@@ -9,8 +9,8 @@
   "scripts": {
     "lint:tests": "eslint --ext .js --fix tests/",
     "e2e": "npx codeceptjs run-multiple parallel --debug --steps --reporter mocha-multi -c pr.codecept.js --grep '(?=.*)^(?!.*@not-ui-pipeline)^(?!.*@not-pr-pipeline)'",
-    "e2e:ia": "npx codeceptjs run -c pr.codecept.js --grep \"@ia\"",
-    "e2e:dbaas": "npx codeceptjs run -c pr.codecept.js --grep \"@dbaas\""
+    "e2e:ia": "npx codeceptjs run -c pr.codecept.js --grep '@ia'",
+    "e2e:dbaas": "npx codeceptjs run -c pr.codecept.js --grep '@dbaas'"
   },
   "dependencies": {
     "@types/lodash": "^4.14.168",
@@ -22,16 +22,21 @@
     "eslint-config-airbnb": "^18.2.1",
     "eslint-config-prettier": "^8.2.0",
     "eslint-plugin-import": "^2.22.1",
+    "eslint-plugin-jsx-a11y": "^6.4.1",
     "eslint-plugin-no-inline-styles": "^1.0.5",
     "eslint-plugin-prettier": "^3.4.0",
+    "eslint-plugin-react": "^7.23.2",
+    "eslint-plugin-react-hooks": "^4.2.0",
     "faker": "^5.5.3",
     "lodash": "^4.17.21",
+    "mocha": "^7.2.0",
     "mocha-junit-reporter": "^1.23.1",
     "mocha-multi": "^1.1.3",
     "mochawesome": "^6.2.2",
     "mochawesome-merge": "^4.2.0",
     "mochawesome-report-generator": "^5.2.0",
     "playwright": "^1.10.0",
+    "prettier": "^2.2.1",
     "yaml": "^1.10.2"
   }
 }
