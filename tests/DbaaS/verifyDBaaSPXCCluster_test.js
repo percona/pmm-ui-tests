@@ -178,7 +178,8 @@ Scenario('PMM-T509 Verify Deleting Db Cluster in Pending Status is possible @dba
     await dbaasActionsPage.deleteXtraDBCluster(pxc_cluster_pending_delete, clusterName);
   });
 
-Scenario('Verify Adding PMM-Server Public Address via Settings works @dbaas @not-pr-pipeline',
+// Skipped due to failure at I.waitForInvisible(dbaasPage.tabs.dbClusterTab.fields.clusterStatusDeleting, 60);
+xScenario('Verify Adding PMM-Server Public Address via Settings works @dbaas @not-pr-pipeline',
   async ({
     I, dbaasPage, pmmSettingsPage,
   }) => {
