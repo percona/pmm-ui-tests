@@ -219,7 +219,7 @@ Scenario('Verify Adding PMM-Server Public Address via Settings works @dbaas @not
     );
 
     if (count > 0) {
-      I.waitForInvisible(dbaasPage.tabs.dbClusterTab.fields.clusterStatusDeleting, 30);
+      I.waitForInvisible(dbaasPage.tabs.dbClusterTab.fields.clusterStatusDeleting, 60);
     }
 
     I.click(dbaasPage.tabs.dbClusterTab.addDbClusterButton);
