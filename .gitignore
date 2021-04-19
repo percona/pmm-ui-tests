@@ -1,3 +1,5 @@
+.idea
+.vscode
 # Logs
 logs
 *.log
@@ -71,6 +73,10 @@ typings/
 # dotenv environment variables file
 .env
 .env.test
+.envrc
+
+# UI tests output
+output
 
 # parcel-bundler cache (https://parceljs.org/)
 .cache
