@@ -182,6 +182,10 @@ module.exports = {
         I.click(this.fields.disableEnhancedMetrics);
         I.click(this.fields.disableBasicMetrics);
         break;
+      case 'pmm-qa-postgres-12':
+        I.click(this.fields.disableEnhancedMetrics);
+        I.click(this.fields.disableBasicMetrics);
+        break;
     }
     I.click(this.fields.addService);
     I.waitForVisible(pmmInventoryPage.fields.agentsLink, 30);
@@ -224,12 +228,24 @@ module.exports = {
     I.seeElement(this.fields.userName);
   },
 
-  fillRemoteRDSMySQLFields() {
-    I.fillField(this.fields.userName, this.usernameRDSMySQL);
-    I.fillField(this.fields.password, this.passwordRDSMySQL);
-    I.fillField(this.fields.environment, 'RDS MySQL 5.6');
-    I.fillField(this.fields.cluster, 'rds56-cluster');
-    I.fillField(this.fields.replicationSet, 'rds56-replication');
+  fillRemoteRDSMySQLFields(serviceName) {
+    // eslint-disable-next-line default-case
+    switch (serviceName) {
+      case 'rds-mysql56':
+        I.fillField(this.fields.userName, this.usernameRDSMySQL);
+        I.fillField(this.fields.password, this.passwordRDSMySQL);
+        I.fillField(this.fields.environment, 'RDS MySQL 5.6');
+        I.fillField(this.fields.cluster, 'rds56-cluster');
+        I.fillField(this.fields.replicationSet, 'rds56-replication');
+        break;
+      case 'pmm-qa-postgres-12':
+        I.fillField(this.fields.userName, process.env.REMOTE_AWS_POSTGRES12_USER );
+        I.fillField(this.fields.password, process.env.REMOTE_AWS_POSTGRES12_PASSWORD);
+        I.fillField(this.fields.environment, 'RDS Postgres');
+        I.fillField(this.fields.cluster, 'rdsPostgres-cluster');
+        I.fillField(this.fields.replicationSet, 'rdsPostgres-replication');
+        break;
+    }
     I.scrollPageToBottom();
   },
 
@@ -257,5 +273,11 @@ module.exports = {
   checkRequiredField() {
     I.waitForVisible(this.fields.requiredFieldHostname, 30);
     I.waitForVisible(this.fields.requiredFieldPort, 30);
+  },
+
+  async checkField(field, value) {
+    const grabbedValue = await I.grabValueFrom(field);
+
+    assert.ok(grabbedValue.includes(value), `The field does not contain: ${value}. The value is: ${grabbedValue}`);
   },
 };
