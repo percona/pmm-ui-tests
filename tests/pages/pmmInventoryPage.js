@@ -235,9 +235,10 @@ module.exports = {
 
     /* we are using count 7 because we have two agents for RDS Instance also,
     hence (pmm-agent, Node exporter, postgres exporter, mysql exporter, QAN RDS,
-    QAN postgres, RDS exporter, QAN PostgreSQL PgStatements Agent)
+    QAN postgres, RDS exporter, QAN PostgreSQL PgStatements Agent, 
+    QAN PostgreSQL PgStatements Agent, QAN MySQL Slowlog Agent)
      */
-    assert.ok((otherDetails <= 8 && otherDetails >= 4), `Total Agents running: ${otherDetails} on PMM-Server Instance can not be greater then 8`);
+    assert.ok((otherDetails <= 10 && otherDetails >= 4), `Total Agents running on PMM-Server Instance can not be greater then 10`);
     assert.ok(countBefore > countAfter, `Some PMM Agents should have been deleted, Agents running before deleting ${countBefore} and after deleting ${countAfter}`);
   },
 
