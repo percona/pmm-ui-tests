@@ -108,7 +108,7 @@ Scenario(
     dashboardPage.applyFilter('Node Name', serviceName);
     await dashboardPage.verifyThereAreNoGraphsWithNA();
     await dashboardPage.verifyThereAreNoGraphsWithoutData();
-    //Wait until data in QAN with slowlog will be.
+    // Wait until data in QAN with slowlog will be.
     I.wait(30);
     I.amOnPage(qanPage.url);
     qanOverview.waitForOverviewLoaded();
