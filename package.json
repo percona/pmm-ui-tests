@@ -17,7 +17,7 @@
     "@types/mocha": "^8.2.2",
     "axios": "^0.21.1",
     "codeceptjs": "^3.0.6",
-    "codeceptjs-mailosaurhelper": "^1.0.4",
+    "codeceptjs-mailosaurhelper": "^1.0.5",
     "eslint": "^7.24.0",
     "eslint-config-airbnb": "^18.2.1",
     "eslint-config-prettier": "^8.2.0",
