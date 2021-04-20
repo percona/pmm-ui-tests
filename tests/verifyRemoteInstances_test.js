@@ -14,7 +14,7 @@ Before(async ({ I }) => {
 });
 
 Scenario(
-  'PMM-T588 - Verify adding external exporter service via UI @not-pr-pipeline',
+  'PMM-T588 - Verify adding external exporter service via UI @not-pr-pipeline @nightly',
   async ({ I, remoteInstancesPage, pmmInventoryPage }) => {
     const serviceName = 'external_service_new';
 
@@ -103,7 +103,7 @@ Scenario(
 // Test is connected with T588
 // It must be run after the creation of external exporter
 Scenario(
-  'PMM-T743 - Check metrics from external exporter on Advanced Data Exploration Dashboard @not-pr-pipeline',
+  'PMM-T743 - Check metrics from external exporter on Advanced Data Exploration Dashboard @not-pr-pipeline @nightly',
   async ({ dashboardPage }) => {
     const metricName = 'redis_uptime_in_seconds';
 
