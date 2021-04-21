@@ -11,19 +11,19 @@ module.exports = {
   // insert your locators and methods here
   // setting locators
 
-  mysqlInputs:{
+  mysqlInputs: {
     userName: this.usernameRDSMySQL,
     password: this.passwordRDSMySQL,
-    environment:'RDS MySQL 5.6',
-    cluster:'rds56-cluster',
-    replicationSet:'rds56-replication',
+    environment: 'RDS MySQL 5.6',
+    cluster: 'rds56-cluster',
+    replicationSet: 'rds56-replication',
   },
   postgresqlInputs: {
     userName: process.env.REMOTE_AWS_POSTGRES12_USER,
     password: process.env.REMOTE_AWS_POSTGRES12_PASSWORD,
-    environment:'RDS Postgres',
-    cluster:'rdsPostgres-cluster',
-    replicationSet:'rdsPostgres-replication',
+    environment: 'RDS Postgres',
+    cluster: 'rdsPostgres-cluster',
+    replicationSet: 'rdsPostgres-replication',
   },
   services: {
     mongodb: 'mongodb_remote_new',
@@ -240,7 +240,7 @@ module.exports = {
     I.seeElement(this.fields.userName);
   },
 
-  fillFields(serviceParameters){
+  fillFields(serviceParameters) {
     I.fillField(this.fields.userName, serviceParameters.userName);
     I.fillField(this.fields.password, serviceParameters.password);
     I.fillField(this.fields.environment, serviceParameters.environment);
@@ -252,10 +252,10 @@ module.exports = {
     // eslint-disable-next-line default-case
     switch (serviceName) {
       case 'rds-mysql56':
-        this.fillFields(mysqlInputs);
+        this.fillFields(this.mysqlInputs);
         break;
       case 'pmm-qa-postgres-12':
-        this.fillFields(postgresqlInputs);
+        this.fillFields(this.postgresqlInputs);
         break;
     }
     I.scrollPageToBottom();
