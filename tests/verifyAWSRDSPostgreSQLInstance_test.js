@@ -19,8 +19,10 @@ Scenario(
     remoteInstancesPage.verifyInstanceIsDiscovered(serviceName);
     remoteInstancesPage.startMonitoringOfInstance(serviceName);
     remoteInstancesPage.verifyAddInstancePageOpened();
-    await remoteInstancesPage.seeInField(remoteInstancesPage.fields.serviceName, serviceName);
-    await remoteInstancesPage.seeInField(remoteInstancesPage.fields.hostName, serviceName);
+    const grabbedHostname = await I.grabValueFrom(remoteInstancesPage.fields.hostName);
+
+    assert.ok(grabbedHostname.startsWith(serviceName), `Hostname is incorrect: ${grabbedHostname}`);
+    I.seeInField(remoteInstancesPage.fields.serviceName, serviceName);
     remoteInstancesPage.fillRemoteRDSFields(serviceName);
     remoteInstancesPage.createRemoteInstance(serviceName);
     pmmInventoryPage.verifyRemoteServiceIsDisplayed(serviceName);
