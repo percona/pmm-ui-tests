@@ -156,13 +156,13 @@ Scenario(
     I, remoteInstancesPage, pmmInventoryPage,
   }) => {
     const serviceName = 'haproxy_remote';
-    const url = process.env.PMM_UI_URL;
+    const url = new URL(process.env.PMM_UI_URL);
 
     I.amOnPage(remoteInstancesPage.url);
     remoteInstancesPage.waitUntilRemoteInstancesPageLoaded();
     remoteInstancesPage.openAddRemotePage('haproxy');
     I.waitForVisible(remoteInstancesPage.fields.hostName, 30);
-    I.fillField(remoteInstancesPage.fields.hostName, url.slice(7, url.length - 1));
+    I.fillField(remoteInstancesPage.fields.hostName, url.host);
     I.fillField(remoteInstancesPage.fields.serviceName, serviceName);
     I.clearField(remoteInstancesPage.fields.portNumber);
     I.fillField(remoteInstancesPage.fields.portNumber, '42100');
