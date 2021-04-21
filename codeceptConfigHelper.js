@@ -8,6 +8,7 @@ module.exports = {
     alertmanagerAPI: './tests/pages/api/alertmanagerAPI.js',
     alertsAPI: './tests/ia/pages/api/alertsAPI.js',
     alertsPage: './tests/ia/pages/alertsPage.js',
+    allChecksPage: './tests/pages/allChecksPage.js',
     amiInstanceSetupPage: './tests/pages/amiInstanceSetupPage.js',
     channelsAPI: './tests/ia/pages/api/channelsAPI.js',
     dashboardPage: './tests/pages/dashboardPage.js',

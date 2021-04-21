@@ -1,4 +1,10 @@
-const config = require('../pr.codecept.js').config.helpers.Playwright;
+const { I, allChecksPage, databaseChecksPage, codeceptjsConfig } = inject();
+const config = codeceptjsConfig.config.helpers.Playwright;
+
+const urls = new DataTable(['url']);
+
+urls.add([databaseChecksPage.url]);
+urls.add([allChecksPage.url]);
 
 Feature('Database Failed Checks').retry(2);
 
@@ -21,13 +27,13 @@ Scenario(
   },
 );
 
-Scenario(
-  'PMM-T295 PMM-T276 Verify user is able to see message about Disabled STT at Database Checks page [critical] @not-pr-pipeline',
+Data(urls).Scenario(
+  'PMM-T295 PMM-T276 PMM-T470 Verify user is able to see message about Disabled STT at Database Checks page [critical] @not-pr-pipeline',
   async ({
-    I, databaseChecksPage, pmmSettingsPage, settingsAPI,
+    I, databaseChecksPage, pmmSettingsPage, settingsAPI, current,
   }) => {
     await settingsAPI.apiDisableSTT();
-    I.amOnPage(databaseChecksPage.url);
+    I.amOnPage(current.url);
     I.waitForVisible(databaseChecksPage.fields.dbCheckPanelSelector, 30);
     I.waitForVisible(databaseChecksPage.fields.disabledSTTMessageSelector, 30);
     I.see(

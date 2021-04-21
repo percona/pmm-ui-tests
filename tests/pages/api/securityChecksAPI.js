@@ -3,8 +3,8 @@ const assert = require('assert');
 const { I } = inject();
 
 module.exports = {
-/* Since Enabling STT checks clears existing Checks Results,
- this method is used for waiting for results with a timeout */
+  /* Since Enabling STT checks clears existing Checks Results,
+   this method is used for waiting for results with a timeout */
   async waitForSecurityChecksResults(timeout) {
     for (let i = 0; i < timeout; i++) {
       const results = await this.getSecurityChecksResults();
@@ -28,5 +28,28 @@ module.exports = {
     );
 
     return resp.data.results;
+  },
+
+  async getFailedCheckBySummary(summaryText) {
+    const results = await this.getSecurityChecksResults();
+
+    return results.find((obj) => obj.summary === summaryText);
+  },
+
+  async changeSecurityChecks() {
+    const headers = { Authorization: `Basic ${await I.getAuth()}` };
+    const body = {
+      params: [{
+        name: 'mysql_version',
+        enable: true,
+      }],
+    };
+
+    const resp = await I.sendPostRequest('v1/management/SecurityChecks/Change', body, headers);
+
+    assert.ok(
+      resp.status === 200,
+      `Failed to change Security Checks results. Response message is "${resp.data.message}"`,
+    );
   },
 };
