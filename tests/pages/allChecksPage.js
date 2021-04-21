@@ -11,7 +11,8 @@ module.exports = {
     tableBody: '$db-checks-all-checks-tbody',
   },
   buttons: {
-    disableEnableCheck: (checkName) => locate(checkRow(checkName)).find('td').last().find('button').first(),
+    disableEnableCheck: (checkName) => locate(checkRow(checkName)).find('td').last().find('button')
+      .first(),
   },
   checks: [{
     name: 'MySQL Empty Password',

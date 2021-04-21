@@ -1,4 +1,6 @@
-const { I, allChecksPage, databaseChecksPage, codeceptjsConfig } = inject();
+const {
+  I, allChecksPage, databaseChecksPage, codeceptjsConfig,
+} = inject();
 const config = codeceptjsConfig.config.helpers.Playwright;
 
 const urls = new DataTable(['url']);
