@@ -28,13 +28,12 @@ Scenario(
     pmmInventoryPage.verifyRemoteServiceIsDisplayed(serviceName);
     await pmmInventoryPage.verifyAgentHasStatusRunning(serviceName);
     await pmmInventoryPage.verifyMetricsFlags(serviceName);
-
+    // Wait until data in QAN and dashboard with slowlog will be loaded.
+    I.wait(30);
     I.amOnPage(dashboardPage.postgresqlInstanceOverviewDashboard.url);
     dashboardPage.applyFilter('Node Name', serviceName);
     await dashboardPage.verifyThereAreNoGraphsWithNA();
     await dashboardPage.verifyThereAreNoGraphsWithoutData();
-    // Wait until data in QAN with slowlog will be.
-    I.wait(30);
     I.amOnPage(qanPage.url);
     qanOverview.waitForOverviewLoaded();
     qanFilters.applyFilter('RDS Postgres');
