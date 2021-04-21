@@ -66,6 +66,7 @@ module.exports = {
     }
   },
 
+
   async getServiceIdWithStatus(status) {
     const serviceIds = [];
     const locator = locate('span')
@@ -80,6 +81,14 @@ module.exports = {
 
     return serviceIds;
   },
+
+  async getOtherDetails(serviceID, detailsSection, expectedResult) {
+    const locator = locate('span').withText(detailsSection).after(locate('span').withText(`service_id: ${serviceID}`));
+    const details = await I.grabTextFrom(locator);
+
+    assert.ok(expectedResult === details, `Expected result: ${expectedResult} do not match details section: ${details}`);
+  },
+
 
   async verifyMetricsFlags(serviceName) {
     const servicesLink = this.fields.pmmServicesSelector;
