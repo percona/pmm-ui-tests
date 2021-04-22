@@ -5,15 +5,13 @@ const assert = require('assert');
 module.exports = {
   accessKey: process.env.AWS_ACCESS_KEY_ID,
   secretKey: process.env.AWS_SECRET_ACCESS_KEY,
-  usernameRDSMySQL: process.env.REMOTE_AWS_MYSQL_USER,
-  passwordRDSMySQL: process.env.REMOTE_AWS_MYSQL_PASSWORD,
 
   // insert your locators and methods here
   // setting locators
 
   mysqlInputs: {
-    userName: this.usernameRDSMySQL,
-    password: this.passwordRDSMySQL,
+    userName: process.env.REMOTE_AWS_MYSQL_USER,
+    password: process.env.REMOTE_AWS_MYSQL_PASSWORD,
     environment: 'RDS MySQL 5.6',
     cluster: 'rds56-cluster',
     replicationSet: 'rds56-replication',
