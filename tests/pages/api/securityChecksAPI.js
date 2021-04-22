@@ -50,7 +50,7 @@ module.exports = {
     return results.find((obj) => obj.summary === summaryText);
   },
 
-  async changeSecurityChecks() {
+  async enableMySQLVersionCheck() {
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
     const body = {
       params: [{

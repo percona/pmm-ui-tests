@@ -5,12 +5,12 @@ Feature('Security Checks: All Checks').retry(2);
 Before(async ({ I, settingsAPI, securityChecksAPI }) => {
   await I.Authorize();
   await settingsAPI.apiEnableSTT();
-  await securityChecksAPI.changeSecurityChecks();
+  await securityChecksAPI.enableMySQLVersionCheck();
 });
 
 After(async ({ settingsAPI, securityChecksAPI }) => {
   await settingsAPI.apiEnableSTT();
-  await securityChecksAPI.changeSecurityChecks();
+  await securityChecksAPI.enableMySQLVersionCheck();
 });
 
 Scenario(
