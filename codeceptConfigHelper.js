@@ -8,11 +8,11 @@ module.exports = {
     alertmanagerAPI: './tests/pages/api/alertmanagerAPI.js',
     alertsAPI: './tests/ia/pages/api/alertsAPI.js',
     alertsPage: './tests/ia/pages/alertsPage.js',
-    allChecksPage: './tests/pages/allChecksPage.js',
+    allChecksPage: './tests/stt/pages/allChecksPage.js',
     amiInstanceSetupPage: './tests/pages/amiInstanceSetupPage.js',
     channelsAPI: './tests/ia/pages/api/channelsAPI.js',
     dashboardPage: './tests/pages/dashboardPage.js',
-    databaseChecksPage: './tests/pages/databaseChecksPage.js',
+    databaseChecksPage: './tests/stt/pages/databaseChecksPage.js',
     dbaasAPI: './tests/DbaaS/api/dbaasAPI.js',
     dbaasPage: './tests/DbaaS/pages/dbaasPage.js',
     dbaasActionsPage: './tests/DbaaS/pages/dbaasActionsPage.js',
@@ -34,12 +34,12 @@ module.exports = {
     rulesAPI: './tests/ia/pages/api/rulesAPI.js',
     ruleTemplatesPage: './tests/ia/pages/ruleTemplatesPage.js',
     iaCommon: './tests/ia/pages/iaCommonPage.js',
-    securityChecksAPI: './tests/pages/api/securityChecksAPI.js',
+    securityChecksAPI: './tests/stt/pages/api/securityChecksAPI.js',
     settingsAPI: './tests/pages/api/settingsAPI.js',
     templatesAPI: './tests/ia/pages/api/templatesAPI.js',
   },
   getChunks: (files) => {
-    const dependentTests = files.filter((value) => /PMMSettings|database|ia|permissions/.test(value));
+    const dependentTests = files.filter((value) => /PMMSettings|stt|ia/.test(value));
     const dbaasTests = files.filter((value) => /DbaaS/.test(value));
     const otherTests = files.filter((val) => !dependentTests.includes(val) && !dbaasTests.includes(val));
 

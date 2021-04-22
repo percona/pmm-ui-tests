@@ -15,7 +15,7 @@ Before(async ({ I }) => {
 });
 
 Scenario(
-  'PMM-T294 Verify user is able to see message about Disabled STT in Checks panel at Home Page [critical] @not-pr-pipeline',
+  'PMM-T294 Verify user is able to see message about Disabled STT in Checks panel at Home Page [critical] @stt @not-pr-pipeline',
   async ({
     I, homePage, databaseChecksPage, settingsAPI,
   }) => {
@@ -30,7 +30,7 @@ Scenario(
 );
 
 Data(urls).Scenario(
-  'PMM-T295 PMM-T276 PMM-T470 Verify user is able to see message about Disabled STT at Database Checks page [critical] @not-pr-pipeline',
+  'PMM-T295 PMM-T276 PMM-T470 Verify user is able to see message about Disabled STT at Database Checks page [critical] @stt @not-pr-pipeline',
   async ({
     I, databaseChecksPage, pmmSettingsPage, settingsAPI, current,
   }) => {
@@ -51,7 +51,7 @@ Data(urls).Scenario(
 
 // TODO: need to add functions to access pages via left side menu
 xScenario(
-  'PMM-T233 PMM-T234 Verify user is able to access PMM Database Checks through UI and with URL [critical] @not-pr-pipeline',
+  'PMM-T233 PMM-T234 Verify user is able to access PMM Database Checks through UI and with URL [critical] @stt @not-pr-pipeline',
   async ({
     I, adminPage, databaseChecksPage, pmmSettingsPage, settingsAPI, securityChecksAPI,
   }) => {
@@ -67,7 +67,7 @@ xScenario(
 );
 
 Scenario(
-  'PMM-T233 Verify user can see Number of failed checks at Home Page and open PMM Database Checks page from it [critical] @not-pr-pipeline',
+  'PMM-T233 Verify user can see Number of failed checks at Home Page and open PMM Database Checks page from it [critical] @stt @not-pr-pipeline',
   async ({
     I, homePage, databaseChecksPage, settingsAPI, securityChecksAPI,
   }) => {
@@ -82,7 +82,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T236 Verify user is able to hover Failed Checks values and see tooltip [minor] @not-pr-pipeline',
+  'PMM-T236 Verify user is able to hover Failed Checks values and see tooltip [minor] @stt @not-pr-pipeline',
   async ({
     I, databaseChecksPage, settingsAPI, securityChecksAPI,
   }) => {
@@ -98,7 +98,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T241 Verify user can see correct service name for failed checks [critical] @not-pr-pipeline',
+  'PMM-T241 Verify user can see correct service name for failed checks [critical] @stt @not-pr-pipeline',
   async ({
     I, databaseChecksPage, settingsAPI, securityChecksAPI,
   }) => {

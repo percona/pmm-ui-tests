@@ -14,7 +14,7 @@ After(async ({ settingsAPI, securityChecksAPI }) => {
 });
 
 Scenario(
-  'PMM-T469 PMM-T472 PMM-T654 Verify list of all checks [critical] @not-pr-pipeline',
+  'PMM-T469 PMM-T472 PMM-T654 Verify list of all checks [critical] @stt @not-pr-pipeline',
   async ({
     I, allChecksPage,
   }) => {
@@ -33,7 +33,7 @@ Scenario(
   },
 );
 Scenario(
-  'PMM-T471 Verify reloading page on All Checks tab [minor] @not-pr-pipeline',
+  'PMM-T471 Verify reloading page on All Checks tab [minor] @stt @not-pr-pipeline',
   async ({
     I, allChecksPage,
   }) => {
@@ -51,7 +51,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T585 Verify user is able enable/disable checks [critical] @not-pr-pipeline',
+  'PMM-T585 Verify user is able enable/disable checks [critical] @stt @not-pr-pipeline',
   async ({
     I, allChecksPage, securityChecksAPI, databaseChecksPage,
   }) => {
