@@ -53,19 +53,20 @@ Scenario(
 Scenario(
   'PMM-T585 Verify user is able enable/disable checks [critical] @not-pr-pipeline',
   async ({
-    I, allChecksPage, securityChecksAPI, settingsAPI,
+    I, allChecksPage, securityChecksAPI, databaseChecksPage,
   }) => {
-    const detailsText = 'Newer version of MySQL is available';
+    const detailsText = 'Newer version of Percona Server for MySQL is available';
     const checkName = 'MySQL Version';
 
-    await settingsAPI.apiDisableSTT();
-    await settingsAPI.apiEnableSTT();
-
+    await securityChecksAPI.startSecurityChecks();
     await securityChecksAPI.waitForSecurityChecksResults(30);
+
+    // Check that there is failed MySQL Version check
     const failedCheckExists = await securityChecksAPI.getFailedCheckBySummary(detailsText);
 
     assert.ok(failedCheckExists, `Expected to have "${detailsText}" failed check`);
 
+    // Disable MySQL Version check
     I.amOnPage(allChecksPage.url);
     I.waitForVisible(allChecksPage.buttons.disableEnableCheck(checkName));
     I.seeTextEquals('Disable', allChecksPage.buttons.disableEnableCheck(checkName));
@@ -76,10 +77,13 @@ Scenario(
     I.seeTextEquals('Enable', allChecksPage.buttons.disableEnableCheck(checkName));
     I.seeTextEquals('Disabled', allChecksPage.elements.statusCellByName(checkName));
 
-    await settingsAPI.apiDisableSTT();
-    await settingsAPI.apiEnableSTT();
-    await securityChecksAPI.waitForSecurityChecksResults(30);
+    // Run DB Checks from UI
+    I.amOnPage(databaseChecksPage.url);
+    I.waitForVisible(databaseChecksPage.buttons.startDBChecks, 30);
+    I.click(databaseChecksPage.buttons.startDBChecks);
+    I.verifyPopUpMessage(databaseChecksPage.messages.securityChecksDone);
 
+    // Verify there is no MySQL Version failed check
     const failedCheckDoesNotExist = await securityChecksAPI.getFailedCheckBySummary(detailsText);
 
     assert.ok(!failedCheckDoesNotExist, `Expected "${detailsText}" failed check to not be present`);

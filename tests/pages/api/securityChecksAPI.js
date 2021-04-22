@@ -30,8 +30,22 @@ module.exports = {
     return resp.data.results;
   },
 
+  async startSecurityChecks() {
+    const headers = { Authorization: `Basic ${await I.getAuth()}` };
+
+    const resp = await I.sendPostRequest('v1/management/SecurityChecks/Start', {}, headers);
+
+    assert.ok(
+      resp.status === 200,
+      `Failed to start Security Checks. Response message is "${resp.data.message}"`,
+    );
+  },
+
   async getFailedCheckBySummary(summaryText) {
     const results = await this.getSecurityChecksResults();
+
+    // return null if there are no failed checks
+    if (!results) return null;
 
     return results.find((obj) => obj.summary === summaryText);
   },
