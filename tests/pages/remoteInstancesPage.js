@@ -5,11 +5,24 @@ const assert = require('assert');
 module.exports = {
   accessKey: process.env.AWS_ACCESS_KEY_ID,
   secretKey: process.env.AWS_SECRET_ACCESS_KEY,
-  usernameRDSMySQL: process.env.REMOTE_AWS_MYSQL_USER,
-  passwordRDSMySQL: process.env.REMOTE_AWS_MYSQL_PASSWORD,
 
   // insert your locators and methods here
   // setting locators
+
+  mysqlInputs: {
+    userName: process.env.REMOTE_AWS_MYSQL_USER,
+    password: process.env.REMOTE_AWS_MYSQL_PASSWORD,
+    environment: 'RDS MySQL 5.6',
+    cluster: 'rds56-cluster',
+    replicationSet: 'rds56-replication',
+  },
+  postgresqlInputs: {
+    userName: process.env.REMOTE_AWS_POSTGRES12_USER,
+    password: process.env.REMOTE_AWS_POSTGRES12_PASSWORD,
+    environment: 'RDS Postgres',
+    cluster: 'rdsPostgres-cluster',
+    replicationSet: 'rdsPostgres-replication',
+  },
   services: {
     mongodb: 'mongodb_remote_new',
     mysql: 'mysql_remote_new',
@@ -179,6 +192,7 @@ module.exports = {
         I.click(this.fields.usePgStatStatements);
         break;
       case 'rds-mysql56':
+      case 'pmm-qa-postgres-12':  
         I.click(this.fields.disableEnhancedMetrics);
         I.click(this.fields.disableBasicMetrics);
         break;
@@ -224,12 +238,24 @@ module.exports = {
     I.seeElement(this.fields.userName);
   },
 
-  fillRemoteRDSMySQLFields() {
-    I.fillField(this.fields.userName, this.usernameRDSMySQL);
-    I.fillField(this.fields.password, this.passwordRDSMySQL);
-    I.fillField(this.fields.environment, 'RDS MySQL 5.6');
-    I.fillField(this.fields.cluster, 'rds56-cluster');
-    I.fillField(this.fields.replicationSet, 'rds56-replication');
+  fillFields(serviceParameters) {
+    I.fillField(this.fields.userName, serviceParameters.userName);
+    I.fillField(this.fields.password, serviceParameters.password);
+    I.fillField(this.fields.environment, serviceParameters.environment);
+    I.fillField(this.fields.cluster, serviceParameters.cluster);
+    I.fillField(this.fields.replicationSet, serviceParameters.replicationSet);
+  },
+
+  fillRemoteRDSFields(serviceName) {
+    // eslint-disable-next-line default-case
+    switch (serviceName) {
+      case 'rds-mysql56':
+        this.fillFields(this.mysqlInputs);
+        break;
+      case 'pmm-qa-postgres-12':
+        this.fillFields(this.postgresqlInputs);
+        break;
+    }
     I.scrollPageToBottom();
   },
 
