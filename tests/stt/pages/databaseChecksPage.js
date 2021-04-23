@@ -133,4 +133,11 @@ module.exports = {
       I.seeElement(locate('$table-row').find('td').withText(name));
     }
   },
+
+  runDBChecks() {
+    I.amOnPage(this.url);
+    I.waitForVisible(this.buttons.startDBChecks, 30);
+    I.click(this.buttons.startDBChecks);
+    I.verifyPopUpMessage(this.messages.securityChecksDone);
+  },
 };
