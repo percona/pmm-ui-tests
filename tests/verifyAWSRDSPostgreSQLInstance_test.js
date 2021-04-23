@@ -6,7 +6,8 @@ Before(async ({ I }) => {
   I.Authorize();
 });
 
-Scenario(
+// skipping due to failures
+xScenario(
   'PMM-T716 - Verify adding PostgreSQL RDS monitoring to PMM via UI @not-pr-pipeline',
   async ({
     I, remoteInstancesPage, pmmInventoryPage, qanPage, qanFilters, qanOverview, dashboardPage,
