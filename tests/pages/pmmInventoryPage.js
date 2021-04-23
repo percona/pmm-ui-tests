@@ -239,8 +239,10 @@ module.exports = {
      */
     // need to be fixed later
     // we need to avoid hardcoded values
-    // assert.ok((otherDetails <= 10 && otherDetails >= 4), 'Total Agents running on PMM-Server Instance can not be greater then 10');
-    assert.ok(countBefore > countAfter, `Some PMM Agents should have been deleted, Agents running before deleting ${countBefore} and after deleting ${countAfter}`);
+    // assert.ok((otherDetails <= 10 && otherDetails >= 4),
+    // 'Total Agents running on PMM-Server Instance can not be greater then 10');
+    assert.ok(countBefore > countAfter, `Some PMM Agents should have been deleted,
+     Agents running before deleting ${countBefore} and after deleting ${countAfter}`);
   },
 
   async getCellValue(rowNumber, columnNumber) {

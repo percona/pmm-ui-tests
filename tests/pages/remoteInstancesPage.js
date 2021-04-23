@@ -192,7 +192,7 @@ module.exports = {
         I.click(this.fields.usePgStatStatements);
         break;
       case 'rds-mysql56':
-      case 'pmm-qa-postgres-12':  
+      case 'pmm-qa-postgres-12':
         I.click(this.fields.disableEnhancedMetrics);
         I.click(this.fields.disableBasicMetrics);
         break;
