@@ -1,10 +1,13 @@
-const { I, codeceptjsConfig } = inject();
-const url = new URL(codeceptjsConfig.config.helpers.Playwright.url);
+const { I } = inject();
 const db = 'mysql';
 
 module.exports = {
-  connectToPS() {
-    I.connect(db, `mysql://root:ps@${url.host}:43306/mysql`);
+  connectToPS(connection) {
+    const {
+      host, port, username, password,
+    } = connection;
+
+    I.connect(db, `mysql://${username}:${password}@${host}:${port}/mysql`);
   },
   async disconnectFromPS() {
     await I.removeConnection(db);

@@ -20,12 +20,12 @@ module.exports = {
     rds: 'RDS',
   },
 
-  async apiAddInstance(type, serviceName) {
+  async apiAddInstance(type, serviceName, creds) {
     switch (type) {
       case this.instanceTypes.mongodb:
         return this.addMongodb(serviceName);
       case this.instanceTypes.mysql:
-        return this.addMysql(serviceName);
+        return this.addMysql(serviceName, creds);
       case this.instanceTypes.proxysql:
         return this.addProxysql(serviceName);
       case this.instanceTypes.postgresql:
@@ -37,18 +37,21 @@ module.exports = {
     }
   },
 
-  async addMysql(serviceName) {
+  async addMysql(serviceName, connection) {
+    const {
+      host, port, username, password,
+    } = connection;
     const body = {
       add_node: {
         node_name: serviceName,
         node_type: 'REMOTE_NODE',
       },
-      port: 3307,
+      port: port || 3307,
       qan_mysql_perfschema: true,
-      address: process.env.REMOTE_MYSQL_HOST,
+      address: host || process.env.REMOTE_MYSQL_HOST,
       service_name: serviceName,
-      username: process.env.REMOTE_MYSQL_USER,
-      password: process.env.REMOTE_MYSQL_PASSWORD,
+      username: username || process.env.REMOTE_MYSQL_USER,
+      password: password || process.env.REMOTE_MYSQL_PASSWORD,
       cluster: this.clusterNames.mysql,
       engine: 'DISCOVER_RDS_MYSQL',
       pmm_agent_id: 'pmm-server',
@@ -57,7 +60,9 @@ module.exports = {
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
     const resp = await I.sendPostRequest('/v1/management/MySQL/Add', body, headers);
 
-    assert.equal(resp.status, 200, `Instance ${serviceName} was not added for monitoring`);
+    assert.equal(resp.status, 200, `Instance ${serviceName} was not added for monitoring. ${resp.data.message}`);
+
+    return resp.data;
   },
 
   async addPostgresql(serviceName) {
