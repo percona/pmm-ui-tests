@@ -32,7 +32,7 @@ Before(async ({ I }) => {
 });
 
 Scenario(
-  'PMM-T289 Verify Whats New link is presented on Update Widget @pre-update @pmm-upgrade @not-ui-pipeline @not-pr-pipeline',
+  'PMM-T289 Verify Whats New link is presented on Update Widget @pre-upgrade @pmm-upgrade @not-ui-pipeline @not-pr-pipeline',
   async ({ I, homePage }) => {
     const versions = getVersions();
     const locators = homePage.getLocators(versions.dockerMinor);
@@ -51,7 +51,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T288 Verify user can see Update widget before upgrade [critical] @pre-update  @pmm-upgrade @not-ui-pipeline @not-pr-pipeline',
+  'PMM-T288 Verify user can see Update widget before upgrade [critical] @pre-upgrade  @pmm-upgrade @not-ui-pipeline @not-pr-pipeline',
   async ({ I, homePage }) => {
     const versions = getVersions();
 
@@ -61,7 +61,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T391 Verify user is able to create and set custom home dashboard @pre-update @pmm-upgrade @not-ui-pipeline @not-pr-pipeline',
+  'PMM-T391 Verify user is able to create and set custom home dashboard @pre-upgrade @pmm-upgrade @not-ui-pipeline @not-pr-pipeline',
   async ({ I, grafanaAPI, dashboardPage }) => {
     const resp = await grafanaAPI.createCustomDashboard();
 
@@ -78,7 +78,7 @@ Scenario(
 );
 
 Scenario(
-  'Verify user can create Remote Instances before upgrade and they are in RUNNNING status @pre-update @pmm-upgrade @not-ui-pipeline @not-pr-pipeline',
+  'Verify user can create Remote Instances before upgrade and they are in RUNNNING status @pre-upgrade @pmm-upgrade @not-ui-pipeline @not-pr-pipeline',
   async ({
     inventoryAPI, addInstanceAPI,
   }) => {
@@ -95,7 +95,7 @@ Scenario(
 );
 
 Scenario(
-  'Verify user is able to Upgrade PMM version [blocker] @pmm-upgrade @not-ui-pipeline @not-pr-pipeline',
+  'PMM-T3 Verify user is able to Upgrade PMM version [blocker] @pmm-upgrade @not-ui-pipeline @not-pr-pipeline',
   async ({ I, homePage }) => {
     const versions = getVersions();
 
