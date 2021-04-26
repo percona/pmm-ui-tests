@@ -1,3 +1,8 @@
+const inputs = new DataTable(['input']);
+
+inputs.add(['0']);
+inputs.add(['-1']);
+
 Feature('Security Checks: Settings').retry(2);
 
 Before(async ({
@@ -70,44 +75,26 @@ Scenario(
   },
 );
 
-Scenario(
+Data(inputs).Scenario(
   'PMM-T651 Verify Check Intervals validation @stt @settings',
   async ({
-    I, pmmSettingsPage,
+    I, pmmSettingsPage, current,
   }) => {
     const greaterThanZero = 'Value should be greater or equal to 0.1';
 
     I.amOnPage(pmmSettingsPage.advancedSettingsUrl);
     I.waitForVisible(pmmSettingsPage.fields.rareIntervalInput, 30);
 
-    // Verify validation for 0
     I.clearField(pmmSettingsPage.fields.rareIntervalInput);
-    I.fillField(pmmSettingsPage.fields.rareIntervalInput, '0');
+    I.fillField(pmmSettingsPage.fields.rareIntervalInput, current.input);
     I.seeTextEquals(greaterThanZero, pmmSettingsPage.fields.rareIntervalValidation);
 
-    // Verify validation for -1
-    I.clearField(pmmSettingsPage.fields.rareIntervalInput);
-    I.fillField(pmmSettingsPage.fields.rareIntervalInput, '-1');
-    I.seeTextEquals(greaterThanZero, pmmSettingsPage.fields.rareIntervalValidation);
-
-    // Verify validation for 0
     I.clearField(pmmSettingsPage.fields.standartIntervalInput);
-    I.fillField(pmmSettingsPage.fields.standartIntervalInput, '0');
+    I.fillField(pmmSettingsPage.fields.standartIntervalInput, current.input);
     I.seeTextEquals(greaterThanZero, pmmSettingsPage.fields.standartIntervalValidation);
 
-    // Verify validation for -1
-    I.clearField(pmmSettingsPage.fields.standartIntervalInput);
-    I.fillField(pmmSettingsPage.fields.standartIntervalInput, '-1');
-    I.seeTextEquals(greaterThanZero, pmmSettingsPage.fields.standartIntervalValidation);
-
-    // Verify validation for 0
     I.clearField(pmmSettingsPage.fields.frequentIntervalInput);
-    I.fillField(pmmSettingsPage.fields.frequentIntervalInput, '0');
-    I.seeTextEquals(greaterThanZero, pmmSettingsPage.fields.frequentIntervalValidation);
-
-    // Verify validation for -1
-    I.clearField(pmmSettingsPage.fields.frequentIntervalInput);
-    I.fillField(pmmSettingsPage.fields.frequentIntervalInput, '-1');
+    I.fillField(pmmSettingsPage.fields.frequentIntervalInput, current.input);
     I.seeTextEquals(greaterThanZero, pmmSettingsPage.fields.frequentIntervalValidation);
 
     I.seeAttributesOnElements(pmmSettingsPage.fields.advancedButton, { disabled: true });
