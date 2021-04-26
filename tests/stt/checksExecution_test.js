@@ -29,12 +29,12 @@ After(async ({ settingsAPI, securityChecksAPI, perconaServerDB }) => {
 Scenario(
   'PMM-T384 Verify that the user does not see an alert again if it has been fixed [critical] @stt @not-pr-pipeline',
   async ({
-    I, securityChecksAPI, databaseChecksPage, perconaServerDB,
+    securityChecksAPI, databaseChecksPage, perconaServerDB,
   }) => {
     const detailsText = 'MySQL users have empty passwords';
 
-    await securityChecksAPI.startSecurityChecks();
-    await securityChecksAPI.waitForSecurityChecksResults(30);
+    // Run DB Checks from UI
+    databaseChecksPage.runDBChecks();
 
     // Check that there is MySQL user empty password failed check
     const failedCheckExists = await securityChecksAPI.getFailedCheckBySummary(detailsText);
