@@ -6,7 +6,6 @@ const serviceNames = {
   proxysql: 'proxysql_upgrade_service',
   rds: 'mysql_rds_uprgade_service',
 };
-let customDashboardUrl;
 
 // For running on local env set PMM_SERVER_LATEST and DOCKER_VERSION variables
 function getVersions() {
@@ -65,8 +64,6 @@ Scenario(
   async ({ I, grafanaAPI, dashboardPage }) => {
     const resp = await grafanaAPI.createCustomDashboard();
 
-    customDashboardUrl = resp.url;
-
     await grafanaAPI.starDashboard(resp.id);
     await grafanaAPI.setHomeDashboard(resp.id);
 
@@ -106,13 +103,13 @@ Scenario(
 
 Scenario(
   'PMM-T391 Verify that custom home dashboard stays as home dashboard after upgrade @post-upgrade @pmm-upgrade @not-ui-pipeline @not-pr-pipeline',
-  async ({ I, dashboardPage }) => {
+  async ({ I, grafanaAPI, dashboardPage }) => {
     I.amOnPage('');
     dashboardPage.waitForDashboardOpened();
     dashboardPage.verifyMetricsExistence(['Custom Panel']);
     await dashboardPage.verifyThereAreNoGraphsWithNA();
     await dashboardPage.verifyThereAreNoGraphsWithoutData();
-    I.seeInCurrentUrl(customDashboardUrl);
+    I.seeInCurrentUrl(grafanaAPI.customDashboard);
   },
 );
 
