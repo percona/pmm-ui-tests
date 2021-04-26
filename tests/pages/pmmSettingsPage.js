@@ -190,6 +190,7 @@ module.exports = {
     metricsResolution: '//label[text()="',
     metricsResolutionLabel: '$metrics-resolution-label',
     metricsResolutionRadio: '$resolutions-radio-button',
+    microsoftAzureMonitoringSwitch: '//div[@data-qa="advanced-azure-discover"]//div[2]//label',
     loginButton: '$sign-in-submit-button',
     lowInput: '$lr-number-input',
     mediumInput: '$mr-number-input',

@@ -1,6 +1,6 @@
 const assert = require('assert');
 
-Feature('Monitoring AWS RDS MySQL DB');
+Feature('Monitoring AWS RDS PostgreSQL DB');
 
 Before(async ({ I }) => {
   I.Authorize();

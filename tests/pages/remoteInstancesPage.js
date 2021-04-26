@@ -40,6 +40,7 @@ module.exports = {
   fields: {
     accessKeyInput: '$aws_access_key-text-input',
     addAWSRDSMySQLbtn: '$rds-instance',
+    addAzureMySQLPostgreSQL: '$azure-instance',
     addExternalServiceRemote: '$external-instance',
     addInstanceDiv: '//div[@class="view"]',
     addInstancesList: '//nav[@class="navigation"]',
@@ -192,7 +193,7 @@ module.exports = {
         I.click(this.fields.usePgStatStatements);
         break;
       case 'rds-mysql56':
-      case 'pmm-qa-postgres-12':  
+      case 'pmm-qa-postgres-12':
         I.click(this.fields.disableEnhancedMetrics);
         I.click(this.fields.disableBasicMetrics);
         break;
