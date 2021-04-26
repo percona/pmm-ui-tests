@@ -3,6 +3,7 @@ const assert = require('assert');
 const faker = require('faker');
 
 module.exports = {
+  customDashboard: 'custom-dashboard',
   async createCustomDashboard() {
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
     const body = {
@@ -68,7 +69,7 @@ module.exports = {
           from: 'now-6h',
           to: 'now',
         },
-        title: `${faker.lorem.word()}-dashboard`,
+        title: this.customDashboard,
         version: 0,
       },
       folderId: 0,
