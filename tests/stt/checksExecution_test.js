@@ -21,7 +21,7 @@ BeforeSuite(async ({ perconaServerDB, addInstanceAPI }) => {
 
 AfterSuite(async ({ perconaServerDB, inventoryAPI }) => {
   await perconaServerDB.disconnectFromPS();
-  await inventoryAPI.deleteNode(nodeID, true);
+  if (nodeID) await inventoryAPI.deleteNode(nodeID, true);
 });
 
 Before(async ({

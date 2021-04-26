@@ -37,7 +37,7 @@ module.exports = {
     }
   },
 
-  async addMysql(serviceName, connection) {
+  async addMysql(serviceName, connection = {}) {
     const {
       host, port, username, password,
     } = connection;
