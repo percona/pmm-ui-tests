@@ -1,6 +1,5 @@
 const { I } = inject();
 const assert = require('assert');
-const faker = require('faker');
 
 module.exports = {
   customDashboard: 'custom-dashboard',
