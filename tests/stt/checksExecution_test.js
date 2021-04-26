@@ -1,6 +1,6 @@
 const assert = require('assert');
 
-Feature('Security Checks: Checks Execution').retry(2);
+Feature('Security Checks: Checks Execution');
 
 BeforeSuite(async ({ perconaServerDB }) => {
   perconaServerDB.connectToPS();
@@ -29,9 +29,11 @@ After(async ({ settingsAPI, securityChecksAPI, perconaServerDB }) => {
 Scenario(
   'PMM-T384 Verify that the user does not see an alert again if it has been fixed [critical] @stt @not-pr-pipeline',
   async ({
-    securityChecksAPI, databaseChecksPage, perconaServerDB,
+    I, securityChecksAPI, databaseChecksPage, perconaServerDB, inventoryAPI,
   }) => {
     const detailsText = 'MySQL users have empty passwords';
+    const users = await I.run('mysql', 'SELECT User from mysql.user');
+    const services = await inventoryAPI.apiGetServices();
 
     // Run DB Checks from UI
     databaseChecksPage.runDBChecks();
@@ -39,7 +41,10 @@ Scenario(
     // Check that there is MySQL user empty password failed check
     const failedCheckExists = await securityChecksAPI.getFailedCheckBySummary(detailsText);
 
-    assert.ok(failedCheckExists, `Expected to have "${detailsText}" failed check`);
+    assert.ok(failedCheckExists, `Expected to have "${detailsText}" failed check. Users are:
+      ${JSON.stringify(users, null, 2)} 
+      services are: 
+      ${JSON.stringify(services.data, null, 2)}`);
 
     await perconaServerDB.setUserPassword();
 
