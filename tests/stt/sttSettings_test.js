@@ -51,16 +51,18 @@ Scenario(
   async ({
     I, pmmSettingsPage,
   }) => {
+    const interval = '0.1';
+
     I.amOnPage(pmmSettingsPage.advancedSettingsUrl);
     I.waitForVisible(pmmSettingsPage.fields.rareIntervalInput, 30);
 
     // Set 0.1 values for all 3 intervals
     I.clearField(pmmSettingsPage.fields.rareIntervalInput);
-    I.fillField(pmmSettingsPage.fields.rareIntervalInput, '0.1');
+    I.fillField(pmmSettingsPage.fields.rareIntervalInput, interval);
     I.clearField(pmmSettingsPage.fields.standartIntervalInput);
-    I.fillField(pmmSettingsPage.fields.standartIntervalInput, '0.1');
+    I.fillField(pmmSettingsPage.fields.standartIntervalInput, interval);
     I.clearField(pmmSettingsPage.fields.frequentIntervalInput);
-    I.fillField(pmmSettingsPage.fields.frequentIntervalInput, '0.1');
+    I.fillField(pmmSettingsPage.fields.frequentIntervalInput, interval);
 
     // Apply Settings
     I.click(pmmSettingsPage.fields.advancedButton);
@@ -69,9 +71,9 @@ Scenario(
 
     // Verify values are correct after page refresh
     I.waitForVisible(pmmSettingsPage.fields.rareIntervalInput, 30);
-    I.seeInField(pmmSettingsPage.fields.rareIntervalInput, '0.1');
-    I.seeInField(pmmSettingsPage.fields.standartIntervalInput, '0.1');
-    I.seeInField(pmmSettingsPage.fields.frequentIntervalInput, '0.1');
+    I.seeInField(pmmSettingsPage.fields.rareIntervalInput, interval);
+    I.seeInField(pmmSettingsPage.fields.standartIntervalInput, interval);
+    I.seeInField(pmmSettingsPage.fields.frequentIntervalInput, interval);
   },
 );
 
