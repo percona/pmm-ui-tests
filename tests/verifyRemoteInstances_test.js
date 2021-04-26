@@ -173,8 +173,8 @@ Scenario(
     const serviceId = await pmmInventoryPage.getServiceId(serviceName);
 
     I.click(pmmInventoryPage.fields.agentsLink);
-    await pmmInventoryPage.getOtherDetails(serviceId, 'scheme:', 'scheme: http');
-    await pmmInventoryPage.getOtherDetails(serviceId, 'metrics_path:', 'metrics_path: /metrics');
-    await pmmInventoryPage.getOtherDetails(serviceId, 'listen_port:', 'listen_port: 42100');
+    await pmmInventoryPage.checkAgentOtherDetailsSection('scheme:', 'scheme: http', serviceName, serviceId);
+    await pmmInventoryPage.checkAgentOtherDetailsSection('metrics_path:', 'metrics_path: /metrics', serviceName, serviceId);
+    await pmmInventoryPage.checkAgentOtherDetailsSection('listen_port:', 'listen_port: 42100', serviceName, serviceId);
   },
 );
