@@ -43,8 +43,10 @@ Scenario(
 
     assert.ok(failedCheckExists, `Expected to have "${detailsText}" failed check. Users are:
       ${JSON.stringify(users, null, 2)} 
-      services are: 
-      ${JSON.stringify(services.data, null, 2)}`);
+      --- Services are: 
+      ${JSON.stringify(services.data, null, 2)}
+      --- Failed checks are:
+      ${JSON.stringify(await securityChecksAPI.getSecurityChecksResults(), null, 2)}`);
 
     await perconaServerDB.setUserPassword();
 
