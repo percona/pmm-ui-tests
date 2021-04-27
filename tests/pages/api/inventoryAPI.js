@@ -93,4 +93,18 @@ module.exports = {
       .flat(Infinity)
       .filter(({ service_id }) => service_id === serviceId);
   },
+
+  async deleteNode(nodeID, force) {
+    const body = {
+      force,
+      node_id: nodeID,
+    };
+    const headers = { Authorization: `Basic ${await I.getAuth()}` };
+    const resp = await I.sendPostRequest('v1/inventory/Nodes/Remove', body, headers);
+
+    assert.ok(
+      resp.status === 200,
+      `Failed to delete Node. Response message is "${resp.data.message}"`,
+    );
+  },
 };

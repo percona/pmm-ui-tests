@@ -80,6 +80,19 @@ module.exports = {
     await I.sendPostRequest('v1/Settings/Change', body, headers);
   },
 
+  async restoreCheckIntervalsDefaults() {
+    const body = {
+      stt_check_intervals: {
+        standard_interval: '86400s',
+        rare_interval: '280800s',
+        frequent_interval: '14400s',
+      },
+    };
+    const headers = { Authorization: `Basic ${await I.getAuth()}` };
+
+    await I.sendPostRequest('v1/Settings/Change', body, headers);
+  },
+
   async setEmailAlertingSettings(settings) {
     const body = {
       email_alerting_settings: settings || {
