@@ -81,6 +81,13 @@ module.exports = {
     return serviceIds;
   },
 
+  async checkAgentOtherDetailsSection(detailsSection, expectedResult, serviceName, serviceId) {
+    const locator = locate('span').withText(detailsSection).after(locate('span').withText(`service_id: ${serviceId}`));
+    const details = await I.grabTextFrom(locator);
+
+    assert.ok(expectedResult === details, `Infomation '${expectedResult}' for service '${serviceName}' is missing!`);
+  },
+
   async verifyMetricsFlags(serviceName) {
     const servicesLink = this.fields.pmmServicesSelector;
     const agentLinkLocator = this.fields.agentsLink;
@@ -239,10 +246,9 @@ module.exports = {
      */
     // need to be fixed later
     // we need to avoid hardcoded values
-    // assert.ok((otherDetails <= 10 && otherDetails >= 4),
-    // 'Total Agents running on PMM-Server Instance can not be greater then 10');
-    assert.ok(countBefore > countAfter, `Some PMM Agents should have been deleted,
-     Agents running before deleting ${countBefore} and after deleting ${countAfter}`);
+    /* assert.ok((otherDetails <= 10 && otherDetails >= 4),
+     'Total Agents running on PMM-Server Instance can not be greater then 10'); */
+    assert.ok(countBefore > countAfter, `Some PMM Agents should have been deleted, Agents running before deleting ${countBefore} and after deleting ${countAfter}`);
   },
 
   async getCellValue(rowNumber, columnNumber) {
