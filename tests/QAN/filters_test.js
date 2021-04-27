@@ -305,3 +305,11 @@ Scenario('PMM-T437 - Verify short-cut navigation for n/a items @qan @not-pr-pipe
   qanFilters.checkLink('Cluster', 'n/a', false);
   qanFilters.checkLink('Replication Set', 'n/a', false);
 });
+
+Scenario('PMM-T746 - Verify adding monitoring for Azure MySQL CHECK QAN @not-pr-pipeline', async ({ qanFilters, remoteInstancesPage, qanOverview }) => {
+  qanFilters.applyFilter(remoteInstancesPage.mysqlAzureInputs.environment);
+  qanOverview.waitForOverviewLoaded();
+  const count = await qanOverview.getCountOfItems();
+
+  assert.ok(count > 0, 'The queries for added RDS Postgres do NOT exist');
+});
