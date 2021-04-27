@@ -228,6 +228,12 @@ module.exports = {
     termsOfService: '//span[contains(text(), "Terms of Service")]',
     validationMessage: 'span.error-message',
     iaLabelTooltipSelector: locate('$advanced-alerting').find('div[class$="-Icon"]'),
+    rareIntervalInput: '$rareInterval-number-input',
+    rareIntervalValidation: '$rareInterval-field-error-message',
+    standartIntervalInput: '$standardInterval-number-input',
+    standartIntervalValidation: '$standardInterval-field-error-message',
+    frequentIntervalInput: '$frequentInterval-number-input',
+    frequentIntervalValidation: '$frequentInterval-field-error-message',
   },
 
   async waitForPmmSettingsPageLoaded() {

@@ -78,10 +78,7 @@ Scenario(
     I.seeTextEquals('Disabled', allChecksPage.elements.statusCellByName(checkName));
 
     // Run DB Checks from UI
-    I.amOnPage(databaseChecksPage.url);
-    I.waitForVisible(databaseChecksPage.buttons.startDBChecks, 30);
-    I.click(databaseChecksPage.buttons.startDBChecks);
-    I.verifyPopUpMessage(databaseChecksPage.messages.securityChecksDone);
+    databaseChecksPage.runDBChecks();
 
     // Verify there is no MySQL Version failed check
     const failedCheckDoesNotExist = await securityChecksAPI.getFailedCheckBySummary(detailsText);
