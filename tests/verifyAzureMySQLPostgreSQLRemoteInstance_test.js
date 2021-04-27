@@ -7,7 +7,7 @@ Before(async ({ I, settingsAPI, pmmSettingsPage }) => {
 });
 
 Scenario(
-  'PMM-T747 - Verify enabling Azure flag @not-ui-pipeline',
+  'PMM-T746 - Verify adding monitoring for Azure MySQL, PMM-T744 Verify there is "Add Azure MySQL or PostgreSQL instance" button on "Add Instance" page @not-ui-pipeline',
   async ({ I, pmmSettingsPage, remoteInstancesPage }) => {
     const sectionNameToExpand = pmmSettingsPage.sectionTabsList.advanced;
 
@@ -18,7 +18,9 @@ Scenario(
     I.waitForVisible(pmmSettingsPage.fields.advancedButton, 30);
     I.click(pmmSettingsPage.fields.advancedButton);
     I.amOnPage(remoteInstancesPage.url);
-    I.waitForVisible(remoteInstancesPage.fields.addAzureMySQLPostgreSQL, 30);
-    I.click(remoteInstancesPage.fields.addAzureMySQLPostgreSQL);
+    remoteInstancesPage.openAndAzure();
+    remoteInstancesPage.discoverAzure();
+    remoteInstancesPage.startMonitoringOfInstance('pmm2-qa-mysql');
+    remoteInstancesPage.verifyAddInstancePageOpened();
   },
 );

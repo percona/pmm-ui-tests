@@ -50,6 +50,8 @@ module.exports = {
     addProxySQLRemote: '$proxysql-instance',
     addService: '#addInstance',
     availabilityZone: '$az-text-input',
+    clientID: '$azure_client_id-text-input',
+    clientSecret: '$azure_client_secret-password-input',
     cluster: '$cluster-text-input',
     customLabels: '$custom_labels-textarea-input',
     disableBasicMetrics: '//input[@name="disable_basic_metrics"]/following-sibling::span[2]',
@@ -73,7 +75,9 @@ module.exports = {
     skipTLS: '//input[@name="tls_skip_verify"]',
     skipTLSL: '//input[@name="tls_skip_verify"]/following-sibling::span[2]',
     startMonitoring: '/following-sibling::td/a',
+    subscriptionID: '$azure_subscription_id-text-input',
     tableStatsGroupTableLimit: '$tablestats_group_table_limit-number-input',
+    tenantID: '$azure_tenant_id-text-input',
     usePerformanceSchema2: '//input[@name="qan_mysql_perfschema"]/following-sibling::span[2]',
     usePgStatMonitor: '//label[text()="PG Stat Monitor"]',
     usePgStatStatements: '//label[text()="PG Stat Statements"]',
@@ -202,6 +206,21 @@ module.exports = {
     I.waitForVisible(pmmInventoryPage.fields.agentsLink, 30);
 
     return pmmInventoryPage;
+  },
+
+  openAndAzure(){
+    I.waitForVisible(this.fields.addAzureMySQLPostgreSQL, 30);
+    I.click(this.fields.addAzureMySQLPostgreSQL);
+    I.waitForVisible(this.fields.clientID, 30);
+  },
+
+  discoverAzure(){
+    I.fillField(this.fields.clientID, process.env.AZURE_CLIENT_ID);
+    I.fillField(this.fields.clientSecret, process.env.AZURE_CLIENT_SECRET);
+    I.fillField(this.fields.tenantID, process.env.AZURE_TENNANT_ID);
+    I.fillField(this.fields.subscriptionID, process.env.AZURE_SUBSCRIPTION_ID);
+    I.click(this.fields.discoverBtn);
+    this.waitForDiscovery();
   },
 
   openAddAWSRDSMySQLPage() {
