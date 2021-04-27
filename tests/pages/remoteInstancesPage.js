@@ -41,6 +41,7 @@ module.exports = {
     accessKeyInput: '$aws_access_key-text-input',
     addAWSRDSMySQLbtn: '$rds-instance',
     addExternalServiceRemote: '$external-instance',
+    addHAProxy: '$haproxy-instance',
     addInstanceDiv: '//div[@class="view"]',
     addInstancesList: '//nav[@class="navigation"]',
     addMongoDBRemote: '$mongodb-instance',
@@ -63,6 +64,7 @@ module.exports = {
     parseUrlButton: '$parse-url-button',
     password: '$password-password-input',
     portNumber: '$port-text-input',
+    region: '$region-text-input',
     remoteInstanceTitle: 'Add instance',
     remoteInstanceTitleLocator: '//section/h3',
     replicationSet: '$replication_set-text-input',
@@ -80,8 +82,10 @@ module.exports = {
     useTLS: '$tls-field-label',
     userName: '$username-text-input',
     urlInput: '$url-text-input',
+    returnToMenuButton: locate('span').withText('Return to menu'),
     requiredFieldHostname: locate('$address-field-error-message'),
     requiredFieldPort: locate('$port-field-error-message'),
+
   },
 
   tableStatsLimitRadioButtonLocator(limit) {
@@ -120,6 +124,9 @@ module.exports = {
         break;
       case 'external':
         I.click(this.fields.addExternalServiceRemote);
+        break;
+      case 'haproxy':
+        I.click(this.fields.addHAProxy);
         break;
     }
     I.waitForElement(this.fields.serviceName, 60);
@@ -192,7 +199,7 @@ module.exports = {
         I.click(this.fields.usePgStatStatements);
         break;
       case 'rds-mysql56':
-      case 'pmm-qa-postgres-12':  
+      case 'pmm-qa-postgres-12':
         I.click(this.fields.disableEnhancedMetrics);
         I.click(this.fields.disableBasicMetrics);
         break;
