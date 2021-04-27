@@ -8,8 +8,11 @@ Before(async ({ I, settingsAPI, pmmSettingsPage }) => {
 
 Scenario(
   'PMM-T746 - Verify adding monitoring for Azure MySQL, PMM-T744 Verify there is "Add Azure MySQL or PostgreSQL instance" button on "Add Instance" page @not-ui-pipeline',
-  async ({ I, pmmSettingsPage, remoteInstancesPage }) => {
+  async ({
+    I, pmmSettingsPage, remoteInstancesPage, pmmInventoryPage,
+  }) => {
     const sectionNameToExpand = pmmSettingsPage.sectionTabsList.advanced;
+    const serviceName = 'azure-MySQL';
 
     await pmmSettingsPage.waitForPmmSettingsPageLoaded();
     await pmmSettingsPage.expandSection(sectionNameToExpand, pmmSettingsPage.fields.advancedButton);
@@ -22,5 +25,10 @@ Scenario(
     remoteInstancesPage.discoverAzure();
     remoteInstancesPage.startMonitoringOfInstance('pmm2-qa-mysql');
     remoteInstancesPage.verifyAddInstancePageOpened();
+    remoteInstancesPage.fillRemoteRDSFields(serviceName);
+    I.click(remoteInstancesPage.fields.addService);
+    I.amOnPage(pmmInventoryPage.url);
+    pmmInventoryPage.verifyRemoteServiceIsDisplayed(serviceName);
+    await pmmInventoryPage.verifyAgentHasStatusRunning(serviceName);
   },
 );

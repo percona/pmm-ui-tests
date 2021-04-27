@@ -8,7 +8,13 @@ module.exports = {
 
   // insert your locators and methods here
   // setting locators
-
+  mysqlAzureInputs: {
+    userName: process.env.AZURE_MYSQL_USER,
+    password: process.env.REMOTE_AWS_MYSQL_PASSWORD,
+    environment: 'Azure MySQL environment',
+    cluster: 'Azure MySQL cluster',
+    replicationSet: 'Azure MySQL replica',
+  },
   mysqlInputs: {
     userName: process.env.REMOTE_AWS_MYSQL_USER,
     password: process.env.REMOTE_AWS_MYSQL_PASSWORD,
@@ -208,13 +214,13 @@ module.exports = {
     return pmmInventoryPage;
   },
 
-  openAndAzure(){
+  openAndAzure() {
     I.waitForVisible(this.fields.addAzureMySQLPostgreSQL, 30);
     I.click(this.fields.addAzureMySQLPostgreSQL);
     I.waitForVisible(this.fields.clientID, 30);
   },
 
-  discoverAzure(){
+  discoverAzure() {
     I.fillField(this.fields.clientID, process.env.AZURE_CLIENT_ID);
     I.fillField(this.fields.clientSecret, process.env.AZURE_CLIENT_SECRET);
     I.fillField(this.fields.tenantID, process.env.AZURE_TENNANT_ID);
@@ -259,6 +265,7 @@ module.exports = {
   },
 
   fillFields(serviceParameters) {
+    adminPage.customClearField(this.fields.userName);
     I.fillField(this.fields.userName, serviceParameters.userName);
     I.fillField(this.fields.password, serviceParameters.password);
     I.fillField(this.fields.environment, serviceParameters.environment);
@@ -274,6 +281,11 @@ module.exports = {
         break;
       case 'pmm-qa-postgres-12':
         this.fillFields(this.postgresqlInputs);
+        break;
+      case 'azure-MySQL':
+        adminPage.customClearField(this.fields.serviceName);
+        I.fillField(this.fields.serviceName, serviceName);
+        this.fillFields(this.mysqlAzureInputs);
         break;
     }
     I.scrollPageToBottom();
