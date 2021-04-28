@@ -227,7 +227,7 @@ Scenario(
   },
 );
 
-Scenario(
+xScenario(
   'PMM-T436 - Verify short-cut navigation from filters to related dashboards - Cluster @qan @not-pr-pipeline',
   async ({ I, qanFilters, dashboardPage }) => {
     const mongoLink = '/graph/d/mongodb-cluster-summary/mongodb-cluster-summary';
@@ -244,7 +244,7 @@ Scenario(
   },
 );
 
-Scenario(
+xScenario(
   'PMM-T436 - Verify short-cut navigation from filters to related dashboards - Replication Set @qan @not-pr-pipeline',
   async ({ I, qanFilters, dashboardPage }) => {
     const replicationSetLink = '/graph/d/mysql-replicaset-summary/mysql-replication-summary';
@@ -261,7 +261,7 @@ Scenario(
   },
 );
 
-Scenario(
+xScenario(
   'PMM-T436 - Verify short-cut navigation from filters to related dashboards - Node Name @qan @not-pr-pipeline',
   async ({ I, qanFilters, dashboardPage }) => {
     const shortCut = '/graph/d/node-instance-summary/node-summary?var-node_name=pmm-server';
@@ -281,7 +281,7 @@ Scenario(
   },
 );
 
-Scenario(
+xScenario(
   'PMM-T436 - Verify short-cut navigation from filters to related dashboards - Service Name @qan @not-pr-pipeline',
   async ({ I, qanFilters, dashboardPage }) => {
     const serviceNameLink = '/graph/d/mongodb-instance-summary/mongodb-instance-summary';

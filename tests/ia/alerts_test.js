@@ -23,7 +23,7 @@ const alertName = 'PostgreSQL too many connections (pmm-server-postgresql)';
 
 const rulesToDelete = [];
 
-Feature('IA: Alerts').retry(2);
+Feature('IA: Alerts').retry(1);
 
 Before(async ({ I, settingsAPI }) => {
   await I.Authorize();
@@ -72,7 +72,7 @@ AfterSuite(async ({
 });
 
 Scenario(
-  'PMM-T564 Verify Severity colors @ia @not-pr-pipeline',
+  'PMM-T564 Verify Severity colors @ia',
   async ({ I, alertsPage }) => {
     I.amOnPage(alertsPage.url);
     I.waitForElement(alertsPage.elements.criticalSeverity, 30);
@@ -87,7 +87,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T659 Verify alerts are deleted after deleting rules @ia @not-pr-pipeline',
+  'PMM-T659 Verify alerts are deleted after deleting rules @ia',
   async ({ I, alertsPage, rulesAPI }) => {
     // Deleting rules
     for (const ruleId of rulesToDelete) {
@@ -104,7 +104,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T569 Verify Alerts on Email @ia @not-pr-pipeline',
+  'PMM-T569 Verify Alerts on Email @ia',
   async ({ I, rulesAPI }) => {
     // Get message from the inbox
     const message = await I.getLastMessage(testEmail, 120000);
@@ -121,7 +121,7 @@ Scenario(
 );
 
 Scenario(
-  'Verify Firing Alert, labels and existence in alertmanager @ia @not-pr-pipeline',
+  'Verify Firing Alert, labels and existence in alertmanager @ia',
   async ({
     I, alertsPage, inventoryAPI, alertmanagerAPI,
   }) => {
@@ -145,7 +145,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T540 Alerts list columns @ia @not-pr-pipeline',
+  'PMM-T540 Alerts list columns @ia',
   async ({ I, alertsPage }) => {
     I.amOnPage(alertsPage.url);
     I.waitForElement(alertsPage.elements.alertRow(alertName), 30);
@@ -161,7 +161,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T541 Verify user is able to silence/activate the alert @ia @not-pr-pipeline',
+  'PMM-T541 Verify user is able to silence/activate the alert @ia',
   async ({
     I, alertsPage, alertmanagerAPI,
   }) => {
@@ -175,7 +175,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T587 Verify user cant see Alert with non-existing filter @ia @not-pr-pipeline',
+  'PMM-T587 Verify user cant see Alert with non-existing filter @ia',
   async ({ I, alertsPage, rulesAPI }) => {
     const rule = {
       ruleId: ruleIdForAlerts,
@@ -198,7 +198,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T625 Verify Alert disappears after issue in rule is fixed @ia @not-pr-pipeline',
+  'PMM-T625 Verify Alert disappears after issue in rule is fixed @ia @nightly',
   async ({
     I, alertsPage, rulesAPI, alertsAPI,
   }) => {

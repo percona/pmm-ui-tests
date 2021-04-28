@@ -23,7 +23,7 @@ After(async ({ channelsAPI, rulesAPI, templatesAPI }) => {
 });
 
 Data(pages).Scenario(
-  'PMM-T632 PMM-T697 PMM-T701 Verify Pagination navigation @ia @not-pr-pipeline',
+  'PMM-T632 PMM-T697 PMM-T701 Verify Pagination navigation @ia',
   async ({
     I, iaCommon, current,
   }) => {
@@ -166,7 +166,7 @@ Data(pages).Scenario(
 );
 
 Data(pages).Scenario(
-  'PMM-T662 PMM-T698 PMM-T702 PMM-T631 Pagination rows per page persistence @ia @not-pr-pipeline',
+  'PMM-T662 PMM-T698 PMM-T702 PMM-T631 Pagination rows per page persistence @ia @nightly',
   async ({
     I, iaCommon, current,
   }) => {
@@ -243,7 +243,7 @@ Data(pages).Scenario(
 );
 
 Data(pages).Scenario(
-  'PMM-T631 PMM-T633 Changing rows per page resets view to 1 page @ia @not-pr-pipeline',
+  'PMM-T631 PMM-T633 Changing rows per page resets view to 1 page @ia @nightly',
   async ({
     I, iaCommon, current,
   }) => {

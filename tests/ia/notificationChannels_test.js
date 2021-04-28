@@ -6,7 +6,7 @@ for (const [, channel] of Object.entries(page.types)) {
   notificationChannels.add([channel.name, channel.type]);
 }
 
-Feature('IA: Notification Channels').retry(2);
+Feature('IA: Notification Channels').retry(1);
 
 Before(async ({
   I, channelsAPI, settingsAPI, rulesAPI,
@@ -23,7 +23,7 @@ After(async ({ channelsAPI, rulesAPI }) => {
 });
 
 Scenario(
-  'Verify No Channels found message @ia @not-pr-pipeline',
+  'Verify No Channels found message @ia',
   async ({ I, ncPage }) => {
     ncPage.openNotificationChannelsTab();
     I.waitForVisible(ncPage.elements.noData, 30);
@@ -32,7 +32,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T561 Verify that "#" cannot be used in Slack channel name @ia @not-pr-pipeline',
+  'PMM-T561 Verify that "#" cannot be used in Slack channel name @ia @nightly',
   async ({ I, ncPage }) => {
     ncPage.openNotificationChannelsTab();
     I.waitForVisible(ncPage.buttons.openAddChannelModal, 30);
@@ -45,7 +45,7 @@ Scenario(
 );
 
 Data(notificationChannels).Scenario(
-  'PMM-T513,PMM-T512, PMM-T491 Add a notification channel @ia @not-pr-pipeline',
+  'PMM-T513,PMM-T512, PMM-T491 Add a notification channel @ia',
   async ({ ncPage, current }) => {
     ncPage.openNotificationChannelsTab();
     await ncPage.createChannel(current.name, current.type);
@@ -54,7 +54,7 @@ Data(notificationChannels).Scenario(
 );
 
 Scenario(
-  'PMM-T645, PMM-T647 Add a Pager Duty with Service Key @ia @not-pr-pipeline',
+  'PMM-T645, PMM-T647 Add a Pager Duty with Service Key @ia',
   async ({ I, ncPage }) => {
     const channelName = 'Pager Duty with Service key';
 
@@ -73,7 +73,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T647 Verify toggle for Service/Routing key @ia @not-pr-pipeline',
+  'PMM-T647 Verify toggle for Service/Routing key @ia',
   async ({ I, ncPage }) => {
     ncPage.openNotificationChannelsTab();
     I.click(ncPage.buttons.openAddChannelModal);
@@ -95,7 +95,7 @@ Scenario(
 );
 
 Data(notificationChannels).Scenario(
-  'PMM-T492 Edit notification channel @ia @not-pr-pipeline',
+  'PMM-T492 Edit notification channel @ia',
   async ({
     I, ncPage, channelsAPI, current,
   }) => {
@@ -112,7 +112,7 @@ Data(notificationChannels).Scenario(
 );
 
 Data(notificationChannels).Scenario(
-  'PMM-T493 Delete a notification channel @ia @not-pr-pipeline',
+  'PMM-T493 Delete a notification channel @ia',
   async ({
     I, ncPage, channelsAPI, current,
   }) => {
@@ -127,7 +127,7 @@ Data(notificationChannels).Scenario(
 );
 
 Data(notificationChannels).Scenario(
-  'PMM-T658 Verify notification channel can not be deleted if it is used by a rule @ia @not-pr-pipeline',
+  'PMM-T658 Verify notification channel can not be deleted if it is used by a rule @ia',
   async ({
     I, ncPage, channelsAPI, rulesAPI, current,
   }) => {
