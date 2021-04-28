@@ -7,7 +7,7 @@ Before(async ({ I, settingsAPI, pmmSettingsPage }) => {
 });
 
 Scenario(
-  'PMM-T746 - Verify adding monitoring for Azure MySQL, PMM-T744 Verify there is "Add Azure MySQL or PostgreSQL instance" button on "Add Instance" page @not-ui-pipeline',
+  'PMM-T746 - Verify adding monitoring for Azure MySQL, PMM-T744 Verify there is "Add Azure MySQL or PostgreSQL instance" button on "Add Instance" page @not-pr-pipeline',
   async ({
     I, pmmSettingsPage, remoteInstancesPage, pmmInventoryPage,
   }) => {
