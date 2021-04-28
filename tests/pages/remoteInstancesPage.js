@@ -8,6 +8,13 @@ module.exports = {
 
   // insert your locators and methods here
   // setting locators
+  postgresqlAzureInputs: {
+    userName: process.env.AZURE_POSTGRES_USER,
+    password: process.env.AZURE_POSTGRES_PASS,
+    environment: 'Azure PostgreSQL environment',
+    cluster: 'Azure PostgreSQL cluster',
+    replicationSet: 'Azure PostgreSQL replica',
+  },
   mysqlAzureInputs: {
     userName: process.env.AZURE_MYSQL_USER,
     password: process.env.AZURE_MYSQL_PASS,
@@ -294,6 +301,10 @@ module.exports = {
         I.fillField(this.fields.serviceName, serviceName);
         this.fillFields(this.mysqlAzureInputs);
         break;
+      case 'azure-PostgreSQL':
+        adminPage.customClearField(this.fields.serviceName);
+        I.fillField(this.fields.serviceName, serviceName);
+        this.fillFields(this.postgresqlAzureInputs);
     }
     I.scrollPageToBottom();
   },
