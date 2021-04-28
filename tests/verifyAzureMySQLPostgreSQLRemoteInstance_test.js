@@ -27,7 +27,6 @@ Scenario(
     remoteInstancesPage.verifyAddInstancePageOpened();
     remoteInstancesPage.fillRemoteRDSFields(serviceName);
     I.click(remoteInstancesPage.fields.addService);
-    I.amOnPage(pmmInventoryPage.url);
     pmmInventoryPage.verifyRemoteServiceIsDisplayed(serviceName);
     await pmmInventoryPage.verifyAgentHasStatusRunning(serviceName);
   },

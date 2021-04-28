@@ -74,6 +74,7 @@ module.exports = {
       },
       enable_telemetry: true,
       disable_stt: true,
+      disable_azurediscover: true,
     };
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
 
