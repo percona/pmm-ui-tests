@@ -191,6 +191,7 @@ module.exports = {
     metricsResolutionLabel: '$metrics-resolution-label',
     metricsResolutionRadio: '$resolutions-radio-button',
     microsoftAzureMonitoringSwitch: '//div[@data-qa="advanced-azure-discover"]//div[2]//label',
+    microsoftAzureMonitoringSwitchInput: '//div[@data-qa="advanced-azure-discover"]//div[2]//input',
     loginButton: '$sign-in-submit-button',
     lowInput: '$lr-number-input',
     mediumInput: '$mr-number-input',
@@ -234,6 +235,13 @@ module.exports = {
     standartIntervalValidation: '$standardInterval-field-error-message',
     frequentIntervalInput: '$frequentInterval-number-input',
     frequentIntervalValidation: '$frequentInterval-field-error-message',
+  },
+
+  switchAzure() {
+    I.waitForVisible(this.fields.microsoftAzureMonitoringSwitch, 30);
+    I.click(this.fields.microsoftAzureMonitoringSwitch);
+    I.waitForVisible(this.fields.advancedButton, 30);
+    I.click(this.fields.advancedButton);
   },
 
   async waitForPmmSettingsPageLoaded() {

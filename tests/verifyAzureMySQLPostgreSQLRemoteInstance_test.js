@@ -16,10 +16,7 @@ Scenario(
 
     await pmmSettingsPage.waitForPmmSettingsPageLoaded();
     await pmmSettingsPage.expandSection(sectionNameToExpand, pmmSettingsPage.fields.advancedButton);
-    I.waitForVisible(pmmSettingsPage.fields.microsoftAzureMonitoringSwitch, 30);
-    I.click(pmmSettingsPage.fields.microsoftAzureMonitoringSwitch);
-    I.waitForVisible(pmmSettingsPage.fields.advancedButton, 30);
-    I.click(pmmSettingsPage.fields.advancedButton);
+    pmmSettingsPage.switchAzure();
     I.amOnPage(remoteInstancesPage.url);
     remoteInstancesPage.openAndAzure();
     remoteInstancesPage.discoverAzure();
@@ -29,5 +26,32 @@ Scenario(
     I.click(remoteInstancesPage.fields.addService);
     pmmInventoryPage.verifyRemoteServiceIsDisplayed(serviceName);
     await pmmInventoryPage.verifyAgentHasStatusRunning(serviceName);
+  },
+);
+
+Scenario(
+  'PMM-T747 - Verify enabling Azure flag @not-pr-pipeline',
+  async ({
+    I, pmmSettingsPage, remoteInstancesPage,
+  }) => {
+    const sectionNameToExpand = pmmSettingsPage.sectionTabsList.advanced;
+
+    await pmmSettingsPage.waitForPmmSettingsPageLoaded();
+    await pmmSettingsPage.expandSection(sectionNameToExpand, pmmSettingsPage.fields.advancedButton);
+    pmmSettingsPage.verifySwitch(pmmSettingsPage.fields.microsoftAzureMonitoringSwitchInput, 'off');
+    I.amOnPage(remoteInstancesPage.url);
+    I.waitForInvisible(remoteInstancesPage.fields.addAzureMySQLPostgreSQL, 30);
+    I.amOnPage(pmmSettingsPage.url);
+    await pmmSettingsPage.waitForPmmSettingsPageLoaded();
+    await pmmSettingsPage.expandSection(sectionNameToExpand, pmmSettingsPage.fields.advancedButton);
+    pmmSettingsPage.switchAzure();
+    I.amOnPage(remoteInstancesPage.url);
+    I.waitForVisible(remoteInstancesPage.fields.addAzureMySQLPostgreSQL, 30);
+    I.amOnPage(pmmSettingsPage.url);
+    await pmmSettingsPage.waitForPmmSettingsPageLoaded();
+    await pmmSettingsPage.expandSection(sectionNameToExpand, pmmSettingsPage.fields.advancedButton);
+    pmmSettingsPage.switchAzure();
+    I.amOnPage(remoteInstancesPage.url);
+    I.waitForInvisible(remoteInstancesPage.fields.addAzureMySQLPostgreSQL, 30);
   },
 );
