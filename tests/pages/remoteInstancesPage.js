@@ -10,7 +10,7 @@ module.exports = {
   // setting locators
   mysqlAzureInputs: {
     userName: process.env.AZURE_MYSQL_USER,
-    password: process.env.REMOTE_AWS_MYSQL_PASSWORD,
+    password: process.env.AZURE_MYSQL_PASS,
     environment: 'Azure MySQL environment',
     cluster: 'Azure MySQL cluster',
     replicationSet: 'Azure MySQL replica',
