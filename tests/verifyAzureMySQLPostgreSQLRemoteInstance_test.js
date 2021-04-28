@@ -1,3 +1,5 @@
+const assert = require('assert');
+
 Feature('Monitoring Azure MySQL and PostgreSQL DB');
 
 Before(async ({ I, settingsAPI, pmmSettingsPage }) => {
@@ -78,3 +80,45 @@ Scenario(
     await pmmInventoryPage.verifyAgentHasStatusRunning(serviceName);
   },
 );
+
+Scenario(
+  'PMM-T756 - Verify Azure node is displayed on Home dashboard @not-pr-pipeline',
+  async ({
+    I, homePage, remoteInstancesPage, dashboardPage, pmmInventoryPage,
+  }) => {
+    const mySQL = 'azure-MySQL';
+    const instanceToMonitor = 'rds-mysql56';
+
+    I.amOnPage(homePage.url);
+    dashboardPage.applyFilter('Node Name', mySQL);
+    homePage.verifyVisibleService(mySQL);
+    I.amOnPage(remoteInstancesPage.url);
+    remoteInstancesPage.waitUntilRemoteInstancesPageLoaded().openAddAWSRDSMySQLPage();
+    remoteInstancesPage.discoverRDS();
+    remoteInstancesPage.verifyInstanceIsDiscovered(instanceToMonitor);
+    remoteInstancesPage.startMonitoringOfInstance(instanceToMonitor);
+    remoteInstancesPage.verifyAddInstancePageOpened();
+    remoteInstancesPage.fillRemoteRDSFields(instanceToMonitor);
+    remoteInstancesPage.createRemoteInstance(instanceToMonitor);
+    pmmInventoryPage.verifyRemoteServiceIsDisplayed(instanceToMonitor);
+    I.amOnPage(homePage.url);
+    dashboardPage.applyFilter('Node Name', mySQL);
+    homePage.verifyVisibleService(mySQL);
+  },
+);
+
+Scenario('PMM-T746 - Verify adding monitoring for Azure MySQL CHECK QAN @not-pr-pipeline', async ({ qanFilters, remoteInstancesPage, qanOverview }) => {
+  qanFilters.applyFilter(remoteInstancesPage.mysqlAzureInputs.environment);
+  qanOverview.waitForOverviewLoaded();
+  const count = await qanOverview.getCountOfItems();
+
+  assert.ok(count > 0, 'The queries for added Azure MySQL do NOT exist');
+});
+
+Scenario('PMM-T748 - Verify adding monitoring for Azure PostgreSQL CHECK QAN @not-pr-pipeline', async ({ qanFilters, remoteInstancesPage, qanOverview }) => {
+  qanFilters.applyFilter(remoteInstancesPage.postgresqlAzureInputs.environment);
+  qanOverview.waitForOverviewLoaded();
+  const count = await qanOverview.getCountOfItems();
+
+  assert.ok(count > 0, 'The queries for added Azure PostgreSQL do NOT exist');
+});
