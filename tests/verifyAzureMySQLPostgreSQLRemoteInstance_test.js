@@ -32,6 +32,30 @@ Scenario(
 );
 
 Scenario(
+  'PMM-T748 - Verify adding monitoring for Azure PostgreSQL @not-pr-pipeline',
+  async ({
+    I, pmmSettingsPage, remoteInstancesPage, pmmInventoryPage,
+  }) => {
+    const sectionNameToExpand = pmmSettingsPage.sectionTabsList.advanced;
+    const serviceName = 'azure-PostgreSQL';
+
+    await pmmSettingsPage.waitForPmmSettingsPageLoaded();
+    await pmmSettingsPage.expandSection(sectionNameToExpand, pmmSettingsPage.fields.advancedButton);
+    pmmSettingsPage.switchAzure();
+    I.amOnPage(remoteInstancesPage.url);
+    remoteInstancesPage.openAndAzure();
+    remoteInstancesPage.discoverAzure();
+    remoteInstancesPage.startMonitoringOfInstance('pmm2-qa-postgresql');
+    remoteInstancesPage.verifyAddInstancePageOpened();
+    remoteInstancesPage.fillRemoteRDSFields(serviceName);
+    I.click(remoteInstancesPage.fields.addService);
+    pmmInventoryPage.verifyRemoteServiceIsDisplayed(serviceName);
+    await pmmInventoryPage.verifyAgentHasStatusRunning(serviceName);
+  },
+);
+
+
+Scenario(
   'PMM-T747 - Verify enabling Azure flag @not-pr-pipeline',
   async ({
     I, pmmSettingsPage, remoteInstancesPage,
@@ -59,32 +83,9 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T748 - Verify adding monitoring for Azure PostgreSQL @not-pr-pipeline',
-  async ({
-    I, pmmSettingsPage, remoteInstancesPage, pmmInventoryPage,
-  }) => {
-    const sectionNameToExpand = pmmSettingsPage.sectionTabsList.advanced;
-    const serviceName = 'azure-PostgreSQL';
-
-    await pmmSettingsPage.waitForPmmSettingsPageLoaded();
-    await pmmSettingsPage.expandSection(sectionNameToExpand, pmmSettingsPage.fields.advancedButton);
-    pmmSettingsPage.switchAzure();
-    I.amOnPage(remoteInstancesPage.url);
-    remoteInstancesPage.openAndAzure();
-    remoteInstancesPage.discoverAzure();
-    remoteInstancesPage.startMonitoringOfInstance('pmm2-qa-postgresql');
-    remoteInstancesPage.verifyAddInstancePageOpened();
-    remoteInstancesPage.fillRemoteRDSFields(serviceName);
-    I.click(remoteInstancesPage.fields.addService);
-    pmmInventoryPage.verifyRemoteServiceIsDisplayed(serviceName);
-    await pmmInventoryPage.verifyAgentHasStatusRunning(serviceName);
-  },
-);
-
-Scenario(
   'PMM-T756 - Verify Azure node is displayed on Home dashboard @not-pr-pipeline',
   async ({
-    I, homePage, remoteInstancesPage, dashboardPage,
+    I, homePage, dashboardPage,
   }) => {
     const mySQL = 'azure-MySQL';
 
