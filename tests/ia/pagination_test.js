@@ -165,8 +165,9 @@ Data(pages).Scenario(
   },
 );
 
+// nightly candidate
 Data(pages).Scenario(
-  'PMM-T662 PMM-T698 PMM-T702 PMM-T631 Pagination rows per page persistence @ia @nightly',
+  'PMM-T662 PMM-T698 PMM-T702 PMM-T631 Pagination rows per page persistence @ia',
   async ({
     I, iaCommon, current,
   }) => {
@@ -242,8 +243,9 @@ Data(pages).Scenario(
   },
 );
 
+// nightly candidate
 Data(pages).Scenario(
-  'PMM-T631 PMM-T633 Changing rows per page resets view to 1 page @ia @nightly',
+  'PMM-T631 PMM-T633 Changing rows per page resets view to 1 page @ia',
   async ({
     I, iaCommon, current,
   }) => {

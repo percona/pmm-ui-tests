@@ -197,8 +197,9 @@ Scenario(
   },
 );
 
+// nightly candidate
 Scenario(
-  'PMM-T625 Verify Alert disappears after issue in rule is fixed @ia @nightly',
+  'PMM-T625 Verify Alert disappears after issue in rule is fixed @ia',
   async ({
     I, alertsPage, rulesAPI, alertsAPI,
   }) => {

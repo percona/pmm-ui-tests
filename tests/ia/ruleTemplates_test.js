@@ -70,9 +70,10 @@ Scenario(
   },
 );
 
+// nightly candidate
 Data(units)
   .Scenario(
-    'PMM-T500 PMM-T595 PMM-T596 Add rule templates with different units, empty range @ia @nightly',
+    'PMM-T500 PMM-T595 PMM-T596 Add rule templates with different units, empty range @ia',
     async ({
       I, ruleTemplatesPage, templatesAPI, current,
     }) => {

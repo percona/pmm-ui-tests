@@ -31,8 +31,9 @@ Scenario(
   },
 );
 
+// nightly candidate
 Scenario(
-  'PMM-T561 Verify that "#" cannot be used in Slack channel name @ia @nightly',
+  'PMM-T561 Verify that "#" cannot be used in Slack channel name @ia',
   async ({ I, ncPage }) => {
     ncPage.openNotificationChannelsTab();
     I.waitForVisible(ncPage.buttons.openAddChannelModal, 30);

@@ -107,8 +107,9 @@ Scenario(
   },
 );
 
+// nightly candidate
 Data(templates).Scenario(
-  'PMM-T750 PMM-T752 Verify parsing a template in Add Alert rule dialog @ia @nightly',
+  'PMM-T750 PMM-T752 Verify parsing a template in Add Alert rule dialog @ia',
   async ({ I, alertRulesPage, current }) => {
     const rule = {
       template: current.template,
@@ -130,8 +131,9 @@ Data(templates).Scenario(
   },
 );
 
+// nightly candidate
 Data(rules).Scenario(
-  'PMM-T515 PMM-T543 PMM-T544 PMM-T545 PMM-T574 PMM-T596 PMM-T753 PMM-T624 Create Alert rule @ia @nightly',
+  'PMM-T515 PMM-T543 PMM-T544 PMM-T545 PMM-T574 PMM-T596 PMM-T753 PMM-T624 Create Alert rule @ia',
   async ({
     I, alertRulesPage, current, rulesAPI,
   }) => {
@@ -155,26 +157,6 @@ Data(rules).Scenario(
     I.verifyPopUpMessage(alertRulesPage.messages.successfullyAdded);
     I.seeElement(alertRulesPage.elements.rulesNameCell(rule.ruleName));
     if (rule.threshold.length === 0) { rule.threshold = 80; }
-
-    alertRulesPage.verifyRowValues(rule);
-
-    await rulesAPI.clearAllRules();
-  },
-);
-
-Scenario(
-  'PMM-T515 PMM-T544 PMM-T753 Create Alert rule @ia',
-  async ({
-    I, alertRulesPage, rulesAPI,
-  }) => {
-    const rule = page.rules[0];
-
-    alertRulesPage.openAlertRulesTab();
-    I.click(alertRulesPage.buttons.openAddRuleModal);
-    alertRulesPage.fillRuleFields(rule);
-    I.click(alertRulesPage.buttons.addRule);
-    I.verifyPopUpMessage(alertRulesPage.messages.successfullyAdded);
-    I.seeElement(alertRulesPage.elements.rulesNameCell(rule.ruleName));
 
     alertRulesPage.verifyRowValues(rule);
 
@@ -314,8 +296,9 @@ Scenario(
   },
 );
 
+// nightly candidate
 Scenario(
-  'PMM-T646 Verify user can not create Rule with negative duration time @ia @nightly',
+  'PMM-T646 Verify user can not create Rule with negative duration time @ia',
   async ({
     I, alertRulesPage,
   }) => {
