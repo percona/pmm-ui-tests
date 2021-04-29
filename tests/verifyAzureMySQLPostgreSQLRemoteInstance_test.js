@@ -84,21 +84,14 @@ Scenario(
 Scenario(
   'PMM-T756 - Verify Azure node is displayed on Home dashboard @not-pr-pipeline',
   async ({
-    I, homePage, remoteInstancesPage, dashboardPage, pmmInventoryPage,
+    I, homePage, remoteInstancesPage, dashboardPage,
   }) => {
     const mySQL = 'azure-MySQL';
-    const serviceName = remoteInstancesPage.rds['Service Name'];
 
     I.amOnPage(homePage.url);
     dashboardPage.applyFilter('Node Name', mySQL);
     homePage.verifyVisibleService(mySQL);
-    I.amOnPage(pmmInventoryPage.url);
-    pmmInventoryPage.selectService(serviceName);
-    pmmInventoryPage.deleteWithForceOpt();
-    pmmInventoryPage.serviceExists(serviceName, true);
-    I.amOnPage(homePage.url);
-    dashboardPage.applyFilter('Node Name', mySQL);
-    homePage.verifyVisibleService(mySQL);
+    // part without RDS MySQL should be skipped for now
   },
 );
 
