@@ -87,20 +87,15 @@ Scenario(
     I, homePage, remoteInstancesPage, dashboardPage, pmmInventoryPage,
   }) => {
     const mySQL = 'azure-MySQL';
-    const instanceToMonitor = 'rds-mysql56';
+    const serviceName = remoteInstancesPage.rds['Service Name'];
 
     I.amOnPage(homePage.url);
     dashboardPage.applyFilter('Node Name', mySQL);
     homePage.verifyVisibleService(mySQL);
-    I.amOnPage(remoteInstancesPage.url);
-    remoteInstancesPage.waitUntilRemoteInstancesPageLoaded().openAddAWSRDSMySQLPage();
-    remoteInstancesPage.discoverRDS();
-    remoteInstancesPage.verifyInstanceIsDiscovered(instanceToMonitor);
-    remoteInstancesPage.startMonitoringOfInstance(instanceToMonitor);
-    remoteInstancesPage.verifyAddInstancePageOpened();
-    remoteInstancesPage.fillRemoteRDSFields(instanceToMonitor);
-    remoteInstancesPage.createRemoteInstance(instanceToMonitor);
-    pmmInventoryPage.verifyRemoteServiceIsDisplayed(instanceToMonitor);
+    I.amOnPage(pmmInventoryPage.url);
+    pmmInventoryPage.selectService(serviceName);
+    pmmInventoryPage.deleteWithForceOpt();
+    pmmInventoryPage.serviceExists(serviceName, true);
     I.amOnPage(homePage.url);
     dashboardPage.applyFilter('Node Name', mySQL);
     homePage.verifyVisibleService(mySQL);
