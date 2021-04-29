@@ -108,6 +108,7 @@ Scenario(
 );
 
 Scenario('PMM-T746 - Verify adding monitoring for Azure MySQL CHECK QAN @not-pr-pipeline', async ({ qanFilters, remoteInstancesPage, qanOverview }) => {
+  I.amOnPage(qanPage.url);
   qanFilters.applyFilter(remoteInstancesPage.mysqlAzureInputs.environment);
   qanOverview.waitForOverviewLoaded();
   const count = await qanOverview.getCountOfItems();
@@ -116,6 +117,7 @@ Scenario('PMM-T746 - Verify adding monitoring for Azure MySQL CHECK QAN @not-pr-
 });
 
 Scenario('PMM-T748 - Verify adding monitoring for Azure PostgreSQL CHECK QAN @not-pr-pipeline', async ({ qanFilters, remoteInstancesPage, qanOverview }) => {
+  I.amOnPage(qanPage.url);
   qanFilters.applyFilter(remoteInstancesPage.postgresqlAzureInputs.environment);
   qanOverview.waitForOverviewLoaded();
   const count = await qanOverview.getCountOfItems();
