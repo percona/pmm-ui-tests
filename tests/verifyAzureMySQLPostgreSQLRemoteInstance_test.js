@@ -9,7 +9,7 @@ Before(async ({ I, settingsAPI, pmmSettingsPage }) => {
 });
 
 Scenario(
-  'PMM-T746 - Verify adding monitoring for Azure MySQL, PMM-T744 @not-pr-pipeline',
+  'PMM-T746 - Verify adding monitoring for Azure MySQL, PMM-T744 @instances',
   async ({
     I, pmmSettingsPage, remoteInstancesPage, pmmInventoryPage,
   }) => {
@@ -32,7 +32,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T748 - Verify adding monitoring for Azure PostgreSQL @not-pr-pipeline',
+  'PMM-T748 - Verify adding monitoring for Azure PostgreSQL @instances',
   async ({
     I, pmmSettingsPage, remoteInstancesPage, pmmInventoryPage,
   }) => {
@@ -54,9 +54,8 @@ Scenario(
   },
 );
 
-
 Scenario(
-  'PMM-T747 - Verify enabling Azure flag @not-pr-pipeline',
+  'PMM-T747 - Verify enabling Azure flag @instances',
   async ({
     I, pmmSettingsPage, remoteInstancesPage,
   }) => {
@@ -83,7 +82,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T756 - Verify Azure node is displayed on Home dashboard @not-pr-pipeline',
+  'PMM-T756 - Verify Azure node is displayed on Home dashboard @instances',
   async ({
     I, homePage, dashboardPage,
   }) => {
@@ -96,7 +95,7 @@ Scenario(
   },
 );
 
-Scenario('PMM-T746 - Verify adding monitoring for Azure MySQL CHECK QAN @not-pr-pipeline', async ({
+Scenario('PMM-T746 - Verify adding monitoring for Azure MySQL CHECK QAN @instances', async ({
   I, qanFilters, remoteInstancesPage, qanOverview, qanPage,
 }) => {
   I.amOnPage(qanPage.url);
@@ -105,9 +104,9 @@ Scenario('PMM-T746 - Verify adding monitoring for Azure MySQL CHECK QAN @not-pr-
   const count = await qanOverview.getCountOfItems();
 
   assert.ok(count > 0, 'The queries for added Azure MySQL do NOT exist');
-});
+}).retry(2);
 
-Scenario('PMM-T748 - Verify adding monitoring for Azure PostgreSQL CHECK QAN @not-pr-pipeline', async ({
+Scenario('PMM-T748 - Verify adding monitoring for Azure PostgreSQL CHECK QAN @instances', async ({
   I, qanFilters, remoteInstancesPage, qanOverview, qanPage,
 }) => {
   I.amOnPage(qanPage.url);
@@ -116,4 +115,4 @@ Scenario('PMM-T748 - Verify adding monitoring for Azure PostgreSQL CHECK QAN @no
   const count = await qanOverview.getCountOfItems();
 
   assert.ok(count > 0, 'The queries for added Azure PostgreSQL do NOT exist');
-});
+}).retry(2);
