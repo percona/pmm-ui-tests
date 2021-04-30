@@ -37,6 +37,8 @@ Scenario(
   async ({
     I, dashboardPage,
   }) => {
+    const serviceName = 'pmm-qa-postgres-12';
+
     I.amOnPage(dashboardPage.postgresqlInstanceOverviewDashboard.url);
     dashboardPage.applyFilter('Node Name', serviceName);
     await dashboardPage.verifyThereAreNoGraphsWithNA();
