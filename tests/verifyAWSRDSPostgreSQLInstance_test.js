@@ -33,7 +33,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T716 - Verify adding PostgreSQL RDS monitoring to PMM via UI DASHBOARD @instances',
+  'PMM-T716 - Verify Dashboard for Postgres RDS added via UI @instances',
   async ({
     I, dashboardPage,
   }) => {
@@ -47,7 +47,7 @@ Scenario(
 ).retry(2);
 
 Scenario(
-  'PMM-T716 - Verify adding PostgreSQL RDS monitoring to PMM via UI QAN @instances',
+  'PMM-T716 - Verify QAN for Postgres RDS added via UI @instances',
   async ({
     I, qanOverview, qanFilters, qanPage,
   }) => {
