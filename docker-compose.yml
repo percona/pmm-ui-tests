@@ -6,10 +6,10 @@ services:
     image: ${PMM_SERVER_IMAGE:-perconalab/pmm-server:dev-latest}
     container_name: pmm-agent_pmm-server
     ports:
-      - 127.0.0.1:80:80
-      - 127.0.0.1:443:443
+      - "80:80"
+      - "443:443"
     environment:
-      - PERCONA_TEST_DBAAS=1
+      - ENABLE_DBAAS=1
       - PMM_DEBUG=1
       - PERCONA_TEST_CHECKS_INTERVAL=10s
       - PERCONA_TEST_SAAS_HOST=check-dev.percona.com:443
@@ -33,11 +33,11 @@ services:
     command: >
       --sql-mode="ANSI_QUOTES"
       --performance-schema --innodb_monitor_enable=all
-      --slow_query_log --slow_query_log_file=/mysql/slowlogs/slow.log --long_query_time=0
+      --slow_query_log --log_slow_rate_limit=1 --log_slow_admin_statements --log_slow_slave_statements --slow_query_log_file=/mysql/slowlogs/slow.log --long_query_time=0
     ports:
-      - 127.0.0.1:3306:3306
+      - 127.0.0.1:43306:3306
     environment:
-      - MYSQL_ROOT_PASSWORD=root-password
+      - MYSQL_ROOT_PASSWORD=ps
       - MYSQL_USER=pmm-agent
       - MYSQL_PASSWORD=pmm-agent-password
       - UMASK=0777  # for slowlog file
@@ -98,6 +98,48 @@ services:
   sysbench:
     image: perconalab/sysbench
     container_name: pmm-agent_sysbench
+    depends_on:
+      - mysql
+    command: >
+      bash -c "
+          set -o xtrace
+          sleep 20
+          mysql \
+              --host=mysql \
+              --port=43306 \
+              --user=root \
+              --password=ps \
+              -e 'CREATE DATABASE IF NOT EXISTS sbtest'
+          sysbench \
+              --db-driver=mysql \
+              --mysql-host=mysql \
+              --mysql-port=43306 \
+              --mysql-user=root \
+              --mysql-password=ps \
+              --mysql-db=sbtest \
+              --mysql-table-engine=innodb \
+              --oltp-table-size=1000000 \
+              /usr/share/sysbench/tests/include/oltp_legacy/oltp.lua \
+              prepare
+          sysbench \
+              --rate=200 \
+              --threads=64 \
+              --report-interval=10 \
+              --time=0 \
+              --events=0 \
+              --rand-type=pareto \
+              --db-driver=mysql \
+              --mysql-host=mysql \
+              --mysql-port=43306 \
+              --mysql-user=root \
+              --mysql-password=ps \
+              --mysql-db=sbtest \
+              --mysql-table-engine=innodb \
+              --oltp-reconnect \
+              --oltp-table-size=1000000 \
+              /usr/share/sysbench/tests/include/oltp_legacy/select.lua \
+              run
+      "
 
 volumes:
   test_db_mysql:
