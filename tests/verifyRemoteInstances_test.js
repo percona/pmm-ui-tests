@@ -31,7 +31,7 @@ Scenario(
 );
 
 // TODO: unskip the mongodb tests after resolving a creds issue
-Data(instances.filter((instance) => instance.name !== 'mongodb')).Scenario(
+Data(instances.filter((instance) => instance.name !== 'mongodb' && instance.name !=='postgresql')).Scenario(
   'Verify Remote Instance Addition [critical] @not-pr-pipeline',
   async ({ I, remoteInstancesPage, current }) => {
     const serviceName = remoteInstancesPage.services[current.name];
@@ -71,7 +71,7 @@ Scenario(
   },
 );
 
-Data(instances.filter((instance) => instance.name !== 'mongodb')).Scenario(
+Data(instances.filter((instance) => instance.name !== 'mongodb' && instance.name !=='postgresql')).Scenario(
   'Verify Remote Instance has Status Running [critical] @not-pr-pipeline',
   async ({
     I, remoteInstancesPage, pmmInventoryPage, current,
