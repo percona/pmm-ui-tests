@@ -178,3 +178,15 @@ Scenario(
     await pmmInventoryPage.checkAgentOtherDetailsSection('listen_port:', 'listen_port: 42100', serviceName, serviceId);
   },
 );
+
+Scenario(
+  'PMM-T441 - Verify adding Remote PostgreSQL Instance @not-pr-pipeline',
+  async ({ I, remoteInstancesPage }) => {
+    const serviceName = 'postgresql';
+
+    I.amOnPage(remoteInstancesPage.url);
+    remoteInstancesPage.waitUntilRemoteInstancesPageLoaded();
+    remoteInstancesPage.openAddRemotePage(serviceName);
+    remoteInstancesPage.fillRemoteFields(serviceName);
+  },
+);
