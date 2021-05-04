@@ -81,12 +81,12 @@ Scenario(
   }) => {
     // Adding instances for monitoring
     for (const type of Object.values(addInstanceAPI.instanceTypes)) {
-      if (type !== 'MongoDB') await addInstanceAPI.apiAddInstance(type, serviceNames[type.toLowerCase()]);
+      if (type !== 'MongoDB' && type !== 'PostgreSQL') await addInstanceAPI.apiAddInstance(type, serviceNames[type.toLowerCase()]);
     }
 
     // Checking that instances are RUNNING
     for (const service of Object.values(inventoryAPI.services)) {
-      if (service.service !== 'mongodb') await inventoryAPI.verifyServiceExistsAndHasRunningStatus(service, serviceNames[service.service]);
+      if (service.service !== 'mongodb' && service.service !== 'postgresql') await inventoryAPI.verifyServiceExistsAndHasRunningStatus(service, serviceNames[service.service]);
     }
   },
 );
@@ -117,7 +117,7 @@ Scenario(
   'Verify Agents are RUNNING after Upgrade (API) [critical] @post-upgrade @pmm-upgrade @not-ui-pipeline @not-pr-pipeline',
   async ({ inventoryAPI }) => {
     for (const service of Object.values(inventoryAPI.services)) {
-      if (service.service !== 'mongodb') await inventoryAPI.verifyServiceExistsAndHasRunningStatus(service, serviceNames[service.service]);
+      if (service.service !== 'mongodb' && service.service !== 'postgresql') await inventoryAPI.verifyServiceExistsAndHasRunningStatus(service, serviceNames[service.service]);
     }
   },
 );
@@ -198,7 +198,7 @@ Scenario(
     // Checking that Cluster filters are still in QAN after Upgrade
     for (const name of Object.values(addInstanceAPI.clusterNames)) {
       // For now we can't see the cluster names in QAN for ProxySQL and MongoDB
-      if (name !== addInstanceAPI.clusterNames.proxysql && name !== addInstanceAPI.clusterNames.mongodb) {
+      if (name !== addInstanceAPI.clusterNames.proxysql && name !== addInstanceAPI.clusterNames.mongodb && name !== addInstanceAPI.clusterNames.postgresql) {
         const filter = qanFilters.getFilterLocator(name);
 
         I.waitForVisible(filter, 30);
