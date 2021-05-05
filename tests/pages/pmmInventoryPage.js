@@ -22,6 +22,10 @@ module.exports = {
     tableRow: '//tr[@data-qa="table-row"]',
     runningStatus: '//span[contains(text(), "RUNNING")]',
     externalExporter: locate('td').withText('External exporter'),
+    postgresExporter: locate('td').withText('Postgres exporter'),
+    postgresPgStatementsExporter: locate('td').withText('QAN PostgreSQL PgStatements'),
+    postgresPgstatmonitorExporter: locate('td').withText('QAN PostgreSQL Pgstatmonitor'),
+
   },
 
   verifyOldMySQLRemoteServiceIsDisplayed(serviceName) {

@@ -181,12 +181,24 @@ Scenario(
 
 Scenario(
   'PMM-T441 - Verify adding Remote PostgreSQL Instance @not-pr-pipeline',
-  async ({ I, remoteInstancesPage }) => {
-    const serviceName = 'postgresql';
-
+  async ({ I, remoteInstancesPage, pmmInventoryPage }) => {
     I.amOnPage(remoteInstancesPage.url);
     remoteInstancesPage.waitUntilRemoteInstancesPageLoaded();
-    remoteInstancesPage.openAddRemotePage(serviceName);
-    remoteInstancesPage.fillRemoteFields(serviceName);
+    remoteInstancesPage.createPostgreSQLInstance('postgresDoNotTrack', remoteInstancesPage.fields.doNotTrack);
+    pmmInventoryPage.verifyRemoteServiceIsDisplayed('postgresDoNotTrack');
+    I.click(pmmInventoryPage.fields.agentsLink);
+    I.waitForVisible(pmmInventoryPage.fields.postgresExporter, 30);
+    I.amOnPage(remoteInstancesPage.url);
+    remoteInstancesPage.waitUntilRemoteInstancesPageLoaded();
+    remoteInstancesPage.createPostgreSQLInstance('postgresPGStatStatements', remoteInstancesPage.fields.usePgStatStatements);
+    pmmInventoryPage.verifyRemoteServiceIsDisplayed('postgresPGStatStatements');
+    I.click(pmmInventoryPage.fields.agentsLink);
+    I.waitForVisible(pmmInventoryPage.fields.postgresPgStatementsExporter, 30);
+    I.amOnPage(remoteInstancesPage.url);
+    remoteInstancesPage.waitUntilRemoteInstancesPageLoaded();
+    remoteInstancesPage.createPostgreSQLInstance('postgresPgstatmonitor', remoteInstancesPage.fields.usePgStatMonitor);
+    pmmInventoryPage.verifyRemoteServiceIsDisplayed('postgresPgstatmonitor');
+    I.click(pmmInventoryPage.fields.agentsLink);
+    I.waitForVisible(pmmInventoryPage.fields.postgresPgstatmonitorExporter, 30);
   },
 );
