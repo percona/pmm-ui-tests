@@ -21,7 +21,7 @@ Object.values(page.templates).forEach((template) => {
     template.expression, template.alert]);
 });
 
-Feature('IA: Alert rules').retry(2);
+Feature('IA: Alert rules').retry(1);
 
 Before(async ({ I, settingsAPI }) => {
   await I.Authorize();
@@ -50,7 +50,7 @@ AfterSuite(async ({
 });
 
 Scenario(
-  'Verify alert rules list elements @ia @not-pr-pipeline',
+  'Verify alert rules list elements @ia',
   async ({ I, alertRulesPage, rulesAPI }) => {
     const ruleName = 'QAA PSQL rules List test';
     const ruleId = await rulesAPI.createAlertRule({ ruleName });
@@ -66,7 +66,7 @@ Scenario(
 );
 
 Scenario(
-  'Add alert rule modal elements @ia @not-pr-pipeline',
+  'Add alert rule modal elements @ia',
   async ({ I, alertRulesPage }) => {
     alertRulesPage.openAlertRulesTab();
     I.click(alertRulesPage.buttons.openAddRuleModal);
@@ -85,7 +85,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T538 Verify user is able to disable/enable a rule from the rules list @ia @not-pr-pipeline',
+  'PMM-T538 Verify user is able to disable/enable a rule from the rules list @ia',
   async ({ I, alertRulesPage, rulesAPI }) => {
     const ruleName = 'QAA PSQL Enable/Disable test';
     const ruleId = await rulesAPI.createAlertRule({ ruleName });
@@ -107,8 +107,9 @@ Scenario(
   },
 );
 
+// nightly candidate
 Data(templates).Scenario(
-  'PMM-T750 PMM-T752 Verify parsing a template in Add Alert rule dialog @ia @not-pr-pipeline',
+  'PMM-T750 PMM-T752 Verify parsing a template in Add Alert rule dialog @ia',
   async ({ I, alertRulesPage, current }) => {
     const rule = {
       template: current.template,
@@ -130,8 +131,9 @@ Data(templates).Scenario(
   },
 );
 
+// nightly candidate
 Data(rules).Scenario(
-  'PMM-T515 PMM-T543 PMM-T544 PMM-T545 PMM-T574 PMM-T596 PMM-T753 PMM-T624 Create Alert rule @ia @not-pr-pipeline',
+  'PMM-T515 PMM-T543 PMM-T544 PMM-T545 PMM-T574 PMM-T596 PMM-T753 PMM-T624 Create Alert rule @ia',
   async ({
     I, alertRulesPage, current, rulesAPI,
   }) => {
@@ -163,7 +165,7 @@ Data(rules).Scenario(
 );
 
 Scenario(
-  'PMM-T516 PMM-T687 Update Alert rule @ia @not-pr-pipeline',
+  'PMM-T516 PMM-T687 Update Alert rule @ia',
   async ({
     I, alertRulesPage, rulesAPI, channelsAPI, ncPage,
   }) => {
@@ -208,7 +210,7 @@ Scenario(
 );
 
 Data(rulesStates).Scenario(
-  'PMM-T566 Verify user can copy Alert rule @ia @not-pr-pipeline',
+  'PMM-T566 Verify user can copy Alert rule @ia',
   async ({
     I, alertRulesPage, rulesAPI, current,
   }) => {
@@ -240,7 +242,7 @@ Data(rulesStates).Scenario(
 );
 
 Data(rulesStates).Scenario(
-  'PMM-T517 Verify user can delete Alert rule @ia @not-pr-pipeline',
+  'PMM-T517 Verify user can delete Alert rule @ia',
   async ({
     I, alertRulesPage, rulesAPI, current,
   }) => {
@@ -267,7 +269,7 @@ Data(rulesStates).Scenario(
 );
 
 Scenario(
-  'PMM-T639 Verify alert rule details content @ia @not-pr-pipeline',
+  'PMM-T639 Verify alert rule details content @ia',
   async ({
     I, ruleTemplatesPage, alertRulesPage, rulesAPI,
   }) => {
@@ -294,8 +296,9 @@ Scenario(
   },
 );
 
+// nightly candidate
 Scenario(
-  'PMM-T646 Verify user can not create Rule with negative duration time @ia @not-pr-pipeline',
+  'PMM-T646 Verify user can not create Rule with negative duration time @ia',
   async ({
     I, alertRulesPage,
   }) => {

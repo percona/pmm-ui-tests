@@ -213,7 +213,7 @@ Scenario(
   },
 );
 
-Scenario('PMM-T537 - Verify user is not able to enable IA if Telemetry is disabled @ia @not-pr-pipeline',
+Scenario('PMM-T537 - Verify user is not able to enable IA if Telemetry is disabled @ia',
   async ({ I, pmmSettingsPage, settingsAPI }) => {
     await settingsAPI.apiDisableIA();
     I.amOnPage(pmmSettingsPage.advancedSettingsUrl);
