@@ -4,7 +4,7 @@ const { codeceptjsConfig } = inject();
 const url = new URL(codeceptjsConfig.config.helpers.Playwright.url);
 const connection = {
   host: 'mysql',
-  port: 3306,
+  port: 43306,
   username: 'root',
   password: 'ps',
 };
