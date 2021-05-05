@@ -3,7 +3,7 @@ const assert = require('assert');
 const { codeceptjsConfig } = inject();
 const url = new URL(codeceptjsConfig.config.helpers.Playwright.url);
 const connection = {
-  host: url.host,
+  host: 'mysql',
   port: 43306,
   username: 'root',
   password: 'ps',
