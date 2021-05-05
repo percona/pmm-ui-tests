@@ -45,7 +45,8 @@ Data(instances.filter((instance) => instance.name !== 'mongodb')).Scenario(
   },
 );
 
-Scenario(
+// TODO: fix in scope of https://jira.percona.com/browse/PMM-8002
+xScenario(
   'PMM-T590 - Verify parsing URL on adding External service page @instances',
   async ({ I, remoteInstancesPage }) => {
     const metricsPath = '/metrics2';
