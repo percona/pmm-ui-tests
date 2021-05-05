@@ -44,7 +44,8 @@ Data(instances.filter((instance) => instance.name !== 'mongodb')).Scenario(
   },
 );
 
-Scenario(
+// Skip Due to change in the UI elements for external service page
+xScenario(
   'PMM-T590 - Verify parsing URL on adding External service page @not-pr-pipeline',
   async ({ I, remoteInstancesPage }) => {
     const metricsPath = '/metrics2';
