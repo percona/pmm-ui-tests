@@ -186,19 +186,16 @@ Scenario(
     remoteInstancesPage.waitUntilRemoteInstancesPageLoaded();
     remoteInstancesPage.createPostgreSQLInstance('postgresDoNotTrack', remoteInstancesPage.fields.doNotTrack);
     pmmInventoryPage.verifyRemoteServiceIsDisplayed('postgresDoNotTrack');
-    I.click(pmmInventoryPage.fields.agentsLink);
-    I.waitForVisible(pmmInventoryPage.fields.postgresExporter, 30);
+    pmmInventoryPage.checkExistingAgent(pmmInventoryPage.fields.postgresExporter);
     I.amOnPage(remoteInstancesPage.url);
     remoteInstancesPage.waitUntilRemoteInstancesPageLoaded();
     remoteInstancesPage.createPostgreSQLInstance('postgresPGStatStatements', remoteInstancesPage.fields.usePgStatStatements);
     pmmInventoryPage.verifyRemoteServiceIsDisplayed('postgresPGStatStatements');
-    I.click(pmmInventoryPage.fields.agentsLink);
-    I.waitForVisible(pmmInventoryPage.fields.postgresPgStatementsExporter, 30);
+    pmmInventoryPage.checkExistingAgent(pmmInventoryPage.fields.postgresPgStatements);
     I.amOnPage(remoteInstancesPage.url);
     remoteInstancesPage.waitUntilRemoteInstancesPageLoaded();
     remoteInstancesPage.createPostgreSQLInstance('postgresPgstatmonitor', remoteInstancesPage.fields.usePgStatMonitor);
     pmmInventoryPage.verifyRemoteServiceIsDisplayed('postgresPgstatmonitor');
-    I.click(pmmInventoryPage.fields.agentsLink);
-    I.waitForVisible(pmmInventoryPage.fields.postgresPgstatmonitorExporter, 30);
+    pmmInventoryPage.checkExistingAgent(pmmInventoryPage.fields.postgresPgstatmonitor);
   },
 );

@@ -23,8 +23,8 @@ module.exports = {
     runningStatus: '//span[contains(text(), "RUNNING")]',
     externalExporter: locate('td').withText('External exporter'),
     postgresExporter: locate('td').withText('Postgres exporter'),
-    postgresPgStatementsExporter: locate('td').withText('QAN PostgreSQL PgStatements'),
-    postgresPgstatmonitorExporter: locate('td').withText('QAN PostgreSQL Pgstatmonitor'),
+    postgresPgStatements: locate('td').withText('QAN PostgreSQL PgStatements'),
+    postgresPgstatmonitor: locate('td').withText('QAN PostgreSQL Pgstatmonitor'),
 
   },
 
@@ -285,4 +285,9 @@ module.exports = {
       }
     }
   },
+
+  checkExistingAgent(agent){
+    I.click(this.fields.agentsLink);
+    I.waitForVisible(agent, 30);
+  }
 };
