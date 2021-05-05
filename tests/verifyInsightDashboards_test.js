@@ -1,12 +1,11 @@
 Feature('Test Dashboards inside the Insights Folder');
 
 Before(async ({ I }) => {
-  I.Authorize();
+  await I.Authorize();
 });
 
 Scenario(
-  // eslint-disable-next-line max-len
-  'Open Advanced Exploration Dashboard and verify Metrics are present and graphs are displayed @nightly @not-ui-pipeline',
+  'Open Advanced Exploration Dashboard and verify Metrics are present and graphs are displayed @nightly @dashboards',
   async ({ I, dashboardPage }) => {
     I.amOnPage(dashboardPage.advancedDataExplorationDashboard.url);
     dashboardPage.waitForDashboardOpened();
@@ -17,8 +16,7 @@ Scenario(
 );
 
 Scenario(
-  // eslint-disable-next-line max-len
-  'Open the Prometheus Exporters Status Dashboard and verify Metrics are present and graphs are displayed @not-ui-pipeline @nightly @not-pr-pipeline',
+  'Open the Prometheus Exporters Status Dashboard and verify Metrics are present and graphs are displayed @nightly @dashboards',
   async ({ I, dashboardPage, adminPage }) => {
     I.amOnPage(dashboardPage.prometheusExporterStatusDashboard.url);
     dashboardPage.waitForDashboardOpened();
@@ -34,8 +32,7 @@ Scenario(
 
 // Need to Skip to avoid false positive, investigate and fix
 xScenario(
-  // eslint-disable-next-line max-len
-  'Open the Prometheus Exporters Overview Dashboard and verify Metrics are present and graphs are displayed @not-ui-pipeline @nightly @not-pr-pipeline',
+  'Open the Prometheus Exporters Overview Dashboard and verify Metrics are present and graphs are displayed @nightly @dashboards',
   async ({ I, dashboardPage, adminPage }) => {
     I.amOnPage(dashboardPage.prometheusExporterOverviewDashboard.url);
     dashboardPage.waitForDashboardOpened();

@@ -1,11 +1,11 @@
 Feature('VictoriaMetrics Dashboards');
 
 Before(async ({ I }) => {
-  I.Authorize();
+  await I.Authorize();
 });
 
 Scenario(
-  'PMM-T506 Verify metrics on VictoriaMetrics dashboard @not-ui-pipeline @nightly @not-pr-pipeline',
+  'PMM-T506 Verify metrics on VictoriaMetrics dashboard @nightly @dashboards',
   async ({ I, dashboardPage, adminPage }) => {
     I.amOnPage(dashboardPage.victoriaMetricsDashboard.url);
     dashboardPage.waitForDashboardOpened();
@@ -19,7 +19,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T507 Verify metrics on VM Agents Overview Dashboard @not-ui-pipeline @nightly @not-pr-pipeline',
+  'PMM-T507 Verify metrics on VM Agents Overview Dashboard @nightly @dashboards',
   async ({ I, dashboardPage, adminPage }) => {
     I.amOnPage(dashboardPage.victoriaMetricsAgentsOverviewDashboard.url);
     dashboardPage.waitForDashboardOpened();

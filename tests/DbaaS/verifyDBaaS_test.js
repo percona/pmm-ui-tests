@@ -25,7 +25,7 @@ Before(async ({ I }) => {
 
 Scenario(
   'PMM-T426 - Verify adding new Kubernetes cluster minikube, PMM-T428 - Verify adding new Kubernetes cluster with same name, '
-  + 'PMM-T546, PMM-T431 -Verify unregistering Kubernetes cluster @not-pr-pipeline @dbaas',
+  + 'PMM-T546, PMM-T431 -Verify unregistering Kubernetes cluster @dbaas',
   async ({ I, dbaasPage }) => {
     I.amOnPage(dbaasPage.url);
     I.waitForVisible(dbaasPage.tabs.kubernetesClusterTab.addKubernetesClusterButtonInTable, 30);
@@ -52,7 +52,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T427 - Verify submitting blank Add kubernetes cluster form @not-pr-pipeline @dbaas',
+  'PMM-T427 - Verify submitting blank Add kubernetes cluster form @dbaas',
   async ({ I, dbaasPage }) => {
     I.amOnPage(dbaasPage.url);
     I.waitForVisible(dbaasPage.tabs.kubernetesClusterTab.addKubernetesClusterButtonInTable, 30);
@@ -70,14 +70,14 @@ Scenario(
   },
 );
 
-Scenario('PMM-T427 - Verify elements on PMM DBaaS page @not-pr-pipeline @dbaas',
+Scenario('PMM-T427 - Verify elements on PMM DBaaS page @dbaas',
   async ({ I, dbaasPage }) => {
     I.amOnPage(dbaasPage.url);
     I.waitForVisible(dbaasPage.tabs.kubernetesClusterTab.addKubernetesClusterButton, 30);
     I.waitForVisible(dbaasPage.tabs.kubernetesClusterTab.addKubernetesClusterButtonInTable, 30);
   });
 
-Scenario('PMM-T547 PMM-T548  Verify user is able to view config of registered Kubernetes cluster on Kubernetes Cluster Page @not-pr-pipeline @dbaas',
+Scenario('PMM-T547 PMM-T548  Verify user is able to view config of registered Kubernetes cluster on Kubernetes Cluster Page @dbaas',
   async ({ I, dbaasPage, dbaasAPI }) => {
     await dbaasAPI.apiRegisterCluster(process.env.kubeconfig_minikube, clusterName);
     I.amOnPage(dbaasPage.url);
@@ -96,7 +96,7 @@ Scenario('PMM-T547 PMM-T548  Verify user is able to view config of registered Ku
     await dbaasAPI.apiUnregisterCluster(clusterName);
   });
 
-Scenario('Verify user is able to add same cluster config with different Name @not-pr-pipeline @dbaas',
+Scenario('Verify user is able to add same cluster config with different Name @dbaas',
   async ({ I, dbaasPage, dbaasAPI }) => {
     const clusterName1 = 'Kubernetes_Testing_Cluster_1';
     const clusterName2 = 'Kubernetes_Testing_Cluster_2';
@@ -113,7 +113,7 @@ Scenario('Verify user is able to add same cluster config with different Name @no
     dbaasPage.checkCluster(clusterName1, true);
   });
 
-Scenario('Verify DB Cluster Tab Page Elements & Steps Background @dbaas @not-pr-pipeline',
+Scenario('Verify DB Cluster Tab Page Elements & Steps Background @dbaas',
   async ({ I, dbaasPage, dbaasAPI }) => {
     if (!await dbaasAPI.apiCheckRegisteredClusterExist(clusterName)) {
       await dbaasAPI.apiRegisterCluster(process.env.kubeconfig_minikube, clusterName);
@@ -142,7 +142,7 @@ Scenario('Verify DB Cluster Tab Page Elements & Steps Background @dbaas @not-pr-
     await dbaasAPI.apiUnregisterCluster(clusterName);
   });
 
-Scenario('PMM-T456 PMM-T490 Verify DB Cluster Steps Background @dbaas @not-pr-pipeline',
+Scenario('PMM-T456 PMM-T490 Verify DB Cluster Steps Background @dbaas',
   async ({
     I, dbaasPage, dbaasAPI, adminPage,
   }) => {
@@ -171,7 +171,7 @@ Scenario('PMM-T456 PMM-T490 Verify DB Cluster Steps Background @dbaas @not-pr-pi
     await dbaasAPI.apiUnregisterCluster(clusterName);
   });
 
-Scenario('PMM-T456 Verify Create Cluster steps validation fields disabled/enabled @dbaas @not-pr-pipeline',
+Scenario('PMM-T456 Verify Create Cluster steps validation fields disabled/enabled @dbaas',
   async ({
     I, dbaasPage, dbaasAPI, adminPage,
   }) => {
@@ -214,7 +214,7 @@ Scenario('PMM-T456 Verify Create Cluster steps validation fields disabled/enable
     await dbaasAPI.apiUnregisterCluster(clusterName);
   });
 
-Data(inputFields).Scenario('PMM-T456 Verify Create Cluster steps validation - field input validation @nightly @not-pr-pipeline',
+Data(inputFields).Scenario('PMM-T456 Verify Create Cluster steps validation - field input validation @nightly',
   async ({
     I, dbaasPage, dbaasAPI, adminPage, current,
   }) => {
