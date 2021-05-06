@@ -286,8 +286,8 @@ module.exports = {
     }
   },
 
-  checkExistingAgent(agent){
+  checkExistingAgent(agent) {
     I.click(this.fields.agentsLink);
     I.waitForVisible(agent, 30);
-  }
+  },
 };

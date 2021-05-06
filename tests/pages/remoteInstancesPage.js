@@ -62,6 +62,7 @@ module.exports = {
     iframe: '//div[@class="panel-content"]//iframe',
     metricsPath: '$metrics_path-text-input',
     pageHeaderText: 'PMM Add Instance',
+    parseFromURLRadioButton: locate('label').withText('Parse from URL string'),
     parseUrlButton: '$parse-url-button',
     password: '$password-password-input',
     portNumber: '$port-text-input',
@@ -71,6 +72,7 @@ module.exports = {
     replicationSet: '$replication_set-text-input',
     secretKeyInput: '$aws_secret_key-password-input',
     serviceName: '$serviceName-text-input',
+    setManualy: locate('label').withText('Set manually'),
     skipConnectionCheck: '//input[@name="skip_connection_check"]/following-sibling::span[2]',
     skipTLS: '//input[@name="tls_skip_verify"]',
     skipTLSL: '//input[@name="tls_skip_verify"]/following-sibling::span[2]',
@@ -268,9 +270,11 @@ module.exports = {
   },
 
   parseURL(url) {
+    I.waitForVisible(this.fields.parseFromURLRadioButton, 30);
+    I.click(this.fields.parseFromURLRadioButton);
     I.waitForVisible(this.fields.urlInput, 30);
     I.fillField(this.fields.urlInput, url);
-    I.click(this.fields.parseUrlButton);
+    I.click(this.fields.setManualy);
   },
 
   async checkParsing(metricsPath, credentials) {
