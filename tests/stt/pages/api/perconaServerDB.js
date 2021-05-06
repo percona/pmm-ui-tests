@@ -9,16 +9,24 @@ module.exports = {
 
     I.connect(db, `mysql://${username}:${password}@${host}:${port}/mysql`);
   },
+
   async disconnectFromPS() {
     await I.removeConnection(db);
   },
-  async dropUser(username = 'empty-user') {
+
+  async dropUser(username = 'empty_user') {
     await I.run(db, `DROP USER IF EXISTS "${username}"@"localhost"`);
   },
-  async createUser(username = 'empty-user', password = '') {
-    await I.run(db, `CREATE USER "${username}"@"localhost" IDENTIFIED BY "${password}"`);
+
+  async createUser(username = 'empty_user', password = '') {
+    if (password === '') {
+      await I.run(db, `CREATE USER "${username}"@"localhost"`);
+    } else {
+      await I.run(db, `CREATE USER "${username}"@"localhost" IDENTIFIED BY "${password}"`);
+    }
   },
-  async setUserPassword(username = 'empty-user', password = 'password') {
-    await I.run(db, `SET PASSWORD FOR "${username}"@"localhost" = PASSWORD("${password}")`);
+
+  async setUserPassword(username = 'empty_user', password = 'password') {
+    await I.run(db, `ALTER USER ${username}@localhost IDENTIFIED BY '${password}'`);
   },
 };
