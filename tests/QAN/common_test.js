@@ -8,7 +8,7 @@ Before(async ({ I, qanPage }) => {
 });
 
 Scenario(
-  'PMM-T122 - Verify QAN UI Elements are displayed @not-pr-pipeline @qan',
+  'PMM-T122 - Verify QAN UI Elements are displayed @qan',
   async ({
     I, qanFilters, qanOverview, qanPagination,
   }) => {
@@ -29,7 +29,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T223 - Verify values in overview and in details match @qan @not-pr-pipeline',
+  'PMM-T223 - Verify values in overview and in details match @qan',
   async ({
     I, qanOverview, qanFilters, qanDetails, adminPage,
   }) => {
@@ -58,7 +58,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T215 - Verify that buttons in QAN are disabled and visible on the screen @not-pr-pipeline @qan',
+  'PMM-T215 - Verify that buttons in QAN are disabled and visible on the screen @qan',
   async ({
     I, qanPagination, qanFilters, qanOverview,
   }) => {

@@ -10,7 +10,7 @@ Before(async ({ I, settingsAPI }) => {
   await settingsAPI.restoreSettingsDefaults();
 });
 
-Scenario('PMM-T93 - Open PMM Settings page and verify changing Metrics Resolution [critical]', async ({ I, pmmSettingsPage }) => {
+Scenario('PMM-T93 - Open PMM Settings page and verify changing Metrics Resolution [critical] @settings', async ({ I, pmmSettingsPage }) => {
   const resolutionToApply = 'Rare';
 
   I.amOnPage(pmmSettingsPage.url);
@@ -22,7 +22,7 @@ Scenario('PMM-T93 - Open PMM Settings page and verify changing Metrics Resolutio
   await pmmSettingsPage.verifySelectedResolution(resolutionToApply);
 });
 
-Scenario('PMM-T94 - Open PMM Settings page and verify changing Data Retention [critical]', async ({ I, pmmSettingsPage }) => {
+Scenario('PMM-T94 - Open PMM Settings page and verify changing Data Retention [critical] @settings', async ({ I, pmmSettingsPage }) => {
   const dataRetentionValue = '1';
   const sectionNameToExpand = pmmSettingsPage.sectionTabsList.advanced;
 
@@ -40,7 +40,7 @@ Scenario('PMM-T94 - Open PMM Settings page and verify changing Data Retention [c
 });
 
 Scenario(
-  'PMM-T108 - Open PMM Settings page and verify adding Alertmanager Rule [critical] PMM-T109 - Verify adding and clearing Alertmanager rules',
+  'PMM-T108 - Open PMM Settings page and verify adding Alertmanager Rule [critical] PMM-T109 - Verify adding and clearing Alertmanager rules @settings',
   async ({ I, pmmSettingsPage }) => {
     const scheme = 'http://';
     const sectionNameToExpand = pmmSettingsPage.sectionTabsList.alertmanager;
@@ -67,7 +67,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T253 Verify user can see correct tooltip for STT [trivial]',
+  'PMM-T253 Verify user can see correct tooltip for STT [trivial] @settings @stt',
   async ({ I, pmmSettingsPage }) => {
     const sectionNameToExpand = pmmSettingsPage.sectionTabsList.advanced;
 
@@ -81,7 +81,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T560 Verify IA related tooltips [trivial] @ia',
+  'PMM-T560 Verify IA related tooltips [trivial] @ia @settings',
   async ({ I, pmmSettingsPage, settingsAPI }) => {
     await settingsAPI.apiEnableIA();
 
@@ -116,7 +116,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T253 Verify user can enable STT if Telemetry is enabled',
+  'PMM-T253 Verify user can enable STT if Telemetry is enabled @settings @stt',
   async ({ I, pmmSettingsPage }) => {
     const sectionNameToExpand = pmmSettingsPage.sectionTabsList.advanced;
 
@@ -135,7 +135,7 @@ Scenario(
   },
 ).retry(2);
 
-Scenario('PMM-T520 - Verify that alert is in Firing State - internal alert manager @not-ui-pipeline @nightly @not-pr-pipeline', async ({ I, pmmSettingsPage }) => {
+Scenario('PMM-T520 - Verify that alert is in Firing State - internal alert manager @nightly @settings', async ({ I, pmmSettingsPage }) => {
   const scheme = 'http://127.0.0.1';
   const sectionNameToExpand = pmmSettingsPage.sectionTabsList.alertmanager;
 
@@ -153,7 +153,7 @@ Scenario('PMM-T520 - Verify that alert is in Firing State - internal alert manag
   await pmmSettingsPage.verifyAlertmanagerRuleAdded(pmmSettingsPage.alertManager.ruleName2, true);
 });
 
-Scenario('PMM-T520 - Verify that alert is being fired to external Alert Manager @not-ui-pipeline @nightly @not-pr-pipeline', async ({ I, pmmSettingsPage }) => {
+Scenario('PMM-T520 - Verify that alert is being fired to external Alert Manager @nightly @settings', async ({ I, pmmSettingsPage }) => {
   const scheme = 'http://';
   const sectionNameToExpand = pmmSettingsPage.sectionTabsList.alertmanager;
 
@@ -172,7 +172,7 @@ Scenario('PMM-T520 - Verify that alert is being fired to external Alert Manager 
   await pmmSettingsPage.verifyExternalAlertManager(pmmSettingsPage.alertManager.ruleName);
 });
 
-Scenario('PMM-T532 PMM-T533 PMM-T536 - Verify user can enable/disable IA in Settings @ia',
+Scenario('PMM-T532 PMM-T533 PMM-T536 - Verify user can enable/disable IA in Settings @ia @settings',
   async ({
     I, pmmSettingsPage, settingsAPI, adminPage,
   }) => {
@@ -199,7 +199,7 @@ Scenario('PMM-T532 PMM-T533 PMM-T536 - Verify user can enable/disable IA in Sett
   }).retry(2);
 
 // TODO: unskip and fix in scope of https://jira.percona.com/browse/PMM-7830
-Scenario.skip('PMM-T534 PMM-T535 - Verify user is able to set up default Email/Slack communication settings @ia',
+Scenario.skip('PMM-T534 PMM-T535 - Verify user is able to set up default Email/Slack communication settings @ia @settings',
   async ({
     I, pmmSettingsPage, settingsAPI, current,
   }) => {
