@@ -3,7 +3,7 @@ const assert = require('assert');
 const { codeceptjsConfig } = inject();
 const url = new URL(codeceptjsConfig.config.helpers.Playwright.url);
 const connection = {
-  host: 'mysql',
+  host: '127.0.0.1',
   port: 3306,
   username: 'root',
   password: 'ps',
@@ -13,7 +13,15 @@ let nodeID;
 Feature('Security Checks: Checks Execution').retry(2);
 
 BeforeSuite(async ({ perconaServerDB, addInstanceAPI }) => {
-  const instance = await addInstanceAPI.apiAddInstance(addInstanceAPI.instanceTypes.mysql, 'stt-mysql-5.7.30', connection);
+
+  const mysqlComposeConnection = {
+    host: 'mysql',
+    port: connection.port,
+    username: connection.username,
+    password: connection.password,
+  };
+
+  const instance = await addInstanceAPI.apiAddInstance(addInstanceAPI.instanceTypes.mysql, 'stt-mysql2-5.7.30', mysqlComposeConnection);
 
   nodeID = instance.service.node_id;
   perconaServerDB.connectToPS(connection);
