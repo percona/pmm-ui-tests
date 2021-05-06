@@ -87,7 +87,6 @@ module.exports = {
     returnToMenuButton: locate('span').withText('Return to menu'),
     requiredFieldHostname: locate('$address-field-error-message'),
     requiredFieldPort: locate('$port-field-error-message'),
-
   },
 
   tableStatsLimitRadioButtonLocator(limit) {

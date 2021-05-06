@@ -191,11 +191,13 @@ Scenario(
     remoteInstancesPage.waitUntilRemoteInstancesPageLoaded();
     remoteInstancesPage.createPostgreSQLInstance('postgresPGStatStatements', remoteInstancesPage.fields.usePgStatStatements);
     pmmInventoryPage.verifyRemoteServiceIsDisplayed('postgresPGStatStatements');
+    await pmmInventoryPage.verifyAgentHasStatusRunning('postgresPGStatStatements');
     pmmInventoryPage.checkExistingAgent(pmmInventoryPage.fields.postgresPgStatements);
     I.amOnPage(remoteInstancesPage.url);
     remoteInstancesPage.waitUntilRemoteInstancesPageLoaded();
     remoteInstancesPage.createPostgreSQLInstance('postgresPgstatmonitor', remoteInstancesPage.fields.usePgStatMonitor);
     pmmInventoryPage.verifyRemoteServiceIsDisplayed('postgresPgstatmonitor');
+    //await pmmInventoryPage.verifyAgentHasStatusRunning('postgresPgstatmonitor');
     pmmInventoryPage.checkExistingAgent(pmmInventoryPage.fields.postgresPgstatmonitor);
   },
 );
