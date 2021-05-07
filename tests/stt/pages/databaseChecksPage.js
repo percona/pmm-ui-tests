@@ -138,6 +138,6 @@ module.exports = {
     I.amOnPage(this.url);
     I.waitForVisible(this.buttons.startDBChecks, 30);
     I.click(this.buttons.startDBChecks);
-    I.verifyPopUpMessage(this.messages.securityChecksDone);
+    I.verifyPopUpMessage(this.messages.securityChecksDone, 60);
   },
 };

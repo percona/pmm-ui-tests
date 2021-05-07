@@ -8,7 +8,7 @@ Before(async ({ I, qanPage }) => {
 });
 
 Scenario(
-  'Verify Details section tabs @qan @not-pr-pipeline',
+  'Verify Details section tabs @qan',
   async ({
     I, qanDetails, qanOverview, qanFilters,
   }) => {
@@ -27,7 +27,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T223 - Verify time metrics are AVG per query (not per second) @qan @not-pr-pipeline',
+  'PMM-T223 - Verify time metrics are AVG per query (not per second) @qan',
   async ({
     I, qanOverview, qanFilters, qanDetails,
   }) => {
@@ -50,7 +50,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T13 - Check Explain and Example for supported DBs @qan @not-pr-pipeline',
+  'PMM-T13 - Check Explain and Example for supported DBs @qan',
   async ({
     I, qanOverview, qanFilters, qanDetails,
   }) => {
@@ -70,7 +70,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T13 - Check Explain and Example for supported DBs - md @qan @not-pr-pipeline',
+  'PMM-T13 - Check Explain and Example for supported DBs - md @qan',
   async ({
     I, qanOverview, qanFilters, qanDetails,
   }) => {
@@ -87,7 +87,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T13 - Check Explain and Example for supported DBs - ps @qan @not-pr-pipeline',
+  'PMM-T13 - Check Explain and Example for supported DBs - ps @qan',
   async ({
     I, qanOverview, qanFilters, qanDetails,
   }) => {
@@ -104,7 +104,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T13 - Check Explain and Example for supported DBs - pdpqsql @qan @not-pr-pipeline',
+  'PMM-T13 - Check Explain and Example for supported DBs - pdpqsql @qan',
   async ({
     I, qanOverview, qanFilters, qanDetails,
   }) => {
@@ -120,7 +120,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T13 - Check Explain and Example for supported DBs - pgsql @qan @not-pr-pipeline',
+  'PMM-T13 - Check Explain and Example for supported DBs - pgsql @qan',
   async ({
     I, qanOverview, qanFilters, qanDetails,
   }) => {
@@ -136,7 +136,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T13 - Check Explain and Example for supported DBs - mongodb @qan @not-pr-pipeline',
+  'PMM-T13 - Check Explain and Example for supported DBs - mongodb @qan',
   async ({
     I, qanOverview, qanFilters, qanDetails,
   }) => {

@@ -3,11 +3,11 @@ const assert = require('assert');
 Feature('Inventory page');
 
 Before(async ({ I }) => {
-  I.Authorize();
+  await I.Authorize();
 });
 
 Scenario(
-  'PMM-T371 - Verify sorting in Inventory page(Services tab) @not-pr-pipeline @not-ui-pipeline @nightly',
+  'PMM-T371 - Verify sorting in Inventory page(Services tab) @nightly',
   async ({ I, pmmInventoryPage }) => {
     I.amOnPage(pmmInventoryPage.url);
     await pmmInventoryPage.checkSort(4);
@@ -15,7 +15,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T371 - Verify sorting in Inventory page(Agents tab) @not-pr-pipeline @not-ui-pipeline @nightly',
+  'PMM-T371 - Verify sorting in Inventory page(Agents tab) @nightly',
   async ({ I, pmmInventoryPage }) => {
     I.amOnPage(pmmInventoryPage.url);
     I.waitForVisible(pmmInventoryPage.fields.agentsLink, 20);
@@ -25,7 +25,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T371 - Verify sorting in Inventory page(Nodes tab) @not-pr-pipeline @not-ui-pipeline @nightly',
+  'PMM-T371 - Verify sorting in Inventory page(Nodes tab) @nightly',
   async ({ I, pmmInventoryPage }) => {
     I.amOnPage(pmmInventoryPage.url);
     I.waitForVisible(pmmInventoryPage.fields.nodesLink, 20);
@@ -35,7 +35,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T339 - Verify MySQL service is removed on PMM Inventory page @not-pr-pipeline',
+  'PMM-T339 - Verify MySQL service is removed on PMM Inventory page',
   async ({ I, addInstanceAPI, pmmInventoryPage }) => {
     const serviceType = 'MySQL';
     const serviceName = 'ServiceToDelete';
@@ -59,7 +59,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T340 - Verify node with agents, services can be removed on PMM Inventory page @not-pr-pipeline',
+  'PMM-T340 - Verify node with agents, services can be removed on PMM Inventory page',
   async ({ I, addInstanceAPI, pmmInventoryPage }) => {
     const serviceType = 'MySQL';
     const serviceName = 'NodeToDelete';
@@ -80,7 +80,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T342 - Verify pmm-server node cannot be removed from PMM Inventory page @not-pr-pipeline',
+  'PMM-T342 - Verify pmm-server node cannot be removed from PMM Inventory page',
   async ({ I, pmmInventoryPage }) => {
     const node = 'pmm-server';
 
@@ -94,7 +94,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T343 - Verify agent can be removed on PMM Inventory page @not-pr-pipeline',
+  'PMM-T343 - Verify agent can be removed on PMM Inventory page',
   async ({ I, pmmInventoryPage }) => {
     const agentType = 'MySQL exporter';
 
@@ -122,7 +122,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T345 - Verify removing pmm-agent on PMM Inventory page removes all associated agents @not-pr-pipeline',
+  'PMM-T345 - Verify removing pmm-agent on PMM Inventory page removes all associated agents',
   async ({ I, pmmInventoryPage }) => {
     const agentID = 'pmm-server';
     const agentType = 'PMM Agent';
@@ -145,7 +145,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T554 - Check that all agents have status "RUNNING" @not-pr-pipeline @nightly',
+  'PMM-T554 - Check that all agents have status "RUNNING" @nightly',
   async ({ I, pmmInventoryPage, inventoryAPI }) => {
     const statuses = ['WAITING', 'STARTING', 'UNKNOWN'];
     const serviceIdsNotRunning = [];

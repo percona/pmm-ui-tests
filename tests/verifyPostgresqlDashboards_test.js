@@ -1,11 +1,11 @@
 Feature('Test Dashboards inside the PostgreSQL Folder');
 
 Before(async ({ I }) => {
-  I.Authorize();
+  await I.Authorize();
 });
 
 Scenario(
-  'Open the PostgreSQL Instance Summary Dashboard and verify Metrics are present and graphs are displayed @not-ui-pipeline @nightly @not-pr-pipeline',
+  'Open the PostgreSQL Instance Summary Dashboard and verify Metrics are present and graphs are displayed @nightly @dashboards',
   async ({ I, dashboardPage, adminPage }) => {
     I.amOnPage(dashboardPage.postgresqlInstanceSummaryDashboard.url);
     dashboardPage.waitForDashboardOpened();
@@ -20,7 +20,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T394 - PostgreSQL Instance Overview Dashboard metrics @not-ui-pipeline @nightly @not-pr-pipeline',
+  'PMM-T394 - PostgreSQL Instance Overview Dashboard metrics @nightly @dashboards',
   async ({ I, dashboardPage, adminPage }) => {
     I.amOnPage(dashboardPage.postgresqlInstanceOverviewDashboard.url);
     dashboardPage.waitForDashboardOpened();

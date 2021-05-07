@@ -1,11 +1,11 @@
 Feature('Test Dashboards inside the MongoDB Folder');
 
 Before(async ({ I }) => {
-  I.Authorize();
+  await I.Authorize();
 });
 
 Scenario(
-  'Open the MongoDB Instance Summary Dashboard and verify Metrics are present and graphs are displayed @not-ui-pipeline @nightly @not-pr-pipeline',
+  'Open the MongoDB Instance Summary Dashboard and verify Metrics are present and graphs are displayed @nightly @dashboards',
   async ({ I, dashboardPage }) => {
     I.amOnPage(dashboardPage.mongodbOverviewDashboard.url);
     dashboardPage.waitForDashboardOpened();
@@ -17,7 +17,7 @@ Scenario(
 );
 
 Scenario(
-  'Open the MongoDB Cluster Summary Dashboard and verify Metrics are present and graphs are displayed @not-ui-pipeline @nightly @not-pr-pipeline',
+  'Open the MongoDB Cluster Summary Dashboard and verify Metrics are present and graphs are displayed @nightly @dashboards',
   async ({ I, adminPage, dashboardPage }) => {
     I.amOnPage(dashboardPage.mongoDbClusterSummaryDashboard.url);
     dashboardPage.waitForDashboardOpened();

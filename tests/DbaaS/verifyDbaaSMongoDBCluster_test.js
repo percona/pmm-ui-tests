@@ -34,7 +34,7 @@ Before(async ({ I, dbaasAPI }) => {
 
 // These test covers a lot of cases, will be refactored and changed in terms of flow, this is initial setup
 
-Scenario('PMM-T642 PMM-T484  PSMDB Cluster with Custom Resources, Verify MongoDB Cluster can be restarted @dbaas @not-pr-pipeline',
+Scenario('PMM-T642 PMM-T484  PSMDB Cluster with Custom Resources, Verify MongoDB Cluster can be restarted @dbaas',
   async ({
     I, dbaasPage, dbaasAPI, dbaasActionsPage,
   }) => {
@@ -48,7 +48,7 @@ Scenario('PMM-T642 PMM-T484  PSMDB Cluster with Custom Resources, Verify MongoDB
     await dbaasPage.validateClusterDetail(psmdb_cluster, clusterName, psmdb_configuration);
   });
 
-Scenario('PMM-T477 PMM-T461 Verify MongoDB Cluster can be restarted, unregister k8s Cluster when Db Cluster Exist @dbaas @not-pr-pipeline',
+Scenario('PMM-T477 PMM-T461 Verify MongoDB Cluster can be restarted, unregister k8s Cluster when Db Cluster Exist @dbaas',
   async ({ I, dbaasPage, dbaasActionsPage }) => {
     await dbaasPage.waitForKubernetesClusterTab(clusterName);
     dbaasPage.unregisterCluster(clusterName);
@@ -60,7 +60,7 @@ Scenario('PMM-T477 PMM-T461 Verify MongoDB Cluster can be restarted, unregister 
     await dbaasActionsPage.deletePSMDBCluster(psmdb_cluster, clusterName);
   });
 
-Scenario('PMM-T525 PMM-T528 Verify Suspend & Resume for Mongo DB Cluster Works as expected @nightly @not-pr-pipeline',
+Scenario('PMM-T525 PMM-T528 Verify Suspend & Resume for Mongo DB Cluster Works as expected @nightly',
   async ({ I, dbaasPage, dbaasActionsPage }) => {
     const psmdb_cluster_suspend_resume = 'psmdb-suspend-resume';
     const clusterDetails = {
@@ -92,7 +92,7 @@ Scenario('PMM-T525 PMM-T528 Verify Suspend & Resume for Mongo DB Cluster Works a
     await dbaasActionsPage.deletePSMDBCluster(psmdb_cluster_suspend_resume, clusterName);
   });
 
-Scenario('PMM-T509 Verify Deleting Mongo Db Cluster in Pending Status is possible @dbaas @not-pr-pipeline',
+Scenario('PMM-T509 Verify Deleting Mongo Db Cluster in Pending Status is possible @dbaas',
   async ({ I, dbaasPage, dbaasActionsPage }) => {
     const psmdb_cluster_pending_delete = 'psmdb-pending-delete';
 
