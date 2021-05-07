@@ -25,7 +25,6 @@ module.exports = {
     postgresExporter: locate('td').withText('Postgres exporter'),
     postgresPgStatements: locate('td').withText('QAN PostgreSQL PgStatements'),
     postgresPgstatmonitor: locate('td').withText('QAN PostgreSQL Pgstatmonitor'),
-
   },
 
   verifyOldMySQLRemoteServiceIsDisplayed(serviceName) {
