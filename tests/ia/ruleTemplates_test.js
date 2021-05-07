@@ -13,7 +13,7 @@ for (const i of Object.values(page.ruleTemplate.paths)) {
   templates.add([i]);
 }
 
-Feature('IA: Alert rule templates').retry(2);
+Feature('IA: Alert rule templates').retry(1);
 
 Before(async ({
   I, settingsAPI, templatesAPI, rulesAPI,
@@ -25,7 +25,7 @@ Before(async ({
 });
 
 Scenario(
-  'PMM-T510 Verify built-in rule templates are non-editable @ia @not-pr-pipeline',
+  'PMM-T510 Verify built-in rule templates are non-editable @ia',
   async ({ I, ruleTemplatesPage }) => {
     const editButton = ruleTemplatesPage.buttons
       .editButtonBySource(ruleTemplatesPage.templateSources.builtin);
@@ -40,7 +40,7 @@ Scenario(
 );
 
 Scenario(
-  'Verify rule templates list elements @ia @not-pr-pipeline',
+  'Verify rule templates list elements @ia',
   async ({ I, ruleTemplatesPage }) => {
     ruleTemplatesPage.openRuleTemplatesTab();
     ruleTemplatesPage.columnHeaders.forEach((header) => {
@@ -58,7 +58,7 @@ Scenario(
 );
 
 Scenario(
-  'Add rule template modal elements @ia @not-pr-pipeline',
+  'Add rule template modal elements @ia',
   async ({ I, ruleTemplatesPage }) => {
     ruleTemplatesPage.openRuleTemplatesTab();
     I.click(ruleTemplatesPage.buttons.openAddTemplateModal);
@@ -70,9 +70,10 @@ Scenario(
   },
 );
 
+// nightly candidate
 Data(units)
   .Scenario(
-    'PMM-T500 PMM-T595 PMM-T596 Add rule templates with different units, empty range @ia @not-pr-pipeline',
+    'PMM-T500 PMM-T595 PMM-T596 Add rule templates with different units, empty range @ia',
     async ({
       I, ruleTemplatesPage, templatesAPI, current,
     }) => {
@@ -108,7 +109,7 @@ Data(units)
 
 Data(templates)
   .Scenario(
-    'PMM-T482 PMM-T499 Upload rule templates @ia @not-pr-pipeline',
+    'PMM-T482 PMM-T499 Upload rule templates @ia',
     async ({ I, ruleTemplatesPage, current }) => {
       const { path } = current;
       const validFile = path.endsWith('.yaml') || path.endsWith('.yml');
@@ -135,7 +136,7 @@ Data(templates)
   );
 
 Scenario(
-  'PMM-T501 Upload duplicate rule template @ia @not-pr-pipeline',
+  'PMM-T501 Upload duplicate rule template @ia',
   async ({ I, ruleTemplatesPage, templatesAPI }) => {
     const path = ruleTemplatesPage.ruleTemplate.paths.yaml;
     const [, , id] = await ruleTemplatesPage.ruleTemplate.templateNameAndContent(path);
@@ -153,7 +154,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T483 PMM-T699 Verify user can edit UI-created IA rule template @ia @not-pr-pipeline',
+  'PMM-T483 PMM-T699 Verify user can edit UI-created IA rule template @ia',
   async ({ I, ruleTemplatesPage, templatesAPI }) => {
     const path = ruleTemplatesPage.ruleTemplate.paths.yaml;
     const [templateName, fileContent, id] = await ruleTemplatesPage.ruleTemplate
@@ -184,7 +185,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T562 Verify user can delete User-defined (UI) rule templates @ia @not-pr-pipeline',
+  'PMM-T562 Verify user can delete User-defined (UI) rule templates @ia',
   async ({ I, ruleTemplatesPage, templatesAPI }) => {
     const path = ruleTemplatesPage.ruleTemplate.paths.yaml;
     const [templateName] = await ruleTemplatesPage.ruleTemplate
@@ -213,7 +214,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T553 Verify rule template can not be deleted if there is a rule based on it @ia @not-pr-pipeline',
+  'PMM-T553 Verify rule template can not be deleted if there is a rule based on it @ia',
   async ({
     I, ruleTemplatesPage, templatesAPI, rulesAPI,
   }) => {

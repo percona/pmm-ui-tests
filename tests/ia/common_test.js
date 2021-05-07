@@ -1,4 +1,4 @@
-Feature('IA: Navigation, breadcrumb').retry(2);
+Feature('IA: Navigation, breadcrumb').retry(1);
 
 Before(async ({
   I, channelsAPI, settingsAPI, rulesAPI, templatesAPI,
@@ -11,7 +11,7 @@ Before(async ({
 });
 
 Scenario(
-  'PMM-T643 Verify message about disabled IA @ia @not-pr-pipeline',
+  'PMM-T643 Verify message about disabled IA @ia',
   async ({
     I, settingsAPI, iaCommon, pmmSettingsPage, codeceptjsConfig,
   }) => {
@@ -28,7 +28,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T481 PMM-T619 PMM-T620 Verify user is able to use tab bar, breadcrumb @ia @not-pr-pipeline',
+  'PMM-T481 PMM-T619 PMM-T620 Verify user is able to use tab bar, breadcrumb @ia',
   async ({
     I, alertRulesPage, ruleTemplatesPage, iaCommon, ncPage,
   }) => {

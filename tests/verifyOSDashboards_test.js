@@ -5,11 +5,11 @@ nodes.add(['pmm-client', 'ip']);
 Feature('Test Dashboards inside the OS Folder');
 
 Before(async ({ I }) => {
-  I.Authorize();
+  await I.Authorize();
 });
 
 Scenario(
-  'Open the Node Summary Dashboard and verify Metrics are present and graphs are displayed @not-ui-pipeline @nightly @not-pr-pipeline',
+  'Open the Node Summary Dashboard and verify Metrics are present and graphs are displayed @nightly @dashboards',
   async ({ I, dashboardPage, adminPage }) => {
     I.amOnPage(dashboardPage.nodeSummaryDashboard.url);
     dashboardPage.waitForDashboardOpened();
@@ -25,7 +25,7 @@ Scenario(
 );
 
 Scenario(
-  'Open the Nodes Compare Dashboard and verify Metrics are present and graphs are displayed @not-ui-pipeline @nightly @not-pr-pipeline',
+  'Open the Nodes Compare Dashboard and verify Metrics are present and graphs are displayed @nightly @dashboards',
   async ({ I, dashboardPage }) => {
     I.amOnPage(dashboardPage.nodesCompareDashboard.url);
     dashboardPage.waitForDashboardOpened();
@@ -37,7 +37,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T165: Verify Annotation with Default Options @not-ui-pipeline @nightly @not-pr-pipeline',
+  'PMM-T165: Verify Annotation with Default Options @nightly @dashboards',
   async ({ I, dashboardPage }) => {
     const annotationTitle = 'pmm-annotate-without-tags';
 
@@ -49,7 +49,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T166: Verify adding annotation with specified tags @not-ui-pipeline @nightly @not-pr-pipeline',
+  'PMM-T166: Verify adding annotation with specified tags @nightly @dashboards',
   async ({ I, dashboardPage }) => {
     const annotationTitle2 = 'pmm-annotate-tags';
     const annotationTag1 = 'pmm-testing-tag1';
@@ -67,7 +67,7 @@ Scenario(
 );
 
 Data(nodes).Scenario(
-  'PMM-T418 PMM-T419 Verify the pt-summary on Node Summary dashboard @not-ui-pipeline @nightly @not-pr-pipeline',
+  'PMM-T418 PMM-T419 Verify the pt-summary on Node Summary dashboard @nightly @dashboards',
   async ({ I, dashboardPage, adminPage }) => {
     I.amOnPage(dashboardPage.nodeSummaryDashboard.url);
     dashboardPage.waitForDashboardOpened();

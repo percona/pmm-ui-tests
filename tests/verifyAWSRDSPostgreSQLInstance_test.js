@@ -7,10 +7,10 @@ Before(async ({ I }) => {
 });
 
 // skipping due to failures
-xScenario(
-  'PMM-T716 - Verify adding PostgreSQL RDS monitoring to PMM via UI @not-pr-pipeline',
+Scenario(
+  'PMM-T716 - Verify adding PostgreSQL RDS monitoring to PMM via UI @instances',
   async ({
-    I, remoteInstancesPage, pmmInventoryPage, qanPage, qanFilters, qanOverview, dashboardPage,
+    I, remoteInstancesPage, pmmInventoryPage,
   }) => {
     const serviceName = 'pmm-qa-postgres-12';
 
@@ -29,12 +29,28 @@ xScenario(
     pmmInventoryPage.verifyRemoteServiceIsDisplayed(serviceName);
     await pmmInventoryPage.verifyAgentHasStatusRunning(serviceName);
     await pmmInventoryPage.verifyMetricsFlags(serviceName);
-    // Wait until data in QAN and dashboard with slowlog will be loaded.
-    I.wait(30);
+  },
+);
+
+Scenario(
+  'PMM-T716 - Verify Dashboard for Postgres RDS added via UI @instances',
+  async ({
+    I, dashboardPage,
+  }) => {
+    const serviceName = 'pmm-qa-postgres-12';
+
     I.amOnPage(dashboardPage.postgresqlInstanceOverviewDashboard.url);
     dashboardPage.applyFilter('Node Name', serviceName);
     await dashboardPage.verifyThereAreNoGraphsWithNA();
     await dashboardPage.verifyThereAreNoGraphsWithoutData();
+  },
+).retry(2);
+
+Scenario(
+  'PMM-T716 - Verify QAN for Postgres RDS added via UI @instances',
+  async ({
+    I, qanOverview, qanFilters, qanPage,
+  }) => {
     I.amOnPage(qanPage.url);
     qanOverview.waitForOverviewLoaded();
     qanFilters.applyFilter('RDS Postgres');
@@ -43,4 +59,4 @@ xScenario(
 
     assert.ok(count > 0, 'The queries for added RDS Postgres do NOT exist');
   },
-);
+).retry(2);

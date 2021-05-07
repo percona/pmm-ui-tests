@@ -821,7 +821,7 @@ module.exports = {
   },
 
   async grabFailedReportTitles(selector) {
-    const reportNames = await I.grabTextFrom(selector);
+    const reportNames = await I.grabTextFromAll(selector);
 
     return reportNames;
   },

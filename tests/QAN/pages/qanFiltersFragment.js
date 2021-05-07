@@ -159,11 +159,12 @@ module.exports = {
     }
   },
 
-  async navigateByShortCut(href, filterValue) {
+  async verifyShortcutAttributes(href, filterValue) {
     const shortCutLocator = locate(`$filter-checkbox-${filterValue}`).find('a');
     const linkText = await I.grabAttributeFrom(shortCutLocator, 'href');
+    const target = await I.grabAttributeFrom(shortCutLocator, 'target');
 
     assert.ok(linkText.includes(href), `The redirection link on QAN Filter section was expected ${href} but the href attribute found was ${linkText}`);
-    I.click(shortCutLocator);
+    assert.ok(target === '_blank', `The redirection link on QAN Filter section was expected "_blank" but the href attribute found was ${target}`);
   },
 };
