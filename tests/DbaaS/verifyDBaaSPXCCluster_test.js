@@ -26,7 +26,7 @@ Before(async ({ I, dbaasAPI }) => {
 });
 
 Scenario('PMM-T455 PMM-T575 Verify that Advanced Options are optional for DB Cluster Creation, '
-  + 'creating PXC cluster with default settings @dbaas @not-pr-pipeline',
+  + 'creating PXC cluster with default settings @dbaas',
 async ({
   I, dbaasPage, dbaasAPI, dbaasActionsPage,
 }) => {
@@ -39,7 +39,7 @@ async ({
   await dbaasPage.postClusterCreationValidation(pxc_cluster_name, clusterName);
 });
 
-Scenario('PMM-T459, PMM-T473, PMM-T478, PMM-T524 Verify DB Cluster Details are listed, shortcut link for DB Cluster, Show/Hide password button @dbaas @not-pr-pipeline',
+Scenario('PMM-T459, PMM-T473, PMM-T478, PMM-T524 Verify DB Cluster Details are listed, shortcut link for DB Cluster, Show/Hide password button @dbaas',
   async ({ I, dbaasPage, dbaasActionsPage }) => {
     const clusterDetails = {
       clusterDashboardRedirectionLink: `/graph/d/pxc-cluster-summary/pxc-galera-cluster-summary?var-cluster=${pxc_cluster_name}-pxc`,
@@ -56,7 +56,7 @@ Scenario('PMM-T459, PMM-T473, PMM-T478, PMM-T524 Verify DB Cluster Details are l
     await dbaasPage.validateClusterDetail(pxc_cluster_name, clusterName, clusterDetails);
   });
 
-Scenario('PMM-T582 Verify Adding Cluster with Same Name and Same DB Type @dbaas @not-pr-pipeline',
+Scenario('PMM-T582 Verify Adding Cluster with Same Name and Same DB Type @dbaas',
   async ({ I, dbaasPage, dbaasActionsPage }) => {
     await dbaasPage.waitForDbClusterTab(clusterName);
     await dbaasActionsPage.createClusterBasicOptions(clusterName, pxc_cluster_name, 'MySQL');
@@ -64,7 +64,7 @@ Scenario('PMM-T582 Verify Adding Cluster with Same Name and Same DB Type @dbaas 
     await dbaasPage.seeErrorForAddedDBCluster(pxc_cluster_name);
   });
 
-Scenario('PMM-T460, PMM-T452 Verify force unregistering Kubernetes cluster @dbaas @not-pr-pipeline',
+Scenario('PMM-T460, PMM-T452 Verify force unregistering Kubernetes cluster @dbaas',
   async ({ I, dbaasPage }) => {
     await dbaasPage.waitForKubernetesClusterTab(clusterName);
     dbaasPage.unregisterCluster(clusterName);
@@ -74,14 +74,14 @@ Scenario('PMM-T460, PMM-T452 Verify force unregistering Kubernetes cluster @dbaa
     dbaasPage.checkCluster(clusterName, true);
   });
 
-Scenario('PMM-T524 Delete PXC Cluster and Unregister K8s Cluster @dbaas @not-pr-pipeline',
+Scenario('PMM-T524 Delete PXC Cluster and Unregister K8s Cluster @dbaas',
   async ({ I, dbaasPage, dbaasActionsPage }) => {
     await dbaasPage.waitForDbClusterTab(clusterName);
     I.waitForVisible(dbaasPage.tabs.dbClusterTab.dbClusterAddButtonTop, 30);
     await dbaasActionsPage.deleteXtraDBCluster(pxc_cluster_name, clusterName);
   });
 
-Scenario('PMM-T640 PMM-T479 Single Node PXC Cluster with Custom Resources @dbaas @not-pr-pipeline',
+Scenario('PMM-T640 PMM-T479 Single Node PXC Cluster with Custom Resources @dbaas',
   async ({
     I, dbaasPage, dbaasActionsPage, dbaasAPI,
   }) => {
@@ -107,7 +107,7 @@ Scenario('PMM-T640 PMM-T479 Single Node PXC Cluster with Custom Resources @dbaas
     await dbaasActionsPage.deleteXtraDBCluster(pxc_cluster_name_single, clusterName);
   });
 
-Scenario('PMM-T522 Verify Editing a Cluster with Custom Setting and float values is possible @dbaas @not-pr-pipeline',
+Scenario('PMM-T522 Verify Editing a Cluster with Custom Setting and float values is possible @dbaas',
   async ({
     I, dbaasPage, dbaasActionsPage, dbaasAPI,
   }) => {
@@ -137,7 +137,7 @@ Scenario('PMM-T522 Verify Editing a Cluster with Custom Setting and float values
     await dbaasActionsPage.deleteXtraDBCluster(pxc_cluster_small, clusterName);
   });
 
-Scenario('PMM-T525 PMM-T528 Verify Suspend & Resume for DB Cluster Works as expected @nightly  @not-pr-pipeline',
+Scenario('PMM-T525 PMM-T528 Verify Suspend & Resume for DB Cluster Works as expected @nightly',
   async ({ I, dbaasPage, dbaasActionsPage }) => {
     const pxc_cluster_suspend_resume = 'pxc-suspend-resume';
     const clusterDetails = {
@@ -165,7 +165,7 @@ Scenario('PMM-T525 PMM-T528 Verify Suspend & Resume for DB Cluster Works as expe
     await dbaasActionsPage.deleteXtraDBCluster(pxc_cluster_suspend_resume, clusterName);
   });
 
-Scenario('PMM-T509 Verify Deleting Db Cluster in Pending Status is possible @dbaas @not-pr-pipeline',
+Scenario('PMM-T509 Verify Deleting Db Cluster in Pending Status is possible @dbaas',
   async ({ I, dbaasPage, dbaasActionsPage }) => {
     const pxc_cluster_pending_delete = 'pxc-pending-delete';
 
@@ -179,7 +179,7 @@ Scenario('PMM-T509 Verify Deleting Db Cluster in Pending Status is possible @dba
   });
 
 // Skipped due to failure at I.waitForInvisible(dbaasPage.tabs.dbClusterTab.fields.clusterStatusDeleting, 60);
-xScenario('Verify Adding PMM-Server Public Address via Settings works @dbaas @not-pr-pipeline',
+xScenario('Verify Adding PMM-Server Public Address via Settings works @dbaas',
   async ({
     I, dbaasPage, pmmSettingsPage,
   }) => {

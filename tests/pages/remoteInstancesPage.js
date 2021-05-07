@@ -1,6 +1,9 @@
-// eslint-disable-next-line no-undef
-const { I, adminPage, pmmInventoryPage } = inject();
+const {
+  I, adminPage, pmmInventoryPage, codeceptjsConfig,
+} = inject();
 const assert = require('assert');
+
+const url = new URL(codeceptjsConfig.config.helpers.Playwright.url);
 
 module.exports = {
   accessKey: process.env.AWS_ACCESS_KEY_ID,
@@ -176,7 +179,7 @@ module.exports = {
         break;
       case 'external_service_new':
         I.fillField(this.fields.serviceName, serviceName);
-        I.fillField(this.fields.hostName, process.env.SERVER_IP);
+        I.fillField(this.fields.hostName, url.host);
         I.fillField(this.fields.metricsPath, '/metrics');
         I.fillField(this.fields.portNumber, '42200');
         I.fillField(this.fields.environment, 'remote-external-service');

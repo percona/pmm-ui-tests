@@ -3,12 +3,11 @@ const assert = require('assert');
 Feature('Test Dashboards inside the MySQL Folder');
 
 Before(async ({ I }) => {
-  I.Authorize();
+  await I.Authorize();
 });
 
 Scenario(
-  // eslint-disable-next-line max-len
-  'Open the MySQL Overview Dashboard and verify Metrics are present and graphs are displayed @nightly @not-ui-pipeline',
+  'Open the MySQL Overview Dashboard and verify Metrics are present and graphs are displayed @nightly @dashboards',
   async ({ I, adminPage, dashboardPage }) => {
     I.amOnPage(dashboardPage.mysqlInstanceSummaryDashboard.url);
     dashboardPage.waitForDashboardOpened();
@@ -23,8 +22,7 @@ Scenario(
 );
 
 Scenario(
-  // eslint-disable-next-line max-len
-  'Open the ProxySQL Instance Summary Dashboard and verify Metrics are present and graphs are displayed @nightly @not-ui-pipeline',
+  'Open the ProxySQL Instance Summary Dashboard and verify Metrics are present and graphs are displayed @nightly @dashboards',
   async ({ I, adminPage, dashboardPage }) => {
     I.amOnPage(`${dashboardPage.proxysqlInstanceSummaryDashboard.url}?from=now-5m&to=now`);
     dashboardPage.waitForDashboardOpened();
@@ -37,8 +35,7 @@ Scenario(
 );
 
 Scenario(
-  // eslint-disable-next-line max-len
-  'Open the PXCGalera Cluster Summary Dashboard and verify Metrics are present and graphs are displayed @nightly @not-ui-pipeline',
+  'Open the PXCGalera Cluster Summary Dashboard and verify Metrics are present and graphs are displayed @nightly @dashboards',
   async ({ I, adminPage, dashboardPage }) => {
     I.amOnPage(`${dashboardPage.pxcGaleraClusterSummaryDashboard.url}?from=now-5m&to=now`);
     dashboardPage.waitForDashboardOpened();
@@ -51,7 +48,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T324 - Verify MySQL - MySQL User Details dashboard @nightly @not-ui-pipeline',
+  'PMM-T324 - Verify MySQL - MySQL User Details dashboard @nightly @dashboards',
   async ({ I, dashboardPage, adminPage }) => {
     I.amOnPage(dashboardPage.mysqlUserDetailsDashboard.url);
     dashboardPage.waitForDashboardOpened();
@@ -66,7 +63,7 @@ Scenario(
 
 // Need to Skip due to wait issue on locator
 xScenario(
-  'PMM-T396 - Verify that parameters are passed from MySQL User Details dashboard to QAN @nightly @not-ui-pipeline',
+  'PMM-T396 - Verify that parameters are passed from MySQL User Details dashboard to QAN @nightly @dashboards',
   async ({
     I, dashboardPage, qanFilters, adminPage,
   }) => {
@@ -102,7 +99,7 @@ xScenario(
 );
 
 Scenario(
-  'PMM-T348 - PXC/Galera Node Summary dashboard @not-pr-pipeline @not-ui-pipeline @nightly',
+  'PMM-T348 - PXC/Galera Node Summary dashboard @dashboards @nightly',
   async ({ I, dashboardPage, adminPage }) => {
     I.amOnPage(`${dashboardPage.mysqlPXCGaleraNodeSummaryDashboard.url}&from=now-15m&to=now`);
     dashboardPage.waitForDashboardOpened();
@@ -115,7 +112,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T349 - PXC/Galera Nodes Compare dashboard @not-pr-pipeline @not-ui-pipeline @nightly',
+  'PMM-T349 - PXC/Galera Nodes Compare dashboard @dashboards @nightly',
   async ({ I, dashboardPage, adminPage }) => {
     I.amOnPage(`${dashboardPage.mysqlPXCGaleraNodesSummaryDashboard.url}&from=now-15m&to=now`);
     dashboardPage.waitForDashboardOpened();
@@ -131,7 +128,7 @@ Scenario(
 );
 
 Scenario(
-  'Verify metrics on Group Replication Summary Dashboard @not-pr-pipeline @not-ui-pipeline @nightly',
+  'Verify metrics on Group Replication Summary Dashboard @dashboards @nightly',
   async ({ I, dashboardPage, adminPage }) => {
     I.amOnPage(dashboardPage.groupReplicationDashboard.url);
     dashboardPage.waitForDashboardOpened();

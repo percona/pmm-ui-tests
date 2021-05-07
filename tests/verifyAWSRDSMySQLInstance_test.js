@@ -1,11 +1,11 @@
 Feature('Monitoring AWS RDS MySQL DB');
 
 Before(async ({ I }) => {
-  I.Authorize();
+  await I.Authorize();
 });
 
 Scenario(
-  'PMM-T138 Verify disabling enhanced metrics for RDS, PMM-T139 Verify disabling basic metrics for RDS, PMM-T9 Verify adding RDS instances [critical] @not-pr-pipeline',
+  'PMM-T138 Verify disabling enhanced metrics for RDS, PMM-T139 Verify disabling basic metrics for RDS, PMM-T9 Verify adding RDS instances [critical] @dashboards',
   async ({ I, remoteInstancesPage, pmmInventoryPage }) => {
     const instanceIdToMonitor = remoteInstancesPage.rds['Service Name'];
 
@@ -24,7 +24,7 @@ Scenario(
 );
 
 Scenario(
-  'Verify AWS RDS MySQL 5.6 instance has status running [critical] @not-pr-pipeline',
+  'Verify AWS RDS MySQL 5.6 instance has status running [critical] @instances',
   async ({ I, remoteInstancesPage, pmmInventoryPage }) => {
     const serviceName = remoteInstancesPage.rds['Service Name'];
 
@@ -35,7 +35,7 @@ Scenario(
 );
 // Skipping the tests because QAN does not get any data right after instance was added for monitoring
 xScenario(
-  'Verify QAN Filters contain AWS RDS MySQL 5.6 after it was added for monitoring @not-pr-pipeline',
+  'Verify QAN Filters contain AWS RDS MySQL 5.6 after it was added for monitoring @instances',
   async ({
     I, qanPage, remoteInstancesPage, qanFilters,
   }) => {
@@ -54,7 +54,7 @@ xScenario(
 );
 
 Scenario(
-  'Verify MySQL Instances Overview Dashboard for AWS RDS MySQL 5.6 data after it was added for monitoring @not-pr-pipeline',
+  'Verify MySQL Instances Overview Dashboard for AWS RDS MySQL 5.6 data after it was added for monitoring @instances',
   async ({ I, dashboardPage }) => {
     I.amOnPage(dashboardPage.mySQLInstanceOverview.urlWithRDSFilter);
     dashboardPage.waitForDashboardOpened();
@@ -65,7 +65,7 @@ Scenario(
 );
 
 Scenario(
-  'Verify MySQL Instances Overview Dashboard contains AWS RDS MySQL 5.6 filters @not-pr-pipeline',
+  'Verify MySQL Instances Overview Dashboard contains AWS RDS MySQL 5.6 filters @instances',
   async ({ I, dashboardPage, remoteInstancesPage }) => {
     const filters = remoteInstancesPage.rds;
 

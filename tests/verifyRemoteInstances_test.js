@@ -19,8 +19,9 @@ Before(async ({ I }) => {
   await I.Authorize();
 });
 
-Scenario(
-  'PMM-T588 - Verify adding external exporter service via UI @not-pr-pipeline @nightly',
+// TODO: fix in scope of https://jira.percona.com/browse/PMM-8002
+xScenario(
+  'PMM-T588 - Verify adding external exporter service via UI @instances @nightly',
   async ({ I, remoteInstancesPage, pmmInventoryPage }) => {
     const serviceName = 'external_service_new';
 
@@ -38,7 +39,7 @@ Scenario(
 
 // TODO: unskip the mongodb tests after resolving a creds issue
 Data(instances.filter((instance) => instance.name !== 'mongodb')).Scenario(
-  'Verify Remote Instance Addition [critical] @not-pr-pipeline',
+  'Verify Remote Instance Addition [critical] @instances',
   async ({ I, remoteInstancesPage, current }) => {
     const serviceName = remoteInstancesPage.services[current.name];
 
@@ -50,8 +51,9 @@ Data(instances.filter((instance) => instance.name !== 'mongodb')).Scenario(
   },
 );
 
-Scenario(
-  'PMM-T590 - Verify parsing URL on adding External service page @not-pr-pipeline',
+// TODO: fix in scope of https://jira.percona.com/browse/PMM-8002
+xScenario(
+  'PMM-T590 - Verify parsing URL on adding External service page @instances',
   async ({ I, remoteInstancesPage }) => {
     const metricsPath = '/metrics2';
     const credentials = 'something';
@@ -66,7 +68,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T630 - Verify adding External service with empty fields via UI @not-pr-pipeline',
+  'PMM-T630 - Verify adding External service with empty fields via UI @instances',
   async ({ I, remoteInstancesPage }) => {
     I.amOnPage(remoteInstancesPage.url);
     remoteInstancesPage.waitUntilRemoteInstancesPageLoaded();
@@ -78,7 +80,7 @@ Scenario(
 );
 
 Data(instances.filter((instance) => instance.name !== 'mongodb')).Scenario(
-  'Verify Remote Instance has Status Running [critical] @not-pr-pipeline',
+  'Verify Remote Instance has Status Running [critical] @instances',
   async ({
     I, remoteInstancesPage, pmmInventoryPage, current,
   }) => {
@@ -91,7 +93,7 @@ Data(instances.filter((instance) => instance.name !== 'mongodb')).Scenario(
 );
 
 Scenario(
-  'TableStats UI Default table Options for Remote MySQL & AWS-RDS Instance',
+  'TableStats UI Default table Options for Remote MySQL & AWS-RDS Instance @instances',
   async ({ I, remoteInstancesPage, adminPage }) => {
     I.amOnPage(remoteInstancesPage.url);
     remoteInstancesPage.waitUntilRemoteInstancesPageLoaded();
@@ -108,8 +110,9 @@ Scenario(
 
 // Test is connected with T588
 // It must be run after the creation of external exporter
-Scenario(
-  'PMM-T743 - Check metrics from external exporter on Advanced Data Exploration Dashboard @not-pr-pipeline @nightly',
+// TODO: fix in scope of https://jira.percona.com/browse/PMM-8002
+xScenario(
+  'PMM-T743 - Check metrics from external exporter on Advanced Data Exploration Dashboard @instances @nightly',
   async ({ I, dashboardPage }) => {
     const metricName = 'redis_uptime_in_seconds';
 
@@ -123,7 +126,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T637 - Verify elements on HAProxy page @not-pr-pipeline',
+  'PMM-T637 - Verify elements on HAProxy page @instances',
   async ({ I, remoteInstancesPage }) => {
     I.amOnPage(remoteInstancesPage.url);
     remoteInstancesPage.waitUntilRemoteInstancesPageLoaded();
@@ -145,7 +148,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T636 - Verify adding HAProxy with all empty fields @not-pr-pipeline',
+  'PMM-T636 - Verify adding HAProxy with all empty fields @instances',
   async ({ I, remoteInstancesPage }) => {
     I.amOnPage(remoteInstancesPage.url);
     remoteInstancesPage.waitUntilRemoteInstancesPageLoaded();
@@ -157,7 +160,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T635 - Verify Adding HAProxy service via UI @not-pr-pipeline',
+  'PMM-T635 - Verify Adding HAProxy service via UI @instances',
   async ({
     I, remoteInstancesPage, pmmInventoryPage,
   }) => {
