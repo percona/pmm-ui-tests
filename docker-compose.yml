@@ -45,7 +45,7 @@ services:
       - ./testdata/mysql:/mysql
 
   mongo:
-    image: ${MONGO_IMAGE:-percona/percona-server-mongodb:4.2}
+    image: ${MONGO_IMAGE:-percona/percona-server-mongodb:4.2.8}
     container_name: pmm-agent_mongo
     command: --profile 2
     ports:
@@ -55,7 +55,7 @@ services:
       - MONGO_INITDB_ROOT_PASSWORD=root-password
 
   mongo_with_ssl:
-    image: ${MONGO_IMAGE:-percona/percona-server-mongodb:4.2}
+    image: ${MONGO_IMAGE:-percona/percona-server-mongodb:4.4}
     ports:
       - 127.0.0.1:27018:27017
     command:
@@ -69,7 +69,7 @@ services:
       - ${PWD}/utils/tests/testdata/mongodb:/etc/ssl/certificates
 
   mongonoauth:
-    image: ${MONGO_IMAGE:-percona/percona-server-mongodb:4.2}
+    image: ${MONGO_IMAGE:-percona/percona-server-mongodb:4.2.8}
     container_name: pmm-agent_mongonoauth
     command: --profile 2
     ports:
