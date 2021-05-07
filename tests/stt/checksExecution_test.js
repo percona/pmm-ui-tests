@@ -93,8 +93,10 @@ Data(intervalsTests).Scenario(
 Scenario(
   'PMM-T757 Verify disabled checks do not execute based on interval value [critical] @stt',
   async ({
-    I, securityChecksAPI, settingsAPI,
+    I, securityChecksAPI, settingsAPI, perconaServerDB,
   }) => {
+    await perconaServerDB.setUserPassword();
+
     await securityChecksAPI.disableCheck(securityChecksAPI.checkNames.mysqlEmptyPassword);
 
     await settingsAPI.setCheckIntervals({ ...intervals, standard_interval: '5s' });
