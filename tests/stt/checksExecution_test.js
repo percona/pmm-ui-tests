@@ -6,10 +6,9 @@ let nodeID;
 
 const intervalsTests = new DataTable(['interval', 'intervalValue']);
 
-intervalsTests.add(['standard_interval', 'STANDARD']);
-
 // TODO: unskip after https://jira.percona.com/browse/PMM-8051
 // intervalsTests.add(['frequent_interval', 'FREQUENT']);
+intervalsTests.add(['standard_interval', 'STANDARD']);
 // intervalsTests.add(['rare_interval', 'RARE']);
 
 const cleanup = async () => {
@@ -75,10 +74,11 @@ Data(intervalsTests).Scenario(
   }) => {
     await perconaServerDB.setUserPassword();
 
-    await securityChecksAPI.changeCheckInterval(
-      securityChecksAPI.checkNames.mysqlEmptyPassword,
-      current.intervalValue,
-    );
+    // TODO: uncomment after https://jira.percona.com/browse/PMM-8051
+    // await securityChecksAPI.changeCheckInterval(
+    //   securityChecksAPI.checkNames.mysqlEmptyPassword,
+    //   current.intervalValue,
+    // );
     await settingsAPI.setCheckIntervals({ ...intervals, [current.interval]: '5s' });
 
     // Wait 15 seconds for Empty Password check execution
