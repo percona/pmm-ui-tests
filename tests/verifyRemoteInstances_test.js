@@ -190,7 +190,7 @@ Scenario(
 
 // add postgresPgStatMonitor after fix https://jira.percona.com/browse/PMM-8054
 Data(remotePostgreSQL.filter((remotePostgreSQL) => remotePostgreSQL.instanceName !== 'postgresPgStatMonitor')).Scenario(
-  'PMM-T441 - Verify adding Remote PostgreSQL Instance @not-pr-pipeline',
+  'PMM-T441 - Verify adding Remote PostgreSQL Instance @instances',
   async ({
     I, remoteInstancesPage, pmmInventoryPage, current,
   }) => {
