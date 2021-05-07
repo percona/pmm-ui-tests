@@ -27,6 +27,6 @@ module.exports = {
   },
 
   async setUserPassword(username = 'empty_user', password = 'password') {
-    await I.run(db, `ALTER USER ${username}@localhost IDENTIFIED BY '${password}'`);
+    await I.run(db, `ALTER USER "${username}"@"localhost" IDENTIFIED BY '${password}'`);
   },
 };
