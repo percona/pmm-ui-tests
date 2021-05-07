@@ -1,9 +1,15 @@
 const assert = require('assert');
-const page = require('./pages/remoteInstancesPage');
+const remotePage = require('./pages/remoteInstancesPage');
+const inventoryPage = require('./pages/pmmInventoryPage');
 
 const instances = new DataTable(['name']);
+const remotePostgreSQL = new DataTable(['instanceName', 'trackingOption', 'checkAgent']);
 
-for (const i of Object.keys(page.services)) {
+remotePostgreSQL.add(['doNotTrack', remotePage.fields.doNotTrack, inventoryPage.fields.postgresExporter]);
+remotePostgreSQL.add(['postgresPGStatStatements', remotePage.fields.usePgStatStatements, inventoryPage.fields.postgresPgStatements]);
+remotePostgreSQL.add(['postgresPgStatMonitor', remotePage.fields.usePgStatMonitor, inventoryPage.fields.postgresPgstatmonitor]);
+
+for (const i of Object.keys(remotePage.services)) {
   instances.add([i]);
 }
 
@@ -179,25 +185,17 @@ Scenario(
   },
 );
 
-Scenario(
+// add postgresPgStatMonitor after fix https://jira.percona.com/browse/PMM-8054
+Data(remotePostgreSQL.filter((remotePostgreSQL) => remotePostgreSQL.instanceName !== 'postgresPgStatMonitor')).Scenario(
   'PMM-T441 - Verify adding Remote PostgreSQL Instance @not-pr-pipeline',
-  async ({ I, remoteInstancesPage, pmmInventoryPage }) => {
+  async ({
+    I, remoteInstancesPage, pmmInventoryPage, current,
+  }) => {
     I.amOnPage(remoteInstancesPage.url);
     remoteInstancesPage.waitUntilRemoteInstancesPageLoaded();
-    remoteInstancesPage.createPostgreSQLInstance('postgresDoNotTrack', remoteInstancesPage.fields.doNotTrack);
-    pmmInventoryPage.verifyRemoteServiceIsDisplayed('postgresDoNotTrack');
-    pmmInventoryPage.checkExistingAgent(pmmInventoryPage.fields.postgresExporter);
-    I.amOnPage(remoteInstancesPage.url);
-    remoteInstancesPage.waitUntilRemoteInstancesPageLoaded();
-    remoteInstancesPage.createPostgreSQLInstance('postgresPGStatStatements', remoteInstancesPage.fields.usePgStatStatements);
-    pmmInventoryPage.verifyRemoteServiceIsDisplayed('postgresPGStatStatements');
-    await pmmInventoryPage.verifyAgentHasStatusRunning('postgresPGStatStatements');
-    pmmInventoryPage.checkExistingAgent(pmmInventoryPage.fields.postgresPgStatements);
-    I.amOnPage(remoteInstancesPage.url);
-    remoteInstancesPage.waitUntilRemoteInstancesPageLoaded();
-    remoteInstancesPage.createPostgreSQLInstance('postgresPgstatmonitor', remoteInstancesPage.fields.usePgStatMonitor);
-    pmmInventoryPage.verifyRemoteServiceIsDisplayed('postgresPgstatmonitor');
-    //await pmmInventoryPage.verifyAgentHasStatusRunning('postgresPgstatmonitor');
-    pmmInventoryPage.checkExistingAgent(pmmInventoryPage.fields.postgresPgstatmonitor);
+    remoteInstancesPage.createPostgreSQLInstance(current.instanceName, current.trackingOption);
+    pmmInventoryPage.verifyRemoteServiceIsDisplayed(current.instanceName);
+    await pmmInventoryPage.verifyAgentHasStatusRunning(current.instanceName);
+    pmmInventoryPage.checkExistingAgent(current.checkAgent);
   },
 );
