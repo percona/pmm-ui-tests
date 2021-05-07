@@ -49,6 +49,9 @@ Scenario(
       I.seeTextEquals(description, allChecksPage.elements.descriptionCellByName(name));
       I.seeTextEquals(status, allChecksPage.elements.statusCellByName(name));
       I.seeTextEquals(interval, allChecksPage.elements.intervalCellByName(name));
+
+      // Verify there are no duplicates
+      I.seeNumberOfVisibleElements(allChecksPage.elements.checkNameCell(name), 1);
     }
   },
 );
@@ -105,7 +108,7 @@ Scenario(
 );
 
 Data(changeIntervalTests).Scenario(
-  'PMM-T471 Verify user can change check intervals for every check @stt',
+  'PMM-T723 Verify user can change check intervals for every check @stt',
   async ({
     I, allChecksPage, securityChecksAPI, current,
   }) => {

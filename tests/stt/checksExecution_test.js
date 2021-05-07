@@ -6,9 +6,10 @@ let nodeID;
 
 const intervalsTests = new DataTable(['interval', 'intervalValue']);
 
+intervalsTests.add(['standard_interval', 'STANDARD']);
+
 // TODO: unskip after https://jira.percona.com/browse/PMM-8051
 // intervalsTests.add(['frequent_interval', 'FREQUENT']);
-// intervalsTests.add(['standard_interval', 'STANDARD']);
 // intervalsTests.add(['rare_interval', 'RARE']);
 
 const cleanup = async () => {
@@ -68,7 +69,7 @@ Scenario(
 );
 
 Data(intervalsTests).Scenario(
-  'PMM-T706 Verify checks are executed based on interval value [critical] @stt',
+  'PMM-T706 PMM-709 PMM-T711 Verify checks are executed based on interval value, change interval, fix problem [critical] @stt',
   async ({
     I, securityChecksAPI, settingsAPI, perconaServerDB, databaseChecksPage, current,
   }) => {
@@ -80,8 +81,8 @@ Data(intervalsTests).Scenario(
     );
     await settingsAPI.setCheckIntervals({ ...intervals, [current.interval]: '5s' });
 
-    // Wait 10 seconds for Empty Password check execution
-    I.wait(10);
+    // Wait 15 seconds for Empty Password check execution
+    I.wait(15);
 
     I.refreshPage();
     I.waitForVisible(databaseChecksPage.fields.dbCheckPanelSelector, 30);
