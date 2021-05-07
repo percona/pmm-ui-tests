@@ -1,7 +1,9 @@
 const {
-  I, allChecksPage, databaseChecksPage, codeceptjsConfig,
+  I, allChecksPage, databaseChecksPage, codeceptjsConfig, perconaServerDB,
 } = inject();
 const config = codeceptjsConfig.config.helpers.Playwright;
+const connection = perconaServerDB.defaultConnection;
+let nodeID;
 
 const urls = new DataTable(['url']);
 
@@ -9,6 +11,16 @@ urls.add([databaseChecksPage.url]);
 urls.add([allChecksPage.url]);
 
 Feature('Database Failed Checks').retry(2);
+
+BeforeSuite(async ({ addInstanceAPI }) => {
+  const instance = await addInstanceAPI.apiAddInstance(addInstanceAPI.instanceTypes.mysql, 'stt-failed-checks-mysql-5.7.30', connection);
+
+  nodeID = instance.service.node_id;
+});
+
+AfterSuite(async ({ inventoryAPI }) => {
+  if (nodeID) await inventoryAPI.deleteNode(nodeID, true);
+});
 
 Before(async ({ I }) => {
   await I.Authorize();
@@ -99,13 +111,9 @@ Scenario(
 
 Scenario(
   'PMM-T241 Verify user can see correct service name for failed checks [critical] @stt @not-pr-pipeline',
-  async ({
-    I, databaseChecksPage, settingsAPI, securityChecksAPI,
-  }) => {
+  async ({ databaseChecksPage, settingsAPI }) => {
     await settingsAPI.apiEnableSTT();
-    await securityChecksAPI.waitForSecurityChecksResults(20);
-    I.amOnPage(databaseChecksPage.url);
-    await databaseChecksPage.verifyDatabaseChecksPageOpened();
+    await databaseChecksPage.runDBChecks();
     await databaseChecksPage.verifyServiceNamesExistence();
   },
 );
