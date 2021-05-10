@@ -1,39 +1,27 @@
+const emailDefaults = {
+  type: 'email',
+  serverAddress: 'test.server.com',
+  hello: 'Hey there',
+  from: 'sender',
+  authType: 'None',
+  username: 'test',
+  password: 'test',
+};
+
 module.exports = {
-  communicationData: [{
-    type: 'email',
-    serverAddress: 'test.server.com',
-    hello: 'Hey there',
-    from: 'sender',
-    authType: 'None',
-    username: '',
-    password: '',
-  }, {
-    type: 'email',
-    serverAddress: 'test.server.com',
-    hello: 'Hey there',
-    from: 'sender',
-    authType: 'Plain',
-    username: 'test',
-    password: 'test',
-  }, {
-    type: 'email',
-    serverAddress: 'test.server.com',
-    hello: 'Hey there',
-    from: 'sender',
-    authType: 'Login',
-    username: 'test',
-    password: 'test',
-  }, {
-    type: 'email',
-    serverAddress: 'test.server.com',
-    hello: 'Hey there',
-    from: 'sender',
-    authType: 'CRAM-MD5',
-    username: 'test',
-    password: 'test',
-  }, {
-    type: 'slack',
-    url: 'https://hook',
-  },
+  communicationData: [
+    emailDefaults, {
+      ...emailDefaults,
+      authType: 'Plain',
+    }, {
+      ...emailDefaults,
+      authType: 'Login',
+    }, {
+      ...emailDefaults,
+      authType: 'CRAM-MD5',
+    }, {
+      type: 'slack',
+      url: 'https://hook',
+    },
   ],
 };
