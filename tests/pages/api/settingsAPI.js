@@ -80,6 +80,8 @@ module.exports = {
       },
       enable_telemetry: true,
       disable_stt: true,
+      email_alerting_settings: { from: '1', smarthost: '1', hello: '1' },
+      slack_alerting_settings: { url: '1' },
     };
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
 
