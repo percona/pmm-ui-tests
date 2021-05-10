@@ -79,10 +79,11 @@ Data(intervalsTests).Scenario(
     //   securityChecksAPI.checkNames.mysqlEmptyPassword,
     //   current.intervalValue,
     // );
-    await settingsAPI.setCheckIntervals({ ...intervals, [current.interval]: '5s' });
 
-    // Wait 15 seconds for Empty Password check execution
-    I.wait(15);
+    await settingsAPI.setCheckIntervals({ ...intervals, [current.interval]: '3s' });
+
+    // Wait 20 seconds for Empty Password check execution
+    I.wait(20);
 
     I.refreshPage();
     I.waitForVisible(databaseChecksPage.fields.dbCheckPanelSelector, 30);
@@ -98,10 +99,10 @@ Scenario(
     I, securityChecksAPI, settingsAPI, databaseChecksPage,
   }) => {
     await securityChecksAPI.disableCheck(securityChecksAPI.checkNames.mysqlEmptyPassword);
-    await settingsAPI.setCheckIntervals({ ...intervals, standard_interval: '5s' });
+    await settingsAPI.setCheckIntervals({ ...intervals, standard_interval: '3s' });
 
-    // Wait 15 seconds for Empty Password check execution
-    I.wait(15);
+    // Wait 20 seconds for Empty Password check execution
+    I.wait(20);
 
     I.refreshPage();
     I.waitForVisible(databaseChecksPage.fields.dbCheckPanelSelector, 30);
