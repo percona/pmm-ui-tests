@@ -191,19 +191,21 @@ Scenario(
   async ({
     I, qanPage, qanFilters, addInstanceAPI,
   }) => {
+    // For now we can't see the cluster names in QAN for ProxySQL, MongoDB and PostgreSQL
+    const {
+      proxysql, mongodb, postgresql, ...filters
+    } = addInstanceAPI.clusterNames;
+
     I.amOnPage(qanPage.url);
     qanFilters.waitForFiltersToLoad();
     await qanFilters.expandAllFilters();
 
     // Checking that Cluster filters are still in QAN after Upgrade
-    for (const name of Object.values(addInstanceAPI.clusterNames)) {
-      // For now we can't see the cluster names in QAN for ProxySQL and MongoDB
-      if (name !== addInstanceAPI.clusterNames.proxysql && name !== addInstanceAPI.clusterNames.mongodb) {
-        const filter = qanFilters.getFilterLocator(name);
+    for (const name of Object.values(filters)) {
+      const filter = qanFilters.getFilterLocator(name);
 
-        I.waitForVisible(filter, 30);
-        I.seeElement(filter);
-      }
+      I.waitForVisible(filter, 30);
+      I.seeElement(filter);
     }
   },
 );
