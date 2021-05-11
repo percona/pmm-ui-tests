@@ -4,12 +4,14 @@ const { I, codeceptjsConfig } = inject();
 
 const mailosaur = codeceptjsConfig.config.helpers.Mailosaur;
 
+const  defaultCheckIntervals = {
+  standard_interval: '86400s',
+  rare_interval: '280800s',
+  frequent_interval: '14400s',
+};
+
 module.exports = {
-  defaultCheckIntervals: {
-    standard_interval: '86400s',
-    rare_interval: '280800s',
-    frequent_interval: '14400s',
-  },
+  defaultCheckIntervals,
 
   // methods for preparing state of application before test
   async apiEnableSTT() {
@@ -88,7 +90,7 @@ module.exports = {
     await I.sendPostRequest('v1/Settings/Change', body, headers);
   },
 
-  async setCheckIntervals(intervals = this.defaultCheckIntervals) {
+  async setCheckIntervals(intervals = defaultCheckIntervals) {
     const body = {
       stt_check_intervals: intervals,
     };
