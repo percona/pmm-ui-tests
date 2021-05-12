@@ -196,12 +196,7 @@ Data(remotePostgreSQL.filter((remotePostgreSQL) => remotePostgreSQL.instanceName
   }) => {
     I.amOnPage(remoteInstancesPage.url);
     remoteInstancesPage.waitUntilRemoteInstancesPageLoaded();
-    remoteInstancesPage.openAddRemotePage('postgresql');
-    remoteInstancesPage.fillRemoteFields(current.instanceName);
-    I.waitForVisible(remoteInstancesPage.fields.skipTLSL, 30);
-    I.click(remoteInstancesPage.fields.skipTLSL);
-    I.click(current.trackingOption);
-    I.click(remoteInstancesPage.fields.addService);
+    remoteInstancesPage.createPostgreSQLInstance(current.instanceName, current.trackingOption);
     pmmInventoryPage.verifyRemoteServiceIsDisplayed(current.instanceName);
     await pmmInventoryPage.verifyAgentHasStatusRunning(current.instanceName);
     pmmInventoryPage.checkExistingAgent(current.checkAgent);
