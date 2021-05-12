@@ -1,5 +1,4 @@
-const { I, codeceptjsConfig } = inject();
-const url = new URL(codeceptjsConfig.config.helpers.Playwright.url);
+const { I } = inject();
 const db = 'mysql';
 
 module.exports = {
@@ -28,13 +27,13 @@ module.exports = {
 
   async createUser(username = 'empty-user', password = '') {
     if (password) {
-      await I.run(db, `CREATE USER "${username}"@"localhost" IDENTIFIED BY "${password}"`);
+      await I.run(db, `CREATE USER "${username}"@"localhost" IDENTIFIED BY '${password}'`);
     } else {
       await I.run(db, `CREATE USER "${username}"@"localhost"`);
     }
   },
 
   async setUserPassword(username = 'empty-user', password = 'password') {
-    await I.run(db, `ALTER USER "${username}"@"localhost" IDENTIFIED BY "${password}"`);
+    await I.run(db, `ALTER USER "${username}"@"localhost" IDENTIFIED BY '${password}'`);
   },
 };

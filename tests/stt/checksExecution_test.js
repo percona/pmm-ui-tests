@@ -24,15 +24,15 @@ Feature('Security Checks: Checks Execution');
 
 BeforeSuite(async ({ perconaServerDB, addInstanceAPI }) => {
   const mysqlComposeConnection = {
-    host: 'mysql',
+    host: '127.0.0.1',
     port: connection.port,
     username: connection.username,
     password: connection.password,
   };
-  const instance = await addInstanceAPI.apiAddInstance(addInstanceAPI.instanceTypes.mysql, 'stt-mysql-5.7.30', mysqlComposeConnection);
+  const instance = await addInstanceAPI.apiAddInstance(addInstanceAPI.instanceTypes.mysql, 'stt-mysql-5.7.30', connection);
 
   nodeID = instance.service.node_id;
-  perconaServerDB.connectToPS();
+  perconaServerDB.connectToPS(mysqlComposeConnection);
 });
 
 AfterSuite(async ({ perconaServerDB, inventoryAPI }) => {
