@@ -188,8 +188,7 @@ Scenario(
   },
 );
 
-// add postgresPgStatMonitor after fix https://jira.percona.com/browse/PMM-8054
-Data(remotePostgreSQL.filter((remotePostgreSQL) => remotePostgreSQL.instanceName !== 'postgresPgStatMonitor')).Scenario(
+Data(remotePostgreSQL).Scenario(
   'PMM-T441 - Verify adding Remote PostgreSQL Instance @instances',
   async ({
     I, remoteInstancesPage, pmmInventoryPage, current,
@@ -203,7 +202,11 @@ Data(remotePostgreSQL.filter((remotePostgreSQL) => remotePostgreSQL.instanceName
     I.click(current.trackingOption);
     I.click(remoteInstancesPage.fields.addService);
     pmmInventoryPage.verifyRemoteServiceIsDisplayed(current.instanceName);
-    await pmmInventoryPage.verifyAgentHasStatusRunning(current.instanceName);
+    // add postgresPgStatMonitor check after fix https://jira.percona.com/browse/PMM-8054
+    if (current.instanceName !== 'postgresPgStatMonitor') {
+      await pmmInventoryPage.verifyAgentHasStatusRunning(current.instanceName);
+    }
+
     pmmInventoryPage.checkExistingAgent(current.checkAgent);
   },
 );
