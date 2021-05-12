@@ -188,9 +188,9 @@ module.exports = {
       case 'doNotTrack':
       case 'postgresPGStatStatements':
       case 'postgresPgStatMonitor':
-        I.fillField(this.fields.hostName, /* process.env.REMOTE_POSTGRESQL_HOST */'35.170.53.236');
-        I.fillField(this.fields.userName, /* process.env.REMOTE_POSTGRESQL_USER */'postgres');
-        I.fillField(this.fields.password, /* process.env.REMOTE_POSTGRESSQL_PASSWORD */'K{vD3r%@P(J<Aam9uKu');
+        I.fillField(this.fields.hostName, process.env.REMOTE_POSTGRESQL_HOST);
+        I.fillField(this.fields.userName, process.env.REMOTE_POSTGRESQL_USER);
+        I.fillField(this.fields.password, process.env.REMOTE_POSTGRESSQL_PASSWORD);
         I.fillField(this.fields.serviceName, serviceName);
         break;
     }
