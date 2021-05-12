@@ -184,6 +184,15 @@ module.exports = {
         I.fillField(this.fields.portNumber, '42200');
         I.fillField(this.fields.environment, 'remote-external-service');
         I.fillField(this.fields.cluster, 'remote-external-cluster');
+        break;
+      case 'doNotTrack':
+      case 'postgresPGStatStatements':
+      case 'postgresPgStatMonitor':
+        I.fillField(this.fields.hostName, /* process.env.REMOTE_POSTGRESQL_HOST */'35.170.53.236');
+        I.fillField(this.fields.userName, /* process.env.REMOTE_POSTGRESQL_USER */'postgres');
+        I.fillField(this.fields.password, /* process.env.REMOTE_POSTGRESSQL_PASSWORD */'K{vD3r%@P(J<Aam9uKu');
+        I.fillField(this.fields.serviceName, serviceName);
+        break;
     }
     adminPage.peformPageDown(1);
   },
@@ -298,15 +307,4 @@ module.exports = {
     I.waitForVisible(this.fields.requiredFieldPort, 30);
   },
 
-  createPostgreSQLInstance(serviceName, tracking) {
-    this.openAddRemotePage('postgresql');
-    I.fillField(this.fields.hostName, process.env.REMOTE_POSTGRESQL_HOST);
-    I.fillField(this.fields.userName, process.env.REMOTE_POSTGRESQL_USER);
-    I.fillField(this.fields.password, process.env.REMOTE_POSTGRESSQL_PASSWORD);
-    I.fillField(this.fields.serviceName, serviceName);
-    I.waitForVisible(this.fields.skipTLSL, 30);
-    I.click(this.fields.skipTLSL);
-    I.click(tracking);
-    I.click(this.fields.addService);
-  },
 };
