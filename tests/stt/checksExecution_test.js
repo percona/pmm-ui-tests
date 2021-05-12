@@ -23,7 +23,13 @@ const cleanup = async () => {
 Feature('Security Checks: Checks Execution');
 
 BeforeSuite(async ({ perconaServerDB, addInstanceAPI }) => {
-  const instance = await addInstanceAPI.apiAddInstance(addInstanceAPI.instanceTypes.mysql, 'stt-mysql-5.7.30', connection);
+  const mysqlComposeConnection = {
+    host: 'mysql',
+    port: connection.port,
+    username: connection.username,
+    password: connection.password,
+  };
+  const instance = await addInstanceAPI.apiAddInstance(addInstanceAPI.instanceTypes.mysql, 'stt-mysql-5.7.30', mysqlComposeConnection);
 
   nodeID = instance.service.node_id;
   perconaServerDB.connectToPS();
