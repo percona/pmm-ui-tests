@@ -2,7 +2,7 @@ const assert = require('assert');
 
 const serviceNames = {
   mysql: 'mysql_upgrade_service',
-  postgresql: 'postgres_upgrade_service',
+  // postgresql: 'postgres_upgrade_service',
   proxysql: 'proxysql_upgrade_service',
   rds: 'mysql_rds_uprgade_service',
 };
@@ -81,12 +81,12 @@ Scenario(
   }) => {
     // Adding instances for monitoring
     for (const type of Object.values(addInstanceAPI.instanceTypes)) {
-      if (type !== 'MongoDB') await addInstanceAPI.apiAddInstance(type, serviceNames[type.toLowerCase()]);
+      if (!/MongoDB|PostgreSQL/.test(type)) await addInstanceAPI.apiAddInstance(type, serviceNames[type.toLowerCase()]);
     }
 
     // Checking that instances are RUNNING
     for (const service of Object.values(inventoryAPI.services)) {
-      if (service.service !== 'mongodb') await inventoryAPI.verifyServiceExistsAndHasRunningStatus(service, serviceNames[service.service]);
+      if (!/mongodb|postgresql/.test(service.service)) await inventoryAPI.verifyServiceExistsAndHasRunningStatus(service, serviceNames[service.service]);
     }
   },
 );
@@ -117,7 +117,7 @@ Scenario(
   'Verify Agents are RUNNING after Upgrade (API) [critical] @post-upgrade @pmm-upgrade @not-ui-pipeline',
   async ({ inventoryAPI }) => {
     for (const service of Object.values(inventoryAPI.services)) {
-      if (service.service !== 'mongodb') await inventoryAPI.verifyServiceExistsAndHasRunningStatus(service, serviceNames[service.service]);
+      if (!/mongodb|postgresql/.test(service.service)) await inventoryAPI.verifyServiceExistsAndHasRunningStatus(service, serviceNames[service.service]);
     }
   },
 );
@@ -191,19 +191,21 @@ Scenario(
   async ({
     I, qanPage, qanFilters, addInstanceAPI,
   }) => {
+    // For now we can't see the cluster names in QAN for ProxySQL, MongoDB and PostgreSQL
+    const {
+      proxysql, mongodb, postgresql, ...filters
+    } = addInstanceAPI.clusterNames;
+
     I.amOnPage(qanPage.url);
     qanFilters.waitForFiltersToLoad();
     await qanFilters.expandAllFilters();
 
     // Checking that Cluster filters are still in QAN after Upgrade
-    for (const name of Object.values(addInstanceAPI.clusterNames)) {
-      // For now we can't see the cluster names in QAN for ProxySQL and MongoDB
-      if (name !== addInstanceAPI.clusterNames.proxysql && name !== addInstanceAPI.clusterNames.mongodb) {
-        const filter = qanFilters.getFilterLocator(name);
+    for (const name of Object.values(filters)) {
+      const filter = qanFilters.getFilterLocator(name);
 
-        I.waitForVisible(filter, 30);
-        I.seeElement(filter);
-      }
+      I.waitForVisible(filter, 30);
+      I.seeElement(filter);
     }
   },
 );
