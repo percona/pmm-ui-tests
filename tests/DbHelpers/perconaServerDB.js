@@ -4,7 +4,7 @@ const db = 'mysql';
 
 module.exports = {
   defaultConnection: {
-    host: url.host,
+    host: 'mysql',
     port: 3306,
     username: 'root',
     password: 'ps',
