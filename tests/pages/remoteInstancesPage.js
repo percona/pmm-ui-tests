@@ -306,16 +306,4 @@ module.exports = {
     I.waitForVisible(this.fields.requiredFieldHostname, 30);
     I.waitForVisible(this.fields.requiredFieldPort, 30);
   },
-
-  createPostgreSQLInstance(serviceName, tracking) {
-    this.openAddRemotePage('postgresql');
-    I.fillField(this.fields.hostName, process.env.REMOTE_POSTGRESQL_HOST);
-    I.fillField(this.fields.userName, process.env.REMOTE_POSTGRESQL_USER);
-    I.fillField(this.fields.password, process.env.REMOTE_POSTGRESSQL_PASSWORD);
-    I.fillField(this.fields.serviceName, serviceName);
-    I.waitForVisible(this.fields.skipTLSL, 30);
-    I.click(this.fields.skipTLSL);
-    I.click(tracking);
-    I.click(this.fields.addService);
-  },
 };
