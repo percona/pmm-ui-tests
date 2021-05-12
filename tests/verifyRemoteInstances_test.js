@@ -1,15 +1,15 @@
 const assert = require('assert');
-const remotePage = require('./pages/remoteInstancesPage');
-const inventoryPage = require('./pages/pmmInventoryPage');
+
+const { remoteInstancesPage, pmmInventoryPage } = inject();
 
 const instances = new DataTable(['name']);
 const remotePostgreSQL = new DataTable(['instanceName', 'trackingOption', 'checkAgent']);
 
-remotePostgreSQL.add(['doNotTrack', remotePage.fields.doNotTrack, inventoryPage.fields.postgresExporter]);
-remotePostgreSQL.add(['postgresPGStatStatements', remotePage.fields.usePgStatStatements, inventoryPage.fields.postgresPgStatements]);
-remotePostgreSQL.add(['postgresPgStatMonitor', remotePage.fields.usePgStatMonitor, inventoryPage.fields.postgresPgstatmonitor]);
+remotePostgreSQL.add(['doNotTrack', remoteInstancesPage.fields.doNotTrack, pmmInventoryPage.fields.postgresExporter]);
+remotePostgreSQL.add(['postgresPGStatStatements', remoteInstancesPage.fields.usePgStatStatements, pmmInventoryPage.fields.postgresPgStatements]);
+remotePostgreSQL.add(['postgresPgStatMonitor', remoteInstancesPage.fields.usePgStatMonitor, pmmInventoryPage.fields.postgresPgstatmonitor]);
 
-for (const i of Object.keys(remotePage.services)) {
+for (const i of Object.keys(remoteInstancesPage.services)) {
   instances.add([i]);
 }
 
@@ -18,7 +18,7 @@ Feature('Remote DB Instances').retry(2);
 Before(async ({ I }) => {
   await I.Authorize();
 });
-
+/*
 // TODO: fix in scope of https://jira.percona.com/browse/PMM-8002
 xScenario(
   'PMM-T588 - Verify adding external exporter service via UI @instances @nightly',
@@ -187,7 +187,7 @@ Scenario(
     await pmmInventoryPage.checkAgentOtherDetailsSection('listen_port:', 'listen_port: 42100', serviceName, serviceId);
   },
 );
-
+*/
 // add postgresPgStatMonitor after fix https://jira.percona.com/browse/PMM-8054
 Data(remotePostgreSQL.filter((remotePostgreSQL) => remotePostgreSQL.instanceName !== 'postgresPgStatMonitor')).Scenario(
   'PMM-T441 - Verify adding Remote PostgreSQL Instance @instances',
