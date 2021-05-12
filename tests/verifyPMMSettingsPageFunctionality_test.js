@@ -1,9 +1,13 @@
-const communicationDefaults = new DataTable(['type']);
+const { pmmSettingsPage } = inject();
+const communicationDefaults = new DataTable(['type', 'serverAddress', 'hello', 'from', 'authType', 'username', 'password', 'url']);
 
-communicationDefaults.add(['email']);
-communicationDefaults.add(['slack']);
+pmmSettingsPage.communicationData.forEach(({
+  type, serverAddress, hello, from, authType, username, password, url,
+}) => {
+  communicationDefaults.add([type, serverAddress, hello, from, authType, username, password, url]);
+});
 
-Feature('PMM Settings Functionality').retry(2);
+Feature('PMM Settings Functionality').retry(1);
 
 Before(async ({ I, settingsAPI }) => {
   await I.Authorize();
@@ -198,17 +202,16 @@ Scenario('PMM-T532 PMM-T533 PMM-T536 - Verify user can enable/disable IA in Sett
     await settingsAPI.apiEnableIA();
   }).retry(2);
 
-// TODO: unskip and fix in scope of https://jira.percona.com/browse/PMM-7830
-Scenario.skip('PMM-T534 PMM-T535 - Verify user is able to set up default Email/Slack communication settings @ia @settings',
+Data(communicationDefaults).Scenario('PMM-T534 PMM-T535 - Verify user is able to set up default Email/Slack communication settings @ia @settings',
   async ({
     I, pmmSettingsPage, settingsAPI, current,
   }) => {
     await settingsAPI.apiEnableIA();
     I.amOnPage(pmmSettingsPage.communicationSettingsUrl);
     await pmmSettingsPage.waitForPmmSettingsPageLoaded();
-    pmmSettingsPage.fillCommunicationFields(current.type);
+    pmmSettingsPage.fillCommunicationFields(current);
     I.verifyPopUpMessage(pmmSettingsPage.messages.successPopUpMessage);
     I.refreshPage();
     await pmmSettingsPage.waitForPmmSettingsPageLoaded();
-    await pmmSettingsPage.verifyCommunicationFields(current.type);
-  }).retry(2);
+    await pmmSettingsPage.verifyCommunicationFields(current);
+  });

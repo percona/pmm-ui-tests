@@ -1,16 +1,36 @@
-const assert = require('assert');
+const {
+  settingsAPI, allChecksPage, perconaServerDB,
+} = inject();
+const connection = perconaServerDB.defaultConnection;
+let nodeID;
+
+const changeIntervalTests = new DataTable(['checkName', 'interval']);
+
+Object.values(allChecksPage.checks).forEach(({ name }) => {
+  changeIntervalTests.add([name, 'Rare']);
+});
 
 Feature('Security Checks: All Checks').retry(2);
+
+BeforeSuite(async ({ addInstanceAPI }) => {
+  const instance = await addInstanceAPI.apiAddInstance(addInstanceAPI.instanceTypes.mysql, 'stt-all-checks-mysql-5.7.30', connection);
+
+  nodeID = instance.service.node_id;
+});
+
+AfterSuite(async ({ inventoryAPI }) => {
+  if (nodeID) await inventoryAPI.deleteNode(nodeID, true);
+});
 
 Before(async ({ I, settingsAPI, securityChecksAPI }) => {
   await I.Authorize();
   await settingsAPI.apiEnableSTT();
-  await securityChecksAPI.enableMySQLVersionCheck();
+  await securityChecksAPI.enableCheck(securityChecksAPI.checkNames.mysqlVersion);
 });
 
 After(async ({ settingsAPI, securityChecksAPI }) => {
   await settingsAPI.apiEnableSTT();
-  await securityChecksAPI.enableMySQLVersionCheck();
+  await securityChecksAPI.enableCheck(securityChecksAPI.checkNames.mysqlVersion);
 });
 
 Scenario(
@@ -29,9 +49,13 @@ Scenario(
       I.seeTextEquals(description, allChecksPage.elements.descriptionCellByName(name));
       I.seeTextEquals(status, allChecksPage.elements.statusCellByName(name));
       I.seeTextEquals(interval, allChecksPage.elements.intervalCellByName(name));
+
+      // Verify there are no duplicates
+      I.seeNumberOfVisibleElements(allChecksPage.elements.checkNameCell(name), 1);
     }
   },
 );
+
 Scenario(
   'PMM-T471 Verify reloading page on All Checks tab [minor] @stt @not-pr-pipeline',
   async ({
@@ -58,13 +82,11 @@ Scenario(
     const detailsText = 'Newer version of Percona Server for MySQL is available';
     const checkName = 'MySQL Version';
 
-    await securityChecksAPI.startSecurityChecks();
-    await securityChecksAPI.waitForSecurityChecksResults(30);
+    // Run DB Checks from UI
+    databaseChecksPage.runDBChecks();
 
-    // Check that there is failed MySQL Version check
-    const failedCheckExists = await securityChecksAPI.getFailedCheckBySummary(detailsText);
-
-    assert.ok(failedCheckExists, `Expected to have "${detailsText}" failed check`);
+    // Check that there is MySQL user empty password failed check
+    await securityChecksAPI.verifyFailedCheckExists(detailsText);
 
     // Disable MySQL Version check
     I.amOnPage(allChecksPage.url);
@@ -81,8 +103,34 @@ Scenario(
     databaseChecksPage.runDBChecks();
 
     // Verify there is no MySQL Version failed check
-    const failedCheckDoesNotExist = await securityChecksAPI.getFailedCheckBySummary(detailsText);
+    await securityChecksAPI.verifyFailedCheckNotExists(detailsText);
+  },
+);
 
-    assert.ok(!failedCheckDoesNotExist, `Expected "${detailsText}" failed check to not be present`);
+Data(changeIntervalTests).Scenario(
+  'PMM-T723 Verify user can change check intervals for every check @stt',
+  async ({
+    I, allChecksPage, securityChecksAPI, current,
+  }) => {
+    await securityChecksAPI.restoreDefaultIntervals();
+    I.amOnPage(allChecksPage.url);
+
+    I.waitForVisible(allChecksPage.elements.tableBody, 30);
+    I.seeInCurrentUrl(allChecksPage.url);
+
+    I.click(allChecksPage.buttons.openChangeInterval(current.checkName));
+    I.waitForVisible(allChecksPage.elements.modalContent, 10);
+    I.seeTextEquals(
+      allChecksPage.messages.changeIntervalText(current.checkName),
+      locate(allChecksPage.elements.modalContent).find('h4'),
+    );
+    I.click(allChecksPage.buttons.intervalValue(current.interval));
+
+    I.click(allChecksPage.buttons.applyIntervalChange);
+
+    I.verifyPopUpMessage(allChecksPage.messages.successIntervalChange(current.checkName));
+    I.seeTextEquals(current.interval, allChecksPage.elements.intervalCellByName(current.checkName));
+
+    await securityChecksAPI.restoreDefaultIntervals();
   },
 );
