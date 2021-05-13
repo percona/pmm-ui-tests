@@ -37,8 +37,8 @@ xScenario(
   },
 );
 
-// TODO: unskip the mongodb tests after resolving a creds issue
-Data(instances.filter((instance) => instance.name !== 'mongodb')).Scenario(
+// TODO: unskip the mongodb and postgresql tests after resolving a instance issues
+Data(instances.filter((instance) => /mysql|proxysql/.test(instance.name))).Scenario(
   'Verify Remote Instance Addition [critical] @instances',
   async ({ I, remoteInstancesPage, current }) => {
     const serviceName = remoteInstancesPage.services[current.name];
@@ -79,7 +79,8 @@ Scenario(
   },
 );
 
-Data(instances.filter((instance) => instance.name !== 'mongodb')).Scenario(
+// TODO: unskip the mongodb and postgresql tests after resolving a instance issues
+Data(instances.filter((instance) => /mysql|proxysql/.test(instance.name))).Scenario(
   'Verify Remote Instance has Status Running [critical] @instances',
   async ({
     I, remoteInstancesPage, pmmInventoryPage, current,

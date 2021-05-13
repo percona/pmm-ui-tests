@@ -4,7 +4,15 @@ const { I, codeceptjsConfig } = inject();
 
 const mailosaur = codeceptjsConfig.config.helpers.Mailosaur;
 
+const  defaultCheckIntervals = {
+  standard_interval: '86400s',
+  rare_interval: '280800s',
+  frequent_interval: '14400s',
+};
+
 module.exports = {
+  defaultCheckIntervals,
+
   // methods for preparing state of application before test
   async apiEnableSTT() {
     const body = {
@@ -74,19 +82,17 @@ module.exports = {
       },
       enable_telemetry: true,
       disable_stt: true,
+      email_alerting_settings: { from: '1', smarthost: '1', hello: '1' },
+      slack_alerting_settings: { url: '1' },
     };
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
 
     await I.sendPostRequest('v1/Settings/Change', body, headers);
   },
 
-  async restoreCheckIntervalsDefaults() {
+  async setCheckIntervals(intervals = defaultCheckIntervals) {
     const body = {
-      stt_check_intervals: {
-        standard_interval: '86400s',
-        rare_interval: '280800s',
-        frequent_interval: '14400s',
-      },
+      stt_check_intervals: intervals,
     };
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
 

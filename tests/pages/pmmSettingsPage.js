@@ -1,5 +1,7 @@
-const { I, adminPage, links } = inject();
 const assert = require('assert');
+const { communicationData } = require('./testData');
+
+const { I, adminPage, links } = inject();
 
 const locateLabel = (dataQA) => locate(`[data-qa="${dataQA}"]`).find('span');
 
@@ -116,37 +118,32 @@ module.exports = {
       link: links.communicationDocs,
     },
   },
+  communicationData,
   communication: {
     email: {
       serverAddress: {
         tooltipLocator: locate('div').after(locate('span').withText('Server Address')),
         locator: '$smarthost-text-input',
-        value: 'test.server.com',
       },
       hello: {
         tooltipLocator: locate('div').after(locate('span').withText('Hello')),
         locator: '$hello-text-input',
-        value: 'Hey there',
       },
       from: {
         tooltipLocator: locate('div').after(locate('span').withText('From')),
         locator: '$from-text-input',
-        value: 'sender',
       },
       authType: {
         tooltipLocator: locate('div').after(locate('span').withText('Auth Type')),
         locator: '$hello-text-input',
-        value: 'Hey there',
       },
       username: {
         tooltipLocator: locate('div').after(locate('span').withText('Username')),
         locator: '$username-text-input',
-        value: 'user',
       },
       password: {
         tooltipLocator: locate('div').after(locate('span').withText('Password')),
         locator: '$password-password-input',
-        value: 'secret',
       },
     },
     slack: {
@@ -248,19 +245,40 @@ module.exports = {
     I.waitForVisible(expectedContentLocator, 30);
   },
 
-  fillCommunicationFields(type) {
-    if (type === 'slack') I.click(this.communication.slackTab);
+  fillCommunicationFields(fields) {
+    const {
+      type, serverAddress, hello, from, authType, username, password, url,
+    } = fields;
 
-    Object.values(this.communication[type]).forEach((key) => {
-      I.waitForVisible(key.locator, 30);
-      I.clearField(key.locator);
-      I.fillField(key.locator, key.value);
-    });
+    if (url && type === 'slack') {
+      I.click(this.communication.slackTab);
+
+      I.waitForVisible(this.communication.slack.url.locator, 30);
+      I.clearField(this.communication.slack.url.locator);
+      I.fillField(this.communication.slack.url.locator, url);
+
+      I.click(this.communication.submitSlackButton);
+    }
 
     if (type === 'email') {
+      I.waitForVisible(this.communication.email.serverAddress.locator, 30);
+      I.clearField(this.communication.email.serverAddress.locator);
+      I.fillField(this.communication.email.serverAddress.locator, serverAddress);
+      I.clearField(this.communication.email.hello.locator);
+      I.fillField(this.communication.email.hello.locator, hello);
+      I.clearField(this.communication.email.from.locator);
+      I.fillField(this.communication.email.from.locator, from);
+
+      I.click(locate('label').withText(authType));
+
+      if (/Plain|Login|CRAM-MD5/.test(authType)) {
+        I.clearField(this.communication.email.username.locator);
+        I.fillField(this.communication.email.username.locator, username);
+        I.clearField(this.communication.email.password.locator);
+        I.fillField(this.communication.email.password.locator, password);
+      }
+
       I.click(this.communication.submitEmailButton);
-    } else {
-      I.click(this.communication.submitSlackButton);
     }
   },
 
@@ -272,20 +290,28 @@ module.exports = {
     }
   },
 
-  async verifyCommunicationFields(type) {
-    if (type === 'slack') I.click(this.communication.slackTab);
+  async verifyCommunicationFields(fields) {
+    const {
+      type, serverAddress, hello, from, authType, username, url,
+    } = fields;
 
-    Object.values(this.communication[type]).forEach((key) => {
-      let { value } = key;
+    if (type === 'slack') {
+      I.click(this.communication.slackTab);
+      I.waitForVisible(this.communication.slack.url.locator, 30);
+      I.seeInField(this.communication.slack.url.locator, url);
+    }
 
-      if (key.locator === this.communication.email.password.locator) value = '';
+    if (type === 'email') {
+      I.waitForVisible(this.communication.email.serverAddress.locator, 30);
+      I.seeInField(this.communication.email.serverAddress.locator, serverAddress);
+      I.seeInField(this.communication.email.hello.locator, hello);
+      I.seeInField(this.communication.email.from.locator, from);
 
-      if (key.locator !== this.communication.email.secret.locator) {
-        I.seeInField(key.locator, value);
-      } else {
-        I.seeAttributesOnElements(key.locator, { type: 'password' });
+      if (/Plain|Login|CRAM-MD5/.test(authType)) {
+        I.seeInField(this.communication.email.username.locator, username);
+        I.seeAttributesOnElements(this.communication.email.password.locator, { type: 'password' });
       }
-    });
+    }
   },
 
   async selectMetricsResolution(resolution) {

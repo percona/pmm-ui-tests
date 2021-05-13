@@ -9,13 +9,13 @@ Before(async ({
   I, settingsAPI,
 }) => {
   await I.Authorize();
-  await settingsAPI.restoreCheckIntervalsDefaults();
+  await settingsAPI.setCheckIntervals();
   await settingsAPI.apiEnableSTT();
 });
 
 After(async ({ settingsAPI }) => {
   await settingsAPI.apiEnableSTT();
-  await settingsAPI.restoreCheckIntervalsDefaults();
+  await settingsAPI.setCheckIntervals();
 });
 
 Scenario(
