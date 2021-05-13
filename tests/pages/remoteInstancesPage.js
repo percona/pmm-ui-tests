@@ -185,7 +185,7 @@ module.exports = {
         I.fillField(this.fields.environment, 'remote-external-service');
         I.fillField(this.fields.cluster, 'remote-external-cluster');
         break;
-      case 'doNotTrack':
+      case 'postgresDoNotTrack':
       case 'postgresPGStatStatements':
       case 'postgresPgStatMonitor':
         I.fillField(this.fields.hostName, process.env.REMOTE_POSTGRESQL_HOST);
