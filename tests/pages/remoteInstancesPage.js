@@ -231,7 +231,7 @@ module.exports = {
     return pmmInventoryPage;
   },
 
-  openAndAzure() {
+  openAddAzure() {
     I.waitForVisible(this.fields.addAzureMySQLPostgreSQL, 30);
     I.click(this.fields.addAzureMySQLPostgreSQL);
     I.waitForVisible(this.fields.clientID, 30);

@@ -1,51 +1,38 @@
 const assert = require('assert');
 
+const { remoteInstancesPage } = inject();
+
+const filters = new DataTable(['filter']);
+const azureServices = new DataTable(['serviceName', 'instanceToMonitor']);
+
+filters.add([remoteInstancesPage.mysqlAzureInputs.environment]);
+filters.add([remoteInstancesPage.postgresqlAzureInputs.environment]);
+azureServices.add(['azure-MySQL', 'pmm2-qa-mysql']);
+azureServices.add(['azure-PostgreSQL', 'pmm2-qa-postgresql']);
+
 Feature('Monitoring Azure MySQL and PostgreSQL DB');
 
 Before(async ({ I, settingsAPI, pmmSettingsPage }) => {
-  I.Authorize();
+  await I.Authorize();
   await settingsAPI.restoreSettingsDefaults();
   I.amOnPage(pmmSettingsPage.url);
 });
 
-Scenario(
-  'PMM-T746 - Verify adding monitoring for Azure MySQL, PMM-T744 @instances',
+Data(azureServices).Scenario(
+  'PMM-T744, PMM-T746, PMM-T748 - Verify adding monitoring for Azure @instances',
   async ({
-    I, pmmSettingsPage, remoteInstancesPage, pmmInventoryPage,
+    I, pmmSettingsPage, remoteInstancesPage, pmmInventoryPage, current,
   }) => {
     const sectionNameToExpand = pmmSettingsPage.sectionTabsList.advanced;
-    const serviceName = 'azure-MySQL';
+    const { serviceName } = current;
 
     await pmmSettingsPage.waitForPmmSettingsPageLoaded();
     await pmmSettingsPage.expandSection(sectionNameToExpand, pmmSettingsPage.fields.advancedButton);
     pmmSettingsPage.switchAzure();
     I.amOnPage(remoteInstancesPage.url);
-    remoteInstancesPage.openAndAzure();
+    remoteInstancesPage.openAddAzure();
     remoteInstancesPage.discoverAzure();
-    remoteInstancesPage.startMonitoringOfInstance('pmm2-qa-mysql');
-    remoteInstancesPage.verifyAddInstancePageOpened();
-    remoteInstancesPage.fillRemoteRDSFields(serviceName);
-    I.click(remoteInstancesPage.fields.addService);
-    pmmInventoryPage.verifyRemoteServiceIsDisplayed(serviceName);
-    await pmmInventoryPage.verifyAgentHasStatusRunning(serviceName);
-  },
-);
-
-Scenario(
-  'PMM-T748 - Verify adding monitoring for Azure PostgreSQL @instances',
-  async ({
-    I, pmmSettingsPage, remoteInstancesPage, pmmInventoryPage,
-  }) => {
-    const sectionNameToExpand = pmmSettingsPage.sectionTabsList.advanced;
-    const serviceName = 'azure-PostgreSQL';
-
-    await pmmSettingsPage.waitForPmmSettingsPageLoaded();
-    await pmmSettingsPage.expandSection(sectionNameToExpand, pmmSettingsPage.fields.advancedButton);
-    pmmSettingsPage.switchAzure();
-    I.amOnPage(remoteInstancesPage.url);
-    remoteInstancesPage.openAndAzure();
-    remoteInstancesPage.discoverAzure();
-    remoteInstancesPage.startMonitoringOfInstance('pmm2-qa-postgresql');
+    remoteInstancesPage.startMonitoringOfInstance(current.instanceToMonitor);
     remoteInstancesPage.verifyAddInstancePageOpened();
     remoteInstancesPage.fillRemoteRDSFields(serviceName);
     I.click(remoteInstancesPage.fields.addService);
@@ -95,24 +82,13 @@ Scenario(
   },
 );
 
-Scenario('PMM-T746 - Verify adding monitoring for Azure MySQL CHECK QAN @instances', async ({
-  I, qanFilters, remoteInstancesPage, qanOverview, qanPage,
+Data(filters).Scenario('PMM-T746, PMM-T748 - Verify adding monitoring for Azure CHECK QAN @instances', async ({
+  I, qanFilters, qanOverview, qanPage, current,
 }) => {
   I.amOnPage(qanPage.url);
-  qanFilters.applyFilter(remoteInstancesPage.mysqlAzureInputs.environment);
+  qanFilters.applyFilter(current.filter);
   qanOverview.waitForOverviewLoaded();
   const count = await qanOverview.getCountOfItems();
 
-  assert.ok(count > 0, 'The queries for added Azure MySQL do NOT exist');
-}).retry(2);
-
-Scenario('PMM-T748 - Verify adding monitoring for Azure PostgreSQL CHECK QAN @instances', async ({
-  I, qanFilters, remoteInstancesPage, qanOverview, qanPage,
-}) => {
-  I.amOnPage(qanPage.url);
-  qanFilters.applyFilter(remoteInstancesPage.postgresqlAzureInputs.environment);
-  qanOverview.waitForOverviewLoaded();
-  const count = await qanOverview.getCountOfItems();
-
-  assert.ok(count > 0, 'The queries for added Azure PostgreSQL do NOT exist');
+  assert.ok(count > 0, `QAN queries for added Azure mysql service with env as ${current.filter} does not exist`);
 }).retry(2);

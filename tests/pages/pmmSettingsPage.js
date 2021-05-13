@@ -187,7 +187,7 @@ module.exports = {
     metricsResolution: '//label[text()="',
     metricsResolutionLabel: '$metrics-resolution-label',
     metricsResolutionRadio: '$resolutions-radio-button',
-    microsoftAzureMonitoringSwitch: '//div[@data-qa="advanced-azure-discover"]//div[2]//label',
+    microsoftAzureMonitoringSwitch: locate('$advanced-azure-discover').find('//div[2]//label'),
     microsoftAzureMonitoringSwitchInput: '//div[@data-qa="advanced-azure-discover"]//div[2]//input',
     loginButton: '$sign-in-submit-button',
     lowInput: '$lr-number-input',
