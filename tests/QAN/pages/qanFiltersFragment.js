@@ -88,6 +88,7 @@ module.exports = {
   applyFilter(filterName) {
     const filterToApply = `//span[contains(@class, 'checkbox-container__label-text') and contains(text(), '${filterName}')]`;
 
+    I.waitForVisible(this.fields.filterBy, 30);
     I.fillField(this.fields.filterBy, filterName);
     I.waitForVisible(filterToApply, 20);
     I.forceClick(filterToApply);

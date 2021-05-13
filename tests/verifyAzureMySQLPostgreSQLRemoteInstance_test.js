@@ -3,7 +3,7 @@ const assert = require('assert');
 const { remoteInstancesPage } = inject();
 
 const filters = new DataTable(['filter']);
-const azureServices = new DataTable(['serviceName', 'instanceToMonitor']);
+const azureServices = new DataTable(['name', 'instanceToMonitor']);
 
 filters.add([remoteInstancesPage.mysqlAzureInputs.environment]);
 filters.add([remoteInstancesPage.postgresqlAzureInputs.environment]);
@@ -12,23 +12,18 @@ azureServices.add(['azure-PostgreSQL', 'pmm2-qa-postgresql']);
 
 Feature('Monitoring Azure MySQL and PostgreSQL DB');
 
-Before(async ({ I, settingsAPI, pmmSettingsPage }) => {
+Before(async ({ I }) => {
   await I.Authorize();
-  await settingsAPI.restoreSettingsDefaults();
-  I.amOnPage(pmmSettingsPage.url);
 });
 
 Data(azureServices).Scenario(
   'PMM-T744, PMM-T746, PMM-T748 - Verify adding monitoring for Azure @instances',
   async ({
-    I, pmmSettingsPage, remoteInstancesPage, pmmInventoryPage, current,
+    I, remoteInstancesPage, pmmInventoryPage, settingsAPI, current,
   }) => {
-    const sectionNameToExpand = pmmSettingsPage.sectionTabsList.advanced;
-    const { serviceName } = current;
+    const serviceName = current.name;
 
-    await pmmSettingsPage.waitForPmmSettingsPageLoaded();
-    await pmmSettingsPage.expandSection(sectionNameToExpand, pmmSettingsPage.fields.advancedButton);
-    pmmSettingsPage.switchAzure();
+    await settingsAPI.enableAzure();
     I.amOnPage(remoteInstancesPage.url);
     remoteInstancesPage.openAddAzure();
     remoteInstancesPage.discoverAzure();
@@ -44,10 +39,12 @@ Data(azureServices).Scenario(
 Scenario(
   'PMM-T747 - Verify enabling Azure flag @instances',
   async ({
-    I, pmmSettingsPage, remoteInstancesPage,
+    I, pmmSettingsPage, remoteInstancesPage, settingsAPI,
   }) => {
     const sectionNameToExpand = pmmSettingsPage.sectionTabsList.advanced;
 
+    I.amOnPage(pmmSettingsPage.url);
+    await settingsAPI.restoreSettingsDefaults();
     await pmmSettingsPage.waitForPmmSettingsPageLoaded();
     await pmmSettingsPage.expandSection(sectionNameToExpand, pmmSettingsPage.fields.advancedButton);
     pmmSettingsPage.verifySwitch(pmmSettingsPage.fields.microsoftAzureMonitoringSwitchInput, 'off');
