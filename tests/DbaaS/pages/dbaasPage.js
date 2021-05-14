@@ -122,20 +122,25 @@ module.exports = {
     },
   },
   clusterConfiguration: {
-    small: {
-      memory: 2,
-      cpu: 1,
-      disk: 25,
+    Small: {
+      memory: '2',
+      cpu: '1',
+      disk: '25',
     },
-    medium: {
-      memory: 8,
-      cpu: 4,
-      disk: 100,
+    Medium: {
+      memory: '8',
+      cpu: '4',
+      disk: '100',
     },
-    large: {
-      memory: 32,
-      cpu: 8,
-      disk: 500,
+    Large: {
+      memory: '32',
+      cpu: '8',
+      disk: '500',
+    },
+    Custom: {
+      memory: '2',
+      cpu: '1',
+      disk: '25',
     },
   },
   clusterDashboardUrls: {
@@ -306,6 +311,13 @@ module.exports = {
     assert.ok(
       parameterDisplayed === value,
       `Expected the k8s Cluster ${type} to show ${value} but found ${parameterDisplayed}`,
+    );
+  },
+
+  async validateResourcesField(field, resourcePerNode, value) {
+    assert.ok(
+      this.clusterConfiguration[resourcePerNode][field] === value,
+      `Expected Resource field ${field} to have ${this.clusterConfiguration[resourcePerNode][field]} but found ${value}`,
     );
   },
 

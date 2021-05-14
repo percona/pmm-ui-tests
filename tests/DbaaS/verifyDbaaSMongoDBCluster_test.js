@@ -48,7 +48,19 @@ Scenario('PMM-T642 PMM-T484  PSMDB Cluster with Custom Resources, Verify MongoDB
     await dbaasPage.validateClusterDetail(psmdb_cluster, clusterName, psmdb_configuration);
   });
 
-Scenario('PMM-787 Verify Editing MonogDB Cluster is possible. @dbaas',
+Scenario('PMM-T477 PMM-T461 Verify MongoDB Cluster can be restarted, unregister k8s Cluster when Db Cluster Exist @dbaas',
+  async ({ I, dbaasPage, dbaasActionsPage }) => {
+    await dbaasPage.waitForKubernetesClusterTab(clusterName);
+    dbaasPage.unregisterCluster(clusterName);
+    I.waitForText(dbaasPage.failedUnregisterCluster(clusterName, 'PSMDB'));
+    await dbaasPage.waitForDbClusterTab(clusterName);
+    I.waitForInvisible(dbaasPage.tabs.kubernetesClusterTab.disabledAddButton, 30);
+    await dbaasActionsPage.restartCluster(psmdb_cluster, clusterName, 'MongoDB');
+    await dbaasPage.validateClusterDetail(psmdb_cluster, clusterName, psmdb_configuration);
+    await dbaasActionsPage.deletePSMDBCluster(psmdb_cluster, clusterName);
+  });
+
+Scenario('PMM-787 Verify Editing MonogDB Cluster is possible. @dbaas @nightly',
   async ({
     I, dbaasPage, dbaasAPI, dbaasActionsPage,
   }) => {
@@ -76,17 +88,6 @@ Scenario('PMM-787 Verify Editing MonogDB Cluster is possible. @dbaas',
     I.waitForText('Processing', 30, dbaasPage.tabs.dbClusterTab.fields.progressBarContent);
     await dbaasPage.postClusterCreationValidation(psmdb_cluster, clusterName, 'MongoDB');
     await dbaasPage.validateClusterDetail(psmdb_cluster, clusterName, psmdb_updated_configuration);
-  });
-
-Scenario('PMM-T477 PMM-T461 Verify MongoDB Cluster can be restarted, unregister k8s Cluster when Db Cluster Exist @dbaas',
-  async ({ I, dbaasPage, dbaasActionsPage }) => {
-    await dbaasPage.waitForKubernetesClusterTab(clusterName);
-    dbaasPage.unregisterCluster(clusterName);
-    I.waitForText(dbaasPage.failedUnregisterCluster(clusterName, 'PSMDB'));
-    await dbaasPage.waitForDbClusterTab(clusterName);
-    I.waitForInvisible(dbaasPage.tabs.kubernetesClusterTab.disabledAddButton, 30);
-    await dbaasActionsPage.restartCluster(psmdb_cluster, clusterName, 'MongoDB');
-    await dbaasPage.validateClusterDetail(psmdb_cluster, clusterName, psmdb_configuration);
     await dbaasActionsPage.deletePSMDBCluster(psmdb_cluster, clusterName);
   });
 
@@ -101,7 +102,9 @@ Scenario('PMM-T525 PMM-T528 Verify Suspend & Resume for Mongo DB Cluster Works a
       cpu: '1',
       disk: '2 GB',
       dbType: 'MongoDB',
-      clusterDashboardRedirectionLink: dbaasPage.clusterDashboardUrls.psmdbDashboard(psmdb_cluster_suspend_resume),
+      clusterDashboardRedirectionLink: dbaasPage.clusterDashboardUrls.psmdbDashboard(
+        psmdb_cluster_suspend_resume,
+      ),
     };
 
     await dbaasAPI.deleteAllDBCluster(clusterName);

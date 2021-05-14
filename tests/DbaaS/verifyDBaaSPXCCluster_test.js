@@ -53,7 +53,7 @@ async ({
 Scenario('PMM-T459, PMM-T473, PMM-T478, PMM-T524 Verify DB Cluster Details are listed, shortcut link for DB Cluster, Show/Hide password button @dbaas',
   async ({ I, dbaasPage, dbaasActionsPage }) => {
     const clusterDetails = {
-      clusterDashboardRedirectionLink: `/graph/d/pxc-cluster-summary/pxc-galera-cluster-summary?var-cluster=${pxc_cluster_name}-pxc`,
+      clusterDashboardRedirectionLink: dbaasPage.clusterDashboardUrls.pxcDashboard(pxc_cluster_name),
       dbType: 'MySQL',
       memory: '2 GB',
       cpu: '1',
@@ -120,13 +120,12 @@ Scenario('PMM-T522 Verify Editing a Cluster with Custom Setting and float values
     await dbaasPage.postClusterCreationValidation(pxc_cluster_small, clusterName);
     const configuration = {
       topology: 'Single',
-      numberOfNodes: '1',
       resourcePerNode: 'Custom',
       memory: '1.2 GB',
       cpu: '0.2',
       disk: '25 GB',
       dbType: 'MySQL',
-      clusterDashboardRedirectionLink: `/graph/d/pxc-cluster-summary/pxc-galera-cluster-summary?var-cluster=${pxc_cluster_small}-pxc`,
+      clusterDashboardRedirectionLink: dbaasPage.clusterDashboardUrls.pxcDashboard(pxc_cluster_small),
     };
 
     await dbaasActionsPage.editCluster(pxc_cluster_small, clusterName, configuration);
@@ -149,7 +148,7 @@ Scenario('PMM-T488, PMM-T489 Verify editing PXC cluster changing single node to 
       cpu: '0.5',
       disk: '25 GB',
       dbType: 'MySQL',
-      clusterDashboardRedirectionLink: `/graph/d/pxc-cluster-summary/pxc-galera-cluster-summary?var-cluster=${pxc_cluster_name_single}-pxc`,
+      clusterDashboardRedirectionLink: dbaasPage.clusterDashboardUrls.pxcDashboard(pxc_cluster_name_single),
     };
 
     await dbaasAPI.deleteAllDBCluster(clusterName);
@@ -172,7 +171,9 @@ Scenario('PMM-T525 PMM-T528 Verify Suspend & Resume for DB Cluster Works as expe
   async ({ I, dbaasPage, dbaasActionsPage }) => {
     const pxc_cluster_suspend_resume = 'pxc-suspend-resume';
     const clusterDetails = {
-      clusterDashboardRedirectionLink: `/graph/d/pxc-cluster-summary/pxc-galera-cluster-summary?var-cluster=${pxc_cluster_suspend_resume}-pxc`,
+      clusterDashboardRedirectionLink: dbaasPage.clusterDashboardUrls.pxcDashboard(
+        pxc_cluster_suspend_resume,
+      ),
       dbType: 'MySQL',
       memory: '2 GB',
       cpu: '1',
