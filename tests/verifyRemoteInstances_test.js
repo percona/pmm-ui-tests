@@ -5,7 +5,7 @@ const { remoteInstancesPage, pmmInventoryPage } = inject();
 const instances = new DataTable(['name']);
 const remotePostgreSQL = new DataTable(['instanceName', 'trackingOption', 'checkAgent']);
 
-remotePostgreSQL.add(['postgresDoNotTrack', remoteInstancesPage.fields.doNotTrack, pmmInventoryPage.fields.postgresExporter]);
+remotePostgreSQL.add(['postgreDoNotTrack', remoteInstancesPage.fields.doNotTrack, pmmInventoryPage.fields.postgresExporter]);
 remotePostgreSQL.add(['postgresPGStatStatements', remoteInstancesPage.fields.usePgStatStatements, pmmInventoryPage.fields.postgresPgStatements]);
 remotePostgreSQL.add(['postgresPgStatMonitor', remoteInstancesPage.fields.usePgStatMonitor, pmmInventoryPage.fields.postgresPgstatmonitor]);
 
