@@ -1,4 +1,4 @@
-const { dbaasAPI } = inject();
+const { dbaasAPI, dbaasPage } = inject();
 const clusterName = 'Kubernetes_Testing_Cluster_Minikube';
 const psmdb_cluster = 'psmdb-cluster';
 
@@ -10,7 +10,7 @@ const psmdb_configuration = {
   cpu: '1',
   disk: '5 GB',
   dbType: 'MongoDB',
-  clusterDashboardRedirectionLink: `/graph/d/mongodb-cluster-summary/mongodb-cluster-summary?var-cluster=${psmdb_cluster}`,
+  clusterDashboardRedirectionLink: dbaasPage.clusterDashboardUrls.psmdbDashboard(psmdb_cluster),
 };
 
 Feature('DBaaS: MongoDB Cluster Creation, Modifications, Actions, Verification tests');
@@ -68,7 +68,7 @@ Scenario('PMM-787 Verify Editing MonogDB Cluster is possible. @dbaas',
       cpu: '0.5',
       disk: '5 GB',
       dbType: 'MongoDB',
-      clusterDashboardRedirectionLink: `/graph/d/mongodb-cluster-summary/mongodb-cluster-summary?var-cluster=${psmdb_cluster}`,
+      clusterDashboardRedirectionLink: dbaasPage.clusterDashboardUrls.psmdbDashboard(psmdb_cluster),
     };
 
     await dbaasActionsPage.editCluster(psmdb_cluster, clusterName, psmdb_updated_configuration);
@@ -101,7 +101,7 @@ Scenario('PMM-T525 PMM-T528 Verify Suspend & Resume for Mongo DB Cluster Works a
       cpu: '1',
       disk: '2 GB',
       dbType: 'MongoDB',
-      clusterDashboardRedirectionLink: `/graph/d/mongodb-cluster-summary/mongodb-cluster-summary?var-cluster=${psmdb_cluster_suspend_resume}`,
+      clusterDashboardRedirectionLink: dbaasPage.clusterDashboardUrls.psmdbDashboard(psmdb_cluster_suspend_resume),
     };
 
     await dbaasAPI.deleteAllDBCluster(clusterName);

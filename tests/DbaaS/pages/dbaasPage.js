@@ -138,6 +138,10 @@ module.exports = {
       disk: 500,
     },
   },
+  clusterDashboardUrls: {
+    pxcDashboard: (dbClusterName) => `/graph/d/pxc-cluster-summary/pxc-galera-cluster-summary?var-cluster=${dbClusterName}-pxc`,
+    psmdbDashboard: (dbClusterName) => `/graph/d/mongodb-cluster-summary/mongodb-cluster-summary?var-cluster=${dbClusterName}`,
+  },
 
   checkCluster(cluserName, deleted) {
     const clusterLocator = `//td[contains(text(), '${cluserName}')]`;

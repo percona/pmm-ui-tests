@@ -1,6 +1,6 @@
 const assert = require('assert');
 
-const { dbaasAPI } = inject();
+const { dbaasAPI, dbaasPage } = inject();
 const clusterName = 'Kubernetes_Testing_Cluster_Minikube';
 const pxc_cluster_name = 'pxc-dbcluster';
 const pxc_cluster_name_single = 'pxc-singlenode';
@@ -16,7 +16,7 @@ const singleNodeConfiguration = {
   cpu: '0.2',
   disk: '25 GB',
   dbType: 'MySQL',
-  clusterDashboardRedirectionLink: `/graph/d/pxc-cluster-summary/pxc-galera-cluster-summary?var-cluster=${pxc_cluster_name_single}-pxc`,
+  clusterDashboardRedirectionLink: dbaasPage.clusterDashboardUrls.pxcDashboard(pxc_cluster_name_single),
 };
 
 BeforeSuite(async ({ dbaasAPI }) => {
