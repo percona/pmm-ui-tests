@@ -8,6 +8,17 @@ const pxc_cluster_small = 'pxc-smalldbcluster';
 
 Feature('DbaaS: PXC Cluster Creation, Modifications, Actions, Verification tests');
 
+const singleNodeConfiguration = {
+  topology: 'Single',
+  numberOfNodes: '1',
+  resourcePerNode: 'Custom',
+  memory: '1.2 GB',
+  cpu: '0.2',
+  disk: '25 GB',
+  dbType: 'MySQL',
+  clusterDashboardRedirectionLink: `/graph/d/pxc-cluster-summary/pxc-galera-cluster-summary?var-cluster=${pxc_cluster_name_single}-pxc`,
+};
+
 BeforeSuite(async ({ dbaasAPI }) => {
   if (!await dbaasAPI.apiCheckRegisteredClusterExist(clusterName)) {
     await dbaasAPI.apiRegisterCluster(process.env.kubeconfig_minikube, clusterName);
@@ -85,25 +96,14 @@ Scenario('PMM-T640 PMM-T479 Single Node PXC Cluster with Custom Resources @dbaas
   async ({
     I, dbaasPage, dbaasActionsPage, dbaasAPI,
   }) => {
-    const configuration = {
-      topology: 'Single',
-      numberOfNodes: '1',
-      resourcePerNode: 'Custom',
-      memory: '2 GB',
-      cpu: '2',
-      disk: '5 GB',
-      dbType: 'MySQL',
-      clusterDashboardRedirectionLink: `/graph/d/pxc-cluster-summary/pxc-galera-cluster-summary?var-cluster=${pxc_cluster_name_single}-pxc`,
-    };
-
     await dbaasAPI.deleteAllDBCluster(clusterName);
     await dbaasPage.waitForDbClusterTab(clusterName);
     I.waitForInvisible(dbaasPage.tabs.kubernetesClusterTab.disabledAddButton, 30);
-    await dbaasActionsPage.createClusterAdvancedOption(clusterName, pxc_cluster_name_single, 'MySQL', configuration);
+    await dbaasActionsPage.createClusterAdvancedOption(clusterName, pxc_cluster_name_single, 'MySQL', singleNodeConfiguration);
     I.click(dbaasPage.tabs.dbClusterTab.createClusterButton);
     I.waitForText('Processing', 30, dbaasPage.tabs.dbClusterTab.fields.progressBarContent);
     await dbaasPage.postClusterCreationValidation(pxc_cluster_name_single, clusterName);
-    await dbaasPage.validateClusterDetail(pxc_cluster_name_single, clusterName, configuration);
+    await dbaasPage.validateClusterDetail(pxc_cluster_name_single, clusterName, singleNodeConfiguration);
     await dbaasActionsPage.deleteXtraDBCluster(pxc_cluster_name_single, clusterName);
   });
 
@@ -135,6 +135,37 @@ Scenario('PMM-T522 Verify Editing a Cluster with Custom Setting and float values
     await dbaasPage.postClusterCreationValidation(pxc_cluster_small, clusterName);
     await dbaasPage.validateClusterDetail(pxc_cluster_small, clusterName, configuration);
     await dbaasActionsPage.deleteXtraDBCluster(pxc_cluster_small, clusterName);
+  });
+
+Scenario('PMM-T488, PMM-T489 Verify editing PXC cluster changing single node to 3 nodes topology, editing cluster only possible when cluster is active @dbaas',
+  async ({
+    I, dbaasPage, dbaasActionsPage, dbaasAPI,
+  }) => {
+    const updatedConfiguration = {
+      topology: 'Cluster',
+      numberOfNodes: '3',
+      resourcePerNode: 'Custom',
+      memory: '1 GB',
+      cpu: '0.5',
+      disk: '25 GB',
+      dbType: 'MySQL',
+      clusterDashboardRedirectionLink: `/graph/d/pxc-cluster-summary/pxc-galera-cluster-summary?var-cluster=${pxc_cluster_name_single}-pxc`,
+    };
+
+    await dbaasAPI.deleteAllDBCluster(clusterName);
+    await dbaasPage.waitForDbClusterTab(clusterName);
+    I.waitForInvisible(dbaasPage.tabs.kubernetesClusterTab.disabledAddButton, 30);
+    await dbaasActionsPage.createClusterAdvancedOption(clusterName, pxc_cluster_name_single, 'MySQL', singleNodeConfiguration);
+    I.click(dbaasPage.tabs.dbClusterTab.createClusterButton);
+    I.waitForText('Processing', 30, dbaasPage.tabs.dbClusterTab.fields.progressBarContent);
+    await dbaasPage.postClusterCreationValidation(pxc_cluster_name_single, clusterName);
+    await dbaasPage.validateClusterDetail(pxc_cluster_name_single, clusterName, singleNodeConfiguration);
+    await dbaasActionsPage.editCluster(pxc_cluster_name_single, clusterName, updatedConfiguration);
+    I.click(dbaasPage.tabs.dbClusterTab.updateClusterButton);
+    I.waitForText('Processing', 30, dbaasPage.tabs.dbClusterTab.fields.progressBarContent);
+    await dbaasPage.postClusterCreationValidation(pxc_cluster_name_single, clusterName);
+    await dbaasPage.validateClusterDetail(pxc_cluster_name_single, clusterName, updatedConfiguration);
+    await dbaasActionsPage.deleteXtraDBCluster(pxc_cluster_name_single, clusterName);
   });
 
 Scenario('PMM-T525 PMM-T528 Verify Suspend & Resume for DB Cluster Works as expected @nightly',

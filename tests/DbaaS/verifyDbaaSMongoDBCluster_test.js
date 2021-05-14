@@ -48,6 +48,36 @@ Scenario('PMM-T642 PMM-T484  PSMDB Cluster with Custom Resources, Verify MongoDB
     await dbaasPage.validateClusterDetail(psmdb_cluster, clusterName, psmdb_configuration);
   });
 
+Scenario('PMM-787 Verify Editing MonogDB Cluster is possible. @dbaas',
+  async ({
+    I, dbaasPage, dbaasAPI, dbaasActionsPage,
+  }) => {
+    await dbaasAPI.deleteAllDBCluster(clusterName);
+    await dbaasPage.waitForDbClusterTab(clusterName);
+    I.waitForInvisible(dbaasPage.tabs.kubernetesClusterTab.disabledAddButton, 30);
+    await dbaasActionsPage.createClusterAdvancedOption(clusterName, psmdb_cluster, 'MongoDB', psmdb_configuration);
+    I.click(dbaasPage.tabs.dbClusterTab.createClusterButton);
+    I.waitForText('Processing', 30, dbaasPage.tabs.dbClusterTab.fields.progressBarContent);
+    await dbaasPage.postClusterCreationValidation(psmdb_cluster, clusterName, 'MongoDB');
+    await dbaasPage.validateClusterDetail(psmdb_cluster, clusterName, psmdb_configuration);
+    const psmdb_updated_configuration = {
+      topology: 'Cluster',
+      numberOfNodes: '4',
+      resourcePerNode: 'Custom',
+      memory: '1 GB',
+      cpu: '0.5',
+      disk: '5 GB',
+      dbType: 'MongoDB',
+      clusterDashboardRedirectionLink: `/graph/d/mongodb-cluster-summary/mongodb-cluster-summary?var-cluster=${psmdb_cluster}`,
+    };
+
+    await dbaasActionsPage.editCluster(psmdb_cluster, clusterName, psmdb_updated_configuration);
+    I.click(dbaasPage.tabs.dbClusterTab.updateClusterButton);
+    I.waitForText('Processing', 30, dbaasPage.tabs.dbClusterTab.fields.progressBarContent);
+    await dbaasPage.postClusterCreationValidation(psmdb_cluster, clusterName, 'MongoDB');
+    await dbaasPage.validateClusterDetail(psmdb_cluster, clusterName, psmdb_updated_configuration);
+  });
+
 Scenario('PMM-T477 PMM-T461 Verify MongoDB Cluster can be restarted, unregister k8s Cluster when Db Cluster Exist @dbaas',
   async ({ I, dbaasPage, dbaasActionsPage }) => {
     await dbaasPage.waitForKubernetesClusterTab(clusterName);
