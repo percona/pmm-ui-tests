@@ -38,7 +38,7 @@ module.exports = {
       .at(position),
     getVersionNumberLocator: (component) => locate(`$${component}-options`)
       .find('//div/span[1]'),
-    getRecommendVersion: (component) => locate(`$${component}-options`)
+    getRecommendedVersionLocator: (component) => locate(`$${component}-options`)
       .find('span')
       .withText('Recommended')
       .find('//preceding-sibling::span'),
@@ -63,14 +63,6 @@ module.exports = {
     return numOfElements;
   },
 
-  async getTotalRecommendedVersions(component) {
-    const numOfElements = await I.grabNumberOfVisibleElements(
-      this.manageVersion.getRecommendVersion(component),
-    );
-
-    return numOfElements;
-  },
-
   async getSupportedVersion(component, position) {
     const versionNumber = await I.grabTextFrom(this.manageVersion.getVersionNumber(component, position));
 
@@ -78,7 +70,7 @@ module.exports = {
   },
 
   async getRecommendedVersion(component) {
-    const version = await I.grabTextFrom(this.manageVersion.getRecommendVersion(component)
+    const version = await I.grabTextFrom(this.manageVersion.getRecommendedVersionLocator(component)
       .last());
 
     return version;
@@ -89,7 +81,7 @@ module.exports = {
   },
 
   async getAllRecommendedVersions(component) {
-    return await I.grabTextFromAll(this.manageVersion.getRecommendVersion(component));
+    return await I.grabTextFromAll(this.manageVersion.getRecommendedVersionLocator(component));
   },
 
   // Checkbox for version selector is a psuedo element, very difficult to track if checked or not
@@ -113,7 +105,7 @@ module.exports = {
   },
 
   async isRecommendedVersion(component, version) {
-    const recommendedVersions = await I.grabTextFromAll(this.manageVersion.getRecommendVersion(component));
+    const recommendedVersions = await I.grabTextFromAll(this.manageVersion.getRecommendedVersionLocator(component));
 
     return recommendedVersions.includes(version);
   },
