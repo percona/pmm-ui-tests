@@ -92,22 +92,6 @@ module.exports = {
     return await I.grabTextFromAll(this.manageVersion.getRecommendVersion(component));
   },
 
-  async getVersionPosition(component, version) {
-    const count = await this.getTotalSupportedVersions(component);
-    let position;
-
-    for (let i = 1; i <= count; i++) {
-      const getVersionNumber = await this.getSupportedVersion(component, i);
-
-      if (getVersionNumber === version) {
-        position = i;
-        break;
-      }
-    }
-
-    return position;
-  },
-
   // Checkbox for version selector is a psuedo element, very difficult to track if checked or not
   async setAllVersions(component, versions) {
     versions.forEach((version) => {
