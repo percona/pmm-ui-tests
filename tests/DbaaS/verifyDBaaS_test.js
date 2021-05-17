@@ -34,7 +34,7 @@ Before(async ({ I }) => {
 
 Scenario(
   'PMM-T426 - Verify adding new Kubernetes cluster minikube, PMM-T428 - Verify adding new Kubernetes cluster with same name, '
-  + 'PMM-T546, PMM-T431 -Verify unregistering Kubernetes cluster @dbaas',
+  + 'PMM-T431 -Verify unregistering Kubernetes cluster @dbaas',
   async ({ I, dbaasPage }) => {
     I.amOnPage(dbaasPage.url);
     I.waitForVisible(dbaasPage.tabs.kubernetesClusterTab.addKubernetesClusterButtonInTable, 30);
@@ -53,7 +53,7 @@ Scenario(
     // PMM-T428 - starting here
     dbaasPage.registerKubernetesCluster(clusterName, process.env.kubeconfig_minikube);
     dbaasPage.seeErrorForAddedCluster(clusterName);
-    // PMM-T431, PMM-T546 - starting here, unregister cluster using unregister option
+    // PMM-T431 starting here, unregister cluster using unregister option
     dbaasPage.unregisterCluster(clusterName);
     I.waitForText(dbaasPage.deletedAlertMessage, 20);
     dbaasPage.checkCluster(clusterName, true);
@@ -278,4 +278,20 @@ Data(resourceFields).Scenario('PMM-T828 Verify the Configuration for Small, Medi
     await dbaasPage.validateResourcesField('memory', current.resourceType, value);
     value = await I.grabAttributeFrom(dbaasPage.tabs.dbClusterTab.advancedOptions.fields.diskSizeInputField, 'value');
     await dbaasPage.validateResourcesField('disk', current.resourceType, value);
+  });
+
+Scenario('PMM-T546 Verify Actions column on Kubernetes cluster page @dbaas',
+  async ({ I, dbaasPage, dbaasAPI }) => {
+    if (!await dbaasAPI.apiCheckRegisteredClusterExist(clusterName)) {
+      await dbaasAPI.apiRegisterCluster(process.env.kubeconfig_minikube, clusterName);
+    }
+
+    I.amOnPage(dbaasPage.url);
+    dbaasPage.checkCluster(clusterName, false);
+    I.waitForElement(dbaasPage.tabs.kubernetesClusterTab.actionsLocator(clusterName), 30);
+    I.click(dbaasPage.tabs.kubernetesClusterTab.actionsLocator(clusterName));
+    I.waitForElement(dbaasPage.tabs.kubernetesClusterTab.viewClusterConfiguration, 30);
+    I.seeElement(dbaasPage.tabs.kubernetesClusterTab.manageVersions);
+    I.seeElement(dbaasPage.tabs.kubernetesClusterTab.viewClusterConfiguration);
+    I.seeElement(dbaasPage.tabs.kubernetesClusterTab.unregisterButton);
   });

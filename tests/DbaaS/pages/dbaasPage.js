@@ -1,5 +1,5 @@
 const {
-  I, dbaasAPI, dbaasActionsPage,
+  I, dbaasAPI, dbaasActionsPage, dbaasManageVersionPage,
 } = inject();
 const assert = require('assert');
 
@@ -35,6 +35,7 @@ module.exports = {
       tableLoading: '$table-loading',
       unregisterButton: locate('$dropdown-menu-menu').find('span').at(1),
       viewClusterConfiguration: locate('$dropdown-menu-menu').find('span').at(2),
+      manageVersions: locate('$dropdown-menu-menu').find('span').at(3),
     },
     dbClusterTab: {
       defaultPassword: '***************',
@@ -55,6 +56,17 @@ module.exports = {
           dbClusterDatabaseTypeInputField: locate('$dbcluster-database-type-field').find('input'),
           dbClusterDatabaseTypeFieldSelect: (dbtype) => `//div[@aria-label='Select option']//span[contains(@text, ${dbtype})]`,
           dbClusterDatabaseTypeFieldErrorMessage: '$select-field-error-message',
+          dbClusterDatabaseVersionField: '$dbcluster-database-version-field',
+          dbClusterDatabaseVersion: (version) => locate(
+            this.tabs.dbClusterTab.basicOptions.fields.dbClusterDatabaseVersionField,
+          )
+            .find('span')
+            .withText(version),
+          defaultDbVersionValue: (version) => locate(
+            this.tabs.dbClusterTab.basicOptions.fields.dbClusterDatabaseVersionField,
+          )
+            .find('div')
+            .withText(version),
           kubernetesClusterDropDown: '$dbcluster-kubernetes-cluster-field',
           kubernetesClusterDropDownSelect: (clusterName) => `//div[@aria-label='Select option']//span[contains(@text, ${clusterName})]`,
           kubernetesClusterErrorMessage: '$select-field-error-message',
@@ -243,6 +255,7 @@ module.exports = {
     dbaasPage.checkCluster(clusterName, false);
     I.click(dbaasPage.tabs.dbClusterTab.dbClusterTab);
     I.waitForElement(dbaasPage.tabs.dbClusterTab.dbClusterAddButtonTop, 30);
+    I.waitForDetached(dbaasManageVersionPage.loader, 30);
   },
 
   async waitForKubernetesClusterTab(k8sClusterName) {

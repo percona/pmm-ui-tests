@@ -16,6 +16,7 @@ module.exports = {
     dbaasAPI: './tests/DbaaS/api/dbaasAPI.js',
     dbaasPage: './tests/DbaaS/pages/dbaasPage.js',
     dbaasActionsPage: './tests/DbaaS/pages/dbaasActionsPage.js',
+    dbaasManageVersionPage: './tests/DbaaS/pages/dbaasManageVersionPage.js',
     grafanaAPI: './tests/pages/api/grafanaAPI.js',
     homePage: './tests/pages/homePage.js',
     inventoryAPI: './tests/pages/api/inventoryAPI.js',
