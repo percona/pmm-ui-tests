@@ -31,6 +31,8 @@ module.exports = {
     defaultVersionSelector: '$kubernetes-default-version',
     defaultVersionOption: (version) => locate('$kubernetes-default-version-option').find('span').withText(version),
     dialogTitle: 'Manage Components Versions',
+    defaultVersionSelectorFieldErrorMessage: '$select-field-error-message',
+    errorMessageRequiredField: 'Required field',
     getVersionNumber: (component, position) => locate(`$${component}-options`)
       .find('//div/span[1]')
       .at(position),
@@ -53,8 +55,6 @@ module.exports = {
     versionsSection: (component) => locate(`$${component}-options`)
       .find('//div[contains(@data-qa, "-option")]'),
     versionSelectorFieldErrorMessage: (component) => `$${component}-field-error-message`,
-    errorMessageRequiredField: 'Required field',
-    defaultVersionSelectorFieldErrorMessage: '$select-field-error-message',
   },
 
   async getTotalSupportedVersions(component) {
