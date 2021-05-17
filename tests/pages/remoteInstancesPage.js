@@ -75,12 +75,13 @@ module.exports = {
     disableEnhancedMetrics: '//input[@name="disable_enhanced_metrics"]/following-sibling::span[2]',
     discoverBtn: '$credentials-search-button',
     discoveryResults: 'tbody[role="rowgroup"]',
+    doNotTrack: locate('label').withText('Don\'t track'),
     environment: '$environment-text-input',
     hostName: '$address-text-input',
     iframe: '//div[@class="panel-content"]//iframe',
     metricsPath: '$metrics_path-text-input',
     pageHeaderText: 'PMM Add Instance',
-    parseUrlButton: '$parse-url-button',
+    parseFromURLRadioButton: locate('label').withText('Parse from URL string'),
     password: '$password-password-input',
     portNumber: '$port-text-input',
     region: '$region-text-input',
@@ -89,6 +90,7 @@ module.exports = {
     replicationSet: '$replication_set-text-input',
     secretKeyInput: '$aws_secret_key-password-input',
     serviceName: '$serviceName-text-input',
+    setManualy: locate('label').withText('Set manually'),
     skipConnectionCheck: '//input[@name="skip_connection_check"]/following-sibling::span[2]',
     skipTLS: '//input[@name="tls_skip_verify"]',
     skipTLSL: '//input[@name="tls_skip_verify"]/following-sibling::span[2]',
@@ -106,7 +108,6 @@ module.exports = {
     returnToMenuButton: locate('span').withText('Return to menu'),
     requiredFieldHostname: locate('$address-field-error-message'),
     requiredFieldPort: locate('$port-field-error-message'),
-
   },
 
   tableStatsLimitRadioButtonLocator(limit) {
@@ -201,6 +202,15 @@ module.exports = {
         I.fillField(this.fields.portNumber, '42200');
         I.fillField(this.fields.environment, 'remote-external-service');
         I.fillField(this.fields.cluster, 'remote-external-cluster');
+        break;
+      case 'postgreDoNotTrack':
+      case 'postgresPGStatStatements':
+      case 'postgresPgStatMonitor':
+        I.fillField(this.fields.hostName, process.env.REMOTE_POSTGRESQL_HOST);
+        I.fillField(this.fields.userName, process.env.REMOTE_POSTGRESQL_USER);
+        I.fillField(this.fields.password, process.env.REMOTE_POSTGRESSQL_PASSWORD);
+        I.fillField(this.fields.serviceName, serviceName);
+        break;
     }
     adminPage.peformPageDown(1);
   },
@@ -313,9 +323,11 @@ module.exports = {
   },
 
   parseURL(url) {
+    I.waitForVisible(this.fields.parseFromURLRadioButton, 30);
+    I.click(this.fields.parseFromURLRadioButton);
     I.waitForVisible(this.fields.urlInput, 30);
     I.fillField(this.fields.urlInput, url);
-    I.click(this.fields.parseUrlButton);
+    I.click(this.fields.setManualy);
   },
 
   async checkParsing(metricsPath, credentials) {
