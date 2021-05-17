@@ -173,4 +173,20 @@ module.exports = {
     await dbaasAPI.waitForDbClusterDeleted(dbClusterName, k8sClusterName, 'MongoDB');
   },
 
+  async verifyInsufficientResources(resourceType, warningMessage) {
+    I.seeElement(
+      dbaasPage.tabs.dbClusterTab.advancedOptions.fields.resourceBarInsufficientResources(
+        resourceType,
+      ),
+    );
+    I.see(warningMessage,
+      dbaasPage.tabs.dbClusterTab.advancedOptions.fields.resourceBarInsufficientResources(
+        resourceType,
+      ));
+    await adminPage.verifyBackgroundColor(
+      dbaasPage.tabs.dbClusterTab.advancedOptions.fields.resourceBarResourceIndication(
+        resourceType,
+      ), 'rgb(224, 47, 68)',
+    );
+  },
 };

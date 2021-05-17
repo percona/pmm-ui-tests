@@ -88,6 +88,15 @@ module.exports = {
           nodesFieldErrorMessage: '$nodes-field-error-message',
           nodesNumberField: '$nodes-number-input',
           resourcesPerNode: (clusterSize) => `//label[contains(text(), "${clusterSize}")]`,
+          resourceBarCPU: '$dbcluster-resources-bar-cpu',
+          resourceBarMemory: '$dbcluster-resources-bar-memory',
+          resourceBarDisk: '$dbcluster-resources-bar-disk',
+          resourceBarInsufficientResources: (section) => locate(section)
+            .find('$resources-bar-insufficient-resources'),
+          resourceBarResourceIndication: (section) => locate(section)
+            .find('$resources-bar')
+            .find('div')
+            .at(1),
         },
       },
       fields: {
