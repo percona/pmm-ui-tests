@@ -20,9 +20,10 @@ Before(async ({ I, settingsAPI }) => {
 Data(azureServices).Scenario(
   'PMM-T744, PMM-T746, PMM-T748 - Verify adding monitoring for Azure @instances',
   async ({
-    I, remoteInstancesPage, pmmInventoryPage, current,
+    I, remoteInstancesPage, pmmInventoryPage, current, pmmSettingsPage 
   }) => {
     const serviceName = current.name;
+    const sectionNameToExpand = pmmSettingsPage.sectionTabsList.advanced;
 
     I.amOnPage(pmmSettingsPage.url);
     await pmmSettingsPage.waitForPmmSettingsPageLoaded();
@@ -43,7 +44,7 @@ Data(azureServices).Scenario(
 Scenario(
   'PMM-T747 - Verify enabling Azure flag @instances',
   async ({
-    I, pmmSettingsPage, remoteInstancesPage, settingsAPI,
+    I, pmmSettingsPage, remoteInstancesPage,
   }) => {
     const sectionNameToExpand = pmmSettingsPage.sectionTabsList.advanced;
 
