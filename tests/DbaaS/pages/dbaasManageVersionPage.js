@@ -25,7 +25,7 @@ module.exports = {
     cancelButton: '$kubernetes-components-versions-cancel',
     changeVersionSuccessMessage: 'Components versions updated successfully',
     component: '$kubernetes-component',
-    componentSelector: (component) => locate(this.manageVersion.component)
+    componentSelector: (component) => locate('$kubernetes-component')
       .find('span')
       .withText(component),
     defaultVersionSelector: '$kubernetes-default-version',
@@ -43,9 +43,9 @@ module.exports = {
       .withText('Recommended')
       .find('//preceding-sibling::span'),
     modalHeader: '$modal-header',
-    operatorSelector: (operator) => locate(this.manageVersion.operator)
+    operatorSelector: (operatorName) => locate('$kubernetes-operator')
       .find('span')
-      .withText(operator),
+      .withText(operatorName),
     operator: '$kubernetes-operator',
     saveButton: '$kubernetes-components-versions-save',
     versionCheckBox: (component, versionNumber) => locate(`$${component}-options`)

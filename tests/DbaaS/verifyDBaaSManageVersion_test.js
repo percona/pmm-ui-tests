@@ -105,7 +105,7 @@ Scenario('PMM-T765 Verify Manage Components Versions @dbaas',
     I.click(dbaasManageVersionPage.manageVersion.operator);
   });
 
-Data(versionVerification).Scenario('PMM-T765 Saving Custom Version for Dbaas Operators @dbaas',
+Data(versionVerification).Scenario('PMM-T760 PMM-T762 PMM-T770 Saving Custom Version for Dbaas Operators @dbaas',
   async ({
     I, dbaasPage, dbaasActionsPage, dbaasManageVersionPage, current,
   }) => {
@@ -170,7 +170,7 @@ Data(versionVerification).Scenario('PMM-T765 Saving Custom Version for Dbaas Ope
       defaultRecommendedVersion,
     );
 
-    // Save button should still be enabled now and error messages gone.
+    // Save button should be enabled now and error messages gone.
     I.dontSee(
       dbaasManageVersionPage.manageVersion.errorMessageRequiredField,
       dbaasManageVersionPage.manageVersion.defaultVersionSelectorFieldErrorMessage,

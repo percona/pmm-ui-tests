@@ -58,12 +58,12 @@ module.exports = {
           dbClusterDatabaseTypeFieldErrorMessage: '$select-field-error-message',
           dbClusterDatabaseVersionField: '$dbcluster-database-version-field',
           dbClusterDatabaseVersion: (version) => locate(
-            this.tabs.dbClusterTab.basicOptions.fields.dbClusterDatabaseVersionField,
+            '$dbcluster-database-version-field',
           )
             .find('span')
             .withText(version),
           defaultDbVersionValue: (version) => locate(
-            this.tabs.dbClusterTab.basicOptions.fields.dbClusterDatabaseVersionField,
+            '$dbcluster-database-version-field',
           )
             .find('div')
             .withText(version),
