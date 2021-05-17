@@ -32,6 +32,7 @@ versionVerification.add([
 Feature('DbaaS: Manage Version Action flows & validation');
 
 BeforeSuite(async ({ dbaasAPI }) => {
+  await dbaasAPI.apiUnregisterAllCluster();
   if (!await dbaasAPI.apiCheckRegisteredClusterExist(clusterName)) {
     await dbaasAPI.apiRegisterCluster(process.env.kubeconfig_minikube, clusterName);
   }
