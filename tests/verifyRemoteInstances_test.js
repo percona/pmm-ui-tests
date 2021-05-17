@@ -1,9 +1,15 @@
 const assert = require('assert');
-const page = require('./pages/remoteInstancesPage');
+
+const { remoteInstancesPage, pmmInventoryPage } = inject();
 
 const instances = new DataTable(['name']);
+const remotePostgreSQL = new DataTable(['instanceName', 'trackingOption', 'checkAgent']);
 
-for (const i of Object.keys(page.services)) {
+remotePostgreSQL.add(['postgreDoNotTrack', remoteInstancesPage.fields.doNotTrack, pmmInventoryPage.fields.postgresExporter]);
+remotePostgreSQL.add(['postgresPGStatStatements', remoteInstancesPage.fields.usePgStatStatements, pmmInventoryPage.fields.postgresPgStatements]);
+remotePostgreSQL.add(['postgresPgStatMonitor', remoteInstancesPage.fields.usePgStatMonitor, pmmInventoryPage.fields.postgresPgstatmonitor]);
+
+for (const i of Object.keys(remoteInstancesPage.services)) {
   instances.add([i]);
 }
 
@@ -180,5 +186,24 @@ Scenario(
     await pmmInventoryPage.checkAgentOtherDetailsSection('scheme:', 'scheme: http', serviceName, serviceId);
     await pmmInventoryPage.checkAgentOtherDetailsSection('metrics_path:', 'metrics_path: /metrics', serviceName, serviceId);
     await pmmInventoryPage.checkAgentOtherDetailsSection('listen_port:', 'listen_port: 42100', serviceName, serviceId);
+  },
+);
+
+Data(remotePostgreSQL).Scenario(
+  'PMM-T441 - Verify adding Remote PostgreSQL Instance @instances',
+  async ({
+    I, remoteInstancesPage, pmmInventoryPage, current,
+  }) => {
+    I.amOnPage(remoteInstancesPage.url);
+    remoteInstancesPage.waitUntilRemoteInstancesPageLoaded();
+    remoteInstancesPage.openAddRemotePage('postgresql');
+    remoteInstancesPage.fillRemoteFields(current.instanceName);
+    I.waitForVisible(remoteInstancesPage.fields.skipTLSL, 30);
+    I.click(remoteInstancesPage.fields.skipTLSL);
+    I.click(current.trackingOption);
+    I.click(remoteInstancesPage.fields.addService);
+    pmmInventoryPage.verifyRemoteServiceIsDisplayed(current.instanceName);
+    await pmmInventoryPage.verifyAgentHasStatusRunning(current.instanceName);
+    pmmInventoryPage.checkExistingAgent(current.checkAgent);
   },
 );
