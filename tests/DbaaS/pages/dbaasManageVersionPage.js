@@ -93,7 +93,7 @@ module.exports = {
   },
 
   // Checkbox for version selector is a psuedo element, very difficult to track if checked or not
-  async setAllVersions(component, versions) {
+  async setVersions(component, versions) {
     versions.forEach((version) => {
       this.setSpecificVersion(component, version);
     });

@@ -135,7 +135,7 @@ Data(versionVerification).Scenario('PMM-T765 Saving Custom Version for Dbaas Ope
     const getRecommendedVersions = await dbaasManageVersionPage.getAllRecommendedVersions(component);
 
     // Select Recommended Versions
-    await dbaasManageVersionPage.setAllVersions(component, getRecommendedVersions);
+    await dbaasManageVersionPage.setVersions(component, getRecommendedVersions);
 
     // Error Message on Version Selector Should be gone
     I.dontSee(
