@@ -14,6 +14,7 @@ Feature('Monitoring Azure MySQL and PostgreSQL DB');
 
 Before(async ({ I }) => {
   await I.Authorize();
+  await settingsAPI.restoreSettingsDefaults();
 });
 
 Data(azureServices).Scenario(
@@ -23,7 +24,10 @@ Data(azureServices).Scenario(
   }) => {
     const serviceName = current.name;
 
-    await settingsAPI.enableAzure();
+    I.amOnPage(pmmSettingsPage.url);
+    await pmmSettingsPage.waitForPmmSettingsPageLoaded();
+    await pmmSettingsPage.expandSection(sectionNameToExpand, pmmSettingsPage.fields.advancedButton);
+    pmmSettingsPage.switchAzure();
     I.amOnPage(remoteInstancesPage.url);
     remoteInstancesPage.openAddAzure();
     remoteInstancesPage.discoverAzure();
@@ -44,7 +48,6 @@ Scenario(
     const sectionNameToExpand = pmmSettingsPage.sectionTabsList.advanced;
 
     I.amOnPage(pmmSettingsPage.url);
-    await settingsAPI.restoreSettingsDefaults();
     await pmmSettingsPage.waitForPmmSettingsPageLoaded();
     await pmmSettingsPage.expandSection(sectionNameToExpand, pmmSettingsPage.fields.advancedButton);
     pmmSettingsPage.verifySwitch(pmmSettingsPage.fields.microsoftAzureMonitoringSwitchInput, 'off');
