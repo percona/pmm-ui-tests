@@ -204,7 +204,8 @@ Data(remotePostgreSQL).Scenario(
     I.click(remoteInstancesPage.fields.addService);
     pmmInventoryPage.verifyRemoteServiceIsDisplayed(current.instanceName);
     // add postgresPgStatMonitor check after fix https://jira.percona.com/browse/PMM-8054
-    if (current.instanceName !== 'postgresPgStatMonitor') {
+    // change after https://jira.percona.com/browse/PMM-8102
+    if (current.instanceName === 'postgreDoNotTrack') {
       await pmmInventoryPage.verifyAgentHasStatusRunning(current.instanceName);
     }
 
