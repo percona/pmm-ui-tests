@@ -232,9 +232,9 @@ module.exports = {
   },
 
   openAddAzure() {
-    I.waitForVisible(this.fields.addAzureMySQLPostgreSQL, 30);
+    I.waitForVisible(this.fields.addAzureMySQLPostgreSQL, 10);
     I.click(this.fields.addAzureMySQLPostgreSQL);
-    I.waitForVisible(this.fields.clientID, 30);
+    I.waitForVisible(this.fields.clientID, 10);
   },
 
   discoverAzure() {
