@@ -12,7 +12,7 @@ azureServices.add(['azure-PostgreSQL', 'pmm2-qa-postgresql']);
 
 Feature('Monitoring Azure MySQL and PostgreSQL DB');
 
-Before(async ({ I, settingsAPI }) => {
+Before(async ({ I }) => {
   await I.Authorize();
   await settingsAPI.restoreSettingsDefaults();
 });
@@ -20,7 +20,7 @@ Before(async ({ I, settingsAPI }) => {
 Data(azureServices).Scenario(
   'PMM-T744, PMM-T746, PMM-T748 - Verify adding monitoring for Azure @instances',
   async ({
-    I, remoteInstancesPage, pmmInventoryPage, current,
+    I, remoteInstancesPage, pmmInventoryPage, settingsAPI, current,
   }) => {
     const serviceName = current.name;
 
