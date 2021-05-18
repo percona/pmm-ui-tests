@@ -708,8 +708,9 @@ module.exports = {
     rootUser: '//div[contains(text(), "root")]',
     dataLinkForRoot: '//div[contains(text(), "Data links")]/..//a',
     navbarLocator: '.navbar-page-btn',
-    serviceSummary: locate('div').withText('Service Summary'),
-    panelLoading:  locate('div').withAttr({ class: 'panel-loading' }),
+    serviceSummary: locate('a').withText('Service Summary'),
+    serviceSummaryContent: locate('pre').withText('Percona Toolkit MySQL Summary Report'),
+    panelLoading: locate('div').withAttr({ class: 'panel-loading' }),
   },
 
   createAdvancedDataExplorationURL(metricName, time = '1m', nodeName = 'All') {

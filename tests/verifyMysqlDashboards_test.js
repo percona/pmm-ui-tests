@@ -141,13 +141,13 @@ Scenario(
   },
 );
 
-Scenario.only(
+Scenario(
   'PMM-T671 - Verify MySQL summary is displayed on MySQL Instance Summary dashboard @nightly',
   async ({ I, dashboardPage }) => {
     I.amOnPage(dashboardPage.mysqlInstanceSummaryDashboard.url);
     dashboardPage.waitForDashboardOpened();
-    I.waitForVisible(dashboardPage.fields.serviceSummary,30);
+    I.waitForVisible(dashboardPage.fields.serviceSummary, 30);
     I.click(dashboardPage.fields.serviceSummary);
-    I.waitForInvisible(dashboardPage.fields.panelLoading, 90);
+    I.waitForVisible(dashboardPage.fields.serviceSummaryContent, 90);
   },
 );
