@@ -367,6 +367,9 @@ module.exports = {
       'Total Mongos Operations',
     ],
   },
+  mongoDbInstanceSummaryDashboard: {
+    url: 'graph/d/mongodb-instance-summary/mongodb-instance-summary',
+  },
   mysqlInstanceSummaryDashboard: {
     url: 'graph/d/mysql-instance-summary/mysql-instance-summary?orgId=1&refresh=1m&from=now-5m&to=now',
     metrics: [
@@ -694,6 +697,8 @@ module.exports = {
     notAvailableMetrics: '//span[contains(text(), "N/A")]',
     notAvailableDataPoints: '//div[contains(text(),"No data")]',
     metricTitle: '//div[@class="panel-title"]',
+    mongoDBServiceSummaryContent: locate('pre').withText('Percona Toolkit MySQL Summary Report'),
+    mySQLServiceSummaryContent: locate('pre').withText('Percona Toolkit MySQL Summary Report'),
     reportTitleWithNA:
       '//span[contains(text(), "N/A")]//ancestor::div[contains(@class,"panel-container")]//span[contains(@class,"panel-title-text")]',
     reportTitleWithNoData:
@@ -709,7 +714,6 @@ module.exports = {
     dataLinkForRoot: '//div[contains(text(), "Data links")]/..//a',
     navbarLocator: '.navbar-page-btn',
     serviceSummary: locate('a').withText('Service Summary'),
-    serviceSummaryContent: locate('pre').withText('Percona Toolkit MySQL Summary Report'),
     panelLoading: locate('div').withAttr({ class: 'panel-loading' }),
   },
 

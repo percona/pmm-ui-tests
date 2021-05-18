@@ -148,6 +148,6 @@ Scenario(
     dashboardPage.waitForDashboardOpened();
     I.waitForVisible(dashboardPage.fields.serviceSummary, 30);
     I.click(dashboardPage.fields.serviceSummary);
-    I.waitForVisible(dashboardPage.fields.serviceSummaryContent, 90);
+    I.waitForVisible(dashboardPage.fields.mySQLServiceSummaryContent, 90);
   },
 );
