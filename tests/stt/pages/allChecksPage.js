@@ -1,5 +1,6 @@
 // xpath used here because locate('td').withText('') method does not work correctly
 const checkRow = (checkName) => `//tr[td[text()="${checkName}"]]`;
+const actionButton = (checkName) => locate(checkRow(checkName)).find('td').last().find('button');
 
 module.exports = {
   url: 'graph/pmm-database-checks/allChecks',
@@ -9,10 +10,17 @@ module.exports = {
     statusCellByName: (checkName) => locate(checkRow(checkName)).find('td').at(3),
     intervalCellByName: (checkName) => locate(checkRow(checkName)).find('td').at(4),
     tableBody: '$db-checks-all-checks-tbody',
+    modalContent: '$modal-content',
   },
   buttons: {
-    disableEnableCheck: (checkName) => locate(checkRow(checkName)).find('td').last().find('button')
-      .first(),
+    disableEnableCheck: (checkName) => actionButton(checkName).first(),
+    openChangeInterval: (checkName) => actionButton(checkName).last(),
+    intervalValue: (intervalName) => locate('label').withText(intervalName),
+    applyIntervalChange: '$change-check-interval-modal-save',
+  },
+  messages: {
+    successIntervalChange: (checkName) => `Interval changed for ${checkName}`,
+    changeIntervalText: (checkName) => `Set interval for ${checkName}`,
   },
   checks: [{
     name: 'MySQL Empty Password',
@@ -38,6 +46,11 @@ module.exports = {
   }, {
     name: 'MongoDB Authentication',
     description: 'This check returns warnings if MongoDB authentication is disabled.',
+    status: 'Enabled',
+    interval: 'Standard',
+  }, {
+    name: 'MongoDB CVE Version',
+    description: 'This check returns errors if MongoDB or Percona Server for MongoDB version is less than the latest one with CVE fixes.',
     status: 'Enabled',
     interval: 'Standard',
   }, {

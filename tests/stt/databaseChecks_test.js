@@ -1,7 +1,9 @@
 const {
-  I, allChecksPage, databaseChecksPage, codeceptjsConfig,
+  I, allChecksPage, databaseChecksPage, codeceptjsConfig, perconaServerDB,
 } = inject();
 const config = codeceptjsConfig.config.helpers.Playwright;
+const connection = perconaServerDB.defaultConnection;
+let nodeID;
 
 const urls = new DataTable(['url']);
 
@@ -10,12 +12,22 @@ urls.add([allChecksPage.url]);
 
 Feature('Database Failed Checks').retry(2);
 
+BeforeSuite(async ({ addInstanceAPI }) => {
+  const instance = await addInstanceAPI.apiAddInstance(addInstanceAPI.instanceTypes.mysql, 'stt-failed-checks-mysql-5.7.30', connection);
+
+  nodeID = instance.service.node_id;
+});
+
+AfterSuite(async ({ inventoryAPI }) => {
+  if (nodeID) await inventoryAPI.deleteNode(nodeID, true);
+});
+
 Before(async ({ I }) => {
   await I.Authorize();
 });
 
 Scenario(
-  'PMM-T294 Verify user is able to see message about Disabled STT in Checks panel at Home Page [critical] @stt @not-pr-pipeline',
+  'PMM-T294 Verify user is able to see message about Disabled STT in Checks panel at Home Page [critical] @stt',
   async ({
     I, homePage, databaseChecksPage, settingsAPI,
   }) => {
@@ -30,7 +42,7 @@ Scenario(
 );
 
 Data(urls).Scenario(
-  'PMM-T295 PMM-T276 PMM-T470 Verify user is able to see message about Disabled STT at Database Checks page [critical] @stt @not-pr-pipeline',
+  'PMM-T295 PMM-T276 PMM-T470 Verify user is able to see message about Disabled STT at Database Checks page [critical] @stt',
   async ({
     I, databaseChecksPage, pmmSettingsPage, settingsAPI, current,
   }) => {
@@ -51,7 +63,7 @@ Data(urls).Scenario(
 
 // TODO: need to add functions to access pages via left side menu
 xScenario(
-  'PMM-T233 PMM-T234 Verify user is able to access PMM Database Checks through UI and with URL [critical] @stt @not-pr-pipeline',
+  'PMM-T233 PMM-T234 Verify user is able to access PMM Database Checks through UI and with URL [critical] @stt',
   async ({
     I, adminPage, databaseChecksPage, pmmSettingsPage, settingsAPI, securityChecksAPI,
   }) => {
@@ -67,7 +79,7 @@ xScenario(
 );
 
 Scenario(
-  'PMM-T233 Verify user can see Number of failed checks at Home Page and open PMM Database Checks page from it [critical] @stt @not-pr-pipeline',
+  'PMM-T233 Verify user can see Number of failed checks at Home Page and open PMM Database Checks page from it [critical] @stt',
   async ({
     I, homePage, databaseChecksPage, settingsAPI, securityChecksAPI,
   }) => {
@@ -82,7 +94,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T236 Verify user is able to hover Failed Checks values and see tooltip [minor] @stt @not-pr-pipeline',
+  'PMM-T236 Verify user is able to hover Failed Checks values and see tooltip [minor] @stt',
   async ({
     I, databaseChecksPage, settingsAPI, securityChecksAPI,
   }) => {
@@ -98,14 +110,10 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T241 Verify user can see correct service name for failed checks [critical] @stt @not-pr-pipeline',
-  async ({
-    I, databaseChecksPage, settingsAPI, securityChecksAPI,
-  }) => {
+  'PMM-T241 Verify user can see correct service name for failed checks [critical] @stt',
+  async ({ databaseChecksPage, settingsAPI }) => {
     await settingsAPI.apiEnableSTT();
-    await securityChecksAPI.waitForSecurityChecksResults(20);
-    I.amOnPage(databaseChecksPage.url);
-    await databaseChecksPage.verifyDatabaseChecksPageOpened();
+    await databaseChecksPage.runDBChecks();
     await databaseChecksPage.verifyServiceNamesExistence();
   },
 );

@@ -22,6 +22,9 @@ module.exports = {
     tableRow: '//tr[@data-qa="table-row"]',
     runningStatus: '//span[contains(text(), "RUNNING")]',
     externalExporter: locate('td').withText('External exporter'),
+    postgresExporter: locate('td').withText('Postgres exporter'),
+    postgresPgStatements: locate('td').withText('QAN PostgreSQL PgStatements'),
+    postgresPgstatmonitor: locate('td').withText('QAN PostgreSQL Pgstatmonitor'),
   },
 
   verifyOldMySQLRemoteServiceIsDisplayed(serviceName) {
@@ -280,5 +283,10 @@ module.exports = {
         tmp = cellValue;
       }
     }
+  },
+
+  checkExistingAgent(agent) {
+    I.click(this.fields.agentsLink);
+    I.waitForVisible(agent, 30);
   },
 };
