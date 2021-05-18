@@ -66,7 +66,7 @@ module.exports = {
   },
 
   waitForFiltersToLoad() {
-    I.waitForInvisible(this.elements.spinner, 60);
+    I.waitForDetached(this.elements.spinner, 60);
   },
 
   async expandAllFilters() {
@@ -91,7 +91,7 @@ module.exports = {
     I.fillField(this.fields.filterBy, filterName);
     I.waitForVisible(filterToApply, 20);
     I.forceClick(filterToApply);
-    I.waitForInvisible(this.elements.spinner, 30);
+    I.waitForDetached(this.elements.spinner, 30);
     I.waitForElement(this.fields.filterBy, 30);
     // workaround for clearing the field completely
     I.forceClick(this.fields.filterBy);
