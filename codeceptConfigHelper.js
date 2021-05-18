@@ -23,7 +23,7 @@ module.exports = {
     mysqlTableDetailsPage: './tests/pages/mysqlTableDetailsPage.js',
     links: './linksHelper.js',
     ncPage: './tests/ia/pages/notificationChannelsPage.js',
-    perconaServerDB: './tests/stt/pages/api/perconaServerDB.js',
+    perconaServerDB: './tests/DbHelpers/perconaServerDB.js',
     pmmDemoPage: './tests/pages/pmmDemoPage.js',
     pmmInventoryPage: './tests/pages/pmmInventoryPage.js',
     pmmSettingsPage: './tests/pages/pmmSettingsPage.js',
