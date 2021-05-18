@@ -88,4 +88,4 @@ Data(filters).Scenario('PMM-T746, PMM-T748 - Verify adding monitoring for Azure 
   const count = await qanOverview.getCountOfItems();
 
   assert.ok(count > 0, `QAN queries for added Azure service with env as ${current.filter} does not exist`);
-}).retry(2);
+}).retry(3);
