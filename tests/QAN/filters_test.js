@@ -166,6 +166,7 @@ Scenario(
 );
 
 Scenario('PMM-T190 - Verify user is able to see n/a filter @qan', async ({ I, qanFilters }) => {
+  qanFilters.waitForFiltersToLoad();
   I.fillField(qanFilters.fields.filterBy, 'n/a');
   await qanFilters.verifyCountOfFilterLinks(0, true);
 });

@@ -34,6 +34,7 @@ Scenario(
   async ({ adminPage, qanOverview }) => {
     await qanOverview.changeGroupBy('Client Host');
     adminPage.applyTimeRange('Last 24 hours');
+    qanOverview.waitForOverviewLoaded();
     qanOverview.verifyGroupByIs('Client Host');
   },
 );
@@ -43,6 +44,7 @@ Scenario(
   async ({ adminPage, qanOverview }) => {
     await qanOverview.changeSorting(1);
     adminPage.applyTimeRange('Last 24 hours');
+    qanOverview.waitForOverviewLoaded();
     qanOverview.verifySorting(1, 'desc');
   },
 );
