@@ -44,7 +44,7 @@ Scenario(
     await dashboardPage.verifyThereAreNoGraphsWithNA();
     await dashboardPage.verifyThereAreNoGraphsWithoutData();
   },
-).retry(2);
+).retry(1);
 
 Scenario(
   'PMM-T716 - Verify QAN for Postgres RDS added via UI @instances',
@@ -59,4 +59,4 @@ Scenario(
 
     assert.ok(count > 0, 'The queries for added RDS Postgres do NOT exist');
   },
-).retry(2);
+).retry(1);
