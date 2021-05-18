@@ -133,7 +133,7 @@ module.exports = {
     const showAllLink = this.getFilterGroupCountSelector(groupName);
 
     I.waitForVisible(showAllLink, 30);
-    I.click(showAllLink);
+    I.forceClick(showAllLink);
   },
 
   async applyShowTop5Link(groupName) {

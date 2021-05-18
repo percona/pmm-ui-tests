@@ -7,7 +7,7 @@ shortCutTests.add(['Replication Set', 'MySQL Replication Summary', 'graph/d/mysq
 shortCutTests.add(['Node Name', 'Node Summary', 'graph/d/node-instance-summary/node-summary?var-node_name=pmm-server', 'pmm-server']);
 shortCutTests.add(['Service Name', 'MongoDB Instance Summary', 'graph/d/mongodb-instance-summary/mongodb-instance-summary', 'mongodb_rs1_2']);
 
-Feature('QAN filters');
+Feature('QAN filters').retry(1);
 
 Before(async ({ I, qanPage, qanOverview }) => {
   await I.Authorize();
@@ -22,6 +22,7 @@ Scenario(
 
     const countBefore = await qanOverview.getCountOfItems();
 
+    qanFilters.waitForFiltersToLoad();
     qanFilters.applyFilter(serviceName);
     I.seeInCurrentUrl(`service_name=${serviceName}`);
     const countAfter = await qanOverview.getCountOfItems();
