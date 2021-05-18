@@ -243,6 +243,7 @@ Data(shortCutTests).Scenario(
     const header = current.dashboard;
     const filterValue = current.filter;
 
+    qanFilters.waitForFiltersToLoad();
     I.fillField(qanFilters.fields.filterBy, filterValue);
     await qanFilters.verifyShortcutAttributes(shortCutLink, filterValue);
 
@@ -259,6 +260,8 @@ Data(shortCutTests).Scenario(
 );
 
 Scenario('PMM-T437 - Verify short-cut navigation for n/a items @qan', async ({ I, qanFilters }) => {
+
+  qanFilters.waitForFiltersToLoad();
   qanFilters.applyShowAllLink('Cluster');
   qanFilters.checkLink('Cluster', 'ps-dev-cluster', true);
   I.fillField(qanFilters.fields.filterBy, 'n/a');

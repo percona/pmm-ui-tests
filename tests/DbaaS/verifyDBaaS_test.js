@@ -225,7 +225,7 @@ Scenario('PMM-T456 Verify Create Cluster steps validation fields disabled/enable
 
 Data(inputFields).Scenario('PMM-T456 Verify Create Cluster steps validation - field input validation @dbaas @nightly',
   async ({
-    I, dbaasPage, dbaasAPI, adminPage, current,
+    I, dbaasPage, dbaasAPI, adminPage, current, dbaasManageVersionPage,
   }) => {
     if (!await dbaasAPI.apiCheckRegisteredClusterExist(clusterName)) {
       await dbaasAPI.apiRegisterCluster(process.env.kubeconfig_minikube, clusterName);
@@ -235,6 +235,7 @@ Data(inputFields).Scenario('PMM-T456 Verify Create Cluster steps validation - fi
     dbaasPage.checkCluster(clusterName, false);
     I.click(dbaasPage.tabs.dbClusterTab.dbClusterTab);
     I.waitForElement(dbaasPage.tabs.dbClusterTab.dbClusterAddButtonTop, 30);
+    I.waitForDetached(dbaasManageVersionPage.loader, 30);
     I.click(dbaasPage.tabs.dbClusterTab.dbClusterAddButtonTop);
     I.waitForElement(dbaasPage.tabs.dbClusterTab.optionsCountLocator(2), 30);
     I.click(dbaasPage.tabs.dbClusterTab.optionsCountLocator(2));
