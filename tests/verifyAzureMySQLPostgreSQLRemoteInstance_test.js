@@ -44,7 +44,7 @@ Scenario(
     const sectionNameToExpand = pmmSettingsPage.sectionTabsList.advanced;
 
     I.amOnPage(pmmSettingsPage.url);
-    await settingsAPI.restoreSettingsDefaults();
+    await settingsAPI.disableAzure();
     await pmmSettingsPage.waitForPmmSettingsPageLoaded();
     await pmmSettingsPage.expandSection(sectionNameToExpand, pmmSettingsPage.fields.advancedButton);
     pmmSettingsPage.verifySwitch(pmmSettingsPage.fields.microsoftAzureMonitoringSwitchInput, 'off');
@@ -87,5 +87,5 @@ Data(filters).Scenario('PMM-T746, PMM-T748 - Verify adding monitoring for Azure 
   qanOverview.waitForOverviewLoaded();
   const count = await qanOverview.getCountOfItems();
 
-  assert.ok(count > 0, `QAN queries for added Azure mysql service with env as ${current.filter} does not exist`);
+  assert.ok(count > 0, `QAN queries for added Azure service with env as ${current.filter} does not exist`);
 }).retry(2);
