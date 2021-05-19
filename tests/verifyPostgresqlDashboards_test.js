@@ -32,3 +32,14 @@ Scenario(
     await dashboardPage.verifyThereAreNoGraphsWithoutData(1);
   },
 );
+
+Scenario(
+  'PMM-T666 - Verify displaying of pt-pg-summary on PostgreSQL Summary dashboard @nightly',
+  async ({ I, dashboardPage }) => {
+    I.amOnPage(dashboardPage.postgresqlInstanceSummaryDashboard.url);
+    dashboardPage.waitForDashboardOpened();
+    I.waitForVisible(dashboardPage.fields.serviceSummary, 30);
+    I.click(dashboardPage.fields.serviceSummary);
+    I.waitForVisible(dashboardPage.fields.postgreSQLServiceSummaryContent, 90);
+  },
+);

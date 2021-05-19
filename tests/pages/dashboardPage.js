@@ -694,27 +694,28 @@ module.exports = {
   },
 
   fields: {
+    annotationMarker: '(//div[contains(@class,"events_marker")])',
+    clearSelection: '//a[@ng-click="vm.clearSelections()"]',
+    collapsedDashboardRow: '//div[@class="dashboard-row dashboard-row--collapsed"]/a',
+    dataLinkForRoot: '//div[contains(text(), "Data links")]/..//a',
+    Last2Days: '//span[contains(text(), "Last 2 days")]',
+    navbarLocator: '.navbar-page-btn',
     notAvailableMetrics: '//span[contains(text(), "N/A")]',
     notAvailableDataPoints: '//div[contains(text(),"No data")]',
     metricTitle: '//div[@class="panel-title"]',
     mongoDBServiceSummaryContent: locate('pre').withText('Mongo Executable'),
     mySQLServiceSummaryContent: locate('pre').withText('Percona Toolkit MySQL Summary Report'),
+    otherReportTitleWithNoData:
+    '//span[contains(text(),"No Data")]//ancestor::div[contains(@class,"panel-container")]//span[contains(@class,"panel-title-text")]',
+    panelLoading: locate('div').withAttr({ class: 'panel-loading' }),
     reportTitleWithNA:
       '//span[contains(text(), "N/A")]//ancestor::div[contains(@class,"panel-container")]//span[contains(@class,"panel-title-text")]',
     reportTitleWithNoData:
       '//div[contains(text(),"No data")]//ancestor::div[contains(@class,"panel-container")]//span[contains(@class,"panel-title-text")]',
-    otherReportTitleWithNoData:
-      '//span[contains(text(),"No Data")]//ancestor::div[contains(@class,"panel-container")]//span[contains(@class,"panel-title-text")]',
-    collapsedDashboardRow: '//div[@class="dashboard-row dashboard-row--collapsed"]/a',
-    annotationMarker: '(//div[contains(@class,"events_marker")])',
-    clearSelection: '//a[@ng-click="vm.clearSelections()"]',
-    Last2Days: '//span[contains(text(), "Last 2 days")]',
-    timeRangePickerButton: '.btn.navbar-button.navbar-button--tight',
     rootUser: '//div[contains(text(), "root")]',
-    dataLinkForRoot: '//div[contains(text(), "Data links")]/..//a',
-    navbarLocator: '.navbar-page-btn',
+    postgreSQLServiceSummaryContent: locate('pre').withText('Detected PostgreSQL version:'),
     serviceSummary: locate('a').withText('Service Summary'),
-    panelLoading: locate('div').withAttr({ class: 'panel-loading' }),
+    timeRangePickerButton: '.btn.navbar-button.navbar-button--tight',
   },
 
   createAdvancedDataExplorationURL(metricName, time = '1m', nodeName = 'All') {
