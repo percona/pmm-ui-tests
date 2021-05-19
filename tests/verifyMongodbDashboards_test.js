@@ -37,5 +37,6 @@ Scenario(
     dashboardPage.waitForDashboardOpened();
     I.waitForVisible(dashboardPage.fields.serviceSummary, 30);
     I.click(dashboardPage.fields.serviceSummary);
+    I.waitForVisible(dashboardPage.fields.mongoDBServiceSummaryContent, 90);
   },
 );

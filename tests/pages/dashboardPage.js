@@ -697,7 +697,7 @@ module.exports = {
     notAvailableMetrics: '//span[contains(text(), "N/A")]',
     notAvailableDataPoints: '//div[contains(text(),"No data")]',
     metricTitle: '//div[@class="panel-title"]',
-    mongoDBServiceSummaryContent: locate('pre').withText('Percona Toolkit MySQL Summary Report'),
+    mongoDBServiceSummaryContent: locate('pre').withText('Mongo Executable'),
     mySQLServiceSummaryContent: locate('pre').withText('Percona Toolkit MySQL Summary Report'),
     reportTitleWithNA:
       '//span[contains(text(), "N/A")]//ancestor::div[contains(@class,"panel-container")]//span[contains(@class,"panel-title-text")]',
