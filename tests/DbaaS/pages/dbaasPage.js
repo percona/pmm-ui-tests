@@ -1,5 +1,5 @@
 const {
-  I, dbaasAPI, dbaasActionsPage,
+  I, dbaasAPI, dbaasActionsPage, dbaasManageVersionPage,
 } = inject();
 const assert = require('assert');
 
@@ -35,6 +35,7 @@ module.exports = {
       tableLoading: '$table-loading',
       unregisterButton: locate('$dropdown-menu-menu').find('span').at(1),
       viewClusterConfiguration: locate('$dropdown-menu-menu').find('span').at(2),
+      manageVersions: locate('$dropdown-menu-menu').find('span').at(3),
     },
     dbClusterTab: {
       defaultPassword: '***************',
@@ -55,6 +56,17 @@ module.exports = {
           dbClusterDatabaseTypeInputField: locate('$dbcluster-database-type-field').find('input'),
           dbClusterDatabaseTypeFieldSelect: (dbtype) => `//div[@aria-label='Select option']//span[contains(@text, ${dbtype})]`,
           dbClusterDatabaseTypeFieldErrorMessage: '$select-field-error-message',
+          dbClusterDatabaseVersionField: '$dbcluster-database-version-field',
+          dbClusterDatabaseVersion: (version) => locate(
+            '$dbcluster-database-version-field',
+          )
+            .find('span')
+            .withText(version),
+          defaultDbVersionValue: (version) => locate(
+            '$dbcluster-database-version-field',
+          )
+            .find('div')
+            .withText(version),
           kubernetesClusterDropDown: '$dbcluster-kubernetes-cluster-field',
           kubernetesClusterDropDownSelect: (clusterName) => `//div[@aria-label='Select option']//span[contains(@text, ${clusterName})]`,
           kubernetesClusterErrorMessage: '$select-field-error-message',
@@ -76,6 +88,15 @@ module.exports = {
           nodesFieldErrorMessage: '$nodes-field-error-message',
           nodesNumberField: '$nodes-number-input',
           resourcesPerNode: (clusterSize) => `//label[contains(text(), "${clusterSize}")]`,
+          resourceBarCPU: '$dbcluster-resources-bar-cpu',
+          resourceBarMemory: '$dbcluster-resources-bar-memory',
+          resourceBarDisk: '$dbcluster-resources-bar-disk',
+          resourceBarInsufficientResources: (section) => locate(section)
+            .find('$resources-bar-insufficient-resources'),
+          resourceBarResourceIndication: (section) => locate(section)
+            .find('$resources-bar')
+            .find('div')
+            .at(1),
         },
       },
       fields: {
@@ -122,21 +143,30 @@ module.exports = {
     },
   },
   clusterConfiguration: {
-    small: {
-      memory: 2,
-      cpu: 1,
-      disk: 25,
+    Small: {
+      memory: '2',
+      cpu: '1',
+      disk: '25',
     },
-    medium: {
-      memory: 8,
-      cpu: 4,
-      disk: 100,
+    Medium: {
+      memory: '8',
+      cpu: '4',
+      disk: '100',
     },
-    large: {
-      memory: 32,
-      cpu: 8,
-      disk: 500,
+    Large: {
+      memory: '32',
+      cpu: '8',
+      disk: '500',
     },
+    Custom: {
+      memory: '2',
+      cpu: '1',
+      disk: '25',
+    },
+  },
+  clusterDashboardUrls: {
+    pxcDashboard: (dbClusterName) => `/graph/d/pxc-cluster-summary/pxc-galera-cluster-summary?var-cluster=${dbClusterName}-pxc`,
+    psmdbDashboard: (dbClusterName) => `/graph/d/mongodb-cluster-summary/mongodb-cluster-summary?var-cluster=${dbClusterName}`,
   },
 
   checkCluster(cluserName, deleted) {
@@ -212,7 +242,6 @@ module.exports = {
       await dbaasAPI.waitForXtraDbClusterReady(dbClusterName, k8sClusterName);
     } else {
       await dbaasAPI.waitForPSMDBClusterReady(dbClusterName, k8sClusterName);
-      await dbaasPage.waitForDbClusterTab(k8sClusterName);
     }
 
     I.waitForElement(dbaasPage.tabs.dbClusterTab.fields.clusterStatusActive, 60);
@@ -235,6 +264,7 @@ module.exports = {
     dbaasPage.checkCluster(clusterName, false);
     I.click(dbaasPage.tabs.dbClusterTab.dbClusterTab);
     I.waitForElement(dbaasPage.tabs.dbClusterTab.dbClusterAddButtonTop, 30);
+    I.waitForDetached(dbaasManageVersionPage.loader, 30);
   },
 
   async waitForKubernetesClusterTab(k8sClusterName) {
@@ -303,6 +333,13 @@ module.exports = {
     assert.ok(
       parameterDisplayed === value,
       `Expected the k8s Cluster ${type} to show ${value} but found ${parameterDisplayed}`,
+    );
+  },
+
+  async validateResourcesField(field, resourcePerNode, value) {
+    assert.ok(
+      this.clusterConfiguration[resourcePerNode][field] === value,
+      `Expected Resource field ${field} to have ${this.clusterConfiguration[resourcePerNode][field]} but found ${value}`,
     );
   },
 

@@ -103,7 +103,19 @@ module.exports = {
     I.waitForElement(
       dbaasPage.tabs.dbClusterTab.advancedOptions.fields.clusterTopology(configuration.topology), 30,
     );
+    I.seeAttributesOnElements(
+      dbaasPage.tabs.dbClusterTab.advancedOptions.fields.diskSizeInputField,
+      { disabled: true },
+    );
     I.click(dbaasPage.tabs.dbClusterTab.advancedOptions.fields.clusterTopology(configuration.topology));
+    if (configuration.numberOfNodes) {
+      adminPage.customClearField(dbaasPage.tabs.dbClusterTab.advancedOptions.fields.nodesNumberField);
+      I.fillField(
+        dbaasPage.tabs.dbClusterTab.advancedOptions.fields.nodesNumberField,
+        configuration.numberOfNodes,
+      );
+    }
+
     if (configuration.resourcePerNode === 'Custom') {
       I.click(
         dbaasPage.tabs.dbClusterTab.advancedOptions.fields.resourcesPerNode(configuration.resourcePerNode),
@@ -161,4 +173,20 @@ module.exports = {
     await dbaasAPI.waitForDbClusterDeleted(dbClusterName, k8sClusterName, 'MongoDB');
   },
 
+  async verifyInsufficientResources(resourceType, warningMessage) {
+    I.seeElement(
+      dbaasPage.tabs.dbClusterTab.advancedOptions.fields.resourceBarInsufficientResources(
+        resourceType,
+      ),
+    );
+    I.see(warningMessage,
+      dbaasPage.tabs.dbClusterTab.advancedOptions.fields.resourceBarInsufficientResources(
+        resourceType,
+      ));
+    await adminPage.verifyBackgroundColor(
+      dbaasPage.tabs.dbClusterTab.advancedOptions.fields.resourceBarResourceIndication(
+        resourceType,
+      ), 'rgb(224, 47, 68)',
+    );
+  },
 };
