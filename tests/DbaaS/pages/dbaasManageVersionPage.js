@@ -58,7 +58,9 @@ module.exports = {
   },
 
   async getTotalSupportedVersions(component) {
-    const numOfElements = await I.grabNumberOfVisibleElements(this.manageVersion.versionsSection(component));
+    const numOfElements = await I.grabNumberOfVisibleElements(
+      this.manageVersion.versionsSection(component)
+    );
 
     return numOfElements;
   },
