@@ -1,9 +1,12 @@
 Feature('QAN overview').retry(1);
 
-Before(async ({ I, qanPage, qanOverview }) => {
+Before(async ({
+  I, qanPage, qanOverview, qanFilters,
+}) => {
   await I.Authorize();
   I.amOnPage(qanPage.url);
   qanOverview.waitForOverviewLoaded();
+  qanFilters.waitForFiltersToLoad();
 });
 
 Scenario(

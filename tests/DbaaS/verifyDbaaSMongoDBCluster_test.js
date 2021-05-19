@@ -142,8 +142,6 @@ Scenario('PMM-T509 Verify Deleting Mongo Db Cluster in Pending Status is possibl
 
     // Using API delete call to check if this is still possible
     await dbaasAPI.apiDeletePSMDBCluster(psmdb_cluster_pending_delete, clusterName);
-    I.refreshPage();
     await dbaasPage.waitForDbClusterTab(clusterName);
-    I.waitForElement(dbaasPage.tabs.dbClusterTab.fields.clusterStatusDeleting, 30);
     await dbaasAPI.waitForDbClusterDeleted(psmdb_cluster_pending_delete, clusterName, 'MongoDB');
   });
