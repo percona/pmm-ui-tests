@@ -126,7 +126,8 @@ xScenario('PMM-T525 PMM-T528 Verify Suspend & Resume for Mongo DB Cluster Works 
     await dbaasActionsPage.deletePSMDBCluster(psmdb_cluster_suspend_resume, clusterName);
   });
 
-Scenario('PMM-T509 Verify Deleting Mongo Db Cluster in Pending Status is possible @dbaas',
+// skipping the UI delete due to bug: https://jira.percona.com/browse/PMM-8115 the popup doesn't close until the request return.
+xScenario('PMM-T509 Verify Deleting Mongo Db Cluster in Pending Status is possible @dbaas',
   async ({ I, dbaasPage, dbaasActionsPage }) => {
     const psmdb_cluster_pending_delete = 'psmdb-pending-delete';
 
