@@ -91,7 +91,8 @@ Scenario('PMM-787 Verify Editing MonogDB Cluster is possible. @dbaas @nightly',
     await dbaasActionsPage.deletePSMDBCluster(psmdb_cluster, clusterName);
   });
 
-Scenario('PMM-T525 PMM-T528 Verify Suspend & Resume for Mongo DB Cluster Works as expected @dbaas @nightly',
+// Need to Skip due to bug in operator latest version https://jira.percona.com/browse/PMM-8094
+xScenario('PMM-T525 PMM-T528 Verify Suspend & Resume for Mongo DB Cluster Works as expected @nightly',
   async ({ I, dbaasPage, dbaasActionsPage }) => {
     const psmdb_cluster_suspend_resume = 'psmdb-suspend-resume';
     const clusterDetails = {
@@ -135,5 +136,14 @@ Scenario('PMM-T509 Verify Deleting Mongo Db Cluster in Pending Status is possibl
     await dbaasActionsPage.createClusterBasicOptions(clusterName, psmdb_cluster_pending_delete, 'MongoDB');
     I.click(dbaasPage.tabs.dbClusterTab.createClusterButton);
     I.waitForText('Processing', 30, dbaasPage.tabs.dbClusterTab.fields.progressBarContent);
-    await dbaasActionsPage.deletePSMDBCluster(psmdb_cluster_pending_delete, clusterName);
+
+    // skipping the UI delete due to bug: https://jira.percona.com/browse/PMM-8115 the popup doesn't close until the request return.
+    // await dbaasActionsPage.deletePSMDBCluster(psmdb_cluster_pending_delete, clusterName);
+
+    // Using API delete call to check if this is still possible
+    await dbaasAPI.apiDeletePSMDBCluster(psmdb_cluster_pending_delete, clusterName);
+    I.refreshPage();
+    await dbaasPage.waitForDbClusterTab(clusterName);
+    I.waitForElement(dbaasPage.tabs.dbClusterTab.fields.clusterStatusDeleting, 30);
+    await dbaasAPI.waitForDbClusterDeleted(psmdb_cluster_pending_delete, clusterName, 'MongoDB');
   });
