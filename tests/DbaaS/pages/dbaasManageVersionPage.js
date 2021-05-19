@@ -58,24 +58,18 @@ module.exports = {
   },
 
   async getTotalSupportedVersions(component) {
-    const numOfElements = await I.grabNumberOfVisibleElements(
-      this.manageVersion.versionsSection(component)
+    return await I.grabNumberOfVisibleElements(
+      this.manageVersion.versionsSection(component),
     );
-
-    return numOfElements;
   },
 
   async getSupportedVersion(component, position) {
-    const versionNumber = await I.grabTextFrom(this.manageVersion.getVersionNumber(component, position));
-
-    return versionNumber;
+    return await I.grabTextFrom(this.manageVersion.getVersionNumber(component, position));
   },
 
   async getRecommendedVersion(component) {
-    const version = await I.grabTextFrom(this.manageVersion.getRecommendedVersionLocator(component)
+    return await I.grabTextFrom(this.manageVersion.getRecommendedVersionLocator(component)
       .last());
-
-    return version;
   },
 
   async getAllVersionsSupported(component) {
@@ -107,7 +101,9 @@ module.exports = {
   },
 
   async isRecommendedVersion(component, version) {
-    const recommendedVersions = await I.grabTextFromAll(this.manageVersion.getRecommendedVersionLocator(component));
+    const recommendedVersions = await I.grabTextFromAll(
+      this.manageVersion.getRecommendedVersionLocator(component),
+    );
 
     return recommendedVersions.includes(version);
   },
@@ -134,7 +130,7 @@ module.exports = {
     I.waitForElement(
       this.manageVersion.operatorSelector(
         operatorVersion,
-      ),
+      ), 30,
     );
     I.forceClick(
       this.manageVersion.operatorSelector(
@@ -148,7 +144,7 @@ module.exports = {
     I.waitForElement(
       this.manageVersion.componentSelector(
         componentName,
-      ),
+      ), 30,
     );
     I.forceClick(
       this.manageVersion.componentSelector(
@@ -162,7 +158,7 @@ module.exports = {
     I.waitForElement(
       this.manageVersion.defaultVersionOption(
         version,
-      ),
+      ), 30,
     );
     I.forceClick(
       this.manageVersion.defaultVersionOption(

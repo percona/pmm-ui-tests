@@ -1,6 +1,8 @@
 Feature('QAN timerange').retry(1);
 
-Before(async ({ I, qanPage, qanOverview, qanFilters }) => {
+Before(async ({
+  I, qanPage, qanOverview, qanFilters,
+}) => {
   await I.Authorize();
   I.amOnPage(qanPage.url);
   qanOverview.waitForOverviewLoaded();

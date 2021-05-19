@@ -4,7 +4,7 @@ const { I, codeceptjsConfig } = inject();
 
 const mailosaur = codeceptjsConfig.config.helpers.Mailosaur;
 
-const  defaultCheckIntervals = {
+const defaultCheckIntervals = {
   standard_interval: '86400s',
   rare_interval: '280800s',
   frequent_interval: '14400s',
