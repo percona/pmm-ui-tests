@@ -107,8 +107,8 @@ Scenario(
     await securityChecksAPI.disableCheck(securityChecksAPI.checkNames.mysqlEmptyPassword);
     await settingsAPI.setCheckIntervals({ ...intervals, standard_interval: '3s' });
 
-    // Wait 20 seconds for Empty Password check execution
-    I.wait(20);
+    // Wait 30 seconds for Empty Password check execution
+    I.wait(30);
 
     I.refreshPage();
     I.waitForVisible(databaseChecksPage.fields.dbCheckPanelSelector, 30);
