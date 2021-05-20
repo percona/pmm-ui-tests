@@ -7,13 +7,13 @@ on:
     branches:
       - main
   pull_request:
-    branches: 
+    branches:
       - main
 
 jobs:
-  build:
+  lint:
 
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-18.04
 
     steps:
     - uses: percona-platform/checkout@v2
