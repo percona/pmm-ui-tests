@@ -2,7 +2,7 @@ const {
   I, allChecksPage, databaseChecksPage, codeceptjsConfig, perconaServerDB,
 } = inject();
 const config = codeceptjsConfig.config.helpers.Playwright;
-const connection = perconaServerDB.defaultConnection;
+const connection = perconaServerDB.defineConnection();
 let nodeID;
 
 const urls = new DataTable(['url']);

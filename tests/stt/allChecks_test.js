@@ -1,7 +1,7 @@
 const {
   settingsAPI, allChecksPage, perconaServerDB,
 } = inject();
-const connection = perconaServerDB.defaultConnection;
+const connection = perconaServerDB.defineConnection();
 let nodeID;
 
 const changeIntervalTests = new DataTable(['checkName', 'interval']);

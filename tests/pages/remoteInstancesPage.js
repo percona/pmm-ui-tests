@@ -179,7 +179,7 @@ module.exports = {
         break;
       case 'external_service_new':
         I.fillField(this.fields.serviceName, serviceName);
-        I.fillField(this.fields.hostName, url.host);
+        I.fillField(this.fields.hostName, process.env.OVF_TEST === 'yes' ? process.env.CLIENT_IP : url.host);
         I.fillField(this.fields.metricsPath, '/metrics');
         I.fillField(this.fields.portNumber, '42200');
         I.fillField(this.fields.environment, 'remote-external-service');

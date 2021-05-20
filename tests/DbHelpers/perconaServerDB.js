@@ -9,6 +9,15 @@ module.exports = {
     password: 'ps',
   },
 
+  defineConnection(connection = this.defaultConnection) {
+    if (process.env.OVF_TEST === 'yes') {
+      connection.host = process.env.CLIENT_IP;
+      connection.port = 43306;
+    }
+
+    return connection;
+  },
+
   connectToPS(connection = this.defaultConnection) {
     const {
       host, port, username, password,
