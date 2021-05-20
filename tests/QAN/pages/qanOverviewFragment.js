@@ -19,7 +19,7 @@ module.exports = {
     newMetricDropdown: '.add-columns-selector-dropdown',
     noDataIcon: 'div.ant-empty-image',
     querySelector: 'div.tr-1',
-    spinner: '$table-loading',
+    spinner: locate('$table-loading').find('//i[contains(@class,"fa-spinner")]'),
     tableRow: 'div.tr',
     tooltip: '.overview-column-tooltip',
     tooltipQPSValue: '$qps',
@@ -38,6 +38,7 @@ module.exports = {
   getGroupByOptionLocator: (option) => `//ul/li[@label='${option}']`,
 
   waitForOverviewLoaded() {
+    I.waitForDetached(this.elements.spinner, 30);
     I.waitForVisible(this.root, 60);
     I.waitForVisible(this.elements.querySelector, 60);
   },
