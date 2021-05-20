@@ -161,7 +161,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T635 - Verify Adding HAProxy service via UI @nightly @instances',
+  'PMM-T635 - Verify Adding HAProxy service via UI @nightly @not-ovf @instances',
   async ({
     I, remoteInstancesPage, pmmInventoryPage,
   }) => {
