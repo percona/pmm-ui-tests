@@ -31,6 +31,19 @@ module.exports = {
     );
   },
 
+  async apiUnregisterAllCluster() {
+    const body = {};
+    const headers = { Authorization: `Basic ${await I.getAuth()}` };
+
+    const response = await I.sendPostRequest('v1/management/DBaaS/Kubernetes/List', body, headers);
+
+    if (response.data.kubernetes_clusters) {
+      for (const cluster of response.data.kubernetes_clusters) {
+        await this.apiUnregisterCluster(cluster.kubernetes_cluster_name, true);
+      }
+    }
+  },
+
   async apiDeleteXtraDBCluster(dbClusterName, clusterName) {
     const body = { kubernetes_cluster_name: `${clusterName}`, name: dbClusterName };
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
