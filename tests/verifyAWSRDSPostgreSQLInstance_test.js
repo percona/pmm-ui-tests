@@ -1,12 +1,11 @@
 const assert = require('assert');
 
-Feature('Monitoring AWS RDS MySQL DB');
+Feature('Monitoring AWS RDS PostgreSQL');
 
 Before(async ({ I }) => {
-  I.Authorize();
+  await I.Authorize();
 });
 
-// skipping due to failures
 Scenario(
   'PMM-T716 - Verify adding PostgreSQL RDS monitoring to PMM via UI @instances',
   async ({
@@ -39,12 +38,14 @@ Scenario(
   }) => {
     const serviceName = 'pmm-qa-postgres-12';
 
+    // Wait 10 seconds before test to start getting metrics
+    I.wait(10);
     I.amOnPage(dashboardPage.postgresqlInstanceOverviewDashboard.url);
     dashboardPage.applyFilter('Node Name', serviceName);
     await dashboardPage.verifyThereAreNoGraphsWithNA();
     await dashboardPage.verifyThereAreNoGraphsWithoutData();
   },
-).retry(1);
+).retry(2);
 
 Scenario(
   'PMM-T716 - Verify QAN for Postgres RDS added via UI @instances',
@@ -59,4 +60,4 @@ Scenario(
 
     assert.ok(count > 0, 'The queries for added RDS Postgres do NOT exist');
   },
-).retry(1);
+).retry(2);

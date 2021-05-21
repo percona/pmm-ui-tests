@@ -1,8 +1,6 @@
 const {
-  settingsAPI, allChecksPage, perconaServerDB,
+  settingsAPI, allChecksPage,
 } = inject();
-const connection = perconaServerDB.defineConnection();
-let nodeID;
 
 const changeIntervalTests = new DataTable(['checkName', 'interval']);
 
@@ -11,16 +9,6 @@ Object.values(allChecksPage.checks).forEach(({ name }) => {
 });
 
 Feature('Security Checks: All Checks').retry(2);
-
-BeforeSuite(async ({ addInstanceAPI }) => {
-  const instance = await addInstanceAPI.apiAddInstance(addInstanceAPI.instanceTypes.mysql, 'stt-all-checks-mysql-5.7.30', connection);
-
-  nodeID = instance.service.node_id;
-});
-
-AfterSuite(async ({ inventoryAPI }) => {
-  if (nodeID) await inventoryAPI.deleteNode(nodeID, true);
-});
 
 Before(async ({ I, settingsAPI, securityChecksAPI }) => {
   await I.Authorize();
@@ -85,7 +73,7 @@ Scenario(
     // Run DB Checks from UI
     databaseChecksPage.runDBChecks();
 
-    // Check that there is MySQL user empty password failed check
+    // Check that there is MySQL version failed check
     await securityChecksAPI.verifyFailedCheckExists(detailsText);
 
     // Disable MySQL Version check
