@@ -1,9 +1,12 @@
-Feature('QAN overview');
+Feature('QAN overview').retry(1);
 
-Before(async ({ I, qanPage, qanOverview }) => {
+Before(async ({
+  I, qanPage, qanOverview, qanFilters,
+}) => {
   await I.Authorize();
   I.amOnPage(qanPage.url);
   qanOverview.waitForOverviewLoaded();
+  qanFilters.waitForFiltersToLoad();
 });
 
 Scenario(
@@ -12,6 +15,7 @@ Scenario(
     const ROW_NUMBER = 1;
     const QUERY_TIME_COLUMN_NUMBER = 3;
 
+    qanOverview.waitForOverviewLoaded();
     qanOverview.showTooltip(ROW_NUMBER, QUERY_TIME_COLUMN_NUMBER);
     I.seeElement(qanOverview.elements.latencyChart);
   },
@@ -23,6 +27,7 @@ Scenario(
     const ROW_NUMBER = 1;
     const QUERY_COUNT_COLUMN_NUMBER = 2;
 
+    qanOverview.waitForOverviewLoaded();
     qanOverview.showTooltip(ROW_NUMBER, QUERY_COUNT_COLUMN_NUMBER);
     I.dontSeeElement(qanOverview.elements.latencyChart);
   },
@@ -53,6 +58,7 @@ Scenario(
   'PMM-T183 Verify that "Group by" in the overview table can be changed @qan',
   async ({ I, qanOverview }) => {
     I.waitForText('Query', 30, qanOverview.elements.groupBy);
+    qanOverview.waitForOverviewLoaded();
     await qanOverview.changeGroupBy('Database');
     qanOverview.verifyGroupByIs('Database');
   },
@@ -191,6 +197,7 @@ Scenario(
 Scenario(
   'PMM-T179 - Verify user is able to hover sparkline buckets and see correct Query Count Value @qan',
   async ({ I, qanOverview }) => {
+    qanOverview.waitForOverviewLoaded();
     const firstCell = qanOverview.getCellValueLocator(3, 2);
 
     const [queryCount] = (await I.grabTextFrom(firstCell)).split(' ');
@@ -204,6 +211,7 @@ Scenario(
 Scenario(
   'PMM-T179 - Verify user is able to hover sparkline buckets and see correct Query Time Value @qan',
   async ({ I, qanOverview }) => {
+    qanOverview.waitForOverviewLoaded();
     const secondCell = qanOverview.getCellValueLocator(3, 3);
 
     const queryTime = await I.grabTextFrom(secondCell);

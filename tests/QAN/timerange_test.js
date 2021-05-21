@@ -1,9 +1,12 @@
-Feature('QAN timerange');
+Feature('QAN timerange').retry(1);
 
-Before(async ({ I, qanPage, qanOverview }) => {
+Before(async ({
+  I, qanPage, qanOverview, qanFilters,
+}) => {
   await I.Authorize();
   I.amOnPage(qanPage.url);
   qanOverview.waitForOverviewLoaded();
+  qanFilters.waitForFiltersToLoad();
 });
 
 Scenario(
@@ -34,6 +37,7 @@ Scenario(
   async ({ adminPage, qanOverview }) => {
     await qanOverview.changeGroupBy('Client Host');
     adminPage.applyTimeRange('Last 24 hours');
+    qanOverview.waitForOverviewLoaded();
     qanOverview.verifyGroupByIs('Client Host');
   },
 );
@@ -43,6 +47,7 @@ Scenario(
   async ({ adminPage, qanOverview }) => {
     await qanOverview.changeSorting(1);
     adminPage.applyTimeRange('Last 24 hours');
+    qanOverview.waitForOverviewLoaded();
     qanOverview.verifySorting(1, 'desc');
   },
 );
