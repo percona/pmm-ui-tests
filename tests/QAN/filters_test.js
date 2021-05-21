@@ -7,7 +7,7 @@ shortCutTests.add(['Replication Set', 'MySQL Replication Summary', 'graph/d/mysq
 shortCutTests.add(['Node Name', 'Node Summary', 'graph/d/node-instance-summary/node-summary?var-node_name=pmm-server', 'pmm-server']);
 shortCutTests.add(['Service Name', 'MongoDB Instance Summary', 'graph/d/mongodb-instance-summary/mongodb-instance-summary', 'mongodb_rs1_2']);
 
-Feature('QAN filters');
+Feature('QAN filters').retry(1);
 
 Before(async ({ I, qanPage, qanOverview }) => {
   await I.Authorize();
@@ -22,6 +22,7 @@ Scenario(
 
     const countBefore = await qanOverview.getCountOfItems();
 
+    qanFilters.waitForFiltersToLoad();
     qanFilters.applyFilter(serviceName);
     I.seeInCurrentUrl(`service_name=${serviceName}`);
     const countAfter = await qanOverview.getCountOfItems();
@@ -166,6 +167,7 @@ Scenario(
 );
 
 Scenario('PMM-T190 - Verify user is able to see n/a filter @qan', async ({ I, qanFilters }) => {
+  qanFilters.waitForFiltersToLoad();
   I.fillField(qanFilters.fields.filterBy, 'n/a');
   await qanFilters.verifyCountOfFilterLinks(0, true);
 });
@@ -243,6 +245,7 @@ Data(shortCutTests).Scenario(
     const header = current.dashboard;
     const filterValue = current.filter;
 
+    qanFilters.waitForFiltersToLoad();
     I.fillField(qanFilters.fields.filterBy, filterValue);
     await qanFilters.verifyShortcutAttributes(shortCutLink, filterValue);
 
@@ -259,6 +262,7 @@ Data(shortCutTests).Scenario(
 );
 
 Scenario('PMM-T437 - Verify short-cut navigation for n/a items @qan', async ({ I, qanFilters }) => {
+  qanFilters.waitForFiltersToLoad();
   qanFilters.applyShowAllLink('Cluster');
   qanFilters.checkLink('Cluster', 'ps-dev-cluster', true);
   I.fillField(qanFilters.fields.filterBy, 'n/a');
