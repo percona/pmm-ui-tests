@@ -1,5 +1,5 @@
 const { settingsAPI, perconaServerDB, securityChecksAPI } = inject();
-const connection = perconaServerDB.defineConnection();
+const connection = perconaServerDB.defaultConnection;
 const emptyPasswordSummary = 'MySQL users have empty passwords';
 const intervals = settingsAPI.defaultCheckIntervals;
 let nodeID;
