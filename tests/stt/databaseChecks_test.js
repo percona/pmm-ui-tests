@@ -13,11 +13,7 @@ urls.add([allChecksPage.url]);
 Feature('Database Failed Checks').retry(2);
 
 BeforeSuite(async ({ addInstanceAPI }) => {
-  if (process.env.OVF_TEST === 'no') {
-    const instance = await addInstanceAPI.apiAddInstance(addInstanceAPI.instanceTypes.mysql, 'stt-failed-checks-mysql-5.7.30', connection);
-
-    nodeID = instance.service.node_id;
-  }
+  nodeID = await addInstanceAPI.addInstanceForSTT(connection);
 });
 
 AfterSuite(async ({ inventoryAPI }) => {

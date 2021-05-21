@@ -1,7 +1,9 @@
 const {
-  settingsAPI, allChecksPage,
+  settingsAPI, allChecksPage, perconaServerDB,
 } = inject();
 
+const connection = perconaServerDB.defaultConnection;
+let nodeID;
 const changeIntervalTests = new DataTable(['checkName', 'interval']);
 
 Object.values(allChecksPage.checks).forEach(({ name }) => {
@@ -9,6 +11,14 @@ Object.values(allChecksPage.checks).forEach(({ name }) => {
 });
 
 Feature('Security Checks: All Checks').retry(2);
+
+BeforeSuite(async ({ addInstanceAPI }) => {
+  nodeID = await addInstanceAPI.addInstanceForSTT(connection);
+});
+
+AfterSuite(async ({ inventoryAPI }) => {
+  if (nodeID) await inventoryAPI.deleteNode(nodeID, true);
+});
 
 Before(async ({ I, settingsAPI, securityChecksAPI }) => {
   await I.Authorize();
@@ -67,7 +77,9 @@ Scenario(
   async ({
     I, allChecksPage, securityChecksAPI, databaseChecksPage,
   }) => {
-    const detailsText = 'Newer version of Percona Server for MySQL is available';
+    const detailsText = process.env.OVF_TEST === 'yes'
+      ? 'Newer version of MySQL is available'
+      : 'Newer version of Percona Server for MySQL is available';
     const checkName = 'MySQL Version';
 
     // Run DB Checks from UI
