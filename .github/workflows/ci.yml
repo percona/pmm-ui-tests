@@ -1,0 +1,27 @@
+# This workflow will do a clean install of node dependencies and run lint tests
+
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  lint:
+
+    runs-on: ubuntu-18.04
+
+    steps:
+    - uses: percona-platform/checkout@v2
+    - name: Use Node.js 14.x
+      uses: percona-platform/setup-node@v2
+      with:
+        node-version: 14.x
+    - name: Install Dependencies
+      run: npm i
+    - name: Run lint:tests
+      run: npm run lint:tests
