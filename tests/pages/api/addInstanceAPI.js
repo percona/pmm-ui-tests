@@ -168,14 +168,14 @@ module.exports = {
   },
 
   async addInstanceForSTT(connection) {
-    let instance;
+    let nodeId;
 
     if (process.env.OVF_TEST === 'yes') {
-      instance = await this.apiAddInstance(this.instanceTypes.rds, 'rds-for-stt-all-checks');
+      nodeId = (await this.apiAddInstance(this.instanceTypes.rds, 'rds-for-stt-all-checks')).node.node_id;
     } else {
-      instance = await this.apiAddInstance(this.instanceTypes.mysql, 'stt-all-checks-mysql-5.7.30', connection);
+      nodeId = (await this.apiAddInstance(this.instanceTypes.mysql, 'stt-all-checks-mysql-5.7.30', connection)).service.node_id;
     }
 
-    return instance.node.node_id;
+    return nodeId;
   },
 };
