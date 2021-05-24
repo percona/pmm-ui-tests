@@ -59,7 +59,7 @@ After(async () => {
 });
 
 Scenario(
-  'PMM-T384 Verify that the user does not see an alert again if it has been fixed [critical] @stt',
+  'PMM-T384 Verify that the user does not see an alert again if it has been fixed [critical] @stt @not-ovf',
   async ({
     securityChecksAPI, databaseChecksPage, perconaServerDB,
   }) => {
@@ -74,7 +74,7 @@ Scenario(
 );
 
 Data(intervalsTests).Scenario(
-  'PMM-T706 PMM-709 PMM-T711 Verify checks are executed based on interval value, change interval, fix problem [critical] @stt',
+  'PMM-T706 PMM-709 PMM-T711 Verify checks are executed based on interval value, change interval, fix problem [critical] @stt @not-ovf',
   async ({
     I, securityChecksAPI, settingsAPI, perconaServerDB, databaseChecksPage, current,
   }) => {
@@ -100,7 +100,7 @@ Data(intervalsTests).Scenario(
 );
 
 Scenario(
-  'PMM-T757 Verify disabled checks do not execute based on interval value [critical] @stt',
+  'PMM-T757 Verify disabled checks do not execute based on interval value [critical] @stt @not-ovf',
   async ({
     I, securityChecksAPI, settingsAPI, databaseChecksPage,
   }) => {

@@ -233,7 +233,7 @@ module.exports = {
   },
   postgresqlInstanceOverviewDashboard: {
     // had to be changed after the PMM-6386 bug will be fixed
-    url: 'graph/d/postgresql-instance-overview/postgresql-instances-overview',
+    url: 'graph/d/postgresql-instance-overview/postgresql-instances-overview?orgId=1&from=now-5m&to=now',
     metrics: [
       'Services',
       'Max Active Connections',
