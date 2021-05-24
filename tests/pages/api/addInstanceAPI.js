@@ -163,5 +163,19 @@ module.exports = {
     const resp = await I.sendPostRequest('v1/management/RDS/Add', body, headers);
 
     assert.equal(resp.status, 200, `Instance ${serviceName} was not added for monitoring`);
+
+    return resp.data;
+  },
+
+  async addInstanceForSTT(connection) {
+    let nodeId;
+
+    if (process.env.OVF_TEST === 'yes') {
+      nodeId = (await this.apiAddInstance(this.instanceTypes.rds, 'rds-for-stt-all-checks')).node.node_id;
+    } else {
+      nodeId = (await this.apiAddInstance(this.instanceTypes.mysql, 'stt-all-checks-mysql-5.7.30', connection)).service.node_id;
+    }
+
+    return nodeId;
   },
 };

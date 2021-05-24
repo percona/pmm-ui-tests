@@ -76,7 +76,7 @@ services:
       - 127.0.0.1:27019:27017
 
   postgres:
-    image: ${POSTGRES_IMAGE:-perconalab/percona-distribution-postgresql:13.2-2}
+    image: ${POSTGRES_IMAGE:-perconalab/percona-distribution-postgresql:13.3}
     container_name: pmm-agent_postgres
     command: >
       -c shared_preload_libraries='${PG_PRELOADED_LIBS:-pg_stat_statements,pg_stat_monitor}'

@@ -47,7 +47,6 @@ module.exports = {
   },
 
   async verifyFailedCheckNotExists(detailsText, serviceName) {
-    // Verify there is no MySQL user empty password failed check
     const failedCheckDoesNotExist = await this.getFailedCheckBySummary(detailsText, serviceName);
 
     assert.ok(!failedCheckDoesNotExist, `Expected "${detailsText}" failed check to not be present`);
