@@ -15,7 +15,7 @@ Before(async ({ I }) => {
 });
 
 Data(dashboard).Scenario(
-  'PMM-T671 - Verify MySQL summary is displayed on MySQL Instance Summary dashboard @nightly',
+  'PMM-T671, PMM-T666, PMM-T672 - Verify summary is displayed on Instance Summary dashboard @nightly',
   async ({ I, dashboardPage, current }) => {
     I.amOnPage(current.page);
     dashboardPage.waitForDashboardOpened();
