@@ -10,16 +10,23 @@ const serviceNames = {
 // For running on local env set PMM_SERVER_LATEST and DOCKER_VERSION variables
 function getVersions() {
   const [, pmmMinor, pmmPatch] = process.env.PMM_SERVER_LATEST.split('.');
-  const [, dockerMinor, dockerPatch] = process.env.DOCKER_VERSION.split('.');
-  const majorVersionDiff = pmmMinor - dockerMinor;
-  const patchVersionDiff = pmmPatch - dockerPatch;
-  const current = `2.${dockerMinor}`;
+  let [, versionMinor, versionPatch] = [];
+
+  if (process.env.DOCKER_VERSION) {
+    [, versionMinor, versionPatch] = process.env.DOCKER_VERSION.split('.');
+  } else {
+    [, versionMinor, versionPatch] = process.env.SERVER_VERSION.split('.');
+  }
+
+  const majorVersionDiff = pmmMinor - versionMinor;
+  const patchVersionDiff = pmmPatch - versionPatch;
+  const current = `2.${versionMinor}`;
 
   return {
     majorVersionDiff,
     patchVersionDiff,
     current,
-    dockerMinor,
+    versionMinor,
   };
 }
 
@@ -41,7 +48,7 @@ Scenario(
   'PMM-T289 Verify Whats New link is presented on Update Widget @ami-upgrade @pre-upgrade @pmm-upgrade @not-ui-pipeline',
   async ({ I, homePage }) => {
     const versions = getVersions();
-    const locators = homePage.getLocators(versions.dockerMinor);
+    const locators = homePage.getLocators(versions.versionMinor);
 
     I.amOnPage(homePage.url);
     // Whats New Link is added for the latest version hours before the release,
@@ -62,7 +69,7 @@ Scenario(
     const versions = getVersions();
 
     I.amOnPage(homePage.url);
-    await homePage.verifyPreUpdateWidgetIsPresent(versions.dockerMinor);
+    await homePage.verifyPreUpdateWidgetIsPresent(versions.versionMinor);
   },
 );
 
@@ -104,7 +111,7 @@ Scenario(
     const versions = getVersions();
 
     I.amOnPage(homePage.url);
-    await homePage.upgradePMM(versions.dockerMinor);
+    await homePage.upgradePMM(versions.versionMinor);
   },
 );
 
