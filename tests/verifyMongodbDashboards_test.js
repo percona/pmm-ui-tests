@@ -29,14 +29,3 @@ Scenario(
     await dashboardPage.verifyThereAreNoGraphsWithoutData(12);
   },
 );
-
-Scenario(
-  'PMM-T672 - Verify pt-mongodb-summary displayed on MongoDB Instance Summary dashboard @nightly',
-  async ({ I, dashboardPage }) => {
-    I.amOnPage(dashboardPage.mongoDbInstanceSummaryDashboard.url);
-    dashboardPage.waitForDashboardOpened();
-    I.waitForVisible(dashboardPage.fields.serviceSummary, 30);
-    I.click(dashboardPage.fields.serviceSummary);
-    I.waitForVisible(dashboardPage.fields.mongoDBServiceSummaryContent, 90);
-  },
-);

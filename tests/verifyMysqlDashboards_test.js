@@ -140,14 +140,3 @@ Scenario(
     await dashboardPage.verifyThereAreNoGraphsWithoutData(3);
   },
 );
-
-Scenario(
-  'PMM-T671 - Verify MySQL summary is displayed on MySQL Instance Summary dashboard @nightly',
-  async ({ I, dashboardPage }) => {
-    I.amOnPage(dashboardPage.mysqlInstanceSummaryDashboard.url);
-    dashboardPage.waitForDashboardOpened();
-    I.waitForVisible(dashboardPage.fields.serviceSummary, 30);
-    I.click(dashboardPage.fields.serviceSummary);
-    I.waitForVisible(dashboardPage.fields.mySQLServiceSummaryContent, 120);
-  },
-);
