@@ -92,7 +92,7 @@ Scenario('PMM-787 Verify Editing MonogDB Cluster is possible. @dbaas @nightly',
   });
 
 // Need to Skip due to bug in operator latest version https://jira.percona.com/browse/PMM-8094
-xScenario('PMM-T525 PMM-T528 Verify Suspend & Resume for Mongo DB Cluster Works as expected @nightly',
+xScenario('PMM-T525 PMM-T528 Verify Suspend & Resume for Mongo DB Cluster Works as expected @dbaas @nightly',
   async ({ I, dbaasPage, dbaasActionsPage }) => {
     const psmdb_cluster_suspend_resume = 'psmdb-suspend-resume';
     const clusterDetails = {

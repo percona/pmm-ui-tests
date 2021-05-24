@@ -1,9 +1,9 @@
 const {
   settingsAPI, allChecksPage, perconaServerDB,
 } = inject();
+
 const connection = perconaServerDB.defaultConnection;
 let nodeID;
-
 const changeIntervalTests = new DataTable(['checkName', 'interval']);
 
 Object.values(allChecksPage.checks).forEach(({ name }) => {
@@ -13,9 +13,7 @@ Object.values(allChecksPage.checks).forEach(({ name }) => {
 Feature('Security Checks: All Checks').retry(2);
 
 BeforeSuite(async ({ addInstanceAPI }) => {
-  const instance = await addInstanceAPI.apiAddInstance(addInstanceAPI.instanceTypes.mysql, 'stt-all-checks-mysql-5.7.30', connection);
-
-  nodeID = instance.service.node_id;
+  nodeID = await addInstanceAPI.addInstanceForSTT(connection);
 });
 
 AfterSuite(async ({ inventoryAPI }) => {
@@ -34,7 +32,7 @@ After(async ({ settingsAPI, securityChecksAPI }) => {
 });
 
 Scenario(
-  'PMM-T469 PMM-T472 PMM-T654 Verify list of all checks [critical] @stt @not-pr-pipeline',
+  'PMM-T469 PMM-T472 PMM-T654 Verify list of all checks [critical] @stt',
   async ({
     I, allChecksPage,
   }) => {
@@ -57,7 +55,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T471 Verify reloading page on All Checks tab [minor] @stt @not-pr-pipeline',
+  'PMM-T471 Verify reloading page on All Checks tab [minor] @stt',
   async ({
     I, allChecksPage,
   }) => {
@@ -75,17 +73,19 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T585 Verify user is able enable/disable checks [critical] @stt @not-pr-pipeline',
+  'PMM-T585 Verify user is able enable/disable checks [critical] @stt',
   async ({
     I, allChecksPage, securityChecksAPI, databaseChecksPage,
   }) => {
-    const detailsText = 'Newer version of Percona Server for MySQL is available';
+    const detailsText = process.env.OVF_TEST === 'yes'
+      ? 'Newer version of MySQL is available'
+      : 'Newer version of Percona Server for MySQL is available';
     const checkName = 'MySQL Version';
 
     // Run DB Checks from UI
     databaseChecksPage.runDBChecks();
 
-    // Check that there is MySQL user empty password failed check
+    // Check that there is MySQL version failed check
     await securityChecksAPI.verifyFailedCheckExists(detailsText);
 
     // Disable MySQL Version check
