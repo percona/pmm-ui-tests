@@ -2,10 +2,13 @@ Feature('Test Dashboards');
 const { dashboardPage } = inject();
 
 const dashboard = new DataTable(['page', 'content']);
+const mySQLContent = dashboardPage.fields.mySQLServiceSummaryContent;
+const postgresContent = dashboardPage.fields.postgreSQLServiceSummaryContent;
+const mongoContent = dashboardPage.fields.mongoDBServiceSummaryContent;
 
-dashboard.add([dashboardPage.mysqlInstanceSummaryDashboard.url, dashboardPage.fields.mySQLServiceSummaryContent]);
-// dashboard.add([dashboardPage.postgresqlInstanceSummaryDashboard.url, dashboardPage.fields.postgreSQLServiceSummaryContent]);
-dashboard.add([dashboardPage.mongoDbInstanceSummaryDashboard.url, dashboardPage.fields.mongoDBServiceSummaryContent]);
+dashboard.add([dashboardPage.mysqlInstanceSummaryDashboard.url, mySQLContent]);
+dashboard.add([dashboardPage.postgresqlInstanceSummaryDashboard.url, postgresContent]);
+dashboard.add([dashboardPage.mongoDbInstanceSummaryDashboard.url, mongoContent]);
 
 Before(async ({ I }) => {
   await I.Authorize();
