@@ -53,7 +53,7 @@ Scenario(
     I.amOnPage(homePage.url);
     // Whats New Link is added for the latest version hours before the release,
     // hence we need to skip checking on that, rest it should be available and checked.
-    if (versions.majorVersionDiff >= 1 && versions.patchVersionDiff >= 0) {
+    if (versions.majorVersionDiff >= 1 && versions.patchVersionDiff >= 1) {
       I.waitForElement(locators.whatsNewLink, 30);
       I.seeElement(locators.whatsNewLink);
       const link = await I.grabAttributeFrom(locators.whatsNewLink, 'href');
