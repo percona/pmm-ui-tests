@@ -368,7 +368,7 @@ module.exports = {
     ],
   },
   mongoDbInstanceSummaryDashboard: {
-    url: 'graph/d/mongodb-instance-summary/mongodb-instance-summary',
+    url: 'graph/d/mongodb-instance-summary/mongodb-instance-summary?orgId=1&refresh=1m&from=now-5m&to=now',
   },
   mysqlInstanceSummaryDashboard: {
     url: 'graph/d/mysql-instance-summary/mysql-instance-summary?orgId=1&refresh=1m&from=now-5m&to=now',

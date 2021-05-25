@@ -1,21 +1,21 @@
-Feature('Test Dashboards');
+Feature('PT Summary');
 const { dashboardPage } = inject();
 
 const dashboard = new DataTable(['page', 'content']);
-const mySQLContent = dashboardPage.fields.mySQLServiceSummaryContent;
-const postgresContent = dashboardPage.fields.postgreSQLServiceSummaryContent;
-const mongoContent = dashboardPage.fields.mongoDBServiceSummaryContent;
 
-dashboard.add([dashboardPage.mysqlInstanceSummaryDashboard.url, mySQLContent]);
-dashboard.add([dashboardPage.postgresqlInstanceSummaryDashboard.url, postgresContent]);
-dashboard.add([dashboardPage.mongoDbInstanceSummaryDashboard.url, mongoContent]);
+dashboard.add([dashboardPage.mysqlInstanceSummaryDashboard.url,
+  dashboardPage.fields.mySQLServiceSummaryContent]);
+dashboard.add([dashboardPage.postgresqlInstanceSummaryDashboard.url,
+  dashboardPage.fields.postgreSQLServiceSummaryContent]);
+dashboard.add([dashboardPage.mongoDbInstanceSummaryDashboard.url,
+  dashboardPage.fields.mongoDBServiceSummaryContent]);
 
 Before(async ({ I }) => {
   await I.Authorize();
 });
 
 Data(dashboard).Scenario(
-  'PMM-T671, PMM-T666, PMM-T672 - Verify summary is displayed on Instance Summary dashboard @nightly',
+  'PMM-T671, PMM-T666, PMM-T672 - Verify summary is displayed on Instance Summary dashboard @dashboards',
   async ({ I, dashboardPage, current }) => {
     I.amOnPage(current.page);
     dashboardPage.waitForDashboardOpened();
