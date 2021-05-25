@@ -9,6 +9,7 @@ module.exports = {
   url: 'graph/settings',
   advancedSettingsUrl: 'graph/settings/advanced-settings',
   communicationSettingsUrl: 'graph/settings/communication',
+  perconaPlatform: 'graph/settings/percona-platform',
   prometheusAlertUrl: '/prometheus/rules',
   stateOfAlertsUrl: '/prometheus/alerts',
   diagnosticsText:
