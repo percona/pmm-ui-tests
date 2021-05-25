@@ -32,7 +32,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T716 - Verify Dashboard for Postgres RDS added via UI @instances @not-ovf',
+  'PMM-T716 - Verify Dashboard for Postgres RDS added via UI @instances',
   async ({
     I, dashboardPage,
   }) => {
