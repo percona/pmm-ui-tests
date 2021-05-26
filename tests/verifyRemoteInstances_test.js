@@ -209,7 +209,7 @@ Data(remotePostgreSQL).Scenario(
 );
 
 Scenario(
-  'check postgreSQL Overview dashboard @instances @not-ovf',
+  'check postgreSQL Overview dashboard @instances',
   async ({
     I, dashboardPage, adminPage
   }) => {
