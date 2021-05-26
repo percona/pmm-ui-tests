@@ -37,8 +37,8 @@ xScenario(
   },
 );
 
-// TODO: unskip the mongodb and postgresql tests after resolving a instance issues
-Data(instances.filter((instance) => /mysql|proxysql/.test(instance.name))).Scenario(
+// TODO: unskip the mongodb test after resolving a instance issues
+Data(instances.filter((instance) => instance.name!=='mongodb')).Scenario(
   'Verify Remote Instance Addition [critical] @instances',
   async ({ I, remoteInstancesPage, current }) => {
     const serviceName = remoteInstancesPage.services[current.name];
@@ -207,3 +207,22 @@ Data(remotePostgreSQL).Scenario(
     pmmInventoryPage.checkExistingAgent(current.checkAgent);
   },
 );
+
+Scenario(
+  'check postgreSQL Overview dashboard @instances @not-ovf',
+  async ({
+    I, dashboardPage, adminPage
+  }) => {
+    const serviceName = 'postgresql_remote_new';
+
+    // Wait 10 seconds before test to start getting metrics
+    I.wait(10);
+    I.amOnPage(dashboardPage.postgresqlInstanceOverviewDashboard.url);
+    dashboardPage.applyFilter('Service Name', serviceName);
+    adminPage.peformPageDown(5);
+    await dashboardPage.expandEachDashboardRow();
+    adminPage.performPageUp(5);
+    await dashboardPage.verifyThereAreNoGraphsWithNA();
+    await dashboardPage.verifyThereAreNoGraphsWithoutData();
+  },
+).retry(2);
