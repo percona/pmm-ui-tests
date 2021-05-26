@@ -15,7 +15,7 @@ Before(async ({ I }) => {
 });
 
 Data(dashboard).Scenario(
-  'PMM-T671, PMM-T666, PMM-T672 - Verify summary is displayed on Instance Summary dashboard @dashboards',
+  'PMM-T671, PMM-T666, PMM-T672 - Verify summary is displayed on Instance Summary dashboard @dashboards @nightly',
   async ({ I, dashboardPage, current }) => {
     I.amOnPage(current.page);
     dashboardPage.waitForDashboardOpened();
