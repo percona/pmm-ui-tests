@@ -1,3 +1,13 @@
+const { generate } = require('generate-password');
+
+const getPassword = () => generate({
+  length: 10,
+  numbers: true,
+  lowercase: true,
+  uppercase: true,
+  strict: true,
+});
+
 const { pmmSettingsPage } = inject();
 
 const {
@@ -152,7 +162,7 @@ Scenario(
     I.waitForVisible(elements.signUpForm, 30);
 
     const newUserEmail = await I.generateNewEmail();
-    const newUserPassword = 'MySecretTempPassword with space 123321';
+    const newUserPassword = `${getPassword()} with spaces`;
 
     // Fill Sign Up fields, accept Terms agreement and submit a form
     pmmSettingsPage.perconaPlatform.submitSignUpForm(newUserEmail);
