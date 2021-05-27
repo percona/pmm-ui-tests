@@ -146,13 +146,13 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T399 Verify user is able to Sign Up @platform @settings',
+  'PMM-T399 PMM-T843 Verify user is able to Sign Up and login with new account @platform @settings',
   async ({ I }) => {
     I.click(buttons.goToSignUp);
     I.waitForVisible(elements.signUpForm, 30);
 
     const newUserEmail = await I.generateNewEmail();
-    const newUserPassword = 'MySuperSecretTempPassword123321';
+    const newUserPassword = 'MySecretTempPassword with space 123321';
 
     // Fill Sign Up fields, accept Terms agreement and submit a form
     pmmSettingsPage.perconaPlatform.submitSignUpForm(newUserEmail);
