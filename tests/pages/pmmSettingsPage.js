@@ -4,7 +4,7 @@ const perconaPlatform = require('./perconaPlatform');
 
 const { I, adminPage, links } = inject();
 
-const locateLabel = (dataQA) => locate(`[data-qa="${dataQA}"]`).find('span');
+const locateLabel = (selector) => locate(I.useDataQA(selector)).find('span');
 
 module.exports = {
   url: 'graph/settings',

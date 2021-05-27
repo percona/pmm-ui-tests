@@ -36,9 +36,9 @@ Scenario(
 
     // Focus on Email and Password fields to verify that fields are required
     I.usePlaywrightTo('focus on email and password fields', async ({ page }) => {
-      page.focus('[data-qa="email-text-input"]');
-      page.focus('[data-qa="password-password-input"]');
-      page.focus('[data-qa="sign-in-to-sign-up-button"]');
+      page.focus(I.useDataQA('email-text-input'));
+      page.focus(I.useDataQA('password-password-input'));
+      page.focus(I.useDataQA('sign-in-to-sign-up-button'));
     });
 
     pmmSettingsPage.perconaPlatform.verifyEmailFieldValidation();
@@ -85,10 +85,10 @@ Scenario(
 
     // Focus on Email, First Name, Last Name fields and terms checkbox to verify that fields are required
     I.usePlaywrightTo('focus on email and password fields', async ({ page }) => {
-      page.focus('[data-qa="email-text-input"]');
-      page.focus('[data-qa="firstName-text-input"]');
-      page.focus('[data-qa="lastName-text-input"]');
-      page.focus('[data-qa="agreement-checkbox-input"]');
+      page.focus(I.useDataQA('email-text-input'));
+      page.focus(I.useDataQA('firstName-text-input'));
+      page.focus(I.useDataQA('lastName-text-input'));
+      page.focus(I.useDataQA('agreement-checkbox-input'));
     });
 
     pmmSettingsPage.perconaPlatform.verifyEmailFieldValidation();

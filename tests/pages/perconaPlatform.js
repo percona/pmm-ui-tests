@@ -113,7 +113,7 @@ module.exports = {
     I.appendField(this.fields.emailField, 'domain#.com');
     I.seeTextEquals(this.messages.invalidEmail, this.elements.emailValidation);
 
-    // Verify there is no validation for "email@domain.com" value
+    // Verify there is no validation error for "email@domain.com" value
     I.clearField(this.fields.emailField);
     I.appendField(this.fields.emailField, 'email@domain.com');
     I.seeTextEquals('', this.elements.emailValidation);
