@@ -698,7 +698,7 @@ module.exports = {
     clearSelection: '//a[@ng-click="vm.clearSelections()"]',
     collapsedDashboardRow: '//div[@class="dashboard-row dashboard-row--collapsed"]/a',
     dataLinkForRoot: '//div[contains(text(), "Data links")]/..//a',
-    Last2Days: '//span[contains(text(), "Last 2 days")]',  
+    Last2Days: '//span[contains(text(), "Last 2 days")]',
     metricTitle: '//div[@class="panel-title"]',
     mongoDBServiceSummaryContent: locate('pre').withText('Mongo Executable'),
     mySQLServiceSummaryContent: locate('pre').withText('Percona Toolkit MySQL Summary Report'),
