@@ -1,4 +1,3 @@
-const assert = require('assert');
 const page = require('./pages/pmmSettingsPage');
 
 // Value should be in range from 1 to 3650 days, so put a value outside of the range
@@ -165,51 +164,6 @@ xScenario(
 
     await pmmSettingsPage.waitForPmmSettingsPageLoaded();
     I.waitForValue(pmmSettingsPage.fields.dataRetentionCount, dataRetention, 30);
-  },
-);
-
-// TODO: unskip and fix in scope of https://jira.percona.com/browse/PMM-7733
-xScenario(
-  'PMM-T415 - Verify Percona Platform (Sign up) elements on PMM Settings Page @settings',
-  async ({ I, pmmSettingsPage }) => {
-    await pmmSettingsPage.waitForPmmSettingsPageLoaded();
-    I.waitForElement(pmmSettingsPage.fields.perconaPlatformLink, 30);
-    I.click(pmmSettingsPage.fields.perconaPlatformLink);
-    I.waitForElement(pmmSettingsPage.fields.singInToSignUpButton, 30);
-    I.click(pmmSettingsPage.fields.singInToSignUpButton);
-    I.waitForElement(pmmSettingsPage.fields.signUpEmail, 30);
-    I.waitForElement(pmmSettingsPage.fields.signUpPassword, 30);
-    const agreementLabel = await I.grabTextFrom(pmmSettingsPage.fields.signUpAgreementLabel);
-
-    assert.ok(
-      agreementLabel === pmmSettingsPage.agreementText,
-      `${agreementLabel}: This is not correct agreement label`,
-    );
-    I.waitForElement(pmmSettingsPage.fields.signUpButton, 30);
-    I.waitForElement(pmmSettingsPage.fields.signUpBackToLogin, 30);
-    I.waitForElement(pmmSettingsPage.fields.diagnosticsButton, 30);
-    I.waitForVisible(pmmSettingsPage.fields.diagnosticsInfo, 30);
-    I.moveCursor(pmmSettingsPage.fields.diagnosticsInfo);
-    I.waitForText(pmmSettingsPage.diagnosticsText, 30);
-    I.waitForElement(pmmSettingsPage.fields.termsOfService);
-    I.waitForElement(pmmSettingsPage.fields.privacyPolicy);
-  },
-);
-
-Scenario(
-  'PMM-T398 - Verify Percona Platform (Login) elements on PMM Settings Page @settings',
-  async ({ I, pmmSettingsPage }) => {
-    await pmmSettingsPage.waitForPmmSettingsPageLoaded();
-    I.waitForElement(pmmSettingsPage.fields.perconaPlatformLink, 30);
-    I.click(pmmSettingsPage.fields.perconaPlatformLink);
-    I.waitForElement(pmmSettingsPage.fields.signInEmail, 30);
-    I.waitForElement(pmmSettingsPage.fields.signInPassword, 30);
-    I.waitForElement(pmmSettingsPage.fields.loginButton, 30);
-    I.waitForElement(pmmSettingsPage.fields.singInToSignUpButton, 30);
-    I.waitForElement(pmmSettingsPage.fields.diagnosticsButton, 30);
-    I.waitForVisible(pmmSettingsPage.fields.diagnosticsInfo, 30);
-    I.moveCursor(pmmSettingsPage.fields.diagnosticsInfo);
-    I.waitForText(pmmSettingsPage.diagnosticsText, 30);
   },
 );
 
