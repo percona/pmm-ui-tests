@@ -4,4 +4,6 @@ module.exports = () => actor({
     this.waitForText(message, timeout, '.page-alert-list div');
     this.click('.page-alert-list button');
   },
+
+  useDataQA: (selector) => `[data-qa="${selector}"]`,
 });
