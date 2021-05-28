@@ -23,7 +23,7 @@ After(async ({ channelsAPI, rulesAPI, templatesAPI }) => {
 });
 
 Data(pages).Scenario(
-  'PMM-T632 PMM-T697 PMM-T701 Verify Pagination navigation @ia',
+  'PMM-T632 PMM-T697 PMM-T701 Verify Pagination navigation @ia @grafana-pr',
   async ({
     I, iaCommon, current,
   }) => {

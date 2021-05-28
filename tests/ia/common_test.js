@@ -11,7 +11,7 @@ Before(async ({
 });
 
 Scenario(
-  'PMM-T643 Verify message about disabled IA @ia',
+  'PMM-T643 Verify message about disabled IA @ia @grafana-pr',
   async ({
     I, settingsAPI, iaCommon, pmmSettingsPage, codeceptjsConfig,
   }) => {
@@ -28,7 +28,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T481 PMM-T619 PMM-T620 Verify user is able to use tab bar, breadcrumb @ia',
+  'PMM-T481 PMM-T619 PMM-T620 Verify user is able to use tab bar, breadcrumb @ia @grafana-pr',
   async ({
     I, alertRulesPage, ruleTemplatesPage, iaCommon, ncPage,
   }) => {
