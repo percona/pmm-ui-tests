@@ -88,7 +88,7 @@ Scenario(
   },
 );
 
-Scenario(
+xScenario(
   'Verify user can create Remote Instances before upgrade and they are in RUNNNING status @pre-upgrade @ami-upgrade @pmm-upgrade',
   async ({
     inventoryAPI, addInstanceAPI,
@@ -127,7 +127,7 @@ Scenario(
   },
 );
 
-Scenario(
+xScenario(
   'Verify Agents are RUNNING after Upgrade (API) [critical] @post-upgrade @ami-upgrade @pmm-upgrade',
   async ({ inventoryAPI }) => {
     for (const service of Object.values(inventoryAPI.services)) {
@@ -190,7 +190,7 @@ Scenario(
   },
 );
 
-Scenario(
+xScenario(
   'Verify Agents are RUNNING after Upgrade (UI) [critical] @ami-upgrade @post-upgrade @pmm-upgrade',
   async ({ I, pmmInventoryPage }) => {
     for (const service of Object.values(serviceNames)) {
@@ -200,7 +200,7 @@ Scenario(
   },
 );
 
-Scenario(
+xScenario(
   'Verify QAN has specific filters for Remote Instances after Upgrade (UI) @ami-upgrade @post-upgrade @pmm-upgrade',
   async ({
     I, qanPage, qanFilters, addInstanceAPI,
