@@ -228,7 +228,7 @@ Scenario(
 ).retry(2);
 
 Scenario(
-  'Check QAN after remote postgreSQL instance is added @instances',
+  'PMM-T854 - Check QAN after remote postgreSQL instance is added @instances',
   async ({
     I, qanOverview, qanFilters, qanPage,
   }) => {
