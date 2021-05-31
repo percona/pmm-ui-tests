@@ -209,7 +209,7 @@ Data(remotePostgreSQL).Scenario(
 );
 
 Scenario(
-  'PMM-T853 - Check dashboard after remote postgreSQL instance is added @instances @not-ovf',
+  'PMM-T853 - Verify dashboard after remote postgreSQL instance is added @instances @not-ovf',
   async ({
     I, dashboardPage, adminPage,
   }) => {
@@ -228,7 +228,7 @@ Scenario(
 ).retry(2);
 
 Scenario(
-  'PMM-T854 - Check QAN after remote postgreSQL instance is added @instances',
+  'PMM-T854 - Verify QAN after remote postgreSQL instance is added @instances',
   async ({
     I, qanOverview, qanFilters, qanPage,
   }) => {
