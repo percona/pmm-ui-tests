@@ -39,7 +39,7 @@ module.exports = {
     accessDenied: '//div[contains(@class, "alert-title") and contains(text(), "Access denied.")]',
     title: '//span[contains(text(), "Percona Monitoring and Management")]',
     failedSecurityChecks: '//span[contains(text(), "Failed security check")]',
-    dbCheckPanelNoAccess: '//div[@data-qa="db-check-panel-no-access"]',
+    dbCheckPanelNoAccess: '//div[@data-qa="unauthorized"]',
   },
 
   verifyCopyrightsAndLegal() {
