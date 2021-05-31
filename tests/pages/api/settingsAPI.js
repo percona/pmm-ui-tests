@@ -72,6 +72,24 @@ module.exports = {
     );
   },
 
+  async enableAzure() {
+    const body = {
+      enable_azurediscover: true,
+    };
+    const headers = { Authorization: `Basic ${await I.getAuth()}` };
+
+    await I.sendPostRequest('v1/Settings/Change', body, headers);
+  },
+
+  async disableAzure(){
+    const body = {
+      disable_azurediscover: true,
+    };
+    const headers = { Authorization: `Basic ${await I.getAuth()}` };
+
+    await I.sendPostRequest('v1/Settings/Change', body, headers);
+  },
+
   async restoreSettingsDefaults() {
     const body = {
       data_retention: '2592000s',

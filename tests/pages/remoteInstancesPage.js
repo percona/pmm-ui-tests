@@ -11,7 +11,20 @@ module.exports = {
 
   // insert your locators and methods here
   // setting locators
-
+  postgresqlAzureInputs: {
+    userName: process.env.AZURE_POSTGRES_USER,
+    password: process.env.AZURE_POSTGRES_PASS,
+    environment: 'Azure PostgreSQL environment',
+    cluster: 'Azure PostgreSQL cluster',
+    replicationSet: 'Azure PostgreSQL replica',
+  },
+  mysqlAzureInputs: {
+    userName: process.env.AZURE_MYSQL_USER,
+    password: process.env.AZURE_MYSQL_PASS,
+    environment: 'Azure MySQL environment',
+    cluster: 'Azure MySQL cluster',
+    replicationSet: 'Azure MySQL replica',
+  },
   mysqlInputs: {
     userName: process.env.REMOTE_AWS_MYSQL_USER,
     password: process.env.REMOTE_AWS_MYSQL_PASSWORD,
@@ -43,6 +56,7 @@ module.exports = {
   fields: {
     accessKeyInput: '$aws_access_key-text-input',
     addAWSRDSMySQLbtn: '$rds-instance',
+    addAzureMySQLPostgreSQL: '$azure-instance',
     addExternalServiceRemote: '$external-instance',
     addHAProxy: '$haproxy-instance',
     addInstanceDiv: '//div[@class="view"]',
@@ -53,6 +67,8 @@ module.exports = {
     addProxySQLRemote: '$proxysql-instance',
     addService: '#addInstance',
     availabilityZone: '$az-text-input',
+    clientID: '$azure_client_id-text-input',
+    clientSecret: '$azure_client_secret-password-input',
     cluster: '$cluster-text-input',
     customLabels: '$custom_labels-textarea-input',
     disableBasicMetrics: '//input[@name="disable_basic_metrics"]/following-sibling::span[2]',
@@ -79,7 +95,9 @@ module.exports = {
     skipTLS: '//input[@name="tls_skip_verify"]',
     skipTLSL: '//input[@name="tls_skip_verify"]/following-sibling::span[2]',
     startMonitoring: '/following-sibling::td/a',
+    subscriptionID: '$azure_subscription_id-text-input',
     tableStatsGroupTableLimit: '$tablestats_group_table_limit-number-input',
+    tenantID: '$azure_tenant_id-text-input',
     usePerformanceSchema2: '//input[@name="qan_mysql_perfschema"]/following-sibling::span[2]',
     usePgStatMonitor: '//label[text()="PG Stat Monitor"]',
     usePgStatStatements: '//label[text()="PG Stat Statements"]',
@@ -223,6 +241,21 @@ module.exports = {
     return pmmInventoryPage;
   },
 
+  openAddAzure() {
+    I.waitForVisible(this.fields.addAzureMySQLPostgreSQL, 10);
+    I.click(this.fields.addAzureMySQLPostgreSQL);
+    I.waitForVisible(this.fields.clientID, 10);
+  },
+
+  discoverAzure() {
+    I.fillField(this.fields.clientID, process.env.AZURE_CLIENT_ID);
+    I.fillField(this.fields.clientSecret, process.env.AZURE_CLIENT_SECRET);
+    I.fillField(this.fields.tenantID, process.env.AZURE_TENNANT_ID);
+    I.fillField(this.fields.subscriptionID, process.env.AZURE_SUBSCRIPTION_ID);
+    I.click(this.fields.discoverBtn);
+    this.waitForDiscovery();
+  },
+
   openAddAWSRDSMySQLPage() {
     I.click(this.fields.addAWSRDSMySQLbtn);
     I.waitForVisible(this.fields.accessKeyInput, 30);
@@ -259,6 +292,7 @@ module.exports = {
   },
 
   fillFields(serviceParameters) {
+    adminPage.customClearField(this.fields.userName);
     I.fillField(this.fields.userName, serviceParameters.userName);
     I.fillField(this.fields.password, serviceParameters.password);
     I.fillField(this.fields.environment, serviceParameters.environment);
@@ -275,6 +309,15 @@ module.exports = {
       case 'pmm-qa-postgres-12':
         this.fillFields(this.postgresqlInputs);
         break;
+      case 'azure-MySQL':
+        adminPage.customClearField(this.fields.serviceName);
+        I.fillField(this.fields.serviceName, serviceName);
+        this.fillFields(this.mysqlAzureInputs);
+        break;
+      case 'azure-PostgreSQL':
+        adminPage.customClearField(this.fields.serviceName);
+        I.fillField(this.fields.serviceName, serviceName);
+        this.fillFields(this.postgresqlAzureInputs);
     }
     I.scrollPageToBottom();
   },
