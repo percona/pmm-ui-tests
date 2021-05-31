@@ -209,7 +209,7 @@ Data(remotePostgreSQL).Scenario(
 );
 
 Scenario(
-  'PMM-T853 - Check dashboard after remote postgreSQL instance is added @instances',
+  'PMM-T853 - Check dashboard after remote postgreSQL instance is added @instances @not-ovf',
   async ({
     I, dashboardPage, adminPage,
   }) => {
@@ -224,5 +224,20 @@ Scenario(
     adminPage.performPageUp(5);
     await dashboardPage.verifyThereAreNoGraphsWithNA();
     await dashboardPage.verifyThereAreNoGraphsWithoutData();
+  },
+).retry(2);
+
+Scenario(
+  'Check QAN after remote postgreSQL instance is added @instances',
+  async ({
+    I, qanOverview, qanFilters, qanPage,
+  }) => {
+    I.amOnPage(qanPage.url);
+    qanOverview.waitForOverviewLoaded();
+    qanFilters.applyFilter('remote-postgres-cluster');
+    qanOverview.waitForOverviewLoaded();
+    const count = await qanOverview.getCountOfItems();
+
+    assert.ok(count > 0, 'The queries for added remote PostgreSQL instance do NOT exist');
   },
 ).retry(2);
