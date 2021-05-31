@@ -128,12 +128,17 @@ class Grafana extends Helper {
   async verifyCommand(command, output, result = 'pass') {
     const { stdout, stderr, code } = shell.exec(command, { silent: true });
 
-    assert.ok(stdout.includes(output), `The output for ${command} was expected to include ${output} but found ${stdout}`);
+    if (output) {
+      assert.ok(stdout.includes(output), `The output for ${command} was expected to include ${output} but found ${stdout}`);
+    }
+
     if (result === 'pass') {
       assert.ok(code === 0, `The command ${command} was expected to run without any errors but found error in return code ${code}`);
     } else {
       assert.ok(code !== 0, `The command ${command} was expected to return with failure but found to be executing without any error, the return code ${code}`);
     }
+
+    return stdout;
   }
 }
 

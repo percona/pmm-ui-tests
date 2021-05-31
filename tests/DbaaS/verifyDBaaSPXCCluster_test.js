@@ -108,10 +108,14 @@ Scenario('PMM-T640 PMM-T479 Single Node PXC Cluster with Custom Resources @dbaas
       username, password, host, port,
     } = await dbaasAPI.getDbClusterDetails(pxc_cluster_name_single, clusterName);
     const output = await I.verifyCommand(
-      `kubectl run -i --rm --tty percona-client --image=percona:8.0 --restart=Never -- mysql -h ${host} -u${username} -p${password} -e "SHOW DATABASES;"`,
+      `kubectl run -i --rm --tty pxc-client --image=percona:8.0 --restart=Never -- mysql -h ${host} -u${username} -p${password} -e "SHOW DATABASES;"`,
       'performance_schema',
     );
 
+    await I.verifyCommand(
+      'kubectl delete pods pxc-client',
+      'pod "pxc-client" deleted',
+    );
     await dbaasActionsPage.deleteXtraDBCluster(pxc_cluster_name_single, clusterName);
   });
 
