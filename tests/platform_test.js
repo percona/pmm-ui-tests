@@ -31,7 +31,7 @@ After(async ({ platformAPI }) => {
 });
 
 Scenario(
-  'PMM-T398 PMM-T809 Verify Sign in form and validation @platform @settings @grafana-pr',
+  'PMM-T398 PMM-T809 Verify Sign in form and validation @platform @settings',
   async ({ I, links }) => {
     // Verify elements in login form
     I.seeTextEquals('Login', 'legend');
