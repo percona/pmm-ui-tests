@@ -81,7 +81,7 @@ module.exports = {
     await I.sendPostRequest('v1/Settings/Change', body, headers);
   },
 
-  async disableAzure(){
+  async disableAzure() {
     const body = {
       disable_azurediscover: true,
     };

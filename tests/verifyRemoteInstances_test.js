@@ -38,7 +38,7 @@ xScenario(
 );
 
 // TODO: unskip the mongodb test after resolving a instance issues
-Data(instances.filter((instance) => instance.name!=='mongodb')).Scenario(
+Data(instances.filter((instance) => instance.name !== 'mongodb')).Scenario(
   'Verify Remote Instance Addition [critical] @instances',
   async ({ I, remoteInstancesPage, current }) => {
     const serviceName = remoteInstancesPage.services[current.name];
@@ -209,9 +209,9 @@ Data(remotePostgreSQL).Scenario(
 );
 
 Scenario(
-  'check postgreSQL Overview dashboard @instances',
+  'PMM-T853 - Check dashboard after remote postgreSQL instance is added @instances',
   async ({
-    I, dashboardPage, adminPage
+    I, dashboardPage, adminPage,
   }) => {
     const serviceName = 'postgresql_remote_new';
 
