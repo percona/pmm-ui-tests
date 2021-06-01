@@ -58,7 +58,7 @@ Scenario('PMM-T642 PMM-T484  PSMDB Cluster with Custom Resources, Verify MongoDB
       'kubectl run psmdb-client --image=percona/percona-server-mongodb:4.4.5-7 --restart=Never',
     );
 
-    // Adding wait for psmdb-client pod to startup
+    // wait for psmdb-client pod to startup, to improve with cmd helper wait for expected output on list pods
     I.wait(20);
     await I.verifyCommand(
       'kubectl cp /srv/pmm-qa/pmm-tests/psmdb_cluster_connection_check.js psmdb-client:/tmp/',

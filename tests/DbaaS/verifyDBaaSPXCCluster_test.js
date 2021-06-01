@@ -112,10 +112,6 @@ Scenario('PMM-T640 PMM-T479 Single Node PXC Cluster with Custom Resources @dbaas
       'performance_schema',
     );
 
-    await I.verifyCommand(
-      'kubectl delete pods pxc-client',
-      'pod "pxc-client" deleted',
-    );
     await dbaasActionsPage.deleteXtraDBCluster(pxc_cluster_name_single, clusterName);
   });
 
