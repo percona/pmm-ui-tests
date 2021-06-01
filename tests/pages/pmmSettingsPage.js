@@ -73,6 +73,7 @@ module.exports = {
       'Invalid alert_manager_url: invalid_url - missing protocol scheme.',
     invalidAlertmanagerMissingHostMessage: 'Invalid alert_manager_url: http:// - missing host.',
     invalidAlertmanagerRulesMessage: 'Invalid alerting rules.',
+    invalidDBaaSDisableMessage: 'DBaaS is enabled via ENABLE_DBAAS or via deprecated PERCONA_TEST_DBAAS environment variable.',
   },
   sectionTabsList: {
     metrics: 'Metrics Resolution',
@@ -234,6 +235,8 @@ module.exports = {
     standartIntervalValidation: '$standardInterval-field-error-message',
     frequentIntervalInput: '$frequentInterval-number-input',
     frequentIntervalValidation: '$frequentInterval-field-error-message',
+    dbaasSwitchSelectorInput: locate('$advanced-dbaas').find('//div[2]//input'),
+    dbaasSwitchSelector: locate('$advanced-dbaas').find('//div[2]//label'),
   },
 
   switchAzure() {
