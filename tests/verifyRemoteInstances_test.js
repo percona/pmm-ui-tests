@@ -4,10 +4,17 @@ const { remoteInstancesPage, pmmInventoryPage } = inject();
 
 const instances = new DataTable(['name']);
 const remotePostgreSQL = new DataTable(['instanceName', 'trackingOption', 'checkAgent']);
+const qanFilters = new DataTable(['filterName']);
 
 remotePostgreSQL.add(['postgreDoNotTrack', remoteInstancesPage.fields.doNotTrack, pmmInventoryPage.fields.postgresExporter]);
 remotePostgreSQL.add(['postgresPGStatStatements', remoteInstancesPage.fields.usePgStatStatements, pmmInventoryPage.fields.postgresPgStatements]);
 remotePostgreSQL.add(['postgresPgStatMonitor', remoteInstancesPage.fields.usePgStatMonitor, pmmInventoryPage.fields.postgresPgstatmonitor]);
+
+qanFilters.add(['remote-postgres-cluster']);
+// TODO: uncomment after fix of mongodb
+// qanFilters.add(['remote-mongodb-cluster']);
+qanFilters.add(['remote-proxysql-cluster']);
+qanFilters.add(['remote-mysql-cluster']);
 
 for (const i of Object.keys(remoteInstancesPage.services)) {
   instances.add([i]);
@@ -227,17 +234,17 @@ Scenario(
   },
 ).retry(2);
 
-Scenario(
+Data(qanFilters).Scenario(
   'PMM-T854 - Verify QAN after remote postgreSQL instance is added @instances',
   async ({
-    I, qanOverview, qanFilters, qanPage,
+    I, qanOverview, qanFilters, qanPage, current,
   }) => {
     I.amOnPage(qanPage.url);
     qanOverview.waitForOverviewLoaded();
-    qanFilters.applyFilter('remote-postgres-cluster');
+    qanFilters.applyFilter(current.filterName);
     qanOverview.waitForOverviewLoaded();
     const count = await qanOverview.getCountOfItems();
 
-    assert.ok(count > 0, 'The queries for added remote PostgreSQL instance do NOT exist');
+    assert.ok(count > 0, `The queries for filter ${current.filterName} instance do NOT exist`);
   },
 ).retry(2);
