@@ -133,7 +133,7 @@ class Grafana extends Helper {
     }
 
     if (result === 'pass') {
-      assert.ok(code === 0, `The command ${command} was expected to run without any errors but found error in return code ${code}`);
+      assert.ok(code === 0, `The command ${command} was expected to run without any errors, the error found ${stderr}`);
     } else {
       assert.ok(code !== 0, `The command ${command} was expected to return with failure but found to be executing without any error, the error found ${stderr}`);
     }
