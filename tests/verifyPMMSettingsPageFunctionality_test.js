@@ -202,6 +202,19 @@ Scenario('PMM-T532 PMM-T533 PMM-T536 - Verify user can enable/disable IA in Sett
     await settingsAPI.apiEnableIA();
   }).retry(2);
 
+Scenario('PMM-T785 - Verify DBaaS cannot be disabled with ENABLE_DBAAS or PERCONA_TEST_DBAAS @settings @dbaas',
+  async ({ I, pmmSettingsPage }) => {
+    I.amOnPage(pmmSettingsPage.advancedSettingsUrl);
+    await pmmSettingsPage.waitForPmmSettingsPageLoaded();
+    I.waitForVisible(pmmSettingsPage.fields.dbaasSwitchSelector, 30);
+    pmmSettingsPage.verifySwitch(pmmSettingsPage.fields.dbaasSwitchSelectorInput, 'on');
+    I.click(pmmSettingsPage.fields.dbaasSwitchSelector);
+    pmmSettingsPage.verifySwitch(pmmSettingsPage.fields.dbaasSwitchSelectorInput, 'off');
+    I.click(pmmSettingsPage.fields.advancedButton);
+    pmmSettingsPage.verifySwitch(pmmSettingsPage.fields.dbaasSwitchSelectorInput, 'on');
+    I.verifyPopUpMessage(pmmSettingsPage.messages.invalidDBaaSDisableMessage);
+  });
+
 Data(communicationDefaults).Scenario('PMM-T534 PMM-T535 - Verify user is able to set up default Email/Slack communication settings @ia @settings',
   async ({
     I, pmmSettingsPage, settingsAPI, current,
