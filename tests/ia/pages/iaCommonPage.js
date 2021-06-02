@@ -89,6 +89,7 @@ module.exports = {
   verifyPaginationButtonsState(state) {
     for (const [key, value] of Object.entries(state)) {
       if (this.buttons[key]) {
+        I.waitForVisible(this.buttons[key], 10);
         this.verifyButtonState(this.buttons[key], this.shouldBeDisabled(value));
       } else {
         throw new Error(`Didn't find ${key} key in ${this.buttons} object`);
