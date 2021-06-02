@@ -41,6 +41,7 @@
     "mochawesome-report-generator": "^5.2.0",
     "playwright": "^1.10.0",
     "prettier": "^2.2.1",
+    "shelljs": "^0.8.4",
     "yaml": "^1.10.2"
   }
 }

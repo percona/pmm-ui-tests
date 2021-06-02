@@ -242,6 +242,23 @@ module.exports = {
     }
   },
 
+  async getDbClusterDetails(dbClusterName, clusterName, dbType = 'MySQL') {
+    let response;
+    const body = {
+      kubernetesClusterName: clusterName,
+      name: dbClusterName,
+    };
+    const headers = { Authorization: `Basic ${await I.getAuth()}` };
+
+    if (dbType === 'MySQL') {
+      response = await I.sendPostRequest('v1/management/DBaaS/XtraDBClusters/GetCredentials', body, headers);
+    } else {
+      response = await I.sendPostRequest('v1/management/DBaaS/PSMDBClusters/GetCredentials', body, headers);
+    }
+
+    return response.data.connection_credentials;
+  },
+
   async deleteAllDBCluster(clusterName) {
     const body = {
       kubernetesClusterName: clusterName,
