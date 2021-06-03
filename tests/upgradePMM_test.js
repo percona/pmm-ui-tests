@@ -1,11 +1,8 @@
 const assert = require('assert');
 
-const serviceNames = {
-  mysql: 'mysql_upgrade_service',
-  // postgresql: 'postgres_upgrade_service',
-  proxysql: 'proxysql_upgrade_service',
-  rds: 'mysql_rds_uprgade_service',
-};
+const {
+  remoteInstancesHelper,
+} = inject();
 
 // For running on local env set PMM_SERVER_LATEST and DOCKER_VERSION variables
 function getVersions() {
@@ -30,7 +27,7 @@ function getVersions() {
   };
 }
 
-Feature('PMM server Upgrade Tests and Executing test cases related to Upgrade Testing Cycle').retry(2);
+Feature('PMM server Upgrade Tests and Executing test cases related to Upgrade Testing Cycle').retry(0);
 
 Before(async ({ I }) => {
   await I.Authorize();
@@ -94,13 +91,24 @@ Scenario(
     inventoryAPI, addInstanceAPI,
   }) => {
     // Adding instances for monitoring
-    for (const type of Object.values(addInstanceAPI.instanceTypes)) {
-      if (!/MongoDB|PostgreSQL/.test(type)) await addInstanceAPI.apiAddInstance(type, serviceNames[type.toLowerCase()]);
+    for (const type of Object.values(remoteInstancesHelper.instanceTypes)) {
+      if (type) {
+        console.log(type);
+        await addInstanceAPI.apiAddInstance(
+          type,
+          remoteInstancesHelper.upgradeServiceNames[type.toLowerCase()],
+        );
+      }
     }
 
     // Checking that instances are RUNNING
-    for (const service of Object.values(inventoryAPI.services)) {
-      if (!/mongodb|postgresql/.test(service.service)) await inventoryAPI.verifyServiceExistsAndHasRunningStatus(service, serviceNames[service.service]);
+    for (const service of Object.values(remoteInstancesHelper.serviceTypes)) {
+      if (service) {
+        await inventoryAPI.verifyServiceExistsAndHasRunningStatus(
+          service,
+          remoteInstancesHelper.upgradeServiceNames[service.service],
+        );
+      }
     }
   },
 );
@@ -130,8 +138,13 @@ Scenario(
 Scenario(
   'Verify Agents are RUNNING after Upgrade (API) [critical] @post-upgrade @ami-upgrade @pmm-upgrade',
   async ({ inventoryAPI }) => {
-    for (const service of Object.values(inventoryAPI.services)) {
-      if (!/mongodb|postgresql/.test(service.service)) await inventoryAPI.verifyServiceExistsAndHasRunningStatus(service, serviceNames[service.service]);
+    for (const service of Object.values(remoteInstancesHelper.serviceTypes)) {
+      if (service) {
+        await inventoryAPI.verifyServiceExistsAndHasRunningStatus(
+          service,
+          remoteInstancesHelper.upgradeServiceNames[service.service],
+        );
+      }
     }
   },
 );
@@ -193,9 +206,11 @@ Scenario(
 Scenario(
   'Verify Agents are RUNNING after Upgrade (UI) [critical] @ami-upgrade @post-upgrade @pmm-upgrade',
   async ({ I, pmmInventoryPage }) => {
-    for (const service of Object.values(serviceNames)) {
-      I.amOnPage(pmmInventoryPage.url);
-      await pmmInventoryPage.verifyAgentHasStatusRunning(service);
+    for (const service of Object.values(remoteInstancesHelper.upgradeServiceNames)) {
+      if (service) {
+        I.amOnPage(pmmInventoryPage.url);
+        await pmmInventoryPage.verifyAgentHasStatusRunning(service);
+      }
     }
   },
 );
@@ -205,21 +220,18 @@ Scenario(
   async ({
     I, qanPage, qanFilters, addInstanceAPI,
   }) => {
-    // For now we can't see the cluster names in QAN for ProxySQL, MongoDB and PostgreSQL
-    const {
-      proxysql, mongodb, postgresql, ...filters
-    } = addInstanceAPI.clusterNames;
-
     I.amOnPage(qanPage.url);
     qanFilters.waitForFiltersToLoad();
     await qanFilters.expandAllFilters();
 
     // Checking that Cluster filters are still in QAN after Upgrade
-    for (const name of Object.values(filters)) {
-      const filter = qanFilters.getFilterLocator(name);
+    for (const name of Object.keys(remoteInstancesHelper.upgradeServiceNames)) {
+      if (remoteInstancesHelper.qanFilters.includes(name)) {
+        const filter = qanFilters.getFilterLocator(name);
 
-      I.waitForVisible(filter, 30);
-      I.seeElement(filter);
+        I.waitForVisible(filter, 30);
+        I.seeElement(filter);
+      }
     }
   },
 );

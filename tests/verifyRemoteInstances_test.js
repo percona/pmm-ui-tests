@@ -1,19 +1,20 @@
 const assert = require('assert');
 
-const { remoteInstancesPage, pmmInventoryPage } = inject();
+const { pmmInventoryPage, remoteInstancesPage, remoteInstancesHelper } = inject();
 
 const instances = new DataTable(['name']);
 const remotePostgreSQL = new DataTable(['instanceName', 'trackingOption', 'checkAgent']);
 
 remotePostgreSQL.add(['postgreDoNotTrack', remoteInstancesPage.fields.doNotTrack, pmmInventoryPage.fields.postgresExporter]);
 remotePostgreSQL.add(['postgresPGStatStatements', remoteInstancesPage.fields.usePgStatStatements, pmmInventoryPage.fields.postgresPgStatements]);
-remotePostgreSQL.add(['postgresPgStatMonitor', remoteInstancesPage.fields.usePgStatMonitor, pmmInventoryPage.fields.postgresPgstatmonitor]);
 
-for (const i of Object.keys(remoteInstancesPage.services)) {
-  instances.add([i]);
+for (const [key, value] of Object.entries(remoteInstancesHelper.services)) {
+  if (value) {
+    instances.add([key]);
+  }
 }
 
-Feature('Remote DB Instances').retry(2);
+Feature('Remote DB Instances').retry(1);
 
 Before(async ({ I }) => {
   await I.Authorize();
@@ -37,11 +38,10 @@ xScenario(
   },
 );
 
-// TODO: unskip the mongodb and postgresql tests after resolving a instance issues
-Data(instances.filter((instance) => /mysql|proxysql/.test(instance.name))).Scenario(
+Data(instances).Scenario(
   'Verify Remote Instance Addition [critical] @instances',
   async ({ I, remoteInstancesPage, current }) => {
-    const serviceName = remoteInstancesPage.services[current.name];
+    const serviceName = remoteInstancesHelper.services[current.name];
 
     I.amOnPage(remoteInstancesPage.url);
     remoteInstancesPage.waitUntilRemoteInstancesPageLoaded();
@@ -79,13 +79,12 @@ Scenario(
   },
 );
 
-// TODO: unskip the mongodb and postgresql tests after resolving a instance issues
-Data(instances.filter((instance) => /mysql|proxysql/.test(instance.name))).Scenario(
+Data(instances).Scenario(
   'Verify Remote Instance has Status Running [critical] @instances',
   async ({
-    I, remoteInstancesPage, pmmInventoryPage, current,
+    I, pmmInventoryPage, current,
   }) => {
-    const serviceName = remoteInstancesPage.services[current.name];
+    const serviceName = remoteInstancesHelper.services[current.name];
 
     I.amOnPage(pmmInventoryPage.url);
     pmmInventoryPage.verifyRemoteServiceIsDisplayed(serviceName);

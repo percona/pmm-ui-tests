@@ -3,26 +3,6 @@ const assert = require('assert');
 const { I } = inject();
 
 module.exports = {
-  // methods for preparing state of application before test
-  services: {
-    mysql: {
-      serviceType: 'MYSQL_SERVICE',
-      service: 'mysql',
-    },
-    mongodb: {
-      serviceType: 'MONGODB_SERVICE',
-      service: 'mongodb',
-    },
-    postgresql: {
-      serviceType: 'POSTGRESQL_SERVICE',
-      service: 'postgresql',
-    },
-    proxysql: {
-      serviceType: 'PROXYSQL_SERVICE',
-      service: 'proxysql',
-    },
-  },
-
   async verifyServiceExistsAndHasRunningStatus(service, serviceName) {
     let responseService;
 
