@@ -25,7 +25,7 @@ Before(async ({
 });
 
 Scenario(
-  'PMM-T510 Verify built-in rule templates are non-editable @ia',
+  'PMM-T510 Verify built-in rule templates are non-editable @ia @grafana-pr',
   async ({ I, ruleTemplatesPage }) => {
     const editButton = ruleTemplatesPage.buttons
       .editButtonBySource(ruleTemplatesPage.templateSources.builtin);
@@ -40,7 +40,7 @@ Scenario(
 );
 
 Scenario(
-  'Verify rule templates list elements @ia',
+  'Verify rule templates list elements @ia @grafana-pr',
   async ({ I, ruleTemplatesPage }) => {
     ruleTemplatesPage.openRuleTemplatesTab();
     ruleTemplatesPage.columnHeaders.forEach((header) => {
@@ -58,7 +58,7 @@ Scenario(
 );
 
 Scenario(
-  'Add rule template modal elements @ia',
+  'Add rule template modal elements @ia @grafana-pr',
   async ({ I, ruleTemplatesPage }) => {
     ruleTemplatesPage.openRuleTemplatesTab();
     I.click(ruleTemplatesPage.buttons.openAddTemplateModal);
@@ -136,7 +136,7 @@ Data(templates)
   );
 
 Scenario(
-  'PMM-T501 Upload duplicate rule template @ia',
+  'PMM-T501 Upload duplicate rule template @ia @grafana-pr',
   async ({ I, ruleTemplatesPage, templatesAPI }) => {
     const path = ruleTemplatesPage.ruleTemplate.paths.yaml;
     const [, , id] = await ruleTemplatesPage.ruleTemplate.templateNameAndContent(path);
@@ -154,7 +154,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T483 PMM-T699 Verify user can edit UI-created IA rule template @ia',
+  'PMM-T483 PMM-T699 Verify user can edit UI-created IA rule template @ia @grafana-pr',
   async ({ I, ruleTemplatesPage, templatesAPI }) => {
     const path = ruleTemplatesPage.ruleTemplate.paths.yaml;
     const [templateName, fileContent, id] = await ruleTemplatesPage.ruleTemplate
@@ -185,7 +185,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T562 Verify user can delete User-defined (UI) rule templates @ia',
+  'PMM-T562 Verify user can delete User-defined (UI) rule templates @ia @grafana-pr',
   async ({ I, ruleTemplatesPage, templatesAPI }) => {
     const path = ruleTemplatesPage.ruleTemplate.paths.yaml;
     const [templateName] = await ruleTemplatesPage.ruleTemplate
