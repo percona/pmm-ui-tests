@@ -13,7 +13,7 @@ module.exports = {
   // setting locators
   postgresqlAzureInputs: {
     userName: remoteInstancesHelper.remote_instance.azure.azure_postgresql.userName,
-    password: remoteInstancesHelper.remote_instance.azure.azure_postgresql.userName,
+    password: remoteInstancesHelper.remote_instance.azure.azure_postgresql.password,
     environment: 'Azure PostgreSQL environment',
     cluster: 'Azure PostgreSQL cluster',
     replicationSet: 'Azure PostgreSQL replica',
