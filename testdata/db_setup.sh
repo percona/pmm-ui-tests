@@ -1,8 +1,8 @@
 #!/bin/bash
 
 
-## Slowlog volume shared with docker container
-chmod 777 -R /tmp/mysql
+## Slowlog file shared with ps docker container, to allow pmm-agent to read
+sudo chmod 777 -R /tmp/mysql/log
 
 ## setup as we do in pmm-framework
 docker exec pmm-agent_mysql_5_7 mysql -h 127.0.0.1 -u root -pps -e "SET GLOBAL slow_query_log='ON';"
