@@ -183,6 +183,6 @@ module.exports = {
   qanFilters: ['mysql', 'mongodb', 'postgresql', 'rds'],
 
   getInstanceStatus(instance) {
-    return Object.keys(remoteInstanceStatus).filter(instance);
+    return remoteInstanceStatus[Object.keys(remoteInstanceStatus).filter((dbtype) => dbtype === instance)];
   },
 };
