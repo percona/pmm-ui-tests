@@ -138,6 +138,17 @@ module.exports = {
     );
   },
 
+  /**
+   * Change Settings API call
+   *
+   * @param values object
+   * @param fullPayload boolean (default = false. If true - passed values object will be send as a payload)
+   * @returns {Promise<void>}
+   *
+   * @example
+   * await settingsAPI.changeSettings({ alerting: true, dbaas: true, stt: false });
+   * await settingsAPI.changeSettings({ enable_alerting: true, enable_dbaas: true, disable_stt: true }, true);
+   */
   async changeSettings(values, fullPayload = false) {
     const body = fullPayload ? values : {};
 
