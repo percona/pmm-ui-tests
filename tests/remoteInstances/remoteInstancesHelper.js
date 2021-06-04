@@ -49,14 +49,14 @@ module.exports = {
   remote_instance: {
     mysql: {
       ps_5_7: {
-        host: process.env.PMM_SERVER_LATEST ? '127.0.0.1' : 'mysql',
+        host: 'mysql',
         port: '3306',
         username: 'pmm-agent',
         password: 'pmm%*&agent-password',
         clusterName: 'mysql_clstr',
       },
       ps_8_0: {
-        host: process.env.PMM_SERVER_LATEST ? '127.0.0.1' : 'mysql8',
+        host: 'mysql8',
         port: '3307',
         username: 'pmm-agent',
         password: 'pmm!^%*@agent-password',
@@ -65,7 +65,7 @@ module.exports = {
     },
     mongodb: {
       psmdb_4_2: {
-        host: process.env.PMM_SERVER_LATEST ? '127.0.0.1' : 'mongo',
+        host: 'mongo',
         port: '27017',
         username: 'root',
         password: 'root-!@#%^password',
@@ -74,7 +74,7 @@ module.exports = {
     },
     postgresql: {
       pdpgsql_13_3: {
-        host: process.env.PMM_SERVER_LATEST ? '127.0.0.1' : 'postgres',
+        host: 'postgres',
         port: '5432',
         username: 'postgres',
         password: 'pmm-^*&@agent-password',
@@ -83,7 +83,7 @@ module.exports = {
     },
     proxysql: {
       proxysql_2_1_1: {
-        host: process.env.PMM_SERVER_LATEST ? '127.0.0.1' : 'proxysql',
+        host: 'proxysql',
         port: '6032',
         username: 'radmin',
         password: 'radmin',
