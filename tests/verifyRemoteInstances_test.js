@@ -14,7 +14,6 @@ qanFilters.add(['remote-postgres-cluster']);
 // TODO: uncomment after fix of mongodb
 // qanFilters.add(['remote-mongodb-cluster']);
 qanFilters.add(['remote-mysql-cluster']);
-qanFilters.add(['remote-proxysql-cluster']);
 
 for (const i of Object.keys(remoteInstancesPage.services)) {
   instances.add([i]);
@@ -235,7 +234,7 @@ Scenario(
 ).retry(2);
 
 Data(qanFilters).Scenario(
-  'PMM-T854 - Verify QAN after remote postgreSQL instance is added @instances',
+  'PMM-T854 - Verify QAN after remote instance is added @instances',
   async ({
     I, qanOverview, qanFilters, qanPage, current,
   }) => {
