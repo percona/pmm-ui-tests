@@ -138,56 +138,58 @@ module.exports = {
     );
   },
 
-  async changeSettings(values) {
-    const body = {};
+  async changeSettings(values, fullPayload = false) {
+    const body = fullPayload ? values : {};
 
-    Object.entries(values).forEach(([key, value]) => {
-      switch (key) {
-        case 'alerting':
-          value ? body.enable_alerting = true : body.disable_alerting = true;
-          break;
-        case 'stt':
-          value ? body.enable_stt = true : body.disable_stt = true;
-          break;
-        case 'dbaas':
-          value ? body.enable_dbaas = true : body.disable_dbaas = true;
-          break;
-        case 'telemetry':
-          value ? body.enable_telemetry = true : body.disable_telemetry = true;
-          break;
-        case 'azureDiscover':
-          value ? body.enable_azurediscover = true : body.disable_azurediscover = true;
-          break;
-        case 'backup':
-          value ? body.enable_backup_management = true : body.disable_backup_management = true;
-          break;
-        case 'publicAddress':
-          value
-            ? Object.assign(body, { pmm_public_address: value, remove_pmm_public_address: false })
-            : body.remove_pmm_public_address = true;
-          break;
-        case 'data_retention':
-          body.data_retention = value;
-          break;
-        case 'resolution':
-          body.metrics_resolutions = Object.assign(body, value);
-          break;
-        case 'checkIntervals':
-          body.stt_check_intervals = Object.assign(body, value);
-          break;
-        case 'alertmanagerRules':
-          body.alert_manager_rules = value;
-          break;
-        case 'alertmanagerURL':
-          body.alert_manager_url = value;
-          break;
-        case 'ssh':
-          body.ssh_key = value;
-          break;
-        default:
-          throw Error(`Unknown property "${key}" was passed to Change Settings function`);
-      }
-    });
+    if (!fullPayload) {
+      Object.entries(values).forEach(([key, value]) => {
+        switch (key) {
+          case 'alerting':
+            value ? body.enable_alerting = true : body.disable_alerting = true;
+            break;
+          case 'stt':
+            value ? body.enable_stt = true : body.disable_stt = true;
+            break;
+          case 'dbaas':
+            value ? body.enable_dbaas = true : body.disable_dbaas = true;
+            break;
+          case 'telemetry':
+            value ? body.enable_telemetry = true : body.disable_telemetry = true;
+            break;
+          case 'azureDiscover':
+            value ? body.enable_azurediscover = true : body.disable_azurediscover = true;
+            break;
+          case 'backup':
+            value ? body.enable_backup_management = true : body.disable_backup_management = true;
+            break;
+          case 'publicAddress':
+            value
+              ? Object.assign(body, { pmm_public_address: value, remove_pmm_public_address: false })
+              : body.remove_pmm_public_address = true;
+            break;
+          case 'data_retention':
+            body.data_retention = value;
+            break;
+          case 'resolution':
+            body.metrics_resolutions = Object.assign(body, value);
+            break;
+          case 'checkIntervals':
+            body.stt_check_intervals = Object.assign(body, value);
+            break;
+          case 'alertmanagerRules':
+            body.alert_manager_rules = value;
+            break;
+          case 'alertmanagerURL':
+            body.alert_manager_url = value;
+            break;
+          case 'ssh':
+            body.ssh_key = value;
+            break;
+          default:
+            throw Error(`Unknown property "${key}" was passed to Change Settings function`);
+        }
+      });
+    }
 
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
 
