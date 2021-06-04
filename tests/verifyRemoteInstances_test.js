@@ -13,8 +13,8 @@ remotePostgreSQL.add(['postgresPgStatMonitor', remoteInstancesPage.fields.usePgS
 qanFilters.add(['remote-postgres-cluster']);
 // TODO: uncomment after fix of mongodb
 // qanFilters.add(['remote-mongodb-cluster']);
-qanFilters.add(['remote-proxysql-cluster']);
 qanFilters.add(['remote-mysql-cluster']);
+qanFilters.add(['remote-proxysql-cluster']);
 
 for (const i of Object.keys(remoteInstancesPage.services)) {
   instances.add([i]);
@@ -230,7 +230,7 @@ Scenario(
     await dashboardPage.expandEachDashboardRow();
     adminPage.performPageUp(5);
     await dashboardPage.verifyThereAreNoGraphsWithNA();
-    await dashboardPage.verifyThereAreNoGraphsWithoutData();
+    await dashboardPage.verifyThereAreNoGraphsWithoutData(1);
   },
 ).retry(2);
 
