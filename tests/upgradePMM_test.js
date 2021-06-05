@@ -176,7 +176,7 @@ Scenario(
   },
 );
 
-Scenario(
+xScenario(
   'Verify user can see News Panel @post-upgrade @ami-upgrade @pmm-upgrade  ',
   async ({ I, homePage }) => {
     I.amOnPage(homePage.url);
@@ -236,7 +236,7 @@ Scenario(
   },
 );
 
-Scenario(
+xScenario(
   'Verify Metrics from custom queries for mysqld_exporter after upgrade (UI) @post-upgrade @ami-upgrade @pmm-upgrade',
   async ({ dashboardPage }) => {
     const metricName = 'mysql_performance_schema_memory_summary_current_bytes';
