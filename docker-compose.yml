@@ -1,6 +1,10 @@
 ---
 version: '3.7'
 
+volumes:
+  pmm-server-data:
+    external: true
+
 services:
   pmm-server:
     image: ${PMM_SERVER_IMAGE:-perconalab/pmm-server:dev-latest}
@@ -16,7 +20,7 @@ services:
       - DISABLE_TELEMETRY=${DISABLE_TELEMETRY:-false}
       - DATA_RETENTION=${DATA_RETENTION:-48h}
     volumes:
-      - ./testdata/checks:/srv/checks
+      - pmm-server-data:/srv
 
   # It is essential to have an extra directory `/slowlogs/` between host and container;
   # Otherwise, MySQL in Docker for Mac completely locks during/after slowlog rotation tests.
@@ -36,7 +40,7 @@ services:
       - MYSQL_PASSWORD=pmm%*&agent-password
       - UMASK=0777  # for slowlog file
     volumes:
-      - /tmp/mysql/log:/tmp/mysql/log
+      - /tmp/mysql/log:/tmp/mysql/log:rw
 
   mysql8:
     image: ${MYSQL_IMAGE:-percona:8.0}
@@ -112,7 +116,7 @@ services:
       - "6033:6033"
       - "6070:6070"
     volumes:
-      - ${PWD}/testdata/proxysql/proxysql.cnf:/etc/proxysql.cnf
+      - ${PWD}/testdata/proxysql/proxysql.cnf:/etc/proxysql.cnf:rw
 
   sysbench:
     image: perconalab/sysbench
