@@ -218,7 +218,7 @@ Scenario(
 Scenario(
   'Verify QAN has specific filters for Remote Instances after Upgrade (UI) @ami-upgrade @post-upgrade @pmm-upgrade',
   async ({
-    I, qanPage, qanFilters, addInstanceAPI,
+    I, qanPage, qanFilters, qanOverview,
   }) => {
     I.amOnPage(qanPage.url);
     qanFilters.waitForFiltersToLoad();
@@ -228,6 +228,9 @@ Scenario(
     for (const name of Object.keys(remoteInstancesHelper.upgradeServiceNames)) {
       if (remoteInstancesHelper.qanFilters.includes(name)) {
         const filter = qanFilters.getFilterLocator(name);
+
+        qanFilters.waitForFiltersToLoad();
+        qanOverview.waitForOverviewLoaded();
 
         I.waitForVisible(filter, 30);
         I.seeElement(filter);
