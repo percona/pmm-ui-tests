@@ -176,6 +176,7 @@ Scenario(
   },
 );
 
+// https://jira.percona.com/browse/PMM-8213 logged to track the defect
 xScenario(
   'Verify user can see News Panel @post-upgrade @ami-upgrade @pmm-upgrade  ',
   async ({ I, homePage }) => {
@@ -239,6 +240,7 @@ Scenario(
   },
 );
 
+// PMM-8123 yet to be merged to master hence skipping, was already fixed in RC 2.18.0
 xScenario(
   'Verify Metrics from custom queries for mysqld_exporter after upgrade (UI) @post-upgrade @ami-upgrade @pmm-upgrade',
   async ({ dashboardPage }) => {
