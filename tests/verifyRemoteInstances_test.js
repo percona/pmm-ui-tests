@@ -10,10 +10,10 @@ remotePostgreSQL.add(['postgreDoNotTrack', remoteInstancesPage.fields.doNotTrack
 remotePostgreSQL.add(['postgresPGStatStatements', remoteInstancesPage.fields.usePgStatStatements, pmmInventoryPage.fields.postgresPgStatements]);
 remotePostgreSQL.add(['postgresPgStatMonitor', remoteInstancesPage.fields.usePgStatMonitor, pmmInventoryPage.fields.postgresPgstatmonitor]);
 
-qanFilters.add(['remote-postgres-cluster']);
+qanFilters.add([remoteInstancesPage.potgresqlSettings.environment]);
 // TODO: uncomment after fix of mongodb
 // qanFilters.add(['remote-mongodb-cluster']);
-qanFilters.add(['remote-mysql-cluster']);
+qanFilters.add([remoteInstancesPage.mysqlSettings.environment]);
 
 for (const i of Object.keys(remoteInstancesPage.services)) {
   instances.add([i]);
