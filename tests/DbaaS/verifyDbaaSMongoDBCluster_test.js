@@ -1,6 +1,7 @@
 const { dbaasAPI, dbaasPage } = inject();
 const clusterName = 'Kubernetes_Testing_Cluster_Minikube';
 const psmdb_cluster = 'psmdb-cluster';
+const assert = require('assert');
 
 const psmdb_configuration = {
   topology: 'Cluster',
@@ -38,6 +39,9 @@ Scenario('PMM-T642 PMM-T484  PSMDB Cluster with Custom Resources, Verify MongoDB
   async ({
     I, dbaasPage, dbaasAPI, dbaasActionsPage,
   }) => {
+    const collectionNames = '[ "customers", "system.profile" ]';
+    const dbName = 'tutorialkart2';
+
     await dbaasAPI.deleteAllDBCluster(clusterName);
     await dbaasPage.waitForDbClusterTab(clusterName);
     I.waitForInvisible(dbaasPage.tabs.kubernetesClusterTab.disabledAddButton, 30);
@@ -46,6 +50,30 @@ Scenario('PMM-T642 PMM-T484  PSMDB Cluster with Custom Resources, Verify MongoDB
     I.waitForText('Processing', 30, dbaasPage.tabs.dbClusterTab.fields.progressBarContent);
     await dbaasPage.postClusterCreationValidation(psmdb_cluster, clusterName, 'MongoDB');
     await dbaasPage.validateClusterDetail(psmdb_cluster, clusterName, psmdb_configuration);
+    const {
+      username, password, host, port,
+    } = await dbaasAPI.getDbClusterDetails(psmdb_cluster, clusterName, 'MongoDB');
+
+    await I.verifyCommand(
+      'kubectl run psmdb-client --image=percona/percona-server-mongodb:4.4.5-7 --restart=Never',
+    );
+
+    // wait for psmdb-client pod to startup, to improve with cmd helper wait for expected output on list pods
+    I.wait(20);
+    await I.verifyCommand(
+      'kubectl cp /srv/pmm-qa/pmm-tests/psmdb_cluster_connection_check.js psmdb-client:/tmp/',
+    );
+    const output = await I.verifyCommand(
+      `kubectl exec psmdb-client -- mongo "mongodb://${username}:${password}@${host}/admin?ssl=false" /tmp/psmdb_cluster_connection_check.js`,
+    );
+
+    assert.ok(output.includes(collectionNames), `The ${output} for psmdb cluster setup dump was expected to have collection names ${collectionNames}, but found ${output}`);
+    assert.ok(output.includes(dbName), `The ${output} for psmdb cluster setup dump was expected to have db name ${dbName}, but found ${output}`);
+
+    await I.verifyCommand(
+      'kubectl delete pods psmdb-client',
+      'pod "psmdb-client" deleted',
+    );
   });
 
 Scenario('PMM-T477 PMM-T461 Verify MongoDB Cluster can be restarted, unregister k8s Cluster when Db Cluster Exist @dbaas',
