@@ -15,12 +15,6 @@ function getVersions() {
     ? process.env.DOCKER_VERSION.split('.')
     : process.env.SERVER_VERSION.split('.');
 
-  // if (process.env.DOCKER_VERSION) {
-  //   [, versionMinor, versionPatch] = process.env.DOCKER_VERSION.split('.');
-  // } else {
-  //   [, versionMinor, versionPatch] = process.env.SERVER_VERSION.split('.');
-  // }
-
   const majorVersionDiff = pmmMinor - versionMinor;
   const patchVersionDiff = pmmPatch - versionPatch;
   const current = `2.${versionMinor}`;
