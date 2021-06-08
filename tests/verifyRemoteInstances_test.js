@@ -4,10 +4,16 @@ const { remoteInstancesPage, pmmInventoryPage } = inject();
 
 const instances = new DataTable(['name']);
 const remotePostgreSQL = new DataTable(['instanceName', 'trackingOption', 'checkAgent']);
+const qanFilters = new DataTable(['filterName']);
 
 remotePostgreSQL.add(['postgreDoNotTrack', remoteInstancesPage.fields.doNotTrack, pmmInventoryPage.fields.postgresExporter]);
 remotePostgreSQL.add(['postgresPGStatStatements', remoteInstancesPage.fields.usePgStatStatements, pmmInventoryPage.fields.postgresPgStatements]);
 remotePostgreSQL.add(['postgresPgStatMonitor', remoteInstancesPage.fields.usePgStatMonitor, pmmInventoryPage.fields.postgresPgstatmonitor]);
+
+qanFilters.add([remoteInstancesPage.potgresqlSettings.environment]);
+// TODO: uncomment after fix of mongodb
+// qanFilters.add(['remote-mongodb-cluster']);
+qanFilters.add([remoteInstancesPage.mysqlSettings.environment]);
 
 for (const i of Object.keys(remoteInstancesPage.services)) {
   instances.add([i]);
@@ -37,8 +43,8 @@ xScenario(
   },
 );
 
-// TODO: unskip the mongodb and postgresql tests after resolving a instance issues
-Data(instances.filter((instance) => /mysql|proxysql/.test(instance.name))).Scenario(
+// TODO: unskip the mongodb test after resolving a instance issues
+Data(instances.filter((instance) => instance.name !== 'mongodb')).Scenario(
   'Verify Remote Instance Addition [critical] @instances',
   async ({ I, remoteInstancesPage, current }) => {
     const serviceName = remoteInstancesPage.services[current.name];
@@ -207,3 +213,37 @@ Data(remotePostgreSQL).Scenario(
     pmmInventoryPage.checkExistingAgent(current.checkAgent);
   },
 );
+
+Scenario(
+  'PMM-T853 - Verify dashboard after remote postgreSQL instance is added @instances @not-ovf',
+  async ({
+    I, dashboardPage, adminPage,
+  }) => {
+    const serviceName = 'postgresql_remote_new';
+
+    // Wait 10 seconds before test to start getting metrics
+    I.wait(10);
+    I.amOnPage(dashboardPage.postgresqlInstanceOverviewDashboard.url);
+    dashboardPage.applyFilter('Service Name', serviceName);
+    adminPage.peformPageDown(5);
+    await dashboardPage.expandEachDashboardRow();
+    adminPage.performPageUp(5);
+    await dashboardPage.verifyThereAreNoGraphsWithNA();
+    await dashboardPage.verifyThereAreNoGraphsWithoutData(1);
+  },
+).retry(2);
+
+Data(qanFilters).Scenario(
+  'PMM-T854 - Verify QAN after remote instance is added @instances',
+  async ({
+    I, qanOverview, qanFilters, qanPage, current,
+  }) => {
+    I.amOnPage(qanPage.url);
+    qanOverview.waitForOverviewLoaded();
+    qanFilters.applyFilter(current.filterName);
+    qanOverview.waitForOverviewLoaded();
+    const count = await qanOverview.getCountOfItems();
+
+    assert.ok(count > 0, `The queries for filter ${current.filterName} instance do NOT exist`);
+  },
+).retry(2);
