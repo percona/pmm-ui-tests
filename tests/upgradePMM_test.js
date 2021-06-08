@@ -6,17 +6,20 @@ const serviceNames = {
   proxysql: 'proxysql_upgrade_service',
   rds: 'mysql_rds_uprgade_service',
 };
+const ruleName = 'Alert Rule for upgrade';
 
 // For running on local env set PMM_SERVER_LATEST and DOCKER_VERSION variables
 function getVersions() {
   const [, pmmMinor, pmmPatch] = process.env.PMM_SERVER_LATEST.split('.');
-  let [, versionMinor, versionPatch] = [];
+  const [, versionMinor, versionPatch] = process.env.DOCKER_VERSION
+    ? process.env.DOCKER_VERSION.split('.')
+    : process.env.SERVER_VERSION.split('.');
 
-  if (process.env.DOCKER_VERSION) {
-    [, versionMinor, versionPatch] = process.env.DOCKER_VERSION.split('.');
-  } else {
-    [, versionMinor, versionPatch] = process.env.SERVER_VERSION.split('.');
-  }
+  // if (process.env.DOCKER_VERSION) {
+  //   [, versionMinor, versionPatch] = process.env.DOCKER_VERSION.split('.');
+  // } else {
+  //   [, versionMinor, versionPatch] = process.env.SERVER_VERSION.split('.');
+  // }
 
   const majorVersionDiff = pmmMinor - versionMinor;
   const patchVersionDiff = pmmPatch - versionPatch;
@@ -39,7 +42,7 @@ Before(async ({ I }) => {
 
 Scenario(
   'Add AMI Instance ID @ami-upgrade',
-  async ({ I, amiInstanceAPI }) => {
+  async ({ amiInstanceAPI }) => {
     await amiInstanceAPI.verifyAmazonInstanceId(process.env.AMI_INSTANCE_ID);
   },
 );
@@ -106,6 +109,19 @@ Scenario(
 );
 
 Scenario(
+  'PMM-T577 Verify user is able to see IA alerts before upgrade @pre-upgrade @ami-upgrade @pmm-upgrade',
+  async ({
+    settingsAPI, rulesAPI, alertsAPI,
+  }) => {
+    await settingsAPI.changeSettings({ alerting: true });
+    await rulesAPI.clearAllRules(true);
+    await rulesAPI.createAlertRule({ ruleName });
+    // Wait for alert to appear
+    await alertsAPI.waitForAlerts(60, 1);
+  },
+);
+
+Scenario(
   'PMM-T3 Verify user is able to Upgrade PMM version [blocker] @pmm-upgrade @ami-upgrade  ',
   async ({ I, homePage }) => {
     const versions = getVersions();
@@ -124,6 +140,24 @@ Scenario(
     await dashboardPage.verifyThereAreNoGraphsWithNA();
     await dashboardPage.verifyThereAreNoGraphsWithoutData();
     I.seeInCurrentUrl(grafanaAPI.customDashboard);
+  },
+);
+
+Scenario(
+  'PMM-T577 Verify user can see IA alerts after upgrade @pre-upgrade @ami-upgrade @pmm-upgrade',
+  async ({
+    I, alertsPage, alertsAPI,
+  }) => {
+    const alertName = 'PostgreSQL too many connections (pmm-server-postgresql)';
+
+    // Verify Alert is present
+    await alertsAPI.waitForAlerts(60, 1);
+    const alerts = await alertsAPI.getAlertsList();
+
+    assert.ok(alerts[0].summary === alertName, `Didn't find alert with name ${alertName}`);
+
+    I.amOnPage(alertsPage.url);
+    I.waitForElement(alertsPage.elements.alertRow(alertName), 30);
   },
 );
 
