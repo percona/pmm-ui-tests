@@ -27,6 +27,8 @@ function getVersions() {
   };
 }
 
+const iaReleased = getVersions().versionMinor >= 13;
+
 Feature('PMM server Upgrade Tests and Executing test cases related to Upgrade Testing Cycle').retry(2);
 
 Before(async ({ I }) => {
@@ -102,18 +104,20 @@ Scenario(
   },
 );
 
-Scenario(
-  'PMM-T577 Verify user is able to see IA alerts before upgrade @pre-upgrade @ami-upgrade @pmm-upgrade',
-  async ({
-    settingsAPI, rulesAPI, alertsAPI,
-  }) => {
-    await settingsAPI.changeSettings({ alerting: true });
-    await rulesAPI.clearAllRules(true);
-    await rulesAPI.createAlertRule({ ruleName });
-    // Wait for alert to appear
-    await alertsAPI.waitForAlerts(60, 1);
-  },
-);
+if (iaReleased) {
+  Scenario(
+    'PMM-T577 Verify user is able to see IA alerts before upgrade @pre-upgrade @ami-upgrade @pmm-upgrade',
+    async ({
+      settingsAPI, rulesAPI, alertsAPI,
+    }) => {
+      await settingsAPI.changeSettings({ alerting: true });
+      await rulesAPI.clearAllRules(true);
+      await rulesAPI.createAlertRule({ ruleName });
+      // Wait for alert to appear
+      await alertsAPI.waitForAlerts(60, 1);
+    },
+  );
+}
 
 Scenario(
   'PMM-T3 Verify user is able to Upgrade PMM version [blocker] @pmm-upgrade @ami-upgrade  ',
@@ -137,23 +141,25 @@ Scenario(
   },
 );
 
-Scenario(
-  'PMM-T577 Verify user can see IA alerts after upgrade @pre-upgrade @ami-upgrade @pmm-upgrade',
-  async ({
-    I, alertsPage, alertsAPI,
-  }) => {
-    const alertName = 'PostgreSQL too many connections (pmm-server-postgresql)';
+if (iaReleased) {
+  Scenario(
+    'PMM-T577 Verify user can see IA alerts after upgrade @pre-upgrade @ami-upgrade @pmm-upgrade',
+    async ({
+      I, alertsPage, alertsAPI,
+    }) => {
+      const alertName = 'PostgreSQL too many connections (pmm-server-postgresql)';
 
-    // Verify Alert is present
-    await alertsAPI.waitForAlerts(60, 1);
-    const alerts = await alertsAPI.getAlertsList();
+      // Verify Alert is present
+      await alertsAPI.waitForAlerts(60, 1);
+      const alerts = await alertsAPI.getAlertsList();
 
-    assert.ok(alerts[0].summary === alertName, `Didn't find alert with name ${alertName}`);
+      assert.ok(alerts[0].summary === alertName, `Didn't find alert with name ${alertName}`);
 
-    I.amOnPage(alertsPage.url);
-    I.waitForElement(alertsPage.elements.alertRow(alertName), 30);
-  },
-);
+      I.amOnPage(alertsPage.url);
+      I.waitForElement(alertsPage.elements.alertRow(alertName), 30);
+    },
+  );
+}
 
 Scenario(
   'Verify Agents are RUNNING after Upgrade (API) [critical] @post-upgrade @ami-upgrade @pmm-upgrade',
