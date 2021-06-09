@@ -27,7 +27,7 @@ function getVersions() {
   };
 }
 
-Feature('PMM server Upgrade Tests and Executing test cases related to Upgrade Testing Cycle').retry(0);
+Feature('PMM server Upgrade Tests and Executing test cases related to Upgrade Testing Cycle').retry(1);
 
 Before(async ({ I }) => {
   await I.Authorize();
@@ -93,7 +93,6 @@ Scenario(
     // Adding instances for monitoring
     for (const type of Object.values(remoteInstancesHelper.instanceTypes)) {
       if (type) {
-        console.log(type);
         await addInstanceAPI.apiAddInstance(
           type,
           remoteInstancesHelper.upgradeServiceNames[type.toLowerCase()],
