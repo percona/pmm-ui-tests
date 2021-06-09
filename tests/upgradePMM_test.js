@@ -29,7 +29,9 @@ function getVersions() {
   };
 }
 
-const iaReleased = getVersions().versionMinor >= 13;
+const { versionMinor, patchVersionDiff, majorVersionDiff } = getVersions();
+
+const iaReleased = versionMinor >= 13;
 
 Feature('PMM server Upgrade Tests and Executing test cases related to Upgrade Testing Cycle').retry(2);
 
@@ -48,13 +50,12 @@ Scenario(
 Scenario(
   'PMM-T289 Verify Whats New link is presented on Update Widget @ami-upgrade @pre-upgrade @pmm-upgrade',
   async ({ I, homePage }) => {
-    const versions = getVersions();
-    const locators = homePage.getLocators(versions.versionMinor);
+    const locators = homePage.getLocators(versionMinor);
 
     I.amOnPage(homePage.url);
     // Whats New Link is added for the latest version hours before the release,
     // hence we need to skip checking on that, rest it should be available and checked.
-    if (versions.majorVersionDiff >= 1 && versions.patchVersionDiff >= 1) {
+    if (majorVersionDiff >= 1 && patchVersionDiff >= 1) {
       I.waitForElement(locators.whatsNewLink, 30);
       I.seeElement(locators.whatsNewLink);
       const link = await I.grabAttributeFrom(locators.whatsNewLink, 'href');
@@ -67,10 +68,8 @@ Scenario(
 Scenario(
   'PMM-T288 Verify user can see Update widget before upgrade [critical] @pre-upgrade @ami-upgrade @pmm-upgrade',
   async ({ I, homePage }) => {
-    const versions = getVersions();
-
     I.amOnPage(homePage.url);
-    await homePage.verifyPreUpdateWidgetIsPresent(versions.versionMinor);
+    await homePage.verifyPreUpdateWidgetIsPresent(versionMinor);
   },
 );
 
@@ -106,7 +105,7 @@ Scenario(
   },
 );
 
-if (getVersions().versionMinor < 16) {
+if (versionMinor < 16 && versionMinor >= 10) {
   Scenario(
     'PMM-T720 Verify Platform registration for PMM before 2.16.0 @pre-upgrade @ami-upgrade @pmm-upgrade',
     async ({ I }) => {
@@ -151,10 +150,8 @@ if (iaReleased) {
 Scenario(
   'PMM-T3 Verify user is able to Upgrade PMM version [blocker] @pmm-upgrade @ami-upgrade  ',
   async ({ I, homePage }) => {
-    const versions = getVersions();
-
     I.amOnPage(homePage.url);
-    await homePage.upgradePMM(versions.versionMinor);
+    await homePage.upgradePMM(versionMinor);
   },
 );
 
