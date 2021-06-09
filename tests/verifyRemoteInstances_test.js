@@ -6,13 +6,19 @@ const instances = new DataTable(['name']);
 const remotePostgreSQL = new DataTable(['instanceName', 'trackingOption', 'checkAgent']);
 const qanFilters = new DataTable(['filterName']);
 
-remotePostgreSQL.add(['postgreDoNotTrack', remoteInstancesPage.fields.doNotTrack, pmmInventoryPage.fields.postgresExporter]);
-remotePostgreSQL.add(['postgresPGStatStatements', remoteInstancesPage.fields.usePgStatStatements, pmmInventoryPage.fields.postgresPgStatements]);
-qanFilters.add([remoteInstancesPage.potgresqlSettings.environment]);
-qanFilters.add([remoteInstancesPage.mysqlSettings.environment]);
-
 for (const [key, value] of Object.entries(remoteInstancesHelper.services)) {
   if (value) {
+    switch (key) {
+      case 'postgresql':
+        remotePostgreSQL.add(['postgreDoNotTrack', remoteInstancesPage.fields.doNotTrack, pmmInventoryPage.fields.postgresExporter]);
+        remotePostgreSQL.add(['postgresPGStatStatements', remoteInstancesPage.fields.usePgStatStatements, pmmInventoryPage.fields.postgresPgStatements]);
+        qanFilters.add([remoteInstancesPage.potgresqlSettings.environment]);
+        break;
+      case 'mysql':
+        qanFilters.add([remoteInstancesPage.mysqlSettings.environment]);
+        break;
+      default:
+    }
     instances.add([key]);
   }
 }
