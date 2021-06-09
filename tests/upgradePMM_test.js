@@ -175,8 +175,7 @@ Scenario(
   },
 );
 
-// https://jira.percona.com/browse/PMM-8213 logged to track the defect
-xScenario(
+Scenario(
   'Verify user can see News Panel @post-upgrade @ami-upgrade @pmm-upgrade  ',
   async ({ I, homePage }) => {
     I.amOnPage(homePage.url);
