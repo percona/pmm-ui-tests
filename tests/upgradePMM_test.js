@@ -159,6 +159,18 @@ if (iaReleased) {
       I.waitForElement(alertsPage.elements.alertRow(alertName), 30);
     },
   );
+} else {
+  Scenario(
+    'PMM-T531 Verify IA is disabled by default after upgrading from older PMM version @pre-upgrade @ami-upgrade @pmm-upgrade',
+    async ({
+      I, pmmSettingsPage,
+    }) => {
+      I.amOnPage(pmmSettingsPage.advancedSettingsUrl);
+      I.waitForVisible(pmmSettingsPage.fields.iaSwitchSelector, 30);
+      I.dontSeeElement(pmmSettingsPage.communication.communicationSection);
+      pmmSettingsPage.verifySwitch(pmmSettingsPage.fields.iaSwitchSelectorInput, 'off');
+    },
+  );
 }
 
 Scenario(
