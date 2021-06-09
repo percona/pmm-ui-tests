@@ -47,7 +47,6 @@ xScenario(
   },
 );
 
-
 Data(instances).Scenario(
   'Verify Remote Instance Addition [critical] @instances',
   async ({ I, remoteInstancesPage, current }) => {
