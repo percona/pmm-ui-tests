@@ -29,8 +29,7 @@ Before(async ({ I }) => {
   await I.Authorize();
 });
 
-// TODO: fix in scope of https://jira.percona.com/browse/PMM-8002
-xScenario(
+Scenario(
   'PMM-T588 - Verify adding external exporter service via UI @instances @nightly',
   async ({ I, remoteInstancesPage, pmmInventoryPage }) => {
     const serviceName = 'external_service_new';
@@ -60,8 +59,7 @@ Data(instances).Scenario(
   },
 );
 
-// TODO: fix in scope of https://jira.percona.com/browse/PMM-8002
-xScenario(
+Scenario(
   'PMM-T590 - Verify parsing URL on adding External service page @instances',
   async ({ I, remoteInstancesPage }) => {
     const metricsPath = '/metrics2';
@@ -117,10 +115,7 @@ Scenario(
   },
 );
 
-// Test is connected with T588
-// It must be run after the creation of external exporter
-// TODO: fix in scope of https://jira.percona.com/browse/PMM-8002
-xScenario(
+Scenario(
   'PMM-T743 - Check metrics from external exporter on Advanced Data Exploration Dashboard @instances @nightly',
   async ({ I, dashboardPage }) => {
     const metricName = 'redis_uptime_in_seconds';
@@ -130,7 +125,7 @@ xScenario(
     const response = await dashboardPage.checkMetricExist(metricName);
     const result = JSON.stringify(response.data.data.result);
 
-    assert.ok(response.data.data.result.length !== 0, `Custom Metrics Should be available but got empty ${result}`);
+    assert.ok(response.data.data.result.length !== 0, `Metrics ${metricName} from external exporter should be available but got empty ${result}`);
   },
 );
 

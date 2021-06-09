@@ -206,7 +206,7 @@ module.exports = {
         );
         I.fillField(
           this.fields.password,
-          remoteInstancesHelper.remote_instance.proxysql.proxysql_2_1_1.password
+          remoteInstancesHelper.remote_instance.proxysql.proxysql_2_1_1.password,
         );
         I.fillField(this.fields.serviceName, serviceName);
         I.fillField(this.fields.environment, 'remote-proxysql');
@@ -214,9 +214,9 @@ module.exports = {
         break;
       case 'external_service_new':
         I.fillField(this.fields.serviceName, serviceName);
-        I.fillField(this.fields.hostName, url.host);
+        I.fillField(this.fields.hostName, '192.168.0.1');
         I.fillField(this.fields.metricsPath, '/metrics');
-        I.fillField(this.fields.portNumber, '42200');
+        I.fillField(this.fields.portNumber, '42100');
         I.fillField(this.fields.environment, 'remote-external-service');
         I.fillField(this.fields.cluster, 'remote-external-cluster');
         break;
