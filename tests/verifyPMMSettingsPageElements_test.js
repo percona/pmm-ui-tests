@@ -21,7 +21,7 @@ Before(async ({ I, pmmSettingsPage, settingsAPI }) => {
   I.amOnPage(pmmSettingsPage.url);
 });
 
-Data(dataRetentionTable).Scenario('PMM-T97 - Verify server diagnostics on PMM Settings Page @settings', async ({ pmmSettingsPage, current }) => {
+Data(dataRetentionTable).Scenario('PMM-T97 - Verify server diagnostics on PMM Settings Page @settings @grafana-pr', async ({ pmmSettingsPage, current }) => {
   const sectionNameToExpand = pmmSettingsPage.sectionTabsList.advanced;
 
   await pmmSettingsPage.waitForPmmSettingsPageLoaded();
@@ -29,7 +29,7 @@ Data(dataRetentionTable).Scenario('PMM-T97 - Verify server diagnostics on PMM Se
   pmmSettingsPage.checkDataRetentionInput(current.value, current.message);
 });
 
-Scenario('PMM-T87 - Verify server diagnostics on PMM Settings Page @settings', async ({ pmmSettingsPage }) => {
+Scenario('PMM-T87 - Verify server diagnostics on PMM Settings Page @settings @grafana-pr', async ({ pmmSettingsPage }) => {
   const diagnostcsButtonLocator = pmmSettingsPage.fields.diagnosticsButton;
   const platform = pmmSettingsPage.sectionTabsList.perconaPlatform;
 
@@ -41,7 +41,7 @@ Scenario('PMM-T87 - Verify server diagnostics on PMM Settings Page @settings', a
   await pmmSettingsPage.expandSection(platform, diagnostcsButtonLocator);
 });
 
-Scenario('PMM-T84 - Verify Section Tabs and Metrics Section Elements [critical] @settings', async ({ I, pmmSettingsPage }) => {
+Scenario('PMM-T84 - Verify Section Tabs and Metrics Section Elements [critical] @settings @grafana-pr', async ({ I, pmmSettingsPage }) => {
   await pmmSettingsPage.waitForPmmSettingsPageLoaded();
   Object.values(pmmSettingsPage.sectionTabsList).forEach((value) => {
     I.see(value, pmmSettingsPage.fields.tabsSection);
@@ -57,7 +57,7 @@ Scenario('PMM-T84 - Verify Section Tabs and Metrics Section Elements [critical] 
   });
 });
 
-Scenario('PMM-T85 - Verify SSH Key Section Elements @settings', async ({ I, pmmSettingsPage }) => {
+Scenario('PMM-T85 - Verify SSH Key Section Elements @settings @grafana-pr', async ({ I, pmmSettingsPage }) => {
   const sectionNameToExpand = pmmSettingsPage.sectionTabsList.ssh;
 
   await pmmSettingsPage.waitForPmmSettingsPageLoaded();
@@ -66,7 +66,7 @@ Scenario('PMM-T85 - Verify SSH Key Section Elements @settings', async ({ I, pmmS
   I.seeElement(pmmSettingsPage.fields.sshKeyInput);
 });
 
-Scenario('Verify Advanced Section Elements @settings', async ({ I, pmmSettingsPage }) => {
+Scenario('Verify Advanced Section Elements @settings @grafana-pr', async ({ I, pmmSettingsPage }) => {
   const sectionNameToExpand = pmmSettingsPage.sectionTabsList.advanced;
 
   await pmmSettingsPage.waitForPmmSettingsPageLoaded();
@@ -83,7 +83,7 @@ Scenario('Verify Advanced Section Elements @settings', async ({ I, pmmSettingsPa
   I.seeElement(pmmSettingsPage.fields.sttLabel);
 });
 
-Scenario('PMM-T86 - Verify Alertmanager integration Section Elements @settings', async ({ I, pmmSettingsPage }) => {
+Scenario('PMM-T86 - Verify Alertmanager integration Section Elements @settings @grafana-pr', async ({ I, pmmSettingsPage }) => {
   const sectionNameToExpand = pmmSettingsPage.sectionTabsList.alertmanager;
 
   await pmmSettingsPage.waitForPmmSettingsPageLoaded();
@@ -95,7 +95,7 @@ Scenario('PMM-T86 - Verify Alertmanager integration Section Elements @settings',
   I.seeElement(pmmSettingsPage.fields.diagnosticsButton);
 });
 
-Scenario('PMM-T89 - Verify validation for invalid SSH Key @settings', async ({ I, pmmSettingsPage }) => {
+Scenario('PMM-T89 - Verify validation for invalid SSH Key @settings @grafana-pr', async ({ I, pmmSettingsPage }) => {
   const sshKeyForTest = 'ssh-rsa testKey test@key.local';
   const sectionNameToExpand = pmmSettingsPage.sectionTabsList.ssh;
 
@@ -105,7 +105,7 @@ Scenario('PMM-T89 - Verify validation for invalid SSH Key @settings', async ({ I
   I.verifyPopUpMessage(pmmSettingsPage.messages.invalidSSHKeyMessage);
 });
 
-Scenario('PMM-T90 - Verify validation for Alertmanager URL without scheme @settings', async ({ I, pmmSettingsPage }) => {
+Scenario('PMM-T90 - Verify validation for Alertmanager URL without scheme @settings @grafana-pr', async ({ I, pmmSettingsPage }) => {
   const urlWithoutScheme = 'invalid_url';
   const sectionNameToExpand = pmmSettingsPage.sectionTabsList.alertmanager;
 
@@ -115,7 +115,7 @@ Scenario('PMM-T90 - Verify validation for Alertmanager URL without scheme @setti
   I.verifyPopUpMessage(pmmSettingsPage.messages.invalidAlertmanagerMissingSchemeMessage);
 });
 
-Scenario('PMM-T91 - Verify validation for Alertmanager URL without host @settings', async ({ I, pmmSettingsPage }) => {
+Scenario('PMM-T91 - Verify validation for Alertmanager URL without host @settings @grafana-pr', async ({ I, pmmSettingsPage }) => {
   const urlWithoutHost = 'http://';
   const sectionNameToExpand = pmmSettingsPage.sectionTabsList.alertmanager;
 
@@ -125,7 +125,7 @@ Scenario('PMM-T91 - Verify validation for Alertmanager URL without host @setting
   I.verifyPopUpMessage(pmmSettingsPage.messages.invalidAlertmanagerMissingHostMessage);
 });
 
-Scenario('PMM-T92 - Verify validation for invalid Alertmanager Rule @settings', async ({ I, pmmSettingsPage }) => {
+Scenario('PMM-T92 - Verify validation for invalid Alertmanager Rule @settings @grafana-pr', async ({ I, pmmSettingsPage }) => {
   const rule = 'invalid_rule';
   const sectionNameToExpand = pmmSettingsPage.sectionTabsList.alertmanager;
 
@@ -136,7 +136,7 @@ Scenario('PMM-T92 - Verify validation for invalid Alertmanager Rule @settings', 
 });
 
 Scenario(
-  'PMM-T254 Verify validation for STT and Telemetry switches @settings @stt',
+  'PMM-T254 Verify validation for STT and Telemetry switches @settings @stt @grafana-pr',
   async ({ I, pmmSettingsPage, settingsAPI }) => {
     await settingsAPI.apiDisableSTT();
     const sectionNameToExpand = pmmSettingsPage.sectionTabsList.advanced;
@@ -167,7 +167,7 @@ xScenario(
   },
 );
 
-Scenario('PMM-T537 - Verify user is not able to enable IA if Telemetry is disabled @ia @settings',
+Scenario('PMM-T537 - Verify user is not able to enable IA if Telemetry is disabled @ia @settings @grafana-pr',
   async ({ I, pmmSettingsPage, settingsAPI }) => {
     await settingsAPI.apiDisableIA();
     I.amOnPage(pmmSettingsPage.advancedSettingsUrl);
