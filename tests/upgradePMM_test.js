@@ -1,4 +1,6 @@
 const assert = require('assert');
+const faker = require('faker');
+const { generate } = require('generate-password');
 
 const serviceNames = {
   mysql: 'mysql_upgrade_service',
@@ -103,6 +105,33 @@ Scenario(
     }
   },
 );
+
+if (getVersions().versionMinor < 16) {
+  Scenario(
+    'PMM-T720 Verify Platform registration for PMM before 2.16.0 @pre-upgrade @ami-upgrade @pmm-upgrade',
+    async ({ I }) => {
+      const message = 'Please upgrade PMM to v2.16 or higher to use the new Percona Platform registration flow.';
+      const body = {
+        email: faker.internet.email(),
+        password: generate({
+          length: 10,
+          numbers: true,
+          lowercase: true,
+          uppercase: true,
+          strict: true,
+        }),
+      };
+      const headers = { Authorization: `Basic ${await I.getAuth()}` };
+
+      const resp = await I.sendPostRequest('v1/Platform/SignUp', body, headers);
+
+      assert.ok(
+        resp.status === 400 && resp.data.message === message,
+        `Expected to see ${message} for Sign Up to the Percona Platform call. Response message is "${resp.data.message}"`,
+      );
+    },
+  );
+}
 
 if (iaReleased) {
   Scenario(
