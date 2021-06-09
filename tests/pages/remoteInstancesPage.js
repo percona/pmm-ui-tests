@@ -216,6 +216,9 @@ module.exports = {
         I.fillField(this.fields.serviceName, serviceName);
         I.fillField(this.fields.hostName, '192.168.0.1');
         I.fillField(this.fields.metricsPath, '/metrics');
+        I.appendField(this.fields.portNumber, '');
+        I.pressKey(['Shift', 'Home']);
+        I.pressKey('Backspace');
         I.fillField(this.fields.portNumber, '42100');
         I.fillField(this.fields.environment, 'remote-external-service');
         I.fillField(this.fields.cluster, 'remote-external-cluster');
