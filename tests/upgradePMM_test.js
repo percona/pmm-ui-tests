@@ -10,10 +10,10 @@ const ruleName = 'Alert Rule for upgrade';
 
 // For running on local env set PMM_SERVER_LATEST and DOCKER_VERSION variables
 function getVersions() {
-  const [, pmmMinor, pmmPatch] = process.env.PMM_SERVER_LATEST.split('.');
+  const [, pmmMinor, pmmPatch] = (process.env.PMM_SERVER_LATEST || '').split('.');
   const [, versionMinor, versionPatch] = process.env.DOCKER_VERSION
-    ? process.env.DOCKER_VERSION.split('.')
-    : process.env.SERVER_VERSION.split('.');
+    ? (process.env.DOCKER_VERSION || '').split('.')
+    : (process.env.SERVER_VERSION || '').split('.');
 
   const majorVersionDiff = pmmMinor - versionMinor;
   const patchVersionDiff = pmmPatch - versionPatch;
