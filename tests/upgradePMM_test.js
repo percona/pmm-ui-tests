@@ -9,6 +9,7 @@ const serviceNames = {
   rds: 'mysql_rds_uprgade_service',
 };
 const ruleName = 'Alert Rule for upgrade';
+const failedCheckMessage = 'Newer version of MySQL is available';
 
 // For running on local env set PMM_SERVER_LATEST and DOCKER_VERSION variables
 function getVersions() {
@@ -147,6 +148,35 @@ if (iaReleased) {
   );
 }
 
+if (versionMinor >= 13) {
+  Scenario(
+    'Verify user has failed checks before upgrade @pre-upgrade @ami-upgrade @pmm-upgrade',
+    async ({
+      I, settingsAPI, addInstanceAPI, databaseChecksPage, securityChecksAPI,
+    }) => {
+      const runChecks = locate('button').withText('Run DB checks');
+
+      await settingsAPI.changeSettings({ stt: true });
+      // Adding instances for monitoring
+      await addInstanceAPI.addInstanceForSTT({}, true);
+      // Run DB Checks from UI
+      if (versionMinor >= 16) {
+        databaseChecksPage.runDBChecks();
+        await securityChecksAPI.disableCheck('mysql_anonymous_users');
+      } else {
+        I.amOnPage(databaseChecksPage.oldUrl);
+        I.waitForVisible(runChecks, 30);
+        I.click(runChecks);
+        I.waitForText(databaseChecksPage.messages.securityChecksDone, 30, '.alert-title');
+      }
+
+      // Check that there is a failed check
+      I.waitForVisible(locate('td').at(4), 30);
+      I.see(failedCheckMessage, locate('td').at(4));
+    },
+  );
+}
+
 Scenario(
   'PMM-T3 Verify user is able to Upgrade PMM version [blocker] @pmm-upgrade @ami-upgrade  ',
   async ({ I, homePage }) => {
@@ -166,6 +196,39 @@ Scenario(
     I.seeInCurrentUrl(grafanaAPI.customDashboard);
   },
 );
+
+if (versionMinor >= 13) {
+  Scenario(
+    'Verify user has failed checks after upgrade / STT on @pre-upgrade @ami-upgrade @pmm-upgrade',
+    async ({
+      I, pmmSettingsPage, securityChecksAPI,
+    }) => {
+      // Verify STT is enabled
+      I.amOnPage(pmmSettingsPage.advancedSettingsUrl);
+      I.waitForVisible(pmmSettingsPage.fields.sttSwitchSelector, 30);
+      pmmSettingsPage.verifySwitch(pmmSettingsPage.fields.sttSwitchSelectorInput, 'on');
+
+      // Verify there is failed check
+      await securityChecksAPI.verifyFailedCheckExists(failedCheckMessage);
+    },
+  );
+}
+
+if (versionMinor >= 16) {
+  Scenario(
+    'Verify disabled checks remain disabled after upgrade @pre-upgrade @ami-upgrade @pmm-upgrade',
+    async ({
+      I, allChecksPage,
+    }) => {
+      const checkName = 'MySQL Anonymous Users';
+
+      I.amOnPage(allChecksPage.url);
+      I.waitForVisible(allChecksPage.buttons.disableEnableCheck(checkName));
+      I.seeTextEquals('Enable', allChecksPage.buttons.disableEnableCheck(checkName));
+      I.seeTextEquals('Disabled', allChecksPage.elements.statusCellByName(checkName));
+    },
+  );
+}
 
 if (iaReleased) {
   Scenario(
