@@ -30,7 +30,7 @@ Before(async ({ I }) => {
 });
 
 Scenario(
-  'PMM-T588 - Verify adding external exporter service via UI @instances @nightly',
+  'PMM-T588 - Verify adding external exporter service via UI @instances',
   async ({ I, remoteInstancesPage, pmmInventoryPage }) => {
     const serviceName = 'external_service_new';
 
@@ -116,7 +116,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T743 - Check metrics from external exporter on Advanced Data Exploration Dashboard @instances @nightly',
+  'PMM-T743 - Check metrics from external exporter on Advanced Data Exploration Dashboard @instances',
   async ({ I, dashboardPage }) => {
     const metricName = 'redis_uptime_in_seconds';
 
@@ -164,7 +164,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T635 - Verify Adding HAProxy service via UI @nightly @not-ovf @instances',
+  'PMM-T635 - Verify Adding HAProxy service via UI @not-ovf @instances',
   async ({
     I, remoteInstancesPage, pmmInventoryPage,
   }) => {
