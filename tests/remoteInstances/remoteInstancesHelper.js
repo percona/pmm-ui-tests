@@ -24,6 +24,11 @@ const remoteInstanceStatus = {
       enabled: true,
     },
   },
+  haproxy: {
+    haproxy_2: {
+      enabled: true,
+    },
+  },
   aws: {
     aws_rds_5_7: {
       enabled: true,
@@ -88,6 +93,13 @@ module.exports = {
         username: 'radmin',
         password: 'radmin',
         clusterName: 'proxy_clstr',
+      },
+    },
+    haproxy: {
+      haproxy_2: {
+        host: '192.168.0.1',
+        port: '42100',
+        clusterName: 'haproxy_clst',
       },
     },
     aws: {

@@ -169,16 +169,21 @@ Scenario(
     I, remoteInstancesPage, pmmInventoryPage,
   }) => {
     const serviceName = 'haproxy_remote';
-    const url = new URL(process.env.PMM_UI_URL);
 
     I.amOnPage(remoteInstancesPage.url);
     remoteInstancesPage.waitUntilRemoteInstancesPageLoaded();
     remoteInstancesPage.openAddRemotePage('haproxy');
     I.waitForVisible(remoteInstancesPage.fields.hostName, 30);
-    I.fillField(remoteInstancesPage.fields.hostName, url.host);
+    I.fillField(
+      remoteInstancesPage.fields.hostName,
+      remoteInstancesHelper.remote_instance.haproxy.haproxy_2.host,
+    );
     I.fillField(remoteInstancesPage.fields.serviceName, serviceName);
     I.clearField(remoteInstancesPage.fields.portNumber);
-    I.fillField(remoteInstancesPage.fields.portNumber, '42100');
+    I.fillField(
+      remoteInstancesPage.fields.portNumber,
+      remoteInstancesHelper.remote_instance.haproxy.haproxy_2.port,
+    );
     I.scrollPageToBottom();
     I.waitForVisible(remoteInstancesPage.fields.addService, 30);
     I.click(remoteInstancesPage.fields.addService);
@@ -188,7 +193,7 @@ Scenario(
     I.click(pmmInventoryPage.fields.agentsLink);
     await pmmInventoryPage.checkAgentOtherDetailsSection('scheme:', 'scheme: http', serviceName, serviceId);
     await pmmInventoryPage.checkAgentOtherDetailsSection('metrics_path:', 'metrics_path: /metrics', serviceName, serviceId);
-    await pmmInventoryPage.checkAgentOtherDetailsSection('listen_port:', 'listen_port: 42100', serviceName, serviceId);
+    await pmmInventoryPage.checkAgentOtherDetailsSection('listen_port:', `listen_port: ${remoteInstancesHelper.remote_instance.haproxy.haproxy_2.port}`, serviceName, serviceId);
   },
 );
 
