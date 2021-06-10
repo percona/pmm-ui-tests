@@ -29,6 +29,11 @@ const remoteInstanceStatus = {
       enabled: true,
     },
   },
+  external: {
+    redis: {
+      enabled: true,
+    },
+  },
   aws: {
     aws_rds_5_7: {
       enabled: true,
@@ -100,6 +105,13 @@ module.exports = {
         host: '192.168.0.1',
         port: '42100',
         clusterName: 'haproxy_clst',
+      },
+    },
+    external: {
+      redis: {
+        host: '192.168.0.1',
+        port: '42200',
+        clusterName: 'redis_external_exporter',
       },
     },
     aws: {

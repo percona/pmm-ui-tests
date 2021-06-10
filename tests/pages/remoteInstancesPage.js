@@ -214,12 +214,12 @@ module.exports = {
         break;
       case 'external_service_new':
         I.fillField(this.fields.serviceName, serviceName);
-        I.fillField(this.fields.hostName, remoteInstancesHelper.remote_instance.haproxy.haproxy_2.host);
+        I.fillField(this.fields.hostName, remoteInstancesHelper.remote_instance.external.redis.host);
         I.fillField(this.fields.metricsPath, '/metrics');
         I.appendField(this.fields.portNumber, '');
         I.pressKey(['Shift', 'Home']);
         I.pressKey('Backspace');
-        I.fillField(this.fields.portNumber, remoteInstancesHelper.remote_instance.haproxy.haproxy_2.port);
+        I.fillField(this.fields.portNumber, remoteInstancesHelper.remote_instance.external.redis.port);
         I.fillField(this.fields.environment, 'remote-external-service');
         I.fillField(this.fields.cluster, 'remote-external-cluster');
         break;
