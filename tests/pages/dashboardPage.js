@@ -367,6 +367,9 @@ module.exports = {
       'Total Mongos Operations',
     ],
   },
+  mongoDbInstanceSummaryDashboard: {
+    url: 'graph/d/mongodb-instance-summary/mongodb-instance-summary?orgId=1&refresh=1m&from=now-5m&to=now',
+  },
   mysqlInstanceSummaryDashboard: {
     url: 'graph/d/mysql-instance-summary/mysql-instance-summary?orgId=1&refresh=1m&from=now-5m&to=now',
     metrics: [
@@ -691,23 +694,28 @@ module.exports = {
   },
 
   fields: {
-    notAvailableMetrics: '//span[contains(text(), "N/A")]',
-    notAvailableDataPoints: '//div[contains(text(),"No data")]',
+    annotationMarker: '(//div[contains(@class,"events_marker")])',
+    clearSelection: '//a[@ng-click="vm.clearSelections()"]',
+    collapsedDashboardRow: '//div[@class="dashboard-row dashboard-row--collapsed"]/a',
+    dataLinkForRoot: '//div[contains(text(), "Data links")]/..//a',
+    Last2Days: '//span[contains(text(), "Last 2 days")]',
     metricTitle: '//div[@class="panel-title"]',
+    mongoDBServiceSummaryContent: locate('pre').withText('Mongo Executable'),
+    mySQLServiceSummaryContent: locate('pre').withText('Percona Toolkit MySQL Summary Report'),
+    navbarLocator: '.navbar-page-btn',
+    notAvailableDataPoints: '//div[contains(text(),"No data")]',
+    notAvailableMetrics: '//span[contains(text(), "N/A")]',
+    otherReportTitleWithNoData:
+    '//span[contains(text(),"No Data")]//ancestor::div[contains(@class,"panel-container")]//span[contains(@class,"panel-title-text")]',
+    panelLoading: locate('div').withAttr({ class: 'panel-loading' }),
+    postgreSQLServiceSummaryContent: locate('pre').withText('Detected PostgreSQL version:'),
     reportTitleWithNA:
       '//span[contains(text(), "N/A")]//ancestor::div[contains(@class,"panel-container")]//span[contains(@class,"panel-title-text")]',
     reportTitleWithNoData:
       '//div[contains(text(),"No data")]//ancestor::div[contains(@class,"panel-container")]//span[contains(@class,"panel-title-text")]',
-    otherReportTitleWithNoData:
-      '//span[contains(text(),"No Data")]//ancestor::div[contains(@class,"panel-container")]//span[contains(@class,"panel-title-text")]',
-    collapsedDashboardRow: '//div[@class="dashboard-row dashboard-row--collapsed"]/a',
-    annotationMarker: '(//div[contains(@class,"events_marker")])',
-    clearSelection: '//a[@ng-click="vm.clearSelections()"]',
-    Last2Days: '//span[contains(text(), "Last 2 days")]',
-    timeRangePickerButton: '.btn.navbar-button.navbar-button--tight',
     rootUser: '//div[contains(text(), "root")]',
-    dataLinkForRoot: '//div[contains(text(), "Data links")]/..//a',
-    navbarLocator: '.navbar-page-btn',
+    serviceSummary: locate('a').withText('Service Summary'),
+    timeRangePickerButton: '.btn.navbar-button.navbar-button--tight',
   },
 
   createAdvancedDataExplorationURL(metricName, time = '1m', nodeName = 'All') {

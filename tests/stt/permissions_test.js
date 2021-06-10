@@ -30,7 +30,7 @@ AfterSuite(async ({ I }) => {
 });
 
 Scenario(
-  'PMM-T358 Verify Failed checks panel at Home page for the viewer role (STT is enabled) @stt',
+  'PMM-T358 Verify Failed checks panel at Home page for the viewer role (STT is enabled) @stt @grafana-pr',
   async ({ I, homePage, settingsAPI }) => {
     await settingsAPI.apiEnableSTT();
     await I.Authorize(users.viewer.username, users.viewer.password);
@@ -42,7 +42,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T360 Verify Failed checks panel at Home page for the admin role (STT is enabled) @stt',
+  'PMM-T360 Verify Failed checks panel at Home page for the admin role (STT is enabled) @stt @grafana-pr',
   async ({ I, homePage, settingsAPI }) => {
     await settingsAPI.apiEnableSTT();
     await I.Authorize(users.admin.username, users.admin.password);
@@ -53,7 +53,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T358 Verify Database Failed checks page for the viewer role (STT is enabled) [critical] @stt',
+  'PMM-T358 Verify Database Failed checks page for the viewer role (STT is enabled) [critical] @stt @grafana-pr',
   async ({ I, databaseChecksPage, settingsAPI }) => {
     await settingsAPI.apiEnableSTT();
     await I.Authorize(users.viewer.username, users.viewer.password);
@@ -65,7 +65,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T360 Verify Database Failed checks page for the admin role (STT is enabled) [critical] @stt',
+  'PMM-T360 Verify Database Failed checks page for the admin role (STT is enabled) [critical] @stt @grafana-pr',
   async ({ I, databaseChecksPage, settingsAPI }) => {
     await settingsAPI.apiEnableSTT();
     await I.Authorize(users.admin.username, users.admin.password);
@@ -76,7 +76,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T358 Verify Failed checks panel at Home page for the viewer role (STT is disabled) @stt',
+  'PMM-T358 Verify Failed checks panel at Home page for the viewer role (STT is disabled) @stt @grafana-pr',
   async ({ I, homePage, settingsAPI }) => {
     await settingsAPI.apiDisableSTT();
     await I.Authorize(users.viewer.username, users.viewer.password);
@@ -88,7 +88,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T360 Verify Failed checks panel at Home page for the admin role (STT is disabled) @stt',
+  'PMM-T360 Verify Failed checks panel at Home page for the admin role (STT is disabled) @stt @grafana-pr',
   async ({ I, homePage, settingsAPI }) => {
     await settingsAPI.apiDisableSTT();
     await I.Authorize(users.admin.username, users.admin.password);
@@ -99,7 +99,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T358 Verify Database Failed checks page for the viewer role (STT is disabled) [critical] @stt',
+  'PMM-T358 Verify Database Failed checks page for the viewer role (STT is disabled) [critical] @stt @grafana-pr',
   async ({ I, databaseChecksPage, settingsAPI }) => {
     await settingsAPI.apiDisableSTT();
     await I.Authorize(users.viewer.username, users.viewer.password);
@@ -111,7 +111,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T360 Verify Database Failed checks page for the admin role (STT is disabled) [critical] @stt',
+  'PMM-T360 Verify Database Failed checks page for the admin role (STT is disabled) [critical] @stt @grafana-pr',
   async ({ I, databaseChecksPage, settingsAPI }) => {
     await settingsAPI.apiDisableSTT();
     await I.Authorize(users.admin.username, users.admin.password);
