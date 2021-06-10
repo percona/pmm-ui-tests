@@ -19,7 +19,7 @@ After(async ({ settingsAPI }) => {
 });
 
 Scenario(
-  'PMM-T649 PMM-T652 Verify default checks intervals / enabling intervals section @stt @settings',
+  'PMM-T649 PMM-T652 Verify default checks intervals / enabling intervals section @stt @settings @grafana-pr',
   async ({
     I, pmmSettingsPage, settingsAPI,
   }) => {
@@ -47,7 +47,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T650 PMM-T648 Verify user is able to set 0.1h check Frequency / custom check frequency @stt @settings',
+  'PMM-T650 PMM-T648 Verify user is able to set 0.1h check Frequency / custom check frequency @stt @settings @grafana-pr',
   async ({
     I, pmmSettingsPage,
   }) => {
@@ -78,7 +78,7 @@ Scenario(
 );
 
 Data(inputs).Scenario(
-  'PMM-T651 Verify Check Intervals validation @stt @settings',
+  'PMM-T651 Verify Check Intervals validation @stt @settings @grafana-pr',
   async ({
     I, pmmSettingsPage, current,
   }) => {
