@@ -11,6 +11,14 @@ module.exports = {
 
   // insert your locators and methods here
   // setting locators
+  mysqlSettings: {
+    environment: 'remote-mysql',
+    cluster: 'remote-mysql-cluster',
+  },
+  potgresqlSettings: {
+    environment: 'remote-postgres',
+    cluster: 'remote-postgres-cluster',
+  },
   postgresqlAzureInputs: {
     userName: process.env.AZURE_POSTGRES_USER,
     password: process.env.AZURE_POSTGRES_PASS,
@@ -168,8 +176,8 @@ module.exports = {
         I.pressKey('Backspace');
         I.fillField(this.fields.portNumber, '3307');
         I.fillField(this.fields.serviceName, serviceName);
-        I.fillField(this.fields.environment, 'remote-mysql');
-        I.fillField(this.fields.cluster, 'remote-mysql-cluster');
+        I.fillField(this.fields.environment, this.mysqlSettings.environment);
+        I.fillField(this.fields.cluster, this.mysqlSettings.cluster);
         break;
       case this.services.mongodb:
         I.fillField(this.fields.hostName, process.env.REMOTE_MONGODB_HOST);
@@ -184,8 +192,8 @@ module.exports = {
         I.fillField(this.fields.userName, process.env.REMOTE_POSTGRESQL_USER);
         I.fillField(this.fields.password, process.env.REMOTE_POSTGRESSQL_PASSWORD);
         I.fillField(this.fields.serviceName, serviceName);
-        I.fillField(this.fields.environment, 'remote-postgres');
-        I.fillField(this.fields.cluster, 'remote-postgres-cluster');
+        I.fillField(this.fields.environment, this.potgresqlSettings.environment);
+        I.fillField(this.fields.cluster, this.potgresqlSettings.cluster);
         break;
       case this.services.proxysql:
         I.fillField(this.fields.hostName, process.env.REMOTE_PROXYSQL_HOST);
