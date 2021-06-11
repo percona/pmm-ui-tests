@@ -117,19 +117,6 @@ Scenario(
         );
       }
     }
-
-    // wait 10 seconds before checking agent status.
-    I.wait(20);
-
-    // Checking that instances are RUNNING
-    for (const service of Object.values(remoteInstancesHelper.serviceTypes)) {
-      if (service) {
-        await inventoryAPI.verifyServiceExistsAndHasRunningStatus(
-          service,
-          remoteInstancesHelper.upgradeServiceNames[service.service],
-        );
-      }
-    }
   },
 );
 
