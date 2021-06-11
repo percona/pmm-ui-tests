@@ -27,7 +27,6 @@ function getVersions() {
   };
 }
 
-
 const { versionMinor, patchVersionDiff, majorVersionDiff } = getVersions();
 
 const iaReleased = versionMinor >= 13;
@@ -84,6 +83,23 @@ Scenario(
     dashboardPage.waitForDashboardOpened();
     dashboardPage.verifyMetricsExistence(['Custom Panel']);
     I.seeInCurrentUrl(resp.url);
+  },
+);
+
+Scenario(
+  'Verify user is able to set custom Settings like Data_retention, Resolution @pre-upgrade @ami-upgrade @pmm-upgrade',
+  async ({ I, settingsAPI }) => {
+    const body = {
+      telemetry_enabled: true,
+      metrics_resolutions: {
+        hr: '3s',
+        mr: '15s',
+        lr: '30s',
+      },
+      data_retention: '172800s',
+    };
+
+    await settingsAPI.changeSettings(body, true);
   },
 );
 
@@ -231,23 +247,25 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T262 Open PMM Settings page and verify DATA_RETENTION value is set to 2 days after upgrade @post-upgrade @pmm-upgrade',
+  'PMM-T262 Open PMM Settings page and verify DATA_RETENTION value is set to 2 days, Custom Resolution is still preserved after upgrade @post-upgrade @pmm-upgrade',
   async ({ I, pmmSettingsPage }) => {
-    const dataRetention = '2';
-    const sectionNameToExpand = pmmSettingsPage.sectionTabsList.advanced;
+    const advancedSection = pmmSettingsPage.sectionTabsList.advanced;
+    const metricResoltionSection = pmmSettingsPage.sectionTabsList.metrics;
 
     I.amOnPage(pmmSettingsPage.url);
     await pmmSettingsPage.waitForPmmSettingsPageLoaded();
-    await pmmSettingsPage.expandSection(sectionNameToExpand, pmmSettingsPage.fields.advancedButton);
-    const dataRetentionActualValue = await I.grabValueFrom(pmmSettingsPage.fields.dataRetentionInput);
-
-    assert.equal(
-      dataRetention,
-      dataRetentionActualValue,
-      'The Value for Data Retention is not the same as passed via Docker Environment Variable',
+    await pmmSettingsPage.expandSection(advancedSection, pmmSettingsPage.fields.advancedButton);
+    await pmmSettingsPage.verifySettingsValue(pmmSettingsPage.fields.dataRetentionInput, 2);
+    await pmmSettingsPage.expandSection(
+      metricResoltionSection,
+      pmmSettingsPage.fields.metricsResolutionButton,
     );
+    await pmmSettingsPage.verifySettingsValue(pmmSettingsPage.fields.lowInput, 30);
+    await pmmSettingsPage.verifySettingsValue(pmmSettingsPage.fields.mediumInput, 15);
+    await pmmSettingsPage.verifySettingsValue(pmmSettingsPage.fields.highInput, 3);
   },
 );
+
 
 Scenario(
   'Verify user can see News Panel @post-upgrade @ami-upgrade @pmm-upgrade  ',
