@@ -5,7 +5,7 @@ module.exports = {
   defaultConnection: {
     host: 'mysql',
     port: 3306,
-    username: 'root',
+    username: 'pmm-agent',
     password: 'pmm%*&agent-password',
   },
 
