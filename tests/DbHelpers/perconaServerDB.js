@@ -6,7 +6,7 @@ module.exports = {
     host: 'mysql',
     port: 3306,
     username: 'root',
-    password: 'ps',
+    password: 'pmm%*&agent-password',
   },
 
   connectToPS(connection = this.defaultConnection) {

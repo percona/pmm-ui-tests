@@ -1,6 +1,6 @@
 const assert = require('assert');
 
-const { I } = inject();
+const { I, remoteInstancesHelper } = inject();
 
 module.exports = {
   async verifyServiceExistsAndHasRunningStatus(service, serviceName) {
@@ -57,7 +57,7 @@ module.exports = {
   },
 
   async verifyServiceIdExists(serviceId) {
-    const services = await this.apiGetServices(this.services.postgresql.serviceType);
+    const services = await this.apiGetServices(remoteInstancesHelper.serviceTypes.postgresql.serviceType);
 
     const present = Object.values(services.data)
       .flat(Infinity)
