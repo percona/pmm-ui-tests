@@ -119,7 +119,7 @@ Scenario(
     }
 
     // wait 10 seconds before checking agent status.
-    I.wait(10);
+    I.wait(20);
 
     // Checking that instances are RUNNING
     for (const service of Object.values(remoteInstancesHelper.serviceTypes)) {
