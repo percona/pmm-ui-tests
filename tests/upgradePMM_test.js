@@ -88,7 +88,7 @@ Scenario(
 
 Scenario(
   'Verify user is able to set custom Settings like Data_retention, Resolution @pre-upgrade @ami-upgrade @pmm-upgrade',
-  async ({ I, settingsAPI }) => {
+  async ({ settingsAPI }) => {
     const body = {
       telemetry_enabled: true,
       metrics_resolutions: {
@@ -106,7 +106,7 @@ Scenario(
 Scenario(
   'Verify user can create Remote Instances before upgrade and they are in RUNNNING status @pre-upgrade @ami-upgrade @pmm-upgrade',
   async ({
-    inventoryAPI, addInstanceAPI,
+    inventoryAPI, addInstanceAPI, I,
   }) => {
     // Adding instances for monitoring
     for (const type of Object.values(remoteInstancesHelper.instanceTypes)) {
@@ -117,6 +117,9 @@ Scenario(
         );
       }
     }
+
+    // wait 10 seconds before checking agent status.
+    I.wait(10);
 
     // Checking that instances are RUNNING
     for (const service of Object.values(remoteInstancesHelper.serviceTypes)) {
