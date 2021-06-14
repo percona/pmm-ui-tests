@@ -5,6 +5,7 @@ const { remoteInstancesPage, pmmInventoryPage } = inject();
 const instances = new DataTable(['name']);
 const remotePostgreSQL = new DataTable(['instanceName', 'trackingOption', 'checkAgent']);
 const qanFilters = new DataTable(['filterName']);
+const dashboardCheck = new DataTable(['serviceName']);
 
 remotePostgreSQL.add(['postgreDoNotTrack', remoteInstancesPage.fields.doNotTrack, pmmInventoryPage.fields.postgresExporter]);
 remotePostgreSQL.add(['postgresPGStatStatements', remoteInstancesPage.fields.usePgStatStatements, pmmInventoryPage.fields.postgresPgStatements]);
@@ -15,6 +16,9 @@ qanFilters.add([remoteInstancesPage.potgresqlSettings.environment]);
 // qanFilters.add(['remote-mongodb-cluster']);
 qanFilters.add([remoteInstancesPage.mysqlSettings.environment]);
 qanFilters.add([remoteInstancesPage.postgresGCSettings.environment]);
+
+dashboardCheck.add([remoteInstancesPage.services.postgresql]);
+dashboardCheck.add([remoteInstancesPage.services.postgresGC]);
 
 for (const i of Object.keys(remoteInstancesPage.services)) {
   instances.add([i]);
@@ -215,17 +219,15 @@ Data(remotePostgreSQL).Scenario(
   },
 );
 
-Scenario(
+Data(dashboardCheck).Scenario(
   'PMM-T853 - Verify dashboard after remote postgreSQL instance is added @instances @not-ovf',
   async ({
-    I, dashboardPage, adminPage,
+    I, dashboardPage, adminPage, current,
   }) => {
-    const serviceName = 'postgresql_remote_new';
-
     // Wait 10 seconds before test to start getting metrics
     I.wait(10);
     I.amOnPage(dashboardPage.postgresqlInstanceOverviewDashboard.url);
-    dashboardPage.applyFilter('Service Name', serviceName);
+    dashboardPage.applyFilter('Service Name', current.serviceName);
     adminPage.peformPageDown(5);
     await dashboardPage.expandEachDashboardRow();
     adminPage.performPageUp(5);
