@@ -106,7 +106,7 @@ services:
       -c pg_stat_statements.save=off
       -c track_io_timing=on
     ports:
-      - "5432:5432"
+      - "5433:5432"
     environment:
       - POSTGRES_PASSWORD=pmm-^*&@agent-password
 
