@@ -160,9 +160,12 @@ if (versionMinor >= 13) {
       // Adding instances for monitoring
       await addInstanceAPI.addInstanceForSTT({}, true);
       // Run DB Checks from UI
+      // disable check, change interval for a check, change interval settings
       if (versionMinor >= 16) {
         databaseChecksPage.runDBChecks();
         await securityChecksAPI.disableCheck('mysql_anonymous_users');
+        await securityChecksAPI.changeCheckInterval('postgresql_version');
+        await settingsAPI.setCheckIntervals({ ...settingsAPI.defaultCheckIntervals, standard_interval: '3600s' });
       } else {
         I.amOnPage(databaseChecksPage.oldUrl);
         I.waitForVisible(runChecks, 30);
@@ -226,6 +229,33 @@ if (versionMinor >= 16) {
       I.waitForVisible(allChecksPage.buttons.disableEnableCheck(checkName));
       I.seeTextEquals('Enable', allChecksPage.buttons.disableEnableCheck(checkName));
       I.seeTextEquals('Disabled', allChecksPage.elements.statusCellByName(checkName));
+    },
+  );
+
+  Scenario(
+    'Verify check intervals remain the same after upgrade @pre-upgrade @ami-upgrade @pmm-upgrade',
+    async ({
+      I, allChecksPage,
+    }) => {
+      const checkName = 'PostgreSQL Version';
+
+      I.amOnPage(allChecksPage.url);
+      I.waitForVisible(allChecksPage.buttons.disableEnableCheck(checkName));
+      I.seeTextEquals('Frequent', allChecksPage.elements.intervalCellByName(checkName));
+    },
+  );
+
+  Scenario(
+    'Verify settings for intervals remain the same after upgrade @pre-upgrade @ami-upgrade @pmm-upgrade',
+    async ({
+      I, pmmSettingsPage,
+    }) => {
+      I.amOnPage(pmmSettingsPage.advancedSettingsUrl);
+      I.waitForVisible(pmmSettingsPage.fields.rareIntervalInput, 30);
+
+      I.seeInField(pmmSettingsPage.fields.rareIntervalInput, '78');
+      I.seeInField(pmmSettingsPage.fields.standartIntervalInput, '1');
+      I.seeInField(pmmSettingsPage.fields.frequentIntervalInput, '4');
     },
   );
 }
