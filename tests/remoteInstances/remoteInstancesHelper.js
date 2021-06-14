@@ -59,7 +59,7 @@ module.exports = {
   remote_instance: {
     mysql: {
       ps_5_7: {
-        host: 'mysql',
+        host: (process.env.AMI_UPGRADE_TESTING_INSTANCE === 'true' ? '127.0.0.1' : 'mysql'),
         port: '3306',
         username: 'pmm-agent',
         password: 'pmm%*&agent-password',
@@ -75,7 +75,7 @@ module.exports = {
     },
     mongodb: {
       psmdb_4_2: {
-        host: 'mongo',
+        host: (process.env.AMI_UPGRADE_TESTING_INSTANCE === 'true' ? '127.0.0.1' : 'mongo'),
         port: '27017',
         username: 'root',
         password: 'root-!@#%^password',
@@ -84,8 +84,8 @@ module.exports = {
     },
     postgresql: {
       pdpgsql_13_3: {
-        host: 'postgres',
-        port: '5432',
+        host: (process.env.AMI_UPGRADE_TESTING_INSTANCE === 'true' ? '127.0.0.1' : 'postgres'),
+        port: (process.env.AMI_UPGRADE_TESTING_INSTANCE === 'true' ? '5433' : '5432'),
         username: 'postgres',
         password: 'pmm-^*&@agent-password',
         clusterName: 'pgsql_clstr',
@@ -93,7 +93,7 @@ module.exports = {
     },
     proxysql: {
       proxysql_2_1_1: {
-        host: 'proxysql',
+        host: (process.env.AMI_UPGRADE_TESTING_INSTANCE === 'true' ? '127.0.0.1' : 'proxysql'),
         port: '6032',
         username: 'radmin',
         password: 'radmin',
@@ -102,14 +102,14 @@ module.exports = {
     },
     haproxy: {
       haproxy_2: {
-        host: '192.168.0.1',
+        host: (process.env.AMI_UPGRADE_TESTING_INSTANCE === 'true' ? process.env.VM_CLIENT_IP : '192.168.0.1'),
         port: '42100',
         clusterName: 'haproxy_clst',
       },
     },
     external: {
       redis: {
-        host: '192.168.0.1',
+        host: (process.env.AMI_UPGRADE_TESTING_INSTANCE === 'true' ? process.env.VM_CLIENT_IP : '192.168.0.1'),
         port: '42200',
         clusterName: 'redis_external_exporter',
       },
