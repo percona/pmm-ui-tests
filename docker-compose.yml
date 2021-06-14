@@ -105,6 +105,8 @@ services:
     command: --profile 2
     ports:
       - "27019:27017"
+    networks:
+      - pmm-network
 
   postgres:
     image: ${POSTGRES_IMAGE:-perconalab/percona-distribution-postgresql:13.3}
@@ -122,6 +124,8 @@ services:
       - "5433:5432"
     environment:
       - POSTGRES_PASSWORD=pmm-^*&@agent-password
+    networks:
+      - pmm-network
 
   proxysql:
     image: ${PROXYSQL_IMAGE:-proxysql/proxysql:2.1.1}
