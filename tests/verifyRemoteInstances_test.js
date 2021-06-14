@@ -14,6 +14,7 @@ qanFilters.add([remoteInstancesPage.potgresqlSettings.environment]);
 // TODO: uncomment after fix of mongodb
 // qanFilters.add(['remote-mongodb-cluster']);
 qanFilters.add([remoteInstancesPage.mysqlSettings.environment]);
+qanFilters.add([remoteInstancesPage.postgresGCSettings.environment]);
 
 for (const i of Object.keys(remoteInstancesPage.services)) {
   instances.add([i]);
@@ -86,7 +87,7 @@ Scenario(
 );
 
 // TODO: unskip the mongodb and postgresql tests after resolving a instance issues
-Data(instances.filter((instance) => /mysql|proxysql/.test(instance.name))).Scenario(
+Data(instances.filter((instance) => instance.name !== 'mongodb')).Scenario(
   'Verify Remote Instance has Status Running [critical] @instances',
   async ({
     I, remoteInstancesPage, pmmInventoryPage, current,
