@@ -320,8 +320,7 @@ Scenario(
   },
 );
 
-// PMM-8123 yet to be merged to master hence skipping, was already fixed in RC 2.18.0
-xScenario(
+Scenario(
   'Verify Metrics from custom queries for mysqld_exporter after upgrade (UI) @post-upgrade @ami-upgrade @pmm-upgrade',
   async ({ dashboardPage }) => {
     const metricName = 'mysql_performance_schema_memory_summary_current_bytes';
