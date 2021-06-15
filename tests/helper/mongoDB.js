@@ -17,7 +17,7 @@ class MongoDB extends Helper {
    * @param url - optional
    * @returns {Promise<*>}
    */
-  async connectToMongo(url) {
+  async mongoConnect(url) {
     return url
       ? await (new MongoClient(url, { useUnifiedTopology: true })).connect()
       : await this.client.connect();
@@ -27,7 +27,7 @@ class MongoDB extends Helper {
    * Disconnects from mongo shell
    * @returns {Promise<void>}
    */
-  async disconnectFromMongo() {
+  async mongoDisconnect() {
     await this.client.close();
   }
 
@@ -38,7 +38,7 @@ class MongoDB extends Helper {
    * @param db
    * @returns {Promise<*>}
    */
-  async executeMongoCommand(cmdObj, db) {
+  async mongoExecuteCommand(cmdObj, db) {
     return await this.client.db(db).admin().command(cmdObj);
   }
 
@@ -48,7 +48,7 @@ class MongoDB extends Helper {
    * @param cmdObj
    * @returns {Promise<*>}
    */
-  async executeMongoAdminCommand(cmdObj) {
+  async mongoExecuteAdminCommand(cmdObj) {
     return await this.client.db().command(cmdObj);
   }
 
@@ -59,7 +59,7 @@ class MongoDB extends Helper {
    * @param rolesArr
    * @returns {Promise<unknown>}
    */
-  async addUserMongo(username, password, rolesArr) {
+  async mongoAddUser(username, password, rolesArr) {
     const { roles = [{ role: 'userAdminAnyDatabase', db: 'admin' }] } = rolesArr;
 
     return this.client.db().admin().addUser(username, password, { roles });
@@ -70,7 +70,7 @@ class MongoDB extends Helper {
    * @param username
    * @returns {Promise<*>}
    */
-  async removeUserMongo(username) {
+  async mongoRemoveUser(username) {
     return await this.client.db().admin().removeUser(username);
   }
 
@@ -78,34 +78,34 @@ class MongoDB extends Helper {
    * Returns databases list
    * @returns {Promise<*>}
    */
-  async listDBs() {
+  async mongoListDBs() {
     return await this.client.db().admin().listDatabases();
   }
 
   /**
    * Creates a collection in a database and returns collection object
    * @example
-   * const col = await I.createCollection('local', 'e2e');
+   * const col = await I.mongoCreateCollection('local', 'e2e');
    * await col.insertOne({ a: '111' });
    * await col.find().toArray()
    * @param dbName
    * @param collectionName
    * @returns {Promise<*>}
    */
-  async createCollection(dbName, collectionName) {
+  async mongoCreateCollection(dbName, collectionName) {
     return await this.client.db(dbName).createCollection(collectionName);
   }
 
   /**
    * Returns collection object for further use
    * @example
-   * const col = await I.getCollection('local', 'e2e');
+   * const col = await I.mongoGetCollection('local', 'e2e');
    * await col.insertOne({ a: '111' });
    * @param dbName
    * @param collectionName
    * @returns {Promise<Collection>}
    */
-  async getCollection(dbName, collectionName) {
+  async mongoGetCollection(dbName, collectionName) {
     return this.client.db(dbName).collection(collectionName);
   }
 
@@ -115,7 +115,7 @@ class MongoDB extends Helper {
    * @param collectionName
    * @returns {Promise<*>}
    */
-  async dropCollection(dbName, collectionName) {
+  async mongoDropCollection(dbName, collectionName) {
     return await this.client.db(dbName).dropCollection(collectionName);
   }
 
@@ -124,7 +124,7 @@ class MongoDB extends Helper {
    * @param dbName
    * @returns {Promise<*>}
    */
-  async showCollections(dbName) {
+  async mongoShowCollections(dbName) {
     const collections = await this.client.db(dbName).listCollections();
 
     return await collections.toArray();
