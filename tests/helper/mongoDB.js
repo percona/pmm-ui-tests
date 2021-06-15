@@ -11,35 +11,121 @@ class MongoDB extends Helper {
     this.client = new MongoClient(this.url, { useUnifiedTopology: true });
   }
 
+  /**
+   * Connects to mongo shell. Takes options from the Helper config by default
+   * if url param is passed - it is used for a connection
+   * @param url - optional
+   * @returns {Promise<*>}
+   */
   async connectToMongo(url) {
     return url
       ? await (new MongoClient(url, { useUnifiedTopology: true })).connect()
       : await this.client.connect();
   }
 
+  /**
+   * Disconnects from mongo shell
+   * @returns {Promise<void>}
+   */
   async disconnectFromMongo() {
     await this.client.close();
   }
 
-  async listDBs() {
-    return await this.client.db('admin').admin().listDatabases();
+  /**
+   * Runs a command against the current database
+   * readmore here: https://docs.mongodb.com/manual/reference/command/
+   * @param cmdObj
+   * @param db
+   * @returns {Promise<*>}
+   */
+  async executeMongoCommand(cmdObj, db) {
+    return await this.client.db(db).admin().command(cmdObj);
   }
 
-  async createCollection(dbName = 'local', collectionName = 'e2e') {
+  /**
+   * Runs an administrative command against the admin database
+   * readmore here: https://docs.mongodb.com/manual/reference/command/
+   * @param cmdObj
+   * @returns {Promise<*>}
+   */
+  async executeMongoAdminCommand(cmdObj) {
+    return await this.client.db().command(cmdObj);
+  }
+
+  /**
+   * Creates new user
+   * @param username
+   * @param password
+   * @param rolesArr
+   * @returns {Promise<unknown>}
+   */
+  async addUserMongo(username, password, rolesArr) {
+    const { roles = [{ role: 'userAdminAnyDatabase', db: 'admin' }] } = rolesArr;
+
+    return this.client.db().admin().addUser(username, password, { roles });
+  }
+
+  /**
+   * Removes a user
+   * @param username
+   * @returns {Promise<*>}
+   */
+  async removeUserMongo(username) {
+    return await this.client.db().admin().removeUser(username);
+  }
+
+  /**
+   * Returns databases list
+   * @returns {Promise<*>}
+   */
+  async listDBs() {
+    return await this.client.db().admin().listDatabases();
+  }
+
+  /**
+   * Creates a collection in a database and returns collection object
+   * @example
+   * const col = await I.createCollection('local', 'e2e');
+   * await col.insertOne({ a: '111' });
+   * await col.find().toArray()
+   * @param dbName
+   * @param collectionName
+   * @returns {Promise<*>}
+   */
+  async createCollection(dbName, collectionName) {
     return await this.client.db(dbName).createCollection(collectionName);
   }
 
-  async getCollection(dbName = 'local', collectionName = 'e2e') {
+  /**
+   * Returns collection object for further use
+   * @example
+   * const col = await I.getCollection('local', 'e2e');
+   * await col.insertOne({ a: '111' });
+   * @param dbName
+   * @param collectionName
+   * @returns {Promise<Collection>}
+   */
+  async getCollection(dbName, collectionName) {
     return this.client.db(dbName).collection(collectionName);
   }
 
-  async dropCollection(dbName = 'local', collectionName = 'e2e') {
-    await this.client.db(dbName).dropCollection(collectionName);
+  /**
+   * Deletes a collection in a database
+   * @param dbName
+   * @param collectionName
+   * @returns {Promise<*>}
+   */
+  async dropCollection(dbName, collectionName) {
+    return await this.client.db(dbName).dropCollection(collectionName);
   }
 
-  async showCollections(dbName = 'local') {
-    const db = this.client.db(dbName);
-    const collections = await db.listCollections();
+  /**
+   * Returns collections in a database
+   * @param dbName
+   * @returns {Promise<*>}
+   */
+  async showCollections(dbName) {
+    const collections = await this.client.db(dbName).listCollections();
 
     return await collections.toArray();
   }
