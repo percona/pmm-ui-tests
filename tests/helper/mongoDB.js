@@ -7,7 +7,7 @@ class MongoDB extends Helper {
     this.port = config.port;
     this.username = config.username;
     this.password = config.password;
-    this.url = `mongodb://${config.username}:${config.password}@${config.host}:${config.port}/?authSource=admin`;
+    this.url = `mongodb://${config.username}:${encodeURIComponent(config.password)}@${config.host}:${config.port}/?authSource=admin`;
     this.client = new MongoClient(this.url, { useUnifiedTopology: true });
   }
 
