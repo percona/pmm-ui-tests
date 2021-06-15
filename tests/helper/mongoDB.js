@@ -40,7 +40,7 @@ class MongoDB extends Helper {
    * @returns {Promise<*>}
    */
   async mongoExecuteCommand(cmdObj, db) {
-    return await this.client.db(db).admin().command(cmdObj);
+    return await this.client.db(db).command(cmdObj);
   }
 
   /**
@@ -51,7 +51,7 @@ class MongoDB extends Helper {
    * @returns {Promise<*>}
    */
   async mongoExecuteAdminCommand(cmdObj) {
-    return await this.client.db().command(cmdObj);
+    return await this.client.db().admin().command(cmdObj);
   }
 
   /**
