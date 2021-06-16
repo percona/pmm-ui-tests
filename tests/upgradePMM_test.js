@@ -123,7 +123,7 @@ Scenario(
     const response = await dashboardPage.checkMetricExist(metricName);
     const result = JSON.stringify(response.data.data.result);
 
-    I.amOnPage('graph/d/prometheus-advanced/advanced-data-exploration?orgId=1&refresh=1m&var-metric=mysql_global_status_uptime&var-interval=$__auto_interval_interval&var-node_name=All&from=now-5m&to=now');
+    I.amOnPage('graph/d/prometheus-advanced/advanced-data-exploration?orgId=1&refresh=1m&var-metric=mysql_global_status_uptime&var-interval=$__auto_interval_interval&var-node_name=All&from=now-59m&to=now');
     dashboardPage.waitForDashboardOpened();
     await dashboardPage.expandEachDashboardRow();
     await dashboardPage.verifyThereAreNoGraphsWithNA();
