@@ -1,6 +1,6 @@
 const { MongoClient } = require('mongodb');
 
-class MongoDB extends Helper {
+class MongoDBHelper extends Helper {
   constructor(config) {
     super(config);
     this.host = config.host;
@@ -33,7 +33,7 @@ class MongoDB extends Helper {
 
   /**
    * Runs a command against the current database
-   * readmore here: https://docs.mongodb.com/manual/reference/command/
+   * read more here: https://docs.mongodb.com/manual/reference/command/
    * @example await I.mongoExecuteCommand({ getLastError: 1 })
    * @param cmdObj
    * @param db
@@ -45,7 +45,7 @@ class MongoDB extends Helper {
 
   /**
    * Runs an administrative command against the admin database
-   * readmore here: https://docs.mongodb.com/manual/reference/command/
+   * read more here: https://docs.mongodb.com/manual/reference/command/
    * @example await I.mongoExecuteAdminCommand({ listDatabases: 1 })
    * @param cmdObj
    * @returns {Promise<*>}
@@ -133,4 +133,4 @@ class MongoDB extends Helper {
   }
 }
 
-module.exports = MongoDB;
+module.exports = MongoDBHelper;

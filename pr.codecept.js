@@ -25,7 +25,7 @@ exports.config = {
         ],
       },
     },
-    MongoDB: {
+    MongoDBHelper: {
       require: './tests/helper/mongoDB.js',
       host: '127.0.0.1',
       port: 27017,
