@@ -123,7 +123,7 @@ Scenario(
 Scenario(
   'Verify Metrics from custom queries for mysqld_exporter before Upgrade @pre-upgrade @ami-upgrade @pmm-upgrade',
   async ({ dashboardPage }) => {
-    const metricName = 'mysql_performance_schema_memory_summary_current_bytes';
+    const metricName = 'mysql_global_status_uptime';
 
     const response = await dashboardPage.checkMetricExist(metricName);
     const result = JSON.stringify(response.data.data.result);
