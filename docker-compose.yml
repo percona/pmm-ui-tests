@@ -27,7 +27,8 @@ services:
     volumes:
       - pmm-server-data:/srv
     networks:
-      - pmm-network
+      pmm-network:
+        ipv4_address: 192.168.0.2
 
   # It is essential to have an extra directory `/slowlogs/` between host and container;
   # Otherwise, MySQL in Docker for Mac completely locks during/after slowlog rotation tests.
@@ -50,6 +51,8 @@ services:
       - /tmp/mysql/log:/tmp/mysql/log:rw
     networks:
       - pmm-network
+    depends_on:
+      - pmm-server
 
   mysql8:
     image: ${MYSQL_IMAGE:-percona:8.0}
@@ -70,6 +73,8 @@ services:
       - /tmp/mysql/log:/tmp/mysql/log
     networks:
       - pmm-network
+    depends_on:
+      - pmm-server
 
   mongo:
     image: ${MONGO_IMAGE:-percona/percona-server-mongodb:4.2.8}
@@ -82,6 +87,8 @@ services:
       - MONGO_INITDB_ROOT_PASSWORD=root-!@#%^password
     networks:
       - pmm-network
+    depends_on:
+      - pmm-server
 
   mongo_with_ssl:
     image: ${MONGO_IMAGE:-percona/percona-server-mongodb:4.4}
@@ -98,6 +105,8 @@ services:
       - ${PWD}/testdata/mongodb:/etc/ssl/certificates
     networks:
       - pmm-network
+    depends_on:
+      - pmm-server
 
   mongonoauth:
     image: ${MONGO_IMAGE:-percona/percona-server-mongodb:4.2.8}
@@ -107,6 +116,8 @@ services:
       - "27019:27017"
     networks:
       - pmm-network
+    depends_on:
+      - pmm-server
 
   postgres:
     image: ${POSTGRES_IMAGE:-perconalab/percona-distribution-postgresql:13.3}
@@ -126,6 +137,8 @@ services:
       - POSTGRES_PASSWORD=pmm-^*&@agent-password
     networks:
       - pmm-network
+    depends_on:
+      - pmm-server
 
   proxysql:
     image: ${PROXYSQL_IMAGE:-proxysql/proxysql:2.1.1}
@@ -138,6 +151,8 @@ services:
       - ${PWD}/testdata/proxysql/proxysql.cnf:/etc/proxysql.cnf:rw
     networks:
       - pmm-network
+    depends_on:
+      - pmm-server
 
   sysbench:
     image: perconalab/sysbench
