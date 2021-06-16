@@ -104,7 +104,7 @@ Scenario(
 );
 
 Scenario(
-  'Verify user can create Remote Instances before upgrade and they are in RUNNNING status @pre-upgrade @ami-upgrade @pmm-upgrade',
+  'Verify user can create Remote Instances before upgrade @pre-upgrade @ami-upgrade @pmm-upgrade',
   async ({
     inventoryAPI, addInstanceAPI, I,
   }) => {
@@ -117,6 +117,18 @@ Scenario(
         );
       }
     }
+  },
+);
+
+Scenario(
+  'Verify Metrics from custom queries for mysqld_exporter before Upgrade @pre-upgrade @ami-upgrade @pmm-upgrade',
+  async ({ dashboardPage }) => {
+    const metricName = 'mysql_performance_schema_memory_summary_current_bytes';
+
+    const response = await dashboardPage.checkMetricExist(metricName);
+    const result = JSON.stringify(response.data.data.result);
+
+    assert.ok(response.data.data.result.length !== 0, `Custom Metrics Should be available but got empty ${result}`);
   },
 );
 
