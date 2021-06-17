@@ -6,7 +6,11 @@ volumes:
 
 networks:
   pmm-network:
-    external: true
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 192.168.0.0/24
+          gateway: 192.168.0.1
 
 services:
   pmm-server:
@@ -22,6 +26,8 @@ services:
       - PERCONA_TEST_CHECKS_PUBLIC_KEY=RWTg+ZmCCjt7O8eWeAmTLAqW+1ozUbpRSKSwNTmO+exlS5KEIPYWuYdX
     volumes:
       - pmm-server-data:/srv
+    networks:
+      - pmm-network
 
   # It is essential to have an extra directory `/slowlogs/` between host and container;
   # Otherwise, MySQL in Docker for Mac completely locks during/after slowlog rotation tests.
@@ -44,6 +50,8 @@ services:
       - /tmp/mysql/log:/tmp/mysql/log:rw
     depends_on:
       - pmm-server
+    networks:
+      - pmm-network
 
   mysql8:
     image: ${MYSQL_IMAGE:-percona:8.0}
@@ -64,6 +72,8 @@ services:
       - /tmp/mysql/log:/tmp/mysql/log
     depends_on:
       - pmm-server
+    networks:
+      - pmm-network
 
   mongo:
     image: ${MONGO_IMAGE:-percona/percona-server-mongodb:4.2.8}
@@ -76,6 +86,8 @@ services:
       - MONGO_INITDB_ROOT_PASSWORD=root-!@#%^password
     depends_on:
       - pmm-server
+    networks:
+      - pmm-network
 
   mongo_with_ssl:
     image: ${MONGO_IMAGE:-percona/percona-server-mongodb:4.4}
@@ -92,6 +104,8 @@ services:
       - ${PWD}/testdata/mongodb:/etc/ssl/certificates
     depends_on:
       - pmm-server
+    networks:
+      - pmm-network
 
   mongonoauth:
     image: ${MONGO_IMAGE:-percona/percona-server-mongodb:4.2.8}
@@ -101,6 +115,8 @@ services:
       - "27019:27017"
     depends_on:
       - pmm-server
+    networks:
+      - pmm-network
 
   postgres:
     image: ${POSTGRES_IMAGE:-perconalab/percona-distribution-postgresql:13.3}
@@ -120,6 +136,8 @@ services:
       - POSTGRES_PASSWORD=pmm-^*&@agent-password
     depends_on:
       - pmm-server
+    networks:
+      - pmm-network
 
   proxysql:
     image: ${PROXYSQL_IMAGE:-proxysql/proxysql:2.1.1}
@@ -132,12 +150,16 @@ services:
       - ${PWD}/testdata/proxysql/proxysql.cnf:/etc/proxysql.cnf:rw
     depends_on:
       - pmm-server
+    networks:
+      - pmm-network
 
   sysbench:
     image: perconalab/sysbench
     container_name: pmm-agent_sysbench
     depends_on:
       - mysql
+    networks:
+      - pmm-network
     command: >
       bash -c "
           set -o xtrace
