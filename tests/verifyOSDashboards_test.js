@@ -7,7 +7,7 @@ Feature('Test Dashboards inside the OS Folder');
 Before(async ({ I }) => {
   await I.Authorize();
 });
-
+/*
 Scenario(
   'Open the Node Summary Dashboard and verify Metrics are present and graphs are displayed @nightly @dashboards',
   async ({ I, dashboardPage, adminPage }) => {
@@ -76,5 +76,31 @@ Data(nodes).Scenario(
     adminPage.performPageUp(5);
     I.waitForElement(dashboardPage.nodeSummaryDashboard.ptSummaryDetail.reportContainer, 60);
     I.seeElement(dashboardPage.nodeSummaryDashboard.ptSummaryDetail.reportContainer);
+  },
+);
+*/
+Scenario(
+  'PMM-T373 - Verify adding annotation with pmm-admin annotate --service @nightly @dashboards',
+  async ({ I, dashboardPage }) => {
+    const postgresAnnotation = 'Annotation for postgres';
+
+    I.amOnPage(`${dashboardPage.postgresqlInstanceSummaryDashboard.url}`);
+    dashboardPage.waitForDashboardOpened();
+    await dashboardPage.applyFilter('Service Name', 'pmm-server-postgres');
+    dashboardPage.verifyAnnotationsLoaded(postgresAnnotation, 1);
+    I.seeElement(dashboardPage.annotationText(postgresAnnotation), 10);
+  },
+);
+
+Scenario(
+  'PMM-T373 - Verify adding annotation with pmm-admin annotate --service postgres @nightly @dashboards',
+  async ({ I, dashboardPage }) => {
+    const postgresAnnotation = 'annotation-for-postgres2';
+
+    I.amOnPage(`${dashboardPage.postgresqlInstanceSummaryDashboard.url}`);
+    dashboardPage.waitForDashboardOpened();
+    await dashboardPage.applyFilter('Service Name', 'pmm-server-postgres');
+    dashboardPage.verifyAnnotationsLoaded(postgresAnnotation, 4);
+    I.seeElement(dashboardPage.annotationText(postgresAnnotation), 10);
   },
 );
