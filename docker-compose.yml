@@ -6,6 +6,11 @@ volumes:
 
 networks:
   pmm-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 192.168.0.0/24
+          gateway: 192.168.0.1
 
 services:
   pmm-server:
@@ -22,7 +27,7 @@ services:
     volumes:
       - pmm-server-data:/srv
     networks:
-      pmm-network:
+     - pmm-network
 
   # It is essential to have an extra directory `/slowlogs/` between host and container;
   # Otherwise, MySQL in Docker for Mac completely locks during/after slowlog rotation tests.
