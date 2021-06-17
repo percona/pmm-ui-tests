@@ -6,11 +6,7 @@ volumes:
 
 networks:
   pmm-network:
-    driver: bridge
-    ipam:
-      config:
-        - subnet: 192.168.0.0/24
-          gateway: 192.168.0.1
+    external: true
 
 services:
   pmm-server:
@@ -26,8 +22,6 @@ services:
       - PERCONA_TEST_CHECKS_PUBLIC_KEY=RWTg+ZmCCjt7O8eWeAmTLAqW+1ozUbpRSKSwNTmO+exlS5KEIPYWuYdX
     volumes:
       - pmm-server-data:/srv
-    networks:
-     - pmm-network
 
   # It is essential to have an extra directory `/slowlogs/` between host and container;
   # Otherwise, MySQL in Docker for Mac completely locks during/after slowlog rotation tests.
@@ -48,8 +42,6 @@ services:
       - UMASK=0777  # for slowlog file
     volumes:
       - /tmp/mysql/log:/tmp/mysql/log:rw
-    networks:
-      - pmm-network
     depends_on:
       - pmm-server
 
@@ -70,8 +62,6 @@ services:
       - UMASK=0777  # for slowlog file
     volumes:
       - /tmp/mysql/log:/tmp/mysql/log
-    networks:
-      - pmm-network
     depends_on:
       - pmm-server
 
@@ -84,8 +74,6 @@ services:
     environment:
       - MONGO_INITDB_ROOT_USERNAME=root
       - MONGO_INITDB_ROOT_PASSWORD=root-!@#%^password
-    networks:
-      - pmm-network
     depends_on:
       - pmm-server
 
@@ -102,8 +90,6 @@ services:
       - --bind_ip=0.0.0.0
     volumes:
       - ${PWD}/testdata/mongodb:/etc/ssl/certificates
-    networks:
-      - pmm-network
     depends_on:
       - pmm-server
 
@@ -113,8 +99,6 @@ services:
     command: --profile 2
     ports:
       - "27019:27017"
-    networks:
-      - pmm-network
     depends_on:
       - pmm-server
 
@@ -134,8 +118,6 @@ services:
       - "5433:5432"
     environment:
       - POSTGRES_PASSWORD=pmm-^*&@agent-password
-    networks:
-      - pmm-network
     depends_on:
       - pmm-server
 
@@ -148,8 +130,6 @@ services:
       - "6070:6070"
     volumes:
       - ${PWD}/testdata/proxysql/proxysql.cnf:/etc/proxysql.cnf:rw
-    networks:
-      - pmm-network
     depends_on:
       - pmm-server
 
@@ -158,8 +138,6 @@ services:
     container_name: pmm-agent_sysbench
     depends_on:
       - mysql
-    networks:
-      - pmm-network
     command: >
       bash -c "
           set -o xtrace
