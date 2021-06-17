@@ -19,22 +19,26 @@ const singleNodeConfiguration = {
   clusterDashboardRedirectionLink: dbaasPage.clusterDashboardUrls.pxcDashboard(pxc_cluster_name_single),
 };
 
-BeforeSuite(async ({ dbaasAPI }) => {
-  if (!await dbaasAPI.apiCheckRegisteredClusterExist(clusterName)) {
-    await dbaasAPI.apiRegisterCluster(process.env.kubeconfig_minikube, clusterName);
-  }
-});
+// BeforeSuite(async ({ dbaasAPI }) => {
+//   if (!await dbaasAPI.apiCheckRegisteredClusterExist(clusterName)) {
+//     await dbaasAPI.apiRegisterCluster(process.env.kubeconfig_minikube, clusterName);
+//   }
+// });
 
-AfterSuite(async ({ dbaasAPI }) => {
-  await dbaasAPI.apiUnregisterCluster(clusterName, true);
-});
+// AfterSuite(async ({ dbaasAPI }) => {
+//   await dbaasAPI.apiUnregisterCluster(clusterName, true);
+// });
 
-Before(async ({ I, dbaasAPI }) => {
+Before(async ({ I, settingsAPI }) => {
   await I.Authorize();
-  if (!await dbaasAPI.apiCheckRegisteredClusterExist(clusterName)) {
-    await dbaasAPI.apiRegisterCluster(process.env.kubeconfig_minikube, clusterName);
-  }
 });
+
+// Before(async ({ I, dbaasAPI }) => {
+//   await I.Authorize();
+//   if (!await dbaasAPI.apiCheckRegisteredClusterExist(clusterName)) {
+//     await dbaasAPI.apiRegisterCluster(process.env.kubeconfig_minikube, clusterName);
+//   }
+// });
 
 Scenario('PMM-T455 PMM-T575 Verify that Advanced Options are optional for DB Cluster Creation, '
   + 'creating PXC cluster with default settings @dbaas',
@@ -290,4 +294,25 @@ Scenario('PMM-T717 Verify insufficient resources warning @dbaas @nightly',
     await dbaasActionsPage.verifyInsufficientResources(dbaasPage.tabs.dbClusterTab.advancedOptions.fields.resourceBarCPU, 'Insufficient CPU');
     await dbaasActionsPage.verifyInsufficientResources(dbaasPage.tabs.dbClusterTab.advancedOptions.fields.resourceBarMemory, 'Insufficient Memory');
     await dbaasActionsPage.verifyInsufficientResources(dbaasPage.tabs.dbClusterTab.advancedOptions.fields.resourceBarDisk, 'Insufficient Disk');
+  });
+
+  Scenario.only('PMM-T665 Verify View Cluster PXC Logs @dbaas',
+  async ({ I, dbaasPage, dbaasActionsPage }) => {
+    I.amOnPage(dbaasPage.url);
+    I.click(dbaasPage.tabs.dbClusterTab.dbClusterTab);
+    await dbaasActionsPage.createClusterBasicOptions(clusterName, pxc_cluster_name, 'MySQL');
+    I.click(dbaasPage.tabs.dbClusterTab.createClusterButton);
+    I.waitForText('Processing', 30, dbaasPage.tabs.dbClusterTab.fields.progressBarContent);
+    I.wait(20);//There are no logs yet
+    await dbaasActionsPage.showClusterLogs(pxc_cluster_name, clusterName);
+
+    I.waitForElement(dbaasPage.tabs.dbClusterTab.fields.dbClusterLogs.expandAllButton); //wait after loaded
+    I.seeTextEquals('Expand all',dbaasPage.tabs.dbClusterTab.fields.dbClusterLogs.expandAllButton);//check text in expand all button
+    I.click(dbaasPage.tabs.dbClusterTab.fields.dbClusterLogs.expandAllButton); //click expand all
+    I.seeTextEquals('Collapse all', dbaasPage.tabs.dbClusterTab.fields.dbClusterLogs.expandAllButton); //check text in collapse all
+    I.seeElement(dbaasPage.tabs.dbClusterTab.fields.dbClusterLogs.expandSection); //check expanded body
+    I.click(dbaasPage.tabs.dbClusterTab.fields.dbClusterLogs.expandAllButton); //click collapse all again
+    I.seeTextEquals('Expand all',dbaasPage.tabs.dbClusterTab.fields.dbClusterLogs.expandAllButton);//check text changed to expand all
+    I.dontSeeElement(dbaasPage.tabs.dbClusterTab.fields.dbClusterLogs.expandSection);//check expanded body collapsed
+    pause();
   });

@@ -135,6 +135,8 @@ module.exports = {
           dbClusterLogsAction: '$dbcluster-logs-actions',
           closeButton: '$modal-close-button',
           modalHeader: '$modal-header',
+          expandAllButton: 'body > grafana-app > div > div > react-container > div > div.css-14ru1ij > div.css-18m13of > div > div.css-qtvzzq > div > div.css-1rf34ep > div.css-3hrlc4 > div > div.css-1mt9hc7 > button.css-oz2z28-button',
+          expandedPods: 'body > grafana-app > div > div > react-container > div > div.css-14ru1ij > div.css-18m13of > div > div.css-qtvzzq > div > div.css-1rf34ep > div.css-3hrlc4 > div > div:nth-child(2) > div > div.css-128nx2g-collapse__body',
         },
         cancelDeleteDBCluster: '$cancel-delete-dbcluster-button',
         progressBarSteps: '$progress-bar-steps',

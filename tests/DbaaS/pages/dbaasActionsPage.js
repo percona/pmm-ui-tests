@@ -173,6 +173,13 @@ module.exports = {
     await dbaasAPI.waitForDbClusterDeleted(dbClusterName, k8sClusterName, 'MongoDB');
   },
 
+  async showClusterLogs(dbClusterName, k8sClusterName) {
+    I.waitForElement(dbaasPage.tabs.dbClusterTab.fields.clusterTableHeader, 30);
+    I.click(dbaasPage.tabs.dbClusterTab.fields.clusterActionsMenu);
+    I.waitForElement(dbaasPage.tabs.dbClusterTab.fields.clusterAction('View logs'), 30);
+    I.click(dbaasPage.tabs.dbClusterTab.fields.clusterAction('View logs'));
+  },
+
   async verifyInsufficientResources(resourceType, warningMessage) {
     I.seeElement(
       dbaasPage.tabs.dbClusterTab.advancedOptions.fields.resourceBarInsufficientResources(
