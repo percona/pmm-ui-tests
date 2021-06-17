@@ -91,6 +91,11 @@ Scenario(
   async ({ settingsAPI }) => {
     const body = {
       telemetry_enabled: true,
+      metrics_resolutions: {
+        hr: '3s',
+        mr: '15s',
+        lr: '30s',
+      },
       data_retention: '172800s',
     };
 
@@ -117,17 +122,11 @@ Scenario(
 
 Scenario(
   'Verify Metrics from custom queries for mysqld_exporter before Upgrade @pre-upgrade @ami-upgrade @pmm-upgrade',
-  async ({ dashboardPage, I }) => {
-    const metricName = 'mysql_global_status_uptime';
+  async ({ dashboardPage }) => {
+    const metricName = 'mysql_performance_schema_memory_summary_current_bytes';
 
     const response = await dashboardPage.checkMetricExist(metricName);
     const result = JSON.stringify(response.data.data.result);
-
-    I.amOnPage('graph/d/prometheus-advanced/advanced-data-exploration?orgId=1&refresh=1m&var-metric=mysql_global_status_uptime&var-interval=$__auto_interval_interval&var-node_name=All&from=now-59m&to=now');
-    dashboardPage.waitForDashboardOpened();
-    await dashboardPage.expandEachDashboardRow();
-    await dashboardPage.verifyThereAreNoGraphsWithNA();
-    await dashboardPage.verifyThereAreNoGraphsWithoutData(0);
 
     assert.ok(response.data.data.result.length !== 0, `Custom Metrics Should be available but got empty ${result}`);
   },
