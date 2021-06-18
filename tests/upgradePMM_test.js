@@ -108,6 +108,21 @@ Scenario(
 );
 
 Scenario(
+  'Open the MySQL Overview Dashboard and verify Metrics are present and graphs are displayed @pre-upgrade @ami-upgrade @pmm-upgrade',
+  async ({ I, adminPage, dashboardPage }) => {
+    I.amOnPage(dashboardPage.mysqlInstanceSummaryDashboard.url);
+    dashboardPage.waitForDashboardOpened();
+    await dashboardPage.applyFilter('Service Name', 'ps_5.7');
+    await dashboardPage.expandEachDashboardRow();
+    I.click(adminPage.fields.metricTitle);
+    adminPage.peformPageDown(5);
+    dashboardPage.verifyMetricsExistence(dashboardPage.mysqlInstanceSummaryDashboard.metrics);
+    await dashboardPage.verifyThereAreNoGraphsWithNA(1);
+    await dashboardPage.verifyThereAreNoGraphsWithoutData(3);
+  },
+);
+
+Scenario(
   'Verify user is able to set custom Settings like Data_retention, Resolution @pre-upgrade @ami-upgrade @pmm-upgrade',
   async ({ settingsAPI, I }) => {
     const body = {
