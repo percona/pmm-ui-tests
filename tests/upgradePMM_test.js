@@ -88,7 +88,15 @@ Scenario(
 
 Scenario(
   'Verify Metrics for mysqld_exporter before Upgrade & Custom Settings @pre-upgrade @ami-upgrade @pmm-upgrade',
-  async ({ dashboardPage }) => {
+  async ({ dashboardPage, I }) => {
+    const listOutput = await I.verifyCommand(
+      'pmm-admin list',
+    );
+    console.log(listOutput);
+    const statusOutput = await I.verifyCommand(
+      'pmm-admin status',
+    );
+    console.log(statusOutput);
     const metricName = 'mysql_global_status_connections';
 
     const response = await dashboardPage.checkMetricExist(metricName);
