@@ -87,17 +87,6 @@ Scenario(
 );
 
 Scenario(
-  'Verify Metrics for mysqld_exporter before Upgrade & Custom Settings @pre-upgrade @ami-upgrade @pmm-upgrade',
-  async ({ dashboardPage, I }) => {
-    const metricName = 'mysql_global_status_connections';
-    const response = await dashboardPage.checkMetricExist(metricName);
-    const result = JSON.stringify(response.data.data.result);
-
-    assert.ok(response.data.data.result.length !== 0, `Custom Metrics ${metricName} Should be available but got empty ${result}`);
-  },
-);
-
-Scenario(
   'Open the MySQL Overview Dashboard and verify Metrics are present and graphs are displayed @pre-upgrade @ami-upgrade @pmm-upgrade',
   async ({ I, adminPage, dashboardPage }) => {
     I.amOnPage(dashboardPage.mysqlInstanceSummaryDashboard.url);
@@ -126,6 +115,7 @@ Scenario(
     };
 
     await settingsAPI.changeSettings(body, true);
+    I.wait(10);
   },
 );
 
@@ -143,18 +133,6 @@ Scenario(
         );
       }
     }
-  },
-);
-
-Scenario(
-  'Verify Metrics from custom queries for mysqld_exporter before Upgrade @pre-upgrade @ami-upgrade @pmm-upgrade',
-  async ({ dashboardPage }) => {
-    const metricName = 'mysql_global_status_connections';
-
-    const response = await dashboardPage.checkMetricExist(metricName);
-    const result = JSON.stringify(response.data.data.result);
-
-    assert.ok(response.data.data.result.length !== 0, `Custom Metrics ${metricName} Should be available but got empty ${result}`);
   },
 );
 
