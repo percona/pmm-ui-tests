@@ -87,8 +87,20 @@ Scenario(
 );
 
 Scenario(
+  'Verify Metrics for mysqld_exporter before Upgrade & Custom Settings @pre-upgrade @ami-upgrade @pmm-upgrade',
+  async ({ dashboardPage }) => {
+    const metricName = 'mysql_global_status_connections';
+
+    const response = await dashboardPage.checkMetricExist(metricName);
+    const result = JSON.stringify(response.data.data.result);
+
+    assert.ok(response.data.data.result.length !== 0, `Custom Metrics ${metricName} Should be available but got empty ${result}`);
+  },
+);
+
+Scenario(
   'Verify user is able to set custom Settings like Data_retention, Resolution @pre-upgrade @ami-upgrade @pmm-upgrade',
-  async ({ settingsAPI }) => {
+  async ({ settingsAPI, I }) => {
     const body = {
       telemetry_enabled: true,
       metrics_resolutions: {
@@ -100,6 +112,7 @@ Scenario(
     };
 
     await settingsAPI.changeSettings(body, true);
+    I.wait(30);
   },
 );
 
@@ -128,7 +141,7 @@ Scenario(
     const response = await dashboardPage.checkMetricExist(metricName);
     const result = JSON.stringify(response.data.data.result);
 
-    assert.ok(response.data.data.result.length !== 0, `Custom Metrics Should be available but got empty ${result}`);
+    assert.ok(response.data.data.result.length !== 0, `Custom Metrics ${metricName} Should be available but got empty ${result}`);
   },
 );
 
@@ -340,7 +353,7 @@ Scenario(
     const response = await dashboardPage.checkMetricExist(metricName);
     const result = JSON.stringify(response.data.data.result);
 
-    assert.ok(response.data.data.result.length !== 0, `Custom Metrics Should be available but got empty ${result}`);
+    assert.ok(response.data.data.result.length !== 0, `Custom Metrics ${metricName} Should be available but got empty ${result}`);
   },
 );
 
