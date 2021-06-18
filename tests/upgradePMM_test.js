@@ -91,6 +91,11 @@ Scenario(
   async ({ settingsAPI }) => {
     const body = {
       telemetry_enabled: true,
+      metrics_resolutions: {
+        hr: '3s',
+        mr: '15s',
+        lr: '30s',
+      },
       data_retention: '172800s',
     };
 
