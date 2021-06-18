@@ -98,7 +98,8 @@ Scenario(
     );
     console.log(statusOutput);
     const metricName = 'mysql_global_status_connections';
-
+    const psauxout = await I.verifyCommand('ps -aux');
+    console.log(psauxout);
     const response = await dashboardPage.checkMetricExist(metricName);
     const result = JSON.stringify(response.data.data.result);
 
