@@ -7,7 +7,7 @@ Feature('Test Dashboards inside the OS Folder');
 Before(async ({ I }) => {
   await I.Authorize();
 });
-/*
+
 Scenario(
   'Open the Node Summary Dashboard and verify Metrics are present and graphs are displayed @nightly @dashboards',
   async ({ I, dashboardPage, adminPage }) => {
@@ -78,14 +78,13 @@ Data(nodes).Scenario(
     I.seeElement(dashboardPage.nodeSummaryDashboard.ptSummaryDetail.reportContainer);
   },
 );
-*/
 
 Scenario(
-  'PMM-T373 - Verify adding annotation with pmm-admin annotate --service @nightly @dashboards',
+  'PMM-T877 - Verify adding annotation for service name: pmm-server and node name: pmm-server-postgresql @nightly @dashboards',
   async ({ I, dashboardPage, grafanaAPI }) => {
-    const postgresAnnotation = 'Annotation for postgres';
+    const postgresAnnotation = 'annotation-for-postgres';
 
-    await grafanaAPI.setAnnotation(postgresAnnotation, 'PMM-T373', 'pmm-server', 'pmm-server-postgresql')
+    await grafanaAPI.setAnnotation(postgresAnnotation, 'PMM-T877', 'pmm-server', 'pmm-server-postgresql');
     I.amOnPage(`${dashboardPage.postgresqlInstanceSummaryDashboard.url}`);
     dashboardPage.waitForDashboardOpened();
     await dashboardPage.applyFilter('Service Name', 'pmm-server-postgres');
@@ -94,15 +93,25 @@ Scenario(
   },
 );
 
-Scenario(
-  'PMM-T373 - Verify adding annotation with pmm-admin annotate --service postgres @nightly @dashboards',
-  async ({ I, dashboardPage }) => {
-    const postgresAnnotation = 'annotation-for-postgres2';
+Scenario.only(
+  'PMM-T877 - Verify adding annotation for mongoDB @nightly @dashboards',
+  async ({
+    I, dashboardPage, pmmInventoryPage, grafanaAPI,
+  }) => {
+    const mongoAnnotation = 'annotation-for-mongo';
 
-    I.amOnPage(`${dashboardPage.postgresqlInstanceSummaryDashboard.url}`);
+    I.amOnPage(pmmInventoryPage.url);
+    const serviceName = await I.grabTextFrom(pmmInventoryPage.fields.mongoServiceName);
+    const nodeID = await pmmInventoryPage.getNodeId(serviceName);
+
+    I.click(pmmInventoryPage.fields.nodesLink);
+    const nodeName = await pmmInventoryPage.getNodeName(nodeID);
+
+    await grafanaAPI.setAnnotation(mongoAnnotation, 'PMM-T877', nodeName, serviceName);
+    I.amOnPage(`${dashboardPage.mongoDbInstanceOverview.url}`);
     dashboardPage.waitForDashboardOpened();
-    await dashboardPage.applyFilter('Service Name', 'pmm-server-postgres');
-    dashboardPage.verifyAnnotationsLoaded(postgresAnnotation, 4);
-    I.seeElement(dashboardPage.annotationText(postgresAnnotation), 10);
+    await dashboardPage.applyFilter('Service Name', serviceName);
+    dashboardPage.verifyAnnotationsLoaded(mongoAnnotation, 1);
+    I.seeElement(dashboardPage.annotationText(mongoAnnotation), 10);
   },
 );

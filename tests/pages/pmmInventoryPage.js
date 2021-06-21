@@ -162,8 +162,8 @@ module.exports = {
     return serviceIdLocator;
   },
 
-  getNodeName(nodeID){
-    return `//table//tr/td[2][contains(text(),"${nodeID}")]/following-sibling::td[4]`
+  async getNodeName(nodeID) {
+    return await I.grabTextFrom(`//table//tr/td[2][contains(text(),"${nodeID}")]/following-sibling::td[2]`);
   },
 
   async getCountOfAgents(serviceId) {

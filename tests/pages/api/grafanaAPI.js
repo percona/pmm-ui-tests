@@ -125,7 +125,7 @@ module.exports = {
       text: annotationName,
       tags: [tags],
       node_name: nodeName,
-      service_names: [serviceNames]
+      service_names: [serviceNames],
     };
 
     const resp = await I.sendPostRequest('v1/management/Annotations/Add', body, headers);
