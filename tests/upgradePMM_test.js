@@ -9,8 +9,7 @@ const {
 const { perconaServerDB } = inject();
 const connection = perconaServerDB.defaultConnection;
 const emptyPasswordSummary = 'MySQL users have empty passwords';
-const serviceNameForSTT = 'upgrade-stt-ps-5.30';
-const failedCheckRowLocator = locate('tr').withChild(locate('td').withText(serviceNameForSTT));
+const failedCheckRowLocator = locate('tr').withChild(locate('td').withText(remoteInstancesHelper.upgradeServiceNames.mysql));
 const ruleName = 'Alert Rule for upgrade';
 const failedCheckMessage = 'Newer version of Percona Server for MySQL is available';
 
@@ -52,11 +51,20 @@ BeforeSuite(async ({ addInstanceAPI }) => {
     password: connection.password,
   };
 
-  await addInstanceAPI.apiAddInstance(
-    remoteInstancesHelper.instanceTypes.mysql,
-    serviceNameForSTT,
-    connection,
-  );
+  // await addInstanceAPI.apiAddInstance(
+  //   remoteInstancesHelper.instanceTypes.mysql,
+  //   serviceNameForSTT,
+  //   connection,
+  // );
+
+  for (const type of Object.values(remoteInstancesHelper.instanceTypes)) {
+    if (type) {
+      await addInstanceAPI.apiAddInstance(
+        type,
+        remoteInstancesHelper.upgradeServiceNames[type.toLowerCase()],
+      );
+    }
+  }
 
   perconaServerDB.connectToPS(mysqlComposeConnection);
   await perconaServerDB.dropUser();
@@ -147,7 +155,7 @@ Scenario(
   },
 );
 
-Scenario(
+xScenario(
   'Verify user can create Remote Instances before upgrade @pre-upgrade @ami-upgrade @pmm-upgrade',
   async ({ addInstanceAPI }) => {
     // Adding instances for monitoring
