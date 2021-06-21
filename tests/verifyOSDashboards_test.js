@@ -79,11 +79,13 @@ Data(nodes).Scenario(
   },
 );
 */
+
 Scenario(
   'PMM-T373 - Verify adding annotation with pmm-admin annotate --service @nightly @dashboards',
-  async ({ I, dashboardPage }) => {
+  async ({ I, dashboardPage, grafanaAPI }) => {
     const postgresAnnotation = 'Annotation for postgres';
 
+    await grafanaAPI.setAnnotation(postgresAnnotation, 'PMM-T373', 'pmm-server', 'pmm-server-postgresql')
     I.amOnPage(`${dashboardPage.postgresqlInstanceSummaryDashboard.url}`);
     dashboardPage.waitForDashboardOpened();
     await dashboardPage.applyFilter('Service Name', 'pmm-server-postgres');
