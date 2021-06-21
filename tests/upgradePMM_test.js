@@ -212,6 +212,8 @@ if (versionMinor >= 13) {
     }) => {
       const runChecks = locate('button').withText('Run DB checks');
 
+      await perconaServerDB.dropUser();
+
       await settingsAPI.changeSettings({ stt: true });
       // Run DB Checks from UI
       // disable check, change interval for a check, change interval settings
