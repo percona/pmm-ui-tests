@@ -167,10 +167,10 @@ module.exports = {
     return resp.data;
   },
 
-  async addInstanceForSTT(connection, upgrade = false) {
+  async addInstanceForSTT(connection) {
     let nodeId;
 
-    if (process.env.OVF_TEST === 'yes' || upgrade) {
+    if (process.env.OVF_TEST === 'yes') {
       nodeId = (await this.apiAddInstance(this.instanceTypes.rds, 'rds-for-stt-all-checks')).node.node_id;
     } else {
       nodeId = (await this.apiAddInstance(this.instanceTypes.mysql, 'stt-all-checks-mysql-5.7.30', connection)).service.node_id;
