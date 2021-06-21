@@ -433,6 +433,17 @@ module.exports = {
     );
   },
 
+  async verifySettingsValue(field, expectedValue) {
+    I.waitForElement(field, 30);
+    const fieldActualValue = await I.grabValueFrom(field);
+
+    assert.equal(
+      expectedValue,
+      fieldActualValue,
+      `The Value for Setting ${field} is not the same as expected Value ${expectedValue}, value found was ${fieldActualValue}`,
+    );
+  },
+
   async verifyTooltip(tooltipObj) {
     I.waitForVisible(this.fields.tooltipSelector, 30);
     I.seeTextEquals(`${tooltipObj.text}\nRead more`, this.fields.tooltipSelector);
