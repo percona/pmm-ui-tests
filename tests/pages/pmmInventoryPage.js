@@ -4,27 +4,29 @@ const assert = require('assert');
 module.exports = {
   url: 'graph/inventory?orgId=1',
   fields: {
+    agentsLink: '//li[contains(text(),"Agents")]',
+    agentsLinkOld: '//a[contains(text(), "Agents")]',
+    deleteButton: '//span[contains(text(), "Delete")]',
+    externalExporter: locate('td').withText('External exporter'),
+    forceModeCheckbox: 'span[data-qa="force-field-label"]',
     iframe: '//div[@class="panel-content"]//iframe',
     inventoryTable: '//table',
-    inventoryTableRows: '//table//tr',
     inventoryTableColumn: '//table//td',
-    agentsLink: '//li[contains(text(),"Agents")]',
+    inventoryTableRows: '//table//tr',
+    mongoNodeID: locate('td').after(locate('td').withText('mongodb')),
+    mongoServiceName: locate('td').withText('mongodb'),
     nodesLink: '//li[contains(text(),"Nodes")]',
-    pmmServicesSelector: '//li[contains(text(),"Services")]',
-    agentsLinkOld: '//a[contains(text(), "Agents")]',
     nodesLinkOld: '//a[contains(text(), "Nodes")]',
     pmmAgentLocator: '//table//td[contains(text(), "PMM Agent")]',
-    serviceIdLocatorPrefix: '//table//tr/td[4][contains(text(),"',
-    deleteButton: '//span[contains(text(), "Delete")]',
-    proceedButton: '//span[contains(text(), "Proceed")]',
-    forceModeCheckbox: 'span[data-qa="force-field-label"]',
-    tableCheckbox: 'div[data-qa="select-row"]',
-    tableRow: '//tr[@data-qa="table-row"]',
-    runningStatus: '//span[contains(text(), "RUNNING")]',
-    externalExporter: locate('td').withText('External exporter'),
+    pmmServicesSelector: '//li[contains(text(),"Services")]',
     postgresExporter: locate('td').withText('Postgres exporter'),
     postgresPgStatements: locate('td').withText('QAN PostgreSQL PgStatements'),
     postgresPgstatmonitor: locate('td').withText('QAN PostgreSQL Pgstatmonitor'),
+    proceedButton: '//span[contains(text(), "Proceed")]',
+    runningStatus: '//span[contains(text(), "RUNNING")]',
+    serviceIdLocatorPrefix: '//table//tr/td[4][contains(text(),"',
+    tableCheckbox: 'div[data-qa="select-row"]',
+    tableRow: '//tr[@data-qa="table-row"]',
   },
 
   verifyOldMySQLRemoteServiceIsDisplayed(serviceName) {
@@ -158,6 +160,10 @@ module.exports = {
     const serviceIdLocator = `${this.fields.serviceIdLocatorPrefix}${serviceName}")]/preceding-sibling::td[2]`;
 
     return serviceIdLocator;
+  },
+
+  getNodeName(nodeID){
+    return `//table//tr/td[2][contains(text(),"${nodeID}")]/following-sibling::td[4]`
   },
 
   async getCountOfAgents(serviceId) {
