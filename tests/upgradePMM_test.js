@@ -52,7 +52,11 @@ BeforeSuite(async ({ addInstanceAPI }) => {
     password: connection.password,
   };
 
-  await addInstanceAPI.apiAddInstance(addInstanceAPI.instanceTypes.mysql, serviceNameForSTT, connection);
+  await addInstanceAPI.apiAddInstance(
+    remoteInstancesHelper.instanceTypes.mysql,
+    serviceNameForSTT,
+    connection,
+  );
 
   perconaServerDB.connectToPS(mysqlComposeConnection);
   await perconaServerDB.dropUser();
@@ -145,9 +149,7 @@ Scenario(
 
 Scenario(
   'Verify user can create Remote Instances before upgrade @pre-upgrade @ami-upgrade @pmm-upgrade',
-  async ({
-    inventoryAPI, addInstanceAPI, I,
-  }) => {
+  async ({ addInstanceAPI }) => {
     // Adding instances for monitoring
     for (const type of Object.values(remoteInstancesHelper.instanceTypes)) {
       if (type) {
