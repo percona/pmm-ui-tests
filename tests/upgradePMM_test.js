@@ -66,7 +66,7 @@ AfterSuite(async ({ perconaServerDB }) => {
   await perconaServerDB.disconnectFromPS();
 });
 
-xScenario(
+Scenario(
   'Add AMI Instance ID @ami-upgrade',
   async ({ amiInstanceAPI }) => {
     await amiInstanceAPI.verifyAmazonInstanceId(process.env.AMI_INSTANCE_ID);
@@ -235,7 +235,8 @@ if (versionMinor >= 13) {
       }
 
       // Check that there is a failed check
-      I.waitForVisible(locate('td').at(4), 30);
+      I.waitForVisible(failedCheckRowLocator, 30);
+      console.log(await I.grabTextFromAll(locate('td').at(4)));
       I.see(failedCheckMessage, locate('td').at(4));
     },
   );
