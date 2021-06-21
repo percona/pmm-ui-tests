@@ -44,19 +44,13 @@ Before(async ({ I }) => {
   I.setRequestTimeout(30000);
 });
 
-BeforeSuite(async ({ addInstanceAPI }) => {
+BeforeSuite(async () => {
   const mysqlComposeConnection = {
     host: '127.0.0.1',
     port: connection.port,
     username: connection.username,
     password: connection.password,
   };
-
-  await addInstanceAPI.apiAddInstance(
-    remoteInstancesHelper.instanceTypes.mysql,
-    serviceNameForSTT,
-    connection,
-  );
 
   perconaServerDB.connectToPS(mysqlComposeConnection);
   await perconaServerDB.dropUser();
@@ -208,9 +202,15 @@ if (versionMinor >= 13) {
   Scenario(
     'Verify user has failed checks before upgrade @pre-upgrade @ami-upgrade @pmm-upgrade',
     async ({
-      I, settingsAPI, databaseChecksPage, securityChecksAPI,
+      I, settingsAPI, databaseChecksPage, securityChecksAPI, addInstanceAPI,
     }) => {
       const runChecks = locate('button').withText('Run DB checks');
+
+      await addInstanceAPI.apiAddInstance(
+        remoteInstancesHelper.instanceTypes.mysql,
+        serviceNameForSTT,
+        connection,
+      );
 
       await perconaServerDB.dropUser();
 
@@ -222,6 +222,7 @@ if (versionMinor >= 13) {
         databaseChecksPage.runDBChecks();
         // Check that there is MySQL user empty password failed check
         await securityChecksAPI.verifyFailedCheckExists(emptyPasswordSummary);
+        await securityChecksAPI.verifyFailedCheckExists(failedCheckMessage);
         I.waitForVisible(failedCheckRowLocator, 30);
         I.click(failedCheckRowLocator.find('button'));
         await securityChecksAPI.disableCheck('mysql_anonymous_users');
@@ -235,8 +236,7 @@ if (versionMinor >= 13) {
       }
 
       // Check that there is a failed check
-      I.waitForVisible(failedCheckRowLocator, 30);
-      console.log(await I.grabTextFromAll(locate('td').at(4)));
+      I.waitForVisible(locate('td').at(4), 30);
       I.see(failedCheckMessage, locate('td').at(4));
     },
   );
