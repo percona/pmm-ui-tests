@@ -96,18 +96,16 @@ Scenario(
 Scenario.only(
   'PMM-T877 - Verify adding annotation for mongoDB @nightly @dashboards',
   async ({
-    I, dashboardPage, pmmInventoryPage, grafanaAPI,
+    I, dashboardPage, pmmInventoryPage, grafanaAPI, inventoryAPI,
   }) => {
     const mongoAnnotation = 'annotation-for-mongo';
 
     I.amOnPage(pmmInventoryPage.url);
     const serviceName = await I.grabTextFrom(pmmInventoryPage.fields.mongoServiceName);
     const nodeID = await pmmInventoryPage.getNodeId(serviceName);
+    const nodeName = await inventoryAPI.getNodeName(nodeID);
 
-    I.click(pmmInventoryPage.fields.nodesLink);
-    const nodeName = await pmmInventoryPage.getNodeName(nodeID);
-
-    await grafanaAPI.setAnnotation(mongoAnnotation, 'PMM-T877', nodeName, serviceName);
+    await grafanaAPI.setAnnotation(mongoAnnotation, 'PMM-T877', nodeName.node_name, serviceName);
     I.amOnPage(`${dashboardPage.mongoDbInstanceOverview.url}`);
     dashboardPage.waitForDashboardOpened();
     await dashboardPage.applyFilter('Service Name', serviceName);
