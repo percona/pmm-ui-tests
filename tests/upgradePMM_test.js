@@ -44,13 +44,19 @@ Before(async ({ I }) => {
   I.setRequestTimeout(30000);
 });
 
-BeforeSuite(async () => {
+BeforeSuite(async ({ addInstanceAPI }) => {
   const mysqlComposeConnection = {
     host: '127.0.0.1',
     port: connection.port,
     username: connection.username,
     password: connection.password,
   };
+
+  await addInstanceAPI.apiAddInstance(
+    remoteInstancesHelper.instanceTypes.mysql,
+    serviceNameForSTT,
+    connection,
+  );
 
   perconaServerDB.connectToPS(mysqlComposeConnection);
   await perconaServerDB.dropUser();
@@ -202,15 +208,9 @@ if (versionMinor >= 13) {
   Scenario(
     'Verify user has failed checks before upgrade @pre-upgrade @ami-upgrade @pmm-upgrade',
     async ({
-      I, settingsAPI, databaseChecksPage, securityChecksAPI, addInstanceAPI,
+      I, settingsAPI, databaseChecksPage, securityChecksAPI,
     }) => {
       const runChecks = locate('button').withText('Run DB checks');
-
-      await addInstanceAPI.apiAddInstance(
-        remoteInstancesHelper.instanceTypes.mysql,
-        serviceNameForSTT,
-        connection,
-      );
 
       await perconaServerDB.dropUser();
 
@@ -236,6 +236,7 @@ if (versionMinor >= 13) {
       }
 
       // Check that there is a failed check
+      I.refreshPage();
       I.waitForVisible(locate('td').at(4), 30);
       I.see(failedCheckMessage, locate('td').at(4));
     },
