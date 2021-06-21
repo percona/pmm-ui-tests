@@ -34,6 +34,7 @@ module.exports = {
     qanPage: './tests/QAN/pages/qanPage.js',
     qanPagination: './tests/QAN/pages/qanPaginationFragment.js',
     remoteInstancesPage: './tests/pages/remoteInstancesPage.js',
+    remoteInstancesHelper: './tests/remoteInstances/remoteInstancesHelper.js',
     rulesAPI: './tests/ia/pages/api/rulesAPI.js',
     ruleTemplatesPage: './tests/ia/pages/ruleTemplatesPage.js',
     iaCommon: './tests/ia/pages/iaCommonPage.js',

@@ -2,18 +2,15 @@ const assert = require('assert');
 const faker = require('faker');
 const { generate } = require('generate-password');
 
+const {
+  remoteInstancesHelper,
+} = inject();
+
 const { perconaServerDB } = inject();
 const connection = perconaServerDB.defaultConnection;
 const emptyPasswordSummary = 'MySQL users have empty passwords';
 const serviceNameForSTT = 'upgrade-stt-ps-5.30';
 const failedCheckRowLocator = locate('tr').withChild(locate('td').withText(serviceNameForSTT));
-
-const serviceNames = {
-  mysql: 'mysql_upgrade_service',
-  // postgresql: 'postgres_upgrade_service',
-  proxysql: 'proxysql_upgrade_service',
-  rds: 'mysql_rds_uprgade_service',
-};
 const ruleName = 'Alert Rule for upgrade';
 const failedCheckMessage = 'Newer version of Percona Server for MySQL is available';
 
@@ -40,7 +37,7 @@ const { versionMinor, patchVersionDiff, majorVersionDiff } = getVersions();
 
 const iaReleased = versionMinor >= 13;
 
-Feature('PMM server Upgrade Tests and Executing test cases related to Upgrade Testing Cycle').retry(2);
+Feature('PMM server Upgrade Tests and Executing test cases related to Upgrade Testing Cycle').retry(1);
 
 Before(async ({ I }) => {
   await I.Authorize();
@@ -114,18 +111,51 @@ Scenario(
 );
 
 Scenario(
-  'Verify user can create Remote Instances before upgrade and they are in RUNNNING status @pre-upgrade @ami-upgrade @pmm-upgrade',
+  'Open the MySQL Overview Dashboard and verify Metrics are present and graphs are displayed @pre-upgrade @ami-upgrade @pmm-upgrade',
+  async ({ I, adminPage, dashboardPage }) => {
+    I.amOnPage(dashboardPage.mysqlInstanceSummaryDashboard.url);
+    dashboardPage.waitForDashboardOpened();
+    await dashboardPage.applyFilter('Service Name', 'ps_5.7');
+    await dashboardPage.expandEachDashboardRow();
+    I.click(adminPage.fields.metricTitle);
+    adminPage.peformPageDown(5);
+    dashboardPage.verifyMetricsExistence(dashboardPage.mysqlInstanceSummaryDashboard.metrics);
+    await dashboardPage.verifyThereAreNoGraphsWithNA(5);
+    await dashboardPage.verifyThereAreNoGraphsWithoutData(5);
+  },
+);
+
+Scenario(
+  'Verify user is able to set custom Settings like Data_retention, Resolution @pre-upgrade @ami-upgrade @pmm-upgrade',
+  async ({ settingsAPI, I }) => {
+    const body = {
+      telemetry_enabled: true,
+      metrics_resolutions: {
+        hr: '3s',
+        mr: '15s',
+        lr: '30s',
+      },
+      data_retention: '172800s',
+    };
+
+    await settingsAPI.changeSettings(body, true);
+    I.wait(10);
+  },
+);
+
+Scenario(
+  'Verify user can create Remote Instances before upgrade @pre-upgrade @ami-upgrade @pmm-upgrade',
   async ({
-    inventoryAPI, addInstanceAPI,
+    inventoryAPI, addInstanceAPI, I,
   }) => {
     // Adding instances for monitoring
-    for (const type of Object.values(addInstanceAPI.instanceTypes)) {
-      if (!/MongoDB|PostgreSQL/.test(type)) await addInstanceAPI.apiAddInstance(type, serviceNames[type.toLowerCase()]);
-    }
-
-    // Checking that instances are RUNNING
-    for (const service of Object.values(inventoryAPI.services)) {
-      if (!/mongodb|postgresql/.test(service.service)) await inventoryAPI.verifyServiceExistsAndHasRunningStatus(service, serviceNames[service.service]);
+    for (const type of Object.values(remoteInstancesHelper.instanceTypes)) {
+      if (type) {
+        await addInstanceAPI.apiAddInstance(
+          type,
+          remoteInstancesHelper.upgradeServiceNames[type.toLowerCase()],
+        );
+      }
     }
   },
 );
@@ -339,8 +369,13 @@ if (iaReleased) {
 Scenario(
   'Verify Agents are RUNNING after Upgrade (API) [critical] @post-upgrade @ami-upgrade @pmm-upgrade',
   async ({ inventoryAPI }) => {
-    for (const service of Object.values(inventoryAPI.services)) {
-      if (!/mongodb|postgresql/.test(service.service)) await inventoryAPI.verifyServiceExistsAndHasRunningStatus(service, serviceNames[service.service]);
+    for (const service of Object.values(remoteInstancesHelper.serviceTypes)) {
+      if (service) {
+        await inventoryAPI.verifyServiceExistsAndHasRunningStatus(
+          service,
+          remoteInstancesHelper.upgradeServiceNames[service.service],
+        );
+      }
     }
   },
 );
@@ -354,21 +389,22 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T262 Open PMM Settings page and verify DATA_RETENTION value is set to 2 days after upgrade @post-upgrade @pmm-upgrade',
+  'PMM-T262 Open PMM Settings page and verify DATA_RETENTION value is set to 2 days, Custom Resolution is still preserved after upgrade @post-upgrade @pmm-upgrade',
   async ({ I, pmmSettingsPage }) => {
-    const dataRetention = '2';
-    const sectionNameToExpand = pmmSettingsPage.sectionTabsList.advanced;
+    const advancedSection = pmmSettingsPage.sectionTabsList.advanced;
+    const metricResoltionSection = pmmSettingsPage.sectionTabsList.metrics;
 
     I.amOnPage(pmmSettingsPage.url);
     await pmmSettingsPage.waitForPmmSettingsPageLoaded();
-    await pmmSettingsPage.expandSection(sectionNameToExpand, pmmSettingsPage.fields.advancedButton);
-    const dataRetentionActualValue = await I.grabValueFrom(pmmSettingsPage.fields.dataRetentionInput);
-
-    assert.equal(
-      dataRetention,
-      dataRetentionActualValue,
-      'The Value for Data Retention is not the same as passed via Docker Environment Variable',
+    await pmmSettingsPage.expandSection(advancedSection, pmmSettingsPage.fields.advancedButton);
+    await pmmSettingsPage.verifySettingsValue(pmmSettingsPage.fields.dataRetentionInput, 2);
+    await pmmSettingsPage.expandSection(
+      metricResoltionSection,
+      pmmSettingsPage.fields.metricsResolutionButton,
     );
+    await pmmSettingsPage.verifySettingsValue(pmmSettingsPage.fields.lowInput, 30);
+    await pmmSettingsPage.verifySettingsValue(pmmSettingsPage.fields.mediumInput, 15);
+    await pmmSettingsPage.verifySettingsValue(pmmSettingsPage.fields.highInput, 3);
   },
 );
 
@@ -402,9 +438,11 @@ Scenario(
 Scenario(
   'Verify Agents are RUNNING after Upgrade (UI) [critical] @ami-upgrade @post-upgrade @pmm-upgrade',
   async ({ I, pmmInventoryPage }) => {
-    for (const service of Object.values(serviceNames)) {
-      I.amOnPage(pmmInventoryPage.url);
-      await pmmInventoryPage.verifyAgentHasStatusRunning(service);
+    for (const service of Object.values(remoteInstancesHelper.upgradeServiceNames)) {
+      if (service) {
+        I.amOnPage(pmmInventoryPage.url);
+        await pmmInventoryPage.verifyAgentHasStatusRunning(service);
+      }
     }
   },
 );
@@ -412,23 +450,23 @@ Scenario(
 Scenario(
   'Verify QAN has specific filters for Remote Instances after Upgrade (UI) @ami-upgrade @post-upgrade @pmm-upgrade',
   async ({
-    I, qanPage, qanFilters, addInstanceAPI,
+    I, qanPage, qanFilters, qanOverview,
   }) => {
-    // For now we can't see the cluster names in QAN for ProxySQL, MongoDB and PostgreSQL
-    const {
-      proxysql, mongodb, postgresql, ...filters
-    } = addInstanceAPI.clusterNames;
-
     I.amOnPage(qanPage.url);
     qanFilters.waitForFiltersToLoad();
     await qanFilters.expandAllFilters();
 
     // Checking that Cluster filters are still in QAN after Upgrade
-    for (const name of Object.values(filters)) {
-      const filter = qanFilters.getFilterLocator(name);
+    for (const name of Object.keys(remoteInstancesHelper.upgradeServiceNames)) {
+      if (remoteInstancesHelper.qanFilters.includes(name)) {
+        const filter = qanFilters.getFilterLocator(name);
 
-      I.waitForVisible(filter, 30);
-      I.seeElement(filter);
+        qanFilters.waitForFiltersToLoad();
+        qanOverview.waitForOverviewLoaded();
+
+        I.waitForVisible(filter, 30);
+        I.seeElement(filter);
+      }
     }
   },
 );
@@ -441,7 +479,7 @@ Scenario(
     const response = await dashboardPage.checkMetricExist(metricName);
     const result = JSON.stringify(response.data.data.result);
 
-    assert.ok(response.data.data.result.length !== 0, `Custom Metrics Should be available but got empty ${result}`);
+    assert.ok(response.data.data.result.length !== 0, `Custom Metrics ${metricName} Should be available but got empty ${result}`);
   },
 );
 
