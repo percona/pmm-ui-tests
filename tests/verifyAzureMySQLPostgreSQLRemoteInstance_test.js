@@ -1,14 +1,19 @@
 const assert = require('assert');
 
-const { remoteInstancesPage } = inject();
+const { remoteInstancesPage, remoteInstancesHelper } = inject();
 
 const filters = new DataTable(['filter']);
 const azureServices = new DataTable(['name', 'instanceToMonitor']);
 
-filters.add([remoteInstancesPage.mysqlAzureInputs.environment]);
-filters.add([remoteInstancesPage.postgresqlAzureInputs.environment]);
-azureServices.add(['azure-MySQL', 'pmm2-qa-mysql']);
-azureServices.add(['azure-PostgreSQL', 'pmm2-qa-postgresql']);
+if (remoteInstancesHelper.getInstanceStatus('azure').azure_mysql.enabled) {
+  azureServices.add(['azure-MySQL', 'pmm2-qa-mysql']);
+  filters.add([remoteInstancesPage.mysqlAzureInputs.environment]);
+}
+
+if (remoteInstancesHelper.getInstanceStatus('azure').azure_postgresql.enabled) {
+  azureServices.add(['azure-PostgreSQL', 'pmm2-qa-postgresql']);
+  filters.add([remoteInstancesPage.postgresqlAzureInputs.environment]);
+}
 
 Feature('Monitoring Azure MySQL and PostgreSQL DB');
 
