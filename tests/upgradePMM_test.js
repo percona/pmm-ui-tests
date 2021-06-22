@@ -227,20 +227,16 @@ if (versionMinor >= 13) {
         I.amOnPage(databaseChecksPage.oldUrl);
         I.waitForVisible(runChecks, 30);
         I.click(runChecks);
-        I.waitForText(databaseChecksPage.messages.securityChecksDone, 30, '.alert-title');
+        I.waitForVisible(failedCheckRowLocator, 30);
       }
 
-      // Check that there is MySQL user empty password failed check
+      // Check that there are failed checks
       await securityChecksAPI.verifyFailedCheckExists(emptyPasswordSummary);
       await securityChecksAPI.verifyFailedCheckExists(failedCheckMessage);
+
       // Silence mysql Empty Password failed check
       I.waitForVisible(failedCheckRowLocator, 30);
       I.click(failedCheckRowLocator.find('button').first());
-
-      // // Check that there is a failed check
-      // I.refreshPage();
-      // I.waitForVisible(locate('td').at(4), 30);
-      // I.see(failedCheckMessage, locate('td').at(4));
     },
   );
 }
@@ -269,13 +265,15 @@ if (versionMinor >= 13) {
   Scenario(
     'Verify user has failed checks after upgrade / STT on @post-upgrade @ami-upgrade @pmm-upgrade',
     async ({
-      I, pmmSettingsPage, securityChecksAPI,
+      I, pmmSettingsPage, securityChecksAPI, databaseChecksPage,
     }) => {
       // Verify STT is enabled
       I.amOnPage(pmmSettingsPage.advancedSettingsUrl);
       I.waitForVisible(pmmSettingsPage.fields.sttSwitchSelector, 30);
       pmmSettingsPage.verifySwitch(pmmSettingsPage.fields.sttSwitchSelectorInput, 'on');
 
+      I.amOnPage(databaseChecksPage.url);
+      I.waitForVisible(databaseChecksPage.buttons.startDBChecks, 30);
       // Verify there is failed check
       await securityChecksAPI.verifyFailedCheckExists(failedCheckMessage);
     },
