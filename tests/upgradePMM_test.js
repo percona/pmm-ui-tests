@@ -235,7 +235,7 @@ if (versionMinor >= 13) {
       await securityChecksAPI.verifyFailedCheckExists(failedCheckMessage);
       // Silence mysql Empty Password failed check
       I.waitForVisible(failedCheckRowLocator, 30);
-      I.click(failedCheckRowLocator.find('button'));
+      I.click(failedCheckRowLocator.find('button').first());
 
       // Check that there is a failed check
       I.refreshPage();
