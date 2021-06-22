@@ -51,12 +51,6 @@ BeforeSuite(async ({ addInstanceAPI }) => {
     password: connection.password,
   };
 
-  // await addInstanceAPI.apiAddInstance(
-  //   remoteInstancesHelper.instanceTypes.mysql,
-  //   serviceNameForSTT,
-  //   connection,
-  // );
-
   for (const type of Object.values(remoteInstancesHelper.instanceTypes)) {
     if (type) {
       await addInstanceAPI.apiAddInstance(
@@ -220,19 +214,12 @@ if (versionMinor >= 13) {
     }) => {
       const runChecks = locate('button').withText('Run DB checks');
 
-      await perconaServerDB.dropUser();
-
       await settingsAPI.changeSettings({ stt: true });
       // Run DB Checks from UI
       // disable check, change interval for a check, change interval settings
       if (versionMinor >= 16) {
         await perconaServerDB.createUser();
         databaseChecksPage.runDBChecks();
-        // Check that there is MySQL user empty password failed check
-        await securityChecksAPI.verifyFailedCheckExists(emptyPasswordSummary);
-        await securityChecksAPI.verifyFailedCheckExists(failedCheckMessage);
-        I.waitForVisible(failedCheckRowLocator, 30);
-        I.click(failedCheckRowLocator.find('button'));
         await securityChecksAPI.disableCheck('mysql_anonymous_users');
         await securityChecksAPI.changeCheckInterval('postgresql_version');
         await settingsAPI.setCheckIntervals({ ...settingsAPI.defaultCheckIntervals, standard_interval: '3600s' });
@@ -242,6 +229,13 @@ if (versionMinor >= 13) {
         I.click(runChecks);
         I.waitForText(databaseChecksPage.messages.securityChecksDone, 30, '.alert-title');
       }
+
+      // Check that there is MySQL user empty password failed check
+      await securityChecksAPI.verifyFailedCheckExists(emptyPasswordSummary);
+      await securityChecksAPI.verifyFailedCheckExists(failedCheckMessage);
+      // Silence mysql Empty Password failed check
+      I.waitForVisible(failedCheckRowLocator, 30);
+      I.click(failedCheckRowLocator.find('button'));
 
       // Check that there is a failed check
       I.refreshPage();
