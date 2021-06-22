@@ -62,6 +62,7 @@ BeforeSuite(async ({ addInstanceAPI }) => {
 
   perconaServerDB.connectToPS(mysqlComposeConnection);
   await perconaServerDB.dropUser();
+  await perconaServerDB.createUser();
 });
 
 AfterSuite(async ({ perconaServerDB }) => {
@@ -218,7 +219,6 @@ if (versionMinor >= 13) {
       // Run DB Checks from UI
       // disable check, change interval for a check, change interval settings
       if (versionMinor >= 16) {
-        await perconaServerDB.createUser();
         databaseChecksPage.runDBChecks();
         await securityChecksAPI.disableCheck('mysql_anonymous_users');
         await securityChecksAPI.changeCheckInterval('postgresql_version');
