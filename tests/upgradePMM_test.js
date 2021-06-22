@@ -233,14 +233,14 @@ if (versionMinor >= 13) {
       // Check that there is MySQL user empty password failed check
       await securityChecksAPI.verifyFailedCheckExists(emptyPasswordSummary);
       await securityChecksAPI.verifyFailedCheckExists(failedCheckMessage);
-      // // Silence mysql Empty Password failed check
-      // I.waitForVisible(failedCheckRowLocator, 30);
-      // I.click(failedCheckRowLocator.find('button').first());
+      // Silence mysql Empty Password failed check
+      I.waitForVisible(failedCheckRowLocator, 30);
+      I.click(failedCheckRowLocator.find('button').first());
 
-      // Check that there is a failed check
-      I.refreshPage();
-      I.waitForVisible(locate('td').at(4), 30);
-      I.see(failedCheckMessage, locate('td').at(4));
+      // // Check that there is a failed check
+      // I.refreshPage();
+      // I.waitForVisible(locate('td').at(4), 30);
+      // I.see(failedCheckMessage, locate('td').at(4));
     },
   );
 }
@@ -297,7 +297,7 @@ if (versionMinor >= 16) {
     },
   );
 
-  xScenario(
+  Scenario(
     'Verify silenced checks remain silenced after upgrade @post-upgrade @ami-upgrade @pmm-upgrade',
     async ({
       I, databaseChecksPage,
