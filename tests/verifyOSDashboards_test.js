@@ -1,6 +1,12 @@
+const { pmmInventoryPage, dashboardPage } = inject();
+
 const nodes = new DataTable(['node-type', 'name']);
+const annotation = new DataTable(['annotationName', 'service', 'dashboard']);
 
 nodes.add(['pmm-client', 'ip']);
+
+annotation.add(['annotation-for-mongo', pmmInventoryPage.fields.mongoServiceName, dashboardPage.mongoDbInstanceSummaryDashboard.url]);
+annotation.add(['annotation-for-postgres', pmmInventoryPage.fields.pdphsqlServiceName, dashboardPage.postgresqlInstanceSummaryDashboard.url]);
 
 Feature('Test Dashboards inside the OS Folder');
 
@@ -93,23 +99,23 @@ Scenario(
   },
 );
 
-Scenario.only(
+Data(annotation).Scenario(
   'PMM-T877 - Verify adding annotation for mongoDB @nightly @dashboards',
   async ({
-    I, dashboardPage, pmmInventoryPage, grafanaAPI, inventoryAPI,
+    I, dashboardPage, pmmInventoryPage, grafanaAPI, inventoryAPI, current,
   }) => {
-    const mongoAnnotation = 'annotation-for-mongo';
+    const { annotationName } = current;
 
     I.amOnPage(pmmInventoryPage.url);
-    const serviceName = await I.grabTextFrom(pmmInventoryPage.fields.mongoServiceName);
+    const serviceName = await I.grabTextFrom(current.service);
     const nodeID = await pmmInventoryPage.getNodeId(serviceName);
     const nodeName = await inventoryAPI.getNodeName(nodeID);
 
-    await grafanaAPI.setAnnotation(mongoAnnotation, 'PMM-T877', nodeName.node_name, serviceName);
-    I.amOnPage(`${dashboardPage.mongoDbInstanceOverview.url}`);
+    await grafanaAPI.setAnnotation(annotationName, 'PMM-T877', nodeName.node_name, serviceName);
+    I.amOnPage(current.dashboard);
     dashboardPage.waitForDashboardOpened();
     await dashboardPage.applyFilter('Service Name', serviceName);
-    dashboardPage.verifyAnnotationsLoaded(mongoAnnotation, 1);
-    I.seeElement(dashboardPage.annotationText(mongoAnnotation), 10);
+    dashboardPage.verifyAnnotationsLoaded(annotationName, 1);
+    I.seeElement(dashboardPage.annotationText(annotationName), 10);
   },
 );

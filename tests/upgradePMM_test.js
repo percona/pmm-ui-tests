@@ -272,7 +272,6 @@ Scenario(
   },
 );
 
-
 Scenario(
   'Verify user can see News Panel @post-upgrade @ami-upgrade @pmm-upgrade  ',
   async ({ I, homePage }) => {
