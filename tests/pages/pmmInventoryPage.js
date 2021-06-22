@@ -14,6 +14,7 @@ module.exports = {
     inventoryTableColumn: '//table//td',
     inventoryTableRows: '//table//tr',
     mongoServiceName: locate('td').withText('mongodb'),
+    mysqlServiceName: locate('td').withText('ps_group_rep'),
     nodesLink: '//li[contains(text(),"Nodes")]',
     nodesLinkOld: '//a[contains(text(), "Nodes")]',
     pdphsqlServiceName: locate('td').withText('PDPGSQL'),
