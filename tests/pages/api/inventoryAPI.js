@@ -96,8 +96,10 @@ module.exports = {
 
     const resp = await I.sendPostRequest('v1/inventory/Nodes/Get', body, headers);
 
-    return Object.values(resp.data)
+    const values = Object.values(resp.data)
       .flat(Infinity)
       .find(({ node_id }) => node_id === nodeID);
+
+    return values.node_name;
   },
 };
