@@ -43,7 +43,7 @@ Before(async ({ I }) => {
   I.setRequestTimeout(30000);
 });
 
-BeforeSuite(async ({ addInstanceAPI }) => {
+BeforeSuite(async () => {
   const mysqlComposeConnection = {
     host: '127.0.0.1',
     port: connection.port,
@@ -51,19 +51,7 @@ BeforeSuite(async ({ addInstanceAPI }) => {
     password: connection.password,
   };
 
-  // Create remote instances via API
-  for (const type of Object.values(remoteInstancesHelper.instanceTypes)) {
-    if (type) {
-      await addInstanceAPI.apiAddInstance(
-        type,
-        remoteInstancesHelper.upgradeServiceNames[type.toLowerCase()],
-      );
-    }
-  }
-
   perconaServerDB.connectToPS(mysqlComposeConnection);
-  await perconaServerDB.dropUser();
-  await perconaServerDB.createUser();
 });
 
 AfterSuite(async ({ perconaServerDB }) => {
@@ -151,6 +139,21 @@ Scenario(
   },
 );
 
+Scenario(
+  'Verify user can create Remote Instances before upgrade @pre-upgrade @ami-upgrade @pmm-upgrade',
+  async ({ addInstanceAPI }) => {
+    // Adding instances for monitoring
+    for (const type of Object.values(remoteInstancesHelper.instanceTypes)) {
+      if (type) {
+        await addInstanceAPI.apiAddInstance(
+          type,
+          remoteInstancesHelper.upgradeServiceNames[type.toLowerCase()],
+        );
+      }
+    }
+  },
+);
+
 if (versionMinor < 16 && versionMinor >= 10) {
   Scenario(
     'PMM-T720 Verify Platform registration for PMM before 2.16.0 @pre-upgrade @ami-upgrade @pmm-upgrade',
@@ -201,6 +204,8 @@ if (versionMinor >= 13) {
     }) => {
       const runChecks = locate('button').withText('Run DB checks');
 
+      await perconaServerDB.dropUser();
+      await perconaServerDB.createUser();
       await settingsAPI.changeSettings({ stt: true });
       // Run DB Checks from UI
       // disable check, change interval for a check, change interval settings
