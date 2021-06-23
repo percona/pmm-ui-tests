@@ -106,7 +106,7 @@ Scenario(
   },
 );
 
-Scenario(
+xScenario(
   'Open the MySQL Overview Dashboard and verify Metrics are present and graphs are displayed @pre-upgrade @ami-upgrade @pmm-upgrade',
   async ({ I, adminPage, dashboardPage }) => {
     I.amOnPage(dashboardPage.mysqlInstanceSummaryDashboard.url);
