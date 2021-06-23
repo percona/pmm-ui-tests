@@ -27,9 +27,9 @@ module.exports = {
     const templates = await this.getTemplatesList();
 
     for (const i in templates) {
-      const template = templates[i];
+      const { source, name } = templates[i];
 
-      if (template.source !== 'BUILT_IN') { await this.removeTemplate(template.name); }
+      if (source !== 'BUILT_IN' && source !== 'SAAS') { await this.removeTemplate(name); }
     }
   },
 
