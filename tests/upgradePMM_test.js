@@ -3,10 +3,9 @@ const faker = require('faker');
 const { generate } = require('generate-password');
 
 const {
-  remoteInstancesHelper,
+  remoteInstancesHelper, perconaServerDB,
 } = inject();
 
-const { perconaServerDB } = inject();
 const connection = perconaServerDB.defaultConnection;
 const emptyPasswordSummary = 'MySQL users have empty passwords';
 const failedCheckRowLocator = locate('tr').withChild(locate('td').withText(remoteInstancesHelper.upgradeServiceNames.mysql));
@@ -106,6 +105,7 @@ Scenario(
   },
 );
 
+// Skipped due to random failures
 xScenario(
   'Open the MySQL Overview Dashboard and verify Metrics are present and graphs are displayed @pre-upgrade @ami-upgrade @pmm-upgrade',
   async ({ I, adminPage, dashboardPage }) => {

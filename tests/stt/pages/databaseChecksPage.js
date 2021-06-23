@@ -7,6 +7,7 @@ module.exports = {
   // insert your locators and methods here
   // setting locators
   url: 'graph/pmm-database-checks',
+  // Database Checks page URL before 2.13 version
   oldUrl: 'graph/d/pmm-checks/pmm-database-checks',
   messages: {
     homePagePanelMessage: 'Security Threat Tool is disabled.\nCheck PMM Settings.',
