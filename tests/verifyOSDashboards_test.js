@@ -7,7 +7,7 @@ nodes.add(['pmm-client', 'ip']);
 
 annotation.add(['annotation-for-mongo', pmmInventoryPage.fields.mongoServiceName, dashboardPage.mongoDbInstanceSummaryDashboard.url]);
 annotation.add(['annotation-for-postgres', pmmInventoryPage.fields.pdphsqlServiceName, dashboardPage.postgresqlInstanceSummaryDashboard.url]);
-annotation.add(['annotation-for-mysql', pmmInventoryPage.fields.mysqlServiceName, dashboardPage.mysqlInstanceSummaryDashboard.url])
+annotation.add(['annotation-for-mysql', pmmInventoryPage.fields.mysqlServiceName, dashboardPage.mysqlInstanceSummaryDashboard.url]);
 
 Feature('Test Dashboards inside the OS Folder');
 
@@ -95,7 +95,7 @@ Scenario(
     I.amOnPage(`${dashboardPage.postgresqlInstanceSummaryDashboard.url}`);
     dashboardPage.waitForDashboardOpened();
     await dashboardPage.applyFilter('Service Name', 'pmm-server-postgres');
-    dashboardPage.verifyAnnotationsLoaded(postgresAnnotation, 1);
+    dashboardPage.verifyAnnotationsLoaded(postgresAnnotation, 3);
     I.seeElement(dashboardPage.annotationText(postgresAnnotation), 10);
   },
 );
@@ -116,7 +116,12 @@ Data(annotation).Scenario(
     I.amOnPage(current.dashboard);
     dashboardPage.waitForDashboardOpened();
     await dashboardPage.applyFilter('Service Name', serviceName);
-    dashboardPage.verifyAnnotationsLoaded(annotationName, 1);
+    if (annotationName === 'annotation-for-postgres') {
+      dashboardPage.verifyAnnotationsLoaded(annotationName, 3);
+    } else {
+      dashboardPage.verifyAnnotationsLoaded(annotationName, 1);
+    }
+
     I.seeElement(dashboardPage.annotationText(annotationName), 10);
   },
 );
