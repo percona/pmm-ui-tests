@@ -51,13 +51,13 @@ Data(pages).Scenario(
 
     // Number of elements for Rule Templates is different because there are Built-In templates
     isTemplatesPage
-      ? I.seeNumberOfElements(iaCommon.elements.rowInTable, 13)
+      ? I.seeNumberOfElements(iaCommon.elements.rowInTable, 14)
       : I.seeNumberOfElements(iaCommon.elements.rowInTable, 1);
     I.seeNumberOfElements(iaCommon.buttons.pageButton, 1);
 
     // Create entities for to have 2 pages (26 entities in sum)
     isTemplatesPage
-      ? await createEntities(13)
+      ? await createEntities(12)
       : await createEntities(25);
 
     I.say(`1st checkpoint, URL = ${url}, Count of elements = ${(await getListOfItems()).length}`);
@@ -188,7 +188,7 @@ Data(pages).Scenario(
 
     // Create entities for to have 2 pages
     isTemplatesPage
-      ? await createEntities(13)
+      ? await createEntities(12)
       : await createEntities(25);
 
     // Rows per page is '50' after refreshing a page
@@ -254,7 +254,7 @@ Data(pages).Scenario(
 
     // Create entities for to have 2 pages
     isTemplatesPage
-      ? await createEntities(89)
+      ? await createEntities(88)
       : await createEntities(101);
 
     I.say(`Checkpoint, URL = ${url}, Count of elements = ${(await getListOfItems()).length}`);
