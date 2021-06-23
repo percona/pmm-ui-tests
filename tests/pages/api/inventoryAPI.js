@@ -1,28 +1,8 @@
 const assert = require('assert');
 
-const { I } = inject();
+const { I, remoteInstancesHelper } = inject();
 
 module.exports = {
-  // methods for preparing state of application before test
-  services: {
-    mysql: {
-      serviceType: 'MYSQL_SERVICE',
-      service: 'mysql',
-    },
-    mongodb: {
-      serviceType: 'MONGODB_SERVICE',
-      service: 'mongodb',
-    },
-    postgresql: {
-      serviceType: 'POSTGRESQL_SERVICE',
-      service: 'postgresql',
-    },
-    proxysql: {
-      serviceType: 'PROXYSQL_SERVICE',
-      service: 'proxysql',
-    },
-  },
-
   async verifyServiceExistsAndHasRunningStatus(service, serviceName) {
     let responseService;
 
@@ -77,7 +57,7 @@ module.exports = {
   },
 
   async verifyServiceIdExists(serviceId) {
-    const services = await this.apiGetServices(this.services.postgresql.serviceType);
+    const services = await this.apiGetServices(remoteInstancesHelper.serviceTypes.postgresql.serviceType);
 
     const present = Object.values(services.data)
       .flat(Infinity)
