@@ -51,6 +51,7 @@ BeforeSuite(async ({ addInstanceAPI }) => {
     password: connection.password,
   };
 
+  // Create remote instances via API
   for (const type of Object.values(remoteInstancesHelper.instanceTypes)) {
     if (type) {
       await addInstanceAPI.apiAddInstance(
@@ -147,21 +148,6 @@ Scenario(
 
     await settingsAPI.changeSettings(body, true);
     I.wait(10);
-  },
-);
-
-xScenario(
-  'Verify user can create Remote Instances before upgrade @pre-upgrade @ami-upgrade @pmm-upgrade',
-  async ({ addInstanceAPI }) => {
-    // Adding instances for monitoring
-    for (const type of Object.values(remoteInstancesHelper.instanceTypes)) {
-      if (type) {
-        await addInstanceAPI.apiAddInstance(
-          type,
-          remoteInstancesHelper.upgradeServiceNames[type.toLowerCase()],
-        );
-      }
-    }
   },
 );
 
