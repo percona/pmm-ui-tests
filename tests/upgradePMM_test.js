@@ -44,7 +44,7 @@ Before(async ({ I }) => {
 
 BeforeSuite(async () => {
   const mysqlComposeConnection = {
-    host: '127.0.0.1',
+    host: process.env.AMI_INSTANCE_IP || '127.0.0.1',
     port: connection.port,
     username: connection.username,
     password: connection.password,
