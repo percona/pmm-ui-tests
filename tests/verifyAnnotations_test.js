@@ -14,10 +14,10 @@ Before(async ({ I }) => {
 
 Scenario(
   'PMM-T877 - Verify adding annotation for service name: pmm-server-postgresql and node name: pmm-server @nightly @dashboards',
-  async ({ I, dashboardPage, grafanaAPI }) => {
+  async ({ I, dashboardPage, annotationAPI }) => {
     const postgresAnnotation = 'annotation-for-postgres';
 
-    await grafanaAPI.setAnnotation(postgresAnnotation, 'PMM-T877', 'pmm-server', 'pmm-server-postgresql');
+    await annotationAPI.setAnnotation(postgresAnnotation, 'PMM-T877', 'pmm-server', 'pmm-server-postgresql');
     I.amOnPage(`${dashboardPage.postgresqlInstanceSummaryDashboard.url}`);
     dashboardPage.waitForDashboardOpened();
     await dashboardPage.applyFilter('Service Name', 'pmm-server-postgres');
@@ -29,7 +29,7 @@ Scenario(
 Data(annotation).Scenario(
   'PMM-T877 - Verify adding annotation specific dashboard @nightly @dashboards',
   async ({
-    I, dashboardPage, pmmInventoryPage, grafanaAPI, inventoryAPI, current,
+    I, dashboardPage, pmmInventoryPage, annotationAPI, inventoryAPI, current,
   }) => {
     const { annotationName } = current;
 
@@ -38,7 +38,7 @@ Data(annotation).Scenario(
     const nodeID = await pmmInventoryPage.getNodeId(serviceName);
     const nodeName = await inventoryAPI.getNodeName(nodeID);
 
-    await grafanaAPI.setAnnotation(annotationName, 'PMM-T877', nodeName, serviceName);
+    await annotationAPI.setAnnotation(annotationName, 'PMM-T877', nodeName, serviceName);
     I.amOnPage(current.dashboard);
     dashboardPage.waitForDashboardOpened();
     await dashboardPage.applyFilter('Service Name', serviceName);
