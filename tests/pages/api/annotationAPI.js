@@ -1,7 +1,9 @@
 const { I } = inject();
 const assert = require('assert');
 
+  /* eslint-disable consistent-return */
 module.exports = {
+    
   async setAnnotation(annotationName, tags, nodeName, serviceNames) {
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
     const body = {
@@ -12,6 +14,10 @@ module.exports = {
     };
 
     const resp = await I.sendPostRequest('v1/management/Annotations/Add', body, headers);
+
+    if (resp.status !== 200) {
+      return resp.status;
+    }
 
     assert.ok(
       resp.status === 200,

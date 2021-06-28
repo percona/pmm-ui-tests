@@ -1,4 +1,5 @@
 const { pmmInventoryPage, dashboardPage } = inject();
+const assert = require('assert');
 
 const annotation = new DataTable(['annotationName', 'service', 'dashboard']);
 
@@ -49,5 +50,51 @@ Data(annotation).Scenario(
     }
 
     I.seeElement(dashboardPage.annotationText(annotationName), 10);
+  },
+);
+
+Data(annotation).Scenario(
+  'Verify not adding annotation with wrong node name @nightly @dashboards',
+  async ({
+    I, annotationAPI, current, pmmInventoryPage,
+  }) => {
+    I.amOnPage(pmmInventoryPage.url);
+    const serviceName = await I.grabTextFrom(current.service);
+
+    const errorNumber = await annotationAPI.setAnnotation(`annotation-not-added${serviceName}node-name`, 'PMM-T877', 'random1', serviceName);
+
+    assert.ok(errorNumber === 404, `Annotation for ${serviceName} should not be added with wrong node name`);
+  },
+);
+
+Scenario(
+  'Verify not adding annotation with wrong service name @nightly @dashboards',
+  async ({
+    I, annotationAPI, pmmInventoryPage, inventoryAPI,
+  }) => {
+    I.amOnPage(pmmInventoryPage.url);
+    const serviceName = await I.grabTextFrom(pmmInventoryPage.fields.mongoServiceName);
+    const nodeID = await pmmInventoryPage.getNodeId(serviceName);
+    const nodeName = await inventoryAPI.getNodeName(nodeID);
+
+    const errorNumber = await annotationAPI.setAnnotation('wrong-service-name', 'PMM-T877', nodeName, 'random2');
+
+    assert.ok(errorNumber === 404, `Annotation for ${nodeName} should not be added with wrong node name`);
+  },
+);
+
+Scenario(
+  'Verify not adding annotation with empty service name @nightly @dashboards',
+  async ({
+    I, annotationAPI, pmmInventoryPage, inventoryAPI,
+  }) => {
+    I.amOnPage(pmmInventoryPage.url);
+    const serviceName = await I.grabTextFrom(pmmInventoryPage.fields.mongoServiceName);
+    const nodeID = await pmmInventoryPage.getNodeId(serviceName);
+    const nodeName = await inventoryAPI.getNodeName(nodeID);
+
+    const errorNumber = await annotationAPI.setAnnotation('empty-service-name', 'PMM-T877', nodeName, '');
+
+    assert.ok(errorNumber === 400, `Annotation for ${nodeName} should not be added without service name`);
   },
 );
