@@ -361,6 +361,8 @@ Scenario('PMM-T704 PMM-T772 PMM-T849 PMM-T850 Resources, PV, Secrets verificatio
     await dbaasAPI.apiDeleteXtraDBCluster(pxc_resource_check_cluster_name, clusterName);
     await dbaasAPI.waitForDbClusterDeleted(pxc_resource_check_cluster_name, clusterName);
 
+    output = await I.verifyCommand(`kubectl get secrets dbaas-${pxc_resource_check_cluster_name}-pxc-secrets -o yaml | grep root: | awk '{print $2}' | base64 --decode`);
+    console.log(output);
     output = await I.verifyCommand(
       `kubectl get secrets dbaas-${pxc_resource_check_cluster_name}-pxc-secrets -o yaml | grep root: | awk '{print $2}' | base64 --decode`,
       `Error from server (NotFound): secrets "dbaas-${pxc_resource_check_cluster_name}-pxc-secrets" not found`,

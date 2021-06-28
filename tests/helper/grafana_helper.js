@@ -125,7 +125,7 @@ class Grafana extends Helper {
     assert.equal(resp.status, 200, `Failed to delete ${userId}`);
   }
 
-  async verifyCommand(command, output, result = 'pass') {
+  async verifyCommand(command, output, result = 'pass', getError = false) {
     const { stdout, stderr, code } = shell.exec(command, { silent: true });
 
     if (output) {
@@ -138,7 +138,9 @@ class Grafana extends Helper {
       assert.ok(code !== 0, `The command ${command} was expected to return with failure but found to be executing without any error, the return code found ${code}`);
     }
 
-    return stdout;
+    if (!getError) return stdout;
+
+    return stderr;
   }
 }
 
