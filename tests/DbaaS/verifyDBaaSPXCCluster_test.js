@@ -299,3 +299,71 @@ Scenario('PMM-T717 Verify insufficient resources warning @dbaas @nightly',
     await dbaasActionsPage.verifyInsufficientResources(dbaasPage.tabs.dbClusterTab.advancedOptions.fields.resourceBarMemory, 'Insufficient Memory');
     await dbaasActionsPage.verifyInsufficientResources(dbaasPage.tabs.dbClusterTab.advancedOptions.fields.resourceBarDisk, 'Insufficient Disk');
   });
+
+Scenario('PMM-T704 PMM-T772 PMM-T849 PMM-T850 Resources, PV, Secrets verification @dbaas',
+  async ({
+    I, dbaasPage, dbaasAPI, dbaasActionsPage, adminPage,
+  }) => {
+    const pxc_resource_check_cluster_name = 'pxc-resource-1';
+    let output;
+    const pxc_configuration = {
+      topology: 'Cluster',
+      numberOfNodes: '1',
+      resourcePerNode: 'Custom',
+      memory: '1 GB',
+      cpu: '1',
+      disk: '3 GB',
+      dbType: 'MySQL',
+      clusterDashboardRedirectionLink: dbaasPage.clusterDashboardUrls.pxcDashboard(
+        pxc_resource_check_cluster_name,
+      ),
+    };
+
+    if (!await dbaasAPI.apiCheckRegisteredClusterExist(clusterName)) {
+      await dbaasAPI.apiRegisterCluster(process.env.kubeconfig_minikube, clusterName);
+    }
+
+    await dbaasAPI.deleteAllDBCluster(clusterName);
+    await dbaasPage.waitForDbClusterTab(clusterName);
+    I.waitForDetached(dbaasPage.tabs.kubernetesClusterTab.disabledAddButton, 30);
+    await dbaasActionsPage.createClusterAdvancedOption(clusterName, pxc_resource_check_cluster_name, 'MySQL', pxc_configuration);
+    I.click(dbaasPage.tabs.dbClusterTab.createClusterButton);
+    I.waitForText('Processing', 30, dbaasPage.tabs.dbClusterTab.fields.progressBarContent);
+    await dbaasPage.postClusterCreationValidation(pxc_resource_check_cluster_name, clusterName);
+    const {
+      username, password, host, port,
+    } = await dbaasAPI.getDbClusterDetails(pxc_resource_check_cluster_name, clusterName);
+
+    output = await I.verifyCommand(
+      `kubectl get pods ${pxc_resource_check_cluster_name}-pxc-0 -o json | grep -i requests -A2 | tail -2`,
+      '"cpu": "1"',
+    );
+
+    output = await I.verifyCommand(
+      `kubectl get pods ${pxc_resource_check_cluster_name}-pxc-0 -o json | grep -i requests -A2 | tail -2`,
+      '"memory": "1G"',
+    );
+
+    output = await I.verifyCommand(
+      `kubectl get pv | grep ${pxc_resource_check_cluster_name}`,
+      pxc_resource_check_cluster_name,
+    );
+
+    output = await I.verifyCommand(
+      `kubectl get secrets | grep dbaas-${pxc_resource_check_cluster_name}-pxc-secrets`,
+      pxc_resource_check_cluster_name,
+    );
+
+    output = await I.verifyCommand(
+      `kubectl get secrets dbaas-${pxc_resource_check_cluster_name}-pxc-secrets -o yaml | grep root: | awk '{print $2}' | base64 --decode`,
+      password,
+    );
+    await dbaasAPI.apiDeleteXtraDBCluster(pxc_resource_check_cluster_name, clusterName);
+    await dbaasAPI.waitForDbClusterDeleted(pxc_resource_check_cluster_name, clusterName);
+
+    output = await I.verifyCommand(
+      `kubectl get secrets dbaas-${pxc_resource_check_cluster_name}-pxc-secrets -o yaml | grep root: | awk '{print $2}' | base64 --decode`,
+      `Error from server (NotFound): secrets "dbaas-${pxc_resource_check_cluster_name}-pxc-secrets" not found`,
+      'fail',
+    );
+  });
