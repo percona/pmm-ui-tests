@@ -3,10 +3,14 @@ const faker = require('faker');
 const { generate } = require('generate-password');
 
 const {
-  remoteInstancesHelper,
+  remoteInstancesHelper, perconaServerDB,
 } = inject();
 
+const connection = perconaServerDB.defaultConnection;
+const emptyPasswordSummary = 'MySQL users have empty passwords';
+const failedCheckRowLocator = locate('tr').withChild(locate('td').withText(remoteInstancesHelper.upgradeServiceNames.mysql));
 const ruleName = 'Alert Rule for upgrade';
+const failedCheckMessage = 'Newer version of Percona Server for MySQL is available';
 
 // For running on local env set PMM_SERVER_LATEST and DOCKER_VERSION variables
 function getVersions() {
@@ -36,6 +40,21 @@ Feature('PMM server Upgrade Tests and Executing test cases related to Upgrade Te
 Before(async ({ I }) => {
   await I.Authorize();
   I.setRequestTimeout(30000);
+});
+
+BeforeSuite(async () => {
+  const mysqlComposeConnection = {
+    host: '127.0.0.1',
+    port: connection.port,
+    username: connection.username,
+    password: connection.password,
+  };
+
+  perconaServerDB.connectToPS(mysqlComposeConnection);
+});
+
+AfterSuite(async ({ perconaServerDB }) => {
+  await perconaServerDB.disconnectFromPS();
 });
 
 Scenario(
@@ -87,21 +106,6 @@ Scenario(
 );
 
 Scenario(
-  'Open the MySQL Overview Dashboard and verify Metrics are present and graphs are displayed @pre-upgrade @ami-upgrade @pmm-upgrade',
-  async ({ I, adminPage, dashboardPage }) => {
-    I.amOnPage(dashboardPage.mysqlInstanceSummaryDashboard.url);
-    dashboardPage.waitForDashboardOpened();
-    await dashboardPage.applyFilter('Service Name', 'ps_5.7');
-    await dashboardPage.expandEachDashboardRow();
-    I.click(adminPage.fields.metricTitle);
-    adminPage.peformPageDown(5);
-    dashboardPage.verifyMetricsExistence(dashboardPage.mysqlInstanceSummaryDashboard.metrics);
-    await dashboardPage.verifyThereAreNoGraphsWithNA(5);
-    await dashboardPage.verifyThereAreNoGraphsWithoutData(5);
-  },
-);
-
-Scenario(
   'Verify user is able to set custom Settings like Data_retention, Resolution @pre-upgrade @ami-upgrade @pmm-upgrade',
   async ({ settingsAPI, I }) => {
     const body = {
@@ -121,9 +125,7 @@ Scenario(
 
 Scenario(
   'Verify user can create Remote Instances before upgrade @pre-upgrade @ami-upgrade @pmm-upgrade',
-  async ({
-    inventoryAPI, addInstanceAPI, I,
-  }) => {
+  async ({ addInstanceAPI }) => {
     // Adding instances for monitoring
     for (const type of Object.values(remoteInstancesHelper.instanceTypes)) {
       if (type) {
@@ -178,6 +180,42 @@ if (iaReleased) {
   );
 }
 
+if (versionMinor >= 13) {
+  Scenario(
+    'Verify user has failed checks before upgrade @pre-upgrade @ami-upgrade @pmm-upgrade',
+    async ({
+      I, settingsAPI, databaseChecksPage, securityChecksAPI,
+    }) => {
+      const runChecks = locate('button').withText('Run DB checks');
+
+      await perconaServerDB.dropUser();
+      await perconaServerDB.createUser();
+      await settingsAPI.changeSettings({ stt: true });
+      // Run DB Checks from UI
+      // disable check, change interval for a check, change interval settings
+      if (versionMinor >= 16) {
+        databaseChecksPage.runDBChecks();
+        await securityChecksAPI.disableCheck('mysql_anonymous_users');
+        await securityChecksAPI.changeCheckInterval('postgresql_version');
+        await settingsAPI.setCheckIntervals({ ...settingsAPI.defaultCheckIntervals, standard_interval: '3600s' });
+      } else {
+        I.amOnPage(databaseChecksPage.oldUrl);
+        I.waitForVisible(runChecks, 30);
+        I.click(runChecks);
+        I.waitForVisible(failedCheckRowLocator, 30);
+      }
+
+      // Check that there are failed checks
+      await securityChecksAPI.verifyFailedCheckExists(emptyPasswordSummary);
+      await securityChecksAPI.verifyFailedCheckExists(failedCheckMessage);
+
+      // Silence mysql Empty Password failed check
+      I.waitForVisible(failedCheckRowLocator, 30);
+      I.click(failedCheckRowLocator.find('button').first());
+    },
+  );
+}
+
 Scenario(
   'PMM-T3 Verify user is able to Upgrade PMM version [blocker] @pmm-upgrade @ami-upgrade  ',
   async ({ I, homePage }) => {
@@ -198,9 +236,88 @@ Scenario(
   },
 );
 
+if (versionMinor >= 13) {
+  Scenario(
+    'Verify user has failed checks after upgrade / STT on @post-upgrade @ami-upgrade @pmm-upgrade',
+    async ({
+      I, pmmSettingsPage, securityChecksAPI, databaseChecksPage,
+    }) => {
+      // Verify STT is enabled
+      I.amOnPage(pmmSettingsPage.advancedSettingsUrl);
+      I.waitForVisible(pmmSettingsPage.fields.sttSwitchSelector, 30);
+      pmmSettingsPage.verifySwitch(pmmSettingsPage.fields.sttSwitchSelectorInput, 'on');
+
+      I.amOnPage(databaseChecksPage.url);
+      I.waitForVisible(databaseChecksPage.buttons.startDBChecks, 30);
+      // Verify there is failed check
+      await securityChecksAPI.verifyFailedCheckExists(failedCheckMessage);
+    },
+  );
+}
+
+if (versionMinor >= 16) {
+  Scenario(
+    'Verify disabled checks remain disabled after upgrade @post-upgrade @ami-upgrade @pmm-upgrade',
+    async ({
+      I, allChecksPage,
+    }) => {
+      const checkName = 'MySQL Anonymous Users';
+
+      I.amOnPage(allChecksPage.url);
+      I.waitForVisible(allChecksPage.buttons.disableEnableCheck(checkName));
+      I.seeTextEquals('Enable', allChecksPage.buttons.disableEnableCheck(checkName));
+      I.seeTextEquals('Disabled', allChecksPage.elements.statusCellByName(checkName));
+    },
+  );
+
+  Scenario(
+    'Verify silenced checks remain silenced after upgrade @post-upgrade @ami-upgrade @pmm-upgrade',
+    async ({
+      I, databaseChecksPage,
+    }) => {
+      I.amOnPage(databaseChecksPage.url);
+
+      I.waitForVisible(failedCheckRowLocator, 30);
+      I.dontSeeElement(failedCheckRowLocator.find('td').withText(emptyPasswordSummary));
+
+      I.click(locate('$db-checks-failed-checks-toggle-silenced').find('label'));
+
+      I.seeElement(failedCheckRowLocator.find('td').withText(emptyPasswordSummary));
+      I.seeElement(failedCheckRowLocator.find('td').withText('Silenced'));
+    },
+  );
+
+  Scenario(
+    'Verify check intervals remain the same after upgrade @post-upgrade @ami-upgrade @pmm-upgrade',
+    async ({
+      I, allChecksPage,
+    }) => {
+      const checkName = 'PostgreSQL Version';
+
+      I.amOnPage(allChecksPage.url);
+      I.waitForVisible(allChecksPage.buttons.disableEnableCheck(checkName));
+      I.seeTextEquals('Frequent', allChecksPage.elements.intervalCellByName(checkName));
+    },
+  );
+
+  Scenario(
+    'Verify settings for intervals remain the same after upgrade @post-upgrade @ami-upgrade @pmm-upgrade',
+    async ({
+      I, pmmSettingsPage,
+    }) => {
+      I.amOnPage(pmmSettingsPage.advancedSettingsUrl);
+      I.waitForVisible(pmmSettingsPage.fields.rareIntervalInput, 30);
+
+      I.seeInField(pmmSettingsPage.fields.rareIntervalInput, '78');
+      I.seeInField(pmmSettingsPage.fields.standartIntervalInput, '1');
+      I.seeInField(pmmSettingsPage.fields.frequentIntervalInput, '4');
+    },
+  );
+}
+
 if (iaReleased) {
   Scenario(
-    'PMM-T577 Verify user can see IA alerts after upgrade @pre-upgrade @ami-upgrade @pmm-upgrade',
+    'PMM-T577 Verify user can see IA alerts after upgrade @post-upgrade @ami-upgrade @pmm-upgrade',
     async ({
       I, alertsPage, alertsAPI,
     }) => {
@@ -218,7 +335,7 @@ if (iaReleased) {
   );
 } else {
   Scenario(
-    'PMM-T531 Verify IA is disabled by default after upgrading from older PMM version @pre-upgrade @ami-upgrade @pmm-upgrade',
+    'PMM-T531 Verify IA is disabled by default after upgrading from older PMM version @post-upgrade @ami-upgrade @pmm-upgrade',
     async ({
       I, pmmSettingsPage,
     }) => {
@@ -271,7 +388,6 @@ Scenario(
     await pmmSettingsPage.verifySettingsValue(pmmSettingsPage.fields.highInput, 3);
   },
 );
-
 
 Scenario(
   'Verify user can see News Panel @post-upgrade @ami-upgrade @pmm-upgrade  ',

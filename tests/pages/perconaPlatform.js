@@ -82,7 +82,8 @@ module.exports = {
     I.fillField('[name="newPassword"]', password);
     I.fillField('[name="verifyPassword"]', password);
     I.click('#next-button');
-    I.waitForVisible('[data-se="user-menu"]', 30);
+    I.waitForVisible('[data-se="org-logo"]', 30);
+    I.waitForVisible('[data-se="dropdown-menu-button-header"]', 30);
     I.seeInCurrentUrl('/app/UserHome');
     I.closeCurrentTab();
   },
