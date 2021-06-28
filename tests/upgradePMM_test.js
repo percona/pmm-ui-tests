@@ -43,35 +43,24 @@ Before(async ({ I }) => {
 });
 
 BeforeSuite(async () => {
-  // const mysqlComposeConnection = {
-  //   host: '127.0.0.1',
-  //   port: connection.port,
-  //   username: connection.username,
-  //   password: connection.password,
-  // };
-  //
-  // perconaServerDB.connectToPS(mysqlComposeConnection);
+  const mysqlComposeConnection = {
+    host: process.env.AMI_INSTANCE_IP || '127.0.0.1',
+    port: connection.port,
+    username: connection.username,
+    password: connection.password,
+  };
+
+  perconaServerDB.connectToPS(mysqlComposeConnection);
 });
 
 AfterSuite(async ({ perconaServerDB }) => {
-  // await perconaServerDB.disconnectFromPS();
+  await perconaServerDB.disconnectFromPS();
 });
 
-Scenario.only(
+Scenario(
   'Add AMI Instance ID @ami-upgrade',
   async ({ amiInstanceAPI }) => {
-    const mysqlComposeConnection = {
-      host: '127.0.0.1',
-      port: connection.port,
-      username: connection.username,
-      password: connection.password,
-    };
-
-    perconaServerDB.connectToPS(mysqlComposeConnection);
-
-    await perconaServerDB.dropUser();
-    await perconaServerDB.createUser();
-    // await amiInstanceAPI.verifyAmazonInstanceId(process.env.AMI_INSTANCE_ID);
+    await amiInstanceAPI.verifyAmazonInstanceId(process.env.AMI_INSTANCE_ID);
   },
 );
 
