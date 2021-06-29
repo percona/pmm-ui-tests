@@ -48,8 +48,6 @@ services:
       - UMASK=0777  # for slowlog file
     volumes:
       - /tmp/mysql/log:/tmp/mysql/log:rw
-    depends_on:
-      - pmm-server
     networks:
       - pmm-network
 
@@ -70,8 +68,6 @@ services:
       - UMASK=0777  # for slowlog file
     volumes:
       - /tmp/mysql/log:/tmp/mysql/log
-    depends_on:
-      - pmm-server
     networks:
       - pmm-network
 
@@ -84,8 +80,6 @@ services:
     environment:
       - MONGO_INITDB_ROOT_USERNAME=root
       - MONGO_INITDB_ROOT_PASSWORD=root-!@#%^password
-    depends_on:
-      - pmm-server
     networks:
       - pmm-network
 
@@ -102,8 +96,6 @@ services:
       - --bind_ip=0.0.0.0
     volumes:
       - ${PWD}/testdata/mongodb:/etc/ssl/certificates
-    depends_on:
-      - pmm-server
     networks:
       - pmm-network
 
@@ -113,8 +105,6 @@ services:
     command: --profile 2
     ports:
       - "27019:27017"
-    depends_on:
-      - pmm-server
     networks:
       - pmm-network
 
@@ -134,8 +124,6 @@ services:
       - "5433:5432"
     environment:
       - POSTGRES_PASSWORD=pmm-^*&@agent-password
-    depends_on:
-      - pmm-server
     networks:
       - pmm-network
 
@@ -148,8 +136,6 @@ services:
       - "6070:6070"
     volumes:
       - ${PWD}/testdata/proxysql/proxysql.cnf:/etc/proxysql.cnf:rw
-    depends_on:
-      - pmm-server
     networks:
       - pmm-network
 
