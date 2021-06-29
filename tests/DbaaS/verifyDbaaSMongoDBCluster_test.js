@@ -236,10 +236,15 @@ Scenario('PMM-T704 PMM-T772 PMM-T849 PMM-T850 Resources, PV, Secrets verificatio
     await dbaasAPI.apiDeletePSMDBCluster(psmdb_cluster_resource_check, clusterName);
     await dbaasAPI.waitForDbClusterDeleted(psmdb_cluster_resource_check, clusterName, 'MongoDB');
 
-    output = await I.verifyCommand(`kubectl get secrets dbaas-${psmdb_cluster_resource_check}-psmdb-secrets -o yaml | grep MONGODB_USER_ADMIN_PASSWORD: | awk '{print $2}' | base64 --decode`);
-    console.log(output);
     output = await I.verifyCommand(
-      `kubectl get secrets dbaas-${psmdb_cluster_resource_check}-psmdb-secrets -o yaml | grep root: | awk '{print $2}' | base64 --decode`,
-      `Error from server (NotFound): secrets "dbaas-${psmdb_cluster_resource_check}-psmdb-secrets" not found`,
+      `kubectl get pv | grep ${psmdb_cluster_resource_check}`,
+      'No resources found',
+      'fail',
+    );
+
+    output = await I.verifyCommand(
+      `kubectl get secrets | grep dbaas-${psmdb_cluster_resource_check}-psmdb-secrets`,
+      '',
+      'fail',
     );
   });
