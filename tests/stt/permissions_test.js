@@ -37,7 +37,7 @@ Scenario(
     I.amOnPage(homePage.url);
     I.waitForVisible(homePage.fields.checksPanelSelector, 30);
     I.waitForVisible(homePage.fields.noAccessRightsSelector, 30);
-    I.see('Insufficient access rights.', homePage.fields.noAccessRightsSelector);
+    I.see('Insufficient access permissions.', homePage.fields.noAccessRightsSelector);
   },
 );
 
@@ -60,7 +60,7 @@ Scenario(
     I.amOnPage(databaseChecksPage.url);
     I.waitForVisible(databaseChecksPage.fields.dbCheckPanelSelector, 30);
     I.waitForVisible(databaseChecksPage.fields.noAccessRightsSelector, 30);
-    I.see('Insufficient access rights.', databaseChecksPage.fields.noAccessRightsSelector);
+    I.see('Insufficient access permissions.', databaseChecksPage.fields.noAccessRightsSelector);
   },
 );
 
@@ -83,7 +83,7 @@ Scenario(
     I.amOnPage(homePage.url);
     I.waitForVisible(homePage.fields.checksPanelSelector, 30);
     I.waitForVisible(homePage.fields.noAccessRightsSelector, 30);
-    I.see('Insufficient access rights.', homePage.fields.noAccessRightsSelector);
+    I.see('Insufficient access permissions.', homePage.fields.noAccessRightsSelector);
   },
 );
 
@@ -106,7 +106,7 @@ Scenario(
     I.amOnPage(databaseChecksPage.url);
     I.waitForVisible(databaseChecksPage.fields.dbCheckPanelSelector, 30);
     I.waitForVisible(databaseChecksPage.fields.noAccessRightsSelector, 30);
-    I.see('Insufficient access rights.', databaseChecksPage.fields.noAccessRightsSelector);
+    I.see('Insufficient access permissions.', databaseChecksPage.fields.noAccessRightsSelector);
   },
 );
 
