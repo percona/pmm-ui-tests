@@ -179,7 +179,6 @@ Scenario('PMM-T704 PMM-T772 PMM-T849 PMM-T850 Resources, PV, Secrets verificatio
   async ({
     I, dbaasPage, dbaasAPI, dbaasActionsPage, adminPage,
   }) => {
-    let output;
     const psmdb_cluster_resource_check = 'psmdb-resource-1';
     const clusterDetails = {
       topology: 'Cluster',
@@ -209,40 +208,34 @@ Scenario('PMM-T704 PMM-T772 PMM-T849 PMM-T850 Resources, PV, Secrets verificatio
     await I.verifyCommand(
       'kubectl run psmdb-client --image=percona/percona-server-mongodb:4.4.5-7 --restart=Never',
     );
-    output = await I.verifyCommand(
+    await I.verifyCommand(
       `kubectl get pods ${psmdb_cluster_resource_check}-rs0-0 -o json | grep -i requests -A2 | tail -2`,
       '"cpu": "1"',
     );
-
-    output = await I.verifyCommand(
+    await I.verifyCommand(
       `kubectl get pods ${psmdb_cluster_resource_check}-rs0-0 -o json | grep -i requests -A2 | tail -2`,
       '"memory": "1G"',
     );
-
-    output = await I.verifyCommand(
+    await I.verifyCommand(
       `kubectl get pv | grep ${psmdb_cluster_resource_check}`,
       psmdb_cluster_resource_check,
     );
-
-    output = await I.verifyCommand(
+    await I.verifyCommand(
       `kubectl get secrets | grep dbaas-${psmdb_cluster_resource_check}-psmdb-secrets`,
       psmdb_cluster_resource_check,
     );
-
-    output = await I.verifyCommand(
+    await I.verifyCommand(
       `kubectl get secrets dbaas-${psmdb_cluster_resource_check}-psmdb-secrets -o yaml | grep MONGODB_USER_ADMIN_PASSWORD: | awk '{print $2}' | base64 --decode`,
       password,
     );
     await dbaasAPI.apiDeletePSMDBCluster(psmdb_cluster_resource_check, clusterName);
     await dbaasAPI.waitForDbClusterDeleted(psmdb_cluster_resource_check, clusterName, 'MongoDB');
-
-    output = await I.verifyCommand(
+    await I.verifyCommand(
       `kubectl get pv | grep ${psmdb_cluster_resource_check}`,
       'No resources found',
       'fail',
     );
-
-    output = await I.verifyCommand(
+    await I.verifyCommand(
       `kubectl get secrets | grep dbaas-${psmdb_cluster_resource_check}-psmdb-secrets`,
       '',
       'fail',
