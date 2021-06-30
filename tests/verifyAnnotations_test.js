@@ -14,11 +14,11 @@ Before(async ({ I }) => {
 });
 
 Scenario(
-  'PMM-T877 - Verify adding annotation for service name: pmm-server-postgresql and node name: pmm-server @nightly @dashboards',
+  'PMM-T878 - Verify adding annotation for service name: pmm-server-postgresql and node name: pmm-server @nightly @dashboards',
   async ({ I, dashboardPage, annotationAPI }) => {
     const postgresAnnotation = 'annotation-for-postgres';
 
-    await annotationAPI.setAnnotation(postgresAnnotation, 'PMM-T877', 'pmm-server', 'pmm-server-postgresql');
+    await annotationAPI.setAnnotation(postgresAnnotation, 'PMM-T878', 'pmm-server', 'pmm-server-postgresql');
     I.amOnPage(`${dashboardPage.postgresqlInstanceSummaryDashboard.url}`);
     dashboardPage.waitForDashboardOpened();
     await dashboardPage.applyFilter('Service Name', 'pmm-server-postgres');
@@ -28,7 +28,7 @@ Scenario(
 );
 
 Data(annotation).Scenario(
-  'PMM-T877 - Verify adding annotation specific dashboard @nightly @dashboards',
+  'PMM-T878 - Verify adding annotation specific dashboard @nightly @dashboards',
   async ({
     I, dashboardPage, pmmInventoryPage, annotationAPI, inventoryAPI, current,
   }) => {
@@ -40,7 +40,7 @@ Data(annotation).Scenario(
     const nodeID = await pmmInventoryPage.getNodeId(serviceName);
     const nodeName = await inventoryAPI.getNodeName(nodeID);
 
-    await annotationAPI.setAnnotation(annotationName, 'PMM-T877', nodeName, serviceName);
+    await annotationAPI.setAnnotation(annotationName, 'PMM-T878', nodeName, serviceName);
     I.amOnPage(current.dashboard);
     dashboardPage.waitForDashboardOpened();
     await dashboardPage.applyFilter('Service Name', serviceName);
@@ -55,7 +55,7 @@ Data(annotation).Scenario(
 );
 
 Data(annotation).Scenario(
-  'Verify not adding annotation with wrong node name @nightly @dashboards',
+  'PMM-T878 - Verify not adding annotation with wrong node name @nightly @dashboards',
   async ({
     I, annotationAPI, current, pmmInventoryPage,
   }) => {
@@ -63,14 +63,14 @@ Data(annotation).Scenario(
     I.waitForVisible(current.service, 10);
     const serviceName = await I.grabTextFrom(current.service);
 
-    const errorNumber = await annotationAPI.setAnnotation(`annotation-not-added${serviceName}node-name`, 'PMM-T877', 'random1', serviceName);
+    const errorNumber = await annotationAPI.setAnnotation(`annotation-not-added${serviceName}node-name`, 'PMM-T878', 'random1', serviceName);
 
     assert.ok(errorNumber === 404, `Annotation for ${serviceName} should not be added with wrong node name`);
   },
 );
 
 Scenario(
-  'Verify not adding annotation with wrong service name @nightly @dashboards',
+  'PMM-T878 - Verify not adding annotation with wrong service name @nightly @dashboards',
   async ({
     I, annotationAPI, pmmInventoryPage, inventoryAPI,
   }) => {
@@ -80,14 +80,14 @@ Scenario(
     const nodeID = await pmmInventoryPage.getNodeId(serviceName);
     const nodeName = await inventoryAPI.getNodeName(nodeID);
 
-    const errorNumber = await annotationAPI.setAnnotation('wrong-service-name', 'PMM-T877', nodeName, 'random2');
+    const errorNumber = await annotationAPI.setAnnotation('wrong-service-name', 'PMM-T878', nodeName, 'random2');
 
     assert.ok(errorNumber === 404, `Annotation for ${nodeName} should not be added with wrong node name`);
   },
 );
 
 Scenario(
-  'Verify not adding annotation with empty service name @nightly @dashboards',
+  'PMM-T878 - Verify not adding annotation with empty service name @nightly @dashboards',
   async ({
     I, annotationAPI, pmmInventoryPage, inventoryAPI,
   }) => {
@@ -97,7 +97,7 @@ Scenario(
     const nodeID = await pmmInventoryPage.getNodeId(serviceName);
     const nodeName = await inventoryAPI.getNodeName(nodeID);
 
-    const errorNumber = await annotationAPI.setAnnotation('empty-service-name', 'PMM-T877', nodeName, '');
+    const errorNumber = await annotationAPI.setAnnotation('empty-service-name', 'PMM-T878', nodeName, '');
 
     assert.ok(errorNumber === 400, `Annotation for ${nodeName} should not be added without service name`);
   },
