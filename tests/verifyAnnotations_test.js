@@ -35,6 +35,7 @@ Data(annotation).Scenario(
     const { annotationName } = current;
 
     I.amOnPage(pmmInventoryPage.url);
+    I.waitForVisible(current.service, 10);
     const serviceName = await I.grabTextFrom(current.service);
     const nodeID = await pmmInventoryPage.getNodeId(serviceName);
     const nodeName = await inventoryAPI.getNodeName(nodeID);
@@ -59,6 +60,7 @@ Data(annotation).Scenario(
     I, annotationAPI, current, pmmInventoryPage,
   }) => {
     I.amOnPage(pmmInventoryPage.url);
+    I.waitForVisible(current.service, 10);
     const serviceName = await I.grabTextFrom(current.service);
 
     const errorNumber = await annotationAPI.setAnnotation(`annotation-not-added${serviceName}node-name`, 'PMM-T877', 'random1', serviceName);
@@ -73,6 +75,7 @@ Scenario(
     I, annotationAPI, pmmInventoryPage, inventoryAPI,
   }) => {
     I.amOnPage(pmmInventoryPage.url);
+    I.waitForVisible(pmmInventoryPage.fields.mongoServiceName, 10);
     const serviceName = await I.grabTextFrom(pmmInventoryPage.fields.mongoServiceName);
     const nodeID = await pmmInventoryPage.getNodeId(serviceName);
     const nodeName = await inventoryAPI.getNodeName(nodeID);
@@ -89,6 +92,7 @@ Scenario(
     I, annotationAPI, pmmInventoryPage, inventoryAPI,
   }) => {
     I.amOnPage(pmmInventoryPage.url);
+    I.waitForVisible(pmmInventoryPage.fields.mongoServiceName, 10);
     const serviceName = await I.grabTextFrom(pmmInventoryPage.fields.mongoServiceName);
     const nodeID = await pmmInventoryPage.getNodeId(serviceName);
     const nodeName = await inventoryAPI.getNodeName(nodeID);
@@ -96,5 +100,32 @@ Scenario(
     const errorNumber = await annotationAPI.setAnnotation('empty-service-name', 'PMM-T877', nodeName, '');
 
     assert.ok(errorNumber === 400, `Annotation for ${nodeName} should not be added without service name`);
+  },
+);
+
+Data(annotation).Scenario(
+  'PMM-T877 - Verify adding annotation for specific node @nightly @dashboards',
+  async ({
+    I, dashboardPage, pmmInventoryPage, annotationAPI, inventoryAPI, current,
+  }) => {
+    const annotationNameForNode = `${current.annotationName}-node`;
+
+    I.amOnPage(pmmInventoryPage.url);
+    I.waitForVisible(current.service, 10);
+    const serviceName = await I.grabTextFrom(current.service);
+    const nodeID = await pmmInventoryPage.getNodeId(serviceName);
+    const nodeName = await inventoryAPI.getNodeName(nodeID);
+
+    await annotationAPI.setAnnotationWithoutServiceName(annotationNameForNode, 'PMM-T877', nodeName);
+    I.amOnPage(dashboardPage.nodesCompareDashboard.url);
+    dashboardPage.waitForDashboardOpened();
+    await dashboardPage.applyFilter('Node Name', nodeName);
+    if (annotationNameForNode === 'annotation-for-postgres-node') {
+      dashboardPage.verifyAnnotationsLoaded(annotationNameForNode, 2);
+    } else {
+      dashboardPage.verifyAnnotationsLoaded(annotationNameForNode, 1);
+    }
+
+    I.seeElement(dashboardPage.annotationText(annotationNameForNode), 10);
   },
 );
