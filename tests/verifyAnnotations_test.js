@@ -121,9 +121,9 @@ Data(annotation).Scenario(
     dashboardPage.waitForDashboardOpened();
     await dashboardPage.applyFilter('Node Name', nodeName);
     if (annotationNameForNode === 'annotation-for-postgres-node') {
-      dashboardPage.verifyAnnotationsLoaded(annotationNameForNode, 2);
+      dashboardPage.verifyAnnotationsLoaded(annotationNameForNode, 3);
     } else {
-      dashboardPage.verifyAnnotationsLoaded(annotationNameForNode, 1);
+      dashboardPage.verifyAnnotationsLoaded(annotationNameForNode, 2);
     }
 
     I.seeElement(dashboardPage.annotationText(annotationNameForNode), 10);
