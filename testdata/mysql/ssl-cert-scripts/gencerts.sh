@@ -10,3 +10,7 @@ sh ./genroot.sh "${OPENSSL_CA}"
 sh ./genserver.sh "${OPENSSL_SERVER}"
 sh ./genclient.sh "${OPENSSL_CLIENT}"
 
+openssl rsa -in certs/client-key.pem -out certs/client-key.pem
+openssl rsa -in certs/server-key.pem -out certs/server-key.pem
+openssl verify -CAfile certs/root-ca.pem certs/server-cert.pem certs/client-cert.pem
+sudo chown -R $USER:$USER certs
