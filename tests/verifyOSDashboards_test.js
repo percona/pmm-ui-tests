@@ -1,5 +1,3 @@
-const { pmmInventoryPage, dashboardPage } = inject();
-
 const nodes = new DataTable(['node-type', 'name']);
 
 nodes.add(['pmm-client', 'ip']);
