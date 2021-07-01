@@ -14,13 +14,23 @@ class MongoDBHelper extends Helper {
   /**
    * Connects to mongo shell. Takes options from the Helper config by default
    * if url param is passed - it is used for a connection
-   * @param url - optional
    * @returns {Promise<*>}
+   * @param connection
    */
-  async mongoConnect(url) {
-    return url
-      ? await (new MongoClient(url, { useUnifiedTopology: true })).connect()
-      : await this.client.connect();
+  async mongoConnect(connection) {
+    const {
+      host, port, username, password,
+    } = connection;
+
+    if (host) this.host = host;
+
+    if (port) this.port = port;
+
+    if (username) this.username = username;
+
+    if (password) this.password = password;
+
+    return await this.client.connect();
   }
 
   /**
