@@ -37,7 +37,7 @@ module.exports = {
 
     assert.ok(
       resp.status === 200,
-      `Failed to add annotation for service/s name: ${nodeName}. Response message is ${resp.data.message}`,
+      `Failed to add annotation for node name: ${nodeName}. Response message is ${resp.data.message}`,
     );
   },
 };

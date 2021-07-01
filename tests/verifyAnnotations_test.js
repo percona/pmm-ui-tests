@@ -55,7 +55,7 @@ Data(annotation).Scenario(
 );
 
 Data(annotation).Scenario(
-  'PMM-T878 - Verify not adding annotation with wrong node name @nightly @dashboards',
+  'PMM-T878 - Verify annotation cannot be added with wrong node name @nightly @dashboards',
   async ({
     I, annotationAPI, current, pmmInventoryPage,
   }) => {
@@ -70,7 +70,7 @@ Data(annotation).Scenario(
 );
 
 Scenario(
-  'PMM-T878 - Verify not adding annotation with wrong service name @nightly @dashboards',
+  'PMM-T878 - Verify annotation cannot be added with wrong service name @nightly @dashboards',
   async ({
     I, annotationAPI, pmmInventoryPage, inventoryAPI,
   }) => {
@@ -87,7 +87,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T878 - Verify not adding annotation with empty service name @nightly @dashboards',
+  'PMM-T878 - Verify annotation cannot be added with empty service name @nightly @dashboards',
   async ({
     I, annotationAPI, pmmInventoryPage, inventoryAPI,
   }) => {
