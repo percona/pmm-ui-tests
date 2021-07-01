@@ -103,16 +103,16 @@ Scenario(
   },
 );
 
-Data(annotation).Scenario(
+Scenario(
   'PMM-T877 - Verify adding annotation for specific node @nightly @dashboards',
   async ({
-    I, dashboardPage, pmmInventoryPage, annotationAPI, inventoryAPI, current,
+    I, dashboardPage, pmmInventoryPage, annotationAPI, inventoryAPI,
   }) => {
-    const annotationNameForNode = `${current.annotationName}-node`;
+    const annotationNameForNode = 'mysql-node-name';
 
     I.amOnPage(pmmInventoryPage.url);
-    I.waitForVisible(current.service, 10);
-    const serviceName = await I.grabTextFrom(current.service);
+    I.waitForVisible(pmmInventoryPage.fields.mysqlServiceName, 10);
+    const serviceName = await I.grabTextFrom(pmmInventoryPage.fields.mysqlServiceName);
     const nodeID = await pmmInventoryPage.getNodeId(serviceName);
     const nodeName = await inventoryAPI.getNodeName(nodeID);
 
@@ -120,11 +120,7 @@ Data(annotation).Scenario(
     I.amOnPage(dashboardPage.nodesCompareDashboard.url);
     dashboardPage.waitForDashboardOpened();
     await dashboardPage.applyFilter('Node Name', nodeName);
-    if (annotationNameForNode === 'annotation-for-postgres-node') {
-      dashboardPage.verifyAnnotationsLoaded(annotationNameForNode, 3);
-    } else {
-      dashboardPage.verifyAnnotationsLoaded(annotationNameForNode, 2);
-    }
+    dashboardPage.verifyAnnotationsLoaded(annotationNameForNode, 2);
 
     I.seeElement(dashboardPage.annotationText(annotationNameForNode), 10);
   },
