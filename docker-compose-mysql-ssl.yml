@@ -16,7 +16,7 @@ services:
       - "3308:3306"
     volumes:
       - type: bind
-        source: ${PWD}/testdata/mysql/ssl-cert-scripts/database
+        source: ${PWD}/testdata/mysql/ssl-cert-scripts/
         target: /var/lib/mysql
     environment:
       MYSQL_ROOT_PASSWORD: "r00tr00t"
