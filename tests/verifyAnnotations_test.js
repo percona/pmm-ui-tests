@@ -37,7 +37,7 @@ Data(annotation).Scenario(
       await dashboardPage.applyFilter('Service Name', serviceName);
     }
 
-    if (annotationName === 'annotation-for-postgres' || annotationName === 'mysql-node-name' || annotationName === 'annotation-for-postgres-server') {
+    if (annotationName === 'annotation-for-postgres') {
       dashboardPage.verifyAnnotationsLoaded(annotationName, 3);
     } else {
       dashboardPage.verifyAnnotationsLoaded(annotationName, 1);

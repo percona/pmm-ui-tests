@@ -27,7 +27,7 @@ module.exports = {
     runningStatus: locate('span').withText('RUNNING'),
     serviceIdLocatorPrefix: '//table//tr/td[4][contains(text(),"',
     tableCheckbox: locate('$select-row').find('span'),
-    tableRow: locate('$table-row').find('tr'),
+    tableRow: locate('$table-row')
   },
 
   verifyRemoteServiceIsDisplayed(serviceName) {
