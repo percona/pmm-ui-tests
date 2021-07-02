@@ -3,6 +3,7 @@ const assert = require('assert');
 
 const annotation = new DataTable(['annotationName', 'service', 'dashboard']);
 
+annotation.add(['annotation-for-postgres-server', pmmInventoryPage.fields.pmmServerPostgresLocator, dashboardPage.postgresqlInstanceSummaryDashboard.url]);
 annotation.add(['annotation-for-mongo', pmmInventoryPage.fields.mongoServiceName, dashboardPage.mongoDbInstanceSummaryDashboard.url]);
 annotation.add(['annotation-for-postgres', pmmInventoryPage.fields.pdphsqlServiceName, dashboardPage.postgresqlInstanceSummaryDashboard.url]);
 annotation.add(['annotation-for-mysql', pmmInventoryPage.fields.mysqlServiceName, dashboardPage.mysqlInstanceSummaryDashboard.url]);
@@ -12,20 +13,6 @@ Feature('Test annotation on dashboards');
 Before(async ({ I }) => {
   await I.Authorize();
 });
-
-Scenario(
-  'PMM-T878 - Verify adding annotation for service name: pmm-server-postgresql and node name: pmm-server @nightly @dashboards',
-  async ({ I, dashboardPage, annotationAPI }) => {
-    const postgresAnnotation = 'annotation-for-postgres';
-
-    await annotationAPI.setAnnotation(postgresAnnotation, 'PMM-T878', 'pmm-server', 'pmm-server-postgresql');
-    I.amOnPage(`${dashboardPage.postgresqlInstanceSummaryDashboard.url}`);
-    dashboardPage.waitForDashboardOpened();
-    await dashboardPage.applyFilter('Service Name', 'pmm-server-postgres');
-    dashboardPage.verifyAnnotationsLoaded(postgresAnnotation, 3);
-    I.seeElement(dashboardPage.annotationText(postgresAnnotation), 10);
-  },
-);
 
 Data(annotation).Scenario(
   'PMM-T878 - Verify adding annotation specific dashboard @nightly @dashboards',
@@ -44,7 +31,7 @@ Data(annotation).Scenario(
     I.amOnPage(current.dashboard);
     dashboardPage.waitForDashboardOpened();
     await dashboardPage.applyFilter('Service Name', serviceName);
-    if (annotationName === 'annotation-for-postgres') {
+    if (annotationName === 'annotation-for-postgres' || 'annotation-for-postgres-server') {
       dashboardPage.verifyAnnotationsLoaded(annotationName, 3);
     } else {
       dashboardPage.verifyAnnotationsLoaded(annotationName, 1);

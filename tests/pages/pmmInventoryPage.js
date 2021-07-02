@@ -9,16 +9,16 @@ module.exports = {
     deleteButton: locate('span').withText('Delete'),
     externalExporter: locate('td').withText('External exporter'),
     forceModeCheckbox: locate('$force-field-label').find('span'),
-    iframe: '//div[@class="panel-content"]//iframe',
     inventoryTable: locate('table'),
     inventoryTableColumn: locate('td').after('table'),
     inventoryTableRows: locate('tr').after('table'),
     mongoServiceName: locate('td').withText('mongodb'),
     mysqlServiceName: locate('td').withText('ps_group_rep'),
-    nodesLink: '//li[contains(text(),"Nodes")]',
+    nodesLink: locate('li').withText('Nodes'),
     nodesLinkOld: locate('a').withText('Nodes'),
     pdphsqlServiceName: locate('td').withText('PDPGSQL'),
     pmmAgentLocator: locate('td').withText('PMM Agent').after('table'),
+    pmmServerPostgresLocator: locate('td').withText('pmm-server-postgresql'),
     pmmServicesSelector: locate('li').withText('Services'),
     postgresExporter: locate('td').withText('Postgres exporter'),
     postgresPgStatements: locate('td').withText('QAN PostgreSQL PgStatements'),
@@ -27,15 +27,7 @@ module.exports = {
     runningStatus: locate('span').withText('RUNNING'),
     serviceIdLocatorPrefix: '//table//tr/td[4][contains(text(),"',
     tableCheckbox: locate('$select-row').find('span'),
-    tableRow: '//tr[@data-qa="table-row"]',
-  },
-
-  verifyOldMySQLRemoteServiceIsDisplayed(serviceName) {
-    I.waitForElement(pmmInventoryPage.fields.iframe, 60);
-    I.switchTo(pmmInventoryPage.fields.iframe);
-    I.waitForVisible(pmmInventoryPage.fields.inventoryTableColumn, 30);
-    I.scrollPageToBottom();
-    I.see(serviceName, pmmInventoryPage.fields.inventoryTableColumn);
+    tableRow: locate('$table-row').find('tr'),
   },
 
   verifyRemoteServiceIsDisplayed(serviceName) {
