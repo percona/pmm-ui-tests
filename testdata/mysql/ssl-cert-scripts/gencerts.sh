@@ -7,9 +7,7 @@ OPENSSL_SERVER="${OPENSSL_SUBJ}/CN=fake-server"
 OPENSSL_CLIENT="${OPENSSL_SUBJ}/CN=fake-client"
 
 sh ./genroot.sh "${OPENSSL_CA}"
-sleep 5
 sh ./genserver.sh "${OPENSSL_SERVER}"
-sleep 5
 sh ./genclient.sh "${OPENSSL_CLIENT}"
 
 sleep 10
