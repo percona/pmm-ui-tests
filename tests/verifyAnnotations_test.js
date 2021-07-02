@@ -7,6 +7,7 @@ annotation.add(['annotation-for-postgres-server', pmmInventoryPage.fields.pmmSer
 annotation.add(['annotation-for-mongo', pmmInventoryPage.fields.mongoServiceName, dashboardPage.mongoDbInstanceSummaryDashboard.url]);
 annotation.add(['annotation-for-postgres', pmmInventoryPage.fields.pdphsqlServiceName, dashboardPage.postgresqlInstanceSummaryDashboard.url]);
 annotation.add(['annotation-for-mysql', pmmInventoryPage.fields.mysqlServiceName, dashboardPage.mysqlInstanceSummaryDashboard.url]);
+annotation.add(['mysql-node-name', pmmInventoryPage.fields.mysqlServiceName, dashboardPage.nodesCompareDashboard.url]);
 
 Feature('Test annotation on dashboards');
 
@@ -27,11 +28,16 @@ Data(annotation).Scenario(
     const nodeID = await pmmInventoryPage.getNodeId(serviceName);
     const nodeName = await inventoryAPI.getNodeName(nodeID);
 
-    await annotationAPI.setAnnotation(annotationName, 'PMM-T878', nodeName, serviceName);
+    await annotationAPI.setAnnotation(annotationName, 'PMM-T878', nodeName, serviceName, 200);
     I.amOnPage(current.dashboard);
     dashboardPage.waitForDashboardOpened();
-    await dashboardPage.applyFilter('Service Name', serviceName);
-    if (annotationName === 'annotation-for-postgres' || 'annotation-for-postgres-server') {
+    if (annotationName === 'mysql-node-name') {
+      await dashboardPage.applyFilter('Node Name', nodeName);
+    } else {
+      await dashboardPage.applyFilter('Service Name', serviceName);
+    }
+
+    if (annotationName === 'annotation-for-postgres' || annotationName === 'mysql-node-name' || annotationName === 'annotation-for-postgres-server') {
       dashboardPage.verifyAnnotationsLoaded(annotationName, 3);
     } else {
       dashboardPage.verifyAnnotationsLoaded(annotationName, 1);
@@ -41,74 +47,24 @@ Data(annotation).Scenario(
   },
 );
 
-Data(annotation).Scenario(
-  'PMM-T878 - Verify annotation cannot be added with wrong node name @nightly @dashboards',
-  async ({
-    I, annotationAPI, current, pmmInventoryPage,
-  }) => {
-    I.amOnPage(pmmInventoryPage.url);
-    I.waitForVisible(current.service, 10);
-    const serviceName = await I.grabTextFrom(current.service);
-
-    const errorNumber = await annotationAPI.setAnnotation(`annotation-not-added${serviceName}node-name`, 'PMM-T878', 'random1', serviceName);
-
-    assert.ok(errorNumber === 404, `Annotation for ${serviceName} should not be added with wrong node name`);
-  },
-);
-
 Scenario(
-  'PMM-T878 - Verify annotation cannot be added with wrong service name @nightly @dashboards',
+  'PMM-T878 - Verify user is not able to add an annotation for non-existing node name or service name and without service name @nightly @dashboards',
   async ({
     I, annotationAPI, pmmInventoryPage, inventoryAPI,
   }) => {
-    I.amOnPage(pmmInventoryPage.url);
-    I.waitForVisible(pmmInventoryPage.fields.mongoServiceName, 10);
-    const serviceName = await I.grabTextFrom(pmmInventoryPage.fields.mongoServiceName);
-    const nodeID = await pmmInventoryPage.getNodeId(serviceName);
-    const nodeName = await inventoryAPI.getNodeName(nodeID);
-
-    const errorNumber = await annotationAPI.setAnnotation('wrong-service-name', 'PMM-T878', nodeName, 'random2');
-
-    assert.ok(errorNumber === 404, `Annotation for ${nodeName} should not be added with wrong node name`);
-  },
-);
-
-Scenario(
-  'PMM-T878 - Verify annotation cannot be added with empty service name @nightly @dashboards',
-  async ({
-    I, annotationAPI, pmmInventoryPage, inventoryAPI,
-  }) => {
-    I.amOnPage(pmmInventoryPage.url);
-    I.waitForVisible(pmmInventoryPage.fields.mongoServiceName, 10);
-    const serviceName = await I.grabTextFrom(pmmInventoryPage.fields.mongoServiceName);
-    const nodeID = await pmmInventoryPage.getNodeId(serviceName);
-    const nodeName = await inventoryAPI.getNodeName(nodeID);
-
-    const errorNumber = await annotationAPI.setAnnotation('empty-service-name', 'PMM-T878', nodeName, '');
-
-    assert.ok(errorNumber === 400, `Annotation for ${nodeName} should not be added without service name`);
-  },
-);
-
-Scenario(
-  'PMM-T877 - Verify adding annotation for specific node @nightly @dashboards',
-  async ({
-    I, dashboardPage, pmmInventoryPage, annotationAPI, inventoryAPI,
-  }) => {
-    const annotationNameForNode = 'mysql-node-name';
-
     I.amOnPage(pmmInventoryPage.url);
     I.waitForVisible(pmmInventoryPage.fields.mysqlServiceName, 10);
     const serviceName = await I.grabTextFrom(pmmInventoryPage.fields.mysqlServiceName);
     const nodeID = await pmmInventoryPage.getNodeId(serviceName);
     const nodeName = await inventoryAPI.getNodeName(nodeID);
 
-    await annotationAPI.setAnnotationWithoutServiceName(annotationNameForNode, 'PMM-T877', nodeName);
-    I.amOnPage(dashboardPage.nodesCompareDashboard.url);
-    dashboardPage.waitForDashboardOpened();
-    await dashboardPage.applyFilter('Node Name', nodeName);
-    dashboardPage.verifyAnnotationsLoaded(annotationNameForNode, 2);
+    // wrong node name
+    await annotationAPI.setAnnotation(`annotation-not-added${serviceName}node-name`, 'PMM-T878', 'random1', serviceName, 404);
 
-    I.seeElement(dashboardPage.annotationText(annotationNameForNode), 10);
+    // wrong service name
+    await annotationAPI.setAnnotation('wrong-service-name', 'PMM-T878', nodeName, 'random2', 404);
+
+    // without service name
+    await annotationAPI.setAnnotation('empty-service-name', 'PMM-T878', nodeName, '', 400);
   },
 );
