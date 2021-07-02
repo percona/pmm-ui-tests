@@ -13,6 +13,11 @@ module.exports = {
 
     const resp = await I.sendPostRequest('v1/management/Annotations/Add', body, headers);
 
+    assert.ok(
+      resp.status === 200,
+      `Failed to add annotation for ${body}. Response message is ${resp.data.message}`,
+    );
+
     return resp.status;
   },
 
@@ -28,7 +33,7 @@ module.exports = {
 
     assert.ok(
       resp.status === 200,
-      `Failed to add annotation for node name: ${nodeName}. Response message is ${resp.data.message}`,
+      `Failed to add annotation for ${body}. Response message is ${resp.data.message}`,
     );
   },
 };
