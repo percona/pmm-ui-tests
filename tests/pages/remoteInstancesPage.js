@@ -226,9 +226,9 @@ module.exports = {
         I.fillField(this.fields.serviceName, serviceName);
         break;
       case this.services.postgresGC:
-        I.fillField(this.fields.hostName, /*hostGC*/);
-        I.fillField(this.fields.userName, /*userGC*/);
-        I.fillField(this.fields.password, /*passGC*/);
+        I.fillField(this.fields.hostName, process.env.GCP_SERVER_IP);
+        I.fillField(this.fields.userName, process.env.GCP_USER);
+        I.fillField(this.fields.password, process.env.GCP_USER_PASSWORD);
         I.fillField(this.fields.serviceName, serviceName);
         I.fillField(this.fields.environment, this.postgresGCSettings.environment);
         I.fillField(this.fields.cluster, this.postgresGCSettings.cluster);
