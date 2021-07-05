@@ -318,10 +318,6 @@ Scenario('PMM-T704 PMM-T772 PMM-T849 PMM-T850 Resources, PV, Secrets verificatio
       ),
     };
 
-    if (!await dbaasAPI.apiCheckRegisteredClusterExist(clusterName)) {
-      await dbaasAPI.apiRegisterCluster(process.env.kubeconfig_minikube, clusterName);
-    }
-
     await dbaasAPI.deleteAllDBCluster(clusterName);
     await dbaasPage.waitForDbClusterTab(clusterName);
     I.waitForDetached(dbaasPage.tabs.kubernetesClusterTab.disabledAddButton, 30);
