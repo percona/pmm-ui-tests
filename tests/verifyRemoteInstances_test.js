@@ -7,6 +7,9 @@ const remotePostgreSQL = new DataTable(['instanceName', 'trackingOption', 'check
 const qanFilters = new DataTable(['filterName']);
 const dashboardCheck = new DataTable(['serviceName']);
 
+dashboardCheck.add([remoteInstancesPage.services.postgresql]);
+dashboardCheck.add([remoteInstancesPage.services.postgresGC]);
+
 for (const [key, value] of Object.entries(remoteInstancesHelper.services)) {
   if (value) {
     switch (key) {
