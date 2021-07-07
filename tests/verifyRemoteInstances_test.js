@@ -87,12 +87,7 @@ Scenario(
   },
 );
 
-<<<<<<< HEAD
-// TODO: unskip the mongodb and postgresql tests after resolving a instance issues
-Data(instances.filter((instance) => instance.name !== 'mongodb')).Scenario(
-=======
 Data(instances).Scenario(
->>>>>>> main
   'Verify Remote Instance has Status Running [critical] @instances',
   async ({
     I, pmmInventoryPage, current,
