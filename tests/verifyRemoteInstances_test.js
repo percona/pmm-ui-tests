@@ -5,6 +5,7 @@ const { pmmInventoryPage, remoteInstancesPage, remoteInstancesHelper } = inject(
 const instances = new DataTable(['name']);
 const remotePostgreSQL = new DataTable(['instanceName', 'trackingOption', 'checkAgent']);
 const qanFilters = new DataTable(['filterName']);
+const dashboardCheck = new DataTable(['serviceName']);
 
 for (const [key, value] of Object.entries(remoteInstancesHelper.services)) {
   if (value) {
@@ -86,7 +87,12 @@ Scenario(
   },
 );
 
+<<<<<<< HEAD
+// TODO: unskip the mongodb and postgresql tests after resolving a instance issues
+Data(instances.filter((instance) => instance.name !== 'mongodb')).Scenario(
+=======
 Data(instances).Scenario(
+>>>>>>> main
   'Verify Remote Instance has Status Running [critical] @instances',
   async ({
     I, pmmInventoryPage, current,
@@ -216,17 +222,15 @@ Data(remotePostgreSQL).Scenario(
   },
 );
 
-Scenario(
+Data(dashboardCheck).Scenario(
   'PMM-T853 - Verify dashboard after remote postgreSQL instance is added @instances @not-ovf',
   async ({
-    I, dashboardPage, adminPage,
+    I, dashboardPage, adminPage, current,
   }) => {
-    const serviceName = 'postgresql_remote_new';
-
     // Wait 10 seconds before test to start getting metrics
     I.wait(10);
     I.amOnPage(dashboardPage.postgresqlInstanceOverviewDashboard.url);
-    dashboardPage.applyFilter('Service Name', serviceName);
+    dashboardPage.applyFilter('Service Name', current.serviceName);
     adminPage.peformPageDown(5);
     await dashboardPage.expandEachDashboardRow();
     adminPage.performPageUp(5);
