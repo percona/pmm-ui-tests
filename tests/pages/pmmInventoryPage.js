@@ -13,7 +13,7 @@ module.exports = {
     inventoryTableColumn: locate('td').after('table'),
     inventoryTableRows: locate('tr').after('table'),
     mongoServiceName: locate('td').withText('mongodb'),
-    mysqlServiceName: locate('td').withText('ps_group_rep'),
+    mysqlServiceName: locate('td').withText('ms-single'),
     // cannot be changed to locate because it's failing in I.waitForVisible()
     nodesLink: '//li[contains(text(),"Nodes")]',
     nodesLinkOld: locate('a').withText('Nodes'),
