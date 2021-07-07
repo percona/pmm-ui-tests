@@ -259,7 +259,7 @@ Scenario(
 
 if (versionMinor >= 13) {
   Scenario(
-    'Verify user has failed checks after upgrade / STT on @post-upgrade @ami-upgrade @pmm-upgrade',
+    'Verify user has failed checks after upgrade / STT on @ami-upgrade @pmm-upgrade',
     async ({
       I, pmmSettingsPage, securityChecksAPI, databaseChecksPage,
     }) => {
@@ -338,7 +338,7 @@ if (versionMinor >= 16) {
 
 if (iaReleased) {
   Scenario(
-    'PMM-T577 Verify user can see IA alerts after upgrade @post-upgrade @ami-upgrade @pmm-upgrade',
+    'PMM-T577 Verify user can see IA alerts after upgrade @ami-upgrade @pmm-upgrade',
     async ({
       I, alertsPage, alertsAPI,
     }) => {
