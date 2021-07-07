@@ -1,13 +1,13 @@
 const {
-  I, adminPage, pmmInventoryPage, codeceptjsConfig,
+  I, adminPage, pmmInventoryPage, codeceptjsConfig, remoteInstancesHelper,
 } = inject();
 const assert = require('assert');
 
 const url = new URL(codeceptjsConfig.config.helpers.Playwright.url);
 
 module.exports = {
-  accessKey: process.env.AWS_ACCESS_KEY_ID,
-  secretKey: process.env.AWS_SECRET_ACCESS_KEY,
+  accessKey: remoteInstancesHelper.remote_instance.aws.aws_access_key,
+  secretKey: remoteInstancesHelper.remote_instance.aws.aws_secret_key,
 
   // insert your locators and methods here
   // setting locators
@@ -24,29 +24,29 @@ module.exports = {
     cluster: 'remote-postgres-cluster',
   },
   postgresqlAzureInputs: {
-    userName: process.env.AZURE_POSTGRES_USER,
-    password: process.env.AZURE_POSTGRES_PASS,
+    userName: remoteInstancesHelper.remote_instance.azure.azure_postgresql.userName,
+    password: remoteInstancesHelper.remote_instance.azure.azure_postgresql.password,
     environment: 'Azure PostgreSQL environment',
     cluster: 'Azure PostgreSQL cluster',
     replicationSet: 'Azure PostgreSQL replica',
   },
   mysqlAzureInputs: {
-    userName: process.env.AZURE_MYSQL_USER,
-    password: process.env.AZURE_MYSQL_PASS,
+    userName: remoteInstancesHelper.remote_instance.azure.azure_mysql.userName,
+    password: remoteInstancesHelper.remote_instance.azure.azure_mysql.password,
     environment: 'Azure MySQL environment',
     cluster: 'Azure MySQL cluster',
     replicationSet: 'Azure MySQL replica',
   },
   mysqlInputs: {
-    userName: process.env.REMOTE_AWS_MYSQL_USER,
-    password: process.env.REMOTE_AWS_MYSQL_PASSWORD,
+    userName: remoteInstancesHelper.remote_instance.aws.aws_rds_5_6.username,
+    password: remoteInstancesHelper.remote_instance.aws.aws_rds_5_6.password,
     environment: 'RDS MySQL 5.6',
     cluster: 'rds56-cluster',
     replicationSet: 'rds56-replication',
   },
   postgresqlInputs: {
-    userName: process.env.REMOTE_AWS_POSTGRES12_USER,
-    password: process.env.REMOTE_AWS_POSTGRES12_PASSWORD,
+    userName: remoteInstancesHelper.remote_instance.aws.aws_postgresql_12.userName,
+    password: remoteInstancesHelper.remote_instance.aws.aws_postgresql_12.password,
     environment: 'RDS Postgres',
     cluster: 'rdsPostgres-cluster',
     replicationSet: 'rdsPostgres-replication',
@@ -114,7 +114,7 @@ module.exports = {
     usePerformanceSchema2: '//input[@name="qan_mysql_perfschema"]/following-sibling::span[2]',
     usePgStatMonitor: '//label[text()="PG Stat Monitor"]',
     usePgStatStatements: '//label[text()="PG Stat Statements"]',
-    useQANMongoDBProfiler: '//input[@name="qan_mongodb_profiler"]',
+    useQANMongoDBProfiler: '$qan_mongodb_profiler-field-label',
     useTLS: '$tls-field-label',
     userName: '$username-text-input',
     urlInput: '$url-text-input',
@@ -173,56 +173,83 @@ module.exports = {
   fillRemoteFields(serviceName) {
     // eslint-disable-next-line default-case
     switch (serviceName) {
-      case this.services.mysql:
-        I.fillField(this.fields.hostName, process.env.REMOTE_MYSQL_HOST);
-        I.fillField(this.fields.userName, process.env.REMOTE_MYSQL_USER);
-        I.fillField(this.fields.password, process.env.REMOTE_MYSQL_PASSWORD);
+      case remoteInstancesHelper.services.mysql:
+        I.fillField(this.fields.hostName, remoteInstancesHelper.remote_instance.mysql.ps_5_7.host);
+        I.fillField(this.fields.userName, remoteInstancesHelper.remote_instance.mysql.ps_5_7.username);
+        I.fillField(this.fields.password, remoteInstancesHelper.remote_instance.mysql.ps_5_7.password);
         I.appendField(this.fields.portNumber, '');
         I.pressKey(['Shift', 'Home']);
         I.pressKey('Backspace');
-        I.fillField(this.fields.portNumber, '3307');
+        I.fillField(this.fields.portNumber, remoteInstancesHelper.remote_instance.mysql.ps_5_7.port);
         I.fillField(this.fields.serviceName, serviceName);
         I.fillField(this.fields.environment, this.mysqlSettings.environment);
         I.fillField(this.fields.cluster, this.mysqlSettings.cluster);
         break;
-      case this.services.mongodb:
-        I.fillField(this.fields.hostName, process.env.REMOTE_MONGODB_HOST);
-        I.fillField(this.fields.userName, process.env.REMOTE_MONGODB_USER);
-        I.fillField(this.fields.password, process.env.REMOTE_MONGODB_PASSWORD);
+      case remoteInstancesHelper.services.mongodb:
+        I.fillField(this.fields.hostName, remoteInstancesHelper.remote_instance.mongodb.psmdb_4_2.host);
+        I.fillField(this.fields.userName, remoteInstancesHelper.remote_instance.mongodb.psmdb_4_2.username);
+        I.fillField(this.fields.password, remoteInstancesHelper.remote_instance.mongodb.psmdb_4_2.password);
         I.fillField(this.fields.serviceName, serviceName);
         I.fillField(this.fields.environment, 'remote-mongodb');
         I.fillField(this.fields.cluster, 'remote-mongodb-cluster');
         break;
-      case this.services.postgresql:
-        I.fillField(this.fields.hostName, process.env.REMOTE_POSTGRESQL_HOST);
-        I.fillField(this.fields.userName, process.env.REMOTE_POSTGRESQL_USER);
-        I.fillField(this.fields.password, process.env.REMOTE_POSTGRESSQL_PASSWORD);
+      case remoteInstancesHelper.services.postgresql:
+        I.fillField(
+          this.fields.hostName,
+          remoteInstancesHelper.remote_instance.postgresql.pdpgsql_13_3.host,
+        );
+        I.fillField(
+          this.fields.userName,
+          remoteInstancesHelper.remote_instance.postgresql.pdpgsql_13_3.username,
+        );
+        I.fillField(
+          this.fields.password,
+          remoteInstancesHelper.remote_instance.postgresql.pdpgsql_13_3.password,
+        );
         I.fillField(this.fields.serviceName, serviceName);
         I.fillField(this.fields.environment, this.potgresqlSettings.environment);
         I.fillField(this.fields.cluster, this.potgresqlSettings.cluster);
         break;
-      case this.services.proxysql:
-        I.fillField(this.fields.hostName, process.env.REMOTE_PROXYSQL_HOST);
-        I.fillField(this.fields.userName, process.env.REMOTE_PROXYSQL_USER);
-        I.fillField(this.fields.password, process.env.REMOTE_PROXYSQL_PASSWORD);
+      case remoteInstancesHelper.services.proxysql:
+        I.fillField(this.fields.hostName, remoteInstancesHelper.remote_instance.proxysql.proxysql_2_1_1.host);
+        I.fillField(
+          this.fields.userName,
+          remoteInstancesHelper.remote_instance.proxysql.proxysql_2_1_1.username,
+        );
+        I.fillField(
+          this.fields.password,
+          remoteInstancesHelper.remote_instance.proxysql.proxysql_2_1_1.password,
+        );
         I.fillField(this.fields.serviceName, serviceName);
         I.fillField(this.fields.environment, 'remote-proxysql');
         I.fillField(this.fields.cluster, 'remote-proxysql-cluster');
         break;
       case 'external_service_new':
         I.fillField(this.fields.serviceName, serviceName);
-        I.fillField(this.fields.hostName, url.host);
+        I.fillField(this.fields.hostName, remoteInstancesHelper.remote_instance.external.redis.host);
         I.fillField(this.fields.metricsPath, '/metrics');
-        I.fillField(this.fields.portNumber, '42200');
+        I.appendField(this.fields.portNumber, '');
+        I.pressKey(['Shift', 'Home']);
+        I.pressKey('Backspace');
+        I.fillField(this.fields.portNumber, remoteInstancesHelper.remote_instance.external.redis.port);
         I.fillField(this.fields.environment, 'remote-external-service');
         I.fillField(this.fields.cluster, 'remote-external-cluster');
         break;
       case 'postgreDoNotTrack':
       case 'postgresPGStatStatements':
       case 'postgresPgStatMonitor':
-        I.fillField(this.fields.hostName, process.env.REMOTE_POSTGRESQL_HOST);
-        I.fillField(this.fields.userName, process.env.REMOTE_POSTGRESQL_USER);
-        I.fillField(this.fields.password, process.env.REMOTE_POSTGRESSQL_PASSWORD);
+        I.fillField(
+          this.fields.hostName,
+          remoteInstancesHelper.remote_instance.postgresql.pdpgsql_13_3.host,
+        );
+        I.fillField(
+          this.fields.userName,
+          remoteInstancesHelper.remote_instance.postgresql.pdpgsql_13_3.username,
+        );
+        I.fillField(
+          this.fields.password,
+          remoteInstancesHelper.remote_instance.postgresql.pdpgsql_13_3.password,
+        );
         I.fillField(this.fields.serviceName, serviceName);
         break;
       case this.services.postgresGC:
@@ -242,12 +269,10 @@ module.exports = {
     I.click(this.fields.skipTLSL);
     // eslint-disable-next-line default-case
     switch (serviceName) {
-      case this.services.mongodb:
-        I.click(this.fields.useTLS);
+      case remoteInstancesHelper.services.mongodb:
         I.click(this.fields.useQANMongoDBProfiler);
         break;
-      case this.services.postgresql:
-        I.click(this.fields.useTLS);
+      case remoteInstancesHelper.services.postgresql:
         I.click(this.fields.usePgStatStatements);
         break;
       case 'rds-mysql56':
@@ -269,10 +294,11 @@ module.exports = {
   },
 
   discoverAzure() {
-    I.fillField(this.fields.clientID, process.env.AZURE_CLIENT_ID);
-    I.fillField(this.fields.clientSecret, process.env.AZURE_CLIENT_SECRET);
-    I.fillField(this.fields.tenantID, process.env.AZURE_TENNANT_ID);
-    I.fillField(this.fields.subscriptionID, process.env.AZURE_SUBSCRIPTION_ID);
+    I.fillField(this.fields.clientID, remoteInstancesHelper.remote_instance.azure.azure_client_id);
+    I.fillField(this.fields.clientSecret, remoteInstancesHelper.remote_instance.azure.azure_client_secret);
+    I.fillField(this.fields.tenantID, remoteInstancesHelper.remote_instance.azure.azure_tenant_id);
+    I.fillField(this.fields.subscriptionID,
+      remoteInstancesHelper.remote_instance.azure.azure_subscription_id);
     I.click(this.fields.discoverBtn);
     this.waitForDiscovery();
   },

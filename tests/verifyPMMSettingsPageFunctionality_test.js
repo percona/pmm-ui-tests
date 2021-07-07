@@ -139,7 +139,7 @@ Scenario(
   },
 ).retry(2);
 
-Scenario('PMM-T520 - Verify that alert is in Firing State - internal alert manager @nightly @settings', async ({ I, pmmSettingsPage }) => {
+Scenario('PMM-T520 - Verify that alert is in Firing State - internal alert manager @nightly @not-ovf @settings', async ({ I, pmmSettingsPage }) => {
   const scheme = 'http://127.0.0.1';
   const sectionNameToExpand = pmmSettingsPage.sectionTabsList.alertmanager;
 

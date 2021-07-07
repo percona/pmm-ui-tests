@@ -2,13 +2,15 @@ const assert = require('assert');
 const faker = require('faker');
 const { generate } = require('generate-password');
 
-const serviceNames = {
-  mysql: 'mysql_upgrade_service',
-  // postgresql: 'postgres_upgrade_service',
-  proxysql: 'proxysql_upgrade_service',
-  rds: 'mysql_rds_uprgade_service',
-};
+const {
+  remoteInstancesHelper, perconaServerDB,
+} = inject();
+
+const connection = perconaServerDB.defaultConnection;
+const emptyPasswordSummary = 'MySQL users have empty passwords';
+const failedCheckRowLocator = locate('tr').withChild(locate('td').withText(remoteInstancesHelper.upgradeServiceNames.mysql));
 const ruleName = 'Alert Rule for upgrade';
+const failedCheckMessage = 'Newer version of Percona Server for MySQL is available';
 
 // For running on local env set PMM_SERVER_LATEST and DOCKER_VERSION variables
 function getVersions() {
@@ -33,11 +35,37 @@ const { versionMinor, patchVersionDiff, majorVersionDiff } = getVersions();
 
 const iaReleased = versionMinor >= 13;
 
-Feature('PMM server Upgrade Tests and Executing test cases related to Upgrade Testing Cycle').retry(2);
+Feature('PMM server Upgrade Tests and Executing test cases related to Upgrade Testing Cycle').retry(1);
 
 Before(async ({ I }) => {
   await I.Authorize();
   I.setRequestTimeout(30000);
+});
+
+BeforeSuite(async ({ I, codeceptjsConfig }) => {
+  const mysqlComposeConnection = {
+    host: process.env.AMI_INSTANCE_IP || '127.0.0.1',
+    port: connection.port,
+    username: connection.username,
+    password: connection.password,
+  };
+
+  perconaServerDB.connectToPS(mysqlComposeConnection);
+
+  // Connect to MongoDB
+  const mongoConnection = {
+    host: process.env.AMI_INSTANCE_IP || codeceptjsConfig.config.helpers.MongoDBHelper.host,
+    port: codeceptjsConfig.config.helpers.MongoDBHelper.port,
+    username: codeceptjsConfig.config.helpers.MongoDBHelper.username,
+    password: codeceptjsConfig.config.helpers.MongoDBHelper.password,
+  };
+
+  await I.mongoConnect(mongoConnection);
+});
+
+AfterSuite(async ({ I, perconaServerDB }) => {
+  await perconaServerDB.disconnectFromPS();
+  await I.mongoDisconnect();
 });
 
 Scenario(
@@ -89,18 +117,34 @@ Scenario(
 );
 
 Scenario(
-  'Verify user can create Remote Instances before upgrade and they are in RUNNNING status @pre-upgrade @ami-upgrade @pmm-upgrade',
-  async ({
-    inventoryAPI, addInstanceAPI,
-  }) => {
-    // Adding instances for monitoring
-    for (const type of Object.values(addInstanceAPI.instanceTypes)) {
-      if (!/MongoDB|PostgreSQL/.test(type)) await addInstanceAPI.apiAddInstance(type, serviceNames[type.toLowerCase()]);
-    }
+  'Verify user is able to set custom Settings like Data_retention, Resolution @pre-upgrade @ami-upgrade @pmm-upgrade',
+  async ({ settingsAPI, I }) => {
+    const body = {
+      telemetry_enabled: true,
+      metrics_resolutions: {
+        hr: '3s',
+        mr: '15s',
+        lr: '30s',
+      },
+      data_retention: '172800s',
+    };
 
-    // Checking that instances are RUNNING
-    for (const service of Object.values(inventoryAPI.services)) {
-      if (!/mongodb|postgresql/.test(service.service)) await inventoryAPI.verifyServiceExistsAndHasRunningStatus(service, serviceNames[service.service]);
+    await settingsAPI.changeSettings(body, true);
+    I.wait(10);
+  },
+);
+
+Scenario(
+  'Verify user can create Remote Instances before upgrade @pre-upgrade @ami-upgrade @pmm-upgrade',
+  async ({ addInstanceAPI }) => {
+    // Adding instances for monitoring
+    for (const type of Object.values(remoteInstancesHelper.instanceTypes)) {
+      if (type) {
+        await addInstanceAPI.apiAddInstance(
+          type,
+          remoteInstancesHelper.upgradeServiceNames[type.toLowerCase()],
+        );
+      }
     }
   },
 );
@@ -147,11 +191,57 @@ if (iaReleased) {
   );
 }
 
+if (versionMinor >= 13) {
+  Scenario(
+    'Verify user has failed checks before upgrade @pre-upgrade @ami-upgrade @pmm-upgrade',
+    async ({
+      I, settingsAPI, databaseChecksPage, securityChecksAPI,
+    }) => {
+      const runChecks = locate('button').withText('Run DB checks');
+
+      await perconaServerDB.dropUser();
+      await perconaServerDB.createUser();
+      await settingsAPI.changeSettings({ stt: true });
+      // Run DB Checks from UI
+      // disable check, change interval for a check, change interval settings
+      if (versionMinor >= 16) {
+        databaseChecksPage.runDBChecks();
+        await securityChecksAPI.disableCheck('mysql_anonymous_users');
+        await securityChecksAPI.changeCheckInterval('postgresql_version');
+        await settingsAPI.setCheckIntervals({ ...settingsAPI.defaultCheckIntervals, standard_interval: '3600s' });
+      } else {
+        I.amOnPage(databaseChecksPage.oldUrl);
+        I.waitForVisible(runChecks, 30);
+        I.click(runChecks);
+        I.waitForVisible(failedCheckRowLocator, 30);
+      }
+
+      // Check that there are failed checks
+      await securityChecksAPI.verifyFailedCheckExists(emptyPasswordSummary);
+      await securityChecksAPI.verifyFailedCheckExists(failedCheckMessage);
+
+      // Silence mysql Empty Password failed check
+      I.waitForVisible(failedCheckRowLocator, 30);
+      I.click(failedCheckRowLocator.find('button').first());
+    },
+  );
+}
+
 Scenario(
   'PMM-T3 Verify user is able to Upgrade PMM version [blocker] @pmm-upgrade @ami-upgrade  ',
   async ({ I, homePage }) => {
     I.amOnPage(homePage.url);
     await homePage.upgradePMM(versionMinor);
+  },
+);
+
+Scenario(
+  'Run queries for MongoDB after upgrade @post-upgrade @ami-upgrade @pmm-upgrade',
+  async ({ I }) => {
+    const col = await I.mongoCreateCollection('local', 'e2e');
+
+    await col.insertOne({ a: '111' });
+    await col.findOne();
   },
 );
 
@@ -167,9 +257,88 @@ Scenario(
   },
 );
 
+if (versionMinor >= 13) {
+  Scenario(
+    'Verify user has failed checks after upgrade / STT on @post-upgrade @ami-upgrade @pmm-upgrade',
+    async ({
+      I, pmmSettingsPage, securityChecksAPI, databaseChecksPage,
+    }) => {
+      // Verify STT is enabled
+      I.amOnPage(pmmSettingsPage.advancedSettingsUrl);
+      I.waitForVisible(pmmSettingsPage.fields.sttSwitchSelector, 30);
+      pmmSettingsPage.verifySwitch(pmmSettingsPage.fields.sttSwitchSelectorInput, 'on');
+
+      I.amOnPage(databaseChecksPage.url);
+      I.waitForVisible(databaseChecksPage.buttons.startDBChecks, 30);
+      // Verify there is failed check
+      await securityChecksAPI.verifyFailedCheckExists(failedCheckMessage);
+    },
+  );
+}
+
+if (versionMinor >= 16) {
+  Scenario(
+    'Verify disabled checks remain disabled after upgrade @post-upgrade @ami-upgrade @pmm-upgrade',
+    async ({
+      I, allChecksPage,
+    }) => {
+      const checkName = 'MySQL Anonymous Users';
+
+      I.amOnPage(allChecksPage.url);
+      I.waitForVisible(allChecksPage.buttons.disableEnableCheck(checkName));
+      I.seeTextEquals('Enable', allChecksPage.buttons.disableEnableCheck(checkName));
+      I.seeTextEquals('Disabled', allChecksPage.elements.statusCellByName(checkName));
+    },
+  );
+
+  Scenario(
+    'Verify silenced checks remain silenced after upgrade @post-upgrade @ami-upgrade @pmm-upgrade',
+    async ({
+      I, databaseChecksPage,
+    }) => {
+      I.amOnPage(databaseChecksPage.url);
+
+      I.waitForVisible(failedCheckRowLocator, 30);
+      I.dontSeeElement(failedCheckRowLocator.find('td').withText(emptyPasswordSummary));
+
+      I.click(locate('$db-checks-failed-checks-toggle-silenced').find('label'));
+
+      I.seeElement(failedCheckRowLocator.find('td').withText(emptyPasswordSummary));
+      I.seeElement(failedCheckRowLocator.find('td').withText('Silenced'));
+    },
+  );
+
+  Scenario(
+    'Verify check intervals remain the same after upgrade @post-upgrade @ami-upgrade @pmm-upgrade',
+    async ({
+      I, allChecksPage,
+    }) => {
+      const checkName = 'PostgreSQL Version';
+
+      I.amOnPage(allChecksPage.url);
+      I.waitForVisible(allChecksPage.buttons.disableEnableCheck(checkName));
+      I.seeTextEquals('Frequent', allChecksPage.elements.intervalCellByName(checkName));
+    },
+  );
+
+  Scenario(
+    'Verify settings for intervals remain the same after upgrade @post-upgrade @ami-upgrade @pmm-upgrade',
+    async ({
+      I, pmmSettingsPage,
+    }) => {
+      I.amOnPage(pmmSettingsPage.advancedSettingsUrl);
+      I.waitForVisible(pmmSettingsPage.fields.rareIntervalInput, 30);
+
+      I.seeInField(pmmSettingsPage.fields.rareIntervalInput, '78');
+      I.seeInField(pmmSettingsPage.fields.standartIntervalInput, '1');
+      I.seeInField(pmmSettingsPage.fields.frequentIntervalInput, '4');
+    },
+  );
+}
+
 if (iaReleased) {
   Scenario(
-    'PMM-T577 Verify user can see IA alerts after upgrade @pre-upgrade @ami-upgrade @pmm-upgrade',
+    'PMM-T577 Verify user can see IA alerts after upgrade @post-upgrade @ami-upgrade @pmm-upgrade',
     async ({
       I, alertsPage, alertsAPI,
     }) => {
@@ -187,7 +356,7 @@ if (iaReleased) {
   );
 } else {
   Scenario(
-    'PMM-T531 Verify IA is disabled by default after upgrading from older PMM version @pre-upgrade @ami-upgrade @pmm-upgrade',
+    'PMM-T531 Verify IA is disabled by default after upgrading from older PMM version @post-upgrade @ami-upgrade @pmm-upgrade',
     async ({
       I, pmmSettingsPage,
     }) => {
@@ -202,8 +371,13 @@ if (iaReleased) {
 Scenario(
   'Verify Agents are RUNNING after Upgrade (API) [critical] @post-upgrade @ami-upgrade @pmm-upgrade',
   async ({ inventoryAPI }) => {
-    for (const service of Object.values(inventoryAPI.services)) {
-      if (!/mongodb|postgresql/.test(service.service)) await inventoryAPI.verifyServiceExistsAndHasRunningStatus(service, serviceNames[service.service]);
+    for (const service of Object.values(remoteInstancesHelper.serviceTypes)) {
+      if (service) {
+        await inventoryAPI.verifyServiceExistsAndHasRunningStatus(
+          service,
+          remoteInstancesHelper.upgradeServiceNames[service.service],
+        );
+      }
     }
   },
 );
@@ -217,21 +391,22 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T262 Open PMM Settings page and verify DATA_RETENTION value is set to 2 days after upgrade @post-upgrade @pmm-upgrade',
+  'PMM-T262 Open PMM Settings page and verify DATA_RETENTION value is set to 2 days, Custom Resolution is still preserved after upgrade @post-upgrade @pmm-upgrade',
   async ({ I, pmmSettingsPage }) => {
-    const dataRetention = '2';
-    const sectionNameToExpand = pmmSettingsPage.sectionTabsList.advanced;
+    const advancedSection = pmmSettingsPage.sectionTabsList.advanced;
+    const metricResoltionSection = pmmSettingsPage.sectionTabsList.metrics;
 
     I.amOnPage(pmmSettingsPage.url);
     await pmmSettingsPage.waitForPmmSettingsPageLoaded();
-    await pmmSettingsPage.expandSection(sectionNameToExpand, pmmSettingsPage.fields.advancedButton);
-    const dataRetentionActualValue = await I.grabValueFrom(pmmSettingsPage.fields.dataRetentionInput);
-
-    assert.equal(
-      dataRetention,
-      dataRetentionActualValue,
-      'The Value for Data Retention is not the same as passed via Docker Environment Variable',
+    await pmmSettingsPage.expandSection(advancedSection, pmmSettingsPage.fields.advancedButton);
+    await pmmSettingsPage.verifySettingsValue(pmmSettingsPage.fields.dataRetentionInput, 2);
+    await pmmSettingsPage.expandSection(
+      metricResoltionSection,
+      pmmSettingsPage.fields.metricsResolutionButton,
     );
+    await pmmSettingsPage.verifySettingsValue(pmmSettingsPage.fields.lowInput, 30);
+    await pmmSettingsPage.verifySettingsValue(pmmSettingsPage.fields.mediumInput, 15);
+    await pmmSettingsPage.verifySettingsValue(pmmSettingsPage.fields.highInput, 3);
   },
 );
 
@@ -265,9 +440,11 @@ Scenario(
 Scenario(
   'Verify Agents are RUNNING after Upgrade (UI) [critical] @ami-upgrade @post-upgrade @pmm-upgrade',
   async ({ I, pmmInventoryPage }) => {
-    for (const service of Object.values(serviceNames)) {
-      I.amOnPage(pmmInventoryPage.url);
-      await pmmInventoryPage.verifyAgentHasStatusRunning(service);
+    for (const service of Object.values(remoteInstancesHelper.upgradeServiceNames)) {
+      if (service) {
+        I.amOnPage(pmmInventoryPage.url);
+        await pmmInventoryPage.verifyAgentHasStatusRunning(service);
+      }
     }
   },
 );
@@ -275,23 +452,23 @@ Scenario(
 Scenario(
   'Verify QAN has specific filters for Remote Instances after Upgrade (UI) @ami-upgrade @post-upgrade @pmm-upgrade',
   async ({
-    I, qanPage, qanFilters, addInstanceAPI,
+    I, qanPage, qanFilters, qanOverview,
   }) => {
-    // For now we can't see the cluster names in QAN for ProxySQL, MongoDB and PostgreSQL
-    const {
-      proxysql, mongodb, postgresql, ...filters
-    } = addInstanceAPI.clusterNames;
-
     I.amOnPage(qanPage.url);
     qanFilters.waitForFiltersToLoad();
     await qanFilters.expandAllFilters();
 
     // Checking that Cluster filters are still in QAN after Upgrade
-    for (const name of Object.values(filters)) {
-      const filter = qanFilters.getFilterLocator(name);
+    for (const name of Object.keys(remoteInstancesHelper.upgradeServiceNames)) {
+      if (remoteInstancesHelper.qanFilters.includes(name)) {
+        const filter = qanFilters.getFilterLocator(name);
 
-      I.waitForVisible(filter, 30);
-      I.seeElement(filter);
+        qanFilters.waitForFiltersToLoad();
+        qanOverview.waitForOverviewLoaded();
+
+        I.waitForVisible(filter, 30);
+        I.seeElement(filter);
+      }
     }
   },
 );
@@ -304,7 +481,7 @@ Scenario(
     const response = await dashboardPage.checkMetricExist(metricName);
     const result = JSON.stringify(response.data.data.result);
 
-    assert.ok(response.data.data.result.length !== 0, `Custom Metrics Should be available but got empty ${result}`);
+    assert.ok(response.data.data.result.length !== 0, `Custom Metrics ${metricName} Should be available but got empty ${result}`);
   },
 );
 
