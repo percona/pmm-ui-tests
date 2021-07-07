@@ -9,6 +9,7 @@ const dashboardCheck = new DataTable(['serviceName']);
 
 dashboardCheck.add([remoteInstancesPage.services.postgresql]);
 dashboardCheck.add([remoteInstancesPage.services.postgresGC]);
+qanFilters.add([remoteInstancesPage.postgresGCSettings.environment]);
 
 for (const [key, value] of Object.entries(remoteInstancesHelper.services)) {
   if (value) {
