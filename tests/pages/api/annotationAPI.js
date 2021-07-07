@@ -6,7 +6,7 @@ module.exports = {
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
     let body;
 
-    if (serviceNames !== null) {
+    if (serviceNames) {
       body = {
         text: annotationName,
         tags: [tags],
