@@ -14,7 +14,8 @@ module.exports = {
     inventoryTableRows: locate('tr').after('table'),
     mongoServiceName: locate('td').withText('mongodb'),
     mysqlServiceName: locate('td').withText('ps_group_rep'),
-    nodesLink: '//li[contains(text(),"Nodes")]', 
+    // cannot be changed to locate because it's failing in I.waitForVisible()
+    nodesLink: '//li[contains(text(),"Nodes")]',
     nodesLinkOld: locate('a').withText('Nodes'),
     pdphsqlServiceName: locate('td').withText('PDPGSQL'),
     pmmAgentLocator: locate('td').withText('PMM Agent').after('table'),
@@ -27,6 +28,7 @@ module.exports = {
     runningStatus: locate('span').withText('RUNNING'),
     serviceIdLocatorPrefix: '//table//tr/td[4][contains(text(),"',
     tableCheckbox: locate('$select-row').find('span'),
+    // cannot be changed to locate() because of method: getCellValue()
     tableRow: '//tr[@data-qa="table-row"]',
   },
 
