@@ -15,10 +15,11 @@ module.exports = {
     mongoServiceName: locate('td').withText('mongodb'),
     mysqlServiceName: locate('td').withText('ms-single'),
     // cannot be changed to locate because it's failing in I.waitForVisible()
-    nodesLink: '//li[contains(text(),"Nodes")]',
+    // nodesLink: '//li[contains(text(),"Nodes")]',
+    nodesLink: locate('li').withText('Nodes'),
     nodesLinkOld: locate('a').withText('Nodes'),
     pdphsqlServiceName: locate('td').withText('PDPGSQL'),
-    pmmAgentLocator: locate('td').withText('PMM Agent').after('table'),
+    pmmAgentLocator: locate('td').withText('PMM Agent'),
     pmmServerPostgresLocator: locate('td').withText('pmm-server-postgresql'),
     pmmServicesSelector: locate('li').withText('Services'),
     postgresExporter: locate('td').withText('Postgres exporter'),
@@ -123,9 +124,8 @@ module.exports = {
       1,
       `There must be only one entry for the newly added service with name ${serviceName}`,
     );
-    const serviceId = await I.grabTextFrom(serviceIdLocator);
 
-    return serviceId;
+    return await I.grabTextFrom(serviceIdLocator);
   },
 
   selectService(serviceName) {
@@ -152,9 +152,7 @@ module.exports = {
   },
 
   getServicesId(serviceName) {
-    const serviceIdLocator = `${this.fields.serviceIdLocatorPrefix}${serviceName}")]/preceding-sibling::td[2]`;
-
-    return serviceIdLocator;
+    return `${this.fields.serviceIdLocatorPrefix}${serviceName}")]/preceding-sibling::td[2]`;
   },
 
   async getCountOfAgents(serviceId) {
