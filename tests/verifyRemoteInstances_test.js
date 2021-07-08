@@ -7,10 +7,6 @@ const remotePostgreSQL = new DataTable(['instanceName', 'trackingOption', 'check
 const qanFilters = new DataTable(['filterName']);
 const dashboardCheck = new DataTable(['serviceName']);
 
-dashboardCheck.add([remoteInstancesPage.services.postgresql]);
-dashboardCheck.add([remoteInstancesPage.services.postgresGC]);
-qanFilters.add([remoteInstancesPage.postgresGCSettings.environment]);
-
 for (const [key, value] of Object.entries(remoteInstancesHelper.services)) {
   if (value) {
     switch (key) {
@@ -18,9 +14,14 @@ for (const [key, value] of Object.entries(remoteInstancesHelper.services)) {
         remotePostgreSQL.add(['postgreDoNotTrack', remoteInstancesPage.fields.doNotTrack, pmmInventoryPage.fields.postgresExporter]);
         remotePostgreSQL.add(['postgresPGStatStatements', remoteInstancesPage.fields.usePgStatStatements, pmmInventoryPage.fields.postgresPgStatements]);
         qanFilters.add([remoteInstancesPage.potgresqlSettings.environment]);
+        dashboardCheck.add([remoteInstancesPage.services.postgresql]);
         break;
       case 'mysql':
         qanFilters.add([remoteInstancesPage.mysqlSettings.environment]);
+        break;
+      case 'gc':
+        dashboardCheck.add([remoteInstancesPage.services.postgresGC]);
+        qanFilters.add([remoteInstancesPage.postgresGCSettings.environment]);
         break;
       default:
     }
