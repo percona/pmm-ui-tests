@@ -204,7 +204,7 @@ module.exports = {
     ],
   },
   postgresqlInstanceSummaryDashboard: {
-    url: 'graph/d/postgresql-instance-summary/postgresql-instance-summary?orgId=1&from=now-5m&to=now',
+    url: 'graph/d/postgresql-instance-summary/postgresql-instance-summary',
     metrics: [
       'Version',
       'Max Connections',

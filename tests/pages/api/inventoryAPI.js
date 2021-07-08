@@ -87,19 +87,4 @@ module.exports = {
       `Failed to delete Node. Response message is "${resp.data.message}"`,
     );
   },
-
-  async getNodeName(nodeID) {
-    const body = {
-      node_id: nodeID,
-    };
-    const headers = { Authorization: `Basic ${await I.getAuth()}` };
-
-    const resp = await I.sendPostRequest('v1/inventory/Nodes/Get', body, headers);
-
-    const values = Object.values(resp.data)
-      .flat(Infinity)
-      .find(({ node_id }) => node_id === nodeID);
-
-    return values.node_name;
-  },
 };
