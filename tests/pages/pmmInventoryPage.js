@@ -15,8 +15,7 @@ module.exports = {
     mongoServiceName: locate('td').withText('mongodb'),
     mysqlServiceName: locate('td').withText('ms-single'),
     // cannot be changed to locate because it's failing in I.waitForVisible()
-    // nodesLink: '//li[contains(text(),"Nodes")]',
-    nodesLink: locate('li').withText('Nodes'),
+    nodesLink: '//li[contains(text(),"Nodes")]',
     nodesLinkOld: locate('a').withText('Nodes'),
     pdphsqlServiceName: locate('td').withText('PDPGSQL'),
     pmmAgentLocator: locate('td').withText('PMM Agent'),
