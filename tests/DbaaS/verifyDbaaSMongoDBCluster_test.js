@@ -174,3 +174,70 @@ xScenario('PMM-T509 Verify Deleting Mongo Db Cluster in Pending Status is possib
     await dbaasPage.waitForDbClusterTab(clusterName);
     await dbaasAPI.waitForDbClusterDeleted(psmdb_cluster_pending_delete, clusterName, 'MongoDB');
   });
+
+Scenario('PMM-T704 PMM-T772 PMM-T849 PMM-T850 Resources, PV, Secrets verification @dbaas',
+  async ({
+    I, dbaasPage, dbaasAPI, dbaasActionsPage, adminPage,
+  }) => {
+    const psmdb_cluster_resource_check = 'psmdb-resource-1';
+    const clusterDetails = {
+      topology: 'Cluster',
+      numberOfNodes: '1',
+      resourcePerNode: 'Custom',
+      memory: '1 GB',
+      cpu: '1',
+      disk: '2 GB',
+      dbType: 'MongoDB',
+      clusterDashboardRedirectionLink: dbaasPage.clusterDashboardUrls.psmdbDashboard(
+        psmdb_cluster_resource_check,
+      ),
+    };
+
+    await dbaasAPI.deleteAllDBCluster(clusterName);
+    await dbaasPage.waitForDbClusterTab(clusterName);
+    I.waitForInvisible(dbaasPage.tabs.kubernetesClusterTab.disabledAddButton, 30);
+    await dbaasActionsPage.createClusterAdvancedOption(clusterName, psmdb_cluster_resource_check, 'MongoDB', clusterDetails);
+    I.click(dbaasPage.tabs.dbClusterTab.createClusterButton);
+    I.waitForText('Processing', 30, dbaasPage.tabs.dbClusterTab.fields.progressBarContent);
+    await dbaasPage.postClusterCreationValidation(psmdb_cluster_resource_check, clusterName, 'MongoDB');
+    await dbaasPage.validateClusterDetail(psmdb_cluster_resource_check, clusterName, clusterDetails);
+    const {
+      username, password, host, port,
+    } = await dbaasAPI.getDbClusterDetails(psmdb_cluster_resource_check, clusterName, 'MongoDB');
+
+    await I.verifyCommand(
+      'kubectl run psmdb-client --image=percona/percona-server-mongodb:4.4.5-7 --restart=Never',
+    );
+    await I.verifyCommand(
+      `kubectl get pods ${psmdb_cluster_resource_check}-rs0-0 -o json | grep -i requests -A2 | tail -2`,
+      '"cpu": "1"',
+    );
+    await I.verifyCommand(
+      `kubectl get pods ${psmdb_cluster_resource_check}-rs0-0 -o json | grep -i requests -A2 | tail -2`,
+      '"memory": "1G"',
+    );
+    await I.verifyCommand(
+      `kubectl get pv | grep ${psmdb_cluster_resource_check}`,
+      psmdb_cluster_resource_check,
+    );
+    await I.verifyCommand(
+      `kubectl get secrets | grep dbaas-${psmdb_cluster_resource_check}-psmdb-secrets`,
+      psmdb_cluster_resource_check,
+    );
+    await I.verifyCommand(
+      `kubectl get secrets dbaas-${psmdb_cluster_resource_check}-psmdb-secrets -o yaml | grep MONGODB_USER_ADMIN_PASSWORD: | awk '{print $2}' | base64 --decode`,
+      password,
+    );
+    await dbaasAPI.apiDeletePSMDBCluster(psmdb_cluster_resource_check, clusterName);
+    await dbaasAPI.waitForDbClusterDeleted(psmdb_cluster_resource_check, clusterName, 'MongoDB');
+    await I.verifyCommand(
+      `kubectl get pv | grep ${psmdb_cluster_resource_check}`,
+      'No resources found',
+      'fail',
+    );
+    await I.verifyCommand(
+      `kubectl get secrets | grep dbaas-${psmdb_cluster_resource_check}-psmdb-secrets`,
+      '',
+      'fail',
+    );
+  });

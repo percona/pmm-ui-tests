@@ -8,9 +8,9 @@ module.exports = {
     agentsLinkOld: locate('a').withText('Agents'),
     deleteButton: locate('span').withText('Delete'),
     externalExporter: locate('td').withText('External exporter'),
-    forceModeCheckbox: locate('$force-field-label').find('span'),
+    forceModeCheckbox: locate('$force-field-label'),
     inventoryTable: locate('table'),
-    inventoryTableColumn: locate('td').after('table'),
+    inventoryTableColumn: locate('table').find('td'),
     inventoryTableRows: locate('tr').after('table'),
     mongoServiceName: locate('td').withText('mongodb'),
     mysqlServiceName: locate('td').withText('ms-single'),
@@ -18,7 +18,7 @@ module.exports = {
     nodesLink: '//li[contains(text(),"Nodes")]',
     nodesLinkOld: locate('a').withText('Nodes'),
     pdphsqlServiceName: locate('td').withText('PDPGSQL'),
-    pmmAgentLocator: locate('td').withText('PMM Agent').after('table'),
+    pmmAgentLocator: locate('td').withText('PMM Agent'),
     pmmServerPostgresLocator: locate('td').withText('pmm-server-postgresql'),
     pmmServicesSelector: locate('li').withText('Services'),
     postgresExporter: locate('td').withText('Postgres exporter'),
@@ -123,9 +123,8 @@ module.exports = {
       1,
       `There must be only one entry for the newly added service with name ${serviceName}`,
     );
-    const serviceId = await I.grabTextFrom(serviceIdLocator);
 
-    return serviceId;
+    return await I.grabTextFrom(serviceIdLocator);
   },
 
   selectService(serviceName) {
@@ -152,9 +151,7 @@ module.exports = {
   },
 
   getServicesId(serviceName) {
-    const serviceIdLocator = `${this.fields.serviceIdLocatorPrefix}${serviceName}")]/preceding-sibling::td[2]`;
-
-    return serviceIdLocator;
+    return `${this.fields.serviceIdLocatorPrefix}${serviceName}")]/preceding-sibling::td[2]`;
   },
 
   async getCountOfAgents(serviceId) {
