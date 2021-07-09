@@ -47,7 +47,7 @@ module.exports = {
   },
   fields: {
     nameInput: '$name-text-input',
-    typeDropdown: 'div[class$="singleValue"]',
+    typeDropdown: 'div[class$="grafana-select-value-container"]',
     typeOptionLocator: (type) => `//div[@aria-label="Select option"]//span[text()="${type}"]`,
     emailsInput: '$emails-textarea-input',
     routingKeyInput: '$routing-text-input',
