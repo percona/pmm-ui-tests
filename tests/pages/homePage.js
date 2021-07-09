@@ -145,8 +145,8 @@ module.exports = {
   },
 
   async verifyVisibleService(serviceName) {
-    adminPage.peformPageDown(2);
-    const serviceExists = `//div[@class='react-grid-item']/descendant::p[contains(text(),'${serviceName}')]`;
+    adminPage.peformPageDown(1);
+    const serviceExists = `//p[contains(text(),'${serviceName}')]`;
 
     I.waitForElement(serviceExists, 30);
     I.seeElement(serviceExists);
