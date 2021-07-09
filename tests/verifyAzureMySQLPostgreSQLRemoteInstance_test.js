@@ -82,7 +82,7 @@ Scenario(
     homePage.verifyVisibleService(mySQL);
     // part without RDS MySQL should be skipped for now
   },
-);
+).retry(2);
 
 Data(filters).Scenario('PMM-T746, PMM-T748 - Verify adding monitoring for Azure CHECK QAN @instances', async ({
   I, qanFilters, qanOverview, qanPage, current,
