@@ -19,7 +19,7 @@ for (const [key, value] of Object.entries(remoteInstancesHelper.services)) {
       case 'mysql':
         qanFilters.add([remoteInstancesPage.mysqlSettings.environment]);
         break;
-      case 'gc':
+      case 'postgresGC':
         dashboardCheck.add([remoteInstancesPage.services.postgresGC]);
         qanFilters.add([remoteInstancesPage.postgresGCSettings.environment]);
         break;
