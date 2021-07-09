@@ -1,4 +1,4 @@
-const { I } = inject();
+const { I, adminPage } = inject();
 const assert = require('assert');
 // The original regex source is https://regexlib.com/REDetails.aspx?regexp_id=5055
 // eslint-disable-next-line no-useless-escape
