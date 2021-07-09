@@ -145,7 +145,7 @@ module.exports = {
   },
 
   async verifyVisibleService(serviceName) {
-    I.scrollPageToBottom();
+    adminPage.peformPageDown(2);
     const serviceExists = `//div[@class='react-grid-item']/descendant::p[contains(text(),'${serviceName}')]`;
 
     I.waitForElement(serviceExists, 30);
