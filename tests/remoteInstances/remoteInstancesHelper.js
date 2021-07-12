@@ -55,9 +55,11 @@ const remoteInstanceStatus = {
   },
 };
 let PMM_SERVER_OVF_AMI_SETUP;
+let SERVER_HOST;
 
 if (process.env.AMI_UPGRADE_TESTING_INSTANCE === 'true' || process.env.OVF_TEST === 'yes') {
   PMM_SERVER_OVF_AMI_SETUP = 'true';
+  SERVER_HOST = process.env.SERVER_IP;
 } else {
   PMM_SERVER_OVF_AMI_SETUP = 'false';
 }
@@ -66,7 +68,7 @@ module.exports = {
   remote_instance: {
     mysql: {
       ps_5_7: {
-        host: (PMM_SERVER_OVF_AMI_SETUP === 'true' ? '127.0.0.1' : 'mysql'),
+        host: (PMM_SERVER_OVF_AMI_SETUP === 'true' ? SERVER_HOST : 'mysql'),
         port: '3306',
         username: 'pmm-agent',
         password: 'pmm%*&agent-password',
@@ -82,7 +84,7 @@ module.exports = {
     },
     mongodb: {
       psmdb_4_2: {
-        host: (PMM_SERVER_OVF_AMI_SETUP === 'true' ? '127.0.0.1' : 'mongo'),
+        host: (PMM_SERVER_OVF_AMI_SETUP === 'true' ? SERVER_HOST : 'mongo'),
         port: '27017',
         username: 'root',
         password: 'root-!@#%^password',
@@ -91,7 +93,7 @@ module.exports = {
     },
     postgresql: {
       pdpgsql_13_3: {
-        host: (PMM_SERVER_OVF_AMI_SETUP === 'true' ? '127.0.0.1' : 'postgres'),
+        host: (PMM_SERVER_OVF_AMI_SETUP === 'true' ? SERVER_HOST : 'postgres'),
         port: (PMM_SERVER_OVF_AMI_SETUP === 'true' ? '5433' : '5432'),
         username: 'postgres',
         password: 'pmm-^*&@agent-password',
