@@ -230,7 +230,7 @@ Data(dashboardCheck).Scenario(
     // Wait 10 seconds before test to start getting metrics
     I.wait(10);
     I.amOnPage(dashboardPage.postgresqlInstanceOverviewDashboard.url);
-    dashboardPage.applyFilter('Service Name', current.serviceName);
+    await dashboardPage.applyFilter('Service Name', current.serviceName);
     adminPage.peformPageDown(5);
     await dashboardPage.expandEachDashboardRow();
     adminPage.performPageUp(5);
@@ -246,7 +246,7 @@ Data(qanFilters).Scenario(
   }) => {
     I.amOnPage(qanPage.url);
     qanOverview.waitForOverviewLoaded();
-    qanFilters.applyFilter(current.filterName);
+    await qanFilters.applyFilter(current.filterName);
     qanOverview.waitForOverviewLoaded();
     const count = await qanOverview.getCountOfItems();
 
