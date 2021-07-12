@@ -14,13 +14,13 @@ for (const [key, value] of Object.entries(remoteInstancesHelper.services)) {
         remotePostgreSQL.add(['postgreDoNotTrack', remoteInstancesPage.fields.doNotTrack, pmmInventoryPage.fields.postgresExporter]);
         remotePostgreSQL.add(['postgresPGStatStatements', remoteInstancesPage.fields.usePgStatStatements, pmmInventoryPage.fields.postgresPgStatements]);
         qanFilters.add([remoteInstancesPage.potgresqlSettings.environment]);
-        dashboardCheck.add([remoteInstancesPage.services.postgresql]);
+        dashboardCheck.add([remoteInstancesHelper.services.postgresql]);
         break;
       case 'mysql':
         qanFilters.add([remoteInstancesPage.mysqlSettings.environment]);
         break;
       case 'postgresGC':
-        dashboardCheck.add([remoteInstancesPage.services.postgresGC]);
+        dashboardCheck.add([remoteInstancesHelper.services.postgresGC]);
         qanFilters.add([remoteInstancesPage.postgresGCSettings.environment]);
         break;
       default:

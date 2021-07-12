@@ -51,13 +51,6 @@ module.exports = {
     cluster: 'rdsPostgres-cluster',
     replicationSet: 'rdsPostgres-replication',
   },
-  services: {
-    mongodb: 'mongodb_remote_new',
-    mysql: 'mysql_remote_new',
-    postgresql: 'postgresql_remote_new',
-    proxysql: 'proxysql_remote_new',
-    postgresGC: 'postgresql_GC_remote_new',
-  },
   url: 'graph/add-instance?orgId=1',
   addMySQLRemoteURL: 'graph/add-instance?instance_type=mysql',
   rds: {
