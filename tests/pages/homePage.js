@@ -1,4 +1,4 @@
-const { I, adminPage } = inject();
+const { I } = inject();
 const assert = require('assert');
 // The original regex source is https://regexlib.com/REDetails.aspx?regexp_id=5055
 // eslint-disable-next-line no-useless-escape
@@ -144,9 +144,8 @@ module.exports = {
     assert.ok(lastCheckRegex.test(date), `Last Check Date has unexpected pattern: ${date}`);
   },
 
-  async verifyVisibleService(serviceName) {
-    adminPage.peformPageDown(2);
-    const serviceExists = `//div[@class='react-grid-item']/descendant::p[contains(text(),'${serviceName}')]`;
+  verifyVisibleService(serviceName) {
+    const serviceExists = locate('.react-grid-item').find(locate('p').withText(serviceName));
 
     I.waitForElement(serviceExists, 30);
     I.seeElement(serviceExists);

@@ -78,7 +78,7 @@ Scenario(
     const mySQL = 'azure-MySQL';
 
     I.amOnPage(homePage.url);
-    dashboardPage.applyFilter('Node Name', mySQL);
+    await dashboardPage.applyFilter('Node Name', mySQL);
     homePage.verifyVisibleService(mySQL);
     // part without RDS MySQL should be skipped for now
   },
