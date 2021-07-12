@@ -56,10 +56,19 @@ const remoteInstanceStatus = {
 };
 let PMM_SERVER_OVF_AMI_SETUP;
 let SERVER_HOST;
+let POSTGRESQL_PORT;
+let EXTERNAL_EXPORTER_HOST;
 
-if (process.env.AMI_UPGRADE_TESTING_INSTANCE === 'true' || process.env.OVF_TEST === 'yes') {
+if (process.env.AMI_UPGRADE_TESTING_INSTANCE === 'true') {
+  PMM_SERVER_OVF_AMI_SETUP = 'true';
+  SERVER_HOST = '127.0.0.1';
+  POSTGRESQL_PORT = '5433';
+  EXTERNAL_EXPORTER_HOST = process.env.VM_CLIENT_IP;
+} else if (process.env.OVF_TEST === 'yes') {
   PMM_SERVER_OVF_AMI_SETUP = 'true';
   SERVER_HOST = process.env.SERVER_IP;
+  POSTGRESQL_PORT = '5432';
+  EXTERNAL_EXPORTER_HOST = process.env.SERVER_IP;
 } else {
   PMM_SERVER_OVF_AMI_SETUP = 'false';
 }
@@ -94,7 +103,7 @@ module.exports = {
     postgresql: {
       pdpgsql_13_3: {
         host: (PMM_SERVER_OVF_AMI_SETUP === 'true' ? SERVER_HOST : 'postgres'),
-        port: (PMM_SERVER_OVF_AMI_SETUP === 'true' ? '5433' : '5432'),
+        port: (PMM_SERVER_OVF_AMI_SETUP === 'true' ? POSTGRESQL_PORT : '5432'),
         username: 'postgres',
         password: 'pmm-^*&@agent-password',
         clusterName: 'pgsql_clstr',
@@ -111,14 +120,14 @@ module.exports = {
     },
     haproxy: {
       haproxy_2: {
-        host: (PMM_SERVER_OVF_AMI_SETUP === 'true' ? process.env.VM_CLIENT_IP : '192.168.0.1'),
+        host: (PMM_SERVER_OVF_AMI_SETUP === 'true' ? EXTERNAL_EXPORTER_HOST : '192.168.0.1'),
         port: '42100',
         clusterName: 'haproxy_clst',
       },
     },
     external: {
       redis: {
-        host: (PMM_SERVER_OVF_AMI_SETUP === 'true' ? process.env.VM_CLIENT_IP : '192.168.0.1'),
+        host: (PMM_SERVER_OVF_AMI_SETUP === 'true' ? EXTERNAL_EXPORTER_HOST : '192.168.0.1'),
         port: '42200',
         clusterName: 'redis_external_exporter',
       },
