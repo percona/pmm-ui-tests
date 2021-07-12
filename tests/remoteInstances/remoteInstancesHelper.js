@@ -21,7 +21,7 @@ const remoteInstanceStatus = {
   },
   proxysql: {
     proxysql_2_1_1: {
-      enabled: true,
+      enabled: process.env.OVF_TEST !== 'yes',
     },
   },
   haproxy: {
