@@ -245,7 +245,7 @@ module.exports = {
         );
         I.fillField(this.fields.serviceName, serviceName);
         break;
-      case this.services.postgresGC:
+      case remoteInstancesHelper.services.postgresGC:
         I.fillField(this.fields.hostName, process.env.GCP_SERVER_IP);
         I.fillField(this.fields.userName, process.env.GCP_USER);
         I.fillField(this.fields.password, process.env.GCP_USER_PASSWORD);
