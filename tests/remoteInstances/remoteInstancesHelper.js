@@ -1,4 +1,4 @@
-const { I } = inject();
+const { I, adminPage } = inject();
 
 const remoteInstanceStatus = {
   mysql: {
@@ -130,12 +130,12 @@ module.exports = {
       },
     },
     aws: {
-      aws_access_key: secret(process.env.AWS_ACCESS_KEY_ID),
-      aws_secret_key: secret(process.env.AWS_SECRET_ACCESS_KEY),
+      aws_access_key: process.env.AWS_ACCESS_KEY_ID,
+      aws_secret_key: process.env.AWS_SECRET_ACCESS_KEY,
       aws_rds_5_7: {
-        address: secret(process.env.REMOTE_AWS_MYSQL57_HOST),
-        username: secret(process.env.REMOTE_AWS_MYSQL_USER),
-        password: secret(process.env.REMOTE_AWS_MYSQL_PASSWORD),
+        address: process.env.REMOTE_AWS_MYSQL57_HOST,
+        username: process.env.REMOTE_AWS_MYSQL_USER,
+        password: process.env.REMOTE_AWS_MYSQL_PASSWORD,
         clusterName: 'aws_rds_mysql_5_7',
         port: 3306,
       },
