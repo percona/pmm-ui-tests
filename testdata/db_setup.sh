@@ -14,7 +14,7 @@ bash -x ${PWD}/testdata/docker-db-setup-scripts/docker_postgres_13.sh
 
 
 ### SSL instance setup along with slowlog
-bash -x ${PWD}/testdata/docker-db-setup-scripts/docker_mysql_ssl_8_0.sh
+##bash -x ${PWD}/testdata/docker-db-setup-scripts/docker_mysql_ssl_8_0.sh
 
 
 ### SSL instance setup along for Mongodb
