@@ -12,8 +12,8 @@ module.exports = {
   // insert your locators and methods here
   // setting locators
   postgresGCSettings: {
-    environment: 'remote_postgresGC_env',
-    cluster: 'remote_postgresGC_clu',
+    environment: 'Remote PostgreSQL_GC env',
+    cluster: 'Remote PostgreSQL_GC cluster',
   },
   mysqlSettings: {
     environment: 'remote-mysql',
@@ -246,9 +246,9 @@ module.exports = {
         I.fillField(this.fields.serviceName, serviceName);
         break;
       case remoteInstancesHelper.services.postgresGC:
-        I.fillField(this.fields.hostName, process.env.GCP_SERVER_IP);
-        I.fillField(this.fields.userName, process.env.GCP_USER);
-        I.fillField(this.fields.password, process.env.GCP_USER_PASSWORD);
+        I.fillField(this.fields.hostName, remoteInstancesHelper.remote_instance.gc.gc_postgresql.address);
+        I.fillField(this.fields.userName, remoteInstancesHelper.remote_instance.gc.gc_postgresql.userName);
+        I.fillField(this.fields.password, remoteInstancesHelper.remote_instance.gc.gc_postgresql.password);
         I.fillField(this.fields.serviceName, serviceName);
         I.fillField(this.fields.environment, this.postgresGCSettings.environment);
         I.fillField(this.fields.cluster, this.postgresGCSettings.cluster);
