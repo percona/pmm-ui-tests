@@ -159,9 +159,9 @@ module.exports = {
     },
     gc: {
       gc_postgresql: {
-        address: process.env.GCP_SERVER_IP,
-        userName: process.env.GCP_USER,
-        password: process.env.GCP_USER_PASSWORD,
+        address: secret(process.env.GCP_SERVER_IP),
+        userName: secret(process.env.GCP_USER),
+        password: secret(process.env.GCP_USER_PASSWORD),
       },
     },
   },
