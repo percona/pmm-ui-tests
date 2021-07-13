@@ -56,18 +56,15 @@ const remoteInstanceStatus = {
 };
 let PMM_SERVER_OVF_AMI_SETUP;
 let SERVER_HOST;
-let POSTGRESQL_PORT;
 let EXTERNAL_EXPORTER_HOST;
 
 if (process.env.AMI_UPGRADE_TESTING_INSTANCE === 'true') {
   PMM_SERVER_OVF_AMI_SETUP = 'true';
   SERVER_HOST = '127.0.0.1';
-  POSTGRESQL_PORT = '5433';
   EXTERNAL_EXPORTER_HOST = process.env.VM_CLIENT_IP;
 } else if (process.env.OVF_TEST === 'yes') {
   PMM_SERVER_OVF_AMI_SETUP = 'true';
   SERVER_HOST = process.env.SERVER_IP;
-  POSTGRESQL_PORT = '5432';
   EXTERNAL_EXPORTER_HOST = process.env.SERVER_IP;
 } else {
   PMM_SERVER_OVF_AMI_SETUP = 'false';
@@ -103,7 +100,7 @@ module.exports = {
     postgresql: {
       pdpgsql_13_3: {
         host: (PMM_SERVER_OVF_AMI_SETUP === 'true' ? SERVER_HOST : 'postgres'),
-        port: (PMM_SERVER_OVF_AMI_SETUP === 'true' ? POSTGRESQL_PORT : '5432'),
+        port: (PMM_SERVER_OVF_AMI_SETUP === 'true' ? '5433' : '5432'),
         username: 'postgres',
         password: 'pmm-^*&@agent-password',
         clusterName: 'pgsql_clstr',
@@ -133,41 +130,41 @@ module.exports = {
       },
     },
     aws: {
-      aws_access_key: process.env.AWS_ACCESS_KEY_ID,
-      aws_secret_key: process.env.AWS_SECRET_ACCESS_KEY,
+      aws_access_key: secret(process.env.AWS_ACCESS_KEY_ID),
+      aws_secret_key: secret(process.env.AWS_SECRET_ACCESS_KEY),
       aws_rds_5_7: {
-        address: process.env.REMOTE_AWS_MYSQL57_HOST,
-        username: process.env.REMOTE_AWS_MYSQL_USER,
-        password: process.env.REMOTE_AWS_MYSQL_PASSWORD,
+        address: secret(process.env.REMOTE_AWS_MYSQL57_HOST),
+        username: secret(process.env.REMOTE_AWS_MYSQL_USER),
+        password: secret(process.env.REMOTE_AWS_MYSQL_PASSWORD),
         clusterName: 'aws_rds_mysql_5_7',
         port: 3306,
       },
       aws_rds_5_6: {
-        address: process.env.REMOTE_AWS_MYSQL57_HOST,
-        username: process.env.REMOTE_AWS_MYSQL_USER,
-        password: process.env.REMOTE_AWS_MYSQL_PASSWORD,
+        address: secret(process.env.REMOTE_AWS_MYSQL57_HOST),
+        username: secret(process.env.REMOTE_AWS_MYSQL_USER),
+        password: secret(process.env.REMOTE_AWS_MYSQL_PASSWORD),
         clusterName: 'aws_rds_mysql_5_6',
         port: 3306,
       },
       aws_postgresql_12: {
-        userName: process.env.REMOTE_AWS_POSTGRES12_USER,
-        password: process.env.REMOTE_AWS_POSTGRES12_PASSWORD,
+        userName: secret(process.env.REMOTE_AWS_POSTGRES12_USER),
+        password: secret(process.env.REMOTE_AWS_POSTGRES12_PASSWORD),
         clusterName: 'aws_postgresql_12',
         port: 5432,
       },
     },
     azure: {
-      azure_client_id: process.env.AZURE_CLIENT_ID,
-      azure_client_secret: process.env.AZURE_CLIENT_SECRET,
-      azure_tenant_id: process.env.AZURE_TENNANT_ID,
-      azure_subscription_id: process.env.AZURE_SUBSCRIPTION_ID,
+      azure_client_id: secret(process.env.AZURE_CLIENT_ID),
+      azure_client_secret: secret(process.env.AZURE_CLIENT_SECRET),
+      azure_tenant_id: secret(process.env.AZURE_TENNANT_ID),
+      azure_subscription_id: secret(process.env.AZURE_SUBSCRIPTION_ID),
       azure_mysql: {
-        userName: process.env.AZURE_MYSQL_USER,
-        password: process.env.AZURE_MYSQL_PASS,
+        userName: secret(process.env.AZURE_MYSQL_USER),
+        password: secret(process.env.AZURE_MYSQL_PASS),
       },
       azure_postgresql: {
-        userName: process.env.AZURE_POSTGRES_USER,
-        password: process.env.AZURE_POSTGRES_PASS,
+        userName: secret(process.env.AZURE_POSTGRES_USER),
+        password: secret(process.env.AZURE_POSTGRES_PASS),
       },
     },
   },
