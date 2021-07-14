@@ -26,8 +26,10 @@ module.exports = {
   async clearAllTemplates() {
     const templates = await this.getTemplatesList();
 
-    for (const { source, name } of templates) {
-      if (source === 'USER_API') { await this.removeTemplate(name); }
+    for (const i in templates) {
+      const template = templates[i];
+
+      if (template.source !== 'BUILT_IN') { await this.removeTemplate(template.name); }
     }
   },
 
