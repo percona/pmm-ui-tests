@@ -103,6 +103,7 @@ module.exports = {
     const sortingBlockSelector = this.getMetricSortingLocator(columnNumber);
 
     I.waitForElement(sortingBlockSelector, 30);
+    this.waitForOverviewLoaded();
     I.click(sortingBlockSelector);
   },
 
