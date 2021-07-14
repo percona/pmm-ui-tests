@@ -247,22 +247,16 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T825 PMM-T821 Verify User can add Alert Rule Template in the file system @ia',
+  'PMM-T825 PMM-T821 Verify User can add Alert Rule Template in the file system @not-ovf @ia',
   async ({ I, ruleTemplatesPage }) => {
     const editButton = ruleTemplatesPage.buttons
       .editButtonBySource(ruleTemplatesPage.templateSources.file);
     const deleteButton = ruleTemplatesPage.buttons
       .deleteButtonBySource(ruleTemplatesPage.templateSources.file);
 
-    if (process.env.OVF_TEST === 'yes') {
-      await I.verifyCommand('sudo cp tests/ia/templates/customParam.yml /srv/ia/templates');
-      await I.verifyCommand('sudo cp tests/ia/templates/spaceInParam.yml /srv/ia/templates');
-      await I.verifyCommand('sudo cp tests/ia/templates/template.txt /srv/ia/templates');
-    } else {
-      await I.verifyCommand('docker cp tests/ia/templates/customParam.yml pmm-server:/srv/ia/templates');
-      await I.verifyCommand('docker cp tests/ia/templates/spaceInParam.yml pmm-server:/srv/ia/templates');
-      await I.verifyCommand('docker cp tests/ia/templates/template.txt pmm-server:/srv/ia/templates');
-    }
+    await I.verifyCommand('docker cp tests/ia/templates/customParam.yml pmm-server:/srv/ia/templates');
+    await I.verifyCommand('docker cp tests/ia/templates/spaceInParam.yml pmm-server:/srv/ia/templates');
+    await I.verifyCommand('docker cp tests/ia/templates/template.txt pmm-server:/srv/ia/templates');
 
     ruleTemplatesPage.openRuleTemplatesTab();
     I.seeElement(editButton);

@@ -26,16 +26,12 @@ module.exports = {
   async clearAllTemplates() {
     const templates = await this.getTemplatesList();
 
-    if (process.env.OVF_TEST === 'yes') {
-      await I.verifyCommand('sudo rm -f /srv/ia/templates/*');
-    } else {
+    if (process.env.OVF_TEST !== 'yes') {
       await I.verifyCommand('docker exec pmm-server rm -f /srv/ia/templates/*');
     }
 
-    for (const i in templates) {
-      const template = templates[i];
-
-      if (template.source === 'USER_API') { await this.removeTemplate(template.name); }
+    for (const { source, name } of templates) {
+      if (source === 'USER_API') { await this.removeTemplate(name); }
     }
   },
 
