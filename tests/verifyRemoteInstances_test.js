@@ -217,6 +217,22 @@ Data(remotePostgreSQL).Scenario(
 );
 
 Scenario(
+  'PMM-T801 - Verify there are TLS options exists on Add Remote MySQL instance page @instances',
+  async ({
+    I, remoteInstancesPage,
+  }) => {
+    I.amOnPage(remoteInstancesPage.url);
+    remoteInstancesPage.waitUntilRemoteInstancesPageLoaded();
+    remoteInstancesPage.openAddRemotePage('mysql');
+    I.waitForVisible(remoteInstancesPage.fields.useTLS, 30);
+    I.click(remoteInstancesPage.fields.useTLS);
+    I.waitForVisible(remoteInstancesPage.fields.tlscaInput, 30);
+    I.waitForVisible(remoteInstancesPage.fields.tlsCertificateInput, 30);
+    I.waitForVisible(remoteInstancesPage.fields.tlsCertificateKeyInput, 30);
+  },
+);
+
+Scenario(
   'PMM-T853 - Verify dashboard after remote postgreSQL instance is added @instances @not-ovf',
   async ({
     I, dashboardPage, adminPage,
