@@ -11,6 +11,10 @@ module.exports = {
 
   // insert your locators and methods here
   // setting locators
+  postgresGCSettings: {
+    environment: 'Remote PostgreSQL_GC env',
+    cluster: 'Remote PostgreSQL_GC cluster',
+  },
   mysqlSettings: {
     environment: 'remote-mysql',
     cluster: 'remote-mysql-cluster',
@@ -141,6 +145,7 @@ module.exports = {
         I.click(this.fields.addMongoDBRemote);
         break;
       case 'postgresql':
+      case 'postgresGC':
         I.click(this.fields.addPostgreSQLRemote);
         break;
       case 'proxysql':
@@ -246,6 +251,13 @@ module.exports = {
         );
         I.fillField(this.fields.serviceName, serviceName);
         break;
+      case remoteInstancesHelper.services.postgresGC:
+        I.fillField(this.fields.hostName, remoteInstancesHelper.remote_instance.gc.gc_postgresql.address);
+        I.fillField(this.fields.userName, remoteInstancesHelper.remote_instance.gc.gc_postgresql.userName);
+        I.fillField(this.fields.password, remoteInstancesHelper.remote_instance.gc.gc_postgresql.password);
+        I.fillField(this.fields.serviceName, serviceName);
+        I.fillField(this.fields.environment, this.postgresGCSettings.environment);
+        I.fillField(this.fields.cluster, this.postgresGCSettings.cluster);
     }
     adminPage.peformPageDown(1);
   },
