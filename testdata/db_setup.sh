@@ -1,24 +1,21 @@
 #!/bin/bash
 
+export PWD=$(pwd)
 
-## Slowlog file shared with ps docker container, to allow pmm-agent to read
-sudo chmod 777 -R /tmp/mysql/log
-
-## setup as we do in pmm-framework
-docker exec pmm-agent_mysql_5_7 mysql -h 127.0.0.1 -u root -pps -e "SET GLOBAL slow_query_log='ON';"
-docker exec pmm-agent_mysql_5_7 mysql -h 127.0.0.1 -u root -pps -e "INSTALL PLUGIN QUERY_RESPONSE_TIME_AUDIT SONAME 'query_response_time.so';"
-docker exec pmm-agent_mysql_5_7 mysql -h 127.0.0.1 -u root -pps -e "INSTALL PLUGIN QUERY_RESPONSE_TIME SONAME 'query_response_time.so';"
-docker exec pmm-agent_mysql_5_7 mysql -h 127.0.0.1 -u root -pps -e "INSTALL PLUGIN QUERY_RESPONSE_TIME_READ SONAME 'query_response_time.so';"
-docker exec pmm-agent_mysql_5_7 mysql -h 127.0.0.1 -u root -pps -e "INSTALL PLUGIN QUERY_RESPONSE_TIME_WRITE SONAME 'query_response_time.so';"
-docker exec pmm-agent_mysql_5_7 mysql -h 127.0.0.1 -u root -pps -e "SET GLOBAL query_response_time_stats=ON;"
-docker exec pmm-agent_mysql_5_7 mysql -h 127.0.0.1 -u root -pps -e "GRANT SELECT, PROCESS, SUPER, REPLICATION CLIENT, RELOAD ON *.* TO 'pmm-agent'@'%';"
+### Call PS5.7 Setup Scripts
+bash -x ${PWD}/testdata/docker-db-setup-scripts/docker_ps_5_7.sh
 
 
-## setup as we do in pmm-framework
-docker exec pmm-agent_mysql_8_0 mysql -h 127.0.0.1 -u root -pps -e "SET GLOBAL slow_query_log='ON';"
-docker exec pmm-agent_mysql_8_0 mysql -h 127.0.0.1 -u root -pps -e "GRANT SELECT, PROCESS, SUPER, REPLICATION CLIENT, RELOAD ON *.* TO 'pmm-agent'@'%';"
+### Call PS8.0 Setup Scripts
+bash -x ${PWD}/testdata/docker-db-setup-scripts/docker_ps_8_0.sh
 
-## Percona-distribution postgresql
-docker exec pmm-agent_postgres psql -h localhost -U postgres -c 'create extension pg_stat_statements'
-docker exec pmm-agent_postgres psql -h localhost -U postgres -c 'create extension pg_stat_monitor'
-docker exec pmm-agent_postgres psql -h localhost -U postgres -c 'SELECT pg_reload_conf();'
+### Call Postgres Docker Setup Script
+bash -x ${PWD}/testdata/docker-db-setup-scripts/docker_postgres_13.sh
+
+
+### SSL instance setup along with slowlog
+bash -x ${PWD}/testdata/docker-db-setup-scripts/docker_mysql_ssl_8_0.sh
+
+
+### SSL instance setup along for Mongodb
+##bash -x ${PWD}/testdata/docker-db-setup-scripts/docker_mongodb_ssl_4_4.sh

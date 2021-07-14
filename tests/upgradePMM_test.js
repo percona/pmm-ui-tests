@@ -42,19 +42,30 @@ Before(async ({ I }) => {
   I.setRequestTimeout(30000);
 });
 
-BeforeSuite(async () => {
+BeforeSuite(async ({ I, codeceptjsConfig }) => {
   const mysqlComposeConnection = {
-    host: '127.0.0.1',
+    host: process.env.AMI_INSTANCE_IP || '127.0.0.1',
     port: connection.port,
     username: connection.username,
     password: connection.password,
   };
 
   perconaServerDB.connectToPS(mysqlComposeConnection);
+
+  // Connect to MongoDB
+  const mongoConnection = {
+    host: process.env.AMI_INSTANCE_IP || codeceptjsConfig.config.helpers.MongoDBHelper.host,
+    port: codeceptjsConfig.config.helpers.MongoDBHelper.port,
+    username: codeceptjsConfig.config.helpers.MongoDBHelper.username,
+    password: codeceptjsConfig.config.helpers.MongoDBHelper.password,
+  };
+
+  await I.mongoConnect(mongoConnection);
 });
 
-AfterSuite(async ({ perconaServerDB }) => {
+AfterSuite(async ({ I, perconaServerDB }) => {
   await perconaServerDB.disconnectFromPS();
+  await I.mongoDisconnect();
 });
 
 Scenario(
@@ -221,6 +232,16 @@ Scenario(
   async ({ I, homePage }) => {
     I.amOnPage(homePage.url);
     await homePage.upgradePMM(versionMinor);
+  },
+);
+
+Scenario(
+  'Run queries for MongoDB after upgrade @post-upgrade @ami-upgrade @pmm-upgrade',
+  async ({ I }) => {
+    const col = await I.mongoCreateCollection('local', 'e2e');
+
+    await col.insertOne({ a: '111' });
+    await col.findOne();
   },
 );
 

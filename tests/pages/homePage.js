@@ -23,7 +23,7 @@ module.exports = {
     newsPanelTitleSelector: '//span[@class="panel-title-text" and text() = "Percona News"]',
     newsPanelContentSelector:
       '//span[contains(text(), "Percona News")]/ancestor::div[contains(@class, "panel-container")]//div[contains(@class, "view")]',
-    noAccessRightsSelector: '$db-check-panel-no-access',
+    noAccessRightsSelector: '$unauthorized',
     updateWidget: {
       base: {
         checkUpdateButton: '#refresh',
@@ -144,9 +144,8 @@ module.exports = {
     assert.ok(lastCheckRegex.test(date), `Last Check Date has unexpected pattern: ${date}`);
   },
 
-  async verifyVisibleService(serviceName) {
-    I.scrollPageToBottom();
-    const serviceExists = `//div[@class='react-grid-item']/descendant::p[contains(text(),'${serviceName}')]`;
+  verifyVisibleService(serviceName) {
+    const serviceExists = locate('.react-grid-item').find(locate('p').withText(serviceName));
 
     I.waitForElement(serviceExists, 30);
     I.seeElement(serviceExists);
