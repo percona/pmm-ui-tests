@@ -62,7 +62,7 @@ let SERVER_HOST;
 let EXTERNAL_EXPORTER_HOST;
 
 if (process.env.AMI_UPGRADE_TESTING_INSTANCE === 'true') {
-  SERVER_HOST = '127.0.0.1';
+  SERVER_HOST = process.env.SERVER_IP;
   EXTERNAL_EXPORTER_HOST = process.env.VM_CLIENT_IP;
 } else if (process.env.OVF_TEST === 'yes') {
   SERVER_HOST = process.env.SERVER_IP;
