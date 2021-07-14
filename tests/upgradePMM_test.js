@@ -263,7 +263,7 @@ if (versionMinor >= 13) {
     async ({
       I, pmmSettingsPage, securityChecksAPI, databaseChecksPage,
     }) => {
-      // Wait for 30 seconds because of docker way upgrade
+      // Wait for 30 seconds to have latest check results
       I.wait(30);
       // Verify STT is enabled
       I.amOnPage(pmmSettingsPage.advancedSettingsUrl);
