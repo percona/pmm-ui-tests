@@ -766,7 +766,7 @@ module.exports = {
     metricTitle: '//div[@class="panel-title"]',
     mongoDBServiceSummaryContent: locate('pre').withText('Mongo Executable'),
     mySQLServiceSummaryContent: locate('pre').withText('Percona Toolkit MySQL Summary Report'),
-    navbarLocator: '.navbar-page-btn',
+    navbarLocator: '.page-toolbar',
     notAvailableDataPoints: '//div[contains(text(),"No data")]',
     notAvailableMetrics: '//span[contains(text(), "N/A")]',
     otherReportTitleWithNoData:

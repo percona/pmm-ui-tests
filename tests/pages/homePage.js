@@ -144,9 +144,8 @@ module.exports = {
     assert.ok(lastCheckRegex.test(date), `Last Check Date has unexpected pattern: ${date}`);
   },
 
-  async verifyVisibleService(serviceName) {
-    I.scrollPageToBottom();
-    const serviceExists = `//div[@class='react-grid-item']/descendant::p[contains(text(),'${serviceName}')]`;
+  verifyVisibleService(serviceName) {
+    const serviceExists = locate('.react-grid-item').find(locate('p').withText(serviceName));
 
     I.waitForElement(serviceExists, 30);
     I.seeElement(serviceExists);
