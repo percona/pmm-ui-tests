@@ -1,5 +1,3 @@
-const { I, adminPage } = inject();
-
 const remoteInstanceStatus = {
   mysql: {
     ps_5_7: {
@@ -54,16 +52,14 @@ const remoteInstanceStatus = {
     },
   },
 };
-let PMM_SERVER_OVF_AMI_SETUP;
+let PMM_SERVER_OVF_AMI_SETUP = 'true';
 let SERVER_HOST;
 let EXTERNAL_EXPORTER_HOST;
 
 if (process.env.AMI_UPGRADE_TESTING_INSTANCE === 'true') {
-  PMM_SERVER_OVF_AMI_SETUP = 'true';
   SERVER_HOST = '127.0.0.1';
   EXTERNAL_EXPORTER_HOST = process.env.VM_CLIENT_IP;
 } else if (process.env.OVF_TEST === 'yes') {
-  PMM_SERVER_OVF_AMI_SETUP = 'true';
   SERVER_HOST = process.env.SERVER_IP;
   EXTERNAL_EXPORTER_HOST = process.env.SERVER_IP;
 } else {
