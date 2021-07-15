@@ -5,6 +5,7 @@ const { pmmInventoryPage, remoteInstancesPage, remoteInstancesHelper } = inject(
 const instances = new DataTable(['name']);
 const remotePostgreSQL = new DataTable(['instanceName', 'trackingOption', 'checkAgent']);
 const qanFilters = new DataTable(['filterName']);
+const dashboardCheck = new DataTable(['serviceName']);
 
 for (const [key, value] of Object.entries(remoteInstancesHelper.services)) {
   if (value) {
@@ -13,9 +14,14 @@ for (const [key, value] of Object.entries(remoteInstancesHelper.services)) {
         remotePostgreSQL.add(['postgreDoNotTrack', remoteInstancesPage.fields.doNotTrack, pmmInventoryPage.fields.postgresExporter]);
         remotePostgreSQL.add(['postgresPGStatStatements', remoteInstancesPage.fields.usePgStatStatements, pmmInventoryPage.fields.postgresPgStatements]);
         qanFilters.add([remoteInstancesPage.potgresqlSettings.environment]);
+        dashboardCheck.add([remoteInstancesHelper.services.postgresql]);
         break;
       case 'mysql':
         qanFilters.add([remoteInstancesPage.mysqlSettings.environment]);
+        break;
+      case 'postgresGC':
+        dashboardCheck.add([remoteInstancesHelper.services.postgresGC]);
+        qanFilters.add([remoteInstancesPage.postgresGCSettings.environment]);
         break;
       default:
     }
@@ -234,17 +240,15 @@ Scenario(
   },
 );
 
-Scenario(
+Data(dashboardCheck).Scenario(
   'PMM-T853 - Verify dashboard after remote postgreSQL instance is added @instances @not-ovf',
   async ({
-    I, dashboardPage, adminPage,
+    I, dashboardPage, adminPage, current,
   }) => {
-    const serviceName = 'postgresql_remote_new';
-
     // Wait 10 seconds before test to start getting metrics
     I.wait(10);
     I.amOnPage(dashboardPage.postgresqlInstanceOverviewDashboard.url);
-    dashboardPage.applyFilter('Service Name', serviceName);
+    await dashboardPage.applyFilter('Service Name', current.serviceName);
     adminPage.peformPageDown(5);
     await dashboardPage.expandEachDashboardRow();
     adminPage.performPageUp(5);
@@ -260,7 +264,7 @@ Data(qanFilters).Scenario(
   }) => {
     I.amOnPage(qanPage.url);
     qanOverview.waitForOverviewLoaded();
-    qanFilters.applyFilter(current.filterName);
+    await qanFilters.applyFilter(current.filterName);
     qanOverview.waitForOverviewLoaded();
     const count = await qanOverview.getCountOfItems();
 

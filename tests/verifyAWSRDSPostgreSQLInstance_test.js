@@ -68,7 +68,7 @@ Scenario(
     // Wait 10 seconds before test to start getting metrics
     I.wait(10);
     I.amOnPage(dashboardPage.postgresqlInstanceOverviewDashboard.url);
-    dashboardPage.applyFilter('Node Name', serviceName);
+    await dashboardPage.applyFilter('Node Name', serviceName);
     await dashboardPage.verifyThereAreNoGraphsWithNA();
     await dashboardPage.verifyThereAreNoGraphsWithoutData();
   },

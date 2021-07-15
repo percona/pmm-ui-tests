@@ -53,6 +53,11 @@ const remoteInstanceStatus = {
       enabled: true,
     },
   },
+  gc: {
+    gc_postgresql: {
+      enabled: true,
+    },
+  },
 };
 
 module.exports = {
@@ -152,6 +157,13 @@ module.exports = {
         password: process.env.AZURE_POSTGRES_PASS,
       },
     },
+    gc: {
+      gc_postgresql: {
+        address: secret(process.env.GCP_SERVER_IP),
+        userName: secret(process.env.GCP_USER),
+        password: secret(process.env.GCP_USER_PASSWORD),
+      },
+    },
   },
 
   instanceTypes: {
@@ -160,6 +172,7 @@ module.exports = {
     mongodb: (remoteInstanceStatus.mongodb.psmdb_4_2.enabled ? 'MongoDB' : undefined),
     proxysql: (remoteInstanceStatus.proxysql.proxysql_2_1_1.enabled ? 'ProxySQL' : undefined),
     rds: (remoteInstanceStatus.aws.aws_rds_5_7.enabled ? 'RDS' : undefined),
+    postgresGC: (remoteInstanceStatus.gc.gc_postgresql.enabled ? 'PostgreSQL_GC' : undefined),
   },
 
   serviceTypes: {
@@ -187,6 +200,12 @@ module.exports = {
         service: 'proxysql',
       } : undefined
     ),
+    postgresGC: (
+      remoteInstanceStatus.gc.gc_postgresql.enabled ? {
+        serviceType: 'POSTGRESGC_SERVICE',
+        service: 'postgresGC',
+      } : undefined
+    ),
   },
 
   services: {
@@ -194,6 +213,7 @@ module.exports = {
     mongodb: (remoteInstanceStatus.mongodb.psmdb_4_2.enabled ? 'mongodb_remote_new' : undefined),
     postgresql: (remoteInstanceStatus.postgresql.pdpgsql_13_3.enabled ? 'postgresql_remote_new' : undefined),
     proxysql: (remoteInstanceStatus.proxysql.proxysql_2_1_1.enabled ? 'proxysql_remote_new' : undefined),
+    postgresGC: (remoteInstanceStatus.gc.gc_postgresql.enabled ? 'postgresql_GC_remote_new' : undefined),
   },
 
   upgradeServiceNames: {
@@ -202,6 +222,7 @@ module.exports = {
     proxysql: (remoteInstanceStatus.proxysql.proxysql_2_1_1.enabled ? 'proxysql_upgrade_service' : undefined),
     postgresql: (remoteInstanceStatus.postgresql.pdpgsql_13_3.enabled ? 'postgres_upgrade_service' : undefined),
     rds: (remoteInstanceStatus.aws.aws_rds_5_7.enabled ? 'mysql_rds_uprgade_service' : undefined),
+    postgresGC: (remoteInstanceStatus.gc.gc_postgresql.enabled ? 'postgresql_GC_upgrade_service' : undefined),
   },
 
   qanFilters: ['mysql', 'mongodb', 'postgresql', 'rds'],
