@@ -225,6 +225,8 @@ Scenario(
     remoteInstancesPage.waitUntilRemoteInstancesPageLoaded();
     remoteInstancesPage.openAddRemotePage('mysql');
     I.waitForVisible(remoteInstancesPage.fields.useTLS, 30);
+    I.dontSeeCheckboxIsChecked(remoteInstancesPage.fields.useTLS);
+    I.dontSeeCheckboxIsChecked(remoteInstancesPage.fields.skipTLSL);
     I.click(remoteInstancesPage.fields.useTLS);
     I.waitForVisible(remoteInstancesPage.fields.tlscaInput, 30);
     I.waitForVisible(remoteInstancesPage.fields.tlsCertificateInput, 30);
