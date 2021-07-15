@@ -134,20 +134,20 @@ Scenario(
   },
 );
 
-Scenario(
-  'Verify user can create Remote Instances before upgrade @pre-upgrade @ami-upgrade @pmm-upgrade',
-  async ({ addInstanceAPI }) => {
-    // Adding instances for monitoring
-    for (const type of Object.values(remoteInstancesHelper.instanceTypes)) {
-      if (type) {
-        await addInstanceAPI.apiAddInstance(
-          type,
-          remoteInstancesHelper.upgradeServiceNames[type.toLowerCase()],
-        );
-      }
-    }
-  },
-);
+// Scenario(
+//   'Verify user can create Remote Instances before upgrade @pre-upgrade @ami-upgrade @pmm-upgrade',
+//   async ({ addInstanceAPI }) => {
+//     // Adding instances for monitoring
+//     for (const type of Object.values(remoteInstancesHelper.instanceTypes)) {
+//       if (type) {
+//         await addInstanceAPI.apiAddInstance(
+//           type,
+//           remoteInstancesHelper.upgradeServiceNames[type.toLowerCase()],
+//         );
+//       }
+//     }
+//   },
+// );
 
 if (versionMinor < 16 && versionMinor >= 10) {
   Scenario(
