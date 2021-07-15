@@ -203,7 +203,7 @@ module.exports = {
     postgresGC: (
       remoteInstanceStatus.gc.gc_postgresql.enabled ? {
         serviceType: 'POSTGRESGC_SERVICE',
-        service: 'postgresGC',
+        service: 'postgresql',
       } : undefined
     ),
   },
