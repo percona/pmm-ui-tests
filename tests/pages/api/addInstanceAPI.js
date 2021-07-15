@@ -80,12 +80,12 @@ module.exports = {
     const body = {
       add_node: {
         node_name: serviceName,
-        node_type: 'REMOTE_GC_POSTGRESQL_NODE',
+        node_type: 'REMOTE_NODE',
       },
       port: 5432,
-      address: remoteInstancesHelper.remote_instance.gc.gc_postgresql.host,
+      address: remoteInstancesHelper.remote_instance.gc.gc_postgresql.address,
       service_name: serviceName,
-      username: remoteInstancesHelper.remote_instance.gc.gc_postgresql.username,
+      username: remoteInstancesHelper.remote_instance.gc.gc_postgresql.userName,
       password: remoteInstancesHelper.remote_instance.gc.gc_postgresql.password,
       cluster: 'postgresql_clust',
       pmm_agent_id: 'pmm-server',
