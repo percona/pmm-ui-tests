@@ -11,6 +11,10 @@ module.exports = {
 
   // insert your locators and methods here
   // setting locators
+  mysqlTLSSettings:{
+    environment: 'Remote MySQL TLS env',
+    cluster: 'Remote MySQL TLS cluster',
+  },
   postgresGCSettings: {
     environment: 'Remote PostgreSQL_GC env',
     cluster: 'Remote PostgreSQL_GC cluster',
@@ -142,6 +146,7 @@ module.exports = {
     // eslint-disable-next-line default-case
     switch (instanceType) {
       case 'mysql':
+      case 'mysqlTLS':
         I.click(this.fields.addMySqlRemote);
         break;
       case 'mongodb':
@@ -166,10 +171,22 @@ module.exports = {
     return this;
   },
 
+  fillEnvironmentAndCluster(serviceName){
+    switch (serviceName) {
+      case remoteInstancesHelper.services.mysql:
+        I.fillField(this.fields.environment, this.mysqlSettings.environment);
+        I.fillField(this.fields.cluster, this.mysqlSettings.cluster);
+      case remoteInstancesHelper.services.mysqlTLS:
+        I.fillField(this.fields.environment, this.mysqlTLSSettings.environment);
+        I.fillField(this.fields.cluster, this.mysqlTLSSettings.cluster);
+    }
+  },
+
   fillRemoteFields(serviceName) {
     // eslint-disable-next-line default-case
     switch (serviceName) {
       case remoteInstancesHelper.services.mysql:
+      case remoteInstancesHelper.services.mysqlTLS: 
         I.fillField(this.fields.hostName, remoteInstancesHelper.remote_instance.mysql.ps_5_7.host);
         I.fillField(this.fields.userName, remoteInstancesHelper.remote_instance.mysql.ps_5_7.username);
         I.fillField(this.fields.password, remoteInstancesHelper.remote_instance.mysql.ps_5_7.password);
@@ -178,8 +195,7 @@ module.exports = {
         I.pressKey('Backspace');
         I.fillField(this.fields.portNumber, remoteInstancesHelper.remote_instance.mysql.ps_5_7.port);
         I.fillField(this.fields.serviceName, serviceName);
-        I.fillField(this.fields.environment, this.mysqlSettings.environment);
-        I.fillField(this.fields.cluster, this.mysqlSettings.cluster);
+        this.fillEnvironmentAndCluster(serviceName);
         break;
       case remoteInstancesHelper.services.mongodb:
         I.fillField(this.fields.hostName, remoteInstancesHelper.remote_instance.mongodb.psmdb_4_2.host);
