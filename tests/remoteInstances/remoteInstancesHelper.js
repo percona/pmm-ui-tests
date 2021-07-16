@@ -57,15 +57,13 @@ const remoteInstanceStatus = {
     },
   },
 };
+const SERVER_HOST = process.env.SERVER_IP;
 let PMM_SERVER_OVF_AMI_SETUP = 'true';
-let SERVER_HOST;
 let EXTERNAL_EXPORTER_HOST;
 
 if (process.env.AMI_UPGRADE_TESTING_INSTANCE === 'true') {
-  SERVER_HOST = process.env.SERVER_IP;
   EXTERNAL_EXPORTER_HOST = process.env.VM_CLIENT_IP;
 } else if (process.env.OVF_TEST === 'yes') {
-  SERVER_HOST = process.env.SERVER_IP;
   EXTERNAL_EXPORTER_HOST = process.env.SERVER_IP;
 } else {
   PMM_SERVER_OVF_AMI_SETUP = 'false';
