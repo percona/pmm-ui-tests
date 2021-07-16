@@ -11,7 +11,7 @@ module.exports = {
 
   // insert your locators and methods here
   // setting locators
-  mysqlTLSSettings:{
+  mysqlTLSSettings: {
     environment: 'Remote MySQL TLS env',
     cluster: 'Remote MySQL TLS cluster',
   },
@@ -171,14 +171,17 @@ module.exports = {
     return this;
   },
 
-  fillEnvironmentAndCluster(serviceName){
+  fillEnvironmentAndCluster(serviceName) {
+    // eslint-disable-next-line default-case
     switch (serviceName) {
       case remoteInstancesHelper.services.mysql:
         I.fillField(this.fields.environment, this.mysqlSettings.environment);
         I.fillField(this.fields.cluster, this.mysqlSettings.cluster);
+        break;
       case remoteInstancesHelper.services.mysqlTLS:
         I.fillField(this.fields.environment, this.mysqlTLSSettings.environment);
         I.fillField(this.fields.cluster, this.mysqlTLSSettings.cluster);
+        break;
     }
   },
 
@@ -186,7 +189,7 @@ module.exports = {
     // eslint-disable-next-line default-case
     switch (serviceName) {
       case remoteInstancesHelper.services.mysql:
-      case remoteInstancesHelper.services.mysqlTLS: 
+      case remoteInstancesHelper.services.mysqlTLS:
         I.fillField(this.fields.hostName, remoteInstancesHelper.remote_instance.mysql.ps_5_7.host);
         I.fillField(this.fields.userName, remoteInstancesHelper.remote_instance.mysql.ps_5_7.username);
         I.fillField(this.fields.password, remoteInstancesHelper.remote_instance.mysql.ps_5_7.password);
