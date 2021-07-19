@@ -57,13 +57,24 @@ const remoteInstanceStatus = {
     },
   },
 };
-let SERVER_HOST;
+
+let SERVER_HOST; let DB_CONFIG; let EXTERNAL_EXPORTER_HOST;
 let PMM_SERVER_OVF_AMI_SETUP = 'true';
-let EXTERNAL_EXPORTER_HOST;
+
+DB_CONFIG = {
+  MYSQL_SERVER_PORT: '3306',
+  POSTGRES_SERVER_PORT: '5432',
+  MONGODB_SERVER_PORT: '27017',
+  PROXYSQL_SERVER_PORT: '6032',
+};
 
 if (process.env.AMI_UPGRADE_TESTING_INSTANCE === 'true') {
-  SERVER_HOST = process.env.SERVER_IP;
+  SERVER_HOST = process.env.VM_CLIENT_IP;
   EXTERNAL_EXPORTER_HOST = process.env.VM_CLIENT_IP;
+  DB_CONFIG.MYSQL_SERVER_PORT = '42300';
+  DB_CONFIG.MONGODB_SERVER_PORT = '42100';
+  DB_CONFIG.POSTGRES_SERVER_PORT = '42200';
+  DB_CONFIG.PROXYSQL_SERVER_PORT = '46032';
 } else if (process.env.OVF_TEST === 'yes') {
   SERVER_HOST = process.env.VM_CLIENT_IP;
   EXTERNAL_EXPORTER_HOST = process.env.SERVER_IP;
@@ -76,7 +87,7 @@ module.exports = {
     mysql: {
       ps_5_7: {
         host: (PMM_SERVER_OVF_AMI_SETUP === 'true' ? SERVER_HOST : 'mysql'),
-        port: '3306',
+        port: DB_CONFIG.MYSQL_SERVER_PORT,
         username: 'pmm-agent',
         password: 'pmm%*&agent-password',
         clusterName: 'mysql_clstr',
@@ -92,7 +103,7 @@ module.exports = {
     mongodb: {
       psmdb_4_2: {
         host: (PMM_SERVER_OVF_AMI_SETUP === 'true' ? SERVER_HOST : 'mongo'),
-        port: '27017',
+        port: DB_CONFIG.MONGODB_SERVER_PORT,
         username: 'root',
         password: 'root-!@#%^password',
         clusterName: 'mongo_clstr',
@@ -101,7 +112,7 @@ module.exports = {
     postgresql: {
       pdpgsql_13_3: {
         host: (PMM_SERVER_OVF_AMI_SETUP === 'true' ? SERVER_HOST : 'postgres'),
-        port: (PMM_SERVER_OVF_AMI_SETUP === 'true' ? '5433' : '5432'),
+        port: DB_CONFIG.POSTGRES_SERVER_PORT,
         username: 'postgres',
         password: 'pmm-^*&@agent-password',
         clusterName: 'pgsql_clstr',
@@ -110,7 +121,7 @@ module.exports = {
     proxysql: {
       proxysql_2_1_1: {
         host: (PMM_SERVER_OVF_AMI_SETUP === 'true' ? '127.0.0.1' : 'proxysql'),
-        port: '6032',
+        port: DB_CONFIG.PROXYSQL_SERVER_PORT,
         username: 'radmin',
         password: 'radmin',
         clusterName: 'proxy_clstr',
