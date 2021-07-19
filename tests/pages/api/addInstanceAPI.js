@@ -60,7 +60,7 @@ module.exports = {
         node_name: serviceName,
         node_type: 'REMOTE_NODE',
       },
-      port: 5432,
+      port: remoteInstancesHelper.remote_instance.postgresql.pdpgsql_13_3.port,
       address: remoteInstancesHelper.remote_instance.postgresql.pdpgsql_13_3.host,
       service_name: serviceName,
       username: remoteInstancesHelper.remote_instance.postgresql.pdpgsql_13_3.username,

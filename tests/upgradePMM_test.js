@@ -195,7 +195,7 @@ if (iaReleased) {
 
 if (versionMinor >= 13) {
   Scenario(
-    'Verify user has failed checks before upgrade @pre-upgrade @ami-upgrade @pmm-upgrade',
+    'Verify user has failed checks before upgrade @pre-upgrade @pmm-upgrade',
     async ({
       I, settingsAPI, databaseChecksPage, securityChecksAPI,
     }) => {
@@ -238,7 +238,7 @@ Scenario(
 );
 
 Scenario(
-  'Run queries for MongoDB after upgrade @post-upgrade @ami-upgrade @pmm-upgrade',
+  'Run queries for MongoDB after upgrade @post-upgrade @pmm-upgrade',
   async ({ I }) => {
     const col = await I.mongoCreateCollection('local', 'e2e');
 
@@ -261,7 +261,7 @@ Scenario(
 
 if (versionMinor >= 13) {
   Scenario(
-    'Verify user has failed checks after upgrade / STT on @post-upgrade @ami-upgrade @pmm-upgrade',
+    'Verify user has failed checks after upgrade / STT on @post-upgrade @pmm-upgrade',
     async ({
       I, pmmSettingsPage, securityChecksAPI, databaseChecksPage,
     }) => {
