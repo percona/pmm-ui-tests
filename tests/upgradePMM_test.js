@@ -340,7 +340,7 @@ if (versionMinor >= 16) {
 
 if (iaReleased) {
   Scenario(
-    'PMM-T577 Verify user can see IA alerts after upgrade @post-upgrade @ami-upgrade @pmm-upgrade',
+    'PMM-T577 Verify user can see IA alerts after upgrade @ami-upgrade @pmm-upgrade',
     async ({
       I, alertsPage, alertsAPI,
     }) => {
