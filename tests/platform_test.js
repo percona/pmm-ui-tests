@@ -155,7 +155,8 @@ Scenario(
   },
 );
 
-Scenario(
+// Skipping due to changes on sign up process
+xScenario(
   'PMM-T399 PMM-T843 Verify user is able to Sign Up and login with new account @platform @settings',
   async ({ I }) => {
     I.click(buttons.goToSignUp);

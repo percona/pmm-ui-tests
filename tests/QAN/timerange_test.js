@@ -33,12 +33,15 @@ Scenario(
 );
 
 Scenario(
-  'Open the QAN Dashboard and check that changing the time range doesn"t clear "Group by". @qan',
-  async ({ adminPage, qanOverview }) => {
-    await qanOverview.changeGroupBy('Client Host');
+  'Open the QAN Dashboard and check that changing the time range doesn\'t clear "Group by". @qan',
+  async ({ I, adminPage, qanOverview }) => {
+    const group = 'Client Host';
+
+    I.waitForText('Query', 30, qanOverview.elements.groupBy);
+    await qanOverview.changeGroupBy(group);
     adminPage.applyTimeRange('Last 24 hours');
     qanOverview.waitForOverviewLoaded();
-    qanOverview.verifyGroupByIs('Client Host');
+    qanOverview.verifyGroupByIs(group);
   },
 );
 
