@@ -58,7 +58,7 @@ const remoteInstanceStatus = {
   },
 };
 
-let SERVER_HOST; let DB_CONFIG; let EXTERNAL_EXPORTER_HOST;
+let SERVER_HOST; let EXTERNAL_EXPORTER_HOST; let DB_CONFIG = {};
 let PMM_SERVER_OVF_AMI_SETUP = 'true';
 
 DB_CONFIG = {
