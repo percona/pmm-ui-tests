@@ -120,7 +120,7 @@ module.exports = {
     },
     proxysql: {
       proxysql_2_1_1: {
-        host: (PMM_SERVER_OVF_AMI_SETUP === 'true' ? '127.0.0.1' : 'proxysql'),
+        host: (PMM_SERVER_OVF_AMI_SETUP === 'true' ? SERVER_HOST : 'proxysql'),
         port: DB_CONFIG.PROXYSQL_SERVER_PORT,
         username: 'radmin',
         password: 'radmin',
