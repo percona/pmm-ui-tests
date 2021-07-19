@@ -76,7 +76,7 @@ if (process.env.AMI_UPGRADE_TESTING_INSTANCE === 'true') {
   DB_CONFIG.POSTGRES_SERVER_PORT = '42200';
   DB_CONFIG.PROXYSQL_SERVER_PORT = '46032';
 } else if (process.env.OVF_TEST === 'yes') {
-  SERVER_HOST = process.env.VM_CLIENT_IP;
+  SERVER_HOST = process.env.SERVER_IP;
   EXTERNAL_EXPORTER_HOST = process.env.SERVER_IP;
 } else {
   PMM_SERVER_OVF_AMI_SETUP = 'false';
