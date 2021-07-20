@@ -53,7 +53,7 @@ Scenario(
 );
 
 Data(instances).Scenario(
-  'Verify Remote Instance Addition [critical] @instances',
+  'PMM-T898 Verify Remote Instance Addition [critical] @instances',
   async ({ I, remoteInstancesPage, current }) => {
     const serviceName = remoteInstancesHelper.services[current.name];
 
