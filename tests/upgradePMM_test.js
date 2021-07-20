@@ -132,9 +132,6 @@ Scenario(
     };
 
     await settingsAPI.changeSettings(body, true);
-    await securityChecksAPI.disableCheck('mysql_anonymous_users');
-    await securityChecksAPI.changeCheckInterval('postgresql_version');
-    await settingsAPI.setCheckIntervals({ ...settingsAPI.defaultCheckIntervals, standard_interval: '3600s' });
     I.wait(10);
   },
 );
@@ -329,7 +326,7 @@ if (versionMinor >= 16) {
   );
 
   Scenario(
-    'Verify settings for intervals remain the same after upgrade @post-upgrade @ami-upgrade @pmm-upgrade',
+    'Verify settings for intervals remain the same after upgrade @post-upgrade @pmm-upgrade',
     async ({
       I, pmmSettingsPage,
     }) => {
