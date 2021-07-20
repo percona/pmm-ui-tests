@@ -59,7 +59,7 @@ const remoteInstanceStatus = {
 };
 
 let SERVER_HOST; let EXTERNAL_EXPORTER_HOST; let DB_CONFIG = {};
-let PMM_SERVER_OVF_AMI_SETUP = 'true';
+let PMM_SERVER_OVF_AMI_SETUP = 'false';
 
 DB_CONFIG = {
   MYSQL_SERVER_PORT: '3306',
@@ -69,17 +69,19 @@ DB_CONFIG = {
 };
 
 if (process.env.AMI_UPGRADE_TESTING_INSTANCE === 'true') {
+  PMM_SERVER_OVF_AMI_SETUP = 'true';
   SERVER_HOST = process.env.VM_CLIENT_IP;
   EXTERNAL_EXPORTER_HOST = process.env.VM_CLIENT_IP;
   DB_CONFIG.MYSQL_SERVER_PORT = '42300';
   DB_CONFIG.MONGODB_SERVER_PORT = '42100';
   DB_CONFIG.POSTGRES_SERVER_PORT = '42200';
   DB_CONFIG.PROXYSQL_SERVER_PORT = '46032';
-} else if (process.env.OVF_TEST === 'yes') {
+}
+
+if (process.env.OVF_TEST === 'yes') {
+  PMM_SERVER_OVF_AMI_SETUP = 'true';
   SERVER_HOST = process.env.SERVER_IP;
   EXTERNAL_EXPORTER_HOST = process.env.SERVER_IP;
-} else {
-  PMM_SERVER_OVF_AMI_SETUP = 'false';
 }
 
 module.exports = {
