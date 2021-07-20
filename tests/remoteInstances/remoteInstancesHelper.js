@@ -53,7 +53,7 @@ const remoteInstanceStatus = {
   },
   gc: {
     gc_postgresql: {
-      enabled: true,
+      enabled: process.env.OVF_TEST !== 'yes',
     },
   },
 };
@@ -82,6 +82,7 @@ if (process.env.OVF_TEST === 'yes') {
   PMM_SERVER_OVF_AMI_SETUP = 'true';
   SERVER_HOST = process.env.SERVER_IP;
   EXTERNAL_EXPORTER_HOST = process.env.SERVER_IP;
+  DB_CONFIG.POSTGRES_SERVER_PORT = '5433';
 }
 
 module.exports = {
