@@ -120,7 +120,7 @@ Scenario(
 
 Scenario(
   'Verify user is able to set custom Settings like Data_retention, Resolution @pre-upgrade @ami-upgrade @pmm-upgrade',
-  async ({ settingsAPI, I }) => {
+  async ({ settingsAPI, securityChecksAPI, I }) => {
     const body = {
       telemetry_enabled: true,
       metrics_resolutions: {
@@ -132,6 +132,9 @@ Scenario(
     };
 
     await settingsAPI.changeSettings(body, true);
+    await securityChecksAPI.disableCheck('mysql_anonymous_users');
+    await securityChecksAPI.changeCheckInterval('postgresql_version');
+    await settingsAPI.setCheckIntervals({ ...settingsAPI.defaultCheckIntervals, standard_interval: '3600s' });
     I.wait(10);
   },
 );
@@ -282,7 +285,7 @@ if (versionMinor >= 13) {
 
 if (versionMinor >= 16) {
   Scenario(
-    'Verify disabled checks remain disabled after upgrade @post-upgrade @ami-upgrade @pmm-upgrade',
+    'Verify disabled checks remain disabled after upgrade @post-upgrade @pmm-upgrade',
     async ({
       I, allChecksPage,
     }) => {
@@ -296,7 +299,7 @@ if (versionMinor >= 16) {
   );
 
   Scenario(
-    'Verify silenced checks remain silenced after upgrade @post-upgrade @ami-upgrade @pmm-upgrade',
+    'Verify silenced checks remain silenced after upgrade @post-upgrade @pmm-upgrade',
     async ({
       I, databaseChecksPage,
     }) => {
@@ -313,7 +316,7 @@ if (versionMinor >= 16) {
   );
 
   Scenario(
-    'Verify check intervals remain the same after upgrade @post-upgrade @ami-upgrade @pmm-upgrade',
+    'Verify check intervals remain the same after upgrade @post-upgrade @pmm-upgrade',
     async ({
       I, allChecksPage,
     }) => {
