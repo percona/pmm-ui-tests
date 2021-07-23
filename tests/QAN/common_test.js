@@ -29,7 +29,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T223 - Verify values in overview and in details match @qan',
+  'PMM-T186 - Verify values in overview and in details match @qan',
   async ({
     I, qanOverview, qanFilters, qanDetails, adminPage,
   }) => {

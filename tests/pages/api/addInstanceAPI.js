@@ -19,6 +19,8 @@ module.exports = {
         return this.addPostgresql(serviceName);
       case remoteInstancesHelper.instanceTypes.rds:
         return this.addRDS(serviceName);
+      case remoteInstancesHelper.instanceTypes.postgresGC:
+        return await this.addPostgreSQLGC(serviceName);
       default:
         throw new Error('Unknown instance type');
     }
@@ -64,6 +66,28 @@ module.exports = {
       username: remoteInstancesHelper.remote_instance.postgresql.pdpgsql_13_3.username,
       password: remoteInstancesHelper.remote_instance.postgresql.pdpgsql_13_3.password,
       cluster: remoteInstancesHelper.remote_instance.postgresql.pdpgsql_13_3.clusterName,
+      pmm_agent_id: 'pmm-server',
+      qan_postgresql_pgstatements_agent: true,
+      tls_skip_verify: true,
+    };
+    const headers = { Authorization: `Basic ${await I.getAuth()}` };
+    const resp = await I.sendPostRequest('v1/management/PostgreSQL/Add', body, headers);
+
+    assert.equal(resp.status, 200, `Instance ${serviceName} was not added for monitoring`);
+  },
+
+  async addPostgreSQLGC(serviceName) {
+    const body = {
+      add_node: {
+        node_name: serviceName,
+        node_type: 'REMOTE_NODE',
+      },
+      port: 5432,
+      address: remoteInstancesHelper.remote_instance.gc.gc_postgresql.address,
+      service_name: serviceName,
+      username: remoteInstancesHelper.remote_instance.gc.gc_postgresql.userName,
+      password: remoteInstancesHelper.remote_instance.gc.gc_postgresql.password,
+      cluster: 'postgresql_clust',
       pmm_agent_id: 'pmm-server',
       qan_postgresql_pgstatements_agent: true,
       tls_skip_verify: true,
