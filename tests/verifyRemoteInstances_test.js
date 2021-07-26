@@ -61,6 +61,9 @@ Data(instances).Scenario(
     remoteInstancesPage.waitUntilRemoteInstancesPageLoaded();
     remoteInstancesPage.openAddRemotePage(current.name);
     remoteInstancesPage.fillRemoteFields(serviceName);
+    if(serviceName==='mysql_tls_remote_new'){
+      remoteInstancesPage.fillTLS();
+    }
     remoteInstancesPage.createRemoteInstance(serviceName);
   },
 );
