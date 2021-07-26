@@ -171,6 +171,15 @@ module.exports = {
     return this;
   },
 
+  async fillTLS(){
+    pause();
+    I.click(this.fields.useTLS);
+    const tlsCA = await I.verifyCommand('cat /tmp/ssl/pmm-ui-tests/testdata/mysql/ssl-cert-scripts/certs/root-ca.pem');
+    console.log(tlsCA);
+    I.fillField(this.fields.tlscaInput, tlsCA)
+    
+  },
+
   fillEnvironmentAndCluster(serviceName) {
     // eslint-disable-next-line default-case
     switch (serviceName) {
