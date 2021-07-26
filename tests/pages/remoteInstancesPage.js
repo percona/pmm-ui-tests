@@ -171,13 +171,11 @@ module.exports = {
     return this;
   },
 
-  async fillTLS(){
-    pause();
-    I.click(this.fields.useTLS);
-    const tlsCA = await I.verifyCommand('cat /tmp/ssl/pmm-ui-tests/testdata/mysql/ssl-cert-scripts/certs/root-ca.pem');
-    console.log(tlsCA);
-    I.fillField(this.fields.tlscaInput, tlsCA)
-    
+  async fillTLS(file, field) {
+    const certificateData = await I.verifyCommand(`cat ./testdata/mysql/ssl-cert-scripts/certs/${file}`);
+
+    I.waitForVisible(field, 30);
+    I.fillField(field, certificateData);
   },
 
   fillEnvironmentAndCluster(serviceName) {

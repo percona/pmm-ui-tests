@@ -61,9 +61,13 @@ Data(instances).Scenario(
     remoteInstancesPage.waitUntilRemoteInstancesPageLoaded();
     remoteInstancesPage.openAddRemotePage(current.name);
     remoteInstancesPage.fillRemoteFields(serviceName);
-    if(serviceName==='mysql_tls_remote_new'){
-      remoteInstancesPage.fillTLS();
+    if (serviceName === 'mysql_tls_remote_new') {
+      I.click(remoteInstancesPage.fields.useTLS);
+      await remoteInstancesPage.fillTLS('root-ca.pem', remoteInstancesPage.fields.tlscaInput);
+      await remoteInstancesPage.fillTLS('client-cert.pem', remoteInstancesPage.fields.tlsCertificateInput);
+      await remoteInstancesPage.fillTLS('client-key.pem', remoteInstancesPage.fields.tlsCertificateKeyInput);
     }
+
     remoteInstancesPage.createRemoteInstance(serviceName);
   },
 );
