@@ -120,7 +120,7 @@ Scenario(
 
 Scenario(
   'Verify user is able to set custom Settings like Data_retention, Resolution @pre-upgrade @ami-upgrade @pmm-upgrade',
-  async ({ settingsAPI, securityChecksAPI, I }) => {
+  async ({ settingsAPI, I }) => {
     const body = {
       telemetry_enabled: true,
       metrics_resolutions: {
