@@ -61,7 +61,7 @@ Data(instances).Scenario(
     remoteInstancesPage.waitUntilRemoteInstancesPageLoaded();
     remoteInstancesPage.openAddRemotePage(current.name);
     remoteInstancesPage.fillRemoteFields(serviceName);
-    if (serviceName === 'mysql_tls_remote_new') {
+    if (serviceName === remoteInstancesHelper.services.mysqlTLS) {
       I.click(remoteInstancesPage.fields.useTLS);
       await remoteInstancesPage.fillTLS('root-ca.pem', remoteInstancesPage.fields.tlscaInput);
       await remoteInstancesPage.fillTLS('client-cert.pem', remoteInstancesPage.fields.tlsCertificateInput);
@@ -109,6 +109,23 @@ Data(instances).Scenario(
     I.amOnPage(pmmInventoryPage.url);
     pmmInventoryPage.verifyRemoteServiceIsDisplayed(serviceName);
     await pmmInventoryPage.verifyAgentHasStatusRunning(serviceName);
+  },
+);
+
+Scenario.only(
+  'PMM-T802 - Verify it is possible to add Remote MySQL with enabled TLS @instances',
+  async ({
+    I, pmmInventoryPage,
+  }) => {
+    const serviceName = remoteInstancesHelper.services.mysqlTLS;
+
+    I.amOnPage(pmmInventoryPage.url);
+    pmmInventoryPage.verifyRemoteServiceIsDisplayed(serviceName);
+    const serviceId = await pmmInventoryPage.getServiceId(serviceName);
+
+    I.click(pmmInventoryPage.fields.agentsLink);
+    await pmmInventoryPage.checkAgentOtherDetailsSection('tls:', 'tls: true', serviceName, serviceId);
+    await pmmInventoryPage.checkAgentOtherDetailsSection('tls_skip_verify:', 'tls_skip_verify: true', serviceName, serviceId);
   },
 );
 
