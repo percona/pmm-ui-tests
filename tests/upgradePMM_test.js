@@ -43,24 +43,26 @@ Before(async ({ I }) => {
 });
 
 BeforeSuite(async ({ I, codeceptjsConfig }) => {
-  const mysqlComposeConnection = {
-    host: process.env.AMI_INSTANCE_IP || '127.0.0.1',
-    port: connection.port,
-    username: connection.username,
-    password: connection.password,
-  };
+  if (process.env.AMI_UPGRADE_TESTING_INSTANCE !== 'true') {
+    const mysqlComposeConnection = {
+      host: (process.env.AMI_UPGRADE_TESTING_INSTANCE === 'true' ? process.env.VM_CLIENT_IP : '127.0.0.1'),
+      port: (process.env.AMI_UPGRADE_TESTING_INSTANCE === 'true' ? remoteInstancesHelper.remote_instance.mysql.ps_5_7.port : connection.port),
+      username: connection.username,
+      password: connection.password,
+    };
 
-  perconaServerDB.connectToPS(mysqlComposeConnection);
+    perconaServerDB.connectToPS(mysqlComposeConnection);
 
-  // Connect to MongoDB
-  const mongoConnection = {
-    host: process.env.AMI_INSTANCE_IP || codeceptjsConfig.config.helpers.MongoDBHelper.host,
-    port: codeceptjsConfig.config.helpers.MongoDBHelper.port,
-    username: codeceptjsConfig.config.helpers.MongoDBHelper.username,
-    password: codeceptjsConfig.config.helpers.MongoDBHelper.password,
-  };
+    // Connect to MongoDB
+    const mongoConnection = {
+      host: (process.env.AMI_UPGRADE_TESTING_INSTANCE === 'true' ? process.env.VM_CLIENT_IP : codeceptjsConfig.config.helpers.MongoDBHelper.host),
+      port: (process.env.AMI_UPGRADE_TESTING_INSTANCE === 'true' ? remoteInstancesHelper.remote_instance.mongodb.psmdb_4_2.port : codeceptjsConfig.config.helpers.MongoDBHelper.port),
+      username: codeceptjsConfig.config.helpers.MongoDBHelper.username,
+      password: codeceptjsConfig.config.helpers.MongoDBHelper.password,
+    };
 
-  await I.mongoConnect(mongoConnection);
+    await I.mongoConnect(mongoConnection);
+  }
 });
 
 AfterSuite(async ({ I, perconaServerDB }) => {
@@ -193,7 +195,7 @@ if (iaReleased) {
 
 if (versionMinor >= 13) {
   Scenario(
-    'Verify user has failed checks before upgrade @pre-upgrade @ami-upgrade @pmm-upgrade',
+    'Verify user has failed checks before upgrade @pre-upgrade @pmm-upgrade',
     async ({
       I, settingsAPI, databaseChecksPage, securityChecksAPI,
     }) => {
@@ -236,7 +238,7 @@ Scenario(
 );
 
 Scenario(
-  'Run queries for MongoDB after upgrade @post-upgrade @ami-upgrade @pmm-upgrade',
+  'Run queries for MongoDB after upgrade @post-upgrade @pmm-upgrade',
   async ({ I }) => {
     const col = await I.mongoCreateCollection('local', 'e2e');
 
@@ -259,7 +261,7 @@ Scenario(
 
 if (versionMinor >= 13) {
   Scenario(
-    'Verify user has failed checks after upgrade / STT on @post-upgrade @ami-upgrade @pmm-upgrade',
+    'Verify user has failed checks after upgrade / STT on @post-upgrade @pmm-upgrade',
     async ({
       I, pmmSettingsPage, securityChecksAPI, databaseChecksPage,
     }) => {
@@ -280,7 +282,7 @@ if (versionMinor >= 13) {
 
 if (versionMinor >= 16) {
   Scenario(
-    'Verify disabled checks remain disabled after upgrade @post-upgrade @ami-upgrade @pmm-upgrade',
+    'Verify disabled checks remain disabled after upgrade @post-upgrade @pmm-upgrade',
     async ({
       I, allChecksPage,
     }) => {
@@ -294,7 +296,7 @@ if (versionMinor >= 16) {
   );
 
   Scenario(
-    'Verify silenced checks remain silenced after upgrade @post-upgrade @ami-upgrade @pmm-upgrade',
+    'Verify silenced checks remain silenced after upgrade @post-upgrade @pmm-upgrade',
     async ({
       I, databaseChecksPage,
     }) => {
@@ -311,7 +313,7 @@ if (versionMinor >= 16) {
   );
 
   Scenario(
-    'Verify check intervals remain the same after upgrade @post-upgrade @ami-upgrade @pmm-upgrade',
+    'Verify check intervals remain the same after upgrade @post-upgrade @pmm-upgrade',
     async ({
       I, allChecksPage,
     }) => {
@@ -324,7 +326,7 @@ if (versionMinor >= 16) {
   );
 
   Scenario(
-    'Verify settings for intervals remain the same after upgrade @post-upgrade @ami-upgrade @pmm-upgrade',
+    'Verify settings for intervals remain the same after upgrade @post-upgrade @pmm-upgrade',
     async ({
       I, pmmSettingsPage,
     }) => {
