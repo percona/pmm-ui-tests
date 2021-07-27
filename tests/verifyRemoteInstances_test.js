@@ -112,7 +112,7 @@ Data(instances).Scenario(
   },
 );
 
-Scenario.only(
+Scenario(
   'PMM-T802 - Verify it is possible to add Remote MySQL with enabled TLS @instances',
   async ({
     I, pmmInventoryPage,
