@@ -194,7 +194,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T635 - Verify Adding HAProxy service via UI @not-ovf @instances',
+  'PMM-T635 - Verify Adding HAProxy service via UI @instances',
   async ({
     I, remoteInstancesPage, pmmInventoryPage,
   }) => {
@@ -265,7 +265,7 @@ Scenario(
 );
 
 Data(dashboardCheck).Scenario(
-  'PMM-T853 - Verify dashboard after remote postgreSQL instance is added @instances @not-ovf',
+  'PMM-T853 - Verify dashboard after remote postgreSQL instance is added @instances',
   async ({
     I, dashboardPage, adminPage, current,
   }) => {

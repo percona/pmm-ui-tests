@@ -1,5 +1,3 @@
-const { I } = inject();
-
 const remoteInstanceStatus = {
   mysql: {
     ps_5_7: {
@@ -21,7 +19,7 @@ const remoteInstanceStatus = {
   },
   proxysql: {
     proxysql_2_1_1: {
-      enabled: true,
+      enabled: process.env.OVF_TEST !== 'yes',
     },
   },
   haproxy: {
@@ -55,17 +53,44 @@ const remoteInstanceStatus = {
   },
   gc: {
     gc_postgresql: {
-      enabled: true,
+      enabled: process.env.OVF_TEST !== 'yes',
     },
   },
 };
+
+let SERVER_HOST; let EXTERNAL_EXPORTER_HOST; let DB_CONFIG = {};
+let PMM_SERVER_OVF_AMI_SETUP = 'false';
+
+DB_CONFIG = {
+  MYSQL_SERVER_PORT: '3306',
+  POSTGRES_SERVER_PORT: '5432',
+  MONGODB_SERVER_PORT: '27017',
+  PROXYSQL_SERVER_PORT: '6032',
+};
+
+if (process.env.AMI_UPGRADE_TESTING_INSTANCE === 'true') {
+  PMM_SERVER_OVF_AMI_SETUP = 'true';
+  SERVER_HOST = process.env.VM_CLIENT_IP;
+  EXTERNAL_EXPORTER_HOST = process.env.VM_CLIENT_IP;
+  DB_CONFIG.MYSQL_SERVER_PORT = '42300';
+  DB_CONFIG.MONGODB_SERVER_PORT = '42100';
+  DB_CONFIG.POSTGRES_SERVER_PORT = '42200';
+  DB_CONFIG.PROXYSQL_SERVER_PORT = '46032';
+}
+
+if (process.env.OVF_TEST === 'yes') {
+  PMM_SERVER_OVF_AMI_SETUP = 'true';
+  SERVER_HOST = process.env.SERVER_IP;
+  EXTERNAL_EXPORTER_HOST = process.env.SERVER_IP;
+  DB_CONFIG.POSTGRES_SERVER_PORT = '5433';
+}
 
 module.exports = {
   remote_instance: {
     mysql: {
       ps_5_7: {
-        host: (process.env.AMI_UPGRADE_TESTING_INSTANCE === 'true' ? '127.0.0.1' : 'mysql'),
-        port: '3306',
+        host: (PMM_SERVER_OVF_AMI_SETUP === 'true' ? SERVER_HOST : 'mysql'),
+        port: DB_CONFIG.MYSQL_SERVER_PORT,
         username: 'pmm-agent',
         password: 'pmm%*&agent-password',
         clusterName: 'mysql_clstr',
@@ -80,8 +105,8 @@ module.exports = {
     },
     mongodb: {
       psmdb_4_2: {
-        host: (process.env.AMI_UPGRADE_TESTING_INSTANCE === 'true' ? '127.0.0.1' : 'mongo'),
-        port: '27017',
+        host: (PMM_SERVER_OVF_AMI_SETUP === 'true' ? SERVER_HOST : 'mongo'),
+        port: DB_CONFIG.MONGODB_SERVER_PORT,
         username: 'root',
         password: 'root-!@#%^password',
         clusterName: 'mongo_clstr',
@@ -89,8 +114,8 @@ module.exports = {
     },
     postgresql: {
       pdpgsql_13_3: {
-        host: (process.env.AMI_UPGRADE_TESTING_INSTANCE === 'true' ? '127.0.0.1' : 'postgres'),
-        port: (process.env.AMI_UPGRADE_TESTING_INSTANCE === 'true' ? '5433' : '5432'),
+        host: (PMM_SERVER_OVF_AMI_SETUP === 'true' ? SERVER_HOST : 'postgres'),
+        port: DB_CONFIG.POSTGRES_SERVER_PORT,
         username: 'postgres',
         password: 'pmm-^*&@agent-password',
         clusterName: 'pgsql_clstr',
@@ -98,8 +123,8 @@ module.exports = {
     },
     proxysql: {
       proxysql_2_1_1: {
-        host: (process.env.AMI_UPGRADE_TESTING_INSTANCE === 'true' ? '127.0.0.1' : 'proxysql'),
-        port: '6032',
+        host: (PMM_SERVER_OVF_AMI_SETUP === 'true' ? SERVER_HOST : 'proxysql'),
+        port: DB_CONFIG.PROXYSQL_SERVER_PORT,
         username: 'radmin',
         password: 'radmin',
         clusterName: 'proxy_clstr',
@@ -107,14 +132,14 @@ module.exports = {
     },
     haproxy: {
       haproxy_2: {
-        host: (process.env.AMI_UPGRADE_TESTING_INSTANCE === 'true' ? process.env.VM_CLIENT_IP : '192.168.0.1'),
+        host: (PMM_SERVER_OVF_AMI_SETUP === 'true' ? EXTERNAL_EXPORTER_HOST : '192.168.0.1'),
         port: '42100',
         clusterName: 'haproxy_clst',
       },
     },
     external: {
       redis: {
-        host: (process.env.AMI_UPGRADE_TESTING_INSTANCE === 'true' ? process.env.VM_CLIENT_IP : '192.168.0.1'),
+        host: (PMM_SERVER_OVF_AMI_SETUP === 'true' ? EXTERNAL_EXPORTER_HOST : '192.168.0.1'),
         port: '42200',
         clusterName: 'redis_external_exporter',
       },
@@ -130,31 +155,31 @@ module.exports = {
         port: 3306,
       },
       aws_rds_5_6: {
-        address: process.env.REMOTE_AWS_MYSQL57_HOST,
-        username: process.env.REMOTE_AWS_MYSQL_USER,
-        password: process.env.REMOTE_AWS_MYSQL_PASSWORD,
+        address: secret(process.env.REMOTE_AWS_MYSQL57_HOST),
+        username: secret(process.env.REMOTE_AWS_MYSQL_USER),
+        password: secret(process.env.REMOTE_AWS_MYSQL_PASSWORD),
         clusterName: 'aws_rds_mysql_5_6',
         port: 3306,
       },
       aws_postgresql_12: {
-        userName: process.env.REMOTE_AWS_POSTGRES12_USER,
-        password: process.env.REMOTE_AWS_POSTGRES12_PASSWORD,
+        userName: secret(process.env.REMOTE_AWS_POSTGRES12_USER),
+        password: secret(process.env.REMOTE_AWS_POSTGRES12_PASSWORD),
         clusterName: 'aws_postgresql_12',
         port: 5432,
       },
     },
     azure: {
-      azure_client_id: process.env.AZURE_CLIENT_ID,
-      azure_client_secret: process.env.AZURE_CLIENT_SECRET,
-      azure_tenant_id: process.env.AZURE_TENNANT_ID,
-      azure_subscription_id: process.env.AZURE_SUBSCRIPTION_ID,
+      azure_client_id: secret(process.env.AZURE_CLIENT_ID),
+      azure_client_secret: secret(process.env.AZURE_CLIENT_SECRET),
+      azure_tenant_id: secret(process.env.AZURE_TENNANT_ID),
+      azure_subscription_id: secret(process.env.AZURE_SUBSCRIPTION_ID),
       azure_mysql: {
-        userName: process.env.AZURE_MYSQL_USER,
-        password: process.env.AZURE_MYSQL_PASS,
+        userName: secret(process.env.AZURE_MYSQL_USER),
+        password: secret(process.env.AZURE_MYSQL_PASS),
       },
       azure_postgresql: {
-        userName: process.env.AZURE_POSTGRES_USER,
-        password: process.env.AZURE_POSTGRES_PASS,
+        userName: secret(process.env.AZURE_POSTGRES_USER),
+        password: secret(process.env.AZURE_POSTGRES_PASS),
       },
     },
     gc: {

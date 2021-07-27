@@ -200,9 +200,7 @@ module.exports = {
         I.fillField(this.fields.hostName, remoteInstancesHelper.remote_instance.mysql.ps_5_7.host);
         I.fillField(this.fields.userName, remoteInstancesHelper.remote_instance.mysql.ps_5_7.username);
         I.fillField(this.fields.password, remoteInstancesHelper.remote_instance.mysql.ps_5_7.password);
-        I.appendField(this.fields.portNumber, '');
-        I.pressKey(['Shift', 'Home']);
-        I.pressKey('Backspace');
+        adminPage.customClearField(this.fields.portNumber);
         I.fillField(this.fields.portNumber, remoteInstancesHelper.remote_instance.mysql.ps_5_7.port);
         I.fillField(this.fields.serviceName, serviceName);
         this.fillEnvironmentAndCluster(serviceName);
@@ -228,6 +226,11 @@ module.exports = {
           this.fields.password,
           remoteInstancesHelper.remote_instance.postgresql.pdpgsql_13_3.password,
         );
+        adminPage.customClearField(this.fields.portNumber);
+        I.fillField(
+          this.fields.portNumber,
+          remoteInstancesHelper.remote_instance.postgresql.pdpgsql_13_3.port,
+        );
         I.fillField(this.fields.serviceName, serviceName);
         I.fillField(this.fields.environment, this.potgresqlSettings.environment);
         I.fillField(this.fields.cluster, this.potgresqlSettings.cluster);
@@ -250,9 +253,7 @@ module.exports = {
         I.fillField(this.fields.serviceName, serviceName);
         I.fillField(this.fields.hostName, remoteInstancesHelper.remote_instance.external.redis.host);
         I.fillField(this.fields.metricsPath, '/metrics');
-        I.appendField(this.fields.portNumber, '');
-        I.pressKey(['Shift', 'Home']);
-        I.pressKey('Backspace');
+        adminPage.customClearField(this.fields.portNumber);
         I.fillField(this.fields.portNumber, remoteInstancesHelper.remote_instance.external.redis.port);
         I.fillField(this.fields.environment, 'remote-external-service');
         I.fillField(this.fields.cluster, 'remote-external-cluster');
@@ -271,6 +272,11 @@ module.exports = {
         I.fillField(
           this.fields.password,
           remoteInstancesHelper.remote_instance.postgresql.pdpgsql_13_3.password,
+        );
+        adminPage.customClearField(this.fields.portNumber);
+        I.fillField(
+          this.fields.portNumber,
+          remoteInstancesHelper.remote_instance.postgresql.pdpgsql_13_3.port,
         );
         I.fillField(this.fields.serviceName, serviceName);
         break;
