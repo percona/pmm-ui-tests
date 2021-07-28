@@ -12,6 +12,8 @@ module.exports = {
     allChecksPage: './tests/stt/pages/allChecksPage.js',
     amiInstanceSetupPage: './tests/pages/amiInstanceSetupPage.js',
     annotationAPI: './tests/pages/api/annotationAPI.js',
+    backupAPI: './tests/backup/pages/api/backupAPI.js',
+    backupInventoryPage: './tests/backup/pages/inventoryPage.js',
     channelsAPI: './tests/ia/pages/api/channelsAPI.js',
     dashboardPage: './tests/pages/dashboardPage.js',
     databaseChecksPage: './tests/stt/pages/databaseChecksPage.js',

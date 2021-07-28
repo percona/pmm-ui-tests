@@ -34,6 +34,7 @@ module.exports = {
       secretKey: '$small-secret-holder',
     },
     confirmDelete: locate('$modal-content').find('h4'),
+    deleteWarning: '$warning-block',
     columnHeaderLocator: (columnHeaderText) => `//th[text()="${columnHeaderText}"]`,
   },
   buttons: {
@@ -50,6 +51,7 @@ module.exports = {
     showDetails: (name) => locate('$show-details').inside(locationCell(name)),
     hideDetails: (name) => locate('$hide-details').inside(locationCell(name)),
     showSecret: locate('div').after('$small-secret-holder'),
+    forceDeleteCheckbox: '$force-checkbox-input',
     cancelDelete: '$cancel-delete-modal-button',
     confirmDelete: '$confirm-delete-modal-button',
   },
@@ -73,6 +75,8 @@ module.exports = {
     successfullyDeleted: (name) => `Backup location "${name}" successfully deleted.`,
     requiredField: 'Required field',
     locationAlreadyExists: (name) => `Location with name "${name}" already exists.`,
+    locationHasArtifacts: (location_id) => `backup location with ID "${location_id}" has artifacts.`,
+    deleteWarning: 'This action will only remove the Storage Location from PMM inventory, but will not delete the physical storage.',
   },
   locationType: {
     s3: 'S3',
@@ -91,6 +95,11 @@ module.exports = {
 
     I.seeTextEquals(this.messages.modalHeaderText, this.elements.modalHeader);
     I.seeElement(this.buttons.closeModal);
+  },
+  openDeleteLocationModal(locationName) {
+    I.waitForVisible(this.buttons.deleteByName(locationName), 10);
+    I.click(this.buttons.deleteByName(locationName));
+    I.waitForVisible(this.buttons.forceDeleteCheckbox, 10);
   },
 
   fillLocationFields(locationObj) {

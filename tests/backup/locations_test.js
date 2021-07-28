@@ -1,12 +1,34 @@
+let nodeID;
+let serviceID;
+
 Feature('BM: Backup Locations').retry(1);
+
+BeforeSuite(async ({
+  addInstanceAPI, remoteInstancesHelper,
+}) => {
+  const { service: { service_id, node_id } } = await addInstanceAPI.apiAddInstance(
+    remoteInstancesHelper.instanceTypes.mysql,
+    'backup_mysql',
+  );
+
+  // Assign nodeID to delete this node after test
+  nodeID = node_id;
+  serviceID = service_id;
+});
 
 Before(async ({
   I, settingsAPI, locationsPage, locationsAPI,
 }) => {
   await I.Authorize();
   await settingsAPI.changeSettings({ backup: true });
-  await locationsAPI.clearAllLocations();
+  await locationsAPI.clearAllLocations(true);
   locationsPage.openLocationsPage();
+});
+
+AfterSuite(async ({
+  inventoryAPI,
+}) => {
+  if (nodeID) await inventoryAPI.deleteNode(nodeID, true);
 });
 
 const s3Errors = new DataTable(['field', 'value', 'error']);
@@ -90,7 +112,6 @@ Scenario(
   },
 );
 
-// TODO: add invalid creds test
 Scenario(
   'PMM-T707 Verify user is able to test connection for storage location @backup',
   async ({
@@ -193,7 +214,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T693 Verify user is not able to delete storage location @backup',
+  'PMM-T693 Verify user is able to delete storage location @backup',
   async ({
     I, locationsPage, locationsAPI,
   }) => {
@@ -204,24 +225,71 @@ Scenario(
 
     await locationsAPI.createStorageLocation(location);
     locationsPage.openLocationsPage();
-    I.waitForVisible(locationsPage.buttons.deleteByName(location.name));
-    I.click(locationsPage.buttons.deleteByName(location.name));
+    locationsPage.openDeleteLocationModal(location.name);
 
     I.waitForText(locationsPage.messages.deleteModalHeaderText, 10, locationsPage.elements.modalHeader);
     I.seeTextEquals(
       locationsPage.messages.confirmDelete(location.name),
       locationsPage.elements.confirmDelete,
     );
+    I.seeTextEquals(locationsPage.messages.deleteWarning, locationsPage.elements.deleteWarning);
     I.seeElement(locationsPage.buttons.cancelDelete);
     I.click(locationsPage.buttons.cancelDelete);
     I.dontSeeElement(locationsPage.elements.modalHeader);
 
-    I.click(locationsPage.buttons.deleteByName(location.name));
-    I.waitForText(locationsPage.messages.deleteModalHeaderText, 10, locationsPage.elements.modalHeader);
+    locationsPage.openDeleteLocationModal(location.name);
     I.click(locationsPage.buttons.confirmDelete);
     I.verifyPopUpMessage(locationsPage.messages.successfullyDeleted(location.name));
 
     I.dontSeeElement(locationsPage.buttons.deleteByName(location.name));
+  },
+);
+
+Scenario(
+  'PMM-T695 Verify user is not able to delete storage location that has backups @backup',
+  async ({
+    I, locationsPage, locationsAPI, backupAPI,
+  }) => {
+    const location = {
+      name: 'location',
+      ...locationsPage.storageLocationConnection,
+    };
+
+    const location_id = await locationsAPI.createStorageLocation(location);
+
+    await backupAPI.startBackup('delete location', serviceID, location_id);
+    locationsPage.openLocationsPage();
+    locationsPage.openDeleteLocationModal(location.name);
+    I.click(locationsPage.buttons.confirmDelete);
+
+    I.verifyPopUpMessage(locationsPage.messages.locationHasArtifacts(location_id));
+  },
+);
+
+Scenario(
+  'PMM-T694 Verify user is able to force delete storage location that has backups @backup',
+  async ({
+    I, locationsPage, locationsAPI, backupAPI, backupInventoryPage,
+  }) => {
+    const location = {
+      name: 'location',
+      ...locationsPage.storageLocationConnection,
+    };
+    const backupName = 'delete location';
+
+    const location_id = await locationsAPI.createStorageLocation(location);
+
+    await backupAPI.startBackup(backupName, serviceID, location_id);
+    locationsPage.openLocationsPage();
+    locationsPage.openDeleteLocationModal(location.name);
+    I.forceClick(locationsPage.buttons.forceDeleteCheckbox);
+    I.click(locationsPage.buttons.confirmDelete);
+
+    I.verifyPopUpMessage(locationsPage.messages.successfullyDeleted(location.name));
+    I.dontSeeElement(locationsPage.buttons.deleteByName(location.name));
+
+    backupInventoryPage.openInventoryPage();
+    I.dontSeeElement(backupInventoryPage.buttons.restoreByName(backupName));
   },
 );
 

@@ -42,7 +42,7 @@ module.exports = {
     if (!locations) return;
 
     for (const { location_id } of locations) {
-      await this.removeLocation(location_id);
+      await this.removeLocation(location_id, true);
     }
   },
 
@@ -53,9 +53,10 @@ module.exports = {
     return resp.data.locations;
   },
 
-  async removeLocation(locationId) {
+  async removeLocation(locationId, force) {
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
     const body = {
+      force,
       location_id: locationId,
     };
     const resp = await I.sendPostRequest('v1/management/backup/Locations/Remove', body, headers);
