@@ -24,6 +24,8 @@ module.exports = {
     inventoryAPI: './tests/pages/api/inventoryAPI.js',
     mysqlTableDetailsPage: './tests/pages/mysqlTableDetailsPage.js',
     links: './linksHelper.js',
+    locationsPage: './tests/backup/pages/locationsPage.js',
+    locationsAPI: './tests/backup/pages/api/locationsAPI.js',
     ncPage: './tests/ia/pages/notificationChannelsPage.js',
     perconaServerDB: './tests/DbHelpers/perconaServerDB.js',
     pmmDemoPage: './tests/pages/pmmDemoPage.js',
@@ -45,7 +47,7 @@ module.exports = {
     templatesAPI: './tests/ia/pages/api/templatesAPI.js',
   },
   getChunks: (files) => {
-    const dependentTests = files.filter((value) => /PMMSettings|stt|ia|Azure/.test(value));
+    const dependentTests = files.filter((value) => /PMMSettings|stt|ia|Azure|backup/.test(value));
     const dbaasTests = files.filter((value) => /DbaaS/.test(value));
     const otherTests = files.filter((val) => !dependentTests.includes(val) && !dbaasTests.includes(val));
 

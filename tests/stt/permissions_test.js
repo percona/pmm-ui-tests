@@ -120,3 +120,17 @@ Scenario(
     I.dontSeeElement(databaseChecksPage.fields.noAccessRightsSelector);
   },
 );
+
+Scenario(
+  'PMM-T682 Verify backup locations access for user with viewer role [critical] @backup @grafana-pr',
+  async ({
+    I, databaseChecksPage, settingsAPI, locationsPage,
+  }) => {
+    await settingsAPI.changeSettings({ backup: true });
+    await I.Authorize(users.viewer.username, users.viewer.password);
+
+    I.amOnPage(locationsPage.url);
+    I.waitForVisible(databaseChecksPage.fields.noAccessRightsSelector, 30);
+    I.see('Insufficient access permissions.', databaseChecksPage.fields.noAccessRightsSelector);
+  },
+);
