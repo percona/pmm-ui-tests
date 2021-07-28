@@ -172,7 +172,7 @@ module.exports = {
   },
 
   async fillTLS(file, field) {
-    const certificateData = await I.verifyCommand(`cat ./testdata/mysql/ssl-cert-scripts/certs/${file}`);
+    const certificateData = await I.verifyCommand(`cat /tmp/ssl/pmm-ui-tests/testdata/mysql/ssl-cert-scripts/certs/${file}`);
 
     I.waitForVisible(field, 30);
     I.fillField(field, certificateData);
