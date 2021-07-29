@@ -223,7 +223,7 @@ Scenario('PMM-T456 Verify Create Cluster steps validation fields disabled/enable
     await dbaasAPI.apiUnregisterCluster(clusterName);
   });
 
-Data(inputFields).Scenario('PMM-T456 Verify Create Cluster steps validation - field input validation @dbaas @nightly',
+Data(inputFields).Scenario('PMM-T456 Verify Create Cluster steps validation - field input validation @dbaas',
   async ({
     I, dbaasPage, dbaasAPI, adminPage, current, dbaasManageVersionPage,
   }) => {
@@ -253,7 +253,7 @@ Data(inputFields).Scenario('PMM-T456 Verify Create Cluster steps validation - fi
     );
   });
 
-Data(resourceFields).Scenario('PMM-T828 Verify the Configuration for Small, Medium, Large Resource @dbaas @nightly',
+Data(resourceFields).Scenario('PMM-T828 Verify the Configuration for Small, Medium, Large Resource @dbaas',
   async ({
     I, dbaasPage, dbaasAPI, current,
   }) => {
