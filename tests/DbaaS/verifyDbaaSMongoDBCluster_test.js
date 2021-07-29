@@ -88,7 +88,7 @@ Scenario('PMM-T477 PMM-T461 Verify MongoDB Cluster can be restarted, unregister 
     await dbaasActionsPage.deletePSMDBCluster(psmdb_cluster, clusterName);
   });
 
-Scenario('PMM-787 Verify Editing MonogDB Cluster is possible. @dbaas @nightly',
+Scenario('PMM-787 Verify Editing MonogDB Cluster is possible. @dbaas',
   async ({
     I, dbaasPage, dbaasAPI, dbaasActionsPage,
   }) => {
@@ -120,7 +120,7 @@ Scenario('PMM-787 Verify Editing MonogDB Cluster is possible. @dbaas @nightly',
   });
 
 // Need to Skip due to bug in operator latest version https://jira.percona.com/browse/PMM-8094
-xScenario('PMM-T525 PMM-T528 Verify Suspend & Resume for Mongo DB Cluster Works as expected @dbaas @nightly',
+xScenario('PMM-T525 PMM-T528 Verify Suspend & Resume for Mongo DB Cluster Works as expected @dbaas',
   async ({ I, dbaasPage, dbaasActionsPage }) => {
     const psmdb_cluster_suspend_resume = 'psmdb-suspend-resume';
     const clusterDetails = {
