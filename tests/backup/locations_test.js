@@ -1,20 +1,34 @@
+const faker = require('faker');
+
+const { locationsPage } = inject();
+
+const isOVF = process.env.OVF_TEST === 'yes' || false;
+
+const location = {
+  name: `${faker.lorem.word()}_location`,
+  description: 'test description',
+  ...locationsPage.storageLocationConnection,
+};
+
 let nodeID;
 let serviceID;
 
 Feature('BM: Backup Locations').retry(1);
 
-BeforeSuite(async ({
-  addInstanceAPI, remoteInstancesHelper,
-}) => {
-  const { service: { service_id, node_id } } = await addInstanceAPI.apiAddInstance(
-    remoteInstancesHelper.instanceTypes.mysql,
-    'backup_mysql',
-  );
+if (!isOVF) {
+  BeforeSuite(async ({
+    addInstanceAPI, remoteInstancesHelper,
+  }) => {
+    const { service: { service_id, node_id } } = await addInstanceAPI.apiAddInstance(
+      remoteInstancesHelper.instanceTypes.mysql,
+      'backup_mysql',
+    );
 
-  // Assign nodeID to delete this node after test
-  nodeID = node_id;
-  serviceID = service_id;
-});
+    // Assign nodeID to delete this node after test
+    nodeID = node_id;
+    serviceID = service_id;
+  });
+}
 
 Before(async ({
   I, settingsAPI, locationsPage, locationsAPI,
@@ -117,12 +131,6 @@ Scenario(
   async ({
     I, locationsPage,
   }) => {
-    const location = {
-      name: 'Location',
-      description: 'test description',
-      ...locationsPage.storageLocationConnection,
-    };
-
     locationsPage.openAddLocationModal();
 
     // Fill required fields
@@ -143,11 +151,6 @@ Data(s3Errors).Scenario(
   async ({
     I, locationsPage, current,
   }) => {
-    const location = {
-      name: 'Location',
-      ...locationsPage.storageLocationConnection,
-    };
-
     locationsPage.openAddLocationModal();
     locationsPage.fillLocationFields({ ...location, [current.field]: current.value });
     I.click(locationsPage.buttons.testLocation);
@@ -160,12 +163,6 @@ Scenario(
   async ({
     I, locationsPage,
   }) => {
-    const location = {
-      name: 'Location',
-      description: 'test description',
-      ...locationsPage.storageLocationConnection,
-    };
-
     locationsPage.openAddLocationModal();
 
     // Fill required fields
@@ -176,7 +173,6 @@ Scenario(
     I.verifyPopUpMessage(locationsPage.messages.successfullyAdded);
 
     // Verify table headers
-
     I.seeTextEquals('Name', locate('th').at(1));
     I.seeTextEquals('Type', locate('th').at(2));
     I.seeTextEquals('Endpoint or path', locate('th').at(3));
@@ -195,11 +191,6 @@ Scenario(
   async ({
     I, locationsPage, locationsAPI,
   }) => {
-    const location = {
-      name: 'location',
-      ...locationsPage.storageLocationConnection,
-    };
-
     await locationsAPI.createStorageLocation(location);
     locationsPage.openLocationsPage();
     locationsPage.openAddLocationModal();
@@ -218,11 +209,6 @@ Scenario(
   async ({
     I, locationsPage, locationsAPI,
   }) => {
-    const location = {
-      name: 'location',
-      ...locationsPage.storageLocationConnection,
-    };
-
     await locationsAPI.createStorageLocation(location);
     locationsPage.openLocationsPage();
     locationsPage.openDeleteLocationModal(location.name);
@@ -244,64 +230,51 @@ Scenario(
     I.dontSeeElement(locationsPage.buttons.deleteByName(location.name));
   },
 );
+if (!isOVF) {
+  Scenario(
+    'PMM-T695 Verify user is not able to delete storage location that has backups @backup',
+    async ({
+      I, locationsPage, locationsAPI, backupAPI,
+    }) => {
+      const location_id = await locationsAPI.createStorageLocation(location);
 
-Scenario(
-  'PMM-T695 Verify user is not able to delete storage location that has backups @backup',
-  async ({
-    I, locationsPage, locationsAPI, backupAPI,
-  }) => {
-    const location = {
-      name: 'location',
-      ...locationsPage.storageLocationConnection,
-    };
+      await backupAPI.startBackup('delete location', serviceID, location_id);
+      locationsPage.openLocationsPage();
+      locationsPage.openDeleteLocationModal(location.name);
+      I.click(locationsPage.buttons.confirmDelete);
 
-    const location_id = await locationsAPI.createStorageLocation(location);
+      I.verifyPopUpMessage(locationsPage.messages.locationHasArtifacts(location_id));
+    },
+  );
 
-    await backupAPI.startBackup('delete location', serviceID, location_id);
-    locationsPage.openLocationsPage();
-    locationsPage.openDeleteLocationModal(location.name);
-    I.click(locationsPage.buttons.confirmDelete);
+  Scenario(
+    'PMM-T694 Verify user is able to force delete storage location that has backups @backup',
+    async ({
+      I, locationsPage, locationsAPI, backupAPI, backupInventoryPage,
+    }) => {
+      const backupName = 'delete location';
+      const location_id = await locationsAPI.createStorageLocation(location);
 
-    I.verifyPopUpMessage(locationsPage.messages.locationHasArtifacts(location_id));
-  },
-);
+      await backupAPI.startBackup(backupName, serviceID, location_id);
+      locationsPage.openLocationsPage();
+      locationsPage.openDeleteLocationModal(location.name);
+      I.forceClick(locationsPage.buttons.forceDeleteCheckbox);
+      I.click(locationsPage.buttons.confirmDelete);
 
-Scenario(
-  'PMM-T694 Verify user is able to force delete storage location that has backups @backup',
-  async ({
-    I, locationsPage, locationsAPI, backupAPI, backupInventoryPage,
-  }) => {
-    const location = {
-      name: 'location',
-      ...locationsPage.storageLocationConnection,
-    };
-    const backupName = 'delete location';
+      I.verifyPopUpMessage(locationsPage.messages.successfullyDeleted(location.name));
+      I.dontSeeElement(locationsPage.buttons.deleteByName(location.name));
 
-    const location_id = await locationsAPI.createStorageLocation(location);
-
-    await backupAPI.startBackup(backupName, serviceID, location_id);
-    locationsPage.openLocationsPage();
-    locationsPage.openDeleteLocationModal(location.name);
-    I.forceClick(locationsPage.buttons.forceDeleteCheckbox);
-    I.click(locationsPage.buttons.confirmDelete);
-
-    I.verifyPopUpMessage(locationsPage.messages.successfullyDeleted(location.name));
-    I.dontSeeElement(locationsPage.buttons.deleteByName(location.name));
-
-    backupInventoryPage.openInventoryPage();
-    I.dontSeeElement(backupInventoryPage.buttons.restoreByName(backupName));
-  },
-);
+      backupInventoryPage.openInventoryPage();
+      I.dontSeeElement(backupInventoryPage.buttons.restoreByName(backupName));
+    },
+  );
+}
 
 Scenario(
   'PMM-T692 Verify user is able to edit storage location @backup',
   async ({
     I, locationsPage, locationsAPI,
   }) => {
-    const location = {
-      name: 'location',
-      ...locationsPage.storageLocationConnection,
-    };
     const updatedLocation = {
       ...location,
       name: 'updated location',
@@ -336,12 +309,6 @@ Scenario(
   async ({
     I, locationsPage, locationsAPI,
   }) => {
-    const location = {
-      name: 'location',
-      description: 'description',
-      ...locationsPage.storageLocationConnection,
-    };
-
     await locationsAPI.createStorageLocation(location);
     locationsPage.openLocationsPage();
 
