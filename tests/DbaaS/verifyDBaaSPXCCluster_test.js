@@ -175,7 +175,7 @@ Scenario('PMM-T488, PMM-T489 Verify editing PXC cluster changing single node to 
     await dbaasActionsPage.deleteXtraDBCluster(pxc_cluster_name_single, clusterName);
   });
 
-Scenario('PMM-T525 PMM-T528 Verify Suspend & Resume for DB Cluster Works as expected @dbaas @nightly',
+Scenario('PMM-T525 PMM-T528 Verify Suspend & Resume for DB Cluster Works as expected @dbaas',
   async ({ I, dbaasPage, dbaasActionsPage }) => {
     const pxc_cluster_suspend_resume = 'pxc-suspend-resume';
     const clusterDetails = {
@@ -269,7 +269,7 @@ xScenario('Verify Adding PMM-Server Public Address via Settings works @dbaas',
     I.dontSee(dbaasPage.monitoringWarningMessage);
   });
 
-Scenario('PMM-T717 Verify insufficient resources warning @dbaas @nightly',
+Scenario('PMM-T717 Verify insufficient resources warning @dbaas',
   async ({
     I, dbaasPage, dbaasAPI, dbaasActionsPage, adminPage,
   }) => {
