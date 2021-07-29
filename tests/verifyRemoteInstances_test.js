@@ -17,7 +17,7 @@ for (const [key, value] of Object.entries(remoteInstancesHelper.services)) {
         dashboardCheck.add([remoteInstancesHelper.services.postgresql]);
         break;
       case 'mysql':
-        qanFilters.add([remoteInstancesPage.mysqlSettings.environment]);
+        qanFilters.add([remoteInstancesHelper.services.mysql]);
         break;
       case 'postgresGC':
         dashboardCheck.add([remoteInstancesHelper.services.postgresGC]);

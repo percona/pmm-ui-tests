@@ -11,10 +11,6 @@ module.exports = {
 
   // insert your locators and methods here
   // setting locators
-  mysqlTLSSettings: {
-    environment: 'Remote MySQL TLS env',
-    cluster: 'Remote MySQL TLS cluster',
-  },
   postgresGCSettings: {
     environment: 'Remote PostgreSQL_GC env',
     cluster: 'Remote PostgreSQL_GC cluster',
@@ -178,20 +174,6 @@ module.exports = {
     I.fillField(field, certificateData);
   },
 
-  fillEnvironmentAndCluster(serviceName) {
-    // eslint-disable-next-line default-case
-    switch (serviceName) {
-      case remoteInstancesHelper.services.mysql:
-        I.fillField(this.fields.environment, this.mysqlSettings.environment);
-        I.fillField(this.fields.cluster, this.mysqlSettings.cluster);
-        break;
-      case remoteInstancesHelper.services.mysqlTLS:
-        I.fillField(this.fields.environment, this.mysqlTLSSettings.environment);
-        I.fillField(this.fields.cluster, this.mysqlTLSSettings.cluster);
-        break;
-    }
-  },
-
   fillRemoteFields(serviceName) {
     // eslint-disable-next-line default-case
     switch (serviceName) {
@@ -203,7 +185,6 @@ module.exports = {
         adminPage.customClearField(this.fields.portNumber);
         I.fillField(this.fields.portNumber, remoteInstancesHelper.remote_instance.mysql.ps_5_7.port);
         I.fillField(this.fields.serviceName, serviceName);
-        this.fillEnvironmentAndCluster(serviceName);
         break;
       case remoteInstancesHelper.services.mongodb:
         I.fillField(this.fields.hostName, remoteInstancesHelper.remote_instance.mongodb.psmdb_4_2.host);
