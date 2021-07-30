@@ -223,7 +223,7 @@ xScenario('Verify Adding PMM-Server Public Address via Settings works @dbaas',
 
     I.amOnPage(pmmSettingsPage.url);
     await pmmSettingsPage.waitForPmmSettingsPageLoaded();
-    await pmmSettingsPage.expandSection(sectionNameToExpand, pmmSettingsPage.fields.advancedButton);
+    await pmmSettingsPage.expandedSection(sectionNameToExpand, pmmSettingsPage.fields.advancedButton);
     await pmmSettingsPage.waitForPmmSettingsPageLoaded();
 
     I.waitForVisible(pmmSettingsPage.fields.publicAddressInput, 30);
@@ -240,7 +240,7 @@ xScenario('Verify Adding PMM-Server Public Address via Settings works @dbaas',
     I.verifyPopUpMessage(pmmSettingsPage.messages.successPopUpMessage);
     I.refreshPage();
     await pmmSettingsPage.waitForPmmSettingsPageLoaded();
-    await pmmSettingsPage.expandSection(sectionNameToExpand, pmmSettingsPage.fields.advancedButton);
+    await pmmSettingsPage.expandedSection(sectionNameToExpand, pmmSettingsPage.fields.advancedButton);
     await pmmSettingsPage.waitForPmmSettingsPageLoaded();
     publicAddress = await I.grabValueFrom(pmmSettingsPage.fields.publicAddressInput);
 
@@ -303,16 +303,32 @@ Scenario('PMM-T717 Verify insufficient resources warning @dbaas @nightly',
     await dbaasActionsPage.createClusterBasicOptions(clusterName, pxc_cluster_name, 'MySQL');
     I.click(dbaasPage.tabs.dbClusterTab.createClusterButton);
     I.waitForText('Processing', 30, dbaasPage.tabs.dbClusterTab.fields.progressBarContent);
-    I.wait(20);//There are no logs yet
+    await dbaasAPI.waitForXtraDbClusterReady('pxc-dbcluster', 'min');
     await dbaasActionsPage.showClusterLogs(pxc_cluster_name, clusterName);
 
-    I.waitForElement(dbaasPage.tabs.dbClusterTab.fields.dbClusterLogs.expandAllButton); //wait after loaded
-    I.seeTextEquals('Expand all',dbaasPage.tabs.dbClusterTab.fields.dbClusterLogs.expandAllButton);//check text in expand all button
-    I.click(dbaasPage.tabs.dbClusterTab.fields.dbClusterLogs.expandAllButton); //click expand all
-    I.seeTextEquals('Collapse all', dbaasPage.tabs.dbClusterTab.fields.dbClusterLogs.expandAllButton); //check text in collapse all
-    I.seeElement(dbaasPage.tabs.dbClusterTab.fields.dbClusterLogs.expandSection); //check expanded body
-    I.click(dbaasPage.tabs.dbClusterTab.fields.dbClusterLogs.expandAllButton); //click collapse all again
-    I.seeTextEquals('Expand all',dbaasPage.tabs.dbClusterTab.fields.dbClusterLogs.expandAllButton);//check text changed to expand all
-    I.dontSeeElement(dbaasPage.tabs.dbClusterTab.fields.dbClusterLogs.expandSection);//check expanded body collapsed
-    pause();
+    I.waitForElement(dbaasPage.tabs.dbClusterTab.fields.dbClusterLogs.expandAllLogsButton); //wait for exapand button
+    I.seeTextEquals('Expand all',dbaasPage.tabs.dbClusterTab.fields.dbClusterLogs.expandAllLogsButton);//check text in expand all button
+    I.click(dbaasPage.tabs.dbClusterTab.fields.dbClusterLogs.expandAllLogsButton); 
+    I.seeTextEquals('Collapse all', dbaasPage.tabs.dbClusterTab.fields.dbClusterLogs.expandAllLogsButton); //check text in collapse all
+    //replace next for check if all sections were expanded
+    //I.seeElement(dbaasPage.tabs.dbClusterTab.fields.dbClusterLogs.expandedLogsSection); //check expanded body
+    
+    const numberOfCollapsed = await I.grabNumberOfVisibleElements(expandedLogsSection);
+    assert.ok(numberOfCollapsed === 9, `Number of grabbed elements is: ${numberOfCollapsed}`);
+
+    I.click(dbaasPage.tabs.dbClusterTab.fields.dbClusterLogs.expandAllLogsButton);
+    I.seeTextEquals('Expand all',dbaasPage.tabs.dbClusterTab.fields.dbClusterLogs.expandAllLogsButton);//check text changed to expand all
+    //replace next for check if all sections were collapsed
+    I.dontSeeElement(dbaasPage.tabs.dbClusterTab.fields.dbClusterLogs.expandedLogsSection);//check expanded body collapsed
+
+    I.click(dbaasPage.tabs.dbClusterTab.fields.dbClusterLogs.refreshLogsButton);
+    //replace next for check if none of the sections are visible
+    I.dontSeeElement(dbaasPage.tabs.dbClusterTab.fields.dbClusterLogs.expandedLogsSection);
+    I.seeElement(dbaasPage.tabs.dbClusterTab.fields.dbClusterLogs.refreshLogsSpinner);
+
+    //add one section collapse/expand here
+
+    I.click(dbaasPage.tabs.dbClusterTab.fields.dbClusterLogs.closeButton);
+
+
   });
