@@ -11,7 +11,6 @@ for (const [key, value] of Object.entries(remoteInstancesHelper.services)) {
   if (value) {
     switch (key) {
       case 'postgresql':
-        remotePostgreSQL.add(['postgreDoNotTrack', remoteInstancesPage.fields.doNotTrack, pmmInventoryPage.fields.postgresExporter]);
         remotePostgreSQL.add(['postgresPGStatStatements', remoteInstancesPage.fields.usePgStatStatements, pmmInventoryPage.fields.postgresPgStatements]);
         qanFilters.add([remoteInstancesPage.potgresqlSettings.environment]);
         dashboardCheck.add([remoteInstancesHelper.services.postgresql]);
