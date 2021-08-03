@@ -42,7 +42,7 @@ Scenario(
     I.amOnPage(remoteInstancesPage.url);
     remoteInstancesPage.waitUntilRemoteInstancesPageLoaded();
     remoteInstancesPage.openAddRemotePage('external');
-    remoteInstancesPage.fillRemoteFields(serviceName);
+    await remoteInstancesPage.fillRemoteFields(serviceName);
     I.waitForVisible(remoteInstancesPage.fields.addService, 30);
     I.click(remoteInstancesPage.fields.addService);
     pmmInventoryPage.verifyRemoteServiceIsDisplayed(serviceName);
@@ -59,13 +59,7 @@ Data(instances).Scenario(
     I.amOnPage(remoteInstancesPage.url);
     remoteInstancesPage.waitUntilRemoteInstancesPageLoaded();
     remoteInstancesPage.openAddRemotePage(current.name);
-    remoteInstancesPage.fillRemoteFields(serviceName);
-    if (serviceName === remoteInstancesHelper.services.mysqlTLS) {
-      I.click(remoteInstancesPage.fields.useTLS);
-      await remoteInstancesPage.fillTLS('root-ca.pem', remoteInstancesPage.fields.tlscaInput);
-      await remoteInstancesPage.fillTLS('client-cert.pem', remoteInstancesPage.fields.tlsCertificateInput);
-      await remoteInstancesPage.fillTLS('client-key.pem', remoteInstancesPage.fields.tlsCertificateKeyInput);
-    }
+    await remoteInstancesPage.fillRemoteFields(serviceName);
 
     remoteInstancesPage.createRemoteInstance(serviceName);
   },
@@ -234,7 +228,7 @@ Data(remotePostgreSQL).Scenario(
     I.amOnPage(remoteInstancesPage.url);
     remoteInstancesPage.waitUntilRemoteInstancesPageLoaded();
     remoteInstancesPage.openAddRemotePage('postgresql');
-    remoteInstancesPage.fillRemoteFields(current.instanceName);
+    await remoteInstancesPage.fillRemoteFields(current.instanceName);
     I.waitForVisible(remoteInstancesPage.fields.skipTLSL, 30);
     I.click(remoteInstancesPage.fields.skipTLSL);
     I.click(current.trackingOption);

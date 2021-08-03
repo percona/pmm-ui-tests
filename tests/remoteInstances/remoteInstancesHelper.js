@@ -6,6 +6,9 @@ const remoteInstanceStatus = {
     ps_8_0: {
       enabled: true,
     },
+    ps_5_7_tls: {
+      enabled: true,
+    },
   },
   mongodb: {
     psmdb_4_2: {
@@ -63,6 +66,7 @@ let PMM_SERVER_OVF_AMI_SETUP = 'false';
 
 DB_CONFIG = {
   MYSQL_SERVER_PORT: '3306',
+  MYSQL_SSL_SERVER_PORT: '3308',
   POSTGRES_SERVER_PORT: '5432',
   MONGODB_SERVER_PORT: '27017',
   PROXYSQL_SERVER_PORT: '6032',
@@ -101,6 +105,13 @@ module.exports = {
         username: 'pmm-agent',
         password: 'pmm-agent-password',
         clusterName: 'mysql_clstr',
+      },
+      ps_5_7_tls: {
+        host: (PMM_SERVER_OVF_AMI_SETUP === 'true' ? SERVER_HOST : 'mysql_ssl'),
+        port: DB_CONFIG.MYSQL_SSL_SERVER_PORT,
+        username: 'root',
+        password: 'r00tr00t',
+        clusterName: 'mysql_tls_clstr',
       },
     },
     mongodb: {
@@ -239,7 +250,7 @@ module.exports = {
     postgresql: (remoteInstanceStatus.postgresql.pdpgsql_13_3.enabled ? 'postgresql_remote_new' : undefined),
     proxysql: (remoteInstanceStatus.proxysql.proxysql_2_1_1.enabled ? 'proxysql_remote_new' : undefined),
     postgresGC: (remoteInstanceStatus.gc.gc_postgresql.enabled ? 'postgresql_GC_remote_new' : undefined),
-    mysqlTLS: (remoteInstanceStatus.mysql.ps_5_7.enabled ? 'mysql_tls_remote_new' : undefined),
+    mysqlTLS: (remoteInstanceStatus.mysql.ps_5_7_tls.enabled ? 'mysql_tls_remote_new' : undefined),
   },
 
   upgradeServiceNames: {

@@ -174,17 +174,30 @@ module.exports = {
     I.fillField(field, certificateData);
   },
 
-  fillRemoteFields(serviceName) {
+  async fillRemoteFields(serviceName) {
     // eslint-disable-next-line default-case
     switch (serviceName) {
       case remoteInstancesHelper.services.mysql:
-      case remoteInstancesHelper.services.mysqlTLS:
         I.fillField(this.fields.hostName, remoteInstancesHelper.remote_instance.mysql.ps_5_7.host);
         I.fillField(this.fields.userName, remoteInstancesHelper.remote_instance.mysql.ps_5_7.username);
         I.fillField(this.fields.password, remoteInstancesHelper.remote_instance.mysql.ps_5_7.password);
         adminPage.customClearField(this.fields.portNumber);
         I.fillField(this.fields.portNumber, remoteInstancesHelper.remote_instance.mysql.ps_5_7.port);
         I.fillField(this.fields.serviceName, serviceName);
+        I.fillField(this.fields.environment, 'remote-mysql');
+        break;
+      case remoteInstancesHelper.services.mysqlTLS:
+        I.fillField(this.fields.hostName, remoteInstancesHelper.remote_instance.mysql.ps_5_7_tls.host);
+        I.fillField(this.fields.userName, remoteInstancesHelper.remote_instance.mysql.ps_5_7_tls.username);
+        I.fillField(this.fields.password, remoteInstancesHelper.remote_instance.mysql.ps_5_7_tls.password);
+        adminPage.customClearField(this.fields.portNumber);
+        I.fillField(this.fields.portNumber, remoteInstancesHelper.remote_instance.mysql.ps_5_7_tls.port);
+        I.fillField(this.fields.serviceName, serviceName);
+        I.fillField(this.fields.environment, 'remote-mysql-tls');
+        I.click(this.fields.useTLS);
+        await this.fillTLS('root-ca.pem', this.fields.tlscaInput);
+        await this.fillTLS('server-cert.pem', this.fields.tlsCertificateInput);
+        await this.fillTLS('server-key.pem', this.fields.tlsCertificateKeyInput);
         break;
       case remoteInstancesHelper.services.mongodb:
         I.fillField(this.fields.hostName, remoteInstancesHelper.remote_instance.mongodb.psmdb_4_2.host);
@@ -275,7 +288,8 @@ module.exports = {
   createRemoteInstance(serviceName) {
     I.waitForVisible(this.fields.skipTLSL, 30);
     I.waitForVisible(this.fields.addService, 30);
-    I.click(this.fields.skipTLSL);
+    if (serviceName !== remoteInstancesHelper.services.mysqlTLS) I.click(this.fields.skipTLSL);
+
     // eslint-disable-next-line default-case
     switch (serviceName) {
       case remoteInstancesHelper.services.mongodb:
