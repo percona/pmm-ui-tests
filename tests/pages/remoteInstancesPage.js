@@ -305,7 +305,7 @@ module.exports = {
         break;
     }
     I.click(this.fields.addService);
-    I.waitForVisible(pmmInventoryPage.fields.agentsLink, 30);
+    I.waitForVisible(pmmInventoryPage.fields.agentsLink, 2);
 
     return pmmInventoryPage;
   },
