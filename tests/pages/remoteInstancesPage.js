@@ -196,8 +196,8 @@ module.exports = {
         I.fillField(this.fields.environment, 'remote-mysql-tls');
         I.click(this.fields.useTLS);
         await this.fillTLS('root-ca.pem', this.fields.tlscaInput);
-        await this.fillTLS('server-cert.pem', this.fields.tlsCertificateInput);
-        await this.fillTLS('server-key.pem', this.fields.tlsCertificateKeyInput);
+        await this.fillTLS('client-cert.pem', this.fields.tlsCertificateInput);
+        await this.fillTLS('client-key.pem', this.fields.tlsCertificateKeyInput);
         break;
       case remoteInstancesHelper.services.mongodb:
         I.fillField(this.fields.hostName, remoteInstancesHelper.remote_instance.mongodb.psmdb_4_2.host);
@@ -305,6 +305,7 @@ module.exports = {
         break;
     }
     I.click(this.fields.addService);
+    pause();
     I.waitForVisible(pmmInventoryPage.fields.agentsLink, 2);
 
     return pmmInventoryPage;
