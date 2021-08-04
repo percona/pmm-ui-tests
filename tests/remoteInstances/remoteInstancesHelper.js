@@ -107,8 +107,8 @@ module.exports = {
         clusterName: 'mysql_clstr',
       },
       ps_5_7_tls: {
-        host: (PMM_SERVER_OVF_AMI_SETUP === 'true' ? SERVER_HOST : '192.168.0.1'),
-        port: DB_CONFIG.MYSQL_SSL_SERVER_PORT,
+        host: (PMM_SERVER_OVF_AMI_SETUP === 'true' ? SERVER_HOST : 'mysql_ssl'),
+        port: DB_CONFIG.MYSQL_SERVER_PORT,
         username: 'root',
         password: 'r00tr00t',
         clusterName: 'mysql_tls_clstr',
