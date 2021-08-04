@@ -194,7 +194,7 @@ module.exports = {
     };
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
 
-    for (let i = 0; i < 60; i++) {
+    for (let i = 0; i < 90; i++) {
       const response = await I.sendPostRequest('v1/management/DBaaS/PSMDBClusters/List', body, headers);
 
       if (response.data.clusters) {
@@ -240,6 +240,23 @@ module.exports = {
 
       await new Promise((r) => setTimeout(r, 10000));
     }
+  },
+
+  async getDbClusterDetails(dbClusterName, clusterName, dbType = 'MySQL') {
+    let response;
+    const body = {
+      kubernetesClusterName: clusterName,
+      name: dbClusterName,
+    };
+    const headers = { Authorization: `Basic ${await I.getAuth()}` };
+
+    if (dbType === 'MySQL') {
+      response = await I.sendPostRequest('v1/management/DBaaS/XtraDBClusters/GetCredentials', body, headers);
+    } else {
+      response = await I.sendPostRequest('v1/management/DBaaS/PSMDBClusters/GetCredentials', body, headers);
+    }
+
+    return response.data.connection_credentials;
   },
 
   async deleteAllDBCluster(clusterName) {

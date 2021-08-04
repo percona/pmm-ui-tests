@@ -1,7 +1,7 @@
 const assert = require('assert');
 const page = require('./pages/ruleTemplatesPage');
 
-const templates = new DataTable(['path']);
+const templates = new DataTable(['path', 'error']);
 const units = new DataTable(['unit', 'range']);
 
 units.add(['%', '[0, 100]']);
@@ -9,9 +9,16 @@ units.add(['s', '[0, 100]']);
 units.add(['*', '[0, 100]']);
 units.add(['%', '']);
 
-for (const i of Object.values(page.ruleTemplate.paths)) {
-  templates.add([i]);
-}
+templates.add([page.ruleTemplate.paths.yaml, null]);
+templates.add([page.ruleTemplate.paths.yml, null]);
+templates.add([page.ruleTemplate.paths.txt, page.messages.failedToParse]);
+templates.add(['tests/ia/templates/customParam.yml', null]);
+templates.add(['tests/ia/templates/undefinedParam.yml',
+  'failed to fill expression placeholders: template: :4:5: executing "" at <.threshold>: map has no entry for key "threshold".']);
+templates.add(['tests/ia/templates/specialCharInParam.yml',
+  'failed to parse rule expression: template: :4: bad character U+0040 \'@\'.']);
+templates.add(['tests/ia/templates/spaceInParam.yml',
+  'failed to parse rule expression: template: :4: function "old" not defined.']);
 
 Feature('IA: Alert rule templates').retry(1);
 
@@ -24,8 +31,12 @@ Before(async ({
   await templatesAPI.clearAllTemplates();
 });
 
+Before(async ({ templatesAPI }) => {
+  await templatesAPI.clearAllTemplates();
+});
+
 Scenario(
-  'PMM-T510 Verify built-in rule templates are non-editable @ia',
+  'PMM-T510 Verify built-in rule templates are non-editable @ia @grafana-pr',
   async ({ I, ruleTemplatesPage }) => {
     const editButton = ruleTemplatesPage.buttons
       .editButtonBySource(ruleTemplatesPage.templateSources.builtin);
@@ -40,7 +51,7 @@ Scenario(
 );
 
 Scenario(
-  'Verify rule templates list elements @ia',
+  'Verify rule templates list elements @ia @grafana-pr',
   async ({ I, ruleTemplatesPage }) => {
     ruleTemplatesPage.openRuleTemplatesTab();
     ruleTemplatesPage.columnHeaders.forEach((header) => {
@@ -58,7 +69,7 @@ Scenario(
 );
 
 Scenario(
-  'Add rule template modal elements @ia',
+  'Add rule template modal elements @ia @grafana-pr',
   async ({ I, ruleTemplatesPage }) => {
     ruleTemplatesPage.openRuleTemplatesTab();
     I.click(ruleTemplatesPage.buttons.openAddTemplateModal);
@@ -109,10 +120,10 @@ Data(units)
 
 Data(templates)
   .Scenario(
-    'PMM-T482 PMM-T499 Upload rule templates @ia',
+    'PMM-T482 PMM-T499 PMM-T766 PMM-T758 PMM-T766 PMM-T767 PMM-T931 Upload rule templates @ia',
     async ({ I, ruleTemplatesPage, current }) => {
       const { path } = current;
-      const validFile = path.endsWith('.yaml') || path.endsWith('.yml');
+      const validFile = !current.error;
       const [templateName] = await ruleTemplatesPage.ruleTemplate.templateNameAndContent(path);
       const expectedSourceLocator = ruleTemplatesPage
         .getSourceLocator(templateName, ruleTemplatesPage.templateSources.ui);
@@ -130,13 +141,13 @@ Data(templates)
         I.waitForVisible(expectedSourceLocator, 30);
         I.seeAttributesOnElements(editButton, { disabled: null });
       } else {
-        I.verifyPopUpMessage(ruleTemplatesPage.messages.failedToParse);
+        I.verifyPopUpMessage(current.error);
       }
     },
   );
 
 Scenario(
-  'PMM-T501 Upload duplicate rule template @ia',
+  'PMM-T501 Upload duplicate rule template @ia @grafana-pr',
   async ({ I, ruleTemplatesPage, templatesAPI }) => {
     const path = ruleTemplatesPage.ruleTemplate.paths.yaml;
     const [, , id] = await ruleTemplatesPage.ruleTemplate.templateNameAndContent(path);
@@ -154,7 +165,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T483 PMM-T699 Verify user can edit UI-created IA rule template @ia',
+  'PMM-T483 PMM-T699 Verify user can edit UI-created IA rule template @ia @grafana-pr',
   async ({ I, ruleTemplatesPage, templatesAPI }) => {
     const path = ruleTemplatesPage.ruleTemplate.paths.yaml;
     const [templateName, fileContent, id] = await ruleTemplatesPage.ruleTemplate
@@ -185,7 +196,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T562 Verify user can delete User-defined (UI) rule templates @ia',
+  'PMM-T562 Verify user can delete User-defined (UI) rule templates @ia @grafana-pr',
   async ({ I, ruleTemplatesPage, templatesAPI }) => {
     const path = ruleTemplatesPage.ruleTemplate.paths.yaml;
     const [templateName] = await ruleTemplatesPage.ruleTemplate
@@ -232,5 +243,27 @@ Scenario(
     I.click(deleteButton);
     I.click(ruleTemplatesPage.buttons.confirmDelete);
     I.verifyPopUpMessage(ruleTemplatesPage.messages.failedToDelete(id));
+  },
+);
+
+Scenario(
+  'PMM-T825 PMM-T821 Verify User can add Alert Rule Template in the file system @not-ovf @ia',
+  async ({ I, ruleTemplatesPage }) => {
+    const editButton = ruleTemplatesPage.buttons
+      .editButtonBySource(ruleTemplatesPage.templateSources.file);
+    const deleteButton = ruleTemplatesPage.buttons
+      .deleteButtonBySource(ruleTemplatesPage.templateSources.file);
+
+    await I.verifyCommand('docker cp tests/ia/templates/customParam.yml pmm-server:/srv/ia/templates');
+    await I.verifyCommand('docker cp tests/ia/templates/spaceInParam.yml pmm-server:/srv/ia/templates');
+    await I.verifyCommand('docker cp tests/ia/templates/template.txt pmm-server:/srv/ia/templates');
+
+    ruleTemplatesPage.openRuleTemplatesTab();
+    I.seeElement(editButton);
+    I.seeElement(ruleTemplatesPage.buttons.editButtonByName('Custom parameter template'));
+    I.dontSeeElement(ruleTemplatesPage.buttons.editButtonByName('Space in parameter'));
+
+    I.seeAttributesOnElements(editButton, { disabled: true });
+    I.seeAttributesOnElements(deleteButton, { disabled: true });
   },
 );

@@ -1,6 +1,7 @@
 const { dbaasAPI, dbaasPage } = inject();
 const clusterName = 'Kubernetes_Testing_Cluster_Minikube';
 const psmdb_cluster = 'psmdb-cluster';
+const assert = require('assert');
 
 const psmdb_configuration = {
   topology: 'Cluster',
@@ -38,6 +39,9 @@ Scenario('PMM-T642 PMM-T484  PSMDB Cluster with Custom Resources, Verify MongoDB
   async ({
     I, dbaasPage, dbaasAPI, dbaasActionsPage,
   }) => {
+    const collectionNames = '[ "customers", "system.profile" ]';
+    const dbName = 'tutorialkart2';
+
     await dbaasAPI.deleteAllDBCluster(clusterName);
     await dbaasPage.waitForDbClusterTab(clusterName);
     I.waitForInvisible(dbaasPage.tabs.kubernetesClusterTab.disabledAddButton, 30);
@@ -46,6 +50,30 @@ Scenario('PMM-T642 PMM-T484  PSMDB Cluster with Custom Resources, Verify MongoDB
     I.waitForText('Processing', 30, dbaasPage.tabs.dbClusterTab.fields.progressBarContent);
     await dbaasPage.postClusterCreationValidation(psmdb_cluster, clusterName, 'MongoDB');
     await dbaasPage.validateClusterDetail(psmdb_cluster, clusterName, psmdb_configuration);
+    const {
+      username, password, host, port,
+    } = await dbaasAPI.getDbClusterDetails(psmdb_cluster, clusterName, 'MongoDB');
+
+    await I.verifyCommand(
+      'kubectl run psmdb-client --image=percona/percona-server-mongodb:4.4.5-7 --restart=Never',
+    );
+
+    // wait for psmdb-client pod to startup, to improve with cmd helper wait for expected output on list pods
+    I.wait(20);
+    await I.verifyCommand(
+      'kubectl cp /srv/pmm-qa/pmm-tests/psmdb_cluster_connection_check.js psmdb-client:/tmp/',
+    );
+    const output = await I.verifyCommand(
+      `kubectl exec psmdb-client -- mongo "mongodb://${username}:${password}@${host}/admin?ssl=false" /tmp/psmdb_cluster_connection_check.js`,
+    );
+
+    assert.ok(output.includes(collectionNames), `The ${output} for psmdb cluster setup dump was expected to have collection names ${collectionNames}, but found ${output}`);
+    assert.ok(output.includes(dbName), `The ${output} for psmdb cluster setup dump was expected to have db name ${dbName}, but found ${output}`);
+
+    await I.verifyCommand(
+      'kubectl delete pods psmdb-client',
+      'pod "psmdb-client" deleted',
+    );
   });
 
 Scenario('PMM-T477 PMM-T461 Verify MongoDB Cluster can be restarted, unregister k8s Cluster when Db Cluster Exist @dbaas',
@@ -60,7 +88,7 @@ Scenario('PMM-T477 PMM-T461 Verify MongoDB Cluster can be restarted, unregister 
     await dbaasActionsPage.deletePSMDBCluster(psmdb_cluster, clusterName);
   });
 
-Scenario('PMM-787 Verify Editing MonogDB Cluster is possible. @dbaas @nightly',
+Scenario('PMM-787 Verify Editing MonogDB Cluster is possible. @dbaas',
   async ({
     I, dbaasPage, dbaasAPI, dbaasActionsPage,
   }) => {
@@ -92,7 +120,7 @@ Scenario('PMM-787 Verify Editing MonogDB Cluster is possible. @dbaas @nightly',
   });
 
 // Need to Skip due to bug in operator latest version https://jira.percona.com/browse/PMM-8094
-xScenario('PMM-T525 PMM-T528 Verify Suspend & Resume for Mongo DB Cluster Works as expected @dbaas @nightly',
+xScenario('PMM-T525 PMM-T528 Verify Suspend & Resume for Mongo DB Cluster Works as expected @dbaas',
   async ({ I, dbaasPage, dbaasActionsPage }) => {
     const psmdb_cluster_suspend_resume = 'psmdb-suspend-resume';
     const clusterDetails = {
@@ -145,4 +173,71 @@ xScenario('PMM-T509 Verify Deleting Mongo Db Cluster in Pending Status is possib
     await dbaasAPI.apiDeletePSMDBCluster(psmdb_cluster_pending_delete, clusterName);
     await dbaasPage.waitForDbClusterTab(clusterName);
     await dbaasAPI.waitForDbClusterDeleted(psmdb_cluster_pending_delete, clusterName, 'MongoDB');
+  });
+
+Scenario('PMM-T704 PMM-T772 PMM-T849 PMM-T850 Resources, PV, Secrets verification @dbaas',
+  async ({
+    I, dbaasPage, dbaasAPI, dbaasActionsPage, adminPage,
+  }) => {
+    const psmdb_cluster_resource_check = 'psmdb-resource-1';
+    const clusterDetails = {
+      topology: 'Cluster',
+      numberOfNodes: '1',
+      resourcePerNode: 'Custom',
+      memory: '1 GB',
+      cpu: '1',
+      disk: '2 GB',
+      dbType: 'MongoDB',
+      clusterDashboardRedirectionLink: dbaasPage.clusterDashboardUrls.psmdbDashboard(
+        psmdb_cluster_resource_check,
+      ),
+    };
+
+    await dbaasAPI.deleteAllDBCluster(clusterName);
+    await dbaasPage.waitForDbClusterTab(clusterName);
+    I.waitForInvisible(dbaasPage.tabs.kubernetesClusterTab.disabledAddButton, 30);
+    await dbaasActionsPage.createClusterAdvancedOption(clusterName, psmdb_cluster_resource_check, 'MongoDB', clusterDetails);
+    I.click(dbaasPage.tabs.dbClusterTab.createClusterButton);
+    I.waitForText('Processing', 30, dbaasPage.tabs.dbClusterTab.fields.progressBarContent);
+    await dbaasPage.postClusterCreationValidation(psmdb_cluster_resource_check, clusterName, 'MongoDB');
+    await dbaasPage.validateClusterDetail(psmdb_cluster_resource_check, clusterName, clusterDetails);
+    const {
+      username, password, host, port,
+    } = await dbaasAPI.getDbClusterDetails(psmdb_cluster_resource_check, clusterName, 'MongoDB');
+
+    await I.verifyCommand(
+      'kubectl run psmdb-client --image=percona/percona-server-mongodb:4.4.5-7 --restart=Never',
+    );
+    await I.verifyCommand(
+      `kubectl get pods ${psmdb_cluster_resource_check}-rs0-0 -o json | grep -i requests -A2 | tail -2`,
+      '"cpu": "1"',
+    );
+    await I.verifyCommand(
+      `kubectl get pods ${psmdb_cluster_resource_check}-rs0-0 -o json | grep -i requests -A2 | tail -2`,
+      '"memory": "1G"',
+    );
+    await I.verifyCommand(
+      `kubectl get pv | grep ${psmdb_cluster_resource_check}`,
+      psmdb_cluster_resource_check,
+    );
+    await I.verifyCommand(
+      `kubectl get secrets | grep dbaas-${psmdb_cluster_resource_check}-psmdb-secrets`,
+      psmdb_cluster_resource_check,
+    );
+    await I.verifyCommand(
+      `kubectl get secrets dbaas-${psmdb_cluster_resource_check}-psmdb-secrets -o yaml | grep MONGODB_USER_ADMIN_PASSWORD: | awk '{print $2}' | base64 --decode`,
+      password,
+    );
+    await dbaasAPI.apiDeletePSMDBCluster(psmdb_cluster_resource_check, clusterName);
+    await dbaasAPI.waitForDbClusterDeleted(psmdb_cluster_resource_check, clusterName, 'MongoDB');
+    await I.verifyCommand(
+      `kubectl get pv | grep ${psmdb_cluster_resource_check}`,
+      'No resources found',
+      'fail',
+    );
+    await I.verifyCommand(
+      `kubectl get secrets | grep dbaas-${psmdb_cluster_resource_check}-psmdb-secrets`,
+      '',
+      'fail',
+    );
   });

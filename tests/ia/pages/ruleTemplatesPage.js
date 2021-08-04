@@ -51,6 +51,7 @@ module.exports = {
   templateSources: {
     ui: 'User-defined (UI)',
     builtin: 'Built-in',
+    file: 'User-defined (file)',
   },
   ruleTemplate: {
     // templateNameAndContent parses yaml file and returns

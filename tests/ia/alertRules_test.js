@@ -50,7 +50,7 @@ AfterSuite(async ({
 });
 
 Scenario(
-  'Verify alert rules list elements @ia',
+  'Verify alert rules list elements @ia @grafana-pr',
   async ({ I, alertRulesPage, rulesAPI }) => {
     const ruleName = 'QAA PSQL rules List test';
     const ruleId = await rulesAPI.createAlertRule({ ruleName });
@@ -66,7 +66,7 @@ Scenario(
 );
 
 Scenario(
-  'Add alert rule modal elements @ia',
+  'Add alert rule modal elements @ia @grafana-pr',
   async ({ I, alertRulesPage }) => {
     alertRulesPage.openAlertRulesTab();
     I.click(alertRulesPage.buttons.openAddRuleModal);
@@ -85,7 +85,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T538 Verify user is able to disable/enable a rule from the rules list @ia',
+  'PMM-T538 Verify user is able to disable/enable a rule from the rules list @ia @grafana-pr',
   async ({ I, alertRulesPage, rulesAPI }) => {
     const ruleName = 'QAA PSQL Enable/Disable test';
     const ruleId = await rulesAPI.createAlertRule({ ruleName });
@@ -165,7 +165,7 @@ Data(rules).Scenario(
 );
 
 Scenario(
-  'PMM-T516 PMM-T687 Update Alert rule @ia',
+  'PMM-T516 PMM-T687 Update Alert rule @ia @grafana-pr',
   async ({
     I, alertRulesPage, rulesAPI, channelsAPI, ncPage,
   }) => {
@@ -210,7 +210,7 @@ Scenario(
 );
 
 Data(rulesStates).Scenario(
-  'PMM-T566 Verify user can copy Alert rule @ia',
+  'PMM-T566 Verify user can copy Alert rule @ia @grafana-pr',
   async ({
     I, alertRulesPage, rulesAPI, current,
   }) => {
@@ -269,7 +269,7 @@ Data(rulesStates).Scenario(
 );
 
 Scenario(
-  'PMM-T639 Verify alert rule details content @ia',
+  'PMM-T639 Verify alert rule details content @ia @grafana-pr',
   async ({
     I, ruleTemplatesPage, alertRulesPage, rulesAPI,
   }) => {
@@ -298,7 +298,7 @@ Scenario(
 
 // nightly candidate
 Scenario(
-  'PMM-T646 Verify user can not create Rule with negative duration time @ia',
+  'PMM-T646 Verify user can not create Rule with negative duration time @ia @grafana-pr',
   async ({
     I, alertRulesPage,
   }) => {

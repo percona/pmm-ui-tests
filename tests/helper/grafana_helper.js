@@ -1,6 +1,7 @@
 const Helper = codecept_helper;
 const assert = require('assert');
 const fs = require('fs');
+const shell = require('shelljs');
 
 class Grafana extends Helper {
   constructor(config) {
@@ -122,6 +123,24 @@ class Grafana extends Helper {
     const resp = await apiContext.sendDeleteRequest(`graph/api/admin/users/${userId}`, headers);
 
     assert.equal(resp.status, 200, `Failed to delete ${userId}`);
+  }
+
+  async verifyCommand(command, output, result = 'pass', getError = false) {
+    const { stdout, stderr, code } = shell.exec(command, { silent: true });
+
+    if (output && result === 'pass') {
+      assert.ok(stdout.includes(output), `The output for ${command} was expected to include ${output} but found ${stdout}`);
+    }
+
+    if (result === 'pass') {
+      assert.ok(code === 0, `The command ${command} was expected to run without any errors, the error found ${stderr}`);
+    } else {
+      assert.ok(code !== 0, `The command ${command} was expected to return with failure but found to be executing without any error, the return code found ${code}`);
+    }
+
+    if (!getError) return stdout;
+
+    return stderr;
   }
 }
 

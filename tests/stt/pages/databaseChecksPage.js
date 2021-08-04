@@ -7,6 +7,8 @@ module.exports = {
   // insert your locators and methods here
   // setting locators
   url: 'graph/pmm-database-checks',
+  // Database Checks page URL before 2.13 version
+  oldUrl: 'graph/d/pmm-checks/pmm-database-checks',
   messages: {
     homePagePanelMessage: 'Security Threat Tool is disabled.\nCheck PMM Settings.',
     disabledSTTMessage: 'Security Threat Tool is disabled. You can enable it in',
@@ -29,7 +31,7 @@ module.exports = {
     disabledSTTMessageLinkSelector: locate('$db-check-panel-settings-link'),
     failedChecksRowSelector: 'tbody > tr',
     tooltipSelector: locate('.ant-tooltip-inner > div > div').first(),
-    noAccessRightsSelector: '$db-check-panel-unauthorized',
+    noAccessRightsSelector: '$unauthorized',
   },
   // introducing methods
 

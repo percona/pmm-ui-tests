@@ -1,14 +1,16 @@
 const assert = require('assert');
 const { communicationData } = require('./testData');
+const perconaPlatform = require('./perconaPlatform');
 
 const { I, adminPage, links } = inject();
 
-const locateLabel = (dataQA) => locate(`[data-qa="${dataQA}"]`).find('span');
+const locateLabel = (selector) => locate(I.useDataQA(selector)).find('span');
 
 module.exports = {
   url: 'graph/settings',
   advancedSettingsUrl: 'graph/settings/advanced-settings',
   communicationSettingsUrl: 'graph/settings/communication',
+  perconaPlatform,
   prometheusAlertUrl: '/prometheus/rules',
   stateOfAlertsUrl: '/prometheus/alerts',
   diagnosticsText:
@@ -71,6 +73,7 @@ module.exports = {
       'Invalid alert_manager_url: invalid_url - missing protocol scheme.',
     invalidAlertmanagerMissingHostMessage: 'Invalid alert_manager_url: http:// - missing host.',
     invalidAlertmanagerRulesMessage: 'Invalid alerting rules.',
+    invalidDBaaSDisableMessage: 'DBaaS is enabled via ENABLE_DBAAS or via deprecated PERCONA_TEST_DBAAS environment variable.',
   },
   sectionTabsList: {
     metrics: 'Metrics Resolution',
@@ -187,6 +190,8 @@ module.exports = {
     metricsResolution: '//label[text()="',
     metricsResolutionLabel: '$metrics-resolution-label',
     metricsResolutionRadio: '$resolutions-radio-button',
+    microsoftAzureMonitoringSwitch: locate('$advanced-azure-discover').find('//div[2]//label'),
+    microsoftAzureMonitoringSwitchInput: locate('$advanced-azure-discover').find('//div[2]//input'),
     loginButton: '$sign-in-submit-button',
     lowInput: '$lr-number-input',
     mediumInput: '$mr-number-input',
@@ -230,6 +235,15 @@ module.exports = {
     standartIntervalValidation: '$standardInterval-field-error-message',
     frequentIntervalInput: '$frequentInterval-number-input',
     frequentIntervalValidation: '$frequentInterval-field-error-message',
+    dbaasSwitchSelectorInput: locate('$advanced-dbaas').find('//div[2]//input'),
+    dbaasSwitchSelector: locate('$advanced-dbaas').find('//div[2]//label'),
+  },
+
+  switchAzure() {
+    I.waitForVisible(this.fields.microsoftAzureMonitoringSwitch, 30);
+    I.click(this.fields.microsoftAzureMonitoringSwitch);
+    I.waitForVisible(this.fields.advancedButton, 30);
+    I.click(this.fields.advancedButton);
   },
 
   async waitForPmmSettingsPageLoaded() {
@@ -416,6 +430,17 @@ module.exports = {
       JSON.stringify(response.data).includes(ruleName),
       true,
       'Alert Should be firing at External Alert Manager',
+    );
+  },
+
+  async verifySettingsValue(field, expectedValue) {
+    I.waitForElement(field, 30);
+    const fieldActualValue = await I.grabValueFrom(field);
+
+    assert.equal(
+      expectedValue,
+      fieldActualValue,
+      `The Value for Setting ${field} is not the same as expected Value ${expectedValue}, value found was ${fieldActualValue}`,
     );
   },
 

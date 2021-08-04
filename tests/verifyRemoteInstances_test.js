@@ -1,27 +1,41 @@
 const assert = require('assert');
 
-const { remoteInstancesPage, pmmInventoryPage } = inject();
+const { pmmInventoryPage, remoteInstancesPage, remoteInstancesHelper } = inject();
 
 const instances = new DataTable(['name']);
 const remotePostgreSQL = new DataTable(['instanceName', 'trackingOption', 'checkAgent']);
+const qanFilters = new DataTable(['filterName']);
+const dashboardCheck = new DataTable(['serviceName']);
 
-remotePostgreSQL.add(['postgreDoNotTrack', remoteInstancesPage.fields.doNotTrack, pmmInventoryPage.fields.postgresExporter]);
-remotePostgreSQL.add(['postgresPGStatStatements', remoteInstancesPage.fields.usePgStatStatements, pmmInventoryPage.fields.postgresPgStatements]);
-remotePostgreSQL.add(['postgresPgStatMonitor', remoteInstancesPage.fields.usePgStatMonitor, pmmInventoryPage.fields.postgresPgstatmonitor]);
-
-for (const i of Object.keys(remoteInstancesPage.services)) {
-  instances.add([i]);
+for (const [key, value] of Object.entries(remoteInstancesHelper.services)) {
+  if (value) {
+    switch (key) {
+      case 'postgresql':
+        remotePostgreSQL.add(['postgresPGStatStatements', remoteInstancesPage.fields.usePgStatStatements, pmmInventoryPage.fields.postgresPgStatements]);
+        qanFilters.add([remoteInstancesPage.potgresqlSettings.environment]);
+        dashboardCheck.add([remoteInstancesHelper.services.postgresql]);
+        break;
+      case 'mysql':
+        qanFilters.add([remoteInstancesPage.mysqlSettings.environment]);
+        break;
+      case 'postgresGC':
+        dashboardCheck.add([remoteInstancesHelper.services.postgresGC]);
+        qanFilters.add([remoteInstancesPage.postgresGCSettings.environment]);
+        break;
+      default:
+    }
+    instances.add([key]);
+  }
 }
 
-Feature('Remote DB Instances').retry(2);
+Feature('Remote DB Instances').retry(1);
 
 Before(async ({ I }) => {
   await I.Authorize();
 });
 
-// TODO: fix in scope of https://jira.percona.com/browse/PMM-8002
-xScenario(
-  'PMM-T588 - Verify adding external exporter service via UI @instances @nightly',
+Scenario(
+  'PMM-T588 - Verify adding external exporter service via UI @instances',
   async ({ I, remoteInstancesPage, pmmInventoryPage }) => {
     const serviceName = 'external_service_new';
 
@@ -37,11 +51,10 @@ xScenario(
   },
 );
 
-// TODO: unskip the mongodb and postgresql tests after resolving a instance issues
-Data(instances.filter((instance) => /mysql|proxysql/.test(instance.name))).Scenario(
-  'Verify Remote Instance Addition [critical] @instances',
+Data(instances).Scenario(
+  'PMM-T898 Verify Remote Instance Addition [critical] @instances',
   async ({ I, remoteInstancesPage, current }) => {
-    const serviceName = remoteInstancesPage.services[current.name];
+    const serviceName = remoteInstancesHelper.services[current.name];
 
     I.amOnPage(remoteInstancesPage.url);
     remoteInstancesPage.waitUntilRemoteInstancesPageLoaded();
@@ -51,8 +64,7 @@ Data(instances.filter((instance) => /mysql|proxysql/.test(instance.name))).Scena
   },
 );
 
-// TODO: fix in scope of https://jira.percona.com/browse/PMM-8002
-xScenario(
+Scenario(
   'PMM-T590 - Verify parsing URL on adding External service page @instances',
   async ({ I, remoteInstancesPage }) => {
     const metricsPath = '/metrics2';
@@ -79,13 +91,12 @@ Scenario(
   },
 );
 
-// TODO: unskip the mongodb and postgresql tests after resolving a instance issues
-Data(instances.filter((instance) => /mysql|proxysql/.test(instance.name))).Scenario(
+Data(instances).Scenario(
   'Verify Remote Instance has Status Running [critical] @instances',
   async ({
-    I, remoteInstancesPage, pmmInventoryPage, current,
+    I, pmmInventoryPage, current,
   }) => {
-    const serviceName = remoteInstancesPage.services[current.name];
+    const serviceName = remoteInstancesHelper.services[current.name];
 
     I.amOnPage(pmmInventoryPage.url);
     pmmInventoryPage.verifyRemoteServiceIsDisplayed(serviceName);
@@ -109,11 +120,8 @@ Scenario(
   },
 );
 
-// Test is connected with T588
-// It must be run after the creation of external exporter
-// TODO: fix in scope of https://jira.percona.com/browse/PMM-8002
-xScenario(
-  'PMM-T743 - Check metrics from external exporter on Advanced Data Exploration Dashboard @instances @nightly',
+Scenario(
+  'PMM-T743 - Check metrics from external exporter on Advanced Data Exploration Dashboard @instances',
   async ({ I, dashboardPage }) => {
     const metricName = 'redis_uptime_in_seconds';
 
@@ -122,7 +130,7 @@ xScenario(
     const response = await dashboardPage.checkMetricExist(metricName);
     const result = JSON.stringify(response.data.data.result);
 
-    assert.ok(response.data.data.result.length !== 0, `Custom Metrics Should be available but got empty ${result}`);
+    assert.ok(response.data.data.result.length !== 0, `Metrics ${metricName} from external exporter should be available but got empty ${result}`);
   },
 );
 
@@ -161,21 +169,26 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T635 - Verify Adding HAProxy service via UI @nightly @not-ovf @instances',
+  'PMM-T635 - Verify Adding HAProxy service via UI @instances',
   async ({
     I, remoteInstancesPage, pmmInventoryPage,
   }) => {
     const serviceName = 'haproxy_remote';
-    const url = new URL(process.env.PMM_UI_URL);
 
     I.amOnPage(remoteInstancesPage.url);
     remoteInstancesPage.waitUntilRemoteInstancesPageLoaded();
     remoteInstancesPage.openAddRemotePage('haproxy');
     I.waitForVisible(remoteInstancesPage.fields.hostName, 30);
-    I.fillField(remoteInstancesPage.fields.hostName, url.host);
+    I.fillField(
+      remoteInstancesPage.fields.hostName,
+      remoteInstancesHelper.remote_instance.haproxy.haproxy_2.host,
+    );
     I.fillField(remoteInstancesPage.fields.serviceName, serviceName);
     I.clearField(remoteInstancesPage.fields.portNumber);
-    I.fillField(remoteInstancesPage.fields.portNumber, '42100');
+    I.fillField(
+      remoteInstancesPage.fields.portNumber,
+      remoteInstancesHelper.remote_instance.haproxy.haproxy_2.port,
+    );
     I.scrollPageToBottom();
     I.waitForVisible(remoteInstancesPage.fields.addService, 30);
     I.click(remoteInstancesPage.fields.addService);
@@ -185,7 +198,7 @@ Scenario(
     I.click(pmmInventoryPage.fields.agentsLink);
     await pmmInventoryPage.checkAgentOtherDetailsSection('scheme:', 'scheme: http', serviceName, serviceId);
     await pmmInventoryPage.checkAgentOtherDetailsSection('metrics_path:', 'metrics_path: /metrics', serviceName, serviceId);
-    await pmmInventoryPage.checkAgentOtherDetailsSection('listen_port:', 'listen_port: 42100', serviceName, serviceId);
+    await pmmInventoryPage.checkAgentOtherDetailsSection('listen_port:', `listen_port: ${remoteInstancesHelper.remote_instance.haproxy.haproxy_2.port}`, serviceName, serviceId);
   },
 );
 
@@ -207,3 +220,35 @@ Data(remotePostgreSQL).Scenario(
     pmmInventoryPage.checkExistingAgent(current.checkAgent);
   },
 );
+
+Data(dashboardCheck).Scenario(
+  'PMM-T853 - Verify dashboard after remote postgreSQL instance is added @instances',
+  async ({
+    I, dashboardPage, adminPage, current,
+  }) => {
+    // Wait 10 seconds before test to start getting metrics
+    I.wait(10);
+    I.amOnPage(dashboardPage.postgresqlInstanceOverviewDashboard.url);
+    await dashboardPage.applyFilter('Service Name', current.serviceName);
+    adminPage.peformPageDown(5);
+    await dashboardPage.expandEachDashboardRow();
+    adminPage.performPageUp(5);
+    await dashboardPage.verifyThereAreNoGraphsWithNA();
+    await dashboardPage.verifyThereAreNoGraphsWithoutData(1);
+  },
+).retry(2);
+
+Data(qanFilters).Scenario(
+  'PMM-T854 - Verify QAN after remote instance is added @instances',
+  async ({
+    I, qanOverview, qanFilters, qanPage, current,
+  }) => {
+    I.amOnPage(qanPage.url);
+    qanOverview.waitForOverviewLoaded();
+    await qanFilters.applyFilter(current.filterName);
+    qanOverview.waitForOverviewLoaded();
+    const count = await qanOverview.getCountOfItems();
+
+    assert.ok(count > 0, `The queries for filter ${current.filterName} instance do NOT exist`);
+  },
+).retry(2);
