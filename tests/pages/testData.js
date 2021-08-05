@@ -2,7 +2,7 @@ const emailDefaults = {
   type: 'email',
   serverAddress: 'test.server.com',
   hello: 'Hey there',
-  from: 'sender',
+  from: 'sender@mail.com',
   authType: 'None',
   username: 'test',
   password: 'test',
