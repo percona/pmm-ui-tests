@@ -1,7 +1,9 @@
 version: '3.8'
 
 networks:
-  pmm-network:
+  default:
+    external: true
+    name: pmm2-ui-tests-temp_pmm-network
 
 services:
   mysql_ssl:
