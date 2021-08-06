@@ -1,4 +1,4 @@
-Feature('PT Summary');
+Feature('PT Summary').retry(1);
 const { dashboardPage } = inject();
 
 const dashboard = new DataTable(['page', 'content']);

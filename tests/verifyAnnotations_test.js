@@ -1,5 +1,4 @@
 const { pmmInventoryPage, dashboardPage } = inject();
-const assert = require('assert');
 
 const annotation = new DataTable(['annotationName', 'service', 'dashboard']);
 

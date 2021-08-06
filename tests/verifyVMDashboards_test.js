@@ -1,4 +1,4 @@
-Feature('VictoriaMetrics Dashboards');
+Feature('VictoriaMetrics Dashboards').retry(1);
 
 Before(async ({ I }) => {
   await I.Authorize();

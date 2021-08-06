@@ -41,6 +41,7 @@ module.exports = {
     I.waitForDetached(this.elements.spinner, 30);
     I.waitForVisible(this.root, 60);
     I.waitForVisible(this.elements.querySelector, 60);
+    I.waitForVisible(this.getMetricSortingLocator(1), 60);
   },
 
   // Wait For Results count to be changed
