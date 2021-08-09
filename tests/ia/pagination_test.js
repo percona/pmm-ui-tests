@@ -51,13 +51,13 @@ Data(pages).Scenario(
 
     // Number of elements for Rule Templates is different because there are Built-In templates
     isTemplatesPage
-      ? I.seeNumberOfElements(iaCommon.elements.rowInTable, 13)
+      ? I.seeNumberOfElements(iaCommon.elements.rowInTable, 14)
       : I.seeNumberOfElements(iaCommon.elements.rowInTable, 1);
     I.seeNumberOfElements(iaCommon.buttons.pageButton, 1);
 
     // Create entities for to have 2 pages (26 entities in sum)
     isTemplatesPage
-      ? await createEntities(13)
+      ? await createEntities(12)
       : await createEntities(25);
 
     I.say(`1st checkpoint, URL = ${url}, Count of elements = ${(await getListOfItems()).length}`);
@@ -200,7 +200,7 @@ Data(pages).Scenario(
     I.seeTextEquals('50', iaCommon.buttons.rowsPerPage);
 
     // Verify that we have 25 rows and only one page
-    I.seeNumberOfElements(iaCommon.elements.rowInTable, 26);
+    I.seeNumberOfElements(iaCommon.elements.rowInTable, 27);
     I.seeNumberOfElements(iaCommon.buttons.pageButton, 1);
 
     // Change rows per page to '25'
@@ -214,7 +214,7 @@ Data(pages).Scenario(
     // Change rows to 100
     iaCommon.selectRowsPerPage(100);
     I.waitForVisible(iaCommon.elements.pagination, 30);
-    I.seeNumberOfElements(iaCommon.elements.rowInTable, 26);
+    I.seeNumberOfElements(iaCommon.elements.rowInTable, 27);
     I.seeNumberOfElements(iaCommon.buttons.pageButton, 1);
 
     // Create 75 entities more to have 101 in sum
@@ -263,14 +263,14 @@ Data(pages).Scenario(
     // Verify '25' rows per page is selected by default
     I.waitForVisible(iaCommon.elements.pagination, 30);
     I.seeTextEquals('25', iaCommon.buttons.rowsPerPage);
-    I.seeTextEquals(iaCommon.messages.itemsShown(1, 25, 101), iaCommon.elements.itemsShown);
+    I.seeTextEquals(iaCommon.messages.itemsShown(1, 25, 102), iaCommon.elements.itemsShown);
 
     // Go to 2nd page
     I.scrollTo(iaCommon.elements.pagination);
     I.click(locate(iaCommon.buttons.pageButton).at(2));
 
     I.waitForVisible(iaCommon.elements.pagination, 30);
-    I.seeTextEquals(iaCommon.messages.itemsShown(26, 50, 101), iaCommon.elements.itemsShown);
+    I.seeTextEquals(iaCommon.messages.itemsShown(26, 50, 102), iaCommon.elements.itemsShown);
 
     // Change rows per page to '50'
     iaCommon.selectRowsPerPage(50);
@@ -278,13 +278,13 @@ Data(pages).Scenario(
     I.scrollTo(iaCommon.elements.pagination);
     I.seeTextEquals('50', iaCommon.buttons.rowsPerPage);
 
-    I.seeTextEquals(iaCommon.messages.itemsShown(1, 50, 101), iaCommon.elements.itemsShown);
+    I.seeTextEquals(iaCommon.messages.itemsShown(1, 50, 102), iaCommon.elements.itemsShown);
 
     I.scrollTo(iaCommon.elements.pagination);
     I.click(locate(iaCommon.buttons.pageButton).at(2));
 
     I.waitForVisible(iaCommon.elements.pagination, 30);
-    I.seeTextEquals(iaCommon.messages.itemsShown(51, 100, 101), iaCommon.elements.itemsShown);
+    I.seeTextEquals(iaCommon.messages.itemsShown(51, 100, 102), iaCommon.elements.itemsShown);
 
     // Change rows per page to '100'
     iaCommon.selectRowsPerPage(100);
@@ -292,7 +292,7 @@ Data(pages).Scenario(
     I.scrollTo(iaCommon.elements.pagination);
     I.seeTextEquals('100', iaCommon.buttons.rowsPerPage);
 
-    I.seeTextEquals(iaCommon.messages.itemsShown(1, 100, 101), iaCommon.elements.itemsShown);
+    I.seeTextEquals(iaCommon.messages.itemsShown(1, 100, 102), iaCommon.elements.itemsShown);
 
     I.scrollTo(iaCommon.elements.pagination);
     I.click(locate(iaCommon.buttons.pageButton).at(2));
@@ -301,6 +301,6 @@ Data(pages).Scenario(
     I.seeNumberOfElements(iaCommon.elements.rowInTable, 1);
     I.seeNumberOfElements(iaCommon.buttons.pageButton, 2);
 
-    I.seeTextEquals(iaCommon.messages.itemsShown(101, 101, 101), iaCommon.elements.itemsShown);
+    I.seeTextEquals(iaCommon.messages.itemsShown(101, 102, 102), iaCommon.elements.itemsShown);
   },
 );
