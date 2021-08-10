@@ -200,7 +200,10 @@ Data(pages).Scenario(
     I.seeTextEquals('50', iaCommon.buttons.rowsPerPage);
 
     // Verify that we have 25 rows and only one page
-    I.seeNumberOfElements(iaCommon.elements.rowInTable, 27);
+    isTemplatesPage
+      ? I.seeNumberOfElements(iaCommon.elements.rowInTable, 27);
+      : I.seeNumberOfElements(iaCommon.elements.rowInTable, 26);
+    
     I.seeNumberOfElements(iaCommon.buttons.pageButton, 1);
 
     // Change rows per page to '25'
