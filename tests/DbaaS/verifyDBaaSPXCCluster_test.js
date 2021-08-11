@@ -19,26 +19,26 @@ const singleNodeConfiguration = {
   clusterDashboardRedirectionLink: dbaasPage.clusterDashboardUrls.pxcDashboard(pxc_cluster_name_single),
 };
 
-// BeforeSuite(async ({ dbaasAPI }) => {
-//   if (!await dbaasAPI.apiCheckRegisteredClusterExist(clusterName)) {
-//     await dbaasAPI.apiRegisterCluster(process.env.kubeconfig_minikube, clusterName);
-//   }
-// });
+BeforeSuite(async ({ dbaasAPI }) => {
+  if (!await dbaasAPI.apiCheckRegisteredClusterExist(clusterName)) {
+    await dbaasAPI.apiRegisterCluster(process.env.kubeconfig_minikube, clusterName);
+  }
+});
 
-// AfterSuite(async ({ dbaasAPI }) => {
-//   await dbaasAPI.apiUnregisterCluster(clusterName, true);
-// });
+AfterSuite(async ({ dbaasAPI }) => {
+  await dbaasAPI.apiUnregisterCluster(clusterName, true);
+});
 
 Before(async ({ I, settingsAPI }) => {
   await I.Authorize();
 });
 
-// Before(async ({ I, dbaasAPI }) => {
-//   await I.Authorize();
-//   if (!await dbaasAPI.apiCheckRegisteredClusterExist(clusterName)) {
-//     await dbaasAPI.apiRegisterCluster(process.env.kubeconfig_minikube, clusterName);
-//   }
-// });
+Before(async ({ I, dbaasAPI }) => {
+  await I.Authorize();
+  if (!await dbaasAPI.apiCheckRegisteredClusterExist(clusterName)) {
+    await dbaasAPI.apiRegisterCluster(process.env.kubeconfig_minikube, clusterName);
+  }
+});
 
 Scenario('PMM-T455 PMM-T575 Verify that Advanced Options are optional for DB Cluster Creation, '
   + 'creating PXC cluster with default settings @dbaas',
@@ -300,41 +300,36 @@ Scenario('PMM-T717 Verify insufficient resources warning @dbaas',
     await dbaasActionsPage.verifyInsufficientResources(dbaasPage.tabs.dbClusterTab.advancedOptions.fields.resourceBarDisk, 'Insufficient Disk');
   });
 
-Scenario.only('PMM-T665 Verify View Cluster PXC Logs @dbaas',
-  async ({ I, dbaasPage, dbaasActionsPage }) => {
-    I.amOnPage(dbaasPage.url);
+Scenario('PMM-T665 Verify View Cluster PXC Logs @dbaas',
+  async ({ I, dbaasPage, dbaasActionsPage, dbaasAPI }) => {
+    await dbaasPage.waitForDbClusterTab(clusterName);
+    I.waitForInvisible(dbaasPage.tabs.kubernetesClusterTab.disabledAddButton, 30);
     I.click(dbaasPage.tabs.dbClusterTab.dbClusterTab);
     await dbaasActionsPage.createClusterBasicOptions(clusterName, pxc_cluster_name, 'MySQL');
     I.click(dbaasPage.tabs.dbClusterTab.createClusterButton);
     I.waitForText('Processing', 30, dbaasPage.tabs.dbClusterTab.fields.progressBarContent);
-    await dbaasAPI.waitForXtraDbClusterReady('pxc-dbcluster', 'min');
+    await dbaasAPI.waitForXtraDbClusterReady(pxc_cluster_name, clusterName); 
     await dbaasActionsPage.showClusterLogs(pxc_cluster_name, clusterName);
-
-    I.waitForElement(dbaasPage.tabs.dbClusterTab.fields.dbClusterLogs.expandAllLogsButton); //wait for exapand button
-    I.seeTextEquals('Expand all',dbaasPage.tabs.dbClusterTab.fields.dbClusterLogs.expandAllLogsButton);//check text in expand all button
+    I.waitForElement(dbaasPage.tabs.dbClusterTab.fields.dbClusterLogs.expandAllLogsButton);
+    I.seeTextEquals('Expand all',dbaasPage.tabs.dbClusterTab.fields.dbClusterLogs.expandAllLogsButton);
     I.click(dbaasPage.tabs.dbClusterTab.fields.dbClusterLogs.expandAllLogsButton); 
-    I.seeTextEquals('Collapse all', dbaasPage.tabs.dbClusterTab.fields.dbClusterLogs.expandAllLogsButton); //check text in collapse all
-    //replace next for check if all sections were expanded
-    //I.seeElement(dbaasPage.tabs.dbClusterTab.fields.dbClusterLogs.expandedLogsSection); //check expanded body
-    
-    const numberOfCollapsed = await I.grabNumberOfVisibleElements(expandedLogsSection);
-    assert.ok(numberOfCollapsed === 9, `Number of grabbed elements is: ${numberOfCollapsed}`);
-
-    I.click(dbaasPage.tabs.dbClusterTab.fields.dbClusterLogs.expandAllLogsButton);
-    I.seeTextEquals('Expand all',dbaasPage.tabs.dbClusterTab.fields.dbClusterLogs.expandAllLogsButton);//check text changed to expand all
-    //replace next for check if all sections were collapsed
-    I.dontSeeElement(dbaasPage.tabs.dbClusterTab.fields.dbClusterLogs.expandedLogsSection);//check expanded body collapsed
-
+    I.seeTextEquals('Collapse all', dbaasPage.tabs.dbClusterTab.fields.dbClusterLogs.collapseAllLogsButton);
+    let numberOfExpanded = await I.grabNumberOfVisibleElements(dbaasPage.tabs.dbClusterTab.fields.dbClusterLogs.expandedContainersLogsSection);
+    assert.ok(numberOfExpanded === 12, `Number of grabbed elements is: ${numberOfExpanded}`);
+    I.click(dbaasPage.tabs.dbClusterTab.fields.dbClusterLogs.collapseAllLogsButton);
+    I.dontSeeElement(dbaasPage.tabs.dbClusterTab.fields.dbClusterLogs.expandedContainersLogsSection);
+    I.dontSeeElement(dbaasPage.tabs.dbClusterTab.fields.dbClusterLogs.expandedEventsLogsSection);
+    I.seeTextEquals('Expand all',dbaasPage.tabs.dbClusterTab.fields.dbClusterLogs.expandAllLogsButton);
+    I.waitForElement(dbaasPage.tabs.dbClusterTab.fields.dbClusterLogs.refreshLogsButton);
     I.click(dbaasPage.tabs.dbClusterTab.fields.dbClusterLogs.refreshLogsButton);
-    //replace next for check if none of the sections are visible
-    I.dontSeeElement(dbaasPage.tabs.dbClusterTab.fields.dbClusterLogs.expandedLogsSection);
-    I.seeElement(dbaasPage.tabs.dbClusterTab.fields.dbClusterLogs.refreshLogsSpinner);
-
-    //add one section collapse/expand here
-
+    I.waitForElement(dbaasPage.tabs.dbClusterTab.fields.dbClusterLogs.refreshLogsSpinner);
+    I.waitForElement(dbaasPage.tabs.dbClusterTab.fields.dbClusterLogs.podLogsHeader);
+    I.click(dbaasPage.tabs.dbClusterTab.fields.dbClusterLogs.podLogsHeader);
+    numberOfExpanded = await I.grabNumberOfVisibleElements(dbaasPage.tabs.dbClusterTab.fields.dbClusterLogs.expandedEventsLogsSection);
+    assert.ok(numberOfExpanded === 1, `Number of grabbed elements is: ${numberOfExpanded}`);
     I.click(dbaasPage.tabs.dbClusterTab.fields.dbClusterLogs.closeButton);
+    I.dontSeeElement(dbaasPage.tabs.dbClusterTab.fields.dbClusterLogs.modalHeader);
   });  
-
 
 Scenario('PMM-T704 PMM-T772 PMM-T849 PMM-T850 Resources, PV, Secrets verification @dbaas',
   async ({

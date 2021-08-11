@@ -16,22 +16,26 @@ const psmdb_configuration = {
 
 Feature('DBaaS: MongoDB Cluster Creation, Modifications, Actions, Verification tests');
 
-BeforeSuite(async ({ dbaasAPI }) => {
-  if (!await dbaasAPI.apiCheckRegisteredClusterExist(clusterName)) {
-    await dbaasAPI.apiRegisterCluster(process.env.kubeconfig_minikube, clusterName);
-  }
-});
+// BeforeSuite(async ({ dbaasAPI }) => {
+//   if (!await dbaasAPI.apiCheckRegisteredClusterExist(clusterName)) {
+//     await dbaasAPI.apiRegisterCluster(process.env.kubeconfig_minikube, clusterName);
+//   }
+// });
 
-AfterSuite(async ({ dbaasAPI }) => {
-  await dbaasAPI.apiUnregisterCluster(clusterName, true);
-});
+// AfterSuite(async ({ dbaasAPI }) => {
+//   await dbaasAPI.apiUnregisterCluster(clusterName, true);
+// });
 
-Before(async ({ I, dbaasAPI }) => {
+Before(async ({ I, settingsAPI }) => {
   await I.Authorize();
-  if (!await dbaasAPI.apiCheckRegisteredClusterExist(clusterName)) {
-    await dbaasAPI.apiRegisterCluster(process.env.kubeconfig_minikube, clusterName);
-  }
 });
+
+// Before(async ({ I, dbaasAPI }) => {
+//   await I.Authorize();
+//   if (!await dbaasAPI.apiCheckRegisteredClusterExist(clusterName)) {
+//     await dbaasAPI.apiRegisterCluster(process.env.kubeconfig_minikube, clusterName);
+//   }
+// });
 
 // These test covers a lot of cases, will be refactored and changed in terms of flow, this is initial setup
 
@@ -174,6 +178,37 @@ xScenario('PMM-T509 Verify Deleting Mongo Db Cluster in Pending Status is possib
     await dbaasPage.waitForDbClusterTab(clusterName);
     await dbaasAPI.waitForDbClusterDeleted(psmdb_cluster_pending_delete, clusterName, 'MongoDB');
   });
+
+Scenario('PMM-T665 Verify View Cluster PSMDB Logs @dbaas',
+  async ({ I, dbaasPage, dbaasActionsPage, dbaasAPI }) => {
+    await dbaasPage.waitForDbClusterTab(clusterName);
+    I.waitForInvisible(dbaasPage.tabs.kubernetesClusterTab.disabledAddButton, 30);
+    I.click(dbaasPage.tabs.dbClusterTab.dbClusterTab);
+    await dbaasActionsPage.createClusterBasicOptions(clusterName, psmdb_cluster, 'MongoDB');
+    I.click(dbaasPage.tabs.dbClusterTab.createClusterButton);
+    I.waitForText('Processing', 30, dbaasPage.tabs.dbClusterTab.fields.progressBarContent);
+    await dbaasAPI.waitForPSMDBClusterReady(psmdb_cluster, clusterName);
+    await dbaasActionsPage.showClusterLogs(psmdb_cluster, clusterName);
+    I.waitForElement(dbaasPage.tabs.dbClusterTab.fields.dbClusterLogs.expandAllLogsButton);
+    I.seeTextEquals('Expand all',dbaasPage.tabs.dbClusterTab.fields.dbClusterLogs.expandAllLogsButton);
+    I.click(dbaasPage.tabs.dbClusterTab.fields.dbClusterLogs.expandAllLogsButton); 
+    I.seeTextEquals('Collapse all', dbaasPage.tabs.dbClusterTab.fields.dbClusterLogs.collapseAllLogsButton);
+    let numberOfExpanded = await I.grabNumberOfVisibleElements(dbaasPage.tabs.dbClusterTab.fields.dbClusterLogs.expandedContainersLogsSection);
+    assert.ok(numberOfExpanded === 24, `Number of grabbed elements is: ${numberOfExpanded}`);
+    I.click(dbaasPage.tabs.dbClusterTab.fields.dbClusterLogs.collapseAllLogsButton);
+    I.dontSeeElement(dbaasPage.tabs.dbClusterTab.fields.dbClusterLogs.expandedContainersLogsSection);
+    I.dontSeeElement(dbaasPage.tabs.dbClusterTab.fields.dbClusterLogs.expandedEventsLogsSection);
+    I.seeTextEquals('Expand all',dbaasPage.tabs.dbClusterTab.fields.dbClusterLogs.expandAllLogsButton);
+    I.waitForElement(dbaasPage.tabs.dbClusterTab.fields.dbClusterLogs.refreshLogsButton);
+    I.click(dbaasPage.tabs.dbClusterTab.fields.dbClusterLogs.refreshLogsButton);
+    I.waitForElement(dbaasPage.tabs.dbClusterTab.fields.dbClusterLogs.refreshLogsSpinner);
+    I.waitForElement(dbaasPage.tabs.dbClusterTab.fields.dbClusterLogs.podLogsHeader);
+    I.click(dbaasPage.tabs.dbClusterTab.fields.dbClusterLogs.podLogsHeader);
+    numberOfExpanded = await I.grabNumberOfVisibleElements(dbaasPage.tabs.dbClusterTab.fields.dbClusterLogs.expandedEventsLogsSection);
+    assert.ok(numberOfExpanded === 1, `Number of grabbed elements is: ${numberOfExpanded}`);
+    I.click(dbaasPage.tabs.dbClusterTab.fields.dbClusterLogs.closeButton);
+    I.dontSeeElement(dbaasPage.tabs.dbClusterTab.fields.dbClusterLogs.modalHeader);
+  });  
 
 Scenario('PMM-T704 PMM-T772 PMM-T849 PMM-T850 Resources, PV, Secrets verification @dbaas',
   async ({
