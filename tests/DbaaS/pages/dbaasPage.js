@@ -244,7 +244,7 @@ module.exports = {
       await dbaasAPI.waitForPSMDBClusterReady(dbClusterName, k8sClusterName);
     }
 
-    I.waitForElement(dbaasPage.tabs.dbClusterTab.fields.clusterStatusActive, 60);
+    I.waitForElement(dbaasPage.tabs.dbClusterTab.fields.clusterStatusActive, 120);
     I.seeElement(dbaasPage.tabs.dbClusterTab.fields.clusterStatusActive);
     I.waitForElement(dbaasPage.tabs.dbClusterTab.fields.clusterConnection.showPasswordButton, 30);
     I.click(dbaasPage.tabs.dbClusterTab.fields.clusterConnection.showPasswordButton);
