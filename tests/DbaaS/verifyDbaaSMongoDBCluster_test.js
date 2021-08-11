@@ -16,26 +16,26 @@ const psmdb_configuration = {
 
 Feature('DBaaS: MongoDB Cluster Creation, Modifications, Actions, Verification tests');
 
-// BeforeSuite(async ({ dbaasAPI }) => {
-//   if (!await dbaasAPI.apiCheckRegisteredClusterExist(clusterName)) {
-//     await dbaasAPI.apiRegisterCluster(process.env.kubeconfig_minikube, clusterName);
-//   }
-// });
+BeforeSuite(async ({ dbaasAPI }) => {
+  if (!await dbaasAPI.apiCheckRegisteredClusterExist(clusterName)) {
+    await dbaasAPI.apiRegisterCluster(process.env.kubeconfig_minikube, clusterName);
+  }
+});
 
-// AfterSuite(async ({ dbaasAPI }) => {
-//   await dbaasAPI.apiUnregisterCluster(clusterName, true);
-// });
+AfterSuite(async ({ dbaasAPI }) => {
+  await dbaasAPI.apiUnregisterCluster(clusterName, true);
+});
 
 Before(async ({ I, settingsAPI }) => {
   await I.Authorize();
 });
 
-// Before(async ({ I, dbaasAPI }) => {
-//   await I.Authorize();
-//   if (!await dbaasAPI.apiCheckRegisteredClusterExist(clusterName)) {
-//     await dbaasAPI.apiRegisterCluster(process.env.kubeconfig_minikube, clusterName);
-//   }
-// });
+Before(async ({ I, dbaasAPI }) => {
+  await I.Authorize();
+  if (!await dbaasAPI.apiCheckRegisteredClusterExist(clusterName)) {
+    await dbaasAPI.apiRegisterCluster(process.env.kubeconfig_minikube, clusterName);
+  }
+});
 
 // These test covers a lot of cases, will be refactored and changed in terms of flow, this is initial setup
 
