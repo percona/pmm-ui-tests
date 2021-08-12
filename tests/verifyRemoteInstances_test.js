@@ -22,6 +22,9 @@ for (const [key, value] of Object.entries(remoteInstancesHelper.services)) {
         dashboardCheck.add([remoteInstancesHelper.services.postgresGC]);
         qanFilters.add([remoteInstancesPage.postgresGCSettings.environment]);
         break;
+      case 'mysql_ssl':
+        qanFilters.add([remoteInstancesHelper.remote_instance.mysql.ms_8_0_ssl.environment]);
+        break;
       default:
     }
     instances.add([key]);
