@@ -179,7 +179,7 @@ xScenario('PMM-T509 Verify Deleting Mongo Db Cluster in Pending Status is possib
     await dbaasAPI.waitForDbClusterDeleted(psmdb_cluster_pending_delete, clusterName, 'MongoDB');
   });
 
-Scenario('PMM-T665 Verify View Cluster PSMDB Logs @dbaas',
+Scenario.only('PMM-T665 Verify View Cluster PSMDB Logs @dbaas',
   async ({ I, dbaasPage, dbaasActionsPage, dbaasAPI }) => {
     await dbaasPage.waitForDbClusterTab(clusterName);
     I.waitForInvisible(dbaasPage.tabs.kubernetesClusterTab.disabledAddButton, 30);

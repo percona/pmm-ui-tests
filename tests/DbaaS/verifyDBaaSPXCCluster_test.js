@@ -300,7 +300,7 @@ Scenario('PMM-T717 Verify insufficient resources warning @dbaas',
     await dbaasActionsPage.verifyInsufficientResources(dbaasPage.tabs.dbClusterTab.advancedOptions.fields.resourceBarDisk, 'Insufficient Disk');
   });
 
-Scenario('PMM-T665 Verify View Cluster PXC Logs @dbaas',
+Scenario.only('PMM-T665 Verify View Cluster PXC Logs @dbaas',
   async ({ I, dbaasPage, dbaasActionsPage, dbaasAPI }) => {
     await dbaasPage.waitForDbClusterTab(clusterName);
     I.waitForInvisible(dbaasPage.tabs.kubernetesClusterTab.disabledAddButton, 30);
