@@ -7,7 +7,7 @@ const remoteInstanceStatus = {
       enabled: true,
     },
     ms_8_0_ssl: {
-      enabled: true,
+      enabled: process.env.OVF_TEST !== 'yes',
     },
   },
   mongodb: {
@@ -110,7 +110,7 @@ module.exports = {
       },
       ms_8_0_ssl: {
         host: '192.168.0.1',
-        port: '42205',
+        port: '3308',
         username: 'root',
         password: 'r00tr00t',
         clusterName: 'mysql-ssl-cluster',
