@@ -148,6 +148,7 @@ module.exports = {
     // eslint-disable-next-line default-case
     switch (instanceType) {
       case 'mysql':
+      case 'mysql_ssl':
         I.click(this.fields.addMySqlRemote);
         break;
       case 'mongodb':
@@ -172,7 +173,7 @@ module.exports = {
     return this;
   },
 
-  fillRemoteFields(serviceName) {
+  async fillRemoteFields(serviceName) {
     // eslint-disable-next-line default-case
     switch (serviceName) {
       case remoteInstancesHelper.services.mysql:
@@ -202,11 +203,15 @@ module.exports = {
         I.click(this.fields.useTLS);
         I.waitForElement(this.fields.tlscaInput, 30);
         I.fillField(this.fields.tlscaInput,
-          this.getFileContent(remoteInstancesHelper.remote_instance.mysql.ms_8_0_ssl.tlsCAFile));
+          await this.getFileContent(remoteInstancesHelper.remote_instance.mysql.ms_8_0_ssl.tlsCAFile));
         I.fillField(this.fields.tlsCertificateInput,
-          this.getFileContent(remoteInstancesHelper.remote_instance.mysql.ms_8_0_ssl.tlsCertificateFile));
+          await this.getFileContent(
+            remoteInstancesHelper.remote_instance.mysql.ms_8_0_ssl.tlsCertificateFile,
+          ));
         I.fillField(this.fields.tlsCertificateKeyInput,
-          this.getFileContent(remoteInstancesHelper.remote_instance.mysql.ms_8_0_ssl.tlsCertificateKeyFile));
+          await this.getFileContent(
+            remoteInstancesHelper.remote_instance.mysql.ms_8_0_ssl.tlsCertificateKeyFile,
+          ));
         break;
       case remoteInstancesHelper.services.mongodb:
         I.fillField(this.fields.hostName, remoteInstancesHelper.remote_instance.mongodb.psmdb_4_2.host);
