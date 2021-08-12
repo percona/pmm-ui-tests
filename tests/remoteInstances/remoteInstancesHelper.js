@@ -208,6 +208,7 @@ module.exports = {
     },
   },
 
+  // Used for Adding Remote Instance during Upgrade Tests runs for AMI and Docker.
   instanceTypes: {
     mysql: (remoteInstanceStatus.mysql.ps_5_7.enabled ? 'MySQL' : undefined),
     postgresql: (remoteInstanceStatus.postgresql.pdpgsql_13_3.enabled ? 'PostgreSQL' : undefined),
@@ -215,7 +216,6 @@ module.exports = {
     proxysql: (remoteInstanceStatus.proxysql.proxysql_2_1_1.enabled ? 'ProxySQL' : undefined),
     rds: (remoteInstanceStatus.aws.aws_rds_5_7.enabled ? 'RDS' : undefined),
     postgresGC: (remoteInstanceStatus.gc.gc_postgresql.enabled ? 'postgresGC' : undefined),
-    mysql_ssl: (remoteInstanceStatus.mysql.ms_8_0_ssl.enabled ? 'MySQL_SSL' : undefined),
   },
 
   serviceTypes: {
