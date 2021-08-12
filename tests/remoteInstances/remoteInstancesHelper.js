@@ -6,9 +6,15 @@ const remoteInstanceStatus = {
     ps_8_0: {
       enabled: true,
     },
+    ms_8_0_ssl: {
+      enabled: true,
+    },
   },
   mongodb: {
     psmdb_4_2: {
+      enabled: true,
+    },
+    psmdb_4_4: {
       enabled: true,
     },
   },
@@ -101,6 +107,17 @@ module.exports = {
         username: 'pmm-agent',
         password: 'pmm-agent-password',
         clusterName: 'mysql_clstr',
+      },
+      ms_8_0_ssl: {
+        host: '192.168.0.1',
+        port: '42205',
+        username: 'root',
+        password: 'r00tr00t',
+        clusterName: 'mysql-ssl-cluster',
+        environment: 'mysql-ssl-env',
+        tlsCAFile: '/tmp/ssl/pmm-ui-tests/testdata/mysql/ssl-cert-scripts/certs/root-ca.pem',
+        tlsCertificateKeyFile: '/tmp/ssl/pmm-ui-tests/testdata/mysql/ssl-cert-scripts/certs/client-key.pem',
+        tlsCertificateFile: '/tmp/ssl/pmm-ui-tests/testdata/mysql/ssl-cert-scripts/certs/client-cert.pem',
       },
     },
     mongodb: {
@@ -198,6 +215,7 @@ module.exports = {
     proxysql: (remoteInstanceStatus.proxysql.proxysql_2_1_1.enabled ? 'ProxySQL' : undefined),
     rds: (remoteInstanceStatus.aws.aws_rds_5_7.enabled ? 'RDS' : undefined),
     postgresGC: (remoteInstanceStatus.gc.gc_postgresql.enabled ? 'postgresGC' : undefined),
+    mysql_ssl: (remoteInstanceStatus.mysql.ms_8_0_ssl.enabled ? 'MySQL_SSL' : undefined),
   },
 
   serviceTypes: {
@@ -231,6 +249,12 @@ module.exports = {
         service: 'postgresql',
       } : undefined
     ),
+    mysql_ssl: (
+      remoteInstanceStatus.mysql.ms_8_0_ssl.enabled ? {
+        serviceType: 'MYSQL_SERVICE',
+        service: 'mysql',
+      } : undefined
+    ),
   },
 
   services: {
@@ -239,6 +263,7 @@ module.exports = {
     postgresql: (remoteInstanceStatus.postgresql.pdpgsql_13_3.enabled ? 'postgresql_remote_new' : undefined),
     proxysql: (remoteInstanceStatus.proxysql.proxysql_2_1_1.enabled ? 'proxysql_remote_new' : undefined),
     postgresGC: (remoteInstanceStatus.gc.gc_postgresql.enabled ? 'postgresql_GC_remote_new' : undefined),
+    mysql_ssl: (remoteInstanceStatus.mysql.ms_8_0_ssl.enabled ? 'mysql_ssl_new' : undefined),
   },
 
   upgradeServiceNames: {
