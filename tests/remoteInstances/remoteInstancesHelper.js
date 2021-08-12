@@ -208,7 +208,7 @@ module.exports = {
     },
   },
 
-  // Used for Adding Remote Instance during Upgrade Tests runs for AMI and Docker.
+  // Used for Adding Remote Instance during Upgrade Tests runs for AMI and Docker via API
   instanceTypes: {
     mysql: (remoteInstanceStatus.mysql.ps_5_7.enabled ? 'MySQL' : undefined),
     postgresql: (remoteInstanceStatus.postgresql.pdpgsql_13_3.enabled ? 'PostgreSQL' : undefined),
@@ -218,6 +218,7 @@ module.exports = {
     postgresGC: (remoteInstanceStatus.gc.gc_postgresql.enabled ? 'postgresGC' : undefined),
   },
 
+  // Generic object for each service type, used by both UI/Upgrade jobs depending on the service being used.
   serviceTypes: {
     mysql: (
       remoteInstanceStatus.mysql.ps_5_7.enabled ? {
@@ -257,6 +258,7 @@ module.exports = {
     ),
   },
 
+  // General Remote Instances Service List, this is what UI-tests job uses to run remote instances tests.
   services: {
     mysql: (remoteInstanceStatus.mysql.ps_5_7.enabled ? 'mysql_remote_new' : undefined),
     mongodb: (remoteInstanceStatus.mongodb.psmdb_4_2.enabled ? 'mongodb_remote_new' : undefined),
@@ -266,6 +268,7 @@ module.exports = {
     mysql_ssl: (remoteInstanceStatus.mysql.ms_8_0_ssl.enabled ? 'mysql_ssl_new' : undefined),
   },
 
+  // Only add a service here when you want to include it as part of Upgrade tests cycle for AMI and Docker
   upgradeServiceNames: {
     mysql: (remoteInstanceStatus.mysql.ps_5_7.enabled ? 'mysql_upgrade_service' : undefined),
     mongodb: (remoteInstanceStatus.mongodb.psmdb_4_2.enabled ? 'mongodb_upgrade_scervice' : undefined),
@@ -275,6 +278,7 @@ module.exports = {
     postgresgc: (remoteInstanceStatus.gc.gc_postgresql.enabled ? 'postgresql_GC_remote_new' : undefined),
   },
 
+  // Used by Upgrade Job to test QAN filters
   qanFilters: ['mysql', 'mongodb', 'postgresql', 'rds'],
 
   getInstanceStatus(instance) {
