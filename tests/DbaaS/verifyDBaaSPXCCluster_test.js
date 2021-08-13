@@ -29,6 +29,10 @@ AfterSuite(async ({ dbaasAPI }) => {
   await dbaasAPI.apiUnregisterCluster(clusterName, true);
 });
 
+Before(async ({ I, settingsAPI }) => {
+  await I.Authorize();
+});
+
 Before(async ({ I, dbaasAPI }) => {
   await I.Authorize();
   if (!await dbaasAPI.apiCheckRegisteredClusterExist(clusterName)) {
@@ -227,7 +231,7 @@ xScenario('Verify Adding PMM-Server Public Address via Settings works @dbaas',
 
     I.amOnPage(pmmSettingsPage.url);
     await pmmSettingsPage.waitForPmmSettingsPageLoaded();
-    await pmmSettingsPage.expandSection(sectionNameToExpand, pmmSettingsPage.fields.advancedButton);
+    await pmmSettingsPage.expandedSection(sectionNameToExpand, pmmSettingsPage.fields.advancedButton);
     await pmmSettingsPage.waitForPmmSettingsPageLoaded();
 
     I.waitForVisible(pmmSettingsPage.fields.publicAddressInput, 30);
@@ -244,7 +248,7 @@ xScenario('Verify Adding PMM-Server Public Address via Settings works @dbaas',
     I.verifyPopUpMessage(pmmSettingsPage.messages.successPopUpMessage);
     I.refreshPage();
     await pmmSettingsPage.waitForPmmSettingsPageLoaded();
-    await pmmSettingsPage.expandSection(sectionNameToExpand, pmmSettingsPage.fields.advancedButton);
+    await pmmSettingsPage.expandedSection(sectionNameToExpand, pmmSettingsPage.fields.advancedButton);
     await pmmSettingsPage.waitForPmmSettingsPageLoaded();
     publicAddress = await I.grabValueFrom(pmmSettingsPage.fields.publicAddressInput);
 
@@ -295,6 +299,37 @@ Scenario('PMM-T717 Verify insufficient resources warning @dbaas',
     await dbaasActionsPage.verifyInsufficientResources(dbaasPage.tabs.dbClusterTab.advancedOptions.fields.resourceBarMemory, 'Insufficient Memory');
     await dbaasActionsPage.verifyInsufficientResources(dbaasPage.tabs.dbClusterTab.advancedOptions.fields.resourceBarDisk, 'Insufficient Disk');
   });
+
+Scenario.only('PMM-T665 Verify View Cluster PXC Logs @dbaas',
+  async ({ I, dbaasPage, dbaasActionsPage, dbaasAPI }) => {
+    await dbaasPage.waitForDbClusterTab(clusterName);
+    I.waitForInvisible(dbaasPage.tabs.kubernetesClusterTab.disabledAddButton, 30);
+    I.click(dbaasPage.tabs.dbClusterTab.dbClusterTab);
+    await dbaasActionsPage.createClusterBasicOptions(clusterName, pxc_cluster_name, 'MySQL');
+    I.click(dbaasPage.tabs.dbClusterTab.createClusterButton);
+    I.waitForText('Processing', 30, dbaasPage.tabs.dbClusterTab.fields.progressBarContent);
+    await dbaasAPI.waitForXtraDbClusterReady(pxc_cluster_name, clusterName); 
+    await dbaasActionsPage.showClusterLogs(pxc_cluster_name, clusterName);
+    I.waitForElement(dbaasPage.tabs.dbClusterTab.fields.dbClusterLogs.expandAllLogsButton);
+    I.seeTextEquals('Expand all',dbaasPage.tabs.dbClusterTab.fields.dbClusterLogs.expandAllLogsButton);
+    I.click(dbaasPage.tabs.dbClusterTab.fields.dbClusterLogs.expandAllLogsButton); 
+    I.seeTextEquals('Collapse all', dbaasPage.tabs.dbClusterTab.fields.dbClusterLogs.collapseAllLogsButton);
+    let numberOfExpanded = await I.grabNumberOfVisibleElements(dbaasPage.tabs.dbClusterTab.fields.dbClusterLogs.expandedContainersLogsSection);
+    assert.ok(numberOfExpanded === 12, `Number of grabbed elements is: ${numberOfExpanded}`);
+    I.click(dbaasPage.tabs.dbClusterTab.fields.dbClusterLogs.collapseAllLogsButton);
+    I.dontSeeElement(dbaasPage.tabs.dbClusterTab.fields.dbClusterLogs.expandedContainersLogsSection);
+    I.dontSeeElement(dbaasPage.tabs.dbClusterTab.fields.dbClusterLogs.expandedEventsLogsSection);
+    I.seeTextEquals('Expand all',dbaasPage.tabs.dbClusterTab.fields.dbClusterLogs.expandAllLogsButton);
+    I.waitForElement(dbaasPage.tabs.dbClusterTab.fields.dbClusterLogs.refreshLogsButton);
+    I.click(dbaasPage.tabs.dbClusterTab.fields.dbClusterLogs.refreshLogsButton);
+    I.waitForElement(dbaasPage.tabs.dbClusterTab.fields.dbClusterLogs.refreshLogsSpinner);
+    I.waitForElement(dbaasPage.tabs.dbClusterTab.fields.dbClusterLogs.podLogsHeader);
+    I.click(dbaasPage.tabs.dbClusterTab.fields.dbClusterLogs.podLogsHeader);
+    numberOfExpanded = await I.grabNumberOfVisibleElements(dbaasPage.tabs.dbClusterTab.fields.dbClusterLogs.expandedEventsLogsSection);
+    assert.ok(numberOfExpanded === 1, `Number of grabbed elements is: ${numberOfExpanded}`);
+    I.click(dbaasPage.tabs.dbClusterTab.fields.dbClusterLogs.closeButton);
+    I.dontSeeElement(dbaasPage.tabs.dbClusterTab.fields.dbClusterLogs.modalHeader);
+  });  
 
 Scenario('PMM-T704 PMM-T772 PMM-T849 PMM-T850 Resources, PV, Secrets verification @dbaas',
   async ({
