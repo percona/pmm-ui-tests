@@ -41,7 +41,7 @@ Before(async ({ I, dbaasAPI }) => {
 });
 
 Scenario('PMM-T665 PMM-T455 PMM-T575 Verify that Advanced Options are optional for DB Cluster Creation, '
-  + 'creating PXC cluster with default settings @dbaas',
+  + 'creating PXC cluster with default settings, log popup @dbaas',
 async ({
   I, dbaasPage, dbaasAPI, dbaasActionsPage,
 }) => {
