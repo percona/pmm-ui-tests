@@ -15,7 +15,7 @@ const {
 } = pmmSettingsPage.perconaPlatform;
 
 const email = secret(process.env.PORTAL_USER_EMAIL);
-const password = secret(process.env.PORTAL_USER_PASSWORD);
+const password = process.env.PORTAL_USER_PASSWORD;
 
 Feature('Percona Platform');
 
