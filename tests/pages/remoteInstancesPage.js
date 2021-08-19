@@ -86,6 +86,7 @@ module.exports = {
     hostName: '$address-text-input',
     iframe: '//div[@class="panel-content"]//iframe',
     metricsPath: '$metrics_path-text-input',
+    noCredentialsError: '//div[text()="No credentials provided and IAM role is not defined"]',
     pageHeaderText: 'PMM Add Instance',
     parseFromURLRadioButton: locate('label').withText('Parse from URL string'),
     password: '$password-password-input',
@@ -313,6 +314,11 @@ module.exports = {
     I.fillField(this.fields.secretKeyInput, this.secretKey);
     I.click(this.fields.discoverBtn);
     this.waitForDiscovery();
+  },
+
+  discoverRDSWithoutCredentials() {
+    I.click(this.fields.discoverBtn);
+    I.waitForVisible(this.fields.noCredentialsError, 30);
   },
 
   waitForDiscovery() {
