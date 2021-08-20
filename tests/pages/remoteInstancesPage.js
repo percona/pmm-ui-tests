@@ -337,6 +337,7 @@ module.exports = {
     // eslint-disable-next-line default-case
     switch (serviceName) {
       case remoteInstancesHelper.services.mongodb:
+      case remoteInstancesHelper.services.mongodb_ssl:
         I.click(this.fields.useQANMongoDBProfiler);
         break;
       case remoteInstancesHelper.services.postgresql:
