@@ -17,6 +17,9 @@ const remoteInstanceStatus = {
     psmdb_4_4: {
       enabled: true,
     },
+    mongodb_4_4_ssl: {
+      enabled: process.env.OVF_TEST !== 'yes',
+    },
   },
   postgresql: {
     pdpgsql_13_3: {
@@ -127,6 +130,15 @@ module.exports = {
         username: 'root',
         password: 'root-!@#%^password',
         clusterName: 'mongo_clstr',
+      },
+      mongodb_4_4_ssl: {
+        host: '192.168.0.1',
+        port: '27018',
+        clusterName: 'mongo-ssl-cluster',
+        environment: 'mongo-ssl-env',
+        tlsCAFile: '/tmp/ssl/pmm-ui-tests/testdata/mongodb/certs/ca.crt',
+        tlsCertificateKeyFile: '/tmp/ssl/pmm-ui-tests/testdata/mongodb/certs/client.pem',
+        tlsCertificateKeyFilePassword: '/tmp/ssl/pmm-ui-tests/testdata/mongodb/certs/client.key',
       },
     },
     postgresql: {
@@ -256,6 +268,12 @@ module.exports = {
         service: 'mysql',
       } : undefined
     ),
+    mongodb_ssl: (
+      remoteInstanceStatus.mongodb.mongodb_4_4_ssl.enabled ? {
+        serviceType: 'MONGODB_SERVICE',
+        service: 'mongodb',
+      } : undefined
+    ),
   },
 
   // General Remote Instances Service List, this is what UI-tests job uses to run remote instances tests.
@@ -266,6 +284,7 @@ module.exports = {
     proxysql: (remoteInstanceStatus.proxysql.proxysql_2_1_1.enabled ? 'proxysql_remote_new' : undefined),
     postgresGC: (remoteInstanceStatus.gc.gc_postgresql.enabled ? 'postgresql_GC_remote_new' : undefined),
     mysql_ssl: (remoteInstanceStatus.mysql.ms_8_0_ssl.enabled ? 'mysql_ssl_new' : undefined),
+    mongodb_ssl: (remoteInstanceStatus.mongodb.mongodb_4_4_ssl.enabled ? 'mongodb_ssl_new' : undefined),
   },
 
   // Only add a service here when you want to include it as part of Upgrade tests cycle for AMI and Docker

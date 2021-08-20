@@ -107,6 +107,8 @@ module.exports = {
     tlscaInput: '$tls_ca-textarea-input',
     tlsCertificateInput: '$tls_cert-textarea-input',
     tlsCertificateKeyInput: '$tls_key-textarea-input',
+    tlsCertificateFilePasswordInput: '$tls_certificate_file_password-password-input',
+    tlsCertificateKey: '$tls_certificate_key-textarea-input',
     usePerformanceSchema2: '//input[@name="qan_mysql_perfschema"]/following-sibling::span[2]',
     usePgStatMonitor: '//label[text()="PG Stat Monitor"]',
     usePgStatStatements: '//label[text()="PG Stat Statements"]',
@@ -152,6 +154,7 @@ module.exports = {
         I.click(this.fields.addMySqlRemote);
         break;
       case 'mongodb':
+      case 'mongodb_ssl':
         I.click(this.fields.addMongoDBRemote);
         break;
       case 'postgresql':
@@ -220,6 +223,34 @@ module.exports = {
         I.fillField(this.fields.serviceName, serviceName);
         I.fillField(this.fields.environment, 'remote-mongodb');
         I.fillField(this.fields.cluster, 'remote-mongodb-cluster');
+        break;
+      case remoteInstancesHelper.services.mongodb_ssl:
+        I.fillField(this.fields.hostName, remoteInstancesHelper.remote_instance.mongodb.mongodb_4_4_ssl.host);
+        adminPage.customClearField(this.fields.portNumber);
+        I.fillField(
+          this.fields.portNumber,
+          remoteInstancesHelper.remote_instance.mongodb.mongodb_4_4_ssl.port,
+        );
+        I.fillField(this.fields.serviceName, serviceName);
+        I.fillField(this.fields.environment,
+          remoteInstancesHelper.remote_instance.mongodb.mongodb_4_4_ssl.environment);
+        I.fillField(this.fields.cluster,
+          remoteInstancesHelper.remote_instance.mongodb.mongodb_4_4_ssl.clusterName);
+        I.dontSeeElement(this.fields.tlscaInput);
+        I.dontSeeElement(this.fields.tlsCertificateFilePasswordInput);
+        I.dontSeeElement(this.fields.tlsCertificateKey);
+        I.click(this.fields.useTLS);
+        I.waitForElement(this.fields.tlscaInput, 30);
+        I.fillField(this.fields.tlscaInput,
+          await this.getFileContent(remoteInstancesHelper.remote_instance.mongodb.mongodb_4_4_ssl.tlsCAFile));
+        I.fillField(this.fields.tlsCertificateFilePasswordInput,
+          await this.getFileContent(
+            remoteInstancesHelper.remote_instance.mongodb.mongodb_4_4_ssl.tlsCertificateKeyFilePassword,
+          ));
+        I.fillField(this.fields.tlsCertificateKey,
+          await this.getFileContent(
+            remoteInstancesHelper.remote_instance.mongodb.mongodb_4_4_ssl.tlsCertificateKeyFile,
+          ));
         break;
       case remoteInstancesHelper.services.postgresql:
         I.fillField(
