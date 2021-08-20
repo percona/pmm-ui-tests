@@ -247,10 +247,14 @@ module.exports = {
           await this.getFileContent(
             remoteInstancesHelper.remote_instance.mongodb.mongodb_4_4_ssl.tlsCertificateKeyFilePassword,
           ));
-        I.fillField(this.fields.tlsCertificateKey,
-          await this.getFileContent(
-            remoteInstancesHelper.remote_instance.mongodb.mongodb_4_4_ssl.tlsCertificateKeyFile,
-          ));
+        I.click(this.fields.tlsCertificateKey);
+        I.type(await this.getFileContent(
+          remoteInstancesHelper.remote_instance.mongodb.mongodb_4_4_ssl.tlsCertificateKeyFile,
+        ));
+        // I.fillField(this.fields.tlsCertificateKey,
+        //   await this.getFileContent(
+        //     remoteInstancesHelper.remote_instance.mongodb.mongodb_4_4_ssl.tlsCertificateKeyFile,
+        //   ));
         break;
       case remoteInstancesHelper.services.postgresql:
         I.fillField(
