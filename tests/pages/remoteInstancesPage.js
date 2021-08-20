@@ -104,6 +104,9 @@ module.exports = {
     subscriptionID: '$azure_subscription_id-text-input',
     tableStatsGroupTableLimit: '$tablestats_group_table_limit-number-input',
     tenantID: '$azure_tenant_id-text-input',
+    tlscaInput: '$tls_ca-textarea-input',
+    tlsCertificateInput: '$tls_cert-textarea-input',
+    tlsCertificateKeyInput: '$tls_key-textarea-input',
     usePerformanceSchema2: '//input[@name="qan_mysql_perfschema"]/following-sibling::span[2]',
     usePgStatMonitor: '//label[text()="PG Stat Monitor"]',
     usePgStatStatements: '//label[text()="PG Stat Statements"]',
@@ -114,6 +117,12 @@ module.exports = {
     returnToMenuButton: locate('span').withText('Return to menu'),
     requiredFieldHostname: locate('$address-field-error-message'),
     requiredFieldPort: locate('$port-field-error-message'),
+  },
+
+  async getFileContent(filePath) {
+    const fileContent = await I.verifyCommand(`cat ${filePath}`);
+
+    return fileContent;
   },
 
   tableStatsLimitRadioButtonLocator(limit) {
@@ -139,6 +148,7 @@ module.exports = {
     // eslint-disable-next-line default-case
     switch (instanceType) {
       case 'mysql':
+      case 'mysql_ssl':
         I.click(this.fields.addMySqlRemote);
         break;
       case 'mongodb':
@@ -163,7 +173,7 @@ module.exports = {
     return this;
   },
 
-  fillRemoteFields(serviceName) {
+  async fillRemoteFields(serviceName) {
     // eslint-disable-next-line default-case
     switch (serviceName) {
       case remoteInstancesHelper.services.mysql:
@@ -175,6 +185,33 @@ module.exports = {
         I.fillField(this.fields.serviceName, serviceName);
         I.fillField(this.fields.environment, this.mysqlSettings.environment);
         I.fillField(this.fields.cluster, this.mysqlSettings.cluster);
+        break;
+      case remoteInstancesHelper.services.mysql_ssl:
+        I.fillField(this.fields.hostName, remoteInstancesHelper.remote_instance.mysql.ms_8_0_ssl.host);
+        I.fillField(this.fields.userName, remoteInstancesHelper.remote_instance.mysql.ms_8_0_ssl.username);
+        I.fillField(this.fields.password, remoteInstancesHelper.remote_instance.mysql.ms_8_0_ssl.password);
+        adminPage.customClearField(this.fields.portNumber);
+        I.fillField(this.fields.portNumber, remoteInstancesHelper.remote_instance.mysql.ms_8_0_ssl.port);
+        I.fillField(this.fields.serviceName, serviceName);
+        I.fillField(this.fields.environment,
+          remoteInstancesHelper.remote_instance.mysql.ms_8_0_ssl.environment);
+        I.fillField(this.fields.cluster,
+          remoteInstancesHelper.remote_instance.mysql.ms_8_0_ssl.clusterName);
+        I.dontSeeElement(this.fields.tlscaInput);
+        I.dontSeeElement(this.fields.tlsCertificateInput);
+        I.dontSeeElement(this.fields.tlsCertificateKeyInput);
+        I.click(this.fields.useTLS);
+        I.waitForElement(this.fields.tlscaInput, 30);
+        I.fillField(this.fields.tlscaInput,
+          await this.getFileContent(remoteInstancesHelper.remote_instance.mysql.ms_8_0_ssl.tlsCAFile));
+        I.fillField(this.fields.tlsCertificateInput,
+          await this.getFileContent(
+            remoteInstancesHelper.remote_instance.mysql.ms_8_0_ssl.tlsCertificateFile,
+          ));
+        I.fillField(this.fields.tlsCertificateKeyInput,
+          await this.getFileContent(
+            remoteInstancesHelper.remote_instance.mysql.ms_8_0_ssl.tlsCertificateKeyFile,
+          ));
         break;
       case remoteInstancesHelper.services.mongodb:
         I.fillField(this.fields.hostName, remoteInstancesHelper.remote_instance.mongodb.psmdb_4_2.host);
