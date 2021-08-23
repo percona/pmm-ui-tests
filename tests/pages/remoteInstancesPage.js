@@ -241,20 +241,18 @@ module.exports = {
         I.dontSeeElement(this.fields.tlsCertificateKey);
         I.click(this.fields.useTLS);
         I.waitForElement(this.fields.tlscaInput, 30);
-        I.fillField(this.fields.tlscaInput,
-          await this.getFileContent(remoteInstancesHelper.remote_instance.mongodb.mongodb_4_4_ssl.tlsCAFile));
-        I.fillField(this.fields.tlsCertificateFilePasswordInput,
-          await this.getFileContent(
-            remoteInstancesHelper.remote_instance.mongodb.mongodb_4_4_ssl.tlsCertificateKeyFilePassword,
-          ));
+        I.click(this.fields.tlscaInput);
+        I.type(await this.getFileContent(
+          remoteInstancesHelper.remote_instance.mongodb.mongodb_4_4_ssl.tlsCAFile,
+        ));
+        I.click(this.fields.tlsCertificateFilePasswordInput);
+        I.type(await this.getFileContent(
+          remoteInstancesHelper.remote_instance.mongodb.mongodb_4_4_ssl.tlsCertificateKeyFilePassword,
+        ));
         I.click(this.fields.tlsCertificateKey);
         I.type(await this.getFileContent(
           remoteInstancesHelper.remote_instance.mongodb.mongodb_4_4_ssl.tlsCertificateKeyFile,
         ));
-        // I.fillField(this.fields.tlsCertificateKey,
-        //   await this.getFileContent(
-        //     remoteInstancesHelper.remote_instance.mongodb.mongodb_4_4_ssl.tlsCertificateKeyFile,
-        //   ));
         break;
       case remoteInstancesHelper.services.postgresql:
         I.fillField(
