@@ -127,6 +127,13 @@ module.exports = {
     return fileContent;
   },
 
+  async fillFileContent(field, file) {
+    I.click(field);
+    I.type(await this.getFileContent(
+      file,
+    ));
+  },
+
   tableStatsLimitRadioButtonLocator(limit) {
     return locate('label').withText(limit);
   },
@@ -205,16 +212,12 @@ module.exports = {
         I.dontSeeElement(this.fields.tlsCertificateKeyInput);
         I.click(this.fields.useTLS);
         I.waitForElement(this.fields.tlscaInput, 30);
-        I.fillField(this.fields.tlscaInput,
-          await this.getFileContent(remoteInstancesHelper.remote_instance.mysql.ms_8_0_ssl.tlsCAFile));
-        I.fillField(this.fields.tlsCertificateInput,
-          await this.getFileContent(
-            remoteInstancesHelper.remote_instance.mysql.ms_8_0_ssl.tlsCertificateFile,
-          ));
-        I.fillField(this.fields.tlsCertificateKeyInput,
-          await this.getFileContent(
-            remoteInstancesHelper.remote_instance.mysql.ms_8_0_ssl.tlsCertificateKeyFile,
-          ));
+        await this.fillFileContent(this.fields.tlscaInput,
+          remoteInstancesHelper.remote_instance.mysql.ms_8_0_ssl.tlsCAFile);
+        await this.fillFileContent(this.fields.tls.tlsCertificateInput,
+          remoteInstancesHelper.remote_instance.mysql.ms_8_0_ssl.tlsCertificateFile);
+        await this.fillFileContent(this.fields.tlsCertificateKeyInput,
+          remoteInstancesHelper.remote_instance.mysql.ms_8_0_ssl.tlsCertificateKeyFile);
         break;
       case remoteInstancesHelper.services.mongodb:
         I.fillField(this.fields.hostName, remoteInstancesHelper.remote_instance.mongodb.psmdb_4_2.host);
@@ -241,18 +244,12 @@ module.exports = {
         I.dontSeeElement(this.fields.tlsCertificateKey);
         I.click(this.fields.useTLS);
         I.waitForElement(this.fields.tlscaInput, 30);
-        I.click(this.fields.tlscaInput);
-        I.type(await this.getFileContent(
-          remoteInstancesHelper.remote_instance.mongodb.mongodb_4_4_ssl.tlsCAFile,
-        ));
-        I.click(this.fields.tlsCertificateFilePasswordInput);
-        I.type(await this.getFileContent(
-          remoteInstancesHelper.remote_instance.mongodb.mongodb_4_4_ssl.tlsCertificateKeyFilePassword,
-        ));
-        I.click(this.fields.tlsCertificateKey);
-        I.type(await this.getFileContent(
-          remoteInstancesHelper.remote_instance.mongodb.mongodb_4_4_ssl.tlsCertificateKeyFile,
-        ));
+        await this.fillFileContent(this.fields.tlscaInput,
+          remoteInstancesHelper.remote_instance.mongodb.mongodb_4_4_ssl.tlsCAFile);
+        await this.fillFileContent(this.fields.tlsCertificateFilePasswordInput,
+          remoteInstancesHelper.remote_instance.mongodb.mongodb_4_4_ssl.tlsCertificateKeyFilePassword);
+        await this.fillFileContent(this.fields.tlsCertificateKey,
+          remoteInstancesHelper.remote_instance.mongodb.mongodb_4_4_ssl.tlsCertificateKeyFile);
         break;
       case remoteInstancesHelper.services.postgresql:
         I.fillField(
