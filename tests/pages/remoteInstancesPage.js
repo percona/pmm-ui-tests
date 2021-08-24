@@ -214,7 +214,7 @@ module.exports = {
         I.waitForElement(this.fields.tlscaInput, 30);
         await this.fillFileContent(this.fields.tlscaInput,
           remoteInstancesHelper.remote_instance.mysql.ms_8_0_ssl.tlsCAFile);
-        await this.fillFileContent(this.fields.tls.tlsCertificateInput,
+        await this.fillFileContent(this.fields.tlsCertificateInput,
           remoteInstancesHelper.remote_instance.mysql.ms_8_0_ssl.tlsCertificateFile);
         await this.fillFileContent(this.fields.tlsCertificateKeyInput,
           remoteInstancesHelper.remote_instance.mysql.ms_8_0_ssl.tlsCertificateKeyFile);
