@@ -21,3 +21,4 @@ services:
       - POSTGRES_HOST_AUTH_METHOD=trust
     volumes:
       - ${PWD}/testdata/mysql/ssl-cert-scripts/certs/:/var/lib/postgresql
+      - ${PWD}/testdata/postgres:/docker-entrypoint-initdb.d/:rw
