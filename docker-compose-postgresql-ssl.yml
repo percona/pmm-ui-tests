@@ -13,7 +13,7 @@ services:
       -c pg_stat_statements.save=off
       -c track_io_timing=on
       -c ssl=on
-      -c ssl_cert_file=/var/lib/postgresql/server-crt.pem
+      -c ssl_cert_file=/var/lib/postgresql/server-cert.pem
       -c ssl_key_file=/var/lib/postgresql/server-key.pem
     ports:
       - "5439:5432"
