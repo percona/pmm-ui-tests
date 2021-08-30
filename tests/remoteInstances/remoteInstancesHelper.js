@@ -6,10 +6,19 @@ const remoteInstanceStatus = {
     ps_8_0: {
       enabled: true,
     },
+    ms_8_0_ssl: {
+      enabled: process.env.OVF_TEST !== 'yes',
+    },
   },
   mongodb: {
     psmdb_4_2: {
       enabled: true,
+    },
+    psmdb_4_4: {
+      enabled: true,
+    },
+    mongodb_4_4_ssl: {
+      enabled: process.env.OVF_TEST !== 'yes',
     },
   },
   postgresql: {
@@ -102,6 +111,17 @@ module.exports = {
         password: 'pmm-agent-password',
         clusterName: 'mysql_clstr',
       },
+      ms_8_0_ssl: {
+        host: '192.168.0.1',
+        port: '3308',
+        username: 'root',
+        password: 'r00tr00t',
+        clusterName: 'mysql-ssl-cluster',
+        environment: 'mysql-ssl-env',
+        tlsCAFile: '/tmp/ssl/pmm-ui-tests/testdata/mysql/ssl-cert-scripts/certs/root-ca.pem',
+        tlsCertificateKeyFile: '/tmp/ssl/pmm-ui-tests/testdata/mysql/ssl-cert-scripts/certs/client-key.pem',
+        tlsCertificateFile: '/tmp/ssl/pmm-ui-tests/testdata/mysql/ssl-cert-scripts/certs/client-cert.pem',
+      },
     },
     mongodb: {
       psmdb_4_2: {
@@ -110,6 +130,15 @@ module.exports = {
         username: 'root',
         password: 'root-!@#%^password',
         clusterName: 'mongo_clstr',
+      },
+      mongodb_4_4_ssl: {
+        host: '192.168.0.1',
+        port: '27018',
+        clusterName: 'mongo-ssl-cluster',
+        environment: 'mongo-ssl-env',
+        tlsCAFile: '/tmp/ssl/pmm-ui-tests/testdata/mongodb/certs/ca.crt',
+        tlsCertificateKeyFile: '/tmp/ssl/pmm-ui-tests/testdata/mongodb/certs/client.pem',
+        tlsCertificateKeyFilePassword: '/tmp/ssl/pmm-ui-tests/testdata/mongodb/certs/client.key',
       },
     },
     postgresql: {
@@ -191,6 +220,7 @@ module.exports = {
     },
   },
 
+  // Used for Adding Remote Instance during Upgrade Tests runs for AMI and Docker via API
   instanceTypes: {
     mysql: (remoteInstanceStatus.mysql.ps_5_7.enabled ? 'MySQL' : undefined),
     postgresql: (remoteInstanceStatus.postgresql.pdpgsql_13_3.enabled ? 'PostgreSQL' : undefined),
@@ -200,6 +230,7 @@ module.exports = {
     postgresGC: (remoteInstanceStatus.gc.gc_postgresql.enabled ? 'postgresGC' : undefined),
   },
 
+  // Generic object for each service type, used by both UI/Upgrade jobs depending on the service being used.
   serviceTypes: {
     mysql: (
       remoteInstanceStatus.mysql.ps_5_7.enabled ? {
@@ -231,16 +262,32 @@ module.exports = {
         service: 'postgresql',
       } : undefined
     ),
+    mysql_ssl: (
+      remoteInstanceStatus.mysql.ms_8_0_ssl.enabled ? {
+        serviceType: 'MYSQL_SERVICE',
+        service: 'mysql',
+      } : undefined
+    ),
+    mongodb_ssl: (
+      remoteInstanceStatus.mongodb.mongodb_4_4_ssl.enabled ? {
+        serviceType: 'MONGODB_SERVICE',
+        service: 'mongodb',
+      } : undefined
+    ),
   },
 
+  // General Remote Instances Service List, this is what UI-tests job uses to run remote instances tests.
   services: {
     mysql: (remoteInstanceStatus.mysql.ps_5_7.enabled ? 'mysql_remote_new' : undefined),
     mongodb: (remoteInstanceStatus.mongodb.psmdb_4_2.enabled ? 'mongodb_remote_new' : undefined),
     postgresql: (remoteInstanceStatus.postgresql.pdpgsql_13_3.enabled ? 'postgresql_remote_new' : undefined),
     proxysql: (remoteInstanceStatus.proxysql.proxysql_2_1_1.enabled ? 'proxysql_remote_new' : undefined),
     postgresGC: (remoteInstanceStatus.gc.gc_postgresql.enabled ? 'postgresql_GC_remote_new' : undefined),
+    mysql_ssl: (remoteInstanceStatus.mysql.ms_8_0_ssl.enabled ? 'mysql_ssl_new' : undefined),
+    mongodb_ssl: (remoteInstanceStatus.mongodb.mongodb_4_4_ssl.enabled ? 'mongodb_ssl_new' : undefined),
   },
 
+  // Only add a service here when you want to include it as part of Upgrade tests cycle for AMI and Docker
   upgradeServiceNames: {
     mysql: (remoteInstanceStatus.mysql.ps_5_7.enabled ? 'mysql_upgrade_service' : undefined),
     mongodb: (remoteInstanceStatus.mongodb.psmdb_4_2.enabled ? 'mongodb_upgrade_scervice' : undefined),
@@ -250,6 +297,7 @@ module.exports = {
     postgresgc: (remoteInstanceStatus.gc.gc_postgresql.enabled ? 'postgresql_GC_remote_new' : undefined),
   },
 
+  // Used by Upgrade Job to test QAN filters
   qanFilters: ['mysql', 'mongodb', 'postgresql', 'rds'],
 
   getInstanceStatus(instance) {
