@@ -25,6 +25,9 @@ for (const [key, value] of Object.entries(remoteInstancesHelper.services)) {
       case 'mysql_ssl':
         qanFilters.add([remoteInstancesHelper.remote_instance.mysql.ms_8_0_ssl.environment]);
         break;
+      case 'postgres_ssl':
+        qanFilters.add([remoteInstancesHelper.remote_instance.postgresql.postgres_13_3_ssl.environment]);
+        break;
       default:
     }
     instances.add([key]);
