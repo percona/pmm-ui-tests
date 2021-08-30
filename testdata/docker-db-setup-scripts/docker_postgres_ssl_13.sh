@@ -1,6 +1,8 @@
 #!/bin/bash
 
-pushd testdata/mysql/ssl-cert-scripts/
+mkdir -p testdata/postgres/ssl-cert-scripts
+cp testdata/mysql/ssl-cert-scripts/*.sh testdata/postgres/ssl-cert-scripts
+pushd testdata/postgres/ssl-cert-scripts
 bash ./gencerts.sh
 sudo chown 0:70 certs/server-key.pem
 sudo chmod 640 certs/server-key.pem
