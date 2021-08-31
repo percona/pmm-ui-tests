@@ -156,7 +156,7 @@ module.exports = {
       az: 'us-east-1c',
       cluster: remoteInstancesHelper.remote_instance.aws.aws_rds_5_7.clusterName,
       engine: 'DISCOVER_RDS_MYSQL',
-      instance_id: 'rds-mysql57',
+      instance_id: serviceName,
       isRDS: true,
       pmm_agent_id: 'pmm-server',
       port: remoteInstancesHelper.remote_instance.aws.aws_rds_5_7.port,
