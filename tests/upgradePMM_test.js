@@ -454,6 +454,25 @@ Scenario(
 );
 
 Scenario(
+  'Verify Agents are Running and Metrics are being collected Post Upgrade (UI) [critical] @ami-upgrade @post-upgrade @pmm-upgrade',
+  async ({ I, pmmInventoryPage, dashboardPage }) => {
+    const metrics = Object.keys(remoteInstancesHelper.upgradeServiceMetricNames);
+
+    for (const service of Object.values(remoteInstancesHelper.upgradeServiceNames)) {
+      if (service) {
+        if (metrics.includes(service)) {
+          const metricName = remoteInstancesHelper.upgradeServiceMetricNames[service];
+          const response = await dashboardPage.checkMetricExist(metricName);
+          const result = JSON.stringify(response.data.data.result);
+
+          assert.ok(response.data.data.result.length !== 0, `Metrics ${metricName} for Node ${service} Should be available but got empty ${result}`);
+        }
+      }
+    }
+  },
+);
+
+Scenario(
   'Verify QAN has specific filters for Remote Instances after Upgrade (UI) @ami-upgrade @post-upgrade @pmm-upgrade',
   async ({
     I, qanPage, qanFilters, qanOverview,

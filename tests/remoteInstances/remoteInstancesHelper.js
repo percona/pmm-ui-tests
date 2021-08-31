@@ -316,6 +316,16 @@ module.exports = {
     postgresgc: (remoteInstanceStatus.gc.gc_postgresql.enabled ? 'postgresql_GC_remote_new' : undefined),
   },
 
+  // Metrics that needs to be checked post upgrade for each Service, only used by Docker Upgrade & AMI upgrade
+  upgradeServiceMetricNames: {
+    mysql_upgrade_service: 'mysql_global_status_max_used_connections',
+    mongodb_upgrade_scervice: 'mongodb_connections',
+    proxysql_upgrade_service: 'proxysql_stats_memory_auth_memory',
+    postgres_upgrade_service: 'pg_stat_database_xact_rollback',
+    mysql_rds_uprgade_service: 'aws_rds_bin_log_disk_usage_average',
+    postgresql_GC_remote_new: 'pg_stat_database_xact_rollback',
+  },
+
   // Used by Upgrade Job to test QAN filters
   qanFilters: ['mysql', 'mongodb', 'postgresql', 'rds'],
 
