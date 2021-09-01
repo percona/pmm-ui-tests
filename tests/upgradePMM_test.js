@@ -7,7 +7,7 @@ const {
 } = inject();
 
 const alertManager = {
-  alertmanagerURL: `http://${process.env.SERVER_IP}:9093`,
+  alertmanagerURL: 'http://192.168.0.1:9093',
   alertmanagerRules: pmmSettingsPage.alertManager.rule2,
 };
 
