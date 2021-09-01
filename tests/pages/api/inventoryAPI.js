@@ -40,6 +40,14 @@ module.exports = {
     return false;
   },
 
+  async apiGetNodeIdByServiceName(serviceType, serviceName) {
+    const service = await this.apiGetServices(serviceType);
+
+    return Object.values(service.data)
+      .flat(Infinity)
+      .filter(({ service_name }) => service_name.includes(serviceName));
+  },
+
   async apiGetAgents(serviceId) {
     const body = {
       service_id: serviceId,

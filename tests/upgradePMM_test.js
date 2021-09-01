@@ -6,6 +6,11 @@ const {
   remoteInstancesHelper, perconaServerDB,
 } = inject();
 
+const clientDbServices = new DataTable(['serviceType', 'name', 'metric']);
+
+clientDbServices.add(['MYSQL_SERVICE', 'ps_8', 'mysql_global_status_max_used_connections']);
+clientDbServices.add(['POSTGRESQL_SERVICE', 'PGSQL_', 'pg_stat_database_xact_rollback']);
+clientDbServices.add(['MONGODB_SERVICE', 'mongodb_', 'mongodb_connections']);
 const connection = perconaServerDB.defaultConnection;
 const emptyPasswordSummary = 'MySQL users have empty passwords';
 const failedCheckRowLocator = locate('tr').withChild(locate('td').withText(remoteInstancesHelper.upgradeServiceNames.mysql));
@@ -462,13 +467,28 @@ Scenario(
       if (service) {
         if (metrics.includes(service)) {
           const metricName = remoteInstancesHelper.upgradeServiceMetricNames[service];
-          const response = await dashboardPage.checkMetricExist(metricName);
+          const response = await dashboardPage.checkMetricExist(metricName, service);
           const result = JSON.stringify(response.data.data.result);
 
           assert.ok(response.data.data.result.length !== 0, `Metrics ${metricName} for Node ${service} Should be available but got empty ${result}`);
         }
       }
     }
+  },
+);
+
+Data(clientDbServices).Scenario(
+  'Check Metrics for Client Nodes [critical] @ami-upgrade @post-upgrade @pmm-upgrade',
+  async ({
+    I, inventoryAPI, dashboardPage, current,
+  }) => {
+    const metricName = current.metric;
+    const getObject = await inventoryAPI.apiGetNodeIdByServiceName(current.serviceType, current.name);
+    const nodeName = await inventoryAPI.getNodeName(getObject[0].node_id);
+    const response = await dashboardPage.checkMetricExist(metricName, nodeName);
+    const result = JSON.stringify(response.data.data.result);
+
+    assert.ok(response.data.data.result.length !== 0, `Metrics ${metricName} for Node ${nodeName} Should be available but got empty ${result}`);
   },
 );
 

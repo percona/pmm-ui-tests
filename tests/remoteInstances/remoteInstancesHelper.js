@@ -322,7 +322,7 @@ module.exports = {
     mongodb_upgrade_scervice: 'mongodb_connections',
     proxysql_upgrade_service: 'proxysql_stats_memory_auth_memory',
     postgres_upgrade_service: 'pg_stat_database_xact_rollback',
-    mysql_rds_uprgade_service: 'aws_rds_bin_log_disk_usage_average',
+    mysql_rds_uprgade_service: 'mysql_global_status_max_used_connections',
     postgresql_GC_remote_new: 'pg_stat_database_xact_rollback',
   },
 
