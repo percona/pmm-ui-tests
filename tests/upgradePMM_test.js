@@ -588,7 +588,6 @@ if (versionMinor >= 13) {
 
       I.amOnPage(dashboard);
       dashboardPage.waitForDashboardOpened();
-      I.waitForVisible(dashboardPage.fields.timeRangePickerButton, 20);
       adminPage.applyTimeRange(timeRange);
       const getObject = await inventoryAPI.apiGetNodeIdByServiceName(serviceType, name);
 
