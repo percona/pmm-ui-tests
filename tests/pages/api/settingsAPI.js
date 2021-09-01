@@ -211,4 +211,11 @@ module.exports = {
       `Failed to Apply settings \n${JSON.stringify(values, null, 2)}. ${resp.data.message}`,
     );
   },
+
+  async getSettings(property) {
+    const headers = { Authorization: `Basic ${await I.getAuth()}` };
+    const resp = await I.sendPostRequest('v1/Settings/Get', {}, headers);
+
+    return resp.data.settings[property];
+  },
 };

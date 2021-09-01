@@ -3,12 +3,17 @@ const faker = require('faker');
 const { generate } = require('generate-password');
 
 const {
-  remoteInstancesHelper, perconaServerDB,
+  remoteInstancesHelper, perconaServerDB, pmmSettingsPage,
 } = inject();
+
+const alertManager = {
+  alertmanagerURL: `http://${process.env.SERVER_IP}:9093`,
+  alertmanagerRules: pmmSettingsPage.alertManager.rule2,
+};
 
 const clientDbServices = new DataTable(['serviceType', 'name', 'metric']);
 
-clientDbServices.add(['MYSQL_SERVICE', 'ps_8', 'mysql_global_status_max_used_connections']);
+clientDbServices.add(['MYSQL_SERVICE', 'ps_5', 'mysql_global_status_max_used_connections']);
 clientDbServices.add(['POSTGRESQL_SERVICE', 'PGSQL_', 'pg_stat_database_xact_rollback']);
 clientDbServices.add(['MONGODB_SERVICE', 'mongodb_', 'mongodb_connections']);
 const connection = perconaServerDB.defaultConnection;
@@ -235,6 +240,15 @@ if (versionMinor >= 13) {
 }
 
 Scenario(
+  'Setup Prometheus Alerting with external Alert Manager via API PMM-Settings @pre-upgrade @pmm-upgrade',
+  async ({
+    I, settingsAPI,
+  }) => {
+    await settingsAPI.changeSettings(alertManager);
+  },
+);
+
+Scenario(
   'PMM-T3 Verify user is able to Upgrade PMM version [blocker] @pmm-upgrade @ami-upgrade  ',
   async ({ I, homePage }) => {
     I.amOnPage(homePage.url);
@@ -261,6 +275,20 @@ Scenario(
     await dashboardPage.verifyThereAreNoGraphsWithNA();
     await dashboardPage.verifyThereAreNoGraphsWithoutData();
     I.seeInCurrentUrl(grafanaAPI.customDashboard);
+  },
+);
+
+Scenario(
+  'Check Prometheus Alerting Rules Persist Post Upgrade and Alerts are still Firing @post-upgrade @pmm-upgrade',
+  async ({
+    I, settingsAPI, pmmSettingsPage,
+  }) => {
+    const url = await settingsAPI.getSettings('alert_manager_url');
+    const rule = await settingsAPI.getSettings('alert_manager_rules');
+
+    assert.ok(url === alertManager.alertmanagerURL, `Alert Manager URL value is not persisted, expected value was ${alertManager.alertmanagerURL} but got ${url}`);
+    assert.ok(rule === alertManager.alertmanagerRules, `Alert Manager Rule value is not valid, expected value was ${alertManager.alertmanagerRules} but got ${rule}`);
+    await pmmSettingsPage.verifyAlertmanagerRuleAdded(pmmSettingsPage.alertManager.ruleName2, true);
   },
 );
 
