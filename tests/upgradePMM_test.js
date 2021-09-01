@@ -278,20 +278,6 @@ Scenario(
   },
 );
 
-Scenario(
-  'Check Prometheus Alerting Rules Persist Post Upgrade and Alerts are still Firing @post-upgrade @pmm-upgrade',
-  async ({
-    I, settingsAPI, pmmSettingsPage,
-  }) => {
-    const url = await settingsAPI.getSettings('alert_manager_url');
-    const rule = await settingsAPI.getSettings('alert_manager_rules');
-
-    assert.ok(url === alertManager.alertmanagerURL, `Alert Manager URL value is not persisted, expected value was ${alertManager.alertmanagerURL} but got ${url}`);
-    assert.ok(rule === alertManager.alertmanagerRules, `Alert Manager Rule value is not valid, expected value was ${alertManager.alertmanagerRules} but got ${rule}`);
-    await pmmSettingsPage.verifyAlertmanagerRuleAdded(pmmSettingsPage.alertManager.ruleName2, true);
-  },
-);
-
 if (versionMinor >= 13) {
   Scenario(
     'Verify user has failed checks after upgrade / STT on @post-upgrade @pmm-upgrade',
@@ -568,5 +554,19 @@ Scenario(
     );
 
     assert.ok(targets.labels.job === 'blackbox80', 'Active Target from Custom Prometheus Config After Upgrade is not Available');
+  },
+);
+
+Scenario(
+  'Check Prometheus Alerting Rules Persist Post Upgrade and Alerts are still Firing @post-upgrade @pmm-upgrade',
+  async ({
+    I, settingsAPI, pmmSettingsPage,
+  }) => {
+    const url = await settingsAPI.getSettings('alert_manager_url');
+    const rule = await settingsAPI.getSettings('alert_manager_rules');
+
+    assert.ok(url === alertManager.alertmanagerURL, `Alert Manager URL value is not persisted, expected value was ${alertManager.alertmanagerURL} but got ${url}`);
+    assert.ok(rule === alertManager.alertmanagerRules, `Alert Manager Rule value is not valid, expected value was ${alertManager.alertmanagerRules} but got ${rule}`);
+    await pmmSettingsPage.verifyAlertmanagerRuleAdded(pmmSettingsPage.alertManager.ruleName2, true);
   },
 );

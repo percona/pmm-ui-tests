@@ -408,6 +408,7 @@ module.exports = {
       I.wait(5);
     }
 
+    I.waitForElement(`//pre[contains(text(), '${ruleName}')]`, 30);
     I.seeElement(`//pre[contains(text(), '${ruleName}')]`);
     I.see(ruleName);
   },
