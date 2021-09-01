@@ -323,7 +323,6 @@ module.exports = {
     proxysql_upgrade_service: 'proxysql_stats_memory_auth_memory',
     postgres_upgrade_service: 'pg_stat_database_xact_rollback',
     mysql_rds_uprgade_service: 'mysql_global_status_max_used_connections',
-    postgresql_GC_remote_new: 'pg_stat_database_xact_rollback',
   },
 
   // Used by Upgrade Job to test QAN filters

@@ -61,7 +61,7 @@ module.exports = {
     const body = serviceType ? { service_type: serviceType } : {};
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
 
-    return I.sendPostRequest('v1/inventory/Services/List', body, headers);
+    return await I.sendPostRequest('v1/inventory/Services/List', body, headers);
   },
 
   async verifyServiceIdExists(serviceId) {
