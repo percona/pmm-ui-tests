@@ -3,7 +3,7 @@ const faker = require('faker');
 const { generate } = require('generate-password');
 
 const {
-  remoteInstancesHelper, perconaServerDB, pmmSettingsPage,
+  remoteInstancesHelper, perconaServerDB, pmmSettingsPage, dashboardPage,
 } = inject();
 
 const alertManager = {
@@ -11,11 +11,12 @@ const alertManager = {
   alertmanagerRules: pmmSettingsPage.alertManager.rule2,
 };
 
-const clientDbServices = new DataTable(['serviceType', 'name', 'metric']);
+const clientDbServices = new DataTable(['serviceType', 'name', 'metric', 'annotationName', 'dashboard']);
 
-clientDbServices.add(['MYSQL_SERVICE', 'ps_5', 'mysql_global_status_max_used_connections']);
-clientDbServices.add(['POSTGRESQL_SERVICE', 'PGSQL_', 'pg_stat_database_xact_rollback']);
-clientDbServices.add(['MONGODB_SERVICE', 'mongodb_', 'mongodb_connections']);
+clientDbServices.add(['MYSQL_SERVICE', 'ps_5', 'mysql_global_status_max_used_connections', 'annotation-for-mysql', dashboardPage.mysqlInstanceSummaryDashboard.url]);
+clientDbServices.add(['POSTGRESQL_SERVICE', 'PGSQL_', 'pg_stat_database_xact_rollback', 'annotation-for-postgres', dashboardPage.postgresqlInstanceSummaryDashboard.url]);
+clientDbServices.add(['MONGODB_SERVICE', 'mongodb_', 'mongodb_connections', 'annotation-for-mongo', dashboardPage.mongoDbInstanceSummaryDashboard.url]);
+
 const connection = perconaServerDB.defaultConnection;
 const emptyPasswordSummary = 'MySQL users have empty passwords';
 const failedCheckRowLocator = locate('tr').withChild(locate('td').withText(remoteInstancesHelper.upgradeServiceNames.mysql));
@@ -235,6 +236,23 @@ if (versionMinor >= 13) {
       // Silence mysql Empty Password failed check
       I.waitForVisible(failedCheckRowLocator, 30);
       I.click(failedCheckRowLocator.find('button').first());
+    },
+  );
+}
+
+if (versionMinor >= 13) {
+  Data(clientDbServices).Scenario(
+    'Adding annotation before upgrade At service Level @pre-upgrade @pmm-upgrade',
+    async ({
+      I, annotationAPI, inventoryAPI, current,
+    }) => {
+      const {
+        serviceType, name, metric, annotationName,
+      } = current;
+      const getObject = await inventoryAPI.apiGetNodeIdByServiceName(serviceType, name);
+      const nodeName = await inventoryAPI.getNodeName(getObject[0].node_id);
+
+      await annotationAPI.setAnnotation(annotationName, 'Upgrade-PMM-T878', nodeName, getObject[0].service_name, 200);
     },
   );
 }
@@ -556,6 +574,31 @@ Scenario(
     assert.ok(targets.labels.job === 'blackbox80', 'Active Target from Custom Prometheus Config After Upgrade is not Available');
   },
 );
+
+if (versionMinor >= 13) {
+  Data(clientDbServices).Scenario(
+    'Verify added Annotations at service level, also available post upgrade @post-upgrade @pmm-upgrade',
+    async ({
+      I, dashboardPage, current, inventoryAPI, adminPage,
+    }) => {
+      const {
+        serviceType, name, metric, annotationName, dashboard,
+      } = current;
+      const timeRange = 'Last 30 minutes';
+
+      I.amOnPage(dashboard);
+      dashboardPage.waitForDashboardOpened();
+      I.waitForVisible(dashboardPage.fields.timeRangePickerButton, 20);
+      adminPage.applyTimeRange(timeRange);
+      const getObject = await inventoryAPI.apiGetNodeIdByServiceName(serviceType, name);
+
+      await dashboardPage.applyFilter('Service Name', getObject[0].service_name);
+
+      dashboardPage.verifyAnnotationsLoaded(annotationName, 1);
+      I.seeElement(dashboardPage.annotationText(annotationName), 10);
+    },
+  );
+}
 
 Scenario(
   'Check Prometheus Alerting Rules Persist Post Upgrade and Alerts are still Firing @post-upgrade @pmm-upgrade',
