@@ -842,7 +842,7 @@ module.exports = {
   },
 
   // Should be refactored and added to Grafana Helper as a custom function
-  async checkMetricExist(metricName, nodeName) {
+  async checkMetricExist(metricName, queryBy) {
     const timeStamp = Date.now();
     const bodyFormData = new FormData();
     let body = {
@@ -852,9 +852,9 @@ module.exports = {
       step: 60,
     };
 
-    if (nodeName) {
+    if (queryBy) {
       body = {
-        query: `${metricName}{node_name=~"(${nodeName})"}`,
+        query: `${metricName}{${queryBy.type}=~"(${queryBy.value})"}`,
         start: Math.floor((timeStamp - 10000) / 1000),
         end: Math.floor((timeStamp) / 1000),
         step: 60,

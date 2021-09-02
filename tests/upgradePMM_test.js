@@ -11,11 +11,11 @@ const alertManager = {
   alertmanagerRules: pmmSettingsPage.alertManager.rule2,
 };
 
-const clientDbServices = new DataTable(['serviceType', 'name', 'metric', 'annotationName', 'dashboard']);
+const clientDbServices = new DataTable(['serviceType', 'name', 'metric', 'annotationName', 'dashboard', 'upgrade_service']);
 
-clientDbServices.add(['MYSQL_SERVICE', 'ps_5', 'mysql_global_status_max_used_connections', 'annotation-for-mysql', dashboardPage.mysqlInstanceSummaryDashboard.url]);
-clientDbServices.add(['POSTGRESQL_SERVICE', 'PGSQL_', 'pg_stat_database_xact_rollback', 'annotation-for-postgres', dashboardPage.postgresqlInstanceSummaryDashboard.url]);
-clientDbServices.add(['MONGODB_SERVICE', 'mongodb_', 'mongodb_connections', 'annotation-for-mongo', dashboardPage.mongoDbInstanceSummaryDashboard.url]);
+clientDbServices.add(['MYSQL_SERVICE', 'ps_5', 'mysql_global_status_max_used_connections', 'annotation-for-mysql', dashboardPage.mysqlInstanceSummaryDashboard.url, 'mysql_upgrade']);
+clientDbServices.add(['POSTGRESQL_SERVICE', 'PGSQL_', 'pg_stat_database_xact_rollback', 'annotation-for-postgres', dashboardPage.postgresqlInstanceSummaryDashboard.url, 'pgsql_upgrade']);
+clientDbServices.add(['MONGODB_SERVICE', 'mongodb_', 'mongodb_connections', 'annotation-for-mongo', dashboardPage.mongoDbInstanceSummaryDashboard.url, 'mongodb_upgrade']);
 
 const connection = perconaServerDB.defaultConnection;
 const emptyPasswordSummary = 'MySQL users have empty passwords';
@@ -249,10 +249,48 @@ if (versionMinor >= 13) {
       const {
         serviceType, name, metric, annotationName,
       } = current;
-      const getObject = await inventoryAPI.apiGetNodeIdByServiceName(serviceType, name);
-      const nodeName = await inventoryAPI.getNodeName(getObject[0].node_id);
+      const { node_id, service_name } = await inventoryAPI.apiGetNodeInfoByServiceName(serviceType, name);
+      const nodeName = await inventoryAPI.getNodeName(node_id);
 
-      await annotationAPI.setAnnotation(annotationName, 'Upgrade-PMM-T878', nodeName, getObject[0].service_name, 200);
+      await annotationAPI.setAnnotation(annotationName, 'Upgrade-PMM-T878', nodeName, service_name, 200);
+    },
+  );
+}
+
+if (versionMinor >= 20) {
+  Data(clientDbServices).Scenario(
+    'Adding custom agent Password, Custom Label before upgrade At service Level @pre-upgrade @pmm-upgrade',
+    async ({
+      I, inventoryAPI, current,
+    }) => {
+      const {
+        serviceType, name, upgrade_service,
+      } = current;
+      const {
+        service_id, node_id, address, port,
+      } = await inventoryAPI.apiGetNodeInfoByServiceName(serviceType, name);
+
+      const { pmm_agent_id } = await inventoryAPI.apiGetPMMAgentInfoByServiceId(service_id);
+      let output;
+
+      switch (serviceType) {
+        case 'MYSQL_SERVICE':
+          output = await I.verifyCommand(
+            `pmm-admin add mysql --node-id=${node_id} --pmm-agent-id=${pmm_agent_id} --port=${port} --password=ps --host=${address} --query-source=perfschema --agent-password=uitests --custom-labels="testing=upgrade" ${upgrade_service}`,
+          );
+          break;
+        case 'POSTGRESQL_SERVICE':
+          output = await I.verifyCommand(
+            `pmm-admin add postgresql --node-id=${node_id} --pmm-agent-id=${pmm_agent_id} --port=${port} --host=${address} --agent-password=uitests --custom-labels="testing=upgrade" ${upgrade_service}`,
+          );
+          break;
+        case 'MONGODB_SERVICE':
+          output = await I.verifyCommand(
+            `pmm-admin add mongodb --node-id=${node_id} --pmm-agent-id=${pmm_agent_id} --port=${port} --host=${address} --agent-password=uitests --custom-labels="testing=upgrade" ${upgrade_service}`,
+          );
+          break;
+        default:
+      }
     },
   );
 }
@@ -499,7 +537,7 @@ Scenario(
       if (service) {
         if (metrics.includes(service)) {
           const metricName = remoteInstancesHelper.upgradeServiceMetricNames[service];
-          const response = await dashboardPage.checkMetricExist(metricName, service);
+          const response = await dashboardPage.checkMetricExist(metricName, { type: 'node_name', value: service });
           const result = JSON.stringify(response.data.data.result);
 
           assert.ok(response.data.data.result.length !== 0, `Metrics ${metricName} for Node ${service} Should be available but got empty ${result}`);
@@ -515,9 +553,9 @@ Data(clientDbServices).Scenario(
     I, inventoryAPI, dashboardPage, current,
   }) => {
     const metricName = current.metric;
-    const getObject = await inventoryAPI.apiGetNodeIdByServiceName(current.serviceType, current.name);
-    const nodeName = await inventoryAPI.getNodeName(getObject[0].node_id);
-    const response = await dashboardPage.checkMetricExist(metricName, nodeName);
+    const { node_id } = await inventoryAPI.apiGetNodeInfoByServiceName(current.serviceType, current.name);
+    const nodeName = await inventoryAPI.getNodeName(node_id);
+    const response = await dashboardPage.checkMetricExist(metricName, { type: 'node_name', value: nodeName });
     const result = JSON.stringify(response.data.data.result);
 
     assert.ok(response.data.data.result.length !== 0, `Metrics ${metricName} for Node ${nodeName} Should be available but got empty ${result}`);
@@ -561,6 +599,18 @@ Scenario(
 );
 
 Scenario(
+  'Verify Metrics from custom queries for postgres_exporter after upgrade (UI) @post-upgrade @pmm-upgrade',
+  async ({ dashboardPage }) => {
+    const metricName = 'pg_stat_user_tables_n_tup_ins';
+
+    const response = await dashboardPage.checkMetricExist(metricName);
+    const result = JSON.stringify(response.data.data.result);
+
+    assert.ok(response.data.data.result.length !== 0, `Custom Metrics ${metricName} Should be available but got empty ${result}`);
+  },
+);
+
+Scenario(
   'PMM-T102 Verify Custom Prometheus Configuration File is still available at targets after Upgrade @ami-upgrade @post-upgrade @pmm-upgrade',
   async ({ I }) => {
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
@@ -589,9 +639,9 @@ if (versionMinor >= 13) {
       I.amOnPage(dashboard);
       dashboardPage.waitForDashboardOpened();
       adminPage.applyTimeRange(timeRange);
-      const getObject = await inventoryAPI.apiGetNodeIdByServiceName(serviceType, name);
+      const { service_name } = await inventoryAPI.apiGetNodeInfoByServiceName(serviceType, name);
 
-      await dashboardPage.applyFilter('Service Name', getObject[0].service_name);
+      await dashboardPage.applyFilter('Service Name', service_name);
 
       dashboardPage.verifyAnnotationsLoaded(annotationName, 1);
       I.seeElement(dashboardPage.annotationText(annotationName), 10);
@@ -612,3 +662,25 @@ Scenario(
     await pmmSettingsPage.verifyAlertmanagerRuleAdded(pmmSettingsPage.alertManager.ruleName2, true);
   },
 );
+
+if (versionMinor >= 20) {
+  Data(clientDbServices).Scenario(
+    'Verify if Agents added with custom password and custom label work as expected Post Upgrade @pre-upgrade @pmm-upgrade',
+    async ({
+      I, current, inventoryAPI,
+    }) => {
+      const {
+        serviceType, name, metric, upgrade_service,
+      } = current;
+
+      const {
+        custom_labels,
+      } = await inventoryAPI.apiGetNodeInfoByServiceName(serviceType, name);
+      const response = await dashboardPage.checkMetricExist(metric, { type: 'service_name', value: upgrade_service });
+      const result = JSON.stringify(response.data.data.result);
+
+      assert.ok(response.data.data.result.length !== 0, `Metrics ${metric} for Service ${upgrade_service} Should be available but got empty ${result}`);
+      assert.ok(custom_labels.testing === 'upgrade', `Custom Labels for ${serviceType} added before upgrade with custom labels, doesn't have the same label post upgrade, value found ${custom_labels}`);
+    },
+  );
+}
