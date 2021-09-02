@@ -257,7 +257,7 @@ if (versionMinor >= 13) {
   );
 }
 
-if (versionMinor >= 20) {
+if (versionMinor >= 21) {
   Data(clientDbServices).Scenario(
     'Adding custom agent Password, Custom Label before upgrade At service Level @pre-upgrade @pmm-upgrade',
     async ({
@@ -663,7 +663,7 @@ Scenario(
   },
 );
 
-if (versionMinor >= 20) {
+if (versionMinor >= 21) {
   Data(clientDbServices).Scenario(
     'Verify if Agents added with custom password and custom label work as expected Post Upgrade @pre-upgrade @pmm-upgrade',
     async ({
