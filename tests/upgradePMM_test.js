@@ -670,7 +670,7 @@ if (versionMinor >= 21) {
       I, current, inventoryAPI,
     }) => {
       const {
-        serviceType, name, metric, upgrade_service,
+        serviceType, metric, upgrade_service,
       } = current;
 
       const {

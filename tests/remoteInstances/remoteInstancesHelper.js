@@ -309,7 +309,7 @@ module.exports = {
   // Only add a service here when you want to include it as part of Upgrade tests cycle for AMI and Docker
   upgradeServiceNames: {
     mysql: (remoteInstanceStatus.mysql.ps_5_7.enabled ? 'mysql_upgrade_service' : undefined),
-    mongodb: (remoteInstanceStatus.mongodb.psmdb_4_2.enabled ? 'mongodb_upgrade_scervice' : undefined),
+    mongodb: (remoteInstanceStatus.mongodb.psmdb_4_2.enabled ? 'psmdb_upgrade_scervice' : undefined),
     proxysql: (remoteInstanceStatus.proxysql.proxysql_2_1_1.enabled ? 'proxysql_upgrade_service' : undefined),
     postgresql: (remoteInstanceStatus.postgresql.pdpgsql_13_3.enabled ? 'postgres_upgrade_service' : undefined),
     rds: (remoteInstanceStatus.aws.aws_rds_5_7.enabled ? 'mysql_rds_uprgade_service' : undefined),
@@ -319,7 +319,7 @@ module.exports = {
   // Metrics that needs to be checked post upgrade for each Service, only used by Docker Upgrade & AMI upgrade
   upgradeServiceMetricNames: {
     mysql_upgrade_service: 'mysql_global_status_max_used_connections',
-    mongodb_upgrade_scervice: 'mongodb_connections',
+    psmdb_upgrade_scervice: 'mongodb_connections',
     proxysql_upgrade_service: 'proxysql_stats_memory_auth_memory',
     postgres_upgrade_service: 'pg_stat_database_xact_rollback',
     mysql_rds_uprgade_service: 'mysql_global_status_max_used_connections',
