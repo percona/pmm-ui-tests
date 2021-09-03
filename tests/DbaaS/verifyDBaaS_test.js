@@ -122,7 +122,7 @@ Scenario('Verify user is able to add same cluster config with different Name @db
     dbaasPage.checkCluster(clusterName1, true);
   });
 
-Scenario('Verify DB Cluster Tab Page Elements & Steps Background @dbaas',
+Scenario('PMM-T728 Verify DB Cluster Tab Page Elements & Steps Background @dbaas',
   async ({ I, dbaasPage, dbaasAPI }) => {
     if (!await dbaasAPI.apiCheckRegisteredClusterExist(clusterName)) {
       await dbaasAPI.apiRegisterCluster(process.env.kubeconfig_minikube, clusterName);
