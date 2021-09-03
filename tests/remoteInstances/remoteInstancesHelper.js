@@ -157,9 +157,9 @@ module.exports = {
         port: '5439',
         clusterName: 'postgresql-ssl-cluster',
         environment: 'postgresql-ssl-env',
-        tlsCAFile: '/tmp/ssl/pmm-ui-tests/testdata/postgres/ssl-cert-scripts/certs/root-ca.pem',
-        tlsCertFile: '/tmp/ssl/pmm-ui-tests/testdata/postgres/ssl-cert-scripts/certs/client-cert.pem',
-        tlsKeyFile: '/tmp/ssl/pmm-ui-tests/testdata/postgres/ssl-cert-scripts/certs/client-key.pem',
+        tlsCAFile: '/tmp/ssl/pmm-ui-tests/testdata/pgsql/ssl-cert-scripts/certs/root-ca.pem',
+        tlsCertFile: '/tmp/ssl/pmm-ui-tests/testdata/pgsql/ssl-cert-scripts/certs/client-cert.pem',
+        tlsKeyFile: '/tmp/ssl/pmm-ui-tests/testdata/pgsql/ssl-cert-scripts/certs/client-key.pem',
       },
     },
     proxysql: {
