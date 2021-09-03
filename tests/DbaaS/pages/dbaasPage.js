@@ -91,7 +91,6 @@ module.exports = {
           dbClusterExternalAccessTooltip: locate('$expose-field-container').find('.css-sr6nr'),
           dbClusterExternalAccessCheckbox: '$expose-switch',
           dbClusterExternalAccessTooltipText: locate('div').withAttr({ class: 'popper' }),
-          dbClusterExternalAccessTooltipMessage: 'Allows external access to the database cluster',
           resourceBarCPU: '$dbcluster-resources-bar-cpu',
           resourceBarMemory: '$dbcluster-resources-bar-memory',
           resourceBarDisk: '$dbcluster-resources-bar-disk',
