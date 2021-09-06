@@ -26,7 +26,7 @@ const remoteInstanceStatus = {
       enabled: true,
     },
     postgres_13_3_ssl: {
-      enabled: process.env.OVF_TEST !== 'yes',
+      enabled: false,
     },
   },
   proxysql: {
