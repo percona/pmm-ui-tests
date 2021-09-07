@@ -51,9 +51,9 @@ sleep 10
 docker cp setup-replica.js mongors1:/
 docker exec mongors1 mongo --authenticationDatabase admin setup-replica.js
 
-docker exec -u 0 -it mongors1 /bin/bash -c "percona-release enable pbm release && yum -y install percona-backup-mongodb"
-docker exec -u 0 -it mongors2 /bin/bash -c "percona-release enable pbm release && yum -y install percona-backup-mongodb"
-docker exec -u 0 -it mongors3 /bin/bash -c "percona-release enable pbm release && yum -y install percona-backup-mongodb"
+docker exec -u 0 mongors1 /bin/bash -c "percona-release enable pbm release && yum -y install percona-backup-mongodb"
+docker exec -u 0 mongors2 /bin/bash -c "percona-release enable pbm release && yum -y install percona-backup-mongodb"
+docker exec -u 0 mongors3 /bin/bash -c "percona-release enable pbm release && yum -y install percona-backup-mongodb"
 
 docker exec  -d mongors1 /bin/bash -c 'PBM_MONGODB_URI="mongodb://pbmuser:secretpwd@localhost:27017" pbm-agent'
 docker exec  -d mongors2 /bin/bash -c 'PBM_MONGODB_URI="mongodb://pbmuser:secretpwd@localhost:27017" pbm-agent'
