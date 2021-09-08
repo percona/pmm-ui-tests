@@ -1,0 +1,56 @@
+---
+version: '3.8'
+services:
+  mongors1:
+    container_name: mongors1
+    image: 'percona/percona-server-mongodb:4.2'
+    ports:
+      - 27027:27027
+    restart: always
+    volumes:
+      - '.:/root/pmm-agent'
+    command:
+      - --profile=2
+    entrypoint:
+      - /usr/bin/mongod
+      - '--bind_ip_all'
+      - '--port'
+      - '27027'
+      - '--replSet'
+      - rs0
+
+  mongors2:
+    container_name: mongors2
+    image: 'percona/percona-server-mongodb:4.2'
+    ports:
+      - 27028:27028
+    restart: always
+    volumes:
+      - '.:/root/pmm-agent'
+    command:
+      - --profile=2
+    entrypoint:
+      - /usr/bin/mongod
+      - '--bind_ip_all'
+      - '--port'
+      - '27028'
+      - '--replSet'
+      - rs0
+
+  mongors3:
+    container_name: mongors3
+    image: 'percona/percona-server-mongodb:4.2'
+    ports:
+      - 27029:27029
+    restart: always
+    volumes:
+      - '.:/root/pmm-agent'
+    command:
+      - --profile=2
+    entrypoint:
+      - /usr/bin/mongod
+      - '--bind_ip_all'
+      - '--port'
+      - '27029'
+      - '--replSet'
+      - rs0
