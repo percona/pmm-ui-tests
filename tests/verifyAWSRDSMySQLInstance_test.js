@@ -24,6 +24,15 @@ Scenario(
 );
 
 Scenario(
+  'Verify RDS allows discovery without credentials @instances',
+  async ({ I, remoteInstancesPage }) => {
+    I.amOnPage(remoteInstancesPage.url);
+    remoteInstancesPage.waitUntilRemoteInstancesPageLoaded().openAddAWSRDSMySQLPage();
+    remoteInstancesPage.discoverRDSWithoutCredentials();
+  },
+);
+
+Scenario(
   'Verify AWS RDS MySQL 5.6 instance has status running [critical] @instances',
   async ({ I, remoteInstancesPage, pmmInventoryPage }) => {
     const serviceName = remoteInstancesPage.rds['Service Name'];
