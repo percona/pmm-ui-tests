@@ -7,9 +7,9 @@ rs.initiate(
   {
     _id : 'rs0',
     members: [
-      { _id : 0, host : "mongors1:27017" },
-      { _id : 1, host : "mongors2:27017" },
-      { _id : 2, host : "mongors3:27017" }
+      { _id : 0, host : "mongors1:27027" },
+      { _id : 1, host : "mongors2:27028" },
+      { _id : 2, host : "mongors3:27029" }
     ]
   });
   sleep(40000);
@@ -49,12 +49,14 @@ EOF
 
 sleep 10
 docker cp setup-replica.js mongors1:/
-docker exec mongors1 mongo --authenticationDatabase admin setup-replica.js
+docker exec mongors1 mongo --port=27027 --authenticationDatabase admin setup-replica.js
 
 docker exec -u 0 mongors1 /bin/bash -c "percona-release enable pbm release && yum -y install percona-backup-mongodb"
 docker exec -u 0 mongors2 /bin/bash -c "percona-release enable pbm release && yum -y install percona-backup-mongodb"
 docker exec -u 0 mongors3 /bin/bash -c "percona-release enable pbm release && yum -y install percona-backup-mongodb"
 
-docker exec  -d mongors1 /bin/bash -c 'PBM_MONGODB_URI="mongodb://pbmuser:secretpwd@localhost:27017" pbm-agent'
-docker exec  -d mongors2 /bin/bash -c 'PBM_MONGODB_URI="mongodb://pbmuser:secretpwd@localhost:27017" pbm-agent'
-docker exec  -d mongors3 /bin/bash -c 'PBM_MONGODB_URI="mongodb://pbmuser:secretpwd@localhost:27017" pbm-agent'
+docker exec  -d mongors1 /bin/bash -c 'PBM_MONGODB_URI="mongodb://pbmuser:secretpwd@localhost:27027" pbm-agent'
+docker exec  -d mongors2 /bin/bash -c 'PBM_MONGODB_URI="mongodb://pbmuser:secretpwd@localhost:27028" pbm-agent'
+docker exec  -d mongors3 /bin/bash -c 'PBM_MONGODB_URI="mongodb://pbmuser:secretpwd@localhost:27029" pbm-agent'
+
+sudo -- sh -c "echo '127.0.0.1 mongors1 mongors2 mongors3' >> /etc/hosts"
