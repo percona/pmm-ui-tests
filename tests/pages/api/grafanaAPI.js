@@ -69,6 +69,7 @@ module.exports = {
           to: 'now',
         },
         title: this.customDashboard,
+        tags: ['pmm-qa'],
         version: 0,
       },
       folderId: 0,
