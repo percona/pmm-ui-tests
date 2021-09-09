@@ -14,8 +14,8 @@ services:
       --slow_query_log --log_slow_rate_limit=1 --log_slow_admin_statements --log_slow_slave_statements --slow_query_log_file=/tmp/mysql/log/ps5_slow_log.log --long_query_time=0
       --character-set-server=utf8 --default-authentication-plugin=mysql_native_password --collation-server=utf8_unicode_ci
     ports:
-      - "50000:3306"
-    restart: on-failure
+      - "45000:3306"
+    restart: on-failure:5
     environment:
       - MYSQL_ROOT_PASSWORD=ps
       - MYSQL_USER=pmm-agent
@@ -30,9 +30,9 @@ services:
     image: ${MONGO_IMAGE:-percona/percona-server-mongodb:4.2.8}
     container_name: pmm-agent_mongo
     command: --profile 2
-    restart: on-failure
+    restart: on-failure:5
     ports:
-      - "50001:27017"
+      - "45001:27017"
     environment:
       - MONGO_INITDB_ROOT_USERNAME=root
       - MONGO_INITDB_ROOT_PASSWORD=root-!@#%^password
@@ -42,7 +42,7 @@ services:
   postgres:
     image: ${POSTGRES_IMAGE:-perconalab/percona-distribution-postgresql:13.3}
     container_name: pmm-agent_postgres
-    restart: on-failure
+    restart: on-failure:5
     command: >
       -c shared_preload_libraries=pg_stat_monitor,pg_stat_statements
       -c track_activity_query_size=2048
@@ -53,7 +53,7 @@ services:
       -c pg_stat_statements.save=off
       -c track_io_timing=on
     ports:
-      - "50002:5432"
+      - "45008:5432"
     environment:
       - POSTGRES_PASSWORD=pmm-^*&@agent-password
     networks:
@@ -62,7 +62,7 @@ services:
   proxysql:
     image: ${PROXYSQL_IMAGE:-proxysql/proxysql:2.1.1}
     container_name: pmm-agent_proxysql
-    restart: on-failure
+    restart: on-failure:5
     ports:
       - "50003:6032"
       - "50004:6033"
