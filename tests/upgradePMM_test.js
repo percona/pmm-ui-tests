@@ -548,7 +548,7 @@ Scenario(
 );
 
 Data(clientDbServices).Scenario(
-  'Check Metrics for Client Nodes [critical] @ami-upgrade @post-upgrade @pmm-upgrade',
+  'Check Metrics for Client Nodes [critical] @post-client-upgrade @ami-upgrade @post-upgrade @pmm-upgrade',
   async ({
     I, inventoryAPI, dashboardPage, current,
   }) => {
@@ -587,7 +587,7 @@ Scenario(
 );
 
 Scenario(
-  'Verify Metrics from custom queries for mysqld_exporter after upgrade (UI) @post-upgrade @ami-upgrade @pmm-upgrade',
+  'Verify Metrics from custom queries for mysqld_exporter after upgrade (UI) @post-client-upgrade @post-upgrade @ami-upgrade @pmm-upgrade',
   async ({ dashboardPage }) => {
     const metricName = 'mysql_performance_schema_memory_summary_current_bytes';
 
@@ -599,7 +599,7 @@ Scenario(
 );
 
 Scenario(
-  'Verify Metrics from custom queries for postgres_exporter after upgrade (UI) @post-upgrade @pmm-upgrade',
+  'Verify Metrics from custom queries for postgres_exporter after upgrade (UI) @post-client-upgrade @post-upgrade @pmm-upgrade',
   async ({ dashboardPage }) => {
     const metricName = 'pg_stat_user_tables_n_tup_ins';
 
@@ -627,7 +627,7 @@ Scenario(
 
 if (versionMinor >= 13) {
   Data(clientDbServices).Scenario(
-    'Verify added Annotations at service level, also available post upgrade @post-upgrade @pmm-upgrade',
+    'Verify added Annotations at service level, also available post upgrade @post-client-upgrade @post-upgrade @pmm-upgrade',
     async ({
       I, dashboardPage, current, inventoryAPI, adminPage,
     }) => {
@@ -665,7 +665,7 @@ Scenario(
 
 if (versionMinor >= 21) {
   Data(clientDbServices).Scenario(
-    'Verify if Agents added with custom password and custom label work as expected Post Upgrade @pre-upgrade @pmm-upgrade',
+    'Verify if Agents added with custom password and custom label work as expected Post Upgrade @post-client-upgrade @pre-upgrade @pmm-upgrade',
     async ({
       I, current, inventoryAPI,
     }) => {
