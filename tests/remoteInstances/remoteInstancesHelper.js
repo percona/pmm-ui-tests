@@ -25,6 +25,9 @@ const remoteInstanceStatus = {
     pdpgsql_13_3: {
       enabled: true,
     },
+    postgres_13_3_ssl: {
+      enabled: false,
+    },
   },
   proxysql: {
     proxysql_2_1_1: {
@@ -148,6 +151,15 @@ module.exports = {
         username: 'postgres',
         password: 'pmm-^*&@agent-password',
         clusterName: 'pgsql_clstr',
+      },
+      postgres_13_3_ssl: {
+        host: '192.168.0.1',
+        port: '5439',
+        clusterName: 'postgresql-ssl-cluster',
+        environment: 'postgresql-ssl-env',
+        tlsCAFile: '/tmp/ssl/pmm-ui-tests/testdata/pgsql/ssl-cert-scripts/certs/root-ca.pem',
+        tlsCertFile: '/tmp/ssl/pmm-ui-tests/testdata/pgsql/ssl-cert-scripts/certs/client-cert.pem',
+        tlsKeyFile: '/tmp/ssl/pmm-ui-tests/testdata/pgsql/ssl-cert-scripts/certs/client-key.pem',
       },
     },
     proxysql: {
@@ -274,6 +286,12 @@ module.exports = {
         service: 'mongodb',
       } : undefined
     ),
+    postgres_ssl: (
+      remoteInstanceStatus.postgresql.postgres_13_3_ssl.enabled ? {
+        serviceType: 'POSTGRESQL_SERVICE',
+        service: 'postgresql',
+      } : undefined
+    ),
   },
 
   // General Remote Instances Service List, this is what UI-tests job uses to run remote instances tests.
@@ -285,16 +303,26 @@ module.exports = {
     postgresGC: (remoteInstanceStatus.gc.gc_postgresql.enabled ? 'postgresql_GC_remote_new' : undefined),
     mysql_ssl: (remoteInstanceStatus.mysql.ms_8_0_ssl.enabled ? 'mysql_ssl_new' : undefined),
     mongodb_ssl: (remoteInstanceStatus.mongodb.mongodb_4_4_ssl.enabled ? 'mongodb_ssl_new' : undefined),
+    postgres_ssl: (remoteInstanceStatus.postgresql.postgres_13_3_ssl.enabled ? 'postgres_ssl_new' : undefined),
   },
 
   // Only add a service here when you want to include it as part of Upgrade tests cycle for AMI and Docker
   upgradeServiceNames: {
     mysql: (remoteInstanceStatus.mysql.ps_5_7.enabled ? 'mysql_upgrade_service' : undefined),
-    mongodb: (remoteInstanceStatus.mongodb.psmdb_4_2.enabled ? 'mongodb_upgrade_scervice' : undefined),
+    mongodb: (remoteInstanceStatus.mongodb.psmdb_4_2.enabled ? 'psmdb_upgrade_scervice' : undefined),
     proxysql: (remoteInstanceStatus.proxysql.proxysql_2_1_1.enabled ? 'proxysql_upgrade_service' : undefined),
     postgresql: (remoteInstanceStatus.postgresql.pdpgsql_13_3.enabled ? 'postgres_upgrade_service' : undefined),
     rds: (remoteInstanceStatus.aws.aws_rds_5_7.enabled ? 'mysql_rds_uprgade_service' : undefined),
     postgresgc: (remoteInstanceStatus.gc.gc_postgresql.enabled ? 'postgresql_GC_remote_new' : undefined),
+  },
+
+  // Metrics that needs to be checked post upgrade for each Service, only used by Docker Upgrade & AMI upgrade
+  upgradeServiceMetricNames: {
+    mysql_upgrade_service: 'mysql_global_status_max_used_connections',
+    psmdb_upgrade_scervice: 'mongodb_connections',
+    proxysql_upgrade_service: 'proxysql_stats_memory_auth_memory',
+    postgres_upgrade_service: 'pg_stat_database_xact_rollback',
+    mysql_rds_uprgade_service: 'mysql_global_status_max_used_connections',
   },
 
   // Used by Upgrade Job to test QAN filters

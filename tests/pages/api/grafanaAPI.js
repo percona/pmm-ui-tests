@@ -106,6 +106,12 @@ module.exports = {
     );
   },
 
+  async getDashboard(uid) {
+    const headers = { Authorization: `Basic ${await I.getAuth()}` };
+
+    return await I.sendGetRequest(`graph/api/dashboards/uid/${uid}`, headers);
+  },
+
   async setHomeDashboard(id) {
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
     const body = {
