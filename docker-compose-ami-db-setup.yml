@@ -14,7 +14,7 @@ services:
       --slow_query_log --log_slow_rate_limit=1 --log_slow_admin_statements --log_slow_slave_statements --slow_query_log_file=/tmp/mysql/log/ps5_slow_log.log --long_query_time=0
       --character-set-server=utf8 --default-authentication-plugin=mysql_native_password --collation-server=utf8_unicode_ci
     ports:
-      - "45000:3306"
+      - "42300:3306"
     restart: always
     environment:
       - MYSQL_ROOT_PASSWORD=ps
@@ -32,7 +32,7 @@ services:
     command: --profile 2
     restart: always
     ports:
-      - "45001:27017"
+      - "42100:27017"
     environment:
       - MONGO_INITDB_ROOT_USERNAME=root
       - MONGO_INITDB_ROOT_PASSWORD=root-!@#%^password
@@ -53,7 +53,7 @@ services:
       -c pg_stat_statements.save=off
       -c track_io_timing=on
     ports:
-      - "45008:5432"
+      - "42200:5432"
     environment:
       - POSTGRES_PASSWORD=pmm-^*&@agent-password
     networks:
@@ -64,9 +64,9 @@ services:
     container_name: pmm-agent_proxysql
     restart: on-failure:5
     ports:
-      - "45003:6032"
-      - "45004:6033"
-      - "45005:6070"
+      - "46032:6032"
+      - "46033:6033"
+      - "46070:6070"
     volumes:
       - ${PWD}/testdata/proxysql/proxysql.cnf:/etc/proxysql.cnf:rw
     networks:
