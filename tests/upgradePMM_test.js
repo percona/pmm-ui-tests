@@ -668,7 +668,7 @@ Scenario(
 
 if (versionMinor >= 21) {
   Data(clientDbServices).Scenario(
-    'Verify if Agents added with custom password and custom label work as expected Post Upgrade @post-client-upgrade @pre-upgrade @pmm-upgrade',
+    'Verify if Agents added with custom password and custom label work as expected Post Upgrade @post-client-upgrade @post-upgrade @pmm-upgrade',
     async ({
       I, current, inventoryAPI,
     }) => {
