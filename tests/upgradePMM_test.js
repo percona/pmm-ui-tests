@@ -676,6 +676,8 @@ if (versionMinor >= 21) {
       const {
         custom_labels,
       } = await inventoryAPI.apiGetNodeInfoByServiceName(serviceType, upgrade_service);
+
+      assert.ok(custom_labels, `Node Information for ${serviceType} added with ${upgrade_service} is empty, value returned are ${custom_labels}`);
       const response = await dashboardPage.checkMetricExist(metric, { type: 'service_name', value: upgrade_service });
       const result = JSON.stringify(response.data.data.result);
 
