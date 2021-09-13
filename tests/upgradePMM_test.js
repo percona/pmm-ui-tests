@@ -558,7 +558,10 @@ Data(clientDbServices).Scenario(
     const response = await dashboardPage.checkMetricExist(metricName, { type: 'node_name', value: nodeName });
     const result = JSON.stringify(response.data.data.result);
 
-    assert.ok(response.data.data.result.length !== 0, `Metrics ${metricName} for Node ${nodeName} Should be available but got empty ${result}`);
+    // Need to skip this check on AMI upgrade for Postgresql
+    if (process.env.AMI_UPGRADE_TESTING_INSTANCE !== 'true' && current.serviceType !== 'POSTGRESQL_SERVICE') {
+      assert.ok(response.data.data.result.length !== 0, `Metrics ${metricName} for Node ${nodeName} Should be available but got empty ${result}`);
+    }
   },
 );
 
