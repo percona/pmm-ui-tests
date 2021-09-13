@@ -242,7 +242,7 @@ if (versionMinor >= 13) {
 
 if (versionMinor >= 13) {
   Data(clientDbServices).Scenario(
-    'Adding annotation before upgrade At service Level @pre-upgrade @pmm-upgrade',
+    'Adding annotation before upgrade At service Level @ami-upgrade @pre-upgrade @pmm-upgrade',
     async ({
       I, annotationAPI, inventoryAPI, current,
     }) => {
@@ -470,7 +470,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T262 Open PMM Settings page and verify DATA_RETENTION value is set to 2 days, Custom Resolution is still preserved after upgrade @post-upgrade @pmm-upgrade',
+  'PMM-T262 Open PMM Settings page and verify DATA_RETENTION value is set to 2 days, Custom Resolution is still preserved after upgrade @ami-upgrade @post-upgrade @pmm-upgrade',
   async ({ I, pmmSettingsPage }) => {
     const advancedSection = pmmSettingsPage.sectionTabsList.advanced;
     const metricResoltionSection = pmmSettingsPage.sectionTabsList.metrics;
@@ -548,7 +548,7 @@ Scenario(
 );
 
 Data(clientDbServices).Scenario(
-  'Check Metrics for Client Nodes [critical] @post-client-upgrade @ami-upgrade @post-upgrade @pmm-upgrade',
+  'Check Metrics for Client Nodes [critical] @post-client-upgrade  @ami-upgrade @post-upgrade @pmm-upgrade',
   async ({
     I, inventoryAPI, dashboardPage, current,
   }) => {
@@ -599,7 +599,7 @@ Scenario(
 );
 
 Scenario(
-  'Verify Metrics from custom queries for postgres_exporter after upgrade (UI) @post-client-upgrade @post-upgrade @pmm-upgrade',
+  'Verify Metrics from custom queries for postgres_exporter after upgrade (UI) @ami-upgrade @post-client-upgrade @post-upgrade @pmm-upgrade',
   async ({ dashboardPage }) => {
     const metricName = 'pg_stat_user_tables_n_tup_ins';
 
@@ -627,7 +627,7 @@ Scenario(
 
 if (versionMinor >= 13) {
   Data(clientDbServices).Scenario(
-    'Verify added Annotations at service level, also available post upgrade @post-client-upgrade @post-upgrade @pmm-upgrade',
+    'Verify added Annotations at service level, also available post upgrade @ami-upgrade @post-client-upgrade @post-upgrade @pmm-upgrade',
     async ({
       I, dashboardPage, current, inventoryAPI, adminPage,
     }) => {
