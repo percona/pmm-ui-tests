@@ -242,7 +242,7 @@ if (versionMinor >= 13) {
 
 if (versionMinor >= 13) {
   Data(clientDbServices).Scenario(
-    'Adding annotation before upgrade At service Level @pre-upgrade @pmm-upgrade',
+    'Adding annotation before upgrade At service Level @ami-upgrade @pre-upgrade @pmm-upgrade',
     async ({
       I, annotationAPI, inventoryAPI, current,
     }) => {
@@ -470,7 +470,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T262 Open PMM Settings page and verify DATA_RETENTION value is set to 2 days, Custom Resolution is still preserved after upgrade @post-upgrade @pmm-upgrade',
+  'PMM-T262 Open PMM Settings page and verify DATA_RETENTION value is set to 2 days, Custom Resolution is still preserved after upgrade @ami-upgrade @post-upgrade @pmm-upgrade',
   async ({ I, pmmSettingsPage }) => {
     const advancedSection = pmmSettingsPage.sectionTabsList.advanced;
     const metricResoltionSection = pmmSettingsPage.sectionTabsList.metrics;
@@ -548,7 +548,7 @@ Scenario(
 );
 
 Data(clientDbServices).Scenario(
-  'Check Metrics for Client Nodes [critical] @ami-upgrade @post-upgrade @pmm-upgrade',
+  'Check Metrics for Client Nodes [critical] @post-client-upgrade  @ami-upgrade @post-upgrade @pmm-upgrade',
   async ({
     I, inventoryAPI, dashboardPage, current,
   }) => {
@@ -558,7 +558,10 @@ Data(clientDbServices).Scenario(
     const response = await dashboardPage.checkMetricExist(metricName, { type: 'node_name', value: nodeName });
     const result = JSON.stringify(response.data.data.result);
 
-    assert.ok(response.data.data.result.length !== 0, `Metrics ${metricName} for Node ${nodeName} Should be available but got empty ${result}`);
+    // Need to skip this check on AMI upgrade for Postgresql
+    if (process.env.AMI_UPGRADE_TESTING_INSTANCE !== 'true' && current.serviceType !== 'POSTGRESQL_SERVICE') {
+      assert.ok(response.data.data.result.length !== 0, `Metrics ${metricName} for Node ${nodeName} Should be available but got empty ${result}`);
+    }
   },
 );
 
@@ -587,7 +590,7 @@ Scenario(
 );
 
 Scenario(
-  'Verify Metrics from custom queries for mysqld_exporter after upgrade (UI) @post-upgrade @ami-upgrade @pmm-upgrade',
+  'Verify Metrics from custom queries for mysqld_exporter after upgrade (UI) @post-client-upgrade @post-upgrade @ami-upgrade @pmm-upgrade',
   async ({ dashboardPage }) => {
     const metricName = 'mysql_performance_schema_memory_summary_current_bytes';
 
@@ -599,7 +602,7 @@ Scenario(
 );
 
 Scenario(
-  'Verify Metrics from custom queries for postgres_exporter after upgrade (UI) @post-upgrade @pmm-upgrade',
+  'Verify Metrics from custom queries for postgres_exporter after upgrade (UI) @ami-upgrade @post-client-upgrade @post-upgrade @pmm-upgrade',
   async ({ dashboardPage }) => {
     const metricName = 'pg_stat_user_tables_n_tup_ins';
 
@@ -627,7 +630,7 @@ Scenario(
 
 if (versionMinor >= 13) {
   Data(clientDbServices).Scenario(
-    'Verify added Annotations at service level, also available post upgrade @post-upgrade @pmm-upgrade',
+    'Verify added Annotations at service level, also available post upgrade @ami-upgrade @post-client-upgrade @post-upgrade @pmm-upgrade',
     async ({
       I, dashboardPage, current, inventoryAPI, adminPage,
     }) => {
@@ -665,7 +668,7 @@ Scenario(
 
 if (versionMinor >= 21) {
   Data(clientDbServices).Scenario(
-    'Verify if Agents added with custom password and custom label work as expected Post Upgrade @pre-upgrade @pmm-upgrade',
+    'Verify if Agents added with custom password and custom label work as expected Post Upgrade @post-client-upgrade @post-upgrade @pmm-upgrade',
     async ({
       I, current, inventoryAPI,
     }) => {
@@ -676,11 +679,15 @@ if (versionMinor >= 21) {
       const {
         custom_labels,
       } = await inventoryAPI.apiGetNodeInfoByServiceName(serviceType, upgrade_service);
+
       const response = await dashboardPage.checkMetricExist(metric, { type: 'service_name', value: upgrade_service });
       const result = JSON.stringify(response.data.data.result);
 
       assert.ok(response.data.data.result.length !== 0, `Metrics ${metric} for Service ${upgrade_service} Should be available but got empty ${result}`);
-      assert.ok(custom_labels.testing === 'upgrade', `Custom Labels for ${serviceType} added before upgrade with custom labels, doesn't have the same label post upgrade, value found ${custom_labels}`);
+      if (serviceType !== 'MYSQL_SERVICE') {
+        assert.ok(custom_labels, `Node Information for ${serviceType} added with ${upgrade_service} is empty, value returned are ${custom_labels}`);
+        assert.ok(custom_labels.testing === 'upgrade', `Custom Labels for ${serviceType} added before upgrade with custom labels, doesn't have the same label post upgrade, value found ${custom_labels}`);
+      }
     },
   );
 }
