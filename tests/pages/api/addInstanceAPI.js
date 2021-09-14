@@ -176,6 +176,25 @@ module.exports = {
     return resp.data;
   },
 
+  async addExternalService(serviceName) {
+    const body = {
+      add_node: {
+        node_name: serviceName,
+        node_type: 'REMOTE_NODE',
+      },
+      address: remoteInstancesHelper.remote_instance.external.redis.host,
+      service_name: serviceName,
+      schema: remoteInstancesHelper.remote_instance.external.redis.schema,
+      cluster: remoteInstancesHelper.remote_instance.external.redis.clusterName,
+      listen_port: remoteInstancesHelper.remote_instance.external.redis.port,
+      metrics_path: remoteInstancesHelper.remote_instance.external.redis.metricsPath,
+    };
+    const headers = { Authorization: `Basic ${await I.getAuth()}` };
+    const resp = await I.sendPostRequest('v1/management/External/Add', body, headers);
+
+    assert.equal(resp.status, 200, `External Service ${serviceName} was not added for monitoring`);
+  },
+
   async addInstanceForSTT(connection) {
     let nodeId;
 
