@@ -1,16 +1,20 @@
-const communicationDefaults = new DataTable(['type']);
+const { pmmSettingsPage } = inject();
+const communicationDefaults = new DataTable(['type', 'serverAddress', 'hello', 'from', 'authType', 'username', 'password', 'url']);
 
-communicationDefaults.add(['email']);
-communicationDefaults.add(['slack']);
+pmmSettingsPage.communicationData.forEach(({
+  type, serverAddress, hello, from, authType, username, password, url,
+}) => {
+  communicationDefaults.add([type, serverAddress, hello, from, authType, username, password, url]);
+});
 
-Feature('PMM Settings Functionality').retry(2);
+Feature('PMM Settings Functionality').retry(1);
 
 Before(async ({ I, settingsAPI }) => {
   await I.Authorize();
   await settingsAPI.restoreSettingsDefaults();
 });
 
-Scenario('PMM-T93 - Open PMM Settings page and verify changing Metrics Resolution [critical] @settings', async ({ I, pmmSettingsPage }) => {
+Scenario('PMM-T93 - Open PMM Settings page and verify changing Metrics Resolution [critical] @settings @grafana-pr', async ({ I, pmmSettingsPage }) => {
   const resolutionToApply = 'Rare';
 
   I.amOnPage(pmmSettingsPage.url);
@@ -22,7 +26,7 @@ Scenario('PMM-T93 - Open PMM Settings page and verify changing Metrics Resolutio
   await pmmSettingsPage.verifySelectedResolution(resolutionToApply);
 });
 
-Scenario('PMM-T94 - Open PMM Settings page and verify changing Data Retention [critical] @settings', async ({ I, pmmSettingsPage }) => {
+Scenario('PMM-T94 - Open PMM Settings page and verify changing Data Retention [critical] @settings @grafana-pr', async ({ I, pmmSettingsPage }) => {
   const dataRetentionValue = '1';
   const sectionNameToExpand = pmmSettingsPage.sectionTabsList.advanced;
 
@@ -67,7 +71,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T253 Verify user can see correct tooltip for STT [trivial] @settings @stt',
+  'PMM-T253 Verify user can see correct tooltip for STT [trivial] @settings @stt @grafana-pr',
   async ({ I, pmmSettingsPage }) => {
     const sectionNameToExpand = pmmSettingsPage.sectionTabsList.advanced;
 
@@ -81,7 +85,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T560 Verify IA related tooltips [trivial] @ia @settings',
+  'PMM-T560 Verify IA related tooltips [trivial] @ia @settings @grafana-pr',
   async ({ I, pmmSettingsPage, settingsAPI }) => {
     await settingsAPI.apiEnableIA();
 
@@ -116,7 +120,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T253 Verify user can enable STT if Telemetry is enabled @settings @stt',
+  'PMM-T253 Verify user can enable STT if Telemetry is enabled @settings @stt @grafana-pr',
   async ({ I, pmmSettingsPage }) => {
     const sectionNameToExpand = pmmSettingsPage.sectionTabsList.advanced;
 
@@ -135,7 +139,7 @@ Scenario(
   },
 ).retry(2);
 
-Scenario('PMM-T520 - Verify that alert is in Firing State - internal alert manager @nightly @settings', async ({ I, pmmSettingsPage }) => {
+Scenario('PMM-T520 - Verify that alert is in Firing State - internal alert manager @nightly @not-ovf @settings', async ({ I, pmmSettingsPage }) => {
   const scheme = 'http://127.0.0.1';
   const sectionNameToExpand = pmmSettingsPage.sectionTabsList.alertmanager;
 
@@ -153,7 +157,7 @@ Scenario('PMM-T520 - Verify that alert is in Firing State - internal alert manag
   await pmmSettingsPage.verifyAlertmanagerRuleAdded(pmmSettingsPage.alertManager.ruleName2, true);
 });
 
-Scenario('PMM-T520 - Verify that alert is being fired to external Alert Manager @nightly @settings', async ({ I, pmmSettingsPage }) => {
+Scenario('PMM-T520 - Verify that alert is being fired to external Alert Manager @nightly @not-ovf @settings', async ({ I, pmmSettingsPage }) => {
   const scheme = 'http://';
   const sectionNameToExpand = pmmSettingsPage.sectionTabsList.alertmanager;
 
@@ -172,7 +176,7 @@ Scenario('PMM-T520 - Verify that alert is being fired to external Alert Manager 
   await pmmSettingsPage.verifyExternalAlertManager(pmmSettingsPage.alertManager.ruleName);
 });
 
-Scenario('PMM-T532 PMM-T533 PMM-T536 - Verify user can enable/disable IA in Settings @ia @settings',
+Scenario('PMM-T532 PMM-T533 PMM-T536 - Verify user can enable/disable IA in Settings @ia @settings @grafana-pr',
   async ({
     I, pmmSettingsPage, settingsAPI, adminPage,
   }) => {
@@ -198,17 +202,29 @@ Scenario('PMM-T532 PMM-T533 PMM-T536 - Verify user can enable/disable IA in Sett
     await settingsAPI.apiEnableIA();
   }).retry(2);
 
-// TODO: unskip and fix in scope of https://jira.percona.com/browse/PMM-7830
-Scenario.skip('PMM-T534 PMM-T535 - Verify user is able to set up default Email/Slack communication settings @ia @settings',
+Scenario('PMM-T785 - Verify DBaaS cannot be disabled with ENABLE_DBAAS or PERCONA_TEST_DBAAS @settings @dbaas',
+  async ({ I, pmmSettingsPage }) => {
+    I.amOnPage(pmmSettingsPage.advancedSettingsUrl);
+    await pmmSettingsPage.waitForPmmSettingsPageLoaded();
+    I.waitForVisible(pmmSettingsPage.fields.dbaasSwitchSelector, 30);
+    pmmSettingsPage.verifySwitch(pmmSettingsPage.fields.dbaasSwitchSelectorInput, 'on');
+    I.click(pmmSettingsPage.fields.dbaasSwitchSelector);
+    pmmSettingsPage.verifySwitch(pmmSettingsPage.fields.dbaasSwitchSelectorInput, 'off');
+    I.click(pmmSettingsPage.fields.advancedButton);
+    pmmSettingsPage.verifySwitch(pmmSettingsPage.fields.dbaasSwitchSelectorInput, 'on');
+    I.verifyPopUpMessage(pmmSettingsPage.messages.invalidDBaaSDisableMessage);
+  });
+
+Data(communicationDefaults).Scenario('PMM-T534 PMM-T535 - Verify user is able to set up default Email/Slack communication settings @ia @settings @grafana-pr',
   async ({
     I, pmmSettingsPage, settingsAPI, current,
   }) => {
     await settingsAPI.apiEnableIA();
     I.amOnPage(pmmSettingsPage.communicationSettingsUrl);
     await pmmSettingsPage.waitForPmmSettingsPageLoaded();
-    pmmSettingsPage.fillCommunicationFields(current.type);
+    pmmSettingsPage.fillCommunicationFields(current);
     I.verifyPopUpMessage(pmmSettingsPage.messages.successPopUpMessage);
     I.refreshPage();
     await pmmSettingsPage.waitForPmmSettingsPageLoaded();
-    await pmmSettingsPage.verifyCommunicationFields(current.type);
-  }).retry(2);
+    await pmmSettingsPage.verifyCommunicationFields(current);
+  });

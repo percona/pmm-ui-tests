@@ -7,22 +7,51 @@ Before(async ({ I }) => {
 });
 
 Scenario(
-  'Open the MySQL Overview Dashboard and verify Metrics are present and graphs are displayed @nightly @dashboards',
+  'PMM-T317 - Open the MySQL Instance Summary Dashboard and verify Metrics are present and graphs are displayed @nightly @dashboards',
   async ({ I, adminPage, dashboardPage }) => {
     I.amOnPage(dashboardPage.mysqlInstanceSummaryDashboard.url);
     dashboardPage.waitForDashboardOpened();
-    await dashboardPage.applyFilter('Service Name', 'ps_8.0');
+    await dashboardPage.applyFilter('Service Name', 'ms-single');
     await dashboardPage.expandEachDashboardRow();
     I.click(adminPage.fields.metricTitle);
     adminPage.peformPageDown(5);
     dashboardPage.verifyMetricsExistence(dashboardPage.mysqlInstanceSummaryDashboard.metrics);
-    await dashboardPage.verifyThereAreNoGraphsWithNA(1);
-    await dashboardPage.verifyThereAreNoGraphsWithoutData(5);
+    await dashboardPage.verifyThereAreNoGraphsWithNA();
+    await dashboardPage.verifyThereAreNoGraphsWithoutData(4);
   },
 );
 
 Scenario(
-  'Open the ProxySQL Instance Summary Dashboard and verify Metrics are present and graphs are displayed @nightly @dashboards',
+  'PMM-T319 - Open the MySQL Instances Overview dashboard and verify Metrics are present and graphs are displayed @nightly @dashboards',
+  async ({ I, adminPage, dashboardPage }) => {
+    I.amOnPage(dashboardPage.mySQLInstanceOverview.url);
+    dashboardPage.waitForDashboardOpened();
+    await dashboardPage.applyFilter('Service Name', 'ms-single');
+    await dashboardPage.expandEachDashboardRow();
+    I.click(adminPage.fields.metricTitle);
+    adminPage.peformPageDown(5);
+    dashboardPage.verifyMetricsExistence(dashboardPage.mySQLInstanceOverview.metrics);
+    await dashboardPage.verifyThereAreNoGraphsWithNA();
+    await dashboardPage.verifyThereAreNoGraphsWithoutData(1);
+  },
+);
+
+Scenario(
+  'PMM-T318 - Open the MySQL Instances Compare dashboard and verify Metrics are present and graphs are displayed @nightly @dashboards',
+  async ({ I, adminPage, dashboardPage }) => {
+    I.amOnPage(dashboardPage.mysqlInstancesCompareDashboard.url);
+    dashboardPage.waitForDashboardOpened();
+    await dashboardPage.expandEachDashboardRow();
+    I.click(adminPage.fields.metricTitle);
+    adminPage.peformPageDown(5);
+    dashboardPage.verifyMetricsExistence(dashboardPage.mysqlInstancesCompareDashboard.metrics);
+    await dashboardPage.verifyThereAreNoGraphsWithNA();
+    await dashboardPage.verifyThereAreNoGraphsWithoutData(3);
+  },
+);
+
+Scenario(
+  'PMM-T68 - Open the ProxySQL Instance Summary Dashboard and verify Metrics are present and graphs are displayed @nightly @dashboards',
   async ({ I, adminPage, dashboardPage }) => {
     I.amOnPage(`${dashboardPage.proxysqlInstanceSummaryDashboard.url}?from=now-5m&to=now`);
     dashboardPage.waitForDashboardOpened();
@@ -35,7 +64,7 @@ Scenario(
 );
 
 Scenario(
-  'Open the PXCGalera Cluster Summary Dashboard and verify Metrics are present and graphs are displayed @nightly @dashboards',
+  'PMM-T67 - Open the PXCGalera Cluster Summary Dashboard and verify Metrics are present and graphs are displayed @nightly @dashboards',
   async ({ I, adminPage, dashboardPage }) => {
     I.amOnPage(`${dashboardPage.pxcGaleraClusterSummaryDashboard.url}?from=now-5m&to=now`);
     dashboardPage.waitForDashboardOpened();
@@ -128,7 +157,7 @@ Scenario(
 );
 
 Scenario(
-  'Verify metrics on Group Replication Summary Dashboard @dashboards @nightly',
+  'PMM-T430 - Verify metrics on MySQL Group Replication Summary Dashboard @dashboards @nightly',
   async ({ I, dashboardPage, adminPage }) => {
     I.amOnPage(dashboardPage.groupReplicationDashboard.url);
     dashboardPage.waitForDashboardOpened();

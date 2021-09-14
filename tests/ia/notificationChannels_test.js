@@ -33,7 +33,7 @@ Scenario(
 
 // nightly candidate
 Scenario(
-  'PMM-T561 Verify that "#" cannot be used in Slack channel name @ia',
+  'PMM-T561 Verify that "#" cannot be used in Slack channel name @ia @grafana-pr',
   async ({ I, ncPage }) => {
     ncPage.openNotificationChannelsTab();
     I.waitForVisible(ncPage.buttons.openAddChannelModal, 30);
@@ -55,7 +55,7 @@ Data(notificationChannels).Scenario(
 );
 
 Scenario(
-  'PMM-T645, PMM-T647 Add a Pager Duty with Service Key @ia',
+  'PMM-T645, PMM-T647 Add a Pager Duty with Service Key @ia @grafana-pr',
   async ({ I, ncPage }) => {
     const channelName = 'Pager Duty with Service key';
 
@@ -74,7 +74,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T647 Verify toggle for Service/Routing key @ia',
+  'PMM-T647 Verify toggle for Service/Routing key @ia @grafana-pr',
   async ({ I, ncPage }) => {
     ncPage.openNotificationChannelsTab();
     I.click(ncPage.buttons.openAddChannelModal);
@@ -113,7 +113,7 @@ Data(notificationChannels).Scenario(
 );
 
 Data(notificationChannels).Scenario(
-  'PMM-T493 Delete a notification channel @ia',
+  'PMM-T493 Delete a notification channel @ia @grafana-pr',
   async ({
     I, ncPage, channelsAPI, current,
   }) => {

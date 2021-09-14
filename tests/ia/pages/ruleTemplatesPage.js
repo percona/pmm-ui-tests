@@ -49,8 +49,10 @@ module.exports = {
     duplicateTemplate: (id) => `Template with name "${id}" already exists.`,
   },
   templateSources: {
-    ui: 'User-defined (UI)',
+    ui: 'User Created (UI)',
     builtin: 'Built-in',
+    file: 'User Created (file)',
+    saas: 'Percona',
   },
   ruleTemplate: {
     // templateNameAndContent parses yaml file and returns

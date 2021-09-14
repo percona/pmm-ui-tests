@@ -1,12 +1,25 @@
 const assert = require('assert');
 
-Feature('Monitoring AWS RDS MySQL DB');
+Feature('Monitoring AWS RDS PostgreSQL');
 
 Before(async ({ I }) => {
-  I.Authorize();
+  await I.Authorize();
 });
 
-// skipping due to failures
+After(async ({ settingsAPI }) => {
+  if (process.env.OVF_TEST === 'yes') {
+    const body = {
+      metrics_resolutions: {
+        hr: '5s',
+        mr: '10s',
+        lr: '60s',
+      },
+    };
+
+    await settingsAPI.changeSettings(body, true);
+  }
+});
+
 Scenario(
   'PMM-T716 - Verify adding PostgreSQL RDS monitoring to PMM via UI @instances',
   async ({
@@ -35,12 +48,27 @@ Scenario(
 Scenario(
   'PMM-T716 - Verify Dashboard for Postgres RDS added via UI @instances',
   async ({
-    I, dashboardPage,
+    I, dashboardPage, settingsAPI,
   }) => {
     const serviceName = 'pmm-qa-postgres-12';
 
+    // Increase resolution to avoid failures for OVF execution
+    if (process.env.OVF_TEST === 'yes') {
+      const body = {
+        metrics_resolutions: {
+          hr: '60s',
+          mr: '180s',
+          lr: '300s',
+        },
+      };
+
+      await settingsAPI.changeSettings(body, true);
+    }
+
+    // Wait 10 seconds before test to start getting metrics
+    I.wait(10);
     I.amOnPage(dashboardPage.postgresqlInstanceOverviewDashboard.url);
-    dashboardPage.applyFilter('Node Name', serviceName);
+    await dashboardPage.applyFilter('Node Name', serviceName);
     await dashboardPage.verifyThereAreNoGraphsWithNA();
     await dashboardPage.verifyThereAreNoGraphsWithoutData();
   },

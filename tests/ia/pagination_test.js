@@ -1,7 +1,8 @@
 const pages = new DataTable(['page']);
 
 pages.add(['channels']);
-pages.add(['templates']);
+//Commenting due to recent changes done with https://jira.percona.com/browse/PMM-8091
+//pages.add(['templates']);
 pages.add(['rules']);
 
 Feature('IA: Pagination').retry(1);
@@ -23,7 +24,7 @@ After(async ({ channelsAPI, rulesAPI, templatesAPI }) => {
 });
 
 Data(pages).Scenario(
-  'PMM-T632 PMM-T697 PMM-T701 Verify Pagination navigation @ia',
+  'PMM-T632 PMM-T697 PMM-T701 Verify Pagination navigation @ia @grafana-pr',
   async ({
     I, iaCommon, current,
   }) => {

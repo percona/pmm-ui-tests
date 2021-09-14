@@ -4,7 +4,7 @@ exports.config = {
   output: 'tests/output',
   helpers: {
     Playwright: {
-      url: process.env.PMM_UI_URL || 'http://localhost/',
+      url: process.env.PMM_UI_URL || 'http://127.0.0.1/',
       restart: true,
       browser: 'chromium',
       windowSize: '1920x1080',
@@ -25,14 +25,21 @@ exports.config = {
         ],
       },
     },
+    MongoDBHelper: {
+      require: './tests/helper/mongoDB.js',
+      host: '127.0.0.1',
+      port: 27017,
+      username: 'root',
+      password: 'root-!@#%^password',
+    },
     Grafana: {
       require: './tests/helper/grafana_helper.js',
       username: process.env.GRAFANA_USERNAME,
       password: process.env.GRAFANA_PASSWORD,
     },
     REST: {
-      endpoint: process.env.PMM_UI_URL || 'http://localhost/',
-      timeout: 20000,
+      endpoint: process.env.PMM_UI_URL || 'http://127.0.0.1/',
+      timeout: 30000,
     },
     Mailosaur: {
       require: 'codeceptjs-mailosaurhelper',

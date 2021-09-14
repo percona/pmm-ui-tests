@@ -204,7 +204,7 @@ module.exports = {
     ],
   },
   postgresqlInstanceSummaryDashboard: {
-    url: 'graph/d/postgresql-instance-summary/postgresql-instance-summary',
+    url: 'graph/d/postgresql-instance-summary/postgresql-instance-summary?orgId=1&from=now-5m&to=now',
     metrics: [
       'Version',
       'Max Connections',
@@ -233,7 +233,7 @@ module.exports = {
   },
   postgresqlInstanceOverviewDashboard: {
     // had to be changed after the PMM-6386 bug will be fixed
-    url: 'graph/d/postgresql-instance-overview/postgresql-instances-overview',
+    url: 'graph/d/postgresql-instance-overview/postgresql-instances-overview?orgId=1&from=now-5m&to=now',
     metrics: [
       'Services',
       'Max Active Connections',
@@ -325,7 +325,14 @@ module.exports = {
   mongodbOverviewDashboard: {
     url: 'graph/d/mongodb-instance-summary/mongodb-instance-summary',
     metrics: [
+      'Node',
+      'MongoDB Uptime',
+      'QPS',
+      'Latency',
+      'ReplSet',
+      'Current ReplSet State',
       'Command Operations',
+      'Latency Detail',
       'Connections',
       'Cursors',
       'Document Operations',
@@ -336,6 +343,18 @@ module.exports = {
       'getLastError Write Operations',
       'Assert Events',
       'Page Faults',
+      'System Uptime',
+      'Load Average',
+      'RAM',
+      'Memory Available',
+      'Virtual Memory',
+      'Disk Space',
+      'Min Space Available',
+      'Node',
+      'CPU Usage',
+      'CPU Saturation and Max Core Usage',
+      'Disk I/O and Swap Activity',
+      'Network Traffic',
     ],
   },
   mongoDbClusterSummaryDashboard: {
@@ -367,24 +386,30 @@ module.exports = {
       'Total Mongos Operations',
     ],
   },
+  mongoDbInstanceSummaryDashboard: {
+    url: 'graph/d/mongodb-instance-summary/mongodb-instance-summary?orgId=1&refresh=1m&from=now-5m&to=now',
+  },
   mysqlInstanceSummaryDashboard: {
     url: 'graph/d/mysql-instance-summary/mysql-instance-summary?orgId=1&refresh=1m&from=now-5m&to=now',
     metrics: [
+      'Node',
       'MySQL Uptime',
+      'Version',
       'Current QPS',
       'InnoDB Buffer Pool Size',
       'Buffer Pool Size of Total RAM',
+      'Service Summary',
       'MySQL Connections',
+      'MySQL Aborted Connections',
       'MySQL Client Thread Activity',
-      'MySQL Questions',
       'MySQL Thread Cache',
       'MySQL Temporary Objects',
+      'MySQL Slow Queries',
       'MySQL Select Types',
       'MySQL Sorts',
-      'MySQL Slow Queries',
-      'MySQL Aborted Connections',
       'MySQL Table Locks',
-      'Network Traffic',
+      'MySQL Questions',
+      'MySQL Network Traffic',
       'MySQL Network Usage Hourly',
       'MySQL Internal Memory Overview',
       'Top Command Counters',
@@ -393,6 +418,8 @@ module.exports = {
       'MySQL Transaction Handlers',
       'Process States',
       'Top Process States Hourly',
+      'MySQL Query Cache Memory',
+      'MySQL Query Cache Activity',
       'MySQL File Openings',
       'MySQL Open Files',
       'MySQL Table Open Cache Status',
@@ -485,6 +512,10 @@ module.exports = {
       'Top MySQL Client Threads Connected',
       'Top MySQL Active Client Threads',
       'Top MySQL Threads Cached',
+      'Top 5 MySQL Used Connections',
+      'MySQL Used Connections',
+      'Top 5 MySQL Aborted Connections',
+      'Aborted Connections',
       'Top 5 MySQL Client Threads Connected',
       'MySQL Client Threads Connected',
       'Top 5 MySQL Active Client Threads',
@@ -516,10 +547,28 @@ module.exports = {
       'MySQL Selects',
       'Top 5 MySQL Sorts',
       'MySQL Sorts',
+      'Top 5 MySQL Table Locks',
+      'MySQL Table Locks',
+      'Top MySQL Incoming Network Traffic',
+      'Top MySQL Outgoing Network Traffic',
+      'Top MySQL Used Query Cache',
+      'Top Percentage of File Openings to Opened Files',
+      'Top Percentage of Opened Files to the Limit',
+      'Top 5 MySQL Incoming Network Traffic',
+      'Top 5 MySQL Outgoing Network Traffic',
       'MySQL Query Cache Size',
       'MySQL Used Query Cache',
       'Top 5 MySQL File Openings',
+      'Percentage of File Openings to Opened Files',
+      'Top 5 MySQL Opened Files',
+      'Percentage of Opened Files to the Limit',
       'Top Open Cache Miss Ratio',
+      'Min MySQL Opened Table Definitions',
+      'Top MySQL Opened Table Definitions',
+      'Top MySQL Open Table Definitions',
+      'Top Open Table Definitions to Definition Cache',
+      'Lowest 5 Open Cache Hit Ratio',
+      'Open Cache Miss Ratio',
       'MySQL Table Definition Cache',
       'Top 5 MySQL Opened Table Definitions',
       'Top 5 MySQL Open Table Definitions',
@@ -532,6 +581,43 @@ module.exports = {
       + 'from=now-5m&to=now&refresh=1m&var-interval=$__auto_interval_interval&var-region=All&'
       + 'var-environment=All&var-cluster=rds56-cluster&var-replication_set=All&var-az=&'
       + 'var-node_type=All&var-node_model=&var-database=All&var-service_type=All&var-schema=All',
+  },
+  mysqlInstancesCompareDashboard: {
+    url: 'graph/d/mysql-instance-compare/mysql-instances-compare?orgId=1&refresh=1m&from=now-5m&to=now',
+    metrics: [
+      'Service Info',
+      'MySQL Uptime',
+      'Current QPS',
+      'DB Connections',
+      'InnoDB Buffer Pool Size',
+      'Buffer Pool Size of Total RAM',
+      'MySQL Connections',
+      'MySQL Aborted Connections',
+      'MySQL Questions',
+      'MySQL Client Thread Activity',
+      'MySQL Thread Cache',
+      'MySQL Temporary Objects',
+      'MySQL Select Types',
+      'MySQL Slow Queries',
+      'MySQL Sorts',
+      'MySQL Table Locks',
+      'MySQL Network Traffic',
+      'MySQL Network Usage Hourly',
+      'MySQL Internal Memory Overview',
+      'Top Command Counters',
+      'Top Command Counters Hourly',
+      'MySQL Handlers',
+      'MySQL Transaction Handlers',
+      'Process States',
+      'Top 5 Process States Hourly',
+      'MySQL Query Cache Memory',
+      'MySQL Query Cache Activity',
+      'MySQL File Openings',
+      'MySQL Open Files',
+      'MySQL Table Open Cache Status',
+      'MySQL Open Tables',
+      'MySQL Table Definition Cache',
+    ],
   },
   groupReplicationDashboard: {
     url: 'graph/d/mysql-group-replicaset-summary/mysql-group-replication-summary?orgId=1&refresh=1m',
@@ -691,23 +777,28 @@ module.exports = {
   },
 
   fields: {
-    notAvailableMetrics: '//span[contains(text(), "N/A")]',
-    notAvailableDataPoints: '//div[contains(text(),"No data")]',
+    annotationMarker: '(//div[contains(@class,"events_marker")])',
+    clearSelection: '//a[@ng-click="vm.clearSelections()"]',
+    collapsedDashboardRow: '//div[@class="dashboard-row dashboard-row--collapsed"]/a',
+    dataLinkForRoot: '//div[contains(text(), "Data links")]/..//a',
+    Last2Days: '//span[contains(text(), "Last 2 days")]',
     metricTitle: '//div[@class="panel-title"]',
+    mongoDBServiceSummaryContent: locate('pre').withText('Mongo Executable'),
+    mySQLServiceSummaryContent: locate('pre').withText('Percona Toolkit MySQL Summary Report'),
+    navbarLocator: '.page-toolbar',
+    notAvailableDataPoints: '//div[contains(text(),"No data")]',
+    notAvailableMetrics: '//span[contains(text(), "N/A")]',
+    otherReportTitleWithNoData:
+    '//span[contains(text(),"No Data")]//ancestor::div[contains(@class,"panel-container")]//span[contains(@class,"panel-title-text")]',
+    panelLoading: locate('div').withAttr({ class: 'panel-loading' }),
+    postgreSQLServiceSummaryContent: locate('pre').withText('Detected PostgreSQL version:'),
     reportTitleWithNA:
       '//span[contains(text(), "N/A")]//ancestor::div[contains(@class,"panel-container")]//span[contains(@class,"panel-title-text")]',
     reportTitleWithNoData:
       '//div[contains(text(),"No data")]//ancestor::div[contains(@class,"panel-container")]//span[contains(@class,"panel-title-text")]',
-    otherReportTitleWithNoData:
-      '//span[contains(text(),"No Data")]//ancestor::div[contains(@class,"panel-container")]//span[contains(@class,"panel-title-text")]',
-    collapsedDashboardRow: '//div[@class="dashboard-row dashboard-row--collapsed"]/a',
-    annotationMarker: '(//div[contains(@class,"events_marker")])',
-    clearSelection: '//a[@ng-click="vm.clearSelections()"]',
-    Last2Days: '//span[contains(text(), "Last 2 days")]',
-    timeRangePickerButton: '.btn.navbar-button.navbar-button--tight',
     rootUser: '//div[contains(text(), "root")]',
-    dataLinkForRoot: '//div[contains(text(), "Data links")]/..//a',
-    navbarLocator: '.navbar-page-btn',
+    serviceSummary: locate('a').withText('Service Summary'),
+    timeRangePickerButton: '.btn.navbar-button.navbar-button--tight',
   },
 
   createAdvancedDataExplorationURL(metricName, time = '1m', nodeName = 'All') {
@@ -751,15 +842,24 @@ module.exports = {
   },
 
   // Should be refactored and added to Grafana Helper as a custom function
-  async checkMetricExist(metricName) {
+  async checkMetricExist(metricName, queryBy) {
     const timeStamp = Date.now();
     const bodyFormData = new FormData();
-    const body = {
+    let body = {
       query: metricName,
-      start: Math.floor((timeStamp - 10000) / 1000),
+      start: Math.floor((timeStamp - 15000) / 1000),
       end: Math.floor((timeStamp) / 1000),
       step: 60,
     };
+
+    if (queryBy) {
+      body = {
+        query: `${metricName}{${queryBy.type}=~"(${queryBy.value})"}`,
+        start: Math.floor((timeStamp - 10000) / 1000),
+        end: Math.floor((timeStamp) / 1000),
+        step: 60,
+      };
+    }
 
     Object.keys(body).forEach((key) => bodyFormData.append(key, body[key]));
     const headers = {

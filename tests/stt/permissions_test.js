@@ -30,19 +30,19 @@ AfterSuite(async ({ I }) => {
 });
 
 Scenario(
-  'PMM-T358 Verify Failed checks panel at Home page for the viewer role (STT is enabled) @stt @not-pr-pipeline',
+  'PMM-T358 Verify Failed checks panel at Home page for the viewer role (STT is enabled) @stt @grafana-pr',
   async ({ I, homePage, settingsAPI }) => {
     await settingsAPI.apiEnableSTT();
     await I.Authorize(users.viewer.username, users.viewer.password);
     I.amOnPage(homePage.url);
     I.waitForVisible(homePage.fields.checksPanelSelector, 30);
     I.waitForVisible(homePage.fields.noAccessRightsSelector, 30);
-    I.see('Insufficient access rights.', homePage.fields.noAccessRightsSelector);
+    I.see('Insufficient access permissions.', homePage.fields.noAccessRightsSelector);
   },
 );
 
 Scenario(
-  'PMM-T360 Verify Failed checks panel at Home page for the admin role (STT is enabled) @stt @not-pr-pipeline',
+  'PMM-T360 Verify Failed checks panel at Home page for the admin role (STT is enabled) @stt @grafana-pr',
   async ({ I, homePage, settingsAPI }) => {
     await settingsAPI.apiEnableSTT();
     await I.Authorize(users.admin.username, users.admin.password);
@@ -53,19 +53,19 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T358 Verify Database Failed checks page for the viewer role (STT is enabled) [critical] @stt @not-pr-pipeline',
+  'PMM-T358 Verify Database Failed checks page for the viewer role (STT is enabled) [critical] @stt @grafana-pr',
   async ({ I, databaseChecksPage, settingsAPI }) => {
     await settingsAPI.apiEnableSTT();
     await I.Authorize(users.viewer.username, users.viewer.password);
     I.amOnPage(databaseChecksPage.url);
     I.waitForVisible(databaseChecksPage.fields.dbCheckPanelSelector, 30);
     I.waitForVisible(databaseChecksPage.fields.noAccessRightsSelector, 30);
-    I.see('Insufficient access rights.', databaseChecksPage.fields.noAccessRightsSelector);
+    I.see('Insufficient access permissions.', databaseChecksPage.fields.noAccessRightsSelector);
   },
 );
 
 Scenario(
-  'PMM-T360 Verify Database Failed checks page for the admin role (STT is enabled) [critical] @stt @not-pr-pipeline',
+  'PMM-T360 Verify Database Failed checks page for the admin role (STT is enabled) [critical] @stt @grafana-pr',
   async ({ I, databaseChecksPage, settingsAPI }) => {
     await settingsAPI.apiEnableSTT();
     await I.Authorize(users.admin.username, users.admin.password);
@@ -76,19 +76,19 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T358 Verify Failed checks panel at Home page for the viewer role (STT is disabled) @stt @not-pr-pipeline',
+  'PMM-T358 Verify Failed checks panel at Home page for the viewer role (STT is disabled) @stt @grafana-pr',
   async ({ I, homePage, settingsAPI }) => {
     await settingsAPI.apiDisableSTT();
     await I.Authorize(users.viewer.username, users.viewer.password);
     I.amOnPage(homePage.url);
     I.waitForVisible(homePage.fields.checksPanelSelector, 30);
     I.waitForVisible(homePage.fields.noAccessRightsSelector, 30);
-    I.see('Insufficient access rights.', homePage.fields.noAccessRightsSelector);
+    I.see('Insufficient access permissions.', homePage.fields.noAccessRightsSelector);
   },
 );
 
 Scenario(
-  'PMM-T360 Verify Failed checks panel at Home page for the admin role (STT is disabled) @stt @not-pr-pipeline',
+  'PMM-T360 Verify Failed checks panel at Home page for the admin role (STT is disabled) @stt @grafana-pr',
   async ({ I, homePage, settingsAPI }) => {
     await settingsAPI.apiDisableSTT();
     await I.Authorize(users.admin.username, users.admin.password);
@@ -99,24 +99,38 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T358 Verify Database Failed checks page for the viewer role (STT is disabled) [critical] @stt @not-pr-pipeline',
+  'PMM-T358 Verify Database Failed checks page for the viewer role (STT is disabled) [critical] @stt @grafana-pr',
   async ({ I, databaseChecksPage, settingsAPI }) => {
     await settingsAPI.apiDisableSTT();
     await I.Authorize(users.viewer.username, users.viewer.password);
     I.amOnPage(databaseChecksPage.url);
     I.waitForVisible(databaseChecksPage.fields.dbCheckPanelSelector, 30);
     I.waitForVisible(databaseChecksPage.fields.noAccessRightsSelector, 30);
-    I.see('Insufficient access rights.', databaseChecksPage.fields.noAccessRightsSelector);
+    I.see('Insufficient access permissions.', databaseChecksPage.fields.noAccessRightsSelector);
   },
 );
 
 Scenario(
-  'PMM-T360 Verify Database Failed checks page for the admin role (STT is disabled) [critical] @stt @not-pr-pipeline',
+  'PMM-T360 Verify Database Failed checks page for the admin role (STT is disabled) [critical] @stt @grafana-pr',
   async ({ I, databaseChecksPage, settingsAPI }) => {
     await settingsAPI.apiDisableSTT();
     await I.Authorize(users.admin.username, users.admin.password);
     I.amOnPage(databaseChecksPage.url);
     I.waitForVisible(databaseChecksPage.fields.dbCheckPanelSelector, 30);
     I.dontSeeElement(databaseChecksPage.fields.noAccessRightsSelector);
+  },
+);
+
+Scenario(
+  'PMM-T682 Verify backup locations access for user with viewer role [critical] @backup @grafana-pr',
+  async ({
+    I, databaseChecksPage, settingsAPI, locationsPage,
+  }) => {
+    await settingsAPI.changeSettings({ backup: true });
+    await I.Authorize(users.viewer.username, users.viewer.password);
+
+    I.amOnPage(locationsPage.url);
+    I.waitForVisible(databaseChecksPage.fields.noAccessRightsSelector, 30);
+    I.see('Insufficient access permissions.', databaseChecksPage.fields.noAccessRightsSelector);
   },
 );
