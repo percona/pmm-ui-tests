@@ -402,7 +402,7 @@ if (versionMinor >= 15) {
       response = await I.sendGetRequest('prometheus/api/v1/targets', headers);
 
       const targets = response.data.data.activeTargets.find(
-        (o) => o.labels.external_group === 'redis-external',
+        (o) => o.labels.external_group === 'redis-remote',
       );
 
       const expectedScrapeUrl = `${remoteInstancesHelper.remote_instance.external.redis.schema}://${remoteInstancesHelper.remote_instance.external.redis.host

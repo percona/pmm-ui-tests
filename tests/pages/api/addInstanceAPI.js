@@ -188,6 +188,7 @@ module.exports = {
       cluster: remoteInstancesHelper.remote_instance.external.redis.clusterName,
       listen_port: remoteInstancesHelper.remote_instance.external.redis.port,
       metrics_path: remoteInstancesHelper.remote_instance.external.redis.metricsPath,
+      group: remoteInstancesHelper.remote_instance.external.redis.group,
     };
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
     const resp = await I.sendPostRequest('v1/management/External/Add', body, headers);
