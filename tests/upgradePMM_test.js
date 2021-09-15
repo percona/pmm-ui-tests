@@ -204,7 +204,7 @@ if (iaReleased) {
   );
 }
 
-if (versionMinor >= 13) {
+if (versionMinor >= 15) {
   Scenario(
     'Verify user has failed checks before upgrade @pre-upgrade @pmm-upgrade',
     async ({
@@ -236,6 +236,25 @@ if (versionMinor >= 13) {
       // Silence mysql Empty Password failed check
       I.waitForVisible(failedCheckRowLocator, 30);
       I.click(failedCheckRowLocator.find('button').first());
+    },
+  );
+
+  Scenario(
+    'Verify Adding Redis as external Service before Upgrade @pre-upgrade @pmm-upgrade',
+    async ({
+      I, addInstanceAPI,
+    }) => {
+      await addInstanceAPI.addExternalService('redis_external_remote');
+
+      // Make sure Metrics are hitting before Upgrade
+      const metricName = 'redis_uptime_in_seconds';
+
+      // This is only needed to let PMM Consume Metrics from external Service
+      I.wait(30);
+      const response = await dashboardPage.checkMetricExist(metricName);
+      const result = JSON.stringify(response.data.data.result);
+
+      assert.ok(response.data.data.result.length !== 0, `Metrics ${metricName} from external exporter should be available but got empty ${result}`);
     },
   );
 }
@@ -334,7 +353,7 @@ Scenario(
   },
 );
 
-if (versionMinor >= 13) {
+if (versionMinor >= 15) {
   Scenario(
     'Verify user has failed checks after upgrade / STT on @post-upgrade @pmm-upgrade',
     async ({
@@ -351,6 +370,47 @@ if (versionMinor >= 13) {
       I.waitForVisible(databaseChecksPage.buttons.startDBChecks, 30);
       // Verify there is failed check
       await securityChecksAPI.verifyFailedCheckExists(failedCheckMessage);
+    },
+  );
+
+  Scenario(
+    'Verify Redis as external Service Works After Upgrade @post-upgrade @pmm-upgrade',
+    async ({
+      I, addInstanceAPI, dashboardPage, remoteInstancesHelper,
+    }) => {
+      // Make sure Metrics are hitting before Upgrade
+      const metricName = 'redis_uptime_in_seconds';
+      const headers = { Authorization: `Basic ${await I.getAuth()}` };
+      let response;
+      let result;
+
+      response = await dashboardPage.checkMetricExist(metricName);
+      result = JSON.stringify(response.data.data.result);
+
+      assert.ok(response.data.data.result.length !== 0, `Metrics ${metricName} from external exporter should be available post upgrade but got empty ${result}`);
+
+      response = await dashboardPage.checkMetricExist(metricName, { type: 'node_name', value: 'redis_external_remote' });
+      result = JSON.stringify(response.data.data.result);
+
+      assert.ok(response.data.data.result.length !== 0, `Metrics ${metricName} for remote redis node, remote_redis_external Should be available but got empty ${result}`);
+
+      response = await dashboardPage.checkMetricExist(metricName, { type: 'service_name', value: 'redis_external' });
+      result = JSON.stringify(response.data.data.result);
+
+      assert.ok(response.data.data.result.length !== 0, `Metrics ${metricName} for service name redis_external Should be available but got empty ${result}`);
+
+      response = await I.sendGetRequest('prometheus/api/v1/targets', headers);
+
+      const targets = response.data.data.activeTargets.find(
+        (o) => o.labels.external_group === 'redis-remote',
+      );
+
+      const expectedScrapeUrl = `${remoteInstancesHelper.remote_instance.external.redis.schema}://${remoteInstancesHelper.remote_instance.external.redis.host
+      }:${remoteInstancesHelper.remote_instance.external.redis.port}${remoteInstancesHelper.remote_instance.external.redis.metricsPath}`;
+
+      assert.ok(targets.scrapeUrl === expectedScrapeUrl,
+        `Active Target for external service Post Upgrade has wrong Address value, value found is ${targets.scrapeUrl} and value expected was ${expectedScrapeUrl}`);
+      assert.ok(targets.health === 'up', `Active Target for external service Post Upgrade health value is not up! value found ${targets.health}`);
     },
   );
 }
