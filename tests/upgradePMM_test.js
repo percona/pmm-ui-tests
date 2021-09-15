@@ -244,7 +244,7 @@ if (versionMinor >= 15) {
     async ({
       I, addInstanceAPI,
     }) => {
-      await addInstanceAPI.addExternalService('redis_external');
+      await addInstanceAPI.addExternalService('redis_external_remote');
 
       // Make sure Metrics are hitting before Upgrade
       const metricName = 'redis_uptime_in_seconds';
@@ -389,7 +389,7 @@ if (versionMinor >= 15) {
 
       assert.ok(response.data.data.result.length !== 0, `Metrics ${metricName} from external exporter should be available post upgrade but got empty ${result}`);
 
-      response = await dashboardPage.checkMetricExist(metricName, { type: 'node_name', value: 'remote_redis_external' });
+      response = await dashboardPage.checkMetricExist(metricName, { type: 'node_name', value: 'redis_external_remote' });
       result = JSON.stringify(response.data.data.result);
 
       assert.ok(response.data.data.result.length !== 0, `Metrics ${metricName} for remote redis node, remote_redis_external Should be available but got empty ${result}`);
