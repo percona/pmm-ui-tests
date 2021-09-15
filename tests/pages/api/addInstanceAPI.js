@@ -192,7 +192,7 @@ module.exports = {
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
     const resp = await I.sendPostRequest('v1/management/External/Add', body, headers);
 
-    assert.equal(resp.status, 200, `External Service ${serviceName} was not added for monitoring`);
+    assert.equal(resp.status, 200, `External Service ${serviceName} was not added for monitoring got following response ${JSON.stringify(resp.data)}`);
   },
 
   async addInstanceForSTT(connection) {
