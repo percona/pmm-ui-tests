@@ -239,7 +239,7 @@ if (versionMinor >= 15) {
     },
   );
 
-  Scenario(
+  xScenario(
     'Verify Adding Redis as external Service before Upgrade @pre-upgrade @pmm-upgrade',
     async ({
       I, addInstanceAPI,
@@ -373,7 +373,7 @@ if (versionMinor >= 15) {
     },
   );
 
-  Scenario(
+  xScenario(
     'Verify Redis as external Service Works After Upgrade @post-upgrade @pmm-upgrade',
     async ({
       I, addInstanceAPI, dashboardPage, remoteInstancesHelper,
