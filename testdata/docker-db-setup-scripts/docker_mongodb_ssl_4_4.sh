@@ -28,4 +28,4 @@ db.getSiblingDB("test").test.insert({b:2});
 EOF
 
 docker cp add_new_user.js mongodb_ssl:/
-docker exec mongodb_ssl mongo localhost --ssl --sslPEMKeyFile /etc/ssl/certificates/client.pem --sslCAFile /etc/ssl/certificates/ca.crt --sslAllowInvalidHostnames add_new_user.js
+docker exec mongodb_ssl mongo localhost --ssl --sslPEMKeyFile /etc/ssl/certificates/client.pem --sslCAFile /etc/ssl/certificates/ca.crt --sslAllowInvalidCertificates --sslAllowInvalidHostnames add_new_user.js

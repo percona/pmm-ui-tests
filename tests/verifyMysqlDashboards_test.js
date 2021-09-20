@@ -17,7 +17,7 @@ Scenario(
     adminPage.peformPageDown(5);
     dashboardPage.verifyMetricsExistence(dashboardPage.mysqlInstanceSummaryDashboard.metrics);
     await dashboardPage.verifyThereAreNoGraphsWithNA();
-    await dashboardPage.verifyThereAreNoGraphsWithoutData(3);
+    await dashboardPage.verifyThereAreNoGraphsWithoutData(4);
   },
 );
 
@@ -32,7 +32,7 @@ Scenario(
     adminPage.peformPageDown(5);
     dashboardPage.verifyMetricsExistence(dashboardPage.mySQLInstanceOverview.metrics);
     await dashboardPage.verifyThereAreNoGraphsWithNA();
-    await dashboardPage.verifyThereAreNoGraphsWithoutData();
+    await dashboardPage.verifyThereAreNoGraphsWithoutData(1);
   },
 );
 

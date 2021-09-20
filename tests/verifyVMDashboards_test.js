@@ -14,7 +14,7 @@ Scenario(
     adminPage.peformPageDown(5);
     dashboardPage.verifyMetricsExistence(dashboardPage.victoriaMetricsDashboard.metrics);
     await dashboardPage.verifyThereAreNoGraphsWithNA(0);
-    await dashboardPage.verifyThereAreNoGraphsWithoutData(0);
+    await dashboardPage.verifyThereAreNoGraphsWithoutData(1);
   },
 );
 

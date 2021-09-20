@@ -138,6 +138,13 @@ module.exports = {
           dbClusterLogsAction: '$dbcluster-logs-actions',
           closeButton: '$modal-close-button',
           modalHeader: '$modal-header',
+          podLogsHeader: locate('$dbcluster-pod-logs').at(1),
+          expandAllLogsButton: locate('span').withText('Expand all'),
+          refreshLogsButton: locate('$dbcluster-logs-actions').find('button').at(2),
+          expandedContainersLogsSection: locate('$dbcluster-logs').find('pre'),
+          expandedEventsLogsSection: '$dbcluster-pod-events',
+          refreshLogsSpinner: '$dbcluster-logs-loading',
+          collapseAllLogsButton: locate('span').withText('Collapse all'),
         },
         cancelDeleteDBCluster: '$cancel-delete-dbcluster-button',
         progressBarSteps: '$progress-bar-steps',
@@ -241,6 +248,7 @@ module.exports = {
     await dbaasActionsPage.checkActionPossible('Edit', false);
     await dbaasActionsPage.checkActionPossible('Restart', false);
     await dbaasActionsPage.checkActionPossible('Resume', false);
+    I.click(dbaasPage.tabs.dbClusterTab.fields.clusterActionsMenu);
     if (clusterDBType === 'MySQL') {
       await dbaasAPI.waitForXtraDbClusterReady(dbClusterName, k8sClusterName);
     } else {
@@ -344,6 +352,34 @@ module.exports = {
       this.clusterConfiguration[resourcePerNode][field] === value,
       `Expected Resource field ${field} to have ${this.clusterConfiguration[resourcePerNode][field]} but found ${value}`,
     );
+  },
+
+  async verifyLogPopup(numberOfElementsInLogSection) {
+    await dbaasActionsPage.showClusterLogs();
+    I.waitForElement(this.tabs.dbClusterTab.fields.dbClusterLogs.expandAllLogsButton);
+    I.seeTextEquals('Expand all', this.tabs.dbClusterTab.fields.dbClusterLogs.expandAllLogsButton);
+    I.click(this.tabs.dbClusterTab.fields.dbClusterLogs.expandAllLogsButton);
+    I.seeTextEquals('Collapse all', this.tabs.dbClusterTab.fields.dbClusterLogs.collapseAllLogsButton);
+    let numberOfExpanded = await I.grabNumberOfVisibleElements(
+      this.tabs.dbClusterTab.fields.dbClusterLogs.expandedContainersLogsSection,
+    );
+
+    assert.ok(numberOfExpanded === numberOfElementsInLogSection, `Number of grabbed elements is: ${numberOfExpanded}`);
+    I.click(this.tabs.dbClusterTab.fields.dbClusterLogs.collapseAllLogsButton);
+    I.dontSeeElement(this.tabs.dbClusterTab.fields.dbClusterLogs.expandedContainersLogsSection);
+    I.dontSeeElement(this.tabs.dbClusterTab.fields.dbClusterLogs.expandedEventsLogsSection);
+    I.seeTextEquals('Expand all', this.tabs.dbClusterTab.fields.dbClusterLogs.expandAllLogsButton);
+    I.waitForElement(this.tabs.dbClusterTab.fields.dbClusterLogs.refreshLogsButton);
+    I.click(this.tabs.dbClusterTab.fields.dbClusterLogs.refreshLogsButton);
+    I.waitForElement(this.tabs.dbClusterTab.fields.dbClusterLogs.refreshLogsSpinner);
+    I.waitForElement(this.tabs.dbClusterTab.fields.dbClusterLogs.podLogsHeader);
+    I.click(this.tabs.dbClusterTab.fields.dbClusterLogs.podLogsHeader);
+    numberOfExpanded = await I.grabNumberOfVisibleElements(
+      this.tabs.dbClusterTab.fields.dbClusterLogs.expandedEventsLogsSection,
+    );
+    assert.ok(numberOfExpanded === 1, `Number of grabbed elements is: ${numberOfExpanded}`);
+    I.click(this.tabs.dbClusterTab.fields.dbClusterLogs.closeButton);
+    I.dontSeeElement(this.tabs.dbClusterTab.fields.dbClusterLogs.modalHeader);
   },
 
 };

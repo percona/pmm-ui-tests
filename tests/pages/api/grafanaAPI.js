@@ -69,6 +69,7 @@ module.exports = {
           to: 'now',
         },
         title: this.customDashboard,
+        tags: ['pmm-qa'],
         version: 0,
       },
       folderId: 0,
@@ -103,6 +104,12 @@ module.exports = {
       resp.status === 200,
       `Failed to star dashboard with id '${id}' . Response message is ${resp.data.message}`,
     );
+  },
+
+  async getDashboard(uid) {
+    const headers = { Authorization: `Basic ${await I.getAuth()}` };
+
+    return await I.sendGetRequest(`graph/api/dashboards/uid/${uid}`, headers);
   },
 
   async setHomeDashboard(id) {
