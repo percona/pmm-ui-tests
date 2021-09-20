@@ -2,8 +2,6 @@ const assert = require('assert');
 
 const { locationsPage } = inject();
 
-const isOVF = process.env.OVF_TEST === 'yes' || false;
-
 const location = {
   name: 'mongo-location',
   description: 'test description',
@@ -16,24 +14,22 @@ const mongoServiceName = 'mongodb-backup-service1';
 
 Feature('BM: Backup Inventory');
 
-if (!isOVF) {
-  BeforeSuite(async ({
-    I, backupAPI, locationsAPI,
-  }) => {
-    await backupAPI.clearAllArtifacts();
-    await locationsAPI.clearAllLocations(true);
-    locationId = await locationsAPI.createStorageLocation(location);
-    await I.mongoConnectReplica({
-      host: '127.0.0.1',
-      port: 27028,
-      username: 'admin',
-      password: 'password',
-    });
-
-    await I.verifyCommand(`pmm-client pmm-admin add mongodb --port=27027 --service-name=${mongoServiceName} --replication-set=rs0`,
-      'MongoDB Service added.');
+BeforeSuite(async ({
+  I, backupAPI, locationsAPI,
+}) => {
+  await backupAPI.clearAllArtifacts();
+  await locationsAPI.clearAllLocations(true);
+  locationId = await locationsAPI.createStorageLocation(location);
+  await I.mongoConnectReplica({
+    host: '127.0.0.1',
+    port: 27028,
+    username: 'admin',
+    password: 'password',
   });
-}
+
+  await I.verifyCommand(`pmm-client pmm-admin add mongodb --port=27027 --service-name=${mongoServiceName} --replication-set=rs0`,
+    'MongoDB Service added.');
+});
 
 Before(async ({
   I, settingsAPI, backupInventoryPage,
