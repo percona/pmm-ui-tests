@@ -30,6 +30,28 @@ class MongoDBHelper extends Helper {
 
     if (password) this.password = password;
 
+    this.url = `mongodb://${this.username}:${encodeURIComponent(this.password)}@${this.host}:${this.port}/?authSource=admin`;
+    this.client.s.url = this.url;
+
+    return await this.client.connect();
+  }
+
+  async mongoConnectReplica(connection) {
+    const {
+      host, port, username, password,
+    } = connection;
+
+    if (host) this.host = host;
+
+    if (port) this.port = port;
+
+    if (username) this.username = username;
+
+    if (password) this.password = password;
+
+    this.url = `mongodb://${this.username}:${encodeURIComponent(this.password)}@${this.host}:27027,${this.host}:27028,${this.host}:27029/?authSource=admin&replicaSet=rs0`;
+    this.client.s.url = this.url;
+
     return await this.client.connect();
   }
 
