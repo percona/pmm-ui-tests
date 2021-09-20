@@ -88,7 +88,7 @@ module.exports = {
           nodesFieldErrorMessage: '$nodes-field-error-message',
           nodesNumberField: '$nodes-number-input',
           resourcesPerNode: (clusterSize) => `//label[contains(text(), "${clusterSize}")]`,
-          dbClusterExternalAccessTooltip: locate('$expose-field-container').find('.css-sr6nr'),
+          dbClusterExternalAccessTooltip: `//div[@data-qa='expose-field-container']//div//div`,
           dbClusterExternalAccessCheckbox: '$expose-switch',
           dbClusterExternalAccessTooltipText: locate('div').withAttr({ class: 'popper' }),
           resourceBarCPU: '$dbcluster-resources-bar-cpu',
