@@ -156,7 +156,7 @@ module.exports = {
       az: 'us-east-1c',
       cluster: remoteInstancesHelper.remote_instance.aws.aws_rds_5_7.clusterName,
       engine: 'DISCOVER_RDS_MYSQL',
-      instance_id: 'rds-mysql57',
+      instance_id: serviceName,
       isRDS: true,
       pmm_agent_id: 'pmm-server',
       port: remoteInstancesHelper.remote_instance.aws.aws_rds_5_7.port,
@@ -165,8 +165,8 @@ module.exports = {
       region: 'us-east-1',
       replication_set: 'rds_mysql_repl',
       tls_skip_verify: true,
-      disable_basic_metrics: true,
-      disable_enhanced_metrics: true,
+      disable_basic_metrics: false,
+      disable_enhanced_metrics: false,
     };
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
     const resp = await I.sendPostRequest('v1/management/RDS/Add', body, headers);
@@ -174,6 +174,26 @@ module.exports = {
     assert.equal(resp.status, 200, `Instance ${serviceName} was not added for monitoring`);
 
     return resp.data;
+  },
+
+  async addExternalService(serviceName) {
+    const body = {
+      add_node: {
+        node_name: serviceName,
+        node_type: 'REMOTE_NODE',
+      },
+      address: remoteInstancesHelper.remote_instance.external.redis.host,
+      service_name: serviceName,
+      schema: remoteInstancesHelper.remote_instance.external.redis.schema,
+      cluster: remoteInstancesHelper.remote_instance.external.redis.clusterName,
+      listen_port: remoteInstancesHelper.remote_instance.external.redis.port,
+      metrics_path: remoteInstancesHelper.remote_instance.external.redis.metricsPath,
+      group: remoteInstancesHelper.remote_instance.external.redis.group,
+    };
+    const headers = { Authorization: `Basic ${await I.getAuth()}` };
+    const resp = await I.sendPostRequest('v1/management/External/Add', body, headers);
+
+    assert.equal(resp.status, 200, `External Service ${serviceName} was not added for monitoring got following response ${JSON.stringify(resp.data)}`);
   },
 
   async addInstanceForSTT(connection) {

@@ -19,7 +19,7 @@ module.exports = {
   agreementText:
     'Check here to indicate that you have read and agree to the \nTerms of Service\n and \nPrivacy Policy',
   alertManager: {
-    ip: process.env.VM_IP,
+    ip: process.env.VM_IP ? process.env.VM_IP : process.env.SERVER_IP,
     service: ':9093/#/alerts',
     externalAlertManagerPort: ':9093',
     rule:
@@ -408,6 +408,11 @@ module.exports = {
       I.wait(5);
     }
 
+    if (checkState) {
+      I.amOnPage('prometheus/alerts');
+    }
+
+    I.waitForElement(`//pre[contains(text(), '${ruleName}')]`, 30);
     I.seeElement(`//pre[contains(text(), '${ruleName}')]`);
     I.see(ruleName);
   },

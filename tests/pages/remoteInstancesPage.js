@@ -86,6 +86,7 @@ module.exports = {
     hostName: '$address-text-input',
     iframe: '//div[@class="panel-content"]//iframe',
     metricsPath: '$metrics_path-text-input',
+    noCredentialsError: '//div[text()="No credentials provided and IAM role is not defined"]',
     pageHeaderText: 'PMM Add Instance',
     parseFromURLRadioButton: locate('label').withText('Parse from URL string'),
     password: '$password-password-input',
@@ -166,6 +167,7 @@ module.exports = {
         break;
       case 'postgresql':
       case 'postgresGC':
+      case 'postgres_ssl':
         I.click(this.fields.addPostgreSQLRemote);
         break;
       case 'proxysql':
@@ -272,6 +274,29 @@ module.exports = {
         I.fillField(this.fields.serviceName, serviceName);
         I.fillField(this.fields.environment, this.potgresqlSettings.environment);
         I.fillField(this.fields.cluster, this.potgresqlSettings.cluster);
+        break;
+      case remoteInstancesHelper.services.postgres_ssl:
+        I.fillField(this.fields.hostName,
+          remoteInstancesHelper.remote_instance.postgresql.postgres_13_3_ssl.host);
+        adminPage.customClearField(this.fields.portNumber);
+        I.fillField(this.fields.portNumber,
+          remoteInstancesHelper.remote_instance.postgresql.postgres_13_3_ssl.port);
+        I.fillField(this.fields.serviceName, serviceName);
+        I.fillField(this.fields.environment,
+          remoteInstancesHelper.remote_instance.postgresql.postgres_13_3_ssl.environment);
+        I.fillField(this.fields.cluster,
+          remoteInstancesHelper.remote_instance.postgresql.postgres_13_3_ssl.clusterName);
+        I.dontSeeElement(this.fields.tlscaInput);
+        I.dontSeeElement(this.fields.tlsCertificateKeyInput);
+        I.dontSeeElement(this.fields.tlsCertificateInput);
+        I.click(this.fields.useTLS);
+        I.waitForElement(this.fields.tlscaInput, 30);
+        await this.fillFileContent(this.fields.tlscaInput,
+          remoteInstancesHelper.remote_instance.postgresql.postgres_13_3_ssl.tlsCAFile);
+        await this.fillFileContent(this.fields.tlsCertificateInput,
+          remoteInstancesHelper.remote_instance.postgresql.postgres_13_3_ssl.tlsCertFile);
+        await this.fillFileContent(this.fields.tlsCertificateKeyInput,
+          remoteInstancesHelper.remote_instance.postgresql.postgres_13_3_ssl.tlsKeyFile);
         break;
       case remoteInstancesHelper.services.proxysql:
         I.fillField(this.fields.hostName, remoteInstancesHelper.remote_instance.proxysql.proxysql_2_1_1.host);
@@ -381,6 +406,11 @@ module.exports = {
     I.fillField(this.fields.secretKeyInput, this.secretKey);
     I.click(this.fields.discoverBtn);
     this.waitForDiscovery();
+  },
+
+  discoverRDSWithoutCredentials() {
+    I.click(this.fields.discoverBtn);
+    I.waitForVisible(this.fields.noCredentialsError, 30);
   },
 
   waitForDiscovery() {
