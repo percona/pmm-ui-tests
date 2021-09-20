@@ -23,7 +23,7 @@ module.exports = {
     }
   },
 
-  async createClusterBasicOptions(k8sClusterName, dbClusterName, dbType) {
+  async createClusterBasicOptions(k8sClusterName, dbClusterName, dbType, dbVersion) {
     I.waitForElement(dbaasPage.tabs.dbClusterTab.dbClusterAddButtonTop, 30);
     I.waitForInvisible(dbaasPage.tabs.kubernetesClusterTab.disabledAddButton, 30);
     I.click(dbaasPage.tabs.dbClusterTab.dbClusterAddButtonTop);
@@ -41,10 +41,18 @@ module.exports = {
       dbaasPage.tabs.dbClusterTab.basicOptions.fields.dbClusterDatabaseTypeFieldSelect(dbType),
     );
     I.click(dbaasPage.tabs.dbClusterTab.basicOptions.fields.dbClusterDatabaseTypeFieldSelect(dbType));
+    
+    if (dbVersion) {
+      I.click(dbaasPage.tabs.dbClusterTab.basicOptions.fields.dbClusterDatabaseVersionField);
+      I.waitForElement(
+        dbaasPage.tabs.dbClusterTab.basicOptions.fields.dbClusterDatabaseVersionSelect(dbVersion),
+      );
+      I.click(dbaasPage.tabs.dbClusterTab.basicOptions.fields.dbClusterDatabaseVersionSelect(dbVersion));
+    }
   },
 
-  async createClusterAdvancedOption(k8sClusterName, dbClusterName, dbType, configuration) {
-    this.createClusterBasicOptions(k8sClusterName, dbClusterName, dbType);
+  async createClusterAdvancedOption(k8sClusterName, dbClusterName, dbType, configuration, dbVersion) {
+    this.createClusterBasicOptions(k8sClusterName, dbClusterName, dbType, dbVersion);
     I.click(dbaasPage.tabs.dbClusterTab.optionsCountLocator(2));
     I.waitForElement(
       dbaasPage.tabs.dbClusterTab.advancedOptions.fields.clusterTopology(configuration.topology), 30,
@@ -188,5 +196,15 @@ module.exports = {
         resourceType,
       ), 'rgb(224, 47, 68)',
     );
+  },
+
+  async updateCluster() {
+    I.waitForElement(dbaasPage.tabs.dbClusterTab.fields.clusterTableHeader, 30);
+    I.click(dbaasPage.tabs.dbClusterTab.fields.clusterActionsMenu);
+    await this.checkActionPossible('Update', true);
+    I.waitForElement(dbaasPage.tabs.dbClusterTab.fields.clusterAction('Update'), 30);
+    I.click(dbaasPage.tabs.dbClusterTab.fields.clusterAction('Update'));
+    I.waitForElement(dbaasPage.tabs.dbClusterTab.fields.updateClusterButton, 30);
+    I.click(dbaasPage.tabs.dbClusterTab.fields.updateClusterButton);
   },
 };
