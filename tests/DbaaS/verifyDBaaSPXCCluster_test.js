@@ -29,6 +29,10 @@ AfterSuite(async ({ dbaasAPI }) => {
   await dbaasAPI.apiUnregisterCluster(clusterName, true);
 });
 
+Before(async ({ I, settingsAPI }) => {
+  await I.Authorize();
+});
+
 Before(async ({ I, dbaasAPI }) => {
   await I.Authorize();
   if (!await dbaasAPI.apiCheckRegisteredClusterExist(clusterName)) {
@@ -36,8 +40,8 @@ Before(async ({ I, dbaasAPI }) => {
   }
 });
 
-Scenario('PMM-T455 PMM-T575 Verify that Advanced Options are optional for DB Cluster Creation, '
-  + 'creating PXC cluster with default settings @dbaas',
+Scenario('PMM-T665 PMM-T455 PMM-T575 Verify that Advanced Options are optional for DB Cluster Creation, '
+  + 'creating PXC cluster with default settings, log popup @dbaas',
 async ({
   I, dbaasPage, dbaasAPI, dbaasActionsPage,
 }) => {
@@ -48,6 +52,7 @@ async ({
   I.click(dbaasPage.tabs.dbClusterTab.createClusterButton);
   I.waitForText('Processing', 30, dbaasPage.tabs.dbClusterTab.fields.progressBarContent);
   await dbaasPage.postClusterCreationValidation(pxc_cluster_name, clusterName);
+  await dbaasPage.verifyLogPopup(12);
 });
 
 Scenario('PMM-T459, PMM-T473, PMM-T478, PMM-T524 Verify DB Cluster Details are listed, shortcut link for DB Cluster, Show/Hide password button @dbaas',
@@ -227,7 +232,7 @@ xScenario('Verify Adding PMM-Server Public Address via Settings works @dbaas',
 
     I.amOnPage(pmmSettingsPage.url);
     await pmmSettingsPage.waitForPmmSettingsPageLoaded();
-    await pmmSettingsPage.expandSection(sectionNameToExpand, pmmSettingsPage.fields.advancedButton);
+    await pmmSettingsPage.expandedSection(sectionNameToExpand, pmmSettingsPage.fields.advancedButton);
     await pmmSettingsPage.waitForPmmSettingsPageLoaded();
 
     I.waitForVisible(pmmSettingsPage.fields.publicAddressInput, 30);
@@ -244,7 +249,7 @@ xScenario('Verify Adding PMM-Server Public Address via Settings works @dbaas',
     I.verifyPopUpMessage(pmmSettingsPage.messages.successPopUpMessage);
     I.refreshPage();
     await pmmSettingsPage.waitForPmmSettingsPageLoaded();
-    await pmmSettingsPage.expandSection(sectionNameToExpand, pmmSettingsPage.fields.advancedButton);
+    await pmmSettingsPage.expandedSection(sectionNameToExpand, pmmSettingsPage.fields.advancedButton);
     await pmmSettingsPage.waitForPmmSettingsPageLoaded();
     publicAddress = await I.grabValueFrom(pmmSettingsPage.fields.publicAddressInput);
 
