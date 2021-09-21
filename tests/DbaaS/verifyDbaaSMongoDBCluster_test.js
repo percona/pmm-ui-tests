@@ -272,5 +272,5 @@ Scenario('PMM-T704 PMM-T772 PMM-T849 PMM-T850 Resources, PV, Secrets verificatio
     await dbaasActionsPage.updateCluster();
     I.waitForVisible(dbaasPage.tabs.dbClusterTab.fields.clusterStatusUpdating, 60);
     I.seeElement(dbaasPage.tabs.dbClusterTab.fields.clusterStatusUpdating);
-    await dbaasActionsPage.deletePSMDBCluster(psmdb_cluster_suspend_resume, clusterName);
+    await dbaasActionsPage.deletePSMDBCluster(psmdb_cluster_update, clusterName);
   });
