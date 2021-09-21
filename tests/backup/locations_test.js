@@ -364,6 +364,8 @@ Scenario(
     I.refreshPage();
     I.waitForVisible(locationsPage.buttons.deleteByName(mongoLocation.name), 20);
     I.click(locationsPage.buttons.deleteByName(mongoLocation.name));
+
+    I.waitForVisible(locationsPage.buttons.confirmDelete, 20);
     I.click(locationsPage.buttons.confirmDelete);
 
     I.verifyPopUpMessage(`backup location with ID "${locationId}" has artifacts.`);
@@ -371,7 +373,7 @@ Scenario(
     I.click(locationsPage.buttons.forceDeleteCheckbox);
     I.seeCheckboxIsChecked(locationsPage.buttons.forceDeleteCheckbox);
 
-    I.click(locationsPage.buttons.confirmDelete);
+    I.forceClick(locationsPage.buttons.confirmDelete);
     I.verifyPopUpMessage(locationsPage.messages.successfullyDeleted(mongoLocation.name));
     I.dontSeeElement(locationsPage.buttons.deleteByName(mongoLocation.name));
 

@@ -15,8 +15,9 @@ const mongoServiceName = 'mongodb-backup-service1';
 Feature('BM: Backup Inventory');
 
 BeforeSuite(async ({
-  I, backupAPI, locationsAPI,
+  I, backupAPI, locationsAPI, settingsAPI,
 }) => {
+  await settingsAPI.changeSettings({ backup: true });
   await backupAPI.clearAllArtifacts();
   await locationsAPI.clearAllLocations(true);
   locationId = await locationsAPI.createStorageLocation(location);
