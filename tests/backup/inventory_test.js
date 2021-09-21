@@ -60,7 +60,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T862 Verify user is able to perform MongoDB backup @backup',
+  'PMM-T855 Verify user is able to perform MongoDB backup @backup',
   async ({
     I, backupInventoryPage,
   }) => {
