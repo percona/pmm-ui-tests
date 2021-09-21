@@ -10,7 +10,7 @@ const location = {
 
 let locationId;
 
-const mongoServiceName = 'mongodb-backup-service1';
+const mongoServiceName = 'mongodb-backup-service';
 
 Feature('BM: Backup Inventory');
 
@@ -28,7 +28,7 @@ BeforeSuite(async ({
     password: 'password',
   });
 
-  await I.verifyCommand(`pmm-client pmm-admin add mongodb --port=27027 --service-name=${mongoServiceName} --replication-set=rs0`,
+  await I.verifyCommand(`pmm-admin add mongodb --port=27027 --service-name=${mongoServiceName} --replication-set=rs0`,
     'MongoDB Service added.');
 });
 

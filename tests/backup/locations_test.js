@@ -370,7 +370,7 @@ Scenario(
 
     I.verifyPopUpMessage(`backup location with ID "${locationId}" has artifacts.`);
 
-    I.click(locationsPage.buttons.forceDeleteCheckbox);
+    I.forceClick(locationsPage.buttons.forceDeleteCheckbox);
     I.seeCheckboxIsChecked(locationsPage.buttons.forceDeleteCheckbox);
 
     I.forceClick(locationsPage.buttons.confirmDelete);
