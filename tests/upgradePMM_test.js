@@ -394,6 +394,9 @@ if (versionMinor >= 15) {
 
       assert.ok(response.data.data.result.length !== 0, `Metrics ${metricName} for remote redis node, remote_redis_external Should be available but got empty ${result}`);
 
+      I.amOnPage('graph/d/prometheus-advanced/advanced-data-exploration?orgId=1&refresh=1m&var-metric=redis_uptime_in_seconds&var-interval=$__auto_interval_interval&var-node_name=All&from=now-5m&to=now');
+      dashboardPage.waitForDashboardOpened();
+      I.saveScreenshot();
       response = await dashboardPage.checkMetricExist(metricName, { type: 'service_name', value: 'redis_external' });
       result = JSON.stringify(response.data.data.result);
 
