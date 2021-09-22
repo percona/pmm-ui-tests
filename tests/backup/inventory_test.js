@@ -22,8 +22,6 @@ BeforeSuite(async ({
   await locationsAPI.clearAllLocations(true);
   locationId = await locationsAPI.createStorageLocation(location);
   await I.mongoConnectReplica({
-    host: '127.0.0.1',
-    port: 27028,
     username: 'admin',
     password: 'password',
   });

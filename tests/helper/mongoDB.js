@@ -38,18 +38,19 @@ class MongoDBHelper extends Helper {
 
   async mongoConnectReplica(connection) {
     const {
-      host, port, username, password,
+      member1 = `${this.host}:27027`,
+      member2 = `${this.host}:27028`,
+      member3 = `${this.host}:27029`,
+      replicaName = 'rs0',
+      username,
+      password,
     } = connection;
-
-    if (host) this.host = host;
-
-    if (port) this.port = port;
 
     if (username) this.username = username;
 
     if (password) this.password = password;
 
-    this.url = `mongodb://${this.username}:${encodeURIComponent(this.password)}@${this.host}:27027,${this.host}:27028,${this.host}:27029/?authSource=admin&replicaSet=rs0`;
+    this.url = `mongodb://${this.username}:${encodeURIComponent(this.password)}@${member1},${member2},${member3}/?authSource=admin&replicaSet=${replicaName}`;
     this.client.s.url = this.url;
 
     return await this.client.connect();
