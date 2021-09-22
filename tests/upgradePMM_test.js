@@ -250,7 +250,7 @@ if (versionMinor >= 15) {
       const metricName = 'redis_uptime_in_seconds';
 
       // This is only needed to let PMM Consume Metrics from external Service
-      I.wait(30);
+      I.wait(60);
       const response = await dashboardPage.checkMetricExist(metricName);
       const result = JSON.stringify(response.data.data.result);
 
