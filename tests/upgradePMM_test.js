@@ -618,7 +618,7 @@ Data(clientDbServices).Scenario(
     const response = await dashboardPage.checkMetricExist(metricName, { type: 'node_name', value: nodeName });
     const result = JSON.stringify(response.data.data.result);
 
-    // Need to skip this check on AMI upgrade for Postgresql
+    // Need to skip this check on AMI upgrade for Postgresql we have a bug about it https://jira.percona.com/browse/PMM-8804
     if (process.env.AMI_UPGRADE_TESTING_INSTANCE !== 'true' && current.serviceType !== 'POSTGRESQL_SERVICE') {
       assert.ok(response.data.data.result.length !== 0, `Metrics ${metricName} for Node ${nodeName} Should be available but got empty ${result}`);
     }
@@ -669,7 +669,10 @@ Scenario(
     const response = await dashboardPage.checkMetricExist(metricName);
     const result = JSON.stringify(response.data.data.result);
 
-    assert.ok(response.data.data.result.length !== 0, `Custom Metrics ${metricName} Should be available but got empty ${result}`);
+    // Need to skip this check on AMI upgrade for Postgresql we have a bug about it https://jira.percona.com/browse/PMM-8804
+    if (process.env.AMI_UPGRADE_TESTING_INSTANCE !== 'true') {
+      assert.ok(response.data.data.result.length !== 0, `Custom Metrics ${metricName} Should be available but got empty ${result}`);
+    }
   },
 );
 
