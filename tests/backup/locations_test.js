@@ -12,21 +12,30 @@ const location = {
 
 let nodeID;
 let serviceID;
+const mongoServiceName = 'mongodb-backup-locations';
 
 Feature('BM: Backup Locations').retry(1);
 
 if (!isOVF) {
   BeforeSuite(async ({
-    addInstanceAPI, remoteInstancesHelper,
+    I, addInstanceAPI, remoteInstancesHelper,
   }) => {
     const { service: { service_id, node_id } } = await addInstanceAPI.apiAddInstance(
       remoteInstancesHelper.instanceTypes.mysql,
       'backup_mysql',
     );
 
+    await I.verifyCommand(`pmm-admin add mongodb --port=27027 --service-name=${mongoServiceName} --replication-set=rs0`,
+      'MongoDB Service added.');
+
     // Assign nodeID to delete this node after test
     nodeID = node_id;
     serviceID = service_id;
+  });
+} else {
+  BeforeSuite(async ({ I }) => {
+    await I.verifyCommand(`pmm-admin add mongodb --port=27027 --service-name=${mongoServiceName} --replication-set=rs0`,
+      'MongoDB Service added.');
   });
 }
 
@@ -332,5 +341,51 @@ Scenario(
     I.dontSeeElement(locationsPage.elements.locationDetails.bucket);
     I.dontSeeElement(locationsPage.elements.locationDetails.secretKey);
     I.dontSeeElement(locationsPage.elements.locationDetails.accessKey);
+  },
+);
+
+Scenario(
+  'PMM-T896 Verify user is able to force delete location after MongoDB restore @backup',
+  async ({
+    I, locationsPage, backupAPI, inventoryAPI, locationsAPI, restorePage, backupInventoryPage,
+  }) => {
+    const mongoLocation = {
+      name: 'mongo l',
+      description: 'test description',
+      ...locationsPage.mongoStorageLocation,
+    };
+
+    const locationId = await locationsAPI.createStorageLocation(mongoLocation);
+
+    const backupName = 'mongo force delete locations test';
+    const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName('MONGODB_SERVICE', mongoServiceName);
+    const artifactId = await backupAPI.startBackup(backupName, service_id, locationId);
+
+    await backupAPI.waitForBackupFinish(artifactId);
+    const restoreId = await backupAPI.startRestore(service_id, artifactId);
+
+    await backupAPI.waitForRestoreFinish(restoreId);
+
+    I.refreshPage();
+    I.waitForVisible(locationsPage.buttons.deleteByName(mongoLocation.name), 20);
+    I.click(locationsPage.buttons.deleteByName(mongoLocation.name));
+
+    I.waitForVisible(locationsPage.buttons.confirmDelete, 20);
+    I.click(locationsPage.buttons.confirmDelete);
+
+    I.verifyPopUpMessage(`backup location with ID "${locationId}" has artifacts.`);
+
+    I.forceClick(locationsPage.buttons.forceDeleteCheckbox);
+    I.seeCheckboxIsChecked(locationsPage.buttons.forceDeleteCheckbox);
+
+    I.forceClick(locationsPage.buttons.confirmDelete);
+    I.verifyPopUpMessage(locationsPage.messages.successfullyDeleted(mongoLocation.name));
+    I.dontSeeElement(locationsPage.buttons.deleteByName(mongoLocation.name));
+
+    I.amOnPage(restorePage.url);
+    I.dontSeeElement(restorePage.elements.backupStatusByName(backupName));
+
+    backupInventoryPage.openInventoryPage();
+    I.dontSeeElement(backupInventoryPage.elements.backupStatusByName(backupName));
   },
 );
