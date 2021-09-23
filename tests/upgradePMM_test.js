@@ -56,8 +56,8 @@ Before(async ({ I }) => {
 BeforeSuite(async ({ I, codeceptjsConfig }) => {
   if (process.env.AMI_UPGRADE_TESTING_INSTANCE !== 'true') {
     const mysqlComposeConnection = {
-      host: (process.env.AMI_UPGRADE_TESTING_INSTANCE === 'true' ? process.env.VM_CLIENT_IP : '127.0.0.1'),
-      port: (process.env.AMI_UPGRADE_TESTING_INSTANCE === 'true' ? remoteInstancesHelper.remote_instance.mysql.ps_5_7.port : connection.port),
+      host: process.env.VM_CLIENT_IP,
+      port: remoteInstancesHelper.remote_instance.mysql.ps_5_7.port,
       username: connection.username,
       password: connection.password,
     };
@@ -66,8 +66,8 @@ BeforeSuite(async ({ I, codeceptjsConfig }) => {
 
     // Connect to MongoDB
     const mongoConnection = {
-      host: (process.env.AMI_UPGRADE_TESTING_INSTANCE === 'true' ? process.env.VM_CLIENT_IP : codeceptjsConfig.config.helpers.MongoDBHelper.host),
-      port: (process.env.AMI_UPGRADE_TESTING_INSTANCE === 'true' ? remoteInstancesHelper.remote_instance.mongodb.psmdb_4_2.port : codeceptjsConfig.config.helpers.MongoDBHelper.port),
+      host: process.env.VM_CLIENT_IP,
+      port: remoteInstancesHelper.remote_instance.mongodb.psmdb_4_2.port,
       username: codeceptjsConfig.config.helpers.MongoDBHelper.username,
       password: codeceptjsConfig.config.helpers.MongoDBHelper.password,
     };
