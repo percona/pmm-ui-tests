@@ -30,6 +30,9 @@ class MongoDBHelper extends Helper {
 
     if (password) this.password = password;
 
+    this.url = `mongodb://${this.username}:${encodeURIComponent(this.password)}@${this.host}:${this.port}/?authSource=admin`;
+    this.client.s.url = this.url;
+
     return await this.client.connect();
   }
 
