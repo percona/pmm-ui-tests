@@ -32,6 +32,11 @@ if (!isOVF) {
     nodeID = node_id;
     serviceID = service_id;
   });
+} else {
+  BeforeSuite(async ({ I }) => {
+    await I.verifyCommand(`pmm-admin add mongodb --port=27027 --service-name=${mongoServiceName} --replication-set=rs0`,
+      'MongoDB Service added.');
+  });
 }
 
 Before(async ({

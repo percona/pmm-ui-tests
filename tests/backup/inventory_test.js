@@ -143,7 +143,6 @@ Scenario(
 
     I.click(backupInventoryPage.buttons.confirmDelete);
 
-    I.waitForInvisible(backupInventoryPage.elements.modalHeader, 20);
-    I.dontSeeElement(backupInventoryPage.buttons.deleteByName(backupName));
+    I.waitForInvisible(backupInventoryPage.buttons.deleteByName(backupName), 30);
   },
 );
