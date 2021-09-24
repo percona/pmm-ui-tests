@@ -49,7 +49,7 @@ AfterSuite(async ({
 });
 
 Scenario(
-  'PMM-T691 Verify message about no backups in inventory @backup @grafana-pr',
+  'PMM-T691 Verify message about no backups in inventory @backup',
   async ({
     I, backupInventoryPage,
   }) => {
