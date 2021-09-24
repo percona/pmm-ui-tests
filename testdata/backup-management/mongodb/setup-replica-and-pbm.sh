@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 PWD=$(pwd) docker-compose -f docker-compose-mongo-replica.yml up -d
 
 cat > setup-replica.js <<EOF
@@ -59,4 +61,9 @@ docker exec  -d mongors1 /bin/bash -c 'PBM_MONGODB_URI="mongodb://pbmuser:secret
 docker exec  -d mongors2 /bin/bash -c 'PBM_MONGODB_URI="mongodb://pbmuser:secretpwd@localhost:27028" pbm-agent'
 docker exec  -d mongors3 /bin/bash -c 'PBM_MONGODB_URI="mongodb://pbmuser:secretpwd@localhost:27029" pbm-agent'
 
-sudo -- sh -c "echo '127.0.0.1 mongors1 mongors2 mongors3' >> /etc/hosts"
+docker exec -u 0 -it pmm-client /bin/bash -c "yum -y install https://repo.percona.com/yum/percona-release-latest.noarch.rpm"
+docker exec -u 0 -it pmm-client /bin/bash -c "percona-release enable pbm release && yum -y install percona-backup-mongodb"
+docker exec -u 0 -it pmm-client /bin/bash -c "pmm-admin add mongodb --service-name=mongo-rs --username=admin --password=password --host=mongors1 --port=27027"
+
+
+#sudo -- sh -c "echo '127.0.0.1 mongors1 mongors2 mongors3' >> /etc/hosts"
