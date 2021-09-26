@@ -744,8 +744,9 @@ if (versionMinor >= 21) {
       const response = await dashboardPage.checkMetricExist(metric, { type: 'service_name', value: upgrade_service });
       const result = JSON.stringify(response.data.data.result);
 
-      assert.ok(response.data.data.result.length !== 0, `Metrics ${metric} for Service ${upgrade_service} Should be available but got empty ${result}`);
-      if (serviceType !== 'MYSQL_SERVICE') {
+      // Skipping due to bug in postgres_exporter missing metrics https://jira.percona.com/browse/PMM-8804
+      if (serviceType !== 'POSTGRESQL_SERVICE') {
+        assert.ok(response.data.data.result.length !== 0, `Metrics ${metric} for Service ${upgrade_service} Should be available but got empty ${result}`);
         assert.ok(custom_labels, `Node Information for ${serviceType} added with ${upgrade_service} is empty, value returned are ${custom_labels}`);
         assert.ok(custom_labels.testing === 'upgrade', `Custom Labels for ${serviceType} added before upgrade with custom labels, doesn't have the same label post upgrade, value found ${custom_labels}`);
       }
