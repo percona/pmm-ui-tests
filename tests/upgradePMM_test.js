@@ -661,7 +661,8 @@ Scenario(
   },
 );
 
-Scenario(
+// Skipping due to bug in postgres_exporter missing metrics https://jira.percona.com/browse/PMM-8804
+xScenario(
   'Verify Metrics from custom queries for postgres_exporter after upgrade (UI) @ami-upgrade @post-client-upgrade @post-upgrade @pmm-upgrade',
   async ({ dashboardPage }) => {
     const metricName = 'pg_stat_user_tables_n_tup_ins';
