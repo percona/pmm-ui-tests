@@ -79,7 +79,7 @@ Scenario(
     await pmmSettingsPage.waitForPmmSettingsPageLoaded();
     await pmmSettingsPage.expandSection(sectionNameToExpand, pmmSettingsPage.fields.advancedButton);
     await pmmSettingsPage.waitForPmmSettingsPageLoaded();
-    I.moveCursor(pmmSettingsPage.fields.sttLabelTooltipSelector);
+    await I.moveCursor(pmmSettingsPage.fields.sttLabelTooltipSelector);
     await pmmSettingsPage.verifyTooltip(pmmSettingsPage.tooltips.stt);
   },
 );

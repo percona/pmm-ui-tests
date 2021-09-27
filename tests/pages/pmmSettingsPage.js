@@ -177,14 +177,14 @@ module.exports = {
     amUrlLabel: locateLabel('form-field-am-url'),
     applyButton: '//button[@type="submit"]',
     callHomeSwitch: '//button[@class="toggle-field ant-switch ant-switch-checked"]',
-    checkForUpdatesLabel: '//div[@data-qa="advanced-updates"]//div//span',
-    checkForUpdatesSwitch: '//div[@data-qa="advanced-updates"]//div[2]//input',
+    checkForUpdatesLabel: locate('$advanced-updates').find('span'),
+    checkForUpdatesSwitch: '//div[@data-testid="advanced-updates"]//div[2]//input',
     dataRetentionInput: '$retention-number-input',
     dataRetentionLabel: locateLabel('form-field-data-retention'),
     diagnosticsButton: '$diagnostics-button',
     diagnosticsLabel: '$diagnostics-label',
     downloadLogsButton: '//a[@class="ant-btn" and @href="/logs.zip"]',
-    diagnosticsInfo: '//div[@data-qa="diagnostics-label"]/div/div',
+    diagnosticsInfo: locate('$diagnostics-label').find('div').find('div'),
     iframe: '//div[@class="panel-content"]//iframe',
     metricsResolutionButton: '$metrics-resolution-button',
     metricsResolution: '//label[text()="',
@@ -207,10 +207,10 @@ module.exports = {
     sshKeyInput: '$ssh-key',
     sshKeyLabel: locateLabel('ssh-key-label'),
     sshKeyButton: '$ssh-key-button',
-    sttLabel: '//div[@data-qa="advanced-stt"]//div//span',
-    sttLabelTooltipSelector: '//div[@data-qa="advanced-stt"]//div//div//div//div',
-    sttSwitchSelectorInput: '//div[@data-qa="advanced-stt"]//div[2]//input',
-    sttSwitchSelector: '//div[@data-qa="advanced-stt"]//div[2]//label',
+    sttLabel: locate('$advanced-stt').find('span'),
+    sttLabelTooltipSelector: '//div[@data-testid="advanced-stt"]//div/div/div/div',
+    sttSwitchSelectorInput: locate('$advanced-stt').find('input'),
+    sttSwitchSelector: locate('$advanced-stt').find('label'),
     subSectionHeader: '//following-sibling::div//div[@class="ant-collapse-header"]',
     signUpEmail: '$email-text-input',
     signUpPassword: '$password-password-input',
@@ -218,11 +218,11 @@ module.exports = {
     signUpButton: '$sign-up-submit-button',
     singInToSignUpButton: '$sign-in-to-sign-up-button',
     signUpBackToLogin: '$sign-up-to-sign-in-button',
-    telemetrySwitchSelectorInput: '//div[@data-qa="advanced-telemetry"]//div[2]//input',
-    telemetrySwitchSelector: '//div[@data-qa="advanced-telemetry"]//div[2]//label',
-    iaSwitchSelectorInput: '//div[@data-qa="advanced-alerting"]//div[2]//input',
-    iaSwitchSelector: '//div[@data-qa="advanced-alerting"]//div[2]//label',
-    telemetryLabel: '//div[@data-qa="advanced-telemetry"]//div//span',
+    telemetrySwitchSelectorInput: locate('$advanced-telemetry').find('input'),
+    telemetrySwitchSelector: locate('$advanced-telemetry').find('label'),
+    iaSwitchSelectorInput: locate('$advanced-alerting').find('input'),
+    iaSwitchSelector: locate('$advanced-alerting').find('label'),
+    telemetryLabel: locate('$advanced-telemetry').find('span'),
     tooltipSelector: '.popper__background',
     tabsSection: '$settings-tabs',
     tabContent: '$settings-tab-content',
@@ -253,7 +253,8 @@ module.exports = {
     I.waitForVisible(this.fields.diagnosticsButton, 30);
   },
   async expandSection(sectionName, expectedContentLocator) {
-    const sectionExpandLocator = `//ul[@data-qa="settings-tabs"]//li[contains(text(), '${sectionName}')]`;
+    // const sectionExpandLocator = `//ul[@="settings-tabs"]//li[contains(text(), '${sectionName}')]`;
+    const sectionExpandLocator = locate('$settings-tabs').find('li').withText(sectionName);
 
     I.click(sectionExpandLocator);
     I.waitForVisible(expectedContentLocator, 30);

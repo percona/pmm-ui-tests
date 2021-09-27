@@ -25,7 +25,7 @@ module.exports = {
   },
   elements: {
     spinner: locate('$pmm-overlay-wrapper').find('//i[contains(@class,"fa-spinner")]'),
-    disabledResetAll: '//button[@data-qa="qan-filters-reset-all" and @disabled ]',
+    disabledResetAll: locate('$qan-filters-reset-all').withAttr({ disabled: true }),
     environmentLabel: '//span[contains(text(), "Environment")]',
     filterName: 'span.checkbox-container__label-text',
   },
@@ -145,7 +145,7 @@ module.exports = {
   },
 
   checkDisabledFilter(groupName, filter) {
-    const filterLocator = `//span[contains(text(), '${groupName}')]/parent::p/following-sibling::div[@data-qa='filter-checkbox-${filter}']//input[contains(@name, '${filter}') and @disabled]`;
+    const filterLocator = `//span[contains(text(), '${groupName}')]/parent::p/following-sibling::div[@data-testid='filter-checkbox-${filter}']//input[contains(@name, '${filter}') and @disabled]`;
 
     I.waitForElement(filterLocator, 20);
   },
