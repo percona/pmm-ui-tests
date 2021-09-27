@@ -76,7 +76,6 @@ module.exports = {
         fields: {
           cpuFieldErrorMessage: '$cpu-field-error-message',
           cpuNumberFields: '$cpu-number-input',
-          // clusterTopology: (type) => `//input[@data-testid='topology-radio-button']/../label[contains(text(), '${type}')]`,
           clusterTopology: (type) => `//input[@data-testid='topology-radio-button']/../label[contains(text(), '${type}')]`,
           dbClusterResourceFieldLabel: '$resources-field-label',
           dbClusterTopologyFieldLabel: '$topology-field-label',

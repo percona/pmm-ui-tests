@@ -253,7 +253,6 @@ module.exports = {
     I.waitForVisible(this.fields.diagnosticsButton, 30);
   },
   async expandSection(sectionName, expectedContentLocator) {
-    // const sectionExpandLocator = `//ul[@="settings-tabs"]//li[contains(text(), '${sectionName}')]`;
     const sectionExpandLocator = locate('$settings-tabs').find('li').withText(sectionName);
 
     I.click(sectionExpandLocator);
