@@ -25,8 +25,7 @@ if (!isOVF) {
       'backup_mysql',
     );
 
-    await I.verifyCommand(`pmm-admin add mongodb --port=27027 --service-name=${mongoServiceName} --replication-set=rs0`,
-      'MongoDB Service added.');
+    I.say(await I.verifyCommand(`pmm-admin add mongodb --port=27027 --service-name=${mongoServiceName} --replication-set=rs0`));
 
     // Assign nodeID to delete this node after test
     nodeID = node_id;
@@ -34,8 +33,7 @@ if (!isOVF) {
   });
 } else {
   BeforeSuite(async ({ I }) => {
-    await I.verifyCommand(`pmm-admin add mongodb --port=27027 --service-name=${mongoServiceName} --replication-set=rs0`,
-      'MongoDB Service added.');
+    I.say(await I.verifyCommand(`pmm-admin add mongodb --port=27027 --service-name=${mongoServiceName} --replication-set=rs0`));
   });
 }
 
