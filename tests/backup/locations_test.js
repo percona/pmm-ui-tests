@@ -238,7 +238,8 @@ Scenario(
   },
 );
 if (!isOVF) {
-  Scenario(
+  // unskip after investigation of 500 error during creating a backup
+  xScenario(
     'PMM-T695 Verify user is not able to delete storage location that has backups @backup',
     async ({
       I, locationsPage, locationsAPI, backupAPI,
@@ -254,7 +255,8 @@ if (!isOVF) {
     },
   );
 
-  Scenario(
+  // unskip after investigation of 500 error during creating a backup
+  xScenario(
     'PMM-T694 Verify user is able to force delete storage location that has backups @backup',
     async ({
       I, locationsPage, locationsAPI, backupAPI, backupInventoryPage,
