@@ -25,7 +25,8 @@ module.exports = {
   },
   elements: {
     spinner: locate('$pmm-overlay-wrapper').find('//i[contains(@class,"fa-spinner")]'),
-    disabledResetAll: locate('$qan-filters-reset-all').withAttr({ disabled: true }),
+    // tests fail if locate is used
+    disabledResetAll: '//button[@data-testid="qan-filters-reset-all" and @disabled ]',
     environmentLabel: '//span[contains(text(), "Environment")]',
     filterName: 'span.checkbox-container__label-text',
   },
