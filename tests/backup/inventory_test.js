@@ -26,8 +26,10 @@ BeforeSuite(async ({
     password: 'password',
   });
 
-  await I.verifyCommand(`pmm-admin add mongodb --port=27027 --service-name=${mongoServiceName} --replication-set=rs0`,
-    'MongoDB Service added.');
+  console.log(await I.verifyCommand(`pmm-admin add mongodb --port=27027 --service-name=${mongoServiceName} --replication-set=rs0`));
+  console.log(await I.verifyCommand('pmm-admin list'));
+  console.log(await I.verifyCommand(`pmm-admin add mongodb --port=27027 --service-name=${mongoServiceName} --replication-set=rs0`,
+    'MongoDB Service added.'));
 });
 
 Before(async ({
