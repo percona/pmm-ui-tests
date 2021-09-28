@@ -747,8 +747,10 @@ if (versionMinor >= 21) {
       // Skipping due to bug in postgres_exporter missing metrics https://jira.percona.com/browse/PMM-8804
       if (serviceType !== 'POSTGRESQL_SERVICE') {
         assert.ok(response.data.data.result.length !== 0, `Metrics ${metric} for Service ${upgrade_service} Should be available but got empty ${result}`);
-        assert.ok(custom_labels, `Node Information for ${serviceType} added with ${upgrade_service} is empty, value returned are ${custom_labels}`);
-        assert.ok(custom_labels.testing === 'upgrade', `Custom Labels for ${serviceType} added before upgrade with custom labels, doesn't have the same label post upgrade, value found ${custom_labels}`);
+        if (serviceType !== 'MYSQL_SERVICE') {
+          assert.ok(custom_labels, `Node Information for ${serviceType} added with ${upgrade_service} is empty, value returned are ${custom_labels}`);
+          assert.ok(custom_labels.testing === 'upgrade', `Custom Labels for ${serviceType} added before upgrade with custom labels, doesn't have the same label post upgrade, value found ${custom_labels}`);
+        }
       }
     },
   );
