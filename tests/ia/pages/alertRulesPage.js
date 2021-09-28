@@ -16,7 +16,7 @@ module.exports = {
     rulesNameCell: (ruleName) => rulesNameCell(ruleName),
     // activateSwitch returns enable/disabled rule switch locator which holds the state (enabled or disabled)
     // Note: not clickable one
-    activateSwitch: (ruleName) => `${rulesNameCell(ruleName)}/following-sibling::td//input[@='toggle-alert-rule']`,
+    activateSwitch: (ruleName) => `${rulesNameCell(ruleName)}/following-sibling::td//input[@data-testid='toggle-alert-rule']`,
     parametersCell: (ruleName) => locate('td').after(rulesNameCell(ruleName)).find('$alert-rule-param'),
     durationCell: (ruleName) => `${rulesNameCell(ruleName)}/following-sibling::td[2]`,
     severityCell: (ruleName) => `${rulesNameCell(ruleName)}/following-sibling::td[3]`,

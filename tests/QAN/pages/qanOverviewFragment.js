@@ -33,7 +33,8 @@ module.exports = {
 
   getCellValueLocator: (rowNumber, columnNumber) => `div.tr-${rowNumber} > div:nth-child(${columnNumber + 2}) span > div > span`,
 
-  getMetricSortingLocator: (columnNumber) => locate('$sort-by-control').at(columnNumber),
+  // using below to concatenate locators
+  getMetricSortingLocator: (columnNumber) => `(//a[@data-testid='sort-by-control'])[${columnNumber}]`,
 
   getGroupByOptionLocator: (option) => `//ul/li[@label='${option}']`,
 
