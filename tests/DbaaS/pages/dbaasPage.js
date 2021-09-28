@@ -16,12 +16,12 @@ module.exports = {
   tabs: {
     kubernetesClusterTab: {
       addKubernetesClusterButton: '$kubernetes-new-cluster-button',
-      addKubernetesClusterButtonInTable: locate('$table-no-data').find('span').withText('Register new Kubernetes Cluster'),
+      addKubernetesClusterButtonInTable: '//div[@data-testid="table-no-data"]//span[contains(text(), "Register new Kubernetes Cluster")]',
       actionsLocator: (clusterName) => `//td[contains(text(), "${clusterName}")]//parent::tr//button[@data-testid="dropdown-menu-toggle"]`,
       closeButton: '$modal-close-button',
       clusterConfigurationText: locate('$pmm-overlay-wrapper').find('pre'),
       copyToClipboardButton: '//span[contains(text(), "Copy to clipboard")]',
-      disabledAddButton: locate('$kubernetes-add-cluster-button').withAttr({ disabled: true }),
+      disabledAddButton: '//button[@data-testid="kubernetes-add-cluster-button" and @disabled]',
       forceUnreigsterCheckBox: locate('$force-field-container').find('span').at(1),
       kubeconfigFileInput: '$kubeConfig-textarea-input',
       kubernetesAddButton: '$kubernetes-add-cluster-button',
@@ -45,7 +45,7 @@ module.exports = {
       updateClusterButton: '$dbcluster-update-cluster-button',
       dbClusterTab: '//li[@aria-label="Tab DB Cluster"]',
       monitoringWarningLocator: '$add-cluster-monitoring-warning',
-      optionsCountLocator: (step) => locate(locate('$step-header').find('div').at(1)).at(step),
+      optionsCountLocator: (step) => `(//div[@data-testid='step-header']//div[1])[${step}]`,
       optionsHeader: '$step-header',
       deleteDbClusterConfirmationText: (dbClusterName, clusterName, dbType) => `Are you sure that you want to delete ${dbType} cluster ${dbClusterName} from Kubernetes cluster ${clusterName} ?`,
       basicOptions: {
@@ -101,7 +101,7 @@ module.exports = {
       },
       fields: {
         clusterDetailHeaders: ['Name', 'Database Type', 'Connection', 'DB Cluster Parameters', 'Cluster Status', 'Actions'],
-        clusterAction: (action) => locate('$dropdown-menu-menu').find('span').withText(action),
+        clusterAction: (action) => `//div[@data-testid='dropdown-menu-menu']//span[contains(text(), '${action}')]`,
         clusterConnection: {
           dbHost: '$cluster-connection-host',
           dbPort: '$cluster-connection-port',
