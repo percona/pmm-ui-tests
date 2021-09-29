@@ -131,7 +131,8 @@ Scenario(
     I.waitForElement(qanOverview.elements.querySelector, 30);
     qanOverview.selectRow(1);
     qanFilters.waitForFiltersToLoad();
-    qanDetails.checkExamplesTab();
+    // See comments on ticket, https://jira.percona.com/browse/PMM-7393 we don't support examples for pg_stat_statements
+    // qanDetails.checkExamplesTab();
   },
 );
 
