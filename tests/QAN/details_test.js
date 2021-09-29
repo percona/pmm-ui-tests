@@ -119,7 +119,8 @@ Scenario(
   },
 );
 
-Scenario(
+// Skipping because https://jira.percona.com/browse/PMM-7393
+xScenario(
   'PMM-T13 - Check Explain and Example for supported DBs - pgsql @qan',
   async ({
     I, qanOverview, qanFilters, qanDetails,
