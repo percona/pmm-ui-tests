@@ -193,7 +193,7 @@ module.exports = {
       + '> [[ .threshold ]]',
     alert: 'Node high CPU load ({{ $labels.node_name }})',
   }, {
-    template: 'Node out of memory',
+    template: 'Memory available less than a threshold',
     threshold: '20',
     duration: '300',
     severity: 'Warning',
