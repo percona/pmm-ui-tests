@@ -142,7 +142,7 @@ Data(notificationChannels).Scenario(
     ncPage.openNotificationChannelsTab();
     ncPage.deleteChannel(channel.name, channel.type);
 
-    I.verifyPopUpMessage(ncPage.messages.channelUsedByRule(channelId));
+    I.verifyPopUpMessage(ncPage.messages.channelUsedByRule(channel.name));
 
     await rulesAPI.removeAlertRule(ruleId);
     await channelsAPI.deleteNotificationChannel(channelId);

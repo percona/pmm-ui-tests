@@ -60,7 +60,7 @@ module.exports = {
     successfullyEdited: 'Notification channel was successfully edited',
     deleteConfirmation: (name) => `Are you sure you want to delete the notification channel "${name}"?`,
     successfullyDeleted: (name) => `Notification channel "${name}" successfully deleted.`,
-    channelUsedByRule: (channelId) => `Failed to delete notification channel ${channelId}, as it is being used by some rule.`,
+    channelUsedByRule: (name) => `You can't delete the "${name}" channel when it's being used by a rule.`,
     invalidCharacter: 'Channel shouldn\'t have # character.',
   },
 
