@@ -45,7 +45,7 @@ module.exports = {
     successfullyEdited: 'Alert rule template successfully edited',
     successfullyDeleted: (name) => `Alert rule template  "${name}" successfully deleted.`,
     failedToParse: 'Failed to parse rule template.',
-    failedToDelete: (templateId) => `Failed to delete rule template ${templateId}, as it is being used by some rule.`,
+    failedToDelete: (name) => `You can't delete the "${name}" rule template when it's being used by a rule.`,
     duplicateTemplate: (id) => `Template with name "${id}" already exists.`,
   },
   templateSources: {
