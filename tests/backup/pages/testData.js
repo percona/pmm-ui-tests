@@ -7,4 +7,8 @@ const storageLocationConnection = {
 
 module.exports = {
   storageLocationConnection,
+  mongoStorageLocation: {
+    ...storageLocationConnection,
+    endpoint: 's3.us-east-2.amazonaws.com',
+  },
 };
