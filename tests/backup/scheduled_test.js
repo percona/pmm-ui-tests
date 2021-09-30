@@ -7,10 +7,11 @@ const location = {
 };
 
 let locationId;
+let serviceId;
 
 const mongoServiceName = 'mongo-rs';
 
-Feature('BM: Backup Inventory');
+Feature('BM: Scheduled backups');
 
 BeforeSuite(async ({
   I, backupAPI, locationsAPI, settingsAPI,
@@ -29,8 +30,9 @@ BeforeSuite(async ({
 });
 
 Before(async ({
-  I, settingsAPI, scheduledPage,
+  I, settingsAPI, scheduledPage, inventoryAPI,
 }) => {
+  const { service_id: serviceId } = await inventoryAPI.apiGetNodeInfoByServiceName('MONGODB_SERVICE', mongoServiceName);
   const c = await I.mongoGetCollection('test', 'e2e');
 
   await c.findOneAndDelete({ number: 2, name: 'Anna' });
@@ -38,6 +40,7 @@ Before(async ({
   await I.Authorize();
   await settingsAPI.changeSettings({ backup: true });
   await scheduledPage.openScheduledBackupsPage();
+
 });
 
 AfterSuite(async ({
@@ -56,7 +59,7 @@ Scenario(
 );
 
 Scenario(
-  'Verify validation errors @backup',
+  'PMM-T902 Verify user is not able to schedule a backup without storage location @backup',
   async ({
     I, scheduledPage,
   }) => {
@@ -77,7 +80,7 @@ Scenario(
 );
 
 Scenario(
-  'Verify validation errors for retention @backup',
+  'PMM-T954  Verify validation errors for retention @backup',
   async ({
     I, scheduledPage,
   }) => {
@@ -111,5 +114,97 @@ Scenario(
 
     I.waitForVisible(scheduledPage.elements.retentionByName(scheduleName), 20);
     I.seeTextEquals('Unlimited', scheduledPage.elements.retentionByName(scheduleName));
+  },
+);
+
+Scenario(
+  'PMM-T909 Verify user can update created scheduled backup @backup',
+  async ({
+    I, scheduledPage, scheduledAPI, inventoryAPI,
+  }) => {
+    const newScheduleName = 'updated schedule';
+    const newScheduleDescr = 'new description';
+    const schedule = {
+      service_id: serviceId,
+      location_id: locationId,
+      cron_expression: '0 0 * * *',
+      name: 'schedule for update',
+      description: 'description',
+      retry_interval: '30s',
+      retries: 0,
+      enabled: true,
+      retention: 6,
+    };
+
+    await scheduledAPI.createScheduledBackup(schedule);
+
+    await scheduledPage.openScheduledBackupsPage();
+    I.click(scheduledPage.buttons.deleteByName(schedule.name));
+
+    I.waitForVisible(scheduledPage.fields.backupName, 30);
+    I.clearField(scheduledPage.fields.backupName);
+    I.fillField(scheduledPage.fields.backupName, newScheduleName);
+
+    I.clearField(scheduledPage.fields.description);
+    I.fillField(scheduledPage.fields.description, newScheduleDescr);
+
+    I.seeInField(scheduledPage.fields.retention, 6);
+
+    // clearField method doesn't work for this field
+    I.usePlaywrightTo('clear field', async ({ page }) => {
+      await page.fill(I.useDataQA('retention-number-input'), '');
+    });
+    I.fillField(scheduledPage.fields.retention, '1');
+    I.seeTextEquals('', scheduledPage.elements.retentionValidation);
+
+    I.click(scheduledPage.buttons.createSchedule);
+
+    I.waitForVisible(scheduledPage.elements.scheduleName(newScheduleName), 20);
+    I.seeTextEquals('1 backup', scheduledPage.elements.retentionByName(newScheduleName));
+  },
+);
+
+Scenario.only(
+  'PMM-T928 Verify user can restore from a scheduled backup @backup',
+  async ({
+    I, scheduledPage, scheduledAPI,
+  }) => {
+    const schedule = {
+      service_id: serviceId,
+      location_id: locationId,
+      cron_expression: '* * * * *',
+      name: 'schedule for restore',
+      description: '',
+      retry_interval: '30s',
+      retries: 0,
+      enabled: true,
+      retention: 1,
+    };
+
+    await scheduledAPI.createScheduledBackup(schedule);
+
+    await scheduledPage.openScheduledBackupsPage();
+    I.click(scheduledPage.buttons.deleteByName(schedule.name));
+
+    I.waitForVisible(scheduledPage.fields.backupName, 30);
+    I.clearField(scheduledPage.fields.backupName);
+    I.fillField(scheduledPage.fields.backupName, newScheduleName);
+
+    I.clearField(scheduledPage.fields.description);
+    I.fillField(scheduledPage.fields.description, newScheduleDescr);
+
+    I.seeInField(scheduledPage.fields.retention, 6);
+
+    // clearField method doesn't work for this field
+    I.usePlaywrightTo('clear field', async ({ page }) => {
+      await page.fill(I.useDataQA('retention-number-input'), '');
+    });
+    I.fillField(scheduledPage.fields.retention, '1');
+    I.seeTextEquals('', scheduledPage.elements.retentionValidation);
+
+    I.click(scheduledPage.buttons.createSchedule);
+
+    I.waitForVisible(scheduledPage.elements.scheduleName(newScheduleName), 20);
+    I.seeTextEquals('1 backup', scheduledPage.elements.retentionByName(newScheduleName));
   },
 );

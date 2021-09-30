@@ -43,6 +43,7 @@ module.exports = {
     restorePage: './tests/backup/pages/restorePage.js',
     rulesAPI: './tests/ia/pages/api/rulesAPI.js',
     ruleTemplatesPage: './tests/ia/pages/ruleTemplatesPage.js',
+    scheduledAPI: './tests/backup/pages/api/scheduledAPI.js',
     scheduledPage: './tests/backup/pages/scheduledPage.js',
     iaCommon: './tests/ia/pages/iaCommonPage.js',
     platformAPI: './tests/pages/api/platformAPI.js',

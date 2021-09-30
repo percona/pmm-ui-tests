@@ -11,11 +11,13 @@ module.exports = {
     selectedLocation: locate('div[class$="-singleValue"]').inside(locate('div').withChild('$location-select-label')),
     selectedService: locate('div[class$="-singleValue"]').inside(locate('div').withChild('$service-select-label')),
     retentionValidation: '$retention-field-error-message',
+    scheduleName: (name) => locate('td').at(1).inside(scheduleCell(name)),
     retentionByName: (name) => locate('td').at(4).inside(scheduleCell(name)),
   },
   buttons: {
     openAddScheduleModal: '$scheduled-backup-add-modal-button',
     createSchedule: '$backup-add-button',
+    deleteByName: (name) => locate('$edit-scheduled-backpup-button').inside(scheduleCell(name)),
   },
   fields: {
     backupName: '$backupName-text-input',

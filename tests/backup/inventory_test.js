@@ -9,6 +9,7 @@ const location = {
 };
 
 let locationId;
+let serviceId;
 
 const mongoServiceName = 'mongodb-backup-service';
 
@@ -31,8 +32,9 @@ BeforeSuite(async ({
 });
 
 Before(async ({
-  I, settingsAPI, backupInventoryPage,
+  I, settingsAPI, backupInventoryPage, inventoryAPI,
 }) => {
+  const { service_id: serviceId } = await inventoryAPI.apiGetNodeInfoByServiceName('MONGODB_SERVICE', mongoServiceName);
   const c = await I.mongoGetCollection('test', 'e2e');
 
   await c.findOneAndDelete({ number: 2, name: 'Anna' });
@@ -146,3 +148,27 @@ Scenario(
     I.waitForInvisible(backupInventoryPage.buttons.deleteByName(backupName), 30);
   },
 );
+
+Scenario.only(
+  'PMM-T928 Verify user can restore from a scheduled backup @backup',
+  async ({
+    I, scheduledPage, scheduledAPI, backupAPI,
+  }) => {
+    const schedule = {
+      service_id: serviceId,
+      location_id: locationId,
+      cron_expression: '* * * * *',
+      name: 'schedule for restore',
+      description: '',
+      retry_interval: '30s',
+      retries: 0,
+      enabled: true,
+      retention: 1,
+    };
+
+    await scheduledAPI.createScheduledBackup(schedule);
+    await backupAPI.waitForBackupFinish(null, schedule.name, 180);
+
+  },
+);
+
