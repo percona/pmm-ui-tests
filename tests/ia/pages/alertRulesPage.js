@@ -10,13 +10,13 @@ module.exports = {
   templates,
   elements: {
     rulesTab: '//li[@aria-label="Tab Alert Rules"]',
-    noRules: '[data-qa=alert-rules-table-no-data] > h1',
+    noRules: locate('$alert-rules-table-no-data').find('h1'),
     rulesTableHeader: '$alert-rules-table-thead',
     rulesTable: '$alert-rules-table-tbody',
     rulesNameCell: (ruleName) => rulesNameCell(ruleName),
     // activateSwitch returns enable/disabled rule switch locator which holds the state (enabled or disabled)
     // Note: not clickable one
-    activateSwitch: (ruleName) => `${rulesNameCell(ruleName)}/following-sibling::td//input[@data-qa='toggle-alert-rule']`,
+    activateSwitch: (ruleName) => `${rulesNameCell(ruleName)}/following-sibling::td//input[@data-testid='toggle-alert-rule']`,
     parametersCell: (ruleName) => locate('td').after(rulesNameCell(ruleName)).find('$alert-rule-param'),
     durationCell: (ruleName) => `${rulesNameCell(ruleName)}/following-sibling::td[2]`,
     severityCell: (ruleName) => `${rulesNameCell(ruleName)}/following-sibling::td[3]`,
@@ -38,18 +38,18 @@ module.exports = {
     cancelDelete: '$cancel-delete-modal-button',
     delete: '$confirm-delete-modal-button',
     // showDetails returns Show rule details button locator for a given rule name
-    showDetails: (ruleName) => `${rulesNameCell(ruleName)}//button[@data-qa="show-alert-rule-details"]`,
+    showDetails: (ruleName) => `${rulesNameCell(ruleName)}//button[@data-testid="show-alert-rule-details"]`,
     // hideDetails returns Hide rule details button locator for a given rule name
-    hideDetails: (ruleName) => `${rulesNameCell(ruleName)}//button[@data-qa="hide-alert-rule-details"]`,
+    hideDetails: (ruleName) => `${rulesNameCell(ruleName)}//button[@data-testid="hide-alert-rule-details"]`,
     // editAlertRule returns Edit rule button locator for a given rule name
-    editAlertRule: (ruleName) => `${rulesNameCell(ruleName)}/following-sibling::td//button[@data-qa='edit-alert-rule-button']`,
+    editAlertRule: (ruleName) => `${rulesNameCell(ruleName)}/following-sibling::td//button[@data-testid='edit-alert-rule-button']`,
     // duplicateAlertRule returns Copy rule button locator for a given rule name
-    duplicateAlertRule: (ruleName) => `${rulesNameCell(ruleName)}/following-sibling::td//button[@data-qa='copy-alert-rule-button']`,
+    duplicateAlertRule: (ruleName) => `${rulesNameCell(ruleName)}/following-sibling::td//button[@data-testid='copy-alert-rule-button']`,
     // deleteAlertRule returns Delete rule button locator for a given rule name
-    deleteAlertRule: (ruleName) => `${rulesNameCell(ruleName)}/following-sibling::td//button[@data-qa='delete-alert-rule-button']`,
+    deleteAlertRule: (ruleName) => `${rulesNameCell(ruleName)}/following-sibling::td//button[@data-testid='delete-alert-rule-button']`,
     // toggleAlertRule returns Enable/Disable rule switch locator in alert rules list
-    toggleAlertRule: (ruleName) => `${rulesNameCell(ruleName)}/following-sibling::td//input[@data-qa='toggle-alert-rule']/following-sibling::label`,
-    toogleInModal: '//input[@data-qa="enabled-toggle-input"]/following-sibling::label',
+    toggleAlertRule: (ruleName) => `${rulesNameCell(ruleName)}/following-sibling::td//input[@data-testid='toggle-alert-rule']/following-sibling::label`,
+    toogleInModal: '//input[@data-testid="enabled-toggle-input"]/following-sibling::label',
   },
   fields: {
     // searchDropdown returns a locator of a search input for a given label
