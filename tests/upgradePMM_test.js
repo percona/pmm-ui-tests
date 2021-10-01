@@ -240,21 +240,14 @@ if (versionMinor >= 15) {
   );
 
   Scenario(
-    'Verify Adding Redis as external Service before Upgrade @pre-upgrade @pmm-upgrade',
+    'Adding Redis as external Service before Upgrade @pre-upgrade @pmm-upgrade',
     async ({
       I, addInstanceAPI,
     }) => {
       await addInstanceAPI.addExternalService('redis_external_remote');
-
-      // Make sure Metrics are hitting before Upgrade
-      const metricName = 'redis_uptime_in_seconds';
-
-      // This is only needed to let PMM Consume Metrics from external Service
-      I.wait(30);
-      const response = await dashboardPage.checkMetricExist(metricName);
-      const result = JSON.stringify(response.data.data.result);
-
-      assert.ok(response.data.data.result.length !== 0, `Metrics ${metricName} from external exporter should be available but got empty ${result}`);
+      const output = await I.verifyCommand(
+        'pmm-admin add external --listen-port=42200 --group="redis" --custom-labels="testing=redis" --service-name="redis_external_2"',
+      );
     },
   );
 }
@@ -394,7 +387,7 @@ if (versionMinor >= 15) {
 
       assert.ok(response.data.data.result.length !== 0, `Metrics ${metricName} for remote redis node, remote_redis_external Should be available but got empty ${result}`);
 
-      response = await dashboardPage.checkMetricExist(metricName, { type: 'service_name', value: 'redis_external' });
+      response = await dashboardPage.checkMetricExist(metricName, { type: 'service_name', value: 'redis_external_2' });
       result = JSON.stringify(response.data.data.result);
 
       assert.ok(response.data.data.result.length !== 0, `Metrics ${metricName} for service name redis_external Should be available but got empty ${result}`);
