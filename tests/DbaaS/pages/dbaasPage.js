@@ -16,14 +16,14 @@ module.exports = {
   tabs: {
     kubernetesClusterTab: {
       addKubernetesClusterButton: '$kubernetes-new-cluster-button',
-      addKubernetesClusterButtonInTable: '//div[@data-qa="table-no-data"]//span[contains(text(), "Register new Kubernetes Cluster")]',
-      actionsLocator: (clusterName) => `//td[contains(text(), "${clusterName}")]//parent::tr//button[@data-qa="dropdown-menu-toggle"]`,
+      addKubernetesClusterButtonInTable: '//div[@data-testid="table-no-data"]//span[contains(text(), "Register new Kubernetes Cluster")]',
+      actionsLocator: (clusterName) => `//td[contains(text(), "${clusterName}")]//parent::tr//button[@data-testid="dropdown-menu-toggle"]`,
       closeButton: '$modal-close-button',
       clusterConfigurationText: locate('$pmm-overlay-wrapper').find('pre'),
       copyToClipboardButton: '//span[contains(text(), "Copy to clipboard")]',
-      disabledAddButton: '//button[@data-qa="kubernetes-add-cluster-button" and @disabled]',
+      disabledAddButton: '//button[@data-testid="kubernetes-add-cluster-button" and @disabled]',
       forceUnreigsterCheckBox: locate('$force-field-container').find('span').at(1),
-      kubeconfigFileInput: '//textarea[@data-qa="kubeConfig-textarea-input"]',
+      kubeconfigFileInput: '//textarea[@data-testid="kubeConfig-textarea-input"]',
       kubernetesAddButton: '$kubernetes-add-cluster-button',
       kubernetesClusterNameInput: '$name-text-input',
       modalWindow: '$modal-body',
@@ -45,7 +45,7 @@ module.exports = {
       updateClusterButton: '$dbcluster-update-cluster-button',
       dbClusterTab: '//li[@aria-label="Tab DB Cluster"]',
       monitoringWarningLocator: '$add-cluster-monitoring-warning',
-      optionsCountLocator: (step) => `(//div[@data-qa='step-header']//div[1])[${step}]`,
+      optionsCountLocator: (step) => `(//div[@data-testid='step-header']//div[1])[${step}]`,
       optionsHeader: '$step-header',
       deleteDbClusterConfirmationText: (dbClusterName, clusterName, dbType) => `Are you sure that you want to delete ${dbType} cluster ${dbClusterName} from Kubernetes cluster ${clusterName} ?`,
       basicOptions: {
@@ -76,7 +76,7 @@ module.exports = {
         fields: {
           cpuFieldErrorMessage: '$cpu-field-error-message',
           cpuNumberFields: '$cpu-number-input',
-          clusterTopology: (type) => `//input[@data-qa='topology-radio-button']/../label[contains(text(), '${type}')]`,
+          clusterTopology: (type) => `//input[@data-testid='topology-radio-button']/../label[contains(text(), '${type}')]`,
           dbClusterResourceFieldLabel: '$resources-field-label',
           dbClusterTopologyFieldLabel: '$topology-field-label',
           dbClusterResourcesBarMemory: '$dbcluster-resources-bar-memory',
@@ -101,7 +101,7 @@ module.exports = {
       },
       fields: {
         clusterDetailHeaders: ['Name', 'Database Type', 'Connection', 'DB Cluster Parameters', 'Cluster Status', 'Actions'],
-        clusterAction: (action) => `//div[@data-qa='dropdown-menu-menu']//span[contains(text(), '${action}')]`,
+        clusterAction: (action) => `//div[@data-testid='dropdown-menu-menu']//span[contains(text(), '${action}')]`,
         clusterConnection: {
           dbHost: '$cluster-connection-host',
           dbPort: '$cluster-connection-port',

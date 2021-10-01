@@ -5,5 +5,5 @@ module.exports = () => actor({
     this.click('.page-alert-list button');
   },
 
-  useDataQA: (selector) => `[data-qa="${selector}"]`,
+  useDataQA: (selector) => `[data-testid="${selector}"]`,
 });

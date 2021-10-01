@@ -65,7 +65,7 @@ exports.config = {
     customLocator: {
       enabled: true,
       strategy: 'css',
-      attribute: 'data-qa',
+      attribute: 'data-testid',
       showActual: false,
     },
     allure: {
