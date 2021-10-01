@@ -132,9 +132,9 @@ Scenario(
     I.refreshPage();
     backupInventoryPage.verifyBackupSucceeded(backupName);
 
-    const artifactName = await I.grabTextFrom(backupInventoryPage.elements.artifactName('b1'));
+    const artifactName = await I.grabTextFrom(backupInventoryPage.elements.artifactName(backupName));
 
-    I.click(backupInventoryPage.buttons.deleteByName('b1'));
+    I.click(backupInventoryPage.buttons.deleteByName(backupName));
     I.waitForVisible(backupInventoryPage.elements.forceDeleteLabel, 20);
     I.seeTextEquals(backupInventoryPage.messages.confirmDeleteText(artifactName), 'h4');
     I.seeTextEquals(backupInventoryPage.messages.forceDeleteLabelText, backupInventoryPage.elements.forceDeleteLabel);
