@@ -245,12 +245,14 @@ if (versionMinor >= 15) {
       I, addInstanceAPI,
     }) => {
       await addInstanceAPI.addExternalService('redis_external_remote');
-
+      const output = await I.verifyCommand(
+        'pmm-admin add external --listen-port=42200 --group="redis" --custom-labels="testing=redis" --service-name="redis_external_2"',
+      );
       // Make sure Metrics are hitting before Upgrade
       const metricName = 'redis_uptime_in_seconds';
 
       // This is only needed to let PMM Consume Metrics from external Service
-      I.wait(30);
+      I.wait(60);
       const response = await dashboardPage.checkMetricExist(metricName);
       const result = JSON.stringify(response.data.data.result);
 
@@ -394,7 +396,7 @@ if (versionMinor >= 15) {
 
       assert.ok(response.data.data.result.length !== 0, `Metrics ${metricName} for remote redis node, remote_redis_external Should be available but got empty ${result}`);
 
-      response = await dashboardPage.checkMetricExist(metricName, { type: 'service_name', value: 'redis_external' });
+      response = await dashboardPage.checkMetricExist(metricName, { type: 'service_name', value: 'redis_external_2' });
       result = JSON.stringify(response.data.data.result);
 
       assert.ok(response.data.data.result.length !== 0, `Metrics ${metricName} for service name redis_external Should be available but got empty ${result}`);
