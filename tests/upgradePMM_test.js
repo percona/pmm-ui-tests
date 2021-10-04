@@ -218,10 +218,15 @@ if (versionMinor >= 15) {
       // Run DB Checks from UI
       // disable check, change interval for a check, change interval settings
       if (versionMinor >= 16) {
-        databaseChecksPage.runDBChecks();
+        await securityChecksAPI.startSecurityChecks();
+        // Waiting to have all results
+        I.wait(15);
         await securityChecksAPI.disableCheck('mysql_anonymous_users');
         await securityChecksAPI.changeCheckInterval('postgresql_version');
         await settingsAPI.setCheckIntervals({ ...settingsAPI.defaultCheckIntervals, standard_interval: '3600s' });
+
+        I.amOnPage(databaseChecksPage.url);
+        I.waitForVisible(runChecks, 30);
       } else {
         I.amOnPage(databaseChecksPage.oldUrl);
         I.waitForVisible(runChecks, 30);
