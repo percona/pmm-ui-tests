@@ -327,7 +327,7 @@ Scenario(
     I.amOnPage(homePage.url);
     await homePage.upgradePMM(versionMinor);
   },
-);
+).retry(0);
 
 Scenario(
   'Run queries for MongoDB after upgrade @post-upgrade @pmm-upgrade',
