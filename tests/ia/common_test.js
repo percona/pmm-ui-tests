@@ -11,23 +11,6 @@ Before(async ({
 });
 
 Scenario(
-  'PMM-T643 Verify message about disabled IA @ia @grafana-pr',
-  async ({
-    I, settingsAPI, iaCommon, pmmSettingsPage, codeceptjsConfig,
-  }) => {
-    await settingsAPI.apiDisableIA();
-    I.amOnPage(iaCommon.url);
-
-    I.waitForVisible(iaCommon.elements.disabledIa, 30);
-    I.seeTextEquals(iaCommon.messages.disabledIa, iaCommon.elements.disabledIa);
-
-    I.seeAttributesOnElements(iaCommon.elements.settingsLink, {
-      href: `${codeceptjsConfig.config.helpers.Playwright.url}${pmmSettingsPage.advancedSettingsUrl}`,
-    });
-  },
-);
-
-Scenario(
   'PMM-T481 PMM-T619 PMM-T620 Verify user is able to use tab bar, breadcrumb @ia @grafana-pr',
   async ({
     I, alertRulesPage, ruleTemplatesPage, iaCommon, ncPage,

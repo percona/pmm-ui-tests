@@ -296,14 +296,6 @@ module.exports = {
     }
   },
 
-  async disableIA() {
-    const iaEnabled = await I.grabAttributeFrom(this.fields.iaSwitchSelectorInput, 'checked');
-
-    if (iaEnabled) {
-      I.click(this.fields.iaSwitchSelector);
-    }
-  },
-
   async verifyCommunicationFields(fields) {
     const {
       type, serverAddress, hello, from, authType, username, url,
