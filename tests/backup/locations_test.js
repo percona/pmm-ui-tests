@@ -72,7 +72,7 @@ Scenario(
 );
 
 Scenario(
-  'Verify add storage location modal elements @backup @grafana-pr',
+  'Verify add storage location modal elements @backup',
   async ({
     I, locationsPage,
   }) => {
