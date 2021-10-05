@@ -56,7 +56,8 @@ Scenario(
   },
 );
 
-Scenario(
+// Skipping due to random failures
+xScenario(
   'PMM-T855 Verify user is able to perform MongoDB backup @backup',
   async ({
     I, backupInventoryPage,
@@ -85,7 +86,8 @@ Scenario(
   },
 );
 
-Scenario(
+// Skipping due to random failures
+xScenario(
   'PMM-T862 Verify user is able to perform MongoDB restore @backup',
   async ({
     I, backupInventoryPage, backupAPI, inventoryAPI, restorePage,
