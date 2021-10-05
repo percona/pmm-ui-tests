@@ -4,7 +4,10 @@ const assert = require('assert');
 module.exports = {
   url: 'graph/d/pmm-home/home-dashboard?orgId=1',
   sideMenu: {
-    integratedAlerting: 'li > a[href="/graph/integrated-alerting"]',
+    integratedAlertingAlerts: 'li > a[href="/graph/integrated-alerting/alerts"]',
+    integratedAlertingAlertRules: 'li > a[href="/graph/integrated-alerting/alert-rules"]',
+    integratedAlertingTemplates: 'li > a[href="/graph/integrated-alerting/alert-rule-templates"]',
+    integratedAlertingChannels: 'li > a[href="/graph/integrated-alerting/notification-channels"]',
   },
   fields: {
     navigation: '//i[contains(@class, "navbar-page-btn__search")]',
