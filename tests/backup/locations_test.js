@@ -8,8 +8,7 @@ const location = {
   ...locationsPage.storageLocationConnection,
 };
 
-const mongoServiceName = 'mongodb-backup-locations';
-// const mongoServiceName = 'mongodb-backup-locations';
+const mongoServiceName = 'mongo-backup-locations';
 
 Feature('BM: Backup Locations').retry(1);
 

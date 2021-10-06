@@ -9,7 +9,7 @@ const location = {
 let locationId;
 let serviceId;
 
-const mongoServiceName = 'mongo-rs';
+const mongoServiceName = 'mongo-backup-schedule';
 
 Feature('BM: Scheduled backups');
 

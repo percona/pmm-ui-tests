@@ -11,7 +11,7 @@ const location = {
 let locationId;
 let serviceId;
 
-const mongoServiceName = 'mongodb-backup-service';
+const mongoServiceName = 'mongo-backup-inventory';
 
 Feature('BM: Backup Inventory');
 
