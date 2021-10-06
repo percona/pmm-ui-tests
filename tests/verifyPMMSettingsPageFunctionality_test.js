@@ -200,7 +200,7 @@ Scenario('PMM-T532 PMM-T533 PMM-T536 - Verify user can enable/disable IA in Sett
     I.click(pmmSettingsPage.fields.advancedButton);
     I.waitForVisible(pmmSettingsPage.fields.iaSwitchSelector, 30);
     pmmSettingsPage.verifySwitch(pmmSettingsPage.fields.iaSwitchSelectorInput, 'off');
-    I.seeElementInDOM(adminPage.sideMenu.integratedAlertingAlerts);
+    I.dontSeeElementInDOM(adminPage.sideMenu.integratedAlertingAlerts);
     I.dontSeeElement(pmmSettingsPage.communication.communicationSection);
     await settingsAPI.apiEnableIA();
   }).retry(2);
