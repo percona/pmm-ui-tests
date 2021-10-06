@@ -56,7 +56,8 @@ Scenario(
   },
 );
 
-Scenario(
+// Skipping due to random failures
+xScenario(
   'PMM-T855 Verify user is able to perform MongoDB backup @backup',
   async ({
     I, backupInventoryPage,
@@ -85,7 +86,8 @@ Scenario(
   },
 );
 
-Scenario(
+// Skipping due to random failures
+xScenario(
   'PMM-T862 Verify user is able to perform MongoDB restore @backup',
   async ({
     I, backupInventoryPage, backupAPI, inventoryAPI, restorePage,
@@ -132,9 +134,11 @@ Scenario(
     I.refreshPage();
     backupInventoryPage.verifyBackupSucceeded(backupName);
 
+    const artifactName = await I.grabTextFrom(backupInventoryPage.elements.artifactName(backupName));
+
     I.click(backupInventoryPage.buttons.deleteByName(backupName));
     I.waitForVisible(backupInventoryPage.elements.forceDeleteLabel, 20);
-    I.seeTextEquals(backupInventoryPage.messages.confirmDeleteText(backupName), 'h4');
+    I.seeTextEquals(backupInventoryPage.messages.confirmDeleteText(artifactName), 'h4');
     I.seeTextEquals(backupInventoryPage.messages.forceDeleteLabelText, backupInventoryPage.elements.forceDeleteLabel);
     I.seeTextEquals(backupInventoryPage.messages.modalHeaderText, backupInventoryPage.elements.modalHeader);
 
