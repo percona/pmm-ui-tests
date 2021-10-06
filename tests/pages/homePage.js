@@ -39,6 +39,19 @@ module.exports = {
         successUpgradeMessage: 'Successfully updated',
         whatsNewLink: 'a.text-primary.pmm-link',
       },
+      oldDataAttr: {
+        checkUpdateButton: '[data-qa="update-last-check-button"]',
+        currentVersion: '[data-qa="update-installed-version"]',
+        lastCheckSelector: '[data-qa="update-last-check"]',
+        triggerUpdate: '//button//span[contains(text(), "Upgrade to")]',
+        updateProgressModal: '//div/h4[text()="Upgrade in progress"]',
+        successUpgradeMsgSelector: '[data-qa="modal-update-success-text"]',
+        reloadButtonAfterUpgrade: '[data-qa="modal-close"]',
+        availableVersion: '[data-qa="update-latest-version"]',
+        inProgressMessage: 'Upgrade in progress',
+        successUpgradeMessage: 'PMM has been successfully upgraded to version',
+        whatsNewLink: '//a[@rel="noreferrer"]',
+      },
       latest: {
         checkUpdateButton: '$update-last-check-button',
         currentVersion: '$update-installed-version',
@@ -155,7 +168,11 @@ module.exports = {
   getLocators(version) {
     let locators;
 
-    if (version >= 9) {
+    // data-testid introduction since 2.23
+    if (version >= 9 && version <= 22) {
+      // eslint-disable-next-line no-param-reassign
+      version = 'oldDataAttr';
+    } else {
       // eslint-disable-next-line no-param-reassign
       version = 'latest';
     }

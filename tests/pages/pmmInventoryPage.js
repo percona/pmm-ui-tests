@@ -29,7 +29,7 @@ module.exports = {
     serviceIdLocatorPrefix: '//table//tr/td[4][contains(text(),"',
     tableCheckbox: locate('$select-row').find('span'),
     // cannot be changed to locate() because of method: getCellValue()
-    tableRow: '//tr[@data-qa="table-row"]',
+    tableRow: '//tr[@data-testid="table-row"]',
   },
 
   verifyRemoteServiceIsDisplayed(serviceName) {
@@ -128,7 +128,7 @@ module.exports = {
   },
 
   selectService(serviceName) {
-    const serviceLocator = `${this.fields.serviceIdLocatorPrefix}${serviceName}")]/preceding-sibling::td/div[@data-qa="select-row"]`;
+    const serviceLocator = `${this.fields.serviceIdLocatorPrefix}${serviceName}")]/preceding-sibling::td/div[@data-testid="select-row"]`;
 
     I.waitForVisible(serviceLocator, 30);
     I.click(serviceLocator);
@@ -169,7 +169,7 @@ module.exports = {
   },
 
   selectAgent(agentType) {
-    const agentLocator = `//table//tr/td[3][contains(text(),"${agentType}")]/preceding-sibling::td/div[@data-qa="select-row"]`;
+    const agentLocator = `//table//tr/td[3][contains(text(),"${agentType}")]/preceding-sibling::td/div[@data-testid="select-row"]`;
 
     I.waitForVisible(agentLocator, 30);
     I.click(agentLocator);
@@ -214,7 +214,7 @@ module.exports = {
   },
 
   selectAgentByID(id) {
-    const agentIdLocator = `//table//tr/td[2][contains(text(),"${id}")]/preceding-sibling::td/div[@data-qa="select-row"]`;
+    const agentIdLocator = `//table//tr/td[2][contains(text(),"${id}")]/preceding-sibling::td/div[@data-testid="select-row"]`;
 
     I.waitForVisible(agentIdLocator, 30);
     I.click(agentIdLocator);
@@ -227,7 +227,7 @@ module.exports = {
   },
 
   async getCountOfItems() {
-    return await I.grabNumberOfVisibleElements('//table//tr/td/div[@data-qa="select-row"]');
+    return await I.grabNumberOfVisibleElements('$select-row');
   },
 
   async checkAllNotDeletedAgents(countBefore) {

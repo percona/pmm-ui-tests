@@ -1,4 +1,4 @@
-const { storageLocationConnection } = require('./testData');
+const { storageLocationConnection, mongoStorageLocation } = require('./testData');
 
 const { I } = inject();
 
@@ -6,6 +6,7 @@ const locationCell = (name) => `//tr[td/div[contains(text(), "${name}")]]`;
 
 module.exports = {
   storageLocationConnection,
+  mongoStorageLocation,
   url: 'graph/backup/locations',
   columnHeaders: ['Name', 'Source', 'Created', 'Actions'],
   elements: {
