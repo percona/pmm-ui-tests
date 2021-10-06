@@ -16,10 +16,9 @@ const mongoServiceName = 'mongodb-backup-service';
 Feature('BM: Backup Inventory');
 
 BeforeSuite(async ({
-  I, backupAPI, locationsAPI, settingsAPI,
+  I, locationsAPI, settingsAPI,
 }) => {
   await settingsAPI.changeSettings({ backup: true });
-  await backupAPI.clearAllArtifacts();
   await locationsAPI.clearAllLocations(true);
   locationId = await locationsAPI.createStorageLocation(location);
   await I.mongoConnectReplica({
@@ -31,15 +30,19 @@ BeforeSuite(async ({
 });
 
 Before(async ({
-  I, settingsAPI, backupInventoryPage, inventoryAPI,
+  I, settingsAPI, backupInventoryPage, inventoryAPI, backupAPI,
 }) => {
-  const { service_id: serviceId } = await inventoryAPI.apiGetNodeInfoByServiceName('MONGODB_SERVICE', mongoServiceName);
+  const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName('MONGODB_SERVICE', mongoServiceName);
+
+  serviceId = service_id;
+
   const c = await I.mongoGetCollection('test', 'e2e');
 
-  await c.findOneAndDelete({ number: 2, name: 'Anna' });
+  await c.deleteMany({ number: 2 });
 
   await I.Authorize();
   await settingsAPI.changeSettings({ backup: true });
+  await backupAPI.clearAllArtifacts();
   await backupInventoryPage.openInventoryPage();
 });
 
@@ -58,8 +61,7 @@ Scenario(
   },
 );
 
-// Skipping due to random failures
-xScenario(
+Scenario(
   'PMM-T855 Verify user is able to perform MongoDB backup @backup',
   async ({
     I, backupInventoryPage,
@@ -88,8 +90,7 @@ xScenario(
   },
 );
 
-// Skipping due to random failures
-xScenario(
+Scenario(
   'PMM-T862 Verify user is able to perform MongoDB restore @backup',
   async ({
     I, backupInventoryPage, backupAPI, inventoryAPI, restorePage,
@@ -107,13 +108,8 @@ xScenario(
 
     await c.insertOne({ number: 2, name: 'Anna' });
 
-    I.click(backupInventoryPage.buttons.restoreByName(backupName));
-    I.waitForVisible(backupInventoryPage.buttons.modalRestore, 10);
-    I.click(backupInventoryPage.buttons.modalRestore);
-
-    I.amOnPage(restorePage.url);
-    I.waitForVisible(restorePage.elements.backupStatusByName(backupName), 180);
-    I.waitForText('Success', 30, restorePage.elements.backupStatusByName(backupName));
+    backupInventoryPage.startRestore(backupName);
+    restorePage.waitForRestoreSuccess(backupName);
 
     c = await I.mongoGetCollection('test', 'e2e');
     const record = await c.findOne({ number: 2, name: 'Anna' });
@@ -152,16 +148,18 @@ Scenario(
   },
 );
 
-Scenario.only(
+Scenario(
   'PMM-T928 Verify user can restore from a scheduled backup @backup',
   async ({
-    I, scheduledPage, scheduledAPI, backupAPI,
+    I, backupInventoryPage, scheduledAPI, backupAPI, restorePage,
   }) => {
+    // Every 2 mins schedule
     const schedule = {
       service_id: serviceId,
       location_id: locationId,
-      cron_expression: '* * * * *',
+      cron_expression: '*/2 * * * *',
       name: 'schedule for restore',
+      mode: scheduledAPI.backupModes.snapshot,
       description: '',
       retry_interval: '30s',
       retries: 0,
@@ -169,9 +167,23 @@ Scenario.only(
       retention: 1,
     };
 
-    await scheduledAPI.createScheduledBackup(schedule);
-    await backupAPI.waitForBackupFinish(null, schedule.name, 180);
+    const scheduleId = await scheduledAPI.createScheduledBackup(schedule);
 
+    await backupAPI.waitForBackupFinish(null, schedule.name, 240);
+    await scheduledAPI.disableScheduledBackup(scheduleId);
+
+    let c = await I.mongoGetCollection('test', 'e2e');
+
+    await c.insertOne({ number: 2, name: 'BeforeRestore' });
+    I.refreshPage();
+
+    backupInventoryPage.verifyBackupSucceeded(schedule.name);
+    backupInventoryPage.startRestore(schedule.name);
+    restorePage.waitForRestoreSuccess(schedule.name);
+
+    c = await I.mongoGetCollection('test', 'e2e');
+    const record = await c.findOne({ name: 'BeforeRestore' });
+
+    assert.ok(record === null, `Was expecting to not have a record ${JSON.stringify(record, null, 2)} after restore operation`);
   },
 );
-

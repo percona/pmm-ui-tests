@@ -22,10 +22,17 @@ module.exports = {
     return resp.data.artifact_id;
   },
 
-  // waitForBackupFinish waits for backup to finish
+  // waitForBackupFinish waits for backup to finish. If artifactId is null, scheduleName will be used for filtering
   async waitForBackupFinish(artifactId, scheduleName, timeout = 120) {
     for (let i = 0; i < timeout / 5; i++) {
       const artifacts = await this.getArtifactsList();
+
+      if (!artifacts) {
+        I.wait(5);
+        // eslint-disable-next-line no-continue
+        continue;
+      }
+
       let found;
 
       artifactId

@@ -25,6 +25,7 @@ module.exports = {
     description: '$description-textarea-input',
     serviceNameDropdown: locate('div[class$="-select-value-container"]').inside(locate('div').withChild('$service-select-label')),
     locationDropdown: locate('div[class$="-select-value-container"]').inside(locate('div').withChild('$location-select-label')),
+    everyDropdown: locate('div[class$="-select-value-container"]').inside(locate('div').withChild('$period-select-label')),
     retention: '$retention-number-input',
   },
   messages: {
@@ -50,5 +51,12 @@ module.exports = {
     I.waitForVisible(this.elements.dropdownOption(text), 30);
     I.click(this.elements.dropdownOption(text));
     I.dontSeeElement(this.elements.dropdownOption(text));
+  },
+
+  clearRetentionField() {
+    // clearField method doesn't work for this field
+    I.usePlaywrightTo('clear field', async ({ page }) => {
+      await page.fill(I.useDataQA('retention-number-input'), '');
+    });
   },
 };

@@ -1,13 +1,18 @@
 const { I } = inject();
 const assert = require('assert');
-const { storageLocationConnection } = require('../testData');
+
+const backupModes = {
+  snapshot: 'SNAPSHOT',
+};
 
 module.exports = {
+  backupModes,
   async createScheduledBackup(scheduleObj) {
     const {
       service_id,
       location_id,
       name,
+      mode = backupModes.snapshot,
       description = '',
       cron_expression,
       retry_interval,
@@ -21,6 +26,7 @@ module.exports = {
       location_id,
       cron_expression,
       name,
+      mode,
       description,
       retry_interval,
       retries,
@@ -46,8 +52,8 @@ module.exports = {
 
     if (!schedules) return;
 
-    for (const { location_id } of schedules) {
-      await this.removeScheduledBackup(location_id, true);
+    for (const { scheduled_backup_id } of schedules) {
+      await this.removeScheduledBackup(scheduled_backup_id);
     }
   },
 
@@ -68,6 +74,26 @@ module.exports = {
     assert.ok(
       resp.status === 200,
       `Failed to remove scheduled backup with ID "${scheduledId}". Response message is "${resp.data.message}"`,
+    );
+  },
+
+  async getScheduleIdByName(scheduleName) {
+    const scheduledBackups = await this.getScheduledList();
+
+    return scheduledBackups.find(({ name }) => name === scheduleName);
+  },
+
+  async disableScheduledBackup(scheduledId) {
+    const headers = { Authorization: `Basic ${await I.getAuth()}` };
+    const body = {
+      enabled: false,
+      scheduled_backup_id: scheduledId,
+    };
+    const resp = await I.sendPostRequest('v1/management/backup/Backups/ChangeScheduled', body, headers);
+
+    assert.ok(
+      resp.status === 200,
+      `Failed to disable scheduled backup with ID "${scheduledId}". Response message is "${resp.data.message}"`,
     );
   },
 };
