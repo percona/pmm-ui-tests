@@ -176,6 +176,35 @@ Scenario('PMM-T520 - Verify that alert is being fired to external Alert Manager 
   await pmmSettingsPage.verifyExternalAlertManager(pmmSettingsPage.alertManager.ruleName);
 });
 
+Scenario('PMM-T532 PMM-T533 PMM-T536 - Verify user can enable/disable IA in Settings @ia @settings @grafana-pr',
+  async ({
+    I, pmmSettingsPage, settingsAPI, adminPage,
+  }) => {
+    await settingsAPI.apiDisableIA();
+    I.amOnPage(pmmSettingsPage.advancedSettingsUrl);
+    I.waitForVisible(pmmSettingsPage.fields.iaSwitchSelector, 30);
+    I.click(pmmSettingsPage.fields.iaSwitchSelector);
+    I.dontSeeElement(pmmSettingsPage.communication.communicationSection);
+    pmmSettingsPage.verifySwitch(pmmSettingsPage.fields.iaSwitchSelectorInput, 'on');
+    I.click(pmmSettingsPage.fields.advancedButton);
+    I.waitForVisible(pmmSettingsPage.fields.iaSwitchSelectorInput, 30);
+    pmmSettingsPage.verifySwitch(pmmSettingsPage.fields.iaSwitchSelectorInput, 'on');
+    I.seeElementInDOM(adminPage.sideMenu.integratedAlertingAlerts);
+    I.seeTextEquals('Alerts', adminPage.sideMenu.integratedAlertingAlerts);
+    I.seeTextEquals('Alert Rules', adminPage.sideMenu.integratedAlertingAlertRules);
+    I.seeTextEquals('Alert Rule Templates', adminPage.sideMenu.integratedAlertingTemplates);
+    I.seeTextEquals('Notification Channels', adminPage.sideMenu.integratedAlertingChannels);
+    I.seeTextEquals('Communication', pmmSettingsPage.communication.communicationSection);
+    I.click(pmmSettingsPage.fields.iaSwitchSelector);
+    pmmSettingsPage.verifySwitch(pmmSettingsPage.fields.iaSwitchSelectorInput, 'off');
+    I.click(pmmSettingsPage.fields.advancedButton);
+    I.waitForVisible(pmmSettingsPage.fields.iaSwitchSelector, 30);
+    pmmSettingsPage.verifySwitch(pmmSettingsPage.fields.iaSwitchSelectorInput, 'off');
+    I.seeElementInDOM(adminPage.sideMenu.integratedAlertingAlerts);
+    I.dontSeeElement(pmmSettingsPage.communication.communicationSection);
+    await settingsAPI.apiEnableIA();
+  }).retry(2);
+
 Scenario('PMM-T785 - Verify DBaaS cannot be disabled with ENABLE_DBAAS or PERCONA_TEST_DBAAS @settings @dbaas',
   async ({ I, pmmSettingsPage }) => {
     I.amOnPage(pmmSettingsPage.advancedSettingsUrl);
