@@ -62,6 +62,7 @@ module.exports = {
           )
             .find('span')
             .withText(version),
+          dbClusterDatabaseVersionSelect: (version) => `//div[@data-qa='dbcluster-database-version-field']//div[contains(@class, 'grafana-select-menu')]//span[contains(., '${version}')]`,
           defaultDbVersionValue: (version) => locate(
             '$dbcluster-database-version-field',
           )
@@ -100,7 +101,7 @@ module.exports = {
         },
       },
       fields: {
-        clusterDetailHeaders: ['Name', 'Database Type', 'Connection', 'DB Cluster Parameters', 'Cluster Status', 'Actions'],
+        clusterDetailHeaders: ['Name', 'Database', 'Connection', 'DB Cluster Parameters', 'Cluster Status', 'Actions'],
         clusterAction: (action) => `//div[@data-testid='dropdown-menu-menu']//span[contains(text(), '${action}')]`,
         clusterConnection: {
           dbHost: '$cluster-connection-host',
@@ -127,6 +128,7 @@ module.exports = {
         clusterStatusPending: '$cluster-status-pending',
         clusterStatusPaused: '$cluster-status-suspended',
         clusterStatusDeleting: '$cluster-status-deleting',
+        clusterStatusUpdating: '$cluster-status-updating',
         clusterTableHeader: locate('$table-header').find('th'),
         clusterTableRow: '$table-row',
         clusterActionsMenu: '$dropdown-menu-toggle',
@@ -146,6 +148,7 @@ module.exports = {
         cancelDeleteDBCluster: '$cancel-delete-dbcluster-button',
         progressBarSteps: '$progress-bar-steps',
         progressBarContent: '$progress-bar-message',
+        updateClusterButton: '$confirm-update-dbcluster-button',
       },
     },
   },
