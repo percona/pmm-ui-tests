@@ -13,4 +13,10 @@ module.exports = {
   fields: {},
   messages: {},
   locationType: {},
+
+  waitForRestoreSuccess(backupName) {
+    I.amOnPage(this.url);
+    I.waitForVisible(this.elements.backupStatusByName(backupName), 180);
+    I.waitForText('Success', 30, this.elements.backupStatusByName(backupName));
+  },
 };

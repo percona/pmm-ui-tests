@@ -59,6 +59,9 @@ module.exports = {
     'Replication Set': 'rds56-replication',
     Cluster: 'rds56-cluster',
   },
+  elements: {
+    noData: '$table-no-data',
+  },
   fields: {
     accessKeyInput: '$aws_access_key-text-input',
     addAWSRDSMySQLbtn: '$rds-instance',
@@ -409,6 +412,7 @@ module.exports = {
   },
 
   discoverRDSWithoutCredentials() {
+    I.waitForVisible(this.elements.noData, 30);
     I.click(this.fields.discoverBtn);
     I.waitForVisible(this.fields.noCredentialsError, 30);
   },
