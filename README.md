@@ -53,10 +53,10 @@ Execute command in the Project Root folder
                                 Custom Filters and Navigation between Dashboards are included here.
     @platform               description pending...
     @pmm-demo               Performs basic Sanity on PMM-Demo, esures all expected Services are still running 
-    @pmm-upgrade	        upgrade testing Scenarios, they verify UI Upgrade for docker based PMM Server
-    @pre-upgrade	        upgrade testing Scenarios, they verify Docker way Upgrade. Executed BEFORE the upgrade
-    @post-upgrade	        upgrade testing Scenarios, they verify Docker way Upgrade. Executed AFTER the upgrade
-    @post-client-upgrade    tests which are executed in the "pmm-upgrade" Job after"pmm-client" has been udpated
+    @pmm-upgrade	        upgrade testing Scenarios to verify UI Upgrade for docker based PMM Server
+    @pre-upgrade	        upgrade testing Scenarios to verify Docker way Upgrade. Executed BEFORE the upgrade
+    @post-upgrade	        upgrade testing Scenarios to verify Docker way Upgrade. Executed AFTER the upgrade
+    @post-client-upgrade    executed in the "pmm-upgrade" Job after"pmm-client" has been udpated
     @qan	                Query Analytics(QAN) functionality tests
     @settings               PMM Settings functionality tests
     @stt                    Security Checks (STT) functionality tests
