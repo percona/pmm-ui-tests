@@ -120,22 +120,6 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T13 - Check Explain and Example for supported DBs - pgsql @qan',
-  async ({
-    I, qanOverview, qanFilters, qanDetails,
-  }) => {
-    qanOverview.waitForOverviewLoaded();
-    adminPage.applyTimeRange('Last 1 hour');
-    qanOverview.waitForOverviewLoaded();
-    qanFilters.applyFilter('pgsql-dev');
-    I.waitForElement(qanOverview.elements.querySelector, 30);
-    qanOverview.selectRow(1);
-    qanFilters.waitForFiltersToLoad();
-    qanDetails.checkExamplesTab();
-  },
-);
-
-Scenario(
   'PMM-T13 - Check Explain and Example for supported DBs - mongodb @qan',
   async ({
     I, qanOverview, qanFilters, qanDetails,
