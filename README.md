@@ -67,5 +67,5 @@ Execute command in the Project Root folder
 
 ## Contributing
 
-For the specific contributions guidelines, please see [CONTRIBUTING.md] in the project root directory. 
+For the specific contributions guidelines, please see [CONTRIBUTING.md](CONTRIBUTING.md) in the project root directory. 
 
