@@ -21,4 +21,113 @@ module.exports = {
 
     return resp.data.artifact_id;
   },
+
+  // waitForBackupFinish waits for backup to finish. If artifactId is null, scheduleName will be used for filtering
+  async waitForBackupFinish(artifactId, scheduleName, timeout = 120) {
+    for (let i = 0; i < timeout / 5; i++) {
+      const artifacts = await this.getArtifactsList();
+
+      if (!artifacts) {
+        I.wait(5);
+        // eslint-disable-next-line no-continue
+        continue;
+      }
+
+      let found;
+
+      artifactId
+        ? found = artifacts.filter(({ artifact_id, status }) => status !== 'BACKUP_STATUS_PENDING' && artifact_id === artifactId)
+        : found = artifacts.filter(({ name, status }) => status !== 'BACKUP_STATUS_PENDING' && name.startsWith(scheduleName));
+
+      if (found.length) break;
+
+      I.wait(5);
+    }
+  },
+
+  // getArtifactsList returns array of artifacts
+  async getArtifactsList() {
+    const headers = { Authorization: `Basic ${await I.getAuth()}` };
+
+    const resp = await I.sendPostRequest('v1/management/backup/Artifacts/List', {}, headers);
+
+    assert.ok(
+      resp.status === 200,
+      `Failed to get backup artifacts list. Response message is "${resp.data.message}"`,
+    );
+
+    return resp.data.artifacts;
+  },
+
+  async startRestore(service_id, artifact_id) {
+    const body = {
+      service_id,
+      artifact_id,
+    };
+
+    const headers = { Authorization: `Basic ${await I.getAuth()}` };
+
+    const resp = await I.sendPostRequest('v1/management/backup/Backups/Restore', body, headers);
+
+    assert.ok(
+      resp.status === 200,
+      `Failed to start a restore. Response message is "${resp.data.message}"`,
+    );
+
+    return resp.data.restore_id;
+  },
+
+  // waitForRestoreFinish waits for restore to finish
+  async waitForRestoreFinish(restoreId, timeout = 120) {
+    for (let i = 0; i < timeout / 5; i++) {
+      const artifacts = await this.getRestoreHistoryList();
+      const found = artifacts.filter(({ restore_id, status }) => status !== 'RESTORE_STATUS_IN_PROGRESS' && restore_id === restoreId);
+
+      if (found.length) break;
+
+      I.wait(5);
+    }
+  },
+
+  // getRestoreHistoryList returns array of restores
+  async getRestoreHistoryList() {
+    const headers = { Authorization: `Basic ${await I.getAuth()}` };
+
+    const resp = await I.sendPostRequest('v1/management/backup/RestoreHistory/List', {}, headers);
+
+    assert.ok(
+      resp.status === 200,
+      `Failed to get restore history list. Response message is "${resp.data.message}"`,
+    );
+
+    return resp.data.items;
+  },
+
+  // clearAllArtifacts deletes all artifacts from PMM and from storage
+  async clearAllArtifacts() {
+    const artifacts = await this.getArtifactsList();
+
+    if (!artifacts) return;
+
+    for (const { artifact_id } of artifacts) {
+      await this.deleteArtifact(artifact_id);
+    }
+  },
+
+  // deleteArtifact removes artifact by ID, pass remove_files=false if you want to keep it on the storage
+  async deleteArtifact(artifact_id, remove_files = true) {
+    const headers = { Authorization: `Basic ${await I.getAuth()}` };
+
+    const body = {
+      artifact_id,
+      remove_files,
+    };
+
+    const resp = await I.sendPostRequest('v1/management/backup/Artifacts/Delete', body, headers);
+
+    assert.ok(
+      resp.status === 200,
+      `Failed to delete backup artifact ${artifact_id}. Response message is "${resp.data.message}"`,
+    );
+  },
 };

@@ -2,33 +2,19 @@ const faker = require('faker');
 
 const { locationsPage } = inject();
 
-const isOVF = process.env.OVF_TEST === 'yes' || false;
-
 const location = {
   name: `${faker.lorem.word()}_location`,
   description: 'test description',
   ...locationsPage.storageLocationConnection,
 };
 
-let nodeID;
-let serviceID;
+const mongoServiceName = 'mongo-backup-locations';
 
 Feature('BM: Backup Locations').retry(1);
 
-if (!isOVF) {
-  BeforeSuite(async ({
-    addInstanceAPI, remoteInstancesHelper,
-  }) => {
-    const { service: { service_id, node_id } } = await addInstanceAPI.apiAddInstance(
-      remoteInstancesHelper.instanceTypes.mysql,
-      'backup_mysql',
-    );
-
-    // Assign nodeID to delete this node after test
-    nodeID = node_id;
-    serviceID = service_id;
-  });
-}
+BeforeSuite(async ({ I }) => {
+  I.say(await I.verifyCommand(`pmm-admin add mongodb --port=27027 --service-name=${mongoServiceName} --replication-set=rs0`));
+});
 
 Before(async ({
   I, settingsAPI, locationsPage, locationsAPI,
@@ -37,12 +23,6 @@ Before(async ({
   await settingsAPI.changeSettings({ backup: true });
   await locationsAPI.clearAllLocations(true);
   locationsPage.openLocationsPage();
-});
-
-AfterSuite(async ({
-  inventoryAPI,
-}) => {
-  if (nodeID) await inventoryAPI.deleteNode(nodeID, true);
 });
 
 const s3Errors = new DataTable(['field', 'value', 'error']);
@@ -56,7 +36,7 @@ s3Errors.add(['access_key', 'invalid', 'InvalidAccessKeyId: The AWS Access Key I
 s3Errors.add(['secret_key', 'invalid', 'SignatureDoesNotMatch: The request signature we calculated does not match the signature you provided. Check your key and signing method.']);
 
 Scenario(
-  'PMM-T691 Verify message about no storage locations @backup @grafana-pr',
+  'PMM-T691 Verify message about no storage locations @backup',
   async ({
     I, locationsPage,
   }) => {
@@ -65,7 +45,7 @@ Scenario(
 );
 
 Scenario(
-  'Verify add storage location modal elements @backup @grafana-pr',
+  'Verify add storage location modal elements @backup',
   async ({
     I, locationsPage,
   }) => {
@@ -230,45 +210,46 @@ Scenario(
     I.dontSeeElement(locationsPage.buttons.deleteByName(location.name));
   },
 );
-if (!isOVF) {
-  Scenario(
-    'PMM-T695 Verify user is not able to delete storage location that has backups @backup',
-    async ({
-      I, locationsPage, locationsAPI, backupAPI,
-    }) => {
-      const location_id = await locationsAPI.createStorageLocation(location);
 
-      await backupAPI.startBackup('delete location', serviceID, location_id);
-      locationsPage.openLocationsPage();
-      locationsPage.openDeleteLocationModal(location.name);
-      I.click(locationsPage.buttons.confirmDelete);
+Scenario(
+  'PMM-T695 Verify user is not able to delete storage location that has backups @backup',
+  async ({
+    I, locationsPage, locationsAPI, backupAPI, inventoryAPI,
+  }) => {
+    const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName('MONGODB_SERVICE', mongoServiceName);
+    const location_id = await locationsAPI.createStorageLocation(location);
 
-      I.verifyPopUpMessage(locationsPage.messages.locationHasArtifacts(location_id));
-    },
-  );
+    await backupAPI.startBackup('delete location', service_id, location_id);
+    locationsPage.openLocationsPage();
+    locationsPage.openDeleteLocationModal(location.name);
+    I.click(locationsPage.buttons.confirmDelete);
 
-  Scenario(
-    'PMM-T694 Verify user is able to force delete storage location that has backups @backup',
-    async ({
-      I, locationsPage, locationsAPI, backupAPI, backupInventoryPage,
-    }) => {
-      const backupName = 'delete location';
-      const location_id = await locationsAPI.createStorageLocation(location);
+    I.verifyPopUpMessage(locationsPage.messages.locationHasArtifacts(location_id));
+  },
+);
 
-      await backupAPI.startBackup(backupName, serviceID, location_id);
-      locationsPage.openLocationsPage();
-      locationsPage.openDeleteLocationModal(location.name);
-      I.forceClick(locationsPage.buttons.forceDeleteCheckbox);
-      I.click(locationsPage.buttons.confirmDelete);
+Scenario(
+  'PMM-T694 Verify user is able to force delete storage location that has backups @backup',
+  async ({
+    I, locationsPage, locationsAPI, backupAPI, backupInventoryPage, inventoryAPI,
+  }) => {
+    const backupName = 'delete location';
+    const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName('MONGODB_SERVICE', mongoServiceName);
+    const location_id = await locationsAPI.createStorageLocation(location);
 
-      I.verifyPopUpMessage(locationsPage.messages.successfullyDeleted(location.name));
-      I.dontSeeElement(locationsPage.buttons.deleteByName(location.name));
+    await backupAPI.startBackup(backupName, service_id, location_id);
+    locationsPage.openLocationsPage();
+    locationsPage.openDeleteLocationModal(location.name);
+    I.forceClick(locationsPage.buttons.forceDeleteCheckbox);
+    I.click(locationsPage.buttons.confirmDelete);
 
-      backupInventoryPage.openInventoryPage();
-      I.dontSeeElement(backupInventoryPage.buttons.restoreByName(backupName));
-    },
-  );
-}
+    I.verifyPopUpMessage(locationsPage.messages.successfullyDeleted(location.name));
+    I.dontSeeElement(locationsPage.buttons.deleteByName(location.name));
+
+    backupInventoryPage.openInventoryPage();
+    I.dontSeeElement(backupInventoryPage.buttons.restoreByName(backupName));
+  },
+);
 
 Scenario(
   'PMM-T692 Verify user is able to edit storage location @backup',
@@ -332,5 +313,51 @@ Scenario(
     I.dontSeeElement(locationsPage.elements.locationDetails.bucket);
     I.dontSeeElement(locationsPage.elements.locationDetails.secretKey);
     I.dontSeeElement(locationsPage.elements.locationDetails.accessKey);
+  },
+);
+
+Scenario(
+  'PMM-T896 Verify user is able to force delete location after MongoDB restore @backup',
+  async ({
+    I, locationsPage, backupAPI, inventoryAPI, locationsAPI, restorePage, backupInventoryPage,
+  }) => {
+    const mongoLocation = {
+      name: 'mongo l',
+      description: 'test description',
+      ...locationsPage.mongoStorageLocation,
+    };
+
+    const locationId = await locationsAPI.createStorageLocation(mongoLocation);
+
+    const backupName = 'mongo force delete locations test';
+    const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName('MONGODB_SERVICE', mongoServiceName);
+    const artifactId = await backupAPI.startBackup(backupName, service_id, locationId);
+
+    await backupAPI.waitForBackupFinish(artifactId);
+    const restoreId = await backupAPI.startRestore(service_id, artifactId);
+
+    await backupAPI.waitForRestoreFinish(restoreId);
+
+    I.refreshPage();
+    I.waitForVisible(locationsPage.buttons.deleteByName(mongoLocation.name), 20);
+    I.click(locationsPage.buttons.deleteByName(mongoLocation.name));
+
+    I.waitForVisible(locationsPage.buttons.confirmDelete, 20);
+    I.click(locationsPage.buttons.confirmDelete);
+
+    I.verifyPopUpMessage(`backup location with ID "${locationId}" has artifacts.`);
+
+    I.forceClick(locationsPage.buttons.forceDeleteCheckbox);
+    I.seeCheckboxIsChecked(locationsPage.buttons.forceDeleteCheckbox);
+
+    I.forceClick(locationsPage.buttons.confirmDelete);
+    I.verifyPopUpMessage(locationsPage.messages.successfullyDeleted(mongoLocation.name));
+    I.dontSeeElement(locationsPage.buttons.deleteByName(mongoLocation.name));
+
+    I.amOnPage(restorePage.url);
+    I.dontSeeElement(restorePage.elements.backupStatusByName(backupName));
+
+    backupInventoryPage.openInventoryPage();
+    I.dontSeeElement(backupInventoryPage.elements.backupStatusByName(backupName));
   },
 );

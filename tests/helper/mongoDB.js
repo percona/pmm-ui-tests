@@ -8,7 +8,9 @@ class MongoDBHelper extends Helper {
     this.username = config.username;
     this.password = config.password;
     this.url = `mongodb://${config.username}:${encodeURIComponent(config.password)}@${config.host}:${config.port}/?authSource=admin`;
-    this.client = new MongoClient(this.url, { useUnifiedTopology: true });
+    this.client = new MongoClient(this.url, {
+      useNewUrlParser: true, connectTimeoutMS: 30000,
+    });
   }
 
   /**
@@ -29,6 +31,37 @@ class MongoDBHelper extends Helper {
     if (username) this.username = username;
 
     if (password) this.password = password;
+
+    this.url = `mongodb://${this.username}:${encodeURIComponent(this.password)}@${this.host}:${this.port}/?authSource=admin`;
+    this.client.s.url = this.url;
+
+    this.client = new MongoClient(this.url, {
+      useNewUrlParser: true, useUnifiedTopology: true, connectTimeoutMS: 30000,
+    });
+
+    return await this.client.connect();
+  }
+
+  async mongoConnectReplica(connection) {
+    const {
+      member1 = `${this.host}:27027`,
+      member2 = `${this.host}:27028`,
+      member3 = `${this.host}:27029`,
+      replicaName = 'rs0',
+      username,
+      password,
+    } = connection;
+
+    if (username) this.username = username;
+
+    if (password) this.password = password;
+
+    this.url = `mongodb://${this.username}:${encodeURIComponent(this.password)}@${member1},${member2},${member3}/?authSource=admin&replicaSet=${replicaName}`;
+    this.client.s.url = this.url;
+
+    this.client = new MongoClient(this.url, {
+      useNewUrlParser: true, useUnifiedTopology: true, connectTimeoutMS: 30000,
+    });
 
     return await this.client.connect();
   }
