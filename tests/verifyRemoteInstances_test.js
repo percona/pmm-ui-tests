@@ -2,10 +2,16 @@ const assert = require('assert');
 
 const { pmmInventoryPage, remoteInstancesPage, remoteInstancesHelper } = inject();
 
+const externalExporterServiceName = 'external_service_new';
+
 const instances = new DataTable(['name']);
 const remotePostgreSQL = new DataTable(['instanceName', 'trackingOption', 'checkAgent']);
 const qanFilters = new DataTable(['filterName']);
 const dashboardCheck = new DataTable(['serviceName']);
+const metrics = new DataTable(['serviceName', 'metricName']);
+
+metrics.add(['pmm-server-postgresql', 'pg_stat_database_xact_rollback']);
+metrics.add([externalExporterServiceName, 'redis_uptime_in_seconds']);
 
 for (const [key, value] of Object.entries(remoteInstancesHelper.services)) {
   if (value) {
@@ -14,9 +20,11 @@ for (const [key, value] of Object.entries(remoteInstancesHelper.services)) {
         remotePostgreSQL.add(['postgresPGStatStatements', remoteInstancesPage.fields.usePgStatStatements, pmmInventoryPage.fields.postgresPgStatements]);
         qanFilters.add([remoteInstancesPage.potgresqlSettings.environment]);
         dashboardCheck.add([remoteInstancesHelper.services.postgresql]);
+        metrics.add([remoteInstancesHelper.services.postgresql, 'pg_stat_database_xact_rollback']);
         break;
       case 'mysql':
         qanFilters.add([remoteInstancesPage.mysqlSettings.environment]);
+        metrics.add([remoteInstancesHelper.services.mysql, 'mysql_global_status_max_used_connections']);
         break;
       case 'postgresGC':
         dashboardCheck.add([remoteInstancesHelper.services.postgresGC]);
@@ -43,15 +51,13 @@ Before(async ({ I }) => {
 Scenario(
   'PMM-T588 - Verify adding external exporter service via UI @instances',
   async ({ I, remoteInstancesPage, pmmInventoryPage }) => {
-    const serviceName = 'external_service_new';
-
     I.amOnPage(remoteInstancesPage.url);
     remoteInstancesPage.waitUntilRemoteInstancesPageLoaded();
     remoteInstancesPage.openAddRemotePage('external');
-    await remoteInstancesPage.fillRemoteFields(serviceName);
+    await remoteInstancesPage.fillRemoteFields(externalExporterServiceName);
     I.waitForVisible(remoteInstancesPage.fields.addService, 30);
     I.click(remoteInstancesPage.fields.addService);
-    pmmInventoryPage.verifyRemoteServiceIsDisplayed(serviceName);
+    pmmInventoryPage.verifyRemoteServiceIsDisplayed(externalExporterServiceName);
     I.click(pmmInventoryPage.fields.agentsLink);
     I.waitForVisible(pmmInventoryPage.fields.externalExporter, 30);
   },
@@ -126,17 +132,17 @@ Scenario(
   },
 );
 
-Scenario(
-  'PMM-T743 - Check metrics from external exporter on Advanced Data Exploration Dashboard @instances',
-  async ({ I, dashboardPage }) => {
+Data(metrics).Scenario(
+  'PMM-T743 Check metrics from exporters on Advanced Data Exploration Dashboard @instances',
+  async ({ I, dashboardPage, current }) => {
     const metricName = 'redis_uptime_in_seconds';
 
-    // This is only needed to let PMM Consume Metrics from external Service
+    // This is only needed to let PMM Consume Metrics
     I.wait(10);
-    const response = await dashboardPage.checkMetricExist(metricName);
+    const response = await dashboardPage.checkMetricExist(current.metricName, { type: 'service_name', value: current.serviceName });
     const result = JSON.stringify(response.data.data.result);
 
-    assert.ok(response.data.data.result.length !== 0, `Metrics ${metricName} from external exporter should be available but got empty ${result}`);
+    assert.ok(response.data.data.result.length !== 0, `Metrics ${metricName} from ${current.serviceName} should be available but got empty ${result}`);
   },
 );
 
