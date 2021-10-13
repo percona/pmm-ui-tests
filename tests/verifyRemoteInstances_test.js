@@ -258,10 +258,8 @@ Data(qanFilters).Scenario(
 ).retry(2);
 
 Data(metrics).Scenario(
-  'PMM-T743 Check metrics from exporters on Advanced Data Exploration Dashboard @instances',
+  'PMM-T743 Check metrics from exporters are hitting PMM Server @instances',
   async ({ I, dashboardPage, current }) => {
-    const metricName = 'redis_uptime_in_seconds';
-
     // This is only needed to let PMM Consume Metrics
     I.wait(10);
     const response = await dashboardPage.checkMetricExist(current.metricName, { type: 'service_name', value: current.serviceName });
