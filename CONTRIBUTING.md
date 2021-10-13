@@ -40,7 +40,7 @@ great in terms of usability. The same applies for types `HTTPURLProvider` vs
 ### Locators
 
 * **Locators outside of a test.**   
-  This is a bad practice to use hard coded locators inside a test. All locators should ‘live’ inside a Page Object
+  This is a bad practice to use hard coded locators inside a test. All locators should ‘live’ inside a [Page Object](https://codecept.io/pageobjects/)
 
 
 * **Try to use stable locators.**   
@@ -58,7 +58,8 @@ great in terms of usability. The same applies for types `HTTPURLProvider` vs
 ### Test Data
 
 * **Use Data Provider where applicable.**  
-  In order to decrease the amount of code and increase maintainability, if we have the same tests with the same scenario but different data - Data Provider should be used. Add a comment why you did that! (CodeceptJS Data for ex. Login test with correct and incorrect credentials )
+  In order to decrease the amount of code and increase maintainability, if we have the same tests with the same scenario but different data - Data Provider should be used. Add a comment why you did that!  
+([CodeceptJS Data](https://codecept.io/advanced/#data-driven-tests) for ex. Login test with correct and incorrect credentials )
 
 
 * **Declaration of a test variable** should be done on top of the test

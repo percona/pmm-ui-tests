@@ -6,11 +6,23 @@ Percona Monitoring and Management UI automated tests. Designed to cover "End to 
 
 * Install Node.js 12+ version nad make sure npx is included
 * Install "playwright" browser driver, ex: `sudo npx playwright install-deps`
-* Make sure PMM instance is online.   
-  * to run local PMM execute command in the Project Root folder : `docker-compose up -d` 
-  * to run tests upon remote PMM instance add local environment variable _**"PMM_UI_URL"**_ with instance URL   
+
+this is it! test are good to go on specified PMM server.
+
+### Getting PMM server ready
+  * **Run tests upon local PMM server:**  
+ execute command in the Project Root folder to start default PMM server: `docker-compose up -d`  
+ Or one of the offered configurations:
+    * `docker-compose -f docker-compose-ami-db-setup.yml up -d`
+    * `docker-compose -f docker-compose-mongodb-ssl.yml up -d`
+    * `docker-compose -f docker-compose-mongo-replica.yml up -d`
+    * `docker-compose -f docker-compose-mysql-ssl.yml up -d`
+    * `docker-compose -f docker-compose-postgresql-ssl.yml up -d`
+
+ 
+  * **Run tests upon remote PMM server:**  
+    set desired instance URL in _**"PMM_UI_URL"**_ local environment variable    
     ex: create `.env` file with te following line `PMM_UI_URL=http://myPmmServer.com`
-* Make sure required environment variables(see /env.list) exist is os or .env file 
 
 ### Running tests:
 Execute command in the Project Root folder
@@ -20,7 +32,9 @@ Execute command in the Project Root folder
 * **run desired groups/tags:** `npx codeceptjs run -c pr.codecept.js --steps --grep @settings`
 
 ### Test report
-   run allure server: xxxx
+   1. run allure server: `docker-compose -f docker-compose-allure.yml up -d`
+   2. open test report in browser: http://localhost:5252/
+   
 
 ## **Available Command Line Arguments:**
  `--steps`  enables the step-by-step output of running tests to the console, ex:
