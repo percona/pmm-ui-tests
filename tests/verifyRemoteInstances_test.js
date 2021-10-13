@@ -19,10 +19,12 @@ for (const [key, value] of Object.entries(remoteInstancesHelper.services)) {
   if (value) {
     switch (key) {
       case 'postgresql':
-        remotePostgreSQL.add(['postgresPGStatStatements', remoteInstancesPage.fields.usePgStatStatements, pmmInventoryPage.fields.postgresPgStatements]);
-        qanFilters.add([remoteInstancesPage.potgresqlSettings.environment]);
-        dashboardCheck.add([remoteInstancesHelper.services.postgresql]);
-        metrics.add([remoteInstancesHelper.services.postgresql, 'pg_stat_database_xact_rollback']);
+        // TODO: https://jira.percona.com/browse/PMM-9011
+        // eslint-disable-next-line max-len
+        // remotePostgreSQL.add(['postgresPGStatStatements', remoteInstancesPage.fields.usePgStatStatements, pmmInventoryPage.fields.postgresPgStatements]);
+        // qanFilters.add([remoteInstancesPage.potgresqlSettings.environment]);
+        // dashboardCheck.add([remoteInstancesHelper.services.postgresql]);
+        // metrics.add([remoteInstancesHelper.services.postgresql, 'pg_stat_database_xact_rollback']);
         break;
       case 'mysql':
         qanFilters.add([remoteInstancesPage.mysqlSettings.environment]);
