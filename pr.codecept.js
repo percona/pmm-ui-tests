@@ -94,7 +94,7 @@ exports.config = {
         stdout: './tests/output/mocharesult.log',
         options: {
           reportDir: './tests/output',
-          reportFilename: './tests/output/result.html',
+          reportFilename: 'result.html',
         },
       },
     },
