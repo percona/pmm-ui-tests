@@ -265,6 +265,6 @@ Data(metrics).Scenario(
     const response = await dashboardPage.checkMetricExist(current.metricName, { type: 'service_name', value: current.serviceName });
     const result = JSON.stringify(response.data.data.result);
 
-    assert.ok(response.data.data.result.length !== 0, `Metrics ${metricName} from ${current.serviceName} should be available but got empty ${result}`);
+    assert.ok(response.data.data.result.length !== 0, `Metrics ${current.metricName} from ${current.serviceName} should be available but got empty ${result}`);
   },
 );
