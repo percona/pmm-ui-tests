@@ -32,28 +32,39 @@ Execute command in the Project Root folder
 * **run desired groups/tags:** `npx codeceptjs run -c pr.codecept.js --steps --grep @settings`
 
 ### Test report
+* Allure report in docker(no additional requirements)
    1. run allure server: `docker-compose -f docker-compose-allure.yml up -d`
    2. open test report in browser: http://localhost:5252/
-   
+
+
+* Allure report by **allure-commandline** tool
+   1. Allure requires Java 8 or higher
+   2. install allure-commandline: `npm install -g allure-commandline --save-dev`
+   3. aggregate report: `allure serve tests/output/allure`
+
+
+* HTML report Local(mochawesome):  
+  run tests with `--reporter mochawesome` flag  
+  ex: `npx codeceptjs run-workers 4 -c pr.codecept.js --grep @backup --reporter mochawesome` 
+ 
 
 ## **Available Command Line Arguments:**
  `--steps`  enables the step-by-step output of running tests to the console, ex:
 
-    `npx codeceptjs run-multiple -c pr.codecept.js --steps`
+    `npx codeceptjs run-workers 4 -c pr.codecept.js --steps`
 
   `--debug`  enables a more detailed output to the console, ex:
 
-    `npx codeceptjs run-multiple -c pr.codecept.js --debug`
+    `npx codeceptjs run-workers 4 -c pr.codecept.js --debug`
 
  `--verbose`  enables the very detailed output information to the console, ex:
 
-    `npx codeceptjs run-multiple -c pr.codecept.js --verbose`
+    `npx codeceptjs run-workers 4 -c pr.codecept.js --verbose`
 
  `--grep "@tag"` runs only tests marked by specified tags. The following tags are available:
 
     @ami-upgrade            Groups tests for the "pmm-ami-upgrade" Job
-    @backup                 description pending...
-    @bm                     Backup Management functionality tests
+    @backup                     Backup Management functionality tests
     @dashboards             Dashboards functionality, check that graphs are not empty
                                 (e.g. Data from exporters is displayed at those dashboards)
     @dbaas                  DB as a Service functionality tests
@@ -65,7 +76,7 @@ Execute command in the Project Root folder
     @not-ovf                Tests with this tag are excluded from execution for OVF image tests
     @nightly                executed on a nightly Job, mostly related to Dashboards. Includes tests 
                                 to verify Metrics, Custom Filters and Navigation between Dashboards.
-    @platform               description pending...
+    @platform               Portal functionality tests
     @pmm-demo               Performs basic Sanity on PMM-Demo, esures all expected Services are still running 
     @pmm-upgrade	        upgrade testing Scenarios to verify UI Upgrade for docker based PMM Server
     @pre-upgrade	        upgrade testing Scenarios to verify Docker way Upgrade. Executed BEFORE the upgrade

@@ -5,13 +5,13 @@ services:
   allure:
     image: "frankescobar/allure-docker-service"
     environment:
-      CHECK_RESULTS_EVERY_SECONDS: 1
+      CHECK_RESULTS_EVERY_SECONDS: 60
       KEEP_HISTORY: 1
     ports:
       - "5050:5050"
     volumes:
-      - ./output/allure:/app/allure-results
-      - ./output/allure:/app/default-reports
+      - ./tests/output/allure:/app/allure-results
+      - ./tests/output/allure:/app/default-reports
   allure-ui:
     image: "frankescobar/allure-docker-service-ui"
     environment:
