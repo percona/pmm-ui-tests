@@ -27,7 +27,7 @@ this is it! test are good to go on specified PMM server.
 ### Running tests:
 Execute command in the Project Root folder
 * **run all in single thread tests:** `npx codeceptjs run -c pr.codecept.js`
-* **run all tests in parallel threads:** `npx codeceptjs run-multiple -c pr.codecept.js`
+* **run all tests in parallel threads:** `npx codeceptjs run-multiple parallel -c pr.codecept.js`
 * **run desired "classes":** `npx codeceptjs run -c pr.codecept.js tests/verifyMysqlDashboards_test.js`   
 * **run desired groups/tags:** `npx codeceptjs run -c pr.codecept.js --steps --grep @settings`
 
@@ -44,22 +44,23 @@ Execute command in the Project Root folder
 
 
 * HTML report Local(mochawesome):  
-  run tests with `--reporter mochawesome` flag  
-  ex: `npx codeceptjs run-workers 4 -c pr.codecept.js --grep @backup --reporter mochawesome` 
- 
-
+  1. run tests with `-R mocha-multi` flag  
+     ex: `npx codeceptjs run -c pr.codecept.js --grep @backup -R mocha-multi` 
+  2. open report file: `/tests/output/result.html`  
+     or reports for each parallel thread `/tests/output/parallel_chunk1_..._1/result.html`
+    
 ## **Available Command Line Arguments:**
  `--steps`  enables the step-by-step output of running tests to the console, ex:
 
-    `npx codeceptjs run-workers 4 -c pr.codecept.js --steps`
+    `npx codeceptjs run-multiple parallel -c pr.codecept.js --steps`
 
   `--debug`  enables a more detailed output to the console, ex:
 
-    `npx codeceptjs run-workers 4 -c pr.codecept.js --debug`
+    `npx codeceptjs run-multiple parallel -c pr.codecept.js --debug`
 
  `--verbose`  enables the very detailed output information to the console, ex:
 
-    `npx codeceptjs run-workers 4 -c pr.codecept.js --verbose`
+    `npx codeceptjs run-multiple parallel -c pr.codecept.js --verbose`
 
  `--grep "@tag"` runs only tests marked by specified tags. The following tags are available:
 

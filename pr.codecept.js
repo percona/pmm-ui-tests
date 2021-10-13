@@ -75,8 +75,6 @@ exports.config = {
   },
   mocha: {
     reporterOptions: {
-      reportDir: './tests/output',
-      reportFilename: 'result.html',
       'codeceptjs-cli-reporter': {
         stdout: '-',
         options: {
