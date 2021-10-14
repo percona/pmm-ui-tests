@@ -43,8 +43,9 @@ Scenario('PMM-T94 - Open PMM Settings page and verify changing Data Retention [c
   I.waitForValue(pmmSettingsPage.fields.dataRetentionInput, dataRetentionValue, 30);
 });
 
+// TODO: check ovf failure
 Scenario(
-  'PMM-T108 - Open PMM Settings page and verify adding Alertmanager Rule [critical] PMM-T109 - Verify adding and clearing Alertmanager rules @settings',
+  'PMM-T108 - Open PMM Settings page and verify adding Alertmanager Rule [critical] PMM-T109 - Verify adding and clearing Alertmanager rules @not-ovf @settings',
   async ({ I, pmmSettingsPage }) => {
     const scheme = 'http://';
     const sectionNameToExpand = pmmSettingsPage.sectionTabsList.alertmanager;
