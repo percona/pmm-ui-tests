@@ -4,10 +4,10 @@ Percona Monitoring and Management UI automated tests. Designed to cover "End to 
 
 ## Getting Started
 
-* Install Node.js 12+ version nad make sure npx is included
+* Install Node.js 12+ version and make sure npx is included
 * Install "playwright" browser driver, ex: `sudo npx playwright install-deps`
 
-this is it! test are good to go on specified PMM server.
+this is it! tests are good to go on specified PMM server.
 
 ### Getting PMM server ready
   * **Run tests upon local PMM server:**  
@@ -22,7 +22,7 @@ this is it! test are good to go on specified PMM server.
  
   * **Run tests upon remote PMM server:**  
     set desired instance URL in _**"PMM_UI_URL"**_ local environment variable    
-    ex: create `.env` file with te following line `PMM_UI_URL=http://myPmmServer.com`
+    ex: create `.env` file with the following line `PMM_UI_URL=http://myPmmServer.com`
 
 ### Running tests:
 Execute command in the Project Root folder
@@ -78,11 +78,11 @@ Execute command in the Project Root folder
     @nightly                executed on a nightly Job, mostly related to Dashboards. Includes tests 
                                 to verify Metrics, Custom Filters and Navigation between Dashboards.
     @platform               Portal functionality tests
-    @pmm-demo               Performs basic Sanity on PMM-Demo, esures all expected Services are still running 
+    @pmm-demo               Performs basic Sanity on PMM-Demo, ensures all expected Services are still running 
     @pmm-upgrade	        upgrade testing Scenarios to verify UI Upgrade for docker based PMM Server
     @pre-upgrade	        upgrade testing Scenarios to verify Docker way Upgrade. Executed BEFORE the upgrade
     @post-upgrade	        upgrade testing Scenarios to verify Docker way Upgrade. Executed AFTER the upgrade
-    @post-client-upgrade    executed in the "pmm-upgrade" Job after"pmm-client" has been udpated
+    @post-client-upgrade    executed in the "pmm-upgrade" Job after"pmm-client" has been updated
     @qan	                Query Analytics(QAN) functionality tests
     @settings               PMM Settings functionality tests
     @stt                    Security Checks (STT) functionality tests
