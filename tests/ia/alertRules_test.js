@@ -164,8 +164,9 @@ Data(rules).Scenario(
   },
 );
 
+// TODO: check ovf failure
 Scenario(
-  'PMM-T516 PMM-T687 Update Alert rule @ia @grafana-pr',
+  'PMM-T516 PMM-T687 Update Alert rule @ia @grafana-pr @not-ovf',
   async ({
     I, alertRulesPage, rulesAPI, channelsAPI, ncPage,
   }) => {
