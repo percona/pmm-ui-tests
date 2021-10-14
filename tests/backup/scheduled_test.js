@@ -181,7 +181,7 @@ Scenario(
     I.waitForVisible(scheduledPage.elements.scheduleName(schedule.name), 20);
     I.seeTextEquals('1 backup', scheduledPage.elements.retentionByName(schedule.name));
 
-    await backupAPI.waitForBackupFinish(null, schedule.name, 240);
+    await backupAPI.waitForBackupFinish(null, schedule.name, 300);
     const { scheduled_backup_id } = await scheduledAPI.getScheduleIdByName(schedule.name);
 
     await scheduledAPI.disableScheduledBackup(scheduled_backup_id);
