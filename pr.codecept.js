@@ -91,7 +91,7 @@ exports.config = {
       mochawesome: {
         stdout: './tests/output/mocharesult.log',
         options: {
-          reportDir: 'tests/output',
+          reportDir: './tests/output',
           reportFilename: 'result.html',
         },
       },
