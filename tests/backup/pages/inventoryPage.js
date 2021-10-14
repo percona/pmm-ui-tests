@@ -15,6 +15,7 @@ module.exports = {
     backupStatus: '$statusMsg',
     pendingBackupByName: (name) => locate('$statusPending').inside(artifactCell(name)),
     backupStatusByName: (name) => locate('$statusMsg').inside(artifactCell(name)),
+    artifactName: (name) => locate('td').at(1).inside(artifactCell(name)),
     forceDeleteLabel: '$force-field-label',
   },
   buttons: {
@@ -56,7 +57,14 @@ module.exports = {
   },
 
   verifyBackupSucceeded(backupName) {
+    I.amOnPage(this.url);
     I.waitForVisible(this.elements.backupStatusByName(backupName), 120);
     I.seeTextEquals('Success', this.elements.backupStatusByName(backupName));
+  },
+
+  startRestore(backupName) {
+    I.click(this.buttons.restoreByName(backupName));
+    I.waitForVisible(this.buttons.modalRestore, 10);
+    I.click(this.buttons.modalRestore);
   },
 };

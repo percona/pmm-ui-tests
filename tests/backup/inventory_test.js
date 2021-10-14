@@ -9,16 +9,16 @@ const location = {
 };
 
 let locationId;
+let serviceId;
 
-const mongoServiceName = 'mongodb-backup-service';
+const mongoServiceName = 'mongo-backup-inventory';
 
 Feature('BM: Backup Inventory');
 
 BeforeSuite(async ({
-  I, backupAPI, locationsAPI, settingsAPI,
+  I, locationsAPI, settingsAPI,
 }) => {
   await settingsAPI.changeSettings({ backup: true });
-  await backupAPI.clearAllArtifacts();
   await locationsAPI.clearAllLocations(true);
   locationId = await locationsAPI.createStorageLocation(location);
   await I.mongoConnectReplica({
@@ -30,14 +30,19 @@ BeforeSuite(async ({
 });
 
 Before(async ({
-  I, settingsAPI, backupInventoryPage,
+  I, settingsAPI, backupInventoryPage, inventoryAPI, backupAPI,
 }) => {
+  const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName('MONGODB_SERVICE', mongoServiceName);
+
+  serviceId = service_id;
+
   const c = await I.mongoGetCollection('test', 'e2e');
 
-  await c.findOneAndDelete({ number: 2, name: 'Anna' });
+  await c.deleteMany({ number: 2 });
 
   await I.Authorize();
   await settingsAPI.changeSettings({ backup: true });
+  await backupAPI.clearAllArtifacts();
   await backupInventoryPage.openInventoryPage();
 });
 
@@ -103,13 +108,8 @@ Scenario(
 
     await c.insertOne({ number: 2, name: 'Anna' });
 
-    I.click(backupInventoryPage.buttons.restoreByName(backupName));
-    I.waitForVisible(backupInventoryPage.buttons.modalRestore, 10);
-    I.click(backupInventoryPage.buttons.modalRestore);
-
-    I.amOnPage(restorePage.url);
-    I.waitForVisible(restorePage.elements.backupStatusByName(backupName), 180);
-    I.waitForText('Success', 30, restorePage.elements.backupStatusByName(backupName));
+    backupInventoryPage.startRestore(backupName);
+    restorePage.waitForRestoreSuccess(backupName);
 
     c = await I.mongoGetCollection('test', 'e2e');
     const record = await c.findOne({ number: 2, name: 'Anna' });
@@ -132,9 +132,11 @@ Scenario(
     I.refreshPage();
     backupInventoryPage.verifyBackupSucceeded(backupName);
 
+    const artifactName = await I.grabTextFrom(backupInventoryPage.elements.artifactName(backupName));
+
     I.click(backupInventoryPage.buttons.deleteByName(backupName));
     I.waitForVisible(backupInventoryPage.elements.forceDeleteLabel, 20);
-    I.seeTextEquals(backupInventoryPage.messages.confirmDeleteText(backupName), 'h4');
+    I.seeTextEquals(backupInventoryPage.messages.confirmDeleteText(artifactName), 'h4');
     I.seeTextEquals(backupInventoryPage.messages.forceDeleteLabelText, backupInventoryPage.elements.forceDeleteLabel);
     I.seeTextEquals(backupInventoryPage.messages.modalHeaderText, backupInventoryPage.elements.modalHeader);
 
@@ -143,5 +145,45 @@ Scenario(
     I.click(backupInventoryPage.buttons.confirmDelete);
 
     I.waitForInvisible(backupInventoryPage.buttons.deleteByName(backupName), 30);
+  },
+);
+
+Scenario(
+  'PMM-T928 Verify user can restore from a scheduled backup @backup',
+  async ({
+    I, backupInventoryPage, scheduledAPI, backupAPI, restorePage,
+  }) => {
+    // Every 2 mins schedule
+    const schedule = {
+      service_id: serviceId,
+      location_id: locationId,
+      cron_expression: '*/2 * * * *',
+      name: 'schedule for restore',
+      mode: scheduledAPI.backupModes.snapshot,
+      description: '',
+      retry_interval: '30s',
+      retries: 0,
+      enabled: true,
+      retention: 1,
+    };
+
+    const scheduleId = await scheduledAPI.createScheduledBackup(schedule);
+
+    await backupAPI.waitForBackupFinish(null, schedule.name, 240);
+    await scheduledAPI.disableScheduledBackup(scheduleId);
+
+    let c = await I.mongoGetCollection('test', 'e2e');
+
+    await c.insertOne({ number: 2, name: 'BeforeRestore' });
+    I.refreshPage();
+
+    backupInventoryPage.verifyBackupSucceeded(schedule.name);
+    backupInventoryPage.startRestore(schedule.name);
+    restorePage.waitForRestoreSuccess(schedule.name);
+
+    c = await I.mongoGetCollection('test', 'e2e');
+    const record = await c.findOne({ name: 'BeforeRestore' });
+
+    assert.ok(record === null, `Was expecting to not have a record ${JSON.stringify(record, null, 2)} after restore operation`);
   },
 );
