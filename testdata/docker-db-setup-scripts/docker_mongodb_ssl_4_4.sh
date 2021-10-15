@@ -9,7 +9,7 @@ PWD=$(pwd) docker-compose -f docker-compose-mongodb-ssl.yml up -d
 cat > add_new_user.js <<EOF
 db.getSiblingDB("\$external").runCommand(
   	{
-    	createUser: "CN=fake-CA,OU=client,O=MongoDB,L=Sydney,ST=NSW,C=AU",
+    	createUser: "CN=127.0.0.1,OU=client,O=MongoDB,L=Sydney,ST=NSW,C=AU",
     	roles: [
              { role: "readWrite", db: 'test' }
         ],
@@ -19,7 +19,7 @@ db.getSiblingDB("\$external").runCommand(
 db.getSiblingDB("\$external").auth(
   {
     mechanism: "MONGODB-X509",
-    user: "CN=fake-CA,OU=client,O=MongoDB,L=Sydney,ST=NSW,C=AU"
+    user: "CN=127.0.0.1,OU=client,O=MongoDB,L=Sydney,ST=NSW,C=AU"
   }
 );
 print("Added new user ssl");
