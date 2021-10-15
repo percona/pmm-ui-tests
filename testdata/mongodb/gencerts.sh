@@ -7,7 +7,7 @@ openssl req -nodes -x509 -newkey rsa:2048 -keyout certs/ca.key -out certs/ca.crt
 
 
 # Generate server cert to be signed
-openssl req -nodes -newkey rsa:2048 -keyout certs/server.key -out certs/server.csr -subj "/C=AU/ST=NSW/L=Sydney/O=MongoDB/OU=server/CN=fake-CA"
+openssl req -nodes -newkey rsa:2048 -keyout certs/server.key -out certs/server.csr -subj "/C=AU/ST=NSW/L=Sydney/O=MongoDB/OU=server/CN=127.0.0.1"
 
 # Sign the server cert
 openssl x509 -req -in certs/server.csr -CA certs/ca.crt -CAkey certs/ca.key -CAcreateserial -out certs/server.crt
@@ -17,7 +17,7 @@ cat certs/server.key certs/server.crt > certs/server.pem
 
 
 # Generate client cert to be signed
-openssl req -nodes -newkey rsa:2048 -keyout certs/client.key -out certs/client.csr -subj "/C=AU/ST=NSW/L=Sydney/O=MongoDB/OU=client/CN=fake-CA"
+openssl req -nodes -newkey rsa:2048 -keyout certs/client.key -out certs/client.csr -subj "/C=AU/ST=NSW/L=Sydney/O=MongoDB/OU=client/CN=127.0.0.1"
 
 # Sign the client cert
 openssl x509 -req -in certs/client.csr -CA certs/ca.crt -CAkey certs/ca.key -CAserial certs/ca.srl -out certs/client.crt
