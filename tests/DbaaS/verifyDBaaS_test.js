@@ -122,7 +122,7 @@ Scenario('Verify user is able to add same cluster config with different Name @db
     dbaasPage.checkCluster(clusterName1, true);
   });
 
-Scenario('Verify DB Cluster Tab Page Elements & Steps Background @dbaas',
+Scenario('PMM-T728 Verify DB Cluster Tab Page Elements & Steps Background @dbaas',
   async ({ I, dbaasPage, dbaasAPI }) => {
     if (!await dbaasAPI.apiCheckRegisteredClusterExist(clusterName)) {
       await dbaasAPI.apiRegisterCluster(process.env.kubeconfig_minikube, clusterName);
@@ -143,6 +143,12 @@ Scenario('Verify DB Cluster Tab Page Elements & Steps Background @dbaas',
     I.click(dbaasPage.tabs.dbClusterTab.optionsCountLocator(2));
     I.seeElement(dbaasPage.tabs.dbClusterTab.advancedOptions.fields.dbClusterTopologyFieldLabel);
     I.seeElement(dbaasPage.tabs.dbClusterTab.advancedOptions.fields.nodesNumberField);
+    I.seeElement(dbaasPage.tabs.dbClusterTab.advancedOptions.fields.dbClusterExternalAccessCheckbox);
+    I.dontSeeCheckboxIsChecked(
+      dbaasPage.tabs.dbClusterTab.advancedOptions.fields.dbClusterExternalAccessCheckbox);
+    I.moveCursorTo(dbaasPage.tabs.dbClusterTab.advancedOptions.fields.dbClusterExternalAccessTooltip);
+    I.seeTextEquals('Allows external access to the database cluster', 
+      dbaasPage.tabs.dbClusterTab.advancedOptions.fields.dbClusterExternalAccessTooltipText);
     I.seeElement(dbaasPage.tabs.dbClusterTab.advancedOptions.fields.dbClusterResourceFieldLabel);
     I.seeElement(dbaasPage.tabs.dbClusterTab.advancedOptions.fields.memoryField);
     I.seeElement(dbaasPage.tabs.dbClusterTab.advancedOptions.fields.cpuNumberFields);

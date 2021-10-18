@@ -20,6 +20,10 @@ this is it! tests are good to go on specified PMM server.
     * `docker-compose -f docker-compose-postgresql-ssl.yml up -d`
 
  
+  * **Setup environment for backup management tests:**  
+    run `bash -x testdata/backup-management/mongodb/setup-replica-and-pbm-local.sh`.
+    This will launch docker compose with PMM Server, PMM Client, and set up replica set with 3 Percona MongoDB instance
+      
   * **Run tests upon remote PMM server:**  
     set desired instance URL in _**"PMM_UI_URL"**_ local environment variable    
     ex: create `.env` file with the following line `PMM_UI_URL=http://myPmmServer.com`
