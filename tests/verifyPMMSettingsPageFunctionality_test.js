@@ -168,3 +168,32 @@ Data(communicationDefaults).Scenario('PMM-T534 PMM-T535 - Verify user is able to
     await pmmSettingsPage.waitForPmmSettingsPageLoaded();
     await pmmSettingsPage.verifyCommunicationFields(current);
   });
+
+Scenario(
+  'PMM-T747 - Verify enabling Azure flag @instances',
+  async ({
+    I, pmmSettingsPage, remoteInstancesPage, settingsAPI,
+  }) => {
+    const sectionNameToExpand = pmmSettingsPage.sectionTabsList.advanced;
+
+    I.amOnPage(pmmSettingsPage.url);
+    await settingsAPI.disableAzure();
+    await pmmSettingsPage.waitForPmmSettingsPageLoaded();
+    await pmmSettingsPage.expandSection(sectionNameToExpand, pmmSettingsPage.fields.advancedButton);
+    pmmSettingsPage.verifySwitch(pmmSettingsPage.fields.microsoftAzureMonitoringSwitchInput, 'off');
+    I.amOnPage(remoteInstancesPage.url);
+    I.waitForInvisible(remoteInstancesPage.fields.addAzureMySQLPostgreSQL, 30);
+    I.amOnPage(pmmSettingsPage.url);
+    await pmmSettingsPage.waitForPmmSettingsPageLoaded();
+    await pmmSettingsPage.expandSection(sectionNameToExpand, pmmSettingsPage.fields.advancedButton);
+    pmmSettingsPage.switchAzure();
+    I.amOnPage(remoteInstancesPage.url);
+    I.waitForVisible(remoteInstancesPage.fields.addAzureMySQLPostgreSQL, 30);
+    I.amOnPage(pmmSettingsPage.url);
+    await pmmSettingsPage.waitForPmmSettingsPageLoaded();
+    await pmmSettingsPage.expandSection(sectionNameToExpand, pmmSettingsPage.fields.advancedButton);
+    pmmSettingsPage.switchAzure();
+    I.amOnPage(remoteInstancesPage.url);
+    I.waitForInvisible(remoteInstancesPage.fields.addAzureMySQLPostgreSQL, 30);
+  },
+);
