@@ -42,35 +42,6 @@ Data(azureServices).Scenario(
 );
 
 Scenario(
-  'PMM-T747 - Verify enabling Azure flag @instances',
-  async ({
-    I, pmmSettingsPage, remoteInstancesPage, settingsAPI,
-  }) => {
-    const sectionNameToExpand = pmmSettingsPage.sectionTabsList.advanced;
-
-    I.amOnPage(pmmSettingsPage.url);
-    await settingsAPI.disableAzure();
-    await pmmSettingsPage.waitForPmmSettingsPageLoaded();
-    await pmmSettingsPage.expandSection(sectionNameToExpand, pmmSettingsPage.fields.advancedButton);
-    pmmSettingsPage.verifySwitch(pmmSettingsPage.fields.microsoftAzureMonitoringSwitchInput, 'off');
-    I.amOnPage(remoteInstancesPage.url);
-    I.waitForInvisible(remoteInstancesPage.fields.addAzureMySQLPostgreSQL, 30);
-    I.amOnPage(pmmSettingsPage.url);
-    await pmmSettingsPage.waitForPmmSettingsPageLoaded();
-    await pmmSettingsPage.expandSection(sectionNameToExpand, pmmSettingsPage.fields.advancedButton);
-    pmmSettingsPage.switchAzure();
-    I.amOnPage(remoteInstancesPage.url);
-    I.waitForVisible(remoteInstancesPage.fields.addAzureMySQLPostgreSQL, 30);
-    I.amOnPage(pmmSettingsPage.url);
-    await pmmSettingsPage.waitForPmmSettingsPageLoaded();
-    await pmmSettingsPage.expandSection(sectionNameToExpand, pmmSettingsPage.fields.advancedButton);
-    pmmSettingsPage.switchAzure();
-    I.amOnPage(remoteInstancesPage.url);
-    I.waitForInvisible(remoteInstancesPage.fields.addAzureMySQLPostgreSQL, 30);
-  },
-);
-
-Scenario(
   'PMM-T756 - Verify Azure node is displayed on Home dashboard @instances',
   async ({
     I, homePage, dashboardPage,
