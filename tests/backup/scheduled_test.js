@@ -116,6 +116,7 @@ Scenario(
 
     I.click(scheduledPage.buttons.createSchedule);
 
+    I.verifyPopUpMessage(scheduledPage.messages.backupScheduled);
     I.waitForVisible(scheduledPage.elements.retentionByName(scheduleName), 20);
     I.seeTextEquals('Unlimited', scheduledPage.elements.retentionByName(scheduleName));
   },
@@ -199,7 +200,7 @@ Scenario(
 Data(schedules).Scenario(
   'PMM-T899 PMM-T903 PMM-T904 PMM-T905 Verify user can create daily scheduled backup @backup',
   async ({
-    I, scheduledPage, scheduledAPI, current,
+    scheduledPage, scheduledAPI, current,
   }) => {
     const schedule = {
       service_id: serviceId,

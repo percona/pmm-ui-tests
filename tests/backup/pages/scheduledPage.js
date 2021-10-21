@@ -40,6 +40,7 @@ module.exports = {
     modalHeaderText: 'Schedule backup',
     requiredField: 'Required field',
     outOfRetentionRange: 'Value should be in the range from 0 to 99',
+    backupScheduled: 'Backup successfully scheduled',
   },
   locationType: {},
 
