@@ -1,6 +1,7 @@
 const { I } = inject();
 
 const scheduleCell = (name) => `//tr[td/div[contains(text(), "${name}")]]`;
+const scheduleDetailText = (dataTestId) => `//span[@data-testid="scheduled-backup-details-${dataTestId}"]/span[not(@class)]`;
 
 module.exports = {
   url: 'graph/backup/scheduled',
@@ -12,7 +13,14 @@ module.exports = {
     selectedService: locate('div[class$="-singleValue"]').inside(locate('div').withChild('$service-select-label')),
     retentionValidation: '$retention-field-error-message',
     scheduleName: (name) => locate('td').at(1).inside(scheduleCell(name)),
+    frequencyByName: (name) => locate('td').at(3).inside(scheduleCell(name)),
     retentionByName: (name) => locate('td').at(4).inside(scheduleCell(name)),
+    detailedInfoRow: {
+      backupName: locate(scheduleDetailText('name')),
+      description: locate('pre'),
+      dataModel: locate(scheduleDetailText('data-model')),
+      cronExpression: locate(scheduleDetailText('cron')),
+    },
   },
   buttons: {
     openAddScheduleModal: '$scheduled-backup-add-modal-button',
@@ -58,5 +66,30 @@ module.exports = {
     I.usePlaywrightTo('clear field', async ({ page }) => {
       await page.fill(I.useDataQA('retention-number-input'), '');
     });
+  },
+
+  verifyBackupValues(scheduleObj) {
+    const {
+      service_id, location_id, cron_expression, name, description, mode,
+      retry_interval, retries, retention, enabled,
+    } = scheduleObj;
+
+    this.verifyBackupRowValues(name, description, retention);
+    this.verifyBackupDetailsRow(cron_expression, name, description);
+  },
+
+  verifyBackupRowValues(name, description, retention) {
+    I.seeElement(this.elements.scheduleName(name));
+    I.see(description, this.elements.frequencyByName(name));
+    I.see(`${retention} backups`, this.elements.retentionByName(name));
+  },
+
+  verifyBackupDetailsRow(cron_expression, name, description) {
+    I.seeElement(this.elements.scheduleName(name));
+    I.click(this.elements.scheduleName(name));
+    I.waitForVisible(this.elements.detailedInfoRow.backupName, 2);
+    I.see(name, this.elements.detailedInfoRow.backupName);
+    I.see(description, this.elements.detailedInfoRow.description);
+    I.see(cron_expression, this.elements.detailedInfoRow.cronExpression);
   },
 };
