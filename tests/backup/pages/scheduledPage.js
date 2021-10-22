@@ -13,8 +13,11 @@ module.exports = {
     selectedService: locate('div[class$="-singleValue"]').inside(locate('div').withChild('$service-select-label')),
     retentionValidation: '$retention-field-error-message',
     scheduleName: (name) => locate('td').at(1).inside(scheduleCell(name)),
+    scheduleVendorByName: (name) => locate('td').at(2).inside(scheduleCell(name)),
     frequencyByName: (name) => locate('td').at(3).inside(scheduleCell(name)),
     retentionByName: (name) => locate('td').at(4).inside(scheduleCell(name)),
+    scheduleTypeByName: (name) => locate('td').at(5).inside(scheduleCell(name)),
+    scheduleLocationByName: (name) => locate('td').at(6).inside(scheduleCell(name)),
     detailedInfoRow: {
       backupName: locate(scheduleDetailText('name')),
       description: locate('pre'),
@@ -71,26 +74,29 @@ module.exports = {
 
   verifyBackupValues(scheduleObj) {
     const {
-      service_id, location_id, cron_expression, name, description, mode,
-      retry_interval, retries, retention, enabled,
+      name, vendor, description, retention, type, location, dataModel, cronExpression,
     } = scheduleObj;
 
-    this.verifyBackupRowValues(name, description, retention);
-    this.verifyBackupDetailsRow(cron_expression, name, description);
+    this.verifyBackupRowValues(name, vendor, description, retention, type, location);
+    this.verifyBackupDetailsRow(name, description, dataModel, cronExpression);
   },
 
-  verifyBackupRowValues(name, description, retention) {
+  verifyBackupRowValues(name, vendor, description, retention, type, location) {
     I.seeElement(this.elements.scheduleName(name));
+    I.see(vendor, this.elements.scheduleVendorByName(name));
     I.see(description, this.elements.frequencyByName(name));
     I.see(`${retention} backups`, this.elements.retentionByName(name));
+    I.see(type, this.elements.scheduleTypeByName(name));
+    I.see(location, this.elements.scheduleLocationByName(name));
   },
 
-  verifyBackupDetailsRow(cron_expression, name, description) {
+  verifyBackupDetailsRow(name, description, dataModel, cronExpression) {
     I.seeElement(this.elements.scheduleName(name));
     I.click(this.elements.scheduleName(name));
     I.waitForVisible(this.elements.detailedInfoRow.backupName, 2);
     I.see(name, this.elements.detailedInfoRow.backupName);
     I.see(description, this.elements.detailedInfoRow.description);
-    I.see(cron_expression, this.elements.detailedInfoRow.cronExpression);
+    I.see(dataModel, this.elements.detailedInfoRow.dataModel);
+    I.see(cronExpression, this.elements.detailedInfoRow.cronExpression);
   },
 };

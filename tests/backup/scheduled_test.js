@@ -214,9 +214,19 @@ Data(schedules).Scenario(
       retention: 6,
       enabled: true,
     };
+    const scheduleDetails = {
+      name: current.name,
+      vendor: 'MongoDB',
+      description: current.description,
+      retention: 6,
+      type: 'Full',
+      location: 'mongo-location for scheduling',
+      dataModel: 'Logical',
+      cronExpression: current.cronExpression,
+    };
 
     await scheduledAPI.createScheduledBackup(schedule);
     await scheduledPage.openScheduledBackupsPage();
-    await scheduledPage.verifyBackupValues(schedule);
+    await scheduledPage.verifyBackupValues(scheduleDetails);
   },
 );
