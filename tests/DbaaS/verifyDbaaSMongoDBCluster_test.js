@@ -247,30 +247,30 @@ Scenario('PMM-T704 PMM-T772 PMM-T849 PMM-T850 Resources, PV, Secrets verificatio
     );
   }).retry(1);
 
-  Scenario('Verify update PSMDB Cluster version @dbaas', async ({ I, dbaasPage, dbaasActionsPage }) => {
-    const psmdb_cluster_update = 'psmdb-update';
-    const clusterDetails = {
-      topology: 'Cluster',
-      numberOfNodes: '1',
-      resourcePerNode: 'Custom',
-      memory: '2 GB',
-      cpu: '1',
-      disk: '2 GB',
-      dbType: 'MongoDB 4.4.6',
-      clusterDashboardRedirectionLink: dbaasPage.clusterDashboardUrls.psmdbDashboard(
-        psmdb_cluster_update,
-      ),
-    };
+Scenario('Verify update PSMDB Cluster version @dbaas', async ({ I, dbaasPage, dbaasActionsPage }) => {
+  const psmdb_cluster_update = 'psmdb-update';
+  const clusterDetails = {
+    topology: 'Cluster',
+    numberOfNodes: '1',
+    resourcePerNode: 'Custom',
+    memory: '2 GB',
+    cpu: '1',
+    disk: '2 GB',
+    dbType: 'MongoDB',
+    clusterDashboardRedirectionLink: dbaasPage.clusterDashboardUrls.psmdbDashboard(
+      psmdb_cluster_update,
+    ),
+  };
 
-    await dbaasAPI.deleteAllDBCluster(clusterName);
-    await dbaasPage.waitForDbClusterTab(clusterName);
-    I.waitForInvisible(dbaasPage.tabs.kubernetesClusterTab.disabledAddButton, 30);
-    await dbaasActionsPage.createClusterAdvancedOption(clusterName, psmdb_cluster_update, 'MongoDB', clusterDetails, '4.2.8-8');
-    I.click(dbaasPage.tabs.dbClusterTab.createClusterButton);
-    I.waitForText('Processing', 30, dbaasPage.tabs.dbClusterTab.fields.progressBarContent);
-    await dbaasPage.postClusterCreationValidation(psmdb_cluster_update, clusterName);
-    await dbaasActionsPage.updateCluster();
-    I.waitForVisible(dbaasPage.tabs.dbClusterTab.fields.clusterStatusUpdating, 60);
-    I.seeElement(dbaasPage.tabs.dbClusterTab.fields.clusterStatusUpdating);
-    await dbaasActionsPage.deletePSMDBCluster(psmdb_cluster_update, clusterName);
-  });
+  await dbaasAPI.deleteAllDBCluster(clusterName);
+  await dbaasPage.waitForDbClusterTab(clusterName);
+  I.waitForInvisible(dbaasPage.tabs.kubernetesClusterTab.disabledAddButton, 30);
+  await dbaasActionsPage.createClusterAdvancedOption(clusterName, psmdb_cluster_update, 'MongoDB', clusterDetails, '4.2.8-8');
+  I.click(dbaasPage.tabs.dbClusterTab.createClusterButton);
+  I.waitForText('Processing', 30, dbaasPage.tabs.dbClusterTab.fields.progressBarContent);
+  await dbaasPage.postClusterCreationValidation(psmdb_cluster_update, clusterName);
+  await dbaasActionsPage.updateCluster();
+  I.waitForVisible(dbaasPage.tabs.dbClusterTab.fields.clusterStatusUpdating, 60);
+  I.seeElement(dbaasPage.tabs.dbClusterTab.fields.clusterStatusUpdating);
+  await dbaasActionsPage.deletePSMDBCluster(psmdb_cluster_update, clusterName);
+});
