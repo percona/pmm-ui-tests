@@ -109,14 +109,11 @@ Scenario(
     // Get message from the inbox
     const message = await I.getLastMessage(testEmail, 120000);
 
-    await I.seeTextInSubject(ruleIdForEmailCheck, message);
-    await I.seeTextInSubject('PMM Integrated Alerting', message);
+    await I.seeTextInSubject('FIRING', message);
 
     assert.ok(message.html.body.includes(ruleNameForEmailCheck));
 
     await rulesAPI.removeAlertRule(ruleIdForEmailCheck);
-
-    await I.deleteMessage(message.id);
   },
 );
 
