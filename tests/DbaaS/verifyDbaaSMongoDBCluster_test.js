@@ -26,10 +26,6 @@ AfterSuite(async ({ dbaasAPI }) => {
   await dbaasAPI.apiUnregisterCluster(clusterName, true);
 });
 
-Before(async ({ I, settingsAPI }) => {
-  await I.Authorize();
-});
-
 Before(async ({ I, dbaasAPI }) => {
   await I.Authorize();
   if (!await dbaasAPI.apiCheckRegisteredClusterExist(clusterName)) {
@@ -272,5 +268,11 @@ Scenario('Verify update PSMDB Cluster version @dbaas', async ({ I, dbaasPage, db
   await dbaasActionsPage.updateCluster();
   I.waitForVisible(dbaasPage.tabs.dbClusterTab.fields.clusterStatusUpdating, 60);
   I.seeElement(dbaasPage.tabs.dbClusterTab.fields.clusterStatusUpdating);
+  await dbaasAPI.waitForPSMDBClusterReady(psmdb_cluster_update, clusterName);
+  I.waitForElement(dbaasPage.tabs.dbClusterTab.fields.clusterStatusActive, 60);
+  I.seeElement(dbaasPage.tabs.dbClusterTab.fields.clusterStatusActive);
+  I.click(dbaasPage.tabs.dbClusterTab.fields.clusterActionsMenu);
+  await this.checkActionPossible('Update', false);
+  I.click(dbaasPage.tabs.dbClusterTab.fields.clusterActionsMenu);
   await dbaasActionsPage.deletePSMDBCluster(psmdb_cluster_update, clusterName);
 });

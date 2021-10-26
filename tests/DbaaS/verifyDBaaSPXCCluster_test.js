@@ -29,10 +29,6 @@ AfterSuite(async ({ dbaasAPI }) => {
   await dbaasAPI.apiUnregisterCluster(clusterName, true);
 });
 
-Before(async ({ I, settingsAPI }) => {
-  await I.Authorize();
-});
-
 Before(async ({ I, dbaasAPI }) => {
   await I.Authorize();
   if (!await dbaasAPI.apiCheckRegisteredClusterExist(clusterName)) {
@@ -390,7 +386,9 @@ Scenario('Verify update PXC DB Cluster version @dbaas', async ({ I, dbaasPage, d
   await dbaasActionsPage.updateCluster();
   I.waitForVisible(dbaasPage.tabs.dbClusterTab.fields.clusterStatusUpdating, 60);
   I.seeElement(dbaasPage.tabs.dbClusterTab.fields.clusterStatusUpdating);
-  await dbaasPage.postClusterCreationValidation(pxc_cluster_name_single, clusterName);
+  await dbaasAPI.waitForXtraDbClusterReady(pxc_cluster_name_single, clusterName);
+  I.waitForElement(dbaasPage.tabs.dbClusterTab.fields.clusterStatusActive, 60);
+  I.seeElement(dbaasPage.tabs.dbClusterTab.fields.clusterStatusActive);
   await I.verifyCommand(
     `kubectl run -i --rm --tty pxc-client --image=percona:8.0 --restart=Never -- mysql -h ${host} -u${username} -p${password} -e "SHOW DATABASES;"`,
     'DBAAS_UPGRADE_TESTING',
@@ -400,5 +398,8 @@ Scenario('Verify update PXC DB Cluster version @dbaas', async ({ I, dbaasPage, d
   );
 
   assert.ok(!version.includes('8.0.19-10.1'), `Expected Version for PXC Cluster After Upgrade ${version} should not be same as Before Update Operation`);
+  I.click(dbaasPage.tabs.dbClusterTab.fields.clusterActionsMenu);
+  await this.checkActionPossible('Update', false);
+  I.click(dbaasPage.tabs.dbClusterTab.fields.clusterActionsMenu);
   await dbaasActionsPage.deleteXtraDBCluster(pxc_cluster_name_single, clusterName);
 });
