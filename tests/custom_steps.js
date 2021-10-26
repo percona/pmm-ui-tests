@@ -1,6 +1,6 @@
-const systemMessageLocator = locate('//*[@class="page-alert-list"]/.//div[@aria-label]');
-const systemMessageText = locate('//div[contains(@aria-label, "Alert ")]/div/div[not(*)]');
-const systemMessageButtonClose = locate('.page-alert-list button');
+const systemMessageLocator = '.page-alert-list div[aria-label^="Alert"]';
+const systemMessageText = 'div[aria-label^="Alert"] > div';
+const systemMessageButtonClose = '.page-alert-list button';
 
 module.exports = () => actor({
 

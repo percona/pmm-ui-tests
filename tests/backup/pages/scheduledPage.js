@@ -1,7 +1,6 @@
 const { I } = inject();
 
 const scheduleCell = (name) => `//tr[td/div[contains(text(), "${name}")]]`;
-const scheduleDetailText = (dataTestId) => `//span[@data-testid="scheduled-backup-details-${dataTestId}"]/span[not(@class)]`;
 
 module.exports = {
   url: 'graph/backup/scheduled',
