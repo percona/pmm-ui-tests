@@ -83,11 +83,11 @@ module.exports = {
 
   verifyBackupRowValues(name, vendor, description, retention, type, location) {
     I.seeElement(this.elements.scheduleName(name));
-    I.see(vendor, this.elements.scheduleVendorByName(name));
-    I.see(description, this.elements.frequencyByName(name));
-    I.see(`${retention} backups`, this.elements.retentionByName(name));
-    I.see(type, this.elements.scheduleTypeByName(name));
-    I.see(location, this.elements.scheduleLocationByName(name));
+    I.seeTextEquals(vendor, this.elements.scheduleVendorByName(name));
+    I.seeTextEquals(description, this.elements.frequencyByName(name));
+    I.seeTextEquals(`${retention} backups`, this.elements.retentionByName(name));
+    I.seeTextEquals(type, this.elements.scheduleTypeByName(name));
+    I.seeTextEquals(location, this.elements.scheduleLocationByName(name));
   },
 
   verifyBackupDetailsRow(name, description, dataModel, cronExpression) {
