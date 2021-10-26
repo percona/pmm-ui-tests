@@ -19,10 +19,10 @@ module.exports = {
     scheduleTypeByName: (name) => locate('td').at(5).inside(scheduleCell(name)),
     scheduleLocationByName: (name) => locate('td').at(6).inside(scheduleCell(name)),
     detailedInfoRow: {
-      backupName: locate(scheduleDetailText('name')),
-      description: locate('pre'),
-      dataModel: locate(scheduleDetailText('data-model')),
-      cronExpression: locate(scheduleDetailText('cron')),
+      backupName: locate('$scheduled-backup-details-name').find('span').at(2),
+      description: 'pre',
+      dataModel: locate('$scheduled-backup-details-data-model').find('span').at(2),
+      cronExpression: locate('$scheduled-backup-details-cron').find('span').at(2),
     },
   },
   buttons: {
