@@ -94,9 +94,9 @@ module.exports = {
     I.seeElement(this.elements.scheduleName(name));
     I.click(this.elements.scheduleName(name));
     I.waitForVisible(this.elements.detailedInfoRow.backupName, 2);
-    I.see(name, this.elements.detailedInfoRow.backupName);
-    I.see(description, this.elements.detailedInfoRow.description);
-    I.see(dataModel, this.elements.detailedInfoRow.dataModel);
-    I.see(cronExpression, this.elements.detailedInfoRow.cronExpression);
+    I.seeTextEquals(name, this.elements.detailedInfoRow.backupName);
+    I.seeTextEquals(description, this.elements.detailedInfoRow.description);
+    I.seeTextEquals(dataModel, this.elements.detailedInfoRow.dataModel);
+    I.seeTextEquals(cronExpression, this.elements.detailedInfoRow.cronExpression);
   },
 };
