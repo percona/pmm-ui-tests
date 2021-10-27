@@ -196,6 +196,9 @@ Scenario('PMM-T525 PMM-T528 Verify Suspend & Resume for DB Cluster Works as expe
     I.click(dbaasPage.tabs.dbClusterTab.createClusterButton);
     I.waitForText('Processing', 30, dbaasPage.tabs.dbClusterTab.fields.progressBarContent);
     await dbaasPage.postClusterCreationValidation(pxc_cluster_suspend_resume, clusterName);
+    I.click(dbaasPage.tabs.dbClusterTab.fields.clusterActionsMenu);
+    await dbaasActionsPage.checkActionPossible('Update', false);
+    I.click(dbaasPage.tabs.dbClusterTab.fields.clusterActionsMenu);
     await dbaasActionsPage.suspendCluster(pxc_cluster_suspend_resume, clusterName);
     I.waitForVisible(dbaasPage.tabs.dbClusterTab.fields.clusterStatusPaused, 60);
     I.seeElement(dbaasPage.tabs.dbClusterTab.fields.clusterStatusPaused);
@@ -398,8 +401,5 @@ Scenario('Verify update PXC DB Cluster version @dbaas', async ({ I, dbaasPage, d
   );
 
   assert.ok(!version.includes('8.0.19-10.1'), `Expected Version for PXC Cluster After Upgrade ${version} should not be same as Before Update Operation`);
-  I.click(dbaasPage.tabs.dbClusterTab.fields.clusterActionsMenu);
-  await dbaasActionsPage.checkActionPossible('Update', false);
-  I.click(dbaasPage.tabs.dbClusterTab.fields.clusterActionsMenu);
   await dbaasActionsPage.deleteXtraDBCluster(pxc_cluster_name_single, clusterName);
 });

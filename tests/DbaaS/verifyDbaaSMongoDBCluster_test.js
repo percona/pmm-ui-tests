@@ -101,6 +101,9 @@ Scenario('PMM-787 Verify Editing MonogDB Cluster is possible. @dbaas',
     I.waitForText('Processing', 30, dbaasPage.tabs.dbClusterTab.fields.progressBarContent);
     await dbaasPage.postClusterCreationValidation(psmdb_cluster, clusterName, 'MongoDB');
     await dbaasPage.validateClusterDetail(psmdb_cluster, clusterName, psmdb_configuration);
+    I.click(dbaasPage.tabs.dbClusterTab.fields.clusterActionsMenu);
+    await dbaasActionsPage.checkActionPossible('Update', false);
+    I.click(dbaasPage.tabs.dbClusterTab.fields.clusterActionsMenu);
     const psmdb_updated_configuration = {
       topology: 'Cluster',
       numberOfNodes: '4',
@@ -271,8 +274,5 @@ Scenario('Verify update PSMDB Cluster version @dbaas', async ({ I, dbaasPage, db
   await dbaasAPI.waitForPSMDBClusterReady(psmdb_cluster_update, clusterName);
   I.waitForElement(dbaasPage.tabs.dbClusterTab.fields.clusterStatusActive, 120);
   I.seeElement(dbaasPage.tabs.dbClusterTab.fields.clusterStatusActive);
-  I.click(dbaasPage.tabs.dbClusterTab.fields.clusterActionsMenu);
-  await dbaasActionsPage.checkActionPossible('Update', false);
-  I.click(dbaasPage.tabs.dbClusterTab.fields.clusterActionsMenu);
   await dbaasActionsPage.deletePSMDBCluster(psmdb_cluster_update, clusterName);
 });
