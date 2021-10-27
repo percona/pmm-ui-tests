@@ -170,7 +170,7 @@ Scenario('PMM-T488, PMM-T489 Verify editing PXC cluster changing single node to 
     await dbaasPage.validateClusterDetail(pxc_cluster_name_single, clusterName, singleNodeConfiguration);
     await dbaasActionsPage.editCluster(pxc_cluster_name_single, clusterName, updatedConfiguration);
     I.click(dbaasPage.tabs.dbClusterTab.updateClusterButton);
-    I.waitForText('Processing', 30, dbaasPage.tabs.dbClusterTab.fields.progressBarContent);
+    I.waitForText('Processing', 60, dbaasPage.tabs.dbClusterTab.fields.progressBarContent);
     await dbaasPage.postClusterCreationValidation(pxc_cluster_name_single, clusterName);
     await dbaasPage.validateClusterDetail(pxc_cluster_name_single, clusterName, updatedConfiguration);
     await dbaasActionsPage.deleteXtraDBCluster(pxc_cluster_name_single, clusterName);
@@ -218,7 +218,7 @@ Scenario('PMM-T509 Verify Deleting Db Cluster in Pending Status is possible @dba
     I.waitForInvisible(dbaasPage.tabs.kubernetesClusterTab.disabledAddButton, 30);
     await dbaasActionsPage.createClusterBasicOptions(clusterName, pxc_cluster_pending_delete, 'MySQL');
     I.click(dbaasPage.tabs.dbClusterTab.createClusterButton);
-    I.waitForText('Processing', 30, dbaasPage.tabs.dbClusterTab.fields.progressBarContent);
+    I.waitForText('Processing', 60, dbaasPage.tabs.dbClusterTab.fields.progressBarContent);
     await dbaasActionsPage.deleteXtraDBCluster(pxc_cluster_pending_delete, clusterName);
   });
 

@@ -117,7 +117,7 @@ Scenario('PMM-787 Verify Editing MonogDB Cluster is possible. @dbaas',
 
     await dbaasActionsPage.editCluster(psmdb_cluster, clusterName, psmdb_updated_configuration);
     I.click(dbaasPage.tabs.dbClusterTab.updateClusterButton);
-    I.waitForText('Processing', 30, dbaasPage.tabs.dbClusterTab.fields.progressBarContent);
+    I.waitForText('Processing', 60, dbaasPage.tabs.dbClusterTab.fields.progressBarContent);
     await dbaasPage.postClusterCreationValidation(psmdb_cluster, clusterName, 'MongoDB');
     await dbaasPage.validateClusterDetail(psmdb_cluster, clusterName, psmdb_updated_configuration);
     await dbaasActionsPage.deletePSMDBCluster(psmdb_cluster, clusterName);
