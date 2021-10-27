@@ -399,7 +399,7 @@ Scenario('Verify update PXC DB Cluster version @dbaas', async ({ I, dbaasPage, d
 
   assert.ok(!version.includes('8.0.19-10.1'), `Expected Version for PXC Cluster After Upgrade ${version} should not be same as Before Update Operation`);
   I.click(dbaasPage.tabs.dbClusterTab.fields.clusterActionsMenu);
-  await this.checkActionPossible('Update', false);
+  await dbaasActionsPage.checkActionPossible('Update', false);
   I.click(dbaasPage.tabs.dbClusterTab.fields.clusterActionsMenu);
   await dbaasActionsPage.deleteXtraDBCluster(pxc_cluster_name_single, clusterName);
 });

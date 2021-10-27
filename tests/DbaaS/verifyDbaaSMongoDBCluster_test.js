@@ -269,10 +269,10 @@ Scenario('Verify update PSMDB Cluster version @dbaas', async ({ I, dbaasPage, db
   I.waitForVisible(dbaasPage.tabs.dbClusterTab.fields.clusterStatusUpdating, 60);
   I.seeElement(dbaasPage.tabs.dbClusterTab.fields.clusterStatusUpdating);
   await dbaasAPI.waitForPSMDBClusterReady(psmdb_cluster_update, clusterName);
-  I.waitForElement(dbaasPage.tabs.dbClusterTab.fields.clusterStatusActive, 60);
+  I.waitForElement(dbaasPage.tabs.dbClusterTab.fields.clusterStatusActive, 120);
   I.seeElement(dbaasPage.tabs.dbClusterTab.fields.clusterStatusActive);
   I.click(dbaasPage.tabs.dbClusterTab.fields.clusterActionsMenu);
-  await this.checkActionPossible('Update', false);
+  await dbaasActionsPage.checkActionPossible('Update', false);
   I.click(dbaasPage.tabs.dbClusterTab.fields.clusterActionsMenu);
   await dbaasActionsPage.deletePSMDBCluster(psmdb_cluster_update, clusterName);
 });
