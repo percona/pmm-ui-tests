@@ -46,6 +46,10 @@ great in terms of usability. The same applies for types `HTTPURLProvider` vs
 * **Try to use stable locators.**   
   Ideally there should exist a dedicated attribute for each interactive element (“data-qa” attribute). But id, classname, text also used frequently. (try to use small xpath)
 
+
+* **Locators preference: locate() > CSS > Xpath**  
+  Try to use `locate()` builder as a first priority, and only then CSS. Use XPath as a last stand. 
+
 ### Assertions
 
 * **Assertion can be used directly in a test.**  
