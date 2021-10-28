@@ -12,7 +12,17 @@ module.exports = {
     selectedService: locate('div[class$="-singleValue"]').inside(locate('div').withChild('$service-select-label')),
     retentionValidation: '$retention-field-error-message',
     scheduleName: (name) => locate('td').at(1).inside(scheduleCell(name)),
+    scheduleVendorByName: (name) => locate('td').at(2).inside(scheduleCell(name)),
+    frequencyByName: (name) => locate('td').at(3).inside(scheduleCell(name)),
     retentionByName: (name) => locate('td').at(4).inside(scheduleCell(name)),
+    scheduleTypeByName: (name) => locate('td').at(5).inside(scheduleCell(name)),
+    scheduleLocationByName: (name) => locate('td').at(6).inside(scheduleCell(name)),
+    detailedInfoRow: {
+      backupName: locate('$scheduled-backup-details-name').find('span').at(2),
+      description: 'pre',
+      dataModel: locate('$scheduled-backup-details-data-model').find('span').at(2),
+      cronExpression: locate('$scheduled-backup-details-cron').find('span').at(2),
+    },
   },
   buttons: {
     openAddScheduleModal: '$scheduled-backup-add-modal-button',
@@ -32,6 +42,7 @@ module.exports = {
     modalHeaderText: 'Schedule backup',
     requiredField: 'Required field',
     outOfRetentionRange: 'Value should be in the range from 0 to 99',
+    backupScheduled: 'Backup successfully scheduled',
   },
   locationType: {},
 
@@ -58,5 +69,33 @@ module.exports = {
     I.usePlaywrightTo('clear field', async ({ page }) => {
       await page.fill(I.useDataQA('retention-number-input'), '');
     });
+  },
+
+  verifyBackupValues(scheduleObj) {
+    const {
+      name, vendor, description, retention, type, location, dataModel, cronExpression,
+    } = scheduleObj;
+
+    this.verifyBackupRowValues(name, vendor, description, retention, type, location);
+    this.verifyBackupDetailsRow(name, description, dataModel, cronExpression);
+  },
+
+  verifyBackupRowValues(name, vendor, description, retention, type, location) {
+    I.seeElement(this.elements.scheduleName(name));
+    I.seeTextEquals(vendor, this.elements.scheduleVendorByName(name));
+    I.seeTextEquals(description, this.elements.frequencyByName(name));
+    I.seeTextEquals(`${retention} backups`, this.elements.retentionByName(name));
+    I.seeTextEquals(type, this.elements.scheduleTypeByName(name));
+    I.seeTextEquals(location, this.elements.scheduleLocationByName(name));
+  },
+
+  verifyBackupDetailsRow(name, description, dataModel, cronExpression) {
+    I.seeElement(this.elements.scheduleName(name));
+    I.click(this.elements.scheduleName(name));
+    I.waitForVisible(this.elements.detailedInfoRow.backupName, 2);
+    I.seeTextEquals(name, this.elements.detailedInfoRow.backupName);
+    I.seeTextEquals(description, this.elements.detailedInfoRow.description);
+    I.seeTextEquals(dataModel, this.elements.detailedInfoRow.dataModel);
+    I.seeTextEquals(cronExpression, this.elements.detailedInfoRow.cronExpression);
   },
 };
