@@ -62,7 +62,7 @@ module.exports = {
           )
             .find('span')
             .withText(version),
-          dbClusterDatabaseVersionSelect: (version) => `//div[@aria-label='Select option']//span[contains(., '${version}')]`,
+          dbClusterDatabaseVersionSelect: (version) => locate('div').withAttr({ 'aria-label': 'Select option' }).find('span').withText(`${version}`),
           defaultDbVersionValue: (version) => locate(
             '$dbcluster-database-version-field',
           )

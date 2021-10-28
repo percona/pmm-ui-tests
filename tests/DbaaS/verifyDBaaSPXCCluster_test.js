@@ -366,11 +366,13 @@ Scenario('PMM-T704 PMM-T772 PMM-T849 PMM-T850 Resources, PV, Secrets verificatio
   });
 
 Scenario('Verify update PXC DB Cluster version @dbaas', async ({ I, dbaasPage, dbaasActionsPage }) => {
+  const mysqlVersion = '8.0.19-10.1';
+
   await dbaasAPI.deleteAllDBCluster(clusterName);
   await dbaasPage.waitForDbClusterTab(clusterName);
 
   I.waitForInvisible(dbaasPage.tabs.kubernetesClusterTab.disabledAddButton, 30);
-  await dbaasActionsPage.createClusterAdvancedOption(clusterName, pxc_cluster_name_single, 'MySQL', singleNodeConfiguration, '8.0.19-10.1');
+  await dbaasActionsPage.createClusterAdvancedOption(clusterName, pxc_cluster_name_single, 'MySQL', singleNodeConfiguration, mysqlVersion);
   await I.click(dbaasPage.tabs.dbClusterTab.createClusterButton);
   await I.waitForText('Processing', 30, dbaasPage.tabs.dbClusterTab.fields.progressBarContent);
   await dbaasPage.postClusterCreationValidation(pxc_cluster_name_single, clusterName);
@@ -400,6 +402,6 @@ Scenario('Verify update PXC DB Cluster version @dbaas', async ({ I, dbaasPage, d
     `kubectl run -i --rm --tty pxc-client --image=percona:8.0 --restart=Never -- mysql -h ${host} -u${username} -p${password} -e "SELECT VERSION();"`,
   );
 
-  assert.ok(!version.includes('8.0.19-10.1'), `Expected Version for PXC Cluster After Upgrade ${version} should not be same as Before Update Operation`);
+  assert.ok(!version.includes(mysqlVersion), `Expected Version for PXC Cluster After Upgrade ${version} should not be same as Before Update Operation`);
   await dbaasActionsPage.deleteXtraDBCluster(pxc_cluster_name_single, clusterName);
 });
