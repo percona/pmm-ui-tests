@@ -43,7 +43,7 @@ module.exports = {
     deleteModalMessage: (name) => `Are you sure you want to delete the alert rule template "${name}"?`,
     successfullyAdded: 'Alert rule template successfully added',
     successfullyEdited: 'Alert rule template successfully edited',
-    successfullyDeleted: (name) => `Alert rule template  "${name}" successfully deleted.`,
+    successfullyDeleted: (name) => `Alert rule template "${name}" successfully deleted.`,
     failedToParse: 'Failed to parse rule template.',
     failedToDelete: (name) => `You can't delete the "${name}" rule template when it's being used by a rule.`,
     duplicateTemplate: (id) => `Template with name "${id}" already exists.`,
