@@ -41,7 +41,7 @@ module.exports = {
       dbaasPage.tabs.dbClusterTab.basicOptions.fields.dbClusterDatabaseTypeFieldSelect(dbType),
     );
     I.click(dbaasPage.tabs.dbClusterTab.basicOptions.fields.dbClusterDatabaseTypeFieldSelect(dbType));
-    
+
     if (dbVersion) {
       I.click(dbaasPage.tabs.dbClusterTab.basicOptions.fields.dbClusterDatabaseVersionField);
       I.waitForElement(
@@ -52,7 +52,7 @@ module.exports = {
   },
 
   async createClusterAdvancedOption(k8sClusterName, dbClusterName, dbType, configuration, dbVersion) {
-    this.createClusterBasicOptions(k8sClusterName, dbClusterName, dbType, dbVersion);
+    await this.createClusterBasicOptions(k8sClusterName, dbClusterName, dbType, dbVersion);
     I.click(dbaasPage.tabs.dbClusterTab.optionsCountLocator(2));
     I.waitForElement(
       dbaasPage.tabs.dbClusterTab.advancedOptions.fields.clusterTopology(configuration.topology), 30,
