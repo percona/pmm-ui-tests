@@ -10,12 +10,12 @@ Scenario(
 
     I.amOnPage(pmmDemoPage.url + dashboardPage.mySQLInstanceOverview.url);
     dashboardPage.waitForDashboardOpened();
-    adminPage.peformPageDown(5);
+    adminPage.performPageDown(5);
     await dashboardPage.expandEachDashboardRow();
     for (let i = 0; i < serviceName.length; i++) {
       await dashboardPage.applyFilter('Service Name', serviceName[i]);
       I.click(adminPage.fields.metricTitle);
-      adminPage.peformPageDown(5);
+      adminPage.performPageDown(5);
       dashboardPage.verifyMetricsExistence(dashboardPage.mySQLInstanceOverview.metrics);
       await dashboardPage.verifyThereAreNoGraphsWithNA();
       await dashboardPage.verifyThereAreNoGraphsWithoutData(1);
@@ -33,12 +33,12 @@ Scenario(
 
     I.amOnPage(pmmDemoPage.url + dashboardPage.mysqlInstanceSummaryDashboard.url);
     dashboardPage.waitForDashboardOpened();
-    adminPage.peformPageDown(5);
+    adminPage.performPageDown(5);
     await dashboardPage.expandEachDashboardRow();
     for (let i = 0; i < serviceName.length; i++) {
       await dashboardPage.applyFilter('Service Name', serviceName[i]);
       I.click(adminPage.fields.metricTitle);
-      adminPage.peformPageDown(5);
+      adminPage.performPageDown(5);
       dashboardPage.verifyMetricsExistence(dashboardPage.mysqlInstanceSummaryDashboard.metrics);
       await dashboardPage.verifyThereAreNoGraphsWithNA();
       await dashboardPage.verifyThereAreNoGraphsWithoutData(2);
@@ -55,13 +55,13 @@ Scenario(
 
     I.amOnPage(pmmDemoPage.url + dashboardPage.postgresqlInstanceSummaryDashboard.url);
     dashboardPage.waitForDashboardOpened();
-    adminPage.peformPageDown(5);
+    adminPage.performPageDown(5);
     await dashboardPage.expandEachDashboardRow();
     // Need to fix the scroll better, wait for ScrollTo() fix in playwright.
     for (let i = 0; i < serviceName.length; i++) {
       await dashboardPage.applyFilter('Service Name', serviceName[i]);
       I.click(adminPage.fields.metricTitle);
-      adminPage.peformPageDown(5);
+      adminPage.performPageDown(5);
       adminPage.performPageUp(5);
       dashboardPage.verifyMetricsExistence(dashboardPage.postgresqlInstanceSummaryDashboard.metrics);
       await dashboardPage.verifyThereAreNoGraphsWithNA();
@@ -79,12 +79,12 @@ Scenario(
 
     I.amOnPage(pmmDemoPage.url + dashboardPage.mongodbOverviewDashboard.url);
     dashboardPage.waitForDashboardOpened();
-    adminPage.peformPageDown(10);
+    adminPage.performPageDown(10);
     await dashboardPage.expandEachDashboardRow();
     for (let i = 0; i < serviceName.length; i++) {
       await dashboardPage.applyFilter('Service Name', serviceName[i]);
       I.click(adminPage.fields.metricTitle);
-      adminPage.peformPageDown(5);
+      adminPage.performPageDown(5);
       await dashboardPage.verifyMetricsExistence(dashboardPage.mongodbOverviewDashboard.metrics);
       await dashboardPage.verifyThereAreNoGraphsWithNA();
       await dashboardPage.verifyThereAreNoGraphsWithoutData();
@@ -100,7 +100,7 @@ xScenario(
   }) => {
     I.amOnPage(pmmDemoPage.url + dashboardPage.mongoDbClusterSummaryDashboard.url);
     dashboardPage.waitForDashboardOpened();
-    adminPage.peformPageDown(2);
+    adminPage.performPageDown(2);
     await dashboardPage.expandEachDashboardRow();
     dashboardPage.verifyMetricsExistence(dashboardPage.mongoDbClusterSummaryDashboard.metrics);
     await dashboardPage.verifyThereAreNoGraphsWithNA();
@@ -117,12 +117,12 @@ Scenario(
 
     I.amOnPage(pmmDemoPage.url + dashboardPage.mongoDbInstanceOverview.url);
     dashboardPage.waitForDashboardOpened();
-    adminPage.peformPageDown(1);
+    adminPage.performPageDown(1);
     await dashboardPage.expandEachDashboardRow();
     for (let i = 0; i < serviceName.length; i++) {
       await dashboardPage.applyFilter('Service Name', serviceName[i]);
       I.click(adminPage.fields.metricTitle);
-      adminPage.peformPageDown(5);
+      adminPage.performPageDown(5);
       await dashboardPage.verifyThereAreNoGraphsWithNA();
       await dashboardPage.verifyThereAreNoGraphsWithoutData(3);
     }
@@ -172,11 +172,11 @@ Scenario(
 
     I.amOnPage(pmmDemoPage.url + dashboardPage.prometheusExporterOverviewDashboard.url);
     dashboardPage.waitForDashboardOpened();
-    adminPage.peformPageDown(2);
+    adminPage.performPageDown(2);
     for (let i = 0; i < nodeName.length; i++) {
       await dashboardPage.applyFilter('Node Name', nodeName[i]);
       I.click(adminPage.fields.metricTitle);
-      adminPage.peformPageDown(2);
+      adminPage.performPageDown(2);
       dashboardPage.verifyMetricsExistence(dashboardPage.prometheusExporterOverviewDashboard.metrics);
       await dashboardPage.verifyThereAreNoGraphsWithNA(0);
       await dashboardPage.verifyThereAreNoGraphsWithoutData();
@@ -192,7 +192,7 @@ Scenario(
     I.amOnPage(pmmDemoPage.url);
     dashboardPage.waitForDashboardOpened();
     I.click(adminPage.fields.metricTitle);
-    adminPage.peformPageDown(10);
+    adminPage.performPageDown(10);
     for (let i = 0; i < pmmDemoPage.monitoredDB.length; i += 2) {
       I.waitForElement(pmmDemoPage.getHostLocator(pmmDemoPage.monitoredDB[i]), 30);
       I.seeElement(pmmDemoPage.getHostLocator(pmmDemoPage.monitoredDB[i]));
