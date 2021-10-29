@@ -30,9 +30,8 @@ Scenario(
   },
 );
 
-// Need to Skip to avoid false positive, investigate and fix
-xScenario(
-  'Open the Prometheus Exporters Overview Dashboard and verify Metrics are present and graphs are displayed @nightly @dashboards',
+Scenario(
+  'PMM-T300 Open the Prometheus Exporters Overview Dashboard and verify Metrics are present and graphs are displayed @nightly @dashboards',
   async ({ I, dashboardPage, adminPage }) => {
     I.amOnPage(dashboardPage.prometheusExporterOverviewDashboard.url);
     dashboardPage.waitForDashboardOpened();

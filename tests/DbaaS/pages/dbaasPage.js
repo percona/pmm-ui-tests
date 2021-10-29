@@ -62,7 +62,7 @@ module.exports = {
           )
             .find('span')
             .withText(version),
-          dbClusterDatabaseVersionSelect: (version) => `//div[@data-qa='dbcluster-database-version-field']//div[contains(@class, 'grafana-select-menu')]//span[contains(., '${version}')]`,
+          dbClusterDatabaseVersionSelect: (version) => locate('div').withAttr({ 'aria-label': 'Select option' }).find('span').withText(`${version}`),
           defaultDbVersionValue: (version) => locate(
             '$dbcluster-database-version-field',
           )
@@ -151,7 +151,7 @@ module.exports = {
         cancelDeleteDBCluster: '$cancel-delete-dbcluster-button',
         progressBarSteps: '$progress-bar-steps',
         progressBarContent: '$progress-bar-message',
-        updateClusterButton: '$confirm-update-dbcluster-button',
+        updateClusterButton: locate('button').withAttr({ 'data-qa': 'confirm-update-dbcluster-button' }),
       },
     },
   },
@@ -258,7 +258,7 @@ module.exports = {
       await dbaasAPI.waitForPSMDBClusterReady(dbClusterName, k8sClusterName);
     }
 
-    I.waitForElement(dbaasPage.tabs.dbClusterTab.fields.clusterStatusActive, 60);
+    I.waitForElement(dbaasPage.tabs.dbClusterTab.fields.clusterStatusActive, 120);
     I.seeElement(dbaasPage.tabs.dbClusterTab.fields.clusterStatusActive);
     I.waitForElement(dbaasPage.tabs.dbClusterTab.fields.clusterConnection.showPasswordButton, 30);
     I.click(dbaasPage.tabs.dbClusterTab.fields.clusterConnection.showPasswordButton);
@@ -319,7 +319,7 @@ module.exports = {
     const clusterDBType = await I.grabTextFrom(dbaasPage.tabs.dbClusterTab.fields.clusterDatabaseType);
 
     assert.ok(
-      clusterDBType === configuration.dbType,
+      clusterDBType.includes(configuration.dbType),
       `Expected DB Type was ${configuration.dbType}, but found ${clusterDBType}`,
     );
     await dbaasPage.verifyElementInSection(dbaasPage.tabs.dbClusterTab.fields.clusterParameters);
