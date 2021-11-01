@@ -132,7 +132,7 @@ Scenario(
     I.amOnPage(remoteInstancesPage.url);
     remoteInstancesPage.waitUntilRemoteInstancesPageLoaded();
     remoteInstancesPage.openAddRemotePage('mysql');
-    adminPage.peformPageDown(1);
+    adminPage.performPageDown(1);
     I.waitForVisible(remoteInstancesPage.fields.tableStatsGroupTableLimit, 30);
     assert.strictEqual('-1', await remoteInstancesPage.getTableLimitFieldValue(), 'Count for Disabled Table Stats dont Match, was expecting -1');
     I.click(remoteInstancesPage.tableStatsLimitRadioButtonLocator('Default'));
@@ -236,7 +236,7 @@ Data(dashboardCheck).Scenario(
     I.wait(10);
     I.amOnPage(dashboardPage.postgresqlInstanceOverviewDashboard.url);
     await dashboardPage.applyFilter('Service Name', current.serviceName);
-    adminPage.peformPageDown(5);
+    adminPage.performPageDown(5);
     await dashboardPage.expandEachDashboardRow();
     adminPage.performPageUp(5);
     await dashboardPage.verifyThereAreNoGraphsWithNA();

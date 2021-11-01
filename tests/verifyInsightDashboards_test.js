@@ -22,7 +22,7 @@ Scenario(
     dashboardPage.waitForDashboardOpened();
     await dashboardPage.applyFilter('Node Name', 'pmm-server');
     I.click(adminPage.fields.metricTitle);
-    adminPage.peformPageDown(5);
+    adminPage.performPageDown(5);
     await dashboardPage.expandEachDashboardRow();
     dashboardPage.verifyMetricsExistence(dashboardPage.prometheusExporterStatusDashboard.metrics);
     await dashboardPage.verifyThereAreNoGraphsWithNA(4);
@@ -37,7 +37,7 @@ Scenario(
     dashboardPage.waitForDashboardOpened();
     await dashboardPage.applyFilter('Node Name', 'pmm-server');
     I.click(adminPage.fields.metricTitle);
-    adminPage.peformPageDown(5);
+    adminPage.performPageDown(5);
     dashboardPage.verifyMetricsExistence(dashboardPage.prometheusExporterOverviewDashboard.metrics);
     await dashboardPage.verifyThereAreNoGraphsWithNA(6);
     await dashboardPage.verifyThereAreNoGraphsWithoutData();

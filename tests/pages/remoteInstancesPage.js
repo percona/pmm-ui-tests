@@ -354,7 +354,7 @@ module.exports = {
         I.fillField(this.fields.environment, this.postgresGCSettings.environment);
         I.fillField(this.fields.cluster, this.postgresGCSettings.cluster);
     }
-    adminPage.peformPageDown(1);
+    adminPage.performPageDown(1);
   },
 
   createRemoteInstance(serviceName) {
