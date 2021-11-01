@@ -97,7 +97,7 @@ module.exports = {
       link: links.integratedAlertingDocs,
     },
     serverAddress: {
-      text: 'The SMTP host server address through which emails are sent',
+      text: 'The default SMTP smarthost used for sending emails, including port number (e.g. smtp.example.org:587)',
       link: links.communicationDocs,
     },
     hello: {
