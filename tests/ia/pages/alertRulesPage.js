@@ -53,7 +53,7 @@ module.exports = {
   },
   fields: {
     // searchDropdown returns a locator of a search input for a given label
-    searchDropdown: (field) => `//label[text()="${field}"]/following-sibling::div[1]//input`,
+    searchDropdown: (field) => `//label[text()="${field}"]/parent::div/following-sibling::div[1]//input`,
     // resultsLocator returns item locator in a search dropdown based on a text
     resultsLocator: (name) => `//div[@aria-label="Select option"]//span[text()="${name}"]`,
     ruleName: '$name-text-input',
