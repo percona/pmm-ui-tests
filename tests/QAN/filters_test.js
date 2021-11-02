@@ -132,7 +132,7 @@ xScenario(
 );
 
 Scenario(
-  'Check All Filter Groups Exists in the Filter Section @qan',
+  'PMM-T269 Check All Filter Groups Exists in the Filter Section @qan',
   async ({ I, qanFilters }) => {
     for (const i in qanFilters.filterGroups) {
       I.fillField(qanFilters.fields.filterBy, qanFilters.filterGroups[i]);

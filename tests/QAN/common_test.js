@@ -8,7 +8,7 @@ Before(async ({ I, qanPage }) => {
 });
 
 Scenario(
-  'PMM-T122 - Verify QAN UI Elements are displayed @qan',
+  'PMM-T122 PMM-T269 - Verify QAN UI Elements are displayed @qan',
   async ({
     I, qanFilters, qanOverview, qanPagination,
   }) => {
