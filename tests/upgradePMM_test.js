@@ -660,6 +660,18 @@ Scenario(
 );
 
 Scenario(
+  'Verify textfile collector extend metrics is still collected post upgrade (UI) @post-client-upgrade @post-upgrade @ami-upgrade @pmm-upgrade',
+  async ({ dashboardPage }) => {
+    const metricName = 'node_role';
+
+    const response = await dashboardPage.checkMetricExist(metricName);
+    const result = JSON.stringify(response.data.data.result);
+
+    assert.ok(response.data.data.result.length !== 0, `TextFile Collector Metrics ${metricName} Should be available but got empty ${result}`);
+  },
+);
+
+Scenario(
   'Verify Metrics from custom queries for postgres_exporter after upgrade (UI) @ami-upgrade @post-client-upgrade @post-upgrade @pmm-upgrade',
   async ({ dashboardPage }) => {
     const metricName = 'pg_stat_user_tables_n_tup_ins';
