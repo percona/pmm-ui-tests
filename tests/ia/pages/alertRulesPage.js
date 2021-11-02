@@ -60,7 +60,7 @@ module.exports = {
     threshold: '$threshold-number-input',
     duration: '$duration-number-input',
     filters: '$filters-textarea-input',
-    template: locate('$add-alert-rule-modal-form').find('div').first().find('div[class$="-singleValue"]'),
+    template: '//form[@data-testid="add-alert-rule-modal-form"]/div[2]//div[contains(@class, "singleValue")]',
   },
   messages: {
     noRulesFound: 'No alert rules found',
