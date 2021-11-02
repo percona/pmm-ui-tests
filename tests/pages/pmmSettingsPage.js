@@ -88,6 +88,10 @@ module.exports = {
     applyAlertmanager: 'Apply Alertmanager settings',
   },
   tooltips: {
+    dbaas: {
+      text: 'Option to enable/disable DBaaS features. Disabling DBaaS does not suspend or remove running clusters.',
+      link: links.dbaasDocs,
+    },
     stt: {
       text: 'Enable Security Threat Tool and get updated checks from Percona.',
       link: links.sttDocs,
@@ -222,6 +226,8 @@ module.exports = {
     telemetrySwitchSelector: locate('$advanced-telemetry').find('label'),
     iaSwitchSelectorInput: locate('$advanced-alerting').find('input'),
     iaSwitchSelector: locate('$advanced-alerting').find('label'),
+    dbaasSwitchSelectorInput: locate('$advanced-dbaas').find('input'),
+    dbaasSwitchSelector: locate('$advanced-dbaas').find('label'),
     telemetryLabel: locate('$advanced-telemetry').find('span'),
     tooltipSelector: '.popper__background',
     tabsSection: '$settings-tabs',
@@ -229,14 +235,14 @@ module.exports = {
     termsOfService: '//span[contains(text(), "Terms of Service")]',
     validationMessage: 'span.error-message',
     iaLabelTooltipSelector: locate('$advanced-alerting').find('div[class$="-Icon"]'),
+    dbaasLabelTooltipSelector: locate('$advanced-dbaas').find('div[class$="-Icon"]'),
+    dbaasMenuIconLocator: locate('a').withAttr({ href: '/graph/dbaas' }),
     rareIntervalInput: '$rareInterval-number-input',
     rareIntervalValidation: '$rareInterval-field-error-message',
     standartIntervalInput: '$standardInterval-number-input',
     standartIntervalValidation: '$standardInterval-field-error-message',
     frequentIntervalInput: '$frequentInterval-number-input',
     frequentIntervalValidation: '$frequentInterval-field-error-message',
-    dbaasSwitchSelectorInput: locate('$advanced-dbaas').find('//div[2]//input'),
-    dbaasSwitchSelector: locate('$advanced-dbaas').find('//div[2]//label'),
   },
 
   switchAzure() {

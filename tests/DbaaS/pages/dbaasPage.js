@@ -5,6 +5,12 @@ const assert = require('assert');
 
 module.exports = {
   url: 'graph/dbaas',
+  disabledDbaaSMessage: {
+    textMessage: 'DBaaS is disabled. You can enable it in PMM Settings.',
+    disabledDbaaSPopUpMessage: 'Service dbaas.v1beta1.Components is disabled.',
+    settingsLinkLocator: '$settings-link',
+    emptyBlock: '$empty-block',
+  },
   addedAlertMessage: 'Cluster was successfully registered',
   confirmDeleteText: 'Are you sure that you want to unregister this cluster?',
   deletedAlertMessage: 'Cluster successfully unregistered',
