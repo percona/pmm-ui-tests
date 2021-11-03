@@ -68,6 +68,15 @@ module.exports = {
     return I.sendPostRequest('v1/inventory/Agents/List', body, headers);
   },
 
+  async apiGetAgentsViaNodeId(nodeId) {
+    const body = {
+      node_id: nodeId,
+    };
+    const headers = { Authorization: `Basic ${await I.getAuth()}` };
+
+    return I.sendPostRequest('v1/inventory/Agents/List', body, headers);
+  },
+
   async apiGetServices(serviceType) {
     const body = serviceType ? { service_type: serviceType } : {};
     const headers = { Authorization: `Basic ${await I.getAuth()}` };

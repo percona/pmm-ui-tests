@@ -5,6 +5,12 @@ const assert = require('assert');
 
 module.exports = {
   url: 'graph/dbaas',
+  disabledDbaaSMessage: {
+    textMessage: 'DBaaS is disabled. You can enable it in PMM Settings.',
+    disabledDbaaSPopUpMessage: 'Service dbaas.v1beta1.Components is disabled.',
+    settingsLinkLocator: '$settings-link',
+    emptyBlock: '$empty-block',
+  },
   addedAlertMessage: 'Cluster was successfully registered',
   confirmDeleteText: 'Are you sure that you want to unregister this cluster?',
   deletedAlertMessage: 'Cluster successfully unregistered',
@@ -62,7 +68,7 @@ module.exports = {
           )
             .find('span')
             .withText(version),
-          dbClusterDatabaseVersionSelect: (version) => `//div[@data-qa='dbcluster-database-version-field']//div[contains(@class, 'grafana-select-menu')]//span[contains(., '${version}')]`,
+          dbClusterDatabaseVersionSelect: (version) => locate('div').withAttr({ 'aria-label': 'Select option' }).find('span').withText(`${version}`),
           defaultDbVersionValue: (version) => locate(
             '$dbcluster-database-version-field',
           )
@@ -89,6 +95,9 @@ module.exports = {
           nodesFieldErrorMessage: '$nodes-field-error-message',
           nodesNumberField: '$nodes-number-input',
           resourcesPerNode: (clusterSize) => `//label[contains(text(), "${clusterSize}")]`,
+          dbClusterExternalAccessTooltip: locate('$expose-field-container').find('div').at(2),
+          dbClusterExternalAccessCheckbox: '$expose-switch',
+          dbClusterExternalAccessTooltipText: '.popper',
           resourceBarCPU: '$dbcluster-resources-bar-cpu',
           resourceBarMemory: '$dbcluster-resources-bar-memory',
           resourceBarDisk: '$dbcluster-resources-bar-disk',
@@ -148,7 +157,7 @@ module.exports = {
         cancelDeleteDBCluster: '$cancel-delete-dbcluster-button',
         progressBarSteps: '$progress-bar-steps',
         progressBarContent: '$progress-bar-message',
-        updateClusterButton: '$confirm-update-dbcluster-button',
+        updateClusterButton: locate('button').withAttr({ 'data-qa': 'confirm-update-dbcluster-button' }),
       },
     },
   },
@@ -255,7 +264,7 @@ module.exports = {
       await dbaasAPI.waitForPSMDBClusterReady(dbClusterName, k8sClusterName);
     }
 
-    I.waitForElement(dbaasPage.tabs.dbClusterTab.fields.clusterStatusActive, 60);
+    I.waitForElement(dbaasPage.tabs.dbClusterTab.fields.clusterStatusActive, 120);
     I.seeElement(dbaasPage.tabs.dbClusterTab.fields.clusterStatusActive);
     I.waitForElement(dbaasPage.tabs.dbClusterTab.fields.clusterConnection.showPasswordButton, 30);
     I.click(dbaasPage.tabs.dbClusterTab.fields.clusterConnection.showPasswordButton);
@@ -316,7 +325,7 @@ module.exports = {
     const clusterDBType = await I.grabTextFrom(dbaasPage.tabs.dbClusterTab.fields.clusterDatabaseType);
 
     assert.ok(
-      clusterDBType === configuration.dbType,
+      clusterDBType.includes(configuration.dbType),
       `Expected DB Type was ${configuration.dbType}, but found ${clusterDBType}`,
     );
     await dbaasPage.verifyElementInSection(dbaasPage.tabs.dbClusterTab.fields.clusterParameters);
