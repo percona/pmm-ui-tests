@@ -1,6 +1,29 @@
 const assert = require('assert');
 
+const { inventoryAPI } = inject();
+
+const today = new Date().toISOString().slice(0, 10);
+const rnd = Math.floor(Math.random() * 90000) + 10000;
+const mysqlServiceName = `mysql-push-mode-${today}-${rnd}`;
+const postgresServiceName = `postgres-push-mode-${today}-${rnd}`;
+const mongoServiceName = `mongo--push-mode-${today}-${rnd}`;
+const haproxyServiceType = 'HAPROXY_SERVICE';
+
+const services = new DataTable(['serviceName']);
+
+services.add([mysqlServiceName]);
+services.add([postgresServiceName]);
+services.add([mongoServiceName]);
+// haproxy does not work since api returns Promise, and await cannot be used here
+services.add([getHaproxyName()]);
+
 Feature('Inventory page');
+
+BeforeSuite(async ({ I, inventoryAPI }) => {
+  I.say(await I.verifyCommand(`pmm-admin add mysql --port=3306 --password=ps --service-name=${mysqlServiceName}`));
+  I.say(await I.verifyCommand(`pmm-admin add postgresql --port=5433 --service-name=${postgresServiceName}`));
+  I.say(await I.verifyCommand(`pmm-admin add mongodb --port=27027 --service-name=${mongoServiceName}`));
+});
 
 Before(async ({ I }) => {
   await I.Authorize();
@@ -172,3 +195,20 @@ Scenario(
     }
   },
 );
+
+Data(services).Scenario(
+  'Verify push mode metrics in Inventory page(Agents tab) @inventory',
+  async ({ pmmInventoryPage, inventoryAPI, current }) => {
+    const id = await inventoryAPI.getServiceId(current.serviceName);
+
+    pmmInventoryPage.openAgentsPage();
+    await pmmInventoryPage.verifyExporterPushModeMetrics(id);
+  },
+);
+
+async function getHaproxyName() {
+    const haproxyService = await inventoryAPI.apiGetServices(haproxyServiceType);
+
+    /* expected array with single object, even if multiple returned - only one required for test */
+    return haproxyService.data.haproxy[0].service_name;
+}

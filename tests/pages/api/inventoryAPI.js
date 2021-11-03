@@ -93,6 +93,21 @@ module.exports = {
       .filter(({ service_id }) => service_id === serviceId);
   },
 
+  /**
+   * Returns Service ID for specified service Name.
+   *
+   * @param   serviceName   to search the ID
+   * @returns {Promise<string>}
+   */
+  async getServiceId(serviceName) {
+    const resp = await this.apiGetServices();
+
+    return Object.values(resp.data)
+      .flat(Infinity)
+      .find(({ service_name }) => service_name === serviceName)
+      .service_id;
+  },
+
   async deleteNode(nodeID, force) {
     const body = {
       force,

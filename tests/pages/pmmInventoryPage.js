@@ -3,6 +3,7 @@ const assert = require('assert');
 
 module.exports = {
   url: 'graph/inventory?orgId=1',
+  urlAgents: 'graph/inventory/agents?orgId=1',
   fields: {
     agentsLink: locate('li').withText('Agents'),
     agentsLinkOld: locate('a').withText('Agents'),
@@ -30,6 +31,11 @@ module.exports = {
     tableCheckbox: locate('$select-row').find('span'),
     // cannot be changed to locate() because of method: getCellValue()
     tableRow: '//tr[@data-testid="table-row"]',
+  },
+
+  openAgentsPage() {
+    I.amOnPage(this.urlAgents);
+    I.waitForVisible(this.fields.tableRow, 20);
   },
 
   verifyRemoteServiceIsDisplayed(serviceName) {
@@ -282,5 +288,11 @@ module.exports = {
   checkExistingAgent(agent) {
     I.click(this.fields.agentsLink);
     I.waitForVisible(agent, 30);
+  },
+
+  async verifyExporterPushModeMetrics(serviceId) {
+    const exporterLocator = `//tr/td[contains(text(), 'exporter')]/..//span[text()='service_id: ${serviceId}' and ../span/text()='push_metrics_enabled: true']`;
+
+    I.seeElement(exporterLocator);
   },
 };

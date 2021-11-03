@@ -16,6 +16,7 @@ this is it! tests are good to go on specified PMM server.
     * `docker-compose -f docker-compose-ami-db-setup.yml up -d`
     * `docker-compose -f docker-compose-mongodb-ssl.yml up -d`
     * `docker-compose -f docker-compose-mongo-replica.yml up -d`
+    * `docker-compose -f docker-compose-mongo-replica-local.yml up -d`
     * `docker-compose -f docker-compose-mysql-ssl.yml up -d`
     * `docker-compose -f docker-compose-postgresql-ssl.yml up -d`
 
