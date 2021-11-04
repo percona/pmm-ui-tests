@@ -11,7 +11,7 @@ Scenario(
     dashboardPage.waitForDashboardOpened();
     await dashboardPage.expandEachDashboardRow();
     I.click(adminPage.fields.metricTitle);
-    adminPage.peformPageDown(5);
+    adminPage.performPageDown(5);
     dashboardPage.verifyMetricsExistence(dashboardPage.victoriaMetricsDashboard.metrics);
     await dashboardPage.verifyThereAreNoGraphsWithNA(0);
     await dashboardPage.verifyThereAreNoGraphsWithoutData(1);
@@ -25,7 +25,7 @@ Scenario(
     dashboardPage.waitForDashboardOpened();
     await dashboardPage.expandEachDashboardRow();
     I.click(adminPage.fields.metricTitle);
-    adminPage.peformPageDown(5);
+    adminPage.performPageDown(5);
     dashboardPage.verifyMetricsExistence(dashboardPage.victoriaMetricsAgentsOverviewDashboard.metrics);
     await dashboardPage.verifyThereAreNoGraphsWithNA(0);
     await dashboardPage.verifyThereAreNoGraphsWithoutData(0);

@@ -22,7 +22,7 @@ Scenario(
     I.amOnPage(dashboardPage.mongoDbClusterSummaryDashboard.url);
     dashboardPage.waitForDashboardOpened();
     I.click(adminPage.fields.metricTitle);
-    adminPage.peformPageDown(1);
+    adminPage.performPageDown(1);
     await dashboardPage.expandEachDashboardRow();
     dashboardPage.verifyMetricsExistence(dashboardPage.mongoDbClusterSummaryDashboard.metrics);
     await dashboardPage.verifyThereAreNoGraphsWithNA();

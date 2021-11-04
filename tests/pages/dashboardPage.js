@@ -956,7 +956,8 @@ module.exports = {
 
       I.click(rowToExpand);
       I.wait(0.5);
-      adminPage.peformPageDown(1);
+      adminPage.performPageDown(1);
+      adminPage.performPageDown(1);
     }
   },
 

@@ -1,5 +1,6 @@
 const { pmmSettingsPage } = inject();
 const communicationDefaults = new DataTable(['type', 'serverAddress', 'hello', 'from', 'authType', 'username', 'password', 'url']);
+const assert = require('assert');
 
 pmmSettingsPage.communicationData.forEach(({
   type, serverAddress, hello, from, authType, username, password, url,
@@ -82,6 +83,50 @@ Scenario(
     await pmmSettingsPage.waitForPmmSettingsPageLoaded();
     I.moveCursor(pmmSettingsPage.fields.sttLabelTooltipSelector);
     await pmmSettingsPage.verifyTooltip(pmmSettingsPage.tooltips.stt);
+  },
+);
+
+Scenario(
+  'PMM-T782 PMM-T783 Verify DBaaS is disabled by default, Verify DBaaS can be enabled in PMM Settings @settings',
+  async ({ I, pmmSettingsPage, dbaasPage }) => {
+    I.amOnPage(pmmSettingsPage.advancedSettingsUrl);
+    await pmmSettingsPage.waitForPmmSettingsPageLoaded();
+    I.waitForVisible(pmmSettingsPage.fields.dbaasLabelTooltipSelector, 30);
+
+    // Verify tooltip for Enable/Disable DBaaS toggle
+    I.moveCursorTo(pmmSettingsPage.fields.dbaasLabelTooltipSelector);
+    await pmmSettingsPage.verifyTooltip(pmmSettingsPage.tooltips.dbaas);
+
+    let selector = await I.grabAttributeFrom(pmmSettingsPage.fields.dbaasSwitchSelector, 'checked');
+
+    if (selector) {
+      assert.ok(selector === false, 'Dbaas Should be disabled by Default, toggle should be disabled');
+    }
+
+    I.dontSeeElement(pmmSettingsPage.fields.dbaasMenuIconLocator);
+    I.amOnPage(dbaasPage.url);
+    I.waitForElement(dbaasPage.disabledDbaaSMessage.settingsLinkLocator, 30);
+    I.verifyPopUpMessage(dbaasPage.disabledDbaaSMessage.disabledDbaaSPopUpMessage);
+    const message = (await I.grabTextFrom(dbaasPage.disabledDbaaSMessage.emptyBlock)).replace(/\s+/g, ' ');
+
+    assert.ok(message === dbaasPage.disabledDbaaSMessage.textMessage, `Message Shown on ${message} should be equal to ${dbaasPage.disabledDbaaSMessage.textMessage}`);
+    const link = await I.grabAttributeFrom(dbaasPage.disabledDbaaSMessage.settingsLinkLocator, 'href');
+
+    assert.ok(link.includes('/graph/settings/advanced-settings'), `Advanced Setting Link displayed on DbaaS Page, when DbaaS is not enabled ${link}, please check the link`);
+    // Enable DbaaS via Advanced Settings, Make sure Menu is visible.
+    I.amOnPage(pmmSettingsPage.advancedSettingsUrl);
+    await pmmSettingsPage.waitForPmmSettingsPageLoaded();
+    I.waitForVisible(pmmSettingsPage.fields.dbaasLabelTooltipSelector, 30);
+    I.click(pmmSettingsPage.fields.dbaasSwitchSelector);
+    I.click(pmmSettingsPage.fields.applyButton);
+    I.waitForElement(pmmSettingsPage.fields.dbaasMenuIconLocator, 30);
+    I.seeElement(pmmSettingsPage.fields.dbaasMenuIconLocator);
+    I.waitForElement(pmmSettingsPage.fields.dbaasSwitchSelector, 60);
+    selector = await I.grabAttributeFrom(pmmSettingsPage.fields.dbaasSwitchSelectorInput, 'checked');
+    assert.ok(selector === true, 'Dbaas Should be enabled, toggle should be checked now');
+    I.amOnPage(dbaasPage.url);
+    I.waitForElement(dbaasPage.tabs.kubernetesClusterTab.addKubernetesClusterButton, 50);
+    I.seeElement(dbaasPage.tabs.kubernetesClusterTab.addKubernetesClusterButton);
   },
 );
 
