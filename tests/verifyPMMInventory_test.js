@@ -207,8 +207,8 @@ Data(services).Scenario(
 );
 
 async function getHaproxyName() {
-    const haproxyService = await inventoryAPI.apiGetServices(haproxyServiceType);
+  const haproxyService = await inventoryAPI.apiGetServices(haproxyServiceType);
 
-    /* expected array with single object, even if multiple returned - only one required for test */
-    return haproxyService.data.haproxy[0].service_name;
+  /* expected array with single object, even if multiple returned - only one required for test */
+  return haproxyService.data.haproxy[0].service_name;
 }
