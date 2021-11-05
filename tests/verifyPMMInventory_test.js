@@ -14,7 +14,7 @@ services.add(['haproxy']);
 
 Feature('Inventory page');
 
-BeforeSuite(async ({ I, inventoryAPI }) => {
+BeforeSuite(async ({ I }) => {
   I.say(await I.verifyCommand(`pmm-admin add mysql --port=3306 --password=ps --service-name=${mysqlServiceName}`));
   I.say(await I.verifyCommand(`pmm-admin add postgresql --port=5433 --service-name=${postgresServiceName}`));
   I.say(await I.verifyCommand(`pmm-admin add mongodb --port=27027 --service-name=${mongoServiceName}`));
@@ -186,7 +186,9 @@ Scenario(
 
 Data(services).Scenario(
   'Verify  push mode metrics in Inventory page(Agents tab) @inventory',
-  async ({ pmmInventoryPage, inventoryAPI, current, remoteInstancesHelper }) => {
+  async ({
+    pmmInventoryPage, inventoryAPI, current, remoteInstancesHelper,
+  }) => {
     let name = current.serviceName;
 
     if (name === 'haproxy') {
