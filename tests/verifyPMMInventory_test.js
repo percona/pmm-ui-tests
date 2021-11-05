@@ -1,10 +1,9 @@
 const assert = require('assert');
+const faker = require('faker');
 
-const today = new Date().toISOString().slice(0, 10);
-const rnd = Math.floor(Math.random() * 90000) + 10000;
-const mysqlServiceName = `mysql-push-mode-${today}-${rnd}`;
-const postgresServiceName = `postgres-push-mode-${today}-${rnd}`;
-const mongoServiceName = `mongo--push-mode-${today}-${rnd}`;
+const mysqlServiceName = `mysql-push-mode-${faker.datatype.number()}`;
+const postgresServiceName = `postgres-push-mode-${faker.datatype.number()}`;
+const mongoServiceName = `mongo-push-mode-${faker.datatype.number()}`;
 
 const services = new DataTable(['serviceName']);
 
@@ -35,10 +34,8 @@ Scenario(
 
 Scenario(
   'PMM-T371 - Verify sorting in Inventory page(Agents tab) @inventory @nightly',
-  async ({ I, pmmInventoryPage }) => {
-    I.amOnPage(pmmInventoryPage.url);
-    I.waitForVisible(pmmInventoryPage.fields.agentsLink, 20);
-    I.click(pmmInventoryPage.fields.agentsLink);
+  async ({ pmmInventoryPage }) => {
+    pmmInventoryPage.openAgentsPage();
     await pmmInventoryPage.checkSort(3);
   },
 );
@@ -122,8 +119,7 @@ Scenario(
     I.click(pmmInventoryPage.fields.nodesLink);
     const countOfNodesBefore = await pmmInventoryPage.getNodeCount();
 
-    I.waitForVisible(pmmInventoryPage.fields.agentsLink, 20);
-    I.click(pmmInventoryPage.fields.agentsLink);
+    pmmInventoryPage.openAgentsPage();
     const serviceId = await pmmInventoryPage.getAgentServiceID(agentType);
     const agentId = await pmmInventoryPage.getAgentID(agentType);
 
@@ -142,13 +138,11 @@ Scenario(
 
 Scenario(
   'PMM-T345 - Verify removing pmm-agent on PMM Inventory page removes all associated agents @inventory',
-  async ({ I, pmmInventoryPage }) => {
+  async ({ pmmInventoryPage }) => {
     const agentID = 'pmm-server';
     const agentType = 'PMM Agent';
 
-    I.amOnPage(pmmInventoryPage.url);
-    I.waitForVisible(pmmInventoryPage.fields.agentsLink, 20);
-    I.click(pmmInventoryPage.fields.agentsLink);
+    pmmInventoryPage.openAgentsPage();
     const countBefore = await pmmInventoryPage.getCountOfItems();
 
     pmmInventoryPage.selectAgentByID(agentID);
@@ -165,14 +159,12 @@ Scenario(
 
 Scenario(
   'PMM-T554 - Check that all agents have status "RUNNING" @inventory @nightly',
-  async ({ I, pmmInventoryPage, inventoryAPI }) => {
+  async ({ pmmInventoryPage, inventoryAPI }) => {
     const statuses = ['WAITING', 'STARTING', 'UNKNOWN'];
     const serviceIdsNotRunning = [];
     const servicesNotRunning = [];
 
-    I.amOnPage(pmmInventoryPage.url);
-    I.waitForVisible(pmmInventoryPage.fields.agentsLink, 20);
-    I.click(pmmInventoryPage.fields.agentsLink);
+    pmmInventoryPage.openAgentsPage();
 
     for (const status of statuses) {
       const ids = await pmmInventoryPage.getServiceIdWithStatus(status);
