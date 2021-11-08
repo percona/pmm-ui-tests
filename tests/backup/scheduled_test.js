@@ -1,3 +1,5 @@
+const assert = require('assert');
+
 const { locationsPage } = inject();
 
 const location = {
@@ -10,7 +12,7 @@ let locationId;
 let serviceId;
 
 const mongoServiceName = 'mongo-backup-schedule';
-const schedules = new DataTable(['cronExpression', 'name', 'description']);
+const schedules = new DataTable(['cronExpression', 'name', 'frequency']);
 
 schedules.add(['30 8 * * *', 'schedule daily', 'At 08:30 AM']);
 schedules.add(['0 0 * * 2', 'schedule weekly', 'At 12:00 AM, only on Tuesday']);
@@ -207,20 +209,17 @@ Data(schedules).Scenario(
       location_id: locationId,
       cron_expression: current.cronExpression,
       name: current.name,
-      description: current.description,
-      mode: scheduledAPI.backupModes.snapshot,
-      retry_interval: '30s',
-      retries: 0,
+      description: `Desc ${current.frequency}`,
       retention: 6,
-      enabled: true,
     };
     const scheduleDetails = {
       name: current.name,
       vendor: 'MongoDB',
-      description: current.description,
+      frequency: current.frequency,
+      description: schedule.description,
       retention: 6,
       type: 'Full',
-      location: 'mongo-location for scheduling',
+      location: location.name,
       dataModel: 'Logical',
       cronExpression: current.cronExpression,
     };
@@ -230,3 +229,112 @@ Data(schedules).Scenario(
     await scheduledPage.verifyBackupValues(scheduleDetails);
   },
 );
+
+Scenario('PMM-T900 Verify user can copy scheduled backup @backup',
+  async ({
+    I, scheduledPage, scheduledAPI,
+  }) => {
+    const schedule = {
+      service_id: serviceId,
+      location_id: locationId,
+      name: 'test schedule copy',
+      description: 'some description',
+      cron_expression: '0 0 * * *',
+    };
+
+    const newSchedule = {
+      name: `Copy of ${schedule.name}`,
+      vendor: 'MongoDB',
+      description: schedule.description,
+      enabled: false,
+      frequency: 'At 12:00 AM',
+      retention: 7,
+      type: 'Full',
+      location: location.name,
+      dataModel: 'Logical',
+      cronExpression: schedule.cron_expression,
+    };
+
+    await scheduledAPI.createScheduledBackup(schedule);
+    await scheduledPage.openScheduledBackupsPage();
+
+    // Copy existing schedule
+    I.click(scheduledPage.buttons.copyByName(schedule.name));
+
+    // Verify copied schedule details
+    I.waitForVisible(scheduledPage.buttons.deleteByName(newSchedule.name), 10);
+    await scheduledPage.verifyBackupValues(newSchedule);
+
+    // Verify schedule is disabled after copy
+    I.seeAttributesOnElements(scheduledPage.elements.toggleByName(newSchedule.name), { checked: null });
+  });
+
+Scenario('PMM-T908 Verify user can enable/disable scheduled backup @backup',
+  async ({
+    I, scheduledPage, scheduledAPI,
+  }) => {
+    const schedule = {
+      service_id: serviceId,
+      location_id: locationId,
+      name: 'test schedule enable/disable',
+      enabled: false,
+    };
+
+    await scheduledAPI.createScheduledBackup(schedule);
+    await scheduledPage.openScheduledBackupsPage();
+
+    // Verify schedule is disabled
+    I.seeAttributesOnElements(scheduledPage.elements.toggleByName(schedule.name), { checked: null });
+
+    // Grab background-color of a row
+    const color = await I.grabCssPropertyFrom(scheduledPage.elements.scheduleTypeByName(schedule.name), 'background-color');
+
+    // Enable schedule
+    I.click(scheduledPage.buttons.enableDisableByName(schedule.name));
+    I.seeAttributesOnElements(scheduledPage.elements.toggleByName(schedule.name), { checked: true });
+
+    // Grab background-color of a row after enabling schedule
+    const newColor = await I.grabCssPropertyFrom(scheduledPage.elements.scheduleTypeByName(schedule.name), 'background-color');
+
+    assert.ok(color !== newColor, 'Background color should change after toggle');
+
+    // Disable schedule
+    I.click(scheduledPage.buttons.enableDisableByName(schedule.name));
+    I.seeAttributesOnElements(scheduledPage.elements.toggleByName(schedule.name), { checked: null });
+
+    // Verify the color is the same as before enabling
+    I.seeCssPropertiesOnElements(scheduledPage.elements.scheduleTypeByName(schedule.name), { 'background-color': color });
+  });
+
+Scenario('PMM-T901 Verify user can delete scheduled backup @backup',
+  async ({
+    I, scheduledPage, scheduledAPI,
+  }) => {
+    const schedule = {
+      service_id: serviceId,
+      location_id: locationId,
+      name: 'test schedule delete',
+    };
+
+    await scheduledAPI.createScheduledBackup(schedule);
+    await scheduledPage.openScheduledBackupsPage();
+
+    // Open Delete modal
+    I.click(scheduledPage.buttons.deleteByName(schedule.name));
+
+    // Click Cancel button and verify schedule still exists
+    I.waitForVisible(scheduledPage.buttons.confirmDelete, 10);
+    I.click(scheduledPage.buttons.cancelDelete);
+    I.dontSeeElement(scheduledPage.elements.modalContent);
+    I.seeElement(scheduledPage.buttons.deleteByName(schedule.name));
+
+    // Open Delete modal again and verify it has a correct schedule name in message
+    I.click(scheduledPage.buttons.deleteByName(schedule.name));
+    I.waitForVisible(scheduledPage.buttons.confirmDelete, 10);
+    I.seeTextEquals(scheduledPage.messages.confirmDelete(schedule.name),
+      locate(scheduledPage.elements.modalContent).find('h4'));
+
+    // Confirm delete and verify success message
+    I.click(scheduledPage.buttons.confirmDelete);
+    I.verifyPopUpMessage(scheduledPage.messages.successfullyDeleted(schedule.name));
+  });

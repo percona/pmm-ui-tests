@@ -7,6 +7,7 @@ module.exports = {
   elements: {
     noData: '$table-no-data',
     modalHeader: '$modal-header',
+    modalContent: '$modal-content',
     dropdownOption: (text) => locate('div[class$="-select-option-body"]').find('span').withText(text),
     selectedLocation: locate('div[class$="-singleValue"]').inside(locate('div').withChild('$location-select-label')),
     selectedService: locate('div[class$="-singleValue"]').inside(locate('div').withChild('$service-select-label')),
@@ -17,6 +18,7 @@ module.exports = {
     retentionByName: (name) => locate('td').at(4).inside(scheduleCell(name)),
     scheduleTypeByName: (name) => locate('td').at(5).inside(scheduleCell(name)),
     scheduleLocationByName: (name) => locate('td').at(6).inside(scheduleCell(name)),
+    toggleByName: (name) => locate('$toggle-scheduled-backpup').inside(scheduleCell(name)),
     detailedInfoRow: {
       backupName: locate('$scheduled-backup-details-name').find('span').at(2),
       description: 'pre',
@@ -27,7 +29,12 @@ module.exports = {
   buttons: {
     openAddScheduleModal: '$scheduled-backup-add-modal-button',
     createSchedule: '$backup-add-button',
-    deleteByName: (name) => locate('$edit-scheduled-backpup-button').inside(scheduleCell(name)),
+    editByName: (name) => locate('$edit-scheduled-backpup-button').inside(scheduleCell(name)),
+    deleteByName: (name) => locate('$delete-scheduled-backpup-button').inside(scheduleCell(name)),
+    copyByName: (name) => locate('$copy-alert-scheduled-backup-button').inside(scheduleCell(name)),
+    enableDisableByName: (name) => locate('label').after('$toggle-scheduled-backpup').inside(scheduleCell(name)),
+    confirmDelete: '$confirm-delete-modal-button',
+    cancelDelete: '$cancel-delete-modal-button',
   },
   fields: {
     backupName: '$backupName-text-input',
@@ -43,6 +50,8 @@ module.exports = {
     requiredField: 'Required field',
     outOfRetentionRange: 'Value should be in the range from 0 to 99',
     backupScheduled: 'Backup successfully scheduled',
+    confirmDelete: (name) => `Are you sure you want to delete the scheduled backup "${name}"?`,
+    successfullyDeleted: (name) => `Scheduled backup "${name}" successfully deleted.`,
   },
   locationType: {},
 
@@ -73,17 +82,17 @@ module.exports = {
 
   verifyBackupValues(scheduleObj) {
     const {
-      name, vendor, description, retention, type, location, dataModel, cronExpression,
+      name, vendor, frequency, description, retention, type, location, dataModel, cronExpression,
     } = scheduleObj;
 
-    this.verifyBackupRowValues(name, vendor, description, retention, type, location);
+    this.verifyBackupRowValues(name, vendor, frequency, retention, type, location);
     this.verifyBackupDetailsRow(name, description, dataModel, cronExpression);
   },
 
-  verifyBackupRowValues(name, vendor, description, retention, type, location) {
+  verifyBackupRowValues(name, vendor, frequency, retention, type, location) {
     I.seeElement(this.elements.scheduleName(name));
     I.seeTextEquals(vendor, this.elements.scheduleVendorByName(name));
-    I.seeTextEquals(description, this.elements.frequencyByName(name));
+    I.seeTextEquals(frequency, this.elements.frequencyByName(name));
     I.seeTextEquals(`${retention} backups`, this.elements.retentionByName(name));
     I.seeTextEquals(type, this.elements.scheduleTypeByName(name));
     I.seeTextEquals(location, this.elements.scheduleLocationByName(name));

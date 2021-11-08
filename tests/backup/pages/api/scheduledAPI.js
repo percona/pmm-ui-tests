@@ -13,12 +13,12 @@ module.exports = {
       location_id,
       name,
       mode = backupModes.snapshot,
-      description = '',
-      cron_expression,
-      retry_interval,
-      retries,
-      retention,
-      enabled,
+      description = 'description',
+      cron_expression = '0 0 * * *',
+      retry_interval = '30s',
+      retries = 0,
+      retention = 7,
+      enabled = true,
     } = scheduleObj;
 
     const body = {
