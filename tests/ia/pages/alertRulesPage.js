@@ -38,9 +38,9 @@ module.exports = {
     cancelDelete: '$cancel-delete-modal-button',
     delete: '$confirm-delete-modal-button',
     // showDetails returns Show rule details button locator for a given rule name
-    showDetails: (ruleName) => `${rulesNameCell(ruleName)}//button[@data-testid="show-alert-rule-details"]`,
+    showDetails: (ruleName) => `${rulesNameCell(ruleName)}//button[@data-testid="show-details"]`,
     // hideDetails returns Hide rule details button locator for a given rule name
-    hideDetails: (ruleName) => `${rulesNameCell(ruleName)}//button[@data-testid="hide-alert-rule-details"]`,
+    hideDetails: (ruleName) => `${rulesNameCell(ruleName)}//button[@data-testid="hide-details"]`,
     // editAlertRule returns Edit rule button locator for a given rule name
     editAlertRule: (ruleName) => `${rulesNameCell(ruleName)}/following-sibling::td//button[@data-testid='edit-alert-rule-button']`,
     // duplicateAlertRule returns Copy rule button locator for a given rule name
