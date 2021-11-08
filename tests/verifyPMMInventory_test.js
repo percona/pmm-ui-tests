@@ -1,6 +1,7 @@
 const assert = require('assert');
 const faker = require('faker');
 
+const pmmManagerCmd = '/srv/pmm-qa/pmm-tests/pmm-framework.sh';
 const mysqlServiceName = `mysql-push-mode-${faker.datatype.number()}`;
 const postgresServiceName = `postgres-push-mode-${faker.datatype.number()}`;
 const mongoServiceName = `mongo-push-mode-${faker.datatype.number()}`;
@@ -15,9 +16,15 @@ services.add(['haproxy']);
 Feature('Inventory page');
 
 BeforeSuite(async ({ I }) => {
-  I.say(await I.verifyCommand(`pmm-admin add mysql --port=3306 --password=ps --service-name=${mysqlServiceName}`));
-  I.say(await I.verifyCommand(`pmm-admin add postgresql --port=5433 --service-name=${postgresServiceName}`));
-  I.say(await I.verifyCommand(`pmm-admin add mongodb --port=27027 --service-name=${mongoServiceName}`));
+  I.say(await I.verifyCommand(`${pmmManagerCmd} --addclient=ps,1 --deploy-service-with-name ${mysqlServiceName}`));
+  I.say(await I.verifyCommand(`${pmmManagerCmd} --addclient=pdpgsql,1 --deploy-service-with-name ${postgresServiceName}`));
+  I.say(await I.verifyCommand(`${pmmManagerCmd} --addclient=mo,1 --deploy-service-with-name ${mongoServiceName}`));
+});
+
+AfterSuite(async ({ I }) => {
+  I.say(await I.verifyCommand(`${pmmManagerCmd} --cleanup-service ${mysqlServiceName}`));
+  I.say(await I.verifyCommand(`${pmmManagerCmd} --cleanup-service ${postgresServiceName}`));
+  I.say(await I.verifyCommand(`${pmmManagerCmd} --cleanup-service ${mongoServiceName}`));
 });
 
 Before(async ({ I }) => {
