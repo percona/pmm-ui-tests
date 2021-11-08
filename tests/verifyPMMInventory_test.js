@@ -1,7 +1,7 @@
 const assert = require('assert');
 const faker = require('faker');
 
-const pmmManagerCmd = 'bash /srv/pmm-qa/pmm-tests/pmm-framework.sh';
+const pmmManagerCmd = 'bash /srv/pmm-qa/pmm-tests/pmm-framework.sh --pmm2';
 const mysqlServiceName = `mysql-push-mode-${faker.datatype.number()}`;
 const postgresServiceName = `postgres-push-mode-${faker.datatype.number()}`;
 const mongoServiceName = `mongo-push-mode-${faker.datatype.number()}`;
