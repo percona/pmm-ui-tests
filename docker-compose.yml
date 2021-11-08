@@ -19,11 +19,6 @@ services:
     ports:
       - "80:80"
       - "443:443"
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://127.0.0.1/ping"]
-      interval: 3s
-      timeout: 2s
-      retries: 20
     environment:
       - PMM_DEBUG=1
       - PERCONA_TEST_SAAS_HOST=check-dev.percona.com:443
@@ -33,29 +28,6 @@ services:
       - pmm-server-data:/srv
     networks:
       - pmm-network
-
-  pmm-client:
-    image: ${PMM_CLIENT_IMAGE:-perconalab/pmm-client:dev-latest}
-    container_name: pmm-client
-    ports:
-      - "7778:7777"
-    depends_on:
-      pmm-server:
-        condition: service_healthy
-    environment:
-      - PMM_AGENT_SETUP=1
-      - PMM_AGENT_SERVER_ADDRESS=pmm-server
-      - PMM_AGENT_SERVER_USERNAME=admin
-      - PMM_AGENT_SERVER_PASSWORD=admin
-      - PMM_AGENT_PORTS_MIN=41000
-      - PMM_AGENT_PORTS_MAX=41500
-      - PMM_AGENT_SERVER_INSECURE_TLS=1
-      - PMM_AGENT_CONFIG_FILE=config/pmm-agent.yaml
-      - PMM_AGENT_SETUP_NODE_NAME=${PMM_AGENT_SETUP_NODE_NAME:-pmm-client-container}
-      - PMM_AGENT_SETUP_FORCE=1
-      - PMM_AGENT_SETUP_NODE_TYPE=container
-      - PMM_AGENT_PRERUN_SCRIPT=${PMM_AGENT_PRERUN_SCRIPT}
-    restart: on-failure
 
   # It is essential to have an extra directory `/slowlogs/` between host and container;
   # Otherwise, MySQL in Docker for Mac completely locks during/after slowlog rotation tests.
