@@ -1,7 +1,7 @@
 const { I } = inject();
 const { rules, templates } = require('./testData');
 
-const rulesNameCell = (ruleName) => `//td[1][div/span[text()="${ruleName}"]]`;
+const rulesNameCell = (ruleName) => `//td[1][div[text()="${ruleName}"]]`;
 
 module.exports = {
   url: 'graph/integrated-alerting/alert-rules',
