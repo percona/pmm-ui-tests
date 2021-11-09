@@ -7,6 +7,7 @@ exports.config = {
       url: process.env.PMM_UI_URL || 'http://127.0.0.1/',
       restart: true,
       browser: 'chromium',
+      video: true,
       windowSize: '1920x1080',
       waitForNavigation: 'networkidle0',
       waitForTimeout: 30000,
