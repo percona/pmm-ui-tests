@@ -53,14 +53,14 @@ module.exports = {
   },
   fields: {
     // searchDropdown returns a locator of a search input for a given label
-    searchDropdown: (field) => `//label[text()="${field}"]/following-sibling::div[1]//input`,
+    searchDropdown: (field) => `//label[text()="${field}"]/parent::div/following-sibling::div[1]//input`,
     // resultsLocator returns item locator in a search dropdown based on a text
     resultsLocator: (name) => `//div[@aria-label="Select option"]//span[text()="${name}"]`,
     ruleName: '$name-text-input',
     threshold: '$threshold-number-input',
     duration: '$duration-number-input',
     filters: '$filters-textarea-input',
-    template: locate('$add-alert-rule-modal-form').find('div').first().find('div[class$="-singleValue"]'),
+    template: '//form[@data-testid="add-alert-rule-modal-form"]/div[2]//div[contains(@class, "singleValue")]',
   },
   messages: {
     noRulesFound: 'No alert rules found',

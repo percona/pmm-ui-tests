@@ -35,7 +35,7 @@ module.exports = {
     description: '$description-textarea-input',
     serviceNameDropdown: locate('div[class$="-select-value-container"]').inside(locate('div').withChild('$service-select-label')),
     locationDropdown: locate('div[class$="-select-value-container"]').inside(locate('div').withChild('$location-select-label')),
-    everyDropdown: locate('div[class$="-select-value-container"]').inside(locate('div').withChild('$period-select-label')),
+    everyDropdown: '//label[@data-testid="period-field-label"]/parent::div/following-sibling::div[1]//div[contains(@class, "-select-value-container")]',
     retention: '$retention-number-input',
   },
   messages: {
