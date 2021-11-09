@@ -18,7 +18,7 @@ Feature('Inventory page');
 BeforeSuite(async ({ I }) => {
   I.say(await I.verifyCommand(`${pmmManagerCmd} --addclient=ps,1 --deploy-service-with-name ${mysqlServiceName}`));
   I.say(await I.verifyCommand(`${pmmManagerCmd} --addclient=pdpgsql,1 --deploy-service-with-name ${postgresServiceName}`));
-  I.say(await I.verifyCommand(`${pmmManagerCmd} --addclient=mo,1 --deploy-service-with-name ${mongoServiceName}`));
+  I.say(await I.verifyCommand(`${pmmManagerCmd} --addclient=modb,1 --deploy-service-with-name ${mongoServiceName}`));
 });
 
 AfterSuite(async ({ I }) => {
