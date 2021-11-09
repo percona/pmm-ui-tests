@@ -1,4 +1,5 @@
 const assert = require('assert');
+const moment = require('moment');
 
 const { locationsPage } = inject();
 
@@ -170,7 +171,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T922 Verify user can schedule a backup for MongoDB with replica @backup',
+  'PMM-T922, PMM-T977 Verify user can schedule a backup for MongoDB with replica @backup',
   async ({
     I, backupInventoryPage, scheduledAPI, backupAPI, scheduledPage,
   }) => {
@@ -186,9 +187,20 @@ Scenario(
     scheduledPage.selectDropdownOption(scheduledPage.fields.everyDropdown, 'Minute');
     scheduledPage.clearRetentionField();
     I.fillField(scheduledPage.fields.retention, schedule.retention);
+
+    // Verify mention about UTC time in create schedule modal
+    I.seeTextEquals(
+      scheduledPage.messages.scheduleInModalLabel,
+      locate(scheduledPage.elements.scheduleBlockInModal).find('h6'),
+    );
     I.click(scheduledPage.buttons.createSchedule);
     I.waitForVisible(scheduledPage.elements.scheduleName(schedule.name), 20);
     I.seeTextEquals('1 backup', scheduledPage.elements.retentionByName(schedule.name));
+
+    // Verify local timestamp is shown in Last Backup column
+    await scheduledAPI.waitForFirstExecution(schedule.name);
+    scheduledPage.openScheduledBackupsPage();
+    I.seeTextEquals(moment().format('YYYY-MM-DDHH:mm:00'), scheduledPage.elements.lastBackupByName(schedule.name));
 
     await backupAPI.waitForBackupFinish(null, schedule.name, 300);
     const { scheduled_backup_id } = await scheduledAPI.getScheduleIdByName(schedule.name);

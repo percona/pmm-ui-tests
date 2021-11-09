@@ -19,6 +19,8 @@ module.exports = {
     scheduleTypeByName: (name) => locate('td').at(5).inside(scheduleCell(name)),
     scheduleLocationByName: (name) => locate('td').at(6).inside(scheduleCell(name)),
     toggleByName: (name) => locate('$toggle-scheduled-backpup').inside(scheduleCell(name)),
+    lastBackupByName: (name) => locate('$detailed-date').inside(scheduleCell(name)),
+    scheduleBlockInModal: '$advanced-backup-fields',
     detailedInfoRow: {
       backupName: locate('$scheduled-backup-details-name').find('span').at(2),
       description: 'pre',
@@ -52,6 +54,7 @@ module.exports = {
     backupScheduled: 'Backup successfully scheduled',
     confirmDelete: (name) => `Are you sure you want to delete the scheduled backup "${name}"?`,
     successfullyDeleted: (name) => `Scheduled backup "${name}" successfully deleted.`,
+    scheduleInModalLabel: 'Schedule - UTC time',
   },
   locationType: {},
 

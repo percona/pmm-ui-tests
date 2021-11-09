@@ -64,6 +64,24 @@ module.exports = {
     return resp.data.scheduled_backups;
   },
 
+  async waitForFirstExecution(scheduledBackupName, timeout = 120) {
+    for (let i = 0; i < timeout / 5; i++) {
+      const schedules = await this.getScheduledList();
+
+      if (!schedules) {
+        I.wait(5);
+        // eslint-disable-next-line no-continue
+        continue;
+      }
+
+      const found = schedules.filter(({ last_run = null, name }) => name === scheduledBackupName && last_run);
+
+      if (found.length) break;
+
+      I.wait(5);
+    }
+  },
+
   async removeScheduledBackup(scheduledId) {
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
     const body = {
