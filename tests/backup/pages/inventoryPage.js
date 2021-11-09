@@ -20,6 +20,7 @@ module.exports = {
     retryTimes: '$retryTimes-number-input',
     retryInterval: '$retryInterval-number-input',
     dataModelState: '$dataModel-radio-state',
+    backupModalError: '$backup-modal-error',
   },
   buttons: {
     openAddBackupModal: '$backup-add-modal-button',
@@ -47,6 +48,7 @@ module.exports = {
     modalHeaderText: 'Delete backup artifact',
     forceDeleteLabelText: 'Delete from storage',
     confirmDeleteText: (backupName) => `Are you sure you want to delete "${backupName}"?`,
+    serviceNoLongerExists: 'This service no longer exists. Please choose a compatible one.',
   },
   locationType: {},
 

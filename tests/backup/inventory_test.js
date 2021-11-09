@@ -12,6 +12,7 @@ let locationId;
 let serviceId;
 
 const mongoServiceName = 'mongo-backup-inventory';
+const mongoServiceNameToDelete = 'mongo-service-to-delete';
 
 Feature('BM: Backup Inventory');
 
@@ -27,6 +28,7 @@ BeforeSuite(async ({
   });
 
   I.say(await I.verifyCommand(`pmm-admin add mongodb --port=27027 --service-name=${mongoServiceName} --replication-set=rs0`));
+  I.say(await I.verifyCommand(`pmm-admin add mongodb --port=27027 --service-name=${mongoServiceNameToDelete} --replication-set=rs0`));
 });
 
 Before(async ({
@@ -211,5 +213,27 @@ Scenario(
     const record = await c.findOne({ name: 'BeforeRestore' });
 
     assert.ok(record === null, `Was expecting to not have a record ${JSON.stringify(record, null, 2)} after restore operation`);
+  },
+);
+
+Scenario(
+  'PMM-T848 Verify service no longer exists error message during restore @backup',
+  async ({
+    I, backupInventoryPage, backupAPI, inventoryAPI,
+  }) => {
+    const backupName = 'service remove backup';
+    const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName('MONGODB_SERVICE', mongoServiceNameToDelete);
+    const artifactId = await backupAPI.startBackup(backupName, service_id, locationId);
+
+    await backupAPI.waitForBackupFinish(artifactId);
+    await inventoryAPI.deleteService(service_id);
+
+    I.refreshPage();
+    backupInventoryPage.verifyBackupSucceeded(backupName);
+
+    I.click(backupInventoryPage.buttons.restoreByName(backupName));
+    I.waitForVisible(backupInventoryPage.buttons.modalRestore, 10);
+    I.seeTextEquals(backupInventoryPage.messages.serviceNoLongerExists, backupInventoryPage.elements.backupModalError);
+    I.seeElementsDisabled(backupInventoryPage.buttons.modalRestore);
   },
 );
