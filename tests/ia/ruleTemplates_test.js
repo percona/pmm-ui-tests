@@ -178,7 +178,7 @@ Scenario(
     ruleTemplatesPage.openRuleTemplatesTab();
     ruleTemplatesPage.openEditDialog(templateName);
     ruleTemplatesPage.verifyRuleTemplateContent(fileContent);
-    I.seeElementsEnabled(ruleTemplatesPage.buttons.editTemplate);
+    I.seeElementsDisabled(ruleTemplatesPage.buttons.editTemplate);
     I.clearField(ruleTemplatesPage.fields.templateInput);
     I.fillField(ruleTemplatesPage.fields.templateInput, updatedTemplateText);
     I.seeElementsEnabled(ruleTemplatesPage.buttons.editTemplate);

@@ -148,7 +148,7 @@ Scenario(
     await scheduledAPI.createScheduledBackup(schedule);
 
     await scheduledPage.openScheduledBackupsPage();
-    I.click(scheduledPage.buttons.deleteByName(schedule.name));
+    I.click(scheduledPage.buttons.editByName(schedule.name));
 
     I.waitForVisible(scheduledPage.fields.backupName, 30);
     I.clearField(scheduledPage.fields.backupName);
