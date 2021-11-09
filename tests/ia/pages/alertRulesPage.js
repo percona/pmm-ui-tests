@@ -152,10 +152,10 @@ module.exports = {
       I.see(filter.trim(), this.elements.filtersCell(ruleName));
     });
     this.verifyRuleState(activate, ruleName);
-    I.seeAttributesOnElements(this.buttons.showDetails(ruleName), { disabled: null });
-    I.seeAttributesOnElements(this.buttons.deleteAlertRule(ruleName), { disabled: null });
-    I.seeAttributesOnElements(this.buttons.editAlertRule(ruleName), { disabled: null });
-    I.seeAttributesOnElements(this.buttons.duplicateAlertRule(ruleName), { disabled: null });
+    I.seeElementsEnabled(this.buttons.showDetails(ruleName));
+    I.seeElementsEnabled(this.buttons.deleteAlertRule(ruleName));
+    I.seeElementsEnabled(this.buttons.editAlertRule(ruleName));
+    I.seeElementsEnabled(this.buttons.duplicateAlertRule(ruleName));
   },
 
   verifyRuleState(activate, ruleName) {

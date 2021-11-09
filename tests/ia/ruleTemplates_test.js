@@ -45,8 +45,8 @@ Scenario(
 
     ruleTemplatesPage.openRuleTemplatesTab();
     I.waitForVisible(editButton, 30);
-    I.seeAttributesOnElements(editButton, { disabled: true });
-    I.seeAttributesOnElements(deleteButton, { disabled: true });
+    I.seeElementsDisabled(editButton);
+    I.seeElementsDisabled(deleteButton);
   },
 );
 
@@ -108,8 +108,8 @@ Data(units)
         I.verifyPopUpMessage(ruleTemplatesPage.messages.successfullyAdded);
 
         // Check that Edit and Delete buttons are enabled
-        I.seeAttributesOnElements(editButton, { disabled: null });
-        I.seeAttributesOnElements(deleteButton, { disabled: null });
+        I.seeElementsEnabled(editButton);
+        I.seeElementsEnabled(deleteButton);
 
         await templatesAPI.removeTemplate(id);
       } else {
@@ -139,7 +139,7 @@ Data(templates)
       if (validFile) {
         I.verifyPopUpMessage(ruleTemplatesPage.messages.successfullyAdded);
         I.waitForVisible(expectedSourceLocator, 30);
-        I.seeAttributesOnElements(editButton, { disabled: null });
+        I.seeElementsEnabled(editButton);
       } else {
         I.verifyPopUpMessage(current.error);
       }
@@ -178,10 +178,10 @@ Scenario(
     ruleTemplatesPage.openRuleTemplatesTab();
     ruleTemplatesPage.openEditDialog(templateName);
     ruleTemplatesPage.verifyRuleTemplateContent(fileContent);
-    I.seeAttributesOnElements(ruleTemplatesPage.buttons.editTemplate, { disabled: true });
+    I.seeElementsEnabled(ruleTemplatesPage.buttons.editTemplate);
     I.clearField(ruleTemplatesPage.fields.templateInput);
     I.fillField(ruleTemplatesPage.fields.templateInput, updatedTemplateText);
-    I.seeAttributesOnElements(ruleTemplatesPage.buttons.editTemplate, { disabled: null });
+    I.seeElementsEnabled(ruleTemplatesPage.buttons.editTemplate);
     ruleTemplatesPage.verifyEditModalHeaderAndWarning(templateName);
     I.click(ruleTemplatesPage.buttons.editTemplate);
     I.verifyPopUpMessage(ruleTemplatesPage.messages.successfullyEdited);
@@ -263,7 +263,7 @@ Scenario(
     I.seeElement(ruleTemplatesPage.buttons.editButtonByName('Custom parameter template'));
     I.dontSeeElement(ruleTemplatesPage.buttons.editButtonByName('Space in parameter'));
 
-    I.seeAttributesOnElements(editButton, { disabled: true });
-    I.seeAttributesOnElements(deleteButton, { disabled: true });
+    I.seeElementsDisabled(editButton);
+    I.seeElementsDisabled(deleteButton);
   },
 );

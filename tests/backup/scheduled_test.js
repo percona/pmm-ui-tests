@@ -82,9 +82,9 @@ Scenario(
     scheduledPage.selectDropdownOption(scheduledPage.fields.locationDropdown, location.name);
     I.seeTextEquals(location.name, scheduledPage.elements.selectedLocation);
 
-    I.seeAttributesOnElements(scheduledPage.buttons.createSchedule, { disabled: true });
+    I.seeElementsDisabled(scheduledPage.buttons.createSchedule);
     I.fillField(scheduledPage.fields.backupName, scheduleName);
-    I.seeAttributesOnElements(scheduledPage.buttons.createSchedule, { disabled: null });
+    I.seeElementsEnabled(scheduledPage.buttons.createSchedule);
   },
 );
 

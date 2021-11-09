@@ -17,6 +17,9 @@ module.exports = {
     backupStatusByName: (name) => locate('$statusMsg').inside(artifactCell(name)),
     artifactName: (name) => locate('td').at(1).inside(artifactCell(name)),
     forceDeleteLabel: '$force-field-label',
+    retryTimes: '$retryTimes-number-input',
+    retryInterval: '$retryInterval-number-input',
+    dataModelState: '$dataModel-radio-state',
   },
   buttons: {
     openAddBackupModal: '$backup-add-modal-button',
@@ -29,6 +32,9 @@ module.exports = {
     modalRestore: '$restore-button',
     forceDeleteCheckbox: '$force-checkbox-input',
     confirmDelete: '$confirm-delete-modal-button',
+    retryModeOption: (option) => locate('$retry-mode-selector').find('div').at(1).find('label')
+      .withText(option),
+    dataModel: '$dataModel-radio-button',
   },
   fields: {
     backupName: '$backupName-text-input',
