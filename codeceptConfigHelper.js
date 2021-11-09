@@ -11,6 +11,9 @@ module.exports = {
     alertsPage: './tests/ia/pages/alertsPage.js',
     allChecksPage: './tests/stt/pages/allChecksPage.js',
     amiInstanceSetupPage: './tests/pages/amiInstanceSetupPage.js',
+    annotationAPI: './tests/pages/api/annotationAPI.js',
+    backupAPI: './tests/backup/pages/api/backupAPI.js',
+    backupInventoryPage: './tests/backup/pages/inventoryPage.js',
     channelsAPI: './tests/ia/pages/api/channelsAPI.js',
     dashboardPage: './tests/pages/dashboardPage.js',
     databaseChecksPage: './tests/stt/pages/databaseChecksPage.js',
@@ -23,6 +26,8 @@ module.exports = {
     inventoryAPI: './tests/pages/api/inventoryAPI.js',
     mysqlTableDetailsPage: './tests/pages/mysqlTableDetailsPage.js',
     links: './linksHelper.js',
+    locationsPage: './tests/backup/pages/locationsPage.js',
+    locationsAPI: './tests/backup/pages/api/locationsAPI.js',
     ncPage: './tests/ia/pages/notificationChannelsPage.js',
     perconaServerDB: './tests/DbHelpers/perconaServerDB.js',
     pmmDemoPage: './tests/pages/pmmDemoPage.js',
@@ -35,8 +40,11 @@ module.exports = {
     qanPagination: './tests/QAN/pages/qanPaginationFragment.js',
     remoteInstancesPage: './tests/pages/remoteInstancesPage.js',
     remoteInstancesHelper: './tests/remoteInstances/remoteInstancesHelper.js',
+    restorePage: './tests/backup/pages/restorePage.js',
     rulesAPI: './tests/ia/pages/api/rulesAPI.js',
     ruleTemplatesPage: './tests/ia/pages/ruleTemplatesPage.js',
+    scheduledAPI: './tests/backup/pages/api/scheduledAPI.js',
+    scheduledPage: './tests/backup/pages/scheduledPage.js',
     iaCommon: './tests/ia/pages/iaCommonPage.js',
     platformAPI: './tests/pages/api/platformAPI.js',
     securityChecksAPI: './tests/stt/pages/api/securityChecksAPI.js',
@@ -44,7 +52,7 @@ module.exports = {
     templatesAPI: './tests/ia/pages/api/templatesAPI.js',
   },
   getChunks: (files) => {
-    const dependentTests = files.filter((value) => /PMMSettings|stt|ia|Azure/.test(value));
+    const dependentTests = files.filter((value) => /PMMSettings|ia|backup/.test(value));
     const dbaasTests = files.filter((value) => /DbaaS/.test(value));
     const otherTests = files.filter((val) => !dependentTests.includes(val) && !dbaasTests.includes(val));
 

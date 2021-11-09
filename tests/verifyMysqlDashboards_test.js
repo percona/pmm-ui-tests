@@ -14,10 +14,10 @@ Scenario(
     await dashboardPage.applyFilter('Service Name', 'ms-single');
     await dashboardPage.expandEachDashboardRow();
     I.click(adminPage.fields.metricTitle);
-    adminPage.peformPageDown(5);
+    adminPage.performPageDown(5);
     dashboardPage.verifyMetricsExistence(dashboardPage.mysqlInstanceSummaryDashboard.metrics);
     await dashboardPage.verifyThereAreNoGraphsWithNA();
-    await dashboardPage.verifyThereAreNoGraphsWithoutData(3);
+    await dashboardPage.verifyThereAreNoGraphsWithoutData(4);
   },
 );
 
@@ -29,10 +29,10 @@ Scenario(
     await dashboardPage.applyFilter('Service Name', 'ms-single');
     await dashboardPage.expandEachDashboardRow();
     I.click(adminPage.fields.metricTitle);
-    adminPage.peformPageDown(5);
+    adminPage.performPageDown(5);
     dashboardPage.verifyMetricsExistence(dashboardPage.mySQLInstanceOverview.metrics);
     await dashboardPage.verifyThereAreNoGraphsWithNA();
-    await dashboardPage.verifyThereAreNoGraphsWithoutData();
+    await dashboardPage.verifyThereAreNoGraphsWithoutData(1);
   },
 );
 
@@ -43,7 +43,7 @@ Scenario(
     dashboardPage.waitForDashboardOpened();
     await dashboardPage.expandEachDashboardRow();
     I.click(adminPage.fields.metricTitle);
-    adminPage.peformPageDown(5);
+    adminPage.performPageDown(5);
     dashboardPage.verifyMetricsExistence(dashboardPage.mysqlInstancesCompareDashboard.metrics);
     await dashboardPage.verifyThereAreNoGraphsWithNA();
     await dashboardPage.verifyThereAreNoGraphsWithoutData(3);
@@ -56,7 +56,7 @@ Scenario(
     I.amOnPage(`${dashboardPage.proxysqlInstanceSummaryDashboard.url}?from=now-5m&to=now`);
     dashboardPage.waitForDashboardOpened();
     I.click(adminPage.fields.metricTitle);
-    adminPage.peformPageDown(5);
+    adminPage.performPageDown(5);
     await dashboardPage.verifyMetricsExistence(dashboardPage.proxysqlInstanceSummaryDashboard.metrics);
     await dashboardPage.verifyThereAreNoGraphsWithNA();
     await dashboardPage.verifyThereAreNoGraphsWithoutData(8);
@@ -69,7 +69,7 @@ Scenario(
     I.amOnPage(`${dashboardPage.pxcGaleraClusterSummaryDashboard.url}?from=now-5m&to=now`);
     dashboardPage.waitForDashboardOpened();
     I.click(adminPage.fields.metricTitle);
-    adminPage.peformPageDown(5);
+    adminPage.performPageDown(5);
     dashboardPage.verifyMetricsExistence(dashboardPage.pxcGaleraClusterSummaryDashboard.metrics);
     await dashboardPage.verifyThereAreNoGraphsWithNA();
     await dashboardPage.verifyThereAreNoGraphsWithoutData(2);
@@ -81,7 +81,7 @@ Scenario(
   async ({ I, dashboardPage, adminPage }) => {
     I.amOnPage(dashboardPage.mysqlUserDetailsDashboard.url);
     dashboardPage.waitForDashboardOpened();
-    adminPage.peformPageDown(5);
+    adminPage.performPageDown(5);
     await dashboardPage.expandEachDashboardRow();
     adminPage.performPageUp(5);
     dashboardPage.verifyMetricsExistence(dashboardPage.mysqlUserDetailsDashboard.metrics);
@@ -133,7 +133,7 @@ Scenario(
     I.amOnPage(`${dashboardPage.mysqlPXCGaleraNodeSummaryDashboard.url}&from=now-15m&to=now`);
     dashboardPage.waitForDashboardOpened();
     await dashboardPage.applyFilter('Service Name', 'pxc_node_8.0');
-    adminPage.peformPageDown(5);
+    adminPage.performPageDown(5);
     dashboardPage.verifyMetricsExistence(dashboardPage.mysqlPXCGaleraNodeSummaryDashboard.metrics);
     await dashboardPage.verifyThereAreNoGraphsWithNA();
     await dashboardPage.verifyThereAreNoGraphsWithoutData(2);
@@ -145,7 +145,7 @@ Scenario(
   async ({ I, dashboardPage, adminPage }) => {
     I.amOnPage(`${dashboardPage.mysqlPXCGaleraNodesSummaryDashboard.url}&from=now-15m&to=now`);
     dashboardPage.waitForDashboardOpened();
-    adminPage.peformPageDown(5);
+    adminPage.performPageDown(5);
     await dashboardPage.expandEachDashboardRow();
     await dashboardPage.applyFilter('Service Name', 'pxc');
     adminPage.performPageUp(5);
@@ -161,7 +161,7 @@ Scenario(
   async ({ I, dashboardPage, adminPage }) => {
     I.amOnPage(dashboardPage.groupReplicationDashboard.url);
     dashboardPage.waitForDashboardOpened();
-    adminPage.peformPageDown(5);
+    adminPage.performPageDown(5);
     await dashboardPage.expandEachDashboardRow();
     adminPage.performPageUp(5);
     dashboardPage.verifyMetricsExistence(dashboardPage.groupReplicationDashboard.metrics);

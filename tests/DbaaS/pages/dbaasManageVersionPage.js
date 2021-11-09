@@ -4,7 +4,7 @@ module.exports = {
   loader: locate('$pmm-overlay-wrapper').find('//i[contains(@class,"fa-spinner")]'),
   operatorVersion: {
     PXC: 'PXC 1.8.0',
-    PSMDB: 'PSMDB 1.8.0',
+    PSMDB: 'PSMDB 1.9.0',
   },
   components: {
     PXC: {
@@ -53,7 +53,7 @@ module.exports = {
       .withText(versionNumber)
       .find('//parent::div//label//span'),
     versionsSection: (component) => locate(`$${component}-options`)
-      .find('//div[contains(@data-qa, "-option")]'),
+      .find('//div[contains(@data-testid, "-option")]'),
     versionSelectorFieldErrorMessage: (component) => `$${component}-field-error-message`,
   },
 

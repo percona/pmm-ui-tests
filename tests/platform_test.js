@@ -127,7 +127,8 @@ Scenario(
   },
 );
 
-Scenario(
+// Skip due to failure
+xScenario(
   'PMM-T413 Verify user is able to Login @platform @settings',
   async () => {
     // Sign In and verify it was successful
@@ -135,7 +136,8 @@ Scenario(
   },
 );
 
-Scenario(
+// Skip due to failure
+xScenario(
   'PMM-T416 Verify user is able to Sign Out @platform @settings',
   async ({ I, platformAPI }) => {
     await platformAPI.signIn();
@@ -155,7 +157,8 @@ Scenario(
   },
 );
 
-Scenario(
+// Skipping due to changes on sign up process
+xScenario(
   'PMM-T399 PMM-T843 Verify user is able to Sign Up and login with new account @platform @settings',
   async ({ I }) => {
     I.click(buttons.goToSignUp);

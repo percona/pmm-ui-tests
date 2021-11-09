@@ -33,7 +33,8 @@ module.exports = {
 
   getCellValueLocator: (rowNumber, columnNumber) => `div.tr-${rowNumber} > div:nth-child(${columnNumber + 2}) span > div > span`,
 
-  getMetricSortingLocator: (columnNumber) => `(//a[@data-qa='sort-by-control'])[${columnNumber}]`,
+  // using below to concatenate locators
+  getMetricSortingLocator: (columnNumber) => `(//a[@data-testid='sort-by-control'])[${columnNumber}]`,
 
   getGroupByOptionLocator: (option) => `//ul/li[@label='${option}']`,
 
@@ -103,6 +104,7 @@ module.exports = {
     const sortingBlockSelector = this.getMetricSortingLocator(columnNumber);
 
     I.waitForElement(sortingBlockSelector, 30);
+    this.waitForOverviewLoaded();
     I.click(sortingBlockSelector);
   },
 

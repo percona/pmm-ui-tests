@@ -85,7 +85,7 @@ module.exports = {
     }
   },
 
-  peformPageDown(timesPagesDown) {
+  performPageDown(timesPagesDown) {
     for (let i = 0; i < timesPagesDown; i++) {
       I.pressKey('PageDown');
       I.wait(1);

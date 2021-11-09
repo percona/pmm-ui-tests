@@ -1,7 +1,7 @@
 const assert = require('assert');
 const page = require('./pages/ruleTemplatesPage');
 
-const templates = new DataTable(['path']);
+const templates = new DataTable(['path', 'error']);
 const units = new DataTable(['unit', 'range']);
 
 units.add(['%', '[0, 100]']);
@@ -9,9 +9,16 @@ units.add(['s', '[0, 100]']);
 units.add(['*', '[0, 100]']);
 units.add(['%', '']);
 
-for (const i of Object.values(page.ruleTemplate.paths)) {
-  templates.add([i]);
-}
+templates.add([page.ruleTemplate.paths.yaml, null]);
+templates.add([page.ruleTemplate.paths.yml, null]);
+templates.add([page.ruleTemplate.paths.txt, page.messages.failedToParse]);
+templates.add(['tests/ia/templates/customParam.yml', null]);
+templates.add(['tests/ia/templates/undefinedParam.yml',
+  'failed to fill expression placeholders: template: :4:5: executing "" at <.threshold>: map has no entry for key "threshold".']);
+templates.add(['tests/ia/templates/specialCharInParam.yml',
+  'failed to parse rule expression: template: :4: bad character U+0040 \'@\'.']);
+templates.add(['tests/ia/templates/spaceInParam.yml',
+  'failed to parse rule expression: template: :4: function "old" not defined.']);
 
 Feature('IA: Alert rule templates').retry(1);
 
@@ -21,6 +28,10 @@ Before(async ({
   await I.Authorize();
   await settingsAPI.apiEnableIA();
   await rulesAPI.clearAllRules();
+  await templatesAPI.clearAllTemplates();
+});
+
+Before(async ({ templatesAPI }) => {
   await templatesAPI.clearAllTemplates();
 });
 
@@ -109,10 +120,10 @@ Data(units)
 
 Data(templates)
   .Scenario(
-    'PMM-T482 PMM-T499 Upload rule templates @ia',
+    'PMM-T482 PMM-T499 PMM-T766 PMM-T758 PMM-T766 PMM-T767 PMM-T931 Upload rule templates @ia',
     async ({ I, ruleTemplatesPage, current }) => {
       const { path } = current;
-      const validFile = path.endsWith('.yaml') || path.endsWith('.yml');
+      const validFile = !current.error;
       const [templateName] = await ruleTemplatesPage.ruleTemplate.templateNameAndContent(path);
       const expectedSourceLocator = ruleTemplatesPage
         .getSourceLocator(templateName, ruleTemplatesPage.templateSources.ui);
@@ -130,7 +141,7 @@ Data(templates)
         I.waitForVisible(expectedSourceLocator, 30);
         I.seeAttributesOnElements(editButton, { disabled: null });
       } else {
-        I.verifyPopUpMessage(ruleTemplatesPage.messages.failedToParse);
+        I.verifyPopUpMessage(current.error);
       }
     },
   );
@@ -231,6 +242,28 @@ Scenario(
     I.waitForElement(deleteButton, 30);
     I.click(deleteButton);
     I.click(ruleTemplatesPage.buttons.confirmDelete);
-    I.verifyPopUpMessage(ruleTemplatesPage.messages.failedToDelete(id));
+    I.verifyPopUpMessage(ruleTemplatesPage.messages.failedToDelete(templateName));
+  },
+);
+
+Scenario(
+  'PMM-T825 PMM-T821 Verify User can add Alert Rule Template in the file system @not-ovf @ia',
+  async ({ I, ruleTemplatesPage }) => {
+    const editButton = ruleTemplatesPage.buttons
+      .editButtonBySource(ruleTemplatesPage.templateSources.file);
+    const deleteButton = ruleTemplatesPage.buttons
+      .deleteButtonBySource(ruleTemplatesPage.templateSources.file);
+
+    await I.verifyCommand('docker cp tests/ia/templates/customParam.yml pmm-server:/srv/ia/templates');
+    await I.verifyCommand('docker cp tests/ia/templates/spaceInParam.yml pmm-server:/srv/ia/templates');
+    await I.verifyCommand('docker cp tests/ia/templates/template.txt pmm-server:/srv/ia/templates');
+
+    ruleTemplatesPage.openRuleTemplatesTab();
+    I.seeElement(editButton);
+    I.seeElement(ruleTemplatesPage.buttons.editButtonByName('Custom parameter template'));
+    I.dontSeeElement(ruleTemplatesPage.buttons.editButtonByName('Space in parameter'));
+
+    I.seeAttributesOnElements(editButton, { disabled: true });
+    I.seeAttributesOnElements(deleteButton, { disabled: true });
   },
 );

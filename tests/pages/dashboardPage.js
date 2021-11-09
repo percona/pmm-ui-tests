@@ -204,7 +204,7 @@ module.exports = {
     ],
   },
   postgresqlInstanceSummaryDashboard: {
-    url: 'graph/d/postgresql-instance-summary/postgresql-instance-summary',
+    url: 'graph/d/postgresql-instance-summary/postgresql-instance-summary?orgId=1&from=now-5m&to=now',
     metrics: [
       'Version',
       'Max Connections',
@@ -325,7 +325,14 @@ module.exports = {
   mongodbOverviewDashboard: {
     url: 'graph/d/mongodb-instance-summary/mongodb-instance-summary',
     metrics: [
+      'Node',
+      'MongoDB Uptime',
+      'QPS',
+      'Latency',
+      'ReplSet',
+      'Current ReplSet State',
       'Command Operations',
+      'Latency Detail',
       'Connections',
       'Cursors',
       'Document Operations',
@@ -336,6 +343,18 @@ module.exports = {
       'getLastError Write Operations',
       'Assert Events',
       'Page Faults',
+      'System Uptime',
+      'Load Average',
+      'RAM',
+      'Memory Available',
+      'Virtual Memory',
+      'Disk Space',
+      'Min Space Available',
+      'Node',
+      'CPU Usage',
+      'CPU Saturation and Max Core Usage',
+      'Disk I/O and Swap Activity',
+      'Network Traffic',
     ],
   },
   mongoDbClusterSummaryDashboard: {
@@ -766,7 +785,7 @@ module.exports = {
     metricTitle: '//div[@class="panel-title"]',
     mongoDBServiceSummaryContent: locate('pre').withText('Mongo Executable'),
     mySQLServiceSummaryContent: locate('pre').withText('Percona Toolkit MySQL Summary Report'),
-    navbarLocator: '.navbar-page-btn',
+    navbarLocator: '.page-toolbar',
     notAvailableDataPoints: '//div[contains(text(),"No data")]',
     notAvailableMetrics: '//span[contains(text(), "N/A")]',
     otherReportTitleWithNoData:
@@ -823,15 +842,24 @@ module.exports = {
   },
 
   // Should be refactored and added to Grafana Helper as a custom function
-  async checkMetricExist(metricName) {
+  async checkMetricExist(metricName, queryBy) {
     const timeStamp = Date.now();
     const bodyFormData = new FormData();
-    const body = {
+    let body = {
       query: metricName,
-      start: Math.floor((timeStamp - 10000) / 1000),
+      start: Math.floor((timeStamp - 15000) / 1000),
       end: Math.floor((timeStamp) / 1000),
       step: 60,
     };
+
+    if (queryBy) {
+      body = {
+        query: `${metricName}{${queryBy.type}=~"(${queryBy.value})"}`,
+        start: Math.floor((timeStamp - 10000) / 1000),
+        end: Math.floor((timeStamp) / 1000),
+        step: 60,
+      };
+    }
 
     Object.keys(body).forEach((key) => bodyFormData.append(key, body[key]));
     const headers = {
@@ -928,7 +956,8 @@ module.exports = {
 
       I.click(rowToExpand);
       I.wait(0.5);
-      adminPage.peformPageDown(1);
+      adminPage.performPageDown(1);
+      adminPage.performPageDown(1);
     }
   },
 

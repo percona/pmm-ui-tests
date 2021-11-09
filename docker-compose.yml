@@ -14,16 +14,16 @@ networks:
 
 services:
   pmm-server:
-    image: ${PMM_SERVER_IMAGE:-perconalab/pmm-server:dev-latest}
+    image: ${PMM_SERVER_IMAGE:-public.ecr.aws/e7j3v3n0/pmm-server:dev-latest}
     container_name: pmm-server
     ports:
       - "80:80"
       - "443:443"
     environment:
-      - ENABLE_DBAAS=1
       - PMM_DEBUG=1
       - PERCONA_TEST_SAAS_HOST=check-dev.percona.com:443
       - PERCONA_TEST_CHECKS_PUBLIC_KEY=RWTg+ZmCCjt7O8eWeAmTLAqW+1ozUbpRSKSwNTmO+exlS5KEIPYWuYdX
+      - PERCONA_TEST_VERSION_SERVICE_URL=https://check-dev.percona.com/versions/v1
     volumes:
       - pmm-server-data:/srv
     networks:
@@ -48,8 +48,6 @@ services:
       - UMASK=0777  # for slowlog file
     volumes:
       - /tmp/mysql/log:/tmp/mysql/log:rw
-    depends_on:
-      - pmm-server
     networks:
       - pmm-network
 
@@ -70,8 +68,6 @@ services:
       - UMASK=0777  # for slowlog file
     volumes:
       - /tmp/mysql/log:/tmp/mysql/log
-    depends_on:
-      - pmm-server
     networks:
       - pmm-network
 
@@ -84,26 +80,6 @@ services:
     environment:
       - MONGO_INITDB_ROOT_USERNAME=root
       - MONGO_INITDB_ROOT_PASSWORD=root-!@#%^password
-    depends_on:
-      - pmm-server
-    networks:
-      - pmm-network
-
-  mongo_with_ssl:
-    image: ${MONGO_IMAGE:-percona/percona-server-mongodb:4.4}
-    ports:
-      - "27018:27017"
-    command:
-      - --profile=2
-      - --sslMode=requireSSL
-      - --sslPEMKeyFile=/etc/ssl/certificates/server.pem
-      - --sslCAFile=/etc/ssl/certificates/ca.crt
-      - --sslWeakCertificateValidation
-      - --bind_ip=0.0.0.0
-    volumes:
-      - ${PWD}/testdata/mongodb:/etc/ssl/certificates
-    depends_on:
-      - pmm-server
     networks:
       - pmm-network
 
@@ -113,8 +89,6 @@ services:
     command: --profile 2
     ports:
       - "27019:27017"
-    depends_on:
-      - pmm-server
     networks:
       - pmm-network
 
@@ -134,8 +108,6 @@ services:
       - "5433:5432"
     environment:
       - POSTGRES_PASSWORD=pmm-^*&@agent-password
-    depends_on:
-      - pmm-server
     networks:
       - pmm-network
 
@@ -148,8 +120,6 @@ services:
       - "6070:6070"
     volumes:
       - ${PWD}/testdata/proxysql/proxysql.cnf:/etc/proxysql.cnf:rw
-    depends_on:
-      - pmm-server
     networks:
       - pmm-network
 

@@ -39,7 +39,7 @@ module.exports = {
     accessDenied: '//div[contains(@class, "alert-title") and contains(text(), "Access denied.")]',
     title: '//span[contains(text(), "Percona Monitoring and Management")]',
     failedSecurityChecks: '//span[contains(text(), "Failed security check")]',
-    dbCheckPanelNoAccess: '//div[@data-qa="db-check-panel-no-access"]',
+    noAccess: '$unauthorized',
   },
 
   verifyCopyrightsAndLegal() {
@@ -52,7 +52,7 @@ module.exports = {
   },
 
   async checkDBPanelText(text) {
-    const checkedText = await I.grabTextFrom(this.fields.dbCheckPanelNoAccess);
+    const checkedText = await I.grabTextFrom(this.fields.noAccess);
 
     assert.equal(checkedText, text, 'Check the DB security checks text');
   },

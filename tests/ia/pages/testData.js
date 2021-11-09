@@ -137,20 +137,18 @@ module.exports = {
     threshold: '25',
     duration: '300',
     severity: 'Warning',
-    expression: 'sum by (node_name) (mongodb_ss_connections{conn_type="current"}) * 1024 * 1024\n'
-      + '/ on (node_name) (node_memory_MemTotal_bytes)\n'
-      + '* 100\n'
-      + '> [[ .threshold ]]',
+    expression: '100 / ((node_memory_MemTotal_bytes)\n'
+        + '/ on(node_name) group_left(service_name) (mongodb_ss_connections{conn_type="current"} * 1024 * 1024))\n'
+        + '> [[ .threshold ]]',
     alert: 'MongoDB high memory usage by connections ({{ $labels.service_name }})',
   }, {
     template: 'Memory used by MongoDB',
     threshold: '80',
     duration: '300',
     severity: 'Warning',
-    expression: 'sum by (node_name) (mongodb_ss_mem_resident * 1024 * 1024)\n'
-      + '/ on (node_name) (node_memory_MemTotal_bytes)\n'
-      + '* 100\n'
-      + '> [[ .threshold ]]',
+    expression: '100 / ((node_memory_MemTotal_bytes)\n'
+        + '/ on(node_name) group_left(service_name) (mongodb_ss_mem_resident * 1024 * 1024))\n'
+        + '> [[ .threshold ]]',
     alert: 'MongoDB high memory usage ({{ $labels.service_name }})',
   }, {
     template: 'MongoDB restarted',

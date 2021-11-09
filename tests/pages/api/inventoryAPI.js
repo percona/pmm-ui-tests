@@ -40,9 +40,37 @@ module.exports = {
     return false;
   },
 
+  async apiGetNodeInfoByServiceName(serviceType, serviceName) {
+    const service = await this.apiGetServices(serviceType);
+
+    const data = Object.values(service.data)
+      .flat(Infinity)
+      .filter(({ service_name }) => service_name.includes(serviceName));
+
+    return data[0];
+  },
+
+  async apiGetPMMAgentInfoByServiceId(serviceId) {
+    const agents = await this.apiGetAgents(serviceId);
+    const data = Object.values(agents.data)
+      .flat(Infinity)
+      .filter(({ service_id }) => service_id === serviceId);
+
+    return data[0];
+  },
+
   async apiGetAgents(serviceId) {
     const body = {
       service_id: serviceId,
+    };
+    const headers = { Authorization: `Basic ${await I.getAuth()}` };
+
+    return I.sendPostRequest('v1/inventory/Agents/List', body, headers);
+  },
+
+  async apiGetAgentsViaNodeId(nodeId) {
+    const body = {
+      node_id: nodeId,
     };
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
 
@@ -53,7 +81,7 @@ module.exports = {
     const body = serviceType ? { service_type: serviceType } : {};
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
 
-    return I.sendPostRequest('v1/inventory/Services/List', body, headers);
+    return await I.sendPostRequest('v1/inventory/Services/List', body, headers);
   },
 
   async verifyServiceIdExists(serviceId) {
@@ -86,5 +114,20 @@ module.exports = {
       resp.status === 200,
       `Failed to delete Node. Response message is "${resp.data.message}"`,
     );
+  },
+
+  async getNodeName(nodeID) {
+    const body = {
+      node_id: nodeID,
+    };
+    const headers = { Authorization: `Basic ${await I.getAuth()}` };
+
+    const resp = await I.sendPostRequest('v1/inventory/Nodes/Get', body, headers);
+
+    const values = Object.values(resp.data)
+      .flat(Infinity)
+      .find(({ node_id }) => node_id === nodeID);
+
+    return values.node_name;
   },
 };

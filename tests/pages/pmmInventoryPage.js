@@ -4,35 +4,32 @@ const assert = require('assert');
 module.exports = {
   url: 'graph/inventory?orgId=1',
   fields: {
-    iframe: '//div[@class="panel-content"]//iframe',
-    inventoryTable: '//table',
-    inventoryTableRows: '//table//tr',
-    inventoryTableColumn: '//table//td',
-    agentsLink: '//li[contains(text(),"Agents")]',
-    nodesLink: '//li[contains(text(),"Nodes")]',
-    pmmServicesSelector: '//li[contains(text(),"Services")]',
-    agentsLinkOld: '//a[contains(text(), "Agents")]',
-    nodesLinkOld: '//a[contains(text(), "Nodes")]',
-    pmmAgentLocator: '//table//td[contains(text(), "PMM Agent")]',
-    serviceIdLocatorPrefix: '//table//tr/td[4][contains(text(),"',
-    deleteButton: '//span[contains(text(), "Delete")]',
-    proceedButton: '//span[contains(text(), "Proceed")]',
-    forceModeCheckbox: 'span[data-qa="force-field-label"]',
-    tableCheckbox: 'div[data-qa="select-row"]',
-    tableRow: '//tr[@data-qa="table-row"]',
-    runningStatus: '//span[contains(text(), "RUNNING")]',
+    agentsLink: locate('li').withText('Agents'),
+    agentsLinkOld: locate('a').withText('Agents'),
+    deleteButton: locate('span').withText('Delete'),
     externalExporter: locate('td').withText('External exporter'),
+    forceModeCheckbox: locate('$force-field-label'),
+    inventoryTable: locate('table'),
+    inventoryTableColumn: locate('table').find('td'),
+    inventoryTableRows: locate('tr').after('table'),
+    mongoServiceName: locate('td').withText('mongodb'),
+    mysqlServiceName: locate('td').withText('ms-single'),
+    // cannot be changed to locate because it's failing in I.waitForVisible()
+    nodesLink: '//li[contains(text(),"Nodes")]',
+    nodesLinkOld: locate('a').withText('Nodes'),
+    pdphsqlServiceName: locate('td').withText('PDPGSQL'),
+    pmmAgentLocator: locate('td').withText('PMM Agent'),
+    pmmServerPostgresLocator: locate('td').withText('pmm-server-postgresql'),
+    pmmServicesSelector: locate('li').withText('Services'),
     postgresExporter: locate('td').withText('Postgres exporter'),
     postgresPgStatements: locate('td').withText('QAN PostgreSQL PgStatements'),
     postgresPgstatmonitor: locate('td').withText('QAN PostgreSQL Pgstatmonitor'),
-  },
-
-  verifyOldMySQLRemoteServiceIsDisplayed(serviceName) {
-    I.waitForElement(pmmInventoryPage.fields.iframe, 60);
-    I.switchTo(pmmInventoryPage.fields.iframe);
-    I.waitForVisible(pmmInventoryPage.fields.inventoryTableColumn, 30);
-    I.scrollPageToBottom();
-    I.see(serviceName, pmmInventoryPage.fields.inventoryTableColumn);
+    proceedButton: locate('span').withText('Proceed'),
+    runningStatus: locate('span').withText('RUNNING'),
+    serviceIdLocatorPrefix: '//table//tr/td[4][contains(text(),"',
+    tableCheckbox: locate('$select-row').find('span'),
+    // cannot be changed to locate() because of method: getCellValue()
+    tableRow: '//tr[@data-testid="table-row"]',
   },
 
   verifyRemoteServiceIsDisplayed(serviceName) {
@@ -54,7 +51,7 @@ module.exports = {
       `//tr//td//span[contains(text(), "${serviceId}")]/../span[contains(text(), 'status: RUNNING')]`,
     );
 
-    if (/mysql|mongo|postgres|rds/gim.test(service_name)) {
+    if (/mysql|mongo|psmdb|postgres|rds/gim.test(service_name)) {
       I.waitForVisible(
         `//tr//td//span[contains(text(), "${serviceId}")]/../span[contains(text(), 'status: RUNNING')]`,
         30,
@@ -126,13 +123,12 @@ module.exports = {
       1,
       `There must be only one entry for the newly added service with name ${serviceName}`,
     );
-    const serviceId = await I.grabTextFrom(serviceIdLocator);
 
-    return serviceId;
+    return await I.grabTextFrom(serviceIdLocator);
   },
 
   selectService(serviceName) {
-    const serviceLocator = `${this.fields.serviceIdLocatorPrefix}${serviceName}")]/preceding-sibling::td/div[@data-qa="select-row"]`;
+    const serviceLocator = `${this.fields.serviceIdLocatorPrefix}${serviceName}")]/preceding-sibling::td/div[@data-testid="select-row"]`;
 
     I.waitForVisible(serviceLocator, 30);
     I.click(serviceLocator);
@@ -155,9 +151,7 @@ module.exports = {
   },
 
   getServicesId(serviceName) {
-    const serviceIdLocator = `${this.fields.serviceIdLocatorPrefix}${serviceName}")]/preceding-sibling::td[2]`;
-
-    return serviceIdLocator;
+    return `${this.fields.serviceIdLocatorPrefix}${serviceName}")]/preceding-sibling::td[2]`;
   },
 
   async getCountOfAgents(serviceId) {
@@ -175,7 +169,7 @@ module.exports = {
   },
 
   selectAgent(agentType) {
-    const agentLocator = `//table//tr/td[3][contains(text(),"${agentType}")]/preceding-sibling::td/div[@data-qa="select-row"]`;
+    const agentLocator = `//table//tr/td[3][contains(text(),"${agentType}")]/preceding-sibling::td/div[@data-testid="select-row"]`;
 
     I.waitForVisible(agentLocator, 30);
     I.click(agentLocator);
@@ -220,7 +214,7 @@ module.exports = {
   },
 
   selectAgentByID(id) {
-    const agentIdLocator = `//table//tr/td[2][contains(text(),"${id}")]/preceding-sibling::td/div[@data-qa="select-row"]`;
+    const agentIdLocator = `//table//tr/td[2][contains(text(),"${id}")]/preceding-sibling::td/div[@data-testid="select-row"]`;
 
     I.waitForVisible(agentIdLocator, 30);
     I.click(agentIdLocator);
@@ -233,7 +227,7 @@ module.exports = {
   },
 
   async getCountOfItems() {
-    return await I.grabNumberOfVisibleElements('//table//tr/td/div[@data-qa="select-row"]');
+    return await I.grabNumberOfVisibleElements('$select-row');
   },
 
   async checkAllNotDeletedAgents(countBefore) {

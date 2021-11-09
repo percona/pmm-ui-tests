@@ -23,7 +23,7 @@ module.exports = {
     newsPanelTitleSelector: '//span[@class="panel-title-text" and text() = "Percona News"]',
     newsPanelContentSelector:
       '//span[contains(text(), "Percona News")]/ancestor::div[contains(@class, "panel-container")]//div[contains(@class, "view")]',
-    noAccessRightsSelector: '$db-check-panel-no-access',
+    noAccessRightsSelector: '$unauthorized',
     updateWidget: {
       base: {
         checkUpdateButton: '#refresh',
@@ -38,6 +38,19 @@ module.exports = {
         inProgressMessage: 'Update in progress',
         successUpgradeMessage: 'Successfully updated',
         whatsNewLink: 'a.text-primary.pmm-link',
+      },
+      oldDataAttr: {
+        checkUpdateButton: '[data-qa="update-last-check-button"]',
+        currentVersion: '[data-qa="update-installed-version"]',
+        lastCheckSelector: '[data-qa="update-last-check"]',
+        triggerUpdate: '//button//span[contains(text(), "Upgrade to")]',
+        updateProgressModal: '//div/h4[text()="Upgrade in progress"]',
+        successUpgradeMsgSelector: '[data-qa="modal-update-success-text"]',
+        reloadButtonAfterUpgrade: '[data-qa="modal-close"]',
+        availableVersion: '[data-qa="update-latest-version"]',
+        inProgressMessage: 'Upgrade in progress',
+        successUpgradeMessage: 'PMM has been successfully upgraded to version',
+        whatsNewLink: '//a[@rel="noreferrer"]',
       },
       latest: {
         checkUpdateButton: '$update-last-check-button',
@@ -144,9 +157,8 @@ module.exports = {
     assert.ok(lastCheckRegex.test(date), `Last Check Date has unexpected pattern: ${date}`);
   },
 
-  async verifyVisibleService(serviceName) {
-    I.scrollPageToBottom();
-    const serviceExists = `//div[@class='react-grid-item']/descendant::p[contains(text(),'${serviceName}')]`;
+  verifyVisibleService(serviceName) {
+    const serviceExists = locate('.react-grid-item').find(locate('p').withText(serviceName));
 
     I.waitForElement(serviceExists, 30);
     I.seeElement(serviceExists);
@@ -156,7 +168,11 @@ module.exports = {
   getLocators(version) {
     let locators;
 
-    if (version >= 9) {
+    // data-testid introduction since 2.23
+    if (version >= 9 && version <= 22) {
+      // eslint-disable-next-line no-param-reassign
+      version = 'oldDataAttr';
+    } else {
       // eslint-disable-next-line no-param-reassign
       version = 'latest';
     }

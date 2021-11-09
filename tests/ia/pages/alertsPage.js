@@ -20,7 +20,7 @@ module.exports = {
   },
   buttons: {
     // silenceActivate returns silence/activate button locator for a given alert name
-    silenceActivate: (alertName) => `${alertRow(alertName)}[1]/td//button[@data-qa="silence-alert-button"]`,
+    silenceActivate: (alertName) => `${alertRow(alertName)}[1]/td//button[@data-testid="silence-alert-button"]`,
   },
   messages: {
     noAlertsFound: 'No alerts',

@@ -19,6 +19,8 @@ module.exports = {
         return this.addPostgresql(serviceName);
       case remoteInstancesHelper.instanceTypes.rds:
         return this.addRDS(serviceName);
+      case remoteInstancesHelper.instanceTypes.postgresGC:
+        return await this.addPostgreSQLGC(serviceName);
       default:
         throw new Error('Unknown instance type');
     }
@@ -58,12 +60,34 @@ module.exports = {
         node_name: serviceName,
         node_type: 'REMOTE_NODE',
       },
-      port: 5432,
+      port: remoteInstancesHelper.remote_instance.postgresql.pdpgsql_13_3.port,
       address: remoteInstancesHelper.remote_instance.postgresql.pdpgsql_13_3.host,
       service_name: serviceName,
       username: remoteInstancesHelper.remote_instance.postgresql.pdpgsql_13_3.username,
       password: remoteInstancesHelper.remote_instance.postgresql.pdpgsql_13_3.password,
       cluster: remoteInstancesHelper.remote_instance.postgresql.pdpgsql_13_3.clusterName,
+      pmm_agent_id: 'pmm-server',
+      qan_postgresql_pgstatements_agent: true,
+      tls_skip_verify: true,
+    };
+    const headers = { Authorization: `Basic ${await I.getAuth()}` };
+    const resp = await I.sendPostRequest('v1/management/PostgreSQL/Add', body, headers);
+
+    assert.equal(resp.status, 200, `Instance ${serviceName} was not added for monitoring`);
+  },
+
+  async addPostgreSQLGC(serviceName) {
+    const body = {
+      add_node: {
+        node_name: serviceName,
+        node_type: 'REMOTE_NODE',
+      },
+      port: 5432,
+      address: remoteInstancesHelper.remote_instance.gc.gc_postgresql.address,
+      service_name: serviceName,
+      username: remoteInstancesHelper.remote_instance.gc.gc_postgresql.userName,
+      password: remoteInstancesHelper.remote_instance.gc.gc_postgresql.password,
+      cluster: 'postgresql_clust',
       pmm_agent_id: 'pmm-server',
       qan_postgresql_pgstatements_agent: true,
       tls_skip_verify: true,
@@ -101,7 +125,7 @@ module.exports = {
         node_name: serviceName,
         node_type: 'REMOTE_NODE',
       },
-      port: 27017,
+      port: remoteInstancesHelper.remote_instance.mongodb.psmdb_4_2.port,
       address: remoteInstancesHelper.remote_instance.mongodb.psmdb_4_2.host,
       service_name: serviceName,
       username: remoteInstancesHelper.remote_instance.mongodb.psmdb_4_2.username,
@@ -132,7 +156,7 @@ module.exports = {
       az: 'us-east-1c',
       cluster: remoteInstancesHelper.remote_instance.aws.aws_rds_5_7.clusterName,
       engine: 'DISCOVER_RDS_MYSQL',
-      instance_id: 'rds-mysql57',
+      instance_id: serviceName,
       isRDS: true,
       pmm_agent_id: 'pmm-server',
       port: remoteInstancesHelper.remote_instance.aws.aws_rds_5_7.port,
@@ -141,8 +165,8 @@ module.exports = {
       region: 'us-east-1',
       replication_set: 'rds_mysql_repl',
       tls_skip_verify: true,
-      disable_basic_metrics: true,
-      disable_enhanced_metrics: true,
+      disable_basic_metrics: false,
+      disable_enhanced_metrics: false,
     };
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
     const resp = await I.sendPostRequest('v1/management/RDS/Add', body, headers);
@@ -150,6 +174,26 @@ module.exports = {
     assert.equal(resp.status, 200, `Instance ${serviceName} was not added for monitoring`);
 
     return resp.data;
+  },
+
+  async addExternalService(serviceName) {
+    const body = {
+      add_node: {
+        node_name: serviceName,
+        node_type: 'REMOTE_NODE',
+      },
+      address: remoteInstancesHelper.remote_instance.external.redis.host,
+      service_name: serviceName,
+      schema: remoteInstancesHelper.remote_instance.external.redis.schema,
+      cluster: remoteInstancesHelper.remote_instance.external.redis.clusterName,
+      listen_port: remoteInstancesHelper.remote_instance.external.redis.port,
+      metrics_path: remoteInstancesHelper.remote_instance.external.redis.metricsPath,
+      group: remoteInstancesHelper.remote_instance.external.redis.group,
+    };
+    const headers = { Authorization: `Basic ${await I.getAuth()}` };
+    const resp = await I.sendPostRequest('v1/management/External/Add', body, headers);
+
+    assert.equal(resp.status, 200, `External Service ${serviceName} was not added for monitoring got following response ${JSON.stringify(resp.data)}`);
   },
 
   async addInstanceForSTT(connection) {
