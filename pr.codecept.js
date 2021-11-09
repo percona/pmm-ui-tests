@@ -65,7 +65,7 @@ exports.config = {
     customLocator: {
       enabled: true,
       strategy: 'css',
-      attribute: 'data-qa',
+      attribute: 'data-testid',
       showActual: false,
     },
     allure: {
@@ -91,7 +91,7 @@ exports.config = {
       mochawesome: {
         stdout: './tests/output/mocharesult.log',
         options: {
-          reportDir: 'tests/output',
+          reportDir: './tests/output',
           reportFilename: 'result.html',
         },
       },

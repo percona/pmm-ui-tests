@@ -53,7 +53,7 @@ module.exports = {
       .withText(versionNumber)
       .find('//parent::div//label//span'),
     versionsSection: (component) => locate(`$${component}-options`)
-      .find('//div[contains(@data-qa, "-option")]'),
+      .find('//div[contains(@data-testid, "-option")]'),
     versionSelectorFieldErrorMessage: (component) => `$${component}-field-error-message`,
   },
 

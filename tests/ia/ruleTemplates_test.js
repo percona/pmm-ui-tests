@@ -242,7 +242,7 @@ Scenario(
     I.waitForElement(deleteButton, 30);
     I.click(deleteButton);
     I.click(ruleTemplatesPage.buttons.confirmDelete);
-    I.verifyPopUpMessage(ruleTemplatesPage.messages.failedToDelete(id));
+    I.verifyPopUpMessage(ruleTemplatesPage.messages.failedToDelete(templateName));
   },
 );
 

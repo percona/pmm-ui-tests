@@ -23,17 +23,17 @@ module.exports = {
     cancelAdding: '$alert-rule-template-cancel-button',
     confirmDelete: '$confirm-delete-modal-button',
     // editButtonBySource returns Edit template button locators for a given source
-    editButtonBySource: (source) => `//tr[descendant::td[contains(text(), "${source}")]]//button[@data-qa="edit-template-button"]`,
+    editButtonBySource: (source) => `//tr[descendant::td[contains(text(), "${source}")]]//button[@data-testid="edit-template-button"]`,
     // deleteButtonBySource returns Delete template button locators for a given source
-    deleteButtonBySource: (source) => `//tr[descendant::td[contains(text(), "${source}")]]//button[@data-qa="delete-template-button"]`,
+    deleteButtonBySource: (source) => `//tr[descendant::td[contains(text(), "${source}")]]//button[@data-testid="delete-template-button"]`,
     // editButtonByName returns Delete template button locator for a given Template name
-    editButtonByName: (name) => `//td[contains(text(), "${name}")]/following-sibling::td//button[@data-qa="edit-template-button"]`,
+    editButtonByName: (name) => `//td[contains(text(), "${name}")]/following-sibling::td//button[@data-testid="edit-template-button"]`,
     // deleteButtonByName returns Delete template button locator for a given Template name
-    deleteButtonByName: (name) => `//td[contains(text(), "${name}")]/following-sibling::td//button[@data-qa="delete-template-button"]`,
+    deleteButtonByName: (name) => `//td[contains(text(), "${name}")]/following-sibling::td//button[@data-testid="delete-template-button"]`,
   },
   fields: {
     templateInput: '$yaml-textarea-input',
-    fileInput: '//div[@data-qa="modal-content"]//input[@type="file"]',
+    fileInput: locate('$modal-content').find('input').withAttr({ type: 'file' }),
   },
   messages: {
     modalHeaderText: 'Add Alert Rule Template',
@@ -43,9 +43,9 @@ module.exports = {
     deleteModalMessage: (name) => `Are you sure you want to delete the alert rule template "${name}"?`,
     successfullyAdded: 'Alert rule template successfully added',
     successfullyEdited: 'Alert rule template successfully edited',
-    successfullyDeleted: (name) => `Alert rule template  "${name}" successfully deleted.`,
+    successfullyDeleted: (name) => `Alert rule template "${name}" successfully deleted.`,
     failedToParse: 'Failed to parse rule template.',
-    failedToDelete: (templateId) => `Failed to delete rule template ${templateId}, as it is being used by some rule.`,
+    failedToDelete: (name) => `You can't delete the "${name}" rule template when it's being used by a rule.`,
     duplicateTemplate: (id) => `Template with name "${id}" already exists.`,
   },
   templateSources: {

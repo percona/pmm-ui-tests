@@ -39,9 +39,9 @@ module.exports = {
     cancelAdding: '$notification-channel-cancel-button',
     confirmDelete: '$confirm-delete-modal-button',
     // removeChannelLocator returns delete channel button locators for a given channel name
-    deleteChannelLocator: (name) => `//td[text()="${name}"]/following-sibling::td//button[@data-qa="delete-notification-channel-button"]`,
+    deleteChannelLocator: (name) => `//td[text()="${name}"]/following-sibling::td//button[@data-testid="delete-notification-channel-button"]`,
     // editChannelLocator returns delete channel button locators for a given channel name
-    editChannelLocator: (name) => `//td[text()="${name}"]/following-sibling::td//button[@data-qa="edit-notification-channel-button"]`,
+    editChannelLocator: (name) => `//td[text()="${name}"]/following-sibling::td//button[@data-testid="edit-notification-channel-button"]`,
     pagerDutyServiceKeyOption: locate('label').withText('Service key'),
     pagerDutyRoutingKeyOption: locate('label').withText('Routing key'),
   },
@@ -60,7 +60,7 @@ module.exports = {
     successfullyEdited: 'Notification channel was successfully edited',
     deleteConfirmation: (name) => `Are you sure you want to delete the notification channel "${name}"?`,
     successfullyDeleted: (name) => `Notification channel "${name}" successfully deleted.`,
-    channelUsedByRule: (channelId) => `Failed to delete notification channel ${channelId}, as it is being used by some rule.`,
+    channelUsedByRule: (name) => `You can't delete the "${name}" channel when it's being used by a rule.`,
     invalidCharacter: 'Channel shouldn\'t have # character.',
   },
 

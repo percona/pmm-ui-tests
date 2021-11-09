@@ -59,6 +59,9 @@ module.exports = {
     'Replication Set': 'rds56-replication',
     Cluster: 'rds56-cluster',
   },
+  elements: {
+    noData: '$table-no-data',
+  },
   fields: {
     accessKeyInput: '$aws_access_key-text-input',
     addAWSRDSMySQLbtn: '$rds-instance',
@@ -77,8 +80,8 @@ module.exports = {
     clientSecret: '$azure_client_secret-password-input',
     cluster: '$cluster-text-input',
     customLabels: '$custom_labels-textarea-input',
-    disableBasicMetrics: '//input[@name="disable_basic_metrics"]/following-sibling::span[2]',
-    disableEnhancedMetrics: '//input[@name="disable_enhanced_metrics"]/following-sibling::span[2]',
+    disableBasicMetrics: '//input[@name="disable_basic_metrics"]/following-sibling::*[2]',
+    disableEnhancedMetrics: '//input[@name="disable_enhanced_metrics"]/following-sibling::*[2]',
     discoverBtn: '$credentials-search-button',
     discoveryResults: 'tbody[role="rowgroup"]',
     doNotTrack: locate('label').withText('Don\'t track'),
@@ -98,9 +101,9 @@ module.exports = {
     secretKeyInput: '$aws_secret_key-password-input',
     serviceName: '$serviceName-text-input',
     setManualy: locate('label').withText('Set manually'),
-    skipConnectionCheck: '//input[@name="skip_connection_check"]/following-sibling::span[2]',
+    skipConnectionCheck: '//input[@name="skip_connection_check"]/following-sibling::*[2]',
     skipTLS: '//input[@name="tls_skip_verify"]',
-    skipTLSL: '//input[@name="tls_skip_verify"]/following-sibling::span[2]',
+    skipTLSL: '//input[@name="tls_skip_verify"]/following-sibling::*[2]',
     startMonitoring: '/following-sibling::td/a',
     subscriptionID: '$azure_subscription_id-text-input',
     tableStatsGroupTableLimit: '$tablestats_group_table_limit-number-input',
@@ -110,7 +113,7 @@ module.exports = {
     tlsCertificateKeyInput: '$tls_key-textarea-input',
     tlsCertificateFilePasswordInput: '$tls_certificate_file_password-password-input',
     tlsCertificateKey: '$tls_certificate_key-textarea-input',
-    usePerformanceSchema2: '//input[@name="qan_mysql_perfschema"]/following-sibling::span[2]',
+    usePerformanceSchema2: '//input[@name="qan_mysql_perfschema"]/following-sibling::*[2]',
     usePgStatMonitor: '//label[text()="PG Stat Monitor"]',
     usePgStatStatements: '//label[text()="PG Stat Statements"]',
     useQANMongoDBProfiler: '$qan_mongodb_profiler-field-label',
@@ -351,7 +354,7 @@ module.exports = {
         I.fillField(this.fields.environment, this.postgresGCSettings.environment);
         I.fillField(this.fields.cluster, this.postgresGCSettings.cluster);
     }
-    adminPage.peformPageDown(1);
+    adminPage.performPageDown(1);
   },
 
   createRemoteInstance(serviceName) {
@@ -409,6 +412,7 @@ module.exports = {
   },
 
   discoverRDSWithoutCredentials() {
+    I.waitForVisible(this.elements.noData, 30);
     I.click(this.fields.discoverBtn);
     I.waitForVisible(this.fields.noCredentialsError, 30);
   },

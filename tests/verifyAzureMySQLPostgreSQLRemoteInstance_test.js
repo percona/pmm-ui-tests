@@ -15,6 +15,12 @@ if (remoteInstancesHelper.getInstanceStatus('azure').azure_postgresql.enabled) {
   filters.add([remoteInstancesPage.postgresqlAzureInputs.environment]);
 }
 
+const metrics = new DataTable(['metricName']);
+
+metrics.add(['azure_memory_percent_average']);
+metrics.add(['mysql_global_status_max_used_connections']);
+metrics.add(['mysql_global_variables_azure_ia_enabled']);
+
 Feature('Monitoring Azure MySQL and PostgreSQL DB');
 
 Before(async ({ I }) => {
@@ -42,35 +48,6 @@ Data(azureServices).Scenario(
 );
 
 Scenario(
-  'PMM-T747 - Verify enabling Azure flag @instances',
-  async ({
-    I, pmmSettingsPage, remoteInstancesPage, settingsAPI,
-  }) => {
-    const sectionNameToExpand = pmmSettingsPage.sectionTabsList.advanced;
-
-    I.amOnPage(pmmSettingsPage.url);
-    await settingsAPI.disableAzure();
-    await pmmSettingsPage.waitForPmmSettingsPageLoaded();
-    await pmmSettingsPage.expandSection(sectionNameToExpand, pmmSettingsPage.fields.advancedButton);
-    pmmSettingsPage.verifySwitch(pmmSettingsPage.fields.microsoftAzureMonitoringSwitchInput, 'off');
-    I.amOnPage(remoteInstancesPage.url);
-    I.waitForInvisible(remoteInstancesPage.fields.addAzureMySQLPostgreSQL, 30);
-    I.amOnPage(pmmSettingsPage.url);
-    await pmmSettingsPage.waitForPmmSettingsPageLoaded();
-    await pmmSettingsPage.expandSection(sectionNameToExpand, pmmSettingsPage.fields.advancedButton);
-    pmmSettingsPage.switchAzure();
-    I.amOnPage(remoteInstancesPage.url);
-    I.waitForVisible(remoteInstancesPage.fields.addAzureMySQLPostgreSQL, 30);
-    I.amOnPage(pmmSettingsPage.url);
-    await pmmSettingsPage.waitForPmmSettingsPageLoaded();
-    await pmmSettingsPage.expandSection(sectionNameToExpand, pmmSettingsPage.fields.advancedButton);
-    pmmSettingsPage.switchAzure();
-    I.amOnPage(remoteInstancesPage.url);
-    I.waitForInvisible(remoteInstancesPage.fields.addAzureMySQLPostgreSQL, 30);
-  },
-);
-
-Scenario(
   'PMM-T756 - Verify Azure node is displayed on Home dashboard @instances',
   async ({
     I, homePage, dashboardPage,
@@ -94,3 +71,15 @@ Data(filters).Scenario('PMM-T746, PMM-T748 - Verify adding monitoring for Azure 
 
   assert.ok(count > 0, `QAN queries for added Azure service with env as ${current.filter} does not exist`);
 }).retry(3);
+
+Data(metrics).Scenario(
+  'PMM-T743 Check metrics from exporters are hitting PMM Server @instances',
+  async ({ I, dashboardPage, current }) => {
+    // This is only needed to let PMM Consume Metrics
+    I.wait(10);
+    const response = await dashboardPage.checkMetricExist(current.metricName);
+    const result = JSON.stringify(response.data.data.result);
+
+    assert.ok(response.data.data.result.length !== 0, `Metrics ${current.metricName} should be available after adding Azure Instance but got empty ${result}`);
+  },
+);
