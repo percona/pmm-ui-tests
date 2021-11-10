@@ -116,7 +116,7 @@ module.exports = {
     I.click(locators.reloadButtonAfterUpgrade);
     locators = this.getLocators('latest');
 
-    I.waitForVisible(locators.upToDateLocator, 30);
+    I.waitForVisible(locators.upToDateLocator, 60);
     assert.equal(
       await I.grabTextFrom(locators.currentVersion),
       available_version.split(' ')[0],
