@@ -3,6 +3,7 @@ const connection = perconaServerDB.defaultConnection;
 const emptyPasswordSummary = 'MySQL users have empty passwords';
 const intervals = settingsAPI.defaultCheckIntervals;
 let nodeID;
+const psServiceName = 'stt-mysql-5.7.30';
 
 const intervalsTests = new DataTable(['interval', 'intervalValue']);
 
@@ -29,7 +30,7 @@ BeforeSuite(async ({ perconaServerDB, addInstanceAPI, remoteInstancesHelper }) =
     username: connection.username,
     password: connection.password,
   };
-  const instance = await addInstanceAPI.apiAddInstance(remoteInstancesHelper.instanceTypes.mysql, 'stt-mysql-5.7.30', connection);
+  const instance = await addInstanceAPI.apiAddInstance(remoteInstancesHelper.instanceTypes.mysql, psServiceName, connection);
 
   nodeID = instance.service.node_id;
   perconaServerDB.connectToPS(mysqlComposeConnection);
@@ -70,6 +71,29 @@ Scenario(
 
     // Verify there is no MySQL user empty password failed check
     await securityChecksAPI.verifyFailedCheckNotExists(emptyPasswordSummary);
+  },
+);
+
+Scenario(
+  'PMM-T617 Verify Show all toggle for failed checks @stt @not-ovf',
+  async ({
+    I, databaseChecksPage,
+  }) => {
+    const failedCheckRowLocator = databaseChecksPage.elements
+      .failedCheckRowByServiceName(psServiceName);
+
+    I.amOnPage(databaseChecksPage.url);
+    I.waitForVisible(failedCheckRowLocator, 30);
+
+    // Silence mysql Empty Password failed check and verify it's not displayed
+    I.waitForVisible(failedCheckRowLocator, 30);
+    I.click(failedCheckRowLocator.find('button').first());
+    I.dontSeeElement(failedCheckRowLocator.find('td').withText(emptyPasswordSummary));
+
+    // Toggle Show Silenced and verify mysql Empty Password failed check is present and has state "Silenced"
+    I.click(databaseChecksPage.buttons.toggleSilenced);
+    I.seeElement(failedCheckRowLocator.find('td').withText(emptyPasswordSummary));
+    I.seeElement(failedCheckRowLocator.find('td').withText('Silenced'));
   },
 );
 
