@@ -14,6 +14,7 @@ module.exports = {
     'User Name',
     'Node Type',
     'Service Type',
+    'Command Type',
   ],
   fields: {
     filterBy: '$filters-search-field',
@@ -117,6 +118,28 @@ module.exports = {
     const countOfFiltersInSection = await I.grabNumberOfVisibleElements(sectionLocator);
 
     assert.equal(countOfFiltersInSection, expectedCount, `There should be '${expectedCount}' visible links`);
+  },
+
+  checkSectionFilterVisible(filterSection, filter) {
+    const filterLocator = `//span[contains(text(), '${filterSection}')]/parent::p/following-sibling::div[@data-testid='filter-checkbox-${filter}']//input[contains(@name, '${filter}')]`;
+
+    I.waitForElement(filterLocator, 20);
+  },
+
+  async verifySectionItems(filterSection, filters) {
+    const sectionLocator = `//span[contains(text(), '${filterSection}')]/ancestor::p/following-sibling::`
+      + 'div//span[contains(@class, "checkbox-container__checkmark")]';
+
+    I.fillField(this.fields.filterBy, filterSection);
+    I.waitForVisible(`//span[contains(text(), '${filterSection}')]`, 30);
+    const countOfFiltersInSection = await I.grabNumberOfVisibleElements(sectionLocator);
+    const currentFilters = await I.grabTextFrom(this.elements.filterName);
+
+    for (let i = 0; i <= filters.length - 1; i++) {
+      assert.ok(currentFilters[i].includes(filters[i]), `The filter '${filters[i]}' has not been found!`);
+    }
+
+    I.clearField(this.fields.filterBy);
   },
 
   async verifyCountOfFilterLinks(expectedCount, before) {

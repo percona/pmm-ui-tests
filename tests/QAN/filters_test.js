@@ -9,11 +9,65 @@ shortCutTests.add(['Service Name', 'MongoDB Instance Summary', 'graph/d/mongodb-
 
 Feature('QAN filters').retry(1);
 
+const filters = new DataTable(['filter1', 'filter2']);
+
+filters.add(['SELECT', 'INSERT']);
+// filters.add(['INSERT', 'SELECT']);
+// filters.add(['UPDATE', 'SELECT']);
+// filters.add(['DELETE', 'INSERT']);
+
 Before(async ({ I, qanPage, qanOverview }) => {
   await I.Authorize();
   I.amOnPage(qanPage.url);
   qanOverview.waitForOverviewLoaded();
 });
+
+Scenario.only(
+  'PMM-T1054 - Verify the "Command type" filter for Postgres exists @qan',
+  async ({
+    I, qanOverview, qanFilters,
+  }) => {
+    const filterSection = 'Command Type';
+    const environmentName = 'pdpgsql-dev';
+    const filter1 = 'SELECT';
+
+    qanFilters.applyFilter(environmentName);
+    // need add INSERT, UPDATE and DELETE
+    // await qanFilters.verifySectionItems(filterSection, [filter1]);
+    // qanFilters.checkSectionFilterVisible(filterSection, 'undefined');
+    qanFilters.checkSectionFilterVisible(filterSection, filter1);
+    I.fillField(qanFilters.fields.filterBy, filterSection);
+    I.waitForVisible(qanFilters.getFilterSectionLocator(filterSection), 30);
+    I.seeElement(qanFilters.getFilterSectionLocator(filterSection));
+
+    await qanFilters.verifySectionItemsCount(filterSection, 2);
+    await qanFilters.verifyCountOfFilterLinks(2, false);
+    // qanFilters.checkDisabledFilter(filterSection, filter1);
+
+    I.clearField(qanFilters.fields.filterBy);
+  },
+);
+
+Data(filters).Scenario(
+  'PMM-T1055 - Filter by "Command type" filter for Postgres @qan',
+  async ({
+    I, qanOverview, qanFilters, current,
+  }) => {
+    const environmentName = 'pdpgsql-dev';
+    const filterName1 = current.filter1;
+    const filterName2 = current.filter2;
+
+    qanFilters.applyFilter(environmentName);
+    I.waitForVisible(qanFilters.buttons.showSelected, 30);
+
+    qanFilters.applyFilterInSection('Command Type', filterName1);
+    I.waitForVisible(qanFilters.buttons.showSelected, 30);
+    I.fillField(qanOverview.fields.searchBy, filterName2);
+
+    await qanFilters.verifyCountOfFilterLinks(0, true);
+    I.clearField(qanFilters.fields.filterBy);
+  },
+);
 
 Scenario(
   'PMM-T175 - Verify user is able to apply filter that has dots in label @qan',
