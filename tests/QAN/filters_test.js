@@ -22,34 +22,29 @@ Before(async ({ I, qanPage, qanOverview }) => {
   qanOverview.waitForOverviewLoaded();
 });
 
-Scenario.only(
+Scenario(
   'PMM-T1054 - Verify the "Command type" filter for Postgres exists @qan',
   async ({
-    I, qanOverview, qanFilters,
+    I, qanFilters,
   }) => {
     const filterSection = 'Command Type';
     const environmentName = 'pdpgsql-dev';
-    const filter1 = 'SELECT';
+    const filtersNames = ['n/a', 'SELECT'];
 
     qanFilters.applyFilter(environmentName);
-    // need add INSERT, UPDATE and DELETE
-    // await qanFilters.verifySectionItems(filterSection, [filter1]);
-    // qanFilters.checkSectionFilterVisible(filterSection, 'undefined');
-    qanFilters.checkSectionFilterVisible(filterSection, filter1);
+    I.waitForVisible(qanFilters.buttons.showSelected, 30);
     I.fillField(qanFilters.fields.filterBy, filterSection);
     I.waitForVisible(qanFilters.getFilterSectionLocator(filterSection), 30);
     I.seeElement(qanFilters.getFilterSectionLocator(filterSection));
 
-    await qanFilters.verifySectionItemsCount(filterSection, 2);
-    await qanFilters.verifyCountOfFilterLinks(2, false);
-    // qanFilters.checkDisabledFilter(filterSection, filter1);
+    qanFilters.checkSectionFilterVisible(filterSection, filtersNames);
 
-    I.clearField(qanFilters.fields.filterBy);
+    await qanFilters.verifySectionItemsCount(filterSection, filtersNames.length);
   },
 );
 
 Data(filters).Scenario(
-  'PMM-T1055 - Filter by "Command type" filter for Postgres @qan',
+  'PMM-T1055 - Verify the "Command type" filter for Postgres @qan',
   async ({
     I, qanOverview, qanFilters, current,
   }) => {
@@ -65,7 +60,6 @@ Data(filters).Scenario(
     I.fillField(qanOverview.fields.searchBy, filterName2);
 
     await qanFilters.verifyCountOfFilterLinks(0, true);
-    I.clearField(qanFilters.fields.filterBy);
   },
 );
 
