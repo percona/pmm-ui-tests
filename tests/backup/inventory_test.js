@@ -80,7 +80,7 @@ Scenario(
     I.waitForVisible(backupInventoryPage.elements.pendingBackupByName(backupName), 10);
     backupInventoryPage.verifyBackupSucceeded(backupName);
   },
-);
+).retry(1);
 
 Scenario(
   'PMM-T1005 Verify create backup modal @backup',
