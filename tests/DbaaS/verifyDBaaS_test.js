@@ -206,10 +206,11 @@ Data(nameFields).Scenario('PMM-T456 Verify Create Cluster steps validation field
     I.waitForVisible(dbaasPage.tabs.dbClusterTab.addDbClusterButton, 60);
     I.dontSeeElement(adminPage.fields.timePickerMenu);
     await dbaasActionsPage.createClusterBasicOptions(clusterName, 'a2345678901234567890', 'MySQL');
-    I.dontSee(dbaasPage.dbclusterNameLimitError, dbaasPage.tabs.dbClusterTab.basicOptions.fields.clusterNameFieldErrorMessage),
+    I.dontSee(dbaasPage.dbclusterNameLimitError, dbaasPage.tabs.dbClusterTab.basicOptions.fields.clusterNameFieldErrorMessage);
     adminPage.customClearField(current.field);
     I.fillField(dbaasPage.tabs.dbClusterTab.basicOptions.fields.clusterNameField,'a23456789012345678901');
-    I.seeTextEquals(dbaasPage.dbclusterNameLimitError, dbaasPage.tabs.dbClusterTab.basicOptions.fields.clusterNameFieldErrorMessage),
+    I.seeTextEquals(
+      dbaasPage.dbclusterNameLimitError, dbaasPage.tabs.dbClusterTab.basicOptions.fields.clusterNameFieldErrorMessage);
     I.waitForElement(dbaasPage.tabs.dbClusterTab.optionsCountLocator(2), 30);
     current.value.forEach((input) => dbaasPage.verifyInputValidationMessages(
       current.field,
