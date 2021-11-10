@@ -1,9 +1,13 @@
-const { settingsAPI, perconaServerDB, securityChecksAPI } = inject();
+const {
+  settingsAPI, perconaServerDB, securityChecksAPI, databaseChecksPage,
+} = inject();
 const connection = perconaServerDB.defaultConnection;
 const emptyPasswordSummary = 'MySQL users have empty passwords';
 const intervals = settingsAPI.defaultCheckIntervals;
 let nodeID;
 const psServiceName = 'stt-mysql-5.7.30';
+const failedCheckRowLocator = databaseChecksPage.elements
+  .failedCheckRowByServiceName(psServiceName);
 
 const intervalsTests = new DataTable(['interval', 'intervalValue']);
 
@@ -19,6 +23,14 @@ const cleanup = async () => {
   await perconaServerDB.dropUser();
   await securityChecksAPI.enableCheck(securityChecksAPI.checkNames.mysqlVersion);
   await securityChecksAPI.enableCheck(securityChecksAPI.checkNames.mysqlEmptyPassword);
+};
+
+const prepareFailedCheck = async () => {
+  // Run DB Checks from UI
+  databaseChecksPage.runDBChecks();
+
+  // Check that there is MySQL user empty password failed check
+  await securityChecksAPI.verifyFailedCheckExists(emptyPasswordSummary);
 };
 
 Feature('Security Checks: Checks Execution');
@@ -42,17 +54,11 @@ AfterSuite(async ({ perconaServerDB, inventoryAPI }) => {
 });
 
 Before(async ({
-  I, securityChecksAPI, perconaServerDB, databaseChecksPage,
+  I, perconaServerDB,
 }) => {
   await I.Authorize();
   await cleanup();
   await perconaServerDB.createUser();
-
-  // Run DB Checks from UI
-  databaseChecksPage.runDBChecks();
-
-  // Check that there is MySQL user empty password failed check
-  await securityChecksAPI.verifyFailedCheckExists(emptyPasswordSummary);
 });
 
 After(async () => {
@@ -64,6 +70,7 @@ Scenario(
   async ({
     securityChecksAPI, databaseChecksPage, perconaServerDB,
   }) => {
+    await prepareFailedCheck();
     await perconaServerDB.setUserPassword();
 
     // Run DB Checks from UI
@@ -75,6 +82,24 @@ Scenario(
 );
 
 Scenario(
+  'PMM-T594 Verify failed checks appear after STT is enabled in Settings @stt @not-ovf',
+  async ({
+    I, databaseChecksPage, homePage, settingsAPI,
+  }) => {
+    await settingsAPI.changeSettings({ stt: false });
+    await settingsAPI.changeSettings({ stt: true });
+    await securityChecksAPI.waitForSecurityChecksResults(30);
+    I.amOnPage(homePage.url);
+    I.waitForVisible(homePage.fields.checksPanelSelector, 30);
+    I.dontSeeElement(homePage.fields.noFailedChecksInPanel);
+    I.seeElement(homePage.fields.sttFailedChecksPanelSelector);
+
+    I.amOnPage(databaseChecksPage.url);
+    I.waitForVisible(failedCheckRowLocator, 30);
+  },
+);
+
+Scenario(
   'PMM-T617 Verify Show all toggle for failed checks @stt @not-ovf',
   async ({
     I, databaseChecksPage,
@@ -82,6 +107,7 @@ Scenario(
     const failedCheckRowLocator = databaseChecksPage.elements
       .failedCheckRowByServiceName(psServiceName);
 
+    await prepareFailedCheck();
     I.amOnPage(databaseChecksPage.url);
     I.waitForVisible(failedCheckRowLocator, 30);
 
@@ -102,6 +128,7 @@ Data(intervalsTests).Scenario(
   async ({
     I, securityChecksAPI, settingsAPI, perconaServerDB, databaseChecksPage, current,
   }) => {
+    await prepareFailedCheck();
     await perconaServerDB.setUserPassword();
 
     // TODO: uncomment after https://jira.percona.com/browse/PMM-8051
@@ -128,6 +155,7 @@ Scenario(
   async ({
     I, securityChecksAPI, settingsAPI, databaseChecksPage,
   }) => {
+    await prepareFailedCheck();
     await securityChecksAPI.disableCheck(securityChecksAPI.checkNames.mysqlEmptyPassword);
     await settingsAPI.setCheckIntervals({ ...intervals, standard_interval: '3s' });
 
