@@ -41,7 +41,7 @@ Scenario(
     await ncPage.selectChannelType(ncPage.types.slack.type);
     I.fillField(ncPage.fields.slackChannelInput, '#');
     I.seeTextEquals(ncPage.messages.invalidCharacter, ncPage.elements.channelFieldValidation);
-    I.seeAttributesOnElements(ncPage.buttons.addChannel, { disabled: true });
+    I.seeElementsDisabled(ncPage.buttons.addChannel);
   },
 );
 

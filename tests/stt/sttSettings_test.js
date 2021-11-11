@@ -28,11 +28,11 @@ Scenario(
     I.waitForVisible(pmmSettingsPage.fields.rareIntervalInput, 30);
 
     // Verify Interval fields are disabled and have default values
-    I.seeAttributesOnElements(pmmSettingsPage.fields.rareIntervalInput, { disabled: true });
+    I.seeElementsDisabled(pmmSettingsPage.fields.rareIntervalInput);
     I.seeInField(pmmSettingsPage.fields.rareIntervalInput, '78');
-    I.seeAttributesOnElements(pmmSettingsPage.fields.standartIntervalInput, { disabled: true });
+    I.seeElementsDisabled(pmmSettingsPage.fields.standartIntervalInput);
     I.seeInField(pmmSettingsPage.fields.standartIntervalInput, '24');
-    I.seeAttributesOnElements(pmmSettingsPage.fields.frequentIntervalInput, { disabled: true });
+    I.seeElementsDisabled(pmmSettingsPage.fields.frequentIntervalInput);
     I.seeInField(pmmSettingsPage.fields.frequentIntervalInput, '4');
 
     // Enable STT
@@ -40,9 +40,9 @@ Scenario(
     pmmSettingsPage.verifySwitch(pmmSettingsPage.fields.sttSwitchSelectorInput, 'on');
 
     // // Verify Interval fields are enabled
-    I.seeAttributesOnElements(pmmSettingsPage.fields.rareIntervalInput, { disabled: null });
-    I.seeAttributesOnElements(pmmSettingsPage.fields.standartIntervalInput, { disabled: null });
-    I.seeAttributesOnElements(pmmSettingsPage.fields.frequentIntervalInput, { disabled: null });
+    I.seeElementsEnabled(pmmSettingsPage.fields.rareIntervalInput);
+    I.seeElementsEnabled(pmmSettingsPage.fields.standartIntervalInput);
+    I.seeElementsEnabled(pmmSettingsPage.fields.frequentIntervalInput);
   },
 );
 
@@ -99,6 +99,6 @@ Data(inputs).Scenario(
     I.fillField(pmmSettingsPage.fields.frequentIntervalInput, current.input);
     I.seeTextEquals(greaterThanZero, pmmSettingsPage.fields.frequentIntervalValidation);
 
-    I.seeAttributesOnElements(pmmSettingsPage.fields.advancedButton, { disabled: true });
+    I.seeElementsDisabled(pmmSettingsPage.fields.advancedButton);
   },
 );

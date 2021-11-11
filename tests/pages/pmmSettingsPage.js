@@ -74,6 +74,7 @@ module.exports = {
     invalidAlertmanagerMissingHostMessage: 'Invalid alert_manager_url: http:// - missing host.',
     invalidAlertmanagerRulesMessage: 'Invalid alerting rules.',
     invalidDBaaSDisableMessage: 'DBaaS is enabled via ENABLE_DBAAS or via deprecated PERCONA_TEST_DBAAS environment variable.',
+    disabledBackupManagement: 'Backup Management is disabled. You can enable it in PMM Settings.',
   },
   sectionTabsList: {
     metrics: 'Metrics Resolution',
@@ -180,6 +181,8 @@ module.exports = {
     alertmanagerButton: '$alertmanager-button',
     amUrlLabel: locateLabel('form-field-am-url'),
     applyButton: '//button[@type="submit"]',
+    backupManagementSwitch: locate('$advanced-backup').find('label'),
+    backupManagementSwitchInput: locate('$advanced-backup').find('input'),
     callHomeSwitch: '//button[@class="toggle-field ant-switch ant-switch-checked"]',
     checkForUpdatesLabel: locate('$advanced-updates').find('span'),
     checkForUpdatesSwitch: '//div[@data-testid="advanced-updates"]//div[2]//input',
