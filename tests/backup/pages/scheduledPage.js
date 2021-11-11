@@ -33,7 +33,7 @@ module.exports = {
     createSchedule: '$backup-add-button',
     editByName: (name) => locate('$edit-scheduled-backpup-button').inside(scheduleCell(name)),
     deleteByName: (name) => locate('$delete-scheduled-backpup-button').inside(scheduleCell(name)),
-    copyByName: (name) => locate('$copy-alert-scheduled-backup-button').inside(scheduleCell(name)),
+    copyByName: (name) => locate('$copy-scheduled-backup-button').inside(scheduleCell(name)),
     enableDisableByName: (name) => locate('label').after('$toggle-scheduled-backpup').inside(scheduleCell(name)),
     confirmDelete: '$confirm-delete-modal-button',
     cancelDelete: '$cancel-delete-modal-button',

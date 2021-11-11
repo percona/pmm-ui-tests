@@ -171,7 +171,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T922, PMM-T977 Verify user can schedule a backup for MongoDB with replica @backup',
+  'PMM-T913, PMM-T922, PMM-T977 Verify user can schedule a backup for MongoDB with replica @backup',
   async ({
     I, backupInventoryPage, scheduledAPI, backupAPI, scheduledPage,
   }) => {
@@ -212,7 +212,7 @@ Scenario(
 );
 
 Data(schedules).Scenario(
-  'PMM-T899 PMM-T903 PMM-T904 PMM-T905 Verify user can create daily scheduled backup @backup',
+  'PMM-T899 PMM-T903 PMM-T904 PMM-T905 PMM-T907 Verify user can create daily scheduled backup @backup',
   async ({
     scheduledPage, scheduledAPI, current,
   }) => {
