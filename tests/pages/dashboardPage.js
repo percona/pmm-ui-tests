@@ -974,6 +974,17 @@ module.exports = {
     return filterGroupLocator;
   },
 
+  async genericDashboardLoadForDbaaSClusters(url, timeRange = 'Last 5 minutes', performPageDown = 4, graphsWithNa = 0, graphsWithoutData = 0) {
+    I.amOnPage(url);
+    this.waitForDashboardOpened();
+    await adminPage.applyTimeRange(timeRange);
+    I.click(adminPage.fields.metricTitle);
+    adminPage.performPageDown(performPageDown);
+    await this.expandEachDashboardRow();
+    await this.verifyThereAreNoGraphsWithNA(graphsWithNa);
+    await this.verifyThereAreNoGraphsWithoutData(graphsWithoutData);
+  },
+
   async applyFilter(filterName, filterValue) {
     // eslint-disable-next-line max-len
     const filterSelector = `(//div[@class='variable-link-wrapper']//ancestor::div//label[contains(text(),'${filterName}')])[1]//parent::div//a`;

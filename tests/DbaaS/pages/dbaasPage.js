@@ -1,5 +1,5 @@
 const {
-  I, dbaasAPI, dbaasActionsPage, dbaasManageVersionPage,
+  I, dbaasAPI, dbaasActionsPage, dbaasManageVersionPage, dashboardPage, qanPage, qanFilters, qanOverview, inventoryAPI,
 } = inject();
 const assert = require('assert');
 
@@ -391,4 +391,40 @@ module.exports = {
     I.dontSeeElement(this.tabs.dbClusterTab.fields.dbClusterLogs.modalHeader);
   },
 
+  async pxcClusterMetricCheck(dbclusterName, serviceName, nodeName) {
+    await dashboardPage.genericDashboardLoadForDbaaSClusters(`${dashboardPage.pxcGaleraClusterSummaryDashboard.url}&var-cluster=pxc-${dbclusterName}`);
+    await dashboardPage.genericDashboardLoadForDbaaSClusters(`${dashboardPage.mysqlPXCGaleraNodeSummaryDashboard.url}?&var-service_name=${serviceName}`, 'Last 5 minutes', 4, 0, 1);
+    await dashboardPage.genericDashboardLoadForDbaaSClusters(`${dashboardPage.nodeSummaryDashboard.url}?&var-node_name=${nodeName}`, 'Last 5 minutes', 4, 0, 1);
+    await dashboardPage.genericDashboardLoadForDbaaSClusters(`${dashboardPage.mysqlInstanceSummaryDashboard.url}&var-service_name=${serviceName}`, 'Last 5 minutes', 4, 0, 2);
+  },
+
+  async pxcQANCheck(dbclusterName, nodeName, serviceName) {
+    I.amOnPage(qanPage.url);
+    qanFilters.applyFilterInSection('Cluster', dbclusterName);
+    qanOverview.waitForOverviewLoaded();
+    let count = await qanOverview.getCountOfItems();
+
+    assert.ok(count > 0, `QAN queries for added DBaaS PXC Cluster ${dbclusterName} does not exist`);
+    qanFilters.applyFilterInSection('Cluster', dbclusterName);
+
+    qanFilters.applyFilterInSection('Node Name', `${nodeName}`);
+    qanOverview.waitForOverviewLoaded();
+    count = await qanOverview.getCountOfItems();
+
+    assert.ok(count > 0, `QAN queries for added DBaaS PXC Cluster with node name as ${nodeName} does not exist`);
+    qanFilters.applyFilterInSection('Node Name', `${nodeName}`);
+
+    qanFilters.applyFilterInSection('Service Name', `${serviceName}`);
+    qanOverview.waitForOverviewLoaded();
+    count = await qanOverview.getCountOfItems();
+
+    assert.ok(count > 0, `QAN queries for added DBaaS PXC Cluster with service name as ${serviceName} does not exist`);
+    qanFilters.applyFilterInSection('Service Name', `${serviceName}`);
+  },
+
+  async dbClusterAgentStatusCheck(dbClusterName, serviceName, serviceType) {
+    const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName(serviceType, serviceName);
+
+    await inventoryAPI.waitForRunningState(service_id);
+  },
 };

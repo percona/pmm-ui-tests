@@ -6,6 +6,13 @@ const pxc_cluster_name = 'pxc-dbcluster';
 const pxc_cluster_name_single = 'pxc-singlenode';
 const pxc_cluster_small = 'pxc-smalldbcluster';
 
+const pxcDBClusterDetails = new DataTable(['namespace', 'clusterName', 'node']);
+
+// only to details in current object for each node check
+pxcDBClusterDetails.add(['default', `${pxc_cluster_name}`, '0']);
+pxcDBClusterDetails.add(['default', `${pxc_cluster_name}`, '1']);
+pxcDBClusterDetails.add(['default', `${pxc_cluster_name}`, '2']);
+
 Feature('DbaaS: PXC Cluster Creation, Modifications, Actions, Verification tests');
 
 const singleNodeConfiguration = {
@@ -15,11 +22,12 @@ const singleNodeConfiguration = {
   memory: '1.2 GB',
   cpu: '0.2',
   disk: '25 GB',
-  dbType: 'MySQL 8.0.22',
+  dbType: 'MySQL 8.0.23',
   clusterDashboardRedirectionLink: dbaasPage.clusterDashboardUrls.pxcDashboard(pxc_cluster_name_single),
 };
 
-BeforeSuite(async ({ dbaasAPI }) => {
+BeforeSuite(async ({ dbaasAPI, settingsAPI }) => {
+  await settingsAPI.changeSettings({ publicAddress: process.env.VM_IP });
   if (!await dbaasAPI.apiCheckRegisteredClusterExist(clusterName)) {
     await dbaasAPI.apiRegisterCluster(process.env.kubeconfig_minikube, clusterName);
   }
@@ -55,7 +63,7 @@ Scenario('PMM-T459, PMM-T473, PMM-T478, PMM-T524 Verify DB Cluster Details are l
   async ({ I, dbaasPage, dbaasActionsPage }) => {
     const clusterDetails = {
       clusterDashboardRedirectionLink: dbaasPage.clusterDashboardUrls.pxcDashboard(pxc_cluster_name),
-      dbType: 'MySQL 8.0.22',
+      dbType: 'MySQL 8.0.23',
       memory: '2 GB',
       cpu: '1',
       disk: '25 GB',
@@ -66,6 +74,19 @@ Scenario('PMM-T459, PMM-T473, PMM-T478, PMM-T524 Verify DB Cluster Details are l
     await dbaasPage.validateClusterDetail(pxc_cluster_name, clusterName, clusterDetails);
     await dbaasActionsPage.restartCluster(pxc_cluster_name, clusterName, 'MySQL');
     await dbaasPage.validateClusterDetail(pxc_cluster_name, clusterName, clusterDetails);
+  });
+
+Data(pxcDBClusterDetails).Scenario('PMM-T502, Verify Monitoring of PXC Clusters @dbaas',
+  async ({
+    I, dbaasPage, current,
+  }) => {
+    await dbaasPage.waitForDbClusterTab(clusterName);
+    I.waitForVisible(dbaasPage.tabs.dbClusterTab.dbClusterAddButtonTop, 30);
+    const serviceName = `${current.namespace}-${current.clusterName}-pxc-${current.node}`;
+
+    await dbaasPage.pxcClusterMetricCheck(pxc_cluster_name, serviceName, serviceName);
+    await dbaasPage.pxcQANCheck(pxc_cluster_name, serviceName, serviceName);
+    await dbaasPage.dbClusterAgentStatusCheck(pxc_cluster_name, serviceName, 'MYSQL_SERVICE');
   });
 
 Scenario('PMM-T582 Verify Adding Cluster with Same Name and Same DB Type @dbaas',
@@ -83,6 +104,12 @@ Scenario('PMM-T460, PMM-T452 Verify force unregistering Kubernetes cluster @dbaa
     I.waitForText(dbaasPage.failedUnregisterCluster(clusterName, 'XtraDB'));
     dbaasPage.unregisterCluster(clusterName, true);
     I.waitForText(dbaasPage.deletedAlertMessage, 20);
+    dbaasPage.checkCluster(clusterName, true);
+  });
+
+Scenario('PMM-T460, PMM-T452 Verify force unregistering Kubernetes cluster @dbaas',
+  async ({ I, dbaasPage }) => {
+    await dbaasPage.waitForKubernetesClusterTab(clusterName);
     dbaasPage.checkCluster(clusterName, true);
   });
 
@@ -156,7 +183,7 @@ Scenario('PMM-T488, PMM-T489 Verify editing PXC cluster changing single node to 
       memory: '1 GB',
       cpu: '0.5',
       disk: '25 GB',
-      dbType: 'MySQL 8.0.22',
+      dbType: 'MySQL 8.0.23',
       clusterDashboardRedirectionLink: dbaasPage.clusterDashboardUrls.pxcDashboard(pxc_cluster_name_single),
     };
 
@@ -183,7 +210,7 @@ Scenario('PMM-T525 PMM-T528 Verify Suspend & Resume for DB Cluster Works as expe
       clusterDashboardRedirectionLink: dbaasPage.clusterDashboardUrls.pxcDashboard(
         pxc_cluster_suspend_resume,
       ),
-      dbType: 'MySQL 8.0.22',
+      dbType: 'MySQL 8.0.23',
       memory: '2 GB',
       cpu: '1',
       disk: '25 GB',
