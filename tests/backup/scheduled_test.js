@@ -271,7 +271,6 @@ Scenario('PMM-T900 Verify user can copy scheduled backup @backup',
     await scheduledPage.openScheduledBackupsPage();
 
     // Copy existing schedule
-    I.waitForVisible(scheduledPage.buttons.copyByName(schedule.name), 10);
     I.click(scheduledPage.buttons.copyByName(schedule.name));
 
     // Verify copied schedule details
