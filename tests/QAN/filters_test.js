@@ -8,10 +8,11 @@ shortCutTests.add(['Node Name', 'Node Summary', 'graph/d/node-instance-summary/n
 shortCutTests.add(['Service Name', 'MongoDB Instance Summary', 'graph/d/mongodb-instance-summary/mongodb-instance-summary', 'mongodb_rs1_2']);
 
 Feature('QAN filters').retry(1);
-
-const filters = new DataTable(['filter1', 'filter2']);
+// filterToApply - filter witch we check, searchValue - value to get zero search result
+const filters = new DataTable(['filterToApply', 'searchValue']);
 
 filters.add(['SELECT', 'INSERT']);
+// TODO add script to create test data for cases INSERT, UPDATE, DELETE in task PMM-9147
 // filters.add(['INSERT', 'SELECT']);
 // filters.add(['UPDATE', 'SELECT']);
 // filters.add(['DELETE', 'INSERT']);
@@ -22,44 +23,21 @@ Before(async ({ I, qanPage, qanOverview }) => {
   qanOverview.waitForOverviewLoaded();
 });
 
-Scenario(
-  'PMM-T1054 - Verify the "Command type" filter for Postgres exists @qan',
-  async ({
-    I, qanFilters,
-  }) => {
-    const filterSection = 'Command Type';
-    const environmentName = 'pdpgsql-dev';
-    const filtersNames = ['n/a', 'SELECT'];
-
-    qanFilters.applyFilter(environmentName);
-    I.waitForVisible(qanFilters.buttons.showSelected, 30);
-    I.fillField(qanFilters.fields.filterBy, filterSection);
-    I.waitForVisible(qanFilters.getFilterSectionLocator(filterSection), 30);
-    I.seeElement(qanFilters.getFilterSectionLocator(filterSection));
-
-    qanFilters.checkSectionFilterVisible(filterSection, filtersNames);
-
-    await qanFilters.verifySectionItemsCount(filterSection, filtersNames.length);
-  },
-);
-
 Data(filters).Scenario(
-  'PMM-T1055 - Verify the "Command type" filter for Postgres @qan',
+  'PMM-T1054 + PMM-T1055 - Verify the "Command type" filter for Postgres @qan',
   async ({
     I, qanOverview, qanFilters, current,
   }) => {
     const environmentName = 'pdpgsql-dev';
-    const filterName1 = current.filter1;
-    const filterName2 = current.filter2;
 
     qanFilters.applyFilter(environmentName);
     I.waitForVisible(qanFilters.buttons.showSelected, 30);
 
-    qanFilters.applyFilterInSection('Command Type', filterName1);
+    qanFilters.applyFilterInSection('Command Type', current.filterToApply);
     I.waitForVisible(qanFilters.buttons.showSelected, 30);
-    I.fillField(qanOverview.fields.searchBy, filterName2);
+    I.fillField(qanOverview.fields.searchBy, current.searchValue);
 
-    await qanFilters.verifyCountOfFilterLinks(0, true);
+    await qanFilters.verifyRowCount(0);
   },
 );
 

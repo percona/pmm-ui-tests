@@ -120,14 +120,6 @@ module.exports = {
     assert.equal(countOfFiltersInSection, expectedCount, `There should be '${expectedCount}' visible links`);
   },
 
-  checkSectionFilterVisible(section, filters) {
-    for (let i = 0; i <= filters.length - 1; i++) {
-      const filterLocator = `//span[contains(text(), '${section}')]/parent::p/following-sibling::div//span[contains(@class, 'checkbox-container__label-text') and contains(text(), '${filters[i]}')]`;
-
-      I.waitForVisible(filterLocator, 20);
-    }
-  },
-
   async verifyCountOfFilterLinks(expectedCount, before) {
     const count = await I.grabNumberOfVisibleElements(this.fields.filterCheckboxes);
 
