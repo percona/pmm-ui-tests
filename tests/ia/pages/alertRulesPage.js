@@ -1,7 +1,7 @@
 const { I } = inject();
 const { rules, templates } = require('./testData');
 
-const rulesNameCell = (ruleName) => `//td[1][div/span[text()="${ruleName}"]]`;
+const rulesNameCell = (ruleName) => `//td[1][div[text()="${ruleName}"]]`;
 
 module.exports = {
   url: 'graph/integrated-alerting/alert-rules',
@@ -38,9 +38,9 @@ module.exports = {
     cancelDelete: '$cancel-delete-modal-button',
     delete: '$confirm-delete-modal-button',
     // showDetails returns Show rule details button locator for a given rule name
-    showDetails: (ruleName) => `${rulesNameCell(ruleName)}//button[@data-testid="show-alert-rule-details"]`,
+    showDetails: (ruleName) => `${rulesNameCell(ruleName)}//button[@data-testid="show-details"]`,
     // hideDetails returns Hide rule details button locator for a given rule name
-    hideDetails: (ruleName) => `${rulesNameCell(ruleName)}//button[@data-testid="hide-alert-rule-details"]`,
+    hideDetails: (ruleName) => `${rulesNameCell(ruleName)}//button[@data-testid="hide-details"]`,
     // editAlertRule returns Edit rule button locator for a given rule name
     editAlertRule: (ruleName) => `${rulesNameCell(ruleName)}/following-sibling::td//button[@data-testid='edit-alert-rule-button']`,
     // duplicateAlertRule returns Copy rule button locator for a given rule name
@@ -53,14 +53,14 @@ module.exports = {
   },
   fields: {
     // searchDropdown returns a locator of a search input for a given label
-    searchDropdown: (field) => `//label[text()="${field}"]/following-sibling::div[1]//input`,
+    searchDropdown: (field) => `//label[text()="${field}"]/parent::div/following-sibling::div[1]//input`,
     // resultsLocator returns item locator in a search dropdown based on a text
     resultsLocator: (name) => `//div[@aria-label="Select option"]//span[text()="${name}"]`,
     ruleName: '$name-text-input',
     threshold: '$threshold-number-input',
     duration: '$duration-number-input',
     filters: '$filters-textarea-input',
-    template: locate('$add-alert-rule-modal-form').find('div').first().find('div[class$="-singleValue"]'),
+    template: '//form[@data-testid="add-alert-rule-modal-form"]/div[2]//div[contains(@class, "singleValue")]',
   },
   messages: {
     noRulesFound: 'No alert rules found',
