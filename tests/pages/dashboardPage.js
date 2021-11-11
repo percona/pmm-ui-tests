@@ -977,6 +977,7 @@ module.exports = {
   async genericDashboardLoadForDbaaSClusters(url, timeRange = 'Last 5 minutes', performPageDown = 4, graphsWithNa = 0, graphsWithoutData = 0) {
     I.amOnPage(url);
     this.waitForDashboardOpened();
+    I.click(adminPage.fields.metricTitle);
     await adminPage.applyTimeRange(timeRange);
     I.click(adminPage.fields.metricTitle);
     adminPage.performPageDown(performPageDown);

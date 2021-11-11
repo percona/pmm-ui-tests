@@ -1,5 +1,5 @@
 const {
-  I, dbaasAPI, dbaasActionsPage, dbaasManageVersionPage, dashboardPage, qanPage, qanFilters, qanOverview, inventoryAPI,
+  I, dbaasAPI, dbaasActionsPage, dbaasManageVersionPage, dashboardPage, qanPage, qanFilters, qanOverview, inventoryAPI, adminPage,
 } = inject();
 const assert = require('assert');
 
@@ -400,28 +400,44 @@ module.exports = {
     await dashboardPage.genericDashboardLoadForDbaaSClusters(`${dashboardPage.mysqlInstanceSummaryDashboard.url}&var-service_name=${serviceName}`, 'Last 5 minutes', 4, 0, 5);
   },
 
-  async pxcQANCheck(dbclusterName, nodeName, serviceName) {
+  async psmdbClusterMetricCheck(dbclusterName, serviceName, nodeName) {
+    await dashboardPage.genericDashboardLoadForDbaaSClusters(`${dashboardPage.mongoDbClusterSummaryDashboard.url}?&var-cluster=${dbclusterName}`, 'Last 5 minutes', 4, 0, 9);
+    await dashboardPage.genericDashboardLoadForDbaaSClusters(`graph/d/mongodb-wiredtiger/mongodb-wiredtiger-details?orgId=1&refresh=1m&var-service_name=${serviceName}`, 'Last 5 minutes', 4, 0, 2);
+    await dashboardPage.genericDashboardLoadForDbaaSClusters(`${dashboardPage.mongodbOverviewDashboard.url}?&var-service_name=${serviceName}`, 'Last 5 minutes', 4, 0, 1);
+    await dashboardPage.genericDashboardLoadForDbaaSClusters(`graph/d/mongodb-replicaset-summary/mongodb-replset-summary?orgId=1&refresh=1m&var-service_name=${serviceName}`, 'Last 5 minutes', 4, 0, 1);
+    await dashboardPage.genericDashboardLoadForDbaaSClusters(`${dashboardPage.nodeSummaryDashboard.url}?&var-node_name=${nodeName}`, 'Last 5 minutes', 4, 0, 1);
+  },
+
+  async dbaasQANCheck(dbclusterName, nodeName, serviceName) {
     I.amOnPage(qanPage.url);
+    await adminPage.applyTimeRange('Last 3 hours');
+    qanOverview.waitForOverviewLoaded();
     qanFilters.applyFilterInSection('Cluster', dbclusterName);
     qanOverview.waitForOverviewLoaded();
     let count = await qanOverview.getCountOfItems();
 
-    assert.ok(count > 0, `QAN queries for added DBaaS PXC Cluster ${dbclusterName} does not exist`);
+    assert.ok(count > 0, `QAN queries for added DBaaS Cluster ${dbclusterName} does not exist`);
+    // This is Intentionally added, because waitForOverviewLoaded is not effective many times, introducing false positives.
+    I.wait(3);
     qanFilters.applyFilterInSection('Cluster', dbclusterName);
+    qanOverview.waitForOverviewLoaded();
 
     qanFilters.applyFilterInSection('Node Name', `${nodeName}`);
     qanOverview.waitForOverviewLoaded();
     count = await qanOverview.getCountOfItems();
 
-    assert.ok(count > 0, `QAN queries for added DBaaS PXC Cluster with node name as ${nodeName} does not exist`);
+    assert.ok(count > 0, `QAN queries for added DBaaS Cluster with node name as ${nodeName} does not exist`);
+    I.wait(3);
     qanFilters.applyFilterInSection('Node Name', `${nodeName}`);
+    qanOverview.waitForOverviewLoaded();
 
     qanFilters.applyFilterInSection('Service Name', `${serviceName}`);
     qanOverview.waitForOverviewLoaded();
     count = await qanOverview.getCountOfItems();
 
-    assert.ok(count > 0, `QAN queries for added DBaaS PXC Cluster with service name as ${serviceName} does not exist`);
+    assert.ok(count > 0, `QAN queries for added DBaaS Cluster with service name as ${serviceName} does not exist`);
     qanFilters.applyFilterInSection('Service Name', `${serviceName}`);
+    qanOverview.waitForOverviewLoaded();
   },
 
   async dbClusterAgentStatusCheck(dbClusterName, serviceName, serviceType) {

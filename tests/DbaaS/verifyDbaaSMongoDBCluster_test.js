@@ -3,6 +3,16 @@ const clusterName = 'Kubernetes_Testing_Cluster_Minikube';
 const psmdb_cluster = 'psmdb-cluster';
 const assert = require('assert');
 
+const psmdbClusterDetails = new DataTable(['namespace', 'clusterName', 'node', 'nodeType']);
+
+// only to details in current object for each node check
+psmdbClusterDetails.add(['default', `${psmdb_cluster}`, '0', 'rs0']);
+psmdbClusterDetails.add(['default', `${psmdb_cluster}`, '1', 'rs0']);
+psmdbClusterDetails.add(['default', `${psmdb_cluster}`, '2', 'rs0']);
+psmdbClusterDetails.add(['default', `${psmdb_cluster}`, '0', 'cfg']);
+psmdbClusterDetails.add(['default', `${psmdb_cluster}`, '1', 'cfg']);
+psmdbClusterDetails.add(['default', `${psmdb_cluster}`, '2', 'cfg']);
+
 const psmdb_configuration = {
   topology: 'Cluster',
   numberOfNodes: '1',
@@ -16,7 +26,8 @@ const psmdb_configuration = {
 
 Feature('DBaaS: MongoDB Cluster Creation, Modifications, Actions, Verification tests');
 
-BeforeSuite(async ({ dbaasAPI }) => {
+BeforeSuite(async ({ dbaasAPI, settingsAPI }) => {
+  await settingsAPI.changeSettings({ publicAddress: process.env.VM_IP });
   if (!await dbaasAPI.apiCheckRegisteredClusterExist(clusterName)) {
     await dbaasAPI.apiRegisterCluster(process.env.kubeconfig_minikube, clusterName);
   }
@@ -75,6 +86,19 @@ Scenario('PMM-T665 PMM-T642 PMM-T484  PSMDB Cluster with Custom Resources, Verif
       'kubectl delete pods psmdb-client',
       'pod "psmdb-client" deleted',
     );
+  });
+
+Data(psmdbClusterDetails).Scenario('PMM-T503, Verify monitoring of PSMDB cluster @dbaas',
+  async ({
+    I, dbaasPage, current,
+  }) => {
+    await dbaasPage.waitForDbClusterTab(clusterName);
+    I.waitForVisible(dbaasPage.tabs.dbClusterTab.dbClusterAddButtonTop, 30);
+    const serviceName = `${current.namespace}-${current.clusterName}-${current.nodeType}-${current.node}`;
+
+    await dbaasPage.psmdbClusterMetricCheck(psmdb_cluster, serviceName, serviceName);
+    await dbaasPage.dbaasQANCheck(psmdb_cluster, serviceName, serviceName);
+    await dbaasPage.dbClusterAgentStatusCheck(psmdb_cluster, serviceName, 'MONGODB_SERVICE');
   });
 
 Scenario('PMM-T477 PMM-T461 Verify MongoDB Cluster can be restarted, unregister k8s Cluster when Db Cluster Exist @dbaas',
