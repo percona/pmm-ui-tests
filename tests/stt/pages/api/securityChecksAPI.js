@@ -15,11 +15,13 @@ module.exports = {
       const results = await this.getSecurityChecksResults();
 
       if (results && results.length) {
-        break;
+        return;
       }
 
       I.wait(1);
     }
+
+    assert.fail(`Timed out waiting. Failed checks didn't appear in ${timeout} seconds.`);
   },
 
   async getSecurityChecksResults() {

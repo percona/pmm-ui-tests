@@ -314,7 +314,7 @@ Scenario(
     I.fillField(alertRulesPage.fields.duration, '-1');
 
     I.seeTextEquals('Must be greater than or equal to 1', alertRulesPage.elements.durationError);
-    I.seeAttributesOnElements(alertRulesPage.buttons.addRule, { disabled: true });
+    I.seeElementsDisabled(alertRulesPage.buttons.addRule);
 
     I.clearField(alertRulesPage.fields.duration);
     I.fillField(alertRulesPage.fields.duration, '1');

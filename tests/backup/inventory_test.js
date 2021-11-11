@@ -12,6 +12,7 @@ let locationId;
 let serviceId;
 
 const mongoServiceName = 'mongo-backup-inventory';
+const mongoServiceNameToDelete = 'mongo-service-to-delete';
 
 Feature('BM: Backup Inventory');
 
@@ -27,6 +28,7 @@ BeforeSuite(async ({
   });
 
   I.say(await I.verifyCommand(`pmm-admin add mongodb --port=27027 --service-name=${mongoServiceName} --replication-set=rs0`));
+  I.say(await I.verifyCommand(`pmm-admin add mongodb --port=27027 --service-name=${mongoServiceNameToDelete} --replication-set=rs0`));
 });
 
 Before(async ({
@@ -71,22 +73,48 @@ Scenario(
     I.click(backupInventoryPage.buttons.openAddBackupModal);
 
     backupInventoryPage.selectDropdownOption(backupInventoryPage.fields.serviceNameDropdown, mongoServiceName);
+    backupInventoryPage.selectDropdownOption(backupInventoryPage.fields.locationDropdown, location.name);
+    I.fillField(backupInventoryPage.fields.backupName, backupName);
+    I.fillField(backupInventoryPage.fields.description, 'test description');
+    I.click(backupInventoryPage.buttons.addBackup);
+    I.waitForVisible(backupInventoryPage.elements.pendingBackupByName(backupName), 10);
+    backupInventoryPage.verifyBackupSucceeded(backupName);
+  },
+).retry(1);
+
+Scenario(
+  'PMM-T1005 Verify create backup modal @backup',
+  async ({
+    I, backupInventoryPage,
+  }) => {
+    const backupName = 'backup modal test';
+
+    I.click(backupInventoryPage.buttons.openAddBackupModal);
+
+    backupInventoryPage.selectDropdownOption(backupInventoryPage.fields.serviceNameDropdown, mongoServiceName);
     I.seeTextEquals(mongoServiceName, backupInventoryPage.elements.selectedService);
     I.waitForValue(backupInventoryPage.fields.vendor, 'MongoDB', 5);
+    I.seeElementsDisabled(backupInventoryPage.fields.vendor);
 
     backupInventoryPage.selectDropdownOption(backupInventoryPage.fields.locationDropdown, location.name);
     I.seeTextEquals(location.name, backupInventoryPage.elements.selectedLocation);
 
-    I.seeAttributesOnElements(backupInventoryPage.buttons.addBackup, { disabled: true });
+    I.seeInField(backupInventoryPage.elements.dataModelState, 'LOGICAL');
+    I.seeElementsDisabled(backupInventoryPage.buttons.dataModel);
+
+    I.seeElementsDisabled(backupInventoryPage.elements.retryTimes);
+    I.click(backupInventoryPage.buttons.retryModeOption('Auto'));
+    I.seeElementsEnabled(backupInventoryPage.elements.retryTimes);
+    I.seeElementsEnabled(backupInventoryPage.elements.retryInterval);
+    I.click(backupInventoryPage.buttons.retryModeOption('Manual'));
+    I.seeElementsDisabled(backupInventoryPage.elements.retryTimes);
+    I.seeElementsDisabled(backupInventoryPage.elements.retryInterval);
+
+    I.seeElementsDisabled(backupInventoryPage.buttons.addBackup);
     I.fillField(backupInventoryPage.fields.backupName, backupName);
-    I.seeAttributesOnElements(backupInventoryPage.buttons.addBackup, { disabled: null });
+    I.seeElementsEnabled(backupInventoryPage.buttons.addBackup);
 
     I.fillField(backupInventoryPage.fields.description, 'test description');
-
-    I.click(backupInventoryPage.buttons.addBackup);
-
-    I.waitForVisible(backupInventoryPage.elements.pendingBackupByName(backupName), 10);
-    backupInventoryPage.verifyBackupSucceeded(backupName);
   },
 );
 
@@ -185,5 +213,27 @@ Scenario(
     const record = await c.findOne({ name: 'BeforeRestore' });
 
     assert.ok(record === null, `Was expecting to not have a record ${JSON.stringify(record, null, 2)} after restore operation`);
+  },
+);
+
+Scenario(
+  'PMM-T848 Verify service no longer exists error message during restore @backup',
+  async ({
+    I, backupInventoryPage, backupAPI, inventoryAPI,
+  }) => {
+    const backupName = 'service remove backup';
+    const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName('MONGODB_SERVICE', mongoServiceNameToDelete);
+    const artifactId = await backupAPI.startBackup(backupName, service_id, locationId);
+
+    await backupAPI.waitForBackupFinish(artifactId);
+    await inventoryAPI.deleteService(service_id);
+
+    I.refreshPage();
+    backupInventoryPage.verifyBackupSucceeded(backupName);
+
+    I.click(backupInventoryPage.buttons.restoreByName(backupName));
+    I.waitForVisible(backupInventoryPage.buttons.modalRestore, 10);
+    I.seeTextEquals(backupInventoryPage.messages.serviceNoLongerExists, backupInventoryPage.elements.backupModalError);
+    I.seeElementsDisabled(backupInventoryPage.buttons.modalRestore);
   },
 );
