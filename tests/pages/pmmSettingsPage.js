@@ -70,8 +70,8 @@ module.exports = {
     invalidSSHKeyMessage: 'Invalid SSH key.',
     successAlertmanagerMessage: 'Alertmanager settings updated',
     invalidAlertmanagerMissingSchemeMessage:
-      'Invalid alert_manager_url: invalid_url - missing protocol scheme',
-    invalidAlertmanagerMissingHostMessage: 'Invalid alert_manager_url: http:// - missing host',
+      'Invalid argument: invalid alert_manager_url: invalid_url - missing protocol scheme.',
+    invalidAlertmanagerMissingHostMessage: 'Invalid argument: invalid alert_manager_url: http:// - missing host.',
     invalidAlertmanagerRulesMessage: 'Invalid alerting rules.',
     invalidDBaaSDisableMessage: 'DBaaS is enabled via ENABLE_DBAAS or via deprecated PERCONA_TEST_DBAAS environment variable.',
   },
