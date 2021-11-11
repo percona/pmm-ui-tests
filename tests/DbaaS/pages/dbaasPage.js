@@ -19,6 +19,8 @@ module.exports = {
   monitoringWarningMessage: 'If you want to use monitoring, you need to set your PMM installation public address in',
   requiredFieldError: 'Required field',
   valueGreatThanErrorText: (value) => `Value should be greater or equal to ${value}`,
+  dbclusterNameError: 'Should start with a letter, may only contain lower case, number, dash and end with alphanumeric',
+  dbclusterNameLimitError: 'Must contain at most 20 characters',
   tabs: {
     kubernetesClusterTab: {
       addKubernetesClusterButton: '$kubernetes-new-cluster-button',
