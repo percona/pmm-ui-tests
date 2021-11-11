@@ -159,7 +159,7 @@ module.exports = {
         cancelDeleteDBCluster: '$cancel-delete-dbcluster-button',
         progressBarSteps: '$progress-bar-steps',
         progressBarContent: '$progress-bar-message',
-        updateClusterButton: locate('button').withAttr({ 'data-qa': 'confirm-update-dbcluster-button' }),
+        updateClusterButton: '$confirm-update-dbcluster-button',
       },
     },
   },
@@ -402,7 +402,7 @@ module.exports = {
 
   async psmdbClusterMetricCheck(dbclusterName, serviceName, nodeName) {
     await dashboardPage.genericDashboardLoadForDbaaSClusters(`${dashboardPage.mongoDbClusterSummaryDashboard.url}?&var-cluster=${dbclusterName}`, 'Last 5 minutes', 4, 0, 9);
-    await dashboardPage.genericDashboardLoadForDbaaSClusters(`graph/d/mongodb-wiredtiger/mongodb-wiredtiger-details?orgId=1&refresh=1m&var-service_name=${serviceName}`, 'Last 5 minutes', 4, 0, 2);
+    await dashboardPage.genericDashboardLoadForDbaaSClusters(`graph/d/mongodb-wiredtiger/mongodb-wiredtiger-details?orgId=1&refresh=1m&var-service_name=${serviceName}`, 'Last 5 minutes', 4, 6, 2);
     await dashboardPage.genericDashboardLoadForDbaaSClusters(`${dashboardPage.mongodbOverviewDashboard.url}?&var-service_name=${serviceName}`, 'Last 5 minutes', 4, 0, 1);
     await dashboardPage.genericDashboardLoadForDbaaSClusters(`graph/d/mongodb-replicaset-summary/mongodb-replset-summary?orgId=1&refresh=1m&var-service_name=${serviceName}`, 'Last 5 minutes', 4, 0, 1);
     await dashboardPage.genericDashboardLoadForDbaaSClusters(`${dashboardPage.nodeSummaryDashboard.url}?&var-node_name=${nodeName}`, 'Last 5 minutes', 4, 0, 1);

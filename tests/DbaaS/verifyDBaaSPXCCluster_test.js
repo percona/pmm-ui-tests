@@ -56,7 +56,7 @@ async ({
   I.click(dbaasPage.tabs.dbClusterTab.createClusterButton);
   I.waitForText('Processing', 30, dbaasPage.tabs.dbClusterTab.fields.progressBarContent);
   await dbaasPage.postClusterCreationValidation(pxc_cluster_name, clusterName);
-  await dbaasPage.verifyLogPopup(12);
+  await dbaasPage.verifyLogPopup(18);
 });
 
 Scenario('PMM-T459, PMM-T473, PMM-T478, PMM-T524 Verify DB Cluster Details are listed, shortcut link for DB Cluster, Show/Hide password button @dbaas',
