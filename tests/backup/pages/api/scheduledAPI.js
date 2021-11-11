@@ -13,12 +13,12 @@ module.exports = {
       location_id,
       name,
       mode = backupModes.snapshot,
-      description = '',
-      cron_expression,
-      retry_interval,
-      retries,
-      retention,
-      enabled,
+      description = 'description',
+      cron_expression = '0 0 * * *',
+      retry_interval = '30s',
+      retries = 0,
+      retention = 7,
+      enabled = true,
     } = scheduleObj;
 
     const body = {
@@ -62,6 +62,24 @@ module.exports = {
     const resp = await I.sendPostRequest('v1/management/backup/Backups/ListScheduled', {}, headers);
 
     return resp.data.scheduled_backups;
+  },
+
+  async waitForFirstExecution(scheduledBackupName, timeout = 120) {
+    for (let i = 0; i < timeout / 5; i++) {
+      const schedules = await this.getScheduledList();
+
+      if (!schedules) {
+        I.wait(5);
+        // eslint-disable-next-line no-continue
+        continue;
+      }
+
+      const found = schedules.filter(({ last_run = null, name }) => name === scheduledBackupName && last_run);
+
+      if (found.length) break;
+
+      I.wait(5);
+    }
   },
 
   async removeScheduledBackup(scheduledId) {
