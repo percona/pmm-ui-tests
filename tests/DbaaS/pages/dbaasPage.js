@@ -412,31 +412,9 @@ module.exports = {
     I.amOnPage(qanPage.url);
     await adminPage.applyTimeRange('Last 3 hours');
     qanOverview.waitForOverviewLoaded();
-    qanFilters.applyFilterInSection('Cluster', dbclusterName);
-    qanOverview.waitForOverviewLoaded();
-    let count = await qanOverview.getCountOfItems();
-
-    assert.ok(count > 0, `QAN queries for added DBaaS Cluster ${dbclusterName} does not exist`);
-    // This is Intentionally added, because waitForOverviewLoaded is not effective many times, introducing false positives.
-    I.wait(3);
-    qanFilters.applyFilterInSection('Cluster', dbclusterName);
-    qanOverview.waitForOverviewLoaded();
-
-    qanFilters.applyFilterInSection('Node Name', `${nodeName}`);
-    qanOverview.waitForOverviewLoaded();
-    count = await qanOverview.getCountOfItems();
-
-    assert.ok(count > 0, `QAN queries for added DBaaS Cluster with node name as ${nodeName} does not exist`);
-    I.wait(3);
-    qanFilters.applyFilterInSection('Node Name', `${nodeName}`);
-    qanOverview.waitForOverviewLoaded();
-
-    qanFilters.applyFilterInSection('Service Name', `${serviceName}`);
-    qanOverview.waitForOverviewLoaded();
-    count = await qanOverview.getCountOfItems();
-
-    assert.ok(count > 0, `QAN queries for added DBaaS Cluster with service name as ${serviceName} does not exist`);
-    qanFilters.applyFilterInSection('Service Name', `${serviceName}`);
+    qanFilters.checkFilterExistInSection('Cluster', dbclusterName);
+    qanFilters.checkFilterExistInSection('Node Name', `${nodeName}`);
+    qanFilters.checkFilterExistInSection('Service Name', `${serviceName}`);
     qanOverview.waitForOverviewLoaded();
   },
 
