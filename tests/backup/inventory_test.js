@@ -83,7 +83,7 @@ Scenario(
 ).retry(1);
 
 Scenario(
-  'PMM-T1005 Verify create backup modal @backup',
+  'PMM-T1005 PMM-T1024 Verify create backup modal @backup',
   async ({
     I, backupInventoryPage,
   }) => {
@@ -101,6 +101,10 @@ Scenario(
 
     I.seeInField(backupInventoryPage.elements.dataModelState, 'LOGICAL');
     I.seeElementsDisabled(backupInventoryPage.buttons.dataModel);
+
+    // Verify retry times and retry interval default values
+    I.seeInField(backupInventoryPage.elements.retryTimes, 2);
+    I.seeInField(backupInventoryPage.elements.retryInterval, 30);
 
     I.seeElementsDisabled(backupInventoryPage.elements.retryTimes);
     I.click(backupInventoryPage.buttons.retryModeOption('Auto'));
