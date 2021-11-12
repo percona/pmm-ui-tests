@@ -897,7 +897,9 @@ module.exports = {
     if (numberOfNAElements > acceptableNACount) {
       const titles = await this.grabFailedReportTitles(this.fields.reportTitleWithNA);
 
-      await this.printFailedReportNames(acceptableNACount, numberOfNAElements, titles);
+      const url = await I.grabCurrentUrl();
+
+      await this.printFailedReportNames(acceptableNACount, numberOfNAElements, titles, url);
     }
   },
 
@@ -907,16 +909,17 @@ module.exports = {
     I.say(`number of No Data elements is = ${numberOfNoDataElements}`);
     if (numberOfNoDataElements > acceptableNoDataCount) {
       const titles = await this.grabFailedReportTitles(this.fields.reportTitleWithNoData);
+      const url = await I.grabCurrentUrl();
 
-      await this.printFailedReportNames(acceptableNoDataCount, numberOfNoDataElements, titles);
+      await this.printFailedReportNames(acceptableNoDataCount, numberOfNoDataElements, titles, url);
     }
   },
 
-  async printFailedReportNames(expectedNumber, actualNumber, titles) {
+  async printFailedReportNames(expectedNumber, actualNumber, titles, dashboardUrl) {
     assert.equal(
       actualNumber <= expectedNumber,
       true,
-      `Expected ${expectedNumber} Elements with but found ${actualNumber}. Report Names are ${titles}`,
+      `Expected ${expectedNumber} Elements with but found ${actualNumber} on Dashboard ${dashboardUrl}. Report Names are ${titles}`,
     );
   },
 

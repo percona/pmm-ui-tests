@@ -46,7 +46,7 @@ Before(async ({ I, dbaasAPI }) => {
 
 // These test covers a lot of cases, will be refactored and changed in terms of flow, this is initial setup
 
-Scenario('PMM-T665 PMM-T642 PMM-T484  PSMDB Cluster with Custom Resources, Verify MongoDB Cluster can be restarted, log popup @dbaas',
+Scenario('PMM-T665 PMM-T642 PMM-T484  PSMDB Cluster with Custom Resources, Verify MongoDB Cluster can be restarted, log popup @dbaas-test @dbaas',
   async ({
     I, dbaasPage, dbaasAPI, dbaasActionsPage,
   }) => {
@@ -88,7 +88,7 @@ Scenario('PMM-T665 PMM-T642 PMM-T484  PSMDB Cluster with Custom Resources, Verif
     );
   });
 
-Data(psmdbClusterDetails).Scenario('PMM-T503, Verify monitoring of PSMDB cluster @dbaas',
+Data(psmdbClusterDetails).Scenario('PMM-T503, Verify monitoring of PSMDB cluster @dbaas-test @dbaas',
   async ({
     I, dbaasPage, current,
   }) => {
@@ -101,7 +101,7 @@ Data(psmdbClusterDetails).Scenario('PMM-T503, Verify monitoring of PSMDB cluster
     await dbaasPage.dbClusterAgentStatusCheck(psmdb_cluster, serviceName, 'MONGODB_SERVICE');
   });
 
-Scenario('PMM-T477 PMM-T461 Verify MongoDB Cluster can be restarted, unregister k8s Cluster when Db Cluster Exist @dbaas',
+Scenario('PMM-T477 PMM-T461 Verify MongoDB Cluster can be restarted, unregister k8s Cluster when Db Cluster Exist @dbaas-test @dbaas',
   async ({ I, dbaasPage, dbaasActionsPage }) => {
     await dbaasPage.waitForKubernetesClusterTab(clusterName);
     dbaasPage.unregisterCluster(clusterName);

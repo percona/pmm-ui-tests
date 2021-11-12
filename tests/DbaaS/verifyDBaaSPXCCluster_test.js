@@ -45,7 +45,7 @@ Before(async ({ I, dbaasAPI }) => {
 });
 
 Scenario('PMM-T665 PMM-T455 PMM-T575 Verify that Advanced Options are optional for DB Cluster Creation, '
-  + 'creating PXC cluster with default settings, log popup @dbaas',
+  + 'creating PXC cluster with default settings, log popup @dbaas @dbaas-test',
 async ({
   I, dbaasPage, dbaasAPI, dbaasActionsPage,
 }) => {
@@ -59,7 +59,7 @@ async ({
   await dbaasPage.verifyLogPopup(18);
 });
 
-Scenario('PMM-T459, PMM-T473, PMM-T478, PMM-T524 Verify DB Cluster Details are listed, shortcut link for DB Cluster, Show/Hide password button @dbaas',
+Scenario('PMM-T459, PMM-T473, PMM-T478, PMM-T524 Verify DB Cluster Details are listed, shortcut link for DB Cluster, Show/Hide password button @dbaas-test @dbaas',
   async ({ I, dbaasPage, dbaasActionsPage }) => {
     const clusterDetails = {
       clusterDashboardRedirectionLink: dbaasPage.clusterDashboardUrls.pxcDashboard(pxc_cluster_name),
@@ -76,7 +76,7 @@ Scenario('PMM-T459, PMM-T473, PMM-T478, PMM-T524 Verify DB Cluster Details are l
     await dbaasPage.validateClusterDetail(pxc_cluster_name, clusterName, clusterDetails);
   });
 
-Data(pxcDBClusterDetails).Scenario('PMM-T502, Verify Monitoring of PXC Clusters @dbaas',
+Data(pxcDBClusterDetails).Scenario('PMM-T502, Verify Monitoring of PXC Clusters @dbaas-test @dbaas',
   async ({
     I, dbaasPage, current,
   }) => {
