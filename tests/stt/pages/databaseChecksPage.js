@@ -9,6 +9,9 @@ module.exports = {
   url: 'graph/pmm-database-checks',
   // Database Checks page URL before 2.13 version
   oldUrl: 'graph/d/pmm-checks/pmm-database-checks',
+  elements: {
+    failedCheckRowByServiceName: (name) => locate('tr').withChild(locate('td').withText(name)),
+  },
   messages: {
     homePagePanelMessage: 'Security Threat Tool is disabled.\nCheck PMM Settings.',
     disabledSTTMessage: 'Security Threat Tool is disabled. You can enable it in',
@@ -16,6 +19,7 @@ module.exports = {
   },
   buttons: {
     startDBChecks: locate('$db-check-panel-actions').find('button'),
+    toggleSilenced: locate('$db-checks-failed-checks-toggle-silenced').find('label'),
   },
   fields: {
     dbCheckPanelSelector: '$db-check-panel',

@@ -66,8 +66,8 @@ Scenario(
     qanOverview.waitForOverviewLoaded();
     I.seeAttributesOnElements(qanPagination.buttons.previousPage, { 'aria-disabled': 'true' });
     I.seeAttributesOnElements(qanPagination.buttons.nextPage, { 'aria-disabled': 'false' });
-    I.seeAttributesOnElements(qanFilters.buttons.resetAll, { disabled: true });
-    I.seeAttributesOnElements(qanFilters.buttons.showSelected, { disabled: true });
+    I.seeElementsDisabled(qanFilters.buttons.resetAll);
+    I.seeElementsDisabled(qanFilters.buttons.showSelected);
     const count = await qanOverview.getCountOfItems();
 
     if (count > 100) {
