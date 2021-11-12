@@ -37,7 +37,7 @@ Data(filters).Scenario(
     I.waitForVisible(qanFilters.buttons.showSelected, 30);
     I.fillField(qanOverview.fields.searchBy, current.searchValue);
 
-    await qanFilters.verifyRowCount(0);
+    await qanOverview.verifyRowCount(0);
   },
 );
 
