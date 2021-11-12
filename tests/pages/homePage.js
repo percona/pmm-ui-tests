@@ -91,6 +91,11 @@ module.exports = {
     'Waiting for Grafana dashboards update to finish...',
   ],
 
+  async open() {
+    I.amOnPage(this.url);
+    I.waitForElement(this.fields.dashboardHeaderLocator, 60);
+  },
+
   // introducing methods
   async upgradePMM(version) {
     let locators = this.getLocators(version);
