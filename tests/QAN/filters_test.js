@@ -34,10 +34,11 @@ Data(filters).Scenario(
     I.waitForVisible(qanFilters.buttons.showSelected, 30);
 
     qanFilters.applyFilterInSection('Command Type', current.filterToApply);
-    I.waitForVisible(qanFilters.buttons.showSelected, 30);
+    I.waitForVisible(qanOverview.fields.searchBy, 30);
     I.fillField(qanOverview.fields.searchBy, current.searchValue);
-
-    await qanOverview.verifyRowCount(0);
+    I.pressKey('Enter');
+    I.waitForVisible(qanOverview.elements.noResultTableText, 30);
+    I.seeTextEquals(qanOverview.messages.noResultTableText, qanOverview.elements.noResultTableText);
   },
 );
 
