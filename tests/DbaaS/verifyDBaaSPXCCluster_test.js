@@ -108,12 +108,6 @@ Scenario('PMM-T460, PMM-T452 Verify force unregistering Kubernetes cluster @dbaa
     dbaasPage.checkCluster(clusterName, true);
   });
 
-Scenario('PMM-T460, PMM-T452 Verify force unregistering Kubernetes cluster @dbaas',
-  async ({ I, dbaasPage }) => {
-    await dbaasPage.waitForKubernetesClusterTab(clusterName);
-    dbaasPage.checkCluster(clusterName, true);
-  });
-
 Scenario('PMM-T524 Delete PXC Cluster and Unregister K8s Cluster @dbaas',
   async ({ I, dbaasPage, dbaasActionsPage }) => {
     await dbaasPage.waitForDbClusterTab(clusterName);
