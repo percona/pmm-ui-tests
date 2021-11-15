@@ -23,7 +23,7 @@ module.exports = {
     tableRow: 'div.tr',
     tooltip: '.overview-column-tooltip',
     tooltipQPSValue: '$qps',
-    noResultTableText: '//div[@data-testid="table-no-data"]/h1',
+    noResultTableText: locate('$table-no-data').find('h1'),
   },
   messages: {
     noResultTableText: 'No queries available for this combination of filters in the selected time frame',
