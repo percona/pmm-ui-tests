@@ -101,7 +101,7 @@ Data(psmdbClusterDetails).Scenario('PMM-T503, Verify monitoring of PSMDB cluster
     await dbaasPage.dbClusterAgentStatusCheck(psmdb_cluster, serviceName, 'MONGODB_SERVICE');
   });
 
-Scenario('PMM-T477 PMM-T461 Verify MongoDB Cluster can be restarted, unregister k8s Cluster when Db Cluster Exist @dbaas-test @dbaas',
+Scenario('PMM-T477 PMM-T461 Verify MongoDB Cluster can be restarted, unregister k8s Cluster when Db Cluster Exist @dbaas',
   async ({ I, dbaasPage, dbaasActionsPage }) => {
     await dbaasPage.waitForKubernetesClusterTab(clusterName);
     dbaasPage.unregisterCluster(clusterName);
