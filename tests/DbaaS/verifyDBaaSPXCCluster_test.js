@@ -83,8 +83,9 @@ Data(pxcDBClusterDetails).Scenario('PMM-T502, Verify Monitoring of PXC Clusters 
     await dbaasPage.waitForDbClusterTab(clusterName);
     I.waitForVisible(dbaasPage.tabs.dbClusterTab.dbClusterAddButtonTop, 30);
     const serviceName = `${current.namespace}-${current.clusterName}-pxc-${current.node}`;
+    const haproxyNodeName = `${current.namespace}-${current.clusterName}-haproxy-${current.node}`;
 
-    await dbaasPage.pxcClusterMetricCheck(pxc_cluster_name, serviceName, serviceName);
+    await dbaasPage.pxcClusterMetricCheck(pxc_cluster_name, serviceName, serviceName, haproxyNodeName);
     await dbaasPage.dbaasQANCheck(pxc_cluster_name, serviceName, serviceName);
     await dbaasPage.dbClusterAgentStatusCheck(pxc_cluster_name, serviceName, 'MYSQL_SERVICE');
   });

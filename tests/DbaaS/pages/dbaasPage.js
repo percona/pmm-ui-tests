@@ -393,11 +393,12 @@ module.exports = {
     I.dontSeeElement(this.tabs.dbClusterTab.fields.dbClusterLogs.modalHeader);
   },
 
-  async pxcClusterMetricCheck(dbclusterName, serviceName, nodeName) {
+  async pxcClusterMetricCheck(dbclusterName, serviceName, nodeName, haproxynodeName) {
     await dashboardPage.genericDashboardLoadForDbaaSClusters(`${dashboardPage.pxcGaleraClusterSummaryDashboard.url}&var-cluster=pxc-${dbclusterName}`, 'Last 5 minutes', 4, 0, 2);
     await dashboardPage.genericDashboardLoadForDbaaSClusters(`${dashboardPage.mysqlPXCGaleraNodeSummaryDashboard.url}?&var-service_name=${serviceName}`, 'Last 5 minutes', 4, 0, 2);
     await dashboardPage.genericDashboardLoadForDbaaSClusters(`${dashboardPage.nodeSummaryDashboard.url}?&var-node_name=${nodeName}`, 'Last 5 minutes', 4, 0, 1);
     await dashboardPage.genericDashboardLoadForDbaaSClusters(`${dashboardPage.mysqlInstanceSummaryDashboard.url}&var-service_name=${serviceName}`, 'Last 5 minutes', 4, 0, 5);
+    await dashboardPage.genericDashboardLoadForDbaaSClusters(`graph/d/haproxy-instance-summary/haproxy-instance-summary?orgId=1&refresh=1m&var-node_name=${haproxynodeName}`, 'Last 5 minutes', 4, 0, 3);
   },
 
   async psmdbClusterMetricCheck(dbclusterName, serviceName, nodeName) {
