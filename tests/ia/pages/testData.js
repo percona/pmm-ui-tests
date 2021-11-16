@@ -200,7 +200,7 @@ module.exports = {
     expression: 'node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes\n'
       + '* 100\n'
       + '< [[ .threshold ]]',
-    alert: 'Node out of memory ({{ $labels.node_name }})',
+    alert: 'Lack of available memory on the Node ({{ $labels.node_name }})',
   }, {
     template: 'Node high swap filling up',
     threshold: '80',
