@@ -12,10 +12,9 @@ Feature('QAN filters').retry(1);
 const filters = new DataTable(['filterToApply', 'searchValue']);
 
 filters.add(['SELECT', 'INSERT']);
-// TODO add script to create test data for cases INSERT, UPDATE, DELETE in task PMM-9147
-// filters.add(['INSERT', 'SELECT']);
-// filters.add(['UPDATE', 'SELECT']);
-// filters.add(['DELETE', 'INSERT']);
+filters.add(['INSERT', 'SELECT']);
+filters.add(['UPDATE', 'DELETE']);
+filters.add(['DELETE', 'UPDATE']);
 
 Before(async ({ I, qanPage, qanOverview }) => {
   await I.Authorize();
