@@ -2,8 +2,22 @@ const { leftNavMenu } = inject();
 
 const sidebar = new DataTable(['locator', 'path', 'click']);
 
-// parse leftNavMenu;  path === '#' should be skipped
-sidebar.add([leftNavMenu.search.locator, leftNavMenu.search.path, leftNavMenu.search.click]);
+const parse = (obj) => {
+  if (obj !== null && typeof obj == 'object') {
+    if ('path' in obj && 'click' in obj
+      // excludes top level clickable icon
+      && 'label' in obj) {
+      sidebar.add([obj.locator, obj.path, obj.click]);
+    }
+
+    Object.values(obj).forEach((value) => {
+      // key is either an array index or object key
+      parse(value);
+    });
+  }
+};
+
+parse(leftNavMenu);
 
 Feature('Left Navigation menu tests');
 
@@ -15,7 +29,7 @@ Before(async ({ I, homePage }) => {
 Data(sidebar).Scenario(
   'PMM-T433 - Verify menu items on Grafana sidebar @nightly @menu',
   async ({ I, current }) => {
-    I.seeElementExists(current.locator);
+    I.seeElementInDOM(current.locator);
   },
 );
 
