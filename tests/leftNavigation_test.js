@@ -1,13 +1,13 @@
 const { leftNavMenu } = inject();
 
-const sidebar = new DataTable(['locator', 'path', 'click']);
+const sidebar = new DataTable(['name', 'locator', 'path', 'click']);
 
 const parse = (obj) => {
   if (obj !== null && typeof obj == 'object') {
     if ('path' in obj && 'click' in obj
       // excludes top level clickable icon
       && 'label' in obj) {
-      sidebar.add([obj.locator, obj.path, obj.click]);
+      sidebar.add([obj.label, obj.locator, obj.path, obj.click]);
     }
 
     Object.values(obj).forEach((value) => {
@@ -36,7 +36,7 @@ Data(sidebar).Scenario(
 Data(sidebar).Scenario(
   'PMM-T591 - Verify menu items on Grafana sidebar redirects to correct page @nightly @menu',
   async ({ I, current }) => {
-    await current.click();
+    current.click();
     I.seeInCurrentUrl(current.path);
   },
 );

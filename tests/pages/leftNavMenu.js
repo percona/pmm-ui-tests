@@ -7,13 +7,38 @@ const mouseOverMenu = (menuObj) => {
 };
 
 /**
- * Constructor of the "menu heading" objects. For internal usage.
+ * Internal top level "menu object" template
  *
- * @param label
- * @param locator
+ * @param name
  * @param path
+ * @param menuOptions
  * @returns {*}
  */
+const constructMenu = (name, path, menuOptions) => {
+  return new function () {
+    this.name = name;
+    this.path = path;
+    this.headingLocator = locate('a[class="side-menu-header-link"]').withText(name);
+    this.locator = locate('a[class="sidemenu-link"]')
+      .before(locate('ul[role="menu"]').withDescendant(this.headingLocator));
+    this.menu = {
+      heading: menuHeading(this.name, this.headingLocator, this.path),
+    };
+    if (menuOptions != null) {
+      Object.entries(menuOptions).forEach(([key, value]) => {
+        this.menu[key] = value;
+      });
+    }
+
+    this.showMenu = () => {
+      mouseOverMenu(this);
+    };
+    this.click = () => {
+      I.click(this.locator);
+    };
+  };
+};
+
 const menuHeading = (label, locator, path) => {
   return new function () {
     this.label = label;
@@ -36,69 +61,32 @@ const menuOption = (label, path) => {
     this.label = label;
     this.locator = locate('a').withText(label).inside('ul[role="menu"]');
     this.path = path;
-    this.click = () => { I.click(this.locator); };
+    this.click = () => {
+      I.moveCursorTo(locate('a[class="sidemenu-link"]').before(locate(this.locator)));
+      I.waitForVisible(this.locator, 2);
+      I.click(this.locator);
+    };
   };
 };
 
-const searchMenu = new function () {
-  this.name = 'Search';
-  this.path = '?search=open';
-  this.headingLocator = locate('a[class="side-menu-header-link"]').withText(this.name);
-  this.locator = locate('a[class="sidemenu-link"]')
-    .before(locate('ul[role="menu"]').withDescendant(this.headingLocator));
-  this.menu = {
-    heading: menuHeading(this.name, this.headingLocator, this.path),
-  };
-  this.showMenu = () => { mouseOverMenu(this); };
-  this.click = () => { I.click(this.locator); };
-};
-
-const createMenu = new function () {
-  this.name = 'Create';
-  this.path = '/graph/dashboard/new';
-  this.headingLocator = locate('a[class="side-menu-header-link"]').withText(this.name);
-  this.locator = locate('a[class="sidemenu-link"]')
-    .before(locate('ul[role="menu"]').withDescendant(this.headingLocator));
-  this.menu = {
-    heading: menuHeading(this.name, this.headingLocator, this.path),
-    dashboard: menuOption('Dashboard', '/graph/dashboard/new?orgId=1'),
-    folder: menuOption('Folder', '/graph/dashboards/folder/new'),
-    import: menuOption('Import', '/graph/dashboard/import'),
-  };
-  this.showMenu = () => { mouseOverMenu(this); };
-  this.click = () => { I.click(this.locator); };
-};
+const dashboardsMenu = constructMenu('Dashboards', '/graph/',
+  {
+    home: menuOption('Home', '/graph/d/pmm-home/home-dashboard?orgId=1&refresh=1m'),
+    manage: menuOption('Manage', '/graph/dashboards'),
+    playlists: menuOption('Playlists', '/graph/playlists'),
+    snapshots: menuOption('Snapshots', '/graph/dashboard/snapshots'),
+  });
 
 module.exports = {
-  search: searchMenu,
-  create: createMenu,
+  search: constructMenu('Search', '?search=open'),
+  create: constructMenu('Create', '/graph/dashboard/new',
+    {
+      dashboard: menuOption('Dashboard', '/graph/dashboard/new?orgId=1'),
+      folder: menuOption('Folder', '/graph/dashboards/folder/new'),
+      import: menuOption('Import', '/graph/dashboard/import'),
+    }),
+  dashboards: dashboardsMenu,
 
-  // dashboards: {
-  //   locator: '',
-  //   path: '',
-  //   menu: {
-  //     heading: {
-  //       locator: '',
-  //       path: '',
-  //     },
-  //     home: {
-  //       locator: '',
-  //       path: '/graph/d/pmm-home/home-dashboard?orgId=1&refresh=1m',
-  //     },
-  //     manage: {
-  //       locator: '',
-  //       path: '/graph/dashboards',
-  //     },
-  //     playlists: {
-  //       locator: '',
-  //       path: '/graph/playlists',
-  //     },
-  //     snapshots: {
-  //       locator: '',
-  //       path: '/graph/dashboard/snapshots',
-  //     },
-  //   },
-  // },
   // pmmDashboards: {
   //   locator: '',
   //   path: 'graph/d/pmm-home/home-dashboard?orgId=1&refresh=1m',
