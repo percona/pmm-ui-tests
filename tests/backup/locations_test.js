@@ -76,11 +76,11 @@ Scenario(
 
     // Verify buttons state
     I.seeTextEquals('Add', locationsPage.buttons.addLocation);
-    I.seeAttributesOnElements(locationsPage.buttons.addLocation, { disabled: true });
+    I.seeElementsDisabled(locationsPage.buttons.addLocation);
     I.seeTextEquals('Test', locationsPage.buttons.testLocation);
-    I.seeAttributesOnElements(locationsPage.buttons.testLocation, { disabled: true });
+    I.seeElementsDisabled(locationsPage.buttons.testLocation);
     I.seeTextEquals('Cancel', locationsPage.buttons.cancel);
-    I.seeAttributesOnElements(locationsPage.buttons.cancel, { disabled: null });
+    I.seeElementsEnabled(locationsPage.buttons.cancel);
   },
 );
 

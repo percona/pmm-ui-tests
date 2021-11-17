@@ -1,7 +1,7 @@
 const { I } = inject();
 const assert = require('assert');
 
-const alertRow = (alertName) => `//tr[td[text()="${alertName}"]]`;
+const alertRow = (alertName) => `//tr[td[contains(., "${alertName}")]]`;
 
 module.exports = {
   url: 'graph/integrated-alerting/alerts',
