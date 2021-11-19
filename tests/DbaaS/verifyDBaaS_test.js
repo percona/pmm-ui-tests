@@ -8,6 +8,8 @@ const inputFields = new DataTable(['field', 'value', 'errorMessageField', 'error
 
 const resourceFields = new DataTable(['resourceType']);
 
+const nameFields = new DataTable(['field', 'value', 'errorMessageField', 'errorMessage']);
+
 // This is Data table for Resources available for DB Cluster, used for checking Default Values.
 
 resourceFields.add(['Small']);
@@ -25,6 +27,10 @@ inputFields.add([dbaasPage.tabs.dbClusterTab.advancedOptions.fields.nodesNumberF
 inputFields.add([dbaasPage.tabs.dbClusterTab.advancedOptions.fields.nodesNumberField, ['1', '2'], dbaasPage.tabs.dbClusterTab.advancedOptions.fields.nodesFieldErrorMessage, dbaasPage.valueGreatThanErrorText(3)]);
 inputFields.add([dbaasPage.tabs.dbClusterTab.advancedOptions.fields.memoryField, ['0.01', '-0.3', '0.0'], dbaasPage.tabs.dbClusterTab.advancedOptions.fields.memoryFieldErrorMessage, dbaasPage.valueGreatThanErrorText(0.1)]);
 inputFields.add([dbaasPage.tabs.dbClusterTab.advancedOptions.fields.cpuNumberFields, ['0.01', '-0.3', '0.0'], dbaasPage.tabs.dbClusterTab.advancedOptions.fields.cpuFieldErrorMessage, dbaasPage.valueGreatThanErrorText(0.1)]);
+
+// Data table for db cluster name validation
+
+nameFields.add([dbaasPage.tabs.dbClusterTab.basicOptions.fields.clusterNameField, ['1cluster','clusterA','cluster-'], dbaasPage.tabs.dbClusterTab.basicOptions.fields.clusterNameFieldErrorMessage, dbaasPage.dbclusterNameError]);
 
 Feature('DbaaS: Kubernetes Cluster Registration UI');
 
@@ -186,9 +192,9 @@ Scenario('PMM-T456 PMM-T490 Verify DB Cluster Steps Background @dbaas',
     await dbaasAPI.apiUnregisterCluster(clusterName);
   });
 
-Scenario('PMM-T456 Verify Create Cluster steps validation fields disabled/enabled @dbaas',
+Data(nameFields).Scenario('PMM-T456 Verify Create Cluster steps validation fields disabled/enabled + name input validation, PMM-T833 - Verify DB cluster name length @dbaas',
   async ({
-    I, dbaasPage, dbaasAPI, adminPage,
+    I, dbaasPage, dbaasAPI, adminPage, current, dbaasActionsPage
   }) => {
     if (!await dbaasAPI.apiCheckRegisteredClusterExist(clusterName)) {
       await dbaasAPI.apiRegisterCluster(process.env.kubeconfig_minikube, clusterName);
@@ -199,8 +205,19 @@ Scenario('PMM-T456 Verify Create Cluster steps validation fields disabled/enable
     I.click(dbaasPage.tabs.dbClusterTab.dbClusterTab);
     I.waitForVisible(dbaasPage.tabs.dbClusterTab.addDbClusterButton, 60);
     I.dontSeeElement(adminPage.fields.timePickerMenu);
-    I.click(dbaasPage.tabs.dbClusterTab.addDbClusterButton);
+    await dbaasActionsPage.createClusterBasicOptions(clusterName, 'a2345678901234567890', 'MySQL');
+    I.dontSee(dbaasPage.dbclusterNameLimitError, dbaasPage.tabs.dbClusterTab.basicOptions.fields.clusterNameFieldErrorMessage);
+    adminPage.customClearField(current.field);
+    I.fillField(dbaasPage.tabs.dbClusterTab.basicOptions.fields.clusterNameField,'a23456789012345678901');
+    I.seeTextEquals(
+      dbaasPage.dbclusterNameLimitError, dbaasPage.tabs.dbClusterTab.basicOptions.fields.clusterNameFieldErrorMessage);
     I.waitForElement(dbaasPage.tabs.dbClusterTab.optionsCountLocator(2), 30);
+    current.value.forEach((input) => dbaasPage.verifyInputValidationMessages(
+      current.field,
+      input,
+      current.errorMessageField,
+      current.errorMessage,
+    ));
     assert.ok(
       await I.grabAttributeFrom(dbaasPage.tabs.dbClusterTab.createClusterButton, 'disabled'),
       'Create Cluster Button Should be Disabled',
@@ -231,7 +248,7 @@ Scenario('PMM-T456 Verify Create Cluster steps validation fields disabled/enable
 
 Data(inputFields).Scenario('PMM-T456 Verify Create Cluster steps validation - field input validation @dbaas',
   async ({
-    I, dbaasPage, dbaasAPI, adminPage, current, dbaasManageVersionPage,
+    I, dbaasPage, dbaasAPI, adminPage, current, dbaasManageVersionPage, dbaasActionsPage
   }) => {
     if (!await dbaasAPI.apiCheckRegisteredClusterExist(clusterName)) {
       await dbaasAPI.apiRegisterCluster(process.env.kubeconfig_minikube, clusterName);
@@ -240,9 +257,8 @@ Data(inputFields).Scenario('PMM-T456 Verify Create Cluster steps validation - fi
     I.amOnPage(dbaasPage.url);
     dbaasPage.checkCluster(clusterName, false);
     I.click(dbaasPage.tabs.dbClusterTab.dbClusterTab);
-    I.waitForElement(dbaasPage.tabs.dbClusterTab.dbClusterAddButtonTop, 30);
-    I.waitForDetached(dbaasManageVersionPage.loader, 30);
-    I.click(dbaasPage.tabs.dbClusterTab.dbClusterAddButtonTop);
+    I.waitForVisible(dbaasPage.tabs.dbClusterTab.addDbClusterButton, 60);
+    await dbaasActionsPage.createClusterBasicOptions(clusterName, 'dbcluster', 'MySQL');
     I.waitForElement(dbaasPage.tabs.dbClusterTab.optionsCountLocator(2), 30);
     I.click(dbaasPage.tabs.dbClusterTab.optionsCountLocator(2));
     I.click(dbaasPage.tabs.dbClusterTab.advancedOptions.fields.resourcesPerNode('Custom'));

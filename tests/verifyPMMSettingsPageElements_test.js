@@ -166,14 +166,3 @@ xScenario(
     I.waitForValue(pmmSettingsPage.fields.dataRetentionCount, dataRetention, 30);
   },
 );
-
-Scenario('PMM-T537 - Verify user is not able to enable IA if Telemetry is disabled @ia @settings @grafana-pr',
-  async ({ I, pmmSettingsPage, settingsAPI }) => {
-    await settingsAPI.apiDisableIA();
-    I.amOnPage(pmmSettingsPage.advancedSettingsUrl);
-    await pmmSettingsPage.waitForPmmSettingsPageLoaded();
-    I.seeAttributesOnElements(pmmSettingsPage.fields.iaSwitchSelectorInput, { disabled: null });
-    I.click(pmmSettingsPage.fields.telemetrySwitchSelector);
-    I.seeAttributesOnElements(pmmSettingsPage.fields.iaSwitchSelectorInput, { disabled: true });
-    await settingsAPI.apiEnableIA();
-  }).retry(2);

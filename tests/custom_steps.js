@@ -11,4 +11,11 @@ module.exports = () => actor({
   },
 
   useDataQA: (selector) => `[data-testid="${selector}"]`,
+
+  seeElementsDisabled(locator) {
+    this.seeAttributesOnElements(locator, { disabled: true });
+  },
+  seeElementsEnabled(locator) {
+    this.seeAttributesOnElements(locator, { disabled: null });
+  },
 });

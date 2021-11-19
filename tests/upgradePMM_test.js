@@ -3,7 +3,7 @@ const faker = require('faker');
 const { generate } = require('generate-password');
 
 const {
-  remoteInstancesHelper, perconaServerDB, pmmSettingsPage, dashboardPage,
+  remoteInstancesHelper, perconaServerDB, pmmSettingsPage, dashboardPage, databaseChecksPage,
 } = inject();
 
 const alertManager = {
@@ -19,7 +19,8 @@ clientDbServices.add(['MONGODB_SERVICE', 'mongodb_', 'mongodb_connections', 'ann
 
 const connection = perconaServerDB.defaultConnection;
 const emptyPasswordSummary = 'MySQL users have empty passwords';
-const failedCheckRowLocator = locate('tr').withChild(locate('td').withText(remoteInstancesHelper.upgradeServiceNames.mysql));
+const failedCheckRowLocator = databaseChecksPage.elements
+  .failedCheckRowByServiceName(remoteInstancesHelper.upgradeServiceNames.mysql);
 const ruleName = 'Alert Rule for upgrade';
 const failedCheckMessage = 'Newer version of Percona Server for MySQL is available';
 
@@ -438,7 +439,7 @@ if (versionMinor >= 16) {
       I.waitForVisible(failedCheckRowLocator, 30);
       I.dontSeeElement(failedCheckRowLocator.find('td').withText(emptyPasswordSummary));
 
-      I.click(locate('$db-checks-failed-checks-toggle-silenced').find('label'));
+      I.click(databaseChecksPage.buttons.toggleSilenced);
 
       I.seeElement(failedCheckRowLocator.find('td').withText(emptyPasswordSummary));
       I.seeElement(failedCheckRowLocator.find('td').withText('Silenced'));

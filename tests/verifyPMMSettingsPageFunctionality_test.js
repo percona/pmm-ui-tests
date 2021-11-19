@@ -106,7 +106,6 @@ Scenario(
     I.dontSeeElement(pmmSettingsPage.fields.dbaasMenuIconLocator);
     I.amOnPage(dbaasPage.url);
     I.waitForElement(dbaasPage.disabledDbaaSMessage.settingsLinkLocator, 30);
-    I.verifyPopUpMessage(dbaasPage.disabledDbaaSMessage.disabledDbaaSPopUpMessage);
     const message = (await I.grabTextFrom(dbaasPage.disabledDbaaSMessage.emptyBlock)).replace(/\s+/g, ' ');
 
     assert.ok(message === dbaasPage.disabledDbaaSMessage.textMessage, `Message Shown on ${message} should be equal to ${dbaasPage.disabledDbaaSMessage.textMessage}`);
@@ -301,5 +300,40 @@ Scenario(
     pmmSettingsPage.switchAzure();
     I.amOnPage(remoteInstancesPage.url);
     I.waitForInvisible(remoteInstancesPage.fields.addAzureMySQLPostgreSQL, 30);
+  },
+);
+
+Scenario(
+  'PMM-T841 - Verify user is able to enable Backup Management @backup',
+  async ({
+    I, pmmSettingsPage, scheduledPage, settingsAPI, codeceptjsConfig,
+  }) => {
+    await settingsAPI.changeSettings({ backup: false });
+
+    // Open advanced settings and verify backup management switch is off
+    I.amOnPage(pmmSettingsPage.advancedSettingsUrl);
+    pmmSettingsPage.verifySwitch(pmmSettingsPage.fields.backupManagementSwitchInput, 'off');
+
+    // Open scheduled backups page and verify message about disabled backup management
+    I.amOnPage(scheduledPage.url);
+    I.waitForVisible('$empty-block', 20);
+
+    const message = await I.grabTextFrom('$empty-block');
+
+    assert.ok(
+      message.replace(/\s+/g, ' ') === pmmSettingsPage.messages.disabledBackupManagement,
+      `Message Shown on ${message} should be equal to ${pmmSettingsPage.messages.disabledBackupManagement}`,
+    );
+    I.seeAttributesOnElements('$settings-link', { href: `${codeceptjsConfig.config.helpers.Playwright.url}graph/settings/advanced-settings` });
+
+    // Open advanced settings and enable backup management
+    I.amOnPage(pmmSettingsPage.advancedSettingsUrl);
+    I.waitForVisible(pmmSettingsPage.fields.backupManagementSwitch, 30);
+    I.click(pmmSettingsPage.fields.backupManagementSwitch);
+    pmmSettingsPage.verifySwitch(pmmSettingsPage.fields.backupManagementSwitchInput, 'on');
+    I.click(pmmSettingsPage.fields.advancedButton);
+
+    // Open scheduled backups page and verify backup management is enabled
+    scheduledPage.openScheduledBackupsPage();
   },
 );
