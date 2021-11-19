@@ -106,7 +106,6 @@ Scenario(
     I.dontSeeElement(pmmSettingsPage.fields.dbaasMenuIconLocator);
     I.amOnPage(dbaasPage.url);
     I.waitForElement(dbaasPage.disabledDbaaSMessage.settingsLinkLocator, 30);
-    I.verifyPopUpMessage(dbaasPage.disabledDbaaSMessage.disabledDbaaSPopUpMessage);
     const message = (await I.grabTextFrom(dbaasPage.disabledDbaaSMessage.emptyBlock)).replace(/\s+/g, ' ');
 
     assert.ok(message === dbaasPage.disabledDbaaSMessage.textMessage, `Message Shown on ${message} should be equal to ${dbaasPage.disabledDbaaSMessage.textMessage}`);
