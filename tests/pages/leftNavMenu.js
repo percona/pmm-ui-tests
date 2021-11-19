@@ -1,408 +1,124 @@
-const { I, leftNavMenu } = inject();
-const assert = require('assert');
-
-const mouseOverMenu = (menuObj) => {
-  I.moveCursorTo(menuObj.locator);
-  I.waitForVisible(menuObj.menu.heading.locator, 2);
-};
+const { LeftMenu, SubMenu, menuOption } = require('./menuTemplates.js');
 
 /**
- * Internal top level "menu object" template
- *
- * @param name
- * @param path
- * @param menuOptions
- * @returns {*}
+ * Implements left Navigation Grafana Menu. Intended to be used UX goes, ex.:
+ *    leftNavMenu.pmmDashboards.menu.systemNode.menu.nodeOverview.click()
  */
-const constructMenu = (name, path, menuOptions) => {
-  return new function () {
-    this.name = name;
-    this.path = path;
-    this.headingLocator = locate('a[class="side-menu-header-link"]').withText(name);
-    this.locator = locate('a[class="sidemenu-link"]')
-      .before(locate('ul[role="menu"]').withDescendant(this.headingLocator));
-    this.menu = {
-      heading: menuHeading(this.name, this.headingLocator, this.path),
-    };
-    if (menuOptions != null) {
-      Object.entries(menuOptions).forEach(([key, value]) => {
-        this.menu[key] = value;
-      });
-    }
-
-    this.showMenu = () => {
-      mouseOverMenu(this);
-    };
-    this.click = () => {
-      I.click(this.locator);
-    };
-  };
-};
-
-const menuHeading = (label, locator, path) => {
-  return new function () {
-    this.label = label;
-    this.locator = locator;
-    this.path = path;
-    this.click = () => { I.click(this.locator); };
-  };
-};
-
-/**
- * Constructor of the "menu option" objects. For internal usage.
- *
- * @param label
- * @param locator
- * @param path
- * @returns {*}
- */
-const menuOption = (label, path) => {
-  return new function () {
-    this.label = label;
-    this.locator = locate('a').withText(label).inside('ul[role="menu"]');
-    this.path = path;
-    this.click = () => {
-      I.moveCursorTo(locate('a[class="sidemenu-link"]').before(locate(this.locator)));
-      I.waitForVisible(this.locator, 2);
-      I.click(this.locator);
-    };
-  };
-};
-
-const dashboardsMenu = constructMenu('Dashboards', '/graph/',
-  {
-    home: menuOption('Home', '/graph/d/pmm-home/home-dashboard?orgId=1&refresh=1m'),
-    manage: menuOption('Manage', '/graph/dashboards'),
-    playlists: menuOption('Playlists', '/graph/playlists'),
-    snapshots: menuOption('Snapshots', '/graph/dashboard/snapshots'),
-  });
-
 module.exports = {
-  search: constructMenu('Search', '?search=open'),
-  create: constructMenu('Create', '/graph/dashboard/new',
+  search: new LeftMenu('Search', '?search=open'),
+  create: new LeftMenu('Create', '/graph/dashboard/new',
     {
       dashboard: menuOption('Dashboard', '/graph/dashboard/new?orgId=1'),
       folder: menuOption('Folder', '/graph/dashboards/folder/new'),
       import: menuOption('Import', '/graph/dashboard/import'),
     }),
-  dashboards: dashboardsMenu,
+  dashboards: new LeftMenu('Dashboards', '/graph/',
+    {
+      home: menuOption('Home', '/graph/d/pmm-home/home-dashboard?orgId=1&refresh=1m'),
+      manage: menuOption('Manage', '/graph/dashboards'),
+      playlists: menuOption('Playlists', '/graph/playlists'),
+      snapshots: menuOption('Snapshots', '/graph/dashboard/snapshots'),
+    }),
+  pmmDashboards: new LeftMenu('PMM dashboards', 'graph/d/pmm-home/home-dashboard?orgId=1&refresh=1m',
+    {
+      queryAnalytics: menuOption('Query Analytics', '/graph/d/pmm-qan/pmm-query-analytics'),
+      systemNode: new SubMenu('System (Node)', '/graph/d/node-instance-overview/',
+        {
+          nodeOverview: menuOption('Node Overview', '/graph/d/node-instance-overview/', 2),
+          nodeSummary: new SubMenu('Node Summary', '/graph/d/node-instance-summary/',
+            {
+              // CPU Utilization Details does not exit. there is "CPU Utilization"
+              cpuUtilizationDetails: menuOption('CPU Utilization', '/graph/d/node-cpu/cpu-utilization-details', 3),
+              disk: menuOption('Disk', '/graph/d/node-disk/disk-details', 3),
+              memory: menuOption('Memory', '/graph/d/node-memory/memory-details', 3),
+              network: menuOption('Network', '/graph/d/node-network/network-details', 3),
+              temperature: menuOption('Temperature', '/graph/d/node-temp/node-temperature-details', 3),
+              numa: menuOption('NUMA', '/graph/d/node-memory-numa/numa-details', 3),
+              processes: menuOption('Processes', '/graph/d/node-cpu-process/processes-details', 3),
+            }),
+        }),
+      mySql: new SubMenu('MySQL', '/graph/d/mysql-instance-overview/mysql-instances-overview',
+        {
+          ha_HighAvailability: new SubMenu('HA (High availability)', '#',
+            {
+              mySqlGroupReplicationSummary: menuOption('MySQL Group Replication Summary', '/graph/d/mysql-group-replicaset-summary/mysql-group-replication-summary', 3),
+              mySQLReplicationSummary: menuOption('MySQL Replication Summary', '/graph/d/mysql-replicaset-summary/mysql-replication-summary', 3),
+              pxc_galeraClusterSummary: menuOption('PXC/Galera Cluster Summary', '/graph/d/pxc-cluster-summary/pxc-galera-cluster-summary', 3),
+              pxc_galeraNodeSummary: menuOption('PXC/Galera Node Summary', '/graph/d/pxc-node-summary/pxc-galera-node-summary', 3),
+              pxc_galeraNodesCompare: menuOption('PXC/Galera Nodes Compare', '/graph/d/pxc-nodes-compare/pxc-galera-nodes-compare', 3),
+            }),
+          mySqlOverview: menuOption('MySQL Overview', '/graph/d/mysql-instance-overview/mysql-instances-overview', 2),
+          mySqlSummary: new SubMenu('MySQL Summary', '/graph/d/mysql-instance-summary/mysql-instance-summary',
+            {
+              MySqlCommand_HandlerCountersCompare: menuOption('MySQL Command/Handler Counters Compare', '/graph/d/mysql-commandhandler-compare/mysql-command-handler-counters-compare', 3),
+              mySqlInnoDbCompressionDetails: menuOption('MySQL InnoDB Compression Details', '/graph/d/mysql-innodb-compression/mysql-innodb-compression-details', 3),
+              // MySQL InnoDB Details  does not exist
+              // mySqlInnoDbDetails: menuOption('MySQL InnoDB Details', '/graph/d/mysql-innodb/mysql-innodb-details', 3),
+              mySqlPerformanceSchemaDetails: menuOption('MySQL Performance Schema Details', '/graph/d/mysql-performance-schema/mysql-performance-schema-details', 3),
+              mySqlQueryResponseTimeDetails: menuOption('MySQL Query Response Time Details', '/graph/d/mysql-queryresponsetime/mysql-query-response-time-details', 3),
+              mySqlTableDetails: menuOption('MySQL Table Details', '/graph/d/mysql-table/mysql-table-details', 3),
+              mySqlTokuDbDetails: menuOption('MySQL TokuDB Details', '/graph/d/mysql-tokudb/mysql-tokudb-details', 3),
+              mySqlUserDetails: menuOption('MySQL User Details', '/graph/d/mysql-user/mysql-user-details', 3),
+              mySqlWaitEventAnalysesDetails: menuOption('MySQL Wait Event Analyses Details', '/graph/d/mysql-waitevents-analysis/mysql-wait-event-analyses-details', 3),
+              mySqlMyIsam_AriaDetails: menuOption('MySQL MyISAM/Aria Details', '/graph/d/mysql-myisamaria/mysql-myisam-aria-details', 3),
+              mySqlMyRocksDetails: menuOption('MySQL MyRocks Details', '/graph/d/mysql-myrocks/mysql-myrocks-details', 3),
+              mySqlAmazonAuroraDetails: menuOption('MySQL Amazon Aurora Details', '/graph/d/mysql-amazonaurora/mysql-amazon-aurora-details', 3),
+            }),
+        }),
+      mongoDb: new SubMenu('MongoDB', '/graph/d/mongodb-instance-overview/mongodb-instances-overview',
+        {
+          ha_HighAvailability: new SubMenu('HA (High availability)', '#',
+            {
+              mongoDbClusterSummary: menuOption('MongoDB Cluster Summary', '/graph/d/mongodb-cluster-summary/mongodb-cluster-summary', 3),
+              mongoDbReplSetSummary: menuOption('MongoDB ReplSet Summary', '/graph/d/mongodb-replicaset-summary/mongodb-replset-summary', 3),
+            }),
+          // "MongoDB Instance Overview" does not exist. there is "MongoDB Overview"
+          mongoDbInstanceOverview: menuOption('MongoDB Overview', '/graph/d/mongodb-instance-overview/mongodb-instances-overview', 2),
+          // "MongoDB Instance Summary" does not exist. there is "MongoDB Summary"
+          mongoDbInstanceSummary: new SubMenu('MongoDB Summary', '/graph/d/mongodb-instance-summary/mongodb-instance-summary',
+            {
+              mongoDbInMemoryDetails: menuOption('MongoDB InMemory Details', '/graph/d/mongodb-inmemory/mongodb-inmemory-details', 3),
+              mongoDbMmaPv1Details: menuOption('MongoDB MMAPv1', '/graph/d/mongodb-mmapv1/mongodb-mmapv1-details', 3),
+              mongoDbWiredTigerDetails: menuOption('MongoDB WiredTiger Details', '/graph/d/mongodb-wiredtiger/mongodb-wiredtiger-details', 3),
+            }),
+        }),
+      postgreSql: new SubMenu('PostgreSQL', '/graph/d/postgresql-instance-overview/postgresql-instances-overview',
+        {
+          postgreSqlOverview: menuOption('PostgreSQL Overview', '/graph/d/postgresql-instance-overview/postgresql-instances-overview', 2),
+          postgreSqlSummary: menuOption('PostgreSQL Summary', '/graph/d/postgresql-instance-summary/postgresql-instance-summary', 2),
+        }),
+      proxySql: menuOption('ProxySQL', '/graph/d/proxysql-instance-summary/proxysql-instance-summary'),
+      haProxy: menuOption('HAProxy', '/graph/d/haproxy-instance-summary/haproxy-instance-summary'),
+    }),
+  explore: new LeftMenu('Explore', '/graph/explore'),
+  alerting: new LeftMenu('Alerting', '/graph/alerting/list',
+    {
+      alertRules: menuOption('Alert Rules', '/graph/alerting/list'),
+      notificationChannels: menuOption('Notification channels', '/graph/alerting/notifications'),
 
-  // pmmDashboards: {
-  //   locator: '',
-  //   path: 'graph/d/pmm-home/home-dashboard?orgId=1&refresh=1m',
-  //   menu: {
-  //     heading: {
-  //       locator: '',
-  //       path: 'graph/d/pmm-home/home-dashboard?orgId=1&refresh=1m',
-  //     },
-  //     queryAnalytics: {
-  //       locator: '',
-  //       path: '/graph/d/pmm-qan/pmm-query-analytics',
-  //     },
-  //     systemNode: {
-  //       locator: '',
-  //       path: '',
-  //       menu: {
-  //         nodeOverview: {
-  //           locator: '',
-  //           path: '/graph/d/node-instance-overview/',
-  //         },
-  //         nodeSummary: {
-  //           locator: '',
-  //           path: '/graph/d/node-instance-summary/',
-  //           menu: {
-  //             cpuUtilizationDetails: {
-  //               locator: '',
-  //               path: '/graph/d/node-cpu/cpu-utilization-details',
-  //             },
-  //             disk: {
-  //               locator: '',
-  //               path: '/graph/d/node-disk/disk-details',
-  //             },
-  //             memory: {
-  //               locator: '',
-  //               path: '/graph/d/node-memory/memory-details',
-  //             },
-  //             network: {
-  //               locator: '',
-  //               path: '/graph/d/node-network/network-details',
-  //             },
-  //             temperature: {
-  //               locator: '',
-  //               path: '/graph/d/node-temp/node-temperature-details',
-  //             },
-  //             numa: {
-  //               locator: '',
-  //               path: '/graph/d/node-memory-numa/numa-details',
-  //             },
-  //             processes: {
-  //               locator: '',
-  //               path: '/graph/d/node-cpu-process/processes-details',
-  //             },
-  //           },
-  //         },
-  //       },
-  //     },
-  //     mySql: {
-  //       locator: '',
-  //       path: '/graph/d/mysql-instance-overview/mysql-instances-overview',
-  //       menu: {
-  //         ha_HighAvailability: {
-  //           locator: '',
-  //           path: '',
-  //           menu: {
-  //             mySqlGroupReplicationSummary: {
-  //               locator: '',
-  //               path: '/graph/d/mysql-group-replicaset-summary/mysql-group-replication-summary',
-  //             },
-  //             mySQLReplicationSummary: {
-  //               locator: '',
-  //               path: '/graph/d/mysql-replicaset-summary/mysql-replication-summary',
-  //             },
-  //             pxc_galeraClusterSummary: {
-  //               locator: '',
-  //               path: '/graph/d/pxc-cluster-summary/pxc-galera-cluster-summary',
-  //             },
-  //             pxc_galeraNodeSummary: {
-  //               locator: '',
-  //               path: '/graph/d/pxc-node-summary/pxc-galera-node-summary',
-  //             },
-  //             pxc_galeraNodesCompare: {
-  //               locator: '',
-  //               path: '/graph/d/pxc-nodes-compare/pxc-galera-nodes-compare',
-  //             },
-  //           },
-  //         },
-  //         mySqlOverview: {
-  //           locator: '',
-  //           path: '/graph/d/mysql-instance-overview/mysql-instances-overview',
-  //         },
-  //         mySqlSummary: {
-  //           locator: '',
-  //           path: '/graph/d/mysql-instance-summary/mysql-instance-summary',
-  //           menu: {
-  //             MySqlCommand_HandlerCountersCompare: {
-  //               locator: '',
-  //               path: '/graph/d/mysql-commandhandler-compare/mysql-command-handler-counters-compare',
-  //             },
-  //             mySqlInnoDbCompressionDetails: {
-  //               locator: '',
-  //               path: '/graph/d/mysql-innodb-compression/mysql-innodb-compression-details',
-  //             },
-  //             mySqlInnoDbDetails: {
-  //               locator: '',
-  //               path: '/graph/d/mysql-innodb/mysql-innodb-details',
-  //             },
-  //             mySqlPerformanceSchemaDetails: {
-  //               locator: '',
-  //               path: '/graph/d/mysql-performance-schema/mysql-performance-schema-details',
-  //             },
-  //             mySqlQueryResponseTimeDetails: {
-  //               locator: '',
-  //               path: '/graph/d/mysql-queryresponsetime/mysql-query-response-time-details',
-  //             },
-  //             mySqlTableDetails: {
-  //               locator: '',
-  //               path: '/graph/d/mysql-table/mysql-table-details',
-  //             },
-  //             mySqlTokuDbDetails: {
-  //               locator: '',
-  //               path: '/graph/d/mysql-tokudb/mysql-tokudb-details',
-  //             },
-  //             mySqlUserDetails: {
-  //               locator: '',
-  //               path: '/graph/d/mysql-user/mysql-user-details',
-  //             },
-  //             mySqlWaitEventAnalysesDetails: {
-  //               locator: '',
-  //               path: '/graph/d/mysql-waitevents-analysis/mysql-wait-event-analyses-details',
-  //             },
-  //             mySqlMyIsam_AriaDetails: {
-  //               locator: '',
-  //               path: '/graph/d/mysql-myisamaria/mysql-myisam-aria-details',
-  //             },
-  //             mySqlMyRocksDetails: {
-  //               locator: '',
-  //               path: '/graph/d/mysql-myrocks/mysql-myrocks-details',
-  //             },
-  //             mySqlAmazonAuroraDetails: {
-  //               locator: '',
-  //               path: '/graph/d/mysql-amazonaurora/mysql-amazon-aurora-details',
-  //             },
-  //           },
-  //         },
-  //       },
-  //     },
-  //     mongoDb: {
-  //       locator: '',
-  //       path: '/graph/d/mongodb-instance-overview/mongodb-instances-overview',
-  //       menu: {
-  //         ha_HighAvailability: {
-  //           locator: '',
-  //           path: '#',
-  //           menu: {
-  //             mongoDbClusterSummary: {
-  //               locator: '',
-  //               path: '/graph/d/mongodb-cluster-summary/mongodb-cluster-summary',
-  //             },
-  //             mongoDbReplSetSummary: {
-  //               locator: '',
-  //               path: '/graph/d/mongodb-replicaset-summary/mongodb-replset-summary',
-  //             },
-  //           },
-  //         },
-  //         mongoDbInstanceOverview: {
-  //           locator: '',
-  //           path: '/graph/d/mongodb-instance-overview/mongodb-instances-overview',
-  //         },
-  //         mongoDbInstanceSummary: {
-  //           locator: '',
-  //           path: '/graph/d/mongodb-instance-summary/mongodb-instance-summary',
-  //           menu: {
-  //             mongoDbInMemoryDetails: {
-  //               locator: '',
-  //               path: '/graph/d/mongodb-inmemory/mongodb-inmemory-details',
-  //             },
-  //             mongoDbMmaPv1Details: {
-  //               locator: '',
-  //               path: '/graph/d/mongodb-mmapv1/mongodb-mmapv1-details',
-  //             },
-  //             mongoDbWiredTigerDetails: {
-  //               locator: '',
-  //               path: '/graph/d/mongodb-wiredtiger/mongodb-wiredtiger-details',
-  //             },
-  //           },
-  //         },
-  //       },
-  //     },
-  //     postgreSql: {
-  //       locator: '',
-  //       path: '',
-  //       menu: {
-  //         postgreSqlOverview: {
-  //           locator: '',
-  //           path: '/graph/d/postgresql-instance-overview/postgresql-instances-overview',
-  //         },
-  //         postgreSqlSummary: {
-  //           locator: '',
-  //           path: '/graph/d/postgresql-instance-summary/postgresql-instance-summary',
-  //         },
-  //       },
-  //     },
-  //     proxySql: {
-  //       locator: '',
-  //       path: '/graph/d/proxysql-instance-summary/proxysql-instance-summary',
-  //     },
-  //     haProxy: {
-  //       locator: '',
-  //       path: '/graph/d/haproxy-instance-summary/haproxy-instance-summary',
-  //     },
-  //   },
-  // },
-  // explore: {
-  //   locator: '',
-  //   path: '/graph/explore',
-  //   menu: {
-  //     heading: {
-  //       locator: '',
-  //       path: '/graph/explore',
-  //     },
-  //   },
-  // },
-  // alerting: {
-  //   locator: '',
-  //   path: '',
-  //   menu: {
-  //     heading: {
-  //       locator: '',
-  //       path: '',
-  //     },
-  //     alertRules: {
-  //       locator: '',
-  //       path: '/graph/alerting/list',
-  //     },
-  //     notificationChannels: {
-  //       locator: '',
-  //       path: '/graph/alerting/notifications',
-  //     },
-  //   },
-  // },
-  // configuration: {
-  //   locator: '',
-  //   path: '',
-  //   menu: {
-  //     heading: {
-  //       locator: '',
-  //       path: '',
-  //     },
-  //     pmmInventory: {
-  //       locator: '',
-  //       path: '/graph/inventory/services',
-  //       menu: {
-  //         inventoryList: {
-  //           locator: '',
-  //           path: '/graph/inventory/services',
-  //         },
-  //         addInstance: {
-  //           locator: '',
-  //           path: '/graph/add-instance',
-  //         },
-  //       },
-  //     },
-  //     settings: {
-  //       locator: '',
-  //       path: '/graph/settings/metrics-resolution',
-  //     },
-  //     dataSources: {
-  //       locator: '',
-  //       path: '/graph/datasources',
-  //     },
-  //     users: {
-  //       locator: '',
-  //       path: '/graph/org/users',
-  //     },
-  //     teams: {
-  //       locator: '',
-  //       path: '/graph/org/teams',
-  //     },
-  //     plugins: {
-  //       locator: '',
-  //       path: '/graph/plugins',
-  //     },
-  //     preferences: {
-  //       locator: '',
-  //       path: '/graph/org',
-  //     },
-  //     apiKeys: {
-  //       locator: '',
-  //       path: '/graph/org/apikeys',
-  //     },
-  //   },
-  // },
-  // serverAdmin: {
-  //   locator: '',
-  //   path: '',
-  //   menu: {
-  //     heading: {
-  //       locator: '',
-  //       path: '',
-  //     },
-  //     users: {
-  //       locator: '',
-  //       path: '/graph/admin/users',
-  //     },
-  //     orgs: {
-  //       locator: '',
-  //       path: '/graph/admin/orgs',
-  //     },
-  //     settings: {
-  //       locator: '',
-  //       path: '/graph/admin/settings',
-  //     },
-  //     stats: {
-  //       locator: '',
-  //       path: '/graph/admin/stats',
-  //     },
-  //   },
-  // },
+    }),
+  configuration: new LeftMenu('Configuration', '/graph/inventory',
+    {
+      pmmInventory: new SubMenu('PMM Inventory', '/graph/inventory/services',
+        {
+          inventoryList: menuOption('Inventory list', '/graph/inventory/services', 2),
+          addInstance: menuOption('Add instance', '/graph/add-instance', 2),
+        }),
+      settings: menuOption('Settings', '/graph/settings/metrics-resolution'),
+      dataSources: menuOption('Data Sources', '/graph/datasources'),
+      users: menuOption('Users', '/graph/org/users'),
+      teams: menuOption('Teams', '/graph/org/teams'),
+      plugins: menuOption('Plugins', '/graph/plugins'),
+      preferences: menuOption('Preferences', '/graph/org'),
+      apiKeys: menuOption('API Keys', '/graph/org/apikeys'),
+    }),
+  serverAdmin: new LeftMenu('Server Admin', '/graph/admin/users',
+    {
+      // "/graph/org/users" is opened instead of "/graph/admin/users"
+      users: menuOption('Users', '/graph/admin/users'),
+      orgs: menuOption('Orgs', '/graph/admin/orgs'),
+      // "/graph/settings/metrics-resolution" is opened instead of "/graph/admin/settings"
+      settings: menuOption('Settings', '/graph/admin/settings'),
+      stats: menuOption('Stats', '/graph/admin/stats'),
+    }),
 };
