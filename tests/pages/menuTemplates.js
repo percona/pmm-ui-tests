@@ -52,10 +52,7 @@ function MenuOption(label, locator, path, menuLevel = 1) {
   this.click = () => {
     I.moveCursorTo(locate('div[class="sidemenu-item dropdown"]').withDescendant(locate(this.locator)));
     for (let i = 1; i < menuLevel; i++) {
-      // hover li with child ul
-      I.moveCursorTo(locate('li').withChild('ul')
-        .withDescendant(locate(this.locator))
-        .at(i));
+      I.moveCursorTo(locate('li').withChild('ul').withDescendant(locate(this.locator)).at(i));
     }
 
     I.waitForVisible(this.locator, 2);
@@ -80,7 +77,7 @@ const menuOption = (label, path, menuLevel = 1) => {
  * A sub level "menu object" of the Grafana menu. Should used in the {@link LeftMenu}
  *
  * @param   name          name of the menu item appears as menu heading
- * @param   path          "expected" url path to be opened on click
+ * @param   path          "expected" url path to be opened on click; '#' is non-clickable sub menu
  * @param   menuOptions   an object collection of {@link MenuOption} and/or {@link SubMenu}
  * @constructor
  */
