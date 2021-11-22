@@ -50,13 +50,13 @@ function MenuOption(label, locator, path, menuLevel = 1) {
   this.locator = locator;
   this.path = path;
   this.click = () => {
-    I.moveCursorTo(locate('div[class="sidemenu-item dropdown"]').withDescendant(locate(this.locator)));
+    I.moveCursorTo(locate('div[class="sidemenu-item dropdown"]').withDescendant(locate(locator)));
     for (let i = 1; i < menuLevel; i++) {
-      I.moveCursorTo(locate('li').withChild('ul').withDescendant(locate(this.locator)).at(i));
+      I.moveCursorTo(locate('li').withChild('ul').withDescendant(locate(locator)).at(i));
     }
 
-    I.waitForVisible(this.locator, 2);
-    I.click(this.locator);
+    I.waitForVisible(locator, 2);
+    I.click(locator);
   };
 }
 
@@ -71,6 +71,29 @@ function MenuOption(label, locator, path, menuLevel = 1) {
  */
 const menuOption = (label, path, menuLevel = 1) => {
   return new MenuOption(label, locate('a').withText(label).inside('ul'), path, menuLevel);
+};
+
+/**
+ * Duplicated options could be located only with specified top level menu.
+ * Encapsulates constant locator of {@link MenuOption} for the left navigation Grafana menu.
+ * Just to keep constructor simple.
+ *
+ * @param   menuName    name of the top level menu
+ * @param   label       name of the option
+ * @param   path        "expected" url path to be opened on click
+ * @param   menuLevel   required to handle interaction, optional for the top level
+ * @returns             {MenuOption} instance
+ */
+const duplicatedOption = (menuName, label, path, menuLevel = 1) => {
+  return new MenuOption(
+    label,
+    locate('a').withText(label).inside('ul').inside(
+      locate('div[class="sidemenu-item dropdown"]')
+        .withDescendant(locate('a[class="side-menu-header-link"]').withText(menuName)),
+    ),
+    path,
+    menuLevel,
+  );
 };
 
 /**
@@ -103,4 +126,6 @@ function SubMenu(name, path = '#', menuOptions) {
   }
 }
 
-module.exports = { LeftMenu, SubMenu, menuOption };
+module.exports = {
+  LeftMenu, SubMenu, menuOption, duplicatedOption,
+};

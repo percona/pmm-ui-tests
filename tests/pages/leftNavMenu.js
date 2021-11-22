@@ -1,4 +1,6 @@
-const { LeftMenu, SubMenu, menuOption } = require('./menuTemplates.js');
+const {
+  LeftMenu, SubMenu, menuOption, duplicatedOption,
+} = require('./menuTemplates.js');
 
 /**
  * Implements left Navigation Grafana Menu. Intended to be used UX goes, ex.:
@@ -27,7 +29,6 @@ module.exports = {
           nodeOverview: menuOption('Node Overview', '/graph/d/node-instance-overview/', 2),
           nodeSummary: new SubMenu('Node Summary', '/graph/d/node-instance-summary/',
             {
-              // CPU Utilization Details does not exit. there is "CPU Utilization"
               cpuUtilizationDetails: menuOption('CPU Utilization', '/graph/d/node-cpu/cpu-utilization-details', 3),
               disk: menuOption('Disk', '/graph/d/node-disk/disk-details', 3),
               memory: menuOption('Memory', '/graph/d/node-memory/memory-details', 3),
@@ -52,8 +53,7 @@ module.exports = {
             {
               MySqlCommand_HandlerCountersCompare: menuOption('MySQL Command/Handler Counters Compare', '/graph/d/mysql-commandhandler-compare/mysql-command-handler-counters-compare', 3),
               mySqlInnoDbCompressionDetails: menuOption('MySQL InnoDB Compression Details', '/graph/d/mysql-innodb-compression/mysql-innodb-compression-details', 3),
-              // MySQL InnoDB Details  does not exist
-              // mySqlInnoDbDetails: menuOption('MySQL InnoDB Details', '/graph/d/mysql-innodb/mysql-innodb-details', 3),
+              mySqlInnoDbDetails: menuOption('MySQL InnoDB Details', '/graph/d/mysql-innodb/mysql-innodb-details', 3),
               mySqlPerformanceSchemaDetails: menuOption('MySQL Performance Schema Details', '/graph/d/mysql-performance-schema/mysql-performance-schema-details', 3),
               mySqlQueryResponseTimeDetails: menuOption('MySQL Query Response Time Details', '/graph/d/mysql-queryresponsetime/mysql-query-response-time-details', 3),
               mySqlTableDetails: menuOption('MySQL Table Details', '/graph/d/mysql-table/mysql-table-details', 3),
@@ -72,9 +72,7 @@ module.exports = {
               mongoDbClusterSummary: menuOption('MongoDB Cluster Summary', '/graph/d/mongodb-cluster-summary/mongodb-cluster-summary', 3),
               mongoDbReplSetSummary: menuOption('MongoDB ReplSet Summary', '/graph/d/mongodb-replicaset-summary/mongodb-replset-summary', 3),
             }),
-          // "MongoDB Instance Overview" does not exist. there is "MongoDB Overview"
           mongoDbInstanceOverview: menuOption('MongoDB Overview', '/graph/d/mongodb-instance-overview/mongodb-instances-overview', 2),
-          // "MongoDB Instance Summary" does not exist. there is "MongoDB Summary"
           mongoDbInstanceSummary: new SubMenu('MongoDB Summary', '/graph/d/mongodb-instance-summary/mongodb-instance-summary',
             {
               mongoDbInMemoryDetails: menuOption('MongoDB InMemory Details', '/graph/d/mongodb-inmemory/mongodb-inmemory-details', 3),
@@ -114,11 +112,9 @@ module.exports = {
     }),
   serverAdmin: new LeftMenu('Server Admin', '/graph/admin/users',
     {
-      // "/graph/org/users" is opened instead of "/graph/admin/users"
-      users: menuOption('Users', '/graph/admin/users'),
+      users: duplicatedOption('Server Admin', 'Users', '/graph/admin/users'),
       orgs: menuOption('Orgs', '/graph/admin/orgs'),
-      // "/graph/settings/metrics-resolution" is opened instead of "/graph/admin/settings"
-      settings: menuOption('Settings', '/graph/admin/settings'),
+      settings: duplicatedOption('Server Admin', 'Settings', '/graph/admin/settings'),
       stats: menuOption('Stats', '/graph/admin/stats'),
     }),
 };
