@@ -164,22 +164,54 @@ module.exports = {
       'File Descriptors Used',
     ],
   },
+  sharePanel:{
+    elements: {
+      imageRendererPluginLink: locate('//div[@class="css-1gzpxok"').first('a'),
+    }
+},
   proxysqlInstanceSummaryDashboard: {
     url: 'graph/d/proxysql-instance-summary/proxysql-instance-summary',
     metrics: [
+      'Hostgroup Size',
       'Client Connections',
       'Client Questions',
       'Active Backend Connections',
       'Failed Backend Connections',
+      'Active Frontend Connections',
+      'Client Frontend Connections',
+      'Endpoint Status',
       'Queries Routed',
       'Query processor time efficecy',
       'Connection Free',
       'Latency',
+      'Executed Queries',
+      'Queries Execution Time',
+      'Queries Latency',
+      // instead of 6 metrics, one metric 'Commands Latency All' is visible
+      // 'Commands Latency - CREATE_TEMPORARY',//*
+      // 'Commands Latency - DELETE',//*
+      // 'Commands Latency - INSERT',//*
+      // 'Commands Latency - SELECT',//*
+      // 'Commands Latency - SELECT_FOR_UPDATE',//*
+      // 'Commands Latency - UPDATE',//*
       'Query Cache memory',
       'Query Cache efficiency',
       'Network Traffic',
       'Mirroring efficiency',
       'Memory Utilization',
+      'Memory Usage',
+      'System Uptime',
+      'Load Average',
+      'RAM',
+      'Memory Available',
+      'Virtual Memory',
+      'Disk Space',
+      'Min Space Available',
+      'Node',
+      'CPU Usage',
+      'CPU Saturation and Max Core Usage',
+      'Disk I/O and Swap Activity',
+      'Network Traffic',
     ],
   },
   pxcGaleraClusterSummaryDashboard: {
@@ -839,6 +871,29 @@ module.exports = {
     for (const i in metrics) {
       I.seeElement(this.graphsLocator(metrics[i]));
     }
+  },
+
+  openToggleMetricMenu(metric) {
+    I.seeElement(this.graphsLocator(metric));
+    I.click(this.graphsLocator(metric));
+  },
+
+  metricDropdownMenu(metric) {
+    return `//div[contains(@aria-label, 'Panel container title ${metric}')]/..//ul[contains(@class, 'dropdown-menu')]`;
+  },
+
+  verifyMetricDropdownMenuVisible(metric) {
+    I.seeElement(this.metricDropdownMenu(metric));
+  },
+
+  verifyMetricShareLinkValue(metric, link) {
+    const shareLocator = locate(this.metricDropdownMenu(metric)).find('span').withText('Share');
+    I.seeElement(shareLocator);
+    I.click(shareLocator);
+
+    I.waitForVisible(dashboardPage.proxysqlInstanceSummaryDashboard.fields.imageRendererPluginLink, 20);
+    I.seeAttributesOnElements(dashboardPage.proxysqlInstanceSummaryDashboard.fields.imageRendererPluginLink, { href: link });
+    I.seeTextEquals('Image Renderer plugin', dashboardPage.proxysqlInstanceSummaryDashboard.fields.imageRendererPluginLink);
   },
 
   // Should be refactored and added to Grafana Helper as a custom function
