@@ -7,7 +7,6 @@ module.exports = {
   url: 'graph/dbaas',
   disabledDbaaSMessage: {
     textMessage: 'DBaaS is disabled. You can enable it in PMM Settings.',
-    disabledDbaaSPopUpMessage: 'Service dbaas.v1beta1.Components is disabled.',
     settingsLinkLocator: '$settings-link',
     emptyBlock: '$empty-block',
   },

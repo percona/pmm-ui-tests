@@ -8,12 +8,38 @@ shortCutTests.add(['Node Name', 'Node Summary', 'graph/d/node-instance-summary/n
 shortCutTests.add(['Service Name', 'MongoDB Instance Summary', 'graph/d/mongodb-instance-summary/mongodb-instance-summary', 'mongodb_rs1_2']);
 
 Feature('QAN filters').retry(1);
+// filterToApply - filter witch we check, searchValue - value to get zero search result
+const filters = new DataTable(['filterToApply', 'searchValue']);
+
+filters.add(['SELECT', 'INSERT']);
+filters.add(['INSERT', 'SELECT']);
+filters.add(['UPDATE', 'DELETE']);
+filters.add(['DELETE', 'UPDATE']);
 
 Before(async ({ I, qanPage, qanOverview }) => {
   await I.Authorize();
   I.amOnPage(qanPage.url);
   qanOverview.waitForOverviewLoaded();
 });
+
+Data(filters).Scenario(
+  'PMM-T1054 + PMM-T1055 - Verify the "Command type" filter for Postgres @qan',
+  async ({
+    I, qanOverview, qanFilters, current,
+  }) => {
+    const environmentName = 'pdpgsql-dev';
+
+    qanFilters.applyFilter(environmentName);
+    I.waitForVisible(qanFilters.buttons.showSelected, 30);
+
+    qanFilters.applyFilterInSection('Command Type', current.filterToApply);
+    I.waitForVisible(qanOverview.fields.searchBy, 30);
+    I.fillField(qanOverview.fields.searchBy, current.searchValue);
+    I.pressKey('Enter');
+    I.waitForVisible(qanOverview.elements.noResultTableText, 30);
+    I.seeTextEquals(qanOverview.messages.noResultTableText, qanOverview.elements.noResultTableText);
+  },
+);
 
 Scenario(
   'PMM-T175 - Verify user is able to apply filter that has dots in label @qan',

@@ -14,6 +14,7 @@ module.exports = {
     'User Name',
     'Node Type',
     'Service Type',
+    'Command Type',
   ],
   fields: {
     filterBy: '$filters-search-field',
