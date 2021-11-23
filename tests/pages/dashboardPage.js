@@ -166,7 +166,7 @@ module.exports = {
   },
   sharePanel:{
     elements: {
-      imageRendererPluginLink: locate('//div[@class="css-1gzpxok"').first('a'),
+      imageRendererPluginLink: locate('//a[@class="external-link"]'),
     }
 },
   proxysqlInstanceSummaryDashboard: {
@@ -873,27 +873,13 @@ module.exports = {
     }
   },
 
-  openToggleMetricMenu(metric) {
+  openGraphDropdownMenu(metric) {
     I.seeElement(this.graphsLocator(metric));
     I.click(this.graphsLocator(metric));
   },
 
-  metricDropdownMenu(metric) {
-    return `//div[contains(@aria-label, 'Panel container title ${metric}')]/..//ul[contains(@class, 'dropdown-menu')]`;
-  },
-
-  verifyMetricDropdownMenuVisible(metric) {
-    I.seeElement(this.metricDropdownMenu(metric));
-  },
-
-  verifyMetricShareLinkValue(metric, link) {
-    const shareLocator = locate(this.metricDropdownMenu(metric)).find('span').withText('Share');
-    I.seeElement(shareLocator);
-    I.click(shareLocator);
-
-    I.waitForVisible(this.proxysqlInstanceSummaryDashboard.fields.imageRendererPluginLink, 20);
-    I.seeAttributesOnElements(this.proxysqlInstanceSummaryDashboard.fields.imageRendererPluginLink, { href: link });
-    I.seeTextEquals('Image Renderer plugin', this.proxysqlInstanceSummaryDashboard.fields.imageRendererPluginLink);
+  graphDropdownMenu(metric) {
+    return this.graphsLocator(metric) + `/..//ul[contains(@class, 'dropdown-menu')]`;
   },
 
   // Should be refactored and added to Grafana Helper as a custom function

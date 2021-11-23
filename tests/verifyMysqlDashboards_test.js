@@ -57,9 +57,14 @@ Scenario(
 
     I.amOnPage(`${dashboardPage.proxysqlInstanceSummaryDashboard.url}?from=now-5m&to=now`);
     dashboardPage.waitForDashboardOpened();
-    await dashboardPage.openToggleMetricMenu(metricName);
-    await dashboardPage.verifyMetricDropdownMenuVisible(metricName);
-    await dashboardPage.verifyMetricShareLinkValue(metricName, links.imageRendererPlugin);
+    await dashboardPage.openGraphDropdownMenu(metricName);
+    const shareLocator = locate(dashboardPage.graphDropdownMenu(metricName)).find('span').withText('Share');
+
+    I.waitForVisible(shareLocator, 20);
+    I.click(shareLocator);
+    I.waitForVisible(dashboardPage.sharePanel.elements.imageRendererPluginLink, 20);
+    I.seeAttributesOnElements(dashboardPage.sharePanel.elements.imageRendererPluginLink, { href: links.imageRendererPlugin });
+    I.seeTextEquals('Image Renderer plugin', dashboardPage.sharePanel.elements.imageRendererPluginLink);
   },
 );
 
