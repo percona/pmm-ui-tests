@@ -891,9 +891,9 @@ module.exports = {
     I.seeElement(shareLocator);
     I.click(shareLocator);
 
-    I.waitForVisible(dashboardPage.proxysqlInstanceSummaryDashboard.fields.imageRendererPluginLink, 20);
-    I.seeAttributesOnElements(dashboardPage.proxysqlInstanceSummaryDashboard.fields.imageRendererPluginLink, { href: link });
-    I.seeTextEquals('Image Renderer plugin', dashboardPage.proxysqlInstanceSummaryDashboard.fields.imageRendererPluginLink);
+    I.waitForVisible(this.proxysqlInstanceSummaryDashboard.fields.imageRendererPluginLink, 20);
+    I.seeAttributesOnElements(this.proxysqlInstanceSummaryDashboard.fields.imageRendererPluginLink, { href: link });
+    I.seeTextEquals('Image Renderer plugin', this.proxysqlInstanceSummaryDashboard.fields.imageRendererPluginLink);
   },
 
   // Should be refactored and added to Grafana Helper as a custom function
