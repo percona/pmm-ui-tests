@@ -1,5 +1,5 @@
 const {
-  I, dbaasAPI, dbaasActionsPage, dbaasManageVersionPage,
+  I, dbaasAPI, dbaasActionsPage, dbaasManageVersionPage, dashboardPage, qanPage, qanFilters, qanOverview, inventoryAPI, adminPage,
 } = inject();
 const assert = require('assert');
 
@@ -158,7 +158,7 @@ module.exports = {
         cancelDeleteDBCluster: '$cancel-delete-dbcluster-button',
         progressBarSteps: '$progress-bar-steps',
         progressBarContent: '$progress-bar-message',
-        updateClusterButton: locate('button').withAttr({ 'data-qa': 'confirm-update-dbcluster-button' }),
+        updateClusterButton: '$confirm-update-dbcluster-button',
       },
     },
   },
@@ -392,4 +392,35 @@ module.exports = {
     I.dontSeeElement(this.tabs.dbClusterTab.fields.dbClusterLogs.modalHeader);
   },
 
+  async pxcClusterMetricCheck(dbclusterName, serviceName, nodeName, haproxynodeName) {
+    await dashboardPage.genericDashboardLoadForDbaaSClusters(`${dashboardPage.pxcGaleraClusterSummaryDashboard.url}&var-cluster=pxc-${dbclusterName}`, 'Last 5 minutes', 4, 0, 2);
+    await dashboardPage.genericDashboardLoadForDbaaSClusters(`${dashboardPage.mysqlPXCGaleraNodeSummaryDashboard.url}?&var-service_name=${serviceName}`, 'Last 5 minutes', 4, 0, 2);
+    await dashboardPage.genericDashboardLoadForDbaaSClusters(`${dashboardPage.nodeSummaryDashboard.url}?&var-node_name=${nodeName}`, 'Last 5 minutes', 4, 0, 1);
+    await dashboardPage.genericDashboardLoadForDbaaSClusters(`${dashboardPage.mysqlInstanceSummaryDashboard.url}&var-service_name=${serviceName}`, 'Last 5 minutes', 4, 0, 5);
+    await dashboardPage.genericDashboardLoadForDbaaSClusters(`graph/d/haproxy-instance-summary/haproxy-instance-summary?orgId=1&refresh=1m&var-node_name=${haproxynodeName}`, 'Last 5 minutes', 4, 0, 3);
+  },
+
+  async psmdbClusterMetricCheck(dbclusterName, serviceName, nodeName) {
+    await dashboardPage.genericDashboardLoadForDbaaSClusters(`${dashboardPage.mongoDbClusterSummaryDashboard.url}?&var-cluster=${dbclusterName}`, 'Last 5 minutes', 4, 0, 9);
+    await dashboardPage.genericDashboardLoadForDbaaSClusters(`graph/d/mongodb-wiredtiger/mongodb-wiredtiger-details?orgId=1&refresh=1m&var-service_name=${serviceName}`, 'Last 5 minutes', 4, 6, 2);
+    await dashboardPage.genericDashboardLoadForDbaaSClusters(`${dashboardPage.mongodbOverviewDashboard.url}?&var-service_name=${serviceName}`, 'Last 5 minutes', 4, 3, 1);
+    await dashboardPage.genericDashboardLoadForDbaaSClusters(`graph/d/mongodb-replicaset-summary/mongodb-replset-summary?orgId=1&refresh=1m&var-service_name=${serviceName}`, 'Last 5 minutes', 4, 0, 1);
+    await dashboardPage.genericDashboardLoadForDbaaSClusters(`${dashboardPage.nodeSummaryDashboard.url}?&var-node_name=${nodeName}`, 'Last 5 minutes', 4, 0, 1);
+  },
+
+  async dbaasQANCheck(dbclusterName, nodeName, serviceName) {
+    I.amOnPage(qanPage.url);
+    await adminPage.applyTimeRange('Last 3 hours');
+    qanOverview.waitForOverviewLoaded();
+    qanFilters.checkFilterExistInSection('Cluster', dbclusterName);
+    qanFilters.checkFilterExistInSection('Node Name', `${nodeName}`);
+    qanFilters.checkFilterExistInSection('Service Name', `${serviceName}`);
+    qanOverview.waitForOverviewLoaded();
+  },
+
+  async dbClusterAgentStatusCheck(dbClusterName, serviceName, serviceType) {
+    const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName(serviceType, serviceName);
+
+    await inventoryAPI.waitForRunningState(service_id);
+  },
 };
