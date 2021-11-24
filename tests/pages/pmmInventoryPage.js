@@ -109,7 +109,7 @@ module.exports = {
   async getNodeId(serviceName) {
     const nodeIdLocator = `${this.fields.serviceIdLocatorPrefix + serviceName}")]/../td[5]`;
 
-    return await I.grabTextFrom(nodeIdLocator);
+    return I.grabTextFrom(nodeIdLocator);
   },
 
   async getServiceId(serviceName) {
@@ -124,7 +124,7 @@ module.exports = {
       `There must be only one entry for the newly added service with name ${serviceName}`,
     );
 
-    return await I.grabTextFrom(serviceIdLocator);
+    return I.grabTextFrom(serviceIdLocator);
   },
 
   selectService(serviceName) {
@@ -161,11 +161,11 @@ module.exports = {
   },
 
   async getCountOfRunningAgents() {
-    return await I.grabNumberOfVisibleElements(this.fields.runningStatus);
+    return I.grabNumberOfVisibleElements(this.fields.runningStatus);
   },
 
   async getCountOfPMMAgents() {
-    return await I.grabNumberOfVisibleElements(this.fields.pmmAgentLocator);
+    return I.grabNumberOfVisibleElements(this.fields.pmmAgentLocator);
   },
 
   selectAgent(agentType) {
@@ -196,7 +196,7 @@ module.exports = {
   async getNodeCount() {
     I.waitForVisible(this.fields.tableCheckbox);
 
-    return await I.grabNumberOfVisibleElements(this.fields.tableCheckbox);
+    return I.grabNumberOfVisibleElements(this.fields.tableCheckbox);
   },
 
   verifyNodesCount(before, after) {
@@ -227,7 +227,7 @@ module.exports = {
   },
 
   async getCountOfItems() {
-    return await I.grabNumberOfVisibleElements('$select-row');
+    return I.grabNumberOfVisibleElements('$select-row');
   },
 
   async checkAllNotDeletedAgents(countBefore) {
