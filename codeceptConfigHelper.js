@@ -45,6 +45,7 @@ module.exports = {
     ruleTemplatesPage: './tests/ia/pages/ruleTemplatesPage.js',
     scheduledAPI: './tests/backup/pages/api/scheduledAPI.js',
     scheduledPage: './tests/backup/pages/scheduledPage.js',
+    searchDashboardsModal: './tests/dashboards/pages/searchDashboardsModal.js',
     iaCommon: './tests/ia/pages/iaCommonPage.js',
     platformAPI: './tests/pages/api/platformAPI.js',
     securityChecksAPI: './tests/stt/pages/api/securityChecksAPI.js',
