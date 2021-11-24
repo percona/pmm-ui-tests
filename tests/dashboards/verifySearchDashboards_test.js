@@ -11,7 +11,7 @@ Before(async ({ I }) => {
 });
 
 Data(folders).Scenario(
-  'PMM-T1086 - Verify PMM Dashboards collections are present in correct folders @nightly @dashboards @imp',
+  'PMM-T1086 - Verify PMM Dashboards collections are present in correct folders @nightly @dashboards',
   async ({
     I, homePage, dashboardPage, searchDashboardsModal, current,
   }) => {
