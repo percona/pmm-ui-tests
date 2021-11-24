@@ -1,18 +1,26 @@
+const { setHeadlessWhen } = require('@codeceptjs/configure');
+
 const { pageObjects, getChunks } = require('./codeceptConfigHelper');
+
+require('dotenv').config();
+
+// by default run in headless mode
+setHeadlessWhen(!(process.env.SHOW_BROWSER === 'true'));
 
 exports.config = {
   output: 'tests/output',
   helpers: {
     Playwright: {
+      show: true,
       url: process.env.PMM_UI_URL || 'http://127.0.0.1/',
       restart: true,
       browser: 'chromium',
       windowSize: '1920x1080',
-      waitForNavigation: 'networkidle0',
+      waitForNavigation: 'load',
       waitForTimeout: 30000,
       getPageTimeout: 30000,
-      waitForAction: 500,
-      pressKeyDelay: 5,
+      waitForAction: 100,
+      pressKeyDelay: 0,
       chromium: {
         executablePath: process.env.CHROMIUM_PATH,
         ignoreHTTPSErrors: true,
