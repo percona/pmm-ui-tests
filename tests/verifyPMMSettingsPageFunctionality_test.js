@@ -221,7 +221,8 @@ Scenario('PMM-T520 - Verify that alert is being fired to external Alert Manager 
   await pmmSettingsPage.verifyExternalAlertManager(pmmSettingsPage.alertManager.ruleName);
 });
 
-Scenario('PMM-T532 PMM-T533 PMM-T536 - Verify user can enable/disable IA in Settings @ia @settings @grafana-pr',
+Scenario(
+  'PMM-T532 PMM-T533 PMM-T536 - Verify user can enable/disable IA in Settings @ia @settings @grafana-pr',
   async ({
     I, pmmSettingsPage, settingsAPI, adminPage,
   }) => {
@@ -245,9 +246,11 @@ Scenario('PMM-T532 PMM-T533 PMM-T536 - Verify user can enable/disable IA in Sett
     I.dontSeeElementInDOM(adminPage.sideMenu.integratedAlerting);
     I.dontSeeElement(pmmSettingsPage.communication.communicationSection);
     await settingsAPI.apiEnableIA();
-  }).retry(2);
+  },
+).retry(2);
 
-Scenario('PMM-T785 - Verify DBaaS cannot be disabled with ENABLE_DBAAS or PERCONA_TEST_DBAAS @settings @dbaas',
+Scenario(
+  'PMM-T785 - Verify DBaaS cannot be disabled with ENABLE_DBAAS or PERCONA_TEST_DBAAS @settings @dbaas',
   async ({ I, pmmSettingsPage }) => {
     I.amOnPage(pmmSettingsPage.advancedSettingsUrl);
     await pmmSettingsPage.waitForPmmSettingsPageLoaded();
@@ -258,9 +261,11 @@ Scenario('PMM-T785 - Verify DBaaS cannot be disabled with ENABLE_DBAAS or PERCON
     I.click(pmmSettingsPage.fields.advancedButton);
     pmmSettingsPage.verifySwitch(pmmSettingsPage.fields.dbaasSwitchSelectorInput, 'on');
     I.verifyPopUpMessage(pmmSettingsPage.messages.invalidDBaaSDisableMessage);
-  });
+  },
+);
 
-Data(communicationDefaults).Scenario('PMM-T534 PMM-T535 - Verify user is able to set up default Email/Slack communication settings @ia @settings @grafana-pr',
+Data(communicationDefaults).Scenario(
+  'PMM-T534 PMM-T535 - Verify user is able to set up default Email/Slack communication settings @ia @settings @grafana-pr',
   async ({
     I, pmmSettingsPage, settingsAPI, current,
   }) => {
@@ -272,7 +277,8 @@ Data(communicationDefaults).Scenario('PMM-T534 PMM-T535 - Verify user is able to
     I.refreshPage();
     await pmmSettingsPage.waitForPmmSettingsPageLoaded();
     await pmmSettingsPage.verifyCommunicationFields(current);
-  });
+  },
+);
 
 Scenario(
   'PMM-T747 - Verify enabling Azure flag @instances',

@@ -127,11 +127,9 @@ module.exports = {
 
   async selectOperatorVersion(operatorVersion) {
     I.click(this.manageVersion.operator);
-    I.waitForElement(
-      this.manageVersion.operatorSelector(
-        operatorVersion,
-      ), 30,
-    );
+    I.waitForElement(this.manageVersion.operatorSelector(
+      operatorVersion,
+    ), 30);
     I.forceClick(
       this.manageVersion.operatorSelector(
         operatorVersion,
@@ -141,11 +139,9 @@ module.exports = {
 
   async selectComponent(componentName) {
     I.click(this.manageVersion.component);
-    I.waitForElement(
-      this.manageVersion.componentSelector(
-        componentName,
-      ), 30,
-    );
+    I.waitForElement(this.manageVersion.componentSelector(
+      componentName,
+    ), 30);
     I.forceClick(
       this.manageVersion.componentSelector(
         componentName,
@@ -155,11 +151,9 @@ module.exports = {
 
   async selectDefaultVersion(version) {
     I.click(this.manageVersion.defaultVersionSelector);
-    I.waitForElement(
-      this.manageVersion.defaultVersionOption(
-        version,
-      ), 30,
-    );
+    I.waitForElement(this.manageVersion.defaultVersionOption(
+      version,
+    ), 30);
     I.forceClick(
       this.manageVersion.defaultVersionOption(
         version,

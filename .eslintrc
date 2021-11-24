@@ -58,7 +58,10 @@
     "max-classes-per-file": ["off"],
     "no-shadow": ["off"],
     // enable it later, it happens because null coalesion operator
-    "no-unused-expressions": ["off"],
-    "class-methods-use-this": ["off"]
+    "no-unused-expressions": ["warn"],
+    "class-methods-use-this": ["warn"],
+    "function-paren-newline": ["warn"],
+    "spaced-comment": ["warn"],
+    "comma-spacing": ["warn"]
   }
 }

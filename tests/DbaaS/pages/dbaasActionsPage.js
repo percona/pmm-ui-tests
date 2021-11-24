@@ -54,9 +54,7 @@ module.exports = {
   async createClusterAdvancedOption(k8sClusterName, dbClusterName, dbType, configuration, dbVersion) {
     await this.createClusterBasicOptions(k8sClusterName, dbClusterName, dbType, dbVersion);
     I.click(dbaasPage.tabs.dbClusterTab.optionsCountLocator(2));
-    I.waitForElement(
-      dbaasPage.tabs.dbClusterTab.advancedOptions.fields.clusterTopology(configuration.topology), 30,
-    );
+    I.waitForElement(dbaasPage.tabs.dbClusterTab.advancedOptions.fields.clusterTopology(configuration.topology), 30);
     I.click(dbaasPage.tabs.dbClusterTab.advancedOptions.fields.clusterTopology(configuration.topology));
     if (configuration.resourcePerNode === 'Custom') {
       I.click(
@@ -108,9 +106,7 @@ module.exports = {
     await this.checkActionPossible('Edit', true);
     I.waitForElement(dbaasPage.tabs.dbClusterTab.fields.clusterAction('Edit'), 30);
     I.click(dbaasPage.tabs.dbClusterTab.fields.clusterAction('Edit'));
-    I.waitForElement(
-      dbaasPage.tabs.dbClusterTab.advancedOptions.fields.clusterTopology(configuration.topology), 30,
-    );
+    I.waitForElement(dbaasPage.tabs.dbClusterTab.advancedOptions.fields.clusterTopology(configuration.topology), 30);
     I.seeAttributesOnElements(
       dbaasPage.tabs.dbClusterTab.advancedOptions.fields.diskSizeInputField,
       { disabled: true },
@@ -194,15 +190,15 @@ module.exports = {
         resourceType,
       ),
     );
-    I.see(warningMessage,
+    I.see(
+      warningMessage,
       dbaasPage.tabs.dbClusterTab.advancedOptions.fields.resourceBarInsufficientResources(
         resourceType,
-      ));
-    await adminPage.verifyBackgroundColor(
-      dbaasPage.tabs.dbClusterTab.advancedOptions.fields.resourceBarResourceIndication(
-        resourceType,
-      ), 'rgb(224, 47, 68)',
+      ),
     );
+    await adminPage.verifyBackgroundColor(dbaasPage.tabs.dbClusterTab.advancedOptions.fields.resourceBarResourceIndication(
+      resourceType,
+    ), 'rgb(224, 47, 68)');
   },
 
   async updateCluster() {

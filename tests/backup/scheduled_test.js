@@ -242,7 +242,8 @@ Data(schedules).Scenario(
   },
 );
 
-Scenario('PMM-T900 Verify user can copy scheduled backup @backup',
+Scenario(
+  'PMM-T900 Verify user can copy scheduled backup @backup',
   async ({
     I, scheduledPage, scheduledAPI,
   }) => {
@@ -279,9 +280,11 @@ Scenario('PMM-T900 Verify user can copy scheduled backup @backup',
 
     // Verify schedule is disabled after copy
     I.seeAttributesOnElements(scheduledPage.elements.toggleByName(newSchedule.name), { checked: null });
-  });
+  },
+);
 
-Scenario('PMM-T908 Verify user can enable/disable scheduled backup @backup',
+Scenario(
+  'PMM-T908 Verify user can enable/disable scheduled backup @backup',
   async ({
     I, scheduledPage, scheduledAPI,
   }) => {
@@ -316,9 +319,11 @@ Scenario('PMM-T908 Verify user can enable/disable scheduled backup @backup',
 
     // Verify the color is the same as before enabling
     I.seeCssPropertiesOnElements(scheduledPage.elements.scheduleTypeByName(schedule.name), { 'background-color': color });
-  });
+  },
+);
 
-Scenario('PMM-T901 Verify user can delete scheduled backup @backup',
+Scenario(
+  'PMM-T901 Verify user can delete scheduled backup @backup',
   async ({
     I, scheduledPage, scheduledAPI,
   }) => {
@@ -343,10 +348,13 @@ Scenario('PMM-T901 Verify user can delete scheduled backup @backup',
     // Open Delete modal again and verify it has a correct schedule name in message
     I.click(scheduledPage.buttons.deleteByName(schedule.name));
     I.waitForVisible(scheduledPage.buttons.confirmDelete, 10);
-    I.seeTextEquals(scheduledPage.messages.confirmDelete(schedule.name),
-      locate(scheduledPage.elements.modalContent).find('h4'));
+    I.seeTextEquals(
+      scheduledPage.messages.confirmDelete(schedule.name),
+      locate(scheduledPage.elements.modalContent).find('h4'),
+    );
 
     // Confirm delete and verify success message
     I.click(scheduledPage.buttons.confirmDelete);
     I.verifyPopUpMessage(scheduledPage.messages.successfullyDeleted(schedule.name));
-  });
+  },
+);

@@ -259,8 +259,10 @@ Data(rulesStates).Scenario(
     I.click(alertRulesPage.buttons.deleteAlertRule(rule.ruleName));
     I.seeTextEquals(alertRulesPage.messages.deleteRuleModalHeader, alertRulesPage.elements.modalHeader);
     I.seeElement(alertRulesPage.buttons.closeModal, alertRulesPage.elements.modalHeader);
-    I.seeTextEquals(alertRulesPage.messages.confirmDelete(rule.ruleName),
-      locate(alertRulesPage.elements.modalContent).find('h4'));
+    I.seeTextEquals(
+      alertRulesPage.messages.confirmDelete(rule.ruleName),
+      locate(alertRulesPage.elements.modalContent).find('h4'),
+    );
     I.seeElement(alertRulesPage.buttons.cancelDelete);
     I.seeElement(alertRulesPage.buttons.delete);
     I.click(alertRulesPage.buttons.delete);
@@ -285,13 +287,17 @@ Scenario(
     await rulesAPI.createAlertRule({ ruleName: ruleNameWithBuiltInTemplate });
     alertRulesPage.openAlertRulesTab();
     I.click(alertRulesPage.buttons.showDetails(ruleName));
-    I.seeTextEquals(expr.replace('[[ .threshold ]]', '1'),
-      alertRulesPage.elements.ruleDetails);
+    I.seeTextEquals(
+      expr.replace('[[ .threshold ]]', '1'),
+      alertRulesPage.elements.ruleDetails,
+    );
     I.click(alertRulesPage.buttons.hideDetails(ruleName));
     I.dontSeeElement(alertRulesPage.elements.ruleDetails);
     I.click(alertRulesPage.buttons.showDetails(ruleNameWithBuiltInTemplate));
-    I.seeTextEquals(exprForBuiltInTemplate.replace('[[ .threshold ]]', '1'),
-      alertRulesPage.elements.ruleDetails);
+    I.seeTextEquals(
+      exprForBuiltInTemplate.replace('[[ .threshold ]]', '1'),
+      alertRulesPage.elements.ruleDetails,
+    );
     I.click(alertRulesPage.buttons.hideDetails(ruleNameWithBuiltInTemplate));
     I.dontSeeElement(alertRulesPage.elements.ruleDetails);
   },
