@@ -1,4 +1,6 @@
-const { I, adminPage } = inject();
+const { I } = inject();
+
+const folderWrapper = 'div[aria-label="Search section"]';
 
 module.exports = {
   folders: {
@@ -89,15 +91,26 @@ module.exports = {
   },
   fields: {
     searchInput: 'input[placeholder="Search dashboards by name"]',
-    collapsedFolderLocator: (folderName) => locate('div[aria-label="Search section"]')
+    collapsedFolderLocator: (folderName) => locate(folderWrapper)
       .withDescendant(locate('div').withText(folderName)),
-    expandedFolderLocator: (folderName) => locate('div[aria-label="Search section"]')
-      .withDescendant('div').withText(folderName).find('div').at(1),
+    expandedFolderLocator: (folderName) => locate(folderWrapper).withDescendant('div').withText(folderName)
+      .find('div')
+      .at(1),
     folderItemLocator: (itemName) => locate(`div[aria-label="Dashboard search item ${itemName}"]`).find('a'),
   },
 
   waitForOpened() {
     I.waitForElement(this.fields.searchInput, 3);
+  },
+
+  async countFolders() {
+    return await I.grabNumberOfVisibleElements(folderWrapper);
+  },
+
+  async getFoldersList() {
+    return (await I.grabTextFromAll(
+      locate('div .pointer').find('div').after('div').before('div'),
+    )).map((elem) => elem.split('|')[0]);
   },
 
   expandFolder(name) {
