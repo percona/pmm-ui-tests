@@ -27,15 +27,9 @@ Before(async ({ I, homePage }) => {
 });
 
 Data(sidebar).Scenario(
-  'PMM-T433 - Verify menu items on Grafana sidebar @nightly @menu',
+  'PMM-T433, PMM-T591 - Verify menu items on Grafana sidebar redirects to correct page @nightly @menu',
   async ({ I, current }) => {
     I.seeElementInDOM(current.locator);
-  },
-);
-
-Data(sidebar).Scenario(
-  'PMM-T591 - Verify menu items on Grafana sidebar redirects to correct page @nightly @menu',
-  async ({ I, current }) => {
     current.click();
     I.seeInCurrentUrl(current.path);
   },
