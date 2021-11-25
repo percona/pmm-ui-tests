@@ -14,6 +14,7 @@ module.exports = {
     'User Name',
     'Node Type',
     'Service Type',
+    'Command Type',
   ],
   fields: {
     filterBy: '$filters-search-field',
@@ -104,8 +105,19 @@ module.exports = {
   applyFilterInSection(section, filter) {
     const filterLocator = `//span[contains(text(), '${section}')]/parent::p/following-sibling::div//span[contains(@class, 'checkbox-container__label-text') and contains(text(), '${filter}')]`;
 
+    I.waitForVisible(this.fields.filterBy, 30);
+    I.fillField(this.fields.filterBy, filter);
     I.waitForVisible(filterLocator, 20);
     I.click(filterLocator);
+  },
+
+  checkFilterExistInSection(section, filter) {
+    const filterLocator = `//span[contains(text(), '${section}')]/parent::p/following-sibling::div//span[contains(@class, 'checkbox-container__label-text') and contains(text(), '${filter}')]`;
+
+    I.waitForVisible(this.fields.filterBy, 30);
+    I.fillField(this.fields.filterBy, filter);
+    I.waitForVisible(filterLocator, 20);
+    I.seeElement(filterLocator);
   },
 
   async verifySectionItemsCount(filterSection, expectedCount) {

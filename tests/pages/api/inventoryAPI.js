@@ -131,6 +131,20 @@ module.exports = {
     );
   },
 
+  async deleteService(serviceId, force = true) {
+    const body = {
+      force,
+      service_id: serviceId,
+    };
+    const headers = { Authorization: `Basic ${await I.getAuth()}` };
+    const resp = await I.sendPostRequest('v1/inventory/Services/Remove', body, headers);
+
+    assert.ok(
+      resp.status === 200,
+      `Failed to delete Service. Response message is "${resp.data.message}"`,
+    );
+  },
+
   async getNodeName(nodeID) {
     const body = {
       node_id: nodeID,
