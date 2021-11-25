@@ -31,8 +31,8 @@ Before(async ({ I, settingsAPI }) => {
 });
 
 BeforeSuite(async ({
-  I, settingsAPI, rulesAPI, alertsAPI, channelsAPI, ncPage,
-}) => {
+                     I, settingsAPI, rulesAPI, alertsAPI, channelsAPI, ncPage,
+                   }) => {
   await settingsAPI.apiEnableIA();
   await rulesAPI.clearAllRules(true);
   for (const rule of rulesForAlerts) {
@@ -65,8 +65,8 @@ BeforeSuite(async ({
 });
 
 AfterSuite(async ({
-  settingsAPI, rulesAPI,
-}) => {
+                    settingsAPI, rulesAPI,
+                  }) => {
   await settingsAPI.apiEnableIA();
   await rulesAPI.clearAllRules(true);
 });
@@ -120,8 +120,8 @@ Scenario(
 Scenario(
   'Verify Firing Alert, labels and existence in alertmanager @ia',
   async ({
-    I, alertsPage, inventoryAPI, alertmanagerAPI,
-  }) => {
+           I, alertsPage, inventoryAPI, alertmanagerAPI,
+         }) => {
     I.amOnPage(alertsPage.url);
     I.waitForElement(alertsPage.elements.alertRow(alertName), 3);
 
@@ -160,8 +160,8 @@ Scenario(
 Scenario(
   'PMM-T541 Verify user is able to silence/activate the alert @ia',
   async ({
-    I, alertsPage, alertmanagerAPI,
-  }) => {
+           I, alertsPage, alertmanagerAPI,
+         }) => {
     I.amOnPage(alertsPage.url);
     I.waitForVisible(alertsPage.elements.alertRow(alertName), 3);
     await alertsPage.silenceAlert(alertName);
@@ -198,8 +198,8 @@ Scenario(
 Scenario(
   'PMM-T625 Verify Alert disappears after issue in rule is fixed @ia',
   async ({
-    I, alertsPage, rulesAPI, alertsAPI,
-  }) => {
+           I, alertsPage, rulesAPI, alertsAPI,
+         }) => {
     const rule = {
       ruleId: ruleIdForAlerts,
       ruleName,

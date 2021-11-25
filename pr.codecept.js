@@ -69,7 +69,7 @@ exports.config = {
     },
     REST: {
       endpoint: process.env.PMM_UI_URL || 'http://127.0.0.1/',
-      timeout: 3000,
+      timeout: 30000,
     },
     Mailosaur: {
       require: 'codeceptjs-mailosaurhelper',
@@ -99,7 +99,7 @@ exports.config = {
       showActual: false,
     },
     allure: {
-      enabled: false,
+      enabled: true,
       outputDir: 'tests/output/allure',
     },
     retryFailedStep: {
