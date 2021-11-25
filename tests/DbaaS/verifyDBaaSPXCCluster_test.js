@@ -52,7 +52,7 @@ Scenario(
   }) => {
     await dbaasAPI.deleteAllDBCluster(clusterName);
     await dbaasPage.waitForDbClusterTab(clusterName);
-    I.waitForInvisible(dbaasPage.tabs.kubernetesClusterTab.disabledAddButton, 30);
+    I.waitForInvisible(dbaasPage.tabs.kubernetesClusterTab.disabledAddButton, 3);
     await dbaasActionsPage.createClusterBasicOptions(clusterName, pxc_cluster_name, 'MySQL');
     I.click(dbaasPage.tabs.dbClusterTab.createClusterButton);
     I.waitForText('Processing', 30, dbaasPage.tabs.dbClusterTab.fields.progressBarContent);
@@ -73,7 +73,7 @@ Scenario(
     };
 
     await dbaasPage.waitForDbClusterTab(clusterName);
-    I.waitForVisible(dbaasPage.tabs.dbClusterTab.fields.clusterTableHeader, 30);
+    I.waitForVisible(dbaasPage.tabs.dbClusterTab.fields.clusterTableHeader, 3);
     await dbaasPage.validateClusterDetail(pxc_cluster_name, clusterName, clusterDetails);
     await dbaasActionsPage.restartCluster(pxc_cluster_name, clusterName, 'MySQL');
     await dbaasPage.validateClusterDetail(pxc_cluster_name, clusterName, clusterDetails);
@@ -86,7 +86,7 @@ Data(pxcDBClusterDetails).Scenario(
     I, dbaasPage, current,
   }) => {
     await dbaasPage.waitForDbClusterTab(clusterName);
-    I.waitForVisible(dbaasPage.tabs.dbClusterTab.dbClusterAddButtonTop, 30);
+    I.waitForVisible(dbaasPage.tabs.dbClusterTab.dbClusterAddButtonTop, 3);
     const serviceName = `${current.namespace}-${current.clusterName}-pxc-${current.node}`;
     const haproxyNodeName = `${current.namespace}-${current.clusterName}-haproxy-${current.node}`;
 
@@ -113,7 +113,7 @@ Scenario(
     dbaasPage.unregisterCluster(clusterName);
     I.waitForText(dbaasPage.failedUnregisterCluster(clusterName, 'XtraDB'));
     dbaasPage.unregisterCluster(clusterName, true);
-    I.waitForText(dbaasPage.deletedAlertMessage, 20);
+    I.waitForText(dbaasPage.deletedAlertMessage, 3);
     dbaasPage.checkCluster(clusterName, true);
   },
 );
@@ -122,7 +122,7 @@ Scenario(
   'PMM-T524 Delete PXC Cluster and Unregister K8s Cluster @dbaas',
   async ({ I, dbaasPage, dbaasActionsPage }) => {
     await dbaasPage.waitForDbClusterTab(clusterName);
-    I.waitForVisible(dbaasPage.tabs.dbClusterTab.dbClusterAddButtonTop, 30);
+    I.waitForVisible(dbaasPage.tabs.dbClusterTab.dbClusterAddButtonTop, 3);
     await dbaasActionsPage.deleteXtraDBCluster(pxc_cluster_name, clusterName);
   },
 );
@@ -134,7 +134,7 @@ Scenario(
   }) => {
     await dbaasAPI.deleteAllDBCluster(clusterName);
     await dbaasPage.waitForDbClusterTab(clusterName);
-    I.waitForInvisible(dbaasPage.tabs.kubernetesClusterTab.disabledAddButton, 30);
+    I.waitForInvisible(dbaasPage.tabs.kubernetesClusterTab.disabledAddButton, 3);
     await dbaasActionsPage.createClusterAdvancedOption(clusterName, pxc_cluster_name_single, 'MySQL', singleNodeConfiguration);
     I.click(dbaasPage.tabs.dbClusterTab.createClusterButton);
     I.waitForText('Processing', 30, dbaasPage.tabs.dbClusterTab.fields.progressBarContent);
@@ -159,7 +159,7 @@ Scenario(
   }) => {
     await dbaasAPI.deleteAllDBCluster(clusterName);
     await dbaasPage.waitForDbClusterTab(clusterName);
-    I.waitForInvisible(dbaasPage.tabs.kubernetesClusterTab.disabledAddButton, 30);
+    I.waitForInvisible(dbaasPage.tabs.kubernetesClusterTab.disabledAddButton, 3);
     await dbaasActionsPage.createClusterBasicOptions(clusterName, pxc_cluster_small, 'MySQL');
     I.click(dbaasPage.tabs.dbClusterTab.createClusterButton);
     I.waitForText('Processing', 30, dbaasPage.tabs.dbClusterTab.fields.progressBarContent);
@@ -201,7 +201,7 @@ Scenario(
 
     await dbaasAPI.deleteAllDBCluster(clusterName);
     await dbaasPage.waitForDbClusterTab(clusterName);
-    I.waitForInvisible(dbaasPage.tabs.kubernetesClusterTab.disabledAddButton, 30);
+    I.waitForInvisible(dbaasPage.tabs.kubernetesClusterTab.disabledAddButton, 3);
     await dbaasActionsPage.createClusterAdvancedOption(clusterName, pxc_cluster_name_single, 'MySQL', singleNodeConfiguration);
     I.click(dbaasPage.tabs.dbClusterTab.createClusterButton);
     I.waitForText('Processing', 30, dbaasPage.tabs.dbClusterTab.fields.progressBarContent);
@@ -232,7 +232,7 @@ Scenario(
 
     await dbaasAPI.deleteAllDBCluster(clusterName);
     await dbaasPage.waitForDbClusterTab(clusterName);
-    I.waitForInvisible(dbaasPage.tabs.kubernetesClusterTab.disabledAddButton, 30);
+    I.waitForInvisible(dbaasPage.tabs.kubernetesClusterTab.disabledAddButton, 3);
     await dbaasActionsPage.createClusterBasicOptions(clusterName, pxc_cluster_suspend_resume, 'MySQL');
     I.click(dbaasPage.tabs.dbClusterTab.createClusterButton);
     I.waitForText('Processing', 30, dbaasPage.tabs.dbClusterTab.fields.progressBarContent);
@@ -258,7 +258,7 @@ Scenario(
 
     await dbaasAPI.deleteAllDBCluster(clusterName);
     await dbaasPage.waitForDbClusterTab(clusterName);
-    I.waitForInvisible(dbaasPage.tabs.kubernetesClusterTab.disabledAddButton, 30);
+    I.waitForInvisible(dbaasPage.tabs.kubernetesClusterTab.disabledAddButton, 3);
     await dbaasActionsPage.createClusterBasicOptions(clusterName, pxc_cluster_pending_delete, 'MySQL');
     I.click(dbaasPage.tabs.dbClusterTab.createClusterButton);
     I.waitForText('Processing', 60, dbaasPage.tabs.dbClusterTab.fields.progressBarContent);
@@ -279,7 +279,7 @@ xScenario(
     await pmmSettingsPage.expandedSection(sectionNameToExpand, pmmSettingsPage.fields.advancedButton);
     await pmmSettingsPage.waitForPmmSettingsPageLoaded();
 
-    I.waitForVisible(pmmSettingsPage.fields.publicAddressInput, 30);
+    I.waitForVisible(pmmSettingsPage.fields.publicAddressInput, 3);
     I.seeElement(pmmSettingsPage.fields.publicAddressInput);
     I.seeElement(pmmSettingsPage.fields.publicAddressButton);
     I.click(pmmSettingsPage.fields.publicAddressButton);
@@ -302,8 +302,8 @@ xScenario(
       `Expected the Public Address to be saved and Match ${process.env.SERVER_IP} but found ${publicAddress}`,
     );
     await dbaasPage.waitForDbClusterTab(clusterName);
-    I.waitForInvisible(dbaasPage.tabs.kubernetesClusterTab.disabledAddButton, 30);
-    I.waitForInvisible(dbaasPage.tabs.kubernetesClusterTab.tableLoading, 30);
+    I.waitForInvisible(dbaasPage.tabs.kubernetesClusterTab.disabledAddButton, 3);
+    I.waitForInvisible(dbaasPage.tabs.kubernetesClusterTab.tableLoading, 3);
     const count = await I.grabNumberOfVisibleElements(
       dbaasPage.tabs.dbClusterTab.fields.clusterStatusDeleting,
     );
@@ -313,8 +313,8 @@ xScenario(
     }
 
     I.click(dbaasPage.tabs.dbClusterTab.addDbClusterButton);
-    I.waitForVisible(dbaasPage.tabs.dbClusterTab.basicOptions.fields.clusterNameField, 30);
-    I.dontSeeElement(dbaasPage.tabs.dbClusterTab.monitoringWarningLocator, 30);
+    I.waitForVisible(dbaasPage.tabs.dbClusterTab.basicOptions.fields.clusterNameField, 3);
+    I.dontSeeElement(dbaasPage.tabs.dbClusterTab.monitoringWarningLocator, 3);
     I.dontSee(dbaasPage.monitoringWarningMessage);
   },
 );
@@ -340,7 +340,7 @@ Scenario(
 
     await dbaasAPI.deleteAllDBCluster(clusterName);
     await dbaasPage.waitForDbClusterTab(clusterName);
-    I.waitForDetached(dbaasPage.tabs.kubernetesClusterTab.disabledAddButton, 30);
+    I.waitForDetached(dbaasPage.tabs.kubernetesClusterTab.disabledAddButton, 3);
     await dbaasActionsPage.createClusterAdvancedOption(clusterName, pxc_resource_check_cluster_name, 'MySQL', pxc_configuration);
     await dbaasActionsPage.verifyInsufficientResources(dbaasPage.tabs.dbClusterTab.advancedOptions.fields.resourceBarCPU, 'Insufficient CPU');
     await dbaasActionsPage.verifyInsufficientResources(dbaasPage.tabs.dbClusterTab.advancedOptions.fields.resourceBarMemory, 'Insufficient Memory');
@@ -369,7 +369,7 @@ Scenario(
 
     await dbaasAPI.deleteAllDBCluster(clusterName);
     await dbaasPage.waitForDbClusterTab(clusterName);
-    I.waitForDetached(dbaasPage.tabs.kubernetesClusterTab.disabledAddButton, 30);
+    I.waitForDetached(dbaasPage.tabs.kubernetesClusterTab.disabledAddButton, 3);
     await dbaasActionsPage.createClusterAdvancedOption(clusterName, pxc_resource_check_cluster_name, 'MySQL', pxc_configuration);
     I.click(dbaasPage.tabs.dbClusterTab.createClusterButton);
     I.waitForText('Processing', 30, dbaasPage.tabs.dbClusterTab.fields.progressBarContent);
@@ -421,7 +421,7 @@ Scenario('Verify update PXC DB Cluster version @dbaas', async ({ I, dbaasPage, d
   await dbaasAPI.deleteAllDBCluster(clusterName);
   await dbaasPage.waitForDbClusterTab(clusterName);
 
-  I.waitForInvisible(dbaasPage.tabs.kubernetesClusterTab.disabledAddButton, 30);
+  I.waitForInvisible(dbaasPage.tabs.kubernetesClusterTab.disabledAddButton, 3);
   await dbaasActionsPage.createClusterAdvancedOption(clusterName, pxc_cluster_name_single, 'MySQL', singleNodeConfiguration, mysqlVersion);
   await I.click(dbaasPage.tabs.dbClusterTab.createClusterButton);
   await I.waitForText('Processing', 30, dbaasPage.tabs.dbClusterTab.fields.progressBarContent);

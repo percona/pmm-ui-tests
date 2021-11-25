@@ -31,7 +31,7 @@ Scenario(
   }) => {
     await settingsAPI.apiDisableSTT();
     I.amOnPage(homePage.url);
-    I.waitForVisible(homePage.fields.sttDisabledFailedChecksPanelSelector, 30);
+    I.waitForVisible(homePage.fields.sttDisabledFailedChecksPanelSelector, 3);
     I.see(
       databaseChecksPage.messages.homePagePanelMessage,
       homePage.fields.sttDisabledFailedChecksPanelSelector,
@@ -46,8 +46,8 @@ Data(urls).Scenario(
   }) => {
     await settingsAPI.apiDisableSTT();
     I.amOnPage(current.url);
-    I.waitForVisible(databaseChecksPage.fields.dbCheckPanelSelector, 30);
-    I.waitForVisible(databaseChecksPage.fields.disabledSTTMessageSelector, 30);
+    I.waitForVisible(databaseChecksPage.fields.dbCheckPanelSelector, 3);
+    I.waitForVisible(databaseChecksPage.fields.disabledSTTMessageSelector, 3);
     I.see(
       databaseChecksPage.messages.disabledSTTMessage,
       locate('div').withChild(databaseChecksPage.fields.disabledSTTMessageSelector),
@@ -70,9 +70,9 @@ xScenario(
     I.amOnPage(pmmSettingsPage.url);
     await pmmSettingsPage.waitForPmmSettingsPageLoaded();
     await adminPage.selectItemFromPMMDropdown('PMM Database Checks');
-    I.waitForVisible(databaseChecksPage.fields.dbCheckPanelSelector, 30);
+    I.waitForVisible(databaseChecksPage.fields.dbCheckPanelSelector, 3);
     I.amOnPage(databaseChecksPage.url);
-    I.waitForVisible(databaseChecksPage.fields.dbCheckPanelSelector, 30);
+    I.waitForVisible(databaseChecksPage.fields.dbCheckPanelSelector, 3);
   },
 );
 
@@ -84,8 +84,8 @@ Scenario(
     await settingsAPI.apiEnableSTT();
     await securityChecksAPI.waitForSecurityChecksResults(20);
     I.amOnPage(homePage.url);
-    I.waitForVisible(homePage.fields.checksPanelSelector, 30);
-    I.waitForVisible(homePage.fields.sttFailedChecksPanelSelector, 30);
+    I.waitForVisible(homePage.fields.checksPanelSelector, 3);
+    I.waitForVisible(homePage.fields.sttFailedChecksPanelSelector, 3);
     I.doubleClick(homePage.fields.sttFailedChecksPanelSelector);
     await databaseChecksPage.verifyDatabaseChecksPageOpened();
   },

@@ -2,7 +2,7 @@ const { I } = inject();
 const assert = require('assert');
 // The original regex source is https://regexlib.com/REDetails.aspx?regexp_id=5055
 // eslint-disable-next-line no-useless-escape
-const lastCheckRegex = /^(?:(((Jan(uary)?|Ma(r(ch)?|y)|Jul(y)?|Aug(ust)?|Oct(ober)?|Dec(ember)?)\ 31)|((Jan(uary)?|Ma(r(ch)?|y)|Apr(il)?|Ju((ly?)|(ne?))|Aug(ust)?|Oct(ober)?|(Sept|Nov|Dec)(ember)?) (0?[1-9]|([12]\d)|30))|(Feb(ruary)? (0?[1-9]|1\d|2[0-8]|(29(?=, ))))),) (?:[0-1]?[0-9]|[2][1-4]):[0-5]?[0-9]?\s??$/gim;
+const lastCheckRegex = /^(?:(((Jan(uary)?|Ma(r(ch)?|y)|Jul(y)?|Aug(ust)?|Oct(ober)?|Dec(ember)?)\ 31)|((Jan(uary)?|Ma(r(ch)?|y)|Apr(il)?|Ju((ly?)|(ne?))|Aug(ust)?|Oct(ober)?|(Sept|Nov|Dec)(ember)?) (0?[1-9]|([12]\d)|3))|(Feb(ruary)? (0?[1-9]|1\d|2[0-8]|(29(?=, ))))),) (?:[0-1]?[0-9]|[2][1-4]):[0-5]?[0-9]?\s??$/gim;
 
 module.exports = {
   // insert your locators and methods here
@@ -102,7 +102,7 @@ module.exports = {
     const available_version = await I.grabTextFrom(locators.availableVersion);
 
     I.click(locators.triggerUpdate);
-    I.waitForElement(locators.updateProgressModal, 30);
+    I.waitForElement(locators.updateProgressModal, 3);
     I.waitForText(locators.inProgressMessage, 30, locators.updateProgressModal);
 
     // skipping milestones checks for 2.9 and 2.10 versions due logs not showing issue
@@ -146,8 +146,8 @@ module.exports = {
   async verifyPostUpdateWidgetIsPresent() {
     const locators = this.getLocators('latest');
 
-    I.waitForVisible(locators.upToDateLocator, 30);
-    I.waitForVisible(locators.lastCheckSelector, 30);
+    I.waitForVisible(locators.upToDateLocator, 3);
+    I.waitForVisible(locators.lastCheckSelector, 3);
     I.dontSeeElement(locators.availableVersion);
     I.dontSeeElement(locators.triggerUpdate);
     I.seeElement(locators.upToDateLocator);
@@ -161,7 +161,7 @@ module.exports = {
   verifyVisibleService(serviceName) {
     const serviceExists = locate('.react-grid-item').find(locate('p').withText(serviceName));
 
-    I.waitForElement(serviceExists, 30);
+    I.waitForElement(serviceExists, 3);
     I.seeElement(serviceExists);
   },
 

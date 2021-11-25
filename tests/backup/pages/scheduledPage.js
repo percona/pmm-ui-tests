@@ -65,13 +65,13 @@ module.exports = {
 
   openScheduleBackupModal() {
     I.click(this.buttons.openAddScheduleModal);
-    I.waitForVisible(this.elements.modalHeader, 20);
+    I.waitForVisible(this.elements.modalHeader, 3);
     I.seeTextEquals(this.messages.modalHeaderText, this.elements.modalHeader);
   },
 
   selectDropdownOption(dropdownLocator, text) {
     I.click(dropdownLocator);
-    I.waitForVisible(this.elements.dropdownOption(text), 30);
+    I.waitForVisible(this.elements.dropdownOption(text), 3);
     I.click(this.elements.dropdownOption(text));
     I.dontSeeElement(this.elements.dropdownOption(text));
   },

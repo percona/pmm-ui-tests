@@ -33,15 +33,15 @@ module.exports = {
   },
 
   checkExamplesTab() {
-    I.waitForVisible(this.getTabLocator('Examples'), 30);
+    I.waitForVisible(this.getTabLocator('Examples'), 3);
     I.click(this.getTabLocator('Examples'));
     qanFilters.waitForFiltersToLoad();
-    I.waitForVisible(this.elements.examplesCodeBlock, 30);
+    I.waitForVisible(this.elements.examplesCodeBlock, 3);
     I.dontSeeElement(this.elements.noExamples);
   },
 
   checkExplainTab() {
-    I.waitForVisible(this.getTabLocator('Explain'), 30);
+    I.waitForVisible(this.getTabLocator('Explain'), 3);
     I.click(this.getTabLocator('Explain'));
     I.wait(5);
     qanFilters.waitForFiltersToLoad();

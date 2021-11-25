@@ -23,17 +23,17 @@ module.exports = {
     const titleLocator = `//li/a[text()='${title}']`;
 
     I.click(this.fields.pmmDropdownMenuSelector);
-    I.waitForVisible(titleLocator, 30);
+    I.waitForVisible(titleLocator, 3);
     I.click(titleLocator);
   },
 
   async navigateToDashboard(folderName, dashboardName) {
-    I.waitForElement(this.fields.navigation, 30);
+    I.waitForElement(this.fields.navigation, 3);
     I.click(this.fields.navigation);
-    I.waitForElement(this.prepareFolderLocator(folderName), 30);
+    I.waitForElement(this.prepareFolderLocator(folderName), 3);
     I.click(this.prepareFolderLocator(folderName));
-    I.waitForElement(this.prepareDashboardLocator(dashboardName), 30);
-    I.waitForVisible(this.prepareDashboardLocator(dashboardName), 30);
+    I.waitForElement(this.prepareDashboardLocator(dashboardName), 3);
+    I.waitForVisible(this.prepareDashboardLocator(dashboardName), 3);
     I.wait(5);
     I.click(this.prepareDashboardLocator(dashboardName));
     const numOfElements = await I.grabNumberOfVisibleElements(this.fields.discardChanges);
@@ -57,15 +57,15 @@ module.exports = {
   applyTimeRange(timeRange = 'Last 5 minutes') {
     const timeRangeSelector = `//span[contains(text(), '${timeRange}')]`;
 
-    I.waitForElement(this.fields.timePickerMenu, 30);
+    I.waitForElement(this.fields.timePickerMenu, 3);
     I.forceClick(this.fields.timePickerMenu);
-    I.waitForVisible(timeRangeSelector, 30);
+    I.waitForVisible(timeRangeSelector, 3);
     I.click(timeRangeSelector);
   },
 
   viewMetric(metricName) {
     I.click(`//span[contains(text(), '${metricName}')]`);
-    I.waitForElement(`//span[contains(text(), '${metricName}')]/../span/ul/li[1]`, 30);
+    I.waitForElement(`//span[contains(text(), '${metricName}')]/../span/ul/li[1]`, 3);
     I.click(`//span[contains(text(), '${metricName}')]/../span/ul/li[1]`);
     I.wait(10);
   },

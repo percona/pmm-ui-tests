@@ -806,7 +806,7 @@ module.exports = {
   },
 
   async checkNavigationBar(text) {
-    I.waitForVisible(this.fields.navbarLocator, 30);
+    I.waitForVisible(this.fields.navbarLocator, 3);
     const navbarText = await I.grabTextFrom(this.fields.navbarLocator);
 
     assert.ok(navbarText.includes(text));
@@ -829,9 +829,9 @@ module.exports = {
   },
 
   verifyAnnotationsLoaded(title, annotationNumber) {
-    I.waitForElement(this.fields.annotationMarker, 30);
+    I.waitForElement(this.fields.annotationMarker, 3);
     I.moveCursorTo(this.annotationLocator(annotationNumber));
-    I.waitForVisible(this.annotationText(title), 30);
+    I.waitForVisible(this.annotationText(title), 3);
   },
 
   // introducing methods
@@ -971,7 +971,7 @@ module.exports = {
   expandFilters(filterType) {
     const filterGroupLocator = `//label[contains(text(), '${filterType}')]/parent::div`;
 
-    I.waitForElement(`${filterGroupLocator}//a`, 30);
+    I.waitForElement(`${filterGroupLocator}//a`, 3);
     I.click(`${filterGroupLocator}//a`);
 
     return filterGroupLocator;
@@ -996,18 +996,18 @@ module.exports = {
     // eslint-disable-next-line max-len
     const filterNameSelector = `(//div[@class='variable-link-wrapper']//ancestor::div//label[contains(text(),'${filterName}')])[1]`;
 
-    I.waitForElement(filterSelector, 30);
+    I.waitForElement(filterSelector, 3);
     I.click(filterSelector);
-    I.waitForElement(filterValueSelector, 30);
+    I.waitForElement(filterValueSelector, 3);
     const numOfElements = await I.grabNumberOfVisibleElements(this.fields.clearSelection);
 
     if (numOfElements === 1) {
       I.click(this.fields.clearSelection);
     }
 
-    I.waitForElement(filterValueSelector, 30);
+    I.waitForElement(filterValueSelector, 3);
     I.click(filterValueSelector);
-    I.waitForElement(filterNameSelector, 30);
+    I.waitForElement(filterNameSelector, 3);
     I.click(filterNameSelector);
   },
 

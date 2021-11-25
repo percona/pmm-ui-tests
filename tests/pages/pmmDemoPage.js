@@ -44,7 +44,7 @@ module.exports = {
 
   verifyCopyrightsAndLegal() {
     I.scrollTo(this.fields.copyrightsAndLegalPanel);
-    I.waitForVisible(this.fields.policyText, 30);
+    I.waitForVisible(this.fields.policyText, 3);
     I.seeElement(this.fields.termsOfUse);
     I.seeElement(this.fields.privacy);
     I.seeElement(this.fields.copyright);

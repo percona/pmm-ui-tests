@@ -339,10 +339,10 @@ Scenario(
     await backupAPI.waitForRestoreFinish(restoreId);
 
     I.refreshPage();
-    I.waitForVisible(locationsPage.buttons.deleteByName(mongoLocation.name), 20);
+    I.waitForVisible(locationsPage.buttons.deleteByName(mongoLocation.name), 3);
     I.click(locationsPage.buttons.deleteByName(mongoLocation.name));
 
-    I.waitForVisible(locationsPage.buttons.confirmDelete, 20);
+    I.waitForVisible(locationsPage.buttons.confirmDelete, 3);
     I.click(locationsPage.buttons.confirmDelete);
 
     I.verifyPopUpMessage(`backup location with ID "${locationId}" has artifacts.`);

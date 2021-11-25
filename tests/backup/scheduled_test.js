@@ -120,7 +120,7 @@ Scenario(
     I.click(scheduledPage.buttons.createSchedule);
 
     I.verifyPopUpMessage(scheduledPage.messages.backupScheduled);
-    I.waitForVisible(scheduledPage.elements.retentionByName(scheduleName), 20);
+    I.waitForVisible(scheduledPage.elements.retentionByName(scheduleName), 3);
     I.seeTextEquals('Unlimited', scheduledPage.elements.retentionByName(scheduleName));
   },
 );
@@ -150,7 +150,7 @@ Scenario(
     await scheduledPage.openScheduledBackupsPage();
     I.click(scheduledPage.buttons.editByName(schedule.name));
 
-    I.waitForVisible(scheduledPage.fields.backupName, 30);
+    I.waitForVisible(scheduledPage.fields.backupName, 3);
     I.clearField(scheduledPage.fields.backupName);
     I.fillField(scheduledPage.fields.backupName, newScheduleName);
 
@@ -165,7 +165,7 @@ Scenario(
 
     I.click(scheduledPage.buttons.createSchedule);
 
-    I.waitForVisible(scheduledPage.elements.scheduleName(newScheduleName), 20);
+    I.waitForVisible(scheduledPage.elements.scheduleName(newScheduleName), 3);
     I.seeTextEquals('1 backup', scheduledPage.elements.retentionByName(newScheduleName));
   },
 );
@@ -194,7 +194,7 @@ Scenario(
       locate(scheduledPage.elements.scheduleBlockInModal).find('h6'),
     );
     I.click(scheduledPage.buttons.createSchedule);
-    I.waitForVisible(scheduledPage.elements.scheduleName(schedule.name), 20);
+    I.waitForVisible(scheduledPage.elements.scheduleName(schedule.name), 3);
     I.seeTextEquals('1 backup', scheduledPage.elements.retentionByName(schedule.name));
 
     // Verify local timestamp is shown in Last Backup column

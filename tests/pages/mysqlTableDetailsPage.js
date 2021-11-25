@@ -26,17 +26,17 @@ module.exports = {
   },
 
   verifyNoDataShow() {
-    I.waitForElement(this.fields.serviceNameDropDown, 30);
+    I.waitForElement(this.fields.serviceNameDropDown, 3);
     I.click(this.fields.serviceNameDropDown);
-    I.waitForElement(this.fields.clearSelection, 30);
+    I.waitForElement(this.fields.clearSelection, 3);
     I.click(this.fields.clearSelection);
-    I.waitForElement(this.fields.disabledServiceName, 30);
+    I.waitForElement(this.fields.disabledServiceName, 3);
     I.click(this.fields.disabledServiceName);
-    I.waitForElement(this.fields.serviceName, 30);
+    I.waitForElement(this.fields.serviceName, 3);
     I.click(this.fields.serviceName);
-    I.waitForVisible(this.graphsLocator(this.metrics[0]), 30);
-    I.waitForVisible(this.graphsLocator(this.metrics[1]), 30);
-    I.waitForVisible(this.graphsLocator(this.metrics[2]), 30);
+    I.waitForVisible(this.graphsLocator(this.metrics[0]), 3);
+    I.waitForVisible(this.graphsLocator(this.metrics[1]), 3);
+    I.waitForVisible(this.graphsLocator(this.metrics[2]), 3);
     for (const i in this.metrics) {
       I.seeElement(this.graphsLocator(this.metrics[i]));
     }
