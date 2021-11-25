@@ -19,7 +19,7 @@ exports.config = {
       waitForNavigation: 'load',
       waitForTimeout: 3000,
       getPageTimeout: 3000,
-      waitForAction: 0,
+      waitForAction: 100,
       pressKeyDelay: 0,
       chromium: {
         executablePath: process.env.CHROMIUM_PATH,
