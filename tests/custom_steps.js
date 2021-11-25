@@ -4,7 +4,7 @@ const systemMessageButtonClose = '.page-alert-list button';
 
 module.exports = () => actor({
 
-  verifyPopUpMessage(message, timeout = 30) {
+  verifyPopUpMessage(message, timeout = 3) {
     this.waitForElement(systemMessageLocator, timeout);
     this.see(message, systemMessageText);
     this.click(systemMessageButtonClose);

@@ -46,7 +46,8 @@ Before(async ({ I }) => {
   await I.Authorize();
 });
 
-Data(versionVerification).Scenario('PMM-T760 Verify Manage Components Versions @dbaas',
+Data(versionVerification).Scenario(
+  'PMM-T760 Verify Manage Components Versions @dbaas',
   async ({
     I, dbaasPage, dbaasAPI, dbaasManageVersionPage, current,
   }) => {
@@ -56,11 +57,11 @@ Data(versionVerification).Scenario('PMM-T760 Verify Manage Components Versions @
 
     I.amOnPage(dbaasPage.url);
     dbaasPage.checkCluster(clusterName, false);
-    I.waitForElement(dbaasPage.tabs.kubernetesClusterTab.actionsLocator(clusterName), 30);
+    I.waitForElement(dbaasPage.tabs.kubernetesClusterTab.actionsLocator(clusterName), 3);
     I.click(dbaasPage.tabs.kubernetesClusterTab.actionsLocator(clusterName));
-    I.waitForElement(dbaasPage.tabs.kubernetesClusterTab.manageVersions, 30);
+    I.waitForElement(dbaasPage.tabs.kubernetesClusterTab.manageVersions, 3);
     I.click(dbaasPage.tabs.kubernetesClusterTab.manageVersions);
-    I.waitForDetached(dbaasManageVersionPage.loader, 30);
+    I.waitForDetached(dbaasManageVersionPage.loader, 3);
     await dbaasManageVersionPage.selectOperatorVersion(operatorVersion);
     await dbaasManageVersionPage.selectComponent(componentName);
     const count = await dbaasManageVersionPage.getTotalSupportedVersions(component);
@@ -69,9 +70,11 @@ Data(versionVerification).Scenario('PMM-T760 Verify Manage Components Versions @
     I.seeElement(dbaasManageVersionPage.manageVersion.defaultVersionOption(recommendedVersion));
     // This is to check if all versions by default are supported.
     await dbaasManageVersionPage.verifyAllVersionSupportedByDefault(component, count);
-  });
+  },
+);
 
-Scenario('PMM-T765 Verify Manage Components Versions @dbaas',
+Scenario(
+  'PMM-T765 Verify Manage Components Versions @dbaas',
   async ({
     I, dbaasPage, dbaasAPI, dbaasManageVersionPage,
   }) => {
@@ -104,9 +107,11 @@ Scenario('PMM-T765 Verify Manage Components Versions @dbaas',
     I.dontSeeElement(dbaasManageVersionPage.manageVersion.dialogTitle);
     dbaasManageVersionPage.waitForManageVersionPopup(clusterName);
     I.click(dbaasManageVersionPage.manageVersion.operator);
-  });
+  },
+);
 
-Data(versionVerification).Scenario('PMM-T760 PMM-T762 PMM-T770 Saving Custom Version for Dbaas Operators @dbaas',
+Data(versionVerification).Scenario(
+  'PMM-T760 PMM-T762 PMM-T770 Saving Custom Version for Dbaas Operators @dbaas',
   async ({
     I, dbaasPage, dbaasActionsPage, dbaasManageVersionPage, current,
   }) => {
@@ -177,7 +182,7 @@ Data(versionVerification).Scenario('PMM-T760 PMM-T762 PMM-T770 Saving Custom Ver
       dbaasManageVersionPage.manageVersion.defaultVersionSelectorFieldErrorMessage,
     );
     I.click(dbaasManageVersionPage.manageVersion.saveButton);
-    I.waitForText(dbaasManageVersionPage.manageVersion.changeVersionSuccessMessage, 30);
+    I.waitForText(dbaasManageVersionPage.manageVersion.changeVersionSuccessMessage, 3);
     I.refreshPage();
     dbaasPage.checkCluster(clusterName, false);
     await dbaasManageVersionPage.waitForManageVersionPopup(clusterName);
@@ -207,4 +212,5 @@ Data(versionVerification).Scenario('PMM-T760 PMM-T762 PMM-T770 Saving Custom Ver
         I.dontSeeElement(dbaasPage.tabs.dbClusterTab.basicOptions.fields.dbClusterDatabaseVersion(version));
       });
     }
-  });
+  },
+);

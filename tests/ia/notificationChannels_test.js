@@ -26,7 +26,7 @@ Scenario(
   'Verify No Channels found message @ia',
   async ({ I, ncPage }) => {
     ncPage.openNotificationChannelsTab();
-    I.waitForVisible(ncPage.elements.noData, 30);
+    I.waitForVisible(ncPage.elements.noData, 3);
     I.see(ncPage.messages.noChannelsFound, ncPage.elements.noData);
   },
 );
@@ -36,7 +36,7 @@ Scenario(
   'PMM-T561 Verify that "#" cannot be used in Slack channel name @ia @grafana-pr',
   async ({ I, ncPage }) => {
     ncPage.openNotificationChannelsTab();
-    I.waitForVisible(ncPage.buttons.openAddChannelModal, 30);
+    I.waitForVisible(ncPage.buttons.openAddChannelModal, 3);
     I.click(ncPage.buttons.openAddChannelModal);
     await ncPage.selectChannelType(ncPage.types.slack.type);
     I.fillField(ncPage.fields.slackChannelInput, '#');
@@ -61,7 +61,7 @@ Scenario(
 
     ncPage.openNotificationChannelsTab();
     I.click(ncPage.buttons.openAddChannelModal);
-    I.waitForVisible(ncPage.fields.typeDropdown, 30);
+    I.waitForVisible(ncPage.fields.typeDropdown, 3);
     I.fillField(ncPage.fields.nameInput, channelName);
     await ncPage.selectChannelType(ncPage.types.pagerDuty.type);
     I.click(ncPage.buttons.pagerDutyServiceKeyOption);
@@ -78,7 +78,7 @@ Scenario(
   async ({ I, ncPage }) => {
     ncPage.openNotificationChannelsTab();
     I.click(ncPage.buttons.openAddChannelModal);
-    I.waitForVisible(ncPage.fields.typeDropdown, 30);
+    I.waitForVisible(ncPage.fields.typeDropdown, 3);
     await ncPage.selectChannelType(ncPage.types.pagerDuty.type);
     I.dontSeeElement(ncPage.elements.serviceKeyFieldLabel);
     I.seeElement(ncPage.elements.routingKeyFieldLabel);

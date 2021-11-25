@@ -118,20 +118,18 @@ module.exports = {
   },
 
   async waitForManageVersionPopup(clusterName) {
-    I.waitForElement(dbaasPage.tabs.kubernetesClusterTab.actionsLocator(clusterName), 30);
+    I.waitForElement(dbaasPage.tabs.kubernetesClusterTab.actionsLocator(clusterName), 3);
     I.click(dbaasPage.tabs.kubernetesClusterTab.actionsLocator(clusterName));
-    I.waitForElement(dbaasPage.tabs.kubernetesClusterTab.manageVersions, 30);
+    I.waitForElement(dbaasPage.tabs.kubernetesClusterTab.manageVersions, 3);
     I.click(dbaasPage.tabs.kubernetesClusterTab.manageVersions);
-    I.waitForDetached(this.loader, 30);
+    I.waitForDetached(this.loader, 3);
   },
 
   async selectOperatorVersion(operatorVersion) {
     I.click(this.manageVersion.operator);
-    I.waitForElement(
-      this.manageVersion.operatorSelector(
-        operatorVersion,
-      ), 30,
-    );
+    I.waitForElement(this.manageVersion.operatorSelector(
+      operatorVersion,
+    ), 3);
     I.forceClick(
       this.manageVersion.operatorSelector(
         operatorVersion,
@@ -141,11 +139,9 @@ module.exports = {
 
   async selectComponent(componentName) {
     I.click(this.manageVersion.component);
-    I.waitForElement(
-      this.manageVersion.componentSelector(
-        componentName,
-      ), 30,
-    );
+    I.waitForElement(this.manageVersion.componentSelector(
+      componentName,
+    ), 3);
     I.forceClick(
       this.manageVersion.componentSelector(
         componentName,
@@ -155,11 +151,9 @@ module.exports = {
 
   async selectDefaultVersion(version) {
     I.click(this.manageVersion.defaultVersionSelector);
-    I.waitForElement(
-      this.manageVersion.defaultVersionOption(
-        version,
-      ), 30,
-    );
+    I.waitForElement(this.manageVersion.defaultVersionOption(
+      version,
+    ), 3);
     I.forceClick(
       this.manageVersion.defaultVersionOption(
         version,

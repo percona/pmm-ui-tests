@@ -151,7 +151,7 @@ module.exports = {
   },
 
   waitUntilRemoteInstancesPageLoaded() {
-    I.waitForElement(this.fields.addMySqlRemote, 30);
+    I.waitForElement(this.fields.addMySqlRemote, 3);
     I.seeElement(this.fields.addMySqlRemote);
 
     return this;
@@ -208,21 +208,31 @@ module.exports = {
         adminPage.customClearField(this.fields.portNumber);
         I.fillField(this.fields.portNumber, remoteInstancesHelper.remote_instance.mysql.ms_8_0_ssl.port);
         I.fillField(this.fields.serviceName, serviceName);
-        I.fillField(this.fields.environment,
-          remoteInstancesHelper.remote_instance.mysql.ms_8_0_ssl.environment);
-        I.fillField(this.fields.cluster,
-          remoteInstancesHelper.remote_instance.mysql.ms_8_0_ssl.clusterName);
+        I.fillField(
+          this.fields.environment,
+          remoteInstancesHelper.remote_instance.mysql.ms_8_0_ssl.environment,
+        );
+        I.fillField(
+          this.fields.cluster,
+          remoteInstancesHelper.remote_instance.mysql.ms_8_0_ssl.clusterName,
+        );
         I.dontSeeElement(this.fields.tlscaInput);
         I.dontSeeElement(this.fields.tlsCertificateInput);
         I.dontSeeElement(this.fields.tlsCertificateKeyInput);
         I.click(this.fields.useTLS);
-        I.waitForElement(this.fields.tlscaInput, 30);
-        await this.fillFileContent(this.fields.tlscaInput,
-          remoteInstancesHelper.remote_instance.mysql.ms_8_0_ssl.tlsCAFile);
-        await this.fillFileContent(this.fields.tlsCertificateInput,
-          remoteInstancesHelper.remote_instance.mysql.ms_8_0_ssl.tlsCertificateFile);
-        await this.fillFileContent(this.fields.tlsCertificateKeyInput,
-          remoteInstancesHelper.remote_instance.mysql.ms_8_0_ssl.tlsCertificateKeyFile);
+        I.waitForElement(this.fields.tlscaInput, 3);
+        await this.fillFileContent(
+          this.fields.tlscaInput,
+          remoteInstancesHelper.remote_instance.mysql.ms_8_0_ssl.tlsCAFile,
+        );
+        await this.fillFileContent(
+          this.fields.tlsCertificateInput,
+          remoteInstancesHelper.remote_instance.mysql.ms_8_0_ssl.tlsCertificateFile,
+        );
+        await this.fillFileContent(
+          this.fields.tlsCertificateKeyInput,
+          remoteInstancesHelper.remote_instance.mysql.ms_8_0_ssl.tlsCertificateKeyFile,
+        );
         break;
       case remoteInstancesHelper.services.mongodb:
         I.fillField(this.fields.hostName, remoteInstancesHelper.remote_instance.mongodb.psmdb_4_2.host);
@@ -240,21 +250,31 @@ module.exports = {
           remoteInstancesHelper.remote_instance.mongodb.mongodb_4_4_ssl.port,
         );
         I.fillField(this.fields.serviceName, serviceName);
-        I.fillField(this.fields.environment,
-          remoteInstancesHelper.remote_instance.mongodb.mongodb_4_4_ssl.environment);
-        I.fillField(this.fields.cluster,
-          remoteInstancesHelper.remote_instance.mongodb.mongodb_4_4_ssl.clusterName);
+        I.fillField(
+          this.fields.environment,
+          remoteInstancesHelper.remote_instance.mongodb.mongodb_4_4_ssl.environment,
+        );
+        I.fillField(
+          this.fields.cluster,
+          remoteInstancesHelper.remote_instance.mongodb.mongodb_4_4_ssl.clusterName,
+        );
         I.dontSeeElement(this.fields.tlscaInput);
         I.dontSeeElement(this.fields.tlsCertificateFilePasswordInput);
         I.dontSeeElement(this.fields.tlsCertificateKey);
         I.click(this.fields.useTLS);
-        I.waitForElement(this.fields.tlscaInput, 30);
-        await this.fillFileContent(this.fields.tlscaInput,
-          remoteInstancesHelper.remote_instance.mongodb.mongodb_4_4_ssl.tlsCAFile);
-        await this.fillFileContent(this.fields.tlsCertificateFilePasswordInput,
-          remoteInstancesHelper.remote_instance.mongodb.mongodb_4_4_ssl.tlsCertificateKeyFilePassword);
-        await this.fillFileContent(this.fields.tlsCertificateKey,
-          remoteInstancesHelper.remote_instance.mongodb.mongodb_4_4_ssl.tlsCertificateKeyFile);
+        I.waitForElement(this.fields.tlscaInput, 3);
+        await this.fillFileContent(
+          this.fields.tlscaInput,
+          remoteInstancesHelper.remote_instance.mongodb.mongodb_4_4_ssl.tlsCAFile,
+        );
+        await this.fillFileContent(
+          this.fields.tlsCertificateFilePasswordInput,
+          remoteInstancesHelper.remote_instance.mongodb.mongodb_4_4_ssl.tlsCertificateKeyFilePassword,
+        );
+        await this.fillFileContent(
+          this.fields.tlsCertificateKey,
+          remoteInstancesHelper.remote_instance.mongodb.mongodb_4_4_ssl.tlsCertificateKeyFile,
+        );
         break;
       case remoteInstancesHelper.services.postgresql:
         I.fillField(
@@ -279,27 +299,41 @@ module.exports = {
         I.fillField(this.fields.cluster, this.potgresqlSettings.cluster);
         break;
       case remoteInstancesHelper.services.postgres_ssl:
-        I.fillField(this.fields.hostName,
-          remoteInstancesHelper.remote_instance.postgresql.postgres_13_3_ssl.host);
+        I.fillField(
+          this.fields.hostName,
+          remoteInstancesHelper.remote_instance.postgresql.postgres_13_3_ssl.host,
+        );
         adminPage.customClearField(this.fields.portNumber);
-        I.fillField(this.fields.portNumber,
-          remoteInstancesHelper.remote_instance.postgresql.postgres_13_3_ssl.port);
+        I.fillField(
+          this.fields.portNumber,
+          remoteInstancesHelper.remote_instance.postgresql.postgres_13_3_ssl.port,
+        );
         I.fillField(this.fields.serviceName, serviceName);
-        I.fillField(this.fields.environment,
-          remoteInstancesHelper.remote_instance.postgresql.postgres_13_3_ssl.environment);
-        I.fillField(this.fields.cluster,
-          remoteInstancesHelper.remote_instance.postgresql.postgres_13_3_ssl.clusterName);
+        I.fillField(
+          this.fields.environment,
+          remoteInstancesHelper.remote_instance.postgresql.postgres_13_3_ssl.environment,
+        );
+        I.fillField(
+          this.fields.cluster,
+          remoteInstancesHelper.remote_instance.postgresql.postgres_13_3_ssl.clusterName,
+        );
         I.dontSeeElement(this.fields.tlscaInput);
         I.dontSeeElement(this.fields.tlsCertificateKeyInput);
         I.dontSeeElement(this.fields.tlsCertificateInput);
         I.click(this.fields.useTLS);
-        I.waitForElement(this.fields.tlscaInput, 30);
-        await this.fillFileContent(this.fields.tlscaInput,
-          remoteInstancesHelper.remote_instance.postgresql.postgres_13_3_ssl.tlsCAFile);
-        await this.fillFileContent(this.fields.tlsCertificateInput,
-          remoteInstancesHelper.remote_instance.postgresql.postgres_13_3_ssl.tlsCertFile);
-        await this.fillFileContent(this.fields.tlsCertificateKeyInput,
-          remoteInstancesHelper.remote_instance.postgresql.postgres_13_3_ssl.tlsKeyFile);
+        I.waitForElement(this.fields.tlscaInput, 3);
+        await this.fillFileContent(
+          this.fields.tlscaInput,
+          remoteInstancesHelper.remote_instance.postgresql.postgres_13_3_ssl.tlsCAFile,
+        );
+        await this.fillFileContent(
+          this.fields.tlsCertificateInput,
+          remoteInstancesHelper.remote_instance.postgresql.postgres_13_3_ssl.tlsCertFile,
+        );
+        await this.fillFileContent(
+          this.fields.tlsCertificateKeyInput,
+          remoteInstancesHelper.remote_instance.postgresql.postgres_13_3_ssl.tlsKeyFile,
+        );
         break;
       case remoteInstancesHelper.services.proxysql:
         I.fillField(this.fields.hostName, remoteInstancesHelper.remote_instance.proxysql.proxysql_2_1_1.host);
@@ -358,8 +392,8 @@ module.exports = {
   },
 
   createRemoteInstance(serviceName) {
-    I.waitForVisible(this.fields.skipTLSL, 30);
-    I.waitForVisible(this.fields.addService, 30);
+    I.waitForVisible(this.fields.skipTLSL, 3);
+    I.waitForVisible(this.fields.addService, 3);
     I.click(this.fields.skipTLSL);
     // eslint-disable-next-line default-case
     switch (serviceName) {
@@ -377,7 +411,7 @@ module.exports = {
         break;
     }
     I.click(this.fields.addService);
-    I.waitForVisible(pmmInventoryPage.fields.agentsLink, 30);
+    I.waitForVisible(pmmInventoryPage.fields.agentsLink, 3);
 
     return pmmInventoryPage;
   },
@@ -392,16 +426,18 @@ module.exports = {
     I.fillField(this.fields.clientID, remoteInstancesHelper.remote_instance.azure.azure_client_id);
     I.fillField(this.fields.clientSecret, remoteInstancesHelper.remote_instance.azure.azure_client_secret);
     I.fillField(this.fields.tenantID, remoteInstancesHelper.remote_instance.azure.azure_tenant_id);
-    I.fillField(this.fields.subscriptionID,
-      remoteInstancesHelper.remote_instance.azure.azure_subscription_id);
+    I.fillField(
+      this.fields.subscriptionID,
+      remoteInstancesHelper.remote_instance.azure.azure_subscription_id,
+    );
     I.click(this.fields.discoverBtn);
     this.waitForDiscovery();
   },
 
   openAddAWSRDSMySQLPage() {
     I.click(this.fields.addAWSRDSMySQLbtn);
-    I.waitForVisible(this.fields.accessKeyInput, 30);
-    I.waitForVisible(this.fields.secretKeyInput, 30);
+    I.waitForVisible(this.fields.accessKeyInput, 3);
+    I.waitForVisible(this.fields.secretKeyInput, 3);
   },
 
   discoverRDS() {
@@ -412,13 +448,13 @@ module.exports = {
   },
 
   discoverRDSWithoutCredentials() {
-    I.waitForVisible(this.elements.noData, 30);
+    I.waitForVisible(this.elements.noData, 3);
     I.click(this.fields.discoverBtn);
-    I.waitForVisible(this.fields.noCredentialsError, 30);
+    I.waitForVisible(this.fields.noCredentialsError, 3);
   },
 
   waitForDiscovery() {
-    I.waitForVisible(this.fields.discoveryResults, 30);
+    I.waitForVisible(this.fields.discoveryResults, 3);
   },
 
   verifyInstanceIsDiscovered(instanceIdToMonitor) {
@@ -430,12 +466,12 @@ module.exports = {
   startMonitoringOfInstance(instanceIdToMonitor) {
     const instangeIdLocator = this.rdsInstanceIdLocator(instanceIdToMonitor);
 
-    I.waitForVisible(instangeIdLocator, 30);
+    I.waitForVisible(instangeIdLocator, 3);
     I.click(instangeIdLocator);
   },
 
   verifyAddInstancePageOpened() {
-    I.waitForVisible(this.fields.userName, 30);
+    I.waitForVisible(this.fields.userName, 3);
     I.seeElement(this.fields.userName);
   },
 
@@ -471,9 +507,9 @@ module.exports = {
   },
 
   parseURL(url) {
-    I.waitForVisible(this.fields.parseFromURLRadioButton, 30);
+    I.waitForVisible(this.fields.parseFromURLRadioButton, 3);
     I.click(this.fields.parseFromURLRadioButton);
-    I.waitForVisible(this.fields.urlInput, 30);
+    I.waitForVisible(this.fields.urlInput, 3);
     I.fillField(this.fields.urlInput, url);
     I.click(this.fields.setManualy);
   },
@@ -494,7 +530,7 @@ module.exports = {
   },
 
   checkRequiredField() {
-    I.waitForVisible(this.fields.requiredFieldHostname, 30);
-    I.waitForVisible(this.fields.requiredFieldPort, 30);
+    I.waitForVisible(this.fields.requiredFieldHostname, 3);
+    I.waitForVisible(this.fields.requiredFieldPort, 3);
   },
 };

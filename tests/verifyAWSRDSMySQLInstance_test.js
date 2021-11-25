@@ -58,7 +58,7 @@ xScenario(
     for (const filter of Object.values(filters)) {
       const name = qanFilters.getFilterLocator(filter);
 
-      I.waitForVisible(name, 30);
+      I.waitForVisible(name, 3);
       I.seeElement(name);
     }
   },

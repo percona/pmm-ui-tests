@@ -88,14 +88,14 @@ Scenario(
   }) => {
     await settingsAPI.changeSettings({ stt: false });
     await settingsAPI.changeSettings({ stt: true });
-    await securityChecksAPI.waitForSecurityChecksResults(30);
+    await securityChecksAPI.waitForSecurityChecksResults(3);
     I.amOnPage(homePage.url);
-    I.waitForVisible(homePage.fields.checksPanelSelector, 30);
+    I.waitForVisible(homePage.fields.checksPanelSelector, 3);
     I.dontSeeElement(homePage.fields.noFailedChecksInPanel);
     I.seeElement(homePage.fields.sttFailedChecksPanelSelector);
 
     I.amOnPage(databaseChecksPage.url);
-    I.waitForVisible(failedCheckRowLocator, 30);
+    I.waitForVisible(failedCheckRowLocator, 3);
   },
 );
 
@@ -109,10 +109,10 @@ Scenario(
 
     await prepareFailedCheck();
     I.amOnPage(databaseChecksPage.url);
-    I.waitForVisible(failedCheckRowLocator, 30);
+    I.waitForVisible(failedCheckRowLocator, 3);
 
     // Silence mysql Empty Password failed check and verify it's not displayed
-    I.waitForVisible(failedCheckRowLocator, 30);
+    I.waitForVisible(failedCheckRowLocator, 3);
     I.click(failedCheckRowLocator.find('button').first());
     I.dontSeeElement(failedCheckRowLocator.find('td').withText(emptyPasswordSummary));
 
@@ -143,7 +143,7 @@ Data(intervalsTests).Scenario(
     I.wait(30);
 
     I.refreshPage();
-    I.waitForVisible(databaseChecksPage.fields.dbCheckPanelSelector, 30);
+    I.waitForVisible(databaseChecksPage.fields.dbCheckPanelSelector, 3);
 
     // Verify there is no MySQL user empty password failed check
     await securityChecksAPI.verifyFailedCheckNotExists(emptyPasswordSummary);
@@ -163,7 +163,7 @@ Scenario(
     I.wait(30);
 
     I.refreshPage();
-    I.waitForVisible(databaseChecksPage.fields.dbCheckPanelSelector, 30);
+    I.waitForVisible(databaseChecksPage.fields.dbCheckPanelSelector, 3);
 
     // Verify there is no MySQL user empty password failed check
     await securityChecksAPI.verifyFailedCheckNotExists(emptyPasswordSummary);

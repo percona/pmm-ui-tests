@@ -57,13 +57,13 @@ module.exports = {
     I.dontSeeElement(this.elements.signInForm);
     I.seeElement(this.elements.loggedInForm);
     I.refreshPage();
-    I.waitForVisible(this.elements.loggedInForm, 20);
+    I.waitForVisible(this.elements.loggedInForm, 3);
 
     await this.verifyUserIsLoggedIn(email);
   },
 
   async verifyUserIsLoggedIn(email) {
-    I.waitForVisible(this.elements.loggedInForm, 30);
+    I.waitForVisible(this.elements.loggedInForm, 3);
     await within(this.elements.loggedInForm, async () => {
       I.seeTextEquals('Percona Platform Account', 'header');
       I.seeTextEquals('You are logged in as', locate('p').first());
@@ -78,12 +78,12 @@ module.exports = {
 
     I.openNewTab();
     I.amOnPage(activationLink);
-    I.waitForVisible('[name="newPassword"]', 20);
+    I.waitForVisible('[name="newPassword"]', 3);
     I.fillField('[name="newPassword"]', password);
     I.fillField('[name="verifyPassword"]', password);
     I.click('#next-button');
-    I.waitForVisible('[data-se="org-logo"]', 30);
-    I.waitForVisible('[data-se="dropdown-menu-button-header"]', 30);
+    I.waitForVisible('[data-se="org-logo"]', 3);
+    I.waitForVisible('[data-se="dropdown-menu-button-header"]', 3);
     I.seeInCurrentUrl('/app/UserHome');
     I.closeCurrentTab();
   },

@@ -69,10 +69,10 @@ module.exports = {
   },
 
   async selectChannelType(type) {
-    I.waitForVisible(this.fields.typeDropdown, 30);
+    I.waitForVisible(this.fields.typeDropdown, 3);
     await within(this.elements.modalContent, () => {
       I.click(this.fields.typeDropdown);
-      I.waitForVisible(this.fields.typeOptionLocator(type), 30);
+      I.waitForVisible(this.fields.typeOptionLocator(type), 3);
       I.click(this.fields.typeOptionLocator(type));
     });
     I.see(type, this.fields.typeDropdown);
@@ -80,7 +80,7 @@ module.exports = {
 
   async createChannel(name, type) {
     I.click(this.buttons.openAddChannelModal);
-    I.waitForVisible(this.fields.typeDropdown, 30);
+    I.waitForVisible(this.fields.typeDropdown, 3);
     I.seeElement(this.buttons.closeModal);
     I.seeElement(this.buttons.cancelAdding);
     await this.fillFields(name, type);
@@ -111,7 +111,7 @@ module.exports = {
     const suffix = '_EDITED';
 
     I.click(this.buttons.editChannelLocator(name, type));
-    I.waitForVisible(this.buttons.addChannel, 30);
+    I.waitForVisible(this.buttons.addChannel, 3);
     I.seeElementsDisabled(this.buttons.addChannel);
     I.appendField(this.fields.nameInput, suffix);
 
@@ -136,7 +136,7 @@ module.exports = {
   },
 
   deleteChannel(name, type) {
-    I.waitForVisible(this.elements.channelInTable(name, type), 30);
+    I.waitForVisible(this.elements.channelInTable(name, type), 3);
     I.click(this.buttons.deleteChannelLocator(name));
     I.waitForText(this.messages.deleteConfirmation(name), 10, this.elements.modalContent);
     I.click(this.buttons.confirmDelete);

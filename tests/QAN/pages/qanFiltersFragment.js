@@ -55,7 +55,7 @@ module.exports = {
     const locator = `//span[contains(text(), '${section}')]/parent::p/following-sibling::div//span[contains(@class, 'checkbox-container__label-text') and contains(text(), '${filter}')]/ancestor::span/following-sibling::span/a`;
 
     if (visibility) {
-      I.waitForElement(locator, 30);
+      I.waitForElement(locator, 3);
     } else {
       I.dontSeeElement(locator);
     }
@@ -90,12 +90,12 @@ module.exports = {
   applyFilter(filterName) {
     const filterToApply = `//span[contains(@class, 'checkbox-container__label-text') and contains(text(), '${filterName}')]`;
 
-    I.waitForVisible(this.fields.filterBy, 30);
+    I.waitForVisible(this.fields.filterBy, 3);
     I.fillField(this.fields.filterBy, filterName);
-    I.waitForVisible(filterToApply, 20);
+    I.waitForVisible(filterToApply, 3);
     I.forceClick(filterToApply);
-    I.waitForDetached(this.elements.spinner, 30);
-    I.waitForElement(this.fields.filterBy, 30);
+    I.waitForDetached(this.elements.spinner, 3);
+    I.waitForElement(this.fields.filterBy, 3);
     // workaround for clearing the field completely
     I.forceClick(this.fields.filterBy);
     adminPage.customClearField(this.fields.filterBy);
@@ -105,18 +105,18 @@ module.exports = {
   applyFilterInSection(section, filter) {
     const filterLocator = `//span[contains(text(), '${section}')]/parent::p/following-sibling::div//span[contains(@class, 'checkbox-container__label-text') and contains(text(), '${filter}')]`;
 
-    I.waitForVisible(this.fields.filterBy, 30);
+    I.waitForVisible(this.fields.filterBy, 3);
     I.fillField(this.fields.filterBy, filter);
-    I.waitForVisible(filterLocator, 20);
+    I.waitForVisible(filterLocator, 3);
     I.click(filterLocator);
   },
 
   checkFilterExistInSection(section, filter) {
     const filterLocator = `//span[contains(text(), '${section}')]/parent::p/following-sibling::div//span[contains(@class, 'checkbox-container__label-text') and contains(text(), '${filter}')]`;
 
-    I.waitForVisible(this.fields.filterBy, 30);
+    I.waitForVisible(this.fields.filterBy, 3);
     I.fillField(this.fields.filterBy, filter);
-    I.waitForVisible(filterLocator, 20);
+    I.waitForVisible(filterLocator, 3);
     I.seeElement(filterLocator);
   },
 
@@ -125,7 +125,7 @@ module.exports = {
       + 'div//span[contains(@class, "checkbox-container__checkmark")]';
 
     I.fillField(this.fields.filterBy, filterSection);
-    I.waitForVisible(`//span[contains(text(), '${filterSection}')]`, 30);
+    I.waitForVisible(`//span[contains(text(), '${filterSection}')]`, 3);
     const countOfFiltersInSection = await I.grabNumberOfVisibleElements(sectionLocator);
 
     assert.equal(countOfFiltersInSection, expectedCount, `There should be '${expectedCount}' visible links`);
@@ -146,26 +146,26 @@ module.exports = {
   applyShowAllLink(groupName) {
     const showAllLink = this.getFilterGroupCountSelector(groupName);
 
-    I.waitForVisible(showAllLink, 30);
+    I.waitForVisible(showAllLink, 3);
     I.forceClick(showAllLink);
   },
 
   async applyShowTop5Link(groupName) {
     const showTop5Link = `//span[contains(text(), '${groupName}')]/following-sibling::span[contains(text(), 'Show top 5')]`;
 
-    I.waitForVisible(showTop5Link, 30);
+    I.waitForVisible(showTop5Link, 3);
     I.click(showTop5Link);
   },
 
   checkDisabledFilter(groupName, filter) {
     const filterLocator = `//span[contains(text(), '${groupName}')]/parent::p/following-sibling::div[@data-testid='filter-checkbox-${filter}']//input[contains(@name, '${filter}') and @disabled]`;
 
-    I.waitForElement(filterLocator, 20);
+    I.waitForElement(filterLocator, 3);
   },
 
   async verifySelectedFilters(filters) {
     I.click(this.buttons.showSelected);
-    I.waitForVisible(this.elements.filterName, 20);
+    I.waitForVisible(this.elements.filterName, 3);
     const currentFilters = await I.grabTextFrom(this.elements.filterName);
 
     for (let i = 0; i <= filters.length - 1; i++) {

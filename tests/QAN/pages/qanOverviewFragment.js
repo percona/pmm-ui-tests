@@ -63,7 +63,7 @@ module.exports = {
   },
 
   async getCountOfItems() {
-    I.waitForVisible(this.elements.querySelector, 30);
+    I.waitForVisible(this.elements.querySelector, 3);
     const resultsCount = (await I.grabTextFrom(this.elements.countOfItems)).split(' ');
 
     return resultsCount[2];
@@ -74,8 +74,8 @@ module.exports = {
     const metricInDropdown = this.getMetricLocatorInDropdown(metricName);
     const oldMetric = this.getColumnLocator(columnName);
 
-    I.waitForElement(oldMetric, 30);
-    I.waitForVisible(qanFilters.elements.filterName, 30);
+    I.waitForElement(oldMetric, 3);
+    I.waitForVisible(qanFilters.elements.filterName, 3);
 
     // Hardcoded wait because of random failings
     I.wait(3);
@@ -83,7 +83,7 @@ module.exports = {
     I.waitForElement(this.fields.columnSearchField, 10);
     I.fillField(this.fields.columnSearchField, metricName);
     I.click(metricInDropdown);
-    I.waitForElement(newMetric, 30);
+    I.waitForElement(newMetric, 3);
     I.seeElement(newMetric);
     I.dontSeeElement(oldMetric);
   },
@@ -91,23 +91,23 @@ module.exports = {
   addSpecificColumn(columnName) {
     const column = `//span[contains(text(), '${columnName}')]`;
 
-    I.waitForVisible(column, 30);
+    I.waitForVisible(column, 3);
     I.click(column);
   },
 
   showTooltip(rowNumber, dataColumnNumber) {
     const tooltipSelector = this.getCellValueLocator(rowNumber, dataColumnNumber);
 
-    I.waitForElement(tooltipSelector, 30);
+    I.waitForElement(tooltipSelector, 3);
     I.scrollTo(tooltipSelector);
     I.moveCursorTo(tooltipSelector);
-    I.waitForElement(this.elements.metricTooltip, 30);
+    I.waitForElement(this.elements.metricTooltip, 3);
   },
 
   changeSorting(columnNumber) {
     const sortingBlockSelector = this.getMetricSortingLocator(columnNumber);
 
-    I.waitForElement(sortingBlockSelector, 30);
+    I.waitForElement(sortingBlockSelector, 3);
     this.waitForOverviewLoaded();
     I.click(sortingBlockSelector);
   },
@@ -116,13 +116,13 @@ module.exports = {
     const sortingBlockSelector = this.getMetricSortingLocator(columnNumber);
 
     if (!sortDirection) {
-      I.waitForElement(`${sortingBlockSelector}/span`, 30);
+      I.waitForElement(`${sortingBlockSelector}/span`, 3);
       I.seeAttributesOnElements(`${sortingBlockSelector}/span`, { class: 'sort-by ' });
 
       return;
     }
 
-    I.waitForElement(`${sortingBlockSelector}/span`, 30);
+    I.waitForElement(`${sortingBlockSelector}/span`, 3);
     I.seeAttributesOnElements(`${sortingBlockSelector}/span`, { class: `sort-by ${sortDirection}` });
   },
 
@@ -152,7 +152,7 @@ module.exports = {
   async changeGroupBy(groupBy = 'Client Host') {
     const locator = this.getGroupByOptionLocator(groupBy);
 
-    I.waitForElement(this.elements.groupBy, 30);
+    I.waitForElement(this.elements.groupBy, 3);
     I.click(this.elements.groupBy);
     // For some reason dropdown is not opened sometimes
     I.wait(1);
@@ -160,7 +160,7 @@ module.exports = {
 
     if (!dropdownOpened) I.click(this.elements.groupBy);
 
-    I.waitForVisible(locator, 30);
+    I.waitForVisible(locator, 3);
     I.click(locator);
   },
 
@@ -178,7 +178,7 @@ module.exports = {
   },
 
   async verifyRowCount(rowCount) {
-    I.waitForVisible(this.elements.querySelector, 30);
+    I.waitForVisible(this.elements.querySelector, 3);
     const count = await I.grabNumberOfVisibleElements(this.elements.tableRow);
 
     assert.ok(count === rowCount, `Row count should be ${rowCount} instead of ${count}`);

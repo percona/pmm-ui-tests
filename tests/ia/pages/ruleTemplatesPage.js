@@ -90,9 +90,9 @@ module.exports = {
 
   openRuleTemplatesTab() {
     I.amOnPage(this.url);
-    I.waitForVisible(this.elements.ruleTemplateTab, 30);
+    I.waitForVisible(this.elements.ruleTemplateTab, 3);
     I.click(this.elements.ruleTemplateTab);
-    I.waitForVisible(this.elements.templatesTable, 30);
+    I.waitForVisible(this.elements.templatesTable, 3);
   },
 
   verifyEditModalHeaderAndWarning(templateName) {
@@ -106,12 +106,12 @@ module.exports = {
   },
 
   openEditDialog(templateName) {
-    I.waitForElement(this.buttons.editButtonByName(templateName), 30);
+    I.waitForElement(this.buttons.editButtonByName(templateName), 3);
     I.click(this.buttons.editButtonByName(templateName));
   },
 
   verifyRuleTemplateContent(content) {
-    I.waitForVisible(this.fields.templateInput, 30);
+    I.waitForVisible(this.fields.templateInput, 3);
     I.seeInField(this.fields.templateInput, content);
   },
 };

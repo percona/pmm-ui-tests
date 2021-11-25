@@ -59,7 +59,7 @@ Scenario(
     alertRulesPage.columnHeaders.forEach((header) => {
       const columnHeader = alertRulesPage.elements.columnHeaderLocator(header);
 
-      I.waitForVisible(columnHeader, 30);
+      I.waitForVisible(columnHeader, 3);
     });
     await rulesAPI.removeAlertRule(ruleId);
   },
@@ -91,7 +91,7 @@ Scenario(
     const ruleId = await rulesAPI.createAlertRule({ ruleName });
 
     alertRulesPage.openAlertRulesTab();
-    I.waitForVisible(alertRulesPage.buttons.toggleAlertRule(ruleName), 30);
+    I.waitForVisible(alertRulesPage.buttons.toggleAlertRule(ruleName), 3);
     const color = await I.grabCssPropertyFrom(alertRulesPage.elements.rulesNameCell(ruleName), 'background-color');
 
     I.click(alertRulesPage.buttons.toggleAlertRule(ruleName));
@@ -123,9 +123,9 @@ Data(templates).Scenario(
     alertRulesPage.openAlertRulesTab();
     I.click(alertRulesPage.buttons.openAddRuleModal);
 
-    I.waitForVisible(alertRulesPage.fields.ruleName, 30);
+    I.waitForVisible(alertRulesPage.fields.ruleName, 3);
     alertRulesPage.searchAndSelectResult('Template', current.template);
-    I.waitForVisible(alertRulesPage.elements.expression, 30);
+    I.waitForVisible(alertRulesPage.elements.expression, 3);
 
     alertRulesPage.verifyEditRuleDialogElements(rule);
   },
@@ -259,8 +259,10 @@ Data(rulesStates).Scenario(
     I.click(alertRulesPage.buttons.deleteAlertRule(rule.ruleName));
     I.seeTextEquals(alertRulesPage.messages.deleteRuleModalHeader, alertRulesPage.elements.modalHeader);
     I.seeElement(alertRulesPage.buttons.closeModal, alertRulesPage.elements.modalHeader);
-    I.seeTextEquals(alertRulesPage.messages.confirmDelete(rule.ruleName),
-      locate(alertRulesPage.elements.modalContent).find('h4'));
+    I.seeTextEquals(
+      alertRulesPage.messages.confirmDelete(rule.ruleName),
+      locate(alertRulesPage.elements.modalContent).find('h4'),
+    );
     I.seeElement(alertRulesPage.buttons.cancelDelete);
     I.seeElement(alertRulesPage.buttons.delete);
     I.click(alertRulesPage.buttons.delete);
@@ -285,13 +287,17 @@ Scenario(
     await rulesAPI.createAlertRule({ ruleName: ruleNameWithBuiltInTemplate });
     alertRulesPage.openAlertRulesTab();
     I.click(alertRulesPage.buttons.showDetails(ruleName));
-    I.seeTextEquals(expr.replace('[[ .threshold ]]', '1'),
-      alertRulesPage.elements.ruleDetails);
+    I.seeTextEquals(
+      expr.replace('[[ .threshold ]]', '1'),
+      alertRulesPage.elements.ruleDetails,
+    );
     I.click(alertRulesPage.buttons.hideDetails(ruleName));
     I.dontSeeElement(alertRulesPage.elements.ruleDetails);
     I.click(alertRulesPage.buttons.showDetails(ruleNameWithBuiltInTemplate));
-    I.seeTextEquals(exprForBuiltInTemplate.replace('[[ .threshold ]]', '1'),
-      alertRulesPage.elements.ruleDetails);
+    I.seeTextEquals(
+      exprForBuiltInTemplate.replace('[[ .threshold ]]', '1'),
+      alertRulesPage.elements.ruleDetails,
+    );
     I.click(alertRulesPage.buttons.hideDetails(ruleNameWithBuiltInTemplate));
     I.dontSeeElement(alertRulesPage.elements.ruleDetails);
   },
@@ -306,9 +312,9 @@ Scenario(
     alertRulesPage.openAlertRulesTab();
     I.click(alertRulesPage.buttons.openAddRuleModal);
 
-    I.waitForVisible(alertRulesPage.fields.ruleName, 30);
+    I.waitForVisible(alertRulesPage.fields.ruleName, 3);
     alertRulesPage.searchAndSelectResult('Template', 'Memory used by MongoDB');
-    I.waitForVisible(alertRulesPage.elements.expression, 30);
+    I.waitForVisible(alertRulesPage.elements.expression, 3);
 
     I.clearField(alertRulesPage.fields.duration);
     I.fillField(alertRulesPage.fields.duration, '-1');

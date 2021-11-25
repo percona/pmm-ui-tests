@@ -82,14 +82,14 @@ Scenario(
     const newMetric = qanOverview.getColumnLocator(metricName);
     const oldMetric = qanOverview.getColumnLocator('Load');
 
-    I.waitForElement(qanOverview.buttons.addColumn, 30);
+    I.waitForElement(qanOverview.buttons.addColumn, 3);
     qanOverview.changeMetric('Load', metricName);
     I.seeInCurrentUrl(urlString);
     const url = await I.grabCurrentUrl();
 
     I.amOnPage(url);
-    I.waitForElement(qanOverview.buttons.addColumn, 30);
-    I.waitForElement(newMetric, 30);
+    I.waitForElement(qanOverview.buttons.addColumn, 3);
+    I.waitForElement(newMetric, 3);
     I.dontSeeElement(oldMetric);
   },
 );
@@ -103,14 +103,14 @@ Scenario(
     const metricInDropdown = qanOverview.getMetricLocatorInDropdown(metricName);
     const oldMetric = qanOverview.getColumnLocator('Load');
 
-    I.waitForElement(qanOverview.buttons.addColumn, 30);
-    I.waitForElement(oldMetric, 30);
+    I.waitForElement(qanOverview.buttons.addColumn, 3);
+    I.waitForElement(oldMetric, 3);
     I.doubleClick(qanOverview.buttons.addColumn);
-    I.waitForElement(qanOverview.elements.newMetricDropdown, 30);
+    I.waitForElement(qanOverview.elements.newMetricDropdown, 3);
     I.fillField(qanOverview.fields.columnSearchField, metricName);
     I.click(metricInDropdown);
     qanOverview.waitForOverviewLoaded();
-    I.waitForElement(newMetric, 30);
+    I.waitForElement(newMetric, 3);
     I.seeElement(newMetric);
     I.seeElement(oldMetric);
     I.seeInCurrentUrl(urlString);
@@ -118,8 +118,8 @@ Scenario(
 
     I.amOnPage(url);
     qanOverview.waitForOverviewLoaded();
-    I.waitForElement(qanOverview.buttons.addColumn, 30);
-    I.waitForElement(newMetric, 30);
+    I.waitForElement(qanOverview.buttons.addColumn, 3);
+    I.waitForElement(newMetric, 3);
     I.seeElement(oldMetric);
     I.seeElement(newMetric);
   },
@@ -131,11 +131,11 @@ Scenario(
     const columnName = 'Load';
     const column = qanOverview.getColumnLocator(columnName);
 
-    I.waitForVisible(column, 30);
+    I.waitForVisible(column, 3);
     I.seeElement(column);
     I.click(qanOverview.buttons.addColumn);
     I.fillField(qanOverview.fields.columnSearchField, columnName);
-    I.waitForVisible(qanOverview.elements.noDataIcon, 30);
+    I.waitForVisible(qanOverview.elements.noDataIcon, 3);
     I.seeElement(qanOverview.elements.noDataIcon);
   },
 );
@@ -158,14 +158,14 @@ xScenario(
       qanOverview.addSpecificColumn(columnsToAdd[i]);
     }
 
-    I.waitForElement(qanOverview.getColumnLocator('Local Blocks Written'), 30);
-    I.scrollTo(qanOverview.getColumnLocator('Local Blocks Written'), 30);
+    I.waitForElement(qanOverview.getColumnLocator('Local Blocks Written'), 3);
+    I.scrollTo(qanOverview.getColumnLocator('Local Blocks Written'), 3);
     I.moveCursorTo(qanOverview.elements.querySelector);
     I.waitForVisible(qanOverview.elements.querySelector);
     I.click(qanOverview.elements.querySelector);
     I.scrollTo(qanOverview.getRowLocator(10));
-    I.waitForVisible(qanOverview.getColumnLocator('Query Time'), 30);
-    I.waitForVisible(qanDetails.elements.resizer, 30);
+    I.waitForVisible(qanOverview.getColumnLocator('Query Time'), 3);
+    I.waitForVisible(qanDetails.elements.resizer, 3);
     I.dragAndDrop(qanDetails.elements.resizer, qanOverview.getColumnLocator('Query Time'));
     I.scrollTo(qanOverview.getColumnLocator('Query Time'));
   },
@@ -203,7 +203,7 @@ Scenario(
     const [queryCount] = (await I.grabTextFrom(firstCell)).split(' ');
 
     I.moveCursorTo(firstCell);
-    I.waitForVisible(qanOverview.elements.tooltip, 20);
+    I.waitForVisible(qanOverview.elements.tooltip, 3);
     await qanOverview.verifyTooltipValue(queryCount);
   },
 );
@@ -217,7 +217,7 @@ Scenario(
     const queryTime = await I.grabTextFrom(secondCell);
 
     I.moveCursorTo(secondCell);
-    I.waitForVisible(qanOverview.elements.latencyChart, 20);
+    I.waitForVisible(qanOverview.elements.latencyChart, 3);
     await qanOverview.verifyTooltipValue(`Per query : ${queryTime}`);
   },
 );

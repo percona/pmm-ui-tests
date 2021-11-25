@@ -1,27 +1,57 @@
+const { setHeadlessWhen } = require('@codeceptjs/configure');
+
 const { pageObjects, getChunks } = require('./codeceptConfigHelper');
+
+require('dotenv').config();
+
+// by default run in headless mode
+setHeadlessWhen(!(process.env.SHOW_BROWSER === 'true'));
 
 exports.config = {
   output: 'tests/output',
   helpers: {
     Playwright: {
+      show: true,
       url: process.env.PMM_UI_URL || 'http://127.0.0.1/',
-      restart: true,
+      restart: false,
       browser: 'chromium',
       windowSize: '1920x1080',
-      waitForNavigation: 'networkidle0',
-      waitForTimeout: 30000,
-      getPageTimeout: 30000,
-      waitForAction: 500,
-      pressKeyDelay: 5,
+      waitForNavigation: 'load',
+      waitForTimeout: 3000,
+      getPageTimeout: 3000,
+      waitForAction: 100,
+      pressKeyDelay: 0,
       chromium: {
         executablePath: process.env.CHROMIUM_PATH,
         ignoreHTTPSErrors: true,
         args: [
-          '--no-sandbox',
-          '--window-size=1920,1080',
-          '--disable-gpu',
+          '--disable-background-networking',
+          '--enable-features=NetworkService,NetworkServiceInProcess',
+          '--disable-background-timer-throttling',
+          '--disable-backgrounding-occluded-windows',
+          '--disable-breakpad',
+          '--disable-client-side-phishing-detection',
+          '--disable-component-extensions-with-background-pages',
+          '--disable-default-apps',
           '--disable-dev-shm-usage',
-          '--disable-setuid-sandbox',
+          '--disable-extensions',
+          '--disable-features=Translate',
+          '--disable-hang-monitor',
+          '--disable-ipc-flooding-protection',
+          '--disable-popup-blocking',
+          '--disable-prompt-on-repost',
+          '--disable-renderer-backgrounding',
+          '--disable-sync',
+          '--force-color-profile=srgb',
+          '--metrics-recording-only',
+          '--no-first-run',
+          '--enable-automation',
+          '--password-store=basic',
+          '--use-mock-keychain',
+          // TODO(sadym): remove '--enable-blink-features=IdleDetection'
+          // once IdleDetection is turned on by default.
+          '--enable-blink-features=IdleDetection',
+          '--export-tagged-pdf',
         ],
       },
     },
@@ -45,7 +75,7 @@ exports.config = {
       require: 'codeceptjs-mailosaurhelper',
       apiKey: process.env.MAILOSAUR_API_KEY || 'key',
       serverId: process.env.MAILOSAUR_SERVER_ID || 'id',
-      timeout: 15000,
+      timeout: 3000,
     },
     DbHelper: {
       require: 'codeceptjs-dbhelper',
@@ -71,6 +101,9 @@ exports.config = {
     allure: {
       enabled: true,
       outputDir: 'tests/output/allure',
+    },
+    retryFailedStep: {
+      enabled: true,
     },
   },
   mocha: {
@@ -102,6 +135,6 @@ exports.config = {
   hooks: [],
   gherkin: {},
   tests: 'tests/**/*_test.js',
-  timeout: 10000,
+  timeout: 3000,
   name: 'pmm-qa',
 };
