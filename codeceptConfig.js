@@ -1,7 +1,8 @@
 module.exports = {
   pageObjects: {
     I: './tests/custom_steps.js',
-    codeceptjsConfig: './pr.codecept.js',
+    config: './tests/globalConfig.js',
+    codeceptjsConfig: './codecept.conf.js',
     addInstanceAPI: './tests/pages/api/addInstanceAPI.js',
     amiInstanceAPI: './tests/pages/api/amiInstanceAPI.js',
     adminPage: './tests/pages/adminPage.js',

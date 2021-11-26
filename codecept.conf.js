@@ -1,6 +1,6 @@
 const { setHeadlessWhen } = require('@codeceptjs/configure');
 
-const { pageObjects, getChunks } = require('./codeceptConfigHelper');
+const { pageObjects, getChunks } = require('./codeceptConfig');
 
 require('dotenv').config();
 
