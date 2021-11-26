@@ -25,6 +25,7 @@ module.exports = {
     homePage: './tests/pages/homePage.js',
     inventoryAPI: './tests/pages/api/inventoryAPI.js',
     mysqlTableDetailsPage: './tests/pages/mysqlTableDetailsPage.js',
+    leftNavMenu: './tests/pages/leftNavMenu.js',
     links: './linksHelper.js',
     locationsPage: './tests/backup/pages/locationsPage.js',
     locationsAPI: './tests/backup/pages/api/locationsAPI.js',
