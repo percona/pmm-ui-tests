@@ -12,9 +12,7 @@ Before(async ({
   I, homePage, dashboardPage, searchDashboardsModal,
 }) => {
   await I.Authorize();
-  // await homePage.open();
-  I.amOnPage(homePage.url);
-  dashboardPage.waitForDashboardOpened();
+  await homePage.open();
   I.click(dashboardPage.fields.breadcrumbs.dashboardName);
   searchDashboardsModal.waitForOpened();
 });
