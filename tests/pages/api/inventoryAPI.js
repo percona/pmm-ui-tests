@@ -130,6 +130,7 @@ module.exports = {
     const timout = timeOutInSeconds * 1000;
     const interval = 1;
 
+    /* eslint no-constant-condition: ["error", { "checkLoops": false }] */
     while (true) {
       // Main condition check: service obj returned
       const obj = await this.getServiceByName(serviceName);
