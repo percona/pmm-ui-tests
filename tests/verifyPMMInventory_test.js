@@ -195,7 +195,7 @@ Scenario(
 Data(services).Scenario(
   'PMM-T1072 - Verify "push_metrics" enabled by default on DB Exporters in Inventory page(Agents tab) @inventory',
   async ({
-    pmmInventoryPage, inventoryAPI, current, remoteInstancesHelper,
+    pmmInventoryPage, inventoryAPI, current, remoteInstancesHelper, I,
   }) => {
     let name = current.serviceName;
 
@@ -206,7 +206,8 @@ Data(services).Scenario(
       name = haproxyService.data.haproxy[0].service_name;
     }
 
-    const id = (await inventoryAPI.waitForServiceExist(name, 30)).service_id;
+    I.amOnPage(pmmInventoryPage.url);
+    const id = (await inventoryAPI.waitForServiceExist(name, 90)).service_id;
 
     pmmInventoryPage.openAgentsPage();
     await pmmInventoryPage.verifyExporterPushModeMetrics(id);
