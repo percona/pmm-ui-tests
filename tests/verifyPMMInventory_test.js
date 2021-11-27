@@ -193,7 +193,7 @@ Scenario(
 );
 
 Data(services).Scenario(
-  'PMM-T1072 - Verify "push_metrics" enabled by default on DB Exporters in Inventory page(Agents tab) @inventory @imp',
+  'PMM-T1072 - Verify "push_metrics" enabled by default on DB Exporters in Inventory page(Agents tab) @inventory',
   async ({
     pmmInventoryPage, inventoryAPI, current, remoteInstancesHelper,
   }) => {
