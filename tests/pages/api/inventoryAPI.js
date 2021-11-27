@@ -103,18 +103,51 @@ module.exports = {
   },
 
   /**
-   * Returns Service ID for specified service Name.
+   * Returns Service Obj by specified Name of the service.
    *
-   * @param   serviceName   to search the ID
-   * @returns {Promise<string>}
+   * @param     serviceName   to search the service
+   * @returns   {Promise<{serviceObject}>} if service found; empty object otherwise.
    */
-  async getServiceId(serviceName) {
+  async getServiceByName(serviceName) {
     const resp = await this.apiGetServices();
-
-    return Object.values(resp.data)
+    const result = Object.values(resp.data)
       .flat(Infinity)
-      .find(({ service_name }) => service_name === serviceName)
-      .service_id;
+      .find(({ service_name }) => service_name === serviceName);
+
+    return result && Object.prototype.hasOwnProperty.call(result, 'service_id') ? result : {};
+  },
+
+  /**
+   * Fluent wait for the specified Service to appear using the API.
+   * Fails test is timeout exceeded.
+   *
+   * @param     serviceName       a name to search
+   * @param     timeOutInSeconds  time to wait for a service to appear
+   * @returns   {Promise<{serviceObject}>}
+   */
+  async waitForServiceExist(serviceName, timeOutInSeconds) {
+    const start = new Date().getTime();
+    const timout = timeOutInSeconds * 1000;
+    const interval = 1;
+
+    while (true) {
+      // Main condition check: service obj returned
+      const obj = await this.getServiceByName(serviceName);
+
+      if (obj && Object.prototype.hasOwnProperty.call(obj, 'service_id')) {
+        return obj;
+      }
+
+      // Check the timeout after evaluating main condition
+      // to ensure conditions with a zero timeout can succeed.
+
+      if (new Date().getTime() - start >= timout) {
+        assert.fail(`Service "${serviceName}" did not appear: 
+        tried to check for ${timeOutInSeconds} second(s) with ${interval} second(s) with interval`);
+      }
+
+      I.wait(interval);
+    }
   },
 
   async deleteNode(nodeID, force) {

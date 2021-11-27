@@ -11,21 +11,22 @@ const services = new DataTable(['serviceName']);
 services.add([mysqlServiceName]);
 services.add([postgresServiceName]);
 services.add([mongoServiceName]);
+services.add(['stt-mysql-5.7.30']);
 services.add(['haproxy']);
 
 Feature('Inventory page');
 
-BeforeSuite(async ({ I }) => {
-  I.say(await I.verifyCommand(`${pmmManagerCmd} --addclient=ps,1 --deploy-service-with-name ${mysqlServiceName}`));
-  I.say(await I.verifyCommand(`${pmmManagerCmd} --addclient=pdpgsql,1 --deploy-service-with-name ${postgresServiceName}`));
-  I.say(await I.verifyCommand(`${pmmManagerCmd} --addclient=modb,1 --deploy-service-with-name ${mongoServiceName}`));
-});
-
-AfterSuite(async ({ I }) => {
-  I.say(await I.verifyCommand(`${pmmManagerCmd} --cleanup-service ${mysqlServiceName}`));
-  I.say(await I.verifyCommand(`${pmmManagerCmd} --cleanup-service ${postgresServiceName}`));
-  I.say(await I.verifyCommand(`${pmmManagerCmd} --cleanup-service ${mongoServiceName}`));
-});
+// BeforeSuite(async ({ I }) => {
+//   I.say(await I.verifyCommand(`${pmmManagerCmd} --addclient=ps,1 --deploy-service-with-name ${mysqlServiceName}`));
+//   I.say(await I.verifyCommand(`${pmmManagerCmd} --addclient=pdpgsql,1 --deploy-service-with-name ${postgresServiceName}`));
+//   I.say(await I.verifyCommand(`${pmmManagerCmd} --addclient=modb,1 --deploy-service-with-name ${mongoServiceName}`));
+// });
+//
+// AfterSuite(async ({ I }) => {
+//   I.say(await I.verifyCommand(`${pmmManagerCmd} --cleanup-service ${mysqlServiceName}`));
+//   I.say(await I.verifyCommand(`${pmmManagerCmd} --cleanup-service ${postgresServiceName}`));
+//   I.say(await I.verifyCommand(`${pmmManagerCmd} --cleanup-service ${mongoServiceName}`));
+// });
 
 Before(async ({ I }) => {
   await I.Authorize();
@@ -192,7 +193,7 @@ Scenario(
 );
 
 Data(services).Scenario(
-  'PMM-T1072 - Verify "push_metrics" enabled by default on DB Exporters in Inventory page(Agents tab) @inventory',
+  'PMM-T1072 - Verify "push_metrics" enabled by default on DB Exporters in Inventory page(Agents tab) @inventory @imp',
   async ({
     pmmInventoryPage, inventoryAPI, current, remoteInstancesHelper,
   }) => {
@@ -205,7 +206,7 @@ Data(services).Scenario(
       name = haproxyService.data.haproxy[0].service_name;
     }
 
-    const id = await inventoryAPI.getServiceId(name);
+    const id = (await inventoryAPI.waitForServiceExist(name, 30)).service_id;
 
     pmmInventoryPage.openAgentsPage();
     await pmmInventoryPage.verifyExporterPushModeMetrics(id);
