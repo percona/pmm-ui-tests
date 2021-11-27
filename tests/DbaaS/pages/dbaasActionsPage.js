@@ -24,10 +24,10 @@ module.exports = {
   },
 
   async createClusterBasicOptions(k8sClusterName, dbClusterName, dbType, dbVersion) {
-    I.waitForElement(dbaasPage.tabs.dbClusterTab.dbClusterAddButtonTop, 3);
-    I.waitForInvisible(dbaasPage.tabs.kubernetesClusterTab.disabledAddButton, 3);
+    I.waitForElement(dbaasPage.tabs.dbClusterTab.dbClusterAddButtonTop, 30);
+    I.waitForInvisible(dbaasPage.tabs.kubernetesClusterTab.disabledAddButton, 30);
     I.click(dbaasPage.tabs.dbClusterTab.dbClusterAddButtonTop);
-    I.waitForElement(dbaasPage.tabs.dbClusterTab.basicOptions.fields.clusterNameField, 3);
+    I.waitForElement(dbaasPage.tabs.dbClusterTab.basicOptions.fields.clusterNameField, 30);
     I.fillField(dbaasPage.tabs.dbClusterTab.basicOptions.fields.clusterNameField, dbClusterName);
     I.click(dbaasPage.tabs.dbClusterTab.basicOptions.fields.kubernetesClusterDropDown);
     I.waitForElement(
@@ -54,7 +54,7 @@ module.exports = {
   async createClusterAdvancedOption(k8sClusterName, dbClusterName, dbType, configuration, dbVersion) {
     await this.createClusterBasicOptions(k8sClusterName, dbClusterName, dbType, dbVersion);
     I.click(dbaasPage.tabs.dbClusterTab.optionsCountLocator(2));
-    I.waitForElement(dbaasPage.tabs.dbClusterTab.advancedOptions.fields.clusterTopology(configuration.topology), 3);
+    I.waitForElement(dbaasPage.tabs.dbClusterTab.advancedOptions.fields.clusterTopology(configuration.topology), 30);
     I.click(dbaasPage.tabs.dbClusterTab.advancedOptions.fields.clusterTopology(configuration.topology));
     if (configuration.resourcePerNode === 'Custom') {
       I.click(
@@ -70,27 +70,27 @@ module.exports = {
   },
 
   async deleteXtraDBCluster(dbClusterName, k8sClusterName) {
-    I.waitForElement(dbaasPage.tabs.dbClusterTab.fields.clusterTableHeader, 3);
+    I.waitForElement(dbaasPage.tabs.dbClusterTab.fields.clusterTableHeader, 30);
     I.click(dbaasPage.tabs.dbClusterTab.fields.clusterActionsMenu);
     await this.checkActionPossible('Delete', true);
-    I.waitForElement(dbaasPage.tabs.dbClusterTab.fields.clusterAction('Delete'), 3);
+    I.waitForElement(dbaasPage.tabs.dbClusterTab.fields.clusterAction('Delete'), 30);
     I.click(dbaasPage.tabs.dbClusterTab.fields.clusterAction('Delete'));
-    I.waitForElement(dbaasPage.tabs.dbClusterTab.fields.deleteDBClusterButton, 3);
-    I.seeElement(dbaasPage.tabs.dbClusterTab.fields.cancelDeleteDBCluster);
+    I.waitForElement(dbaasPage.tabs.dbClusterTab.fields.deleteDBClusterButton, 30);
+    I.seeElement(dbaasPage.tabs.dbClusterTab.fields.cancelDeleteDBCluster, 30);
     I.seeTextEquals(
       dbaasPage.tabs.dbClusterTab.deleteDbClusterConfirmationText(dbClusterName, k8sClusterName, 'MySQL'),
       dbaasPage.tabs.kubernetesClusterTab.modalContentText,
     );
     I.click(dbaasPage.tabs.dbClusterTab.fields.deleteDBClusterButton);
-    I.waitForElement(dbaasPage.tabs.dbClusterTab.fields.clusterStatusDeleting, 3);
+    I.waitForElement(dbaasPage.tabs.dbClusterTab.fields.clusterStatusDeleting, 30);
     await dbaasAPI.waitForDbClusterDeleted(dbClusterName, k8sClusterName);
   },
 
   async restartCluster(dbClusterName, k8sClusterName, clusterDBType = 'MySQL') {
-    I.waitForElement(dbaasPage.tabs.dbClusterTab.fields.clusterTableHeader, 3);
+    I.waitForElement(dbaasPage.tabs.dbClusterTab.fields.clusterTableHeader, 30);
     I.click(dbaasPage.tabs.dbClusterTab.fields.clusterActionsMenu);
     await this.checkActionPossible('Restart', true);
-    I.waitForElement(dbaasPage.tabs.dbClusterTab.fields.clusterAction('Restart'), 3);
+    I.waitForElement(dbaasPage.tabs.dbClusterTab.fields.clusterAction('Restart'), 30);
     I.click(dbaasPage.tabs.dbClusterTab.fields.clusterAction('Restart'));
     I.waitForText('Processing', 30, dbaasPage.tabs.dbClusterTab.fields.progressBarContent);
     if (clusterDBType === 'MySQL') {
@@ -101,12 +101,12 @@ module.exports = {
   },
 
   async editCluster(dbClusterName, k8sClusterName, configuration) {
-    I.waitForElement(dbaasPage.tabs.dbClusterTab.fields.clusterTableHeader, 3);
+    I.waitForElement(dbaasPage.tabs.dbClusterTab.fields.clusterTableHeader, 30);
     I.click(dbaasPage.tabs.dbClusterTab.fields.clusterActionsMenu);
     await this.checkActionPossible('Edit', true);
-    I.waitForElement(dbaasPage.tabs.dbClusterTab.fields.clusterAction('Edit'), 3);
+    I.waitForElement(dbaasPage.tabs.dbClusterTab.fields.clusterAction('Edit'), 30);
     I.click(dbaasPage.tabs.dbClusterTab.fields.clusterAction('Edit'));
-    I.waitForElement(dbaasPage.tabs.dbClusterTab.advancedOptions.fields.clusterTopology(configuration.topology), 3);
+    I.waitForElement(dbaasPage.tabs.dbClusterTab.advancedOptions.fields.clusterTopology(configuration.topology), 30);
     I.seeAttributesOnElements(
       dbaasPage.tabs.dbClusterTab.advancedOptions.fields.diskSizeInputField,
       { disabled: true },
@@ -132,10 +132,10 @@ module.exports = {
   },
 
   async suspendCluster(dbClusterName, k8sClusterName, clusterDBType = 'MySQL') {
-    I.waitForElement(dbaasPage.tabs.dbClusterTab.fields.clusterTableHeader, 3);
+    I.waitForElement(dbaasPage.tabs.dbClusterTab.fields.clusterTableHeader, 30);
     I.click(dbaasPage.tabs.dbClusterTab.fields.clusterActionsMenu);
     await this.checkActionPossible('Suspend', true);
-    I.waitForElement(dbaasPage.tabs.dbClusterTab.fields.clusterAction('Suspend'), 3);
+    I.waitForElement(dbaasPage.tabs.dbClusterTab.fields.clusterAction('Suspend'), 30);
     I.click(dbaasPage.tabs.dbClusterTab.fields.clusterAction('Suspend'));
     I.waitForText('Processing', 30, dbaasPage.tabs.dbClusterTab.fields.progressBarContent);
     await this.checkActionPossible('Resume', false);
@@ -147,10 +147,10 @@ module.exports = {
   },
 
   async resumeCluster(dbClusterName, k8sClusterName, clusterDBType = 'MySQL') {
-    I.waitForElement(dbaasPage.tabs.dbClusterTab.fields.clusterTableHeader, 3);
+    I.waitForElement(dbaasPage.tabs.dbClusterTab.fields.clusterTableHeader, 30);
     I.click(dbaasPage.tabs.dbClusterTab.fields.clusterActionsMenu);
     await this.checkActionPossible('Resume', true);
-    I.waitForElement(dbaasPage.tabs.dbClusterTab.fields.clusterAction('Resume'), 3);
+    I.waitForElement(dbaasPage.tabs.dbClusterTab.fields.clusterAction('Resume'), 30);
     I.click(dbaasPage.tabs.dbClusterTab.fields.clusterAction('Resume'));
     I.waitForText('Processing', 30, dbaasPage.tabs.dbClusterTab.fields.progressBarContent);
     if (clusterDBType === 'MySQL') {
@@ -161,26 +161,26 @@ module.exports = {
   },
 
   async deletePSMDBCluster(dbClusterName, k8sClusterName) {
-    I.waitForElement(dbaasPage.tabs.dbClusterTab.fields.clusterTableHeader, 3);
+    I.waitForElement(dbaasPage.tabs.dbClusterTab.fields.clusterTableHeader, 30);
     I.click(dbaasPage.tabs.dbClusterTab.fields.clusterActionsMenu);
     await this.checkActionPossible('Delete', true);
-    I.waitForElement(dbaasPage.tabs.dbClusterTab.fields.clusterAction('Delete'), 3);
+    I.waitForElement(dbaasPage.tabs.dbClusterTab.fields.clusterAction('Delete'), 30);
     I.click(dbaasPage.tabs.dbClusterTab.fields.clusterAction('Delete'));
-    I.waitForElement(dbaasPage.tabs.dbClusterTab.fields.deleteDBClusterButton, 3);
-    I.seeElement(dbaasPage.tabs.dbClusterTab.fields.cancelDeleteDBCluster);
+    I.waitForElement(dbaasPage.tabs.dbClusterTab.fields.deleteDBClusterButton, 30);
+    I.seeElement(dbaasPage.tabs.dbClusterTab.fields.cancelDeleteDBCluster, 30);
     I.seeTextEquals(
       dbaasPage.tabs.dbClusterTab.deleteDbClusterConfirmationText(dbClusterName, k8sClusterName, 'MongoDB'),
       dbaasPage.tabs.kubernetesClusterTab.modalContentText,
     );
     I.click(dbaasPage.tabs.dbClusterTab.fields.deleteDBClusterButton);
-    I.waitForElement(dbaasPage.tabs.dbClusterTab.fields.clusterStatusDeleting, 3);
+    I.waitForElement(dbaasPage.tabs.dbClusterTab.fields.clusterStatusDeleting, 30);
     await dbaasAPI.waitForDbClusterDeleted(dbClusterName, k8sClusterName, 'MongoDB');
   },
 
   async showClusterLogs() {
-    I.waitForElement(dbaasPage.tabs.dbClusterTab.fields.clusterTableHeader, 3);
+    I.waitForElement(dbaasPage.tabs.dbClusterTab.fields.clusterTableHeader, 30);
     I.click(dbaasPage.tabs.dbClusterTab.fields.clusterActionsMenu);
-    I.waitForElement(dbaasPage.tabs.dbClusterTab.fields.clusterAction('View logs'), 3);
+    I.waitForElement(dbaasPage.tabs.dbClusterTab.fields.clusterAction('View logs'), 30);
     I.click(dbaasPage.tabs.dbClusterTab.fields.clusterAction('View logs'));
   },
 
@@ -202,12 +202,12 @@ module.exports = {
   },
 
   async updateCluster() {
-    I.waitForElement(dbaasPage.tabs.dbClusterTab.fields.clusterTableHeader, 3);
+    I.waitForElement(dbaasPage.tabs.dbClusterTab.fields.clusterTableHeader, 30);
     I.click(dbaasPage.tabs.dbClusterTab.fields.clusterActionsMenu);
     await this.checkActionPossible('Update', true);
-    I.waitForElement(dbaasPage.tabs.dbClusterTab.fields.clusterAction('Update'), 3);
+    I.waitForElement(dbaasPage.tabs.dbClusterTab.fields.clusterAction('Update'), 30);
     I.click(dbaasPage.tabs.dbClusterTab.fields.clusterAction('Update'));
-    I.waitForElement(dbaasPage.tabs.dbClusterTab.fields.updateClusterButton, 3);
+    I.waitForElement(dbaasPage.tabs.dbClusterTab.fields.updateClusterButton, 30);
     I.click(dbaasPage.tabs.dbClusterTab.fields.updateClusterButton);
   },
 };

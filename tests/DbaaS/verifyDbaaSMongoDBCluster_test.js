@@ -56,7 +56,7 @@ Scenario(
 
     await dbaasAPI.deleteAllDBCluster(clusterName);
     await dbaasPage.waitForDbClusterTab(clusterName);
-    I.waitForInvisible(dbaasPage.tabs.kubernetesClusterTab.disabledAddButton, 3);
+    I.waitForInvisible(dbaasPage.tabs.kubernetesClusterTab.disabledAddButton, 30);
     await dbaasActionsPage.createClusterAdvancedOption(clusterName, psmdb_cluster, 'MongoDB', psmdb_configuration);
     I.click(dbaasPage.tabs.dbClusterTab.createClusterButton);
     I.waitForText('Processing', 30, dbaasPage.tabs.dbClusterTab.fields.progressBarContent);
@@ -96,7 +96,7 @@ Data(psmdbClusterDetails).Scenario(
     I, dbaasPage, current,
   }) => {
     await dbaasPage.waitForDbClusterTab(clusterName);
-    I.waitForVisible(dbaasPage.tabs.dbClusterTab.dbClusterAddButtonTop, 3);
+    I.waitForVisible(dbaasPage.tabs.dbClusterTab.dbClusterAddButtonTop, 30);
     const serviceName = `${current.namespace}-${current.clusterName}-${current.nodeType}-${current.node}`;
 
     await dbaasPage.psmdbClusterMetricCheck(psmdb_cluster, serviceName, serviceName);
@@ -112,7 +112,7 @@ Scenario(
     dbaasPage.unregisterCluster(clusterName);
     I.waitForText(dbaasPage.failedUnregisterCluster(clusterName, 'PSMDB'));
     await dbaasPage.waitForDbClusterTab(clusterName);
-    I.waitForInvisible(dbaasPage.tabs.kubernetesClusterTab.disabledAddButton, 3);
+    I.waitForInvisible(dbaasPage.tabs.kubernetesClusterTab.disabledAddButton, 30);
     await dbaasActionsPage.restartCluster(psmdb_cluster, clusterName, 'MongoDB');
     await dbaasPage.validateClusterDetail(psmdb_cluster, clusterName, psmdb_configuration);
     await dbaasActionsPage.deletePSMDBCluster(psmdb_cluster, clusterName);
@@ -126,7 +126,7 @@ Scenario(
   }) => {
     await dbaasAPI.deleteAllDBCluster(clusterName);
     await dbaasPage.waitForDbClusterTab(clusterName);
-    I.waitForInvisible(dbaasPage.tabs.kubernetesClusterTab.disabledAddButton, 3);
+    I.waitForInvisible(dbaasPage.tabs.kubernetesClusterTab.disabledAddButton, 30);
     await dbaasActionsPage.createClusterAdvancedOption(clusterName, psmdb_cluster, 'MongoDB', psmdb_configuration);
     I.click(dbaasPage.tabs.dbClusterTab.createClusterButton);
     I.waitForText('Processing', 30, dbaasPage.tabs.dbClusterTab.fields.progressBarContent);
@@ -175,7 +175,7 @@ xScenario(
 
     await dbaasAPI.deleteAllDBCluster(clusterName);
     await dbaasPage.waitForDbClusterTab(clusterName);
-    I.waitForInvisible(dbaasPage.tabs.kubernetesClusterTab.disabledAddButton, 3);
+    I.waitForInvisible(dbaasPage.tabs.kubernetesClusterTab.disabledAddButton, 30);
     await dbaasActionsPage.createClusterAdvancedOption(clusterName, psmdb_cluster_suspend_resume, 'MongoDB', clusterDetails);
     I.click(dbaasPage.tabs.dbClusterTab.createClusterButton);
     I.waitForText('Processing', 30, dbaasPage.tabs.dbClusterTab.fields.progressBarContent);
@@ -200,7 +200,7 @@ xScenario(
 
     await dbaasAPI.deleteAllDBCluster(clusterName);
     await dbaasPage.waitForDbClusterTab(clusterName);
-    I.waitForInvisible(dbaasPage.tabs.kubernetesClusterTab.disabledAddButton, 3);
+    I.waitForInvisible(dbaasPage.tabs.kubernetesClusterTab.disabledAddButton, 30);
     await dbaasActionsPage.createClusterBasicOptions(clusterName, psmdb_cluster_pending_delete, 'MongoDB');
     I.click(dbaasPage.tabs.dbClusterTab.createClusterButton);
     I.waitForText('Processing', 30, dbaasPage.tabs.dbClusterTab.fields.progressBarContent);
@@ -236,7 +236,7 @@ Scenario(
 
     await dbaasAPI.deleteAllDBCluster(clusterName);
     await dbaasPage.waitForDbClusterTab(clusterName);
-    I.waitForInvisible(dbaasPage.tabs.kubernetesClusterTab.disabledAddButton, 3);
+    I.waitForInvisible(dbaasPage.tabs.kubernetesClusterTab.disabledAddButton, 30);
     await dbaasActionsPage.createClusterAdvancedOption(clusterName, psmdb_cluster_resource_check, 'MongoDB', clusterDetails);
     I.click(dbaasPage.tabs.dbClusterTab.createClusterButton);
     I.waitForText('Processing', 30, dbaasPage.tabs.dbClusterTab.fields.progressBarContent);
@@ -301,7 +301,7 @@ Scenario('Verify update PSMDB Cluster version @dbaas', async ({ I, dbaasPage, db
 
   await dbaasAPI.deleteAllDBCluster(clusterName);
   await dbaasPage.waitForDbClusterTab(clusterName);
-  I.waitForInvisible(dbaasPage.tabs.kubernetesClusterTab.disabledAddButton, 3);
+  I.waitForInvisible(dbaasPage.tabs.kubernetesClusterTab.disabledAddButton, 30);
   await dbaasActionsPage.createClusterAdvancedOption(clusterName, psmdb_cluster_update, 'MongoDB', clusterDetails, '4.2.8-8');
   I.click(dbaasPage.tabs.dbClusterTab.createClusterButton);
   I.waitForText('Processing', 30, dbaasPage.tabs.dbClusterTab.fields.progressBarContent);

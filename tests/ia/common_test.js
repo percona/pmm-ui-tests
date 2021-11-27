@@ -18,7 +18,7 @@ Scenario(
     await settingsAPI.apiDisableIA();
     I.amOnPage(iaCommon.url);
 
-    I.waitForVisible(iaCommon.elements.disabledIa, 3);
+    I.waitForVisible(iaCommon.elements.disabledIa, 30);
     I.seeTextEquals(iaCommon.messages.disabledIa, iaCommon.elements.disabledIa);
 
     I.seeAttributesOnElements(iaCommon.elements.settingsLink, {
@@ -69,7 +69,7 @@ Scenario(
     await verifyNotificationChannelsPage();
     verifyTitle();
     I.refreshPage();
-    I.waitForVisible(ncPage.buttons.openAddChannelModal, 3);
+    I.waitForVisible(ncPage.buttons.openAddChannelModal, 30);
     await verifyNotificationChannelsPage();
 
     iaCommon.openTab(iaCommon.tabNames.alerts);

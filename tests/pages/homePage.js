@@ -102,7 +102,7 @@ module.exports = {
     const available_version = await I.grabTextFrom(locators.availableVersion);
 
     I.click(locators.triggerUpdate);
-    I.waitForElement(locators.updateProgressModal, 3);
+    I.waitForElement(locators.updateProgressModal, 30);
     I.waitForText(locators.inProgressMessage, 30, locators.updateProgressModal);
 
     // skipping milestones checks for 2.9 and 2.10 versions due logs not showing issue
@@ -146,8 +146,8 @@ module.exports = {
   async verifyPostUpdateWidgetIsPresent() {
     const locators = this.getLocators('latest');
 
-    I.waitForVisible(locators.upToDateLocator, 3);
-    I.waitForVisible(locators.lastCheckSelector, 3);
+    I.waitForVisible(locators.upToDateLocator, 30);
+    I.waitForVisible(locators.lastCheckSelector, 30);
     I.dontSeeElement(locators.availableVersion);
     I.dontSeeElement(locators.triggerUpdate);
     I.seeElement(locators.upToDateLocator);
@@ -161,7 +161,7 @@ module.exports = {
   verifyVisibleService(serviceName) {
     const serviceExists = locate('.react-grid-item').find(locate('p').withText(serviceName));
 
-    I.waitForElement(serviceExists, 3);
+    I.waitForElement(serviceExists, 30);
     I.seeElement(serviceExists);
   },
 

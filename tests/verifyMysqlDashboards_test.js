@@ -101,17 +101,17 @@ xScenario(
 
     I.amOnPage(dashboardPage.mysqlUserDetailsDashboard.url);
     dashboardPage.waitForDashboardOpened();
-    I.waitForVisible(dashboardPage.fields.timeRangePickerButton, 3);
+    I.waitForVisible(dashboardPage.fields.timeRangePickerButton, 20);
     adminPage.applyTimeRange(timeRange);
     await dashboardPage.applyFilter('Service Name', 'ps_8.0');
-    I.waitForVisible(dashboardPage.fields.rootUser, 3);
+    I.waitForVisible(dashboardPage.fields.rootUser, 20);
     I.click(dashboardPage.fields.rootUser);
     I.waitForVisible(dashboardPage.fields.dataLinkForRoot);
     I.click(dashboardPage.fields.dataLinkForRoot);
     await dashboardPage.waitAndSwitchTabs(2);
     I.waitForVisible(qanFilters.buttons.showSelected, 60);
-    I.waitInUrl('&var-username=root', 3);
-    I.waitInUrl('from=now-12h&to=now', 3);
+    I.waitInUrl('&var-username=root', 30);
+    I.waitInUrl('from=now-12h&to=now', 30);
     I.waitForVisible(qanFilters.buttons.showSelected, 60);
     await qanFilters.verifySelectedFilters(filters);
     const timeRangeGrabbed = await dashboardPage.getTimeRange();

@@ -33,7 +33,7 @@ module.exports = {
   },
 
   verifyRemoteServiceIsDisplayed(serviceName) {
-    I.waitForVisible(pmmInventoryPage.fields.inventoryTableColumn, 3);
+    I.waitForVisible(pmmInventoryPage.fields.inventoryTableColumn, 30);
     I.scrollPageToBottom();
     I.see(serviceName, pmmInventoryPage.fields.inventoryTableColumn);
   },
@@ -92,14 +92,14 @@ module.exports = {
     const servicesLink = this.fields.pmmServicesSelector;
     const agentLinkLocator = this.fields.agentsLink;
 
-    I.waitForElement(servicesLink, 3);
+    I.waitForElement(servicesLink, 20);
     I.click(servicesLink);
     const nodeId = await this.getNodeId(serviceName);
 
     I.click(agentLinkLocator);
     const enhanceMetricsDisabled = `//tr//td//span[contains(text(), "${nodeId}")]/../span[contains(text(),"enhanced_metrics_disabled: true")]`;
 
-    I.waitForElement(enhanceMetricsDisabled, 3);
+    I.waitForElement(enhanceMetricsDisabled, 30);
     I.seeElement(enhanceMetricsDisabled);
     const basicMetricsDisabled = `//tr//td//span[contains(text(), "${nodeId}")]/../span[contains(text(),"basic_metrics_disabled: true")]`;
 
@@ -115,7 +115,7 @@ module.exports = {
   async getServiceId(serviceName) {
     const serviceIdLocator = `${this.fields.serviceIdLocatorPrefix}${serviceName}")]/preceding-sibling::td[2]`;
 
-    I.waitForVisible(serviceIdLocator, 3);
+    I.waitForVisible(serviceIdLocator, 30);
     const matchedServices = await I.grabNumberOfVisibleElements(serviceIdLocator);
 
     await assert.equal(
@@ -130,7 +130,7 @@ module.exports = {
   selectService(serviceName) {
     const serviceLocator = `${this.fields.serviceIdLocatorPrefix}${serviceName}")]/preceding-sibling::td/div[@data-testid="select-row"]`;
 
-    I.waitForVisible(serviceLocator, 3);
+    I.waitForVisible(serviceLocator, 30);
     I.click(serviceLocator);
   },
 
@@ -138,16 +138,16 @@ module.exports = {
     const serviceLocator = `${this.fields.serviceIdLocatorPrefix}${serviceName}")]`;
 
     if (deleted) {
-      I.waitForInvisible(serviceLocator, 3);
+      I.waitForInvisible(serviceLocator, 30);
     } else {
-      I.waitForVisible(serviceLocator, 3);
+      I.waitForVisible(serviceLocator, 30);
     }
   },
 
   checkNodeExists(serviceName) {
     const nodeName = `${this.fields.serviceIdLocatorPrefix}${serviceName}")]`;
 
-    I.waitForVisible(nodeName, 3);
+    I.waitForVisible(nodeName, 20);
   },
 
   getServicesId(serviceName) {
@@ -171,14 +171,14 @@ module.exports = {
   selectAgent(agentType) {
     const agentLocator = `//table//tr/td[3][contains(text(),"${agentType}")]/preceding-sibling::td/div[@data-testid="select-row"]`;
 
-    I.waitForVisible(agentLocator, 3);
+    I.waitForVisible(agentLocator, 30);
     I.click(agentLocator);
   },
 
   async getAgentServiceID(agentType) {
     const serviceIdLocator = `//table//tr/td[3][contains(text(),"${agentType}")]/following-sibling::td//span[contains(text(), 'service_id:')]`;
 
-    I.waitForVisible(serviceIdLocator, 3);
+    I.waitForVisible(serviceIdLocator, 30);
     const serviceIDs = await I.grabTextFrom(serviceIdLocator);
 
     return serviceIDs[0].slice(12, serviceIDs[0].lenght);
@@ -187,7 +187,7 @@ module.exports = {
   async getAgentID(agentType) {
     const agentIdLocator = `//table//tr/td[3][contains(text(),"${agentType}")]/preceding-sibling::td`;
 
-    I.waitForVisible(agentIdLocator, 3);
+    I.waitForVisible(agentIdLocator, 30);
     const agentIDs = await I.grabTextFrom(agentIdLocator);
 
     return agentIDs[1];
@@ -207,16 +207,16 @@ module.exports = {
     const agentIdLocator = `//table//tr/td[2][contains(text(),"${id}")]`;
 
     if (deleted) {
-      I.waitForInvisible(agentIdLocator, 3);
+      I.waitForInvisible(agentIdLocator, 30);
     } else {
-      I.waitForVisible(agentIdLocator, 3);
+      I.waitForVisible(agentIdLocator, 30);
     }
   },
 
   selectAgentByID(id) {
     const agentIdLocator = `//table//tr/td[2][contains(text(),"${id}")]/preceding-sibling::td/div[@data-testid="select-row"]`;
 
-    I.waitForVisible(agentIdLocator, 3);
+    I.waitForVisible(agentIdLocator, 30);
     I.click(agentIdLocator);
   },
 
@@ -255,7 +255,7 @@ module.exports = {
   },
 
   async checkSort(columnNumber) {
-    I.waitForVisible(this.fields.tableRow, 3);
+    I.waitForVisible(this.fields.tableRow, 20);
     const rowCount = await I.grabNumberOfVisibleElements(this.fields.tableRow);
     let tmp;
 
@@ -281,6 +281,6 @@ module.exports = {
 
   checkExistingAgent(agent) {
     I.click(this.fields.agentsLink);
-    I.waitForVisible(agent, 3);
+    I.waitForVisible(agent, 30);
   },
 };

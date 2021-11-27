@@ -18,7 +18,7 @@ Scenario(
   'PMM-T371 - Verify sorting in Inventory page(Agents tab) @inventory @nightly',
   async ({ I, pmmInventoryPage }) => {
     I.amOnPage(pmmInventoryPage.url);
-    I.waitForVisible(pmmInventoryPage.fields.agentsLink, 3);
+    I.waitForVisible(pmmInventoryPage.fields.agentsLink, 20);
     I.click(pmmInventoryPage.fields.agentsLink);
     await pmmInventoryPage.checkSort(3);
   },
@@ -28,7 +28,7 @@ Scenario(
   'PMM-T371 - Verify sorting in Inventory page(Nodes tab) @inventory @nightly',
   async ({ I, pmmInventoryPage }) => {
     I.amOnPage(pmmInventoryPage.url);
-    I.waitForVisible(pmmInventoryPage.fields.nodesLink, 3);
+    I.waitForVisible(pmmInventoryPage.fields.nodesLink, 20);
     I.click(pmmInventoryPage.fields.nodesLink);
     await pmmInventoryPage.checkSort(4);
   },
@@ -68,7 +68,7 @@ Scenario(
     I.amOnPage(pmmInventoryPage.url);
     const serviceId = pmmInventoryPage.getServicesId(serviceName);
 
-    I.waitForVisible(pmmInventoryPage.fields.nodesLink, 3);
+    I.waitForVisible(pmmInventoryPage.fields.nodesLink, 30);
     I.click(pmmInventoryPage.fields.nodesLink);
     pmmInventoryPage.selectService(serviceName);
     pmmInventoryPage.deleteWithForceOpt();
@@ -85,7 +85,7 @@ Scenario(
     const node = 'pmm-server';
 
     I.amOnPage(pmmInventoryPage.url);
-    I.waitForVisible(pmmInventoryPage.fields.nodesLink, 3);
+    I.waitForVisible(pmmInventoryPage.fields.nodesLink, 30);
     I.click(pmmInventoryPage.fields.nodesLink);
     pmmInventoryPage.selectService(node);
     pmmInventoryPage.deleteWithForceOpt();
@@ -99,11 +99,11 @@ Scenario(
     const agentType = 'MySQL exporter';
 
     I.amOnPage(pmmInventoryPage.url);
-    I.waitForVisible(pmmInventoryPage.fields.nodesLink, 3);
+    I.waitForVisible(pmmInventoryPage.fields.nodesLink, 20);
     I.click(pmmInventoryPage.fields.nodesLink);
     const countOfNodesBefore = await pmmInventoryPage.getNodeCount();
 
-    I.waitForVisible(pmmInventoryPage.fields.agentsLink, 3);
+    I.waitForVisible(pmmInventoryPage.fields.agentsLink, 20);
     I.click(pmmInventoryPage.fields.agentsLink);
     const serviceId = await pmmInventoryPage.getAgentServiceID(agentType);
     const agentId = await pmmInventoryPage.getAgentID(agentType);
@@ -128,7 +128,7 @@ Scenario(
     const agentType = 'PMM Agent';
 
     I.amOnPage(pmmInventoryPage.url);
-    I.waitForVisible(pmmInventoryPage.fields.agentsLink, 3);
+    I.waitForVisible(pmmInventoryPage.fields.agentsLink, 20);
     I.click(pmmInventoryPage.fields.agentsLink);
     const countBefore = await pmmInventoryPage.getCountOfItems();
 
@@ -152,7 +152,7 @@ Scenario(
     const servicesNotRunning = [];
 
     I.amOnPage(pmmInventoryPage.url);
-    I.waitForVisible(pmmInventoryPage.fields.agentsLink, 3);
+    I.waitForVisible(pmmInventoryPage.fields.agentsLink, 20);
     I.click(pmmInventoryPage.fields.agentsLink);
 
     for (const status of statuses) {

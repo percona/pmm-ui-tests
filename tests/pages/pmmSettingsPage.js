@@ -249,23 +249,23 @@ module.exports = {
   },
 
   switchAzure() {
-    I.waitForVisible(this.fields.microsoftAzureMonitoringSwitch, 3);
+    I.waitForVisible(this.fields.microsoftAzureMonitoringSwitch, 30);
     I.click(this.fields.microsoftAzureMonitoringSwitch);
-    I.waitForVisible(this.fields.advancedButton, 3);
+    I.waitForVisible(this.fields.advancedButton, 30);
     I.click(this.fields.advancedButton);
   },
 
   async waitForPmmSettingsPageLoaded() {
-    I.waitForVisible(this.fields.tabsSection, 3);
-    I.waitForVisible(this.fields.tabContent, 3);
-    I.waitForVisible(this.fields.diagnosticsLabel, 3);
-    I.waitForVisible(this.fields.diagnosticsButton, 3);
+    I.waitForVisible(this.fields.tabsSection, 30);
+    I.waitForVisible(this.fields.tabContent, 30);
+    I.waitForVisible(this.fields.diagnosticsLabel, 30);
+    I.waitForVisible(this.fields.diagnosticsButton, 30);
   },
   async expandSection(sectionName, expectedContentLocator) {
     const sectionExpandLocator = locate('$settings-tabs').find('li').withText(sectionName);
 
     I.click(sectionExpandLocator);
-    I.waitForVisible(expectedContentLocator, 3);
+    I.waitForVisible(expectedContentLocator, 30);
   },
 
   fillCommunicationFields(fields) {
@@ -276,7 +276,7 @@ module.exports = {
     if (url && type === 'slack') {
       I.click(this.communication.slackTab);
 
-      I.waitForVisible(this.communication.slack.url.locator, 3);
+      I.waitForVisible(this.communication.slack.url.locator, 30);
       I.clearField(this.communication.slack.url.locator);
       I.fillField(this.communication.slack.url.locator, url);
 
@@ -284,7 +284,7 @@ module.exports = {
     }
 
     if (type === 'email') {
-      I.waitForVisible(this.communication.email.serverAddress.locator, 3);
+      I.waitForVisible(this.communication.email.serverAddress.locator, 30);
       I.clearField(this.communication.email.serverAddress.locator);
       I.fillField(this.communication.email.serverAddress.locator, serverAddress);
       I.clearField(this.communication.email.hello.locator);
@@ -320,12 +320,12 @@ module.exports = {
 
     if (type === 'slack') {
       I.click(this.communication.slackTab);
-      I.waitForVisible(this.communication.slack.url.locator, 3);
+      I.waitForVisible(this.communication.slack.url.locator, 30);
       I.seeInField(this.communication.slack.url.locator, url);
     }
 
     if (type === 'email') {
-      I.waitForVisible(this.communication.email.serverAddress.locator, 3);
+      I.waitForVisible(this.communication.email.serverAddress.locator, 30);
       I.seeInField(this.communication.email.serverAddress.locator, serverAddress);
       I.seeInField(this.communication.email.hello.locator, hello);
       I.seeInField(this.communication.email.from.locator, from);
@@ -338,7 +338,7 @@ module.exports = {
   },
 
   async selectMetricsResolution(resolution) {
-    I.waitForElement(`${this.fields.metricsResolution + resolution}"]`, 3);
+    I.waitForElement(`${this.fields.metricsResolution + resolution}"]`, 30);
     I.click(`${this.fields.metricsResolution + resolution}"]`);
     I.click(this.fields.metricsResolutionButton);
   },
@@ -346,7 +346,7 @@ module.exports = {
   async verifySelectedResolution(resolution) {
     const selector = '$resolutions-radio-state';
 
-    I.waitForElement(selector, 3);
+    I.waitForElement(selector, 30);
     const value = await I.grabAttributeFrom(selector, 'value');
 
     assert.equal(value.includes(resolution.toLowerCase()), true, 'Metric resolution should be selected');
@@ -388,7 +388,7 @@ module.exports = {
     I.fillField(this.fields.alertURLInput, url);
     adminPage.customClearField(this.fields.alertRulesInput);
     I.fillField(this.fields.alertRulesInput, rule);
-    I.waitForElement(this.fields.alertmanagerButton, 3);
+    I.waitForElement(this.fields.alertmanagerButton, 30);
     I.click(this.fields.alertmanagerButton);
   },
 
@@ -421,7 +421,7 @@ module.exports = {
       I.amOnPage('prometheus/alerts');
     }
 
-    I.waitForElement(`//pre[contains(text(), '${ruleName}')]`, 3);
+    I.waitForElement(`//pre[contains(text(), '${ruleName}')]`, 30);
     I.seeElement(`//pre[contains(text(), '${ruleName}')]`);
     I.see(ruleName);
   },
@@ -448,7 +448,7 @@ module.exports = {
   },
 
   async verifySettingsValue(field, expectedValue) {
-    I.waitForElement(field, 3);
+    I.waitForElement(field, 30);
     const fieldActualValue = await I.grabValueFrom(field);
 
     assert.equal(
@@ -459,7 +459,7 @@ module.exports = {
   },
 
   async verifyTooltip(tooltipObj) {
-    I.waitForVisible(this.fields.tooltipSelector, 3);
+    I.waitForVisible(this.fields.tooltipSelector, 30);
     I.seeTextEquals(`${tooltipObj.text}\nRead more`, this.fields.tooltipSelector);
     I.seeAttributesOnElements(`${this.fields.tooltipSelector} > div > a`, { href: tooltipObj.link });
   },

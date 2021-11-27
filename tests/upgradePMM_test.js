@@ -98,7 +98,7 @@ Scenario(
     // Whats New Link is added for the latest version hours before the release,
     // hence we need to skip checking on that, rest it should be available and checked.
     if (majorVersionDiff >= 1 && patchVersionDiff >= 1) {
-      I.waitForElement(locators.whatsNewLink, 3);
+      I.waitForElement(locators.whatsNewLink, 30);
       I.seeElement(locators.whatsNewLink);
       const link = await I.grabAttributeFrom(locators.whatsNewLink, 'href');
 
@@ -227,12 +227,12 @@ if (versionMinor >= 15) {
         await settingsAPI.setCheckIntervals({ ...settingsAPI.defaultCheckIntervals, standard_interval: '3600s' });
 
         I.amOnPage(databaseChecksPage.url);
-        I.waitForVisible(runChecks, 3);
+        I.waitForVisible(runChecks, 30);
       } else {
         I.amOnPage(databaseChecksPage.oldUrl);
-        I.waitForVisible(runChecks, 3);
+        I.waitForVisible(runChecks, 30);
         I.click(runChecks);
-        I.waitForVisible(failedCheckRowLocator, 3);
+        I.waitForVisible(failedCheckRowLocator, 30);
       }
 
       // Check that there are failed checks
@@ -240,7 +240,7 @@ if (versionMinor >= 15) {
       await securityChecksAPI.verifyFailedCheckExists(failedCheckMessage);
 
       // Silence mysql Empty Password failed check
-      I.waitForVisible(failedCheckRowLocator, 3);
+      I.waitForVisible(failedCheckRowLocator, 30);
       I.click(failedCheckRowLocator.find('button').first());
     },
   );
@@ -362,11 +362,11 @@ if (versionMinor >= 15) {
       I.wait(30);
       // Verify STT is enabled
       I.amOnPage(pmmSettingsPage.advancedSettingsUrl);
-      I.waitForVisible(pmmSettingsPage.fields.sttSwitchSelector, 3);
+      I.waitForVisible(pmmSettingsPage.fields.sttSwitchSelector, 30);
       pmmSettingsPage.verifySwitch(pmmSettingsPage.fields.sttSwitchSelectorInput, 'on');
 
       I.amOnPage(databaseChecksPage.url);
-      I.waitForVisible(databaseChecksPage.buttons.startDBChecks, 3);
+      I.waitForVisible(databaseChecksPage.buttons.startDBChecks, 30);
       // Verify there is failed check
       await securityChecksAPI.verifyFailedCheckExists(failedCheckMessage);
     },
@@ -438,7 +438,7 @@ if (versionMinor >= 16) {
     }) => {
       I.amOnPage(databaseChecksPage.url);
 
-      I.waitForVisible(failedCheckRowLocator, 3);
+      I.waitForVisible(failedCheckRowLocator, 30);
       I.dontSeeElement(failedCheckRowLocator.find('td').withText(emptyPasswordSummary));
 
       I.click(databaseChecksPage.buttons.toggleSilenced);
@@ -467,7 +467,7 @@ if (versionMinor >= 16) {
       I, pmmSettingsPage,
     }) => {
       I.amOnPage(pmmSettingsPage.advancedSettingsUrl);
-      I.waitForVisible(pmmSettingsPage.fields.rareIntervalInput, 3);
+      I.waitForVisible(pmmSettingsPage.fields.rareIntervalInput, 30);
 
       I.seeInField(pmmSettingsPage.fields.rareIntervalInput, '78');
       I.seeInField(pmmSettingsPage.fields.standartIntervalInput, '1');
@@ -491,7 +491,7 @@ if (iaReleased) {
       assert.ok(alerts[0].summary === alertName, `Didn't find alert with name ${alertName}`);
 
       I.amOnPage(alertsPage.url);
-      I.waitForElement(alertsPage.elements.alertRow(alertName), 3);
+      I.waitForElement(alertsPage.elements.alertRow(alertName), 30);
     },
   );
 } else {
@@ -501,7 +501,7 @@ if (iaReleased) {
       I, pmmSettingsPage,
     }) => {
       I.amOnPage(pmmSettingsPage.advancedSettingsUrl);
-      I.waitForVisible(pmmSettingsPage.fields.iaSwitchSelector, 3);
+      I.waitForVisible(pmmSettingsPage.fields.iaSwitchSelector, 30);
       I.dontSeeElement(pmmSettingsPage.communication.communicationSection);
       pmmSettingsPage.verifySwitch(pmmSettingsPage.fields.iaSwitchSelectorInput, 'off');
     },
@@ -544,7 +544,7 @@ Scenario(
       metricResoltionSection,
       pmmSettingsPage.fields.metricsResolutionButton,
     );
-    await pmmSettingsPage.verifySettingsValue(pmmSettingsPage.fields.lowInput, 3);
+    await pmmSettingsPage.verifySettingsValue(pmmSettingsPage.fields.lowInput, 30);
     await pmmSettingsPage.verifySettingsValue(pmmSettingsPage.fields.mediumInput, 15);
     await pmmSettingsPage.verifySettingsValue(pmmSettingsPage.fields.highInput, 3);
   },
@@ -554,8 +554,8 @@ Scenario(
   'Verify user can see News Panel @post-upgrade @ami-upgrade @pmm-upgrade  ',
   async ({ I, homePage }) => {
     I.amOnPage(homePage.url);
-    I.waitForVisible(homePage.fields.newsPanelTitleSelector, 3);
-    I.waitForVisible(homePage.fields.newsPanelContentSelector, 3);
+    I.waitForVisible(homePage.fields.newsPanelTitleSelector, 30);
+    I.waitForVisible(homePage.fields.newsPanelContentSelector, 30);
     const newsItems = await I.grabNumberOfVisibleElements(`${homePage.fields.newsPanelContentSelector}/div`);
 
     assert.ok(newsItems > 1, 'News Panel is empty');
@@ -643,7 +643,7 @@ Scenario(
         qanFilters.waitForFiltersToLoad();
         qanOverview.waitForOverviewLoaded();
 
-        I.waitForVisible(filter, 3);
+        I.waitForVisible(filter, 30);
         I.seeElement(filter);
       }
     }

@@ -35,8 +35,8 @@ Scenario(
     await settingsAPI.apiEnableSTT();
     await I.Authorize(users.viewer.username, users.viewer.password);
     I.amOnPage(homePage.url);
-    I.waitForVisible(homePage.fields.checksPanelSelector, 3);
-    I.waitForVisible(homePage.fields.noAccessRightsSelector, 3);
+    I.waitForVisible(homePage.fields.checksPanelSelector, 30);
+    I.waitForVisible(homePage.fields.noAccessRightsSelector, 30);
     I.see('Insufficient access permissions.', homePage.fields.noAccessRightsSelector);
   },
 );
@@ -47,7 +47,7 @@ Scenario(
     await settingsAPI.apiEnableSTT();
     await I.Authorize(users.admin.username, users.admin.password);
     I.amOnPage(homePage.url);
-    I.waitForVisible(homePage.fields.checksPanelSelector, 3);
+    I.waitForVisible(homePage.fields.checksPanelSelector, 30);
     I.dontSeeElement(homePage.fields.noAccessRightsSelector);
   },
 );
@@ -58,8 +58,8 @@ Scenario(
     await settingsAPI.apiEnableSTT();
     await I.Authorize(users.viewer.username, users.viewer.password);
     I.amOnPage(databaseChecksPage.url);
-    I.waitForVisible(databaseChecksPage.fields.dbCheckPanelSelector, 3);
-    I.waitForVisible(databaseChecksPage.fields.noAccessRightsSelector, 3);
+    I.waitForVisible(databaseChecksPage.fields.dbCheckPanelSelector, 30);
+    I.waitForVisible(databaseChecksPage.fields.noAccessRightsSelector, 30);
     I.see('Insufficient access permissions.', databaseChecksPage.fields.noAccessRightsSelector);
   },
 );
@@ -70,7 +70,7 @@ Scenario(
     await settingsAPI.apiEnableSTT();
     await I.Authorize(users.admin.username, users.admin.password);
     I.amOnPage(databaseChecksPage.url);
-    I.waitForVisible(databaseChecksPage.fields.dbCheckPanelSelector, 3);
+    I.waitForVisible(databaseChecksPage.fields.dbCheckPanelSelector, 30);
     I.dontSeeElement(databaseChecksPage.fields.noAccessRightsSelector);
   },
 );
@@ -81,8 +81,8 @@ Scenario(
     await settingsAPI.apiDisableSTT();
     await I.Authorize(users.viewer.username, users.viewer.password);
     I.amOnPage(homePage.url);
-    I.waitForVisible(homePage.fields.checksPanelSelector, 3);
-    I.waitForVisible(homePage.fields.noAccessRightsSelector, 3);
+    I.waitForVisible(homePage.fields.checksPanelSelector, 30);
+    I.waitForVisible(homePage.fields.noAccessRightsSelector, 30);
     I.see('Insufficient access permissions.', homePage.fields.noAccessRightsSelector);
   },
 );
@@ -93,7 +93,7 @@ Scenario(
     await settingsAPI.apiDisableSTT();
     await I.Authorize(users.admin.username, users.admin.password);
     I.amOnPage(homePage.url);
-    I.waitForVisible(homePage.fields.checksPanelSelector, 3);
+    I.waitForVisible(homePage.fields.checksPanelSelector, 30);
     I.dontSeeElement(homePage.fields.noAccessRightsSelector);
   },
 );
@@ -104,8 +104,8 @@ Scenario(
     await settingsAPI.apiDisableSTT();
     await I.Authorize(users.viewer.username, users.viewer.password);
     I.amOnPage(databaseChecksPage.url);
-    I.waitForVisible(databaseChecksPage.fields.dbCheckPanelSelector, 3);
-    I.waitForVisible(databaseChecksPage.fields.noAccessRightsSelector, 3);
+    I.waitForVisible(databaseChecksPage.fields.dbCheckPanelSelector, 30);
+    I.waitForVisible(databaseChecksPage.fields.noAccessRightsSelector, 30);
     I.see('Insufficient access permissions.', databaseChecksPage.fields.noAccessRightsSelector);
   },
 );
@@ -116,7 +116,7 @@ Scenario(
     await settingsAPI.apiDisableSTT();
     await I.Authorize(users.admin.username, users.admin.password);
     I.amOnPage(databaseChecksPage.url);
-    I.waitForVisible(databaseChecksPage.fields.dbCheckPanelSelector, 3);
+    I.waitForVisible(databaseChecksPage.fields.dbCheckPanelSelector, 30);
     I.dontSeeElement(databaseChecksPage.fields.noAccessRightsSelector);
   },
 );
@@ -130,7 +130,7 @@ Scenario(
     await I.Authorize(users.viewer.username, users.viewer.password);
 
     I.amOnPage(locationsPage.url);
-    I.waitForVisible(databaseChecksPage.fields.noAccessRightsSelector, 3);
+    I.waitForVisible(databaseChecksPage.fields.noAccessRightsSelector, 30);
     I.see('Insufficient access permissions.', databaseChecksPage.fields.noAccessRightsSelector);
   },
 );

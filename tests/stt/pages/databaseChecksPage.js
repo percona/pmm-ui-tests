@@ -62,7 +62,7 @@ module.exports = {
         I.seeElement(this.fields.detailsHeaderSelector);
         break;
       case 'disabled':
-        I.waitForVisible(this.fields.disabledSTTMessageSelector, 3);
+        I.waitForVisible(this.fields.disabledSTTMessageSelector, 30);
         I.seeElement(this.fields.dbCheckPanelSelector);
         I.see(this.messages.disabledSTTMessage, this.fields.disabledSTTMessageSelector);
         I.seeElement(this.fields.disabledSTTMessageLinkSelector);
@@ -78,7 +78,7 @@ module.exports = {
   // Contains if statements to avoid situations when another test disables STT
   // while we expect it to be enabled and vice versa
   async verifyDatabaseChecksPageOpened(stt = 'enabled') {
-    I.waitForVisible(this.fields.dbCheckPanelSelector, 3);
+    I.waitForVisible(this.fields.dbCheckPanelSelector, 30);
     const disabledSTT = await I.grabNumberOfVisibleElements(this.fields.disabledSTTMessageSelector);
 
     switch (stt) {
@@ -88,7 +88,7 @@ module.exports = {
           I.refreshPage();
         }
 
-        I.waitForVisible(this.fields.serviceNameHeaderSelector, 3);
+        I.waitForVisible(this.fields.serviceNameHeaderSelector, 30);
         this.verifyDatabaseChecksPageElements(stt);
         break;
       case 'disabled':
@@ -120,7 +120,7 @@ module.exports = {
 
   mouseOverInfoIcon(row) {
     I.moveCursorTo(this.failedChecksInfoLocator(row));
-    I.waitForVisible(this.fields.totalFailedChecksTooltipSelector, 3);
+    I.waitForVisible(this.fields.totalFailedChecksTooltipSelector, 30);
     I.seeElement(this.fields.totalFailedChecksTooltipSelector);
   },
 
@@ -132,7 +132,7 @@ module.exports = {
     const serviceNames = await I.grabTextFromAll(this.fields.serviceNameSelector);
 
     I.amOnPage(pmmInventoryPage.url);
-    I.waitForVisible(pmmInventoryPage.fields.inventoryTableColumn, 3);
+    I.waitForVisible(pmmInventoryPage.fields.inventoryTableColumn, 30);
     I.scrollPageToBottom();
 
     for (const name of serviceNames) {
@@ -142,7 +142,7 @@ module.exports = {
 
   runDBChecks() {
     I.amOnPage(this.url);
-    I.waitForVisible(this.buttons.startDBChecks, 3);
+    I.waitForVisible(this.buttons.startDBChecks, 30);
     I.click(this.buttons.startDBChecks);
     I.verifyPopUpMessage(this.messages.securityChecksDone, 60);
   },

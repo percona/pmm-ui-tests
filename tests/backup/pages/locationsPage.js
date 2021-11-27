@@ -92,7 +92,7 @@ module.exports = {
 
   openAddLocationModal() {
     I.click(this.buttons.openAddLocationModal);
-    I.waitForVisible(this.elements.nameFieldLabel, 3);
+    I.waitForVisible(this.elements.nameFieldLabel, 30);
 
     I.seeTextEquals(this.messages.modalHeaderText, this.elements.modalHeader);
     I.seeElement(this.buttons.closeModal);
@@ -122,7 +122,7 @@ module.exports = {
       name, description = '', endpoint, bucket_name, access_key, secret_key,
     } = locationObj;
 
-    I.waitForVisible(this.fields.name, 3);
+    I.waitForVisible(this.fields.name, 30);
     I.seeInField(this.fields.name, name);
     I.seeInField(this.fields.description, description);
     I.seeInField(this.fields.endpoint, endpoint);

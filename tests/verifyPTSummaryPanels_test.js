@@ -19,7 +19,7 @@ Data(dashboard).Scenario(
   async ({ I, dashboardPage, current }) => {
     I.amOnPage(current.page);
     dashboardPage.waitForDashboardOpened();
-    I.waitForVisible(dashboardPage.fields.serviceSummary, 3);
+    I.waitForVisible(dashboardPage.fields.serviceSummary, 30);
     I.click(dashboardPage.fields.serviceSummary);
     I.waitForVisible(current.content, 150);
   },

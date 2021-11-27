@@ -17,7 +17,7 @@ Scenario(
     qanOverview.selectRow(2);
     qanFilters.waitForFiltersToLoad();
     await within(qanDetails.root, () => {
-      I.waitForVisible(qanDetails.buttons.close, 3);
+      I.waitForVisible(qanDetails.buttons.close, 30);
       I.see('Details', qanDetails.getTabLocator('Details'));
       I.see('Example', qanDetails.getTabLocator('Example'));
       I.see('Explain', qanDetails.getTabLocator('Explain'));
@@ -37,13 +37,13 @@ Scenario(
     adminPage.applyTimeRange('Last 1 hour');
     qanOverview.waitForOverviewLoaded();
     qanFilters.applyFilter('ps-dev');
-    I.waitForVisible(qanOverview.fields.searchBy, 3);
+    I.waitForVisible(qanOverview.fields.searchBy, 30);
     I.fillField(qanOverview.fields.searchBy, 'insert');
     I.pressKey('Enter');
-    I.waitForElement(qanOverview.elements.querySelector, 3);
+    I.waitForElement(qanOverview.elements.querySelector, 30);
     qanOverview.selectRow(1);
     qanFilters.waitForFiltersToLoad();
-    I.waitForVisible(cellValue, 3);
+    I.waitForVisible(cellValue, 30);
     await qanDetails.verifyAvqQueryCount(3600);
     await qanDetails.verifyAvgQueryTime(3600);
   },
@@ -58,10 +58,10 @@ Scenario(
     adminPage.applyTimeRange('Last 1 hour');
     qanOverview.waitForOverviewLoaded();
     qanFilters.applyFilter('ps-dev');
-    I.waitForVisible(qanOverview.fields.searchBy, 3);
+    I.waitForVisible(qanOverview.fields.searchBy, 30);
     I.fillField(qanOverview.fields.searchBy, 'insert');
     I.pressKey('Enter');
-    I.waitForElement(qanOverview.elements.querySelector, 3);
+    I.waitForElement(qanOverview.elements.querySelector, 30);
     qanOverview.selectRow(1);
     qanFilters.waitForFiltersToLoad();
     qanDetails.checkExamplesTab();
@@ -78,7 +78,7 @@ Scenario(
     adminPage.applyTimeRange('Last 1 hour');
     qanOverview.waitForOverviewLoaded();
     qanFilters.applyFilter('md-dev');
-    I.waitForElement(qanOverview.elements.querySelector, 3);
+    I.waitForElement(qanOverview.elements.querySelector, 30);
     qanOverview.selectRow(1);
     qanFilters.waitForFiltersToLoad();
     qanDetails.checkExamplesTab();
@@ -95,7 +95,7 @@ Scenario(
     adminPage.applyTimeRange('Last 1 hour');
     qanOverview.waitForOverviewLoaded();
     qanFilters.applyFilter('ps-dev');
-    I.waitForElement(qanOverview.elements.querySelector, 3);
+    I.waitForElement(qanOverview.elements.querySelector, 30);
     qanOverview.selectRow(1);
     qanFilters.waitForFiltersToLoad();
     qanDetails.checkExamplesTab();
@@ -112,7 +112,7 @@ Scenario(
     adminPage.applyTimeRange('Last 1 hour');
     qanOverview.waitForOverviewLoaded();
     qanFilters.applyFilter('pdpgsql-dev');
-    I.waitForElement(qanOverview.elements.querySelector, 3);
+    I.waitForElement(qanOverview.elements.querySelector, 30);
     qanOverview.selectRow(1);
     qanFilters.waitForFiltersToLoad();
     qanDetails.checkExamplesTab();
@@ -128,7 +128,7 @@ Scenario(
     adminPage.applyTimeRange('Last 1 hour');
     qanOverview.waitForOverviewLoaded();
     qanFilters.applyFilter('mongodb');
-    I.waitForElement(qanOverview.elements.querySelector, 3);
+    I.waitForElement(qanOverview.elements.querySelector, 30);
     qanOverview.selectRow(1);
     qanFilters.waitForFiltersToLoad();
     qanDetails.checkExamplesTab();

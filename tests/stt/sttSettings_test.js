@@ -25,7 +25,7 @@ Scenario(
   }) => {
     await settingsAPI.apiDisableSTT();
     I.amOnPage(pmmSettingsPage.advancedSettingsUrl);
-    I.waitForVisible(pmmSettingsPage.fields.rareIntervalInput, 3);
+    I.waitForVisible(pmmSettingsPage.fields.rareIntervalInput, 30);
 
     // Verify Interval fields are disabled and have default values
     I.seeElementsDisabled(pmmSettingsPage.fields.rareIntervalInput);
@@ -54,7 +54,7 @@ Scenario(
     const interval = '0.1';
 
     I.amOnPage(pmmSettingsPage.advancedSettingsUrl);
-    I.waitForVisible(pmmSettingsPage.fields.rareIntervalInput, 3);
+    I.waitForVisible(pmmSettingsPage.fields.rareIntervalInput, 30);
 
     // Set 0.1 values for all 3 intervals
     I.clearField(pmmSettingsPage.fields.rareIntervalInput);
@@ -70,7 +70,7 @@ Scenario(
     I.refreshPage();
 
     // Verify values are correct after page refresh
-    I.waitForVisible(pmmSettingsPage.fields.rareIntervalInput, 3);
+    I.waitForVisible(pmmSettingsPage.fields.rareIntervalInput, 30);
     I.seeInField(pmmSettingsPage.fields.rareIntervalInput, interval);
     I.seeInField(pmmSettingsPage.fields.standartIntervalInput, interval);
     I.seeInField(pmmSettingsPage.fields.frequentIntervalInput, interval);
@@ -85,7 +85,7 @@ Data(inputs).Scenario(
     const greaterThanZero = 'Value should be greater or equal to 0.1';
 
     I.amOnPage(pmmSettingsPage.advancedSettingsUrl);
-    I.waitForVisible(pmmSettingsPage.fields.rareIntervalInput, 3);
+    I.waitForVisible(pmmSettingsPage.fields.rareIntervalInput, 30);
 
     I.clearField(pmmSettingsPage.fields.rareIntervalInput);
     I.fillField(pmmSettingsPage.fields.rareIntervalInput, current.input);

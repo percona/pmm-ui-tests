@@ -57,11 +57,11 @@ Data(versionVerification).Scenario(
 
     I.amOnPage(dbaasPage.url);
     dbaasPage.checkCluster(clusterName, false);
-    I.waitForElement(dbaasPage.tabs.kubernetesClusterTab.actionsLocator(clusterName), 3);
+    I.waitForElement(dbaasPage.tabs.kubernetesClusterTab.actionsLocator(clusterName), 30);
     I.click(dbaasPage.tabs.kubernetesClusterTab.actionsLocator(clusterName));
-    I.waitForElement(dbaasPage.tabs.kubernetesClusterTab.manageVersions, 3);
+    I.waitForElement(dbaasPage.tabs.kubernetesClusterTab.manageVersions, 30);
     I.click(dbaasPage.tabs.kubernetesClusterTab.manageVersions);
-    I.waitForDetached(dbaasManageVersionPage.loader, 3);
+    I.waitForDetached(dbaasManageVersionPage.loader, 30);
     await dbaasManageVersionPage.selectOperatorVersion(operatorVersion);
     await dbaasManageVersionPage.selectComponent(componentName);
     const count = await dbaasManageVersionPage.getTotalSupportedVersions(component);
@@ -182,7 +182,7 @@ Data(versionVerification).Scenario(
       dbaasManageVersionPage.manageVersion.defaultVersionSelectorFieldErrorMessage,
     );
     I.click(dbaasManageVersionPage.manageVersion.saveButton);
-    I.waitForText(dbaasManageVersionPage.manageVersion.changeVersionSuccessMessage, 3);
+    I.waitForText(dbaasManageVersionPage.manageVersion.changeVersionSuccessMessage, 30);
     I.refreshPage();
     dbaasPage.checkCluster(clusterName, false);
     await dbaasManageVersionPage.waitForManageVersionPopup(clusterName);

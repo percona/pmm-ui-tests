@@ -23,7 +23,7 @@ Before(async ({ I, platformAPI }) => {
   await platformAPI.signOut();
   await I.Authorize();
   I.amOnPage(url);
-  I.waitForVisible(elements.signInForm, 3);
+  I.waitForVisible(elements.signInForm, 30);
 });
 
 After(async ({ platformAPI }) => {
@@ -67,7 +67,7 @@ Scenario(
   async ({ I, links }) => {
     // Open Sign Up Form
     I.click(buttons.goToSignUp);
-    I.waitForVisible(elements.signUpForm, 3);
+    I.waitForVisible(elements.signUpForm, 30);
 
     // Verify elements in Sign Up form
     I.seeTextEquals('Sign up', 'legend');
@@ -162,7 +162,7 @@ xScenario(
   'PMM-T399 PMM-T843 Verify user is able to Sign Up and login with new account @platform @settings',
   async ({ I }) => {
     I.click(buttons.goToSignUp);
-    I.waitForVisible(elements.signUpForm, 3);
+    I.waitForVisible(elements.signUpForm, 30);
 
     const newUserEmail = await I.generateNewEmail();
     const newUserPassword = `${getPassword()} with spaces`;
@@ -181,7 +181,7 @@ Scenario(
   'PMM-T401 Verify user is not able to Sign Up with existing email @platform @settings',
   async ({ I }) => {
     I.click(buttons.goToSignUp);
-    I.waitForVisible(elements.signUpForm, 3);
+    I.waitForVisible(elements.signUpForm, 30);
     pmmSettingsPage.perconaPlatform.submitSignUpForm(email);
     I.verifyPopUpMessage(messages.errorCreatingAccount);
   },

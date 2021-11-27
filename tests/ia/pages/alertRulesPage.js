@@ -112,7 +112,7 @@ module.exports = {
       filters = '', expression, alert,
     } = rule;
 
-    I.waitForVisible(this.fields.template, 3);
+    I.waitForVisible(this.fields.template, 30);
     I.seeTextEquals(template, this.fields.template);
     I.waitForValue(this.fields.ruleName, ruleName, 10);
     if (threshold) {
@@ -129,7 +129,7 @@ module.exports = {
 
   openAlertRulesTab() {
     I.amOnPage(this.url);
-    I.waitForVisible(this.buttons.openAddRuleModal, 3);
+    I.waitForVisible(this.buttons.openAddRuleModal, 30);
   },
 
   searchAndSelectResult(dropdownLabel, option) {
@@ -163,7 +163,7 @@ module.exports = {
 
     if (!activate) checked = null;
 
-    I.waitForVisible(this.elements.activateSwitch(ruleName), 3);
+    I.waitForVisible(this.elements.activateSwitch(ruleName), 30);
     I.seeAttributesOnElements(this.elements.activateSwitch(ruleName), { checked });
   },
 };

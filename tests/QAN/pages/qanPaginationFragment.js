@@ -48,7 +48,7 @@ module.exports = {
   },
 
   async verifySelectedCountPerPage(expectedResults) {
-    I.waitForElement(this.elements.resultsPerPage, 3);
+    I.waitForElement(this.elements.resultsPerPage, 30);
     await within(this.elements.resultsPerPage, () => {
       I.see(expectedResults);
     });
@@ -57,7 +57,7 @@ module.exports = {
   verifyActivePage(page) {
     const item = this.getActivePageLocator(page);
 
-    I.waitForElement(item, 3);
+    I.waitForElement(item, 30);
   },
 
   async verifyPagesAndCount(itemsPerPage) {

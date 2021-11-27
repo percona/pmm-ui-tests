@@ -4,7 +4,7 @@ Scenario(
   'PMM-T363 - Verify Copyrights & Legal section elements [critical] @not-pr-pipeline @pmm-demo @not-ui-pipeline',
   async ({ I, pmmDemoPage }) => {
     I.amOnPage(pmmDemoPage.url);
-    I.waitForVisible(pmmDemoPage.fields.title, 3);
+    I.waitForVisible(pmmDemoPage.fields.title, 30);
     pmmDemoPage.verifyCopyrightsAndLegal();
     I.amOnPage(pmmDemoPage.url + pmmDemoPage.mongoDBDashbordUrl);
     pmmDemoPage.verifyCopyrightsAndLegal();
@@ -15,7 +15,7 @@ Scenario(
   'PMM-T364 - Verify PMM settings returns Access denied error [critical] @not-pr-pipeline @pmm-demo @not-ui-pipeline',
   async ({ I, pmmDemoPage, pmmSettingsPage }) => {
     I.amOnPage(pmmDemoPage.url + pmmSettingsPage.url);
-    I.waitForVisible(pmmDemoPage.fields.noAccess, 3);
+    I.waitForVisible(pmmDemoPage.fields.noAccess, 30);
   },
 );
 
@@ -23,7 +23,7 @@ Scenario(
   'PMM-T365 - Verify PMM settings returns Access denied error @not-pr-pipeline [critical] @pmm-demo @not-ui-pipeline',
   async ({ I, pmmDemoPage, pmmInventoryPage }) => {
     I.amOnPage(pmmDemoPage.url + pmmInventoryPage.url);
-    I.waitForVisible(pmmDemoPage.fields.noAccess, 3);
+    I.waitForVisible(pmmDemoPage.fields.noAccess, 30);
   },
 );
 
@@ -33,8 +33,8 @@ Scenario(
     const text = 'Insufficient access permissions.';
 
     I.amOnPage(pmmDemoPage.url);
-    I.waitForVisible(pmmDemoPage.fields.failedSecurityChecks, 3);
-    I.waitForVisible(pmmDemoPage.fields.noAccess, 3);
+    I.waitForVisible(pmmDemoPage.fields.failedSecurityChecks, 30);
+    I.waitForVisible(pmmDemoPage.fields.noAccess, 30);
     await pmmDemoPage.checkDBPanelText(text);
   },
 );
@@ -45,7 +45,7 @@ Scenario(
     const text = 'Insufficient access permissions.';
 
     I.amOnPage(pmmDemoPage.url + databaseChecksPage.url);
-    I.waitForVisible(pmmDemoPage.fields.noAccess, 3);
+    I.waitForVisible(pmmDemoPage.fields.noAccess, 30);
     await pmmDemoPage.checkDBPanelText(text);
   },
 );

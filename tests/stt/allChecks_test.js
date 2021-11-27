@@ -38,7 +38,7 @@ Scenario(
   }) => {
     I.amOnPage(allChecksPage.url);
 
-    I.waitForVisible(allChecksPage.elements.tableBody, 3);
+    I.waitForVisible(allChecksPage.elements.tableBody, 30);
 
     for (const {
       name, description, status, interval,
@@ -61,12 +61,12 @@ Scenario(
   }) => {
     I.amOnPage(allChecksPage.url);
 
-    I.waitForVisible(allChecksPage.elements.tableBody, 3);
+    I.waitForVisible(allChecksPage.elements.tableBody, 30);
     I.seeInCurrentUrl(allChecksPage.url);
 
     I.refreshPage();
 
-    I.waitForVisible(allChecksPage.elements.tableBody, 3);
+    I.waitForVisible(allChecksPage.elements.tableBody, 30);
     I.seeInCurrentUrl(allChecksPage.url);
     I.seeElement(allChecksPage.elements.checkNameCell(allChecksPage.checks[0].name));
   },
@@ -115,7 +115,7 @@ Data(changeIntervalTests).Scenario(
     await securityChecksAPI.restoreDefaultIntervals();
     I.amOnPage(allChecksPage.url);
 
-    I.waitForVisible(allChecksPage.elements.tableBody, 3);
+    I.waitForVisible(allChecksPage.elements.tableBody, 30);
     I.seeInCurrentUrl(allChecksPage.url);
 
     I.click(allChecksPage.buttons.openChangeInterval(current.checkName));

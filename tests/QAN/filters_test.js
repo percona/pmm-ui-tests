@@ -30,13 +30,13 @@ Data(filters).Scenario(
     const environmentName = 'pdpgsql-dev';
 
     qanFilters.applyFilter(environmentName);
-    I.waitForVisible(qanFilters.buttons.showSelected, 3);
+    I.waitForVisible(qanFilters.buttons.showSelected, 30);
 
     qanFilters.applyFilterInSection('Command Type', current.filterToApply);
-    I.waitForVisible(qanOverview.fields.searchBy, 3);
+    I.waitForVisible(qanOverview.fields.searchBy, 30);
     I.fillField(qanOverview.fields.searchBy, current.searchValue);
     I.pressKey('Enter');
-    I.waitForVisible(qanOverview.elements.noResultTableText, 3);
+    I.waitForVisible(qanOverview.elements.noResultTableText, 30);
     I.seeTextEquals(qanOverview.messages.noResultTableText, qanOverview.elements.noResultTableText);
   },
 );
@@ -88,7 +88,7 @@ Scenario(
     assert.ok(countAfter !== countBefore, 'Query count was expected to change');
 
     I.click(qanFilters.buttons.resetAll);
-    I.waitForVisible(qanFilters.elements.disabledResetAll, 3);
+    I.waitForVisible(qanFilters.elements.disabledResetAll, 30);
     const countAfterReset = await qanOverview.getCountOfItems();
 
     assert.ok(countAfterReset >= countBefore, 'Query count wasn\'t expected to change');
@@ -118,7 +118,7 @@ Scenario(
 
     qanFilters.applyFilter(environmentName1);
     qanFilters.applyFilter(environmentName2);
-    I.waitForVisible(qanFilters.buttons.showSelected, 3);
+    I.waitForVisible(qanFilters.buttons.showSelected, 30);
     I.click(qanFilters.buttons.showSelected);
     await qanFilters.verifyCountOfFilterLinks(2, false);
     I.click(qanFilters.buttons.showSelected);
@@ -141,7 +141,7 @@ xScenario(
       'pgsql-repl1',
     ];
 
-    I.waitForElement(qanFilters.fields.filterBy, 3);
+    I.waitForElement(qanFilters.fields.filterBy, 30);
     const countBefore = await qanOverview.getCountOfItems();
 
     for (const i in filters) {
@@ -162,7 +162,7 @@ Scenario(
   async ({ I, qanFilters }) => {
     for (const i in qanFilters.filterGroups) {
       I.fillField(qanFilters.fields.filterBy, qanFilters.filterGroups[i]);
-      I.waitForVisible(qanFilters.getFilterSectionLocator(qanFilters.filterGroups[i]), 3);
+      I.waitForVisible(qanFilters.getFilterSectionLocator(qanFilters.filterGroups[i]), 30);
       I.seeElement(qanFilters.getFilterSectionLocator(qanFilters.filterGroups[i]));
       I.clearField(qanFilters.fields.filterBy);
     }
@@ -180,14 +180,14 @@ Scenario(
     I.click(qanFilters.buttons.showSelected);
     await qanFilters.verifyCountOfFilterLinks(2, false);
     I.click(qanFilters.buttons.resetAll);
-    I.waitForInvisible(qanFilters.elements.spinner, 3);
+    I.waitForInvisible(qanFilters.elements.spinner, 30);
     await qanFilters.verifyCountOfFilterLinks(2, true);
 
     qanFilters.applyFilter(environmentName1);
     I.click(qanFilters.buttons.showSelected);
     await qanFilters.verifyCountOfFilterLinks(1, false);
     qanFilters.applyFilter(environmentName1);
-    I.waitForInvisible(qanFilters.elements.spinner, 3);
+    I.waitForInvisible(qanFilters.elements.spinner, 30);
     await qanFilters.verifyCountOfFilterLinks(1, true);
   },
 );
@@ -222,7 +222,7 @@ Scenario(
     await qanOverview.waitForNewItemsCount(count);
     qanFilters.applyFilterInSection(section, db2);
     await within(qanOverview.root, () => {
-      I.waitForText('No queries available for this combination of filters', 3);
+      I.waitForText('No queries available for this combination of filters', 30);
     });
   },
 );
@@ -277,10 +277,10 @@ Data(shortCutTests).Scenario(
 
     I.amOnPage(shortCutLink);
     if (filterValue === 'pmm-server') {
-      I.waitInUrl(shortCutLink.split('?var-')[0], 3);
-      I.waitInUrl(shortCutLink.split('?var-')[1], 3);
+      I.waitInUrl(shortCutLink.split('?var-')[0], 30);
+      I.waitInUrl(shortCutLink.split('?var-')[1], 30);
     } else {
-      I.waitInUrl(shortCutLink, 3);
+      I.waitInUrl(shortCutLink, 30);
     }
 
     await dashboardPage.checkNavigationBar(header);

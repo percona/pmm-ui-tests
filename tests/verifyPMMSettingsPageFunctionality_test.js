@@ -41,7 +41,7 @@ Scenario('PMM-T94 - Open PMM Settings page and verify changing Data Retention [c
   await pmmSettingsPage.waitForPmmSettingsPageLoaded();
   await pmmSettingsPage.expandSection(sectionNameToExpand, pmmSettingsPage.fields.advancedButton);
   await pmmSettingsPage.waitForPmmSettingsPageLoaded();
-  I.waitForValue(pmmSettingsPage.fields.dataRetentionInput, dataRetentionValue, 3);
+  I.waitForValue(pmmSettingsPage.fields.dataRetentionInput, dataRetentionValue, 30);
 });
 
 // TODO: check ovf failure
@@ -91,7 +91,7 @@ Scenario(
   async ({ I, pmmSettingsPage, dbaasPage }) => {
     I.amOnPage(pmmSettingsPage.advancedSettingsUrl);
     await pmmSettingsPage.waitForPmmSettingsPageLoaded();
-    I.waitForVisible(pmmSettingsPage.fields.dbaasLabelTooltipSelector, 3);
+    I.waitForVisible(pmmSettingsPage.fields.dbaasLabelTooltipSelector, 30);
 
     // Verify tooltip for Enable/Disable DBaaS toggle
     I.moveCursorTo(pmmSettingsPage.fields.dbaasLabelTooltipSelector);
@@ -105,7 +105,7 @@ Scenario(
 
     I.dontSeeElement(pmmSettingsPage.fields.dbaasMenuIconLocator);
     I.amOnPage(dbaasPage.url);
-    I.waitForElement(dbaasPage.disabledDbaaSMessage.settingsLinkLocator, 3);
+    I.waitForElement(dbaasPage.disabledDbaaSMessage.settingsLinkLocator, 30);
     const message = (await I.grabTextFrom(dbaasPage.disabledDbaaSMessage.emptyBlock)).replace(/\s+/g, ' ');
 
     assert.ok(message === dbaasPage.disabledDbaaSMessage.textMessage, `Message Shown on ${message} should be equal to ${dbaasPage.disabledDbaaSMessage.textMessage}`);
@@ -115,10 +115,10 @@ Scenario(
     // Enable DbaaS via Advanced Settings, Make sure Menu is visible.
     I.amOnPage(pmmSettingsPage.advancedSettingsUrl);
     await pmmSettingsPage.waitForPmmSettingsPageLoaded();
-    I.waitForVisible(pmmSettingsPage.fields.dbaasLabelTooltipSelector, 3);
+    I.waitForVisible(pmmSettingsPage.fields.dbaasLabelTooltipSelector, 30);
     I.click(pmmSettingsPage.fields.dbaasSwitchSelector);
     I.click(pmmSettingsPage.fields.applyButton);
-    I.waitForElement(pmmSettingsPage.fields.dbaasMenuIconLocator, 3);
+    I.waitForElement(pmmSettingsPage.fields.dbaasMenuIconLocator, 30);
     I.seeElement(pmmSettingsPage.fields.dbaasMenuIconLocator);
     I.waitForElement(pmmSettingsPage.fields.dbaasSwitchSelector, 60);
     selector = await I.grabAttributeFrom(pmmSettingsPage.fields.dbaasSwitchSelectorInput, 'checked');
@@ -136,14 +136,14 @@ Scenario(
 
     I.amOnPage(pmmSettingsPage.advancedSettingsUrl);
     await pmmSettingsPage.waitForPmmSettingsPageLoaded();
-    I.waitForVisible(pmmSettingsPage.fields.iaLabelTooltipSelector, 3);
+    I.waitForVisible(pmmSettingsPage.fields.iaLabelTooltipSelector, 30);
 
     // Verify tooltip for Enable/Disable IA toggle
     I.moveCursorTo(pmmSettingsPage.fields.iaLabelTooltipSelector);
     await pmmSettingsPage.verifyTooltip(pmmSettingsPage.tooltips.integratedAlerting);
 
     I.amOnPage(pmmSettingsPage.communicationSettingsUrl);
-    I.waitForVisible(pmmSettingsPage.communication.email.serverAddress.locator, 3);
+    I.waitForVisible(pmmSettingsPage.communication.email.serverAddress.locator, 30);
 
     // Verify tooltips for Communication > Email fields
     for (const o of Object.keys(pmmSettingsPage.communication.email)) {
@@ -228,12 +228,12 @@ Scenario(
   }) => {
     await settingsAPI.apiDisableIA();
     I.amOnPage(pmmSettingsPage.advancedSettingsUrl);
-    I.waitForVisible(pmmSettingsPage.fields.iaSwitchSelector, 3);
+    I.waitForVisible(pmmSettingsPage.fields.iaSwitchSelector, 30);
     I.click(pmmSettingsPage.fields.iaSwitchSelector);
     I.dontSeeElement(pmmSettingsPage.communication.communicationSection);
     pmmSettingsPage.verifySwitch(pmmSettingsPage.fields.iaSwitchSelectorInput, 'on');
     I.click(pmmSettingsPage.fields.advancedButton);
-    I.waitForVisible(pmmSettingsPage.fields.iaSwitchSelectorInput, 3);
+    I.waitForVisible(pmmSettingsPage.fields.iaSwitchSelectorInput, 30);
     pmmSettingsPage.verifySwitch(pmmSettingsPage.fields.iaSwitchSelectorInput, 'on');
     I.seeElementInDOM(adminPage.sideMenu.integratedAlerting);
     I.seeTextEquals('Integrated Alerting', adminPage.sideMenu.integratedAlerting);
@@ -241,7 +241,7 @@ Scenario(
     I.click(pmmSettingsPage.fields.iaSwitchSelector);
     pmmSettingsPage.verifySwitch(pmmSettingsPage.fields.iaSwitchSelectorInput, 'off');
     I.click(pmmSettingsPage.fields.advancedButton);
-    I.waitForVisible(pmmSettingsPage.fields.iaSwitchSelector, 3);
+    I.waitForVisible(pmmSettingsPage.fields.iaSwitchSelector, 30);
     pmmSettingsPage.verifySwitch(pmmSettingsPage.fields.iaSwitchSelectorInput, 'off');
     I.dontSeeElementInDOM(adminPage.sideMenu.integratedAlerting);
     I.dontSeeElement(pmmSettingsPage.communication.communicationSection);
@@ -254,7 +254,7 @@ Scenario(
   async ({ I, pmmSettingsPage }) => {
     I.amOnPage(pmmSettingsPage.advancedSettingsUrl);
     await pmmSettingsPage.waitForPmmSettingsPageLoaded();
-    I.waitForVisible(pmmSettingsPage.fields.dbaasSwitchSelector, 3);
+    I.waitForVisible(pmmSettingsPage.fields.dbaasSwitchSelector, 30);
     pmmSettingsPage.verifySwitch(pmmSettingsPage.fields.dbaasSwitchSelectorInput, 'on');
     I.click(pmmSettingsPage.fields.dbaasSwitchSelector);
     pmmSettingsPage.verifySwitch(pmmSettingsPage.fields.dbaasSwitchSelectorInput, 'off');
@@ -293,19 +293,19 @@ Scenario(
     await pmmSettingsPage.expandSection(sectionNameToExpand, pmmSettingsPage.fields.advancedButton);
     pmmSettingsPage.verifySwitch(pmmSettingsPage.fields.microsoftAzureMonitoringSwitchInput, 'off');
     I.amOnPage(remoteInstancesPage.url);
-    I.waitForInvisible(remoteInstancesPage.fields.addAzureMySQLPostgreSQL, 3);
+    I.waitForInvisible(remoteInstancesPage.fields.addAzureMySQLPostgreSQL, 30);
     I.amOnPage(pmmSettingsPage.url);
     await pmmSettingsPage.waitForPmmSettingsPageLoaded();
     await pmmSettingsPage.expandSection(sectionNameToExpand, pmmSettingsPage.fields.advancedButton);
     pmmSettingsPage.switchAzure();
     I.amOnPage(remoteInstancesPage.url);
-    I.waitForVisible(remoteInstancesPage.fields.addAzureMySQLPostgreSQL, 3);
+    I.waitForVisible(remoteInstancesPage.fields.addAzureMySQLPostgreSQL, 30);
     I.amOnPage(pmmSettingsPage.url);
     await pmmSettingsPage.waitForPmmSettingsPageLoaded();
     await pmmSettingsPage.expandSection(sectionNameToExpand, pmmSettingsPage.fields.advancedButton);
     pmmSettingsPage.switchAzure();
     I.amOnPage(remoteInstancesPage.url);
-    I.waitForInvisible(remoteInstancesPage.fields.addAzureMySQLPostgreSQL, 3);
+    I.waitForInvisible(remoteInstancesPage.fields.addAzureMySQLPostgreSQL, 30);
   },
 );
 
@@ -322,7 +322,7 @@ Scenario(
 
     // Open scheduled backups page and verify message about disabled backup management
     I.amOnPage(scheduledPage.url);
-    I.waitForVisible('$empty-block', 3);
+    I.waitForVisible('$empty-block', 20);
 
     const message = await I.grabTextFrom('$empty-block');
 
@@ -334,7 +334,7 @@ Scenario(
 
     // Open advanced settings and enable backup management
     I.amOnPage(pmmSettingsPage.advancedSettingsUrl);
-    I.waitForVisible(pmmSettingsPage.fields.backupManagementSwitch, 3);
+    I.waitForVisible(pmmSettingsPage.fields.backupManagementSwitch, 30);
     I.click(pmmSettingsPage.fields.backupManagementSwitch);
     pmmSettingsPage.verifySwitch(pmmSettingsPage.fields.backupManagementSwitchInput, 'on');
     I.click(pmmSettingsPage.fields.advancedButton);

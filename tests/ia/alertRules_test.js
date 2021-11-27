@@ -59,7 +59,7 @@ Scenario(
     alertRulesPage.columnHeaders.forEach((header) => {
       const columnHeader = alertRulesPage.elements.columnHeaderLocator(header);
 
-      I.waitForVisible(columnHeader, 3);
+      I.waitForVisible(columnHeader, 30);
     });
     await rulesAPI.removeAlertRule(ruleId);
   },
@@ -91,7 +91,7 @@ Scenario(
     const ruleId = await rulesAPI.createAlertRule({ ruleName });
 
     alertRulesPage.openAlertRulesTab();
-    I.waitForVisible(alertRulesPage.buttons.toggleAlertRule(ruleName), 3);
+    I.waitForVisible(alertRulesPage.buttons.toggleAlertRule(ruleName), 30);
     const color = await I.grabCssPropertyFrom(alertRulesPage.elements.rulesNameCell(ruleName), 'background-color');
 
     I.click(alertRulesPage.buttons.toggleAlertRule(ruleName));
@@ -123,9 +123,9 @@ Data(templates).Scenario(
     alertRulesPage.openAlertRulesTab();
     I.click(alertRulesPage.buttons.openAddRuleModal);
 
-    I.waitForVisible(alertRulesPage.fields.ruleName, 3);
+    I.waitForVisible(alertRulesPage.fields.ruleName, 30);
     alertRulesPage.searchAndSelectResult('Template', current.template);
-    I.waitForVisible(alertRulesPage.elements.expression, 3);
+    I.waitForVisible(alertRulesPage.elements.expression, 30);
 
     alertRulesPage.verifyEditRuleDialogElements(rule);
   },
@@ -312,9 +312,9 @@ Scenario(
     alertRulesPage.openAlertRulesTab();
     I.click(alertRulesPage.buttons.openAddRuleModal);
 
-    I.waitForVisible(alertRulesPage.fields.ruleName, 3);
+    I.waitForVisible(alertRulesPage.fields.ruleName, 30);
     alertRulesPage.searchAndSelectResult('Template', 'Memory used by MongoDB');
-    I.waitForVisible(alertRulesPage.elements.expression, 3);
+    I.waitForVisible(alertRulesPage.elements.expression, 30);
 
     I.clearField(alertRulesPage.fields.duration);
     I.fillField(alertRulesPage.fields.duration, '-1');

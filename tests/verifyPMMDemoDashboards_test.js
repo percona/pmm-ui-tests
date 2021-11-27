@@ -194,7 +194,7 @@ Scenario(
     I.click(adminPage.fields.metricTitle);
     adminPage.performPageDown(10);
     for (let i = 0; i < pmmDemoPage.monitoredDB.length; i += 2) {
-      I.waitForElement(pmmDemoPage.getHostLocator(pmmDemoPage.monitoredDB[i]), 3);
+      I.waitForElement(pmmDemoPage.getHostLocator(pmmDemoPage.monitoredDB[i]), 30);
       I.seeElement(pmmDemoPage.getHostLocator(pmmDemoPage.monitoredDB[i]));
       I.seeNumberOfVisibleElements(
         pmmDemoPage.getHostLocator(pmmDemoPage.monitoredDB[i]),

@@ -65,11 +65,11 @@ Scenario(
     remoteInstancesPage.waitUntilRemoteInstancesPageLoaded();
     remoteInstancesPage.openAddRemotePage('external');
     await remoteInstancesPage.fillRemoteFields(externalExporterServiceName);
-    I.waitForVisible(remoteInstancesPage.fields.addService, 3);
+    I.waitForVisible(remoteInstancesPage.fields.addService, 30);
     I.click(remoteInstancesPage.fields.addService);
     pmmInventoryPage.verifyRemoteServiceIsDisplayed(externalExporterServiceName);
     I.click(pmmInventoryPage.fields.agentsLink);
-    I.waitForVisible(pmmInventoryPage.fields.externalExporter, 3);
+    I.waitForVisible(pmmInventoryPage.fields.externalExporter, 30);
   },
 );
 
@@ -107,7 +107,7 @@ Scenario(
     I.amOnPage(remoteInstancesPage.url);
     remoteInstancesPage.waitUntilRemoteInstancesPageLoaded();
     remoteInstancesPage.openAddRemotePage('external');
-    I.waitForVisible(remoteInstancesPage.fields.addService, 3);
+    I.waitForVisible(remoteInstancesPage.fields.addService, 30);
     I.click(remoteInstancesPage.fields.addService);
     remoteInstancesPage.checkRequiredField();
   },
@@ -133,7 +133,7 @@ Scenario(
     remoteInstancesPage.waitUntilRemoteInstancesPageLoaded();
     remoteInstancesPage.openAddRemotePage('mysql');
     adminPage.performPageDown(1);
-    I.waitForVisible(remoteInstancesPage.fields.tableStatsGroupTableLimit, 3);
+    I.waitForVisible(remoteInstancesPage.fields.tableStatsGroupTableLimit, 30);
     assert.strictEqual('-1', await remoteInstancesPage.getTableLimitFieldValue(), 'Count for Disabled Table Stats dont Match, was expecting -1');
     I.click(remoteInstancesPage.tableStatsLimitRadioButtonLocator('Default'));
     assert.strictEqual('1000', await remoteInstancesPage.getTableLimitFieldValue(), 'Count for Default Table Stats dont Match, was expecting 1000');
@@ -148,19 +148,19 @@ Scenario(
     I.amOnPage(remoteInstancesPage.url);
     remoteInstancesPage.waitUntilRemoteInstancesPageLoaded();
     remoteInstancesPage.openAddRemotePage('haproxy');
-    I.waitForVisible(remoteInstancesPage.fields.returnToMenuButton, 3);
-    I.waitForVisible(remoteInstancesPage.fields.hostName, 3);
-    I.waitForVisible(remoteInstancesPage.fields.serviceName, 3);
-    I.waitForVisible(remoteInstancesPage.fields.portNumber, 3);
-    I.waitForVisible(remoteInstancesPage.fields.userName, 3);
-    I.waitForVisible(remoteInstancesPage.fields.password, 3);
-    I.waitForVisible(remoteInstancesPage.fields.environment, 3);
-    I.waitForVisible(remoteInstancesPage.fields.region, 3);
-    I.waitForVisible(remoteInstancesPage.fields.availabilityZone, 3);
-    I.waitForVisible(remoteInstancesPage.fields.replicationSet, 3);
-    I.waitForVisible(remoteInstancesPage.fields.cluster, 3);
-    I.waitForVisible(remoteInstancesPage.fields.customLabels, 3);
-    I.waitForVisible(remoteInstancesPage.fields.skipConnectionCheck, 3);
+    I.waitForVisible(remoteInstancesPage.fields.returnToMenuButton, 30);
+    I.waitForVisible(remoteInstancesPage.fields.hostName, 30);
+    I.waitForVisible(remoteInstancesPage.fields.serviceName, 30);
+    I.waitForVisible(remoteInstancesPage.fields.portNumber, 30);
+    I.waitForVisible(remoteInstancesPage.fields.userName, 30);
+    I.waitForVisible(remoteInstancesPage.fields.password, 30);
+    I.waitForVisible(remoteInstancesPage.fields.environment, 30);
+    I.waitForVisible(remoteInstancesPage.fields.region, 30);
+    I.waitForVisible(remoteInstancesPage.fields.availabilityZone, 30);
+    I.waitForVisible(remoteInstancesPage.fields.replicationSet, 30);
+    I.waitForVisible(remoteInstancesPage.fields.cluster, 30);
+    I.waitForVisible(remoteInstancesPage.fields.customLabels, 30);
+    I.waitForVisible(remoteInstancesPage.fields.skipConnectionCheck, 30);
   },
 );
 
@@ -170,9 +170,9 @@ Scenario(
     I.amOnPage(remoteInstancesPage.url);
     remoteInstancesPage.waitUntilRemoteInstancesPageLoaded();
     remoteInstancesPage.openAddRemotePage('haproxy');
-    I.waitForVisible(remoteInstancesPage.fields.addService, 3);
+    I.waitForVisible(remoteInstancesPage.fields.addService, 30);
     I.click(remoteInstancesPage.fields.addService);
-    I.waitForVisible(remoteInstancesPage.fields.requiredFieldHostname, 3);
+    I.waitForVisible(remoteInstancesPage.fields.requiredFieldHostname, 30);
   },
 );
 
@@ -184,7 +184,7 @@ Scenario(
     I.amOnPage(remoteInstancesPage.url);
     remoteInstancesPage.waitUntilRemoteInstancesPageLoaded();
     remoteInstancesPage.openAddRemotePage('haproxy');
-    I.waitForVisible(remoteInstancesPage.fields.hostName, 3);
+    I.waitForVisible(remoteInstancesPage.fields.hostName, 30);
     I.fillField(
       remoteInstancesPage.fields.hostName,
       remoteInstancesHelper.remote_instance.haproxy.haproxy_2.host,
@@ -196,7 +196,7 @@ Scenario(
       remoteInstancesHelper.remote_instance.haproxy.haproxy_2.port,
     );
     I.scrollPageToBottom();
-    I.waitForVisible(remoteInstancesPage.fields.addService, 3);
+    I.waitForVisible(remoteInstancesPage.fields.addService, 30);
     I.click(remoteInstancesPage.fields.addService);
     pmmInventoryPage.verifyRemoteServiceIsDisplayed(haproxyServiceName);
     const serviceId = await pmmInventoryPage.getServiceId(haproxyServiceName);
@@ -217,7 +217,7 @@ Data(remotePostgreSQL).Scenario(
     remoteInstancesPage.waitUntilRemoteInstancesPageLoaded();
     remoteInstancesPage.openAddRemotePage('postgresql');
     await remoteInstancesPage.fillRemoteFields(current.instanceName);
-    I.waitForVisible(remoteInstancesPage.fields.skipTLSL, 3);
+    I.waitForVisible(remoteInstancesPage.fields.skipTLSL, 30);
     I.click(remoteInstancesPage.fields.skipTLSL);
     I.click(current.trackingOption);
     I.click(remoteInstancesPage.fields.addService);

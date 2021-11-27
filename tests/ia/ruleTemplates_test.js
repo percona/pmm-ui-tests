@@ -44,7 +44,7 @@ Scenario(
       .deleteButtonBySource(ruleTemplatesPage.templateSources.builtin);
 
     ruleTemplatesPage.openRuleTemplatesTab();
-    I.waitForVisible(editButton, 3);
+    I.waitForVisible(editButton, 30);
     I.seeElementsDisabled(editButton);
     I.seeElementsDisabled(deleteButton);
   },
@@ -57,7 +57,7 @@ Scenario(
     ruleTemplatesPage.columnHeaders.forEach((header) => {
       const columnHeader = ruleTemplatesPage.elements.columnHeaderLocator(header);
 
-      I.waitForVisible(columnHeader, 3);
+      I.waitForVisible(columnHeader, 30);
     });
     const templateName = await I.grabTextFromAll(ruleTemplatesPage.elements.templateName);
 
@@ -138,7 +138,7 @@ Data(templates)
 
       if (validFile) {
         I.verifyPopUpMessage(ruleTemplatesPage.messages.successfullyAdded);
-        I.waitForVisible(expectedSourceLocator, 3);
+        I.waitForVisible(expectedSourceLocator, 30);
         I.seeElementsEnabled(editButton);
       } else {
         I.verifyPopUpMessage(current.error);
@@ -207,7 +207,7 @@ Scenario(
     await templatesAPI.createRuleTemplate(path);
     ruleTemplatesPage.openRuleTemplatesTab();
 
-    I.waitForElement(deleteButton, 3);
+    I.waitForElement(deleteButton, 30);
     I.click(deleteButton);
     I.waitForText(
       ruleTemplatesPage.messages.deleteModalHeaderText,
@@ -239,7 +239,7 @@ Scenario(
     await rulesAPI.createAlertRule({ ruleName: 'Rule for PMM-T553' }, id);
     ruleTemplatesPage.openRuleTemplatesTab();
 
-    I.waitForElement(deleteButton, 3);
+    I.waitForElement(deleteButton, 30);
     I.click(deleteButton);
     I.click(ruleTemplatesPage.buttons.confirmDelete);
     I.verifyPopUpMessage(ruleTemplatesPage.messages.failedToDelete(templateName));

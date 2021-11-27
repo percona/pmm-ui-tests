@@ -48,7 +48,7 @@ Scenario('PMM-T84 - Verify Section Tabs and Metrics Section Elements [critical] 
   });
 
   await within(pmmSettingsPage.fields.tabContent, () => {
-    I.waitForElement(pmmSettingsPage.fields.metricsResolutionLabel, 3);
+    I.waitForElement(pmmSettingsPage.fields.metricsResolutionLabel, 30);
     I.see('Metrics resolution, sec', pmmSettingsPage.fields.metricsResolutionLabel);
     I.seeElement(pmmSettingsPage.fields.metricsResolutionRadio);
     I.seeElement(pmmSettingsPage.fields.lowInput);
@@ -163,6 +163,6 @@ xScenario(
     const dataRetention = '2';
 
     await pmmSettingsPage.waitForPmmSettingsPageLoaded();
-    I.waitForValue(pmmSettingsPage.fields.dataRetentionCount, dataRetention, 3);
+    I.waitForValue(pmmSettingsPage.fields.dataRetentionCount, dataRetention, 30);
   },
 );

@@ -39,12 +39,12 @@ module.exports = {
   },
 
   openTab(tabName) {
-    I.waitForVisible(this.elements.tab(tabName), 3);
+    I.waitForVisible(this.elements.tab(tabName), 30);
     I.click(this.elements.tab(tabName));
     if (tabName === this.tabNames.ruleTemplates) {
-      I.waitForVisible(this.elements.table, 3);
+      I.waitForVisible(this.elements.table, 30);
     } else {
-      I.waitForVisible(this.elements.noData, 3);
+      I.waitForVisible(this.elements.noData, 30);
     }
   },
 
@@ -78,7 +78,7 @@ module.exports = {
 
   selectRowsPerPage(count) {
     I.click(this.buttons.rowsPerPage);
-    I.waitForElement(this.buttons.rowsPerPageOption(count), 3);
+    I.waitForElement(this.buttons.rowsPerPageOption(count), 30);
     I.click(this.buttons.rowsPerPageOption(count));
   },
 

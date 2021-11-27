@@ -195,7 +195,7 @@ module.exports = {
     if (deleted) {
       I.dontSeeElement(clusterLocator);
     } else {
-      I.waitForVisible(clusterLocator, 3);
+      I.waitForVisible(clusterLocator, 30);
     }
   },
 
@@ -221,13 +221,13 @@ module.exports = {
   },
 
   unregisterCluster(clusterName, force = false) {
-    I.waitForVisible(this.tabs.kubernetesClusterTab.actionsLocator(clusterName), 3);
+    I.waitForVisible(this.tabs.kubernetesClusterTab.actionsLocator(clusterName), 30);
     I.click(this.tabs.kubernetesClusterTab.actionsLocator(clusterName));
-    I.waitForElement(this.tabs.kubernetesClusterTab.unregisterButton, 3);
+    I.waitForElement(this.tabs.kubernetesClusterTab.unregisterButton, 30);
     I.click(this.tabs.kubernetesClusterTab.unregisterButton);
     I.waitForText(this.confirmDeleteText, 10);
     if (force) {
-      I.waitForElement(this.tabs.kubernetesClusterTab.forceUnreigsterCheckBox, 3);
+      I.waitForElement(this.tabs.kubernetesClusterTab.forceUnreigsterCheckBox, 30);
       I.click(this.tabs.kubernetesClusterTab.forceUnreigsterCheckBox);
     }
 
@@ -241,7 +241,7 @@ module.exports = {
 
   async verifyElementInSection(section) {
     for (const element in section) {
-      I.waitForElement(section[element], 3);
+      I.waitForElement(section[element], 30);
       I.seeElement(section[element]);
       if (element !== 'showPasswordButton') {
         I.seeElement(this.tabs.dbClusterTab.fields.clusterDetailProperty(section[element]));
@@ -267,7 +267,7 @@ module.exports = {
 
     I.waitForElement(dbaasPage.tabs.dbClusterTab.fields.clusterStatusActive, 120);
     I.seeElement(dbaasPage.tabs.dbClusterTab.fields.clusterStatusActive);
-    I.waitForElement(dbaasPage.tabs.dbClusterTab.fields.clusterConnection.showPasswordButton, 3);
+    I.waitForElement(dbaasPage.tabs.dbClusterTab.fields.clusterConnection.showPasswordButton, 30);
     I.click(dbaasPage.tabs.dbClusterTab.fields.clusterConnection.showPasswordButton);
     I.click(dbaasPage.tabs.dbClusterTab.fields.clusterActionsMenu);
     await dbaasActionsPage.checkActionPossible('Delete', true);
@@ -284,8 +284,8 @@ module.exports = {
     I.amOnPage(dbaasPage.url);
     dbaasPage.checkCluster(clusterName, false);
     I.click(dbaasPage.tabs.dbClusterTab.dbClusterTab);
-    I.waitForElement(dbaasPage.tabs.dbClusterTab.dbClusterAddButtonTop, 3);
-    I.waitForDetached(dbaasManageVersionPage.loader, 3);
+    I.waitForElement(dbaasPage.tabs.dbClusterTab.dbClusterAddButtonTop, 30);
+    I.waitForDetached(dbaasManageVersionPage.loader, 30);
   },
 
   async waitForKubernetesClusterTab(k8sClusterName) {
@@ -293,7 +293,7 @@ module.exports = {
 
     I.amOnPage(dbaasPage.url);
     dbaasPage.checkCluster(k8sClusterName, false);
-    I.waitForElement(dbaasPage.tabs.kubernetesClusterTab.addKubernetesClusterButton, 3);
+    I.waitForElement(dbaasPage.tabs.kubernetesClusterTab.addKubernetesClusterButton, 30);
   },
 
   async validateClusterDetail(dbsClusterName, k8sClusterName, configuration) {
