@@ -212,7 +212,15 @@ Data(services).Scenario(
 
     pmmInventoryPage.openAgentsPage();
     I.saveScreenshot('agentsPage.png', true);
-    await I.say(await I.grabAttributeFrom('//table', 'innerHtml'));
+    I.pressKey('PageDown');
+    I.wait(1);
+    I.saveScreenshot('agentsPage1.png', true);
+    I.pressKey('PageDown');
+    I.wait(1);
+    I.saveScreenshot('agentsPage2.png', true);
+    const table = await I.grabAttributeFrom('//table', 'innerHTML');
+    console.log(table);
+    await I.say(table);
     await pmmInventoryPage.verifyExporterPushModeMetrics(id);
   },
 );
