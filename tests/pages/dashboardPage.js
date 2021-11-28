@@ -878,10 +878,6 @@ module.exports = {
     I.click(this.graphsLocator(metric));
   },
 
-  graphDropdownMenu(metric) {
-    return this.graphsLocator(metric) + `/..//ul[contains(@class, 'dropdown-menu')]`;
-  },
-
   // Should be refactored and added to Grafana Helper as a custom function
   async checkMetricExist(metricName, queryBy) {
     const timeStamp = Date.now();

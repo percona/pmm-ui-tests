@@ -58,7 +58,7 @@ Scenario(
     I.amOnPage(`${dashboardPage.proxysqlInstanceSummaryDashboard.url}?from=now-5m&to=now`);
     dashboardPage.waitForDashboardOpened();
     await dashboardPage.openGraphDropdownMenu(metricName);
-    const shareLocator = locate(dashboardPage.graphDropdownMenu(metricName)).find('span').withText('Share');
+    const shareLocator = locate('.dropdown-item-text').withText('Share');
 
     I.waitForVisible(shareLocator, 20);
     I.click(shareLocator);
