@@ -809,6 +809,10 @@ module.exports = {
   },
 
   fields: {
+    breadcrumbs: {
+      folder: locate('.page-toolbar').find('button').at(1),
+      dashboardName: locate('.page-toolbar').find('button').at(2),
+    },
     annotationMarker: '(//div[contains(@class,"events_marker")])',
     clearSelection: '//a[@ng-click="vm.clearSelections()"]',
     collapsedDashboardRow: '//div[@class="dashboard-row dashboard-row--collapsed"]/a',
