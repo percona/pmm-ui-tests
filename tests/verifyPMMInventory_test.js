@@ -207,9 +207,12 @@ Data(services).Scenario(
     }
 
     I.amOnPage(pmmInventoryPage.url);
+    I.saveScreenshot('servicesPage.png', true);
     const id = (await inventoryAPI.waitForServiceExist(name, 90)).service_id;
 
     pmmInventoryPage.openAgentsPage();
+    I.saveScreenshot('agentsPage.png', true);
+    await I.say(await I.grabAttributeFrom('//table', 'innerHtml'));
     await pmmInventoryPage.verifyExporterPushModeMetrics(id);
   },
 );
