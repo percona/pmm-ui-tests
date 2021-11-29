@@ -42,7 +42,7 @@
     "mochawesome-report-generator": "^5.2.0",
     "moment": "^2.29.1",
     "mongodb": "^3.7.2",
-    "playwright": "^1.10.0",
+    "playwright": "^1.16.3",
     "prettier": "^2.2.1",
     "shelljs": "^0.8.4",
     "yaml": "^1.10.2"
