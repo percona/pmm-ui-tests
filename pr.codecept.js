@@ -54,7 +54,7 @@ exports.config = {
       require: 'codeceptjs-mailosaurhelper',
       apiKey: process.env.MAILOSAUR_API_KEY || 'key',
       serverId: process.env.MAILOSAUR_SERVER_ID || 'id',
-      timeout: 3000,
+      timeout: 15000,
     },
     DbHelper: {
       require: 'codeceptjs-dbhelper',
@@ -80,9 +80,6 @@ exports.config = {
     allure: {
       enabled: true,
       outputDir: 'tests/output/allure',
-    },
-    retryFailedStep: {
-      enabled: true,
     },
   },
   mocha: {
@@ -114,6 +111,6 @@ exports.config = {
   hooks: [],
   gherkin: {},
   tests: 'tests/**/*_test.js',
-  timeout: 3000,
+  timeout: 10000,
   name: 'pmm-qa',
 };
