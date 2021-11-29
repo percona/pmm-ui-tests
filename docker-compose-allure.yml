@@ -1,11 +1,18 @@
 ---
 version: '3.7'
 
+networks:
+  default:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.16.57.0/24
+
 services:
   allure:
     image: "frankescobar/allure-docker-service"
     environment:
-      CHECK_RESULTS_EVERY_SECONDS: 60
+      CHECK_RESULTS_EVERY_SECONDS: ${CHECK_RESULTS_EVERY_SECONDS:-60}
       KEEP_HISTORY: 1
     ports:
       - "5050:5050"

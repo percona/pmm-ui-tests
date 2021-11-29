@@ -42,6 +42,7 @@
       }
     ],
     "no-await-in-loop": ["off"],
+    "eslint-disable-next-line": ["off"],
     "no-return-await": ["warn"],
     "no-promise-executor-return": ["warn"]
   }

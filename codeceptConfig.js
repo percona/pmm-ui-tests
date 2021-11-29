@@ -1,8 +1,9 @@
+/* eslint-disable padding-line-between-statements */
+const _ = require("lodash");
 module.exports = {
   pageObjects: {
     I: './tests/custom_steps.js',
-    config: './tests/globalConfig.js',
-    codeceptjsConfig: './codecept.conf.js',
+    codeceptjsConfig: './pr.codecept.js',
     addInstanceAPI: './tests/pages/api/addInstanceAPI.js',
     amiInstanceAPI: './tests/pages/api/amiInstanceAPI.js',
     adminPage: './tests/pages/adminPage.js',
@@ -53,14 +54,22 @@ module.exports = {
     templatesAPI: './tests/ia/pages/api/templatesAPI.js',
   },
   getChunks: (files) => {
-    const dependentTests = files.filter((value) => /PMMSettings|ia|backup/.test(value));
-    const dbaasTests = files.filter((value) => /DbaaS/.test(value));
-    const otherTests = files.filter((val) => !dependentTests.includes(val) && !dbaasTests.includes(val));
+    const take = (regexp) => {
+      const next = files.filter((value) => regexp.test(value));
+      // eslint-disable-next-line no-param-reassign
+      files = files.filter((v) => !next.includes(v));
+      return next;
+    };
+
+    const _ = require('lodash');
+    const splitIntoParts = (items, parts) => _.chunk(items, items.length / parts);
 
     return [
-      dependentTests,
-      otherTests,
-      dbaasTests,
+      ...splitIntoParts(take(/\/ia\//), 2),
+      take(/\/backup\//),
+      take(/PMMSettings/),
+      take(/\/DbaaS\//),
+      files,
     ];
   },
 };

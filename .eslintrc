@@ -6,6 +6,7 @@
   "root": true,
   "plugins": ["eslint-plugin-no-inline-styles"],
   "rules": {
+    "global-require": 0,
     "comma-dangle": [
       "error",
       {
@@ -57,6 +58,7 @@
     // ENABLE LATER
     "max-classes-per-file": ["off"],
     "no-shadow": ["off"],
+    "indent": ["off"],
     // enable it later, it happens because null coalesion operator
     "no-unused-expressions": ["warn"],
     "class-methods-use-this": ["warn"],

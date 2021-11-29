@@ -7,8 +7,8 @@
     "url": "https://github.com/percona/pmm-ui-tests.git"
   },
   "scripts": {
-    "e2e:experimental": "node bin/runner.js",
     "lint:tests": "eslint --ext .js --fix tests/",
+    "ci": "npx codeceptjs run-multiple parallel --debug --steps --reporter mocha-multi -c pr.codecept.js --grep '(?=.*)^(?!.*@not-ui-pipeline)^(?!.*@dbaas)^(?!.*@ami-upgrade)^(?!.*@pmm-upgrade)^(?!.*@qan)^(?!.*@nightly)'",
     "e2e": "npx codeceptjs run-multiple parallel --debug --steps --reporter mocha-multi -c pr.codecept.js --grep '(?=.*)^(?!.*@not-ui-pipeline)^(?!.*@not-pr-pipeline)'",
     "e2e:ia": "npx codeceptjs run -c pr.codecept.js --grep '@ia'",
     "e2e:dbaas": "npx codeceptjs run -c pr.codecept.js --grep '@dbaas'",
@@ -16,6 +16,7 @@
   },
   "dependencies": {
     "@codeceptjs/configure": "^0.7.0",
+    "@codeceptjs/helper": "^1.0.2",
     "@codeceptjs/ui": "^0.4.6",
     "@types/lodash": "^4.14.177",
     "@types/mocha": "^9.0.0",
