@@ -15,6 +15,7 @@ exports.config = {
       show: true,
       url: process.env.PMM_UI_URL || 'http://127.0.0.1/',
       restart: false,
+      keepBrowserState: true,
       browser: 'chromium',
       windowSize: '1920x1080',
       waitForNavigation: 'networkidle0',
@@ -23,6 +24,7 @@ exports.config = {
       waitForAction: 500,
       pressKeyDelay: 5,
       chromium: {
+        userDataDir: '/tmp/playwright-tmp',
         executablePath: process.env.CHROMIUM_PATH,
         ignoreHTTPSErrors: true,
         args: [
