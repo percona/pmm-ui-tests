@@ -51,15 +51,32 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T68 - Open the ProxySQL Instance Summary Dashboard and verify Metrics are present and graphs are displayed @nightly @dashboards',
-  async ({ I, adminPage, dashboardPage }) => {
+  'PMM-T1070 - Verify link to instructions for enabling rendering images @nightly @dashboards',
+  async ({ I, dashboardPage, links }) => {
+    const metricName = 'Client Connections (All Host Groups)';
+
     I.amOnPage(`${dashboardPage.proxysqlInstanceSummaryDashboard.url}?from=now-5m&to=now`);
     dashboardPage.waitForDashboardOpened();
-    I.click(adminPage.fields.metricTitle);
-    adminPage.performPageDown(5);
+    await dashboardPage.openGraphDropdownMenu(metricName);
+    const shareLocator = locate('.dropdown-item-text').withText('Share');
+
+    I.waitForVisible(shareLocator, 20);
+    I.click(shareLocator);
+    I.waitForVisible(dashboardPage.sharePanel.elements.imageRendererPluginLink, 20);
+    I.seeAttributesOnElements(dashboardPage.sharePanel.elements.imageRendererPluginLink, { href: links.imageRendererPlugin });
+    I.seeTextEquals('Image Renderer plugin', dashboardPage.sharePanel.elements.imageRendererPluginLink);
+  },
+);
+
+Scenario(
+  'PMM-T68 - Open the ProxySQL Instance Summary Dashboard and verify Metrics are present and graphs are displayed @nightly @dashboards',
+  async ({ I, dashboardPage }) => {
+    I.amOnPage(`${dashboardPage.proxysqlInstanceSummaryDashboard.url}?from=now-5m&to=now`);
+    dashboardPage.waitForDashboardOpened();
+    await dashboardPage.expandEachDashboardRow();
     await dashboardPage.verifyMetricsExistence(dashboardPage.proxysqlInstanceSummaryDashboard.metrics);
     await dashboardPage.verifyThereAreNoGraphsWithNA();
-    await dashboardPage.verifyThereAreNoGraphsWithoutData(8);
+    await dashboardPage.verifyThereAreNoGraphsWithoutData(3);
   },
 );
 
