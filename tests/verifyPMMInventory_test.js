@@ -193,7 +193,7 @@ Scenario(
 );
 
 Data(services).Scenario(
-  'PMM-T1072 - Verify "push_metrics" enabled by default on DB Exporters in Inventory page(Agents tab) @inventory',
+  'PMM-T1072 - Verify "push_metrics" enabled by default on DB Exporters in Inventory page(Agents tab) @inventory @imp',
   async ({
     pmmInventoryPage, inventoryAPI, current, remoteInstancesHelper, I,
   }) => {
@@ -208,19 +208,25 @@ Data(services).Scenario(
 
     I.amOnPage(pmmInventoryPage.url);
     I.saveScreenshot('servicesPage.png', true);
-    const id = (await inventoryAPI.waitForServiceExist(name, 90)).service_id;
+    const id = (await inventoryAPI.waitForServiceExist(name, 10)).service_id;
     const agentsObj = await inventoryAPI.apiGetAgents(id);
+    const agentsAll = await inventoryAPI.apiGetAgents();
 
     pmmInventoryPage.openAgentsPage();
-    let agentsTotal = I.grabNumberOfVisibleElements('tr[data-testid="table-row"]');
-    I.scrollPageToBottom();
+    let agentsTotal = await I.grabNumberOfVisibleElements('tr[data-testid="table-row"]');
+    I.click('//table');
+    I.pressKey('PageDown');
+    I.wait(1);
     const table = await I.grabAttributeFrom('//table', 'innerHTML');
-    I.say(`Total agent in table before scroll: ${agentsTotal}`);
+    await I.say(`Total agent in table before scroll: ${agentsTotal}`);
     I.saveScreenshot('agentsPage.png', true);
-    agentsTotal = I.grabNumberOfVisibleElements('tr[data-testid="table-row"]');
-    I.say(`Total agent in table after scroll: ${agentsTotal}`);
+    agentsTotal = await I.grabNumberOfVisibleElements('tr[data-testid="table-row"]');
+    await I.say(`Total agent in table after scroll: ${agentsTotal}`);
     await I.say(table);
-    I.say(agentsObj);
+    console.log(agentsObj.data);
+    console.log(agentsAll.data);
+    await I.say(JSON.stringify(agentsObj.data,null,2));
+    await I.say(JSON.stringify(agentsAll.data,null,2));
     await pmmInventoryPage.verifyExporterPushModeMetrics(id);
   },
 );
