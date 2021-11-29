@@ -160,6 +160,7 @@ module.exports = {
     return `${this.fields.serviceIdLocatorPrefix}${serviceName}")]/preceding-sibling::td[2]`;
   },
 
+  // TODO: rename method, "get" expected to return something.
   async getCountOfAgents(serviceId) {
     const countOfAgents = await I.grabNumberOfVisibleElements(serviceId);
 

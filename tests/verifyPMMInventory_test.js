@@ -209,18 +209,18 @@ Data(services).Scenario(
     I.amOnPage(pmmInventoryPage.url);
     I.saveScreenshot('servicesPage.png', true);
     const id = (await inventoryAPI.waitForServiceExist(name, 90)).service_id;
+    const agentsObj = await inventoryAPI.apiGetAgents(id);
 
     pmmInventoryPage.openAgentsPage();
-    I.saveScreenshot('agentsPage.png', true);
-    I.pressKey('PageDown');
-    I.wait(1);
-    I.saveScreenshot('agentsPage1.png', true);
-    I.pressKey('PageDown');
-    I.wait(1);
-    I.saveScreenshot('agentsPage2.png', true);
+    let agentsTotal = I.grabNumberOfVisibleElements('tr[data-testid="table-row"]');
+    I.scrollPageToBottom();
     const table = await I.grabAttributeFrom('//table', 'innerHTML');
-    console.log(table);
+    I.say(`Total agent in table before scroll: ${agentsTotal}`);
+    I.saveScreenshot('agentsPage.png', true);
+    agentsTotal = I.grabNumberOfVisibleElements('tr[data-testid="table-row"]');
+    I.say(`Total agent in table after scroll: ${agentsTotal}`);
     await I.say(table);
+    I.say(agentsObj);
     await pmmInventoryPage.verifyExporterPushModeMetrics(id);
   },
 );
