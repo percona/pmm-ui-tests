@@ -5,15 +5,17 @@ exports.config = {
   helpers: {
     Playwright: {
       url: process.env.PMM_UI_URL || 'http://127.0.0.1/',
-      restart: true,
+      restart: false,
+      keepBrowserState: true,
       browser: 'chromium',
       windowSize: '1920x1080',
       waitForNavigation: 'networkidle0',
       waitForTimeout: 30000,
       getPageTimeout: 30000,
-      waitForAction: 500,
+      waitForAction: 100,
       pressKeyDelay: 5,
       chromium: {
+        userDataDir: '/tmp/playwright-tmp',
         executablePath: process.env.CHROMIUM_PATH,
         ignoreHTTPSErrors: true,
         args: [
