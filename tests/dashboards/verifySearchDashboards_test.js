@@ -18,7 +18,7 @@ Before(async ({
 });
 
 Scenario(
-  'PMM-T1091 - Verify PMM Dashboards folders are correct @nightly @dashboards',
+  'PMM-T1091 - Verify PMM Dashboards folders are correct @nightly @dashboards @post-upgrade',
   async ({ searchDashboardsModal }) => {
     const foldersNames = Object.values(searchDashboardsModal.folders).map((folder) => folder.name);
 
@@ -31,7 +31,7 @@ Scenario(
 );
 
 Data(folders).Scenario(
-  'PMM-T1086 - Verify PMM Dashboards collections are present in correct folders @nightly @dashboards',
+  'PMM-T1086 - Verify PMM Dashboards collections are present in correct folders @nightly @dashboards @post-upgrade',
   async ({ searchDashboardsModal, current }) => {
     searchDashboardsModal.collapseFolder('Recent');
     searchDashboardsModal.expandFolder(current.name);
