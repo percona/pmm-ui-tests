@@ -196,14 +196,6 @@ Data(services).Scenario(
     pmmInventoryPage, inventoryAPI, current, remoteInstancesHelper, I,
   }) => {
     let name = current.serviceName;
-
-    if (name === 'haproxy') {
-      const haproxyService = await inventoryAPI.apiGetServices(remoteInstancesHelper.services.haproxy.serviceType);
-
-      /* expected array with single object, even if multiple returned - only one required for test */
-      name = haproxyService.data.haproxy[0].service_name;
-    }
-
     I.amOnPage(pmmInventoryPage.url);
     I.saveScreenshot('servicesPage.png', true);
     const id = (await inventoryAPI.waitForServiceExist(name, 10)).service_id;
