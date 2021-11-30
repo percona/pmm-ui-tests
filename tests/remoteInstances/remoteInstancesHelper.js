@@ -138,7 +138,7 @@ module.exports = {
       },
       mongodb_4_4_ssl: {
         host: '192.168.0.1',
-        port: '27018',
+        port: '37018',
         clusterName: 'mongo-ssl-cluster',
         environment: 'mongo-ssl-env',
         tlsCAFile: '/tmp/ssl/pmm-ui-tests/testdata/mongodb/certs/ca.crt',
