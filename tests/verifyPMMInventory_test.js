@@ -11,14 +11,12 @@ const services = new DataTable(['serviceName']);
 services.add([mysqlServiceName]);
 services.add([postgresServiceName]);
 services.add([mongoServiceName]);
-services.add(['stt-mysql-5.7.30']);
-services.add(['haproxy']);
 
 Feature('Inventory page');
 
 BeforeSuite(async ({ I }) => {
   I.say(await I.verifyCommand(`${pmmManagerCmd} --addclient=ps,1 --deploy-service-with-name ${mysqlServiceName}`));
-  I.say(await I.verifyCommand(`${pmmManagerCmd} --addclient=pdpgsql,1 --deploy-service-with-name ${postgresServiceName}`));
+  I.say(await I.verifyCommand(`${pmmManagerCmd} --addclient=pdpgsql,1 --pdpgsql-version=13.4 --deploy-service-with-name ${postgresServiceName}`));
   I.say(await I.verifyCommand(`${pmmManagerCmd} --addclient=modb,1 --deploy-service-with-name ${mongoServiceName}`));
 });
 
