@@ -7,7 +7,7 @@ const lastCheckRegex = /^(?:(((Jan(uary)?|Ma(r(ch)?|y)|Jul(y)?|Aug(ust)?|Oct(obe
 module.exports = {
   // insert your locators and methods here
   // setting locators
-  url: 'graph/d/pmm-home/home-dashboard?orgId=1',
+  url: 'graph/d/pmm-home/home-dashboard?orgId=1&refresh=1m&from=now-5m&to=now',
   requestEnd: '/v1/Updates/Check',
   fields: {
     systemsUnderMonitoringCount:
@@ -20,6 +20,7 @@ module.exports = {
     sttDisabledFailedChecksPanelSelector: '$db-check-panel-settings-link',
     sttFailedChecksPanelSelector: '$db-check-panel-has-checks',
     checksPanelSelector: '$db-check-panel-home',
+    noFailedChecksInPanel: '$db-check-panel-zero-checks',
     newsPanelTitleSelector: '//span[@class="panel-title-text" and text() = "Percona News"]',
     newsPanelContentSelector:
       '//span[contains(text(), "Percona News")]/ancestor::div[contains(@class, "panel-container")]//div[contains(@class, "view")]',
@@ -91,6 +92,11 @@ module.exports = {
     'Waiting for Grafana dashboards update to finish...',
   ],
 
+  async open() {
+    I.amOnPage(this.url);
+    I.waitForElement(this.fields.dashboardHeaderLocator, 60);
+  },
+
   // introducing methods
   async upgradePMM(version) {
     let locators = this.getLocators(version);
@@ -115,7 +121,7 @@ module.exports = {
     I.click(locators.reloadButtonAfterUpgrade);
     locators = this.getLocators('latest');
 
-    I.waitForVisible(locators.upToDateLocator, 30);
+    I.waitForVisible(locators.upToDateLocator, 60);
     assert.equal(
       await I.grabTextFrom(locators.currentVersion),
       available_version.split(' ')[0],

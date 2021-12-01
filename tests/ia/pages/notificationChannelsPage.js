@@ -112,7 +112,7 @@ module.exports = {
 
     I.click(this.buttons.editChannelLocator(name, type));
     I.waitForVisible(this.buttons.addChannel, 30);
-    I.seeAttributesOnElements(this.buttons.addChannel, { disabled: true });
+    I.seeElementsDisabled(this.buttons.addChannel);
     I.appendField(this.fields.nameInput, suffix);
 
     switch (type) {
