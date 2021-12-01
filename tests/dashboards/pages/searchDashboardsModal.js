@@ -70,10 +70,6 @@ module.exports = {
         'Processes Details',
       ],
     },
-    pmm: {
-      name: 'PMM',
-      items: [],
-    },
     postgreSql: {
       name: 'PostgreSQL',
       items: [
