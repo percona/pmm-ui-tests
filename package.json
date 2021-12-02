@@ -18,6 +18,7 @@
     "@types/mocha": "^8.2.2",
     "axios": "^0.21.4",
     "codeceptjs": "^3.0.6",
+    "codeceptjs-chai": "^2.3.2",
     "codeceptjs-dbhelper": "^1.0.1",
     "codeceptjs-mailosaurhelper": "^1.0.5",
     "database-js-mysql": "^1.1.3",

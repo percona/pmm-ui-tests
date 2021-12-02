@@ -118,7 +118,8 @@ Scenario(
 Scenario(
   'PMM-T391 Verify user is able to create and set custom home dashboard @pre-upgrade @ami-upgrade @pmm-upgrade',
   async ({ I, grafanaAPI, dashboardPage }) => {
-    const resp = await grafanaAPI.createCustomDashboard();
+    const folder = await grafanaAPI.createFolder(grafanaAPI.customFolderName);
+    const resp = await grafanaAPI.createCustomDashboard(grafanaAPI.customDashboardName, folder.id);
 
     await grafanaAPI.starDashboard(resp.id);
     await grafanaAPI.setHomeDashboard(resp.id);

@@ -19,14 +19,15 @@ Before(async ({
 
 Scenario(
   'PMM-T1091 - Verify PMM Dashboards folders are correct @nightly @dashboards @post-upgrade',
-  async ({ searchDashboardsModal }) => {
+  async ({ I, searchDashboardsModal, grafanaAPI }) => {
     const foldersNames = Object.values(searchDashboardsModal.folders).map((folder) => folder.name);
 
     foldersNames.unshift('Recent');
-    assert.strictEqual(await searchDashboardsModal.countFolders(), foldersNames.length,
-      'Folders amount does not match expected!');
-    assert.deepStrictEqual(await searchDashboardsModal.getFoldersList(), foldersNames,
-      'Folders collection does not match expected!');
+    const actualFolders = (await searchDashboardsModal.getFoldersList())
+      // these folders verified in dedicated test.
+      .filter((value) => value !== 'Starred' && value !== grafanaAPI.customFolderName);
+
+    I.assertDeepMembers(actualFolders, foldersNames);
   },
 );
 
@@ -36,5 +37,16 @@ Data(folders).Scenario(
     searchDashboardsModal.collapseFolder('Recent');
     searchDashboardsModal.expandFolder(current.name);
     searchDashboardsModal.verifyDashboardsInFolderCollection(current);
+  },
+);
+
+Scenario(
+  'PMM-T998 - Verify dashboard folders after upgrade @post-upgrade',
+  async ({ I, searchDashboardsModal, grafanaAPI }) => {
+    const actualFolders = (await searchDashboardsModal.getFoldersList());
+
+    I.assertContain(actualFolders, 'Starred');
+    I.assertContain(actualFolders, grafanaAPI.customFolderName);
+    I.seeElement(searchDashboardsModal.fields.folderItemLocator(grafanaAPI.customDashboardName));
   },
 );
