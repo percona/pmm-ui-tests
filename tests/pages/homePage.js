@@ -86,10 +86,8 @@ module.exports = {
     'TASK [Wait for pmm-managed]',
     'TASK [Reread supervisord configuration again]',
     'TASK [Restart services]',
-    'TASK [Start Grafana dashboards update]',
     'TASK [Update/restart other services]',
     'TASK [Check supervisord log]',
-    'Waiting for Grafana dashboards update to finish...',
   ],
 
   async open() {
