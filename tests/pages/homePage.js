@@ -110,8 +110,8 @@ module.exports = {
     I.waitForElement(locators.updateProgressModal, 30);
     I.waitForText(locators.inProgressMessage, 30, locators.updateProgressModal);
 
-    // skipping milestones checks for 2.9 and 2.10 versions due logs not showing issue
-    if (version !== '9' && version !== '10') {
+    // skipping milestones checks for 2.9 and 2.10, 2.11 versions due logs not showing issue
+    if (version > '11') {
       for (const milestone of milestones) {
         I.waitForElement(`//pre[contains(text(), '${milestone}')]`, 1200);
       }
