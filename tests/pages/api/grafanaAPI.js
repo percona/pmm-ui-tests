@@ -142,4 +142,35 @@ module.exports = {
 
     return resp.data;
   },
+
+  async lookupFolderByName(name) {
+    const headers = { Authorization: `Basic ${await I.getAuth()}` };
+    const resp = await I.sendGetRequest('graph/api/folders', headers);
+
+    return Object.entries(resp.data).filter((folder) => folder.title === name);
+  },
+
+  async deleteFolder(uid) {
+    const headers = { Authorization: `Basic ${await I.getAuth()}` };
+
+    const resp = await I.sendDeleteRequest(`graph/api/folders/${uid}`, headers);
+
+    assert.ok(
+      resp.status === 200,
+      `Failed to delete folder with uid '${uid}' . Response message is ${resp.data.message}`,
+    );
+  },
+
+  /**
+   * Encapsulates multiple actions require do delete folder to keep test body short.
+   */
+  async safeDeletePmmFolder() {
+    const searchResultObj = await this.lookupFolderByName('PMM');
+
+    if (searchResultObj && Object.prototype.hasOwnProperty.call(searchResultObj, 'uid')) {
+      await this.deleteFolder(searchResultObj.uid);
+    } else {
+      await I.say('PMM folder was not found!');
+    }
+  },
 };

@@ -121,6 +121,7 @@ Scenario(
     const folder = await grafanaAPI.createFolder(grafanaAPI.customFolderName);
     const resp = await grafanaAPI.createCustomDashboard(grafanaAPI.customDashboardName, folder.id);
 
+    await grafanaAPI.safeDeletePmmFolder();
     await grafanaAPI.starDashboard(resp.id);
     await grafanaAPI.setHomeDashboard(resp.id);
 
