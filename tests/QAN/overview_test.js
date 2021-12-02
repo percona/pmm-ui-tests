@@ -1,3 +1,5 @@
+const assert = require('assert');
+
 Feature('QAN overview').retry(1);
 
 Before(async ({
@@ -8,6 +10,28 @@ Before(async ({
   qanOverview.waitForOverviewLoaded();
   qanFilters.waitForFiltersToLoad();
 });
+
+Scenario(
+  'PMM-T207 Verify hovering over query in overview table  @qan',
+  async ({ I, qanOverview }) => {
+    qanOverview.waitForOverviewLoaded();
+    const firstQueryLocator = `${qanOverview.getRowLocator(1)} div.td:nth-child(2) div`;
+
+    I.waitForVisible(`${firstQueryLocator} > div`, 30);
+    let firstQueryText = await I.grabTextFrom(`${firstQueryLocator} > div`);
+
+    firstQueryText = qanOverview.removeSimbolFromString(firstQueryText, ' ');
+
+    I.moveCursorTo(`${firstQueryLocator} > svg`);
+    I.waitForVisible(qanOverview.elements.tooltipQueryValue, 30);
+    I.seeElement(qanOverview.elements.tooltipQueryValue);
+    let tooltipQueryText = await I.grabTextFrom(qanOverview.elements.tooltipQueryValue);
+
+    tooltipQueryText = qanOverview.removeSimbolFromString(tooltipQueryText, ' ');
+    tooltipQueryText = qanOverview.removeSimbolFromString(tooltipQueryText, '\n');
+    assert.ok(firstQueryText === tooltipQueryText, 'Expected that the request text in the line matches the request text on the tooltip');
+  },
+);
 
 Scenario(
   'PMM-T146 Verify user is able to see  chart tooltip for time related metric  @qan',

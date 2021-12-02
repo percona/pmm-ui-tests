@@ -24,6 +24,7 @@ module.exports = {
     tooltip: '.overview-column-tooltip',
     tooltipQPSValue: '$qps',
     noResultTableText: locate('$table-no-data').find('h1'),
+    tooltipQueryValue: locate('.ant-tooltip-inner').find('code'),
   },
   messages: {
     noResultTableText: 'No queries available for this combination of filters in the selected time frame',
@@ -189,5 +190,27 @@ module.exports = {
     const tooltip = await I.grabTextFrom(this.elements.tooltipQPSValue);
 
     assert.ok(tooltip.includes(value), `The tooltip value is ${tooltip} while expected value was ${value}`);
+  },
+
+  mouseOverInfoIcon(row) {
+    I.moveCursorTo(`${this.getRowLocator(row)}> div:nth-child(2) div > svg`);
+    I.waitForVisible(this.elements.tooltipQueryValue, 30);
+  },
+
+  removeSimbolFromString(str, simbol) {
+    let pos = 0;
+    let resultText = '';
+    while (true) {
+      const foundPos = str.indexOf(simbol, pos);
+
+      if (foundPos === -1) {
+        resultText += str.slice(pos, str.length);
+        break;
+      }
+
+      resultText += str.slice(pos, foundPos);
+      pos = foundPos + 1;
+    }
+    return resultText;
   },
 };
