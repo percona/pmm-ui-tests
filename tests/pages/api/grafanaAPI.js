@@ -160,17 +160,4 @@ module.exports = {
       `Failed to delete folder with uid '${uid}' . Response message is ${resp.data.message}`,
     );
   },
-
-  /**
-   * Encapsulates multiple actions require do delete folder to keep test body short.
-   */
-  async safeDeletePmmFolder() {
-    const searchResultObj = await this.lookupFolderByName('PMM');
-
-    if (searchResultObj && Object.prototype.hasOwnProperty.call(searchResultObj, 'uid')) {
-      await this.deleteFolder(searchResultObj.uid);
-    } else {
-      await I.say('PMM folder was not found!');
-    }
-  },
 };
