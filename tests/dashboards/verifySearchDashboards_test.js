@@ -18,15 +18,12 @@ Before(async ({
 });
 
 Scenario(
-  'PMM-T1091 - Verify PMM Dashboards folders are correct @nightly @dashboards @post-upgrade',
+  'PMM-T1091 - Verify PMM Dashboards folders are correct @nightly @dashboards',
   async ({ I, searchDashboardsModal, grafanaAPI }) => {
     const foldersNames = Object.values(searchDashboardsModal.folders).map((folder) => folder.name);
+    const actualFolders = (await searchDashboardsModal.getFoldersList());
 
     foldersNames.unshift('Recent');
-    const actualFolders = (await searchDashboardsModal.getFoldersList())
-      // these folders verified in dedicated test.
-      .filter((value) => value !== 'Starred' && value !== grafanaAPI.customFolderName);
-
     I.assertDeepMembers(actualFolders, foldersNames);
   },
 );
@@ -40,13 +37,4 @@ Data(folders).Scenario(
   },
 );
 
-Scenario(
-  'PMM-T998 - Verify dashboard folders after upgrade @post-upgrade',
-  async ({ I, searchDashboardsModal, grafanaAPI }) => {
-    const actualFolders = (await searchDashboardsModal.getFoldersList());
 
-    I.assertContain(actualFolders, 'Starred');
-    I.assertContain(actualFolders, grafanaAPI.customFolderName);
-    I.seeElement(searchDashboardsModal.fields.folderItemLocator(grafanaAPI.customDashboardName));
-  },
-);
