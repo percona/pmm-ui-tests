@@ -19,9 +19,7 @@ Before(async ({
 
 Scenario(
   'PMM-T1091 - Verify PMM Dashboards folders are correct @nightly @dashboards',
-  async ({ I, searchDashboardsModal, grafanaAPI }) => {
-  'PMM-T1091 - Verify PMM Dashboards folders are correct @nightly @dashboards',
-  async ({ searchDashboardsModal }) => {
+  async ({ I, searchDashboardsModal }) => {
     const foldersNames = Object.values(searchDashboardsModal.folders).map((folder) => folder.name);
     const actualFolders = (await searchDashboardsModal.getFoldersList());
 
@@ -31,12 +29,10 @@ Scenario(
 );
 
 Data(folders).Scenario(
-  'PMM-T1086 - Verify PMM Dashboards collections are present in correct folders @nightly @dashboards',
+  'PMM-T1086 - Verify PMM Dashboards collections are present in correct folders @nightly @dashboards @post-upgrade',
   async ({ searchDashboardsModal, current }) => {
     searchDashboardsModal.collapseFolder('Recent');
     searchDashboardsModal.expandFolder(current.name);
     searchDashboardsModal.verifyDashboardsInFolderCollection(current);
   },
 );
-
-
