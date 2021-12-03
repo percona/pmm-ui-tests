@@ -355,7 +355,12 @@ Scenario(
 
 Scenario(
   'PMM-T998 - Verify dashboard folders after upgrade @post-upgrade',
-  async ({ I, searchDashboardsModal, grafanaAPI }) => {
+  async ({
+    I, searchDashboardsModal, grafanaAPI, homePage,
+  }) => {
+    await homePage.open();
+    I.click(dashboardPage.fields.breadcrumbs.dashboardName);
+    searchDashboardsModal.waitForOpened();
     const actualFolders = (await searchDashboardsModal.getFoldersList());
 
     I.assertDeepIncludeMembers(actualFolders, ['Starred', grafanaAPI.customFolderName]);
@@ -365,7 +370,9 @@ Scenario(
 
 Scenario(
   'PMM-T1091 - Verify PMM Dashboards folders are correct @post-upgrade',
-  async ({ I, searchDashboardsModal, grafanaAPI }) => {
+  async ({
+    I, searchDashboardsModal, grafanaAPI, homePage,
+  }) => {
     const foldersNames = Object.values(searchDashboardsModal.folders).map((folder) => folder.name);
 
     foldersNames.unshift('Recent');
@@ -373,6 +380,9 @@ Scenario(
       foldersNames.push('PMM');
     }
 
+    await homePage.open();
+    I.click(dashboardPage.fields.breadcrumbs.dashboardName);
+    searchDashboardsModal.waitForOpened();
     const actualFolders = (await searchDashboardsModal.getFoldersList())
       // these folders verified in dedicated test.
       .filter((value) => value !== 'Starred' && value !== grafanaAPI.customFolderName);
