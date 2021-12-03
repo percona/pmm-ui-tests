@@ -679,7 +679,7 @@ Scenario(
 
     const response = await dashboardPage.checkMetricExist(metricName);
     const result = JSON.stringify(response.data.data.result);
-    
+
     assert.ok(response.data.data.result.length !== 0, `Custom Metrics ${metricName} Should be available but got empty ${result}`);
   },
 );
