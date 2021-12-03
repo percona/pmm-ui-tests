@@ -9,7 +9,7 @@ module.exports = {
   components: {
     PXC: {
       name: 'PXC',
-      dataqa: 'xtradbpxc',
+      dataqa: 'pxcpxc',
     },
     PSMDB: {
       name: 'PSMDB',
@@ -17,7 +17,7 @@ module.exports = {
     },
     HAPROXY: {
       name: 'HAProxy',
-      dataqa: 'xtradbhaproxy',
+      dataqa: 'pxchaproxy',
     },
   },
 
