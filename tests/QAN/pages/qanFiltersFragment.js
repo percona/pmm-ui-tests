@@ -143,11 +143,16 @@ module.exports = {
     }
   },
 
-  applyShowAllLink(groupName) {
+  async applyShowAllLink(groupName) {
     const showAllLink = this.getFilterGroupCountSelector(groupName);
+    
+    this.waitForFiltersToLoad();
+    const grabNumberOfElements = await I.grabNumberOfVisibleElements(showAllLink);
 
-    I.waitForVisible(showAllLink, 30);
-    I.forceClick(showAllLink);
+    if (grabNumberOfElements > 0) {
+      I.waitForVisible(showAllLink, 30);
+      I.forceClick(showAllLink);
+    }
   },
 
   async applyShowTop5Link(groupName) {
