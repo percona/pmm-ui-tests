@@ -673,13 +673,13 @@ Scenario(
 );
 
 Scenario(
-  'Verify Metrics from custom queries for postgres_exporter after upgrade (UI) @ami-upgrade @post-client-upgrade @post-upgrade @pmm-upgrade',
+  'Verify Metrics from custom queries for postgres_exporter after upgrade (UI) @post-client-upgrade @post-upgrade @pmm-upgrade',
   async ({ dashboardPage }) => {
     const metricName = 'pg_stat_user_tables_n_tup_ins';
 
     const response = await dashboardPage.checkMetricExist(metricName);
     const result = JSON.stringify(response.data.data.result);
-
+    
     assert.ok(response.data.data.result.length !== 0, `Custom Metrics ${metricName} Should be available but got empty ${result}`);
   },
 );
