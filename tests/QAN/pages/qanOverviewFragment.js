@@ -197,12 +197,13 @@ module.exports = {
     I.waitForVisible(this.elements.tooltipQueryValue, 30);
   },
 
-  removeSimbolFromString(str, simbol) {
+  removeSymbolFromString(str, simbol) {
     let pos = 0;
     let resultText = '';
+    let foundPos;
 
-    while (true) {
-      const foundPos = str.indexOf(simbol, pos);
+    while (foundPos > -1) {
+      foundPos = str.indexOf(simbol, pos);
 
       if (foundPos === -1) {
         resultText += str.slice(pos, str.length);
