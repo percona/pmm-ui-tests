@@ -673,7 +673,7 @@ Scenario(
 );
 
 Scenario(
-  'Verify Metrics from custom queries for postgres_exporter after upgrade (UI) @ami-upgrade @post-client-upgrade @post-upgrade @pmm-upgrade',
+  'Verify Metrics from custom queries for postgres_exporter after upgrade (UI) @post-client-upgrade @post-upgrade @pmm-upgrade',
   async ({ dashboardPage }) => {
     const metricName = 'pg_stat_user_tables_n_tup_ins';
 
