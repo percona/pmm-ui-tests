@@ -3,7 +3,7 @@ const { leftNavMenu } = inject();
 const sidebar = new DataTable(['name', 'locator', 'path', 'click']);
 
 const parse = (obj) => {
-  if (obj !== null && typeof obj == 'object') {
+  if (obj !== null && typeof obj === 'object') {
     if ('path' in obj && 'click' in obj
       // excludes top level clickable icon
       && 'label' in obj) {
@@ -31,6 +31,6 @@ Data(sidebar).Scenario(
   async ({ I, current }) => {
     I.seeElementInDOM(current.locator);
     current.click();
-    I.seeInCurrentUrl(current.path);
+    I.waitUrlEquals(current.path, 10);
   },
 );
