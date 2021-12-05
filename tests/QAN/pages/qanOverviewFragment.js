@@ -200,6 +200,7 @@ module.exports = {
   removeSimbolFromString(str, simbol) {
     let pos = 0;
     let resultText = '';
+
     while (true) {
       const foundPos = str.indexOf(simbol, pos);
 
@@ -211,6 +212,7 @@ module.exports = {
       resultText += str.slice(pos, foundPos);
       pos = foundPos + 1;
     }
+
     return resultText;
   },
 };
