@@ -8,9 +8,7 @@ Object.values(searchDashboardsModal.folders).forEach((folder) => { folders.add([
 
 Feature('Test Dashboards collection inside the Folders');
 
-Before(async ({
-  I, homePage, dashboardPage, searchDashboardsModal,
-}) => {
+Before(async ({ I, homePage }) => {
   await I.Authorize();
   await homePage.open();
 });
