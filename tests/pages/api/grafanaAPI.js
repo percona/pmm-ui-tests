@@ -2,8 +2,10 @@ const { I } = inject();
 const assert = require('assert');
 
 module.exports = {
-  customDashboard: 'custom-dashboard',
-  async createCustomDashboard() {
+  customDashboardName: 'auto-test-dashboard',
+  customFolderName: 'auto-test-folder',
+
+  async createCustomDashboard(name, folderId = 0) {
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
     const body = {
       dashboard: {
@@ -68,11 +70,11 @@ module.exports = {
           from: 'now-6h',
           to: 'now',
         },
-        title: this.customDashboard,
+        title: name,
         tags: ['pmm-qa'],
         version: 0,
       },
-      folderId: 0,
+      folderId,
     };
     const resp = await I.sendPostRequest('graph/api/dashboards/db/', body, headers);
 
@@ -123,6 +125,39 @@ module.exports = {
     assert.ok(
       resp.status === 200,
       `Failed to set custom Home dashboard '${id}'. Response message is ${resp.data.message}`,
+    );
+  },
+
+  async createFolder(name) {
+    const headers = { Authorization: `Basic ${await I.getAuth()}` };
+    const body = {
+      title: name,
+    };
+    const resp = await I.sendPostRequest('graph/api/folders', body, headers);
+
+    assert.ok(
+      resp.status === 200,
+      `Failed to create "${name}" folder. Response message is ${resp.data.message}`,
+    );
+
+    return resp.data;
+  },
+
+  async lookupFolderByName(name) {
+    const headers = { Authorization: `Basic ${await I.getAuth()}` };
+    const resp = await I.sendGetRequest('graph/api/folders', headers);
+
+    return Object.entries(resp.data).filter((folder) => folder.title === name);
+  },
+
+  async deleteFolder(uid) {
+    const headers = { Authorization: `Basic ${await I.getAuth()}` };
+
+    const resp = await I.sendDeleteRequest(`graph/api/folders/${uid}`, headers);
+
+    assert.ok(
+      resp.status === 200,
+      `Failed to delete folder with uid '${uid}' . Response message is ${resp.data.message}`,
     );
   },
 };

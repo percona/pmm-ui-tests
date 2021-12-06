@@ -118,7 +118,8 @@ Scenario(
 Scenario(
   'PMM-T391 Verify user is able to create and set custom home dashboard @pre-upgrade @ami-upgrade @pmm-upgrade',
   async ({ I, grafanaAPI, dashboardPage }) => {
-    const resp = await grafanaAPI.createCustomDashboard();
+    const folder = await grafanaAPI.createFolder(grafanaAPI.customFolderName);
+    const resp = await grafanaAPI.createCustomDashboard(grafanaAPI.customDashboardName, folder.id);
 
     await grafanaAPI.starDashboard(resp.id);
     await grafanaAPI.setHomeDashboard(resp.id);
@@ -348,7 +349,45 @@ Scenario(
     dashboardPage.verifyMetricsExistence(['Custom Panel']);
     await dashboardPage.verifyThereAreNoGraphsWithNA();
     await dashboardPage.verifyThereAreNoGraphsWithoutData();
-    I.seeInCurrentUrl(grafanaAPI.customDashboard);
+    I.seeInCurrentUrl(grafanaAPI.customDashboardName);
+  },
+);
+
+Scenario(
+  'PMM-T998 - Verify dashboard folders after upgrade @post-upgrade',
+  async ({
+    I, searchDashboardsModal, grafanaAPI, homePage,
+  }) => {
+    await homePage.open();
+    I.click(dashboardPage.fields.breadcrumbs.dashboardName);
+    searchDashboardsModal.waitForOpened();
+    const actualFolders = (await searchDashboardsModal.getFoldersList());
+
+    I.assertDeepIncludeMembers(actualFolders, ['Starred', grafanaAPI.customFolderName]);
+    I.seeElement(searchDashboardsModal.fields.folderItemLocator(grafanaAPI.customDashboardName));
+  },
+);
+
+Scenario(
+  'PMM-T1091 - Verify PMM Dashboards folders are correct @post-upgrade',
+  async ({
+    I, searchDashboardsModal, grafanaAPI, homePage,
+  }) => {
+    const foldersNames = Object.values(searchDashboardsModal.folders).map((folder) => folder.name);
+
+    foldersNames.unshift('Recent');
+    if (versionMinor < 25) {
+      foldersNames.push('PMM');
+    }
+
+    await homePage.open();
+    I.click(dashboardPage.fields.breadcrumbs.dashboardName);
+    searchDashboardsModal.waitForOpened();
+    const actualFolders = (await searchDashboardsModal.getFoldersList())
+      // these folders verified in dedicated test.
+      .filter((value) => value !== 'Starred' && value !== grafanaAPI.customFolderName);
+
+    I.assertDeepMembers(actualFolders, foldersNames);
   },
 );
 
