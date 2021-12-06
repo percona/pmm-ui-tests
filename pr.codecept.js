@@ -50,6 +50,9 @@ exports.config = {
     DbHelper: {
       require: 'codeceptjs-dbhelper',
     },
+    ChaiWrapper: {
+      require: 'codeceptjs-chai',
+    },
   },
   include: pageObjects,
   multiple: {
