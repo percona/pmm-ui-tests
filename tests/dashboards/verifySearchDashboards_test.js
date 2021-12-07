@@ -8,18 +8,16 @@ Object.values(searchDashboardsModal.folders).forEach((folder) => { folders.add([
 
 Feature('Test Dashboards collection inside the Folders');
 
-Before(async ({
-  I, homePage, dashboardPage, searchDashboardsModal,
-}) => {
+Before(async ({ I, homePage }) => {
   await I.Authorize();
   await homePage.open();
-  I.click(dashboardPage.fields.breadcrumbs.dashboardName);
-  searchDashboardsModal.waitForOpened();
 });
 
 Scenario(
   'PMM-T1091 - Verify PMM Dashboards folders are correct @nightly @dashboards',
-  async ({ I, searchDashboardsModal }) => {
+  async ({ I, searchDashboardsModal, dashboardPage }) => {
+    I.click(dashboardPage.fields.breadcrumbs.dashboardName);
+    searchDashboardsModal.waitForOpened();
     const foldersNames = Object.values(searchDashboardsModal.folders).map((folder) => folder.name);
     const actualFolders = (await searchDashboardsModal.getFoldersList());
 
@@ -30,7 +28,11 @@ Scenario(
 
 Data(folders).Scenario(
   'PMM-T1086 - Verify PMM Dashboards collections are present in correct folders @nightly @dashboards @post-upgrade',
-  async ({ searchDashboardsModal, current }) => {
+  async ({
+    I, current, searchDashboardsModal, dashboardPage,
+  }) => {
+    I.click(dashboardPage.fields.breadcrumbs.dashboardName);
+    searchDashboardsModal.waitForOpened();
     searchDashboardsModal.collapseFolder('Recent');
     searchDashboardsModal.expandFolder(current.name);
     searchDashboardsModal.verifyDashboardsInFolderCollection(current);

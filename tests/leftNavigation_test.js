@@ -31,6 +31,6 @@ Data(sidebar).Scenario(
   async ({ I, current }) => {
     I.seeElementInDOM(current.locator);
     current.click();
-    I.seeInCurrentUrl(current.path);
+    I.waitInUrl(current.path, 5);
   },
 );

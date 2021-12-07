@@ -96,7 +96,7 @@ module.exports = {
   },
 
   waitForOpened() {
-    I.waitForElement(this.fields.searchInput, 3);
+    I.waitForElement(this.fields.searchInput, 5);
   },
 
   async countFolders() {
