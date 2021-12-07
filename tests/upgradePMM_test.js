@@ -354,7 +354,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T998 - Verify dashboard folders after upgrade @post-upgrade',
+  'PMM-T998 - Verify dashboard folders after upgrade @pmm-upgrade @ami-upgrade @post-upgrade',
   async ({
     I, searchDashboardsModal, grafanaAPI, homePage,
   }) => {
