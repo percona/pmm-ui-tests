@@ -18,7 +18,7 @@ const remoteInstanceStatus = {
       enabled: true,
     },
     mongodb_4_4_ssl: {
-      enabled: process.env.OVF_TEST !== 'yes',
+      enabled: false,
     },
   },
   postgresql: {
