@@ -117,7 +117,7 @@ module.exports = {
 
     I.waitForText(locators.successUpgradeMessage, 1200, locators.successUpgradeMsgSelector);
     if (version < 12) {
-      I.wait(5);
+      I.wait(60);
       I.click(locators.reloadButtonAfterUpgrade);
     } else {
       I.click(locators.reloadButtonAfterUpgrade);
