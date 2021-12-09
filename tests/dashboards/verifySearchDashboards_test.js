@@ -6,7 +6,7 @@ const folders = new DataTable(['folderObject']);
 
 Object.values(searchDashboardsModal.folders).forEach((folder) => { folders.add([folder]); });
 
-Feature('Test Dashboards collection inside the Folders');
+Feature('Test Dashboards collection inside the Folders').retry(1);
 
 Before(async ({ I, homePage }) => {
   await I.Authorize();
