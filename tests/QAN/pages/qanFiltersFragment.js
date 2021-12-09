@@ -150,6 +150,15 @@ module.exports = {
     I.forceClick(showAllLink);
   },
 
+  async applyShowAllLinkIfItIsVisible(groupName) {
+    const showAllLink = this.getFilterGroupCountSelector(groupName);
+    const numOfShowAllLinkSectionCount = await I.grabNumberOfVisibleElements(showAllLink);
+
+    if (numOfShowAllLinkSectionCount === 1) {
+      this.applyShowAllLink(groupName);
+    }
+  },
+
   async applyShowTop5Link(groupName) {
     const showTop5Link = `//span[contains(text(), '${groupName}')]/following-sibling::span[contains(text(), 'Show top 5')]`;
 
