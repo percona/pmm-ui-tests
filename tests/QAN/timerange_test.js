@@ -38,7 +38,7 @@ Scenario(
 );
 
 Scenario(
-  'Open the QAN Dashboard and check that changing the time range doesn\'t clear "Group by". @qan',
+  'PMM-T170 Open the QAN Dashboard and check that changing the time range doesn\'t clear "Group by". @qan',
   async ({ I, adminPage, qanOverview }) => {
     const group = 'Client Host';
 
