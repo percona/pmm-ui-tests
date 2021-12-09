@@ -116,12 +116,14 @@ module.exports = {
     }
 
     I.waitForText(locators.successUpgradeMessage, 1200, locators.successUpgradeMsgSelector);
-    I.click(locators.reloadButtonAfterUpgrade);
-    locators = this.getLocators('latest');
-
     if (version < 12) {
-      I.refreshPage();
+      I.wait(5);
+      I.click(locators.reloadButtonAfterUpgrade);
+    } else {
+      I.click(locators.reloadButtonAfterUpgrade);
     }
+    
+    locators = this.getLocators('latest');
 
     I.waitForVisible(locators.upToDateLocator, 60);
     assert.equal(
