@@ -25,7 +25,7 @@ Scenario(
   },
 );
 
-Scenario(
+xScenario(
   'Verify RDS allows discovery without credentials @instances',
   async ({ I, remoteInstancesPage }) => {
     I.amOnPage(remoteInstancesPage.url);
