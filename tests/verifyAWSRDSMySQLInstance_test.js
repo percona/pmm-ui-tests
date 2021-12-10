@@ -32,7 +32,7 @@ Scenario(
     remoteInstancesPage.waitUntilRemoteInstancesPageLoaded().openAddAWSRDSMySQLPage();
     remoteInstancesPage.discoverRDSWithoutCredentials();
   },
-);
+).retry(1);
 
 Scenario(
   'Verify AWS RDS MySQL 5.6 instance has status running [critical] @instances',
