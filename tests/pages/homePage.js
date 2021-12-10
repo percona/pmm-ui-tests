@@ -109,13 +109,18 @@ module.exports = {
     I.waitForText(locators.inProgressMessage, 30, locators.updateProgressModal);
 
     // skipping milestones checks for 2.9 and 2.10, 2.11 versions due logs not showing issue
-    if (version > '11') {
+    if (version > 11) {
       for (const milestone of milestones) {
         I.waitForElement(`//pre[contains(text(), '${milestone}')]`, 1200);
       }
     }
 
     I.waitForText(locators.successUpgradeMessage, 1200, locators.successUpgradeMsgSelector);
+    if (version < 12) {
+      // we have a bug we need this https://jira.percona.com/browse/PMM-9294
+      I.wait(60); 
+    }
+    
     I.click(locators.reloadButtonAfterUpgrade);
     locators = this.getLocators('latest');
 
