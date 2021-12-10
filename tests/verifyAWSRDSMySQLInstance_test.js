@@ -25,6 +25,7 @@ Scenario(
   },
 );
 
+// bug about failing error message https://jira.percona.com/browse/PMM-9301
 xScenario(
   'Verify RDS allows discovery without credentials @instances',
   async ({ I, remoteInstancesPage }) => {
