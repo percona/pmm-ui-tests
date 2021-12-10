@@ -117,6 +117,7 @@ module.exports = {
 
     I.waitForText(locators.successUpgradeMessage, 1200, locators.successUpgradeMsgSelector);
     if (version < 12) {
+      // https://jira.percona.com/browse/PMM-9294
       I.wait(60);
       I.click(locators.reloadButtonAfterUpgrade);
     } else {
