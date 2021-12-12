@@ -25,14 +25,15 @@ Scenario(
   },
 );
 
-Scenario(
+// bug about failing error message https://jira.percona.com/browse/PMM-9301
+xScenario(
   'Verify RDS allows discovery without credentials @instances',
   async ({ I, remoteInstancesPage }) => {
     I.amOnPage(remoteInstancesPage.url);
     remoteInstancesPage.waitUntilRemoteInstancesPageLoaded().openAddAWSRDSMySQLPage();
     remoteInstancesPage.discoverRDSWithoutCredentials();
   },
-);
+).retry(1);
 
 Scenario(
   'Verify AWS RDS MySQL 5.6 instance has status running [critical] @instances',

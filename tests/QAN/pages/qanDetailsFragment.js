@@ -74,12 +74,12 @@ function compareCalculation(value, result) {
 
   switch (true) {
     case result < 0.01:
-      assert.ok(value.startsWith('<0.01'), `Values don't match in the ${caller} method. Value: ${value}`);
+      assert.ok(value.startsWith('<0.01'), `Values don't match in the ${caller} method. Value: ${value}, calculated Result: ${result}`);
       break;
     case parseFloat(result) <= 0.0149:
-      assert.ok(value.startsWith('0.01'), `Values don't match in the ${caller} method. Value: ${value}`);
+      assert.ok(value.startsWith('0.01'), `Values don't match in the ${caller} method. Value: ${value}, calculated Result: ${result}`);
       break;
     default:
-      assert.ok(parseFloat(parseFloat(result).toFixed(2)) === parseFloat(value), `Values don't match in the ${caller} method. Value: ${value}`);
+      assert.ok(parseFloat(parseFloat(result).toFixed(2)) === parseFloat(value), `Values don't match in the ${caller} method. Value: ${value}, calculated Result: ${result}`);
   }
 }

@@ -369,7 +369,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T1091 - Verify PMM Dashboards folders are correct @post-upgrade',
+  'PMM-T1091 - Verify PMM Dashboards folders are correct @pmm-upgrade @ami-upgrade @post-upgrade',
   async ({
     I, searchDashboardsModal, grafanaAPI, homePage,
   }) => {

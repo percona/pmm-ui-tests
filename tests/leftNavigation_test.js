@@ -19,7 +19,7 @@ const parse = (obj) => {
 
 parse(leftNavMenu);
 
-Feature('Left Navigation menu tests');
+Feature('Left Navigation menu tests').retry(1);
 
 Before(async ({ I, homePage }) => {
   await I.Authorize();
