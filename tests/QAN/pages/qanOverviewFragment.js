@@ -196,24 +196,4 @@ module.exports = {
     I.moveCursorTo(`${this.getRowLocator(row)}> div:nth-child(2) div > svg`);
     I.waitForVisible(this.elements.tooltipQueryValue, 30);
   },
-
-  removeSymbolFromString(str, symbol) {
-    let pos = 0;
-    let resultText = '';
-    let foundPos;
-
-    while (foundPos > -1) {
-      foundPos = str.indexOf(symbol, pos);
-
-      if (foundPos === -1) {
-        resultText += str.slice(pos, str.length);
-        break;
-      }
-
-      resultText += str.slice(pos, foundPos);
-      pos = foundPos + 1;
-    }
-
-    return resultText;
-  },
 };

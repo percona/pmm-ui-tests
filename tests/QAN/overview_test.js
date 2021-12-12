@@ -20,15 +20,14 @@ Scenario(
     I.waitForVisible(`${firstQueryLocator} > div`, 30);
     let firstQueryText = await I.grabTextFrom(`${firstQueryLocator} > div`);
 
-    firstQueryText = qanOverview.removeSymbolFromString(firstQueryText, ' ');
+    firstQueryText = firstQueryText.replace(/ /g, '');
 
     I.moveCursorTo(`${firstQueryLocator} > svg`);
     I.waitForVisible(qanOverview.elements.tooltipQueryValue, 30);
     I.seeElement(qanOverview.elements.tooltipQueryValue);
     let tooltipQueryText = await I.grabTextFrom(qanOverview.elements.tooltipQueryValue);
 
-    tooltipQueryText = qanOverview.removeSymbolFromString(tooltipQueryText, ' ');
-    tooltipQueryText = qanOverview.removeSymbolFromString(tooltipQueryText, '\n');
+    tooltipQueryText = tooltipQueryText.replace(/ /g, '').replace(/\n/g, '');
     assert.ok(firstQueryText === tooltipQueryText, 'Expected that the request text in the line matches the request text on the tooltip');
   },
 );
