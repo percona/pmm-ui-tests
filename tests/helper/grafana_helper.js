@@ -10,10 +10,10 @@ class Grafana extends Helper {
   }
 
   async Authorize(username = 'admin', password = 'admin') {
-    const { Playwright } = this.helpers;
+    const { Playwright: { page } } = this.helpers;
     const basicAuthEncoded = await this.getAuth(username, password);
 
-    Playwright.haveRequestHeaders({ Authorization: `Basic ${basicAuthEncoded}` });
+    await page.setExtraHTTPHeaders({ Authorization: `Basic ${basicAuthEncoded}` });
   }
 
   async getAuth(username = 'admin', password = 'admin') {
