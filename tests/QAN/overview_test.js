@@ -15,20 +15,17 @@ Scenario(
   'PMM-T207 Verify hovering over query in overview table  @qan',
   async ({ I, qanOverview }) => {
     qanOverview.waitForOverviewLoaded();
-    const firstQueryLocator = `${qanOverview.getRowLocator(1)} div.td:nth-child(2) div`;
-
-    I.waitForVisible(`${firstQueryLocator} > div`, 30);
-    let firstQueryText = await I.grabTextFrom(`${firstQueryLocator} > div`);
+    I.waitForVisible(qanOverview.elements.firstQueryValue, 30);
+    let firstQueryText = await I.grabTextFrom(qanOverview.elements.firstQueryValue);
 
     firstQueryText = firstQueryText.replace(/ /g, '');
-
-    I.moveCursorTo(`${firstQueryLocator} > svg`);
+    I.moveCursorTo(qanOverview.elements.firstQueryInfoIcon);
     I.waitForVisible(qanOverview.elements.tooltipQueryValue, 30);
-    I.seeElement(qanOverview.elements.tooltipQueryValue);
+
     let tooltipQueryText = await I.grabTextFrom(qanOverview.elements.tooltipQueryValue);
 
     tooltipQueryText = tooltipQueryText.replace(/ /g, '').replace(/\n/g, '');
-    assert.ok(firstQueryText === tooltipQueryText, 'Expected that the request text in the line matches the request text on the tooltip');
+    assert.ok(firstQueryText === tooltipQueryText, `The request text: ${firstQueryText}, don't match the request text on the tooltip: ${tooltipQueryText}.`);
   },
 );
 

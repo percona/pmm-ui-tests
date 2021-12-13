@@ -25,6 +25,8 @@ module.exports = {
     tooltipQPSValue: '$qps',
     noResultTableText: locate('$table-no-data').find('h1'),
     tooltipQueryValue: locate('.ant-tooltip-inner').find('code'),
+    firstQueryValue: 'div.tr-1 > div.td:nth-child(2) div > div',
+    firstQueryInfoIcon: 'div.tr-1 > div.td:nth-child(2) div > svg',
   },
   messages: {
     noResultTableText: 'No queries available for this combination of filters in the selected time frame',
