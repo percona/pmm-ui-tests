@@ -24,7 +24,11 @@ module.exports = {
 
   async verifyAvqQueryCount(timeRangeInSec = 300) {
     const qpsvalue = await I.grabTextFrom(this.getMetricsCellLocator('Query Count', 2));
-    const queryCountDetail = await I.grabTextFrom(this.getMetricsCellLocator('Query Count', 3));
+    let queryCountDetail = await I.grabTextFrom(this.getMetricsCellLocator('Query Count', 3));
+
+    if (queryCountDetail.indexOf('k', 0) > -1) {
+      queryCountDetail = parseFloat(queryCountDetail) * 1000;
+    }
 
     // We divide by 300 because we are using last 5 mins filter.
     const result = (parseFloat(queryCountDetail) / timeRangeInSec).toFixed(4);
