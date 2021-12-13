@@ -19,8 +19,7 @@ Scenario(
     let firstQueryText = await I.grabTextFrom(qanOverview.elements.firstQueryValue);
 
     firstQueryText = firstQueryText.replace(/ /g, '');
-    I.moveCursorTo(qanOverview.elements.firstQueryInfoIcon);
-    I.waitForVisible(qanOverview.elements.tooltipQueryValue, 30);
+    qanOverview.mouseOverFirstInfoIcon();
 
     let tooltipQueryText = await I.grabTextFrom(qanOverview.elements.tooltipQueryValue);
 

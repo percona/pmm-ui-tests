@@ -194,8 +194,8 @@ module.exports = {
     assert.ok(tooltip.includes(value), `The tooltip value is ${tooltip} while expected value was ${value}`);
   },
 
-  mouseOverInfoIcon(row) {
-    I.moveCursorTo(`${this.getRowLocator(row)}> div:nth-child(2) div > svg`);
+  mouseOverFirstInfoIcon() {
+    I.moveCursorTo(this.elements.firstQueryInfoIcon);
     I.waitForVisible(this.elements.tooltipQueryValue, 30);
   },
 };
