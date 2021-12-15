@@ -57,7 +57,7 @@ Scenario(
 );
 
 Data(urlsAndMetrics).Scenario(
-  'PMM-T1070 + 449 - Verify link to instructions for enabling rendering images @nightly @dashboards',
+  'PMM-T1070 + PMM-T449 - Verify link to instructions for enabling rendering images @nightly @dashboards',
   async ({ I, dashboardPage, links, current }) => {
     I.amOnPage(current.startUrl);
     dashboardPage.waitForDashboardOpened();
