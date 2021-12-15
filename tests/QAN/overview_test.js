@@ -1,3 +1,5 @@
+const assert = require('assert');
+
 Feature('QAN overview').retry(1);
 
 Before(async ({
@@ -8,6 +10,23 @@ Before(async ({
   qanOverview.waitForOverviewLoaded();
   qanFilters.waitForFiltersToLoad();
 });
+
+Scenario(
+  'PMM-T207 Verify hovering over query in overview table  @qan',
+  async ({ I, qanOverview }) => {
+    qanOverview.waitForOverviewLoaded();
+    I.waitForVisible(qanOverview.elements.firstQueryValue, 30);
+    let firstQueryText = await I.grabTextFrom(qanOverview.elements.firstQueryValue);
+
+    firstQueryText = firstQueryText.replace(/ /g, '');
+    qanOverview.mouseOverFirstInfoIcon();
+
+    let tooltipQueryText = await I.grabTextFrom(qanOverview.elements.tooltipQueryValue);
+
+    tooltipQueryText = tooltipQueryText.replace(/ /g, '').replace(/\n/g, '');
+    assert.ok(firstQueryText === tooltipQueryText, `The request text: ${firstQueryText}, don't match the request text on the tooltip: ${tooltipQueryText}.`);
+  },
+);
 
 Scenario(
   'PMM-T146 Verify user is able to see  chart tooltip for time related metric  @qan',
