@@ -16,9 +16,9 @@ templates.add(['tests/ia/templates/customParam.yml', null]);
 templates.add(['tests/ia/templates/undefinedParam.yml',
   'failed to fill expression placeholders: template: :4:5: executing "" at <.threshold>: map has no entry for key "threshold".']);
 templates.add(['tests/ia/templates/specialCharInParam.yml',
-  'failed to parse rule expression: template: :4: bad character U+0040 \'@\'.']);
+  'failed to parse expression: template: :4: bad character U+0040 \'@\'.']);
 templates.add(['tests/ia/templates/spaceInParam.yml',
-  'failed to parse rule expression: template: :4: function "old" not defined.']);
+  'failed to parse expression: template: :4: function "old" not defined.']);
 
 Feature('IA: Alert rule templates').retry(1);
 
@@ -225,7 +225,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T553 Verify rule template can not be deleted if there is a rule based on it @ia',
+  'PMM-T553 Verify rule template can be deleted if there is a rule based on it @ia',
   async ({
     I, ruleTemplatesPage, templatesAPI, rulesAPI,
   }) => {
@@ -242,7 +242,7 @@ Scenario(
     I.waitForElement(deleteButton, 30);
     I.click(deleteButton);
     I.click(ruleTemplatesPage.buttons.confirmDelete);
-    I.verifyPopUpMessage(ruleTemplatesPage.messages.failedToDelete(templateName));
+    I.verifyPopUpMessage(ruleTemplatesPage.messages.successfullyDeleted(templateName));
   },
 );
 
