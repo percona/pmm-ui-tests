@@ -67,9 +67,16 @@ module.exports = {
 
     if (perQueryUnit === 'µs') perQueryStats /= 1000000;
 
-    const queryCountDetail = await I.grabTextFrom(countLocator);
+    let queryCountDetail = await I.grabTextFrom(countLocator);
+
+    if (queryCountDetail.indexOf('k', 0) > -1) {
+      queryCountDetail = parseFloat(queryCountDetail) * 1000;
+    } else {
+      queryCountDetail = parseFloat(queryCountDetail);
+    }
+
     const [load] = (await I.grabTextFrom(loadLocator)).split(' ');
-    const result = ((parseFloat(queryCountDetail) * parseFloat(perQueryStats)) / timeRangeInSec).toFixed(4);
+    const result = ((queryCountDetail * parseFloat(perQueryStats)) / timeRangeInSec).toFixed(4);
 
     compareCalculation(load, result);
   },
