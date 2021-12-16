@@ -207,7 +207,7 @@ Scenario(
         {
           name: 'threshold',
           type: 'FLOAT',
-          float: 500,
+          float: 99,
         },
       ],
     };
