@@ -24,6 +24,9 @@ module.exports = {
     tooltip: '.overview-column-tooltip',
     tooltipQPSValue: '$qps',
     noResultTableText: locate('$table-no-data').find('h1'),
+    tooltipQueryValue: locate('.ant-tooltip-inner').find('code'),
+    firstQueryValue: 'div.tr-1 > div.td:nth-child(2) div > div',
+    firstQueryInfoIcon: 'div.tr-1 > div.td:nth-child(2) div > svg',
   },
   messages: {
     noResultTableText: 'No queries available for this combination of filters in the selected time frame',
@@ -189,5 +192,10 @@ module.exports = {
     const tooltip = await I.grabTextFrom(this.elements.tooltipQPSValue);
 
     assert.ok(tooltip.includes(value), `The tooltip value is ${tooltip} while expected value was ${value}`);
+  },
+
+  mouseOverFirstInfoIcon() {
+    I.moveCursorTo(this.elements.firstQueryInfoIcon);
+    I.waitForVisible(this.elements.tooltipQueryValue, 30);
   },
 };
