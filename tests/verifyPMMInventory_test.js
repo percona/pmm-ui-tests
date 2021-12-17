@@ -121,7 +121,7 @@ Scenario(
   },
 );
 
-Scenario(
+Scenario.skip(
   'PMM-T345 - Verify removing pmm-agent on PMM Inventory page removes all associated agents @inventory',
   async ({ I, pmmInventoryPage }) => {
     const agentID = 'pmm-server';
