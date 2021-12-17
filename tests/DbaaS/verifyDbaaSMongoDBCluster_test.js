@@ -20,7 +20,7 @@ const psmdb_configuration = {
   memory: '2 GB',
   cpu: '1',
   disk: '5 GB',
-  dbType: 'MongoDB 4.4.6',
+  dbType: 'MongoDB 4.4.8',
   clusterDashboardRedirectionLink: dbaasPage.clusterDashboardUrls.psmdbDashboard(psmdb_cluster),
 };
 
@@ -135,7 +135,7 @@ Scenario('PMM-787 Verify Editing MonogDB Cluster is possible. @dbaas',
       memory: '1 GB',
       cpu: '0.5',
       disk: '5 GB',
-      dbType: 'MongoDB 4.4.6',
+      dbType: 'MongoDB 4.4.8',
       clusterDashboardRedirectionLink: dbaasPage.clusterDashboardUrls.psmdbDashboard(psmdb_cluster),
     };
 
@@ -158,7 +158,7 @@ xScenario('PMM-T525 PMM-T528 Verify Suspend & Resume for Mongo DB Cluster Works 
       memory: '2 GB',
       cpu: '1',
       disk: '2 GB',
-      dbType: 'MongoDB 4.4.6',
+      dbType: 'MongoDB 4.4.8',
       clusterDashboardRedirectionLink: dbaasPage.clusterDashboardUrls.psmdbDashboard(
         psmdb_cluster_suspend_resume,
       ),
@@ -215,7 +215,7 @@ Scenario('PMM-T704 PMM-T772 PMM-T849 PMM-T850 Resources, PV, Secrets verificatio
       memory: '1 GB',
       cpu: '1',
       disk: '2 GB',
-      dbType: 'MongoDB 4.4.6',
+      dbType: 'MongoDB 4.4.8',
       clusterDashboardRedirectionLink: dbaasPage.clusterDashboardUrls.psmdbDashboard(
         psmdb_cluster_resource_check,
       ),
