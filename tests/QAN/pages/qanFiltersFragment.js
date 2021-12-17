@@ -154,7 +154,7 @@ module.exports = {
     const showAllLink = this.getFilterGroupCountSelector(groupName);
     const numOfShowAllLinkSectionCount = await I.grabNumberOfVisibleElements(showAllLink);
 
-    if (numOfShowAllLinkSectionCount === 1) {
+    if (numOfShowAllLinkSectionCount) {
       this.applyShowAllLink(groupName);
     }
   },
