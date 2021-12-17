@@ -22,6 +22,7 @@ Scenario(
       I.click(qanPagination.buttons.nextPage);
       qanPagination.verifyActivePage(2);
       await qanPagination.verifyRange('26-50');
+      I.click(qanPagination.buttons.previousPage);
       qanPagination.verifyActivePage(1);
       await qanPagination.verifyRange('1-25');
     } else {
@@ -59,11 +60,12 @@ Scenario(
       await qanPagination.verifyRange('1-25');
       await qanPagination.verifyPagesAndCount(25);
       await qanPagination.selectResultsPerPage('50 / page');
+      qanOverview.waitForOverviewLoaded();
       await qanOverview.verifyRowCount(52);
       await qanPagination.verifyPagesAndCount(50);
       await qanPagination.verifyRange('1-50');
       await qanPagination.selectResultsPerPage('100 / page');
-      await qanPagination.verifyRange('1-100');
+      if (countOfItems === 100) await qanPagination.verifyRange('1-100');
     } else {
       await qanPagination.verifyRange('1-25');
       await qanPagination.verifyPagesAndCount(25);
