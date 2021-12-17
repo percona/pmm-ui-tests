@@ -74,10 +74,12 @@ Scenario(
       await qanPagination.verifyPagesAndCount(50);
       await qanPagination.verifyRange('1-50');
       await qanPagination.selectResultsPerPage('100 / page');
+      qanOverview.waitForOverviewLoaded();
       await qanOverview.verifyRowCount(102);
       await qanPagination.verifyPagesAndCount(100);
       await qanPagination.verifyRange('1-100');
       await qanPagination.selectResultsPerPage('25 / page');
+      qanOverview.waitForOverviewLoaded();
       await qanOverview.verifyRowCount(27);
       await qanPagination.verifyRange('1-25');
       await qanPagination.verifyPagesAndCount(25);
