@@ -192,7 +192,7 @@ if (versionMinor < 16 && versionMinor >= 10) {
 }
 
 if (iaReleased) {
-  Scenario(
+  Scenario.skip(
     'PMM-T577 Verify user is able to see IA alerts before upgrade @pre-upgrade @ami-upgrade @pmm-upgrade',
     async ({
       settingsAPI, rulesAPI, alertsAPI,
@@ -207,7 +207,7 @@ if (iaReleased) {
 }
 
 if (versionMinor >= 15) {
-  Scenario(
+  Scenario.skip(
     'Verify user has failed checks before upgrade @pre-upgrade @pmm-upgrade',
     async ({
       I, settingsAPI, databaseChecksPage, securityChecksAPI,
@@ -392,7 +392,7 @@ Scenario(
 );
 
 if (versionMinor >= 15) {
-  Scenario(
+  Scenario.skip(
     'Verify user has failed checks after upgrade / STT on @post-upgrade @pmm-upgrade',
     async ({
       I, pmmSettingsPage, securityChecksAPI, databaseChecksPage,
@@ -454,7 +454,7 @@ if (versionMinor >= 15) {
 }
 
 if (versionMinor >= 16) {
-  Scenario(
+  Scenario.skip(
     'Verify disabled checks remain disabled after upgrade @post-upgrade @pmm-upgrade',
     async ({
       I, allChecksPage,
@@ -468,7 +468,7 @@ if (versionMinor >= 16) {
     },
   );
 
-  Scenario(
+  Scenario.skip(
     'Verify silenced checks remain silenced after upgrade @post-upgrade @pmm-upgrade',
     async ({
       I, databaseChecksPage,
@@ -485,7 +485,7 @@ if (versionMinor >= 16) {
     },
   );
 
-  Scenario(
+  Scenario.skip(
     'Verify check intervals remain the same after upgrade @post-upgrade @pmm-upgrade',
     async ({
       I, allChecksPage,
@@ -514,7 +514,7 @@ if (versionMinor >= 16) {
 }
 
 if (iaReleased) {
-  Scenario(
+  Scenario.skip(
     'PMM-T577 Verify user can see IA alerts after upgrade @ami-upgrade @pmm-upgrade',
     async ({
       I, alertsPage, alertsAPI,
