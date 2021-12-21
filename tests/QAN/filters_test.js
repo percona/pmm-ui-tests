@@ -212,10 +212,10 @@ Scenario(
 
     adminPage.applyTimeRange('Last 3 hour');
     qanOverview.waitForOverviewLoaded();
-    qanFilters.applyShowAllLink(section);
+    await qanFilters.applyShowAllLinkIfItIsVisible(section);
     qanFilters.applyFilterInSection(section, db1);
     count = await qanOverview.waitForNewItemsCount(count);
-    qanFilters.applyShowAllLink(section);
+    await qanFilters.applyShowAllLinkIfItIsVisible(section);
     qanFilters.applyFilterInSection(section, db2);
     count = await qanOverview.waitForNewItemsCount(count);
     qanFilters.applyFilter(serviceName);
