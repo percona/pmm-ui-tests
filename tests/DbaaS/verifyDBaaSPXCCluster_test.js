@@ -5,6 +5,7 @@ const clusterName = 'Kubernetes_Testing_Cluster_Minikube';
 const pxc_cluster_name = 'pxc-dbcluster';
 const pxc_cluster_name_single = 'pxc-singlenode';
 const pxc_cluster_small = 'pxc-smalldbcluster';
+const pxc_cluster_type = 'DB_CLUSTER_TYPE_PXC';
 
 const pxcDBClusterDetails = new DataTable(['namespace', 'clusterName', 'node']);
 
@@ -373,7 +374,7 @@ Scenario('PMM-T704 PMM-T772 PMM-T849 PMM-T850 Resources, PV, Secrets verificatio
       `kubectl get secrets dbaas-${pxc_resource_check_cluster_name}-pxc-secrets -o yaml | grep root: | awk '{print $2}' | base64 --decode`,
       password,
     );
-    await dbaasAPI.apiDeleteXtraDBCluster(pxc_resource_check_cluster_name, clusterName);
+    await dbaasAPI.apiDeleteDBCluster(pxc_resource_check_cluster_name, clusterName, pxc_cluster_type);
     await dbaasAPI.waitForDbClusterDeleted(pxc_resource_check_cluster_name, clusterName);
     await I.verifyCommand(
       `kubectl get pv | grep ${pxc_resource_check_cluster_name}`,

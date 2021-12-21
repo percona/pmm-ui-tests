@@ -46,7 +46,7 @@ Before(async ({ I, dbaasAPI }) => {
 
 // These test covers a lot of cases, will be refactored and changed in terms of flow, this is initial setup
 
-Scenario('PMM-T665 PMM-T642 PMM-T484  PSMDB Cluster with Custom Resources, Verify MongoDB Cluster can be restarted, log popup @dbaas',
+Scenario('PMM-T665 PMM-T642 PMM-T484 PSMDB Cluster with Custom Resources, Verify MongoDB Cluster can be restarted, log popup @dbaas',
   async ({
     I, dbaasPage, dbaasAPI, dbaasActionsPage,
   }) => {

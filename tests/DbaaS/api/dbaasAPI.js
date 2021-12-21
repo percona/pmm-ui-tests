@@ -1,6 +1,8 @@
 const assert = require('assert');
 
 const { I } = inject();
+const psmdb_cluster_type = 'DB_CLUSTER_TYPE_PSMDB';
+const pxc_cluster_type = 'DB_CLUSTER_TYPE_PXC';
 
 module.exports = {
 
@@ -44,27 +46,15 @@ module.exports = {
     }
   },
 
-  async apiDeleteXtraDBCluster(dbClusterName, clusterName) {
-    const body = { kubernetes_cluster_name: `${clusterName}`, name: dbClusterName };
+  async apiDeleteDBCluster(dbClusterName, clusterName, dbClusterType) {
+    const body = { kubernetes_cluster_name: clusterName, name: dbClusterName, cluster_type: dbClusterType};
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
 
-    const response = await I.sendPostRequest('v1/management/DBaaS/XtraDBCluster/Delete', body, headers);
+    const response = await I.sendPostRequest('v1/management/DBaaS/DBClusters/Delete', body, headers);
 
     assert.ok(
       response.status === 200,
-      `Failed to delete pxc cluster with name "${dbClusterName}". Response message is "${response.data.message}"`,
-    );
-  },
-
-  async apiDeletePSMDBCluster(dbClusterName, clusterName) {
-    const body = { kubernetes_cluster_name: clusterName, name: dbClusterName };
-    const headers = { Authorization: `Basic ${await I.getAuth()}` };
-
-    const response = await I.sendPostRequest('v1/management/DBaaS/PSMDBCluster/Delete', body, headers);
-
-    assert.ok(
-      response.status === 200,
-      `Failed to delete MongoDB cluster with name "${dbClusterName}". Response message is "${response.data.message}"`,
+      `Failed to delete "${dbClusterType}" cluster with name "${dbClusterName}". Response message is "${response.data.message}"`,
     );
   },
 
@@ -94,14 +84,18 @@ module.exports = {
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
     let response;
 
-    if (dbType === 'MySQL') {
-      response = await I.sendPostRequest('v1/management/DBaaS/XtraDBClusters/List', body, headers);
-    } else {
-      response = await I.sendPostRequest('v1/management/DBaaS/PSMDBClusters/List', body, headers);
+    response = await I.sendPostRequest('v1/management/DBaaS/DBClusters/List', body, headers);
+
+    if (response.data.pxc_clusters) {
+      const cluster = response.data.pxc_clusters.find(
+        (o) => o.name === dbClusterName,
+      );
+
+      return !!cluster;
     }
 
-    if (response.data.clusters) {
-      const cluster = response.data.clusters.find(
+    if (response.data.psmdb_clusters) {
+      const cluster = response.data.psmdb_clusters.find(
         (o) => o.name === dbClusterName,
       );
 
@@ -120,14 +114,14 @@ module.exports = {
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
 
     for (let i = 0; i < 30; i++) {
-      const response = await I.sendPostRequest('v1/management/DBaaS/XtraDBClusters/List', body, headers);
+      const response = await I.sendPostRequest('v1/management/DBaaS/DBClusters/List', body, headers);
 
-      if (response.data.clusters) {
-        const cluster = response.data.clusters.find(
+      if (response.data.pxc_clusters) {
+        const cluster = response.data.pxc_clusters.find(
           (o) => o.name === dbClusterName,
         );
 
-        if (cluster && cluster.state === 'XTRA_DB_CLUSTER_STATE_READY') {
+        if (cluster && cluster.state === 'DB_CLUSTER_STATE_READY') {
           break;
         }
       }
@@ -145,39 +139,14 @@ module.exports = {
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
 
     for (let i = 0; i < 30; i++) {
-      const response = await I.sendPostRequest('v1/management/DBaaS/XtraDBClusters/List', body, headers);
+      const response = await I.sendPostRequest('v1/management/DBaaS/DBClusters/List', body, headers);
 
-      if (response.data.clusters) {
-        const cluster = response.data.clusters.find(
+      if (response.data.pxc_clusters) {
+        const cluster = response.data.pxc_clusters.find(
           (o) => o.name === dbClusterName,
         );
 
-        if (cluster && cluster.state === 'XTRA_DB_CLUSTER_STATE_PAUSED') {
-          break;
-        }
-      }
-
-      await new Promise((r) => setTimeout(r, 10000));
-    }
-  },
-
-  async waitForPSMDBClusterPaused(dbClusterName, clusterName) {
-    const body = {
-      kubernetesClusterName: clusterName,
-      operators: { xtradb: { status: 'OPERATORS_STATUS_OK' }, psmdb: { status: 'OPERATORS_STATUS_OK' } },
-      status: 'KUBERNETES_CLUSTER_STATUS_OK',
-    };
-    const headers = { Authorization: `Basic ${await I.getAuth()}` };
-
-    for (let i = 0; i < 30; i++) {
-      const response = await I.sendPostRequest('v1/management/DBaaS/PSMDBClusters/List', body, headers);
-
-      if (response.data.clusters) {
-        const cluster = response.data.clusters.find(
-          (o) => o.name === dbClusterName,
-        );
-
-        if (cluster && cluster.state === 'PSMDB_CLUSTER_STATE_PAUSED') {
+        if (cluster && cluster.state === 'XDB_CLUSTER_STATE_PAUSED') {
           break;
         }
       }
@@ -195,14 +164,39 @@ module.exports = {
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
 
     for (let i = 0; i < 30; i++) {
-      const response = await I.sendPostRequest('v1/management/DBaaS/PSMDBClusters/List', body, headers);
+      const response = await I.sendPostRequest('v1/management/DBaaS/DBClusters/List', body, headers);
 
-      if (response.data.clusters) {
-        const cluster = response.data.clusters.find(
+      if (response.data.psmdb_clusters) {
+        const cluster = response.data.psmdb_clusters.find(
           (o) => o.name === dbClusterName,
         );
 
-        if (cluster && cluster.state === 'PSMDB_CLUSTER_STATE_READY') {
+        if (cluster && cluster.state === 'DB_CLUSTER_STATE_READY') {
+          break;
+        }
+      }
+
+      await new Promise((r) => setTimeout(r, 10000));
+    }
+  },
+
+  async waitForPSMDBClusterPaused(dbClusterName, clusterName) {
+    const body = {
+      kubernetesClusterName: clusterName,
+      operators: { xtradb: { status: 'OPERATORS_STATUS_OK' }, psmdb: { status: 'OPERATORS_STATUS_OK' } },
+      status: 'KUBERNETES_CLUSTER_STATUS_OK',
+    };
+    const headers = { Authorization: `Basic ${await I.getAuth()}` };
+
+    for (let i = 0; i < 30; i++) {
+      const response = await I.sendPostRequest('v1/management/DBaaS/DBClusters/List', body, headers);
+
+      if (response.data.psmdb_clusters) {
+        const cluster = response.data.psmdb_clusters.find(
+          (o) => o.name === dbClusterName,
+        );
+
+        if (cluster && cluster.state === 'DB_CLUSTER_STATE_PAUSED') {
           break;
         }
       }
@@ -221,15 +215,20 @@ module.exports = {
 
     for (let i = 0; i < 30; i++) {
       let response;
+      response = await I.sendPostRequest('v1/management/DBaaS/DBClusters/List', body, headers);
 
-      if (dbType === 'MySQL') {
-        response = await I.sendPostRequest('v1/management/DBaaS/XtraDBClusters/List', body, headers);
-      } else {
-        response = await I.sendPostRequest('v1/management/DBaaS/PSMDBClusters/List', body, headers);
-      }
+      if (response.data.pxc_clusters) {
+        const cluster = response.data.pxc_clusters.find(
+          (o) => o.name === dbClusterName,
+        );
 
-      if (response.data.clusters) {
-        const cluster = response.data.clusters.find(
+        if (cluster === undefined) {
+          break;
+        }
+      } else break;
+
+      if (response.data.psmdb_clusters) {
+        const cluster = response.data.psmdb_clusters.find(
           (o) => o.name === dbClusterName,
         );
 
@@ -251,7 +250,7 @@ module.exports = {
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
 
     if (dbType === 'MySQL') {
-      response = await I.sendPostRequest('v1/management/DBaaS/XtraDBClusters/GetCredentials', body, headers);
+      response = await I.sendPostRequest('v1/management/DBaaS/PXCClusters/GetCredentials', body, headers);
     } else {
       response = await I.sendPostRequest('v1/management/DBaaS/PSMDBClusters/GetCredentials', body, headers);
     }
@@ -267,20 +266,18 @@ module.exports = {
     };
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
 
-    let response = await I.sendPostRequest('v1/management/DBaaS/XtraDBClusters/List', body, headers);
+    let response = await I.sendPostRequest('v1/management/DBaaS/DBClusters/List', body, headers);
 
-    if (response.data.clusters) {
-      for (const db of response.data.clusters) {
-        await this.apiDeleteXtraDBCluster(db.name, clusterName);
+    if (response.data.pxc_clusters) {
+      for (const db of response.data.pxc_clusters) {
+        await this.apiDeleteDBCluster(db.name, clusterName, pxc_cluster_type);
         await this.waitForDbClusterDeleted(db.name, clusterName);
       }
     }
 
-    response = await I.sendPostRequest('v1/management/DBaaS/PSMDBClusters/List', body, headers);
-
-    if (response.data.clusters) {
-      for (const db of response.data.clusters) {
-        await this.apiDeletePSMDBCluster(db.name, clusterName);
+    if (response.data.psmdb_clusters) {
+      for (const db of response.data.psmdb_clusters) {
+        await this.apiDeleteDBCluster(db.name, clusterName, psmdb_cluster_type);
         await this.waitForDbClusterDeleted(db.name, clusterName, 'MongoDB');
       }
     }
