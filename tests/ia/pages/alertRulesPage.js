@@ -123,8 +123,6 @@ module.exports = {
 
     I.waitForValue(this.fields.duration, duration, 10);
     I.waitForValue(this.fields.filters, filters, 10);
-    I.seeTextEquals(expression, this.elements.expression);
-    I.seeTextEquals(alert, this.elements.templateAlert);
   },
 
   openAlertRulesTab() {
