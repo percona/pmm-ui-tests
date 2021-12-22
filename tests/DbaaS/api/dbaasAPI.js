@@ -213,8 +213,7 @@ module.exports = {
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
 
     for (let i = 0; i < 30; i++) {
-      const response;
-      response = await I.sendPostRequest('v1/management/DBaaS/DBClusters/List', body, headers);
+      const response = await I.sendPostRequest('v1/management/DBaaS/DBClusters/List', body, headers);
 
       if (response.data.pxc_clusters) {
         const cluster = response.data.pxc_clusters.find(
