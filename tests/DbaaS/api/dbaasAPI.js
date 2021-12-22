@@ -82,7 +82,7 @@ module.exports = {
       status: 'KUBERNETES_CLUSTER_STATUS_OK',
     };
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
-    let response;
+    const response;
 
     response = await I.sendPostRequest('v1/management/DBaaS/DBClusters/List', body, headers);
 
@@ -214,7 +214,7 @@ module.exports = {
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
 
     for (let i = 0; i < 30; i++) {
-      let response;
+      const response;
       response = await I.sendPostRequest('v1/management/DBaaS/DBClusters/List', body, headers);
 
       if (response.data.pxc_clusters) {
@@ -266,7 +266,7 @@ module.exports = {
     };
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
 
-    let response = await I.sendPostRequest('v1/management/DBaaS/DBClusters/List', body, headers);
+    const response = await I.sendPostRequest('v1/management/DBaaS/DBClusters/List', body, headers);
 
     if (response.data.pxc_clusters) {
       for (const db of response.data.pxc_clusters) {
