@@ -82,9 +82,8 @@ module.exports = {
       status: 'KUBERNETES_CLUSTER_STATUS_OK',
     };
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
-    const response;
-
-    response = await I.sendPostRequest('v1/management/DBaaS/DBClusters/List', body, headers);
+    
+    const response = await I.sendPostRequest('v1/management/DBaaS/DBClusters/List', body, headers);
 
     if (response.data.pxc_clusters) {
       const cluster = response.data.pxc_clusters.find(
