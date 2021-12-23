@@ -137,9 +137,9 @@ Scenario(
     const body = {
       telemetry_enabled: true,
       metrics_resolutions: {
-        hr: '3s',
-        mr: '15s',
-        lr: '30s',
+        hr: '30s',
+        mr: '60s',
+        lr: '60s',
       },
       data_retention: '172800s',
     };
@@ -305,7 +305,7 @@ if (versionMinor >= 21) {
           break;
         case 'MONGODB_SERVICE':
           output = await I.verifyCommand(
-            `pmm-admin add mongodb --node-id=${node_id} --pmm-agent-id=${pmm_agent_id} --port=${port} --host=${address} --agent-password=uitests --custom-labels="testing=upgrade" ${upgrade_service}`,
+            `pmm-admin add mongodb --node-id=${node_id} --username=pmm_mongodb --password=secret --pmm-agent-id=${pmm_agent_id} --port=${port} --host=${address} --agent-password=uitests --custom-labels="testing=upgrade" ${upgrade_service}`,
           );
           break;
         default:
