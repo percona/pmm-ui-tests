@@ -105,6 +105,6 @@ exports.config = {
   hooks: [],
   gherkin: {},
   tests: 'tests/**/*_test.js',
-  timeout: 10000,
+  timeout: 100,
   name: 'pmm-qa',
 };
