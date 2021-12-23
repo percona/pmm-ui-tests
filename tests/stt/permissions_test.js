@@ -171,7 +171,7 @@ Scenario(
 );
 
 Data(viewerRole).Scenario(
-  'PMM-T824 - Verify viewer users do not see Inventory, Settings, Remote Instances Page @grafana-pr',
+  'PMM-T824 - Verify viewer users do not see Inventory, Settings, Remote Instances Page @nightly @grafana-pr',
   async ({
     I, current, homePage, databaseChecksPage,
   }) => {
@@ -185,7 +185,7 @@ Data(viewerRole).Scenario(
 );
 
 Data(editorRole).Scenario(
-  'PMM-T824 - Verify editor users do not see Inventory, Settings, Remote Instances Page @grafana-pr',
+  'PMM-T824 - Verify editor users do not see Inventory, Settings, Remote Instances Page @nightly @grafana-pr',
   async ({
     I, current, homePage, databaseChecksPage,
   }) => {
@@ -199,7 +199,7 @@ Data(editorRole).Scenario(
 );
 
 Data(ptSummaryRoleCheck).Scenario(
-  'PMM-T420 Verify the pt-summary with different user roles @grafana-pr',
+  'PMM-T420 Verify the pt-summary with different user roles @nightly @grafana-pr',
   async ({
     I, databaseChecksPage, settingsAPI, locationsPage, current, adminPage,
   }) => {
