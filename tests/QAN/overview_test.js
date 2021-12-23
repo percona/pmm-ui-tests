@@ -258,3 +258,44 @@ Scenario(
     I.dontSeeElement(qanOverview.elements.tooltipQPSValue);
   },
 );
+
+Scenario(
+  'PMM-T412 - Verify user is able to search by part of query @qan',
+  async ({
+    I, qanOverview, adminPage,
+  }) => {
+    const query = 'SELECT * FROM pg_stat_bgwriter';
+
+    qanOverview.waitForOverviewLoaded();
+    adminPage.applyTimeRange('Last 1 hour');
+    qanOverview.waitForOverviewLoaded();
+    I.waitForVisible(qanOverview.fields.searchBy, 30);
+    I.fillField(qanOverview.fields.searchBy, query);
+    I.pressKey('Enter');
+    I.waitForElement(qanOverview.elements.querySelector, 30);
+    const firstQueryText = await I.grabTextFrom(qanOverview.elements.firstQueryValue);
+
+    assert.ok(firstQueryText === query, `The Searched Query text was: ${query}, don't match the result text in overview for 1st result: ${firstQueryText}`);
+  },
+);
+
+Scenario(
+  'PMM-T417 Verify user is able to search by Database @qan',
+  async ({ I, qanOverview }) => {
+    const groupBy = 'Database';
+    const query = 'postgres';
+
+    I.waitForText('Query', 30, qanOverview.elements.groupBy);
+    qanOverview.waitForOverviewLoaded();
+    await qanOverview.changeGroupBy(groupBy);
+    qanOverview.verifyGroupByIs(groupBy);
+    qanOverview.waitForOverviewLoaded();
+    I.waitForVisible(qanOverview.fields.searchBy, 30);
+    I.fillField(qanOverview.fields.searchBy, query);
+    I.pressKey('Enter');
+    I.waitForElement(qanOverview.elements.querySelector, 30);
+    const firstQueryText = await I.grabTextFrom(qanOverview.elements.firstQueryValue);
+
+    assert.ok(firstQueryText === query, `The Searched text was: ${query}, don't match the result text in overview for 1st result: ${firstQueryText}`);
+  },
+);

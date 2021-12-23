@@ -1,3 +1,5 @@
+const assert = require('assert');
+
 Feature('QAN details');
 
 const { adminPage } = inject();
@@ -133,5 +135,23 @@ Scenario(
     qanFilters.waitForFiltersToLoad();
     qanDetails.checkExamplesTab();
     qanDetails.checkExplainTab();
+  },
+);
+
+Scenario(
+  'PMM-T245 - Verify that user is able to close the Details section @qan',
+  async ({
+    I, qanOverview, qanFilters, qanDetails,
+  }) => {
+    qanOverview.waitForOverviewLoaded();
+    adminPage.applyTimeRange('Last 1 hour');
+    qanOverview.waitForOverviewLoaded();
+    I.waitForElement(qanOverview.elements.querySelector, 30);
+    qanOverview.selectRow(1);
+    qanFilters.waitForFiltersToLoad();
+    I.waitForElement(qanDetails.buttons.close, 30);
+    I.click(qanDetails.buttons.close);
+    I.waitForInvisible(qanDetails.buttons.close, 30);
+    I.dontSeeElement(qanDetails.buttons.close);
   },
 );
