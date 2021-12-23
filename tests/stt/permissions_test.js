@@ -38,7 +38,7 @@ editorRole.add([users.editor.username, users.editor.password, 'graph/inventory/n
 editorRole.add([users.editor.username, users.editor.password, 'graph/inventory/agents?orgId=1']);
 editorRole.add([users.editor.username, users.editor.password, 'graph/inventory/services?orgId=1']);
 
-const ptSummaryRoleCheck = DataTable(['username', 'password', 'dashboard']);
+const ptSummaryRoleCheck = new DataTable(['username', 'password', 'dashboard']);
 
 ptSummaryRoleCheck.add([users.editor.username, users.editor.password, dashboardPage.nodeSummaryDashboard.url]);
 ptSummaryRoleCheck.add([users.viewer.username, users.viewer.password, dashboardPage.nodeSummaryDashboard.url]);
