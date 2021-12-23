@@ -581,9 +581,9 @@ Scenario(
       metricResoltionSection,
       pmmSettingsPage.fields.metricsResolutionButton,
     );
-    await pmmSettingsPage.verifySettingsValue(pmmSettingsPage.fields.lowInput, 30);
-    await pmmSettingsPage.verifySettingsValue(pmmSettingsPage.fields.mediumInput, 15);
-    await pmmSettingsPage.verifySettingsValue(pmmSettingsPage.fields.highInput, 3);
+    await pmmSettingsPage.verifySettingsValue(pmmSettingsPage.fields.lowInput, 60);
+    await pmmSettingsPage.verifySettingsValue(pmmSettingsPage.fields.mediumInput, 60);
+    await pmmSettingsPage.verifySettingsValue(pmmSettingsPage.fields.highInput, 30);
   },
 );
 
