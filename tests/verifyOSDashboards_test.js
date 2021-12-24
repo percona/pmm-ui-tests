@@ -78,3 +78,24 @@ Data(nodes).Scenario(
     I.seeElement(dashboardPage.nodeSummaryDashboard.ptSummaryDetail.reportContainer);
   },
 );
+
+Scenario(
+  'PMM-T1090: Verify time zones and navigation between dashboards @nightly @dashboards',
+  async ({
+    I, dashboardPage, adminPage, homePage,
+  }) => {
+    const timeZone = 'Europe/London';
+
+    I.amOnPage(`${dashboardPage.processDetailsDashboard.url}`);
+    dashboardPage.waitForDashboardOpened();
+    adminPage.applyTimeZone(timeZone);
+    I.click(homePage.fields.servicesButton);
+    I.waitForElement(homePage.serviceDashboardLocator('MySQL Instances Overview'), 30);
+    I.click(homePage.serviceDashboardLocator('MySQL Instances Overview'));
+    dashboardPage.waitForDashboardOpened();
+    I.waitForElement(adminPage.fields.timePickerMenu, 30);
+    I.forceClick(adminPage.fields.timePickerMenu);
+    I.waitForVisible(adminPage.getTimeZoneSelector(timeZone), 30);
+    I.seeElement(adminPage.getTimeZoneSelector(timeZone));
+  },
+);

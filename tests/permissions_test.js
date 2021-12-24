@@ -2,7 +2,7 @@ const {
   pmmSettingsPage, pmmInventoryPage, dashboardPage, remoteInstancesPage,
 } = inject();
 
-Feature('PMM Permission restrictions').retry(2);
+Feature('PMM Permission restrictions').retry(1);
 
 let viewer; let admin; let
   editor;
@@ -199,13 +199,21 @@ Data(editorRole).Scenario(
 );
 
 Data(ptSummaryRoleCheck).Scenario(
-  'PMM-T420 Verify the pt-summary with different user roles @nightly @grafana-pr',
+  'PMM-T334 PMM-T420 Verify the pt-summary with different user roles '
++ 'Verify user with viewer or editor role is able to see all elements on Home dashboard @nightly @grafana-pr',
   async ({
-    I, databaseChecksPage, settingsAPI, locationsPage, current, adminPage,
+    I, databaseChecksPage, settingsAPI, locationsPage, current, adminPage, homePage,
   }) => {
     const { username, password, dashboard } = current;
 
     await I.Authorize(username, password);
+    I.amOnPage(homePage.url);
+    I.waitForVisible(homePage.fields.checksPanelSelector, 30);
+    I.seeElement(homePage.fields.pmmCustomMenu);
+    I.seeElement(homePage.fields.systemsUnderMonitoringCount);
+    I.seeElement(homePage.fields.dbUnderMonitoringCount);
+    I.seeElement(homePage.fields.newsPanelContentSelector);
+    I.seeElement(homePage.fields.newsPanelContentSelector);
     I.amOnPage(dashboard);
     dashboardPage.waitForDashboardOpened();
     I.click(adminPage.fields.metricTitle);
