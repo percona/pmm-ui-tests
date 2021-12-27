@@ -53,9 +53,13 @@ Scenario(
 );
 
 Scenario(
-  'Open the QAN Dashboard and check that sorting works correctly after sorting by another column. @qan',
-  async ({ qanOverview }) => {
+  'PMM-T171 Verify that changing the time range doesnt reset sorting, Open the QAN Dashboard and check that sorting works correctly after sorting by another column. @qan',
+  async ({ qanOverview, adminPage }) => {
     qanOverview.changeSorting(2);
+    qanOverview.verifySorting(2, 'asc');
+    qanOverview.waitForOverviewLoaded();
+    adminPage.applyTimeRange('Last 1 hour');
+    qanOverview.waitForOverviewLoaded();
     qanOverview.verifySorting(2, 'asc');
     qanOverview.changeSorting(1);
     qanOverview.verifySorting(1, 'asc');
@@ -321,7 +325,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T414 Verify user is able to search the query id specified time range @qan',
+  'PMM-T411 PMM-T400 PMM-T414 Verify search filed is displayed, Verify user is able to search the query id specified time range, Verify searching by Query ID @qan',
   async ({ I, qanOverview, adminPage }) => {
     qanOverview.waitForOverviewLoaded();
     I.waitForVisible(qanOverview.elements.firstQueryValue, 30);
@@ -363,5 +367,26 @@ Scenario(
     qanOverview.waitForOverviewLoaded();
     I.waitForElement(qanOverview.buttons.addColumn, 30);
     I.dontSeeElement(qanOverview.getQANMetricHeader(metricName));
+  },
+);
+
+Scenario(
+  'PMM-T220 Verify that last column cant be removed from Overview table @qan',
+  async ({
+    I, qanOverview, qanDetails, qanFilters,
+  }) => {
+    qanOverview.selectRow(1);
+    qanFilters.waitForFiltersToLoad();
+    I.waitForElement(qanDetails.buttons.close, 30);
+    I.seeElement(qanOverview.getQANMetricHeader('Query Count'));
+    qanOverview.removeMetricFromOverview('Query Count');
+    qanOverview.removeMetricFromOverview('Query Time');
+    const column = qanOverview.getColumnLocator('Load');
+
+    I.waitForElement(column);
+    I.click(column);
+    I.waitForElement(qanOverview.fields.columnSearchField, 10);
+    I.fillField(qanOverview.fields.columnSearchField, 'Remove column');
+    I.dontSeeElement(qanOverview.elements.removeMetricColumn);
   },
 );

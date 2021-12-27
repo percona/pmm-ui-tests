@@ -19,7 +19,7 @@ module.exports = {
     newMetricDropdown: '.add-columns-selector-dropdown',
     noDataIcon: 'div.ant-empty-image',
     querySelector: 'div.tr-1',
-    removeMetricColumn: locate('div').withText('Remove column').find('i'),
+    removeMetricColumn: '//i[@aria-label="icon: minus"]',
     spinner: locate('$table-loading').find('//i[contains(@class,"fa-spinner")]'),
     tableRow: 'div.tr',
     tooltip: '.overview-column-tooltip',
@@ -98,12 +98,10 @@ module.exports = {
     const column = this.getColumnLocator(metricName);
 
     I.click(column);
-    I.waitForElement(this.elements.removeMetricColumn, 30);
     I.waitForElement(this.fields.columnSearchField, 10);
     I.fillField(this.fields.columnSearchField, 'Remove column');
     I.waitForElement(this.elements.removeMetricColumn, 30);
-    I.moveCursorTo(this.elements.removeMetricColumn);
-    I.click(this.elements.removeMetricColumn);
+    I.forceClick(this.elements.removeMetricColumn);
     this.waitForOverviewLoaded();
     I.waitForInvisible(this.elements.spinner, 30);
     I.dontSeeElement(this.getQANMetricHeader(metricName));
