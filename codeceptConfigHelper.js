@@ -33,6 +33,7 @@ module.exports = {
     perconaServerDB: './tests/DbHelpers/perconaServerDB.js',
     pmmDemoPage: './tests/pages/pmmDemoPage.js',
     pmmInventoryPage: './tests/pages/pmmInventoryPage.js',
+    pmmServerAdminSettingsPage: './tests/pages/pmmServerAdminSettingsPage.js',
     pmmSettingsPage: './tests/pages/pmmSettingsPage.js',
     qanDetails: './tests/QAN/pages/qanDetailsFragment.js',
     qanFilters: './tests/QAN/pages/qanFiltersFragment.js',
