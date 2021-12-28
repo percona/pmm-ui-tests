@@ -106,6 +106,7 @@ module.exports = {
     clientSecret: '$azure_client_secret-password-input',
     cluster: '$cluster-text-input',
     customLabels: '$custom_labels-textarea-input',
+    database: '$database-text-input',
     disableBasicMetrics: '//input[@name="disable_basic_metrics"]/following-sibling::*[2]',
     disableEnhancedMetrics: '//input[@name="disable_enhanced_metrics"]/following-sibling::*[2]',
     discoverBtn: '$credentials-search-button',
@@ -212,6 +213,23 @@ module.exports = {
     I.waitForElement(this.fields.serviceName, 60);
 
     return this;
+  },
+
+  async addRemoteDetails(details) {
+    if (details.type === 'mysql') {
+      I.waitForElement(this.fields.hostName, 30);
+      I.fillField(this.fields.hostName, details.host);
+      I.fillField(this.fields.userName, details.username);
+      I.fillField(this.fields.password, details.password);
+      adminPage.customClearField(this.fields.portNumber);
+      I.fillField(this.fields.portNumber, details.port);
+      I.fillField(this.fields.serviceName, details.serviceName);
+      I.fillField(this.fields.environment, details.environment);
+      I.fillField(this.fields.cluster, details.cluster);
+    }
+
+    // eslint-disable-next-line no-empty
+    if (details.db.type === 'postgres') {}
   },
 
   async fillRemoteFields(serviceName) {
@@ -396,7 +414,9 @@ module.exports = {
       case remoteInstancesHelper.services.postgresql:
         I.click(this.fields.usePgStatStatements);
         break;
-      case (serviceName.indexOf('rds-mysql') >= 0):
+      case 'rds-mysql57':
+      case 'qa-mysql-8-0-17':
+      case 'rds-mysql56':
       case 'pmm-qa-postgres-12':
         I.click(this.fields.disableEnhancedMetrics);
         I.click(this.fields.disableBasicMetrics);

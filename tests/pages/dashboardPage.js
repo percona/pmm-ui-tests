@@ -266,6 +266,7 @@ module.exports = {
   postgresqlInstanceOverviewDashboard: {
     // had to be changed after the PMM-6386 bug will be fixed
     url: 'graph/d/postgresql-instance-overview/postgresql-instances-overview?orgId=1&from=now-5m&to=now',
+    customServiceUrl: (serviceName) => `graph/d/postgresql-instance-overview/postgresql-instances-overview?orgId=1&var-service_name=${serviceName}&from=now-5m&to=now'`,
     metrics: [
       'Services',
       'Max Active Connections',
@@ -534,6 +535,7 @@ module.exports = {
   },
   mySQLInstanceOverview: {
     url: 'graph/d/mysql-instance-overview/mysql-instances-overview?orgId=1&from=now-2m&to=now&refresh=1m',
+    customServiceUrl: (serviceName) => `graph/d/mysql-instance-overview/mysql-instances-overview?orgId=1&var-service_name=${serviceName}&from=now-2m&to=now&refresh=1m`,
     metrics: [
       'Services',
       'Min MySQL Uptime',

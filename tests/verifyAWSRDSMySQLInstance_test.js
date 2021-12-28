@@ -121,11 +121,13 @@ Data(instances).Scenario(
 
     assert.ok(!result.push_metrics_enabled, `Push Metrics Enabled Flag Should not be present on response object for AWS RDS but found ${JSON.stringify(result)}`);
 
-    metricNames.forEach((metric) => {
-      const response = dashboardPage.checkMetricExist(metric, { type: 'service_name', value: serviceName });
+    for (const metric of metricNames) {
+      const response = await dashboardPage.checkMetricExist(metric, { type: 'service_name', value: serviceName });
+
+      console.log(JSON.stringify(response.data.data.result));
       const result = JSON.stringify(response.data.data.result);
 
       assert.ok(response.data.data.result.length !== 0, `Metrics ${metric} from ${serviceName} should be available but got empty ${result}`);
-    });
+    }
   },
 );
