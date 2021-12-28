@@ -2,9 +2,8 @@ const {
   settingsAPI, perconaServerDB, securityChecksAPI, databaseChecksPage,
 } = inject();
 const connection = perconaServerDB.defaultConnection;
-const emptyPasswordSummary = 'MySQL users have empty passwords';
+const emptyPasswordSummary = 'User(s) has/have no password defined';
 const intervals = settingsAPI.defaultCheckIntervals;
-let nodeID;
 const psServiceName = 'stt-mysql-5.7.30';
 const failedCheckRowLocator = databaseChecksPage.elements
   .failedCheckRowByServiceName(psServiceName);
@@ -35,22 +34,21 @@ const prepareFailedCheck = async () => {
 
 Feature('Security Checks: Checks Execution');
 
-BeforeSuite(async ({ perconaServerDB, addInstanceAPI, remoteInstancesHelper }) => {
+BeforeSuite(async ({ perconaServerDB, addInstanceAPI }) => {
   const mysqlComposeConnection = {
     host: '127.0.0.1',
     port: connection.port,
     username: connection.username,
     password: connection.password,
   };
-  const instance = await addInstanceAPI.apiAddInstance(remoteInstancesHelper.instanceTypes.mysql, psServiceName, connection);
 
-  nodeID = instance.service.node_id;
+  await addInstanceAPI.addInstanceForSTT(connection);
+
   perconaServerDB.connectToPS(mysqlComposeConnection);
 });
 
-AfterSuite(async ({ perconaServerDB, inventoryAPI }) => {
+AfterSuite(async ({ perconaServerDB }) => {
   await perconaServerDB.disconnectFromPS();
-  if (nodeID) await inventoryAPI.deleteNode(nodeID, true);
 });
 
 Before(async ({

@@ -2,6 +2,7 @@ const assert = require('assert');
 
 const {
   remoteInstancesHelper,
+  inventoryAPI,
 } = inject();
 
 const { I } = inject();
@@ -198,11 +199,17 @@ module.exports = {
 
   async addInstanceForSTT(connection) {
     let nodeId;
+    const rdsSttServiceName = 'rds-for-stt-all-checks';
+    const mysqlSttServiceName = 'stt-all-checks-mysql-5.7.30';
 
     if (process.env.OVF_TEST === 'yes') {
-      nodeId = (await this.apiAddInstance(remoteInstancesHelper.instanceTypes.rds, 'rds-for-stt-all-checks')).node.node_id;
+      await inventoryAPI.deleteNodeByServiceName(remoteInstancesHelper.serviceTypes.mysql.serviceType, rdsSttServiceName);
+      nodeId = (await this.apiAddInstance(remoteInstancesHelper.instanceTypes.rds, rdsSttServiceName)).node.node_id;
     } else {
-      nodeId = (await this.apiAddInstance(remoteInstancesHelper.instanceTypes.mysql, 'stt-all-checks-mysql-5.7.30', connection)).service.node_id;
+      await inventoryAPI.deleteNodeByServiceName(remoteInstancesHelper.serviceTypes.mysql.serviceType, mysqlSttServiceName);
+      nodeId = (await this.apiAddInstance(remoteInstancesHelper.instanceTypes.mysql, mysqlSttServiceName, connection))
+        .service
+        .node_id;
     }
 
     return nodeId;

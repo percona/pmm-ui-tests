@@ -5,23 +5,29 @@ const { I } = inject();
 module.exports = {
   checkNames: {
     mysqlVersion: 'mysql_version',
-    mysqlEmptyPassword: 'mysql_empty_password',
+    mysqlEmptyPassword: 'mysql_security_1',
   },
 
-  /* Since Enabling STT checks clears existing Checks Results,
-   this method is used for waiting for results with a timeout */
-  async waitForSecurityChecksResults(timeout) {
-    for (let i = 0; i < timeout; i++) {
-      const results = await this.getSecurityChecksResults();
+  async waitForCallbackWithTimeout(cb, timeout = 30) {
+    let result = [];
 
-      if (results && results.length) {
+    for (let i = 0; i < timeout; i++) {
+      result = await cb();
+
+      if (result && result.length) {
         return;
       }
 
       I.wait(1);
     }
 
-    assert.fail(`Timed out waiting. Failed checks didn't appear in ${timeout} seconds.`);
+    assert.ok(result.length, 'Timed out waiting.');
+  },
+
+  /* Since Enabling STT checks clears existing Checks Results,
+   this method is used for waiting for results with a timeout */
+  async waitForSecurityChecksResults(timeout) {
+    await this.waitForCallbackWithTimeout(this.getSecurityChecksResults, timeout);
   },
 
   async getSecurityChecksResults() {
@@ -66,7 +72,7 @@ module.exports = {
     // return null if there are no failed checks
     if (!results) return null;
 
-    return results.find((obj) => obj.summary === summaryText);
+    return results.find((obj) => obj.summary.trim() === summaryText);
   },
 
   async enableCheck(checkName) {
@@ -120,44 +126,23 @@ module.exports = {
     );
   },
 
+  async getAllChecksList() {
+    const headers = { Authorization: `Basic ${await I.getAuth()}` };
+    const resp = await I.sendPostRequest('v1/management/SecurityChecks/List', {}, headers);
+
+    return resp.data.checks;
+  },
+
   async restoreDefaultIntervals() {
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
     const body = {
-      params: [{
-        name: 'mongodb_version',
-        interval: 'STANDARD',
-      },
-      {
-        name: 'mysql_anonymous_users',
-        interval: 'STANDARD',
-      },
-      {
-        name: 'postgresql_super_role',
-        interval: 'STANDARD',
-      },
-      {
-        name: 'mysql_empty_password',
-        interval: 'STANDARD',
-      },
-      {
-        name: 'mysql_version',
-        interval: 'STANDARD',
-      },
-      {
-        name: 'mongodb_cve_version',
-        interval: 'STANDARD',
-      },
-      {
-        name: 'postgresql_version',
-        interval: 'STANDARD',
-      },
-      {
-        name: 'mongodb_auth',
-        interval: 'STANDARD',
-      },
-      ],
+      params: [],
     };
 
+    await this.waitForCallbackWithTimeout(this.getAllChecksList, 60);
+    const allChecks = await this.getAllChecksList();
+
+    allChecks.forEach(({ name }) => body.params.push({ name, interval: 'STANDARD' }));
     const resp = await I.sendPostRequest('v1/management/SecurityChecks/Change', body, headers);
 
     assert.ok(
