@@ -68,7 +68,7 @@ module.exports = {
   url: 'graph/add-instance?orgId=1',
   addMySQLRemoteURL: 'graph/add-instance?instance_type=mysql',
   mysql8rds: {
-    'Service Name': 'rds-mysql80',
+    'Service Name': 'qa-mysql-8-0-17',
     Environment: 'RDS MySQL 8.0',
     'Replication Set': 'rds80-replication',
     Cluster: 'rds80-cluster',
@@ -396,7 +396,7 @@ module.exports = {
       case remoteInstancesHelper.services.postgresql:
         I.click(this.fields.usePgStatStatements);
         break;
-      case serviceName.indexOf('rds-mysql'):
+      case (serviceName.indexOf('rds-mysql') >= 0):
       case 'pmm-qa-postgres-12':
         I.click(this.fields.disableEnhancedMetrics);
         I.click(this.fields.disableBasicMetrics);

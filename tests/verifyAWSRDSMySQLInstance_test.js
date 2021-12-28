@@ -46,7 +46,7 @@ xScenario(
 ).retry(1);
 
 Data(instances).Scenario(
-  'Verify AWS RDS MySQL 5.6 instance has status running [critical] @instances',
+  'Verify AWS RDS MySQL instance has status running [critical] @instances',
   async ({
     I, remoteInstancesPage, pmmInventoryPage, current,
   }) => {
@@ -78,10 +78,12 @@ xScenario(
   },
 );
 
-Scenario(
+Data(instances).Scenario(
   'Verify MySQL Instances Overview Dashboard for AWS RDS MySQL data after it was added for monitoring @instances',
-  async ({ I, dashboardPage }) => {
-    I.amOnPage(dashboardPage.mySQLInstanceOverview.urlWithRDSFilter);
+  async ({ I, dashboardPage, current }) => {
+    const serviceName = current.instanceId;
+
+    I.amOnPage(dashboardPage.mySQLInstanceOverview.urlWithRDSFilter(serviceName));
     dashboardPage.waitForDashboardOpened();
     await dashboardPage.expandEachDashboardRow();
     await dashboardPage.verifyThereAreNoGraphsWithNA(1);
