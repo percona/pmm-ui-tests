@@ -120,8 +120,12 @@ Data(instances).Scenario(
     const result = response.data.rds_exporter[0];
 
     assert.ok(!result.push_metrics_enabled, `Push Metrics Enabled Flag Should not be present on response object for AWS RDS but found ${JSON.stringify(result)}`);
+
     metricNames.forEach((metric) => {
-      dashboardPage.checkMetricExist(metric, { type: 'service_name', value: serviceName });
+      const response = dashboardPage.checkMetricExist(metric, { type: 'service_name', value: serviceName });
+      const result = JSON.stringify(response.data.data.result);
+
+      assert.ok(response.data.data.result.length !== 0, `Metrics ${metric} from ${serviceName} should be available but got empty ${result}`);
     });
   },
 );

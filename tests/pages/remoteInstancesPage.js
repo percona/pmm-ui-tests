@@ -480,7 +480,7 @@ module.exports = {
       case 'rds-mysql56':
         this.fillFields(this.mysqlInputs);
         break;
-      case 'rds-mysql80':
+      case 'qa-mysql-8-0-17':
         this.fillFields(this.mysql80rdsInput);
         break;
       case 'rds-mysql57':
