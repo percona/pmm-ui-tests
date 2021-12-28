@@ -1,15 +1,25 @@
 const assert = require('assert');
 
+const { remoteInstancesPage } = inject();
+
 Feature('Monitoring AWS RDS MySQL DB');
+
+const instances = new DataTable(['version', 'instanceId']);
+
+instances.add(['mysql57', remoteInstancesPage.mysql57rds['Service Name']]);
+instances.add(['mysql80', remoteInstancesPage.mysql8rds['Service Name']]);
+instances.add(['mysql56', remoteInstancesPage.rds['Service Name']]);
 
 Before(async ({ I }) => {
   await I.Authorize();
 });
 
-Scenario(
+Data(instances).Scenario(
   'PMM-T138 Verify disabling enhanced metrics for RDS, PMM-T139 Verify disabling basic metrics for RDS, PMM-T9 Verify adding RDS instances [critical] @instances',
-  async ({ I, remoteInstancesPage, pmmInventoryPage }) => {
-    const instanceIdToMonitor = remoteInstancesPage.rds['Service Name'];
+  async ({
+    I, remoteInstancesPage, pmmInventoryPage, current,
+  }) => {
+    const instanceIdToMonitor = current.instanceId;
 
     I.amOnPage(remoteInstancesPage.url);
     remoteInstancesPage.waitUntilRemoteInstancesPageLoaded().openAddAWSRDSMySQLPage();
@@ -35,19 +45,22 @@ xScenario(
   },
 ).retry(1);
 
-Scenario(
+Data(instances).Scenario(
   'Verify AWS RDS MySQL 5.6 instance has status running [critical] @instances',
-  async ({ I, remoteInstancesPage, pmmInventoryPage }) => {
-    const serviceName = remoteInstancesPage.rds['Service Name'];
+  async ({
+    I, remoteInstancesPage, pmmInventoryPage, current,
+  }) => {
+    const serviceName = current.instanceId;
 
     I.amOnPage(pmmInventoryPage.url);
     pmmInventoryPage.verifyRemoteServiceIsDisplayed(serviceName);
     await pmmInventoryPage.verifyAgentHasStatusRunning(serviceName);
   },
 );
+
 // Skipping the tests because QAN does not get any data right after instance was added for monitoring
 xScenario(
-  'Verify QAN Filters contain AWS RDS MySQL 5.6 after it was added for monitoring @instances',
+  'Verify QAN Filters contain AWS RDS MySQL after it was added for monitoring @instances',
   async ({
     I, qanPage, remoteInstancesPage, qanFilters,
   }) => {
@@ -66,7 +79,7 @@ xScenario(
 );
 
 Scenario(
-  'Verify MySQL Instances Overview Dashboard for AWS RDS MySQL 5.6 data after it was added for monitoring @instances',
+  'Verify MySQL Instances Overview Dashboard for AWS RDS MySQL data after it was added for monitoring @instances',
   async ({ I, dashboardPage }) => {
     I.amOnPage(dashboardPage.mySQLInstanceOverview.urlWithRDSFilter);
     dashboardPage.waitForDashboardOpened();
@@ -77,7 +90,7 @@ Scenario(
 );
 
 Scenario(
-  'Verify MySQL Instances Overview Dashboard contains AWS RDS MySQL 5.6 filters @instances',
+  'Verify MySQL Instances Overview Dashboard contains AWS RDS MySQL filters @instances',
   async ({ I, dashboardPage, remoteInstancesPage }) => {
     const filters = remoteInstancesPage.rds;
 
@@ -93,13 +106,13 @@ Scenario(
   },
 );
 
-Scenario(
+Data(instances).Scenario(
   'PMM-T603 Verify MySQL RDS exporter is running in pull mode @instances',
   async ({
-    I, dashboardPage, remoteInstancesPage, inventoryAPI,
+    I, dashboardPage, remoteInstancesPage, inventoryAPI, current,
   }) => {
     const metricNames = ['aws_rds_cpu_credit_usage_average', 'rds_exporter_requests_total', 'rdsosmetrics_cpuUtilization_system'];
-    const serviceName = remoteInstancesPage.rds['Service Name'];
+    const serviceName = current.instanceId;
     const { node_id } = await inventoryAPI.apiGetNodeInfoByServiceName('MYSQL_SERVICE', serviceName);
     const response = await inventoryAPI.apiGetAgentsViaNodeId(node_id);
     const result = response.data.rds_exporter[0];

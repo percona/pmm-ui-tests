@@ -48,6 +48,9 @@ const remoteInstanceStatus = {
     aws_rds_5_7: {
       enabled: true,
     },
+    aws_rds_8_0: {
+      enabled: true,
+    },
     aws_rds_5_6: {
       enabled: true,
     },
@@ -201,6 +204,13 @@ module.exports = {
         clusterName: 'aws_rds_mysql_5_7',
         port: 3306,
       },
+      aws_rds_8_0: {
+        address: secret(process.env.REMOTE_AWS_MYSQL80_HOST),
+        username: secret(process.env.REMOTE_AWS_MYSQL80_USER),
+        password: secret(process.env.REMOTE_AWS_MYSQL80_PASSWORD),
+        clusterName: 'aws_rds_mysql_8_0',
+        port: 3306,
+      },
       aws_rds_5_6: {
         address: secret(process.env.REMOTE_AWS_MYSQL57_HOST),
         username: secret(process.env.REMOTE_AWS_MYSQL_USER),
@@ -245,6 +255,7 @@ module.exports = {
     mongodb: (remoteInstanceStatus.mongodb.psmdb_4_2.enabled ? 'MongoDB' : undefined),
     proxysql: (remoteInstanceStatus.proxysql.proxysql_2_1_1.enabled ? 'ProxySQL' : undefined),
     rds: (remoteInstanceStatus.aws.aws_rds_5_7.enabled ? 'RDS' : undefined),
+    rds8: (remoteInstanceStatus.aws.aws_rds_8_0.enabled ? 'RDS' : undefined),
     postgresGC: (remoteInstanceStatus.gc.gc_postgresql.enabled ? 'postgresGC' : undefined),
   },
 
@@ -319,6 +330,7 @@ module.exports = {
     proxysql: (remoteInstanceStatus.proxysql.proxysql_2_1_1.enabled ? 'proxysql_upgrade_service' : undefined),
     postgresql: (remoteInstanceStatus.postgresql.pdpgsql_13_3.enabled ? 'postgres_upgrade_service' : undefined),
     rds: (remoteInstanceStatus.aws.aws_rds_5_7.enabled ? 'mysql_rds_uprgade_service' : undefined),
+    rds8: (remoteInstanceStatus.aws.aws_rds_8_0.enabled ? 'mysql8_rds_uprgade_service' : undefined),
     postgresgc: (remoteInstanceStatus.gc.gc_postgresql.enabled ? 'postgresql_GC_remote_new' : undefined),
   },
 
@@ -329,6 +341,7 @@ module.exports = {
     proxysql_upgrade_service: 'proxysql_stats_memory_auth_memory',
     postgres_upgrade_service: 'pg_stat_database_xact_rollback',
     mysql_rds_uprgade_service: 'mysql_global_status_max_used_connections',
+    mysql8_rds_uprgade_service: 'mysql_global_status_max_used_connections',
   },
 
   // Used by Upgrade Job to test QAN filters
