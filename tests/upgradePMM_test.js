@@ -224,7 +224,6 @@ if (versionMinor >= 15) {
       // Run DB Checks from UI
       // disable check, change interval for a check, change interval settings
       if (versionMinor >= 16) {
-        // await securityChecksAPI.startSecurityChecks();
         I.amOnPage(databaseChecksPage.url);
         I.waitForVisible(runChecks, 30);
         I.click(runChecks);
