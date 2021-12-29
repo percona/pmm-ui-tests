@@ -134,3 +134,21 @@ Data(instances).Scenario(
     }
   },
 ).retry(1);
+
+Data(instances).Scenario(
+  'PMM-T603 Verify MySQL exporter metrics for rds mysql @instances',
+  async ({
+    I, dashboardPage, remoteInstancesPage, inventoryAPI, current,
+  }) => {
+    const metricNames = ['mysql_global_status_max_used_connections', 'mysql_exporter_scrape_errors_total', 'mysql_info_schema_innodb_metrics_lock_lock_row_lock_time_total'];
+    const serviceName = current.instanceId;
+
+    for (const metric of metricNames) {
+      const response = await dashboardPage.checkMetricExist(metric, { type: 'service_name', value: serviceName });
+
+      const result = JSON.stringify(response.data.data.result);
+
+      assert.ok(response.data.data.result.length !== 0, `Metrics ${metric} from ${serviceName} should be available but got empty ${result}`);
+    }
+  },
+).retry(1);

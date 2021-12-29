@@ -216,20 +216,20 @@ module.exports = {
   },
 
   async addRemoteDetails(details) {
-    if (details.type === 'mysql') {
-      I.waitForElement(this.fields.hostName, 30);
-      I.fillField(this.fields.hostName, details.host);
-      I.fillField(this.fields.userName, details.username);
-      I.fillField(this.fields.password, details.password);
-      adminPage.customClearField(this.fields.portNumber);
-      I.fillField(this.fields.portNumber, details.port);
-      I.fillField(this.fields.serviceName, details.serviceName);
-      I.fillField(this.fields.environment, details.environment);
-      I.fillField(this.fields.cluster, details.cluster);
-    }
+    I.waitForElement(this.fields.hostName, 30);
+    I.fillField(this.fields.hostName, details.host);
+    I.fillField(this.fields.userName, details.username);
+    I.fillField(this.fields.password, details.password);
+    adminPage.customClearField(this.fields.portNumber);
+    I.fillField(this.fields.portNumber, details.port);
+    I.fillField(this.fields.serviceName, details.serviceName);
+    I.fillField(this.fields.environment, details.environment);
+    I.fillField(this.fields.cluster, details.cluster);
 
     // eslint-disable-next-line no-empty
-    if (details.type === 'postgres') {}
+    if (details.type === 'postgresql') {
+      I.fillField(this.fields.database, details.database);
+    }
   },
 
   async fillRemoteFields(serviceName) {

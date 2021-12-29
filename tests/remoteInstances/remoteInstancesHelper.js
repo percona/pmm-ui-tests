@@ -72,6 +72,15 @@ const remoteInstanceStatus = {
       enabled: false,
       // enabled: process.env.OVF_TEST !== 'yes',
     },
+    gc_mysql57: {
+      enabled: true,
+    },
+    gc_mysql80: {
+      enabled: true,
+    },
+    gc_pgsql_13: {
+      enabled: true,
+    },
   },
 };
 
@@ -244,6 +253,59 @@ module.exports = {
         address: process.env.GCP_SERVER_IP,
         userName: process.env.GCP_USER,
         password: process.env.GCP_USER_PASSWORD,
+      },
+      gc_mysql57: {
+        type: 'mysql',
+        serviceName: 'gc-mysql57',
+        port: '3306',
+        host: process.env.GCP_MYSQL57_HOST,
+        username: process.env.GCP_MYSQL57_USER,
+        password: process.env.GCP_MYSQL57_PASSWORD,
+        cluster: 'gc-mysql57',
+        environment: 'gc-mysql57',
+      },
+      gc_mysql80: {
+        type: 'mysql',
+        serviceName: 'gc-mysql80',
+        port: '3306',
+        host: process.env.GCP_MYSQL80_HOST,
+        username: process.env.GCP_MYSQL80_USER,
+        password: process.env.GCP_MYSQL80_PASSWORD,
+        cluster: 'gc-mysql80',
+        environment: 'gc-mysql80',
+      },
+      gc_pgsql_13: {
+        type: 'postgresql',
+        serviceName: 'gc-postgres13', // using postgres in name makes sure both exporter and QAN agents are verified
+        port: '5432',
+        database: process.env.GCP_PGSQL13_USER,
+        host: process.env.GCP_PGSQL13_HOST,
+        username: process.env.GCP_PGSQL13_USER,
+        password: process.env.GCP_PGSQL13_PASSWORD,
+        cluster: 'gc-pgsql13',
+        environment: 'gc-pgsql13',
+      },
+      gc_pgsql_12: {
+        type: 'postgresql',
+        serviceName: 'gc-postgres12', // using postgres in name makes sure both exporter and QAN agents are verified
+        port: '5432',
+        database: process.env.GCP_PGSQL12_USER,
+        host: process.env.GCP_PGSQL12_HOST,
+        username: process.env.GCP_PGSQL12_USER,
+        password: process.env.GCP_PGSQL12_PASSWORD,
+        cluster: 'gc-pgsql12',
+        environment: 'gc-pgsql12',
+      },
+      gc_pgsql_14: {
+        type: 'postgresql',
+        serviceName: 'gc-postgres14', // using postgres in name makes sure both exporter and QAN agents are verified
+        port: '5432',
+        database: process.env.GCP_PGSQL14_USER,
+        host: process.env.GCP_PGSQL14_HOST,
+        username: process.env.GCP_PGSQL14_USER,
+        password: process.env.GCP_PGSQL14_PASSWORD,
+        cluster: 'gc-pgsql14',
+        environment: 'gc-pgsql14',
       },
     },
   },
