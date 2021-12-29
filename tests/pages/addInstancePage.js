@@ -1,7 +1,7 @@
 const { I } = inject();
 
 module.exports = {
-  url: 'graph/add-instance?orgId=1',
+  url: 'graph/add-instance',
   addMySQLRemoteURL: 'graph/add-instance?instance_type=mysql',
   fields: {
     breadcrumbs: locate('span').withAttr({ 'data-testid': 'breadcrumb-section' }),
@@ -11,6 +11,6 @@ module.exports = {
 
   async open() {
     I.amOnPage(this.url);
-    I.waitForElement(this.fields.dashboardHeaderLocator, 60);
+    I.waitForElement(this.fields.breadcrumbs, 60);
   },
 };
