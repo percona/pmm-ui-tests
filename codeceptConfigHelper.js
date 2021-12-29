@@ -57,8 +57,7 @@ module.exports = {
     const dependentTests = files.filter((value) => /PMMSettings|ia|backup/.test(value));
     const dbaasTests = files.filter((value) => /DbaaS/.test(value));
     const otherTests = files.filter((val) => !dependentTests.includes(val)
-      && !dbaasTests.includes(val)
-      && !val.includes('stt'));
+      && !dbaasTests.includes(val));
 
     return [
       dependentTests,
