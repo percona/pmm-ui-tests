@@ -197,10 +197,10 @@ module.exports = {
     assert.equal(resp.status, 200, `External Service ${serviceName} was not added for monitoring got following response ${JSON.stringify(resp.data)}`);
   },
 
-  async addInstanceForSTT(connection) {
+  async addInstanceForSTT(connection, instanceName = 'stt-mysql-5.7.30') {
     let nodeId;
     const rdsSttServiceName = 'rds-for-stt-all-checks';
-    const mysqlSttServiceName = 'stt-all-checks-mysql-5.7.30';
+    const mysqlSttServiceName = instanceName;
 
     if (process.env.OVF_TEST === 'yes') {
       await inventoryAPI.deleteNodeByServiceName(remoteInstancesHelper.serviceTypes.mysql.serviceType, rdsSttServiceName);

@@ -42,7 +42,7 @@ BeforeSuite(async ({ perconaServerDB, addInstanceAPI }) => {
     password: connection.password,
   };
 
-  await addInstanceAPI.addInstanceForSTT(connection);
+  await addInstanceAPI.addInstanceForSTT(connection, psServiceName);
 
   perconaServerDB.connectToPS(mysqlComposeConnection);
 });
