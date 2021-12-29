@@ -1,17 +1,31 @@
 const assert = require('assert');
 
-const { remoteInstancesPage, remoteInstancesHelper } = inject();
+const { remoteInstancesHelper } = inject();
 
 Feature('Monitoring Mysql and Postgresql DB running on Google Cloud');
 
-const instances = new DataTable(['version', 'instance', 'instanceType', 'metric']);
+const instances = new DataTable(['instance', 'instanceType', 'metric']);
 
-instances.add(['pgsql13', remoteInstancesHelper.remote_instance.gc.gc_pgsql_13, 'postgresql', 'pg_stat_database_xact_rollback']);
-instances.add(['pgsql12', remoteInstancesHelper.remote_instance.gc.gc_pgsql_12, 'postgresql', 'pg_stat_database_xact_rollback']);
-instances.add(['pgsql14', remoteInstancesHelper.remote_instance.gc.gc_pgsql_14, 'postgresql', 'pg_stat_database_xact_rollback']);
-instances.add(['pgsql11', remoteInstancesHelper.remote_instance.gc.gc_pgsql_11, 'postgresql', 'pg_stat_database_xact_rollback']);
-instances.add(['mysql57', remoteInstancesHelper.remote_instance.gc.gc_mysql57, 'mysql', 'mysql_global_status_max_used_connections']);
-instances.add(['mysql80', remoteInstancesHelper.remote_instance.gc.gc_mysql80, 'mysql', 'mysql_global_status_max_used_connections']);
+instances.add(['pgsql13', 'postgresql', 'pg_stat_database_xact_rollback']);
+instances.add(['pgsql12', 'postgresql', 'pg_stat_database_xact_rollback']);
+instances.add(['pgsql14', 'postgresql', 'pg_stat_database_xact_rollback']);
+instances.add(['pgsql11', 'postgresql', 'pg_stat_database_xact_rollback']);
+instances.add(['mysql57', 'mysql', 'mysql_global_status_max_used_connections']);
+instances.add(['mysql80', 'mysql', 'mysql_global_status_max_used_connections']);
+
+// Mapping here to avoid datatables to add those details to test names in allure report
+const remoteInstance = {
+  pgsql13: remoteInstancesHelper.remote_instance.gc.gc_pgsql_13,
+  pgsql14: remoteInstancesHelper.remote_instance.gc.gc_pgsql_14,
+  pgsql12: remoteInstancesHelper.remote_instance.gc.gc_pgsql_12,
+  pgsql11: remoteInstancesHelper.remote_instance.gc.gc_pgsql_11,
+  mysql57: remoteInstancesHelper.remote_instance.gc.gc_mysql57,
+  mysql80: remoteInstancesHelper.remote_instance.gc.gc_mysql80,
+};
+
+function getInstance(key) {
+  return remoteInstance[key];
+}
 
 Before(async ({ I, settingsAPI }) => {
   await I.Authorize();
@@ -45,13 +59,15 @@ Data(instances).Scenario(
       instance, instanceType,
     } = current;
 
+    const instanceDetails = getInstance(instance);
+
     I.amOnPage(remoteInstancesPage.url);
     remoteInstancesPage.waitUntilRemoteInstancesPageLoaded();
     remoteInstancesPage.openAddRemotePage(instanceType);
-    await remoteInstancesPage.addRemoteDetails(instance);
+    await remoteInstancesPage.addRemoteDetails(instanceDetails);
     I.click(remoteInstancesPage.fields.addService);
-    pmmInventoryPage.verifyRemoteServiceIsDisplayed(instance.serviceName);
-    await pmmInventoryPage.verifyAgentHasStatusRunning(instance.serviceName);
+    pmmInventoryPage.verifyRemoteServiceIsDisplayed(instanceDetails.serviceName);
+    await pmmInventoryPage.verifyAgentHasStatusRunning(instanceDetails.serviceName);
     // Waiting for metrics to start hitting PMM-Server
     I.wait(20);
   },
@@ -66,13 +82,15 @@ Data(instances).Scenario(
       instance, instanceType,
     } = current;
 
+    const instanceDetails = getInstance(instance);
+
     I.wait(10);
     if (instanceType === 'mysql') {
-      I.amOnPage(dashboardPage.mySQLInstanceOverview.customServiceUrl(instance.serviceName));
+      I.amOnPage(dashboardPage.mySQLInstanceOverview.customServiceUrl(instanceDetails.serviceName));
     }
 
     if (instanceType === 'postgresql') {
-      I.amOnPage(dashboardPage.postgresqlInstanceOverviewDashboard.customServiceUrl(instance.serviceName));
+      I.amOnPage(dashboardPage.postgresqlInstanceOverviewDashboard.customServiceUrl(instanceDetails.serviceName));
     }
 
     dashboardPage.waitForDashboardOpened();
@@ -91,17 +109,19 @@ Data(instances.filter((instance) => instance.instanceType.indexOf('mysql') === -
     I, qanOverview, qanFilters, qanPage, current,
   }) => {
     const {
-      version, instance, instanceType, metric,
+      instance,
     } = current;
+
+    const instanceDetails = getInstance(instance);
 
     I.amOnPage(qanPage.url);
     qanOverview.waitForOverviewLoaded();
     qanFilters.waitForFiltersToLoad();
-    await qanFilters.applyFilter(instance.serviceName);
+    await qanFilters.applyFilter(instanceDetails.serviceName);
     qanOverview.waitForOverviewLoaded();
     const count = await qanOverview.getCountOfItems();
 
-    assert.ok(count > 0, `The queries for service ${instance.serviceName} instance do NOT exist`);
+    assert.ok(count > 0, `The queries for service ${instanceDetails.serviceName} instance do NOT exist`);
   },
 ).retry(1);
 
@@ -112,11 +132,13 @@ Data(instances).Scenario(
       instance, metric,
     } = current;
 
+    const instanceDetails = getInstance(instance);
+
     I.wait(10);
-    const response = await dashboardPage.checkMetricExist(metric, { type: 'service_name', value: instance.serviceName });
+    const response = await dashboardPage.checkMetricExist(metric, { type: 'service_name', value: instanceDetails.serviceName });
     const result = JSON.stringify(response.data.data.result);
 
-    assert.ok(response.data.data.result.length !== 0, `Metrics ${metric} from ${instance.serviceName} should be available but got empty ${result}`);
+    assert.ok(response.data.data.result.length !== 0, `Metrics ${metric} from ${instanceDetails.serviceName} should be available but got empty ${result}`);
   },
 );
 
