@@ -227,7 +227,7 @@ if (versionMinor >= 15) {
         I.amOnPage(databaseChecksPage.url);
         I.waitForVisible(runChecks, 30);
         I.click(runChecks);
-        I.waitForVisible(failedCheckRowLocator, 30);
+        I.waitForVisible(failedCheckRowLocator, 60);
         // Waiting to have all results
         I.wait(15);
         await securityChecksAPI.disableCheck('mongodb_version');
@@ -243,7 +243,7 @@ if (versionMinor >= 15) {
         I.amOnPage(databaseChecksPage.oldUrl);
         I.waitForVisible(runChecks, 30);
         I.click(runChecks);
-        I.waitForVisible(failedCheckRowLocator, 30);
+        I.waitForVisible(failedCheckRowLocator, 60);
       }
 
       // Check that there are failed checks
