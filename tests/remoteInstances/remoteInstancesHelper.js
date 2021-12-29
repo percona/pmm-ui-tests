@@ -310,6 +310,18 @@ module.exports = {
         cluster: 'gc-pgsql14',
         environment: 'gc-pgsql14',
       },
+      gc_pgsql_11: {
+        type: 'postgresql',
+        // using postgres in name makes sure both exporter and QAN agents are verified
+        serviceName: 'gc-postgres11',
+        port: '5432',
+        database: process.env.GCP_PGSQL11_USER,
+        host: process.env.GCP_PGSQL11_HOST,
+        username: process.env.GCP_PGSQL11_USER,
+        password: process.env.GCP_PGSQL11_PASSWORD,
+        cluster: 'gc-pgsql11',
+        environment: 'gc-pgsql11',
+      },
     },
   },
 
