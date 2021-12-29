@@ -229,7 +229,7 @@ module.exports = {
     }
 
     // eslint-disable-next-line no-empty
-    if (details.db.type === 'postgres') {}
+    if (details.type === 'postgres') {}
   },
 
   async fillRemoteFields(serviceName) {
@@ -414,9 +414,6 @@ module.exports = {
       case remoteInstancesHelper.services.postgresql:
         I.click(this.fields.usePgStatStatements);
         break;
-      case 'rds-mysql57':
-      case 'qa-mysql-8-0-17':
-      case 'rds-mysql56':
       case 'pmm-qa-postgres-12':
         I.click(this.fields.disableEnhancedMetrics);
         I.click(this.fields.disableBasicMetrics);

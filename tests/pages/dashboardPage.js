@@ -888,15 +888,15 @@ module.exports = {
       query: metricName,
       start: Math.floor((timeStamp - 15000) / 1000),
       end: Math.floor((timeStamp) / 1000),
-      step: 60,
+      step: 1,
     };
 
     if (queryBy) {
       body = {
         query: `${metricName}{${queryBy.type}=~"(${queryBy.value})"}`,
-        start: Math.floor((timeStamp - 10000) / 1000),
+        start: Math.floor((timeStamp - 15000) / 1000),
         end: Math.floor((timeStamp) / 1000),
-        step: 60,
+        step: 1,
       };
     }
 
