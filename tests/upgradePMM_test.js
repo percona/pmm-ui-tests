@@ -408,8 +408,8 @@ if (versionMinor >= 15) {
       securityChecksAPI,
       databaseChecksPage,
     }) => {
-      // Wait for 30 seconds to have latest check results
-      I.wait(30);
+      // Wait for 45 seconds to have latest check results
+      I.wait(45);
       // Verify STT is enabled
       I.amOnPage(pmmSettingsPage.advancedSettingsUrl);
       I.waitForVisible(pmmSettingsPage.fields.sttSwitchSelector, 30);
