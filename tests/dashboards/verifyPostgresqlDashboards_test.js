@@ -27,6 +27,7 @@ Before(async ({ I }) => {
 Scenario(
   'Open the PostgreSQL Instance Summary Dashboard and verify Metrics are present and graphs are displayed @nightly @dashboards',
   async ({ I, dashboardPage, adminPage }) => {
+    I.say(serviceList);
     for (const serviceName of serviceList) {
       I.amOnPage(dashboardPage.postgresqlInstanceSummaryDashboard.url);
       dashboardPage.waitForDashboardOpened();
