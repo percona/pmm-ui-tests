@@ -50,6 +50,16 @@ module.exports = {
     return data[0];
   },
 
+  async apiGetNodeInfoForAllNodesByServiceName(serviceType, serviceName) {
+    const service = await this.apiGetServices(serviceType);
+
+    const data = Object.values(service.data)
+      .flat(Infinity)
+      .filter(({ service_name }) => service_name.includes(serviceName));
+
+    return data;
+  },
+
   async apiGetPMMAgentInfoByServiceId(serviceId) {
     const agents = await this.apiGetAgents(serviceId);
     const data = Object.values(agents.data)

@@ -56,12 +56,14 @@ module.exports = {
   getChunks: (files) => {
     const dependentTests = files.filter((value) => /PMMSettings|ia|backup/.test(value));
     const dbaasTests = files.filter((value) => /DbaaS/.test(value));
+    const dashboardTests = files.filter((value) => /dashboards/.test(value));
     const otherTests = files.filter((val) => !dependentTests.includes(val)
       && !dbaasTests.includes(val)
       && !val.includes('stt'));
 
     return [
       dependentTests,
+      dashboardTests,
       otherTests,
       dbaasTests,
     ];

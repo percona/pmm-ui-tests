@@ -164,10 +164,10 @@ module.exports = {
       'File Descriptors Used',
     ],
   },
-  sharePanel:{
+  sharePanel: {
     elements: {
       imageRendererPluginLink: locate('.share-modal-body').find('.external-link'),
-    }
+    },
   },
   proxysqlInstanceSummaryDashboard: {
     url: 'graph/d/proxysql-instance-summary/proxysql-instance-summary',
@@ -233,6 +233,16 @@ module.exports = {
       'IST Progress',
       'Average Galera Replication Latency',
       'Maximum Galera Replication Latency',
+    ],
+  },
+  postgresqlInstanceCompareDashboard: {
+    url: 'graph/d/postgresql-instance-compare/postgresql-instances-compare?orgId=1&from=now-5m&to=now',
+    metrics: [
+      'Service Info',
+      'PostgreSQL Connections',
+      'Active Connections',
+      'Tuples',
+      'Transactions',
     ],
   },
   postgresqlInstanceSummaryDashboard: {
@@ -424,6 +434,7 @@ module.exports = {
   },
   mysqlInstanceSummaryDashboard: {
     url: 'graph/d/mysql-instance-summary/mysql-instance-summary?orgId=1&refresh=1m&from=now-5m&to=now',
+    customServiceUrl: (serviceName) => `graph/d/mysql-instance-summary/mysql-instance-summary?orgId=1&refresh=1m&from=now-5m&to=now&var-interval=$__auto_interval_interval&var-environment=All&var-service_type=All&var-database=All&var-username=All&var-schema=All&var-service_name=${serviceName}`,
     metrics: [
       'Node',
       'MySQL Uptime',
