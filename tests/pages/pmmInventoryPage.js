@@ -17,7 +17,7 @@ module.exports = {
     // cannot be changed to locate because it's failing in I.waitForVisible()
     nodesLink: '//li[contains(text(),"Nodes")]',
     nodesLinkOld: locate('a').withText('Nodes'),
-    pdphsqlServiceName: locate('td').withText('PDPGSQL'),
+    pdphsqlServiceName: locate('td').withText('PGSQL'),
     pmmAgentLocator: locate('td').withText('PMM Agent'),
     pmmServerPostgresLocator: locate('td').withText('pmm-server-postgresql'),
     pmmServicesSelector: locate('li').withText('Services'),

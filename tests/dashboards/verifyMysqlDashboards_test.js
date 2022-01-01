@@ -73,7 +73,7 @@ Scenario(
     I.click(adminPage.fields.metricTitle);
     adminPage.performPageDown(5);
     dashboardPage.verifyMetricsExistence(dashboardPage.mysqlInstancesCompareDashboard.metrics);
-    await dashboardPage.verifyThereAreNoGraphsWithNA();
+    await dashboardPage.verifyThereAreNoGraphsWithNA(1);
     await dashboardPage.verifyThereAreNoGraphsWithoutData(3);
   },
 );

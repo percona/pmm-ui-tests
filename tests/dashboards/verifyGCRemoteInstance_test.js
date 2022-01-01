@@ -71,7 +71,7 @@ Data(instances).Scenario(
     // Waiting for metrics to start hitting PMM-Server
     I.wait(20);
   },
-);
+).retry(1);
 
 Data(instances).Scenario(
   'Verify dashboard after Remote GC Instances are added @nightly @gcp',

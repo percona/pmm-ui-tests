@@ -55,7 +55,7 @@ module.exports = {
 
     const data = Object.values(service.data)
       .flat(Infinity)
-      .filter(({ service_name }) => service_name.includes(serviceName));
+      .filter(({ service_name }) => service_name.startsWith(serviceName));
 
     return data;
   },
