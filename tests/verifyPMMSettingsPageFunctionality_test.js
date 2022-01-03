@@ -81,7 +81,7 @@ Scenario(
     await pmmSettingsPage.waitForPmmSettingsPageLoaded();
     await pmmSettingsPage.expandSection(sectionNameToExpand, pmmSettingsPage.fields.advancedButton);
     await pmmSettingsPage.waitForPmmSettingsPageLoaded();
-    I.moveCursor(pmmSettingsPage.fields.sttLabelTooltipSelector);
+
     await pmmSettingsPage.verifyTooltip(pmmSettingsPage.tooltips.stt);
   },
 );
@@ -91,10 +91,8 @@ Scenario(
   async ({ I, pmmSettingsPage, dbaasPage }) => {
     I.amOnPage(pmmSettingsPage.advancedSettingsUrl);
     await pmmSettingsPage.waitForPmmSettingsPageLoaded();
-    I.waitForVisible(pmmSettingsPage.fields.dbaasLabelTooltipSelector, 30);
 
     // Verify tooltip for Enable/Disable DBaaS toggle
-    I.moveCursorTo(pmmSettingsPage.fields.dbaasLabelTooltipSelector);
     await pmmSettingsPage.verifyTooltip(pmmSettingsPage.tooltips.dbaas);
 
     let selector = await I.grabAttributeFrom(pmmSettingsPage.fields.dbaasSwitchSelector, 'checked');
@@ -136,10 +134,8 @@ Scenario(
 
     I.amOnPage(pmmSettingsPage.advancedSettingsUrl);
     await pmmSettingsPage.waitForPmmSettingsPageLoaded();
-    I.waitForVisible(pmmSettingsPage.fields.iaLabelTooltipSelector, 30);
 
     // Verify tooltip for Enable/Disable IA toggle
-    I.moveCursorTo(pmmSettingsPage.fields.iaLabelTooltipSelector);
     await pmmSettingsPage.verifyTooltip(pmmSettingsPage.tooltips.integratedAlerting);
 
     I.amOnPage(pmmSettingsPage.communicationSettingsUrl);
@@ -148,18 +144,11 @@ Scenario(
     // Verify tooltips for Communication > Email fields
     for (const o of Object.keys(pmmSettingsPage.communication.email)) {
       I.moveCursorTo(pmmSettingsPage.communication.submitEmailButton);
-      I.moveCursorTo(pmmSettingsPage.communication.email[o].tooltipLocator);
-
-      if (o === 'password' || o === 'username') {
-        await pmmSettingsPage.verifyTooltip(pmmSettingsPage.tooltips.auth);
-      } else {
-        await pmmSettingsPage.verifyTooltip(pmmSettingsPage.tooltips[o]);
-      }
+      await pmmSettingsPage.verifyTooltip(pmmSettingsPage.tooltips[o]);
     }
 
     // Verify tooltips for Communication > Slack URL field
     I.click(pmmSettingsPage.communication.slackTab);
-    I.moveCursorTo(pmmSettingsPage.communication.slack.url.tooltipLocator);
     await pmmSettingsPage.verifyTooltip(pmmSettingsPage.tooltips.slackUrl);
   },
 );
@@ -335,5 +324,26 @@ Scenario(
 
     // Open scheduled backups page and verify backup management is enabled
     scheduledPage.openScheduledBackupsPage();
+  },
+);
+
+Scenario(
+  'PMM-T486 - Verify Public Address in PMM Settings @settings @nightly',
+  async ({ I, pmmSettingsPage }) => {
+    await pmmSettingsPage.openAdvancedSettings();
+    await pmmSettingsPage.verifyTooltip(pmmSettingsPage.tooltips.publicAddress);
+    I.waitForVisible(pmmSettingsPage.fields.publicAddressInput, 30);
+    I.seeElement(pmmSettingsPage.fields.publicAddressButton);
+    I.click(pmmSettingsPage.fields.publicAddressButton);
+    const publicAddressValue = await I.grabValueFrom(pmmSettingsPage.fields.publicAddressInput);
+
+    I.assertTrue(publicAddressValue.length > 0, 'Expected the Public Address Input Field to be not empty!');
+    pmmSettingsPage.applyChanges();
+    I.refreshPage();
+    await pmmSettingsPage.waitForPmmSettingsPageLoaded();
+    const publicAddressAfterRefresh = await I.grabValueFrom(pmmSettingsPage.fields.publicAddressInput);
+
+    I.assertEqual(publicAddressAfterRefresh, publicAddressValue,
+      `Expected the Public Address to be saved and Match ${publicAddressValue}`);
   },
 );
