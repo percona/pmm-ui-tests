@@ -59,6 +59,7 @@ module.exports = {
     const dashboardTests = files.filter((value) => /dashboards/.test(value));
     const otherTests = files.filter((val) => !dependentTests.includes(val)
       && !dbaasTests.includes(val)
+      && !dashboardTests.includes(val)
       && !val.includes('stt'));
 
     return [
