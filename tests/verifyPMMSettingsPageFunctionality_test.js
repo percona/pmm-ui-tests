@@ -141,9 +141,9 @@ Scenario(
     I.waitForVisible(pmmSettingsPage.communication.email.serverAddress.locator, 30);
 
     // Verify tooltips for Communication > Email fields
-    for (const o of Object.keys(pmmSettingsPage.communication.email)) {
+    for (const formField of Object.keys(pmmSettingsPage.communication.email)) {
       I.moveCursorTo(pmmSettingsPage.communication.submitEmailButton);
-      await pmmSettingsPage.verifyTooltip(pmmSettingsPage.tooltips[o]);
+      await pmmSettingsPage.verifyTooltip(pmmSettingsPage.tooltips[formField]);
     }
 
     // Verify tooltips for Communication > Slack URL field
