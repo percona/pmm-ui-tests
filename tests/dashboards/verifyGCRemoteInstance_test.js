@@ -86,14 +86,15 @@ Data(instances).Scenario(
 
     I.wait(10);
     if (instanceType === 'mysql') {
-      I.amOnPage(dashboardPage.mySQLInstanceOverview.customServiceUrl(instanceDetails.serviceName));
+      I.amOnPage(dashboardPage.mySQLInstanceOverview.url);
     }
 
     if (instanceType === 'postgresql') {
-      I.amOnPage(dashboardPage.postgresqlInstanceOverviewDashboard.customServiceUrl(instanceDetails.serviceName));
+      I.amOnPage(dashboardPage.postgresqlInstanceOverviewDashboard.url);
     }
 
     dashboardPage.waitForDashboardOpened();
+    await dashboardPage.applyFilter('Service Name', instanceDetails.serviceName);
     adminPage.performPageDown(5);
     await dashboardPage.expandEachDashboardRow();
     adminPage.performPageUp(5);

@@ -3,11 +3,11 @@ const assert = require('assert');
 
 const annotation = new DataTable(['annotationName', 'service', 'dashboard', 'service_type']);
 
-annotation.add(['annotation-for-postgres-server', pmmInventoryPage.fields.pmmServerPostgresLocator, dashboardPage.postgresqlInstanceSummaryDashboard.url, 'POSTGRESQL_SERVICE']);
-annotation.add(['annotation-for-mongo', pmmInventoryPage.fields.mongoServiceName, dashboardPage.mongoDbInstanceSummaryDashboard.url, 'MONGODB_SERVICE']);
-annotation.add(['annotation-for-postgres', pmmInventoryPage.fields.pdphsqlServiceName, dashboardPage.postgresqlInstanceSummaryDashboard.url, 'POSTGRESQL_SERVICE']);
-annotation.add(['annotation-for-mysql', pmmInventoryPage.fields.mysqlServiceName, dashboardPage.mysqlInstanceSummaryDashboard.url, 'MYSQL_SERVICE']);
-annotation.add(['mysql-node-name', pmmInventoryPage.fields.mysqlServiceName, dashboardPage.nodesCompareDashboard.url, 'MYSQL_SERVICE']);
+annotation.add(['annotation-for-postgres-server', 'pmm-server', dashboardPage.postgresqlInstanceSummaryDashboard.url, 'POSTGRESQL_SERVICE']);
+annotation.add(['annotation-for-mongo', 'mongodb', dashboardPage.mongoDbInstanceSummaryDashboard.url, 'MONGODB_SERVICE']);
+annotation.add(['annotation-for-postgres', 'PGSQL', dashboardPage.postgresqlInstanceSummaryDashboard.url, 'POSTGRESQL_SERVICE']);
+annotation.add(['annotation-for-mysql', 'ms-', dashboardPage.mysqlInstanceSummaryDashboard.url, 'MYSQL_SERVICE']);
+annotation.add(['mysql-node-name', 'ms-', dashboardPage.nodesCompareDashboard.url, 'MYSQL_SERVICE']);
 
 Feature('Test annotation on dashboards');
 
@@ -21,8 +21,11 @@ Data(annotation).Scenario(
     I, dashboardPage, pmmInventoryPage, annotationAPI, inventoryAPI, current,
   }) => {
     const { annotationName } = current;
+
+    I.amOnPage(pmmInventoryPage.url);
+    I.waitForVisible(pmmInventoryPage.fields.nodesLink, 30);
     const service_response = await inventoryAPI.apiGetNodeInfoForAllNodesByServiceName(current.service_type, current.service);
-    const serviceName = service_response.service_name;
+    const serviceName = service_response[0].service_name;
     const nodeID = await pmmInventoryPage.getNodeId(serviceName);
     const nodeName = await inventoryAPI.getNodeName(nodeID);
 

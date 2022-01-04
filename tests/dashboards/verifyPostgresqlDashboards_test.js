@@ -66,6 +66,10 @@ Scenario(
   async ({ I, dashboardPage, adminPage }) => {
     I.amOnPage(dashboardPage.postgresqlInstanceCompareDashboard.url);
     dashboardPage.waitForDashboardOpened();
+    for (const serviceName of serviceList) {
+      await dashboardPage.applyFilter('Service Name', serviceName);
+    }
+
     await dashboardPage.expandEachDashboardRow();
     I.click(adminPage.fields.metricTitle);
     adminPage.performPageDown(5);
