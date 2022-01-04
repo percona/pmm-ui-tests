@@ -111,9 +111,8 @@ Scenario(
 
     assert.ok(link.includes('/graph/settings/advanced-settings'), `Advanced Setting Link displayed on DbaaS Page, when DbaaS is not enabled ${link}, please check the link`);
     // Enable DbaaS via Advanced Settings, Make sure Menu is visible.
-    I.amOnPage(pmmSettingsPage.advancedSettingsUrl);
-    await pmmSettingsPage.waitForPmmSettingsPageLoaded();
-    I.waitForVisible(pmmSettingsPage.fields.dbaasLabelTooltipSelector, 30);
+    await pmmSettingsPage.openAdvancedSettings();
+    I.waitForVisible(pmmSettingsPage.tooltips.dbaas.iconLocator, 30);
     I.click(pmmSettingsPage.fields.dbaasSwitchSelector);
     I.click(pmmSettingsPage.fields.applyButton);
     I.waitForElement(pmmSettingsPage.fields.dbaasMenuIconLocator, 30);
