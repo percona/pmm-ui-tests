@@ -35,8 +35,11 @@ Scenario(
     let response = await dashboardPage.checkMetricExist(metricName, { type: 'service_name', value: serviceName });
     const result = JSON.stringify(response.data.data.result);
 
-    await I.say(response);
-    await I.say(result);
+    I.amOnPage(dashboardPage.postgresqlInstanceOverviewDashboard.url);
+    console.log(response.data);
+    console.log(result.data);
+    await I.say(JSON.stringify(response.data,null,2));
+    await I.say(JSON.stringify(result.data,null,2));
 
     I.assertEqual(response.data.data.result, 1,
       `PostgreSQL ${serviceName} ${metricName} should be 1`);
