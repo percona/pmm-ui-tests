@@ -200,7 +200,7 @@ module.exports = {
     alertmanagerRulesLabel: '$alertmanager-rules-label',
     alertmanagerButton: '$alertmanager-button',
     amUrlLabel: locateLabel('form-field-am-url'),
-    applyButton: 'button[@type="submit"]',
+    applyButton: 'button[type="submit"]',
     backupManagementSwitch: locate('$advanced-backup').find('label'),
     backupManagementSwitchInput: locate('$advanced-backup').find('input'),
     callHomeSwitch: '//button[@class="toggle-field ant-switch ant-switch-checked"]',
