@@ -1,13 +1,13 @@
 const { pmmInventoryPage, dashboardPage } = inject();
 const assert = require('assert');
 
-const annotation = new DataTable(['annotationName', 'service', 'dashboard']);
+const annotation = new DataTable(['annotationName', 'service', 'dashboard', 'service_type']);
 
-annotation.add(['annotation-for-postgres-server', pmmInventoryPage.fields.pmmServerPostgresLocator, dashboardPage.postgresqlInstanceSummaryDashboard.url]);
-annotation.add(['annotation-for-mongo', pmmInventoryPage.fields.mongoServiceName, dashboardPage.mongoDbInstanceSummaryDashboard.url]);
-annotation.add(['annotation-for-postgres', pmmInventoryPage.fields.pdphsqlServiceName, dashboardPage.postgresqlInstanceSummaryDashboard.url]);
-annotation.add(['annotation-for-mysql', pmmInventoryPage.fields.mysqlServiceName, dashboardPage.mysqlInstanceSummaryDashboard.url]);
-annotation.add(['mysql-node-name', pmmInventoryPage.fields.mysqlServiceName, dashboardPage.nodesCompareDashboard.url]);
+annotation.add(['annotation-for-postgres-server', pmmInventoryPage.fields.pmmServerPostgresLocator, dashboardPage.postgresqlInstanceSummaryDashboard.url, 'POSTGRESQL_SERVICE']);
+annotation.add(['annotation-for-mongo', pmmInventoryPage.fields.mongoServiceName, dashboardPage.mongoDbInstanceSummaryDashboard.url, 'MONGODB_SERVICE']);
+annotation.add(['annotation-for-postgres', pmmInventoryPage.fields.pdphsqlServiceName, dashboardPage.postgresqlInstanceSummaryDashboard.url, 'POSTGRESQL_SERVICE']);
+annotation.add(['annotation-for-mysql', pmmInventoryPage.fields.mysqlServiceName, dashboardPage.mysqlInstanceSummaryDashboard.url, 'MYSQL_SERVICE']);
+annotation.add(['mysql-node-name', pmmInventoryPage.fields.mysqlServiceName, dashboardPage.nodesCompareDashboard.url, 'MYSQL_SERVICE']);
 
 Feature('Test annotation on dashboards');
 
@@ -21,14 +21,13 @@ Data(annotation).Scenario(
     I, dashboardPage, pmmInventoryPage, annotationAPI, inventoryAPI, current,
   }) => {
     const { annotationName } = current;
-
-    I.amOnPage(pmmInventoryPage.url);
-    I.waitForVisible(current.service, 10);
-    const serviceName = await I.grabTextFrom(current.service);
+    const service_response = await inventoryAPI.apiGetNodeInfoForAllNodesByServiceName(current.service_type, current.service);
+    const serviceName = service_response.service_name;
     const nodeID = await pmmInventoryPage.getNodeId(serviceName);
     const nodeName = await inventoryAPI.getNodeName(nodeID);
 
     await annotationAPI.setAnnotation(annotationName, 'PMM-T878', nodeName, serviceName, 200);
+
     I.amOnPage(current.dashboard);
     dashboardPage.waitForDashboardOpened();
     if (annotationName === 'mysql-node-name') {
