@@ -82,4 +82,4 @@ Data(metrics).Scenario(
 
     assert.ok(response.data.data.result.length !== 0, `Metrics ${current.metricName} should be available after adding Azure Instance but got empty ${result}`);
   },
-);
+).retry(1);
