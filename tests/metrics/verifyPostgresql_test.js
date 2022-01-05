@@ -8,7 +8,7 @@ Before(async ({ I }) => {
 
 Scenario(
   'PMM-T1032 - Verify default PG queries are shipped with PMM',
-  async ({ I, dashboardPage }) => {
+  async ({ I, grafanaAPI }) => {
     const metricNames = [
       'pg_replication_lag',
       'pg_postmaster_start_time_seconds',
@@ -20,34 +20,35 @@ Scenario(
 
     await I.verifyCommand(`${pmmManagerCmd} --addclient=pdpgsql,1 --pdpgsql-version=13.4 --deploy-service-with-name ${serviceName}`);
     metricNames.forEach((metric) => {
-      dashboardPage.checkMetricExist(metric, { type: 'service_name', value: serviceName });
+      // make sure the method really  verifies metric existence
+      grafanaAPI.checkMetricExist(metric, { type: 'service_name', value: serviceName });
     });
+    await I.verifyCommand(`${pmmManagerCmd} --cleanup-service ${serviceName}`);
   },
 );
 
 Scenario(
   'PMM-T1102 - Verify last scrape of metrics from PostgreSQL',
-  async ({ I, dashboardPage }) => {
+  async ({ I, grafanaAPI }) => {
     const metricName = 'pg_up';
     const serviceName = 'PG-service';
 
     await I.verifyCommand(`${pmmManagerCmd} --addclient=pdpgsql,1 --pdpgsql-version=13.4 --deploy-service-with-name ${serviceName}`);
-    let response = await dashboardPage.checkMetricExist(metricName, { type: 'service_name', value: serviceName });
-    const result = JSON.stringify(response.data.data.result);
+    let response = await grafanaAPI.waitForMetric(metricName, { type: 'service_name', value: serviceName }, 30);
+    let lastValue = Number(response.data.data.result[0].values.slice(-1)[0].slice(-1)[0]);
 
-    I.amOnPage(dashboardPage.postgresqlInstanceOverviewDashboard.url);
-    console.log(response.data);
-    console.log(result.data);
-    await I.say(JSON.stringify(response.data,null,2));
-    await I.say(JSON.stringify(result.data,null,2));
+    await I.say(JSON.stringify(response.data, null, 2));
+    await I.say(JSON.stringify(lastValue, null, 2));
 
-    I.assertEqual(response.data.data.result, 1,
+    I.assertEqual(lastValue, 1,
       `PostgreSQL ${serviceName} ${metricName} should be 1`);
 
     await I.verifyCommand(`docker stop ${serviceName}`);
-    response = await dashboardPage.checkMetricExist(metricName, { type: 'service_name', value: serviceName });
+    response = await grafanaAPI.waitForMetric(metricName, { type: 'service_name', value: serviceName }, 30);
+    lastValue = Number(response.data.data.result[0].values.slice(-1)[0].slice(-1)[0]);
 
-    I.assertEqual(response.data.data.result, 0,
+    I.assertEqual(lastValue, 0,
       `PostgreSQL ${serviceName} ${metricName} should be 1`);
+    await I.verifyCommand(`${pmmManagerCmd} --cleanup-service ${serviceName}`);
   },
 );

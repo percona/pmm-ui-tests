@@ -1,5 +1,6 @@
 const { I } = inject();
 const assert = require('assert');
+const FormData = require('form-data');
 
 module.exports = {
   customDashboardName: 'auto-test-dashboard',
@@ -160,4 +161,60 @@ module.exports = {
       `Failed to delete folder with uid '${uid}' . Response message is ${resp.data.message}`,
     );
   },
+
+  // Should be refactored
+  async checkMetricExist(metricName, queryBy) {
+    const timeStamp = Date.now();
+    const bodyFormData = new FormData();
+    const body = {
+      query: metricName,
+      start: Math.floor((timeStamp - 15000) / 1000),
+      end: Math.floor((timeStamp) / 1000),
+      step: 60,
+    };
+
+    if (queryBy) {
+      body.query = `${metricName}{${queryBy.type}=~"(${queryBy.value})"}`;
+    }
+
+    Object.keys(body).forEach((key) => bodyFormData.append(key, body[key]));
+    const headers = {
+      Authorization: `Basic ${await I.getAuth()}`,
+      ...bodyFormData.getHeaders(),
+    };
+
+    const response = await I.sendPostRequest(
+      'graph/api/datasources/proxy/1/api/v1/query_range',
+      bodyFormData,
+      headers,
+    );
+
+    return response;
+  },
+
+  async waitForMetric(metricName, queryBy, timeOutInSeconds) {
+    const start = new Date().getTime();
+    const timout = timeOutInSeconds * 1000;
+    const interval = 1;
+
+    /* eslint no-constant-condition: ["error", { "checkLoops": false }] */
+    while (true) {
+      // Main condition check: service obj returned
+      const response = await this.checkMetricExist(metricName, queryBy);
+
+      if (response.data.data.result.length !== 0) {
+        return response;
+      }
+
+      // Check the timeout after evaluating main condition
+      // to ensure conditions with a zero timeout can succeed.
+      if (new Date().getTime() - start >= timout) {
+        assert.fail(`Metrics "${metricName}" is empty: 
+        tried to check for ${timeOutInSeconds} second(s) with ${interval} second(s) with interval`);
+      }
+
+      I.wait(interval);
+    }
+  },
+
 };
