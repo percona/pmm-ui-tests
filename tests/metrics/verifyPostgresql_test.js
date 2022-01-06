@@ -46,7 +46,7 @@ Scenario(
     I.assertEqual(lastValue, 1, `PostgreSQL ${serviceName} ${metricName} should be 1`);
 
     await I.verifyCommand(`docker stop ${serviceName}`);
-    await I.asyncWaitFor(pgUpIsZero, 10);
+    await I.asyncWaitFor(pgUpIsZero, 30);
     response = await grafanaAPI.checkMetricExist(metricName, { type: 'service_name', value: serviceName });
     lastValue = Number(response.data.data.result[0].values.slice(-1)[0].slice(-1)[0]);
 
