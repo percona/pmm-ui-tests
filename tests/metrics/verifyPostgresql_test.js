@@ -33,22 +33,29 @@ Scenario(
     const metricName = 'pg_up';
     const serviceName = 'PG-service';
 
+    async function pgUpIsZero() {
+      response = await grafanaAPI.waitForMetric(metricName, { type: 'service_name', value: serviceName }, 30);
+
+      return Number(response.data.data.result[0].values.slice(-1)[0].slice(-1)[0]) === 0;
+    }
+
     await I.verifyCommand(`${pmmManagerCmd} --addclient=pdpgsql,1 --pdpgsql-version=13.4 --deploy-service-with-name ${serviceName}`);
     let response = await grafanaAPI.waitForMetric(metricName, { type: 'service_name', value: serviceName }, 30);
     let lastValue = Number(response.data.data.result[0].values.slice(-1)[0].slice(-1)[0]);
-
-    await I.say(JSON.stringify(response.data, null, 2));
-    await I.say(JSON.stringify(lastValue, null, 2));
 
     I.assertEqual(lastValue, 1,
       `PostgreSQL ${serviceName} ${metricName} should be 1`);
 
     await I.verifyCommand(`docker stop ${serviceName}`);
-    response = await grafanaAPI.waitForMetric(metricName, { type: 'service_name', value: serviceName }, 30);
+    await I.asyncWaitFor(pgUpIsZero(), 30);
+    response = await grafanaAPI.checkMetricExist(metricName, { type: 'service_name', value: serviceName });
     lastValue = Number(response.data.data.result[0].values.slice(-1)[0].slice(-1)[0]);
 
+    await I.say(JSON.stringify(response.data, null, 2));
+    await I.say(JSON.stringify(lastValue, null, 2));
+
     I.assertEqual(lastValue, 0,
-      `PostgreSQL ${serviceName} ${metricName} should be 1`);
+      `PostgreSQL ${serviceName} ${metricName} should be 0`);
     await I.verifyCommand(`${pmmManagerCmd} --cleanup-service ${serviceName}`);
   },
 );
