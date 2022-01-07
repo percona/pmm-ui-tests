@@ -50,7 +50,7 @@ Scenario(
       // return Number(response.data.data.result[0].values.slice(-1)[0].slice(-1)[0]) === 0;
     }
 
-    await I.asyncWaitFor(pgUpIsZero, 30);
+    await I.asyncWaitFor(pgUpIsZero, 180);
     await I.say(`PostgreSQL ${serviceName} ${metricName} is 0`);
     await I.verifyCommand(`${pmmManagerCmd} --cleanup-service ${serviceName}`);
   },
