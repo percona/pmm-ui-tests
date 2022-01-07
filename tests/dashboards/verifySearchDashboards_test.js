@@ -27,14 +27,14 @@ Scenario(
 );
 
 Data(folders).Scenario(
-  'PMM-T1086 - Verify PMM Dashboards collections are present in correct folders @nightly @dashboards @post-upgrade',
+  'PMM-T1086 - Verify PMM Dashboards collections are present in correct folders @nightly @dashboards @post-upgrade @imp',
   async ({
     I, current, searchDashboardsModal, dashboardPage,
   }) => {
     I.click(dashboardPage.fields.breadcrumbs.dashboardName);
     searchDashboardsModal.waitForOpened();
     searchDashboardsModal.collapseFolder('Recent');
-    searchDashboardsModal.expandFolder(current.name);
-    searchDashboardsModal.verifyDashboardsInFolderCollection(current);
+    searchDashboardsModal.expandFolder(current.folderObject.name);
+    searchDashboardsModal.verifyDashboardsInFolderCollection(current.folderObject);
   },
 );
