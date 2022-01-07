@@ -36,7 +36,7 @@ module.exports = () => actor({
 
     /* eslint no-constant-condition: ["error", { "checkLoops": false }] */
     while (true) {
-      // Main condition check: service obj returned
+      // Main condition check
       if (await boolCallable()) {
         return;
       }
