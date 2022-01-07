@@ -41,7 +41,7 @@ Scenario(
 
     await I.verifyCommand(`docker stop ${serviceName}`);
     async function pgUpIsZero() {
-      response = await grafanaAPI.waitForMetric(metricName, { type: 'service_name', value: serviceName }, 30);
+      response = await grafanaAPI.checkMetricExist(metricName, { type: 'service_name', value: serviceName });
       lastValue = Number(response.data.data.result[0].values.slice(-1)[0].slice(-1)[0]);
       await I.say(JSON.stringify(response.data, null, 2));
       await I.say(JSON.stringify(lastValue, null, 2));
