@@ -212,10 +212,10 @@ Scenario(
 
     adminPage.applyTimeRange('Last 3 hour');
     qanOverview.waitForOverviewLoaded();
-    qanFilters.applyShowAllLink(section);
+    await qanFilters.applyShowAllLinkIfItIsVisible(section);
     qanFilters.applyFilterInSection(section, db1);
     count = await qanOverview.waitForNewItemsCount(count);
-    qanFilters.applyShowAllLink(section);
+    await qanFilters.applyShowAllLinkIfItIsVisible(section);
     qanFilters.applyFilterInSection(section, db2);
     count = await qanOverview.waitForNewItemsCount(count);
     qanFilters.applyFilter(serviceName);
@@ -263,17 +263,22 @@ Scenario(
 );
 
 Data(shortCutTests).Scenario(
-  'PMM-T436 - Verify short-cut navigation from filters to related dashboards @qan',
+  'PMM-T436 PMM-T458 - Verify short-cut navigation from filters to related dashboards, '
+    + 'Verify time interval is passed from QAN to dashboards via shortcut links @qan',
   async ({
-    I, qanFilters, dashboardPage, current,
+    I, qanFilters, dashboardPage, current, adminPage, qanOverview,
   }) => {
     const shortCutLink = current.shortcutLink;
     const header = current.dashboard;
     const filterValue = current.filter;
+    const timeRangeValue = 'from=now-3h&to=now';
 
+    adminPage.applyTimeRange('Last 3 hours');
+    qanOverview.waitForOverviewLoaded();
     qanFilters.waitForFiltersToLoad();
+
     I.fillField(qanFilters.fields.filterBy, filterValue);
-    await qanFilters.verifyShortcutAttributes(shortCutLink, filterValue);
+    await qanFilters.verifyShortcutAttributes(shortCutLink, filterValue, timeRangeValue);
 
     I.amOnPage(shortCutLink);
     if (filterValue === 'pmm-server') {

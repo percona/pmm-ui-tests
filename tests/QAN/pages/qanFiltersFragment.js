@@ -150,6 +150,15 @@ module.exports = {
     I.forceClick(showAllLink);
   },
 
+  async applyShowAllLinkIfItIsVisible(groupName) {
+    const showAllLink = this.getFilterGroupCountSelector(groupName);
+    const numOfShowAllLinkSectionCount = await I.grabNumberOfVisibleElements(showAllLink);
+
+    if (numOfShowAllLinkSectionCount) {
+      this.applyShowAllLink(groupName);
+    }
+  },
+
   async applyShowTop5Link(groupName) {
     const showTop5Link = `//span[contains(text(), '${groupName}')]/following-sibling::span[contains(text(), 'Show top 5')]`;
 
@@ -173,11 +182,12 @@ module.exports = {
     }
   },
 
-  async verifyShortcutAttributes(href, filterValue) {
+  async verifyShortcutAttributes(href, filterValue, timeRangeValue) {
     const shortCutLocator = locate(`$filter-checkbox-${filterValue}`).find('a');
     const linkText = await I.grabAttributeFrom(shortCutLocator, 'href');
     const target = await I.grabAttributeFrom(shortCutLocator, 'target');
 
+    assert.ok(linkText.includes(timeRangeValue), `The redirection link from QAN Filter section was expected to have selected Time range ${href} but the href attribute found was ${linkText}`);
     assert.ok(linkText.includes(href), `The redirection link on QAN Filter section was expected ${href} but the href attribute found was ${linkText}`);
     assert.ok(target === '_blank', `The redirection link on QAN Filter section was expected "_blank" but the href attribute found was ${target}`);
   },
