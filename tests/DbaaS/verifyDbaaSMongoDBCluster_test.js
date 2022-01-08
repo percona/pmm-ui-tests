@@ -126,7 +126,7 @@ Scenario('PMM-787 Verify Editing MonogDB Cluster is possible. @dbaas',
     await dbaasPage.postClusterCreationValidation(psmdb_cluster, clusterName, 'MongoDB');
     await dbaasPage.validateClusterDetail(psmdb_cluster, clusterName, psmdb_configuration);
     I.click(dbaasPage.tabs.dbClusterTab.fields.clusterActionsMenu);
-    //await dbaasActionsPage.checkActionPossible('Update', false); commented out because latest mongodb is not recommended version
+    //await dbaasActionsPage.checkActionPossible('Update', false); skipped because latest mongodb is not recommended version
     I.click(dbaasPage.tabs.dbClusterTab.fields.clusterActionsMenu);
     const psmdb_updated_configuration = {
       topology: 'Cluster',
