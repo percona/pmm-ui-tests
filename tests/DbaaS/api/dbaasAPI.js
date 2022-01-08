@@ -46,15 +46,27 @@ module.exports = {
     }
   },
 
-  async apiDeleteDBCluster(dbClusterName, clusterName, dbClusterType) {
-    const body = { kubernetes_cluster_name: clusterName, name: dbClusterName, cluster_type: dbClusterType};
+  async apiDeleteXtraDBCluster(dbClusterName, clusterName) {
+    const body = { kubernetes_cluster_name: `${clusterName}`, name: dbClusterName, cluster_type: 'DB_CLUSTER_TYPE_PXC'};
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
 
     const response = await I.sendPostRequest('v1/management/DBaaS/DBClusters/Delete', body, headers);
 
     assert.ok(
       response.status === 200,
-      `Failed to delete "${dbClusterType}" cluster with name "${dbClusterName}". Response message is "${response.data.message}"`,
+      `Failed to delete pxc cluster with name "${dbClusterName}". Response message is "${response.data.message}"`,
+    );
+  },
+
+  async apiDeletePSMDBCluster(dbClusterName, clusterName) {
+    const body = { kubernetes_cluster_name: clusterName, name: dbClusterName, cluster_type: 'DB_CLUSTER_TYPE_PSMDB' };
+    const headers = { Authorization: `Basic ${await I.getAuth()}` };
+
+    const response = await I.sendPostRequest('v1/management/DBaaS/DBClusters/Delete', body, headers);
+
+    assert.ok(
+      response.status === 200,
+      `Failed to delete MongoDB cluster with name "${dbClusterName}". Response message is "${response.data.message}"`,
     );
   },
 
@@ -145,7 +157,7 @@ module.exports = {
           (o) => o.name === dbClusterName,
         );
 
-        if (cluster && cluster.state === 'XDB_CLUSTER_STATE_PAUSED') {
+        if (cluster && cluster.state === 'DB_CLUSTER_STATE_PAUSED') {
           break;
         }
       }
@@ -213,25 +225,25 @@ module.exports = {
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
 
     for (let i = 0; i < 30; i++) {
-      const response = await I.sendPostRequest('v1/management/DBaaS/DBClusters/List', body, headers);
+      let response = await I.sendPostRequest('v1/management/DBaaS/DBClusters/List', body, headers);
 
-      if (response.data.pxc_clusters) {
-        const cluster = response.data.pxc_clusters.find(
-          (o) => o.name === dbClusterName,
-        );
+      if (response.data.pxc_clusters || response.data.psmdb_clusters) {
+        if (dbType === 'MySQL') {
+          const pxc_cluster = response.data.pxc_clusters.find(
+            (o) => o.name === dbClusterName,
+          );
+          
+          if (pxc_cluster === undefined) {
+            break;
+          }          
+        } else {
+          const psmdb_cluster = response.data.psmdb_clusters.find(
+            (o) => o.name === dbClusterName,
+          );  
 
-        if (cluster === undefined) {
-          break;
-        }
-      } else break;
-
-      if (response.data.psmdb_clusters) {
-        const cluster = response.data.psmdb_clusters.find(
-          (o) => o.name === dbClusterName,
-        );
-
-        if (cluster === undefined) {
-          break;
+          if (psmdb_cluster === undefined) {
+            break;
+          }     
         }
       } else break;
 
@@ -268,14 +280,14 @@ module.exports = {
 
     if (response.data.pxc_clusters) {
       for (const db of response.data.pxc_clusters) {
-        await this.apiDeleteDBCluster(db.name, clusterName, pxc_cluster_type);
+        await this.apiDeleteXtraDBCluster(db.name, clusterName);
         await this.waitForDbClusterDeleted(db.name, clusterName);
       }
     }
 
     if (response.data.psmdb_clusters) {
       for (const db of response.data.psmdb_clusters) {
-        await this.apiDeleteDBCluster(db.name, clusterName, psmdb_cluster_type);
+        await this.apiDeletePSMDBCluster(db.name, clusterName);
         await this.waitForDbClusterDeleted(db.name, clusterName, 'MongoDB');
       }
     }
