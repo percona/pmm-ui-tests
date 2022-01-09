@@ -103,7 +103,7 @@ Scenario('PMM-T460, PMM-T452 Verify force unregistering Kubernetes cluster @dbaa
   async ({ I, dbaasPage }) => {
     await dbaasPage.waitForKubernetesClusterTab(clusterName);
     dbaasPage.unregisterCluster(clusterName);
-    I.waitForText(dbaasPage.failedUnregisterCluster(clusterName, 'XtraDB'));
+    I.waitForText(dbaasPage.failedUnregisterCluster(clusterName, 'PXC'));
     dbaasPage.unregisterCluster(clusterName, true);
     I.waitForText(dbaasPage.deletedAlertMessage, 20);
     dbaasPage.checkCluster(clusterName, true);
@@ -374,7 +374,7 @@ Scenario('PMM-T704 PMM-T772 PMM-T849 PMM-T850 Resources, PV, Secrets verificatio
       `kubectl get secrets dbaas-${pxc_resource_check_cluster_name}-pxc-secrets -o yaml | grep root: | awk '{print $2}' | base64 --decode`,
       password,
     );
-    await dbaasAPI.apiDeleteXtraDBCluster(pxc_resource_check_cluster_name);
+    await dbaasAPI.apiDeleteXtraDBCluster(pxc_resource_check_cluster_name, clusterName);
     await dbaasAPI.waitForDbClusterDeleted(pxc_resource_check_cluster_name, clusterName);
     await I.verifyCommand(
       `kubectl get pv | grep ${pxc_resource_check_cluster_name}`,
