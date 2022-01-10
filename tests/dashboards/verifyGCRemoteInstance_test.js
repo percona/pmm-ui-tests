@@ -94,6 +94,7 @@ Data(instances).Scenario(
     }
 
     dashboardPage.waitForDashboardOpened();
+    adminPage.applyTimeRange('Last 12 hours');
     await dashboardPage.applyFilter('Service Name', instanceDetails.serviceName);
     adminPage.performPageDown(5);
     await dashboardPage.expandEachDashboardRow();
@@ -126,8 +127,7 @@ Data(instances.filter((instance) => instance.instanceType.indexOf('mysql') === -
   },
 ).retry(1);
 
-// Skipped because of a known issues on job workers: https://jira.percona.com/browse/PMM-8804
-Data(instances.filter((instance) => instance.instanceType.indexOf('postgresql') === -1)).Scenario(
+Data(instances).Scenario(
   'Check metrics from exporters are hitting PMM Server @nightly @gcp',
   async ({ I, dashboardPage, current }) => {
     const {
