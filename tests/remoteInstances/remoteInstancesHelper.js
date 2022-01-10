@@ -274,6 +274,17 @@ module.exports = {
         cluster: 'gc-mysql80',
         environment: 'gc-mysql80',
       },
+      gc_mysql56: {
+        type: 'mysql',
+        // service name used here intentionally doesn't include mysql because we are only checking exporter agent status
+        serviceName: 'gcp56',
+        port: '3306',
+        host: secret(process.env.GCP_MYSQL56_HOST),
+        username: secret(process.env.GCP_MYSQL56_USER),
+        password: secret(process.env.GCP_MYSQL56_PASSWORD),
+        cluster: 'gc-mysql56',
+        environment: 'gc-mysql56',
+      },
       gc_pgsql_13: {
         type: 'postgresql',
         // using postgres in name makes sure both exporter and QAN agents are verified
