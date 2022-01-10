@@ -149,63 +149,6 @@ Scenario(
   },
 );
 
-Scenario(
-  'Verify user can create Remote Instances before upgrade @pre-upgrade @ami-upgrade @pmm-upgrade',
-  async ({ addInstanceAPI }) => {
-    // Adding instances for monitoring
-    for (const type of Object.values(remoteInstancesHelper.instanceTypes)) {
-      if (type) {
-        await addInstanceAPI.apiAddInstance(
-          type,
-          remoteInstancesHelper.upgradeServiceNames[type.toLowerCase()],
-        );
-      }
-    }
-  },
-);
-
-if (versionMinor < 16 && versionMinor >= 10) {
-  Scenario(
-    'PMM-T720 Verify Platform registration for PMM before 2.16.0 @pre-upgrade @ami-upgrade @pmm-upgrade',
-    async ({ I }) => {
-      const message = 'Please upgrade PMM to v2.16 or higher to use the new Percona Platform registration flow.';
-      const body = {
-        email: faker.internet.email(),
-        password: generate({
-          length: 10,
-          numbers: true,
-          lowercase: true,
-          uppercase: true,
-          strict: true,
-        }),
-      };
-      const headers = { Authorization: `Basic ${await I.getAuth()}` };
-
-      const resp = await I.sendPostRequest('v1/Platform/SignUp', body, headers);
-
-      assert.ok(
-        resp.status === 400 && resp.data.message === message,
-        `Expected to see ${message} for Sign Up to the Percona Platform call. Response message is "${resp.data.message}"`,
-      );
-    },
-  );
-}
-
-if (iaReleased) {
-  Scenario.skip(
-    'PMM-T577 Verify user is able to see IA alerts before upgrade @pre-upgrade @ami-upgrade @pmm-upgrade',
-    async ({
-      settingsAPI, rulesAPI, alertsAPI,
-    }) => {
-      await settingsAPI.changeSettings({ alerting: true });
-      await rulesAPI.clearAllRules(true);
-      await rulesAPI.createAlertRule({ ruleName });
-      // Wait for alert to appear
-      await alertsAPI.waitForAlerts(60, 1);
-    },
-  );
-}
-
 if (versionMinor >= 15) {
   Scenario(
     'Verify user has failed checks before upgrade @pre-upgrade @pmm-upgrade',
@@ -265,6 +208,63 @@ if (versionMinor >= 15) {
       await I.verifyCommand(
         'pmm-admin add external --listen-port=42200 --group="redis" --custom-labels="testing=redis" --service-name="redis_external_2"',
       );
+    },
+  );
+}
+
+Scenario(
+  'Verify user can create Remote Instances before upgrade @pre-upgrade @ami-upgrade @pmm-upgrade',
+  async ({ addInstanceAPI }) => {
+    // Adding instances for monitoring
+    for (const type of Object.values(remoteInstancesHelper.instanceTypes)) {
+      if (type) {
+        await addInstanceAPI.apiAddInstance(
+          type,
+          remoteInstancesHelper.upgradeServiceNames[type.toLowerCase()],
+        );
+      }
+    }
+  },
+);
+
+if (versionMinor < 16 && versionMinor >= 10) {
+  Scenario(
+    'PMM-T720 Verify Platform registration for PMM before 2.16.0 @pre-upgrade @ami-upgrade @pmm-upgrade',
+    async ({ I }) => {
+      const message = 'Please upgrade PMM to v2.16 or higher to use the new Percona Platform registration flow.';
+      const body = {
+        email: faker.internet.email(),
+        password: generate({
+          length: 10,
+          numbers: true,
+          lowercase: true,
+          uppercase: true,
+          strict: true,
+        }),
+      };
+      const headers = { Authorization: `Basic ${await I.getAuth()}` };
+
+      const resp = await I.sendPostRequest('v1/Platform/SignUp', body, headers);
+
+      assert.ok(
+        resp.status === 400 && resp.data.message === message,
+        `Expected to see ${message} for Sign Up to the Percona Platform call. Response message is "${resp.data.message}"`,
+      );
+    },
+  );
+}
+
+if (iaReleased) {
+  Scenario.skip(
+    'PMM-T577 Verify user is able to see IA alerts before upgrade @pre-upgrade @ami-upgrade @pmm-upgrade',
+    async ({
+      settingsAPI, rulesAPI, alertsAPI,
+    }) => {
+      await settingsAPI.changeSettings({ alerting: true });
+      await rulesAPI.clearAllRules(true);
+      await rulesAPI.createAlertRule({ ruleName });
+      // Wait for alert to appear
+      await alertsAPI.waitForAlerts(60, 1);
     },
   );
 }
