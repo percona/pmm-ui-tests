@@ -34,7 +34,7 @@ Data(folders).Scenario(
     I.click(dashboardPage.fields.breadcrumbs.dashboardName);
     searchDashboardsModal.waitForOpened();
     searchDashboardsModal.collapseFolder('Recent');
-    searchDashboardsModal.expandFolder(current.name);
-    searchDashboardsModal.verifyDashboardsInFolderCollection(current);
+    searchDashboardsModal.expandFolder(current.folderObject.name);
+    searchDashboardsModal.verifyDashboardsInFolderCollection(current.folderObject);
   },
 );
