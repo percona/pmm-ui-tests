@@ -322,6 +322,30 @@ module.exports = {
         cluster: 'gc-pgsql11',
         environment: 'gc-pgsql11',
       },
+      gc_pgsql_10: {
+        type: 'postgresql',
+        // using postgres in name makes sure both exporter and QAN agents are verified
+        serviceName: 'gc-postgres10',
+        port: '5432',
+        database: process.env.GCP_PGSQL10_USER,
+        host: secret(process.env.GCP_PGSQL10_HOST),
+        username: secret(process.env.GCP_PGSQL10_USER),
+        password: secret(process.env.GCP_PGSQL10_PASSWORD),
+        cluster: 'gc-pgsql10',
+        environment: 'gc-pgsql10',
+      },
+      gc_pgsql_96: {
+        type: 'postgresql',
+        // using postgres in name makes sure both exporter and QAN agents are verified
+        serviceName: 'gc-postgres96',
+        port: '5432',
+        database: process.env.GCP_PGSQL96_USER,
+        host: secret(process.env.GCP_PGSQL96_HOST),
+        username: secret(process.env.GCP_PGSQL96_USER),
+        password: secret(process.env.GCP_PGSQL96_PASSWORD),
+        cluster: 'gc-pgsql96',
+        environment: 'gc-pgsql96',
+      },
     },
   },
 
