@@ -414,7 +414,7 @@ Scenario('Verify update PXC DB Cluster version @dbaas', async ({ I, dbaasPage, d
   await dbaasActionsPage.updateCluster();
   I.waitForVisible(dbaasPage.tabs.dbClusterTab.fields.clusterStatusUpdating, 60);
   I.seeElement(dbaasPage.tabs.dbClusterTab.fields.clusterStatusUpdating);
-  await dbaasAPI.waitForDBClusterReady(pxc_cluster_name_single, clusterName);
+  await dbaasAPI.waitForDBClusterState(pxc_cluster_name_single, clusterName, 'DB_CLUSTER_STATE_READY');
   I.waitForElement(dbaasPage.tabs.dbClusterTab.fields.clusterStatusActive, 60);
   I.seeElement(dbaasPage.tabs.dbClusterTab.fields.clusterStatusActive);
   await I.verifyCommand(

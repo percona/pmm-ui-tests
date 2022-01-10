@@ -104,7 +104,7 @@ module.exports = {
     return false;
   },
 
-  async waitForDBClusterReady(dbClusterName, clusterName, dbType = 'MySQL') {
+  async waitForDBClusterState(dbClusterName, clusterName, dbType = 'MySQL', dbState) {
     const body = {
       kubernetesClusterName: clusterName,
       operators: { xtradb: { status: 'OPERATORS_STATUS_OK' }, psmdb: { status: 'OPERATORS_STATUS_OK' } },
@@ -120,7 +120,7 @@ module.exports = {
           (o) => o.name === dbClusterName,
         );
         
-        if (pxc_cluster && pxc_cluster.state === 'DB_CLUSTER_STATE_READY') {
+        if (pxc_cluster && pxc_cluster.state === dbState) {
           break;
         }
       } else {
@@ -128,40 +128,7 @@ module.exports = {
           (o) => o.name === dbClusterName,
         );
 
-        if (psmdb_cluster && psmdb_cluster.state === 'DB_CLUSTER_STATE_READY') {
-          break;
-        }
-      }
-
-      await new Promise((r) => setTimeout(r, 10000));
-    }
-  },
-
-  async waitForDBClusterPaused(dbClusterName, clusterName, dbType = 'MySQL') {
-    const body = {
-      kubernetesClusterName: clusterName,
-      operators: { xtradb: { status: 'OPERATORS_STATUS_OK' }, psmdb: { status: 'OPERATORS_STATUS_OK' } },
-      status: 'KUBERNETES_CLUSTER_STATUS_OK',
-    };
-    const headers = { Authorization: `Basic ${await I.getAuth()}` };
-
-    for (let i = 0; i < 30; i++) {
-      let response = await I.sendPostRequest('v1/management/DBaaS/DBClusters/List', body, headers);
-
-      if (dbType === 'MySQL') {
-        const pxc_cluster = response.data.pxc_clusters.find(
-          (o) => o.name === dbClusterName,
-        );
-        
-        if (pxc_cluster && pxc_cluster.state === 'DB_CLUSTER_STATE_PAUSED') {
-          break;
-        }
-      } else {
-        const psmdb_cluster = response.data.psmdb_clusters.find(
-          (o) => o.name === dbClusterName,
-        );
-
-        if (psmdb_cluster && psmdb_cluster.state === 'DB_CLUSTER_STATE_PAUSED') {
+        if (psmdb_cluster && psmdb_cluster.state === dbState) {
           break;
         }
       }
