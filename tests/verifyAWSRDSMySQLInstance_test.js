@@ -15,7 +15,7 @@ Before(async ({ I }) => {
 });
 
 Data(instances).Scenario(
-  'PMM-T138 Verify disabling enhanced metrics for RDS, PMM-T139 Verify disabling basic metrics for RDS, PMM-T9 Verify adding RDS instances [critical] @instances',
+  'PMM-T138 Verify disabling enhanced metrics for RDS, PMM-T139 Verify disabling basic metrics for RDS, PMM-T9 Verify adding RDS instances [critical] @aws @instances',
   async ({
     I, remoteInstancesPage, pmmInventoryPage, current,
   }) => {
@@ -48,7 +48,7 @@ xScenario(
 ).retry(1);
 
 Data(instances).Scenario(
-  'Verify AWS RDS MySQL instance has status running [critical] @instances',
+  'Verify AWS RDS MySQL instance has status running [critical] @aws @instances',
   async ({
     I, remoteInstancesPage, pmmInventoryPage, current,
   }) => {
@@ -62,7 +62,7 @@ Data(instances).Scenario(
 
 // Skipping the tests because QAN does not get any data right after instance was added for monitoring
 xScenario(
-  'Verify QAN Filters contain AWS RDS MySQL after it was added for monitoring @instances',
+  'Verify QAN Filters contain AWS RDS MySQL after it was added for monitoring @aws @instances',
   async ({
     I, qanPage, remoteInstancesPage, qanFilters,
   }) => {
@@ -81,7 +81,7 @@ xScenario(
 );
 
 Data(instances).Scenario(
-  'Verify MySQL Instances Overview Dashboard for AWS RDS MySQL data after it was added for monitoring @instances',
+  'Verify MySQL Instances Overview Dashboard for AWS RDS MySQL data after it was added for monitoring @aws @instances',
   async ({ I, dashboardPage, current }) => {
     const serviceName = current.instanceId;
 
@@ -94,7 +94,7 @@ Data(instances).Scenario(
 );
 
 Data(instances).Scenario(
-  'Verify MySQL Instances Overview Dashboard contains AWS RDS MySQL filters @instances',
+  'Verify MySQL Instances Overview Dashboard contains AWS RDS MySQL filters @aws @instances',
   async ({
     I, dashboardPage, remoteInstancesPage, current,
   }) => {
@@ -113,7 +113,7 @@ Data(instances).Scenario(
 );
 
 Data(instances).Scenario(
-  'PMM-T603 Verify MySQL RDS exporter is running in pull mode, metrics for rds exporter @instances',
+  'PMM-T603 Verify MySQL RDS exporter is running in pull mode, metrics for rds exporter @aws @instances',
   async ({
     I, dashboardPage, remoteInstancesPage, inventoryAPI, current,
   }) => {
@@ -136,7 +136,7 @@ Data(instances).Scenario(
 ).retry(1);
 
 Data(instances).Scenario(
-  'PMM-T603 Verify MySQL exporter metrics for rds mysql @instances',
+  'PMM-T603 Verify MySQL exporter metrics for rds mysql @aws @instances',
   async ({
     I, dashboardPage, remoteInstancesPage, inventoryAPI, current,
   }) => {

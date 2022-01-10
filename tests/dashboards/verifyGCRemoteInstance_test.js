@@ -32,7 +32,7 @@ Before(async ({ I, settingsAPI }) => {
 });
 
 Scenario(
-  'Increasing Scrape Interval to Rare for remote pgsql instances bug @nightly @gcp',
+  'Increasing Scrape Interval to Rare for remote pgsql instances bug @not-ui-pipeline @gcp',
   async ({
     I, settingsAPI,
   }) => {
@@ -51,7 +51,7 @@ Scenario(
 );
 
 Data(instances).Scenario(
-  'Verify adding Remote Google Cloud Instance @nightly @gcp',
+  'Verify adding Remote Google Cloud Instance @not-ui-pipeline @gcp',
   async ({
     I, remoteInstancesPage, pmmInventoryPage, current,
   }) => {
@@ -74,7 +74,7 @@ Data(instances).Scenario(
 ).retry(1);
 
 Data(instances).Scenario(
-  'Verify dashboard after Remote GC Instances are added @nightly @gcp',
+  'Verify dashboard after Remote GC Instances are added @not-ui-pipeline @gcp',
   async ({
     I, dashboardPage, adminPage, current,
   }) => {
@@ -106,7 +106,7 @@ Data(instances).Scenario(
 
 // skipping mysql gc because of PMM-9389
 Data(instances.filter((instance) => instance.instanceType.indexOf('mysql') === -1)).Scenario(
-  'Verify QAN after remote Google Cloud instance is added @nightly @gcp',
+  'Verify QAN after remote Google Cloud instance is added @not-ui-pipeline @gcp',
   async ({
     I, qanOverview, qanFilters, qanPage, current,
   }) => {
@@ -128,7 +128,7 @@ Data(instances.filter((instance) => instance.instanceType.indexOf('mysql') === -
 ).retry(1);
 
 Data(instances).Scenario(
-  'Check metrics from exporters are hitting PMM Server @nightly @gcp',
+  'Check metrics from exporters are hitting PMM Server @not-ui-pipeline @gcp',
   async ({ I, dashboardPage, current }) => {
     const {
       instance, metric,
@@ -145,7 +145,7 @@ Data(instances).Scenario(
 );
 
 Scenario(
-  'Setting back to default Scrape Interval @nightly @gcp',
+  'Setting back to default Scrape Interval @not-ui-pipeline @gcp',
   async ({
     I, settingsAPI,
   }) => {

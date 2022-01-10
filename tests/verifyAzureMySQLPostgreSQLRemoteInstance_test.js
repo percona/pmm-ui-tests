@@ -28,7 +28,7 @@ Before(async ({ I }) => {
 });
 
 Data(azureServices).Scenario(
-  'PMM-T744, PMM-T746, PMM-T748 - Verify adding monitoring for Azure @instances',
+  'PMM-T744, PMM-T746, PMM-T748 - Verify adding monitoring for Azure @azure @instances',
   async ({
     I, remoteInstancesPage, pmmInventoryPage, settingsAPI, current,
   }) => {
@@ -48,7 +48,7 @@ Data(azureServices).Scenario(
 );
 
 Scenario(
-  'PMM-T756 - Verify Azure node is displayed on Home dashboard @instances',
+  'PMM-T756 - Verify Azure node is displayed on Home dashboard @azure @instances',
   async ({
     I, homePage, dashboardPage,
   }) => {
@@ -61,7 +61,7 @@ Scenario(
   },
 ).retry(2);
 
-Data(filters).Scenario('PMM-T746, PMM-T748 - Verify adding monitoring for Azure CHECK QAN @instances', async ({
+Data(filters).Scenario('PMM-T746, PMM-T748 - Verify adding monitoring for Azure CHECK QAN @azure @instances', async ({
   I, qanFilters, qanOverview, qanPage, current,
 }) => {
   I.amOnPage(qanPage.url);
@@ -73,7 +73,7 @@ Data(filters).Scenario('PMM-T746, PMM-T748 - Verify adding monitoring for Azure 
 }).retry(3);
 
 Data(metrics).Scenario(
-  'PMM-T743 Check metrics from exporters are hitting PMM Server @instances',
+  'PMM-T743 Check metrics from exporters are hitting PMM Server @azure @instances',
   async ({ I, dashboardPage, current }) => {
     // This is only needed to let PMM Consume Metrics
     I.wait(10);
