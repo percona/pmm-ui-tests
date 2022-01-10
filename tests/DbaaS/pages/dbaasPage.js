@@ -259,12 +259,7 @@ module.exports = {
     await dbaasActionsPage.checkActionPossible('Restart', false);
     await dbaasActionsPage.checkActionPossible('Resume', false);
     I.click(dbaasPage.tabs.dbClusterTab.fields.clusterActionsMenu);
-    if (clusterDBType === 'MySQL') {
-      await dbaasAPI.waitForXtraDbClusterReady(dbClusterName, k8sClusterName);
-    } else {
-      await dbaasAPI.waitForPSMDBClusterReady(dbClusterName, k8sClusterName);
-    }
-
+    await dbaasAPI.waitForDBClusterReady(dbClusterName, k8sClusterName, clusterDBType);
     I.waitForElement(dbaasPage.tabs.dbClusterTab.fields.clusterStatusActive, 120);
     I.seeElement(dbaasPage.tabs.dbClusterTab.fields.clusterStatusActive);
     I.waitForElement(dbaasPage.tabs.dbClusterTab.fields.clusterConnection.showPasswordButton, 30);

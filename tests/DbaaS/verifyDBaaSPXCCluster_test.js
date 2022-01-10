@@ -374,7 +374,7 @@ Scenario('PMM-T704 PMM-T772 PMM-T849 PMM-T850 Resources, PV, Secrets verificatio
       `kubectl get secrets dbaas-${pxc_resource_check_cluster_name}-pxc-secrets -o yaml | grep root: | awk '{print $2}' | base64 --decode`,
       password,
     );
-    await dbaasAPI.apiDeleteXtraDBCluster(pxc_resource_check_cluster_name, clusterName);
+    await dbaasAPI.apiDeleteDBCluster(pxc_resource_check_cluster_name, clusterName, pxc_cluster_type);
     await dbaasAPI.waitForDbClusterDeleted(pxc_resource_check_cluster_name, clusterName);
     await I.verifyCommand(
       `kubectl get pv | grep ${pxc_resource_check_cluster_name}`,
@@ -414,7 +414,7 @@ Scenario('Verify update PXC DB Cluster version @dbaas', async ({ I, dbaasPage, d
   await dbaasActionsPage.updateCluster();
   I.waitForVisible(dbaasPage.tabs.dbClusterTab.fields.clusterStatusUpdating, 60);
   I.seeElement(dbaasPage.tabs.dbClusterTab.fields.clusterStatusUpdating);
-  await dbaasAPI.waitForXtraDbClusterReady(pxc_cluster_name_single, clusterName);
+  await dbaasAPI.waitForDBClusterReady(pxc_cluster_name_single, clusterName);
   I.waitForElement(dbaasPage.tabs.dbClusterTab.fields.clusterStatusActive, 60);
   I.seeElement(dbaasPage.tabs.dbClusterTab.fields.clusterStatusActive);
   await I.verifyCommand(

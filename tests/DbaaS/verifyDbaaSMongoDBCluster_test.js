@@ -2,6 +2,7 @@ const { dbaasAPI, dbaasPage } = inject();
 const clusterName = 'Kubernetes_Testing_Cluster_Minikube';
 const psmdb_cluster = 'psmdb-cluster';
 const assert = require('assert');
+const psmdb_cluster_type = 'DB_CLUSTER_TYPE_PSMDB';
 
 const psmdbClusterDetails = new DataTable(['namespace', 'clusterName', 'node', 'nodeType']);
 
@@ -247,7 +248,7 @@ Scenario('PMM-T704 PMM-T772 PMM-T849 PMM-T850 Resources, PV, Secrets verificatio
       `kubectl get secrets dbaas-${psmdb_cluster_resource_check}-psmdb-secrets -o yaml | grep MONGODB_USER_ADMIN_PASSWORD: | awk '{print $2}' | base64 --decode`,
       password,
     );
-    await dbaasAPI.apiDeletePSMDBCluster(psmdb_cluster_resource_check, clusterName);
+    await dbaasAPI.apiDeleteDBCluster(psmdb_cluster_resource_check, clusterName, psmdb_cluster_type);
     await dbaasAPI.waitForDbClusterDeleted(psmdb_cluster_resource_check, clusterName, 'MongoDB');
     await I.verifyCommand(
       `kubectl get pv | grep ${psmdb_cluster_resource_check}`,
@@ -286,7 +287,7 @@ Scenario('Verify update PSMDB Cluster version @dbaas', async ({ I, dbaasPage, db
   await dbaasActionsPage.updateCluster();
   I.waitForVisible(dbaasPage.tabs.dbClusterTab.fields.clusterStatusUpdating, 60);
   I.seeElement(dbaasPage.tabs.dbClusterTab.fields.clusterStatusUpdating);
-  await dbaasAPI.waitForPSMDBClusterReady(psmdb_cluster_update, clusterName);
+  await dbaasAPI.waitForDBClusterReady(psmdb_cluster_update, clusterName, 'MongoDB');
   I.waitForElement(dbaasPage.tabs.dbClusterTab.fields.clusterStatusActive, 120);
   I.seeElement(dbaasPage.tabs.dbClusterTab.fields.clusterStatusActive);
   await dbaasActionsPage.deletePSMDBCluster(psmdb_cluster_update, clusterName);
