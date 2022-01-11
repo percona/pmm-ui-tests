@@ -21,7 +21,9 @@ Scenario(
 
 Scenario(
   'PMM-T167 Open the QAN Dashboard and check that changing the time range updates the overview table, URL. @nightly @qan',
-  async ({ I, adminPage, qanDetails, qanFilters, qanOverview }) => {
+  async ({
+    I, adminPage, qanDetails, qanFilters, qanOverview,
+  }) => {
     I.seeInCurrentUrl('from=now-5m&to=now');
     qanOverview.selectRow(1);
     qanFilters.waitForFiltersToLoad();

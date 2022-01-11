@@ -78,6 +78,12 @@ module.exports = {
         'PostgreSQL Instances Overview',
       ],
     },
+    experimental: {
+      name: 'Experimental',
+      items: [
+        'Db Cluster Summary',
+      ],
+    },
     queryAnalytics: {
       name: 'Query Analytics',
       items: [

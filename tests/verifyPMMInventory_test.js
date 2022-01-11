@@ -95,9 +95,12 @@ Scenario(
 
 Scenario(
   'PMM-T343 - Verify agent can be removed on PMM Inventory page @inventory',
-  async ({ I, pmmInventoryPage }) => {
+  async ({ I, pmmInventoryPage, addInstanceAPI }) => {
     const agentType = 'MySQL exporter';
+    const serviceType = 'MySQL';
+    const serviceName = 'AgentToDelete';
 
+    await addInstanceAPI.apiAddInstance(serviceType, serviceName);
     I.amOnPage(pmmInventoryPage.url);
     I.waitForVisible(pmmInventoryPage.fields.nodesLink, 20);
     I.click(pmmInventoryPage.fields.nodesLink);
@@ -121,7 +124,7 @@ Scenario(
   },
 );
 
-Scenario(
+Scenario.skip(
   'PMM-T345 - Verify removing pmm-agent on PMM Inventory page removes all associated agents @inventory',
   async ({ I, pmmInventoryPage }) => {
     const agentID = 'pmm-server';

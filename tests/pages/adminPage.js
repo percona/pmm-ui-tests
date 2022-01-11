@@ -13,12 +13,16 @@ module.exports = {
     backToDashboard: '//button[@ng-click=\'ctrl.close()\']',
     discardChanges: '//button[@ng-click="ctrl.discard()"]',
     metricTitle: '//div[@class="panel-title"]',
+    changeTimeZoneButton: locate('span').withText('Change time zone'),
+    timeZoneSelector: locate('div').withText('Type to search (country, city, abbreviation)'),
     reportTitleWithNA:
       '//span[contains(text(), "N/A")]//ancestor::div[contains(@class,"panel-container")]//span[contains(@class,"panel-title-text")]',
     pmmDropdownMenuSelector: locate('a[data-toggle="dropdown"] > span').withText('PMM'),
     timeRangeFrom: locate('input').withAttr({ 'aria-label': 'TimePicker from field' }),
     timeRangeTo: locate('input').withAttr({ 'aria-label': 'TimePicker to field' }),
   },
+
+  getTimeZoneSelector: (timeZone) => `//span[contains(text(), '${timeZone}')]`,
 
   async selectItemFromPMMDropdown(title) {
     const titleLocator = `//li/a[text()='${title}']`;
@@ -74,6 +78,21 @@ module.exports = {
     I.fillField(this.fields.timeRangeTo, to);
     I.click(this.fields.applyCustomTimer);
     I.waitForInvisible(this.fields.applyCustomTimer, 30);
+  },
+
+  applyTimeZone(timeZone = 'Europe/London') {
+    const timeZoneSelector = this.getTimeZoneSelector(timeZone);
+
+    I.waitForElement(this.fields.timePickerMenu, 30);
+    I.forceClick(this.fields.timePickerMenu);
+    I.waitForVisible(this.fields.changeTimeZoneButton, 30);
+    I.click(this.fields.changeTimeZoneButton);
+    I.waitForVisible(timeZoneSelector, 30);
+    I.waitForElement(this.fields.timeZoneSelector, 30);
+    I.fillField(this.fields.timeZoneSelector, timeZone);
+    I.waitForElement(timeZoneSelector, 30);
+    I.click(timeZoneSelector);
+    I.forceClick(this.fields.timePickerMenu);
   },
 
   viewMetric(metricName) {

@@ -26,11 +26,7 @@ module.exports = {
     const qpsvalue = await I.grabTextFrom(this.getMetricsCellLocator('Query Count', 2));
     let queryCountDetail = await I.grabTextFrom(this.getMetricsCellLocator('Query Count', 3));
 
-    if (queryCountDetail.indexOf('k', 0) > -1) {
-      queryCountDetail = parseFloat(queryCountDetail) * 1000;
-    } else {
-      queryCountDetail = parseFloat(queryCountDetail);
-    }
+    queryCountDetail = this.getQueryCountValue(queryCountDetail);
 
     // We divide by 300 because we are using last 5 mins filter.
     const result = (queryCountDetail / timeRangeInSec).toFixed(4);
@@ -69,16 +65,22 @@ module.exports = {
 
     let queryCountDetail = await I.grabTextFrom(countLocator);
 
-    if (queryCountDetail.indexOf('k', 0) > -1) {
-      queryCountDetail = parseFloat(queryCountDetail) * 1000;
-    } else {
-      queryCountDetail = parseFloat(queryCountDetail);
-    }
+    queryCountDetail = this.getQueryCountValue(queryCountDetail);
 
     const [load] = (await I.grabTextFrom(loadLocator)).split(' ');
     const result = ((queryCountDetail * parseFloat(perQueryStats)) / timeRangeInSec).toFixed(4);
 
     compareCalculation(load, result);
+  },
+
+  getQueryCountValue(value) {
+    let result = parseFloat(value);
+
+    if (value.endsWith('k')) {
+      result *= 1000;
+    }
+
+    return result;
   },
 };
 
