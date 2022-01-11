@@ -9,14 +9,15 @@ module.exports = {
   fields: {
     navigation: '//i[contains(@class, "navbar-page-btn__search")]',
     timePickerMenu: '//button[@aria-label="TimePicker Open Button"]',
-    fromTime: '(//input[@input-datetime])[1]',
-    applyCustomTimer: '//button[@ng-click="ctrl.applyCustom();"]',
+    applyCustomTimer: locate('button').withAttr({ 'aria-label': 'TimePicker submit button' }),
     backToDashboard: '//button[@ng-click=\'ctrl.close()\']',
     discardChanges: '//button[@ng-click="ctrl.discard()"]',
     metricTitle: '//div[@class="panel-title"]',
     reportTitleWithNA:
       '//span[contains(text(), "N/A")]//ancestor::div[contains(@class,"panel-container")]//span[contains(@class,"panel-title-text")]',
     pmmDropdownMenuSelector: locate('a[data-toggle="dropdown"] > span').withText('PMM'),
+    timeRangeFrom: locate('input').withAttr({ 'aria-label': 'TimePicker from field' }),
+    timeRangeTo: locate('input').withAttr({ 'aria-label': 'TimePicker to field' }),
   },
 
   async selectItemFromPMMDropdown(title) {
@@ -61,6 +62,18 @@ module.exports = {
     I.forceClick(this.fields.timePickerMenu);
     I.waitForVisible(timeRangeSelector, 30);
     I.click(timeRangeSelector);
+  },
+
+  setAbsoluteTimeRange(from = '2022-01-10 09:09:59', to = '2022-01-10 10:00:59') {
+    I.waitForElement(this.fields.timePickerMenu, 30);
+    I.click(this.fields.timePickerMenu);
+    I.waitForVisible(this.fields.timeRangeFrom, 30);
+    I.clearField(this.fields.timeRangeFrom);
+    I.fillField(this.fields.timeRangeFrom, from);
+    I.clearField(this.fields.timeRangeTo);
+    I.fillField(this.fields.timeRangeTo, to);
+    I.click(this.fields.applyCustomTimer);
+    I.waitForInvisible(this.fields.applyCustomTimer, 30);
   },
 
   viewMetric(metricName) {
