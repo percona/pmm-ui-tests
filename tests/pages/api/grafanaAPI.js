@@ -163,7 +163,7 @@ module.exports = {
   },
 
   // Should be refactored
-  async checkMetricExist(metricName, queryBy) {
+  async getMetric(metricName, refineBy) {
     const timeStamp = Date.now();
     const bodyFormData = new FormData();
     const body = {
@@ -173,8 +173,8 @@ module.exports = {
       step: 60,
     };
 
-    if (queryBy) {
-      body.query = `${metricName}{${queryBy.type}=~"(${queryBy.value})"}`;
+    if (refineBy) {
+      body.query = `${metricName}{${refineBy.type}=~"(${refineBy.value})"}`;
     }
 
     Object.keys(body).forEach((key) => bodyFormData.append(key, body[key]));
@@ -183,13 +183,11 @@ module.exports = {
       ...bodyFormData.getHeaders(),
     };
 
-    const response = await I.sendPostRequest(
+    return await I.sendPostRequest(
       'graph/api/datasources/proxy/1/api/v1/query_range',
       bodyFormData,
       headers,
     );
-
-    return response;
   },
 
   async waitForMetric(metricName, queryBy, timeOutInSeconds) {
@@ -199,8 +197,8 @@ module.exports = {
 
     /* eslint no-constant-condition: ["error", { "checkLoops": false }] */
     while (true) {
-      // Main condition check: service obj returned
-      const response = await this.checkMetricExist(metricName, queryBy);
+      // Main condition check: metric body is not empty
+      const response = await this.getMetric(metricName, queryBy);
 
       if (response.data.data.result.length !== 0) {
         return response;
@@ -217,4 +215,13 @@ module.exports = {
     }
   },
 
+  async checkMetricExist(metricName, refineBy) {
+    const response = await this.getMetric(metricName, refineBy);
+    const result = JSON.stringify(response.data.data.result);
+
+    I.assertTrue(response.data.data.result.length !== 0,
+      `TextFile Collector Metrics ${metricName} Should be available but got empty ${result}`);
+
+    return response;
+  },
 };

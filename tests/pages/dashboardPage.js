@@ -163,10 +163,10 @@ module.exports = {
       'File Descriptors Used',
     ],
   },
-  sharePanel:{
+  sharePanel: {
     elements: {
       imageRendererPluginLink: locate('.share-modal-body').find('.external-link'),
-    }
+    },
   },
   proxysqlInstanceSummaryDashboard: {
     url: 'graph/d/proxysql-instance-summary/proxysql-instance-summary',
@@ -879,11 +879,6 @@ module.exports = {
   openGraphDropdownMenu(metric) {
     I.seeElement(this.graphsLocator(metric));
     I.click(this.graphsLocator(metric));
-  },
-
-  // Should be removed, switched to grafanaAPI.checkMetricExist(metricName, queryBy) instead
-  async checkMetricExist(metricName, queryBy) {
-    return await grafanaAPI.checkMetricExist(metricName, queryBy);
   },
 
   verifyTabExistence(tabs) {
