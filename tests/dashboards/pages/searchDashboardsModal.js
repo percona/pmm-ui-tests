@@ -81,7 +81,9 @@ module.exports = {
     experimental: {
       name: 'Experimental',
       items: [
-        'Db Cluster Summary',
+        'DB Cluster Summary',
+        'Environments Overview (Designed for PMM)',
+        'Environment Summary (Designed for PMM)',
       ],
     },
     queryAnalytics: {
