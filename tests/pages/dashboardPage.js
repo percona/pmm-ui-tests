@@ -1,4 +1,4 @@
-const { I, adminPage, grafanaAPI } = inject();
+const { I, adminPage } = inject();
 const assert = require('assert');
 
 module.exports = {

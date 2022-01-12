@@ -190,6 +190,15 @@ module.exports = {
     );
   },
 
+  /**
+   * Fluent wait for a specified metric to have non-empty body.
+   * Fails test if timeout exceeded.
+   *
+   * @param     metricName          name of the metric to lookup
+   * @param     queryBy             PrometheusQL expression, ex.: {node_name='MySQL Node'}
+   * @param     timeOutInSeconds    time to wait for a service to appear
+   * @returns   {Promise<Object>}   response Object, requires await when called
+   */
   async waitForMetric(metricName, queryBy, timeOutInSeconds) {
     const start = new Date().getTime();
     const timout = timeOutInSeconds * 1000;

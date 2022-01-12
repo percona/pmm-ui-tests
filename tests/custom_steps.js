@@ -22,8 +22,8 @@ module.exports = () => actor({
   },
 
   /**
-   * Fluent wait for the specified callable. callable shoul be be async and return bool value
-   * Fails test is timeout exceeded.
+   * Fluent wait for the specified callable. Callable should be async and return bool value
+   * Fails test if timeout exceeded.
    *
    * @param     boolCallable      should be a function with boolean return type
    * @param     timeOutInSeconds  time to wait for a service to appear
