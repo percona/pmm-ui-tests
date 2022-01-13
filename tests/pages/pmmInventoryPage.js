@@ -192,12 +192,12 @@ module.exports = {
   },
 
   async getAgentID(agentType) {
-    const agentIdLocator = `//table//tr/td[3][contains(text(),"${agentType}")]/preceding-sibling::td`;
+    const agentIdLocator = `//table//tr/td[3][contains(text(),"${agentType}")]/preceding-sibling::td[1]`;
 
     I.waitForVisible(agentIdLocator, 30);
-    const agentIDs = await I.grabTextFrom(agentIdLocator);
+    const agentID = await I.grabTextFrom(agentIdLocator);
 
-    return agentIDs[1];
+    return agentID;
   },
 
   async getNodeCount() {

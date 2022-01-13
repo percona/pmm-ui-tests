@@ -20,20 +20,27 @@ Scenario(
 );
 
 Scenario(
-  'Open the QAN Dashboard and check that changing the time range updates the overview table and URL. @qan',
-  async ({ I, adminPage, qanOverview }) => {
-    const TIME_RANGE_QUERY_PARAMS_BEFORE = 'from=now-5m&to=now';
-    const TIME_RANGE_QUERY_PARAMS_AFTER = 'from=now-3h&to=now';
+  'PMM-T167 Open the QAN Dashboard and check that changing the time range updates the overview table, URL. @nightly @qan',
+  async ({
+    I, adminPage, qanDetails, qanFilters, qanOverview,
+  }) => {
+    I.seeInCurrentUrl('from=now-5m&to=now');
+    qanOverview.selectRow(1);
+    qanFilters.waitForFiltersToLoad();
+    I.seeElement(qanDetails.root);
 
-    I.seeInCurrentUrl(TIME_RANGE_QUERY_PARAMS_BEFORE);
     adminPage.applyTimeRange('Last 3 hours');
     qanOverview.waitForOverviewLoaded();
-    I.seeInCurrentUrl(TIME_RANGE_QUERY_PARAMS_AFTER);
+    I.seeInCurrentUrl('from=now-3h&to=now');
+    I.dontSeeElement(qanDetails.root);
+    qanOverview.selectRow(1);
+    qanFilters.waitForFiltersToLoad();
+    I.seeElement(qanDetails.root);
   },
 );
 
 Scenario(
-  'Open the QAN Dashboard and check that changing the time range doesn\'t clear "Group by". @qan',
+  'PMM-T170 Open the QAN Dashboard and check that changing the time range doesn\'t clear "Group by". @qan',
   async ({ I, adminPage, qanOverview }) => {
     const group = 'Client Host';
 

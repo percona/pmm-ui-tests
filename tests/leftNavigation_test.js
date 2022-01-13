@@ -19,7 +19,7 @@ const parse = (obj) => {
 
 parse(leftNavMenu);
 
-Feature('Left Navigation menu tests');
+Feature('Left Navigation menu tests').retry(1);
 
 Before(async ({ I, homePage }) => {
   await I.Authorize();
@@ -31,6 +31,6 @@ Data(sidebar).Scenario(
   async ({ I, current }) => {
     I.seeElementInDOM(current.locator);
     current.click();
-    I.seeInCurrentUrl(current.path);
+    I.waitInUrl(current.path, 5);
   },
 );

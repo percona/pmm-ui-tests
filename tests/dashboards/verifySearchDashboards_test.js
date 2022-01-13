@@ -6,35 +6,35 @@ const folders = new DataTable(['folderObject']);
 
 Object.values(searchDashboardsModal.folders).forEach((folder) => { folders.add([folder]); });
 
-Feature('Test Dashboards collection inside the Folders');
+Feature('Test Dashboards collection inside the Folders').retry(1);
 
-Before(async ({
-  I, homePage, dashboardPage, searchDashboardsModal,
-}) => {
+Before(async ({ I, homePage }) => {
   await I.Authorize();
   await homePage.open();
-  I.click(dashboardPage.fields.breadcrumbs.dashboardName);
-  searchDashboardsModal.waitForOpened();
 });
 
 Scenario(
   'PMM-T1091 - Verify PMM Dashboards folders are correct @nightly @dashboards',
-  async ({ searchDashboardsModal }) => {
+  async ({ I, searchDashboardsModal, dashboardPage }) => {
+    I.click(dashboardPage.fields.breadcrumbs.dashboardName);
+    searchDashboardsModal.waitForOpened();
     const foldersNames = Object.values(searchDashboardsModal.folders).map((folder) => folder.name);
+    const actualFolders = (await searchDashboardsModal.getFoldersList());
 
     foldersNames.unshift('Recent');
-    assert.strictEqual(await searchDashboardsModal.countFolders(), foldersNames.length,
-      'Folders amount does not match expected!');
-    assert.deepStrictEqual(await searchDashboardsModal.getFoldersList(), foldersNames,
-      'Folders collection does not match expected!');
+    I.assertDeepMembers(actualFolders, foldersNames);
   },
 );
 
 Data(folders).Scenario(
-  'PMM-T1086 - Verify PMM Dashboards collections are present in correct folders @nightly @dashboards',
-  async ({ searchDashboardsModal, current }) => {
+  'PMM-T1086 - Verify PMM Dashboards collections are present in correct folders @nightly @dashboards @post-upgrade',
+  async ({
+    I, current, searchDashboardsModal, dashboardPage,
+  }) => {
+    I.click(dashboardPage.fields.breadcrumbs.dashboardName);
+    searchDashboardsModal.waitForOpened();
     searchDashboardsModal.collapseFolder('Recent');
-    searchDashboardsModal.expandFolder(current.name);
-    searchDashboardsModal.verifyDashboardsInFolderCollection(current);
+    searchDashboardsModal.expandFolder(current.folderObject.name);
+    searchDashboardsModal.verifyDashboardsInFolderCollection(current.folderObject);
   },
 );

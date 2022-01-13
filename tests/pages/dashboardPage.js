@@ -168,7 +168,7 @@ module.exports = {
     elements: {
       imageRendererPluginLink: locate('.share-modal-body').find('.external-link'),
     }
-},
+  },
   proxysqlInstanceSummaryDashboard: {
     url: 'graph/d/proxysql-instance-summary/proxysql-instance-summary',
     metrics: [

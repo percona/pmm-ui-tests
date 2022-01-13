@@ -28,6 +28,7 @@ module.exports = {
     expression: locate('$template-expression').find('pre'),
     templateAlert: locate('$template-alert').find('pre'),
     durationError: '$duration-field-error-message',
+    ruleAdvancedSectionToggle: locate('$alert-rule-advanced-section').find('//*[text()="Advanced details"]'),
   },
   buttons: {
     openAddRuleModal: '$alert-rule-template-add-modal-button',
@@ -106,7 +107,7 @@ module.exports = {
     }
   },
 
-  verifyEditRuleDialogElements(rule) {
+  verifyEditRuleDialogElements(rule, openAdvancedSection = false) {
     const {
       template, ruleName = '', threshold, duration,
       filters = '', expression, alert,
@@ -123,6 +124,11 @@ module.exports = {
 
     I.waitForValue(this.fields.duration, duration, 10);
     I.waitForValue(this.fields.filters, filters, 10);
+
+    if (openAdvancedSection) {
+      I.click(this.elements.ruleAdvancedSectionToggle);
+    }
+
     I.seeTextEquals(expression, this.elements.expression);
     I.seeTextEquals(alert, this.elements.templateAlert);
   },

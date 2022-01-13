@@ -11,9 +11,9 @@ module.exports = {
   requestEnd: '/v1/Updates/Check',
   fields: {
     systemsUnderMonitoringCount:
-      '//span[@class="panel-title-text" and contains(text(), "Systems under monitoring")]//../../../..//span[@class="singlestat-panel-value"]',
+      '//span[@class="panel-title-text" and contains(text(), "Monitored nodes")]//../../../..//span[@class="singlestat-panel-value"]',
     dbUnderMonitoringCount:
-      '//span[@class="panel-title-text" and contains(text(), "Monitored DB Instances")]//../../../..//span[@class="singlestat-panel-value"]',
+      '//span[@class="panel-title-text" and contains(text(), "Monitored DB Services")]//../../../..//span[@class="singlestat-panel-value"]',
     dashboardHeaderText: 'Percona Monitoring and Management',
     dashboardHeaderLocator: '//div[contains(@class, "dashboard-header")]',
     oldLastCheckSelector: '#pmm-update-widget > .last-check-wrapper p',
@@ -22,6 +22,8 @@ module.exports = {
     checksPanelSelector: '$db-check-panel-home',
     noFailedChecksInPanel: '$db-check-panel-zero-checks',
     newsPanelTitleSelector: '//span[@class="panel-title-text" and text() = "Percona News"]',
+    pmmCustomMenu: '$sidemenu-item-pmm',
+    servicesButton: locate('span').withText('Services'),
     newsPanelContentSelector:
       '//span[contains(text(), "Percona News")]/ancestor::div[contains(@class, "panel-container")]//div[contains(@class, "view")]',
     noAccessRightsSelector: '$unauthorized',
@@ -90,6 +92,8 @@ module.exports = {
     'TASK [Check supervisord log]',
   ],
 
+  serviceDashboardLocator: (serviceName) => locate('a').withText(serviceName),
+
   async open() {
     I.amOnPage(this.url);
     I.waitForElement(this.fields.dashboardHeaderLocator, 60);
@@ -109,13 +113,18 @@ module.exports = {
     I.waitForText(locators.inProgressMessage, 30, locators.updateProgressModal);
 
     // skipping milestones checks for 2.9 and 2.10, 2.11 versions due logs not showing issue
-    if (version > '11') {
+    if (version > 11) {
       for (const milestone of milestones) {
         I.waitForElement(`//pre[contains(text(), '${milestone}')]`, 1200);
       }
     }
 
     I.waitForText(locators.successUpgradeMessage, 1200, locators.successUpgradeMsgSelector);
+    if (version < 12) {
+      // we have a bug we need this https://jira.percona.com/browse/PMM-9294
+      I.wait(60); 
+    }
+    
     I.click(locators.reloadButtonAfterUpgrade);
     locators = this.getLocators('latest');
 

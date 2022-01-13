@@ -1,3 +1,5 @@
+const assert = require('assert');
+
 Feature('QAN overview').retry(1);
 
 Before(async ({
@@ -8,6 +10,23 @@ Before(async ({
   qanOverview.waitForOverviewLoaded();
   qanFilters.waitForFiltersToLoad();
 });
+
+Scenario(
+  'PMM-T207 Verify hovering over query in overview table  @qan',
+  async ({ I, qanOverview }) => {
+    qanOverview.waitForOverviewLoaded();
+    I.waitForVisible(qanOverview.elements.firstQueryValue, 30);
+    let firstQueryText = await I.grabTextFrom(qanOverview.elements.firstQueryValue);
+
+    firstQueryText = firstQueryText.replace(/ /g, '');
+    qanOverview.mouseOverFirstInfoIcon();
+
+    let tooltipQueryText = await I.grabTextFrom(qanOverview.elements.tooltipQueryValue);
+
+    tooltipQueryText = tooltipQueryText.replace(/ /g, '').replace(/\n/g, '');
+    assert.ok(firstQueryText === tooltipQueryText, `The request text: ${firstQueryText}, don't match the request text on the tooltip: ${tooltipQueryText}.`);
+  },
+);
 
 Scenario(
   'PMM-T146 Verify user is able to see  chart tooltip for time related metric  @qan',
@@ -34,9 +53,13 @@ Scenario(
 );
 
 Scenario(
-  'Open the QAN Dashboard and check that sorting works correctly after sorting by another column. @qan',
-  async ({ qanOverview }) => {
+  'PMM-T171 Verify that changing the time range doesnt reset sorting, Open the QAN Dashboard and check that sorting works correctly after sorting by another column. @qan',
+  async ({ qanOverview, adminPage }) => {
     qanOverview.changeSorting(2);
+    qanOverview.verifySorting(2, 'asc');
+    qanOverview.waitForOverviewLoaded();
+    adminPage.applyTimeRange('Last 1 hour');
+    qanOverview.waitForOverviewLoaded();
     qanOverview.verifySorting(2, 'asc');
     qanOverview.changeSorting(1);
     qanOverview.verifySorting(1, 'asc');
@@ -237,5 +260,133 @@ Scenario(
     I.moveCursorTo(secondCell);
     I.dontSeeElement(qanOverview.elements.tooltip);
     I.dontSeeElement(qanOverview.elements.tooltipQPSValue);
+  },
+);
+
+Scenario(
+  'PMM-T412 - Verify user is able to search by part of query @qan',
+  async ({
+    I, qanOverview, adminPage,
+  }) => {
+    const query = 'SELECT * FROM pg_stat_bgwriter';
+
+    qanOverview.waitForOverviewLoaded();
+    adminPage.applyTimeRange('Last 1 hour');
+    qanOverview.waitForOverviewLoaded();
+    I.waitForVisible(qanOverview.fields.searchBy, 30);
+    I.fillField(qanOverview.fields.searchBy, query);
+    I.pressKey('Enter');
+    I.waitForElement(qanOverview.elements.querySelector, 30);
+    const firstQueryText = await I.grabTextFrom(qanOverview.elements.firstQueryValue);
+
+    assert.ok(firstQueryText === query, `The Searched Query text was: ${query}, don't match the result text in overview for 1st result: ${firstQueryText}`);
+  },
+);
+
+Scenario(
+  'PMM-T417 Verify user is able to search by Database @qan',
+  async ({ I, qanOverview }) => {
+    const groupBy = 'Database';
+    const query = 'postgres';
+
+    I.waitForText('Query', 30, qanOverview.elements.groupBy);
+    qanOverview.waitForOverviewLoaded();
+    await qanOverview.changeGroupBy(groupBy);
+    qanOverview.verifyGroupByIs(groupBy);
+    qanOverview.waitForOverviewLoaded();
+    I.waitForVisible(qanOverview.fields.searchBy, 30);
+    I.fillField(qanOverview.fields.searchBy, query);
+    I.pressKey('Enter');
+    I.waitForElement(qanOverview.elements.querySelector, 30);
+    const firstQueryText = await I.grabTextFrom(qanOverview.elements.firstQueryValue);
+
+    assert.ok(firstQueryText === query, `The Searched text was: ${query}, don't match the result text in overview for 1st result: ${firstQueryText}`);
+  },
+);
+
+Scenario(
+  'PMM-T127 Verify user is able to Group By overview table results @qan',
+  async ({ I, qanOverview }) => {
+    I.waitForText('Query', 30, qanOverview.elements.groupBy);
+    qanOverview.waitForOverviewLoaded();
+    await qanOverview.changeGroupBy('Service Name');
+    qanOverview.verifyGroupByIs('Service Name');
+    await qanOverview.changeGroupBy('Database');
+    qanOverview.verifyGroupByIs('Database');
+    await qanOverview.changeGroupBy('Schema');
+    qanOverview.verifyGroupByIs('Schema');
+    await qanOverview.changeGroupBy('User Name');
+    qanOverview.verifyGroupByIs('User Name');
+    await qanOverview.changeGroupBy('Client Host');
+    qanOverview.verifyGroupByIs('Client Host');
+    await qanOverview.changeGroupBy('Query');
+    qanOverview.verifyGroupByIs('Query');
+  },
+);
+
+Scenario(
+  'PMM-T411 PMM-T400 PMM-T414 Verify search filed is displayed, Verify user is able to search the query id specified time range, Verify searching by Query ID @qan',
+  async ({ I, qanOverview, adminPage }) => {
+    qanOverview.waitForOverviewLoaded();
+    I.waitForVisible(qanOverview.elements.firstQueryValue, 30);
+    const firstQueryText = await I.grabTextFrom(qanOverview.elements.firstQueryValue);
+
+    qanOverview.mouseOverFirstInfoIcon();
+
+    let tooltipQueryId = await I.grabTextFrom(qanOverview.elements.tooltipQueryId);
+
+    tooltipQueryId = tooltipQueryId.split(':');
+
+    // fetch the query id field value, split to get just the queryId
+    tooltipQueryId = tooltipQueryId[1].trim();
+    I.waitForVisible(qanOverview.fields.searchBy, 30);
+    I.fillField(qanOverview.fields.searchBy, tooltipQueryId);
+    I.pressKey('Enter');
+    I.waitForElement(qanOverview.elements.querySelector, 30);
+    const firstQuerySearchText = await I.grabTextFrom(qanOverview.elements.firstQueryValue);
+
+    assert.ok(firstQuerySearchText === firstQueryText, `The search with Query Id: ${tooltipQueryId} was supposed to result in Query with value: ${firstQueryText} but the resulted query found is ${firstQuerySearchText}`);
+  },
+);
+
+Scenario(
+  'PMM-T134 Verify user is able to remove metric from the overview table @qan',
+  async ({
+    I, qanOverview, qanDetails, qanFilters,
+  }) => {
+    const metricName = 'Query Count';
+
+    qanOverview.selectRow(1);
+    qanFilters.waitForFiltersToLoad();
+    I.waitForElement(qanDetails.buttons.close, 30);
+    I.seeElement(qanOverview.getQANMetricHeader(metricName));
+    qanOverview.removeMetricFromOverview(metricName);
+    const url = await I.grabCurrentUrl();
+
+    I.amOnPage(url);
+    qanOverview.waitForOverviewLoaded();
+    I.waitForElement(qanOverview.buttons.addColumn, 30);
+    I.dontSeeElement(qanOverview.getQANMetricHeader(metricName));
+  },
+);
+
+Scenario(
+  'PMM-T220 Verify that last column cant be removed from Overview table @qan',
+  async ({
+    I, qanOverview, qanDetails, qanFilters,
+  }) => {
+    qanOverview.selectRow(1);
+    qanFilters.waitForFiltersToLoad();
+    I.waitForElement(qanDetails.buttons.close, 30);
+    I.seeElement(qanOverview.getQANMetricHeader('Query Count'));
+    qanOverview.removeMetricFromOverview('Query Count');
+    qanOverview.removeMetricFromOverview('Query Time');
+    const column = qanOverview.getColumnLocator('Load');
+
+    I.waitForElement(column);
+    I.click(column);
+    I.waitForElement(qanOverview.fields.columnSearchField, 10);
+    I.fillField(qanOverview.fields.columnSearchField, 'Remove column');
+    I.dontSeeElement(qanOverview.elements.removeMetricColumn);
   },
 );

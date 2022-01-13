@@ -78,6 +78,14 @@ module.exports = {
         'PostgreSQL Instances Overview',
       ],
     },
+    experimental: {
+      name: 'Experimental',
+      items: [
+        'DB Cluster Summary',
+        'Environments Overview (Designed for PMM)',
+        'Environment Summary (Designed for PMM)',
+      ],
+    },
     queryAnalytics: {
       name: 'Query Analytics',
       items: [
@@ -96,7 +104,7 @@ module.exports = {
   },
 
   waitForOpened() {
-    I.waitForElement(this.fields.searchInput, 3);
+    I.waitForElement(this.fields.searchInput, 5);
   },
 
   async countFolders() {

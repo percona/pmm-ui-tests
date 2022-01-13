@@ -24,10 +24,12 @@ module.exports = {
 
   async verifyAvqQueryCount(timeRangeInSec = 300) {
     const qpsvalue = await I.grabTextFrom(this.getMetricsCellLocator('Query Count', 2));
-    const queryCountDetail = await I.grabTextFrom(this.getMetricsCellLocator('Query Count', 3));
+    let queryCountDetail = await I.grabTextFrom(this.getMetricsCellLocator('Query Count', 3));
+
+    queryCountDetail = this.getQueryCountValue(queryCountDetail);
 
     // We divide by 300 because we are using last 5 mins filter.
-    const result = (parseFloat(queryCountDetail) / timeRangeInSec).toFixed(4);
+    const result = (queryCountDetail / timeRangeInSec).toFixed(4);
 
     compareCalculation(qpsvalue, result);
   },
@@ -61,11 +63,24 @@ module.exports = {
 
     if (perQueryUnit === 'µs') perQueryStats /= 1000000;
 
-    const queryCountDetail = await I.grabTextFrom(countLocator);
+    let queryCountDetail = await I.grabTextFrom(countLocator);
+
+    queryCountDetail = this.getQueryCountValue(queryCountDetail);
+
     const [load] = (await I.grabTextFrom(loadLocator)).split(' ');
-    const result = ((parseFloat(queryCountDetail) * parseFloat(perQueryStats)) / timeRangeInSec).toFixed(4);
+    const result = ((queryCountDetail * parseFloat(perQueryStats)) / timeRangeInSec).toFixed(4);
 
     compareCalculation(load, result);
+  },
+
+  getQueryCountValue(value) {
+    let result = parseFloat(value);
+
+    if (value.endsWith('k')) {
+      result *= 1000;
+    }
+
+    return result;
   },
 };
 
@@ -74,12 +89,12 @@ function compareCalculation(value, result) {
 
   switch (true) {
     case result < 0.01:
-      assert.ok(value.startsWith('<0.01'), `Values don't match in the ${caller} method. Value: ${value}`);
+      assert.ok(value.startsWith('<0.01'), `Values don't match in the ${caller} method. Value: ${value}, calculated Result: ${result}`);
       break;
     case parseFloat(result) <= 0.0149:
-      assert.ok(value.startsWith('0.01'), `Values don't match in the ${caller} method. Value: ${value}`);
+      assert.ok(value.startsWith('0.01'), `Values don't match in the ${caller} method. Value: ${value}, calculated Result: ${result}`);
       break;
     default:
-      assert.ok(parseFloat(parseFloat(result).toFixed(2)) === parseFloat(value), `Values don't match in the ${caller} method. Value: ${value}`);
+      assert.ok(parseFloat(parseFloat(result).toFixed(2)) === parseFloat(value), `Values don't match in the ${caller} method. Value: ${value}, calculated Result: ${result}`);
   }
 }

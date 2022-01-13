@@ -118,7 +118,8 @@ Scenario(
 Scenario(
   'PMM-T391 Verify user is able to create and set custom home dashboard @pre-upgrade @ami-upgrade @pmm-upgrade',
   async ({ I, grafanaAPI, dashboardPage }) => {
-    const resp = await grafanaAPI.createCustomDashboard();
+    const folder = await grafanaAPI.createFolder(grafanaAPI.customFolderName);
+    const resp = await grafanaAPI.createCustomDashboard(grafanaAPI.customDashboardName, folder.id);
 
     await grafanaAPI.starDashboard(resp.id);
     await grafanaAPI.setHomeDashboard(resp.id);
@@ -136,9 +137,9 @@ Scenario(
     const body = {
       telemetry_enabled: true,
       metrics_resolutions: {
-        hr: '3s',
-        mr: '15s',
-        lr: '30s',
+        hr: '30s',
+        mr: '60s',
+        lr: '60s',
       },
       data_retention: '172800s',
     };
@@ -191,7 +192,7 @@ if (versionMinor < 16 && versionMinor >= 10) {
 }
 
 if (iaReleased) {
-  Scenario(
+  Scenario.skip(
     'PMM-T577 Verify user is able to see IA alerts before upgrade @pre-upgrade @ami-upgrade @pmm-upgrade',
     async ({
       settingsAPI, rulesAPI, alertsAPI,
@@ -206,7 +207,7 @@ if (iaReleased) {
 }
 
 if (versionMinor >= 15) {
-  Scenario(
+  Scenario.skip(
     'Verify user has failed checks before upgrade @pre-upgrade @pmm-upgrade',
     async ({
       I, settingsAPI, databaseChecksPage, securityChecksAPI,
@@ -304,7 +305,7 @@ if (versionMinor >= 21) {
           break;
         case 'MONGODB_SERVICE':
           output = await I.verifyCommand(
-            `pmm-admin add mongodb --node-id=${node_id} --pmm-agent-id=${pmm_agent_id} --port=${port} --host=${address} --agent-password=uitests --custom-labels="testing=upgrade" ${upgrade_service}`,
+            `pmm-admin add mongodb --node-id=${node_id} --username=pmm_mongodb --password=secret --pmm-agent-id=${pmm_agent_id} --port=${port} --host=${address} --agent-password=uitests --custom-labels="testing=upgrade" ${upgrade_service}`,
           );
           break;
         default:
@@ -348,12 +349,50 @@ Scenario(
     dashboardPage.verifyMetricsExistence(['Custom Panel']);
     await dashboardPage.verifyThereAreNoGraphsWithNA();
     await dashboardPage.verifyThereAreNoGraphsWithoutData();
-    I.seeInCurrentUrl(grafanaAPI.customDashboard);
+    I.seeInCurrentUrl(grafanaAPI.customDashboardName);
+  },
+);
+
+Scenario(
+  'PMM-T998 - Verify dashboard folders after upgrade @pmm-upgrade @ami-upgrade @post-upgrade',
+  async ({
+    I, searchDashboardsModal, grafanaAPI, homePage,
+  }) => {
+    await homePage.open();
+    I.click(dashboardPage.fields.breadcrumbs.dashboardName);
+    searchDashboardsModal.waitForOpened();
+    const actualFolders = (await searchDashboardsModal.getFoldersList());
+
+    I.assertDeepIncludeMembers(actualFolders, ['Starred', grafanaAPI.customFolderName]);
+    I.seeElement(searchDashboardsModal.fields.folderItemLocator(grafanaAPI.customDashboardName));
+  },
+);
+
+Scenario(
+  'PMM-T1091 - Verify PMM Dashboards folders are correct @pmm-upgrade @ami-upgrade @post-upgrade',
+  async ({
+    I, searchDashboardsModal, grafanaAPI, homePage,
+  }) => {
+    const foldersNames = Object.values(searchDashboardsModal.folders).map((folder) => folder.name);
+
+    foldersNames.unshift('Recent');
+    if (versionMinor < 25) {
+      foldersNames.push('PMM');
+    }
+
+    await homePage.open();
+    I.click(dashboardPage.fields.breadcrumbs.dashboardName);
+    searchDashboardsModal.waitForOpened();
+    const actualFolders = (await searchDashboardsModal.getFoldersList())
+      // these folders verified in dedicated test.
+      .filter((value) => value !== 'Starred' && value !== grafanaAPI.customFolderName);
+
+    I.assertDeepMembers(actualFolders, foldersNames);
   },
 );
 
 if (versionMinor >= 15) {
-  Scenario(
+  Scenario.skip(
     'Verify user has failed checks after upgrade / STT on @post-upgrade @pmm-upgrade',
     async ({
       I, pmmSettingsPage, securityChecksAPI, databaseChecksPage,
@@ -415,7 +454,7 @@ if (versionMinor >= 15) {
 }
 
 if (versionMinor >= 16) {
-  Scenario(
+  Scenario.skip(
     'Verify disabled checks remain disabled after upgrade @post-upgrade @pmm-upgrade',
     async ({
       I, allChecksPage,
@@ -429,7 +468,7 @@ if (versionMinor >= 16) {
     },
   );
 
-  Scenario(
+  Scenario.skip(
     'Verify silenced checks remain silenced after upgrade @post-upgrade @pmm-upgrade',
     async ({
       I, databaseChecksPage,
@@ -446,7 +485,7 @@ if (versionMinor >= 16) {
     },
   );
 
-  Scenario(
+  Scenario.skip(
     'Verify check intervals remain the same after upgrade @post-upgrade @pmm-upgrade',
     async ({
       I, allChecksPage,
@@ -459,7 +498,7 @@ if (versionMinor >= 16) {
     },
   );
 
-  Scenario(
+  Scenario.skip(
     'Verify settings for intervals remain the same after upgrade @post-upgrade @pmm-upgrade',
     async ({
       I, pmmSettingsPage,
@@ -475,7 +514,7 @@ if (versionMinor >= 16) {
 }
 
 if (iaReleased) {
-  Scenario(
+  Scenario.skip(
     'PMM-T577 Verify user can see IA alerts after upgrade @ami-upgrade @pmm-upgrade',
     async ({
       I, alertsPage, alertsAPI,
@@ -542,9 +581,9 @@ Scenario(
       metricResoltionSection,
       pmmSettingsPage.fields.metricsResolutionButton,
     );
-    await pmmSettingsPage.verifySettingsValue(pmmSettingsPage.fields.lowInput, 30);
-    await pmmSettingsPage.verifySettingsValue(pmmSettingsPage.fields.mediumInput, 15);
-    await pmmSettingsPage.verifySettingsValue(pmmSettingsPage.fields.highInput, 3);
+    await pmmSettingsPage.verifySettingsValue(pmmSettingsPage.fields.lowInput, 60);
+    await pmmSettingsPage.verifySettingsValue(pmmSettingsPage.fields.mediumInput, 60);
+    await pmmSettingsPage.verifySettingsValue(pmmSettingsPage.fields.highInput, 30);
   },
 );
 

@@ -1,4 +1,10 @@
+const { dashboardPage, homePage } = inject();
 const assert = require('assert');
+
+const urlsAndMetrics = new DataTable(['metricName', 'startUrl']);
+
+urlsAndMetrics.add(['Client Connections (All Host Groups)', `${dashboardPage.proxysqlInstanceSummaryDashboard.url}?from=now-5m&to=now`]);
+urlsAndMetrics.add(['Percona News', homePage.url]);
 
 Feature('Test Dashboards inside the MySQL Folder');
 
@@ -50,14 +56,12 @@ Scenario(
   },
 );
 
-Scenario(
-  'PMM-T1070 - Verify link to instructions for enabling rendering images @nightly @dashboards',
-  async ({ I, dashboardPage, links }) => {
-    const metricName = 'Client Connections (All Host Groups)';
-
-    I.amOnPage(`${dashboardPage.proxysqlInstanceSummaryDashboard.url}?from=now-5m&to=now`);
+Data(urlsAndMetrics).Scenario(
+  'PMM-T1070 + PMM-T449 - Verify link to instructions for enabling rendering images @nightly @dashboards',
+  async ({ I, dashboardPage, links, current }) => {
+    I.amOnPage(current.startUrl);
     dashboardPage.waitForDashboardOpened();
-    await dashboardPage.openGraphDropdownMenu(metricName);
+    await dashboardPage.openGraphDropdownMenu(current.metricName);
     const shareLocator = locate('.dropdown-item-text').withText('Share');
 
     I.waitForVisible(shareLocator, 20);
