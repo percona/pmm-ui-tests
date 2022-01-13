@@ -298,6 +298,12 @@ module.exports = {
         service: 'postgresql',
       } : undefined
     ),
+    haproxy: (
+      remoteInstanceStatus.haproxy.haproxy_2.enabled ? {
+        serviceType: 'HAPROXY_SERVICE',
+        service: 'haproxy',
+      } : undefined
+    ),
   },
 
   // General Remote Instances Service List, this is what UI-tests job uses to run remote instances tests.
