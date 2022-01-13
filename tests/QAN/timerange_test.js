@@ -42,19 +42,15 @@ Scenario(
 Scenario(
   'PMM-T432 Open the QAN Dashboard and check that changing absolute time range updates the overview table, URL. @nightly @qan',
   async ({ I, adminPage, qanDetails, qanFilters, qanOverview }) => {
-    I.seeInCurrentUrl('from=now-5m&to=now');
-    qanOverview.selectRow(1);
-    qanFilters.waitForFiltersToLoad();
-    I.seeElement(qanDetails.root);
-
-    adminPage.setAbsoluteTimeRange('2022-01-02 00:00:00', '2022-01-03 23:59:59');
-    I.waitForVisible(qanOverview.elements.noResultTableText, 30);
-    I.seeInCurrentUrl('from=1641070800000&to=1641243599000');
     const today = new Date();
     const date = `${today.getFullYear()}-${today.getMonth() + 1}-${today.getDate()}`;
     const fromString = Date.parse(`${date} 00:00:00`);
     const toString = Date.parse(`${date} 23:59:59`);
 
+    I.seeInCurrentUrl('from=now-5m&to=now');
+    qanOverview.selectRow(1);
+    qanFilters.waitForFiltersToLoad();
+    I.seeElement(qanDetails.root);
     adminPage.setAbsoluteTimeRange(`${date} 00:00:00`, `${date} 23:59:59`);
     I.seeInCurrentUrl(`from=${fromString}&to=${toString}`);
     I.dontSeeElement(qanDetails.root);
