@@ -103,7 +103,6 @@ exports.config = {
   bootstrap: false,
   teardown: null,
   hooks: [],
-  timeout: 600,
   gherkin: {},
   tests: 'tests/**/*_test.js',
   name: 'pmm-qa',
