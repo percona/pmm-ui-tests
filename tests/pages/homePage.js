@@ -89,7 +89,7 @@ module.exports = {
     'TASK [Reread supervisord configuration again]',
     'TASK [Restart services]',
     'TASK [Update/restart other services]',
-    'TASK [Check supervisord log]',
+//     'TASK [Check supervisord log]',
   ],
 
   serviceDashboardLocator: (serviceName) => locate('a').withText(serviceName),
