@@ -14,6 +14,10 @@ module.exports = {
     noClassic: '//pre[contains(text(), "No classic explain found")]',
     noJSON: '//pre[contains(text(), "No JSON explain found")]',
     examplesCodeBlock: '$pmm-overlay-wrapper',
+    planInfoIcon: locate('$pmm-overlay-wrapper').find('//div/div/div/svg'),
+    tooltipPlanId: locate('.popper__background.popper__background--info'),
+    planText: locate('pre').find('code'),
+    emptyPlanText: locate('pre').withText('No plan found'),
   },
 
   getFilterSectionLocator: (filterSectionName) => `//span[contains(text(), '${filterSectionName}')]`,
@@ -49,6 +53,33 @@ module.exports = {
     qanFilters.waitForFiltersToLoad();
     I.dontSeeElement(this.elements.noClassic);
     I.dontSeeElement(this.elements.noJSON);
+  },
+
+  checkPlanTab() {
+    I.waitForVisible(this.getTabLocator('Plan'), 30);
+    I.click(this.getTabLocator('Plan'));
+    I.wait(5);
+    qanFilters.waitForFiltersToLoad();
+    I.dontSeeElement(this.elements.noClassic);
+    I.dontSeeElement(this.elements.noJSON);
+  },
+
+  async checkPlanTabIsNotEmpty() {
+    I.dontSeeElement(this.elements.emptyPlanText);
+    I.waitForVisible(this.elements.planText, 20);
+    const text = await I.grabTextFrom(this.elements.planText);
+
+    assert.ok(text.length > 0, 'Plan text length must be more than 0');
+  },
+
+  checkPlanTabIsEmpty() {
+    I.waitForVisible(this.elements.emptyPlanText, 20);
+    I.dontSeeElement(this.elements.planInfoIcon);
+  },
+
+  mouseOverPlanInfoIcon() {
+    I.moveCursorTo(this.elements.planInfoIcon);
+    I.waitForVisible(this.elements.tooltipPlanId, 30);
   },
 
   async verifyAvgQueryTime(timeRangeInSec = 300) {

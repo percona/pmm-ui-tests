@@ -164,10 +164,10 @@ module.exports = {
       'File Descriptors Used',
     ],
   },
-  sharePanel:{
+  sharePanel: {
     elements: {
       imageRendererPluginLink: locate('.share-modal-body').find('.external-link'),
-    }
+    },
   },
   proxysqlInstanceSummaryDashboard: {
     url: 'graph/d/proxysql-instance-summary/proxysql-instance-summary',

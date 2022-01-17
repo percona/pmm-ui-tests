@@ -29,6 +29,43 @@ Scenario(
 );
 
 Scenario(
+  'PMM-T1061 Verify Plan and PlanID with pg_stat_monitor @qan',
+  async ({ I, adminPage, qanOverview, qanFilters, qanDetails }) => {
+    qanOverview.waitForOverviewLoaded();
+    adminPage.applyTimeRange('Last 12 hours');
+    qanOverview.waitForOverviewLoaded();
+    qanOverview.searchByValue('SELECT current_database() datname, schemaname, relname, heap_blks_read, heap_blks_hit, idx_blks_read');
+    qanOverview.waitForOverviewLoaded();
+    qanOverview.mouseOverFirstInfoIcon();
+
+    let tooltipQueryId = await I.grabTextFrom(qanOverview.elements.tooltipQueryId);
+
+    tooltipQueryId = tooltipQueryId.split(':');
+    tooltipQueryId = tooltipQueryId[1].trim();
+
+    qanOverview.selectRow(1);
+    qanFilters.waitForFiltersToLoad();
+    qanDetails.checkPlanTab();
+    await qanDetails.checkPlanTabIsNotEmpty();
+    qanDetails.mouseOverPlanInfoIcon();
+
+    let tooltipPlanId = await I.grabTextFrom(qanDetails.elements.tooltipPlanId);
+
+    tooltipPlanId = tooltipPlanId.split(':');
+    tooltipPlanId = tooltipPlanId[1].trim();
+
+    assert.notEqual(tooltipQueryId, tooltipPlanId, 'Plan Id should not be equal to Query Id');
+
+    qanOverview.searchByValue(qanOverview.fields.searchBy, 'SELECT * FROM pg_stat_database');
+    qanOverview.waitForOverviewLoaded();
+    qanOverview.selectRow(1);
+    qanFilters.waitForFiltersToLoad();
+    qanDetails.checkPlanTab();
+    qanDetails.checkPlanTabIsEmpty();
+  },
+);
+
+Scenario(
   'PMM-T146 Verify user is able to see  chart tooltip for time related metric  @qan',
   async ({ I, qanOverview }) => {
     const ROW_NUMBER = 1;
@@ -273,9 +310,7 @@ Scenario(
     qanOverview.waitForOverviewLoaded();
     adminPage.applyTimeRange('Last 1 hour');
     qanOverview.waitForOverviewLoaded();
-    I.waitForVisible(qanOverview.fields.searchBy, 30);
-    I.fillField(qanOverview.fields.searchBy, query);
-    I.pressKey('Enter');
+    qanOverview.searchByValue(query);
     I.waitForElement(qanOverview.elements.querySelector, 30);
     const firstQueryText = await I.grabTextFrom(qanOverview.elements.firstQueryValue);
 
@@ -294,9 +329,7 @@ Scenario(
     await qanOverview.changeGroupBy(groupBy);
     qanOverview.verifyGroupByIs(groupBy);
     qanOverview.waitForOverviewLoaded();
-    I.waitForVisible(qanOverview.fields.searchBy, 30);
-    I.fillField(qanOverview.fields.searchBy, query);
-    I.pressKey('Enter');
+    qanOverview.searchByValue(query);
     I.waitForElement(qanOverview.elements.querySelector, 30);
     const firstQueryText = await I.grabTextFrom(qanOverview.elements.firstQueryValue);
 
@@ -326,7 +359,7 @@ Scenario(
 
 Scenario(
   'PMM-T411 PMM-T400 PMM-T414 Verify search filed is displayed, Verify user is able to search the query id specified time range, Verify searching by Query ID @qan',
-  async ({ I, qanOverview, adminPage }) => {
+  async ({ I, qanOverview }) => {
     qanOverview.waitForOverviewLoaded();
     I.waitForVisible(qanOverview.elements.firstQueryValue, 30);
     const firstQueryText = await I.grabTextFrom(qanOverview.elements.firstQueryValue);
@@ -339,9 +372,7 @@ Scenario(
 
     // fetch the query id field value, split to get just the queryId
     tooltipQueryId = tooltipQueryId[1].trim();
-    I.waitForVisible(qanOverview.fields.searchBy, 30);
-    I.fillField(qanOverview.fields.searchBy, tooltipQueryId);
-    I.pressKey('Enter');
+    qanOverview.searchByValue(tooltipQueryId);
     I.waitForElement(qanOverview.elements.querySelector, 30);
     const firstQuerySearchText = await I.grabTextFrom(qanOverview.elements.firstQueryValue);
 
