@@ -122,7 +122,8 @@ module.exports = {
       I.waitForText(locators.successUpgradeMessage, 1200, locators.successUpgradeMsgSelector);
     }
 
-    if (version > 11 && !this.isAmiUpgrade) {
+    if (!this.isAmiUpgrade) {
+    // if (version > 11 && !this.isAmiUpgrade) {
       // to ensure that the logs window is never empty during upgrade
       I.waitForElement(`//pre[contains(text(), '${milestones[0]}')]`, 1200);
       I.waitForText(locators.successUpgradeMessage, 1200, locators.successUpgradeMsgSelector);
