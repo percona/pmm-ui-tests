@@ -10,7 +10,7 @@ const urls = new DataTable(['url']);
 urls.add([databaseChecksPage.url]);
 urls.add([allChecksPage.url]);
 
-Feature('Database Failed Checks').retry(2);
+Feature('Database Failed Checks');
 
 BeforeSuite(async ({ addInstanceAPI }) => {
   nodeID = await addInstanceAPI.addInstanceForSTT(connection);

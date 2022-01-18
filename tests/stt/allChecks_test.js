@@ -4,7 +4,7 @@ const { perconaServerDB } = inject();
 
 const connection = perconaServerDB.defaultConnection;
 
-Feature('Security Checks: All Checks').retry(2);
+Feature('Security Checks: All Checks');
 
 BeforeSuite(async ({ addInstanceAPI }) => {
   await addInstanceAPI.addInstanceForSTT(connection);

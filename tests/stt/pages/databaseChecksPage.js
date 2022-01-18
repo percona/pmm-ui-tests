@@ -145,7 +145,7 @@ module.exports = {
     I.waitForVisible(this.buttons.startDBChecks, 30);
     I.click(this.buttons.startDBChecks);
     I.verifyPopUpMessage(this.messages.securityChecksDone, 60);
-    I.wait(15);
+    I.wait(60);
     I.refreshPage();
     I.waitForVisible(this.buttons.startDBChecks, 30);
   },
