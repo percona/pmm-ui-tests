@@ -965,9 +965,7 @@ module.exports = {
   },
 
   async grabFailedReportTitles(selector) {
-    const reportNames = await I.grabTextFromAll(selector);
-
-    return reportNames;
+    return await I.grabTextFromAll(selector);
   },
 
   async expandEachDashboardRow(halfToExpand) {

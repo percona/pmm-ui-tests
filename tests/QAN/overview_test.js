@@ -56,7 +56,7 @@ Scenario(
 
     assert.notEqual(tooltipQueryId, tooltipPlanId, 'Plan Id should not be equal to Query Id');
 
-    qanOverview.searchByValue(qanOverview.fields.searchBy, 'SELECT * FROM pg_stat_database');
+    qanOverview.searchByValue('SELECT * FROM pg_stat_database');
     qanOverview.waitForOverviewLoaded();
     qanOverview.selectRow(1);
     qanFilters.waitForFiltersToLoad();
