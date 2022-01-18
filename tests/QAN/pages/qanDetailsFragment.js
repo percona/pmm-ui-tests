@@ -14,7 +14,7 @@ module.exports = {
     noClassic: '//pre[contains(text(), "No classic explain found")]',
     noJSON: '//pre[contains(text(), "No JSON explain found")]',
     examplesCodeBlock: '$pmm-overlay-wrapper',
-    planInfoIcon: locate('$pmm-overlay-wrapper').find('//div/div/div/svg'),
+    planInfoIcon: locate('$query-analytics-details').find('div').after('pre > code'),
     tooltipPlanId: locate('.popper__background.popper__background--info'),
     planText: locate('pre').find('code'),
     emptyPlanText: locate('pre').withText('No plan found'),
