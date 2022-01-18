@@ -117,7 +117,11 @@ module.exports = {
       for (const milestone of milestones) {
         I.waitForElement(`//pre[contains(text(), '${milestone}')]`, 1200);
       }
+
+      I.waitForText(locators.successUpgradeMessage, 1200, locators.successUpgradeMsgSelector);
     } else {
+      I.waitForText(locators.successUpgradeMessage, 1200, locators.successUpgradeMsgSelector);
+
       // Get upgrade logs from a container
       const upgradeLogs = await I.verifyCommand('docker exec pmm-server cat /srv/logs/pmm-update-perform.log');
 
@@ -126,7 +130,6 @@ module.exports = {
       });
     }
 
-    I.waitForText(locators.successUpgradeMessage, 1200, locators.successUpgradeMsgSelector);
     if (version < 12) {
       // we have a bug we need this https://jira.percona.com/browse/PMM-9294
       I.wait(60);
