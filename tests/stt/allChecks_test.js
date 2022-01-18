@@ -72,7 +72,7 @@ Scenario(
     const checkName = 'MySQL Version';
 
     // Run DB Checks from UI
-    databaseChecksPage.runDBChecks();
+    await databaseChecksPage.runDBChecks();
 
     // Check that there is MySQL version failed check
     await securityChecksAPI.verifyFailedCheckExists(detailsText);
@@ -89,7 +89,7 @@ Scenario(
     I.seeTextEquals('Disabled', allChecksPage.elements.statusCellByName(checkName));
 
     // Run DB Checks from UI
-    databaseChecksPage.runDBChecks();
+    await databaseChecksPage.runDBChecks();
 
     // Verify there is no MySQL Version failed check
     await securityChecksAPI.verifyFailedCheckNotExists(detailsText);

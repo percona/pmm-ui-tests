@@ -21,7 +21,7 @@ module.exports = {
       I.wait(1);
     }
 
-    assert.ok(result.length, 'Timed out waiting.');
+    assert.fail('Timed out waiting.');
   },
 
   /* Since Enabling STT checks clears existing Checks Results,

@@ -66,7 +66,7 @@ xScenario(
     I, adminPage, databaseChecksPage, pmmSettingsPage, settingsAPI, securityChecksAPI,
   }) => {
     await settingsAPI.apiEnableSTT();
-    await securityChecksAPI.waitForSecurityChecksResults(20);
+    await securityChecksAPI.waitForSecurityChecksResults(120);
     I.amOnPage(pmmSettingsPage.url);
     await pmmSettingsPage.waitForPmmSettingsPageLoaded();
     await adminPage.selectItemFromPMMDropdown('PMM Database Checks');
@@ -82,7 +82,7 @@ Scenario(
     I, homePage, databaseChecksPage, settingsAPI, securityChecksAPI,
   }) => {
     await settingsAPI.apiEnableSTT();
-    await securityChecksAPI.waitForSecurityChecksResults(20);
+    await securityChecksAPI.waitForSecurityChecksResults(120);
     I.amOnPage(homePage.url);
     I.waitForVisible(homePage.fields.checksPanelSelector, 30);
     I.waitForVisible(homePage.fields.sttFailedChecksPanelSelector, 30);
@@ -99,7 +99,7 @@ Scenario(
     const row = 1;
 
     await settingsAPI.apiEnableSTT();
-    await securityChecksAPI.waitForSecurityChecksResults(20);
+    await securityChecksAPI.waitForSecurityChecksResults(120);
     I.amOnPage(databaseChecksPage.url);
     await databaseChecksPage.verifyDatabaseChecksPageOpened();
     databaseChecksPage.mouseOverInfoIcon(row);

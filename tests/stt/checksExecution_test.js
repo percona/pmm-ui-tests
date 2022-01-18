@@ -26,7 +26,7 @@ const cleanup = async () => {
 
 const prepareFailedCheck = async () => {
   // Run DB Checks from UI
-  databaseChecksPage.runDBChecks();
+  await databaseChecksPage.runDBChecks();
 
   // Check that there is MySQL user empty password failed check
   await securityChecksAPI.verifyFailedCheckExists(emptyPasswordSummary);
@@ -72,7 +72,7 @@ Scenario(
     await perconaServerDB.setUserPassword();
 
     // Run DB Checks from UI
-    databaseChecksPage.runDBChecks();
+    await databaseChecksPage.runDBChecks();
 
     // Verify there is no MySQL user empty password failed check
     await securityChecksAPI.verifyFailedCheckNotExists(emptyPasswordSummary);
@@ -86,7 +86,7 @@ Scenario(
   }) => {
     await settingsAPI.changeSettings({ stt: false });
     await settingsAPI.changeSettings({ stt: true });
-    await securityChecksAPI.waitForSecurityChecksResults(30);
+    await securityChecksAPI.waitForSecurityChecksResults(120);
     I.amOnPage(homePage.url);
     I.waitForVisible(homePage.fields.checksPanelSelector, 30);
     I.dontSeeElement(homePage.fields.noFailedChecksInPanel);
@@ -157,8 +157,8 @@ Scenario(
     await securityChecksAPI.disableCheck(securityChecksAPI.checkNames.mysqlEmptyPassword);
     await settingsAPI.setCheckIntervals({ ...intervals, standard_interval: '3s' });
 
-    // Wait 30 seconds for Empty Password check execution
-    I.wait(30);
+    // Wait 60 seconds for Empty Password check execution
+    I.wait(60);
 
     I.refreshPage();
     I.waitForVisible(databaseChecksPage.fields.dbCheckPanelSelector, 30);

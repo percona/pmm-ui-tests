@@ -172,7 +172,7 @@ if (versionMinor >= 15) {
         I.click(runChecks);
         I.waitForVisible(failedCheckRowLocator, 60);
         // Waiting to have all results
-        I.wait(15);
+        I.wait(60);
         await securityChecksAPI.disableCheck('mongodb_version');
         await securityChecksAPI.changeCheckInterval('postgresql_version');
         await settingsAPI.setCheckIntervals({

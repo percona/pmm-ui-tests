@@ -1,4 +1,6 @@
-const { I, pmmInventoryPage, settingsAPI } = inject();
+const {
+  I, pmmInventoryPage, settingsAPI, securityChecksAPI,
+} = inject();
 const assert = require('assert');
 // xpath used here because locate('th').withText('') method does not work correctly
 const locateChecksHeader = (header) => `//th[text()='${header}']`;
@@ -140,12 +142,13 @@ module.exports = {
     }
   },
 
-  runDBChecks() {
+  async runDBChecks() {
     I.amOnPage(this.url);
     I.waitForVisible(this.buttons.startDBChecks, 30);
     I.click(this.buttons.startDBChecks);
     I.verifyPopUpMessage(this.messages.securityChecksDone, 60);
-    I.wait(60);
+    await securityChecksAPI.waitForSecurityChecksResults(120);
+    I.wait(30);
     I.refreshPage();
     I.waitForVisible(this.buttons.startDBChecks, 30);
   },
