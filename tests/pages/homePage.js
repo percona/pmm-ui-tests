@@ -93,6 +93,7 @@ module.exports = {
   ],
 
   serviceDashboardLocator: (serviceName) => locate('a').withText(serviceName),
+  isAmiUpgrade: process.env.AMI_UPGRADE_TESTING_INSTANCE === 'true',
 
   async open() {
     I.amOnPage(this.url);
@@ -113,13 +114,15 @@ module.exports = {
     I.waitForText(locators.inProgressMessage, 30, locators.updateProgressModal);
 
     // skipping milestones checks for 2.9 and 2.10, 2.11 versions due logs not showing issue
-    if (version > 11 && process.env.AMI_UPGRADE_TESTING_INSTANCE === 'true') {
+    if (version > 11 && this.isAmiUpgrade) {
       for (const milestone of milestones) {
         I.waitForElement(`//pre[contains(text(), '${milestone}')]`, 1200);
       }
 
       I.waitForText(locators.successUpgradeMessage, 1200, locators.successUpgradeMsgSelector);
-    } else {
+    }
+
+    if (version > 11 && !this.isAmiUpgrade) {
       I.waitForText(locators.successUpgradeMessage, 1200, locators.successUpgradeMsgSelector);
 
       // Get upgrade logs from a container
