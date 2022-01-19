@@ -247,38 +247,22 @@ Scenario('PMM-T509 Verify Deleting Db Cluster in Pending Status is possible @dba
 
 // Skipped due to failure at I.waitForInvisible(dbaasPage.tabs.dbClusterTab.fields.clusterStatusDeleting, 60);
 xScenario('Verify Adding PMM-Server Public Address via Settings works @dbaas',
-  async ({
-    I, dbaasPage, pmmSettingsPage,
-  }) => {
-    const sectionNameToExpand = pmmSettingsPage.sectionTabsList.advanced;
-
-    I.amOnPage(pmmSettingsPage.url);
-    await pmmSettingsPage.waitForPmmSettingsPageLoaded();
-    await pmmSettingsPage.expandedSection(sectionNameToExpand, pmmSettingsPage.fields.advancedButton);
-    await pmmSettingsPage.waitForPmmSettingsPageLoaded();
-
+  async ({ I, dbaasPage, pmmSettingsPage }) => {
+    await pmmSettingsPage.openAdvancedSettings();
+    await pmmSettingsPage.verifyTooltip(pmmSettingsPage.tooltips.publicAddress);
     I.waitForVisible(pmmSettingsPage.fields.publicAddressInput, 30);
-    I.seeElement(pmmSettingsPage.fields.publicAddressInput);
     I.seeElement(pmmSettingsPage.fields.publicAddressButton);
     I.click(pmmSettingsPage.fields.publicAddressButton);
     let publicAddress = await I.grabValueFrom(pmmSettingsPage.fields.publicAddressInput);
 
-    assert.ok(
-      publicAddress === process.env.SERVER_IP,
-      `Expected the Public Address Input Field to Match ${process.env.SERVER_IP} but found ${publicAddress}`,
-    );
-    I.click(pmmSettingsPage.fields.advancedButton);
-    I.verifyPopUpMessage(pmmSettingsPage.messages.successPopUpMessage);
+    I.assertEqual(publicAddress, process.env.SERVER_IP,
+      `Expected the Public Address Input Field to Match ${process.env.SERVER_IP} but found ${publicAddress}`);
+    pmmSettingsPage.applyChanges();
     I.refreshPage();
     await pmmSettingsPage.waitForPmmSettingsPageLoaded();
-    await pmmSettingsPage.expandedSection(sectionNameToExpand, pmmSettingsPage.fields.advancedButton);
-    await pmmSettingsPage.waitForPmmSettingsPageLoaded();
     publicAddress = await I.grabValueFrom(pmmSettingsPage.fields.publicAddressInput);
-
-    assert.ok(
-      publicAddress === process.env.SERVER_IP,
-      `Expected the Public Address to be saved and Match ${process.env.SERVER_IP} but found ${publicAddress}`,
-    );
+    I.assertEqual(publicAddress, process.env.SERVER_IP,
+      `Expected the Public Address to be saved and Match ${process.env.SERVER_IP} but found ${publicAddress}`);
     await dbaasPage.waitForDbClusterTab(clusterName);
     I.waitForInvisible(dbaasPage.tabs.kubernetesClusterTab.disabledAddButton, 30);
     I.waitForInvisible(dbaasPage.tabs.kubernetesClusterTab.tableLoading, 30);
