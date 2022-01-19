@@ -31,6 +31,7 @@ Scenario(
 Scenario(
   'PMM-T1061 Verify Plan and PlanID with pg_stat_monitor @qan',
   async ({ I, adminPage, qanOverview, qanFilters, qanDetails }) => {
+    qanFilters.applyFilter('pdpgsql-dev');
     qanOverview.waitForOverviewLoaded();
     adminPage.applyTimeRange('Last 12 hours');
     qanOverview.waitForOverviewLoaded();
@@ -55,7 +56,7 @@ Scenario(
     tooltipPlanId = tooltipPlanId[1].trim();
 
     assert.notEqual(tooltipQueryId, tooltipPlanId, 'Plan Id should not be equal to Query Id');
-
+    I.click(qanFilters.buttons.resetAll);
     qanOverview.searchByValue('SELECT * FROM pg_stat_database');
     qanOverview.waitForOverviewLoaded();
     qanOverview.selectRow(1);
