@@ -5,6 +5,12 @@ const assert = require('assert');
 
 module.exports = {
   url: 'graph/dbaas',
+  apiKeysUrl: 'graph/org/apikeys',
+
+  apiKeysWarning: {
+    apiKeysWarningText: 'If a resource (e.g. DB cluster) uses an API key, deleting that API key might affect the functionality of that resource.',
+    apiKeysWarningLocator: '$warning-block',
+  },
   disabledDbaaSMessage: {
     textMessage: 'DBaaS is disabled. You can enable it in PMM Settings.',
     settingsLinkLocator: '$settings-link',
