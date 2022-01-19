@@ -3,6 +3,7 @@ module.exports = {
     I: './tests/custom_steps.js',
     codeceptjsConfig: './pr.codecept.js',
     addInstanceAPI: './tests/pages/api/addInstanceAPI.js',
+    addInstancePage: './tests/pages/addInstancePage.js',
     amiInstanceAPI: './tests/pages/api/amiInstanceAPI.js',
     adminPage: './tests/pages/adminPage.js',
     alertRulesPage: './tests/ia/pages/alertRulesPage.js',
