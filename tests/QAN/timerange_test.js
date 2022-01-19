@@ -1,3 +1,4 @@
+const moment = require("moment");
 Feature('QAN timerange').retry(1);
 
 Before(async ({
@@ -32,6 +33,26 @@ Scenario(
     adminPage.applyTimeRange('Last 3 hours');
     qanOverview.waitForOverviewLoaded();
     I.seeInCurrentUrl('from=now-3h&to=now');
+    I.dontSeeElement(qanDetails.root);
+    qanOverview.selectRow(1);
+    qanFilters.waitForFiltersToLoad();
+    I.seeElement(qanDetails.root);
+  },
+);
+
+Scenario(
+  'PMM-T432 Open the QAN Dashboard and check that changing absolute time range updates the overview table, URL. @nightly @qan',
+  async ({ I, adminPage, qanDetails, qanFilters, qanOverview }) => {
+    const date = moment().format('YYYY-MM-DD');
+    const fromString = Date.parse(`${date} 00:00:00`);
+    const toString = Date.parse(`${date} 23:59:59`);
+
+    I.seeInCurrentUrl('from=now-5m&to=now');
+    qanOverview.selectRow(1);
+    qanFilters.waitForFiltersToLoad();
+    I.seeElement(qanDetails.root);
+    adminPage.setAbsoluteTimeRange(`${date} 00:00:00`, `${date} 23:59:59`);
+    I.seeInCurrentUrl(`from=${fromString}&to=${toString}`);
     I.dontSeeElement(qanDetails.root);
     qanOverview.selectRow(1);
     qanFilters.waitForFiltersToLoad();
