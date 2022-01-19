@@ -92,7 +92,8 @@ Scenario('PMM-T427 - Verify elements on PMM DBaaS page @dbaas',
     I.waitForVisible(dbaasPage.tabs.kubernetesClusterTab.addKubernetesClusterButtonInTable, 30);
   });
 
-Scenario('PMM-T547 PMM-T548  Verify user is able to view config of registered Kubernetes cluster on Kubernetes Cluster Page @dbaas',
+Scenario('PMM-T547 PMM-T548  Verify user is able to view config of registered Kubernetes cluster on Kubernetes Cluster Page, ' +
+ 'PMM-T1130 - Verify warning about deleting an API key @dbaas',
   async ({ I, dbaasPage, dbaasAPI }) => {
     await dbaasAPI.apiRegisterCluster(process.env.kubeconfig_minikube, clusterName);
     I.amOnPage(dbaasPage.url);
@@ -108,6 +109,9 @@ Scenario('PMM-T547 PMM-T548  Verify user is able to view config of registered Ku
     const configuration = await I.grabTextFrom(dbaasPage.tabs.kubernetesClusterTab.clusterConfigurationText);
 
     assert.ok(configuration === process.env.kubeconfig_minikube, `The configuration shown is not equal to the expected Cluster configuration, ${configuration}`);
+    // PMM-T1130
+    I.amOnPage(dbaasPage.apiKeysUrl);
+    I.waitForText(dbaasPage.apiKeysWarning.apiKeysWarningText, 10, dbaasPage.apiKeysWarning.apiKeysWarningLocator);
     await dbaasAPI.apiUnregisterCluster(clusterName);
   });
 
