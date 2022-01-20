@@ -8,28 +8,6 @@ module.exports = {
     mysqlEmptyPassword: 'mysql_security_1',
   },
 
-  async waitForCallbackWithTimeout(cb, timeout = 30) {
-    let result = [];
-
-    for (let i = 0; i < timeout; i++) {
-      result = await cb();
-
-      if (result && result.length) {
-        return;
-      }
-
-      I.wait(1);
-    }
-
-    assert.fail('Timed out waiting.');
-  },
-
-  /* Since Enabling STT checks clears existing Checks Results,
-   this method is used for waiting for results with a timeout */
-  async waitForSecurityChecksResults(timeout) {
-    await this.waitForCallbackWithTimeout(this.getSecurityChecksResults, timeout);
-  },
-
   async getSecurityChecksResults() {
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
 
@@ -60,19 +38,30 @@ module.exports = {
     assert.ok(!failedCheckDoesNotExist, `Expected "${detailsText}" failed check to not be present`);
   },
 
+  async waitForFailedCheckExistance(detailsText, serviceName, timeout = 120) {
+    await I.asyncWaitFor(async () => (await this.getFailedCheckBySummary(detailsText, serviceName)) !== undefined, timeout);
+    I.wait(5);
+  },
+
+  async waitForFailedCheckNonExistance(detailsText, serviceName, timeout = 120) {
+    await I.asyncWaitFor(async () => (await this.getFailedCheckBySummary(detailsText, serviceName)) === undefined, timeout);
+    I.wait(5);
+  },
+
   async verifyFailedCheckExists(detailsText, serviceName) {
     const failedCheckExists = await this.getFailedCheckBySummary(detailsText, serviceName);
 
     assert.ok(failedCheckExists, `Expected to have "${detailsText}" failed check.`);
   },
 
-  async getFailedCheckBySummary(summaryText) {
+  async getFailedCheckBySummary(summaryText, serviceName) {
     const results = await this.getSecurityChecksResults();
 
     // return null if there are no failed checks
     if (!results) return null;
 
-    return results.find((obj) => obj.summary.trim() === summaryText);
+    // eslint-disable-next-line max-len
+    return results.find((obj) => obj.summary.trim() === summaryText && (serviceName ? obj.service_name.trim() === serviceName : true));
   },
 
   async enableCheck(checkName) {
@@ -139,7 +128,7 @@ module.exports = {
       params: [],
     };
 
-    await this.waitForCallbackWithTimeout(this.getAllChecksList, 60);
+    await I.asyncWaitFor(this.getAllChecksList, 60);
     const allChecks = await this.getAllChecksList();
 
     allChecks.forEach(({ name }) => body.params.push({ name, interval: 'STANDARD' }));

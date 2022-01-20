@@ -1,5 +1,5 @@
 const {
-  I, pmmInventoryPage, settingsAPI, securityChecksAPI,
+  I, pmmInventoryPage, settingsAPI,
 } = inject();
 const assert = require('assert');
 // xpath used here because locate('th').withText('') method does not work correctly
@@ -48,6 +48,21 @@ module.exports = {
   // Locator for checks results in Failed Checks column
   numberOfFailedChecksLocator(rowNumber = 1) {
     return `//tbody/tr[${rowNumber}]/td[1]/following-sibling::td/div/span[1]`;
+  },
+
+  openDBChecksPage() {
+    I.amOnPage(this.url);
+    I.waitForVisible(this.buttons.startDBChecks, 30);
+  },
+
+  async verifyFailedCheckNotExists(checkSummary) {
+    await this.openDBChecksPage();
+    I.dontSee(checkSummary);
+  },
+
+  async verifyFailedCheckExists(checkSummary) {
+    await this.openDBChecksPage();
+    I.see(checkSummary);
   },
   /*
    Method for verifying elements on a page when STT is enabled and disabled
@@ -147,9 +162,5 @@ module.exports = {
     I.waitForVisible(this.buttons.startDBChecks, 30);
     I.click(this.buttons.startDBChecks);
     I.verifyPopUpMessage(this.messages.securityChecksDone, 60);
-    await securityChecksAPI.waitForSecurityChecksResults(120);
-    I.wait(30);
-    I.refreshPage();
-    I.waitForVisible(this.buttons.startDBChecks, 30);
   },
 };

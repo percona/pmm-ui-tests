@@ -10,10 +10,15 @@ const urls = new DataTable(['url']);
 urls.add([databaseChecksPage.url]);
 urls.add([allChecksPage.url]);
 
+const psServiceName = 'databaseChecks-ps-5.7.30';
+const detailsText = process.env.OVF_TEST === 'yes'
+  ? 'Newer version of MySQL is available'
+  : 'Newer version of Percona Server for MySQL is available';
+
 Feature('Database Failed Checks');
 
 BeforeSuite(async ({ addInstanceAPI }) => {
-  nodeID = await addInstanceAPI.addInstanceForSTT(connection);
+  nodeID = await addInstanceAPI.addInstanceForSTT(connection, psServiceName);
 });
 
 AfterSuite(async ({ inventoryAPI }) => {
@@ -66,7 +71,7 @@ xScenario(
     I, adminPage, databaseChecksPage, pmmSettingsPage, settingsAPI, securityChecksAPI,
   }) => {
     await settingsAPI.apiEnableSTT();
-    await securityChecksAPI.waitForSecurityChecksResults(120);
+    await securityChecksAPI.waitForFailedCheckExistance(detailsText, psServiceName);
     I.amOnPage(pmmSettingsPage.url);
     await pmmSettingsPage.waitForPmmSettingsPageLoaded();
     await adminPage.selectItemFromPMMDropdown('PMM Database Checks');
@@ -77,12 +82,13 @@ xScenario(
 );
 
 Scenario(
-  'PMM-T233 Verify user can see Number of failed checks at Home Page and open PMM Database Checks page from it [critical] @stt',
+  'PMM-T233 Verify user can open PMM Database Checks page from it [critical] @stt',
   async ({
     I, homePage, databaseChecksPage, settingsAPI, securityChecksAPI,
   }) => {
     await settingsAPI.apiEnableSTT();
-    await securityChecksAPI.waitForSecurityChecksResults(120);
+    await securityChecksAPI.waitForFailedCheckExistance(detailsText, psServiceName);
+    I.wait(5);
     I.amOnPage(homePage.url);
     I.waitForVisible(homePage.fields.checksPanelSelector, 30);
     I.waitForVisible(homePage.fields.sttFailedChecksPanelSelector, 30);
@@ -99,7 +105,7 @@ Scenario(
     const row = 1;
 
     await settingsAPI.apiEnableSTT();
-    await securityChecksAPI.waitForSecurityChecksResults(120);
+    await securityChecksAPI.waitForFailedCheckExistance(detailsText, psServiceName);
     I.amOnPage(databaseChecksPage.url);
     await databaseChecksPage.verifyDatabaseChecksPageOpened();
     databaseChecksPage.mouseOverInfoIcon(row);
@@ -109,9 +115,10 @@ Scenario(
 
 Scenario(
   'PMM-T241 Verify user can see correct service name for failed checks [critical] @stt',
-  async ({ databaseChecksPage, settingsAPI }) => {
+  async ({ databaseChecksPage, settingsAPI, securityChecksAPI }) => {
     await settingsAPI.apiEnableSTT();
     await databaseChecksPage.runDBChecks();
+    await securityChecksAPI.waitForFailedCheckExistance(detailsText, psServiceName);
     await databaseChecksPage.verifyServiceNamesExistence();
   },
 );

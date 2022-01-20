@@ -25,11 +25,10 @@ const cleanup = async () => {
 };
 
 const prepareFailedCheck = async () => {
-  // Run DB Checks from UI
-  await databaseChecksPage.runDBChecks();
+  await securityChecksAPI.startSecurityChecks();
 
   // Check that there is MySQL user empty password failed check
-  await securityChecksAPI.verifyFailedCheckExists(emptyPasswordSummary);
+  await securityChecksAPI.waitForFailedCheckExistance(emptyPasswordSummary, psServiceName);
 };
 
 Feature('Security Checks: Checks Execution');
@@ -74,8 +73,9 @@ Scenario(
     // Run DB Checks from UI
     await databaseChecksPage.runDBChecks();
 
+    await securityChecksAPI.waitForFailedCheckNonExistance(emptyPasswordSummary, psServiceName);
     // Verify there is no MySQL user empty password failed check
-    await securityChecksAPI.verifyFailedCheckNotExists(emptyPasswordSummary);
+    await databaseChecksPage.verifyFailedCheckNotExists(emptyPasswordSummary);
   },
 );
 
@@ -86,7 +86,10 @@ Scenario(
   }) => {
     await settingsAPI.changeSettings({ stt: false });
     await settingsAPI.changeSettings({ stt: true });
-    await securityChecksAPI.waitForSecurityChecksResults(120);
+
+    // Wait for MySQL user empty password failed check
+    await securityChecksAPI.waitForFailedCheckExistance(emptyPasswordSummary, psServiceName);
+    I.wait(5);
     I.amOnPage(homePage.url);
     I.waitForVisible(homePage.fields.checksPanelSelector, 30);
     I.dontSeeElement(homePage.fields.noFailedChecksInPanel);
@@ -124,7 +127,7 @@ Scenario(
 Data(intervalsTests).Scenario(
   'PMM-T706 PMM-709 PMM-T711 Verify checks are executed based on interval value, change interval, fix problem [critical] @stt @not-ovf',
   async ({
-    I, securityChecksAPI, settingsAPI, perconaServerDB, databaseChecksPage, current,
+    securityChecksAPI, settingsAPI, perconaServerDB, databaseChecksPage, current,
   }) => {
     await prepareFailedCheck();
     await perconaServerDB.setUserPassword();
@@ -137,33 +140,25 @@ Data(intervalsTests).Scenario(
 
     await settingsAPI.setCheckIntervals({ ...intervals, [current.interval]: '3s' });
 
-    // Wait 60 seconds for Empty Password check execution
-    I.wait(60);
-
-    I.refreshPage();
-    I.waitForVisible(databaseChecksPage.fields.dbCheckPanelSelector, 30);
+    await securityChecksAPI.waitForFailedCheckNonExistance(emptyPasswordSummary, psServiceName);
 
     // Verify there is no MySQL user empty password failed check
-    await securityChecksAPI.verifyFailedCheckNotExists(emptyPasswordSummary);
+    await databaseChecksPage.verifyFailedCheckNotExists(emptyPasswordSummary);
   },
 );
 
 Scenario(
   'PMM-T757 Verify disabled checks do not execute based on interval value [critical] @stt @not-ovf',
   async ({
-    I, securityChecksAPI, settingsAPI, databaseChecksPage,
+    securityChecksAPI, settingsAPI, databaseChecksPage,
   }) => {
     await prepareFailedCheck();
     await securityChecksAPI.disableCheck(securityChecksAPI.checkNames.mysqlEmptyPassword);
     await settingsAPI.setCheckIntervals({ ...intervals, standard_interval: '3s' });
 
-    // Wait 60 seconds for Empty Password check execution
-    I.wait(60);
-
-    I.refreshPage();
-    I.waitForVisible(databaseChecksPage.fields.dbCheckPanelSelector, 30);
+    await securityChecksAPI.waitForFailedCheckNonExistance(emptyPasswordSummary, psServiceName);
 
     // Verify there is no MySQL user empty password failed check
-    await securityChecksAPI.verifyFailedCheckNotExists(emptyPasswordSummary);
+    await databaseChecksPage.verifyFailedCheckNotExists(emptyPasswordSummary);
   },
 );

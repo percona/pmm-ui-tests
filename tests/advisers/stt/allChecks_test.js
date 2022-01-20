@@ -3,11 +3,12 @@ const assert = require('assert');
 const { perconaServerDB } = inject();
 
 const connection = perconaServerDB.defaultConnection;
+const psServiceName = 'allChecks-ps-5.7.30';
 
 Feature('Security Checks: All Checks');
 
 BeforeSuite(async ({ addInstanceAPI }) => {
-  await addInstanceAPI.addInstanceForSTT(connection);
+  await addInstanceAPI.addInstanceForSTT(connection, psServiceName);
 });
 
 Before(async ({ I, settingsAPI, securityChecksAPI }) => {
@@ -74,8 +75,11 @@ Scenario(
     // Run DB Checks from UI
     await databaseChecksPage.runDBChecks();
 
-    // Check that there is MySQL version failed check
-    await securityChecksAPI.verifyFailedCheckExists(detailsText);
+    // Wait for MySQL version failed check
+    await securityChecksAPI.waitForFailedCheckExistance(detailsText, psServiceName);
+
+    // Verify failed check on UI
+    await databaseChecksPage.verifyFailedCheckExists(detailsText);
 
     // Disable MySQL Version check
     I.amOnPage(allChecksPage.url);
@@ -90,9 +94,10 @@ Scenario(
 
     // Run DB Checks from UI
     await databaseChecksPage.runDBChecks();
+    await securityChecksAPI.waitForFailedCheckNonExistance(detailsText, psServiceName);
 
     // Verify there is no MySQL Version failed check
-    await securityChecksAPI.verifyFailedCheckNotExists(detailsText);
+    await databaseChecksPage.verifyFailedCheckNotExists(detailsText);
   },
 );
 

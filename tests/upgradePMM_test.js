@@ -425,7 +425,6 @@ if (versionMinor >= 15) {
   Scenario(
     'Verify Redis as external Service Works After Upgrade @post-upgrade @pmm-upgrade',
     async ({
-      I, dashboardPage, remoteInstancesHelper,
       I, grafanaAPI, remoteInstancesHelper,
     }) => {
       // Make sure Metrics are hitting before Upgrade
