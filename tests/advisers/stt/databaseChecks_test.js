@@ -82,13 +82,13 @@ xScenario(
 );
 
 Scenario(
-  'PMM-T233 Verify user can open PMM Database Checks page from it [critical] @stt',
+  'PMM-T233 Verify user can open PMM Database Checks page from home dashboard [critical] @stt',
   async ({
     I, homePage, databaseChecksPage, settingsAPI, securityChecksAPI,
   }) => {
     await settingsAPI.apiEnableSTT();
     await securityChecksAPI.waitForFailedCheckExistance(detailsText, psServiceName);
-    I.wait(5);
+    I.wait(15);
     I.amOnPage(homePage.url);
     I.waitForVisible(homePage.fields.checksPanelSelector, 30);
     I.waitForVisible(homePage.fields.sttFailedChecksPanelSelector, 30);
