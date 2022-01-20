@@ -23,7 +23,7 @@ const singleNodeConfiguration = {
   memory: '1.2 GB',
   cpu: '0.2',
   disk: '25 GB',
-  dbType: 'MySQL 8.0.23',
+  dbType: 'MySQL 8.0.25',
   clusterDashboardRedirectionLink: dbaasPage.clusterDashboardUrls.pxcDashboard(pxc_cluster_name_single),
 };
 
@@ -64,7 +64,7 @@ Scenario('PMM-T459, PMM-T473, PMM-T478, PMM-T524 Verify DB Cluster Details are l
   async ({ I, dbaasPage, dbaasActionsPage }) => {
     const clusterDetails = {
       clusterDashboardRedirectionLink: dbaasPage.clusterDashboardUrls.pxcDashboard(pxc_cluster_name),
-      dbType: 'MySQL 8.0.23',
+      dbType: 'MySQL 8.0.25',
       memory: '2 GB',
       cpu: '1',
       disk: '25 GB',
@@ -179,7 +179,7 @@ Scenario('PMM-T488, PMM-T489 Verify editing PXC cluster changing single node to 
       memory: '1 GB',
       cpu: '0.5',
       disk: '25 GB',
-      dbType: 'MySQL 8.0.23',
+      dbType: 'MySQL 8.0.25',
       clusterDashboardRedirectionLink: dbaasPage.clusterDashboardUrls.pxcDashboard(pxc_cluster_name_single),
     };
 
@@ -206,7 +206,7 @@ Scenario('PMM-T525 PMM-T528 Verify Suspend & Resume for DB Cluster Works as expe
       clusterDashboardRedirectionLink: dbaasPage.clusterDashboardUrls.pxcDashboard(
         pxc_cluster_suspend_resume,
       ),
-      dbType: 'MySQL 8.0.23',
+      dbType: 'MySQL 8.0.25',
       memory: '2 GB',
       cpu: '1',
       disk: '25 GB',
