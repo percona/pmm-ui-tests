@@ -32,7 +32,9 @@ Before(async ({ I }) => {
 
 Scenario(
   'PMM-T317 - Open the MySQL Instance Summary Dashboard and verify Metrics are present and graphs are displayed @nightly @dashboards',
-  async ({ I, adminPage, dashboardPage }) => {
+  async ({
+    I, adminPage, dashboardPage,
+  }) => {
     for (const serviceName of serviceList) {
       I.amOnPage(dashboardPage.mysqlInstanceSummaryDashboard.url);
       dashboardPage.waitForDashboardOpened();
@@ -42,7 +44,7 @@ Scenario(
       adminPage.performPageDown(5);
       dashboardPage.verifyMetricsExistence(dashboardPage.mysqlInstanceSummaryDashboard.metrics);
       await dashboardPage.verifyThereAreNoGraphsWithNA();
-      await dashboardPage.verifyThereAreNoGraphsWithoutData(4);
+      await dashboardPage.verifyThereAreNoGraphsWithoutData(5);
     }
   },
 );
@@ -128,7 +130,7 @@ Scenario(
     const ps_service_response = await inventoryAPI.apiGetNodeInfoForAllNodesByServiceName('MYSQL_SERVICE', 'ps_');
 
     dashboardPage.waitForDashboardOpened();
-    await dashboardPage.applyFilter('Service Name', ps_service_response);
+    await dashboardPage.applyFilter('Service Name', ps_service_response[0].service_name);
     adminPage.performPageDown(5);
     await dashboardPage.expandEachDashboardRow();
     adminPage.performPageUp(5);
