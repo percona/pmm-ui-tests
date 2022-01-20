@@ -127,7 +127,7 @@ Scenario(
   'PMM-T324 - Verify MySQL - MySQL User Details dashboard @nightly @dashboards',
   async ({ I, dashboardPage, adminPage }) => {
     I.amOnPage(dashboardPage.mysqlUserDetailsDashboard.url);
-    const ps_service_response = await inventoryAPI.apiGetNodeInfoForAllNodesByServiceName('MYSQL_SERVICE', 'ps_');
+    const ps_service_response = await inventoryAPI.apiGetNodeInfoForAllNodesByServiceName('MYSQL_SERVICE', 'ps_8.0');
 
     dashboardPage.waitForDashboardOpened();
     await dashboardPage.applyFilter('Service Name', ps_service_response[0].service_name);
