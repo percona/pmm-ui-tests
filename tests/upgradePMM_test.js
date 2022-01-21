@@ -19,8 +19,9 @@ clientDbServices.add(['MONGODB_SERVICE', 'mongodb_', 'mongodb_connections', 'ann
 
 const connection = perconaServerDB.defaultConnection;
 const emptyPasswordSummary = 'User(s) has/have no password defined';
+const psServiceName = 'upgrade-stt-ps-5.7.30';
 const failedCheckRowLocator = databaseChecksPage.elements
-  .failedCheckRowByServiceName(remoteInstancesHelper.upgradeServiceNames.mysql);
+  .failedCheckRowByServiceName(psServiceName);
 const ruleName = 'Alert Rule for upgrade';
 const failedCheckMessage = 'Newer version of Percona Server for MySQL is available';
 
@@ -149,21 +150,6 @@ Scenario(
   },
 );
 
-Scenario(
-  'Verify user can create Remote Instances before upgrade @pre-upgrade @ami-upgrade @pmm-upgrade',
-  async ({ addInstanceAPI }) => {
-    // Adding instances for monitoring
-    for (const type of Object.values(remoteInstancesHelper.instanceTypes)) {
-      if (type) {
-        await addInstanceAPI.apiAddInstance(
-          type,
-          remoteInstancesHelper.upgradeServiceNames[type.toLowerCase()],
-        );
-      }
-    }
-  },
-);
-
 if (versionMinor >= 15) {
   Scenario(
     'Verify user has failed checks before upgrade @pre-upgrade @pmm-upgrade',
@@ -172,6 +158,7 @@ if (versionMinor >= 15) {
       settingsAPI,
       databaseChecksPage,
       securityChecksAPI,
+      addInstanceAPI,
     }) => {
       const runChecks = locate('button')
         .withText('Run DB checks');
@@ -179,6 +166,7 @@ if (versionMinor >= 15) {
       await perconaServerDB.dropUser();
       await perconaServerDB.createUser();
       await settingsAPI.changeSettings({ stt: true });
+      await addInstanceAPI.addInstanceForSTT(connection, psServiceName);
 
       await securityChecksAPI.startSecurityChecks();
       // Waiting to have results
@@ -222,6 +210,21 @@ if (versionMinor >= 15) {
     },
   );
 }
+
+Scenario(
+  'Verify user can create Remote Instances before upgrade @pre-upgrade @ami-upgrade @pmm-upgrade',
+  async ({ addInstanceAPI }) => {
+    // Adding instances for monitoring
+    for (const type of Object.values(remoteInstancesHelper.instanceTypes)) {
+      if (type) {
+        await addInstanceAPI.apiAddInstance(
+          type,
+          remoteInstancesHelper.upgradeServiceNames[type.toLowerCase()],
+        );
+      }
+    }
+  },
+);
 
 if (versionMinor < 16 && versionMinor >= 10) {
   Scenario(
