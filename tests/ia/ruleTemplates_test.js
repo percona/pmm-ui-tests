@@ -91,7 +91,7 @@ Data(units)
       const [templateName, fileContent, id] = await ruleTemplatesPage.ruleTemplate
         .templateNameAndContent(ruleTemplatesPage.ruleTemplate.inputFilePath);
       const editButton = ruleTemplatesPage.buttons
-        .deleteButtonByName(templateName);
+        .editButtonByName(templateName);
       const deleteButton = ruleTemplatesPage.buttons
         .deleteButtonByName(templateName);
 
@@ -265,5 +265,39 @@ Scenario(
 
     I.seeElementsDisabled(editButton);
     I.seeElementsDisabled(deleteButton);
+  },
+);
+
+Scenario(
+  'PMM-T1126 - Verify there are no STT checks and Templates from Percona if Telemetry is disabled @settings @nightly',
+  async ({ I, homePage, pmmSettingsPage, ruleTemplatesPage }) => {
+    const editButton = ruleTemplatesPage.buttons
+      .editButtonByName('Percona');
+    const deleteButton = ruleTemplatesPage.buttons
+      .deleteButtonByName('Percona');
+
+    await pmmSettingsPage.openAdvancedSettings();
+    I.waitForVisible(pmmSettingsPage.fields.publicAddressInput, 30);
+    await pmmSettingsPage.disableSwitch(pmmSettingsPage.fields.telemetrySwitchSelectorInput,
+      pmmSettingsPage.fields.telemetrySwitchSelector);
+    pmmSettingsPage.verifySwitch(pmmSettingsPage.fields.telemetrySwitchSelectorInput, 'off');
+    await pmmSettingsPage.enableSwitch(pmmSettingsPage.fields.sttSwitchSelectorInput,
+      pmmSettingsPage.fields.sttSwitchSelector);
+    pmmSettingsPage.verifySwitch(pmmSettingsPage.fields.sttSwitchSelectorInput);
+    await pmmSettingsPage.enableSwitch(pmmSettingsPage.fields.iaSwitchSelectorInput,
+      pmmSettingsPage.fields.iaSwitchSelector);
+    pmmSettingsPage.verifySwitch(pmmSettingsPage.fields.iaSwitchSelectorInput);
+    pmmSettingsPage.applyChanges();
+    await homePage.open();
+    I.waitForVisible(homePage.fields.checksPanelSelector, 30);
+    I.waitForVisible(homePage.fields.noFailedChecksInPanel);
+    I.amOnPage(ruleTemplatesPage.url);
+    ruleTemplatesPage.columnHeaders.forEach((header) => {
+      const columnHeader = ruleTemplatesPage.elements.columnHeaderLocator(header);
+
+      I.waitForVisible(columnHeader, 30);
+    });
+    I.dontSeeElement(editButton);
+    I.dontSeeElement(deleteButton);
   },
 );
