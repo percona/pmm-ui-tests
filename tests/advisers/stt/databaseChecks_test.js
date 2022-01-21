@@ -119,6 +119,8 @@ Scenario(
     await settingsAPI.apiEnableSTT();
     await databaseChecksPage.runDBChecks();
     await securityChecksAPI.waitForFailedCheckExistance(detailsText, psServiceName);
+    // Verify failed check on UI
+    await databaseChecksPage.verifyFailedCheckExists(detailsText);
     await databaseChecksPage.verifyServiceNamesExistence(psServiceName);
   },
 );
