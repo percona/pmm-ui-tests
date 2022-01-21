@@ -164,30 +164,26 @@ if (versionMinor >= 15) {
       await perconaServerDB.dropUser();
       await perconaServerDB.createUser();
       await settingsAPI.changeSettings({ stt: true });
+
+      await securityChecksAPI.startSecurityChecks();
+      // Waiting to have results
+      await securityChecksAPI.waitForFailedCheckExistance(emptyPasswordSummary);
       // Run DB Checks from UI
       // disable check, change interval for a check, change interval settings
       if (versionMinor >= 16) {
-        I.amOnPage(databaseChecksPage.url);
-        I.waitForVisible(runChecks, 30);
-        I.click(runChecks);
-        I.waitForVisible(failedCheckRowLocator, 60);
-        // Waiting to have results
-        await securityChecksAPI.waitForFailedCheckExistance(emptyPasswordSummary);
         await securityChecksAPI.disableCheck('mongodb_version');
         await securityChecksAPI.changeCheckInterval('postgresql_version');
         await settingsAPI.setCheckIntervals({
           ...settingsAPI.defaultCheckIntervals,
           standard_interval: '3600s',
         });
-
         I.amOnPage(databaseChecksPage.url);
-        I.waitForVisible(runChecks, 30);
       } else {
         I.amOnPage(databaseChecksPage.oldUrl);
-        I.waitForVisible(runChecks, 30);
-        I.click(runChecks);
-        I.waitForVisible(failedCheckRowLocator, 60);
       }
+
+      I.waitForVisible(runChecks, 30);
+      I.waitForVisible(failedCheckRowLocator, 60);
 
       // Check that there are failed checks
       await securityChecksAPI.verifyFailedCheckExists(emptyPasswordSummary);
