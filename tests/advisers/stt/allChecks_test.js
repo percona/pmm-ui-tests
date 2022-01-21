@@ -79,7 +79,7 @@ Scenario(
     await securityChecksAPI.waitForFailedCheckExistance(detailsText, psServiceName);
 
     // Verify failed check on UI
-    await databaseChecksPage.verifyFailedCheckExists(detailsText);
+    databaseChecksPage.verifyFailedCheckExists(detailsText);
 
     // Disable MySQL Version check
     I.amOnPage(allChecksPage.url);
@@ -97,7 +97,7 @@ Scenario(
     await securityChecksAPI.waitForFailedCheckNonExistance(detailsText, psServiceName);
 
     // Verify there is no MySQL Version failed check
-    await databaseChecksPage.verifyFailedCheckNotExists(detailsText);
+    databaseChecksPage.verifyFailedCheckNotExists(detailsText);
   },
 );
 

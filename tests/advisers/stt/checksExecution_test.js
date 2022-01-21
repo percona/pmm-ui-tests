@@ -75,7 +75,7 @@ Scenario(
 
     await securityChecksAPI.waitForFailedCheckNonExistance(emptyPasswordSummary, psServiceName);
     // Verify there is no MySQL user empty password failed check
-    await databaseChecksPage.verifyFailedCheckNotExists(emptyPasswordSummary);
+    databaseChecksPage.verifyFailedCheckNotExists(emptyPasswordSummary);
   },
 );
 
@@ -142,7 +142,7 @@ Data(intervalsTests).Scenario(
     await securityChecksAPI.waitForFailedCheckNonExistance(emptyPasswordSummary, psServiceName);
 
     // Verify there is no MySQL user empty password failed check
-    await databaseChecksPage.verifyFailedCheckNotExists(emptyPasswordSummary);
+    databaseChecksPage.verifyFailedCheckNotExists(emptyPasswordSummary);
   },
 );
 
@@ -158,6 +158,6 @@ Scenario(
     await securityChecksAPI.waitForFailedCheckNonExistance(emptyPasswordSummary, psServiceName);
 
     // Verify there is no MySQL user empty password failed check
-    await databaseChecksPage.verifyFailedCheckNotExists(emptyPasswordSummary);
+    databaseChecksPage.verifyFailedCheckNotExists(emptyPasswordSummary);
   },
 );

@@ -120,7 +120,7 @@ Scenario(
     await databaseChecksPage.runDBChecks();
     await securityChecksAPI.waitForFailedCheckExistance(detailsText, psServiceName);
     // Verify failed check on UI
-    await databaseChecksPage.verifyFailedCheckExists(detailsText);
+    databaseChecksPage.verifyFailedCheckExists(detailsText);
     await databaseChecksPage.verifyServiceNamesExistence(psServiceName);
   },
 );

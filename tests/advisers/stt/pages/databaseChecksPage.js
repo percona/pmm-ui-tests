@@ -55,13 +55,13 @@ module.exports = {
     I.waitForVisible(this.buttons.startDBChecks, 30);
   },
 
-  async verifyFailedCheckNotExists(checkSummary) {
-    await this.openDBChecksPage();
+  verifyFailedCheckNotExists(checkSummary) {
+    this.openDBChecksPage();
     I.dontSee(checkSummary);
   },
 
-  async verifyFailedCheckExists(checkSummary) {
-    await this.openDBChecksPage();
+  verifyFailedCheckExists(checkSummary) {
+    this.openDBChecksPage();
     I.see(checkSummary);
   },
   /*
