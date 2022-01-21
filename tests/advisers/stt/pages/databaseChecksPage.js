@@ -145,16 +145,14 @@ module.exports = {
     Method takes service names listed in Database Failed checks
      and compares names with existing Service Names in PMM Inventory
    */
-  async verifyServiceNamesExistence() {
-    const serviceNames = await I.grabTextFromAll(this.fields.serviceNameSelector);
+  async verifyServiceNamesExistence(serviceName) {
+    I.see(serviceName);
 
     I.amOnPage(pmmInventoryPage.url);
     I.waitForVisible(pmmInventoryPage.fields.inventoryTableColumn, 30);
     I.scrollPageToBottom();
 
-    for (const name of serviceNames) {
-      I.seeElement(locate('$table-row').find('td').withText(name));
-    }
+    I.seeElement(locate('$table-row').find('td').withText(serviceName));
   },
 
   async runDBChecks() {
