@@ -6,6 +6,7 @@ const pxc_cluster_name = 'pxc-dbcluster';
 const pxc_cluster_name_single = 'pxc-singlenode';
 const pxc_cluster_small = 'pxc-smalldbcluster';
 const pxc_cluster_type = 'DB_CLUSTER_TYPE_PXC';
+const mysql_recommended_version = 'MySQL 8.0.25';
 
 const pxcDBClusterDetails = new DataTable(['namespace', 'clusterName', 'node']);
 
@@ -23,7 +24,7 @@ const singleNodeConfiguration = {
   memory: '1.2 GB',
   cpu: '0.2',
   disk: '25 GB',
-  dbType: 'MySQL 8.0.25',
+  dbType: mysql_recommended_version,
   clusterDashboardRedirectionLink: dbaasPage.clusterDashboardUrls.pxcDashboard(pxc_cluster_name_single),
 };
 
@@ -64,7 +65,7 @@ Scenario('PMM-T459, PMM-T473, PMM-T478, PMM-T524 Verify DB Cluster Details are l
   async ({ I, dbaasPage, dbaasActionsPage }) => {
     const clusterDetails = {
       clusterDashboardRedirectionLink: dbaasPage.clusterDashboardUrls.pxcDashboard(pxc_cluster_name),
-      dbType: 'MySQL 8.0.25',
+      dbType: mysql_recommended_version,
       memory: '2 GB',
       cpu: '1',
       disk: '25 GB',
@@ -179,7 +180,7 @@ Scenario('PMM-T488, PMM-T489 Verify editing PXC cluster changing single node to 
       memory: '1 GB',
       cpu: '0.5',
       disk: '25 GB',
-      dbType: 'MySQL 8.0.25',
+      dbType: mysql_recommended_version,
       clusterDashboardRedirectionLink: dbaasPage.clusterDashboardUrls.pxcDashboard(pxc_cluster_name_single),
     };
 
