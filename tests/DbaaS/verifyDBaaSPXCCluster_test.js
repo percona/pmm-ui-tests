@@ -207,7 +207,7 @@ Scenario('PMM-T525 PMM-T528 Verify Suspend & Resume for DB Cluster Works as expe
       clusterDashboardRedirectionLink: dbaasPage.clusterDashboardUrls.pxcDashboard(
         pxc_cluster_suspend_resume,
       ),
-      dbType: 'MySQL 8.0.25',
+      dbType: mysql_recommended_version,
       memory: '2 GB',
       cpu: '1',
       disk: '25 GB',
