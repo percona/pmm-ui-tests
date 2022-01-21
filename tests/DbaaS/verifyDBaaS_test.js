@@ -36,7 +36,6 @@ Feature('DbaaS: Kubernetes Cluster Registration UI');
 
 Before(async ({ I }) => {
   await I.Authorize();
-  await settingsAPI.changeSettings({ publicAddress: process.env.VM_IP });
 });
 
 Scenario(
