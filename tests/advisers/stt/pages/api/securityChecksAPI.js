@@ -39,12 +39,16 @@ module.exports = {
   },
 
   async waitForFailedCheckExistance(detailsText, serviceName, timeout = 120) {
-    await I.asyncWaitFor(async () => (await this.getFailedCheckBySummary(detailsText, serviceName)) !== undefined, timeout);
+    await I.asyncWaitFor(async () => await this.getFailedCheckBySummary(detailsText, serviceName), timeout);
     I.wait(5);
   },
 
   async waitForFailedCheckNonExistance(detailsText, serviceName, timeout = 120) {
-    await I.asyncWaitFor(async () => (await this.getFailedCheckBySummary(detailsText, serviceName)) === undefined, timeout);
+    await I.asyncWaitFor(async () => {
+      const check = await this.getFailedCheckBySummary(detailsText, serviceName);
+
+      return !check;
+    }, timeout);
     I.wait(5);
   },
 

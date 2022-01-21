@@ -185,10 +185,10 @@ module.exports = {
             body.data_retention = value;
             break;
           case 'resolution':
-            body.metrics_resolutions = Object.assign(body, value);
+            body.metrics_resolutions = value;
             break;
           case 'checkIntervals':
-            body.stt_check_intervals = Object.assign(body, value);
+            body.stt_check_intervals = value;
             break;
           case 'alertmanagerRules':
             body.alert_manager_rules = value;

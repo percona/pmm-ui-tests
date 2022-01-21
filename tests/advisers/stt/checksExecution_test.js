@@ -89,7 +89,6 @@ Scenario(
 
     // Wait for MySQL user empty password failed check
     await securityChecksAPI.waitForFailedCheckExistance(emptyPasswordSummary, psServiceName);
-    I.wait(5);
     I.amOnPage(homePage.url);
     I.waitForVisible(homePage.fields.checksPanelSelector, 30);
     I.dontSeeElement(homePage.fields.noFailedChecksInPanel);
