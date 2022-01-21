@@ -114,37 +114,39 @@ module.exports = {
     I.waitForText(locators.inProgressMessage, 30, locators.updateProgressModal);
 
     // skipping milestones checks for 2.9 and 2.10, 2.11 versions due logs not showing issue
-    if (version > 11 && this.isAmiUpgrade) {
-      for (const milestone of milestones) {
-        I.waitForElement(`//pre[contains(text(), '${milestone}')]`, 1200);
+    if (version > 11) {
+      if (this.isAmiUpgrade) {
+        for (const milestone of milestones) {
+          I.waitForElement(`//pre[contains(text(), '${milestone}')]`, 1200);
+        }
+
+        I.waitForText(locators.successUpgradeMessage, 1200, locators.successUpgradeMsgSelector);
       }
 
-      I.waitForText(locators.successUpgradeMessage, 1200, locators.successUpgradeMsgSelector);
-    }
+      if (!this.isAmiUpgrade) {
+        // to ensure that the logs window is never empty during upgrade
+        I.waitForElement(`//pre[contains(text(), '${milestones[0]}')]`, 1200);
+        I.waitForText(locators.successUpgradeMessage, 1200, locators.successUpgradeMsgSelector);
 
-    if (version > 11 && !this.isAmiUpgrade) {
-      // to ensure that the logs window is never empty during upgrade
-      I.waitForElement(`//pre[contains(text(), '${milestones[0]}')]`, 1200);
-      I.waitForText(locators.successUpgradeMessage, 1200, locators.successUpgradeMsgSelector);
+        // Get upgrade logs from a container
+        const upgradeLogs = await I.verifyCommand('docker exec pmm-server cat /srv/logs/pmm-update-perform.log');
 
-      // Get upgrade logs from a container
-      const upgradeLogs = await I.verifyCommand('docker exec pmm-server cat /srv/logs/pmm-update-perform.log');
+        milestones.forEach((milestone) => {
+          assert.ok(upgradeLogs.includes(milestone), `Expected to see ${milestone} in upgrade logs`);
+        });
+      }
 
-      milestones.forEach((milestone) => {
-        assert.ok(upgradeLogs.includes(milestone), `Expected to see ${milestone} in upgrade logs`);
-      });
-    }
-
-    if (version < 12) {
+      I.click(locators.reloadButtonAfterUpgrade);
+    } else {
       I.waitForText(locators.successUpgradeMessage, 1200, locators.successUpgradeMsgSelector);
       // we have a bug we need this https://jira.percona.com/browse/PMM-9294
       I.wait(60);
+
+      I.click(locators.reloadButtonAfterUpgrade);
+      I.refreshPage();
     }
 
-    I.click(locators.reloadButtonAfterUpgrade);
     locators = this.getLocators('latest');
-
-    I.refreshPage();
 
     I.waitForVisible(locators.upToDateLocator, 60);
     assert.equal(
