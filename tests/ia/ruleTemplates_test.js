@@ -272,9 +272,9 @@ Scenario(
   'PMM-T1126 - Verify there are no STT checks and Templates from Percona if Telemetry is disabled @settings @nightly',
   async ({ I, homePage, pmmSettingsPage, ruleTemplatesPage }) => {
     const editButton = ruleTemplatesPage.buttons
-      .editButtonByName('Percona');
+      .editButtonBySource('Percona');
     const deleteButton = ruleTemplatesPage.buttons
-      .deleteButtonByName('Percona');
+      .deleteButtonBySource('Percona');
 
     await pmmSettingsPage.openAdvancedSettings();
     I.waitForVisible(pmmSettingsPage.fields.publicAddressInput, 30);
@@ -287,10 +287,10 @@ Scenario(
     await pmmSettingsPage.enableSwitch(pmmSettingsPage.fields.iaSwitchSelectorInput,
       pmmSettingsPage.fields.iaSwitchSelector);
     pmmSettingsPage.verifySwitch(pmmSettingsPage.fields.iaSwitchSelectorInput);
-    pmmSettingsPage.applyChanges();
+    I.click(pmmSettingsPage.fields.applyButton);
     await homePage.open();
     I.waitForVisible(homePage.fields.checksPanelSelector, 30);
-    I.waitForVisible(homePage.fields.noFailedChecksInPanel);
+    I.waitForVisible(homePage.fields.noFailedChecksInPanel, 30);
     I.amOnPage(ruleTemplatesPage.url);
     ruleTemplatesPage.columnHeaders.forEach((header) => {
       const columnHeader = ruleTemplatesPage.elements.columnHeaderLocator(header);
