@@ -51,7 +51,7 @@ Feature('PMM server Upgrade Tests and Executing test cases related to Upgrade Te
 
 Before(async ({ I }) => {
   await I.Authorize();
-  I.setRequestTimeout(30000);
+  I.setRequestTimeout(60000);
 });
 
 BeforeSuite(async ({ I, codeceptjsConfig }) => {
@@ -263,7 +263,7 @@ if (versionMinor >= 13) {
   Data(clientDbServices).Scenario(
     'Adding annotation before upgrade At service Level @ami-upgrade @pre-upgrade @pmm-upgrade',
     async ({
-      I, annotationAPI, inventoryAPI, current,
+      annotationAPI, inventoryAPI, current,
     }) => {
       const {
         serviceType, name, metric, annotationName,
@@ -316,9 +316,7 @@ if (versionMinor >= 21) {
 
 Scenario(
   'Setup Prometheus Alerting with external Alert Manager via API PMM-Settings @pre-upgrade @pmm-upgrade',
-  async ({
-    I, settingsAPI,
-  }) => {
+  async ({ settingsAPI }) => {
     await settingsAPI.changeSettings(alertManager);
   },
 );
@@ -414,31 +412,17 @@ if (versionMinor >= 15) {
   Scenario(
     'Verify Redis as external Service Works After Upgrade @post-upgrade @pmm-upgrade',
     async ({
-      I, addInstanceAPI, dashboardPage, remoteInstancesHelper,
+      I, grafanaAPI, remoteInstancesHelper,
     }) => {
       // Make sure Metrics are hitting before Upgrade
       const metricName = 'redis_uptime_in_seconds';
       const headers = { Authorization: `Basic ${await I.getAuth()}` };
-      let response;
-      let result;
 
-      response = await dashboardPage.checkMetricExist(metricName);
-      result = JSON.stringify(response.data.data.result);
+      await grafanaAPI.checkMetricExist(metricName);
+      await grafanaAPI.checkMetricExist(metricName, { type: 'node_name', value: 'redis_external_remote' });
+      await grafanaAPI.checkMetricExist(metricName, { type: 'service_name', value: 'redis_external_2' });
 
-      assert.ok(response.data.data.result.length !== 0, `Metrics ${metricName} from external exporter should be available post upgrade but got empty ${result}`);
-
-      response = await dashboardPage.checkMetricExist(metricName, { type: 'node_name', value: 'redis_external_remote' });
-      result = JSON.stringify(response.data.data.result);
-
-      assert.ok(response.data.data.result.length !== 0, `Metrics ${metricName} for remote redis node, remote_redis_external Should be available but got empty ${result}`);
-
-      response = await dashboardPage.checkMetricExist(metricName, { type: 'service_name', value: 'redis_external_2' });
-      result = JSON.stringify(response.data.data.result);
-
-      assert.ok(response.data.data.result.length !== 0, `Metrics ${metricName} for service name redis_external Should be available but got empty ${result}`);
-
-      response = await I.sendGetRequest('prometheus/api/v1/targets', headers);
-
+      const response = await I.sendGetRequest('prometheus/api/v1/targets', headers);
       const targets = response.data.data.activeTargets.find(
         (o) => o.labels.external_group === 'redis-remote',
       );
@@ -628,17 +612,15 @@ Scenario(
 
 Scenario(
   'Verify Agents are Running and Metrics are being collected Post Upgrade (UI) [critical] @ami-upgrade @post-upgrade @pmm-upgrade',
-  async ({ I, pmmInventoryPage, dashboardPage }) => {
+  async ({ grafanaAPI }) => {
     const metrics = Object.keys(remoteInstancesHelper.upgradeServiceMetricNames);
 
     for (const service of Object.values(remoteInstancesHelper.upgradeServiceNames)) {
       if (service) {
         if (metrics.includes(service)) {
           const metricName = remoteInstancesHelper.upgradeServiceMetricNames[service];
-          const response = await dashboardPage.checkMetricExist(metricName, { type: 'node_name', value: service });
-          const result = JSON.stringify(response.data.data.result);
 
-          assert.ok(response.data.data.result.length !== 0, `Metrics ${metricName} for Node ${service} Should be available but got empty ${result}`);
+          await grafanaAPI.checkMetricExist(metricName, { type: 'node_name', value: service });
         }
       }
     }
@@ -648,17 +630,15 @@ Scenario(
 Data(clientDbServices).Scenario(
   'Check Metrics for Client Nodes [critical] @post-client-upgrade  @ami-upgrade @post-upgrade @pmm-upgrade',
   async ({
-    I, inventoryAPI, dashboardPage, current,
+    inventoryAPI, grafanaAPI, current,
   }) => {
     const metricName = current.metric;
     const { node_id } = await inventoryAPI.apiGetNodeInfoByServiceName(current.serviceType, current.name);
     const nodeName = await inventoryAPI.getNodeName(node_id);
-    const response = await dashboardPage.checkMetricExist(metricName, { type: 'node_name', value: nodeName });
-    const result = JSON.stringify(response.data.data.result);
 
     // Need to skip this check on AMI upgrade for Postgresql
     if (process.env.AMI_UPGRADE_TESTING_INSTANCE !== 'true' && current.serviceType !== 'POSTGRESQL_SERVICE') {
-      assert.ok(response.data.data.result.length !== 0, `Metrics ${metricName} for Node ${nodeName} Should be available but got empty ${result}`);
+      await grafanaAPI.checkMetricExist(metricName, { type: 'node_name', value: nodeName });
     }
   },
 );
@@ -689,37 +669,28 @@ Scenario(
 
 Scenario(
   'Verify Metrics from custom queries for mysqld_exporter after upgrade (UI) @post-client-upgrade @post-upgrade @ami-upgrade @pmm-upgrade',
-  async ({ dashboardPage }) => {
+  async ({ grafanaAPI }) => {
     const metricName = 'mysql_performance_schema_memory_summary_current_bytes';
 
-    const response = await dashboardPage.checkMetricExist(metricName);
-    const result = JSON.stringify(response.data.data.result);
-
-    assert.ok(response.data.data.result.length !== 0, `Custom Metrics ${metricName} Should be available but got empty ${result}`);
+    await grafanaAPI.checkMetricExist(metricName);
   },
 );
 
 Scenario(
   'Verify textfile collector extend metrics is still collected post upgrade (UI) @post-client-upgrade @post-upgrade @ami-upgrade @pmm-upgrade',
-  async ({ dashboardPage }) => {
+  async ({ grafanaAPI }) => {
     const metricName = 'node_role';
 
-    const response = await dashboardPage.checkMetricExist(metricName);
-    const result = JSON.stringify(response.data.data.result);
-
-    assert.ok(response.data.data.result.length !== 0, `TextFile Collector Metrics ${metricName} Should be available but got empty ${result}`);
+    await grafanaAPI.checkMetricExist(metricName);
   },
 );
 
 Scenario(
   'Verify Metrics from custom queries for postgres_exporter after upgrade (UI) @post-client-upgrade @post-upgrade @pmm-upgrade',
-  async ({ dashboardPage }) => {
+  async ({ grafanaAPI }) => {
     const metricName = 'pg_stat_user_tables_n_tup_ins';
 
-    const response = await dashboardPage.checkMetricExist(metricName);
-    const result = JSON.stringify(response.data.data.result);
-
-    assert.ok(response.data.data.result.length !== 0, `Custom Metrics ${metricName} Should be available but got empty ${result}`);
+    await grafanaAPI.checkMetricExist(metricName);
   },
 );
 
@@ -765,7 +736,7 @@ if (versionMinor >= 13) {
 Scenario(
   'Check Prometheus Alerting Rules Persist Post Upgrade and Alerts are still Firing @post-upgrade @pmm-upgrade',
   async ({
-    I, settingsAPI, pmmSettingsPage,
+    settingsAPI, pmmSettingsPage,
   }) => {
     const url = await settingsAPI.getSettings('alert_manager_url');
     const rule = await settingsAPI.getSettings('alert_manager_rules');
@@ -780,7 +751,7 @@ if (versionMinor >= 21) {
   Data(clientDbServices).Scenario(
     'Verify if Agents added with custom password and custom label work as expected Post Upgrade @post-client-upgrade @post-upgrade @pmm-upgrade',
     async ({
-      I, current, inventoryAPI,
+      current, inventoryAPI, grafanaAPI,
     }) => {
       const {
         serviceType, metric, upgrade_service,
@@ -790,10 +761,7 @@ if (versionMinor >= 21) {
         custom_labels,
       } = await inventoryAPI.apiGetNodeInfoByServiceName(serviceType, upgrade_service);
 
-      const response = await dashboardPage.checkMetricExist(metric, { type: 'service_name', value: upgrade_service });
-      const result = JSON.stringify(response.data.data.result);
-
-      assert.ok(response.data.data.result.length !== 0, `Metrics ${metric} for Service ${upgrade_service} Should be available but got empty ${result}`);
+      await grafanaAPI.checkMetricExist(metric, { type: 'service_name', value: upgrade_service });
       if (serviceType !== 'MYSQL_SERVICE') {
         assert.ok(custom_labels, `Node Information for ${serviceType} added with ${upgrade_service} is empty, value returned are ${custom_labels}`);
         assert.ok(custom_labels.testing === 'upgrade', `Custom Labels for ${serviceType} added before upgrade with custom labels, doesn't have the same label post upgrade, value found ${custom_labels}`);
