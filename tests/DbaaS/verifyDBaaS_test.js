@@ -34,8 +34,9 @@ nameFields.add([dbaasPage.tabs.dbClusterTab.basicOptions.fields.clusterNameField
 
 Feature('DbaaS: Kubernetes Cluster Registration UI');
 
-Before(async ({ I }) => {
+Before(async ({ I, settingsAPI }) => {
   await I.Authorize();
+  await settingsAPI.changeSettings({ publicAddress: process.env.VM_IP });
 });
 
 Scenario(
