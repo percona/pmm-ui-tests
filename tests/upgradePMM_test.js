@@ -51,7 +51,7 @@ Feature('PMM server Upgrade Tests and Executing test cases related to Upgrade Te
 
 Before(async ({ I }) => {
   await I.Authorize();
-  I.setRequestTimeout(30000);
+  I.setRequestTimeout(60000);
 });
 
 BeforeSuite(async ({ I, codeceptjsConfig }) => {
