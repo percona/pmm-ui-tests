@@ -93,9 +93,7 @@ Scenario(
   },
 );
 
-// skipped to investigate why it fails.
-// Missed metric length check was added and it caused the issue.
-xScenario(
+Scenario(
   'PMM-T603 Verify MySQL RDS exporter is running in pull mode @instances',
   async ({
     grafanaAPI, remoteInstancesPage, inventoryAPI,
