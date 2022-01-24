@@ -229,7 +229,7 @@ module.exports = {
     const result = JSON.stringify(response.data.data.result);
 
     I.assertTrue(response.data.data.result.length !== 0,
-      `TextFile Collector Metrics ${metricName} Should be available but got empty ${result}`);
+      `Metrics ${metricName} Should be available but got empty ${result}`);
 
     return response;
   },

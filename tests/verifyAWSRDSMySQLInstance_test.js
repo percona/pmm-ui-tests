@@ -21,7 +21,6 @@ Scenario(
     remoteInstancesPage.createRemoteInstance(instanceIdToMonitor);
     pmmInventoryPage.verifyRemoteServiceIsDisplayed(instanceIdToMonitor);
     await pmmInventoryPage.verifyAgentHasStatusRunning(instanceIdToMonitor);
-    await pmmInventoryPage.verifyMetricsFlags(instanceIdToMonitor);
   },
 );
 
