@@ -1,6 +1,5 @@
 const { I, adminPage } = inject();
 const assert = require('assert');
-const FormData = require('form-data');
 
 module.exports = {
   // insert your locators and methods here
@@ -114,7 +113,7 @@ module.exports = {
     ],
   },
   processDetailsDashboard: {
-    url: 'graph/d/node-cpu-process/processes-details?from=now-5m&to=now',
+    url: 'graph/d/node-cpu-process/processes-details?from=now-45m&to=now',
   },
   nodeSummaryDashboard: {
     url: 'graph/d/node-instance-summary/node-summary?orgId=1&refresh=5m',
@@ -235,16 +234,6 @@ module.exports = {
       'Maximum Galera Replication Latency',
     ],
   },
-  postgresqlInstanceCompareDashboard: {
-    url: 'graph/d/postgresql-instance-compare/postgresql-instances-compare?orgId=1&from=now-5m&to=now',
-    metrics: [
-      'Service Info',
-      'PostgreSQL Connections',
-      'Active Connections',
-      'Tuples',
-      'Transactions',
-    ],
-  },
   postgresqlInstanceSummaryDashboard: {
     url: 'graph/d/postgresql-instance-summary/postgresql-instance-summary?orgId=1&from=now-5m&to=now',
     metrics: [
@@ -276,7 +265,6 @@ module.exports = {
   postgresqlInstanceOverviewDashboard: {
     // had to be changed after the PMM-6386 bug will be fixed
     url: 'graph/d/postgresql-instance-overview/postgresql-instances-overview?orgId=1&from=now-5m&to=now',
-    customServiceUrl: (serviceName) => `graph/d/postgresql-instance-overview/postgresql-instances-overview?orgId=1&var-service_name=${serviceName}&from=now-5m&to=now`,
     metrics: [
       'Services',
       'Max Active Connections',
@@ -434,7 +422,6 @@ module.exports = {
   },
   mysqlInstanceSummaryDashboard: {
     url: 'graph/d/mysql-instance-summary/mysql-instance-summary?orgId=1&refresh=1m&from=now-5m&to=now',
-    customServiceUrl: (serviceName) => `graph/d/mysql-instance-summary/mysql-instance-summary?orgId=1&refresh=1m&from=now-5m&to=now&var-interval=$__auto_interval_interval&var-environment=All&var-service_type=All&var-database=All&var-username=All&var-schema=All&var-service_name=${serviceName}`,
     metrics: [
       'Node',
       'MySQL Uptime',
@@ -546,7 +533,6 @@ module.exports = {
   },
   mySQLInstanceOverview: {
     url: 'graph/d/mysql-instance-overview/mysql-instances-overview?orgId=1&from=now-2m&to=now&refresh=1m',
-    customServiceUrl: (serviceName) => `graph/d/mysql-instance-overview/mysql-instances-overview?orgId=1&var-service_name=${serviceName}&from=now-2m&to=now&refresh=1m`,
     metrics: [
       'Services',
       'Min MySQL Uptime',
@@ -621,7 +607,11 @@ module.exports = {
     ],
     serviceName:
       '//label[contains(text(), "Service Name")]/following-sibling::value-select-dropdown/descendant::a[@class="variable-value-link"]',
-    urlWithRDSFilter: (serviceName) => `graph/d/mysql-instance-overview/mysql-instances-overview?orgId=1&refresh=1m&var-service_name=${serviceName}&from=now-5m&to=now`,
+    urlWithRDSFilter:
+      'graph/d/mysql-instance-overview/mysql-instances-overview?orgId=1&'
+      + 'from=now-5m&to=now&refresh=1m&var-interval=$__auto_interval_interval&var-region=All&'
+      + 'var-environment=All&var-cluster=rds56-cluster&var-replication_set=All&var-az=&'
+      + 'var-node_type=All&var-node_model=&var-database=All&var-service_type=All&var-schema=All',
   },
   mysqlInstancesCompareDashboard: {
     url: 'graph/d/mysql-instance-compare/mysql-instances-compare?orgId=1&refresh=1m&from=now-5m&to=now',
@@ -891,41 +881,6 @@ module.exports = {
     I.click(this.graphsLocator(metric));
   },
 
-  // Should be refactored and added to Grafana Helper as a custom function
-  async checkMetricExist(metricName, queryBy) {
-    const timeStamp = Date.now();
-    const bodyFormData = new FormData();
-    let body = {
-      query: metricName,
-      start: Math.floor((timeStamp - 15000) / 1000),
-      end: Math.floor((timeStamp) / 1000),
-      step: 1,
-    };
-
-    if (queryBy) {
-      body = {
-        query: `${metricName}{${queryBy.type}=~"(${queryBy.value})"}`,
-        start: Math.floor((timeStamp - 15000) / 1000),
-        end: Math.floor((timeStamp) / 1000),
-        step: 1,
-      };
-    }
-
-    Object.keys(body).forEach((key) => bodyFormData.append(key, body[key]));
-    const headers = {
-      Authorization: `Basic ${await I.getAuth()}`,
-      ...bodyFormData.getHeaders(),
-    };
-
-    const response = await I.sendPostRequest(
-      'graph/api/datasources/proxy/1/api/v1/query_range',
-      bodyFormData,
-      headers,
-    );
-
-    return response;
-  },
-
   verifyTabExistence(tabs) {
     for (const i in tabs) {
       I.seeElement(this.tabLocator(tabs[i]));
@@ -974,9 +929,7 @@ module.exports = {
   },
 
   async grabFailedReportTitles(selector) {
-    const reportNames = await I.grabTextFromAll(selector);
-
-    return reportNames;
+    return await I.grabTextFromAll(selector);
   },
 
   async expandEachDashboardRow(halfToExpand) {

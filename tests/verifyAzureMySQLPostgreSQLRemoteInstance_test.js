@@ -28,7 +28,7 @@ Before(async ({ I }) => {
 });
 
 Data(azureServices).Scenario(
-  'PMM-T744, PMM-T746, PMM-T748 - Verify adding monitoring for Azure @azure @instances',
+  'PMM-T744, PMM-T746, PMM-T748 - Verify adding monitoring for Azure @instances',
   async ({
     I, remoteInstancesPage, pmmInventoryPage, settingsAPI, current,
   }) => {
@@ -48,7 +48,7 @@ Data(azureServices).Scenario(
 );
 
 Scenario(
-  'PMM-T756 - Verify Azure node is displayed on Home dashboard @azure @instances',
+  'PMM-T756 - Verify Azure node is displayed on Home dashboard @instances',
   async ({
     I, homePage, dashboardPage,
   }) => {
@@ -61,7 +61,7 @@ Scenario(
   },
 ).retry(2);
 
-Data(filters).Scenario('PMM-T746, PMM-T748 - Verify adding monitoring for Azure CHECK QAN @azure @instances', async ({
+Data(filters).Scenario('PMM-T746, PMM-T748 - Verify adding monitoring for Azure CHECK QAN @instances', async ({
   I, qanFilters, qanOverview, qanPage, current,
 }) => {
   I.amOnPage(qanPage.url);
@@ -73,13 +73,8 @@ Data(filters).Scenario('PMM-T746, PMM-T748 - Verify adding monitoring for Azure 
 }).retry(3);
 
 Data(metrics).Scenario(
-  'PMM-T743 Check metrics from exporters are hitting PMM Server @azure @instances',
-  async ({ I, dashboardPage, current }) => {
-    // This is only needed to let PMM Consume Metrics
-    I.wait(10);
-    const response = await dashboardPage.checkMetricExist(current.metricName);
-    const result = JSON.stringify(response.data.data.result);
-
-    assert.ok(response.data.data.result.length !== 0, `Metrics ${current.metricName} should be available after adding Azure Instance but got empty ${result}`);
+  'PMM-T743 Check metrics from exporters are hitting PMM Server @instances',
+  async ({ grafanaAPI, current }) => {
+    await grafanaAPI.waitForMetric(current.metricName, null, 10);
   },
-).retry(1);
+);
