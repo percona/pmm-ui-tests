@@ -40,7 +40,7 @@ Data(annotation).Scenario(
     }
 
     if (annotationName === 'annotation-for-postgres') {
-      dashboardPage.verifyAnnotationsLoaded(annotationName, 3);
+      dashboardPage.verifyAnnotationsLoaded(annotationName, 1);
     } else if (annotationName === 'mysql-node-name') {
       dashboardPage.verifyAnnotationsLoaded(annotationName, 2);
     } else {
