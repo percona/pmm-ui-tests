@@ -343,22 +343,6 @@ module.exports = {
     }
   },
 
-  async disableSwitch(element, switcher) {
-    const iaEnabled = await I.grabAttributeFrom(element, 'checked');
-
-    if (iaEnabled) {
-      I.click(switcher);
-    }
-  },
-
-  async enableSwitch(element, switcher) {
-    const iaEnabled = await I.grabAttributeFrom(element, 'checked');
-
-    if (!iaEnabled) {
-      I.click(switcher);
-    }
-  },
-
   async verifyCommunicationFields(fields) {
     const {
       type, serverAddress, hello, from, authType, username, url,

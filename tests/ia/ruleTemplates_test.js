@@ -269,34 +269,23 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T1126 - Verify there are no STT checks and Templates from Percona if Telemetry is disabled @settings @nightly',
-  async ({ I, homePage, pmmSettingsPage, ruleTemplatesPage }) => {
+  'PMM-T1126 - Verify there are no Templates from Percona if Telemetry is disabled @ia',
+  async ({ I, settingsAPI, homePage, ruleTemplatesPage }) => {
     const editButton = ruleTemplatesPage.buttons
       .editButtonBySource('Percona');
     const deleteButton = ruleTemplatesPage.buttons
       .deleteButtonBySource('Percona');
+    const settings = {
+      telemetry: false,
+      alerting: true,
+    };
 
-    await pmmSettingsPage.openAdvancedSettings();
-    I.waitForVisible(pmmSettingsPage.fields.publicAddressInput, 30);
-    await pmmSettingsPage.disableSwitch(pmmSettingsPage.fields.telemetrySwitchSelectorInput,
-      pmmSettingsPage.fields.telemetrySwitchSelector);
-    pmmSettingsPage.verifySwitch(pmmSettingsPage.fields.telemetrySwitchSelectorInput, 'off');
-    await pmmSettingsPage.enableSwitch(pmmSettingsPage.fields.sttSwitchSelectorInput,
-      pmmSettingsPage.fields.sttSwitchSelector);
-    pmmSettingsPage.verifySwitch(pmmSettingsPage.fields.sttSwitchSelectorInput);
-    await pmmSettingsPage.enableSwitch(pmmSettingsPage.fields.iaSwitchSelectorInput,
-      pmmSettingsPage.fields.iaSwitchSelector);
-    pmmSettingsPage.verifySwitch(pmmSettingsPage.fields.iaSwitchSelectorInput);
-    I.click(pmmSettingsPage.fields.applyButton);
+    await settingsAPI.changeSettings(settings);
     await homePage.open();
     I.waitForVisible(homePage.fields.checksPanelSelector, 30);
     I.waitForVisible(homePage.fields.noFailedChecksInPanel, 30);
+    // I.wait(1);
     I.amOnPage(ruleTemplatesPage.url);
-    ruleTemplatesPage.columnHeaders.forEach((header) => {
-      const columnHeader = ruleTemplatesPage.elements.columnHeaderLocator(header);
-
-      I.waitForVisible(columnHeader, 30);
-    });
     I.dontSeeElement(editButton);
     I.dontSeeElement(deleteButton);
   },
