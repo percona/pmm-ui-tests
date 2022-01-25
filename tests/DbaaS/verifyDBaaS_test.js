@@ -34,9 +34,8 @@ nameFields.add([dbaasPage.tabs.dbClusterTab.basicOptions.fields.clusterNameField
 
 Feature('DbaaS: Kubernetes Cluster Registration UI');
 
-Before(async ({ I, settingsAPI }) => {
+Before(async ({ I }) => {
   await I.Authorize();
-  await settingsAPI.changeSettings({ publicAddress: process.env.VM_IP });
 });
 
 Scenario(
@@ -96,6 +95,7 @@ Scenario('PMM-T427 - Verify elements on PMM DBaaS page @dbaas',
 Scenario('PMM-T547 PMM-T548  Verify user is able to view config of registered Kubernetes cluster on Kubernetes Cluster Page, ' +
  'PMM-T1130 - Verify warning about deleting an API key @dbaas',
   async ({ I, dbaasPage, dbaasAPI }) => {
+    await settingsAPI.changeSettings({ publicAddress: process.env.VM_IP });
     await dbaasAPI.apiRegisterCluster(process.env.kubeconfig_minikube, clusterName);
     I.amOnPage(dbaasPage.url);
     dbaasPage.checkCluster(clusterName, false);
