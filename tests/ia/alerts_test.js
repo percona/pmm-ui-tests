@@ -98,7 +98,7 @@ Scenario(
     I.waitForElement(alertsPage.elements.alertRow(alertName), 30);
 
     for (const ruleId of rulesToDelete) {
-      I.dontSee(`rule_id=${ruleId}`, alertsPage.elements.labelsCell(alertName));
+      I.dontSee(alertsPage.elements.alertRow(alertName));
     }
   },
 );
@@ -126,7 +126,6 @@ Scenario(
     I.waitForElement(alertsPage.elements.alertRow(alertName), 30);
 
     // Verify correct labels
-    I.see(`rule_id=${ruleIdForAlerts}`, alertsPage.elements.labelsCell(alertName));
     I.see('Critical', alertsPage.elements.severityCell(alertName));
     const labels = await I.grabTextFromAll(alertsPage.elements.labelsCell(alertName));
 
