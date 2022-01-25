@@ -26,6 +26,7 @@ module.exports = {
     servicesButton: locate('span').withText('Services'),
     newsPanelContentSelector:
       '//span[contains(text(), "Percona News")]/ancestor::div[contains(@class, "panel-container")]//div[contains(@class, "view")]',
+    popUp: '.popper__background',
     noAccessRightsSelector: '$unauthorized',
     updateWidget: {
       base: {

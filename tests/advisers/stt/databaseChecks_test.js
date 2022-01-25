@@ -1,3 +1,5 @@
+const assert = require('assert');
+
 const {
   I, allChecksPage, databaseChecksPage, codeceptjsConfig, perconaServerDB,
 } = inject();
@@ -82,18 +84,31 @@ xScenario(
 );
 
 Scenario(
-  'PMM-T233 Verify user can open PMM Database Checks page from home dashboard [critical] @stt',
+  'PMM-T233 PMM-T354 open PMM Database Checks page from home dashboard and verify number of failed checks [critical] @stt',
   async ({
     I, homePage, databaseChecksPage, settingsAPI, securityChecksAPI,
   }) => {
     await settingsAPI.apiEnableSTT();
+    await securityChecksAPI.startSecurityChecks();
     await securityChecksAPI.waitForFailedCheckExistance(detailsText, psServiceName);
-    I.wait(15);
+    I.wait(5);
     I.amOnPage(homePage.url);
     I.waitForVisible(homePage.fields.checksPanelSelector, 30);
     I.waitForVisible(homePage.fields.sttFailedChecksPanelSelector, 30);
+    const [critical, major, trivial] = (await I.grabTextFrom(homePage.fields.sttFailedChecksPanelSelector)).split(' / ').map(Number);
+
+    I.moveCursorTo(homePage.fields.sttFailedChecksPanelSelector);
+    I.waitForVisible(homePage.fields.popUp, 5);
+    assert.ok(
+      (await I.grabTextFrom(homePage.fields.popUp)),
+      `Failed checks: ${critical + major + trivial}Critical – ${critical}Major – ${major}Trivial – ${trivial}`,
+    );
+
     I.doubleClick(homePage.fields.sttFailedChecksPanelSelector);
     await databaseChecksPage.verifyDatabaseChecksPageOpened();
+    I.seeNumberOfElements(locate('td').withText('Critical'), critical);
+    I.seeNumberOfElements(locate('td').withText('Major'), major);
+    I.seeNumberOfElements(locate('td').withText('Trivial'), trivial);
   },
 );
 
