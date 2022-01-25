@@ -166,15 +166,22 @@ module.exports = {
   async getMetric(metricName, refineBy) {
     const timeStamp = Date.now();
     const bodyFormData = new FormData();
-    const body = {
+    let body;
+
+    body = {
       query: metricName,
       start: Math.floor((timeStamp - 15000) / 1000),
       end: Math.floor((timeStamp) / 1000),
-      step: 60,
+      step: 1,
     };
 
     if (refineBy) {
-      body.query = `${metricName}{${refineBy.type}=~"(${refineBy.value})"}`;
+      body = {
+        query: `${metricName}{${refineBy.type}=~"(${refineBy.value})"}`,
+        start: Math.floor((timeStamp - 10000) / 1000),
+        end: Math.floor((timeStamp) / 1000),
+        step: 1,
+      };
     }
 
     Object.keys(body).forEach((key) => bodyFormData.append(key, body[key]));
@@ -199,7 +206,7 @@ module.exports = {
    * @param     timeOutInSeconds    time to wait for a service to appear
    * @returns   {Promise<Object>}   response Object, requires await when called
    */
-  async waitForMetric(metricName, queryBy, timeOutInSeconds) {
+  async waitForMetric(metricName, queryBy, timeOutInSeconds = 30) {
     const start = new Date().getTime();
     const timout = timeOutInSeconds * 1000;
     const interval = 1;
@@ -227,6 +234,7 @@ module.exports = {
   async checkMetricExist(metricName, refineBy) {
     const response = await this.getMetric(metricName, refineBy);
     const result = JSON.stringify(response.data.data.result);
+    console.log(result);
 
     I.assertTrue(response.data.data.result.length !== 0,
       `Metrics ${metricName} Should be available but got empty ${result}`);

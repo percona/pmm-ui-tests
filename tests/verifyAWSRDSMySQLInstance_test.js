@@ -97,7 +97,7 @@ Scenario(
   async ({
     grafanaAPI, remoteInstancesPage, inventoryAPI,
   }) => {
-    const metricNames = ['aws_rds_cpu_credit_usage_average', 'rds_exporter_requests_total', 'rdsosmetrics_cpuUtilization_system'];
+    const metricNames = ['aws_rds_cpu_credit_usage_average', 'rdsosmetrics_memory_total', 'rdsosmetrics_cpuUtilization_total'];
     const serviceName = remoteInstancesPage.rds['Service Name'];
     const { node_id } = await inventoryAPI.apiGetNodeInfoByServiceName('MYSQL_SERVICE', serviceName);
     const response = await inventoryAPI.apiGetAgentsViaNodeId(node_id);
@@ -105,7 +105,7 @@ Scenario(
 
     assert.ok(!result.push_metrics_enabled, `Push Metrics Enabled Flag Should not be present on response object for AWS RDS but found ${JSON.stringify(result)}`);
     for (const metric of metricNames) {
-      await grafanaAPI.checkMetricExist(metric, { type: 'service_name', value: serviceName });
+      await grafanaAPI.waitForMetric(metric, { type: 'node_id', value: node_id });
     }
   },
 );
