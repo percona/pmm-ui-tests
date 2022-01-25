@@ -94,7 +94,7 @@ Scenario('PMM-T427 - Verify elements on PMM DBaaS page @dbaas',
 
 Scenario('PMM-T547 PMM-T548  Verify user is able to view config of registered Kubernetes cluster on Kubernetes Cluster Page, ' +
  'PMM-T1130 - Verify warning about deleting an API key @dbaas',
-  async ({ I, dbaasPage, dbaasAPI }) => {
+  async ({ I, dbaasPage, dbaasAPI, settingsAPI }) => {
     await settingsAPI.changeSettings({ publicAddress: process.env.VM_IP });
     await dbaasAPI.apiRegisterCluster(process.env.kubeconfig_minikube, clusterName);
     I.amOnPage(dbaasPage.url);
