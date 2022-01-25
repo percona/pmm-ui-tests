@@ -398,6 +398,18 @@ Scenario(
   },
 );
 
+if (versionMinor < 15) {
+  Scenario(
+    'PMM-T268 - Verify Failed check singlestats after upgrade from old versions @post-upgrade @pmm-upgrade',
+    async ({
+      I, homePage,
+    }) => {
+      await homePage.open();
+      I.waitForVisible(homePage.fields.sttDisabledFailedChecksPanelSelector, 15);
+    },
+  );
+}
+
 if (versionMinor >= 15) {
   Scenario(
     'Verify user has failed checks after upgrade / STT on @post-upgrade @pmm-upgrade',
