@@ -1,7 +1,7 @@
 const assert = require('assert');
 
 const {
-  I, allChecksPage, databaseChecksPage, codeceptjsConfig, perconaServerDB,
+  allChecksPage, databaseChecksPage, codeceptjsConfig, perconaServerDB,
 } = inject();
 const config = codeceptjsConfig.config.helpers.Playwright;
 const connection = perconaServerDB.defaultConnection;
@@ -84,6 +84,17 @@ xScenario(
 );
 
 Scenario(
+  'PMM-T368 Verify info icon message for Failed check panel on home page [minor] @stt',
+  async ({
+    I, homePage,
+  }) => {
+    I.moveCursorTo(homePage.fields.failedChecksPanelInfo);
+    I.waitForVisible(homePage.fields.popUp, 5);
+    I.seeTextEquals(homePage.failedChecksSinglestatsInfoMessage, homePage.fields.popUp);
+  },
+);
+
+Scenario(
   'PMM-T233 PMM-T354 open PMM Database Checks page from home dashboard and verify number of failed checks [critical] @stt',
   async ({
     I, homePage, databaseChecksPage, settingsAPI, securityChecksAPI,
@@ -97,6 +108,7 @@ Scenario(
     I.waitForVisible(homePage.fields.sttFailedChecksPanelSelector, 30);
     const [critical, major, trivial] = (await I.grabTextFrom(homePage.fields.sttFailedChecksPanelSelector)).split(' / ').map(Number);
 
+    // Verify failed checks pop up
     I.moveCursorTo(homePage.fields.sttFailedChecksPanelSelector);
     I.waitForVisible(homePage.fields.popUp, 5);
     assert.ok(
@@ -106,6 +118,8 @@ Scenario(
 
     I.doubleClick(homePage.fields.sttFailedChecksPanelSelector);
     await databaseChecksPage.verifyDatabaseChecksPageOpened();
+
+    // Verify count of checks by Severity match number on the home page singlestat
     I.seeNumberOfElements(locate('td').withText('Critical'), critical);
     I.seeNumberOfElements(locate('td').withText('Major'), major);
     I.seeNumberOfElements(locate('td').withText('Trivial'), trivial);
