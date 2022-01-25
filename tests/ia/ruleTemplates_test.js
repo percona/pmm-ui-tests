@@ -270,7 +270,7 @@ Scenario(
 
 Scenario(
   'PMM-T1126 - Verify there are no Templates from Percona if Telemetry is disabled @ia',
-  async ({ I, settingsAPI, homePage, ruleTemplatesPage }) => {
+  async ({ I, settingsAPI, homePage, allChecksPage, ruleTemplatesPage }) => {
     const editButton = ruleTemplatesPage.buttons
       .editButtonBySource('Percona');
     const deleteButton = ruleTemplatesPage.buttons
@@ -284,7 +284,9 @@ Scenario(
     await homePage.open();
     I.waitForVisible(homePage.fields.checksPanelSelector, 30);
     I.waitForVisible(homePage.fields.noFailedChecksInPanel, 30);
-    // I.wait(1);
+    I.wait(40);
+    I.amOnPage(allChecksPage.url);
+    I.dontSeeElement(locate('button').find('span').withText('Disable'));
     I.amOnPage(ruleTemplatesPage.url);
     I.dontSeeElement(editButton);
     I.dontSeeElement(deleteButton);
