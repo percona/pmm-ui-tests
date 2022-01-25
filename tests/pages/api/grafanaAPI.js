@@ -234,7 +234,6 @@ module.exports = {
   async checkMetricExist(metricName, refineBy) {
     const response = await this.getMetric(metricName, refineBy);
     const result = JSON.stringify(response.data.data.result);
-    console.log(result);
 
     I.assertTrue(response.data.data.result.length !== 0,
       `Metrics ${metricName} Should be available but got empty ${result}`);
