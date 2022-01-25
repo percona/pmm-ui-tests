@@ -127,13 +127,6 @@ Scenario(
 
     // Verify correct labels
     I.see('Critical', alertsPage.elements.severityCell(alertName));
-    const labels = await I.grabTextFromAll(alertsPage.elements.labelsCell(alertName));
-
-    const [, serviceId] = labels
-      .find((label) => label.includes('service_id='))
-      .split('=');
-
-    await inventoryAPI.verifyServiceIdExists(serviceId);
 
     // Verify Alert exists in alertmanager
     await alertmanagerAPI.verifyAlert({ ruleId: ruleIdForAlerts, serviceName: 'pmm-server-postgresql' });
