@@ -10,14 +10,14 @@ module.exports = {
     alertmanagerAPI: './tests/pages/api/alertmanagerAPI.js',
     alertsAPI: './tests/ia/pages/api/alertsAPI.js',
     alertsPage: './tests/ia/pages/alertsPage.js',
-    allChecksPage: './tests/stt/pages/allChecksPage.js',
+    allChecksPage: './tests/advisers/stt/pages/allChecksPage.js',
     amiInstanceSetupPage: './tests/pages/amiInstanceSetupPage.js',
     annotationAPI: './tests/pages/api/annotationAPI.js',
     backupAPI: './tests/backup/pages/api/backupAPI.js',
     backupInventoryPage: './tests/backup/pages/inventoryPage.js',
     channelsAPI: './tests/ia/pages/api/channelsAPI.js',
     dashboardPage: './tests/pages/dashboardPage.js',
-    databaseChecksPage: './tests/stt/pages/databaseChecksPage.js',
+    databaseChecksPage: './tests/advisers/stt/pages/databaseChecksPage.js',
     dbaasAPI: './tests/DbaaS/api/dbaasAPI.js',
     dbaasPage: './tests/DbaaS/pages/dbaasPage.js',
     dbaasActionsPage: './tests/DbaaS/pages/dbaasActionsPage.js',
@@ -50,22 +50,20 @@ module.exports = {
     searchDashboardsModal: './tests/dashboards/pages/searchDashboardsModal.js',
     iaCommon: './tests/ia/pages/iaCommonPage.js',
     platformAPI: './tests/pages/api/platformAPI.js',
-    securityChecksAPI: './tests/stt/pages/api/securityChecksAPI.js',
+    securityChecksAPI: './tests/advisers/stt/pages/api/securityChecksAPI.js',
     settingsAPI: './tests/pages/api/settingsAPI.js',
     templatesAPI: './tests/ia/pages/api/templatesAPI.js',
   },
   getChunks: (files) => {
-    const dependentTests = files.filter((value) => /PMMSettings|ia|backup/.test(value));
+    const dependentTests = files.filter((value) => /PMMSettings|stt|backup|permissions/.test(value));
+    const iaTests = files.filter((value) => /ia/.test(value));
     const dbaasTests = files.filter((value) => /DbaaS/.test(value));
-    const dashboardTests = files.filter((value) => /dashboards/.test(value));
     const otherTests = files.filter((val) => !dependentTests.includes(val)
-      && !dbaasTests.includes(val)
-      && !dashboardTests.includes(val)
-      && !val.includes('stt'));
+      && !dbaasTests.includes(val) && !iaTests.includes(val));
 
     return [
       dependentTests,
-      dashboardTests,
+      iaTests,
       otherTests,
       dbaasTests,
     ];

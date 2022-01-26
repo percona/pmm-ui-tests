@@ -47,7 +47,7 @@ module.exports = {
       .flat(Infinity)
       .filter(({ service_name }) => service_name.includes(serviceName));
 
-    return data[0];
+    return data ? data[0] : null;
   },
 
   async apiGetNodeInfoForAllNodesByServiceName(serviceType, serviceName) {
@@ -110,6 +110,12 @@ module.exports = {
     return Object.values(resp.data)
       .flat(Infinity)
       .filter(({ service_id }) => service_id === serviceId);
+  },
+
+  async deleteNodeByServiceName(serviceType, serviceName, force = true) {
+    const node = await this.apiGetNodeInfoByServiceName(serviceType, serviceName);
+
+    if (node) await this.deleteNode(node.node_id, force);
   },
 
   async deleteNode(nodeID, force) {
