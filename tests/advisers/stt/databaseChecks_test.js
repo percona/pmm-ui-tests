@@ -84,23 +84,12 @@ xScenario(
 );
 
 Scenario(
-  'PMM-T368 Verify info icon message for Failed check panel on home page [minor] @stt',
-  async ({
-    I, homePage,
-  }) => {
-    I.moveCursorTo(homePage.fields.failedChecksPanelInfo);
-    I.waitForVisible(homePage.fields.popUp, 5);
-    I.seeTextEquals(homePage.failedChecksSinglestatsInfoMessage, homePage.fields.popUp);
-  },
-);
-
-Scenario(
-  'PMM-T233 PMM-T354 open PMM Database Checks page from home dashboard and verify number of failed checks [critical] @stt',
+  'PMM-T233 PMM-T354 PMM-T368 open PMM Database Checks page from home dashboard and verify number of failed checks [critical] @stt',
   async ({
     I, homePage, databaseChecksPage, settingsAPI, securityChecksAPI,
   }) => {
     await settingsAPI.apiEnableSTT();
-    await securityChecksAPI.startSecurityChecks();
+    await securityChecksAPI.startSecurityChecks(['mysql_version']);
     await securityChecksAPI.waitForFailedCheckExistance(detailsText, psServiceName);
     I.wait(5);
     I.amOnPage(homePage.url);
@@ -115,6 +104,11 @@ Scenario(
       (await I.grabTextFrom(homePage.fields.popUp)),
       `Failed checks: ${critical + major + trivial}Critical – ${critical}Major – ${major}Trivial – ${trivial}`,
     );
+
+    // Verify info icon message for Failed check panel
+    I.moveCursorTo(homePage.fields.failedChecksPanelInfo);
+    I.waitForVisible(homePage.fields.popUp, 5);
+    I.seeTextEquals(homePage.failedChecksSinglestatsInfoMessage, homePage.fields.popUp);
 
     I.doubleClick(homePage.fields.sttFailedChecksPanelSelector);
     await databaseChecksPage.verifyDatabaseChecksPageOpened();

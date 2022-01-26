@@ -21,10 +21,11 @@ module.exports = {
     return resp.data.results;
   },
 
-  async startSecurityChecks() {
+  async startSecurityChecks(checkNamesArray) {
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
+    const body = checkNamesArray ? { names: checkNamesArray } : {};
 
-    const resp = await I.sendPostRequest('v1/management/SecurityChecks/Start', {}, headers);
+    const resp = await I.sendPostRequest('v1/management/SecurityChecks/Start', body, headers);
 
     assert.ok(
       resp.status === 200,
