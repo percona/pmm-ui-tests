@@ -54,6 +54,7 @@ Before(async ({
   I, perconaServerDB,
 }) => {
   await I.Authorize();
+  I.setRequestTimeout(60000);
   await cleanup();
   await perconaServerDB.createUser();
 });
