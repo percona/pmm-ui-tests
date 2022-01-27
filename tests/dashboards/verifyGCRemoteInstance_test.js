@@ -157,11 +157,7 @@ Scenario(
   }) => {
     const body = {
       telemetry_enabled: true,
-      metrics_resolutions: {
-        hr: '5s',
-        mr: '10s',
-        lr: '60s',
-      },
+      metrics_resolutions: settingsAPI.defaultResolution,
       data_retention: '172800s',
     };
 
