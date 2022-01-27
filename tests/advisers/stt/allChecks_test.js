@@ -4,11 +4,15 @@ const { perconaServerDB } = inject();
 
 const connection = perconaServerDB.defaultConnection;
 const psServiceName = 'allChecks-ps-5.7.30';
+let nodeId;
 
 Feature('Security Checks: All Checks');
 
 BeforeSuite(async ({ addInstanceAPI }) => {
-  await addInstanceAPI.addInstanceForSTT(connection, psServiceName);
+  nodeId = await addInstanceAPI.addInstanceForSTT(connection, psServiceName);
+});
+AfterSuite(async ({ inventoryAPI }) => {
+  if (nodeId) await inventoryAPI.deleteNode(nodeId, true);
 });
 
 Before(async ({ I, settingsAPI, securityChecksAPI }) => {
