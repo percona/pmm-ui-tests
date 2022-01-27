@@ -282,6 +282,7 @@ Scenario(
 
     await settingsAPI.changeSettings(settings);
     I.amOnPage(ruleTemplatesPage.url);
+    I.waitForElement(ruleTemplatesPage.buttons.openAddTemplateModal, 30);
     I.dontSeeElement(editButton);
     I.dontSeeElement(deleteButton);
   },
