@@ -51,6 +51,6 @@ Scenario(
     await I.asyncWaitFor(pgUpIsZero, 180);
     await I.say(`PostgreSQL ${serviceName} ${metricName} is 0`);
     await I.verifyCommand(`${pmmManagerCmd} --cleanup-service ${serviceName}`);
-    await settingsAPI.restoreSettingsDefaults();
+    await settingsAPI.changeSettings({ resolution: settingsAPI.defaultResolution });
   },
 );
