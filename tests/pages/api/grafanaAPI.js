@@ -166,9 +166,8 @@ module.exports = {
   async getMetric(metricName, refineBy) {
     const timeStamp = Date.now();
     const bodyFormData = new FormData();
-    let body;
 
-    body = {
+    const body = {
       query: metricName,
       start: Math.floor((timeStamp - 15000) / 1000),
       end: Math.floor((timeStamp) / 1000),
@@ -176,12 +175,7 @@ module.exports = {
     };
 
     if (refineBy) {
-      body = {
-        query: `${metricName}{${refineBy.type}=~"(${refineBy.value})"}`,
-        start: Math.floor((timeStamp - 10000) / 1000),
-        end: Math.floor((timeStamp) / 1000),
-        step: 1,
-      };
+      body.query = `${metricName}{${refineBy.type}=~"(${refineBy.value})"}`;
     }
 
     Object.keys(body).forEach((key) => bodyFormData.append(key, body[key]));
