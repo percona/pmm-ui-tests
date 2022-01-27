@@ -190,7 +190,7 @@ Scenario('PMM-T520 - Verify that alert is in Firing State - internal alert manag
   await pmmSettingsPage.verifyAlertmanagerRuleAdded(pmmSettingsPage.alertManager.ruleName2, true);
 });
 
-Scenario('PMM-T520 - Verify that alert is being fired to external Alert Manager @nightly @not-ovf @settings', async ({ I, pmmSettingsPage }) => {
+Scenario('PMM-T520 - Verify that alert is being fired to external Alert Manager @nightly @not-ovf', async ({ I, pmmSettingsPage }) => {
   const scheme = 'http://';
   const sectionNameToExpand = pmmSettingsPage.sectionTabsList.alertmanager;
 
