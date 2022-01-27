@@ -17,7 +17,8 @@ module.exports = {
   messages: {
     homePagePanelMessage: 'Security Threat Tool is disabled.\nCheck PMM Settings.',
     disabledSTTMessage: 'Security Threat Tool is disabled. You can enable it in',
-    securityChecksDone: 'Running database checks in the background... The results will be displayed here soon.',
+    securityChecksDone: 'Done running DB checks. The latest results are displayed.',
+    // securityChecksDone: 'Running database checks in the background... The results will be displayed here soon.',
   },
   buttons: {
     startDBChecks: locate('$db-check-panel-actions').find('button'),
