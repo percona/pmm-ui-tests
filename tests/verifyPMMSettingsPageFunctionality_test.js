@@ -222,7 +222,8 @@ Scenario('PMM-T532 PMM-T533 PMM-T536 - Verify user can enable/disable IA in Sett
     I.click(pmmSettingsPage.fields.advancedButton);
     I.waitForVisible(pmmSettingsPage.fields.iaSwitchSelectorInput, 30);
     pmmSettingsPage.verifySwitch(pmmSettingsPage.fields.iaSwitchSelectorInput, 'on');
-    I.seeElementInDOM(adminPage.sideMenu.integratedAlerting);
+    I.moveCursorTo(adminPage.sideMenu.alertingBellIcon);
+    I.waitForVisible(adminPage.sideMenu.integratedAlertingManuItem, 20);
     I.seeTextEquals('Integrated Alerting', adminPage.sideMenu.integratedAlerting);
     I.seeTextEquals('Communication', pmmSettingsPage.communication.communicationSection);
     I.click(pmmSettingsPage.fields.iaSwitchSelector);

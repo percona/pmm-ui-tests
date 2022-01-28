@@ -5,6 +5,8 @@ module.exports = {
   url: 'graph/d/pmm-home/home-dashboard?orgId=1',
   sideMenu: {
     integratedAlerting: 'li > a[href="/graph/integrated-alerting"]',
+    alertingBellIcon: locate('$navbar-section').at(2).find('li a[aria-label="Alerting"]'),
+    integratedAlertingManuItem: locate('ul[aria-label="Alerting"]').find('[data-key=integrated-alerting]'),
   },
   fields: {
     navigation: '//i[contains(@class, "navbar-page-btn__search")]',
