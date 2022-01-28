@@ -12,10 +12,10 @@ const remoteInstanceStatus = {
   },
   mongodb: {
     psmdb_4_2: {
-      enabled: false,
+      enabled: true,
     },
     psmdb_4_4: {
-      enabled: false,
+      enabled: true,
     },
     mongodb_4_4_ssl: {
       enabled: false,
