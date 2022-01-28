@@ -166,11 +166,12 @@ module.exports = {
   async getMetric(metricName, refineBy) {
     const timeStamp = Date.now();
     const bodyFormData = new FormData();
+
     const body = {
       query: metricName,
       start: Math.floor((timeStamp - 15000) / 1000),
       end: Math.floor((timeStamp) / 1000),
-      step: 60,
+      step: 1,
     };
 
     if (refineBy) {
@@ -199,7 +200,7 @@ module.exports = {
    * @param     timeOutInSeconds    time to wait for a service to appear
    * @returns   {Promise<Object>}   response Object, requires await when called
    */
-  async waitForMetric(metricName, queryBy, timeOutInSeconds) {
+  async waitForMetric(metricName, queryBy, timeOutInSeconds = 30) {
     const start = new Date().getTime();
     const timout = timeOutInSeconds * 1000;
     const interval = 1;
@@ -229,7 +230,7 @@ module.exports = {
     const result = JSON.stringify(response.data.data.result);
 
     I.assertTrue(response.data.data.result.length !== 0,
-      `TextFile Collector Metrics ${metricName} Should be available but got empty ${result}`);
+      `Metrics ${metricName} Should be available but got empty ${result}`);
 
     return response;
   },
