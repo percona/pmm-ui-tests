@@ -21,7 +21,7 @@ module.exports = {
     sttFailedChecksPanelSelector: '$db-check-panel-has-checks',
     checksPanelSelector: '$db-check-panel-home',
     noFailedChecksInPanel: '$db-check-panel-zero-checks',
-    failedChecksPanelInfo: '[aria-label="Panel container title Failed security checks"] i',
+    failedChecksPanelInfo: '[aria-label="Failed security checks panel"] i',
     newsPanelTitleSelector: '//span[@class="panel-title-text" and text() = "Percona News"]',
     pmmCustomMenu: '$sidemenu-item-pmm',
     servicesButton: locate('span').withText('Services'),
