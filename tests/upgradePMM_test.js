@@ -666,11 +666,7 @@ Data(clientDbServices).Scenario(
     const metricName = current.metric;
     const { node_id } = await inventoryAPI.apiGetNodeInfoByServiceName(current.serviceType, current.name);
     const nodeName = await inventoryAPI.getNodeName(node_id);
-
-    // Need to skip this check on AMI upgrade for Postgresql
-    if (process.env.AMI_UPGRADE_TESTING_INSTANCE !== 'true' && current.serviceType !== 'POSTGRESQL_SERVICE') {
-      await grafanaAPI.checkMetricExist(metricName, { type: 'node_name', value: nodeName });
-    }
+    await grafanaAPI.checkMetricExist(metricName, { type: 'node_name', value: nodeName });
   },
 );
 
