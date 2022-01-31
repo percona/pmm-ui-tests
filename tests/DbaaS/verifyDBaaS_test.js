@@ -41,7 +41,8 @@ Before(async ({ I }) => {
 Scenario(
   'PMM-T426 - Verify adding new Kubernetes cluster minikube, PMM-T428 - Verify adding new Kubernetes cluster with same name, '
   + 'PMM-T431 -Verify unregistering Kubernetes cluster @dbaas',
-  async ({ I, dbaasPage }) => {
+  async ({ I, dbaasPage, settingsAPI }) => {
+    await settingsAPI.changeSettings({ publicAddress: process.env.VM_IP });
     I.amOnPage(dbaasPage.url);
     I.waitForVisible(dbaasPage.tabs.kubernetesClusterTab.addKubernetesClusterButtonInTable, 30);
     I.click(dbaasPage.tabs.kubernetesClusterTab.addKubernetesClusterButton);
@@ -94,8 +95,7 @@ Scenario('PMM-T427 - Verify elements on PMM DBaaS page @dbaas',
 
 Scenario('PMM-T547 PMM-T548  Verify user is able to view config of registered Kubernetes cluster on Kubernetes Cluster Page, ' +
  'PMM-T1130 - Verify warning about deleting an API key @dbaas',
-  async ({ I, dbaasPage, dbaasAPI, settingsAPI }) => {
-    await settingsAPI.changeSettings({ publicAddress: process.env.VM_IP });
+  async ({ I, dbaasPage, dbaasAPI }) => {
     await dbaasAPI.apiRegisterCluster(process.env.kubeconfig_minikube, clusterName);
     I.amOnPage(dbaasPage.url);
     dbaasPage.checkCluster(clusterName, false);
@@ -134,7 +134,8 @@ Scenario('Verify user is able to add same cluster config with different Name @db
   });
 
 Scenario('PMM-T728 Verify DB Cluster Tab Page Elements & Steps Background @dbaas',
-  async ({ I, dbaasPage, dbaasAPI }) => {
+  async ({ I, dbaasPage, dbaasAPI, settingsAPI }) => {
+    await settingsAPI.changeSettings({ publicAddress: '' });
     if (!await dbaasAPI.apiCheckRegisteredClusterExist(clusterName)) {
       await dbaasAPI.apiRegisterCluster(process.env.kubeconfig_minikube, clusterName);
     }
