@@ -1,4 +1,6 @@
-const moment = require("moment");
+const moment = require('moment');
+const assert = require('assert');
+
 Feature('QAN timerange').retry(1);
 
 Before(async ({
@@ -80,5 +82,116 @@ Scenario(
     adminPage.applyTimeRange('Last 24 hours');
     qanOverview.waitForOverviewLoaded();
     qanOverview.verifySorting(1, 'desc');
+  },
+);
+
+Scenario(
+  'PMM-T9148 - First use case @qan',
+  async ({ I, adminPage, qanOverview }) => {
+    adminPage.applyTimeRange('Last 12 hours');
+
+    const dateTime = moment();
+    const fromToString = qanOverview.createFromToTimeString(dateTime, 12, 'hours');
+
+    I.wait(300);
+    qanOverview.waitForOverviewLoaded();
+    qanOverview.selectRow(2);
+    I.click(qanOverview.buttons.copyButton);
+
+    const url = await I.grabCurrentUrl();
+    // const url = await navigator.clipboard.readText();
+    // const url = await I.grabTextFrom(qanOverview.tabs.clusterConfigurationText);
+    // I.verifyPopUpMessage(qanOverview.messages.copiedPopUpMessage);
+
+    I.openNewTab();
+    I.amOnPage(url);
+    qanOverview.waitForOverviewLoaded();
+    I.waitForVisible(qanOverview.getSelectedRowLocator(2));
+    I.seeInCurrentUrl(fromToString);
+  },
+);
+
+Scenario(
+  'PMM-T9148 - Second use case @qan',
+  async ({ I, adminPage, qanOverview }) => {
+    adminPage.applyTimeRange('Last 12 hours');
+
+    const dateTime = moment();
+    const fromToString = qanOverview.createFromToTimeString(dateTime, 12, 'hours');
+
+    I.seeInCurrentUrl(fromToString);
+    I.wait(300);
+
+    const url = await I.grabCurrentUrl();
+
+    I.openNewTab();
+    I.amOnPage(url);
+
+    const dateTime2 = moment();
+    const fromToString2 = qanOverview.createFromToTimeString(dateTime2, 12, 'hours');
+
+    I.seeInCurrentUrl(fromToString2);
+    assert.notEqual(fromToString, fromToString2, 'The time range is NOT the same you were seeing in previously tab');
+  },
+);
+
+Scenario(
+  'PMM-T9148 - Third use case - ready @qan',
+  async ({ I, adminPage }) => {
+    const date = moment().format('YYYY-MM-DD');
+    const fromString = Date.parse(`${date} 00:00:00`);
+    const toString = Date.parse(`${date} 23:59:59`);
+    const fromToString = `from=${fromString}&to=${toString}`;
+
+    adminPage.setAbsoluteTimeRange(`${date} 00:00:00`, `${date} 23:59:59`);
+    I.seeInCurrentUrl(fromToString);
+
+    const url = await I.grabCurrentUrl();
+
+    I.openNewTab();
+    I.amOnPage(url);
+    I.seeInCurrentUrl(fromToString);
+  },
+);
+
+Scenario(
+  'PMM-T9148 - Fourth use case - one question @qan',
+  async ({ I, qanPagination, qanOverview }) => {
+    I.click(qanPagination.buttons.nextPage);
+    qanOverview.selectRow(2);
+    I.click(qanOverview.buttons.copyButton);
+
+    // const url = await I.grabTextFrom(qanOverview.tabs.clusterConfigurationText);
+    const url = await I.grabCurrentUrl();
+
+    I.openNewTab();
+    I.amOnPage(url);
+    qanOverview.waitForOverviewLoaded();
+    // qanPagination.verifyActivePage(2);
+    I.waitForVisible(qanOverview.getSelectedRowLocator(2));
+  },
+);
+
+Scenario.only(
+  'PMM-T9148 - Fifth use case - ready @qan',
+  async ({ I, qanFilters, qanOverview }) => {
+    const environmentName = 'ps-dev';
+    const columnName = 'Bytes Sent';
+
+    I.click(qanOverview.buttons.addColumn);
+    qanOverview.addSpecificColumn(columnName);
+    qanFilters.applyFilter(environmentName);
+    qanOverview.waitForOverviewLoaded();
+    I.click(qanOverview.buttons.copyButton);
+
+    // const url = await I.grabTextFrom(qanOverview.tabs.clusterConfigurationText);
+    const url = await I.grabCurrentUrl();
+
+    I.openNewTab();
+    I.amOnPage(url);
+    qanOverview.waitForOverviewLoaded();
+    I.seeInCurrentUrl(`environment=${environmentName}`);
+    await qanFilters.verifyCountOfFilterLinks(1, false);
+    I.waitForElement(qanOverview.getColumnLocator(columnName), 30);
   },
 );
