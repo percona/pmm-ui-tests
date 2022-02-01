@@ -1,6 +1,8 @@
 const { I, adminPage } = inject();
 const assert = require('assert');
 
+const formatElementId = (text) => text.toLowerCase().replace(/ /g, '_');
+
 module.exports = {
   // insert your locators and methods here
   // setting locators
@@ -844,6 +846,8 @@ module.exports = {
     rootUser: '//div[contains(text(), "root")]',
     serviceSummary: locate('a').withText('Service Summary'),
     timeRangePickerButton: '.btn.navbar-button.navbar-button--tight',
+    openFiltersDropdownLocator: (filterName) => `#${formatElementId(filterName)}`,
+    filterDropdownOptionsLocator: (filterName) => `#options-${formatElementId(filterName)}`,
   },
 
   createAdvancedDataExplorationURL(metricName, time = '1m', nodeName = 'All') {
@@ -981,13 +985,11 @@ module.exports = {
     I.waitForElement(this.fields.metricTitle, 60);
   },
 
-  expandFilters(filterType) {
-    const filterGroupLocator = `//label[contains(text(), '${filterType}')]/parent::div`;
+  expandFilters(filterName) {
+    const dropdownLocator = this.fields.openFiltersDropdownLocator(filterName);
 
-    I.waitForElement(`${filterGroupLocator}//a`, 30);
-    I.click(`${filterGroupLocator}//a`);
-
-    return filterGroupLocator;
+    I.waitForElement(dropdownLocator, 30);
+    I.click(dropdownLocator);
   },
 
   async genericDashboardLoadForDbaaSClusters(url, timeRange = 'Last 5 minutes', performPageDown = 4, graphsWithNa = 0, graphsWithoutData = 0) {
@@ -1003,24 +1005,12 @@ module.exports = {
   },
 
   async applyFilter(filterName, filterValue) {
-    const filterNameLocator = filterName.toLowerCase().replaceAll(' ', '_');
-    const filterSelector = `#${filterNameLocator}`;
     const filterValueSelector = `//span[contains(text(), '${filterValue}')]`;
-    const filterNameSelector = `#options-${filterNameLocator}`;
+    const filterDropdownOptionsLocator = this.fields.filterDropdownOptionsLocator(filterName);
 
-    I.waitForElement(filterSelector, 30);
-    I.click(filterSelector);
-    I.waitForElement(filterValueSelector, 30);
-    const numOfElements = await I.grabNumberOfVisibleElements(this.fields.clearSelection);
-
-    if (numOfElements === 1) {
-      I.click(this.fields.clearSelection);
-    }
-
-    I.waitForElement(filterValueSelector, 30);
+    this.expandFilters(filterName);
+    I.waitForElement(filterDropdownOptionsLocator, 30);
     I.click(filterValueSelector);
-    I.waitForElement(filterNameSelector, 30);
-    I.click(filterNameSelector);
   },
 
   async getTimeRange() {
