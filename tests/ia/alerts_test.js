@@ -97,9 +97,8 @@ Scenario(
     I.amOnPage(alertsPage.url);
     I.waitForElement(alertsPage.elements.alertRow(alertName), 30);
 
-    for (const ruleId of rulesToDelete) {
-      I.dontSee(`rule_id=${ruleId}`, alertsPage.elements.labelsCell(alertName));
-    }
+    I.seeNumberOfElements(alertsPage.elements.alertRow(alertName), 2);
+    I.seeNumberOfElements(alertsPage.elements.criticalSeverity, 2);
   },
 );
 
@@ -126,15 +125,7 @@ Scenario(
     I.waitForElement(alertsPage.elements.alertRow(alertName), 30);
 
     // Verify correct labels
-    I.see(`rule_id=${ruleIdForAlerts}`, alertsPage.elements.labelsCell(alertName));
     I.see('Critical', alertsPage.elements.severityCell(alertName));
-    const labels = await I.grabTextFromAll(alertsPage.elements.labelsCell(alertName));
-
-    const [, serviceId] = labels
-      .find((label) => label.includes('service_id='))
-      .split('=');
-
-    await inventoryAPI.verifyServiceIdExists(serviceId);
 
     // Verify Alert exists in alertmanager
     await alertmanagerAPI.verifyAlert({ ruleId: ruleIdForAlerts, serviceName: 'pmm-server-postgresql' });
