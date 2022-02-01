@@ -97,9 +97,8 @@ Scenario(
     I.amOnPage(alertsPage.url);
     I.waitForElement(alertsPage.elements.alertRow(alertName), 30);
 
-    for (const ruleId of rulesToDelete) {
-      I.dontSee(alertsPage.elements.alertRow(alertName));
-    }
+    I.seeNumberOfElements(alertsPage.elements.alertRow(alertName), 2);
+    I.seeNumberOfElements(alertsPage.elements.criticalSeverity, 2);
   },
 );
 
