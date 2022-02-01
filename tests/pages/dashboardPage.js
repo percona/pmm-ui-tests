@@ -990,6 +990,8 @@ module.exports = {
 
     I.waitForElement(dropdownLocator, 30);
     I.click(dropdownLocator);
+
+    return this.fields.filterDropdownOptionsLocator(filterName);
   },
 
   async genericDashboardLoadForDbaaSClusters(url, timeRange = 'Last 5 minutes', performPageDown = 4, graphsWithNa = 0, graphsWithoutData = 0) {
