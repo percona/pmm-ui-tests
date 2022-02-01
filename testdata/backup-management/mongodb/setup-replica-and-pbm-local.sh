@@ -53,9 +53,9 @@ sleep 10
 docker cp setup-replica.js mongors1:/
 docker exec mongors1 mongo --port=27027 --authenticationDatabase admin setup-replica.js
 
-docker exec -u 0 mongors1 /bin/bash -c "percona-release enable pbm release && yum -y install percona-backup-mongodb"
-docker exec -u 0 mongors2 /bin/bash -c "percona-release enable pbm release && yum -y install percona-backup-mongodb"
-docker exec -u 0 mongors3 /bin/bash -c "percona-release enable pbm release && yum -y install percona-backup-mongodb"
+docker exec -u 0 mongors1 /bin/bash -c "percona-release enable pbm release && microdnf -y install percona-backup-mongodb"
+docker exec -u 0 mongors2 /bin/bash -c "percona-release enable pbm release && microdnf -y install percona-backup-mongodb"
+docker exec -u 0 mongors3 /bin/bash -c "percona-release enable pbm release && microdnf -y install percona-backup-mongodb"
 
 docker exec  -d mongors1 /bin/bash -c 'PBM_MONGODB_URI="mongodb://pbmuser:secretpwd@localhost:27027" pbm-agent'
 docker exec  -d mongors2 /bin/bash -c 'PBM_MONGODB_URI="mongodb://pbmuser:secretpwd@localhost:27028" pbm-agent'
@@ -66,3 +66,4 @@ docker exec -u 0 -it pmm-client /bin/bash -c "percona-release enable pbm release
 docker exec -u 0 -it pmm-client /bin/bash -c "pmm-admin add mongodb --service-name=mongo-backup-locations --username=admin --password=password --host=mongors1 --port=27027"
 docker exec -u 0 -it pmm-client /bin/bash -c "pmm-admin add mongodb --service-name=mongo-backup-schedule --username=admin --password=password --host=mongors1 --port=27027"
 docker exec -u 0 -it pmm-client /bin/bash -c "pmm-admin add mongodb --service-name=mongo-backup-inventory --username=admin --password=password --host=mongors1 --port=27027"
+docker exec -u 0 -it pmm-client /bin/bash -c "pmm-admin add mongodb --service-name=mongo-service-to-delete --username=admin --password=password --host=mongors1 --port=27027"
