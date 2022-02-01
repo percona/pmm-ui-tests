@@ -76,7 +76,7 @@ Scenario(
   async ({ I, alertsPage }) => {
     I.amOnPage(alertsPage.url);
     I.waitForElement(alertsPage.elements.criticalSeverity, 30);
-    I.seeCssPropertiesOnElements(alertsPage.elements.criticalSeverity, { color: 'rgb(224, 47, 68)' });
+    I.seeCssPropertiesOnElements(alertsPage.elements.criticalSeverity, { color: 'rgb(212, 74, 58)' });
     I.waitForElement(alertsPage.elements.highSeverity, 30);
     I.seeCssPropertiesOnElements(alertsPage.elements.highSeverity, { color: 'rgb(235, 123, 24)' });
     I.waitForElement(alertsPage.elements.noticeSeverity, 30);
@@ -119,7 +119,7 @@ Scenario(
 Scenario(
   'Verify Firing Alert, labels and existence in alertmanager @ia',
   async ({
-    I, alertsPage, inventoryAPI, alertmanagerAPI,
+    I, alertsPage, alertmanagerAPI,
   }) => {
     I.amOnPage(alertsPage.url);
     I.waitForElement(alertsPage.elements.alertRow(alertName), 30);
