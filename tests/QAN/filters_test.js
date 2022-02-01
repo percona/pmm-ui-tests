@@ -33,9 +33,7 @@ Data(filters).Scenario(
     I.waitForVisible(qanFilters.buttons.showSelected, 30);
 
     qanFilters.applyFilterInSection('Command Type', current.filterToApply);
-    I.waitForVisible(qanOverview.fields.searchBy, 30);
-    I.fillField(qanOverview.fields.searchBy, current.searchValue);
-    I.pressKey('Enter');
+    qanOverview.searchByValue(current.searchValue);
     I.waitForVisible(qanOverview.elements.noResultTableText, 30);
     I.seeTextEquals(qanOverview.messages.noResultTableText, qanOverview.elements.noResultTableText);
   },

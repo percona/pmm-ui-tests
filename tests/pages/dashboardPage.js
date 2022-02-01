@@ -262,6 +262,16 @@ module.exports = {
       'Number of Locks',
     ],
   },
+  postgresqlInstanceCompareDashboard: {
+    url: 'graph/d/postgresql-instance-compare/postgresql-instances-compare?orgId=1&from=now-5m&to=now',
+    metrics: [
+      'Service Info',
+      'PostgreSQL Connections',
+      'Active Connections',
+      'Tuples',
+      'Transactions',
+    ],
+  },
   postgresqlInstanceOverviewDashboard: {
     // had to be changed after the PMM-6386 bug will be fixed
     url: 'graph/d/postgresql-instance-overview/postgresql-instances-overview?orgId=1&from=now-5m&to=now',
@@ -929,9 +939,7 @@ module.exports = {
   },
 
   async grabFailedReportTitles(selector) {
-    const reportNames = await I.grabTextFromAll(selector);
-
-    return reportNames;
+    return await I.grabTextFromAll(selector);
   },
 
   async expandEachDashboardRow(halfToExpand) {
