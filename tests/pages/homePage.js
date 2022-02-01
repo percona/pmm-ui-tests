@@ -21,11 +21,13 @@ module.exports = {
     sttFailedChecksPanelSelector: '$db-check-panel-has-checks',
     checksPanelSelector: '$db-check-panel-home',
     noFailedChecksInPanel: '$db-check-panel-zero-checks',
+    failedChecksPanelInfo: '[aria-label="Panel container title Failed security checks"] i',
     newsPanelTitleSelector: '//span[@class="panel-title-text" and text() = "Percona News"]',
     pmmCustomMenu: '$sidemenu-item-pmm',
     servicesButton: locate('span').withText('Services'),
     newsPanelContentSelector:
       '//span[contains(text(), "Percona News")]/ancestor::div[contains(@class, "panel-container")]//div[contains(@class, "view")]',
+    popUp: '.popper__background',
     noAccessRightsSelector: '$unauthorized',
     updateWidget: {
       base: {
@@ -91,6 +93,7 @@ module.exports = {
     'TASK [Update/restart other services]',
     'TASK [Check supervisord log]',
   ],
+  failedChecksSinglestatsInfoMessage: 'Display the number of database security checks that the Security Threat Tool identified as failed during its most recent run.',
 
   serviceDashboardLocator: (serviceName) => locate('a').withText(serviceName),
   isAmiUpgrade: process.env.AMI_UPGRADE_TESTING_INSTANCE === 'true',

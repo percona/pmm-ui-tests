@@ -18,9 +18,10 @@ clientDbServices.add(['POSTGRESQL_SERVICE', 'PGSQL_', 'pg_stat_database_xact_rol
 clientDbServices.add(['MONGODB_SERVICE', 'mongodb_', 'mongodb_connections', 'annotation-for-mongo', dashboardPage.mongoDbInstanceSummaryDashboard.url, 'mongo_upgrade']);
 
 const connection = perconaServerDB.defaultConnection;
-const emptyPasswordSummary = 'MySQL users have empty passwords';
+const emptyPasswordSummary = 'User(s) has/have no password defined';
+const psServiceName = 'upgrade-stt-ps-5.7.30';
 const failedCheckRowLocator = databaseChecksPage.elements
-  .failedCheckRowByServiceName(remoteInstancesHelper.upgradeServiceNames.mysql);
+  .failedCheckRowByServiceName(psServiceName);
 const ruleName = 'Alert Rule for upgrade';
 const failedCheckMessage = 'Newer version of Percona Server for MySQL is available';
 
@@ -149,6 +150,67 @@ Scenario(
   },
 );
 
+if (versionMinor >= 15) {
+  Scenario(
+    'Verify user has failed checks before upgrade @pre-upgrade @pmm-upgrade',
+    async ({
+      I,
+      settingsAPI,
+      databaseChecksPage,
+      securityChecksAPI,
+      addInstanceAPI,
+    }) => {
+      const runChecks = locate('button')
+        .withText('Run DB checks');
+
+      await perconaServerDB.dropUser();
+      await perconaServerDB.createUser();
+      await settingsAPI.changeSettings({ stt: true });
+      await addInstanceAPI.addInstanceForSTT(connection, psServiceName);
+
+      await securityChecksAPI.startSecurityChecks();
+      // Waiting to have results
+      await securityChecksAPI.waitForFailedCheckExistance(emptyPasswordSummary);
+      // Run DB Checks from UI
+      // disable check, change interval for a check, change interval settings
+      if (versionMinor >= 16) {
+        await securityChecksAPI.disableCheck('mongodb_version');
+        await securityChecksAPI.changeCheckInterval('postgresql_version');
+        await settingsAPI.setCheckIntervals({
+          ...settingsAPI.defaultCheckIntervals,
+          standard_interval: '3600s',
+        });
+        I.amOnPage(databaseChecksPage.url);
+      } else {
+        I.amOnPage(databaseChecksPage.oldUrl);
+      }
+
+      I.waitForVisible(runChecks, 30);
+      I.waitForVisible(failedCheckRowLocator, 60);
+
+      // Check that there are failed checks
+      await securityChecksAPI.verifyFailedCheckExists(emptyPasswordSummary);
+      await securityChecksAPI.verifyFailedCheckExists(failedCheckMessage);
+
+      // Silence mysql Empty Password failed check
+      I.waitForVisible(failedCheckRowLocator, 30);
+      I.click(failedCheckRowLocator.find('button').first());
+    },
+  );
+
+  Scenario(
+    'Adding Redis as external Service before Upgrade @pre-upgrade @pmm-upgrade',
+    async ({
+      I, addInstanceAPI,
+    }) => {
+      await addInstanceAPI.addExternalService('redis_external_remote');
+      await I.verifyCommand(
+        'pmm-admin add external --listen-port=42200 --group="redis" --custom-labels="testing=redis" --service-name="redis_external_2"',
+      );
+    },
+  );
+}
+
 Scenario(
   'Verify user can create Remote Instances before upgrade @pre-upgrade @ami-upgrade @pmm-upgrade',
   async ({ addInstanceAPI }) => {
@@ -206,59 +268,6 @@ if (iaReleased) {
   );
 }
 
-if (versionMinor >= 15) {
-  Scenario.skip(
-    'Verify user has failed checks before upgrade @pre-upgrade @pmm-upgrade',
-    async ({
-      I, settingsAPI, databaseChecksPage, securityChecksAPI,
-    }) => {
-      const runChecks = locate('button').withText('Run DB checks');
-
-      await perconaServerDB.dropUser();
-      await perconaServerDB.createUser();
-      await settingsAPI.changeSettings({ stt: true });
-      // Run DB Checks from UI
-      // disable check, change interval for a check, change interval settings
-      if (versionMinor >= 16) {
-        await securityChecksAPI.startSecurityChecks();
-        // Waiting to have all results
-        I.wait(15);
-        await securityChecksAPI.disableCheck('mysql_anonymous_users');
-        await securityChecksAPI.changeCheckInterval('postgresql_version');
-        await settingsAPI.setCheckIntervals({ ...settingsAPI.defaultCheckIntervals, standard_interval: '3600s' });
-
-        I.amOnPage(databaseChecksPage.url);
-        I.waitForVisible(runChecks, 30);
-      } else {
-        I.amOnPage(databaseChecksPage.oldUrl);
-        I.waitForVisible(runChecks, 30);
-        I.click(runChecks);
-        I.waitForVisible(failedCheckRowLocator, 30);
-      }
-
-      // Check that there are failed checks
-      await securityChecksAPI.verifyFailedCheckExists(emptyPasswordSummary);
-      await securityChecksAPI.verifyFailedCheckExists(failedCheckMessage);
-
-      // Silence mysql Empty Password failed check
-      I.waitForVisible(failedCheckRowLocator, 30);
-      I.click(failedCheckRowLocator.find('button').first());
-    },
-  );
-
-  Scenario(
-    'Adding Redis as external Service before Upgrade @pre-upgrade @pmm-upgrade',
-    async ({
-      I, addInstanceAPI,
-    }) => {
-      await addInstanceAPI.addExternalService('redis_external_remote');
-      const output = await I.verifyCommand(
-        'pmm-admin add external --listen-port=42200 --group="redis" --custom-labels="testing=redis" --service-name="redis_external_2"',
-      );
-    },
-  );
-}
-
 if (versionMinor >= 13) {
   Data(clientDbServices).Scenario(
     'Adding annotation before upgrade At service Level @ami-upgrade @pre-upgrade @pmm-upgrade',
@@ -266,7 +275,7 @@ if (versionMinor >= 13) {
       annotationAPI, inventoryAPI, current,
     }) => {
       const {
-        serviceType, name, metric, annotationName,
+        serviceType, name, annotationName,
       } = current;
       const { node_id, service_name } = await inventoryAPI.apiGetNodeInfoByServiceName(serviceType, name);
       const nodeName = await inventoryAPI.getNodeName(node_id);
@@ -389,14 +398,29 @@ Scenario(
   },
 );
 
+if (versionMinor < 15) {
+  Scenario(
+    'PMM-T268 - Verify Failed check singlestats after upgrade from old versions @post-upgrade @pmm-upgrade',
+    async ({
+      I, homePage,
+    }) => {
+      await homePage.open();
+      I.waitForVisible(homePage.fields.sttDisabledFailedChecksPanelSelector, 15);
+    },
+  );
+}
+
 if (versionMinor >= 15) {
-  Scenario.skip(
+  Scenario(
     'Verify user has failed checks after upgrade / STT on @post-upgrade @pmm-upgrade',
     async ({
-      I, pmmSettingsPage, securityChecksAPI, databaseChecksPage,
+      I,
+      pmmSettingsPage,
+      securityChecksAPI,
+      databaseChecksPage,
     }) => {
-      // Wait for 30 seconds to have latest check results
-      I.wait(30);
+      // Wait for 45 seconds to have latest check results
+      I.wait(45);
       // Verify STT is enabled
       I.amOnPage(pmmSettingsPage.advancedSettingsUrl);
       I.waitForVisible(pmmSettingsPage.fields.sttSwitchSelector, 30);
@@ -438,12 +462,13 @@ if (versionMinor >= 15) {
 }
 
 if (versionMinor >= 16) {
-  Scenario.skip(
+  Scenario(
     'Verify disabled checks remain disabled after upgrade @post-upgrade @pmm-upgrade',
     async ({
-      I, allChecksPage,
+      I,
+      allChecksPage,
     }) => {
-      const checkName = 'MySQL Anonymous Users';
+      const checkName = 'MongoDB Version';
 
       I.amOnPage(allChecksPage.url);
       I.waitForVisible(allChecksPage.buttons.disableEnableCheck(checkName));
@@ -452,27 +477,32 @@ if (versionMinor >= 16) {
     },
   );
 
-  Scenario.skip(
+  Scenario(
     'Verify silenced checks remain silenced after upgrade @post-upgrade @pmm-upgrade',
     async ({
-      I, databaseChecksPage,
+      I,
+      databaseChecksPage,
     }) => {
       I.amOnPage(databaseChecksPage.url);
 
       I.waitForVisible(failedCheckRowLocator, 30);
-      I.dontSeeElement(failedCheckRowLocator.find('td').withText(emptyPasswordSummary));
+      I.dontSeeElement(failedCheckRowLocator.find('td')
+        .withText(emptyPasswordSummary));
 
       I.click(databaseChecksPage.buttons.toggleSilenced);
 
-      I.seeElement(failedCheckRowLocator.find('td').withText(emptyPasswordSummary));
-      I.seeElement(failedCheckRowLocator.find('td').withText('Silenced'));
+      I.seeElement(failedCheckRowLocator.find('td')
+        .withText(emptyPasswordSummary));
+      I.seeElement(failedCheckRowLocator.find('td')
+        .withText('Silenced'));
     },
   );
 
-  Scenario.skip(
+  Scenario(
     'Verify check intervals remain the same after upgrade @post-upgrade @pmm-upgrade',
     async ({
-      I, allChecksPage,
+      I,
+      allChecksPage,
     }) => {
       const checkName = 'PostgreSQL Version';
 
@@ -482,10 +512,11 @@ if (versionMinor >= 16) {
     },
   );
 
-  Scenario.skip(
+  Scenario(
     'Verify settings for intervals remain the same after upgrade @post-upgrade @pmm-upgrade',
     async ({
-      I, pmmSettingsPage,
+      I,
+      pmmSettingsPage,
     }) => {
       I.amOnPage(pmmSettingsPage.advancedSettingsUrl);
       I.waitForVisible(pmmSettingsPage.fields.rareIntervalInput, 30);
@@ -635,11 +666,7 @@ Data(clientDbServices).Scenario(
     const metricName = current.metric;
     const { node_id } = await inventoryAPI.apiGetNodeInfoByServiceName(current.serviceType, current.name);
     const nodeName = await inventoryAPI.getNodeName(node_id);
-
-    // Need to skip this check on AMI upgrade for Postgresql
-    if (process.env.AMI_UPGRADE_TESTING_INSTANCE !== 'true' && current.serviceType !== 'POSTGRESQL_SERVICE') {
-      await grafanaAPI.checkMetricExist(metricName, { type: 'node_name', value: nodeName });
-    }
+    await grafanaAPI.checkMetricExist(metricName, { type: 'node_name', value: nodeName });
   },
 );
 
@@ -716,7 +743,7 @@ if (versionMinor >= 13) {
       I, dashboardPage, current, inventoryAPI, adminPage,
     }) => {
       const {
-        serviceType, name, metric, annotationName, dashboard,
+        serviceType, name, annotationName, dashboard,
       } = current;
       const timeRange = 'Last 30 minutes';
 
@@ -735,9 +762,7 @@ if (versionMinor >= 13) {
 
 Scenario(
   'Check Prometheus Alerting Rules Persist Post Upgrade and Alerts are still Firing @post-upgrade @pmm-upgrade',
-  async ({
-    settingsAPI, pmmSettingsPage,
-  }) => {
+  async ({ settingsAPI, pmmSettingsPage }) => {
     const url = await settingsAPI.getSettings('alert_manager_url');
     const rule = await settingsAPI.getSettings('alert_manager_rules');
 
