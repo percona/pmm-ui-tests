@@ -86,7 +86,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T9148 - First use case @qan',
+  'PMM-T1138 - Verify QAN Copy Button for URL @qan',
   async ({ I, adminPage, qanOverview }) => {
     adminPage.applyTimeRange('Last 12 hours');
 
@@ -98,11 +98,12 @@ Scenario(
     qanOverview.selectRow(2);
     I.click(qanOverview.buttons.copyButton);
 
-    const url = await I.grabCurrentUrl();
+    const url = window.clipboardData.getData('Text');
+    // const url = Clipboard.getText();
+    // const url = await I.grabCurrentUrl();
     // const url = await navigator.clipboard.readText();
-    // const url = await I.grabTextFrom(qanOverview.tabs.clusterConfigurationText);
-    // I.verifyPopUpMessage(qanOverview.messages.copiedPopUpMessage);
 
+    // I.verifyPopUpMessage(qanOverview.messages.copiedPopUpMessage);
     I.openNewTab();
     I.amOnPage(url);
     qanOverview.waitForOverviewLoaded();
@@ -112,7 +113,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T9148 - Second use case @qan',
+  'PMM-T1140 - Verify relative time range copy URL from browser @qan',
   async ({ I, adminPage, qanOverview }) => {
     adminPage.applyTimeRange('Last 12 hours');
 
@@ -136,7 +137,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T9148 - Third use case - ready @qan',
+  'PMM-T1141 - Verify specific time range by new button to copy QAN URL @qan',
   async ({ I, adminPage }) => {
     const date = moment().format('YYYY-MM-DD');
     const fromString = Date.parse(`${date} 00:00:00`);
@@ -155,25 +156,27 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T9148 - Fourth use case - one question @qan',
+  'PMM-T1142 - Verify that the table page and selected query are still the same when we go on copied link by new QAN CopyButton @qan',
   async ({ I, qanPagination, qanOverview }) => {
     I.click(qanPagination.buttons.nextPage);
     qanOverview.selectRow(2);
     I.click(qanOverview.buttons.copyButton);
 
-    // const url = await I.grabTextFrom(qanOverview.tabs.clusterConfigurationText);
     const url = await I.grabCurrentUrl();
+    // const url = window.clipboardData.getData('Text');
+    // const url = Clipboard.getText();
 
     I.openNewTab();
     I.amOnPage(url);
     qanOverview.waitForOverviewLoaded();
+    // this check will need to be uncommented after tasks 9480 and 9481 are ready
     // qanPagination.verifyActivePage(2);
     I.waitForVisible(qanOverview.getSelectedRowLocator(2));
   },
 );
 
-Scenario.only(
-  'PMM-T9148 - Fifth use case - ready @qan',
+Scenario(
+  'PMM-T1143 - Verify columns and filters  when we go on copied link by new QAN CopyButton @qan',
   async ({ I, qanFilters, qanOverview }) => {
     const environmentName = 'ps-dev';
     const columnName = 'Bytes Sent';
@@ -184,8 +187,9 @@ Scenario.only(
     qanOverview.waitForOverviewLoaded();
     I.click(qanOverview.buttons.copyButton);
 
-    // const url = await I.grabTextFrom(qanOverview.tabs.clusterConfigurationText);
     const url = await I.grabCurrentUrl();
+    // const url = window.clipboardData.getData('Text');
+    // const url = Clipboard.getText();
 
     I.openNewTab();
     I.amOnPage(url);
