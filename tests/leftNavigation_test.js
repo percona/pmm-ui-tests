@@ -21,15 +21,14 @@ parse(leftNavMenu);
 
 Feature('Left Navigation menu tests').retry(1);
 
-Before(async ({ I, homePage }) => {
+Before(async ({ I }) => {
   await I.Authorize();
-  await homePage.open();
 });
 
 Data(sidebar).Scenario(
-  'PMM-T433, PMM-T591 - Verify menu items on Grafana sidebar redirects to correct page @nightly @menu',
-  async ({ I, current }) => {
-    I.seeElementInDOM(current.locator);
+  'PMM-T433, PMM-T591 - Verify menu items on Grafana sidebar redirects to correct page @nightly @menu @imp',
+  async ({ I, homePage, current }) => {
+    await homePage.open();
     current.click();
     I.waitInUrl(current.path, 5);
   },
