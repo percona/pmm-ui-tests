@@ -10,7 +10,7 @@ module.exports = {
   },
   fields: {
     navigation: '//i[contains(@class, "navbar-page-btn__search")]',
-    timePickerMenu: '//button[@aria-label="TimePicker Open Button"]',
+    timePickerMenu: I.useDataQA('data-testid TimePicker Open Button'),
     applyCustomTimer: locate('button').withAttr({ 'aria-label': 'TimePicker submit button' }),
     backToDashboard: '//button[@ng-click=\'ctrl.close()\']',
     discardChanges: '//button[@ng-click="ctrl.discard()"]',
@@ -62,7 +62,7 @@ module.exports = {
   },
 
   applyTimeRange(timeRange = 'Last 5 minutes') {
-    const timeRangeSelector = `//span[contains(text(), '${timeRange}')]`;
+    const timeRangeSelector = locate('li > label').withText(timeRange);
 
     I.waitForElement(this.fields.timePickerMenu, 30);
     I.forceClick(this.fields.timePickerMenu);
