@@ -292,7 +292,7 @@ module.exports = {
   },
 
   async expandSection(sectionName, expectedContentLocator) {
-    const sectionExpandLocator = locate('$settings-tabs').find('li').withText(sectionName);
+    const sectionExpandLocator = locate('$settings-tabs').find('li > a').withText(sectionName);
 
     I.click(sectionExpandLocator);
     I.waitForVisible(expectedContentLocator, 30);

@@ -11,7 +11,7 @@ module.exports = {
   fields: {
     navigation: '//i[contains(@class, "navbar-page-btn__search")]',
     timePickerMenu: I.useDataQA('data-testid TimePicker Open Button'),
-    applyCustomTimer: locate('button').withAttr({ 'aria-label': 'TimePicker submit button' }),
+    applyCustomTimer: I.useDataQA('data-testid TimePicker submit button'),
     backToDashboard: '//button[@ng-click=\'ctrl.close()\']',
     discardChanges: '//button[@ng-click="ctrl.discard()"]',
     metricTitle: '//div[@class="panel-title"]',
@@ -20,8 +20,8 @@ module.exports = {
     reportTitleWithNA:
       '//span[contains(text(), "N/A")]//ancestor::div[contains(@class,"panel-container")]//span[contains(@class,"panel-title-text")]',
     pmmDropdownMenuSelector: locate('a[data-toggle="dropdown"] > span').withText('PMM'),
-    timeRangeFrom: locate('input').withAttr({ 'aria-label': 'TimePicker from field' }),
-    timeRangeTo: locate('input').withAttr({ 'aria-label': 'TimePicker to field' }),
+    timeRangeFrom: locate('input').withAttr({ 'aria-label': 'Time Range from field' }),
+    timeRangeTo: locate('input').withAttr({ 'aria-label': 'Time Range to field' }),
   },
 
   getTimeZoneSelector: (timeZone) => `//span[contains(text(), '${timeZone}')]`,

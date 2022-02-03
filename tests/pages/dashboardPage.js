@@ -167,7 +167,7 @@ module.exports = {
   },
   sharePanel: {
     elements: {
-      imageRendererPluginLink: locate('.share-modal-body').find('.external-link'),
+      imageRendererPluginLink: locate('div .external-link').after('.share-modal-info-text'),
     },
   },
   proxysqlInstanceSummaryDashboard: {

@@ -1,4 +1,5 @@
-const moment = require("moment");
+const moment = require('moment');
+
 Feature('QAN timerange').retry(1);
 
 Before(async ({
@@ -42,7 +43,9 @@ Scenario(
 
 Scenario(
   'PMM-T432 Open the QAN Dashboard and check that changing absolute time range updates the overview table, URL. @nightly @qan',
-  async ({ I, adminPage, qanDetails, qanFilters, qanOverview }) => {
+  async ({
+    I, adminPage, qanDetails, qanFilters, qanOverview,
+  }) => {
     const date = moment().format('YYYY-MM-DD');
     const fromString = Date.parse(`${date} 00:00:00`);
     const toString = Date.parse(`${date} 23:59:59`);
