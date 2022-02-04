@@ -227,10 +227,10 @@ module.exports = {
   },
 
   getToTimeFromUrl(url) {
-    return url.slice(url.indexOf('&to=') + 4, url.indexOf('&to=') + 17);
+    return url.slice(url.indexOf('&to=') + 4, url.indexOf('&page_number='));
   },
 
   getFromToTimeFromUrl(url) {
-    return url.slice(url.indexOf('&from='), url.indexOf('&to=') + 17);
+    return url.slice(url.indexOf('&from='), url.indexOf('&page_number='));
   },
 };

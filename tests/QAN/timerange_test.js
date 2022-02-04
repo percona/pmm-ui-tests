@@ -124,7 +124,7 @@ Scenario(
     const url = await I.grabCurrentUrl();
     const fromToString = qanOverview.getFromToTimeFromUrl(url);
 
-    I.wait(5);
+    I.wait(60);
     I.openNewTab();
     I.amOnPage(url);
     qanOverview.waitForOverviewLoaded();
@@ -132,10 +132,7 @@ Scenario(
     const url2 = await I.grabCurrentUrl();
     const fromToString2 = qanOverview.getFromToTimeFromUrl(url2);
 
-    console.log(url);
-    console.log(url2);
-
-    assert.notEqual(fromToString, fromToString2, `The time range ${fromToString} is NOT the same you were seeing in previously tab ${fromToString2}`);
+    assert.equal(fromToString, fromToString2, `The time range ${fromToString} is NOT the same you were seeing in previously tab ${fromToString2}`);
   },
 );
 
