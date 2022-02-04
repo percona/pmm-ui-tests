@@ -15,7 +15,36 @@ const mouseOverMenu = (locator, elementToWait) => {
  */
 function LeftMenu(name, path, menuOptions) {
   this.headingLocator = locate(`ul[aria-label="${name}"]`).find('a').withText(name);
-  this.locator = `a[aria-label="${name}"]`;
+  this.menuLocator = `ul[aria-label="${name}"]`;
+  this.locator = `//a[@aria-label="${name}"] | //button[@aria-label="${name}"]`;
+  this.menu = {
+    heading: new MenuOption(name, name, this.headingLocator, path),
+  };
+  if (menuOptions != null) {
+    Object.entries(menuOptions).forEach(([key, value]) => {
+      this.menu[key] = value;
+    });
+  }
+
+  this.showMenu = () => {
+    mouseOverMenu(this.locator, this.menuLocator);
+  };
+  this.click = () => {
+    I.click(this.locator);
+  };
+}
+
+/**
+ * The search menu in the left navigation. It has dedicated markup since Grafana 8.
+ *
+ * @param   name          name of the menu item appears as menu heading
+ * @param   path          "expected" url path to be opened on click
+ * @param   menuOptions   an object collection of {@link MenuOption} and/or {@link SubMenu}
+ * @constructor
+ */
+function LeftSearchMenu(name, path, menuOptions) {
+  this.headingLocator = locate(`ul[aria-label="${name}"]`).find('button').withText(name);
+  this.locator = `button[aria-label="${name}"]`;
   this.menu = {
     heading: new MenuOption(name, name, this.headingLocator, path),
   };
@@ -86,7 +115,7 @@ const menuOption = (menuName, label, path, menuLevel = 1) => {
  * @param   menuOptions   an object collection of {@link MenuOption} and/or {@link SubMenu}
  * @constructor
  */
-function SubMenu(topMenuName, name, path, menuOptions) {
+function SubMenu(topMenuName, name, path = '#', menuOptions) {
   this.menu = { };
   if (menuOptions != null) {
     Object.entries(menuOptions).forEach(([key, value]) => {
@@ -102,5 +131,5 @@ function SubMenu(topMenuName, name, path, menuOptions) {
 }
 
 module.exports = {
-  LeftMenu, SubMenu, menuOption,
+  LeftMenu, LeftSearchMenu, SubMenu, menuOption,
 };

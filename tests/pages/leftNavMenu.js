@@ -1,27 +1,33 @@
 const {
-  LeftMenu, SubMenu, menuOption,
+  LeftMenu, LeftSearchMenu, SubMenu, menuOption,
 } = require('./menuTemplates.js');
 
+// to keep arguments short
+const cr = 'Create';
+const da = 'Dashboards';
 const pmmD = 'PMM dashboards';
+const sa = 'Server Admin';
+const co = 'Configuration';
+const al = 'Alerting';
 
 /**
  * Implements left Navigation Grafana Menu. Intended to be used UX goes, ex.:
  *    leftNavMenu.pmmDashboards.menu.systemNode.menu.nodeOverview.click()
  */
 module.exports = {
-  search: new LeftMenu('Search', '?search=open'),
+  search: new LeftSearchMenu('Search dashboards', 'search=open'),
   create: new LeftMenu('Create', '/graph/dashboard/new',
     {
-      dashboard: menuOption('Create', 'Dashboard', '/graph/dashboard/new?orgId=1'),
-      folder: menuOption('Create', 'Folder', '/graph/dashboards/folder/new'),
-      import: menuOption('Create', 'Import', '/graph/dashboard/import'),
+      dashboard: menuOption(cr, 'Dashboard', '/graph/dashboard/new?orgId=1'),
+      folder: menuOption(cr, 'Folder', '/graph/dashboards/folder/new'),
+      import: menuOption(cr, 'Import', '/graph/dashboard/import'),
     }),
   dashboards: new LeftMenu('Dashboards', '/graph/',
     {
-      home: menuOption('Dashboards', 'Home', '/graph/d/pmm-home/home-dashboard?orgId=1&refresh=1m'),
-      manage: menuOption('Dashboards', 'Manage', '/graph/dashboards'),
-      playlists: menuOption('Dashboards', 'Playlists', '/graph/playlists'),
-      snapshots: menuOption('Dashboards', 'Snapshots', '/graph/dashboard/snapshots'),
+      home: menuOption(da, 'Home', '/graph/d/pmm-home/home-dashboard?orgId=1&refresh=1m'),
+      manage: menuOption(da, 'Manage', '/graph/dashboards'),
+      playlists: menuOption(da, 'Playlists', '/graph/playlists'),
+      snapshots: menuOption(da, 'Snapshots', '/graph/dashboard/snapshots'),
     }),
   pmmDashboards: new LeftMenu('PMM dashboards', 'graph/d/pmm-home/home-dashboard?orgId=1&refresh=1m',
     {
@@ -93,30 +99,30 @@ module.exports = {
   explore: new LeftMenu('Explore', '/graph/explore'),
   alerting: new LeftMenu('Alerting', '/graph/alerting/list',
     {
-      alertRules: menuOption('Alerting', 'Alert rules', '/graph/alerting/list'),
-      notificationChannels: menuOption('Alerting', 'Notification channels', '/graph/alerting/notifications'),
+      alertRules: menuOption(al, 'Alert rules', '/graph/alerting/list'),
+      notificationChannels: menuOption(al, 'Notification channels', '/graph/alerting/notifications'),
 
     }),
   configuration: new LeftMenu('Configuration', '/graph/inventory',
     {
-      pmmInventory: new SubMenu('Configuration', 'PMM Inventory', '/graph/inventory/services',
+      pmmInventory: new SubMenu(co, 'PMM Inventory', '/graph/inventory/services',
         {
-          inventoryList: menuOption('Configuration', 'Inventory list', '/graph/inventory/services', 2),
-          addInstance: menuOption('Configuration', 'Add instance', '/graph/add-instance', 2),
+          inventoryList: menuOption(co, 'Inventory list', '/graph/inventory/services', 2),
+          addInstance: menuOption(co, 'Add instance', '/graph/add-instance', 2),
         }),
-      settings: menuOption('Configuration', 'Settings', '/graph/settings/metrics-resolution'),
-      dataSources: menuOption('Configuration', 'Data Sources', '/graph/datasources'),
-      users: menuOption('Configuration', 'Users', '/graph/org/users'),
-      teams: menuOption('Configuration', 'Teams', '/graph/org/teams'),
-      plugins: menuOption('Configuration', 'Plugins', '/graph/plugins'),
-      preferences: menuOption('Configuration', 'Preferences', '/graph/org'),
-      apiKeys: menuOption('Configuration', 'API Keys', '/graph/org/apikeys'),
+      settings: menuOption(co, 'Settings', '/graph/settings/metrics-resolution'),
+      dataSources: menuOption(co, 'Data Sources', '/graph/datasources'),
+      users: menuOption(co, 'Users', '/graph/org/users'),
+      teams: menuOption(co, 'Teams', '/graph/org/teams'),
+      plugins: menuOption(co, 'Plugins', '/graph/plugins'),
+      preferences: menuOption(co, 'Preferences', '/graph/org'),
+      apiKeys: menuOption(co, 'API Keys', '/graph/org/apikeys'),
     }),
   serverAdmin: new LeftMenu('Server Admin', '/graph/admin/users',
     {
-      users: menuOption('Server Admin', 'Server Admin', 'Users', '/graph/admin/users'),
-      orgs: menuOption('Server Admin', 'Orgs', '/graph/admin/orgs'),
-      settings: menuOption('Server Admin', 'Server Admin', 'Settings', '/graph/admin/settings'),
-      stats: menuOption('Server Admin', 'Stats', '/graph/admin/stats'),
+      users: menuOption(sa, 'Server Admin', 'Users', '/graph/admin/users'),
+      orgs: menuOption(sa, 'Orgs', '/graph/admin/orgs'),
+      settings: menuOption(sa, 'Settings', '/graph/admin/settings'),
+      stats: menuOption(sa, 'Stats', '/graph/admin/stats'),
     }),
 };

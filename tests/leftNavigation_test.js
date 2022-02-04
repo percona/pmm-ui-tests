@@ -26,7 +26,7 @@ Before(async ({ I }) => {
 });
 
 Data(sidebar).Scenario(
-  'PMM-T433, PMM-T591 - Verify menu items on Grafana sidebar redirects to correct page @nightly @menu @imp',
+  'PMM-T433, PMM-T591 - Verify menu items on Grafana sidebar redirects to correct page @nightly @menu',
   async ({ I, homePage, current }) => {
     await homePage.open();
     current.click();
