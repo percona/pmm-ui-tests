@@ -30,13 +30,11 @@ module.exports = {
     tooltipQueryId: locate('.ant-tooltip-inner').find('h5'),
     firstQueryValue: 'div.tr-1 > div.td:nth-child(2) div > div',
     firstQueryInfoIcon: 'div.tr-1 > div.td:nth-child(2) div > svg',
+    clipboardLink: locate('div').withText('Clipboard is not available. Copy the link:').find('span'),
   },
   messages: {
     noResultTableText: 'No queries available for this combination of filters in the selected time frame',
     copiedPopUpMessage: 'Successfully copied Query Analytics link to clipboard',
-  },
-  tabs: {
-    clusterConfigurationText: locate('$pmm-overlay-wrapper').find('pre'),
   },
 
   getRowLocator: (rowNumber) => `div.tr-${rowNumber}`,
@@ -228,13 +226,11 @@ module.exports = {
     I.pressKey('Enter');
   },
 
-  createFromToTimeString(moment, timeCount, timeUnits) {
-    const dateFrom = moment.format('YYYY-MM-DD');
-    const timeFrom = moment.format('HH:mm:00');
-    const dateTo = moment.subtract(timeCount, timeUnits).format('YYYY-MM-DD');
-    const timeTo = moment.subtract(timeCount, timeUnits).format('HH:mm:00');
-    const fromString = Date.parse(`${dateFrom} ${timeFrom}`);
-    const toString = Date.parse(`${dateTo} ${timeTo}`);
-    return `from=${fromString}&to=${toString}`;
+  getToTimeFromUrl(url) {
+    return url.slice(url.indexOf('&to=') + 4, url.indexOf('&to=') + 17);
+  },
+
+  getFromToTimeFromUrl(url) {
+    return url.slice(url.indexOf('&from='), url.indexOf('&to=') + 17);
   },
 };

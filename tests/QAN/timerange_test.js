@@ -90,64 +90,69 @@ Scenario(
   async ({ I, adminPage, qanOverview }) => {
     adminPage.applyTimeRange('Last 12 hours');
 
-    const dateTime = moment();
-    const fromToString = qanOverview.createFromToTimeString(dateTime, 12, 'hours');
+    const dateTime = moment().format('x');
 
-    I.wait(300);
     qanOverview.waitForOverviewLoaded();
     qanOverview.selectRow(2);
     I.click(qanOverview.buttons.copyButton);
 
-    const url = window.clipboardData.getData('Text');
-    // const url = Clipboard.getText();
-    // const url = await I.grabCurrentUrl();
-    // const url = await navigator.clipboard.readText();
+    const url = await I.grabTextFrom(qanOverview.elements.clipboardLink);
+    const toTimeFromUrl = qanOverview.getToTimeFromUrl(url);
 
-    // I.verifyPopUpMessage(qanOverview.messages.copiedPopUpMessage);
+    assert.ok(Math.abs(dateTime - toTimeFromUrl) < 30000, 'Difference between moment time and first copied time must be less then half of minute');
+
+    I.wait(30);
+    I.refreshPage();
+    qanOverview.waitForOverviewLoaded();
+    I.click(qanOverview.buttons.copyButton);
+
+    const url2 = await I.grabTextFrom(qanOverview.elements.clipboardLink);
+    const toTimeFromUrl2 = qanOverview.getToTimeFromUrl(url2);
+
+    assert.ok(Math.abs(toTimeFromUrl - toTimeFromUrl2) < 60000, 'Difference between moment time and second copied time must be less then one minute');
+
     I.openNewTab();
     I.amOnPage(url);
     qanOverview.waitForOverviewLoaded();
     I.waitForVisible(qanOverview.getSelectedRowLocator(2));
-    I.seeInCurrentUrl(fromToString);
   },
 );
 
 Scenario(
   'PMM-T1140 - Verify relative time range copy URL from browser @qan',
-  async ({ I, adminPage, qanOverview }) => {
-    adminPage.applyTimeRange('Last 12 hours');
-
-    const dateTime = moment();
-    const fromToString = qanOverview.createFromToTimeString(dateTime, 12, 'hours');
-
-    I.seeInCurrentUrl(fromToString);
-    I.wait(300);
-
+  async ({ I, qanOverview }) => {
     const url = await I.grabCurrentUrl();
+    const fromToString = qanOverview.getFromToTimeFromUrl(url);
 
+    I.wait(5);
     I.openNewTab();
     I.amOnPage(url);
+    qanOverview.waitForOverviewLoaded();
 
-    const dateTime2 = moment();
-    const fromToString2 = qanOverview.createFromToTimeString(dateTime2, 12, 'hours');
+    const url2 = await I.grabCurrentUrl();
+    const fromToString2 = qanOverview.getFromToTimeFromUrl(url2);
 
-    I.seeInCurrentUrl(fromToString2);
-    assert.notEqual(fromToString, fromToString2, 'The time range is NOT the same you were seeing in previously tab');
+    console.log(url);
+    console.log(url2);
+
+    assert.notEqual(fromToString, fromToString2, `The time range ${fromToString} is NOT the same you were seeing in previously tab ${fromToString2}`);
   },
 );
 
 Scenario(
   'PMM-T1141 - Verify specific time range by new button to copy QAN URL @qan',
-  async ({ I, adminPage }) => {
-    const date = moment().format('YYYY-MM-DD');
-    const fromString = Date.parse(`${date} 00:00:00`);
-    const toString = Date.parse(`${date} 23:59:59`);
-    const fromToString = `from=${fromString}&to=${toString}`;
+  async ({ I, adminPage, qanOverview }) => {
+    const dateTime = moment();
+    const to = dateTime.format('YYYY-MM-DD HH:mm:ss');
+    const from = moment(dateTime).subtract(1, 'hours').format('YYYY-MM-DD HH:mm:ss');
+    const fromToString = `&from=${moment(from).format('x')}&to=${moment(to).format('x')}`;
 
-    adminPage.setAbsoluteTimeRange(`${date} 00:00:00`, `${date} 23:59:59`);
+    adminPage.setAbsoluteTimeRange(from, to);
+    qanOverview.waitForOverviewLoaded();
     I.seeInCurrentUrl(fromToString);
+    I.click(qanOverview.buttons.copyButton);
 
-    const url = await I.grabCurrentUrl();
+    const url = await I.grabTextFrom(qanOverview.elements.clipboardLink);
 
     I.openNewTab();
     I.amOnPage(url);
@@ -162,21 +167,19 @@ Scenario(
     qanOverview.selectRow(2);
     I.click(qanOverview.buttons.copyButton);
 
-    const url = await I.grabCurrentUrl();
-    // const url = window.clipboardData.getData('Text');
-    // const url = Clipboard.getText();
+    const url = await I.grabTextFrom(qanOverview.elements.clipboardLink);
 
     I.openNewTab();
     I.amOnPage(url);
     qanOverview.waitForOverviewLoaded();
     // this check will need to be uncommented after tasks 9480 and 9481 are ready
     // qanPagination.verifyActivePage(2);
-    I.waitForVisible(qanOverview.getSelectedRowLocator(2));
+    I.waitForVisible(qanOverview.getSelectedRowLocator(2), 20);
   },
 );
 
 Scenario(
-  'PMM-T1143 - Verify columns and filters  when we go on copied link by new QAN CopyButton @qan',
+  'PMM-T1143 - Verify columns and filters when we go on copied link by new QAN CopyButton @qan',
   async ({ I, qanFilters, qanOverview }) => {
     const environmentName = 'ps-dev';
     const columnName = 'Bytes Sent';
@@ -187,9 +190,7 @@ Scenario(
     qanOverview.waitForOverviewLoaded();
     I.click(qanOverview.buttons.copyButton);
 
-    const url = await I.grabCurrentUrl();
-    // const url = window.clipboardData.getData('Text');
-    // const url = Clipboard.getText();
+    const url = await I.grabTextFrom(qanOverview.elements.clipboardLink);
 
     I.openNewTab();
     I.amOnPage(url);
