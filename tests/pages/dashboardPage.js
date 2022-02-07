@@ -167,7 +167,11 @@ module.exports = {
   },
   sharePanel: {
     elements: {
-      imageRendererPluginLink: locate('div .external-link').after('.share-modal-info-text'),
+      imageRendererPluginInfoText: locate('p').withDescendant('.external-link'),
+      imageRendererPluginLink: locate('[role="alert"]').find('.external-link'),
+    },
+    messages: {
+      imageRendererPlugin: 'To render a panel image, you must install the Image Renderer plugin. Please contact your PMM administrator to install the plugin.',
     },
   },
   proxysqlInstanceSummaryDashboard: {

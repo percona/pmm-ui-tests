@@ -93,8 +93,18 @@ Data(urlsAndMetrics).Scenario(
     I.waitForVisible(shareLocator, 20);
     I.click(shareLocator);
     I.waitForVisible(dashboardPage.sharePanel.elements.imageRendererPluginLink, 20);
-    I.seeAttributesOnElements(dashboardPage.sharePanel.elements.imageRendererPluginLink, { href: links.imageRendererPlugin });
+    I.seeAttributesOnElements(
+      dashboardPage.sharePanel.elements.imageRendererPluginLink,
+      {
+        href: links.imageRendererPlugin,
+        target: '_blank',
+      },
+    );
     I.seeTextEquals('Image Renderer plugin', dashboardPage.sharePanel.elements.imageRendererPluginLink);
+    I.seeTextEquals(
+      dashboardPage.sharePanel.messages.imageRendererPlugin,
+      dashboardPage.sharePanel.elements.imageRendererPluginInfoText,
+    );
   },
 );
 
