@@ -15,8 +15,8 @@ module.exports = {
     backToDashboard: '//button[@ng-click=\'ctrl.close()\']',
     discardChanges: '//button[@ng-click="ctrl.discard()"]',
     metricTitle: '//div[@class="panel-title"]',
-    changeTimeZoneButton: locate('span').withText('Change time zone'),
-    timeZoneSelector: locate('div').withText('Type to search (country, city, abbreviation)'),
+    changeTimeZoneButton: locate('button').withText('Change time settings').inside('#TimePickerContent'),
+    timeZoneSelector: '#TimePickerContent [aria-label="Time zone picker"]',
     reportTitleWithNA:
       '//span[contains(text(), "N/A")]//ancestor::div[contains(@class,"panel-container")]//span[contains(@class,"panel-title-text")]',
     pmmDropdownMenuSelector: locate('a[data-toggle="dropdown"] > span').withText('PMM'),
@@ -24,7 +24,11 @@ module.exports = {
     timeRangeTo: locate('input').withAttr({ 'aria-label': 'Time Range to field' }),
   },
 
-  getTimeZoneSelector: (timeZone) => `//span[contains(text(), '${timeZone}')]`,
+  getTimeZoneOptionSelector: (timeZone) => locate('[aria-label="Select option"]')
+    .find('span')
+    .withText(timeZone)
+    .inside('[aria-label="Select options menu"]'),
+  getTimeZoneSelector: (timeZone) => locate('[aria-label="Time zone selection"]').find('span').withText(timeZone),
 
   async selectItemFromPMMDropdown(title) {
     const titleLocator = `//li/a[text()='${title}']`;
@@ -83,13 +87,12 @@ module.exports = {
   },
 
   applyTimeZone(timeZone = 'Europe/London') {
-    const timeZoneSelector = this.getTimeZoneSelector(timeZone);
+    const timeZoneSelector = this.getTimeZoneOptionSelector(timeZone);
 
     I.waitForElement(this.fields.timePickerMenu, 30);
     I.forceClick(this.fields.timePickerMenu);
     I.waitForVisible(this.fields.changeTimeZoneButton, 30);
     I.click(this.fields.changeTimeZoneButton);
-    I.waitForVisible(timeZoneSelector, 30);
     I.waitForElement(this.fields.timeZoneSelector, 30);
     I.fillField(this.fields.timeZoneSelector, timeZone);
     I.waitForElement(timeZoneSelector, 30);

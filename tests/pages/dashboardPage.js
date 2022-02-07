@@ -850,7 +850,7 @@ module.exports = {
     rootUser: '//div[contains(text(), "root")]',
     serviceSummary: locate('a').withText('Service Summary'),
     timeRangePickerButton: '.btn.navbar-button.navbar-button--tight',
-    openFiltersDropdownLocator: (filterName) => `#${formatElementId(filterName)}`,
+    openFiltersDropdownLocator: (filterName) => locate('.variable-link-wrapper').after(`label[for="${formatElementId(filterName)}"]`),
     filterDropdownOptionsLocator: (filterName) => `#options-${formatElementId(filterName)}`,
   },
 
