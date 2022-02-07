@@ -1,6 +1,6 @@
 const { I } = inject();
 
-const folderWrapper = 'div[aria-label="Search section"]';
+const folderWrapper = I.useDataQA('data-testid Search section');
 
 module.exports = {
   folders: {
@@ -100,7 +100,7 @@ module.exports = {
     expandedFolderLocator: (folderName) => locate(folderWrapper).withDescendant('div').withText(folderName)
       .find('div')
       .at(1),
-    folderItemLocator: (itemName) => locate(`div[aria-label="Dashboard search item ${itemName}"]`).find('a'),
+    folderItemLocator: (itemName) => locate(I.useDataQA(`data-testid Dashboard search item ${itemName}`)).find('a'),
   },
 
   waitForOpened() {
@@ -119,17 +119,18 @@ module.exports = {
 
   expandFolder(name) {
     I.click(this.fields.collapsedFolderLocator(name));
-    I.waitForElement(this.fields.expandedFolderLocator(name));
+    I.waitForElement(this.fields.expandedFolderLocator(name), 5);
   },
 
   collapseFolder(name) {
     I.click(this.fields.expandedFolderLocator(name));
-    I.waitForElement(this.fields.collapsedFolderLocator(name));
+    I.waitForElement(this.fields.collapsedFolderLocator(name), 5);
   },
 
   verifyDashboardsInFolderCollection(folderObject) {
     for (const item of folderObject.items) {
       I.seeElementInDOM(this.fields.folderItemLocator(item));
+      I.see(item, this.fields.folderItemLocator(item));
     }
   },
 };

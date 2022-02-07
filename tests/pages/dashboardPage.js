@@ -821,8 +821,8 @@ module.exports = {
 
   fields: {
     breadcrumbs: {
-      folder: locate('.page-toolbar').find('button').at(1),
-      dashboardName: locate('.page-toolbar').find('button').at(2),
+      folder: locate('.page-toolbar').find('[aria-label="Search links"] > a'),
+      dashboardName: locate('.page-toolbar').find('[aria-label="Search dashboard by name"]'),
     },
     annotationMarker: '(//div[contains(@class,"events_marker")])',
     clearSelection: '//a[@ng-click="vm.clearSelections()"]',
