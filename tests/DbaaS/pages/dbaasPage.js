@@ -50,7 +50,7 @@ module.exports = {
       dbClusterAddButtonTop: '$dbcluster-add-cluster-button',
       createClusterButton: '$step-progress-submit-button',
       updateClusterButton: '$dbcluster-update-cluster-button',
-      dbClusterTab: '//li[@aria-label="Tab DB Cluster"]',
+      dbClusterTab: '//li/a[@aria-label="Tab DB Cluster"]',
       monitoringWarningLocator: '$add-cluster-monitoring-warning',
       optionsCountLocator: (step) => `(//div[@data-testid='step-header']//div[1])[${step}]`,
       optionsHeader: '$step-header',
