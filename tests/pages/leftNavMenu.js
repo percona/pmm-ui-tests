@@ -120,7 +120,7 @@ module.exports = {
     }),
   serverAdmin: new LeftMenu('Server Admin', '/graph/admin/users',
     {
-      users: menuOption(sa, 'Server Admin', 'Users', '/graph/admin/users'),
+      users: menuOption(sa, 'Users', '/graph/admin/users'),
       orgs: menuOption(sa, 'Orgs', '/graph/admin/orgs'),
       settings: menuOption(sa, 'Settings', '/graph/admin/settings'),
       stats: menuOption(sa, 'Stats', '/graph/admin/stats'),
