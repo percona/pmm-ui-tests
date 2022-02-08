@@ -97,9 +97,9 @@ Scenario(
     I.click(qanOverview.buttons.copyButton);
 
     const url = await I.grabTextFrom(qanOverview.elements.clipboardLink);
-    const toTimeFromUrl = qanOverview.getToTimeFromUrl(url);
+    const toTimeFromUrl1 = qanOverview.getToTimeFromUrl(url);
 
-    assert.ok(Math.abs(dateTime - toTimeFromUrl) < 30000, 'Difference between moment time and first copied time must be less then half of minute');
+    assert.ok(Math.abs(dateTime - toTimeFromUrl1) < 30000, 'Difference between moment time and first copied time must be less then half of minute');
 
     I.wait(30);
     I.refreshPage();
@@ -109,7 +109,8 @@ Scenario(
     const url2 = await I.grabTextFrom(qanOverview.elements.clipboardLink);
     const toTimeFromUrl2 = qanOverview.getToTimeFromUrl(url2);
 
-    assert.ok(Math.abs(toTimeFromUrl - toTimeFromUrl2) < 60000, 'Difference between moment time and second copied time must be less then one minute');
+    assert.ok(Math.abs(toTimeFromUrl1 - toTimeFromUrl2) < 60000, 'Difference between moment time and second copied time must be less then one minute');
+    assert.notEqual(toTimeFromUrl1, toTimeFromUrl2, 'TimeFromUrl2 must not be the same as timeFromUrl1');
 
     I.openNewTab();
     I.amOnPage(url);
@@ -159,7 +160,7 @@ Scenario(
 
 Scenario(
   'PMM-T1142 - Verify that the table page and selected query are still the same when we go on copied link by new QAN CopyButton @qan',
-  async ({ I, qanPagination, qanOverview }) => {
+  async ({ I, qanPagination, qanOverview, qanDetails }) => {
     I.click(qanPagination.buttons.nextPage);
     qanOverview.selectRow(2);
     I.click(qanOverview.buttons.copyButton);
@@ -172,6 +173,7 @@ Scenario(
     // this check will need to be uncommented after tasks 9480 and 9481 are ready
     // qanPagination.verifyActivePage(2);
     I.waitForVisible(qanOverview.getSelectedRowLocator(2), 20);
+    I.waitForElement(qanDetails.buttons.close, 30);
   },
 );
 
