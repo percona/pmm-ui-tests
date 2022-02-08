@@ -189,8 +189,13 @@ module.exports = {
     psmdbDashboard: (dbClusterName) => `/graph/d/mongodb-cluster-summary/mongodb-cluster-summary?var-cluster=${dbClusterName}`,
   },
 
-  checkCluster(cluserName, deleted) {
-    const clusterLocator = `//td[contains(text(), '${cluserName}')]`;
+  randomizeClusterName(clusterName) {
+    let randomString = Math.random().toString(36).slice(-6);
+    return clusterName + '-' + randomString;
+  },
+
+  checkCluster(clusterName, deleted) {
+    const clusterLocator = `//td[contains(text(), '${clusterName}')]`;
 
     if (deleted) {
       I.dontSeeElement(clusterLocator);
