@@ -13,6 +13,7 @@ exports.config = {
       getPageTimeout: 30000,
       waitForAction: 500,
       pressKeyDelay: 5,
+      FileSystem: {},
       chromium: {
         executablePath: process.env.CHROMIUM_PATH,
         ignoreHTTPSErrors: true,
