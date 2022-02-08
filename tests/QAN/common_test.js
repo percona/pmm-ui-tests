@@ -1,6 +1,6 @@
 const assert = require('assert');
 
-Feature('QAN common');
+Feature('QAN common').retry(1);
 
 Before(async ({ I, qanPage }) => {
   await I.Authorize();
@@ -19,9 +19,7 @@ Scenario(
     await qanOverview.verifyRowCount(27);
     qanFilters.applyFilter('ps-dev');
     I.waitForVisible(qanFilters.fields.filterBy, 30);
-    I.waitForVisible(qanOverview.fields.searchBy, 30);
-    I.fillField(qanOverview.fields.searchBy, 'insert');
-    I.pressKey('Enter');
+    qanOverview.searchByValue('insert');
     I.waitForVisible(qanOverview.elements.querySelector, 30);
     I.click(qanOverview.elements.querySelector);
     I.waitForVisible(qanOverview.getColumnLocator('Lock Time'), 30);
@@ -39,9 +37,7 @@ Scenario(
     adminPage.applyTimeRange('Last 1 hour');
     qanOverview.waitForOverviewLoaded();
     qanFilters.applyFilter('ps-dev');
-    I.waitForVisible(qanOverview.fields.searchBy, 30);
-    I.fillField(qanOverview.fields.searchBy, 'insert');
-    I.pressKey('Enter');
+    qanOverview.searchByValue('insert');
     I.waitForElement(qanOverview.elements.querySelector, 30);
     qanOverview.selectRow(1);
     I.waitForVisible(cellValue, 30);

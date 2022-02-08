@@ -10,10 +10,17 @@ const defaultCheckIntervals = {
   frequent_interval: '14400s',
 };
 
+const defaultResolution = {
+  hr: '5s',
+  mr: '10s',
+  lr: '60s',
+};
+
 const endpoint = 'v1/Settings/Change';
 
 module.exports = {
   defaultCheckIntervals,
+  defaultResolution,
 
   // methods for preparing state of application before test
   async apiEnableSTT() {
@@ -95,11 +102,7 @@ module.exports = {
   async restoreSettingsDefaults() {
     const body = {
       data_retention: '2592000s',
-      metrics_resolutions: {
-        hr: '5s',
-        mr: '10s',
-        lr: '60s',
-      },
+      metrics_resolutions: defaultResolution,
       enable_telemetry: true,
       disable_stt: true,
       remove_email_alerting_settings: true,
@@ -182,10 +185,10 @@ module.exports = {
             body.data_retention = value;
             break;
           case 'resolution':
-            body.metrics_resolutions = Object.assign(body, value);
+            body.metrics_resolutions = value;
             break;
           case 'checkIntervals':
-            body.stt_check_intervals = Object.assign(body, value);
+            body.stt_check_intervals = value;
             break;
           case 'alertmanagerRules':
             body.alert_manager_rules = value;

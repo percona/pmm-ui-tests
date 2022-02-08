@@ -5,6 +5,7 @@ const clusterName = 'Kubernetes_Testing_Cluster_Minikube';
 const pxc_cluster_name = 'pxc-dbcluster';
 const pxc_cluster_name_single = 'pxc-singlenode';
 const pxc_cluster_type = 'DB_CLUSTER_TYPE_PXC';
+const mysql_recommended_version = 'MySQL 8.0.25';
 
 const pxcDBClusterDetails = new DataTable(['namespace', 'clusterName', 'node']);
 
@@ -22,7 +23,7 @@ const singleNodeConfiguration = {
   memory: '1.2 GB',
   cpu: '0.2',
   disk: '25 GB',
-  dbType: 'MySQL 8.0.23',
+  dbType: mysql_recommended_version,
   clusterDashboardRedirectionLink: dbaasPage.clusterDashboardUrls.pxcDashboard(pxc_cluster_name_single),
 };
 
@@ -63,7 +64,7 @@ Scenario('PMM-T459, PMM-T473, PMM-T478, PMM-T524 Verify DB Cluster Details are l
   async ({ I, dbaasPage, dbaasActionsPage }) => {
     const clusterDetails = {
       clusterDashboardRedirectionLink: dbaasPage.clusterDashboardUrls.pxcDashboard(pxc_cluster_name),
-      dbType: 'MySQL 8.0.23',
+      dbType: mysql_recommended_version,
       memory: '2 GB',
       cpu: '1',
       disk: '25 GB',
@@ -181,7 +182,7 @@ Scenario('PMM-T488, PMM-T489 Verify editing PXC cluster changing single node to 
       memory: '1 GB',
       cpu: '0.5',
       disk: '25 GB',
-      dbType: 'MySQL 8.0.23',
+      dbType: mysql_recommended_version,
       clusterDashboardRedirectionLink: dbaasPage.clusterDashboardUrls.pxcDashboard(dbClusterRandomName),
     };
 
@@ -208,7 +209,7 @@ Scenario('PMM-T525 PMM-T528 Verify Suspend & Resume for DB Cluster Works as expe
       clusterDashboardRedirectionLink: dbaasPage.clusterDashboardUrls.pxcDashboard(
         dbClusterRandomName,
       ),
-      dbType: 'MySQL 8.0.23',
+      dbType: mysql_recommended_version,
       memory: '2 GB',
       cpu: '1',
       disk: '25 GB',
@@ -236,38 +237,22 @@ Scenario('PMM-T525 PMM-T528 Verify Suspend & Resume for DB Cluster Works as expe
 
 // Skipped due to failure at I.waitForInvisible(dbaasPage.tabs.dbClusterTab.fields.clusterStatusDeleting, 60);
 xScenario('Verify Adding PMM-Server Public Address via Settings works @dbaas',
-  async ({
-    I, dbaasPage, pmmSettingsPage,
-  }) => {
-    const sectionNameToExpand = pmmSettingsPage.sectionTabsList.advanced;
-
-    I.amOnPage(pmmSettingsPage.url);
-    await pmmSettingsPage.waitForPmmSettingsPageLoaded();
-    await pmmSettingsPage.expandedSection(sectionNameToExpand, pmmSettingsPage.fields.advancedButton);
-    await pmmSettingsPage.waitForPmmSettingsPageLoaded();
-
+  async ({ I, dbaasPage, pmmSettingsPage }) => {
+    await pmmSettingsPage.openAdvancedSettings();
+    await pmmSettingsPage.verifyTooltip(pmmSettingsPage.tooltips.publicAddress);
     I.waitForVisible(pmmSettingsPage.fields.publicAddressInput, 30);
-    I.seeElement(pmmSettingsPage.fields.publicAddressInput);
     I.seeElement(pmmSettingsPage.fields.publicAddressButton);
     I.click(pmmSettingsPage.fields.publicAddressButton);
     let publicAddress = await I.grabValueFrom(pmmSettingsPage.fields.publicAddressInput);
 
-    assert.ok(
-      publicAddress === process.env.SERVER_IP,
-      `Expected the Public Address Input Field to Match ${process.env.SERVER_IP} but found ${publicAddress}`,
-    );
-    I.click(pmmSettingsPage.fields.advancedButton);
-    I.verifyPopUpMessage(pmmSettingsPage.messages.successPopUpMessage);
+    I.assertEqual(publicAddress, process.env.SERVER_IP,
+      `Expected the Public Address Input Field to Match ${process.env.SERVER_IP} but found ${publicAddress}`);
+    pmmSettingsPage.applyChanges();
     I.refreshPage();
     await pmmSettingsPage.waitForPmmSettingsPageLoaded();
-    await pmmSettingsPage.expandedSection(sectionNameToExpand, pmmSettingsPage.fields.advancedButton);
-    await pmmSettingsPage.waitForPmmSettingsPageLoaded();
     publicAddress = await I.grabValueFrom(pmmSettingsPage.fields.publicAddressInput);
-
-    assert.ok(
-      publicAddress === process.env.SERVER_IP,
-      `Expected the Public Address to be saved and Match ${process.env.SERVER_IP} but found ${publicAddress}`,
-    );
+    I.assertEqual(publicAddress, process.env.SERVER_IP,
+      `Expected the Public Address to be saved and Match ${process.env.SERVER_IP} but found ${publicAddress}`);
     await dbaasPage.waitForDbClusterTab(clusterName);
     I.waitForInvisible(dbaasPage.tabs.kubernetesClusterTab.disabledAddButton, 30);
     I.waitForInvisible(dbaasPage.tabs.kubernetesClusterTab.tableLoading, 30);

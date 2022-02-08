@@ -214,4 +214,11 @@ module.exports = {
     I.moveCursorTo(this.elements.firstQueryInfoIcon);
     I.waitForVisible(this.elements.tooltipQueryValue, 30);
   },
+
+  searchByValue(value) {
+    I.waitForVisible(this.fields.searchBy, 30);
+    I.clearField(this.fields.searchBy);
+    I.fillField(this.fields.searchBy, value);
+    I.pressKey('Enter');
+  },
 };

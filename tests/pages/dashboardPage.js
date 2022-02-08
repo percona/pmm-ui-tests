@@ -1,6 +1,5 @@
 const { I, adminPage } = inject();
 const assert = require('assert');
-const FormData = require('form-data');
 
 module.exports = {
   // insert your locators and methods here
@@ -164,10 +163,10 @@ module.exports = {
       'File Descriptors Used',
     ],
   },
-  sharePanel:{
+  sharePanel: {
     elements: {
       imageRendererPluginLink: locate('.share-modal-body').find('.external-link'),
-    }
+    },
   },
   proxysqlInstanceSummaryDashboard: {
     url: 'graph/d/proxysql-instance-summary/proxysql-instance-summary',
@@ -261,6 +260,16 @@ module.exports = {
       'Cache Hit Ratio',
       'Checkpoint stats',
       'Number of Locks',
+    ],
+  },
+  postgresqlInstanceCompareDashboard: {
+    url: 'graph/d/postgresql-instance-compare/postgresql-instances-compare?orgId=1&from=now-5m&to=now',
+    metrics: [
+      'Service Info',
+      'PostgreSQL Connections',
+      'Active Connections',
+      'Tuples',
+      'Transactions',
     ],
   },
   postgresqlInstanceOverviewDashboard: {
@@ -882,41 +891,6 @@ module.exports = {
     I.click(this.graphsLocator(metric));
   },
 
-  // Should be refactored and added to Grafana Helper as a custom function
-  async checkMetricExist(metricName, queryBy) {
-    const timeStamp = Date.now();
-    const bodyFormData = new FormData();
-    let body = {
-      query: metricName,
-      start: Math.floor((timeStamp - 15000) / 1000),
-      end: Math.floor((timeStamp) / 1000),
-      step: 60,
-    };
-
-    if (queryBy) {
-      body = {
-        query: `${metricName}{${queryBy.type}=~"(${queryBy.value})"}`,
-        start: Math.floor((timeStamp - 10000) / 1000),
-        end: Math.floor((timeStamp) / 1000),
-        step: 60,
-      };
-    }
-
-    Object.keys(body).forEach((key) => bodyFormData.append(key, body[key]));
-    const headers = {
-      Authorization: `Basic ${await I.getAuth()}`,
-      ...bodyFormData.getHeaders(),
-    };
-
-    const response = await I.sendPostRequest(
-      'graph/api/datasources/proxy/1/api/v1/query_range',
-      bodyFormData,
-      headers,
-    );
-
-    return response;
-  },
-
   verifyTabExistence(tabs) {
     for (const i in tabs) {
       I.seeElement(this.tabLocator(tabs[i]));
@@ -965,9 +939,7 @@ module.exports = {
   },
 
   async grabFailedReportTitles(selector) {
-    const reportNames = await I.grabTextFromAll(selector);
-
-    return reportNames;
+    return await I.grabTextFromAll(selector);
   },
 
   async expandEachDashboardRow(halfToExpand) {

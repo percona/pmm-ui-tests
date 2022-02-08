@@ -91,7 +91,7 @@ Data(units)
       const [templateName, fileContent, id] = await ruleTemplatesPage.ruleTemplate
         .templateNameAndContent(ruleTemplatesPage.ruleTemplate.inputFilePath);
       const editButton = ruleTemplatesPage.buttons
-        .deleteButtonByName(templateName);
+        .editButtonByName(templateName);
       const deleteButton = ruleTemplatesPage.buttons
         .deleteButtonByName(templateName);
 
@@ -265,5 +265,25 @@ Scenario(
 
     I.seeElementsDisabled(editButton);
     I.seeElementsDisabled(deleteButton);
+  },
+);
+
+Scenario(
+  'PMM-T1126 - Verify there are no Templates from Percona if Telemetry is disabled @ia',
+  async ({ I, settingsAPI, ruleTemplatesPage }) => {
+    const editButton = ruleTemplatesPage.buttons
+      .editButtonBySource(ruleTemplatesPage.templateSources.saas);
+    const deleteButton = ruleTemplatesPage.buttons
+      .deleteButtonBySource(ruleTemplatesPage.templateSources.saas);
+    const settings = {
+      telemetry: false,
+      alerting: true,
+    };
+
+    await settingsAPI.changeSettings(settings);
+    I.amOnPage(ruleTemplatesPage.url);
+    I.waitForElement(ruleTemplatesPage.buttons.openAddTemplateModal, 30);
+    I.dontSeeElement(editButton);
+    I.dontSeeElement(deleteButton);
   },
 );
