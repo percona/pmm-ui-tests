@@ -11,7 +11,7 @@ const location = {
 
 let locationId;
 let serviceId;
-
+const mysqlServiceName = 'mysql-with-backup';
 const mongoServiceName = 'mongo-backup-schedule';
 const schedules = new DataTable(['cronExpression', 'name', 'frequency']);
 
@@ -351,4 +351,49 @@ Scenario('PMM-T901 Verify user can delete scheduled backup @backup',
     I.verifyPopUpMessage(scheduledPage.messages.successfullyDeleted(schedule.name));
   });
 
-// PMM-T924 - Verify user is able to schedule a backup for MongoDB with replica & MySQL and try to run those backup schedule job in parallel
+Scenario(
+  'PMM-T924 - Verify user is able to schedule a backup for MongoDB with replica & MySQL '
+  + 'and try to run those backup schedule job in parallel @nightly @bm-mysql',
+  async ({
+    I, backupInventoryPage, scheduledAPI, backupAPI, inventoryAPI,
+  }) => {
+    await I.say(await I.verifyCommand(`pmm-admin add mysql --username=root --password=admin --query-source=perfschema ${mysqlServiceName}`));
+    // Every 2 mins schedule
+    const scheduleMongo = {
+      service_id: serviceId,
+      location_id: locationId,
+      cron_expression: '*/2 * * * *',
+      name: 'Mongo for parallel backup test',
+      mode: scheduledAPI.backupModes.snapshot,
+      description: '',
+      retry_interval: '30s',
+      retries: 0,
+      enabled: true,
+      retention: 1,
+    };
+    const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName('MYSQL_SERVICE', mysqlServiceName);
+    const scheduleMySql = {
+      service_id,
+      location_id: locationId,
+      cron_expression: '*/2 * * * *',
+      name: 'mySQL for parallel backup test',
+      mode: scheduledAPI.backupModes.snapshot,
+      description: '',
+      retry_interval: '30s',
+      retries: 0,
+      enabled: true,
+      retention: 1,
+    };
+    const mongoScheduleId = await scheduledAPI.createScheduledBackup(scheduleMongo);
+    const mySqlScheduleId = await scheduledAPI.createScheduledBackup(scheduleMySql);
+
+    await backupAPI.waitForBackupFinish(null, scheduleMySql.name, 240);
+    await backupAPI.waitForBackupFinish(null, scheduleMongo.name, 30);
+    await scheduledAPI.disableScheduledBackup(mongoScheduleId);
+    await scheduledAPI.disableScheduledBackup(mySqlScheduleId);
+
+    I.refreshPage();
+    backupInventoryPage.verifyBackupSucceeded(scheduleMongo.name);
+    backupInventoryPage.verifyBackupSucceeded(scheduleMySql.name);
+  },
+);
