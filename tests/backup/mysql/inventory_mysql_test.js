@@ -26,7 +26,7 @@ BeforeSuite(async ({
     host: '127.0.0.1',
     port: connection.port,
     username: connection.username,
-    password: connection.password,
+    password: 'admin',
   };
 
   psMySql.connectToPS(mysqlComposeConnection);
