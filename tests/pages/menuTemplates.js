@@ -5,6 +5,8 @@ const mouseOverMenu = (locator, elementToWait) => {
   I.waitForVisible(elementToWait, 2);
 };
 
+const formatElementId = (text) => text.toLowerCase().replace(/ /g, '-');
+
 /**
  * The left navigation Grafana menu template. A top level "menu object".
  *
@@ -80,6 +82,7 @@ function MenuOption(menuName, label, locator, path, menuLevel = 1) {
   this.path = path;
   this.click = () => {
     new LeftMenu(menuName, '').showMenu();
+
     /* top level menu options text is nested <div> and should be excluded from loop */
     for (let i = 2; i <= menuLevel; i++) {
       this.locator = `(//ul[@data-testid="navbar-section"]/.//li[descendant::a[contains(text(), "${label}")]])`;
@@ -89,7 +92,7 @@ function MenuOption(menuName, label, locator, path, menuLevel = 1) {
     /* top level menu options are handled without loop and locator from the argument */
     const elemToClick = this.locator === locator
       ? locator
-      : `//ul[@data-testid="navbar-section"]/.//a[contains(text(), "${label}")]`;
+      : locate(`$left-menu-${formatElementId(label)}`);
 
     I.waitForVisible(elemToClick, 2);
     I.moveCursorTo(elemToClick);
@@ -107,9 +110,7 @@ function MenuOption(menuName, label, locator, path, menuLevel = 1) {
  * @param   menuLevel   required to handle interaction, optional for the top level
  * @returns             {MenuOption} instance
  */
-const menuOption = (menuName, label, path, menuLevel = 1) => {
-  return new MenuOption(menuName, label, locate('a').withDescendant(locate('div').withText(label)).inside('ul'), path, menuLevel);
-};
+const menuOption = (menuName, label, path, menuLevel = 1) => new MenuOption(menuName, label, locate('a').withDescendant(locate('div').withText(label)).inside('ul'), path, menuLevel);
 
 /**
  * A sub level "menu object" of the Grafana menu. Should used in the {@link LeftMenu}
