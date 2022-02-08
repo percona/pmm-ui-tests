@@ -11,6 +11,12 @@ let serviceId;
 
 const mysqlServiceName = 'mysql-with-backup';
 const mysqlServiceNameToDelete = 'mysql-service-to-delete';
+const mysqlCredentials = {
+  host: '127.0.0.1',
+  port: connection.port,
+  username: connection.username,
+  password: 'admin',
+};
 
 Feature('BM: MySQL Backup Inventory');
 
@@ -20,14 +26,8 @@ BeforeSuite(async ({
   await settingsAPI.changeSettings({ backup: true });
   await locationsAPI.clearAllLocations(true);
   locationId = await locationsAPI.createStorageLocation(location);
-  const mysqlComposeConnection = {
-    host: '127.0.0.1',
-    port: connection.port,
-    username: connection.username,
-    password: 'admin',
-  };
 
-  psMySql.connectToPS(mysqlComposeConnection);
+  psMySql.connectToPS(mysqlCredentials);
 
   await I.say(await I.verifyCommand(`pmm-admin add mysql --username=root --password=admin --query-source=perfschema ${mysqlServiceName}`));
   await I.say(await I.verifyCommand(`pmm-admin add mysql --username=root --password=admin --query-source=perfschema ${mysqlServiceNameToDelete}`));
@@ -69,27 +69,29 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T862 Verify user is able to perform MongoDB restore @nightly @bm-mysql',
+  'PMM-T862 Verify user is able to perform MySQL restore @nightly @bm-mysql',
   async ({
     I, backupInventoryPage, backupAPI, restorePage, psMySql,
   }) => {
     const backupName = 'mysql restore test';
     const tableName = 'test';
+
+    await psMySql.deleteTable(tableName);
     const artifactId = await backupAPI.startBackup(backupName, serviceId, locationId);
 
     await backupAPI.waitForBackupFinish(artifactId);
-
     I.refreshPage();
     backupInventoryPage.verifyBackupSucceeded(backupName);
-
     await psMySql.createTable(tableName);
-
+    /* connection must be closed in correct way before restore backup. Restore procedure restarts mysql service */
+    await psMySql.disconnectFromPS();
     backupInventoryPage.startRestore(backupName);
     restorePage.waitForRestoreSuccess(backupName);
 
+    psMySql.connectToPS(mysqlCredentials);
     const tableExists = await psMySql.isTableExists(tableName);
 
-    I.assertFalse(tableExists, `Table ${tableName} is expected to be absent after restore backup operation`);
+    I.assertFalse(tableExists, `Table "${tableName}" is expected to be absent after restore backup operation`);
   },
 );
 
@@ -133,7 +135,7 @@ Scenario(
       service_id: serviceId,
       location_id: locationId,
       cron_expression: '*/2 * * * *',
-      name: 'to restore mysql',
+      name: 'for restore mysql test',
       mode: scheduledAPI.backupModes.snapshot,
       description: '',
       retry_interval: '30s',
@@ -141,22 +143,25 @@ Scenario(
       enabled: true,
       retention: 1,
     };
-    const tableName = 'test';
+    const tableName = 'sh_test';
     const scheduleId = await scheduledAPI.createScheduledBackup(schedule);
 
+    await psMySql.deleteTable(tableName);
     await backupAPI.waitForBackupFinish(null, schedule.name, 240);
     await scheduledAPI.disableScheduledBackup(scheduleId);
 
-    await psMySql.createTable(tableName);
     I.refreshPage();
-
+    await psMySql.createTable(tableName);
     backupInventoryPage.verifyBackupSucceeded(schedule.name);
+    /* connection must be closed in correct way before restore backup. Restore procedure restarts mysql service */
+    await psMySql.disconnectFromPS();
     backupInventoryPage.startRestore(schedule.name);
     restorePage.waitForRestoreSuccess(schedule.name);
 
+    psMySql.connectToPS(mysqlCredentials);
     const tableExists = await psMySql.isTableExists(tableName);
 
-    I.assertFalse(tableExists, `Table ${tableName} is expected to be absent after restore backup operation`);
+    I.assertFalse(tableExists, `Table "${tableName}" is expected to be absent after restore backup operation`);
   },
 );
 

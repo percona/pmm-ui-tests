@@ -54,7 +54,7 @@ Before(async ({
 });
 
 AfterSuite(async ({ psMySql }) => {
-  // await psMySql.disconnectFromPS();
+  await psMySql.disconnectFromPS();
 });
 
 Scenario(

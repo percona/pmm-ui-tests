@@ -1,6 +1,10 @@
 const { I } = inject();
 const db = 'mysql';
 
+/**
+ * Percona Server MySQL DB interaction module.
+ * Based on "codeceptjs-dbhelper" plugin.
+ */
 module.exports = {
   defaultConnection: {
     host: 'mysql',
@@ -38,10 +42,16 @@ module.exports = {
   },
 
   async createTable(name, columns = 'id INT AUTO_INCREMENT PRIMARY KEY, user VARCHAR(20) NOT NULL') {
-    await I.run(db, `CREATE TABLE IF NOT EXISTS ${name} (${columns}) ENGINE=INNODB;`);
+    await I.run(db, `CREATE TABLE IF NOT EXISTS \`${name}\` (${columns}) ENGINE=INNODB`);
+  },
+
+  async deleteTable(name) {
+    await I.run(db, `DROP TABLE IF EXISTS ${name};`);
   },
 
   async isTableExists(name) {
-    return I.run(db, `SELECT * FROM information_schema WHERE TABLE_NAME = "${name}"`) !== 0;
+    const result = await I.query(db, `SHOW TABLES LIKE "${name}";`);
+
+    return result.length > 0;
   },
 };
