@@ -37,7 +37,7 @@ BeforeSuite(async ({
 
   psMySql.connectToPS(mysqlComposeConnection);
 
-  // add ps80  --service-name=${mysqlServiceName} --backup
+  await I.say(await I.verifyCommand(`pmm-admin add mysql --username=root --password=admin --query-source=perfschema ${mysqlServiceName}`));
 });
 
 Before(async ({
@@ -58,7 +58,7 @@ AfterSuite(async ({ psMySql }) => {
 });
 
 Scenario(
-  'PMM-T923 - Verify user is able to schedule a backup for MySQL @nightly',
+  'PMM-T923 - Verify user is able to schedule a backup for MySQL @nightly @bm-mysql',
   async ({
     I, backupInventoryPage, scheduledAPI, backupAPI, scheduledPage,
   }) => {

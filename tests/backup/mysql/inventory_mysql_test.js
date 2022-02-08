@@ -1,5 +1,3 @@
-const assert = require('assert');
-
 const { locationsPage, psMySql } = inject();
 const connection = psMySql.defaultConnection;
 const location = {
@@ -12,12 +10,12 @@ let locationId;
 let serviceId;
 
 const mysqlServiceName = 'mysql-with-backup';
-const mysqlServiceNameToDelete = 'mmysql-service-to-delete';
+const mysqlServiceNameToDelete = 'mysql-service-to-delete';
 
 Feature('BM: MySQL Backup Inventory');
 
 BeforeSuite(async ({
-  locationsAPI, settingsAPI, psMySql,
+  I, locationsAPI, settingsAPI, psMySql,
 }) => {
   await settingsAPI.changeSettings({ backup: true });
   await locationsAPI.clearAllLocations(true);
@@ -31,8 +29,8 @@ BeforeSuite(async ({
 
   psMySql.connectToPS(mysqlComposeConnection);
 
-  // add ps80  --service-name=${mysqlServiceName} --backup
-  // add ps80 --port=27027 --service-name=${mysqlServiceNameToDelete} --backup
+  await I.say(await I.verifyCommand(`pmm-admin add mysql --username=root --password=admin --query-source=perfschema ${mysqlServiceName}`));
+  await I.say(await I.verifyCommand(`pmm-admin add mysql --username=root --password=admin --query-source=perfschema ${mysqlServiceNameToDelete}`));
 });
 
 Before(async ({
@@ -53,7 +51,7 @@ AfterSuite(async ({ psMySql }) => {
 });
 
 Scenario(
-  'PMM-T769, PMM-T920 - Verify user is able to perform MySQL backup @nightly',
+  'PMM-T769, PMM-T920 - Verify user is able to perform MySQL backup @nightly @bm-mysql',
   async ({ I, backupInventoryPage }) => {
     const backupName = 'mysql backup test';
 
@@ -71,7 +69,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T862 Verify user is able to perform MongoDB restore @imp',
+  'PMM-T862 Verify user is able to perform MongoDB restore @nightly @bm-mysql',
   async ({
     I, backupInventoryPage, backupAPI, restorePage, psMySql,
   }) => {
@@ -96,7 +94,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T910 PMM-T911 Verify delete from storage is selected by default @nightly',
+  'PMM-T910 PMM-T911 Verify delete from storage is selected by default @nightly @bm-mysql',
   async ({
     I, backupInventoryPage, backupAPI, inventoryAPI,
   }) => {
@@ -126,7 +124,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T810 Verify user can restore MySQL backup from a scheduled backup @nightly',
+  'PMM-T810 Verify user can restore MySQL backup from a scheduled backup @nightly @bm-mysql',
   async ({
     I, backupInventoryPage, scheduledAPI, backupAPI, restorePage,
   }) => {
@@ -163,7 +161,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T848 Verify service no longer exists error message during restore @nightly',
+  'PMM-T848 Verify service no longer exists error message during restore @nightly @bm-mysql',
   async ({
     I, backupInventoryPage, backupAPI, inventoryAPI,
   }) => {
