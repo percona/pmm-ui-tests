@@ -1,8 +1,8 @@
 const assert = require('assert');
 
-const { perconaServerDB } = inject();
+const { psMySql } = inject();
 
-const connection = perconaServerDB.defaultConnection;
+const connection = psMySql.defaultConnection;
 const psServiceName = 'allChecks-ps-5.7.30';
 let nodeId;
 

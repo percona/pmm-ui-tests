@@ -1,10 +1,10 @@
 const assert = require('assert');
 
 const {
-  allChecksPage, databaseChecksPage, codeceptjsConfig, perconaServerDB,
+  allChecksPage, databaseChecksPage, codeceptjsConfig, psMySql,
 } = inject();
 const config = codeceptjsConfig.config.helpers.Playwright;
-const connection = perconaServerDB.defaultConnection;
+const connection = psMySql.defaultConnection;
 let nodeID;
 
 const urls = new DataTable(['url']);

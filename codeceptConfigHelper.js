@@ -31,7 +31,7 @@ module.exports = {
     locationsPage: './tests/backup/pages/locationsPage.js',
     locationsAPI: './tests/backup/pages/api/locationsAPI.js',
     ncPage: './tests/ia/pages/notificationChannelsPage.js',
-    perconaServerDB: './tests/DbHelpers/perconaServerDB.js',
+    psMySql: './tests/helper/psMySql.js',
     pmmDemoPage: './tests/pages/pmmDemoPage.js',
     pmmInventoryPage: './tests/pages/pmmInventoryPage.js',
     pmmSettingsPage: './tests/pages/pmmSettingsPage.js',

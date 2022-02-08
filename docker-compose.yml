@@ -14,7 +14,7 @@ networks:
 
 services:
   pmm-server:
-    image: ${PMM_SERVER_IMAGE:-perconalab/pmm-server:dev-latest}
+    image: ${PMM_SERVER_IMAGE:-perconalab/pmm-server-fb:PR-2296-eded043}
     container_name: pmm-server
     ports:
       - "80:80"
@@ -119,7 +119,7 @@ services:
       - "6033:6033"
       - "6070:6070"
     volumes:
-      - ${PWD}/testdata/proxysql/proxysql.cnf:/etc/proxysql.cnf:rw
+      - ./testdata/proxysql/proxysql.cnf:/etc/proxysql.cnf:rw
     networks:
       - pmm-network
 

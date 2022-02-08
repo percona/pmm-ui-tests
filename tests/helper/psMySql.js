@@ -36,4 +36,12 @@ module.exports = {
   async setUserPassword(username = 'empty-user', password = 'password') {
     await I.run(db, `ALTER USER "${username}"@"localhost" IDENTIFIED BY '${password}'`);
   },
+
+  async createTable(name, columns = 'id INT AUTO_INCREMENT PRIMARY KEY, user VARCHAR(20) NOT NULL') {
+    await I.run(db, `CREATE TABLE IF NOT EXISTS ${name} (${columns}) ENGINE=INNODB;`);
+  },
+
+  async isTableExists(name) {
+    return I.run(db, `SELECT * FROM information_schema WHERE TABLE_NAME = "${name}"`) !== 0;
+  },
 };

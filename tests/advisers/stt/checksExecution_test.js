@@ -1,7 +1,7 @@
 const {
-  settingsAPI, perconaServerDB, securityChecksAPI, databaseChecksPage,
+  settingsAPI, psMySql, securityChecksAPI, databaseChecksPage,
 } = inject();
-const connection = perconaServerDB.defaultConnection;
+const connection = psMySql.defaultConnection;
 const emptyPasswordSummary = 'User(s) has/have no password defined';
 const intervals = settingsAPI.defaultCheckIntervals;
 const psServiceName = 'stt-mysql-5.7.30';
@@ -19,7 +19,7 @@ const cleanup = async () => {
   await settingsAPI.apiEnableSTT();
   await settingsAPI.setCheckIntervals();
   await securityChecksAPI.restoreDefaultIntervals();
-  await perconaServerDB.dropUser();
+  await psMySql.dropUser();
   await securityChecksAPI.enableCheck(securityChecksAPI.checkNames.mysqlVersion);
   await securityChecksAPI.enableCheck(securityChecksAPI.checkNames.mysqlEmptyPassword);
 };
@@ -33,7 +33,7 @@ const prepareFailedCheck = async () => {
 
 Feature('Security Checks: Checks Execution');
 
-BeforeSuite(async ({ perconaServerDB, addInstanceAPI }) => {
+BeforeSuite(async ({ psMySql, addInstanceAPI }) => {
   const mysqlComposeConnection = {
     host: '127.0.0.1',
     port: connection.port,
@@ -43,19 +43,19 @@ BeforeSuite(async ({ perconaServerDB, addInstanceAPI }) => {
 
   await addInstanceAPI.addInstanceForSTT(connection, psServiceName);
 
-  perconaServerDB.connectToPS(mysqlComposeConnection);
+  psMySql.connectToPS(mysqlComposeConnection);
 });
 
-AfterSuite(async ({ perconaServerDB }) => {
-  await perconaServerDB.disconnectFromPS();
+AfterSuite(async ({ psMySql }) => {
+  await psMySql.disconnectFromPS();
 });
 
 Before(async ({
-  I, perconaServerDB,
+  I, psMySql,
 }) => {
   await I.Authorize();
   await cleanup();
-  await perconaServerDB.createUser();
+  await psMySql.createUser();
 });
 
 After(async () => {
@@ -65,10 +65,10 @@ After(async () => {
 Scenario(
   'PMM-T384 Verify that the user does not see an alert again if it has been fixed [critical] @stt @not-ovf',
   async ({
-    securityChecksAPI, databaseChecksPage, perconaServerDB,
+    securityChecksAPI, databaseChecksPage, psMySql,
   }) => {
     await prepareFailedCheck();
-    await perconaServerDB.setUserPassword();
+    await psMySql.setUserPassword();
 
     // Run DB Checks from UI
     await databaseChecksPage.runDBChecks();
@@ -126,10 +126,10 @@ Scenario(
 Data(intervalsTests).Scenario(
   'PMM-T706 PMM-709 PMM-T711 Verify checks are executed based on interval value, change interval, fix problem [critical] @stt @not-ovf',
   async ({
-    securityChecksAPI, settingsAPI, perconaServerDB, databaseChecksPage, current,
+    securityChecksAPI, settingsAPI, psMySql, databaseChecksPage, current,
   }) => {
     await prepareFailedCheck();
-    await perconaServerDB.setUserPassword();
+    await psMySql.setUserPassword();
 
     // TODO: uncomment after https://jira.percona.com/browse/PMM-8051
     // await securityChecksAPI.changeCheckInterval(

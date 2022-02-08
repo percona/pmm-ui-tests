@@ -350,3 +350,5 @@ Scenario('PMM-T901 Verify user can delete scheduled backup @backup',
     I.click(scheduledPage.buttons.confirmDelete);
     I.verifyPopUpMessage(scheduledPage.messages.successfullyDeleted(schedule.name));
   });
+
+// PMM-T924 - Verify user is able to schedule a backup for MongoDB with replica & MySQL and try to run those backup schedule job in parallel
