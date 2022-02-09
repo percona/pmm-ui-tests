@@ -13,8 +13,8 @@ const mysqlServiceName = 'mysql-with-backup';
 const mysqlServiceNameToDelete = 'mysql-service-to-delete';
 const mysqlCredentials = {
   host: '127.0.0.1',
-  port: connection.port,
-  username: connection.username,
+  port: '3306',
+  username: 'root',
   password: 'PMM_user@k@12456',
 };
 
