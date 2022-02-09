@@ -178,12 +178,12 @@ Scenario(
 
     I.handleDownloads();
     I.click(pmmSettingsPage.fields.diagnosticsButton);
-    I.amInPath('output/downloads');
+    await I.amInPath('output/downloads');
     I.wait(5);
     I.seeFileNameMatching('.zip');
 
-    const downloadedFileNames = I.grabFileNames();
+    const downloadedFileNames = await I.grabFileNames();
 
-    assert.ok(downloadedFileNames.length === 1, `The count of downloaded files must be 1 not ${downloadedFileNames.length}`);
+    assert.ok(downloadedFileNames.length > 0, `The count of downloaded files must be 1 not ${downloadedFileNames.length}`);
   },
 );
