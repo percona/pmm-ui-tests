@@ -66,14 +66,13 @@ module.exports = {
     const timeRangeSelector = locate('li > label').withText(timeRange);
     const closePopUpLocator = I.getClosePopUpButtonLocator();
 
-    I.waitForElement(this.fields.timePickerMenu, 30);
-    I.forceClick(this.fields.timePickerMenu);
-
     // Close randomly appeared pop up message
     if (await I.grabNumberOfVisibleElements(closePopUpLocator)) {
       I.click(closePopUpLocator);
     }
 
+    I.waitForElement(this.fields.timePickerMenu, 30);
+    I.forceClick(this.fields.timePickerMenu);
     I.waitForVisible(timeRangeSelector, 30);
     I.click(timeRangeSelector);
   },
