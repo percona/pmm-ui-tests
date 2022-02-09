@@ -172,10 +172,10 @@ Scenario(
   'PMM-9550 Verify downloading server diagnostics logs from Settings @settings',
   async ({ I, pmmSettingsPage }) => {
     await pmmSettingsPage.waitForPmmSettingsPageLoaded();
-    I.handleDownloads('downloads/logs');
+    I.handleDownloads();
     I.click(pmmSettingsPage.fields.diagnosticsButton);
-    await I.amInPath('tests/output/downloads');
-    I.seeFileNameMatching('logs');
+    await I.amInPath('tests/output');
+    I.seeFileNameMatching('downloads');
 
     const downloadedFileNames = await I.grabFileNames();
 
