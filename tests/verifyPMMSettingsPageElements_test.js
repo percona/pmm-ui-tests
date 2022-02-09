@@ -1,5 +1,4 @@
 const assert = require("assert");
-const moment = require('moment');
 const page = require('./pages/pmmSettingsPage');
 
 // Value should be in range from 1 to 3650 days, so put a value outside of the range
@@ -173,17 +172,13 @@ Scenario(
   'PMM-9550 Verify downloading server diagnostics logs from Settings @settings',
   async ({ I, pmmSettingsPage }) => {
     await pmmSettingsPage.waitForPmmSettingsPageLoaded();
-
-    const fileName = `pmm-server_${moment().format('YYYY-MM-DD_HH-mm')}.zip`;
-
-    I.handleDownloads();
+    I.handleDownloads('downloads/logs');
     I.click(pmmSettingsPage.fields.diagnosticsButton);
-    await I.amInPath('output/downloads');
-    I.wait(5);
-    I.seeFileNameMatching('.zip');
+    await I.amInPath('tests/output/downloads');
+    I.seeFileNameMatching('logs');
 
     const downloadedFileNames = await I.grabFileNames();
 
-    assert.ok(downloadedFileNames.length > 0, `The count of downloaded files must be 1 not ${downloadedFileNames.length}`);
+    assert.ok(downloadedFileNames.length === 1, `The count of downloaded files must be 1 not ${downloadedFileNames.length}`);
   },
 );
