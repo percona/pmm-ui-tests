@@ -15,7 +15,7 @@ const mysqlCredentials = {
   host: '127.0.0.1',
   port: connection.port,
   username: connection.username,
-  password: 'admin',
+  password: 'PMM_user@k@12456',
 };
 
 Feature('BM: MySQL Backup Inventory');
@@ -29,8 +29,8 @@ BeforeSuite(async ({
 
   psMySql.connectToPS(mysqlCredentials);
 
-  await I.say(await I.verifyCommand(`pmm-admin add mysql --username=root --password=admin --query-source=perfschema ${mysqlServiceName}`));
-  await I.say(await I.verifyCommand(`pmm-admin add mysql --username=root --password=admin --query-source=perfschema ${mysqlServiceNameToDelete}`));
+  await I.say(await I.verifyCommand(`pmm-admin add mysql --username=mysqlCredentials.username --password=mysqlCredentials.password --query-source=perfschema ${mysqlServiceName}`));
+  await I.say(await I.verifyCommand(`pmm-admin add mysql --username=mysqlCredentials.username --password=mysqlCredentials.password --query-source=perfschema ${mysqlServiceNameToDelete}`));
 });
 
 Before(async ({
