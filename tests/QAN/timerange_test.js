@@ -15,7 +15,7 @@ Scenario(
   'Open the QAN Dashboard and check that changing the time range resets current page to the first. @qan',
   async ({ adminPage, qanPagination, qanOverview }) => {
     qanPagination.selectPage(2);
-    adminPage.applyTimeRange('Last 3 hours');
+    await adminPage.applyTimeRange('Last 3 hours');
     qanOverview.waitForOverviewLoaded();
     await qanPagination.verifyActivePage(1);
   },
@@ -31,7 +31,7 @@ Scenario(
     qanFilters.waitForFiltersToLoad();
     I.seeElement(qanDetails.root);
 
-    adminPage.applyTimeRange('Last 3 hours');
+    await adminPage.applyTimeRange('Last 3 hours');
     qanOverview.waitForOverviewLoaded();
     I.seeInCurrentUrl('from=now-3h&to=now');
     I.dontSeeElement(qanDetails.root);
@@ -70,7 +70,7 @@ Scenario(
 
     I.waitForText('Query', 30, qanOverview.elements.groupBy);
     await qanOverview.changeGroupBy(group);
-    adminPage.applyTimeRange('Last 24 hours');
+    await adminPage.applyTimeRange('Last 24 hours');
     qanOverview.waitForOverviewLoaded();
     qanOverview.verifyGroupByIs(group);
   },
@@ -80,7 +80,7 @@ Scenario(
   'Open the QAN Dashboard and check that changing the time range doesn\'t reset sorting. @qan',
   async ({ adminPage, qanOverview }) => {
     await qanOverview.changeSorting(1);
-    adminPage.applyTimeRange('Last 24 hours');
+    await adminPage.applyTimeRange('Last 24 hours');
     qanOverview.waitForOverviewLoaded();
     qanOverview.verifySorting(1, 'desc');
   },

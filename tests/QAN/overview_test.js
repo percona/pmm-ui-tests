@@ -30,10 +30,12 @@ Scenario(
 
 Scenario(
   'PMM-T1061 Verify Plan and PlanID with pg_stat_monitor @qan',
-  async ({ I, adminPage, qanOverview, qanFilters, qanDetails }) => {
+  async ({
+    I, adminPage, qanOverview, qanFilters, qanDetails,
+  }) => {
     qanFilters.applyFilter('pdpgsql-dev');
     qanOverview.waitForOverviewLoaded();
-    adminPage.applyTimeRange('Last 12 hours');
+    await adminPage.applyTimeRange('Last 12 hours');
     qanOverview.waitForOverviewLoaded();
     qanOverview.searchByValue('SELECT current_database() datname, schemaname, relname, heap_blks_read, heap_blks_hit, idx_blks_read');
     qanOverview.waitForOverviewLoaded();
@@ -96,7 +98,7 @@ Scenario(
     qanOverview.changeSorting(2);
     qanOverview.verifySorting(2, 'asc');
     qanOverview.waitForOverviewLoaded();
-    adminPage.applyTimeRange('Last 1 hour');
+    await adminPage.applyTimeRange('Last 1 hour');
     qanOverview.waitForOverviewLoaded();
     qanOverview.verifySorting(2, 'asc');
     qanOverview.changeSorting(1);
@@ -309,7 +311,7 @@ Scenario(
     const query = 'SELECT * FROM pg_stat_bgwriter';
 
     qanOverview.waitForOverviewLoaded();
-    adminPage.applyTimeRange('Last 1 hour');
+    await adminPage.applyTimeRange('Last 1 hour');
     qanOverview.waitForOverviewLoaded();
     qanOverview.searchByValue(query);
     I.waitForElement(qanOverview.elements.querySelector, 30);

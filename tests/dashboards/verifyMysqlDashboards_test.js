@@ -162,7 +162,7 @@ xScenario(
     I.amOnPage(dashboardPage.mysqlUserDetailsDashboard.url);
     dashboardPage.waitForDashboardOpened();
     I.waitForVisible(dashboardPage.fields.timeRangePickerButton, 20);
-    adminPage.applyTimeRange(timeRange);
+    await adminPage.applyTimeRange(timeRange);
     await dashboardPage.applyFilter('Service Name', 'ps_8.0');
     I.waitForVisible(dashboardPage.fields.rootUser, 20);
     I.click(dashboardPage.fields.rootUser);

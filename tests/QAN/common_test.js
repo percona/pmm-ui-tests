@@ -34,7 +34,7 @@ Scenario(
     const cellValue = qanDetails.getMetricsCellLocator('Query Time', 3);
 
     qanOverview.waitForOverviewLoaded();
-    adminPage.applyTimeRange('Last 1 hour');
+    await adminPage.applyTimeRange('Last 1 hour');
     qanOverview.waitForOverviewLoaded();
     qanFilters.applyFilter('ps-dev');
     qanOverview.searchByValue('insert');
