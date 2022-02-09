@@ -24,10 +24,7 @@ module.exports = {
     timeRangeTo: locate('input').withAttr({ 'aria-label': 'Time Range to field' }),
   },
 
-  getTimeZoneOptionSelector: (timeZone) => locate('[aria-label="Select option"]')
-    .find('span')
-    .withText(timeZone)
-    .inside('[aria-label="Select options menu"]'),
+  getTimeZoneOptionSelector: (timeZone) => I.getSingleSelectOptionLocator(timeZone),
   getTimeZoneSelector: (timeZone) => locate('[aria-label="Time zone selection"]').find('span').withText(timeZone),
 
   async selectItemFromPMMDropdown(title) {

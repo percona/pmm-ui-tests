@@ -12,6 +12,10 @@ module.exports = () => actor({
   },
 
   useDataQA: (selector) => `[data-testid="${selector}"]`,
+  getSingleSelectOptionLocator: (optionName) => locate('[aria-label="Select option"]')
+    .find('span')
+    .withText(optionName)
+    .inside('[aria-label="Select options menu"]'),
 
   seeElementsDisabled(locator) {
     this.seeAttributesOnElements(locator, { disabled: true });
