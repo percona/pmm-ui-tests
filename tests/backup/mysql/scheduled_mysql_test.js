@@ -32,12 +32,12 @@ BeforeSuite(async ({
     host: '127.0.0.1',
     port: connection.port,
     username: connection.username,
-    password: connection.password,
+    password: "PMM_user@k@12456",
   };
 
   psMySql.connectToPS(mysqlComposeConnection);
 
-  await I.say(await I.verifyCommand(`pmm-admin add mysql --username=root --password=admin --query-source=perfschema ${mysqlServiceName}`));
+  await I.say(await I.verifyCommand(`pmm-admin add mysql --username=mysqlComposeConnection.username --password=mysqlComposeConnection.password --query-source=perfschema ${mysqlServiceName}`));
 });
 
 Before(async ({
