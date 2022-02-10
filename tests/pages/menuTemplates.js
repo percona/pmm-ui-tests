@@ -80,7 +80,7 @@ function MenuOption(menuName, label, locator, path, menuLevel = 1) {
   this.label = label;
   this.locator = locator;
   this.path = path;
-  this.click = () => {
+  this.click = async () => {
     new LeftMenu(menuName, '').showMenu();
 
     /* top level menu options text is nested <div> and should be excluded from loop */
@@ -92,11 +92,19 @@ function MenuOption(menuName, label, locator, path, menuLevel = 1) {
     /* top level menu options are handled without loop and locator from the argument */
     const elemToClick = this.locator === locator
       ? locator
-      : locate(`$left-menu-${formatElementId(label)}`);
+      : `//ul[@data-testid="navbar-section"]/.//a[text()="${label}"]`;
 
     I.waitForVisible(elemToClick, 2);
     I.moveCursorTo(elemToClick);
+    I.seeTextEquals(label, elemToClick);
+    I.seeAttributesOnElements(elemToClick, { target: null });
+
+    // Temporary fix to avoid clicking. Due to redirect to Summary dashboard
+    // if (menuLevel > 2) {
+    //   I.amOnPage(await I.grabAttributeFrom(elemToClick, 'href'));
+    // } else {
     I.click(elemToClick);
+    // }
   };
 }
 

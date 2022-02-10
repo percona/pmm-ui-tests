@@ -25,7 +25,7 @@ module.exports = {
   dashboards: new LeftMenu('Dashboards', '/graph/',
     {
       home: menuOption(da, 'Home', '/graph/d/pmm-home/home-dashboard?orgId=1&refresh=1m'),
-      manage: menuOption(da, 'Manage', '/graph/dashboards'),
+      manage: menuOption(da, 'Browse', '/graph/dashboards'),
       playlists: menuOption(da, 'Playlists', '/graph/playlists'),
       snapshots: menuOption(da, 'Snapshots', '/graph/dashboard/snapshots'),
     }),
@@ -84,7 +84,7 @@ module.exports = {
           mongoDbInstanceSummary: new SubMenu(pmmD, 'MongoDB Summary', '/graph/d/mongodb-instance-summary/mongodb-instance-summary',
             {
               mongoDbInMemoryDetails: menuOption(pmmD, 'MongoDB InMemory Details', '/graph/d/mongodb-inmemory/mongodb-inmemory-details', 3),
-              mongoDbMmaPv1Details: menuOption(pmmD, 'MongoDB MMAPv1', '/graph/d/mongodb-mmapv1/mongodb-mmapv1-details', 3),
+              mongoDbMmaPv1Details: menuOption(pmmD, 'MongoDB MMAPv1 Details', '/graph/d/mongodb-mmapv1/mongodb-mmapv1-details', 3),
               mongoDbWiredTigerDetails: menuOption(pmmD, 'MongoDB WiredTiger Details', '/graph/d/mongodb-wiredtiger/mongodb-wiredtiger-details', 3),
             }),
         }),
@@ -100,7 +100,7 @@ module.exports = {
   alerting: new LeftMenu('Alerting', '/graph/alerting/list',
     {
       alertRules: menuOption(al, 'Alert rules', '/graph/alerting/list'),
-      notificationChannels: menuOption(al, 'Notification channels', '/graph/alerting/notifications'),
+      notificationChannels: menuOption(al, 'Contact points', '/graph/alerting/notifications'),
 
     }),
   configuration: new LeftMenu('Configuration', '/graph/inventory',
@@ -111,18 +111,18 @@ module.exports = {
           addInstance: menuOption(co, 'Add instance', '/graph/add-instance', 2),
         }),
       settings: menuOption(co, 'Settings', '/graph/settings/metrics-resolution'),
-      dataSources: menuOption(co, 'Data Sources', '/graph/datasources'),
+      dataSources: menuOption(co, 'Data sources', '/graph/datasources'),
       users: menuOption(co, 'Users', '/graph/org/users'),
       teams: menuOption(co, 'Teams', '/graph/org/teams'),
       plugins: menuOption(co, 'Plugins', '/graph/plugins'),
       preferences: menuOption(co, 'Preferences', '/graph/org'),
-      apiKeys: menuOption(co, 'API Keys', '/graph/org/apikeys'),
+      apiKeys: menuOption(co, 'API keys', '/graph/org/apikeys'),
     }),
   serverAdmin: new LeftMenu('Server Admin', '/graph/admin/users',
     {
       users: menuOption(sa, 'Users', '/graph/admin/users'),
       orgs: menuOption(sa, 'Orgs', '/graph/admin/orgs'),
       settings: menuOption(sa, 'Settings', '/graph/admin/settings'),
-      stats: menuOption(sa, 'Stats', '/graph/admin/stats'),
+      stats: menuOption(sa, 'Stats and license', '/graph/admin/upgrading'),
     }),
 };
