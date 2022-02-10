@@ -29,8 +29,8 @@ BeforeSuite(async ({
 
   psMySql.connectToPS(mysqlCredentials);
 
-  await I.say(await I.verifyCommand(`pmm-admin add mysql --username=mysqlCredentials.username --password=mysqlCredentials.password --query-source=perfschema ${mysqlServiceName}`));
-  await I.say(await I.verifyCommand(`pmm-admin add mysql --username=mysqlCredentials.username --password=mysqlCredentials.password --query-source=perfschema ${mysqlServiceNameToDelete}`));
+  await I.say(await I.verifyCommand(`pmm-admin add mysql --username=${mysqlCredentials.username} --password=${mysqlCredentials.password} --query-source=perfschema ${mysqlServiceName}`));
+  await I.say(await I.verifyCommand(`pmm-admin add mysql --username=${mysqlCredentials.username} --password=${mysqlCredentials.password} --query-source=perfschema ${mysqlServiceNameToDelete}`));
 });
 
 Before(async ({
