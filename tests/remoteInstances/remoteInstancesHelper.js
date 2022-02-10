@@ -88,7 +88,7 @@ let SERVER_HOST; let EXTERNAL_EXPORTER_HOST; let DB_CONFIG = {};
 let PMM_SERVER_OVF_AMI_SETUP = 'false';
 
 DB_CONFIG = {
-  MYSQL_SERVER_PORT: '3306',
+  MYSQL_SERVER_PORT: '3309',
   POSTGRES_SERVER_PORT: '5432',
   MONGODB_SERVER_PORT: '27017',
   PROXYSQL_SERVER_PORT: '6032',
@@ -123,7 +123,7 @@ module.exports = {
       },
       ps_8_0: {
         host: 'mysql8',
-        port: '3306',
+        port: '3307',
         username: 'pmm-agent',
         password: 'pmm-agent-password',
         clusterName: 'mysql_clstr',
