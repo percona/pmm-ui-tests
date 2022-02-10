@@ -169,7 +169,7 @@ xScenario(
 );
 
 Scenario(
-  'PMM-9550 Verify downloading server diagnostics logs from Settings @alyona-testing',
+  'PMM-9550 Verify downloading server diagnostics logs from Settings @settings @alyona-testing',
   async ({ I, pmmSettingsPage }) => {
     await pmmSettingsPage.waitForPmmSettingsPageLoaded();
     I.handleDownloads('downloads/logs.zip');
