@@ -9,13 +9,13 @@ const location = {
 let locationId;
 let serviceId;
 
-const mysqlServiceName = 'mysql-with-backup';
+const mysqlServiceName = 'mysql-with-backup-inventory';
 const mysqlServiceNameToDelete = 'mysql-service-to-delete';
 const mysqlCredentials = {
   host: '127.0.0.1',
   port: '3306',
   username: 'root',
-  password: 'PMM_user@k@12456',
+  password: 'PMM_userk12456',
 };
 
 Feature('BM: MySQL Backup Inventory');
