@@ -357,7 +357,7 @@ Scenario(
   async ({
     I, backupInventoryPage, scheduledAPI, backupAPI, inventoryAPI,
   }) => {
-    await I.say(await I.verifyCommand(`pmm-admin add mysql --username=root --password=admin --query-source=perfschema ${mysqlServiceName}`));
+    await I.say(await I.verifyCommand(`pmm-admin add mysql --username=root --password=PMM_userk12456 --query-source=perfschema ${mysqlServiceName}`));
     // Every 2 mins schedule
     const scheduleMongo = {
       service_id: serviceId,
