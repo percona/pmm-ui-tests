@@ -71,9 +71,11 @@ Scenario('PMM-T459, PMM-T473, PMM-T478, PMM-T524 Verify DB Cluster Details are l
 
     await dbaasPage.waitForDbClusterTab(clusterName);
     I.waitForVisible(dbaasPage.tabs.dbClusterTab.fields.clusterTableHeader, 30);
-    await dbaasPage.validateClusterDetail(pxc_cluster_name, clusterName, clusterDetails, clusterDetails.clusterDashboardRedirectionLink);
+    await dbaasPage.validateClusterDetail(pxc_cluster_name, clusterName, clusterDetails, 
+      clusterDetails.clusterDashboardRedirectionLink);
     await dbaasActionsPage.restartCluster(pxc_cluster_name, clusterName, 'MySQL');
-    await dbaasPage.validateClusterDetail(pxc_cluster_name, clusterName, clusterDetails, clusterDetails.clusterDashboardRedirectionLink);
+    await dbaasPage.validateClusterDetail(pxc_cluster_name, clusterName, clusterDetails, 
+      clusterDetails.clusterDashboardRedirectionLink);
   });
 
 Data(pxcDBClusterDetails).Scenario('PMM-T502, Verify Monitoring of PXC Clusters @dbaas',
@@ -133,7 +135,8 @@ Scenario('PMM-T640 PMM-T479 Single Node PXC Cluster with Custom Resources @dbaas
       username, password, host, port,
     } = await dbaasAPI.getDbClusterDetails(dbClusterRandomName, clusterName);
     const output = await I.verifyCommand(
-      `kubectl run -i --rm --tty pxc-client --image=percona:8.0 --restart=Never -- mysql -h ${host} -u${username} -p${password} -e "SHOW DATABASES;"`,
+      `kubectl run -i --rm --tty pxc-client --image=percona:8.0 --restart=Never -- mysql -h ${host} -u${username} -p${password}
+       -e "SHOW DATABASES;"`,
       'performance_schema',
     );
 
@@ -166,7 +169,8 @@ Scenario('PMM-T522 Verify Editing a Cluster with Custom Setting and float values
     I.click(dbaasPage.tabs.dbClusterTab.updateClusterButton);
     I.waitForText('Processing', 30, dbaasPage.tabs.dbClusterTab.fields.progressBarContent);
     await dbaasPage.postClusterCreationValidation(dbClusterRandomName, clusterName);
-    await dbaasPage.validateClusterDetail(dbClusterRandomName, clusterName, singleNodeConfiguration, configuration.clusterDashboardRedirectionLink);
+    await dbaasPage.validateClusterDetail(dbClusterRandomName, clusterName, singleNodeConfiguration, 
+      configuration.clusterDashboardRedirectionLink);
     await dbaasActionsPage.deleteXtraDBCluster(dbClusterRandomName, clusterName);
   });
 
@@ -193,12 +197,14 @@ Scenario('PMM-T488, PMM-T489 Verify editing PXC cluster changing single node to 
     I.click(dbaasPage.tabs.dbClusterTab.createClusterButton);
     I.waitForText('Processing', 30, dbaasPage.tabs.dbClusterTab.fields.progressBarContent);
     await dbaasPage.postClusterCreationValidation(dbClusterRandomName, clusterName);
-    await dbaasPage.validateClusterDetail(dbClusterRandomName, clusterName, singleNodeConfiguration, updatedConfiguration.clusterDashboardRedirectionLink);
+    await dbaasPage.validateClusterDetail(dbClusterRandomName, clusterName, singleNodeConfiguration, 
+      updatedConfiguration.clusterDashboardRedirectionLink);
     await dbaasActionsPage.editCluster(dbClusterRandomName, clusterName, updatedConfiguration);
     I.click(dbaasPage.tabs.dbClusterTab.updateClusterButton);
     I.waitForText('Processing', 60, dbaasPage.tabs.dbClusterTab.fields.progressBarContent);
     await dbaasPage.postClusterCreationValidation(dbClusterRandomName, clusterName);
-    await dbaasPage.validateClusterDetail(dbClusterRandomName, clusterName, updatedConfiguration, updatedConfiguration.clusterDashboardRedirectionLink);
+    await dbaasPage.validateClusterDetail(dbClusterRandomName, clusterName, updatedConfiguration, 
+      updatedConfiguration.clusterDashboardRedirectionLink);
     await dbaasActionsPage.deleteXtraDBCluster(dbClusterRandomName, clusterName);
   });
 
