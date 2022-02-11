@@ -50,7 +50,7 @@ module.exports = {
     const body = { kubernetes_cluster_name: clusterName, name: dbClusterName, cluster_type: dbClusterType };
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
 
-    const response = await I.sendPostRequest('v1/management/DBaaS/DBClusters/List', body, headers);  
+    let response = await I.sendPostRequest('v1/management/DBaaS/DBClusters/List', body, headers);  
     
     if (response.data.pxc_clusters) {
       const pxc_cluster = response.data.pxc_clusters.find(
@@ -58,7 +58,12 @@ module.exports = {
       );
 
       if (pxc_cluster.state !== 'DB_CLUSTER_STATE_DELETING') {
-        await I.sendPostRequest('v1/management/DBaaS/DBClusters/Delete', body, headers);
+        response = await I.sendPostRequest('v1/management/DBaaS/DBClusters/Delete', body, headers);
+
+        assert.ok(
+          response.status === 200,
+          `Failed to delete "${dbClusterType}" cluster with name "${dbClusterName}". Response message is "${response.data.message}"`,
+        );
       }
     }
 
@@ -67,7 +72,12 @@ module.exports = {
         (o) => o.name === dbClusterName,
       );
       if (psmdb_cluster) {
-        await I.sendPostRequest('v1/management/DBaaS/DBClusters/Delete', body, headers);
+        response = await I.sendPostRequest('v1/management/DBaaS/DBClusters/Delete', body, headers);
+
+        assert.ok(
+          response.status === 200,
+          `Failed to delete "${dbClusterType}" cluster with name "${dbClusterName}". Response message is "${response.data.message}"`,
+        );
       }
     }
   },

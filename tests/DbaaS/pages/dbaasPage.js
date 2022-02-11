@@ -296,7 +296,7 @@ module.exports = {
     I.waitForElement(dbaasPage.tabs.kubernetesClusterTab.addKubernetesClusterButton, 30);
   },
 
-  async validateClusterDetail(dbsClusterName, k8sClusterName, configuration) {
+  async validateClusterDetail(dbsClusterName, k8sClusterName, configuration, link) {
     const dbaasPage = this;
 
     I.waitForElement(dbaasPage.tabs.dbClusterTab.fields.clusterTableHeader, 60);
@@ -319,7 +319,7 @@ module.exports = {
     const dashboardLinkAttribute = await I.grabAttributeFrom(dbaasPage.tabs.dbClusterTab.fields.clusterSummaryDashboard, 'href');
 
     assert.ok(
-      dashboardLinkAttribute.includes(configuration.clusterDashboardRedirectionLink),
+      dashboardLinkAttribute.includes(link),
       `The Cluster Dashboard Redirection Link is wrong found ${dashboardLinkAttribute}`,
     );
     I.seeElement(dbaasPage.tabs.dbClusterTab.fields.clusterDatabaseType);
