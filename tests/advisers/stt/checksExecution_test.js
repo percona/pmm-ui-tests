@@ -36,7 +36,7 @@ Feature('Security Checks: Checks Execution');
 BeforeSuite(async ({ psMySql, addInstanceAPI }) => {
   const mysqlComposeConnection = {
     host: '127.0.0.1',
-    port: connection.port,
+    port: '3309',
     username: connection.username,
     password: connection.password,
   };
