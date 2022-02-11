@@ -11,7 +11,7 @@ const location = {
 
 let locationId;
 let serviceId;
-const mysqlServiceName = 'mysql-with-backup';
+const mysqlServiceName = 'mysql-with-backup2';
 const mongoServiceName = 'mongo-backup-schedule';
 const schedules = new DataTable(['cronExpression', 'name', 'frequency']);
 
