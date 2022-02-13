@@ -118,9 +118,14 @@ Scenario(
 
 Scenario(
   'PMM-T391 Verify user is able to create and set custom home dashboard @pre-upgrade @ami-upgrade @pmm-upgrade',
-  async ({ I, grafanaAPI, dashboardPage }) => {
+  async ({
+    I, grafanaAPI, dashboardPage, searchDashboardsModal,
+  }) => {
     const folder = await grafanaAPI.createFolder(grafanaAPI.customFolderName);
     const resp = await grafanaAPI.createCustomDashboard(grafanaAPI.customDashboardName, folder.id);
+    const insightFolder = await grafanaAPI.lookupFolderByName(searchDashboardsModal.folders.insight.name);
+
+    await grafanaAPI.createCustomDashboard(grafanaAPI.randomDashboardName, insightFolder.id, ['pmm-qa', grafanaAPI.randomTag]);
 
     await grafanaAPI.starDashboard(resp.id);
     await grafanaAPI.setHomeDashboard(resp.id);
@@ -398,6 +403,21 @@ Scenario(
   },
 );
 
+Scenario(
+  'PMM-T1003 - Verify UI upgrade with Custom dashboard @pmm-upgrade @ami-upgrade @post-upgrade',
+  async ({
+    I, searchDashboardsModal, grafanaAPI, homePage,
+  }) => {
+    await homePage.open();
+    I.click(dashboardPage.fields.breadcrumbs.dashboardName);
+    searchDashboardsModal.waitForOpened();
+    searchDashboardsModal.collapseFolder('Recent');
+    searchDashboardsModal.expandFolder(searchDashboardsModal.folders.insight.name);
+    I.seeElement(searchDashboardsModal.fields.folderItemLocator(grafanaAPI.randomDashboardName));
+    I.seeElement(searchDashboardsModal.fields.folderItemWithTagLocator(grafanaAPI.randomDashboardName, grafanaAPI.randomTag));
+  },
+);
+
 if (versionMinor < 15) {
   Scenario(
     'PMM-T268 - Verify Failed check singlestats after upgrade from old versions @post-upgrade @pmm-upgrade',
@@ -666,6 +686,7 @@ Data(clientDbServices).Scenario(
     const metricName = current.metric;
     const { node_id } = await inventoryAPI.apiGetNodeInfoByServiceName(current.serviceType, current.name);
     const nodeName = await inventoryAPI.getNodeName(node_id);
+
     await grafanaAPI.checkMetricExist(metricName, { type: 'node_name', value: nodeName });
   },
 );

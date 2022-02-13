@@ -1,12 +1,15 @@
 const { I } = inject();
 const assert = require('assert');
 const FormData = require('form-data');
+const faker = require('faker');
 
 module.exports = {
   customDashboardName: 'auto-test-dashboard',
   customFolderName: 'auto-test-folder',
+  randomDashboardName: `auto-dashboard-${faker.datatype.number()}`,
+  randomTag: `tag-${faker.datatype.number()}`,
 
-  async createCustomDashboard(name, folderId = 0) {
+  async createCustomDashboard(name, folderId = 0, tags = ['pmm-qa']) {
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
     const body = {
       dashboard: {
@@ -72,7 +75,7 @@ module.exports = {
           to: 'now',
         },
         title: name,
-        tags: ['pmm-qa'],
+        tags,
         version: 0,
       },
       folderId,

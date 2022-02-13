@@ -101,6 +101,8 @@ module.exports = {
       .find('div')
       .at(1),
     folderItemLocator: (itemName) => locate(`div[aria-label="Dashboard search item ${itemName}"]`).find('a'),
+    folderItemWithTagLocator: (itemName, tag) => locate(`div[aria-label="Dashboard search item ${itemName}"]`)
+      .find('a').withDescendant('span').withText(tag),
   },
 
   waitForOpened() {
