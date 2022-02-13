@@ -1,4 +1,3 @@
-const assert = require("assert");
 const page = require('./pages/pmmSettingsPage');
 
 // Value should be in range from 1 to 3650 days, so put a value outside of the range
@@ -172,14 +171,11 @@ Scenario(
   'PMM-9550 Verify downloading server diagnostics logs from Settings @settings @alyona-testing',
   async ({ I, pmmSettingsPage }) => {
     await pmmSettingsPage.waitForPmmSettingsPageLoaded();
-    I.handleDownloads('downloads/logs.zip');
+    I.handleDownloads('logs.zip');
     I.click(pmmSettingsPage.fields.diagnosticsButton);
-    await I.amInPath('tests/output/downloads');
-    await I.waitForFile('logs.zip', 5);
-    await I.seeFileNameMatching('logs.zip');
-
-    const downloadedFileNames = await I.grabFileNames();
-
-    assert.ok(downloadedFileNames.length === 1, `The Server Diagnostic Zip file should be present inside tests/output/downloads directory, found ${downloadedFileNames.length} files`);
+    await I.amInPath('tests/output');
+    await I.waitForFile('logs.zip', 10);
+    await I.seeFile('logs.zip');
+    await I.seeInThisFile('vmalert.log');
   },
 );
