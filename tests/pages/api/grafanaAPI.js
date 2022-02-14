@@ -3,11 +3,13 @@ const assert = require('assert');
 const FormData = require('form-data');
 const faker = require('faker');
 
+const rnd = faker.datatype.number();
+
 module.exports = {
   customDashboardName: 'auto-test-dashboard',
   customFolderName: 'auto-test-folder',
-  randomDashboardName: `auto-dashboard-${faker.datatype.number()}`,
-  randomTag: `tag-${faker.datatype.number()}`,
+  randomDashboardName: `auto-dashboard-${rnd}`,
+  randomTag: `tag-${rnd}`,
 
   async createCustomDashboard(name, folderId = 0, tags = ['pmm-qa']) {
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
@@ -151,7 +153,9 @@ module.exports = {
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
     const resp = await I.sendGetRequest('graph/api/folders', headers);
 
-    return Object.entries(resp.data).filter((folder) => folder.title === name);
+    const result = resp.data.filter((obj) => obj.title === name);
+
+    return result.length > 0 ? result[0] : null;
   },
 
   async deleteFolder(uid) {
