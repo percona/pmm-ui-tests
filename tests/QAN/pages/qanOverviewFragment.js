@@ -225,12 +225,4 @@ module.exports = {
     I.fillField(this.fields.searchBy, value);
     I.pressKey('Enter');
   },
-
-  getToTimeFromUrl(url) {
-    return url.slice(url.indexOf('&to=') + 4, url.indexOf('&page_number='));
-  },
-
-  getFromToTimeFromUrl(url) {
-    return url.slice(url.indexOf('&from='), url.indexOf('&page_number='));
-  },
 };

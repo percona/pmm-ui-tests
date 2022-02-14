@@ -96,8 +96,8 @@ Scenario(
     qanOverview.selectRow(2);
     I.click(qanOverview.buttons.copyButton);
 
-    const url = await I.grabTextFrom(qanOverview.elements.clipboardLink);
-    const toTimeFromUrl1 = qanOverview.getToTimeFromUrl(url);
+    const url = new URL(await I.grabTextFrom(qanOverview.elements.clipboardLink));
+    const toTimeFromUrl1 = url.searchParams.get('to');
 
     assert.ok(Math.abs(dateTime - toTimeFromUrl1) < 30000, 'Difference between moment time and first copied time must be less then half of minute');
 
@@ -106,14 +106,14 @@ Scenario(
     qanOverview.waitForOverviewLoaded();
     I.click(qanOverview.buttons.copyButton);
 
-    const url2 = await I.grabTextFrom(qanOverview.elements.clipboardLink);
-    const toTimeFromUrl2 = qanOverview.getToTimeFromUrl(url2);
+    const url2 = new URL(await I.grabTextFrom(qanOverview.elements.clipboardLink));
+    const toTimeFromUrl2 = url2.searchParams.get('to');
 
     assert.ok(Math.abs(toTimeFromUrl1 - toTimeFromUrl2) < 60000, 'Difference between moment time and second copied time must be less then one minute');
     assert.notEqual(toTimeFromUrl1, toTimeFromUrl2, 'TimeFromUrl2 must not be the same as timeFromUrl1');
 
     I.openNewTab();
-    I.amOnPage(url);
+    I.amOnPage(url.toString());
     qanOverview.waitForOverviewLoaded();
     I.waitForVisible(qanOverview.getSelectedRowLocator(2));
   },
@@ -122,18 +122,21 @@ Scenario(
 Scenario(
   'PMM-T1140 - Verify relative time range copy URL from browser @qan',
   async ({ I, qanOverview }) => {
-    const url = await I.grabCurrentUrl();
-    const fromToString = qanOverview.getFromToTimeFromUrl(url);
+    const url = new URL(await I.grabCurrentUrl());
+    const fromString1 = url.searchParams.get('from');
+    const toString1 = url.searchParams.get('to');
 
     I.wait(60);
     I.openNewTab();
-    I.amOnPage(url);
+    I.amOnPage(url.toString());
     qanOverview.waitForOverviewLoaded();
 
-    const url2 = await I.grabCurrentUrl();
-    const fromToString2 = qanOverview.getFromToTimeFromUrl(url2);
+    const url2 = new URL(await I.grabCurrentUrl());
+    const fromString2 = url2.searchParams.get('from');
+    const toString2 = url2.searchParams.get('to');
 
-    assert.equal(fromToString, fromToString2, `The time range ${fromToString} is NOT the same you were seeing in previously tab ${fromToString2}`);
+    assert.equal(fromString1, fromString2, `The time range \"from\" ${fromString1} is NOT the same you were seeing in previously tab ${fromString2}`);
+    assert.equal(toString1, toString2, `The time range \"to\" ${toString1} is NOT the same you were seeing in previously tab ${toString2}`);
   },
 );
 
