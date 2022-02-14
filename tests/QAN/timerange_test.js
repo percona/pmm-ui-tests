@@ -135,8 +135,8 @@ Scenario(
     const fromString2 = url2.searchParams.get('from');
     const toString2 = url2.searchParams.get('to');
 
-    assert.equal(fromString1, fromString2, `The time range \"from\" ${fromString1} is NOT the same you were seeing in previously tab ${fromString2}`);
-    assert.equal(toString1, toString2, `The time range \"to\" ${toString1} is NOT the same you were seeing in previously tab ${toString2}`);
+    assert.equal(fromString1, fromString2, `The time range "from" ${fromString1} is NOT the same you were seeing in previously tab ${fromString2}`);
+    assert.equal(toString1, toString2, `The time range "to" ${toString1} is NOT the same you were seeing in previously tab ${toString2}`);
   },
 );
 
