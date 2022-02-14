@@ -162,26 +162,45 @@ Scenario(
   },
 );
 
-Scenario(
+Scenario.only(
     'PMM-T1146 Verify IA silence/unsilence all button @ia',
   async ({ I, alertsPage, alertmanagerAPI, alertManagerPage, }) => {
     I.amOnPage(alertsPage.url);
     I.waitForVisible(alertsPage.elements.alertRow(alertName), 30);
     I.waitForVisible(alertsPage.buttons.silenceAllAlerts, 30);
     I.waitForVisible(alertsPage.buttons.unsilenceAllAlerts, 30);
-    await alertmanagerAPI.verifyAlert({ ruleId: ruleIdForAlerts, serviceName: 'pmm-server-postgresql' });
-    I.amOnPage(alertManagerPage.urlSilences);
-    I.waitForVisible(alertManagerPage.activeTab, 30);
-    I.dontSeeElement(alertManagerPage.noSilencesText, 30);
 
-    I.amOnPage(alertsPage.url);
-    I.waitForVisible(alertsPage.buttons.silenceAllAlerts, 30);
     I.click(alertsPage.buttons.silenceAllAlerts);
     await alertmanagerAPI.verifyAlert({ ruleId: ruleIdForAlerts, serviceName: 'pmm-server-postgresql' }, true);
+    I.waitForElement(alertsPage.elements.criticalSeverity, 30);
+    //change color to grey
+    // I.seeCssPropertiesOnElements(alertsPage.elements.criticalSeverity, { color: 'rgb(224, 47, 68)' });
+    // I.waitForElement(alertsPage.elements.highSeverity, 30);
+    // I.seeCssPropertiesOnElements(alertsPage.elements.highSeverity, { color: 'rgb(235, 123, 24)' });
+    // I.waitForElement(alertsPage.elements.noticeSeverity, 30);
+    // I.seeCssPropertiesOnElements(alertsPage.elements.noticeSeverity, { color: 'rgb(50, 116, 217)' });
+    // I.waitForElement(alertsPage.elements.warningSeverity, 30);
+    // I.seeCssPropertiesOnElements(alertsPage.elements.warningSeverity, { color: 'rgb(236, 187, 19)' });
     I.amOnPage(alertManagerPage.urlSilences);
     I.waitForVisible(alertManagerPage.noSilencesText);
     await alertManagerPage.selectExpiredTab();
     I.dontSeeElement(alertManagerPage.noSilencesText);
+
+    I.amOnPage(alertsPage.url);
+    I.waitForVisible(alertsPage.buttons.silenceAllAlerts, 30);
+    I.click(alertsPage.buttons.unsilenceAllAlerts);
+    await alertmanagerAPI.verifyAlert({ ruleId: ruleIdForAlerts, serviceName: 'pmm-server-postgresql' });
+    I.waitForElement(alertsPage.elements.criticalSeverity, 30);
+    I.seeCssPropertiesOnElements(alertsPage.elements.criticalSeverity, { color: 'rgb(224, 47, 68)' });
+    I.waitForElement(alertsPage.elements.highSeverity, 30);
+    I.seeCssPropertiesOnElements(alertsPage.elements.highSeverity, { color: 'rgb(235, 123, 24)' });
+    I.waitForElement(alertsPage.elements.noticeSeverity, 30);
+    I.seeCssPropertiesOnElements(alertsPage.elements.noticeSeverity, { color: 'rgb(50, 116, 217)' });
+    I.waitForElement(alertsPage.elements.warningSeverity, 30);
+    I.seeCssPropertiesOnElements(alertsPage.elements.warningSeverity, { color: 'rgb(236, 187, 19)' });
+    I.amOnPage(alertManagerPage.urlSilences);
+    I.waitForVisible(alertManagerPage.activeTab, 30);
+    I.dontSeeElement(alertManagerPage.noSilencesText, 30);
   },
 );
 
