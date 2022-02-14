@@ -171,9 +171,9 @@ Scenario(
   'PMM-9550 Verify downloading server diagnostics logs from Settings @settings @alyona-testing',
   async ({ I, pmmSettingsPage }) => {
     await pmmSettingsPage.waitForPmmSettingsPageLoaded();
-    I.handleDownloads('logs.zip');
+    I.handleDownloads('downloads/logs.zip');
     I.click(pmmSettingsPage.fields.diagnosticsButton);
-    await I.amInPath('tests/output');
+    await I.amInPath('tests/output/downloads');
     await I.waitForFile('logs.zip', 10);
     await I.seeFile('logs.zip');
     await I.seeInThisFile('vmalert.log');
