@@ -85,26 +85,20 @@ function MenuOption(menuName, label, locator, path, menuLevel = 1) {
 
     /* top level menu options text is nested <div> and should be excluded from loop */
     for (let i = 2; i <= menuLevel; i++) {
-      this.locator = `(//ul[@data-testid="navbar-section"]/.//li[descendant::a[contains(text(), "${label}")]])`;
+      this.locator = `(//div[@data-testid="navbar-section"]/.//li[descendant::a[text()="${label}"]])`;
       I.moveCursorTo(`${this.locator}[position()=${i}]`);
     }
 
     /* top level menu options are handled without loop and locator from the argument */
     const elemToClick = this.locator === locator
       ? locator
-      : `//ul[@data-testid="navbar-section"]/.//a[text()="${label}"]`;
+      : `//div[@data-testid="navbar-section"]/.//a[text()="${label}"]`;
 
     I.waitForVisible(elemToClick, 2);
     I.moveCursorTo(elemToClick);
     I.seeTextEquals(label, elemToClick);
     I.seeAttributesOnElements(elemToClick, { target: null });
-
-    // Temporary fix to avoid clicking. Due to redirect to Summary dashboard
-    // if (menuLevel > 2) {
-    //   I.amOnPage(await I.grabAttributeFrom(elemToClick, 'href'));
-    // } else {
     I.click(elemToClick);
-    // }
   };
 }
 

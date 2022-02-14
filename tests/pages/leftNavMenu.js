@@ -97,12 +97,13 @@ module.exports = {
       haProxy: menuOption(pmmD, 'HAProxy', '/graph/d/haproxy-instance-summary/haproxy-instance-summary'),
     }),
   explore: new LeftMenu('Explore', '/graph/explore'),
+  /* Skipping due to a conflict with Integrated Alerting item
   alerting: new LeftMenu('Alerting', '/graph/alerting/list',
     {
       alertRules: menuOption(al, 'Alert rules', '/graph/alerting/list'),
       notificationChannels: menuOption(al, 'Contact points', '/graph/alerting/notifications'),
-
     }),
+  */
   configuration: new LeftMenu('Configuration', '/graph/inventory',
     {
       pmmInventory: new SubMenu(co, 'PMM Inventory', '/graph/inventory/services',
