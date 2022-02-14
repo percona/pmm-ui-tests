@@ -21,6 +21,8 @@ module.exports = {
   buttons: {
     // silenceActivate returns silence/activate button locator for a given alert name
     silenceActivate: (alertName) => `${alertRow(alertName)}[1]/td//button[@data-testid="silence-alert-button"]`,
+    silenceAllAlerts: locate('span').withText('Silence All'),
+    unsilenceAllAlerts: locate('span').withText('Unsilence All'),
   },
   messages: {
     noAlertsFound: 'No alerts',

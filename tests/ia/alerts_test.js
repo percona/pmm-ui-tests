@@ -119,7 +119,7 @@ Scenario(
 Scenario(
   'Verify Firing Alert, labels and existence in alertmanager @ia',
   async ({
-    I, alertsPage, inventoryAPI, alertmanagerAPI,
+    I, alertsPage, alertmanagerAPI,
   }) => {
     I.amOnPage(alertsPage.url);
     I.waitForElement(alertsPage.elements.alertRow(alertName), 30);
@@ -159,6 +159,29 @@ Scenario(
     await alertmanagerAPI.verifyAlert({ ruleId: ruleIdForAlerts, serviceName: 'pmm-server-postgresql' }, true);
     await alertsPage.activateAlert(alertName);
     await alertmanagerAPI.verifyAlert({ ruleId: ruleIdForAlerts, serviceName: 'pmm-server-postgresql' });
+  },
+);
+
+Scenario(
+    'PMM-T1146 Verify IA silence/unsilence all button @ia',
+  async ({ I, alertsPage, alertmanagerAPI, alertManagerPage, }) => {
+    I.amOnPage(alertsPage.url);
+    I.waitForVisible(alertsPage.elements.alertRow(alertName), 30);
+    I.waitForVisible(alertsPage.buttons.silenceAllAlerts, 30);
+    I.waitForVisible(alertsPage.buttons.unsilenceAllAlerts, 30);
+    await alertmanagerAPI.verifyAlert({ ruleId: ruleIdForAlerts, serviceName: 'pmm-server-postgresql' });
+    I.amOnPage(alertManagerPage.urlSilences);
+    I.waitForVisible(alertManagerPage.activeTab, 30);
+    I.dontSeeElement(alertManagerPage.noSilencesText, 30);
+
+    I.amOnPage(alertsPage.url);
+    I.waitForVisible(alertsPage.buttons.silenceAllAlerts, 30);
+    I.click(alertsPage.buttons.silenceAllAlerts);
+    await alertmanagerAPI.verifyAlert({ ruleId: ruleIdForAlerts, serviceName: 'pmm-server-postgresql' }, true);
+    I.amOnPage(alertManagerPage.urlSilences);
+    I.waitForVisible(alertManagerPage.noSilencesText);
+    await alertManagerPage.selectExpiredTab();
+    I.dontSeeElement(alertManagerPage.noSilencesText);
   },
 );
 
