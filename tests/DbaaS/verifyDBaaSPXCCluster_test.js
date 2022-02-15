@@ -134,8 +134,7 @@ Scenario('PMM-T640 PMM-T479 Single Node PXC Cluster with Custom Resources @dbaas
       username, password, host, port,
     } = await dbaasAPI.getDbClusterDetails(dbClusterRandomName, clusterName);
     const output = await I.verifyCommand(
-      `kubectl run -i --rm --tty pxc-client --image=percona:8.0 --restart=Never -- mysql -h ${host} -u${username} -p${password}
-       -e "SHOW DATABASES;"`,
+      `kubectl run -i --rm --tty pxc-client --image=percona:8.0 --restart=Never -- mysql -h ${host} -u${username} -p${password} -e "SHOW DATABASES;"`,
       'performance_schema',
     );
 
