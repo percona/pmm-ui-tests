@@ -33,35 +33,35 @@ Before(async ({ I, settingsAPI }) => {
 BeforeSuite(async ({
   I, settingsAPI, rulesAPI, alertsAPI, channelsAPI, ncPage,
 }) => {
-  await settingsAPI.apiEnableIA();
-  await rulesAPI.clearAllRules(true);
-  for (const rule of rulesForAlerts) {
-    const ruleId = await rulesAPI.createAlertRule(rule);
-
-    rulesToDelete.push(ruleId);
-  }
-
-  ruleIdForAlerts = await rulesAPI.createAlertRule({ ruleName });
-
-  // Preparation steps for checking Alert via email
-  const channelName = 'EmailChannel';
-
-  testEmail = await I.generateNewEmail();
-
-  await settingsAPI.setEmailAlertingSettings();
-  const channelId = await channelsAPI.createNotificationChannel(
-    channelName,
-    ncPage.types.email.type,
-    testEmail,
-  );
-
-  ruleIdForEmailCheck = await rulesAPI.createAlertRule({
-    ruleName: ruleNameForEmailCheck,
-    channels: [channelId],
-  });
-
-  // Wait for all alerts to appear
-  await alertsAPI.waitForAlerts(60, rulesToDelete.length + 2);
+  // await settingsAPI.apiEnableIA();
+  // await rulesAPI.clearAllRules(true);
+  // for (const rule of rulesForAlerts) {
+  //   const ruleId = await rulesAPI.createAlertRule(rule);
+  //
+  //   rulesToDelete.push(ruleId);
+  // }
+  //
+  // ruleIdForAlerts = await rulesAPI.createAlertRule({ ruleName });
+  //
+  // // Preparation steps for checking Alert via email
+  // const channelName = 'EmailChannel';
+  //
+  // testEmail = await I.generateNewEmail();
+  //
+  // await settingsAPI.setEmailAlertingSettings();
+  // const channelId = await channelsAPI.createNotificationChannel(
+  //   channelName,
+  //   ncPage.types.email.type,
+  //   testEmail,
+  // );
+  //
+  // ruleIdForEmailCheck = await rulesAPI.createAlertRule({
+  //   ruleName: ruleNameForEmailCheck,
+  //   channels: [channelId],
+  // });
+  //
+  // // Wait for all alerts to appear
+  // await alertsAPI.waitForAlerts(60, rulesToDelete.length + 2);
 });
 
 AfterSuite(async ({
@@ -164,12 +164,40 @@ Scenario(
 
 Scenario.only(
     'PMM-T1146 Verify IA silence/unsilence all button @ia',
-  async ({ I, alertsPage, alertmanagerAPI, alertManagerPage, }) => {
+  async ({ I, alertsPage, alertmanagerAPI, alertManagerPage, settingsAPI, rulesAPI, alertsAPI, channelsAPI, ncPage,}) => {
+      await settingsAPI.apiEnableIA();
+      await rulesAPI.clearAllRules(true);
+      for (const rule of rulesForAlerts) {
+          const ruleId = await rulesAPI.createAlertRule(rule);
+
+          rulesToDelete.push(ruleId);
+      }
+
+      ruleIdForAlerts = await rulesAPI.createAlertRule({ ruleName });
+
+      // Preparation steps for checking Alert via email
+      const channelName = 'EmailChannel';
+
+      testEmail = await I.generateNewEmail();
+
+      await settingsAPI.setEmailAlertingSettings();
+      const channelId = await channelsAPI.createNotificationChannel(
+          channelName,
+          ncPage.types.email.type,
+          testEmail,
+      );
+
+      ruleIdForEmailCheck = await rulesAPI.createAlertRule({
+          ruleName: ruleNameForEmailCheck,
+          channels: [channelId],
+      });
+
+      // Wait for all alerts to appear
+      await alertsAPI.waitForAlerts(60, rulesToDelete.length + 2);
     I.amOnPage(alertsPage.url);
-    I.waitForVisible(alertsPage.elements.alertRow(alertName), 30);
+    pause();
     I.waitForVisible(alertsPage.buttons.silenceAllAlerts, 30);
     I.waitForVisible(alertsPage.buttons.unsilenceAllAlerts, 30);
-
     I.click(alertsPage.buttons.silenceAllAlerts);
     await alertmanagerAPI.verifyAlert({ ruleId: ruleIdForAlerts, serviceName: 'pmm-server-postgresql' }, true);
     I.waitForElement(alertsPage.elements.criticalSeverity, 30);
