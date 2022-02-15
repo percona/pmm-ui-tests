@@ -3,7 +3,6 @@ const assert = require('assert');
 const { dbaasAPI, dbaasPage } = inject();
 const clusterName = 'Kubernetes_Testing_Cluster_Minikube';
 const pxc_cluster_name = 'pxc-dbcluster';
-const pxc_cluster_name_single = 'pxc-singlenode';
 const pxc_cluster_type = 'DB_CLUSTER_TYPE_PXC';
 const mysql_recommended_version = 'MySQL 8.0.25';
 
