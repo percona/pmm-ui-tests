@@ -112,7 +112,8 @@ Scenario('PMM-T477 PMM-T461 Verify MongoDB Cluster can be restarted, unregister 
     await dbaasPage.waitForDbClusterTab(clusterName);
     I.waitForInvisible(dbaasPage.tabs.kubernetesClusterTab.disabledAddButton, 30);
     await dbaasActionsPage.restartCluster(psmdb_cluster, clusterName, 'MongoDB');
-    await dbaasPage.validateClusterDetail(psmdb_cluster, clusterName, psmdb_configuration, psmdb_configuration.clusterDashboardRedirectionLink);
+    await dbaasPage.validateClusterDetail(psmdb_cluster, clusterName, psmdb_configuration, 
+      psmdb_configuration.clusterDashboardRedirectionLink);
     await dbaasActionsPage.deletePSMDBCluster(psmdb_cluster, clusterName);
   });
 
@@ -127,7 +128,8 @@ Scenario('PMM-787 Verify Editing MonogDB Cluster is possible. @dbaas',
     I.click(dbaasPage.tabs.dbClusterTab.createClusterButton);
     I.waitForText('Processing', 30, dbaasPage.tabs.dbClusterTab.fields.progressBarContent);
     await dbaasPage.postClusterCreationValidation(psmdb_cluster, clusterName, 'MongoDB');
-    await dbaasPage.validateClusterDetail(psmdb_cluster, clusterName, psmdb_configuration, psmdb_configuration.clusterDashboardRedirectionLink);
+    await dbaasPage.validateClusterDetail(psmdb_cluster, clusterName, psmdb_configuration, 
+      psmdb_configuration.clusterDashboardRedirectionLink);
     I.click(dbaasPage.tabs.dbClusterTab.fields.clusterActionsMenu);
     //await dbaasActionsPage.checkActionPossible('Update', false); skipped because latest mongodb is not recommended version
     I.click(dbaasPage.tabs.dbClusterTab.fields.clusterActionsMenu);
@@ -147,7 +149,7 @@ Scenario('PMM-787 Verify Editing MonogDB Cluster is possible. @dbaas',
     I.waitForText('Processing', 60, dbaasPage.tabs.dbClusterTab.fields.progressBarContent);
     await dbaasPage.postClusterCreationValidation(psmdb_cluster, clusterName, 'MongoDB');
     await dbaasPage.validateClusterDetail(psmdb_cluster, clusterName, psmdb_updated_configuration, 
-      clusterDashboardRedirectionLink);
+      psmdb_updated_configuration.clusterDashboardRedirectionLink);
     await dbaasActionsPage.deletePSMDBCluster(psmdb_cluster, clusterName);
   }).retry(1);
 
