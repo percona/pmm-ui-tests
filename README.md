@@ -70,7 +70,9 @@ Execute command in the Project Root folder
  `--grep "@tag"` runs only tests marked by specified tags. The following tags are available:
 
     @ami-upgrade            Groups tests for the "pmm-ami-upgrade" Job
-    @backup                     Backup Management functionality tests
+    @backup                 Backup Management functionality tests
+    @bm-mongo               Backup Management functionality tests for MongoDB
+    @bm-mongo               Backup Management functionality tests for MySQL 
     @dashboards             Dashboards functionality, check that graphs are not empty
                                 (e.g. Data from exporters is displayed at those dashboards)
     @dbaas                  DB as a Service functionality tests

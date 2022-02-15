@@ -60,7 +60,7 @@ AfterSuite(async ({
 });
 
 Scenario(
-  'Verify message about no scheduled backups @backup',
+  'Verify message about no scheduled backups @backup @bm-mongo',
   async ({
     I, scheduledPage,
   }) => {
@@ -69,7 +69,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T902 Verify user is not able to schedule a backup without storage location @backup',
+  'PMM-T902 Verify user is not able to schedule a backup without storage location @backup @bm-mongo',
   async ({
     I, scheduledPage,
   }) => {
@@ -90,7 +90,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T954 PMM-T952 PMM-T956 PMM-T958 Verify validation errors for retention @backup',
+  'PMM-T954 PMM-T952 PMM-T956 PMM-T958 Verify validation errors for retention @backup @bm-mongo',
   async ({
     I, scheduledPage,
   }) => {
@@ -126,7 +126,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T909 PMM-T952 PMM-T956 Verify user can update created scheduled backup @backup',
+  'PMM-T909 PMM-T952 PMM-T956 Verify user can update created scheduled backup @backup @bm-mongo',
   async ({
     I, scheduledPage, scheduledAPI,
   }) => {
@@ -171,7 +171,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T913, PMM-T922, PMM-T977 Verify user can schedule a backup for MongoDB with replica @backup',
+  'PMM-T913, PMM-T922, PMM-T977 Verify user can schedule a backup for MongoDB with replica @backup @bm-mongo',
   async ({
     I, backupInventoryPage, scheduledAPI, backupAPI, scheduledPage,
   }) => {
@@ -212,7 +212,7 @@ Scenario(
 );
 
 Data(schedules).Scenario(
-  'PMM-T899 PMM-T903 PMM-T904 PMM-T905 PMM-T907 Verify user can create daily scheduled backup @backup',
+  'PMM-T899 PMM-T903 PMM-T904 PMM-T905 PMM-T907 Verify user can create daily scheduled backup @backup @bm-mongo',
   async ({
     scheduledPage, scheduledAPI, current,
   }) => {
@@ -242,7 +242,7 @@ Data(schedules).Scenario(
   },
 );
 
-Scenario('PMM-T900 Verify user can copy scheduled backup @backup',
+Scenario('PMM-T900 Verify user can copy scheduled backup @backup @bm-mongo',
   async ({
     I, scheduledPage, scheduledAPI,
   }) => {
@@ -281,7 +281,7 @@ Scenario('PMM-T900 Verify user can copy scheduled backup @backup',
     I.seeAttributesOnElements(scheduledPage.elements.toggleByName(newSchedule.name), { checked: null });
   });
 
-Scenario('PMM-T908 Verify user can enable/disable scheduled backup @backup',
+Scenario('PMM-T908 Verify user can enable/disable scheduled backup @backup @bm-mongo',
   async ({
     I, scheduledPage, scheduledAPI,
   }) => {
@@ -318,7 +318,7 @@ Scenario('PMM-T908 Verify user can enable/disable scheduled backup @backup',
     I.seeCssPropertiesOnElements(scheduledPage.elements.scheduleTypeByName(schedule.name), { 'background-color': color });
   });
 
-Scenario('PMM-T901 Verify user can delete scheduled backup @backup',
+Scenario('PMM-T901 Verify user can delete scheduled backup @backup @bm-mongo',
   async ({
     I, scheduledPage, scheduledAPI,
   }) => {
@@ -353,7 +353,7 @@ Scenario('PMM-T901 Verify user can delete scheduled backup @backup',
 
 Scenario(
   'PMM-T924 - Verify user is able to schedule a backup for MongoDB with replica & MySQL '
-  + 'and try to run those backup schedule job in parallel @nightly @bm-mysql',
+  + 'and try to run those backup schedule job in parallel @nightly @bm-mysql @bm-mongo',
   async ({
     I, backupInventoryPage, scheduledAPI, backupAPI, inventoryAPI,
   }) => {

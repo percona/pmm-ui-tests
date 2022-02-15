@@ -55,7 +55,7 @@ AfterSuite(async ({
 });
 
 Scenario(
-  'PMM-T691 Verify message about no backups in inventory @backup',
+  'PMM-T691 Verify message about no backups in inventory @backup @bm-mongo',
   async ({
     I, backupInventoryPage,
   }) => {
@@ -64,7 +64,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T855 Verify user is able to perform MongoDB backup @backup',
+  'PMM-T855 Verify user is able to perform MongoDB backup @backup @bm-mongo',
   async ({
     I, backupInventoryPage,
   }) => {
@@ -83,7 +83,7 @@ Scenario(
 ).retry(1);
 
 Scenario(
-  'PMM-T1005 PMM-T1024 Verify create backup modal @backup',
+  'PMM-T1005 PMM-T1024 Verify create backup modal @backup @bm-mongo',
   async ({
     I, backupInventoryPage,
   }) => {
@@ -123,7 +123,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T862 Verify user is able to perform MongoDB restore @backup',
+  'PMM-T862 Verify user is able to perform MongoDB restore @backup @bm-mongo',
   async ({
     I, backupInventoryPage, backupAPI, inventoryAPI, restorePage,
   }) => {
@@ -151,7 +151,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T910 PMM-T911 Verify delete from storage is selected by default @backup',
+  'PMM-T910 PMM-T911 Verify delete from storage is selected by default @backup @bm-mongo',
   async ({
     I, backupInventoryPage, backupAPI, inventoryAPI,
   }) => {
@@ -181,7 +181,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T928 Verify user can restore from a scheduled backup @backup',
+  'PMM-T928 Verify user can restore from a scheduled backup @backup @bm-mongo @bm-mongo',
   async ({
     I, backupInventoryPage, scheduledAPI, backupAPI, restorePage,
   }) => {
@@ -221,7 +221,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T848 Verify service no longer exists error message during restore @backup',
+  'PMM-T848 Verify service no longer exists error message during restore @backup @bm-mongo',
   async ({
     I, backupInventoryPage, backupAPI, inventoryAPI,
   }) => {
