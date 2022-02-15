@@ -14,7 +14,7 @@ networks:
 
 services:
   pmm-server:
-    image: ${PMM_SERVER_IMAGE:-perconalab/pmm-server-fb:PR-2296-eded043}
+    image: ${PMM_SERVER_IMAGE:-perconalab/pmm-server:dev-latest}
     container_name: pmm-server
     ports:
       - "80:80"
