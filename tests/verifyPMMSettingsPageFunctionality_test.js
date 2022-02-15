@@ -350,6 +350,7 @@ Scenario(
 Scenario(
   'PMM-9550 Verify downloading server diagnostics logs from Settings @settings',
   async ({ I, pmmSettingsPage }) => {
+    I.amOnPage(pmmSettingsPage.url);
     await pmmSettingsPage.waitForPmmSettingsPageLoaded();
     // Using hardcoded xpath here only because of using native playwright functions
     await I.waitForEndPointRequest('http://*/logs.zip', '//a[@data-testid=\'diagnostics-button\']');
