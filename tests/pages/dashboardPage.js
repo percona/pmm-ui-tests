@@ -1014,9 +1014,10 @@ module.exports = {
     const filterValueSelector = `//span[contains(text(), '${filterValue}')]`;
     const filterDropdownOptionsLocator = this.fields.filterDropdownOptionsLocator(filterName);
     const dropdownLocator = this.fields.openFiltersDropdownLocator(filterName);
+    const selectedFilterValue = await I.grabTextFrom(dropdownLocator);
 
     // If there is only one value for a filter it is selected by default
-    if (await I.grabTextFrom(dropdownLocator) !== 'All') {
+    if (selectedFilterValue !== 'All' && selectedFilterValue === filterValue) {
       I.seeTextEquals(filterValue, dropdownLocator);
     } else {
       this.expandFilters(filterName);
