@@ -113,7 +113,7 @@ module.exports = {
 
   async getFoldersList() {
     return (await I.grabTextFromAll(
-      locate('div .pointer').find('div').after('div').before('div'),
+      '.pointer > div:nth-child(2)',
     )).map((elem) => elem.split('|')[0]);
   },
 
