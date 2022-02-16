@@ -851,7 +851,7 @@ module.exports = {
     serviceSummary: locate('a').withText('Service Summary'),
     timeRangePickerButton: '.btn.navbar-button.navbar-button--tight',
     openFiltersDropdownLocator: (filterName) => locate('.variable-link-wrapper').after(`label[for="${formatElementId(filterName)}"]`),
-    filterDropdownOptionsLocator: (filterName) => `#options-${formatElementId(filterName)}`,
+    filterDropdownOptionsLocator: (filterName) => `[aria-control="options-${formatElementId(filterName)}"]`,
   },
 
   createAdvancedDataExplorationURL(metricName, time = '1m', nodeName = 'All') {
@@ -1013,10 +1013,16 @@ module.exports = {
   async applyFilter(filterName, filterValue) {
     const filterValueSelector = `//span[contains(text(), '${filterValue}')]`;
     const filterDropdownOptionsLocator = this.fields.filterDropdownOptionsLocator(filterName);
+    const dropdownLocator = this.fields.openFiltersDropdownLocator(filterName);
 
-    this.expandFilters(filterName);
-    I.waitForElement(filterDropdownOptionsLocator, 30);
-    I.click(filterValueSelector);
+    // If there is only one value for a filter it is selected by default
+    if (await I.grabTextFrom(dropdownLocator) !== 'All') {
+      I.seeTextEquals(filterValue, dropdownLocator);
+    } else {
+      this.expandFilters(filterName);
+      I.waitForElement(filterDropdownOptionsLocator, 30);
+      I.click(filterValueSelector);
+    }
   },
 
   async getTimeRange() {
