@@ -869,8 +869,8 @@ module.exports = {
     return await I.grabAttributeFrom(`//label[contains(@aria-label, '${filterName}')]/..//a`, 'title');
   },
 
-  annotationLocator(annotationNumber) {
-    return `(//div[contains(@class,'events_marker')])[${annotationNumber}]`;
+  annotationLocator() {
+    return '(//div[contains(@class,"events_marker")])[last()]';
   },
 
   annotationTagText(tagValue) {

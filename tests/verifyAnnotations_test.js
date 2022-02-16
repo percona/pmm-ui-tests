@@ -39,14 +39,7 @@ Data(annotation).Scenario(
       await dashboardPage.applyFilter('Service Name', serviceName);
     }
 
-    if (annotationName === 'annotation-for-postgres') {
-      dashboardPage.verifyAnnotationsLoaded(annotationName, 1);
-    } else if (annotationName === 'mysql-node-name') {
-      dashboardPage.verifyAnnotationsLoaded(annotationName, 2);
-    } else {
-      dashboardPage.verifyAnnotationsLoaded(annotationName, 1);
-    }
-
+    dashboardPage.verifyAnnotationsLoaded(annotationName);
     I.seeElement(dashboardPage.annotationText(annotationName), 10);
   },
 );
