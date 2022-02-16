@@ -127,7 +127,7 @@ Scenario(
 
     I.amOnPage('');
     dashboardPage.waitForDashboardOpened();
-    dashboardPage.verifyMetricsExistence(['Custom Panel']);
+    // dashboardPage.verifyMetricsExistence(['Custom Panel']);
     I.seeInCurrentUrl(resp.url);
   },
 );
@@ -666,6 +666,7 @@ Data(clientDbServices).Scenario(
     const metricName = current.metric;
     const { node_id } = await inventoryAPI.apiGetNodeInfoByServiceName(current.serviceType, current.name);
     const nodeName = await inventoryAPI.getNodeName(node_id);
+
     await grafanaAPI.checkMetricExist(metricName, { type: 'node_name', value: nodeName });
   },
 );

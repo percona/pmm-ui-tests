@@ -29,6 +29,7 @@ module.exports = {
     tooltipQueryId: locate('.ant-tooltip-inner').find('h5'),
     firstQueryValue: 'div.tr-1 > div.td:nth-child(2) div > div',
     firstQueryInfoIcon: 'div.tr-1 > div.td:nth-child(2) div > svg',
+    selectedRow: '.selected-overview-row',
   },
   messages: {
     noResultTableText: 'No queries available for this combination of filters in the selected time frame',
@@ -194,6 +195,7 @@ module.exports = {
     I.waitForElement(rowSelector, 60);
     I.forceClick(rowSelector);
     this.waitForOverviewLoaded();
+    I.waitForVisible(this.elements.selectedRow, 10);
   },
 
   async verifyRowCount(rowCount) {

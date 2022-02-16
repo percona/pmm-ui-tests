@@ -131,9 +131,11 @@ Scenario(
   'PMM-T187 Verify that the selected row in the overview table is highlighted @qan',
   async ({ I, qanOverview }) => {
     qanOverview.selectRow('2');
-    I.seeCssPropertiesOnElements('.selected-overview-row > div', {
-      'background-color': 'rgb(35, 70, 130)',
-    });
+    await I.asyncWaitFor(async () => (
+      // eslint-disable-next-line no-undef
+      await tryTo(() => I.seeCssPropertiesOnElements(`${qanOverview.elements.selectedRow} > div`, {
+        'background-color': 'rgb(35, 70, 130)',
+      }))), 10);
   },
 );
 
