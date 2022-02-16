@@ -1,4 +1,4 @@
-const { I } = inject();
+const { I, dashboardPage } = inject();
 const assert = require('assert');
 // The original regex source is https://regexlib.com/REDetails.aspx?regexp_id=5055
 // eslint-disable-next-line no-useless-escape
@@ -22,7 +22,7 @@ module.exports = {
     checksPanelSelector: '$db-check-panel-home',
     noFailedChecksInPanel: '$db-check-panel-zero-checks',
     failedChecksPanelInfo: '[aria-label="Failed security checks panel"] i',
-    newsPanelTitleSelector: '//span[@class="panel-title-text" and text() = "Percona News"]',
+    newsPanelTitleSelector: dashboardPage.graphsLocator('Percona News'),
     pmmCustomMenu: locate('$navbar-section').find('.dropdown a[aria-label="PMM dashboards"]'),
     servicesButton: locate('span').withText('Services'),
     newsPanelContentSelector:
