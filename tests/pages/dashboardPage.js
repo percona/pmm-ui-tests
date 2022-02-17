@@ -851,7 +851,7 @@ module.exports = {
     serviceSummary: locate('a').withText('Service Summary'),
     timeRangePickerButton: '.btn.navbar-button.navbar-button--tight',
     openFiltersDropdownLocator: (filterName) => locate('.variable-link-wrapper').after(`label[for="${formatElementId(filterName)}"]`),
-    filterDropdownOptionsLocator: (filterName) => `[aria-control="options-${formatElementId(filterName)}"]`,
+    filterDropdownOptionsLocator: (filterName) => `[aria-controls="options-${formatElementId(filterName)}"]`,
   },
 
   createAdvancedDataExplorationURL(metricName, time = '1m', nodeName = 'All') {
