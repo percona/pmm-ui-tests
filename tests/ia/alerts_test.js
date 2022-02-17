@@ -185,7 +185,7 @@ Scenario(
   },
 );
 
-Scenario.only(
+Scenario(
   'PMM-T1146 Verify IA silence/unsilence all button @ia',
   async ({ I, alertsPage, alertmanagerAPI, alertManagerPage }) => {
     I.amOnPage(alertsPage.url);
