@@ -163,6 +163,28 @@ Scenario(
 );
 
 Scenario(
+  'PMM-T587 Verify user cant see Alert with non-existing filter @ia',
+  async ({ I, alertsPage, rulesAPI }) => {
+    const rule = {
+      ruleId: ruleIdForAlerts,
+      ruleName,
+      filters: [
+        {
+          key: 'service_name',
+          value: 'pmm-server-postgresql111',
+          type: 'EQUAL',
+        },
+      ],
+    };
+
+    await rulesAPI.updateAlertRule(rule);
+    I.amOnPage(alertsPage.url);
+    I.waitForVisible(alertsPage.elements.noData);
+    I.dontSeeElement(alertsPage.elements.alertRow(alertName));
+  },
+);
+
+Scenario(
   'PMM-T1146 Verify IA silence/unsilence all button @ia',
   async ({ I, alertsPage, alertmanagerAPI, alertManagerPage }) => {
     I.amOnPage(alertsPage.url);
