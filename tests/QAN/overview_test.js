@@ -131,6 +131,8 @@ Scenario(
   'PMM-T187 Verify that the selected row in the overview table is highlighted @qan',
   async ({ I, qanOverview }) => {
     qanOverview.selectRow('2');
+    I.say(await I.grabCssPropertyFrom(`${qanOverview.elements.selectedRow} > div`, 'background-color'));
+    I.say(await I.grabCssPropertyFrom(`${qanOverview.elements.selectedRow}`, 'background-color'));
     await I.asyncWaitFor(async () => (
       // eslint-disable-next-line no-undef
       await tryTo(() => I.seeCssPropertiesOnElements(`${qanOverview.elements.selectedRow} > div`, {
@@ -319,7 +321,7 @@ Scenario(
     I.waitForElement(qanOverview.elements.querySelector, 30);
     const firstQueryText = await I.grabTextFrom(qanOverview.elements.firstQueryValue);
 
-    assert.ok(firstQueryText === query, `The Searched Query text was: ${query}, don't match the result text in overview for 1st result: ${firstQueryText}`);
+    assert.ok(firstQueryText.startsWith(query), `The Searched Query text was: "${query}", don't match the result text in overview for 1st result: "${firstQueryText}"`);
   },
 );
 
