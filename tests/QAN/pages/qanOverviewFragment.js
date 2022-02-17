@@ -10,6 +10,7 @@ module.exports = {
   },
   buttons: {
     addColumn: '//span[contains(text(), "Add column")]',
+    copyButton: '$copy-link-button',
   },
   elements: {
     countOfItems: '$qan-total-items',
@@ -30,12 +31,15 @@ module.exports = {
     firstQueryValue: 'div.tr-1 > div.td:nth-child(2) div > div',
     firstQueryInfoIcon: 'div.tr-1 > div.td:nth-child(2) div > svg',
     selectedRow: '.selected-overview-row',
+    clipboardLink: locate('div').withText('Clipboard is not available. Copy the link:').find('span'),
   },
   messages: {
     noResultTableText: 'No queries available for this combination of filters in the selected time frame',
+    copiedPopUpMessage: 'Successfully copied Query Analytics link to clipboard',
   },
 
   getRowLocator: (rowNumber) => `div.tr-${rowNumber}`,
+  getSelectedRowLocator: (rowNumber) => `div.tr-${rowNumber}.selected-overview-row`,
 
   getColumnLocator: (columnName) => `//span[contains(text(), '${columnName}')]`,
   getQANMetricHeader: (metricName) => `//div[@role='columnheader']//span[contains(text(), '${metricName}')]`,
