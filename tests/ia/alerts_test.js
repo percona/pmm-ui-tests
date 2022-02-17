@@ -33,35 +33,35 @@ Before(async ({ I, settingsAPI }) => {
 BeforeSuite(async ({
   I, settingsAPI, rulesAPI, alertsAPI, channelsAPI, ncPage,
 }) => {
-  // await settingsAPI.apiEnableIA();
-  // await rulesAPI.clearAllRules(true);
-  // for (const rule of rulesForAlerts) {
-  //   const ruleId = await rulesAPI.createAlertRule(rule);
-  //
-  //   rulesToDelete.push(ruleId);
-  // }
-  //
-  // ruleIdForAlerts = await rulesAPI.createAlertRule({ ruleName });
-  //
-  // // Preparation steps for checking Alert via email
-  // const channelName = 'EmailChannel';
-  //
-  // testEmail = await I.generateNewEmail();
-  //
-  // await settingsAPI.setEmailAlertingSettings();
-  // const channelId = await channelsAPI.createNotificationChannel(
-  //   channelName,
-  //   ncPage.types.email.type,
-  //   testEmail,
-  // );
-  //
-  // ruleIdForEmailCheck = await rulesAPI.createAlertRule({
-  //   ruleName: ruleNameForEmailCheck,
-  //   channels: [channelId],
-  // });
-  //
-  // // Wait for all alerts to appear
-  // await alertsAPI.waitForAlerts(60, rulesToDelete.length + 2);
+  await settingsAPI.apiEnableIA();
+  await rulesAPI.clearAllRules(true);
+  for (const rule of rulesForAlerts) {
+    const ruleId = await rulesAPI.createAlertRule(rule);
+
+    rulesToDelete.push(ruleId);
+  }
+
+  ruleIdForAlerts = await rulesAPI.createAlertRule({ ruleName });
+
+  // Preparation steps for checking Alert via email
+  const channelName = 'EmailChannel';
+
+  testEmail = await I.generateNewEmail();
+
+  await settingsAPI.setEmailAlertingSettings();
+  const channelId = await channelsAPI.createNotificationChannel(
+    channelName,
+    ncPage.types.email.type,
+    testEmail,
+  );
+
+  ruleIdForEmailCheck = await rulesAPI.createAlertRule({
+    ruleName: ruleNameForEmailCheck,
+    channels: [channelId],
+  });
+
+  // Wait for all alerts to appear
+  await alertsAPI.waitForAlerts(60, rulesToDelete.length + 2);
 });
 
 AfterSuite(async ({
@@ -162,57 +162,26 @@ Scenario(
   },
 );
 
-Scenario.only(
-    'PMM-T1146 Verify IA silence/unsilence all button @ia',
-  async ({ I, alertsPage, alertmanagerAPI, alertManagerPage, settingsAPI, rulesAPI, alertsAPI, channelsAPI, ncPage,}) => {
-      await settingsAPI.apiEnableIA();
-      await rulesAPI.clearAllRules(true);
-      for (const rule of rulesForAlerts) {
-          const ruleId = await rulesAPI.createAlertRule(rule);
-
-          rulesToDelete.push(ruleId);
-      }
-
-      ruleIdForAlerts = await rulesAPI.createAlertRule({ ruleName });
-
-      // Preparation steps for checking Alert via email
-      const channelName = 'EmailChannel';
-
-      testEmail = await I.generateNewEmail();
-
-      await settingsAPI.setEmailAlertingSettings();
-      const channelId = await channelsAPI.createNotificationChannel(
-          channelName,
-          ncPage.types.email.type,
-          testEmail,
-      );
-
-      ruleIdForEmailCheck = await rulesAPI.createAlertRule({
-          ruleName: ruleNameForEmailCheck,
-          channels: [channelId],
-      });
-
-      // Wait for all alerts to appear
-      await alertsAPI.waitForAlerts(60, rulesToDelete.length + 2);
+Scenario(
+  'PMM-T1146 Verify IA silence/unsilence all button @ia',
+  async ({ I, alertsPage, alertmanagerAPI, alertManagerPage }) => {
     I.amOnPage(alertsPage.url);
-    pause();
     I.waitForVisible(alertsPage.buttons.silenceAllAlerts, 30);
     I.waitForVisible(alertsPage.buttons.unsilenceAllAlerts, 30);
     I.click(alertsPage.buttons.silenceAllAlerts);
     await alertmanagerAPI.verifyAlert({ ruleId: ruleIdForAlerts, serviceName: 'pmm-server-postgresql' }, true);
     I.waitForElement(alertsPage.elements.criticalSeverity, 30);
-    //change color to grey
-    // I.seeCssPropertiesOnElements(alertsPage.elements.criticalSeverity, { color: 'rgb(224, 47, 68)' });
-    // I.waitForElement(alertsPage.elements.highSeverity, 30);
-    // I.seeCssPropertiesOnElements(alertsPage.elements.highSeverity, { color: 'rgb(235, 123, 24)' });
-    // I.waitForElement(alertsPage.elements.noticeSeverity, 30);
-    // I.seeCssPropertiesOnElements(alertsPage.elements.noticeSeverity, { color: 'rgb(50, 116, 217)' });
-    // I.waitForElement(alertsPage.elements.warningSeverity, 30);
-    // I.seeCssPropertiesOnElements(alertsPage.elements.warningSeverity, { color: 'rgb(236, 187, 19)' });
-    I.amOnPage(alertManagerPage.urlSilences);
-    I.waitForVisible(alertManagerPage.noSilencesText);
-    await alertManagerPage.selectExpiredTab();
-    I.dontSeeElement(alertManagerPage.noSilencesText);
+    I.seeCssPropertiesOnElements(alertsPage.elements.criticalSeverity, { color: 'rgb(199, 208, 217)' });
+    I.seeCssPropertiesOnElements(alertsPage.elements.highSeverity, { color: 'rgb(199, 208, 217)' });
+    I.seeCssPropertiesOnElements(alertsPage.elements.noticeSeverity, { color: 'rgb(199, 208, 217)' });
+    I.seeCssPropertiesOnElements(alertsPage.elements.warningSeverity, { color: 'rgb(199, 208, 217)' });
+
+    I.amOnPage(alertManagerPage.url);
+    // I.waitForVisible(alertManagerPage.elements.noSilencesText, 30);
+    I.click(alertManagerPage.elements.silencesTab);
+    // I.dontSeeElement(alertManagerPage.elements.noSilencesText);
+    await alertManagerPage.selectTab('Expired');
+    // I.dontSeeElement(alertManagerPage.elements.noSilencesText);
 
     I.amOnPage(alertsPage.url);
     I.waitForVisible(alertsPage.buttons.silenceAllAlerts, 30);
@@ -220,38 +189,16 @@ Scenario.only(
     await alertmanagerAPI.verifyAlert({ ruleId: ruleIdForAlerts, serviceName: 'pmm-server-postgresql' });
     I.waitForElement(alertsPage.elements.criticalSeverity, 30);
     I.seeCssPropertiesOnElements(alertsPage.elements.criticalSeverity, { color: 'rgb(224, 47, 68)' });
-    I.waitForElement(alertsPage.elements.highSeverity, 30);
     I.seeCssPropertiesOnElements(alertsPage.elements.highSeverity, { color: 'rgb(235, 123, 24)' });
-    I.waitForElement(alertsPage.elements.noticeSeverity, 30);
     I.seeCssPropertiesOnElements(alertsPage.elements.noticeSeverity, { color: 'rgb(50, 116, 217)' });
-    I.waitForElement(alertsPage.elements.warningSeverity, 30);
     I.seeCssPropertiesOnElements(alertsPage.elements.warningSeverity, { color: 'rgb(236, 187, 19)' });
-    I.amOnPage(alertManagerPage.urlSilences);
-    I.waitForVisible(alertManagerPage.activeTab, 30);
-    I.dontSeeElement(alertManagerPage.noSilencesText, 30);
-  },
-);
 
-Scenario(
-  'PMM-T587 Verify user cant see Alert with non-existing filter @ia',
-  async ({ I, alertsPage, rulesAPI }) => {
-    const rule = {
-      ruleId: ruleIdForAlerts,
-      ruleName,
-      filters: [
-        {
-          key: 'service_name',
-          value: 'pmm-server-postgresql111',
-          type: 'EQUAL',
-        },
-      ],
-    };
-
-    await rulesAPI.updateAlertRule(rule);
-
-    I.amOnPage(alertsPage.url);
-    I.waitForVisible(alertsPage.elements.noData);
-    I.dontSeeElement(alertsPage.elements.alertRow(alertName));
+    I.amOnPage(alertManagerPage.url);
+    I.waitForElement(alertManagerPage.elements.silencesTab, 30);
+    I.click(alertManagerPage.elements.silencesTab);
+    // I.waitForVisible(alertManagerPage.elements.noSilencesText, 30);
+    await alertManagerPage.selectTab('Expired');
+    // I.dontSeeElement(alertManagerPage.noSilencesText, 30);
   },
 );
 
