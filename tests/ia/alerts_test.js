@@ -178,13 +178,14 @@ Scenario(
     };
 
     await rulesAPI.updateAlertRule(rule);
+
     I.amOnPage(alertsPage.url);
     I.waitForVisible(alertsPage.elements.noData);
     I.dontSeeElement(alertsPage.elements.alertRow(alertName));
   },
 );
 
-Scenario(
+Scenario.only(
   'PMM-T1146 Verify IA silence/unsilence all button @ia',
   async ({ I, alertsPage, alertmanagerAPI, alertManagerPage }) => {
     I.amOnPage(alertsPage.url);
@@ -199,11 +200,12 @@ Scenario(
     I.seeCssPropertiesOnElements(alertsPage.elements.warningSeverity, { color: 'rgb(199, 208, 217)' });
 
     I.amOnPage(alertManagerPage.url);
-    // I.waitForVisible(alertManagerPage.elements.noSilencesText, 30);
+    I.waitForVisible(alertManagerPage.elements.noAlertGroupsText, 30);
     I.click(alertManagerPage.elements.silencesTab);
-    // I.dontSeeElement(alertManagerPage.elements.noSilencesText);
+    I.waitForInvisible(alertManagerPage.elements.tableLoading, 30);
+    I.dontSeeElement(alertManagerPage.elements.noSilencesText);
     await alertManagerPage.selectTab('Expired');
-    // I.dontSeeElement(alertManagerPage.elements.noSilencesText);
+    I.dontSeeElement(alertManagerPage.elements.noSilencesText);
 
     I.amOnPage(alertsPage.url);
     I.waitForVisible(alertsPage.buttons.silenceAllAlerts, 30);
@@ -217,10 +219,9 @@ Scenario(
 
     I.amOnPage(alertManagerPage.url);
     I.waitForElement(alertManagerPage.elements.silencesTab, 30);
+    I.dontSeeElement(alertManagerPage.elements.noAlertGroupsText);
     I.click(alertManagerPage.elements.silencesTab);
-    // I.waitForVisible(alertManagerPage.elements.noSilencesText, 30);
-    await alertManagerPage.selectTab('Expired');
-    // I.dontSeeElement(alertManagerPage.noSilencesText, 30);
+    I.waitForVisible(alertManagerPage.elements.noSilencesText, 30);
   },
 );
 

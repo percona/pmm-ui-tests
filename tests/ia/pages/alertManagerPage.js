@@ -5,11 +5,12 @@ module.exports = {
   url: '/alertmanager',
   elements: {
     silencesTab: locate('a').withAttr({'title': 'Silences'}),
-    noSilencesText: locate('.alert-warning').withText('No silences found'),
+    alertsTab: locate('a').withAttr({'title': 'Alerts'}),
     tab: (tabName) => tab(tabName),
     activatedTab: (tabName) => locate('.nav-link.active').withText(tabName),
-    activeTab: tab('Active'),
-    expiredTab: tab('Expired'),
+    tableLoading: '$table-loading',
+    noSilencesText: locate('.alert-warning').withText('No silences found'),
+    noAlertGroupsText: locate('.alert-warning').withText('No alert groups found'),
   },
 
   selectTab(tabName) {
