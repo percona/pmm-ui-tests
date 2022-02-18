@@ -41,7 +41,8 @@ Before(async ({ I }) => {
 Scenario(
   'PMM-T426 - Verify adding new Kubernetes cluster minikube, PMM-T428 - Verify adding new Kubernetes cluster with same name, '
   + 'PMM-T431 -Verify unregistering Kubernetes cluster @dbaas',
-  async ({ I, dbaasPage }) => {
+  async ({ I, dbaasPage, settingsAPI }) => {
+    await settingsAPI.changeSettings({ publicAddress: process.env.VM_IP });
     I.amOnPage(dbaasPage.url);
     I.waitForVisible(dbaasPage.tabs.kubernetesClusterTab.addKubernetesClusterButtonInTable, 30);
     I.click(dbaasPage.tabs.kubernetesClusterTab.addKubernetesClusterButton);
@@ -92,7 +93,8 @@ Scenario('PMM-T427 - Verify elements on PMM DBaaS page @dbaas',
     I.waitForVisible(dbaasPage.tabs.kubernetesClusterTab.addKubernetesClusterButtonInTable, 30);
   });
 
-Scenario('PMM-T547 PMM-T548  Verify user is able to view config of registered Kubernetes cluster on Kubernetes Cluster Page @dbaas',
+Scenario('PMM-T547 PMM-T548  Verify user is able to view config of registered Kubernetes cluster on Kubernetes Cluster Page, ' +
+ 'PMM-T1130 - Verify warning about deleting an API key @dbaas',
   async ({ I, dbaasPage, dbaasAPI }) => {
     await dbaasAPI.apiRegisterCluster(process.env.kubeconfig_minikube, clusterName);
     I.amOnPage(dbaasPage.url);
@@ -108,6 +110,9 @@ Scenario('PMM-T547 PMM-T548  Verify user is able to view config of registered Ku
     const configuration = await I.grabTextFrom(dbaasPage.tabs.kubernetesClusterTab.clusterConfigurationText);
 
     assert.ok(configuration === process.env.kubeconfig_minikube, `The configuration shown is not equal to the expected Cluster configuration, ${configuration}`);
+    // PMM-T1130
+    I.amOnPage(dbaasPage.apiKeysUrl);
+    I.waitForText(dbaasPage.apiKeysPage.apiKeysWarningText, 10, dbaasPage.apiKeysPage.apiKeysWarningLocator);
     await dbaasAPI.apiUnregisterCluster(clusterName);
   });
 
@@ -129,7 +134,8 @@ Scenario('Verify user is able to add same cluster config with different Name @db
   });
 
 Scenario('PMM-T728 Verify DB Cluster Tab Page Elements & Steps Background @dbaas',
-  async ({ I, dbaasPage, dbaasAPI }) => {
+  async ({ I, dbaasPage, dbaasAPI, settingsAPI }) => {
+    await settingsAPI.changeSettings({ publicAddress: '' });
     if (!await dbaasAPI.apiCheckRegisteredClusterExist(clusterName)) {
       await dbaasAPI.apiRegisterCluster(process.env.kubeconfig_minikube, clusterName);
     }
