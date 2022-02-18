@@ -130,14 +130,12 @@ Scenario(
 Scenario(
   'PMM-T187 Verify that the selected row in the overview table is highlighted @qan',
   async ({ I, qanOverview }) => {
+    const expectedColor = 'rgb(35, 70, 130)';
+
     qanOverview.selectRow('2');
-    I.say(await I.grabCssPropertyFrom(`${qanOverview.elements.selectedRow} > div`, 'background-color'));
-    I.say(await I.grabCssPropertyFrom(`${qanOverview.elements.selectedRow}`, 'background-color'));
-    await I.asyncWaitFor(async () => (
-      // eslint-disable-next-line no-undef
-      await tryTo(() => I.seeCssPropertiesOnElements(`${qanOverview.elements.selectedRow} > div`, {
-        'background-color': 'rgb(35, 70, 130)',
-      }))), 10);
+    const color = await I.grabCssPropertyFrom(`${qanOverview.elements.selectedRow} > div`, 'background-color');
+
+    assert.ok(color === expectedColor, `Row background color should be ${expectedColor} but it is ${color}`);
   },
 );
 
