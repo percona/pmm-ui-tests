@@ -187,17 +187,13 @@ Scenario(
 
 Scenario(
   'PMM-T1146 Verify IA silence/unsilence all button @ia',
-  async ({ I, alertsPage, alertmanagerAPI, alertManagerPage }) => {
+  async ({ I, alertsPage, alertManagerPage }) => {
     I.amOnPage(alertsPage.url);
     I.waitForVisible(alertsPage.buttons.silenceAllAlerts, 30);
     I.waitForVisible(alertsPage.buttons.unsilenceAllAlerts, 30);
     I.click(alertsPage.buttons.silenceAllAlerts);
-    await alertmanagerAPI.verifyAlert({ ruleId: ruleIdForAlerts, serviceName: 'pmm-server-postgresql' }, true);
     I.waitForElement(alertsPage.elements.criticalSeverity, 30);
-    I.seeCssPropertiesOnElements(alertsPage.elements.criticalSeverity, { color: 'rgb(199, 208, 217)' });
-    I.seeCssPropertiesOnElements(alertsPage.elements.highSeverity, { color: 'rgb(199, 208, 217)' });
-    I.seeCssPropertiesOnElements(alertsPage.elements.noticeSeverity, { color: 'rgb(199, 208, 217)' });
-    I.seeCssPropertiesOnElements(alertsPage.elements.warningSeverity, { color: 'rgb(199, 208, 217)' });
+    await alertsPage.checkAllAlertsStateAndColor('Silenced');
 
     I.amOnPage(alertManagerPage.url);
     I.waitForVisible(alertManagerPage.elements.noAlertGroupsText, 30);
@@ -210,12 +206,8 @@ Scenario(
     I.amOnPage(alertsPage.url);
     I.waitForVisible(alertsPage.buttons.silenceAllAlerts, 30);
     I.click(alertsPage.buttons.unsilenceAllAlerts);
-    await alertmanagerAPI.verifyAlert({ ruleId: ruleIdForAlerts, serviceName: 'pmm-server-postgresql' });
     I.waitForElement(alertsPage.elements.criticalSeverity, 30);
-    I.seeCssPropertiesOnElements(alertsPage.elements.criticalSeverity, { color: 'rgb(224, 47, 68)' });
-    I.seeCssPropertiesOnElements(alertsPage.elements.highSeverity, { color: 'rgb(235, 123, 24)' });
-    I.seeCssPropertiesOnElements(alertsPage.elements.noticeSeverity, { color: 'rgb(50, 116, 217)' });
-    I.seeCssPropertiesOnElements(alertsPage.elements.warningSeverity, { color: 'rgb(236, 187, 19)' });
+    await alertsPage.checkAllAlertsStateAndColor('Firing');
 
     I.amOnPage(alertManagerPage.url);
     I.waitForElement(alertManagerPage.elements.silencesTab, 30);

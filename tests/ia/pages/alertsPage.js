@@ -77,4 +77,29 @@ module.exports = {
       );
     }
   },
+
+  async checkAllAlertsStateAndColor(alertsExpectedStates) {
+    const critical = 'rgb(224, 47, 68)';
+    const high = 'rgb(235, 123, 24)';
+    const notice = 'rgb(50, 116, 217)';
+    const warning = 'rgb(236, 187, 19)';
+    const alertsStates = await I.grabTextFromAll('//td[3]');
+    const alertsColors = await I.grabCssPropertyFromAll('//td[2]/span', 'color');
+
+    if (alertsExpectedStates === 'Silenced') {
+      assert.ok(alertsStates.includes('Silenced'), `Alerts have not Silenced state`);
+      assert.ok(!alertsStates.includes('Firing'), `Alerts have Firing state`);
+      assert.ok(!alertsColors.includes(critical), `Critical alert is unsilence`);
+      assert.ok(!alertsColors.includes(high), `High alert is unsilence`);
+      assert.ok(!alertsColors.includes(notice), `Notice alert is unsilence`);
+      assert.ok(!alertsColors.includes(warning), `Warning alert is unsilence`);
+    } else {
+      assert.ok(!alertsStates.includes('Silenced'), `Alerts have Silenced state`);
+      assert.ok(alertsStates.includes('Firing'), `Alerts have not Firing state`);
+      assert.ok(alertsColors.includes(critical), `Critical alert is silence`);
+      assert.ok(alertsColors.includes(high), `High alert is silence`);
+      assert.ok(alertsColors.includes(notice), `Notice alert is silence`);
+      assert.ok(alertsColors.includes(warning), `Warning alert is silence`);
+    }
+  }
 };
