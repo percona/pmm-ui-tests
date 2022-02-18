@@ -17,6 +17,7 @@ module.exports = () => actor({
     .withText(optionName)
     .inside('[aria-label="Select options menu"]'),
   getClosePopUpButtonLocator: () => systemMessageButtonClose,
+  getPopUpLocator: () => systemMessageText,
 
   seeElementsDisabled(locator) {
     this.seeAttributesOnElements(locator, { disabled: true });

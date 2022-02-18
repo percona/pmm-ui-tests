@@ -90,13 +90,14 @@ Scenario(
 Scenario(
   'PMM-T1138 - Verify QAN Copy Button for URL @qan',
   async ({ I, adminPage, qanOverview }) => {
-    adminPage.applyTimeRange('Last 12 hours');
+    await adminPage.applyTimeRange('Last 12 hours');
 
     const dateTime = moment().format('x');
 
     qanOverview.waitForOverviewLoaded();
     qanOverview.selectRow(2);
     I.click(qanOverview.buttons.copyButton);
+    I.waitForVisible(I.getPopUpLocator(), 10);
 
     const url = new URL(await I.grabTextFrom(qanOverview.elements.clipboardLink));
     const toTimeFromUrl1 = url.searchParams.get('to');
@@ -107,6 +108,7 @@ Scenario(
     I.refreshPage();
     qanOverview.waitForOverviewLoaded();
     I.click(qanOverview.buttons.copyButton);
+    I.waitForVisible(I.getPopUpLocator(), 10);
 
     const url2 = new URL(await I.grabTextFrom(qanOverview.elements.clipboardLink));
     const toTimeFromUrl2 = url2.searchParams.get('to');
@@ -165,10 +167,13 @@ Scenario(
 
 Scenario(
   'PMM-T1142 - Verify that the table page and selected query are still the same when we go on copied link by new QAN CopyButton @qan',
-  async ({ I, qanPagination, qanOverview, qanDetails }) => {
+  async ({
+    I, qanPagination, qanOverview, qanDetails,
+  }) => {
     I.click(qanPagination.buttons.nextPage);
     qanOverview.selectRow(2);
     I.click(qanOverview.buttons.copyButton);
+    I.waitForVisible(I.getPopUpLocator(), 10);
 
     const url = await I.grabTextFrom(qanOverview.elements.clipboardLink);
 
@@ -193,6 +198,7 @@ Scenario(
     qanFilters.applyFilter(environmentName);
     qanOverview.waitForOverviewLoaded();
     I.click(qanOverview.buttons.copyButton);
+    I.waitForVisible(I.getPopUpLocator(), 10);
 
     const url = await I.grabTextFrom(qanOverview.elements.clipboardLink);
 

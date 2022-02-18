@@ -31,7 +31,7 @@ module.exports = {
     firstQueryValue: 'div.tr-1 > div.td:nth-child(2) div > div',
     firstQueryInfoIcon: 'div.tr-1 > div.td:nth-child(2) div > svg',
     selectedRow: '.selected-overview-row',
-    clipboardLink: locate('div').withText('Clipboard is not available. Copy the link:').find('span'),
+    clipboardLink: locate(I.getPopUpLocator()).find('span'),
   },
   messages: {
     noResultTableText: 'No queries available for this combination of filters in the selected time frame',
