@@ -189,6 +189,7 @@ Scenario(
   'PMM-T1146 Verify IA silence/unsilence all button @ia',
   async ({ I, alertsPage, alertManagerPage }) => {
     I.amOnPage(alertsPage.url);
+    I.waitForElement(alertsPage.elements.criticalSeverity, 30);
     I.waitForVisible(alertsPage.buttons.silenceAllAlerts, 30);
     I.waitForVisible(alertsPage.buttons.unsilenceAllAlerts, 30);
     I.click(alertsPage.buttons.silenceAllAlerts);
