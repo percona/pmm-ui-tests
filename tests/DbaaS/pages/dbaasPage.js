@@ -6,6 +6,13 @@ const faker = require('faker');
 
 module.exports = {
   url: 'graph/dbaas',
+  apiKeysUrl: 'graph/org/apikeys',
+
+  apiKeysPage: {
+    apiKeysWarningText: 'If a resource (for example, DB cluster) uses an API key, deleting that API key might affect the functionality of that resource.',
+    apiKeysWarningLocator: '$warning-block',
+    apiKeysTable: '.filter-table',
+  },
   disabledDbaaSMessage: {
     textMessage: 'DBaaS is disabled. You can enable it in PMM Settings.',
     settingsLinkLocator: '$settings-link',
@@ -423,5 +430,16 @@ module.exports = {
     const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName(serviceType, serviceName);
 
     await inventoryAPI.waitForRunningState(service_id);
+  },
+
+  async apiKeyCheck(clusterName, dbClusterName, dbClusterType, keyExists) {
+    const dbaasPage = this;
+    I.amOnPage(dbaasPage.apiKeysUrl);
+
+    if (keyExists) {
+      I.waitForText(`${dbClusterType}-${clusterName}-${dbClusterName}`, 10 , dbaasPage.apiKeysPage.apiKeysTable);
+    } else {
+      I.dontSee(`${dbClusterType}-${dbClusterName}`, dbaasPage.apiKeysPage.apiKeysTable);
+    }
   },
 };

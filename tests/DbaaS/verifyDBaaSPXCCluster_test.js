@@ -116,7 +116,8 @@ Scenario('PMM-T524 Delete PXC Cluster and Unregister K8s Cluster @dbaas',
     await dbaasActionsPage.deleteXtraDBCluster(pxc_cluster_name, clusterName);
   });
 
-Scenario('PMM-T640 PMM-T479 Single Node PXC Cluster with Custom Resources @dbaas',
+Scenario('PMM-T640 PMM-T479 Single Node PXC Cluster with Custom Resources, PMM-T780 Verify API keys are created when DB ' +
+ 'cluster is created, PMM-T781 Verify API keys are deleted when DB cluster is deleted  @dbaas',
   async ({
     I, dbaasPage, dbaasActionsPage, dbaasAPI,
   }) => {
@@ -128,6 +129,13 @@ Scenario('PMM-T640 PMM-T479 Single Node PXC Cluster with Custom Resources @dbaas
     await dbaasActionsPage.createClusterAdvancedOption(clusterName, dbClusterRandomName, 'MySQL', singleNodeConfiguration);
     I.click(dbaasPage.tabs.dbClusterTab.createClusterButton);
     I.waitForText('Processing', 30, dbaasPage.tabs.dbClusterTab.fields.progressBarContent);
+    //PMM-T780
+    await dbaasPage.apiKeyCheck(clusterName, pxc_cluster_name_single, 'pxc', true);
+    await dbaasPage.waitForDbClusterTab(clusterName);
+    I.waitForInvisible(dbaasPage.tabs.kubernetesClusterTab.disabledAddButton, 30);
+
+    await dbaasPage.postClusterCreationValidation(pxc_cluster_name_single, clusterName);
+    await dbaasPage.validateClusterDetail(pxc_cluster_name_single, clusterName, singleNodeConfiguration);
     await dbaasPage.postClusterCreationValidation(dbClusterRandomName, clusterName);
     await dbaasPage.validateClusterDetail(dbClusterRandomName, clusterName, singleNodeConfiguration, dbClusterRandomNameLink);
     const {
@@ -138,6 +146,9 @@ Scenario('PMM-T640 PMM-T479 Single Node PXC Cluster with Custom Resources @dbaas
       'performance_schema',
     );
 
+    await dbaasActionsPage.deleteXtraDBCluster(pxc_cluster_name_single, clusterName);
+    //PMM-T781
+    await dbaasPage.apiKeyCheck(clusterName, pxc_cluster_name_single, 'pxc', false);
     await dbaasActionsPage.deleteXtraDBCluster(dbClusterRandomName, clusterName);
   });
 
