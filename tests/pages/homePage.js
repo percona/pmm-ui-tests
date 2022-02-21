@@ -181,7 +181,7 @@ module.exports = {
   async verifyPostUpdateWidgetIsPresent() {
     const locators = this.getLocators('latest');
 
-    I.waitForVisible(locators.upToDateLocator, 30);
+    I.waitForVisible(locators.upToDateLocator, 60);
     I.waitForVisible(locators.lastCheckSelector, 30);
     I.dontSeeElement(locators.availableVersion);
     I.dontSeeElement(locators.triggerUpdate);
