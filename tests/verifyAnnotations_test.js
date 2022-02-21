@@ -35,12 +35,15 @@ Data(annotation).Scenario(
     dashboardPage.waitForDashboardOpened();
     if (annotationName === 'mysql-node-name') {
       await dashboardPage.applyFilter('Node Name', nodeName);
+      dashboardPage.expandFilters('Interval');
     } else {
       await dashboardPage.applyFilter('Service Name', serviceName);
     }
 
     dashboardPage.verifyAnnotationsLoaded(annotationName);
-    I.seeElement(dashboardPage.annotationText(annotationName), 10);
+    await within('[aria-label="$node_name - Saturation Metrics panel"]', () => {
+      I.seeElement(dashboardPage.annotationText(annotationName), 10);
+    });
   },
 );
 
