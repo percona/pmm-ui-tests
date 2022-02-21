@@ -870,7 +870,7 @@ module.exports = {
   },
 
   annotationLocator() {
-    return '(//div[contains(@class,"events_marker")])[last()]';
+    return '(//div[contains(@class,"events_marker")])[1]';
   },
 
   annotationTagText(tagValue) {
