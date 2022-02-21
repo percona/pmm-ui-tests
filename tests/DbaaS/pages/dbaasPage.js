@@ -198,7 +198,8 @@ module.exports = {
   },
 
   randomizeClusterName(clusterName) {
-    let randomString = faker.random.alphaNumeric(number = 6);
+    const stringLength = 6;
+    let randomString = faker.random.alphaNumeric(stringLength);
     return clusterName + '-' + randomString;
   },
 
