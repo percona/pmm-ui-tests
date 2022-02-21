@@ -130,12 +130,9 @@ Scenario('PMM-T640 PMM-T479 Single Node PXC Cluster with Custom Resources, PMM-T
     I.click(dbaasPage.tabs.dbClusterTab.createClusterButton);
     I.waitForText('Processing', 30, dbaasPage.tabs.dbClusterTab.fields.progressBarContent);
     //PMM-T780
-    await dbaasPage.apiKeyCheck(clusterName, pxc_cluster_name_single, 'pxc', true);
+    await dbaasPage.apiKeyCheck(clusterName, dbClusterRandomName, 'pxc', true);
     await dbaasPage.waitForDbClusterTab(clusterName);
     I.waitForInvisible(dbaasPage.tabs.kubernetesClusterTab.disabledAddButton, 30);
-
-    await dbaasPage.postClusterCreationValidation(pxc_cluster_name_single, clusterName);
-    await dbaasPage.validateClusterDetail(pxc_cluster_name_single, clusterName, singleNodeConfiguration);
     await dbaasPage.postClusterCreationValidation(dbClusterRandomName, clusterName);
     await dbaasPage.validateClusterDetail(dbClusterRandomName, clusterName, singleNodeConfiguration, dbClusterRandomNameLink);
     const {
@@ -145,10 +142,9 @@ Scenario('PMM-T640 PMM-T479 Single Node PXC Cluster with Custom Resources, PMM-T
       `kubectl run -i --rm --tty pxc-client --image=percona:8.0 --restart=Never -- mysql -h ${host} -u${username} -p${password} -e "SHOW DATABASES;"`,
       'performance_schema',
     );
-
-    await dbaasActionsPage.deleteXtraDBCluster(pxc_cluster_name_single, clusterName);
+    await dbaasActionsPage.deleteXtraDBCluster(dbClusterRandomName, clusterName);
     //PMM-T781
-    await dbaasPage.apiKeyCheck(clusterName, pxc_cluster_name_single, 'pxc', false);
+    await dbaasPage.apiKeyCheck(clusterName, dbClusterRandomName, 'pxc', false);
     await dbaasActionsPage.deleteXtraDBCluster(dbClusterRandomName, clusterName);
   });
 
