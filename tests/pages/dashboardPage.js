@@ -870,7 +870,7 @@ module.exports = {
   },
 
   annotationLocator() {
-    return '(//div[contains(@class,"events_marker")])[1]';
+    return '(//div[contains(@class,"events_marker")])[last()]';
   },
 
   annotationTagText(tagValue) {
@@ -884,7 +884,7 @@ module.exports = {
   verifyAnnotationsLoaded(title) {
     I.waitForElement(this.fields.annotationMarker, 30);
     I.moveCursorTo(this.annotationLocator());
-    I.waitForVisible(locate(this.annotationText(title)).last(), 30);
+    I.waitForVisible(this.annotationText(title), 30);
   },
 
   // introducing methods

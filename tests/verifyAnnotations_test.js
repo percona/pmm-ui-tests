@@ -41,9 +41,7 @@ Data(annotation).Scenario(
     }
 
     dashboardPage.verifyAnnotationsLoaded(annotationName);
-    await within('[aria-label="$node_name - Saturation Metrics panel"]', () => {
-      I.seeElement(dashboardPage.annotationText(annotationName), 10);
-    });
+    I.seeElement(dashboardPage.annotationText(annotationName), 10);
   },
 );
 
