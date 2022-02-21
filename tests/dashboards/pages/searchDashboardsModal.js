@@ -1,6 +1,6 @@
 const { I } = inject();
 
-const folderWrapper = I.useDataQA('data-testid Search section');
+const folderWrapper = locate(I.useDataQA('data-testid Search section')).find('.pointer');
 
 module.exports = {
   folders: {
