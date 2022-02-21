@@ -2,6 +2,7 @@ const {
   I, dbaasAPI, dbaasActionsPage, dbaasManageVersionPage, dashboardPage, qanPage, qanFilters, qanOverview, inventoryAPI, adminPage,
 } = inject();
 const assert = require('assert');
+const faker = require('faker');
 
 module.exports = {
   url: 'graph/dbaas',
@@ -190,7 +191,7 @@ module.exports = {
   },
 
   randomizeClusterName(clusterName) {
-    let randomString = Math.random().toString(36).slice(-6);
+    let randomString = faker.random.alphaNumeric(number = 6);
     return clusterName + '-' + randomString;
   },
 
