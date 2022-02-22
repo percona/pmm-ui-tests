@@ -16,7 +16,7 @@ Before(async ({ I }) => {
 });
 
 Data(annotation).Scenario(
-  'PMM-T878 - Verify adding annotation specific dashboard @nightly @dashboards',
+  'PMM-T878 - Verify adding annotation specific dashboard @nightly @dashboards @annotations',
   async ({
     I, dashboardPage, pmmInventoryPage, annotationAPI, inventoryAPI, current,
   }) => {
