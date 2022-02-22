@@ -3,7 +3,7 @@ const clusterName = 'Kubernetes_Testing_Cluster_Minikube';
 const psmdb_cluster = 'psmdb-cluster';
 const assert = require('assert');
 const psmdb_cluster_type = 'DB_CLUSTER_TYPE_PSMDB';
-const mongodb_recommended_version = 'MongoDB 4.4.8';
+const mongodb_recommended_version = 'MongoDB 4.4.10';
 
 const psmdbClusterDetails = new DataTable(['namespace', 'clusterName', 'node', 'nodeType']);
 

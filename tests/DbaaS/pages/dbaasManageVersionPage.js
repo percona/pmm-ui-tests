@@ -4,7 +4,7 @@ module.exports = {
   loader: locate('$pmm-overlay-wrapper').find('//i[contains(@class,"fa-spinner")]'),
   operatorVersion: {
     PXC: 'PXC 1.10.0',
-    PSMDB: 'PSMDB 1.10.0',
+    PSMDB: 'PSMDB 1.11.0',
   },
   components: {
     PXC: {
