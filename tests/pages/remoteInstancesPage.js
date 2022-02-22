@@ -232,6 +232,31 @@ module.exports = {
     }
   },
 
+  async addRemoteSSLDetails(details) {
+    await this.addRemoteDetails(details);
+    if (details.serviceType === 'postgres_ssl') {
+      I.dontSeeElement(this.fields.tlscaInput);
+      I.dontSeeElement(this.fields.tlsCertificateKeyInput);
+      I.dontSeeElement(this.fields.tlsCertificateInput);
+      I.click(this.fields.useTLS);
+      I.waitForElement(this.fields.tlscaInput, 30);
+      await this.fillFileContent(this.fields.tlscaInput, details.tlsCAFile);
+      await this.fillFileContent(this.fields.tlsCertificateInput, details.tlsCertFile);
+      await this.fillFileContent(this.fields.tlsCertificateKeyInput, details.tlsKeyFile);
+    }
+
+    if (details.serviceType === 'mongodb_ssl') {
+      I.dontSeeElement(this.fields.tlscaInput);
+      I.dontSeeElement(this.fields.tlsCertificateFilePasswordInput);
+      I.dontSeeElement(this.fields.tlsCertificateKey);
+      I.click(this.fields.useTLS);
+      I.waitForElement(this.fields.tlscaInput, 30);
+      await this.fillFileContent(this.fields.tlscaInput, details.tlsCAFile);
+      await this.fillFileContent(this.fields.tlsCertificateFilePasswordInput, details.tlsCertificateKeyFilePassword);
+      await this.fillFileContent(this.fields.tlsCertificateKey, details.tlsCertificateKeyFile);
+    }
+  },
+
   async fillRemoteFields(serviceName) {
     // eslint-disable-next-line default-case
     switch (serviceName) {
