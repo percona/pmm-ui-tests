@@ -145,7 +145,6 @@ Scenario('PMM-T640 PMM-T479 Single Node PXC Cluster with Custom Resources, PMM-T
     await dbaasActionsPage.deleteXtraDBCluster(dbClusterRandomName, clusterName);
     //PMM-T781
     await dbaasPage.apiKeyCheck(clusterName, dbClusterRandomName, 'pxc', false);
-    await dbaasActionsPage.deleteXtraDBCluster(dbClusterRandomName, clusterName);
   });
 
 Scenario('PMM-T522 Verify Editing a Cluster with Custom Setting and float values is possible @dbaas',
