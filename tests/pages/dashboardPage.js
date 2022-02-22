@@ -869,8 +869,8 @@ module.exports = {
     return await I.grabAttributeFrom(`//label[contains(@aria-label, '${filterName}')]/..//a`, 'title');
   },
 
-  annotationLocator() {
-    return '(//div[contains(@class,"events_marker")])[1]';
+  annotationLocator(number = 1) {
+    return `(//div[contains(@class,"events_marker")])[${number}]`;
   },
 
   annotationTagText(tagValue) {
@@ -881,9 +881,9 @@ module.exports = {
     return `//div[contains(text(), '${annotationTitle}')]`;
   },
 
-  verifyAnnotationsLoaded(title) {
+  verifyAnnotationsLoaded(title, number = 1) {
     I.waitForElement(this.fields.annotationMarker, 30);
-    I.moveCursorTo(this.annotationLocator());
+    I.moveCursorTo(this.annotationLocator(number));
     I.waitForVisible(this.annotationText(title), 30);
   },
 

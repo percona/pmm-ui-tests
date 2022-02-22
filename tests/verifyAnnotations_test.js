@@ -36,11 +36,12 @@ Data(annotation).Scenario(
     if (annotationName === 'mysql-node-name') {
       await dashboardPage.applyFilter('Node Name', nodeName);
       dashboardPage.expandFilters('Interval');
+      dashboardPage.verifyAnnotationsLoaded(annotationName, 2);
     } else {
       await dashboardPage.applyFilter('Service Name', serviceName);
+      dashboardPage.verifyAnnotationsLoaded(annotationName, 1);
     }
 
-    dashboardPage.verifyAnnotationsLoaded(annotationName);
     I.seeElement(dashboardPage.annotationText(annotationName), 10);
   },
 );
