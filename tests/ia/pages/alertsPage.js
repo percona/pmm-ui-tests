@@ -94,6 +94,7 @@ module.exports = {
     for (const i in alertsStates) {
       assert.equal(alertsStates[i], expectedStates, `Alert has not ${expectedStates} state`);
     }
+
     if (expectedStates === 'Silenced') {
       assert.notEqual(criticalColor, this.colors.critical, 'Critical alert is unsilence');
       assert.notEqual(highColor, this.colors.high, 'High alert is unsilence');
