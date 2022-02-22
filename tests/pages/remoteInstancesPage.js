@@ -215,11 +215,14 @@ module.exports = {
     return this;
   },
 
-  async addRemoteDetails(details) {
+  async addRemoteDetails(details, skipUserNamePassword = false) {
     I.waitForElement(this.fields.hostName, 30);
     I.fillField(this.fields.hostName, details.host);
-    I.fillField(this.fields.userName, details.username);
-    I.fillField(this.fields.password, details.password);
+    if (!skipUserNamePassword) {
+      I.fillField(this.fields.userName, details.username);
+      I.fillField(this.fields.password, details.password);
+    }
+
     adminPage.customClearField(this.fields.portNumber);
     I.fillField(this.fields.portNumber, details.port);
     I.fillField(this.fields.serviceName, details.serviceName);
@@ -233,8 +236,8 @@ module.exports = {
   },
 
   async addRemoteSSLDetails(details) {
-    await this.addRemoteDetails(details);
     if (details.serviceType === 'postgres_ssl') {
+      await this.addRemoteDetails(details);
       I.dontSeeElement(this.fields.tlscaInput);
       I.dontSeeElement(this.fields.tlsCertificateKeyInput);
       I.dontSeeElement(this.fields.tlsCertificateInput);
@@ -247,6 +250,7 @@ module.exports = {
     }
 
     if (details.serviceType === 'mongodb_ssl') {
+      await this.addRemoteDetails(details, true);
       I.dontSeeElement(this.fields.tlscaInput);
       I.dontSeeElement(this.fields.tlsCertificateFilePasswordInput);
       I.dontSeeElement(this.fields.tlsCertificateKey);

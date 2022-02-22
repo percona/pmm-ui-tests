@@ -57,8 +57,8 @@ Data(instances).Scenario(
         cluster: 'pgsql_remote_cluster',
         environment: 'pgsql_remote_cluster',
         tlsCAFile: `/srv/pmm-qa/pmm-tests/tls-ssl-setup/postgres/${version}/ca.crt`,
-        tlsCertificateKeyInput: `/srv/pmm-qa/pmm-tests/tls-ssl-setup/postgres/${version}/client.pem`,
-        tlsCertificateInput: `/srv/pmm-qa/pmm-tests/tls-ssl-setup/postgres/${version}/client.crt`,
+        tlsKeyFile: `/srv/pmm-qa/pmm-tests/tls-ssl-setup/postgres/${version}/client.pem`,
+        tlsCertFile: `/srv/pmm-qa/pmm-tests/tls-ssl-setup/postgres/${version}/client.crt`,
       };
     }
 
