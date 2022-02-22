@@ -243,6 +243,7 @@ module.exports = {
       await this.fillFileContent(this.fields.tlscaInput, details.tlsCAFile);
       await this.fillFileContent(this.fields.tlsCertificateInput, details.tlsCertFile);
       await this.fillFileContent(this.fields.tlsCertificateKeyInput, details.tlsKeyFile);
+      I.click(this.fields.usePgStatStatements);
     }
 
     if (details.serviceType === 'mongodb_ssl') {
@@ -254,6 +255,7 @@ module.exports = {
       await this.fillFileContent(this.fields.tlscaInput, details.tlsCAFile);
       await this.fillFileContent(this.fields.tlsCertificateFilePasswordInput, details.tlsCertificateKeyFilePassword);
       await this.fillFileContent(this.fields.tlsCertificateKey, details.tlsCertificateKeyFile);
+      I.click(this.fields.useQANMongoDBProfiler);
     }
   },
 

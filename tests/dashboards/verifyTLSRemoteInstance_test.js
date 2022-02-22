@@ -62,6 +62,23 @@ Data(instances).Scenario(
       };
     }
 
+    if (serviceType === 'mongodb_ssl') {
+      details = {
+        serviceName: `${serviceName}_remote`,
+        serviceType,
+        port: '27017',
+        host: container,
+        cluster: 'mongodb_remote_cluster',
+        environment: 'mongodb_remote_cluster',
+        tlsCAFile: `/srv/pmm-qa/pmm-tests/tls-ssl-setup/mongodb/${version}/ca.crt`,
+        tlsCertificateFilePasswordInput: `/srv/pmm-qa/pmm-tests/tls-ssl-setup/mongodb/${version}/client.crt`,
+        tlsCertificateKeyFile: `/srv/pmm-qa/pmm-tests/tls-ssl-setup/mongodb/${version}/client.pem`,
+      };
+    }
+
+    I.amOnPage(remoteInstancesPage.url);
+    remoteInstancesPage.waitUntilRemoteInstancesPageLoaded();
+    remoteInstancesPage.openAddRemotePage(serviceType);
     await remoteInstancesPage.addRemoteSSLDetails(details);
     I.click(remoteInstancesPage.fields.addService);
     pmmInventoryPage.verifyRemoteServiceIsDisplayed(serviceName);
