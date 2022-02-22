@@ -24,31 +24,33 @@ module.exports = {
     return silences.data.filter(({ status }) => status.state === 'active');
   },
 
-  async verifyAlert(alertAttributes, silenced = false) {
-    const { ruleId, serviceName } = alertAttributes;
-    const alerts = await this.getAlerts(serviceName);
-    const silences = await this.getSilenced();
+  async verifyAlerts(alertAttributes, silenced = false) {
+    for (const i in alertAttributes) {
+      const { ruleId, serviceName } = alertAttributes[i];
+      const alerts = await this.getAlerts(serviceName);
+      const silences = await this.getSilenced();
 
-    if (silenced) {
-      assert.ok(
-        JSON.stringify(silences).includes(ruleId),
-        'Alert should be silenced in alertmanager',
-      );
+      if (silenced) {
+        assert.ok(
+            JSON.stringify(silences).includes(ruleId),
+            'Alert should be silenced in alertmanager',
+        );
 
-      assert.ok(
-        !JSON.stringify(alerts).includes(ruleId),
-        'Silenced alert should not be active in alertmanager',
-      );
-    } else {
-      assert.ok(
-        JSON.stringify(alerts).includes(ruleId),
-        'Alert should be active in alertmanager',
-      );
+        assert.ok(
+            !JSON.stringify(alerts).includes(ruleId),
+            'Silenced alert should not be active in alertmanager',
+        );
+      } else {
+        assert.ok(
+            JSON.stringify(alerts).includes(ruleId),
+            'Alert should be active in alertmanager',
+        );
 
-      assert.ok(
-        !JSON.stringify(silences).includes(ruleId),
-        'Alert should not be be silenced in alertmanager',
-      );
+        assert.ok(
+            !JSON.stringify(silences).includes(ruleId),
+            'Alert should not be be silenced in alertmanager',
+        );
+      }
     }
   },
 };

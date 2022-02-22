@@ -22,6 +22,7 @@ const rulesForAlerts = [{
 const alertName = 'PostgreSQL too many connections (pmm-server-postgresql)';
 
 const rulesToDelete = [];
+const rulesForSilensingAlerts = [];
 
 Feature('IA: Alerts').retry(1);
 
@@ -39,6 +40,7 @@ BeforeSuite(async ({
     const ruleId = await rulesAPI.createAlertRule(rule);
 
     rulesToDelete.push(ruleId);
+    rulesForSilensingAlerts.push({ ruleId, serviceName: 'pmm-server-postgresql' });
   }
 
   ruleIdForAlerts = await rulesAPI.createAlertRule({ ruleName });
@@ -76,13 +78,33 @@ Scenario(
   async ({ I, alertsPage }) => {
     I.amOnPage(alertsPage.url);
     I.waitForElement(alertsPage.elements.criticalSeverity, 30);
-    I.seeCssPropertiesOnElements(alertsPage.elements.criticalSeverity, { color: 'rgb(224, 47, 68)' });
+    I.seeCssPropertiesOnElements(alertsPage.elements.criticalSeverity, { color: alertsPage.colors.critical });
     I.waitForElement(alertsPage.elements.highSeverity, 30);
-    I.seeCssPropertiesOnElements(alertsPage.elements.highSeverity, { color: 'rgb(235, 123, 24)' });
+    I.seeCssPropertiesOnElements(alertsPage.elements.highSeverity, { color: alertsPage.colors.high });
     I.waitForElement(alertsPage.elements.noticeSeverity, 30);
-    I.seeCssPropertiesOnElements(alertsPage.elements.noticeSeverity, { color: 'rgb(50, 116, 217)' });
+    I.seeCssPropertiesOnElements(alertsPage.elements.noticeSeverity, { color: alertsPage.colors.notice });
     I.waitForElement(alertsPage.elements.warningSeverity, 30);
-    I.seeCssPropertiesOnElements(alertsPage.elements.warningSeverity, { color: 'rgb(236, 187, 19)' });
+    I.seeCssPropertiesOnElements(alertsPage.elements.warningSeverity, { color: alertsPage.colors.warning });
+  },
+);
+
+Scenario(
+  'PMM-T1146 Verify IA silence/unsilence all button @ia',
+  async ({ I, alertmanagerAPI, alertsPage, }) => {
+    // const alerts = await alertsAPI.getAlertsList();
+
+    I.amOnPage(alertsPage.url);
+    I.waitForVisible(alertsPage.buttons.silenceAllAlerts, 30);
+    I.waitForVisible(alertsPage.buttons.unsilenceAllAlerts, 30);
+    I.click(alertsPage.buttons.silenceAllAlerts);
+    I.waitForElement(alertsPage.elements.criticalSeverity, 30);
+    await alertmanagerAPI.verifyAlerts(rulesForSilensingAlerts, true);
+    await alertsPage.checkAllAlertsColor('Silenced');
+
+    I.click(alertsPage.buttons.unsilenceAllAlerts);
+    I.waitForElement(alertsPage.elements.criticalSeverity, 30);
+    await alertmanagerAPI.verifyAlerts(rulesForSilensingAlerts);
+    await alertsPage.checkAllAlertsColor('Firing');
   },
 );
 
@@ -128,7 +150,7 @@ Scenario(
     I.see('Critical', alertsPage.elements.severityCell(alertName));
 
     // Verify Alert exists in alertmanager
-    await alertmanagerAPI.verifyAlert({ ruleId: ruleIdForAlerts, serviceName: 'pmm-server-postgresql' });
+    await alertmanagerAPI.verifyAlerts({ ruleId: ruleIdForAlerts, serviceName: 'pmm-server-postgresql' });
   },
 );
 
@@ -156,9 +178,9 @@ Scenario(
     I.amOnPage(alertsPage.url);
     I.waitForVisible(alertsPage.elements.alertRow(alertName), 30);
     await alertsPage.silenceAlert(alertName);
-    await alertmanagerAPI.verifyAlert({ ruleId: ruleIdForAlerts, serviceName: 'pmm-server-postgresql' }, true);
+    await alertmanagerAPI.verifyAlerts({ ruleId: ruleIdForAlerts, serviceName: 'pmm-server-postgresql' }, true);
     await alertsPage.activateAlert(alertName);
-    await alertmanagerAPI.verifyAlert({ ruleId: ruleIdForAlerts, serviceName: 'pmm-server-postgresql' });
+    await alertmanagerAPI.verifyAlerts({ ruleId: ruleIdForAlerts, serviceName: 'pmm-server-postgresql' });
   },
 );
 
@@ -182,39 +204,6 @@ Scenario(
     I.amOnPage(alertsPage.url);
     I.waitForVisible(alertsPage.elements.noData);
     I.dontSeeElement(alertsPage.elements.alertRow(alertName));
-  },
-);
-
-Scenario(
-  'PMM-T1146 Verify IA silence/unsilence all button @ia',
-  async ({ I, alertsPage, alertManagerPage }) => {
-    I.amOnPage(alertsPage.url);
-    I.waitForElement(alertsPage.elements.criticalSeverity, 30);
-    I.waitForVisible(alertsPage.buttons.silenceAllAlerts, 30);
-    I.waitForVisible(alertsPage.buttons.unsilenceAllAlerts, 30);
-    I.click(alertsPage.buttons.silenceAllAlerts);
-    I.waitForElement(alertsPage.elements.criticalSeverity, 30);
-    await alertsPage.checkAllAlertsStateAndColor('Silenced');
-
-    I.amOnPage(alertManagerPage.url);
-    I.waitForVisible(alertManagerPage.elements.noAlertGroupsText, 30);
-    I.click(alertManagerPage.elements.silencesTab);
-    I.waitForInvisible(alertManagerPage.elements.tableLoading, 30);
-    I.dontSeeElement(alertManagerPage.elements.noSilencesText);
-    await alertManagerPage.selectTab('Expired');
-    I.dontSeeElement(alertManagerPage.elements.noSilencesText);
-
-    I.amOnPage(alertsPage.url);
-    I.waitForVisible(alertsPage.buttons.silenceAllAlerts, 30);
-    I.click(alertsPage.buttons.unsilenceAllAlerts);
-    I.waitForElement(alertsPage.elements.criticalSeverity, 30);
-    await alertsPage.checkAllAlertsStateAndColor('Firing');
-
-    I.amOnPage(alertManagerPage.url);
-    I.waitForElement(alertManagerPage.elements.silencesTab, 30);
-    I.dontSeeElement(alertManagerPage.elements.noAlertGroupsText);
-    I.click(alertManagerPage.elements.silencesTab);
-    I.waitForVisible(alertManagerPage.elements.noSilencesText, 30);
   },
 );
 

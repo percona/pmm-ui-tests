@@ -29,6 +29,12 @@ module.exports = {
     successfullySilenced: 'Alert silenced',
     successfullyActivated: 'Alert activated',
   },
+  colors: {
+    critical: 'rgb(224, 47, 68)',
+    high: 'rgb(235, 123, 24)',
+    notice: 'rgb(50, 116, 217)',
+    warning: 'rgb(236, 187, 19)',
+  },
 
   async silenceAlert(alertName) {
     const title = await I.grabAttributeFrom(this.buttons.silenceActivate(alertName), 'title');
@@ -78,28 +84,26 @@ module.exports = {
     }
   },
 
-  async checkAllAlertsStateAndColor(alertsExpectedStates) {
-    const critical = 'rgb(224, 47, 68)';
-    const high = 'rgb(235, 123, 24)';
-    const notice = 'rgb(50, 116, 217)';
-    const warning = 'rgb(236, 187, 19)';
+  async checkAllAlertsColor(expectedStates) {
     const alertsStates = await I.grabTextFromAll('//td[3]');
-    const alertsColors = await I.grabCssPropertyFromAll('//td[2]/span', 'color');
+    const criticalColor = await I.grabCssPropertyFrom(this.elements.criticalSeverity, 'color');
+    const highColor = await I.grabCssPropertyFrom(this.elements.highSeverity, 'color');
+    const noticeColor = await I.grabCssPropertyFrom(this.elements.noticeSeverity, 'color');
+    const warningColor = await I.grabCssPropertyFrom(this.elements.warningSeverity, 'color');
 
-    if (alertsExpectedStates === 'Silenced') {
-      assert.ok(alertsStates.includes('Silenced'), 'Alerts have not Silenced state');
-      assert.ok(!alertsStates.includes('Firing'), 'Alerts have Firing state');
-      assert.ok(!alertsColors.includes(critical), 'Critical alert is unsilence');
-      assert.ok(!alertsColors.includes(high), 'High alert is unsilence');
-      assert.ok(!alertsColors.includes(notice), 'Notice alert is unsilence');
-      assert.ok(!alertsColors.includes(warning), 'Warning alert is unsilence');
+    for (const i in alertsStates) {
+      assert.equal(alertsStates[i], expectedStates, `Alert has not ${expectedStates} state`);
+    }
+    if (expectedStates === 'Silenced') {
+      assert.notEqual(criticalColor, this.colors.critical, 'Critical alert is unsilence');
+      assert.notEqual(highColor, this.colors.high, 'High alert is unsilence');
+      assert.notEqual(noticeColor, this.colors.notice, 'Notice alert is unsilence');
+      assert.notEqual(warningColor, this.colors.warning, 'Warning alert is unsilence');
     } else {
-      assert.ok(!alertsStates.includes('Silenced'), 'Alerts have Silenced state');
-      assert.ok(alertsStates.includes('Firing'), 'Alerts have not Firing state');
-      assert.ok(alertsColors.includes(critical), 'Critical alert is silence');
-      assert.ok(alertsColors.includes(high), 'High alert is silence');
-      assert.ok(alertsColors.includes(notice), 'Notice alert is silence');
-      assert.ok(alertsColors.includes(warning), 'Warning alert is silence');
+      assert.equal(criticalColor, this.colors.critical, 'Critical alert is silence');
+      assert.equal(highColor, this.colors.high, 'High alert is silence');
+      assert.equal(noticeColor, this.colors.notice, 'Notice alert is silence');
+      assert.equal(warningColor, this.colors.warning, 'Warning alert is silence');
     }
   },
 };
