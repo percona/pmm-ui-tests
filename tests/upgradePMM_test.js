@@ -127,7 +127,7 @@ Scenario(
 
     I.amOnPage('');
     dashboardPage.waitForDashboardOpened();
-    dashboardPage.verifyMetricsExistence(['Custom Panel']);
+    // dashboardPage.verifyMetricsExistence(['Custom Panel']);
     I.seeInCurrentUrl(resp.url);
   },
 );
@@ -608,7 +608,7 @@ Scenario(
     I.amOnPage(homePage.url);
     I.waitForVisible(homePage.fields.newsPanelTitleSelector, 30);
     I.waitForVisible(homePage.fields.newsPanelContentSelector, 30);
-    const newsItems = await I.grabNumberOfVisibleElements(`${homePage.fields.newsPanelContentSelector}/div`);
+    const newsItems = await I.grabNumberOfVisibleElements(locate('article').inside(homePage.fields.newsPanelContentSelector));
 
     assert.ok(newsItems > 1, 'News Panel is empty');
   },
@@ -666,6 +666,7 @@ Data(clientDbServices).Scenario(
     const metricName = current.metric;
     const { node_id } = await inventoryAPI.apiGetNodeInfoByServiceName(current.serviceType, current.name);
     const nodeName = await inventoryAPI.getNodeName(node_id);
+
     await grafanaAPI.checkMetricExist(metricName, { type: 'node_name', value: nodeName });
   },
 );
@@ -749,12 +750,12 @@ if (versionMinor >= 13) {
 
       I.amOnPage(dashboard);
       dashboardPage.waitForDashboardOpened();
-      adminPage.applyTimeRange(timeRange);
+      await adminPage.applyTimeRange(timeRange);
       const { service_name } = await inventoryAPI.apiGetNodeInfoByServiceName(serviceType, name);
 
       await dashboardPage.applyFilter('Service Name', service_name);
 
-      dashboardPage.verifyAnnotationsLoaded(annotationName, 1);
+      dashboardPage.verifyAnnotationsLoaded(annotationName);
       I.seeElement(dashboardPage.annotationText(annotationName), 10);
     },
   );

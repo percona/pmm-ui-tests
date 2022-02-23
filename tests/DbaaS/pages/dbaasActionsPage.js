@@ -189,7 +189,7 @@ module.exports = {
     await adminPage.verifyBackgroundColor(
       dbaasPage.tabs.dbClusterTab.advancedOptions.fields.resourceBarResourceIndication(
         resourceType,
-      ), 'rgb(224, 47, 68)',
+      ), 'rgb(209, 14, 92)',
     );
   },
 
