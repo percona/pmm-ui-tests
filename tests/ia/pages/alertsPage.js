@@ -30,7 +30,7 @@ module.exports = {
     successfullyActivated: 'Alert activated',
   },
   colors: {
-    critical: 'rgb(224, 47, 68)',
+    critical: 'rgb(212, 74, 58)',
     high: 'rgb(235, 123, 24)',
     notice: 'rgb(50, 116, 217)',
     warning: 'rgb(236, 187, 19)',
