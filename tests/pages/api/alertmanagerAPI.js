@@ -24,9 +24,15 @@ module.exports = {
     return silences.data.filter(({ status }) => status.state === 'active');
   },
 
-  async verifyAlerts(alertAttributes, silenced = false) {
-    for (const i in alertAttributes) {
-      const { ruleId, serviceName } = alertAttributes[i];
+  /**
+   * Verify alerts states
+   * @example await alertmanagerAPI.verifyAlerts([{ ruleId: ruleId, serviceName: serviceName }], true)
+   * @param alertAttributesArray
+   * @param silenced
+   */
+  async verifyAlerts(alertAttributesArray, silenced = false) {
+    for (const i in alertAttributesArray) {
+      const { ruleId, serviceName } = alertAttributesArray[i];
       const alerts = await this.getAlerts(serviceName);
       const silences = await this.getSilenced();
 

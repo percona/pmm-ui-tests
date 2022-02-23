@@ -10,7 +10,6 @@ module.exports = {
     alertmanagerAPI: './tests/pages/api/alertmanagerAPI.js',
     alertsAPI: './tests/ia/pages/api/alertsAPI.js',
     alertsPage: './tests/ia/pages/alertsPage.js',
-    alertManagerPage: './tests/ia/pages/alertManagerPage.js',
     allChecksPage: './tests/advisers/stt/pages/allChecksPage.js',
     amiInstanceSetupPage: './tests/pages/amiInstanceSetupPage.js',
     annotationAPI: './tests/pages/api/annotationAPI.js',

@@ -34,6 +34,7 @@ module.exports = {
     high: 'rgb(235, 123, 24)',
     notice: 'rgb(50, 116, 217)',
     warning: 'rgb(236, 187, 19)',
+    silence: 'rgb(199, 208, 217)',
   },
 
   async silenceAlert(alertName) {
@@ -96,10 +97,10 @@ module.exports = {
     }
 
     if (expectedStates === 'Silenced') {
-      assert.notEqual(criticalColor, this.colors.critical, 'Critical alert is unsilence');
-      assert.notEqual(highColor, this.colors.high, 'High alert is unsilence');
-      assert.notEqual(noticeColor, this.colors.notice, 'Notice alert is unsilence');
-      assert.notEqual(warningColor, this.colors.warning, 'Warning alert is unsilence');
+      assert.equal(criticalColor, this.colors.silence, 'Critical alert is unsilence');
+      assert.equal(highColor, this.colors.silence, 'High alert is unsilence');
+      assert.equal(noticeColor, this.colors.silence, 'Notice alert is unsilence');
+      assert.equal(warningColor, this.colors.silence, 'Warning alert is unsilence');
     } else {
       assert.equal(criticalColor, this.colors.critical, 'Critical alert is silence');
       assert.equal(highColor, this.colors.high, 'High alert is silence');
