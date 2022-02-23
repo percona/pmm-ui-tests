@@ -148,7 +148,7 @@ Scenario(
     I.see('Critical', alertsPage.elements.severityCell(alertName));
 
     // Verify Alert exists in alertmanager
-    await alertmanagerAPI.verifyAlerts({ ruleId: ruleIdForAlerts, serviceName: 'pmm-server-postgresql' });
+    await alertmanagerAPI.verifyAlerts([{ ruleId: ruleIdForAlerts, serviceName: 'pmm-server-postgresql' }]);
   },
 );
 
@@ -176,9 +176,9 @@ Scenario(
     I.amOnPage(alertsPage.url);
     I.waitForVisible(alertsPage.elements.alertRow(alertName), 30);
     await alertsPage.silenceAlert(alertName);
-    await alertmanagerAPI.verifyAlerts({ ruleId: ruleIdForAlerts, serviceName: 'pmm-server-postgresql' }, true);
+    await alertmanagerAPI.verifyAlerts([{ ruleId: ruleIdForAlerts, serviceName: 'pmm-server-postgresql' }], true);
     await alertsPage.activateAlert(alertName);
-    await alertmanagerAPI.verifyAlerts({ ruleId: ruleIdForAlerts, serviceName: 'pmm-server-postgresql' });
+    await alertmanagerAPI.verifyAlerts([{ ruleId: ruleIdForAlerts, serviceName: 'pmm-server-postgresql' }]);
   },
 );
 
