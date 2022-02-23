@@ -53,6 +53,9 @@ exports.config = {
     ChaiWrapper: {
       require: 'codeceptjs-chai',
     },
+    Clipboard: {
+      require: './tests/helper/clipboard.js',
+    },
   },
   include: pageObjects,
   multiple: {
