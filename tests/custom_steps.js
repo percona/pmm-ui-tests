@@ -1,18 +1,23 @@
 const assert = require('assert');
 
-const systemMessageLocator = '.page-alert-list div[aria-label^="Alert"]';
-const systemMessageText = 'div[aria-label^="Alert"] > div';
+const systemMessageText = '.page-alert-list div[data-testid^="data-testid Alert"] > div';
 const systemMessageButtonClose = '.page-alert-list button';
 
 module.exports = () => actor({
 
   verifyPopUpMessage(message, timeout = 30) {
-    this.waitForElement(systemMessageLocator, timeout);
+    this.waitForElement(systemMessageText, timeout);
     this.see(message, systemMessageText);
     this.click(systemMessageButtonClose);
   },
 
   useDataQA: (selector) => `[data-testid="${selector}"]`,
+  getSingleSelectOptionLocator: (optionName) => locate('[aria-label="Select option"]')
+    .find('span')
+    .withText(optionName)
+    .inside('[aria-label="Select options menu"]'),
+  getClosePopUpButtonLocator: () => systemMessageButtonClose,
+  getPopUpLocator: () => systemMessageText,
 
   seeElementsDisabled(locator) {
     this.seeAttributesOnElements(locator, { disabled: true });
