@@ -260,6 +260,7 @@ module.exports = {
       await this.fillFileContent(this.fields.tlsCertificateFilePasswordInput, details.tlsCertificateFilePasswordInput);
       await this.fillFileContent(this.fields.tlsCertificateKey, details.tlsCertificateKeyFile);
       I.click(this.fields.useQANMongoDBProfiler);
+      I.click(this.fields.skipTLSL);
     }
   },
 
