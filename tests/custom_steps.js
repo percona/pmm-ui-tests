@@ -1,4 +1,5 @@
 const assert = require('assert');
+const AdmZip = require('adm-zip');
 
 const systemMessageLocator = '.page-alert-list div[aria-label^="Alert"]';
 const systemMessageText = 'div[aria-label^="Alert"] > div';
@@ -17,8 +18,27 @@ module.exports = () => actor({
   seeElementsDisabled(locator) {
     this.seeAttributesOnElements(locator, { disabled: true });
   },
+
   seeElementsEnabled(locator) {
     this.seeAttributesOnElements(locator, { disabled: null });
+  },
+
+  async readZipArchive(filepath) {
+    try {
+      const zip = new AdmZip(filepath);
+
+      return zip.getEntries().map(({ name }) => name);
+    } catch (e) {
+      return Error(`Something went wrong when reading a zip file ${filepath}. ${e}`);
+    }
+  },
+
+  async seeEntriesInZip(filepath, entriesArray) {
+    const entries = await this.readZipArchive(filepath);
+
+    entriesArray.forEach((entry) => {
+      assert.ok(entries.includes(entry));
+    });
   },
 
   /**

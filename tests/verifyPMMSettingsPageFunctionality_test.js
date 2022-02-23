@@ -352,7 +352,20 @@ Scenario(
   async ({ I, pmmSettingsPage }) => {
     I.amOnPage(pmmSettingsPage.url);
     await pmmSettingsPage.waitForPmmSettingsPageLoaded();
-    // Using hardcoded xpath here only because of using native playwright functions
-    await I.waitForEndPointRequest('http://*/logs.zip', '//a[@data-testid=\'diagnostics-button\']');
+    let path;
+
+    await I.usePlaywrightTo('download', async ({ page }) => {
+      const [download] = await Promise.all([
+        // Start waiting for the download
+        page.waitForEvent('download'),
+        // Perform the action that initiates download
+        page.locator(I.useDataQA('diagnostics-button')).click(),
+      ]);
+
+      // Wait for the download process to complete
+      path = await download.path();
+    });
+
+    await I.seeEntriesInZip(path, ['pmm-agent.yaml', 'pmm-managed.log', 'pmm-agent.log']);
   },
 );
