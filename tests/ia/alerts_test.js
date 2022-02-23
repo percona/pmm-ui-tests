@@ -24,7 +24,7 @@ const alertName = 'PostgreSQL too many connections (pmm-server-postgresql)';
 const rulesToDelete = [];
 const rulesForSilensingAlerts = [];
 
-Feature('IA: Alerts').retry(1);
+Feature('IA: Alerts');
 
 Before(async ({ I, settingsAPI }) => {
   await I.Authorize();

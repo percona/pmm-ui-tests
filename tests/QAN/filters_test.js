@@ -208,7 +208,7 @@ Scenario(
 
     let count = qanOverview.getCountOfItems();
 
-    adminPage.applyTimeRange('Last 3 hour');
+    await adminPage.applyTimeRange('Last 3 hour');
     qanOverview.waitForOverviewLoaded();
     await qanFilters.applyShowAllLinkIfItIsVisible(section);
     qanFilters.applyFilterInSection(section, db1);
@@ -235,7 +235,7 @@ Scenario(
     const serviceName = 'ps_8.0';
 
     // change to 2 days for apply ps_8.0 value in filter
-    adminPage.applyTimeRange('Last 2 days');
+    await adminPage.applyTimeRange('Last 2 days');
     qanOverview.waitForOverviewLoaded();
     const countBefore = await qanOverview.getCountOfItems();
     const percentageBefore = await qanFilters.getPercentage('Service Type', serviceType);
@@ -271,7 +271,7 @@ Data(shortCutTests).Scenario(
     const filterValue = current.filter;
     const timeRangeValue = 'from=now-3h&to=now';
 
-    adminPage.applyTimeRange('Last 3 hours');
+    await adminPage.applyTimeRange('Last 3 hours');
     qanOverview.waitForOverviewLoaded();
     qanFilters.waitForFiltersToLoad();
 

@@ -61,7 +61,7 @@ module.exports = {
       rule_id: ruleId,
       severity: severity || 'SEVERITY_CRITICAL',
       template_name: templateName || 'pmm_postgresql_too_many_connections',
-      summary: ruleName,
+      name: ruleName,
       params: params || [
         {
           name: 'threshold',

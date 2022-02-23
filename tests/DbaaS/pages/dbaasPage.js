@@ -2,6 +2,7 @@ const {
   I, dbaasAPI, dbaasActionsPage, dbaasManageVersionPage, dashboardPage, qanPage, qanFilters, qanOverview, inventoryAPI, adminPage,
 } = inject();
 const assert = require('assert');
+const faker = require('faker');
 
 module.exports = {
   url: 'graph/dbaas',
@@ -57,7 +58,7 @@ module.exports = {
       dbClusterAddButtonTop: '$dbcluster-add-cluster-button',
       createClusterButton: '$step-progress-submit-button',
       updateClusterButton: '$dbcluster-update-cluster-button',
-      dbClusterTab: '//li[@aria-label="Tab DB Cluster"]',
+      dbClusterTab: '//li/a[@aria-label="Tab DB Cluster"]',
       monitoringWarningLocator: '$add-cluster-monitoring-warning',
       optionsCountLocator: (step) => `(//div[@data-testid='step-header']//div[1])[${step}]`,
       optionsHeader: '$step-header',
@@ -196,8 +197,14 @@ module.exports = {
     psmdbDashboard: (dbClusterName) => `/graph/d/mongodb-cluster-summary/mongodb-cluster-summary?var-cluster=${dbClusterName}`,
   },
 
-  checkCluster(cluserName, deleted) {
-    const clusterLocator = `//td[contains(text(), '${cluserName}')]`;
+  randomizeClusterName(clusterName) {
+    const stringLength = 6;
+    let randomString = faker.random.alphaNumeric(stringLength);
+    return clusterName + '-' + randomString;
+  },
+
+  checkCluster(clusterName, deleted) {
+    const clusterLocator = `//td[contains(text(), '${clusterName}')]`;
 
     if (deleted) {
       I.dontSeeElement(clusterLocator);
@@ -298,7 +305,7 @@ module.exports = {
     I.waitForElement(dbaasPage.tabs.kubernetesClusterTab.addKubernetesClusterButton, 30);
   },
 
-  async validateClusterDetail(dbsClusterName, k8sClusterName, configuration) {
+  async validateClusterDetail(dbsClusterName, k8sClusterName, configuration, link) {
     const dbaasPage = this;
 
     I.waitForElement(dbaasPage.tabs.dbClusterTab.fields.clusterTableHeader, 60);
@@ -321,7 +328,7 @@ module.exports = {
     const dashboardLinkAttribute = await I.grabAttributeFrom(dbaasPage.tabs.dbClusterTab.fields.clusterSummaryDashboard, 'href');
 
     assert.ok(
-      dashboardLinkAttribute.includes(configuration.clusterDashboardRedirectionLink),
+      dashboardLinkAttribute.includes(link),
       `The Cluster Dashboard Redirection Link is wrong found ${dashboardLinkAttribute}`,
     );
     I.seeElement(dbaasPage.tabs.dbClusterTab.fields.clusterDatabaseType);

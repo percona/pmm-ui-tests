@@ -30,10 +30,12 @@ Scenario(
 
 Scenario(
   'PMM-T1061 Verify Plan and PlanID with pg_stat_monitor @qan',
-  async ({ I, adminPage, qanOverview, qanFilters, qanDetails }) => {
+  async ({
+    I, adminPage, qanOverview, qanFilters, qanDetails,
+  }) => {
     qanFilters.applyFilter('pdpgsql-dev');
     qanOverview.waitForOverviewLoaded();
-    adminPage.applyTimeRange('Last 12 hours');
+    await adminPage.applyTimeRange('Last 12 hours');
     qanOverview.waitForOverviewLoaded();
     qanOverview.searchByValue('SELECT current_database() datname, schemaname, relname, heap_blks_read, heap_blks_hit, idx_blks_read');
     qanOverview.waitForOverviewLoaded();
@@ -96,7 +98,7 @@ Scenario(
     qanOverview.changeSorting(2);
     qanOverview.verifySorting(2, 'asc');
     qanOverview.waitForOverviewLoaded();
-    adminPage.applyTimeRange('Last 1 hour');
+    await adminPage.applyTimeRange('Last 1 hour');
     qanOverview.waitForOverviewLoaded();
     qanOverview.verifySorting(2, 'asc');
     qanOverview.changeSorting(1);
@@ -128,10 +130,12 @@ Scenario(
 Scenario(
   'PMM-T187 Verify that the selected row in the overview table is highlighted @qan',
   async ({ I, qanOverview }) => {
+    const expectedColor = 'rgb(35, 70, 130)';
+
     qanOverview.selectRow('2');
-    I.seeCssPropertiesOnElements('.selected-overview-row > div', {
-      'background-color': 'rgb(35, 70, 130)',
-    });
+    const color = await I.grabCssPropertyFrom(`${qanOverview.elements.selectedRow} > div`, 'background-color');
+
+    assert.ok(color === expectedColor, `Row background color should be ${expectedColor} but it is ${color}`);
   },
 );
 
@@ -309,13 +313,13 @@ Scenario(
     const query = 'SELECT * FROM pg_stat_bgwriter';
 
     qanOverview.waitForOverviewLoaded();
-    adminPage.applyTimeRange('Last 1 hour');
+    await adminPage.applyTimeRange('Last 1 hour');
     qanOverview.waitForOverviewLoaded();
     qanOverview.searchByValue(query);
     I.waitForElement(qanOverview.elements.querySelector, 30);
     const firstQueryText = await I.grabTextFrom(qanOverview.elements.firstQueryValue);
 
-    assert.ok(firstQueryText === query, `The Searched Query text was: ${query}, don't match the result text in overview for 1st result: ${firstQueryText}`);
+    assert.ok(firstQueryText.startsWith(query), `The Searched Query text was: "${query}", don't match the result text in overview for 1st result: "${firstQueryText}"`);
   },
 );
 

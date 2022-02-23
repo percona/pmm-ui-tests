@@ -16,7 +16,7 @@ Before(async ({ I }) => {
 });
 
 Data(annotation).Scenario(
-  'PMM-T878 - Verify adding annotation specific dashboard @nightly @dashboards',
+  'PMM-T878 - Verify adding annotation specific dashboard @nightly @dashboards @annotations',
   async ({
     I, dashboardPage, pmmInventoryPage, annotationAPI, inventoryAPI, current,
   }) => {
@@ -35,15 +35,10 @@ Data(annotation).Scenario(
     dashboardPage.waitForDashboardOpened();
     if (annotationName === 'mysql-node-name') {
       await dashboardPage.applyFilter('Node Name', nodeName);
-    } else {
-      await dashboardPage.applyFilter('Service Name', serviceName);
-    }
-
-    if (annotationName === 'annotation-for-postgres') {
-      dashboardPage.verifyAnnotationsLoaded(annotationName, 1);
-    } else if (annotationName === 'mysql-node-name') {
+      dashboardPage.expandFilters('Interval');
       dashboardPage.verifyAnnotationsLoaded(annotationName, 2);
     } else {
+      await dashboardPage.applyFilter('Service Name', serviceName);
       dashboardPage.verifyAnnotationsLoaded(annotationName, 1);
     }
 
