@@ -34,7 +34,7 @@ module.exports = {
     high: 'rgb(235, 123, 24)',
     notice: 'rgb(50, 116, 217)',
     warning: 'rgb(236, 187, 19)',
-    silence: 'rgb(199, 208, 217)',
+    silence: 'rgb(204, 204, 220)',
   },
 
   async silenceAlert(alertName) {
