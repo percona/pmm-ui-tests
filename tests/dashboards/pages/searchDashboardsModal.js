@@ -101,8 +101,7 @@ module.exports = {
       .find('div')
       .at(1),
     folderItemLocator: (itemName) => locate(I.useDataQA(`data-testid Dashboard search item ${itemName}`)).find('a'),
-    folderItemLocator: (itemName) => locate(`div[aria-label="Dashboard search item ${itemName}"]`).find('a'),
-    folderItemWithTagLocator: (itemName, tag) => locate(`div[aria-label="Dashboard search item ${itemName}"]`)
+    folderItemWithTagLocator: (itemName, tag) => locate(I.useDataQA(`data-testid Dashboard search item ${itemName}`))
       .find('a').withDescendant('span').withText(tag),
   },
 

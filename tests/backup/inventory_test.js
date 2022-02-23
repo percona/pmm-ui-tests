@@ -22,25 +22,25 @@ BeforeSuite(async ({
   await settingsAPI.changeSettings({ backup: true });
   await locationsAPI.clearAllLocations(true);
   locationId = await locationsAPI.createStorageLocation(location);
-  // await I.mongoConnectReplica({
-  //   username: 'admin',
-  //   password: 'password',
-  // });
+  await I.mongoConnectReplica({
+    username: 'admin',
+    password: 'password',
+  });
 
-  // I.say(await I.verifyCommand(`pmm-admin add mongodb --port=27027 --service-name=${mongoServiceName} --replication-set=rs0`));
-  // I.say(await I.verifyCommand(`pmm-admin add mongodb --port=27027 --service-name=${mongoServiceNameToDelete} --replication-set=rs0`));
+  I.say(await I.verifyCommand(`pmm-admin add mongodb --port=27027 --service-name=${mongoServiceName} --replication-set=rs0`));
+  I.say(await I.verifyCommand(`pmm-admin add mongodb --port=27027 --service-name=${mongoServiceNameToDelete} --replication-set=rs0`));
 });
 
 Before(async ({
   I, settingsAPI, backupInventoryPage, inventoryAPI, backupAPI,
 }) => {
-  // const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName('MONGODB_SERVICE', mongoServiceName);
+  const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName('MONGODB_SERVICE', mongoServiceName);
 
-  // serviceId = service_id;
+  serviceId = service_id;
 
-  // const c = await I.mongoGetCollection('test', 'e2e');
+  const c = await I.mongoGetCollection('test', 'e2e');
 
-  // await c.deleteMany({ number: 2 });
+  await c.deleteMany({ number: 2 });
 
   await I.Authorize();
   await settingsAPI.changeSettings({ backup: true });
@@ -51,7 +51,7 @@ Before(async ({
 AfterSuite(async ({
   I,
 }) => {
-  // await I.mongoDisconnect();
+  await I.mongoDisconnect();
 });
 
 Scenario(
@@ -243,7 +243,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T1033 - Verify that user is able to display backup logs from MongoDB on UI @backup @bm-mongo @imp',
+  'PMM-T1033 - Verify that user is able to display backup logs from MongoDB on UI @backup @bm-mongo',
   async ({
     I, inventoryAPI, backupAPI, backupInventoryPage,
   }) => {
@@ -262,6 +262,12 @@ Scenario(
     I.assertTrue(logs.length > 0);
 
     I.waitForVisible(backupInventoryPage.modal.copyToClipboardButton, 10);
-    // you should be able to copy to clipboard via Btn
+
+    // TODO: add clibboard check after PMM-9654 is done
+    // I.click(backupInventoryPage.modal.copyToClipboardButton);
+    // I.wait(1);
+    // const clipboardText = I.readClipboard();
+    //
+    // I.assertEqual(clipboardText, logs);
   },
 );
