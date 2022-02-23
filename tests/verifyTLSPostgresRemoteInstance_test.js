@@ -20,7 +20,10 @@ BeforeSuite(async ({ I, codeceptjsConfig }) => {
 });
 
 AfterSuite(async ({ I, perconaServerDB }) => {
-  await I.verifyCommand('docker stop mongodb_4.4 || docker rm mongodb_4.4');
+  await I.verifyCommand('docker stop pgsql_11 || docker rm pgsql_11');
+  await I.verifyCommand('docker stop pgsql_12 || docker rm pgsql_12');
+  await I.verifyCommand('docker stop pgsql_13 || docker rm pgsql_13');
+  await I.verifyCommand('docker stop pgsql_14 || docker rm pgsql_14');
 });
 
 Before(async ({ I, settingsAPI }) => {
@@ -30,16 +33,17 @@ Before(async ({ I, settingsAPI }) => {
 Data(instances).Scenario(
   'Verify Adding SSL services remotely @ssl @ssl-remote',
   async ({
-    I, remoteInstancesPage, pmmInventoryPage, current, grafanaAPI,
+    I, remoteInstancesPage, pmmInventoryPage, current, inventoryAPI,
   }) => {
     const {
       serviceName, serviceType, version, container,
     } = current;
     let details;
+    const remoteServiceName = `remote_${serviceName}`;
 
     if (serviceType === 'postgres_ssl') {
       details = {
-        serviceName: `remote_${serviceName}`,
+        serviceName: remoteServiceName,
         serviceType,
         port: '5432',
         database: 'postgres',
@@ -59,8 +63,17 @@ Data(instances).Scenario(
     remoteInstancesPage.openAddRemotePage(serviceType);
     await remoteInstancesPage.addRemoteSSLDetails(details);
     I.click(remoteInstancesPage.fields.addService);
-    pmmInventoryPage.verifyRemoteServiceIsDisplayed(serviceName);
-    await pmmInventoryPage.verifyAgentHasStatusRunning(serviceName);
+    await inventoryAPI.verifyServiceExistsAndHasRunningStatus(
+      {
+        serviceType: 'POSTGRESQL_SERVICE',
+        service: 'postgresql',
+      },
+      serviceName,
+    );
+
+    // Check Remote Instance also added and have running status
+    pmmInventoryPage.verifyRemoteServiceIsDisplayed(remoteServiceName);
+    await pmmInventoryPage.verifyAgentHasStatusRunning(remoteServiceName);
   },
 );
 
@@ -73,6 +86,7 @@ Data(instances).Scenario(
       serviceName, metric,
     } = current;
     let response; let result;
+    const remoteServiceName = `remote_${serviceName}`;
 
     // verify metric for client container node instance
     response = await grafanaAPI.checkMetricExist(metric, { type: 'service_name', value: serviceName });
@@ -81,9 +95,9 @@ Data(instances).Scenario(
     assert.ok(response.data.data.result.length !== 0, `Metrics ${metric} from ${serviceName} should be available but got empty ${result}`);
 
     // verify metric for remote instance
-    response = await grafanaAPI.checkMetricExist(metric, { type: 'service_name', value: `${serviceName}_remote` });
+    response = await grafanaAPI.checkMetricExist(metric, { type: 'service_name', value: remoteServiceName });
     result = JSON.stringify(response.data.data.result);
 
-    assert.ok(response.data.data.result.length !== 0, `Metrics ${metric} from ${serviceName}_remote should be available but got empty ${result}`);
+    assert.ok(response.data.data.result.length !== 0, `Metrics ${metric} from ${remoteServiceName} should be available but got empty ${result}`);
   },
 ).retry(1);

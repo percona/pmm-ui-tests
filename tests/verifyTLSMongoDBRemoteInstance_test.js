@@ -21,6 +21,9 @@ BeforeSuite(async ({ I, codeceptjsConfig }) => {
 
 AfterSuite(async ({ I, perconaServerDB }) => {
   await I.verifyCommand('docker stop mongodb_4.4 || docker rm mongodb_4.4');
+  await I.verifyCommand('docker stop mongodb_4.2 || docker rm mongodb_4.2');
+  await I.verifyCommand('docker stop mongodb_4.0 || docker rm mongodb_4.0');
+  await I.verifyCommand('docker stop mongodb_5.0 || docker rm mongodb_5.0');
 });
 
 Before(async ({ I, settingsAPI }) => {
@@ -30,23 +33,24 @@ Before(async ({ I, settingsAPI }) => {
 Data(instances).Scenario(
   'Verify Adding SSL services remotely @ssl @ssl-remote',
   async ({
-    I, remoteInstancesPage, pmmInventoryPage, current, grafanaAPI,
+    I, remoteInstancesPage, pmmInventoryPage, current, grafanaAPI, inventoryAPI,
   }) => {
     const {
       serviceName, serviceType, version, container,
     } = current;
     let details;
+    const remoteServiceName = `remote_${serviceName}`;
 
     if (serviceType === 'mongodb_ssl') {
       details = {
-        serviceName: `${serviceName}_remote`,
+        serviceName: remoteServiceName,
         serviceType,
         port: '27017',
         host: container,
         cluster: 'mongodb_remote_cluster',
         environment: 'mongodb_remote_cluster',
         tlsCAFile: `/srv/pmm-qa/pmm-tests/tls-ssl-setup/mongodb/${version}/ca.crt`,
-        tlsCertificateFilePasswordInput: `/srv/pmm-qa/pmm-tests/tls-ssl-setup/mongodb/${version}/client.crt`,
+        tlsCertificateFilePasswordInput: `/srv/pmm-qa/pmm-tests/tls-ssl-setup/mongodb/${version}/client.key`,
         tlsCertificateKeyFile: `/srv/pmm-qa/pmm-tests/tls-ssl-setup/mongodb/${version}/client.pem`,
       };
     }
@@ -56,8 +60,17 @@ Data(instances).Scenario(
     remoteInstancesPage.openAddRemotePage(serviceType);
     await remoteInstancesPage.addRemoteSSLDetails(details);
     I.click(remoteInstancesPage.fields.addService);
-    pmmInventoryPage.verifyRemoteServiceIsDisplayed(serviceName);
-    await pmmInventoryPage.verifyAgentHasStatusRunning(serviceName);
+    await inventoryAPI.verifyServiceExistsAndHasRunningStatus(
+      {
+        serviceType: 'MONGODB_SERVICE',
+        service: 'mongodb',
+      },
+      serviceName,
+    );
+
+    // Check Remote Instance also added and have running status
+    pmmInventoryPage.verifyRemoteServiceIsDisplayed(remoteServiceName);
+    await pmmInventoryPage.verifyAgentHasStatusRunning(remoteServiceName);
   },
 );
 
@@ -70,6 +83,7 @@ Data(instances).Scenario(
       serviceName, metric,
     } = current;
     let response; let result;
+    const remoteServiceName = `remote_${serviceName}`;
 
     // verify metric for client container node instance
     response = await grafanaAPI.checkMetricExist(metric, { type: 'service_name', value: serviceName });
@@ -78,9 +92,9 @@ Data(instances).Scenario(
     assert.ok(response.data.data.result.length !== 0, `Metrics ${metric} from ${serviceName} should be available but got empty ${result}`);
 
     // verify metric for remote instance
-    response = await grafanaAPI.checkMetricExist(metric, { type: 'service_name', value: `${serviceName}_remote` });
+    response = await grafanaAPI.checkMetricExist(metric, { type: 'service_name', value: remoteServiceName });
     result = JSON.stringify(response.data.data.result);
 
-    assert.ok(response.data.data.result.length !== 0, `Metrics ${metric} from ${serviceName}_remote should be available but got empty ${result}`);
+    assert.ok(response.data.data.result.length !== 0, `Metrics ${metric} from ${remoteServiceName} should be available but got empty ${result}`);
   },
 ).retry(1);
