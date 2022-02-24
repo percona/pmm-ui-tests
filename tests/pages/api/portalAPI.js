@@ -1,0 +1,132 @@
+const assert = require('assert');
+const faker = require('faker');
+const { generate } = require('generate-password');
+
+const { I } = inject();
+
+module.exports = {
+  snUsername: process.env.SERVICENOW_LOGIN,
+  snPassword: process.env.SERVICENOW_PASSWORD,
+  devUrl: process.env.SERVICENOW_DEV_URL,
+  oktaToken: `SSWS ${process.env.OKTA_TOKEN}`,
+  oktaUrl: `https://${process.env.OAUTH_DEV_HOST}/`,
+  oktaClientId: process.env.OAUTH_DEV_CLIENT_ID,
+  portalBaseUrl: process.env.PORTAL_BASE_URL,
+
+  async createServiceNowUsers() {
+    const headers = { Authorization: `Basic ${await I.getAuth(this.snUsername, this.snPassword)}` };
+    const resp = await I.sendPostRequest(this.devUrl, {}, headers);
+
+    assert.equal(resp.status, 200);
+
+    return {
+      name: resp.data.result.account.name,
+      id: resp.data.result.account.sys_id,
+      admin1: await this.getUser(resp.data.result.contacts.find(({ email }) => email.startsWith('admin-')).email),
+      admin2: await this.getUser(resp.data.result.contacts.find(({ email }) => email.startsWith('admin2-')).email),
+      technical: await this.getUser(resp.data.result.contacts.find(({ email }) => email.startsWith('technical-')).email),
+    };
+  },
+
+  async oktaCreateUser({
+    email,
+    password,
+    firstName,
+    lastName,
+  }) {
+    const oktaUrl = `${this.oktaUrl}/api/v1/users?activate=true`;
+    const headers = { Authorization: this.oktaToken };
+    const data = {
+      profile: {
+        firstName,
+        lastName,
+        email,
+        login: email,
+      },
+      credentials: {
+        password: { value: password },
+      },
+    };
+    const response = await I.sendPostRequest(oktaUrl, data, headers);
+
+    assert.equal(response.status, 200);
+
+    return response.data;
+  },
+
+  async loginByOktaApi(username, password) {
+    const oktaUrl = 'https://id-dev.percona.com/api/v1/authn';
+    const data = {
+      username,
+      password,
+    };
+
+    await I.sendPostRequest(oktaUrl, data);
+  },
+
+  async getUserAccessToken(username, password) {
+    const apiUrl = `${this.portalBaseUrl}/v1/auth/SignIn`;
+    const data = {
+      email: username,
+      password,
+    };
+    const response = await I.sendPostRequest(apiUrl, data, {});
+
+    return response.data.access_token;
+  },
+
+  async getUser(email = '') {
+    const firstName = faker.name.firstName();
+    const lastName = faker.name.lastName();
+
+    return {
+      email: email || `${firstName.toLowerCase()}.${lastName.toLowerCase()}.${Date.now()}.${faker.datatype.number()}@test.com`,
+      password: generate({
+        length: 10,
+        numbers: true,
+        lowercase: true,
+        uppercase: true,
+        strict: true,
+      }),
+      firstName,
+      lastName,
+    };
+  },
+
+  async oktaGetUser(userEmail) {
+    const oktaUrl = `${this.oktaUrl}/api/v1/users?q=${userEmail}`;
+    const headers = { Authorization: this.oktaToken };
+    const response = await I.sendGetRequest(oktaUrl, headers);
+
+    assert.equal(response.status, 200);
+
+    return response.data;
+  },
+
+  async apiCreateOrg(accessToken, orgName = 'Test Organization') {
+    const apiUrl = `${this.portalBaseUrl}/v1/orgs`;
+    const headers = { Authorization: `Bearer ${accessToken}` };
+    const response = await I.sendPostRequest(apiUrl, { name: orgName }, headers);
+
+    return response.data.org;
+  },
+
+  async apiGetOrg(accessToken) {
+    const apiUrl = `${this.portalBaseUrl}/v1/orgs:search`;
+    const headers = { Authorization: `Bearer ${accessToken}` };
+    const response = await I.sendPostRequest(apiUrl, {}, headers);
+
+    return response.data.orgs;
+  },
+
+  async apiInviteOrgMember(accessToken, orgId, member = {
+    username: '',
+    role: '',
+  }) {
+    const apiUrl = `${this.portalBaseUrl}/v1/orgs/${orgId}/members`;
+    const headers = { Authorization: `Bearer ${accessToken}` };
+    const response = await I.sendPostRequest(apiUrl, member, headers);
+
+    return response.data;
+  },
+};
