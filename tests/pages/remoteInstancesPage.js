@@ -236,7 +236,7 @@ module.exports = {
   },
 
   async addRemoteSSLDetails(details) {
-    if (details.serviceType === 'postgres_ssl') {
+    if (details.serviceType === 'postgres_ssl' || details.serviceType === 'mysql_ssl') {
       await this.addRemoteDetails(details);
       I.dontSeeElement(this.fields.tlscaInput);
       I.dontSeeElement(this.fields.tlsCertificateKeyInput);
