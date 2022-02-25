@@ -222,7 +222,8 @@ Scenario('PMM-T532 PMM-T533 PMM-T536 - Verify user can enable/disable IA in Sett
     I.click(pmmSettingsPage.fields.advancedButton);
     I.waitForVisible(pmmSettingsPage.fields.iaSwitchSelectorInput, 30);
     pmmSettingsPage.verifySwitch(pmmSettingsPage.fields.iaSwitchSelectorInput, 'on');
-    I.seeElementInDOM(adminPage.sideMenu.integratedAlerting);
+    I.moveCursorTo(adminPage.sideMenu.alertingBellIcon);
+    I.waitForVisible(adminPage.sideMenu.integratedAlertingManuItem, 20);
     I.seeTextEquals('Integrated Alerting', adminPage.sideMenu.integratedAlerting);
     I.seeTextEquals('Communication', pmmSettingsPage.communication.communicationSection);
     I.click(pmmSettingsPage.fields.iaSwitchSelector);
@@ -344,5 +345,28 @@ Scenario(
 
     I.assertEqual(publicAddressAfterRefresh, publicAddressValue,
       `Expected the Public Address to be saved and Match ${publicAddressValue}`);
+  },
+);
+
+Scenario(
+  'PMM-9550 Verify downloading server diagnostics logs from Settings @settings',
+  async ({ I, pmmSettingsPage }) => {
+    I.amOnPage(pmmSettingsPage.url);
+    await pmmSettingsPage.waitForPmmSettingsPageLoaded();
+    let path;
+
+    await I.usePlaywrightTo('download', async ({ page }) => {
+      const [download] = await Promise.all([
+        // Start waiting for the download
+        page.waitForEvent('download'),
+        // Perform the action that initiates download
+        page.locator(I.useDataQA('diagnostics-button')).click(),
+      ]);
+
+      // Wait for the download process to complete
+      path = await download.path();
+    });
+
+    await I.seeEntriesInZip(path, ['pmm-agent.yaml', 'pmm-managed.log', 'pmm-agent.log']);
   },
 );

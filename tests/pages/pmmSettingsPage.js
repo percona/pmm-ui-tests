@@ -182,11 +182,11 @@ module.exports = {
       },
     },
     communicationSection: locate('$settings-tabs')
-      .find('li')
+      .find('li a')
       .withAttr({ 'aria-label': 'Tab Communication' }),
-    emailTab: 'li[aria-label="Tab Email"]',
+    emailTab: 'li > a[aria-label="Tab Email"]',
     submitEmailButton: '$email-settings-submit-button',
-    slackTab: 'li[aria-label="Tab Slack"]',
+    slackTab: 'li > a[aria-label="Tab Slack"]',
     submitSlackButton: '$slack-settings--submit-button',
   },
   fields: {
@@ -292,7 +292,7 @@ module.exports = {
   },
 
   async expandSection(sectionName, expectedContentLocator) {
-    const sectionExpandLocator = locate('$settings-tabs').find('li').withText(sectionName);
+    const sectionExpandLocator = locate('$settings-tabs').find('li > a').withText(sectionName);
 
     I.click(sectionExpandLocator);
     I.waitForVisible(expectedContentLocator, 30);
