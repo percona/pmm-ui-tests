@@ -16,8 +16,8 @@ BeforeSuite(async ({ I, codeceptjsConfig }) => {
 });
 
 AfterSuite(async ({ I, perconaServerDB }) => {
-  await I.verifyCommand('docker stop mysql_57 || docker rm mysql_57');
-  await I.verifyCommand('docker stop mysql_80 || docker rm mysql_80');
+  await I.verifyCommand('docker stop mysql_5.7 || docker rm mysql_5.7');
+  await I.verifyCommand('docker stop mysql_8.0 || docker rm mysql_8.0');
 });
 
 Before(async ({ I, settingsAPI }) => {
