@@ -153,7 +153,7 @@ module.exports = {
   },
 
   async getFileContent(filePath) {
-    const fileContent = await I.verifyCommand(`cat ${filePath}`);
+    const fileContent = await I.verifyCommand(`cat ${filePath} | head -n -1`);
 
     return fileContent;
   },
@@ -246,7 +246,7 @@ module.exports = {
       await this.fillFileContent(this.fields.tlscaInput, details.tlsCAFile);
       await this.fillFileContent(this.fields.tlsCertificateInput, details.tlsCertFile);
       await this.fillFileContent(this.fields.tlsCertificateKeyInput, details.tlsKeyFile);
-      I.click(this.fields.usePgStatStatements);
+      if (details.serviceType === 'postgres_ssl') I.click(this.fields.usePgStatStatements);
     }
 
     if (details.serviceType === 'mongodb_ssl') {
