@@ -27,7 +27,7 @@ Scenario('PMM-T93 - Open PMM Settings page and verify changing Metrics Resolutio
   await pmmSettingsPage.verifySelectedResolution(resolutionToApply);
 });
 
-Scenario('PMM-T94 - Open PMM Settings page and verify changing Data Retention [critical] @settings @grafana-pr', async ({ I, pmmSettingsPage }) => {
+Scenario('PMM-T94 - Open PMM Settings page and verify changing Data Retention [critical] @settings', async ({ I, pmmSettingsPage }) => {
   const dataRetentionValue = '1';
   const sectionNameToExpand = pmmSettingsPage.sectionTabsList.advanced;
 
@@ -153,7 +153,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T253 Verify user can enable STT if Telemetry is enabled @settings @stt @grafana-pr',
+  'PMM-T253 Verify user can enable STT if Telemetry is enabled @settings @stt',
   async ({ I, pmmSettingsPage }) => {
     const sectionNameToExpand = pmmSettingsPage.sectionTabsList.advanced;
 
@@ -209,7 +209,7 @@ Scenario('PMM-T520 - Verify that alert is being fired to external Alert Manager 
   await pmmSettingsPage.verifyExternalAlertManager(pmmSettingsPage.alertManager.ruleName);
 });
 
-Scenario('PMM-T532 PMM-T533 PMM-T536 - Verify user can enable/disable IA in Settings @ia @settings @grafana-pr',
+Scenario('PMM-T532 PMM-T533 PMM-T536 - Verify user can enable/disable IA in Settings @ia @settings',
   async ({
     I, pmmSettingsPage, settingsAPI, adminPage,
   }) => {
