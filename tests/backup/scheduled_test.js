@@ -15,10 +15,10 @@ let serviceId;
 const mongoServiceName = 'mongo-backup-schedule';
 const schedules = new DataTable(['cronExpression', 'name', 'frequency']);
 
-schedules.add(['30 8 * * *', 'schedule daily', 'At 08:30 AM']);
-schedules.add(['0 0 * * 2', 'schedule weekly', 'At 12:00 AM, only on Tuesday']);
-schedules.add(['0 0 1 * *', 'schedule monthly', 'At 12:00 AM, on day 1 of the month']);
-schedules.add(['0 1 1 9 2', 'schedule odd', 'At 01:00 AM, on day 1 of the month, and on Tuesday, only in September']);
+schedules.add(['30 8 * * *', 'schedule daily', 'At 08:30']);
+schedules.add(['0 0 * * 2', 'schedule weekly', 'At 00:00, only on Tuesday']);
+schedules.add(['0 0 1 * *', 'schedule monthly', 'At 00:00, on day 1 of the month']);
+schedules.add(['0 1 1 9 2', 'schedule odd', 'At 01:00, on day 1 of the month, and on Tuesday, only in September']);
 
 Feature('BM: Scheduled backups');
 
