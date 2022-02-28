@@ -7,8 +7,8 @@ Feature('Monitoring SSL/TLS MYSQL instances');
 
 const instances = new DataTable(['serviceName', 'version', 'container', 'serviceType', 'metric']);
 
-instances.add(['mysql_57_ssl_service', '5.7', 'mysql_57', 'mysql_ssl', 'mysql_global_status_max_used_connections']);
-instances.add(['mysql_80_ssl_service', '8.0', 'mysql_80', 'mysql_ssl', 'mysql_global_status_max_used_connections']);
+instances.add(['mysql_5.7_ssl_service', '5.7', 'mysql_5.7', 'mysql_ssl', 'mysql_global_status_max_used_connections']);
+instances.add(['mysql_8.0_ssl_service', '8.0', 'mysql_8.0', 'mysql_ssl', 'mysql_global_status_max_used_connections']);
 
 BeforeSuite(async ({ I, codeceptjsConfig }) => {
   await I.verifyCommand(`${pmmFrameworkLoader} --ps-version=5.7 --setup-mysql-ssl --pmm2`);

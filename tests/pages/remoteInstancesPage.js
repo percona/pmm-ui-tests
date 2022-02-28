@@ -247,6 +247,7 @@ module.exports = {
       await this.fillFileContent(this.fields.tlsCertificateInput, details.tlsCertFile);
       await this.fillFileContent(this.fields.tlsCertificateKeyInput, details.tlsKeyFile);
       if (details.serviceType === 'postgres_ssl') I.click(this.fields.usePgStatStatements);
+      if (details.serviceType === 'mysql_ssl') I.click(this.fields.skipTLSL);
     }
 
     if (details.serviceType === 'mongodb_ssl') {
