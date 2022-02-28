@@ -31,7 +31,7 @@ Before(async ({ I, settingsAPI }) => {
 });
 
 Data(instances).Scenario(
-  'Verify Adding SSL services remotely @ssl @ssl-remote',
+  'PMM-T888 PMM-T919 Verify Adding SSL services remotely @ssl @ssl-remote',
   async ({
     I, remoteInstancesPage, pmmInventoryPage, current, grafanaAPI, inventoryAPI,
   }) => {
@@ -99,5 +99,56 @@ Data(instances).Scenario(
     result = JSON.stringify(response.data.data.result);
 
     assert.ok(response.data.data.result.length !== 0, `Metrics ${metric} from ${remoteServiceName} should be available but got empty ${result}`);
+  },
+).retry(1);
+
+Data(instances).Scenario(
+  'Verify dashboard after MongoDB SSL Instances are added @ssl @ssl-remote',
+  async ({
+    I, dashboardPage, adminPage, current,
+  }) => {
+    const {
+      serviceName,
+    } = current;
+
+    const serviceList = [serviceName, `remote_${serviceName}`];
+
+    for (const service of serviceList) {
+      I.amOnPage(dashboardPage.mongoDbInstanceOverview.url);
+      dashboardPage.waitForDashboardOpened();
+      await adminPage.applyTimeRange('Last 5 minutes');
+      await dashboardPage.applyFilter('Service Name', service);
+      adminPage.performPageDown(5);
+      await dashboardPage.expandEachDashboardRow();
+      adminPage.performPageUp(5);
+      await dashboardPage.verifyThereAreNoGraphsWithNA();
+      await dashboardPage.verifyThereAreNoGraphsWithoutData(3);
+    }
+  },
+).retry(2);
+
+Data(instances).Scenario(
+  'Verify QAN after MongoDB SSL Instances is added @ssl @ssl-remote',
+  async ({
+    I, qanOverview, qanFilters, qanPage, current, adminPage,
+  }) => {
+    const {
+      serviceName,
+    } = current;
+
+    const serviceList = [serviceName, `remote_${serviceName}`];
+
+    for (const service of serviceList) {
+      I.amOnPage(qanPage.url);
+      qanOverview.waitForOverviewLoaded();
+      await adminPage.applyTimeRange('Last 12 hours');
+      qanOverview.waitForOverviewLoaded();
+      qanFilters.waitForFiltersToLoad();
+      await qanFilters.applySpecificFilter(service);
+      qanOverview.waitForOverviewLoaded();
+      const count = await qanOverview.getCountOfItems();
+
+      assert.ok(count > 0, `The queries for service ${service} instance do NOT exist, check QAN Data`);
+    }
   },
 ).retry(1);

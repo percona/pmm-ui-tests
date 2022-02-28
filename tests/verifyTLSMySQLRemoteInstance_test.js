@@ -97,3 +97,99 @@ Data(instances).Scenario(
     assert.ok(response.data.data.result.length !== 0, `Metrics ${metric} from ${remoteServiceName} should be available but got empty ${result}`);
   },
 ).retry(1);
+
+Data(instances).Scenario(
+  'Verify metrics from SSL instances on PMM-Server @ssl @ssl-remote',
+  async ({
+    I, remoteInstancesPage, pmmInventoryPage, current, grafanaAPI,
+  }) => {
+    const {
+      serviceName, metric,
+    } = current;
+    let response; let result;
+    const remoteServiceName = `remote_${serviceName}`;
+
+    // Waiting for metrics to start hitting for remotely added services
+    I.wait(10);
+
+    // verify metric for client container node instance
+    response = await grafanaAPI.checkMetricExist(metric, { type: 'service_name', value: serviceName });
+    result = JSON.stringify(response.data.data.result);
+
+    assert.ok(response.data.data.result.length !== 0, `Metrics ${metric} from ${serviceName} should be available but got empty ${result}`);
+
+    // verify metric for remote instance
+    response = await grafanaAPI.checkMetricExist(metric, { type: 'service_name', value: remoteServiceName });
+    result = JSON.stringify(response.data.data.result);
+
+    assert.ok(response.data.data.result.length !== 0, `Metrics ${metric} from ${remoteServiceName} should be available but got empty ${result}`);
+  },
+).retry(1);
+
+Data(instances).Scenario(
+  'PMM-T937 Verify MySQL cannot be added without specified --tls-key @ssl @ssl-remote',
+  async ({
+    I, current, grafanaAPI,
+  }) => {
+    const {
+      container,
+    } = current;
+    const responseMessage = 'Connection check failed: register MySQL client cert failed: tls: failed to find any PEM data in key input.\n';
+    const command = `docker exec ${container} pmm-admin add mysql --username=pmm --password=pmm --port=3306 --query-source=perfschema --tls --tls-skip-verify --tls-ca=/var/lib/mysql/ca.pem --tls-cert=/var/lib/mysql/client-cert.pem TLS_mysql`;
+
+    const output = await I.verifyCommand(command, responseMessage, 'fail');
+
+    assert.ok(output === responseMessage, `The ${command} was supposed to return ${responseMessage} but actually got ${output}`);
+  },
+).retry(1);
+
+Data(instances).Scenario(
+  'Verify dashboard after MySQL SSL Instances are added @ssl @ssl-remote',
+  async ({
+    I, dashboardPage, adminPage, current,
+  }) => {
+    const {
+      serviceName,
+    } = current;
+
+    const serviceList = [serviceName, `remote_${serviceName}`];
+
+    for (const service of serviceList) {
+      I.amOnPage(dashboardPage.mySQLInstanceOverview.url);
+      dashboardPage.waitForDashboardOpened();
+      await adminPage.applyTimeRange('Last 5 minutes');
+      await dashboardPage.applyFilter('Service Name', service);
+      adminPage.performPageDown(5);
+      await dashboardPage.expandEachDashboardRow();
+      adminPage.performPageUp(5);
+      await dashboardPage.verifyThereAreNoGraphsWithNA();
+      await dashboardPage.verifyThereAreNoGraphsWithoutData(1);
+    }
+  },
+).retry(2);
+
+Data(instances).Scenario(
+  'Verify QAN after MySQL SSL Instances is added @ssl @ssl-remote',
+  async ({
+    I, qanOverview, qanFilters, qanPage, current, adminPage,
+  }) => {
+    const {
+      serviceName,
+    } = current;
+
+    const serviceList = [serviceName, `remote_${serviceName}`];
+
+    for (const service of serviceList) {
+      I.amOnPage(qanPage.url);
+      qanOverview.waitForOverviewLoaded();
+      await adminPage.applyTimeRange('Last 12 hours');
+      qanOverview.waitForOverviewLoaded();
+      qanFilters.waitForFiltersToLoad();
+      await qanFilters.applySpecificFilter(service);
+      qanOverview.waitForOverviewLoaded();
+      const count = await qanOverview.getCountOfItems();
+
+      assert.ok(count > 0, `The queries for service ${service} instance do NOT exist, check QAN Data`);
+    }
+  },
+).retry(1);

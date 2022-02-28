@@ -1,6 +1,7 @@
 const assert = require('assert');
 
-const pmmFrameworkLoader = 'bash /srv/pmm-qa/pmm-tests/pmm-framework.sh';
+const pathToPMMFramework = '/srv/pmm-qa/pmm-tests';
+const pmmFrameworkLoader = `bash ${pathToPMMFramework}/pmm-framework.sh`;
 const { remoteInstancesHelper } = inject();
 
 Feature('Monitoring SSL/TLS PGSQL instances');
@@ -31,7 +32,7 @@ Before(async ({ I, settingsAPI }) => {
 });
 
 Data(instances).Scenario(
-  'Verify Adding SSL services remotely @ssl @ssl-remote',
+  'PMM-T948 PMM-T947 Verify Adding SSL services remotely @ssl @ssl-remote',
   async ({
     I, remoteInstancesPage, pmmInventoryPage, current, inventoryAPI,
   }) => {
@@ -52,9 +53,9 @@ Data(instances).Scenario(
         password: 'pmm',
         cluster: 'pgsql_remote_cluster',
         environment: 'pgsql_remote_cluster',
-        tlsCAFile: `/srv/pmm-qa/pmm-tests/tls-ssl-setup/postgres/${version}/ca.crt`,
-        tlsKeyFile: `/srv/pmm-qa/pmm-tests/tls-ssl-setup/postgres/${version}/client.pem`,
-        tlsCertFile: `/srv/pmm-qa/pmm-tests/tls-ssl-setup/postgres/${version}/client.crt`,
+        tlsCAFile: `${pathToPMMFramework}/tls-ssl-setup/postgres/${version}/ca.crt`,
+        tlsKeyFile: `${pathToPMMFramework}/tls-ssl-setup/postgres/${version}/client.pem`,
+        tlsCertFile: `${pathToPMMFramework}/tls-ssl-setup/postgres/${version}/client.crt`,
       };
     }
 
@@ -102,5 +103,95 @@ Data(instances).Scenario(
     result = JSON.stringify(response.data.data.result);
 
     assert.ok(response.data.data.result.length !== 0, `Metrics ${metric} from ${remoteServiceName} should be available but got empty ${result}`);
+  },
+).retry(1);
+
+Data(instances).Scenario(
+  'PMM-T946 Verify adding PostgreSQL with --tls flag and with missing TLS options @ssl @ssl-remote',
+  async ({
+    I, current, grafanaAPI,
+  }) => {
+    const {
+      container,
+    } = current;
+
+    let responseMessage = 'Connection check failed: tls: failed to find any PEM data in key input.\n';
+    let command = `docker exec ${container} pmm-admin add postgresql --tls --tls-ca-file=./certificates/ca.crt --tls-cert-file=./certificates/client.crt --port=5432 --username=pmm --password=pmm--service-name=PG_tls`;
+
+    let output = await I.verifyCommand(command, responseMessage, 'fail');
+
+    assert.ok(output === responseMessage, `The ${command} was supposed to return ${responseMessage} but actually got ${output}`);
+
+    responseMessage = 'Connection check failed: tls: failed to find any PEM data in certificate input.\n';
+    command = `docker exec ${container} pmm-admin add postgresql --tls --tls-ca-file=./certificates/ca.crt --tls-key-file=./certificates/client.pem --port=5432 --username=pmm --password=pmm --service-name=PG_tls`;
+
+    output = await I.verifyCommand(command, responseMessage, 'fail');
+
+    assert.ok(output === responseMessage, `The ${command} was supposed to return ${responseMessage} but actually got ${output}`);
+
+    responseMessage = 'Connection check failed: pq: couldn\'t parse pem in sslrootcert.\n';
+    command = `docker exec ${container} pmm-admin add postgresql --tls --tls-cert-file=./certificates/client.crt --tls-key-file=./certificates/client.pem --port=5432 --username=pmm --password=pmm --service-name=PG_tls`;
+
+    output = await I.verifyCommand(command, responseMessage, 'fail');
+
+    assert.ok(output === responseMessage, `The ${command} was supposed to return ${responseMessage} but actually got ${output}`);
+
+    responseMessage = 'Connection check failed: x509: certificate signed by unknown authority.\n';
+    command = `docker exec ${container} pmm-admin add postgresql --tls --port=5432 --username=pmm --password=pmm --service-name=PG_tls_2`;
+
+    output = await I.verifyCommand(command, responseMessage, 'fail');
+
+    assert.ok(output === responseMessage, `The ${command} was supposed to return ${responseMessage} but actually got ${output}`);
+  },
+).retry(1);
+
+Data(instances).Scenario(
+  'Verify dashboard after PGSQL SSL Instances are added @ssl @ssl-remote',
+  async ({
+    I, dashboardPage, adminPage, current,
+  }) => {
+    const {
+      serviceName,
+    } = current;
+
+    const serviceList = [serviceName, `remote_${serviceName}`];
+
+    for (const service of serviceList) {
+      I.amOnPage(dashboardPage.postgresqlInstanceOverviewDashboard.url);
+      dashboardPage.waitForDashboardOpened();
+      await adminPage.applyTimeRange('Last 5 minutes');
+      await dashboardPage.applyFilter('Service Name', service);
+      adminPage.performPageDown(5);
+      await dashboardPage.expandEachDashboardRow();
+      adminPage.performPageUp(5);
+      await dashboardPage.verifyThereAreNoGraphsWithNA();
+      await dashboardPage.verifyThereAreNoGraphsWithoutData(1);
+    }
+  },
+).retry(2);
+
+Data(instances).Scenario(
+  'Verify QAN after PGSQL SSL Instances is added @ssl @ssl-remote',
+  async ({
+    I, qanOverview, qanFilters, qanPage, current, adminPage,
+  }) => {
+    const {
+      serviceName,
+    } = current;
+
+    const serviceList = [serviceName, `remote_${serviceName}`];
+
+    for (const service of serviceList) {
+      I.amOnPage(qanPage.url);
+      qanOverview.waitForOverviewLoaded();
+      await adminPage.applyTimeRange('Last 12 hours');
+      qanOverview.waitForOverviewLoaded();
+      qanFilters.waitForFiltersToLoad();
+      await qanFilters.applySpecificFilter(service);
+      qanOverview.waitForOverviewLoaded();
+      const count = await qanOverview.getCountOfItems();
+
+      assert.ok(count > 0, `The queries for service ${service} instance do NOT exist, check QAN Data`);
+    }
   },
 ).retry(1);
