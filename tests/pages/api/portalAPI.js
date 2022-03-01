@@ -4,6 +4,8 @@ const { generate } = require('generate-password');
 
 const { I } = inject();
 
+require('dotenv').config();
+
 module.exports = {
   snUsername: process.env.SERVICENOW_LOGIN,
   snPassword: process.env.SERVICENOW_PASSWORD,
@@ -52,16 +54,6 @@ module.exports = {
     assert.equal(response.status, 200);
 
     return response.data;
-  },
-
-  async loginByOktaApi(username, password) {
-    const oktaUrl = 'https://id-dev.percona.com/api/v1/authn';
-    const data = {
-      username,
-      password,
-    };
-
-    await I.sendPostRequest(oktaUrl, data);
   },
 
   async getUserAccessToken(username, password) {
