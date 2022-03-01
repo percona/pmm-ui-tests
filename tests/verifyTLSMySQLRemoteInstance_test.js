@@ -25,7 +25,7 @@ Before(async ({ I, settingsAPI }) => {
 });
 
 Data(instances).Scenario(
-  'Verify Adding SSL services remotely @ssl @ssl-remote',
+  'Verify Adding SSL Mysql services remotely @ssl @ssl-remote',
   async ({
     I, remoteInstancesPage, pmmInventoryPage, current, inventoryAPI,
   }) => {
@@ -71,35 +71,7 @@ Data(instances).Scenario(
 );
 
 Data(instances).Scenario(
-  'Verify metrics from SSL instances on PMM-Server @ssl @ssl-remote',
-  async ({
-    I, remoteInstancesPage, pmmInventoryPage, current, grafanaAPI,
-  }) => {
-    const {
-      serviceName, metric,
-    } = current;
-    let response; let result;
-    const remoteServiceName = `remote_${serviceName}`;
-
-    // Waiting for metrics to start hitting for remotely added services
-    I.wait(10);
-
-    // verify metric for client container node instance
-    response = await grafanaAPI.checkMetricExist(metric, { type: 'service_name', value: serviceName });
-    result = JSON.stringify(response.data.data.result);
-
-    assert.ok(response.data.data.result.length !== 0, `Metrics ${metric} from ${serviceName} should be available but got empty ${result}`);
-
-    // verify metric for remote instance
-    response = await grafanaAPI.checkMetricExist(metric, { type: 'service_name', value: remoteServiceName });
-    result = JSON.stringify(response.data.data.result);
-
-    assert.ok(response.data.data.result.length !== 0, `Metrics ${metric} from ${remoteServiceName} should be available but got empty ${result}`);
-  },
-).retry(1);
-
-Data(instances).Scenario(
-  'Verify metrics from SSL instances on PMM-Server @ssl @ssl-remote',
+  'Verify metrics from mysql SSL instances on PMM-Server @ssl @ssl-remote',
   async ({
     I, remoteInstancesPage, pmmInventoryPage, current, grafanaAPI,
   }) => {
