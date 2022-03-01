@@ -47,6 +47,7 @@ Scenario(
     I.waitForVisible(dbaasPage.tabs.kubernetesClusterTab.addKubernetesClusterButtonInTable, 30);
     I.click(dbaasPage.tabs.kubernetesClusterTab.addKubernetesClusterButton);
     I.seeElement(dbaasPage.tabs.kubernetesClusterTab.modalWindow);
+    I.waitForElement(dbaasPage.tabs.kubernetesClusterTab.monitoringWarningLocator, 30);
     I.click(dbaasPage.tabs.kubernetesClusterTab.closeButton);
     I.dontSeeElement(dbaasPage.tabs.kubernetesClusterTab.modalWindow);
     I.click(dbaasPage.tabs.kubernetesClusterTab.addKubernetesClusterButton);
@@ -256,7 +257,7 @@ Data(nameFields).Scenario('PMM-T456 Verify Create Cluster steps validation field
 
 Data(inputFields).Scenario('PMM-T456 Verify Create Cluster steps validation - field input validation @dbaas',
   async ({
-    I, dbaasPage, dbaasAPI, adminPage, current, dbaasManageVersionPage, dbaasActionsPage,
+    I, dbaasPage, dbaasAPI, adminPage, current, dbaasActionsPage,
   }) => {
     if (!await dbaasAPI.apiCheckRegisteredClusterExist(clusterName)) {
       await dbaasAPI.apiRegisterCluster(process.env.kubeconfig_minikube, clusterName);
