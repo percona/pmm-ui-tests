@@ -1,7 +1,8 @@
 const assert = require('assert');
 
-const pmmFrameworkLoader = 'bash /srv/pmm-qa/pmm-tests/pmm-framework.sh';
-const { remoteInstancesHelper } = inject();
+const { adminPage } = inject();
+const pmmFrameworkLoader = `bash ${adminPage.pathToFramework}`;
+const pathToPMMFramework = adminPage.pathToPMMTests;
 
 Feature('Monitoring SSL/TLS MongoDB instances');
 
@@ -49,9 +50,9 @@ Data(instances).Scenario(
         host: container,
         cluster: 'mongodb_remote_cluster',
         environment: 'mongodb_remote_cluster',
-        tlsCAFile: `/srv/pmm-qa/pmm-tests/tls-ssl-setup/mongodb/${version}/ca.crt`,
-        tlsCertificateFilePasswordInput: `/srv/pmm-qa/pmm-tests/tls-ssl-setup/mongodb/${version}/client.key`,
-        tlsCertificateKeyFile: `/srv/pmm-qa/pmm-tests/tls-ssl-setup/mongodb/${version}/client.pem`,
+        tlsCAFile: `${pathToPMMFramework}tls-ssl-setup/mongodb/${version}/ca.crt`,
+        tlsCertificateFilePasswordInput: `${pathToPMMFramework}tls-ssl-setup/mongodb/${version}/client.key`,
+        tlsCertificateKeyFile: `${pathToPMMFramework}tls-ssl-setup/mongodb/${version}/client.pem`,
       };
     }
 
@@ -125,7 +126,7 @@ Data(instances).Scenario(
       await dashboardPage.verifyThereAreNoGraphsWithoutData(3);
     }
   },
-).retry(2);
+).retry(1);
 
 Data(instances).Scenario(
   'Verify QAN after MongoDB SSL Instances is added @ssl @ssl-remote',

@@ -1,7 +1,7 @@
 const assert = require('assert');
 
-const pmmFrameworkLoader = 'bash /srv/pmm-qa/pmm-tests/pmm-framework.sh';
-const { remoteInstancesHelper } = inject();
+const { adminPage } = inject();
+const pmmFrameworkLoader = `bash ${adminPage.pathToFramework}`;
 
 Feature('Monitoring SSL/TLS MYSQL instances');
 
@@ -45,9 +45,9 @@ Data(instances).Scenario(
         password: 'pmm',
         cluster: 'mysql_remote_cluster',
         environment: 'mysql_remote_cluster',
-        tlsCAFile: `/srv/pmm-qa/pmm-tests/tls-ssl-setup/mysql/${version}/ca.pem`,
-        tlsKeyFile: `/srv/pmm-qa/pmm-tests/tls-ssl-setup/mysql/${version}/client-key.pem`,
-        tlsCertFile: `/srv/pmm-qa/pmm-tests/tls-ssl-setup/mysql/${version}/client-cert.pem`,
+        tlsCAFile: `${adminPage.pathToPMMTests}tls-ssl-setup/mysql/${version}/ca.pem`,
+        tlsKeyFile: `${adminPage.pathToPMMTests}tls-ssl-setup/mysql/${version}/client-key.pem`,
+        tlsCertFile: `${adminPage.pathToPMMTests}tls-ssl-setup/mysql/${version}/client-cert.pem`,
       };
     }
 

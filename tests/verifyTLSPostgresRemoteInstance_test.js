@@ -1,8 +1,8 @@
 const assert = require('assert');
 
-const pathToPMMFramework = '/srv/pmm-qa/pmm-tests';
-const pmmFrameworkLoader = `bash ${pathToPMMFramework}/pmm-framework.sh`;
-const { remoteInstancesHelper } = inject();
+const { adminPage } = inject();
+const pmmFrameworkLoader = `bash ${adminPage.pathToFramework}`;
+const pathToPMMFramework = adminPage.pathToPMMTests;
 
 Feature('Monitoring SSL/TLS PGSQL instances');
 
@@ -53,9 +53,9 @@ Data(instances).Scenario(
         password: 'pmm',
         cluster: 'pgsql_remote_cluster',
         environment: 'pgsql_remote_cluster',
-        tlsCAFile: `${pathToPMMFramework}/tls-ssl-setup/postgres/${version}/ca.crt`,
-        tlsKeyFile: `${pathToPMMFramework}/tls-ssl-setup/postgres/${version}/client.pem`,
-        tlsCertFile: `${pathToPMMFramework}/tls-ssl-setup/postgres/${version}/client.crt`,
+        tlsCAFile: `${pathToPMMFramework}tls-ssl-setup/postgres/${version}/ca.crt`,
+        tlsKeyFile: `${pathToPMMFramework}tls-ssl-setup/postgres/${version}/client.pem`,
+        tlsCertFile: `${pathToPMMFramework}tls-ssl-setup/postgres/${version}/client.crt`,
       };
     }
 

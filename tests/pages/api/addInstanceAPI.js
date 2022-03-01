@@ -55,6 +55,33 @@ module.exports = {
     return resp.data;
   },
 
+  async addMysqlSSL(connection) {
+    const body = {
+      add_node: {
+        node_name: connection.serviceName,
+        node_type: 'REMOTE_NODE',
+      },
+      port: connection.port,
+      address: connection.address,
+      service_name: connection.serviceName,
+      username: connection.username,
+      password: connection.password,
+      tls: true,
+      tls_ca: connection.tlsCAFile,
+      tls_key: connection.tlsKeyFile,
+      tls_cert: connection.tlsCertFile,
+      tls_skip_verify: true,
+      cluster: connection.cluster,
+      pmm_agent_id: 'pmm-server',
+      qan_mysql_perfschema: true,
+    };
+    const headers = { Authorization: `Basic ${await I.getAuth()}` };
+    const resp = await I.sendPostRequest('v1/management/MySQL/Add', body, headers);
+
+    console.log(resp);
+    assert.equal(resp.status, 200, `Instance ${connection.serviceName} was not added for monitoring`);
+  },
+
   async addPostgresql(serviceName) {
     const body = {
       add_node: {
@@ -75,6 +102,33 @@ module.exports = {
     const resp = await I.sendPostRequest('v1/management/PostgreSQL/Add', body, headers);
 
     assert.equal(resp.status, 200, `Instance ${serviceName} was not added for monitoring`);
+  },
+
+  async addPostgreSqlSSL(connection) {
+    const body = {
+      add_node: {
+        node_name: connection.serviceName,
+        node_type: 'REMOTE_NODE',
+      },
+      port: connection.port,
+      address: connection.address,
+      service_name: connection.serviceName,
+      username: connection.username,
+      password: connection.password,
+      tls: true,
+      tls_ca: connection.tlsCAFile,
+      tls_key: connection.tlsKeyFile,
+      tls_cert: connection.tlsCertFile,
+      tls_skip_verify: true,
+      cluster: connection.cluster,
+      pmm_agent_id: 'pmm-server',
+      qan_postgresql_pgstatements_agent: true,
+    };
+    const headers = { Authorization: `Basic ${await I.getAuth()}` };
+    const resp = await I.sendPostRequest('v1/management/PostgreSQL/Add', body, headers);
+
+    console.log(resp);
+    assert.equal(resp.status, 200, `Instance ${connection.serviceName} was not added for monitoring`);
   },
 
   async addPostgreSQLGC(serviceName) {
@@ -140,6 +194,32 @@ module.exports = {
     const resp = await I.sendPostRequest('v1/management/MongoDB/Add', body, headers);
 
     assert.equal(resp.status, 200, `Instance ${serviceName} was not added for monitoring`);
+  },
+
+  async addMongoDBSSL(connection) {
+    const body = {
+      add_node: {
+        node_name: connection.serviceName,
+        node_type: 'REMOTE_NODE',
+      },
+      port: connection.port,
+      address: connection.address,
+      service_name: connection.serviceName,
+      tls: true,
+      tls_certificate_file_password: connection.tls_certificate_file_password,
+      tls_certificate_key: connection.tls_certificate_key,
+      tls_ca: connection.tls_ca,
+      tls_skip_verify: true,
+      cluster: connection.cluster,
+      pmm_agent_id: 'pmm-server',
+      qan_mongodb_profiler: true,
+      authentication_mechanism: 'MONGODB-X509',
+    };
+    const headers = { Authorization: `Basic ${await I.getAuth()}` };
+    const resp = await I.sendPostRequest('v1/management/MongoDB/Add', body, headers);
+
+    console.log(resp);
+    assert.equal(resp.status, 200, `Instance ${connection.serviceName} was not added for monitoring`);
   },
 
   async addRDS(serviceName) {
