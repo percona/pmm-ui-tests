@@ -78,7 +78,6 @@ module.exports = {
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
     const resp = await I.sendPostRequest('v1/management/MySQL/Add', body, headers);
 
-    console.log(resp);
     assert.equal(resp.status, 200, `Instance ${connection.serviceName} was not added for monitoring`);
   },
 
@@ -127,7 +126,6 @@ module.exports = {
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
     const resp = await I.sendPostRequest('v1/management/PostgreSQL/Add', body, headers);
 
-    console.log(resp);
     assert.equal(resp.status, 200, `Instance ${connection.serviceName} was not added for monitoring`);
   },
 
@@ -218,7 +216,6 @@ module.exports = {
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
     const resp = await I.sendPostRequest('v1/management/MongoDB/Add', body, headers);
 
-    console.log(resp);
     assert.equal(resp.status, 200, `Instance ${connection.serviceName} was not added for monitoring`);
   },
 
