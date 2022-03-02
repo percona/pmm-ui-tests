@@ -42,12 +42,17 @@ Scenario(
   'PMM-T426 - Verify adding new Kubernetes cluster minikube, PMM-T428 - Verify adding new Kubernetes cluster with same name, '
   + 'PMM-T431 -Verify unregistering Kubernetes cluster, PMM-T1158 - Verify warning about unset public address @dbaas',
   async ({ I, dbaasPage, settingsAPI }) => {
-    await settingsAPI.changeSettings({ publicAddress: process.env.VM_IP });
     I.amOnPage(dbaasPage.url);
     I.waitForVisible(dbaasPage.tabs.kubernetesClusterTab.addKubernetesClusterButtonInTable, 30);
     I.click(dbaasPage.tabs.kubernetesClusterTab.addKubernetesClusterButton);
     I.seeElement(dbaasPage.tabs.kubernetesClusterTab.modalWindow);
     I.waitForElement(dbaasPage.tabs.dbClusterTab.monitoringWarningLocator, 30);
+    I.click(dbaasPage.tabs.kubernetesClusterTab.closeButton);
+    await settingsAPI.changeSettings({ publicAddress: process.env.VM_IP });
+    I.amOnPage(dbaasPage.url);
+    I.click(dbaasPage.tabs.kubernetesClusterTab.addKubernetesClusterButton);
+    I.seeElement(dbaasPage.tabs.kubernetesClusterTab.modalWindow);
+    I.dontSeeElement(dbaasPage.tabs.dbClusterTab.monitoringWarningLocator, 30);
     I.click(dbaasPage.tabs.kubernetesClusterTab.closeButton);
     I.dontSeeElement(dbaasPage.tabs.kubernetesClusterTab.modalWindow);
     I.click(dbaasPage.tabs.kubernetesClusterTab.addKubernetesClusterButton);
