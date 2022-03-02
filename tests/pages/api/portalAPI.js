@@ -4,8 +4,6 @@ const { generate } = require('generate-password');
 
 const { I } = inject();
 
-require('dotenv').config();
-
 module.exports = {
   snUsername: process.env.SERVICENOW_LOGIN,
   snPassword: process.env.SERVICENOW_PASSWORD,
@@ -30,13 +28,9 @@ module.exports = {
     };
   },
 
-  async oktaCreateUser({
-    email,
-    password,
-    firstName,
-    lastName,
-  }) {
-    const oktaUrl = `${this.oktaUrl}/api/v1/users?activate=true`;
+  // eslint-disable-next-line object-curly-newline
+  async oktaCreateUser({ email, password, firstName, lastName }) {
+    const oktaUrl = `${this.oktaUrl}api/v1/users?activate=true`;
     const headers = { Authorization: this.oktaToken };
     const data = {
       profile: {
@@ -111,10 +105,14 @@ module.exports = {
     return response.data.orgs;
   },
 
-  async apiInviteOrgMember(accessToken, orgId, member = {
-    username: '',
-    role: '',
-  }) {
+  async apiInviteOrgMember(
+    accessToken,
+    orgId,
+    member = {
+      username: '',
+      role: '',
+    },
+  ) {
     const apiUrl = `${this.portalBaseUrl}/v1/orgs/${orgId}/members`;
     const headers = { Authorization: `Bearer ${accessToken}` };
     const response = await I.sendPostRequest(apiUrl, member, headers);
