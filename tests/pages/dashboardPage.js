@@ -1022,6 +1022,7 @@ module.exports = {
     } else {
       this.expandFilters(filterName);
       I.waitForElement(filterDropdownOptionsLocator, 30);
+      I.waitForVisible(filterValueSelector, 30);
       I.click(filterValueSelector);
     }
   },
