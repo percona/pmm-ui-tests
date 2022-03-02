@@ -267,7 +267,6 @@ module.exports = {
       I.click(this.fields.useTLS);
       I.waitForElement(this.fields.tlscaInput, 30);
       await this.fillFileContent(this.fields.tlscaInput, details.tlsCAFile);
-      await this.fillFileContent(this.fields.tlsCertificateFilePasswordInput, details.tlsCertificateFilePasswordInput);
       await this.fillFileContent(this.fields.tlsCertificateKey, details.tlsCertificateKeyFile);
       I.click(this.fields.useQANMongoDBProfiler);
       I.click(this.fields.skipTLSL);
