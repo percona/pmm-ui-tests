@@ -47,7 +47,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T650 PMM-T648 Verify user is able to set 0.1h check Frequency / custom check frequency @stt @settings @grafana-pr',
+  'PMM-T650 PMM-T648 Verify user is able to set 0.1h check Frequency / custom check frequency @stt @settings',
   async ({
     I, pmmSettingsPage,
   }) => {
