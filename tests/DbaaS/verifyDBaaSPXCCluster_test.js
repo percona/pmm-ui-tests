@@ -48,7 +48,7 @@ Scenario('PMM-T665 PMM-T455 PMM-T575 Verify that Advanced Options are optional f
 async ({
   I, dbaasPage, dbaasAPI, dbaasActionsPage,
 }) => {
-  await dbaasAPI.deleteAllDBCluster(clusterName);
+  await dbaasAPI.apiDeleteAllDBCluster(clusterName);
   await dbaasPage.waitForDbClusterTab(clusterName);
   I.waitForInvisible(dbaasPage.tabs.kubernetesClusterTab.disabledAddButton, 30);
   await dbaasActionsPage.createClusterBasicOptions(clusterName, pxc_cluster_name, 'MySQL');
@@ -123,7 +123,7 @@ Scenario('PMM-T640 PMM-T479 Single Node PXC Cluster with Custom Resources, PMM-T
   }) => {
     const dbClusterRandomName = dbaasPage.randomizeClusterName(pxc_cluster_name);
     const dbClusterRandomNameLink = dbaasPage.clusterDashboardUrls.pxcDashboard(dbClusterRandomName);
-    await dbaasAPI.deleteAllDBCluster(clusterName);
+    await dbaasAPI.apiDeleteAllDBCluster(clusterName);
     await dbaasPage.waitForDbClusterTab(clusterName);
     I.waitForInvisible(dbaasPage.tabs.kubernetesClusterTab.disabledAddButton, 30);
     await dbaasActionsPage.createClusterAdvancedOption(clusterName, dbClusterRandomName, 'MySQL', singleNodeConfiguration);
@@ -137,7 +137,7 @@ Scenario('PMM-T640 PMM-T479 Single Node PXC Cluster with Custom Resources, PMM-T
     await dbaasPage.validateClusterDetail(dbClusterRandomName, clusterName, singleNodeConfiguration, dbClusterRandomNameLink);
     const {
       username, password, host, port,
-    } = await dbaasAPI.getDbClusterDetails(dbClusterRandomName, clusterName);
+    } = await dbaasAPI.apiGetDbClusterDetails(dbClusterRandomName, clusterName);
     const output = await I.verifyCommand(
       `kubectl run -i --rm --tty pxc-client --image=percona:8.0 --restart=Never -- mysql -h ${host} -u${username} -p${password} -e "SHOW DATABASES;"`,
       'performance_schema',
@@ -152,7 +152,7 @@ Scenario('PMM-T522 Verify Editing a Cluster with Custom Setting and float values
     I, dbaasPage, dbaasActionsPage, dbaasAPI,
   }) => {
     const dbClusterRandomName = dbaasPage.randomizeClusterName(pxc_cluster_name);
-    await dbaasAPI.deleteAllDBCluster(clusterName);
+    await dbaasAPI.apiDeleteAllDBCluster(clusterName);
     await dbaasPage.waitForDbClusterTab(clusterName);
     I.waitForInvisible(dbaasPage.tabs.kubernetesClusterTab.disabledAddButton, 30);
     await dbaasActionsPage.createClusterBasicOptions(clusterName, dbClusterRandomName, 'MySQL');
@@ -194,7 +194,7 @@ Scenario('PMM-T488, PMM-T489 Verify editing PXC cluster changing single node to 
       clusterDashboardRedirectionLink: dbaasPage.clusterDashboardUrls.pxcDashboard(dbClusterRandomName),
     };
 
-    await dbaasAPI.deleteAllDBCluster(clusterName);
+    await dbaasAPI.apiDeleteAllDBCluster(clusterName);
     await dbaasPage.waitForDbClusterTab(clusterName);
     I.waitForInvisible(dbaasPage.tabs.kubernetesClusterTab.disabledAddButton, 30);
     await dbaasActionsPage.createClusterAdvancedOption(clusterName, dbClusterRandomName, 'MySQL', singleNodeConfiguration);
@@ -223,7 +223,7 @@ Scenario('PMM-T525 PMM-T528 Verify Suspend & Resume for DB Cluster Works as expe
       disk: '25 GB',
     };
 
-    await dbaasAPI.deleteAllDBCluster(clusterName);
+    await dbaasAPI.apiDeleteAllDBCluster(clusterName);
     await dbaasPage.waitForDbClusterTab(clusterName);
     I.waitForInvisible(dbaasPage.tabs.kubernetesClusterTab.disabledAddButton, 30);
     await dbaasActionsPage.createClusterBasicOptions(clusterName, dbClusterRandomName, 'MySQL');
@@ -296,7 +296,7 @@ Scenario('PMM-T717 Verify insufficient resources warning @dbaas',
       ),
     };
 
-    await dbaasAPI.deleteAllDBCluster(clusterName);
+    await dbaasAPI.apiDeleteAllDBCluster(clusterName);
     await dbaasPage.waitForDbClusterTab(clusterName);
     I.waitForDetached(dbaasPage.tabs.kubernetesClusterTab.disabledAddButton, 30);
     await dbaasActionsPage.createClusterAdvancedOption(clusterName, pxc_resource_check_cluster_name, 'MySQL', pxc_configuration);
@@ -323,7 +323,7 @@ Scenario('PMM-T704 PMM-T772 PMM-T849 PMM-T850 Resources, PV, Secrets verificatio
       ),
     };
 
-    await dbaasAPI.deleteAllDBCluster(clusterName);
+    await dbaasAPI.apiDeleteAllDBCluster(clusterName);
     await dbaasPage.waitForDbClusterTab(clusterName);
     I.waitForDetached(dbaasPage.tabs.kubernetesClusterTab.disabledAddButton, 30);
     await dbaasActionsPage.createClusterAdvancedOption(clusterName, dbClusterRandomName, 'MySQL', pxc_configuration);
@@ -332,7 +332,7 @@ Scenario('PMM-T704 PMM-T772 PMM-T849 PMM-T850 Resources, PV, Secrets verificatio
     await dbaasPage.postClusterCreationValidation(dbClusterRandomName, clusterName);
     const {
       username, password, host, port,
-    } = await dbaasAPI.getDbClusterDetails(dbClusterRandomName, clusterName);
+    } = await dbaasAPI.apiGetDbClusterDetails(dbClusterRandomName, clusterName);
 
     await I.verifyCommand(
       `kubectl get pods ${dbClusterRandomName}-pxc-0 -o json | grep -i requests -A2 | tail -2`,
@@ -357,7 +357,7 @@ Scenario('PMM-T704 PMM-T772 PMM-T849 PMM-T850 Resources, PV, Secrets verificatio
       password,
     );
     await dbaasAPI.apiDeleteDBCluster(dbClusterRandomName, clusterName, pxc_cluster_type);
-    await dbaasAPI.waitForDbClusterDeleted(dbClusterRandomName, clusterName);
+    await dbaasAPI.apiWaitForDbClusterDeleted(dbClusterRandomName, clusterName);
     await I.verifyCommand(
       `kubectl get pv | grep ${dbClusterRandomName}`,
       'No resources found',
@@ -374,7 +374,7 @@ Scenario('Verify update PXC DB Cluster version @dbaas', async ({ I, dbaasPage, d
   const mysqlVersion = '8.0.19-10.1';
   const dbClusterRandomName = dbaasPage.randomizeClusterName(pxc_cluster_name);
 
-  await dbaasAPI.deleteAllDBCluster(clusterName);
+  await dbaasAPI.apiDeleteAllDBCluster(clusterName);
   await dbaasPage.waitForDbClusterTab(clusterName);
 
   I.waitForInvisible(dbaasPage.tabs.kubernetesClusterTab.disabledAddButton, 30);
@@ -384,7 +384,7 @@ Scenario('Verify update PXC DB Cluster version @dbaas', async ({ I, dbaasPage, d
   await dbaasPage.postClusterCreationValidation(dbClusterRandomName, clusterName);
   const {
     username, password, host, port,
-  } = await dbaasAPI.getDbClusterDetails(dbClusterRandomName, clusterName);
+  } = await dbaasAPI.apiGetDbClusterDetails(dbClusterRandomName, clusterName);
 
   await I.verifyCommand(
     `kubectl run -i --rm --tty pxc-client --image=percona:8.0 --restart=Never -- mysql -h ${host} -u${username} -p${password} -e "CREATE DATABASE DBAAS_UPGRADE_TESTING;"`,
@@ -397,7 +397,7 @@ Scenario('Verify update PXC DB Cluster version @dbaas', async ({ I, dbaasPage, d
   await dbaasActionsPage.updateCluster();
   I.waitForVisible(dbaasPage.tabs.dbClusterTab.fields.clusterStatusUpdating, 60);
   I.seeElement(dbaasPage.tabs.dbClusterTab.fields.clusterStatusUpdating);
-  await dbaasAPI.waitForDBClusterState(dbClusterRandomName, clusterName, 'MySQL', 'DB_CLUSTER_STATE_READY');
+  await dbaasAPI.apiWaitForDBClusterState(dbClusterRandomName, clusterName, 'MySQL', 'DB_CLUSTER_STATE_READY');
   I.waitForElement(dbaasPage.tabs.dbClusterTab.fields.clusterStatusActive, 60);
   I.seeElement(dbaasPage.tabs.dbClusterTab.fields.clusterStatusActive);
   await I.verifyCommand(
@@ -415,7 +415,7 @@ Scenario('Verify update PXC DB Cluster version @dbaas', async ({ I, dbaasPage, d
   async ({ I, dbaasPage, dbaasActionsPage }) => {
     const pxc_cluster_pending_delete = 'pxc-pending-delete';
 
-    await dbaasAPI.deleteAllDBCluster(clusterName);
+    await dbaasAPI.apiDeleteAllDBCluster(clusterName);
     await dbaasPage.waitForDbClusterTab(clusterName);
     I.waitForInvisible(dbaasPage.tabs.kubernetesClusterTab.disabledAddButton, 30);
     await dbaasActionsPage.createClusterBasicOptions(clusterName, pxc_cluster_pending_delete, 'MySQL');

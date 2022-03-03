@@ -85,7 +85,7 @@ module.exports = {
     );
     I.click(dbaasPage.tabs.dbClusterTab.fields.deleteDBClusterButton);
     I.waitForElement(dbaasPage.tabs.dbClusterTab.fields.clusterStatusDeleting, 30);
-    await dbaasAPI.waitForDbClusterDeleted(dbClusterName, k8sClusterName);
+    await dbaasAPI.apiWaitForDbClusterDeleted(dbClusterName, k8sClusterName);
   },
 
   async restartCluster(dbClusterName, k8sClusterName, clusterDBType = 'MySQL') {
@@ -95,7 +95,7 @@ module.exports = {
     I.waitForElement(dbaasPage.tabs.dbClusterTab.fields.clusterAction('Restart'), 30);
     I.click(dbaasPage.tabs.dbClusterTab.fields.clusterAction('Restart'));
     I.waitForText('Processing', 30, dbaasPage.tabs.dbClusterTab.fields.progressBarContent);
-    await dbaasAPI.waitForDBClusterState(dbClusterName, k8sClusterName, clusterDBType, 'DB_CLUSTER_STATE_READY');
+    await dbaasAPI.apiWaitForDBClusterState(dbClusterName, k8sClusterName, clusterDBType, 'DB_CLUSTER_STATE_READY');
   },
 
   async editCluster(dbClusterName, k8sClusterName, configuration) {
@@ -139,7 +139,7 @@ module.exports = {
     I.click(dbaasPage.tabs.dbClusterTab.fields.clusterAction('Suspend'));
     I.waitForText('Processing', 30, dbaasPage.tabs.dbClusterTab.fields.progressBarContent);
     await this.checkActionPossible('Resume', false);
-    await dbaasAPI.waitForDBClusterState(dbClusterName, k8sClusterName, clusterDBType, 'DB_CLUSTER_STATE_PAUSED');
+    await dbaasAPI.apiWaitForDBClusterState(dbClusterName, k8sClusterName, clusterDBType, 'DB_CLUSTER_STATE_PAUSED');
   },
 
   async resumeCluster(dbClusterName, k8sClusterName, clusterDBType = 'MySQL') {
@@ -149,7 +149,7 @@ module.exports = {
     I.waitForElement(dbaasPage.tabs.dbClusterTab.fields.clusterAction('Resume'), 30);
     I.click(dbaasPage.tabs.dbClusterTab.fields.clusterAction('Resume'));
     I.waitForText('Processing', 30, dbaasPage.tabs.dbClusterTab.fields.progressBarContent);
-    await dbaasAPI.waitForDBClusterState(dbClusterName, k8sClusterName, clusterDBType, 'DB_CLUSTER_STATE_READY');
+    await dbaasAPI.apiWaitForDBClusterState(dbClusterName, k8sClusterName, clusterDBType, 'DB_CLUSTER_STATE_READY');
   },
 
   async deletePSMDBCluster(dbClusterName, k8sClusterName) {
@@ -166,7 +166,7 @@ module.exports = {
     );
     I.click(dbaasPage.tabs.dbClusterTab.fields.deleteDBClusterButton);
     I.waitForElement(dbaasPage.tabs.dbClusterTab.fields.clusterStatusDeleting, 30);
-    await dbaasAPI.waitForDbClusterDeleted(dbClusterName, k8sClusterName, 'MongoDB');
+    await dbaasAPI.apiWaitForDbClusterDeleted(dbClusterName, k8sClusterName, 'MongoDB');
   },
 
   async showClusterLogs() {

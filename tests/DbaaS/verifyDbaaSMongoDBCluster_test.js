@@ -57,7 +57,7 @@ Scenario('PMM-T665 PMM-T642 PMM-T484 PSMDB Cluster with Custom Resources, Verify
     const collectionNames = '[ "customers", "system.profile" ]';
     const dbName = 'tutorialkart2';
 
-    await dbaasAPI.deleteAllDBCluster(clusterName);
+    await dbaasAPI.apiDeleteAllDBCluster(clusterName);
     await dbaasPage.waitForDbClusterTab(clusterName);
     I.waitForInvisible(dbaasPage.tabs.kubernetesClusterTab.disabledAddButton, 30);
     await dbaasActionsPage.createClusterAdvancedOption(clusterName, psmdb_cluster, 'MongoDB', psmdb_configuration);
@@ -74,7 +74,7 @@ Scenario('PMM-T665 PMM-T642 PMM-T484 PSMDB Cluster with Custom Resources, Verify
       psmdb_configuration.clusterDashboardRedirectionLink);
     const {
       username, password, host, port,
-    } = await dbaasAPI.getDbClusterDetails(psmdb_cluster, clusterName, 'MongoDB');
+    } = await dbaasAPI.apiGetDbClusterDetails(psmdb_cluster, clusterName, 'MongoDB');
 
     await I.verifyCommand(
       'kubectl run psmdb-client --image=percona/percona-server-mongodb:4.4.5-7 --restart=Never',
@@ -131,7 +131,7 @@ Scenario('PMM-787 Verify Editing MonogDB Cluster is possible. @dbaas',
   async ({
     I, dbaasPage, dbaasAPI, dbaasActionsPage,
   }) => {
-    await dbaasAPI.deleteAllDBCluster(clusterName);
+    await dbaasAPI.apiDeleteAllDBCluster(clusterName);
     await dbaasPage.waitForDbClusterTab(clusterName);
     I.waitForInvisible(dbaasPage.tabs.kubernetesClusterTab.disabledAddButton, 30);
     await dbaasActionsPage.createClusterAdvancedOption(clusterName, psmdb_cluster, 'MongoDB', psmdb_configuration);
@@ -179,7 +179,7 @@ Scenario('PMM-T525 PMM-T528 Verify Suspend & Resume for Mongo DB Cluster Works a
       ),
     };
 
-    await dbaasAPI.deleteAllDBCluster(clusterName);
+    await dbaasAPI.apiDeleteAllDBCluster(clusterName);
     await dbaasPage.waitForDbClusterTab(clusterName);
     I.waitForInvisible(dbaasPage.tabs.kubernetesClusterTab.disabledAddButton, 30);
     await dbaasActionsPage.createClusterAdvancedOption(clusterName, psmdb_cluster_suspend_resume, 'MongoDB', clusterDetails);
@@ -203,7 +203,7 @@ Scenario('PMM-T509 Verify Deleting Mongo Db Cluster in Pending Status is possibl
   async ({ I, dbaasPage, dbaasActionsPage }) => {
     const psmdb_cluster_pending_delete = 'psmdb-pending-delete';
 
-    await dbaasAPI.deleteAllDBCluster(clusterName);
+    await dbaasAPI.apiDeleteAllDBCluster(clusterName);
     await dbaasPage.waitForDbClusterTab(clusterName);
     I.waitForInvisible(dbaasPage.tabs.kubernetesClusterTab.disabledAddButton, 30);
     await dbaasActionsPage.createClusterBasicOptions(clusterName, psmdb_cluster_pending_delete, 'MongoDB');
@@ -230,7 +230,7 @@ Scenario('PMM-T704 PMM-T772 PMM-T849 PMM-T850 Resources, PV, Secrets verificatio
       ),
     };
 
-    await dbaasAPI.deleteAllDBCluster(clusterName);
+    await dbaasAPI.apiDeleteAllDBCluster(clusterName);
     await dbaasPage.waitForDbClusterTab(clusterName);
     I.waitForInvisible(dbaasPage.tabs.kubernetesClusterTab.disabledAddButton, 30);
     await dbaasActionsPage.createClusterAdvancedOption(clusterName, psmdb_cluster_resource_check, 'MongoDB', clusterDetails);
@@ -241,7 +241,7 @@ Scenario('PMM-T704 PMM-T772 PMM-T849 PMM-T850 Resources, PV, Secrets verificatio
       clusterDetails.clusterDashboardRedirectionLink);
     const {
       username, password, host, port,
-    } = await dbaasAPI.getDbClusterDetails(psmdb_cluster_resource_check, clusterName, 'MongoDB');
+    } = await dbaasAPI.apiGetDbClusterDetails(psmdb_cluster_resource_check, clusterName, 'MongoDB');
 
     await I.verifyCommand(
       'kubectl run psmdb-client --image=percona/percona-server-mongodb:4.4.5-7 --restart=Never',
@@ -267,7 +267,7 @@ Scenario('PMM-T704 PMM-T772 PMM-T849 PMM-T850 Resources, PV, Secrets verificatio
       password,
     );
     await dbaasAPI.apiDeleteDBCluster(psmdb_cluster_resource_check, clusterName, psmdb_cluster_type);
-    await dbaasAPI.waitForDbClusterDeleted(psmdb_cluster_resource_check, clusterName, 'MongoDB');
+    await dbaasAPI.apiWaitForDbClusterDeleted(psmdb_cluster_resource_check, clusterName, 'MongoDB');
     await I.verifyCommand(
       `kubectl get pv | grep ${psmdb_cluster_resource_check}`,
       'No resources found',
@@ -295,7 +295,7 @@ Scenario('Verify update PSMDB Cluster version @dbaas', async ({ I, dbaasPage, db
     ),
   };
 
-  await dbaasAPI.deleteAllDBCluster(clusterName);
+  await dbaasAPI.apiDeleteAllDBCluster(clusterName);
   await dbaasPage.waitForDbClusterTab(clusterName);
   I.waitForInvisible(dbaasPage.tabs.kubernetesClusterTab.disabledAddButton, 30);
   await dbaasActionsPage.createClusterAdvancedOption(clusterName, psmdb_cluster_update, 'MongoDB', clusterDetails, '4.2.8-8');
@@ -305,7 +305,7 @@ Scenario('Verify update PSMDB Cluster version @dbaas', async ({ I, dbaasPage, db
   await dbaasActionsPage.updateCluster();
   I.waitForVisible(dbaasPage.tabs.dbClusterTab.fields.clusterStatusUpdating, 60);
   I.seeElement(dbaasPage.tabs.dbClusterTab.fields.clusterStatusUpdating);
-  await dbaasAPI.waitForDBClusterState(psmdb_cluster_update, clusterName, 'MongoDB', 'DB_CLUSTER_STATE_READY');
+  await dbaasAPI.apiWaitForDBClusterState(psmdb_cluster_update, clusterName, 'MongoDB', 'DB_CLUSTER_STATE_READY');
   I.waitForElement(dbaasPage.tabs.dbClusterTab.fields.clusterStatusActive, 120);
   I.seeElement(dbaasPage.tabs.dbClusterTab.fields.clusterStatusActive);
   await dbaasActionsPage.deletePSMDBCluster(psmdb_cluster_update, clusterName);

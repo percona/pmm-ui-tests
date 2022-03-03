@@ -273,7 +273,7 @@ module.exports = {
     await dbaasActionsPage.checkActionPossible('Restart', false);
     await dbaasActionsPage.checkActionPossible('Resume', false);
     I.click(dbaasPage.tabs.dbClusterTab.fields.clusterActionsMenu);
-    await dbaasAPI.waitForDBClusterState(dbClusterName, k8sClusterName, clusterDBType, 'DB_CLUSTER_STATE_READY');
+    await dbaasAPI.apiWaitForDBClusterState(dbClusterName, k8sClusterName, clusterDBType, 'DB_CLUSTER_STATE_READY');
     I.waitForElement(dbaasPage.tabs.dbClusterTab.fields.clusterStatusActive, 120);
     I.seeElement(dbaasPage.tabs.dbClusterTab.fields.clusterStatusActive);
     I.waitForElement(dbaasPage.tabs.dbClusterTab.fields.clusterConnection.showPasswordButton, 30);
