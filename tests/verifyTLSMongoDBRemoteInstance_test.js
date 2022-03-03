@@ -104,6 +104,31 @@ Data(instances).Scenario(
 ).retry(1);
 
 Data(instances).Scenario(
+  'PMM-T926 PMM-T927 Verify there is no possibility to add MongoDB Service with only CA file specified,'
+    + 'Verify there is no possibility to add MongoDB Service with only certificate file specified @ssl @ssl-remote',
+  async ({
+    I, current, grafanaAPI,
+  }) => {
+    const {
+      container,
+    } = current;
+    let responseMessage = 'Connection check failed: server selection error: server selection timeout, current topology:';
+    let command = `docker exec ${container} pmm-admin add mongodb --tls --tls-skip-verify --authentication-mechanism=MONGODB-X509 --authentication-database=$external --tls-ca-file=/nodes/certificates/ca.crt TLS_MongoDB_Service`;
+
+    let output = await I.verifyCommand(command, responseMessage, 'fail');
+
+    assert.ok(output.includes(responseMessage), `The ${command} was supposed to return output which contained ${responseMessage} but actually got ${output}`);
+
+    responseMessage = 'Connection check failed: server selection error: server selection timeout, current topology:';
+    command = `docker exec ${container} pmm-admin add mongodb --tls --authentication-mechanism=MONGODB-X509 --authentication-database=$external --tls-certificate-key-file=/nodes/certificates/client.pem TLS_MongoDB_Service`;
+
+    output = await I.verifyCommand(command, responseMessage, 'fail');
+
+    assert.ok(output.includes(responseMessage), `The ${command} was supposed to return output which contained ${responseMessage} but actually got ${output}`);
+  },
+).retry(1);
+
+Data(instances).Scenario(
   'Verify dashboard after MongoDB SSL Instances are added @ssl @ssl-remote',
   async ({
     I, dashboardPage, adminPage, current,

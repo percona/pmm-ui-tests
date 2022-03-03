@@ -99,17 +99,24 @@ Data(instances).Scenario(
 ).retry(1);
 
 Data(instances).Scenario(
-  'PMM-T937 Verify MySQL cannot be added without specified --tls-key @ssl @ssl-remote',
+  'PMM-T937 PMM-T938 Verify MySQL cannot be added without specified --tls-key, Verify MySQL cannot be added without specified --tls-cert @ssl @ssl-remote',
   async ({
     I, current, grafanaAPI,
   }) => {
     const {
       container,
     } = current;
-    const responseMessage = 'Connection check failed: register MySQL client cert failed: tls: failed to find any PEM data in key input.\n';
-    const command = `docker exec ${container} pmm-admin add mysql --username=pmm --password=pmm --port=3306 --query-source=perfschema --tls --tls-skip-verify --tls-ca=/var/lib/mysql/ca.pem --tls-cert=/var/lib/mysql/client-cert.pem TLS_mysql`;
+    let responseMessage = 'Connection check failed: register MySQL client cert failed: tls: failed to find any PEM data in key input.\n';
+    let command = `docker exec ${container} pmm-admin add mysql --username=pmm --password=pmm --port=3306 --query-source=perfschema --tls --tls-skip-verify --tls-ca=/var/lib/mysql/ca.pem --tls-cert=/var/lib/mysql/client-cert.pem TLS_mysql`;
 
-    const output = await I.verifyCommand(command, responseMessage, 'fail');
+    let output = await I.verifyCommand(command, responseMessage, 'fail');
+
+    assert.ok(output === responseMessage, `The ${command} was supposed to return ${responseMessage} but actually got ${output}`);
+
+    responseMessage = 'Connection check failed: register MySQL client cert failed: tls: failed to find any PEM data in certificate input.\n';
+    command = `docker exec ${container} pmm-admin add mysql --username=pmm --password=pmm --port=3306 --query-source=perfschema --tls --tls-skip-verify --tls-ca=/var/lib/mysql/ca.pem --tls-key=/var/lib/mysql/client-key.pem TLS_mysql`;
+
+    output = await I.verifyCommand(command, responseMessage, 'fail');
 
     assert.ok(output === responseMessage, `The ${command} was supposed to return ${responseMessage} but actually got ${output}`);
   },
