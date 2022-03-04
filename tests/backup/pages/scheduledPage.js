@@ -1,6 +1,6 @@
 const { I } = inject();
 
-const scheduleCell = (name) => `//tr[td/div[contains(text(), "${name}")]]`;
+const scheduleCell = (name) => `//tr[td/div/span[contains(text(), "${name}")]]`;
 
 module.exports = {
   url: 'graph/backup/scheduled',
