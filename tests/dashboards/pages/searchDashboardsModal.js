@@ -1,6 +1,6 @@
 const { I } = inject();
 
-const folderWrapper = 'div[aria-label="Search section"]';
+const folderWrapper = locate(I.useDataQA('data-testid Search section')).find('.pointer');
 
 module.exports = {
   folders: {
@@ -78,6 +78,14 @@ module.exports = {
         'PostgreSQL Instances Overview',
       ],
     },
+    experimental: {
+      name: 'Experimental',
+      items: [
+        'DB Cluster Summary',
+        'Environments Overview (Designed for PMM)',
+        'Environment Summary (Designed for PMM)',
+      ],
+    },
     queryAnalytics: {
       name: 'Query Analytics',
       items: [
@@ -92,7 +100,7 @@ module.exports = {
     expandedFolderLocator: (folderName) => locate(folderWrapper).withDescendant('div').withText(folderName)
       .find('div')
       .at(1),
-    folderItemLocator: (itemName) => locate(`div[aria-label="Dashboard search item ${itemName}"]`).find('a'),
+    folderItemLocator: (itemName) => locate(I.useDataQA(`data-testid Dashboard search item ${itemName}`)).find('a'),
   },
 
   waitForOpened() {
@@ -105,23 +113,26 @@ module.exports = {
 
   async getFoldersList() {
     return (await I.grabTextFromAll(
-      locate('div .pointer').find('div').after('div').before('div'),
+      '.pointer > div:nth-child(2)',
     )).map((elem) => elem.split('|')[0]);
   },
 
   expandFolder(name) {
+    I.waitForVisible(this.fields.collapsedFolderLocator(name), 10);
     I.click(this.fields.collapsedFolderLocator(name));
-    I.waitForElement(this.fields.expandedFolderLocator(name));
+    I.waitForElement(this.fields.expandedFolderLocator(name), 5);
   },
 
   collapseFolder(name) {
+    I.waitForVisible(this.fields.expandedFolderLocator(name), 10);
     I.click(this.fields.expandedFolderLocator(name));
-    I.waitForElement(this.fields.collapsedFolderLocator(name));
+    I.waitForElement(this.fields.collapsedFolderLocator(name), 5);
   },
 
   verifyDashboardsInFolderCollection(folderObject) {
     for (const item of folderObject.items) {
       I.seeElementInDOM(this.fields.folderItemLocator(item));
+      I.see(item, this.fields.folderItemLocator(item));
     }
   },
 };

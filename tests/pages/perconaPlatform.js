@@ -5,6 +5,7 @@ const { I } = inject();
 module.exports = {
   url: 'graph/settings/percona-platform',
   elements: {
+    techPreviewLabel: locate('h1'),
     connectForm: '$connect-form',
     pmmServerNameFieldLabel: '$pmmServerName-field-label',
     pmmServerNameValidation: '$pmmServerName-field-error-message',
@@ -23,6 +24,7 @@ module.exports = {
     connect: '$connect-button',
   },
   messages: {
+    technicalPreview: ' This feature is in Technical Preview stage',
     requiredField: 'Required field',
     invalidEmail: 'Invalid email address',
     connected: 'This PMM instance is connected to Percona Portal.',

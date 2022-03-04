@@ -36,36 +36,6 @@ Scenario(
   },
 );
 
-Scenario(
-  'PMM-T165: Verify Annotation with Default Options @nightly @dashboards',
-  async ({ I, dashboardPage }) => {
-    const annotationTitle = 'pmm-annotate-without-tags';
-
-    I.amOnPage(`${dashboardPage.processDetailsDashboard.url}`);
-    dashboardPage.waitForDashboardOpened();
-    dashboardPage.verifyAnnotationsLoaded('pmm-annotate-without-tags', 1);
-    I.seeElement(dashboardPage.annotationText(annotationTitle));
-  },
-);
-
-Scenario(
-  'PMM-T166: Verify adding annotation with specified tags @nightly @dashboards',
-  async ({ I, dashboardPage }) => {
-    const annotationTitle2 = 'pmm-annotate-tags';
-    const annotationTag1 = 'pmm-testing-tag1';
-    const annotationTag2 = 'pmm-testing-tag2';
-    const defaultAnnotation = 'pmm_annotation';
-
-    I.amOnPage(`${dashboardPage.processDetailsDashboard.url}`);
-    dashboardPage.waitForDashboardOpened();
-    dashboardPage.verifyAnnotationsLoaded('pmm-annotate-tags', 2);
-    I.seeElement(dashboardPage.annotationText(annotationTitle2));
-    I.seeElement(dashboardPage.annotationTagText(annotationTag1));
-    I.seeElement(dashboardPage.annotationTagText(annotationTag2));
-    I.seeElement(dashboardPage.annotationTagText(defaultAnnotation));
-  },
-);
-
 Data(nodes).Scenario(
   'PMM-T418 PMM-T419 Verify the pt-summary on Node Summary dashboard @nightly @dashboards',
   async ({ I, dashboardPage, adminPage }) => {

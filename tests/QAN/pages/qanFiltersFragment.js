@@ -36,7 +36,7 @@ module.exports = {
     getFiltersPath: '/v0/qan/Filters/Get',
   },
 
-  getFilterSectionLocator: (filterSectionName) => `//span[contains(text(), '${filterSectionName}')]`,
+  getFilterSectionLocator: (section) => `//div[./p/span[@data-testid="checkbox-group-header" and contains(text(), "${section}")]]`,
 
   getFilterGroupLocator: (filterName) => `//div[@class='filter-group__title']//span[contains(text(), '${filterName}')]`,
 
@@ -52,7 +52,7 @@ module.exports = {
   },
 
   checkLink(section, filter, visibility) {
-    const locator = `//span[contains(text(), '${section}')]/parent::p/following-sibling::div//span[contains(@class, 'checkbox-container__label-text') and contains(text(), '${filter}')]/ancestor::span/following-sibling::span/a`;
+    const locator = locate('span[title]').withText(filter).inside(this.getFilterSectionLocator(section));
 
     if (visibility) {
       I.waitForElement(locator, 30);

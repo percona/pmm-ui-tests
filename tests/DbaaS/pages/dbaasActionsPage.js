@@ -95,11 +95,7 @@ module.exports = {
     I.waitForElement(dbaasPage.tabs.dbClusterTab.fields.clusterAction('Restart'), 30);
     I.click(dbaasPage.tabs.dbClusterTab.fields.clusterAction('Restart'));
     I.waitForText('Processing', 30, dbaasPage.tabs.dbClusterTab.fields.progressBarContent);
-    if (clusterDBType === 'MySQL') {
-      await dbaasAPI.waitForXtraDbClusterReady(dbClusterName, k8sClusterName);
-    } else {
-      await dbaasAPI.waitForPSMDBClusterReady(dbClusterName, k8sClusterName);
-    }
+    await dbaasAPI.waitForDBClusterState(dbClusterName, k8sClusterName, clusterDBType, 'DB_CLUSTER_STATE_READY');
   },
 
   async editCluster(dbClusterName, k8sClusterName, configuration) {
@@ -143,11 +139,7 @@ module.exports = {
     I.click(dbaasPage.tabs.dbClusterTab.fields.clusterAction('Suspend'));
     I.waitForText('Processing', 30, dbaasPage.tabs.dbClusterTab.fields.progressBarContent);
     await this.checkActionPossible('Resume', false);
-    if (clusterDBType === 'MySQL') {
-      await dbaasAPI.waitForXtraDbClusterPaused(dbClusterName, k8sClusterName);
-    } else {
-      await dbaasAPI.waitForPSMDBClusterPaused(dbClusterName, k8sClusterName);
-    }
+    await dbaasAPI.waitForDBClusterState(dbClusterName, k8sClusterName, clusterDBType, 'DB_CLUSTER_STATE_PAUSED');
   },
 
   async resumeCluster(dbClusterName, k8sClusterName, clusterDBType = 'MySQL') {
@@ -157,11 +149,7 @@ module.exports = {
     I.waitForElement(dbaasPage.tabs.dbClusterTab.fields.clusterAction('Resume'), 30);
     I.click(dbaasPage.tabs.dbClusterTab.fields.clusterAction('Resume'));
     I.waitForText('Processing', 30, dbaasPage.tabs.dbClusterTab.fields.progressBarContent);
-    if (clusterDBType === 'MySQL') {
-      await dbaasAPI.waitForXtraDbClusterReady(dbClusterName, k8sClusterName);
-    } else {
-      await dbaasAPI.waitForPSMDBClusterReady(dbClusterName, k8sClusterName);
-    }
+    await dbaasAPI.waitForDBClusterState(dbClusterName, k8sClusterName, clusterDBType, 'DB_CLUSTER_STATE_READY');
   },
 
   async deletePSMDBCluster(dbClusterName, k8sClusterName) {
@@ -201,7 +189,7 @@ module.exports = {
     await adminPage.verifyBackgroundColor(
       dbaasPage.tabs.dbClusterTab.advancedOptions.fields.resourceBarResourceIndication(
         resourceType,
-      ), 'rgb(224, 47, 68)',
+      ), 'rgb(209, 14, 92)',
     );
   },
 

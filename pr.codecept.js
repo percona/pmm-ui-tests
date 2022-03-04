@@ -75,6 +75,9 @@ exports.config = {
       enabled: true,
       outputDir: 'tests/output/allure',
     },
+    tryTo: {
+      enabled: true,
+    },
   },
   mocha: {
     reporterOptions: {
@@ -105,6 +108,6 @@ exports.config = {
   hooks: [],
   gherkin: {},
   tests: 'tests/**/*_test.js',
-  timeout: 10000,
+  timeout: 1400,
   name: 'pmm-qa',
 };

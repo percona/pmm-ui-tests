@@ -21,7 +21,6 @@ Scenario(
     remoteInstancesPage.createRemoteInstance(instanceIdToMonitor);
     pmmInventoryPage.verifyRemoteServiceIsDisplayed(instanceIdToMonitor);
     await pmmInventoryPage.verifyAgentHasStatusRunning(instanceIdToMonitor);
-    await pmmInventoryPage.verifyMetricsFlags(instanceIdToMonitor);
   },
 );
 
@@ -96,17 +95,17 @@ Scenario(
 Scenario(
   'PMM-T603 Verify MySQL RDS exporter is running in pull mode @instances',
   async ({
-    I, dashboardPage, remoteInstancesPage, inventoryAPI,
+    grafanaAPI, remoteInstancesPage, inventoryAPI,
   }) => {
-    const metricNames = ['aws_rds_cpu_credit_usage_average', 'rds_exporter_requests_total', 'rdsosmetrics_cpuUtilization_system'];
+    const metricNames = ['aws_rds_cpu_credit_usage_average', 'rdsosmetrics_memory_total', 'rdsosmetrics_cpuUtilization_total'];
     const serviceName = remoteInstancesPage.rds['Service Name'];
     const { node_id } = await inventoryAPI.apiGetNodeInfoByServiceName('MYSQL_SERVICE', serviceName);
     const response = await inventoryAPI.apiGetAgentsViaNodeId(node_id);
     const result = response.data.rds_exporter[0];
 
     assert.ok(!result.push_metrics_enabled, `Push Metrics Enabled Flag Should not be present on response object for AWS RDS but found ${JSON.stringify(result)}`);
-    metricNames.forEach((metric) => {
-      dashboardPage.checkMetricExist(metric, { type: 'service_name', value: serviceName });
-    });
+    for (const metric of metricNames) {
+      await grafanaAPI.waitForMetric(metric, { type: 'node_id', value: node_id });
+    }
   },
 );

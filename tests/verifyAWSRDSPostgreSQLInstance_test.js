@@ -21,7 +21,7 @@ After(async ({ settingsAPI }) => {
 });
 
 Scenario(
-  'PMM-T716 - Verify adding PostgreSQL RDS monitoring to PMM via UI @instances',
+  'PMM-T716 - Verify adding PostgreSQL RDS monitoring to PMM via UI @aws @instances',
   async ({
     I, remoteInstancesPage, pmmInventoryPage,
   }) => {
@@ -46,7 +46,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T716 - Verify Dashboard for Postgres RDS added via UI @instances',
+  'PMM-T716 - Verify Dashboard for Postgres RDS added via UI @aws @instances',
   async ({
     I, dashboardPage, settingsAPI,
   }) => {
@@ -75,7 +75,7 @@ Scenario(
 ).retry(2);
 
 Scenario(
-  'PMM-T716 - Verify QAN for Postgres RDS added via UI @instances',
+  'PMM-T716 - Verify QAN for Postgres RDS added via UI @aws @instances',
   async ({
     I, qanOverview, qanFilters, qanPage,
   }) => {

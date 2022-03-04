@@ -1,6 +1,12 @@
 const { dashboardPage, homePage } = inject();
 const assert = require('assert');
 
+const {
+  inventoryAPI,
+} = inject();
+let services;
+const serviceList = [];
+
 const urlsAndMetrics = new DataTable(['metricName', 'startUrl']);
 
 urlsAndMetrics.add(['Client Connections (All Host Groups)', `${dashboardPage.proxysqlInstanceSummaryDashboard.url}?from=now-5m&to=now`]);
@@ -8,37 +14,55 @@ urlsAndMetrics.add(['Percona News', homePage.url]);
 
 Feature('Test Dashboards inside the MySQL Folder');
 
+BeforeSuite(async ({ I }) => {
+  const ps_service_response = await inventoryAPI.apiGetNodeInfoForAllNodesByServiceName('MYSQL_SERVICE', 'ps_');
+  const ms_service_response = await inventoryAPI.apiGetNodeInfoForAllNodesByServiceName('MYSQL_SERVICE', 'ms-');
+  const md_service_response = await inventoryAPI.apiGetNodeInfoForAllNodesByServiceName('MYSQL_SERVICE', 'md_');
+  const pxc_service_response = await inventoryAPI.apiGetNodeInfoForAllNodesByServiceName('MYSQL_SERVICE', 'pxc_');
+
+  services = ps_service_response.concat(ms_service_response, md_service_response, pxc_service_response);
+  for (const nodeInfo of services) {
+    serviceList.push(nodeInfo.service_name);
+  }
+});
+
 Before(async ({ I }) => {
   await I.Authorize();
 });
 
 Scenario(
   'PMM-T317 - Open the MySQL Instance Summary Dashboard and verify Metrics are present and graphs are displayed @nightly @dashboards',
-  async ({ I, adminPage, dashboardPage }) => {
-    I.amOnPage(dashboardPage.mysqlInstanceSummaryDashboard.url);
-    dashboardPage.waitForDashboardOpened();
-    await dashboardPage.applyFilter('Service Name', 'ms-single');
-    await dashboardPage.expandEachDashboardRow();
-    I.click(adminPage.fields.metricTitle);
-    adminPage.performPageDown(5);
-    dashboardPage.verifyMetricsExistence(dashboardPage.mysqlInstanceSummaryDashboard.metrics);
-    await dashboardPage.verifyThereAreNoGraphsWithNA();
-    await dashboardPage.verifyThereAreNoGraphsWithoutData(4);
+  async ({
+    I, adminPage, dashboardPage,
+  }) => {
+    for (const serviceName of serviceList) {
+      I.amOnPage(dashboardPage.mysqlInstanceSummaryDashboard.url);
+      dashboardPage.waitForDashboardOpened();
+      await dashboardPage.applyFilter('Service Name', serviceName);
+      await dashboardPage.expandEachDashboardRow();
+      I.click(adminPage.fields.metricTitle);
+      adminPage.performPageDown(5);
+      dashboardPage.verifyMetricsExistence(dashboardPage.mysqlInstanceSummaryDashboard.metrics);
+      await dashboardPage.verifyThereAreNoGraphsWithNA();
+      await dashboardPage.verifyThereAreNoGraphsWithoutData(5);
+    }
   },
 );
 
 Scenario(
   'PMM-T319 - Open the MySQL Instances Overview dashboard and verify Metrics are present and graphs are displayed @nightly @dashboards',
   async ({ I, adminPage, dashboardPage }) => {
-    I.amOnPage(dashboardPage.mySQLInstanceOverview.url);
-    dashboardPage.waitForDashboardOpened();
-    await dashboardPage.applyFilter('Service Name', 'ms-single');
-    await dashboardPage.expandEachDashboardRow();
-    I.click(adminPage.fields.metricTitle);
-    adminPage.performPageDown(5);
-    dashboardPage.verifyMetricsExistence(dashboardPage.mySQLInstanceOverview.metrics);
-    await dashboardPage.verifyThereAreNoGraphsWithNA();
-    await dashboardPage.verifyThereAreNoGraphsWithoutData(1);
+    for (const serviceName of serviceList) {
+      I.amOnPage(dashboardPage.mySQLInstanceOverview.url);
+      dashboardPage.waitForDashboardOpened();
+      await dashboardPage.applyFilter('Service Name', serviceName);
+      await dashboardPage.expandEachDashboardRow();
+      I.click(adminPage.fields.metricTitle);
+      adminPage.performPageDown(5);
+      dashboardPage.verifyMetricsExistence(dashboardPage.mySQLInstanceOverview.metrics);
+      await dashboardPage.verifyThereAreNoGraphsWithNA();
+      await dashboardPage.verifyThereAreNoGraphsWithoutData(1);
+    }
   },
 );
 
@@ -51,14 +75,16 @@ Scenario(
     I.click(adminPage.fields.metricTitle);
     adminPage.performPageDown(5);
     dashboardPage.verifyMetricsExistence(dashboardPage.mysqlInstancesCompareDashboard.metrics);
-    await dashboardPage.verifyThereAreNoGraphsWithNA();
+    await dashboardPage.verifyThereAreNoGraphsWithNA(1);
     await dashboardPage.verifyThereAreNoGraphsWithoutData(3);
   },
 );
 
 Data(urlsAndMetrics).Scenario(
   'PMM-T1070 + PMM-T449 - Verify link to instructions for enabling rendering images @nightly @dashboards',
-  async ({ I, dashboardPage, links, current }) => {
+  async ({
+    I, dashboardPage, links, current,
+  }) => {
     I.amOnPage(current.startUrl);
     dashboardPage.waitForDashboardOpened();
     await dashboardPage.openGraphDropdownMenu(current.metricName);
@@ -67,8 +93,18 @@ Data(urlsAndMetrics).Scenario(
     I.waitForVisible(shareLocator, 20);
     I.click(shareLocator);
     I.waitForVisible(dashboardPage.sharePanel.elements.imageRendererPluginLink, 20);
-    I.seeAttributesOnElements(dashboardPage.sharePanel.elements.imageRendererPluginLink, { href: links.imageRendererPlugin });
+    I.seeAttributesOnElements(
+      dashboardPage.sharePanel.elements.imageRendererPluginLink,
+      {
+        href: links.imageRendererPlugin,
+        target: '_blank',
+      },
+    );
     I.seeTextEquals('Image Renderer plugin', dashboardPage.sharePanel.elements.imageRendererPluginLink);
+    I.seeTextEquals(
+      dashboardPage.sharePanel.messages.imageRendererPlugin,
+      dashboardPage.sharePanel.elements.imageRendererPluginInfoText,
+    );
   },
 );
 
@@ -101,7 +137,10 @@ Scenario(
   'PMM-T324 - Verify MySQL - MySQL User Details dashboard @nightly @dashboards',
   async ({ I, dashboardPage, adminPage }) => {
     I.amOnPage(dashboardPage.mysqlUserDetailsDashboard.url);
+    const ps_service_response = await inventoryAPI.apiGetNodeInfoForAllNodesByServiceName('MYSQL_SERVICE', 'ps_8.0');
+
     dashboardPage.waitForDashboardOpened();
+    await dashboardPage.applyFilter('Service Name', ps_service_response[0].service_name);
     adminPage.performPageDown(5);
     await dashboardPage.expandEachDashboardRow();
     adminPage.performPageUp(5);
@@ -123,7 +162,7 @@ xScenario(
     I.amOnPage(dashboardPage.mysqlUserDetailsDashboard.url);
     dashboardPage.waitForDashboardOpened();
     I.waitForVisible(dashboardPage.fields.timeRangePickerButton, 20);
-    adminPage.applyTimeRange(timeRange);
+    await adminPage.applyTimeRange(timeRange);
     await dashboardPage.applyFilter('Service Name', 'ps_8.0');
     I.waitForVisible(dashboardPage.fields.rootUser, 20);
     I.click(dashboardPage.fields.rootUser);

@@ -52,11 +52,11 @@ Scenario(
   async ({
     I, homePage, dashboardPage,
   }) => {
-    const mySQL = 'azure-MySQL';
+    const nodeName = 'azure-MySQL';
 
     I.amOnPage(homePage.url);
-    await dashboardPage.applyFilter('Node Name', mySQL);
-    homePage.verifyVisibleService(mySQL);
+    await dashboardPage.applyFilter('Node Name', nodeName);
+    homePage.verifyVisibleService(nodeName);
     // part without RDS MySQL should be skipped for now
   },
 ).retry(2);
@@ -74,12 +74,7 @@ Data(filters).Scenario('PMM-T746, PMM-T748 - Verify adding monitoring for Azure 
 
 Data(metrics).Scenario(
   'PMM-T743 Check metrics from exporters are hitting PMM Server @instances',
-  async ({ I, dashboardPage, current }) => {
-    // This is only needed to let PMM Consume Metrics
-    I.wait(10);
-    const response = await dashboardPage.checkMetricExist(current.metricName);
-    const result = JSON.stringify(response.data.data.result);
-
-    assert.ok(response.data.data.result.length !== 0, `Metrics ${current.metricName} should be available after adding Azure Instance but got empty ${result}`);
+  async ({ grafanaAPI, current }) => {
+    await grafanaAPI.waitForMetric(current.metricName, null, 10);
   },
 );
