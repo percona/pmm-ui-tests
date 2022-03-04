@@ -199,8 +199,9 @@ module.exports = {
 
   randomizeClusterName(clusterName) {
     const stringLength = 6;
-    let randomString = faker.random.alphaNumeric(stringLength);
-    return clusterName + '-' + randomString;
+    const randomString = faker.random.alphaNumeric(stringLength);
+
+    return `${clusterName}-${randomString}`;
   },
 
   checkCluster(clusterName, deleted) {
@@ -418,8 +419,7 @@ module.exports = {
   },
 
   async dbaasQANCheck(dbclusterName, nodeName, serviceName) {
-    I.amOnPage(qanPage.url);
-    await adminPage.applyTimeRange('Last 3 hours');
+    I.amOnPage(I.getDashboardUrlWithParams(qanPage.clearUrl, null, null, 'from=now-3h&to=now'));
     qanOverview.waitForOverviewLoaded();
     qanFilters.checkFilterExistInSection('Cluster', dbclusterName);
     qanFilters.checkFilterExistInSection('Node Name', `${nodeName}`);
@@ -435,10 +435,11 @@ module.exports = {
 
   async apiKeyCheck(clusterName, dbClusterName, dbClusterType, keyExists) {
     const dbaasPage = this;
+
     I.amOnPage(dbaasPage.apiKeysUrl);
 
     if (keyExists) {
-      I.waitForText(`${dbClusterType}-${clusterName}-${dbClusterName}`, 10 , dbaasPage.apiKeysPage.apiKeysTable);
+      I.waitForText(`${dbClusterType}-${clusterName}-${dbClusterName}`, 10, dbaasPage.apiKeysPage.apiKeysTable);
     } else {
       I.dontSee(`${dbClusterType}-${dbClusterName}`, dbaasPage.apiKeysPage.apiKeysTable);
     }

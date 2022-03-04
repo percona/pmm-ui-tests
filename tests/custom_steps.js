@@ -76,4 +76,24 @@ module.exports = () => actor({
       this.wait(interval);
     }
   },
+
+  getDashboardUrlWithParams(url, filters, timerange, searchValue = null, column = null, page_number = 1, page_size = 25) {
+    let str = `${url}?`;
+
+    for (const i in filters) {
+      const { filterName, filterValue } = filters[i];
+
+      str += filterName !== null && !filterValue.isEmpty ? `var-${filterName}=${filterValue}&` : '';
+    }
+    // str += node_name !== null && !node_name.isEmpty ? `var-node_name=${node_name}&` : '';
+    // str += service_name !== null && !service_name.isEmpty ? `var-service_name=${service_name}&` : '';
+
+    str += column !== null && !column.isEmpty ? `columns=%5B%22load%22,%22num_queries%22,%22query_time%22,%22${column}%5D&` : '';
+    str += timerange !== null && !timerange.isEmpty ? `${timerange}&` : '';
+    str += searchValue !== null && !searchValue.isEmpty ? `dimensionSearchText=${searchValue}&` : '';
+    str += page_number !== null && !page_number.isEmpty ? `page_number=${page_number}&` : '';
+    str += page_size !== null && !page_size.isEmpty ? `page_size=${page_size}&` : '';
+
+    return str.slice(0, str.length - 1);
+  },
 });
