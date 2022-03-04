@@ -5,96 +5,41 @@ const { I } = inject();
 module.exports = {
   url: 'graph/settings/percona-platform',
   elements: {
-    signInForm: '$sign-in-form',
-    signUpForm: '$sign-up-form',
+    techPreviewLabel: locate('h1'),
+    connectForm: '$connect-form',
+    pmmServerNameFieldLabel: '$pmmServerName-field-label',
+    pmmServerNameValidation: '$pmmServerName-field-error-message',
     emailFieldLabel: '$email-field-label',
     emailValidation: '$email-field-error-message',
     passwordFieldLabel: '$password-field-label',
     passwordValidation: '$password-field-error-message',
-    firstNameFieldLabel: '$firstName-field-label',
-    firstNameValidation: '$firstName-field-error-message',
-    lastNameFieldLabel: '$lastName-field-label',
-    lastNameValidation: '$lastName-field-error-message',
-    termsCheckboxLabel: '$sign-up-agreement-checkbox-label',
-    termsCheckboxValidation: '$agreement-field-error-message',
-    loggedInForm: '$logged-in-wrapper',
-    loggedInEmail: '$logged-in-email',
+    connectedWrapper: '$connected-wrapper',
   },
   fields: {
+    pmmServerNameField: '$pmmServerName-text-input',
     emailField: '$email-text-input',
     passwordField: '$password-password-input',
-    firstNameField: '$firstName-text-input',
-    lastNameField: '$lastName-text-input',
   },
   buttons: {
-    signIn: '$sign-in-submit-button',
-    signUp: '$sign-up-submit-button',
-    forgotPasswordLink: '$sign-in-forgot-password-button',
-    termsCheckBox: '$agreement-checkbox-input',
-    goToSignUp: '$sign-in-to-sign-up-button',
-    backToSignIn: '$sign-up-to-sign-in-button',
-    signOut: '$logged-in-sign-out-link',
+    connect: '$connect-button',
   },
   messages: {
-    termsText: 'Check here to indicate that you have read and agree to the \n'
-        + 'Terms of Service\n'
-        + ' and \n'
-        + 'Privacy Policy',
+    technicalPreview: ' This feature is in Technical Preview stage',
     requiredField: 'Required field',
     invalidEmail: 'Invalid email address',
-    signedIn: (email) => `You are signed in as ${email}`,
-    signedOut: 'Signed out successfully',
-    activationLinkWasSent: 'An account activation email has been sent to you',
-    errorCreatingAccount: 'Error Creating Your Account.',
+    connected: 'This PMM instance is connected to Percona Portal.',
+    connectedSuccess: 'Successfully connected PMM to Percona Portal',
   },
 
-  async login(email, password) {
+  async connect(pmmServerName, email, password) {
+    I.fillField(this.fields.pmmServerNameField, pmmServerName);
     I.fillField(this.fields.emailField, email);
     I.fillField(this.fields.passwordField, password);
-    I.seeAttributesOnElements(this.buttons.signIn, { disabled: null });
-    I.click(this.buttons.signIn);
-    I.verifyPopUpMessage(this.messages.signedIn(email));
-    I.dontSeeElement(this.elements.signInForm);
-    I.seeElement(this.elements.loggedInForm);
+    I.seeAttributesOnElements(this.buttons.connect, { disabled: null });
+    I.click(this.buttons.connect);
+    I.verifyPopUpMessage(this.messages.connectedSuccess);
     I.refreshPage();
-    I.waitForVisible(this.elements.loggedInForm, 20);
-
-    await this.verifyUserIsLoggedIn(email);
-  },
-
-  async verifyUserIsLoggedIn(email) {
-    I.waitForVisible(this.elements.loggedInForm, 30);
-    await within(this.elements.loggedInForm, async () => {
-      I.seeTextEquals('Percona Platform Account', 'header');
-      I.seeTextEquals('You are logged in as', locate('p').first());
-      I.waitForText(email, 10, this.elements.loggedInEmail);
-      I.seeTextEquals('Logout', this.buttons.signOut);
-    });
-  },
-
-  async activateAccount(email, password) {
-    const messageLinks = (await I.getLastMessage(email)).html.links;
-    const activationLink = messageLinks.find(({ text }) => text.trim() === 'Activate').href;
-
-    I.openNewTab();
-    I.amOnPage(activationLink);
-    I.waitForVisible('[name="newPassword"]', 20);
-    I.fillField('[name="newPassword"]', password);
-    I.fillField('[name="verifyPassword"]', password);
-    I.click('#next-button');
-    I.waitForVisible('[data-se="org-logo"]', 30);
-    I.waitForVisible('[data-se="dropdown-menu-button-header"]', 30);
-    I.seeInCurrentUrl('/app/UserHome');
-    I.closeCurrentTab();
-  },
-
-  submitSignUpForm(email) {
-    I.fillField(this.fields.emailField, email);
-    I.fillField(this.fields.firstNameField, faker.name.firstName());
-    I.fillField(this.fields.lastNameField, faker.name.lastName());
-    I.forceClick(this.buttons.termsCheckBox);
-
-    I.click(this.buttons.signUp);
+    I.waitForVisible(this.elements.connectedWrapper, 20);
   },
 
   verifyEmailFieldValidation() {

@@ -3,7 +3,7 @@ const faker = require('faker');
 const { generate } = require('generate-password');
 
 const {
-  remoteInstancesHelper, perconaServerDB, pmmSettingsPage, dashboardPage,
+  remoteInstancesHelper, perconaServerDB, pmmSettingsPage, dashboardPage, databaseChecksPage,
 } = inject();
 
 const alertManager = {
@@ -18,8 +18,10 @@ clientDbServices.add(['POSTGRESQL_SERVICE', 'PGSQL_', 'pg_stat_database_xact_rol
 clientDbServices.add(['MONGODB_SERVICE', 'mongodb_', 'mongodb_connections', 'annotation-for-mongo', dashboardPage.mongoDbInstanceSummaryDashboard.url, 'mongo_upgrade']);
 
 const connection = perconaServerDB.defaultConnection;
-const emptyPasswordSummary = 'MySQL users have empty passwords';
-const failedCheckRowLocator = locate('tr').withChild(locate('td').withText(remoteInstancesHelper.upgradeServiceNames.mysql));
+const emptyPasswordSummary = 'User(s) has/have no password defined';
+const psServiceName = 'upgrade-stt-ps-5.7.30';
+const failedCheckRowLocator = databaseChecksPage.elements
+  .failedCheckRowByServiceName(psServiceName);
 const ruleName = 'Alert Rule for upgrade';
 const failedCheckMessage = 'Newer version of Percona Server for MySQL is available';
 
@@ -50,7 +52,7 @@ Feature('PMM server Upgrade Tests and Executing test cases related to Upgrade Te
 
 Before(async ({ I }) => {
   await I.Authorize();
-  I.setRequestTimeout(30000);
+  I.setRequestTimeout(60000);
 });
 
 BeforeSuite(async ({ I, codeceptjsConfig }) => {
@@ -117,14 +119,15 @@ Scenario(
 Scenario(
   'PMM-T391 Verify user is able to create and set custom home dashboard @pre-upgrade @ami-upgrade @pmm-upgrade',
   async ({ I, grafanaAPI, dashboardPage }) => {
-    const resp = await grafanaAPI.createCustomDashboard();
+    const folder = await grafanaAPI.createFolder(grafanaAPI.customFolderName);
+    const resp = await grafanaAPI.createCustomDashboard(grafanaAPI.customDashboardName, folder.id);
 
     await grafanaAPI.starDashboard(resp.id);
     await grafanaAPI.setHomeDashboard(resp.id);
 
     I.amOnPage('');
     dashboardPage.waitForDashboardOpened();
-    dashboardPage.verifyMetricsExistence(['Custom Panel']);
+    // dashboardPage.verifyMetricsExistence(['Custom Panel']);
     I.seeInCurrentUrl(resp.url);
   },
 );
@@ -135,9 +138,9 @@ Scenario(
     const body = {
       telemetry_enabled: true,
       metrics_resolutions: {
-        hr: '3s',
-        mr: '15s',
-        lr: '30s',
+        hr: '30s',
+        mr: '60s',
+        lr: '60s',
       },
       data_retention: '172800s',
     };
@@ -146,6 +149,67 @@ Scenario(
     I.wait(10);
   },
 );
+
+if (versionMinor >= 15) {
+  Scenario(
+    'Verify user has failed checks before upgrade @pre-upgrade @pmm-upgrade',
+    async ({
+      I,
+      settingsAPI,
+      databaseChecksPage,
+      securityChecksAPI,
+      addInstanceAPI,
+    }) => {
+      const runChecks = locate('button')
+        .withText('Run DB checks');
+
+      await perconaServerDB.dropUser();
+      await perconaServerDB.createUser();
+      await settingsAPI.changeSettings({ stt: true });
+      await addInstanceAPI.addInstanceForSTT(connection, psServiceName);
+
+      await securityChecksAPI.startSecurityChecks();
+      // Waiting to have results
+      await securityChecksAPI.waitForFailedCheckExistance(emptyPasswordSummary);
+      // Run DB Checks from UI
+      // disable check, change interval for a check, change interval settings
+      if (versionMinor >= 16) {
+        await securityChecksAPI.disableCheck('mongodb_version');
+        await securityChecksAPI.changeCheckInterval('postgresql_version');
+        await settingsAPI.setCheckIntervals({
+          ...settingsAPI.defaultCheckIntervals,
+          standard_interval: '3600s',
+        });
+        I.amOnPage(databaseChecksPage.url);
+      } else {
+        I.amOnPage(databaseChecksPage.oldUrl);
+      }
+
+      I.waitForVisible(runChecks, 30);
+      I.waitForVisible(failedCheckRowLocator, 60);
+
+      // Check that there are failed checks
+      await securityChecksAPI.verifyFailedCheckExists(emptyPasswordSummary);
+      await securityChecksAPI.verifyFailedCheckExists(failedCheckMessage);
+
+      // Silence mysql Empty Password failed check
+      I.waitForVisible(failedCheckRowLocator, 30);
+      I.click(failedCheckRowLocator.find('button').first());
+    },
+  );
+
+  Scenario(
+    'Adding Redis as external Service before Upgrade @pre-upgrade @pmm-upgrade',
+    async ({
+      I, addInstanceAPI,
+    }) => {
+      await addInstanceAPI.addExternalService('redis_external_remote');
+      await I.verifyCommand(
+        'pmm-admin add external --listen-port=42200 --group="redis" --custom-labels="testing=redis" --service-name="redis_external_2"',
+      );
+    },
+  );
+}
 
 Scenario(
   'Verify user can create Remote Instances before upgrade @pre-upgrade @ami-upgrade @pmm-upgrade',
@@ -190,7 +254,7 @@ if (versionMinor < 16 && versionMinor >= 10) {
 }
 
 if (iaReleased) {
-  Scenario(
+  Scenario.skip(
     'PMM-T577 Verify user is able to see IA alerts before upgrade @pre-upgrade @ami-upgrade @pmm-upgrade',
     async ({
       settingsAPI, rulesAPI, alertsAPI,
@@ -204,67 +268,14 @@ if (iaReleased) {
   );
 }
 
-if (versionMinor >= 15) {
-  Scenario(
-    'Verify user has failed checks before upgrade @pre-upgrade @pmm-upgrade',
-    async ({
-      I, settingsAPI, databaseChecksPage, securityChecksAPI,
-    }) => {
-      const runChecks = locate('button').withText('Run DB checks');
-
-      await perconaServerDB.dropUser();
-      await perconaServerDB.createUser();
-      await settingsAPI.changeSettings({ stt: true });
-      // Run DB Checks from UI
-      // disable check, change interval for a check, change interval settings
-      if (versionMinor >= 16) {
-        await securityChecksAPI.startSecurityChecks();
-        // Waiting to have all results
-        I.wait(15);
-        await securityChecksAPI.disableCheck('mysql_anonymous_users');
-        await securityChecksAPI.changeCheckInterval('postgresql_version');
-        await settingsAPI.setCheckIntervals({ ...settingsAPI.defaultCheckIntervals, standard_interval: '3600s' });
-
-        I.amOnPage(databaseChecksPage.url);
-        I.waitForVisible(runChecks, 30);
-      } else {
-        I.amOnPage(databaseChecksPage.oldUrl);
-        I.waitForVisible(runChecks, 30);
-        I.click(runChecks);
-        I.waitForVisible(failedCheckRowLocator, 30);
-      }
-
-      // Check that there are failed checks
-      await securityChecksAPI.verifyFailedCheckExists(emptyPasswordSummary);
-      await securityChecksAPI.verifyFailedCheckExists(failedCheckMessage);
-
-      // Silence mysql Empty Password failed check
-      I.waitForVisible(failedCheckRowLocator, 30);
-      I.click(failedCheckRowLocator.find('button').first());
-    },
-  );
-
-  Scenario(
-    'Adding Redis as external Service before Upgrade @pre-upgrade @pmm-upgrade',
-    async ({
-      I, addInstanceAPI,
-    }) => {
-      await addInstanceAPI.addExternalService('redis_external_remote');
-      const output = await I.verifyCommand(
-        'pmm-admin add external --listen-port=42200 --group="redis" --custom-labels="testing=redis" --service-name="redis_external_2"',
-      );
-    },
-  );
-}
-
 if (versionMinor >= 13) {
   Data(clientDbServices).Scenario(
     'Adding annotation before upgrade At service Level @ami-upgrade @pre-upgrade @pmm-upgrade',
     async ({
-      I, annotationAPI, inventoryAPI, current,
+      annotationAPI, inventoryAPI, current,
     }) => {
       const {
-        serviceType, name, metric, annotationName,
+        serviceType, name, annotationName,
       } = current;
       const { node_id, service_name } = await inventoryAPI.apiGetNodeInfoByServiceName(serviceType, name);
       const nodeName = await inventoryAPI.getNodeName(node_id);
@@ -303,7 +314,7 @@ if (versionMinor >= 21) {
           break;
         case 'MONGODB_SERVICE':
           output = await I.verifyCommand(
-            `pmm-admin add mongodb --node-id=${node_id} --pmm-agent-id=${pmm_agent_id} --port=${port} --host=${address} --agent-password=uitests --custom-labels="testing=upgrade" ${upgrade_service}`,
+            `pmm-admin add mongodb --node-id=${node_id} --username=pmm_mongodb --password=secret --pmm-agent-id=${pmm_agent_id} --port=${port} --host=${address} --agent-password=uitests --custom-labels="testing=upgrade" ${upgrade_service}`,
           );
           break;
         default:
@@ -314,9 +325,7 @@ if (versionMinor >= 21) {
 
 Scenario(
   'Setup Prometheus Alerting with external Alert Manager via API PMM-Settings @pre-upgrade @pmm-upgrade',
-  async ({
-    I, settingsAPI,
-  }) => {
+  async ({ settingsAPI }) => {
     await settingsAPI.changeSettings(alertManager);
   },
 );
@@ -347,18 +356,71 @@ Scenario(
     dashboardPage.verifyMetricsExistence(['Custom Panel']);
     await dashboardPage.verifyThereAreNoGraphsWithNA();
     await dashboardPage.verifyThereAreNoGraphsWithoutData();
-    I.seeInCurrentUrl(grafanaAPI.customDashboard);
+    I.seeInCurrentUrl(grafanaAPI.customDashboardName);
   },
 );
+
+Scenario(
+  'PMM-T998 - Verify dashboard folders after upgrade @pmm-upgrade @ami-upgrade @post-upgrade',
+  async ({
+    I, searchDashboardsModal, grafanaAPI, homePage,
+  }) => {
+    await homePage.open();
+    I.click(dashboardPage.fields.breadcrumbs.dashboardName);
+    searchDashboardsModal.waitForOpened();
+    const actualFolders = (await searchDashboardsModal.getFoldersList());
+
+    I.assertDeepIncludeMembers(actualFolders, ['Starred', grafanaAPI.customFolderName]);
+    I.seeElement(searchDashboardsModal.fields.folderItemLocator(grafanaAPI.customDashboardName));
+  },
+);
+
+Scenario(
+  'PMM-T1091 - Verify PMM Dashboards folders are correct @pmm-upgrade @ami-upgrade @post-upgrade',
+  async ({
+    I, searchDashboardsModal, grafanaAPI, homePage,
+  }) => {
+    const foldersNames = Object.values(searchDashboardsModal.folders).map((folder) => folder.name);
+
+    foldersNames.unshift('Recent');
+    if (versionMinor < 25) {
+      foldersNames.push('PMM');
+    }
+
+    await homePage.open();
+    I.click(dashboardPage.fields.breadcrumbs.dashboardName);
+    searchDashboardsModal.waitForOpened();
+    const actualFolders = (await searchDashboardsModal.getFoldersList())
+      // these folders verified in dedicated test.
+      .filter((value) => value !== 'Starred' && value !== grafanaAPI.customFolderName);
+
+    I.assertDeepMembers(actualFolders, foldersNames);
+  },
+);
+
+if (versionMinor < 15) {
+  Scenario(
+    'PMM-T268 - Verify Failed check singlestats after upgrade from old versions @post-upgrade @pmm-upgrade',
+    async ({
+      I, homePage,
+    }) => {
+      await homePage.open();
+      I.waitForVisible(homePage.fields.sttDisabledFailedChecksPanelSelector, 15);
+    },
+  );
+}
 
 if (versionMinor >= 15) {
   Scenario(
     'Verify user has failed checks after upgrade / STT on @post-upgrade @pmm-upgrade',
     async ({
-      I, pmmSettingsPage, securityChecksAPI, databaseChecksPage,
+      I,
+      pmmSettingsPage,
+      securityChecksAPI,
+      databaseChecksPage,
     }) => {
-      // Wait for 30 seconds to have latest check results
-      I.wait(30);
+      // Wait for 45 seconds to have latest check results
+      I.wait(45);
       // Verify STT is enabled
       I.amOnPage(pmmSettingsPage.advancedSettingsUrl);
       I.waitForVisible(pmmSettingsPage.fields.sttSwitchSelector, 30);
@@ -374,31 +436,17 @@ if (versionMinor >= 15) {
   Scenario(
     'Verify Redis as external Service Works After Upgrade @post-upgrade @pmm-upgrade',
     async ({
-      I, addInstanceAPI, dashboardPage, remoteInstancesHelper,
+      I, grafanaAPI, remoteInstancesHelper,
     }) => {
       // Make sure Metrics are hitting before Upgrade
       const metricName = 'redis_uptime_in_seconds';
       const headers = { Authorization: `Basic ${await I.getAuth()}` };
-      let response;
-      let result;
 
-      response = await dashboardPage.checkMetricExist(metricName);
-      result = JSON.stringify(response.data.data.result);
+      await grafanaAPI.checkMetricExist(metricName);
+      await grafanaAPI.checkMetricExist(metricName, { type: 'node_name', value: 'redis_external_remote' });
+      await grafanaAPI.checkMetricExist(metricName, { type: 'service_name', value: 'redis_external_2' });
 
-      assert.ok(response.data.data.result.length !== 0, `Metrics ${metricName} from external exporter should be available post upgrade but got empty ${result}`);
-
-      response = await dashboardPage.checkMetricExist(metricName, { type: 'node_name', value: 'redis_external_remote' });
-      result = JSON.stringify(response.data.data.result);
-
-      assert.ok(response.data.data.result.length !== 0, `Metrics ${metricName} for remote redis node, remote_redis_external Should be available but got empty ${result}`);
-
-      response = await dashboardPage.checkMetricExist(metricName, { type: 'service_name', value: 'redis_external_2' });
-      result = JSON.stringify(response.data.data.result);
-
-      assert.ok(response.data.data.result.length !== 0, `Metrics ${metricName} for service name redis_external Should be available but got empty ${result}`);
-
-      response = await I.sendGetRequest('prometheus/api/v1/targets', headers);
-
+      const response = await I.sendGetRequest('prometheus/api/v1/targets', headers);
       const targets = response.data.data.activeTargets.find(
         (o) => o.labels.external_group === 'redis-remote',
       );
@@ -417,9 +465,10 @@ if (versionMinor >= 16) {
   Scenario(
     'Verify disabled checks remain disabled after upgrade @post-upgrade @pmm-upgrade',
     async ({
-      I, allChecksPage,
+      I,
+      allChecksPage,
     }) => {
-      const checkName = 'MySQL Anonymous Users';
+      const checkName = 'MongoDB Version';
 
       I.amOnPage(allChecksPage.url);
       I.waitForVisible(allChecksPage.buttons.disableEnableCheck(checkName));
@@ -431,24 +480,29 @@ if (versionMinor >= 16) {
   Scenario(
     'Verify silenced checks remain silenced after upgrade @post-upgrade @pmm-upgrade',
     async ({
-      I, databaseChecksPage,
+      I,
+      databaseChecksPage,
     }) => {
       I.amOnPage(databaseChecksPage.url);
 
       I.waitForVisible(failedCheckRowLocator, 30);
-      I.dontSeeElement(failedCheckRowLocator.find('td').withText(emptyPasswordSummary));
+      I.dontSeeElement(failedCheckRowLocator.find('td')
+        .withText(emptyPasswordSummary));
 
-      I.click(locate('$db-checks-failed-checks-toggle-silenced').find('label'));
+      I.click(databaseChecksPage.buttons.toggleSilenced);
 
-      I.seeElement(failedCheckRowLocator.find('td').withText(emptyPasswordSummary));
-      I.seeElement(failedCheckRowLocator.find('td').withText('Silenced'));
+      I.seeElement(failedCheckRowLocator.find('td')
+        .withText(emptyPasswordSummary));
+      I.seeElement(failedCheckRowLocator.find('td')
+        .withText('Silenced'));
     },
   );
 
   Scenario(
     'Verify check intervals remain the same after upgrade @post-upgrade @pmm-upgrade',
     async ({
-      I, allChecksPage,
+      I,
+      allChecksPage,
     }) => {
       const checkName = 'PostgreSQL Version';
 
@@ -461,7 +515,8 @@ if (versionMinor >= 16) {
   Scenario(
     'Verify settings for intervals remain the same after upgrade @post-upgrade @pmm-upgrade',
     async ({
-      I, pmmSettingsPage,
+      I,
+      pmmSettingsPage,
     }) => {
       I.amOnPage(pmmSettingsPage.advancedSettingsUrl);
       I.waitForVisible(pmmSettingsPage.fields.rareIntervalInput, 30);
@@ -474,7 +529,7 @@ if (versionMinor >= 16) {
 }
 
 if (iaReleased) {
-  Scenario(
+  Scenario.skip(
     'PMM-T577 Verify user can see IA alerts after upgrade @ami-upgrade @pmm-upgrade',
     async ({
       I, alertsPage, alertsAPI,
@@ -541,9 +596,9 @@ Scenario(
       metricResoltionSection,
       pmmSettingsPage.fields.metricsResolutionButton,
     );
-    await pmmSettingsPage.verifySettingsValue(pmmSettingsPage.fields.lowInput, 30);
-    await pmmSettingsPage.verifySettingsValue(pmmSettingsPage.fields.mediumInput, 15);
-    await pmmSettingsPage.verifySettingsValue(pmmSettingsPage.fields.highInput, 3);
+    await pmmSettingsPage.verifySettingsValue(pmmSettingsPage.fields.lowInput, 60);
+    await pmmSettingsPage.verifySettingsValue(pmmSettingsPage.fields.mediumInput, 60);
+    await pmmSettingsPage.verifySettingsValue(pmmSettingsPage.fields.highInput, 30);
   },
 );
 
@@ -553,7 +608,7 @@ Scenario(
     I.amOnPage(homePage.url);
     I.waitForVisible(homePage.fields.newsPanelTitleSelector, 30);
     I.waitForVisible(homePage.fields.newsPanelContentSelector, 30);
-    const newsItems = await I.grabNumberOfVisibleElements(`${homePage.fields.newsPanelContentSelector}/div`);
+    const newsItems = await I.grabNumberOfVisibleElements(locate('article').inside(homePage.fields.newsPanelContentSelector));
 
     assert.ok(newsItems > 1, 'News Panel is empty');
   },
@@ -588,17 +643,15 @@ Scenario(
 
 Scenario(
   'Verify Agents are Running and Metrics are being collected Post Upgrade (UI) [critical] @ami-upgrade @post-upgrade @pmm-upgrade',
-  async ({ I, pmmInventoryPage, dashboardPage }) => {
+  async ({ grafanaAPI }) => {
     const metrics = Object.keys(remoteInstancesHelper.upgradeServiceMetricNames);
 
     for (const service of Object.values(remoteInstancesHelper.upgradeServiceNames)) {
       if (service) {
         if (metrics.includes(service)) {
           const metricName = remoteInstancesHelper.upgradeServiceMetricNames[service];
-          const response = await dashboardPage.checkMetricExist(metricName, { type: 'node_name', value: service });
-          const result = JSON.stringify(response.data.data.result);
 
-          assert.ok(response.data.data.result.length !== 0, `Metrics ${metricName} for Node ${service} Should be available but got empty ${result}`);
+          await grafanaAPI.checkMetricExist(metricName, { type: 'node_name', value: service });
         }
       }
     }
@@ -608,18 +661,13 @@ Scenario(
 Data(clientDbServices).Scenario(
   'Check Metrics for Client Nodes [critical] @post-client-upgrade  @ami-upgrade @post-upgrade @pmm-upgrade',
   async ({
-    I, inventoryAPI, dashboardPage, current,
+    inventoryAPI, grafanaAPI, current,
   }) => {
     const metricName = current.metric;
     const { node_id } = await inventoryAPI.apiGetNodeInfoByServiceName(current.serviceType, current.name);
     const nodeName = await inventoryAPI.getNodeName(node_id);
-    const response = await dashboardPage.checkMetricExist(metricName, { type: 'node_name', value: nodeName });
-    const result = JSON.stringify(response.data.data.result);
 
-    // Need to skip this check on AMI upgrade for Postgresql
-    if (process.env.AMI_UPGRADE_TESTING_INSTANCE !== 'true' && current.serviceType !== 'POSTGRESQL_SERVICE') {
-      assert.ok(response.data.data.result.length !== 0, `Metrics ${metricName} for Node ${nodeName} Should be available but got empty ${result}`);
-    }
+    await grafanaAPI.checkMetricExist(metricName, { type: 'node_name', value: nodeName });
   },
 );
 
@@ -649,37 +697,28 @@ Scenario(
 
 Scenario(
   'Verify Metrics from custom queries for mysqld_exporter after upgrade (UI) @post-client-upgrade @post-upgrade @ami-upgrade @pmm-upgrade',
-  async ({ dashboardPage }) => {
+  async ({ grafanaAPI }) => {
     const metricName = 'mysql_performance_schema_memory_summary_current_bytes';
 
-    const response = await dashboardPage.checkMetricExist(metricName);
-    const result = JSON.stringify(response.data.data.result);
-
-    assert.ok(response.data.data.result.length !== 0, `Custom Metrics ${metricName} Should be available but got empty ${result}`);
+    await grafanaAPI.checkMetricExist(metricName);
   },
 );
 
 Scenario(
   'Verify textfile collector extend metrics is still collected post upgrade (UI) @post-client-upgrade @post-upgrade @ami-upgrade @pmm-upgrade',
-  async ({ dashboardPage }) => {
+  async ({ grafanaAPI }) => {
     const metricName = 'node_role';
 
-    const response = await dashboardPage.checkMetricExist(metricName);
-    const result = JSON.stringify(response.data.data.result);
-
-    assert.ok(response.data.data.result.length !== 0, `TextFile Collector Metrics ${metricName} Should be available but got empty ${result}`);
+    await grafanaAPI.checkMetricExist(metricName);
   },
 );
 
 Scenario(
-  'Verify Metrics from custom queries for postgres_exporter after upgrade (UI) @ami-upgrade @post-client-upgrade @post-upgrade @pmm-upgrade',
-  async ({ dashboardPage }) => {
+  'Verify Metrics from custom queries for postgres_exporter after upgrade (UI) @post-client-upgrade @post-upgrade @pmm-upgrade',
+  async ({ grafanaAPI }) => {
     const metricName = 'pg_stat_user_tables_n_tup_ins';
 
-    const response = await dashboardPage.checkMetricExist(metricName);
-    const result = JSON.stringify(response.data.data.result);
-
-    assert.ok(response.data.data.result.length !== 0, `Custom Metrics ${metricName} Should be available but got empty ${result}`);
+    await grafanaAPI.checkMetricExist(metricName);
   },
 );
 
@@ -705,18 +744,18 @@ if (versionMinor >= 13) {
       I, dashboardPage, current, inventoryAPI, adminPage,
     }) => {
       const {
-        serviceType, name, metric, annotationName, dashboard,
+        serviceType, name, annotationName, dashboard,
       } = current;
       const timeRange = 'Last 30 minutes';
 
       I.amOnPage(dashboard);
       dashboardPage.waitForDashboardOpened();
-      adminPage.applyTimeRange(timeRange);
+      await adminPage.applyTimeRange(timeRange);
       const { service_name } = await inventoryAPI.apiGetNodeInfoByServiceName(serviceType, name);
 
       await dashboardPage.applyFilter('Service Name', service_name);
 
-      dashboardPage.verifyAnnotationsLoaded(annotationName, 1);
+      dashboardPage.verifyAnnotationsLoaded(annotationName);
       I.seeElement(dashboardPage.annotationText(annotationName), 10);
     },
   );
@@ -724,9 +763,7 @@ if (versionMinor >= 13) {
 
 Scenario(
   'Check Prometheus Alerting Rules Persist Post Upgrade and Alerts are still Firing @post-upgrade @pmm-upgrade',
-  async ({
-    I, settingsAPI, pmmSettingsPage,
-  }) => {
+  async ({ settingsAPI, pmmSettingsPage }) => {
     const url = await settingsAPI.getSettings('alert_manager_url');
     const rule = await settingsAPI.getSettings('alert_manager_rules');
 
@@ -740,7 +777,7 @@ if (versionMinor >= 21) {
   Data(clientDbServices).Scenario(
     'Verify if Agents added with custom password and custom label work as expected Post Upgrade @post-client-upgrade @post-upgrade @pmm-upgrade',
     async ({
-      I, current, inventoryAPI,
+      current, inventoryAPI, grafanaAPI,
     }) => {
       const {
         serviceType, metric, upgrade_service,
@@ -750,10 +787,7 @@ if (versionMinor >= 21) {
         custom_labels,
       } = await inventoryAPI.apiGetNodeInfoByServiceName(serviceType, upgrade_service);
 
-      const response = await dashboardPage.checkMetricExist(metric, { type: 'service_name', value: upgrade_service });
-      const result = JSON.stringify(response.data.data.result);
-
-      assert.ok(response.data.data.result.length !== 0, `Metrics ${metric} for Service ${upgrade_service} Should be available but got empty ${result}`);
+      await grafanaAPI.checkMetricExist(metric, { type: 'service_name', value: upgrade_service });
       if (serviceType !== 'MYSQL_SERVICE') {
         assert.ok(custom_labels, `Node Information for ${serviceType} added with ${upgrade_service} is empty, value returned are ${custom_labels}`);
         assert.ok(custom_labels.testing === 'upgrade', `Custom Labels for ${serviceType} added before upgrade with custom labels, doesn't have the same label post upgrade, value found ${custom_labels}`);

@@ -3,20 +3,21 @@ module.exports = {
     I: './tests/custom_steps.js',
     codeceptjsConfig: './pr.codecept.js',
     addInstanceAPI: './tests/pages/api/addInstanceAPI.js',
+    addInstancePage: './tests/pages/addInstancePage.js',
     amiInstanceAPI: './tests/pages/api/amiInstanceAPI.js',
     adminPage: './tests/pages/adminPage.js',
     alertRulesPage: './tests/ia/pages/alertRulesPage.js',
     alertmanagerAPI: './tests/pages/api/alertmanagerAPI.js',
     alertsAPI: './tests/ia/pages/api/alertsAPI.js',
     alertsPage: './tests/ia/pages/alertsPage.js',
-    allChecksPage: './tests/stt/pages/allChecksPage.js',
+    allChecksPage: './tests/advisers/stt/pages/allChecksPage.js',
     amiInstanceSetupPage: './tests/pages/amiInstanceSetupPage.js',
     annotationAPI: './tests/pages/api/annotationAPI.js',
     backupAPI: './tests/backup/pages/api/backupAPI.js',
     backupInventoryPage: './tests/backup/pages/inventoryPage.js',
     channelsAPI: './tests/ia/pages/api/channelsAPI.js',
     dashboardPage: './tests/pages/dashboardPage.js',
-    databaseChecksPage: './tests/stt/pages/databaseChecksPage.js',
+    databaseChecksPage: './tests/advisers/stt/pages/databaseChecksPage.js',
     dbaasAPI: './tests/DbaaS/api/dbaasAPI.js',
     dbaasPage: './tests/DbaaS/pages/dbaasPage.js',
     dbaasActionsPage: './tests/DbaaS/pages/dbaasActionsPage.js',
@@ -25,6 +26,7 @@ module.exports = {
     homePage: './tests/pages/homePage.js',
     inventoryAPI: './tests/pages/api/inventoryAPI.js',
     mysqlTableDetailsPage: './tests/pages/mysqlTableDetailsPage.js',
+    leftNavMenu: './tests/pages/leftNavMenu.js',
     links: './linksHelper.js',
     locationsPage: './tests/backup/pages/locationsPage.js',
     locationsAPI: './tests/backup/pages/api/locationsAPI.js',
@@ -45,19 +47,23 @@ module.exports = {
     ruleTemplatesPage: './tests/ia/pages/ruleTemplatesPage.js',
     scheduledAPI: './tests/backup/pages/api/scheduledAPI.js',
     scheduledPage: './tests/backup/pages/scheduledPage.js',
+    searchDashboardsModal: './tests/dashboards/pages/searchDashboardsModal.js',
     iaCommon: './tests/ia/pages/iaCommonPage.js',
     platformAPI: './tests/pages/api/platformAPI.js',
-    securityChecksAPI: './tests/stt/pages/api/securityChecksAPI.js',
+    securityChecksAPI: './tests/advisers/stt/pages/api/securityChecksAPI.js',
     settingsAPI: './tests/pages/api/settingsAPI.js',
     templatesAPI: './tests/ia/pages/api/templatesAPI.js',
   },
   getChunks: (files) => {
-    const dependentTests = files.filter((value) => /PMMSettings|ia|backup/.test(value));
+    const dependentTests = files.filter((value) => /PMMSettings|stt|backup|permissions/.test(value));
+    const iaTests = files.filter((value) => /ia/.test(value));
     const dbaasTests = files.filter((value) => /DbaaS/.test(value));
-    const otherTests = files.filter((val) => !dependentTests.includes(val) && !dbaasTests.includes(val));
+    const otherTests = files.filter((val) => !dependentTests.includes(val)
+      && !dbaasTests.includes(val) && !iaTests.includes(val));
 
     return [
       dependentTests,
+      iaTests,
       otherTests,
       dbaasTests,
     ];

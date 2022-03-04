@@ -27,7 +27,7 @@ Scenario('PMM-T93 - Open PMM Settings page and verify changing Metrics Resolutio
   await pmmSettingsPage.verifySelectedResolution(resolutionToApply);
 });
 
-Scenario('PMM-T94 - Open PMM Settings page and verify changing Data Retention [critical] @settings @grafana-pr', async ({ I, pmmSettingsPage }) => {
+Scenario('PMM-T94 - Open PMM Settings page and verify changing Data Retention [critical] @settings', async ({ I, pmmSettingsPage }) => {
   const dataRetentionValue = '1';
   const sectionNameToExpand = pmmSettingsPage.sectionTabsList.advanced;
 
@@ -81,7 +81,7 @@ Scenario(
     await pmmSettingsPage.waitForPmmSettingsPageLoaded();
     await pmmSettingsPage.expandSection(sectionNameToExpand, pmmSettingsPage.fields.advancedButton);
     await pmmSettingsPage.waitForPmmSettingsPageLoaded();
-    I.moveCursor(pmmSettingsPage.fields.sttLabelTooltipSelector);
+
     await pmmSettingsPage.verifyTooltip(pmmSettingsPage.tooltips.stt);
   },
 );
@@ -91,10 +91,8 @@ Scenario(
   async ({ I, pmmSettingsPage, dbaasPage }) => {
     I.amOnPage(pmmSettingsPage.advancedSettingsUrl);
     await pmmSettingsPage.waitForPmmSettingsPageLoaded();
-    I.waitForVisible(pmmSettingsPage.fields.dbaasLabelTooltipSelector, 30);
 
     // Verify tooltip for Enable/Disable DBaaS toggle
-    I.moveCursorTo(pmmSettingsPage.fields.dbaasLabelTooltipSelector);
     await pmmSettingsPage.verifyTooltip(pmmSettingsPage.tooltips.dbaas);
 
     let selector = await I.grabAttributeFrom(pmmSettingsPage.fields.dbaasSwitchSelector, 'checked');
@@ -106,7 +104,6 @@ Scenario(
     I.dontSeeElement(pmmSettingsPage.fields.dbaasMenuIconLocator);
     I.amOnPage(dbaasPage.url);
     I.waitForElement(dbaasPage.disabledDbaaSMessage.settingsLinkLocator, 30);
-    I.verifyPopUpMessage(dbaasPage.disabledDbaaSMessage.disabledDbaaSPopUpMessage);
     const message = (await I.grabTextFrom(dbaasPage.disabledDbaaSMessage.emptyBlock)).replace(/\s+/g, ' ');
 
     assert.ok(message === dbaasPage.disabledDbaaSMessage.textMessage, `Message Shown on ${message} should be equal to ${dbaasPage.disabledDbaaSMessage.textMessage}`);
@@ -114,9 +111,8 @@ Scenario(
 
     assert.ok(link.includes('/graph/settings/advanced-settings'), `Advanced Setting Link displayed on DbaaS Page, when DbaaS is not enabled ${link}, please check the link`);
     // Enable DbaaS via Advanced Settings, Make sure Menu is visible.
-    I.amOnPage(pmmSettingsPage.advancedSettingsUrl);
-    await pmmSettingsPage.waitForPmmSettingsPageLoaded();
-    I.waitForVisible(pmmSettingsPage.fields.dbaasLabelTooltipSelector, 30);
+    await pmmSettingsPage.openAdvancedSettings();
+    I.waitForVisible(pmmSettingsPage.tooltips.dbaas.iconLocator, 30);
     I.click(pmmSettingsPage.fields.dbaasSwitchSelector);
     I.click(pmmSettingsPage.fields.applyButton);
     I.waitForElement(pmmSettingsPage.fields.dbaasMenuIconLocator, 30);
@@ -137,36 +133,27 @@ Scenario(
 
     I.amOnPage(pmmSettingsPage.advancedSettingsUrl);
     await pmmSettingsPage.waitForPmmSettingsPageLoaded();
-    I.waitForVisible(pmmSettingsPage.fields.iaLabelTooltipSelector, 30);
 
     // Verify tooltip for Enable/Disable IA toggle
-    I.moveCursorTo(pmmSettingsPage.fields.iaLabelTooltipSelector);
     await pmmSettingsPage.verifyTooltip(pmmSettingsPage.tooltips.integratedAlerting);
 
     I.amOnPage(pmmSettingsPage.communicationSettingsUrl);
     I.waitForVisible(pmmSettingsPage.communication.email.serverAddress.locator, 30);
 
     // Verify tooltips for Communication > Email fields
-    for (const o of Object.keys(pmmSettingsPage.communication.email)) {
+    for (const formField of Object.keys(pmmSettingsPage.communication.email)) {
       I.moveCursorTo(pmmSettingsPage.communication.submitEmailButton);
-      I.moveCursorTo(pmmSettingsPage.communication.email[o].tooltipLocator);
-
-      if (o === 'password' || o === 'username') {
-        await pmmSettingsPage.verifyTooltip(pmmSettingsPage.tooltips.auth);
-      } else {
-        await pmmSettingsPage.verifyTooltip(pmmSettingsPage.tooltips[o]);
-      }
+      await pmmSettingsPage.verifyTooltip(pmmSettingsPage.tooltips[formField]);
     }
 
     // Verify tooltips for Communication > Slack URL field
     I.click(pmmSettingsPage.communication.slackTab);
-    I.moveCursorTo(pmmSettingsPage.communication.slack.url.tooltipLocator);
     await pmmSettingsPage.verifyTooltip(pmmSettingsPage.tooltips.slackUrl);
   },
 );
 
 Scenario(
-  'PMM-T253 Verify user can enable STT if Telemetry is enabled @settings @stt @grafana-pr',
+  'PMM-T253 Verify user can enable STT if Telemetry is enabled @settings @stt',
   async ({ I, pmmSettingsPage }) => {
     const sectionNameToExpand = pmmSettingsPage.sectionTabsList.advanced;
 
@@ -185,7 +172,7 @@ Scenario(
   },
 ).retry(2);
 
-Scenario('PMM-T520 - Verify that alert is in Firing State - internal alert manager @nightly @not-ovf @settings', async ({ I, pmmSettingsPage }) => {
+Scenario('PMM-T520 - Verify that alert is in Firing State - internal alert manager @nightly @not-ovf', async ({ I, pmmSettingsPage }) => {
   const scheme = 'http://127.0.0.1';
   const sectionNameToExpand = pmmSettingsPage.sectionTabsList.alertmanager;
 
@@ -203,7 +190,7 @@ Scenario('PMM-T520 - Verify that alert is in Firing State - internal alert manag
   await pmmSettingsPage.verifyAlertmanagerRuleAdded(pmmSettingsPage.alertManager.ruleName2, true);
 });
 
-Scenario('PMM-T520 - Verify that alert is being fired to external Alert Manager @nightly @not-ovf @settings', async ({ I, pmmSettingsPage }) => {
+Scenario('PMM-T520 - Verify that alert is being fired to external Alert Manager @nightly @not-ovf', async ({ I, pmmSettingsPage }) => {
   const scheme = 'http://';
   const sectionNameToExpand = pmmSettingsPage.sectionTabsList.alertmanager;
 
@@ -222,7 +209,7 @@ Scenario('PMM-T520 - Verify that alert is being fired to external Alert Manager 
   await pmmSettingsPage.verifyExternalAlertManager(pmmSettingsPage.alertManager.ruleName);
 });
 
-Scenario('PMM-T532 PMM-T533 PMM-T536 - Verify user can enable/disable IA in Settings @ia @settings @grafana-pr',
+Scenario('PMM-T532 PMM-T533 PMM-T536 - Verify user can enable/disable IA in Settings @ia @settings',
   async ({
     I, pmmSettingsPage, settingsAPI, adminPage,
   }) => {
@@ -235,7 +222,8 @@ Scenario('PMM-T532 PMM-T533 PMM-T536 - Verify user can enable/disable IA in Sett
     I.click(pmmSettingsPage.fields.advancedButton);
     I.waitForVisible(pmmSettingsPage.fields.iaSwitchSelectorInput, 30);
     pmmSettingsPage.verifySwitch(pmmSettingsPage.fields.iaSwitchSelectorInput, 'on');
-    I.seeElementInDOM(adminPage.sideMenu.integratedAlerting);
+    I.moveCursorTo(adminPage.sideMenu.alertingBellIcon);
+    I.waitForVisible(adminPage.sideMenu.integratedAlertingManuItem, 20);
     I.seeTextEquals('Integrated Alerting', adminPage.sideMenu.integratedAlerting);
     I.seeTextEquals('Communication', pmmSettingsPage.communication.communicationSection);
     I.click(pmmSettingsPage.fields.iaSwitchSelector);
@@ -248,7 +236,7 @@ Scenario('PMM-T532 PMM-T533 PMM-T536 - Verify user can enable/disable IA in Sett
     await settingsAPI.apiEnableIA();
   }).retry(2);
 
-Scenario('PMM-T785 - Verify DBaaS cannot be disabled with ENABLE_DBAAS or PERCONA_TEST_DBAAS @settings @dbaas',
+Scenario('PMM-T785 - Verify DBaaS cannot be disabled with ENABLE_DBAAS or PERCONA_TEST_DBAAS @dbaas',
   async ({ I, pmmSettingsPage }) => {
     I.amOnPage(pmmSettingsPage.advancedSettingsUrl);
     await pmmSettingsPage.waitForPmmSettingsPageLoaded();
@@ -301,5 +289,84 @@ Scenario(
     pmmSettingsPage.switchAzure();
     I.amOnPage(remoteInstancesPage.url);
     I.waitForInvisible(remoteInstancesPage.fields.addAzureMySQLPostgreSQL, 30);
+  },
+);
+
+Scenario(
+  'PMM-T841 - Verify user is able to enable Backup Management @backup',
+  async ({
+    I, pmmSettingsPage, scheduledPage, settingsAPI, codeceptjsConfig,
+  }) => {
+    await settingsAPI.changeSettings({ backup: false });
+
+    // Open advanced settings and verify backup management switch is off
+    I.amOnPage(pmmSettingsPage.advancedSettingsUrl);
+    pmmSettingsPage.verifySwitch(pmmSettingsPage.fields.backupManagementSwitchInput, 'off');
+
+    // Open scheduled backups page and verify message about disabled backup management
+    I.amOnPage(scheduledPage.url);
+    I.waitForVisible('$empty-block', 20);
+
+    const message = await I.grabTextFrom('$empty-block');
+
+    assert.ok(
+      message.replace(/\s+/g, ' ') === pmmSettingsPage.messages.disabledBackupManagement,
+      `Message Shown on ${message} should be equal to ${pmmSettingsPage.messages.disabledBackupManagement}`,
+    );
+    I.seeAttributesOnElements('$settings-link', { href: `${codeceptjsConfig.config.helpers.Playwright.url}graph/settings/advanced-settings` });
+
+    // Open advanced settings and enable backup management
+    I.amOnPage(pmmSettingsPage.advancedSettingsUrl);
+    I.waitForVisible(pmmSettingsPage.fields.backupManagementSwitch, 30);
+    I.click(pmmSettingsPage.fields.backupManagementSwitch);
+    pmmSettingsPage.verifySwitch(pmmSettingsPage.fields.backupManagementSwitchInput, 'on');
+    I.click(pmmSettingsPage.fields.advancedButton);
+
+    // Open scheduled backups page and verify backup management is enabled
+    scheduledPage.openScheduledBackupsPage();
+  },
+);
+
+Scenario(
+  'PMM-T486 - Verify Public Address in PMM Settings @settings @nightly',
+  async ({ I, pmmSettingsPage }) => {
+    await pmmSettingsPage.openAdvancedSettings();
+    await pmmSettingsPage.verifyTooltip(pmmSettingsPage.tooltips.publicAddress);
+    I.waitForVisible(pmmSettingsPage.fields.publicAddressInput, 30);
+    I.seeElement(pmmSettingsPage.fields.publicAddressButton);
+    I.click(pmmSettingsPage.fields.publicAddressButton);
+    const publicAddressValue = await I.grabValueFrom(pmmSettingsPage.fields.publicAddressInput);
+
+    I.assertTrue(publicAddressValue.length > 0, 'Expected the Public Address Input Field to be not empty!');
+    pmmSettingsPage.applyChanges();
+    I.refreshPage();
+    await pmmSettingsPage.waitForPmmSettingsPageLoaded();
+    const publicAddressAfterRefresh = await I.grabValueFrom(pmmSettingsPage.fields.publicAddressInput);
+
+    I.assertEqual(publicAddressAfterRefresh, publicAddressValue,
+      `Expected the Public Address to be saved and Match ${publicAddressValue}`);
+  },
+);
+
+Scenario(
+  'PMM-9550 Verify downloading server diagnostics logs from Settings @settings',
+  async ({ I, pmmSettingsPage }) => {
+    I.amOnPage(pmmSettingsPage.url);
+    await pmmSettingsPage.waitForPmmSettingsPageLoaded();
+    let path;
+
+    await I.usePlaywrightTo('download', async ({ page }) => {
+      const [download] = await Promise.all([
+        // Start waiting for the download
+        page.waitForEvent('download'),
+        // Perform the action that initiates download
+        page.locator(I.useDataQA('diagnostics-button')).click(),
+      ]);
+
+      // Wait for the download process to complete
+      path = await download.path();
+    });
+
+    await I.seeEntriesInZip(path, ['pmm-agent.yaml', 'pmm-managed.log', 'pmm-agent.log']);
   },
 );

@@ -3,13 +3,13 @@ const { I, dbaasPage } = inject();
 module.exports = {
   loader: locate('$pmm-overlay-wrapper').find('//i[contains(@class,"fa-spinner")]'),
   operatorVersion: {
-    PXC: 'PXC 1.8.0',
-    PSMDB: 'PSMDB 1.9.0',
+    PXC: 'PXC 1.10.0',
+    PSMDB: 'PSMDB 1.11.0',
   },
   components: {
     PXC: {
       name: 'PXC',
-      dataqa: 'xtradbpxc',
+      dataqa: 'pxcpxc',
     },
     PSMDB: {
       name: 'PSMDB',
@@ -17,7 +17,7 @@ module.exports = {
     },
     HAPROXY: {
       name: 'HAProxy',
-      dataqa: 'xtradbhaproxy',
+      dataqa: 'pxchaproxy',
     },
   },
 
@@ -25,9 +25,7 @@ module.exports = {
     cancelButton: '$kubernetes-components-versions-cancel',
     changeVersionSuccessMessage: 'Components versions updated successfully',
     component: '$kubernetes-component',
-    componentSelector: (component) => locate('$kubernetes-component')
-      .find('span')
-      .withText(component),
+    componentSelector: (component) => I.getSingleSelectOptionLocator(component),
     defaultVersionSelector: '$kubernetes-default-version',
     defaultVersionOption: (version) => locate('$kubernetes-default-version-option').find('span').withText(version),
     dialogTitle: 'Manage Components Versions',
@@ -43,9 +41,7 @@ module.exports = {
       .withText('Recommended')
       .find('//preceding-sibling::span'),
     modalHeader: '$modal-header',
-    operatorSelector: (operatorName) => locate('$kubernetes-operator')
-      .find('span')
-      .withText(operatorName),
+    operatorSelector: (operatorName) => I.getSingleSelectOptionLocator(operatorName),
     operator: '$kubernetes-operator',
     saveButton: '$kubernetes-components-versions-save',
     versionCheckBox: (component, versionNumber) => locate(`$${component}-options`)

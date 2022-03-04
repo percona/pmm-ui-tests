@@ -125,6 +125,7 @@ Data(templates).Scenario(
 
     I.waitForVisible(alertRulesPage.fields.ruleName, 30);
     alertRulesPage.searchAndSelectResult('Template', current.template);
+    I.click(alertRulesPage.elements.ruleAdvancedSectionToggle);
     I.waitForVisible(alertRulesPage.elements.expression, 30);
 
     alertRulesPage.verifyEditRuleDialogElements(rule);
@@ -200,7 +201,7 @@ Scenario(
     await channelsAPI.createNotificationChannel('EmailChannelForEditRules', ncPage.types.email.type);
     alertRulesPage.openAlertRulesTab();
     I.click(alertRulesPage.buttons.editAlertRule(rule.ruleName));
-    alertRulesPage.verifyEditRuleDialogElements(rule);
+    alertRulesPage.verifyEditRuleDialogElements(rule, true);
     alertRulesPage.fillRuleFields(ruleAfterUpdate);
     I.click(alertRulesPage.buttons.addRule);
     I.verifyPopUpMessage(alertRulesPage.messages.successfullyEdited);
@@ -308,13 +309,14 @@ Scenario(
 
     I.waitForVisible(alertRulesPage.fields.ruleName, 30);
     alertRulesPage.searchAndSelectResult('Template', 'Memory used by MongoDB');
+    I.click(alertRulesPage.elements.ruleAdvancedSectionToggle);
     I.waitForVisible(alertRulesPage.elements.expression, 30);
 
     I.clearField(alertRulesPage.fields.duration);
     I.fillField(alertRulesPage.fields.duration, '-1');
 
     I.seeTextEquals('Must be greater than or equal to 1', alertRulesPage.elements.durationError);
-    I.seeAttributesOnElements(alertRulesPage.buttons.addRule, { disabled: true });
+    I.seeElementsDisabled(alertRulesPage.buttons.addRule);
 
     I.clearField(alertRulesPage.fields.duration);
     I.fillField(alertRulesPage.fields.duration, '1');

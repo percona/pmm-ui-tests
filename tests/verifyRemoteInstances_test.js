@@ -1,6 +1,6 @@
 const assert = require('assert');
 
-const { pmmInventoryPage, remoteInstancesPage, remoteInstancesHelper } = inject();
+const { remoteInstancesPage, remoteInstancesHelper } = inject();
 
 const externalExporterServiceName = 'external_service_new';
 const haproxyServiceName = 'haproxy_remote';
@@ -261,12 +261,7 @@ Data(qanFilters).Scenario(
 
 Data(metrics).Scenario(
   'PMM-T743 Check metrics from exporters are hitting PMM Server @instances',
-  async ({ I, dashboardPage, current }) => {
-    // This is only needed to let PMM Consume Metrics
-    I.wait(10);
-    const response = await dashboardPage.checkMetricExist(current.metricName, { type: 'service_name', value: current.serviceName });
-    const result = JSON.stringify(response.data.data.result);
-
-    assert.ok(response.data.data.result.length !== 0, `Metrics ${current.metricName} from ${current.serviceName} should be available but got empty ${result}`);
+  async ({ I, grafanaAPI, current }) => {
+    await grafanaAPI.waitForMetric(current.metricName, { type: 'service_name', value: current.serviceName }, 10);
   },
 );

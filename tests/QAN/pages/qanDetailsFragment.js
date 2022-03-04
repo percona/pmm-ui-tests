@@ -14,20 +14,26 @@ module.exports = {
     noClassic: '//pre[contains(text(), "No classic explain found")]',
     noJSON: '//pre[contains(text(), "No JSON explain found")]',
     examplesCodeBlock: '$pmm-overlay-wrapper',
+    planInfoIcon: locate('$query-analytics-details').find('div').after('pre > code'),
+    tooltipPlanId: locate('.popper__background.popper__background--info'),
+    planText: locate('pre').find('code'),
+    emptyPlanText: locate('pre').withText('No plan found'),
   },
 
   getFilterSectionLocator: (filterSectionName) => `//span[contains(text(), '${filterSectionName}')]`,
 
-  getTabLocator: (tabName) => `//li[contains(text(), '${tabName}')]`,
+  getTabLocator: (tabName) => locate('li > a').withText(tabName),
 
   getMetricsCellLocator: (metricName, columnNumber) => `//td//span[contains(text(), "${metricName}")]/ancestor::tr/td[${columnNumber}]//span[1]`,
 
   async verifyAvqQueryCount(timeRangeInSec = 300) {
     const qpsvalue = await I.grabTextFrom(this.getMetricsCellLocator('Query Count', 2));
-    const queryCountDetail = await I.grabTextFrom(this.getMetricsCellLocator('Query Count', 3));
+    let queryCountDetail = await I.grabTextFrom(this.getMetricsCellLocator('Query Count', 3));
+
+    queryCountDetail = this.getQueryCountValue(queryCountDetail);
 
     // We divide by 300 because we are using last 5 mins filter.
-    const result = (parseFloat(queryCountDetail) / timeRangeInSec).toFixed(4);
+    const result = (queryCountDetail / timeRangeInSec).toFixed(4);
 
     compareCalculation(qpsvalue, result);
   },
@@ -49,6 +55,33 @@ module.exports = {
     I.dontSeeElement(this.elements.noJSON);
   },
 
+  checkPlanTab() {
+    I.waitForVisible(this.getTabLocator('Plan'), 30);
+    I.click(this.getTabLocator('Plan'));
+    I.wait(5);
+    qanFilters.waitForFiltersToLoad();
+    I.dontSeeElement(this.elements.noClassic);
+    I.dontSeeElement(this.elements.noJSON);
+  },
+
+  async checkPlanTabIsNotEmpty() {
+    I.dontSeeElement(this.elements.emptyPlanText);
+    I.waitForVisible(this.elements.planText, 20);
+    const text = await I.grabTextFrom(this.elements.planText);
+
+    assert.ok(text.length > 0, 'Plan text length must be more than 0');
+  },
+
+  checkPlanTabIsEmpty() {
+    I.waitForVisible(this.elements.emptyPlanText, 20);
+    I.dontSeeElement(this.elements.planInfoIcon);
+  },
+
+  mouseOverPlanInfoIcon() {
+    I.moveCursorTo(this.elements.planInfoIcon);
+    I.waitForVisible(this.elements.tooltipPlanId, 30);
+  },
+
   async verifyAvgQueryTime(timeRangeInSec = 300) {
     const timeLocator = this.getMetricsCellLocator('Query Time', 4);
     const countLocator = this.getMetricsCellLocator('Query Count', 3);
@@ -61,11 +94,24 @@ module.exports = {
 
     if (perQueryUnit === 'µs') perQueryStats /= 1000000;
 
-    const queryCountDetail = await I.grabTextFrom(countLocator);
+    let queryCountDetail = await I.grabTextFrom(countLocator);
+
+    queryCountDetail = this.getQueryCountValue(queryCountDetail);
+
     const [load] = (await I.grabTextFrom(loadLocator)).split(' ');
-    const result = ((parseFloat(queryCountDetail) * parseFloat(perQueryStats)) / timeRangeInSec).toFixed(4);
+    const result = ((queryCountDetail * parseFloat(perQueryStats)) / timeRangeInSec).toFixed(4);
 
     compareCalculation(load, result);
+  },
+
+  getQueryCountValue(value) {
+    let result = parseFloat(value);
+
+    if (value.endsWith('k')) {
+      result *= 1000;
+    }
+
+    return result;
   },
 };
 
@@ -74,12 +120,12 @@ function compareCalculation(value, result) {
 
   switch (true) {
     case result < 0.01:
-      assert.ok(value.startsWith('<0.01'), `Values don't match in the ${caller} method. Value: ${value}`);
+      assert.ok(value.startsWith('<0.01'), `Values don't match in the ${caller} method. Value: ${value}, calculated Result: ${result}`);
       break;
     case parseFloat(result) <= 0.0149:
-      assert.ok(value.startsWith('0.01'), `Values don't match in the ${caller} method. Value: ${value}`);
+      assert.ok(value.startsWith('0.01'), `Values don't match in the ${caller} method. Value: ${value}, calculated Result: ${result}`);
       break;
     default:
-      assert.ok(parseFloat(parseFloat(result).toFixed(2)) === parseFloat(value), `Values don't match in the ${caller} method. Value: ${value}`);
+      assert.ok(parseFloat(parseFloat(result).toFixed(2)) === parseFloat(value), `Values don't match in the ${caller} method. Value: ${value}, calculated Result: ${result}`);
   }
 }

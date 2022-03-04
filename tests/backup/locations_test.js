@@ -31,7 +31,6 @@ s3Errors.add(['bucket_name', 'pmm', 'AccessDenied: Access Denied']);
 s3Errors.add(['bucket_name', 'pmm-backup12', 'Bucket doesn\'t exist']);
 s3Errors.add(['bucket_name', 'random-bucket', '301 response missing Location header']);
 s3Errors.add(['endpoint', 'unknown', 'no such host']);
-s3Errors.add(['endpoint', 'http://33.22.11.00', 'i/o timeout']);
 s3Errors.add(['access_key', 'invalid', 'InvalidAccessKeyId: The AWS Access Key Id you provided does not exist in our records.']);
 s3Errors.add(['secret_key', 'invalid', 'SignatureDoesNotMatch: The request signature we calculated does not match the signature you provided. Check your key and signing method.']);
 
@@ -76,11 +75,11 @@ Scenario(
 
     // Verify buttons state
     I.seeTextEquals('Add', locationsPage.buttons.addLocation);
-    I.seeAttributesOnElements(locationsPage.buttons.addLocation, { disabled: true });
+    I.seeElementsDisabled(locationsPage.buttons.addLocation);
     I.seeTextEquals('Test', locationsPage.buttons.testLocation);
-    I.seeAttributesOnElements(locationsPage.buttons.testLocation, { disabled: true });
+    I.seeElementsDisabled(locationsPage.buttons.testLocation);
     I.seeTextEquals('Cancel', locationsPage.buttons.cancel);
-    I.seeAttributesOnElements(locationsPage.buttons.cancel, { disabled: null });
+    I.seeElementsEnabled(locationsPage.buttons.cancel);
   },
 );
 

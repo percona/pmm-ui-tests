@@ -5,7 +5,7 @@ const { I, qanOverview } = inject();
 module.exports = {
   root: '$qan-pagination',
   buttons: {
-    lastPage: '//li[@title="Next 5 Pages"]/following-sibling::li[1]',
+    lastPageNumber: locate('//li[contains(@class,"ant-pagination-item")]').last(),
     previousPage: '.ant-pagination-prev',
     nextPage: '.ant-pagination-next',
     ellipsis: '.ant-pagination-item-ellipsis',
@@ -20,8 +20,8 @@ module.exports = {
 
   getPerPageOptionLocator: (option) => `//li[contains(@class, 'ant-select-dropdown-menu-item') and contains(text(), '${option}' )]`,
 
-  async getPageCount() {
-    return await I.grabAttributeFrom(this.buttons.lastPage, 'title');
+  async getLastPageNumber() {
+    return await I.grabAttributeFrom(this.buttons.lastPageNumber, 'title');
   },
 
   selectPage(page) {
@@ -30,14 +30,14 @@ module.exports = {
 
   async selectResultsPerPage(option) {
     const optionToSelect = this.getPerPageOptionLocator(option);
-    const pageCount = await this.getPageCount();
+    const pageCount = await this.getLastPageNumber();
 
     I.click(this.elements.resultsPerPage);
     I.click(optionToSelect);
 
     // 20 sec wait for pages count to change
     for (let i = 0; i < 10; i++) {
-      const newPageCount = await this.getPageCount();
+      const newPageCount = await this.getLastPageNumber();
 
       if (newPageCount !== pageCount) {
         return;
@@ -62,7 +62,7 @@ module.exports = {
 
   async verifyPagesAndCount(itemsPerPage) {
     const count = await qanOverview.getCountOfItems();
-    const lastPage = await this.getPageCount();
+    const lastPage = await this.getLastPageNumber();
     const result = count / lastPage;
 
     assert.ok((Math.ceil(result / 25) * 25) === itemsPerPage, 'Pages do not match with total count');

@@ -50,6 +50,9 @@ exports.config = {
     DbHelper: {
       require: 'codeceptjs-dbhelper',
     },
+    ChaiWrapper: {
+      require: 'codeceptjs-chai',
+    },
   },
   include: pageObjects,
   multiple: {
@@ -71,6 +74,9 @@ exports.config = {
     allure: {
       enabled: true,
       outputDir: 'tests/output/allure',
+    },
+    tryTo: {
+      enabled: true,
     },
   },
   mocha: {
@@ -102,6 +108,6 @@ exports.config = {
   hooks: [],
   gherkin: {},
   tests: 'tests/**/*_test.js',
-  timeout: 10000,
+  timeout: 1400,
   name: 'pmm-qa',
 };

@@ -1,9 +1,12 @@
 const { I } = inject();
 const assert = require('assert');
+const FormData = require('form-data');
 
 module.exports = {
-  customDashboard: 'custom-dashboard',
-  async createCustomDashboard() {
+  customDashboardName: 'auto-test-dashboard',
+  customFolderName: 'auto-test-folder',
+
+  async createCustomDashboard(name, folderId = 0) {
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
     const body = {
       dashboard: {
@@ -68,11 +71,11 @@ module.exports = {
           from: 'now-6h',
           to: 'now',
         },
-        title: this.customDashboard,
+        title: name,
         tags: ['pmm-qa'],
         version: 0,
       },
-      folderId: 0,
+      folderId,
     };
     const resp = await I.sendPostRequest('graph/api/dashboards/db/', body, headers);
 
@@ -124,5 +127,111 @@ module.exports = {
       resp.status === 200,
       `Failed to set custom Home dashboard '${id}'. Response message is ${resp.data.message}`,
     );
+  },
+
+  async createFolder(name) {
+    const headers = { Authorization: `Basic ${await I.getAuth()}` };
+    const body = {
+      title: name,
+    };
+    const resp = await I.sendPostRequest('graph/api/folders', body, headers);
+
+    assert.ok(
+      resp.status === 200,
+      `Failed to create "${name}" folder. Response message is ${resp.data.message}`,
+    );
+
+    return resp.data;
+  },
+
+  async lookupFolderByName(name) {
+    const headers = { Authorization: `Basic ${await I.getAuth()}` };
+    const resp = await I.sendGetRequest('graph/api/folders', headers);
+
+    return Object.entries(resp.data).filter((folder) => folder.title === name);
+  },
+
+  async deleteFolder(uid) {
+    const headers = { Authorization: `Basic ${await I.getAuth()}` };
+
+    const resp = await I.sendDeleteRequest(`graph/api/folders/${uid}`, headers);
+
+    assert.ok(
+      resp.status === 200,
+      `Failed to delete folder with uid '${uid}' . Response message is ${resp.data.message}`,
+    );
+  },
+
+  // Should be refactored
+  async getMetric(metricName, refineBy) {
+    const timeStamp = Date.now();
+    const bodyFormData = new FormData();
+
+    const body = {
+      query: metricName,
+      start: Math.floor((timeStamp - 15000) / 1000),
+      end: Math.floor((timeStamp) / 1000),
+      step: 1,
+    };
+
+    if (refineBy) {
+      body.query = `${metricName}{${refineBy.type}=~"(${refineBy.value})"}`;
+    }
+
+    Object.keys(body).forEach((key) => bodyFormData.append(key, body[key]));
+    const headers = {
+      Authorization: `Basic ${await I.getAuth()}`,
+      ...bodyFormData.getHeaders(),
+    };
+
+    return await I.sendPostRequest(
+      'graph/api/datasources/proxy/1/api/v1/query_range',
+      bodyFormData,
+      headers,
+    );
+  },
+
+  /**
+   * Fluent wait for a specified metric to have non-empty body.
+   * Fails test if timeout exceeded.
+   *
+   * @param     metricName          name of the metric to lookup
+   * @param     queryBy             PrometheusQL expression, ex.: {node_name='MySQL Node'}
+   * @param     timeOutInSeconds    time to wait for a service to appear
+   * @returns   {Promise<Object>}   response Object, requires await when called
+   */
+  async waitForMetric(metricName, queryBy, timeOutInSeconds = 30) {
+    const start = new Date().getTime();
+    const timout = timeOutInSeconds * 1000;
+    const interval = 1;
+
+    /* eslint no-constant-condition: ["error", { "checkLoops": false }] */
+    while (true) {
+      // Main condition check: metric body is not empty
+      const response = await this.getMetric(metricName, queryBy);
+
+      if (response.data.data.result.length !== 0) {
+        return response;
+      }
+
+      // Check the timeout after evaluating main condition
+      // to ensure conditions with a zero timeout can succeed.
+      if (new Date().getTime() - start >= timout) {
+        assert.fail(`Metrics "${metricName}" is empty: 
+        tried to check for ${timeOutInSeconds} second(s) with ${interval} second(s) with interval`);
+      }
+
+      I.wait(interval);
+    }
+  },
+
+  async checkMetricExist(metricName, refineBy) {
+    const response = await this.getMetric(metricName, refineBy);
+    const result = JSON.stringify(response.data.data.result);
+
+    I.assertTrue(response.data.data.result.length !== 0,
+      `Metrics ${metricName} Should be available but got empty ${result}`);
+
+    return response;
   },
 };

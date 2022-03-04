@@ -1,6 +1,6 @@
 const { I } = inject();
 
-const artifactCell = (name) => `//tr[td/div[contains(text(), "${name}")]]`;
+const artifactCell = (name) => `//tr[td/div/span[contains(text(), "${name}")]]`;
 
 module.exports = {
   url: 'graph/backup/inventory',
@@ -9,14 +9,18 @@ module.exports = {
     modalHeader: '$modal-header',
     columnHeaderLocator: (columnHeaderText) => `//th[text()="${columnHeaderText}"]`,
     dropdownOption: (text) => locate('div[class$="-select-option-body"]').find('span').withText(text),
-    selectedLocation: locate('div[class$="-singleValue"]').inside(locate('div').withChild('$location-select-label')),
-    selectedService: locate('div[class$="-singleValue"]').inside(locate('div').withChild('$service-select-label')),
+    selectedLocation: locate('div[class*="-singleValue"]').inside(locate('div').withChild('$location-select-label')),
+    selectedService: locate('div[class*="-singleValue"]').inside(locate('div').withChild('$service-select-label')),
     inProgressBackup: '$statusPending',
     backupStatus: '$statusMsg',
     pendingBackupByName: (name) => locate('$statusPending').inside(artifactCell(name)),
     backupStatusByName: (name) => locate('$statusMsg').inside(artifactCell(name)),
     artifactName: (name) => locate('td').at(1).inside(artifactCell(name)),
     forceDeleteLabel: '$force-field-label',
+    retryTimes: '$retryTimes-number-input',
+    retryInterval: '$retryInterval-number-input',
+    dataModelState: '$dataModel-radio-state',
+    backupModalError: '$backup-modal-error',
   },
   buttons: {
     openAddBackupModal: '$backup-add-modal-button',
@@ -29,6 +33,9 @@ module.exports = {
     modalRestore: '$restore-button',
     forceDeleteCheckbox: '$force-checkbox-input',
     confirmDelete: '$confirm-delete-modal-button',
+    retryModeOption: (option) => locate('$retry-mode-selector').find('div').at(1).find('label')
+      .withText(option),
+    dataModel: '$dataModel-radio-button',
   },
   fields: {
     backupName: '$backupName-text-input',
@@ -41,6 +48,7 @@ module.exports = {
     modalHeaderText: 'Delete backup artifact',
     forceDeleteLabelText: 'Delete from storage',
     confirmDeleteText: (backupName) => `Are you sure you want to delete "${backupName}"?`,
+    serviceNoLongerExists: 'This service no longer exists. Please choose a compatible one.',
   },
   locationType: {},
 

@@ -5,21 +5,7 @@ const { I } = inject();
 module.exports = {
   checkNames: {
     mysqlVersion: 'mysql_version',
-    mysqlEmptyPassword: 'mysql_empty_password',
-  },
-
-  /* Since Enabling STT checks clears existing Checks Results,
-   this method is used for waiting for results with a timeout */
-  async waitForSecurityChecksResults(timeout) {
-    for (let i = 0; i < timeout; i++) {
-      const results = await this.getSecurityChecksResults();
-
-      if (results && results.length) {
-        break;
-      }
-
-      I.wait(1);
-    }
+    mysqlEmptyPassword: 'mysql_security_1',
   },
 
   async getSecurityChecksResults() {
@@ -35,10 +21,11 @@ module.exports = {
     return resp.data.results;
   },
 
-  async startSecurityChecks() {
+  async startSecurityChecks(checkNamesArray) {
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
+    const body = checkNamesArray ? { names: checkNamesArray } : {};
 
-    const resp = await I.sendPostRequest('v1/management/SecurityChecks/Start', {}, headers);
+    const resp = await I.sendPostRequest('v1/management/SecurityChecks/Start', body, headers);
 
     assert.ok(
       resp.status === 200,
@@ -52,19 +39,34 @@ module.exports = {
     assert.ok(!failedCheckDoesNotExist, `Expected "${detailsText}" failed check to not be present`);
   },
 
+  async waitForFailedCheckExistance(detailsText, serviceName, timeout = 120) {
+    await I.asyncWaitFor(async () => await this.getFailedCheckBySummary(detailsText, serviceName), timeout);
+    I.wait(5);
+  },
+
+  async waitForFailedCheckNonExistance(detailsText, serviceName, timeout = 120) {
+    await I.asyncWaitFor(async () => {
+      const check = await this.getFailedCheckBySummary(detailsText, serviceName);
+
+      return !check;
+    }, timeout);
+    I.wait(5);
+  },
+
   async verifyFailedCheckExists(detailsText, serviceName) {
     const failedCheckExists = await this.getFailedCheckBySummary(detailsText, serviceName);
 
     assert.ok(failedCheckExists, `Expected to have "${detailsText}" failed check.`);
   },
 
-  async getFailedCheckBySummary(summaryText) {
+  async getFailedCheckBySummary(summaryText, serviceName) {
     const results = await this.getSecurityChecksResults();
 
     // return null if there are no failed checks
     if (!results) return null;
 
-    return results.find((obj) => obj.summary === summaryText);
+    // eslint-disable-next-line max-len
+    return results.find((obj) => obj.summary.trim() === summaryText && (serviceName ? obj.service_name.trim() === serviceName : true));
   },
 
   async enableCheck(checkName) {
@@ -118,44 +120,23 @@ module.exports = {
     );
   },
 
+  async getAllChecksList() {
+    const headers = { Authorization: `Basic ${await I.getAuth()}` };
+    const resp = await I.sendPostRequest('v1/management/SecurityChecks/List', {}, headers);
+
+    return resp.data.checks;
+  },
+
   async restoreDefaultIntervals() {
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
     const body = {
-      params: [{
-        name: 'mongodb_version',
-        interval: 'STANDARD',
-      },
-      {
-        name: 'mysql_anonymous_users',
-        interval: 'STANDARD',
-      },
-      {
-        name: 'postgresql_super_role',
-        interval: 'STANDARD',
-      },
-      {
-        name: 'mysql_empty_password',
-        interval: 'STANDARD',
-      },
-      {
-        name: 'mysql_version',
-        interval: 'STANDARD',
-      },
-      {
-        name: 'mongodb_cve_version',
-        interval: 'STANDARD',
-      },
-      {
-        name: 'postgresql_version',
-        interval: 'STANDARD',
-      },
-      {
-        name: 'mongodb_auth',
-        interval: 'STANDARD',
-      },
-      ],
+      params: [],
     };
 
+    await I.asyncWaitFor(this.getAllChecksList, 60);
+    const allChecks = await this.getAllChecksList();
+
+    allChecks.forEach(({ name }) => body.params.push({ name, interval: 'STANDARD' }));
     const resp = await I.sendPostRequest('v1/management/SecurityChecks/Change', body, headers);
 
     assert.ok(

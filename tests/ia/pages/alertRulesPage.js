@@ -28,6 +28,7 @@ module.exports = {
     expression: locate('$template-expression').find('pre'),
     templateAlert: locate('$template-alert').find('pre'),
     durationError: '$duration-field-error-message',
+    ruleAdvancedSectionToggle: locate('$alert-rule-advanced-section').find('//*[text()="Advanced details"]'),
   },
   buttons: {
     openAddRuleModal: '$alert-rule-template-add-modal-button',
@@ -38,9 +39,9 @@ module.exports = {
     cancelDelete: '$cancel-delete-modal-button',
     delete: '$confirm-delete-modal-button',
     // showDetails returns Show rule details button locator for a given rule name
-    showDetails: (ruleName) => `${rulesNameCell(ruleName)}//button[@data-testid="show-alert-rule-details"]`,
+    showDetails: (ruleName) => `${rulesNameCell(ruleName)}//button[@data-testid="show-details"]`,
     // hideDetails returns Hide rule details button locator for a given rule name
-    hideDetails: (ruleName) => `${rulesNameCell(ruleName)}//button[@data-testid="hide-alert-rule-details"]`,
+    hideDetails: (ruleName) => `${rulesNameCell(ruleName)}//button[@data-testid="hide-details"]`,
     // editAlertRule returns Edit rule button locator for a given rule name
     editAlertRule: (ruleName) => `${rulesNameCell(ruleName)}/following-sibling::td//button[@data-testid='edit-alert-rule-button']`,
     // duplicateAlertRule returns Copy rule button locator for a given rule name
@@ -106,7 +107,7 @@ module.exports = {
     }
   },
 
-  verifyEditRuleDialogElements(rule) {
+  verifyEditRuleDialogElements(rule, openAdvancedSection = false) {
     const {
       template, ruleName = '', threshold, duration,
       filters = '', expression, alert,
@@ -123,6 +124,11 @@ module.exports = {
 
     I.waitForValue(this.fields.duration, duration, 10);
     I.waitForValue(this.fields.filters, filters, 10);
+
+    if (openAdvancedSection) {
+      I.click(this.elements.ruleAdvancedSectionToggle);
+    }
+
     I.seeTextEquals(expression, this.elements.expression);
     I.seeTextEquals(alert, this.elements.templateAlert);
   },
@@ -152,10 +158,10 @@ module.exports = {
       I.see(filter.trim(), this.elements.filtersCell(ruleName));
     });
     this.verifyRuleState(activate, ruleName);
-    I.seeAttributesOnElements(this.buttons.showDetails(ruleName), { disabled: null });
-    I.seeAttributesOnElements(this.buttons.deleteAlertRule(ruleName), { disabled: null });
-    I.seeAttributesOnElements(this.buttons.editAlertRule(ruleName), { disabled: null });
-    I.seeAttributesOnElements(this.buttons.duplicateAlertRule(ruleName), { disabled: null });
+    I.seeElementsEnabled(this.buttons.showDetails(ruleName));
+    I.seeElementsEnabled(this.buttons.deleteAlertRule(ruleName));
+    I.seeElementsEnabled(this.buttons.editAlertRule(ruleName));
+    I.seeElementsEnabled(this.buttons.duplicateAlertRule(ruleName));
   },
 
   verifyRuleState(activate, ruleName) {

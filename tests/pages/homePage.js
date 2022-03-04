@@ -1,4 +1,4 @@
-const { I } = inject();
+const { I, dashboardPage } = inject();
 const assert = require('assert');
 // The original regex source is https://regexlib.com/REDetails.aspx?regexp_id=5055
 // eslint-disable-next-line no-useless-escape
@@ -7,22 +7,27 @@ const lastCheckRegex = /^(?:(((Jan(uary)?|Ma(r(ch)?|y)|Jul(y)?|Aug(ust)?|Oct(obe
 module.exports = {
   // insert your locators and methods here
   // setting locators
-  url: 'graph/d/pmm-home/home-dashboard?orgId=1',
+  url: 'graph/d/pmm-home/home-dashboard?orgId=1&refresh=1m&from=now-5m&to=now',
   requestEnd: '/v1/Updates/Check',
   fields: {
     systemsUnderMonitoringCount:
-      '//span[@class="panel-title-text" and contains(text(), "Systems under monitoring")]//../../../..//span[@class="singlestat-panel-value"]',
+      locate('.panel-content span').inside('[aria-label="Monitored nodes panel"]'),
     dbUnderMonitoringCount:
-      '//span[@class="panel-title-text" and contains(text(), "Monitored DB Instances")]//../../../..//span[@class="singlestat-panel-value"]',
+      locate('.panel-content span').inside('[aria-label="Monitored DB Services panel"]'),
     dashboardHeaderText: 'Percona Monitoring and Management',
     dashboardHeaderLocator: '//div[contains(@class, "dashboard-header")]',
     oldLastCheckSelector: '#pmm-update-widget > .last-check-wrapper p',
     sttDisabledFailedChecksPanelSelector: '$db-check-panel-settings-link',
     sttFailedChecksPanelSelector: '$db-check-panel-has-checks',
     checksPanelSelector: '$db-check-panel-home',
-    newsPanelTitleSelector: '//span[@class="panel-title-text" and text() = "Percona News"]',
+    noFailedChecksInPanel: '$db-check-panel-zero-checks',
+    failedChecksPanelInfo: '[aria-label="Failed security checks panel"] i',
+    newsPanelTitleSelector: dashboardPage.graphsLocator('Percona News'),
+    pmmCustomMenu: locate('$navbar-section').find('.dropdown a[aria-label="PMM dashboards"]'),
+    servicesButton: locate('span').withText('Services'),
     newsPanelContentSelector:
-      '//span[contains(text(), "Percona News")]/ancestor::div[contains(@class, "panel-container")]//div[contains(@class, "view")]',
+      locate('.panel-content').inside('[aria-label="Percona News panel"]'),
+    popUp: '.popper__background',
     noAccessRightsSelector: '$unauthorized',
     updateWidget: {
       base: {
@@ -85,11 +90,18 @@ module.exports = {
     'TASK [Wait for pmm-managed]',
     'TASK [Reread supervisord configuration again]',
     'TASK [Restart services]',
-    'TASK [Start Grafana dashboards update]',
     'TASK [Update/restart other services]',
     'TASK [Check supervisord log]',
-    'Waiting for Grafana dashboards update to finish...',
   ],
+  failedChecksSinglestatsInfoMessage: 'Display the number of database security checks that the Security Threat Tool identified as failed during its most recent run.',
+
+  serviceDashboardLocator: (serviceName) => locate('a').withText(serviceName),
+  isAmiUpgrade: process.env.AMI_UPGRADE_TESTING_INSTANCE === 'true',
+
+  async open() {
+    I.amOnPage(this.url);
+    I.waitForElement(this.fields.dashboardHeaderLocator, 60);
+  },
 
   // introducing methods
   async upgradePMM(version) {
@@ -104,18 +116,42 @@ module.exports = {
     I.waitForElement(locators.updateProgressModal, 30);
     I.waitForText(locators.inProgressMessage, 30, locators.updateProgressModal);
 
-    // skipping milestones checks for 2.9 and 2.10 versions due logs not showing issue
-    if (version !== '9' && version !== '10') {
-      for (const milestone of milestones) {
-        I.waitForElement(`//pre[contains(text(), '${milestone}')]`, 1200);
+    // skipping milestones checks for 2.9 and 2.10, 2.11 versions due logs not showing issue
+    if (version > 11) {
+      if (this.isAmiUpgrade) {
+        for (const milestone of milestones) {
+          I.waitForElement(`//pre[contains(text(), '${milestone}')]`, 1200);
+        }
+
+        I.waitForText(locators.successUpgradeMessage, 1200, locators.successUpgradeMsgSelector);
       }
+
+      if (!this.isAmiUpgrade) {
+        // to ensure that the logs window is never empty during upgrade
+        I.waitForElement(`//pre[contains(text(), '${milestones[0]}')]`, 1200);
+        I.waitForText(locators.successUpgradeMessage, 1200, locators.successUpgradeMsgSelector);
+
+        // Get upgrade logs from a container
+        const upgradeLogs = await I.verifyCommand('docker exec pmm-server cat /srv/logs/pmm-update-perform.log');
+
+        milestones.forEach((milestone) => {
+          assert.ok(upgradeLogs.includes(milestone), `Expected to see ${milestone} in upgrade logs`);
+        });
+      }
+
+      I.click(locators.reloadButtonAfterUpgrade);
+    } else {
+      I.waitForText(locators.successUpgradeMessage, 1200, locators.successUpgradeMsgSelector);
+      // we have a bug we need this https://jira.percona.com/browse/PMM-9294
+      I.wait(60);
+
+      I.click(locators.reloadButtonAfterUpgrade);
+      I.refreshPage();
     }
 
-    I.waitForText(locators.successUpgradeMessage, 1200, locators.successUpgradeMsgSelector);
-    I.click(locators.reloadButtonAfterUpgrade);
     locators = this.getLocators('latest');
 
-    I.waitForVisible(locators.upToDateLocator, 30);
+    I.waitForVisible(locators.upToDateLocator, 60);
     assert.equal(
       await I.grabTextFrom(locators.currentVersion),
       available_version.split(' ')[0],
@@ -145,7 +181,7 @@ module.exports = {
   async verifyPostUpdateWidgetIsPresent() {
     const locators = this.getLocators('latest');
 
-    I.waitForVisible(locators.upToDateLocator, 30);
+    I.waitForVisible(locators.upToDateLocator, 60);
     I.waitForVisible(locators.lastCheckSelector, 30);
     I.dontSeeElement(locators.availableVersion);
     I.dontSeeElement(locators.triggerUpdate);
