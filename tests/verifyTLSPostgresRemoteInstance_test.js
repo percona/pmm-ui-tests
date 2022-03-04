@@ -32,7 +32,7 @@ Before(async ({ I, settingsAPI }) => {
 });
 
 Data(instances).Scenario(
-  'PMM-T948 PMM-T947 Verify Adding SSL services remotely @ssl @ssl-remote',
+  'PMM-T948 PMM-T947 Verify Adding SSL services remotely @ssl @ssl-remote @not-ui-pipeline',
   async ({
     I, remoteInstancesPage, pmmInventoryPage, current, inventoryAPI,
   }) => {
@@ -79,7 +79,7 @@ Data(instances).Scenario(
 );
 
 Data(instances).Scenario(
-  'Verify metrics from SSL instances on PMM-Server @ssl @ssl-remote',
+  'Verify metrics from SSL instances on PMM-Server @ssl @ssl-remote @not-ui-pipeline',
   async ({
     I, remoteInstancesPage, pmmInventoryPage, current, grafanaAPI,
   }) => {
@@ -107,7 +107,7 @@ Data(instances).Scenario(
 ).retry(1);
 
 Data(instances).Scenario(
-  'PMM-T946 Verify adding PostgreSQL with --tls flag and with missing TLS options @ssl @ssl-remote',
+  'PMM-T946 Verify adding PostgreSQL with --tls flag and with missing TLS options @ssl @ssl-remote @not-ui-pipeline',
   async ({
     I, current, grafanaAPI,
   }) => {
@@ -146,7 +146,7 @@ Data(instances).Scenario(
 ).retry(1);
 
 Data(instances).Scenario(
-  'Verify dashboard after PGSQL SSL Instances are added @ssl @ssl-remote',
+  'Verify dashboard after PGSQL SSL Instances are added @ssl @ssl-remote @not-ui-pipeline',
   async ({
     I, dashboardPage, adminPage, current,
   }) => {
@@ -171,7 +171,7 @@ Data(instances).Scenario(
 ).retry(2);
 
 Data(instances).Scenario(
-  'Verify QAN after PGSQL SSL Instances is added @ssl @ssl-remote',
+  'Verify QAN after PGSQL SSL Instances is added @ssl @ssl-remote @not-ui-pipeline',
   async ({
     I, qanOverview, qanFilters, qanPage, current, adminPage,
   }) => {

@@ -32,7 +32,7 @@ Before(async ({ I, settingsAPI }) => {
 });
 
 Data(instances).Scenario(
-  'PMM-T888 PMM-T919 Verify Adding SSL services remotely @ssl @ssl-remote',
+  'PMM-T888 PMM-T919 Verify Adding SSL services remotely @ssl @ssl-remote @not-ui-pipeline',
   async ({
     I, remoteInstancesPage, pmmInventoryPage, current, grafanaAPI, inventoryAPI,
   }) => {
@@ -76,7 +76,7 @@ Data(instances).Scenario(
 );
 
 Data(instances).Scenario(
-  'Verify metrics from SSL instances on PMM-Server @ssl @ssl-remote',
+  'Verify metrics from SSL instances on PMM-Server @ssl @ssl-remote @not-ui-pipeline',
   async ({
     I, remoteInstancesPage, pmmInventoryPage, current, grafanaAPI,
   }) => {
@@ -105,7 +105,7 @@ Data(instances).Scenario(
 
 Data(instances).Scenario(
   'PMM-T926 PMM-T927 Verify there is no possibility to add MongoDB Service with only CA file specified,'
-    + 'Verify there is no possibility to add MongoDB Service with only certificate file specified @ssl @ssl-remote',
+    + 'Verify there is no possibility to add MongoDB Service with only certificate file specified @ssl @ssl-remote @not-ui-pipeline',
   async ({
     I, current, grafanaAPI,
   }) => {
@@ -129,7 +129,7 @@ Data(instances).Scenario(
 ).retry(1);
 
 Data(instances).Scenario(
-  'Verify dashboard after MongoDB SSL Instances are added @ssl @ssl-remote',
+  'Verify dashboard after MongoDB SSL Instances are added @ssl @ssl-remote @not-ui-pipeline',
   async ({
     I, dashboardPage, adminPage, current,
   }) => {
@@ -154,7 +154,7 @@ Data(instances).Scenario(
 ).retry(1);
 
 Data(instances).Scenario(
-  'Verify QAN after MongoDB SSL Instances is added @ssl @ssl-remote',
+  'Verify QAN after MongoDB SSL Instances is added @ssl @ssl-remote @not-ui-pipeline',
   async ({
     I, qanOverview, qanFilters, qanPage, current, adminPage,
   }) => {

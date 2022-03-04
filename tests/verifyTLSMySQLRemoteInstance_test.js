@@ -25,7 +25,7 @@ Before(async ({ I, settingsAPI }) => {
 });
 
 Data(instances).Scenario(
-  'Verify Adding SSL Mysql services remotely @ssl @ssl-remote',
+  'Verify Adding SSL Mysql services remotely @ssl @ssl-remote @not-ui-pipeline',
   async ({
     I, remoteInstancesPage, pmmInventoryPage, current, inventoryAPI,
   }) => {
@@ -71,7 +71,7 @@ Data(instances).Scenario(
 );
 
 Data(instances).Scenario(
-  'Verify metrics from mysql SSL instances on PMM-Server @ssl @ssl-remote',
+  'Verify metrics from mysql SSL instances on PMM-Server @ssl @ssl-remote @not-ui-pipeline',
   async ({
     I, remoteInstancesPage, pmmInventoryPage, current, grafanaAPI,
   }) => {
@@ -99,7 +99,7 @@ Data(instances).Scenario(
 ).retry(1);
 
 Data(instances).Scenario(
-  'PMM-T937 PMM-T938 Verify MySQL cannot be added without specified --tls-key, Verify MySQL cannot be added without specified --tls-cert @ssl @ssl-remote',
+  'PMM-T937 PMM-T938 Verify MySQL cannot be added without specified --tls-key, Verify MySQL cannot be added without specified --tls-cert @ssl @ssl-remote @not-ui-pipeline',
   async ({
     I, current, grafanaAPI,
   }) => {
@@ -123,7 +123,7 @@ Data(instances).Scenario(
 ).retry(1);
 
 Data(instances).Scenario(
-  'Verify dashboard after MySQL SSL Instances are added @ssl @ssl-remote',
+  'Verify dashboard after MySQL SSL Instances are added @ssl @ssl-remote @not-ui-pipeline',
   async ({
     I, dashboardPage, adminPage, current,
   }) => {
@@ -148,7 +148,7 @@ Data(instances).Scenario(
 ).retry(2);
 
 Data(instances).Scenario(
-  'Verify QAN after MySQL SSL Instances is added @ssl @ssl-remote',
+  'Verify QAN after MySQL SSL Instances is added @ssl @ssl-remote @not-ui-pipeline',
   async ({
     I, qanOverview, qanFilters, qanPage, current, adminPage,
   }) => {
