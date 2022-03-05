@@ -52,7 +52,8 @@ module.exports = {
   },
 
   checkLink(section, filter, visibility) {
-    const locator = locate('span[title]').withText(filter).inside(this.getFilterSectionLocator(section));
+    const dashboardLink = locate(`$filter-checkbox-${filter === 'n/a' ? '' : filter}`).find('a');
+    const locator = locate(dashboardLink).inside(this.getFilterSectionLocator(section));
 
     if (visibility) {
       I.waitForElement(locator, 30);
@@ -102,6 +103,20 @@ module.exports = {
     I.wait(2);
   },
 
+  applySpecificFilter(filterName) {
+    const filterToApply = `//span[contains(@class, 'checkbox-container__label-text') and text()='${filterName}']`;
+
+    I.waitForVisible(this.fields.filterBy, 30);
+    I.fillField(this.fields.filterBy, filterName);
+    I.waitForVisible(filterToApply, 20);
+    I.forceClick(filterToApply);
+    I.waitForDetached(this.elements.spinner, 30);
+    I.waitForElement(this.fields.filterBy, 30);
+    // workaround for clearing the field completely
+    I.forceClick(this.fields.filterBy);
+    adminPage.customClearField(this.fields.filterBy);
+    I.wait(2);
+  },
   applyFilterInSection(section, filter) {
     const filterLocator = `//span[contains(text(), '${section}')]/parent::p/following-sibling::div//span[contains(@class, 'checkbox-container__label-text') and contains(text(), '${filter}')]`;
 
