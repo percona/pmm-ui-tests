@@ -28,7 +28,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T1103 Verify Test Email configuration in Settings @ia @grafana-pr',
+  'PMM-T1103 Verify Test Email configuration in Settings @ia',
   async ({
     I, settingsAPI, pmmSettingsPage,
   }) => {
