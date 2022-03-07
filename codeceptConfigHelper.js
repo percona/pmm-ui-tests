@@ -35,6 +35,7 @@ module.exports = {
     pmmDemoPage: './tests/pages/pmmDemoPage.js',
     pmmInventoryPage: './tests/pages/pmmInventoryPage.js',
     pmmSettingsPage: './tests/pages/pmmSettingsPage.js',
+    portalAPI: './tests/pages/api/portalAPI.js',
     qanDetails: './tests/QAN/pages/qanDetailsFragment.js',
     qanFilters: './tests/QAN/pages/qanFiltersFragment.js',
     qanOverview: './tests/QAN/pages/qanOverviewFragment.js',
