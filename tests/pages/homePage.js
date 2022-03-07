@@ -1,4 +1,4 @@
-const { I } = inject();
+const { I, dashboardPage } = inject();
 const assert = require('assert');
 // The original regex source is https://regexlib.com/REDetails.aspx?regexp_id=5055
 // eslint-disable-next-line no-useless-escape
@@ -11,9 +11,9 @@ module.exports = {
   requestEnd: '/v1/Updates/Check',
   fields: {
     systemsUnderMonitoringCount:
-      '//span[@class="panel-title-text" and contains(text(), "Monitored nodes")]//../../../..//span[@class="singlestat-panel-value"]',
+      locate('.panel-content span').inside('[aria-label="Monitored nodes panel"]'),
     dbUnderMonitoringCount:
-      '//span[@class="panel-title-text" and contains(text(), "Monitored DB Services")]//../../../..//span[@class="singlestat-panel-value"]',
+      locate('.panel-content span').inside('[aria-label="Monitored DB Services panel"]'),
     dashboardHeaderText: 'Percona Monitoring and Management',
     dashboardHeaderLocator: '//div[contains(@class, "dashboard-header")]',
     oldLastCheckSelector: '#pmm-update-widget > .last-check-wrapper p',
@@ -21,12 +21,12 @@ module.exports = {
     sttFailedChecksPanelSelector: '$db-check-panel-has-checks',
     checksPanelSelector: '$db-check-panel-home',
     noFailedChecksInPanel: '$db-check-panel-zero-checks',
-    failedChecksPanelInfo: '[aria-label="Panel container title Failed security checks"] i',
-    newsPanelTitleSelector: '//span[@class="panel-title-text" and text() = "Percona News"]',
-    pmmCustomMenu: '$sidemenu-item-pmm',
+    failedChecksPanelInfo: '[aria-label="Failed security checks panel"] i',
+    newsPanelTitleSelector: dashboardPage.graphsLocator('Percona News'),
+    pmmCustomMenu: locate('$navbar-section').find('.dropdown a[aria-label="PMM dashboards"]'),
     servicesButton: locate('span').withText('Services'),
     newsPanelContentSelector:
-      '//span[contains(text(), "Percona News")]/ancestor::div[contains(@class, "panel-container")]//div[contains(@class, "view")]',
+      locate('.panel-content').inside('[aria-label="Percona News panel"]'),
     popUp: '.popper__background',
     noAccessRightsSelector: '$unauthorized',
     updateWidget: {
@@ -181,7 +181,7 @@ module.exports = {
   async verifyPostUpdateWidgetIsPresent() {
     const locators = this.getLocators('latest');
 
-    I.waitForVisible(locators.upToDateLocator, 30);
+    I.waitForVisible(locators.upToDateLocator, 60);
     I.waitForVisible(locators.lastCheckSelector, 30);
     I.dontSeeElement(locators.availableVersion);
     I.dontSeeElement(locators.triggerUpdate);

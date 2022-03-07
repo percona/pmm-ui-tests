@@ -71,6 +71,29 @@ class Grafana extends Helper {
       });
     });
   }
+  
+  /**
+   * Wait for Request to be triggered from User Action
+   *
+   * example Usage: await I.waitForEndPointRequest(endPoint, element);
+   *
+   * @param endpoint       Endpoint which will be called on click of an element
+   * @param element        Playwright to wait for the request
+   * for example: Download Zip log request via Settings get diagnostics button
+   * @returns {Promise<void>}
+   */
+  async waitForEndPointRequest(endpoint, element) {
+    const { browserContext } = this.helpers.Playwright;
+    const existingPages = await browserContext.pages();
+    const mainPage = existingPages[0];
+
+    const [request] = await Promise.all([
+      // Waits for the next request with the specified url
+      mainPage.waitForRequest(endpoint),
+      // Triggers the request
+      mainPage.click(element),
+    ]);
+  }
 
   async grabNumberOfTabs() {
     const { browserContext } = this.helpers.Playwright;

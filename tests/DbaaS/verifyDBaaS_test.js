@@ -30,7 +30,7 @@ inputFields.add([dbaasPage.tabs.dbClusterTab.advancedOptions.fields.cpuNumberFie
 
 // Data table for db cluster name validation
 
-nameFields.add([dbaasPage.tabs.dbClusterTab.basicOptions.fields.clusterNameField, ['1cluster','clusterA','cluster-'], dbaasPage.tabs.dbClusterTab.basicOptions.fields.clusterNameFieldErrorMessage, dbaasPage.dbclusterNameError]);
+nameFields.add([dbaasPage.tabs.dbClusterTab.basicOptions.fields.clusterNameField, ['1cluster', 'clusterA', 'cluster-'], dbaasPage.tabs.dbClusterTab.basicOptions.fields.clusterNameFieldErrorMessage, dbaasPage.dbclusterNameError]);
 
 Feature('DbaaS: Kubernetes Cluster Registration UI');
 
@@ -40,13 +40,19 @@ Before(async ({ I }) => {
 
 Scenario(
   'PMM-T426 - Verify adding new Kubernetes cluster minikube, PMM-T428 - Verify adding new Kubernetes cluster with same name, '
-  + 'PMM-T431 -Verify unregistering Kubernetes cluster @dbaas',
+  + 'PMM-T431 -Verify unregistering Kubernetes cluster, PMM-T1158 - Verify warning about unset public address @dbaas',
   async ({ I, dbaasPage, settingsAPI }) => {
-    await settingsAPI.changeSettings({ publicAddress: process.env.VM_IP });
     I.amOnPage(dbaasPage.url);
     I.waitForVisible(dbaasPage.tabs.kubernetesClusterTab.addKubernetesClusterButtonInTable, 30);
     I.click(dbaasPage.tabs.kubernetesClusterTab.addKubernetesClusterButton);
     I.seeElement(dbaasPage.tabs.kubernetesClusterTab.modalWindow);
+    I.waitForElement(dbaasPage.tabs.dbClusterTab.monitoringWarningLocator, 30);
+    I.click(dbaasPage.tabs.kubernetesClusterTab.closeButton);
+    await settingsAPI.changeSettings({ publicAddress: process.env.VM_IP });
+    I.amOnPage(dbaasPage.url);
+    I.click(dbaasPage.tabs.kubernetesClusterTab.addKubernetesClusterButton);
+    I.seeElement(dbaasPage.tabs.kubernetesClusterTab.modalWindow);
+    I.dontSeeElement(dbaasPage.tabs.dbClusterTab.monitoringWarningLocator, 30);
     I.click(dbaasPage.tabs.kubernetesClusterTab.closeButton);
     I.dontSeeElement(dbaasPage.tabs.kubernetesClusterTab.modalWindow);
     I.click(dbaasPage.tabs.kubernetesClusterTab.addKubernetesClusterButton);
@@ -157,9 +163,10 @@ Scenario('PMM-T728 Verify DB Cluster Tab Page Elements & Steps Background @dbaas
     I.seeElement(dbaasPage.tabs.dbClusterTab.advancedOptions.fields.nodesNumberField);
     I.seeElement(dbaasPage.tabs.dbClusterTab.advancedOptions.fields.dbClusterExternalAccessCheckbox);
     I.dontSeeCheckboxIsChecked(
-      dbaasPage.tabs.dbClusterTab.advancedOptions.fields.dbClusterExternalAccessCheckbox);
+      dbaasPage.tabs.dbClusterTab.advancedOptions.fields.dbClusterExternalAccessCheckbox,
+    );
     I.moveCursorTo(dbaasPage.tabs.dbClusterTab.advancedOptions.fields.dbClusterExternalAccessTooltip);
-    I.seeTextEquals('Allows external access to the database cluster', 
+    I.seeTextEquals('Allows external access to the database cluster',
       dbaasPage.tabs.dbClusterTab.advancedOptions.fields.dbClusterExternalAccessTooltipText);
     I.seeElement(dbaasPage.tabs.dbClusterTab.advancedOptions.fields.dbClusterResourceFieldLabel);
     I.seeElement(dbaasPage.tabs.dbClusterTab.advancedOptions.fields.memoryField);
@@ -189,10 +196,10 @@ Scenario('PMM-T456 PMM-T490 Verify DB Cluster Steps Background @dbaas',
     await adminPage.verifyBackgroundColor(dbaasPage.tabs.dbClusterTab.optionsCountLocator(1), 'rgb(235, 123, 24)');
     await adminPage.verifyBackgroundColor(dbaasPage.tabs.dbClusterTab.optionsCountLocator(2), 'rgb(142, 142, 142)');
     I.click(dbaasPage.tabs.dbClusterTab.optionsCountLocator(2));
-    await adminPage.verifyBackgroundColor(dbaasPage.tabs.dbClusterTab.optionsCountLocator(1), 'rgb(224, 47, 68)');
+    await adminPage.verifyBackgroundColor(dbaasPage.tabs.dbClusterTab.optionsCountLocator(1), 'rgb(209, 14, 92)');
     await adminPage.verifyBackgroundColor(dbaasPage.tabs.dbClusterTab.optionsCountLocator(2), 'rgb(235, 123, 24)');
     I.click(dbaasPage.tabs.dbClusterTab.optionsCountLocator(1));
-    await adminPage.verifyBackgroundColor(dbaasPage.tabs.dbClusterTab.optionsCountLocator(2), 'rgb(41, 156, 70)');
+    await adminPage.verifyBackgroundColor(dbaasPage.tabs.dbClusterTab.optionsCountLocator(2), 'rgb(26, 127, 75)');
     await adminPage.verifyBackgroundColor(dbaasPage.tabs.dbClusterTab.optionsCountLocator(1), 'rgb(235, 123, 24)');
     I.click(dbaasPage.tabs.dbClusterTab.optionsCountLocator(2));
     await dbaasAPI.apiUnregisterCluster(clusterName);
@@ -200,7 +207,7 @@ Scenario('PMM-T456 PMM-T490 Verify DB Cluster Steps Background @dbaas',
 
 Data(nameFields).Scenario('PMM-T456 Verify Create Cluster steps validation fields disabled/enabled + name input validation, PMM-T833 - Verify DB cluster name length @dbaas',
   async ({
-    I, dbaasPage, dbaasAPI, adminPage, current, dbaasActionsPage
+    I, dbaasPage, dbaasAPI, adminPage, current, dbaasActionsPage,
   }) => {
     if (!await dbaasAPI.apiCheckRegisteredClusterExist(clusterName)) {
       await dbaasAPI.apiRegisterCluster(process.env.kubeconfig_minikube, clusterName);
@@ -214,9 +221,10 @@ Data(nameFields).Scenario('PMM-T456 Verify Create Cluster steps validation field
     await dbaasActionsPage.createClusterBasicOptions(clusterName, 'a2345678901234567890', 'MySQL');
     I.dontSee(dbaasPage.dbclusterNameLimitError, dbaasPage.tabs.dbClusterTab.basicOptions.fields.clusterNameFieldErrorMessage);
     adminPage.customClearField(current.field);
-    I.fillField(dbaasPage.tabs.dbClusterTab.basicOptions.fields.clusterNameField,'a23456789012345678901');
+    I.fillField(dbaasPage.tabs.dbClusterTab.basicOptions.fields.clusterNameField, 'a23456789012345678901');
     I.seeTextEquals(
-      dbaasPage.dbclusterNameLimitError, dbaasPage.tabs.dbClusterTab.basicOptions.fields.clusterNameFieldErrorMessage);
+      dbaasPage.dbclusterNameLimitError, dbaasPage.tabs.dbClusterTab.basicOptions.fields.clusterNameFieldErrorMessage,
+    );
     I.waitForElement(dbaasPage.tabs.dbClusterTab.optionsCountLocator(2), 30);
     current.value.forEach((input) => dbaasPage.verifyInputValidationMessages(
       current.field,
@@ -254,7 +262,7 @@ Data(nameFields).Scenario('PMM-T456 Verify Create Cluster steps validation field
 
 Data(inputFields).Scenario('PMM-T456 Verify Create Cluster steps validation - field input validation @dbaas',
   async ({
-    I, dbaasPage, dbaasAPI, adminPage, current, dbaasManageVersionPage, dbaasActionsPage
+    I, dbaasPage, dbaasAPI, adminPage, current, dbaasActionsPage,
   }) => {
     if (!await dbaasAPI.apiCheckRegisteredClusterExist(clusterName)) {
       await dbaasAPI.apiRegisterCluster(process.env.kubeconfig_minikube, clusterName);

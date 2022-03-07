@@ -1,6 +1,6 @@
 const { I } = inject();
 
-const artifactCell = (name) => `//tr[td/div[contains(text(), "${name}")]]`;
+const artifactCell = (name) => `//tr[td/div/span[contains(text(), "${name}")]]`;
 
 module.exports = {
   url: 'graph/backup/inventory',
@@ -9,8 +9,8 @@ module.exports = {
     modalHeader: '$modal-header',
     columnHeaderLocator: (columnHeaderText) => `//th[text()="${columnHeaderText}"]`,
     dropdownOption: (text) => locate('div[class$="-select-option-body"]').find('span').withText(text),
-    selectedLocation: locate('div[class$="-singleValue"]').inside(locate('div').withChild('$location-select-label')),
-    selectedService: locate('div[class$="-singleValue"]').inside(locate('div').withChild('$service-select-label')),
+    selectedLocation: locate('div[class*="-singleValue"]').inside(locate('div').withChild('$location-select-label')),
+    selectedService: locate('div[class*="-singleValue"]').inside(locate('div').withChild('$service-select-label')),
     inProgressBackup: '$statusPending',
     backupStatus: '$statusMsg',
     pendingBackupByName: (name) => locate('$statusPending').inside(artifactCell(name)),

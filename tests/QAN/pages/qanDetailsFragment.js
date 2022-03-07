@@ -22,7 +22,7 @@ module.exports = {
 
   getFilterSectionLocator: (filterSectionName) => `//span[contains(text(), '${filterSectionName}')]`,
 
-  getTabLocator: (tabName) => `//li[contains(text(), '${tabName}')]`,
+  getTabLocator: (tabName) => locate('li > a').withText(tabName),
 
   getMetricsCellLocator: (metricName, columnNumber) => `//td//span[contains(text(), "${metricName}")]/ancestor::tr/td[${columnNumber}]//span[1]`,
 

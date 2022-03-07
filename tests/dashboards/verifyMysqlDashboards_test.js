@@ -93,8 +93,18 @@ Data(urlsAndMetrics).Scenario(
     I.waitForVisible(shareLocator, 20);
     I.click(shareLocator);
     I.waitForVisible(dashboardPage.sharePanel.elements.imageRendererPluginLink, 20);
-    I.seeAttributesOnElements(dashboardPage.sharePanel.elements.imageRendererPluginLink, { href: links.imageRendererPlugin });
+    I.seeAttributesOnElements(
+      dashboardPage.sharePanel.elements.imageRendererPluginLink,
+      {
+        href: links.imageRendererPlugin,
+        target: '_blank',
+      },
+    );
     I.seeTextEquals('Image Renderer plugin', dashboardPage.sharePanel.elements.imageRendererPluginLink);
+    I.seeTextEquals(
+      dashboardPage.sharePanel.messages.imageRendererPlugin,
+      dashboardPage.sharePanel.elements.imageRendererPluginInfoText,
+    );
   },
 );
 
@@ -152,7 +162,7 @@ xScenario(
     I.amOnPage(dashboardPage.mysqlUserDetailsDashboard.url);
     dashboardPage.waitForDashboardOpened();
     I.waitForVisible(dashboardPage.fields.timeRangePickerButton, 20);
-    adminPage.applyTimeRange(timeRange);
+    await adminPage.applyTimeRange(timeRange);
     await dashboardPage.applyFilter('Service Name', 'ps_8.0');
     I.waitForVisible(dashboardPage.fields.rootUser, 20);
     I.click(dashboardPage.fields.rootUser);
