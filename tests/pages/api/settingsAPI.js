@@ -139,6 +139,8 @@ module.exports = {
       resp.status === 200,
       `Failed to set Email Alerting settings. ${resp.data.message}`,
     );
+
+    return body;
   },
 
   /**
