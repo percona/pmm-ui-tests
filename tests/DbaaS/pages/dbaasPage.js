@@ -59,7 +59,7 @@ module.exports = {
       createClusterButton: '$step-progress-submit-button',
       updateClusterButton: '$dbcluster-update-cluster-button',
       dbClusterTab: '//li/a[@aria-label="Tab DB Cluster"]',
-      monitoringWarningLocator: '$add-cluster-monitoring-warning',
+      monitoringWarningLocator: '$pmm-server-url-warning',
       optionsCountLocator: (step) => `(//div[@data-testid='step-header']//div[1])[${step}]`,
       optionsHeader: '$step-header',
       deleteDbClusterConfirmationText: (dbClusterName, clusterName, dbType) => `Are you sure that you want to delete ${dbType} cluster ${dbClusterName} from Kubernetes cluster ${clusterName} ?`,
