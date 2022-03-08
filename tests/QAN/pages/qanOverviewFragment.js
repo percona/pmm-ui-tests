@@ -13,6 +13,7 @@ module.exports = {
     copyButton: '$copy-link-button',
   },
   elements: {
+    timeRangeError: '//div[@role=\'alert\']',
     countOfItems: '$qan-total-items',
     groupBy: '$group-by',
     latencyChart: '.latency-chart-container',

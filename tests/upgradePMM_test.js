@@ -383,6 +383,17 @@ if (versionMinor >= 23) {
 }
 
 if (versionMinor >= 21) {
+  Scenario(
+    'Enable DbaaS in Settings Before upgrade @pre-upgrade @ami-upgrade @pmm-upgrade',
+    async ({ settingsAPI, I }) => {
+      const body = {
+        enable_dbaas: true,
+      };
+
+      await settingsAPI.changeSettings(body, true);
+      I.wait(10);
+    },
+  );
   Data(clientDbServices).Scenario(
     'Adding custom agent Password, Custom Label before upgrade At service Level @pre-upgrade @pmm-upgrade',
     async ({
@@ -871,6 +882,14 @@ Scenario(
 );
 
 if (versionMinor >= 21) {
+  Scenario(
+    'PMM-T784 Verify that DBaaS is enabled after upgrade @post-upgrade @ami-upgrade @pmm-upgrade',
+    async ({ dbaasPage, I }) => {
+      I.amOnPage(dbaasPage.url);
+      I.waitForVisible(dbaasPage.tabs.kubernetesClusterTab.addKubernetesClusterButtonInTable, 30);
+      I.seeElement(dbaasPage.tabs.kubernetesClusterTab.addKubernetesClusterButtonInTable);
+    },
+  );
   Data(clientDbServices).Scenario(
     'Verify if Agents added with custom password and custom label work as expected Post Upgrade @post-client-upgrade @post-upgrade @pmm-upgrade',
     async ({

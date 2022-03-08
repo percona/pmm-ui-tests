@@ -828,6 +828,7 @@ module.exports = {
       folder: locate('.page-toolbar').find('[aria-label="Search links"] > a'),
       dashboardName: locate('.page-toolbar').find('[aria-label="Search dashboard by name"]'),
     },
+    servicePolygonLocator: '//div[@class=\'grafana-d3-polystat\']//*[local-name()=\'svg\']//*[name()=\'a\']',
     annotationMarker: '(//div[contains(@class,"events_marker")])',
     clearSelection: '//a[@ng-click="vm.clearSelections()"]',
     collapsedDashboardRow: '//div[@class="dashboard-row dashboard-row--collapsed"]/a',
@@ -911,6 +912,22 @@ module.exports = {
 
   tabLocator(tabName) {
     return `//a[contains(text(), '${tabName}')]`;
+  },
+
+  async verifyNavigationFromNodeSummary(nodeName, serviceName) {
+    I.amOnPage(this.nodeSummaryDashboard.url);
+    await this.waitForDashboardOpened();
+    await adminPage.applyTimeRange('Last 12 hours');
+    await this.applyFilter('Node Name', nodeName);
+    await this.waitForDashboardOpened();
+    adminPage.performPageDown(5);
+    I.waitForVisible(this.fields.servicePolygonLocator, 30);
+    I.click(this.fields.servicePolygonLocator);
+    I.switchToNextTab();
+    I.waitForText('Instance Summary', 30);
+    const url = await I.grabCurrentUrl();
+
+    assert.ok(url.includes(`var-service_name=${serviceName}`), `The url for Instance summary dashboard is ${url} but it doesn't contain service name filter ${serviceName}`);
   },
 
   async verifyThereAreNoGraphsWithNA(acceptableNACount = 0) {
