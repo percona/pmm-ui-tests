@@ -5,13 +5,13 @@ const assert = require('assert');
 
 module.exports = {
 
-  async checkActionPossible(actionName, actionPosibilty) {
+  async checkActionPossible(actionName, actionPosibilty, dbclusterName) {
     const numOfElements = await I.grabNumberOfVisibleElements(
       dbaasPage.tabs.dbClusterTab.fields.clusterAction(actionName),
     );
 
     if (numOfElements === 0) {
-      I.click(dbaasPage.tabs.dbClusterTab.fields.clusterActionsMenu);
+      I.click(dbaasPage.tabs.dbClusterTab.fields.clusterActionsMenu(dbclusterName));
     }
 
     const actionClass = await I.grabAttributeFrom(dbaasPage.tabs.dbClusterTab.fields.clusterAction(actionName), 'class');
@@ -74,7 +74,7 @@ module.exports = {
   async deleteXtraDBCluster(dbClusterName, k8sClusterName) {
     I.waitForElement(dbaasPage.tabs.dbClusterTab.fields.clusterTableHeader, 30);
     I.click(dbaasPage.tabs.dbClusterTab.fields.clusterActionsMenu);
-    await this.checkActionPossible('Delete', true);
+    await this.checkActionPossible('Delete', true, dbClusterName);
     I.waitForElement(dbaasPage.tabs.dbClusterTab.fields.clusterAction('Delete'), 30);
     I.click(dbaasPage.tabs.dbClusterTab.fields.clusterAction('Delete'));
     I.waitForElement(dbaasPage.tabs.dbClusterTab.fields.deleteDBClusterButton, 30);
@@ -91,7 +91,7 @@ module.exports = {
   async restartCluster(dbClusterName, k8sClusterName, clusterDBType = 'MySQL') {
     I.waitForElement(dbaasPage.tabs.dbClusterTab.fields.clusterTableHeader, 30);
     I.click(dbaasPage.tabs.dbClusterTab.fields.clusterActionsMenu);
-    await this.checkActionPossible('Restart', true);
+    await this.checkActionPossible('Restart', true, dbClusterName);
     I.waitForElement(dbaasPage.tabs.dbClusterTab.fields.clusterAction('Restart'), 30);
     I.click(dbaasPage.tabs.dbClusterTab.fields.clusterAction('Restart'));
     I.waitForText('Processing', 30, dbaasPage.tabs.dbClusterTab.fields.progressBarContent);
@@ -101,7 +101,7 @@ module.exports = {
   async editCluster(dbClusterName, k8sClusterName, configuration) {
     I.waitForElement(dbaasPage.tabs.dbClusterTab.fields.clusterTableHeader, 30);
     I.click(dbaasPage.tabs.dbClusterTab.fields.clusterActionsMenu);
-    await this.checkActionPossible('Edit', true);
+    await this.checkActionPossible('Edit', true, dbClusterName);
     I.waitForElement(dbaasPage.tabs.dbClusterTab.fields.clusterAction('Edit'), 30);
     I.click(dbaasPage.tabs.dbClusterTab.fields.clusterAction('Edit'));
     I.waitForElement(
@@ -133,19 +133,19 @@ module.exports = {
 
   async suspendCluster(dbClusterName, k8sClusterName, clusterDBType = 'MySQL') {
     I.waitForElement(dbaasPage.tabs.dbClusterTab.fields.clusterTableHeader, 30);
-    I.click(dbaasPage.tabs.dbClusterTab.fields.clusterActionsMenu);
-    await this.checkActionPossible('Suspend', true);
+    I.click(dbaasPage.tabs.dbClusterTab.fields.clusterActionsMenu(dbClusterName));
+    await this.checkActionPossible('Suspend', true, dbClusterName);
     I.waitForElement(dbaasPage.tabs.dbClusterTab.fields.clusterAction('Suspend'), 30);
     I.click(dbaasPage.tabs.dbClusterTab.fields.clusterAction('Suspend'));
     I.waitForText('Processing', 30, dbaasPage.tabs.dbClusterTab.fields.progressBarContent);
-    await this.checkActionPossible('Resume', false);
+    await this.checkActionPossible('Resume', false, dbClusterName);
     await dbaasAPI.apiWaitForDBClusterState(dbClusterName, k8sClusterName, clusterDBType, 'DB_CLUSTER_STATE_PAUSED');
   },
 
   async resumeCluster(dbClusterName, k8sClusterName, clusterDBType = 'MySQL') {
     I.waitForElement(dbaasPage.tabs.dbClusterTab.fields.clusterTableHeader, 30);
     I.click(dbaasPage.tabs.dbClusterTab.fields.clusterActionsMenu);
-    await this.checkActionPossible('Resume', true);
+    await this.checkActionPossible('Resume', true, dbClusterName);
     I.waitForElement(dbaasPage.tabs.dbClusterTab.fields.clusterAction('Resume'), 30);
     I.click(dbaasPage.tabs.dbClusterTab.fields.clusterAction('Resume'));
     I.waitForText('Processing', 30, dbaasPage.tabs.dbClusterTab.fields.progressBarContent);
@@ -155,7 +155,7 @@ module.exports = {
   async deletePSMDBCluster(dbClusterName, k8sClusterName) {
     I.waitForElement(dbaasPage.tabs.dbClusterTab.fields.clusterTableHeader, 30);
     I.click(dbaasPage.tabs.dbClusterTab.fields.clusterActionsMenu);
-    await this.checkActionPossible('Delete', true);
+    await this.checkActionPossible('Delete', true, dbClusterName);
     I.waitForElement(dbaasPage.tabs.dbClusterTab.fields.clusterAction('Delete'), 30);
     I.click(dbaasPage.tabs.dbClusterTab.fields.clusterAction('Delete'));
     I.waitForElement(dbaasPage.tabs.dbClusterTab.fields.deleteDBClusterButton, 30);
@@ -193,10 +193,10 @@ module.exports = {
     );
   },
 
-  async updateCluster() {
+  async updateCluster(dbClusterName) {
     I.waitForElement(dbaasPage.tabs.dbClusterTab.fields.clusterTableHeader, 30);
     I.click(dbaasPage.tabs.dbClusterTab.fields.clusterActionsMenu);
-    await this.checkActionPossible('Update', true);
+    await this.checkActionPossible('Update', true, dbClusterName);
     I.waitForElement(dbaasPage.tabs.dbClusterTab.fields.clusterAction('Update'), 30);
     I.click(dbaasPage.tabs.dbClusterTab.fields.clusterAction('Update'));
     I.waitForElement(dbaasPage.tabs.dbClusterTab.fields.updateClusterButton, 30);

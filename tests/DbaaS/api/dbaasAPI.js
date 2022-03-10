@@ -254,4 +254,24 @@ module.exports = {
     
   },
 
+  async apiGetAllDBClusterParameters(dbClusterName, clusterName) {
+    const body = {
+      kubernetesClusterName: clusterName,
+      name: dbClusterName,
+    };
+    const headers = { Authorization: `Basic ${await I.getAuth()}` };
+
+    const response = await I.sendPostRequest('v1/management/DBaaS/DBClusters/List', body, headers);
+
+    if (response.data.pxc_clusters) {
+      console.log(response.data.pxc_clusters);
+    }
+
+    if (response.data.psmdb_clusters) {
+      console.log(response.data.psmdb_clusters);
+    }
+
+    return response.data.connection_credentials;
+  },
+
 };

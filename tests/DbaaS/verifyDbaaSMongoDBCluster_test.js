@@ -141,7 +141,7 @@ Scenario('PMM-787 Verify Editing MonogDB Cluster is possible. @dbaas',
     await dbaasPage.validateClusterDetail(psmdb_cluster, clusterName, psmdb_configuration, 
       psmdb_configuration.clusterDashboardRedirectionLink);
     I.click(dbaasPage.tabs.dbClusterTab.fields.clusterActionsMenu);
-    // await dbaasActionsPage.checkActionPossible('Update', false); skipped because latest mongodb is not recommended version
+    // await dbaasActionsPage.checkActionPossible('Update', false, psmdb_cluster); skipped because latest mongodb is not recommended version
     I.click(dbaasPage.tabs.dbClusterTab.fields.clusterActionsMenu);
     const psmdb_updated_configuration = {
       topology: 'Cluster',
@@ -302,7 +302,7 @@ Scenario('Verify update PSMDB Cluster version @dbaas', async ({ I, dbaasPage, db
   I.click(dbaasPage.tabs.dbClusterTab.createClusterButton);
   I.waitForText('Processing', 30, dbaasPage.tabs.dbClusterTab.fields.progressBarContent);
   await dbaasPage.postClusterCreationValidation(psmdb_cluster_update, clusterName, 'MongoDB');
-  await dbaasActionsPage.updateCluster();
+  await dbaasActionsPage.updateCluster(psmdb_cluster_update);
   I.waitForVisible(dbaasPage.tabs.dbClusterTab.fields.clusterStatusUpdating, 60);
   I.seeElement(dbaasPage.tabs.dbClusterTab.fields.clusterStatusUpdating);
   await dbaasAPI.apiWaitForDBClusterState(psmdb_cluster_update, clusterName, 'MongoDB', 'DB_CLUSTER_STATE_READY');

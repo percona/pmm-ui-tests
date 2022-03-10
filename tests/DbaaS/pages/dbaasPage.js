@@ -148,8 +148,8 @@ module.exports = {
         clusterStatusDeleting: '$cluster-status-deleting',
         clusterStatusUpdating: '$cluster-status-updating',
         clusterTableHeader: locate('$table-header').find('th'),
-        clusterTableRow: '$table-row',
-        clusterActionsMenu: '$dropdown-menu-toggle',
+        clusterTableRow: (dbclusterName) => locate('$table-row').withText(dbclusterName),
+        clusterActionsMenu: (dbclusterName) => `//*[@data-testid="table-row" and contains(.//span, '${dbclusterName}')]//*[@data-testid="dropdown-menu-toggle"]`,
         deleteDBClusterButton: '$delete-dbcluster-button',
         dbClusterLogs: {
           dbClusterLogsAction: '$dbcluster-logs-actions',
@@ -406,7 +406,7 @@ module.exports = {
     await dashboardPage.genericDashboardLoadForDbaaSClusters(`${dashboardPage.mysqlPXCGaleraNodeSummaryDashboard.url}?&var-service_name=${serviceName}`, 'Last 5 minutes', 4, 0, 2);
     await dashboardPage.genericDashboardLoadForDbaaSClusters(`${dashboardPage.nodeSummaryDashboard.url}?&var-node_name=${nodeName}`, 'Last 5 minutes', 4, 0, 1);
     await dashboardPage.genericDashboardLoadForDbaaSClusters(`${dashboardPage.mysqlInstanceSummaryDashboard.url}&var-service_name=${serviceName}`, 'Last 5 minutes', 4, 0, 5);
-    await dashboardPage.genericDashboardLoadForDbaaSClusters(`graph/d/haproxy-instance-summary/haproxy-instance-summary?orgId=1&refresh=1m&var-node_name=${haproxynodeName}`, 'Last 5 minutes', 4, 0, 3);
+    await dashboardPage.genericDashboardLoadForDbaaSClusters(`graph/d/haproxy-instance-summary/haproxy-instance-summary?orgId=1&refresh=1m&var-node_name=${haproxynodeName}`, 'Last 5 minutes', 4, 1, 8);
   },
 
   async psmdbClusterMetricCheck(dbclusterName, serviceName, nodeName) {
