@@ -2,6 +2,7 @@ const { I } = inject();
 const assert = require('assert');
 
 const alertRow = (alertName) => `//tr[td[contains(., "${alertName}")]]`;
+const details = locate('$alert-details-wrapper');
 
 module.exports = {
   url: 'graph/integrated-alerting/alerts',
@@ -17,12 +18,16 @@ module.exports = {
     noticeSeverity: '//td[2]/span[text()="Notice"]',
     warningSeverity: '//td[2]/span[text()="Warning"]',
     columnHeaderLocator: (columnHeaderText) => `//th[text()="${columnHeaderText}"]`,
+    details,
+    detailsRuleExpression: locate(`${details}`).find('div').withText('Rule Expression'),
+    detailsSecondaryLabels: locate(`${details}`).find('div').withText('Secondary Labels'),
   },
   buttons: {
     // silenceActivate returns silence/activate button locator for a given alert name
     silenceActivate: (alertName) => `${alertRow(alertName)}[1]/td//button[@data-testid="silence-alert-button"]`,
     silenceAllAlerts: locate('span').withText('Silence All'),
     unsilenceAllAlerts: locate('span').withText('Unsilence All'),
+    arrowIcon: (alertName) => locate(`${alertRow(alertName)}`).find('$show-details'),
   },
   messages: {
     noAlertsFound: 'No alerts',
@@ -106,6 +111,12 @@ module.exports = {
       assert.equal(highColor, this.colors.high, 'High alert is silence');
       assert.equal(noticeColor, this.colors.notice, 'Notice alert is silence');
       assert.equal(warningColor, this.colors.warning, 'Warning alert is silence');
+    }
+  },
+
+  checkContainingSecondaryLabels(expectedLabels) {
+    for (const i in expectedLabels) {
+      I.seeElement(locate('$chip').withText(`${expectedLabels[i]}`));
     }
   },
 };
