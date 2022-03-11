@@ -230,9 +230,9 @@ Scenario('PMM-T525 PMM-T528 Verify Suspend & Resume for DB Cluster Works as expe
     I.click(dbaasPage.tabs.dbClusterTab.createClusterButton);
     I.waitForText('Processing', 30, dbaasPage.tabs.dbClusterTab.fields.progressBarContent);
     await dbaasPage.postClusterCreationValidation(dbClusterRandomName, clusterName);
-    I.click(dbaasPage.tabs.dbClusterTab.fields.clusterActionsMenu);
+    I.click(dbaasPage.tabs.dbClusterTab.fields.clusterActionsMenu(clusterName));
     await dbaasActionsPage.checkActionPossible('Update', false, pxc_cluster_name);
-    I.click(dbaasPage.tabs.dbClusterTab.fields.clusterActionsMenu);
+    I.click(dbaasPage.tabs.dbClusterTab.fields.clusterActionsMenu(clusterName));
     await dbaasActionsPage.suspendCluster(dbClusterRandomName, clusterName);
     I.waitForVisible(dbaasPage.tabs.dbClusterTab.fields.clusterStatusPaused, 60);
     I.seeElement(dbaasPage.tabs.dbClusterTab.fields.clusterStatusPaused);

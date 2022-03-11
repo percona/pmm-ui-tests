@@ -2,6 +2,7 @@ const clusterName = 'kube';
 const pxc_cluster_name = 'upgrade-pxc';
 const psmdb_cluster_name = 'upgrade-psmdb';
 const active_state = 'ACTIVE';
+const mongodb_recommended_version = 'MongoDB 4.4.10';
 
 Feature('Updates of DB clusters and operators and PMM Server upgrade related tests');
 
@@ -23,31 +24,57 @@ Feature('Updates of DB clusters and operators and PMM Server upgrade related tes
     // }
   });
 
-  Scenario('Verify DB clusters after PMM Server upgrade',
+  Scenario('PMM-T726 Verify DB clusters status after PMM Server upgrade',
   async ({ I, dbaasAPI, homePage, dbaasPage, dbaasActionsPage }) => {
     // await dbaasAPI.apiCreatePXCCluster(pxc_cluster_name, clusterName); //MySQL 8.0.20?
     // await dbaasAPI.apiCreatePSMDBCluster(psmdb_cluster_name, clusterName); //MongoDB 4.2.8?
     // await dbaasAPI.apiWaitForDBClusterState(pxc_cluster_name, clusterName, 'MySQL', 'DB_CLUSTER_STATE_READY');
     // await dbaasAPI.apiWaitForDBClusterState(psmdb_cluster_name, clusterName, 'MongoDB', 'DB_CLUSTER_STATE_READY');
-
     I.amOnPage(homePage.url);
     await homePage.upgradePMM('2.27.0');
     I.amOnPage('graph/dbaas/dbclusters');
     I.waitForText(active_state, 10, dbaasPage.tabs.dbClusterTab.fields.clusterTableRow(pxc_cluster_name));
     I.waitForText(active_state, 10, dbaasPage.tabs.dbClusterTab.fields.clusterTableRow(psmdb_cluster_name));
 
-    //check paramaters after upgrade
-
-    //pause
+    await dbaasPage.verifyLogPopup(33, psmdb_cluster_name);
+    await dbaasPage.verifyLogPopup(6, pxc_cluster_name);
     await dbaasActionsPage.suspendCluster(psmdb_cluster_name, clusterName, 'MongoDB');
     await dbaasActionsPage.suspendCluster(pxc_cluster_name, clusterName);
+    await dbaasActionsPage.resumeCluster(psmdb_cluster_name, clusterName, 'MongoDB');
+    await dbaasActionsPage.resumeCluster(pxc_cluster_name, clusterName);
+    await dbaasActionsPage.restartCluster(psmdb_cluster_name, clusterName, 'MongoDB');
+    await dbaasActionsPage.restartCluster(pxc_cluster_name, clusterName, 'MySQL');
 
-    //restart
-    //edit
-    //logs
+    const psmdb_updated_configuration = {
+      topology: 'Cluster',
+      numberOfNodes: '3',
+      resourcePerNode: 'Custom',
+      memory: '1.2 GB',
+      cpu: '0.5',
+      disk: '5 GB',
+      dbType: mongodb_recommended_version,
+      clusterDashboardRedirectionLink: dbaasPage.clusterDashboardUrls.psmdbDashboard(psmdb_cluster_name),
+    };
 
-    // TODO: update all occurrences of clusterActionsMenu with parameter
-}); 
+    await dbaasActionsPage.editCluster(psmdb_cluster_name, clusterName, psmdb_updated_configuration);
+    I.click(dbaasPage.tabs.dbClusterTab.updateClusterButton);
+    I.waitForElement(dbaasPage.tabs.dbClusterTab.fields.clusterActionsMenu(psmdb_cluster_name));
+    I.wait(5);
+
+    const pxc_updated_configuration = {
+      topology: 'Single',
+      resourcePerNode: 'Custom',
+      memory: '1.2 GB',
+      cpu: '0.5',
+      disk: '25 GB',
+      dbType: 'MySQL',
+      clusterDashboardRedirectionLink: dbaasPage.clusterDashboardUrls.pxcDashboard(pxc_cluster_name),
+    };
+    
+    await dbaasActionsPage.editCluster(pxc_cluster_name, clusterName, pxc_updated_configuration); //here
+    I.click(dbaasPage.tabs.dbClusterTab.updateClusterButton);
+    I.waitForElement(dbaasPage.tabs.dbClusterTab.fields.clusterActionsMenu(pxc_cluster_name));
+  }); 
 
 const pxcDBClusterDetails = new DataTable(['namespace', 'clusterName', 'node']);
 pxcDBClusterDetails.add(['default', `${pxc_cluster_name}`, '0']);
