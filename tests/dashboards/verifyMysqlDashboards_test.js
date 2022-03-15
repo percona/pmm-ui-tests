@@ -36,7 +36,7 @@ Scenario(
     I, adminPage, dashboardPage,
   }) => {
     for (const serviceName of serviceList) {
-      const url = I.getDashboardUrlWithParams(dashboardPage.mysqlInstanceSummaryDashboard.url, [{ filterName: 'service_name', filterValue: serviceName }], 'from=now-5m&to=now');
+      const url = I.getDashboardUrlWithParams(dashboardPage.mysqlInstanceSummaryDashboard.url, null, serviceName, 'now-5m', 'now');
 
       I.amOnPage(url);
       dashboardPage.waitForDashboardOpened();

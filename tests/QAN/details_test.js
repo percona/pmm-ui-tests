@@ -4,7 +4,7 @@ const { adminPage } = inject();
 
 Before(async ({ I, qanPage, qanOverview }) => {
   await I.Authorize();
-  I.amOnPage(I.getDashboardUrlWithParams(qanPage.clearUrl, null, 'from=now-1h&to=now'));
+  I.amOnPage(I.getDashboardUrlWithParams(qanPage.clearUrl, null, null, null, 'now-1h'));
   qanOverview.waitForOverviewLoaded();
 });
 
@@ -33,7 +33,7 @@ Scenario(
   }) => {
     const cellValue = qanDetails.getMetricsCellLocator('Query Time', 3);
 
-    I.amOnPage(I.getDashboardUrlWithParams(qanPage.clearUrl, [{ filterName: 'environment', filterValue: 'ps-dev' }], 'from=now-1h&to=now', 'insert'));
+    I.amOnPage(I.getDashboardUrlWithParams(qanPage.clearUrl, 'ps-dev', null, null, 'now-1', 'now', 'insert'));
     I.waitForElement(qanOverview.elements.querySelector, 30);
     qanOverview.selectRow(1);
     qanFilters.waitForFiltersToLoad();
@@ -48,7 +48,7 @@ Scenario(
   async ({
     I, qanPage, qanOverview, qanFilters, qanDetails,
   }) => {
-    I.amOnPage(I.getDashboardUrlWithParams(qanPage.clearUrl, [{ filterName: 'environment', filterValue: 'ps-dev' }], 'from=now-1h&to=now', 'insert'));
+    I.amOnPage(I.getDashboardUrlWithParams(qanPage.clearUrl, 'ps-dev', null, null, 'now-1h', 'now', 'insert'));
     I.waitForElement(qanOverview.elements.querySelector, 30);
     qanOverview.selectRow(1);
     qanFilters.waitForFiltersToLoad();
@@ -62,7 +62,7 @@ Scenario(
   async ({
     I, qanPage, qanOverview, qanFilters, qanDetails,
   }) => {
-    I.amOnPage(I.getDashboardUrlWithParams(qanPage.clearUrl, [{ filterName: 'environment', filterValue: 'md-dev' }], 'from=now-1h&to=now'));
+    I.amOnPage(I.getDashboardUrlWithParams(qanPage.clearUrl, 'environment', null, null, 'now-1h'));
     I.waitForElement(qanOverview.elements.querySelector, 30);
     qanOverview.selectRow(1);
     qanFilters.waitForFiltersToLoad();
@@ -76,7 +76,7 @@ Scenario(
   async ({
     I, qanPage, qanOverview, qanFilters, qanDetails,
   }) => {
-    I.amOnPage(I.getDashboardUrlWithParams(qanPage.clearUrl, [{ filterName: 'environment', filterValue: 'ps-dev' }], 'from=now-1h&to=now'));
+    I.amOnPage(I.getDashboardUrlWithParams(qanPage.clearUrl, 'ps-dev', null, null, 'now-1h'));
     I.waitForElement(qanOverview.elements.querySelector, 30);
     qanOverview.selectRow(1);
     qanFilters.waitForFiltersToLoad();
@@ -90,7 +90,7 @@ Scenario(
   async ({
     I, qanPage, qanOverview, qanFilters, qanDetails,
   }) => {
-    I.amOnPage(I.getDashboardUrlWithParams(qanPage.clearUrl, [{ filterName: 'environment', filterValue: 'pdpgsql-dev' }], 'from=now-1h&to=now'));
+    I.amOnPage(I.getDashboardUrlWithParams(qanPage.clearUrl, 'pdpgsql-dev', null, null, 'now-1h'));
     I.waitForElement(qanOverview.elements.querySelector, 30);
     qanOverview.selectRow(1);
     qanFilters.waitForFiltersToLoad();
@@ -103,7 +103,7 @@ Scenario(
   async ({
     I, qanPage, qanOverview, qanFilters, qanDetails,
   }) => {
-    I.amOnPage(I.getDashboardUrlWithParams(qanPage.clearUrl, [{ filterName: 'service_type', filterValue: 'mongodb' }], 'from=now-1h&to=now'));
+    I.amOnPage(I.getDashboardUrlWithParams(qanPage.clearUrl, 'mongodb', null, null, 'now-1h'));
     I.waitForElement(qanOverview.elements.querySelector, 30);
     qanOverview.selectRow(1);
     qanFilters.waitForFiltersToLoad();

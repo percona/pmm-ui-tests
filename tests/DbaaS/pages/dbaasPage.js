@@ -1,5 +1,5 @@
 const {
-  I, dbaasAPI, dbaasActionsPage, dbaasManageVersionPage, dashboardPage, qanPage, qanFilters, qanOverview, inventoryAPI, adminPage,
+  I, dbaasAPI, dbaasActionsPage, dbaasManageVersionPage, dashboardPage, qanPage, qanFilters, qanOverview, inventoryAPI,
 } = inject();
 const assert = require('assert');
 const faker = require('faker');
@@ -419,7 +419,7 @@ module.exports = {
   },
 
   async dbaasQANCheck(dbclusterName, nodeName, serviceName) {
-    I.amOnPage(I.getDashboardUrlWithParams(qanPage.clearUrl, null, null, 'from=now-3h&to=now'));
+    I.amOnPage(I.getDashboardUrlWithParams(qanPage.url, null, null, null, 'now-3h'));
     qanOverview.waitForOverviewLoaded();
     qanFilters.checkFilterExistInSection('Cluster', dbclusterName);
     qanFilters.checkFilterExistInSection('Node Name', `${nodeName}`);
