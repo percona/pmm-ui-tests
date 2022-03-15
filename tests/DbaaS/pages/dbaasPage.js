@@ -165,7 +165,7 @@ module.exports = {
         },
         cancelDeleteDBCluster: '$cancel-delete-dbcluster-button',
         progressBarSteps: '$progress-bar-steps',
-        progressBarContent: '$progress-bar-message',
+        progressBarContent: (dbclusterName) => `//*[@data-testid="table-row" and contains(.//span, '${dbclusterName}')]//*[@data-testid="progress-bar-message"]`,
         updateClusterButton: '$confirm-update-dbcluster-button',
       },
     },

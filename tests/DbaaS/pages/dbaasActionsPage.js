@@ -94,7 +94,7 @@ module.exports = {
     await this.checkActionPossible('Restart', true, dbClusterName);
     I.waitForElement(dbaasPage.tabs.dbClusterTab.fields.clusterAction('Restart'), 30);
     I.click(dbaasPage.tabs.dbClusterTab.fields.clusterAction('Restart'));
-    I.waitForText('Processing', 30, dbaasPage.tabs.dbClusterTab.fields.progressBarContent);
+    I.waitForText('Processing', 30, dbaasPage.tabs.dbClusterTab.fields.progressBarContent(dbClusterName));
     await dbaasAPI.apiWaitForDBClusterState(dbClusterName, k8sClusterName, clusterDBType, 'DB_CLUSTER_STATE_READY');
   },
 
@@ -137,7 +137,7 @@ module.exports = {
     await this.checkActionPossible('Suspend', true, dbClusterName);
     I.waitForElement(dbaasPage.tabs.dbClusterTab.fields.clusterAction('Suspend'), 30);
     I.click(dbaasPage.tabs.dbClusterTab.fields.clusterAction('Suspend'));
-    I.waitForText('Processing', 30, dbaasPage.tabs.dbClusterTab.fields.progressBarContent);
+    I.waitForText('Processing', 30, dbaasPage.tabs.dbClusterTab.fields.progressBarContent(dbClusterName));
     await this.checkActionPossible('Resume', false, dbClusterName);
     await dbaasAPI.apiWaitForDBClusterState(dbClusterName, k8sClusterName, clusterDBType, 'DB_CLUSTER_STATE_PAUSED');
     I.click(dbaasPage.tabs.dbClusterTab.dbClusterTab);
@@ -149,7 +149,7 @@ module.exports = {
     await this.checkActionPossible('Resume', true, dbClusterName);
     I.waitForElement(dbaasPage.tabs.dbClusterTab.fields.clusterAction('Resume'), 30);
     I.click(dbaasPage.tabs.dbClusterTab.fields.clusterAction('Resume'));
-    I.waitForText('Processing', 30, dbaasPage.tabs.dbClusterTab.fields.progressBarContent);
+    I.waitForText('Processing', 30, dbaasPage.tabs.dbClusterTab.fields.progressBarContent(dbClusterName));
     await dbaasAPI.apiWaitForDBClusterState(dbClusterName, k8sClusterName, clusterDBType, 'DB_CLUSTER_STATE_READY');
   },
 

@@ -62,7 +62,7 @@ Scenario('PMM-T665 PMM-T642 PMM-T484 PSMDB Cluster with Custom Resources, Verify
     I.waitForInvisible(dbaasPage.tabs.kubernetesClusterTab.disabledAddButton, 30);
     await dbaasActionsPage.createClusterAdvancedOption(clusterName, psmdb_cluster, 'MongoDB', psmdb_configuration);
     I.click(dbaasPage.tabs.dbClusterTab.createClusterButton);
-    I.waitForText('Processing', 30, dbaasPage.tabs.dbClusterTab.fields.progressBarContent);
+    I.waitForText('Processing', 30, dbaasPage.tabs.dbClusterTab.fields.progressBarContent(psmdb_cluster));
     //PMM-T780
     await dbaasPage.apiKeyCheck(clusterName, psmdb_cluster, 'psmdb', true);
     await dbaasPage.waitForDbClusterTab(clusterName);
@@ -136,7 +136,7 @@ Scenario('PMM-787 Verify Editing MonogDB Cluster is possible. @dbaas',
     I.waitForInvisible(dbaasPage.tabs.kubernetesClusterTab.disabledAddButton, 30);
     await dbaasActionsPage.createClusterAdvancedOption(clusterName, psmdb_cluster, 'MongoDB', psmdb_configuration);
     I.click(dbaasPage.tabs.dbClusterTab.createClusterButton);
-    I.waitForText('Processing', 30, dbaasPage.tabs.dbClusterTab.fields.progressBarContent);
+    I.waitForText('Processing', 30, dbaasPage.tabs.dbClusterTab.fields.progressBarContent(psmdb_cluster));
     await dbaasPage.postClusterCreationValidation(psmdb_cluster, clusterName, 'MongoDB');
     await dbaasPage.validateClusterDetail(psmdb_cluster, clusterName, psmdb_configuration, 
       psmdb_configuration.clusterDashboardRedirectionLink);
@@ -157,7 +157,7 @@ Scenario('PMM-787 Verify Editing MonogDB Cluster is possible. @dbaas',
 
     await dbaasActionsPage.editCluster(psmdb_cluster, clusterName, psmdb_updated_configuration);
     I.click(dbaasPage.tabs.dbClusterTab.updateClusterButton);
-    I.waitForText('Processing', 60, dbaasPage.tabs.dbClusterTab.fields.progressBarContent);
+    I.waitForText('Processing', 60, dbaasPage.tabs.dbClusterTab.fields.progressBarContent(psmdb_cluster));
     await dbaasPage.postClusterCreationValidation(psmdb_cluster, clusterName, 'MongoDB');
     await dbaasPage.validateClusterDetail(psmdb_cluster, clusterName, psmdb_updated_configuration, 
       psmdb_updated_configuration.clusterDashboardRedirectionLink);
@@ -185,7 +185,7 @@ Scenario('PMM-T525 PMM-T528 Verify Suspend & Resume for Mongo DB Cluster Works a
     I.waitForInvisible(dbaasPage.tabs.kubernetesClusterTab.disabledAddButton, 30);
     await dbaasActionsPage.createClusterAdvancedOption(clusterName, psmdb_cluster_suspend_resume, 'MongoDB', clusterDetails);
     I.click(dbaasPage.tabs.dbClusterTab.createClusterButton);
-    I.waitForText('Processing', 30, dbaasPage.tabs.dbClusterTab.fields.progressBarContent);
+    I.waitForText('Processing', 30, dbaasPage.tabs.dbClusterTab.fields.progressBarContent(psmdb_cluster_suspend_resume));
     await dbaasPage.postClusterCreationValidation(psmdb_cluster_suspend_resume, clusterName, 'MongoDB');
     await dbaasPage.validateClusterDetail(psmdb_cluster_suspend_resume, clusterName, clusterDetails, 
       clusterDetails.clusterDashboardRedirectionLink);
@@ -209,7 +209,7 @@ Scenario('PMM-T509 Verify Deleting Mongo Db Cluster in Pending Status is possibl
     I.waitForInvisible(dbaasPage.tabs.kubernetesClusterTab.disabledAddButton, 30);
     await dbaasActionsPage.createClusterBasicOptions(clusterName, psmdb_cluster_pending_delete, 'MongoDB');
     I.click(dbaasPage.tabs.dbClusterTab.createClusterButton);
-    I.waitForText('Processing', 30, dbaasPage.tabs.dbClusterTab.fields.progressBarContent);
+    I.waitForText('Processing', 30, dbaasPage.tabs.dbClusterTab.fields.progressBarContent(psmdb_cluster_pending_delete));
     await dbaasActionsPage.deletePSMDBCluster(psmdb_cluster_pending_delete, clusterName);
   }).retry(1);
 
@@ -236,7 +236,7 @@ Scenario('PMM-T704 PMM-T772 PMM-T849 PMM-T850 Resources, PV, Secrets verificatio
     I.waitForInvisible(dbaasPage.tabs.kubernetesClusterTab.disabledAddButton, 30);
     await dbaasActionsPage.createClusterAdvancedOption(clusterName, psmdb_cluster_resource_check, 'MongoDB', clusterDetails);
     I.click(dbaasPage.tabs.dbClusterTab.createClusterButton);
-    I.waitForText('Processing', 30, dbaasPage.tabs.dbClusterTab.fields.progressBarContent);
+    I.waitForText('Processing', 30, dbaasPage.tabs.dbClusterTab.fields.progressBarContent(psmdb_cluster_resource_check));
     await dbaasPage.postClusterCreationValidation(psmdb_cluster_resource_check, clusterName, 'MongoDB');
     await dbaasPage.validateClusterDetail(psmdb_cluster_resource_check, clusterName, clusterDetails, 
       clusterDetails.clusterDashboardRedirectionLink);
@@ -301,7 +301,7 @@ Scenario('Verify update PSMDB Cluster version @dbaas', async ({ I, dbaasPage, db
   I.waitForInvisible(dbaasPage.tabs.kubernetesClusterTab.disabledAddButton, 30);
   await dbaasActionsPage.createClusterAdvancedOption(clusterName, psmdb_cluster_update, 'MongoDB', clusterDetails, '4.2.8-8');
   I.click(dbaasPage.tabs.dbClusterTab.createClusterButton);
-  I.waitForText('Processing', 30, dbaasPage.tabs.dbClusterTab.fields.progressBarContent);
+  I.waitForText('Processing', 30, dbaasPage.tabs.dbClusterTab.fields.progressBarContent(psmdb_cluster_update));
   await dbaasPage.postClusterCreationValidation(psmdb_cluster_update, clusterName, 'MongoDB');
   await dbaasActionsPage.updateCluster(psmdb_cluster_update);
   I.waitForVisible(dbaasPage.tabs.dbClusterTab.fields.clusterStatusUpdating, 60);

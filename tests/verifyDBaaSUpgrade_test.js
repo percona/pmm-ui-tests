@@ -24,14 +24,14 @@ Feature('Updates of DB clusters and operators and PMM Server upgrade related tes
     // }
   });
 
-  Scenario('PMM-T726 Verify DB clusters status after PMM Server upgrade',
+  Scenario('PMM-T726 Verify existing DB clusters status after PMM Server upgrade',
   async ({ I, dbaasAPI, homePage, dbaasPage, dbaasActionsPage }) => {
-    // await dbaasAPI.apiCreatePXCCluster(pxc_cluster_name, clusterName); //MySQL 8.0.20?
-    // await dbaasAPI.apiCreatePSMDBCluster(psmdb_cluster_name, clusterName); //MongoDB 4.2.8?
-    // await dbaasAPI.apiWaitForDBClusterState(pxc_cluster_name, clusterName, 'MySQL', 'DB_CLUSTER_STATE_READY');
-    // await dbaasAPI.apiWaitForDBClusterState(psmdb_cluster_name, clusterName, 'MongoDB', 'DB_CLUSTER_STATE_READY');
-    I.amOnPage(homePage.url);
-    await homePage.upgradePMM('2.27.0');
+    await dbaasAPI.apiCreatePXCCluster(pxc_cluster_name, clusterName); //MySQL 8.0.20?
+    await dbaasAPI.apiCreatePSMDBCluster(psmdb_cluster_name, clusterName); //MongoDB 4.2.8?
+    await dbaasAPI.apiWaitForDBClusterState(pxc_cluster_name, clusterName, 'MySQL', 'DB_CLUSTER_STATE_READY');
+    await dbaasAPI.apiWaitForDBClusterState(psmdb_cluster_name, clusterName, 'MongoDB', 'DB_CLUSTER_STATE_READY');
+    // I.amOnPage(homePage.url);
+    // await homePage.upgradePMM('2.27.0');
     I.amOnPage('graph/dbaas/dbclusters');
     I.waitForText(active_state, 10, dbaasPage.tabs.dbClusterTab.fields.clusterTableRow(pxc_cluster_name));
     I.waitForText(active_state, 10, dbaasPage.tabs.dbClusterTab.fields.clusterTableRow(psmdb_cluster_name));
@@ -58,8 +58,8 @@ Feature('Updates of DB clusters and operators and PMM Server upgrade related tes
 
     await dbaasActionsPage.editCluster(psmdb_cluster_name, clusterName, psmdb_updated_configuration);
     I.click(dbaasPage.tabs.dbClusterTab.updateClusterButton);
+    I.waitForText('Processing', 30, dbaasPage.tabs.dbClusterTab.fields.progressBarContent(psmdb_cluster_name));
     I.waitForElement(dbaasPage.tabs.dbClusterTab.fields.clusterActionsMenu(psmdb_cluster_name));
-    I.wait(5);
 
     const pxc_updated_configuration = {
       topology: 'Single',
@@ -71,17 +71,18 @@ Feature('Updates of DB clusters and operators and PMM Server upgrade related tes
       clusterDashboardRedirectionLink: dbaasPage.clusterDashboardUrls.pxcDashboard(pxc_cluster_name),
     };
     
-    await dbaasActionsPage.editCluster(pxc_cluster_name, clusterName, pxc_updated_configuration); //here
+    await dbaasActionsPage.editCluster(pxc_cluster_name, clusterName, pxc_updated_configuration);
     I.click(dbaasPage.tabs.dbClusterTab.updateClusterButton);
     I.waitForElement(dbaasPage.tabs.dbClusterTab.fields.clusterActionsMenu(pxc_cluster_name));
+    await dbaasAPI.apiWaitForDBClusterState(pxc_cluster_name, clusterName, 'MySQL', 'DB_CLUSTER_STATE_READY');
+    await dbaasAPI.apiWaitForDBClusterState(psmdb_cluster_name, clusterName, 'MongoDB', 'DB_CLUSTER_STATE_READY');
   }); 
 
 const pxcDBClusterDetails = new DataTable(['namespace', 'clusterName', 'node']);
 pxcDBClusterDetails.add(['default', `${pxc_cluster_name}`, '0']);
 
 Data(pxcDBClusterDetails).Scenario('PMM-T726 Verify PXC cluster monitoring after PMM Server upgrade',
-async ({ I, dbaasAPI, homePage, dbaasPage, pmmInventoryPage, current }) => {
-
+async ({dbaasPage, current }) => {
   const serviceName = `${current.namespace}-${current.clusterName}-pxc-${current.node}`;
   const haproxyNodeName = `${current.namespace}-${current.clusterName}-haproxy-${current.node}`;
 
@@ -99,7 +100,7 @@ psmdbClusterDetails.add(['default', `${psmdb_cluster_name}`, '1', 'cfg']);
 psmdbClusterDetails.add(['default', `${psmdb_cluster_name}`, '2', 'cfg']);
 
 Data(psmdbClusterDetails).Scenario('PMM-T726 Verify PSMDB cluster monitoring after PMM Server upgrade',
-async ({ I, dbaasAPI, homePage, dbaasPage, pmmInventoryPage, current }) => {
+async ({dbaasPage, current }) => {
   const serviceName = `${current.namespace}-${current.clusterName}-${current.nodeType}-${current.node}`;
 
   await dbaasPage.dbClusterAgentStatusCheck(psmdb_cluster_name, serviceName, 'MONGODB_SERVICE');
@@ -107,6 +108,28 @@ async ({ I, dbaasAPI, homePage, dbaasPage, pmmInventoryPage, current }) => {
   await dbaasPage.psmdbClusterMetricCheck(psmdb_cluster_name, serviceName, serviceName);
 }); 
 
+Scenario('PMM-T726 Verify removal of existing DB clusters after PMM Server upgrade',
+async ({ I, dbaasPage, dbaasActionsPage }) => {
+  await dbaasPage.waitForDbClusterTab(clusterName);
+  I.waitForInvisible(dbaasPage.tabs.kubernetesClusterTab.disabledAddButton, 30);
+  await dbaasActionsPage.deletePSMDBCluster(psmdb_cluster_name, clusterName);
+  await dbaasActionsPage.deleteXtraDBCluster(pxc_cluster_name, clusterName);
+}); 
 
-//delete existing
-//create new 
+Scenario('PMM-T726 Verify creation and removal of new DB clusters after PMM Server upgrade',
+async ({ I, dbaasPage, dbaasActionsPage, dbaasAPI }) => {
+  await dbaasPage.waitForDbClusterTab(clusterName);
+  I.waitForInvisible(dbaasPage.tabs.kubernetesClusterTab.disabledAddButton, 30);
+  await dbaasActionsPage.createClusterBasicOptions(clusterName, `${psmdb_cluster_name}-new`, 'MongoDB');
+  I.click(dbaasPage.tabs.dbClusterTab.createClusterButton);
+  I.waitForText('Processing', 30, dbaasPage.tabs.dbClusterTab.fields.progressBarContent(`${psmdb_cluster_name}-new`));
+  await dbaasActionsPage.createClusterBasicOptions(clusterName, `${pxc_cluster_name}-new`, 'MySQL');
+  I.click(dbaasPage.tabs.dbClusterTab.createClusterButton);
+  I.waitForText('Processing', 30, dbaasPage.tabs.dbClusterTab.fields.progressBarContent(`${pxc_cluster_name}-new`));
+  await dbaasAPI.apiDeleteAllDBCluster(clusterName);
+  await dbaasPage.waitForKubernetesClusterTab(clusterName);
+  dbaasPage.unregisterCluster(clusterName);
+  I.waitForText(dbaasPage.deletedAlertMessage, 20);
+  dbaasPage.checkCluster(clusterName, true);
+}); 
+
