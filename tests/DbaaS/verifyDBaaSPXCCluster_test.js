@@ -55,7 +55,7 @@ async ({
   I.click(dbaasPage.tabs.dbClusterTab.createClusterButton);
   I.waitForText('Processing', 30, dbaasPage.tabs.dbClusterTab.fields.progressBarContent(pxc_cluster_name));
   await dbaasPage.postClusterCreationValidation(pxc_cluster_name, clusterName);
-  await dbaasPage.verifyLogPopup(18);
+  await dbaasPage.verifyLogPopup(18, pxc_cluster_name);
 });
 
 Scenario('PMM-T459, PMM-T473, PMM-T478, PMM-T524 Verify DB Cluster Details are listed, shortcut link for DB Cluster, Show/Hide password button @dbaas',
@@ -394,7 +394,7 @@ Scenario('Verify update PXC DB Cluster version @dbaas', async ({ I, dbaasPage, d
     'DBAAS_UPGRADE_TESTING',
   );
 
-  await dbaasActionsPage.updateCluster();
+  await dbaasActionsPage.updateCluster(dbClusterRandomName);
   I.waitForVisible(dbaasPage.tabs.dbClusterTab.fields.clusterStatusUpdating, 60);
   I.seeElement(dbaasPage.tabs.dbClusterTab.fields.clusterStatusUpdating);
   await dbaasAPI.apiWaitForDBClusterState(dbClusterRandomName, clusterName, 'MySQL', 'DB_CLUSTER_STATE_READY');
