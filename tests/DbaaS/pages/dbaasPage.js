@@ -419,7 +419,7 @@ module.exports = {
   },
 
   async dbaasQANCheck(dbclusterName, nodeName, serviceName) {
-    I.amOnPage(I.getDashboardUrlWithParams(qanPage.url, null, null, null, 'now-3h'));
+    I.amOnPage(I.getDashboardUrlWithParams(qanPage.url, { from: 'now-3h' }));
     qanOverview.waitForOverviewLoaded();
     qanFilters.checkFilterExistInSection('Cluster', dbclusterName);
     qanFilters.checkFilterExistInSection('Node Name', `${nodeName}`);

@@ -78,19 +78,59 @@ module.exports = () => actor({
     }
   },
 
-  getDashboardUrlWithParams(url, environment = null, node_name = null, service_name = null, timeFrom = 'now-5m', timeTo = 'now', searchValue = null, column = null, page_number = 1, page_size = 25) {
-    return buildUrl(url, {
-      queryParams: {
-        'var-environment': environment,
-        'var-node_name': node_name,
-        'var-service_name': service_name,
-        columns: column,
-        from: timeFrom,
-        to: timeTo,
-        dimensionSearchText: searchValue,
-        page_number,
-        page_size,
-      },
+  /**
+   * Create URL method
+   *
+   * @param url start
+   * @param parameters object
+   * @returns {Promise<void>}
+   *
+   * @example
+   * getDashboardUrlWithParams('http://example.com', { environment: 'ps-dev', from: 'now-1' });
+   */
+  getDashboardUrlWithParams(url, parameters) {
+    const body = {};
+
+    body.from = 'now-5m';
+    body.to = 'now';
+    Object.entries(parameters).forEach(([key, value]) => {
+      switch (key) {
+        case 'environment':
+          body['var-environment'] = value;
+          break;
+        case 'node_name':
+          body['var-node_name'] = value;
+          break;
+        case 'service_name':
+          body['var-service_name'] = value;
+          break;
+        case 'columns':
+          value ? body.columns = value : body.columns = '%5B%22load%22,%22num_queries%22,%22query_time%22%5D';
+          break;
+        case 'from':
+          // value ? body.from = value : body.from = 'now-5m';
+          body.from = value;
+          body.to = 'now';
+          break;
+        case 'to':
+          // value ? body.to = value : body.to = 'now';
+          body.to = value;
+          break;
+        case 'search':
+          body.dimensionSearchText = value;
+          break;
+        case 'page_number':
+          // value ? body.page_number = value : body.page_number = 1;
+          body.page_number = value;
+          break;
+        case 'page_size':
+          // value ? body.page_size = value : body.page_size = 25;
+          body.page_size = value;
+          break;
+        default:
+      }
     });
+
+    return buildUrl(url, { queryParams: body });
   },
 });
