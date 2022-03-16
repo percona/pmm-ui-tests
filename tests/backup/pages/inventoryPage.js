@@ -1,6 +1,6 @@
 const { I } = inject();
 
-const artifactCell = (name) => `//tr[td/div[contains(text(), '${name}')]]`;
+const artifactCell = (name) => `//tr[td/div/span[contains(text(), '${name}')]]`;
 
 module.exports = {
   url: 'graph/backup/inventory',

@@ -3,8 +3,16 @@ const faker = require('faker');
 const { generate } = require('generate-password');
 
 const {
-  remoteInstancesHelper, perconaServerDB, pmmSettingsPage, dashboardPage, databaseChecksPage,
+  adminPage, remoteInstancesHelper, perconaServerDB, pmmSettingsPage, dashboardPage, databaseChecksPage,
 } = inject();
+
+const pathToPMMFramework = adminPage.pathToPMMTests;
+
+const sslinstances = new DataTable(['serviceName', 'version', 'container', 'serviceType', 'metric', 'dashboard']);
+
+sslinstances.add(['pgsql_14_ssl_service', '14', 'pgsql_14', 'postgres_ssl', 'pg_stat_database_xact_rollback', dashboardPage.postgresqlInstanceOverviewDashboard.url]);
+sslinstances.add(['mysql_8.0_ssl_service', '8.0', 'mysql_8.0', 'mysql_ssl', 'mysql_global_status_max_used_connections', dashboardPage.mySQLInstanceOverview.url]);
+sslinstances.add(['mongodb_4.4_ssl_service', '4.4', 'mongodb_4.4', 'mongodb_ssl', 'mongodb_connections', dashboardPage.mongoDbInstanceOverview.url]);
 
 const alertManager = {
   alertmanagerURL: 'http://192.168.0.1:9093',
@@ -286,6 +294,95 @@ if (versionMinor >= 13) {
       const nodeName = await inventoryAPI.getNodeName(node_id);
 
       await annotationAPI.setAnnotation(annotationName, 'Upgrade-PMM-T878', nodeName, service_name, 200);
+    },
+  );
+}
+
+if (versionMinor >= 23) {
+  Data(sslinstances).Scenario(
+    'PMM-T948 PMM-T947 Verify Adding Postgresql, MySQL, MongoDB SSL services remotely via API before upgrade @pre-upgrade @pmm-upgrade',
+    async ({
+      I, remoteInstancesPage, pmmInventoryPage, current, addInstanceAPI, inventoryAPI,
+    }) => {
+      const {
+        serviceName, serviceType, version, container,
+      } = current;
+      let details;
+      const remoteServiceName = `remote_api_${serviceName}`;
+
+      if (serviceType === 'postgres_ssl') {
+        details = {
+          serviceName: remoteServiceName,
+          serviceType,
+          port: '5432',
+          database: 'postgres',
+          address: container,
+          username: 'pmm',
+          password: 'pmm',
+          cluster: 'pgsql_remote_cluster',
+          environment: 'pgsql_remote_cluster',
+          tlsCAFile: await remoteInstancesPage.getFileContent(`${pathToPMMFramework}tls-ssl-setup/postgres/${version}/ca.crt`),
+          tlsKeyFile: await remoteInstancesPage.getFileContent(`${pathToPMMFramework}tls-ssl-setup/postgres/${version}/client.pem`),
+          tlsCertFile: await remoteInstancesPage.getFileContent(`${pathToPMMFramework}tls-ssl-setup/postgres/${version}/client.crt`),
+        };
+        await addInstanceAPI.addPostgreSqlSSL(details);
+        I.wait(5);
+        await inventoryAPI.verifyServiceExistsAndHasRunningStatus(
+          {
+            serviceType: 'POSTGRESQL_SERVICE',
+            service: 'postgresql',
+          },
+          remoteServiceName,
+        );
+      }
+
+      if (serviceType === 'mysql_ssl') {
+        details = {
+          serviceName: remoteServiceName,
+          serviceType,
+          port: '3306',
+          address: container,
+          username: 'pmm',
+          password: 'pmm',
+          cluster: 'mysql_ssl_remote_cluster',
+          environment: 'mysql_ssl_remote_cluster',
+          tlsCAFile: await remoteInstancesPage.getFileContent(`${adminPage.pathToPMMTests}tls-ssl-setup/mysql/${version}/ca.pem`),
+          tlsKeyFile: await remoteInstancesPage.getFileContent(`${adminPage.pathToPMMTests}tls-ssl-setup/mysql/${version}/client-key.pem`),
+          tlsCertFile: await remoteInstancesPage.getFileContent(`${adminPage.pathToPMMTests}tls-ssl-setup/mysql/${version}/client-cert.pem`),
+        };
+        await addInstanceAPI.addMysqlSSL(details);
+        I.wait(5);
+        await inventoryAPI.verifyServiceExistsAndHasRunningStatus(
+          {
+            serviceType: 'MYSQL_SERVICE',
+            service: 'mysql',
+          },
+          remoteServiceName,
+        );
+      }
+
+      if (serviceType === 'mongodb_ssl') {
+        details = {
+          serviceName: remoteServiceName,
+          serviceType,
+          port: '27017',
+          address: container,
+          cluster: 'mongodb_ssl_remote_cluster',
+          environment: 'mongodb_ssl_remote_cluster',
+          tls_certificate_file_password: await remoteInstancesPage.getFileContent(`${pathToPMMFramework}tls-ssl-setup/mongodb/${version}/client.key`),
+          tls_certificate_key: await remoteInstancesPage.getFileContent(`${pathToPMMFramework}tls-ssl-setup/mongodb/${version}/client.pem`),
+          tls_ca: await remoteInstancesPage.getFileContent(`${pathToPMMFramework}tls-ssl-setup/mongodb/${version}/ca.crt`),
+        };
+        await addInstanceAPI.addMongoDBSSL(details);
+        I.wait(5);
+        await inventoryAPI.verifyServiceExistsAndHasRunningStatus(
+          {
+            serviceType: 'MONGODB_SERVICE',
+            service: 'mongodb',
+          },
+          remoteServiceName,
+        );
+      }
     },
   );
 }
@@ -814,4 +911,85 @@ if (versionMinor >= 21) {
       }
     },
   );
+}
+
+if (versionMinor >= 23) {
+  Data(sslinstances).Scenario(
+    'Verify metrics from SSL instances on PMM-Server @post-upgrade @pmm-upgrade',
+    async ({
+      I, remoteInstancesPage, pmmInventoryPage, current, grafanaAPI,
+    }) => {
+      const {
+        serviceName, metric,
+      } = current;
+      let response; let result;
+      const remoteServiceName = `remote_api_${serviceName}`;
+
+      // Waiting for metrics to start hitting for remotely added services
+      I.wait(10);
+
+      // verify metric for client container node instance
+      response = await grafanaAPI.checkMetricExist(metric, { type: 'service_name', value: serviceName });
+      result = JSON.stringify(response.data.data.result);
+
+      assert.ok(response.data.data.result.length !== 0, `Metrics ${metric} from ${serviceName} should be available but got empty ${result}`);
+
+      // verify metric for remote instance
+      response = await grafanaAPI.checkMetricExist(metric, { type: 'service_name', value: remoteServiceName });
+      result = JSON.stringify(response.data.data.result);
+
+      assert.ok(response.data.data.result.length !== 0, `Metrics ${metric} from ${remoteServiceName} should be available but got empty ${result}`);
+    },
+  ).retry(1);
+
+  Data(sslinstances).Scenario(
+    'Verify dashboard for SSL Instances and services after upgrade @post-upgrade @pmm-upgrade',
+    async ({
+      I, dashboardPage, adminPage, current,
+    }) => {
+      const {
+        serviceName, dashboard,
+      } = current;
+
+      const serviceList = [serviceName, `remote_api_${serviceName}`];
+
+      for (const service of serviceList) {
+        I.amOnPage();
+        dashboardPage.waitForDashboardOpened(dashboard);
+        await adminPage.applyTimeRange('Last 5 minutes');
+        await dashboardPage.applyFilter('Service Name', service);
+        adminPage.performPageDown(5);
+        await dashboardPage.expandEachDashboardRow();
+        adminPage.performPageUp(5);
+        await dashboardPage.verifyThereAreNoGraphsWithNA();
+        await dashboardPage.verifyThereAreNoGraphsWithoutData(3);
+      }
+    },
+  ).retry(1);
+
+  Data(sslinstances).Scenario(
+    'Verify QAN after upgrade for SSL Instances added @post-upgrade @pmm-upgrade',
+    async ({
+      I, qanOverview, qanFilters, qanPage, current, adminPage,
+    }) => {
+      const {
+        serviceName,
+      } = current;
+
+      const serviceList = [serviceName, `remote_api_${serviceName}`];
+
+      for (const service of serviceList) {
+        I.amOnPage(qanPage.url);
+        qanOverview.waitForOverviewLoaded();
+        await adminPage.applyTimeRange('Last 5 minutes');
+        qanOverview.waitForOverviewLoaded();
+        qanFilters.waitForFiltersToLoad();
+        await qanFilters.applySpecificFilter(service);
+        qanOverview.waitForOverviewLoaded();
+        const count = await qanOverview.getCountOfItems();
+
+        assert.ok(count > 0, `The queries for service ${service} instance do NOT exist, check QAN Data`);
+      }
+    },
+  ).retry(1);
 }
