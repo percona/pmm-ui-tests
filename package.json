@@ -15,11 +15,11 @@
     "e2e:grafana-pr": "npx codeceptjs run -c pr.codecept.js --grep '@grafana-pr'"
   },
   "dependencies": {
-    "@googlicius/build-url": "^1.0.11",
     "@types/lodash": "^4.14.168",
     "@types/mocha": "^8.2.2",
     "adm-zip": "^0.5.9",
     "axios": "^0.21.4",
+    "build-url": "^6.0.1",
     "codeceptjs": "^3.2.2",
     "codeceptjs-chai": "^2.3.2",
     "codeceptjs-dbhelper": "^1.2.2",

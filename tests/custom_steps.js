@@ -1,6 +1,6 @@
 const assert = require('assert');
 const AdmZip = require('adm-zip');
-const buildUrl = require('@googlicius/build-url');
+const buildUrl = require('build-url');
 
 const systemMessageText = '.page-alert-list div[data-testid^="data-testid Alert"] > div';
 const systemMessageButtonClose = '.page-alert-list button';
