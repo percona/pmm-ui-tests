@@ -108,23 +108,18 @@ module.exports = () => actor({
           value ? body.columns = value : body.columns = '%5B%22load%22,%22num_queries%22,%22query_time%22%5D';
           break;
         case 'from':
-          // value ? body.from = value : body.from = 'now-5m';
           body.from = value;
-          body.to = 'now';
           break;
         case 'to':
-          // value ? body.to = value : body.to = 'now';
           body.to = value;
           break;
         case 'search':
           body.dimensionSearchText = value;
           break;
         case 'page_number':
-          // value ? body.page_number = value : body.page_number = 1;
           body.page_number = value;
           break;
         case 'page_size':
-          // value ? body.page_size = value : body.page_size = 25;
           body.page_size = value;
           break;
         default:
