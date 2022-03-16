@@ -992,6 +992,8 @@ module.exports = {
   expandFilters(filterName) {
     const dropdownLocator = this.fields.openFiltersDropdownLocator(filterName);
 
+    // This is due to some instances with many services take filter to load
+    I.wait(3);
     I.waitForElement(dropdownLocator, 30);
     I.click(dropdownLocator);
 
@@ -1022,6 +1024,7 @@ module.exports = {
     } else {
       this.expandFilters(filterName);
       I.waitForElement(filterDropdownOptionsLocator, 30);
+      I.waitForVisible(filterValueSelector, 30);
       I.click(filterValueSelector);
     }
   },

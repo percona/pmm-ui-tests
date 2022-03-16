@@ -51,7 +51,7 @@ module.exports = {
       `//tr//td//span[contains(text(), "${serviceId}")]/../span[contains(text(), 'status: RUNNING')]`,
     );
 
-    if (/mysql|mongo|psmdb|postgres|rds/gim.test(service_name)) {
+    if (/mysql|mongo|psmdb|postgres|pgsql|rds/gim.test(service_name)) {
       I.waitForVisible(
         `//tr//td//span[contains(text(), "${serviceId}")]/../span[contains(text(), 'status: RUNNING')]`,
         30,

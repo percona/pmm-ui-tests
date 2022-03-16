@@ -153,7 +153,15 @@ module.exports = {
   },
 
   async getFileContent(filePath) {
-    const fileContent = await I.verifyCommand(`cat ${filePath}`);
+    let command;
+
+    if (filePath.includes('mysql')) {
+      command = `cat ${filePath} | head -n -1`;
+    } else {
+      command = `cat ${filePath}`;
+    }
+
+    const fileContent = await I.verifyCommand(command);
 
     return fileContent;
   },
@@ -215,11 +223,14 @@ module.exports = {
     return this;
   },
 
-  async addRemoteDetails(details) {
+  async addRemoteDetails(details, skipUserNamePassword = false) {
     I.waitForElement(this.fields.hostName, 30);
     I.fillField(this.fields.hostName, details.host);
-    I.fillField(this.fields.userName, details.username);
-    I.fillField(this.fields.password, details.password);
+    if (!skipUserNamePassword) {
+      I.fillField(this.fields.userName, details.username);
+      I.fillField(this.fields.password, details.password);
+    }
+
     adminPage.customClearField(this.fields.portNumber);
     I.fillField(this.fields.portNumber, details.port);
     I.fillField(this.fields.serviceName, details.serviceName);
@@ -229,6 +240,36 @@ module.exports = {
     // eslint-disable-next-line no-empty
     if (details.type === 'postgresql') {
       I.fillField(this.fields.database, details.database);
+    }
+  },
+
+  async addRemoteSSLDetails(details) {
+    if (details.serviceType === 'postgres_ssl' || details.serviceType === 'mysql_ssl') {
+      await this.addRemoteDetails(details);
+      I.dontSeeElement(this.fields.tlscaInput);
+      I.dontSeeElement(this.fields.tlsCertificateKeyInput);
+      I.dontSeeElement(this.fields.tlsCertificateInput);
+      I.click(this.fields.useTLS);
+      I.waitForElement(this.fields.tlscaInput, 30);
+      await this.fillFileContent(this.fields.tlscaInput, details.tlsCAFile);
+      await this.fillFileContent(this.fields.tlsCertificateInput, details.tlsCertFile);
+      await this.fillFileContent(this.fields.tlsCertificateKeyInput, details.tlsKeyFile);
+      if (details.serviceType === 'postgres_ssl') I.click(this.fields.usePgStatStatements);
+
+      if (details.serviceType === 'mysql_ssl') I.click(this.fields.skipTLSL);
+    }
+
+    if (details.serviceType === 'mongodb_ssl') {
+      await this.addRemoteDetails(details, true);
+      I.dontSeeElement(this.fields.tlscaInput);
+      I.dontSeeElement(this.fields.tlsCertificateFilePasswordInput);
+      I.dontSeeElement(this.fields.tlsCertificateKey);
+      I.click(this.fields.useTLS);
+      I.waitForElement(this.fields.tlscaInput, 30);
+      await this.fillFileContent(this.fields.tlscaInput, details.tlsCAFile);
+      await this.fillFileContent(this.fields.tlsCertificateKey, details.tlsCertificateKeyFile);
+      I.click(this.fields.useQANMongoDBProfiler);
+      I.click(this.fields.skipTLSL);
     }
   },
 

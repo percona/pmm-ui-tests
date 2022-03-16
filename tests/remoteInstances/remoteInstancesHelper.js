@@ -7,7 +7,7 @@ const remoteInstanceStatus = {
       enabled: true,
     },
     ms_8_0_ssl: {
-      enabled: process.env.OVF_TEST !== 'yes',
+      enabled: false,
     },
   },
   mongodb: {
