@@ -10,7 +10,7 @@ module.exports = {
   elements: {
     noData: '$table-no-data',
     alertRow: (alertName) => alertRow(alertName),
-    labelsCell: (alertName) => `${alertRow(alertName)}/td[4]//span`,
+    labelsCell: (alertName, text) => locate(`${alertRow(alertName)}/td[4]`).find('$chip').withText(text),
     stateCell: (alertName) => `${alertRow(alertName)}/td[3]`,
     severityCell: (alertName) => `${alertRow(alertName)}/td[2]`,
     criticalSeverity: '//td[2]/span[text()="Critical"]',
@@ -21,6 +21,7 @@ module.exports = {
     details,
     detailsRuleExpression: locate(`${details}`).find('div').withText('Rule Expression'),
     detailsSecondaryLabels: locate(`${details}`).find('div').withText('Secondary Labels'),
+    secondaryLabels: (text) => locate(`${details}`).find('$chip').withText(text),
   },
   buttons: {
     // silenceActivate returns silence/activate button locator for a given alert name
@@ -114,9 +115,15 @@ module.exports = {
     }
   },
 
+  checkContainingLabels(alertName, expectedLabels) {
+    for (const i in expectedLabels) {
+      I.seeElement(this.elements.labelsCell(alertName, expectedLabels[i]));
+    }
+  },
+
   checkContainingSecondaryLabels(expectedLabels) {
     for (const i in expectedLabels) {
-      I.seeElement(locate('$chip').withText(`${expectedLabels[i]}`));
+      I.seeElement(this.elements.secondaryLabels(expectedLabels[i]));
     }
   },
 };

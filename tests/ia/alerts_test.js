@@ -157,6 +157,8 @@ Scenario(
   async ({ I, alertsPage }) => {
     I.amOnPage(alertsPage.url);
     I.waitForElement(alertsPage.elements.alertRow(alertName), 30);
+    alertsPage.checkContainingLabels(alertName,
+      ['node_name=pmm-server', 'service_name=pmm-server-postgresql']);
     I.click(alertsPage.buttons.arrowIcon(alertName));
     I.waitForVisible(alertsPage.elements.details, 30);
     I.seeElement(alertsPage.elements.detailsRuleExpression, 30);
