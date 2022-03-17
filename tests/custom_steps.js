@@ -105,7 +105,7 @@ module.exports = () => actor({
           queryParams['var-service_name'] = value;
           break;
         case 'columns':
-          value ? queryParams.columns = value : queryParams.columns = '%5B%22load%22,%22num_queries%22,%22query_time%22%5D';
+          queryParams.columns = value;
           break;
         case 'from':
           queryParams.from = value;
