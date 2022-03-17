@@ -15,6 +15,7 @@ const mongoServiceName = 'mongo-backup-inventory';
 const mongoServiceNameToDelete = 'mongo-service-to-delete';
 
 Feature('BM: Backup Inventory');
+
 BeforeSuite(async ({
   I, locationsAPI, settingsAPI,
 }) => {
