@@ -153,7 +153,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T1137 Verify that IA alerts are showing important labels first @ia @alyona-p',
+  'PMM-T1137 Verify that IA alerts are showing important labels first @ia',
   async ({ I, alertsPage }) => {
     I.amOnPage(alertsPage.url);
     I.waitForElement(alertsPage.elements.alertRow(alertName), 30);

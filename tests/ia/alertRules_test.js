@@ -326,7 +326,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T1116 Verify user is able to copy alert rule, source template of which was deleted @ia @alyona-p',
+  'PMM-T1116 Verify user is able to copy alert rule, source template of which was deleted @ia',
   async ({
     I, ruleTemplatesPage, alertRulesPage, rulesAPI, templatesAPI,
   }) => {
