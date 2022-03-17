@@ -57,12 +57,13 @@ Scenario(
   },
 );
 
-Scenario(
+Scenario.only(
   'PMM-T13 - Check Explain and Example for supported DBs - md @qan',
   async ({
     I, qanPage, qanOverview, qanFilters, qanDetails,
   }) => {
-    I.amOnPage(I.getDashboardUrlWithParams(qanPage.clearUrl, { environment: 'environment', from: 'now-1h' }));
+    pause();
+    I.amOnPage(I.getDashboardUrlWithParams(qanPage.clearUrl, { environment: 'md-dev', from: 'now-1h' }));
     I.waitForElement(qanOverview.elements.querySelector, 30);
     qanOverview.selectRow(1);
     qanFilters.waitForFiltersToLoad();
