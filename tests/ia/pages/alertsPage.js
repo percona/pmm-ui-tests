@@ -9,9 +9,9 @@ module.exports = {
   elements: {
     noData: '$table-no-data',
     alertRow: (alertName) => alertRow(alertName),
-    labelsCell: (alertName) => `${alertRow(alertName)}/td[4]//span`,
-    stateCell: (alertName) => `${alertRow(alertName)}/td[3]`,
-    severityCell: (alertName) => `${alertRow(alertName)}/td[2]`,
+    labelsCell: (alertName) => `${alertRow(alertName)}[1]/td[4]//span`,
+    stateCell: (alertName) => `${alertRow(alertName)}[1]/td[3]`,
+    severityCell: (alertName) => `${alertRow(alertName)}[1]/td[2]`,
     criticalSeverity: '//td[2]/span[text()="Critical"]',
     highSeverity: '//td[2]/span[text()="High"]',
     noticeSeverity: '//td[2]/span[text()="Notice"]',
