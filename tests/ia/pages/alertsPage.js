@@ -115,15 +115,10 @@ module.exports = {
     }
   },
 
-  checkContainingLabels(alertName, expectedLabels) {
+  checkContainingLabels(expectedLabels, alertName = null) {
     for (const i in expectedLabels) {
-      I.seeElement(this.elements.labelsCell(alertName, expectedLabels[i]));
-    }
-  },
-
-  checkContainingSecondaryLabels(expectedLabels) {
-    for (const i in expectedLabels) {
-      I.seeElement(this.elements.secondaryLabels(expectedLabels[i]));
+      if (alertName) I.seeElement(this.elements.labelsCell(alertName, expectedLabels[i]));
+      if (!alertName) I.seeElement(this.elements.secondaryLabels(expectedLabels[i]));
     }
   },
 };

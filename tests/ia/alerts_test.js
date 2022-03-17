@@ -157,13 +157,12 @@ Scenario(
   async ({ I, alertsPage }) => {
     I.amOnPage(alertsPage.url);
     I.waitForElement(alertsPage.elements.alertRow(alertName), 30);
-    alertsPage.checkContainingLabels(alertName,
-      ['node_name=pmm-server', 'service_name=pmm-server-postgresql']);
+    alertsPage.checkContainingLabels(['node_name=pmm-server', 'service_name=pmm-server-postgresql'], alertName);
     I.click(alertsPage.buttons.arrowIcon(alertName));
     I.waitForVisible(alertsPage.elements.details, 30);
     I.seeElement(alertsPage.elements.detailsRuleExpression, 30);
     I.seeElement(alertsPage.elements.detailsSecondaryLabels, 30);
-    alertsPage.checkContainingSecondaryLabels(['agent_type=postgres_exporter',
+    alertsPage.checkContainingLabels(['agent_type=postgres_exporter',
       'alertgroup=PMM Integrated Alerting',
       'node_id=pmm-server',
       'node_type=generic',
