@@ -86,46 +86,46 @@ module.exports = () => actor({
    * @returns {Promise<void>}
    *
    * @example
-   * getDashboardUrlWithParams('http://example.com', { environment: 'ps-dev', from: 'now-1' });
+   * buildUrlWithParams('http://example.com', { environment: 'ps-dev', from: 'now-1' });
    */
-  getDashboardUrlWithParams(url, parameters) {
-    const body = {};
+  buildUrlWithParams(url, parameters) {
+    const queryParams = {};
 
-    body.from = 'now-5m';
-    body.to = 'now';
+    queryParams.from = 'now-5m';
+    queryParams.to = 'now';
     Object.entries(parameters).forEach(([key, value]) => {
       switch (key) {
         case 'environment':
-          body['var-environment'] = value;
+          queryParams['var-environment'] = value;
           break;
         case 'node_name':
-          body['var-node_name'] = value;
+          queryParams['var-node_name'] = value;
           break;
         case 'service_name':
-          body['var-service_name'] = value;
+          queryParams['var-service_name'] = value;
           break;
         case 'columns':
-          value ? body.columns = value : body.columns = '%5B%22load%22,%22num_queries%22,%22query_time%22%5D';
+          value ? queryParams.columns = value : queryParams.columns = '%5B%22load%22,%22num_queries%22,%22query_time%22%5D';
           break;
         case 'from':
-          body.from = value;
+          queryParams.from = value;
           break;
         case 'to':
-          body.to = value;
+          queryParams.to = value;
           break;
         case 'search':
-          body.dimensionSearchText = value;
+          queryParams.dimensionSearchText = value;
           break;
         case 'page_number':
-          body.page_number = value;
+          queryParams.page_number = value;
           break;
         case 'page_size':
-          body.page_size = value;
+          queryParams.page_size = value;
           break;
         default:
       }
     });
 
-    return buildUrl(url, { queryParams: body });
+    return buildUrl(url, { queryParams });
   },
 });

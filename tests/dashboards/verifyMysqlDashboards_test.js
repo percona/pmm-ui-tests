@@ -30,13 +30,13 @@ Before(async ({ I }) => {
   await I.Authorize();
 });
 
-Scenario(
+Scenario.only(
   'PMM-T317 - Open the MySQL Instance Summary Dashboard and verify Metrics are present and graphs are displayed @nightly @dashboards',
   async ({
     I, adminPage, dashboardPage,
   }) => {
     for (const serviceName of serviceList) {
-      const url = I.getDashboardUrlWithParams(dashboardPage.mysqlInstanceSummaryDashboard.url, null, serviceName, 'now-5m', 'now');
+      const url = I.buildUrlWithParams(dashboardPage.mysqlInstanceSummaryDashboard.clearUrl, { service_name: serviceName });
 
       I.amOnPage(url);
       dashboardPage.waitForDashboardOpened();
