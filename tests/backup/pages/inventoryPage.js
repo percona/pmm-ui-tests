@@ -22,7 +22,7 @@ module.exports = {
     retryInterval: '$retryInterval-number-input',
     dataModelState: '$dataModel-radio-state',
     backupModalError: '$backup-modal-error',
-    backupNameInput: '//input[@id="input-backupName-id"]',
+    backupNameInput: '$backupName-text-input',
     backUpNameInputError: '$backupName-field-error-message',
     fullBackUpName: '$backup-artifact-details-name',
     backupNameSpan: (name) => locate(`//span[contains(text(), "${name}")]`),

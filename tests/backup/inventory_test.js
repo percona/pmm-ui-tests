@@ -245,11 +245,11 @@ Scenario(
 Scenario(
   'PMM-T1159 Verify that backup with long backup name is displayed correctly and PMM-T1160 Verify that backup names are limited to 100 chars length',
   async ({
-    I, backupInventoryPage, inventoryPage,
+    I, backupInventoryPage,
   }) => {
-    I.click(inventoryPage.buttons.openAddBackupModal);
+    I.click(backupInventoryPage.buttons.openAddBackupModal);
     backupInventoryPage.inpuRandomBackupName(101);
-    I.see(inventoryPage.messages.lengthErrorBackupName);
+    I.see(backupInventoryPage.messages.lengthErrorBackupName);
     const backupName = backupInventoryPage.inpuRandomBackupName(100);
 
     backupInventoryPage.selectDropdownOption(backupInventoryPage.fields.serviceNameDropdown, mongoServiceName);
