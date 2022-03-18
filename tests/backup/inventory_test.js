@@ -262,7 +262,5 @@ Scenario(
     I.seeCssPropertiesOnElements(backupInventoryPage.elements.backupNameSpan(backupName), { 'text-overflow': 'ellipsis' });
     I.click(backupInventoryPage.buttons.showDetails(backupName));
     I.see(backupName, backupInventoryPage.elements.fullBackUpName);
-    await new Promise((r) => setTimeout(r, 13000));
-    I.refreshPage();
   },
 );
