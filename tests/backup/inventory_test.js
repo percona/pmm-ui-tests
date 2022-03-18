@@ -243,6 +243,29 @@ Scenario(
 );
 
 Scenario(
+  'PMM-T1159 Verify that backup with long backup name is displayed correctly and PMM-T1160 Verify that backup names are limited to 100 chars length',
+  async ({
+    I, backupInventoryPage,
+  }) => {
+    I.click(backupInventoryPage.buttons.openAddBackupModal);
+    backupInventoryPage.inpuRandomBackupName(101);
+    I.see(backupInventoryPage.messages.lengthErrorBackupName);
+    const backupName = backupInventoryPage.inpuRandomBackupName(100);
+
+    backupInventoryPage.selectDropdownOption(backupInventoryPage.fields.serviceNameDropdown, mongoServiceName);
+    I.seeTextEquals(mongoServiceName, backupInventoryPage.elements.selectedService);
+    backupInventoryPage.selectDropdownOption(backupInventoryPage.fields.locationDropdown, location.name);
+    I.seeTextEquals(location.name, backupInventoryPage.elements.selectedLocation);
+    I.fillField(backupInventoryPage.fields.description, 'Test description');
+    I.click(backupInventoryPage.buttons.addBackup);
+    backupInventoryPage.verifyBackupSucceeded(backupName);
+    I.seeCssPropertiesOnElements(backupInventoryPage.elements.backupNameSpan(backupName), { 'text-overflow': 'ellipsis' });
+    I.click(backupInventoryPage.buttons.showDetails(backupName));
+    I.see(backupName, backupInventoryPage.elements.fullBackUpName);
+  },
+);
+
+Scenario(
   'PMM-T1033 - Verify that user is able to display backup logs from MongoDB on UI @backup @bm-mongo',
   async ({
     I, inventoryAPI, backupAPI, backupInventoryPage,
