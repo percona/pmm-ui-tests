@@ -15,6 +15,7 @@ module.exports = {
     backupStatus: '$statusMsg',
     pendingBackupByName: (name) => locate('$statusPending').inside(artifactCell(name)),
     backupStatusByName: (name) => locate('$statusMsg').inside(artifactCell(name)),
+    backupDateByName: (name) => locate('detailed-date').inside(artifactCell(name)),
     artifactName: (name) => locate('td').at(1).inside(artifactCell(name)),
     forceDeleteLabel: '$force-field-label',
     retryTimes: '$retryTimes-number-input',

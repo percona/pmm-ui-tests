@@ -1,4 +1,5 @@
 const assert = require('assert');
+const moment = require('moment');
 
 const { locationsPage } = inject();
 
@@ -239,5 +240,38 @@ Scenario(
     I.waitForVisible(backupInventoryPage.buttons.modalRestore, 10);
     I.seeTextEquals(backupInventoryPage.messages.serviceNoLongerExists, backupInventoryPage.elements.backupModalError);
     I.seeElementsDisabled(backupInventoryPage.buttons.modalRestore);
+  },
+);
+
+Scenario(
+  'PMM-T1163 Verify that Backup time format is identical for whole feature @backup @alyona-p',
+  async ({
+    I, backupInventoryPage, backupAPI, scheduledAPI, scheduledPage,
+  }) => {
+    // Every 2 mins schedule
+    const schedule = {
+      service_id: serviceId,
+      location_id: locationId,
+      cron_expression: '*/2 * * * *',
+      name: 'PMM-T1163 schedule',
+      mode: scheduledAPI.backupModes.snapshot,
+      description: '',
+      retry_interval: '30s',
+      retries: 0,
+      enabled: true,
+      retention: 1,
+    };
+    const scheduleId = await scheduledAPI.createScheduledBackup(schedule);
+
+    await backupAPI.waitForBackupFinish(null, schedule.name, 240);
+
+    const backupDate = moment().format('YYYY-MM-DDHH:mm:00');
+
+    await scheduledAPI.disableScheduledBackup(scheduleId);
+    I.refreshPage();
+    backupInventoryPage.verifyBackupSucceeded(schedule.name);
+    I.seeTextEquals(backupDate, backupInventoryPage.elements.backupDateByName(schedule.name));
+    await scheduledPage.openScheduledBackupsPage();
+    I.seeTextEquals(backupDate, scheduledPage.elements.lastBackupByName(schedule.name));
   },
 );
