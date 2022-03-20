@@ -244,34 +244,57 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T1163 Verify that Backup time format is identical for whole feature @backup @alyona-p',
+  'PMM-T1159 Verify that backup with long backup name is displayed correctly and PMM-T1160 Verify that backup names are limited to 100 chars length',
   async ({
-    I, backupInventoryPage, backupAPI, scheduledAPI, scheduledPage,
+    I, backupInventoryPage,
   }) => {
-    // Every 2 mins schedule
-    const schedule = {
-      service_id: serviceId,
-      location_id: locationId,
-      cron_expression: '*/2 * * * *',
-      name: 'PMM-T1163 schedule',
-      mode: scheduledAPI.backupModes.snapshot,
-      description: '',
-      retry_interval: '30s',
-      retries: 0,
-      enabled: true,
-      retention: 1,
-    };
-    const scheduleId = await scheduledAPI.createScheduledBackup(schedule);
+    I.click(backupInventoryPage.buttons.openAddBackupModal);
+    backupInventoryPage.inpuRandomBackupName(101);
+    I.see(backupInventoryPage.messages.lengthErrorBackupName);
+    const backupName = backupInventoryPage.inpuRandomBackupName(100);
 
-    await backupAPI.waitForBackupFinish(null, schedule.name, 240);
-
-    const backupDate = moment().format('YYYY-MM-DDHH:mm:00');
-
-    await scheduledAPI.disableScheduledBackup(scheduleId);
-    I.refreshPage();
-    backupInventoryPage.verifyBackupSucceeded(schedule.name);
-    I.seeTextEquals(backupDate, backupInventoryPage.elements.backupDateByName(schedule.name));
-    await scheduledPage.openScheduledBackupsPage();
-    I.seeTextEquals(backupDate, scheduledPage.elements.lastBackupByName(schedule.name));
+    backupInventoryPage.selectDropdownOption(backupInventoryPage.fields.serviceNameDropdown, mongoServiceName);
+    I.seeTextEquals(mongoServiceName, backupInventoryPage.elements.selectedService);
+    backupInventoryPage.selectDropdownOption(backupInventoryPage.fields.locationDropdown, location.name);
+    I.seeTextEquals(location.name, backupInventoryPage.elements.selectedLocation);
+    I.fillField(backupInventoryPage.fields.description, 'Test description');
+    I.click(backupInventoryPage.buttons.addBackup);
+    backupInventoryPage.verifyBackupSucceeded(backupName);
+    I.seeCssPropertiesOnElements(backupInventoryPage.elements.backupNameSpan(backupName), { 'text-overflow': 'ellipsis' });
+    I.click(backupInventoryPage.buttons.showDetails(backupName));
+    I.see(backupName, backupInventoryPage.elements.fullBackUpName);
   },
+);
+
+Scenario(
+    'PMM-T1163 Verify that Backup time format is identical for whole feature @backup @alyona-p',
+    async ({
+             I, backupInventoryPage, backupAPI, scheduledAPI, scheduledPage,
+           }) => {
+      // Every 2 mins schedule
+      const schedule = {
+        service_id: serviceId,
+        location_id: locationId,
+        cron_expression: '*/2 * * * *',
+        name: 'PMM-T1163 schedule',
+        mode: scheduledAPI.backupModes.snapshot,
+        description: '',
+        retry_interval: '30s',
+        retries: 0,
+        enabled: true,
+        retention: 1,
+      };
+      const scheduleId = await scheduledAPI.createScheduledBackup(schedule);
+
+      await backupAPI.waitForBackupFinish(null, schedule.name, 240);
+
+      const backupDate = moment().format('YYYY-MM-DDHH:mm:00');
+
+      await scheduledAPI.disableScheduledBackup(scheduleId);
+      I.refreshPage();
+      backupInventoryPage.verifyBackupSucceeded(schedule.name);
+      I.seeTextEquals(backupDate, backupInventoryPage.elements.backupDateByName(schedule.name));
+      await scheduledPage.openScheduledBackupsPage();
+      I.seeTextEquals(backupDate, scheduledPage.elements.lastBackupByName(schedule.name));
+    },
 );
