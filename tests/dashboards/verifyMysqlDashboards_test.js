@@ -30,7 +30,7 @@ Before(async ({ I }) => {
   await I.Authorize();
 });
 
-Scenario.only(
+Scenario(
   'PMM-T317 - Open the MySQL Instance Summary Dashboard and verify Metrics are present and graphs are displayed @nightly @dashboards',
   async ({
     I, adminPage, dashboardPage,

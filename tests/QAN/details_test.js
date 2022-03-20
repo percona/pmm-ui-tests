@@ -57,7 +57,7 @@ Scenario(
   },
 );
 
-Scenario.only(
+Scenario(
   'PMM-T13 - Check Explain and Example for supported DBs - md @qan',
   async ({
     I, qanPage, qanOverview, qanFilters, qanDetails,
