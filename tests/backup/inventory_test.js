@@ -249,9 +249,9 @@ Scenario(
     I, backupInventoryPage,
   }) => {
     I.click(backupInventoryPage.buttons.openAddBackupModal);
-    backupInventoryPage.inpuRandomBackupName(101);
+    backupInventoryPage.inputRandomBackupName(101);
     I.see(backupInventoryPage.messages.lengthErrorBackupName);
-    const backupName = backupInventoryPage.inpuRandomBackupName(100);
+    const backupName = backupInventoryPage.inputRandomBackupName(100);
 
     backupInventoryPage.selectDropdownOption(backupInventoryPage.fields.serviceNameDropdown, mongoServiceName);
     I.seeTextEquals(mongoServiceName, backupInventoryPage.elements.selectedService);

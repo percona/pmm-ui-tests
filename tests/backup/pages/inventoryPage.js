@@ -83,7 +83,7 @@ module.exports = {
     I.click(this.buttons.modalRestore);
   },
 
-  inpuRandomBackupName(length = 10) {
+  inputRandomBackupName(length = 10) {
     const backupName = faker.random.alpha(length);
 
     I.clearField(this.elements.backupNameInput);
