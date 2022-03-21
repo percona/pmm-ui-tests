@@ -22,6 +22,8 @@ function getVersions() {
   };
 }
 
+const { versionMinor, patchVersionDiff, majorVersionDiff } = getVersions();
+
 Feature('Updates of DB clusters and operators and PMM Server upgrade related tests');
 
 BeforeSuite(async ({ dbaasAPI, settingsAPI }) => {
@@ -44,8 +46,10 @@ Before(async ({ I, dbaasAPI }) => {
 
 Scenario('PMM-T726 Verify existing DB clusters status after PMM Server upgrade @dbaas-upgrade',
   async ({ I, dbaasAPI, homePage, dbaasPage, dbaasActionsPage }) => {
-    await dbaasAPI.apiCreatePXCCluster(pxc_cluster_name, clusterName); //MySQL 8.0.20?
-    await dbaasAPI.apiCreatePSMDBCluster(psmdb_cluster_name, clusterName); //MongoDB 4.2.8?
+    //MySQL 8.0.20?
+    await dbaasAPI.apiCreatePXCCluster(pxc_cluster_name, clusterName); 
+    //MongoDB 4.2.8?
+    await dbaasAPI.apiCreatePSMDBCluster(psmdb_cluster_name, clusterName); 
     await dbaasAPI.apiWaitForDBClusterState(pxc_cluster_name, clusterName, 'MySQL', 'DB_CLUSTER_STATE_READY');
     await dbaasAPI.apiWaitForDBClusterState(psmdb_cluster_name, clusterName, 'MongoDB', 'DB_CLUSTER_STATE_READY');
 
