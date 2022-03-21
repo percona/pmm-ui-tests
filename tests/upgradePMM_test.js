@@ -973,3 +973,19 @@ if (versionMinor >= 23) {
     },
   ).retry(1);
 }
+
+Scenario(
+  'PMM-T1051 - Verify PMM Settings page is opened from Home dashboard @menu @alyona-p',
+  async ({ I, homePage, pmmSettingsPage }) => {
+    await homePage.open();
+
+    const tabsCount1 = await I.grabNumberOfOpenTabs();
+
+    I.click(homePage.fields.failedSecurityChecksPmmSettingsLink);
+    await pmmSettingsPage.waitForPmmSettingsPageLoaded();
+
+    const tabsCount2 = await I.grabNumberOfOpenTabs();
+
+    assert.ok(tabsCount1 === tabsCount2, 'Settings page isn\'t opened in the same tab');
+  },
+);
