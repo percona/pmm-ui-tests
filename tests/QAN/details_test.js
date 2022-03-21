@@ -62,7 +62,6 @@ Scenario(
   async ({
     I, qanPage, qanOverview, qanFilters, qanDetails,
   }) => {
-    pause();
     I.amOnPage(I.buildUrlWithParams(qanPage.clearUrl, { environment: 'md-dev', from: 'now-1h' }));
     I.waitForElement(qanOverview.elements.querySelector, 30);
     qanOverview.selectRow(1);
