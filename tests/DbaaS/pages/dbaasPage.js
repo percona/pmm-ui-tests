@@ -417,9 +417,9 @@ module.exports = {
     await dashboardPage.genericDashboardLoadForDbaaSClusters(`${dashboardPage.nodeSummaryDashboard.url}?&var-node_name=${nodeName}`, 'Last 5 minutes', 4, 0, 1);
   },
 
-  async dbaasQANCheck(dbclusterName, nodeName, serviceName) {
+  async dbaasQANCheck(dbclusterName, nodeName, serviceName, timerange = 'Last 3 hours') {
     I.amOnPage(qanPage.url);
-    await adminPage.applyTimeRange('Last 3 hours');
+    await adminPage.applyTimeRange(timerange);
     qanOverview.waitForOverviewLoaded();
     qanFilters.checkFilterExistInSection('Cluster', dbclusterName);
     qanFilters.checkFilterExistInSection('Node Name', `${nodeName}`);
