@@ -1,4 +1,5 @@
 const { I } = inject();
+const faker = require('faker');
 
 const artifactCell = (name) => `//tr[td/div/span[contains(text(), "${name}")]]`;
 
@@ -21,6 +22,10 @@ module.exports = {
     retryInterval: '$retryInterval-number-input',
     dataModelState: '$dataModel-radio-state',
     backupModalError: '$backup-modal-error',
+    backupNameInput: '$backupName-text-input',
+    backUpNameInputError: '$backupName-field-error-message',
+    fullBackUpName: '$backup-artifact-details-name',
+    backupNameSpan: (name) => locate(`//span[contains(text(), "${name}")]`),
   },
   buttons: {
     openAddBackupModal: '$backup-add-modal-button',
@@ -49,6 +54,7 @@ module.exports = {
     forceDeleteLabelText: 'Delete from storage',
     confirmDeleteText: (backupName) => `Are you sure you want to delete "${backupName}"?`,
     serviceNoLongerExists: 'This service no longer exists. Please choose a compatible one.',
+    lengthErrorBackupName: 'Must contain at most 100 characters',
   },
   locationType: {},
 
@@ -74,5 +80,14 @@ module.exports = {
     I.click(this.buttons.restoreByName(backupName));
     I.waitForVisible(this.buttons.modalRestore, 10);
     I.click(this.buttons.modalRestore);
+  },
+
+  inpuRandomBackupName(length = 10) {
+    const backupName = faker.random.alpha(length);
+
+    I.clearField(this.elements.backupNameInput);
+    I.fillField(this.elements.backupNameInput, backupName);
+
+    return backupName;
   },
 };
