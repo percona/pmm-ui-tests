@@ -33,10 +33,6 @@ BeforeSuite(async ({ dbaasAPI, settingsAPI }) => {
   }
 });
   
-AfterSuite(async ({ dbaasAPI }) => {
-  await dbaasAPI.apiUnregisterCluster(clusterName, true);
-});
-  
 Before(async ({ I, dbaasAPI }) => {
   await I.Authorize();
   if (!await dbaasAPI.apiCheckRegisteredClusterExist(clusterName)) {
