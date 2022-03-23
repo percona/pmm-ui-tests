@@ -1,5 +1,7 @@
 const { pageObjects, getChunks } = require('./codeceptConfigHelper');
 
+process.env.ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'admin';
+
 exports.config = {
   output: 'tests/output',
   helpers: {
