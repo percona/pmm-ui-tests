@@ -7,6 +7,20 @@ class Grafana extends Helper {
   constructor(config) {
     super(config);
     this.resultFilesFolder = `${global.output_dir}/`;
+    this.signInWithSSOButton = '//a[contains(@href,"login/generic_oauth")]';
+    this.ssoLoginUsername = '//input[@id="okta-signin-username"]';
+    this.ssoLoginPassword = '//input[@id="okta-signin-password"]';
+    this.ssoLoginSubmit = '//input[@id="okta-signin-submit"]';
+  }
+
+  async LoginWithSSO(username, password) {
+    const { page } = this.helpers.Playwright;
+
+    await page.click(this.signInWithSSOButton);
+    await page.fill(this.ssoLoginUsername, username);
+    await page.click(this.ssoLoginPassword);
+    await page.fill(this.ssoLoginPassword, password);
+    await page.click(this.ssoLoginSubmit);
   }
 
   async Authorize(username = 'admin', password = 'admin') {
@@ -56,6 +70,29 @@ class Grafana extends Helper {
         ]),
       });
     });
+  }
+  
+  /**
+   * Wait for Request to be triggered from User Action
+   *
+   * example Usage: await I.waitForEndPointRequest(endPoint, element);
+   *
+   * @param endpoint       Endpoint which will be called on click of an element
+   * @param element        Playwright to wait for the request
+   * for example: Download Zip log request via Settings get diagnostics button
+   * @returns {Promise<void>}
+   */
+  async waitForEndPointRequest(endpoint, element) {
+    const { browserContext } = this.helpers.Playwright;
+    const existingPages = await browserContext.pages();
+    const mainPage = existingPages[0];
+
+    const [request] = await Promise.all([
+      // Waits for the next request with the specified url
+      mainPage.waitForRequest(endpoint),
+      // Triggers the request
+      mainPage.click(element),
+    ]);
   }
 
   async grabNumberOfTabs() {

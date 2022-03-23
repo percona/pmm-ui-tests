@@ -16,7 +16,7 @@ Scenario(
   'Open the QAN Dashboard and check that changing the time range resets current page to the first. @qan',
   async ({ adminPage, qanPagination, qanOverview }) => {
     qanPagination.selectPage(2);
-    adminPage.applyTimeRange('Last 3 hours');
+    await adminPage.applyTimeRange('Last 3 hours');
     qanOverview.waitForOverviewLoaded();
     await qanPagination.verifyActivePage(1);
   },
@@ -32,7 +32,7 @@ Scenario(
     qanFilters.waitForFiltersToLoad();
     I.seeElement(qanDetails.root);
 
-    adminPage.applyTimeRange('Last 3 hours');
+    await adminPage.applyTimeRange('Last 3 hours');
     qanOverview.waitForOverviewLoaded();
     I.seeInCurrentUrl('from=now-3h&to=now');
     I.dontSeeElement(qanDetails.root);
@@ -44,7 +44,9 @@ Scenario(
 
 Scenario(
   'PMM-T432 Open the QAN Dashboard and check that changing absolute time range updates the overview table, URL. @nightly @qan',
-  async ({ I, adminPage, qanDetails, qanFilters, qanOverview }) => {
+  async ({
+    I, adminPage, qanDetails, qanFilters, qanOverview,
+  }) => {
     const date = moment().format('YYYY-MM-DD');
     const fromString = Date.parse(`${date} 00:00:00`);
     const toString = Date.parse(`${date} 23:59:59`);
@@ -69,7 +71,7 @@ Scenario(
 
     I.waitForText('Query', 30, qanOverview.elements.groupBy);
     await qanOverview.changeGroupBy(group);
-    adminPage.applyTimeRange('Last 24 hours');
+    await adminPage.applyTimeRange('Last 24 hours');
     qanOverview.waitForOverviewLoaded();
     qanOverview.verifyGroupByIs(group);
   },
@@ -79,7 +81,7 @@ Scenario(
   'Open the QAN Dashboard and check that changing the time range doesn\'t reset sorting. @qan',
   async ({ adminPage, qanOverview }) => {
     await qanOverview.changeSorting(1);
-    adminPage.applyTimeRange('Last 24 hours');
+    await adminPage.applyTimeRange('Last 24 hours');
     qanOverview.waitForOverviewLoaded();
     qanOverview.verifySorting(1, 'desc');
   },
@@ -88,13 +90,14 @@ Scenario(
 Scenario(
   'PMM-T1138 - Verify QAN Copy Button for URL @qan',
   async ({ I, adminPage, qanOverview }) => {
-    adminPage.applyTimeRange('Last 12 hours');
+    await adminPage.applyTimeRange('Last 12 hours');
 
     const dateTime = moment().format('x');
 
     qanOverview.waitForOverviewLoaded();
     qanOverview.selectRow(2);
     I.click(qanOverview.buttons.copyButton);
+    I.waitForVisible(I.getPopUpLocator(), 10);
 
     const url = new URL(await I.grabTextFrom(qanOverview.elements.clipboardLink));
     const toTimeFromUrl1 = url.searchParams.get('to');
@@ -105,6 +108,7 @@ Scenario(
     I.refreshPage();
     qanOverview.waitForOverviewLoaded();
     I.click(qanOverview.buttons.copyButton);
+    I.waitForVisible(I.getPopUpLocator(), 10);
 
     const url2 = new URL(await I.grabTextFrom(qanOverview.elements.clipboardLink));
     const toTimeFromUrl2 = url2.searchParams.get('to');
@@ -163,10 +167,13 @@ Scenario(
 
 Scenario(
   'PMM-T1142 - Verify that the table page and selected query are still the same when we go on copied link by new QAN CopyButton @qan',
-  async ({ I, qanPagination, qanOverview, qanDetails }) => {
+  async ({
+    I, qanPagination, qanOverview, qanDetails,
+  }) => {
     I.click(qanPagination.buttons.nextPage);
     qanOverview.selectRow(2);
     I.click(qanOverview.buttons.copyButton);
+    I.waitForVisible(I.getPopUpLocator(), 10);
 
     const url = await I.grabTextFrom(qanOverview.elements.clipboardLink);
 
@@ -191,6 +198,7 @@ Scenario(
     qanFilters.applyFilter(environmentName);
     qanOverview.waitForOverviewLoaded();
     I.click(qanOverview.buttons.copyButton);
+    I.waitForVisible(I.getPopUpLocator(), 10);
 
     const url = await I.grabTextFrom(qanOverview.elements.clipboardLink);
 

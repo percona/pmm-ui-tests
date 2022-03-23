@@ -91,7 +91,7 @@ Scenario(
     await settingsAPI.apiEnableSTT();
     await securityChecksAPI.startSecurityChecks(['mysql_version']);
     await securityChecksAPI.waitForFailedCheckExistance(detailsText, psServiceName);
-    I.wait(5);
+    I.wait(30);
     I.amOnPage(homePage.url);
     I.waitForVisible(homePage.fields.checksPanelSelector, 30);
     I.waitForVisible(homePage.fields.sttFailedChecksPanelSelector, 30);

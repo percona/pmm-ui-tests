@@ -100,7 +100,7 @@ Data(instances).Scenario(
     }
 
     dashboardPage.waitForDashboardOpened();
-    adminPage.applyTimeRange('Last 12 hours');
+    await adminPage.applyTimeRange('Last 12 hours');
     await dashboardPage.applyFilter('Service Name', instanceDetails.serviceName);
     adminPage.performPageDown(5);
     await dashboardPage.expandEachDashboardRow();

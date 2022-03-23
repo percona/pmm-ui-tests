@@ -75,6 +75,9 @@ exports.config = {
       enabled: true,
       outputDir: 'tests/output/allure',
     },
+    tryTo: {
+      enabled: true,
+    },
   },
   mocha: {
     reporterOptions: {

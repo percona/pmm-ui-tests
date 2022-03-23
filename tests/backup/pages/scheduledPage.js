@@ -1,6 +1,6 @@
 const { I } = inject();
 
-const scheduleCell = (name) => `//tr[td/div[contains(text(), "${name}")]]`;
+const scheduleCell = (name) => `//tr[td/div/span[contains(text(), "${name}")]]`;
 
 module.exports = {
   url: 'graph/backup/scheduled',
@@ -9,8 +9,8 @@ module.exports = {
     modalHeader: '$modal-header',
     modalContent: '$modal-content',
     dropdownOption: (text) => locate('div[class$="-select-option-body"]').find('span').withText(text),
-    selectedLocation: locate('div[class$="-singleValue"]').inside(locate('div').withChild('$location-select-label')),
-    selectedService: locate('div[class$="-singleValue"]').inside(locate('div').withChild('$service-select-label')),
+    selectedLocation: locate('div[class*="-singleValue"]').inside(locate('div').withChild('$location-select-label')),
+    selectedService: locate('div[class*="-singleValue"]').inside(locate('div').withChild('$service-select-label')),
     retentionValidation: '$retention-field-error-message',
     scheduleName: (name) => locate('td').at(1).inside(scheduleCell(name)),
     scheduleVendorByName: (name) => locate('td').at(2).inside(scheduleCell(name)),

@@ -1,9 +1,11 @@
 const { I } = inject();
 
-const mouseOverMenu = (menuObj) => {
-  I.moveCursorTo(menuObj.locator);
-  I.waitForVisible(menuObj.menu.heading.locator, 2);
+const mouseOverMenu = (locator, elementToWait) => {
+  I.moveCursorTo(locator);
+  I.waitForVisible(elementToWait, 2);
 };
+
+const formatElementId = (text) => text.toLowerCase().replace(/ /g, '-');
 
 /**
  * The left navigation Grafana menu template. A top level "menu object".
@@ -14,13 +16,11 @@ const mouseOverMenu = (menuObj) => {
  * @constructor
  */
 function LeftMenu(name, path, menuOptions) {
-  this.name = name;
-  this.path = path;
-  this.headingLocator = locate('a[class="side-menu-header-link"]').withText(name);
-  this.locator = locate('a[class="sidemenu-link"]')
-    .before(locate('ul[role="menu"]').withDescendant(this.headingLocator));
+  this.headingLocator = locate(`ul[aria-label="${name}"]`).find('a').withText(name);
+  this.menuLocator = `ul[aria-label="${name}"]`;
+  this.locator = `//a[@aria-label="${name}"] | //button[@aria-label="${name}"]`;
   this.menu = {
-    heading: new MenuOption(this.name, this.headingLocator, this.path),
+    heading: new MenuOption(name, name, this.headingLocator, path),
   };
   if (menuOptions != null) {
     Object.entries(menuOptions).forEach(([key, value]) => {
@@ -29,7 +29,35 @@ function LeftMenu(name, path, menuOptions) {
   }
 
   this.showMenu = () => {
-    mouseOverMenu(this);
+    mouseOverMenu(this.locator, this.menuLocator);
+  };
+  this.click = () => {
+    I.click(this.locator);
+  };
+}
+
+/**
+ * The search menu in the left navigation. It has dedicated markup since Grafana 8.
+ *
+ * @param   name          name of the menu item appears as menu heading
+ * @param   path          "expected" url path to be opened on click
+ * @param   menuOptions   an object collection of {@link MenuOption} and/or {@link SubMenu}
+ * @constructor
+ */
+function LeftSearchMenu(name, path, menuOptions) {
+  this.headingLocator = locate(`ul[aria-label="${name}"]`).find('button').withText(name);
+  this.locator = `button[aria-label="${name}"]`;
+  this.menu = {
+    heading: new MenuOption(name, name, this.headingLocator, path),
+  };
+  if (menuOptions != null) {
+    Object.entries(menuOptions).forEach(([key, value]) => {
+      this.menu[key] = value;
+    });
+  }
+
+  this.showMenu = () => {
+    mouseOverMenu(this.locator, this.headingLocator);
   };
   this.click = () => {
     I.click(this.locator);
@@ -38,25 +66,39 @@ function LeftMenu(name, path, menuOptions) {
 
 /**
  * Internal menu option template for the left navigation Grafana menu
+ * The only repeatable markup part is <li> on each level preceding the target menu option,
+ * where the 1st level is top menu and the last is option to click.
  *
+ * @param   menuName    required to handle interaction
  * @param   label       name of the option
  * @param   locator     locator to interact with the option
  * @param   path        "expected" url path to be opened on click
  * @param   menuLevel   required to handle interaction, optional for the top level
  * @constructor
  */
-function MenuOption(label, locator, path, menuLevel = 1) {
+function MenuOption(menuName, label, locator, path, menuLevel = 1) {
   this.label = label;
   this.locator = locator;
   this.path = path;
-  this.click = () => {
-    I.moveCursorTo(locate('div[class="sidemenu-item dropdown"]').withDescendant(locate(locator)));
-    for (let i = 1; i < menuLevel; i++) {
-      I.moveCursorTo(locate('li').withChild('ul').withDescendant(locate(locator)).at(i));
+  this.click = async () => {
+    new LeftMenu(menuName, '').showMenu();
+
+    /* top level menu options text is nested <div> and should be excluded from loop */
+    for (let i = 2; i <= menuLevel; i++) {
+      this.locator = `(//div[@data-testid="navbar-section"]/.//li[descendant::a[text()="${label}"]])`;
+      I.moveCursorTo(`${this.locator}[position()=${i}]`);
     }
 
-    I.waitForVisible(locator, 2);
-    I.click(locator);
+    /* top level menu options are handled without loop and locator from the argument */
+    const elemToClick = this.locator === locator
+      ? locator
+      : `//div[@data-testid="navbar-section"]/.//a[text()="${label}"]`;
+
+    I.waitForVisible(elemToClick, 2);
+    I.moveCursorTo(elemToClick);
+    I.seeTextEquals(label, elemToClick);
+    I.seeAttributesOnElements(elemToClick, { target: null });
+    I.click(elemToClick);
   };
 }
 
@@ -64,52 +106,24 @@ function MenuOption(label, locator, path, menuLevel = 1) {
  * Encapsulates constant locator of {@link MenuOption} for the left navigation Grafana menu.
  * Just to keep constructor simple.
  *
+ * @param   menuName    required to handle interaction
  * @param   label       name of the option
  * @param   path        "expected" url path to be opened on click
  * @param   menuLevel   required to handle interaction, optional for the top level
  * @returns             {MenuOption} instance
  */
-const menuOption = (label, path, menuLevel = 1) => {
-  return new MenuOption(label, locate('a').withText(label).inside('ul'), path, menuLevel);
-};
-
-/**
- * Duplicated options could be located only with specified top level menu.
- * Encapsulates constant locator of {@link MenuOption} for the left navigation Grafana menu.
- * Just to keep constructor simple.
- *
- * @param   menuName    name of the top level menu
- * @param   label       name of the option
- * @param   path        "expected" url path to be opened on click
- * @param   menuLevel   required to handle interaction, optional for the top level
- * @returns             {MenuOption} instance
- */
-const duplicatedOption = (menuName, label, path, menuLevel = 1) => {
-  return new MenuOption(
-    label,
-    locate('a').withText(label).inside('ul').inside(
-      locate('div[class="sidemenu-item dropdown"]')
-        .withDescendant(locate('a[class="side-menu-header-link"]').withText(menuName)),
-    ),
-    path,
-    menuLevel,
-  );
-};
+const menuOption = (menuName, label, path, menuLevel = 1) => new MenuOption(menuName, label, locate('a').withDescendant(locate('div').withText(label)).inside('ul'), path, menuLevel);
 
 /**
  * A sub level "menu object" of the Grafana menu. Should used in the {@link LeftMenu}
  *
+ * @param   topMenuName    name of the top level menu
  * @param   name          name of the menu item appears as menu heading
  * @param   path          "expected" url path to be opened on click; '#' is non-clickable sub menu
  * @param   menuOptions   an object collection of {@link MenuOption} and/or {@link SubMenu}
  * @constructor
  */
-function SubMenu(name, path = '#', menuOptions) {
-  this.name = name;
-  this.path = path;
-  this.headingLocator = locate('a[class="side-menu-header-link"]').withText(name);
-  this.locator = locate('a[class="sidemenu-link"]')
-    .before(locate('ul[role="menu"]').withDescendant(this.headingLocator));
+function SubMenu(topMenuName, name, path = '#', menuOptions) {
   this.menu = { };
   if (menuOptions != null) {
     Object.entries(menuOptions).forEach(([key, value]) => {
@@ -119,13 +133,11 @@ function SubMenu(name, path = '#', menuOptions) {
 
   if (path !== '#') {
     this.click = () => {
-      I.moveCursorTo(locate('div[class="sidemenu-item dropdown"]').withDescendant(locate(this.locator)));
-      I.waitForVisible(this.locator, 2);
-      I.click(this.locator);
+      menuOption(topMenuName, name, path).click();
     };
   }
 }
 
 module.exports = {
-  LeftMenu, SubMenu, menuOption, duplicatedOption,
+  LeftMenu, LeftSearchMenu, SubMenu, menuOption,
 };

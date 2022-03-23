@@ -146,7 +146,7 @@ Data(intervalsTests).Scenario(
   },
 );
 
-Scenario(
+Scenario.skip(
   'PMM-T757 Verify disabled checks do not execute based on interval value [critical] @stt @not-ovf',
   async ({
     securityChecksAPI, settingsAPI, databaseChecksPage,

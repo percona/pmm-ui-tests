@@ -213,7 +213,6 @@ Data(ptSummaryRoleCheck).Scenario(
     I.seeElement(homePage.fields.systemsUnderMonitoringCount);
     I.seeElement(homePage.fields.dbUnderMonitoringCount);
     I.seeElement(homePage.fields.newsPanelContentSelector);
-    I.seeElement(homePage.fields.newsPanelContentSelector);
     I.amOnPage(dashboard);
     dashboardPage.waitForDashboardOpened();
     I.click(adminPage.fields.metricTitle);
