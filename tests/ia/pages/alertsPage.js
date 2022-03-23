@@ -2,7 +2,7 @@ const { I } = inject();
 const assert = require('assert');
 
 const alertRow = (alertName) => `//tr[td[contains(., "${alertName}")]]`;
-const details = locate('$alert-details-wrapper');
+const details = '$alert-details-wrapper';
 
 module.exports = {
   url: 'graph/integrated-alerting/alerts',
@@ -10,7 +10,7 @@ module.exports = {
   elements: {
     noData: '$table-no-data',
     alertRow: (alertName) => alertRow(alertName),
-    labelsCell: (alertName, text) => locate(`${alertRow(alertName)}/td[4]`).find('$chip').withText(text),
+    labelsCell: (alertName) => `${alertRow(alertName)}/td[4]//span`,
     stateCell: (alertName) => `${alertRow(alertName)}/td[3]`,
     severityCell: (alertName) => `${alertRow(alertName)}/td[2]`,
     criticalSeverity: '//td[2]/span[text()="Critical"]',
@@ -19,9 +19,10 @@ module.exports = {
     warningSeverity: '//td[2]/span[text()="Warning"]',
     columnHeaderLocator: (columnHeaderText) => `//th[text()="${columnHeaderText}"]`,
     details,
-    detailsRuleExpression: locate(`${details}`).find('div').withText('Rule Expression'),
-    detailsSecondaryLabels: locate(`${details}`).find('div').withText('Secondary Labels'),
-    secondaryLabels: (text) => locate(`${details}`).find('$chip').withText(text),
+    detailsRuleExpression: locate(details).find('div').withText('Rule Expression'),
+    detailsSecondaryLabels: locate(details).find('div').withText('Secondary Labels'),
+    primaryLabels: (alertName, text) => locate(`${alertRow(alertName)}/td[4]`).find('$chip').withText(text),
+    secondaryLabels: (text) => locate(details).find('$chip').withText(text),
   },
   buttons: {
     // silenceActivate returns silence/activate button locator for a given alert name
@@ -117,7 +118,8 @@ module.exports = {
 
   checkContainingLabels(expectedLabels, alertName = null) {
     for (const i in expectedLabels) {
-      if (alertName) I.seeElement(this.elements.labelsCell(alertName, expectedLabels[i]));
+      if (alertName) I.seeElement(this.elements.primaryLabels(alertName, expectedLabels[i]));
+
       if (!alertName) I.seeElement(this.elements.secondaryLabels(expectedLabels[i]));
     }
   },
