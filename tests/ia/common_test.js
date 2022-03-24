@@ -36,7 +36,7 @@ Scenario(
       I.seeInCurrentUrl(`${iaCommon.url}/notification-channels`);
       I.seeElement(ncPage.buttons.openAddChannelModal);
       await iaCommon.verifyTabIsActive(iaCommon.tabNames.notificationChannels);
-      I.seeTextEquals(iaCommon.tabNames.notificationChannels, iaCommon.elements.breadcrumbActive);
+      iaCommon.checkBreadcrumbText(iaCommon.tabNames.notificationChannels, iaCommon.elements.breadcrumbActive);
     };
 
     const verifyTitle = (page) => {
@@ -49,21 +49,21 @@ Scenario(
     I.seeInCurrentUrl(`${iaCommon.url}/alerts`);
     await iaCommon.verifyTabIsActive(iaCommon.tabNames.alerts);
     verifyTitle('Alerts');
-    I.seeTextEquals(iaCommon.tabNames.alerts, iaCommon.elements.breadcrumbActive);
+    iaCommon.checkBreadcrumbText(iaCommon.tabNames.alerts, iaCommon.elements.breadcrumbActive);
 
     iaCommon.openTab(iaCommon.tabNames.alertRules);
     I.seeInCurrentUrl(`${iaCommon.url}/alert-rules`);
     I.seeElement(alertRulesPage.buttons.openAddRuleModal);
     await iaCommon.verifyTabIsActive(iaCommon.tabNames.alertRules);
     verifyTitle('Alert Rules');
-    I.seeTextEquals(iaCommon.tabNames.alertRules, iaCommon.elements.breadcrumbActive);
+    iaCommon.checkBreadcrumbText(iaCommon.tabNames.alertRules, iaCommon.elements.breadcrumbActive);
 
     iaCommon.openTab(iaCommon.tabNames.ruleTemplates);
     I.seeInCurrentUrl(`${iaCommon.url}/alert-rule-templates`);
     I.seeElement(ruleTemplatesPage.buttons.openAddTemplateModal);
     await iaCommon.verifyTabIsActive(iaCommon.tabNames.ruleTemplates);
     verifyTitle('Alert Rule Templates');
-    I.seeTextEquals(iaCommon.tabNames.ruleTemplates, iaCommon.elements.breadcrumbActive);
+    iaCommon.checkBreadcrumbText(iaCommon.tabNames.ruleTemplates, iaCommon.elements.breadcrumbActive);
 
     iaCommon.openTab(iaCommon.tabNames.notificationChannels);
     await verifyNotificationChannelsPage();
@@ -75,6 +75,6 @@ Scenario(
     iaCommon.openTab(iaCommon.tabNames.alerts);
     I.seeInCurrentUrl(`${iaCommon.url}/alerts`);
     await iaCommon.verifyTabIsActive(iaCommon.tabNames.alerts);
-    I.seeTextEquals(iaCommon.tabNames.alerts, iaCommon.elements.breadcrumbActive);
+    iaCommon.checkBreadcrumbText(iaCommon.tabNames.alerts, iaCommon.elements.breadcrumbActive);
   },
 );
