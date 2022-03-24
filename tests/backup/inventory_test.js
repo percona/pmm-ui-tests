@@ -288,7 +288,8 @@ Scenario(
 
     await backupAPI.waitForBackupFinish(null, schedule.name, 240);
 
-    const backupDate = moment().format('YYYY-MM-DDHH:mm:00');
+    const date = await backupAPI.getArtifactDate(schedule.name);
+    const backupDate = moment(date).format('YYYY-MM-DDHH:mm:00');
 
     await scheduledAPI.disableScheduledBackup(scheduleId);
     I.refreshPage();
