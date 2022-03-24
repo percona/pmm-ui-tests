@@ -39,8 +39,8 @@ Scenario(
       I.seeTextEquals(iaCommon.tabNames.notificationChannels, iaCommon.elements.breadcrumbActive);
     };
 
-    const verifyTitle = () => {
-      I.seeTitleEquals('Integrated Alerting - Percona Monitoring and Management');
+    const verifyTitle = (page) => {
+      I.seeTitleEquals(`Integrated Alerting: ${page} - Percona Monitoring and Management`);
     };
 
     I.amOnPage(iaCommon.url);
@@ -48,26 +48,26 @@ Scenario(
     I.waitForVisible(iaCommon.elements.tab(iaCommon.tabNames.alerts));
     I.seeInCurrentUrl(`${iaCommon.url}/alerts`);
     await iaCommon.verifyTabIsActive(iaCommon.tabNames.alerts);
-    verifyTitle();
+    verifyTitle('Alerts');
     I.seeTextEquals(iaCommon.tabNames.alerts, iaCommon.elements.breadcrumbActive);
 
     iaCommon.openTab(iaCommon.tabNames.alertRules);
     I.seeInCurrentUrl(`${iaCommon.url}/alert-rules`);
     I.seeElement(alertRulesPage.buttons.openAddRuleModal);
     await iaCommon.verifyTabIsActive(iaCommon.tabNames.alertRules);
-    verifyTitle();
+    verifyTitle('Alert Rules');
     I.seeTextEquals(iaCommon.tabNames.alertRules, iaCommon.elements.breadcrumbActive);
 
     iaCommon.openTab(iaCommon.tabNames.ruleTemplates);
     I.seeInCurrentUrl(`${iaCommon.url}/alert-rule-templates`);
     I.seeElement(ruleTemplatesPage.buttons.openAddTemplateModal);
     await iaCommon.verifyTabIsActive(iaCommon.tabNames.ruleTemplates);
-    verifyTitle();
+    verifyTitle('Alert Rule Templates');
     I.seeTextEquals(iaCommon.tabNames.ruleTemplates, iaCommon.elements.breadcrumbActive);
 
     iaCommon.openTab(iaCommon.tabNames.notificationChannels);
     await verifyNotificationChannelsPage();
-    verifyTitle();
+    verifyTitle('Notification Channels');
     I.refreshPage();
     I.waitForVisible(ncPage.buttons.openAddChannelModal, 30);
     await verifyNotificationChannelsPage();
