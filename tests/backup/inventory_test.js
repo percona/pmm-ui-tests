@@ -267,7 +267,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T1163 Verify that Backup time format is identical for whole feature @backup @alyona-p',
+  'PMM-T1163 Verify that Backup time format is identical for whole feature @backup',
   async ({
     I, backupInventoryPage, backupAPI, scheduledAPI, scheduledPage,
   }) => {
