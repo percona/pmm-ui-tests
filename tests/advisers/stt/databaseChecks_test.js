@@ -1,5 +1,7 @@
+const assert = require('assert');
+
 const {
-  I, allChecksPage, databaseChecksPage, codeceptjsConfig, perconaServerDB,
+  allChecksPage, databaseChecksPage, codeceptjsConfig, perconaServerDB,
 } = inject();
 const config = codeceptjsConfig.config.helpers.Playwright;
 const connection = perconaServerDB.defaultConnection;
@@ -10,10 +12,15 @@ const urls = new DataTable(['url']);
 urls.add([databaseChecksPage.url]);
 urls.add([allChecksPage.url]);
 
-Feature('Database Failed Checks').retry(2);
+const psServiceName = 'databaseChecks-ps-5.7.30';
+const detailsText = process.env.OVF_TEST === 'yes'
+  ? 'Newer version of MySQL is available'
+  : 'Newer version of Percona Server for MySQL is available';
+
+Feature('Database Failed Checks');
 
 BeforeSuite(async ({ addInstanceAPI }) => {
-  nodeID = await addInstanceAPI.addInstanceForSTT(connection);
+  nodeID = await addInstanceAPI.addInstanceForSTT(connection, psServiceName);
 });
 
 AfterSuite(async ({ inventoryAPI }) => {
@@ -66,7 +73,7 @@ xScenario(
     I, adminPage, databaseChecksPage, pmmSettingsPage, settingsAPI, securityChecksAPI,
   }) => {
     await settingsAPI.apiEnableSTT();
-    await securityChecksAPI.waitForSecurityChecksResults(20);
+    await securityChecksAPI.waitForFailedCheckExistance(detailsText, psServiceName);
     I.amOnPage(pmmSettingsPage.url);
     await pmmSettingsPage.waitForPmmSettingsPageLoaded();
     await adminPage.selectItemFromPMMDropdown('PMM Database Checks');
@@ -77,17 +84,39 @@ xScenario(
 );
 
 Scenario(
-  'PMM-T233 Verify user can see Number of failed checks at Home Page and open PMM Database Checks page from it [critical] @stt',
+  'PMM-T233 PMM-T354 PMM-T368 open PMM Database Checks page from home dashboard and verify number of failed checks [critical] @stt',
   async ({
     I, homePage, databaseChecksPage, settingsAPI, securityChecksAPI,
   }) => {
     await settingsAPI.apiEnableSTT();
-    await securityChecksAPI.waitForSecurityChecksResults(20);
+    await securityChecksAPI.startSecurityChecks(['mysql_version']);
+    await securityChecksAPI.waitForFailedCheckExistance(detailsText, psServiceName);
+    I.wait(30);
     I.amOnPage(homePage.url);
     I.waitForVisible(homePage.fields.checksPanelSelector, 30);
     I.waitForVisible(homePage.fields.sttFailedChecksPanelSelector, 30);
+    const [critical, major, trivial] = (await I.grabTextFrom(homePage.fields.sttFailedChecksPanelSelector)).split(' / ').map(Number);
+
+    // Verify failed checks pop up
+    I.moveCursorTo(homePage.fields.sttFailedChecksPanelSelector);
+    I.waitForVisible(homePage.fields.popUp, 5);
+    assert.ok(
+      (await I.grabTextFrom(homePage.fields.popUp)),
+      `Failed checks: ${critical + major + trivial}Critical – ${critical}Major – ${major}Trivial – ${trivial}`,
+    );
+
+    // Verify info icon message for Failed check panel
+    I.moveCursorTo(homePage.fields.failedChecksPanelInfo);
+    I.waitForVisible(homePage.fields.popUp, 5);
+    I.seeTextEquals(homePage.failedChecksSinglestatsInfoMessage, homePage.fields.popUp);
+
     I.doubleClick(homePage.fields.sttFailedChecksPanelSelector);
     await databaseChecksPage.verifyDatabaseChecksPageOpened();
+
+    // Verify count of checks by Severity match number on the home page singlestat
+    I.seeNumberOfElements(locate('td').withText('Critical'), critical);
+    I.seeNumberOfElements(locate('td').withText('Major'), major);
+    I.seeNumberOfElements(locate('td').withText('Trivial'), trivial);
   },
 );
 
@@ -99,7 +128,7 @@ Scenario(
     const row = 1;
 
     await settingsAPI.apiEnableSTT();
-    await securityChecksAPI.waitForSecurityChecksResults(20);
+    await securityChecksAPI.waitForFailedCheckExistance(detailsText, psServiceName);
     I.amOnPage(databaseChecksPage.url);
     await databaseChecksPage.verifyDatabaseChecksPageOpened();
     databaseChecksPage.mouseOverInfoIcon(row);
@@ -109,9 +138,12 @@ Scenario(
 
 Scenario(
   'PMM-T241 Verify user can see correct service name for failed checks [critical] @stt',
-  async ({ databaseChecksPage, settingsAPI }) => {
+  async ({ databaseChecksPage, settingsAPI, securityChecksAPI }) => {
     await settingsAPI.apiEnableSTT();
     await databaseChecksPage.runDBChecks();
-    await databaseChecksPage.verifyServiceNamesExistence();
+    await securityChecksAPI.waitForFailedCheckExistance(detailsText, psServiceName);
+    // Verify failed check on UI
+    databaseChecksPage.verifyFailedCheckExists(detailsText);
+    await databaseChecksPage.verifyServiceNamesExistence(psServiceName);
   },
 );

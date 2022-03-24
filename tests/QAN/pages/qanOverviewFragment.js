@@ -10,6 +10,7 @@ module.exports = {
   },
   buttons: {
     addColumn: '//span[contains(text(), "Add column")]',
+    copyButton: '$copy-link-button',
   },
   elements: {
     countOfItems: '$qan-total-items',
@@ -29,12 +30,16 @@ module.exports = {
     tooltipQueryId: locate('.ant-tooltip-inner').find('h5'),
     firstQueryValue: 'div.tr-1 > div.td:nth-child(2) div > div',
     firstQueryInfoIcon: 'div.tr-1 > div.td:nth-child(2) div > svg',
+    selectedRow: '.selected-overview-row',
+    clipboardLink: locate(I.getPopUpLocator()).find('span'),
   },
   messages: {
     noResultTableText: 'No queries available for this combination of filters in the selected time frame',
+    copiedPopUpMessage: 'Successfully copied Query Analytics link to clipboard',
   },
 
   getRowLocator: (rowNumber) => `div.tr-${rowNumber}`,
+  getSelectedRowLocator: (rowNumber) => `div.tr-${rowNumber}.selected-overview-row`,
 
   getColumnLocator: (columnName) => `//span[contains(text(), '${columnName}')]`,
   getQANMetricHeader: (metricName) => `//div[@role='columnheader']//span[contains(text(), '${metricName}')]`,
@@ -194,6 +199,7 @@ module.exports = {
     I.waitForElement(rowSelector, 60);
     I.forceClick(rowSelector);
     this.waitForOverviewLoaded();
+    I.waitForVisible(this.elements.selectedRow, 10);
   },
 
   async verifyRowCount(rowCount) {
@@ -213,5 +219,12 @@ module.exports = {
   mouseOverFirstInfoIcon() {
     I.moveCursorTo(this.elements.firstQueryInfoIcon);
     I.waitForVisible(this.elements.tooltipQueryValue, 30);
+  },
+
+  searchByValue(value) {
+    I.waitForVisible(this.fields.searchBy, 30);
+    I.clearField(this.fields.searchBy);
+    I.fillField(this.fields.searchBy, value);
+    I.pressKey('Enter');
   },
 };

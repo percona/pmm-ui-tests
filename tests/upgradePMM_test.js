@@ -3,8 +3,16 @@ const faker = require('faker');
 const { generate } = require('generate-password');
 
 const {
-  remoteInstancesHelper, perconaServerDB, pmmSettingsPage, dashboardPage, databaseChecksPage,
+  adminPage, remoteInstancesHelper, perconaServerDB, pmmSettingsPage, dashboardPage, databaseChecksPage,
 } = inject();
+
+const pathToPMMFramework = adminPage.pathToPMMTests;
+
+const sslinstances = new DataTable(['serviceName', 'version', 'container', 'serviceType', 'metric', 'dashboard']);
+
+sslinstances.add(['pgsql_14_ssl_service', '14', 'pgsql_14', 'postgres_ssl', 'pg_stat_database_xact_rollback', dashboardPage.postgresqlInstanceOverviewDashboard.url]);
+sslinstances.add(['mysql_8.0_ssl_service', '8.0', 'mysql_8.0', 'mysql_ssl', 'mysql_global_status_max_used_connections', dashboardPage.mySQLInstanceOverview.url]);
+sslinstances.add(['mongodb_4.4_ssl_service', '4.4', 'mongodb_4.4', 'mongodb_ssl', 'mongodb_connections', dashboardPage.mongoDbInstanceOverview.url]);
 
 const alertManager = {
   alertmanagerURL: 'http://192.168.0.1:9093',
@@ -18,9 +26,10 @@ clientDbServices.add(['POSTGRESQL_SERVICE', 'PGSQL_', 'pg_stat_database_xact_rol
 clientDbServices.add(['MONGODB_SERVICE', 'mongodb_', 'mongodb_connections', 'annotation-for-mongo', dashboardPage.mongoDbInstanceSummaryDashboard.url, 'mongo_upgrade']);
 
 const connection = perconaServerDB.defaultConnection;
-const emptyPasswordSummary = 'MySQL users have empty passwords';
+const emptyPasswordSummary = 'User(s) has/have no password defined';
+const psServiceName = 'upgrade-stt-ps-5.7.30';
 const failedCheckRowLocator = databaseChecksPage.elements
-  .failedCheckRowByServiceName(remoteInstancesHelper.upgradeServiceNames.mysql);
+  .failedCheckRowByServiceName(psServiceName);
 const ruleName = 'Alert Rule for upgrade';
 const failedCheckMessage = 'Newer version of Percona Server for MySQL is available';
 
@@ -51,7 +60,7 @@ Feature('PMM server Upgrade Tests and Executing test cases related to Upgrade Te
 
 Before(async ({ I }) => {
   await I.Authorize();
-  I.setRequestTimeout(30000);
+  I.setRequestTimeout(60000);
 });
 
 BeforeSuite(async ({ I, codeceptjsConfig }) => {
@@ -126,7 +135,7 @@ Scenario(
 
     I.amOnPage('');
     dashboardPage.waitForDashboardOpened();
-    dashboardPage.verifyMetricsExistence(['Custom Panel']);
+    // dashboardPage.verifyMetricsExistence(['Custom Panel']);
     I.seeInCurrentUrl(resp.url);
   },
 );
@@ -148,6 +157,67 @@ Scenario(
     I.wait(10);
   },
 );
+
+if (versionMinor >= 15) {
+  Scenario(
+    'Verify user has failed checks before upgrade @pre-upgrade @pmm-upgrade',
+    async ({
+      I,
+      settingsAPI,
+      databaseChecksPage,
+      securityChecksAPI,
+      addInstanceAPI,
+    }) => {
+      const runChecks = locate('button')
+        .withText('Run DB checks');
+
+      await perconaServerDB.dropUser();
+      await perconaServerDB.createUser();
+      await settingsAPI.changeSettings({ stt: true });
+      await addInstanceAPI.addInstanceForSTT(connection, psServiceName);
+
+      await securityChecksAPI.startSecurityChecks();
+      // Waiting to have results
+      await securityChecksAPI.waitForFailedCheckExistance(emptyPasswordSummary);
+      // Run DB Checks from UI
+      // disable check, change interval for a check, change interval settings
+      if (versionMinor >= 16) {
+        await securityChecksAPI.disableCheck('mongodb_version');
+        await securityChecksAPI.changeCheckInterval('postgresql_version');
+        await settingsAPI.setCheckIntervals({
+          ...settingsAPI.defaultCheckIntervals,
+          standard_interval: '3600s',
+        });
+        I.amOnPage(databaseChecksPage.url);
+      } else {
+        I.amOnPage(databaseChecksPage.oldUrl);
+      }
+
+      I.waitForVisible(runChecks, 30);
+      I.waitForVisible(failedCheckRowLocator, 60);
+
+      // Check that there are failed checks
+      await securityChecksAPI.verifyFailedCheckExists(emptyPasswordSummary);
+      await securityChecksAPI.verifyFailedCheckExists(failedCheckMessage);
+
+      // Silence mysql Empty Password failed check
+      I.waitForVisible(failedCheckRowLocator, 30);
+      I.click(failedCheckRowLocator.find('button').first());
+    },
+  );
+
+  Scenario(
+    'Adding Redis as external Service before Upgrade @pre-upgrade @pmm-upgrade',
+    async ({
+      I, addInstanceAPI,
+    }) => {
+      await addInstanceAPI.addExternalService('redis_external_remote');
+      await I.verifyCommand(
+        'pmm-admin add external --listen-port=42200 --group="redis" --custom-labels="testing=redis" --service-name="redis_external_2"',
+      );
+    },
+  );
+}
 
 Scenario(
   'Verify user can create Remote Instances before upgrade @pre-upgrade @ami-upgrade @pmm-upgrade',
@@ -206,72 +276,108 @@ if (iaReleased) {
   );
 }
 
-if (versionMinor >= 15) {
-  Scenario.skip(
-    'Verify user has failed checks before upgrade @pre-upgrade @pmm-upgrade',
-    async ({
-      I, settingsAPI, databaseChecksPage, securityChecksAPI,
-    }) => {
-      const runChecks = locate('button').withText('Run DB checks');
-
-      await perconaServerDB.dropUser();
-      await perconaServerDB.createUser();
-      await settingsAPI.changeSettings({ stt: true });
-      // Run DB Checks from UI
-      // disable check, change interval for a check, change interval settings
-      if (versionMinor >= 16) {
-        await securityChecksAPI.startSecurityChecks();
-        // Waiting to have all results
-        I.wait(15);
-        await securityChecksAPI.disableCheck('mysql_anonymous_users');
-        await securityChecksAPI.changeCheckInterval('postgresql_version');
-        await settingsAPI.setCheckIntervals({ ...settingsAPI.defaultCheckIntervals, standard_interval: '3600s' });
-
-        I.amOnPage(databaseChecksPage.url);
-        I.waitForVisible(runChecks, 30);
-      } else {
-        I.amOnPage(databaseChecksPage.oldUrl);
-        I.waitForVisible(runChecks, 30);
-        I.click(runChecks);
-        I.waitForVisible(failedCheckRowLocator, 30);
-      }
-
-      // Check that there are failed checks
-      await securityChecksAPI.verifyFailedCheckExists(emptyPasswordSummary);
-      await securityChecksAPI.verifyFailedCheckExists(failedCheckMessage);
-
-      // Silence mysql Empty Password failed check
-      I.waitForVisible(failedCheckRowLocator, 30);
-      I.click(failedCheckRowLocator.find('button').first());
-    },
-  );
-
-  Scenario(
-    'Adding Redis as external Service before Upgrade @pre-upgrade @pmm-upgrade',
-    async ({
-      I, addInstanceAPI,
-    }) => {
-      await addInstanceAPI.addExternalService('redis_external_remote');
-      const output = await I.verifyCommand(
-        'pmm-admin add external --listen-port=42200 --group="redis" --custom-labels="testing=redis" --service-name="redis_external_2"',
-      );
-    },
-  );
-}
-
 if (versionMinor >= 13) {
   Data(clientDbServices).Scenario(
     'Adding annotation before upgrade At service Level @ami-upgrade @pre-upgrade @pmm-upgrade',
     async ({
-      I, annotationAPI, inventoryAPI, current,
+      annotationAPI, inventoryAPI, current,
     }) => {
       const {
-        serviceType, name, metric, annotationName,
+        serviceType, name, annotationName,
       } = current;
       const { node_id, service_name } = await inventoryAPI.apiGetNodeInfoByServiceName(serviceType, name);
       const nodeName = await inventoryAPI.getNodeName(node_id);
 
       await annotationAPI.setAnnotation(annotationName, 'Upgrade-PMM-T878', nodeName, service_name, 200);
+    },
+  );
+}
+
+if (versionMinor >= 23) {
+  Data(sslinstances).Scenario(
+    'PMM-T948 PMM-T947 Verify Adding Postgresql, MySQL, MongoDB SSL services remotely via API before upgrade @pre-upgrade @pmm-upgrade',
+    async ({
+      I, remoteInstancesPage, pmmInventoryPage, current, addInstanceAPI, inventoryAPI,
+    }) => {
+      const {
+        serviceName, serviceType, version, container,
+      } = current;
+      let details;
+      const remoteServiceName = `remote_api_${serviceName}`;
+
+      if (serviceType === 'postgres_ssl') {
+        details = {
+          serviceName: remoteServiceName,
+          serviceType,
+          port: '5432',
+          database: 'postgres',
+          address: container,
+          username: 'pmm',
+          password: 'pmm',
+          cluster: 'pgsql_remote_cluster',
+          environment: 'pgsql_remote_cluster',
+          tlsCAFile: await remoteInstancesPage.getFileContent(`${pathToPMMFramework}tls-ssl-setup/postgres/${version}/ca.crt`),
+          tlsKeyFile: await remoteInstancesPage.getFileContent(`${pathToPMMFramework}tls-ssl-setup/postgres/${version}/client.pem`),
+          tlsCertFile: await remoteInstancesPage.getFileContent(`${pathToPMMFramework}tls-ssl-setup/postgres/${version}/client.crt`),
+        };
+        await addInstanceAPI.addPostgreSqlSSL(details);
+        I.wait(5);
+        await inventoryAPI.verifyServiceExistsAndHasRunningStatus(
+          {
+            serviceType: 'POSTGRESQL_SERVICE',
+            service: 'postgresql',
+          },
+          remoteServiceName,
+        );
+      }
+
+      if (serviceType === 'mysql_ssl') {
+        details = {
+          serviceName: remoteServiceName,
+          serviceType,
+          port: '3306',
+          address: container,
+          username: 'pmm',
+          password: 'pmm',
+          cluster: 'mysql_ssl_remote_cluster',
+          environment: 'mysql_ssl_remote_cluster',
+          tlsCAFile: await remoteInstancesPage.getFileContent(`${adminPage.pathToPMMTests}tls-ssl-setup/mysql/${version}/ca.pem`),
+          tlsKeyFile: await remoteInstancesPage.getFileContent(`${adminPage.pathToPMMTests}tls-ssl-setup/mysql/${version}/client-key.pem`),
+          tlsCertFile: await remoteInstancesPage.getFileContent(`${adminPage.pathToPMMTests}tls-ssl-setup/mysql/${version}/client-cert.pem`),
+        };
+        await addInstanceAPI.addMysqlSSL(details);
+        I.wait(5);
+        await inventoryAPI.verifyServiceExistsAndHasRunningStatus(
+          {
+            serviceType: 'MYSQL_SERVICE',
+            service: 'mysql',
+          },
+          remoteServiceName,
+        );
+      }
+
+      if (serviceType === 'mongodb_ssl') {
+        details = {
+          serviceName: remoteServiceName,
+          serviceType,
+          port: '27017',
+          address: container,
+          cluster: 'mongodb_ssl_remote_cluster',
+          environment: 'mongodb_ssl_remote_cluster',
+          tls_certificate_file_password: await remoteInstancesPage.getFileContent(`${pathToPMMFramework}tls-ssl-setup/mongodb/${version}/client.key`),
+          tls_certificate_key: await remoteInstancesPage.getFileContent(`${pathToPMMFramework}tls-ssl-setup/mongodb/${version}/client.pem`),
+          tls_ca: await remoteInstancesPage.getFileContent(`${pathToPMMFramework}tls-ssl-setup/mongodb/${version}/ca.crt`),
+        };
+        await addInstanceAPI.addMongoDBSSL(details);
+        I.wait(5);
+        await inventoryAPI.verifyServiceExistsAndHasRunningStatus(
+          {
+            serviceType: 'MONGODB_SERVICE',
+            service: 'mongodb',
+          },
+          remoteServiceName,
+        );
+      }
     },
   );
 }
@@ -316,9 +422,7 @@ if (versionMinor >= 21) {
 
 Scenario(
   'Setup Prometheus Alerting with external Alert Manager via API PMM-Settings @pre-upgrade @pmm-upgrade',
-  async ({
-    I, settingsAPI,
-  }) => {
+  async ({ settingsAPI }) => {
     await settingsAPI.changeSettings(alertManager);
   },
 );
@@ -391,14 +495,29 @@ Scenario(
   },
 );
 
+if (versionMinor < 15) {
+  Scenario(
+    'PMM-T268 - Verify Failed check singlestats after upgrade from old versions @post-upgrade @pmm-upgrade',
+    async ({
+      I, homePage,
+    }) => {
+      await homePage.open();
+      I.waitForVisible(homePage.fields.sttDisabledFailedChecksPanelSelector, 15);
+    },
+  );
+}
+
 if (versionMinor >= 15) {
-  Scenario.skip(
+  Scenario(
     'Verify user has failed checks after upgrade / STT on @post-upgrade @pmm-upgrade',
     async ({
-      I, pmmSettingsPage, securityChecksAPI, databaseChecksPage,
+      I,
+      pmmSettingsPage,
+      securityChecksAPI,
+      databaseChecksPage,
     }) => {
-      // Wait for 30 seconds to have latest check results
-      I.wait(30);
+      // Wait for 45 seconds to have latest check results
+      I.wait(45);
       // Verify STT is enabled
       I.amOnPage(pmmSettingsPage.advancedSettingsUrl);
       I.waitForVisible(pmmSettingsPage.fields.sttSwitchSelector, 30);
@@ -414,31 +533,17 @@ if (versionMinor >= 15) {
   Scenario(
     'Verify Redis as external Service Works After Upgrade @post-upgrade @pmm-upgrade',
     async ({
-      I, addInstanceAPI, dashboardPage, remoteInstancesHelper,
+      I, grafanaAPI, remoteInstancesHelper,
     }) => {
       // Make sure Metrics are hitting before Upgrade
       const metricName = 'redis_uptime_in_seconds';
       const headers = { Authorization: `Basic ${await I.getAuth()}` };
-      let response;
-      let result;
 
-      response = await dashboardPage.checkMetricExist(metricName);
-      result = JSON.stringify(response.data.data.result);
+      await grafanaAPI.checkMetricExist(metricName);
+      await grafanaAPI.checkMetricExist(metricName, { type: 'node_name', value: 'redis_external_remote' });
+      await grafanaAPI.checkMetricExist(metricName, { type: 'service_name', value: 'redis_external_2' });
 
-      assert.ok(response.data.data.result.length !== 0, `Metrics ${metricName} from external exporter should be available post upgrade but got empty ${result}`);
-
-      response = await dashboardPage.checkMetricExist(metricName, { type: 'node_name', value: 'redis_external_remote' });
-      result = JSON.stringify(response.data.data.result);
-
-      assert.ok(response.data.data.result.length !== 0, `Metrics ${metricName} for remote redis node, remote_redis_external Should be available but got empty ${result}`);
-
-      response = await dashboardPage.checkMetricExist(metricName, { type: 'service_name', value: 'redis_external_2' });
-      result = JSON.stringify(response.data.data.result);
-
-      assert.ok(response.data.data.result.length !== 0, `Metrics ${metricName} for service name redis_external Should be available but got empty ${result}`);
-
-      response = await I.sendGetRequest('prometheus/api/v1/targets', headers);
-
+      const response = await I.sendGetRequest('prometheus/api/v1/targets', headers);
       const targets = response.data.data.activeTargets.find(
         (o) => o.labels.external_group === 'redis-remote',
       );
@@ -454,12 +559,13 @@ if (versionMinor >= 15) {
 }
 
 if (versionMinor >= 16) {
-  Scenario.skip(
+  Scenario(
     'Verify disabled checks remain disabled after upgrade @post-upgrade @pmm-upgrade',
     async ({
-      I, allChecksPage,
+      I,
+      allChecksPage,
     }) => {
-      const checkName = 'MySQL Anonymous Users';
+      const checkName = 'MongoDB Version';
 
       I.amOnPage(allChecksPage.url);
       I.waitForVisible(allChecksPage.buttons.disableEnableCheck(checkName));
@@ -468,27 +574,32 @@ if (versionMinor >= 16) {
     },
   );
 
-  Scenario.skip(
+  Scenario(
     'Verify silenced checks remain silenced after upgrade @post-upgrade @pmm-upgrade',
     async ({
-      I, databaseChecksPage,
+      I,
+      databaseChecksPage,
     }) => {
       I.amOnPage(databaseChecksPage.url);
 
       I.waitForVisible(failedCheckRowLocator, 30);
-      I.dontSeeElement(failedCheckRowLocator.find('td').withText(emptyPasswordSummary));
+      I.dontSeeElement(failedCheckRowLocator.find('td')
+        .withText(emptyPasswordSummary));
 
       I.click(databaseChecksPage.buttons.toggleSilenced);
 
-      I.seeElement(failedCheckRowLocator.find('td').withText(emptyPasswordSummary));
-      I.seeElement(failedCheckRowLocator.find('td').withText('Silenced'));
+      I.seeElement(failedCheckRowLocator.find('td')
+        .withText(emptyPasswordSummary));
+      I.seeElement(failedCheckRowLocator.find('td')
+        .withText('Silenced'));
     },
   );
 
-  Scenario.skip(
+  Scenario(
     'Verify check intervals remain the same after upgrade @post-upgrade @pmm-upgrade',
     async ({
-      I, allChecksPage,
+      I,
+      allChecksPage,
     }) => {
       const checkName = 'PostgreSQL Version';
 
@@ -498,10 +609,11 @@ if (versionMinor >= 16) {
     },
   );
 
-  Scenario.skip(
+  Scenario(
     'Verify settings for intervals remain the same after upgrade @post-upgrade @pmm-upgrade',
     async ({
-      I, pmmSettingsPage,
+      I,
+      pmmSettingsPage,
     }) => {
       I.amOnPage(pmmSettingsPage.advancedSettingsUrl);
       I.waitForVisible(pmmSettingsPage.fields.rareIntervalInput, 30);
@@ -593,7 +705,7 @@ Scenario(
     I.amOnPage(homePage.url);
     I.waitForVisible(homePage.fields.newsPanelTitleSelector, 30);
     I.waitForVisible(homePage.fields.newsPanelContentSelector, 30);
-    const newsItems = await I.grabNumberOfVisibleElements(`${homePage.fields.newsPanelContentSelector}/div`);
+    const newsItems = await I.grabNumberOfVisibleElements(locate('article').inside(homePage.fields.newsPanelContentSelector));
 
     assert.ok(newsItems > 1, 'News Panel is empty');
   },
@@ -628,17 +740,15 @@ Scenario(
 
 Scenario(
   'Verify Agents are Running and Metrics are being collected Post Upgrade (UI) [critical] @ami-upgrade @post-upgrade @pmm-upgrade',
-  async ({ I, pmmInventoryPage, dashboardPage }) => {
+  async ({ grafanaAPI }) => {
     const metrics = Object.keys(remoteInstancesHelper.upgradeServiceMetricNames);
 
     for (const service of Object.values(remoteInstancesHelper.upgradeServiceNames)) {
       if (service) {
         if (metrics.includes(service)) {
           const metricName = remoteInstancesHelper.upgradeServiceMetricNames[service];
-          const response = await dashboardPage.checkMetricExist(metricName, { type: 'node_name', value: service });
-          const result = JSON.stringify(response.data.data.result);
 
-          assert.ok(response.data.data.result.length !== 0, `Metrics ${metricName} for Node ${service} Should be available but got empty ${result}`);
+          await grafanaAPI.checkMetricExist(metricName, { type: 'node_name', value: service });
         }
       }
     }
@@ -648,18 +758,13 @@ Scenario(
 Data(clientDbServices).Scenario(
   'Check Metrics for Client Nodes [critical] @post-client-upgrade  @ami-upgrade @post-upgrade @pmm-upgrade',
   async ({
-    I, inventoryAPI, dashboardPage, current,
+    inventoryAPI, grafanaAPI, current,
   }) => {
     const metricName = current.metric;
     const { node_id } = await inventoryAPI.apiGetNodeInfoByServiceName(current.serviceType, current.name);
     const nodeName = await inventoryAPI.getNodeName(node_id);
-    const response = await dashboardPage.checkMetricExist(metricName, { type: 'node_name', value: nodeName });
-    const result = JSON.stringify(response.data.data.result);
 
-    // Need to skip this check on AMI upgrade for Postgresql
-    if (process.env.AMI_UPGRADE_TESTING_INSTANCE !== 'true' && current.serviceType !== 'POSTGRESQL_SERVICE') {
-      assert.ok(response.data.data.result.length !== 0, `Metrics ${metricName} for Node ${nodeName} Should be available but got empty ${result}`);
-    }
+    await grafanaAPI.checkMetricExist(metricName, { type: 'node_name', value: nodeName });
   },
 );
 
@@ -689,37 +794,28 @@ Scenario(
 
 Scenario(
   'Verify Metrics from custom queries for mysqld_exporter after upgrade (UI) @post-client-upgrade @post-upgrade @ami-upgrade @pmm-upgrade',
-  async ({ dashboardPage }) => {
+  async ({ grafanaAPI }) => {
     const metricName = 'mysql_performance_schema_memory_summary_current_bytes';
 
-    const response = await dashboardPage.checkMetricExist(metricName);
-    const result = JSON.stringify(response.data.data.result);
-
-    assert.ok(response.data.data.result.length !== 0, `Custom Metrics ${metricName} Should be available but got empty ${result}`);
+    await grafanaAPI.checkMetricExist(metricName);
   },
 );
 
 Scenario(
   'Verify textfile collector extend metrics is still collected post upgrade (UI) @post-client-upgrade @post-upgrade @ami-upgrade @pmm-upgrade',
-  async ({ dashboardPage }) => {
+  async ({ grafanaAPI }) => {
     const metricName = 'node_role';
 
-    const response = await dashboardPage.checkMetricExist(metricName);
-    const result = JSON.stringify(response.data.data.result);
-
-    assert.ok(response.data.data.result.length !== 0, `TextFile Collector Metrics ${metricName} Should be available but got empty ${result}`);
+    await grafanaAPI.checkMetricExist(metricName);
   },
 );
 
 Scenario(
   'Verify Metrics from custom queries for postgres_exporter after upgrade (UI) @post-client-upgrade @post-upgrade @pmm-upgrade',
-  async ({ dashboardPage }) => {
+  async ({ grafanaAPI }) => {
     const metricName = 'pg_stat_user_tables_n_tup_ins';
 
-    const response = await dashboardPage.checkMetricExist(metricName);
-    const result = JSON.stringify(response.data.data.result);
-
-    assert.ok(response.data.data.result.length !== 0, `Custom Metrics ${metricName} Should be available but got empty ${result}`);
+    await grafanaAPI.checkMetricExist(metricName);
   },
 );
 
@@ -745,18 +841,18 @@ if (versionMinor >= 13) {
       I, dashboardPage, current, inventoryAPI, adminPage,
     }) => {
       const {
-        serviceType, name, metric, annotationName, dashboard,
+        serviceType, name, annotationName, dashboard,
       } = current;
       const timeRange = 'Last 30 minutes';
 
       I.amOnPage(dashboard);
       dashboardPage.waitForDashboardOpened();
-      adminPage.applyTimeRange(timeRange);
+      await adminPage.applyTimeRange(timeRange);
       const { service_name } = await inventoryAPI.apiGetNodeInfoByServiceName(serviceType, name);
 
       await dashboardPage.applyFilter('Service Name', service_name);
 
-      dashboardPage.verifyAnnotationsLoaded(annotationName, 1);
+      dashboardPage.verifyAnnotationsLoaded(annotationName);
       I.seeElement(dashboardPage.annotationText(annotationName), 10);
     },
   );
@@ -764,9 +860,7 @@ if (versionMinor >= 13) {
 
 Scenario(
   'Check Prometheus Alerting Rules Persist Post Upgrade and Alerts are still Firing @post-upgrade @pmm-upgrade',
-  async ({
-    I, settingsAPI, pmmSettingsPage,
-  }) => {
+  async ({ settingsAPI, pmmSettingsPage }) => {
     const url = await settingsAPI.getSettings('alert_manager_url');
     const rule = await settingsAPI.getSettings('alert_manager_rules');
 
@@ -780,7 +874,7 @@ if (versionMinor >= 21) {
   Data(clientDbServices).Scenario(
     'Verify if Agents added with custom password and custom label work as expected Post Upgrade @post-client-upgrade @post-upgrade @pmm-upgrade',
     async ({
-      I, current, inventoryAPI,
+      current, inventoryAPI, grafanaAPI,
     }) => {
       const {
         serviceType, metric, upgrade_service,
@@ -790,14 +884,92 @@ if (versionMinor >= 21) {
         custom_labels,
       } = await inventoryAPI.apiGetNodeInfoByServiceName(serviceType, upgrade_service);
 
-      const response = await dashboardPage.checkMetricExist(metric, { type: 'service_name', value: upgrade_service });
-      const result = JSON.stringify(response.data.data.result);
-
-      assert.ok(response.data.data.result.length !== 0, `Metrics ${metric} for Service ${upgrade_service} Should be available but got empty ${result}`);
+      await grafanaAPI.checkMetricExist(metric, { type: 'service_name', value: upgrade_service });
       if (serviceType !== 'MYSQL_SERVICE') {
         assert.ok(custom_labels, `Node Information for ${serviceType} added with ${upgrade_service} is empty, value returned are ${custom_labels}`);
         assert.ok(custom_labels.testing === 'upgrade', `Custom Labels for ${serviceType} added before upgrade with custom labels, doesn't have the same label post upgrade, value found ${custom_labels}`);
       }
     },
   );
+}
+
+if (versionMinor >= 23) {
+  Data(sslinstances).Scenario(
+    'Verify metrics from SSL instances on PMM-Server @post-upgrade @pmm-upgrade',
+    async ({
+      I, remoteInstancesPage, pmmInventoryPage, current, grafanaAPI,
+    }) => {
+      const {
+        serviceName, metric,
+      } = current;
+      let response; let result;
+      const remoteServiceName = `remote_api_${serviceName}`;
+
+      // Waiting for metrics to start hitting for remotely added services
+      I.wait(10);
+
+      // verify metric for client container node instance
+      response = await grafanaAPI.checkMetricExist(metric, { type: 'service_name', value: serviceName });
+      result = JSON.stringify(response.data.data.result);
+
+      assert.ok(response.data.data.result.length !== 0, `Metrics ${metric} from ${serviceName} should be available but got empty ${result}`);
+
+      // verify metric for remote instance
+      response = await grafanaAPI.checkMetricExist(metric, { type: 'service_name', value: remoteServiceName });
+      result = JSON.stringify(response.data.data.result);
+
+      assert.ok(response.data.data.result.length !== 0, `Metrics ${metric} from ${remoteServiceName} should be available but got empty ${result}`);
+    },
+  ).retry(1);
+
+  Data(sslinstances).Scenario(
+    'Verify dashboard for SSL Instances and services after upgrade @post-upgrade @pmm-upgrade',
+    async ({
+      I, dashboardPage, adminPage, current,
+    }) => {
+      const {
+        serviceName, dashboard,
+      } = current;
+
+      const serviceList = [serviceName, `remote_api_${serviceName}`];
+
+      for (const service of serviceList) {
+        I.amOnPage();
+        dashboardPage.waitForDashboardOpened(dashboard);
+        await adminPage.applyTimeRange('Last 5 minutes');
+        await dashboardPage.applyFilter('Service Name', service);
+        adminPage.performPageDown(5);
+        await dashboardPage.expandEachDashboardRow();
+        adminPage.performPageUp(5);
+        await dashboardPage.verifyThereAreNoGraphsWithNA();
+        await dashboardPage.verifyThereAreNoGraphsWithoutData(3);
+      }
+    },
+  ).retry(1);
+
+  Data(sslinstances).Scenario(
+    'Verify QAN after upgrade for SSL Instances added @post-upgrade @pmm-upgrade',
+    async ({
+      I, qanOverview, qanFilters, qanPage, current, adminPage,
+    }) => {
+      const {
+        serviceName,
+      } = current;
+
+      const serviceList = [serviceName, `remote_api_${serviceName}`];
+
+      for (const service of serviceList) {
+        I.amOnPage(qanPage.url);
+        qanOverview.waitForOverviewLoaded();
+        await adminPage.applyTimeRange('Last 5 minutes');
+        qanOverview.waitForOverviewLoaded();
+        qanFilters.waitForFiltersToLoad();
+        await qanFilters.applySpecificFilter(service);
+        qanOverview.waitForOverviewLoaded();
+        const count = await qanOverview.getCountOfItems();
+
+        assert.ok(count > 0, `The queries for service ${service} instance do NOT exist, check QAN Data`);
+      }
+    },
+  ).retry(1);
 }

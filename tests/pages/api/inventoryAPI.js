@@ -47,7 +47,17 @@ module.exports = {
       .flat(Infinity)
       .filter(({ service_name }) => service_name.includes(serviceName));
 
-    return data[0];
+    return data ? data[0] : null;
+  },
+
+  async apiGetNodeInfoForAllNodesByServiceName(serviceType, serviceName) {
+    const service = await this.apiGetServices(serviceType);
+
+    const data = Object.values(service.data)
+      .flat(Infinity)
+      .filter(({ service_name }) => service_name.startsWith(serviceName));
+
+    return data;
   },
 
   async apiGetPMMAgentInfoByServiceId(serviceId) {
@@ -156,6 +166,12 @@ module.exports = {
 
       I.wait(interval);
     }
+  },
+
+  async deleteNodeByServiceName(serviceType, serviceName, force = true) {
+    const node = await this.apiGetNodeInfoByServiceName(serviceType, serviceName);
+
+    if (node) await this.deleteNode(node.node_id, force);
   },
 
   async deleteNode(nodeID, force) {

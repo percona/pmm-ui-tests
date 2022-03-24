@@ -2,7 +2,7 @@ const { storageLocationConnection, mongoStorageLocation } = require('./testData'
 
 const { I } = inject();
 
-const locationCell = (name) => `//tr[td/div[contains(text(), "${name}")]]`;
+const locationCell = (name) => `//tr[td/div/span[contains(text(), "${name}")]]`;
 
 module.exports = {
   storageLocationConnection,

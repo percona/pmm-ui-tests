@@ -2,9 +2,17 @@ const {
   I, dbaasAPI, dbaasActionsPage, dbaasManageVersionPage, dashboardPage, qanPage, qanFilters, qanOverview, inventoryAPI, adminPage,
 } = inject();
 const assert = require('assert');
+const faker = require('faker');
 
 module.exports = {
   url: 'graph/dbaas',
+  apiKeysUrl: 'graph/org/apikeys',
+
+  apiKeysPage: {
+    apiKeysWarningText: 'If a resource (for example, DB cluster) uses an API key, deleting that API key might affect the functionality of that resource.',
+    apiKeysWarningLocator: '$warning-block',
+    apiKeysTable: '.filter-table',
+  },
   disabledDbaaSMessage: {
     textMessage: 'DBaaS is disabled. You can enable it in PMM Settings.',
     settingsLinkLocator: '$settings-link',
@@ -50,8 +58,8 @@ module.exports = {
       dbClusterAddButtonTop: '$dbcluster-add-cluster-button',
       createClusterButton: '$step-progress-submit-button',
       updateClusterButton: '$dbcluster-update-cluster-button',
-      dbClusterTab: '//li[@aria-label="Tab DB Cluster"]',
-      monitoringWarningLocator: '$add-cluster-monitoring-warning',
+      dbClusterTab: '//li/a[@aria-label="Tab DB Cluster"]',
+      monitoringWarningLocator: '$pmm-server-url-warning',
       optionsCountLocator: (step) => `(//div[@data-testid='step-header']//div[1])[${step}]`,
       optionsHeader: '$step-header',
       deleteDbClusterConfirmationText: (dbClusterName, clusterName, dbType) => `Are you sure that you want to delete ${dbType} cluster ${dbClusterName} from Kubernetes cluster ${clusterName} ?`,
@@ -189,8 +197,14 @@ module.exports = {
     psmdbDashboard: (dbClusterName) => `/graph/d/mongodb-cluster-summary/mongodb-cluster-summary?var-cluster=${dbClusterName}`,
   },
 
-  checkCluster(cluserName, deleted) {
-    const clusterLocator = `//td[contains(text(), '${cluserName}')]`;
+  randomizeClusterName(clusterName) {
+    const stringLength = 6;
+    let randomString = faker.random.alphaNumeric(stringLength);
+    return clusterName + '-' + randomString;
+  },
+
+  checkCluster(clusterName, deleted) {
+    const clusterLocator = `//td[contains(text(), '${clusterName}')]`;
 
     if (deleted) {
       I.dontSeeElement(clusterLocator);
@@ -291,7 +305,7 @@ module.exports = {
     I.waitForElement(dbaasPage.tabs.kubernetesClusterTab.addKubernetesClusterButton, 30);
   },
 
-  async validateClusterDetail(dbsClusterName, k8sClusterName, configuration) {
+  async validateClusterDetail(dbsClusterName, k8sClusterName, configuration, link) {
     const dbaasPage = this;
 
     I.waitForElement(dbaasPage.tabs.dbClusterTab.fields.clusterTableHeader, 60);
@@ -314,7 +328,7 @@ module.exports = {
     const dashboardLinkAttribute = await I.grabAttributeFrom(dbaasPage.tabs.dbClusterTab.fields.clusterSummaryDashboard, 'href');
 
     assert.ok(
-      dashboardLinkAttribute.includes(configuration.clusterDashboardRedirectionLink),
+      dashboardLinkAttribute.includes(link),
       `The Cluster Dashboard Redirection Link is wrong found ${dashboardLinkAttribute}`,
     );
     I.seeElement(dbaasPage.tabs.dbClusterTab.fields.clusterDatabaseType);
@@ -417,5 +431,16 @@ module.exports = {
     const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName(serviceType, serviceName);
 
     await inventoryAPI.waitForRunningState(service_id);
+  },
+
+  async apiKeyCheck(clusterName, dbClusterName, dbClusterType, keyExists) {
+    const dbaasPage = this;
+    I.amOnPage(dbaasPage.apiKeysUrl);
+
+    if (keyExists) {
+      I.waitForText(`${dbClusterType}-${clusterName}-${dbClusterName}`, 10 , dbaasPage.apiKeysPage.apiKeysTable);
+    } else {
+      I.dontSee(`${dbClusterType}-${dbClusterName}`, dbaasPage.apiKeysPage.apiKeysTable);
+    }
   },
 };
