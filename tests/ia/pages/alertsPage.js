@@ -116,11 +116,9 @@ module.exports = {
     }
   },
 
-  checkContainingLabels(expectedLabels, alertName = null) {
-    for (const i in expectedLabels) {
-      if (alertName) I.seeElement(this.elements.primaryLabels(alertName, expectedLabels[i]));
+  checkContainingLabels({ primaryLabels = null, secondaryLabels = null, alertName = null }) {
+    for (const i in primaryLabels) I.seeElement(this.elements.primaryLabels(alertName, primaryLabels[i]));
 
-      if (!alertName) I.seeElement(this.elements.secondaryLabels(expectedLabels[i]));
-    }
+    for (const i in secondaryLabels) I.seeElement(this.elements.secondaryLabels(secondaryLabels[i]));
   },
 };
