@@ -152,7 +152,7 @@ Data(intervalsTests).Scenario(
     await securityChecksAPI.waitForFailedCheckNonExistance(emptyPasswordSummary, psServiceName);
 
     // Verify there is no MySQL user empty password failed check
-    databaseChecksPage.verifyFailedCheckNotExists(emptyPasswordSummary);
+    databaseChecksPage.verifyFailedCheckNotExists(emptyPasswordSummary, serviceId);
   },
 );
 
@@ -168,6 +168,6 @@ Scenario.skip(
     await securityChecksAPI.waitForFailedCheckNonExistance(emptyPasswordSummary, psServiceName);
 
     // Verify there is no MySQL user empty password failed check
-    databaseChecksPage.verifyFailedCheckNotExists(emptyPasswordSummary);
+    databaseChecksPage.verifyFailedCheckNotExists(emptyPasswordSummary, serviceId);
   },
 );
