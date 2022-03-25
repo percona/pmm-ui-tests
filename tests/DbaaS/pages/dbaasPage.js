@@ -199,8 +199,9 @@ module.exports = {
 
   randomizeClusterName(clusterName) {
     const stringLength = 6;
-    let randomString = faker.random.alphaNumeric(stringLength);
-    return clusterName + '-' + randomString;
+    const randomString = faker.random.alphaNumeric(stringLength);
+
+    return `${clusterName}-${randomString}`;
   },
 
   checkCluster(clusterName, deleted) {
@@ -435,10 +436,11 @@ module.exports = {
 
   async apiKeyCheck(clusterName, dbClusterName, dbClusterType, keyExists) {
     const dbaasPage = this;
+
     I.amOnPage(dbaasPage.apiKeysUrl);
 
     if (keyExists) {
-      I.waitForText(`${dbClusterType}-${clusterName}-${dbClusterName}`, 10 , dbaasPage.apiKeysPage.apiKeysTable);
+      I.waitForText(`${dbClusterType}-${clusterName}-${dbClusterName}`, 10, dbaasPage.apiKeysPage.apiKeysTable);
     } else {
       I.dontSee(`${dbClusterType}-${dbClusterName}`, dbaasPage.apiKeysPage.apiKeysTable);
     }
