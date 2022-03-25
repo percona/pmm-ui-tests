@@ -30,6 +30,12 @@ class Grafana extends Helper {
     Playwright.haveRequestHeaders({ Authorization: `Basic ${basicAuthEncoded}` });
   }
 
+  async UnAuthorize() {
+    const { Playwright } = this.helpers;
+
+    Playwright.haveRequestHeaders({});
+  }
+
   async getAuth(username = 'admin', password = process.env.ADMIN_PASSWORD) {
     return Buffer.from(`${this.config.username || username}:${this.config.password || password}`).toString(
       'base64',

@@ -10,7 +10,7 @@ module.exports = {
   url: 'graph/settings',
   advancedSettingsUrl: 'graph/settings/advanced-settings',
   communicationSettingsUrl: 'graph/settings/communication',
-  perconaPlatform,
+  perconaPlatform: 'graph/settings/percona-platform',
   prometheusAlertUrl: '/prometheus/rules',
   stateOfAlertsUrl: '/prometheus/alerts',
   diagnosticsText:
@@ -265,10 +265,19 @@ module.exports = {
     standartIntervalValidation: '$standardInterval-field-error-message',
     frequentIntervalInput: '$frequentInterval-number-input',
     frequentIntervalValidation: '$frequentInterval-field-error-message',
+    pmmServerNameInput: '$pmmServerName-text-input',
+    perconaAccountEmailInput: '$email-text-input',
+    perconaAccountPasswordInput: '$password-password-input',
+    platformConnectButton: '$connect-button',
   },
 
   async openAdvancedSettings() {
     I.amOnPage(this.advancedSettingsUrl);
+    await this.waitForPmmSettingsPageLoaded();
+  },
+
+  async openPerconaPlatform() {
+    I.amOnPage(this.perconaPlatform);
     await this.waitForPmmSettingsPageLoaded();
   },
 
@@ -413,6 +422,12 @@ module.exports = {
     I.verifyPopUpMessage(this.messages.successPopUpMessage);
   },
 
+  clearPublicAddress() {
+    this.customClearField(this.fields.publicAddressInput);
+    I.click(this.fields.advancedButton);
+    I.verifyPopUpMessage(this.messages.successPopUpMessage);
+  },
+
   addAlertmanagerRule(url, rule) {
     adminPage.customClearField(this.fields.alertURLInput);
     I.fillField(this.fields.alertURLInput, url);
@@ -516,5 +531,13 @@ module.exports = {
         break;
       default:
     }
+  },
+
+  connectPmmToPerconaPortal(email, password, serverName = 'Test Server') {
+    I.fillField(this.fields.pmmServerNameInput, serverName);
+    I.fillField(this.fields.perconaAccountEmailInput, email);
+    I.fillField(this.fields.perconaAccountPasswordInput, password);
+    I.click(this.fields.platformConnectButton);
+    I.wait(60);
   },
 };

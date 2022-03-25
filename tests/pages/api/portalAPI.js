@@ -119,4 +119,12 @@ module.exports = {
 
     return response.data;
   },
+
+  async searchCompany(accessToken) {
+    const endpointUrl = `${this.portalBaseUrl}/v1/orgs/company:search`;
+    const headers = { Authorization: `Bearer ${accessToken}` };
+    const response = await I.sendPostRequest(endpointUrl, {}, headers);
+
+    return response.data;
+  },
 };
