@@ -272,7 +272,7 @@ Scenario(
     I, remoteInstancesPage, remoteInstancesHelper,
   }) => {
     const errorMessage = 'Connection check failed: pq: database "postgres2" does not exist.\n';
-    const remoteServiceName = `postgresql_remote_new`;
+    const remoteServiceName = 'postgresql_remote_new';
 
     const details = {
       serviceName: remoteServiceName,
@@ -294,5 +294,7 @@ Scenario(
     I.fillField(remoteInstancesPage.fields.database, 'postgres');
     I.click(remoteInstancesPage.fields.addService);
     pmmInventoryPage.verifyRemoteServiceIsDisplayed(remoteServiceName);
+    await pmmInventoryPage.verifyAgentHasStatusRunning(remoteServiceName);
+    await pmmInventoryPage.verifyMetricsFlags(remoteServiceName);
   },
 );
