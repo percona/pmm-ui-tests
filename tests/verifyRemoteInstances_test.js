@@ -1,6 +1,6 @@
 const assert = require('assert');
 
-const { remoteInstancesPage, remoteInstancesHelper } = inject();
+const { remoteInstancesPage, remoteInstancesHelper, pmmInventoryPage } = inject();
 
 const externalExporterServiceName = 'external_service_new';
 const haproxyServiceName = 'haproxy_remote';
@@ -263,5 +263,36 @@ Data(metrics).Scenario(
   'PMM-T743 Check metrics from exporters are hitting PMM Server @instances',
   async ({ I, grafanaAPI, current }) => {
     await grafanaAPI.waitForMetric(current.metricName, { type: 'service_name', value: current.serviceName }, 10);
+  },
+);
+
+Scenario(
+  'PMM-T1087 Verify adding PostgreSQL remote instance without postgres database @instances @alyona-p ',
+  async ({
+    I, remoteInstancesPage, remoteInstancesHelper,
+  }) => {
+    const errorMessage = 'Connection check failed: pq: database "postgres2" does not exist.\n';
+    const remoteServiceName = `postgresql_remote_new`;
+
+    const details = {
+      serviceName: remoteServiceName,
+      serviceType: 'postgresql',
+      port: remoteInstancesHelper.postgresql.pdpgsql_13_3.port,
+      database: 'dfsdafs2',
+      host: remoteInstancesHelper.postgresql.pdpgsql_13_3.host,
+      username: remoteInstancesHelper.postgresql.pdpgsql_13_3.username,
+      password: remoteInstancesHelper.postgresql.pdpgsql_13_3.password,
+      cluster: remoteInstancesHelper.postgresql.pdpgsql_13_3.clusterName,
+    };
+
+    I.amOnPage(remoteInstancesPage.url);
+    remoteInstancesPage.waitUntilRemoteInstancesPageLoaded();
+    remoteInstancesPage.openAddRemotePage(details.serviceType);
+    await remoteInstancesPage.addRemoteDetails(details);
+    I.click(remoteInstancesPage.fields.addService);
+    I.verifyPopUpMessage(errorMessage);
+    I.fillField(remoteInstancesPage.fields.database, 'postgres');
+    I.click(remoteInstancesPage.fields.addService);
+    pmmInventoryPage.verifyRemoteServiceIsDisplayed(remoteServiceName);
   },
 );
