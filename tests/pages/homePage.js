@@ -93,7 +93,7 @@ module.exports = {
     'TASK [Update/restart other services]',
     'TASK [Check supervisord log]',
   ],
-  failedChecksSinglestatsInfoMessage: 'Display the number of database security checks that the Security Threat Tool identified as failed during its most recent run.',
+  failedChecksSinglestatsInfoMessage: 'Display the number of Advisors checks identified as failed during its most recent run.',
 
   serviceDashboardLocator: (serviceName) => locate('a').withText(serviceName),
   isAmiUpgrade: process.env.AMI_UPGRADE_TESTING_INSTANCE === 'true',
