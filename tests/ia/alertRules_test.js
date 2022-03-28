@@ -51,7 +51,7 @@ AfterSuite(async ({
 
 Scenario(
   'PMM-T518 Verify empty alert rules list @ia @grafana-pr',
-  async ({ I, alertRulesPage, rulesAPI }) => {
+  async ({ I, alertRulesPage }) => {
     alertRulesPage.openAlertRulesTab();
     I.waitForText('No alert rules found', alertRulesPage.elements.noRules);
   },
@@ -74,7 +74,7 @@ Scenario(
 );
 
 Scenario(
-  'Add alert rule modal elements @ia @grafana-pr',
+  'PMM-T1073 Add alert rule modal elements @ia @grafana-pr',
   async ({ I, alertRulesPage }) => {
     alertRulesPage.openAlertRulesTab();
     I.click(alertRulesPage.buttons.openAddRuleModal);
@@ -89,6 +89,13 @@ Scenario(
     I.seeElement(alertRulesPage.buttons.toggleInModal);
     I.seeElement(alertRulesPage.buttons.addRule);
     I.seeElement(alertRulesPage.buttons.cancelAdding);
+
+    for (const [, { locator, message }] of Object.entries(alertRulesPage.tooltips)) {
+      I.waitForVisible(locator, 5);
+      I.moveCursorTo(locator);
+      I.waitForVisible(alertRulesPage.elements.tooltipMessage, 5);
+      I.seeTextEquals(message, alertRulesPage.elements.tooltipMessage);
+    }
   },
 );
 
