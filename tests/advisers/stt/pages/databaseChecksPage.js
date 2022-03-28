@@ -17,8 +17,8 @@ module.exports = {
     failedCheckRowBySummary: (summary) => locate('tr').withChild(locate('td').withText(summary)),
   },
   messages: {
-    homePagePanelMessage: 'Security Threat Tool is disabled.\nCheck PMM Settings.',
-    disabledSTTMessage: 'Security Threat Tool is disabled. You can enable it in',
+    homePagePanelMessage: 'Advisors is disabled.\nCheck PMM Settings.',
+    disabledSTTMessage: 'Advisors is disabled. You can enable it in',
     securityChecksDone: 'Running database checks in the background... The results will be displayed here soon.',
   },
   buttons: {
