@@ -370,3 +370,17 @@ Scenario(
     await I.seeEntriesInZip(path, ['pmm-agent.yaml', 'pmm-managed.log', 'pmm-agent.log']);
   },
 );
+
+Scenario(
+  'PMM-T969 - Verify pmm-client logs when incorrect public address is set @settings @nightly @alyona-p',
+  async ({ I, pmmSettingsPage, dbaasAPI, dbaasPage }) => {
+    const clusterName = 'Kubernetes_Testing_Cluster_Minikube';
+
+    await pmmSettingsPage.openAdvancedSettings();
+    I.waitForVisible(pmmSettingsPage.fields.publicAddressInput, 30);
+    pmmSettingsPage.addPublicAddress('http://incorrect.com');
+    await dbaasAPI.apiRegisterCluster(process.env.kubeconfig_minikube, clusterName);
+    I.amOnPage(dbaasPage.url);
+    await dbaasPage.verifyLogPopup(18);
+  },
+);
