@@ -8,16 +8,20 @@ class Grafana extends Helper {
     super(config);
     this.resultFilesFolder = `${global.output_dir}/`;
     this.signInWithSSOButton = '//a[contains(@href,"login/generic_oauth")]';
-    this.ssoLoginUsername = '//input[@id="okta-signin-username"]';
+    this.ssoLoginUsername = '//input[@id="idp-discovery-username"]';
+    this.ssoLoginNext = '//input[@id="idp-discovery-submit"]';
     this.ssoLoginPassword = '//input[@id="okta-signin-password"]';
     this.ssoLoginSubmit = '//input[@id="okta-signin-submit"]';
+    this.mainView = '//main[contains(@class, "main-view")]';
   }
 
   async LoginWithSSO(username, password) {
     const { page } = this.helpers.Playwright;
 
+    await page.isVisible(this.mainView);
     await page.click(this.signInWithSSOButton);
     await page.fill(this.ssoLoginUsername, username);
+    await page.click(this.ssoLoginNext);
     await page.click(this.ssoLoginPassword);
     await page.fill(this.ssoLoginPassword, password);
     await page.click(this.ssoLoginSubmit);
@@ -166,6 +170,14 @@ class Grafana extends Helper {
     const resp = await apiContext.sendDeleteRequest(`graph/api/admin/users/${userId}`, headers);
 
     assert.equal(resp.status, 200, `Failed to delete ${userId}`);
+  }
+
+  async listUsers() {
+    const apiContext = this.helpers.REST;
+    const headers = { Authorization: `Basic ${await this.getAuth()}` };
+    const resp = await apiContext.sendGetRequest('graph/api/users/search', headers);
+
+    return resp.data;
   }
 
   async verifyCommand(command, output, result = 'pass', getError = false) {
