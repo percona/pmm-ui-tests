@@ -26,7 +26,7 @@ Scenario(
   },
 );
 
-Scenario(
+xScenario(
   'PMM-T1102 - Verify last scrape of metrics from PostgreSQL',
   async ({ I, grafanaAPI, settingsAPI }) => {
     const metricName = 'pg_up';
