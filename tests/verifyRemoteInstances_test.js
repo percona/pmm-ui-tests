@@ -277,12 +277,12 @@ Scenario(
     const details = {
       serviceName: remoteServiceName,
       serviceType: 'postgresql',
-      port: remoteInstancesHelper.postgresql.pdpgsql_13_3.port,
+      port: remoteInstancesHelper.remote_instance.postgresql.pdpgsql_13_3.port,
       database: 'dfsdafs2',
-      host: remoteInstancesHelper.postgresql.pdpgsql_13_3.host,
-      username: remoteInstancesHelper.postgresql.pdpgsql_13_3.username,
-      password: remoteInstancesHelper.postgresql.pdpgsql_13_3.password,
-      cluster: remoteInstancesHelper.postgresql.pdpgsql_13_3.clusterName,
+      host: remoteInstancesHelper.remote_instance.postgresql.pdpgsql_13_3.host,
+      username: remoteInstancesHelper.remote_instance.postgresql.pdpgsql_13_3.username,
+      password: remoteInstancesHelper.remote_instance.postgresql.pdpgsql_13_3.password,
+      cluster: remoteInstancesHelper.remote_instance.postgresql.pdpgsql_13_3.clusterName,
     };
 
     I.amOnPage(remoteInstancesPage.url);
