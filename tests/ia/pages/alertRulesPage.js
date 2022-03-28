@@ -50,7 +50,7 @@ module.exports = {
     deleteAlertRule: (ruleName) => `${rulesNameCell(ruleName)}/following-sibling::td//button[@data-testid='delete-alert-rule-button']`,
     // toggleAlertRule returns Enable/Disable rule switch locator in alert rules list
     toggleAlertRule: (ruleName) => `${rulesNameCell(ruleName)}/following-sibling::td//input[@data-testid='toggle-alert-rule']/following-sibling::label`,
-    toogleInModal: '//input[@data-testid="enabled-toggle-input"]/following-sibling::label',
+    toggleInModal: '//input[@data-testid="enabled-toggle-input"]/following-sibling::label',
   },
   fields: {
     // searchDropdown returns a locator of a search input for a given label
@@ -103,7 +103,7 @@ module.exports = {
     }
 
     if (!activate) {
-      I.click(this.buttons.toogleInModal);
+      I.click(this.buttons.toggleInModal);
     }
   },
 

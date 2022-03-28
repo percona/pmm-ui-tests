@@ -23,14 +23,14 @@ class Grafana extends Helper {
     await page.click(this.ssoLoginSubmit);
   }
 
-  async Authorize(username = 'admin', password = 'admin') {
+  async Authorize(username = 'admin', password = process.env.ADMIN_PASSWORD) {
     const { Playwright } = this.helpers;
     const basicAuthEncoded = await this.getAuth(username, password);
 
     Playwright.haveRequestHeaders({ Authorization: `Basic ${basicAuthEncoded}` });
   }
 
-  async getAuth(username = 'admin', password = 'admin') {
+  async getAuth(username = 'admin', password = process.env.ADMIN_PASSWORD) {
     return Buffer.from(`${this.config.username || username}:${this.config.password || password}`).toString(
       'base64',
     );
@@ -71,7 +71,7 @@ class Grafana extends Helper {
       });
     });
   }
-  
+
   /**
    * Wait for Request to be triggered from User Action
    *
