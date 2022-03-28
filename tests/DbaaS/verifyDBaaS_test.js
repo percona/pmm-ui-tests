@@ -335,9 +335,10 @@ Scenario('PMM-T546 Verify Actions column on Kubernetes cluster page @dbaas',
 
 Scenario(
   'PMM-T969 - Verify pmm-client logs when incorrect public address is set @dbaas @alyona-p',
-  async ({ I, pmmSettingsPage, dbaasAPI, dbaasPage }) => {
+  async ({ I, pmmSettingsPage, dbaasAPI, dbaasPage, settingsAPI }) => {
     const clusterName = 'Test_Cluster_Minikube';
 
+    await settingsAPI.changeSettings({ dbaas: true });
     await pmmSettingsPage.openAdvancedSettings();
     I.waitForVisible(pmmSettingsPage.fields.publicAddressInput, 30);
     pmmSettingsPage.addPublicAddress('http://incorrect.com');
