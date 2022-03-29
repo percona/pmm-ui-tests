@@ -1,6 +1,5 @@
-require('dotenv').config();
-
 Feature('Portal Integration with PMM');
+
 let newUser = {};
 
 Before(async ({
@@ -25,7 +24,7 @@ After(async ({ I, pmmSettingsPage }) => {
 });
 
 Scenario(
-  'PMM-T1097 Verify PMM server is connected to Portal and PMM-T1098 Verify login using Percona Platform account @peterTag',
+  'PMM-T1097 Verify PMM server is connected to Portal and PMM-T1098 Verify login using Percona Platform account @platform',
   async ({
     I, pmmSettingsPage, portalAPI, homePage,
   }) => {
@@ -37,7 +36,7 @@ Scenario(
     I.amOnPage(pmmSettingsPage.perconaPlatform);
     await pmmSettingsPage.connectPmmToPerconaPortal(newUser.email, newUser.password);
     await homePage.open();
-    await I.UnAuthorize();
+    await I.unAuthorize();
     I.refreshPage();
     await I.LoginWithSSO(newUser.email, newUser.password);
 

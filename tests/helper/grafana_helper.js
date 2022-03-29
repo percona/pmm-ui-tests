@@ -34,7 +34,7 @@ class Grafana extends Helper {
     Playwright.haveRequestHeaders({ Authorization: `Basic ${basicAuthEncoded}` });
   }
 
-  async UnAuthorize() {
+  async unAuthorize() {
     const { Playwright } = this.helpers;
 
     Playwright.haveRequestHeaders({});
