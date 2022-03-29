@@ -27,7 +27,7 @@ After(async ({ I, pmmSettingsPage }) => {
 });
 
 Scenario(
-  'PMM-T1097 Verify PMM server is connected to Portal and PMM-T1098 Verify login using Percona Platform account',
+  'PMM-T1097 Verify PMM server is connected to Portal and PMM-T1098 Verify login using Percona Platform account @portal',
   async ({
     I, pmmSettingsPage, portalAPI, homePage,
   }) => {

@@ -56,7 +56,7 @@ module.exports = {
     templatesAPI: './tests/ia/pages/api/templatesAPI.js',
   },
   getChunks: (files) => {
-    const dependentTests = files.filter((value) => /PMMSettings|stt|backup|permissions|Azure/.test(value));
+    const dependentTests = files.filter((value) => /PMMSettings|stt|backup|permissions|Azure|portal/.test(value));
     const iaTests = files.filter((value) => /ia/.test(value));
     const dbaasTests = files.filter((value) => /DbaaS|TLSMongo/.test(value));
     const otherTests = files.filter((val) => !dependentTests.includes(val)
