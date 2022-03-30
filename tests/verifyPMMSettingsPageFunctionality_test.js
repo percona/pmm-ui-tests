@@ -1,12 +1,44 @@
 const { pmmSettingsPage } = inject();
-const communicationDefaults = new DataTable(['type', 'serverAddress', 'hello', 'from', 'authType', 'username', 'password', 'url']);
+const communicationDefaults = new DataTable(['type', 'serverAddress', 'hello', 'from', 'authType', 'username', 'password', 'url', 'message']);
 const assert = require('assert');
 
 pmmSettingsPage.communicationData.forEach(({
   type, serverAddress, hello, from, authType, username, password, url,
 }) => {
-  communicationDefaults.add([type, serverAddress, hello, from, authType, username, password, url]);
+  // eslint-disable-next-line max-len
+  communicationDefaults.add([type, serverAddress, hello, from, authType, username, password, url, pmmSettingsPage.messages.successPopUpMessage]);
 });
+
+communicationDefaults.add([
+  pmmSettingsPage.emailDefaults.type,
+  'test.com',
+  pmmSettingsPage.emailDefaults.hello,
+  pmmSettingsPage.emailDefaults.from,
+  pmmSettingsPage.emailDefaults.authType,
+  null,
+  null,
+  null,
+  'Invalid argument: invalid server address, expected format host:port']);
+communicationDefaults.add([
+  pmmSettingsPage.emailDefaults.type,
+  pmmSettingsPage.emailDefaults.serverAddress,
+  '%',
+  pmmSettingsPage.emailDefaults.from,
+  pmmSettingsPage.emailDefaults.authType,
+  null,
+  null,
+  null,
+  'Invalid argument: invalid hello field, expected valid host']);
+communicationDefaults.add([
+  'slack',
+  null,
+  null,
+  null,
+  null,
+  null,
+  null,
+  'invalid@url',
+  'Invalid argument: invalid url value']);
 
 Feature('PMM Settings Functionality').retry(1);
 
@@ -249,7 +281,7 @@ Scenario('PMM-T785 - Verify DBaaS cannot be disabled with ENABLE_DBAAS or PERCON
     I.verifyPopUpMessage(pmmSettingsPage.messages.invalidDBaaSDisableMessage);
   });
 
-Data(communicationDefaults).Scenario('PMM-T534 PMM-T535 - Verify user is able to set up default Email/Slack communication settings @ia @settings @grafana-pr',
+Data(communicationDefaults).Scenario('PMM-T534 PMM-T535 PMM-T1074 - Verify user is able to set up default Email/Slack communication settings / validation @ia @settings @grafana-pr',
   async ({
     I, pmmSettingsPage, settingsAPI, current,
   }) => {
@@ -257,10 +289,12 @@ Data(communicationDefaults).Scenario('PMM-T534 PMM-T535 - Verify user is able to
     I.amOnPage(pmmSettingsPage.communicationSettingsUrl);
     await pmmSettingsPage.waitForPmmSettingsPageLoaded();
     pmmSettingsPage.fillCommunicationFields(current);
-    I.verifyPopUpMessage(pmmSettingsPage.messages.successPopUpMessage);
-    I.refreshPage();
-    await pmmSettingsPage.waitForPmmSettingsPageLoaded();
-    await pmmSettingsPage.verifyCommunicationFields(current);
+    I.verifyPopUpMessage(current.message);
+    if (current === pmmSettingsPage.messages.successPopUpMessage) {
+      I.refreshPage();
+      await pmmSettingsPage.waitForPmmSettingsPageLoaded();
+      await pmmSettingsPage.verifyCommunicationFields(current);
+    }
   });
 
 Scenario(
