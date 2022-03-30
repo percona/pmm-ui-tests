@@ -14,6 +14,10 @@ Scenario(
   async ({
     I, pmmSettingsPage, portalAPI, homePage,
   }) => {
+    const serviceNowUsers = portalAPI.createServiceNowUsers();
+
+    // eslint-disable-next-line no-console
+    console.log(serviceNowUsers);
     await I.Authorize();
     pmmSettingsPage.openAdvancedSettings();
     const publicAddress = await I.grabValueFrom(pmmSettingsPage.fields.publicAddressInput);
