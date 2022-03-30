@@ -17,9 +17,9 @@ module.exports = {
     failedCheckRowBySummary: (summary) => locate('tr').withChild(locate('td').withText(summary)),
   },
   messages: {
-    homePagePanelMessage: 'Advisors is disabled.\nCheck PMM Settings.',
-    disabledSTTMessage: 'Advisors is disabled. You can enable it in',
-    securityChecksDone: 'Running database checks in the background... The results will be displayed here soon.',
+    homePagePanelMessage: 'Advisor Checks is disabled.\nCheck PMM Settings.',
+    disabledSTTMessage: 'Advisor Checks is disabled. You can enable it in',
+    securityChecksDone: 'Running checks in the background... The results will be displayed here soon.',
   },
   buttons: {
     startDBChecks: locate('$db-check-panel-actions').find('button'),
