@@ -8,6 +8,7 @@ module.exports = {
   // insert your locators and methods here
   // setting locators
   url: 'graph/d/pmm-home/home-dashboard?orgId=1&refresh=1m&from=now-5m&to=now',
+  landingUrl: '/graph/d/pmm-home/home-dashboard?orgId=1&refresh=1m',
   requestEnd: '/v1/Updates/Check',
   fields: {
     systemsUnderMonitoringCount:
