@@ -9,7 +9,7 @@ module.exports = {
   snPassword: process.env.SERVICENOW_PASSWORD,
   devUrl: process.env.SERVICENOW_DEV_URL,
   oktaToken: `SSWS ${process.env.OKTA_TOKEN}`,
-  oktaUrl: `https://${process.env.OAUTH_DEV_HOST}/`,
+  oktaUrl: `https://${process.env.OKTA_URL_DEV}/`,
   oktaClientId: process.env.OAUTH_DEV_CLIENT_ID,
   portalBaseUrl: process.env.PORTAL_BASE_URL,
 
