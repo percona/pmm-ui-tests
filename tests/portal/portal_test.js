@@ -38,6 +38,7 @@ Scenario(
   }) => {
     I.amOnPage('/');
     await I.loginWithSSO(newUser.email, newUser.password);
+    I.wait(5);
     I.amOnPage('/');
     I.waitInUrl(homePage.landingUrl);
   },
@@ -50,6 +51,7 @@ Scenario(
   }) => {
     I.amOnPage('/');
     await I.loginWithSSO(newUser.email, newUser.password);
+    I.wait(5);
     I.amOnPage('/');
     I.waitInUrl(homePage.landingUrl);
     I.amOnPage(pmmSettingsPage.perconaPlatform);
