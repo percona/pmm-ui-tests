@@ -14,10 +14,6 @@ Scenario(
   async ({
     I, pmmSettingsPage, portalAPI, homePage,
   }) => {
-    const serviceNowUsers = portalAPI.createServiceNowUsers();
-
-    // eslint-disable-next-line no-console
-    console.log(serviceNowUsers);
     await I.Authorize();
     pmmSettingsPage.openAdvancedSettings();
     const publicAddress = await I.grabValueFrom(pmmSettingsPage.fields.publicAddressInput);
@@ -42,6 +38,7 @@ Scenario(
   }) => {
     I.amOnPage('/');
     await I.loginWithSSO(newUser.email, newUser.password);
+    I.amOnPage('/');
     I.waitInUrl(homePage.landingUrl);
   },
 );
@@ -49,10 +46,11 @@ Scenario(
 Scenario(
   'PMM-T1112 Verify user can disconnect pmm from portal success flow @platform',
   async ({
-    I, pmmSettingsPage, homePage, portalAPI
+    I, pmmSettingsPage, homePage, portalAPI,
   }) => {
     I.amOnPage('/');
     await I.loginWithSSO(newUser.email, newUser.password);
+    I.amOnPage('/');
     I.waitInUrl(homePage.landingUrl);
     I.amOnPage(pmmSettingsPage.perconaPlatform);
     await pmmSettingsPage.disconnectPmmFromPerconaPortal();
