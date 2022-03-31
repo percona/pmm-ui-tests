@@ -36,7 +36,7 @@ Scenario(
   async ({
     I, homePage,
   }) => {
-    I.amOnPage('/');
+    I.amOnPage('');
     await I.loginWithSSO(newUser.email, newUser.password);
     I.waitInUrl(homePage.landingUrl);
   },
@@ -47,17 +47,17 @@ Scenario(
   async ({
     I, pmmSettingsPage, homePage, portalAPI,
   }) => {
-    I.amOnPage('/');
+    I.amOnPage('');
     await I.loginWithSSO(newUser.email, newUser.password);
     I.waitInUrl(homePage.landingUrl);
     I.amOnPage(pmmSettingsPage.perconaPlatform);
     await pmmSettingsPage.disconnectPmmFromPerconaPortal();
     await I.unAuthorize();
-    I.amOnPage('/');
+    I.amOnPage('');
     I.dontSeeElement(locate('a').withAttr({ href: 'login/generic_oauth' }));
     I.amOnPage(portalAPI.oktaUrl);
     I.loginWithSSO(newUser.email, newUser.password, false);
-    I.amOnPage('/');
+    I.amOnPage('');
     I.seeElement(locate('h1').withText('Percona Monitoring and Management'));
   },
 );
