@@ -85,6 +85,7 @@ module.exports = {
             .withText(version),
           kubernetesClusterDropDown: '$dbcluster-kubernetes-cluster-field',
           kubernetesClusterDropDownSelect: (clusterName) => `//div[@aria-label='Select option']//span[contains(@text, ${clusterName})]`,
+          kubernetesClusterDropDownSelect2: (clusterName) => locate('$kubernetes-option').find('span').withText(clusterName),
           kubernetesClusterErrorMessage: '$select-field-error-message',
         },
       },

@@ -335,17 +335,60 @@ Scenario('PMM-T546 Verify Actions column on Kubernetes cluster page @dbaas',
 
 Scenario(
   'PMM-T969 - Verify pmm-client logs when incorrect public address is set @dbaas @alyona-p',
-  async ({ I, pmmSettingsPage, dbaasAPI, dbaasPage, settingsAPI }) => {
-    const clusterName = 'Test_Cluster_Minikube';
+  async ({ I, pmmSettingsPage, dbaasAPI, dbaasPage, settingsAPI, dbaasActionsPage }) => {
+    const clusterName = 'Alyona test';
+    const dbClusterName = dbaasPage.randomizeClusterName('dbcluster');
+    const dbType = 'MySQL';
+    const address = 'https://1.2.3.4';
+    const logsText = `Failed to register pmm-agent on PMM Server: Post "https://[https:%2F%2F1.2.3.4]:443/v1/management/Node/Register": dial tcp: lookup ${address}: no such host.
+        [u'pmm-agent', u'setup'] exited with 1.
+        Restarting [u'pmm-agent', u'setup'] in 5 seconds because PMM_AGENT_SIDECAR is enabled ...`;
 
-    await settingsAPI.changeSettings({ dbaas: true });
-    await pmmSettingsPage.openAdvancedSettings();
-    I.waitForVisible(pmmSettingsPage.fields.publicAddressInput, 30);
-    pmmSettingsPage.addPublicAddress('http://incorrect.com');
     if (!await dbaasAPI.apiCheckRegisteredClusterExist(clusterName)) {
       await dbaasAPI.apiRegisterCluster(process.env.kubeconfig_minikube, clusterName);
     }
 
+    await settingsAPI.changeSettings({ dbaas: true });
+    await pmmSettingsPage.openAdvancedSettings();
+    I.waitForVisible(pmmSettingsPage.fields.publicAddressInput, 30);
+    pmmSettingsPage.addPublicAddress(address);
+
     I.amOnPage(dbaasPage.url);
-    await dbaasPage.verifyLogPopup(18);
+    dbaasPage.checkCluster(clusterName, false);
+    I.click(dbaasPage.tabs.dbClusterTab.dbClusterTab);
+
+    // const dropd = await I.grabTextFromAll(
+    // locate('dbcluster-kubernetes-cluster-field').find('$kubernetes-option').withText(clusterName));
+    // await dbaasActionsPage.createClusterBasicOptions(clusterName, dbClusterName, dbType);
+
+    I.waitForVisible(dbaasPage.tabs.dbClusterTab.dbClusterAddButtonTop, 60);
+    I.click(dbaasPage.tabs.dbClusterTab.dbClusterAddButtonTop);
+
+    I.waitForElement(dbaasPage.tabs.dbClusterTab.basicOptions.fields.clusterNameField, 30);
+    I.fillField(dbaasPage.tabs.dbClusterTab.basicOptions.fields.clusterNameField, dbClusterName);
+
+    I.click(dbaasPage.tabs.dbClusterTab.basicOptions.fields.kubernetesClusterDropDown);
+    I.waitForElement(dbaasPage.tabs.dbClusterTab.basicOptions.fields.kubernetesClusterDropDownSelect2(clusterName),
+      30);
+    I.click(dbaasPage.tabs.dbClusterTab.basicOptions.fields.kubernetesClusterDropDownSelect2(clusterName));
+
+    I.click(dbaasPage.tabs.dbClusterTab.basicOptions.fields.dbClusterDatabaseTypeField);
+    I.fillField(dbaasPage.tabs.dbClusterTab.basicOptions.fields.dbClusterDatabaseTypeInputField, dbType);
+    I.waitForElement(dbaasPage.tabs.dbClusterTab.basicOptions.fields.dbClusterDatabaseTypeFieldSelect(dbType), 30);
+    I.click(dbaasPage.tabs.dbClusterTab.basicOptions.fields.dbClusterDatabaseTypeFieldSelect(dbType));
+
+    I.click(dbaasPage.tabs.dbClusterTab.createClusterButton);
+    I.waitForText('Processing', 30, dbaasPage.tabs.dbClusterTab.fields.progressBarContent);
+    await dbaasActionsPage.showClusterLogs();
+    I.waitForElement(dbaasPage.tabs.dbClusterTab.fields.dbClusterLogs.expandAllLogsButton, 30);
+    I.click(dbaasPage.tabs.dbClusterTab.fields.dbClusterLogs.expandAllLogsButton);
+    I.waitForElement(dbaasPage.tabs.dbClusterTab.fields.dbClusterLogs.expandedContainersLogsSection, 30);
+    I.waitForText('Restarting [u\'pmm-agent\', u\'setup\'] in 5 seconds because PMM_AGENT_SIDECAR is enabled ...',
+      30, dbaasPage.tabs.dbClusterTab.fields.dbClusterLogs.expandedContainersLogsSection);
+
+    const pmmClientLogsText = await I.grabTextFrom(
+      dbaasPage.tabs.dbClusterTab.fields.dbClusterLogs.expandedContainersLogsSection,
+    );
+
+    assert.ok(pmmClientLogsText.includes(logsText), `Pmm-client logs must contain text: ${logsText}`);
   });

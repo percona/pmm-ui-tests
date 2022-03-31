@@ -273,7 +273,6 @@ Scenario(
   }) => {
     const errorMessage = 'Connection check failed: pq: database "postgres2" does not exist.\n';
     const remoteServiceName = 'postgresql_remote_new';
-
     const details = {
       serviceName: remoteServiceName,
       serviceType: 'postgresql',
@@ -282,7 +281,6 @@ Scenario(
       host: remoteInstancesHelper.remote_instance.postgresql.pdpgsql_13_3.host,
       username: remoteInstancesHelper.remote_instance.postgresql.pdpgsql_13_3.username,
       password: remoteInstancesHelper.remote_instance.postgresql.pdpgsql_13_3.password,
-      cluster: remoteInstancesHelper.remote_instance.postgresql.pdpgsql_13_3.clusterName,
     };
 
     I.amOnPage(remoteInstancesPage.url);
