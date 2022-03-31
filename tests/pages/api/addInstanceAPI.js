@@ -276,17 +276,22 @@ module.exports = {
 
   async addInstanceForSTT(connection, instanceName = 'stt-mysql-5.7.30') {
     let nodeId;
+    let serviceId;
 
     if (process.env.OVF_TEST === 'yes') {
       await inventoryAPI.deleteNodeByServiceName(remoteInstancesHelper.serviceTypes.mysql.serviceType, instanceName);
-      nodeId = (await this.apiAddInstance(remoteInstancesHelper.instanceTypes.rds, instanceName)).node.node_id;
+      const instance = await this.apiAddInstance(remoteInstancesHelper.instanceTypes.rds, instanceName);
+
+      nodeId = instance.node.node_id;
+      serviceId = instance.service.service_id;
     } else {
       await inventoryAPI.deleteNodeByServiceName(remoteInstancesHelper.serviceTypes.mysql.serviceType, instanceName);
-      nodeId = (await this.apiAddInstance(remoteInstancesHelper.instanceTypes.mysql, instanceName, connection))
-        .service
-        .node_id;
+      const instance = await this.apiAddInstance(remoteInstancesHelper.instanceTypes.mysql, instanceName, connection);
+
+      nodeId = instance.service.node_id;
+      serviceId = instance.service.service_id;
     }
 
-    return nodeId;
+    return [nodeId, serviceId];
   },
 };

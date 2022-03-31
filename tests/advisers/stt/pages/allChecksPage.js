@@ -3,7 +3,7 @@ const checkRow = (checkName) => `//tr[td[text()="${checkName}"]]`;
 const actionButton = (checkName) => locate(checkRow(checkName)).find('td').last().find('button');
 
 module.exports = {
-  url: 'graph/pmm-database-checks/allChecks',
+  url: 'graph/pmm-database-checks/all-checks',
   elements: {
     checkNameCell: (checkName) => locate(checkRow(checkName)).find('td').at(1),
     descriptionCellByName: (checkName) => locate(checkRow(checkName)).find('td').at(2),

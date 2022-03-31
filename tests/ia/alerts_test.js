@@ -153,6 +153,30 @@ Scenario(
 );
 
 Scenario(
+  'PMM-T1137 Verify that IA alerts are showing important labels first @ia',
+  async ({ I, alertsPage }) => {
+    I.amOnPage(alertsPage.url);
+    I.waitForElement(alertsPage.elements.alertRow(alertName), 30);
+    alertsPage.checkContainingLabels({
+      primaryLabels: ['node_name=pmm-server', 'service_name=pmm-server-postgresql'],
+      alertName,
+    });
+    I.click(alertsPage.buttons.arrowIcon(alertName));
+    I.waitForVisible(alertsPage.elements.details, 30);
+    I.seeElement(alertsPage.elements.detailsRuleExpression, 30);
+    I.seeElement(alertsPage.elements.detailsSecondaryLabels, 30);
+    alertsPage.checkContainingLabels({
+      secondaryLabels: ['agent_type=postgres_exporter',
+        'alertgroup=PMM Integrated Alerting',
+        'node_id=pmm-server',
+        'node_type=generic',
+        'server=127.0.0.1:5432',
+        'service_type=postgresql'],
+    });
+  },
+);
+
+Scenario(
   'PMM-T540 Alerts list columns @ia',
   async ({ I, alertsPage }) => {
     I.amOnPage(alertsPage.url);

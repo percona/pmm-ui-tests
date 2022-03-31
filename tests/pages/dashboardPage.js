@@ -438,6 +438,7 @@ module.exports = {
   },
   mysqlInstanceSummaryDashboard: {
     url: 'graph/d/mysql-instance-summary/mysql-instance-summary?orgId=1&refresh=1m&from=now-5m&to=now',
+    clearUrl: 'graph/d/mysql-instance-summary/mysql-instance-summary',
     metrics: [
       'Node',
       'MySQL Uptime',

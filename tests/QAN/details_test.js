@@ -4,10 +4,7 @@ const { adminPage } = inject();
 
 Before(async ({ I, qanPage, qanOverview }) => {
   await I.Authorize();
-  I.amOnPage(qanPage.url);
-
-  qanOverview.waitForOverviewLoaded();
-  await adminPage.applyTimeRange('Last 1 hour');
+  I.amOnPage(I.buildUrlWithParams(qanPage.clearUrl, { from: 'now-1h' }));
   qanOverview.waitForOverviewLoaded();
 });
 
@@ -32,12 +29,11 @@ Scenario(
 Scenario(
   'PMM-T223 - Verify time metrics are AVG per query (not per second) @qan',
   async ({
-    I, qanOverview, qanFilters, qanDetails,
+    I, qanPage, qanOverview, qanFilters, qanDetails,
   }) => {
     const cellValue = qanDetails.getMetricsCellLocator('Query Time', 3);
 
-    qanFilters.applyFilter('ps-dev');
-    qanOverview.searchByValue('insert');
+    I.amOnPage(I.buildUrlWithParams(qanPage.clearUrl, { environment: 'ps-dev', from: 'now-1h', search: 'insert' }));
     I.waitForElement(qanOverview.elements.querySelector, 30);
     qanOverview.selectRow(1);
     qanFilters.waitForFiltersToLoad();
@@ -50,10 +46,9 @@ Scenario(
 Scenario(
   'PMM-T13 - Check Explain and Example for supported DBs @qan',
   async ({
-    I, qanOverview, qanFilters, qanDetails,
+    I, qanPage, qanOverview, qanFilters, qanDetails,
   }) => {
-    qanFilters.applyFilter('ps-dev');
-    qanOverview.searchByValue('insert');
+    I.amOnPage(I.buildUrlWithParams(qanPage.clearUrl, { environment: 'ps-dev', from: 'now-1h', search: 'insert' }));
     I.waitForElement(qanOverview.elements.querySelector, 30);
     qanOverview.selectRow(1);
     qanFilters.waitForFiltersToLoad();
@@ -65,9 +60,9 @@ Scenario(
 Scenario(
   'PMM-T13 - Check Explain and Example for supported DBs - md @qan',
   async ({
-    I, qanOverview, qanFilters, qanDetails,
+    I, qanPage, qanOverview, qanFilters, qanDetails,
   }) => {
-    qanFilters.applyFilter('md-dev');
+    I.amOnPage(I.buildUrlWithParams(qanPage.clearUrl, { environment: 'md-dev', from: 'now-1h' }));
     I.waitForElement(qanOverview.elements.querySelector, 30);
     qanOverview.selectRow(1);
     qanFilters.waitForFiltersToLoad();
@@ -79,9 +74,9 @@ Scenario(
 Scenario(
   'PMM-T13 - Check Explain and Example for supported DBs - ps @qan',
   async ({
-    I, qanOverview, qanFilters, qanDetails,
+    I, qanPage, qanOverview, qanFilters, qanDetails,
   }) => {
-    qanFilters.applyFilter('ps-dev');
+    I.amOnPage(I.buildUrlWithParams(qanPage.clearUrl, { environment: 'ps-dev', from: 'now-1h' }));
     I.waitForElement(qanOverview.elements.querySelector, 30);
     qanOverview.selectRow(1);
     qanFilters.waitForFiltersToLoad();
@@ -93,9 +88,9 @@ Scenario(
 Scenario(
   'PMM-T13 - Check Explain and Example for supported DBs - pdpqsql @qan',
   async ({
-    I, qanOverview, qanFilters, qanDetails,
+    I, qanPage, qanOverview, qanFilters, qanDetails,
   }) => {
-    qanFilters.applyFilter('pdpgsql-dev');
+    I.amOnPage(I.buildUrlWithParams(qanPage.clearUrl, { environment: 'pdpgsql-dev', from: 'now-1h' }));
     I.waitForElement(qanOverview.elements.querySelector, 30);
     qanOverview.selectRow(1);
     qanFilters.waitForFiltersToLoad();

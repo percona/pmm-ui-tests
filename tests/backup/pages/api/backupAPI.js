@@ -59,6 +59,13 @@ module.exports = {
     return resp.data.artifacts;
   },
 
+  async getArtifactDate(scheduleName) {
+    const artifacts = await this.getArtifactsList();
+    const artifact = artifacts.filter(({ name, status }) => status !== 'BACKUP_STATUS_PENDING' && name.startsWith(scheduleName));
+
+    return artifact[0].created_at;
+  },
+
   async startRestore(service_id, artifact_id) {
     const body = {
       service_id,

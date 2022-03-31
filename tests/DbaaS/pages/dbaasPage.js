@@ -1,5 +1,5 @@
 const {
-  I, dbaasAPI, dbaasActionsPage, dbaasManageVersionPage, dashboardPage, qanPage, qanFilters, qanOverview, inventoryAPI, adminPage,
+  I, dbaasAPI, dbaasActionsPage, dbaasManageVersionPage, dashboardPage, qanPage, qanFilters, qanOverview, inventoryAPI,
 } = inject();
 const assert = require('assert');
 const faker = require('faker');
@@ -199,8 +199,9 @@ module.exports = {
 
   randomizeClusterName(clusterName) {
     const stringLength = 6;
-    let randomString = faker.random.alphaNumeric(stringLength);
-    return clusterName + '-' + randomString;
+    const randomString = faker.random.alphaNumeric(stringLength);
+
+    return `${clusterName}-${randomString}`;
   },
 
   checkCluster(clusterName, deleted) {
@@ -417,9 +418,9 @@ module.exports = {
     await dashboardPage.genericDashboardLoadForDbaaSClusters(`${dashboardPage.nodeSummaryDashboard.url}?&var-node_name=${nodeName}`, 'Last 5 minutes', 4, 0, 1);
   },
 
-  async dbaasQANCheck(dbclusterName, nodeName, serviceName, timerange = 'Last 3 hours') {
-    I.amOnPage(qanPage.url);
-    await adminPage.applyTimeRange(timerange);
+
+  async dbaasQANCheck(dbclusterName, nodeName, serviceName) {
+    I.amOnPage(I.buildUrlWithParams(qanPage.url, { from: 'now-3h' }));
     qanOverview.waitForOverviewLoaded();
     qanFilters.checkFilterExistInSection('Cluster', dbclusterName);
     qanFilters.checkFilterExistInSection('Node Name', `${nodeName}`);
@@ -435,10 +436,11 @@ module.exports = {
 
   async apiKeyCheck(clusterName, dbClusterName, dbClusterType, keyExists) {
     const dbaasPage = this;
+
     I.amOnPage(dbaasPage.apiKeysUrl);
 
     if (keyExists) {
-      I.waitForText(`${dbClusterType}-${clusterName}-${dbClusterName}`, 10 , dbaasPage.apiKeysPage.apiKeysTable);
+      I.waitForText(`${dbClusterType}-${clusterName}-${dbClusterName}`, 10, dbaasPage.apiKeysPage.apiKeysTable);
     } else {
       I.dontSee(`${dbClusterType}-${dbClusterName}`, dbaasPage.apiKeysPage.apiKeysTable);
     }

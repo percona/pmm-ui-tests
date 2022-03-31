@@ -36,9 +36,10 @@ Scenario(
     I, adminPage, dashboardPage,
   }) => {
     for (const serviceName of serviceList) {
-      I.amOnPage(dashboardPage.mysqlInstanceSummaryDashboard.url);
+      const url = I.buildUrlWithParams(dashboardPage.mysqlInstanceSummaryDashboard.clearUrl, { service_name: serviceName });
+
+      I.amOnPage(url);
       dashboardPage.waitForDashboardOpened();
-      await dashboardPage.applyFilter('Service Name', serviceName);
       await dashboardPage.expandEachDashboardRow();
       I.click(adminPage.fields.metricTitle);
       adminPage.performPageDown(5);
