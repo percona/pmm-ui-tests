@@ -104,7 +104,7 @@ module.exports = {
   },
 
   // introducing methods
-  async upgradePMM(version) {
+  async upgradePMM(version, skipUpgradeLogs = 'false') {
     let locators = this.getLocators(version);
     const milestones = this.upgradeMilestones;
 
@@ -131,12 +131,14 @@ module.exports = {
         I.waitForElement(`//pre[contains(text(), '${milestones[0]}')]`, 1200);
         I.waitForText(locators.successUpgradeMessage, 1200, locators.successUpgradeMsgSelector);
 
-        // Get upgrade logs from a container
-        const upgradeLogs = await I.verifyCommand('docker exec pmm-server cat /srv/logs/pmm-update-perform.log');
+        if (skipUpgradeLogs === 'false') {
+          // Get upgrade logs from a container
+          const upgradeLogs = await I.verifyCommand('docker exec pmm-server cat /srv/logs/pmm-update-perform.log');
 
-        milestones.forEach((milestone) => {
-          assert.ok(upgradeLogs.includes(milestone), `Expected to see ${milestone} in upgrade logs`);
-        });
+          milestones.forEach((milestone) => {
+            assert.ok(upgradeLogs.includes(milestone), `Expected to see ${milestone} in upgrade logs`);
+          });
+        }  
       }
 
       I.click(locators.reloadButtonAfterUpgrade);

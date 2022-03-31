@@ -48,9 +48,8 @@ Scenario('PMM-T726 Verify existing DB clusters status after PMM Server upgrade @
     await dbaasAPI.apiCreatePSMDBCluster(psmdb_cluster_name, clusterName); 
     await dbaasAPI.apiWaitForDBClusterState(pxc_cluster_name, clusterName, 'MySQL', 'DB_CLUSTER_STATE_READY');
     await dbaasAPI.apiWaitForDBClusterState(psmdb_cluster_name, clusterName, 'MongoDB', 'DB_CLUSTER_STATE_READY');
-
     I.amOnPage(homePage.url);
-    await homePage.upgradePMM(versionMinor);
+    await homePage.upgradePMM(versionMinor, 'true');
 
     I.amOnPage('graph/dbaas/dbclusters');
     I.waitForText(active_state, 10, dbaasPage.tabs.dbClusterTab.fields.clusterTableRow(pxc_cluster_name));
