@@ -38,6 +38,7 @@ Scenario(
   }) => {
     I.amOnPage('');
     await I.loginWithSSO(newUser.email, newUser.password);
+    I.click('//input[@id="okta-signin-submit"]');
     I.waitInUrl(homePage.landingUrl);
   },
 );
@@ -49,6 +50,7 @@ Scenario(
   }) => {
     I.amOnPage('');
     await I.loginWithSSO(newUser.email, newUser.password);
+    I.click('//input[@id="okta-signin-submit"]');
     I.waitInUrl(homePage.landingUrl);
     I.amOnPage(pmmSettingsPage.perconaPlatform);
     await pmmSettingsPage.disconnectPmmFromPerconaPortal();
@@ -57,7 +59,7 @@ Scenario(
     I.dontSeeElement(locate('a').withAttr({ href: 'login/generic_oauth' }));
     I.amOnPage(portalAPI.oktaUrl);
     I.loginWithSSO(newUser.email, newUser.password, false);
-    I.amOnPage('');
+    I.click('//input[@id="okta-signin-submit"]');
     I.seeElement(locate('h1').withText('Percona Monitoring and Management'));
   },
 );
