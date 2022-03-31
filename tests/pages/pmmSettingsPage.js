@@ -96,7 +96,7 @@ module.exports = {
     },
     stt: {
       iconLocator: '//div[@data-testid="advanced-advisors"]//div/div/div/div',
-      text: 'Enable Advisors and get updated checks from Percona.',
+      text: 'Enable Advisor Checks and get updated checks from Percona.',
       link: links.sttDocs,
     },
     integratedAlerting: {
