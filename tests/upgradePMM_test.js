@@ -115,7 +115,7 @@ Scenario(
     }
   },
 );
-
+/*
 Scenario(
   'PMM-T288 Verify user can see Update widget before upgrade [critical] @pre-upgrade @ami-upgrade @pmm-upgrade',
   async ({ I, homePage }) => {
@@ -426,6 +426,7 @@ Scenario(
     await settingsAPI.changeSettings(alertManager);
   },
 );
+*/
 
 Scenario(
   'PMM-T3 Verify user is able to Upgrade PMM version [blocker] @pmm-upgrade @ami-upgrade  ',
@@ -435,6 +436,7 @@ Scenario(
   },
 ).retry(0);
 
+/*
 Scenario(
   'Run queries for MongoDB after upgrade @post-upgrade @pmm-upgrade',
   async ({ I }) => {
@@ -973,3 +975,4 @@ if (versionMinor >= 23) {
     },
   ).retry(1);
 }
+*/
