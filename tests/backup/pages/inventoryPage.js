@@ -16,6 +16,7 @@ module.exports = {
     backupStatus: '$statusMsg',
     pendingBackupByName: (name) => locate('$statusPending').inside(artifactCell(name)),
     backupStatusByName: (name) => locate('$statusMsg').inside(artifactCell(name)),
+    backupDateByName: (name) => locate('$detailed-date').inside(artifactCell(name)),
     artifactName: (name) => locate('td').at(1).inside(artifactCell(name)),
     forceDeleteLabel: '$force-field-label',
     retryTimes: '$retryTimes-number-input',
@@ -82,7 +83,7 @@ module.exports = {
     I.click(this.buttons.modalRestore);
   },
 
-  inpuRandomBackupName(length = 10) {
+  inputRandomBackupName(length = 10) {
     const backupName = faker.random.alpha(length);
 
     I.clearField(this.elements.backupNameInput);

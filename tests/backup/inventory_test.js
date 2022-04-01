@@ -1,4 +1,5 @@
 const assert = require('assert');
+const moment = require('moment');
 
 const { locationsPage } = inject();
 
@@ -248,9 +249,9 @@ Scenario(
     I, backupInventoryPage,
   }) => {
     I.click(backupInventoryPage.buttons.openAddBackupModal);
-    backupInventoryPage.inpuRandomBackupName(101);
+    backupInventoryPage.inputRandomBackupName(101);
     I.see(backupInventoryPage.messages.lengthErrorBackupName);
-    const backupName = backupInventoryPage.inpuRandomBackupName(100);
+    const backupName = backupInventoryPage.inputRandomBackupName(100);
 
     backupInventoryPage.selectDropdownOption(backupInventoryPage.fields.serviceNameDropdown, mongoServiceName);
     I.seeTextEquals(mongoServiceName, backupInventoryPage.elements.selectedService);
@@ -262,5 +263,39 @@ Scenario(
     I.seeCssPropertiesOnElements(backupInventoryPage.elements.backupNameSpan(backupName), { 'text-overflow': 'ellipsis' });
     I.click(backupInventoryPage.buttons.showDetails(backupName));
     I.see(backupName, backupInventoryPage.elements.fullBackUpName);
+  },
+);
+
+Scenario(
+  'PMM-T1163 Verify that Backup time format is identical for whole feature @backup',
+  async ({
+    I, backupInventoryPage, backupAPI, scheduledAPI, scheduledPage,
+  }) => {
+    // Every 2 mins schedule
+    const schedule = {
+      service_id: serviceId,
+      location_id: locationId,
+      cron_expression: '*/2 * * * *',
+      name: 'PMM-T1163 schedule',
+      mode: scheduledAPI.backupModes.snapshot,
+      description: '',
+      retry_interval: '30s',
+      retries: 0,
+      enabled: true,
+      retention: 1,
+    };
+    const scheduleId = await scheduledAPI.createScheduledBackup(schedule);
+
+    await backupAPI.waitForBackupFinish(null, schedule.name, 240);
+
+    const date = await backupAPI.getArtifactDate(schedule.name);
+    const backupDate = moment(date).format('YYYY-MM-DDHH:mm:00');
+
+    await scheduledAPI.disableScheduledBackup(scheduleId);
+    I.refreshPage();
+    backupInventoryPage.verifyBackupSucceeded(schedule.name);
+    I.seeTextEquals(backupDate, backupInventoryPage.elements.backupDateByName(schedule.name));
+    await scheduledPage.openScheduledBackupsPage();
+    I.seeTextEquals(backupDate, scheduledPage.elements.lastBackupByName(schedule.name));
   },
 );
