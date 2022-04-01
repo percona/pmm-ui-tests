@@ -348,7 +348,6 @@ Scenario(
       await dbaasAPI.apiRegisterCluster(process.env.kubeconfig_minikube, clusterName);
     }
 
-    await settingsAPI.changeSettings({ dbaas: true });
     await pmmSettingsPage.openAdvancedSettings();
     I.waitForVisible(pmmSettingsPage.fields.publicAddressInput, 30);
     pmmSettingsPage.addPublicAddress(address);
@@ -384,7 +383,7 @@ Scenario(
     I.click(dbaasPage.tabs.dbClusterTab.fields.dbClusterLogs.expandAllLogsButton);
     I.waitForElement(dbaasPage.tabs.dbClusterTab.fields.dbClusterLogs.expandedContainersLogsSection, 30);
     I.waitForText('Restarting [u\'pmm-agent\', u\'setup\'] in 5 seconds because PMM_AGENT_SIDECAR is enabled ...',
-      30, dbaasPage.tabs.dbClusterTab.fields.dbClusterLogs.expandedContainersLogsSection);
+      120, dbaasPage.tabs.dbClusterTab.fields.dbClusterLogs.expandedContainersLogsSection);
 
     const pmmClientLogsText = await I.grabTextFrom(
       dbaasPage.tabs.dbClusterTab.fields.dbClusterLogs.expandedContainersLogsSection,
