@@ -129,7 +129,7 @@ module.exports = {
       if (!this.isAmiUpgrade) {
         // to ensure that the logs window is never empty during upgrade
         I.waitForElement(`//pre[contains(text(), '${milestones[0]}')]`, 1200);
-        I.waitForText(locators.successUpgradeMessage, 1200, locators.successUpgradeMsgSelector);
+        I.waitForText(locators.successUpgradeMessage, 1500, locators.successUpgradeMsgSelector);
 
         // Get upgrade logs from a container
         const upgradeLogs = await I.verifyCommand('docker exec pmm-server cat /srv/logs/pmm-update-perform.log');
@@ -141,7 +141,7 @@ module.exports = {
 
       I.click(locators.reloadButtonAfterUpgrade);
     } else {
-      I.waitForText(locators.successUpgradeMessage, 1200, locators.successUpgradeMsgSelector);
+      I.waitForText(locators.successUpgradeMessage, 1500, locators.successUpgradeMsgSelector);
       // we have a bug we need this https://jira.percona.com/browse/PMM-9294
       I.wait(60);
 
