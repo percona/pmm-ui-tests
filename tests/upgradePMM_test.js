@@ -167,6 +167,7 @@ if (versionMinor >= 15) {
       databaseChecksPage,
       securityChecksAPI,
       addInstanceAPI,
+      inventoryAPI,
     }) => {
       const runChecks = locate('button')
         .withText('Run DB checks');
@@ -199,6 +200,19 @@ if (versionMinor >= 15) {
       // Check that there are failed checks
       await securityChecksAPI.verifyFailedCheckExists(emptyPasswordSummary);
       await securityChecksAPI.verifyFailedCheckExists(failedCheckMessage);
+
+      // Silence mysql Empty Password failed check
+      I.waitForVisible(failedCheckRowLocator, 30);
+
+      if (versionMinor < 27) {
+        I.click(failedCheckRowLocator.find('button').first());
+      } else {
+        const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName('MYSQL_SERVICE', psServiceName);
+
+        databaseChecksPage.openFailedChecksListForService(service_id);
+        I.click(databaseChecksPage.buttons.toggleFailedCheckBySummary(emptyPasswordSummary));
+        I.seeAttributesOnElements(databaseChecksPage.buttons.toggleFailedCheckBySummary(emptyPasswordSummary), { title: 'Activate' });
+      }
     },
   );
 
@@ -581,6 +595,21 @@ if (versionMinor >= 16) {
       I.amOnPage(allChecksPage.url);
       I.waitForVisible(allChecksPage.buttons.disableEnableCheck(checkName));
       I.seeTextEquals('Frequent', allChecksPage.elements.intervalCellByName(checkName));
+    },
+  );
+
+  Scenario(
+    'Verify silenced checks remain silenced after upgrade @post-upgrade @pmm-upgrade',
+    async ({
+      I,
+      databaseChecksPage, inventoryAPI,
+    }) => {
+      const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName('MYSQL_SERVICE', psServiceName);
+
+      databaseChecksPage.openFailedChecksListForService(service_id);
+
+      I.waitForVisible(failedCheckRowLocator, 30);
+      I.seeAttributesOnElements(databaseChecksPage.buttons.toggleFailedCheckBySummary(emptyPasswordSummary), { title: 'Activate' });
     },
   );
 
