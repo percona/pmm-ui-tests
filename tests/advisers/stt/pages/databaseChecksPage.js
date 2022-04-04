@@ -4,6 +4,7 @@ const {
 const assert = require('assert');
 // xpath used here because locate('th').withText('') method does not work correctly
 const locateChecksHeader = (header) => `//th[text()='${header}']`;
+const failedCheckRow = (checkSummary) => `//tr[td[contains(., "${checkSummary}")]]`;
 
 module.exports = {
   // insert your locators and methods here
@@ -13,11 +14,12 @@ module.exports = {
   oldUrl: 'graph/d/pmm-checks/pmm-database-checks',
   elements: {
     failedCheckRowByServiceName: (name) => locate('tr').withChild(locate('td').withText(name)),
+    failedCheckRowBySummary: (summary) => locate('tr').withChild(locate('td').withText(summary)),
   },
   messages: {
-    homePagePanelMessage: 'Security Threat Tool is disabled.\nCheck PMM Settings.',
-    disabledSTTMessage: 'Security Threat Tool is disabled. You can enable it in',
-    securityChecksDone: 'Running database checks in the background... The results will be displayed here soon.',
+    homePagePanelMessage: 'Advisor Checks feature is disabled.\nCheck PMM Settings.',
+    disabledSTTMessage: 'Advisor Checks feature is disabled. You can enable it in',
+    securityChecksDone: 'Running checks in the background... The results will be displayed here soon.',
   },
   buttons: {
     startDBChecks: locate('$db-check-panel-actions').find('button'),
@@ -31,7 +33,7 @@ module.exports = {
     serviceNameSelector: 'tr > td[rowspan]:first-child',
     totalFailedChecksTooltipSelector: '.popper > div > div > div:first-of-type',
     failedChecksTooltipSelector: '.popper > div > div > div',
-    serviceNameHeaderSelector: locateChecksHeader('Service name'),
+    serviceNameHeaderSelector: locateChecksHeader('Service Name'),
     detailsHeaderSelector: locateChecksHeader('Details'),
     noOfFailedChecksHeaderSelector: locateChecksHeader('Failed Checks'),
     disabledSTTMessageLinkSelector: locate('$db-check-panel-settings-link'),
@@ -55,13 +57,19 @@ module.exports = {
     I.waitForVisible(this.buttons.startDBChecks, 30);
   },
 
-  verifyFailedCheckNotExists(checkSummary) {
-    this.openDBChecksPage();
+  openFailedChecksListForService(serviceId) {
+    I.amOnPage(`${this.url}/service-checks/${serviceId.split('/')[2]}`);
+    I.waitForVisible('td', 30);
+    // I.waitForVisible(this.buttons.startDBChecks, 30);
+  },
+
+  verifyFailedCheckNotExists(checkSummary, serviceId) {
+    this.openFailedChecksListForService(serviceId);
     I.dontSee(checkSummary);
   },
 
-  verifyFailedCheckExists(checkSummary) {
-    this.openDBChecksPage();
+  verifyFailedCheckExists(checkSummary, serviceId) {
+    this.openFailedChecksListForService(serviceId);
     I.see(checkSummary);
   },
   /*
@@ -141,10 +149,6 @@ module.exports = {
     I.seeElement(this.fields.totalFailedChecksTooltipSelector);
   },
 
-  /*
-    Method takes service names listed in Database Failed checks
-     and compares names with existing Service Names in PMM Inventory
-   */
   async verifyServiceNamesExistence(serviceName) {
     I.see(serviceName);
 

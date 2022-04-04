@@ -1,3 +1,5 @@
+const assert = require('assert');
+
 const {
   settingsAPI, psMySql, securityChecksAPI, databaseChecksPage,
 } = inject();
@@ -7,6 +9,8 @@ const intervals = settingsAPI.defaultCheckIntervals;
 const psServiceName = 'stt-mysql-5.7.30';
 const failedCheckRowLocator = databaseChecksPage.elements
   .failedCheckRowByServiceName(psServiceName);
+let nodeId;
+let serviceId;
 
 const intervalsTests = new DataTable(['interval', 'intervalValue']);
 
@@ -41,13 +45,14 @@ BeforeSuite(async ({ psMySql, addInstanceAPI }) => {
     password: connection.password,
   };
 
-  await addInstanceAPI.addInstanceForSTT(connection, psServiceName);
+  [nodeId, serviceId] = await addInstanceAPI.addInstanceForSTT(connection, psServiceName);
 
   psMySql.connectToPS(mysqlComposeConnection);
 });
 
-AfterSuite(async ({ psMySql }) => {
+AfterSuite(async ({ psMySql, inventoryAPI }) => {
   await psMySql.disconnectFromPS();
+  if (nodeId) await inventoryAPI.deleteNode(nodeId, true);
 });
 
 Before(async ({
@@ -75,7 +80,7 @@ Scenario(
 
     await securityChecksAPI.waitForFailedCheckNonExistance(emptyPasswordSummary, psServiceName);
     // Verify there is no MySQL user empty password failed check
-    databaseChecksPage.verifyFailedCheckNotExists(emptyPasswordSummary);
+    databaseChecksPage.verifyFailedCheckNotExists(emptyPasswordSummary, serviceId);
   },
 );
 
@@ -100,26 +105,31 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T617 Verify Show all toggle for failed checks @stt @not-ovf',
+  'PMM-T617 Verify user is able to silence failed check @stt @not-ovf',
   async ({
     I, databaseChecksPage,
   }) => {
     const failedCheckRowLocator = databaseChecksPage.elements
-      .failedCheckRowByServiceName(psServiceName);
+      .failedCheckRowBySummary(emptyPasswordSummary);
 
     await prepareFailedCheck();
-    I.amOnPage(databaseChecksPage.url);
-    I.waitForVisible(failedCheckRowLocator, 30);
+    databaseChecksPage.openFailedChecksListForService(serviceId);
 
     // Silence mysql Empty Password failed check and verify it's not displayed
     I.waitForVisible(failedCheckRowLocator, 30);
-    I.click(failedCheckRowLocator.find('button').first());
-    I.dontSeeElement(failedCheckRowLocator.find('td').withText(emptyPasswordSummary));
 
-    // Toggle Show Silenced and verify mysql Empty Password failed check is present and has state "Silenced"
-    I.click(databaseChecksPage.buttons.toggleSilenced);
-    I.seeElement(failedCheckRowLocator.find('td').withText(emptyPasswordSummary));
-    I.seeElement(failedCheckRowLocator.find('td').withText('Silenced'));
+    const oldColor = await I.grabCssPropertyFrom(
+      locate(databaseChecksPage.elements.failedCheckRowBySummary(emptyPasswordSummary))
+        .find('td'), 'background-color',
+    );
+
+    I.click(failedCheckRowLocator.find('$silence-button'));
+    const newColor = await I.grabCssPropertyFrom(
+      locate(databaseChecksPage.elements.failedCheckRowBySummary(emptyPasswordSummary))
+        .find('td'), 'background-color',
+    );
+
+    assert.ok(oldColor !== newColor);
   },
 );
 
@@ -142,7 +152,7 @@ Data(intervalsTests).Scenario(
     await securityChecksAPI.waitForFailedCheckNonExistance(emptyPasswordSummary, psServiceName);
 
     // Verify there is no MySQL user empty password failed check
-    databaseChecksPage.verifyFailedCheckNotExists(emptyPasswordSummary);
+    databaseChecksPage.verifyFailedCheckNotExists(emptyPasswordSummary, serviceId);
   },
 );
 
@@ -158,6 +168,6 @@ Scenario.skip(
     await securityChecksAPI.waitForFailedCheckNonExistance(emptyPasswordSummary, psServiceName);
 
     // Verify there is no MySQL user empty password failed check
-    databaseChecksPage.verifyFailedCheckNotExists(emptyPasswordSummary);
+    databaseChecksPage.verifyFailedCheckNotExists(emptyPasswordSummary, serviceId);
   },
 );
