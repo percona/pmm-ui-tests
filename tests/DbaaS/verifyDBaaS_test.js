@@ -356,10 +356,6 @@ Scenario(
     dbaasPage.checkCluster(clusterName, false);
     I.click(dbaasPage.tabs.dbClusterTab.dbClusterTab);
 
-    // const dropd = await I.grabTextFromAll(
-    // locate('dbcluster-kubernetes-cluster-field').find('$kubernetes-option').withText(clusterName));
-    // await dbaasActionsPage.createClusterBasicOptions(clusterName, dbClusterName, dbType);
-
     I.waitForVisible(dbaasPage.tabs.dbClusterTab.dbClusterAddButtonTop, 60);
     I.click(dbaasPage.tabs.dbClusterTab.dbClusterAddButtonTop);
 
@@ -375,8 +371,10 @@ Scenario(
     I.fillField(dbaasPage.tabs.dbClusterTab.basicOptions.fields.dbClusterDatabaseTypeInputField, dbType);
     I.waitForElement(dbaasPage.tabs.dbClusterTab.basicOptions.fields.dbClusterDatabaseTypeFieldSelect(dbType), 30);
     I.click(dbaasPage.tabs.dbClusterTab.basicOptions.fields.dbClusterDatabaseTypeFieldSelect(dbType));
-
     I.click(dbaasPage.tabs.dbClusterTab.createClusterButton);
+    I.waitForText('Processing', 30, dbaasPage.tabs.dbClusterTab.fields.progressBarContent);
+
+    I.refreshPage();
     I.waitForText('Processing', 30, dbaasPage.tabs.dbClusterTab.fields.progressBarContent);
     await dbaasActionsPage.showClusterLogs();
     I.waitForElement(dbaasPage.tabs.dbClusterTab.fields.dbClusterLogs.expandAllLogsButton, 30);
