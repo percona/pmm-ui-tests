@@ -19,7 +19,7 @@ Scenario(
   'PMM-T398 PMM-T809 Verify Connect to Percona Portal @platform @settings',
   async ({ I }) => {
     // Verify elements in login form
-    I.seeTextEquals('Connect PMM to Percona Portal', 'legend');
+    I.seeTextEquals('Connect PMM to Percona Platform', 'legend');
     I.seeTextEquals('PMM Server Name *', elements.pmmServerNameFieldLabel);
     I.seeTextEquals('Percona Account (email) *', elements.emailFieldLabel);
     I.seeInField(fields.emailField, '');
@@ -45,7 +45,6 @@ Scenario(
     I.seeTextEquals('', elements.passwordValidation);
   },
 );
-
 
 // Skip until there's a way to disconnect and portal API is working
 // without the need for PERCONA_SSO env variables
