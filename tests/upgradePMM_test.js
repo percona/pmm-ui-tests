@@ -199,10 +199,6 @@ if (versionMinor >= 15) {
       // Check that there are failed checks
       await securityChecksAPI.verifyFailedCheckExists(emptyPasswordSummary);
       await securityChecksAPI.verifyFailedCheckExists(failedCheckMessage);
-
-      // Silence mysql Empty Password failed check
-      I.waitForVisible(failedCheckRowLocator, 30);
-      I.click(failedCheckRowLocator.find('button').first());
     },
   );
 
@@ -571,27 +567,6 @@ if (versionMinor >= 16) {
       I.waitForVisible(allChecksPage.buttons.disableEnableCheck(checkName));
       I.seeTextEquals('Enable', allChecksPage.buttons.disableEnableCheck(checkName));
       I.seeTextEquals('Disabled', allChecksPage.elements.statusCellByName(checkName));
-    },
-  );
-
-  Scenario(
-    'Verify silenced checks remain silenced after upgrade @post-upgrade @pmm-upgrade',
-    async ({
-      I,
-      databaseChecksPage,
-    }) => {
-      I.amOnPage(databaseChecksPage.url);
-
-      I.waitForVisible(failedCheckRowLocator, 30);
-      I.dontSeeElement(failedCheckRowLocator.find('td')
-        .withText(emptyPasswordSummary));
-
-      I.click(databaseChecksPage.buttons.toggleSilenced);
-
-      I.seeElement(failedCheckRowLocator.find('td')
-        .withText(emptyPasswordSummary));
-      I.seeElement(failedCheckRowLocator.find('td')
-        .withText('Silenced'));
     },
   );
 
