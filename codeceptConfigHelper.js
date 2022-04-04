@@ -36,6 +36,7 @@ module.exports = {
     pmmInventoryPage: './tests/pages/pmmInventoryPage.js',
     pmmServerAdminSettingsPage: './tests/pages/pmmServerAdminSettingsPage.js',
     pmmSettingsPage: './tests/pages/pmmSettingsPage.js',
+    portalAPI: './tests/pages/api/portalAPI.js',
     qanDetails: './tests/QAN/pages/qanDetailsFragment.js',
     qanFilters: './tests/QAN/pages/qanFiltersFragment.js',
     qanOverview: './tests/QAN/pages/qanOverviewFragment.js',
@@ -56,9 +57,9 @@ module.exports = {
     templatesAPI: './tests/ia/pages/api/templatesAPI.js',
   },
   getChunks: (files) => {
-    const dependentTests = files.filter((value) => /PMMSettings|stt|backup|permissions/.test(value));
+    const dependentTests = files.filter((value) => /PMMSettings|stt|backup|permissions|Azure/.test(value));
     const iaTests = files.filter((value) => /ia/.test(value));
-    const dbaasTests = files.filter((value) => /DbaaS/.test(value));
+    const dbaasTests = files.filter((value) => /DbaaS|TLSMongo/.test(value));
     const otherTests = files.filter((val) => !dependentTests.includes(val)
       && !dbaasTests.includes(val) && !iaTests.includes(val));
 

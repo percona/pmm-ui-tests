@@ -7,16 +7,30 @@ class Grafana extends Helper {
   constructor(config) {
     super(config);
     this.resultFilesFolder = `${global.output_dir}/`;
+    this.signInWithSSOButton = '//a[contains(@href,"login/generic_oauth")]';
+    this.ssoLoginUsername = '//input[@id="okta-signin-username"]';
+    this.ssoLoginPassword = '//input[@id="okta-signin-password"]';
+    this.ssoLoginSubmit = '//input[@id="okta-signin-submit"]';
   }
 
-  async Authorize(username = 'admin', password = 'admin') {
+  async LoginWithSSO(username, password) {
+    const { page } = this.helpers.Playwright;
+
+    await page.click(this.signInWithSSOButton);
+    await page.fill(this.ssoLoginUsername, username);
+    await page.click(this.ssoLoginPassword);
+    await page.fill(this.ssoLoginPassword, password);
+    await page.click(this.ssoLoginSubmit);
+  }
+
+  async Authorize(username = 'admin', password = process.env.ADMIN_PASSWORD) {
     const { Playwright } = this.helpers;
     const basicAuthEncoded = await this.getAuth(username, password);
 
     Playwright.haveRequestHeaders({ Authorization: `Basic ${basicAuthEncoded}` });
   }
 
-  async getAuth(username = 'admin', password = 'admin') {
+  async getAuth(username = 'admin', password = process.env.ADMIN_PASSWORD) {
     return Buffer.from(`${this.config.username || username}:${this.config.password || password}`).toString(
       'base64',
     );
@@ -57,7 +71,7 @@ class Grafana extends Helper {
       });
     });
   }
-  
+
   /**
    * Wait for Request to be triggered from User Action
    *
