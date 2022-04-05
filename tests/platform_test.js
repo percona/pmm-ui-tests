@@ -17,32 +17,32 @@ Before(async ({ I }) => {
 
 Scenario(
   'PMM-T398 PMM-T809 Verify Connect to Percona Portal @platform @settings',
-  async ({ I }) => {
-    // Verify elements in login form
+  async ({ I, links }) => {
+    // Verify elements in connect form
     I.seeTextEquals('Connect PMM to Percona Platform', 'legend');
     I.seeTextEquals('PMM Server Name *', elements.pmmServerNameFieldLabel);
-    I.seeTextEquals('Percona Account (email) *', elements.emailFieldLabel);
-    I.seeInField(fields.emailField, '');
-    I.seeTextEquals('Password *', elements.passwordFieldLabel);
-    I.seeInField(fields.passwordField, '');
+    I.seeTextEquals('Percona Platform Access Token *', elements.accessTokenLabel);
+    I.seeInField(fields.accessToken, '');
+    I.seeAttributesOnElements(elements.getAccessTokenLink, { href: links.portalProfile });
     I.seeAttributesOnElements(buttons.connect, { disabled: true });
 
-    // Focus on PMM Server Name, Email and Password fields to verify that fields are required
-    I.usePlaywrightTo('focus on PMM server name, email and password fields', async ({ page }) => {
+    // Focus on PMM Server Name and Access token fields to verify that fields are required
+    I.usePlaywrightTo('focus on PMM Server Name and Access token fields', async ({ page }) => {
+      page.focus(I.useDataQA('accessToken-text-input'));
       page.focus(I.useDataQA('pmmServerName-text-input'));
-      page.focus(I.useDataQA('email-text-input'));
-      page.focus(I.useDataQA('password-password-input'));
-      page.focus(I.useDataQA('connect-button'));
+      page.focus(I.useDataQA('accessToken-text-input'));
     });
 
-    pmmSettingsPage.perconaPlatform.verifyEmailFieldValidation();
+    I.seeTextEquals(messages.requiredField, elements.accessTokenValidation);
+    I.seeTextEquals(messages.requiredField, elements.pmmServerNameValidation);
 
-    // Password validation
-    I.seeTextEquals(messages.requiredField, elements.passwordValidation);
+    I.appendField(fields.pmmServerNameField, 'serverName');
+    I.seeTextEquals('', elements.pmmServerNameValidation);
 
-    // Verify there is no validation for "pass" value
-    I.appendField(fields.passwordField, 'pass');
-    I.seeTextEquals('', elements.passwordValidation);
+    I.appendField(fields.accessToken, 'someToken');
+    I.seeTextEquals('', elements.accessTokenValidation);
+
+    I.seeAttributesOnElements(buttons.connect, { disabled: null });
   },
 );
 
