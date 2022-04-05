@@ -455,7 +455,7 @@ Scenario(
   },
 );
 
-Scenario(
+Scenario.skip(
   'PMM-T391 Verify that custom home dashboard stays as home dashboard after upgrade @post-upgrade @ami-upgrade @pmm-upgrade',
   async ({ I, grafanaAPI, dashboardPage }) => {
     I.amOnPage('');
