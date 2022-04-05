@@ -608,7 +608,7 @@ if (versionMinor >= 16) {
 
       databaseChecksPage.openFailedChecksListForService(service_id);
 
-      I.waitForVisible(failedCheckRowLocator, 30);
+      I.waitForVisible(databaseChecksPage.elements.failedCheckRowBySummary(emptyPasswordSummary), 30);
       I.seeAttributesOnElements(databaseChecksPage.buttons.toggleFailedCheckBySummary(emptyPasswordSummary), { title: 'Activate' });
     },
   );
