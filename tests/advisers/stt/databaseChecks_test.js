@@ -5,7 +5,7 @@ const {
 } = inject();
 const config = codeceptjsConfig.config.helpers.Playwright;
 const connection = psMySql.defaultConnection;
-let nodeID;
+let nodeId;
 let serviceId;
 
 const urls = new DataTable(['url']);
