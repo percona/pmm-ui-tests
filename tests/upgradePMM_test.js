@@ -167,6 +167,7 @@ if (versionMinor >= 15) {
       databaseChecksPage,
       securityChecksAPI,
       addInstanceAPI,
+      inventoryAPI,
     }) => {
       const runChecks = locate('button')
         .withText('Run DB checks');
@@ -202,7 +203,16 @@ if (versionMinor >= 15) {
 
       // Silence mysql Empty Password failed check
       I.waitForVisible(failedCheckRowLocator, 30);
-      I.click(failedCheckRowLocator.find('button').first());
+
+      if (versionMinor < 27) {
+        I.click(failedCheckRowLocator.find('button').first());
+      } else {
+        const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName('MYSQL_SERVICE', psServiceName);
+
+        databaseChecksPage.openFailedChecksListForService(service_id);
+        I.click(databaseChecksPage.buttons.toggleFailedCheckBySummary(emptyPasswordSummary));
+        I.seeAttributesOnElements(databaseChecksPage.buttons.toggleFailedCheckBySummary(emptyPasswordSummary), { title: 'Activate' });
+      }
     },
   );
 
@@ -445,7 +455,7 @@ Scenario(
   },
 );
 
-Scenario(
+Scenario.skip(
   'PMM-T391 Verify that custom home dashboard stays as home dashboard after upgrade @post-upgrade @ami-upgrade @pmm-upgrade',
   async ({ I, grafanaAPI, dashboardPage }) => {
     I.amOnPage('');
@@ -575,27 +585,6 @@ if (versionMinor >= 16) {
   );
 
   Scenario(
-    'Verify silenced checks remain silenced after upgrade @post-upgrade @pmm-upgrade',
-    async ({
-      I,
-      databaseChecksPage,
-    }) => {
-      I.amOnPage(databaseChecksPage.url);
-
-      I.waitForVisible(failedCheckRowLocator, 30);
-      I.dontSeeElement(failedCheckRowLocator.find('td')
-        .withText(emptyPasswordSummary));
-
-      I.click(databaseChecksPage.buttons.toggleSilenced);
-
-      I.seeElement(failedCheckRowLocator.find('td')
-        .withText(emptyPasswordSummary));
-      I.seeElement(failedCheckRowLocator.find('td')
-        .withText('Silenced'));
-    },
-  );
-
-  Scenario(
     'Verify check intervals remain the same after upgrade @post-upgrade @pmm-upgrade',
     async ({
       I,
@@ -606,6 +595,21 @@ if (versionMinor >= 16) {
       I.amOnPage(allChecksPage.url);
       I.waitForVisible(allChecksPage.buttons.disableEnableCheck(checkName));
       I.seeTextEquals('Frequent', allChecksPage.elements.intervalCellByName(checkName));
+    },
+  );
+
+  Scenario(
+    'Verify silenced checks remain silenced after upgrade @post-upgrade @pmm-upgrade',
+    async ({
+      I,
+      databaseChecksPage, inventoryAPI,
+    }) => {
+      const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName('MYSQL_SERVICE', psServiceName);
+
+      databaseChecksPage.openFailedChecksListForService(service_id);
+
+      I.waitForVisible(databaseChecksPage.elements.failedCheckRowBySummary(emptyPasswordSummary), 30);
+      I.seeAttributesOnElements(databaseChecksPage.buttons.toggleFailedCheckBySummary(emptyPasswordSummary), { title: 'Activate' });
     },
   );
 
