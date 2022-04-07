@@ -938,8 +938,8 @@ if (versionMinor >= 23) {
       const serviceList = [serviceName, `remote_api_${serviceName}`];
 
       for (const service of serviceList) {
-        I.amOnPage();
-        dashboardPage.waitForDashboardOpened(dashboard);
+        I.amOnPage(dashboard);
+        dashboardPage.waitForDashboardOpened();
         await adminPage.applyTimeRange('Last 5 minutes');
         await dashboardPage.applyFilter('Service Name', service);
         adminPage.performPageDown(5);
