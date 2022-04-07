@@ -2,12 +2,11 @@ const assert = require('assert');
 const portalAPI = require('../pages/api/portalAPI');
 
 Feature('Testing PMM connected to the Portal Upgrade tests');
-
+const fileName = 'portalCredentials';
 let portalCredentials = [];
 
-BeforeSuite(async ({ I, remoteInstancesPage }) => {
-  const fileName = 'portalCredentials';
-  const userCredentials = String(await remoteInstancesPage.getFileContent(fileName));
+BeforeSuite(async ({ I }) => {
+  const userCredentials = String(await I.readFileSync(fileName));
 
   if (userCredentials.length > 0) {
     portalCredentials = JSON.parse(userCredentials);
@@ -18,6 +17,10 @@ BeforeSuite(async ({ I, remoteInstancesPage }) => {
     portalAPI.oktaCreateUser(portalCredentials.technical);
     await I.writeFileSync(fileName, JSON.stringify(portalCredentials));
   }
+});
+
+AfterSuite(async ({ I }) => {
+  I.writeFileSync(fileName, '');
 });
 
 Scenario('Verify ServiceNow user can connect to PMM Server @pre-pmm-portal-upgrade',

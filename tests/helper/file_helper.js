@@ -12,6 +12,16 @@ class FileHelper extends Helper {
 
     return null;
   }
+
+  async readFileSync(path) {
+    try {
+      return fs.readFileSync(path, 'utf8');
+    } catch (e) {
+      assert.ok(false, `Could not write into file: ${path}, because of error: ${e}`);
+    }
+
+    return null;
+  }
 }
 
 module.exports = FileHelper;
