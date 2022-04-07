@@ -1,6 +1,5 @@
 const assert = require('assert');
 const { communicationData } = require('./testData');
-const perconaPlatform = require('./perconaPlatform');
 
 const { I, adminPage, links } = inject();
 
@@ -534,18 +533,5 @@ module.exports = {
         break;
       default:
     }
-  },
-
-  connectPmmToPerconaPortal(email, password, serverName = 'Test Server') {
-    I.fillField(this.fields.pmmServerNameInput, serverName);
-    I.fillField(this.fields.perconaAccountEmailInput, email);
-    I.fillField(this.fields.perconaAccountPasswordInput, password);
-    I.click(this.fields.platformConnectButton);
-    I.verifyPopUpMessage(this.messages.pmmConnectedToPortal);
-  },
-
-  disconnectPmmFromPerconaPortal() {
-    I.click(this.fields.platformDisconnectButton);
-    I.verifyPopUpMessage(this.messages.pmmDisconnectedFromProtal);
   },
 };

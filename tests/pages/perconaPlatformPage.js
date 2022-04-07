@@ -14,9 +14,11 @@ module.exports = {
     passwordFieldLabel: '$password-field-label',
     passwordValidation: '$password-field-error-message',
     connectedWrapper: '$connected-wrapper',
+    settingsContent: '$settings-tab-content',
   },
   fields: {
     pmmServerNameField: '$pmmServerName-text-input',
+    tokenField: '$accessToken-text-input',
     emailField: '$email-text-input',
     passwordField: '$password-password-input',
   },
@@ -29,6 +31,16 @@ module.exports = {
     invalidEmail: 'Invalid email address',
     connected: 'This PMM instance is connected to Percona Portal.',
     connectedSuccess: 'Successfully connected PMM to Percona Portal',
+  },
+
+  async openPerconaPlatform() {
+    I.amOnPage(this.url);
+    await this.waitForPerconaPlatformPageLoaded();
+  },
+
+  async waitForPerconaPlatformPageLoaded() {
+    I.waitForVisible(this.elements.settingsContent, 30);
+    I.waitInUrl(this.url);
   },
 
   async connect(pmmServerName, email, password) {
@@ -63,5 +75,20 @@ module.exports = {
     I.clearField(this.fields.emailField);
     I.appendField(this.fields.emailField, 'email@domain.com');
     I.seeTextEquals('', this.elements.emailValidation);
+  },
+
+  connectToPortal(token, serverName = 'Test Server') {
+    I.fillField(this.fields.pmmServerNameField, serverName);
+    I.fillField(this.fields.tokenField, token);
+    I.click(this.buttons.connect);
+    I.wait(30);
+    I.verifyPopUpMessage(this.messages.connected);
+    I.refreshPage();
+    I.waitForVisible(this.elements.connectedWrapper, 20);
+  },
+
+  disconnectFromPortal() {
+    I.click(this.fields.platformDisconnectButton);
+    I.verifyPopUpMessage(this.messages.pmmDisconnectedFromProtal);
   },
 };

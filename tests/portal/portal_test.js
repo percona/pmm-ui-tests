@@ -3,6 +3,7 @@ Feature('Portal Integration with PMM');
 let newUser = {};
 
 AfterSuite(async ({ I }) => {
+  console.log(`Test ran for user: ${newUser.email} with password: ${newUser.password}`);
   const users = await I.listUsers();
   const result = users.users.filter((user) => user.email === newUser.email);
 
@@ -12,7 +13,7 @@ AfterSuite(async ({ I }) => {
 Scenario(
   'PMM-T1097 Verify PMM server is connected to Portal @platform',
   async ({
-    I, pmmSettingsPage, portalAPI, homePage,
+    I, pmmSettingsPage, portalAPI, perconaPlatformPage,
   }) => {
     await I.Authorize();
     pmmSettingsPage.openAdvancedSettings();
@@ -21,13 +22,14 @@ Scenario(
     if (publicAddress.length !== 0) pmmSettingsPage.clearPublicAddress();
 
     pmmSettingsPage.addPublicAddress();
+    perconaPlatformPage.openPerconaPlatform();
     newUser = await portalAPI.getUser();
     await portalAPI.oktaCreateUser(newUser);
     const userToken = await portalAPI.getUserAccessToken(newUser.email, newUser.password);
 
     await portalAPI.apiCreateOrg(userToken);
-    I.amOnPage(pmmSettingsPage.perconaPlatform);
-    await pmmSettingsPage.connectPmmToPerconaPortal(newUser.email, newUser.password);
+    await perconaPlatformPage.openPerconaPlatform();
+    await perconaPlatformPage.connectToPortal(userToken, `Test Server ${Date.now()}`);
   },
 );
 
