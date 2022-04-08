@@ -27,7 +27,7 @@ class Grafana extends Helper {
     await page.click(this.ssoLoginNext);
     await page.click(this.ssoLoginPassword);
     await page.fill(this.ssoLoginPassword, password);
-    // await page.click(this.ssoLoginSubmit);
+    await page.click(this.ssoLoginSubmit);
   }
 
   async Authorize(username = 'admin', password = process.env.ADMIN_PASSWORD) {
