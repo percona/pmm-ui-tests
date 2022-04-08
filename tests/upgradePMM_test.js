@@ -177,9 +177,9 @@ if (versionMinor >= 15) {
       await settingsAPI.changeSettings({ stt: true });
       await addInstanceAPI.addInstanceForSTT(connection, psServiceName);
 
-      await securityChecksAPI.startSecurityChecks();
+      // await securityChecksAPI.startSecurityChecks();
       // Waiting to have results
-      await securityChecksAPI.waitForFailedCheckExistance(emptyPasswordSummary);
+      // await securityChecksAPI.waitForFailedCheckExistance(emptyPasswordSummary);
       // Run DB Checks from UI
       // disable check, change interval for a check, change interval settings
       if (versionMinor >= 16) {
@@ -194,18 +194,18 @@ if (versionMinor >= 15) {
         I.amOnPage(databaseChecksPage.oldUrl);
       }
 
-      I.waitForVisible(runChecks, 30);
-      I.waitForVisible(failedCheckRowLocator, 60);
+      // I.waitForVisible(runChecks, 30);
+      // I.waitForVisible(failedCheckRowLocator, 60);
 
       // Check that there are failed checks
-      await securityChecksAPI.verifyFailedCheckExists(emptyPasswordSummary);
-      await securityChecksAPI.verifyFailedCheckExists(failedCheckMessage);
+      // await securityChecksAPI.verifyFailedCheckExists(emptyPasswordSummary);
+      // await securityChecksAPI.verifyFailedCheckExists(failedCheckMessage);
 
       // Silence mysql Empty Password failed check
-      I.waitForVisible(failedCheckRowLocator, 30);
+      // I.waitForVisible(failedCheckRowLocator, 30);
 
       if (versionMinor < 27) {
-        I.click(failedCheckRowLocator.find('button').first());
+        // I.click(failedCheckRowLocator.find('button').first());
       } else {
         const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName('MYSQL_SERVICE', psServiceName);
 
@@ -598,7 +598,7 @@ if (versionMinor >= 16) {
     },
   );
 
-  Scenario(
+  Scenario.skip(
     'Verify silenced checks remain silenced after upgrade @post-upgrade @pmm-upgrade',
     async ({
       I,
