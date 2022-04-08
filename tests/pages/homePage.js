@@ -117,6 +117,10 @@ module.exports = {
     I.waitForElement(locators.updateProgressModal, 30);
     I.waitForText(locators.inProgressMessage, 30, locators.updateProgressModal);
 
+    I.wait(1200);
+    I.refreshPage();
+
+    /* Temp fix to test upgrade
     // skipping milestones checks for 2.9 and 2.10, 2.11 versions due logs not showing issue
     if (version > 11) {
       if (this.isAmiUpgrade) {
@@ -149,6 +153,7 @@ module.exports = {
       I.click(locators.reloadButtonAfterUpgrade);
       I.refreshPage();
     }
+    */
 
     locators = this.getLocators('latest');
 
