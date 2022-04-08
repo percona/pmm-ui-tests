@@ -21,6 +21,8 @@ module.exports = {
     tokenField: '$accessToken-text-input',
     emailField: '$email-text-input',
     passwordField: '$password-password-input',
+    platformConnectButton: '$connect-button',
+    platformDisconnectButton: '$disconnect-button',
   },
   buttons: {
     connect: '$connect-button',
@@ -29,8 +31,8 @@ module.exports = {
     technicalPreview: ' This feature is in Technical Preview stage',
     requiredField: 'Required field',
     invalidEmail: 'Invalid email address',
-    connected: 'This PMM instance is connected to Percona Portal.',
-    connectedSuccess: 'Successfully connected PMM to Percona Portal',
+    connectedSuccess: 'Successfully connected PMM to Percona Platform',
+    pmmDisconnectedFromProtal: 'Successfully disconnected PMM from Percona Platform',
   },
 
   async openPerconaPlatform() {
@@ -81,8 +83,7 @@ module.exports = {
     I.fillField(this.fields.pmmServerNameField, serverName);
     I.fillField(this.fields.tokenField, token);
     I.click(this.buttons.connect);
-    I.wait(30);
-    I.verifyPopUpMessage(this.messages.connected);
+    I.verifyPopUpMessage(this.messages.connectedSuccess);
     I.refreshPage();
     I.waitForVisible(this.elements.connectedWrapper, 20);
   },
