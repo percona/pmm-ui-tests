@@ -35,6 +35,15 @@ module.exports = {
           },
         };
         break;
+      case this.types.webhook.type:
+        const http_config = this.createWebhookNotificationBody(values);
+        body = {
+          ...body,
+          webhook_config: {
+            http_config
+          },
+        };
+        break;
       default:
         assert.ok(false, `Unknown channel ${type}`);
     }
@@ -82,5 +91,128 @@ module.exports = {
     for (let i = 0; i < numberOfChannelsToCreate; i++) {
       await this.createNotificationChannel(`${faker.lorem.word()}_channel`, ncPage.types.email.type);
     }
+  },
+
+  createWebhookNotificationBody(parameters) {
+    let webhook_config = {};
+
+    Object.entries(parameters).forEach(([key, value]) => {
+      switch (key) {
+        case 'name':
+          webhook_config = {
+            ...webhook_config,
+            http_config: {
+              name: value || this.types.webhook.name,
+            },
+          };
+          break;
+        case 'type':
+          webhook_config = {
+            ...webhook_config,
+            http_config: {
+              type: value || this.types.webhook.type,
+            },
+          };
+          break;
+        case 'url':
+          webhook_config = {
+            ...webhook_config,
+            http_config: {
+              url: value,
+            },
+          };
+          break;
+        case 'username':
+          webhook_config = {
+            ...webhook_config,
+            http_config: {
+              basic_auth: {
+                username: value,
+              },
+            },
+          };
+          break;
+        case 'password':
+          webhook_config = {
+            ...webhook_config,
+            http_config: {
+              basic_auth: {
+                password: value,
+              },
+            },
+          };
+          break;
+        case 'send_resolved':
+          webhook_config = {
+            ...webhook_config,
+            http_config: {
+              send_resolved: value || this.types.webhook.send_resolved,
+            },
+          };
+          break;
+        case 'max_alerts':
+          webhook_config = {
+            ...webhook_config,
+            http_config: {
+              max_alerts: value || this.types.webhook.max_alerts,
+            },
+          };
+          break;
+        case 'ca_file_content':
+          webhook_config = {
+            ...webhook_config,
+            http_config: {
+              tls_config: {
+                ca_file_content: value,
+              },
+            },
+          };
+          break;
+        case 'cert_file_content':
+          webhook_config = {
+            ...webhook_config,
+            http_config: {
+              tls_config: {
+                cert_file_content: value,
+              },
+            },
+          };
+          break;
+        case 'insecure_skip_verify':
+          webhook_config = {
+            ...webhook_config,
+            http_config: {
+              tls_config: {
+                insecure_skip_verify: value || this.types.webhook.tls_config.insecure_skip_verify,
+              },
+            },
+          };
+          break;
+        case 'key_file_content':
+          webhook_config = {
+            ...webhook_config,
+            http_config: {
+              tls_config: {
+                key_file_content: value,
+              },
+            },
+          };
+          break;
+        case 'server_name':
+          webhook_config = {
+            ...webhook_config,
+            http_config: {
+              tls_config: {
+                server_name: value,
+              },
+            },
+          };
+          break;
+        default:
+          assert.ok(false, `Unknown field ${key}`);
+      }
+    });
+
+    return webhook_config;
   },
 };

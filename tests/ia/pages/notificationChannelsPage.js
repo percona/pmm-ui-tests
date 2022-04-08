@@ -19,6 +19,26 @@ module.exports = {
       type: 'Slack',
       slackChannel: 'slackChannel',
     },
+    webhook: {
+      name: 'Webhook Channel',
+      type: 'Webhook',
+      // url: 'http://url',
+      max_alerts: 1,
+      send_resolved: true,
+      http_config: {
+        basic_auth: {
+          username: 'username',
+          password: 'password',
+        },
+      },
+      tls_config: {
+        ca_file_content: 'content',
+        cert_file_content: 'content',
+        insecure_skip_verify: false,
+        key_file_content: 'content',
+        server_name: 'serverName',
+      },
+    },
   },
   elements: {
     notificationChannelsTab: '//li[@aria-label="Tab Notification Channels"]',
