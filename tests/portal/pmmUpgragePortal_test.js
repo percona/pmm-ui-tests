@@ -4,12 +4,12 @@ const portalAPI = require('../pages/api/portalAPI');
 Feature('Testing PMM connected to the Portal Upgrade tests');
 let adminToken = '';
 const fileName = 'portalCredentials';
-let portalCredentials = [];
+let portalCredentials = {};
 
 BeforeSuite(async ({ I }) => {
-  const userCredentials = String(await I.readFileSync(fileName));
+  const userCredentials = await I.readFileSync(fileName, true);
 
-  if (userCredentials.length > 0) {
+  if (userCredentials !== null && userCredentials.length > 0) {
     portalCredentials = JSON.parse(userCredentials);
   } else {
     portalCredentials = await portalAPI.createServiceNowUsers();
@@ -21,7 +21,7 @@ BeforeSuite(async ({ I }) => {
 
     portalAPI.apiInviteOrgMember(adminToken, orgResp.id, { username: portalCredentials.admin2.email, role: 'Admin' });
     portalAPI.apiInviteOrgMember(adminToken, orgResp.id, { username: portalCredentials.technical.email, role: 'Technical' });
-    await I.writeFileSync(fileName, JSON.stringify(portalCredentials));
+    await I.writeFileSync(fileName, JSON.stringify(portalCredentials), true);
   }
 });
 

@@ -416,12 +416,6 @@ module.exports = {
   },
 
   addPublicAddress(address = this.publicAddress) {
-    // eslint-disable-next-line no-console
-    console.log(`Public Address is: ${this.publicAddress}`);
-    // eslint-disable-next-line no-console
-    console.log(`VM address is: ${process.env.VM_IP}`);
-    // eslint-disable-next-line no-console
-    console.log(`Server address is: ${process.env.SERVER_IP}`);
     I.fillField(this.fields.publicAddressInput, address);
     I.click(this.fields.advancedButton);
     I.verifyPopUpMessage(this.messages.successPopUpMessage);
