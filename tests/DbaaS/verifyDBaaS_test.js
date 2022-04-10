@@ -357,24 +357,27 @@ Restarting [u'pmm-agent', u'setup'] in 5 seconds because PMM_AGENT_SIDECAR is en
     dbaasPage.checkCluster(clusterName, false);
     I.click(dbaasPage.tabs.dbClusterTab.dbClusterTab);
 
-    I.waitForVisible(dbaasPage.tabs.dbClusterTab.dbClusterAddButtonTop, 60);
-    I.click(dbaasPage.tabs.dbClusterTab.dbClusterAddButtonTop);
+    await dbaasActionsPage.createClusterBasicOptions(clusterName, dbClusterName, dbType);
 
-    I.waitForElement(dbaasPage.tabs.dbClusterTab.basicOptions.fields.clusterNameField, 30);
-    I.fillField(dbaasPage.tabs.dbClusterTab.basicOptions.fields.clusterNameField, dbClusterName);
+    // I.waitForVisible(dbaasPage.tabs.dbClusterTab.dbClusterAddButtonTop, 60);
+    // I.click(dbaasPage.tabs.dbClusterTab.dbClusterAddButtonTop);
+    //
+    // I.waitForElement(dbaasPage.tabs.dbClusterTab.basicOptions.fields.clusterNameField, 30);
+    // I.fillField(dbaasPage.tabs.dbClusterTab.basicOptions.fields.clusterNameField, dbClusterName);
+    //
+    // I.click(dbaasPage.tabs.dbClusterTab.basicOptions.fields.kubernetesClusterDropDown);
+    // I.waitForElement(dbaasPage.tabs.dbClusterTab.basicOptions.fields.kubernetesClusterDropDownSelect2(clusterName),
+    //   30);
+    // I.click(dbaasPage.tabs.dbClusterTab.basicOptions.fields.kubernetesClusterDropDownSelect2(clusterName));
+    //
+    // I.click(dbaasPage.tabs.dbClusterTab.basicOptions.fields.dbClusterDatabaseTypeField);
+    // I.fillField(dbaasPage.tabs.dbClusterTab.basicOptions.fields.dbClusterDatabaseTypeInputField, dbType);
+    // I.waitForElement(dbaasPage.tabs.dbClusterTab.basicOptions.fields.dbClusterDatabaseTypeFieldSelect(dbType), 30);
+    // I.click(dbaasPage.tabs.dbClusterTab.basicOptions.fields.dbClusterDatabaseTypeFieldSelect(dbType));
 
-    I.click(dbaasPage.tabs.dbClusterTab.basicOptions.fields.kubernetesClusterDropDown);
-    I.waitForElement(dbaasPage.tabs.dbClusterTab.basicOptions.fields.kubernetesClusterDropDownSelect2(clusterName),
-      30);
-    I.click(dbaasPage.tabs.dbClusterTab.basicOptions.fields.kubernetesClusterDropDownSelect2(clusterName));
-
-    I.click(dbaasPage.tabs.dbClusterTab.basicOptions.fields.dbClusterDatabaseTypeField);
-    I.fillField(dbaasPage.tabs.dbClusterTab.basicOptions.fields.dbClusterDatabaseTypeInputField, dbType);
-    I.waitForElement(dbaasPage.tabs.dbClusterTab.basicOptions.fields.dbClusterDatabaseTypeFieldSelect(dbType), 30);
-    I.click(dbaasPage.tabs.dbClusterTab.basicOptions.fields.dbClusterDatabaseTypeFieldSelect(dbType));
     I.click(dbaasPage.tabs.dbClusterTab.createClusterButton);
     I.waitForText('Processing', 30, dbaasPage.tabs.dbClusterTab.fields.progressBarContent);
-    await dbaasAPI.waitForDBClusterState(dbClusterName, clusterName, 'MySQL', 'DB_CLUSTER_STATE_READY');
+    await dbaasAPI.waitForDBClusterState(dbClusterName, clusterName, dbType, 'DB_CLUSTER_STATE_READY');
     await dbaasActionsPage.showClusterLogs();
     I.waitForElement(dbaasPage.tabs.dbClusterTab.fields.dbClusterLogs.expandAllLogsButton, 30);
     I.click(dbaasPage.tabs.dbClusterTab.fields.dbClusterLogs.expandAllLogsButton);
