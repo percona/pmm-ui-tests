@@ -281,6 +281,8 @@ Scenario(
       host: remoteInstancesHelper.remote_instance.postgresql.pdpgsql_13_3.host,
       username: remoteInstancesHelper.remote_instance.postgresql.pdpgsql_13_3.username,
       password: remoteInstancesHelper.remote_instance.postgresql.pdpgsql_13_3.password,
+      environment: remoteInstancesPage.potgresqlSettings.environment,
+      cluster: remoteInstancesPage.potgresqlSettings.cluster,
     };
 
     I.amOnPage(remoteInstancesPage.url);
