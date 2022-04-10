@@ -1,5 +1,7 @@
 const { pageObjects, getChunks } = require('./codeceptConfigHelper');
 
+process.env.ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'admin';
+
 exports.config = {
   output: 'tests/output',
   helpers: {
@@ -108,6 +110,6 @@ exports.config = {
   hooks: [],
   gherkin: {},
   tests: 'tests/**/*_test.js',
-  timeout: 1400,
+  timeout: 1800,
   name: 'pmm-qa',
 };

@@ -438,6 +438,7 @@ module.exports = {
   },
   mysqlInstanceSummaryDashboard: {
     url: 'graph/d/mysql-instance-summary/mysql-instance-summary?orgId=1&refresh=1m&from=now-5m&to=now',
+    clearUrl: 'graph/d/mysql-instance-summary/mysql-instance-summary',
     metrics: [
       'Node',
       'MySQL Uptime',
@@ -992,6 +993,8 @@ module.exports = {
   expandFilters(filterName) {
     const dropdownLocator = this.fields.openFiltersDropdownLocator(filterName);
 
+    // This is due to some instances with many services take filter to load
+    I.wait(3);
     I.waitForElement(dropdownLocator, 30);
     I.click(dropdownLocator);
 
@@ -1022,6 +1025,7 @@ module.exports = {
     } else {
       this.expandFilters(filterName);
       I.waitForElement(filterDropdownOptionsLocator, 30);
+      I.waitForVisible(filterValueSelector, 30);
       I.click(filterValueSelector);
     }
   },

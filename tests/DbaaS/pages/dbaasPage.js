@@ -1,5 +1,5 @@
 const {
-  I, dbaasAPI, dbaasActionsPage, dbaasManageVersionPage, dashboardPage, qanPage, qanFilters, qanOverview, inventoryAPI, adminPage,
+  I, dbaasAPI, dbaasActionsPage, dbaasManageVersionPage, dashboardPage, qanPage, qanFilters, qanOverview, inventoryAPI,
 } = inject();
 const assert = require('assert');
 const faker = require('faker');
@@ -59,7 +59,7 @@ module.exports = {
       createClusterButton: '$step-progress-submit-button',
       updateClusterButton: '$dbcluster-update-cluster-button',
       dbClusterTab: '//li/a[@aria-label="Tab DB Cluster"]',
-      monitoringWarningLocator: '$add-cluster-monitoring-warning',
+      monitoringWarningLocator: '$pmm-server-url-warning',
       optionsCountLocator: (step) => `(//div[@data-testid='step-header']//div[1])[${step}]`,
       optionsHeader: '$step-header',
       deleteDbClusterConfirmationText: (dbClusterName, clusterName, dbType) => `Are you sure that you want to delete ${dbType} cluster ${dbClusterName} from Kubernetes cluster ${clusterName} ?`,
@@ -199,8 +199,9 @@ module.exports = {
 
   randomizeClusterName(clusterName) {
     const stringLength = 6;
-    let randomString = faker.random.alphaNumeric(stringLength);
-    return clusterName + '-' + randomString;
+    const randomString = faker.random.alphaNumeric(stringLength);
+
+    return `${clusterName}-${randomString}`;
   },
 
   checkCluster(clusterName, deleted) {
@@ -418,8 +419,7 @@ module.exports = {
   },
 
   async dbaasQANCheck(dbclusterName, nodeName, serviceName) {
-    I.amOnPage(qanPage.url);
-    await adminPage.applyTimeRange('Last 3 hours');
+    I.amOnPage(I.buildUrlWithParams(qanPage.url, { from: 'now-3h' }));
     qanOverview.waitForOverviewLoaded();
     qanFilters.checkFilterExistInSection('Cluster', dbclusterName);
     qanFilters.checkFilterExistInSection('Node Name', `${nodeName}`);
@@ -435,10 +435,11 @@ module.exports = {
 
   async apiKeyCheck(clusterName, dbClusterName, dbClusterType, keyExists) {
     const dbaasPage = this;
+
     I.amOnPage(dbaasPage.apiKeysUrl);
 
     if (keyExists) {
-      I.waitForText(`${dbClusterType}-${clusterName}-${dbClusterName}`, 10 , dbaasPage.apiKeysPage.apiKeysTable);
+      I.waitForText(`${dbClusterType}-${clusterName}-${dbClusterName}`, 10, dbaasPage.apiKeysPage.apiKeysTable);
     } else {
       I.dontSee(`${dbClusterType}-${dbClusterName}`, dbaasPage.apiKeysPage.apiKeysTable);
     }

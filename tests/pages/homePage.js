@@ -21,7 +21,7 @@ module.exports = {
     sttFailedChecksPanelSelector: '$db-check-panel-has-checks',
     checksPanelSelector: '$db-check-panel-home',
     noFailedChecksInPanel: '$db-check-panel-zero-checks',
-    failedChecksPanelInfo: '[aria-label="Failed security checks panel"] i',
+    failedChecksPanelInfo: '[aria-label="Failed Checks panel"] i',
     newsPanelTitleSelector: dashboardPage.graphsLocator('Percona News'),
     pmmCustomMenu: locate('$navbar-section').find('.dropdown a[aria-label="PMM dashboards"]'),
     servicesButton: locate('span').withText('Services'),
@@ -93,7 +93,7 @@ module.exports = {
     'TASK [Update/restart other services]',
     'TASK [Check supervisord log]',
   ],
-  failedChecksSinglestatsInfoMessage: 'Display the number of database security checks that the Security Threat Tool identified as failed during its most recent run.',
+  failedChecksSinglestatsInfoMessage: 'Display the number of Advisors checks identified as failed during its most recent run.',
 
   serviceDashboardLocator: (serviceName) => locate('a').withText(serviceName),
   isAmiUpgrade: process.env.AMI_UPGRADE_TESTING_INSTANCE === 'true',
@@ -116,6 +116,10 @@ module.exports = {
     I.waitForElement(locators.updateProgressModal, 30);
     I.waitForText(locators.inProgressMessage, 30, locators.updateProgressModal);
 
+    I.wait(1200);
+    I.refreshPage();
+
+    /* Temp fix to test upgrade
     // skipping milestones checks for 2.9 and 2.10, 2.11 versions due logs not showing issue
     if (version > 11) {
       if (this.isAmiUpgrade) {
@@ -148,6 +152,7 @@ module.exports = {
       I.click(locators.reloadButtonAfterUpgrade);
       I.refreshPage();
     }
+    */
 
     locators = this.getLocators('latest');
 
