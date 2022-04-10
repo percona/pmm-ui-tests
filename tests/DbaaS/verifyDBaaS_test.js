@@ -334,15 +334,16 @@ Scenario('PMM-T546 Verify Actions column on Kubernetes cluster page @dbaas',
   });
 
 Scenario(
-  'PMM-T969 - Verify pmm-client logs when incorrect public address is set @dbaas @alyona-p',
-  async ({ I, pmmSettingsPage, dbaasAPI, dbaasPage, settingsAPI, dbaasActionsPage }) => {
+  'PMM-T969 - Verify pmm-client logs when incorrect public address is set @dbaas',
+  async ({ I, pmmSettingsPage, dbaasAPI, dbaasPage, dbaasActionsPage }) => {
     const clusterName = 'Alyona test';
     const dbClusterName = dbaasPage.randomizeClusterName('dbcluster');
     const dbType = 'MySQL';
     const address = 'https://1.2.3.4';
-    const logsText = `Failed to register pmm-agent on PMM Server: Post "https://[https:%2F%2F1.2.3.4]:443/v1/management/Node/Register": dial tcp: lookup ${address}: no such host.
-        [u'pmm-agent', u'setup'] exited with 1.
-        Restarting [u'pmm-agent', u'setup'] in 5 seconds because PMM_AGENT_SIDECAR is enabled ...`;
+    const logsText = `Registering pmm-agent on PMM Server...
+Failed to register pmm-agent on PMM Server: Post "https://https:%2F%2F1.2.3.4/v1/management/Node/Register": dial tcp: lookup ${address}: no such host.
+[u'pmm-agent', u'setup'] exited with 1.
+Restarting [u'pmm-agent', u'setup'] in 5 seconds because PMM_AGENT_SIDECAR is enabled ...`;
 
     if (!await dbaasAPI.apiCheckRegisteredClusterExist(clusterName)) {
       await dbaasAPI.apiRegisterCluster(process.env.kubeconfig_minikube, clusterName);
@@ -373,9 +374,7 @@ Scenario(
     I.click(dbaasPage.tabs.dbClusterTab.basicOptions.fields.dbClusterDatabaseTypeFieldSelect(dbType));
     I.click(dbaasPage.tabs.dbClusterTab.createClusterButton);
     I.waitForText('Processing', 30, dbaasPage.tabs.dbClusterTab.fields.progressBarContent);
-
-    I.refreshPage();
-    I.waitForText('Processing', 30, dbaasPage.tabs.dbClusterTab.fields.progressBarContent);
+    await dbaasAPI.waitForDBClusterState(dbClusterName, clusterName, 'MySQL', 'DB_CLUSTER_STATE_READY');
     await dbaasActionsPage.showClusterLogs();
     I.waitForElement(dbaasPage.tabs.dbClusterTab.fields.dbClusterLogs.expandAllLogsButton, 30);
     I.click(dbaasPage.tabs.dbClusterTab.fields.dbClusterLogs.expandAllLogsButton);
