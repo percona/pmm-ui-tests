@@ -272,7 +272,7 @@ Scenario(
     I, remoteInstancesPage, remoteInstancesHelper,
   }) => {
     const errorMessage = 'Connection check failed: pq: database "postgres2" does not exist.\n';
-    const remoteServiceName = 'postgresql_remote_new';
+    const remoteServiceName = 'postgresql_remote_newest';
     const details = {
       serviceName: remoteServiceName,
       serviceType: 'postgresql',
