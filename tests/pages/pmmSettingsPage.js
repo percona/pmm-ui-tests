@@ -75,8 +75,6 @@ module.exports = {
     invalidAlertmanagerRulesMessage: 'Invalid alerting rules.',
     invalidDBaaSDisableMessage: 'DBaaS is enabled via ENABLE_DBAAS or via deprecated PERCONA_TEST_DBAAS environment variable.',
     disabledBackupManagement: 'Backup Management is disabled. You can enable it in PMM Settings.',
-    pmmConnectedToPortal: 'Successfully connected PMM to Percona Portal',
-    pmmDisconnectedFromProtal: 'Successfully disconnected PMM from Percona Portal',
   },
   sectionTabsList: {
     metrics: 'Metrics Resolution',
@@ -270,8 +268,6 @@ module.exports = {
     pmmServerNameInput: '$pmmServerName-text-input',
     perconaAccountEmailInput: '$email-text-input',
     perconaAccountPasswordInput: '$password-password-input',
-    platformConnectButton: '$connect-button',
-    platformDisconnectButton: '$disconnect-button',
   },
 
   async openAdvancedSettings() {

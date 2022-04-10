@@ -11,7 +11,7 @@ AfterSuite(async ({ I }) => {
 });
 
 Scenario(
-  'PMM-T1097 Verify PMM server is connected to Portal @platform',
+  'PMM-T1097 Verify PMM server is connected to Portal @portal',
   async ({
     I, pmmSettingsPage, portalAPI, perconaPlatformPage,
   }) => {
@@ -34,34 +34,32 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T1098 Verify login using Percona Platform account @platform',
+  'PMM-T1098 Verify login using Percona Platform account @portal',
   async ({
     I, homePage,
   }) => {
     I.amOnPage('');
     await I.loginWithSSO(newUser.email, newUser.password);
-    I.click('//input[@id="okta-signin-submit"]');
     I.waitInUrl(homePage.landingUrl);
   },
 );
 
 Scenario(
-  'PMM-T1112 Verify user can disconnect pmm from portal success flow @platform',
+  'PMM-T1112 Verify user can disconnect pmm from portal success flow @portal',
   async ({
-    I, pmmSettingsPage, homePage, portalAPI,
+    I, homePage, portalAPI, perconaPlatformPage,
   }) => {
     I.amOnPage('');
     await I.loginWithSSO(newUser.email, newUser.password);
-    I.click('//input[@id="okta-signin-submit"]');
     I.waitInUrl(homePage.landingUrl);
-    I.amOnPage(pmmSettingsPage.perconaPlatform);
-    await pmmSettingsPage.disconnectPmmFromPerconaPortal();
+    I.amOnPage(perconaPlatformPage.url);
+    await perconaPlatformPage.disconnectFromPortal();
     await I.unAuthorize();
     I.amOnPage('');
     I.dontSeeElement(locate('a').withAttr({ href: 'login/generic_oauth' }));
-    I.amOnPage(portalAPI.oktaUrl);
-    I.loginWithSSO(newUser.email, newUser.password, false);
-    I.click('//input[@id="okta-signin-submit"]');
+    I.amOnPage(homePage.genericOauthUrl);
+    I.seeElement(locate('div').withText('OAuth not enabled'));
+    I.amOnPage('');
     I.seeElement(locate('h1').withText('Percona Monitoring and Management'));
   },
 );

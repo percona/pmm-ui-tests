@@ -19,6 +19,7 @@ exports.config = {
         executablePath: process.env.CHROMIUM_PATH,
         ignoreHTTPSErrors: true,
         args: [
+          '--ignore-certificate-errors',
           '--no-sandbox',
           '--window-size=1920,1080',
           '--disable-gpu',
