@@ -37,7 +37,9 @@ Scenario('Verify ServiceNow user can connect to PMM Server @pre-pmm-portal-upgra
     perconaPlatformPage.openPerconaPlatform();
     const adminToken = await portalAPI.getUserAccessToken(portalCredentials.admin1.email, portalCredentials.admin1.password);
 
-    console.log(adminToken);
+    await portalAPI.apiCreateOrg(adminToken);
+    await perconaPlatformPage.openPerconaPlatform();
+    await perconaPlatformPage.connectToPortal(adminToken, `Test Server ${Date.now()}`);
   });
 /*
 Scenario(
