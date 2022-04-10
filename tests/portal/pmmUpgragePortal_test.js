@@ -90,3 +90,17 @@ Scenario(
     perconaPlatformPage.connectToPortal(adminToken, `Test Server ${Date.now()}`);
   },
 );
+
+Scenario(
+  'Verify User can disconnect PMM from the Portal @post-pmm-portal-upgrade',
+  async ({
+    I, perconaPlatformPage, homePage,
+  }) => {
+    I.amOnPage('');
+    I.loginWithSSO(portalCredentials.admin1.email, portalCredentials.admin1.password);
+    I.waitInUrl(homePage.landingUrl);
+    perconaPlatformPage.openPerconaPlatform();
+    perconaPlatformPage.isPMMConnected();
+    perconaPlatformPage.disconnectFromPortal();
+  },
+);
