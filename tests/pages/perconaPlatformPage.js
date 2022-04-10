@@ -26,6 +26,7 @@ module.exports = {
   },
   buttons: {
     connect: '$connect-button',
+    disconnect: '$disconnect-button',
   },
   messages: {
     technicalPreview: ' This feature is in Technical Preview stage',
@@ -33,6 +34,7 @@ module.exports = {
     invalidEmail: 'Invalid email address',
     connectedSuccess: 'Successfully connected PMM to Percona Platform',
     pmmDisconnectedFromProtal: 'Successfully disconnected PMM from Percona Platform',
+    pmmConnected: 'This PMM instance is connected to Percona Platform.',
   },
 
   async openPerconaPlatform() {
@@ -53,7 +55,7 @@ module.exports = {
     I.click(this.buttons.connect);
     I.verifyPopUpMessage(this.messages.connectedSuccess);
     I.refreshPage();
-    I.waitForVisible(this.elements.connectedWrapper, 20);
+    await this.isPMMConnected();
   },
 
   verifyEmailFieldValidation() {
@@ -91,5 +93,11 @@ module.exports = {
   disconnectFromPortal() {
     I.click(this.fields.platformDisconnectButton);
     I.verifyPopUpMessage(this.messages.pmmDisconnectedFromProtal);
+  },
+
+  async isPMMConnected() {
+    I.waitForVisible(this.elements.connectedWrapper, 20);
+    I.waitForVisible(this.buttons.disconnect);
+    locate('p').withText(this.messages.pmmConnected);
   },
 };

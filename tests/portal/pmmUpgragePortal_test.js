@@ -2,6 +2,7 @@ const assert = require('assert');
 const portalAPI = require('../pages/api/portalAPI');
 
 Feature('Testing PMM connected to the Portal Upgrade tests');
+let adminToken = '';
 const fileName = 'portalCredentials';
 let portalCredentials = [];
 
@@ -15,12 +16,13 @@ BeforeSuite(async ({ I }) => {
     portalAPI.oktaCreateUser(portalCredentials.admin1);
     portalAPI.oktaCreateUser(portalCredentials.admin2);
     portalAPI.oktaCreateUser(portalCredentials.technical);
+    adminToken = await portalAPI.getUserAccessToken(portalCredentials.admin1.email, portalCredentials.admin1.password);
+    const orgResp = await portalAPI.apiCreateOrg(adminToken);
+
+    portalAPI.apiInviteOrgMember(adminToken, orgResp.id, { username: portalCredentials.admin2.email, role: 'Admin' });
+    portalAPI.apiInviteOrgMember(adminToken, orgResp.id, { username: portalCredentials.technical.email, role: 'Technical' });
     await I.writeFileSync(fileName, JSON.stringify(portalCredentials));
   }
-});
-
-AfterSuite(async ({ I }) => {
-  I.writeFileSync(fileName, '');
 });
 
 Scenario('Verify ServiceNow user can connect to PMM Server @pre-pmm-portal-upgrade',
@@ -35,69 +37,56 @@ Scenario('Verify ServiceNow user can connect to PMM Server @pre-pmm-portal-upgra
 
     pmmSettingsPage.addPublicAddress();
     perconaPlatformPage.openPerconaPlatform();
-    const adminToken = await portalAPI.getUserAccessToken(portalCredentials.admin1.email, portalCredentials.admin1.password);
-
-    await portalAPI.apiCreateOrg(adminToken);
     await perconaPlatformPage.openPerconaPlatform();
     await perconaPlatformPage.connectToPortal(adminToken, `Test Server ${Date.now()}`);
   });
-/*
+
 Scenario(
   'Verify All org users can login in connected PMM server @pre-pmm-portal-upgrade @post-pmm-portal-upgrade',
   async ({
     I, homePage,
   }) => {
     I.amOnPage('');
-    await I.loginWithSSO(portalCredentials.admin1.email, portalCredentials.admin2.password);
-    I.click('//input[@id="okta-signin-submit"]');
+    await I.loginWithSSO(portalCredentials.admin1.email, portalCredentials.admin1.password);
     I.waitInUrl(homePage.landingUrl);
     I.unAuthorize();
     await I.loginWithSSO(portalCredentials.admin2.email, portalCredentials.admin2.password);
-    I.click('//input[@id="okta-signin-submit"]');
     I.waitInUrl(homePage.landingUrl);
     I.unAuthorize();
     await I.loginWithSSO(portalCredentials.technical.email, portalCredentials.technical.password);
-    I.click('//input[@id="okta-signin-submit"]');
     I.waitInUrl(homePage.landingUrl);
     I.unAuthorize();
   },
 );
-*/
+
 Scenario(
   'Verify user roles are untouched after PMM server upgrade @post-pmm-portal-upgrade',
   async ({
-    I, remoteInstancesPage,
+    I,
   }) => {
-    const users = await I.listUsers();
-    const foundAdmin1User = users.users.find((user) => user.email === 'admin@localhost');
+    const users = await I.listOrgUsers();
+    const foundAdmin1User = users.find((user) => user.email === portalCredentials.admin1.email);
+    const foundAdmin2User = users.find((user) => user.email === portalCredentials.admin2.email);
+    const foundTechnicalUser = users.find((user) => user.email === portalCredentials.technical.email);
 
-    // eslint-disable-next-line no-console
-    console.log(portalCredentials);
-    assert.ok(foundAdmin1User.isAdmin === true, `User role for the user ${foundAdmin1User.login} was changed from admin to viewer`);
-  },
-);
-/*
-Scenario(
-  'Verify PMM server is connected to the Portal @pre-pmm-portal-upgrade @post-pmm-portal-upgrade',
-  async ({
-    I, perconaPlatformPage,
-  }) => {
-    I.Authorize();
-    I.amOnPage('');
-    perconaPlatformPage.openPerconaPlatform();
-    console.log('Hello World');
+    assert.ok(foundAdmin1User.role === 'Admin', `User role for the user ${foundAdmin1User.login} was changed.`);
+    assert.ok(foundAdmin2User.role === 'Admin', `User role for the user ${foundAdmin2User.login} was changed.`);
+    assert.ok(foundTechnicalUser.role === 'Viewer', `User role for the user ${foundTechnicalUser.login} was changed.`);
   },
 );
 
 Scenario(
-  'Verify User can disconnect an reconect PMM server to the Portal @pre-pmm-portal-upgrade @post-pmm-portal-upgrade',
+  'Verify PMM is connecteda and user can disconnect an reconect PMM server to the Portal @post-pmm-portal-upgrade',
   async ({
-    I, perconaPlatformPage,
+    I, perconaPlatformPage, homePage,
   }) => {
-    I.Authorize();
     I.amOnPage('');
+    I.loginWithSSO(portalCredentials.admin1.email, portalCredentials.admin1.password);
+    I.waitInUrl(homePage.landingUrl);
     perconaPlatformPage.openPerconaPlatform();
-    console.log('Hello World');
+    perconaPlatformPage.isPMMConnected();
+    perconaPlatformPage.disconnectFromPortal();
+    adminToken = await portalAPI.getUserAccessToken(portalCredentials.admin1.email, portalCredentials.admin1.password);
+    perconaPlatformPage.connectToPortal(adminToken, `Test Server ${Date.now()}`);
   },
 );
-*/

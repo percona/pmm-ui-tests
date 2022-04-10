@@ -185,6 +185,14 @@ class Grafana extends Helper {
     return resp.data;
   }
 
+  async listOrgUsers() {
+    const apiContext = this.helpers.REST;
+    const headers = { Authorization: `Basic ${await this.getAuth()}` };
+    const resp = await apiContext.sendGetRequest('graph/api/org/users', headers);
+
+    return resp.data;
+  }
+
   async verifyCommand(command, output, result = 'pass', getError = false) {
     const { stdout, stderr, code } = shell.exec(command, { silent: true });
 
