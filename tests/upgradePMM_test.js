@@ -979,7 +979,7 @@ if (versionMinor >= 23) {
 }
 
 Scenario(
-  'PMM-T1051 - Verify PMM Settings page is opened from Home dashboard @menu @alyona-p',
+  'PMM-T1051 - Verify PMM Settings page is opened from Home dashboard @menu',
   async ({ I, homePage, pmmSettingsPage }) => {
     await homePage.open();
 

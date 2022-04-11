@@ -268,7 +268,7 @@ Data(metrics).Scenario(
 );
 
 Scenario(
-  'PMM-T1087 Verify adding PostgreSQL remote instance without postgres database @instances @alyona-p ',
+  'PMM-T1087 Verify adding PostgreSQL remote instance without postgres database @instances',
   async ({
     I, remoteInstancesPage, remoteInstancesHelper,
   }) => {
