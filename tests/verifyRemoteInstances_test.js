@@ -1,4 +1,5 @@
 const assert = require('assert');
+const faker = require('faker');
 
 const { remoteInstancesPage, remoteInstancesHelper, pmmInventoryPage } = inject();
 
@@ -272,7 +273,7 @@ Scenario(
     I, remoteInstancesPage, remoteInstancesHelper,
   }) => {
     const errorMessage = 'Connection check failed: pq: database "postgres2" does not exist.\n';
-    const remoteServiceName = 'postgresql_remote_newest';
+    const remoteServiceName = faker.random.alpha(10);
     const details = {
       serviceName: remoteServiceName,
       serviceType: 'postgresql',
