@@ -9,6 +9,7 @@ module.exports = {
     let body = {
       summary: name,
     };
+    let http_config = {};
 
     switch (type) {
       case this.types.email.type:
@@ -36,11 +37,12 @@ module.exports = {
         };
         break;
       case this.types.webhook.type:
-        const http_config = this.createWebhookNotificationBody(values);
+        http_config = this.createWebhookNotificationBody(values);
+
         body = {
           ...body,
           webhook_config: {
-            http_config
+            http_config,
           },
         };
         break;
