@@ -272,13 +272,14 @@ Scenario(
   async ({
     I, remoteInstancesPage, remoteInstancesHelper,
   }) => {
-    const errorMessage = 'Connection check failed: pq: database "postgres2" does not exist.\n';
-    const remoteServiceName = faker.random.alpha(10);
+    const databaseName = `${faker.lorem.word()}_db`;
+    const errorMessage = `Connection check failed: pq: database "${databaseName}" does not exist.\n`;
+    const remoteServiceName = `${faker.lorem.word()}_service`;
     const details = {
       serviceName: remoteServiceName,
       serviceType: 'postgresql',
       port: remoteInstancesHelper.remote_instance.postgresql.pdpgsql_13_3.port,
-      database: 'dfsdafs2',
+      database: databaseName,
       host: remoteInstancesHelper.remote_instance.postgresql.pdpgsql_13_3.host,
       username: remoteInstancesHelper.remote_instance.postgresql.pdpgsql_13_3.username,
       password: remoteInstancesHelper.remote_instance.postgresql.pdpgsql_13_3.password,
