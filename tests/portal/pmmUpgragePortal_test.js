@@ -83,6 +83,7 @@ Scenario(
 Scenario(
   'Verify user is able to Upgrade PMM version @pmm-portal-upgrade',
   async ({ I, homePage }) => {
+    await I.Authorize();
     I.amOnPage(homePage.url);
     await homePage.upgradePMM(versionMinor);
   },
