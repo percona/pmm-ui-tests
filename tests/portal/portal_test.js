@@ -3,7 +3,6 @@ Feature('Portal Integration with PMM');
 let newUser = {};
 
 AfterSuite(async ({ I }) => {
-  console.log(`Test ran for user: ${newUser.email} with password: ${newUser.password}`);
   const users = await I.listUsers();
   const result = users.users.filter((user) => user.email === newUser.email);
 

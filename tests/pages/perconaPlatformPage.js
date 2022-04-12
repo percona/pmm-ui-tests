@@ -22,9 +22,6 @@ module.exports = {
     platformConnectButton: '$connect-button',
     platformDisconnectButton: '$disconnect-button',
     getAccessTokenLink: locate('a').after('$accessToken-field-container'),
-  },
-  fields: {
-    pmmServerNameField: '$pmmServerName-text-input',
     accessToken: '$accessToken-text-input',
     serverId: '$pmmServerId-text-input',
   },
