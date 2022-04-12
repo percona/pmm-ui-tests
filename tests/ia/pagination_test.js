@@ -32,7 +32,7 @@ Data(pages).Scenario(
     const initialButtonsState = {
       firstPageButton: 'disabled',
       prevPageButton: 'disabled',
-      pageButton: 'enabled',
+      pageButtonActive: 'enabled',
       nextPageButton: 'disabled',
       lastPageButton: 'disabled',
     };
