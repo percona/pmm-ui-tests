@@ -274,11 +274,6 @@ module.exports = {
     await this.waitForPmmSettingsPageLoaded();
   },
 
-  async openPerconaPlatform() {
-    I.amOnPage(this.perconaPlatform);
-    await this.waitForPmmSettingsPageLoaded();
-  },
-
   applyChanges() {
     I.click(this.fields.applyButton);
     I.verifyPopUpMessage(this.messages.successPopUpMessage);
