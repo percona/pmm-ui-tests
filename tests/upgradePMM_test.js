@@ -211,8 +211,8 @@ if (versionMinor >= 15) {
         const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName('MYSQL_SERVICE', psServiceName);
 
         databaseChecksPage.openFailedChecksListForService(service_id);
-        I.click(databaseChecksPage.buttons.toggleFailedCheckBySummary(emptyPasswordSummary));
-        I.seeAttributesOnElements(databaseChecksPage.buttons.toggleFailedCheckBySummary(emptyPasswordSummary), { title: 'Activate' });
+        I.click(databaseChecksPage.buttons.toggleFailedCheckBySummary(failedCheckMessage));
+        I.seeAttributesOnElements(databaseChecksPage.buttons.toggleFailedCheckBySummary(failedCheckMessage), { title: 'Activate' });
       }
     },
   );
