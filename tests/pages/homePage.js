@@ -99,6 +99,7 @@ module.exports = {
 
   serviceDashboardLocator: (serviceName) => locate('a').withText(serviceName),
   isAmiUpgrade: process.env.AMI_UPGRADE_TESTING_INSTANCE === 'true',
+  pmmServerName: process.env.VM_NAME ? process.env.VM_NAME : 'pmm-server',
 
   async open() {
     I.amOnPage(this.url);
@@ -106,7 +107,8 @@ module.exports = {
   },
 
   // introducing methods
-  async upgradePMM(version, verifyLogs = true) {
+  async upgradePMM(version) {
+    console.log(`PMM Server name is: ${this.pmmServerName}`);
     let locators = this.getLocators(version);
     const milestones = this.upgradeMilestones;
 
@@ -133,14 +135,12 @@ module.exports = {
         I.waitForElement(`//pre[contains(text(), '${milestones[0]}')]`, 1200);
         I.waitForText(locators.successUpgradeMessage, 1200, locators.successUpgradeMsgSelector);
 
-        if (verifyLogs) {
         // Get upgrade logs from a container
-          const upgradeLogs = await I.verifyCommand('docker exec pmm-server cat /srv/logs/pmm-update-perform.log');
+        const upgradeLogs = await I.verifyCommand(`docker exec ${this.pmmServerName} cat /srv/logs/pmm-update-perform.log`);
 
-          milestones.forEach((milestone) => {
-            assert.ok(upgradeLogs.includes(milestone), `Expected to see ${milestone} in upgrade logs`);
-          });
-        }
+        milestones.forEach((milestone) => {
+          assert.ok(upgradeLogs.includes(milestone), `Expected to see ${milestone} in upgrade logs`);
+        });
       }
 
       I.click(locators.reloadButtonAfterUpgrade);

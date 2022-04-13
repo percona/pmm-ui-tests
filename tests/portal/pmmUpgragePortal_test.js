@@ -85,7 +85,7 @@ Scenario(
   async ({ I, homePage }) => {
     await I.Authorize();
     I.amOnPage(homePage.url);
-    await homePage.upgradePMM(versionMinor, false);
+    await homePage.upgradePMM(versionMinor);
   },
 ).retry(0);
 
