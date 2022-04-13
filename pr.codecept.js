@@ -12,7 +12,7 @@ exports.config = {
       windowSize: '1920x1080',
       waitForNavigation: 'networkidle0',
       waitForTimeout: 30000,
-      getPageTimeout: 120000,
+      getPageTimeout: 60000,
       waitForAction: 500,
       pressKeyDelay: 5,
       chromium: {
