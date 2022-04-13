@@ -147,7 +147,7 @@ module.exports = {
     } else {
       I.waitForText(locators.successUpgradeMessage, 1200, locators.successUpgradeMsgSelector);
       // we have a bug we need this https://jira.percona.com/browse/PMM-9294
-      I.wait(60);
+      I.wait(240);
 
       I.click(locators.reloadButtonAfterUpgrade);
       I.refreshPage();
