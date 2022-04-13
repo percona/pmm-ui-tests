@@ -5,26 +5,26 @@ const { I } = inject();
 module.exports = {
   url: 'graph/settings/percona-platform',
   elements: {
+    techPreviewLabel: locate('h1'),
     connectForm: '$connect-form',
     pmmServerNameFieldLabel: '$pmmServerName-field-label',
     pmmServerNameValidation: '$pmmServerName-field-error-message',
-    emailFieldLabel: '$email-field-label',
-    emailValidation: '$email-field-error-message',
-    passwordFieldLabel: '$password-field-label',
-    passwordValidation: '$password-field-error-message',
+    accessTokenLabel: '$accessToken-field-label',
+    accessTokenValidation: '$accessToken-field-error-message',
     connectedWrapper: '$connected-wrapper',
+    getAccessTokenLink: locate('a').after('$accessToken-field-container'),
   },
   fields: {
     pmmServerNameField: '$pmmServerName-text-input',
-    emailField: '$email-text-input',
-    passwordField: '$password-password-input',
+    accessToken: '$accessToken-text-input',
+    serverId: '$pmmServerId-text-input',
   },
   buttons: {
     connect: '$connect-button',
   },
   messages: {
+    technicalPreview: ' This feature is in Technical Preview stage',
     requiredField: 'Required field',
-    invalidEmail: 'Invalid email address',
     connected: 'This PMM instance is connected to Percona Portal.',
     connectedSuccess: 'Successfully connected PMM to Percona Portal',
   },
@@ -38,28 +38,5 @@ module.exports = {
     I.verifyPopUpMessage(this.messages.connectedSuccess);
     I.refreshPage();
     I.waitForVisible(this.elements.connectedWrapper, 20);
-  },
-
-  verifyEmailFieldValidation() {
-    I.clearField(this.fields.emailField);
-
-    I.seeTextEquals(this.messages.requiredField, this.elements.emailValidation);
-
-    // Verify validation message for "email" value
-    I.fillField(this.fields.emailField, 'email');
-    I.seeTextEquals(this.messages.invalidEmail, this.elements.emailValidation);
-
-    // Verify validation message for "email@" value
-    I.appendField(this.fields.emailField, '@');
-    I.seeTextEquals(this.messages.invalidEmail, this.elements.emailValidation);
-
-    // Verify validation message for "email@domain#.com" value
-    I.appendField(this.fields.emailField, 'domain#.com');
-    I.seeTextEquals(this.messages.invalidEmail, this.elements.emailValidation);
-
-    // Verify there is no validation error for "email@domain.com" value
-    I.clearField(this.fields.emailField);
-    I.appendField(this.fields.emailField, 'email@domain.com');
-    I.seeTextEquals('', this.elements.emailValidation);
   },
 };

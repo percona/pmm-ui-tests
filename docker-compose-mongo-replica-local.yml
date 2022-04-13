@@ -30,7 +30,7 @@ services:
       - PMM_AGENT_SETUP=1
       - PMM_AGENT_SERVER_ADDRESS=pmm-server
       - PMM_AGENT_SERVER_USERNAME=admin
-      - PMM_AGENT_SERVER_PASSWORD=admin
+      - PMM_AGENT_SERVER_PASSWORD=${ADMIN_PASSWORD:-admin}
       - PMM_AGENT_PORTS_MIN=41000
       - PMM_AGENT_PORTS_MAX=41500
       - PMM_AGENT_SERVER_INSECURE_TLS=1
@@ -43,7 +43,7 @@ services:
 
   mongors1:
     container_name: mongors1
-    image: 'percona/percona-server-mongodb:4.2'
+    image: 'percona/percona-server-mongodb:4.4'
     ports:
       - 27027:27027
     restart: always
@@ -61,7 +61,7 @@ services:
 
   mongors2:
     container_name: mongors2
-    image: 'percona/percona-server-mongodb:4.2'
+    image: 'percona/percona-server-mongodb:4.4'
     ports:
       - 27028:27028
     restart: always
@@ -79,7 +79,7 @@ services:
 
   mongors3:
     container_name: mongors3
-    image: 'percona/percona-server-mongodb:4.2'
+    image: 'percona/percona-server-mongodb:4.4'
     ports:
       - 27029:27029
     restart: always

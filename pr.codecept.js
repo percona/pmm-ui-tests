@@ -2,6 +2,8 @@ const { pageObjects, getChunks } = require('./codeceptConfigHelper');
 
 const PMM_URL = 'http://127.0.0.1/';
 
+process.env.ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'admin';
+
 exports.config = {
   output: 'tests/output',
   helpers: {
@@ -77,6 +79,9 @@ exports.config = {
       enabled: true,
       outputDir: 'tests/output/allure',
     },
+    tryTo: {
+      enabled: true,
+    },
   },
   mocha: {
     reporterOptions: {
@@ -107,6 +112,6 @@ exports.config = {
   hooks: [],
   gherkin: {},
   tests: 'tests/**/*_test.js',
-  timeout: 200,
+  timeout: 1800,
   name: 'pmm-qa',
 };

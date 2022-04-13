@@ -66,3 +66,4 @@ docker exec -u 0 -it pmm-client /bin/bash -c "percona-release enable pbm release
 docker exec -u 0 -it pmm-client /bin/bash -c "pmm-admin add mongodb --service-name=mongo-backup-locations --username=admin --password=password --host=mongors1 --port=27027"
 docker exec -u 0 -it pmm-client /bin/bash -c "pmm-admin add mongodb --service-name=mongo-backup-schedule --username=admin --password=password --host=mongors1 --port=27027"
 docker exec -u 0 -it pmm-client /bin/bash -c "pmm-admin add mongodb --service-name=mongo-backup-inventory --username=admin --password=password --host=mongors1 --port=27027"
+docker exec -u 0 -it pmm-client /bin/bash -c "pmm-admin add mongodb --service-name=mongo-service-to-delete --username=admin --password=password --host=mongors1 --port=27027"
