@@ -27,7 +27,6 @@ module.exports = {
     firstPageButton: '$first-page-button',
     prevPageButton: '$previous-page-button',
     pageButton: '$page-button',
-    pageButtonActive: '$page-button-active',
     nextPageButton: '$next-page-button',
     lastPageButton: '$last-page-button',
     rowsPerPage: locate('$pagination').find('div[class*="-singleValue"]'),
