@@ -6,27 +6,6 @@ let adminToken = '';
 const fileName = 'portalCredentials';
 let portalCredentials = {};
 
-// For running on local env set PMM_SERVER_LATEST and DOCKER_VERSION variables
-function getVersions() {
-  const [, pmmMinor, pmmPatch] = (process.env.PMM_SERVER_LATEST || '').split('.');
-  const [, versionMinor, versionPatch] = process.env.DOCKER_VERSION
-    ? (process.env.DOCKER_VERSION || '').split('.')
-    : (process.env.SERVER_VERSION || '').split('.');
-
-  const majorVersionDiff = pmmMinor - versionMinor;
-  const patchVersionDiff = pmmPatch - versionPatch;
-  const current = `2.${versionMinor}`;
-
-  return {
-    majorVersionDiff,
-    patchVersionDiff,
-    current,
-    versionMinor,
-  };
-}
-
-const { versionMinor, patchVersionDiff, majorVersionDiff } = getVersions();
-
 BeforeSuite(async ({ I }) => {
   const userCredentials = await I.readFileSync(fileName, true);
 
@@ -83,6 +62,8 @@ Scenario(
 Scenario(
   'Verify user is able to Upgrade PMM version @pmm-portal-upgrade',
   async ({ I, homePage }) => {
+    const { versionMinor } = homePage.getVersions();
+
     await I.Authorize();
     I.amOnPage(homePage.url);
     await homePage.upgradePMM(versionMinor);
