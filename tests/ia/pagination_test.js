@@ -32,7 +32,7 @@ Data(pages).Scenario(
     const initialButtonsState = {
       firstPageButton: 'disabled',
       prevPageButton: 'disabled',
-      pageButton: 'enabled',
+      pageButtonActive: 'enabled',
       nextPageButton: 'disabled',
       lastPageButton: 'disabled',
     };
@@ -54,7 +54,7 @@ Data(pages).Scenario(
     isTemplatesPage
       ? I.seeNumberOfElements(iaCommon.elements.rowInTable, 13)
       : I.seeNumberOfElements(iaCommon.elements.rowInTable, 1);
-    I.seeNumberOfElements(iaCommon.buttons.pageButton, 1);
+    I.seeNumberOfElements(iaCommon.buttons.pageButtonActive, 1);
 
     // Create entities for to have 2 pages (26 entities in sum)
     isTemplatesPage
@@ -74,11 +74,12 @@ Data(pages).Scenario(
 
     // Verify number of rows and number of page buttons
     I.seeNumberOfElements(iaCommon.elements.rowInTable, 25);
-    I.seeNumberOfElements(iaCommon.buttons.pageButton, 2);
+    I.seeNumberOfElements(iaCommon.buttons.pageButton, 1);
+    I.seeNumberOfElements(iaCommon.buttons.pageButtonActive, 1);
 
     // Go to 2 page
     I.scrollTo(iaCommon.elements.pagination);
-    I.click(locate(iaCommon.buttons.pageButton).at(2));
+    I.click(locate(iaCommon.buttons.pageButton).at(1));
 
     I.waitForVisible(iaCommon.elements.pagination, 30);
     iaCommon.verifyPaginationButtonsState({
@@ -88,7 +89,8 @@ Data(pages).Scenario(
     });
     // Verify only 1 row on 2 page
     I.seeNumberOfElements(iaCommon.elements.rowInTable, 1);
-    I.seeNumberOfElements(iaCommon.buttons.pageButton, 2);
+    I.seeNumberOfElements(iaCommon.buttons.pageButton, 1);
+    I.seeNumberOfElements(iaCommon.buttons.pageButtonActive, 1);
 
     // Create entities for to have 3 pages (51 entities in sum)
     await createEntities(25);
@@ -99,7 +101,7 @@ Data(pages).Scenario(
 
     // Go to 2nd page
     I.scrollTo(iaCommon.elements.pagination);
-    I.click(locate(iaCommon.buttons.pageButton).at(2));
+    I.click(locate(iaCommon.buttons.pageButton).at(1));
 
     iaCommon.verifyPaginationButtonsState({
       ...initialButtonsState,
@@ -111,7 +113,8 @@ Data(pages).Scenario(
 
     // Verify number of rows and number of page buttons
     I.seeNumberOfElements(iaCommon.elements.rowInTable, 25);
-    I.seeNumberOfElements(iaCommon.buttons.pageButton, 3);
+    I.seeNumberOfElements(iaCommon.buttons.pageButton, 2);
+    I.seeNumberOfElements(iaCommon.buttons.pageButtonActive, 1);
 
     // Go to 3d page
     I.scrollTo(iaCommon.elements.pagination);
