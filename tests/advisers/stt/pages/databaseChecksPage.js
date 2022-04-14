@@ -17,13 +17,14 @@ module.exports = {
     failedCheckRowBySummary: (summary) => locate('tr').withChild(locate('td').withText(summary)),
   },
   messages: {
-    homePagePanelMessage: 'Security Threat Tool is disabled.\nCheck PMM Settings.',
-    disabledSTTMessage: 'Security Threat Tool is disabled. You can enable it in',
-    securityChecksDone: 'Running database checks in the background... The results will be displayed here soon.',
+    homePagePanelMessage: 'Advisor Checks feature is disabled.\nCheck PMM Settings.',
+    disabledSTTMessage: 'Advisor Checks feature is disabled. You can enable it in',
+    securityChecksDone: 'Running checks in the background... The results will be displayed here soon.',
   },
   buttons: {
     startDBChecks: locate('$db-check-panel-actions').find('button'),
     toggleSilenced: locate('$db-checks-failed-checks-toggle-silenced').find('label'),
+    toggleFailedCheckBySummary: (checkSummary) => locate(failedCheckRow(checkSummary)).find('$silence-button'),
   },
   fields: {
     dbCheckPanelSelector: '$db-check-panel',
