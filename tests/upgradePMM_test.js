@@ -180,7 +180,7 @@ if (versionMinor >= 15) {
 
       await securityChecksAPI.startSecurityChecks();
       // Waiting to have results
-      await securityChecksAPI.waitForFailedCheckExistance(failedCheckMessage, psServiceName);
+      I.wait(60);
       // disable check, change interval for a check, change interval settings
       if (versionMinor >= 16) {
         await securityChecksAPI.disableCheck('mongodb_version');
