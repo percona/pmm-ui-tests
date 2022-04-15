@@ -599,7 +599,7 @@ if (versionMinor >= 16) {
     },
   );
 
-  Scenario.skip(
+  Scenario(
     'Verify silenced checks remain silenced after upgrade @post-upgrade @pmm-upgrade',
     async ({
       I,
