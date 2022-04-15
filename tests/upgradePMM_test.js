@@ -28,7 +28,6 @@ clientDbServices.add(['POSTGRESQL_SERVICE', 'PGSQL_', 'pg_stat_database_xact_rol
 // clientDbServices.add(['MONGODB_SERVICE', 'mongodb_', 'mongodb_connections', 'annotation-for-mongo', dashboardPage.mongoDbInstanceSummaryDashboard.url, 'mongo_upgrade']);
 
 const connection = perconaServerDB.defaultConnection;
-const emptyPasswordSummary = 'User(s) has/have no password defined';
 const psServiceName = 'upgrade-stt-ps-5.7.30';
 const failedCheckRowLocator = databaseChecksPage.elements
   .failedCheckRowByServiceName(psServiceName);
@@ -609,8 +608,8 @@ if (versionMinor >= 16) {
 
       databaseChecksPage.openFailedChecksListForService(service_id);
 
-      I.waitForVisible(databaseChecksPage.elements.failedCheckRowBySummary(emptyPasswordSummary), 30);
-      I.seeAttributesOnElements(databaseChecksPage.buttons.toggleFailedCheckBySummary(emptyPasswordSummary), { title: 'Activate' });
+      I.waitForVisible(databaseChecksPage.elements.failedCheckRowBySummary(failedCheckMessage), 30);
+      I.seeAttributesOnElements(databaseChecksPage.buttons.toggleFailedCheckBySummary(failedCheckMessage), { title: 'Activate' });
     },
   );
 
