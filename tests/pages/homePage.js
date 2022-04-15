@@ -104,9 +104,8 @@ module.exports = {
     // skipping milestones checks for 2.9 and 2.10, 2.11 versions due logs not showing issue
     if (version > 11) {
       if (this.isAmiUpgrade) {
-        for (const milestone of milestones) {
-          I.waitForElement(`//pre[contains(text(), '${milestone}')]`, 1200);
-        }
+        // to ensure that the logs window is never empty during upgrade
+        I.waitForElement(`//pre[contains(text(), '${milestones[0]}')]`, 1200);
 
         I.waitForText(locators.successUpgradeMessage, 1200, locators.successUpgradeMsgSelector);
       }
