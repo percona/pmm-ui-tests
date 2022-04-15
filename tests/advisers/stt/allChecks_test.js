@@ -102,7 +102,7 @@ Scenario(
     await securityChecksAPI.waitForFailedCheckNonExistance(detailsText, psServiceName);
 
     // Verify there is no MySQL Version failed check
-    databaseChecksPage.verifyFailedCheckNotExists(detailsText, serviceId);
+    // databaseChecksPage.verifyFailedCheckNotExists(detailsText, serviceId);
   },
 );
 
@@ -111,7 +111,7 @@ Scenario(
   async ({
     I, allChecksPage, securityChecksAPI,
   }) => {
-    const checkName = 'MySQL User check';
+    const checkName = 'MySQL Version';
     const interval = 'Rare';
 
     await securityChecksAPI.restoreDefaultIntervals();
