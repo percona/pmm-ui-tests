@@ -1,5 +1,16 @@
-const { I } = inject();
-const db = 'mysql';
+const mysql = require('mysql');
+
+let c;
+
+const execute = (query) => new Promise((resolve, reject) => {
+  c.query(query, (error, results) => {
+    if (error) {
+      reject(error);
+    } else {
+      resolve(results);
+    }
+  });
+});
 
 /**
  * Percona Server MySQL DB interaction module.
@@ -18,40 +29,52 @@ module.exports = {
       host, port, username, password,
     } = connection;
 
-    I.connect(db, `mysql://${username}:${password}@${host}:${port}/mysql`);
+    c = mysql.createConnection({
+      host,
+      port,
+      user: username,
+      password,
+      database: 'mysql',
+    });
   },
 
   async disconnectFromPS() {
-    await I.removeConnection(db);
+    await c.destroy();
   },
 
   async dropUser(username = 'empty-user') {
-    await I.run(db, `DROP USER IF EXISTS "${username}"@"localhost"`);
+    await execute(`DROP USER IF EXISTS "${username}"@"localhost"`);
   },
 
   async createUser(username = 'empty-user', password = '') {
     if (password) {
-      await I.run(db, `CREATE USER "${username}"@"localhost" IDENTIFIED BY '${password}'`);
+      await execute(`CREATE USER "${username}"@"localhost" IDENTIFIED BY '${password}'`);
     } else {
-      await I.run(db, `CREATE USER "${username}"@"localhost"`);
+      await execute(`CREATE USER "${username}"@"localhost"`);
     }
   },
 
   async setUserPassword(username = 'empty-user', password = 'password') {
-    await I.run(db, `ALTER USER "${username}"@"localhost" IDENTIFIED BY '${password}'`);
+    await execute(`ALTER USER "${username}"@"localhost" IDENTIFIED BY '${password}'`);
   },
 
   async createTable(name, columns = 'id INT AUTO_INCREMENT PRIMARY KEY, user VARCHAR(20) NOT NULL') {
-    await I.run(db, `CREATE TABLE IF NOT EXISTS \`${name}\` (${columns}) ENGINE=INNODB`);
+    await execute(`CREATE TABLE IF NOT EXISTS \`${name}\` (${columns}) ENGINE=INNODB`);
   },
 
   async deleteTable(name) {
-    await I.run(db, `DROP TABLE IF EXISTS ${name};`);
+    await execute(`DROP TABLE IF EXISTS ${name};`);
   },
 
   async isTableExists(name) {
-    const result = await I.query(db, `SHOW TABLES LIKE "${name}";`);
-
-    return result.length > 0;
+    return new Promise((resolve, reject) => {
+      c.query(`SHOW TABLES LIKE '${name}'`, (error, results) => {
+        if (error) {
+          reject(error);
+        } else {
+          resolve(results.length > 0);
+        }
+      });
+    });
   },
 };
