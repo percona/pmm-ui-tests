@@ -28,7 +28,6 @@ clientDbServices.add(['POSTGRESQL_SERVICE', 'PGSQL_', 'pg_stat_database_xact_rol
 // clientDbServices.add(['MONGODB_SERVICE', 'mongodb_', 'mongodb_connections', 'annotation-for-mongo', dashboardPage.mongoDbInstanceSummaryDashboard.url, 'mongo_upgrade']);
 
 const connection = perconaServerDB.defaultConnection;
-const emptyPasswordSummary = 'User(s) has/have no password defined';
 const psServiceName = 'upgrade-stt-ps-5.7.30';
 const failedCheckRowLocator = databaseChecksPage.elements
   .failedCheckRowByServiceName(psServiceName);
@@ -179,10 +178,9 @@ if (versionMinor >= 15) {
       await settingsAPI.changeSettings({ stt: true });
       await addInstanceAPI.addInstanceForSTT(connection, psServiceName);
 
-      // await securityChecksAPI.startSecurityChecks();
+      await securityChecksAPI.startSecurityChecks();
       // Waiting to have results
-      // await securityChecksAPI.waitForFailedCheckExistance(emptyPasswordSummary);
-      // Run DB Checks from UI
+      I.wait(60);
       // disable check, change interval for a check, change interval settings
       if (versionMinor >= 16) {
         await securityChecksAPI.disableCheck('mongodb_version');
@@ -207,7 +205,7 @@ if (versionMinor >= 15) {
       // I.waitForVisible(failedCheckRowLocator, 30);
 
       if (versionMinor < 27) {
-        // I.click(failedCheckRowLocator.find('button').first());
+        I.click(failedCheckRowLocator.find('button').first());
       } else {
         const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName('MYSQL_SERVICE', psServiceName);
 
@@ -600,7 +598,7 @@ if (versionMinor >= 16) {
     },
   );
 
-  Scenario.skip(
+  Scenario(
     'Verify silenced checks remain silenced after upgrade @post-upgrade @pmm-upgrade',
     async ({
       I,
@@ -610,8 +608,8 @@ if (versionMinor >= 16) {
 
       databaseChecksPage.openFailedChecksListForService(service_id);
 
-      I.waitForVisible(databaseChecksPage.elements.failedCheckRowBySummary(emptyPasswordSummary), 30);
-      I.seeAttributesOnElements(databaseChecksPage.buttons.toggleFailedCheckBySummary(emptyPasswordSummary), { title: 'Activate' });
+      I.waitForVisible(databaseChecksPage.elements.failedCheckRowBySummary(failedCheckMessage), 30);
+      I.seeAttributesOnElements(databaseChecksPage.buttons.toggleFailedCheckBySummary(failedCheckMessage), { title: 'Activate' });
     },
   );
 

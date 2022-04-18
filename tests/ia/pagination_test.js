@@ -205,7 +205,7 @@ Data(pages).Scenario(
 
     // Verify that we have 25 rows and only one page
     I.seeNumberOfElements(iaCommon.elements.rowInTable, 26);
-    I.seeNumberOfElements(iaCommon.buttons.pageButton, 1);
+    I.seeNumberOfElements(iaCommon.buttons.pageButtonActive, 1);
 
     // Change rows per page to '25'
     I.waitForVisible(iaCommon.elements.pagination, 30);
@@ -213,13 +213,14 @@ Data(pages).Scenario(
 
     // Verify that we have 25 rows and 2 pages
     I.seeNumberOfElements(iaCommon.elements.rowInTable, 25);
-    I.seeNumberOfElements(iaCommon.buttons.pageButton, 2);
+    I.seeNumberOfElements(iaCommon.buttons.pageButton, 1);
+    I.seeNumberOfElements(iaCommon.buttons.pageButtonActive, 1);
 
     // Change rows to 100
     iaCommon.selectRowsPerPage(100);
     I.waitForVisible(iaCommon.elements.pagination, 30);
     I.seeNumberOfElements(iaCommon.elements.rowInTable, 26);
-    I.seeNumberOfElements(iaCommon.buttons.pageButton, 1);
+    I.seeNumberOfElements(iaCommon.buttons.pageButtonActive, 1);
 
     // Create 75 entities more to have 101 in sum
     await createEntities(75);
@@ -232,18 +233,20 @@ Data(pages).Scenario(
     I.scrollTo(iaCommon.elements.pagination);
     I.seeTextEquals('100', iaCommon.buttons.rowsPerPage);
     I.seeNumberOfElements(iaCommon.elements.rowInTable, 100);
-    I.seeNumberOfElements(iaCommon.buttons.pageButton, 2);
+    I.seeNumberOfElements(iaCommon.buttons.pageButton, 1);
+    I.seeNumberOfElements(iaCommon.buttons.pageButtonActive, 1);
 
     // Go to 2nd page
     I.scrollTo(iaCommon.elements.pagination);
-    I.click(locate(iaCommon.buttons.pageButton).at(2));
+    I.click(locate(iaCommon.buttons.pageButton).at(1));
 
     // Verify only 1 row on 2 page
     I.waitForVisible(iaCommon.elements.pagination, 30);
     I.waitForVisible(iaCommon.elements.rowInTable, 30);
     I.seeTextEquals('100', iaCommon.buttons.rowsPerPage);
     I.seeNumberOfElements(iaCommon.elements.rowInTable, 1);
-    I.seeNumberOfElements(iaCommon.buttons.pageButton, 2);
+    I.seeNumberOfElements(iaCommon.buttons.pageButton, 1);
+    I.seeNumberOfElements(iaCommon.buttons.pageButtonActive, 1);
   },
 );
 
@@ -271,7 +274,7 @@ Data(pages).Scenario(
 
     // Go to 2nd page
     I.scrollTo(iaCommon.elements.pagination);
-    I.click(locate(iaCommon.buttons.pageButton).at(2));
+    I.click(locate(iaCommon.buttons.pageButton).at(1));
 
     I.waitForVisible(iaCommon.elements.pagination, 30);
     I.seeTextEquals(iaCommon.messages.itemsShown(26, 50, 101), iaCommon.elements.itemsShown);
@@ -285,7 +288,7 @@ Data(pages).Scenario(
     I.seeTextEquals(iaCommon.messages.itemsShown(1, 50, 101), iaCommon.elements.itemsShown);
 
     I.scrollTo(iaCommon.elements.pagination);
-    I.click(locate(iaCommon.buttons.pageButton).at(2));
+    I.click(locate(iaCommon.buttons.pageButton).at(1));
 
     I.waitForVisible(iaCommon.elements.pagination, 30);
     I.seeTextEquals(iaCommon.messages.itemsShown(51, 100, 101), iaCommon.elements.itemsShown);
@@ -299,11 +302,12 @@ Data(pages).Scenario(
     I.seeTextEquals(iaCommon.messages.itemsShown(1, 100, 101), iaCommon.elements.itemsShown);
 
     I.scrollTo(iaCommon.elements.pagination);
-    I.click(locate(iaCommon.buttons.pageButton).at(2));
+    I.click(locate(iaCommon.buttons.pageButton).at(1));
 
     I.waitForVisible(iaCommon.elements.pagination, 30);
     I.seeNumberOfElements(iaCommon.elements.rowInTable, 1);
-    I.seeNumberOfElements(iaCommon.buttons.pageButton, 2);
+    I.seeNumberOfElements(iaCommon.buttons.pageButton, 1);
+    I.seeNumberOfElements(iaCommon.buttons.pageButtonActive, 1);
 
     I.seeTextEquals(iaCommon.messages.itemsShown(101, 101, 101), iaCommon.elements.itemsShown);
   },
