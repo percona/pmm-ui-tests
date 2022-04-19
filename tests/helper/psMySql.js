@@ -72,6 +72,7 @@ module.exports = {
         if (error) {
           reject(error);
         } else {
+          console.log(results);
           resolve(results.length > 0);
         }
       });
