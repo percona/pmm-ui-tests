@@ -46,6 +46,7 @@
     "moment": "^2.29.2",
     "mongodb": "^3.7.2",
     "mysql": "^2.18.1",
+    "mysql2": "^2.3.3",
     "playwright": "^1.13.0",
     "prettier": "^2.2.1",
     "shelljs": "^0.8.5",

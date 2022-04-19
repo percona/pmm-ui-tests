@@ -1,4 +1,4 @@
-const mysql = require('mysql');
+const mysql = require('mysql2');
 
 let c;
 
@@ -63,7 +63,7 @@ module.exports = {
   },
 
   async deleteTable(name) {
-    await execute(`DROP TABLE IF EXISTS ${name};`);
+    await execute(`DROP TABLE IF EXISTS ${name}`);
   },
 
   async isTableExists(name) {
