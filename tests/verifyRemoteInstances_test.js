@@ -272,15 +272,14 @@ Scenario(
   async ({
     I, remoteInstancesPage, remoteInstancesHelper,
   }) => {
-    const databaseName = `${faker.lorem.word()}_db`;
-    const errorMessage = `Connection check failed: pq: database "${databaseName}" does not exist.\n`;
+    const errorMessage = `Connection check failed: pq: database "postgres" does not exist.`;
     const remoteServiceName = `${faker.lorem.word()}_service`;
     const details = {
       serviceName: remoteServiceName,
       serviceType: 'postgresql',
       port: remoteInstancesHelper.remote_instance.postgresql.pdpgsql_13_3.port,
-      database: databaseName,
-      host: remoteInstancesHelper.remote_instance.postgresql.pdpgsql_13_3.host,
+      database: 'postgres',
+      host: 'postgresnodb',
       username: remoteInstancesHelper.remote_instance.postgresql.pdpgsql_13_3.username,
       password: remoteInstancesHelper.remote_instance.postgresql.pdpgsql_13_3.password,
       environment: remoteInstancesPage.potgresqlSettings.environment,
@@ -293,7 +292,7 @@ Scenario(
     await remoteInstancesPage.addRemoteDetails(details);
     I.click(remoteInstancesPage.fields.addService);
     I.verifyPopUpMessage(errorMessage);
-    I.fillField(remoteInstancesPage.fields.database, 'postgres');
+    I.fillField(remoteInstancesPage.fields.database, 'not_default_db');
     I.click(remoteInstancesPage.fields.addService);
     pmmInventoryPage.verifyRemoteServiceIsDisplayed(remoteServiceName);
     await pmmInventoryPage.verifyAgentHasStatusRunning(remoteServiceName);
