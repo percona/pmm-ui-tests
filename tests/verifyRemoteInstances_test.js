@@ -270,18 +270,19 @@ Data(metrics).Scenario(
 Scenario(
   'PMM-T1087 Verify adding PostgreSQL remote instance without postgres database @instances',
   async ({
-    I, remoteInstancesPage, remoteInstancesHelper,
+    I, remoteInstancesPage, grafanaAPI,
   }) => {
-    const errorMessage = `Connection check failed: pq: database "postgres" does not exist.`;
+    const errorMessage = 'Connection check failed: pq: database "postgres" does not exist.';
     const remoteServiceName = `${faker.lorem.word()}_service`;
+    const metric = 'pg_stat_database_xact_rollback';
     const details = {
       serviceName: remoteServiceName,
       serviceType: 'postgresql',
       port: remoteInstancesHelper.remote_instance.postgresql.pdpgsql_13_3.port,
       database: 'postgres',
       host: 'postgresnodb',
-      username: remoteInstancesHelper.remote_instance.postgresql.pdpgsql_13_3.username,
-      password: remoteInstancesHelper.remote_instance.postgresql.pdpgsql_13_3.password,
+      username: 'test',
+      password: 'test',
       environment: remoteInstancesPage.potgresqlSettings.environment,
       cluster: remoteInstancesPage.potgresqlSettings.cluster,
     };
@@ -296,6 +297,10 @@ Scenario(
     I.click(remoteInstancesPage.fields.addService);
     pmmInventoryPage.verifyRemoteServiceIsDisplayed(remoteServiceName);
     await pmmInventoryPage.verifyAgentHasStatusRunning(remoteServiceName);
-    await pmmInventoryPage.verifyMetricsFlags(remoteServiceName);
+    // verify metric for client container node instance
+    const response = await grafanaAPI.checkMetricExist(metric, { type: 'service_name', value: remoteServiceName });
+    const result = JSON.stringify(response.data.data.result);
+
+    assert.ok(response.data.data.result.length !== 0, `Metrics ${metric} from ${remoteServiceName} should be available but got empty ${result}`);
   },
 );
