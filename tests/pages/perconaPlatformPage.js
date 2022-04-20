@@ -3,6 +3,7 @@ const faker = require('faker');
 const { I } = inject();
 
 module.exports = {
+  portalDevUrl: 'https://portal-dev.percona.com',
   url: 'graph/settings/percona-platform',
   elements: {
     techPreviewLabel: locate('h1'),
@@ -34,6 +35,11 @@ module.exports = {
     invalidEmail: 'Invalid email address',
     connectedSuccess: 'Successfully connected PMM to Percona Platform',
     pmmDisconnectedFromProtal: 'Successfully disconnected PMM from Percona Platform',
+  },
+  activateUserPage: {
+    newPasswordField: '//input[@id="loginForm.newPassword"]',
+    verifyPasswordField: '//input[@id="loginForm.verifyPassword"]',
+    createAccountButton: '//input[@id="next-button"]',
   },
 
   async openPerconaPlatform() {
@@ -92,5 +98,11 @@ module.exports = {
   disconnectFromPortal() {
     I.click(this.fields.platformDisconnectButton);
     I.verifyPopUpMessage(this.messages.pmmDisconnectedFromProtal);
+  },
+
+  activateUser(password) {
+    I.fillField(this.activateUserPage.newPasswordField, password);
+    I.fillField(this.activateUserPage.verifyPasswordField, password);
+    I.click(this.activateUserPage.createAccountButton);
   },
 };
