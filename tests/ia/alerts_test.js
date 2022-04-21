@@ -256,3 +256,32 @@ Scenario(
     I.dontSeeElement(alertsPage.elements.alertRow(alertName));
   },
 );
+
+Scenario(
+  'PMM-T568 Verify alerts on Pager Duty @ia',
+  async ({ I, ncPage, alertsPage, channelsAPI, rulesAPI, alertsAPI, alertmanagerAPI, alertRulesPage }) => {
+    await rulesAPI.clearAllRules(true);
+    const channelName = 'Pager Duty with Service key';
+    const ruleName = 'Rule Name for Pager Duty with Service key';
+    const channelId = await channelsAPI.createNotificationChannel(channelName, ncPage.types.pagerDuty.type);
+    const rule = {
+      ruleName,
+      channels: [channelId],
+    };
+    const ruleId = await rulesAPI.createAlertRule(rule);
+
+    alertRulesPage.openAlertRulesTab();
+    I.waitForVisible(alertRulesPage.buttons.toggleAlertRule(ruleName), 30);
+    alertRulesPage.verifyRuleState(true, ruleName);
+
+    await alertsAPI.waitForAlerts(60, 1);
+    I.amOnPage(alertsPage.url);
+    I.waitForElement(alertsPage.elements.alertRow(alertName), 60);
+    I.see('Critical', alertsPage.elements.severityCell(alertName));
+    await alertmanagerAPI.verifyAlerts([{ ruleId, serviceName: 'pmm-server-postgresql' }]);
+
+    // Verify pager notification received
+    await rulesAPI.removeAlertRule(ruleId);
+    await channelsAPI.deleteNotificationChannel(channelId);
+  },
+);
