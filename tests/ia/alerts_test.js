@@ -285,3 +285,118 @@ Scenario(
     await channelsAPI.deleteNotificationChannel(channelId);
   },
 );
+
+Scenario(
+  'PMM-T1044 Verify user is able to add WebHook (using HTTPs request) notification channel @ia',
+  async ({ I, ncPage, rulesAPI, alertsAPI, alertRulesPage }) => {
+    const channelName = 'Webhook Channel for 1044';
+    const webhookURL = 'https://eotp7672kjzmxfx.m.pipedream.net';
+    const ruleName = 'AlertRuleFor1044';
+
+    ncPage.openNotificationChannelsTab();
+    // await ncPage.createChannel(channelName, ncPage.types.webhook.type);
+    I.waitForVisible(ncPage.buttons.openAddChannelModal, 30);
+    I.click(ncPage.buttons.openAddChannelModal);
+    I.waitForVisible(ncPage.fields.typeDropdown, 30);
+    await ncPage.selectChannelType(ncPage.types.webhook.type);
+    I.fillField(ncPage.fields.nameInput, channelName);
+    I.fillField(ncPage.fields.webhookUrlInput, webhookURL);
+    I.click(ncPage.buttons.addChannel);
+    I.verifyPopUpMessage(ncPage.messages.successfullyAdded);
+    ncPage.verifyChannelInList(channelName, ncPage.types.webhook.type);
+    const ruleId = await rulesAPI.createAlertRule({ ruleName });
+
+    alertRulesPage.openAlertRulesTab();
+    I.waitForVisible(alertRulesPage.buttons.toggleAlertRule(ruleName), 30);
+    alertRulesPage.verifyRuleState(true, ruleName);
+    await alertsAPI.waitForAlerts(60, 1);
+
+    I.click(alertRulesPage.buttons.editRule);
+    I.waitForVisible(alertRulesPage.elements.modalHeader, 30);
+    alertRulesPage.searchAndSelectResult('Channels', channelName);
+    I.click(alertRulesPage.buttons.addRule);
+    I.verifyPopUpMessage(alertRulesPage.messages.successfullyAdded);
+    await alertsAPI.waitForAlerts(60, 1);
+    // Verify Webhook Notification is sent to the specified resource
+  },
+);
+
+Scenario(
+  'PMM-T1145 Verify that TLS option is using dropdown instead of a checkbox @ia',
+  async ({ I, ncPage, alertRulesPage }) => {
+    const channelName = 'Webhook Channel for 1145';
+    const webhookURL = 'https://eotp7672kjzmxfx.m.pipedream.net';
+
+    ncPage.openNotificationChannelsTab();
+    I.waitForVisible(ncPage.buttons.openAddChannelModal, 30);
+    I.click(ncPage.buttons.openAddChannelModal);
+    I.waitForVisible(ncPage.fields.typeDropdown, 30);
+    await ncPage.selectChannelType(ncPage.types.webhook.type);
+    I.fillField(ncPage.fields.nameInput, channelName);
+    I.fillField(ncPage.fields.webhookUrlInput, webhookURL);
+    I.waitForText('Maximum number of alerts to include in message (0 = all)', 30, ncPage.elements.maxAlertsCountLabel);
+
+    const defaultCount = await I.grabAttributeFrom(ncPage.fields.maxAlertsCount, 'value');
+
+    assert.ok(defaultCount === '0', `Default value must be 0, not ${defaultCount}`);
+
+    I.fillField(ncPage.fields.maxAlertsCount, 2);
+    I.seeElement(ncPage.buttons.tslDropdown, 30);
+    I.click(ncPage.buttons.tslDropdown);
+    I.waitForVisible(ncPage.elements.caCertificateFieldLabel, 30);
+    I.waitForText('CA Certificate', 30, ncPage.elements.caCertificateFieldLabel);
+    I.scrollPageToBottom();
+    I.seeElement(ncPage.fields.caCertificateInput, 30);
+    I.waitForText('Certificate', 30, ncPage.elements.certificateFieldLabel);
+    I.seeElement(ncPage.fields.certificateInput, 30);
+    I.waitForText('Certificate Key', 30, ncPage.elements.certificateKeyFieldLabel, 30);
+    I.seeElement(ncPage.fields.certificateKeyInput, 30);
+    I.waitForText('Server Name', 30, ncPage.elements.serverNameFieldLabel, 30);
+    I.seeElement(ncPage.fields.serverNameInput, 30);
+    I.waitForText('Skip TLS certificate verification', 30, ncPage.elements.skipTlsVerifyFieldLabel, 30);
+
+    I.click(ncPage.buttons.addChannel);
+    I.verifyPopUpMessage(ncPage.messages.successfullyAdded);
+    ncPage.verifyChannelInList(channelName, ncPage.types.webhook.type);
+    // verify that alertsCount = 2
+  },
+);
+
+Scenario(
+  'PMM-T1045 Verify user is able to add secure WebHook (using basic Auth) notification channel @ia',
+  async ({ I, ncPage, rulesAPI, channelsAPI, alertRulesPage, alertsAPI }) => {
+    await rulesAPI.clearAllRules(true);
+
+    // const webhookURL = ncPage.types.webhook.url;
+    const webhookURL = 'https://eotp7672kjzmxfx.m.pipedream.net';
+    const channelName = 'Webhook notification channel';
+    // const username = 'username';
+    // const password = 'password';
+    const ruleName = 'Rule for webhook';
+
+    ncPage.openNotificationChannelsTab();
+    I.waitForVisible(ncPage.buttons.openAddChannelModal, 30);
+    I.click(ncPage.buttons.openAddChannelModal);
+    I.waitForVisible(ncPage.fields.typeDropdown, 30);
+    await ncPage.selectChannelType(ncPage.types.webhook.type);
+    I.fillField(ncPage.fields.nameInput, channelName);
+    I.fillField(ncPage.fields.webhookUrlInput, webhookURL);
+
+    // I.fillField(ncPage.fields.usernameInput, username);
+    // I.fillField(ncPage.fields.passwordInput, password);
+
+    I.click(ncPage.buttons.addChannel);
+    I.verifyPopUpMessage(ncPage.messages.successfullyAdded);
+    ncPage.verifyChannelInList(channelName, ncPage.types.webhook.type);
+    const rule = {
+      ruleName,
+      // channels: [channelId],
+    };
+    const ruleId = await rulesAPI.createAlertRule(rule);
+
+    alertRulesPage.openAlertRulesTab();
+    I.waitForVisible(alertRulesPage.buttons.toggleAlertRule(ruleName), 30);
+    alertRulesPage.verifyRuleState(true, ruleName);
+    await alertsAPI.waitForAlerts(60, 1);
+  },
+);
