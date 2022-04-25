@@ -22,7 +22,7 @@ module.exports = {
     webhook: {
       name: 'Webhook Channel',
       type: 'Webhook',
-      // url: 'http://url',
+      url: 'https://eotp7672kjzmxfx.m.pipedream.net',
       max_alerts: 1,
       send_resolved: true,
       http_config: {
@@ -51,6 +51,12 @@ module.exports = {
     channelFieldValidation: '$channel-field-error-message',
     serviceKeyFieldLabel: '$service-field-label',
     routingKeyFieldLabel: '$routing-field-label',
+    maxAlertsCountLabel: '$maxAlerts-field-label',
+    caCertificateFieldLabel: '$ca-field-label',
+    certificateFieldLabel: '$cert-field-label',
+    certificateKeyFieldLabel: '$key-field-label',
+    serverNameFieldLabel: '$serverName-field-label',
+    skipTlsVerifyFieldLabel: '$skipVerify-field-label',
   },
   buttons: {
     openAddChannelModal: '$notification-channel-add-modal-button',
@@ -64,6 +70,7 @@ module.exports = {
     editChannelLocator: (name) => `//td[text()="${name}"]/following-sibling::td//button[@data-testid="edit-notification-channel-button"]`,
     pagerDutyServiceKeyOption: locate('label').withText('Service key'),
     pagerDutyRoutingKeyOption: locate('label').withText('Routing key'),
+    tslDropdown: locate('div[class*="collapse__header-label"]').withText('TLS Settings'),
   },
   fields: {
     nameInput: '$name-text-input',
@@ -73,6 +80,14 @@ module.exports = {
     routingKeyInput: '$routing-text-input',
     serviceKeyInput: '$service-text-input',
     slackChannelInput: '$channel-text-input',
+    webhookUrlInput: '$url-text-input',
+    usernameInput: '$username-text-input',
+    passwordInput: '$password-text-input',
+    maxAlertsCount: '$maxAlerts-number-input',
+    caCertificateInput: '$ca-textarea-input',
+    certificateInput: '$cert-textarea-input',
+    certificateKeyInput: '$key-textarea-input',
+    serverNameInput: '$serverName-text-input',
   },
   messages: {
     noChannelsFound: 'No notification channels found',
@@ -121,6 +136,9 @@ module.exports = {
         break;
       case this.types.slack.type:
         I.fillField(this.fields.slackChannelInput, this.types.slack.slackChannel);
+        break;
+      case this.types.webhook.type:
+        I.fillField(this.fields.webhookUrlInput, this.types.webhook.url);
         break;
       default:
         assert.ok(false, `Did not find a matching notification channel type ${type}`);
