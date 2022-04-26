@@ -96,7 +96,7 @@ module.exports = {
     stt: {
       iconLocator: '//div[@data-testid="advanced-advisors"]//div/div/div/div',
       text: 'Enable Advisor Checks and get updated checks from Percona.',
-      link: links.sttDocs,
+      link: links.advisorsDocs,
     },
     integratedAlerting: {
       iconLocator: locate('$advanced-alerting').find('div[class$="-Icon"]'),

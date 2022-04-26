@@ -76,24 +76,9 @@ module.exports = {
   },
   upgradeMilestones: [
     'TASK [Gathering Facts]',
-    'TASK [detect /srv/pmm-distribution]',
-    'TASK [detect containers]',
-    'TASK [Configure systemd]',
-    'TASK [Remove old supervisord service confiuration]',
-    'TASK [Reread supervisord configuration]',
-    'TASK [Remove old packages]',
-    'TASK [Download pmm2 packages]',
-    'TASK [Update pmm2 packages]',
-    'TASK [Update system packages]',
-    'TASK [Check pg_stat_statements extension]',
-    'TASK [Add ClickHouse datasource to the list of unsigned plugins in Grafana]',
-    'TASK [Create working directory for VictoriaMetrics]',
-    'TASK [Restart pmm-managed]',
-    'TASK [Wait for pmm-managed]',
-    'TASK [Reread supervisord configuration again]',
-    'TASK [Restart services]',
-    'TASK [Update/restart other services]',
-    'TASK [Check supervisord log]',
+    'TASK [dashboards_upgrade : Copy file with image version]',
+    'TASK [Delete content & directory]',
+    'failed=0',
   ],
   failedChecksSinglestatsInfoMessage: 'Display the number of Advisors checks identified as failed during its most recent run.',
 
@@ -118,16 +103,11 @@ module.exports = {
     I.waitForElement(locators.updateProgressModal, 30);
     I.waitForText(locators.inProgressMessage, 30, locators.updateProgressModal);
 
-    I.wait(1200);
-    I.refreshPage();
-
-    /* Temp fix to test upgrade
     // skipping milestones checks for 2.9 and 2.10, 2.11 versions due logs not showing issue
     if (version > 11) {
       if (this.isAmiUpgrade) {
-        for (const milestone of milestones) {
-          I.waitForElement(`//pre[contains(text(), '${milestone}')]`, 1200);
-        }
+        // to ensure that the logs window is never empty during upgrade
+        I.waitForElement(`//pre[contains(text(), '${milestones[0]}')]`, 1200);
 
         I.waitForText(locators.successUpgradeMessage, 1200, locators.successUpgradeMsgSelector);
       }
@@ -154,7 +134,6 @@ module.exports = {
       I.click(locators.reloadButtonAfterUpgrade);
       I.refreshPage();
     }
-    */
 
     locators = this.getLocators('latest');
 

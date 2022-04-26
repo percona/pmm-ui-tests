@@ -54,10 +54,3 @@ xScenario(
     await pmmSettingsPage.perconaPlatform.connect('Test name', email, password);
   },
 );
-
-Scenario(
-  'PMM-T1104 - Verify that Percona Platform is marked as Technical preview @platform @settings',
-  async ({ I }) => {
-    I.seeTextEquals(messages.technicalPreview, elements.techPreviewLabel);
-  },
-);
