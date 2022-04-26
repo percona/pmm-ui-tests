@@ -7,17 +7,6 @@ const fileName = 'portalCredentials';
 let portalCredentials = {};
 let adminToken = '';
 
-AfterSuite(async ({ I }) => {
-  const users = await I.listUsers();
-  const resultAdmin1 = users.users.filter((user) => user.email === portalCredentials.admin1.email);
-  const resultAdmin2 = users.users.filter((user) => user.email === portalCredentials.admin2.email);
-  const resultTechnical = users.users.filter((user) => user.email === portalCredentials.technical.email);
-
-  await I.deleteUser(resultAdmin1[0].id);
-  await I.deleteUser(resultAdmin2[0].id);
-  await I.deleteUser(resultTechnical[0].id);
-});
-
 Scenario(
   'Prepare credentials for PMM-Portal upgrade @pre-pmm-portal-upgrade @portal @post-pmm-portal-upgrade',
   async ({
