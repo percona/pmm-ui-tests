@@ -2,10 +2,11 @@ const assert = require('assert');
 const portalAPI = require('../pages/api/portalAPI');
 
 Feature('Testing PMM connected to the Portal Upgrade tests');
-let adminToken = '';
+// let adminToken = '';
 const fileName = 'portalCredentials';
-let portalCredentials = {};
 
+// let portalCredentials = {};
+/*
 BeforeSuite(async ({ I }) => {
   const userCredentials = await I.readFileSync(fileName, true);
 
@@ -115,3 +116,4 @@ Scenario(
     perconaPlatformPage.disconnectFromPortal();
   },
 );
+*/
