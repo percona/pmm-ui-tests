@@ -8,7 +8,7 @@ let portalCredentials = {};
 let adminToken = '';
 
 Scenario(
-  'Prepare credentials for PMM-Portal upgrade @pre-pmm-portal-upgrade @portal @post-pmm-portal-upgrade',
+  'Prepare credentials for PMM-Portal upgrade @pre-pmm-portal-upgrade @post-pmm-portal-upgrade',
   async ({
     I, portalAPI,
   }) => {
@@ -28,6 +28,23 @@ Scenario(
       portalAPI.apiInviteOrgMember(adminToken, orgResp.id, { username: portalCredentials.technical.email, role: 'Technical' });
       await I.writeFileSync(fileName, JSON.stringify(portalCredentials), true);
     }
+  },
+);
+
+Scenario(
+  'Prepare credentials for PMM-Portal tests @portal ',
+  async ({
+    I, portalAPI,
+  }) => {
+    portalCredentials = await portalAPI.createServiceNowUsers();
+    portalAPI.oktaCreateUser(portalCredentials.admin1);
+    portalAPI.oktaCreateUser(portalCredentials.admin2);
+    portalAPI.oktaCreateUser(portalCredentials.technical);
+    adminToken = await portalAPI.getUserAccessToken(portalCredentials.admin1.email, portalCredentials.admin1.password);
+    const orgResp = await portalAPI.apiCreateOrg(adminToken);
+
+    portalAPI.apiInviteOrgMember(adminToken, orgResp.id, { username: portalCredentials.admin2.email, role: 'Admin' });
+    portalAPI.apiInviteOrgMember(adminToken, orgResp.id, { username: portalCredentials.technical.email, role: 'Technical' });
   },
 );
 
