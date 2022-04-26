@@ -10,8 +10,8 @@ let adminToken = '';
 AfterSuite(async ({ I }) => {
   const users = await I.listUsers();
   const resultAdmin1 = users.users.filter((user) => user.email === portalCredentials.admin1.email);
-  const resultAdmin2 = users.users.filter((user) => user.email === portalCredentials.admin1.email);
-  const resultTechnical = users.users.filter((user) => user.email === portalCredentials.admin1.email);
+  const resultAdmin2 = users.users.filter((user) => user.email === portalCredentials.admin2.email);
+  const resultTechnical = users.users.filter((user) => user.email === portalCredentials.technical.email);
 
   await I.deleteUser(resultAdmin1[0].id);
   await I.deleteUser(resultAdmin2[0].id);
@@ -55,7 +55,7 @@ Scenario(
 
     pmmSettingsPage.addPublicAddress();
     perconaPlatformPage.openPerconaPlatform();
-    const userToken = await portalAPI.getUserAccessToken(portalCredentials.admin1.email, portalCredentials.admin1);
+    const userToken = await portalAPI.getUserAccessToken(portalCredentials.admin1.email, portalCredentials.admin1.password);
 
     await perconaPlatformPage.openPerconaPlatform();
     await perconaPlatformPage.connectToPortal(userToken, `Test Server ${Date.now()}`);
