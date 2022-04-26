@@ -172,3 +172,14 @@ Data(instances).Scenario(
     }
   },
 ).retry(1);
+
+Scenario(
+  'PMM-T784 Verify that Service Name is passed from Node Summary to Instance Summary dashboards @ssl-remote @ssl @not-ui-pipeline',
+  async ({
+    dashboardPage,
+  }) => {
+    const { serviceName, nodeName } = 'remote_mysql_8.0_ssl_service';
+
+    await dashboardPage.verifyNavigationFromNodeSummary(nodeName, serviceName);
+  },
+);

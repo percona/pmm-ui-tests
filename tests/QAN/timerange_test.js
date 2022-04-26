@@ -65,6 +65,23 @@ Scenario(
 );
 
 Scenario(
+  'PMM-T200 Verify that setting invalid custom time ranges is not possible @nightly @qan',
+  async ({
+    I, adminPage, qanDetails, qanFilters, qanOverview,
+  }) => {
+    const fromDate = moment().format('YYYY-MM-DD hh:mm:ss');
+    const toDate = '2021-12-25 09:10:10';
+
+    I.seeInCurrentUrl('from=now-5m&to=now');
+    qanOverview.selectRow(1);
+    qanFilters.waitForFiltersToLoad();
+    I.seeElement(qanDetails.root);
+    adminPage.setAbsoluteTimeRange(fromDate, toDate, true);
+    I.seeTextEquals('"From" can\'t be after "To"', qanOverview.elements.timeRangeError);
+  },
+);
+
+Scenario(
   'PMM-T170 Open the QAN Dashboard and check that changing the time range doesn\'t clear "Group by". @qan',
   async ({ I, adminPage, qanOverview }) => {
     const group = 'Client Host';

@@ -178,3 +178,14 @@ Data(instances).Scenario(
     }
   },
 ).retry(1);
+
+Scenario(
+  'PMM-T784 Verify that Service Name is passed from Node Summary to Instance Summary dashboards @ssl-remote @ssl @not-ui-pipeline',
+  async ({
+    dashboardPage,
+  }) => {
+    const { serviceName, nodeName } = 'remote_mongodb_4.4_ssl_service';
+
+    await dashboardPage.verifyNavigationFromNodeSummary(nodeName, serviceName);
+  },
+);
