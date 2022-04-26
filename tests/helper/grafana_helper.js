@@ -163,7 +163,7 @@ class Grafana extends Helper {
   }
 
   async verifyCommand(command, output, result = 'pass', getError = false) {
-    const { stdout, stderr, code } = shell.exec(command, { silent: true });
+    const { stdout, stderr, code } = shell.exec(command.replace(/(\r\n|\n|\r)/gm, ''), { silent: true });
 
     if (output && result === 'pass') {
       assert.ok(stdout.includes(output), `The output for ${command} was expected to include ${output} but found ${stdout}`);
