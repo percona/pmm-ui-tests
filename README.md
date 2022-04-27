@@ -90,6 +90,7 @@ Execute command in the Project Root folder
     @qan	                Query Analytics(QAN) functionality tests
     @settings               PMM Settings functionality tests
     @stt                    Security Checks (STT) functionality tests
+    @portal                 Integration tests between PMM and Percona Portal
     @pmm-ami                legacy/deprecated
     @not-ui-pipeline        legacy/deprecated
     @not-pr-pipeline        legacy/deprecated
