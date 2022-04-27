@@ -19,10 +19,8 @@ module.exports = {
   messages: {
     homePagePanelMessage: 'Advisor Checks feature is disabled.\nCheck PMM Settings.',
     disabledSTTMessage: 'Advisor Checks feature is disabled. You can enable it in',
-    securityChecksDone: 'Running checks in the background... The results will be displayed here soon.',
   },
   buttons: {
-    startDBChecks: locate('$db-check-panel-actions').find('button'),
     toggleSilenced: locate('$db-checks-failed-checks-toggle-silenced').find('label'),
     toggleFailedCheckBySummary: (checkSummary) => locate(failedCheckRow(checkSummary)).find('$silence-button'),
   },
@@ -55,13 +53,11 @@ module.exports = {
 
   openDBChecksPage() {
     I.amOnPage(this.url);
-    I.waitForVisible(this.buttons.startDBChecks, 30);
   },
 
   openFailedChecksListForService(serviceId) {
     I.amOnPage(`${this.url}/service-checks/${serviceId.split('/')[2]}`);
     I.waitForVisible('td', 30);
-    // I.waitForVisible(this.buttons.startDBChecks, 30);
   },
 
   verifyFailedCheckNotExists(checkSummary, serviceId) {
@@ -158,12 +154,5 @@ module.exports = {
     I.scrollPageToBottom();
 
     I.seeElement(locate('$table-row').find('td').withText(serviceName));
-  },
-
-  async runDBChecks() {
-    I.amOnPage(this.url);
-    I.waitForVisible(this.buttons.startDBChecks, 30);
-    I.click(this.buttons.startDBChecks);
-    I.verifyPopUpMessage(this.messages.securityChecksDone, 60);
   },
 };

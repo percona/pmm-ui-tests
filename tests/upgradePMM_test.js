@@ -524,7 +524,7 @@ if (versionMinor >= 15) {
       I,
       pmmSettingsPage,
       securityChecksAPI,
-      databaseChecksPage,
+      allChecksPage,
     }) => {
       // Wait for 45 seconds to have latest check results
       I.wait(45);
@@ -533,8 +533,8 @@ if (versionMinor >= 15) {
       I.waitForVisible(pmmSettingsPage.fields.sttSwitchSelector, 30);
       pmmSettingsPage.verifySwitch(pmmSettingsPage.fields.sttSwitchSelectorInput, 'on');
 
-      I.amOnPage(databaseChecksPage.url);
-      I.waitForVisible(databaseChecksPage.buttons.startDBChecks, 30);
+      I.amOnPage(allChecksPage.url);
+      I.waitForVisible(allChecksPage.buttons.startDBChecks, 30);
       // Verify there is failed check
       await securityChecksAPI.verifyFailedCheckExists(failedCheckMessage);
     },

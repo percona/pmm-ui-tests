@@ -77,8 +77,9 @@ Scenario(
       : 'Newer version of Percona Server for MySQL is available';
     const checkName = 'MySQL Version';
 
+    I.amOnPage(allChecksPage.url);
     // Run DB Checks from UI
-    await databaseChecksPage.runDBChecks();
+    await allChecksPage.runDBChecks();
 
     // Wait for MySQL version failed check
     await securityChecksAPI.waitForFailedCheckExistance(detailsText, psServiceName);
@@ -87,7 +88,6 @@ Scenario(
     databaseChecksPage.verifyFailedCheckExists(detailsText, serviceId);
 
     // Disable MySQL Version check
-    I.amOnPage(allChecksPage.url);
     I.waitForVisible(allChecksPage.buttons.disableEnableCheck(checkName));
     I.seeTextEquals('Disable', allChecksPage.buttons.disableEnableCheck(checkName));
     I.seeTextEquals('Enabled', allChecksPage.elements.statusCellByName(checkName));
@@ -98,7 +98,7 @@ Scenario(
     I.seeTextEquals('Disabled', allChecksPage.elements.statusCellByName(checkName));
 
     // Run DB Checks from UI
-    await databaseChecksPage.runDBChecks();
+    await allChecksPage.runDBChecks();
     await securityChecksAPI.waitForFailedCheckNonExistance(detailsText, psServiceName);
 
     // Verify there is no MySQL Version failed check
