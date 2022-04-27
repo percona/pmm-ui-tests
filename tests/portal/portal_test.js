@@ -33,21 +33,11 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T1098 Verify login using Percona Platform account @portal',
-  async ({
-    I, homePage,
-  }) => {
-    I.amOnPage('');
-    await I.loginWithSSO(newUser.email, newUser.password);
-    I.waitInUrl(homePage.landingUrl);
-  },
-);
-
-Scenario(
   'PMM-T1112 Verify user can disconnect pmm from portal success flow @portal',
   async ({
-    I, homePage, portalAPI, perconaPlatformPage,
+    I, homePage, perconaPlatformPage,
   }) => {
+    I.say('Also covers: PMM-T1098 Verify login using Percona Platform account');
     I.amOnPage('');
     await I.loginWithSSO(newUser.email, newUser.password);
     I.waitInUrl(homePage.landingUrl);
