@@ -95,9 +95,9 @@ module.exports = {
       link: links.dbaasDocs,
     },
     stt: {
-      iconLocator: '//div[@data-testid="advanced-stt"]//div/div/div/div',
-      text: 'Enable Security Threat Tool and get updated checks from Percona.',
-      link: links.sttDocs,
+      iconLocator: '//div[@data-testid="advanced-advisors"]//div/div/div/div',
+      text: 'Enable Advisor Checks and get updated checks from Percona.',
+      link: links.advisorsDocs,
     },
     integratedAlerting: {
       iconLocator: locate('$advanced-alerting').find('div[class$="-Icon"]'),
@@ -235,9 +235,9 @@ module.exports = {
     sshKeyInput: '$ssh-key',
     sshKeyLabel: locateLabel('ssh-key-label'),
     sshKeyButton: '$ssh-key-button',
-    sttLabel: locate('$advanced-stt').find('span'),
-    sttSwitchSelectorInput: locate('$advanced-stt').find('input'),
-    sttSwitchSelector: locate('$advanced-stt').find('label'),
+    sttLabel: locate('$advanced-advisors').find('span'),
+    sttSwitchSelectorInput: locate('$advanced-advisors').find('input'),
+    sttSwitchSelector: locate('$advanced-advisors').find('label'),
     subSectionHeader: '//following-sibling::div//div[@class="ant-collapse-header"]',
     signUpEmail: '$email-text-input',
     signUpPassword: '$password-password-input',
@@ -272,11 +272,6 @@ module.exports = {
 
   async openAdvancedSettings() {
     I.amOnPage(this.advancedSettingsUrl);
-    await this.waitForPmmSettingsPageLoaded();
-  },
-
-  async openPerconaPlatform() {
-    I.amOnPage(this.perconaPlatform);
     await this.waitForPmmSettingsPageLoaded();
   },
 

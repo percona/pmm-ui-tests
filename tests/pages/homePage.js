@@ -23,7 +23,7 @@ module.exports = {
     sttFailedChecksPanelSelector: '$db-check-panel-has-checks',
     checksPanelSelector: '$db-check-panel-home',
     noFailedChecksInPanel: '$db-check-panel-zero-checks',
-    failedChecksPanelInfo: '[aria-label="Failed security checks panel"] i',
+    failedChecksPanelInfo: '[aria-label="Failed Checks panel"] i',
     newsPanelTitleSelector: dashboardPage.graphsLocator('Percona News'),
     pmmCustomMenu: locate('$navbar-section').find('.dropdown a[aria-label="PMM dashboards"]'),
     servicesButton: locate('span').withText('Services'),
@@ -76,26 +76,11 @@ module.exports = {
   },
   upgradeMilestones: [
     'TASK [Gathering Facts]',
-    'TASK [detect /srv/pmm-distribution]',
-    'TASK [detect containers]',
-    'TASK [Configure systemd]',
-    'TASK [Remove old supervisord service confiuration]',
-    'TASK [Reread supervisord configuration]',
-    'TASK [Remove old packages]',
-    'TASK [Download pmm2 packages]',
-    'TASK [Update pmm2 packages]',
-    'TASK [Update system packages]',
-    'TASK [Check pg_stat_statements extension]',
-    'TASK [Add ClickHouse datasource to the list of unsigned plugins in Grafana]',
-    'TASK [Create working directory for VictoriaMetrics]',
-    'TASK [Restart pmm-managed]',
-    'TASK [Wait for pmm-managed]',
-    'TASK [Reread supervisord configuration again]',
-    'TASK [Restart services]',
-    'TASK [Update/restart other services]',
-    'TASK [Check supervisord log]',
+    'TASK [dashboards_upgrade : Copy file with image version]',
+    'TASK [Delete content & directory]',
+    'failed=0',
   ],
-  failedChecksSinglestatsInfoMessage: 'Display the number of database security checks that the Security Threat Tool identified as failed during its most recent run.',
+  failedChecksSinglestatsInfoMessage: 'Display the number of Advisors checks identified as failed during its most recent run.',
 
   serviceDashboardLocator: (serviceName) => locate('a').withText(serviceName),
   isAmiUpgrade: process.env.AMI_UPGRADE_TESTING_INSTANCE === 'true',
@@ -123,9 +108,8 @@ module.exports = {
     // skipping milestones checks for 2.9 and 2.10, 2.11 versions due logs not showing issue
     if (version > 11) {
       if (this.isAmiUpgrade) {
-        for (const milestone of milestones) {
-          I.waitForElement(`//pre[contains(text(), '${milestone}')]`, 1200);
-        }
+        // to ensure that the logs window is never empty during upgrade
+        I.waitForElement(`//pre[contains(text(), '${milestones[0]}')]`, 1200);
 
         I.waitForText(locators.successUpgradeMessage, 1200, locators.successUpgradeMsgSelector);
       }
