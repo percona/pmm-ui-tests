@@ -17,7 +17,7 @@ class FileHelper extends Helper {
     try {
       return fs.readFileSync(path, 'utf8');
     } catch (e) {
-      if (!failOnError) assert.ok(false, `Could not read into file: ${path}, because of error: ${e}`);
+      if (!failOnError) assert.ok(false, `Could not read file: ${path}, because of error: ${e}`);
     }
 
     return null;

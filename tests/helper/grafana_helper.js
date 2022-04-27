@@ -15,14 +15,11 @@ class Grafana extends Helper {
     this.mainView = '//main[contains(@class, "main-view")]';
   }
 
-  async loginWithSSO(username, password, onLoginPage = true) {
+  async loginWithSSO(username, password) {
     const { page } = this.helpers.Playwright;
 
-    if (onLoginPage) {
-      await page.isVisible(this.mainView);
-      await page.click(this.signInWithSSOButton);
-    }
-
+    await page.isVisible(this.mainView);
+    await page.click(this.signInWithSSOButton);
     await page.fill(this.ssoLoginUsername, username);
     await page.click(this.ssoLoginNext);
     await page.click(this.ssoLoginPassword);
