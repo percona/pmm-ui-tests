@@ -26,7 +26,7 @@ module.exports = {
   messages: {
     successIntervalChange: (checkName) => `Interval changed for ${checkName}`,
     changeIntervalText: (checkName) => `Set interval for ${checkName}`,
-    securityChecksDone: 'Running checks in the background... The results will be displayed here soon.',
+    securityChecksDone: 'All checks started running in the background',
   },
   checks: [
     {
