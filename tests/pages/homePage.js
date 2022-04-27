@@ -93,7 +93,6 @@ module.exports = {
 
   // introducing methods
   async upgradePMM(version) {
-    console.log(`PMM Server name is: ${this.pmmServerName}`);
     let locators = this.getLocators(version);
     const milestones = this.upgradeMilestones;
 
