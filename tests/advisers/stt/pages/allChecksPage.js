@@ -9,7 +9,7 @@ module.exports = {
     descriptionCellByName: (checkName) => locate(checkRow(checkName)).find('td').at(2),
     statusCellByName: (checkName) => locate(checkRow(checkName)).find('td').at(3),
     intervalCellByName: (checkName) => locate(checkRow(checkName)).find('td').at(4),
-    tableBody: '$db-checks-all-checks-tbody',
+    tableBody: '$table-tbody',
     modalContent: '$modal-content',
   },
   buttons: {
