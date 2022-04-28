@@ -33,6 +33,32 @@ module.exports = {
     );
   },
 
+  async getFailedChecks(service_id) {
+    const headers = { Authorization: `Basic ${await I.getAuth()}` };
+    const body = { service_id, page_params: { page_size: 25, index: 0 } };
+
+    const resp = await I.sendPostRequest('v1/management/SecurityChecks/FailedChecks', body, headers);
+
+    assert.ok(
+      resp.status === 200,
+      `Failed to get FailedChecks for the service. Response message is "${resp.data.message}"`,
+    );
+
+    return resp.data.results;
+  },
+
+  async toggleChecksAlert(alert_id, silence = true) {
+    const headers = { Authorization: `Basic ${await I.getAuth()}` };
+    const body = { alert_id, silence };
+
+    const resp = await I.sendPostRequest('v1/management/SecurityChecks/ToggleCheckAlert', body, headers);
+
+    assert.ok(
+      resp.status === 200,
+      `Failed to ToggleCheckAlert. Response message is "${resp.data.message}"`,
+    );
+  },
+
   async verifyFailedCheckNotExists(detailsText, serviceName) {
     const failedCheckDoesNotExist = await this.getFailedCheckBySummary(detailsText, serviceName);
 
