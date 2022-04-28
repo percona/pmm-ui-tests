@@ -1,7 +1,9 @@
 const assert = require('assert');
 const { communicationData } = require('./testData');
 
-const { I, adminPage, links } = inject();
+const {
+  I, adminPage, links, perconaPlatformPage,
+} = inject();
 
 const locateLabel = (selector) => locate(I.useDataQA(selector)).find('span');
 
@@ -9,7 +11,7 @@ module.exports = {
   url: 'graph/settings',
   advancedSettingsUrl: 'graph/settings/advanced-settings',
   communicationSettingsUrl: 'graph/settings/communication',
-  perconaPlatform: 'graph/settings/percona-platform',
+  perconaPlatform: perconaPlatformPage,
   prometheusAlertUrl: '/prometheus/rules',
   stateOfAlertsUrl: '/prometheus/alerts',
   diagnosticsText:
