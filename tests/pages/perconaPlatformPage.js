@@ -91,6 +91,5 @@ module.exports = {
 
   disconnectFromPortal() {
     I.click(this.fields.platformDisconnectButton);
-    I.verifyPopUpMessage(this.messages.pmmDisconnectedFromProtal);
   },
 };

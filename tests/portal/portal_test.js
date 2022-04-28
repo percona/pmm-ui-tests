@@ -43,8 +43,7 @@ Scenario(
     I.waitInUrl(homePage.landingUrl);
     I.amOnPage(perconaPlatformPage.url);
     await perconaPlatformPage.disconnectFromPortal();
-    await I.unAuthorize();
-    I.amOnPage('');
+    await I.waitInUrl('graph/login', 10);
     I.dontSeeElement(locate('a').withAttr({ href: 'login/generic_oauth' }));
     I.amOnPage(homePage.genericOauthUrl);
     I.seeElement(locate('div').withText('OAuth not enabled'));
