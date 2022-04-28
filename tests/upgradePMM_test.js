@@ -23,9 +23,8 @@ const clientDbServices = new DataTable(['serviceType', 'name', 'metric', 'annota
 
 clientDbServices.add(['MYSQL_SERVICE', 'ps_', 'mysql_global_status_max_used_connections', 'annotation-for-mysql', dashboardPage.mysqlInstanceSummaryDashboard.url, 'mysql_upgrade']);
 clientDbServices.add(['POSTGRESQL_SERVICE', 'PGSQL_', 'pg_stat_database_xact_rollback', 'annotation-for-postgres', dashboardPage.postgresqlInstanceSummaryDashboard.url, 'pgsql_upgrade']);
-// temp skip for mongo
 // eslint-disable-next-line max-len
-// clientDbServices.add(['MONGODB_SERVICE', 'mongodb_', 'mongodb_connections', 'annotation-for-mongo', dashboardPage.mongoDbInstanceSummaryDashboard.url, 'mongo_upgrade']);
+clientDbServices.add(['MONGODB_SERVICE', 'mongodb_', 'mongodb_connections', 'annotation-for-mongo', dashboardPage.mongoDbInstanceSummaryDashboard.url, 'mongo_upgrade']);
 
 const connection = perconaServerDB.defaultConnection;
 const psServiceName = 'upgrade-stt-ps-5.7.30';
@@ -229,6 +228,44 @@ if (versionMinor >= 15) {
   );
 }
 
+if (versionMinor >= 21) {
+  Data(clientDbServices).Scenario(
+    'Adding custom agent Password, Custom Label before upgrade At service Level @pre-upgrade @pmm-upgrade',
+    async ({
+      I, inventoryAPI, current,
+    }) => {
+      const {
+        serviceType, name, upgrade_service,
+      } = current;
+      const {
+        service_id, node_id, address, port,
+      } = await inventoryAPI.apiGetNodeInfoByServiceName(serviceType, name);
+
+      const { pmm_agent_id } = await inventoryAPI.apiGetPMMAgentInfoByServiceId(service_id);
+      let output;
+
+      switch (serviceType) {
+        case 'MYSQL_SERVICE':
+          output = await I.verifyCommand(
+            `pmm-admin add mysql --node-id=${node_id} --pmm-agent-id=${pmm_agent_id} --port=${port} --password=ps --host=${address} --query-source=perfschema --agent-password=uitests --custom-labels="testing=upgrade" ${upgrade_service}`,
+          );
+          break;
+        case 'POSTGRESQL_SERVICE':
+          output = await I.verifyCommand(
+            `pmm-admin add postgresql --node-id=${node_id} --pmm-agent-id=${pmm_agent_id} --port=${port} --host=${address} --agent-password=uitests --custom-labels="testing=upgrade" ${upgrade_service}`,
+          );
+          break;
+        case 'MONGODB_SERVICE':
+          output = await I.verifyCommand(
+            `pmm-admin add mongodb --node-id=${node_id} --username=pmm_mongodb --password=secret --pmm-agent-id=${pmm_agent_id} --port=${port} --host=${address} --agent-password=uitests --custom-labels="testing=upgrade" ${upgrade_service}`,
+          );
+          break;
+        default:
+      }
+    },
+  );
+}
+
 Scenario(
   'Verify user can create Remote Instances before upgrade @pre-upgrade @ami-upgrade @pmm-upgrade',
   async ({ addInstanceAPI }) => {
@@ -387,44 +424,6 @@ if (versionMinor >= 23) {
           },
           remoteServiceName,
         );
-      }
-    },
-  );
-}
-
-if (versionMinor >= 21) {
-  Data(clientDbServices).Scenario(
-    'Adding custom agent Password, Custom Label before upgrade At service Level @pre-upgrade @pmm-upgrade',
-    async ({
-      I, inventoryAPI, current,
-    }) => {
-      const {
-        serviceType, name, upgrade_service,
-      } = current;
-      const {
-        service_id, node_id, address, port,
-      } = await inventoryAPI.apiGetNodeInfoByServiceName(serviceType, name);
-
-      const { pmm_agent_id } = await inventoryAPI.apiGetPMMAgentInfoByServiceId(service_id);
-      let output;
-
-      switch (serviceType) {
-        case 'MYSQL_SERVICE':
-          output = await I.verifyCommand(
-            `pmm-admin add mysql --node-id=${node_id} --pmm-agent-id=${pmm_agent_id} --port=${port} --password=ps --host=${address} --query-source=perfschema --agent-password=uitests --custom-labels="testing=upgrade" ${upgrade_service}`,
-          );
-          break;
-        case 'POSTGRESQL_SERVICE':
-          output = await I.verifyCommand(
-            `pmm-admin add postgresql --node-id=${node_id} --pmm-agent-id=${pmm_agent_id} --port=${port} --host=${address} --agent-password=uitests --custom-labels="testing=upgrade" ${upgrade_service}`,
-          );
-          break;
-        case 'MONGODB_SERVICE':
-          output = await I.verifyCommand(
-            `pmm-admin add mongodb --node-id=${node_id} --username=pmm_mongodb --password=secret --pmm-agent-id=${pmm_agent_id} --port=${port} --host=${address} --agent-password=uitests --custom-labels="testing=upgrade" ${upgrade_service}`,
-          );
-          break;
-        default:
       }
     },
   );
