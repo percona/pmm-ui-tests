@@ -88,6 +88,7 @@ Scenario(
     databaseChecksPage.verifyFailedCheckExists(detailsText, serviceId);
 
     // Disable MySQL Version check
+    I.amOnPage(allChecksPage.url);
     I.waitForVisible(allChecksPage.buttons.disableEnableCheck(checkName));
     I.seeTextEquals('Disable', allChecksPage.buttons.disableEnableCheck(checkName));
     I.seeTextEquals('Enabled', allChecksPage.elements.statusCellByName(checkName));
