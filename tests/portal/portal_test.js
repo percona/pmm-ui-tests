@@ -10,7 +10,7 @@ AfterSuite(async ({ I }) => {
 });
 
 Scenario(
-  'PMM-T398 PMM-T809 Verify Connect to Percona Portal @platform elements @settings',
+  'PMM-T398 PMM-T809 Verify Connect to Percona Portal elements @portal',
   async ({ I, links, perconaPlatformPage }) => {
     const {
       buttons, elements, fields, url, messages,
