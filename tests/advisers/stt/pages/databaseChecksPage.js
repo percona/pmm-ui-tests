@@ -24,6 +24,7 @@ module.exports = {
   buttons: {
     startDBChecks: locate('$db-check-panel-actions').find('button'),
     toggleSilenced: locate('$db-checks-failed-checks-toggle-silenced').find('label'),
+    toggleFailedCheckBySummary: (checkSummary) => locate(failedCheckRow(checkSummary)).find('$silence-button'),
   },
   fields: {
     dbCheckPanelSelector: '$db-check-panel',
