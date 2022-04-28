@@ -1,8 +1,9 @@
 const assert = require('assert');
 const { communicationData } = require('./testData');
-const perconaPlatform = require('./perconaPlatform');
 
-const { I, adminPage, links } = inject();
+const {
+  I, adminPage, links, perconaPlatformPage,
+} = inject();
 
 const locateLabel = (selector) => locate(I.useDataQA(selector)).find('span');
 
@@ -10,7 +11,7 @@ module.exports = {
   url: 'graph/settings',
   advancedSettingsUrl: 'graph/settings/advanced-settings',
   communicationSettingsUrl: 'graph/settings/communication',
-  perconaPlatform,
+  perconaPlatform: perconaPlatformPage,
   prometheusAlertUrl: '/prometheus/rules',
   stateOfAlertsUrl: '/prometheus/alerts',
   diagnosticsText:
@@ -271,6 +272,9 @@ module.exports = {
     standartIntervalValidation: '$standardInterval-field-error-message',
     frequentIntervalInput: '$frequentInterval-number-input',
     frequentIntervalValidation: '$frequentInterval-field-error-message',
+    pmmServerNameInput: '$pmmServerName-text-input',
+    perconaAccountEmailInput: '$email-text-input',
+    perconaAccountPasswordInput: '$password-password-input',
   },
 
   async openAdvancedSettings() {
@@ -416,6 +420,12 @@ module.exports = {
   addPublicAddress(address = process.env.SERVER_IP) {
     I.clearField(this.fields.publicAddressInput);
     I.fillField(this.fields.publicAddressInput, address);
+    I.click(this.fields.advancedButton);
+    I.verifyPopUpMessage(this.messages.successPopUpMessage);
+  },
+
+  clearPublicAddress() {
+    this.customClearField(this.fields.publicAddressInput);
     I.click(this.fields.advancedButton);
     I.verifyPopUpMessage(this.messages.successPopUpMessage);
   },

@@ -8,6 +8,8 @@ module.exports = {
   // insert your locators and methods here
   // setting locators
   url: 'graph/d/pmm-home/home-dashboard?orgId=1&refresh=1m&from=now-5m&to=now',
+  landingUrl: 'graph/d/pmm-home/home-dashboard?orgId=1&refresh=1m',
+  genericOauthUrl: 'graph/login/generic_oauth',
   requestEnd: '/v1/Updates/Check',
   fields: {
     systemsUnderMonitoringCount:
@@ -18,6 +20,7 @@ module.exports = {
     dashboardHeaderLocator: '//div[contains(@class, "dashboard-header")]',
     oldLastCheckSelector: '#pmm-update-widget > .last-check-wrapper p',
     sttDisabledFailedChecksPanelSelector: '$db-check-panel-settings-link',
+    failedSecurityChecksPmmSettingsLink: locate('$db-check-panel-settings-link').find('a'),
     sttFailedChecksPanelSelector: '$db-check-panel-has-checks',
     checksPanelSelector: '$db-check-panel-home',
     noFailedChecksInPanel: '$db-check-panel-zero-checks',
