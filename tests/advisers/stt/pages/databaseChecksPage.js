@@ -56,7 +56,7 @@ module.exports = {
   },
 
   openFailedChecksListForService(serviceId) {
-    I.amOnPage(`${this.url}/service-checks/${serviceId.split('/')[2]}`);
+    I.amOnPage(`${this.url}/failed-checks/${serviceId.split('/')[2]}`);
     I.waitForVisible('td', 30);
   },
 
