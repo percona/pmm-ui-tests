@@ -115,6 +115,19 @@ Data(psmdbClusterDetails).Scenario('PMM-T726 Verify PSMDB cluster monitoring aft
   async ({dbaasPage, current }) => {
     const serviceName = `${current.namespace}-${current.clusterName}-${current.nodeType}-${current.node}`;
 
+    //run some load on mongodb to enable qan filters
+    await I.verifyCommand(
+      'kubectl run psmdb-client --image=percona/percona-server-mongodb:4.4.5-7 --restart=Never',
+    );
+
+    I.wait(20);
+    await I.verifyCommand(
+      'kubectl cp /srv/pmm-qa/pmm-tests/psmdb_cluster_connection_check.js psmdb-client:/tmp/',
+    );
+    const output = await I.verifyCommand(
+      `kubectl exec psmdb-client -- mongo "mongodb://${username}:${password}@${host}/admin?ssl=false" /tmp/psmdb_cluster_connection_check.js`,
+    );
+
     await dbaasPage.dbClusterAgentStatusCheck(psmdb_cluster_name, serviceName, 'MONGODB_SERVICE');
     await dbaasPage.dbaasQANCheck(psmdb_cluster_name, serviceName, serviceName, 'Last 5 minutes');
     await dbaasPage.psmdbClusterMetricCheck(psmdb_cluster_name, serviceName, serviceName);
