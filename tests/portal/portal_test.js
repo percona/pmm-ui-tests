@@ -4,7 +4,7 @@ const portalAPI = require('../pages/api/portalAPI');
 Feature('Portal Integration with PMM');
 
 const fileName = 'portalCredentials';
-let portalCredentials = {};
+let portalCredentials = {}
 let adminToken = '';
 
 Scenario(
@@ -98,7 +98,7 @@ Scenario(
 );
 
 Scenario(
-  'Verify PMM is connecteda and user can disconnect an reconect PMM server to the Portal @post-pmm-portal-upgrade',
+  'Verify PMM is connected and user can disconnect an reconect PMM server to the Portal @post-pmm-portal-upgrade',
   async ({
     I, perconaPlatformPage, homePage,
   }) => {
@@ -118,8 +118,10 @@ Scenario(
   async ({
     I, homePage, perconaPlatformPage,
   }) => {
+    I.say('Also covers: PMM-T1098 Verify login using Percona Platform account');
     I.amOnPage('');
     await I.loginWithSSO(portalCredentials.admin1.email, portalCredentials.admin1.password);
+
     I.waitInUrl(homePage.landingUrl);
     I.amOnPage(perconaPlatformPage.url);
     await perconaPlatformPage.disconnectFromPortal();
