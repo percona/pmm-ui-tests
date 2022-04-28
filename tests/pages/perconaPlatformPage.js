@@ -1,5 +1,3 @@
-const faker = require('faker');
-
 const { I } = inject();
 
 module.exports = {
@@ -13,6 +11,7 @@ module.exports = {
     accessTokenValidation: '$accessToken-field-error-message',
     connectedWrapper: '$connected-wrapper',
     settingsContent: '$settings-tab-content',
+    getAccessTokenLink: locate('a').after('$accessToken-field-container'),
   },
   fields: {
     pmmServerNameField: '$pmmServerName-text-input',
@@ -21,7 +20,6 @@ module.exports = {
     passwordField: '$password-password-input',
     platformConnectButton: '$connect-button',
     platformDisconnectButton: '$disconnect-button',
-    getAccessTokenLink: locate('a').after('$accessToken-field-container'),
     accessToken: '$accessToken-text-input',
     serverId: '$pmmServerId-text-input',
   },
