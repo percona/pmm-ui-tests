@@ -112,10 +112,14 @@ psmdbClusterDetails.add(['default', `${psmdb_cluster_name}`, '1', 'cfg']);
 psmdbClusterDetails.add(['default', `${psmdb_cluster_name}`, '2', 'cfg']);
 
 Data(psmdbClusterDetails).Scenario('PMM-T726 Verify PSMDB cluster monitoring after PMM Server upgrade @dbaas-upgrade',
-  async ({dbaasPage, current }) => {
+  async ({I, dbaasAPI, dbaasPage, current }) => {
     const serviceName = `${current.namespace}-${current.clusterName}-${current.nodeType}-${current.node}`;
 
     //run some load on mongodb to enable qan filters
+    const {
+      username, password, host,
+    } = await dbaasAPI.apiGetDbClusterDetails(psmdb_cluster_name, clusterName, 'MongoDB');
+
     await I.verifyCommand(
       'kubectl run psmdb-client --image=percona/percona-server-mongodb:4.4.5-7 --restart=Never',
     );
@@ -124,7 +128,7 @@ Data(psmdbClusterDetails).Scenario('PMM-T726 Verify PSMDB cluster monitoring aft
     await I.verifyCommand(
       'kubectl cp /srv/pmm-qa/pmm-tests/psmdb_cluster_connection_check.js psmdb-client:/tmp/',
     );
-    const output = await I.verifyCommand(
+    await I.verifyCommand(
       `kubectl exec psmdb-client -- mongo "mongodb://${username}:${password}@${host}/admin?ssl=false" /tmp/psmdb_cluster_connection_check.js`,
     );
 
