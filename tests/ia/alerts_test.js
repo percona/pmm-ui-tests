@@ -1,10 +1,13 @@
 const assert = require('assert');
 
+const { ncPage } = inject();
+
 let ruleIdForAlerts;
 let ruleIdForEmailCheck;
 let testEmail;
 const ruleNameForEmailCheck = 'Rule with BUILT_IN template (check email)';
 const ruleName = 'PSQL immortal rule';
+const webhookURL = ncPage.types.webhook.url;
 const rulesForAlerts = [{
   ruleName,
   severity: 'SEVERITY_CRITICAL',
@@ -259,7 +262,7 @@ Scenario(
 
 Scenario(
   'PMM-T568 Verify alerts on Pager Duty @ia',
-  async ({ I, ncPage, alertsPage, channelsAPI, rulesAPI, alertsAPI, alertmanagerAPI, alertRulesPage }) => {
+  async ({ I, alertsPage, channelsAPI, rulesAPI, alertsAPI, alertmanagerAPI, alertRulesPage }) => {
     await rulesAPI.clearAllRules(true);
     const channelName = 'Pager Duty with Service key';
     const ruleName = 'Rule Name for Pager Duty with Service key';
@@ -288,9 +291,8 @@ Scenario(
 
 Scenario(
   'PMM-T1044 Verify user is able to add WebHook (using HTTPs request) notification channel @ia',
-  async ({ I, ncPage, rulesAPI, alertsAPI, alertRulesPage }) => {
+  async ({ I, rulesAPI, alertsAPI, alertRulesPage }) => {
     const channelName = 'Webhook Channel for 1044';
-    const webhookURL = 'https://eotp7672kjzmxfx.m.pipedream.net';
     const ruleName = 'AlertRuleFor1044';
 
     ncPage.openNotificationChannelsTab();
@@ -315,17 +317,16 @@ Scenario(
     I.waitForVisible(alertRulesPage.elements.modalHeader, 30);
     alertRulesPage.searchAndSelectResult('Channels', channelName);
     I.click(alertRulesPage.buttons.addRule);
-    I.verifyPopUpMessage(alertRulesPage.messages.successfullyAdded);
-    await alertsAPI.waitForAlerts(60, 1);
+    I.verifyPopUpMessage(alertRulesPage.messages.successfullyEdited);
+    await alertsAPI.waitForAlerts(60, 2);
     // Verify Webhook Notification is sent to the specified resource
   },
 );
 
 Scenario(
   'PMM-T1145 Verify that TLS option is using dropdown instead of a checkbox @ia',
-  async ({ I, ncPage, alertRulesPage }) => {
+  async ({ I }) => {
     const channelName = 'Webhook Channel for 1145';
-    const webhookURL = 'https://eotp7672kjzmxfx.m.pipedream.net';
 
     ncPage.openNotificationChannelsTab();
     I.waitForVisible(ncPage.buttons.openAddChannelModal, 30);
@@ -354,6 +355,7 @@ Scenario(
     I.waitForText('Server Name', 30, ncPage.elements.serverNameFieldLabel, 30);
     I.seeElement(ncPage.fields.serverNameInput, 30);
     I.waitForText('Skip TLS certificate verification', 30, ncPage.elements.skipTlsVerifyFieldLabel, 30);
+    I.click(ncPage.elements.skipTlsVerifyFieldLabel);
 
     I.click(ncPage.buttons.addChannel);
     I.verifyPopUpMessage(ncPage.messages.successfullyAdded);
@@ -364,16 +366,11 @@ Scenario(
 
 Scenario(
   'PMM-T1045 Verify user is able to add secure WebHook (using basic Auth) notification channel @ia',
-  async ({ I, ncPage, rulesAPI, channelsAPI, alertRulesPage, alertsAPI }) => {
-    await rulesAPI.clearAllRules(true);
-
-    // const webhookURL = ncPage.types.webhook.url;
-    const webhookURL = 'https://eotp7672kjzmxfx.m.pipedream.net';
+  async ({ I, rulesAPI, alertRulesPage, alertsAPI }) => {
     const channelName = 'Webhook notification channel';
-    // const username = 'username';
-    // const password = 'password';
     const ruleName = 'Rule for webhook';
 
+    await rulesAPI.clearAllRules(true);
     ncPage.openNotificationChannelsTab();
     I.waitForVisible(ncPage.buttons.openAddChannelModal, 30);
     I.click(ncPage.buttons.openAddChannelModal);
@@ -381,10 +378,7 @@ Scenario(
     await ncPage.selectChannelType(ncPage.types.webhook.type);
     I.fillField(ncPage.fields.nameInput, channelName);
     I.fillField(ncPage.fields.webhookUrlInput, webhookURL);
-
-    // I.fillField(ncPage.fields.usernameInput, username);
-    // I.fillField(ncPage.fields.passwordInput, password);
-
+    ncPage.skipTlsCertVerification();
     I.click(ncPage.buttons.addChannel);
     I.verifyPopUpMessage(ncPage.messages.successfullyAdded);
     ncPage.verifyChannelInList(channelName, ncPage.types.webhook.type);

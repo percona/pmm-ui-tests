@@ -22,22 +22,7 @@ module.exports = {
     webhook: {
       name: 'Webhook Channel',
       type: 'Webhook',
-      url: 'https://eotp7672kjzmxfx.m.pipedream.net',
-      max_alerts: 1,
-      send_resolved: true,
-      http_config: {
-        basic_auth: {
-          username: 'username',
-          password: 'password',
-        },
-      },
-      tls_config: {
-        ca_file_content: 'content',
-        cert_file_content: 'content',
-        insecure_skip_verify: false,
-        key_file_content: 'content',
-        server_name: 'serverName',
-      },
+      url: 'https://webhook:8080/echo',
     },
   },
   elements: {
@@ -184,5 +169,14 @@ module.exports = {
     I.seeElement(this.elements.channelInTable(channelName, type));
     I.seeElement(this.buttons.editChannelLocator(channelName));
     I.seeElement(this.buttons.deleteChannelLocator(channelName));
+  },
+
+  skipTlsCertVerification() {
+    I.seeElement(this.buttons.tslDropdown, 30);
+    I.click(this.buttons.tslDropdown);
+    I.waitForVisible(this.elements.caCertificateFieldLabel, 30);
+    I.scrollPageToBottom();
+    I.waitForVisible(this.elements.skipTlsVerifyFieldLabel, 30);
+    I.click(this.elements.skipTlsVerifyFieldLabel);
   },
 };

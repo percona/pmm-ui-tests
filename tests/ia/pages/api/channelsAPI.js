@@ -9,7 +9,7 @@ module.exports = {
     let body = {
       summary: name,
     };
-    let http_config = {};
+    let webhook_config = {};
 
     switch (type) {
       case this.types.email.type:
@@ -37,13 +37,11 @@ module.exports = {
         };
         break;
       case this.types.webhook.type:
-        http_config = this.createWebhookNotificationBody(values);
+        webhook_config = this.createWebhookNotificationBody(values);
 
         body = {
           ...body,
-          webhook_config: {
-            http_config,
-          },
+          webhook_config,
         };
         break;
       default:
@@ -96,124 +94,94 @@ module.exports = {
   },
 
   createWebhookNotificationBody(parameters) {
-    let webhook_config = {};
+    let basic_auth = {};
+    let tls_config = {
+      insecure_skip_verify: false,
+    };
+    let http_config = {};
+    let webhook_config = {
+      max_alerts: 0,
+      send_resolved: false,
+      url: this.types.webhook.url,
+    };
 
     Object.entries(parameters).forEach(([key, value]) => {
       switch (key) {
-        case 'name':
-          webhook_config = {
-            ...webhook_config,
-            http_config: {
-              name: value || this.types.webhook.name,
-            },
-          };
-          break;
-        case 'type':
-          webhook_config = {
-            ...webhook_config,
-            http_config: {
-              type: value || this.types.webhook.type,
-            },
-          };
-          break;
         case 'url':
           webhook_config = {
             ...webhook_config,
-            http_config: {
               url: value,
-            },
-          };
-          break;
-        case 'username':
-          webhook_config = {
-            ...webhook_config,
-            http_config: {
-              basic_auth: {
-                username: value,
-              },
-            },
-          };
-          break;
-        case 'password':
-          webhook_config = {
-            ...webhook_config,
-            http_config: {
-              basic_auth: {
-                password: value,
-              },
-            },
           };
           break;
         case 'send_resolved':
           webhook_config = {
             ...webhook_config,
-            http_config: {
-              send_resolved: value || this.types.webhook.send_resolved,
-            },
+            send_resolved: value,
           };
           break;
         case 'max_alerts':
           webhook_config = {
             ...webhook_config,
-            http_config: {
-              max_alerts: value || this.types.webhook.max_alerts,
-            },
+            max_alerts: value,
+          };
+          break;
+        case 'username':
+          basic_auth = {
+            ...basic_auth,
+            username: value,
+          };
+          break;
+        case 'password':
+          basic_auth = {
+            ...basic_auth,
+            password: value,
           };
           break;
         case 'ca_file_content':
-          webhook_config = {
-            ...webhook_config,
-            http_config: {
-              tls_config: {
-                ca_file_content: value,
-              },
-            },
+          tls_config = {
+            ...tls_config,
+            ca_file_content: value,
           };
           break;
         case 'cert_file_content':
-          webhook_config = {
-            ...webhook_config,
-            http_config: {
-              tls_config: {
-                cert_file_content: value,
-              },
-            },
+          tls_config = {
+            ...tls_config,
+            cert_file_content: value,
           };
           break;
         case 'insecure_skip_verify':
-          webhook_config = {
-            ...webhook_config,
-            http_config: {
-              tls_config: {
-                insecure_skip_verify: value || this.types.webhook.tls_config.insecure_skip_verify,
-              },
-            },
+          tls_config = {
+            ...tls_config,
+            insecure_skip_verify: value,
           };
           break;
         case 'key_file_content':
-          webhook_config = {
-            ...webhook_config,
-            http_config: {
-              tls_config: {
-                key_file_content: value,
-              },
-            },
+          tls_config = {
+            ...tls_config,
+            key_file_content: value,
           };
           break;
         case 'server_name':
-          webhook_config = {
-            ...webhook_config,
-            http_config: {
-              tls_config: {
-                server_name: value,
-              },
-            },
+          tls_config = {
+            ...tls_config,
+            server_name: value,
           };
           break;
         default:
           assert.ok(false, `Unknown field ${key}`);
       }
     });
+
+    http_config = {
+      ...http_config,
+      basic_auth,
+      tls_config,
+    };
+
+    webhook_config = {
+      ...webhook_config,
+      http_config,
+    };
 
     return webhook_config;
   },

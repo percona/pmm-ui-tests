@@ -1,0 +1,19 @@
+
+services:
+  webhookd:
+    image: ncarlier/webhookd
+    container_name: webhookd
+    restart: always
+    command: >
+      --tls -tls-cert-file=/root/self.crt -tls-key-file=/root/server.key
+      --scripts=/var/opt/webhookd/scripts
+    ports:
+      - "8080:8080"
+    environment:
+      - POSTGRES_HOST_AUTH_METHOD=trust
+      - WHD_SCRIPTS=/scripts
+    volumes:
+      - ${PWD}/testdata/ia/certs:/root
+      - ./scripts:/scripts
+    networks:
+      - pmm-network
