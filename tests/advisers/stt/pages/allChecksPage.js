@@ -17,8 +17,8 @@ module.exports = {
     modalContent: '$modal-content',
   },
   buttons: {
-    disableEnableCheck: (checkName) => actionButton(checkName).first(),
-    openChangeInterval: (checkName) => actionButton(checkName).last(),
+    disableEnableCheck: (checkName) => locate(checkRow(checkName)).find('$check-table-loader-button'),
+    openChangeInterval: (checkName) => locate(checkRow(checkName)).find('[title="Change check interval"]'),
     intervalValue: (intervalName) => locate('label').withText(intervalName),
     startDBChecks: locate('$db-check-panel-actions').find('button'),
     applyIntervalChange: '$change-check-interval-modal-save',
