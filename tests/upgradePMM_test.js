@@ -203,14 +203,14 @@ if (versionMinor >= 15) {
       // Silence mysql Empty Password failed check
       // I.waitForVisible(failedCheckRowLocator, 30);
 
-      if (versionMinor < 27) {
-        I.click(failedCheckRowLocator.find('button').first());
-      } else {
+      if (versionMinor >= 27) {
         const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName('MYSQL_SERVICE', psServiceName);
+        const { alert_id } = (await securityChecksAPI.getFailedChecks(service_id))
+          .find(({ summary }) => summary === failedCheckMessage);
 
-        databaseChecksPage.openFailedChecksListForService(service_id);
-        I.click(databaseChecksPage.buttons.toggleFailedCheckBySummary(failedCheckMessage));
-        I.seeAttributesOnElements(databaseChecksPage.buttons.toggleFailedCheckBySummary(failedCheckMessage), { title: 'Activate' });
+        await securityChecksAPI.toggleChecksAlert(alert_id);
+      } else {
+        I.click(failedCheckRowLocator.find('button').first());
       }
     },
   );
