@@ -13,9 +13,11 @@ this is it! tests are good to go on specified PMM server.
   * **Run tests upon local PMM server:**  
  execute command in the Project Root folder to start default PMM server: `docker-compose up -d`  
  Or one of the offered configurations:
+    * `docker-compose --profile client up -d` including "pmm-client"  
     * `docker-compose -f docker-compose-ami-db-setup.yml up -d`
     * `docker-compose -f docker-compose-mongodb-ssl.yml up -d`
     * `docker-compose -f docker-compose-mongo-replica.yml up -d`
+    * `docker-compose -f docker-compose-mongo-replica-local.yml up -d`
     * `docker-compose -f docker-compose-mysql-ssl.yml up -d`
     * `docker-compose -f docker-compose-postgresql-ssl.yml up -d`
 

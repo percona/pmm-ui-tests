@@ -1,12 +1,14 @@
 const { pageObjects, getChunks } = require('./codeceptConfigHelper');
 
+const PMM_URL = 'http://127.0.0.1/';
+
 process.env.ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'admin';
 
 exports.config = {
   output: 'tests/output',
   helpers: {
     Playwright: {
-      url: process.env.PMM_UI_URL || 'http://127.0.0.1/',
+      url: process.env.PMM_UI_URL || PMM_URL,
       restart: true,
       browser: 'chromium',
       windowSize: '1920x1080',
@@ -41,7 +43,7 @@ exports.config = {
       password: process.env.GRAFANA_PASSWORD,
     },
     REST: {
-      endpoint: process.env.PMM_UI_URL || 'http://127.0.0.1/',
+      endpoint: process.env.PMM_UI_URL || PMM_URL,
       timeout: 30000,
     },
     Mailosaur: {

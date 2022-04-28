@@ -41,9 +41,13 @@ services:
       - PMM_AGENT_PRERUN_SCRIPT=${PMM_AGENT_PRERUN_SCRIPT}
     restart: on-failure
 
-  mongors1:
-    container_name: mongors1
-    image: 'percona/percona-server-mongodb:4.4'
+  mongo-rs1:
+    container_name: mongo-rs-bm-1
+    build:
+      context: ./images/mongors
+      args:
+        psmdbVersion: 4.4
+        localPort: 27027
     ports:
       - 27027:27027
     restart: always
@@ -58,10 +62,22 @@ services:
       - '27027'
       - '--replSet'
       - rs0
+  mongosetup:
+    build:
+      context: ./images/mongors
+    depends_on:
+      - mongo-rs1
+    restart: "no"
+    entrypoint: [ "bash", "-c", "sleep 10 && mongo --host mongo-rs1:27027 --authenticationDatabase admin tmp/setup-replica.js"]
+#    entrypoint: [ "bash", "-c", "sleep 10 && mongo-rs-bm-1 mongo --port=27027 --authenticationDatabase admin tmp/setup-replica.js"]
 
-  mongors2:
-    container_name: mongors2
-    image: 'percona/percona-server-mongodb:4.4'
+  mongo-rs2:
+    container_name: mongo-rs-bm-2
+    build:
+      context: ./images/mongors
+      args:
+        psmdbVersion: 4.4
+        localPort: 27029
     ports:
       - 27028:27028
     restart: always
@@ -77,9 +93,13 @@ services:
       - '--replSet'
       - rs0
 
-  mongors3:
-    container_name: mongors3
-    image: 'percona/percona-server-mongodb:4.4'
+  mongo-rs3:
+    container_name: mongo-rs-bm-3
+    build:
+      context: ./images/mongors
+      args:
+        psmdbVersion: 4.4
+        localPort: 27029
     ports:
       - 27029:27029
     restart: always
