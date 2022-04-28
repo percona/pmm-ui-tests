@@ -9,7 +9,7 @@ module.exports = {
   snPassword: process.env.SERVICENOW_PASSWORD,
   devUrl: process.env.SERVICENOW_DEV_URL,
   oktaToken: `SSWS ${process.env.OKTA_TOKEN}`,
-  oktaUrl: `https://${process.env.OAUTH_DEV_HOST}/`,
+  oktaUrl: 'https://id-dev.percona.com/',
   oktaClientId: process.env.OAUTH_DEV_CLIENT_ID,
   portalBaseUrl: process.env.PORTAL_BASE_URL,
 
@@ -116,6 +116,14 @@ module.exports = {
     const apiUrl = `${this.portalBaseUrl}/v1/orgs/${orgId}/members`;
     const headers = { Authorization: `Bearer ${accessToken}` };
     const response = await I.sendPostRequest(apiUrl, member, headers);
+
+    return response.data;
+  },
+
+  async searchCompany(accessToken) {
+    const endpointUrl = `${this.portalBaseUrl}/v1/orgs/company:search`;
+    const headers = { Authorization: `Bearer ${accessToken}` };
+    const response = await I.sendPostRequest(endpointUrl, {}, headers);
 
     return response.data;
   },
