@@ -144,9 +144,9 @@ Scenario(
     I.amOnPage('');
     I.loginWithSSO(portalCredentials.admin1.email, portalCredentials.admin1.password);
     I.waitInUrl(homePage.landingUrl);
-    await perconaPlatformPage.openPerconaPlatform();
-    await perconaPlatformPage.isPMMConnected();
-    await perconaPlatformPage.disconnectFromPortal();
+    perconaPlatformPage.openPerconaPlatform();
+    perconaPlatformPage.isPMMConnected();
+    perconaPlatformPage.disconnectFromPortal();
     adminToken = await portalAPI.getUserAccessToken(portalCredentials.admin1.email, portalCredentials.admin1.password);
     perconaPlatformPage.connectToPortal(adminToken, `Test Server ${Date.now()}`);
   },
@@ -164,7 +164,7 @@ Scenario(
     I.waitInUrl(homePage.landingUrl);
     I.amOnPage(perconaPlatformPage.url);
     await perconaPlatformPage.disconnectFromPortal();
-    await I.waitInUrl('graph/login', 10);
+    I.waitInUrl('graph/login', 10);
     I.dontSeeElement(locate('a').withAttr({ href: 'login/generic_oauth' }));
     I.amOnPage(homePage.genericOauthUrl);
     I.seeElement(locate('div').withText('OAuth not enabled'));

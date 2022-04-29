@@ -82,24 +82,24 @@ module.exports = {
     I.seeTextEquals('', this.elements.emailValidation);
   },
 
-  async connectToPortal(token, serverName = 'Test Server') {
+  connectToPortal(token, serverName = 'Test Server') {
     I.fillField(this.fields.pmmServerNameField, serverName);
     I.fillField(this.fields.tokenField, token);
     I.click(this.buttons.connect);
     I.verifyPopUpMessage(this.messages.connectedSuccess);
     I.refreshPage();
-    await I.waitForVisible(this.elements.connectedWrapper, 20);
+    I.waitForVisible(this.elements.connectedWrapper, 20);
   },
 
-  async disconnectFromPortal() {
+  disconnectFromPortal() {
     I.click(this.fields.platformDisconnectButton);
-    await I.waitForText(this.messages.disconnectPMM, 3);
+    I.waitForText(this.messages.disconnectPMM, 3);
     I.click(this.fields.confirmDisconnectButton);
   },
 
   async isPMMConnected() {
-    await I.waitForVisible(this.elements.connectedWrapper, 20);
-    await I.waitForVisible(this.buttons.disconnect);
+    I.waitForVisible(this.elements.connectedWrapper, 20);
+    I.waitForVisible(this.buttons.disconnect);
     locate('p').withText(this.messages.pmmConnected);
   },
 };
