@@ -22,6 +22,7 @@ module.exports = {
     platformDisconnectButton: '$disconnect-button',
     accessToken: '$accessToken-text-input',
     serverId: '$pmmServerId-text-input',
+    confirmDisconnectButton: locate('button').withAttr({ 'aria-label': 'Confirm Modal Danger Button' }),
   },
   buttons: {
     connect: '$connect-button',
@@ -33,6 +34,7 @@ module.exports = {
     invalidEmail: 'Invalid email address',
     connectedSuccess: 'Successfully connected PMM to Percona Platform',
     pmmDisconnectedFromProtal: 'Successfully disconnected PMM from Percona Platform',
+    disconnectPMM: 'Disconnect PMM from Percona Platform',
     pmmConnected: 'This PMM instance is connected to Percona Platform.',
   },
 
@@ -91,7 +93,8 @@ module.exports = {
 
   disconnectFromPortal() {
     I.click(this.fields.platformDisconnectButton);
-    I.verifyPopUpMessage(this.messages.pmmDisconnectedFromProtal);
+    I.waitForText(this.messages.disconnectPMM, 3);
+    I.click(this.fields.confirmDisconnectButton);
   },
 
   async isPMMConnected() {
