@@ -32,7 +32,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T398 PMM-T809 Verify Connect to Percona Portal elements @portal @pre-pmm-portal-upgrade @post-pmm-portal-upgrade',
+  'PMM-T398 PMM-T809 Verify Connect to Percona Portal elements @portal @pre-pmm-portal-upgrade',
   async ({ I, links, perconaPlatformPage }) => {
     const {
       buttons, elements, fields, url, messages,
