@@ -1,15 +1,18 @@
 const assert = require('assert');
 const { communicationData } = require('./testData');
 
-const { I, adminPage, links } = inject();
+const {
+  I, adminPage, links, perconaPlatformPage,
+} = inject();
 
 const locateLabel = (selector) => locate(I.useDataQA(selector)).find('span');
 
 module.exports = {
   url: 'graph/settings',
+  publicAddress: process.env.VM_IP ? process.env.VM_IP : process.env.SERVER_IP,
   advancedSettingsUrl: 'graph/settings/advanced-settings',
   communicationSettingsUrl: 'graph/settings/communication',
-  perconaPlatform: 'graph/settings/percona-platform',
+  perconaPlatform: perconaPlatformPage,
   prometheusAlertUrl: '/prometheus/rules',
   stateOfAlertsUrl: '/prometheus/alerts',
   diagnosticsText:
@@ -409,7 +412,7 @@ module.exports = {
     I.click(this.fields.sshKeyButton);
   },
 
-  addPublicAddress(address = process.env.SERVER_IP) {
+  addPublicAddress(address = this.publicAddress) {
     I.fillField(this.fields.publicAddressInput, address);
     I.click(this.fields.advancedButton);
     I.verifyPopUpMessage(this.messages.successPopUpMessage);

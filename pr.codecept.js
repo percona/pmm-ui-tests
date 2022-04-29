@@ -40,6 +40,9 @@ exports.config = {
       username: process.env.GRAFANA_USERNAME,
       password: process.env.GRAFANA_PASSWORD,
     },
+    FileHelper: {
+      require: './tests/helper/file_helper.js',
+    },
     REST: {
       endpoint: process.env.PMM_UI_URL || 'http://127.0.0.1/',
       timeout: 30000,
