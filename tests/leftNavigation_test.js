@@ -55,3 +55,29 @@ Scenario(
     assert.ok(tabsCount1 === tabsCount2, 'Settings page isn\'t opened in the same tab');
   },
 );
+
+Scenario(
+  'PMM-9550 Verify downloading server diagnostics logs',
+  async ({ I, homePage }) => {
+    await homePage.open();
+    let path;
+
+    I.amOnPage('/');
+    I.moveCursorTo(locate('li').find('a').withAttr({ 'aria-label': 'Help' }));
+    I.waitForElement('//div[contains(text(), \'PMM Logs\')]', 3);
+
+    await I.usePlaywrightTo('download', async ({ page }) => {
+      const [download] = await Promise.all([
+        // Start waiting for the download
+        page.waitForEvent('download'),
+        // Perform the action that initiates download
+        page.locator('//div[contains(text(), \'PMM Logs\')]').click(),
+      ]);
+
+      // Wait for the download process to complete
+      path = await download.path();
+    });
+
+    await I.seeEntriesInZip(path, ['pmm-agent.yaml', 'pmm-managed.log', 'pmm-agent.log']);
+  },
+);
