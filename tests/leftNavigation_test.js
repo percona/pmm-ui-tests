@@ -40,7 +40,8 @@ Data(sidebar).Scenario(
   },
 );
 
-Scenario(
+// Needs to be removed, Advisors are on by default hence no settings link anymore
+xScenario(
   'PMM-T1051 - Verify PMM Settings page is opened from Home dashboard @menu',
   async ({ I, homePage, pmmSettingsPage }) => {
     await homePage.open();
