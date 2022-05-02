@@ -5,7 +5,8 @@ const {
 } = inject();
 const config = codeceptjsConfig.config.helpers.Playwright;
 const connection = perconaServerDB.defaultConnection;
-let nodeID;
+let nodeId;
+let serviceId;
 
 const urls = new DataTable(['url']);
 
@@ -20,11 +21,11 @@ const detailsText = process.env.OVF_TEST === 'yes'
 Feature('Database Failed Checks');
 
 BeforeSuite(async ({ addInstanceAPI }) => {
-  nodeID = await addInstanceAPI.addInstanceForSTT(connection, psServiceName);
+  [nodeId, serviceId] = await addInstanceAPI.addInstanceForSTT(connection, psServiceName);
 });
 
 AfterSuite(async ({ inventoryAPI }) => {
-  if (nodeID) await inventoryAPI.deleteNode(nodeID, true);
+  if (nodeId) await inventoryAPI.deleteNode(nodeId, true);
 });
 
 Before(async ({ I }) => {
@@ -84,14 +85,14 @@ xScenario(
 );
 
 Scenario(
-  'PMM-T233 PMM-T354 PMM-T368 open PMM Database Checks page from home dashboard and verify number of failed checks [critical] @stt',
+  'PMM-T233 PMM-T354 PMM-T368 open PMM Database Checks page from home dashboard [critical] @stt',
   async ({
     I, homePage, databaseChecksPage, settingsAPI, securityChecksAPI,
   }) => {
     await settingsAPI.apiEnableSTT();
     await securityChecksAPI.startSecurityChecks(['mysql_version']);
     await securityChecksAPI.waitForFailedCheckExistance(detailsText, psServiceName);
-    I.wait(5);
+    I.wait(30);
     I.amOnPage(homePage.url);
     I.waitForVisible(homePage.fields.checksPanelSelector, 30);
     I.waitForVisible(homePage.fields.sttFailedChecksPanelSelector, 30);
@@ -111,39 +112,29 @@ Scenario(
     I.seeTextEquals(homePage.failedChecksSinglestatsInfoMessage, homePage.fields.popUp);
 
     I.doubleClick(homePage.fields.sttFailedChecksPanelSelector);
-    await databaseChecksPage.verifyDatabaseChecksPageOpened();
-
-    // Verify count of checks by Severity match number on the home page singlestat
-    I.seeNumberOfElements(locate('td').withText('Critical'), critical);
-    I.seeNumberOfElements(locate('td').withText('Major'), major);
-    I.seeNumberOfElements(locate('td').withText('Trivial'), trivial);
-  },
-);
-
-Scenario(
-  'PMM-T236 Verify user is able to hover Failed Checks values and see tooltip [minor] @stt',
-  async ({
-    I, databaseChecksPage, settingsAPI, securityChecksAPI,
-  }) => {
-    const row = 1;
-
-    await settingsAPI.apiEnableSTT();
-    await securityChecksAPI.waitForFailedCheckExistance(detailsText, psServiceName);
-    I.amOnPage(databaseChecksPage.url);
-    await databaseChecksPage.verifyDatabaseChecksPageOpened();
-    databaseChecksPage.mouseOverInfoIcon(row);
-    await databaseChecksPage.compareTooltipValues(row);
+    // await databaseChecksPage.verifyDatabaseChecksPageOpened();
+    I.waitForVisible(databaseChecksPage.elements.failedCheckRowByServiceName(psServiceName), 10);
   },
 );
 
 Scenario(
   'PMM-T241 Verify user can see correct service name for failed checks [critical] @stt',
-  async ({ databaseChecksPage, settingsAPI, securityChecksAPI }) => {
+  async ({
+    I, databaseChecksPage, settingsAPI, securityChecksAPI, inventoryAPI, allChecksPage,
+  }) => {
     await settingsAPI.apiEnableSTT();
-    await databaseChecksPage.runDBChecks();
+    I.amOnPage(allChecksPage.url);
+    await allChecksPage.runDBChecks();
     await securityChecksAPI.waitForFailedCheckExistance(detailsText, psServiceName);
+
+    I.amOnPage(databaseChecksPage.url);
     // Verify failed check on UI
-    databaseChecksPage.verifyFailedCheckExists(detailsText);
-    await databaseChecksPage.verifyServiceNamesExistence(psServiceName);
+    databaseChecksPage.verifyFailedCheckExists(detailsText, serviceId);
+    I.see(psServiceName);
+    await inventoryAPI.verifyServiceExistsAndHasRunningStatus({
+      serviceType: 'MYSQL_SERVICE',
+      service: 'mysql',
+    },
+    psServiceName);
   },
 );

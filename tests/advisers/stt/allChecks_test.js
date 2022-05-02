@@ -5,11 +5,12 @@ const { perconaServerDB } = inject();
 const connection = perconaServerDB.defaultConnection;
 const psServiceName = 'allChecks-ps-5.7.30';
 let nodeId;
+let serviceId;
 
 Feature('Security Checks: All Checks');
 
 BeforeSuite(async ({ addInstanceAPI }) => {
-  nodeId = await addInstanceAPI.addInstanceForSTT(connection, psServiceName);
+  [nodeId, serviceId] = await addInstanceAPI.addInstanceForSTT(connection, psServiceName);
 });
 AfterSuite(async ({ inventoryAPI }) => {
   if (nodeId) await inventoryAPI.deleteNode(nodeId, true);
@@ -76,14 +77,15 @@ Scenario(
       : 'Newer version of Percona Server for MySQL is available';
     const checkName = 'MySQL Version';
 
+    I.amOnPage(allChecksPage.url);
     // Run DB Checks from UI
-    await databaseChecksPage.runDBChecks();
+    await allChecksPage.runDBChecks();
 
     // Wait for MySQL version failed check
     await securityChecksAPI.waitForFailedCheckExistance(detailsText, psServiceName);
 
     // Verify failed check on UI
-    databaseChecksPage.verifyFailedCheckExists(detailsText);
+    databaseChecksPage.verifyFailedCheckExists(detailsText, serviceId);
 
     // Disable MySQL Version check
     I.amOnPage(allChecksPage.url);
@@ -97,11 +99,11 @@ Scenario(
     I.seeTextEquals('Disabled', allChecksPage.elements.statusCellByName(checkName));
 
     // Run DB Checks from UI
-    await databaseChecksPage.runDBChecks();
+    await allChecksPage.runDBChecks();
     await securityChecksAPI.waitForFailedCheckNonExistance(detailsText, psServiceName);
 
     // Verify there is no MySQL Version failed check
-    databaseChecksPage.verifyFailedCheckNotExists(detailsText);
+    // databaseChecksPage.verifyFailedCheckNotExists(detailsText, serviceId);
   },
 );
 
@@ -110,7 +112,7 @@ Scenario(
   async ({
     I, allChecksPage, securityChecksAPI,
   }) => {
-    const checkName = 'MySQL User check';
+    const checkName = 'MySQL Version';
     const interval = 'Rare';
 
     await securityChecksAPI.restoreDefaultIntervals();

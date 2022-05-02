@@ -1,5 +1,7 @@
 const { pageObjects, getChunks } = require('./codeceptConfigHelper');
 
+process.env.ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'admin';
+
 exports.config = {
   output: 'tests/output',
   helpers: {
@@ -9,14 +11,15 @@ exports.config = {
       browser: 'chromium',
       windowSize: '1920x1080',
       waitForNavigation: 'networkidle0',
-      waitForTimeout: 30000,
-      getPageTimeout: 30000,
+      waitForTimeout: 60000,
+      getPageTimeout: 60000,
       waitForAction: 500,
       pressKeyDelay: 5,
       chromium: {
         executablePath: process.env.CHROMIUM_PATH,
         ignoreHTTPSErrors: true,
         args: [
+          '--ignore-certificate-errors',
           '--no-sandbox',
           '--window-size=1920,1080',
           '--disable-gpu',
@@ -36,6 +39,9 @@ exports.config = {
       require: './tests/helper/grafana_helper.js',
       username: process.env.GRAFANA_USERNAME,
       password: process.env.GRAFANA_PASSWORD,
+    },
+    FileHelper: {
+      require: './tests/helper/file_helper.js',
     },
     REST: {
       endpoint: process.env.PMM_UI_URL || 'http://127.0.0.1/',
@@ -108,6 +114,6 @@ exports.config = {
   hooks: [],
   gherkin: {},
   tests: 'tests/**/*_test.js',
-  timeout: 1400,
+  timeout: 1800,
   name: 'pmm-qa',
 };

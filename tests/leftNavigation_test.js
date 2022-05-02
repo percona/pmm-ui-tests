@@ -1,3 +1,5 @@
+const assert = require('assert');
+
 const { leftNavMenu } = inject();
 
 const sidebar = new DataTable(['name', 'path', 'click']);
@@ -35,5 +37,22 @@ Data(sidebar).Scenario(
     });
     current.click();
     I.waitInUrl(current.path, 5);
+  },
+);
+
+// Needs to be removed, Advisors are on by default hence no settings link anymore
+xScenario(
+  'PMM-T1051 - Verify PMM Settings page is opened from Home dashboard @menu',
+  async ({ I, homePage, pmmSettingsPage }) => {
+    await homePage.open();
+
+    const tabsCount1 = await I.grabNumberOfOpenTabs();
+
+    I.click(homePage.fields.failedSecurityChecksPmmSettingsLink);
+    await pmmSettingsPage.waitForPmmSettingsPageLoaded();
+
+    const tabsCount2 = await I.grabNumberOfOpenTabs();
+
+    assert.ok(tabsCount1 === tabsCount2, 'Settings page isn\'t opened in the same tab');
   },
 );

@@ -1,5 +1,6 @@
 const assert = require('assert');
 const AdmZip = require('adm-zip');
+const buildUrl = require('build-url');
 
 const systemMessageText = '.page-alert-list div[data-testid^="data-testid Alert"] > div';
 const systemMessageButtonClose = '.page-alert-list button';
@@ -75,5 +76,56 @@ module.exports = () => actor({
 
       this.wait(interval);
     }
+  },
+
+  /**
+   * Create URL method
+   *
+   * @param url start
+   * @param parameters object
+   * @returns {Promise<void>}
+   *
+   * @example
+   * buildUrlWithParams('http://example.com', { environment: 'ps-dev', from: 'now-1' });
+   */
+  buildUrlWithParams(url, parameters) {
+    const queryParams = {};
+
+    queryParams.from = 'now-5m';
+    queryParams.to = 'now';
+    Object.entries(parameters).forEach(([key, value]) => {
+      switch (key) {
+        case 'environment':
+          queryParams['var-environment'] = value;
+          break;
+        case 'node_name':
+          queryParams['var-node_name'] = value;
+          break;
+        case 'service_name':
+          queryParams['var-service_name'] = value;
+          break;
+        case 'columns':
+          queryParams.columns = value;
+          break;
+        case 'from':
+          queryParams.from = value;
+          break;
+        case 'to':
+          queryParams.to = value;
+          break;
+        case 'search':
+          queryParams.dimensionSearchText = value;
+          break;
+        case 'page_number':
+          queryParams.page_number = value;
+          break;
+        case 'page_size':
+          queryParams.page_size = value;
+          break;
+        default:
+      }
+    });
+
+    return buildUrl(url, { queryParams });
   },
 });

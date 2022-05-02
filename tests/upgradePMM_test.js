@@ -3,8 +3,16 @@ const faker = require('faker');
 const { generate } = require('generate-password');
 
 const {
-  remoteInstancesHelper, perconaServerDB, pmmSettingsPage, dashboardPage, databaseChecksPage,
+  adminPage, remoteInstancesHelper, perconaServerDB, pmmSettingsPage, dashboardPage, databaseChecksPage,
 } = inject();
+
+const pathToPMMFramework = adminPage.pathToPMMTests;
+
+const sslinstances = new DataTable(['serviceName', 'version', 'container', 'serviceType', 'metric', 'dashboard']);
+
+sslinstances.add(['pgsql_14_ssl_service', '14', 'pgsql_14', 'postgres_ssl', 'pg_stat_database_xact_rollback', dashboardPage.postgresqlInstanceOverviewDashboard.url]);
+sslinstances.add(['mysql_8.0_ssl_service', '8.0', 'mysql_8.0', 'mysql_ssl', 'mysql_global_status_max_used_connections', dashboardPage.mySQLInstanceOverview.url]);
+sslinstances.add(['mongodb_4.4_ssl_service', '4.4', 'mongodb_4.4', 'mongodb_ssl', 'mongodb_connections', dashboardPage.mongoDbInstanceOverview.url]);
 
 const alertManager = {
   alertmanagerURL: 'http://192.168.0.1:9093',
@@ -15,10 +23,10 @@ const clientDbServices = new DataTable(['serviceType', 'name', 'metric', 'annota
 
 clientDbServices.add(['MYSQL_SERVICE', 'ps_', 'mysql_global_status_max_used_connections', 'annotation-for-mysql', dashboardPage.mysqlInstanceSummaryDashboard.url, 'mysql_upgrade']);
 clientDbServices.add(['POSTGRESQL_SERVICE', 'PGSQL_', 'pg_stat_database_xact_rollback', 'annotation-for-postgres', dashboardPage.postgresqlInstanceSummaryDashboard.url, 'pgsql_upgrade']);
+// eslint-disable-next-line max-len
 clientDbServices.add(['MONGODB_SERVICE', 'mongodb_', 'mongodb_connections', 'annotation-for-mongo', dashboardPage.mongoDbInstanceSummaryDashboard.url, 'mongo_upgrade']);
 
 const connection = perconaServerDB.defaultConnection;
-const emptyPasswordSummary = 'User(s) has/have no password defined';
 const psServiceName = 'upgrade-stt-ps-5.7.30';
 const failedCheckRowLocator = databaseChecksPage.elements
   .failedCheckRowByServiceName(psServiceName);
@@ -159,6 +167,7 @@ if (versionMinor >= 15) {
       databaseChecksPage,
       securityChecksAPI,
       addInstanceAPI,
+      inventoryAPI,
     }) => {
       const runChecks = locate('button')
         .withText('Run DB checks');
@@ -170,8 +179,7 @@ if (versionMinor >= 15) {
 
       await securityChecksAPI.startSecurityChecks();
       // Waiting to have results
-      await securityChecksAPI.waitForFailedCheckExistance(emptyPasswordSummary);
-      // Run DB Checks from UI
+      I.wait(60);
       // disable check, change interval for a check, change interval settings
       if (versionMinor >= 16) {
         await securityChecksAPI.disableCheck('mongodb_version');
@@ -185,16 +193,25 @@ if (versionMinor >= 15) {
         I.amOnPage(databaseChecksPage.oldUrl);
       }
 
-      I.waitForVisible(runChecks, 30);
-      I.waitForVisible(failedCheckRowLocator, 60);
+      // I.waitForVisible(runChecks, 30);
+      // I.waitForVisible(failedCheckRowLocator, 60);
 
       // Check that there are failed checks
-      await securityChecksAPI.verifyFailedCheckExists(emptyPasswordSummary);
-      await securityChecksAPI.verifyFailedCheckExists(failedCheckMessage);
+      // await securityChecksAPI.verifyFailedCheckExists(emptyPasswordSummary);
+      // await securityChecksAPI.verifyFailedCheckExists(failedCheckMessage);
 
       // Silence mysql Empty Password failed check
-      I.waitForVisible(failedCheckRowLocator, 30);
-      I.click(failedCheckRowLocator.find('button').first());
+      // I.waitForVisible(failedCheckRowLocator, 30);
+
+      if (versionMinor >= 27) {
+        const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName('MYSQL_SERVICE', psServiceName);
+        const { alert_id } = (await securityChecksAPI.getFailedChecks(service_id))
+          .find(({ summary }) => summary === failedCheckMessage);
+
+        await securityChecksAPI.toggleChecksAlert(alert_id);
+      } else {
+        I.click(failedCheckRowLocator.find('button').first());
+      }
     },
   );
 
@@ -207,6 +224,44 @@ if (versionMinor >= 15) {
       await I.verifyCommand(
         'pmm-admin add external --listen-port=42200 --group="redis" --custom-labels="testing=redis" --service-name="redis_external_2"',
       );
+    },
+  );
+}
+
+if (versionMinor >= 21) {
+  Data(clientDbServices).Scenario(
+    'Adding custom agent Password, Custom Label before upgrade At service Level @pre-upgrade @pmm-upgrade',
+    async ({
+      I, inventoryAPI, current,
+    }) => {
+      const {
+        serviceType, name, upgrade_service,
+      } = current;
+      const {
+        service_id, node_id, address, port,
+      } = await inventoryAPI.apiGetNodeInfoByServiceName(serviceType, name);
+
+      const { pmm_agent_id } = await inventoryAPI.apiGetPMMAgentInfoByServiceId(service_id);
+      let output;
+
+      switch (serviceType) {
+        case 'MYSQL_SERVICE':
+          output = await I.verifyCommand(
+            `pmm-admin add mysql --node-id=${node_id} --pmm-agent-id=${pmm_agent_id} --port=${port} --password=ps --host=${address} --query-source=perfschema --agent-password=uitests --custom-labels="testing=upgrade" ${upgrade_service}`,
+          );
+          break;
+        case 'POSTGRESQL_SERVICE':
+          output = await I.verifyCommand(
+            `pmm-admin add postgresql --node-id=${node_id} --pmm-agent-id=${pmm_agent_id} --port=${port} --host=${address} --agent-password=uitests --custom-labels="testing=upgrade" ${upgrade_service}`,
+          );
+          break;
+        case 'MONGODB_SERVICE':
+          output = await I.verifyCommand(
+            `pmm-admin add mongodb --username=pmm_mongodb --password=secret --port=27023 --host=${address} --agent-password=uitests --custom-labels="testing=upgrade" ${upgrade_service}`,
+          );
+          break;
+        default:
+      }
     },
   );
 }
@@ -285,39 +340,90 @@ if (versionMinor >= 13) {
   );
 }
 
-if (versionMinor >= 21) {
-  Data(clientDbServices).Scenario(
-    'Adding custom agent Password, Custom Label before upgrade At service Level @pre-upgrade @pmm-upgrade',
+if (versionMinor >= 23) {
+  Data(sslinstances).Scenario(
+    'PMM-T948 PMM-T947 Verify Adding Postgresql, MySQL, MongoDB SSL services remotely via API before upgrade @pre-upgrade @pmm-upgrade',
     async ({
-      I, inventoryAPI, current,
+      I, remoteInstancesPage, pmmInventoryPage, current, addInstanceAPI, inventoryAPI,
     }) => {
       const {
-        serviceType, name, upgrade_service,
+        serviceName, serviceType, version, container,
       } = current;
-      const {
-        service_id, node_id, address, port,
-      } = await inventoryAPI.apiGetNodeInfoByServiceName(serviceType, name);
+      let details;
+      const remoteServiceName = `remote_api_${serviceName}`;
 
-      const { pmm_agent_id } = await inventoryAPI.apiGetPMMAgentInfoByServiceId(service_id);
-      let output;
+      if (serviceType === 'postgres_ssl') {
+        details = {
+          serviceName: remoteServiceName,
+          serviceType,
+          port: '5432',
+          database: 'postgres',
+          address: container,
+          username: 'pmm',
+          password: 'pmm',
+          cluster: 'pgsql_remote_cluster',
+          environment: 'pgsql_remote_cluster',
+          tlsCAFile: await remoteInstancesPage.getFileContent(`${pathToPMMFramework}tls-ssl-setup/postgres/${version}/ca.crt`),
+          tlsKeyFile: await remoteInstancesPage.getFileContent(`${pathToPMMFramework}tls-ssl-setup/postgres/${version}/client.pem`),
+          tlsCertFile: await remoteInstancesPage.getFileContent(`${pathToPMMFramework}tls-ssl-setup/postgres/${version}/client.crt`),
+        };
+        await addInstanceAPI.addPostgreSqlSSL(details);
+        I.wait(5);
+        await inventoryAPI.verifyServiceExistsAndHasRunningStatus(
+          {
+            serviceType: 'POSTGRESQL_SERVICE',
+            service: 'postgresql',
+          },
+          remoteServiceName,
+        );
+      }
 
-      switch (serviceType) {
-        case 'MYSQL_SERVICE':
-          output = await I.verifyCommand(
-            `pmm-admin add mysql --node-id=${node_id} --pmm-agent-id=${pmm_agent_id} --port=${port} --password=ps --host=${address} --query-source=perfschema --agent-password=uitests --custom-labels="testing=upgrade" ${upgrade_service}`,
-          );
-          break;
-        case 'POSTGRESQL_SERVICE':
-          output = await I.verifyCommand(
-            `pmm-admin add postgresql --node-id=${node_id} --pmm-agent-id=${pmm_agent_id} --port=${port} --host=${address} --agent-password=uitests --custom-labels="testing=upgrade" ${upgrade_service}`,
-          );
-          break;
-        case 'MONGODB_SERVICE':
-          output = await I.verifyCommand(
-            `pmm-admin add mongodb --node-id=${node_id} --username=pmm_mongodb --password=secret --pmm-agent-id=${pmm_agent_id} --port=${port} --host=${address} --agent-password=uitests --custom-labels="testing=upgrade" ${upgrade_service}`,
-          );
-          break;
-        default:
+      if (serviceType === 'mysql_ssl') {
+        details = {
+          serviceName: remoteServiceName,
+          serviceType,
+          port: '3306',
+          address: container,
+          username: 'pmm',
+          password: 'pmm',
+          cluster: 'mysql_ssl_remote_cluster',
+          environment: 'mysql_ssl_remote_cluster',
+          tlsCAFile: await remoteInstancesPage.getFileContent(`${adminPage.pathToPMMTests}tls-ssl-setup/mysql/${version}/ca.pem`),
+          tlsKeyFile: await remoteInstancesPage.getFileContent(`${adminPage.pathToPMMTests}tls-ssl-setup/mysql/${version}/client-key.pem`),
+          tlsCertFile: await remoteInstancesPage.getFileContent(`${adminPage.pathToPMMTests}tls-ssl-setup/mysql/${version}/client-cert.pem`),
+        };
+        await addInstanceAPI.addMysqlSSL(details);
+        I.wait(5);
+        await inventoryAPI.verifyServiceExistsAndHasRunningStatus(
+          {
+            serviceType: 'MYSQL_SERVICE',
+            service: 'mysql',
+          },
+          remoteServiceName,
+        );
+      }
+
+      if (serviceType === 'mongodb_ssl') {
+        details = {
+          serviceName: remoteServiceName,
+          serviceType,
+          port: '27017',
+          address: container,
+          cluster: 'mongodb_ssl_remote_cluster',
+          environment: 'mongodb_ssl_remote_cluster',
+          tls_certificate_file_password: await remoteInstancesPage.getFileContent(`${pathToPMMFramework}tls-ssl-setup/mongodb/${version}/client.key`),
+          tls_certificate_key: await remoteInstancesPage.getFileContent(`${pathToPMMFramework}tls-ssl-setup/mongodb/${version}/client.pem`),
+          tls_ca: await remoteInstancesPage.getFileContent(`${pathToPMMFramework}tls-ssl-setup/mongodb/${version}/ca.crt`),
+        };
+        await addInstanceAPI.addMongoDBSSL(details);
+        I.wait(5);
+        await inventoryAPI.verifyServiceExistsAndHasRunningStatus(
+          {
+            serviceType: 'MONGODB_SERVICE',
+            service: 'mongodb',
+          },
+          remoteServiceName,
+        );
       }
     },
   );
@@ -398,17 +504,15 @@ Scenario(
   },
 );
 
-if (versionMinor < 15) {
-  Scenario(
-    'PMM-T268 - Verify Failed check singlestats after upgrade from old versions @post-upgrade @pmm-upgrade',
-    async ({
-      I, homePage,
-    }) => {
-      await homePage.open();
-      I.waitForVisible(homePage.fields.sttDisabledFailedChecksPanelSelector, 15);
-    },
-  );
-}
+Scenario(
+  'PMM-T268 - Verify Failed check singlestats after upgrade from old versions @post-upgrade @pmm-upgrade',
+  async ({
+    I, homePage,
+  }) => {
+    await homePage.open();
+    I.dontSeeElement(homePage.fields.sttDisabledFailedChecksPanelSelector, 15);
+  },
+);
 
 if (versionMinor >= 15) {
   Scenario(
@@ -417,7 +521,7 @@ if (versionMinor >= 15) {
       I,
       pmmSettingsPage,
       securityChecksAPI,
-      databaseChecksPage,
+      allChecksPage,
     }) => {
       // Wait for 45 seconds to have latest check results
       I.wait(45);
@@ -426,8 +530,8 @@ if (versionMinor >= 15) {
       I.waitForVisible(pmmSettingsPage.fields.sttSwitchSelector, 30);
       pmmSettingsPage.verifySwitch(pmmSettingsPage.fields.sttSwitchSelectorInput, 'on');
 
-      I.amOnPage(databaseChecksPage.url);
-      I.waitForVisible(databaseChecksPage.buttons.startDBChecks, 30);
+      I.amOnPage(allChecksPage.url);
+      I.waitForVisible(allChecksPage.buttons.startDBChecks, 30);
       // Verify there is failed check
       await securityChecksAPI.verifyFailedCheckExists(failedCheckMessage);
     },
@@ -478,27 +582,6 @@ if (versionMinor >= 16) {
   );
 
   Scenario(
-    'Verify silenced checks remain silenced after upgrade @post-upgrade @pmm-upgrade',
-    async ({
-      I,
-      databaseChecksPage,
-    }) => {
-      I.amOnPage(databaseChecksPage.url);
-
-      I.waitForVisible(failedCheckRowLocator, 30);
-      I.dontSeeElement(failedCheckRowLocator.find('td')
-        .withText(emptyPasswordSummary));
-
-      I.click(databaseChecksPage.buttons.toggleSilenced);
-
-      I.seeElement(failedCheckRowLocator.find('td')
-        .withText(emptyPasswordSummary));
-      I.seeElement(failedCheckRowLocator.find('td')
-        .withText('Silenced'));
-    },
-  );
-
-  Scenario(
     'Verify check intervals remain the same after upgrade @post-upgrade @pmm-upgrade',
     async ({
       I,
@@ -509,6 +592,21 @@ if (versionMinor >= 16) {
       I.amOnPage(allChecksPage.url);
       I.waitForVisible(allChecksPage.buttons.disableEnableCheck(checkName));
       I.seeTextEquals('Frequent', allChecksPage.elements.intervalCellByName(checkName));
+    },
+  );
+
+  Scenario(
+    'Verify silenced checks remain silenced after upgrade @post-upgrade @pmm-upgrade',
+    async ({
+      I,
+      databaseChecksPage, inventoryAPI,
+    }) => {
+      const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName('MYSQL_SERVICE', psServiceName);
+
+      databaseChecksPage.openFailedChecksListForService(service_id);
+
+      I.waitForVisible(databaseChecksPage.elements.failedCheckRowBySummary(failedCheckMessage), 30);
+      I.seeAttributesOnElements(databaseChecksPage.buttons.toggleFailedCheckBySummary(failedCheckMessage), { title: 'Activate' });
     },
   );
 
@@ -795,3 +893,93 @@ if (versionMinor >= 21) {
     },
   );
 }
+
+if (versionMinor >= 23) {
+  Data(sslinstances).Scenario(
+    'Verify metrics from SSL instances on PMM-Server @post-upgrade @pmm-upgrade',
+    async ({
+      I, remoteInstancesPage, pmmInventoryPage, current, grafanaAPI,
+    }) => {
+      const {
+        serviceName, metric,
+      } = current;
+      let response; let result;
+      const remoteServiceName = `remote_api_${serviceName}`;
+
+      // Waiting for metrics to start hitting for remotely added services
+      I.wait(10);
+
+      // verify metric for client container node instance
+      response = await grafanaAPI.checkMetricExist(metric, { type: 'service_name', value: serviceName });
+      result = JSON.stringify(response.data.data.result);
+
+      assert.ok(response.data.data.result.length !== 0, `Metrics ${metric} from ${serviceName} should be available but got empty ${result}`);
+
+      // verify metric for remote instance
+      response = await grafanaAPI.checkMetricExist(metric, { type: 'service_name', value: remoteServiceName });
+      result = JSON.stringify(response.data.data.result);
+
+      assert.ok(response.data.data.result.length !== 0, `Metrics ${metric} from ${remoteServiceName} should be available but got empty ${result}`);
+    },
+  ).retry(1);
+
+  Data(sslinstances).Scenario(
+    'Verify dashboard for SSL Instances and services after upgrade @post-upgrade @pmm-upgrade',
+    async ({
+      I, dashboardPage, adminPage, current,
+    }) => {
+      const {
+        serviceName, dashboard,
+      } = current;
+
+      const serviceList = [serviceName, `remote_api_${serviceName}`];
+
+      for (const service of serviceList) {
+        I.amOnPage(dashboard);
+        dashboardPage.waitForDashboardOpened();
+        await adminPage.applyTimeRange('Last 5 minutes');
+        await dashboardPage.applyFilter('Service Name', service);
+        adminPage.performPageDown(5);
+        await dashboardPage.expandEachDashboardRow();
+        adminPage.performPageUp(5);
+        await dashboardPage.verifyThereAreNoGraphsWithNA();
+        await dashboardPage.verifyThereAreNoGraphsWithoutData(3);
+      }
+    },
+  ).retry(1);
+
+  Data(sslinstances).Scenario(
+    'Verify QAN after upgrade for SSL Instances added @post-upgrade @pmm-upgrade',
+    async ({
+      I, qanOverview, qanFilters, qanPage, current, adminPage,
+    }) => {
+      const {
+        serviceName,
+      } = current;
+
+      const serviceList = [serviceName, `remote_api_${serviceName}`];
+
+      for (const service of serviceList) {
+        I.amOnPage(qanPage.url);
+        qanOverview.waitForOverviewLoaded();
+        await adminPage.applyTimeRange('Last 5 minutes');
+        qanOverview.waitForOverviewLoaded();
+        qanFilters.waitForFiltersToLoad();
+        await qanFilters.applySpecificFilter(service);
+        qanOverview.waitForOverviewLoaded();
+        const count = await qanOverview.getCountOfItems();
+
+        assert.ok(count > 0, `The queries for service ${service} instance do NOT exist, check QAN Data`);
+      }
+    },
+  ).retry(1);
+}
+
+Scenario(
+  'PMM-T254 ensure Advisors are on by default @post-upgrade @ami-upgrade @pmm-upgrade',
+  async ({ settingsAPI, I }) => {
+    const resp = await settingsAPI.getSettings('stt_enabled');
+
+    assert.ok(resp, `Advisors should be turned on bydefault from 2.28.0 release but found ${resp}`);
+  },
+);

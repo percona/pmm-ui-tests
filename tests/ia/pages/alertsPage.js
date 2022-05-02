@@ -2,6 +2,7 @@ const { I } = inject();
 const assert = require('assert');
 
 const alertRow = (alertName) => `//tr[td[contains(., "${alertName}")]]`;
+const details = '$alert-details-wrapper';
 
 module.exports = {
   url: 'graph/integrated-alerting/alerts',
@@ -17,15 +18,30 @@ module.exports = {
     noticeSeverity: '//td[2]/span[text()="Notice"]',
     warningSeverity: '//td[2]/span[text()="Warning"]',
     columnHeaderLocator: (columnHeaderText) => `//th[text()="${columnHeaderText}"]`,
+    details,
+    detailsRuleExpression: locate(details).find('div').withText('Rule Expression'),
+    detailsSecondaryLabels: locate(details).find('div').withText('Secondary Labels'),
+    primaryLabels: (alertName, text) => locate(`${alertRow(alertName)}/td[4]`).find('$chip').withText(text),
+    secondaryLabels: (text) => locate(details).find('$chip').withText(text),
   },
   buttons: {
     // silenceActivate returns silence/activate button locator for a given alert name
-    silenceActivate: (alertName) => `${alertRow(alertName)}[1]/td//button[@data-testid="silence-alert-button"]`,
+    silenceActivate: (alertName) => `${alertRow(alertName)}[1]/td//button[@data-testid="silence-button"]`,
+    silenceAllAlerts: locate('span').withText('Silence All'),
+    unsilenceAllAlerts: locate('span').withText('Unsilence All'),
+    arrowIcon: (alertName) => locate(`${alertRow(alertName)}`).find('$show-details'),
   },
   messages: {
     noAlertsFound: 'No alerts',
     successfullySilenced: 'Alert silenced',
     successfullyActivated: 'Alert activated',
+  },
+  colors: {
+    critical: 'rgb(212, 74, 58)',
+    high: 'rgb(235, 123, 24)',
+    notice: 'rgb(50, 116, 217)',
+    warning: 'rgb(236, 187, 19)',
+    silence: 'rgb(204, 204, 220)',
   },
 
   async silenceAlert(alertName) {
@@ -74,5 +90,35 @@ module.exports = {
         'Cell background color should change after activating the alert',
       );
     }
+  },
+
+  async checkAllAlertsColor(expectedStates) {
+    const alertsStates = await I.grabTextFromAll('//td[3]');
+    const criticalColor = await I.grabCssPropertyFrom(this.elements.criticalSeverity, 'color');
+    const highColor = await I.grabCssPropertyFrom(this.elements.highSeverity, 'color');
+    const noticeColor = await I.grabCssPropertyFrom(this.elements.noticeSeverity, 'color');
+    const warningColor = await I.grabCssPropertyFrom(this.elements.warningSeverity, 'color');
+
+    for (const i in alertsStates) {
+      assert.equal(alertsStates[i], expectedStates, `Alert has not ${expectedStates} state`);
+    }
+
+    if (expectedStates === 'Silenced') {
+      assert.equal(criticalColor, this.colors.silence, 'Critical alert is unsilence');
+      assert.equal(highColor, this.colors.silence, 'High alert is unsilence');
+      assert.equal(noticeColor, this.colors.silence, 'Notice alert is unsilence');
+      assert.equal(warningColor, this.colors.silence, 'Warning alert is unsilence');
+    } else {
+      assert.equal(criticalColor, this.colors.critical, 'Critical alert is silence');
+      assert.equal(highColor, this.colors.high, 'High alert is silence');
+      assert.equal(noticeColor, this.colors.notice, 'Notice alert is silence');
+      assert.equal(warningColor, this.colors.warning, 'Warning alert is silence');
+    }
+  },
+
+  checkContainingLabels({ primaryLabels = null, secondaryLabels = null, alertName = null }) {
+    for (const i in primaryLabels) I.seeElement(this.elements.primaryLabels(alertName, primaryLabels[i]));
+
+    for (const i in secondaryLabels) I.seeElement(this.elements.secondaryLabels(secondaryLabels[i]));
   },
 };
