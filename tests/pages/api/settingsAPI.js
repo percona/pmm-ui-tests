@@ -178,6 +178,9 @@ module.exports = {
           case 'backup':
             value ? body.enable_backup_management = true : body.disable_backup_management = true;
             break;
+          case 'updates':
+            value ? body.disable_updates = false : body.disable_updates = true;
+            break;
           case 'publicAddress':
             value
               ? Object.assign(body, { pmm_public_address: value, remove_pmm_public_address: false })
