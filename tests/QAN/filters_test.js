@@ -8,12 +8,36 @@ shortCutTests.add(['Node Name', 'Node Summary', 'graph/d/node-instance-summary/n
 shortCutTests.add(['Service Name', 'MongoDB Instance Summary', 'graph/d/mongodb-instance-summary/mongodb-instance-summary', 'mongodb_rs1_2']);
 
 Feature('QAN filters').retry(1);
+// filterToApply - filter witch we check, searchValue - value to get zero search result
+const filters = new DataTable(['filterToApply', 'searchValue']);
+
+filters.add(['SELECT', 'INSERT']);
+filters.add(['INSERT', 'SELECT']);
+filters.add(['UPDATE', 'DELETE']);
+filters.add(['DELETE', 'UPDATE']);
 
 Before(async ({ I, qanPage, qanOverview }) => {
   await I.Authorize();
   I.amOnPage(qanPage.url);
   qanOverview.waitForOverviewLoaded();
 });
+
+Data(filters).Scenario(
+  'PMM-T1054 + PMM-T1055 - Verify the "Command type" filter for Postgres @qan',
+  async ({
+    I, qanOverview, qanFilters, current,
+  }) => {
+    const environmentName = 'pdpgsql-dev';
+
+    qanFilters.applyFilter(environmentName);
+    I.waitForVisible(qanFilters.buttons.showSelected, 30);
+
+    qanFilters.applyFilterInSection('Command Type', current.filterToApply);
+    qanOverview.searchByValue(current.searchValue);
+    I.waitForVisible(qanOverview.elements.noResultTableText, 30);
+    I.seeTextEquals(qanOverview.messages.noResultTableText, qanOverview.elements.noResultTableText);
+  },
+);
 
 Scenario(
   'PMM-T175 - Verify user is able to apply filter that has dots in label @qan',
@@ -132,7 +156,7 @@ xScenario(
 );
 
 Scenario(
-  'Check All Filter Groups Exists in the Filter Section @qan',
+  'PMM-T269 Check All Filter Groups Exists in the Filter Section @qan',
   async ({ I, qanFilters }) => {
     for (const i in qanFilters.filterGroups) {
       I.fillField(qanFilters.fields.filterBy, qanFilters.filterGroups[i]);
@@ -184,12 +208,12 @@ Scenario(
 
     let count = qanOverview.getCountOfItems();
 
-    adminPage.applyTimeRange('Last 3 hour');
+    await adminPage.applyTimeRange('Last 3 hour');
     qanOverview.waitForOverviewLoaded();
-    qanFilters.applyShowAllLink(section);
+    await qanFilters.applyShowAllLinkIfItIsVisible(section);
     qanFilters.applyFilterInSection(section, db1);
     count = await qanOverview.waitForNewItemsCount(count);
-    qanFilters.applyShowAllLink(section);
+    await qanFilters.applyShowAllLinkIfItIsVisible(section);
     qanFilters.applyFilterInSection(section, db2);
     count = await qanOverview.waitForNewItemsCount(count);
     qanFilters.applyFilter(serviceName);
@@ -211,7 +235,7 @@ Scenario(
     const serviceName = 'ps_8.0';
 
     // change to 2 days for apply ps_8.0 value in filter
-    adminPage.applyTimeRange('Last 2 days');
+    await adminPage.applyTimeRange('Last 2 days');
     qanOverview.waitForOverviewLoaded();
     const countBefore = await qanOverview.getCountOfItems();
     const percentageBefore = await qanFilters.getPercentage('Service Type', serviceType);
@@ -237,17 +261,22 @@ Scenario(
 );
 
 Data(shortCutTests).Scenario(
-  'PMM-T436 - Verify short-cut navigation from filters to related dashboards @qan',
+  'PMM-T436 PMM-T458 - Verify short-cut navigation from filters to related dashboards, '
+    + 'Verify time interval is passed from QAN to dashboards via shortcut links @qan',
   async ({
-    I, qanFilters, dashboardPage, current,
+    I, qanFilters, dashboardPage, current, adminPage, qanOverview,
   }) => {
     const shortCutLink = current.shortcutLink;
     const header = current.dashboard;
     const filterValue = current.filter;
+    const timeRangeValue = 'from=now-3h&to=now';
 
+    await adminPage.applyTimeRange('Last 3 hours');
+    qanOverview.waitForOverviewLoaded();
     qanFilters.waitForFiltersToLoad();
+
     I.fillField(qanFilters.fields.filterBy, filterValue);
-    await qanFilters.verifyShortcutAttributes(shortCutLink, filterValue);
+    await qanFilters.verifyShortcutAttributes(shortCutLink, filterValue, timeRangeValue);
 
     I.amOnPage(shortCutLink);
     if (filterValue === 'pmm-server') {

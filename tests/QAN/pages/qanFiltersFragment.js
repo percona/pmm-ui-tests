@@ -14,6 +14,7 @@ module.exports = {
     'User Name',
     'Node Type',
     'Service Type',
+    'Command Type',
   ],
   fields: {
     filterBy: '$filters-search-field',
@@ -35,7 +36,7 @@ module.exports = {
     getFiltersPath: '/v0/qan/Filters/Get',
   },
 
-  getFilterSectionLocator: (filterSectionName) => `//span[contains(text(), '${filterSectionName}')]`,
+  getFilterSectionLocator: (section) => `//div[./p/span[@data-testid="checkbox-group-header" and contains(text(), "${section}")]]`,
 
   getFilterGroupLocator: (filterName) => `//div[@class='filter-group__title']//span[contains(text(), '${filterName}')]`,
 
@@ -51,7 +52,8 @@ module.exports = {
   },
 
   checkLink(section, filter, visibility) {
-    const locator = `//span[contains(text(), '${section}')]/parent::p/following-sibling::div//span[contains(@class, 'checkbox-container__label-text') and contains(text(), '${filter}')]/ancestor::span/following-sibling::span/a`;
+    const dashboardLink = locate(`$filter-checkbox-${filter === 'n/a' ? '' : filter}`).find('a');
+    const locator = locate(dashboardLink).inside(this.getFilterSectionLocator(section));
 
     if (visibility) {
       I.waitForElement(locator, 30);
@@ -101,11 +103,36 @@ module.exports = {
     I.wait(2);
   },
 
+  applySpecificFilter(filterName) {
+    const filterToApply = `//span[contains(@class, 'checkbox-container__label-text') and text()='${filterName}']`;
+
+    I.waitForVisible(this.fields.filterBy, 30);
+    I.fillField(this.fields.filterBy, filterName);
+    I.waitForVisible(filterToApply, 20);
+    I.forceClick(filterToApply);
+    I.waitForDetached(this.elements.spinner, 30);
+    I.waitForElement(this.fields.filterBy, 30);
+    // workaround for clearing the field completely
+    I.forceClick(this.fields.filterBy);
+    adminPage.customClearField(this.fields.filterBy);
+    I.wait(2);
+  },
   applyFilterInSection(section, filter) {
     const filterLocator = `//span[contains(text(), '${section}')]/parent::p/following-sibling::div//span[contains(@class, 'checkbox-container__label-text') and contains(text(), '${filter}')]`;
 
+    I.waitForVisible(this.fields.filterBy, 30);
+    I.fillField(this.fields.filterBy, filter);
     I.waitForVisible(filterLocator, 20);
     I.click(filterLocator);
+  },
+
+  checkFilterExistInSection(section, filter) {
+    const filterLocator = `//span[contains(text(), '${section}')]/parent::p/following-sibling::div//span[contains(@class, 'checkbox-container__label-text') and contains(text(), '${filter}')]`;
+
+    I.waitForVisible(this.fields.filterBy, 30);
+    I.fillField(this.fields.filterBy, filter);
+    I.waitForVisible(filterLocator, 20);
+    I.seeElement(filterLocator);
   },
 
   async verifySectionItemsCount(filterSection, expectedCount) {
@@ -138,6 +165,15 @@ module.exports = {
     I.forceClick(showAllLink);
   },
 
+  async applyShowAllLinkIfItIsVisible(groupName) {
+    const showAllLink = this.getFilterGroupCountSelector(groupName);
+    const numOfShowAllLinkSectionCount = await I.grabNumberOfVisibleElements(showAllLink);
+
+    if (numOfShowAllLinkSectionCount) {
+      this.applyShowAllLink(groupName);
+    }
+  },
+
   async applyShowTop5Link(groupName) {
     const showTop5Link = `//span[contains(text(), '${groupName}')]/following-sibling::span[contains(text(), 'Show top 5')]`;
 
@@ -161,11 +197,12 @@ module.exports = {
     }
   },
 
-  async verifyShortcutAttributes(href, filterValue) {
+  async verifyShortcutAttributes(href, filterValue, timeRangeValue) {
     const shortCutLocator = locate(`$filter-checkbox-${filterValue}`).find('a');
     const linkText = await I.grabAttributeFrom(shortCutLocator, 'href');
     const target = await I.grabAttributeFrom(shortCutLocator, 'target');
 
+    assert.ok(linkText.includes(timeRangeValue), `The redirection link from QAN Filter section was expected to have selected Time range ${href} but the href attribute found was ${linkText}`);
     assert.ok(linkText.includes(href), `The redirection link on QAN Filter section was expected ${href} but the href attribute found was ${linkText}`);
     assert.ok(target === '_blank', `The redirection link on QAN Filter section was expected "_blank" but the href attribute found was ${target}`);
   },

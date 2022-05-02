@@ -16,9 +16,9 @@ templates.add(['tests/ia/templates/customParam.yml', null]);
 templates.add(['tests/ia/templates/undefinedParam.yml',
   'failed to fill expression placeholders: template: :4:5: executing "" at <.threshold>: map has no entry for key "threshold".']);
 templates.add(['tests/ia/templates/specialCharInParam.yml',
-  'failed to parse rule expression: template: :4: bad character U+0040 \'@\'.']);
+  'failed to parse expression: template: :4: bad character U+0040 \'@\'.']);
 templates.add(['tests/ia/templates/spaceInParam.yml',
-  'failed to parse rule expression: template: :4: function "old" not defined.']);
+  'failed to parse expression: template: :4: function "old" not defined.']);
 
 Feature('IA: Alert rule templates').retry(1);
 
@@ -45,8 +45,8 @@ Scenario(
 
     ruleTemplatesPage.openRuleTemplatesTab();
     I.waitForVisible(editButton, 30);
-    I.seeAttributesOnElements(editButton, { disabled: true });
-    I.seeAttributesOnElements(deleteButton, { disabled: true });
+    I.seeElementsDisabled(editButton);
+    I.seeElementsDisabled(deleteButton);
   },
 );
 
@@ -91,7 +91,7 @@ Data(units)
       const [templateName, fileContent, id] = await ruleTemplatesPage.ruleTemplate
         .templateNameAndContent(ruleTemplatesPage.ruleTemplate.inputFilePath);
       const editButton = ruleTemplatesPage.buttons
-        .deleteButtonByName(templateName);
+        .editButtonByName(templateName);
       const deleteButton = ruleTemplatesPage.buttons
         .deleteButtonByName(templateName);
 
@@ -108,8 +108,8 @@ Data(units)
         I.verifyPopUpMessage(ruleTemplatesPage.messages.successfullyAdded);
 
         // Check that Edit and Delete buttons are enabled
-        I.seeAttributesOnElements(editButton, { disabled: null });
-        I.seeAttributesOnElements(deleteButton, { disabled: null });
+        I.seeElementsEnabled(editButton);
+        I.seeElementsEnabled(deleteButton);
 
         await templatesAPI.removeTemplate(id);
       } else {
@@ -139,7 +139,7 @@ Data(templates)
       if (validFile) {
         I.verifyPopUpMessage(ruleTemplatesPage.messages.successfullyAdded);
         I.waitForVisible(expectedSourceLocator, 30);
-        I.seeAttributesOnElements(editButton, { disabled: null });
+        I.seeElementsEnabled(editButton);
       } else {
         I.verifyPopUpMessage(current.error);
       }
@@ -178,10 +178,10 @@ Scenario(
     ruleTemplatesPage.openRuleTemplatesTab();
     ruleTemplatesPage.openEditDialog(templateName);
     ruleTemplatesPage.verifyRuleTemplateContent(fileContent);
-    I.seeAttributesOnElements(ruleTemplatesPage.buttons.editTemplate, { disabled: true });
+    I.seeElementsDisabled(ruleTemplatesPage.buttons.editTemplate);
     I.clearField(ruleTemplatesPage.fields.templateInput);
     I.fillField(ruleTemplatesPage.fields.templateInput, updatedTemplateText);
-    I.seeAttributesOnElements(ruleTemplatesPage.buttons.editTemplate, { disabled: null });
+    I.seeElementsEnabled(ruleTemplatesPage.buttons.editTemplate);
     ruleTemplatesPage.verifyEditModalHeaderAndWarning(templateName);
     I.click(ruleTemplatesPage.buttons.editTemplate);
     I.verifyPopUpMessage(ruleTemplatesPage.messages.successfullyEdited);
@@ -225,7 +225,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T553 Verify rule template can not be deleted if there is a rule based on it @ia',
+  'PMM-T553 Verify rule template can be deleted if there is a rule based on it @ia',
   async ({
     I, ruleTemplatesPage, templatesAPI, rulesAPI,
   }) => {
@@ -242,7 +242,7 @@ Scenario(
     I.waitForElement(deleteButton, 30);
     I.click(deleteButton);
     I.click(ruleTemplatesPage.buttons.confirmDelete);
-    I.verifyPopUpMessage(ruleTemplatesPage.messages.failedToDelete(templateName));
+    I.verifyPopUpMessage(ruleTemplatesPage.messages.successfullyDeleted(templateName));
   },
 );
 
@@ -263,7 +263,27 @@ Scenario(
     I.seeElement(ruleTemplatesPage.buttons.editButtonByName('Custom parameter template'));
     I.dontSeeElement(ruleTemplatesPage.buttons.editButtonByName('Space in parameter'));
 
-    I.seeAttributesOnElements(editButton, { disabled: true });
-    I.seeAttributesOnElements(deleteButton, { disabled: true });
+    I.seeElementsDisabled(editButton);
+    I.seeElementsDisabled(deleteButton);
+  },
+);
+
+Scenario(
+  'PMM-T1126 - Verify there are no Templates from Percona if Telemetry is disabled @ia',
+  async ({ I, settingsAPI, ruleTemplatesPage }) => {
+    const editButton = ruleTemplatesPage.buttons
+      .editButtonBySource(ruleTemplatesPage.templateSources.saas);
+    const deleteButton = ruleTemplatesPage.buttons
+      .deleteButtonBySource(ruleTemplatesPage.templateSources.saas);
+    const settings = {
+      telemetry: false,
+      alerting: true,
+    };
+
+    await settingsAPI.changeSettings(settings);
+    I.amOnPage(ruleTemplatesPage.url);
+    I.waitForElement(ruleTemplatesPage.buttons.openAddTemplateModal, 30);
+    I.dontSeeElement(editButton);
+    I.dontSeeElement(deleteButton);
   },
 );

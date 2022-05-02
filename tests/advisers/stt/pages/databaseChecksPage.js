@@ -1,7 +1,10 @@
-const { I, pmmInventoryPage, settingsAPI } = inject();
+const {
+  I, pmmInventoryPage, settingsAPI,
+} = inject();
 const assert = require('assert');
 // xpath used here because locate('th').withText('') method does not work correctly
 const locateChecksHeader = (header) => `//th[text()='${header}']`;
+const failedCheckRow = (checkSummary) => `//tr[td[contains(., "${checkSummary}")]]`;
 
 module.exports = {
   // insert your locators and methods here
@@ -9,13 +12,17 @@ module.exports = {
   url: 'graph/pmm-database-checks',
   // Database Checks page URL before 2.13 version
   oldUrl: 'graph/d/pmm-checks/pmm-database-checks',
+  elements: {
+    failedCheckRowByServiceName: (name) => locate('tr').withChild(locate('td').withText(name)),
+    failedCheckRowBySummary: (summary) => locate('tr').withChild(locate('td').withText(summary)),
+  },
   messages: {
-    homePagePanelMessage: 'Security Threat Tool is disabled.\nCheck PMM Settings.',
-    disabledSTTMessage: 'Security Threat Tool is disabled. You can enable it in',
-    securityChecksDone: 'Done running DB checks. The latest results are displayed.',
+    homePagePanelMessage: 'Advisor Checks feature is disabled.\nCheck PMM Settings.',
+    disabledSTTMessage: 'Advisor Checks feature is disabled. You can enable it in',
   },
   buttons: {
-    startDBChecks: locate('$db-check-panel-actions').find('button'),
+    toggleSilenced: locate('$db-checks-failed-checks-toggle-silenced').find('label'),
+    toggleFailedCheckBySummary: (checkSummary) => locate(failedCheckRow(checkSummary)).find('$silence-button'),
   },
   fields: {
     dbCheckPanelSelector: '$db-check-panel',
@@ -25,7 +32,7 @@ module.exports = {
     serviceNameSelector: 'tr > td[rowspan]:first-child',
     totalFailedChecksTooltipSelector: '.popper > div > div > div:first-of-type',
     failedChecksTooltipSelector: '.popper > div > div > div',
-    serviceNameHeaderSelector: locateChecksHeader('Service name'),
+    serviceNameHeaderSelector: locateChecksHeader('Service Name'),
     detailsHeaderSelector: locateChecksHeader('Details'),
     noOfFailedChecksHeaderSelector: locateChecksHeader('Failed Checks'),
     disabledSTTMessageLinkSelector: locate('$db-check-panel-settings-link'),
@@ -42,6 +49,25 @@ module.exports = {
   // Locator for checks results in Failed Checks column
   numberOfFailedChecksLocator(rowNumber = 1) {
     return `//tbody/tr[${rowNumber}]/td[1]/following-sibling::td/div/span[1]`;
+  },
+
+  openDBChecksPage() {
+    I.amOnPage(this.url);
+  },
+
+  openFailedChecksListForService(serviceId) {
+    I.amOnPage(`${this.url}/failed-checks/${serviceId.split('/')[2]}`);
+    I.waitForVisible('td', 30);
+  },
+
+  verifyFailedCheckNotExists(checkSummary, serviceId) {
+    this.openFailedChecksListForService(serviceId);
+    I.dontSee(checkSummary);
+  },
+
+  verifyFailedCheckExists(checkSummary, serviceId) {
+    this.openFailedChecksListForService(serviceId);
+    I.see(checkSummary);
   },
   /*
    Method for verifying elements on a page when STT is enabled and disabled
@@ -120,26 +146,13 @@ module.exports = {
     I.seeElement(this.fields.totalFailedChecksTooltipSelector);
   },
 
-  /*
-    Method takes service names listed in Database Failed checks
-     and compares names with existing Service Names in PMM Inventory
-   */
-  async verifyServiceNamesExistence() {
-    const serviceNames = await I.grabTextFromAll(this.fields.serviceNameSelector);
+  async verifyServiceNamesExistence(serviceName) {
+    I.see(serviceName);
 
     I.amOnPage(pmmInventoryPage.url);
     I.waitForVisible(pmmInventoryPage.fields.inventoryTableColumn, 30);
     I.scrollPageToBottom();
 
-    for (const name of serviceNames) {
-      I.seeElement(locate('$table-row').find('td').withText(name));
-    }
-  },
-
-  runDBChecks() {
-    I.amOnPage(this.url);
-    I.waitForVisible(this.buttons.startDBChecks, 30);
-    I.click(this.buttons.startDBChecks);
-    I.verifyPopUpMessage(this.messages.securityChecksDone, 60);
+    I.seeElement(locate('$table-row').find('td').withText(serviceName));
   },
 };

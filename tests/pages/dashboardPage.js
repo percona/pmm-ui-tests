@@ -1,6 +1,7 @@
 const { I, adminPage } = inject();
 const assert = require('assert');
-const FormData = require('form-data');
+
+const formatElementId = (text) => text.toLowerCase().replace(/ /g, '_');
 
 module.exports = {
   // insert your locators and methods here
@@ -164,22 +165,58 @@ module.exports = {
       'File Descriptors Used',
     ],
   },
+  sharePanel: {
+    elements: {
+      imageRendererPluginInfoText: locate('p').withDescendant('.external-link'),
+      imageRendererPluginLink: locate('[role="alert"]').find('.external-link'),
+    },
+    messages: {
+      imageRendererPlugin: 'To render a panel image, you must install the Image Renderer plugin. Please contact your PMM administrator to install the plugin.',
+    },
+  },
   proxysqlInstanceSummaryDashboard: {
     url: 'graph/d/proxysql-instance-summary/proxysql-instance-summary',
     metrics: [
+      'Hostgroup Size',
       'Client Connections',
       'Client Questions',
       'Active Backend Connections',
       'Failed Backend Connections',
+      'Active Frontend Connections',
+      'Client Frontend Connections',
+      'Endpoint Status',
       'Queries Routed',
       'Query processor time efficecy',
       'Connection Free',
       'Latency',
+      'Executed Queries',
+      'Queries Execution Time',
+      'Queries Latency',
+      // instead of 6 metrics, one metric 'Commands Latency All' is visible
+      // 'Commands Latency - CREATE_TEMPORARY',//*
+      // 'Commands Latency - DELETE',//*
+      // 'Commands Latency - INSERT',//*
+      // 'Commands Latency - SELECT',//*
+      // 'Commands Latency - SELECT_FOR_UPDATE',//*
+      // 'Commands Latency - UPDATE',//*
       'Query Cache memory',
       'Query Cache efficiency',
       'Network Traffic',
       'Mirroring efficiency',
       'Memory Utilization',
+      'Memory Usage',
+      'System Uptime',
+      'Load Average',
+      'RAM',
+      'Memory Available',
+      'Virtual Memory',
+      'Disk Space',
+      'Min Space Available',
+      'Node',
+      'CPU Usage',
+      'CPU Saturation and Max Core Usage',
+      'Disk I/O and Swap Activity',
+      'Network Traffic',
     ],
   },
   pxcGaleraClusterSummaryDashboard: {
@@ -229,6 +266,16 @@ module.exports = {
       'Cache Hit Ratio',
       'Checkpoint stats',
       'Number of Locks',
+    ],
+  },
+  postgresqlInstanceCompareDashboard: {
+    url: 'graph/d/postgresql-instance-compare/postgresql-instances-compare?orgId=1&from=now-5m&to=now',
+    metrics: [
+      'Service Info',
+      'PostgreSQL Connections',
+      'Active Connections',
+      'Tuples',
+      'Transactions',
     ],
   },
   postgresqlInstanceOverviewDashboard: {
@@ -391,6 +438,7 @@ module.exports = {
   },
   mysqlInstanceSummaryDashboard: {
     url: 'graph/d/mysql-instance-summary/mysql-instance-summary?orgId=1&refresh=1m&from=now-5m&to=now',
+    clearUrl: 'graph/d/mysql-instance-summary/mysql-instance-summary',
     metrics: [
       'Node',
       'MySQL Uptime',
@@ -777,6 +825,10 @@ module.exports = {
   },
 
   fields: {
+    breadcrumbs: {
+      folder: locate('.page-toolbar').find('[aria-label="Search links"] > a'),
+      dashboardName: locate('.page-toolbar').find('[aria-label="Search dashboard by name"]'),
+    },
     annotationMarker: '(//div[contains(@class,"events_marker")])',
     clearSelection: '//a[@ng-click="vm.clearSelections()"]',
     collapsedDashboardRow: '//div[@class="dashboard-row dashboard-row--collapsed"]/a',
@@ -793,12 +845,14 @@ module.exports = {
     panelLoading: locate('div').withAttr({ class: 'panel-loading' }),
     postgreSQLServiceSummaryContent: locate('pre').withText('Detected PostgreSQL version:'),
     reportTitleWithNA:
-      '//span[contains(text(), "N/A")]//ancestor::div[contains(@class,"panel-container")]//span[contains(@class,"panel-title-text")]',
+      locate('.panel-title').inside(locate('.panel-container').withDescendant('//div[contains(text(),"N/A")]')),
     reportTitleWithNoData:
-      '//div[contains(text(),"No data")]//ancestor::div[contains(@class,"panel-container")]//span[contains(@class,"panel-title-text")]',
+      locate('.panel-title').inside(locate('.panel-container').withDescendant('//div[contains(text(),"No data")]')),
     rootUser: '//div[contains(text(), "root")]',
     serviceSummary: locate('a').withText('Service Summary'),
     timeRangePickerButton: '.btn.navbar-button.navbar-button--tight',
+    openFiltersDropdownLocator: (filterName) => locate('.variable-link-wrapper').after(`label[for="${formatElementId(filterName)}"]`),
+    filterDropdownOptionsLocator: (filterName) => `[aria-controls="options-${formatElementId(filterName)}"]`,
   },
 
   createAdvancedDataExplorationURL(metricName, time = '1m', nodeName = 'All') {
@@ -816,8 +870,8 @@ module.exports = {
     return await I.grabAttributeFrom(`//label[contains(@aria-label, '${filterName}')]/..//a`, 'title');
   },
 
-  annotationLocator(annotationNumber) {
-    return `(//div[contains(@class,'events_marker')])[${annotationNumber}]`;
+  annotationLocator(number = 1) {
+    return `(//div[contains(@class,"events_marker")])[${number}]`;
   },
 
   annotationTagText(tagValue) {
@@ -828,9 +882,9 @@ module.exports = {
     return `//div[contains(text(), '${annotationTitle}')]`;
   },
 
-  verifyAnnotationsLoaded(title, annotationNumber) {
+  verifyAnnotationsLoaded(title, number = 1) {
     I.waitForElement(this.fields.annotationMarker, 30);
-    I.moveCursorTo(this.annotationLocator(annotationNumber));
+    I.moveCursorTo(this.annotationLocator(number));
     I.waitForVisible(this.annotationText(title), 30);
   },
 
@@ -841,39 +895,9 @@ module.exports = {
     }
   },
 
-  // Should be refactored and added to Grafana Helper as a custom function
-  async checkMetricExist(metricName, queryBy) {
-    const timeStamp = Date.now();
-    const bodyFormData = new FormData();
-    let body = {
-      query: metricName,
-      start: Math.floor((timeStamp - 15000) / 1000),
-      end: Math.floor((timeStamp) / 1000),
-      step: 60,
-    };
-
-    if (queryBy) {
-      body = {
-        query: `${metricName}{${queryBy.type}=~"(${queryBy.value})"}`,
-        start: Math.floor((timeStamp - 10000) / 1000),
-        end: Math.floor((timeStamp) / 1000),
-        step: 60,
-      };
-    }
-
-    Object.keys(body).forEach((key) => bodyFormData.append(key, body[key]));
-    const headers = {
-      Authorization: `Basic ${await I.getAuth()}`,
-      ...bodyFormData.getHeaders(),
-    };
-
-    const response = await I.sendPostRequest(
-      'graph/api/datasources/proxy/1/api/v1/query_range',
-      bodyFormData,
-      headers,
-    );
-
-    return response;
+  openGraphDropdownMenu(metric) {
+    I.seeElement(this.graphsLocator(metric));
+    I.click(this.graphsLocator(metric));
   },
 
   verifyTabExistence(tabs) {
@@ -883,7 +907,7 @@ module.exports = {
   },
 
   graphsLocator(metricName) {
-    return `//span[contains(text(), '${metricName}')]`;
+    return locate('.panel-title-container h2').withText(metricName);
   },
 
   tabLocator(tabName) {
@@ -897,7 +921,9 @@ module.exports = {
     if (numberOfNAElements > acceptableNACount) {
       const titles = await this.grabFailedReportTitles(this.fields.reportTitleWithNA);
 
-      await this.printFailedReportNames(acceptableNACount, numberOfNAElements, titles);
+      const url = await I.grabCurrentUrl();
+
+      await this.printFailedReportNames(acceptableNACount, numberOfNAElements, titles, url);
     }
   },
 
@@ -907,23 +933,22 @@ module.exports = {
     I.say(`number of No Data elements is = ${numberOfNoDataElements}`);
     if (numberOfNoDataElements > acceptableNoDataCount) {
       const titles = await this.grabFailedReportTitles(this.fields.reportTitleWithNoData);
+      const url = await I.grabCurrentUrl();
 
-      await this.printFailedReportNames(acceptableNoDataCount, numberOfNoDataElements, titles);
+      await this.printFailedReportNames(acceptableNoDataCount, numberOfNoDataElements, titles, url);
     }
   },
 
-  async printFailedReportNames(expectedNumber, actualNumber, titles) {
+  async printFailedReportNames(expectedNumber, actualNumber, titles, dashboardUrl) {
     assert.equal(
       actualNumber <= expectedNumber,
       true,
-      `Expected ${expectedNumber} Elements with but found ${actualNumber}. Report Names are ${titles}`,
+      `Expected ${expectedNumber} Elements with but found ${actualNumber} on Dashboard ${dashboardUrl}. Report Names are ${titles}`,
     );
   },
 
   async grabFailedReportTitles(selector) {
-    const reportNames = await I.grabTextFromAll(selector);
-
-    return reportNames;
+    return await I.grabTextFromAll(selector);
   },
 
   async expandEachDashboardRow(halfToExpand) {
@@ -956,7 +981,8 @@ module.exports = {
 
       I.click(rowToExpand);
       I.wait(0.5);
-      adminPage.peformPageDown(1);
+      adminPage.performPageDown(1);
+      adminPage.performPageDown(1);
     }
   },
 
@@ -964,35 +990,44 @@ module.exports = {
     I.waitForElement(this.fields.metricTitle, 60);
   },
 
-  expandFilters(filterType) {
-    const filterGroupLocator = `//label[contains(text(), '${filterType}')]/parent::div`;
+  expandFilters(filterName) {
+    const dropdownLocator = this.fields.openFiltersDropdownLocator(filterName);
 
-    I.waitForElement(`${filterGroupLocator}//a`, 30);
-    I.click(`${filterGroupLocator}//a`);
+    // This is due to some instances with many services take filter to load
+    I.wait(3);
+    I.waitForElement(dropdownLocator, 30);
+    I.click(dropdownLocator);
 
-    return filterGroupLocator;
+    return '[aria-label="Variable options"]';
+  },
+
+  async genericDashboardLoadForDbaaSClusters(url, timeRange = 'Last 5 minutes', performPageDown = 4, graphsWithNa = 0, graphsWithoutData = 0) {
+    I.amOnPage(url);
+    this.waitForDashboardOpened();
+    I.click(adminPage.fields.metricTitle);
+    await adminPage.applyTimeRange(timeRange);
+    I.click(adminPage.fields.metricTitle);
+    adminPage.performPageDown(performPageDown);
+    await this.expandEachDashboardRow();
+    await this.verifyThereAreNoGraphsWithNA(graphsWithNa);
+    await this.verifyThereAreNoGraphsWithoutData(graphsWithoutData);
   },
 
   async applyFilter(filterName, filterValue) {
-    // eslint-disable-next-line max-len
-    const filterSelector = `(//div[@class='variable-link-wrapper']//ancestor::div//label[contains(text(),'${filterName}')])[1]//parent::div//a`;
     const filterValueSelector = `//span[contains(text(), '${filterValue}')]`;
-    // eslint-disable-next-line max-len
-    const filterNameSelector = `(//div[@class='variable-link-wrapper']//ancestor::div//label[contains(text(),'${filterName}')])[1]`;
+    const filterDropdownOptionsLocator = this.fields.filterDropdownOptionsLocator(filterName);
+    const dropdownLocator = this.fields.openFiltersDropdownLocator(filterName);
+    const selectedFilterValue = await I.grabTextFrom(dropdownLocator);
 
-    I.waitForElement(filterSelector, 30);
-    I.click(filterSelector);
-    I.waitForElement(filterValueSelector, 30);
-    const numOfElements = await I.grabNumberOfVisibleElements(this.fields.clearSelection);
-
-    if (numOfElements === 1) {
-      I.click(this.fields.clearSelection);
+    // If there is only one value for a filter it is selected by default
+    if (selectedFilterValue !== 'All' && selectedFilterValue === filterValue) {
+      I.seeTextEquals(filterValue, dropdownLocator);
+    } else {
+      this.expandFilters(filterName);
+      I.waitForElement(filterDropdownOptionsLocator, 30);
+      I.waitForVisible(filterValueSelector, 30);
+      I.click(filterValueSelector);
     }
-
-    I.waitForElement(filterValueSelector, 30);
-    I.click(filterValueSelector);
-    I.waitForElement(filterNameSelector, 30);
-    I.click(filterNameSelector);
   },
 
   async getTimeRange() {

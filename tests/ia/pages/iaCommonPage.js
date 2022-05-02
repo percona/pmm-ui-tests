@@ -17,7 +17,7 @@ module.exports = {
     pagination: '$pagination',
     itemsShown: '$pagination-items-inverval',
     rowInTable: locate('$table-tbody').find('tr'),
-    tab: (tabName) => locate('li').withAttr({ 'aria-label': `Tab ${tabName}` }),
+    tab: (tabName) => locate('li').find('a').withAttr({ 'aria-label': `Tab ${tabName}` }),
     table: '$table-tbody',
     breadcrumbActive: locate('$breadcrumb-section').last(),
     disabledIa: '$empty-block',
@@ -27,9 +27,10 @@ module.exports = {
     firstPageButton: '$first-page-button',
     prevPageButton: '$previous-page-button',
     pageButton: '$page-button',
+    pageButtonActive: '$page-button-active',
     nextPageButton: '$next-page-button',
     lastPageButton: '$last-page-button',
-    rowsPerPage: locate('$pagination').find('div[class$="-singleValue"]'),
+    rowsPerPage: locate('$pagination').find('div[class*="-singleValue"]'),
     rowsPerPageOption: (count) => locate('$pagination').find('[aria-label="Select option"] span').withText(count.toString()),
   },
   messages: {
@@ -105,5 +106,11 @@ module.exports = {
     const className = await I.grabAttributeFrom(this.elements.tab(tabName), 'class');
 
     assert.ok(className.endsWith('activeTabStyle'), `Tab ${tabName} should be active`);
+  },
+
+  checkBreadcrumbText(text, locator) {
+    const breadcrumbSectionText = ` / ${text}`;
+
+    I.seeTextEquals(breadcrumbSectionText, locator);
   },
 };

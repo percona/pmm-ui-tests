@@ -15,6 +15,12 @@ if (remoteInstancesHelper.getInstanceStatus('azure').azure_postgresql.enabled) {
   filters.add([remoteInstancesPage.postgresqlAzureInputs.environment]);
 }
 
+const metrics = new DataTable(['metricName']);
+
+metrics.add(['azure_memory_percent_average']);
+metrics.add(['mysql_global_status_max_used_connections']);
+metrics.add(['mysql_global_variables_azure_ia_enabled']);
+
 Feature('Monitoring Azure MySQL and PostgreSQL DB');
 
 Before(async ({ I }) => {
@@ -46,11 +52,11 @@ Scenario(
   async ({
     I, homePage, dashboardPage,
   }) => {
-    const mySQL = 'azure-MySQL';
+    const nodeName = 'azure-MySQL';
 
     I.amOnPage(homePage.url);
-    await dashboardPage.applyFilter('Node Name', mySQL);
-    homePage.verifyVisibleService(mySQL);
+    await dashboardPage.applyFilter('Node Name', nodeName);
+    homePage.verifyVisibleService(nodeName);
     // part without RDS MySQL should be skipped for now
   },
 ).retry(2);
@@ -65,3 +71,10 @@ Data(filters).Scenario('PMM-T746, PMM-T748 - Verify adding monitoring for Azure 
 
   assert.ok(count > 0, `QAN queries for added Azure service with env as ${current.filter} does not exist`);
 }).retry(3);
+
+Data(metrics).Scenario(
+  'PMM-T743 Check metrics from exporters are hitting PMM Server @instances',
+  async ({ grafanaAPI, current }) => {
+    await grafanaAPI.waitForMetric(current.metricName, null, 10);
+  },
+);

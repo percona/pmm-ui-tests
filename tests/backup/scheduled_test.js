@@ -1,3 +1,6 @@
+const assert = require('assert');
+const moment = require('moment');
+
 const { locationsPage } = inject();
 
 const location = {
@@ -10,12 +13,12 @@ let locationId;
 let serviceId;
 
 const mongoServiceName = 'mongo-backup-schedule';
-const schedules = new DataTable(['cronExpression', 'name', 'description']);
+const schedules = new DataTable(['cronExpression', 'name', 'frequency']);
 
-schedules.add(['30 8 * * *', 'schedule daily', 'At 08:30 AM']);
-schedules.add(['0 0 * * 2', 'schedule weekly', 'At 12:00 AM, only on Tuesday']);
-schedules.add(['0 0 1 * *', 'schedule monthly', 'At 12:00 AM, on day 1 of the month']);
-schedules.add(['0 1 1 9 2', 'schedule odd', 'At 01:00 AM, on day 1 of the month, and on Tuesday, only in September']);
+schedules.add(['30 8 * * *', 'schedule daily', 'At 08:30']);
+schedules.add(['0 0 * * 2', 'schedule weekly', 'At 00:00, only on Tuesday']);
+schedules.add(['0 0 1 * *', 'schedule monthly', 'At 00:00, on day 1 of the month']);
+schedules.add(['0 1 1 9 2', 'schedule odd', 'At 01:00, on day 1 of the month, and on Tuesday, only in September']);
 
 Feature('BM: Scheduled backups');
 
@@ -80,9 +83,9 @@ Scenario(
     scheduledPage.selectDropdownOption(scheduledPage.fields.locationDropdown, location.name);
     I.seeTextEquals(location.name, scheduledPage.elements.selectedLocation);
 
-    I.seeAttributesOnElements(scheduledPage.buttons.createSchedule, { disabled: true });
+    I.seeElementsDisabled(scheduledPage.buttons.createSchedule);
     I.fillField(scheduledPage.fields.backupName, scheduleName);
-    I.seeAttributesOnElements(scheduledPage.buttons.createSchedule, { disabled: null });
+    I.seeElementsEnabled(scheduledPage.buttons.createSchedule);
   },
 );
 
@@ -145,7 +148,7 @@ Scenario(
     await scheduledAPI.createScheduledBackup(schedule);
 
     await scheduledPage.openScheduledBackupsPage();
-    I.click(scheduledPage.buttons.deleteByName(schedule.name));
+    I.click(scheduledPage.buttons.editByName(schedule.name));
 
     I.waitForVisible(scheduledPage.fields.backupName, 30);
     I.clearField(scheduledPage.fields.backupName);
@@ -168,7 +171,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T922 Verify user can schedule a backup for MongoDB with replica @backup',
+  'PMM-T913, PMM-T922, PMM-T977 Verify user can schedule a backup for MongoDB with replica @backup',
   async ({
     I, backupInventoryPage, scheduledAPI, backupAPI, scheduledPage,
   }) => {
@@ -184,9 +187,20 @@ Scenario(
     scheduledPage.selectDropdownOption(scheduledPage.fields.everyDropdown, 'Minute');
     scheduledPage.clearRetentionField();
     I.fillField(scheduledPage.fields.retention, schedule.retention);
+
+    // Verify mention about UTC time in create schedule modal
+    I.seeTextEquals(
+      scheduledPage.messages.scheduleInModalLabel,
+      locate(scheduledPage.elements.scheduleBlockInModal).find('h6'),
+    );
     I.click(scheduledPage.buttons.createSchedule);
     I.waitForVisible(scheduledPage.elements.scheduleName(schedule.name), 20);
     I.seeTextEquals('1 backup', scheduledPage.elements.retentionByName(schedule.name));
+
+    // Verify local timestamp is shown in Last Backup column
+    await scheduledAPI.waitForFirstExecution(schedule.name);
+    scheduledPage.openScheduledBackupsPage();
+    I.seeTextEquals(moment().format('YYYY-MM-DDHH:mm:00'), scheduledPage.elements.lastBackupByName(schedule.name));
 
     await backupAPI.waitForBackupFinish(null, schedule.name, 300);
     const { scheduled_backup_id } = await scheduledAPI.getScheduleIdByName(schedule.name);
@@ -198,7 +212,7 @@ Scenario(
 );
 
 Data(schedules).Scenario(
-  'PMM-T899 PMM-T903 PMM-T904 PMM-T905 Verify user can create daily scheduled backup @backup',
+  'PMM-T899 PMM-T903 PMM-T904 PMM-T905 PMM-T907 Verify user can create daily scheduled backup @backup',
   async ({
     scheduledPage, scheduledAPI, current,
   }) => {
@@ -207,20 +221,17 @@ Data(schedules).Scenario(
       location_id: locationId,
       cron_expression: current.cronExpression,
       name: current.name,
-      description: current.description,
-      mode: scheduledAPI.backupModes.snapshot,
-      retry_interval: '30s',
-      retries: 0,
+      description: `Desc ${current.frequency}`,
       retention: 6,
-      enabled: true,
     };
     const scheduleDetails = {
       name: current.name,
       vendor: 'MongoDB',
-      description: current.description,
+      frequency: current.frequency,
+      description: schedule.description,
       retention: 6,
       type: 'Full',
-      location: 'mongo-location for scheduling',
+      location: location.name,
       dataModel: 'Logical',
       cronExpression: current.cronExpression,
     };
@@ -230,3 +241,112 @@ Data(schedules).Scenario(
     await scheduledPage.verifyBackupValues(scheduleDetails);
   },
 );
+
+Scenario('PMM-T900 Verify user can copy scheduled backup @backup',
+  async ({
+    I, scheduledPage, scheduledAPI,
+  }) => {
+    const schedule = {
+      service_id: serviceId,
+      location_id: locationId,
+      name: 'test schedule copy',
+      description: 'some description',
+      cron_expression: '0 0 * * *',
+    };
+
+    const newSchedule = {
+      name: `Copy of ${schedule.name}`,
+      vendor: 'MongoDB',
+      description: schedule.description,
+      enabled: false,
+      frequency: 'At 00:00',
+      retention: 7,
+      type: 'Full',
+      location: location.name,
+      dataModel: 'Logical',
+      cronExpression: schedule.cron_expression,
+    };
+
+    await scheduledAPI.createScheduledBackup(schedule);
+    await scheduledPage.openScheduledBackupsPage();
+
+    // Copy existing schedule
+    I.click(scheduledPage.buttons.copyByName(schedule.name));
+
+    // Verify copied schedule details
+    I.waitForVisible(scheduledPage.buttons.deleteByName(newSchedule.name), 10);
+    await scheduledPage.verifyBackupValues(newSchedule);
+
+    // Verify schedule is disabled after copy
+    I.seeAttributesOnElements(scheduledPage.elements.toggleByName(newSchedule.name), { checked: null });
+  });
+
+Scenario('PMM-T908 Verify user can enable/disable scheduled backup @backup',
+  async ({
+    I, scheduledPage, scheduledAPI,
+  }) => {
+    const schedule = {
+      service_id: serviceId,
+      location_id: locationId,
+      name: 'test schedule enable/disable',
+      enabled: false,
+    };
+
+    await scheduledAPI.createScheduledBackup(schedule);
+    await scheduledPage.openScheduledBackupsPage();
+
+    // Verify schedule is disabled
+    I.seeAttributesOnElements(scheduledPage.elements.toggleByName(schedule.name), { checked: null });
+
+    // Grab background-color of a row
+    const color = await I.grabCssPropertyFrom(scheduledPage.elements.scheduleTypeByName(schedule.name), 'background-color');
+
+    // Enable schedule
+    I.click(scheduledPage.buttons.enableDisableByName(schedule.name));
+    I.seeAttributesOnElements(scheduledPage.elements.toggleByName(schedule.name), { checked: true });
+
+    // Grab background-color of a row after enabling schedule
+    const newColor = await I.grabCssPropertyFrom(scheduledPage.elements.scheduleTypeByName(schedule.name), 'background-color');
+
+    assert.ok(color !== newColor, 'Background color should change after toggle');
+
+    // Disable schedule
+    I.click(scheduledPage.buttons.enableDisableByName(schedule.name));
+    I.seeAttributesOnElements(scheduledPage.elements.toggleByName(schedule.name), { checked: null });
+
+    // Verify the color is the same as before enabling
+    I.seeCssPropertiesOnElements(scheduledPage.elements.scheduleTypeByName(schedule.name), { 'background-color': color });
+  });
+
+Scenario('PMM-T901 Verify user can delete scheduled backup @backup',
+  async ({
+    I, scheduledPage, scheduledAPI,
+  }) => {
+    const schedule = {
+      service_id: serviceId,
+      location_id: locationId,
+      name: 'test schedule delete',
+    };
+
+    await scheduledAPI.createScheduledBackup(schedule);
+    await scheduledPage.openScheduledBackupsPage();
+
+    // Open Delete modal
+    I.click(scheduledPage.buttons.deleteByName(schedule.name));
+
+    // Click Cancel button and verify schedule still exists
+    I.waitForVisible(scheduledPage.buttons.confirmDelete, 10);
+    I.click(scheduledPage.buttons.cancelDelete);
+    I.dontSeeElement(scheduledPage.elements.modalContent);
+    I.seeElement(scheduledPage.buttons.deleteByName(schedule.name));
+
+    // Open Delete modal again and verify it has a correct schedule name in message
+    I.click(scheduledPage.buttons.deleteByName(schedule.name));
+    I.waitForVisible(scheduledPage.buttons.confirmDelete, 10);
+    I.seeTextEquals(scheduledPage.messages.confirmDelete(schedule.name),
+      locate(scheduledPage.elements.modalContent).find('h4'));
+
+    // Confirm delete and verify success message
+    I.click(scheduledPage.buttons.confirmDelete);
+    I.verifyPopUpMessage(scheduledPage.messages.successfullyDeleted(schedule.name));
+  });

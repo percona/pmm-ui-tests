@@ -47,7 +47,17 @@ module.exports = {
       .flat(Infinity)
       .filter(({ service_name }) => service_name.includes(serviceName));
 
-    return data[0];
+    return data ? data[0] : null;
+  },
+
+  async apiGetNodeInfoForAllNodesByServiceName(serviceType, serviceName) {
+    const service = await this.apiGetServices(serviceType);
+
+    const data = Object.values(service.data)
+      .flat(Infinity)
+      .filter(({ service_name }) => service_name.startsWith(serviceName));
+
+    return data;
   },
 
   async apiGetPMMAgentInfoByServiceId(serviceId) {
@@ -62,6 +72,15 @@ module.exports = {
   async apiGetAgents(serviceId) {
     const body = {
       service_id: serviceId,
+    };
+    const headers = { Authorization: `Basic ${await I.getAuth()}` };
+
+    return I.sendPostRequest('v1/inventory/Agents/List', body, headers);
+  },
+
+  async apiGetAgentsViaNodeId(nodeId) {
+    const body = {
+      node_id: nodeId,
     };
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
 
@@ -93,6 +112,12 @@ module.exports = {
       .filter(({ service_id }) => service_id === serviceId);
   },
 
+  async deleteNodeByServiceName(serviceType, serviceName, force = true) {
+    const node = await this.apiGetNodeInfoByServiceName(serviceType, serviceName);
+
+    if (node) await this.deleteNode(node.node_id, force);
+  },
+
   async deleteNode(nodeID, force) {
     const body = {
       force,
@@ -104,6 +129,20 @@ module.exports = {
     assert.ok(
       resp.status === 200,
       `Failed to delete Node. Response message is "${resp.data.message}"`,
+    );
+  },
+
+  async deleteService(serviceId, force = true) {
+    const body = {
+      force,
+      service_id: serviceId,
+    };
+    const headers = { Authorization: `Basic ${await I.getAuth()}` };
+    const resp = await I.sendPostRequest('v1/inventory/Services/Remove', body, headers);
+
+    assert.ok(
+      resp.status === 200,
+      `Failed to delete Service. Response message is "${resp.data.message}"`,
     );
   },
 

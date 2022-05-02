@@ -10,10 +10,17 @@ const defaultCheckIntervals = {
   frequent_interval: '14400s',
 };
 
+const defaultResolution = {
+  hr: '5s',
+  mr: '10s',
+  lr: '60s',
+};
+
 const endpoint = 'v1/Settings/Change';
 
 module.exports = {
   defaultCheckIntervals,
+  defaultResolution,
 
   // methods for preparing state of application before test
   async apiEnableSTT() {
@@ -95,15 +102,11 @@ module.exports = {
   async restoreSettingsDefaults() {
     const body = {
       data_retention: '2592000s',
-      metrics_resolutions: {
-        hr: '5s',
-        mr: '10s',
-        lr: '60s',
-      },
+      metrics_resolutions: defaultResolution,
       enable_telemetry: true,
       disable_stt: true,
-      email_alerting_settings: { from: '1', smarthost: '1', hello: '1' },
-      slack_alerting_settings: { url: '1' },
+      remove_email_alerting_settings: true,
+      remove_slack_alerting_settings: true,
     };
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
 
@@ -173,6 +176,9 @@ module.exports = {
           case 'backup':
             value ? body.enable_backup_management = true : body.disable_backup_management = true;
             break;
+          case 'updates':
+            value ? body.disable_updates = false : body.disable_updates = true;
+            break;
           case 'publicAddress':
             value
               ? Object.assign(body, { pmm_public_address: value, remove_pmm_public_address: false })
@@ -182,10 +188,10 @@ module.exports = {
             body.data_retention = value;
             break;
           case 'resolution':
-            body.metrics_resolutions = Object.assign(body, value);
+            body.metrics_resolutions = value;
             break;
           case 'checkIntervals':
-            body.stt_check_intervals = Object.assign(body, value);
+            body.stt_check_intervals = value;
             break;
           case 'alertmanagerRules':
             body.alert_manager_rules = value;

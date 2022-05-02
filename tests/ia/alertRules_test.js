@@ -78,7 +78,7 @@ Scenario(
     I.seeElement(alertRulesPage.fields.searchDropdown('Severity'));
     I.seeElement(alertRulesPage.fields.filters);
     I.seeElement(alertRulesPage.fields.searchDropdown('Channels'));
-    I.seeElement(alertRulesPage.buttons.toogleInModal);
+    I.seeElement(alertRulesPage.buttons.toggleInModal);
     I.seeElement(alertRulesPage.buttons.addRule);
     I.seeElement(alertRulesPage.buttons.cancelAdding);
   },
@@ -125,6 +125,7 @@ Data(templates).Scenario(
 
     I.waitForVisible(alertRulesPage.fields.ruleName, 30);
     alertRulesPage.searchAndSelectResult('Template', current.template);
+    I.click(alertRulesPage.elements.ruleAdvancedSectionToggle);
     I.waitForVisible(alertRulesPage.elements.expression, 30);
 
     alertRulesPage.verifyEditRuleDialogElements(rule);
@@ -200,7 +201,7 @@ Scenario(
     await channelsAPI.createNotificationChannel('EmailChannelForEditRules', ncPage.types.email.type);
     alertRulesPage.openAlertRulesTab();
     I.click(alertRulesPage.buttons.editAlertRule(rule.ruleName));
-    alertRulesPage.verifyEditRuleDialogElements(rule);
+    alertRulesPage.verifyEditRuleDialogElements(rule, true);
     alertRulesPage.fillRuleFields(ruleAfterUpdate);
     I.click(alertRulesPage.buttons.addRule);
     I.verifyPopUpMessage(alertRulesPage.messages.successfullyEdited);
@@ -308,17 +309,73 @@ Scenario(
 
     I.waitForVisible(alertRulesPage.fields.ruleName, 30);
     alertRulesPage.searchAndSelectResult('Template', 'Memory used by MongoDB');
+    I.click(alertRulesPage.elements.ruleAdvancedSectionToggle);
     I.waitForVisible(alertRulesPage.elements.expression, 30);
 
     I.clearField(alertRulesPage.fields.duration);
     I.fillField(alertRulesPage.fields.duration, '-1');
 
     I.seeTextEquals('Must be greater than or equal to 1', alertRulesPage.elements.durationError);
-    I.seeAttributesOnElements(alertRulesPage.buttons.addRule, { disabled: true });
+    I.seeElementsDisabled(alertRulesPage.buttons.addRule);
 
     I.clearField(alertRulesPage.fields.duration);
     I.fillField(alertRulesPage.fields.duration, '1');
 
     I.seeTextEquals('', alertRulesPage.elements.durationError);
+  },
+);
+
+Scenario(
+  'PMM-T1116 Verify user is able to copy alert rule, source template of which was deleted @ia',
+  async ({
+    I, ruleTemplatesPage, alertRulesPage, rulesAPI, templatesAPI,
+  }) => {
+    const ruleName = 'Rule for PMM-T1116';
+    const copiedRuleName = `Copy of ${ruleName}`;
+    const ruleCopy = {
+      template: 'E2E TemplateForAutomation YAML',
+      ruleName: copiedRuleName,
+      threshold: '1',
+      thresholdUnit: '%',
+      duration: '1',
+      severity: 'Critical',
+      expression: 'max_over_time(mysql_global_status_threads_connected[5m]) / ignoring (job)\n'
+                + 'mysql_global_variables_max_connections\n'
+                + '* 100\n'
+                + '> [[ .threshold ]]',
+      alert: 'MySQL too many connections (instance {{ $labels.instance }})',
+      filters: 'service_name=pmm-server-postgresql',
+      activate: false,
+    };
+    const path = ruleTemplatesPage.ruleTemplate.paths.yaml;
+    const [, , id] = await ruleTemplatesPage.ruleTemplate
+      .templateNameAndContent(path);
+
+    await templatesAPI.createRuleTemplate(path);
+    const ruleId = await rulesAPI.createAlertRule({ ruleName }, id);
+
+    ruleTemplatesPage.openRuleTemplatesTab();
+    await templatesAPI.removeTemplate(id);
+    alertRulesPage.openAlertRulesTab();
+    I.click(alertRulesPage.buttons.duplicateAlertRule(ruleName));
+    I.verifyPopUpMessage(alertRulesPage.messages.successfullyCreated(copiedRuleName));
+    I.seeElement(alertRulesPage.elements.rulesNameCell(ruleName));
+    I.click(alertRulesPage.buttons.showDetails(ruleName));
+    I.waitForElement(alertRulesPage.elements.ruleDetails, 30);
+    const ruleDetails = await I.grabTextFrom(alertRulesPage.elements.ruleDetails);
+
+    I.click(alertRulesPage.buttons.hideDetails(ruleName));
+    I.click(alertRulesPage.buttons.showDetails(copiedRuleName));
+    I.waitForElement(alertRulesPage.elements.ruleDetails, 30);
+    const ruleDetails2 = await I.grabTextFrom(alertRulesPage.elements.ruleDetails);
+
+    I.click(alertRulesPage.buttons.hideDetails(copiedRuleName));
+    assert.equal(ruleDetails, ruleDetails2, `Details of rule '${ruleName}' must be the same for the rule '${copiedRuleName}'`);
+    alertRulesPage.verifyRowValues(ruleCopy);
+    I.click(alertRulesPage.buttons.editAlertRule(copiedRuleName));
+    I.waitForVisible(alertRulesPage.fields.ruleName, 30);
+    alertRulesPage.verifyEditRuleDialogElements(ruleCopy, true);
+
+    await rulesAPI.removeAlertRule(ruleId);
   },
 );

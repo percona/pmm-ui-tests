@@ -22,7 +22,7 @@ Scenario(
     dashboardPage.waitForDashboardOpened();
     await dashboardPage.applyFilter('Node Name', 'pmm-server');
     I.click(adminPage.fields.metricTitle);
-    adminPage.peformPageDown(5);
+    adminPage.performPageDown(5);
     await dashboardPage.expandEachDashboardRow();
     dashboardPage.verifyMetricsExistence(dashboardPage.prometheusExporterStatusDashboard.metrics);
     await dashboardPage.verifyThereAreNoGraphsWithNA(4);
@@ -30,15 +30,14 @@ Scenario(
   },
 );
 
-// Need to Skip to avoid false positive, investigate and fix
-xScenario(
-  'Open the Prometheus Exporters Overview Dashboard and verify Metrics are present and graphs are displayed @nightly @dashboards',
+Scenario(
+  'PMM-T300 Open the Prometheus Exporters Overview Dashboard and verify Metrics are present and graphs are displayed @nightly @dashboards',
   async ({ I, dashboardPage, adminPage }) => {
     I.amOnPage(dashboardPage.prometheusExporterOverviewDashboard.url);
     dashboardPage.waitForDashboardOpened();
     await dashboardPage.applyFilter('Node Name', 'pmm-server');
     I.click(adminPage.fields.metricTitle);
-    adminPage.peformPageDown(5);
+    adminPage.performPageDown(5);
     dashboardPage.verifyMetricsExistence(dashboardPage.prometheusExporterOverviewDashboard.metrics);
     await dashboardPage.verifyThereAreNoGraphsWithNA(6);
     await dashboardPage.verifyThereAreNoGraphsWithoutData();

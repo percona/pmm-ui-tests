@@ -1,16 +1,18 @@
 const assert = require('assert');
 const { communicationData } = require('./testData');
-const perconaPlatform = require('./perconaPlatform');
 
-const { I, adminPage, links } = inject();
+const {
+  I, adminPage, links, perconaPlatformPage,
+} = inject();
 
 const locateLabel = (selector) => locate(I.useDataQA(selector)).find('span');
 
 module.exports = {
   url: 'graph/settings',
+  publicAddress: process.env.VM_IP ? process.env.VM_IP : process.env.SERVER_IP,
   advancedSettingsUrl: 'graph/settings/advanced-settings',
   communicationSettingsUrl: 'graph/settings/communication',
-  perconaPlatform,
+  perconaPlatform: perconaPlatformPage,
   prometheusAlertUrl: '/prometheus/rules',
   stateOfAlertsUrl: '/prometheus/alerts',
   diagnosticsText:
@@ -70,10 +72,11 @@ module.exports = {
     invalidSSHKeyMessage: 'Invalid SSH key.',
     successAlertmanagerMessage: 'Alertmanager settings updated',
     invalidAlertmanagerMissingSchemeMessage:
-      'Invalid alert_manager_url: invalid_url - missing protocol scheme.',
-    invalidAlertmanagerMissingHostMessage: 'Invalid alert_manager_url: http:// - missing host.',
+      'Invalid argument: invalid alert_manager_url: invalid_url - missing protocol scheme.',
+    invalidAlertmanagerMissingHostMessage: 'Invalid argument: invalid alert_manager_url: http:// - missing host.',
     invalidAlertmanagerRulesMessage: 'Invalid alerting rules.',
     invalidDBaaSDisableMessage: 'DBaaS is enabled via ENABLE_DBAAS or via deprecated PERCONA_TEST_DBAAS environment variable.',
+    disabledBackupManagement: 'Backup Management is disabled. You can enable it in PMM Settings.',
   },
   sectionTabsList: {
     metrics: 'Metrics Resolution',
@@ -88,80 +91,104 @@ module.exports = {
     applyAlertmanager: 'Apply Alertmanager settings',
   },
   tooltips: {
+    dbaas: {
+      iconLocator: locate('$advanced-dbaas').find('div[class$="-Icon"]'),
+      text: 'Option to enable/disable DBaaS features. Disabling DBaaS does not suspend or remove running clusters.',
+      link: links.dbaasDocs,
+    },
     stt: {
-      text: 'Enable Security Threat Tool and get updated checks from Percona.',
-      link: links.sttDocs,
+      iconLocator: '//div[@data-testid="advanced-advisors"]//div/div/div/div',
+      text: 'Enable Advisor Checks and get updated checks from Percona.',
+      link: links.advisorsDocs,
     },
     integratedAlerting: {
+      iconLocator: locate('$advanced-alerting').find('div[class$="-Icon"]'),
       text: 'Option to enable/disable Integrated Alerting features.',
       link: links.integratedAlertingDocs,
     },
     serverAddress: {
-      text: 'The SMTP host server address through which emails are sent',
+      iconLocator: locate('div').after(locate('span').withText('Server Address')),
+      text: 'The default SMTP smarthost used for sending emails, including port number (e.g. smtp.example.org:587)',
       link: links.communicationDocs,
     },
     hello: {
+      iconLocator: locate('div').after(locate('span').withText('Hello')),
       text: 'The hostname to identify the SMTP server',
       link: links.communicationDocs,
     },
     from: {
+      iconLocator: locate('div').after(locate('span').withText('From')),
       text: 'The sender address',
       link: links.communicationDocs,
     },
-    auth: {
+    username: {
+      iconLocator: locate('div').after(locate('span').withText('Username')),
+      text: 'SMTP authentication information',
+      link: links.communicationDocs,
+    },
+    password: {
+      iconLocator: locate('div').after(locate('span').withText('Password')),
       text: 'SMTP authentication information',
       link: links.communicationDocs,
     },
     authType: {
+      iconLocator: locate('div').after(locate('span').withText('Auth Type')),
       text: 'Authentication type',
       link: links.communicationDocs,
     },
+    testEmail: {
+      iconLocator: locate('$testEmail-field-container').find('div[class$="-Icon"]'),
+      text: 'Send a test email to this address',
+      link: false,
+    },
     slackUrl: {
+      iconLocator: locate('div').after(locate('span').withText('URL')),
       text: 'Slack incoming webhook URL',
       link: links.communicationDocs,
+    },
+    publicAddress: {
+      iconLocator: locate('$public-address-label').find('div[class$="-Icon"]'),
+      text: 'Public Address to this PMM server.',
+      link: false,
     },
   },
   communicationData,
   communication: {
     email: {
       serverAddress: {
-        tooltipLocator: locate('div').after(locate('span').withText('Server Address')),
         locator: '$smarthost-text-input',
       },
       hello: {
-        tooltipLocator: locate('div').after(locate('span').withText('Hello')),
         locator: '$hello-text-input',
       },
       from: {
-        tooltipLocator: locate('div').after(locate('span').withText('From')),
         locator: '$from-text-input',
       },
       authType: {
-        tooltipLocator: locate('div').after(locate('span').withText('Auth Type')),
         locator: '$hello-text-input',
       },
       username: {
-        tooltipLocator: locate('div').after(locate('span').withText('Username')),
         locator: '$username-text-input',
       },
       password: {
-        tooltipLocator: locate('div').after(locate('span').withText('Password')),
         locator: '$password-password-input',
+      },
+      testEmail: {
+        locator: '$testEmail-text-input',
       },
     },
     slack: {
       url: {
-        tooltipLocator: locate('div').after(locate('span').withText('URL')),
         locator: '$url-text-input',
         value: 'https://hook',
       },
     },
     communicationSection: locate('$settings-tabs')
-      .find('li')
+      .find('li a')
       .withAttr({ 'aria-label': 'Tab Communication' }),
-    emailTab: 'li[aria-label="Tab Email"]',
+    emailTab: 'li > a[aria-label="Tab Email"]',
     submitEmailButton: '$email-settings-submit-button',
-    slackTab: 'li[aria-label="Tab Slack"]',
+    slackTab: 'li > a[aria-label="Tab Slack"]',
     submitSlackButton: '$slack-settings--submit-button',
   },
   fields: {
@@ -175,7 +202,9 @@ module.exports = {
     alertmanagerRulesLabel: '$alertmanager-rules-label',
     alertmanagerButton: '$alertmanager-button',
     amUrlLabel: locateLabel('form-field-am-url'),
-    applyButton: '//button[@type="submit"]',
+    applyButton: 'button[type="submit"]',
+    backupManagementSwitch: locate('$advanced-backup').find('label'),
+    backupManagementSwitchInput: locate('$advanced-backup').find('input'),
     callHomeSwitch: '//button[@class="toggle-field ant-switch ant-switch-checked"]',
     checkForUpdatesLabel: locate('$advanced-updates').find('span'),
     checkForUpdatesSwitch: '//div[@data-testid="advanced-updates"]//div[2]//input',
@@ -198,6 +227,7 @@ module.exports = {
     highInput: '$hr-number-input',
     perconaPlatformLink: '//li[contains(text(), \'Percona Platform\')]',
     privacyPolicy: '//span[contains(text(), "Privacy Policy")]',
+
     publicAddressInput: '$publicAddress-text-input',
     publicAddressButton: '$public-address-button',
     sectionHeader: '//div[@class="ant-collapse-header"]',
@@ -207,10 +237,9 @@ module.exports = {
     sshKeyInput: '$ssh-key',
     sshKeyLabel: locateLabel('ssh-key-label'),
     sshKeyButton: '$ssh-key-button',
-    sttLabel: locate('$advanced-stt').find('span'),
-    sttLabelTooltipSelector: '//div[@data-testid="advanced-stt"]//div/div/div/div',
-    sttSwitchSelectorInput: locate('$advanced-stt').find('input'),
-    sttSwitchSelector: locate('$advanced-stt').find('label'),
+    sttLabel: locate('$advanced-advisors').find('span'),
+    sttSwitchSelectorInput: locate('$advanced-advisors').find('input'),
+    sttSwitchSelector: locate('$advanced-advisors').find('label'),
     subSectionHeader: '//following-sibling::div//div[@class="ant-collapse-header"]',
     signUpEmail: '$email-text-input',
     signUpPassword: '$password-password-input',
@@ -222,21 +251,35 @@ module.exports = {
     telemetrySwitchSelector: locate('$advanced-telemetry').find('label'),
     iaSwitchSelectorInput: locate('$advanced-alerting').find('input'),
     iaSwitchSelector: locate('$advanced-alerting').find('label'),
+    dbaasSwitchSelectorInput: locate('$advanced-dbaas').find('input'),
+    dbaasSwitchSelector: locate('$advanced-dbaas').find('label'),
     telemetryLabel: locate('$advanced-telemetry').find('span'),
-    tooltipSelector: '.popper__background',
+    tooltipText: locate('div').withAttr({ class: 'popper__background' }).find('span'),
+    tooltipReadMoreLink: locate('div').withAttr({ class: 'popper__background' }).find('a'),
     tabsSection: '$settings-tabs',
     tabContent: '$settings-tab-content',
     termsOfService: '//span[contains(text(), "Terms of Service")]',
     validationMessage: 'span.error-message',
-    iaLabelTooltipSelector: locate('$advanced-alerting').find('div[class$="-Icon"]'),
+    dbaasMenuIconLocator: locate('a').withAttr({ href: '/graph/dbaas' }),
     rareIntervalInput: '$rareInterval-number-input',
     rareIntervalValidation: '$rareInterval-field-error-message',
     standartIntervalInput: '$standardInterval-number-input',
     standartIntervalValidation: '$standardInterval-field-error-message',
     frequentIntervalInput: '$frequentInterval-number-input',
     frequentIntervalValidation: '$frequentInterval-field-error-message',
-    dbaasSwitchSelectorInput: locate('$advanced-dbaas').find('//div[2]//input'),
-    dbaasSwitchSelector: locate('$advanced-dbaas').find('//div[2]//label'),
+    pmmServerNameInput: '$pmmServerName-text-input',
+    perconaAccountEmailInput: '$email-text-input',
+    perconaAccountPasswordInput: '$password-password-input',
+  },
+
+  async openAdvancedSettings() {
+    I.amOnPage(this.advancedSettingsUrl);
+    await this.waitForPmmSettingsPageLoaded();
+  },
+
+  applyChanges() {
+    I.click(this.fields.applyButton);
+    I.verifyPopUpMessage(this.messages.successPopUpMessage);
   },
 
   switchAzure() {
@@ -252,8 +295,9 @@ module.exports = {
     I.waitForVisible(this.fields.diagnosticsLabel, 30);
     I.waitForVisible(this.fields.diagnosticsButton, 30);
   },
+
   async expandSection(sectionName, expectedContentLocator) {
-    const sectionExpandLocator = locate('$settings-tabs').find('li').withText(sectionName);
+    const sectionExpandLocator = locate('$settings-tabs').find('li > a').withText(sectionName);
 
     I.click(sectionExpandLocator);
     I.waitForVisible(expectedContentLocator, 30);
@@ -360,8 +404,14 @@ module.exports = {
     I.click(this.fields.sshKeyButton);
   },
 
-  addPublicAddress(address = process.env.SERVER_IP) {
+  addPublicAddress(address = this.publicAddress) {
     I.fillField(this.fields.publicAddressInput, address);
+    I.click(this.fields.advancedButton);
+    I.verifyPopUpMessage(this.messages.successPopUpMessage);
+  },
+
+  clearPublicAddress() {
+    this.customClearField(this.fields.publicAddressInput);
     I.click(this.fields.advancedButton);
     I.verifyPopUpMessage(this.messages.successPopUpMessage);
   },
@@ -441,10 +491,22 @@ module.exports = {
     );
   },
 
+  /**
+   * Encapsulates Tooltip data verification.
+   * There could be only one tooltip popup on a page.
+   *
+   * @param   tooltipObj        one of {@link pmmSettingsPage.tooltips} or and object with similar structure
+   * @returns {Promise<void>}   requires await in test body.
+   */
   async verifyTooltip(tooltipObj) {
-    I.waitForVisible(this.fields.tooltipSelector, 30);
-    I.seeTextEquals(`${tooltipObj.text}\nRead more`, this.fields.tooltipSelector);
-    I.seeAttributesOnElements(`${this.fields.tooltipSelector} > div > a`, { href: tooltipObj.link });
+    I.waitForVisible(tooltipObj.iconLocator, 5);
+    I.moveCursorTo(tooltipObj.iconLocator);
+    I.waitForVisible(this.fields.tooltipText, 5);
+    I.seeTextEquals(tooltipObj.text, this.fields.tooltipText);
+    /* there are tooltip without "Read more" link */
+    if (tooltipObj.link) {
+      I.seeAttributesOnElements(this.fields.tooltipReadMoreLink, { href: tooltipObj.link });
+    }
   },
 
   verifySwitch(switchSelector, expectedSwitchState = 'on') {

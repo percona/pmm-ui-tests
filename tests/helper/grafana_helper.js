@@ -7,16 +7,42 @@ class Grafana extends Helper {
   constructor(config) {
     super(config);
     this.resultFilesFolder = `${global.output_dir}/`;
+    this.signInWithSSOButton = '//a[contains(@href,"login/generic_oauth")]';
+    this.ssoLoginUsername = '//input[@id="idp-discovery-username"]';
+    this.ssoLoginNext = '//input[@id="idp-discovery-submit"]';
+    this.ssoLoginPassword = '//input[@id="okta-signin-password"]';
+    this.ssoLoginSubmit = '//input[@id="okta-signin-submit"]';
+    this.mainView = '//main[contains(@class, "main-view")]';
   }
 
-  async Authorize(username = 'admin', password = 'admin') {
+  async loginWithSSO(username, password) {
+    const { page } = this.helpers.Playwright;
+
+    await page.isVisible(this.mainView);
+    await page.click(this.signInWithSSOButton);
+    await page.fill(this.ssoLoginUsername, username);
+    await page.click(this.ssoLoginNext);
+    await page.click(this.ssoLoginPassword);
+    await page.fill(this.ssoLoginPassword, password);
+    await page.click(this.ssoLoginSubmit);
+  }
+
+  async Authorize(username = 'admin', password = process.env.ADMIN_PASSWORD) {
     const { Playwright } = this.helpers;
     const basicAuthEncoded = await this.getAuth(username, password);
 
     Playwright.haveRequestHeaders({ Authorization: `Basic ${basicAuthEncoded}` });
   }
 
-  async getAuth(username = 'admin', password = 'admin') {
+  async unAuthorize() {
+    const { Playwright } = this.helpers;
+    const { browserContext } = Playwright;
+
+    await browserContext.clearCookies();
+    Playwright.haveRequestHeaders({});
+  }
+
+  async getAuth(username = 'admin', password = process.env.ADMIN_PASSWORD) {
     return Buffer.from(`${this.config.username || username}:${this.config.password || password}`).toString(
       'base64',
     );
@@ -56,6 +82,29 @@ class Grafana extends Helper {
         ]),
       });
     });
+  }
+
+  /**
+   * Wait for Request to be triggered from User Action
+   *
+   * example Usage: await I.waitForEndPointRequest(endPoint, element);
+   *
+   * @param endpoint       Endpoint which will be called on click of an element
+   * @param element        Playwright to wait for the request
+   * for example: Download Zip log request via Settings get diagnostics button
+   * @returns {Promise<void>}
+   */
+  async waitForEndPointRequest(endpoint, element) {
+    const { browserContext } = this.helpers.Playwright;
+    const existingPages = await browserContext.pages();
+    const mainPage = existingPages[0];
+
+    const [request] = await Promise.all([
+      // Waits for the next request with the specified url
+      mainPage.waitForRequest(endpoint),
+      // Triggers the request
+      mainPage.click(element),
+    ]);
   }
 
   async grabNumberOfTabs() {
@@ -125,8 +174,23 @@ class Grafana extends Helper {
     assert.equal(resp.status, 200, `Failed to delete ${userId}`);
   }
 
+  async listUsers() {
+    const apiContext = this.helpers.REST;
+    const headers = { Authorization: `Basic ${await this.getAuth()}` };
+    const resp = await apiContext.sendGetRequest('graph/api/users/search', headers);
+
+    return resp.data;
+  }
+
+  async listOrgUsers() {
+    const apiContext = this.helpers.REST;
+    const headers = { Authorization: `Basic ${await this.getAuth()}` };
+    const resp = await apiContext.sendGetRequest('graph/api/org/users', headers);
+
+    return resp.data;
+  }
   async verifyCommand(command, output, result = 'pass', getError = false) {
-    const { stdout, stderr, code } = shell.exec(command, { silent: true });
+    const { stdout, stderr, code } = shell.exec(command.replace(/(\r\n|\n|\r)/gm, ''), { silent: true });
 
     if (output && result === 'pass') {
       assert.ok(stdout.includes(output), `The output for ${command} was expected to include ${output} but found ${stdout}`);

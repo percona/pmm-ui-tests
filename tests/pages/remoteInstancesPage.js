@@ -44,6 +44,20 @@ module.exports = {
     cluster: 'rds56-cluster',
     replicationSet: 'rds56-replication',
   },
+  mysql57rdsInput: {
+    userName: remoteInstancesHelper.remote_instance.aws.aws_rds_5_7.username,
+    password: remoteInstancesHelper.remote_instance.aws.aws_rds_5_7.password,
+    environment: 'RDS MySQL 5.7',
+    cluster: 'rds57-cluster',
+    replicationSet: 'rds57-replication',
+  },
+  mysql80rdsInput: {
+    userName: remoteInstancesHelper.remote_instance.aws.aws_rds_8_0.username,
+    password: remoteInstancesHelper.remote_instance.aws.aws_rds_8_0.password,
+    environment: 'RDS MySQL 8.0',
+    cluster: 'rds80-cluster',
+    replicationSet: 'rds80-replication',
+  },
   postgresqlInputs: {
     userName: remoteInstancesHelper.remote_instance.aws.aws_postgresql_12.userName,
     password: remoteInstancesHelper.remote_instance.aws.aws_postgresql_12.password,
@@ -53,6 +67,18 @@ module.exports = {
   },
   url: 'graph/add-instance?orgId=1',
   addMySQLRemoteURL: 'graph/add-instance?instance_type=mysql',
+  mysql8rds: {
+    'Service Name': 'qa-mysql-8-0-17',
+    Environment: 'RDS MySQL 8.0',
+    'Replication Set': 'rds80-replication',
+    Cluster: 'rds80-cluster',
+  },
+  mysql57rds: {
+    'Service Name': 'rds-mysql57',
+    Environment: 'RDS MySQL 5.7',
+    'Replication Set': 'rds57-replication',
+    Cluster: 'rds57-cluster',
+  },
   rds: {
     'Service Name': 'rds-mysql56',
     Environment: 'RDS MySQL 5.6',
@@ -80,8 +106,9 @@ module.exports = {
     clientSecret: '$azure_client_secret-password-input',
     cluster: '$cluster-text-input',
     customLabels: '$custom_labels-textarea-input',
-    disableBasicMetrics: '//input[@name="disable_basic_metrics"]/following-sibling::span[2]',
-    disableEnhancedMetrics: '//input[@name="disable_enhanced_metrics"]/following-sibling::span[2]',
+    database: '$database-text-input',
+    disableBasicMetrics: '//input[@name="disable_basic_metrics"]/following-sibling::*[2]',
+    disableEnhancedMetrics: '//input[@name="disable_enhanced_metrics"]/following-sibling::*[2]',
     discoverBtn: '$credentials-search-button',
     discoveryResults: 'tbody[role="rowgroup"]',
     doNotTrack: locate('label').withText('Don\'t track'),
@@ -101,9 +128,9 @@ module.exports = {
     secretKeyInput: '$aws_secret_key-password-input',
     serviceName: '$serviceName-text-input',
     setManualy: locate('label').withText('Set manually'),
-    skipConnectionCheck: '//input[@name="skip_connection_check"]/following-sibling::span[2]',
+    skipConnectionCheck: '//input[@name="skip_connection_check"]/following-sibling::*[2]',
     skipTLS: '//input[@name="tls_skip_verify"]',
-    skipTLSL: '//input[@name="tls_skip_verify"]/following-sibling::span[2]',
+    skipTLSL: '//input[@name="tls_skip_verify"]/following-sibling::*[2]',
     startMonitoring: '/following-sibling::td/a',
     subscriptionID: '$azure_subscription_id-text-input',
     tableStatsGroupTableLimit: '$tablestats_group_table_limit-number-input',
@@ -113,7 +140,7 @@ module.exports = {
     tlsCertificateKeyInput: '$tls_key-textarea-input',
     tlsCertificateFilePasswordInput: '$tls_certificate_file_password-password-input',
     tlsCertificateKey: '$tls_certificate_key-textarea-input',
-    usePerformanceSchema2: '//input[@name="qan_mysql_perfschema"]/following-sibling::span[2]',
+    usePerformanceSchema2: '//input[@name="qan_mysql_perfschema"]/following-sibling::*[2]',
     usePgStatMonitor: '//label[text()="PG Stat Monitor"]',
     usePgStatStatements: '//label[text()="PG Stat Statements"]',
     useQANMongoDBProfiler: '$qan_mongodb_profiler-field-label',
@@ -126,7 +153,15 @@ module.exports = {
   },
 
   async getFileContent(filePath) {
-    const fileContent = await I.verifyCommand(`cat ${filePath}`);
+    let command;
+
+    if (filePath.includes('mysql')) {
+      command = `cat ${filePath} | head -n -1`;
+    } else {
+      command = `cat ${filePath}`;
+    }
+
+    const fileContent = await I.verifyCommand(command);
 
     return fileContent;
   },
@@ -186,6 +221,56 @@ module.exports = {
     I.waitForElement(this.fields.serviceName, 60);
 
     return this;
+  },
+
+  async addRemoteDetails(details, skipUserNamePassword = false) {
+    I.waitForElement(this.fields.hostName, 30);
+    I.fillField(this.fields.hostName, details.host);
+    if (!skipUserNamePassword) {
+      I.fillField(this.fields.userName, details.username);
+      I.fillField(this.fields.password, details.password);
+    }
+
+    adminPage.customClearField(this.fields.portNumber);
+    I.fillField(this.fields.portNumber, details.port);
+    I.fillField(this.fields.serviceName, details.serviceName);
+    I.fillField(this.fields.environment, details.environment);
+    I.fillField(this.fields.cluster, details.cluster);
+
+    // eslint-disable-next-line no-empty
+    if (details.type === 'postgresql') {
+      I.fillField(this.fields.database, details.database);
+    }
+  },
+
+  async addRemoteSSLDetails(details) {
+    if (details.serviceType === 'postgres_ssl' || details.serviceType === 'mysql_ssl') {
+      await this.addRemoteDetails(details);
+      I.dontSeeElement(this.fields.tlscaInput);
+      I.dontSeeElement(this.fields.tlsCertificateKeyInput);
+      I.dontSeeElement(this.fields.tlsCertificateInput);
+      I.click(this.fields.useTLS);
+      I.waitForElement(this.fields.tlscaInput, 30);
+      await this.fillFileContent(this.fields.tlscaInput, details.tlsCAFile);
+      await this.fillFileContent(this.fields.tlsCertificateInput, details.tlsCertFile);
+      await this.fillFileContent(this.fields.tlsCertificateKeyInput, details.tlsKeyFile);
+      if (details.serviceType === 'postgres_ssl') I.click(this.fields.usePgStatStatements);
+
+      if (details.serviceType === 'mysql_ssl') I.click(this.fields.skipTLSL);
+    }
+
+    if (details.serviceType === 'mongodb_ssl') {
+      await this.addRemoteDetails(details, true);
+      I.dontSeeElement(this.fields.tlscaInput);
+      I.dontSeeElement(this.fields.tlsCertificateFilePasswordInput);
+      I.dontSeeElement(this.fields.tlsCertificateKey);
+      I.click(this.fields.useTLS);
+      I.waitForElement(this.fields.tlscaInput, 30);
+      await this.fillFileContent(this.fields.tlscaInput, details.tlsCAFile);
+      await this.fillFileContent(this.fields.tlsCertificateKey, details.tlsCertificateKeyFile);
+      I.click(this.fields.useQANMongoDBProfiler);
+      I.click(this.fields.skipTLSL);
+    }
   },
 
   async fillRemoteFields(serviceName) {
@@ -354,7 +439,7 @@ module.exports = {
         I.fillField(this.fields.environment, this.postgresGCSettings.environment);
         I.fillField(this.fields.cluster, this.postgresGCSettings.cluster);
     }
-    adminPage.peformPageDown(1);
+    adminPage.performPageDown(1);
   },
 
   createRemoteInstance(serviceName) {
@@ -370,7 +455,6 @@ module.exports = {
       case remoteInstancesHelper.services.postgresql:
         I.click(this.fields.usePgStatStatements);
         break;
-      case 'rds-mysql56':
       case 'pmm-qa-postgres-12':
         I.click(this.fields.disableEnhancedMetrics);
         I.click(this.fields.disableBasicMetrics);
@@ -453,6 +537,12 @@ module.exports = {
     switch (serviceName) {
       case 'rds-mysql56':
         this.fillFields(this.mysqlInputs);
+        break;
+      case 'qa-mysql-8-0-17':
+        this.fillFields(this.mysql80rdsInput);
+        break;
+      case 'rds-mysql57':
+        this.fillFields(this.mysql57rdsInput);
         break;
       case 'pmm-qa-postgres-12':
         this.fillFields(this.postgresqlInputs);

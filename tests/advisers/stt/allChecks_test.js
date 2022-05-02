@@ -1,23 +1,19 @@
-const {
-  settingsAPI, allChecksPage, perconaServerDB,
-} = inject();
+const assert = require('assert');
+
+const { perconaServerDB } = inject();
 
 const connection = perconaServerDB.defaultConnection;
-let nodeID;
-const changeIntervalTests = new DataTable(['checkName', 'interval']);
+const psServiceName = 'allChecks-ps-5.7.30';
+let nodeId;
+let serviceId;
 
-Object.values(allChecksPage.checks).forEach(({ name }) => {
-  changeIntervalTests.add([name, 'Rare']);
-});
-
-Feature('Security Checks: All Checks').retry(2);
+Feature('Security Checks: All Checks');
 
 BeforeSuite(async ({ addInstanceAPI }) => {
-  nodeID = await addInstanceAPI.addInstanceForSTT(connection);
+  [nodeId, serviceId] = await addInstanceAPI.addInstanceForSTT(connection, psServiceName);
 });
-
 AfterSuite(async ({ inventoryAPI }) => {
-  if (nodeID) await inventoryAPI.deleteNode(nodeID, true);
+  if (nodeId) await inventoryAPI.deleteNode(nodeId, true);
 });
 
 Before(async ({ I, settingsAPI, securityChecksAPI }) => {
@@ -36,21 +32,20 @@ Scenario(
   async ({
     I, allChecksPage,
   }) => {
+    const checkNameCell = locate('td').at(1);
+
     I.amOnPage(allChecksPage.url);
 
     I.waitForVisible(allChecksPage.elements.tableBody, 30);
 
-    for (const {
-      name, description, status, interval,
-    } of allChecksPage.checks) {
-      I.seeTextEquals(name, allChecksPage.elements.checkNameCell(name));
-      I.seeTextEquals(description, allChecksPage.elements.descriptionCellByName(name));
-      I.seeTextEquals(status, allChecksPage.elements.statusCellByName(name));
-      I.seeTextEquals(interval, allChecksPage.elements.intervalCellByName(name));
+    const checkNames = await I.grabTextFromAll(checkNameCell);
 
-      // Verify there are no duplicates
-      I.seeNumberOfVisibleElements(allChecksPage.elements.checkNameCell(name), 1);
-    }
+    assert.ok(!checkNames.find((el) => el === ''), 'Expected to not have empty check names.');
+    const checkDescriptions = await I.grabTextFromAll(locate('td').at(2));
+
+    assert.ok(!checkDescriptions.find((el) => el === ''), 'Expected to not have empty check descriptions.');
+
+    assert.ok(checkNames.length === [...new Set(checkNames)].length, 'Expected to not have duplicate checks in All Checks list.');
   },
 );
 
@@ -82,11 +77,15 @@ Scenario(
       : 'Newer version of Percona Server for MySQL is available';
     const checkName = 'MySQL Version';
 
+    I.amOnPage(allChecksPage.url);
     // Run DB Checks from UI
-    databaseChecksPage.runDBChecks();
+    await allChecksPage.runDBChecks();
 
-    // Check that there is MySQL version failed check
-    await securityChecksAPI.verifyFailedCheckExists(detailsText);
+    // Wait for MySQL version failed check
+    await securityChecksAPI.waitForFailedCheckExistance(detailsText, psServiceName);
+
+    // Verify failed check on UI
+    databaseChecksPage.verifyFailedCheckExists(detailsText, serviceId);
 
     // Disable MySQL Version check
     I.amOnPage(allChecksPage.url);
@@ -100,36 +99,40 @@ Scenario(
     I.seeTextEquals('Disabled', allChecksPage.elements.statusCellByName(checkName));
 
     // Run DB Checks from UI
-    databaseChecksPage.runDBChecks();
+    await allChecksPage.runDBChecks();
+    await securityChecksAPI.waitForFailedCheckNonExistance(detailsText, psServiceName);
 
     // Verify there is no MySQL Version failed check
-    await securityChecksAPI.verifyFailedCheckNotExists(detailsText);
+    // databaseChecksPage.verifyFailedCheckNotExists(detailsText, serviceId);
   },
 );
 
-Data(changeIntervalTests).Scenario(
-  'PMM-T723 Verify user can change check intervals for every check @stt',
+Scenario(
+  'PMM-T723 Verify user can change check interval @stt',
   async ({
-    I, allChecksPage, securityChecksAPI, current,
+    I, allChecksPage, securityChecksAPI,
   }) => {
+    const checkName = 'MySQL Version';
+    const interval = 'Rare';
+
     await securityChecksAPI.restoreDefaultIntervals();
     I.amOnPage(allChecksPage.url);
 
     I.waitForVisible(allChecksPage.elements.tableBody, 30);
     I.seeInCurrentUrl(allChecksPage.url);
 
-    I.click(allChecksPage.buttons.openChangeInterval(current.checkName));
+    I.click(allChecksPage.buttons.openChangeInterval(checkName));
     I.waitForVisible(allChecksPage.elements.modalContent, 10);
     I.seeTextEquals(
-      allChecksPage.messages.changeIntervalText(current.checkName),
+      allChecksPage.messages.changeIntervalText(checkName),
       locate(allChecksPage.elements.modalContent).find('h4'),
     );
-    I.click(allChecksPage.buttons.intervalValue(current.interval));
+    I.click(allChecksPage.buttons.intervalValue(interval));
 
     I.click(allChecksPage.buttons.applyIntervalChange);
 
-    I.verifyPopUpMessage(allChecksPage.messages.successIntervalChange(current.checkName));
-    I.seeTextEquals(current.interval, allChecksPage.elements.intervalCellByName(current.checkName));
+    I.verifyPopUpMessage(allChecksPage.messages.successIntervalChange(checkName));
+    I.seeTextEquals(interval, allChecksPage.elements.intervalCellByName(checkName));
 
     await securityChecksAPI.restoreDefaultIntervals();
   },

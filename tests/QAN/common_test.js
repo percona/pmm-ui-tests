@@ -1,6 +1,6 @@
 const assert = require('assert');
 
-Feature('QAN common');
+Feature('QAN common').retry(1);
 
 Before(async ({ I, qanPage }) => {
   await I.Authorize();
@@ -8,7 +8,7 @@ Before(async ({ I, qanPage }) => {
 });
 
 Scenario(
-  'PMM-T122 - Verify QAN UI Elements are displayed @qan',
+  'PMM-T122 PMM-T269 - Verify QAN UI Elements are displayed @qan',
   async ({
     I, qanFilters, qanOverview, qanPagination,
   }) => {
@@ -19,9 +19,7 @@ Scenario(
     await qanOverview.verifyRowCount(27);
     qanFilters.applyFilter('ps-dev');
     I.waitForVisible(qanFilters.fields.filterBy, 30);
-    I.waitForVisible(qanOverview.fields.searchBy, 30);
-    I.fillField(qanOverview.fields.searchBy, 'insert');
-    I.pressKey('Enter');
+    qanOverview.searchByValue('insert');
     I.waitForVisible(qanOverview.elements.querySelector, 30);
     I.click(qanOverview.elements.querySelector);
     I.waitForVisible(qanOverview.getColumnLocator('Lock Time'), 30);
@@ -36,12 +34,10 @@ Scenario(
     const cellValue = qanDetails.getMetricsCellLocator('Query Time', 3);
 
     qanOverview.waitForOverviewLoaded();
-    adminPage.applyTimeRange('Last 1 hour');
+    await adminPage.applyTimeRange('Last 1 hour');
     qanOverview.waitForOverviewLoaded();
     qanFilters.applyFilter('ps-dev');
-    I.waitForVisible(qanOverview.fields.searchBy, 30);
-    I.fillField(qanOverview.fields.searchBy, 'insert');
-    I.pressKey('Enter');
+    qanOverview.searchByValue('insert');
     I.waitForElement(qanOverview.elements.querySelector, 30);
     qanOverview.selectRow(1);
     I.waitForVisible(cellValue, 30);
@@ -66,8 +62,8 @@ Scenario(
     qanOverview.waitForOverviewLoaded();
     I.seeAttributesOnElements(qanPagination.buttons.previousPage, { 'aria-disabled': 'true' });
     I.seeAttributesOnElements(qanPagination.buttons.nextPage, { 'aria-disabled': 'false' });
-    I.seeAttributesOnElements(qanFilters.buttons.resetAll, { disabled: true });
-    I.seeAttributesOnElements(qanFilters.buttons.showSelected, { disabled: true });
+    I.seeElementsDisabled(qanFilters.buttons.resetAll);
+    I.seeElementsDisabled(qanFilters.buttons.showSelected);
     const count = await qanOverview.getCountOfItems();
 
     if (count > 100) {

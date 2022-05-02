@@ -3,21 +3,31 @@ const assert = require('assert');
 
 module.exports = {
   url: 'graph/d/pmm-home/home-dashboard?orgId=1',
+  pathToFramework: '/srv/pmm-qa/pmm-tests/pmm-framework.sh',
+  pathToPMMTests: '/srv/pmm-qa/pmm-tests/',
   sideMenu: {
     integratedAlerting: 'li > a[href="/graph/integrated-alerting"]',
+    alertingBellIcon: locate('$navbar-section').at(2).find('li a[aria-label="Alerting"]'),
+    integratedAlertingManuItem: locate('ul[aria-label="Alerting"]').find('[data-key=integrated-alerting]'),
   },
   fields: {
     navigation: '//i[contains(@class, "navbar-page-btn__search")]',
-    timePickerMenu: '//button[@aria-label="TimePicker Open Button"]',
-    fromTime: '(//input[@input-datetime])[1]',
-    applyCustomTimer: '//button[@ng-click="ctrl.applyCustom();"]',
+    timePickerMenu: I.useDataQA('data-testid TimePicker Open Button'),
+    applyCustomTimer: I.useDataQA('data-testid TimePicker submit button'),
     backToDashboard: '//button[@ng-click=\'ctrl.close()\']',
     discardChanges: '//button[@ng-click="ctrl.discard()"]',
     metricTitle: '//div[@class="panel-title"]',
+    changeTimeZoneButton: locate('button').withText('Change time settings').inside('#TimePickerContent'),
+    timeZoneSelector: '#TimePickerContent [aria-label="Time zone picker"]',
     reportTitleWithNA:
       '//span[contains(text(), "N/A")]//ancestor::div[contains(@class,"panel-container")]//span[contains(@class,"panel-title-text")]',
     pmmDropdownMenuSelector: locate('a[data-toggle="dropdown"] > span').withText('PMM'),
+    timeRangeFrom: locate('input').withAttr({ 'aria-label': 'Time Range from field' }),
+    timeRangeTo: locate('input').withAttr({ 'aria-label': 'Time Range to field' }),
   },
+
+  getTimeZoneOptionSelector: (timeZone) => I.getSingleSelectOptionLocator(timeZone),
+  getTimeZoneSelector: (timeZone) => locate('[aria-label="Time zone selection"]').find('span').withText(timeZone),
 
   async selectItemFromPMMDropdown(title) {
     const titleLocator = `//li/a[text()='${title}']`;
@@ -54,13 +64,45 @@ module.exports = {
     return `(//div[contains(text(), '${dashboardName}')])[1]`;
   },
 
-  applyTimeRange(timeRange = 'Last 5 minutes') {
-    const timeRangeSelector = `//span[contains(text(), '${timeRange}')]`;
+  async applyTimeRange(timeRange = 'Last 5 minutes') {
+    const timeRangeSelector = locate('li > label').withText(timeRange);
+    const closePopUpLocator = I.getClosePopUpButtonLocator();
+
+    // Close randomly appeared pop up message
+    if (await I.grabNumberOfVisibleElements(closePopUpLocator)) {
+      I.click(closePopUpLocator);
+    }
 
     I.waitForElement(this.fields.timePickerMenu, 30);
     I.forceClick(this.fields.timePickerMenu);
     I.waitForVisible(timeRangeSelector, 30);
     I.click(timeRangeSelector);
+  },
+
+  setAbsoluteTimeRange(from = '2022-01-10 09:09:59', to = '2022-01-10 10:00:59') {
+    I.waitForElement(this.fields.timePickerMenu, 30);
+    I.click(this.fields.timePickerMenu);
+    I.waitForVisible(this.fields.timeRangeFrom, 30);
+    I.clearField(this.fields.timeRangeFrom);
+    I.fillField(this.fields.timeRangeFrom, from);
+    I.clearField(this.fields.timeRangeTo);
+    I.fillField(this.fields.timeRangeTo, to);
+    I.click(this.fields.applyCustomTimer);
+    I.waitForInvisible(this.fields.applyCustomTimer, 30);
+  },
+
+  applyTimeZone(timeZone = 'Europe/London') {
+    const timeZoneSelector = this.getTimeZoneOptionSelector(timeZone);
+
+    I.waitForElement(this.fields.timePickerMenu, 30);
+    I.forceClick(this.fields.timePickerMenu);
+    I.waitForVisible(this.fields.changeTimeZoneButton, 30);
+    I.click(this.fields.changeTimeZoneButton);
+    I.waitForElement(this.fields.timeZoneSelector, 30);
+    I.fillField(this.fields.timeZoneSelector, timeZone);
+    I.waitForElement(timeZoneSelector, 30);
+    I.click(timeZoneSelector);
+    I.forceClick(this.fields.timePickerMenu);
   },
 
   viewMetric(metricName) {
@@ -85,7 +127,7 @@ module.exports = {
     }
   },
 
-  peformPageDown(timesPagesDown) {
+  performPageDown(timesPagesDown) {
     for (let i = 0; i < timesPagesDown; i++) {
       I.pressKey('PageDown');
       I.wait(1);

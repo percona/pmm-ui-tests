@@ -1,6 +1,7 @@
 const assert = require('assert');
+const faker = require('faker');
 
-const { pmmInventoryPage, remoteInstancesPage, remoteInstancesHelper } = inject();
+const { remoteInstancesPage, remoteInstancesHelper, pmmInventoryPage } = inject();
 
 const externalExporterServiceName = 'external_service_new';
 const haproxyServiceName = 'haproxy_remote';
@@ -132,7 +133,7 @@ Scenario(
     I.amOnPage(remoteInstancesPage.url);
     remoteInstancesPage.waitUntilRemoteInstancesPageLoaded();
     remoteInstancesPage.openAddRemotePage('mysql');
-    adminPage.peformPageDown(1);
+    adminPage.performPageDown(1);
     I.waitForVisible(remoteInstancesPage.fields.tableStatsGroupTableLimit, 30);
     assert.strictEqual('-1', await remoteInstancesPage.getTableLimitFieldValue(), 'Count for Disabled Table Stats dont Match, was expecting -1');
     I.click(remoteInstancesPage.tableStatsLimitRadioButtonLocator('Default'));
@@ -236,7 +237,7 @@ Data(dashboardCheck).Scenario(
     I.wait(10);
     I.amOnPage(dashboardPage.postgresqlInstanceOverviewDashboard.url);
     await dashboardPage.applyFilter('Service Name', current.serviceName);
-    adminPage.peformPageDown(5);
+    adminPage.performPageDown(5);
     await dashboardPage.expandEachDashboardRow();
     adminPage.performPageUp(5);
     await dashboardPage.verifyThereAreNoGraphsWithNA();
@@ -261,12 +262,45 @@ Data(qanFilters).Scenario(
 
 Data(metrics).Scenario(
   'PMM-T743 Check metrics from exporters are hitting PMM Server @instances',
-  async ({ I, dashboardPage, current }) => {
-    // This is only needed to let PMM Consume Metrics
-    I.wait(10);
-    const response = await dashboardPage.checkMetricExist(current.metricName, { type: 'service_name', value: current.serviceName });
+  async ({ I, grafanaAPI, current }) => {
+    await grafanaAPI.waitForMetric(current.metricName, { type: 'service_name', value: current.serviceName }, 10);
+  },
+);
+
+Scenario(
+  'PMM-T1087 Verify adding PostgreSQL remote instance without postgres database @instances',
+  async ({
+    I, remoteInstancesPage, grafanaAPI,
+  }) => {
+    const errorMessage = 'Connection check failed: pq: database "postgres" does not exist.';
+    const remoteServiceName = `${faker.lorem.word()}_service`;
+    const metric = 'pg_stat_database_xact_rollback';
+    const details = {
+      serviceName: remoteServiceName,
+      serviceType: 'postgresql',
+      port: remoteInstancesHelper.remote_instance.postgresql.pdpgsql_13_3.port,
+      database: 'postgres',
+      host: 'postgresnodb',
+      username: 'test',
+      password: 'test',
+      environment: remoteInstancesPage.potgresqlSettings.environment,
+      cluster: remoteInstancesPage.potgresqlSettings.cluster,
+    };
+
+    I.amOnPage(remoteInstancesPage.url);
+    remoteInstancesPage.waitUntilRemoteInstancesPageLoaded();
+    remoteInstancesPage.openAddRemotePage(details.serviceType);
+    await remoteInstancesPage.addRemoteDetails(details);
+    I.click(remoteInstancesPage.fields.addService);
+    I.verifyPopUpMessage(errorMessage);
+    I.fillField(remoteInstancesPage.fields.database, 'not_default_db');
+    I.click(remoteInstancesPage.fields.addService);
+    pmmInventoryPage.verifyRemoteServiceIsDisplayed(remoteServiceName);
+    await pmmInventoryPage.verifyAgentHasStatusRunning(remoteServiceName);
+    // verify metric for client container node instance
+    const response = await grafanaAPI.checkMetricExist(metric, { type: 'service_name', value: remoteServiceName });
     const result = JSON.stringify(response.data.data.result);
 
-    assert.ok(response.data.data.result.length !== 0, `Metrics ${current.metricName} from ${current.serviceName} should be available but got empty ${result}`);
+    assert.ok(response.data.data.result.length !== 0, `Metrics ${metric} from ${remoteServiceName} should be available but got empty ${result}`);
   },
 );

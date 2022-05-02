@@ -10,6 +10,7 @@ module.exports = {
   },
   buttons: {
     addColumn: '//span[contains(text(), "Add column")]',
+    copyButton: '$copy-link-button',
   },
   elements: {
     countOfItems: '$qan-total-items',
@@ -19,15 +20,29 @@ module.exports = {
     newMetricDropdown: '.add-columns-selector-dropdown',
     noDataIcon: 'div.ant-empty-image',
     querySelector: 'div.tr-1',
+    removeMetricColumn: '//i[@aria-label="icon: minus"]',
     spinner: locate('$table-loading').find('//i[contains(@class,"fa-spinner")]'),
     tableRow: 'div.tr',
     tooltip: '.overview-column-tooltip',
     tooltipQPSValue: '$qps',
+    noResultTableText: locate('$table-no-data').find('h1'),
+    tooltipQueryValue: locate('.ant-tooltip-inner').find('code'),
+    tooltipQueryId: locate('.ant-tooltip-inner').find('h5'),
+    firstQueryValue: 'div.tr-1 > div.td:nth-child(2) div > div',
+    firstQueryInfoIcon: 'div.tr-1 > div.td:nth-child(2) div > svg',
+    selectedRow: '.selected-overview-row',
+    clipboardLink: locate(I.getPopUpLocator()).find('span'),
+  },
+  messages: {
+    noResultTableText: 'No queries available for this combination of filters in the selected time frame',
+    copiedPopUpMessage: 'Successfully copied Query Analytics link to clipboard',
   },
 
   getRowLocator: (rowNumber) => `div.tr-${rowNumber}`,
+  getSelectedRowLocator: (rowNumber) => `div.tr-${rowNumber}.selected-overview-row`,
 
   getColumnLocator: (columnName) => `//span[contains(text(), '${columnName}')]`,
+  getQANMetricHeader: (metricName) => `//div[@role='columnheader']//span[contains(text(), '${metricName}')]`,
 
   getMetricLocatorInDropdown: (name) => `//li[@label='${name}']`,
 
@@ -82,6 +97,19 @@ module.exports = {
     I.waitForElement(newMetric, 30);
     I.seeElement(newMetric);
     I.dontSeeElement(oldMetric);
+  },
+
+  removeMetricFromOverview(metricName) {
+    const column = this.getColumnLocator(metricName);
+
+    I.click(column);
+    I.waitForElement(this.fields.columnSearchField, 10);
+    I.fillField(this.fields.columnSearchField, 'Remove column');
+    I.waitForElement(this.elements.removeMetricColumn, 30);
+    I.forceClick(this.elements.removeMetricColumn);
+    this.waitForOverviewLoaded();
+    I.waitForInvisible(this.elements.spinner, 30);
+    I.dontSeeElement(this.getQANMetricHeader(metricName));
   },
 
   addSpecificColumn(columnName) {
@@ -171,6 +199,7 @@ module.exports = {
     I.waitForElement(rowSelector, 60);
     I.forceClick(rowSelector);
     this.waitForOverviewLoaded();
+    I.waitForVisible(this.elements.selectedRow, 10);
   },
 
   async verifyRowCount(rowCount) {
@@ -185,5 +214,17 @@ module.exports = {
     const tooltip = await I.grabTextFrom(this.elements.tooltipQPSValue);
 
     assert.ok(tooltip.includes(value), `The tooltip value is ${tooltip} while expected value was ${value}`);
+  },
+
+  mouseOverFirstInfoIcon() {
+    I.moveCursorTo(this.elements.firstQueryInfoIcon);
+    I.waitForVisible(this.elements.tooltipQueryValue, 30);
+  },
+
+  searchByValue(value) {
+    I.waitForVisible(this.fields.searchBy, 30);
+    I.clearField(this.fields.searchBy);
+    I.fillField(this.fields.searchBy, value);
+    I.pressKey('Enter');
   },
 };

@@ -1,3 +1,5 @@
+const assert = require('assert');
+
 Feature('Monitoring AWS RDS MySQL DB');
 
 Before(async ({ I }) => {
@@ -19,18 +21,18 @@ Scenario(
     remoteInstancesPage.createRemoteInstance(instanceIdToMonitor);
     pmmInventoryPage.verifyRemoteServiceIsDisplayed(instanceIdToMonitor);
     await pmmInventoryPage.verifyAgentHasStatusRunning(instanceIdToMonitor);
-    await pmmInventoryPage.verifyMetricsFlags(instanceIdToMonitor);
   },
 );
 
-Scenario(
+// bug about failing error message https://jira.percona.com/browse/PMM-9301
+xScenario(
   'Verify RDS allows discovery without credentials @instances',
   async ({ I, remoteInstancesPage }) => {
     I.amOnPage(remoteInstancesPage.url);
     remoteInstancesPage.waitUntilRemoteInstancesPageLoaded().openAddAWSRDSMySQLPage();
     remoteInstancesPage.discoverRDSWithoutCredentials();
   },
-);
+).retry(1);
 
 Scenario(
   'Verify AWS RDS MySQL 5.6 instance has status running [critical] @instances',
@@ -86,6 +88,24 @@ Scenario(
       await within(locator, () => {
         I.seeElement(locate('span').withText(filters[key]));
       });
+    }
+  },
+);
+
+Scenario(
+  'PMM-T603 Verify MySQL RDS exporter is running in pull mode @instances',
+  async ({
+    grafanaAPI, remoteInstancesPage, inventoryAPI,
+  }) => {
+    const metricNames = ['aws_rds_cpu_credit_usage_average', 'rdsosmetrics_memory_total', 'rdsosmetrics_cpuUtilization_total'];
+    const serviceName = remoteInstancesPage.rds['Service Name'];
+    const { node_id } = await inventoryAPI.apiGetNodeInfoByServiceName('MYSQL_SERVICE', serviceName);
+    const response = await inventoryAPI.apiGetAgentsViaNodeId(node_id);
+    const result = response.data.rds_exporter[0];
+
+    assert.ok(!result.push_metrics_enabled, `Push Metrics Enabled Flag Should not be present on response object for AWS RDS but found ${JSON.stringify(result)}`);
+    for (const metric of metricNames) {
+      await grafanaAPI.waitForMetric(metric, { type: 'node_id', value: node_id });
     }
   },
 );
