@@ -10,8 +10,10 @@ let adminToken = '';
 Scenario(
   'Prepare credentials for PMM-Portal upgrade @pre-pmm-portal-upgrade @portal @post-pmm-portal-upgrade',
   async ({
-    I, portalAPI,
+    I, portalAPI, homePage,
   }) => {
+    I.say(process.env.DOCKER_VERSION);
+    I.say(homePage.getVersions());
     const userCredentials = await I.readFileSync(fileName, true);
 
     if (userCredentials !== null && userCredentials.length > 0) {
