@@ -104,12 +104,12 @@ module.exports = {
       notificationChannels: menuOption(al, 'Contact points', '/graph/alerting/notifications'),
     }),
   */
-  configuration: new LeftMenu('Configuration', '/graph/inventory',
+  configuration: new LeftMenu('Configuration', '/graph/datasources',
     {
       pmmInventory: new SubMenu(co, 'PMM Inventory', '/graph/inventory/services',
         {
-          inventoryList: menuOption(co, 'Inventory list', '/graph/inventory/services', 2),
-          addInstance: menuOption(co, 'Add instance', '/graph/add-instance', 2),
+          inventoryList: menuOption(co, 'Inventory List', '/graph/inventory/services', 2),
+          addInstance: menuOption(co, 'Add Instance', '/graph/add-instance', 2),
         }),
       settings: menuOption(co, 'Settings', '/graph/settings/metrics-resolution'),
       dataSources: menuOption(co, 'Data sources', '/graph/datasources'),
