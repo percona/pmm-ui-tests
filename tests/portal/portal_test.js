@@ -12,8 +12,14 @@ Scenario(
   async ({
     I, portalAPI, homePage,
   }) => {
-    I.say(process.env.DOCKER_VERSION);
-    I.say(homePage.getVersions());
+    const {
+      versionMinor, current, patchVersionDiff, majorVersionDiff,
+    } = homePage.getVersions();
+
+    I.say(`Minor Version is ${versionMinor}`);
+    I.say(`Current Version is ${current}`);
+    I.say(`PatchVersionDiff Version is ${patchVersionDiff}`);
+    I.say(`MajorVersionDiff Version is ${majorVersionDiff}`);
     const userCredentials = await I.readFileSync(fileName, true);
 
     if (userCredentials !== null && userCredentials.length > 0) {
