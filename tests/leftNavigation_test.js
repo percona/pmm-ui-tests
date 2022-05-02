@@ -57,7 +57,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-9550 Verify downloading server diagnostics logs',
+  'PMM-9550 Verify downloading server diagnostics logs @menu',
   async ({ I, homePage }) => {
     await homePage.open();
     let path;
