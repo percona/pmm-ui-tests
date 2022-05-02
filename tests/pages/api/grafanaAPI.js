@@ -234,4 +234,12 @@ module.exports = {
 
     return response;
   },
+
+  async checkMetricAbsent(metricName, refineBy) {
+    const response = await this.getMetric(metricName, refineBy);
+    const result = JSON.stringify(response.data.data.result);
+
+    I.assertEqual(response.data.data.result.length, 0,
+      `Metrics "${metricName}" should be empty but got available ${result}`);
+  },
 };
