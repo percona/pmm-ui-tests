@@ -370,3 +370,12 @@ Scenario(
     await I.seeEntriesInZip(path, ['pmm-agent.yaml', 'pmm-managed.log', 'pmm-agent.log']);
   },
 );
+
+Scenario(
+  'PMM-T254 ensure Advisors are on by default @settings',
+  async ({ settingsAPI, I }) => {
+    const resp = await settingsAPI.getSettings('stt_enabled');
+
+    assert.ok(resp, `Advisors should be turned on bydefault from 2.28.0 release but found ${resp}`);
+  },
+);
