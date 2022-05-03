@@ -8,7 +8,7 @@ let portalCredentials = {};
 let adminToken = '';
 
 Scenario(
-  'Prepare credentials for PMM-Portal upgrade @pre-pmm-portal-upgrade @portal @post-pmm-portal-upgrade',
+  'Prepare credentials for PMM-Portal upgrade @not-ui-pipeline @pre-pmm-portal-upgrade @portal @post-pmm-portal-upgrade',
   async ({
     I, portalAPI,
   }) => {
@@ -18,14 +18,14 @@ Scenario(
       portalCredentials = JSON.parse(userCredentials);
     } else {
       portalCredentials = await portalAPI.createServiceNowUsers();
-      portalAPI.oktaCreateUser(portalCredentials.admin1);
-      portalAPI.oktaCreateUser(portalCredentials.admin2);
-      portalAPI.oktaCreateUser(portalCredentials.technical);
+      await portalAPI.oktaCreateUser(portalCredentials.admin1);
+      await portalAPI.oktaCreateUser(portalCredentials.admin2);
+      await portalAPI.oktaCreateUser(portalCredentials.technical);
       adminToken = await portalAPI.getUserAccessToken(portalCredentials.admin1.email, portalCredentials.admin1.password);
       const orgResp = await portalAPI.apiCreateOrg(adminToken);
 
-      portalAPI.apiInviteOrgMember(adminToken, orgResp.id, { username: portalCredentials.admin2.email, role: 'Admin' });
-      portalAPI.apiInviteOrgMember(adminToken, orgResp.id, { username: portalCredentials.technical.email, role: 'Technical' });
+      await portalAPI.apiInviteOrgMember(adminToken, orgResp.id, { username: portalCredentials.admin2.email, role: 'Admin' });
+      await portalAPI.apiInviteOrgMember(adminToken, orgResp.id, { username: portalCredentials.technical.email, role: 'Technical' });
       await I.writeFileSync(fileName, JSON.stringify(portalCredentials), true);
     }
   },
@@ -71,7 +71,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T1097 Verify PMM server is connected to Portal @portal @pre-pmm-portal-upgrade',
+  'PMM-T1097 Verify PMM server is connected to Portal @not-ui-pipeline @portal @pre-pmm-portal-upgrade',
   async ({
     I, pmmSettingsPage, portalAPI, perconaPlatformPage,
   }) => {
@@ -91,7 +91,7 @@ Scenario(
 );
 
 Scenario(
-  'Verify All org users can login in connected PMM server @pre-pmm-portal-upgrade @post-pmm-portal-upgrade',
+  'Verify All org users can login in connected PMM server @not-ui-pipeline @pre-pmm-portal-upgrade @post-pmm-portal-upgrade',
   async ({
     I, homePage,
   }) => {
@@ -110,7 +110,7 @@ Scenario(
 );
 
 Scenario(
-  'Verify user is able to Upgrade PMM version @pmm-portal-upgrade',
+  'Verify user is able to Upgrade PMM version @not-ui-pipeline @pmm-portal-upgrade',
   async ({ I, homePage }) => {
     const { versionMinor } = homePage.getVersions();
 
@@ -121,7 +121,7 @@ Scenario(
 ).retry(0);
 
 Scenario(
-  'Verify user roles are untouched after PMM server upgrade @post-pmm-portal-upgrade',
+  'Verify user roles are untouched after PMM server upgrade @not-ui-pipeline @post-pmm-portal-upgrade',
   async ({
     I,
   }) => {
@@ -137,7 +137,7 @@ Scenario(
 );
 
 Scenario(
-  'Verify PMM is connected and user can disconnect an reconect PMM server to the Portal @post-pmm-portal-upgrade',
+  'Verify PMM is connected and user can disconnect an reconnect PMM server to the Portal @not-ui-pipeline @post-pmm-portal-upgrade',
   async ({
     I, perconaPlatformPage, homePage,
   }) => {
@@ -153,7 +153,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T1112 Verify user can disconnect pmm from portal success flow @portal @post-pmm-portal-upgrade',
+  'PMM-T1112 Verify user can disconnect pmm from portal success flow @portal @not-ui-pipeline @post-pmm-portal-upgrade',
   async ({
     I, homePage, perconaPlatformPage,
   }) => {
