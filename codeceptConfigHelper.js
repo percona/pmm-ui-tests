@@ -60,12 +60,14 @@ module.exports = {
     const dependentTests = files.filter((value) => /PMMSettings|stt|backup|permissions|Azure/.test(value));
     const iaTests = files.filter((value) => /ia/.test(value));
     const dbaasTests = files.filter((value) => /DbaaS|TLSMongo/.test(value));
+    const portalTests = files.filter((value) => /portal/.test(value));
     const otherTests = files.filter((val) => !dependentTests.includes(val)
-      && !dbaasTests.includes(val) && !iaTests.includes(val));
+      && !dbaasTests.includes(val) && !iaTests.includes(val) && !portalTests.includes(val));
 
     return [
       dependentTests,
       iaTests,
+      portalTests,
       otherTests,
       dbaasTests,
     ];
