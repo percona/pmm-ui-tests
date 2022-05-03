@@ -104,7 +104,7 @@ module.exports = {
       data_retention: '2592000s',
       metrics_resolutions: defaultResolution,
       enable_telemetry: true,
-      disable_stt: true,
+      enable_stt: true,
       remove_email_alerting_settings: true,
       remove_slack_alerting_settings: true,
     };
