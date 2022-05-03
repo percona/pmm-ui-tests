@@ -1,5 +1,5 @@
 const assert = require('assert');
-const { communicationData } = require('./testData');
+const { communicationData, emailDefaults } = require('./testData');
 
 const {
   I, adminPage, links, perconaPlatformPage,
@@ -153,6 +153,7 @@ module.exports = {
     },
   },
   communicationData,
+  emailDefaults,
   communication: {
     email: {
       serverAddress: {
@@ -210,10 +211,6 @@ module.exports = {
     checkForUpdatesSwitch: '//div[@data-testid="advanced-updates"]//div[2]//input',
     dataRetentionInput: '$retention-number-input',
     dataRetentionLabel: locateLabel('form-field-data-retention'),
-    diagnosticsButton: '$diagnostics-button',
-    diagnosticsLabel: '$diagnostics-label',
-    downloadLogsButton: '//a[@class="ant-btn" and @href="/logs.zip"]',
-    diagnosticsInfo: locate('$diagnostics-label').find('div').find('div'),
     iframe: '//div[@class="panel-content"]//iframe',
     metricsResolutionButton: '$metrics-resolution-button',
     metricsResolution: '//label[text()="',
@@ -292,8 +289,6 @@ module.exports = {
   async waitForPmmSettingsPageLoaded() {
     I.waitForVisible(this.fields.tabsSection, 30);
     I.waitForVisible(this.fields.tabContent, 30);
-    I.waitForVisible(this.fields.diagnosticsLabel, 30);
-    I.waitForVisible(this.fields.diagnosticsButton, 30);
   },
 
   async expandSection(sectionName, expectedContentLocator) {
