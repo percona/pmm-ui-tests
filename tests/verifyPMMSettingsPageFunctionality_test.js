@@ -383,7 +383,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T254 ensure Advisors are on by default @settings',
+  'PMM-T254 ensure Advisors are on by default @instances',
   async ({ settingsAPI, I }) => {
     const resp = await settingsAPI.getSettings('stt_enabled');
 
