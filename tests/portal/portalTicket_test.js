@@ -32,7 +32,6 @@ Scenario(
       await I.waitInUrl(homePage.landingUrl);
       I.amOnPage(organizationTicketsPage.url);
       await I.waitForVisible(organizationTicketsPage.elements.header);
-      await I.waitForVisible(organizationTicketsPage.elements.subHeader);
       await I.waitForVisible(organizationTicketsPage.elements.ticketTableRows);
       await I.waitForVisible(organizationTicketsPage.elements.ticketTableHead);
       I.click(`${organizationTicketsPage.elements.ticketTableRows}[1]`);
@@ -40,6 +39,19 @@ Scenario(
       I.wait(5);
       I.switchToNextTab();
       await I.waitInUrl(organizationTicketsPage.serviceNowUrl);
+    } else {
+      I.say('This testcase is for PMM version 2.27.0 and higher');
+    }
+  },
+);
+
+Scenario(
+  'PMM-T1147 Verify PMM user that is not logged in with SSO can NOT see Tickets for organization @not-ui-pipeline @portalTickets @post-pmm-portal-upgrade',
+  async ({
+    I,
+  }) => {
+    if (pmmVersion >= 27) {
+      I.say('This testcase is for PMM version 2.27.0 and higher');
     } else {
       I.say('This testcase is for PMM version 2.27.0 and higher');
     }
