@@ -46,6 +46,7 @@
     "mochawesome-report-generator": "^5.2.0",
     "moment": "^2.29.2",
     "mongodb": "^3.7.2",
+    "pg": "^8.7.3",
     "playwright": "^1.13.0",
     "prettier": "^2.2.1",
     "shelljs": "^0.8.5",
