@@ -1,5 +1,5 @@
 const assert = require('assert');
-const { communicationData } = require('./testData');
+const { communicationData, emailDefaults } = require('./testData');
 
 const {
   I, adminPage, links, perconaPlatformPage,
@@ -153,6 +153,7 @@ module.exports = {
     },
   },
   communicationData,
+  emailDefaults,
   communication: {
     email: {
       serverAddress: {
