@@ -21,20 +21,22 @@ BeforeSuite(async ({
   await portalAPI.apiInviteOrgMember(adminToken, orgResp.id, { username: snCredentials.technical.email, role: 'Technical' });
 });
 
-if (pmmVersion >= 27) {
-  Scenario(
-    'PMM-T1132 Verify PMM user logged in using SSO and member of SN account is able to see tickets @not-ui-pipeline @portalTickets @post-pmm-portal-upgrade',
-    async ({
-      I, homePage,
-    }) => {
+Scenario(
+  'PMM-T1132 Verify PMM user logged in using SSO and member of SN account is able to see tickets @not-ui-pipeline @portalTickets @post-pmm-portal-upgrade',
+  async ({
+    I, homePage,
+  }) => {
+    if (pmmVersion >= 27) {
       I.say('Testcase running');
       I.say(`PMM Version Is: ${pmmVersion}`);
       I.amOnPage('');
       I.loginWithSSO(snCredentials.admin1.email, snCredentials.admin1.password);
       I.waitInUrl(homePage.landingUrl);
-    },
-  );
-}
+    } else {
+      I.say('This testcase is for PMM version 2.27.0 and higher');
+    }
+  },
+);
 
 Scenario(
   'PMM-T1132_2 Verify PMM user logged in using SSO and member of SN account is able to see tickets @not-ui-pipeline @portalTickets @post-pmm-portal-upgrade',

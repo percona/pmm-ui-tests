@@ -169,6 +169,7 @@ Scenario(
     I.waitInUrl(homePage.landingUrl);
     I.amOnPage(perconaPlatformPage.url);
     await perconaPlatformPage.disconnectFromPortal(pmmVersion);
+    I.unAuthorize();
     I.waitInUrl('graph/login', 10);
     I.dontSeeElement(locate('a').withAttr({ href: 'login/generic_oauth' }));
     I.amOnPage(homePage.genericOauthUrl);
