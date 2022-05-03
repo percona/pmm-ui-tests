@@ -129,9 +129,11 @@ if (pmmVersion >= 27) {
   Scenario(
     'PMM-T1132 Verify PMM user logged in using SSO and member of SN account is able to see tickets @not-ui-pipeline @portal @post-pmm-portal-upgrade',
     async ({
-      I, pmmSettingsPage, portalAPI, perconaPlatformPage,
+      I, homePage,
     }) => {
       I.say('Testcase running');
+      I.say(`PMM Version Is: ${pmmVersion}`);
+      I.amOnPage(homePage.url);
     },
   );
 }
@@ -162,7 +164,7 @@ Scenario(
     I.waitInUrl(homePage.landingUrl);
     perconaPlatformPage.openPerconaPlatform();
     perconaPlatformPage.isPMMConnected();
-    perconaPlatformPage.disconnectFromPortal();
+    perconaPlatformPage.disconnectFromPortal(pmmVersion);
     adminToken = await portalAPI.getUserAccessToken(portalCredentials.admin1.email, portalCredentials.admin1.password);
     perconaPlatformPage.connectToPortal(adminToken, `Test Server ${Date.now()}`);
   },
@@ -179,7 +181,7 @@ Scenario(
 
     I.waitInUrl(homePage.landingUrl);
     I.amOnPage(perconaPlatformPage.url);
-    await perconaPlatformPage.disconnectFromPortal();
+    await perconaPlatformPage.disconnectFromPortal(pmmVersion);
     I.waitInUrl('graph/login', 10);
     I.dontSeeElement(locate('a').withAttr({ href: 'login/generic_oauth' }));
     I.amOnPage(homePage.genericOauthUrl);

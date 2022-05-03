@@ -48,17 +48,6 @@ module.exports = {
     I.waitInUrl(this.url);
   },
 
-  async connect(pmmServerName, email, password) {
-    I.fillField(this.fields.pmmServerNameField, pmmServerName);
-    I.fillField(this.fields.emailField, email);
-    I.fillField(this.fields.passwordField, password);
-    I.seeAttributesOnElements(this.buttons.connect, { disabled: null });
-    I.click(this.buttons.connect);
-    I.verifyPopUpMessage(this.messages.connectedSuccess);
-    I.refreshPage();
-    await this.isPMMConnected();
-  },
-
   verifyEmailFieldValidation() {
     I.clearField(this.fields.emailField);
 
@@ -91,10 +80,14 @@ module.exports = {
     I.waitForVisible(this.elements.connectedWrapper, 20);
   },
 
-  disconnectFromPortal() {
+  disconnectFromPortal(version = 28) {
     I.click(this.fields.platformDisconnectButton);
-    I.waitForText(this.messages.disconnectPMM, 3);
-    I.click(this.fields.confirmDisconnectButton);
+    if (version >= 28) {
+      I.waitForText(this.messages.disconnectPMM, 3);
+      I.click(this.fields.confirmDisconnectButton);
+    } else {
+      I.verifyPopUpMessage(this.messages.pmmDisconnectedFromProtal);
+    }
   },
 
   async isPMMConnected() {
