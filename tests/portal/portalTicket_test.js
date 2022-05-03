@@ -89,7 +89,8 @@ Scenario(
       I.seeElement(organizationTicketsPage.elements.ticketsMenuIcon);
       I.amOnPage(organizationTicketsPage.url);
       await I.waitForVisible(organizationTicketsPage.elements.header);
-      await I.waitUntilExists(organizationTicketsPage.elements.ticketTableSpinner);
+      await I.waitForDetached(organizationTicketsPage.elements.ticketTableSpinner);
+      await I.waitForVisible(locate('h1').withText(organizationTicketsPage.messages.noTicketsFound), 30);
       const errorMessage = await I.grabTextFrom(organizationTicketsPage.elements.noDataTable);
 
       assert.equal(errorMessage, organizationTicketsPage.messages.noTicketsFound, 'Text for no tickets displayed does not equal expected text');
@@ -112,7 +113,8 @@ Scenario(
       await I.mockServer('**/v1/Platform/SearchOrganizationTickets', { tickets: [] });
       I.amOnPage(organizationTicketsPage.url);
       await I.waitForVisible(organizationTicketsPage.elements.header);
-      await I.waitUntilExists(organizationTicketsPage.elements.ticketTableSpinner);
+      await I.waitForDetached(organizationTicketsPage.elements.ticketTableSpinner);
+      await I.waitForVisible(locate('h1').withText(organizationTicketsPage.messages.noTicketsFound), 30);
       const errorMessage = await I.grabTextFrom(organizationTicketsPage.elements.noDataTable);
 
       assert.equal(errorMessage, organizationTicketsPage.messages.noTicketsFound, 'Text for no tickets displayed does not equal expected text');
