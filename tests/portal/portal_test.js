@@ -125,19 +125,6 @@ Scenario(
   },
 ).retry(0);
 
-if (pmmVersion >= 27) {
-  Scenario(
-    'PMM-T1132 Verify PMM user logged in using SSO and member of SN account is able to see tickets @not-ui-pipeline @portal @post-pmm-portal-upgrade',
-    async ({
-      I, homePage,
-    }) => {
-      I.say('Testcase running');
-      I.say(`PMM Version Is: ${pmmVersion}`);
-      I.amOnPage(homePage.url);
-    },
-  );
-}
-
 Scenario(
   'Verify user roles are untouched after PMM server upgrade @not-ui-pipeline @post-pmm-portal-upgrade',
   async ({
