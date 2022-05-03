@@ -24,29 +24,24 @@ BeforeSuite(async ({
 Scenario(
   'PMM-T1132 Verify PMM user logged in using SSO and member of SN account is able to see tickets @not-ui-pipeline @portalTickets @post-pmm-portal-upgrade',
   async ({
-    I, homePage,
+    I, homePage, organizationTicketsPage,
   }) => {
     if (pmmVersion >= 27) {
-      I.say('Testcase running');
-      I.say(`PMM Version Is: ${pmmVersion}`);
       I.amOnPage('');
       I.loginWithSSO(snCredentials.admin1.email, snCredentials.admin1.password);
-      I.waitInUrl(homePage.landingUrl);
+      await I.waitInUrl(homePage.landingUrl);
+      I.amOnPage(organizationTicketsPage.url);
+      await I.waitForVisible(organizationTicketsPage.elements.header);
+      await I.waitForVisible(organizationTicketsPage.elements.subHeader);
+      await I.waitForVisible(organizationTicketsPage.elements.ticketTableRows);
+      await I.waitForVisible(organizationTicketsPage.elements.ticketTableHead);
+      I.click(`${organizationTicketsPage.elements.ticketTableRows}[1]`);
+      // Wait needed otherwise, browser does not know that there is another tab being opened
+      I.wait(5);
+      I.switchToNextTab();
+      await I.waitInUrl(organizationTicketsPage.serviceNowUrl);
     } else {
       I.say('This testcase is for PMM version 2.27.0 and higher');
     }
-  },
-);
-
-Scenario(
-  'PMM-T1132_2 Verify PMM user logged in using SSO and member of SN account is able to see tickets @not-ui-pipeline @portalTickets @post-pmm-portal-upgrade',
-  async ({
-    I, homePage,
-  }) => {
-    I.say('Testcase running');
-    I.say(`PMM Version Is: ${pmmVersion}`);
-    I.amOnPage('');
-    I.loginWithSSO(snCredentials.admin1.email, snCredentials.admin1.password);
-    I.waitInUrl(homePage.landingUrl);
   },
 );
