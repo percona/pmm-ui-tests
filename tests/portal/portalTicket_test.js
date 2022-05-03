@@ -1,3 +1,5 @@
+const assert = require('assert');
+
 Feature('Portal Tickets integration with PMM');
 
 let snCredentials = {};
@@ -48,10 +50,21 @@ Scenario(
 Scenario(
   'PMM-T1147 Verify PMM user that is not logged in with SSO can NOT see Tickets for organization @not-ui-pipeline @portalTickets @post-pmm-portal-upgrade',
   async ({
-    I,
+    I, organizationTicketsPage,
   }) => {
     if (pmmVersion >= 27) {
-      I.say('This testcase is for PMM version 2.27.0 and higher');
+      const newUser = { username: 'TestUser', password: 'TestPassword1234!' };
+      const newUserId = await I.createUser(newUser.username, newUser.password);
+
+      await I.setRole(newUserId, 'Admin');
+      await I.Authorize(newUser.username, newUser.password);
+      await I.amOnPage('');
+      I.dontSeeElement(organizationTicketsPage.elements.ticketsMenuIcon);
+      I.amOnPage(organizationTicketsPage.url);
+      await I.waitForVisible(organizationTicketsPage.elements.header);
+      const errorMessage = await I.grabTextFrom(organizationTicketsPage.elements.notPlatformUser);
+
+      assert.equal(errorMessage, organizationTicketsPage.messages.loginWithPercona, 'Test');
     } else {
       I.say('This testcase is for PMM version 2.27.0 and higher');
     }
