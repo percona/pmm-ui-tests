@@ -7,7 +7,7 @@ module.exports = {
     ticketTable: '$table',
     ticketTableHead: '//*[@data-testid="table-thead"]//tr',
     ticketTableRows: '//*[@data-testid="table-tbody"]//tr',
-    header: '//*[contains(text(), "List of tickets opened by Customer Organization")]',
+    header: '//body//*[contains(text(), "List of tickets opened by Customer Organization")]',
   },
   fields: {
   },
