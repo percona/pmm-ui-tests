@@ -4,7 +4,9 @@ let snCredentials = {};
 let adminToken = '';
 let pmmVersion;
 
-BeforeSuite(async ({ homePage, portalAPI }) => {
+BeforeSuite(async ({
+  homePage, portalAPI, settingsAPI, pmmSettingsPage,
+}) => {
   pmmVersion = await homePage.getVersions().versionMinor;
   snCredentials = await portalAPI.createServiceNowUsers();
   await portalAPI.oktaCreateUser(snCredentials.admin1);
@@ -13,6 +15,7 @@ BeforeSuite(async ({ homePage, portalAPI }) => {
   adminToken = await portalAPI.getUserAccessToken(snCredentials.admin1.email, snCredentials.admin1.password);
   const orgResp = await portalAPI.apiCreateOrg(adminToken);
 
+  await settingsAPI.changeSettings({ publicAddress: pmmSettingsPage.publicAddress });
   await portalAPI.connectPMMToPortal(adminToken);
   await portalAPI.apiInviteOrgMember(adminToken, orgResp.id, { username: snCredentials.admin2.email, role: 'Admin' });
   await portalAPI.apiInviteOrgMember(adminToken, orgResp.id, { username: snCredentials.technical.email, role: 'Technical' });
