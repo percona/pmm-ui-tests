@@ -83,7 +83,7 @@ module.exports = {
   disconnectFromPortal(version = 28) {
     I.click(this.fields.platformDisconnectButton);
     if (version >= 28) {
-      I.waitForText(this.messages.disconnectPMM, 3);
+      I.waitForText(this.messages.disconnectPMM);
       I.click(this.fields.confirmDisconnectButton);
     } else {
       I.verifyPopUpMessage(this.messages.pmmDisconnectedFromProtal);

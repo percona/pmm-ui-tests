@@ -10,6 +10,8 @@ module.exports = {
     header: '//body//*[contains(text(), "List of tickets opened by Customer Organization")]',
     ticketsMenuIcon: '//*[@aria-label="Support Tickets"]',
     notPlatformUser: '$not-platform-user',
+    noDataTable: '$table-no-data',
+    ticketTableSpinner: '$spinner-wrapper',
   },
   fields: {
   },
@@ -17,5 +19,6 @@ module.exports = {
   },
   messages: {
     loginWithPercona: 'Login with Percona Account to access this content',
+    noTicketsFound: 'No tickets found',
   },
 };
