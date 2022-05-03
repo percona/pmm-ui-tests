@@ -6,6 +6,11 @@ Feature('Portal Integration with PMM');
 const fileName = 'portalCredentials';
 let portalCredentials = {};
 let adminToken = '';
+let pmmVersion;
+
+BeforeSuite(async ({ homePage }) => {
+  pmmVersion = await homePage.getVersions().versionMinor;
+});
 
 Scenario(
   'Prepare credentials for PMM-Portal upgrade @not-ui-pipeline @pre-pmm-portal-upgrade @portal @post-pmm-portal-upgrade',
@@ -119,6 +124,17 @@ Scenario(
     await homePage.upgradePMM(versionMinor);
   },
 ).retry(0);
+
+if (pmmVersion >= 27) {
+  Scenario(
+    'PMM-T1132 Verify PMM user logged in using SSO and member of SN account is able to see tickets @not-ui-pipeline @portal @post-pmm-portal-upgrade',
+    async ({
+      I, pmmSettingsPage, portalAPI, perconaPlatformPage,
+    }) => {
+      I.say('Testcase running');
+    },
+  );
+}
 
 Scenario(
   'Verify user roles are untouched after PMM server upgrade @not-ui-pipeline @post-pmm-portal-upgrade',
