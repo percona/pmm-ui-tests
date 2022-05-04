@@ -383,30 +383,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-9550 Verify downloading server diagnostics logs from Settings @settings',
-  async ({ I, pmmSettingsPage }) => {
-    I.amOnPage(pmmSettingsPage.url);
-    await pmmSettingsPage.waitForPmmSettingsPageLoaded();
-    let path;
-
-    await I.usePlaywrightTo('download', async ({ page }) => {
-      const [download] = await Promise.all([
-        // Start waiting for the download
-        page.waitForEvent('download'),
-        // Perform the action that initiates download
-        page.locator(I.useDataQA('diagnostics-button')).click(),
-      ]);
-
-      // Wait for the download process to complete
-      path = await download.path();
-    });
-
-    await I.seeEntriesInZip(path, ['pmm-agent.yaml', 'pmm-managed.log', 'pmm-agent.log']);
-  },
-);
-
-Scenario(
-  'PMM-T254 ensure Advisors are on by default @settings',
+  'PMM-T254 ensure Advisors are on by default @instances',
   async ({ settingsAPI, I }) => {
     const resp = await settingsAPI.getSettings('stt_enabled');
 

@@ -27,6 +27,7 @@ module.exports = {
   buttons: {
     connect: '$connect-button',
     disconnect: '$disconnect-button',
+    confirmDisconnect: locate('button').withAttr({ 'aria-label': 'Confirm Modal Danger Button' }),
   },
   messages: {
     technicalPreview: ' This feature is in Technical Preview stage',
@@ -46,6 +47,22 @@ module.exports = {
   async waitForPerconaPlatformPageLoaded() {
     I.waitForVisible(this.elements.settingsContent, 30);
     I.waitInUrl(this.url);
+  },
+
+  async connect(pmmServerName, email, password) {
+    I.fillField(this.fields.pmmServerNameField, pmmServerName);
+    I.fillField(this.fields.emailField, email);
+    I.fillField(this.fields.passwordField, password);
+    I.seeAttributesOnElements(this.buttons.connect, { disabled: null });
+    I.click(this.buttons.connect);
+    I.verifyPopUpMessage(this.messages.connectedSuccess);
+    I.refreshPage();
+    await this.isPMMConnected();
+  },
+
+  async disconnect() {
+    I.click(this.buttons.disconnect);
+    I.click(this.buttons.confirmDisconnect);
   },
 
   verifyEmailFieldValidation() {
