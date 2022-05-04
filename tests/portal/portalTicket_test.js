@@ -28,7 +28,7 @@ BeforeSuite(async ({
 });
 
 Scenario(
-  'PMM-T1132 Verify PMM user logged in using SSO and member of SN account is able to see tickets @not-ui-pipeline @portalTickets @post-pmm-portal-upgrade',
+  'PMM-T1132 Verify PMM user logged in using SSO and member of SN account is able to see tickets @portal @post-pmm-portal-upgrade',
   async ({ I, homePage, organizationTicketsPage }) => {
     if (pmmVersion >= 27) {
       I.amOnPage('');
@@ -50,7 +50,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T1147 Verify PMM user that is not logged in with SSO can NOT see Tickets for organization @not-ui-pipeline @portalTickets @post-pmm-portal-upgrade',
+  'PMM-T1147 Verify PMM user that is not logged in with SSO can NOT see Tickets for organization @portal @post-pmm-portal-upgrade',
   async ({ I, organizationTicketsPage, portalAPI }) => {
     if (pmmVersion >= 27) {
       const newUser = await portalAPI.getUser();
@@ -77,7 +77,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T1148 Verify PMM user logged in using SSO and member of organization in Portal BUT not a SN account is NOT able to see Tickets @not-ui-pipeline @portalTickets @post-pmm-portal-upgrade',
+  'PMM-T1148 Verify PMM user logged in using SSO and member of organization in Portal BUT not a SN account is NOT able to see Tickets @portal @post-pmm-portal-upgrade',
   async ({
     I, organizationTicketsPage, portalAPI, homePage,
   }) => {
@@ -109,7 +109,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T1149 Verify PMM user logged in using SSO and is a member of SN account is able to see empty list of tickets @not-ui-pipeline @portalTickets @post-pmm-portal-upgrade',
+  'PMM-T1149 Verify PMM user logged in using SSO and is a member of SN account is able to see empty list of tickets @portal @post-pmm-portal-upgrade',
   async ({
     I, organizationTicketsPage, portalAPI, homePage,
   }) => {
