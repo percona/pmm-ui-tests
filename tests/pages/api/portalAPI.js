@@ -127,4 +127,15 @@ module.exports = {
 
     return response.data;
   },
+
+  async connectPMMToPortal(token, serverName = 'Test Server') {
+    const headers = { Authorization: `Basic ${await I.getAuth()}` };
+
+    const body = { personal_access_token: token, server_name: serverName };
+    const resp = await I.sendPostRequest('v1/Platform/Connect', body, headers);
+
+    assert.ok(resp.status === 200, `Failed to connect PMM to the Portal. Response message is "${resp.data.message}"`);
+
+    return resp.data;
+  },
 };

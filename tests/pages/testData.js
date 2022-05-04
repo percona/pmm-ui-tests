@@ -9,6 +9,7 @@ const emailDefaults = {
 };
 
 module.exports = {
+  emailDefaults,
   communicationData: [
     emailDefaults, {
       ...emailDefaults,

@@ -113,6 +113,35 @@ services:
     networks:
       - pmm-network
 
+  # it needs for deleting postgres db for test T1087
+  postgresremovedefaultdb:
+    image: ${POSTGRES_IMAGE:-perconalab/percona-distribution-postgresql:13.3}
+    command: >
+      psql -Utest -hpostgresnodb -dnot_default_db -c 'DROP DATABASE postgres WITH (FORCE);'
+    depends_on:
+      postgresnodb:
+        condition: service_healthy
+    environment:
+      - PGPASSWORD=test
+    networks:
+      - pmm-network
+
+  postgresnodb:
+    image: ${POSTGRES_IMAGE:-perconalab/percona-distribution-postgresql:13.3}
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    ports:
+      - "6435:5432"
+    environment:
+      - POSTGRES_PASSWORD=test
+      - POSTGRES_USER=test
+      - POSTGRES_DB=not_default_db
+    networks:
+      - pmm-network
+
   proxysql:
     image: ${PROXYSQL_IMAGE:-proxysql/proxysql:2.1.1}
     container_name: pmm-agent_proxysql

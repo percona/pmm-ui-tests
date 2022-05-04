@@ -1,6 +1,7 @@
 const assert = require('assert');
+const faker = require('faker');
 
-const { remoteInstancesPage, remoteInstancesHelper } = inject();
+const { remoteInstancesPage, remoteInstancesHelper, pmmInventoryPage } = inject();
 
 const externalExporterServiceName = 'external_service_new';
 const haproxyServiceName = 'haproxy_remote';
@@ -263,5 +264,43 @@ Data(metrics).Scenario(
   'PMM-T743 Check metrics from exporters are hitting PMM Server @instances',
   async ({ I, grafanaAPI, current }) => {
     await grafanaAPI.waitForMetric(current.metricName, { type: 'service_name', value: current.serviceName }, 10);
+  },
+);
+
+Scenario(
+  'PMM-T1087 Verify adding PostgreSQL remote instance without postgres database @instances',
+  async ({
+    I, remoteInstancesPage, grafanaAPI,
+  }) => {
+    const errorMessage = 'Connection check failed: pq: database "postgres" does not exist.';
+    const remoteServiceName = `${faker.lorem.word()}_service`;
+    const metric = 'pg_stat_database_xact_rollback';
+    const details = {
+      serviceName: remoteServiceName,
+      serviceType: 'postgresql',
+      port: remoteInstancesHelper.remote_instance.postgresql.pdpgsql_13_3.port,
+      database: 'postgres',
+      host: 'postgresnodb',
+      username: 'test',
+      password: 'test',
+      environment: remoteInstancesPage.potgresqlSettings.environment,
+      cluster: remoteInstancesPage.potgresqlSettings.cluster,
+    };
+
+    I.amOnPage(remoteInstancesPage.url);
+    remoteInstancesPage.waitUntilRemoteInstancesPageLoaded();
+    remoteInstancesPage.openAddRemotePage(details.serviceType);
+    await remoteInstancesPage.addRemoteDetails(details);
+    I.click(remoteInstancesPage.fields.addService);
+    I.verifyPopUpMessage(errorMessage);
+    I.fillField(remoteInstancesPage.fields.database, 'not_default_db');
+    I.click(remoteInstancesPage.fields.addService);
+    pmmInventoryPage.verifyRemoteServiceIsDisplayed(remoteServiceName);
+    await pmmInventoryPage.verifyAgentHasStatusRunning(remoteServiceName);
+    // verify metric for client container node instance
+    const response = await grafanaAPI.checkMetricExist(metric, { type: 'service_name', value: remoteServiceName });
+    const result = JSON.stringify(response.data.data.result);
+
+    assert.ok(response.data.data.result.length !== 0, `Metrics ${metric} from ${remoteServiceName} should be available but got empty ${result}`);
   },
 );

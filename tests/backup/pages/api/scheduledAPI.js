@@ -3,6 +3,7 @@ const assert = require('assert');
 
 const backupModes = {
   snapshot: 'SNAPSHOT',
+  pitr: 'PITR',
 };
 
 module.exports = {

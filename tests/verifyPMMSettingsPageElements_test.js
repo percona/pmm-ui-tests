@@ -29,18 +29,6 @@ Data(dataRetentionTable).Scenario('PMM-T97 - Verify server diagnostics on PMM Se
   pmmSettingsPage.checkDataRetentionInput(current.value, current.message);
 });
 
-Scenario('PMM-T87 - Verify server diagnostics on PMM Settings Page @settings @grafana-pr', async ({ pmmSettingsPage }) => {
-  const diagnostcsButtonLocator = pmmSettingsPage.fields.diagnosticsButton;
-  const platform = pmmSettingsPage.sectionTabsList.perconaPlatform;
-
-  await pmmSettingsPage.waitForPmmSettingsPageLoaded();
-  await pmmSettingsPage.expandSection(pmmSettingsPage.sectionTabsList.metrics, diagnostcsButtonLocator);
-  await pmmSettingsPage.expandSection(pmmSettingsPage.sectionTabsList.advanced, diagnostcsButtonLocator);
-  await pmmSettingsPage.expandSection(pmmSettingsPage.sectionTabsList.ssh, diagnostcsButtonLocator);
-  await pmmSettingsPage.expandSection(pmmSettingsPage.sectionTabsList.alertmanager, diagnostcsButtonLocator);
-  await pmmSettingsPage.expandSection(platform, diagnostcsButtonLocator);
-});
-
 Scenario('PMM-T84 - Verify Section Tabs and Metrics Section Elements [critical] @settings @grafana-pr', async ({ I, pmmSettingsPage }) => {
   await pmmSettingsPage.waitForPmmSettingsPageLoaded();
   Object.values(pmmSettingsPage.sectionTabsList).forEach((value) => {
@@ -92,7 +80,6 @@ Scenario('PMM-T86 - Verify Alertmanager integration Section Elements @settings @
   I.see('Prometheus Alerting rules', pmmSettingsPage.fields.alertmanagerRuleslabel);
   I.seeElement(pmmSettingsPage.fields.alertURLInput);
   I.seeElement(pmmSettingsPage.fields.alertRulesInput);
-  I.seeElement(pmmSettingsPage.fields.diagnosticsButton);
 });
 
 Scenario('PMM-T89 - Verify validation for invalid SSH Key @settings @grafana-pr', async ({ I, pmmSettingsPage }) => {

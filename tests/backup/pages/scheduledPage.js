@@ -35,6 +35,7 @@ module.exports = {
     deleteByName: (name) => locate('$delete-scheduled-backpup-button').inside(scheduleCell(name)),
     copyByName: (name) => locate('$copy-scheduled-backup-button').inside(scheduleCell(name)),
     enableDisableByName: (name) => locate('label').after('$toggle-scheduled-backpup').inside(scheduleCell(name)),
+    backupTypeSwitch: (type) => locate('label').after('$mode-radio-button').withText(type),
     confirmDelete: '$confirm-delete-modal-button',
     cancelDelete: '$cancel-delete-modal-button',
   },

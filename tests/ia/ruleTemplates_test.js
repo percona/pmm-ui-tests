@@ -225,6 +225,27 @@ Scenario(
 );
 
 Scenario(
+  'PMM-T884 Verify templates from Percona (SAAS) cannot be deleted or edited @ia @grafana-pr',
+  async ({ I, ruleTemplatesPage }) => {
+    const builtInDeleteButton = ruleTemplatesPage.buttons
+      .deleteButtonBySource(ruleTemplatesPage.templateSources.builtin);
+    const builtInEditButton = ruleTemplatesPage.buttons
+      .editButtonBySource(ruleTemplatesPage.templateSources.builtin);
+    const saasDeleteButton = ruleTemplatesPage.buttons
+      .deleteButtonBySource(ruleTemplatesPage.templateSources.saas);
+    const saasEditButton = ruleTemplatesPage.buttons
+      .editButtonBySource(ruleTemplatesPage.templateSources.saas);
+
+    ruleTemplatesPage.openRuleTemplatesTab();
+    I.waitForElement(builtInDeleteButton, 30);
+    I.seeAttributesOnElements(builtInDeleteButton, { disabled: true });
+    I.seeAttributesOnElements(builtInEditButton, { disabled: true });
+    I.seeAttributesOnElements(saasDeleteButton, { disabled: true });
+    I.seeAttributesOnElements(saasEditButton, { disabled: true });
+  },
+);
+
+Scenario(
   'PMM-T553 Verify rule template can be deleted if there is a rule based on it @ia',
   async ({
     I, ruleTemplatesPage, templatesAPI, rulesAPI,

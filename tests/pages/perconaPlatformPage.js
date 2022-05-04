@@ -1,5 +1,3 @@
-const faker = require('faker');
-
 const { I } = inject();
 
 module.exports = {
@@ -13,6 +11,7 @@ module.exports = {
     accessTokenValidation: '$accessToken-field-error-message',
     connectedWrapper: '$connected-wrapper',
     settingsContent: '$settings-tab-content',
+    getAccessTokenLink: locate('a').after('$accessToken-field-container'),
   },
   fields: {
     pmmServerNameField: '$pmmServerName-text-input',
@@ -21,12 +20,14 @@ module.exports = {
     passwordField: '$password-password-input',
     platformConnectButton: '$connect-button',
     platformDisconnectButton: '$disconnect-button',
-    getAccessTokenLink: locate('a').after('$accessToken-field-container'),
     accessToken: '$accessToken-text-input',
     serverId: '$pmmServerId-text-input',
+    confirmDisconnectButton: locate('button').withAttr({ 'aria-label': 'Confirm Modal Danger Button' }),
   },
   buttons: {
     connect: '$connect-button',
+    disconnect: '$disconnect-button',
+    confirmDisconnect: locate('button').withAttr({ 'aria-label': 'Confirm Modal Danger Button' }),
   },
   messages: {
     technicalPreview: ' This feature is in Technical Preview stage',
@@ -34,6 +35,8 @@ module.exports = {
     invalidEmail: 'Invalid email address',
     connectedSuccess: 'Successfully connected PMM to Percona Platform',
     pmmDisconnectedFromProtal: 'Successfully disconnected PMM from Percona Platform',
+    disconnectPMM: 'Disconnect PMM from Percona Platform',
+    pmmConnected: 'This PMM instance is connected to Percona Platform.',
   },
 
   async openPerconaPlatform() {
@@ -54,7 +57,12 @@ module.exports = {
     I.click(this.buttons.connect);
     I.verifyPopUpMessage(this.messages.connectedSuccess);
     I.refreshPage();
-    I.waitForVisible(this.elements.connectedWrapper, 20);
+    await this.isPMMConnected();
+  },
+
+  async disconnect() {
+    I.click(this.buttons.disconnect);
+    I.click(this.buttons.confirmDisconnect);
   },
 
   verifyEmailFieldValidation() {
@@ -91,6 +99,13 @@ module.exports = {
 
   disconnectFromPortal() {
     I.click(this.fields.platformDisconnectButton);
-    I.verifyPopUpMessage(this.messages.pmmDisconnectedFromProtal);
+    I.waitForText(this.messages.disconnectPMM, 3);
+    I.click(this.fields.confirmDisconnectButton);
+  },
+
+  async isPMMConnected() {
+    I.waitForVisible(this.elements.connectedWrapper, 20);
+    I.waitForVisible(this.buttons.disconnect);
+    locate('p').withText(this.messages.pmmConnected);
   },
 };

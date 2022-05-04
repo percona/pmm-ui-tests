@@ -107,4 +107,10 @@ module.exports = {
 
     assert.ok(className.endsWith('activeTabStyle'), `Tab ${tabName} should be active`);
   },
+
+  checkBreadcrumbText(text, locator) {
+    const breadcrumbSectionText = ` / ${text}`;
+
+    I.seeTextEquals(breadcrumbSectionText, locator);
+  },
 };

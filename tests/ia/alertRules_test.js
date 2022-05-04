@@ -50,6 +50,14 @@ AfterSuite(async ({
 });
 
 Scenario(
+  'PMM-T518 Verify empty alert rules list @ia @grafana-pr',
+  async ({ I, alertRulesPage }) => {
+    alertRulesPage.openAlertRulesTab();
+    I.waitForText('No alert rules found', alertRulesPage.elements.noRules);
+  },
+);
+
+Scenario(
   'Verify alert rules list elements @ia @grafana-pr',
   async ({ I, alertRulesPage, rulesAPI }) => {
     const ruleName = 'QAA PSQL rules List test';
@@ -66,7 +74,7 @@ Scenario(
 );
 
 Scenario(
-  'Add alert rule modal elements @ia @grafana-pr',
+  'PMM-T1073 Add alert rule modal elements @ia @grafana-pr',
   async ({ I, alertRulesPage }) => {
     alertRulesPage.openAlertRulesTab();
     I.click(alertRulesPage.buttons.openAddRuleModal);
@@ -81,6 +89,28 @@ Scenario(
     I.seeElement(alertRulesPage.buttons.toggleInModal);
     I.seeElement(alertRulesPage.buttons.addRule);
     I.seeElement(alertRulesPage.buttons.cancelAdding);
+
+    for (const [, { locator, message }] of Object.entries(alertRulesPage.tooltips)) {
+      I.waitForVisible(locator, 5);
+      I.moveCursorTo(locator);
+      I.waitForVisible(alertRulesPage.elements.tooltipMessage, 5);
+      I.seeTextEquals(message, alertRulesPage.elements.tooltipMessage);
+    }
+  },
+);
+
+Scenario(
+  'PMM-T771 Verify fields dynamically change value after user changes a template @ia @grafana-pr',
+  async ({ I, alertRulesPage }) => {
+    alertRulesPage.openAlertRulesTab();
+    I.click(alertRulesPage.buttons.openAddRuleModal);
+    I.waitForVisible(alertRulesPage.elements.modalHeader, 5);
+
+    alertRulesPage.searchAndSelectResult('Template', 'Memory used by MongoDB');
+    I.waitForValue(alertRulesPage.fields.threshold, 80, 5);
+
+    alertRulesPage.searchAndSelectResult('Template', 'Memory used by MongoDB connections');
+    I.waitForValue(alertRulesPage.fields.threshold, 25, 5);
   },
 );
 
