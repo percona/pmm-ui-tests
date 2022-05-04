@@ -99,7 +99,7 @@ Data(pxcDBClusterDetails).Scenario('PMM-T726 Verify PXC cluster monitoring after
     const haproxyNodeName = `${current.namespace}-${current.clusterName}-haproxy-${current.node}`;
 
     await dbaasPage.dbClusterAgentStatusCheck(pxc_cluster_name, serviceName, 'MYSQL_SERVICE');
-    await dbaasPage.dbaasQANCheck(pxc_cluster_name, serviceName, serviceName, 'Last 5 minutes');
+    await dbaasPage.dbaasQANCheck(pxc_cluster_name, serviceName, serviceName, { from: 'now-5m' });
     await dbaasPage.pxcClusterMetricCheck(pxc_cluster_name, serviceName, serviceName, haproxyNodeName);
 }); 
 
@@ -133,7 +133,7 @@ Data(psmdbClusterDetails).Scenario('PMM-T726 Verify PSMDB cluster monitoring aft
     );
 
     await dbaasPage.dbClusterAgentStatusCheck(psmdb_cluster_name, serviceName, 'MONGODB_SERVICE');
-    await dbaasPage.dbaasQANCheck(psmdb_cluster_name, serviceName, serviceName, 'Last 5 minutes');
+    //await dbaasPage.dbaasQANCheck(psmdb_cluster_name, serviceName, serviceName, { from: 'now-5m' });
     await dbaasPage.psmdbClusterMetricCheck(psmdb_cluster_name, serviceName, serviceName);
 }); 
 

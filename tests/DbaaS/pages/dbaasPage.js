@@ -419,8 +419,8 @@ module.exports = {
   },
 
 
-  async dbaasQANCheck(dbclusterName, nodeName, serviceName) {
-    I.amOnPage(I.buildUrlWithParams(qanPage.url, { from: 'now-3h' }));
+  async dbaasQANCheck(dbclusterName, nodeName, serviceName, time = { from: 'now-3h' }) {
+    I.amOnPage(I.buildUrlWithParams(qanPage.clearUrl, time));
     qanOverview.waitForOverviewLoaded();
     qanFilters.checkFilterExistInSection('Cluster', dbclusterName);
     qanFilters.checkFilterExistInSection('Node Name', `${nodeName}`);
