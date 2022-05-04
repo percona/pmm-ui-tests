@@ -21,14 +21,15 @@ BeforeSuite(async ({
   await settingsAPI.changeSettings({ publicAddress: pmmSettingsPage.publicAddress });
   await portalAPI.connectPMMToPortal(adminToken);
   await portalAPI.apiInviteOrgMember(adminToken, serviceNowOrg.id, { username: snCredentials.admin2.email, role: 'Admin' });
-  await portalAPI.apiInviteOrgMember(adminToken, serviceNowOrg.id, { username: snCredentials.technical.email, role: 'Technical' });
+  await portalAPI.apiInviteOrgMember(adminToken, serviceNowOrg.id, {
+    username: snCredentials.technical.email,
+    role: 'Technical',
+  });
 });
 
 Scenario(
   'PMM-T1132 Verify PMM user logged in using SSO and member of SN account is able to see tickets @not-ui-pipeline @portalTickets @post-pmm-portal-upgrade',
-  async ({
-    I, homePage, organizationTicketsPage,
-  }) => {
+  async ({ I, homePage, organizationTicketsPage }) => {
     if (pmmVersion >= 27) {
       I.amOnPage('');
       I.loginWithSSO(snCredentials.admin1.email, snCredentials.admin1.password);
@@ -50,9 +51,7 @@ Scenario(
 
 Scenario(
   'PMM-T1147 Verify PMM user that is not logged in with SSO can NOT see Tickets for organization @not-ui-pipeline @portalTickets @post-pmm-portal-upgrade',
-  async ({
-    I, organizationTicketsPage, portalAPI,
-  }) => {
+  async ({ I, organizationTicketsPage, portalAPI }) => {
     if (pmmVersion >= 27) {
       const newUser = await portalAPI.getUser();
       const newUserId = await I.createUser(newUser.email, newUser.password);
@@ -63,10 +62,14 @@ Scenario(
       I.dontSeeElement(organizationTicketsPage.elements.ticketsMenuIcon);
       I.amOnPage(organizationTicketsPage.url);
       await I.waitForVisible(organizationTicketsPage.elements.header);
-      await I.waitUntilExists(organizationTicketsPage.elements.ticketTableSpinner);
+      await I.waitForVisible(organizationTicketsPage.elements.notPlatformUser, 30);
       const errorMessage = await I.grabTextFrom(organizationTicketsPage.elements.notPlatformUser);
 
-      assert.equal(errorMessage, organizationTicketsPage.messages.loginWithPercona, 'Text for no tickets displayed does not equal expected text');
+      assert.equal(
+        errorMessage,
+        organizationTicketsPage.messages.loginWithPercona,
+        'Text for no tickets displayed does not equal expected text',
+      );
     } else {
       I.say('This testcase is for PMM version 2.27.0 and higher');
     }
@@ -86,14 +89,19 @@ Scenario(
       await I.amOnPage('');
       await I.loginWithSSO(newUser.email, newUser.password);
       await I.waitInUrl(homePage.landingUrl);
-      I.seeElement(organizationTicketsPage.elements.ticketsMenuIcon);
+      I.waitForVisible(organizationTicketsPage.elements.ticketsMenuIcon);
       I.amOnPage(organizationTicketsPage.url);
       await I.waitForVisible(organizationTicketsPage.elements.header);
-      await I.waitForDetached(organizationTicketsPage.elements.ticketTableSpinner);
-      await I.waitForVisible(locate('h1').withText(organizationTicketsPage.messages.noTicketsFound), 30);
+      await I.waitForVisible(organizationTicketsPage.elements.noDataTable, 30);
+      // Wait needed due to rerender, otherwise test crashes.
+      I.wait(5);
       const errorMessage = await I.grabTextFrom(organizationTicketsPage.elements.noDataTable);
 
-      assert.equal(errorMessage, organizationTicketsPage.messages.noTicketsFound, 'Text for no tickets displayed does not equal expected text');
+      assert.equal(
+        errorMessage,
+        organizationTicketsPage.messages.noTicketsFound,
+        'Text for no tickets displayed does not equal expected text',
+      );
     } else {
       I.say('This testcase is for PMM version 2.27.0 and higher');
     }
@@ -109,15 +117,18 @@ Scenario(
       I.amOnPage('');
       I.loginWithSSO(snCredentials.admin1.email, snCredentials.admin1.password);
       await I.waitInUrl(homePage.landingUrl);
-      I.seeElement(organizationTicketsPage.elements.ticketsMenuIcon);
+      I.waitForVisible(organizationTicketsPage.elements.ticketsMenuIcon);
       await I.mockServer('**/v1/Platform/SearchOrganizationTickets', { tickets: [] });
       I.amOnPage(organizationTicketsPage.url);
       await I.waitForVisible(organizationTicketsPage.elements.header);
-      await I.waitForDetached(organizationTicketsPage.elements.ticketTableSpinner);
-      await I.waitForVisible(locate('h1').withText(organizationTicketsPage.messages.noTicketsFound), 30);
+      await I.waitForVisible(organizationTicketsPage.elements.noDataTable, 30);
       const errorMessage = await I.grabTextFrom(organizationTicketsPage.elements.noDataTable);
 
-      assert.equal(errorMessage, organizationTicketsPage.messages.noTicketsFound, 'Text for no tickets displayed does not equal expected text');
+      assert.equal(
+        errorMessage,
+        organizationTicketsPage.messages.noTicketsFound,
+        'Text for no tickets displayed does not equal expected text',
+      );
     } else {
       I.say('This testcase is for PMM version 2.27.0 and higher');
     }
