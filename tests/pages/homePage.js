@@ -123,9 +123,9 @@ module.exports = {
         // Get upgrade logs from a container
         const upgradeLogs = await I.verifyCommand(`docker exec ${this.pmmServerName} cat /srv/logs/pmm-update-perform.log`);
 
-          milestones.forEach((milestone) => {
-            assert.ok(upgradeLogs.includes(milestone), `Expected to see ${milestone} in upgrade logs`);
-          });  
+        milestones.forEach((milestone) => {
+          assert.ok(upgradeLogs.includes(milestone), `Expected to see ${milestone} in upgrade logs`);
+        });
       }
 
       I.click(locators.reloadButtonAfterUpgrade);
