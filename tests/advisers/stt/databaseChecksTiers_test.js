@@ -1,9 +1,21 @@
 Feature('All Checks Tiers tests');
 
+let pmmVersion;
+
+BeforeSuite(async ({
+  homePage, settingsAPI,
+}) => {
+  pmmVersion = await homePage.getVersions().versionMinor;
+  console.log(pmmVersion);
+  if (pmmVersion < 28) {
+    await settingsAPI.changeSettings({ stt: true });
+  }
+});
+
 Scenario(
   'PMM-T1202 Verify that Advisors reflect on user authority / platform role changes @stt',
   async ({
-    I, pmmSettingsPage, databaseChecksPage, portalAPI, perconaPlatformPage, homePage,
+    I, pmmSettingsPage, databaseChecksPage, portalAPI, perconaPlatformPage, homePage, settingsAPI,
   }) => {
     /* Checks for Anonymous user  */
     await I.Authorize();
@@ -41,6 +53,11 @@ Scenario(
     I.wait(5);
     I.refreshPage();
     /* Checks for Registered user  */
+    if (pmmVersion < 28) {
+      await settingsAPI.changeSettings({ stt: false });
+      await settingsAPI.changeSettings({ stt: true });
+    }
+
     await I.loginWithSSO(freeUser.email, freeUser.password);
     I.waitInUrl(databaseChecksPage.allChecks);
     await I.waitForVisible(databaseChecksPage.elements.allChecksTable);
@@ -59,9 +76,9 @@ Scenario(
     });
 
     await perconaPlatformPage.openPerconaPlatform();
-    await perconaPlatformPage.disconnect();
-    await I.waitInUrl(homePage.landingPage);
+    await perconaPlatformPage.disconnectFromPortal(pmmVersion);
     await I.unAuthorize();
+    await I.waitInUrl(homePage.landingPage);
     const serviceNowUsers = await portalAPI.createServiceNowUsers();
 
     await portalAPI.oktaCreateUser(serviceNowUsers.admin1);
@@ -72,6 +89,11 @@ Scenario(
     I.wait(5);
     I.amOnPage('');
     /* Checks for Paid user  */
+    if (pmmVersion < 28) {
+      await settingsAPI.changeSettings({ stt: false });
+      await settingsAPI.changeSettings({ stt: true });
+    }
+
     await I.loginWithSSO(serviceNowUsers.admin1.email, serviceNowUsers.admin1.password);
     I.waitInUrl(homePage.landingUrl);
     I.amOnPage(databaseChecksPage.allChecks);
@@ -88,7 +110,8 @@ Scenario(
     });
 
     await perconaPlatformPage.openPerconaPlatform();
-    await perconaPlatformPage.disconnect();
+    await perconaPlatformPage.disconnectFromPortal(pmmVersion);
+    await I.unAuthorize();
     await I.waitInUrl(homePage.landingPage);
   },
 );

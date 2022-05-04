@@ -49,22 +49,6 @@ module.exports = {
     I.waitInUrl(this.url);
   },
 
-  async connect(pmmServerName, email, password) {
-    I.fillField(this.fields.pmmServerNameField, pmmServerName);
-    I.fillField(this.fields.emailField, email);
-    I.fillField(this.fields.passwordField, password);
-    I.seeAttributesOnElements(this.buttons.connect, { disabled: null });
-    I.click(this.buttons.connect);
-    I.verifyPopUpMessage(this.messages.connectedSuccess);
-    I.refreshPage();
-    await this.isPMMConnected();
-  },
-
-  async disconnect() {
-    I.click(this.buttons.disconnect);
-    I.click(this.buttons.confirmDisconnect);
-  },
-
   verifyEmailFieldValidation() {
     I.clearField(this.fields.emailField);
 
