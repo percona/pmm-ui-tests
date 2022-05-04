@@ -185,22 +185,19 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T253 Verify user can enable STT if Telemetry is enabled @settings @stt',
+  'PMM-T254 PMM-T253 Verify disable telemetry while Advisers enabled @settings @stt @grafana-pr',
   async ({ I, pmmSettingsPage }) => {
-    const sectionNameToExpand = pmmSettingsPage.sectionTabsList.advanced;
-
-    I.amOnPage(pmmSettingsPage.url);
+    I.amOnPage(pmmSettingsPage.advancedSettingsUrl);
     await pmmSettingsPage.waitForPmmSettingsPageLoaded();
-    await pmmSettingsPage.expandSection(sectionNameToExpand, pmmSettingsPage.fields.advancedButton);
-    await pmmSettingsPage.waitForPmmSettingsPageLoaded();
-    I.click(pmmSettingsPage.fields.sttSwitchSelector);
+    pmmSettingsPage.verifySwitch(pmmSettingsPage.fields.telemetrySwitchSelectorInput, 'on');
     pmmSettingsPage.verifySwitch(pmmSettingsPage.fields.sttSwitchSelectorInput, 'on');
+    I.click(pmmSettingsPage.fields.telemetrySwitchSelector);
+    pmmSettingsPage.verifySwitch(pmmSettingsPage.fields.telemetrySwitchSelectorInput, 'off');
     I.click(pmmSettingsPage.fields.advancedButton);
     I.refreshPage();
     await pmmSettingsPage.waitForPmmSettingsPageLoaded();
-    await pmmSettingsPage.expandSection(sectionNameToExpand, pmmSettingsPage.fields.advancedButton);
-    await pmmSettingsPage.waitForPmmSettingsPageLoaded();
     pmmSettingsPage.verifySwitch(pmmSettingsPage.fields.sttSwitchSelectorInput, 'on');
+    pmmSettingsPage.verifySwitch(pmmSettingsPage.fields.telemetrySwitchSelectorInput, 'off');
   },
 ).retry(2);
 
