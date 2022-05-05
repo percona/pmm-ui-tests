@@ -42,6 +42,13 @@ class Grafana extends Helper {
     Playwright.haveRequestHeaders({});
   }
 
+  async getBrowserCookies() {
+    const { Playwright } = this.helpers;
+    const { browserContext } = Playwright;
+
+    return await browserContext.cookies();
+  }
+
   async getAuth(username = 'admin', password = process.env.ADMIN_PASSWORD) {
     return Buffer.from(`${this.config.username || username}:${this.config.password || password}`).toString(
       'base64',
@@ -189,6 +196,7 @@ class Grafana extends Helper {
 
     return resp.data;
   }
+
   async verifyCommand(command, output, result = 'pass', getError = false) {
     const { stdout, stderr, code } = shell.exec(command.replace(/(\r\n|\n|\r)/gm, ''), { silent: true });
 
