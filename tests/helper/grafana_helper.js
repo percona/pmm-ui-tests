@@ -49,6 +49,15 @@ class Grafana extends Helper {
     return await browserContext.cookies();
   }
 
+  async getBrowserGrafanaSessionCookies() {
+    const { Playwright } = this.helpers;
+    const { browserContext } = Playwright;
+
+    const cookies = await browserContext.cookies();
+
+    return await cookies.find((cookie) => cookie.name === 'grafana_session');
+  }
+
   async getAuth(username = 'admin', password = process.env.ADMIN_PASSWORD) {
     return Buffer.from(`${this.config.username || username}:${this.config.password || password}`).toString(
       'base64',

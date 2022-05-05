@@ -1,15 +1,19 @@
 Feature('All Checks Tiers tests');
 
 let pmmVersion;
+let grafana_session_cookie;
 
 BeforeSuite(async ({
   homePage, settingsAPI,
 }) => {
   pmmVersion = await homePage.getVersions().versionMinor;
-  console.log(pmmVersion);
   if (pmmVersion < 28) {
     await settingsAPI.changeSettings({ stt: true });
   }
+});
+
+AfterSuite(async ({ portalAPI, settingsAPI }) => {
+  await portalAPI.disconnectPMMFromPortal(grafana_session_cookie);
 });
 
 Scenario(
@@ -60,6 +64,7 @@ Scenario(
 
     await I.loginWithSSO(freeUser.email, freeUser.password);
     I.waitInUrl(databaseChecksPage.allChecks);
+    grafana_session_cookie = await I.getBrowserGrafanaSessionCookies();
     await I.waitForVisible(databaseChecksPage.elements.allChecksTable);
 
     databaseChecksPage.checks.anonymous.forEach((check) => {
@@ -75,8 +80,7 @@ Scenario(
       databaseChecksPage.verifyAdvisorCheckIsNotPresent(check);
     });
 
-    await perconaPlatformPage.openPerconaPlatform();
-    await perconaPlatformPage.disconnectFromPortal(pmmVersion);
+    await portalAPI.disconnectPMMFromPortal(grafana_session_cookie);
     await I.unAuthorize();
     await I.waitInUrl(homePage.landingPage);
     const serviceNowUsers = await portalAPI.createServiceNowUsers();
@@ -96,6 +100,7 @@ Scenario(
 
     await I.loginWithSSO(serviceNowUsers.admin1.email, serviceNowUsers.admin1.password);
     I.waitInUrl(homePage.landingUrl);
+    grafana_session_cookie = await I.getBrowserGrafanaSessionCookies();
     I.amOnPage(databaseChecksPage.allChecks);
     await I.waitForVisible(databaseChecksPage.elements.allChecksTable);
 
@@ -109,9 +114,10 @@ Scenario(
       databaseChecksPage.verifyAdvisorCheckExistence(check);
     });
 
-    await perconaPlatformPage.openPerconaPlatform();
-    await perconaPlatformPage.disconnectFromPortal(pmmVersion);
     await I.unAuthorize();
     await I.waitInUrl(homePage.landingPage);
+    if (pmmVersion < 28) {
+      await settingsAPI.changeSettings({ stt: false });
+    }
   },
 );

@@ -6,6 +6,7 @@ let snCredentials = {};
 let adminToken = '';
 let pmmVersion;
 let serviceNowOrg;
+let grafana_session_cookie;
 
 BeforeSuite(async ({
   homePage, portalAPI, settingsAPI, pmmSettingsPage,
@@ -27,6 +28,10 @@ BeforeSuite(async ({
   });
 });
 
+AfterSuite(async ({ portalAPI }) => {
+  await portalAPI.disconnectPMMFromPortal(grafana_session_cookie);
+});
+
 Scenario(
   'PMM-T1132 Verify PMM user logged in using SSO and member of SN account is able to see tickets @portal @post-pmm-portal-upgrade',
   async ({ I, homePage, organizationTicketsPage }) => {
@@ -34,6 +39,7 @@ Scenario(
       I.amOnPage('');
       I.loginWithSSO(snCredentials.admin1.email, snCredentials.admin1.password);
       await I.waitInUrl(homePage.landingUrl);
+      grafana_session_cookie = await I.getBrowserGrafanaSessionCookies();
       I.amOnPage(organizationTicketsPage.url);
       await I.waitForVisible(organizationTicketsPage.elements.header);
       await I.waitForVisible(organizationTicketsPage.elements.ticketTableRows);

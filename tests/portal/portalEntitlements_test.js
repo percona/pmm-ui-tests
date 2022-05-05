@@ -39,9 +39,7 @@ Scenario(
       I.amOnPage('');
       I.loginWithSSO(snCredentials.admin1.email, snCredentials.admin1.password);
       await I.waitInUrl(homePage.landingUrl);
-      const cookies = await I.getBrowserCookies();
-
-      grafana_session_cookie = await cookies.find((cookie) => cookie.name === 'grafana_session');
+      grafana_session_cookie = await I.getBrowserGrafanaSessionCookies();
       I.amOnPage(organizationEntitlementsPage.url);
       await I.waitForVisible(organizationEntitlementsPage.elements.entitlementsMenuIcon);
       await I.waitForVisible(organizationEntitlementsPage.elements.header);
