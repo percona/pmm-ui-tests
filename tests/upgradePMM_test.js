@@ -871,15 +871,6 @@ Scenario(
   },
 );
 
-Scenario(
-  'PMM-T254 ensure Advisors are on by default @post-upgrade @ami-upgrade @pmm-upgrade',
-  async ({ settingsAPI, I }) => {
-    const resp = await settingsAPI.getSettings('stt_enabled');
-
-    assert.ok(resp, `Advisors should be turned on bydefault from 2.28.0 release but found ${resp}`);
-  },
-);
-
 if (versionMinor >= 21) {
   Data(clientDbServices).Scenario(
     'Verify if Agents added with custom password and custom label work as expected Post Upgrade @post-client-upgrade @post-upgrade @pmm-upgrade',
