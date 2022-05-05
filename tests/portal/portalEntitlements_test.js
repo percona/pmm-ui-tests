@@ -71,16 +71,18 @@ Scenario(
       await I.amOnPage('');
       await I.loginWithSSO(newUser.email, newUser.password);
       await I.waitInUrl(homePage.landingUrl);
-      I.dontSeeElement(organizationEntitlementsPage.elements.entitlementsMenuIcon);
+      await I.waitForVisible(organizationEntitlementsPage.elements.entitlementsMenuIcon);
       I.amOnPage(organizationEntitlementsPage.url);
       await I.waitForVisible(organizationEntitlementsPage.elements.header);
-      await I.waitForVisible(organizationEntitlementsPage.elements.notPlatformUser, 30);
-      const errorMessage = await I.grabTextFrom(organizationEntitlementsPage.elements.notPlatformUser);
+      await I.waitForVisible(organizationEntitlementsPage.elements.noDataPage, 30);
+      // Wait needed due to rerender, otherwise test crashes.
+      I.wait(5);
+      const errorMessage = await I.grabTextFrom(organizationEntitlementsPage.elements.noDataPage);
 
       assert.equal(
         errorMessage,
-        organizationEntitlementsPage.messages.loginWithPercona,
-        'Text for no tickets displayed does not equal expected text',
+        organizationEntitlementsPage.messages.noTicketsFound,
+        'Text for no Entitlements displayed does not equal expected text',
       );
     } else {
       I.say('This testcase is for PMM version 2.27.0 and higher');
@@ -100,18 +102,17 @@ Scenario(
       await I.setRole(newUserId, 'Admin');
       await I.Authorize(newUser.email, newUser.password);
       await I.amOnPage('');
-      await I.waitForVisible(organizationEntitlementsPage.elements.entitlementsMenuIcon);
       I.amOnPage(organizationEntitlementsPage.url);
       await I.waitForVisible(organizationEntitlementsPage.elements.header);
-      await I.waitForVisible(organizationEntitlementsPage.elements.noDataPage, 30);
+      await I.waitForVisible(organizationEntitlementsPage.elements.notPlatformUser, 30);
       // Wait needed due to rerender, otherwise test crashes.
       I.wait(5);
       const errorMessage = await I.grabTextFrom(organizationEntitlementsPage.elements.notPlatformUser);
 
       assert.equal(
-        errorMessage,
         organizationEntitlementsPage.messages.loginWithPercona,
-        'Text for no tickets displayed does not equal expected text',
+        errorMessage,
+        'Text for no Entitlements displayed does not equal expected text',
       );
     } else {
       I.say('This testcase is for PMM version 2.27.0 and higher');
