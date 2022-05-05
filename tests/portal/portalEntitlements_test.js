@@ -50,24 +50,27 @@ Scenario(
       await I.waitForVisible(organizationEntitlementsPage.elements.noDataPage, 30);
       // Wait needed due to rerender, otherwise test crashes.
       I.wait(5);
-      pause();
       const errorMessage = await I.grabTextFrom(organizationEntitlementsPage.elements.noDataPage);
     } else {
       I.say('This testcase is for PMM version 2.27.0 and higher');
     }
   },
 );
-/*
+
 Scenario(
   'PMM-T1153 Verify user logged in using SSO and is not a member of SN account is NOT able to see Entitlemets @portal @post-pmm-portal-upgrade',
-  async ({ I, organizationEntitlementsPage, portalAPI }) => {
+  async ({
+    I, organizationEntitlementsPage, portalAPI, homePage,
+  }) => {
     if (pmmVersion >= 27) {
       const newUser = await portalAPI.getUser();
-      const newUserId = await I.createUser(newUser.email, newUser.password);
 
-      await I.setRole(newUserId, 'Admin');
-      await I.Authorize(newUser.email, newUser.password);
+      await portalAPI.oktaCreateUser(newUser);
+      await portalAPI.apiInviteOrgMember(adminToken, serviceNowOrg.id, { username: newUser.email, role: 'Admin' });
+
       await I.amOnPage('');
+      await I.loginWithSSO(newUser.email, newUser.password);
+      await I.waitInUrl(homePage.landingUrl);
       I.dontSeeElement(organizationEntitlementsPage.elements.entitlementsMenuIcon);
       I.amOnPage(organizationEntitlementsPage.url);
       await I.waitForVisible(organizationEntitlementsPage.elements.header);
@@ -92,23 +95,22 @@ Scenario(
   }) => {
     if (pmmVersion >= 27) {
       const newUser = await portalAPI.getUser();
+      const newUserId = await I.createUser(newUser.email, newUser.password);
 
-      await portalAPI.oktaCreateUser(newUser);
-      await portalAPI.apiInviteOrgMember(adminToken, serviceNowOrg.id, { username: newUser.email, role: 'Admin' });
+      await I.setRole(newUserId, 'Admin');
+      await I.Authorize(newUser.email, newUser.password);
       await I.amOnPage('');
-      await I.loginWithSSO(newUser.email, newUser.password);
-      await I.waitInUrl(homePage.landingUrl);
-      I.waitForVisible(organizationEntitlementsPage.elements.entitlementsMenuIcon);
+      await I.waitForVisible(organizationEntitlementsPage.elements.entitlementsMenuIcon);
       I.amOnPage(organizationEntitlementsPage.url);
       await I.waitForVisible(organizationEntitlementsPage.elements.header);
       await I.waitForVisible(organizationEntitlementsPage.elements.noDataPage, 30);
       // Wait needed due to rerender, otherwise test crashes.
       I.wait(5);
-      const errorMessage = await I.grabTextFrom(organizationEntitlementsPage.elements.noDataPage);
+      const errorMessage = await I.grabTextFrom(organizationEntitlementsPage.elements.notPlatformUser);
 
       assert.equal(
         errorMessage,
-        organizationEntitlementsPage.messages.noTicketsFound,
+        organizationEntitlementsPage.messages.loginWithPercona,
         'Text for no tickets displayed does not equal expected text',
       );
     } else {
@@ -116,4 +118,3 @@ Scenario(
     }
   },
 );
-*/
