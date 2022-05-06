@@ -68,14 +68,22 @@ Scenario(
       I.dontSeeElement(organizationTicketsPage.elements.ticketsMenuIcon);
       I.amOnPage(organizationTicketsPage.url);
       await I.waitForVisible(organizationTicketsPage.elements.header);
-      await I.waitForVisible(organizationTicketsPage.elements.notPlatformUser, 30);
-      const errorMessage = await I.grabTextFrom(organizationTicketsPage.elements.notPlatformUser);
+      if (pmmVersion >= 28) {
+        await I.waitForVisible(organizationTicketsPage.elements.notPlatformUser, 30);
+        assert.equal(
+          await I.grabTextFrom(organizationTicketsPage.elements.notPlatformUser),
+          organizationTicketsPage.messages.loginWithPercona,
+          'Text for no tickets displayed does not equal expected text',
+        );
+      } else {
+        await I.waitForVisible(organizationTicketsPage.elements.emptyBlock, 30);
+        const errorMessage = await I.grabTextFrom(organizationTicketsPage.elements.emptyBlock);
 
-      assert.equal(
-        errorMessage,
-        organizationTicketsPage.messages.loginWithPercona,
-        'Text for no tickets displayed does not equal expected text',
-      );
+        assert.ok(
+          errorMessage.includes(organizationTicketsPage.messages.notConnectedToThePortal),
+          'Text for no Entitlements displayed does not equal expected text',
+        );
+      }
     } else {
       I.say('This testcase is for PMM version 2.27.0 and higher');
     }

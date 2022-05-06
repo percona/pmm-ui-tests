@@ -8,14 +8,16 @@ module.exports = {
     tableRow: '//div[@title="Click to expand"]',
     header: '//body//*[contains(text(), "Entitlements")]',
     entitlementsMenuIcon: '//*[contains(@href, "/graph/entitlements")]',
-    notPlatformUser: '$empty-block',
+    notPlatformUser: '$not-platform-user',
     noDataPage: '$page-no-data',
     ticketTableSpinner: '$spinner-wrapper',
+    emptyBlock: '$empty-block',
   },
   fields: {},
   buttons: {},
   messages: {
-    loginWithPercona: 'Not connected to Portal. You can connect in Platform Settings.',
+    loginWithPercona: 'Login with Percona Account to access this content',
+    notConnectedToThePortal: 'Not connected to Portal.',
     noTicketsFound: 'No entitlements found',
   },
 };

@@ -12,11 +12,13 @@ module.exports = {
     notPlatformUser: '$not-platform-user',
     noDataTable: '$table-no-data',
     ticketTableSpinner: '$spinner-wrapper',
+    emptyBlock: '$empty-block',
   },
   fields: {},
   buttons: {},
   messages: {
     loginWithPercona: 'Login with Percona Account to access this content',
+    notConnectedToThePortal: 'Not connected to Portal.',
     noTicketsFound: 'No tickets found',
   },
 };

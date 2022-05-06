@@ -104,16 +104,22 @@ Scenario(
       await I.amOnPage('');
       I.amOnPage(organizationEntitlementsPage.url);
       await I.waitForVisible(organizationEntitlementsPage.elements.header);
-      await I.waitForVisible(organizationEntitlementsPage.elements.notPlatformUser, 30);
-      // Wait needed due to rerender, otherwise test crashes.
-      I.wait(5);
-      const errorMessage = await I.grabTextFrom(organizationEntitlementsPage.elements.notPlatformUser);
+      if (pmmVersion >= 28) {
+        await I.waitForVisible(organizationEntitlementsPage.elements.notPlatformUser, 30);
+        assert.equal(
+          organizationEntitlementsPage.messages.loginWithPercona,
+          await I.grabTextFrom(organizationEntitlementsPage.elements.notPlatformUser),
+          'Text for no Entitlements displayed does not equal expected text',
+        );
+      } else {
+        await I.waitForVisible(organizationEntitlementsPage.elements.emptyBlock, 30);
+        const errorMessage = await I.grabTextFrom(organizationEntitlementsPage.elements.emptyBlock);
 
-      assert.equal(
-        organizationEntitlementsPage.messages.loginWithPercona,
-        errorMessage,
-        'Text for no Entitlements displayed does not equal expected text',
-      );
+        assert.ok(
+          errorMessage.includes(organizationEntitlementsPage.messages.notConnectedToThePortal),
+          'Text for no Entitlements displayed does not equal expected text',
+        );
+      }
     } else {
       I.say('This testcase is for PMM version 2.27.0 and higher');
     }
