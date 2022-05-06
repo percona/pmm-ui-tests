@@ -149,7 +149,7 @@ Scenario('PMM-T728 Verify DB Cluster Tab Page Elements & Steps Background @dbaas
     I.amOnPage(dbaasPage.url);
     dbaasPage.checkCluster(clusterName, false);
     I.click(dbaasPage.tabs.dbClusterTab.dbClusterTab);
-    I.waitForElement(dbaasPage.tabs.dbClusterTab.dbClusterAddButtonTop, 30);
+    I.waitForEnabled(dbaasPage.tabs.dbClusterTab.dbClusterAddButtonTop, 10);
     I.click(dbaasPage.tabs.dbClusterTab.dbClusterAddButtonTop);
     I.waitForElement(dbaasPage.tabs.dbClusterTab.monitoringWarningLocator, 30);
     I.waitForText(dbaasPage.monitoringWarningMessage, 30);
@@ -190,6 +190,7 @@ Scenario('PMM-T456 PMM-T490 Verify DB Cluster Steps Background @dbaas',
     I.click(dbaasPage.tabs.dbClusterTab.dbClusterTab);
     I.waitForVisible(dbaasPage.tabs.dbClusterTab.addDbClusterButton, 60);
     I.dontSeeElement(adminPage.fields.timePickerMenu);
+    I.waitForEnabled(dbaasPage.tabs.dbClusterTab.dbClusterAddButtonTop, 10);
     I.click(dbaasPage.tabs.dbClusterTab.dbClusterAddButtonTop);
     I.waitForElement(dbaasPage.tabs.dbClusterTab.monitoringWarningLocator, 30);
     I.waitForText(dbaasPage.monitoringWarningMessage, 30);
@@ -299,7 +300,7 @@ Data(resourceFields).Scenario('PMM-T828 Verify the Configuration for Small, Medi
 
     await dbaasPage.waitForDbClusterTab(clusterName);
     I.waitForInvisible(dbaasPage.tabs.kubernetesClusterTab.disabledAddButton, 30);
-    I.waitForElement(dbaasPage.tabs.dbClusterTab.dbClusterAddButtonTop, 30);
+    I.waitForEnabled(dbaasPage.tabs.dbClusterTab.dbClusterAddButtonTop, 10);
     I.click(dbaasPage.tabs.dbClusterTab.dbClusterAddButtonTop);
     I.waitForElement(dbaasPage.tabs.dbClusterTab.optionsCountLocator(2), 30);
     I.click(dbaasPage.tabs.dbClusterTab.optionsCountLocator(2));
