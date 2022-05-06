@@ -2,7 +2,7 @@ const { pmmSettingsPage } = inject();
 
 const {
   buttons, elements, fields, url, messages,
-} = pmmSettingsPage.perconaPlatform;
+} = pmmSettingsPage.perconaPlatformUrl;
 
 const email = secret(process.env.PORTAL_USER_EMAIL);
 const password = secret(process.env.PORTAL_USER_PASSWORD);
@@ -51,6 +51,6 @@ Scenario(
 xScenario(
   'PMM-T413 Verify user is able to Connect @platform @settings',
   async () => {
-    await pmmSettingsPage.perconaPlatform.connect('Test name', email, password);
+    await pmmSettingsPage.perconaPlatformUrl.connect('Test name', email, password);
   },
 );

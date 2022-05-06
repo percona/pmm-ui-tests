@@ -8,4 +8,12 @@ module.exports = {
   forgotPassword: 'https://okta.percona.com/signin/forgot-password',
   imageRendererPlugin: 'https://www.percona.com/doc/percona-monitoring-and-management/2.x/how-to/render-dashboard-images.html',
   portalProfile: 'https://platform-dev.percona.com/profile',
+  metricResolutionDocs: 'https://docs.percona.com/percona-monitoring-and-management/how-to/configure.html#server-admin-gui-metrics-resolution',
+  dataRetentionDocs: 'https://docs.percona.com/percona-monitoring-and-management/how-to/configure.html#data-retention',
+  telemetryDocs: 'https://docs.percona.com/percona-monitoring-and-management/how-to/configure.html#telemetry',
+  checkForUpdatesDocs: 'https://docs.percona.com/percona-monitoring-and-management/how-to/configure.html#check-for-updates',
+  backupManagementDocs: 'https://docs.percona.com/percona-monitoring-and-management/how-to/configure.html#backup-management',
+  microsoftAzureMonitoringDocs: 'https://docs.percona.com/percona-monitoring-and-management/how-to/configure.html#microsoft-azure-monitoring',
+  sshKeyDocs: 'https://docs.percona.com/percona-monitoring-and-management/how-to/configure.html#ssh-key-details',
+  prometheusAlertManagerDocs: 'https://docs.percona.com/percona-monitoring-and-management/how-to/configure.html#prometheus-alertmanager-integration',
 };
