@@ -35,7 +35,6 @@ AfterSuite(async ({ portalAPI }) => {
 Scenario(
   'PMM-T1152 Verify PMM user logged in using SSO and member of SN account is able to see tickets @portal @post-pmm-portal-upgrade',
   async ({ I, homePage, organizationEntitlementsPage }) => {
-    I.say(`PMM version is: ${pmmVersion}`);
     if (pmmVersion >= 27 || pmmVersion === undefined) {
       I.amOnPage('');
       I.loginWithSSO(snCredentials.admin1.email, snCredentials.admin1.password);
@@ -106,7 +105,7 @@ Scenario(
       await I.amOnPage('');
       I.amOnPage(organizationEntitlementsPage.url);
       await I.waitForVisible(organizationEntitlementsPage.elements.header);
-      if (pmmVersion >= 28) {
+      if (pmmVersion >= 28 || pmmVersion === undefined) {
         await I.waitForVisible(organizationEntitlementsPage.elements.notPlatformUser, 30);
         assert.equal(
           organizationEntitlementsPage.messages.loginWithPercona,
