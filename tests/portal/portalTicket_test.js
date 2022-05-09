@@ -35,6 +35,7 @@ AfterSuite(async ({ portalAPI }) => {
 Scenario(
   'PMM-T1132 Verify PMM user logged in using SSO and member of SN account is able to see tickets @portal @post-pmm-portal-upgrade',
   async ({ I, homePage, organizationTicketsPage }) => {
+    I.say(`PMM version is: ${pmmVersion}`);
     if (pmmVersion >= 27) {
       I.amOnPage('');
       I.loginWithSSO(snCredentials.admin1.email, snCredentials.admin1.password);

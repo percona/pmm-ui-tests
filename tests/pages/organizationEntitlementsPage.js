@@ -1,5 +1,3 @@
-const { I } = inject();
-
 module.exports = {
   url: 'graph/entitlements',
   elements: {
