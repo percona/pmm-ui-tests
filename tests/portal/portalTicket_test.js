@@ -74,7 +74,7 @@ Scenario(
       I.dontSeeElement(organizationTicketsPage.elements.ticketsMenuIcon);
       I.amOnPage(organizationTicketsPage.url);
       await I.waitForVisible(organizationTicketsPage.elements.header);
-      if (pmmVersion >= 28) {
+      if (pmmVersion >= 28 || pmmVersion === undefined) {
         await I.waitForVisible(organizationTicketsPage.elements.notPlatformUser, 30);
         assert.equal(
           await I.grabTextFrom(organizationTicketsPage.elements.notPlatformUser),
