@@ -35,6 +35,7 @@ AfterSuite(async ({ portalAPI }) => {
 Scenario(
   'PMM-T1152 Verify PMM user logged in using SSO and member of SN account is able to see tickets @portal @post-pmm-portal-upgrade',
   async ({ I, homePage, organizationEntitlementsPage }) => {
+    I.say(`PMM version is: ${pmmVersion}`);
     if (pmmVersion >= 27) {
       I.amOnPage('');
       I.loginWithSSO(snCredentials.admin1.email, snCredentials.admin1.password);
@@ -77,6 +78,7 @@ Scenario(
       await I.waitForVisible(organizationEntitlementsPage.elements.noDataPage, 30);
       // Wait needed due to rerender, otherwise test crashes.
       I.wait(5);
+
       const errorMessage = await I.grabTextFrom(organizationEntitlementsPage.elements.noDataPage);
 
       assert.equal(
