@@ -9,27 +9,33 @@ let serviceNowOrg;
 let grafana_session_cookie;
 
 BeforeSuite(async ({
-  homePage, portalAPI, settingsAPI, pmmSettingsPage,
+  I, homePage, portalAPI, settingsAPI, pmmSettingsPage,
 }) => {
   pmmVersion = await homePage.getVersions().versionMinor;
-  snCredentials = await portalAPI.createServiceNowUsers();
-  await portalAPI.oktaCreateUser(snCredentials.admin1);
-  await portalAPI.oktaCreateUser(snCredentials.admin2);
-  await portalAPI.oktaCreateUser(snCredentials.technical);
-  adminToken = await portalAPI.getUserAccessToken(snCredentials.admin1.email, snCredentials.admin1.password);
-  serviceNowOrg = await portalAPI.apiCreateOrg(adminToken);
+  if (pmmVersion >= 27 || pmmVersion === undefined) {
+    snCredentials = await portalAPI.createServiceNowUsers();
+    await portalAPI.oktaCreateUser(snCredentials.admin1);
+    await portalAPI.oktaCreateUser(snCredentials.admin2);
+    await portalAPI.oktaCreateUser(snCredentials.technical);
+    adminToken = await portalAPI.getUserAccessToken(snCredentials.admin1.email, snCredentials.admin1.password);
+    serviceNowOrg = await portalAPI.apiCreateOrg(adminToken);
 
-  await settingsAPI.changeSettings({ publicAddress: pmmSettingsPage.publicAddress });
-  await portalAPI.connectPMMToPortal(adminToken);
-  await portalAPI.apiInviteOrgMember(adminToken, serviceNowOrg.id, { username: snCredentials.admin2.email, role: 'Admin' });
-  await portalAPI.apiInviteOrgMember(adminToken, serviceNowOrg.id, {
-    username: snCredentials.technical.email,
-    role: 'Technical',
-  });
+    await settingsAPI.changeSettings({ publicAddress: pmmSettingsPage.publicAddress });
+    await portalAPI.connectPMMToPortal(adminToken);
+    await portalAPI.apiInviteOrgMember(adminToken, serviceNowOrg.id, { username: snCredentials.admin2.email, role: 'Admin' });
+    await portalAPI.apiInviteOrgMember(adminToken, serviceNowOrg.id, {
+      username: snCredentials.technical.email,
+      role: 'Technical',
+    });
+  } else {
+    I.say('This test suite is for PMM version 2.27.0 and higher');
+  }
 });
 
 AfterSuite(async ({ portalAPI }) => {
-  await portalAPI.disconnectPMMFromPortal(grafana_session_cookie);
+  if (grafana_session_cookie !== undefined) {
+    await portalAPI.disconnectPMMFromPortal(grafana_session_cookie);
+  }
 });
 
 Scenario(
@@ -125,7 +131,7 @@ Scenario(
 Scenario(
   'PMM-T1149 Verify PMM user logged in using SSO and is a member of SN account is able to see empty list of tickets @portal @post-pmm-portal-upgrade',
   async ({
-    I, organizationTicketsPage, portalAPI, homePage,
+    I, organizationTicketsPage, homePage,
   }) => {
     if (pmmVersion >= 27 || pmmVersion === undefined) {
       I.amOnPage('');

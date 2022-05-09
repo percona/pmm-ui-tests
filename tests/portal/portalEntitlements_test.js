@@ -12,24 +12,28 @@ BeforeSuite(async ({
   homePage, portalAPI, settingsAPI, pmmSettingsPage,
 }) => {
   pmmVersion = await homePage.getVersions().versionMinor;
-  snCredentials = await portalAPI.createServiceNowUsers();
-  await portalAPI.oktaCreateUser(snCredentials.admin1);
-  await portalAPI.oktaCreateUser(snCredentials.admin2);
-  await portalAPI.oktaCreateUser(snCredentials.technical);
-  adminToken = await portalAPI.getUserAccessToken(snCredentials.admin1.email, snCredentials.admin1.password);
-  serviceNowOrg = await portalAPI.apiCreateOrg(adminToken);
+  if (pmmVersion >= 27 || pmmVersion === undefined) {
+    snCredentials = await portalAPI.createServiceNowUsers();
+    await portalAPI.oktaCreateUser(snCredentials.admin1);
+    await portalAPI.oktaCreateUser(snCredentials.admin2);
+    await portalAPI.oktaCreateUser(snCredentials.technical);
+    adminToken = await portalAPI.getUserAccessToken(snCredentials.admin1.email, snCredentials.admin1.password);
+    serviceNowOrg = await portalAPI.apiCreateOrg(adminToken);
 
-  await settingsAPI.changeSettings({ publicAddress: pmmSettingsPage.publicAddress });
-  await portalAPI.connectPMMToPortal(adminToken);
-  await portalAPI.apiInviteOrgMember(adminToken, serviceNowOrg.id, { username: snCredentials.admin2.email, role: 'Admin' });
-  await portalAPI.apiInviteOrgMember(adminToken, serviceNowOrg.id, {
-    username: snCredentials.technical.email,
-    role: 'Technical',
-  });
+    await settingsAPI.changeSettings({ publicAddress: pmmSettingsPage.publicAddress });
+    await portalAPI.connectPMMToPortal(adminToken);
+    await portalAPI.apiInviteOrgMember(adminToken, serviceNowOrg.id, { username: snCredentials.admin2.email, role: 'Admin' });
+    await portalAPI.apiInviteOrgMember(adminToken, serviceNowOrg.id, {
+      username: snCredentials.technical.email,
+      role: 'Technical',
+    });
+  }
 });
 
 AfterSuite(async ({ portalAPI }) => {
-  await portalAPI.disconnectPMMFromPortal(grafana_session_cookie);
+  if (grafana_session_cookie !== undefined) {
+    await portalAPI.disconnectPMMFromPortal(grafana_session_cookie);
+  }
 });
 
 Scenario(
