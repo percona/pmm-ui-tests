@@ -35,6 +35,14 @@ exports.config = {
       username: 'root',
       password: 'root-!@#%^password',
     },
+    PostgresqlDBHelper: {
+      require: './tests/helper/postgresqlDB.js',
+      host: '127.0.0.1',
+      port: 5433,
+      user: 'postgres',
+      password: 'pmm-^*&@agent-password',
+      database: 'postgres',
+    },
     Grafana: {
       require: './tests/helper/grafana_helper.js',
       username: process.env.GRAFANA_USERNAME,

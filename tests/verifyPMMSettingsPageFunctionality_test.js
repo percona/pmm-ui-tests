@@ -1,12 +1,44 @@
 const { pmmSettingsPage } = inject();
-const communicationDefaults = new DataTable(['type', 'serverAddress', 'hello', 'from', 'authType', 'username', 'password', 'url']);
+const communicationDefaults = new DataTable(['type', 'serverAddress', 'hello', 'from', 'authType', 'username', 'password', 'url', 'message']);
 const assert = require('assert');
 
 pmmSettingsPage.communicationData.forEach(({
   type, serverAddress, hello, from, authType, username, password, url,
 }) => {
-  communicationDefaults.add([type, serverAddress, hello, from, authType, username, password, url]);
+  // eslint-disable-next-line max-len
+  communicationDefaults.add([type, serverAddress, hello, from, authType, username, password, url, pmmSettingsPage.messages.successPopUpMessage]);
 });
+
+communicationDefaults.add([
+  pmmSettingsPage.emailDefaults.type,
+  'test.com',
+  pmmSettingsPage.emailDefaults.hello,
+  pmmSettingsPage.emailDefaults.from,
+  pmmSettingsPage.emailDefaults.authType,
+  null,
+  null,
+  null,
+  'Invalid argument: invalid server address, expected format host:port']);
+communicationDefaults.add([
+  pmmSettingsPage.emailDefaults.type,
+  pmmSettingsPage.emailDefaults.serverAddress,
+  '%',
+  pmmSettingsPage.emailDefaults.from,
+  pmmSettingsPage.emailDefaults.authType,
+  null,
+  null,
+  null,
+  'Invalid argument: invalid hello field, expected valid host']);
+communicationDefaults.add([
+  'slack',
+  null,
+  null,
+  null,
+  null,
+  null,
+  null,
+  'invalid@url',
+  'Invalid argument: invalid url value']);
 
 Feature('PMM Settings Functionality').retry(1);
 
@@ -153,22 +185,19 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T253 Verify user can enable STT if Telemetry is enabled @settings @stt',
+  'PMM-T254 PMM-T253 Verify disable telemetry while Advisers enabled @settings @stt @grafana-pr',
   async ({ I, pmmSettingsPage }) => {
-    const sectionNameToExpand = pmmSettingsPage.sectionTabsList.advanced;
-
-    I.amOnPage(pmmSettingsPage.url);
+    I.amOnPage(pmmSettingsPage.advancedSettingsUrl);
     await pmmSettingsPage.waitForPmmSettingsPageLoaded();
-    await pmmSettingsPage.expandSection(sectionNameToExpand, pmmSettingsPage.fields.advancedButton);
-    await pmmSettingsPage.waitForPmmSettingsPageLoaded();
-    I.click(pmmSettingsPage.fields.sttSwitchSelector);
+    pmmSettingsPage.verifySwitch(pmmSettingsPage.fields.telemetrySwitchSelectorInput, 'on');
     pmmSettingsPage.verifySwitch(pmmSettingsPage.fields.sttSwitchSelectorInput, 'on');
+    I.click(pmmSettingsPage.fields.telemetrySwitchSelector);
+    pmmSettingsPage.verifySwitch(pmmSettingsPage.fields.telemetrySwitchSelectorInput, 'off');
     I.click(pmmSettingsPage.fields.advancedButton);
     I.refreshPage();
     await pmmSettingsPage.waitForPmmSettingsPageLoaded();
-    await pmmSettingsPage.expandSection(sectionNameToExpand, pmmSettingsPage.fields.advancedButton);
-    await pmmSettingsPage.waitForPmmSettingsPageLoaded();
     pmmSettingsPage.verifySwitch(pmmSettingsPage.fields.sttSwitchSelectorInput, 'on');
+    pmmSettingsPage.verifySwitch(pmmSettingsPage.fields.telemetrySwitchSelectorInput, 'off');
   },
 ).retry(2);
 
@@ -245,11 +274,12 @@ Scenario('PMM-T785 - Verify DBaaS cannot be disabled with ENABLE_DBAAS or PERCON
     I.click(pmmSettingsPage.fields.dbaasSwitchSelector);
     pmmSettingsPage.verifySwitch(pmmSettingsPage.fields.dbaasSwitchSelectorInput, 'off');
     I.click(pmmSettingsPage.fields.advancedButton);
-    pmmSettingsPage.verifySwitch(pmmSettingsPage.fields.dbaasSwitchSelectorInput, 'on');
+    // skipped until PMM-9982 is fixed
+    // pmmSettingsPage.verifySwitch(pmmSettingsPage.fields.dbaasSwitchSelectorInput, 'on'); 
     I.verifyPopUpMessage(pmmSettingsPage.messages.invalidDBaaSDisableMessage);
   });
 
-Data(communicationDefaults).Scenario('PMM-T534 PMM-T535 - Verify user is able to set up default Email/Slack communication settings @ia @settings @grafana-pr',
+Data(communicationDefaults).Scenario('PMM-T534 PMM-T535 PMM-T1074 - Verify user is able to set up default Email/Slack communication settings / validation @ia @settings @grafana-pr',
   async ({
     I, pmmSettingsPage, settingsAPI, current,
   }) => {
@@ -257,10 +287,12 @@ Data(communicationDefaults).Scenario('PMM-T534 PMM-T535 - Verify user is able to
     I.amOnPage(pmmSettingsPage.communicationSettingsUrl);
     await pmmSettingsPage.waitForPmmSettingsPageLoaded();
     pmmSettingsPage.fillCommunicationFields(current);
-    I.verifyPopUpMessage(pmmSettingsPage.messages.successPopUpMessage);
-    I.refreshPage();
-    await pmmSettingsPage.waitForPmmSettingsPageLoaded();
-    await pmmSettingsPage.verifyCommunicationFields(current);
+    I.verifyPopUpMessage(current.message);
+    if (current === pmmSettingsPage.messages.successPopUpMessage) {
+      I.refreshPage();
+      await pmmSettingsPage.waitForPmmSettingsPageLoaded();
+      await pmmSettingsPage.verifyCommunicationFields(current);
+    }
   });
 
 Scenario(
@@ -349,30 +381,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-9550 Verify downloading server diagnostics logs from Settings @settings',
-  async ({ I, pmmSettingsPage }) => {
-    I.amOnPage(pmmSettingsPage.url);
-    await pmmSettingsPage.waitForPmmSettingsPageLoaded();
-    let path;
-
-    await I.usePlaywrightTo('download', async ({ page }) => {
-      const [download] = await Promise.all([
-        // Start waiting for the download
-        page.waitForEvent('download'),
-        // Perform the action that initiates download
-        page.locator(I.useDataQA('diagnostics-button')).click(),
-      ]);
-
-      // Wait for the download process to complete
-      path = await download.path();
-    });
-
-    await I.seeEntriesInZip(path, ['pmm-agent.yaml', 'pmm-managed.log', 'pmm-agent.log']);
-  },
-);
-
-Scenario(
-  'PMM-T254 ensure Advisors are on by default @settings',
+  'PMM-T254 ensure Advisors are on by default @instances',
   async ({ settingsAPI, I }) => {
     const resp = await settingsAPI.getSettings('stt_enabled');
 

@@ -29,6 +29,7 @@ module.exports = {
     templateAlert: locate('$template-alert').find('pre'),
     durationError: '$duration-field-error-message',
     ruleAdvancedSectionToggle: locate('$alert-rule-advanced-section').find('//*[text()="Advanced details"]'),
+    tooltipMessage: '.popper__background',
   },
   buttons: {
     openAddRuleModal: '$alert-rule-template-add-modal-button',
@@ -51,6 +52,32 @@ module.exports = {
     // toggleAlertRule returns Enable/Disable rule switch locator in alert rules list
     toggleAlertRule: (ruleName) => `${rulesNameCell(ruleName)}/following-sibling::td//input[@data-testid='toggle-alert-rule']/following-sibling::label`,
     toggleInModal: '//input[@data-testid="enabled-toggle-input"]/following-sibling::label',
+  },
+  tooltips: {
+    template: {
+      locator: locate('div').after('$template-field-label'),
+      message: 'The alert template to use for this rule.',
+    },
+    name: {
+      locator: locate('div').after('$name-field-label'),
+      message: 'The name for this rule.',
+    },
+    duration: {
+      locator: locate('div').after('$duration-field-label'),
+      message: 'The alert query duration, in seconds.',
+    },
+    severity: {
+      locator: locate('div').after('$severity-field-label'),
+      message: 'The severity level for the alert triggered by this rule. Either "Warning", "Notice", "High" or "Critical".',
+    },
+    filters: {
+      locator: locate('div').after('$filters-field-label'),
+      message: 'Apply rule only to required services or nodes.',
+    },
+    channels: {
+      locator: locate('div').after('$notificationChannels-field-label'),
+      message: 'Which notification channels should be used to send the alert through.',
+    },
   },
   fields: {
     // searchDropdown returns a locator of a search input for a given label
