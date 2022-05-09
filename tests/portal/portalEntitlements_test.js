@@ -36,7 +36,7 @@ Scenario(
   'PMM-T1152 Verify PMM user logged in using SSO and member of SN account is able to see tickets @portal @post-pmm-portal-upgrade',
   async ({ I, homePage, organizationEntitlementsPage }) => {
     I.say(`PMM version is: ${pmmVersion}`);
-    if (pmmVersion >= 27) {
+    if (pmmVersion >= 27 || pmmVersion === undefined) {
       I.amOnPage('');
       I.loginWithSSO(snCredentials.admin1.email, snCredentials.admin1.password);
       await I.waitInUrl(homePage.landingUrl);
@@ -63,7 +63,7 @@ Scenario(
   async ({
     I, organizationEntitlementsPage, portalAPI, homePage,
   }) => {
-    if (pmmVersion >= 27) {
+    if (pmmVersion >= 27 || pmmVersion === undefined) {
       const newUser = await portalAPI.getUser();
 
       await portalAPI.oktaCreateUser(newUser);
@@ -97,7 +97,7 @@ Scenario(
   async ({
     I, organizationEntitlementsPage, portalAPI, homePage,
   }) => {
-    if (pmmVersion >= 27) {
+    if (pmmVersion >= 27 || pmmVersion === undefined) {
       const newUser = await portalAPI.getUser();
       const newUserId = await I.createUser(newUser.email, newUser.password);
 
