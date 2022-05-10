@@ -81,9 +81,9 @@ module.exports = {
     I.waitForVisible(this.elements.connectedWrapper, 20);
   },
 
-  disconnectFromPortal(version = 28) {
+  disconnectFromPortal(version) {
     I.click(this.fields.platformDisconnectButton);
-    if (version >= 28) {
+    if (version >= 28 || version === undefined) {
       I.waitForText(this.messages.disconnectPMM);
       I.click(this.fields.confirmDisconnectButton);
     } else {

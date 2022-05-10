@@ -103,14 +103,13 @@ Scenario(
     I.say('Also covers: PMM-T1098 Verify login using Percona Platform account');
     I.amOnPage('');
     await I.loginWithSSO(portalCredentials.admin1.email, portalCredentials.admin1.password);
-    I.waitInUrl(homePage.landingUrl);
+    await I.waitInUrl(homePage.landingUrl);
     I.unAuthorize();
     await I.loginWithSSO(portalCredentials.admin2.email, portalCredentials.admin2.password);
-    I.waitInUrl(homePage.landingUrl);
+    await I.waitInUrl(homePage.landingUrl);
     I.unAuthorize();
     await I.loginWithSSO(portalCredentials.technical.email, portalCredentials.technical.password);
-    I.waitInUrl(homePage.landingUrl);
-    I.unAuthorize();
+    await I.waitInUrl(homePage.landingUrl);
   },
 );
 
@@ -148,10 +147,19 @@ Scenario(
   }) => {
     I.amOnPage('');
     I.loginWithSSO(portalCredentials.admin1.email, portalCredentials.admin1.password);
-    I.waitInUrl(homePage.landingUrl);
-    perconaPlatformPage.openPerconaPlatform();
-    perconaPlatformPage.isPMMConnected();
-    perconaPlatformPage.disconnectFromPortal(pmmVersion);
+    await I.waitInUrl(homePage.landingUrl);
+
+    await perconaPlatformPage.openPerconaPlatform();
+    await perconaPlatformPage.isPMMConnected();
+    await perconaPlatformPage.disconnectFromPortal(pmmVersion);
+    if (pmmVersion > 27 || pmmVersion === undefined) {
+      await I.waitInUrl(homePage.landingPage);
+      I.Authorize();
+      await perconaPlatformPage.openPerconaPlatform();
+      await perconaPlatformPage.waitForPerconaPlatformPageLoaded();
+    }
+
+    await I.waitForVisible(perconaPlatformPage.elements.connectForm);
     adminToken = await portalAPI.getUserAccessToken(portalCredentials.admin1.email, portalCredentials.admin1.password);
     perconaPlatformPage.connectToPortal(adminToken, `Test Server ${Date.now()}`);
   },
