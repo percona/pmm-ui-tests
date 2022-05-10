@@ -28,6 +28,30 @@ Scenario(
 );
 
 Scenario(
+  'PMM-T1103 Verify Test Email configuration in Settings @ia',
+  async ({
+    I, settingsAPI, pmmSettingsPage,
+  }) => {
+    const emailAddress = await I.generateNewEmail();
+
+    const { email_alerting_settings: { password } } = await settingsAPI.setEmailAlertingSettings();
+
+    I.amOnPage(pmmSettingsPage.communicationSettingsUrl);
+    await pmmSettingsPage.waitForPmmSettingsPageLoaded();
+
+    I.waitForVisible(pmmSettingsPage.communication.email.testEmail.locator, 5);
+    I.fillField(pmmSettingsPage.communication.email.password.locator, password);
+    I.fillField(pmmSettingsPage.communication.email.testEmail.locator, emailAddress);
+    I.click(locate('button').withText('Test'));
+    I.verifyPopUpMessage('Email sent');
+
+    const message = await I.getLastMessage(emailAddress, 120000);
+
+    await I.seeTextInSubject('Test alert.', message);
+  },
+);
+
+Scenario(
   'PMM-T481 PMM-T619 PMM-T620 PMM-T776 Verify user is able to use tab bar, breadcrumb @ia @grafana-pr',
   async ({
     I, alertRulesPage, ruleTemplatesPage, iaCommon, ncPage,

@@ -40,7 +40,8 @@ Data(sidebar).Scenario(
   },
 );
 
-Scenario(
+// Needs to be removed, Advisors are on by default hence no settings link anymore
+xScenario(
   'PMM-T1051 - Verify PMM Settings page is opened from Home dashboard @menu',
   async ({ I, homePage, pmmSettingsPage }) => {
     await homePage.open();
@@ -53,5 +54,31 @@ Scenario(
     const tabsCount2 = await I.grabNumberOfOpenTabs();
 
     assert.ok(tabsCount1 === tabsCount2, 'Settings page isn\'t opened in the same tab');
+  },
+);
+
+Scenario(
+  'PMM-9550 Verify downloading server diagnostics logs @menu',
+  async ({ I, homePage }) => {
+    await homePage.open();
+    let path;
+
+    I.amOnPage('/');
+    I.moveCursorTo(locate('li').find('a').withAttr({ 'aria-label': 'Help' }));
+    I.waitForElement('//div[contains(text(), \'PMM Logs\')]', 3);
+
+    await I.usePlaywrightTo('download', async ({ page }) => {
+      const [download] = await Promise.all([
+        // Start waiting for the download
+        page.waitForEvent('download'),
+        // Perform the action that initiates download
+        page.locator('//div[contains(text(), \'PMM Logs\')]').click(),
+      ]);
+
+      // Wait for the download process to complete
+      path = await download.path();
+    });
+
+    await I.seeEntriesInZip(path, ['pmm-agent.yaml', 'pmm-managed.log', 'pmm-agent.log']);
   },
 );

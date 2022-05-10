@@ -10,6 +10,7 @@ exports.config = {
       restart: true,
       browser: 'chromium',
       windowSize: '1920x1080',
+      timeout: 20000,
       waitForNavigation: 'networkidle0',
       waitForTimeout: 60000,
       getPageTimeout: 60000,
@@ -35,14 +36,25 @@ exports.config = {
       username: 'root',
       password: 'root-!@#%^password',
     },
+    PostgresqlDBHelper: {
+      require: 'codeceptjs-postgresqlhelper',
+      host: '127.0.0.1',
+      port: 5433,
+      user: 'postgres',
+      password: 'pmm-^*&@agent-password',
+      database: 'postgres',
+    },
     Grafana: {
       require: './tests/helper/grafana_helper.js',
       username: process.env.GRAFANA_USERNAME,
       password: process.env.GRAFANA_PASSWORD,
     },
+    FileHelper: {
+      require: './tests/helper/file_helper.js',
+    },
     REST: {
       endpoint: process.env.PMM_UI_URL || 'http://127.0.0.1/',
-      timeout: 30000,
+      timeout: 60000,
     },
     Mailosaur: {
       require: 'codeceptjs-mailosaurhelper',

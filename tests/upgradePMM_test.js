@@ -257,7 +257,7 @@ if (versionMinor >= 21) {
           break;
         case 'MONGODB_SERVICE':
           output = await I.verifyCommand(
-            `pmm-admin add mongodb --node-id=${node_id} --username=pmm_mongodb --password=secret --pmm-agent-id=${pmm_agent_id} --port=${port} --host=${address} --agent-password=uitests --custom-labels="testing=upgrade" ${upgrade_service}`,
+            `pmm-admin add mongodb --username=pmm_mongodb --password=secret --port=27023 --host=${address} --agent-password=uitests --custom-labels="testing=upgrade" ${upgrade_service}`,
           );
           break;
         default:
@@ -504,17 +504,15 @@ Scenario(
   },
 );
 
-if (versionMinor < 15) {
-  Scenario(
-    'PMM-T268 - Verify Failed check singlestats after upgrade from old versions @post-upgrade @pmm-upgrade',
-    async ({
-      I, homePage,
-    }) => {
-      await homePage.open();
-      I.waitForVisible(homePage.fields.sttDisabledFailedChecksPanelSelector, 15);
-    },
-  );
-}
+Scenario(
+  'PMM-T268 - Verify Failed check singlestats after upgrade from old versions @post-upgrade @pmm-upgrade',
+  async ({
+    I, homePage,
+  }) => {
+    await homePage.open();
+    I.dontSeeElement(homePage.fields.sttDisabledFailedChecksPanelSelector, 15);
+  },
+);
 
 if (versionMinor >= 15) {
   Scenario(

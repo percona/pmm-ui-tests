@@ -11,9 +11,9 @@ module.exports = {
   elements: {
     checkNameCell: (checkName) => locate(checkRow(checkName)).find('td').at(1),
     descriptionCellByName: (checkName) => locate(checkRow(checkName)).find('td').at(2),
-    statusCellByName: (checkName) => locate(checkRow(checkName)).find('td').at(3),
-    intervalCellByName: (checkName) => locate(checkRow(checkName)).find('td').at(4),
-    tableBody: '$db-checks-all-checks-tbody',
+    statusCellByName: (checkName) => locate(checkRow(checkName)).find('td').at(4),
+    intervalCellByName: (checkName) => locate(checkRow(checkName)).find('td').at(5),
+    tableBody: '$table-tbody',
     modalContent: '$modal-content',
   },
   buttons: {
