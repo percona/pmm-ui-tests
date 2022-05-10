@@ -338,6 +338,7 @@ Scenario(
   'PMM-T969 - Verify pmm-client logs when incorrect public address is set @dbaas',
   async ({ I, settingsAPI, dbaasAPI, dbaasPage, dbaasActionsPage }) => {
     const dbClusterName = dbaasPage.randomizeClusterName('dbcluster');
+    const dbType = 'MySQL';
     const address = 'https://1.2.3.4';
     const logsText = `Registering pmm-agent on PMM Server...
 Failed to register pmm-agent on PMM Server: Post "https://https:%2F%2F1.2.3.4/v1/management/Node/Register": dial tcp: lookup ${address}: no such host.
