@@ -36,7 +36,7 @@ exports.config = {
       password: 'root-!@#%^password',
     },
     PostgresqlDBHelper: {
-      require: './tests/helper/postgresqlDB.js',
+      require: 'codeceptjs-postgresqlhelper',
       host: '127.0.0.1',
       port: 5433,
       user: 'postgres',
