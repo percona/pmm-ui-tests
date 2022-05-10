@@ -54,7 +54,6 @@ exports.config = {
     },
     REST: {
       endpoint: process.env.PMM_UI_URL || 'http://127.0.0.1/',
-      timeout: 60000,
     },
     Mailosaur: {
       require: 'codeceptjs-mailosaurhelper',
