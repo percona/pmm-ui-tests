@@ -37,7 +37,7 @@ exports.config = {
       password: 'root-!@#%^password',
     },
     PostgresqlDBHelper: {
-      require: './tests/helper/postgresqlDB.js',
+      require: 'codeceptjs-postgresqlhelper',
       host: '127.0.0.1',
       port: 5433,
       user: 'postgres',
@@ -54,7 +54,7 @@ exports.config = {
     },
     REST: {
       endpoint: process.env.PMM_UI_URL || 'http://127.0.0.1/',
-      timeout: 30000,
+      timeout: 60000,
     },
     Mailosaur: {
       require: 'codeceptjs-mailosaurhelper',
