@@ -22,7 +22,7 @@ module.exports = {
     webhook: {
       name: 'Webhook Channel',
       type: 'Webhook',
-      url: 'https://webhook:8080/echo',
+      url: 'https://webhookd:8080/alert',
     },
   },
   elements: {
