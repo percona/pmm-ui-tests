@@ -332,7 +332,7 @@ if (versionMinor >= 13) {
       const {
         serviceType, name, annotationName,
       } = current;
-      const { node_id, service_name } = await inventoryAPI.apiGetNodeInfoByServiceName(serviceType, name);
+      const { node_id, service_name } = await inventoryAPI.apiGetNodeInfoByServiceName(serviceType, name, 'ssl');
       const nodeName = await inventoryAPI.getNodeName(node_id);
 
       await annotationAPI.setAnnotation(annotationName, 'Upgrade-PMM-T878', nodeName, service_name, 200);
