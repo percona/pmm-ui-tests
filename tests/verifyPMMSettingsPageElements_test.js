@@ -122,27 +122,6 @@ Scenario('PMM-T92 - Verify validation for invalid Alertmanager Rule @settings @g
   I.verifyPopUpMessage(pmmSettingsPage.messages.invalidAlertmanagerRulesMessage);
 });
 
-Scenario(
-  'PMM-T254 Verify validation for STT and Telemetry switches @settings @stt @grafana-pr',
-  async ({ I, pmmSettingsPage, settingsAPI }) => {
-    await settingsAPI.apiDisableSTT();
-    const sectionNameToExpand = pmmSettingsPage.sectionTabsList.advanced;
-
-    await pmmSettingsPage.waitForPmmSettingsPageLoaded();
-    await pmmSettingsPage.expandSection(sectionNameToExpand, pmmSettingsPage.fields.advancedButton);
-    await pmmSettingsPage.disableIA();
-    pmmSettingsPage.verifySwitch(pmmSettingsPage.fields.telemetrySwitchSelectorInput, 'on');
-    pmmSettingsPage.verifySwitch(pmmSettingsPage.fields.sttSwitchSelectorInput, 'off');
-    I.click(pmmSettingsPage.fields.telemetrySwitchSelector);
-    pmmSettingsPage.verifySwitch(pmmSettingsPage.fields.telemetrySwitchSelectorInput, 'off');
-    I.click(pmmSettingsPage.fields.telemetrySwitchSelector);
-    pmmSettingsPage.verifySwitch(pmmSettingsPage.fields.telemetrySwitchSelectorInput, 'on');
-    I.click(pmmSettingsPage.fields.sttSwitchSelector);
-    pmmSettingsPage.verifySwitch(pmmSettingsPage.fields.sttSwitchSelectorInput, 'on');
-    pmmSettingsPage.verifySwitch(pmmSettingsPage.fields.telemetrySwitchSelectorInput, 'on');
-  },
-).retry(2);
-
 // To be removed from Skip after https://jira.percona.com/browse/PMM-5791
 xScenario(
   'PMM-T227 Open PMM Settings page and verify DATA_RETENTION value is set to 2 days @settings',
