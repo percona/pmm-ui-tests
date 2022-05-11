@@ -145,7 +145,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T569 PMM-T1044 PMM-T1045 Verify Alerts on Email and Webhook @ia',
+  'PMM-T551 PMM-T569 PMM-T1044 PMM-T1045 Verify Alerts on Email and Webhook @ia',
   async ({ I, rulesAPI }) => {
     const file = './testdata/ia/scripts/alert.txt';
 
