@@ -38,7 +38,9 @@ AfterSuite(async ({ portalAPI }) => {
 
 Scenario(
   'PMM-T1152 Verify PMM user logged in using SSO and member of SN account is able to see tickets @portal @post-pmm-portal-upgrade',
-  async ({ I, homePage, organizationEntitlementsPage }) => {
+  async ({
+    I, homePage, organizationEntitlementsPage,
+  }) => {
     if (pmmVersion >= 27 || pmmVersion === undefined) {
       I.amOnPage('');
       I.loginWithSSO(snCredentials.admin1.email, snCredentials.admin1.password);
@@ -48,13 +50,22 @@ Scenario(
       await I.waitForVisible(organizationEntitlementsPage.elements.entitlementsMenuIcon);
       await I.waitForVisible(organizationEntitlementsPage.elements.header);
       await I.waitForVisible(organizationEntitlementsPage.elements.tableRow);
+      await I.dontSeeElement(organizationEntitlementsPage.elements.noDataPage);
+
       await I.mockServer('**/v1/Platform/SearchOrganizationEntitlements', { entitlements: [] });
       await I.refreshPage();
       await I.waitForVisible(organizationEntitlementsPage.elements.header);
       await I.waitForVisible(organizationEntitlementsPage.elements.noDataPage, 30);
-      // Wait needed due to rerender, otherwise test crashes.
+      await I.dontSeeElement(organizationEntitlementsPage.elements.tableRow);
+      // Wait needed due to rerender, otherwise test fails.
       I.wait(5);
       const errorMessage = await I.grabTextFrom(organizationEntitlementsPage.elements.noDataPage);
+
+      assert.strictEqual(
+        errorMessage,
+        organizationEntitlementsPage.messages.noTicketsFound,
+        'Text for no Entitlements displayed does not equal expected text',
+      );
     } else {
       I.say('This testcase is for PMM version 2.27.0 and higher');
     }
@@ -79,12 +90,11 @@ Scenario(
       I.amOnPage(organizationEntitlementsPage.url);
       await I.waitForVisible(organizationEntitlementsPage.elements.header);
       await I.waitForVisible(organizationEntitlementsPage.elements.noDataPage, 30);
-      // Wait needed due to rerender, otherwise test crashes.
+      // Wait needed due to rerender, otherwise test fails.
       I.wait(5);
-
       const errorMessage = await I.grabTextFrom(organizationEntitlementsPage.elements.noDataPage);
 
-      assert.equal(
+      assert.strictEqual(
         errorMessage,
         organizationEntitlementsPage.messages.noTicketsFound,
         'Text for no Entitlements displayed does not equal expected text',
@@ -97,9 +107,7 @@ Scenario(
 
 Scenario(
   'PMM-T1154 Verify PMM user that is not logged in with SSO can NOT see Entitlements for organization @portal @post-pmm-portal-upgrade',
-  async ({
-    I, organizationEntitlementsPage, portalAPI, homePage,
-  }) => {
+  async ({ I, organizationEntitlementsPage, portalAPI }) => {
     if (pmmVersion >= 27 || pmmVersion === undefined) {
       const newUser = await portalAPI.getUser();
       const newUserId = await I.createUser(newUser.email, newUser.password);
@@ -111,7 +119,7 @@ Scenario(
       await I.waitForVisible(organizationEntitlementsPage.elements.header);
       if (pmmVersion >= 28 || pmmVersion === undefined) {
         await I.waitForVisible(organizationEntitlementsPage.elements.notPlatformUser, 30);
-        assert.equal(
+        assert.strictEqual(
           organizationEntitlementsPage.messages.loginWithPercona,
           await I.grabTextFrom(organizationEntitlementsPage.elements.notPlatformUser),
           'Text for no Entitlements displayed does not equal expected text',
