@@ -66,10 +66,10 @@ Scenario(
     // PMM-T428 - starting here
     dbaasPage.registerKubernetesCluster(clusterName, process.env.kubeconfig_minikube);
     dbaasPage.seeErrorForAddedCluster(clusterName);
-    // PMM-T431 starting here, unregister cluster using unregister option
-    dbaasPage.unregisterCluster(clusterName);
-    I.waitForText(dbaasPage.deletedAlertMessage, 20);
-    dbaasPage.checkCluster(clusterName, true);
+    // PMM-T431 starting here, unregister cluster using unregister option - skip until PMM-9965 is fixed
+    // dbaasPage.unregisterCluster(clusterName);
+    // I.waitForText(dbaasPage.deletedAlertMessage, 20);
+    // dbaasPage.checkCluster(clusterName, true);
   },
 );
 
@@ -102,7 +102,8 @@ Scenario('PMM-T427 - Verify elements on PMM DBaaS page @dbaas',
 Scenario('PMM-T547 PMM-T548  Verify user is able to view config of registered Kubernetes cluster on Kubernetes Cluster Page, ' +
  'PMM-T1130 - Verify warning about deleting an API key @dbaas',
   async ({ I, dbaasPage, dbaasAPI }) => {
-    await dbaasAPI.apiRegisterCluster(process.env.kubeconfig_minikube, clusterName);
+    // skip until PMM-9965 is fixed
+    // await dbaasAPI.apiRegisterCluster(process.env.kubeconfig_minikube, clusterName);
     I.amOnPage(dbaasPage.url);
     dbaasPage.checkCluster(clusterName, false);
     I.waitForElement(dbaasPage.tabs.kubernetesClusterTab.actionsLocator(clusterName), 30);
@@ -122,7 +123,8 @@ Scenario('PMM-T547 PMM-T548  Verify user is able to view config of registered Ku
     await dbaasAPI.apiUnregisterCluster(clusterName);
   });
 
-Scenario('Verify user is able to add same cluster config with different Name @dbaas',
+// skip until PMM-9965 is fixed
+xScenario('Verify user is able to add same cluster config with different Name @dbaas',
   async ({ I, dbaasPage, dbaasAPI }) => {
     const clusterName1 = 'Kubernetes_Testing_Cluster_1';
     const clusterName2 = 'Kubernetes_Testing_Cluster_2';
