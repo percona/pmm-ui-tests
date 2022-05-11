@@ -28,6 +28,30 @@ Scenario(
 );
 
 Scenario(
+  'PMM-T1103 Verify Test Email configuration in Settings @ia',
+  async ({
+    I, settingsAPI, pmmSettingsPage,
+  }) => {
+    const emailAddress = await I.generateNewEmail();
+
+    const { email_alerting_settings: { password } } = await settingsAPI.setEmailAlertingSettings();
+
+    I.amOnPage(pmmSettingsPage.communicationSettingsUrl);
+    await pmmSettingsPage.waitForPmmSettingsPageLoaded();
+
+    I.waitForVisible(pmmSettingsPage.communication.email.testEmail.locator, 5);
+    I.fillField(pmmSettingsPage.communication.email.password.locator, password);
+    I.fillField(pmmSettingsPage.communication.email.testEmail.locator, emailAddress);
+    I.click(locate('button').withText('Test'));
+    I.verifyPopUpMessage('Email sent');
+
+    const message = await I.getLastMessage(emailAddress, 120000);
+
+    await I.seeTextInSubject('Test alert.', message);
+  },
+);
+
+Scenario(
   'PMM-T481 PMM-T619 PMM-T620 PMM-T776 Verify user is able to use tab bar, breadcrumb @ia @grafana-pr',
   async ({
     I, alertRulesPage, ruleTemplatesPage, iaCommon, ncPage,
@@ -36,11 +60,11 @@ Scenario(
       I.seeInCurrentUrl(`${iaCommon.url}/notification-channels`);
       I.seeElement(ncPage.buttons.openAddChannelModal);
       await iaCommon.verifyTabIsActive(iaCommon.tabNames.notificationChannels);
-      I.seeTextEquals(iaCommon.tabNames.notificationChannels, iaCommon.elements.breadcrumbActive);
+      iaCommon.checkBreadcrumbText(iaCommon.tabNames.notificationChannels, iaCommon.elements.breadcrumbActive);
     };
 
-    const verifyTitle = () => {
-      I.seeTitleEquals('Integrated Alerting - Percona Monitoring and Management');
+    const verifyTitle = (page) => {
+      I.seeTitleEquals(`Integrated Alerting: ${page} - Percona Monitoring and Management`);
     };
 
     I.amOnPage(iaCommon.url);
@@ -48,26 +72,26 @@ Scenario(
     I.waitForVisible(iaCommon.elements.tab(iaCommon.tabNames.alerts));
     I.seeInCurrentUrl(`${iaCommon.url}/alerts`);
     await iaCommon.verifyTabIsActive(iaCommon.tabNames.alerts);
-    verifyTitle();
-    I.seeTextEquals(iaCommon.tabNames.alerts, iaCommon.elements.breadcrumbActive);
+    verifyTitle('Alerts');
+    iaCommon.checkBreadcrumbText(iaCommon.tabNames.alerts, iaCommon.elements.breadcrumbActive);
 
     iaCommon.openTab(iaCommon.tabNames.alertRules);
     I.seeInCurrentUrl(`${iaCommon.url}/alert-rules`);
     I.seeElement(alertRulesPage.buttons.openAddRuleModal);
     await iaCommon.verifyTabIsActive(iaCommon.tabNames.alertRules);
-    verifyTitle();
-    I.seeTextEquals(iaCommon.tabNames.alertRules, iaCommon.elements.breadcrumbActive);
+    verifyTitle('Alert Rules');
+    iaCommon.checkBreadcrumbText(iaCommon.tabNames.alertRules, iaCommon.elements.breadcrumbActive);
 
     iaCommon.openTab(iaCommon.tabNames.ruleTemplates);
     I.seeInCurrentUrl(`${iaCommon.url}/alert-rule-templates`);
     I.seeElement(ruleTemplatesPage.buttons.openAddTemplateModal);
     await iaCommon.verifyTabIsActive(iaCommon.tabNames.ruleTemplates);
-    verifyTitle();
-    I.seeTextEquals(iaCommon.tabNames.ruleTemplates, iaCommon.elements.breadcrumbActive);
+    verifyTitle('Alert Rule Templates');
+    iaCommon.checkBreadcrumbText(iaCommon.tabNames.ruleTemplates, iaCommon.elements.breadcrumbActive);
 
     iaCommon.openTab(iaCommon.tabNames.notificationChannels);
     await verifyNotificationChannelsPage();
-    verifyTitle();
+    verifyTitle('Notification Channels');
     I.refreshPage();
     I.waitForVisible(ncPage.buttons.openAddChannelModal, 30);
     await verifyNotificationChannelsPage();
@@ -75,6 +99,6 @@ Scenario(
     iaCommon.openTab(iaCommon.tabNames.alerts);
     I.seeInCurrentUrl(`${iaCommon.url}/alerts`);
     await iaCommon.verifyTabIsActive(iaCommon.tabNames.alerts);
-    I.seeTextEquals(iaCommon.tabNames.alerts, iaCommon.elements.breadcrumbActive);
+    iaCommon.checkBreadcrumbText(iaCommon.tabNames.alerts, iaCommon.elements.breadcrumbActive);
   },
 );

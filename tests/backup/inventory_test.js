@@ -84,7 +84,7 @@ Scenario(
 ).retry(1);
 
 Scenario(
-  'PMM-T1005 PMM-T1024 Verify create backup modal @backup @bm-mongo',
+  'PMM-T961 PMM-T1005 PMM-T1024 Verify create backup modal @backup @bm-mongo',
   async ({
     I, backupInventoryPage,
   }) => {
@@ -244,7 +244,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T1159 Verify that backup with long backup name is displayed correctly and PMM-T1160 Verify that backup names are limited to 100 chars length',
+  'PMM-T1159 Verify that backup with long backup name is displayed correctly and PMM-T1160 Verify that backup names are limited to 100 chars length @backup',
   async ({
     I, backupInventoryPage,
   }) => {

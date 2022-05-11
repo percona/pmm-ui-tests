@@ -71,14 +71,15 @@ After(async () => {
 Scenario.skip(
   'PMM-T384 Verify that the user does not see an alert again if it has been fixed [critical] @stt @not-ovf',
   async ({
-    securityChecksAPI, databaseChecksPage, psMySql,
+    I, securityChecksAPI, databaseChecksPage, psMySql,
   }) => {
     await prepareFailedCheck();
     await psMySql.setUserPassword();
-
     // Run DB Checks from UI
-    await databaseChecksPage.runDBChecks();
+    I.amOnPage(allChecksPage.url);
+    await allChecksPage.runDBChecks();
 
+    I.amOnPage(databaseChecksPage.url);
     await securityChecksAPI.waitForFailedCheckNonExistance(emptyPasswordSummary, psServiceName);
     // Verify there is no MySQL user empty password failed check
     databaseChecksPage.verifyFailedCheckNotExists(emptyPasswordSummary, serviceId);

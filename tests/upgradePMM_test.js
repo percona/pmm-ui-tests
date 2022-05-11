@@ -23,9 +23,8 @@ const clientDbServices = new DataTable(['serviceType', 'name', 'metric', 'annota
 
 clientDbServices.add(['MYSQL_SERVICE', 'ps_', 'mysql_global_status_max_used_connections', 'annotation-for-mysql', dashboardPage.mysqlInstanceSummaryDashboard.url, 'mysql_upgrade']);
 clientDbServices.add(['POSTGRESQL_SERVICE', 'PGSQL_', 'pg_stat_database_xact_rollback', 'annotation-for-postgres', dashboardPage.postgresqlInstanceSummaryDashboard.url, 'pgsql_upgrade']);
-// temp skip for mongo
 // eslint-disable-next-line max-len
-// clientDbServices.add(['MONGODB_SERVICE', 'mongodb_', 'mongodb_connections', 'annotation-for-mongo', dashboardPage.mongoDbInstanceSummaryDashboard.url, 'mongo_upgrade']);
+clientDbServices.add(['MONGODB_SERVICE', 'mongodb_', 'mongodb_connections', 'annotation-for-mongo', dashboardPage.mongoDbInstanceSummaryDashboard.url, 'mongo_upgrade']);
 
 const connection = psMySql.defaultConnection;
 const psServiceName = 'upgrade-stt-ps-5.7.30';
@@ -204,14 +203,14 @@ if (versionMinor >= 15) {
       // Silence mysql Empty Password failed check
       // I.waitForVisible(failedCheckRowLocator, 30);
 
-      if (versionMinor < 27) {
-        I.click(failedCheckRowLocator.find('button').first());
-      } else {
+      if (versionMinor >= 27) {
         const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName('MYSQL_SERVICE', psServiceName);
+        const { alert_id } = (await securityChecksAPI.getFailedChecks(service_id))
+          .find(({ summary }) => summary === failedCheckMessage);
 
-        databaseChecksPage.openFailedChecksListForService(service_id);
-        I.click(databaseChecksPage.buttons.toggleFailedCheckBySummary(failedCheckMessage));
-        I.seeAttributesOnElements(databaseChecksPage.buttons.toggleFailedCheckBySummary(failedCheckMessage), { title: 'Activate' });
+        await securityChecksAPI.toggleChecksAlert(alert_id);
+      } else {
+        I.click(failedCheckRowLocator.find('button').first());
       }
     },
   );
@@ -225,6 +224,44 @@ if (versionMinor >= 15) {
       await I.verifyCommand(
         'pmm-admin add external --listen-port=42200 --group="redis" --custom-labels="testing=redis" --service-name="redis_external_2"',
       );
+    },
+  );
+}
+
+if (versionMinor >= 21) {
+  Data(clientDbServices).Scenario(
+    'Adding custom agent Password, Custom Label before upgrade At service Level @pre-upgrade @pmm-upgrade',
+    async ({
+      I, inventoryAPI, current,
+    }) => {
+      const {
+        serviceType, name, upgrade_service,
+      } = current;
+      const {
+        service_id, node_id, address, port,
+      } = await inventoryAPI.apiGetNodeInfoByServiceName(serviceType, name);
+
+      const { pmm_agent_id } = await inventoryAPI.apiGetPMMAgentInfoByServiceId(service_id);
+      let output;
+
+      switch (serviceType) {
+        case 'MYSQL_SERVICE':
+          output = await I.verifyCommand(
+            `pmm-admin add mysql --node-id=${node_id} --pmm-agent-id=${pmm_agent_id} --port=${port} --password=ps --host=${address} --query-source=perfschema --agent-password=uitests --custom-labels="testing=upgrade" ${upgrade_service}`,
+          );
+          break;
+        case 'POSTGRESQL_SERVICE':
+          output = await I.verifyCommand(
+            `pmm-admin add postgresql --node-id=${node_id} --pmm-agent-id=${pmm_agent_id} --port=${port} --host=${address} --agent-password=uitests --custom-labels="testing=upgrade" ${upgrade_service}`,
+          );
+          break;
+        case 'MONGODB_SERVICE':
+          output = await I.verifyCommand(
+            `pmm-admin add mongodb --username=pmm_mongodb --password=secret --port=27023 --host=${address} --agent-password=uitests --custom-labels="testing=upgrade" ${upgrade_service}`,
+          );
+          break;
+        default:
+      }
     },
   );
 }
@@ -392,44 +429,6 @@ if (versionMinor >= 23) {
   );
 }
 
-if (versionMinor >= 21) {
-  Data(clientDbServices).Scenario(
-    'Adding custom agent Password, Custom Label before upgrade At service Level @pre-upgrade @pmm-upgrade',
-    async ({
-      I, inventoryAPI, current,
-    }) => {
-      const {
-        serviceType, name, upgrade_service,
-      } = current;
-      const {
-        service_id, node_id, address, port,
-      } = await inventoryAPI.apiGetNodeInfoByServiceName(serviceType, name);
-
-      const { pmm_agent_id } = await inventoryAPI.apiGetPMMAgentInfoByServiceId(service_id);
-      let output;
-
-      switch (serviceType) {
-        case 'MYSQL_SERVICE':
-          output = await I.verifyCommand(
-            `pmm-admin add mysql --node-id=${node_id} --pmm-agent-id=${pmm_agent_id} --port=${port} --password=ps --host=${address} --query-source=perfschema --agent-password=uitests --custom-labels="testing=upgrade" ${upgrade_service}`,
-          );
-          break;
-        case 'POSTGRESQL_SERVICE':
-          output = await I.verifyCommand(
-            `pmm-admin add postgresql --node-id=${node_id} --pmm-agent-id=${pmm_agent_id} --port=${port} --host=${address} --agent-password=uitests --custom-labels="testing=upgrade" ${upgrade_service}`,
-          );
-          break;
-        case 'MONGODB_SERVICE':
-          output = await I.verifyCommand(
-            `pmm-admin add mongodb --node-id=${node_id} --username=pmm_mongodb --password=secret --pmm-agent-id=${pmm_agent_id} --port=${port} --host=${address} --agent-password=uitests --custom-labels="testing=upgrade" ${upgrade_service}`,
-          );
-          break;
-        default:
-      }
-    },
-  );
-}
-
 Scenario(
   'Setup Prometheus Alerting with external Alert Manager via API PMM-Settings @pre-upgrade @pmm-upgrade',
   async ({ settingsAPI }) => {
@@ -505,17 +504,15 @@ Scenario(
   },
 );
 
-if (versionMinor < 15) {
-  Scenario(
-    'PMM-T268 - Verify Failed check singlestats after upgrade from old versions @post-upgrade @pmm-upgrade',
-    async ({
-      I, homePage,
-    }) => {
-      await homePage.open();
-      I.waitForVisible(homePage.fields.sttDisabledFailedChecksPanelSelector, 15);
-    },
-  );
-}
+Scenario(
+  'PMM-T268 - Verify Failed check singlestats after upgrade from old versions @post-upgrade @pmm-upgrade',
+  async ({
+    I, homePage,
+  }) => {
+    await homePage.open();
+    I.dontSeeElement(homePage.fields.sttDisabledFailedChecksPanelSelector, 15);
+  },
+);
 
 if (versionMinor >= 15) {
   Scenario(
@@ -524,7 +521,7 @@ if (versionMinor >= 15) {
       I,
       pmmSettingsPage,
       securityChecksAPI,
-      databaseChecksPage,
+      allChecksPage,
     }) => {
       // Wait for 45 seconds to have latest check results
       I.wait(45);
@@ -533,8 +530,8 @@ if (versionMinor >= 15) {
       I.waitForVisible(pmmSettingsPage.fields.sttSwitchSelector, 30);
       pmmSettingsPage.verifySwitch(pmmSettingsPage.fields.sttSwitchSelectorInput, 'on');
 
-      I.amOnPage(databaseChecksPage.url);
-      I.waitForVisible(databaseChecksPage.buttons.startDBChecks, 30);
+      I.amOnPage(allChecksPage.url);
+      I.waitForVisible(allChecksPage.buttons.startDBChecks, 30);
       // Verify there is failed check
       await securityChecksAPI.verifyFailedCheckExists(failedCheckMessage);
     },

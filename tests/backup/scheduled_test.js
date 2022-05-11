@@ -13,6 +13,11 @@ let locationId;
 let serviceId;
 const mysqlServiceName = 'mysql-with-backup2';
 const mongoServiceName = 'mongo-backup-schedule';
+const scheduleErrors = new DataTable(['mode', 'error']);
+
+scheduleErrors.add(['PITR', 'A scheduled PITR backup can be enabled only if there no other scheduled backups.']);
+scheduleErrors.add(['Full', 'A scheduled snapshot backup can be enabled only if there are no enabled PITR backup.']);
+
 const schedules = new DataTable(['cronExpression', 'name', 'frequency']);
 
 schedules.add(['30 8 * * *', 'schedule daily', 'At 08:30']);
@@ -397,3 +402,27 @@ Scenario(
     backupInventoryPage.verifyBackupSucceeded(scheduleMySql.name);
   },
 );
+
+Data(scheduleErrors).Scenario('PMM-T1031 Verify PITR schedule errors @backup',
+  async ({
+    I, scheduledPage, scheduledAPI, current,
+  }) => {
+    const schedule = {
+      service_id: serviceId,
+      location_id: locationId,
+      name: `test schedule ${current.mode}`,
+      mode: scheduledAPI.backupModes.pitr,
+    };
+
+    await scheduledAPI.createScheduledBackup(schedule);
+    await scheduledPage.openScheduledBackupsPage();
+
+    scheduledPage.openScheduleBackupModal();
+    scheduledPage.selectDropdownOption(scheduledPage.fields.serviceNameDropdown, mongoServiceName);
+    I.fillField(scheduledPage.fields.backupName, schedule.name);
+    scheduledPage.selectDropdownOption(scheduledPage.fields.locationDropdown, location.name);
+    I.click(scheduledPage.buttons.backupTypeSwitch(current.mode));
+    I.click(scheduledPage.buttons.createSchedule);
+
+    I.verifyPopUpMessage(current.error);
+  });
