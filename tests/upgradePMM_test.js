@@ -847,7 +847,7 @@ if (versionMinor >= 13) {
       const { service_name } = await inventoryAPI.apiGetNodeInfoByServiceName(serviceType, name, 'ssl');
       const dashboardUrl = I.buildUrlWithParams(dashboard.split('?')[0], {
         service_name,
-        from: 'now-30m',
+        from: 'now-15m',
       });
 
       I.amOnPage(dashboardUrl);
