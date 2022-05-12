@@ -189,6 +189,7 @@ class Grafana extends Helper {
 
     return resp.data;
   }
+
   async verifyCommand(command, output, result = 'pass', getError = false) {
     const { stdout, stderr, code } = shell.exec(command.replace(/(\r\n|\n|\r)/gm, ''), { silent: true });
 
