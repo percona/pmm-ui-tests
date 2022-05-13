@@ -174,6 +174,24 @@ class MongoDBHelper extends Helper {
 
     return await collections.toArray();
   }
+
+  /**
+   * Creates collections in Bulk in a database
+   * @example
+   * const col = await I.mongoCreateBulkCollection('local', 'e2e');
+   * await col.insertOne({ a: '111' });
+   * await col.find().toArray()
+   * @param dbName
+   * @param collectionNames, array of collection
+   */
+  async mongoCreateBulkCollections(dbName, collectionNames = []) {
+    for (let i = 0; i < collectionNames.length; i++) {
+      await this.client.db(dbName).dropCollection(collectionNames[i]);
+      const col = await this.client.db(dbName).createCollection(collectionNames[i]);
+
+      await col.insertOne({ a: `${dbName}-${collectionNames[i]}` });
+    }
+  }
 }
 
 module.exports = MongoDBHelper;
