@@ -40,18 +40,18 @@ Before(async ({ I }) => {
 Scenario(
   'Adding Load to Postgres test database and verifying PMM-Agent and PG_STAT_MONITOR QAN agent is in running status @not-ui-pipeline @pgsm-pmm-integration',
   async ({ I }) => {
-    await I.pgExecuteQuery('SELECT now();', connection);
+    await I.pgExecuteQueryOnDemand('SELECT now();', connection);
 
-    const output = await I.pgExecuteQuery(`SELECT * FROM pg_database where datname= '${database}';`, connection);
+    const output = await I.pgExecuteQueryOnDemand(`SELECT * FROM pg_database where datname= '${database}';`, connection);
 
     if (output.rows.length === 0) {
-      await I.pgExecuteQuery(`Create database ${database};`, connection);
+      await I.pgExecuteQueryOnDemand(`Create database ${database};`, connection);
     }
 
     connection.database = database;
     const sql = await I.verifyCommand('cat testdata/pgsql/pgsm_load.sql');
 
-    await I.pgExecuteQuery(sql, connection);
+    await I.pgExecuteQueryOnDemand(sql, connection);
     connection.database = 'postgres';
     // wait for pmm-agent to push the execution as part of next bucket to clickhouse
     I.wait(60);
@@ -65,7 +65,7 @@ Scenario(
     const toStart = new Date();
     // using 5 mins as time range hence multiplied 5 min to milliseconds value for
     const fromStart = new Date(toStart - (5 * 60000));
-    const pgsm_output = await I.pgExecuteQuery(`select query, queryid, planid, query_plan, calls, total_exec_time, mean_exec_time  from pg_stat_monitor where datname='${database}';`, connection);
+    const pgsm_output = await I.pgExecuteQueryOnDemand(`select query, queryid, planid, query_plan, calls, total_exec_time, mean_exec_time  from pg_stat_monitor where datname='${database}';`, connection);
 
     for (let i = 0; i < pgsm_output.rows.length; i++) {
       const response = await qanAPI.getMetricByFilterAPI(pgsm_output.rows[i].queryid, 'queryid', labels, fromStart.toISOString(), toStart.toISOString());
