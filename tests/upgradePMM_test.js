@@ -839,7 +839,7 @@ if (versionMinor >= 13) {
   Data(clientDbServices).Scenario(
     'Verify added Annotations at service level, also available post upgrade @ami-upgrade @post-client-upgrade @post-upgrade @pmm-upgrade',
     async ({
-      I, dashboardPage, current, inventoryAPI, adminPage,
+      I, dashboardPage, current, inventoryAPI,
     }) => {
       const {
         serviceType, name, annotationName, dashboard,
