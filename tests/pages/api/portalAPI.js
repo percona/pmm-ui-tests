@@ -22,8 +22,8 @@ module.exports = {
     return {
       name: resp.data.result.account.name,
       id: resp.data.result.account.sys_id,
-      admin1: await this.getUser(resp.data.result.contacts.find(({ email }) => email.startsWith('admin-')).email),
-      admin2: await this.getUser(resp.data.result.contacts.find(({ email }) => email.startsWith('admin2-')).email),
+      admin1: await this.getUser(resp.data.result.contacts.find(({ email }) => email.startsWith('ui_tests_admin-')).email),
+      admin2: await this.getUser(resp.data.result.contacts.find(({ email }) => email.startsWith('ui_tests_admin2-')).email),
       technical: await this.getUser(resp.data.result.contacts.find(({ email }) => email.startsWith('technical-')).email),
     };
   },
