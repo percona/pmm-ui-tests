@@ -104,7 +104,7 @@ module.exports = {
       notificationChannels: menuOption(al, 'Contact points', '/graph/alerting/notifications'),
     }),
   */
-  configuration: new LeftMenu('Configuration', '/graph/datasources',
+  configuration: new LeftMenu('Configuration', '/graph/inventory/services',
     {
       pmmInventory: new SubMenu(co, 'PMM Inventory', '/graph/inventory/services',
         {

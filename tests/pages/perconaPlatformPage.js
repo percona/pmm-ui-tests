@@ -27,6 +27,7 @@ module.exports = {
   buttons: {
     connect: '$connect-button',
     disconnect: '$disconnect-button',
+    confirmDisconnect: locate('button').withAttr({ 'aria-label': 'Confirm Modal Danger Button' }),
   },
   messages: {
     technicalPreview: ' This feature is in Technical Preview stage',
@@ -57,6 +58,11 @@ module.exports = {
     I.verifyPopUpMessage(this.messages.connectedSuccess);
     I.refreshPage();
     await this.isPMMConnected();
+  },
+
+  async disconnect() {
+    I.click(this.buttons.disconnect);
+    I.click(this.buttons.confirmDisconnect);
   },
 
   verifyEmailFieldValidation() {
