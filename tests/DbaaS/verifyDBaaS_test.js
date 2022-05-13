@@ -77,7 +77,7 @@ Scenario(
   'PMM-T427 - Verify submitting blank Add kubernetes cluster form @dbaas',
   async ({ I, dbaasPage }) => {
     I.amOnPage(dbaasPage.url);
-    I.waitForVisible(dbaasPage.tabs.kubernetesClusterTab.addKubernetesClusterButtonInTable, 30);
+    // I.waitForVisible(dbaasPage.tabs.kubernetesClusterTab.addKubernetesClusterButtonInTable, 30); - skip until PMM-9965 is fixed
     I.click(dbaasPage.tabs.kubernetesClusterTab.addKubernetesClusterButton);
     I.seeElement(dbaasPage.tabs.kubernetesClusterTab.disabledAddButton);
     I.click(dbaasPage.tabs.kubernetesClusterTab.kubernetesClusterNameInput);
@@ -96,7 +96,7 @@ Scenario('PMM-T427 - Verify elements on PMM DBaaS page @dbaas',
   async ({ I, dbaasPage }) => {
     I.amOnPage(dbaasPage.url);
     I.waitForVisible(dbaasPage.tabs.kubernetesClusterTab.addKubernetesClusterButton, 30);
-    I.waitForVisible(dbaasPage.tabs.kubernetesClusterTab.addKubernetesClusterButtonInTable, 30);
+    // I.waitForVisible(dbaasPage.tabs.kubernetesClusterTab.addKubernetesClusterButtonInTable, 30); - skip until PMM-9965 is fixed
   });
 
 Scenario('PMM-T547 PMM-T548  Verify user is able to view config of registered Kubernetes cluster on Kubernetes Cluster Page, ' +

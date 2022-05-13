@@ -48,7 +48,7 @@ Before(async ({ I }) => {
 
 Data(versionVerification).Scenario('PMM-T760 Verify Manage Components Versions @dbaas',
   async ({
-    I, dbaasPage, dbaasAPI, dbaasManageVersionPage, current,
+    I, dbaasPage, dbaasManageVersionPage, current,
   }) => {
     const {
       component, operatorVersion, componentName, dbType,
@@ -73,7 +73,7 @@ Data(versionVerification).Scenario('PMM-T760 Verify Manage Components Versions @
 
 Scenario('PMM-T765 Verify Manage Components Versions @dbaas',
   async ({
-    I, dbaasPage, dbaasAPI, dbaasManageVersionPage,
+    I, dbaasPage, dbaasManageVersionPage,
   }) => {
     I.amOnPage(dbaasPage.url);
     dbaasPage.checkCluster(clusterName, false);
