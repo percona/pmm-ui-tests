@@ -332,7 +332,7 @@ if (versionMinor >= 13) {
       const {
         serviceType, name, annotationName,
       } = current;
-      const { node_id, service_name } = await inventoryAPI.apiGetNodeInfoByServiceName(serviceType, name);
+      const { node_id, service_name } = await inventoryAPI.apiGetNodeInfoByServiceName(serviceType, name, 'ssl');
       const nodeName = await inventoryAPI.getNodeName(node_id);
 
       await annotationAPI.setAnnotation(annotationName, 'Upgrade-PMM-T878', nodeName, service_name, 200);
@@ -839,20 +839,19 @@ if (versionMinor >= 13) {
   Data(clientDbServices).Scenario(
     'Verify added Annotations at service level, also available post upgrade @ami-upgrade @post-client-upgrade @post-upgrade @pmm-upgrade',
     async ({
-      I, dashboardPage, current, inventoryAPI, adminPage,
+      I, dashboardPage, current, inventoryAPI,
     }) => {
       const {
         serviceType, name, annotationName, dashboard,
       } = current;
-      const timeRange = 'Last 30 minutes';
+      const { service_name } = await inventoryAPI.apiGetNodeInfoByServiceName(serviceType, name, 'ssl');
+      const dashboardUrl = I.buildUrlWithParams(dashboard.split('?')[0], {
+        service_name,
+        from: 'now-15m',
+      });
 
-      I.amOnPage(dashboard);
+      I.amOnPage(dashboardUrl);
       dashboardPage.waitForDashboardOpened();
-      await adminPage.applyTimeRange(timeRange);
-      const { service_name } = await inventoryAPI.apiGetNodeInfoByServiceName(serviceType, name);
-
-      await dashboardPage.applyFilter('Service Name', service_name);
-
       dashboardPage.verifyAnnotationsLoaded(annotationName);
       I.seeElement(dashboardPage.annotationText(annotationName), 10);
     },
