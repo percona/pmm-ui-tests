@@ -31,7 +31,6 @@ Scenario(
 
       await portalAPI.apiInviteOrgMember(adminToken, org.id, { username: portalCredentials.admin2.email, role: 'Admin' });
       await portalAPI.apiInviteOrgMember(adminToken, org.id, { username: portalCredentials.technical.email, role: 'Technical' });
-      await portalAPI.apiDeleteOrg(org.id, adminToken);
       await I.writeFileSync(fileName, JSON.stringify(portalCredentials), true);
     }
   },
@@ -191,9 +190,9 @@ Scenario(
 Scenario(
   'Perform cleanup after PMM upgrade @portal @not-ui-pipeline @post-pmm-portal-upgrade',
   async ({ portalAPI }) => {
-    portalAPI.oktaDeleteUserByEmail(portalCredentials.admin1.email);
-    portalAPI.oktaDeleteUserByEmail(portalCredentials.admin2.email);
-    portalAPI.oktaDeleteUserByEmail(portalCredentials.technical.email);
-    portalAPI.apiDeleteOrg(org.id, adminToken);
+    await portalAPI.apiDeleteOrg(org.id, adminToken);
+    await portalAPI.oktaDeleteUserByEmail(portalCredentials.admin1.email);
+    await portalAPI.oktaDeleteUserByEmail(portalCredentials.admin2.email);
+    await portalAPI.oktaDeleteUserByEmail(portalCredentials.technical.email);
   },
 );

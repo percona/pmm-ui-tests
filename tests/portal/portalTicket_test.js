@@ -36,6 +36,11 @@ AfterSuite(async ({ portalAPI }) => {
   if (grafana_session_cookie !== undefined) {
     await portalAPI.disconnectPMMFromPortal(grafana_session_cookie);
   }
+
+  await portalAPI.apiDeleteOrg(serviceNowOrg.id, adminToken);
+  await portalAPI.oktaDeleteUserByEmail(snCredentials.admin1.email);
+  await portalAPI.oktaDeleteUserByEmail(snCredentials.admin2.email);
+  await portalAPI.oktaDeleteUserByEmail(snCredentials.technical.email);
 });
 
 Scenario(
