@@ -22,9 +22,9 @@ module.exports = {
     return {
       name: resp.data.result.account.name,
       id: resp.data.result.account.sys_id,
-      admin1: await this.getUser(resp.data.result.contacts.find(({ email }) => email.startsWith('admin-')).email),
-      admin2: await this.getUser(resp.data.result.contacts.find(({ email }) => email.startsWith('admin2-')).email),
-      technical: await this.getUser(resp.data.result.contacts.find(({ email }) => email.startsWith('technical-')).email),
+      admin1: await this.getUser(resp.data.result.contacts.find(({ email }) => email.startsWith('ui_tests_admin-')).email),
+      admin2: await this.getUser(resp.data.result.contacts.find(({ email }) => email.startsWith('ui_tests_admin2-')).email),
+      technical: await this.getUser(resp.data.result.contacts.find(({ email }) => email.startsWith('ui_tests_technical-')).email),
     };
   },
 
@@ -135,6 +135,16 @@ module.exports = {
     const resp = await I.sendPostRequest('v1/Platform/Connect', body, headers);
 
     assert.ok(resp.status === 200, `Failed to connect PMM to the Portal. Response message is "${resp.data.message}"`);
+
+    return resp.data;
+  },
+
+  async disconnectPMMFromPortal(grafana_session_cookie) {
+    const headers = { Cookie: `${grafana_session_cookie.name}=${grafana_session_cookie.value}` };
+
+    const resp = await I.sendPostRequest('v1/Platform/Disconnect', {}, headers);
+
+    assert.ok(resp.status === 200, `Failed to disconnect PMM from the Portal. Response message is "${resp.data.message}"`);
 
     return resp.data;
   },
