@@ -138,4 +138,14 @@ module.exports = {
 
     return resp.data;
   },
+
+  async disconnectPMMFromPortal(grafana_session_cookie) {
+    const headers = { Cookie: `${grafana_session_cookie.name}=${grafana_session_cookie.value}` };
+
+    const resp = await I.sendPostRequest('v1/Platform/Disconnect', {}, headers);
+
+    assert.ok(resp.status === 200, `Failed to disconnect PMM from the Portal. Response message is "${resp.data.message}"`);
+
+    return resp.data;
+  },
 };
