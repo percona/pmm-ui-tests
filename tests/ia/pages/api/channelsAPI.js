@@ -23,7 +23,7 @@ module.exports = {
       case this.types.pagerDuty.type:
         body = {
           ...body,
-          pagerduty_config: {
+          pagerduty_config: values || {
             routing_key: this.types.pagerDuty.key,
           },
         };
@@ -37,7 +37,7 @@ module.exports = {
         };
         break;
       case this.types.webhook.type:
-        webhook_config = this.createWebhookNotificationBody(values);
+        webhook_config = this.createWebhookNotificationBody(values || {});
 
         body = {
           ...body,
@@ -110,7 +110,7 @@ module.exports = {
         case 'url':
           webhook_config = {
             ...webhook_config,
-              url: value,
+            url: value,
           };
           break;
         case 'send_resolved':

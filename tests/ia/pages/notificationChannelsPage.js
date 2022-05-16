@@ -148,6 +148,9 @@ module.exports = {
       case this.types.slack.type:
         I.appendField(this.fields.slackChannelInput, suffix);
         break;
+      case this.types.webhook.type:
+        I.appendField(this.fields.webhookUrlInput, suffix);
+        break;
       default:
         assert.ok(false, `Did not find a matching notification channel type ${type}`);
     }

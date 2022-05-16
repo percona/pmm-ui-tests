@@ -5,6 +5,7 @@ const { ncPage } = inject();
 let ruleIdForAlerts;
 let ruleIdForNotificationsCheck;
 let webhookChannelId;
+let pagerDutyChannelId;
 let testEmail;
 const ruleNameForEmailCheck = 'Rule with BUILT_IN template (email, webhook)';
 const ruleName = 'PSQL immortal rule';
@@ -78,9 +79,17 @@ BeforeSuite(async ({
     },
   );
 
+  pagerDutyChannelId = await channelsAPI.createNotificationChannel(
+    'PD channel',
+    ncPage.types.pagerDuty.type,
+    {
+      service_key: process.env.PAGER_DUTY_SERVICE_KEY,
+    },
+  );
+
   ruleIdForNotificationsCheck = await rulesAPI.createAlertRule({
     ruleName: ruleNameForEmailCheck,
-    channels: [channelId, webhookChannelId],
+    channels: [channelId, webhookChannelId, pagerDutyChannelId],
   });
 
   // Wait for all alerts to appear
@@ -145,8 +154,8 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T551 PMM-T569 PMM-T1044 PMM-T1045 Verify Alerts on Email and Webhook @ia',
-  async ({ I, rulesAPI }) => {
+  'PMM-T551 PMM-T569 PMM-T1044 PMM-T1045 PMM-T568 Verify Alerts on Email, Webhook and Pager Duty @ia',
+  async ({ I, rulesAPI, alertsAPI }) => {
     const file = './testdata/ia/scripts/alert.txt';
 
     // Get message from the inbox
@@ -161,6 +170,9 @@ Scenario(
     I.seeInThisFile(ruleNameForEmailCheck);
     I.seeInThisFile(ruleIdForNotificationsCheck);
     I.seeInThisFile(webhookChannelId);
+
+    // Pager Duty notification check
+    await alertsAPI.verifyAlertInPagerDuty(ruleIdForNotificationsCheck);
 
     await rulesAPI.removeAlertRule(ruleIdForNotificationsCheck);
   },
