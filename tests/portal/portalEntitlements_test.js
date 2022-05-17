@@ -34,10 +34,15 @@ AfterSuite(async ({ portalAPI }) => {
   if (grafana_session_cookie !== undefined) {
     await portalAPI.disconnectPMMFromPortal(grafana_session_cookie);
   }
+
+  await portalAPI.apiDeleteOrg(serviceNowOrg.id, adminToken);
+  await portalAPI.oktaDeleteUserByEmail(snCredentials.admin1.email);
+  await portalAPI.oktaDeleteUserByEmail(snCredentials.admin2.email);
+  await portalAPI.oktaDeleteUserByEmail(snCredentials.technical.email);
 });
 
 Scenario(
-  'PMM-T1152 Verify PMM user logged in using SSO and member of SN account is able to see tickets @portal @post-pmm-portal-upgrade',
+  'PMM-T1152 Verify user logged in using SSO and is a member of SN account is able to see Entitlemets @portal @post-pmm-portal-upgrade',
   async ({
     I, homePage, organizationEntitlementsPage,
   }) => {

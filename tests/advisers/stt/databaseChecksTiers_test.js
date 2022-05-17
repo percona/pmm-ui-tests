@@ -2,6 +2,12 @@ Feature('All Checks Tiers tests');
 
 let pmmVersion;
 let grafana_session_cookie;
+let freeUser;
+let freeUserToken;
+let freUserOrg;
+let adminToken;
+let serviceNowUsers;
+let customerOrg;
 
 BeforeSuite(async ({
   homePage, settingsAPI,
@@ -12,8 +18,23 @@ BeforeSuite(async ({
   }
 });
 
-AfterSuite(async ({ portalAPI, settingsAPI }) => {
+AfterSuite(async ({ portalAPI }) => {
   await portalAPI.disconnectPMMFromPortal(grafana_session_cookie);
+  if (serviceNowUsers) {
+    portalAPI.oktaDeleteUserByEmail(serviceNowUsers.admin1.email);
+  }
+
+  if (customerOrg) {
+    portalAPI.apiDeleteOrg(customerOrg.id, adminToken);
+  }
+
+  if (freeUser) {
+    portalAPI.oktaDeleteUserByEmail(freeUser.email);
+  }
+
+  if (customerOrg) {
+    portalAPI.apiDeleteOrg(freUserOrg.id, freeUserToken);
+  }
 });
 
 Scenario(
@@ -46,12 +67,12 @@ Scenario(
     databaseChecksPage.checks.paid.forEach((check) => {
       databaseChecksPage.verifyAdvisorCheckIsNotPresent(check);
     });
-    const freeUser = await portalAPI.getUser();
+    freeUser = await portalAPI.getUser();
 
     await portalAPI.oktaCreateUser(freeUser);
-    const freeUserToken = await portalAPI.getUserAccessToken(freeUser.email, freeUser.password);
+    freeUserToken = await portalAPI.getUserAccessToken(freeUser.email, freeUser.password);
 
-    await portalAPI.apiCreateOrg(freeUserToken);
+    freUserOrg = await portalAPI.apiCreateOrg(freeUserToken);
     await portalAPI.connectPMMToPortal(freeUserToken);
     await I.unAuthorize();
     I.wait(5);
@@ -83,12 +104,12 @@ Scenario(
     await portalAPI.disconnectPMMFromPortal(grafana_session_cookie);
     await I.unAuthorize();
     await I.waitInUrl(homePage.landingPage);
-    const serviceNowUsers = await portalAPI.createServiceNowUsers();
+    serviceNowUsers = await portalAPI.createServiceNowUsers();
 
     await portalAPI.oktaCreateUser(serviceNowUsers.admin1);
-    const adminToken = await portalAPI.getUserAccessToken(serviceNowUsers.admin1.email, serviceNowUsers.admin1.password);
+    adminToken = await portalAPI.getUserAccessToken(serviceNowUsers.admin1.email, serviceNowUsers.admin1.password);
 
-    await portalAPI.apiCreateOrg(adminToken);
+    customerOrg = await portalAPI.apiCreateOrg(adminToken);
     await portalAPI.connectPMMToPortal(adminToken);
     I.wait(5);
     I.amOnPage('');
