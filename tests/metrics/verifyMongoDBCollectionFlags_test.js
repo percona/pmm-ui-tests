@@ -119,8 +119,6 @@ Scenario(
     const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName('MONGODB_SERVICE', mongodb_service_name);
     const agentInfo = await inventoryAPI.apiGetPMMAgentInfoByServiceId(service_id);
 
-    console.log(agentInfo);
-
     // assert dbstats and topmetrics collectors are enabled
     // eslint-disable-next-line no-prototype-builtins
     assert.ok(agentInfo.hasOwnProperty('enable_all_collectors'), `Was expecting Mongo Exporter for service ${mongodb_service_name} to have "enable_all_collectors" property`);
