@@ -1,9 +1,46 @@
 Feature('All Checks Tiers tests');
 
+let pmmVersion;
+let grafana_session_cookie;
+let freeUser;
+let freeUserToken;
+let freUserOrg;
+let adminToken;
+let serviceNowUsers;
+let customerOrg;
+
+BeforeSuite(async ({
+  homePage, settingsAPI,
+}) => {
+  pmmVersion = await homePage.getVersions().versionMinor;
+  if (pmmVersion < 28) {
+    await settingsAPI.changeSettings({ stt: true });
+  }
+});
+
+AfterSuite(async ({ portalAPI }) => {
+  await portalAPI.disconnectPMMFromPortal(grafana_session_cookie);
+  if (serviceNowUsers) {
+    portalAPI.oktaDeleteUserByEmail(serviceNowUsers.admin1.email);
+  }
+
+  if (customerOrg) {
+    portalAPI.apiDeleteOrg(customerOrg.id, adminToken);
+  }
+
+  if (freeUser) {
+    portalAPI.oktaDeleteUserByEmail(freeUser.email);
+  }
+
+  if (customerOrg) {
+    portalAPI.apiDeleteOrg(freUserOrg.id, freeUserToken);
+  }
+});
+
 Scenario(
   'PMM-T1202 Verify that Advisors reflect on user authority / platform role changes @stt',
   async ({
-    I, pmmSettingsPage, databaseChecksPage, portalAPI, perconaPlatformPage, homePage,
+    I, pmmSettingsPage, databaseChecksPage, portalAPI, perconaPlatformPage, homePage, settingsAPI,
   }) => {
     /* Checks for Anonymous user  */
     await I.Authorize();
@@ -30,19 +67,25 @@ Scenario(
     databaseChecksPage.checks.paid.forEach((check) => {
       databaseChecksPage.verifyAdvisorCheckIsNotPresent(check);
     });
-    const freeUser = await portalAPI.getUser();
+    freeUser = await portalAPI.getUser();
 
     await portalAPI.oktaCreateUser(freeUser);
-    const freeUserToken = await portalAPI.getUserAccessToken(freeUser.email, freeUser.password);
+    freeUserToken = await portalAPI.getUserAccessToken(freeUser.email, freeUser.password);
 
-    await portalAPI.apiCreateOrg(freeUserToken);
+    freUserOrg = await portalAPI.apiCreateOrg(freeUserToken);
     await portalAPI.connectPMMToPortal(freeUserToken);
     await I.unAuthorize();
     I.wait(5);
     I.refreshPage();
     /* Checks for Registered user  */
+    if (pmmVersion < 28) {
+      await settingsAPI.changeSettings({ stt: false });
+      await settingsAPI.changeSettings({ stt: true });
+    }
+
     await I.loginWithSSO(freeUser.email, freeUser.password);
     I.waitInUrl(databaseChecksPage.allChecks);
+    grafana_session_cookie = await I.getBrowserGrafanaSessionCookies();
     await I.waitForVisible(databaseChecksPage.elements.allChecksTable);
 
     databaseChecksPage.checks.anonymous.forEach((check) => {
@@ -58,22 +101,27 @@ Scenario(
       databaseChecksPage.verifyAdvisorCheckIsNotPresent(check);
     });
 
-    await perconaPlatformPage.openPerconaPlatform();
-    await perconaPlatformPage.disconnect();
-    await I.waitInUrl(homePage.landingPage);
+    await portalAPI.disconnectPMMFromPortal(grafana_session_cookie);
     await I.unAuthorize();
-    const serviceNowUsers = await portalAPI.createServiceNowUsers();
+    await I.waitInUrl(homePage.landingPage);
+    serviceNowUsers = await portalAPI.createServiceNowUsers();
 
     await portalAPI.oktaCreateUser(serviceNowUsers.admin1);
-    const adminToken = await portalAPI.getUserAccessToken(serviceNowUsers.admin1.email, serviceNowUsers.admin1.password);
+    adminToken = await portalAPI.getUserAccessToken(serviceNowUsers.admin1.email, serviceNowUsers.admin1.password);
 
-    await portalAPI.apiCreateOrg(adminToken);
+    customerOrg = await portalAPI.apiCreateOrg(adminToken);
     await portalAPI.connectPMMToPortal(adminToken);
     I.wait(5);
     I.amOnPage('');
     /* Checks for Paid user  */
+    if (pmmVersion < 28) {
+      await settingsAPI.changeSettings({ stt: false });
+      await settingsAPI.changeSettings({ stt: true });
+    }
+
     await I.loginWithSSO(serviceNowUsers.admin1.email, serviceNowUsers.admin1.password);
     I.waitInUrl(homePage.landingUrl);
+    grafana_session_cookie = await I.getBrowserGrafanaSessionCookies();
     I.amOnPage(databaseChecksPage.allChecks);
     await I.waitForVisible(databaseChecksPage.elements.allChecksTable);
 
@@ -87,8 +135,10 @@ Scenario(
       databaseChecksPage.verifyAdvisorCheckExistence(check);
     });
 
-    await perconaPlatformPage.openPerconaPlatform();
-    await perconaPlatformPage.disconnect();
+    await I.unAuthorize();
     await I.waitInUrl(homePage.landingPage);
+    if (pmmVersion < 28) {
+      await settingsAPI.changeSettings({ stt: false });
+    }
   },
 );

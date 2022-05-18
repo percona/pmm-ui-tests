@@ -1,11 +1,16 @@
 const assert = require('assert');
-const portalAPI = require('../pages/api/portalAPI');
 
 Feature('Portal Integration with PMM');
 
 const fileName = 'portalCredentials';
 let portalCredentials = {};
 let adminToken = '';
+let org = {};
+let pmmVersion;
+
+BeforeSuite(async ({ homePage }) => {
+  pmmVersion = await homePage.getVersions().versionMinor;
+});
 
 Scenario(
   'Prepare credentials for PMM-Portal upgrade @not-ui-pipeline @pre-pmm-portal-upgrade @portal @post-pmm-portal-upgrade',
@@ -22,10 +27,10 @@ Scenario(
       await portalAPI.oktaCreateUser(portalCredentials.admin2);
       await portalAPI.oktaCreateUser(portalCredentials.technical);
       adminToken = await portalAPI.getUserAccessToken(portalCredentials.admin1.email, portalCredentials.admin1.password);
-      const orgResp = await portalAPI.apiCreateOrg(adminToken);
+      org = await portalAPI.apiCreateOrg(adminToken);
 
-      await portalAPI.apiInviteOrgMember(adminToken, orgResp.id, { username: portalCredentials.admin2.email, role: 'Admin' });
-      await portalAPI.apiInviteOrgMember(adminToken, orgResp.id, { username: portalCredentials.technical.email, role: 'Technical' });
+      await portalAPI.apiInviteOrgMember(adminToken, org.id, { username: portalCredentials.admin2.email, role: 'Admin' });
+      await portalAPI.apiInviteOrgMember(adminToken, org.id, { username: portalCredentials.technical.email, role: 'Technical' });
       await I.writeFileSync(fileName, JSON.stringify(portalCredentials), true);
     }
   },
@@ -98,14 +103,13 @@ Scenario(
     I.say('Also covers: PMM-T1098 Verify login using Percona Platform account');
     I.amOnPage('');
     await I.loginWithSSO(portalCredentials.admin1.email, portalCredentials.admin1.password);
-    I.waitInUrl(homePage.landingUrl);
+    await I.waitInUrl(homePage.landingUrl);
     I.unAuthorize();
     await I.loginWithSSO(portalCredentials.admin2.email, portalCredentials.admin2.password);
-    I.waitInUrl(homePage.landingUrl);
+    await I.waitInUrl(homePage.landingUrl);
     I.unAuthorize();
     await I.loginWithSSO(portalCredentials.technical.email, portalCredentials.technical.password);
-    I.waitInUrl(homePage.landingUrl);
-    I.unAuthorize();
+    await I.waitInUrl(homePage.landingUrl);
   },
 );
 
@@ -139,14 +143,23 @@ Scenario(
 Scenario(
   'Verify PMM is connected and user can disconnect an reconnect PMM server to the Portal @not-ui-pipeline @post-pmm-portal-upgrade',
   async ({
-    I, perconaPlatformPage, homePage,
+    I, perconaPlatformPage, homePage, portalAPI,
   }) => {
     I.amOnPage('');
     I.loginWithSSO(portalCredentials.admin1.email, portalCredentials.admin1.password);
-    I.waitInUrl(homePage.landingUrl);
-    perconaPlatformPage.openPerconaPlatform();
-    perconaPlatformPage.isPMMConnected();
-    perconaPlatformPage.disconnectFromPortal();
+    await I.waitInUrl(homePage.landingUrl);
+
+    await perconaPlatformPage.openPerconaPlatform();
+    await perconaPlatformPage.isPMMConnected();
+    await perconaPlatformPage.disconnectFromPortal(pmmVersion);
+    if (pmmVersion > 27 || pmmVersion === undefined) {
+      await I.waitInUrl(homePage.landingPage);
+      I.Authorize();
+      await perconaPlatformPage.openPerconaPlatform();
+      await perconaPlatformPage.waitForPerconaPlatformPageLoaded();
+    }
+
+    await I.waitForVisible(perconaPlatformPage.elements.connectForm);
     adminToken = await portalAPI.getUserAccessToken(portalCredentials.admin1.email, portalCredentials.admin1.password);
     perconaPlatformPage.connectToPortal(adminToken, `Test Server ${Date.now()}`);
   },
@@ -163,12 +176,23 @@ Scenario(
 
     I.waitInUrl(homePage.landingUrl);
     I.amOnPage(perconaPlatformPage.url);
-    await perconaPlatformPage.disconnectFromPortal();
+    await perconaPlatformPage.disconnectFromPortal(pmmVersion);
+    I.unAuthorize();
     I.waitInUrl('graph/login', 10);
     I.dontSeeElement(locate('a').withAttr({ href: 'login/generic_oauth' }));
     I.amOnPage(homePage.genericOauthUrl);
     I.seeElement(locate('div').withText('OAuth not enabled'));
     I.amOnPage('');
     I.seeElement(locate('h1').withText('Percona Monitoring and Management'));
+  },
+);
+
+Scenario(
+  'Perform cleanup after PMM upgrade @portal @not-ui-pipeline @post-pmm-portal-upgrade',
+  async ({ portalAPI }) => {
+    await portalAPI.apiDeleteOrg(org.id, adminToken);
+    await portalAPI.oktaDeleteUserByEmail(portalCredentials.admin1.email);
+    await portalAPI.oktaDeleteUserByEmail(portalCredentials.admin2.email);
+    await portalAPI.oktaDeleteUserByEmail(portalCredentials.technical.email);
   },
 );
