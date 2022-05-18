@@ -583,21 +583,10 @@ module.exports = {
     /* there are tooltip without "Read more" link */
     if (tooltipObj.link) {
       I.seeAttributesOnElements(this.fields.tooltipReadMoreLink, { href: tooltipObj.link });
-    }
-  },
+      const moreInfoUrl = (await I.grabAttributeFrom(this.fields.tooltipReadMoreLink, 'href'));
+      const response = await I.sendGetRequest(moreInfoUrl);
 
-  /**
-   * Encapsulates Tooltip data verification.
-   * There could be only one tooltip popup on a page.
-   *
-   * @param   subPageUrl        url of subpage
-   * @param   tooltipObjArray   array of {@link pmmSettingsPage.tooltips} or objects with similar structure
-   * @returns {Promise<void>}   requires await in test body.
-   */
-  async verifyTooltipOnSubPage(subPageUrl, tooltipObjArray) {
-    I.amOnPage(subPageUrl);
-    for (const tooltipObject of Object.values(tooltipObjArray)) {
-      await this.verifyTooltip(tooltipObject);
+      assert.equal(response.status, 200);
     }
   },
 

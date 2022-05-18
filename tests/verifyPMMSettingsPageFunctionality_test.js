@@ -384,31 +384,41 @@ Scenario(
 );
 
 Scenario(
-  'Test scenario @testtest',
+  'PMM-T1227 - Verify tooltip "Read more" links on PMM Settings page redirect to working pages @settings',
   async ({ I, pmmSettingsPage, settingsAPI }) => {
-    await pmmSettingsPage.verifyTooltipOnSubPage(
-      pmmSettingsPage.metricsResolutionUrl,
-      pmmSettingsPage.tooltips.metricsResolution,
-    );
-    await pmmSettingsPage.verifyTooltipOnSubPage(
-      pmmSettingsPage.advancedSettingsUrl,
-      pmmSettingsPage.tooltips.advancedSettings,
-    );
-    await pmmSettingsPage.verifyTooltipOnSubPage(
-      pmmSettingsPage.sshKeyUrl,
-      pmmSettingsPage.tooltips.sshKey,
-    );
-    await pmmSettingsPage.verifyTooltipOnSubPage(
-      pmmSettingsPage.alertManagerIntegrationUrl,
-      pmmSettingsPage.tooltips.alertManagerIntegration,
-    );
-    await pmmSettingsPage.verifyTooltipOnSubPage(
-      pmmSettingsPage.perconaPlatformUrl,
-      pmmSettingsPage.tooltips.perconaPlatform,
-    );
-    await pmmSettingsPage.verifyTooltipOnSubPage(
-      pmmSettingsPage.communicationSettingsUrl,
-      pmmSettingsPage.tooltips.communication,
-    );
+    await settingsAPI.changeSettings({ alerting: true });
+    const subPageTooltips = [
+      {
+        subPage: pmmSettingsPage.metricsResolutionUrl,
+        tooltips: pmmSettingsPage.tooltips.metricsResolution,
+      },
+      {
+        subPage: pmmSettingsPage.advancedSettingsUrl,
+        tooltips: pmmSettingsPage.tooltips.advancedSettings,
+      },
+      {
+        subPage: pmmSettingsPage.sshKeyUrl,
+        tooltips: pmmSettingsPage.tooltips.sshKey,
+      },
+      {
+        subPage: pmmSettingsPage.alertManagerIntegrationUrl,
+        tooltips: pmmSettingsPage.tooltips.alertManagerIntegration,
+      },
+      {
+        subPage: pmmSettingsPage.perconaPlatformUrl,
+        tooltips: pmmSettingsPage.tooltips.perconaPlatform,
+      },
+      {
+        subPage: pmmSettingsPage.communicationSettingsUrl,
+        tooltips: pmmSettingsPage.tooltips.communication,
+      },
+    ];
+
+    for (const subPageTooltipObject of Object.values(subPageTooltips)) {
+      I.amOnPage(subPageTooltipObject.subPage);
+      for (const tooltipObject of Object.values(subPageTooltipObject.tooltips)) {
+        await pmmSettingsPage.verifyTooltip(tooltipObject);
+      }
+    }
   },
 );
