@@ -176,6 +176,20 @@ class MongoDBHelper extends Helper {
   }
 
   /**
+   * Drop collections if they already exist in the DB, use this for Data reset
+   * @param dbname
+   * @param col
+   * @returns {Promise<void>}
+   */
+  async dropCollectionIfExist(dbname, col) {
+    const collections = (await this.mongoShowCollections(dbname)).map((collection) => collection.name);
+
+    if (collections.indexOf(col) !== -1) {
+      await this.client.db(dbname).dropCollection(col);
+    }
+  }
+
+  /**
    * Creates collections in Bulk in a database
    * @example
    * const col = await I.mongoCreateBulkCollection('local', 'e2e');
@@ -186,7 +200,8 @@ class MongoDBHelper extends Helper {
    */
   async mongoCreateBulkCollections(dbName, collectionNames = []) {
     for (let i = 0; i < collectionNames.length; i++) {
-      await this.client.db(dbName).dropCollection(collectionNames[i]);
+      await this.dropCollectionIfExist(dbName, collectionNames[i]);
+
       const col = await this.client.db(dbName).createCollection(collectionNames[i]);
 
       await col.insertOne({ a: `${dbName}-${collectionNames[i]}` });
