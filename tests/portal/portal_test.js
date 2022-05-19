@@ -1,11 +1,11 @@
 const assert = require('assert');
-const portalAPI = require('../pages/api/portalAPI');
 
 Feature('Portal Integration with PMM');
 
 const fileName = 'portalCredentials';
 let portalCredentials = {};
 let adminToken = '';
+let org = {};
 let pmmVersion;
 
 BeforeSuite(async ({ homePage }) => {
@@ -27,10 +27,10 @@ Scenario(
       await portalAPI.oktaCreateUser(portalCredentials.admin2);
       await portalAPI.oktaCreateUser(portalCredentials.technical);
       adminToken = await portalAPI.getUserAccessToken(portalCredentials.admin1.email, portalCredentials.admin1.password);
-      const orgResp = await portalAPI.apiCreateOrg(adminToken);
+      org = await portalAPI.apiCreateOrg(adminToken);
 
-      await portalAPI.apiInviteOrgMember(adminToken, orgResp.id, { username: portalCredentials.admin2.email, role: 'Admin' });
-      await portalAPI.apiInviteOrgMember(adminToken, orgResp.id, { username: portalCredentials.technical.email, role: 'Technical' });
+      await portalAPI.apiInviteOrgMember(adminToken, org.id, { username: portalCredentials.admin2.email, role: 'Admin' });
+      await portalAPI.apiInviteOrgMember(adminToken, org.id, { username: portalCredentials.technical.email, role: 'Technical' });
       await I.writeFileSync(fileName, JSON.stringify(portalCredentials), true);
     }
   },
@@ -143,7 +143,7 @@ Scenario(
 Scenario(
   'Verify PMM is connected and user can disconnect an reconnect PMM server to the Portal @not-ui-pipeline @post-pmm-portal-upgrade',
   async ({
-    I, perconaPlatformPage, homePage,
+    I, perconaPlatformPage, homePage, portalAPI,
   }) => {
     I.amOnPage('');
     I.loginWithSSO(portalCredentials.admin1.email, portalCredentials.admin1.password);
@@ -184,5 +184,15 @@ Scenario(
     I.seeElement(locate('div').withText('OAuth not enabled'));
     I.amOnPage('');
     I.seeElement(locate('h1').withText('Percona Monitoring and Management'));
+  },
+);
+
+Scenario(
+  'Perform cleanup after PMM upgrade @portal @not-ui-pipeline @post-pmm-portal-upgrade',
+  async ({ portalAPI }) => {
+    await portalAPI.apiDeleteOrg(org.id, adminToken);
+    await portalAPI.oktaDeleteUserByEmail(portalCredentials.admin1.email);
+    await portalAPI.oktaDeleteUserByEmail(portalCredentials.admin2.email);
+    await portalAPI.oktaDeleteUserByEmail(portalCredentials.technical.email);
   },
 );
