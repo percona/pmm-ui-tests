@@ -6,7 +6,8 @@ const collectionNames = ['col1', 'col2', 'col3', 'col4', 'col5'];
 const dbNames = ['db1', 'db2', 'db3', 'db4'];
 const connection = {
   host: '127.0.0.1',
-  port: '27019',
+  // eslint-disable-next-line no-inline-comments
+  port: '27023', // This is the port used by --addclient=modb,1 and docker-compose setup on a CI/CD
   username: 'mongoadmin',
   password: 'secret',
 };
@@ -26,6 +27,9 @@ const metrics = {
 };
 
 BeforeSuite(async ({ I }) => {
+  const port = await I.verifyCommand('pmm-admin list | grep mongodb_node_1 | awk -F " " \'{print $3}\' | awk -F ":" \'{print $2}\'');
+
+  connection.port = port;
   await I.mongoConnect(connection);
   for (let i = 0; i < dbNames.length; i++) {
     await I.mongoCreateBulkCollections(dbNames[i], collectionNames);
