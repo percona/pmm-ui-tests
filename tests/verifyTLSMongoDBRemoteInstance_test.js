@@ -20,7 +20,7 @@ BeforeSuite(async ({ I, codeceptjsConfig }) => {
   await I.verifyCommand(`${pmmFrameworkLoader} --mo-version=5.0 --setup-mongodb-ssl --pmm2`);
 });
 
-AfterSuite(async ({ I, perconaServerDB }) => {
+AfterSuite(async ({ I }) => {
   await I.verifyCommand('docker stop mongodb_4.4 || docker rm mongodb_4.4');
   await I.verifyCommand('docker stop mongodb_4.2 || docker rm mongodb_4.2');
   await I.verifyCommand('docker stop mongodb_4.0 || docker rm mongodb_4.0');
