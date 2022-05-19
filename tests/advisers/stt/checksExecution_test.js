@@ -71,7 +71,7 @@ After(async () => {
 Scenario.skip(
   'PMM-T384 Verify that the user does not see an alert again if it has been fixed [critical] @stt @not-ovf',
   async ({
-    I, securityChecksAPI, databaseChecksPage, psMySql,
+    I, securityChecksAPI, databaseChecksPage, psMySql, allChecksPage,
   }) => {
     await prepareFailedCheck();
     await psMySql.setUserPassword();
