@@ -190,7 +190,9 @@ Scenario(
 Scenario(
   'Perform cleanup after PMM upgrade @portal @not-ui-pipeline @post-pmm-portal-upgrade',
   async ({ portalAPI }) => {
-    await portalAPI.apiDeleteOrg(org.id, adminToken);
+    const orgResponse = await portalAPI.apiGetOrg(adminToken);
+
+    await portalAPI.apiDeleteOrg(orgResponse[0].id, adminToken);
     await portalAPI.oktaDeleteUserByEmail(portalCredentials.admin1.email);
     await portalAPI.oktaDeleteUserByEmail(portalCredentials.admin2.email);
     await portalAPI.oktaDeleteUserByEmail(portalCredentials.technical.email);
