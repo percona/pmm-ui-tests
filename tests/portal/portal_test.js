@@ -28,7 +28,6 @@ Scenario(
       await portalAPI.oktaCreateUser(portalCredentials.technical);
       adminToken = await portalAPI.getUserAccessToken(portalCredentials.admin1.email, portalCredentials.admin1.password);
       org = await portalAPI.apiCreateOrg(adminToken);
-      I.say(portalCredentials.admin1.email);
 
       await portalAPI.apiInviteOrgMember(adminToken, org.id, { username: portalCredentials.admin2.email, role: 'Admin' });
       await portalAPI.apiInviteOrgMember(adminToken, org.id, { username: portalCredentials.technical.email, role: 'Technical' });
