@@ -88,7 +88,7 @@ Scenario(
     backupInventoryPage.startRestore(backupName);
     restorePage.waitForRestoreSuccess(backupName);
 
-    psMySql.connectToPS(mysqlCredentials);
+    await psMySql.asyncConnectToPS(mysqlCredentials);
     const tableExists = await psMySql.isTableExists(tableName);
 
     I.assertFalse(tableExists, `Table "${tableName}" is expected to be absent after restore backup operation`);
@@ -128,7 +128,7 @@ Scenario(
 Scenario(
   'PMM-T810 Verify user can restore MySQL backup from a scheduled backup @bm-mysql',
   async ({
-    I, backupInventoryPage, scheduledAPI, backupAPI, restorePage,
+    I, backupInventoryPage, scheduledAPI, backupAPI, restorePage, psMySql,
   }) => {
     // Every 2 mins schedule
     const schedule = {
@@ -158,7 +158,7 @@ Scenario(
     backupInventoryPage.startRestore(schedule.name);
     restorePage.waitForRestoreSuccess(schedule.name);
 
-    psMySql.connectToPS(mysqlCredentials);
+    await psMySql.asyncConnectToPS(mysqlCredentials);
     const tableExists = await psMySql.isTableExists(tableName);
 
     I.assertFalse(tableExists, `Table "${tableName}" is expected to be absent after restore backup operation`);

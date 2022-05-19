@@ -1,4 +1,5 @@
 const mysql = require('mysql2');
+const { I } = inject();
 
 let c;
 
@@ -28,7 +29,6 @@ module.exports = {
     const {
       host, port, username, password,
     } = connection;
-
     c = mysql.createConnection({
       host,
       port,
@@ -38,8 +38,35 @@ module.exports = {
     });
   },
 
+  /**
+   * async connection constructor for reconnections to mySQL inside the tests.
+   * I.say() is mandatory in the constructor to fix the execution sequence.
+   *
+   * @param   connection        connection details object, see: {@link #defaultConnection}
+   * @returns {Promise<void>}   should be called with await
+   */
+  async asyncConnectToPS(connection = this.defaultConnection) {
+    const {
+      host, port, username, password,
+    } = connection;
+    await I.say('Connecting to MySQL');
+    c = mysql.createConnection({
+      host,
+      port,
+      user: username,
+      password,
+      database: 'mysql',
+    });
+  },
+
+  /**
+   * I.say() is mandatory to fix the execution sequence.
+   *
+   * @returns {Promise<void>}   should be called with await
+   */
   async disconnectFromPS() {
-    await c.destroy();
+    c.destroy();
+    await I.say('Disconnected from mySQL');
   },
 
   async dropUser(username = 'empty-user') {
@@ -67,12 +94,13 @@ module.exports = {
   },
 
   async isTableExists(name) {
+    await I.say(`SHOW TABLES LIKE '${name}'`);
     return new Promise((resolve, reject) => {
       c.query(`SHOW TABLES LIKE '${name}'`, (error, results) => {
         if (error) {
           reject(error);
         } else {
-          console.log(results);
+          I.say(JSON.stringify(results, null, 2));
           resolve(results.length > 0);
         }
       });
