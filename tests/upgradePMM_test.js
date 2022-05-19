@@ -538,7 +538,7 @@ if (versionMinor >= 15) {
   );
 
   Scenario(
-    'Verify Redis as external Service Works After Upgrade @post-upgrade @pmm-upgrade',
+    'Verify Redis as external Service Works After Upgrade @post-upgrade @post-client-upgrade @pmm-upgrade',
     async ({
       I, grafanaAPI, remoteInstancesHelper,
     }) => {
@@ -659,7 +659,7 @@ if (iaReleased) {
 }
 
 Scenario(
-  'Verify Agents are RUNNING after Upgrade (API) [critical] @post-upgrade @ami-upgrade @pmm-upgrade',
+  'Verify Agents are RUNNING after Upgrade (API) [critical] @post-upgrade @post-client-upgrade @ami-upgrade @pmm-upgrade',
   async ({ inventoryAPI }) => {
     for (const service of Object.values(remoteInstancesHelper.serviceTypes)) {
       if (service) {
@@ -713,7 +713,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T424 Verify PT Summary Panel is available after Upgrade @post-upgrade @ami-upgrade @pmm-upgrade',
+  'PMM-T424 Verify PT Summary Panel is available after Upgrade @post-upgrade @ami-upgrade @post-client-upgrade @pmm-upgrade',
   async ({ I, dashboardPage }) => {
     const filter = 'Node Name';
 
@@ -728,7 +728,7 @@ Scenario(
 );
 
 Scenario(
-  'Verify Agents are RUNNING after Upgrade (UI) [critical] @ami-upgrade @post-upgrade @pmm-upgrade',
+  'Verify Agents are RUNNING after Upgrade (UI) [critical] @ami-upgrade @post-upgrade @post-client-upgrade @pmm-upgrade',
   async ({ I, pmmInventoryPage }) => {
     for (const service of Object.values(remoteInstancesHelper.upgradeServiceNames)) {
       if (service) {
@@ -740,7 +740,7 @@ Scenario(
 );
 
 Scenario(
-  'Verify Agents are Running and Metrics are being collected Post Upgrade (UI) [critical] @ami-upgrade @post-upgrade @pmm-upgrade',
+  'Verify Agents are Running and Metrics are being collected Post Upgrade (UI) [critical] @ami-upgrade @post-client-upgrade @post-upgrade @pmm-upgrade',
   async ({ grafanaAPI }) => {
     const metrics = Object.keys(remoteInstancesHelper.upgradeServiceMetricNames);
 
@@ -757,7 +757,7 @@ Scenario(
 );
 
 Data(clientDbServices).Scenario(
-  'Check Metrics for Client Nodes [critical] @post-client-upgrade  @ami-upgrade @post-upgrade @pmm-upgrade',
+  'Check Metrics for Client Nodes [critical] @post-client-upgrade  @ami-upgrade @post-upgrade @post-client-upgrade @pmm-upgrade',
   async ({
     inventoryAPI, grafanaAPI, current,
   }) => {
@@ -770,7 +770,7 @@ Data(clientDbServices).Scenario(
 );
 
 Scenario(
-  'Verify QAN has specific filters for Remote Instances after Upgrade (UI) @ami-upgrade @post-upgrade @pmm-upgrade',
+  'Verify QAN has specific filters for Remote Instances after Upgrade (UI) @ami-upgrade @post-client-upgrade @post-upgrade @pmm-upgrade',
   async ({
     I, qanPage, qanFilters, qanOverview,
   }) => {
@@ -847,7 +847,7 @@ if (versionMinor >= 13) {
       const { service_name } = await inventoryAPI.apiGetNodeInfoByServiceName(serviceType, name, 'ssl');
       const dashboardUrl = I.buildUrlWithParams(dashboard.split('?')[0], {
         service_name,
-        from: 'now-15m',
+        from: 'now-30m',
       });
 
       I.amOnPage(dashboardUrl);
