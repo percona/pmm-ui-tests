@@ -15,7 +15,7 @@ BeforeSuite(async ({ I, codeceptjsConfig }) => {
   await I.verifyCommand(`${pmmFrameworkLoader} --ps-version=8.0 --setup-mysql-ssl --pmm2`);
 });
 
-AfterSuite(async ({ I, perconaServerDB }) => {
+AfterSuite(async ({ I }) => {
   await I.verifyCommand('docker stop mysql_5.7 || docker rm mysql_5.7');
   await I.verifyCommand('docker stop mysql_8.0 || docker rm mysql_8.0');
 });

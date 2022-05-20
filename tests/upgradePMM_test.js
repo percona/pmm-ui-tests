@@ -3,7 +3,7 @@ const faker = require('faker');
 const { generate } = require('generate-password');
 
 const {
-  adminPage, remoteInstancesHelper, perconaServerDB, pmmSettingsPage, dashboardPage, databaseChecksPage,
+  adminPage, remoteInstancesHelper, psMySql, pmmSettingsPage, dashboardPage, databaseChecksPage,
 } = inject();
 
 const pathToPMMFramework = adminPage.pathToPMMTests;
@@ -26,7 +26,7 @@ clientDbServices.add(['POSTGRESQL_SERVICE', 'PGSQL_', 'pg_stat_database_xact_rol
 // eslint-disable-next-line max-len
 clientDbServices.add(['MONGODB_SERVICE', 'mongodb_', 'mongodb_connections', 'annotation-for-mongo', dashboardPage.mongoDbInstanceSummaryDashboard.url, 'mongo_upgrade']);
 
-const connection = perconaServerDB.defaultConnection;
+const connection = psMySql.defaultConnection;
 const psServiceName = 'upgrade-stt-ps-5.7.30';
 const failedCheckRowLocator = databaseChecksPage.elements
   .failedCheckRowByServiceName(psServiceName);
@@ -67,12 +67,12 @@ BeforeSuite(async ({ I, codeceptjsConfig }) => {
   if (process.env.AMI_UPGRADE_TESTING_INSTANCE !== 'true') {
     const mysqlComposeConnection = {
       host: (process.env.AMI_UPGRADE_TESTING_INSTANCE === 'true' ? process.env.VM_CLIENT_IP : '127.0.0.1'),
-      port: (process.env.AMI_UPGRADE_TESTING_INSTANCE === 'true' ? remoteInstancesHelper.remote_instance.mysql.ps_5_7.port : connection.port),
+      port: (process.env.AMI_UPGRADE_TESTING_INSTANCE === 'true' ? remoteInstancesHelper.remote_instance.mysql.ps_5_7.port : '3309'),
       username: connection.username,
       password: connection.password,
     };
 
-    perconaServerDB.connectToPS(mysqlComposeConnection);
+    psMySql.connectToPS(mysqlComposeConnection);
 
     // Connect to MongoDB
     const mongoConnection = {
@@ -86,8 +86,8 @@ BeforeSuite(async ({ I, codeceptjsConfig }) => {
   }
 });
 
-AfterSuite(async ({ I, perconaServerDB }) => {
-  await perconaServerDB.disconnectFromPS();
+AfterSuite(async ({ I, psMySql }) => {
+  await psMySql.disconnectFromPS();
   await I.mongoDisconnect();
 });
 
@@ -172,8 +172,8 @@ if (versionMinor >= 15) {
       const runChecks = locate('button')
         .withText('Run DB checks');
 
-      await perconaServerDB.dropUser();
-      await perconaServerDB.createUser();
+      await psMySql.dropUser();
+      await psMySql.createUser();
       await settingsAPI.changeSettings({ stt: true });
       await addInstanceAPI.addInstanceForSTT(connection, psServiceName);
 
