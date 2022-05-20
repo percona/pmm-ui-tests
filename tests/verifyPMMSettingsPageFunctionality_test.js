@@ -384,39 +384,48 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T1227 - Verify tooltip "Read more" links on PMM Settings page redirect to working pages @settings',
+  'PMM-T1227 - Verify tooltip "Read more" links on PMM Settings page redirect to working pages @settings12',
   async ({ I, pmmSettingsPage, settingsAPI }) => {
     await settingsAPI.changeSettings({ alerting: true });
     const subPageTooltips = [
-      {
-        subPage: pmmSettingsPage.metricsResolutionUrl,
-        tooltips: pmmSettingsPage.tooltips.metricsResolution,
-      },
-      {
-        subPage: pmmSettingsPage.advancedSettingsUrl,
-        tooltips: pmmSettingsPage.tooltips.advancedSettings,
-      },
-      {
-        subPage: pmmSettingsPage.sshKeyUrl,
-        tooltips: pmmSettingsPage.tooltips.sshKey,
-      },
-      {
-        subPage: pmmSettingsPage.alertManagerIntegrationUrl,
-        tooltips: pmmSettingsPage.tooltips.alertManagerIntegration,
-      },
-      {
-        subPage: pmmSettingsPage.perconaPlatformUrl,
-        tooltips: pmmSettingsPage.tooltips.perconaPlatform,
-      },
+      // {
+      //   subPage: pmmSettingsPage.metricsResolutionUrl,
+      //   tooltips: pmmSettingsPage.tooltips.metricsResolution,
+      // },
+      // {
+      //   subPage: pmmSettingsPage.advancedSettingsUrl,
+      //   tooltips: pmmSettingsPage.tooltips.advancedSettings,
+      // },
+      // {
+      //   subPage: pmmSettingsPage.sshKeyUrl,
+      //   tooltips: pmmSettingsPage.tooltips.ssh,
+      // },
+      // {
+      //   subPage: pmmSettingsPage.alertManagerIntegrationUrl,
+      //   tooltips: pmmSettingsPage.tooltips.alertManagerIntegration,
+      // },
+      // {
+      //   subPage: pmmSettingsPage.perconaPlatformUrl,
+      //   tooltips: pmmSettingsPage.tooltips.perconaPlatform,
+      // },
+      // {
+      //   subPage: pmmSettingsPage.communicationSettingsUrl,
+      //   tooltips: pmmSettingsPage.tooltips.communication.email,
+      // },
       {
         subPage: pmmSettingsPage.communicationSettingsUrl,
-        tooltips: pmmSettingsPage.tooltips.communication,
+        tooltips: { ...pmmSettingsPage.tooltips.communication.email, ...pmmSettingsPage.tooltips.communication.slack },
       },
     ];
 
     for (const subPageTooltipObject of Object.values(subPageTooltips)) {
       I.amOnPage(subPageTooltipObject.subPage);
+
       for (const tooltipObject of Object.values(subPageTooltipObject.tooltips)) {
+        if ('slackUrl' in subPageTooltips) {
+          I.click(pmmSettingsPage.communication.slackTab);
+        }
+
         await pmmSettingsPage.verifyTooltip(tooltipObject);
       }
     }

@@ -95,7 +95,7 @@ module.exports = {
     },
     metricsResolution: {
       metricsResolutionSec: {
-        iconLocator: locate('$diagnostics-label').find('div[class$="-Icon"]'),
+        iconLocator: locate('$metrics-resolution-label').find('div[class$="-Icon"]'),
         text: 'This setting defines how frequently the data will be collected.',
         link: links.metricsResolutionDocs,
       },
@@ -117,7 +117,7 @@ module.exports = {
         link: links.checkForUpdates,
       },
       stt: {
-        iconLocator: locate('$diagnostics-label').find('div[class$="-Icon"]'),
+        iconLocator: locate('$advanced-advisors').find('div[class$="-Icon"]'),
         text: 'Enable Advisor Checks and get updated checks from Percona.',
         link: links.advisorsDocs,
       },
@@ -137,11 +137,9 @@ module.exports = {
         link: links.dbaasDocs,
       },
       backupManagement: {
-        diagnostics: {
-          iconLocator: locate('$advanced-backup').find('div[class$="-Icon"]'),
-          text: 'Option to enable/disable Backup Management features.',
-          link: links.backupManagementDocs,
-        },
+        iconLocator: locate('$advanced-backup').find('div[class$="-Icon"]'),
+        text: 'Option to enable/disable Backup Management features.',
+        link: links.backupManagementDocs,
       },
       integratedAlerting: {
         iconLocator: locate('$advanced-alerting').find('div[class$="-Icon"]'),
@@ -150,7 +148,7 @@ module.exports = {
       },
       microsoftAzureMonitoring: {
         iconLocator: locate('$advanced-azure-discover').find('div[class$="-Icon"]'),
-        text: 'Option to enable/disable Microsoft Azure DB instanced discovery and monitoring.',
+        text: 'Option to enable/disable Microsoft Azure DB instanced discovery and monitoring',
         link: links.microsoftAzureMonitoringDocs,
       },
     },
@@ -177,7 +175,7 @@ module.exports = {
     communication: {
       email: {
         serverAddress: {
-          iconLocator: locate('div').after(locate('span').withText('Server Address')),
+          iconLocator: locate('div').after(locate('span').withText('Server Address')).as,
           text: 'The default SMTP smarthost used for sending emails, including port number (e.g. smtp.example.org:587)',
           link: links.communicationDocs,
         },
