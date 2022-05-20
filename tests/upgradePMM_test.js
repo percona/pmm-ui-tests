@@ -67,7 +67,7 @@ BeforeSuite(async ({ I, codeceptjsConfig }) => {
   if (process.env.AMI_UPGRADE_TESTING_INSTANCE !== 'true') {
     const mysqlComposeConnection = {
       host: (process.env.AMI_UPGRADE_TESTING_INSTANCE === 'true' ? process.env.VM_CLIENT_IP : '127.0.0.1'),
-      port: (process.env.AMI_UPGRADE_TESTING_INSTANCE === 'true' ? remoteInstancesHelper.remote_instance.mysql.ps_5_7.port : connection.port),
+      port: (process.env.AMI_UPGRADE_TESTING_INSTANCE === 'true' ? remoteInstancesHelper.remote_instance.mysql.ps_5_7.port : '3309'),
       username: connection.username,
       password: connection.password,
     };
