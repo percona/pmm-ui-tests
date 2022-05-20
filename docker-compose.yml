@@ -42,7 +42,7 @@ services:
       --slow_query_log --log_slow_rate_limit=1 --log_slow_admin_statements --log_slow_slave_statements --slow_query_log_file=/tmp/mysql/log/ps5_slow_log.log --long_query_time=0
       --character-set-server=utf8 --default-authentication-plugin=mysql_native_password --collation-server=utf8_unicode_ci
     ports:
-      - "3306:3306"
+      - "3309:3306"
     environment:
       - MYSQL_ROOT_PASSWORD=ps
       - MYSQL_USER=pmm-agent
@@ -150,7 +150,7 @@ services:
       - "6033:6033"
       - "6070:6070"
     volumes:
-      - ${PWD}/testdata/proxysql/proxysql.cnf:/etc/proxysql.cnf:rw
+      - ./testdata/proxysql/proxysql.cnf:/etc/proxysql.cnf:rw
     networks:
       - pmm-network
 
