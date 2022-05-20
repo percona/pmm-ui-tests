@@ -19,6 +19,11 @@ module.exports = {
       type: 'Slack',
       slackChannel: 'slackChannel',
     },
+    webhook: {
+      name: 'Webhook Channel',
+      type: 'Webhook',
+      url: 'https://webhookd:8080/alert',
+    },
   },
   elements: {
     notificationChannelsTab: '//li[@aria-label="Tab Notification Channels"]',
@@ -31,6 +36,12 @@ module.exports = {
     channelFieldValidation: '$channel-field-error-message',
     serviceKeyFieldLabel: '$service-field-label',
     routingKeyFieldLabel: '$routing-field-label',
+    maxAlertsCountLabel: '$maxAlerts-field-label',
+    caCertificateFieldLabel: '$ca-field-label',
+    certificateFieldLabel: '$cert-field-label',
+    certificateKeyFieldLabel: '$key-field-label',
+    serverNameFieldLabel: '$serverName-field-label',
+    skipTlsVerifyFieldLabel: '$skipVerify-field-label',
   },
   buttons: {
     openAddChannelModal: '$notification-channel-add-modal-button',
@@ -44,6 +55,7 @@ module.exports = {
     editChannelLocator: (name) => `//td[text()="${name}"]/following-sibling::td//button[@data-testid="edit-notification-channel-button"]`,
     pagerDutyServiceKeyOption: locate('label').withText('Service key'),
     pagerDutyRoutingKeyOption: locate('label').withText('Routing key'),
+    tslDropdown: locate('div[class*="collapse__header-label"]').withText('TLS Settings'),
   },
   fields: {
     nameInput: '$name-text-input',
@@ -53,6 +65,14 @@ module.exports = {
     routingKeyInput: '$routing-text-input',
     serviceKeyInput: '$service-text-input',
     slackChannelInput: '$channel-text-input',
+    webhookUrlInput: '$url-text-input',
+    usernameInput: '$username-text-input',
+    passwordInput: '$password-text-input',
+    maxAlertsCount: '$maxAlerts-number-input',
+    caCertificateInput: '$ca-textarea-input',
+    certificateInput: '$cert-textarea-input',
+    certificateKeyInput: '$key-textarea-input',
+    serverNameInput: '$serverName-text-input',
   },
   messages: {
     noChannelsFound: 'No notification channels found',
@@ -102,6 +122,9 @@ module.exports = {
       case this.types.slack.type:
         I.fillField(this.fields.slackChannelInput, this.types.slack.slackChannel);
         break;
+      case this.types.webhook.type:
+        I.fillField(this.fields.webhookUrlInput, this.types.webhook.url);
+        break;
       default:
         assert.ok(false, `Did not find a matching notification channel type ${type}`);
     }
@@ -125,6 +148,9 @@ module.exports = {
       case this.types.slack.type:
         I.appendField(this.fields.slackChannelInput, suffix);
         break;
+      case this.types.webhook.type:
+        I.appendField(this.fields.webhookUrlInput, suffix);
+        break;
       default:
         assert.ok(false, `Did not find a matching notification channel type ${type}`);
     }
@@ -146,5 +172,14 @@ module.exports = {
     I.seeElement(this.elements.channelInTable(channelName, type));
     I.seeElement(this.buttons.editChannelLocator(channelName));
     I.seeElement(this.buttons.deleteChannelLocator(channelName));
+  },
+
+  skipTlsCertVerification() {
+    I.seeElement(this.buttons.tslDropdown, 30);
+    I.click(this.buttons.tslDropdown);
+    I.waitForVisible(this.elements.caCertificateFieldLabel, 30);
+    I.scrollPageToBottom();
+    I.waitForVisible(this.elements.skipTlsVerifyFieldLabel, 30);
+    I.click(this.elements.skipTlsVerifyFieldLabel);
   },
 };
