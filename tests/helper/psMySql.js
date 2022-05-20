@@ -20,7 +20,7 @@ const execute = (query) => new Promise((resolve, reject) => {
 module.exports = {
   defaultConnection: {
     host: 'mysql',
-    port: 3309,
+    port: 3306,
     username: 'root',
     password: 'ps',
   },
