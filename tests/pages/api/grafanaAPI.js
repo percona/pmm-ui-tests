@@ -219,6 +219,8 @@ module.exports = {
     const timout = timeOutInSeconds * 1000;
     const interval = 1;
 
+    await I.say(`Wait ${timeOutInSeconds} seconds for Metrics ${metricName} with filters as ${JSON.stringify(queryBy)} being collected`);
+
     /* eslint no-constant-condition: ["error", { "checkLoops": false }] */
     while (true) {
       // Main condition check: metric body is not empty
