@@ -1,7 +1,5 @@
 Feature('MongoDB Metrics tests');
 
-// const { adminPage } = inject();
-// const pmmFrameworkLoader = `bash ${adminPage.pathToFramework}`;
 const connection = {
   host: '127.0.0.1',
   // eslint-disable-next-line no-inline-comments
@@ -11,13 +9,14 @@ const connection = {
 };
 const mongodb_service_name = 'mongodb_test_pass_plus';
 const mongo_test_user = {
-  username: 'test_pass',
+  username: 'test_user',
   password: 'pass+',
 };
 
 BeforeSuite(async ({ I }) => {
-  // await I.verifyCommand(`${pmmFrameworkLoader} --addclient=modb,1 --modb-version=4.4`);
+  const detectedPort = await I.verifyCommand('pmm-admin list | grep mongodb_node_1 | awk -F " " \'{print $3}\' | awk -F ":" \'{print $2}\'');
 
+  connection.port = detectedPort;
   await I.mongoConnect(connection);
   await I.mongoAddUser(mongo_test_user.username, mongo_test_user.password);
 });
