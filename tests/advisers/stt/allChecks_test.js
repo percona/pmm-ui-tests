@@ -1,8 +1,8 @@
 const assert = require('assert');
 
-const { perconaServerDB } = inject();
+const { psMySql } = inject();
 
-const connection = perconaServerDB.defaultConnection;
+const connection = psMySql.defaultConnection;
 const psServiceName = 'allChecks-ps-5.7.30';
 let nodeId;
 let serviceId;
@@ -77,8 +77,9 @@ Scenario(
       : 'Newer version of Percona Server for MySQL is available';
     const checkName = 'MySQL Version';
 
+    I.amOnPage(allChecksPage.url);
     // Run DB Checks from UI
-    await databaseChecksPage.runDBChecks();
+    await allChecksPage.runDBChecks();
 
     // Wait for MySQL version failed check
     await securityChecksAPI.waitForFailedCheckExistance(detailsText, psServiceName);
@@ -98,7 +99,7 @@ Scenario(
     I.seeTextEquals('Disabled', allChecksPage.elements.statusCellByName(checkName));
 
     // Run DB Checks from UI
-    await databaseChecksPage.runDBChecks();
+    await allChecksPage.runDBChecks();
     await securityChecksAPI.waitForFailedCheckNonExistance(detailsText, psServiceName);
 
     // Verify there is no MySQL Version failed check

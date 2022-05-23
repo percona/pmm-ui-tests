@@ -1,9 +1,9 @@
 const assert = require('assert');
 
 const {
-  settingsAPI, perconaServerDB, securityChecksAPI, databaseChecksPage,
+  settingsAPI, psMySql, securityChecksAPI, databaseChecksPage,
 } = inject();
-const connection = perconaServerDB.defaultConnection;
+const connection = psMySql.defaultConnection;
 const emptyPasswordSummary = 'User(s) has/have no password defined';
 const mysqlVersionSummary = 'Newer version of Percona Server for MySQL is available';
 const intervals = settingsAPI.defaultCheckIntervals;
@@ -24,7 +24,7 @@ const cleanup = async () => {
   await settingsAPI.apiEnableSTT();
   await settingsAPI.setCheckIntervals();
   await securityChecksAPI.restoreDefaultIntervals();
-  await perconaServerDB.dropUser();
+  await psMySql.dropUser();
   await securityChecksAPI.enableCheck(securityChecksAPI.checkNames.mysqlVersion);
   await securityChecksAPI.enableCheck(securityChecksAPI.checkNames.mysqlEmptyPassword);
 };
@@ -38,30 +38,30 @@ const prepareFailedCheck = async () => {
 
 Feature('Security Checks: Checks Execution');
 
-BeforeSuite(async ({ perconaServerDB, addInstanceAPI }) => {
+BeforeSuite(async ({ psMySql, addInstanceAPI }) => {
   const mysqlComposeConnection = {
     host: '127.0.0.1',
-    port: connection.port,
+    port: '3309',
     username: connection.username,
     password: connection.password,
   };
 
   [nodeId, serviceId] = await addInstanceAPI.addInstanceForSTT(connection, psServiceName);
 
-  perconaServerDB.connectToPS(mysqlComposeConnection);
+  psMySql.connectToPS(mysqlComposeConnection);
 });
 
-AfterSuite(async ({ perconaServerDB, inventoryAPI }) => {
-  await perconaServerDB.disconnectFromPS();
+AfterSuite(async ({ psMySql, inventoryAPI }) => {
+  await psMySql.disconnectFromPS();
   if (nodeId) await inventoryAPI.deleteNode(nodeId, true);
 });
 
 Before(async ({
-  I, perconaServerDB,
+  I, psMySql,
 }) => {
   await I.Authorize();
   await cleanup();
-  await perconaServerDB.createUser();
+  await psMySql.createUser();
 });
 
 After(async () => {
@@ -71,14 +71,15 @@ After(async () => {
 Scenario.skip(
   'PMM-T384 Verify that the user does not see an alert again if it has been fixed [critical] @stt @not-ovf',
   async ({
-    securityChecksAPI, databaseChecksPage, perconaServerDB,
+    I, securityChecksAPI, databaseChecksPage, psMySql, allChecksPage,
   }) => {
     await prepareFailedCheck();
-    await perconaServerDB.setUserPassword();
-
+    await psMySql.setUserPassword();
     // Run DB Checks from UI
-    await databaseChecksPage.runDBChecks();
+    I.amOnPage(allChecksPage.url);
+    await allChecksPage.runDBChecks();
 
+    I.amOnPage(databaseChecksPage.url);
     await securityChecksAPI.waitForFailedCheckNonExistance(emptyPasswordSummary, psServiceName);
     // Verify there is no MySQL user empty password failed check
     databaseChecksPage.verifyFailedCheckNotExists(emptyPasswordSummary, serviceId);

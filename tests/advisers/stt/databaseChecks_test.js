@@ -1,10 +1,10 @@
 const assert = require('assert');
 
 const {
-  allChecksPage, databaseChecksPage, codeceptjsConfig, perconaServerDB,
+  allChecksPage, databaseChecksPage, codeceptjsConfig, psMySql,
 } = inject();
 const config = codeceptjsConfig.config.helpers.Playwright;
-const connection = perconaServerDB.defaultConnection;
+const connection = psMySql.defaultConnection;
 let nodeId;
 let serviceId;
 
@@ -120,12 +120,14 @@ Scenario(
 Scenario(
   'PMM-T241 Verify user can see correct service name for failed checks [critical] @stt',
   async ({
-    I, databaseChecksPage, settingsAPI, securityChecksAPI, inventoryAPI,
+    I, databaseChecksPage, settingsAPI, securityChecksAPI, inventoryAPI, allChecksPage,
   }) => {
     await settingsAPI.apiEnableSTT();
-    await databaseChecksPage.runDBChecks();
+    I.amOnPage(allChecksPage.url);
+    await allChecksPage.runDBChecks();
     await securityChecksAPI.waitForFailedCheckExistance(detailsText, psServiceName);
 
+    I.amOnPage(databaseChecksPage.url);
     // Verify failed check on UI
     databaseChecksPage.verifyFailedCheckExists(detailsText, serviceId);
     I.see(psServiceName);

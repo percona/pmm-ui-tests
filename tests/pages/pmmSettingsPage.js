@@ -1,17 +1,20 @@
 const assert = require('assert');
-const { communicationData } = require('./testData');
+const { communicationData, emailDefaults } = require('./testData');
 
-const { I, adminPage, links } = inject();
+const {
+  I, adminPage, links, perconaPlatformPage,
+} = inject();
 
 const locateLabel = (selector) => locate(I.useDataQA(selector)).find('span');
 
 module.exports = {
   url: 'graph/settings',
+  publicAddress: process.env.VM_IP ? process.env.VM_IP : process.env.SERVER_IP,
   metricsResolutionUrl: 'graph/settings/metrics-resolution',
   advancedSettingsUrl: 'graph/settings/advanced-settings',
   sshKeyUrl: 'graph/settings/ssh-key',
   alertManagerIntegrationUrl: 'graph/settings/am-integration',
-  perconaPlatformUrl: 'graph/settings/percona-platform',
+  perconaPlatformUrl: perconaPlatformPage,
   communicationSettingsUrl: 'graph/settings/communication',
   prometheusAlertUrl: '/prometheus/rules',
   stateOfAlertsUrl: '/prometheus/alerts',
@@ -71,7 +74,8 @@ module.exports = {
     requiredFieldMessage: 'Required field',
     invalidSSHKeyMessage: 'Invalid SSH key.',
     successAlertmanagerMessage: 'Alertmanager settings updated',
-    invalidAlertmanagerMissingSchemeMessage: 'Invalid argument: invalid alert_manager_url: invalid_url - missing protocol scheme.',
+    invalidAlertmanagerMissingSchemeMessage:
+      'Invalid argument: invalid alert_manager_url: invalid_url - missing protocol scheme.',
     invalidAlertmanagerMissingHostMessage: 'Invalid argument: invalid alert_manager_url: http:// - missing host.',
     invalidAlertmanagerRulesMessage: 'Invalid alerting rules.',
     invalidDBaaSDisableMessage: 'DBaaS is enabled via ENABLE_DBAAS or via deprecated PERCONA_TEST_DBAAS environment variable.',
@@ -86,45 +90,6 @@ module.exports = {
   },
   sectionButtonText: {
     applyChanges: 'Apply changes', applySSHKey: 'Apply SSH key', applyAlertmanager: 'Apply Alertmanager settings',
-  },
-  communicationData,
-  communication: {
-    email: {
-      serverAddress: {
-        locator: '$smarthost-text-input',
-      },
-      hello: {
-        locator: '$hello-text-input',
-      },
-      from: {
-        locator: '$from-text-input',
-      },
-      authType: {
-        locator: '$hello-text-input',
-      },
-      username: {
-        locator: '$username-text-input',
-      },
-      password: {
-        locator: '$password-password-input',
-      },
-      testEmail: {
-        locator: '$testEmail-text-input',
-      },
-    },
-    slack: {
-      url: {
-        locator: '$url-text-input',
-        value: 'https://hook',
-      },
-    },
-    communicationSection: locate('$settings-tabs')
-      .find('li a')
-      .withAttr({ 'aria-label': 'Tab Communication' }),
-    emailTab: 'li > a[aria-label="Tab Email"]',
-    submitEmailButton: '$email-settings-submit-button',
-    slackTab: 'li > a[aria-label="Tab Slack"]',
-    submitSlackButton: '$slack-settings--submit-button',
   },
   tooltips: {
     diagnostics: {
@@ -259,6 +224,45 @@ module.exports = {
       },
     },
   },
+  communicationData,
+  communication: {
+    email: {
+      serverAddress: {
+        locator: '$smarthost-text-input',
+      },
+      hello: {
+        locator: '$hello-text-input',
+      },
+      from: {
+        locator: '$from-text-input',
+      },
+      authType: {
+        locator: '$hello-text-input',
+      },
+      username: {
+        locator: '$username-text-input',
+      },
+      password: {
+        locator: '$password-password-input',
+      },
+      testEmail: {
+        locator: '$testEmail-text-input',
+      },
+    },
+    slack: {
+      url: {
+        locator: '$url-text-input',
+        value: 'https://hook',
+      },
+    },
+    communicationSection: locate('$settings-tabs')
+      .find('li a')
+      .withAttr({ 'aria-label': 'Tab Communication' }),
+    emailTab: 'li > a[aria-label="Tab Email"]',
+    submitEmailButton: '$email-settings-submit-button',
+    slackTab: 'li > a[aria-label="Tab Slack"]',
+    submitSlackButton: '$slack-settings--submit-button',
+  },
   fields: {
     advancedLabel: '$advanced-label',
     advancedButton: '$advanced-button',
@@ -278,10 +282,6 @@ module.exports = {
     checkForUpdatesSwitch: '//div[@data-testid="advanced-updates"]//div[2]//input',
     dataRetentionInput: '$retention-number-input',
     dataRetentionLabel: locateLabel('form-field-data-retention'),
-    diagnosticsButton: '$diagnostics-button',
-    diagnosticsLabel: '$diagnostics-label',
-    downloadLogsButton: '//a[@class="ant-btn" and @href="/logs.zip"]',
-    diagnosticsInfo: locate('$diagnostics-label').find('div').find('div'),
     iframe: '//div[@class="panel-content"]//iframe',
     metricsResolutionButton: '$metrics-resolution-button',
     metricsResolution: '//label[text()="',
@@ -360,8 +360,6 @@ module.exports = {
   async waitForPmmSettingsPageLoaded() {
     I.waitForVisible(this.fields.tabsSection, 30);
     I.waitForVisible(this.fields.tabContent, 30);
-    I.waitForVisible(this.fields.diagnosticsLabel, 30);
-    I.waitForVisible(this.fields.diagnosticsButton, 30);
   },
 
   async expandSection(sectionName, expectedContentLocator) {
@@ -480,7 +478,8 @@ module.exports = {
     I.click(this.fields.sshKeyButton);
   },
 
-  addPublicAddress(address = process.env.SERVER_IP) {
+  addPublicAddress(address = this.publicAddress) {
+    I.clearField(this.fields.publicAddressInput);
     I.fillField(this.fields.publicAddressInput, address);
     I.click(this.fields.advancedButton);
     I.verifyPopUpMessage(this.messages.successPopUpMessage);

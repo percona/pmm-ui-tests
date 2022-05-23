@@ -15,14 +15,11 @@ class Grafana extends Helper {
     this.mainView = '//main[contains(@class, "main-view")]';
   }
 
-  async loginWithSSO(username, password, onLoginPage = true) {
+  async loginWithSSO(username, password) {
     const { page } = this.helpers.Playwright;
 
-    if (onLoginPage) {
-      await page.isVisible(this.mainView);
-      await page.click(this.signInWithSSOButton);
-    }
-
+    await page.isVisible(this.mainView);
+    await page.click(this.signInWithSSOButton);
     await page.fill(this.ssoLoginUsername, username);
     await page.click(this.ssoLoginNext);
     await page.click(this.ssoLoginPassword);
@@ -43,6 +40,22 @@ class Grafana extends Helper {
 
     await browserContext.clearCookies();
     Playwright.haveRequestHeaders({});
+  }
+
+  async getBrowserCookies() {
+    const { Playwright } = this.helpers;
+    const { browserContext } = Playwright;
+
+    return await browserContext.cookies();
+  }
+
+  async getBrowserGrafanaSessionCookies() {
+    const { Playwright } = this.helpers;
+    const { browserContext } = Playwright;
+
+    const cookies = await browserContext.cookies();
+
+    return await cookies.find((cookie) => cookie.name === 'grafana_session');
   }
 
   async getAuth(username = 'admin', password = process.env.ADMIN_PASSWORD) {
@@ -181,6 +194,14 @@ class Grafana extends Helper {
     const apiContext = this.helpers.REST;
     const headers = { Authorization: `Basic ${await this.getAuth()}` };
     const resp = await apiContext.sendGetRequest('graph/api/users/search', headers);
+
+    return resp.data;
+  }
+
+  async listOrgUsers() {
+    const apiContext = this.helpers.REST;
+    const headers = { Authorization: `Basic ${await this.getAuth()}` };
+    const resp = await apiContext.sendGetRequest('graph/api/org/users', headers);
 
     return resp.data;
   }

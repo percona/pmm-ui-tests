@@ -10,6 +10,7 @@ module.exports = {
   url: 'graph/d/pmm-home/home-dashboard?orgId=1&refresh=1m&from=now-5m&to=now',
   landingUrl: 'graph/d/pmm-home/home-dashboard?orgId=1&refresh=1m',
   genericOauthUrl: 'graph/login/generic_oauth',
+  landingPage: 'graph/login',
   requestEnd: '/v1/Updates/Check',
   fields: {
     systemsUnderMonitoringCount:
@@ -20,6 +21,7 @@ module.exports = {
     dashboardHeaderLocator: '//div[contains(@class, "dashboard-header")]',
     oldLastCheckSelector: '#pmm-update-widget > .last-check-wrapper p',
     sttDisabledFailedChecksPanelSelector: '$db-check-panel-settings-link',
+    failedSecurityChecksPmmSettingsLink: locate('$db-check-panel-settings-link').find('a'),
     sttFailedChecksPanelSelector: '$db-check-panel-has-checks',
     checksPanelSelector: '$db-check-panel-home',
     noFailedChecksInPanel: '$db-check-panel-zero-checks',
@@ -84,6 +86,7 @@ module.exports = {
 
   serviceDashboardLocator: (serviceName) => locate('a').withText(serviceName),
   isAmiUpgrade: process.env.AMI_UPGRADE_TESTING_INSTANCE === 'true',
+  pmmServerName: process.env.VM_NAME ? process.env.VM_NAME : 'pmm-server',
 
   async open() {
     I.amOnPage(this.url);
@@ -118,7 +121,7 @@ module.exports = {
         I.waitForText(locators.successUpgradeMessage, 1200, locators.successUpgradeMsgSelector);
 
         // Get upgrade logs from a container
-        const upgradeLogs = await I.verifyCommand('docker exec pmm-server cat /srv/logs/pmm-update-perform.log');
+        const upgradeLogs = await I.verifyCommand(`docker exec ${this.pmmServerName} cat /srv/logs/pmm-update-perform.log`);
 
         milestones.forEach((milestone) => {
           assert.ok(upgradeLogs.includes(milestone), `Expected to see ${milestone} in upgrade logs`);
@@ -207,5 +210,24 @@ module.exports = {
       : (locators = this.fields.updateWidget.base);
 
     return locators;
+  },
+
+  // For running on local env set PMM_SERVER_LATEST and DOCKER_VERSION variables
+  getVersions() {
+    const [, pmmMinor, pmmPatch] = (process.env.PMM_SERVER_LATEST || '').split('.');
+    const [, versionMinor, versionPatch] = process.env.DOCKER_VERSION
+      ? (process.env.DOCKER_VERSION || '').split('.')
+      : (process.env.SERVER_VERSION || '').split('.');
+
+    const majorVersionDiff = pmmMinor - versionMinor;
+    const patchVersionDiff = pmmPatch - versionPatch;
+    const current = `2.${versionMinor}`;
+
+    return {
+      majorVersionDiff,
+      patchVersionDiff,
+      current,
+      versionMinor,
+    };
   },
 };

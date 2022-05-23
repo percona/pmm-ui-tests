@@ -1,5 +1,6 @@
 const { I } = inject();
 const assert = require('assert');
+const { api } = require('@pagerduty/pdjs');
 
 module.exports = {
   /*
@@ -42,5 +43,53 @@ module.exports = {
     );
 
     return resp.data.alerts;
+  },
+
+  async verifyAlertInPagerDuty(ruleId) {
+    const pd = api({ token: process.env.PAGER_DUTY_API_KEY });
+
+    const getAlertFromPD = async (ruleId) => await pd.get('/incidents?statuses[]=triggered')
+      .then(async ({ data: { incidents } }) => {
+        let alert;
+
+        for (const i in incidents) {
+          const { id } = incidents[i];
+
+          alert = await getAlertsForIncident(id, ruleId);
+          if (alert) break;
+        }
+
+        return alert;
+      })
+      .catch((e) => Error(`failed to get incidents from PD: ${e}`));
+
+    const getAlertsForIncident = async (incidentId, ruleId) => await pd.get(`/incidents/${incidentId}/alerts`)
+      .then(({ data }) => {
+        if (!data.alerts.length) return null;
+
+        return data.alerts
+          .find(({ body: { details: { firing } } }) => firing.includes(ruleId));
+      })
+      .catch((e) => Error(`failed to get alerts for incident: ${e}`));
+
+    const alert = await getAlertFromPD(ruleId);
+
+    assert.ok(alert.incident.summary.includes('PostgreSQL too many connections (pmm-server-postgresql)'));
+    assert.ok(alert.body.details.firing.includes('PMM Integrated Alerting'));
+    assert.ok(alert.body.details.firing.includes(ruleId));
+
+    await pd({
+      method: 'put',
+      endpoint: `/incidents/${alert.incident.id}/alerts/${alert.id}`,
+      headers: {
+        From: 'platform.qa.automation@percona.com',
+      },
+      data: {
+        alert: {
+          status: 'resolved',
+        },
+      },
+    })
+      .catch((e) => Error(`failed to resolve alert for an incident: ${e}`));
   },
 };
