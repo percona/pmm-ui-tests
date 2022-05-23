@@ -82,15 +82,15 @@ Scenario('PMM-T86 - Verify Alertmanager integration Section Elements @settings @
   I.seeElement(pmmSettingsPage.fields.alertRulesInput);
 });
 
-Scenario('PMM-T89 - Verify validation for invalid SSH Key @settings @grafana-pr', async ({ I, pmmSettingsPage }) => {
-  const sshKeyForTest = 'ssh-rsa testKey test@key.local';
-  const sectionNameToExpand = pmmSettingsPage.sectionTabsList.ssh;
+// Scenario('PMM-T89 - Verify validation for invalid SSH Key @settings @grafana-pr', async ({ I, pmmSettingsPage }) => {
+//   const sshKeyForTest = 'ssh-rsa testKey test@key.local';
+//   const sectionNameToExpand = pmmSettingsPage.sectionTabsList.ssh;
 
-  await pmmSettingsPage.waitForPmmSettingsPageLoaded();
-  await pmmSettingsPage.expandSection(sectionNameToExpand, pmmSettingsPage.fields.sshKeyButton);
-  pmmSettingsPage.addSSHKey(sshKeyForTest);
-  I.verifyPopUpMessage(pmmSettingsPage.messages.invalidSSHKeyMessage);
-});
+//   await pmmSettingsPage.waitForPmmSettingsPageLoaded();
+//   await pmmSettingsPage.expandSection(sectionNameToExpand, pmmSettingsPage.fields.sshKeyButton);
+//   pmmSettingsPage.addSSHKey(sshKeyForTest);
+//   I.verifyPopUpMessage(pmmSettingsPage.messages.invalidSSHKeyMessage);
+// });
 
 Scenario('PMM-T90 - Verify validation for Alertmanager URL without scheme @settings @grafana-pr', async ({ I, pmmSettingsPage }) => {
   const urlWithoutScheme = 'invalid_url';

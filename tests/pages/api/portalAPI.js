@@ -22,9 +22,9 @@ module.exports = {
     return {
       name: resp.data.result.account.name,
       id: resp.data.result.account.sys_id,
-      admin1: await this.getUser(resp.data.result.contacts.find(({ email }) => email.startsWith('admin-')).email),
-      admin2: await this.getUser(resp.data.result.contacts.find(({ email }) => email.startsWith('admin2-')).email),
-      technical: await this.getUser(resp.data.result.contacts.find(({ email }) => email.startsWith('technical-')).email),
+      admin1: await this.getUser(resp.data.result.contacts.find(({ email }) => email.startsWith('ui_tests_admin-')).email),
+      admin2: await this.getUser(resp.data.result.contacts.find(({ email }) => email.startsWith('ui_tests_admin2-')).email),
+      technical: await this.getUser(resp.data.result.contacts.find(({ email }) => email.startsWith('ui_tests_technical-')).email),
     };
   },
 
@@ -80,11 +80,27 @@ module.exports = {
   },
 
   async oktaGetUser(userEmail) {
-    const oktaUrl = `${this.oktaUrl}/api/v1/users?q=${userEmail}`;
+    const oktaUrl = `${this.oktaUrl}api/v1/users?q=${userEmail}`;
     const headers = { Authorization: this.oktaToken };
     const response = await I.sendGetRequest(oktaUrl, headers);
 
     assert.equal(response.status, 200);
+
+    return response.data;
+  },
+
+  async oktaDeleteUserByEmail(userEmail) {
+    const userDetails = await this.oktaGetUser(userEmail);
+
+    await this.oktaDeleteUserById(userDetails[0].id);
+  },
+
+  async oktaDeleteUserById(userId) {
+    const oktaUrl = `${this.oktaUrl}api/v1/users/${userId}`;
+    const headers = { Authorization: this.oktaToken };
+    const response = await I.sendDeleteRequest(oktaUrl, headers);
+
+    assert.equal(response.status, 204);
 
     return response.data;
   },
@@ -97,10 +113,20 @@ module.exports = {
     return response.data.org;
   },
 
+  async apiDeleteOrg(orgId, accessToken) {
+    const apiUrl = `${this.portalBaseUrl}/v1/orgs/${orgId}`;
+    const headers = { Authorization: `Bearer ${accessToken}` };
+    const response = await I.sendDeleteRequest(apiUrl, headers);
+
+    assert.equal(response.status, 200);
+  },
+
   async apiGetOrg(accessToken) {
     const apiUrl = `${this.portalBaseUrl}/v1/orgs:search`;
     const headers = { Authorization: `Bearer ${accessToken}` };
     const response = await I.sendPostRequest(apiUrl, {}, headers);
+
+    assert.equal(response.status, 200);
 
     return response.data.orgs;
   },
@@ -116,6 +142,8 @@ module.exports = {
     const apiUrl = `${this.portalBaseUrl}/v1/orgs/${orgId}/members`;
     const headers = { Authorization: `Bearer ${accessToken}` };
     const response = await I.sendPostRequest(apiUrl, member, headers);
+
+    assert.equal(response.status, 200);
 
     return response.data;
   },
@@ -135,6 +163,16 @@ module.exports = {
     const resp = await I.sendPostRequest('v1/Platform/Connect', body, headers);
 
     assert.ok(resp.status === 200, `Failed to connect PMM to the Portal. Response message is "${resp.data.message}"`);
+
+    return resp.data;
+  },
+
+  async disconnectPMMFromPortal(grafana_session_cookie) {
+    const headers = { Cookie: `${grafana_session_cookie.name}=${grafana_session_cookie.value}` };
+
+    const resp = await I.sendPostRequest('v1/Platform/Disconnect', {}, headers);
+
+    assert.ok(resp.status === 200, `Failed to disconnect PMM from the Portal. Response message is "${resp.data.message}"`);
 
     return resp.data;
   },

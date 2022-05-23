@@ -184,6 +184,12 @@ module.exports = {
         value: 'https://hook',
       },
     },
+    webhook: {
+      url: {
+        locator: '$url-text-input',
+        value: 'https://hook',
+      },
+    },
     communicationSection: locate('$settings-tabs')
       .find('li a')
       .withAttr({ 'aria-label': 'Tab Communication' }),
@@ -408,6 +414,7 @@ module.exports = {
   },
 
   addPublicAddress(address = this.publicAddress) {
+    I.clearField(this.fields.publicAddressInput);
     I.fillField(this.fields.publicAddressInput, address);
     I.click(this.fields.advancedButton);
     I.verifyPopUpMessage(this.messages.successPopUpMessage);

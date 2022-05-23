@@ -123,7 +123,7 @@ module.exports = {
       },
       ps_8_0: {
         host: 'mysql8',
-        port: '3306',
+        port: '3307',
         username: 'pmm-agent',
         password: 'pmm-agent-password',
         clusterName: 'mysql_clstr',

@@ -3,7 +3,7 @@ const faker = require('faker');
 const { generate } = require('generate-password');
 
 const {
-  adminPage, remoteInstancesHelper, perconaServerDB, pmmSettingsPage, dashboardPage, databaseChecksPage,
+  adminPage, remoteInstancesHelper, psMySql, pmmSettingsPage, dashboardPage, databaseChecksPage,
 } = inject();
 
 const pathToPMMFramework = adminPage.pathToPMMTests;
@@ -26,7 +26,7 @@ clientDbServices.add(['POSTGRESQL_SERVICE', 'PGSQL_', 'pg_stat_database_xact_rol
 // eslint-disable-next-line max-len
 clientDbServices.add(['MONGODB_SERVICE', 'mongodb_', 'mongodb_connections', 'annotation-for-mongo', dashboardPage.mongoDbInstanceSummaryDashboard.url, 'mongo_upgrade']);
 
-const connection = perconaServerDB.defaultConnection;
+const connection = psMySql.defaultConnection;
 const psServiceName = 'upgrade-stt-ps-5.7.30';
 const failedCheckRowLocator = databaseChecksPage.elements
   .failedCheckRowByServiceName(psServiceName);
@@ -64,15 +64,14 @@ Before(async ({ I }) => {
 });
 
 BeforeSuite(async ({ I, codeceptjsConfig }) => {
-  if (process.env.AMI_UPGRADE_TESTING_INSTANCE !== 'true') {
     const mysqlComposeConnection = {
       host: (process.env.AMI_UPGRADE_TESTING_INSTANCE === 'true' ? process.env.VM_CLIENT_IP : '127.0.0.1'),
-      port: (process.env.AMI_UPGRADE_TESTING_INSTANCE === 'true' ? remoteInstancesHelper.remote_instance.mysql.ps_5_7.port : connection.port),
+      port: (process.env.AMI_UPGRADE_TESTING_INSTANCE === 'true' ? remoteInstancesHelper.remote_instance.mysql.ps_5_7.port : '3309'),
       username: connection.username,
       password: connection.password,
     };
 
-    perconaServerDB.connectToPS(mysqlComposeConnection);
+    psMySql.connectToPS(mysqlComposeConnection);
 
     // Connect to MongoDB
     const mongoConnection = {
@@ -83,11 +82,10 @@ BeforeSuite(async ({ I, codeceptjsConfig }) => {
     };
 
     await I.mongoConnect(mongoConnection);
-  }
 });
 
-AfterSuite(async ({ I, perconaServerDB }) => {
-  await perconaServerDB.disconnectFromPS();
+AfterSuite(async ({ I, psMySql }) => {
+  await psMySql.disconnectFromPS();
   await I.mongoDisconnect();
 });
 
@@ -172,8 +170,8 @@ if (versionMinor >= 15) {
       const runChecks = locate('button')
         .withText('Run DB checks');
 
-      await perconaServerDB.dropUser();
-      await perconaServerDB.createUser();
+      await psMySql.dropUser();
+      await psMySql.createUser();
       await settingsAPI.changeSettings({ stt: true });
       await addInstanceAPI.addInstanceForSTT(connection, psServiceName);
 
@@ -538,7 +536,7 @@ if (versionMinor >= 15) {
   );
 
   Scenario(
-    'Verify Redis as external Service Works After Upgrade @post-upgrade @pmm-upgrade',
+    'Verify Redis as external Service Works After Upgrade @post-upgrade @post-client-upgrade @pmm-upgrade',
     async ({
       I, grafanaAPI, remoteInstancesHelper,
     }) => {
@@ -659,7 +657,7 @@ if (iaReleased) {
 }
 
 Scenario(
-  'Verify Agents are RUNNING after Upgrade (API) [critical] @post-upgrade @ami-upgrade @pmm-upgrade',
+  'Verify Agents are RUNNING after Upgrade (API) [critical] @post-upgrade @post-client-upgrade @ami-upgrade @pmm-upgrade',
   async ({ inventoryAPI }) => {
     for (const service of Object.values(remoteInstancesHelper.serviceTypes)) {
       if (service) {
@@ -713,7 +711,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T424 Verify PT Summary Panel is available after Upgrade @post-upgrade @ami-upgrade @pmm-upgrade',
+  'PMM-T424 Verify PT Summary Panel is available after Upgrade @post-upgrade @ami-upgrade @post-client-upgrade @pmm-upgrade',
   async ({ I, dashboardPage }) => {
     const filter = 'Node Name';
 
@@ -728,7 +726,7 @@ Scenario(
 );
 
 Scenario(
-  'Verify Agents are RUNNING after Upgrade (UI) [critical] @ami-upgrade @post-upgrade @pmm-upgrade',
+  'Verify Agents are RUNNING after Upgrade (UI) [critical] @ami-upgrade @post-upgrade @post-client-upgrade @pmm-upgrade',
   async ({ I, pmmInventoryPage }) => {
     for (const service of Object.values(remoteInstancesHelper.upgradeServiceNames)) {
       if (service) {
@@ -740,7 +738,7 @@ Scenario(
 );
 
 Scenario(
-  'Verify Agents are Running and Metrics are being collected Post Upgrade (UI) [critical] @ami-upgrade @post-upgrade @pmm-upgrade',
+  'Verify Agents are Running and Metrics are being collected Post Upgrade (UI) [critical] @ami-upgrade @post-client-upgrade @post-upgrade @pmm-upgrade',
   async ({ grafanaAPI }) => {
     const metrics = Object.keys(remoteInstancesHelper.upgradeServiceMetricNames);
 
@@ -757,7 +755,7 @@ Scenario(
 );
 
 Data(clientDbServices).Scenario(
-  'Check Metrics for Client Nodes [critical] @post-client-upgrade  @ami-upgrade @post-upgrade @pmm-upgrade',
+  'Check Metrics for Client Nodes [critical] @post-client-upgrade  @ami-upgrade @post-upgrade @post-client-upgrade @pmm-upgrade',
   async ({
     inventoryAPI, grafanaAPI, current,
   }) => {
@@ -770,7 +768,7 @@ Data(clientDbServices).Scenario(
 );
 
 Scenario(
-  'Verify QAN has specific filters for Remote Instances after Upgrade (UI) @ami-upgrade @post-upgrade @pmm-upgrade',
+  'Verify QAN has specific filters for Remote Instances after Upgrade (UI) @ami-upgrade @post-client-upgrade @post-upgrade @pmm-upgrade',
   async ({
     I, qanPage, qanFilters, qanOverview,
   }) => {

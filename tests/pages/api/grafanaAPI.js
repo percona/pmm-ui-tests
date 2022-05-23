@@ -175,7 +175,21 @@ module.exports = {
     };
 
     if (refineBy) {
-      body.query = `${metricName}{${refineBy.type}=~"(${refineBy.value})"}`;
+      // ideally would need to refactor existing metric check to implement it this way
+      if (Array.isArray(refineBy)) {
+        let metricLabels = '';
+
+        for (let i = 0; i < refineBy.length; i++) {
+          const { type, value } = refineBy[i];
+          const filter = `${type}="${value}", `;
+
+          metricLabels = metricLabels.concat(filter);
+        }
+
+        body.query = `${metricName}{${metricLabels}}`;
+      } else {
+        body.query = `${metricName}{${refineBy.type}=~"(${refineBy.value})"}`;
+      }
     }
 
     Object.keys(body).forEach((key) => bodyFormData.append(key, body[key]));
@@ -230,8 +244,16 @@ module.exports = {
     const result = JSON.stringify(response.data.data.result);
 
     I.assertTrue(response.data.data.result.length !== 0,
-      `Metrics ${metricName} Should be available but got empty ${result}`);
+      `Metrics ${metricName} with filters as ${JSON.stringify(refineBy)} Should be available but got empty ${result}`);
 
     return response;
+  },
+
+  async checkMetricAbsent(metricName, refineBy) {
+    const response = await this.getMetric(metricName, refineBy);
+    const result = JSON.stringify(response.data.data.result);
+
+    I.assertEqual(response.data.data.result.length, 0,
+      `Metrics "${metricName}" with filters as ${JSON.stringify(refineBy)} should be empty but got available ${result}`);
   },
 };
