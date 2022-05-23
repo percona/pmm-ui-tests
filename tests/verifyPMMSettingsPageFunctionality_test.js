@@ -287,7 +287,7 @@ Scenario('PMM-T785 - Verify DBaaS cannot be disabled with ENABLE_DBAAS or PERCON
     pmmSettingsPage.verifySwitch(pmmSettingsPage.fields.dbaasSwitchSelectorInput, 'off');
     I.click(pmmSettingsPage.fields.advancedButton);
     // skipped until PMM-9982 is fixed
-    // pmmSettingsPage.verifySwitch(pmmSettingsPage.fields.dbaasSwitchSelectorInput, 'on'); 
+    // pmmSettingsPage.verifySwitch(pmmSettingsPage.fields.dbaasSwitchSelectorInput, 'on');
     I.verifyPopUpMessage(pmmSettingsPage.messages.invalidDBaaSDisableMessage);
   });
 
@@ -402,7 +402,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T1227 - Verify tooltip "Read more" links on PMM Settings page redirect to working pages @settings12',
+  'PMM-T1227 - Verify tooltip "Read more" links on PMM Settings page redirect to working pages @settings',
   async ({ I, pmmSettingsPage, settingsAPI }) => {
     await settingsAPI.changeSettings({ alerting: true });
     const subPageTooltips = [
