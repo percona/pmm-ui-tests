@@ -87,6 +87,45 @@ module.exports = {
   sectionButtonText: {
     applyChanges: 'Apply changes', applySSHKey: 'Apply SSH key', applyAlertmanager: 'Apply Alertmanager settings',
   },
+  communicationData,
+  communication: {
+    email: {
+      serverAddress: {
+        locator: '$smarthost-text-input',
+      },
+      hello: {
+        locator: '$hello-text-input',
+      },
+      from: {
+        locator: '$from-text-input',
+      },
+      authType: {
+        locator: '$hello-text-input',
+      },
+      username: {
+        locator: '$username-text-input',
+      },
+      password: {
+        locator: '$password-password-input',
+      },
+      testEmail: {
+        locator: '$testEmail-text-input',
+      },
+    },
+    slack: {
+      url: {
+        locator: '$url-text-input',
+        value: 'https://hook',
+      },
+    },
+    communicationSection: locate('$settings-tabs')
+      .find('li a')
+      .withAttr({ 'aria-label': 'Tab Communication' }),
+    emailTab: 'li > a[aria-label="Tab Email"]',
+    submitEmailButton: '$email-settings-submit-button',
+    slackTab: 'li > a[aria-label="Tab Slack"]',
+    submitSlackButton: '$slack-settings--submit-button',
+  },
   tooltips: {
     diagnostics: {
       iconLocator: locate('$diagnostics-label').find('div[class$="-Icon"]'),
@@ -175,7 +214,7 @@ module.exports = {
     communication: {
       email: {
         serverAddress: {
-          iconLocator: locate('div').after(locate('span').withText('Server Address')).as,
+          iconLocator: locate('div').after(locate('span').withText('Server Address')),
           text: 'The default SMTP smarthost used for sending emails, including port number (e.g. smtp.example.org:587)',
           link: links.communicationDocs,
         },
@@ -212,51 +251,13 @@ module.exports = {
       },
       slack: {
         slackUrl: {
+          tabButton: 'li > a[aria-label="Tab Slack"]',
           iconLocator: locate('div').after(locate('span').withText('URL')),
           text: 'Slack incoming webhook URL',
           link: links.communicationDocs,
         },
       },
     },
-  },
-  communicationData,
-  communication: {
-    email: {
-      serverAddress: {
-        locator: '$smarthost-text-input',
-      },
-      hello: {
-        locator: '$hello-text-input',
-      },
-      from: {
-        locator: '$from-text-input',
-      },
-      authType: {
-        locator: '$hello-text-input',
-      },
-      username: {
-        locator: '$username-text-input',
-      },
-      password: {
-        locator: '$password-password-input',
-      },
-      testEmail: {
-        locator: '$testEmail-text-input',
-      },
-    },
-    slack: {
-      url: {
-        locator: '$url-text-input',
-        value: 'https://hook',
-      },
-    },
-    communicationSection: locate('$settings-tabs')
-      .find('li a')
-      .withAttr({ 'aria-label': 'Tab Communication' }),
-    emailTab: 'li > a[aria-label="Tab Email"]',
-    submitEmailButton: '$email-settings-submit-button',
-    slackTab: 'li > a[aria-label="Tab Slack"]',
-    submitSlackButton: '$slack-settings--submit-button',
   },
   fields: {
     advancedLabel: '$advanced-label',

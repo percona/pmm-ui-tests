@@ -388,30 +388,26 @@ Scenario(
   async ({ I, pmmSettingsPage, settingsAPI }) => {
     await settingsAPI.changeSettings({ alerting: true });
     const subPageTooltips = [
-      // {
-      //   subPage: pmmSettingsPage.metricsResolutionUrl,
-      //   tooltips: pmmSettingsPage.tooltips.metricsResolution,
-      // },
-      // {
-      //   subPage: pmmSettingsPage.advancedSettingsUrl,
-      //   tooltips: pmmSettingsPage.tooltips.advancedSettings,
-      // },
-      // {
-      //   subPage: pmmSettingsPage.sshKeyUrl,
-      //   tooltips: pmmSettingsPage.tooltips.ssh,
-      // },
-      // {
-      //   subPage: pmmSettingsPage.alertManagerIntegrationUrl,
-      //   tooltips: pmmSettingsPage.tooltips.alertManagerIntegration,
-      // },
-      // {
-      //   subPage: pmmSettingsPage.perconaPlatformUrl,
-      //   tooltips: pmmSettingsPage.tooltips.perconaPlatform,
-      // },
-      // {
-      //   subPage: pmmSettingsPage.communicationSettingsUrl,
-      //   tooltips: pmmSettingsPage.tooltips.communication.email,
-      // },
+      {
+        subPage: pmmSettingsPage.metricsResolutionUrl,
+        tooltips: pmmSettingsPage.tooltips.metricsResolution,
+      },
+      {
+        subPage: pmmSettingsPage.advancedSettingsUrl,
+        tooltips: pmmSettingsPage.tooltips.advancedSettings,
+      },
+      {
+        subPage: pmmSettingsPage.sshKeyUrl,
+        tooltips: pmmSettingsPage.tooltips.ssh,
+      },
+      {
+        subPage: pmmSettingsPage.alertManagerIntegrationUrl,
+        tooltips: pmmSettingsPage.tooltips.alertManagerIntegration,
+      },
+      {
+        subPage: pmmSettingsPage.perconaPlatformUrl,
+        tooltips: pmmSettingsPage.tooltips.perconaPlatform,
+      },
       {
         subPage: pmmSettingsPage.communicationSettingsUrl,
         tooltips: { ...pmmSettingsPage.tooltips.communication.email, ...pmmSettingsPage.tooltips.communication.slack },
@@ -422,8 +418,8 @@ Scenario(
       I.amOnPage(subPageTooltipObject.subPage);
 
       for (const tooltipObject of Object.values(subPageTooltipObject.tooltips)) {
-        if ('slackUrl' in subPageTooltips) {
-          I.click(pmmSettingsPage.communication.slackTab);
+        if (tooltipObject.tabButton) {
+          I.click(tooltipObject.tabButton);
         }
 
         await pmmSettingsPage.verifyTooltip(tooltipObject);
