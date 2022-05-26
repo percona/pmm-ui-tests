@@ -21,7 +21,7 @@ metrics.add(['azure_memory_percent_average']);
 metrics.add(['mysql_global_status_max_used_connections']);
 metrics.add(['mysql_global_variables_azure_ia_enabled']);
 
-Feature('Monitoring Azure MySQL and PostgreSQL DB');
+Feature('Monitoring Azure MySQL and PostgreSQL DB @not-ui-pipeline');
 
 Before(async ({ I }) => {
   await I.Authorize();
