@@ -1,4 +1,4 @@
-const emailDefaults = {
+const emailDefaultData = {
   type: 'email',
   serverAddress: 'test.server.com:465',
   hello: 'server.com',
@@ -9,16 +9,16 @@ const emailDefaults = {
 };
 
 module.exports = {
-  emailDefaults,
+  emailDefaults: emailDefaultData,
   communicationData: [
-    emailDefaults, {
-      ...emailDefaults,
+    emailDefaultData, {
+      ...emailDefaultData,
       authType: 'Plain',
     }, {
-      ...emailDefaults,
+      ...emailDefaultData,
       authType: 'Login',
     }, {
-      ...emailDefaults,
+      ...emailDefaultData,
       authType: 'CRAM-MD5',
     }, {
       type: 'slack',
