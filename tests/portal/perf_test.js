@@ -10,6 +10,10 @@ Scenario(
       I.navigateTabTo(tab, '').then(async () => I.say(`Page load time was ${await I.getPageTimeLoad(tab)}ms`));
     }
 
+    for (const tab of newTabs) {
+      I.getPageTimeToInteractive('http://192.168.100.13');
+    }
+
     I.say('New Window Opened');
   },
 );
