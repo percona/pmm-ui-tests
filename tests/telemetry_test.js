@@ -15,7 +15,7 @@ AfterSuite(async ({ settingsAPI }) => {
 });
 
 Scenario(
-  'Telemetry data should land on portal @not-ui-pipeline @telemetry',
+  'Telemetry data should land on portal @not-ui-pipeline',
   async ({ platformAPI }) => {
     const { pmm_server_telemetry_id } = await platformAPI.getServerInfo();
 
