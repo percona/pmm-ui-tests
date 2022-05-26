@@ -225,6 +225,7 @@ module.exports = {
     },
   },
   communicationData,
+  emailDefaults,
   communication: {
     email: {
       serverAddress: {
