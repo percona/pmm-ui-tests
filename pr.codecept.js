@@ -26,6 +26,7 @@ exports.config = {
           '--disable-gpu',
           '--disable-dev-shm-usage',
           '--disable-setuid-sandbox',
+          '--remote-debugging-port=9222',
         ],
       },
     },
@@ -53,6 +54,9 @@ exports.config = {
       require: './tests/helper/file_helper.js',
     },
     FileSystem: {},
+    PerformanceHelper: {
+      require: './tests/helper/performance_helper.js',
+    },
     REST: {
       endpoint: process.env.PMM_UI_URL || 'http://127.0.0.1/',
       timeout: 60000,
