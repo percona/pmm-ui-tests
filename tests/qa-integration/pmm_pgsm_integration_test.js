@@ -81,9 +81,13 @@ Scenario(
         const clickhouse_sum = parseFloat((response.data.metrics.query_time.sum).toFixed(7));
         const clickhouse_avg = parseFloat((response.data.metrics.query_time.avg).toFixed(7));
 
+        // Due to rounding difference we sometimes have values which differ in points 0.0000001
+        const avg_diff = Number(average_exec_time - clickhouse_avg).toFixed(7);
+        const total_diff = Number(total_exec_time - clickhouse_sum).toFixed(7);
+
         if (query !== 'SELECT version()' && query !== 'SELECT /* pmm-agent:pgstatmonitor */ version()') {
-          assert.ok(clickhouse_sum === total_exec_time, `Expected Total Query Time Metrics to be same for query ${query} with id as ${queryid} found ${clickhouse_sum} on clickhouse while PGSM has ${total_exec_time}`);
-          assert.ok(clickhouse_avg === average_exec_time, `Expected Average Query Time Metrics to be same for query ${query} with id as ${queryid} found ${clickhouse_avg} on clickhouse while PGSM has ${average_exec_time}`);
+          assert.ok(total_diff <= 0.0000001, `Expected Total Query Time Metrics to be same for query ${query} with id as ${queryid} found ${clickhouse_sum} on clickhouse while PGSM has ${total_exec_time}`);
+          assert.ok(avg_diff <= 0.0000001, `Expected Average Query Time Metrics to be same for query ${query} with id as ${queryid} found ${clickhouse_avg} on clickhouse while PGSM has ${average_exec_time}`);
           assert.ok(response.data.metrics.query_time.cnt === query_cnt, `Expected Total Query Count Metrics to be same for query ${query} with id as ${queryid} found in clickhouse as ${response.data.metrics.query_time.cnt} while pgsm has value as ${query_cnt}`);
         }
       }
