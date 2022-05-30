@@ -28,7 +28,7 @@ module.exports = {
     I.fillField('[name=user]', secret(process.env.PORTAL_USER_EMAIL));
     I.fillField('[name=password]', secret(process.env.PORTAL_USER_PASSWORD));
     I.click('Log in');
-    I.waitForVisible('$updates-info', 20);
+    I.waitForVisible('$updates-info', 60);
 
     return await I.grabCookie('grafana_session');
   },
