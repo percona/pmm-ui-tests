@@ -34,7 +34,7 @@ AfterSuite(async ({ I }) => {
 });
 
 Scenario(
-  'PMM-T1241 - Verify add mongoDB service with "+" in user password',
+  'PMM-T1241 - Verify add mongoDB service with "+" in user password @not-ui-pipeline @mongodb-exporter @exporters',
   async ({ I, grafanaAPI }) => {
     await I.say(
       await I.verifyCommand(`pmm-admin add mongodb --port=${connection.port} --password=${mongo_test_user.password} --username='${mongo_test_user.username}' --service-name=${mongodb_service_name}`),
