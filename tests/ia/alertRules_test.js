@@ -84,7 +84,11 @@ Scenario(
     I.seeElement(alertRulesPage.fields.ruleName);
     I.seeElement(alertRulesPage.fields.duration);
     I.seeElement(alertRulesPage.fields.searchDropdown('Severity'));
-    I.seeElement(alertRulesPage.fields.filters);
+    I.click(alertRulesPage.buttons.addFilter);
+    I.seeElement(alertRulesPage.fields.filtersLabel);
+    I.seeElement(alertRulesPage.fields.filtersValue);
+    I.seeElement(alertRulesPage.buttons.deleteFilter());
+    I.seeElement(alertRulesPage.fields.searchDropdown('Operators'));
     I.seeElement(alertRulesPage.fields.searchDropdown('Channels'));
     I.seeElement(alertRulesPage.buttons.toggleInModal);
     I.seeElement(alertRulesPage.buttons.addRule);
@@ -183,7 +187,7 @@ Data(rules).Scenario(
 
     alertRulesPage.openAlertRulesTab();
     I.click(alertRulesPage.buttons.openAddRuleModal);
-    alertRulesPage.fillRuleFields(rule);
+    await alertRulesPage.fillRuleFields(rule);
     I.click(alertRulesPage.buttons.addRule);
     I.verifyPopUpMessage(alertRulesPage.messages.successfullyAdded);
     I.seeElement(alertRulesPage.elements.rulesNameCell(rule.ruleName));
@@ -208,7 +212,7 @@ Scenario(
       thresholdUnit: '%',
       duration: '1',
       severity: 'Critical',
-      filters: 'service_name=pmm-server-postgresql',
+      filters: [{ label: 'service_name', operator: alertRulesPage.filterOperators.equal, value: 'pmm-server-postgresql' }],
       channels: '',
       activate: true,
       expression: 'sum(pg_stat_activity_count{datname!~"template.*|postgres"})\n'
@@ -221,7 +225,7 @@ Scenario(
       thresholdUnit: '%',
       duration: '2',
       severity: 'High',
-      filters: 'service_name=pmm-server-postgresql-updated',
+      filters: [{ label: 'service_name_updated', operator: alertRulesPage.filterOperators.regex, value: 'pmm-server-postgresql-updated' }],
       channels: ['EmailChannelForRules', 'EmailChannelForEditRules'],
       activate: false,
     };
@@ -232,7 +236,7 @@ Scenario(
     alertRulesPage.openAlertRulesTab();
     I.click(alertRulesPage.buttons.editAlertRule(rule.ruleName));
     alertRulesPage.verifyEditRuleDialogElements(rule, true);
-    alertRulesPage.fillRuleFields(ruleAfterUpdate);
+    await alertRulesPage.fillRuleFields(ruleAfterUpdate);
     I.click(alertRulesPage.buttons.addRule);
     I.verifyPopUpMessage(alertRulesPage.messages.successfullyEdited);
     alertRulesPage.verifyRowValues(ruleAfterUpdate);
