@@ -13,7 +13,7 @@ BeforeSuite(async ({ homePage }) => {
 });
 
 Scenario(
-  'Prepare credentials for PMM-Portal upgrade @not-ui-pipeline @pre-pmm-portal-upgrade @portal @post-pmm-portal-upgrade @portalTest',
+  'Prepare credentials for PMM-Portal upgrade @not-ui-pipeline @pre-pmm-portal-upgrade @portal @post-pmm-portal-upgrade',
   async ({
     I, portalAPI, settingsAPI, pmmSettingsPage,
   }) => {
@@ -81,7 +81,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T1224 Verify user is notified about using old PMM version while trying to connect to Portal @portal @pre-pmm-portal-upgrade @post-pmm-portal-upgrade @portalTest',
+  'PMM-T1224 Verify user is notified about using old PMM version while trying to connect to Portal @portal @pre-pmm-portal-upgrade @post-pmm-portal-upgrade',
   async ({
     I, perconaPlatformPage, portalAPI,
   }) => {
@@ -96,9 +96,6 @@ Scenario(
       perconaPlatformPage.before227.verifyPopUpMessage(perconaPlatformPage.before227.messages.oldPmmVersionError);
       I.refreshPage();
       I.waitForVisible(perconaPlatformPage.before227.elements.connectForm, 30);
-      const orgDetails = await portalAPI.apiGetOrgDetails(org.id, adminToken);
-
-      console.log(orgDetails.contacts);
     }
   },
 );
@@ -122,15 +119,24 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T1224 Verify user is notified about using old PMM version while trying to connect to Portal @portal @pre-pmm-portal-upgrade @post-pmm-portal-upgrade @portalTest',
+  'PMM-T1222 Verify user can see the contacts from Percona @portal @pre-pmm-portal-upgrade @post-pmm-portal-upgrade',
   async ({
-    I, portalAPI,
+    I, portalAPI, homePage, environmentOverviewPage,
   }) => {
-    await I.Authorize();
     if (pmmVersion >= 27 || pmmVersion === undefined) {
       const orgDetails = await portalAPI.apiGetOrgDetails(org.id, adminToken);
 
-      console.log(orgDetails.contacts);
+      I.amOnPage('');
+      await I.loginWithSSO(portalCredentials.admin1.email, portalCredentials.admin1.password);
+      await I.waitInUrl(homePage.landingUrl);
+      await I.waitForVisible(environmentOverviewPage.elements.environmentOverviewIcon);
+      I.amOnPage(environmentOverviewPage.url);
+      await I.waitForVisible(environmentOverviewPage.elements.contactName);
+      await I.waitForVisible(locate('strong').withText(environmentOverviewPage.messages.contactsHeader));
+      await I.waitForVisible(locate('span').withText(environmentOverviewPage.messages.customerManager));
+      const contactName = await I.grabTextFrom(environmentOverviewPage.elements.contactName);
+
+      assert.equal(orgDetails.contacts.customer_success.name, contactName, 'Portal and PMM contacts names are not the same');
     }
   },
 );

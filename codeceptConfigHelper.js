@@ -58,6 +58,7 @@ module.exports = {
     settingsAPI: './tests/pages/api/settingsAPI.js',
     templatesAPI: './tests/ia/pages/api/templatesAPI.js',
     qanAPI: './tests/QAN/api/qanAPI.js',
+    environmentOverviewPage: './tests/pages/environmentOverviewPage.js',
   },
   getChunks: (files) => {
     const dependentTests = files.filter((value) => /PMMSettings|stt|backup|permissions|Azure/.test(value));
