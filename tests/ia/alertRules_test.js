@@ -23,9 +23,10 @@ Object.values(page.templates).forEach((template) => {
 
 Feature('IA: Alert rules').retry(1);
 
-Before(async ({ I, settingsAPI }) => {
+Before(async ({ I, settingsAPI, rulesAPI }) => {
   await I.Authorize();
   await settingsAPI.apiEnableIA();
+  await rulesAPI.clearAllRules();
 });
 
 BeforeSuite(async ({
