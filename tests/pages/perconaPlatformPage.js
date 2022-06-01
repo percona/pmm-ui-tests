@@ -1,7 +1,9 @@
 const { I } = inject();
+const before227 = require('./perconaPlatformPage/before227Page');
 
 module.exports = {
   url: 'graph/settings/percona-platform',
+  before227,
   elements: {
     techPreviewLabel: locate('h1'),
     connectForm: '$connect-form',
