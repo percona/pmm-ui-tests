@@ -86,8 +86,8 @@ Scenario(
     I.seeElement(alertRulesPage.fields.duration);
     I.seeElement(alertRulesPage.fields.searchDropdown('Severity'));
     I.click(alertRulesPage.buttons.addFilter);
-    I.seeElement(alertRulesPage.fields.filtersLabel);
-    I.seeElement(alertRulesPage.fields.filtersValue);
+    I.seeElement(alertRulesPage.fields.filtersLabel());
+    I.seeElement(alertRulesPage.fields.filtersValue());
     I.seeElement(alertRulesPage.buttons.deleteFilter());
     I.seeElement(alertRulesPage.fields.searchDropdown('Operators'));
     I.seeElement(alertRulesPage.fields.searchDropdown('Channels'));
@@ -261,7 +261,7 @@ Data(rulesStates).Scenario(
       thresholdUnit: '%',
       duration: '1',
       severity: 'Critical',
-      filters: 'service_name=pmm-server-postgresql',
+      filters: [{ label: 'service_name', operator: alertRulesPage.filterOperators.equal, value: 'pmm-server-postgresql' }],
       channels: [],
       activate: false,
     };
@@ -379,7 +379,7 @@ Scenario(
                 + '* 100\n'
                 + '> [[ .threshold ]]',
       alert: 'MySQL too many connections (instance {{ $labels.instance }})',
-      filters: 'service_name=pmm-server-postgresql',
+      filters: [{ label: 'service_name', operator: alertRulesPage.filterOperators.equal, value: 'pmm-server-postgresql' }],
       activate: false,
     };
     const path = ruleTemplatesPage.ruleTemplate.paths.yaml;

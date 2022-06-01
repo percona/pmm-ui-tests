@@ -91,8 +91,8 @@ module.exports = {
     ruleName: '$name-text-input',
     threshold: '$threshold-number-input',
     duration: '$duration-number-input',
-    filtersLabel: I.useDataQA('filters[0].label-text-input'),
-    filtersValue: I.useDataQA('filters[0].value-text-input'),
+    filtersLabel: (index = 0) => I.useDataQA(`filters[${index}].label-text-input`),
+    filtersValue: (index = 0) => I.useDataQA(`filters[${index}].value-text-input`),
     template: '//form[@data-testid="add-alert-rule-modal-form"]/div[2]//div[contains(@class, "singleValue")]',
   },
   messages: {
@@ -137,11 +137,12 @@ module.exports = {
     }
 
     if (filters) {
-      I.click(this.buttons.addFilter);
-      filters.forEach(({ label, operator, value }) => {
-        I.fillField(this.fields.filtersLabel, label);
-        I.fillField(this.fields.filtersValue, value);
-        this.searchAndSelectResult('Operators', operator);
+      filters.forEach(({ label, operator, value }, num) => {
+        I.click(this.buttons.addFilter);
+        I.fillField(this.fields.filtersLabel(num), label);
+        I.fillField(this.fields.filtersValue(num), value);
+        I.fillField(locate(this.fields.searchDropdown('Operators')).at(num + 1), operator);
+        I.click(this.fields.resultsLocator(operator));
       });
     }
 
@@ -176,13 +177,13 @@ module.exports = {
 
     if (filters) {
       filters.forEach(({ label, operator, value }) => {
-        I.waitForValue(this.fields.filtersLabel, label, 5);
-        I.waitForValue(this.fields.filtersValue, value, 5);
+        I.waitForValue(this.fields.filtersLabel(), label, 5);
+        I.waitForValue(this.fields.filtersValue(), value, 5);
         I.seeTextEquals(operator, this.fields.dropdownValue('Operators'));
       });
     } else {
-      I.dontSeeElement(this.fields.filtersLabel);
-      I.dontSeeElement(this.fields.filtersValue);
+      I.dontSeeElement(this.fields.filtersLabel());
+      I.dontSeeElement(this.fields.filtersValue());
     }
 
     if (openAdvancedSection) {
