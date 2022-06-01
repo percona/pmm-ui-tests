@@ -85,8 +85,8 @@ Scenario(
   async ({
     I, perconaPlatformPage, portalAPI,
   }) => {
-    await I.Authorize();
     if (pmmVersion < 27) {
+      await I.Authorize();
       perconaPlatformPage.openPerconaPlatform();
       I.say(JSON.stringify(perconaPlatformPage.before227));
       I.appendField(perconaPlatformPage.before227.fields.pmmServerName, 'Test Server');
@@ -96,6 +96,8 @@ Scenario(
       perconaPlatformPage.before227.verifyPopUpMessage(perconaPlatformPage.before227.messages.oldPmmVersionError);
       I.refreshPage();
       I.waitForVisible(perconaPlatformPage.before227.elements.connectForm, 30);
+    } else {
+      I.say('This testcase is for PMM version 2.26.0 and lower');
     }
   },
 );
