@@ -121,11 +121,11 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T1222 Verify user can see the contacts from Percona @portal @pre-pmm-portal-upgrade @post-pmm-portal-upgrade',
+  'PMM-T1222 Verify user can see the contacts from Percona @portal @post-pmm-portal-upgrade',
   async ({
     I, portalAPI, homePage, environmentOverviewPage,
   }) => {
-    if (pmmVersion >= 27 || pmmVersion === undefined) {
+    if (pmmVersion >= 29 || pmmVersion === undefined) {
       const orgDetails = await portalAPI.apiGetOrgDetails(org.id, adminToken);
 
       I.amOnPage('');
@@ -139,6 +139,8 @@ Scenario(
       const contactName = await I.grabTextFrom(environmentOverviewPage.elements.contactName);
 
       assert.equal(orgDetails.contacts.customer_success.name, contactName, 'Portal and PMM contacts names are not the same');
+    } else {
+      I.say('This testcase is for PMM version 2.29.0 and higher');
     }
   },
 );
