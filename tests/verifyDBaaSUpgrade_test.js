@@ -26,8 +26,16 @@ const { versionMinor, patchVersionDiff, majorVersionDiff } = getVersions();
 
 Feature('Updates of DB clusters and operators and PMM Server upgrade related tests');
 
-BeforeSuite(async ({ dbaasAPI, settingsAPI }) => {
+BeforeSuite(async ({ I, dbaasAPI, settingsAPI }) => {
   await settingsAPI.changeSettings({ publicAddress: process.env.VM_IP });
+
+  const body = {
+
+  };
+  const headers = { Authorization: `Basic ${await I.getAuth()}` };
+
+  await I.sendPostRequest('/v1/Settings/Get', body, headers);
+
   if (!await dbaasAPI.apiCheckRegisteredClusterExist(clusterName)) {
     await dbaasAPI.apiRegisterCluster(process.env.kubeconfig_minikube, clusterName);
   }
