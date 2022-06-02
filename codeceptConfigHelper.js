@@ -34,7 +34,7 @@ module.exports = {
     psMySql: './tests/helper/psMySql.js',
     organizationEntitlementsPage: './tests/pages/organizationEntitlementsPage.js',
     organizationTicketsPage: './tests/pages/organizationTicketsPage.js',
-    perconaPlatformPage: './tests/pages/perconaPlatformPage.js',
+    perconaPlatformPage: './tests/pages/perconaPlatformPage/perconaPlatformPage.js',
     pmmDemoPage: './tests/pages/pmmDemoPage.js',
     pmmInventoryPage: './tests/pages/pmmInventoryPage.js',
     pmmSettingsPage: './tests/pages/pmmSettingsPage.js',
