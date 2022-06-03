@@ -26,16 +26,8 @@ const { versionMinor, patchVersionDiff, majorVersionDiff } = getVersions();
 
 Feature('Updates of DB clusters and operators and PMM Server upgrade related tests');
 
-BeforeSuite(async ({ I, dbaasAPI, settingsAPI }) => {
-  await settingsAPI.changeSettings({ publicAddress: process.env.VM_IP });
-
-  const body = {
-
-  };
-  const headers = { Authorization: `Basic ${await I.getAuth()}` };
-
-  await I.sendPostRequest('/v1/Settings/Get', body, headers);
-
+BeforeSuite(async ({ dbaasAPI, settingsAPI, pmmSettingsPage }) => {
+  //await settingsAPI.changeSettings({ publicAddress: process.env.VM_IP });
   if (!await dbaasAPI.apiCheckRegisteredClusterExist(clusterName)) {
     await dbaasAPI.apiRegisterCluster(process.env.kubeconfig_minikube, clusterName);
   }
@@ -49,7 +41,11 @@ Before(async ({ I, dbaasAPI }) => {
 });
 
 Scenario('PMM-T726 Verify existing DB clusters status after PMM Server upgrade @dbaas-upgrade',
-  async ({ I, dbaasAPI, homePage, dbaasPage, dbaasActionsPage }) => {
+  async ({ I, dbaasAPI, homePage, pmmSettingsPage, dbaasPage, dbaasActionsPage }) => {
+    await pmmSettingsPage.openAdvancedSettings();
+    I.seeElement(pmmSettingsPage.fields.publicAddressButton);
+    I.click(pmmSettingsPage.fields.publicAddressButton);
+    I.click(pmmSettingsPage.fields.advancedButton);
     //MySQL 8.0.20?
     await dbaasAPI.apiCreatePXCCluster(pxc_cluster_name, clusterName); 
     //MongoDB 4.2.8?
