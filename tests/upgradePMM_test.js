@@ -56,11 +56,6 @@ const { versionMinor, patchVersionDiff, majorVersionDiff } = getVersions();
 
 const iaReleased = versionMinor >= 13;
 
-if (process.env.OVF_UPGRADE_TESTING_INSTANCE === 'true') {
-  // Only Using this logic to run same set of setup and tests for AMI & OVF
-  process.env.AMI_UPGRADE_TESTING_INSTANCE = 'true';
-}
-
 Feature('PMM server Upgrade Tests and Executing test cases related to Upgrade Testing Cycle').retry(1);
 
 Before(async ({ I }) => {
@@ -70,8 +65,8 @@ Before(async ({ I }) => {
 
 BeforeSuite(async ({ I, codeceptjsConfig }) => {
   const mysqlComposeConnection = {
-    host: (process.env.AMI_UPGRADE_TESTING_INSTANCE === 'true' ? process.env.VM_CLIENT_IP : '127.0.0.1'),
-    port: (process.env.AMI_UPGRADE_TESTING_INSTANCE === 'true' ? remoteInstancesHelper.remote_instance.mysql.ps_5_7.port : '3309'),
+    host: (process.env.AMI_UPGRADE_TESTING_INSTANCE === 'true' || process.env.OVF_UPGRADE_TESTING_INSTANCE === 'true' ? process.env.VM_CLIENT_IP : '127.0.0.1'),
+    port: (process.env.AMI_UPGRADE_TESTING_INSTANCE === 'true' || process.env.OVF_UPGRADE_TESTING_INSTANCE === 'true' ? remoteInstancesHelper.remote_instance.mysql.ps_5_7.port : '3309'),
     username: connection.username,
     password: connection.password,
   };
@@ -80,8 +75,8 @@ BeforeSuite(async ({ I, codeceptjsConfig }) => {
 
   // Connect to MongoDB
   const mongoConnection = {
-    host: (process.env.AMI_UPGRADE_TESTING_INSTANCE === 'true' ? process.env.VM_CLIENT_IP : codeceptjsConfig.config.helpers.MongoDBHelper.host),
-    port: (process.env.AMI_UPGRADE_TESTING_INSTANCE === 'true' ? remoteInstancesHelper.remote_instance.mongodb.psmdb_4_2.port : codeceptjsConfig.config.helpers.MongoDBHelper.port),
+    host: (process.env.AMI_UPGRADE_TESTING_INSTANCE === 'true' || process.env.OVF_UPGRADE_TESTING_INSTANCE === 'true' ? process.env.VM_CLIENT_IP : codeceptjsConfig.config.helpers.MongoDBHelper.host),
+    port: (process.env.AMI_UPGRADE_TESTING_INSTANCE === 'true' || process.env.OVF_UPGRADE_TESTING_INSTANCE === 'true' ? remoteInstancesHelper.remote_instance.mongodb.psmdb_4_2.port : codeceptjsConfig.config.helpers.MongoDBHelper.port),
     username: codeceptjsConfig.config.helpers.MongoDBHelper.username,
     password: codeceptjsConfig.config.helpers.MongoDBHelper.password,
   };
