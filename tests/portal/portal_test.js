@@ -128,6 +128,7 @@ Scenario(
     I, portalAPI, homePage, environmentOverviewPage,
   }) => {
     if (pmmVersion >= 29 || pmmVersion === undefined) {
+      adminToken = await portalAPI.getUserAccessToken(portalCredentials.admin1.email, portalCredentials.admin1.password);
       const orgResponse = await portalAPI.apiGetOrg(adminToken);
       const orgDetails = await portalAPI.apiGetOrgDetails(orgResponse[0].id, adminToken);
 
@@ -268,7 +269,7 @@ Scenario(
       }
 
       await I.waitForVisible(perconaPlatformPage.elements.connectForm);
-      adminToken = await portalAPI.getUserAccessToken(portalCredentials.admin1.email, portalCredentials.admin1.password);
+
       perconaPlatformPage.connectToPortal(adminToken, `Test Server ${Date.now()}`);
     } else {
       I.say('This testcase is for PMM version 2.27.0 and higher');
