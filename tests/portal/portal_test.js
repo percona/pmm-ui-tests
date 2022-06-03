@@ -7,6 +7,7 @@ let portalCredentials = {};
 let adminToken = '';
 let org = {};
 let pmmVersion;
+let newAdminUser;
 
 BeforeSuite(async ({ homePage }) => {
   pmmVersion = await homePage.getVersions().versionMinor;
@@ -83,7 +84,7 @@ Scenario(
 Scenario(
   'PMM-T1224 Verify user is notified about using old PMM version while trying to connect to Portal @portal @pre-pmm-portal-upgrade @post-pmm-portal-upgrade',
   async ({
-    I, perconaPlatformPage, portalAPI,
+    I, perconaPlatformPage,
   }) => {
     if (pmmVersion < 27) {
       await I.Authorize();
@@ -121,7 +122,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T1222 Verify user can see the contacts from Percona @portal @pre-pmm-portal-upgrade @post-pmm-portal-upgrade',
+  'PMM-T1222 Verify user can see the contacts from Percona @not-ui-pipeline @portal @post-pmm-portal-upgrade',
   async ({
     I, portalAPI, homePage, environmentOverviewPage,
   }) => {
@@ -139,6 +140,46 @@ Scenario(
       const contactName = await I.grabTextFrom(environmentOverviewPage.elements.contactName);
 
       assert.equal(orgDetails.contacts.customer_success.name, contactName, 'Portal and PMM contacts names are not the same');
+    }
+  },
+);
+
+Scenario(
+  'PMM-T1249 Verify user logged in using SSO and is not a member of SN account is NOT able to see contacts @not-ui-pipeline @portal @post-pmm-portal-upgrade',
+  async ({
+    I, portalAPI, homePage, environmentOverviewPage,
+  }) => {
+    if (pmmVersion >= 27 || pmmVersion === undefined) {
+      newAdminUser = await portalAPI.getUser();
+
+      await portalAPI.oktaCreateUser(newAdminUser);
+      await portalAPI.apiInviteOrgMember(adminToken, org.id, { username: newAdminUser.email, role: 'Admin' });
+      I.amOnPage('');
+      await I.loginWithSSO(newAdminUser.email, newAdminUser.password);
+      await I.waitInUrl(homePage.landingUrl);
+      await I.waitForVisible(environmentOverviewPage.elements.environmentOverviewIcon);
+      pause();
+      I.amOnPage(environmentOverviewPage.url);
+      await I.waitForVisible(locate('strong').withText(environmentOverviewPage.messages.contactsHeader));
+      await I.waitForVisible(locate('span').withText(environmentOverviewPage.messages.customerManager));
+      await I.dontSeeElement(environmentOverviewPage.elements.contactName);
+      I.verifyPopUpMessage(environmentOverviewPage.messages.notPerconaCustomer);
+    }
+  },
+);
+
+Scenario(
+  'PMM-T1248 Verify local admin user can not see the contacts from Percona @not-ui-pipeline @portal @post-pmm-portal-upgrade',
+  async ({
+    I, environmentOverviewPage,
+  }) => {
+    if (pmmVersion >= 27 || pmmVersion === undefined) {
+      await I.Authorize();
+      I.amOnPage(environmentOverviewPage.url);
+      await I.waitForVisible(environmentOverviewPage.elements.notPlaformUser);
+      const warningMessage = await I.grabTextFrom(environmentOverviewPage.elements.notPlaformUser);
+
+      assert.equal(environmentOverviewPage.messages.loginWithPerconaAccount, warningMessage, 'Displayed message is not correct.');
     }
   },
 );
@@ -257,6 +298,39 @@ Scenario(
 );
 
 Scenario(
+  'PMM-T1247 Verify user cannot access platform functionality when PMM is not connected to the portal. @not-ui-pipeline @portal @post-pmm-portal-upgrade',
+  async ({
+    I, environmentOverviewPage, organizationEntitlementsPage, organizationTicketsPage,
+  }) => {
+    if (pmmVersion >= 27 || pmmVersion === undefined) {
+      await I.Authorize();
+      I.amOnPage(environmentOverviewPage.url);
+      await I.waitForVisible(environmentOverviewPage.elements.notConnectedToPortal);
+
+      assert.equal(
+        environmentOverviewPage.messages.notConnectedToPortal,
+        await I.grabTextFrom(environmentOverviewPage.elements.notConnectedToPortal),
+        'Displayed message is not correct.',
+      );
+      I.amOnPage(organizationEntitlementsPage.url);
+      await I.waitForVisible(environmentOverviewPage.elements.notConnectedToPortal);
+
+      assert.equal(
+        environmentOverviewPage.messages.notConnectedToPortal,
+        await I.grabTextFrom(environmentOverviewPage.elements.notConnectedToPortal),
+        'Displayed message is not correct.',
+      );
+      I.amOnPage(organizationTicketsPage.url);
+      assert.equal(
+        environmentOverviewPage.messages.notConnectedToPortal,
+        await I.grabTextFrom(environmentOverviewPage.elements.notConnectedToPortal),
+        'Displayed message is not correct.',
+      );
+    }
+  },
+);
+
+Scenario(
   'Perform cleanup after PMM upgrade @portal @not-ui-pipeline @post-pmm-portal-upgrade',
   async ({ portalAPI }) => {
     const orgResponse = await portalAPI.apiGetOrg(adminToken);
@@ -265,5 +339,8 @@ Scenario(
     await portalAPI.oktaDeleteUserByEmail(portalCredentials.admin1.email);
     await portalAPI.oktaDeleteUserByEmail(portalCredentials.admin2.email);
     await portalAPI.oktaDeleteUserByEmail(portalCredentials.technical.email);
+    if (newAdminUser) {
+      await portalAPI.oktaDeleteUserByEmail(newAdminUser.email);
+    }
   },
 );
