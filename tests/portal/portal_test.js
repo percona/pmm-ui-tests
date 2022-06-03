@@ -161,7 +161,6 @@ Scenario(
       await I.loginWithSSO(newAdminUser.email, newAdminUser.password);
       await I.waitInUrl(homePage.landingUrl);
       await I.waitForVisible(environmentOverviewPage.elements.environmentOverviewIcon);
-      pause();
       I.amOnPage(environmentOverviewPage.url);
       await I.waitForVisible(locate('strong').withText(environmentOverviewPage.messages.contactsHeader));
       await I.waitForVisible(locate('span').withText(environmentOverviewPage.messages.customerManager));
