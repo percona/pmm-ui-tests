@@ -73,28 +73,21 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T1207 - Verify dashboard search between QAN and dashboards @qan @nazarov',
+  'PMM-T1207 - Verify dashboard search between QAN and dashboards @qan',
   async ({
     I, qanPage, searchDashboardsModal, qanOverview,
   }) => {
     qanPage.waitForOpened();
-
     I.click(qanPage.fields.breadcrumbs.dashboardName);
     I.wait(3);
     searchDashboardsModal.waitForOpened();
     I.click(searchDashboardsModal.fields.closeButton);
     qanPage.waitForOpened();
-
     qanOverview.waitForOverviewLoaded();
     qanOverview.selectRow(1);
-    // eslint-disable-next-line no-underscore-dangle,no-console
-    console.log(I.grabCurrentUrl());
     I.click(qanPage.fields.topMenu.queryAnalytics);
-    // eslint-disable-next-line no-underscore-dangle,no-console
-    console.log(I.grabCurrentUrl());
     I.click(qanPage.fields.breadcrumbs.dashboardName);
     I.wait(3);
-
     searchDashboardsModal.waitForOpened();
     I.click(searchDashboardsModal.fields.closeButton);
     qanPage.waitForOpened();
