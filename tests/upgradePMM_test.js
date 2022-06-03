@@ -56,16 +56,17 @@ const { versionMinor, patchVersionDiff, majorVersionDiff } = getVersions();
 
 const iaReleased = versionMinor >= 13;
 
+if (process.env.OVF_UPGRADE_TESTING_INSTANCE === 'true') {
+  // Only Using this logic to run same set of setup and tests for AMI & OVF
+  process.env.AMI_UPGRADE_TESTING_INSTANCE = 'true';
+}
+
 Feature('PMM server Upgrade Tests and Executing test cases related to Upgrade Testing Cycle').retry(1);
 
 Before(async ({ I }) => {
   await I.Authorize();
   I.setRequestTimeout(60000);
 });
-if (process.env.OVF_UPGRADE_TESTING_INSTANCE === 'true') {
-  // Only Using this logic to run same set of setup and tests for AMI & OVF
-  process.env.AMI_UPGRADE_TESTING_INSTANCE = 'true';
-}
 
 BeforeSuite(async ({ I, codeceptjsConfig }) => {
   const mysqlComposeConnection = {
