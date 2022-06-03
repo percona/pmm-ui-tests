@@ -89,14 +89,15 @@ Scenario(
     if (pmmVersion < 27) {
       await I.Authorize();
       perconaPlatformPage.openPerconaPlatform();
-      I.say(JSON.stringify(perconaPlatformPage.before227));
-      I.appendField(perconaPlatformPage.before227.fields.pmmServerName, 'Test Server');
-      I.appendField(perconaPlatformPage.before227.fields.emailInput, portalCredentials.admin1.email);
-      I.appendField(perconaPlatformPage.before227.fields.passwordInput, portalCredentials.admin1.password);
-      I.click(perconaPlatformPage.before227.buttons.connectButton);
-      perconaPlatformPage.before227.verifyPopUpMessage(perconaPlatformPage.before227.messages.oldPmmVersionError);
+      I.say(JSON.stringify(perconaPlatformPage.perconaPlatformPage_2_26));
+      I.appendField(perconaPlatformPage.perconaPlatformPage_2_26.fields.pmmServerName, 'Test Server');
+      I.appendField(perconaPlatformPage.perconaPlatformPage_2_26.fields.emailInput, portalCredentials.admin1.email);
+      I.appendField(perconaPlatformPage.perconaPlatformPage_2_26.fields.passwordInput, portalCredentials.admin1.password);
+      I.click(perconaPlatformPage.perconaPlatformPage_2_26.buttons.connectButton);
+      perconaPlatformPage.perconaPlatformPage_2_26
+        .verifyPopUpMessage(perconaPlatformPage.perconaPlatformPage_2_26.messages.oldPmmVersionError);
       I.refreshPage();
-      I.waitForVisible(perconaPlatformPage.before227.elements.connectForm, 30);
+      I.waitForVisible(perconaPlatformPage.perconaPlatformPage_2_26.elements.connectForm, 30);
     } else {
       I.say('This testcase is for PMM version 2.26.0 and lower');
     }
@@ -126,7 +127,7 @@ Scenario(
   async ({
     I, portalAPI, homePage, environmentOverviewPage,
   }) => {
-    if (pmmVersion >= 27 || pmmVersion === undefined) {
+    if (pmmVersion >= 29 || pmmVersion === undefined) {
       const orgDetails = await portalAPI.apiGetOrgDetails(org.id, adminToken);
 
       I.amOnPage('');
@@ -140,6 +141,8 @@ Scenario(
       const contactName = await I.grabTextFrom(environmentOverviewPage.elements.contactName);
 
       assert.equal(orgDetails.contacts.customer_success.name, contactName, 'Portal and PMM contacts names are not the same');
+    } else {
+      I.say('This testcase is for PMM version 2.29.0 and higher');
     }
   },
 );
