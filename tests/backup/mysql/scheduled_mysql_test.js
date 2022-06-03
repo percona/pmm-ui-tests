@@ -50,7 +50,7 @@ AfterSuite(async ({ psMySql }) => {
 });
 
 Scenario(
-  'PMM-T923 - Verify user is able to schedule a backup for MySQL @bm-mysql',
+  'PMM-T923 - Verify user is able to schedule a backup for MySQL @bm-mysql @not-ui-pipeline',
   async ({
     I, backupInventoryPage, scheduledAPI, backupAPI, scheduledPage,
   }) => {
