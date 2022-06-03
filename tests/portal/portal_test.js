@@ -128,7 +128,8 @@ Scenario(
     I, portalAPI, homePage, environmentOverviewPage,
   }) => {
     if (pmmVersion >= 29 || pmmVersion === undefined) {
-      const orgDetails = await portalAPI.apiGetOrgDetails(org.id, adminToken);
+      const orgResponse = await portalAPI.apiGetOrg(adminToken);
+      const orgDetails = await portalAPI.apiGetOrgDetails(orgResponse[0].id, adminToken);
 
       I.amOnPage('');
       await I.loginWithSSO(portalCredentials.admin1.email, portalCredentials.admin1.password);
@@ -156,7 +157,9 @@ Scenario(
       newAdminUser = await portalAPI.getUser();
 
       await portalAPI.oktaCreateUser(newAdminUser);
-      await portalAPI.apiInviteOrgMember(adminToken, org.id, { username: newAdminUser.email, role: 'Admin' });
+      const orgResponse = await portalAPI.apiGetOrg(adminToken);
+
+      await portalAPI.apiInviteOrgMember(adminToken, orgResponse[0].id, { username: newAdminUser.email, role: 'Admin' });
       I.amOnPage('');
       await I.loginWithSSO(newAdminUser.email, newAdminUser.password);
       await I.waitInUrl(homePage.landingUrl);
