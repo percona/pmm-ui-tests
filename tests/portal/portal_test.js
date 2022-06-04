@@ -150,7 +150,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T1249 Verify user logged in using SSO and is not a member of SN account is NOT able to see contacts @not-ui-pipeline @portal @post-pmm-portal-upgrade',
+  'PMM-T1169 Verify PMM user logged in using SSO and member of organization in Portal BUT not a SN account is NOT able to see Contacts @not-ui-pipeline @portal @post-pmm-portal-upgrade',
   async ({
     I, portalAPI, homePage, environmentOverviewPage,
   }) => {
@@ -175,7 +175,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T1248 Verify local admin user can not see the contacts from Percona @not-ui-pipeline @portal @post-pmm-portal-upgrade',
+  'PMM-T1170 Verify PMM user that is not logged in with SSO can NOT see Contacts for organization @not-ui-pipeline @portal @post-pmm-portal-upgrade',
   async ({
     I, environmentOverviewPage,
   }) => {
