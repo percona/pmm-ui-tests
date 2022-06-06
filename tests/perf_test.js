@@ -3,7 +3,7 @@ const assert = require('assert');
 Feature('Performance test of PMM UI');
 
 Scenario(
-  'PMM-T7 Verify performance of PMM instance.',
+  'PMM-T7 Verify performance of PMM instance. @not-ui-pipeline @perf-testing',
   async ({
     I, homePage, pmmInventoryPage, pmmSettingsPage, allChecksPage,
   }) => {
