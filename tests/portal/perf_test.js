@@ -1,17 +1,22 @@
-Feature('Portal Integration with PMM');
+const assert = require('assert');
+
+Feature('Performance test of PMM UI');
 
 Scenario(
-  'PMM-T398 PMM-T809 Verify Connect to Percona Portal elements @portal @pre-pmm-portal-upgrade',
+  'PMM-T7 Verify performance of PMM instance.',
   async ({
     I, homePage, pmmInventoryPage, pmmSettingsPage, allChecksPage,
   }) => {
     await I.Authorize();
+    await I.amOnPage('');
     const newTabs = await I.openNewTabs(4);
     const addresses = [homePage.landingUrl, pmmInventoryPage.url, pmmSettingsPage.url, allChecksPage.url];
 
     for (const [i, tab] of newTabs.entries()) {
       await I.navigateTabTo(tab, addresses[i]);
-      await I.say(`Page load time was ${await I.getPageTimeLoad(tab)}ms`);
+      const loadTime = await I.getPageTimeToLoad(tab);
+
+      assert.ok(parseInt(loadTime, 10) < 10000, `PMM took over the test seconds to load for the address + ${addresses[i]}`);
     }
   },
 );
