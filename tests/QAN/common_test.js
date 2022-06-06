@@ -73,7 +73,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T1207 - Verify dashboard search between QAN and dashboards @qan @nazarov',
+  'PMM-T1207 - Verify dashboard search between QAN and dashboards @qan',
   async ({
     I, qanPage, searchDashboardsModal, qanOverview,
   }) => {
