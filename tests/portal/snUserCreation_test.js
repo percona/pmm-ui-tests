@@ -15,7 +15,6 @@ Scenario(
 
     await portalAPI.apiInviteOrgMember(adminToken, org.id, { username: portalCredentials.admin2.email, role: 'Admin' });
     await portalAPI.apiInviteOrgMember(adminToken, org.id, { username: portalCredentials.technical.email, role: 'Technical' });
-
-    process.env.ServiceNowAdminUsername = portalCredentials.admin1.email;
+    await I.verifyCommand(`export SERVICE_NOT_ADMIN_USERNAME=${portalCredentials.admin1.email}`);
   },
 );
