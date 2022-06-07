@@ -10,8 +10,9 @@ Scenario(
   }) => {
     const portalCredentials = await portalAPI.createServiceNowUsers();
 
-    await exec(`export SERVICE_NOT_ADMIN_USERNAME="${portalCredentials.admin1.email}"`);
+    await exec(`export SERVICE_NOW_ADMIN_USERNAME=${portalCredentials.admin1.email}`);
+    await exec('export TEST=test');
     await I.wait(5);
-    I.say(JSON.stringify(await exec('printenv')));
+    I.say(JSON.stringify(await exec('printenv').stdout));
   },
 );
