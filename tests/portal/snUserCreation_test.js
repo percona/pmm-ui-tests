@@ -11,8 +11,9 @@ Scenario(
     const portalCredentials = await portalAPI.createServiceNowUsers();
 
     I.say(await exec(`SERVICE_NOW_ADMIN_USERNAME=${portalCredentials.admin1.email}`));
-    I.say(await exec('echo $SERVICE_NOW_ADMIN_USERNAME'));
+    I.say(JSON.stringify(await exec('echo $SERVICE_NOW_ADMIN_USERNAME')));
+    I.say(await exec(`SERVICE_NOW_ADMIN_PASSWORD=${portalCredentials.admin1.password}`));
+    I.say(JSON.stringify(await exec('echo $SERVICE_NOW_ADMIN_PASSWORD')));
     await I.wait(5);
-    I.say(JSON.stringify(await exec('printenv')));
   },
 );
