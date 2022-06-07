@@ -6,7 +6,7 @@ Percona Monitoring and Management UI automated tests. Designed to cover "End to 
 
 * Install Node.js 12+ version and make sure npx is included
 * Install "playwright" browser driver, ex: `sudo npx playwright install-deps`
-* build TS definitions: `npx codecept def pr.codecept.js`
+* build TS definitions: `npx codeceptjs def pr.codecept.js`
 
 this is it! tests are good to go on specified PMM server.
 
