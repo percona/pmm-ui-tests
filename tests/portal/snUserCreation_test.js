@@ -11,7 +11,12 @@ Scenario(
     const portalCredentials = await portalAPI.createServiceNowUsers();
 
     I.say(`Admin email is: ${portalCredentials.admin1.email}`);
-    I.say(await exec(`SERVICE_NOW_ADMIN_USERNAME=${portalCredentials.admin1.email}`));
+    const AdminReponse1 = await I.verifyCommand(`SERVICE_NOW_ADMIN_USERNAME=${portalCredentials.admin1.email}`);
+
+    I.say(AdminReponse1);
+    const AdminReponse2 = await I.verifyCommand('echo $SERVICE_NOW_ADMIN_USERNAME');
+
+    I.say(AdminReponse2);
     I.say(JSON.stringify(await exec('echo $SERVICE_NOW_ADMIN_USERNAME')));
     I.say(await exec(`SERVICE_NOW_ADMIN_PASSWORD=${portalCredentials.admin1.password}`));
     I.say(JSON.stringify(await exec('echo $SERVICE_NOW_ADMIN_PASSWORD')));
