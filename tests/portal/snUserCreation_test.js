@@ -13,6 +13,6 @@ Scenario(
     await exec(`export SERVICE_NOW_ADMIN_USERNAME=${portalCredentials.admin1.email}`);
     await exec('export TEST=test');
     await I.wait(5);
-    I.say(JSON.stringify(await exec('printenv').stdout));
+    I.say(JSON.stringify(await exec('printenv')));
   },
 );
