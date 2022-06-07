@@ -7,7 +7,7 @@ let portalCredentials = {};
 let adminToken = '';
 let org = {};
 let pmmVersion;
-let newAdminUser;
+let contactName;
 
 BeforeSuite(async ({ homePage }) => {
   pmmVersion = await homePage.getVersions().versionMinor;
@@ -25,14 +25,19 @@ Scenario(
     } else {
       await settingsAPI.changeSettings({ publicAddress: pmmSettingsPage.publicAddress });
       portalCredentials = await portalAPI.createServiceNowUsers();
+      const newAdminUser = await portalAPI.getUser();
+
       await portalAPI.oktaCreateUser(portalCredentials.admin1);
       await portalAPI.oktaCreateUser(portalCredentials.admin2);
       await portalAPI.oktaCreateUser(portalCredentials.technical);
+      await portalAPI.oktaCreateUser(newAdminUser);
       adminToken = await portalAPI.getUserAccessToken(portalCredentials.admin1.email, portalCredentials.admin1.password);
       org = await portalAPI.apiCreateOrg(adminToken);
 
+      portalCredentials.nonSnAdmin = newAdminUser;
       await portalAPI.apiInviteOrgMember(adminToken, org.id, { username: portalCredentials.admin2.email, role: 'Admin' });
       await portalAPI.apiInviteOrgMember(adminToken, org.id, { username: portalCredentials.technical.email, role: 'Technical' });
+      await portalAPI.apiInviteOrgMember(adminToken, org.id, { username: newAdminUser.email, role: 'Admin' });
       await I.writeFileSync(fileName, JSON.stringify(portalCredentials), true);
     }
   },
@@ -140,7 +145,7 @@ Scenario(
       await I.waitForVisible(environmentOverviewPage.elements.contactName);
       await I.waitForVisible(locate('strong').withText(environmentOverviewPage.messages.contactsHeader));
       await I.waitForVisible(locate('span').withText(environmentOverviewPage.messages.customerManager));
-      const contactName = await I.grabTextFrom(environmentOverviewPage.elements.contactName);
+      contactName = await I.grabTextFrom(environmentOverviewPage.elements.contactName);
 
       assert.equal(orgDetails.contacts.customer_success.name, contactName, 'Portal and PMM contacts names are not the same');
     } else {
@@ -152,17 +157,11 @@ Scenario(
 Scenario(
   'PMM-T1169 Verify PMM user logged in using SSO and member of organization in Portal BUT not a SN account is NOT able to see Contacts @not-ui-pipeline @portal @post-pmm-portal-upgrade',
   async ({
-    I, portalAPI, homePage, environmentOverviewPage,
+    I, homePage, environmentOverviewPage,
   }) => {
-    if (pmmVersion >= 27 || pmmVersion === undefined) {
-      newAdminUser = await portalAPI.getUser();
-
-      await portalAPI.oktaCreateUser(newAdminUser);
-      const orgResponse = await portalAPI.apiGetOrg(adminToken);
-
-      await portalAPI.apiInviteOrgMember(adminToken, orgResponse[0].id, { username: newAdminUser.email, role: 'Admin' });
-      I.amOnPage('');
-      await I.loginWithSSO(newAdminUser.email, newAdminUser.password);
+    if (pmmVersion >= 29 || pmmVersion === undefined) {
+      I.amOnPage('graph/login');
+      await I.loginWithSSO(portalCredentials.nonSnAdmin.email, portalCredentials.nonSnAdmin.password);
       await I.waitInUrl(homePage.landingUrl);
       await I.waitForVisible(environmentOverviewPage.elements.environmentOverviewIcon);
       I.amOnPage(environmentOverviewPage.url);
@@ -179,7 +178,7 @@ Scenario(
   async ({
     I, environmentOverviewPage,
   }) => {
-    if (pmmVersion >= 27 || pmmVersion === undefined) {
+    if (pmmVersion >= 29 || pmmVersion === undefined) {
       await I.Authorize();
       I.amOnPage(environmentOverviewPage.url);
       await I.waitForVisible(environmentOverviewPage.elements.notPlaformUser);
@@ -345,8 +344,6 @@ Scenario(
     await portalAPI.oktaDeleteUserByEmail(portalCredentials.admin1.email);
     await portalAPI.oktaDeleteUserByEmail(portalCredentials.admin2.email);
     await portalAPI.oktaDeleteUserByEmail(portalCredentials.technical.email);
-    if (newAdminUser) {
-      await portalAPI.oktaDeleteUserByEmail(newAdminUser.email);
-    }
+    await portalAPI.oktaDeleteUserByEmail(portalCredentials.nonSnAdmin.email);
   },
 );
