@@ -214,14 +214,14 @@ class Grafana extends Helper {
     }
 
     if (result === 'pass') {
-      assert.ok(code === 0, `The command ${command} was expected to run without any errors, the error found ${stderr}`);
+      assert.ok(code === 0, `The command ${command} was expected to run without any errors, the error found ${stderr} ${stdout}`);
     } else {
       assert.ok(code !== 0, `The command ${command} was expected to return with failure but found to be executing without any error, the return code found ${code}`);
     }
 
-    if (!getError) return stdout;
+    if (!getError) return (stdout || stderr);
 
-    return stderr;
+    return (stdout || stderr);
   }
 }
 
