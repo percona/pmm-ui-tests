@@ -167,6 +167,7 @@ Scenario(
       I.amOnPage(environmentOverviewPage.url);
       await I.waitForVisible(locate('strong').withText(environmentOverviewPage.messages.contactsHeader));
       await I.waitForVisible(locate('span').withText(environmentOverviewPage.messages.customerManager));
+      await I.refreshPage();
       await I.dontSeeElement(environmentOverviewPage.elements.contactName);
       I.verifyPopUpMessage(environmentOverviewPage.messages.notPerconaCustomer);
     }
