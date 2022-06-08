@@ -26,20 +26,20 @@ const { versionMinor, patchVersionDiff, majorVersionDiff } = getVersions();
 
 Feature('Updates of DB clusters and operators and PMM Server upgrade related tests');
 
-BeforeSuite(async ({ dbaasAPI, settingsAPI }) => {
-  await settingsAPI.changeSettings({ publicAddress: process.env.VM_IP });
-  if (!await dbaasAPI.apiCheckRegisteredClusterExist(clusterName)) {
-    await dbaasAPI.apiRegisterCluster(process.env.kubeconfig_minikube, clusterName);
-  }
-});
-
 Before(async ({ I, dbaasAPI }) => {
   await I.Authorize();
 });
 
 Scenario(
   'PMM-T3 Verify user is able to Upgrade PMM version [blocker] @@dbaas-upgrade ',
-  async ({ I, homePage }) => {
+  async ({
+    I, homePage, settingsAPI, dbaasAPI,
+  }) => {
+    await settingsAPI.changeSettings({ publicAddress: process.env.VM_IP });
+    if (!await dbaasAPI.apiCheckRegisteredClusterExist(clusterName)) {
+      await dbaasAPI.apiRegisterCluster(process.env.kubeconfig_minikube, clusterName);
+    }
+
     I.amOnPage(homePage.url);
     await homePage.upgradePMM(versionMinor);
   },
