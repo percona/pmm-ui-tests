@@ -71,3 +71,25 @@ Scenario(
     }
   },
 );
+
+Scenario(
+  'PMM-T1207 - Verify dashboard search between QAN and dashboards @qan',
+  async ({
+    I, qanPage, searchDashboardsModal, qanOverview,
+  }) => {
+    qanPage.waitForOpened();
+    I.click(qanPage.fields.breadcrumbs.dashboardName);
+    I.wait(3);
+    searchDashboardsModal.waitForOpened();
+    I.click(searchDashboardsModal.fields.closeButton);
+    qanPage.waitForOpened();
+    qanOverview.waitForOverviewLoaded();
+    qanOverview.selectRow(1);
+    I.click(qanPage.fields.topMenu.queryAnalytics);
+    I.click(qanPage.fields.breadcrumbs.dashboardName);
+    I.wait(3);
+    searchDashboardsModal.waitForOpened();
+    I.click(searchDashboardsModal.fields.closeButton);
+    qanPage.waitForOpened();
+  },
+);
