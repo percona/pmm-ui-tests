@@ -18,7 +18,7 @@ Before(async ({ I }) => {
 });
 
 Scenario(
-  'PMM-T1229 Verify pmm-admin add --credentials-source flag overwrites other credentials @cli @exporters',
+  'PMM-T1229 Verify pmm-admin add --credentials-source flag overwrites other credentials @not-ui-pipeline @cli @exporters',
   async ({ I, inventoryAPI, grafanaAPI }) => {
     const mysql_service_name = 'credential_source_mysql';
 
@@ -43,7 +43,7 @@ Scenario(
 );
 
 Data(dbInstances).Scenario(
-  'PMM-T1230 Verify pmm-admin add with --credentials-source flag @cli @exporters',
+  'PMM-T1230 Verify pmm-admin add with --credentials-source flag @not-ui-pipeline @cli @exporters',
   async ({
     I, inventoryAPI, grafanaAPI, current,
   }) => {
@@ -86,7 +86,7 @@ Data(dbInstances).Scenario(
 );
 
 Scenario(
-  'PMM-T1231 Verify pmm-admin add with wrong path in --credentials-source flag @cli @exporters',
+  'PMM-T1231 Verify pmm-admin add with wrong path in --credentials-source flag @not-ui-pipeline @cli @exporters',
   async ({ I, inventoryAPI, grafanaAPI }) => {
     const mysql_service_name = 'credential_source_mysql';
 
@@ -101,7 +101,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T1232 Verify pmm-admin add with wrong or missing credentials in file from --credentials-source flag @cli @exporters',
+  'PMM-T1232 Verify pmm-admin add with wrong or missing credentials in file from --credentials-source flag @not-ui-pipeline @cli @exporters',
   async ({ I, inventoryAPI, grafanaAPI }) => {
     const mysql_service_name = 'credential_source_mysql';
     let output;
@@ -135,7 +135,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T1233 Verify pmm-admin add with --credentials-source flag and wrong file format @cli @exporters',
+  'PMM-T1233 Verify pmm-admin add with --credentials-source flag and wrong file format @not-ui-pipeline @cli @exporters',
   async ({ I, inventoryAPI, grafanaAPI }) => {
     const mysql_service_name = 'credential_source_mysql';
 
@@ -150,7 +150,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T1234 Verify pmm-admin add with --credentials-source flag and different file permissions @cli @exporters',
+  'PMM-T1234 Verify pmm-admin add with --credentials-source flag and different file permissions @not-ui-pipeline @cli @exporters',
   async ({ I, inventoryAPI, grafanaAPI }) => {
     const mysql_service_name = 'credential_source_mysql';
 
