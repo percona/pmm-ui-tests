@@ -104,19 +104,6 @@ exports.config = {
           steps: true,
         },
       },
-      'mocha-junit-reporter': {
-        stdout: './tests/output/console.log',
-        options: {
-          mochaFile: './tests/output/result.xml',
-        },
-      },
-      mochawesome: {
-        stdout: './tests/output/mocharesult.log',
-        options: {
-          reportDir: './tests/output',
-          reportFilename: 'result.html',
-        },
-      },
     },
   },
   bootstrap: false,
