@@ -22,6 +22,6 @@ jobs:
       with:
         node-version: 16.x
     - name: Install Dependencies
-      run: npm ci
+      run: npm i
     - name: Run lint:tests
       run: npm run lint:tests
