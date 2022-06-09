@@ -104,6 +104,13 @@ exports.config = {
           steps: true,
         },
       },
+      'mocha-junit-reporter': {
+        stdout: '-',
+        options: {
+          mochaFile: './tests/output/result.xml',
+          jenkinsMode: true,
+        },
+      },
     },
   },
   bootstrap: false,
