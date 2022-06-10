@@ -105,16 +105,10 @@ exports.config = {
         },
       },
       'mocha-junit-reporter': {
-        stdout: './tests/output/console.log',
+        stdout: '-',
         options: {
           mochaFile: './tests/output/result.xml',
-        },
-      },
-      mochawesome: {
-        stdout: './tests/output/mocharesult.log',
-        options: {
-          reportDir: './tests/output',
-          reportFilename: 'result.html',
+          jenkinsMode: true,
         },
       },
     },
