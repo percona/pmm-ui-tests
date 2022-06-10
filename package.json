@@ -15,6 +15,7 @@
     "e2e:grafana-pr": "npx codeceptjs run -c pr.codecept.js --grep '@grafana-pr'"
   },
   "dependencies": {
+    "@faker-js/faker": "^5.5.3",
     "@pagerduty/pdjs": "^2.2.4",
     "@types/lodash": "^4.14.168",
     "@types/mocha": "^8.2.2",
