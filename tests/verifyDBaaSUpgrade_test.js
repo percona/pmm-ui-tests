@@ -35,10 +35,10 @@ Scenario(
   async ({
     I, homePage, settingsAPI, dbaasAPI,
   }) => {
-    // await settingsAPI.changeSettings({ publicAddress: process.env.VM_IP });
-    // if (!await dbaasAPI.apiCheckRegisteredClusterExist(clusterName)) {
-    //   await dbaasAPI.apiRegisterCluster(process.env.kubeconfig_minikube, clusterName);
-    // }
+    await settingsAPI.changeSettings({ publicAddress: process.env.VM_IP });
+    if (!await dbaasAPI.apiCheckRegisteredClusterExist(clusterName)) {
+      await dbaasAPI.apiRegisterCluster(process.env.kubeconfig_minikube, clusterName);
+    }
 
     I.amOnPage(homePage.url);
     await homePage.upgradePMM(versionMinor);
