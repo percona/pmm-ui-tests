@@ -31,14 +31,14 @@ Before(async ({ I, dbaasAPI }) => {
 });
 
 Scenario(
-  'PMM-T3 Verify user is able to Upgrade PMM version [blocker] @@dbaas-upgrade ',
+  'PMM-T3 Verify user is able to Upgrade PMM version [blocker] @dbaas-upgrade ',
   async ({
     I, homePage, settingsAPI, dbaasAPI,
   }) => {
-    await settingsAPI.changeSettings({ publicAddress: process.env.VM_IP });
-    if (!await dbaasAPI.apiCheckRegisteredClusterExist(clusterName)) {
-      await dbaasAPI.apiRegisterCluster(process.env.kubeconfig_minikube, clusterName);
-    }
+    // await settingsAPI.changeSettings({ publicAddress: process.env.VM_IP });
+    // if (!await dbaasAPI.apiCheckRegisteredClusterExist(clusterName)) {
+    //   await dbaasAPI.apiRegisterCluster(process.env.kubeconfig_minikube, clusterName);
+    // }
 
     I.amOnPage(homePage.url);
     await homePage.upgradePMM(versionMinor);
