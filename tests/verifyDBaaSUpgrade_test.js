@@ -41,7 +41,7 @@ Scenario(
     }
 
     I.amOnPage(homePage.url);
-    await homePage.upgradePMM(versionMinor);
+    await homePage.upgradePMM(versionMinor, true);
   },
 ).retry(0);
 
