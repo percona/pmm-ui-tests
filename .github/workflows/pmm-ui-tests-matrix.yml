@@ -38,6 +38,11 @@ jobs:
           target_url: 'https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}'
           sha: ${{ env.SHA }}
 
+      - name: Install NodeJS v16
+        uses: percona-platform/setup-node@v2
+        with:
+          node-version: 16
+
       - name: Checkout UI tests
         uses: percona-platform/checkout@v2
         with:
@@ -52,3 +57,11 @@ jobs:
         run: |
           cd ./pmm-ui-tests
           docker-compose up -d
+
+      - name: which folder are we in
+        run: ls
+
+      - name: Execute Tests
+        run: |
+          npm install
+          npx codeceptjs run --steps -c pr.codecept.js --grep '@portal'
