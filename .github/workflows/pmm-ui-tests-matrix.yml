@@ -63,5 +63,6 @@ jobs:
 
       - name: Execute Tests
         run: |
+          cd ./pmm-ui-tests
           npm install
           npx codeceptjs run --steps -c pr.codecept.js --grep '@portal'
