@@ -38,9 +38,6 @@ jobs:
           target_url: 'https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}'
           sha: ${{ env.SHA }}
 
-      - name: Install Docker Compose
-        uses: ndeloof/install-docker-compose
-
       - name: Checkout UI tests
         uses: percona-platform/checkout@v2
         with:
