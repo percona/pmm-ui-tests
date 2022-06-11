@@ -44,6 +44,9 @@ jobs:
           ref: ${{ env.UI_TESTS_BRANCH }}
           repository: percona/pmm-ui-tests
           path: ./pmm-ui-tests
+      
+      - name: which folder are we in 
+        run: ls
 
       - name: Compose PMM-Sever
         run: docker-compose up -d
