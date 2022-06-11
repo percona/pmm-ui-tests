@@ -132,6 +132,7 @@ Scenario(
   async ({
     I, portalAPI, homePage, environmentOverviewPage,
   }) => {
+    I.say('This test scenario also covers: PMM-T1168 - Verify PMM user logged in using SSO and member of SN account is able to see contacts');
     if (pmmVersion >= 29 || pmmVersion === undefined) {
       adminToken = await portalAPI.getUserAccessToken(portalCredentials.admin1.email, portalCredentials.admin1.password);
       const orgResponse = await portalAPI.apiGetOrg(adminToken);
@@ -154,7 +155,7 @@ Scenario(
   },
 );
 
-Scenario(
+xScenario(
   'PMM-T1169 Verify PMM user logged in using SSO and member of organization in Portal BUT not a SN account is NOT able to see Contacts @not-ui-pipeline @portal @post-pmm-portal-upgrade',
   async ({
     I, homePage, environmentOverviewPage,
