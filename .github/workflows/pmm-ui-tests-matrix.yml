@@ -38,9 +38,15 @@ jobs:
           target_url: 'https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}'
           sha: ${{ env.SHA }}
 
+      - name: Install Docker Compose
+        uses: ndeloof/install-docker-compose
+
       - name: Checkout UI tests
         uses: percona-platform/checkout@v2
         with:
           ref: ${{ env.UI_TESTS_BRANCH }}
           repository: percona/pmm-ui-tests
           path: ./pmm-ui-tests
+
+      - name: Compose PMM-Sever
+        run: docker-compose up -d
