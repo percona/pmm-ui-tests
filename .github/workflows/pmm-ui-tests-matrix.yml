@@ -66,3 +66,23 @@ jobs:
           cd ./pmm-ui-tests
           npm install
           npx codeceptjs run --steps -c pr.codecept.js --grep '@portal'
+
+      - name: Deploy report to Github Pages
+        if: always()
+        uses: peaceiris/actions-gh-pages@v2
+        env:
+          PUBLISH_BRANCH: PMM-10154-1
+          PUBLISH_DIR: allure-history
+      
+      - name: Attaching the report
+        if: ${{ always() && steps.ui-tests.outcome != 'skipped' }}
+        uses: percona-platform/upload-artifact@v2
+        with:
+          name: ui-tests-report
+          path: allure-history
+
+      - name: List Files
+        run: |
+          ls
+          cd ./pmmm-ui-tests
+          ls
