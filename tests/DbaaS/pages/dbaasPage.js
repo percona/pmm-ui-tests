@@ -148,8 +148,8 @@ module.exports = {
         clusterStatusDeleting: '$cluster-status-deleting',
         clusterStatusUpdating: '$cluster-status-updating',
         clusterTableHeader: locate('$table-header').find('th'),
-        clusterTableRow: '$table-row',
-        clusterActionsMenu: '$dropdown-menu-toggle',
+        clusterTableRow: (dbclusterName) => locate('$table-row').withText(dbclusterName),
+        clusterActionsMenu: (dbclusterName) => `//*[@data-testid="table-row" and contains(.//span, '${dbclusterName}')]//*[@data-testid="dropdown-menu-toggle"]`,
         deleteDBClusterButton: '$delete-dbcluster-button',
         dbClusterLogs: {
           dbClusterLogsAction: '$dbcluster-logs-actions',
@@ -165,7 +165,7 @@ module.exports = {
         },
         cancelDeleteDBCluster: '$cancel-delete-dbcluster-button',
         progressBarSteps: '$progress-bar-steps',
-        progressBarContent: '$progress-bar-message',
+        progressBarContent: (dbclusterName) => `//*[@data-testid="table-row" and contains(.//span, '${dbclusterName}')]//*[@data-testid="progress-bar-message"]`,
         updateClusterButton: '$confirm-update-dbcluster-button',
       },
     },
@@ -267,24 +267,24 @@ module.exports = {
   async postClusterCreationValidation(dbClusterName, k8sClusterName, clusterDBType = 'MySQL') {
     const dbaasPage = this;
 
-    I.waitForElement(dbaasPage.tabs.dbClusterTab.fields.clusterActionsMenu, 60);
-    I.click(dbaasPage.tabs.dbClusterTab.fields.clusterActionsMenu);
+    I.waitForElement(dbaasPage.tabs.dbClusterTab.fields.clusterActionsMenu(dbClusterName), 60);
+    I.click(dbaasPage.tabs.dbClusterTab.fields.clusterActionsMenu(dbClusterName));
     await dbaasActionsPage.checkActionPossible('Delete', true);
     await dbaasActionsPage.checkActionPossible('Edit', false);
     await dbaasActionsPage.checkActionPossible('Restart', false);
     await dbaasActionsPage.checkActionPossible('Resume', false);
-    I.click(dbaasPage.tabs.dbClusterTab.fields.clusterActionsMenu);
-    await dbaasAPI.waitForDBClusterState(dbClusterName, k8sClusterName, clusterDBType, 'DB_CLUSTER_STATE_READY');
+    I.click(dbaasPage.tabs.dbClusterTab.fields.clusterActionsMenu(dbClusterName));
+    await dbaasAPI.apiWaitForDBClusterState(dbClusterName, k8sClusterName, clusterDBType, 'DB_CLUSTER_STATE_READY');
     I.waitForElement(dbaasPage.tabs.dbClusterTab.fields.clusterStatusActive, 120);
     I.seeElement(dbaasPage.tabs.dbClusterTab.fields.clusterStatusActive);
     I.waitForElement(dbaasPage.tabs.dbClusterTab.fields.clusterConnection.showPasswordButton, 30);
     I.click(dbaasPage.tabs.dbClusterTab.fields.clusterConnection.showPasswordButton);
-    I.click(dbaasPage.tabs.dbClusterTab.fields.clusterActionsMenu);
+    I.click(dbaasPage.tabs.dbClusterTab.fields.clusterActionsMenu(dbClusterName));
     await dbaasActionsPage.checkActionPossible('Delete', true);
     await dbaasActionsPage.checkActionPossible('Edit', true);
     await dbaasActionsPage.checkActionPossible('Restart', true);
     await dbaasActionsPage.checkActionPossible('Suspend', true);
-    I.click(dbaasPage.tabs.dbClusterTab.fields.clusterActionsMenu);
+    I.click(dbaasPage.tabs.dbClusterTab.fields.clusterActionsMenu(dbClusterName));
     I.click(dbaasPage.tabs.dbClusterTab.fields.clusterConnection.showPasswordButton);
   },
 
@@ -374,8 +374,8 @@ module.exports = {
     );
   },
 
-  async verifyLogPopup(numberOfElementsInLogSection) {
-    await dbaasActionsPage.showClusterLogs();
+  async verifyLogPopup(numberOfElementsInLogSection, dbClusterName) {
+    await dbaasActionsPage.showClusterLogs(dbClusterName);
     I.waitForElement(this.tabs.dbClusterTab.fields.dbClusterLogs.expandAllLogsButton);
     I.seeTextEquals('Expand all', this.tabs.dbClusterTab.fields.dbClusterLogs.expandAllLogsButton);
     I.click(this.tabs.dbClusterTab.fields.dbClusterLogs.expandAllLogsButton);
@@ -407,7 +407,7 @@ module.exports = {
     await dashboardPage.genericDashboardLoadForDbaaSClusters(`${dashboardPage.mysqlPXCGaleraNodeSummaryDashboard.url}?&var-service_name=${serviceName}`, 'Last 5 minutes', 4, 0, 2);
     await dashboardPage.genericDashboardLoadForDbaaSClusters(`${dashboardPage.nodeSummaryDashboard.url}?&var-node_name=${nodeName}`, 'Last 5 minutes', 4, 0, 1);
     await dashboardPage.genericDashboardLoadForDbaaSClusters(`${dashboardPage.mysqlInstanceSummaryDashboard.url}&var-service_name=${serviceName}`, 'Last 5 minutes', 4, 0, 5);
-    await dashboardPage.genericDashboardLoadForDbaaSClusters(`graph/d/haproxy-instance-summary/haproxy-instance-summary?orgId=1&refresh=1m&var-node_name=${haproxynodeName}`, 'Last 5 minutes', 4, 0, 3);
+    await dashboardPage.genericDashboardLoadForDbaaSClusters(`graph/d/haproxy-instance-summary/haproxy-instance-summary?orgId=1&refresh=1m&var-node_name=${haproxynodeName}`, 'Last 5 minutes', 4, 1, 8);
   },
 
   async psmdbClusterMetricCheck(dbclusterName, serviceName, nodeName) {
@@ -418,8 +418,9 @@ module.exports = {
     await dashboardPage.genericDashboardLoadForDbaaSClusters(`${dashboardPage.nodeSummaryDashboard.url}?&var-node_name=${nodeName}`, 'Last 5 minutes', 4, 0, 1);
   },
 
-  async dbaasQANCheck(dbclusterName, nodeName, serviceName) {
-    I.amOnPage(I.buildUrlWithParams(qanPage.url, { from: 'now-3h' }));
+
+  async dbaasQANCheck(dbclusterName, nodeName, serviceName, time = { from: 'now-3h' }) {
+    I.amOnPage(I.buildUrlWithParams(qanPage.clearUrl, time));
     qanOverview.waitForOverviewLoaded();
     qanFilters.checkFilterExistInSection('Cluster', dbclusterName);
     qanFilters.checkFilterExistInSection('Node Name', `${nodeName}`);
