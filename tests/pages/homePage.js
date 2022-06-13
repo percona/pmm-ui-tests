@@ -138,6 +138,9 @@ module.exports = {
         I.click(locators.reloadButtonAfterUpgrade);
         I.refreshPage();
       }
+    } else {
+      I.waitForText(locators.successUpgradeMessage, 1200, locators.successUpgradeMsgSelector);
+      I.click(locators.reloadButtonAfterUpgrade);
     }
 
     locators = this.getLocators('latest');
