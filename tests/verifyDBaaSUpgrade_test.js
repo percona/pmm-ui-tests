@@ -159,6 +159,10 @@ Data(psmdbClusterDetails).Scenario('PMM-T726 Verify PSMDB cluster monitoring aft
     await dbaasPage.dbClusterAgentStatusCheck(psmdb_cluster_name, serviceName, 'MONGODB_SERVICE');
     // await dbaasPage.dbaasQANCheck(psmdb_cluster_name, serviceName, serviceName, { from: 'now-5m' });
     await dbaasPage.psmdbClusterMetricCheck(psmdb_cluster_name, serviceName, serviceName);
+    await I.verifyCommand(
+      'kubectl delete pods psmdb-client',
+      'pod "psmdb-client" deleted',
+    );
   });
 
 Scenario('PMM-T726 Verify removal of existing DB clusters after PMM Server upgrade @dbaas-upgrade',
