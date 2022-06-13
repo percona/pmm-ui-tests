@@ -27,7 +27,7 @@ module.exports = {
     inventoryAPI: './tests/pages/api/inventoryAPI.js',
     mysqlTableDetailsPage: './tests/pages/mysqlTableDetailsPage.js',
     leftNavMenu: './tests/pages/leftNavMenu.js',
-    links: './linksHelper.js',
+    links: './tests/helper/linksHelper.js',
     locationsPage: './tests/backup/pages/locationsPage.js',
     locationsAPI: './tests/backup/pages/api/locationsAPI.js',
     ncPage: './tests/ia/pages/notificationChannelsPage.js',
@@ -59,6 +59,7 @@ module.exports = {
     templatesAPI: './tests/ia/pages/api/templatesAPI.js',
     qanAPI: './tests/QAN/api/qanAPI.js',
     environmentOverviewPage: './tests/pages/environmentOverviewPage.js',
+    tooltips: './tests/helper/tooltipHelper.js',
   },
   getChunks: (files) => {
     const dependentTests = files.filter((value) => /PMMSettings|stt|backup|permissions|Azure/.test(value));
