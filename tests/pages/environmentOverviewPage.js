@@ -5,8 +5,6 @@ module.exports = {
     contactName: '$contact-name',
     notPlaformUser: '$not-platform-user',
     notConnectedToPortal: '$not-connected-platform',
-    contactsHeader: locate('strong').withText(this.messages.contactsHeader),
-    customerManager: locate('span').withText(this.messages.customerManager),
   },
   fields: {},
   buttons: {},

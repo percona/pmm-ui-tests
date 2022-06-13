@@ -144,8 +144,8 @@ Scenario(
       await I.waitForVisible(environmentOverviewPage.elements.environmentOverviewIcon);
       I.amOnPage(environmentOverviewPage.url);
       await I.waitForVisible(environmentOverviewPage.elements.contactName);
-      await I.waitForVisible(environmentOverviewPage.elements.contactsHeader);
-      await I.waitForVisible(environmentOverviewPage.elements.customerManager);
+      await I.waitForVisible(locate('strong').withText(environmentOverviewPage.messages.contactsHeader));
+      await I.waitForVisible(locate('span').withText(environmentOverviewPage.messages.customerManager));
       contactName = await I.grabTextFrom(environmentOverviewPage.elements.contactName);
 
       assert.equal(orgDetails.contacts.customer_success.name, contactName, 'Portal and PMM contacts names are not the same');
@@ -166,8 +166,8 @@ xScenario(
       await I.waitInUrl(homePage.landingUrl);
       await I.waitForVisible(environmentOverviewPage.elements.environmentOverviewIcon);
       I.amOnPage(environmentOverviewPage.url);
-      await I.waitForVisible(environmentOverviewPage.elements.contactsHeader);
-      await I.waitForVisible(environmentOverviewPage.elements.customerManager);
+      await I.waitForVisible(locate('strong').withText(environmentOverviewPage.messages.contactsHeader));
+      await I.waitForVisible(locate('span').withText(environmentOverviewPage.messages.customerManager));
       await I.refreshPage();
       await I.dontSeeElement(environmentOverviewPage.elements.contactName);
       I.verifyPopUpMessage(environmentOverviewPage.messages.notPerconaCustomer);
