@@ -1,3 +1,4 @@
+const assert = require('assert');
 const clusterName = 'minikube';
 const pxc_cluster_name = 'upgrade-pxc';
 const psmdb_cluster_name = 'upgrade-psmdb';
@@ -51,8 +52,12 @@ Scenario('PMM-T726 Verify existing DB clusters status after PMM Server upgrade @
   }) => {
     await pmmSettingsPage.openAdvancedSettings();
     I.seeElement(pmmSettingsPage.fields.publicAddressButton);
-    I.click(pmmSettingsPage.fields.publicAddressButton);
-    I.click(pmmSettingsPage.fields.advancedButton);
+    I.waitForVisible(pmmSettingsPage.fields.publicAddressInput, 30);
+    I.seeElement(pmmSettingsPage.fields.publicAddressButton);
+    const publicAddressValue = await I.grabValueFrom(pmmSettingsPage.fields.publicAddressInput);
+
+    assert.ok(publicAddressValue === process.env.VM_IP, `Expected the Public Address Input Field to be equal to ${process.env.VM_IP} but IP found as ${publicAddressValue}`);
+
     I.amOnPage(dbaasPage.url);
     dbaasPage.registerKubernetesCluster(clusterName, process.env.kubeconfig_minikube);
     // MySQL 8.0.20?
