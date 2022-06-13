@@ -32,24 +32,15 @@ Before(async ({ I, dbaasAPI }) => {
 });
 
 Scenario(
-  'PMM-T3 Verify user is able to Upgrade PMM version [blocker] @dbaas-upgrade ',
+  'PMM-T726 Prepare Setup for DBaaS Instance Before Upgrade [blocker] @dbaas-upgrade ',
   async ({
-    I, homePage, settingsAPI, dbaasAPI,
+    I, homePage, settingsAPI, dbaasAPI, pmmSettingsPage, dbaasPage,
   }) => {
     await settingsAPI.changeSettings({ publicAddress: process.env.VM_IP });
     if (!await dbaasAPI.apiCheckRegisteredClusterExist(clusterName)) {
       await dbaasAPI.apiRegisterCluster(process.env.kubeconfig_minikube, clusterName);
     }
 
-    I.amOnPage(homePage.url);
-    await homePage.upgradePMM(versionMinor, true);
-  },
-).retry(0);
-
-Scenario('PMM-T726 Verify existing DB clusters status after PMM Server upgrade @dbaas-upgrade',
-  async ({
-    I, dbaasAPI, homePage, pmmSettingsPage, dbaasPage, dbaasActionsPage,
-  }) => {
     await pmmSettingsPage.openAdvancedSettings();
     I.seeElement(pmmSettingsPage.fields.publicAddressButton);
     I.waitForVisible(pmmSettingsPage.fields.publicAddressInput, 30);
@@ -66,9 +57,20 @@ Scenario('PMM-T726 Verify existing DB clusters status after PMM Server upgrade @
     await dbaasAPI.apiCreatePSMDBCluster(psmdb_cluster_name, clusterName);
     await dbaasAPI.apiWaitForDBClusterState(pxc_cluster_name, clusterName, 'MySQL', 'DB_CLUSTER_STATE_READY');
     await dbaasAPI.apiWaitForDBClusterState(psmdb_cluster_name, clusterName, 'MongoDB', 'DB_CLUSTER_STATE_READY');
-    I.amOnPage(homePage.url);
-    await homePage.upgradePMM(versionMinor, 'true');
+  },
+).retry(0);
 
+Scenario('PMM-T3 Upgrade PMM via UI with DbaaS Clusters @dbaas-upgrade', async ({
+  I, homePage,
+}) => {
+  I.amOnPage(homePage.url);
+  await homePage.upgradePMM(versionMinor, true);
+});
+
+Scenario('PMM-T726 Verify existing DB clusters status after PMM Server upgrade @dbaas-upgrade',
+  async ({
+    I, dbaasAPI, homePage, pmmSettingsPage, dbaasPage, dbaasActionsPage,
+  }) => {
     I.amOnPage('graph/dbaas/dbclusters');
     I.waitForText(active_state, 10, dbaasPage.tabs.dbClusterTab.fields.clusterTableRow(pxc_cluster_name));
     I.waitForText(active_state, 10, dbaasPage.tabs.dbClusterTab.fields.clusterTableRow(psmdb_cluster_name));
