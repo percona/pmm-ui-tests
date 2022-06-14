@@ -131,6 +131,16 @@ module.exports = {
     return response.data.orgs;
   },
 
+  async apiGetOrgDetails(orgId, accessToken) {
+    const apiUrl = `${this.portalBaseUrl}/v1/orgs/${orgId}`;
+    const headers = { Authorization: `Bearer ${accessToken}` };
+    const response = await I.sendGetRequest(apiUrl, headers);
+
+    assert.equal(response.status, 200);
+
+    return response.data;
+  },
+
   async apiInviteOrgMember(
     accessToken,
     orgId,
