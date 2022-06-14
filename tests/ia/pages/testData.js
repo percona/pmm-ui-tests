@@ -1,4 +1,10 @@
+const filterOperators = {
+  equal: '= (EQUAL)',
+  regex: '=~ (REGEX)',
+};
+
 module.exports = {
+  filterOperators,
   rules: [{
     template: 'PostgreSQL connections in use',
     templateType: 'BUILT_IN',
@@ -7,7 +13,7 @@ module.exports = {
     thresholdUnit: '%',
     duration: '1',
     severity: 'Warning',
-    filters: 'service_name=pmm-server-postgresql',
+    filters: [{ label: 'service_name', operator: filterOperators.equal, value: 'pmm-server-postgresql' }],
     channels: [],
     activate: true,
   }, {
@@ -18,7 +24,7 @@ module.exports = {
     thresholdUnit: '%',
     duration: '1',
     severity: 'Critical',
-    filters: 'service_name=pmm-server-postgresql',
+    filters: [{ label: 'service_name', operator: filterOperators.equal, value: 'pmm-server-postgresql' }],
     channels: [],
     activate: false,
   }, {
@@ -29,7 +35,7 @@ module.exports = {
     thresholdUnit: '%',
     duration: '1',
     severity: 'High',
-    filters: 'service_name=pmm-server-postgresql',
+    filters: [{ label: 'service_name', operator: filterOperators.equal, value: 'pmm-server-postgresql' }],
     channels: ['EmailChannelForRules'],
     activate: true,
   }, {
@@ -40,7 +46,7 @@ module.exports = {
     thresholdUnit: '%',
     duration: '1',
     severity: 'Notice',
-    filters: 'service_name=pmm-server-postgresql',
+    filters: [{ label: 'service_name', operator: filterOperators.equal, value: 'pmm-server-postgresql' }],
     channels: ['EmailChannelForRules'],
     activate: false,
   }, {
@@ -51,7 +57,7 @@ module.exports = {
     thresholdUnit: '%',
     duration: '1',
     severity: 'Warning',
-    filters: 'service_name=pmm-server-postgresql',
+    filters: [{ label: 'service_name', operator: filterOperators.equal, value: 'pmm-server-postgresql' }],
     channels: [],
     activate: true,
   }, {
@@ -62,7 +68,7 @@ module.exports = {
     thresholdUnit: '%',
     duration: '1',
     severity: 'Critical',
-    filters: 'service_name=pmm-server-postgresql',
+    filters: [{ label: 'service_name', operator: filterOperators.equal, value: 'pmm-server-postgresql' }],
     channels: [],
     activate: false,
   }, {
@@ -73,7 +79,7 @@ module.exports = {
     thresholdUnit: '%',
     duration: '1',
     severity: 'High',
-    filters: 'service_name=pmm-server-postgresql',
+    filters: [{ label: 'service_name', operator: filterOperators.equal, value: 'pmm-server-postgresql' }],
     channels: ['EmailChannelForRules'],
     activate: true,
   }, {
@@ -84,7 +90,7 @@ module.exports = {
     thresholdUnit: '%',
     duration: '1',
     severity: 'Notice',
-    filters: 'service_name=pmm-server-postgresql',
+    filters: [{ label: 'service_name', operator: filterOperators.equal, value: 'pmm-server-postgresql' }],
     channels: ['EmailChannelForRules'],
     activate: false,
   }, {
@@ -95,7 +101,7 @@ module.exports = {
     thresholdUnit: '%',
     duration: '50',
     severity: 'Notice',
-    filters: 'service_name=pmm-server-postgresql',
+    filters: [{ label: 'service_name', operator: filterOperators.equal, value: 'pmm-server-postgresql' }],
     channels: ['EmailChannelForRules'],
     activate: true,
   }, {
@@ -106,7 +112,7 @@ module.exports = {
     thresholdUnit: '%',
     duration: '50',
     severity: 'Notice',
-    filters: 'service_name=pmm-server-postgresql',
+    filters: [{ label: 'service_name', operator: filterOperators.equal, value: 'pmm-server-postgresql' }],
     channels: ['EmailChannelForRules'],
     activate: true,
   }, {
@@ -117,7 +123,7 @@ module.exports = {
     thresholdUnit: '%',
     duration: '50',
     severity: 'Notice',
-    filters: 'service_name=pmm-server-postgresql',
+    filters: [{ label: 'service_name', operator: filterOperators.equal, value: 'pmm-server-postgresql' }],
     channels: ['EmailChannelForRules'],
     activate: true,
   }, {
@@ -128,7 +134,10 @@ module.exports = {
     thresholdUnit: '%',
     duration: '1',
     severity: 'Warning',
-    filters: 'service_name=pmm-server-postgresql, node_name=pmm-server',
+    filters: [
+      { label: 'service_name', operator: filterOperators.equal, value: 'pmm-server-postgresql' },
+      { label: 'node_name', operator: filterOperators.equal, value: 'pmm-server' },
+    ],
     channels: [],
     activate: true,
   }],
