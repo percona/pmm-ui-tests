@@ -1,5 +1,7 @@
 const { pageObjects, getChunks } = require('./codeceptConfigHelper');
 
+require('dotenv').config();
+
 process.env.ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'admin';
 
 exports.config = {
@@ -111,16 +113,10 @@ exports.config = {
         },
       },
       'mocha-junit-reporter': {
-        stdout: './tests/output/console.log',
+        stdout: '-',
         options: {
           mochaFile: './tests/output/result.xml',
-        },
-      },
-      mochawesome: {
-        stdout: './tests/output/mocharesult.log',
-        options: {
-          reportDir: './tests/output',
-          reportFilename: 'result.html',
+          jenkinsMode: true,
         },
       },
     },
