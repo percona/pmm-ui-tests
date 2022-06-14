@@ -12,11 +12,11 @@ Scenario(
     const newTabs = await I.openNewTabs(4);
     const addresses = [homePage.landingUrl, pmmInventoryPage.url, pmmSettingsPage.url, allChecksPage.url];
 
-    for (const [i, tab] of newTabs.entries()) {
-      await I.navigateTabTo(tab, addresses[i]);
+    newTabs.forEach(async (tab, index) => {
+      await I.navigateTabTo(tab, addresses[index]);
       const loadTime = await I.getPageTimeToLoad(tab);
 
-      assert.ok(parseInt(loadTime, 10) < 10000, `PMM took over the test seconds to load for the address + ${addresses[i]}`);
-    }
+      assert.ok(parseInt(loadTime, 10) < 10000, `PMM took over the test seconds to load for the address + ${addresses[index]}`);
+    });
   },
 );
