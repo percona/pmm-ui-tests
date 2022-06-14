@@ -16,7 +16,7 @@ Scenario(
       await I.navigateTabTo(tab, addresses[index]);
       const loadTime = await I.getPageTimeToLoad(tab);
 
-      assert.ok(parseInt(loadTime, 10) < 10000, `PMM took over the test seconds to load for the address + ${addresses[index]}`);
+      assert.ok(parseInt(loadTime, 10) < 10000, `PMM took over 10 seconds to load for the address + ${addresses[index]}`);
     });
   },
 );
