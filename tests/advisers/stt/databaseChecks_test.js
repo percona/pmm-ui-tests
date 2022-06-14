@@ -118,7 +118,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T241 Verify user can see correct service name for failed checks [critical] @stt',
+  'PMM-T241 Verify user can see correct service name for failed checks [critical] @stt @fb',
   async ({
     I, databaseChecksPage, settingsAPI, securityChecksAPI, inventoryAPI, allChecksPage,
   }) => {

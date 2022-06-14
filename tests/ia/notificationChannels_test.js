@@ -55,7 +55,7 @@ Data(notificationChannels).Scenario(
 );
 
 Scenario(
-  'PMM-T645, PMM-T647 Add a Pager Duty with Service Key @ia @grafana-pr',
+  'PMM-T645, PMM-T647 Add a Pager Duty with Service Key @ia @grafana-pr @fb',
   async ({ I, ncPage }) => {
     const channelName = 'Pager Duty with Service key';
 
@@ -124,6 +124,22 @@ Data(notificationChannels).Scenario(
     I.click(ncPage.buttons.confirmDelete);
     I.verifyPopUpMessage(ncPage.messages.successfullyDeleted(current.name));
     I.dontSeeElement(ncPage.elements.channelInTable(current.name, current.type));
+  },
+);
+
+Scenario(
+  ' Delete a notification channel @fb',
+  async ({ I, ncPage, channelsAPI }) => {
+    const name = 'Email Channel';
+    const type = 'Email';
+
+    await channelsAPI.createNotificationChannel(name, type);
+    ncPage.openNotificationChannelsTab();
+    I.click(ncPage.buttons.deleteChannelLocator(name));
+    I.see(ncPage.messages.deleteConfirmation(name), ncPage.elements.modalContent);
+    I.click(ncPage.buttons.confirmDelete);
+    I.verifyPopUpMessage(ncPage.messages.successfullyDeleted(name));
+    I.dontSeeElement(ncPage.elements.channelInTable(name, type));
   },
 );
 
