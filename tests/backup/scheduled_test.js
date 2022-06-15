@@ -176,7 +176,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T913, PMM-T922, PMM-T977 Verify user can schedule a backup for MongoDB with replica @backup @bm-mongo',
+  'PMM-T913, PMM-T922, PMM-T977 Verify user can schedule a backup for MongoDB with replica @backup @bm-mongo @fb',
   async ({
     I, backupInventoryPage, scheduledAPI, backupAPI, scheduledPage,
   }) => {
@@ -286,7 +286,7 @@ Scenario('PMM-T900 Verify user can copy scheduled backup @backup @bm-mongo',
     I.seeAttributesOnElements(scheduledPage.elements.toggleByName(newSchedule.name), { checked: null });
   });
 
-Scenario('PMM-T908 Verify user can enable/disable scheduled backup @backup @bm-mongo',
+Scenario('PMM-T908 Verify user can enable/disable scheduled backup @backup @bm-mongo @fb',
   async ({
     I, scheduledPage, scheduledAPI,
   }) => {
