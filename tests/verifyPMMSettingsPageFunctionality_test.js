@@ -125,7 +125,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T782 PMM-T783 Verify DBaaS is disabled by default, Verify DBaaS can be enabled in PMM Settings @settings',
+  'PMM-T782 PMM-T783 Verify DBaaS is disabled by default, Verify DBaaS can be enabled in PMM Settings @settings @fb',
   async ({ I, pmmSettingsPage, dbaasPage }) => {
     I.amOnPage(pmmSettingsPage.advancedSettingsUrl);
     await pmmSettingsPage.waitForPmmSettingsPageLoaded();
@@ -394,7 +394,7 @@ Scenario(
 
 Scenario(
   'PMM-T254 ensure Advisors are on by default @instances',
-  async ({ settingsAPI, I }) => {
+  async ({ settingsAPI }) => {
     const resp = await settingsAPI.getSettings('stt_enabled');
 
     assert.ok(resp, `Advisors should be turned on by default from 2.28.0 release but found ${resp}`);

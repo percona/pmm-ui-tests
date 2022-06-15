@@ -200,9 +200,26 @@ Data(rules).Scenario(
   },
 );
 
+Scenario(
+  'Create Alert rule @fb',
+  async ({ I, alertRulesPage }) => {
+    const rule = alertRulesPage.rules[0];
+
+    alertRulesPage.openAlertRulesTab();
+    I.click(alertRulesPage.buttons.openAddRuleModal);
+    await alertRulesPage.fillRuleFields(rule);
+    I.click(alertRulesPage.buttons.addRule);
+    I.verifyPopUpMessage(alertRulesPage.messages.successfullyAdded);
+    I.seeElement(alertRulesPage.elements.rulesNameCell(rule.ruleName));
+    if (rule.threshold.length === 0) { rule.threshold = 80; }
+
+    alertRulesPage.verifyRowValues(rule);
+  },
+);
+
 // TODO: check ovf failure
 Scenario(
-  'PMM-T516 PMM-T687 Update Alert rule @ia @grafana-pr @not-ovf',
+  'PMM-T516 PMM-T687 Update Alert rule @ia @grafana-pr @not-ovf @fb',
   async ({
     I, alertRulesPage, rulesAPI, channelsAPI, ncPage,
   }) => {
@@ -279,7 +296,7 @@ Data(rulesStates).Scenario(
 );
 
 Data(rulesStates).Scenario(
-  'PMM-T517 Verify user can delete Alert rule @ia',
+  'PMM-T517 Verify user can delete Alert rule @ia @fb',
   async ({
     I, alertRulesPage, rulesAPI, current,
   }) => {
