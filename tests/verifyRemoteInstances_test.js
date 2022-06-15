@@ -304,29 +304,3 @@ Scenario(
     assert.ok(response.data.data.result.length !== 0, `Metrics ${metric} from ${remoteServiceName} should be available but got empty ${result}`);
   },
 );
-
-Scenario(
-  'PMM-TXXX Verify adding Aurora2 remote instance @instances',
-  async ({
-    I, remoteInstancesPage,
-  }) => {
-    const details = {
-      serviceName: remoteInstancesHelper.remote_instance.aurora.aurora2.serviceName,
-      serviceType: 'mysql',
-      port: remoteInstancesHelper.remote_instance.aurora.aurora2.port,
-      host: remoteInstancesHelper.remote_instance.aurora.aurora2.host,
-      username: remoteInstancesHelper.remote_instance.aurora.aurora2.username,
-      password: remoteInstancesHelper.remote_instance.aurora.aurora2.password,
-      environment: remoteInstancesHelper.remote_instance.aurora.aurora2.environment,
-      cluster: remoteInstancesHelper.remote_instance.aurora.aurora2.cluster,
-    };
-
-    I.amOnPage(remoteInstancesPage.url);
-    remoteInstancesPage.waitUntilRemoteInstancesPageLoaded();
-    remoteInstancesPage.openAddRemotePage(details.serviceType);
-    await remoteInstancesPage.addRemoteDetails(details);
-    I.click(remoteInstancesPage.fields.addService);
-    pmmInventoryPage.verifyRemoteServiceIsDisplayed(details.serviceType);
-    await pmmInventoryPage.verifyAgentHasStatusRunning(details.serviceName);
-  },
-);
