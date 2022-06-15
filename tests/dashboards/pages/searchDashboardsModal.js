@@ -50,9 +50,9 @@ module.exports = {
         'MySQL User Details',
         'MySQL Wait Event Analyses Details',
         'ProxySQL Instance Summary',
-        'PXC/Galera Cluster Summary',
-        'PXC/Galera Node Summary',
-        'PXC/Galera Nodes Compare',
+        'Percona Operator for MySQL/Galera Cluster Summary',
+        'Percona Operator for MySQL/Galera Node Summary',
+        'Percona Operator for MySQL/Galera Nodes Compare',
       ],
     },
     os: {
