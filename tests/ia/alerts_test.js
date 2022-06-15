@@ -1,7 +1,5 @@
 const assert = require('assert');
 
-const { ncPage } = inject();
-
 let ruleIdForAlerts;
 let ruleIdForNotificationsCheck;
 let webhookChannelId;
@@ -154,7 +152,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T551 PMM-T569 PMM-T1044 PMM-T1045 PMM-T568 Verify Alerts on Email, Webhook and Pager Duty @ia',
+  'PMM-T551 PMM-T569 PMM-T1044 PMM-T1045 PMM-T568 Verify Alerts on Email, Webhook and Pager Duty @ia @fb',
   async ({ I, rulesAPI, alertsAPI }) => {
     const file = './testdata/ia/scripts/alert.txt';
 

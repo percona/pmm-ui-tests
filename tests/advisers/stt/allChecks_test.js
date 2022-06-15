@@ -68,7 +68,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T585 Verify user is able enable/disable checks [critical] @stt',
+  'PMM-T585 Verify user is able enable/disable checks [critical] @stt @fb',
   async ({
     I, allChecksPage, securityChecksAPI, databaseChecksPage,
   }) => {
@@ -108,7 +108,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T723 Verify user can change check interval @stt',
+  'PMM-T723 Verify user can change check interval @stt @fb',
   async ({
     I, allChecksPage, securityChecksAPI,
   }) => {

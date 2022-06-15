@@ -21,26 +21,26 @@ BeforeSuite(async ({
 AfterSuite(async ({ portalAPI }) => {
   await portalAPI.disconnectPMMFromPortal(grafana_session_cookie);
   if (serviceNowUsers) {
-    portalAPI.oktaDeleteUserByEmail(serviceNowUsers.admin1.email);
+    await portalAPI.oktaDeleteUserByEmail(serviceNowUsers.admin1.email);
   }
 
   if (customerOrg) {
-    portalAPI.apiDeleteOrg(customerOrg.id, adminToken);
+    await portalAPI.apiDeleteOrg(customerOrg.id, adminToken);
   }
 
   if (freeUser) {
-    portalAPI.oktaDeleteUserByEmail(freeUser.email);
+    await portalAPI.oktaDeleteUserByEmail(freeUser.email);
   }
 
   if (customerOrg) {
-    portalAPI.apiDeleteOrg(freUserOrg.id, freeUserToken);
+    await portalAPI.apiDeleteOrg(freUserOrg.id, freeUserToken);
   }
 });
 
 Scenario(
   'PMM-T1202 Verify that Advisors reflect on user authority / platform role changes @stt',
   async ({
-    I, pmmSettingsPage, databaseChecksPage, portalAPI, perconaPlatformPage, homePage, settingsAPI,
+    I, pmmSettingsPage, databaseChecksPage, portalAPI, homePage, settingsAPI,
   }) => {
     /* Checks for Anonymous user  */
     await I.Authorize();
