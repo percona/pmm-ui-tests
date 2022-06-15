@@ -165,7 +165,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T483 PMM-T699 Verify user can edit UI-created IA rule template @ia @grafana-pr',
+  'PMM-T483 PMM-T699 Verify user can edit UI-created IA rule template @ia @grafana-pr @fb',
   async ({ I, ruleTemplatesPage, templatesAPI }) => {
     const path = ruleTemplatesPage.ruleTemplate.paths.yaml;
     const [templateName, fileContent, id] = await ruleTemplatesPage.ruleTemplate
@@ -196,7 +196,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T562 Verify user can delete User-defined (UI) rule templates @ia @grafana-pr',
+  'PMM-T562 Verify user can delete User-defined (UI) rule templates @ia @grafana-pr @fb',
   async ({ I, ruleTemplatesPage, templatesAPI }) => {
     const path = ruleTemplatesPage.ruleTemplate.paths.yaml;
     const [templateName] = await ruleTemplatesPage.ruleTemplate

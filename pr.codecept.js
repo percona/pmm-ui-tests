@@ -55,6 +55,12 @@ exports.config = {
       require: './tests/helper/file_helper.js',
     },
     FileSystem: {},
+    PerformanceHelper: {
+      require: './tests/helper/performance_helper.js',
+    },
+    BrowserHelper: {
+      require: './tests/helper/browser_helper.js',
+    },
     REST: {
       endpoint: process.env.PMM_UI_URL || 'http://127.0.0.1/',
       timeout: 60000,
