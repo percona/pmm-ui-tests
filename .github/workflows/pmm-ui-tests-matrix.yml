@@ -67,23 +67,6 @@ jobs:
           npm install
           npx codeceptjs run --steps -c pr.codecept.js --grep '@portal'
 
-      - name: Test marketplace action
-        uses: simple-elf/allure-report-action@master
-        if: always()
-        id: allure-report
-        with:
-          allure_results: pmm-ui-tests/tests/output/allure
-          gh_pages: gh-pages
-          allure_report: allure-report
-          allure_history: allure-history
-
-      - name: Attaching the report
-        if: ${{ always() && steps.ui-tests.outcome != 'skipped' }}
-        uses: percona-platform/upload-artifact@v2
-        with:
-          name: ui-tests-report
-          path: allure-history
-
       - name: List Files
         run: |
           ls
