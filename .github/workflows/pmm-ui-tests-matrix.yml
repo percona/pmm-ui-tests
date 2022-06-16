@@ -1,5 +1,5 @@
 ---
-name: UI Tests Matrix
+name: UI-Tests
 
 on:
   # run with default inputs
