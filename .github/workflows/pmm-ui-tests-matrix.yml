@@ -29,7 +29,7 @@ jobs:
     env:
       SHA: ${{ github.event.inputs.sha || 'null' }}
 
-      UI_TESTS_BRANCH: ${{ github.event.inputs.pmm_ui_tests_tag }}
+      UI_TESTS_TAG: ${{ github.event.inputs.pmm_ui_tests_tag }}
       UI_TESTS_BRANCH: ${{ github.event.inputs.ui_tests_branch }}
       OAUTH_ISSUER_URL: 'https://id-dev.percona.com/oauth2/aus15pi5rjdtfrcH51d7'
 
