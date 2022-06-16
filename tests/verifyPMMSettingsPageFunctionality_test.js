@@ -1,12 +1,44 @@
 const { pmmSettingsPage } = inject();
-const communicationDefaults = new DataTable(['type', 'serverAddress', 'hello', 'from', 'authType', 'username', 'password', 'url']);
+const communicationDefaults = new DataTable(['type', 'serverAddress', 'hello', 'from', 'authType', 'username', 'password', 'url', 'message']);
 const assert = require('assert');
 
 pmmSettingsPage.communicationData.forEach(({
   type, serverAddress, hello, from, authType, username, password, url,
 }) => {
-  communicationDefaults.add([type, serverAddress, hello, from, authType, username, password, url]);
+  // eslint-disable-next-line max-len
+  communicationDefaults.add([type, serverAddress, hello, from, authType, username, password, url, pmmSettingsPage.messages.successPopUpMessage]);
 });
+
+communicationDefaults.add([
+  pmmSettingsPage.emailDefaults.type,
+  'test.com',
+  pmmSettingsPage.emailDefaults.hello,
+  pmmSettingsPage.emailDefaults.from,
+  pmmSettingsPage.emailDefaults.authType,
+  null,
+  null,
+  null,
+  'Invalid argument: invalid server address, expected format host:port']);
+communicationDefaults.add([
+  pmmSettingsPage.emailDefaults.type,
+  pmmSettingsPage.emailDefaults.serverAddress,
+  '%',
+  pmmSettingsPage.emailDefaults.from,
+  pmmSettingsPage.emailDefaults.authType,
+  null,
+  null,
+  null,
+  'Invalid argument: invalid hello field, expected valid host']);
+communicationDefaults.add([
+  'slack',
+  null,
+  null,
+  null,
+  null,
+  null,
+  null,
+  'invalid@url',
+  'Invalid argument: invalid url value']);
 
 Feature('PMM Settings Functionality').retry(1);
 
@@ -15,7 +47,10 @@ Before(async ({ I, settingsAPI }) => {
   await settingsAPI.restoreSettingsDefaults();
 });
 
-Scenario('PMM-T93 - Open PMM Settings page and verify changing Metrics Resolution [critical] @settings @grafana-pr', async ({ I, pmmSettingsPage }) => {
+Scenario('PMM-T93 - Open PMM Settings page and verify changing Metrics Resolution [critical] @settings @grafana-pr', async ({
+  I,
+  pmmSettingsPage,
+}) => {
   const resolutionToApply = 'Rare';
 
   I.amOnPage(pmmSettingsPage.url);
@@ -27,7 +62,10 @@ Scenario('PMM-T93 - Open PMM Settings page and verify changing Metrics Resolutio
   await pmmSettingsPage.verifySelectedResolution(resolutionToApply);
 });
 
-Scenario('PMM-T94 - Open PMM Settings page and verify changing Data Retention [critical] @settings', async ({ I, pmmSettingsPage }) => {
+Scenario('PMM-T94 - Open PMM Settings page and verify changing Data Retention [critical] @settings', async ({
+  I,
+  pmmSettingsPage,
+}) => {
   const dataRetentionValue = '1';
   const sectionNameToExpand = pmmSettingsPage.sectionTabsList.advanced;
 
@@ -82,18 +120,18 @@ Scenario(
     await pmmSettingsPage.expandSection(sectionNameToExpand, pmmSettingsPage.fields.advancedButton);
     await pmmSettingsPage.waitForPmmSettingsPageLoaded();
 
-    await pmmSettingsPage.verifyTooltip(pmmSettingsPage.tooltips.stt);
+    await pmmSettingsPage.verifyTooltip(pmmSettingsPage.tooltips.advancedSettings.stt);
   },
 );
 
 Scenario(
-  'PMM-T782 PMM-T783 Verify DBaaS is disabled by default, Verify DBaaS can be enabled in PMM Settings @settings',
+  'PMM-T782 PMM-T783 Verify DBaaS is disabled by default, Verify DBaaS can be enabled in PMM Settings @settings @fb',
   async ({ I, pmmSettingsPage, dbaasPage }) => {
     I.amOnPage(pmmSettingsPage.advancedSettingsUrl);
     await pmmSettingsPage.waitForPmmSettingsPageLoaded();
 
     // Verify tooltip for Enable/Disable DBaaS toggle
-    await pmmSettingsPage.verifyTooltip(pmmSettingsPage.tooltips.dbaas);
+    await pmmSettingsPage.verifyTooltip(pmmSettingsPage.tooltips.advancedSettings.dbaas);
 
     let selector = await I.grabAttributeFrom(pmmSettingsPage.fields.dbaasSwitchSelector, 'checked');
 
@@ -112,7 +150,7 @@ Scenario(
     assert.ok(link.includes('/graph/settings/advanced-settings'), `Advanced Setting Link displayed on DbaaS Page, when DbaaS is not enabled ${link}, please check the link`);
     // Enable DbaaS via Advanced Settings, Make sure Menu is visible.
     await pmmSettingsPage.openAdvancedSettings();
-    I.waitForVisible(pmmSettingsPage.tooltips.dbaas.iconLocator, 30);
+    I.waitForVisible(pmmSettingsPage.tooltips.advancedSettings.dbaas.iconLocator, 30);
     I.click(pmmSettingsPage.fields.dbaasSwitchSelector);
     I.click(pmmSettingsPage.fields.applyButton);
     I.waitForElement(pmmSettingsPage.fields.dbaasMenuIconLocator, 30);
@@ -135,7 +173,7 @@ Scenario(
     await pmmSettingsPage.waitForPmmSettingsPageLoaded();
 
     // Verify tooltip for Enable/Disable IA toggle
-    await pmmSettingsPage.verifyTooltip(pmmSettingsPage.tooltips.integratedAlerting);
+    await pmmSettingsPage.verifyTooltip(pmmSettingsPage.tooltips.advancedSettings.integratedAlerting);
 
     I.amOnPage(pmmSettingsPage.communicationSettingsUrl);
     I.waitForVisible(pmmSettingsPage.communication.email.serverAddress.locator, 30);
@@ -143,36 +181,36 @@ Scenario(
     // Verify tooltips for Communication > Email fields
     for (const formField of Object.keys(pmmSettingsPage.communication.email)) {
       I.moveCursorTo(pmmSettingsPage.communication.submitEmailButton);
-      await pmmSettingsPage.verifyTooltip(pmmSettingsPage.tooltips[formField]);
+      await pmmSettingsPage.verifyTooltip(pmmSettingsPage.tooltips.communication.email[formField]);
     }
 
     // Verify tooltips for Communication > Slack URL field
     I.click(pmmSettingsPage.communication.slackTab);
-    await pmmSettingsPage.verifyTooltip(pmmSettingsPage.tooltips.slackUrl);
+    await pmmSettingsPage.verifyTooltip(pmmSettingsPage.tooltips.communication.slack.slackUrl);
   },
 );
 
 Scenario(
-  'PMM-T253 Verify user can enable STT if Telemetry is enabled @settings @stt',
+  'PMM-T254 PMM-T253 Verify disable telemetry while Advisers enabled @settings @stt @grafana-pr',
   async ({ I, pmmSettingsPage }) => {
-    const sectionNameToExpand = pmmSettingsPage.sectionTabsList.advanced;
-
-    I.amOnPage(pmmSettingsPage.url);
+    I.amOnPage(pmmSettingsPage.advancedSettingsUrl);
     await pmmSettingsPage.waitForPmmSettingsPageLoaded();
-    await pmmSettingsPage.expandSection(sectionNameToExpand, pmmSettingsPage.fields.advancedButton);
-    await pmmSettingsPage.waitForPmmSettingsPageLoaded();
-    I.click(pmmSettingsPage.fields.sttSwitchSelector);
+    pmmSettingsPage.verifySwitch(pmmSettingsPage.fields.telemetrySwitchSelectorInput, 'on');
     pmmSettingsPage.verifySwitch(pmmSettingsPage.fields.sttSwitchSelectorInput, 'on');
+    I.click(pmmSettingsPage.fields.telemetrySwitchSelector);
+    pmmSettingsPage.verifySwitch(pmmSettingsPage.fields.telemetrySwitchSelectorInput, 'off');
     I.click(pmmSettingsPage.fields.advancedButton);
     I.refreshPage();
     await pmmSettingsPage.waitForPmmSettingsPageLoaded();
-    await pmmSettingsPage.expandSection(sectionNameToExpand, pmmSettingsPage.fields.advancedButton);
-    await pmmSettingsPage.waitForPmmSettingsPageLoaded();
     pmmSettingsPage.verifySwitch(pmmSettingsPage.fields.sttSwitchSelectorInput, 'on');
+    pmmSettingsPage.verifySwitch(pmmSettingsPage.fields.telemetrySwitchSelectorInput, 'off');
   },
 ).retry(2);
 
-Scenario('PMM-T520 - Verify that alert is in Firing State - internal alert manager @nightly @not-ovf', async ({ I, pmmSettingsPage }) => {
+Scenario('PMM-T520 - Verify that alert is in Firing State - internal alert manager @nightly @not-ovf', async ({
+  I,
+  pmmSettingsPage,
+}) => {
   const scheme = 'http://127.0.0.1';
   const sectionNameToExpand = pmmSettingsPage.sectionTabsList.alertmanager;
 
@@ -190,7 +228,10 @@ Scenario('PMM-T520 - Verify that alert is in Firing State - internal alert manag
   await pmmSettingsPage.verifyAlertmanagerRuleAdded(pmmSettingsPage.alertManager.ruleName2, true);
 });
 
-Scenario('PMM-T520 - Verify that alert is being fired to external Alert Manager @nightly @not-ovf', async ({ I, pmmSettingsPage }) => {
+Scenario('PMM-T520 - Verify that alert is being fired to external Alert Manager @nightly @not-ovf', async ({
+  I,
+  pmmSettingsPage,
+}) => {
   const scheme = 'http://';
   const sectionNameToExpand = pmmSettingsPage.sectionTabsList.alertmanager;
 
@@ -245,11 +286,12 @@ Scenario('PMM-T785 - Verify DBaaS cannot be disabled with ENABLE_DBAAS or PERCON
     I.click(pmmSettingsPage.fields.dbaasSwitchSelector);
     pmmSettingsPage.verifySwitch(pmmSettingsPage.fields.dbaasSwitchSelectorInput, 'off');
     I.click(pmmSettingsPage.fields.advancedButton);
-    pmmSettingsPage.verifySwitch(pmmSettingsPage.fields.dbaasSwitchSelectorInput, 'on');
+    // skipped until PMM-9982 is fixed
+    // pmmSettingsPage.verifySwitch(pmmSettingsPage.fields.dbaasSwitchSelectorInput, 'on');
     I.verifyPopUpMessage(pmmSettingsPage.messages.invalidDBaaSDisableMessage);
   });
 
-Data(communicationDefaults).Scenario('PMM-T534 PMM-T535 - Verify user is able to set up default Email/Slack communication settings @ia @settings @grafana-pr',
+Data(communicationDefaults).Scenario('PMM-T534 PMM-T535 PMM-T1074 - Verify user is able to set up default Email/Slack communication settings / validation @ia @settings @grafana-pr',
   async ({
     I, pmmSettingsPage, settingsAPI, current,
   }) => {
@@ -257,10 +299,12 @@ Data(communicationDefaults).Scenario('PMM-T534 PMM-T535 - Verify user is able to
     I.amOnPage(pmmSettingsPage.communicationSettingsUrl);
     await pmmSettingsPage.waitForPmmSettingsPageLoaded();
     pmmSettingsPage.fillCommunicationFields(current);
-    I.verifyPopUpMessage(pmmSettingsPage.messages.successPopUpMessage);
-    I.refreshPage();
-    await pmmSettingsPage.waitForPmmSettingsPageLoaded();
-    await pmmSettingsPage.verifyCommunicationFields(current);
+    I.verifyPopUpMessage(current.message);
+    if (current === pmmSettingsPage.messages.successPopUpMessage) {
+      I.refreshPage();
+      await pmmSettingsPage.waitForPmmSettingsPageLoaded();
+      await pmmSettingsPage.verifyCommunicationFields(current);
+    }
   });
 
 Scenario(
@@ -331,7 +375,7 @@ Scenario(
   'PMM-T486 - Verify Public Address in PMM Settings @settings @nightly',
   async ({ I, pmmSettingsPage }) => {
     await pmmSettingsPage.openAdvancedSettings();
-    await pmmSettingsPage.verifyTooltip(pmmSettingsPage.tooltips.publicAddress);
+    await pmmSettingsPage.verifyTooltip(pmmSettingsPage.tooltips.advancedSettings.publicAddress);
     I.waitForVisible(pmmSettingsPage.fields.publicAddressInput, 30);
     I.seeElement(pmmSettingsPage.fields.publicAddressButton);
     I.click(pmmSettingsPage.fields.publicAddressButton);
@@ -349,24 +393,55 @@ Scenario(
 );
 
 Scenario(
-  'PMM-9550 Verify downloading server diagnostics logs from Settings @settings',
-  async ({ I, pmmSettingsPage }) => {
-    I.amOnPage(pmmSettingsPage.url);
-    await pmmSettingsPage.waitForPmmSettingsPageLoaded();
-    let path;
+  'PMM-T254 ensure Advisors are on by default @instances',
+  async ({ settingsAPI }) => {
+    const resp = await settingsAPI.getSettings('stt_enabled');
 
-    await I.usePlaywrightTo('download', async ({ page }) => {
-      const [download] = await Promise.all([
-        // Start waiting for the download
-        page.waitForEvent('download'),
-        // Perform the action that initiates download
-        page.locator(I.useDataQA('diagnostics-button')).click(),
-      ]);
+    assert.ok(resp, `Advisors should be turned on by default from 2.28.0 release but found ${resp}`);
+  },
+);
 
-      // Wait for the download process to complete
-      path = await download.path();
-    });
+Scenario(
+  'PMM-T1227 - Verify tooltip "Read more" links on PMM Settings page redirect to working pages @settings',
+  async ({ I, pmmSettingsPage, settingsAPI }) => {
+    await settingsAPI.changeSettings({ alerting: true });
+    const subPageTooltips = [
+      {
+        subPage: pmmSettingsPage.metricsResolutionUrl,
+        tooltips: pmmSettingsPage.tooltips.metricsResolution,
+      },
+      {
+        subPage: pmmSettingsPage.advancedSettingsUrl,
+        tooltips: pmmSettingsPage.tooltips.advancedSettings,
+      },
+      {
+        subPage: pmmSettingsPage.sshKeyUrl,
+        tooltips: pmmSettingsPage.tooltips.ssh,
+      },
+      {
+        subPage: pmmSettingsPage.alertManagerIntegrationUrl,
+        tooltips: pmmSettingsPage.tooltips.alertManagerIntegration,
+      },
+      {
+        subPage: pmmSettingsPage.perconaPlatformUrl,
+        tooltips: pmmSettingsPage.tooltips.perconaPlatform,
+      },
+      {
+        subPage: pmmSettingsPage.communicationSettingsUrl,
+        tooltips: { ...pmmSettingsPage.tooltips.communication.email, ...pmmSettingsPage.tooltips.communication.slack },
+      },
+    ];
 
-    await I.seeEntriesInZip(path, ['pmm-agent.yaml', 'pmm-managed.log', 'pmm-agent.log']);
+    for (const subPageTooltipObject of Object.values(subPageTooltips)) {
+      I.amOnPage(subPageTooltipObject.subPage);
+
+      for (const tooltipObject of Object.values(subPageTooltipObject.tooltips)) {
+        if (tooltipObject.tabButton) {
+          I.click(tooltipObject.tabButton);
+        }
+
+        await pmmSettingsPage.verifyTooltip(tooltipObject);
+      }
+    }
   },
 );

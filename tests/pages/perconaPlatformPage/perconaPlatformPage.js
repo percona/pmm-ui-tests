@@ -1,9 +1,9 @@
-const faker = require('faker');
-
 const { I } = inject();
+const perconaPlatformPage_2_26 = require('./perconaPlatformPage_2_26');
 
 module.exports = {
   url: 'graph/settings/percona-platform',
+  perconaPlatformPage_2_26,
   elements: {
     techPreviewLabel: locate('h1'),
     connectForm: '$connect-form',
@@ -13,6 +13,7 @@ module.exports = {
     accessTokenValidation: '$accessToken-field-error-message',
     connectedWrapper: '$connected-wrapper',
     settingsContent: '$settings-tab-content',
+    getAccessTokenLink: locate('a').after('$accessToken-field-container'),
   },
   fields: {
     pmmServerNameField: '$pmmServerName-text-input',
@@ -21,12 +22,14 @@ module.exports = {
     passwordField: '$password-password-input',
     platformConnectButton: '$connect-button',
     platformDisconnectButton: '$disconnect-button',
-    getAccessTokenLink: locate('a').after('$accessToken-field-container'),
     accessToken: '$accessToken-text-input',
     serverId: '$pmmServerId-text-input',
+    confirmDisconnectButton: locate('button').withAttr({ 'aria-label': 'Confirm Modal Danger Button' }),
   },
   buttons: {
     connect: '$connect-button',
+    disconnect: '$disconnect-button',
+    confirmDisconnect: locate('button').withAttr({ 'aria-label': 'Confirm Modal Danger Button' }),
   },
   messages: {
     technicalPreview: ' This feature is in Technical Preview stage',
@@ -34,6 +37,8 @@ module.exports = {
     invalidEmail: 'Invalid email address',
     connectedSuccess: 'Successfully connected PMM to Percona Platform',
     pmmDisconnectedFromProtal: 'Successfully disconnected PMM from Percona Platform',
+    disconnectPMM: 'Disconnect PMM from Percona Platform',
+    pmmConnected: 'This PMM instance is connected to Percona Platform.',
   },
 
   async openPerconaPlatform() {
@@ -44,17 +49,6 @@ module.exports = {
   async waitForPerconaPlatformPageLoaded() {
     I.waitForVisible(this.elements.settingsContent, 30);
     I.waitInUrl(this.url);
-  },
-
-  async connect(pmmServerName, email, password) {
-    I.fillField(this.fields.pmmServerNameField, pmmServerName);
-    I.fillField(this.fields.emailField, email);
-    I.fillField(this.fields.passwordField, password);
-    I.seeAttributesOnElements(this.buttons.connect, { disabled: null });
-    I.click(this.buttons.connect);
-    I.verifyPopUpMessage(this.messages.connectedSuccess);
-    I.refreshPage();
-    I.waitForVisible(this.elements.connectedWrapper, 20);
   },
 
   verifyEmailFieldValidation() {
@@ -89,8 +83,19 @@ module.exports = {
     I.waitForVisible(this.elements.connectedWrapper, 20);
   },
 
-  disconnectFromPortal() {
+  disconnectFromPortal(version) {
     I.click(this.fields.platformDisconnectButton);
-    I.verifyPopUpMessage(this.messages.pmmDisconnectedFromProtal);
+    if (version >= 28 || version === undefined) {
+      I.waitForText(this.messages.disconnectPMM);
+      I.click(this.fields.confirmDisconnectButton);
+    } else {
+      I.verifyPopUpMessage(this.messages.pmmDisconnectedFromProtal);
+    }
+  },
+
+  async isPMMConnected() {
+    I.waitForVisible(this.elements.connectedWrapper, 20);
+    I.waitForVisible(this.buttons.disconnect);
+    locate('p').withText(this.messages.pmmConnected);
   },
 };

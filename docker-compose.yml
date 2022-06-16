@@ -42,7 +42,7 @@ services:
       --slow_query_log --log_slow_rate_limit=1 --log_slow_admin_statements --log_slow_slave_statements --slow_query_log_file=/tmp/mysql/log/ps5_slow_log.log --long_query_time=0
       --character-set-server=utf8 --default-authentication-plugin=mysql_native_password --collation-server=utf8_unicode_ci
     ports:
-      - "3306:3306"
+      - "3309:3306"
     environment:
       - MYSQL_ROOT_PASSWORD=ps
       - MYSQL_USER=pmm-agent
@@ -113,6 +113,35 @@ services:
     networks:
       - pmm-network
 
+  # it needs for deleting postgres db for test T1087
+  postgresremovedefaultdb:
+    image: ${POSTGRES_IMAGE:-perconalab/percona-distribution-postgresql:13.3}
+    command: >
+      psql -Utest -hpostgresnodb -dnot_default_db -c 'DROP DATABASE postgres WITH (FORCE);'
+    depends_on:
+      postgresnodb:
+        condition: service_healthy
+    environment:
+      - PGPASSWORD=test
+    networks:
+      - pmm-network
+
+  postgresnodb:
+    image: ${POSTGRES_IMAGE:-perconalab/percona-distribution-postgresql:13.3}
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    ports:
+      - "6435:5432"
+    environment:
+      - POSTGRES_PASSWORD=test
+      - POSTGRES_USER=test
+      - POSTGRES_DB=not_default_db
+    networks:
+      - pmm-network
+
   proxysql:
     image: ${PROXYSQL_IMAGE:-proxysql/proxysql:2.1.1}
     container_name: pmm-agent_proxysql
@@ -121,7 +150,7 @@ services:
       - "6033:6033"
       - "6070:6070"
     volumes:
-      - ${PWD}/testdata/proxysql/proxysql.cnf:/etc/proxysql.cnf:rw
+      - ./testdata/proxysql/proxysql.cnf:/etc/proxysql.cnf:rw
     networks:
       - pmm-network
 

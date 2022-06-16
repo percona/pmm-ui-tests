@@ -101,6 +101,7 @@ module.exports = {
       .find('div')
       .at(1),
     folderItemLocator: (itemName) => locate(I.useDataQA(`data-testid Dashboard search item ${itemName}`)).find('a'),
+    closeButton: locate('button[aria-label="Close search"]').as('Close button'),
   },
 
   waitForOpened() {

@@ -23,9 +23,10 @@ Object.values(page.templates).forEach((template) => {
 
 Feature('IA: Alert rules').retry(1);
 
-Before(async ({ I, settingsAPI }) => {
+Before(async ({ I, settingsAPI, rulesAPI }) => {
   await I.Authorize();
   await settingsAPI.apiEnableIA();
+  await rulesAPI.clearAllRules();
 });
 
 BeforeSuite(async ({
@@ -50,6 +51,14 @@ AfterSuite(async ({
 });
 
 Scenario(
+  'PMM-T518 Verify empty alert rules list @ia @grafana-pr',
+  async ({ I, alertRulesPage }) => {
+    alertRulesPage.openAlertRulesTab();
+    I.waitForText('No alert rules found', alertRulesPage.elements.noRules);
+  },
+);
+
+Scenario(
   'Verify alert rules list elements @ia @grafana-pr',
   async ({ I, alertRulesPage, rulesAPI }) => {
     const ruleName = 'QAA PSQL rules List test';
@@ -66,7 +75,7 @@ Scenario(
 );
 
 Scenario(
-  'Add alert rule modal elements @ia @grafana-pr',
+  'PMM-T1073 Add alert rule modal elements @ia @grafana-pr',
   async ({ I, alertRulesPage }) => {
     alertRulesPage.openAlertRulesTab();
     I.click(alertRulesPage.buttons.openAddRuleModal);
@@ -76,11 +85,37 @@ Scenario(
     I.seeElement(alertRulesPage.fields.ruleName);
     I.seeElement(alertRulesPage.fields.duration);
     I.seeElement(alertRulesPage.fields.searchDropdown('Severity'));
-    I.seeElement(alertRulesPage.fields.filters);
+    I.click(alertRulesPage.buttons.addFilter);
+    I.seeElement(alertRulesPage.fields.filtersLabel());
+    I.seeElement(alertRulesPage.fields.filtersValue());
+    I.seeElement(alertRulesPage.buttons.deleteFilter());
+    I.seeElement(alertRulesPage.fields.searchDropdown('Operators'));
     I.seeElement(alertRulesPage.fields.searchDropdown('Channels'));
     I.seeElement(alertRulesPage.buttons.toggleInModal);
     I.seeElement(alertRulesPage.buttons.addRule);
     I.seeElement(alertRulesPage.buttons.cancelAdding);
+
+    for (const [, { locator, message }] of Object.entries(alertRulesPage.tooltips)) {
+      I.waitForVisible(locator, 5);
+      I.moveCursorTo(locator);
+      I.waitForVisible(alertRulesPage.elements.tooltipMessage, 5);
+      I.seeTextEquals(message, alertRulesPage.elements.tooltipMessage);
+    }
+  },
+);
+
+Scenario(
+  'PMM-T771 Verify fields dynamically change value after user changes a template @ia @grafana-pr',
+  async ({ I, alertRulesPage }) => {
+    alertRulesPage.openAlertRulesTab();
+    I.click(alertRulesPage.buttons.openAddRuleModal);
+    I.waitForVisible(alertRulesPage.elements.modalHeader, 5);
+
+    alertRulesPage.searchAndSelectResult('Template', 'Memory used by MongoDB');
+    I.waitForValue(alertRulesPage.fields.threshold, 80, 5);
+
+    alertRulesPage.searchAndSelectResult('Template', 'Memory used by MongoDB connections');
+    I.waitForValue(alertRulesPage.fields.threshold, 25, 5);
   },
 );
 
@@ -153,7 +188,7 @@ Data(rules).Scenario(
 
     alertRulesPage.openAlertRulesTab();
     I.click(alertRulesPage.buttons.openAddRuleModal);
-    alertRulesPage.fillRuleFields(rule);
+    await alertRulesPage.fillRuleFields(rule);
     I.click(alertRulesPage.buttons.addRule);
     I.verifyPopUpMessage(alertRulesPage.messages.successfullyAdded);
     I.seeElement(alertRulesPage.elements.rulesNameCell(rule.ruleName));
@@ -165,9 +200,26 @@ Data(rules).Scenario(
   },
 );
 
+Scenario(
+  'Create Alert rule @fb',
+  async ({ I, alertRulesPage }) => {
+    const rule = alertRulesPage.rules[0];
+
+    alertRulesPage.openAlertRulesTab();
+    I.click(alertRulesPage.buttons.openAddRuleModal);
+    await alertRulesPage.fillRuleFields(rule);
+    I.click(alertRulesPage.buttons.addRule);
+    I.verifyPopUpMessage(alertRulesPage.messages.successfullyAdded);
+    I.seeElement(alertRulesPage.elements.rulesNameCell(rule.ruleName));
+    if (rule.threshold.length === 0) { rule.threshold = 80; }
+
+    alertRulesPage.verifyRowValues(rule);
+  },
+);
+
 // TODO: check ovf failure
 Scenario(
-  'PMM-T516 PMM-T687 Update Alert rule @ia @grafana-pr @not-ovf',
+  'PMM-T516 PMM-T687 Update Alert rule @ia @grafana-pr @not-ovf @fb',
   async ({
     I, alertRulesPage, rulesAPI, channelsAPI, ncPage,
   }) => {
@@ -178,7 +230,7 @@ Scenario(
       thresholdUnit: '%',
       duration: '1',
       severity: 'Critical',
-      filters: 'service_name=pmm-server-postgresql',
+      filters: [{ label: 'service_name', operator: alertRulesPage.filterOperators.equal, value: 'pmm-server-postgresql' }],
       channels: '',
       activate: true,
       expression: 'sum(pg_stat_activity_count{datname!~"template.*|postgres"})\n'
@@ -191,7 +243,7 @@ Scenario(
       thresholdUnit: '%',
       duration: '2',
       severity: 'High',
-      filters: 'service_name=pmm-server-postgresql-updated',
+      filters: [{ label: 'service_name_updated', operator: alertRulesPage.filterOperators.regex, value: 'pmm-server-postgresql-updated' }],
       channels: ['EmailChannelForRules', 'EmailChannelForEditRules'],
       activate: false,
     };
@@ -202,7 +254,7 @@ Scenario(
     alertRulesPage.openAlertRulesTab();
     I.click(alertRulesPage.buttons.editAlertRule(rule.ruleName));
     alertRulesPage.verifyEditRuleDialogElements(rule, true);
-    alertRulesPage.fillRuleFields(ruleAfterUpdate);
+    await alertRulesPage.fillRuleFields(ruleAfterUpdate);
     I.click(alertRulesPage.buttons.addRule);
     I.verifyPopUpMessage(alertRulesPage.messages.successfullyEdited);
     alertRulesPage.verifyRowValues(ruleAfterUpdate);
@@ -226,7 +278,7 @@ Data(rulesStates).Scenario(
       thresholdUnit: '%',
       duration: '1',
       severity: 'Critical',
-      filters: 'service_name=pmm-server-postgresql',
+      filters: [{ label: 'service_name', operator: alertRulesPage.filterOperators.equal, value: 'pmm-server-postgresql' }],
       channels: [],
       activate: false,
     };
@@ -244,7 +296,7 @@ Data(rulesStates).Scenario(
 );
 
 Data(rulesStates).Scenario(
-  'PMM-T517 Verify user can delete Alert rule @ia',
+  'PMM-T517 Verify user can delete Alert rule @ia @fb',
   async ({
     I, alertRulesPage, rulesAPI, current,
   }) => {
@@ -344,7 +396,7 @@ Scenario(
                 + '* 100\n'
                 + '> [[ .threshold ]]',
       alert: 'MySQL too many connections (instance {{ $labels.instance }})',
-      filters: 'service_name=pmm-server-postgresql',
+      filters: [{ label: 'service_name', operator: alertRulesPage.filterOperators.equal, value: 'pmm-server-postgresql' }],
       activate: false,
     };
     const path = ruleTemplatesPage.ruleTemplate.paths.yaml;
