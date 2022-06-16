@@ -219,28 +219,32 @@ module.exports = {
     assert.equal(resp.status, 200, `Instance ${connection.serviceName} was not added for monitoring`);
   },
 
-  async addRDS(serviceName) {
+  async addRDS(serviceName, connection = {}) {
+    const {
+      port, username, password, address, cluster
+    } = connection;
+
     const body = {
       add_node: {
         node_name: serviceName,
         node_type: 'REMOTE_NODE',
       },
-      address: remoteInstancesHelper.remote_instance.aws.aws_rds_5_7.address,
+      address: address || remoteInstancesHelper.remote_instance.aws.aws_rds_5_7.address,
       aws_access_key: remoteInstancesHelper.remote_instance.aws.aws_access_key,
       aws_secret_key: remoteInstancesHelper.remote_instance.aws.aws_secret_key,
       service_name: serviceName,
-      username: remoteInstancesHelper.remote_instance.aws.aws_rds_5_7.username,
-      password: remoteInstancesHelper.remote_instance.aws.aws_rds_5_7.password,
-      az: 'us-east-1c',
-      cluster: remoteInstancesHelper.remote_instance.aws.aws_rds_5_7.clusterName,
+      username: username || remoteInstancesHelper.remote_instance.aws.aws_rds_5_7.username,
+      password: password || remoteInstancesHelper.remote_instance.aws.aws_rds_5_7.password,
+      az: 'us-east-2a',
+      cluster: cluster || remoteInstancesHelper.remote_instance.aws.aws_rds_5_7.clusterName,
       engine: 'DISCOVER_RDS_MYSQL',
       instance_id: serviceName,
       isRDS: true,
       pmm_agent_id: 'pmm-server',
-      port: remoteInstancesHelper.remote_instance.aws.aws_rds_5_7.port,
+      port: port || remoteInstancesHelper.remote_instance.aws.aws_rds_5_7.port,
       qan_mysql_perfschema: true,
       rds_exporter: true,
-      region: 'us-east-1',
+      region: 'us-east-2',
       replication_set: 'rds_mysql_repl',
       tls_skip_verify: true,
       disable_basic_metrics: false,
