@@ -1,5 +1,5 @@
 ---
-name: UI-Tests
+name: pmm2-ui-tests
 
 on:
   # run with default inputs
@@ -31,7 +31,7 @@ jobs:
         if: ${{ github.event_name == 'workflow_dispatch' && env.SHA != 'null' }}
         uses: percona-platform/github-status-action@v1
         with:
-          context: 'PMM ui Tests'
+          context: 'pmm2-ui-tests'
           description: 'Tests execution has been started'
           state: 'pending'
           repository: ${{ github.event.inputs.repo }}
