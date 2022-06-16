@@ -16,6 +16,10 @@ on:
         description: "Target branch for pmm-ui-tests repository"
         default: 'main' 
         required: true
+      pmm_ui_tests_tag:
+        description: 'Tag to run only specific part of tests'
+        required: false
+
 
 jobs:
   tests:
@@ -25,6 +29,7 @@ jobs:
     env:
       SHA: ${{ github.event.inputs.sha || 'null' }}
 
+      UI_TESTS_BRANCH: ${{ github.event.inputs.pmm_ui_tests_tag }}
       UI_TESTS_BRANCH: ${{ github.event.inputs.ui_tests_branch }}
       OAUTH_ISSUER_URL: 'https://id-dev.percona.com/oauth2/aus15pi5rjdtfrcH51d7'
 
@@ -65,6 +70,7 @@ jobs:
 
       - name: Execute Tests
         run: |
+          echo github.event.inputs.pmm_ui_tests_tag
           cd ./pmm-ui-tests
           npm install
           npx codeceptjs run --steps -c pr.codecept.js --grep '@ia'
