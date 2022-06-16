@@ -67,7 +67,7 @@ jobs:
         run: |
           cd ./pmm-ui-tests
           npm install
-          npx codeceptjs run --steps -c pr.codecept.js --grep '@portal'
+          npx codeceptjs run --steps -c pr.codecept.js --grep '@ia'
 
       - name: List Files
         run: |
