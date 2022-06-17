@@ -70,7 +70,7 @@ Data(instances)
 
 // FIXME: Add also check for Aurora3 once https://jira.percona.com/browse/PMM-10201 is fixed
 Scenario('PMM-TXXX Verify MySQL Amazon Aurora Details @instances', async ({ I, dashboardPage, adminPage }) => {
-  I.amOnPage(dashboardPage.mysqlMmazonAuroraDetails.url);
+  I.amOnPage(dashboardPage.mysqlAmazonAuroraDetails.url);
   dashboardPage.waitForDashboardOpened();
   await adminPage.applyTimeRange('Last 5 minutes');
   await dashboardPage.applyFilter('Service Name', 'pmm-qa-aurora2-mysql-instance-1');
