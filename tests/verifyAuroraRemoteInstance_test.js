@@ -31,6 +31,8 @@ Data(instances).Scenario('PMM-TXXX Verify adding Aurora remote instance @instanc
       node_name: service_name,
       node_type: 'REMOTE_NODE',
     },
+    access_key: remoteInstancesHelper.remote_instance.aws.aurora.aws_access_key,
+    aws_access_key: remoteInstancesHelper.remote_instance.aws.aurora.aws_secret_key,
     address: service_name,
     service_name: instance_id,
     port: remoteInstancesHelper.remote_instance.aws.aurora.port,

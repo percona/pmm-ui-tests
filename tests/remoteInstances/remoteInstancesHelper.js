@@ -234,6 +234,8 @@ module.exports = {
         port: 5432,
       },
       aurora: {   
+        aws_access_key: process.env.PMM_QA_AWS_ACCESS_KEY_ID,
+        aws_secret_key: process.env.PMM_QA_AWS_ACCESS_KEY,
         port: '42001',
         username: 'pmm',
         aurora2: {
