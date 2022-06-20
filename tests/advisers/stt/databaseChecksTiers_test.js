@@ -20,20 +20,21 @@ BeforeSuite(async ({
 
 AfterSuite(async ({ portalAPI }) => {
   await portalAPI.disconnectPMMFromPortal(grafana_session_cookie);
-  if (serviceNowUsers) {
-    await portalAPI.oktaDeleteUserByEmail(serviceNowUsers.admin1.email);
-  }
 
   if (customerOrg) {
     await portalAPI.apiDeleteOrg(customerOrg.id, adminToken);
   }
 
-  if (freeUser) {
-    await portalAPI.oktaDeleteUserByEmail(freeUser.email);
+  if (serviceNowUsers) {
+    await portalAPI.oktaDeleteUserByEmail(serviceNowUsers.admin1.email);
   }
 
-  if (customerOrg) {
+  if (freUserOrg) {
     await portalAPI.apiDeleteOrg(freUserOrg.id, freeUserToken);
+  }
+
+  if (freeUser) {
+    await portalAPI.oktaDeleteUserByEmail(freeUser.email);
   }
 });
 
