@@ -63,12 +63,12 @@ jobs:
           docker-compose up -d
 
       - name: Execute All UI Tests
-        if: ${{ env.UI_TESTS_TAG != null}}
+        if: ${{ env.UI_TESTS_TAG == null }}
         run: |
           echo ${{ github.event.inputs.pmm_ui_tests_tag }}
           cd ./pmm-ui-tests
           npm install
-          npx codeceptjs run --steps -c pr.codecept.js --grep '@ia'
+          npx codeceptjs run-multiple parallel --debug --steps --reporter mocha-multi -c pr.codecept.js --grep '(?=.*)^(?!.*@not-ui-pipeline)^(?!.*@dbaas)^(?!.*@ami-upgrade)^(?!.*@pmm-upgrade)^(?!.*@qan)^(?!.*@nightly)^(?!.*@settings)^(?!.*@menu)^(?!.*@pmm-portal-upgrade)'
 
       - name: Execute Tagged UI Tests
         if: ${{ env.UI_TESTS_TAG != null}}
