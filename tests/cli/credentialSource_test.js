@@ -110,10 +110,9 @@ Scenario(
       await I.say(await I.verifyCommand(`pmm-admin remove mysql ${mysql_service_name}`));
     }
 
-    await I.say(await I.verifyCommand(`pmm-admin add mysql --username=testing --password=wrong_password --port=3309 --host=127.0.0.1 --query-source=perfschema --agent-password=testing --credentials-source=./tests/cli/credentialSourceData/mysql/mysqlConnectionString_missingPassword.json ${mysql_service_name}`, '', 'fail'));
-    // output = await I.verifyCommand(`pmm-admin add mysql --username=testing --password=wrong_password --port=3309 --host=127.0.0.1 --query-source=perfschema --agent-password=testing --credentials-source=./tests/cli/credentialSourceData/mysql/mysqlConnectionString_missingPassword.json ${mysql_service_name}`, '', 'fail');
-    //
-    // assert.ok(output.trim().includes('Connection check failed: Error 1045: Access denied for user \'pmm-agent\'@'), `Expected pmm-admin add to fail with Error Message when user provided missing Password in credential source file, got output as ${output}`);
+    output = await I.verifyCommand(`pmm-admin add mysql --username=testing --password=wrong_password --port=3309 --host=127.0.0.1 --query-source=perfschema --agent-password=testing --credentials-source=./tests/cli/credentialSourceData/mysql/mysqlConnectionString_missingPassword.json ${mysql_service_name}`, '', 'fail');
+
+    assert.ok(output.trim().includes('Connection check failed: Error 1045: Access denied for user \'pmm-agent\'@'), `Expected pmm-admin add to fail with Error Message when user provided missing Password in credential source file, got output as ${output}`);
 
     output = await I.verifyCommand(`pmm-admin add mysql --username=testing --password=wrong_password --port=3309 --host=127.0.0.1 --query-source=perfschema --agent-password=testing --credentials-source=./tests/cli/credentialSourceData/mysql/mysqlConnectionString_missingUsername.json ${mysql_service_name}`, '', 'fail');
 
