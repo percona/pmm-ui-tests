@@ -221,7 +221,7 @@ module.exports = {
 
   async addRDS(serviceName, connection = {}) {
     const {
-      port, username, password, address, cluster, access_key, secret_key
+      port, username, password, address, cluster, aws_access_key, aws_secret_key
     } = connection;
 
     const body = {
@@ -230,8 +230,8 @@ module.exports = {
         node_type: 'REMOTE_NODE',
       },
       address: address || remoteInstancesHelper.remote_instance.aws.aws_rds_5_7.address,
-      aws_access_key: access_key || remoteInstancesHelper.remote_instance.aws.aws_access_key,
-      aws_secret_key: secret_key || remoteInstancesHelper.remote_instance.aws.aws_secret_key,
+      aws_access_key: aws_access_key || remoteInstancesHelper.remote_instance.aws.aws_access_key,
+      aws_secret_key: aws_secret_key || remoteInstancesHelper.remote_instance.aws.aws_secret_key,
       service_name: serviceName,
       username: username || remoteInstancesHelper.remote_instance.aws.aws_rds_5_7.username,
       password: password || remoteInstancesHelper.remote_instance.aws.aws_rds_5_7.password,
