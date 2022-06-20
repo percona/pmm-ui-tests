@@ -76,7 +76,7 @@ jobs:
           echo ${{ github.event.inputs.pmm_ui_tests_tag }}
           cd ./pmm-ui-tests
           npm install
-          npx codeceptjs run --steps -c pr.codecept.js --grep '@ia'
+          npx codeceptjs run --steps -c pr.codecept.js --grep '${{ env.UI_TESTS_TAG }}'
 
       - name: List Files
         run: |
