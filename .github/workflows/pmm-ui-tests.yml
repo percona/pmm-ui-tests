@@ -1,0 +1,92 @@
+---
+name: pmm2-ui-tests
+
+on:
+  # run with default inputs
+  schedule:
+    - cron: "0 0 * * *"
+  push:
+    branches:
+      - main
+  pull_request:
+
+  workflow_dispatch:
+    inputs:
+      pmm_ui_tests_branch:
+        description: "Target branch for pmm-ui-tests repository"
+        default: 'main' 
+        required: true
+      pmm_ui_tests_tag:
+        description: 'Tag to run only specific part of tests'
+        required: false
+
+
+jobs:
+  tests:
+    name: Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    env:
+      SHA: ${{ github.event.inputs.sha || 'null' }}
+
+      UI_TESTS_TAG: ${{ github.event.inputs.pmm_ui_tests_tag }}
+      UI_TESTS_BRANCH: ${{ github.event.inputs.ui_tests_branch }}
+      OAUTH_ISSUER_URL: 'https://id-dev.percona.com/oauth2/aus15pi5rjdtfrcH51d7'
+
+    steps:
+      - name: Tests for ${{ github.event.inputs.branch || 'main' }} at ${{ github.event.inputs.repo || 'cicd' }} repo
+        if: ${{ github.event_name == 'workflow_dispatch' && env.SHA != 'null' }}
+        uses: percona-platform/github-status-action@v1
+        with:
+          context: 'pmm2-ui-tests'
+          description: 'Tests execution has been started'
+          state: 'pending'
+          repository: ${{ github.event.inputs.repo }}
+          target_url: 'https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}'
+          sha: ${{ env.SHA }}
+
+      - name: Install NodeJS v16
+        uses: percona-platform/setup-node@v2
+        with:
+          node-version: 16.14.1
+
+      - name: Checkout UI tests
+        uses: percona-platform/checkout@v2
+        with:
+          ref: ${{ env.UI_TESTS_BRANCH }}
+          repository: percona/pmm-ui-tests
+          path: ./pmm-ui-tests
+
+      - name: Compose PMM-Sever
+        run: |
+          cd ./pmm-ui-tests
+          docker-compose up -d
+
+      - name: Execute All UI Tests
+        id: pmm-ui-tests-all
+        if: ${{ env.UI_TESTS_TAG == null }}
+        run: |
+          cd ./pmm-ui-tests
+          npm install
+          ./node_modules/.bin/codeceptjs run-multiple parallel --debug --steps --reporter mochawesome -c pr.codecept.js --grep '(?=.*)^(?!.*@not-ui-pipeline)^(?!.*@dbaas)^(?!.*@ami-upgrade)^(?!.*@pmm-upgrade)^(?!.*@qan)^(?!.*@nightly)^(?!.*@settings)^(?!.*@menu)^(?!.*@pmm-portal-upgrade)'
+
+      - name: Execute Tagged UI Tests
+        id: pmm-ui-tests-tagged
+        if: ${{ env.UI_TESTS_TAG != null}}
+        run: |
+          cd ./pmm-ui-tests
+          npm install
+          ./node_modules/.bin/codeceptjs run-multiple parallel --debug --steps --reporter mochawesome -c pr.codecept.js --grep '${{ env.UI_TESTS_TAG }}'
+
+      - name: Attaching the report
+        if: ${{ always() && (steps.pmm-ui-tests-all.outcome != 'skipped' || steps.pmm-ui-tests-tagged.outcome != 'skipped' ) }}
+        uses: percona-platform/upload-artifact@v2
+        with:
+          name: pmm-ui-tests-report
+          path: pmm-ui-tests/mochawesome-report
+
+      - name: List Files
+        run: |
+          ls
+          cd ./pmmm-ui-tests
+          ls
