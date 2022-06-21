@@ -22,6 +22,10 @@ jobs:
     name: Tests
     runs-on: ubuntu-latest
     timeout-minutes: 60
+    strategy:
+      matrix:
+        test_tag: ['@ia','@instances']
+
     env:
       SHA: ${{ github.event.inputs.sha || 'null' }}
 
@@ -40,18 +44,5 @@ jobs:
           inputs: |
             {
                 "pmm_ui_tests_branch": "main",
-                "pmm_ui_tests_tag": "@ia",
-            }
-
-      - name: Trigger pmm-ui-Tests for instances
-        uses: percona-platform/workflow-dispatch@v1
-        with:
-          workflow: pmm2-ui-tests
-          token: ${{ secrets.ROBOT_TOKEN }}
-          repo: percona/pmm-ui-tests
-          ref: main
-          inputs: |
-            {
-                "pmm_ui_tests_branch": "main",
-                "pmm_ui_tests_tag": "@instances",
+                "pmm_ui_tests_tag": "${{ matrix.test_tag }}
             }
