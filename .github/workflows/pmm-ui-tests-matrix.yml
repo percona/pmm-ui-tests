@@ -44,5 +44,5 @@ jobs:
           inputs: |
             {
                 "pmm_ui_tests_branch": "main",
-                "pmm_ui_tests_tag": "${{ matrix.test_tag }}
+                "pmm_ui_tests_tag": "${{ matrix.test_tag }}"
             }
