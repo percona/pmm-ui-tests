@@ -63,18 +63,27 @@ jobs:
           docker-compose up -d
 
       - name: Execute All UI Tests
+        id: pmm-ui-tests-all
         if: ${{ env.UI_TESTS_TAG == null }}
         run: |
           cd ./pmm-ui-tests
           npm install
-          ./node_modules/.bin/codeceptjs run-multiple parallel --debug --steps --reporter mocha-multi -c pr.codecept.js --grep '(?=.*)^(?!.*@not-ui-pipeline)^(?!.*@dbaas)^(?!.*@ami-upgrade)^(?!.*@pmm-upgrade)^(?!.*@qan)^(?!.*@nightly)^(?!.*@settings)^(?!.*@menu)^(?!.*@pmm-portal-upgrade)'
+          ./node_modules/.bin/codeceptjs run-multiple parallel --debug --steps --reporter mochawesome -c pr.codecept.js --grep '(?=.*)^(?!.*@not-ui-pipeline)^(?!.*@dbaas)^(?!.*@ami-upgrade)^(?!.*@pmm-upgrade)^(?!.*@qan)^(?!.*@nightly)^(?!.*@settings)^(?!.*@menu)^(?!.*@pmm-portal-upgrade)'
 
       - name: Execute Tagged UI Tests
+        id: pmm-ui-tests-tagged
         if: ${{ env.UI_TESTS_TAG != null}}
         run: |
           cd ./pmm-ui-tests
           npm install
-          ./node_modules/.bin/codeceptjs run-multiple parallel --debug --steps --reporter mocha-multi -c pr.codecept.js --grep '${{ env.UI_TESTS_TAG }}'
+          ./node_modules/.bin/codeceptjs run-multiple parallel --debug --steps --reporter mochawesome -c pr.codecept.js --grep '${{ env.UI_TESTS_TAG }}'
+
+      - name: Attaching the report
+        if: ${{ always() && (steps.pmm-ui-tests-all.outcome != 'skipped' || steps.pmm-ui-tests-tagged.outcome != 'skipped' ) }}
+        uses: percona-platform/upload-artifact@v2
+        with:
+          name: pmm-ui-tests-report
+          path: pmm-ui-tests/mochawesome-report
 
       - name: List Files
         run: |
