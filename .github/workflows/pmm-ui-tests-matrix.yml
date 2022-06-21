@@ -42,7 +42,6 @@ jobs:
                 "pmm_ui_tests_branch": "main",
                 "pmm_ui_tests_tag": "@ia",
             }
-    steps:
      - name: Trigger pmm-ui-Tests for @instances
         uses: percona-platform/workflow-dispatch@v1
         with:
