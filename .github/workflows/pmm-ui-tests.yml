@@ -84,9 +84,3 @@ jobs:
         with:
           name: pmm-ui-tests-report
           path: pmm-ui-tests/mochawesome-report
-
-      - name: List Files
-        run: |
-          ls
-          cd ./pmmm-ui-tests
-          ls
