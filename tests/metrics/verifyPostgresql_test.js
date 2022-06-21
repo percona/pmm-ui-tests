@@ -54,19 +54,3 @@ xScenario(
     await settingsAPI.changeSettings({ resolution: settingsAPI.defaultResolution });
   },
 );
-
-Scenario(
-  'PMM-T0000 - Verify Clickhouse and PGSM view data are the same after PG_BENCH load',
-  async ({ I, grafanaAPI }) => {
-    const serviceName = 'pg-bench-test';
-
-    await I.verifyCommand(`${pmmManagerCmd} --addclient=pdpgsql,1 --pdpgsql-version=14.3 --deploy-service-with-name ${serviceName}`);
-    await I.verifyCommand(`docker exec ${serviceName}  pgbench -i -s 100`);
-    await I.verifyCommand(`docker exec ${serviceName}  pgbench -c 10 -j 2 -t 10000`);
-    await I.verifyCommand(`docker exec ${serviceName}  pgbench -c 10 -j 2 -T 60`);
-
-    // wait for metrics and compare the the data
-
-    await I.verifyCommand(`${pmmManagerCmd} --cleanup-service ${serviceName}`);
-  },
-);
