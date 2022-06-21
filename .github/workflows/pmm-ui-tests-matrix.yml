@@ -30,7 +30,7 @@ jobs:
       OAUTH_ISSUER_URL: 'https://id-dev.percona.com/oauth2/aus15pi5rjdtfrcH51d7'
 
     steps:
-     - name: Trigger pmm-ui-Tests for @ia
+      - name: Trigger pmm-ui-Tests for ia
         uses: percona-platform/workflow-dispatch@v1
         with:
           workflow: pmm2-ui-tests
@@ -42,7 +42,8 @@ jobs:
                 "pmm_ui_tests_branch": "main",
                 "pmm_ui_tests_tag": "@ia",
             }
-     - name: Trigger pmm-ui-Tests for @instances
+
+      - name: Trigger pmm-ui-Tests for instances
         uses: percona-platform/workflow-dispatch@v1
         with:
           workflow: pmm2-ui-tests
@@ -54,5 +55,3 @@ jobs:
                 "pmm_ui_tests_branch": "main",
                 "pmm_ui_tests_tag": "@instances",
             }
-
-
