@@ -1,8 +1,8 @@
 const { I } = inject();
 module.exports = {
     url: 'graph/admin/upgrading',
+    headLine: locate('h2').withText('Instance statistics'),
     fields: {
-      headLine: locate('h2').withText('Instance statistics'),
         enterpriseLicense: locate('h2').withText('Enterprise license'),
         grafanaEnterpriseLogo: locate('h2').withText('Grafana Enterprise'),
         freeTrial: locate('h3').withText('Get your free trial'),
@@ -40,12 +40,19 @@ module.exports = {
         inTheUpgradeProcess: locate('div').withText('in the upgrade process'),
         included: locate('strong').withText('Also included:'),
         workingWithGrafana: locate('div').withText('Indemnification, working with Grafana Labs on future prioritization, and training from the core Grafana team.'),
-        trialVersion: locate('div').withText('You can use the trial version for free for 30 days. We will remind you about it five days before the trial period ends.')
+        trialVersion: locate('div').withText('You can use the trial version for free for 30 days. We will remind you about it five days before the trial period ends.'),
+        contactUs: locate('span').withText('Contact us and get a free trial')
     },
     buttons: {
-        contactUs: locate('span').withText('Contact us and get a free trial'),
+      manageDashboards: locate('span.css-1mhnkuh').withText('Manage dashboards'),
+      manageDataSources: locate('span.css-1mhnkuh').withText('Manage data sources'),
+      alerts: locate('span.css-1mhnkuh').withText('Alerts'),
+      manageUsers:locate('span.css-1mhnkuh').withText('Manage users')
     },
    async waitForStatsAndLicensePageLoaded() {
-      await I.waitForVisible(this.fields.headLine, 30);
+     I.seeElement(this.buttons.manageDashboards);
+     I.seeElement(this.buttons.manageDataSources);
+     I.seeElement(this.buttons.alerts);
+     I.seeElement(this.buttons.manageUsers);
     },
   };
