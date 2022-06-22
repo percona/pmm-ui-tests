@@ -60,6 +60,7 @@ module.exports = {
     qanAPI: './tests/QAN/api/qanAPI.js',
     environmentOverviewPage: './tests/pages/environmentOverviewPage.js',
     tooltips: './tests/helper/tooltipHelper.js',
+    dataSourcePage: './tests/pages/pmmSettingsPages/dataSourcePage.js',
   },
   getChunks: (files) => {
     const dependentTests = files.filter((value) => /PMMSettings|stt|backup|permissions|Azure/.test(value));
