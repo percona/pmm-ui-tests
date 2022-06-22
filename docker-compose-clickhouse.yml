@@ -10,7 +10,7 @@ networks:
           gateway: 192.168.0.1
 
 services:
-  pmm-server:
+  pmm-server-external-clickhouse:
     image: ${PMM_SERVER_IMAGE:-perconalab/pmm-server:dev-latest}
     container_name: pmm-server
     ports:
@@ -26,6 +26,6 @@ services:
     networks:
       - pmm-network
 
-  external-clickhouse:
-    image: clickhouse/clickhouse-server:latest
-    container_name: external-clickhouse
+#  external-clickhouse:
+#    image: clickhouse/clickhouse-server:latest
+#    container_name: external-clickhouse
