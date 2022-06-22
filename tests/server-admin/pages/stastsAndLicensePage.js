@@ -45,8 +45,7 @@ module.exports = {
     buttons: {
         contactUs: locate('span').withText('Contact us and get a free trial'),
     },
-    waitForStatsAndLicensePageLoaded() {
-      I.waitForVisible(this.fields.headLine, 30);
-      //I.waitForVisible(this.fields.tabContent, 30);
+   async waitForStatsAndLicensePageLoaded() {
+      await I.waitForVisible(this.fields.headLine, 30);
     },
   };
