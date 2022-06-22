@@ -8,7 +8,7 @@ exports.config = {
   output: 'tests/output',
   helpers: {
     Playwright: {
-      url: process.env.PMM_UI_URL || 'http://127.0.0.1/',
+      url: process.env.PMM_UI_URL || 'http://18.188.164.80/',
       restart: true,
       browser: 'chromium',
       windowSize: '1920x1080',
@@ -21,6 +21,7 @@ exports.config = {
       chromium: {
         executablePath: process.env.CHROMIUM_PATH,
         ignoreHTTPSErrors: true,
+        headless:false,
         args: [
           '--ignore-certificate-errors',
           '--no-sandbox',
@@ -62,7 +63,7 @@ exports.config = {
       require: './tests/helper/browser_helper.js',
     },
     REST: {
-      endpoint: process.env.PMM_UI_URL || 'http://127.0.0.1/',
+      endpoint: process.env.PMM_UI_URL || 'http://18.188.164.80/',
       timeout: 60000,
     },
     Mailosaur: {

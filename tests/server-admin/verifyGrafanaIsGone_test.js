@@ -8,10 +8,10 @@ Before(async ({
 Scenario(
     'PMM-10162 Verify that Grafana Enterprise is not present @admin',
     async ({
-      I, stastsAndLicense,
+      I, stastsAndLicensePage,
     }) => {
-      I.amOnPage(stastsAndLicense.url);
-      I.seeElement(stastsAndLicense.buttons.contactUs);
+      I.amOnPage(stastsAndLicensePage.url);
+      I.seeElement(stastsAndLicensePage.buttons.contactUs);
       //I.waitForVisible(pmmSettingsPage.fields.rareIntervalInput, 30);
   
       // // Verify that you can see element
