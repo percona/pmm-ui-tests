@@ -185,7 +185,7 @@ Data(filters).Scenario(
 );
 
 Scenario(
-  'PMM-T1262 -  @not-ui-pipeline @pgsm-pmm-integration',
+  'PMM-T1262 - Verify Postgresql Dashboard Instance Summary has Data @not-ui-pipeline @pgsm-pmm-integration',
   async ({
     I, dashboardPage, adminPage,
   }) => {
