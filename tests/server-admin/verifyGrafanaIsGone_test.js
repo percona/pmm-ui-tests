@@ -1,4 +1,3 @@
-const assert = require('assert');
 const { fields } = require('./pages/stastsAndLicensePage');
 Feature('Grafana-Enterprise');
 Before(async ({
@@ -15,11 +14,7 @@ Scenario(
       I.seeElement(stastsAndLicensePage.buttons.contactUs);
       I.seeElement(stastsAndLicensePage.fields.enterpriseLicense);
       I.seeElement(stastsAndLicensePage.fields.dataSourcePermission);
-      for (const key in fields) {
-        if (fields.hasOwnProperty(key)) {
-            I.waitForVisible(fields[key]);
-            //I.seeElement(fields[key]);
-        }
-    }
+      Object.values(fields).forEach(val => I.seeElement(val));
+   
     },
   );
