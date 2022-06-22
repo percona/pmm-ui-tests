@@ -1,10 +1,11 @@
 const assert = require('assert');
 
 const {
-  settingsAPI, perconaServerDB, securityChecksAPI, databaseChecksPage,
+  settingsAPI, psMySql, securityChecksAPI, databaseChecksPage,
 } = inject();
-const connection = perconaServerDB.defaultConnection;
+const connection = psMySql.defaultConnection;
 const emptyPasswordSummary = 'User(s) has/have no password defined';
+const mysqlVersionSummary = 'Newer version of Percona Server for MySQL is available';
 const intervals = settingsAPI.defaultCheckIntervals;
 const psServiceName = 'stt-mysql-5.7.30';
 const failedCheckRowLocator = databaseChecksPage.elements
@@ -23,7 +24,7 @@ const cleanup = async () => {
   await settingsAPI.apiEnableSTT();
   await settingsAPI.setCheckIntervals();
   await securityChecksAPI.restoreDefaultIntervals();
-  await perconaServerDB.dropUser();
+  await psMySql.dropUser();
   await securityChecksAPI.enableCheck(securityChecksAPI.checkNames.mysqlVersion);
   await securityChecksAPI.enableCheck(securityChecksAPI.checkNames.mysqlEmptyPassword);
 };
@@ -31,53 +32,54 @@ const cleanup = async () => {
 const prepareFailedCheck = async () => {
   await securityChecksAPI.startSecurityChecks();
 
-  // Check that there is MySQL user empty password failed check
-  await securityChecksAPI.waitForFailedCheckExistance(emptyPasswordSummary, psServiceName);
+  // Check that there is MySQL version failed check
+  await securityChecksAPI.waitForFailedCheckExistance(mysqlVersionSummary, psServiceName);
 };
 
 Feature('Security Checks: Checks Execution');
 
-BeforeSuite(async ({ perconaServerDB, addInstanceAPI }) => {
+BeforeSuite(async ({ psMySql, addInstanceAPI }) => {
   const mysqlComposeConnection = {
     host: '127.0.0.1',
-    port: connection.port,
+    port: '3309',
     username: connection.username,
     password: connection.password,
   };
 
   [nodeId, serviceId] = await addInstanceAPI.addInstanceForSTT(connection, psServiceName);
 
-  perconaServerDB.connectToPS(mysqlComposeConnection);
+  psMySql.connectToPS(mysqlComposeConnection);
 });
 
-AfterSuite(async ({ perconaServerDB, inventoryAPI }) => {
-  await perconaServerDB.disconnectFromPS();
+AfterSuite(async ({ psMySql, inventoryAPI }) => {
+  await psMySql.disconnectFromPS();
   if (nodeId) await inventoryAPI.deleteNode(nodeId, true);
 });
 
 Before(async ({
-  I, perconaServerDB,
+  I, psMySql,
 }) => {
   await I.Authorize();
   await cleanup();
-  await perconaServerDB.createUser();
+  await psMySql.createUser();
 });
 
 After(async () => {
   await cleanup();
 });
 
-Scenario(
+Scenario.skip(
   'PMM-T384 Verify that the user does not see an alert again if it has been fixed [critical] @stt @not-ovf',
   async ({
-    securityChecksAPI, databaseChecksPage, perconaServerDB,
+    I, securityChecksAPI, databaseChecksPage, psMySql, allChecksPage,
   }) => {
     await prepareFailedCheck();
-    await perconaServerDB.setUserPassword();
-
+    await psMySql.setUserPassword();
     // Run DB Checks from UI
-    await databaseChecksPage.runDBChecks();
+    I.amOnPage(allChecksPage.url);
+    await allChecksPage.runDBChecks();
 
+    I.amOnPage(databaseChecksPage.url);
     await securityChecksAPI.waitForFailedCheckNonExistance(emptyPasswordSummary, psServiceName);
     // Verify there is no MySQL user empty password failed check
     databaseChecksPage.verifyFailedCheckNotExists(emptyPasswordSummary, serviceId);
@@ -93,7 +95,7 @@ Scenario(
     await settingsAPI.changeSettings({ stt: true });
 
     // Wait for MySQL user empty password failed check
-    await securityChecksAPI.waitForFailedCheckExistance(emptyPasswordSummary, psServiceName);
+    await securityChecksAPI.waitForFailedCheckExistance(mysqlVersionSummary, psServiceName);
     I.amOnPage(homePage.url);
     I.waitForVisible(homePage.fields.checksPanelSelector, 30);
     I.dontSeeElement(homePage.fields.noFailedChecksInPanel);
@@ -105,12 +107,12 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T617 Verify user is able to silence failed check @stt @not-ovf',
+  'PMM-T617 Verify user is able to silence failed check @stt @not-ovf @fb',
   async ({
     I, databaseChecksPage,
   }) => {
     const failedCheckRowLocator = databaseChecksPage.elements
-      .failedCheckRowBySummary(emptyPasswordSummary);
+      .failedCheckRowBySummary(mysqlVersionSummary);
 
     await prepareFailedCheck();
     databaseChecksPage.openFailedChecksListForService(serviceId);
@@ -119,13 +121,13 @@ Scenario(
     I.waitForVisible(failedCheckRowLocator, 30);
 
     const oldColor = await I.grabCssPropertyFrom(
-      locate(databaseChecksPage.elements.failedCheckRowBySummary(emptyPasswordSummary))
+      locate(databaseChecksPage.elements.failedCheckRowBySummary(mysqlVersionSummary))
         .find('td'), 'background-color',
     );
 
     I.click(failedCheckRowLocator.find('$silence-button'));
     const newColor = await I.grabCssPropertyFrom(
-      locate(databaseChecksPage.elements.failedCheckRowBySummary(emptyPasswordSummary))
+      locate(databaseChecksPage.elements.failedCheckRowBySummary(mysqlVersionSummary))
         .find('td'), 'background-color',
     );
 
@@ -133,41 +135,42 @@ Scenario(
   },
 );
 
-Data(intervalsTests).Scenario(
-  'PMM-T706 PMM-709 PMM-T711 Verify checks are executed based on interval value, change interval, fix problem [critical] @stt @not-ovf',
-  async ({
-    securityChecksAPI, settingsAPI, perconaServerDB, databaseChecksPage, current,
-  }) => {
-    await prepareFailedCheck();
-    await perconaServerDB.setUserPassword();
-
-    // TODO: uncomment after https://jira.percona.com/browse/PMM-8051
-    // await securityChecksAPI.changeCheckInterval(
-    //   securityChecksAPI.checkNames.mysqlEmptyPassword,
-    //   current.intervalValue,
-    // );
-
-    await settingsAPI.setCheckIntervals({ ...intervals, [current.interval]: '3s' });
-
-    await securityChecksAPI.waitForFailedCheckNonExistance(emptyPasswordSummary, psServiceName);
-
-    // Verify there is no MySQL user empty password failed check
-    databaseChecksPage.verifyFailedCheckNotExists(emptyPasswordSummary, serviceId);
-  },
-);
+// Data(intervalsTests).Scenario(
+// eslint-disable-next-line max-len
+//   'PMM-T706 PMM-709 PMM-T711 Verify checks are executed based on interval value, change interval, fix problem [critical] @stt @not-ovf',
+//   async ({
+//     securityChecksAPI, settingsAPI, perconaServerDB, databaseChecksPage, current,
+//   }) => {
+//     await prepareFailedCheck();
+//     await perconaServerDB.setUserPassword();
+//
+//     // TODO: uncomment after https://jira.percona.com/browse/PMM-8051
+//     // await securityChecksAPI.changeCheckInterval(
+//     //   securityChecksAPI.checkNames.mysqlEmptyPassword,
+//     //   current.intervalValue,
+//     // );
+//
+//     await settingsAPI.setCheckIntervals({ ...intervals, [current.interval]: '3s' });
+//
+//     await securityChecksAPI.waitForFailedCheckNonExistance(emptyPasswordSummary, psServiceName);
+//
+//     // Verify there is no MySQL user empty password failed check
+//     databaseChecksPage.verifyFailedCheckNotExists(emptyPasswordSummary, serviceId);
+//   },
+// );
 
 Scenario.skip(
   'PMM-T757 Verify disabled checks do not execute based on interval value [critical] @stt @not-ovf',
   async ({
-    securityChecksAPI, settingsAPI, databaseChecksPage,
+    securityChecksAPI, settingsAPI,
   }) => {
     await prepareFailedCheck();
-    await securityChecksAPI.disableCheck(securityChecksAPI.checkNames.mysqlEmptyPassword);
+    await securityChecksAPI.disableCheck(securityChecksAPI.checkNames.mysqlVersion);
     await settingsAPI.setCheckIntervals({ ...intervals, standard_interval: '3s' });
 
-    await securityChecksAPI.waitForFailedCheckNonExistance(emptyPasswordSummary, psServiceName);
+    await securityChecksAPI.waitForFailedCheckNonExistance(mysqlVersionSummary, psServiceName);
 
     // Verify there is no MySQL user empty password failed check
-    databaseChecksPage.verifyFailedCheckNotExists(emptyPasswordSummary, serviceId);
+    // databaseChecksPage.verifyFailedCheckNotExists(mysqlVersionSummary, serviceId);
   },
 );

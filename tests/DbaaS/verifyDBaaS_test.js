@@ -149,7 +149,7 @@ Scenario('PMM-T728 Verify DB Cluster Tab Page Elements & Steps Background @dbaas
     I.amOnPage(dbaasPage.url);
     dbaasPage.checkCluster(clusterName, false);
     I.click(dbaasPage.tabs.dbClusterTab.dbClusterTab);
-    I.waitForElement(dbaasPage.tabs.dbClusterTab.dbClusterAddButtonTop, 30);
+    I.waitForEnabled(dbaasPage.tabs.dbClusterTab.dbClusterAddButtonTop, 10);
     I.click(dbaasPage.tabs.dbClusterTab.dbClusterAddButtonTop);
     I.waitForElement(dbaasPage.tabs.dbClusterTab.monitoringWarningLocator, 30);
     I.waitForText(dbaasPage.monitoringWarningMessage, 30);
@@ -190,6 +190,7 @@ Scenario('PMM-T456 PMM-T490 Verify DB Cluster Steps Background @dbaas',
     I.click(dbaasPage.tabs.dbClusterTab.dbClusterTab);
     I.waitForVisible(dbaasPage.tabs.dbClusterTab.addDbClusterButton, 60);
     I.dontSeeElement(adminPage.fields.timePickerMenu);
+    I.waitForEnabled(dbaasPage.tabs.dbClusterTab.dbClusterAddButtonTop, 10);
     I.click(dbaasPage.tabs.dbClusterTab.dbClusterAddButtonTop);
     I.waitForElement(dbaasPage.tabs.dbClusterTab.monitoringWarningLocator, 30);
     I.waitForText(dbaasPage.monitoringWarningMessage, 30);
@@ -299,7 +300,7 @@ Data(resourceFields).Scenario('PMM-T828 Verify the Configuration for Small, Medi
 
     await dbaasPage.waitForDbClusterTab(clusterName);
     I.waitForInvisible(dbaasPage.tabs.kubernetesClusterTab.disabledAddButton, 30);
-    I.waitForElement(dbaasPage.tabs.dbClusterTab.dbClusterAddButtonTop, 30);
+    I.waitForEnabled(dbaasPage.tabs.dbClusterTab.dbClusterAddButtonTop, 10);
     I.click(dbaasPage.tabs.dbClusterTab.dbClusterAddButtonTop);
     I.waitForElement(dbaasPage.tabs.dbClusterTab.optionsCountLocator(2), 30);
     I.click(dbaasPage.tabs.dbClusterTab.optionsCountLocator(2));
@@ -331,4 +332,37 @@ Scenario('PMM-T546 Verify Actions column on Kubernetes cluster page @dbaas',
     I.seeElement(dbaasPage.tabs.kubernetesClusterTab.manageVersions);
     I.seeElement(dbaasPage.tabs.kubernetesClusterTab.viewClusterConfiguration);
     I.seeElement(dbaasPage.tabs.kubernetesClusterTab.unregisterButton);
+  });
+
+Scenario(
+  'PMM-T969 - Verify pmm-client logs when incorrect public address is set @dbaas',
+  async ({ I, settingsAPI, dbaasAPI, dbaasPage, dbaasActionsPage }) => {
+    const dbClusterName = dbaasPage.randomizeClusterName('dbcluster');
+    const dbType = 'MySQL';
+    const address = 'https://1.2.3.4';
+    const logsText = `Registering pmm-agent on PMM Server...
+Failed to register pmm-agent on PMM Server: Post "https://https:%2F%2F1.2.3.4/v1/management/Node/Register": dial tcp: lookup ${address}: no such host.
+[u'pmm-agent', u'setup'] exited with 1.
+Restarting [u'pmm-agent', u'setup'] in 5 seconds because PMM_AGENT_SIDECAR is enabled ...`;
+  
+    await settingsAPI.changeSettings({ publicAddress: address });
+    await dbaasAPI.apiCreatePXCCluster(dbClusterName, clusterName);
+
+    I.amOnPage(dbaasPage.url);
+    dbaasPage.checkCluster(clusterName, false);
+    I.click(dbaasPage.tabs.dbClusterTab.dbClusterTab);
+    I.waitForText('Processing', 30, dbaasPage.tabs.dbClusterTab.fields.progressBarContent);
+    await dbaasAPI.waitForDBClusterState(dbClusterName, clusterName, dbType, 'DB_CLUSTER_STATE_READY');
+    await dbaasActionsPage.showClusterLogs();
+    I.waitForElement(dbaasPage.tabs.dbClusterTab.fields.dbClusterLogs.expandAllLogsButton, 30);
+    I.click(dbaasPage.tabs.dbClusterTab.fields.dbClusterLogs.expandAllLogsButton);
+    I.waitForElement(dbaasPage.tabs.dbClusterTab.fields.dbClusterLogs.expandedContainersLogsSection, 30);
+    I.waitForText('Restarting [u\'pmm-agent\', u\'setup\'] in 5 seconds because PMM_AGENT_SIDECAR is enabled ...',
+      120, dbaasPage.tabs.dbClusterTab.fields.dbClusterLogs.expandedContainersLogsSection);
+
+    const pmmClientLogsText = await I.grabTextFrom(
+      dbaasPage.tabs.dbClusterTab.fields.dbClusterLogs.expandedContainersLogsSection,
+    );
+
+    assert.ok(pmmClientLogsText.includes(logsText), `Pmm-client logs must contain text: ${logsText}`);
   });

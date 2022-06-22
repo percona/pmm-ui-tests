@@ -103,6 +103,7 @@ module.exports = {
     folderItemLocator: (itemName) => locate(I.useDataQA(`data-testid Dashboard search item ${itemName}`)).find('a'),
     folderItemWithTagLocator: (itemName, tag) => locate(I.useDataQA(`data-testid Dashboard search item ${itemName}`))
       .find('a').withDescendant('span').withText(tag),
+    closeButton: locate('button[aria-label="Close search"]').as('Close button'),
   },
 
   waitForOpened() {

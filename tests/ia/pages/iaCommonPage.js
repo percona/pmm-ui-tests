@@ -27,6 +27,7 @@ module.exports = {
     firstPageButton: '$first-page-button',
     prevPageButton: '$previous-page-button',
     pageButton: '$page-button',
+    pageButtonActive: '$page-button-active',
     nextPageButton: '$next-page-button',
     lastPageButton: '$last-page-button',
     rowsPerPage: locate('$pagination').find('div[class*="-singleValue"]'),
@@ -105,5 +106,11 @@ module.exports = {
     const className = await I.grabAttributeFrom(this.elements.tab(tabName), 'class');
 
     assert.ok(className.endsWith('activeTabStyle'), `Tab ${tabName} should be active`);
+  },
+
+  checkBreadcrumbText(text, locator) {
+    const breadcrumbSectionText = ` / ${text}`;
+
+    I.seeTextEquals(breadcrumbSectionText, locator);
   },
 };

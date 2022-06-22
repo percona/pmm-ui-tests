@@ -237,4 +237,21 @@ module.exports = {
       }
     }
   },
+
+  async apiCreatePXCCluster(dbClusterName, clusterName) {
+    const body = { kubernetes_cluster_name: clusterName, name: dbClusterName, params: {cluster_size: 1, 
+      pxc: {compute_resources: {cpu_m: 1000, memory_bytes: 2000000000}, disk_size: 1000000000}, 
+      haproxy: {compute_resources: {cpu_m: 1000, memory_bytes: 2000000000}}} } ;
+    const headers = { Authorization: `Basic ${await I.getAuth()}` };
+
+    await I.sendPostRequest('v1/management/DBaaS/PXCCluster/Create', body, headers);  
+  },
+
+  async apiCreatePSMDBCluster(dbClusterName, clusterName) {
+    const body = { kubernetes_cluster_name: clusterName, name: dbClusterName, params: {cluster_size: 3, 
+      replicaset: {compute_resources: {cpu_m: 500, memory_bytes: 2000000000}, disk_size: 1000000000}} };
+    const headers = { Authorization: `Basic ${await I.getAuth()}` };
+
+    await I.sendPostRequest('v1/management/DBaaS/PSMDBCluster/Create', body, headers);  
+  },
 };

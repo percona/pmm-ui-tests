@@ -10,20 +10,22 @@ module.exports = {
   // insert your locators and methods here
   // setting locators
   url: 'graph/pmm-database-checks',
+  allChecks: 'graph/pmm-database-checks/all-checks',
   // Database Checks page URL before 2.13 version
   oldUrl: 'graph/d/pmm-checks/pmm-database-checks',
   elements: {
     failedCheckRowByServiceName: (name) => locate('tr').withChild(locate('td').withText(name)),
     failedCheckRowBySummary: (summary) => locate('tr').withChild(locate('td').withText(summary)),
+    allChecksTable: locate('div').find('$db-check-tab-content'),
+    allChecksTableRows: locate('div').find('$db-check-tab-content').withDescendant(locate('tr')),
   },
   messages: {
     homePagePanelMessage: 'Advisor Checks feature is disabled.\nCheck PMM Settings.',
     disabledSTTMessage: 'Advisor Checks feature is disabled. You can enable it in',
-    securityChecksDone: 'Running checks in the background... The results will be displayed here soon.',
   },
   buttons: {
-    startDBChecks: locate('$db-check-panel-actions').find('button'),
     toggleSilenced: locate('$db-checks-failed-checks-toggle-silenced').find('label'),
+    toggleFailedCheckBySummary: (checkSummary) => locate(failedCheckRow(checkSummary)).find('$silence-button'),
   },
   fields: {
     dbCheckPanelSelector: '$db-check-panel',
@@ -41,6 +43,48 @@ module.exports = {
     tooltipSelector: locate('.ant-tooltip-inner > div > div').first(),
     noAccessRightsSelector: '$unauthorized',
   },
+  checks: {
+    anonymous: [
+      'MongoDB Authentication',
+      'MonogDB IP bindings',
+      'MongoDB CVE Version',
+      'MongoDB localhost authentication bypass enabled',
+      'MongoDB Version',
+      'Check if binaries are 32 bits',
+      'MySQL Version',
+      'PostgreSQL fsync is set to off',
+      'PostgreSQL max_connections is too high.',
+      'PostgreSQL Super Role',
+      'PostgreSQL Version',
+    ],
+    registered: [
+      'MongoDB Active vs Available Connections',
+      'MongoDB Journal',
+      'MongoDB Replica Set Topology',
+      'MySQL Automatic User Expired Password',
+      'MySQL Binary Logs checks, Local infile and local infile.',
+      'MySQL Users With Granted Public Networks Access',
+      'MySQL test Database',
+      'Configuration change requires restart/reload.',
+      'PostgreSQL Checkpoints Logging is Disabled.',
+    ],
+    registeredOnly: ['MySQL User check'],
+    paid: [
+      'MongoDB Security AuthMech Check',
+      'MongoDB Non-Default Log Level',
+      'MongoDB Read Tickets',
+      'MongoDB write Tickets',
+      'InnoDB flush method and File Format check.',
+      'Checks based on values of MySQL configuration variables',
+      'MySQL configuration check',
+      'MySQL User check (advanced)',
+      'MySQL security check',
+      'PostgreSQL Archiver is failing',
+      'PostgreSQL cache hit ratio',
+      'PostgreSQL Autovacuum Logging Is Disabled',
+      'PostgreSQL Stale Replication Slot',
+    ],
+  },
   // introducing methods
 
   // Info icon locator in Failed Checks column for showing tooltip with additional information
@@ -54,13 +98,11 @@ module.exports = {
 
   openDBChecksPage() {
     I.amOnPage(this.url);
-    I.waitForVisible(this.buttons.startDBChecks, 30);
   },
 
   openFailedChecksListForService(serviceId) {
-    I.amOnPage(`${this.url}/service-checks/${serviceId.split('/')[2]}`);
+    I.amOnPage(`${this.url}/failed-checks/${serviceId.split('/')[2]}`);
     I.waitForVisible('td', 30);
-    // I.waitForVisible(this.buttons.startDBChecks, 30);
   },
 
   verifyFailedCheckNotExists(checkSummary, serviceId) {
@@ -158,11 +200,13 @@ module.exports = {
 
     I.seeElement(locate('$table-row').find('td').withText(serviceName));
   },
+  async verifyAdvisorCheckExistence(advisorName) {
+    I.waitForVisible(this.elements.allChecksTableRows, 30);
+    I.seeElement(this.elements.allChecksTableRows.withText(advisorName));
+  },
 
-  async runDBChecks() {
-    I.amOnPage(this.url);
-    I.waitForVisible(this.buttons.startDBChecks, 30);
-    I.click(this.buttons.startDBChecks);
-    I.verifyPopUpMessage(this.messages.securityChecksDone, 60);
+  async verifyAdvisorCheckIsNotPresent(advisorName) {
+    I.waitForVisible(this.elements.allChecksTableRows, 30);
+    I.dontSeeElement(this.elements.allChecksTableRows.withText(advisorName));
   },
 };
