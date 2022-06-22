@@ -1,8 +1,8 @@
 const { I } = inject();
 module.exports = {
     url: 'graph/admin/upgrading',
-    headLine: 'Instance statistics',
     fields: {
+      headLine: locate('h2').withText('Instance statistics'),
         enterpriseLicense: locate('h2').withText('Enterprise license'),
         grafanaEnterpriseLogo: locate('h2').withText('Grafana Enterprise'),
         freeTrial: locate('h3').withText('Get your free trial'),
@@ -45,7 +45,8 @@ module.exports = {
     buttons: {
         contactUs: locate('span').withText('Contact us and get a free trial'),
     },
-    openStatsAndLicensePage() {
-      I.amOnPage(this.url);
+    waitForStatsAndLicensePageLoaded() {
+      I.waitForVisible(this.fields.headLine, 30);
+      //I.waitForVisible(this.fields.tabContent, 30);
     },
   };

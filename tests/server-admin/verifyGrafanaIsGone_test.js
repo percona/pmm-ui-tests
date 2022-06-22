@@ -1,5 +1,5 @@
 const { fields } = require('./pages/stastsAndLicensePage');
-Feature('Grafana-Enterprise');
+Feature('Grafana-EnterpriseAds');
 Before(async ({
     I
   }) => {
@@ -11,9 +11,7 @@ Scenario(
       I, stastsAndLicensePage,
     }) => {
       I.amOnPage(stastsAndLicensePage.url);
-      I.seeElement(stastsAndLicensePage.buttons.contactUs);
-      I.seeElement(stastsAndLicensePage.fields.enterpriseLicense);
-      I.seeElement(stastsAndLicensePage.fields.dataSourcePermission);
+      stastsAndLicensePage.waitForStatsAndLicensePageLoaded();
       Object.values(fields).forEach(val => I.seeElement(val));
    
     },
