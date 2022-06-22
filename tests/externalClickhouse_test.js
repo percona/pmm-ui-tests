@@ -8,7 +8,7 @@ BeforeSuite(async ({ I }) => {
 });
 
 Before(async ({ I }) => {
-  await I.Authorize();
+  await I.Authorize('admin', 'admin');
 });
 
 AfterSuite(async ({ I }) => {
