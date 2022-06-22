@@ -11,8 +11,8 @@ Scenario(
       I, stastsAndLicensePage,
     }) => {
       I.amOnPage(stastsAndLicensePage.url);
-      stastsAndLicensePage.waitForStatsAndLicensePageLoaded();
-      Object.values(fields).forEach(val => I.seeElement(val));
-   
+       stastsAndLicensePage.waitForStatsAndLicensePageLoaded();
+      Object.values(fields).forEach(val =>I.dontSeeElement(val));
+      
     },
   );
