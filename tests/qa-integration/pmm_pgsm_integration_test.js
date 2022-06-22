@@ -38,7 +38,7 @@ Before(async ({ I }) => {
 });
 
 Scenario(
-  'Adding Load to Postgres test database and verifying PMM-Agent and PG_STAT_MONITOR QAN agent is in running status @not-ui-pipeline @pgsm-pmm-integration',
+  'PMM-T1260 - Adding Load to Postgres test database and verifying PMM-Agent and PG_STAT_MONITOR QAN agent is in running status @not-ui-pipeline @pgsm-pmm-integration',
   async ({ I }) => {
     await I.pgExecuteQueryOnDemand('SELECT now();', connection);
 
@@ -60,7 +60,7 @@ Scenario(
 );
 
 Scenario(
-  'Verifying data in Clickhouse and comparing with PGSM output @not-ui-pipeline @pgsm-pmm-integration',
+  'PMM-T1260 - Verifying data in Clickhouse and comparing with PGSM output @not-ui-pipeline @pgsm-pmm-integration',
   async ({ I, qanAPI }) => {
     const toStart = new Date();
     let pgsm_output;
@@ -102,7 +102,7 @@ Scenario(
 );
 
 Scenario(
-  'Adding Load to Postgres test database and verifying PMM-Agent and PG_STAT_MONITOR QAN agent is in running status @not-ui-pipeline',
+  'PMM-T1259 - Adding Load to Postgres test database and verifying PMM-Agent and PG_STAT_MONITOR QAN agent is in running status @not-ui-pipeline',
   async ({ I }) => {
     await I.pgExecuteQueryOnDemand('SELECT now();', connection);
 
@@ -123,7 +123,7 @@ Scenario(
 );
 
 Scenario(
-  'Verifying data in Clickhouse and comparing with PGSM output @not-ui-pipeline',
+  'PMM-T1259 - Verifying data in Clickhouse and comparing with PGSM output @not-ui-pipeline',
   async ({ I, qanAPI }) => {
     const toStart = new Date();
     let pgsm_output;
@@ -165,7 +165,7 @@ Scenario(
 );
 
 Data(filters).Scenario(
-  'Verify the "Command type" filter for Postgres @not-ui-pipeline @pgsm-pmm-integration',
+  'PMM-T1261 - Verify the "Command type" filter for Postgres @not-ui-pipeline @pgsm-pmm-integration',
   async ({
     I, qanPage, qanOverview, qanFilters, current, adminPage,
   }) => {
@@ -185,7 +185,7 @@ Data(filters).Scenario(
 );
 
 Scenario(
-  'Verify Postgresql Dashboard Instance Summary has Data @not-ui-pipeline @pgsm-pmm-integration',
+  'PMM-T1262 -  @not-ui-pipeline @pgsm-pmm-integration',
   async ({
     I, dashboardPage, adminPage,
   }) => {
