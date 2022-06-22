@@ -1,5 +1,5 @@
 const assert = require('assert');
-
+Feature('Grafana-Enterprise');
 Before(async ({
     I
   }) => {
