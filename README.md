@@ -5,8 +5,9 @@ Percona Monitoring and Management UI automated tests. Designed to cover "End to 
 ## Getting Started
 
 * Install Node.js 12+ version and make sure npx is included
+* Install project dependencies: `npm ci`
 * Install "playwright" browser driver, ex: `sudo npx playwright install-deps`
-* build TS definitions: `npx codecept def pr.codecept.js`
+* build TS definitions: `npx codeceptjs def pr.codecept.js`
 
 this is it! tests are good to go on specified PMM server.
 
@@ -97,6 +98,7 @@ Execute command in the Project Root folder
     @pre-pmm-portal-upgrade  upgrade testing Scenarios to verify PMM connection to the Portal. Executed BEFORE the upgrade
     @post-pmm-portal-upgrade upgrade testing Scenarios to verify PMM connection to the Portal. Executed After the upgrade
     @pmm-portal-upgrade      upgrade testing Scenarios to verify UI PMM connected to the Portal
+    @perf-testing           UI performance tests for PMM
     @pmm-ami                legacy/deprecated
     @not-ui-pipeline        legacy/deprecated
     @not-pr-pipeline        legacy/deprecated
