@@ -32,16 +32,15 @@ module.exports = {
         snowflake: locate('div').withText('Snowflake'),
         waveFront: locate('div').withText('Wavefront'),
         atYourService: locate('h4').withText('At your service'),
-        Enterpriseplugins: locate('h4').withText('Enterprise Plugins'),
-        criticalSla: locate('div').withText('At your service'),
         unlimitedExpert: locate('div').withText('Unlimited Expert Support'),
         email: locate('div').withText('Email'),
         slack: locate('div').withText('Private Slack channel'),
-        phone: locate('div').withText('At your Phone'),
+        phone: locate('div').withText('Phone'),
         handInHand: locate('div').withText('Hand-in-hand support'),
-
-        
-        
+        inTheUpgradeProcess: locate('div').withText('in the upgrade process'),
+        included: locate('strong').withText('Also included:'),
+        workingWithGrafana: locate('div').withText('Indemnification, working with Grafana Labs on future prioritization, and training from the core Grafana team.'),
+        trialVersion: locate('div').withText('You can use the trial version for free for 30 days. We will remind you about it five days before the trial period ends.')
     },
     buttons: {
         contactUs: locate('span').withText('Contact us and get a free trial'),
