@@ -50,9 +50,6 @@ module.exports = {
       manageUsers:locate('span.css-1mhnkuh').withText('Manage users')
     },
    async waitForStatsAndLicensePageLoaded() {
-     I.seeElement(this.buttons.manageDashboards);
-     I.seeElement(this.buttons.manageDataSources);
-     I.seeElement(this.buttons.alerts);
-     I.seeElement(this.buttons.manageUsers);
+    Object.values(this.buttons).forEach(val =>I.seeElement(val));
     },
   };
