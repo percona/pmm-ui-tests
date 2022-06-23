@@ -171,7 +171,7 @@ Scenario(
     I.waitForVisible(backupInventoryPage.elements.forceDeleteLabel, 20);
     I.seeTextEquals(backupInventoryPage.messages.confirmDeleteText(artifactName), 'h4');
     I.seeTextEquals(backupInventoryPage.messages.forceDeleteLabelText, backupInventoryPage.elements.forceDeleteLabel);
-    I.seeTextEquals(backupInventoryPage.messages.modalHeaderText, backupInventoryPage.elements.modalHeader);
+    I.seeTextEquals(backupInventoryPage.messages.modalHeaderText, backupInventoryPage.modal.header);
 
     I.seeCheckboxIsChecked(backupInventoryPage.buttons.forceDeleteCheckbox);
 
@@ -297,5 +297,35 @@ Scenario(
     I.seeTextEquals(backupDate, backupInventoryPage.elements.backupDateByName(schedule.name));
     await scheduledPage.openScheduledBackupsPage();
     I.seeTextEquals(backupDate, scheduledPage.elements.lastBackupByName(schedule.name));
+  },
+);
+
+Scenario(
+  'PMM-T1033 - Verify that user is able to display backup logs from MongoDB on UI @backup @bm-mongo',
+  async ({
+    I, inventoryAPI, backupAPI, backupInventoryPage,
+  }) => {
+    const backupName = 'mongo backup logs test';
+    const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName('MONGODB_SERVICE', mongoServiceName);
+    const artifactId = await backupAPI.startBackup(backupName, service_id, locationId);
+
+    await backupAPI.waitForBackupFinish(artifactId);
+
+    I.refreshPage();
+    I.waitForVisible(backupInventoryPage.buttons.backupLogsByName(backupName), 10);
+    I.click(backupInventoryPage.buttons.backupLogsByName(backupName));
+
+    const logs = await I.grabTextFrom(backupInventoryPage.modal.content);
+
+    I.assertTrue(logs.length > 0);
+
+    I.waitForVisible(backupInventoryPage.modal.copyToClipboardButton, 10);
+
+    // TODO: add clibboard check after PMM-9654 is done
+    // I.click(backupInventoryPage.modal.copyToClipboardButton);
+    // I.wait(1);
+    // const clipboardText = I.readClipboard();
+    //
+    // I.assertEqual(clipboardText, logs);
   },
 );
