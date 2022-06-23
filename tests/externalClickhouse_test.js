@@ -18,11 +18,14 @@ AfterSuite(async ({ I }) => {
 
 Scenario(
   'PMM-T1218 Verify PMM with external Clickhouse @externalClickhouse',
-  async ({ I, dataSourcePage }) => {
+  async ({ I, dataSourcePage, qanPage }) => {
     await I.amOnPage(`http://127.0.0.1:8081/${dataSourcePage.url}`);
     await I.waitForVisible(dataSourcePage.elements.clickHouseDescription);
     const clickHouseAddress = await I.grabTextFrom(dataSourcePage.elements.clickHouseDescription);
 
     assert.ok(clickHouseAddress.includes('http://127.0.0.1:9009'), 'PMM is not using correcet clickhouse address');
+    I.amOnPage(`http://127.0.0.1:8081/${qanPage.clearUrl}`);
+    await qanPage.waitForOpened();
+    I.dontSeeElement(locate('h1').withText('No queries available for this combination of filters in the selected time frame'));
   },
 );
