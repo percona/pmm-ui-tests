@@ -4,7 +4,7 @@ services:
     image: ${MONGO_IMAGE:-percona/percona-server-mongodb:4.4}
     container_name: mongodb_ssl
     ports:
-      - "27018:27017"
+      - "37018:27017"
     command:
       - --profile=2
       - --sslMode=requireSSL

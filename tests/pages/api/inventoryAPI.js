@@ -73,6 +73,13 @@ module.exports = {
     return data[0];
   },
 
+  async apiGetAllAgents() {
+    const body = {};
+    const headers = { Authorization: `Basic ${await I.getAuth()}` };
+
+    return I.sendPostRequest('v1/inventory/Agents/List', body, headers);
+  },
+
   async apiGetAgents(serviceId) {
     const body = {
       service_id: serviceId,
@@ -114,6 +121,55 @@ module.exports = {
     return Object.values(resp.data)
       .flat(Infinity)
       .filter(({ service_id }) => service_id === serviceId);
+  },
+
+  /**
+   * Returns Service Obj by specified Name of the service.
+   *
+   * @param     serviceName   to search the service
+   * @returns   {Promise<{serviceObject}>} if service found; empty object otherwise.
+   */
+  async getServiceByName(serviceName) {
+    const resp = await this.apiGetServices();
+    const result = Object.values(resp.data)
+      .flat(Infinity)
+      .find(({ service_name }) => service_name === serviceName);
+
+    return result && Object.prototype.hasOwnProperty.call(result, 'service_id') ? result : {};
+  },
+
+  /**
+   * Fluent wait for the specified Service to appear using the API.
+   * Fails test is timeout exceeded.
+   *
+   * @param     serviceName       a name to search
+   * @param     timeOutInSeconds  time to wait for a service to appear
+   * @returns   {Promise<{serviceObject}>}
+   */
+  async waitForServiceExist(serviceName, timeOutInSeconds) {
+    const start = new Date().getTime();
+    const timout = timeOutInSeconds * 1000;
+    const interval = 1;
+
+    /* eslint no-constant-condition: ["error", { "checkLoops": false }] */
+    while (true) {
+      // Main condition check: service obj returned
+      const obj = await this.getServiceByName(serviceName);
+
+      if (obj && Object.prototype.hasOwnProperty.call(obj, 'service_id')) {
+        return obj;
+      }
+
+      // Check the timeout after evaluating main condition
+      // to ensure conditions with a zero timeout can succeed.
+
+      if (new Date().getTime() - start >= timout) {
+        assert.fail(`Service "${serviceName}" did not appear: 
+        tried to check for ${timeOutInSeconds} second(s) with ${interval} second(s) with interval`);
+      }
+
+      I.wait(interval);
+    }
   },
 
   async deleteNodeByServiceName(serviceType, serviceName, force = true) {

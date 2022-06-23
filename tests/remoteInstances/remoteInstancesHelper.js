@@ -150,7 +150,7 @@ module.exports = {
       },
       mongodb_4_4_ssl: {
         host: '192.168.0.1',
-        port: '27018',
+        port: '37018',
         clusterName: 'mongo-ssl-cluster',
         environment: 'mongo-ssl-env',
         tlsCAFile: '/tmp/ssl/pmm-ui-tests/testdata/mongodb/certs/ca.crt',
@@ -418,6 +418,12 @@ module.exports = {
       remoteInstanceStatus.postgresql.postgres_13_3_ssl.enabled ? {
         serviceType: 'POSTGRESQL_SERVICE',
         service: 'postgresql',
+      } : undefined
+    ),
+    haproxy: (
+      remoteInstanceStatus.haproxy.haproxy_2.enabled ? {
+        serviceType: 'HAPROXY_SERVICE',
+        service: 'haproxy',
       } : undefined
     ),
   },
