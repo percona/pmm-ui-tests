@@ -54,6 +54,19 @@ module.exports = {
     return data ? data[0] : null;
   },
 
+  async checkServiceExist(serviceName, serviceType) {
+    const service = await this.apiGetServices();
+    let data;
+
+    if (service) {
+      data = Object.values(service.data)
+        .flat(Infinity)
+        .filter(({ service_name }) => service_name.includes(serviceName));
+    }
+
+    return data ? data[0] : null;
+  },
+
   async apiGetNodeInfoForAllNodesByServiceName(serviceType, serviceName) {
     const service = await this.apiGetServices(serviceType);
 
