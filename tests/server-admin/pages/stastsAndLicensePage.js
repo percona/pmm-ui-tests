@@ -45,10 +45,10 @@ module.exports = {
     contactUs: locate('span').withText('Contact us and get a free trial'),
   },
   buttons: {
-    manageDashboards: locate('span.css-1mhnkuh').withText('Manage dashboards'),
-    manageDataSources: locate('span.css-1mhnkuh').withText('Manage data sources'),
-    alerts: locate('span.css-1mhnkuh').withText('Alerts'),
-    manageUsers: locate('span.css-1mhnkuh').withText('Manage users'),
+    manageDashboards: locate('a[href="/dashboards"]').withText('Manage dashboards'),
+    manageDataSources: locate('a[href="/datasources"]').withText('Manage data sources'),
+    alerts: locate('a[href="/alerting/list"]').withText('Alerts'),
+    manageUsers: locate('a[href="/admin/users"]').withText('Manage users'),
   },
   async waitForStatsAndLicensePageLoaded() {
     Object.values(this.buttons).forEach((val) => I.seeElement(val));
