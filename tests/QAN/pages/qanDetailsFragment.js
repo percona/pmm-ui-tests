@@ -14,6 +14,7 @@ module.exports = {
     noClassic: '//pre[contains(text(), "No classic explain found")]',
     noJSON: '//pre[contains(text(), "No JSON explain found")]',
     examplesCodeBlock: '$pmm-overlay-wrapper',
+    tablesBlocks: '[data-testid="query-analytics-details"] [data-testid="pmm-overlay-wrapper"]',
     planInfoIcon: locate('$query-analytics-details').find('div').after('pre > code'),
     tooltipPlanId: locate('.popper__background.popper__background--info'),
     planText: locate('pre').find('code'),
@@ -27,7 +28,7 @@ module.exports = {
   getMetricsCellLocator: (metricName, columnNumber) => `//td//span[contains(text(), "${metricName}")]/ancestor::tr/td[${columnNumber}]//span[1]`,
 
   async verifyAvqQueryCount(timeRangeInSec = 300) {
-    const qpsvalue = await I.grabTextFrom(this.getMetricsCellLocator('Query Count', 2));
+    const qpsValue = await I.grabTextFrom(this.getMetricsCellLocator('Query Count', 2));
     let queryCountDetail = await I.grabTextFrom(this.getMetricsCellLocator('Query Count', 3));
 
     queryCountDetail = this.getQueryCountValue(queryCountDetail);
@@ -35,7 +36,7 @@ module.exports = {
     // We divide by 300 because we are using last 5 mins filter.
     const result = (queryCountDetail / timeRangeInSec).toFixed(4);
 
-    compareCalculation(qpsvalue, result);
+    compareCalculation(qpsValue, result);
   },
 
   checkExamplesTab() {
@@ -53,6 +54,14 @@ module.exports = {
     qanFilters.waitForFiltersToLoad();
     I.dontSeeElement(this.elements.noClassic);
     I.dontSeeElement(this.elements.noJSON);
+  },
+
+  checkTablesTab() {
+    I.waitForVisible(this.getTabLocator('Tables'), 30);
+    I.click(this.getTabLocator('Tables'));
+    I.wait(5);
+    qanFilters.waitForFiltersToLoad();
+    I.seeNumberOfElements(this.elements.tablesBlocks, 2);
   },
 
   checkPlanTab() {
@@ -112,6 +121,22 @@ module.exports = {
     }
 
     return result;
+  },
+
+  async verifyDetailsNotEmpty() {
+    const queryCountValue = await I.grabTextFrom(this.getMetricsCellLocator('Query Count', 3));
+    const queryTimeValue = await I.grabTextFrom(this.getMetricsCellLocator('Query Time', 3));
+    const rowsSentValue = await I.grabTextFrom(this.getMetricsCellLocator('Rows Sent', 3));
+    const sbCacheHitsValue = await I.grabTextFrom(this.getMetricsCellLocator('Shared Block Cache Hits', 3));
+    const uCpuTimeValue = await I.grabTextFrom(this.getMetricsCellLocator('User CPU time', 3));
+    const sCpuTimeValue = await I.grabTextFrom(this.getMetricsCellLocator('System CPU time', 3));
+
+    I.assertTrue(queryCountValue.length > 0, '"Query Count" sum length must be more than 0');
+    I.assertTrue(queryTimeValue.length > 0, '"Query Time" sum length must be more than 0');
+    I.assertTrue(rowsSentValue.length > 0, '"Rows Sent" sum length must be more than 0');
+    I.assertTrue(sbCacheHitsValue.length > 0, '"Shared Block Cache Hits" Time sum length must be more than 0');
+    I.assertTrue(uCpuTimeValue.length > 0, '"User CPU time" sum length must be more than 0');
+    I.assertTrue(sCpuTimeValue.length > 0, '"System CPU time" sum length must be more than 0');
   },
 };
 
