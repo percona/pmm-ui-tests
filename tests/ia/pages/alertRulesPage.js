@@ -1,11 +1,12 @@
 const { I } = inject();
-const { rules, templates } = require('./testData');
+const { rules, templates, filterOperators } = require('./testData');
 
 const rulesNameCell = (ruleName) => `//td[1][div/span[text()="${ruleName}"]]`;
 
 module.exports = {
   url: 'graph/integrated-alerting/alert-rules',
   columnHeaders: ['Name', 'Parameters', 'Duration', 'Severity', 'Filters', 'Created', 'Actions'],
+  filterOperators,
   rules,
   templates,
   elements: {
@@ -29,6 +30,7 @@ module.exports = {
     templateAlert: locate('$template-alert').find('pre'),
     durationError: '$duration-field-error-message',
     ruleAdvancedSectionToggle: locate('$alert-rule-advanced-section').find('//*[text()="Advanced details"]'),
+    tooltipMessage: '.popper__background',
   },
   buttons: {
     openAddRuleModal: '$alert-rule-template-add-modal-button',
@@ -38,6 +40,8 @@ module.exports = {
     cancelAdding: '$add-alert-rule-modal-cancel-button',
     cancelDelete: '$cancel-delete-modal-button',
     delete: '$confirm-delete-modal-button',
+    addFilter: '$add-filter-button',
+    deleteFilter: (number = 1) => locate('$delete-filter-button').at(number),
     // showDetails returns Show rule details button locator for a given rule name
     showDetails: (ruleName) => `${rulesNameCell(ruleName)}//button[@data-testid="show-details"]`,
     // hideDetails returns Hide rule details button locator for a given rule name
@@ -52,15 +56,43 @@ module.exports = {
     toggleAlertRule: (ruleName) => `${rulesNameCell(ruleName)}/following-sibling::td//input[@data-testid='toggle-alert-rule']/following-sibling::label`,
     toggleInModal: '//input[@data-testid="enabled-toggle-input"]/following-sibling::label',
   },
+  tooltips: {
+    template: {
+      locator: locate('div').after('$template-field-label'),
+      message: 'The alert template to use for this rule.',
+    },
+    name: {
+      locator: locate('div').after('$name-field-label'),
+      message: 'The name for this rule.',
+    },
+    duration: {
+      locator: locate('div').after('$duration-field-label'),
+      message: 'The alert query duration, in seconds.',
+    },
+    severity: {
+      locator: locate('div').after('$severity-field-label'),
+      message: 'The severity level for the alert triggered by this rule. Either "Warning", "Notice", "High" or "Critical".',
+    },
+    filters: {
+      locator: locate('div').after('$filters-field-label'),
+      message: 'Apply rule only to required services or nodes.',
+    },
+    channels: {
+      locator: locate('div').after('$notificationChannels-field-label'),
+      message: 'Which notification channels should be used to send the alert through.',
+    },
+  },
   fields: {
     // searchDropdown returns a locator of a search input for a given label
     searchDropdown: (field) => `//label[text()="${field}"]/parent::div/following-sibling::div[1]//input`,
+    dropdownValue: (dropdownLabel) => `//label[text()="${dropdownLabel}"]/parent::div/following-sibling::div[1]`,
     // resultsLocator returns item locator in a search dropdown based on a text
     resultsLocator: (name) => `//div[@aria-label="Select option"]//span[text()="${name}"]`,
     ruleName: '$name-text-input',
     threshold: '$threshold-number-input',
     duration: '$duration-number-input',
-    filters: '$filters-textarea-input',
+    filtersLabel: (index = 0) => I.useDataQA(`filters[${index}].label-text-input`),
+    filtersValue: (index = 0) => I.useDataQA(`filters[${index}].value-text-input`),
     template: '//form[@data-testid="add-alert-rule-modal-form"]/div[2]//div[contains(@class, "singleValue")]',
   },
   messages: {
@@ -76,10 +108,10 @@ module.exports = {
     successfullyEnabled: (name) => `Alert rule "${name}" successfully enabled`,
   },
 
-  fillRuleFields(ruleObj = this.rules[0]) {
+  async fillRuleFields(ruleObj = this.rules[0]) {
     const {
       template, ruleName, threshold, duration,
-      severity, filters, channels, activate,
+      severity, filters = '', channels, activate,
     } = ruleObj;
 
     // skipping this step while editing an Alert rule
@@ -94,8 +126,26 @@ module.exports = {
     I.clearField(this.fields.duration);
     I.fillField(this.fields.duration, duration);
     this.searchAndSelectResult('Severity', severity);
-    I.clearField(this.fields.filters);
-    I.fillField(this.fields.filters, filters);
+
+    // delete filters if they exist
+    const numberOfFilters = await I.grabNumberOfVisibleElements(this.buttons.deleteFilter());
+
+    if (numberOfFilters) {
+      for (let i = 0; i < numberOfFilters; i++) {
+        I.click(this.buttons.deleteFilter());
+      }
+    }
+
+    if (filters) {
+      filters.forEach(({ label, operator, value }, num) => {
+        I.click(this.buttons.addFilter);
+        I.fillField(this.fields.filtersLabel(num), label);
+        I.fillField(this.fields.filtersValue(num), value);
+        I.fillField(locate(this.fields.searchDropdown('Operators')).at(num + 1), operator);
+        I.click(this.fields.resultsLocator(operator));
+      });
+    }
+
     if (channels) {
       channels.forEach((channel) => {
         this.searchAndSelectResult('Channels', channel);
@@ -123,7 +173,18 @@ module.exports = {
     }
 
     I.waitForValue(this.fields.duration, duration, 10);
-    I.waitForValue(this.fields.filters, filters, 10);
+    I.seeElement(this.buttons.addFilter);
+
+    if (filters) {
+      filters.forEach(({ label, operator, value }) => {
+        I.waitForValue(this.fields.filtersLabel(), label, 5);
+        I.waitForValue(this.fields.filtersValue(), value, 5);
+        I.seeTextEquals(operator, this.fields.dropdownValue('Operators'));
+      });
+    } else {
+      I.dontSeeElement(this.fields.filtersLabel());
+      I.dontSeeElement(this.fields.filtersValue());
+    }
 
     if (openAdvancedSection) {
       I.click(this.elements.ruleAdvancedSectionToggle);
@@ -146,7 +207,7 @@ module.exports = {
   verifyRowValues(ruleObj) {
     const {
       ruleName, threshold, duration,
-      severity, filters, activate, thresholdUnit = '%',
+      severity, filters = [], activate, thresholdUnit = '%',
     } = ruleObj;
 
     I.seeElement(this.elements.rulesNameCell(ruleName));
@@ -154,8 +215,13 @@ module.exports = {
     I.see(`${duration} seconds`, this.elements.durationCell(ruleName));
     I.see(severity, this.elements.severityCell(ruleName));
     // for cases when there are few filters
-    filters.split(',').forEach((filter) => {
-      I.see(filter.trim(), this.elements.filtersCell(ruleName));
+    filters.forEach(({ label, operator, value }) => {
+      let operatorSign;
+
+      operator === this.filterOperators.equal
+        ? operatorSign = '='
+        : operatorSign = '=~';
+      I.see(`${label}${operatorSign}${value}`, this.elements.filtersCell(ruleName));
     });
     this.verifyRuleState(activate, ruleName);
     I.seeElementsEnabled(this.buttons.showDetails(ruleName));

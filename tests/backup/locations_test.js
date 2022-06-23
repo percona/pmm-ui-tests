@@ -138,7 +138,7 @@ Data(s3Errors).Scenario(
 );
 
 Scenario(
-  'PMM-T683 PMM-T684 Verify user is able to add storage location @backup',
+  'PMM-T683 PMM-T684 Verify user is able to add storage location @backup @fb',
   async ({
     I, locationsPage,
   }) => {
@@ -184,7 +184,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T693 Verify user is able to delete storage location @backup',
+  'PMM-T693 Verify user is able to delete storage location @backup @fb',
   async ({
     I, locationsPage, locationsAPI,
   }) => {
