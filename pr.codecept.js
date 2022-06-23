@@ -21,7 +21,6 @@ exports.config = {
       chromium: {
         executablePath: process.env.CHROMIUM_PATH,
         ignoreHTTPSErrors: true,
-        headless:false,
         args: [
           '--ignore-certificate-errors',
           '--no-sandbox',
