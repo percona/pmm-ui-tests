@@ -19,7 +19,7 @@ module.exports = {
       case remoteInstancesHelper.instanceTypes.postgresql:
         return this.addPostgresql(serviceName);
       case remoteInstancesHelper.instanceTypes.rds:
-        return this.addRDS(serviceName);
+        return this.addRDS(serviceName, creds);
       case remoteInstancesHelper.instanceTypes.postgresGC:
         return await this.addPostgreSQLGC(serviceName);
       default:

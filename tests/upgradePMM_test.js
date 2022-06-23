@@ -268,11 +268,29 @@ Scenario(
   'Verify user can create Remote Instances before upgrade @pre-upgrade @ami-upgrade @pmm-upgrade',
   async ({ addInstanceAPI }) => {
     // Adding instances for monitoring
+
+    const aurora_details = {
+      add_node: {
+        node_name: 'pmm-qa-aurora2-mysql-instance-1',
+        node_type: 'REMOTE_NODE',
+      },
+      aws_access_key: remoteInstancesHelper.remote_instance.aws.aurora.aws_access_key,
+      aws_secret_key: remoteInstancesHelper.remote_instance.aws.aurora.aws_secret_key,
+      address: remoteInstancesHelper.remote_instance.aws.aurora.aurora2.address,
+      service_name: 'pmm-qa-aurora2-mysql-instance-1',
+      port: remoteInstancesHelper.remote_instance.aws.aurora.port,
+      username: remoteInstancesHelper.remote_instance.aws.aurora.username,
+      password: remoteInstancesHelper.remote_instance.aws.aurora.aurora2.password,
+      instance_id: 'pmm-qa-aurora2-mysql-instance-1',
+      cluster_name: 'aurora2',
+    };
+
     for (const type of Object.values(remoteInstancesHelper.instanceTypes)) {
       if (type) {
         await addInstanceAPI.apiAddInstance(
           type,
           remoteInstancesHelper.upgradeServiceNames[type.toLowerCase()],
+          aurora_details,
         );
       }
     }
