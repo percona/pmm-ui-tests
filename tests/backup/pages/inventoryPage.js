@@ -1,7 +1,7 @@
 const { I } = inject();
 const faker = require('faker');
 
-const artifactCell = (name) => `//tr[td/div/span[contains(text(), "${name}")]]`;
+const artifactCell = (name) => `//tr[td/div/span[contains(text(), '${name}')]]`;
 
 module.exports = {
   url: 'graph/backup/inventory',
@@ -31,6 +31,7 @@ module.exports = {
   buttons: {
     openAddBackupModal: '$backup-add-modal-button',
     // restoreByName returns Restore button locator for a given Artifact name
+    backupLogsByName: (name) => locate('span[role="button"]').inside(artifactCell(name)),
     restoreByName: (name) => locate('$restore-backup-artifact-button').inside(artifactCell(name)),
     deleteByName: (name) => locate('$delete-backup-artifact-button').inside(artifactCell(name)),
     showDetails: (name) => locate('$show-details').inside(artifactCell(name)),
@@ -56,6 +57,11 @@ module.exports = {
     confirmDeleteText: (backupName) => `Are you sure you want to delete "${backupName}"?`,
     serviceNoLongerExists: 'This service no longer exists. Please choose a compatible one.',
     lengthErrorBackupName: 'Must contain at most 100 characters',
+  },
+  modal: {
+    header: '$modal-header',
+    copyToClipboardButton: locate('button').withText('Copy to clipboard').inside('$modal-content'),
+    content: locate('pre').inside('$modal-content'),
   },
   locationType: {},
 
