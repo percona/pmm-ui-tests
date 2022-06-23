@@ -7,7 +7,7 @@ Before(async ({
   await I.Authorize();
 });
 Scenario(
-  'PMM-10162 Verify that Grafana Enterprise is not present',
+  'PMM-10162 Verify that Grafana Enterprise is not present @admin',
   async ({
     I, stastsAndLicensePage,
   }) => {
