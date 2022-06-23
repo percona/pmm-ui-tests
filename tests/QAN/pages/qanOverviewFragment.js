@@ -92,7 +92,6 @@ module.exports = {
     I.wait(3);
     I.click(oldMetric);
     I.waitForElement(this.fields.columnSearchField, 10);
-    I.fillField(this.fields.columnSearchField, metricName);
     I.click(metricInDropdown);
     I.waitForElement(newMetric, 30);
     I.seeElement(newMetric);

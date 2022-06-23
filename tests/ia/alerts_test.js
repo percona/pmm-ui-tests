@@ -1,9 +1,11 @@
 const assert = require('assert');
 
 let ruleIdForAlerts;
-let ruleIdForEmailCheck;
+let ruleIdForNotificationsCheck;
+let webhookChannelId;
+let pagerDutyChannelId;
 let testEmail;
-const ruleNameForEmailCheck = 'Rule with BUILT_IN template (check email)';
+const ruleNameForEmailCheck = 'Rule with BUILT_IN template (email, webhook)';
 const ruleName = 'PSQL immortal rule';
 const rulesForAlerts = [{
   ruleName,
@@ -57,9 +59,35 @@ BeforeSuite(async ({
     testEmail,
   );
 
-  ruleIdForEmailCheck = await rulesAPI.createAlertRule({
+  // Preparation steps for checking Alert via webhook server
+  // eslint-disable-next-line no-template-curly-in-string
+  await I.verifyCommand('bash -x ${PWD}/testdata/ia/gencerts.sh');
+  await I.verifyCommand('docker-compose -f docker-compose-webhook.yml up -d');
+  const cert = await I.readFileSync('./testdata/ia/certs/self.crt');
+
+  webhookChannelId = await channelsAPI.createNotificationChannel(
+    'Webhook channel',
+    ncPage.types.webhook.type,
+    {
+      url: ncPage.types.webhook.url,
+      ca_file_content: cert,
+      insecure_skip_verify: true,
+      username: 'alert',
+      password: 'alert',
+    },
+  );
+
+  pagerDutyChannelId = await channelsAPI.createNotificationChannel(
+    'PD channel',
+    ncPage.types.pagerDuty.type,
+    {
+      service_key: process.env.PAGER_DUTY_SERVICE_KEY,
+    },
+  );
+
+  ruleIdForNotificationsCheck = await rulesAPI.createAlertRule({
     ruleName: ruleNameForEmailCheck,
-    channels: [channelId],
+    channels: [channelId, webhookChannelId, pagerDutyChannelId],
   });
 
   // Wait for all alerts to appear
@@ -67,10 +95,11 @@ BeforeSuite(async ({
 });
 
 AfterSuite(async ({
-  settingsAPI, rulesAPI,
+  settingsAPI, rulesAPI, I,
 }) => {
   await settingsAPI.apiEnableIA();
   await rulesAPI.clearAllRules(true);
+  await I.verifyCommand('docker-compose -f docker-compose-webhook.yml stop');
 });
 
 Scenario(
@@ -123,16 +152,27 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T569 Verify Alerts on Email @ia',
-  async ({ I, rulesAPI }) => {
+  'PMM-T551 PMM-T569 PMM-T1044 PMM-T1045 PMM-T568 Verify Alerts on Email, Webhook and Pager Duty @ia @fb',
+  async ({ I, rulesAPI, alertsAPI }) => {
+    const file = './testdata/ia/scripts/alert.txt';
+
     // Get message from the inbox
     const message = await I.getLastMessage(testEmail, 120000);
 
     await I.seeTextInSubject('FIRING', message);
-
     assert.ok(message.html.body.includes(ruleNameForEmailCheck));
 
-    await rulesAPI.removeAlertRule(ruleIdForEmailCheck);
+    // Webhook notification check
+    I.waitForFile(file, 100);
+    I.seeFile(file);
+    I.seeInThisFile(ruleNameForEmailCheck);
+    I.seeInThisFile(ruleIdForNotificationsCheck);
+    I.seeInThisFile(webhookChannelId);
+
+    // Pager Duty notification check
+    await alertsAPI.verifyAlertInPagerDuty(ruleIdForNotificationsCheck);
+
+    await rulesAPI.removeAlertRule(ruleIdForNotificationsCheck);
   },
 );
 
@@ -149,6 +189,30 @@ Scenario(
 
     // Verify Alert exists in alertmanager
     await alertmanagerAPI.verifyAlerts([{ ruleId: ruleIdForAlerts, serviceName: 'pmm-server-postgresql' }]);
+  },
+);
+
+Scenario(
+  'PMM-T1137 Verify that IA alerts are showing important labels first @ia',
+  async ({ I, alertsPage }) => {
+    I.amOnPage(alertsPage.url);
+    I.waitForElement(alertsPage.elements.alertRow(alertName), 30);
+    alertsPage.checkContainingLabels({
+      primaryLabels: ['node_name=pmm-server', 'service_name=pmm-server-postgresql'],
+      alertName,
+    });
+    I.click(alertsPage.buttons.arrowIcon(alertName));
+    I.waitForVisible(alertsPage.elements.details, 30);
+    I.seeElement(alertsPage.elements.detailsRuleExpression, 30);
+    I.seeElement(alertsPage.elements.detailsSecondaryLabels, 30);
+    alertsPage.checkContainingLabels({
+      secondaryLabels: ['agent_type=postgres_exporter',
+        'alertgroup=PMM Integrated Alerting',
+        'node_id=pmm-server',
+        'node_type=generic',
+        'server=127.0.0.1:5432',
+        'service_type=postgresql'],
+    });
   },
 );
 

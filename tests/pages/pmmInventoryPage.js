@@ -5,7 +5,7 @@ module.exports = {
   url: 'graph/inventory?orgId=1',
   urlAgents: 'graph/inventory/agents?orgId=1',
   fields: {
-    agentsLink: locate('li > a').withText('Agents'),
+    agentsLink: locate('li > a').withText('Agents').withAttr({ 'aria-label': 'Tab Agents' }),
     agentsLinkOld: locate('a').withText('Agents'),
     deleteButton: locate('span').withText('Delete'),
     externalExporter: locate('td').withText('External exporter'),
@@ -16,12 +16,12 @@ module.exports = {
     mongoServiceName: locate('td').withText('mongodb'),
     mysqlServiceName: locate('td').withText('ms-single'),
     // cannot be changed to locate because it's failing in I.waitForVisible()
-    nodesLink: '//li/a[contains(text(),"Nodes")]',
+    nodesLink: '//li/a[contains(text(),"Nodes")][@aria-label="Tab Nodes"]',
     nodesLinkOld: locate('a').withText('Nodes'),
     pdphsqlServiceName: locate('td').withText('PGSQL'),
     pmmAgentLocator: locate('td').withText('PMM Agent'),
     pmmServerPostgresLocator: locate('td').withText('pmm-server-postgresql'),
-    pmmServicesSelector: locate('li > a').withText('Services'),
+    pmmServicesSelector: locate('li > a').withText('Services').withAttr({ 'aria-label': 'Tab Services' }),
     postgresExporter: locate('td').withText('Postgres exporter'),
     postgresPgStatements: locate('td').withText('QAN PostgreSQL PgStatements'),
     postgresPgstatmonitor: locate('td').withText('QAN PostgreSQL Pgstatmonitor'),

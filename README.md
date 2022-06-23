@@ -5,7 +5,9 @@ Percona Monitoring and Management UI automated tests. Designed to cover "End to 
 ## Getting Started
 
 * Install Node.js 12+ version and make sure npx is included
+* Install project dependencies: `npm ci`
 * Install "playwright" browser driver, ex: `sudo npx playwright install-deps`
+* build TS definitions: `npx codeceptjs def pr.codecept.js`
 
 this is it! tests are good to go on specified PMM server.
 
@@ -70,7 +72,9 @@ Execute command in the Project Root folder
  `--grep "@tag"` runs only tests marked by specified tags. The following tags are available:
 
     @ami-upgrade            Groups tests for the "pmm-ami-upgrade" Job
-    @backup                     Backup Management functionality tests
+    @backup                 Backup Management functionality tests
+    @bm-mongo               Backup Management functionality tests for MongoDB
+    @bm-mongo               Backup Management functionality tests for MySQL 
     @dashboards             Dashboards functionality, check that graphs are not empty
                                 (e.g. Data from exporters is displayed at those dashboards)
     @dbaas                  DB as a Service functionality tests
@@ -91,6 +95,11 @@ Execute command in the Project Root folder
     @qan	                Query Analytics(QAN) functionality tests
     @settings               PMM Settings functionality tests
     @stt                    Security Checks (STT) functionality tests
+    @portal                 Integration tests between PMM and Percona Portal
+    @pre-pmm-portal-upgrade  upgrade testing Scenarios to verify PMM connection to the Portal. Executed BEFORE the upgrade
+    @post-pmm-portal-upgrade upgrade testing Scenarios to verify PMM connection to the Portal. Executed After the upgrade
+    @pmm-portal-upgrade      upgrade testing Scenarios to verify UI PMM connected to the Portal
+    @perf-testing           UI performance tests for PMM
     @pmm-ami                legacy/deprecated
     @not-ui-pipeline        legacy/deprecated
     @not-pr-pipeline        legacy/deprecated

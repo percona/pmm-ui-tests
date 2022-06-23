@@ -8,6 +8,9 @@ module.exports = {
   // insert your locators and methods here
   // setting locators
   url: 'graph/d/pmm-home/home-dashboard?orgId=1&refresh=1m&from=now-5m&to=now',
+  landingUrl: 'graph/d/pmm-home/home-dashboard?orgId=1&refresh=1m',
+  genericOauthUrl: 'graph/login/generic_oauth',
+  landingPage: 'graph/login',
   requestEnd: '/v1/Updates/Check',
   fields: {
     systemsUnderMonitoringCount:
@@ -18,10 +21,11 @@ module.exports = {
     dashboardHeaderLocator: '//div[contains(@class, "dashboard-header")]',
     oldLastCheckSelector: '#pmm-update-widget > .last-check-wrapper p',
     sttDisabledFailedChecksPanelSelector: '$db-check-panel-settings-link',
+    failedSecurityChecksPmmSettingsLink: locate('$db-check-panel-settings-link').find('a'),
     sttFailedChecksPanelSelector: '$db-check-panel-has-checks',
     checksPanelSelector: '$db-check-panel-home',
     noFailedChecksInPanel: '$db-check-panel-zero-checks',
-    failedChecksPanelInfo: '[aria-label="Failed security checks panel"] i',
+    failedChecksPanelInfo: '[aria-label="Failed Checks panel"] i',
     newsPanelTitleSelector: dashboardPage.graphsLocator('Percona News'),
     pmmCustomMenu: locate('$navbar-section').find('.dropdown a[aria-label="PMM dashboards"]'),
     servicesButton: locate('span').withText('Services'),
@@ -74,29 +78,15 @@ module.exports = {
   },
   upgradeMilestones: [
     'TASK [Gathering Facts]',
-    'TASK [detect /srv/pmm-distribution]',
-    'TASK [detect containers]',
-    'TASK [Configure systemd]',
-    'TASK [Remove old supervisord service confiuration]',
-    'TASK [Reread supervisord configuration]',
-    'TASK [Remove old packages]',
-    'TASK [Download pmm2 packages]',
-    'TASK [Update pmm2 packages]',
-    'TASK [Update system packages]',
-    'TASK [Check pg_stat_statements extension]',
-    'TASK [Add ClickHouse datasource to the list of unsigned plugins in Grafana]',
-    'TASK [Create working directory for VictoriaMetrics]',
-    'TASK [Restart pmm-managed]',
-    'TASK [Wait for pmm-managed]',
-    'TASK [Reread supervisord configuration again]',
-    'TASK [Restart services]',
-    'TASK [Update/restart other services]',
-    'TASK [Check supervisord log]',
+    'TASK [dashboards_upgrade : Copy file with image version]',
+    'TASK [Delete content & directory]',
+    'failed=0',
   ],
-  failedChecksSinglestatsInfoMessage: 'Display the number of database security checks that the Security Threat Tool identified as failed during its most recent run.',
+  failedChecksSinglestatsInfoMessage: 'Display the number of Advisors checks identified as failed during its most recent run.',
 
   serviceDashboardLocator: (serviceName) => locate('a').withText(serviceName),
   isAmiUpgrade: process.env.AMI_UPGRADE_TESTING_INSTANCE === 'true',
+  pmmServerName: process.env.VM_NAME ? process.env.VM_NAME : 'pmm-server',
 
   async open() {
     I.amOnPage(this.url);
@@ -119,9 +109,8 @@ module.exports = {
     // skipping milestones checks for 2.9 and 2.10, 2.11 versions due logs not showing issue
     if (version > 11) {
       if (this.isAmiUpgrade) {
-        for (const milestone of milestones) {
-          I.waitForElement(`//pre[contains(text(), '${milestone}')]`, 1200);
-        }
+        // to ensure that the logs window is never empty during upgrade
+        I.waitForElement(`//pre[contains(text(), '${milestones[0]}')]`, 1200);
 
         I.waitForText(locators.successUpgradeMessage, 1200, locators.successUpgradeMsgSelector);
       }
@@ -132,7 +121,7 @@ module.exports = {
         I.waitForText(locators.successUpgradeMessage, 1200, locators.successUpgradeMsgSelector);
 
         // Get upgrade logs from a container
-        const upgradeLogs = await I.verifyCommand('docker exec pmm-server cat /srv/logs/pmm-update-perform.log');
+        const upgradeLogs = await I.verifyCommand(`docker exec ${this.pmmServerName} cat /srv/logs/pmm-update-perform.log`);
 
         milestones.forEach((milestone) => {
           assert.ok(upgradeLogs.includes(milestone), `Expected to see ${milestone} in upgrade logs`);
@@ -221,5 +210,24 @@ module.exports = {
       : (locators = this.fields.updateWidget.base);
 
     return locators;
+  },
+
+  // For running on local env set PMM_SERVER_LATEST and DOCKER_VERSION variables
+  getVersions() {
+    const [, pmmMinor, pmmPatch] = (process.env.PMM_SERVER_LATEST || '').split('.');
+    const [, versionMinor, versionPatch] = process.env.DOCKER_VERSION
+      ? (process.env.DOCKER_VERSION || '').split('.')
+      : (process.env.SERVER_VERSION || '').split('.');
+
+    const majorVersionDiff = pmmMinor - versionMinor;
+    const patchVersionDiff = pmmPatch - versionPatch;
+    const current = `2.${versionMinor}`;
+
+    return {
+      majorVersionDiff,
+      patchVersionDiff,
+      current,
+      versionMinor,
+    };
   },
 };

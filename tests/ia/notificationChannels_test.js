@@ -55,7 +55,7 @@ Data(notificationChannels).Scenario(
 );
 
 Scenario(
-  'PMM-T645, PMM-T647 Add a Pager Duty with Service Key @ia @grafana-pr',
+  'PMM-T645, PMM-T647 Add a Pager Duty with Service Key @ia @grafana-pr @fb',
   async ({ I, ncPage }) => {
     const channelName = 'Pager Duty with Service key';
 
@@ -127,6 +127,22 @@ Data(notificationChannels).Scenario(
   },
 );
 
+Scenario(
+  ' Delete a notification channel @fb',
+  async ({ I, ncPage, channelsAPI }) => {
+    const name = 'Email Channel';
+    const type = 'Email';
+
+    await channelsAPI.createNotificationChannel(name, type);
+    ncPage.openNotificationChannelsTab();
+    I.click(ncPage.buttons.deleteChannelLocator(name));
+    I.see(ncPage.messages.deleteConfirmation(name), ncPage.elements.modalContent);
+    I.click(ncPage.buttons.confirmDelete);
+    I.verifyPopUpMessage(ncPage.messages.successfullyDeleted(name));
+    I.dontSeeElement(ncPage.elements.channelInTable(name, type));
+  },
+);
+
 Data(notificationChannels).Scenario(
   'PMM-T658 Verify notification channel can not be deleted if it is used by a rule @ia',
   async ({
@@ -146,5 +162,28 @@ Data(notificationChannels).Scenario(
 
     await rulesAPI.removeAlertRule(ruleId);
     await channelsAPI.deleteNotificationChannel(channelId);
+  },
+);
+
+Scenario(
+  'PMM-T1045 Verify user is able to add WebHook notification channel @ia',
+  async ({
+    I, rulesAPI, ncPage,
+  }) => {
+    const channelName = 'Webhook notification channel';
+    const webhookURL = ncPage.types.webhook.url;
+
+    await rulesAPI.clearAllRules(true);
+    ncPage.openNotificationChannelsTab();
+    I.waitForVisible(ncPage.buttons.openAddChannelModal, 30);
+    I.click(ncPage.buttons.openAddChannelModal);
+    I.waitForVisible(ncPage.fields.typeDropdown, 30);
+    await ncPage.selectChannelType(ncPage.types.webhook.type);
+    I.fillField(ncPage.fields.nameInput, channelName);
+    I.fillField(ncPage.fields.webhookUrlInput, webhookURL);
+    ncPage.skipTlsCertVerification();
+    I.click(ncPage.buttons.addChannel);
+    I.verifyPopUpMessage(ncPage.messages.successfullyAdded);
+    ncPage.verifyChannelInList(channelName, ncPage.types.webhook.type);
   },
 );

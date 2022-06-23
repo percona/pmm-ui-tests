@@ -40,12 +40,16 @@ module.exports = {
     return false;
   },
 
-  async apiGetNodeInfoByServiceName(serviceType, serviceName) {
+  async apiGetNodeInfoByServiceName(serviceType, serviceName, excludeSubstring) {
     const service = await this.apiGetServices(serviceType);
 
     const data = Object.values(service.data)
       .flat(Infinity)
       .filter(({ service_name }) => service_name.includes(serviceName));
+
+    if (excludeSubstring) {
+      return data.find(({ service_name }) => !service_name.includes(excludeSubstring));
+    }
 
     return data ? data[0] : null;
   },

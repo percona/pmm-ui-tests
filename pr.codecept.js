@@ -2,6 +2,8 @@ const { pageObjects, getChunks } = require('./codeceptConfigHelper');
 
 const PMM_URL = 'http://127.0.0.1/';
 
+require('dotenv').config();
+
 process.env.ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'admin';
 
 exports.config = {
@@ -12,15 +14,17 @@ exports.config = {
       restart: true,
       browser: 'chromium',
       windowSize: '1920x1080',
+      timeout: 20000,
       waitForNavigation: 'networkidle0',
-      waitForTimeout: 30000,
-      getPageTimeout: 30000,
+      waitForTimeout: 60000,
+      getPageTimeout: 60000,
       waitForAction: 500,
       pressKeyDelay: 5,
       chromium: {
         executablePath: process.env.CHROMIUM_PATH,
         ignoreHTTPSErrors: true,
         args: [
+          '--ignore-certificate-errors',
           '--no-sandbox',
           '--window-size=1920,1080',
           '--disable-gpu',
@@ -36,14 +40,32 @@ exports.config = {
       username: 'root',
       password: 'root-!@#%^password',
     },
+    PostgresqlDBHelper: {
+      require: 'codeceptjs-postgresqlhelper',
+      host: '127.0.0.1',
+      port: 5433,
+      user: 'postgres',
+      password: 'pmm-^*&@agent-password',
+      database: 'postgres',
+    },
     Grafana: {
       require: './tests/helper/grafana_helper.js',
       username: process.env.GRAFANA_USERNAME,
       password: process.env.GRAFANA_PASSWORD,
     },
+    FileHelper: {
+      require: './tests/helper/file_helper.js',
+    },
+    FileSystem: {},
+    PerformanceHelper: {
+      require: './tests/helper/performance_helper.js',
+    },
+    BrowserHelper: {
+      require: './tests/helper/browser_helper.js',
+    },
     REST: {
       endpoint: process.env.PMM_UI_URL || PMM_URL,
-      timeout: 30000,
+      timeout: 60000,
     },
     Mailosaur: {
       require: 'codeceptjs-mailosaurhelper',
@@ -93,16 +115,10 @@ exports.config = {
         },
       },
       'mocha-junit-reporter': {
-        stdout: './tests/output/console.log',
+        stdout: '-',
         options: {
           mochaFile: './tests/output/result.xml',
-        },
-      },
-      mochawesome: {
-        stdout: './tests/output/mocharesult.log',
-        options: {
-          reportDir: './tests/output',
-          reportFilename: 'result.html',
+          jenkinsMode: true,
         },
       },
     },
@@ -112,6 +128,6 @@ exports.config = {
   hooks: [],
   gherkin: {},
   tests: 'tests/**/*_test.js',
-  timeout: 1400,
+  timeout: 1800,
   name: 'pmm-qa',
 };

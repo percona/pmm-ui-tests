@@ -4,24 +4,28 @@ const {
 const assert = require('assert');
 // xpath used here because locate('th').withText('') method does not work correctly
 const locateChecksHeader = (header) => `//th[text()='${header}']`;
+const failedCheckRow = (checkSummary) => `//tr[td[contains(., "${checkSummary}")]]`;
 
 module.exports = {
   // insert your locators and methods here
   // setting locators
   url: 'graph/pmm-database-checks',
+  allChecks: 'graph/pmm-database-checks/all-checks',
   // Database Checks page URL before 2.13 version
   oldUrl: 'graph/d/pmm-checks/pmm-database-checks',
   elements: {
     failedCheckRowByServiceName: (name) => locate('tr').withChild(locate('td').withText(name)),
+    failedCheckRowBySummary: (summary) => locate('tr').withChild(locate('td').withText(summary)),
+    allChecksTable: locate('div').find('$db-check-tab-content'),
+    allChecksTableRows: locate('div').find('$db-check-tab-content').withDescendant(locate('tr')),
   },
   messages: {
-    homePagePanelMessage: 'Security Threat Tool is disabled.\nCheck PMM Settings.',
-    disabledSTTMessage: 'Security Threat Tool is disabled. You can enable it in',
-    securityChecksDone: 'Running database checks in the background... The results will be displayed here soon.',
+    homePagePanelMessage: 'Advisor Checks feature is disabled.\nCheck PMM Settings.',
+    disabledSTTMessage: 'Advisor Checks feature is disabled. You can enable it in',
   },
   buttons: {
-    startDBChecks: locate('$db-check-panel-actions').find('button'),
     toggleSilenced: locate('$db-checks-failed-checks-toggle-silenced').find('label'),
+    toggleFailedCheckBySummary: (checkSummary) => locate(failedCheckRow(checkSummary)).find('$silence-button'),
   },
   fields: {
     dbCheckPanelSelector: '$db-check-panel',
@@ -31,13 +35,55 @@ module.exports = {
     serviceNameSelector: 'tr > td[rowspan]:first-child',
     totalFailedChecksTooltipSelector: '.popper > div > div > div:first-of-type',
     failedChecksTooltipSelector: '.popper > div > div > div',
-    serviceNameHeaderSelector: locateChecksHeader('Service name'),
+    serviceNameHeaderSelector: locateChecksHeader('Service Name'),
     detailsHeaderSelector: locateChecksHeader('Details'),
     noOfFailedChecksHeaderSelector: locateChecksHeader('Failed Checks'),
     disabledSTTMessageLinkSelector: locate('$db-check-panel-settings-link'),
     failedChecksRowSelector: 'tbody > tr',
     tooltipSelector: locate('.ant-tooltip-inner > div > div').first(),
     noAccessRightsSelector: '$unauthorized',
+  },
+  checks: {
+    anonymous: [
+      'MongoDB Authentication',
+      'MonogDB IP bindings',
+      'MongoDB CVE Version',
+      'MongoDB localhost authentication bypass enabled',
+      'MongoDB Version',
+      'Check if binaries are 32 bits',
+      'MySQL Version',
+      'PostgreSQL fsync is set to off',
+      'PostgreSQL max_connections is too high.',
+      'PostgreSQL Super Role',
+      'PostgreSQL Version',
+    ],
+    registered: [
+      'MongoDB Active vs Available Connections',
+      'MongoDB Journal',
+      'MongoDB Replica Set Topology',
+      'MySQL Automatic User Expired Password',
+      'MySQL Binary Logs checks, Local infile and local infile.',
+      'MySQL Users With Granted Public Networks Access',
+      'MySQL test Database',
+      'Configuration change requires restart/reload.',
+      'PostgreSQL Checkpoints Logging is Disabled.',
+    ],
+    registeredOnly: ['MySQL User check'],
+    paid: [
+      'MongoDB Security AuthMech Check',
+      'MongoDB Non-Default Log Level',
+      'MongoDB Read Tickets',
+      'MongoDB write Tickets',
+      'InnoDB flush method and File Format check.',
+      'Checks based on values of MySQL configuration variables',
+      'MySQL configuration check',
+      'MySQL User check (advanced)',
+      'MySQL security check',
+      'PostgreSQL Archiver is failing',
+      'PostgreSQL cache hit ratio',
+      'PostgreSQL Autovacuum Logging Is Disabled',
+      'PostgreSQL Stale Replication Slot',
+    ],
   },
   // introducing methods
 
@@ -52,16 +98,20 @@ module.exports = {
 
   openDBChecksPage() {
     I.amOnPage(this.url);
-    I.waitForVisible(this.buttons.startDBChecks, 30);
   },
 
-  verifyFailedCheckNotExists(checkSummary) {
-    this.openDBChecksPage();
+  openFailedChecksListForService(serviceId) {
+    I.amOnPage(`${this.url}/failed-checks/${serviceId.split('/')[2]}`);
+    I.waitForVisible('td', 30);
+  },
+
+  verifyFailedCheckNotExists(checkSummary, serviceId) {
+    this.openFailedChecksListForService(serviceId);
     I.dontSee(checkSummary);
   },
 
-  verifyFailedCheckExists(checkSummary) {
-    this.openDBChecksPage();
+  verifyFailedCheckExists(checkSummary, serviceId) {
+    this.openFailedChecksListForService(serviceId);
     I.see(checkSummary);
   },
   /*
@@ -141,10 +191,6 @@ module.exports = {
     I.seeElement(this.fields.totalFailedChecksTooltipSelector);
   },
 
-  /*
-    Method takes service names listed in Database Failed checks
-     and compares names with existing Service Names in PMM Inventory
-   */
   async verifyServiceNamesExistence(serviceName) {
     I.see(serviceName);
 
@@ -154,11 +200,13 @@ module.exports = {
 
     I.seeElement(locate('$table-row').find('td').withText(serviceName));
   },
+  async verifyAdvisorCheckExistence(advisorName) {
+    I.waitForVisible(this.elements.allChecksTableRows, 30);
+    I.seeElement(this.elements.allChecksTableRows.withText(advisorName));
+  },
 
-  async runDBChecks() {
-    I.amOnPage(this.url);
-    I.waitForVisible(this.buttons.startDBChecks, 30);
-    I.click(this.buttons.startDBChecks);
-    I.verifyPopUpMessage(this.messages.securityChecksDone, 60);
+  async verifyAdvisorCheckIsNotPresent(advisorName) {
+    I.waitForVisible(this.elements.allChecksTableRows, 30);
+    I.dontSeeElement(this.elements.allChecksTableRows.withText(advisorName));
   },
 };
