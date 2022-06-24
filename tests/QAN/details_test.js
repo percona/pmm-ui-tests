@@ -126,3 +126,27 @@ Scenario(
     I.dontSeeElement(qanDetails.buttons.close);
   },
 );
+
+Scenario(
+  'PMM-T149 - Verify details section works correctly for MySQL @not-ui-pipeline @qan @imp',
+  async ({
+    I, qanPage, qanOverview, qanFilters, qanDetails,
+  }) => {
+    // qanFilters.applyFilter('mysql');
+    qanFilters.applyFilterInSection('Service Type', 'mysql');
+    I.waitForVisible(qanFilters.buttons.showSelected, 30);
+    qanOverview.selectRow(2);
+    qanFilters.waitForFiltersToLoad();
+    await within(qanDetails.root, () => {
+      I.waitForVisible(qanDetails.buttons.close, 30);
+      I.see('Details', qanDetails.getTabLocator('Details'));
+      I.see('Example', qanDetails.getTabLocator('Example'));
+      I.see('Explain', qanDetails.getTabLocator('Explain'));
+      I.see('Tables', qanDetails.getTabLocator('Tables'));
+    });
+    await qanDetails.verifyDetailsNotEmpty();
+    qanDetails.checkExamplesTab();
+    qanDetails.checkExplainTab();
+    qanDetails.checkTablesTab();
+  },
+);

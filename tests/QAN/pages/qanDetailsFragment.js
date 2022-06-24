@@ -61,7 +61,7 @@ module.exports = {
     I.click(this.getTabLocator('Tables'));
     I.wait(5);
     qanFilters.waitForFiltersToLoad();
-    I.seeNumberOfElements(this.elements.tablesBlocks, 2);
+    I.dontSeeElement(this.elements.tablesBlocks);
   },
 
   checkPlanTab() {
@@ -126,17 +126,9 @@ module.exports = {
   async verifyDetailsNotEmpty() {
     const queryCountValue = await I.grabTextFrom(this.getMetricsCellLocator('Query Count', 3));
     const queryTimeValue = await I.grabTextFrom(this.getMetricsCellLocator('Query Time', 3));
-    const rowsSentValue = await I.grabTextFrom(this.getMetricsCellLocator('Rows Sent', 3));
-    const sbCacheHitsValue = await I.grabTextFrom(this.getMetricsCellLocator('Shared Block Cache Hits', 3));
-    const uCpuTimeValue = await I.grabTextFrom(this.getMetricsCellLocator('User CPU time', 3));
-    const sCpuTimeValue = await I.grabTextFrom(this.getMetricsCellLocator('System CPU time', 3));
 
     I.assertTrue(queryCountValue.length > 0, '"Query Count" sum length must be more than 0');
     I.assertTrue(queryTimeValue.length > 0, '"Query Time" sum length must be more than 0');
-    I.assertTrue(rowsSentValue.length > 0, '"Rows Sent" sum length must be more than 0');
-    I.assertTrue(sbCacheHitsValue.length > 0, '"Shared Block Cache Hits" Time sum length must be more than 0');
-    I.assertTrue(uCpuTimeValue.length > 0, '"User CPU time" sum length must be more than 0');
-    I.assertTrue(sCpuTimeValue.length > 0, '"System CPU time" sum length must be more than 0');
   },
 };
 
