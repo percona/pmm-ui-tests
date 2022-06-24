@@ -1,5 +1,3 @@
-const { pmmServerAdminSettingsPage } = inject();
-
 Feature('PMM Server Admin Settings');
 
 Before(async ({ I }) => {
