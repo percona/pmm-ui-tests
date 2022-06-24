@@ -79,14 +79,13 @@ module.exports = () => actor({
   },
 
   /**
-   * Create URL method
+   * Builds queries for specified URL without queries
    *
-   * @param url start
-   * @param parameters object
-   * @returns {Promise<void>}
+   * @param   url         sting with [scheme]://[userinfo "@"][host][:port]/[path]
+   * @param   parameters  object
+   * @returns {*|string}  URL string with query, ex: 'http://my.com/?search=ps-dev&from=now-1'
    *
-   * @example
-   * buildUrlWithParams('http://example.com', { environment: 'ps-dev', from: 'now-1' });
+   * @example             buildUrlWithParams('http://example.com', { environment: 'ps-dev', from: 'now-1' });
    */
   buildUrlWithParams(url, parameters) {
     const queryParams = {};
@@ -98,11 +97,20 @@ module.exports = () => actor({
         case 'environment':
           queryParams['var-environment'] = value;
           break;
+        case 'database':
+          queryParams['var-database'] = value;
+          break;
         case 'node_name':
           queryParams['var-node_name'] = value;
           break;
         case 'service_name':
           queryParams['var-service_name'] = value;
+          break;
+        case 'service_type':
+          queryParams['var-service_type'] = value;
+          break;
+        case 'cmd_type':
+          queryParams['var-cmd_type'] = value;
           break;
         case 'columns':
           queryParams.columns = value;

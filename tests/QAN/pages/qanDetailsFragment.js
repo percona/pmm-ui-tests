@@ -56,12 +56,14 @@ module.exports = {
     I.dontSeeElement(this.elements.noJSON);
   },
 
-  checkTablesTab() {
+  async checkTablesTab() {
     I.waitForVisible(this.getTabLocator('Tables'), 30);
     I.click(this.getTabLocator('Tables'));
     I.wait(5);
     qanFilters.waitForFiltersToLoad();
-    I.dontSeeElement(this.elements.tablesBlocks);
+    const tableBlocks = await I.grabNumberOfVisibleElements(this.elements.tablesBlocks);
+
+    I.assertTrue(tableBlocks >= 2, `At least 2 'Tables' are expected but found ${tableBlocks}`);
   },
 
   checkPlanTab() {
@@ -82,6 +84,10 @@ module.exports = {
   },
 
   checkPlanTabIsEmpty() {
+    I.waitForVisible(this.getTabLocator('Plan'), 30);
+    I.click(this.getTabLocator('Plan'));
+    I.wait(5);
+    qanFilters.waitForFiltersToLoad();
     I.waitForVisible(this.elements.emptyPlanText, 20);
     I.dontSeeElement(this.elements.planInfoIcon);
   },

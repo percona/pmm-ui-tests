@@ -111,10 +111,7 @@ Data(filters).Scenario(
       filterSection, filterToApply, searchValue,
     } = current;
 
-    I.amOnPage(qanPage.url);
-    qanOverview.waitForOverviewLoaded();
-    qanFilters.applyFilter(serviceName);
-    qanFilters.applyFilter(database);
+    I.amOnPage(I.buildUrlWithParams(qanPage.clearUrl, { service_name: pgsm_service_name, database }));
     I.waitForVisible(qanFilters.buttons.showSelected, 30);
 
     qanFilters.applyFilterInSection(filterSection, filterToApply);
@@ -144,13 +141,11 @@ Scenario(
   async ({
     I, qanPage, qanOverview, qanFilters, qanDetails,
   }) => {
-    I.amOnPage(qanPage.url);
-    qanOverview.waitForOverviewLoaded();
-    qanFilters.applyFilter(pgsm_service_name);
-    qanFilters.applyFilter(database);
+    I.amOnPage(I.buildUrlWithParams(qanPage.clearUrl, { service_name: pgsm_service_name, database, cmd_type: 'SELECT' }));
     I.waitForVisible(qanFilters.buttons.showSelected, 30);
     qanOverview.selectRow(2);
     qanFilters.waitForFiltersToLoad();
+
     await within(qanDetails.root, () => {
       I.waitForVisible(qanDetails.buttons.close, 30);
       I.see('Details', qanDetails.getTabLocator('Details'));
@@ -160,8 +155,7 @@ Scenario(
     });
     await qanDetails.verifyDetailsNotEmpty();
     qanDetails.checkExamplesTab();
-    qanDetails.checkTablesTab();
-    qanDetails.checkPlanTab();
-    await qanDetails.checkPlanTabIsNotEmpty();
+    await qanDetails.checkTablesTab();
+    await qanDetails.checkPlanTabIsEmpty();
   },
 );
