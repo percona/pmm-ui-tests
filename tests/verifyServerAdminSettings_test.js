@@ -4,7 +4,7 @@ Before(async ({ I }) => {
   await I.Authorize();
 });
 
-Scenario('PMM-T1110 - Verify Grafana using Postgres database @settings @imp',
+Scenario('PMM-T1110 - Verify Grafana using Postgres database @settings',
   async ({ pmmServerAdminSettingsPage }) => {
     pmmServerAdminSettingsPage.open();
     // TODO: change expected type when PMM-4466 will be merged
