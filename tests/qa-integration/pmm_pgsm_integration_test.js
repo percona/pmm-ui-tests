@@ -29,7 +29,6 @@ filters.add(['Command Type', 'UPDATE']);
 filters.add(['Command Type', 'DELETE']);
 filters.add(['Application Name', 'pmm-codeceptjs']);
 filters.add(['Application Name', 'codeceptjs']);
-filters.add(['Database', database]);
 
 Feature('PMM + PGSM Integration Scenarios');
 
