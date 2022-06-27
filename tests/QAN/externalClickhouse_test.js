@@ -8,6 +8,7 @@ const basePmmUrl = 'http://127.0.0.1:8080/';
 BeforeSuite(async ({ I }) => {
   await I.verifyCommand('docker-compose -f docker-compose-clickhouse.yml up -d');
   await I.wait(60);
+  await I.verifyCommand('docker exec pmm-client sh -c "pmm-admin add mysql --username=root --password=pass --query-source=perfschema  mysql5.7 mysql5.7:3306"');
 });
 
 Before(async ({ I }) => {
