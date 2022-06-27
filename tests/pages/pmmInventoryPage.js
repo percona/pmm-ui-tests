@@ -30,6 +30,7 @@ module.exports = {
     tableCheckbox: locate('$select-row').find('span'),
     // cannot be changed to locate() because of method: getCellValue()
     tableRow: '//tr[@data-testid="table-row"]',
+    agentTableRow: '//td[contains(text(), "agent")][1]//ancestor::tr[@data-testid="table-row"]',
   },
 
   verifyRemoteServiceIsDisplayed(serviceName) {

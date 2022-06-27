@@ -2,7 +2,10 @@ const assert = require('assert');
 
 Feature('Inventory page');
 
-Before(async ({ I }) => {
+let pmmVersion;
+
+Before(async ({ I, homePage }) => {
+  pmmVersion = await homePage.getVersions().versionMinor;
   await I.Authorize();
 });
 
@@ -172,6 +175,27 @@ Scenario(
       }
 
       assert.fail(`These services do not have RUNNING state: \n ${JSON.stringify(servicesNotRunning, null, 2)}`);
+    }
+  },
+);
+
+Scenario(
+  'PMM-T1226 - Verify Agents has process_exec_path option on Inventory page @inventory @exporters @nightly @testTest',
+  async ({ I, pmmInventoryPage }) => {
+    if (pmmVersion >= 29 || pmmVersion === undefined) {
+      I.amOnPage(pmmInventoryPage.url);
+      await I.waitForVisible(pmmInventoryPage.fields.agentsLink, 20);
+      I.click(pmmInventoryPage.fields.agentsLink);
+      await I.waitForVisible(pmmInventoryPage.fields.tableRow);
+      const agentTextValues = await I.grabTextFromAll(pmmInventoryPage.fields.agentTableRow);
+
+      agentTextValues.forEach((value) => {
+        if (!value.toLowerCase().includes('qan')) {
+          assert.ok(value.includes('process_exec_path'), `process_exec_path is not present for exporter ${value}`);
+        }
+      });
+    } else {
+      I.say('This testcase is for PMM version 2.29.0 and higher');
     }
   },
 );
