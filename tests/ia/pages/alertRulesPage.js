@@ -71,7 +71,7 @@ module.exports = {
     },
     severity: {
       locator: locate('div').after('$severity-field-label'),
-      message: 'The severity level for the alert triggered by this rule. Either "Warning", "Notice", "High" or "Critical".',
+      message: 'The severity level for the alert triggered by this rule. Either "Warning", "Notice", "Error" or "Critical".',
     },
     filters: {
       locator: locate('div').after('$filters-field-label'),
