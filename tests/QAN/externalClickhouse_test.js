@@ -29,7 +29,7 @@ Scenario(
     await I.amOnPage(basePmmUrl + qanPage.clearUrl);
     await qanPage.waitForOpened();
     I.dontSeeElement(qanPage.elements.noQueryAvailable);
-    await I.waitForVisible(qanPage.elements.qanContainer);
+    await I.waitForVisible(qanPage.elements.qanRow);
     const qanRows = await I.grabNumberOfVisibleElements(qanPage.elements.qanRow);
 
     assert.ok(qanRows > 0, 'Query Analytics are empty');
