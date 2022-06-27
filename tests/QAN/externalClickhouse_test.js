@@ -2,6 +2,7 @@ const assert = require('assert');
 
 Feature('External Clickhouse Tests');
 
+// Address of PMM with external clickhouse created with docker compose.
 const basePmmUrl = 'http://127.0.0.1:8080/';
 
 BeforeSuite(async ({ I }) => {
@@ -18,7 +19,7 @@ AfterSuite(async ({ I }) => {
 });
 
 Scenario(
-  'PMM-T1218 Verify PMM with external Clickhouse @externalClickhouse',
+  'PMM-T1218 Verify PMM with external Clickhouse @qan',
   async ({ I, dataSourcePage, qanPage }) => {
     await I.amOnPage(basePmmUrl + dataSourcePage.url);
     await I.waitForVisible(dataSourcePage.elements.clickHouseDescription);
@@ -28,7 +29,7 @@ Scenario(
     await I.amOnPage(basePmmUrl + qanPage.clearUrl);
     await qanPage.waitForOpened();
     I.dontSeeElement(qanPage.elements.noQueryAvailable);
-    await I.waitForVisible(qanPage.elements.qanContainer)
+    await I.waitForVisible(qanPage.elements.qanContainer);
     const qanRows = await I.grabNumberOfVisibleElements(qanPage.elements.qanRow);
 
     assert.ok(qanRows > 0, 'Query Analytics are empty');
