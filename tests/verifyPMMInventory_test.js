@@ -205,11 +205,11 @@ Scenario(
 
 Scenario(
   'PMM-T1225 - Verify summary file includes process_exec_path for agents @inventory @exporters @nightly @testTest2',
-  async ({ I, pmmInventoryPage }) => {
+  async ({ I }) => {
     const response = await I.verifyCommand('pmm-admin summary');
 
     await I.say(response);
-    const zipResponse = await I.readZipArchive(response.split(' ')[0]);
+    const zipResponse = await I.readFileInZipArchive(response.split(' ')[0], 'client/status.json');
 
     await I.say(zipResponse);
   },
