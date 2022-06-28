@@ -212,6 +212,6 @@ Scenario(
     await I.say(response.split(' ')[0]);
     const zipResponse = await I.readFileInZipArchive(response.split(' ')[0], 'client/status.json');
 
-    await I.say(zipResponse);
+    await I.say(JSON.parse(zipResponse));
   },
 );
