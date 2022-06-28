@@ -210,9 +210,13 @@ Scenario(
     const statusFile = JSON.parse(await I.readFileInZipArchive(response.split(' ')[0], 'client/status.json'));
     const exporters = statusFile.agents_info.filter((agent) => !agent.agent_type.toLowerCase().includes('qan'));
 
-    await I.say(exporters);
-    exporters.agents_info.forEach((agent) => {
-      assert.ok(agent.process_exec_path.length > 0, `Process exec path for ${agent.agent_type} is empty`);
+    await I.say(JSON.stringify(exporters));
+    exporters.forEach((agent) => {
+      if (agent.process_exec_path) {
+        assert.ok(agent.process_exec_path.length > 0, `Process exec path for ${agent.agent_type} is empty`);
+      } else {
+        throw new Error(`Process exec path is not present for ${agent.agent_type}`);
+      }
     });
   },
 );
