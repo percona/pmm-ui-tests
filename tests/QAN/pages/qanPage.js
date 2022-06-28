@@ -16,7 +16,7 @@ module.exports = {
   },
   elements: {
     qanContainer: '.query-analytics-data',
-    qanRow: '//div[@role="row"]',
+    qanRow: 'div[role="row"]',
     noQueryAvailable: locate('h1').withText('No queries available for this combination of filters in the selected time frame'),
   },
 
