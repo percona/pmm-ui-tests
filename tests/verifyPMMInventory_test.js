@@ -202,3 +202,10 @@ Scenario(
     }
   },
 );
+
+Scenario(
+  'PMM-T1225 - Verify summary file includes process_exec_path for agents @inventory @exporters @nightly @testTest2',
+  async ({ I, pmmInventoryPage }) => {
+    await I.verifyCommand('pmm-admin summary');
+  },
+);
