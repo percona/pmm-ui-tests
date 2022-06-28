@@ -209,7 +209,8 @@ Scenario(
     const response = await I.verifyCommand('pmm-admin summary');
 
     await I.say(response);
-    const zipResponse = await I.readTextFileInZipArchive(response.split(' ')[0], 'client/status.json');
+    await I.say(response.split(' ')[0]);
+    const zipResponse = await I.readFileInZipArchive(response.split(' ')[0], 'client/status.json');
 
     await I.say(zipResponse);
   },
