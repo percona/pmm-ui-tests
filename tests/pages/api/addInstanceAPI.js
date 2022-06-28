@@ -20,6 +20,8 @@ module.exports = {
         return this.addPostgresql(serviceName);
       case remoteInstancesHelper.instanceTypes.rds:
         return this.addRDS(serviceName, creds);
+      case remoteInstancesHelper.instanceTypes.rdsAurora:
+        return this.addRDS(serviceName, creds);
       case remoteInstancesHelper.instanceTypes.postgresGC:
         return await this.addPostgreSQLGC(serviceName);
       default:
@@ -28,9 +30,7 @@ module.exports = {
   },
 
   async addMysql(serviceName, connection = {}) {
-    const {
-      host, port, username, password,
-    } = connection;
+    const { host, port, username, password } = connection;
     const body = {
       add_node: {
         node_name: serviceName,
@@ -220,10 +220,7 @@ module.exports = {
   },
 
   async addRDS(serviceName, connection = {}) {
-    const {
-      port, username, password, address, cluster, aws_access_key, aws_secret_key
-    } = connection;
-
+    const { port, username, password, address, cluster, aws_access_key, aws_secret_key } = connection;
     const body = {
       add_node: {
         node_name: serviceName,
@@ -275,7 +272,11 @@ module.exports = {
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
     const resp = await I.sendPostRequest('v1/management/External/Add', body, headers);
 
-    assert.equal(resp.status, 200, `External Service ${serviceName} was not added for monitoring got following response ${JSON.stringify(resp.data)}`);
+    assert.equal(
+      resp.status,
+      200,
+      `External Service ${serviceName} was not added for monitoring got following response ${JSON.stringify(resp.data)}`,
+    );
   },
 
   async addInstanceForSTT(connection, instanceName = 'stt-mysql-5.7.30') {

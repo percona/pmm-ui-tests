@@ -282,16 +282,24 @@ Scenario(
       username: remoteInstancesHelper.remote_instance.aws.aurora.username,
       password: remoteInstancesHelper.remote_instance.aws.aurora.aurora2.password,
       instance_id: 'pmm-qa-aurora2-mysql-instance-1',
-      cluster_name: 'aurora2',
+      cluster: 'aurora2',
     };
 
     for (const type of Object.values(remoteInstancesHelper.instanceTypes)) {
       if (type) {
-        await addInstanceAPI.apiAddInstance(
-          type,
-          remoteInstancesHelper.upgradeServiceNames[type.toLowerCase()],
-          aurora_details,
-        );
+        if (type == 'RDSAurora') {
+          await addInstanceAPI.apiAddInstance(
+            type,
+            remoteInstancesHelper.upgradeServiceNames[type.toLowerCase()],
+            aurora_details,
+          );
+        }
+        else {
+          await addInstanceAPI.apiAddInstance(
+            type,
+            remoteInstancesHelper.upgradeServiceNames[type.toLowerCase()],
+          );
+        }
       }
     }
   },
