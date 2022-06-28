@@ -287,7 +287,7 @@ Scenario(
 
     for (const type of Object.values(remoteInstancesHelper.instanceTypes)) {
       if (type) {
-        if (type == 'RDSAurora') {
+        if (type === 'RDSAurora') {
           await addInstanceAPI.apiAddInstance(
             type,
             remoteInstancesHelper.upgradeServiceNames[type.toLowerCase()],
