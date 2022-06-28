@@ -187,11 +187,14 @@ Scenario(
       await I.waitForVisible(pmmInventoryPage.fields.agentsLink, 20);
       I.click(pmmInventoryPage.fields.agentsLink);
       await I.waitForVisible(pmmInventoryPage.fields.tableRow);
-      const agentTextValues = await I.grabTextFromAll(pmmInventoryPage.fields.agentTableRow);
+      const agentTextValues = await I.grabTextFromAll(pmmInventoryPage.fields.processExecPathExporters);
 
       agentTextValues.forEach((value) => {
         if (!value.toLowerCase().includes('qan')) {
           assert.ok(value.includes('process_exec_path'), `process_exec_path is not present for exporter ${value}`);
+          const newValue = value.replace('process_exec_path:', '').trim();
+
+          assert.ok(newValue.length > 0, `process_exec_path value is empty for ${value}`);
         }
       });
     } else {
