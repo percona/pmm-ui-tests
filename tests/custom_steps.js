@@ -39,11 +39,11 @@ module.exports = () => actor({
     }
   },
 
-  async readFileInZipArchive(zipPath, filePath) {
+  async readTextFileInZipArchive(zipPath, filePath) {
     try {
       const zip = new AdmZip(zipPath);
 
-      return zip.readfile(filePath);
+      return zip.readAsTextAsync(filePath);
     } catch (e) {
       return Error(`Something went wrong when reading a zip file ${zipPath}. ${e}`);
     }
