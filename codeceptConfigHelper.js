@@ -37,6 +37,7 @@ module.exports = {
     perconaPlatformPage: './tests/pages/perconaPlatformPage/perconaPlatformPage.js',
     pmmDemoPage: './tests/pages/pmmDemoPage.js',
     pmmInventoryPage: './tests/pages/pmmInventoryPage.js',
+    pmmServerAdminSettingsPage: './tests/pages/pmmServerAdminSettingsPage.js',
     pmmSettingsPage: './tests/pages/pmmSettingsPage.js',
     portalAPI: './tests/pages/api/portalAPI.js',
     qanDetails: './tests/QAN/pages/qanDetailsFragment.js',
