@@ -96,7 +96,39 @@ Scenario(
     I.amOnPage(homePage.url);
     I.waitForVisible(homePage.fields.checksPanelSelector, 30);
     I.waitForVisible(homePage.fields.sttFailedChecksPanelSelector, 30);
-    const [critical, error, warning, trivial] = (await I.grabTextFrom(homePage.fields.sttFailedChecksPanelSelector)).split(' / ').map(Number);
+    const [c, e, w, t] = (await I.grabTextFrom(homePage.fields.sttFailedChecksPanelSelector)).split(' / ').map(Number);
+    const levels = await I.grabTextFromAll(locate('$checks-tooltip-body').find('div'));
+
+    let critical = 0;
+    let error = 0;
+    let warning = 0;
+    let trivial = 0;
+
+    levels.forEach((level) => {
+      const [l, num] = level.split(' – ');
+      const sum = parseInt(num, 10);
+
+      switch (l.trim()) {
+        case 'Emergency':
+        case 'Alert':
+        case 'Critical':
+          critical += sum;
+          break;
+        case 'Error':
+          error += sum;
+          break;
+        case 'Warning':
+          warning += sum;
+          break;
+        case 'Notice':
+        case 'Info':
+        case 'Debug':
+          trivial += sum;
+          break;
+        default:
+          assert.fail(`Got unexpected severity level ${l}`);
+      }
+    });
     const expectedPopUpText = `Failed checks: ${critical + error + warning + trivial}Emergency – 0Alert – 0Critical – 0Error – ${error}Warning – ${warning}Notice – 0Info – 0Debug – 0`;
 
     // Verify failed checks pop up
