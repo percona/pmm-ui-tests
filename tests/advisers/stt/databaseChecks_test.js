@@ -96,15 +96,13 @@ Scenario(
     I.amOnPage(homePage.url);
     I.waitForVisible(homePage.fields.checksPanelSelector, 30);
     I.waitForVisible(homePage.fields.sttFailedChecksPanelSelector, 30);
-    const [critical, major, trivial] = (await I.grabTextFrom(homePage.fields.sttFailedChecksPanelSelector)).split(' / ').map(Number);
+    const [critical, error, warning, trivial] = (await I.grabTextFrom(homePage.fields.sttFailedChecksPanelSelector)).split(' / ').map(Number);
+    const expectedPopUpText = `Failed checks: ${critical + error + warning + trivial}Emergency – 0Alert – 0Critical – 0Error – ${error}Warning – ${warning}Notice – 0Info – 0Debug – 0`;
 
     // Verify failed checks pop up
     I.moveCursorTo(homePage.fields.sttFailedChecksPanelSelector);
     I.waitForVisible(homePage.fields.popUp, 5);
-    assert.ok(
-      (await I.grabTextFrom(homePage.fields.popUp)),
-      `Failed checks: ${critical + major + trivial}Critical – ${critical}Major – ${major}Trivial – ${trivial}`,
-    );
+    assert.strictEqual((await I.grabTextFrom(homePage.fields.popUp)), expectedPopUpText);
 
     // Verify info icon message for Failed check panel
     I.moveCursorTo(homePage.fields.failedChecksPanelInfo);
