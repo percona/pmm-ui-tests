@@ -97,6 +97,11 @@ Scenario(
     I.waitForVisible(homePage.fields.checksPanelSelector, 30);
     I.waitForVisible(homePage.fields.sttFailedChecksPanelSelector, 30);
     const [c, e, w, t] = (await I.grabTextFrom(homePage.fields.sttFailedChecksPanelSelector)).split(' / ').map(Number);
+
+    // Verify failed checks pop up
+    I.moveCursorTo(homePage.fields.sttFailedChecksPanelSelector);
+    I.waitForVisible(homePage.fields.popUp, 5);
+
     const levels = await I.grabTextFromAll(locate('$checks-tooltip-body').find('div'));
 
     let critical = 0;
@@ -136,9 +141,6 @@ Scenario(
     assert.strictEqual(trivial, t);
     const expectedPopUpText = `Failed checks: ${critical + error + warning + trivial}Emergency – 0Alert – 0Critical – 0Error – ${error}Warning – ${warning}Notice – 0Info – 0Debug – 0`;
 
-    // Verify failed checks pop up
-    I.moveCursorTo(homePage.fields.sttFailedChecksPanelSelector);
-    I.waitForVisible(homePage.fields.popUp, 5);
     assert.strictEqual((await I.grabTextFrom(homePage.fields.popUp)), expectedPopUpText);
 
     // Verify info icon message for Failed check panel
