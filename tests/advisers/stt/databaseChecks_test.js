@@ -129,6 +129,11 @@ Scenario(
           assert.fail(`Got unexpected severity level ${l}`);
       }
     });
+
+    assert.strictEqual(critical, c);
+    assert.strictEqual(error, e);
+    assert.strictEqual(warning, w);
+    assert.strictEqual(trivial, t);
     const expectedPopUpText = `Failed checks: ${critical + error + warning + trivial}Emergency – 0Alert – 0Critical – 0Error – ${error}Warning – ${warning}Notice – 0Info – 0Debug – 0`;
 
     // Verify failed checks pop up
