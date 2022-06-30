@@ -31,7 +31,6 @@ module.exports = {
     }),
   pmmDashboards: new LeftMenu('PMM dashboards', 'graph/d/pmm-home/home-dashboard?orgId=1&refresh=1m',
     {
-      queryAnalytics: menuOption(pmmD, 'Query Analytics', '/graph/d/pmm-qan/pmm-query-analytics'),
       systemNode: new SubMenu(pmmD, 'System (Node)', '/graph/d/node-instance-overview/',
         {
           nodeOverview: menuOption(pmmD, 'Node Overview', '/graph/d/node-instance-overview/', 2),
@@ -96,6 +95,7 @@ module.exports = {
       proxySql: menuOption(pmmD, 'ProxySQL', '/graph/d/proxysql-instance-summary/proxysql-instance-summary'),
       haProxy: menuOption(pmmD, 'HAProxy', '/graph/d/haproxy-instance-summary/haproxy-instance-summary'),
     }),
+  queryAnalytics: new LeftMenu('Query Analytics (QAN)', '/graph/d/pmm-qan/pmm-query-analytics'),
   explore: new LeftMenu('Explore', '/graph/explore'),
   /* Skipping due to a conflict with Integrated Alerting item
   alerting: new LeftMenu('Alerting', '/graph/alerting/list',
