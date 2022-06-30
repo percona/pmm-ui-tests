@@ -39,7 +39,7 @@ exports.config = {
     },
     REST: {
       endpoint: process.env.PMM_UI_URL || 'http://127.0.0.1/',
-      timeout: 30000,
+      timeout: 60000,
     },
     Mailosaur: {
       require: 'codeceptjs-mailosaurhelper',
@@ -49,6 +49,9 @@ exports.config = {
     },
     DbHelper: {
       require: 'codeceptjs-dbhelper',
+    },
+    LocalStorageHelper: {
+      require: './tests/helper/localStorageHelper.js',
     },
   },
   include: pageObjects,
@@ -83,16 +86,10 @@ exports.config = {
         },
       },
       'mocha-junit-reporter': {
-        stdout: './tests/output/console.log',
+        stdout: '-',
         options: {
           mochaFile: './tests/output/result.xml',
-        },
-      },
-      mochawesome: {
-        stdout: './tests/output/mocharesult.log',
-        options: {
-          reportDir: './tests/output',
-          reportFilename: 'result.html',
+          jenkinsMode: true,
         },
       },
     },
