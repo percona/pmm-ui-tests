@@ -95,7 +95,7 @@ module.exports = {
   async checkAllAlertsColor(expectedStates) {
     const alertsStates = await I.grabTextFromAll('//td[3]');
     const criticalColor = await I.grabCssPropertyFrom(this.elements.criticalSeverity, 'color');
-    const errorColor = await I.grabCssPropertyFrom(this.elements.highSeverity, 'color');
+    const errorColor = await I.grabCssPropertyFrom(this.elements.errorSeverity, 'color');
     const noticeColor = await I.grabCssPropertyFrom(this.elements.noticeSeverity, 'color');
     const warningColor = await I.grabCssPropertyFrom(this.elements.warningSeverity, 'color');
 
