@@ -63,7 +63,6 @@ Scenario(
     await homePage.open();
     let path;
 
-    I.amOnPage('/');
     I.moveCursorTo(locate('li').find('a').withAttr({ 'aria-label': 'Help' }));
     I.waitForElement('//div[contains(text(), \'PMM Logs\')]', 3);
 
