@@ -2,10 +2,7 @@ const assert = require('assert');
 
 Feature('Inventory page');
 
-let pmmVersion;
-
 Before(async ({ I, homePage }) => {
-  pmmVersion = await homePage.getVersions().versionMinor;
   await I.Authorize();
 });
 
@@ -182,45 +179,37 @@ Scenario(
 Scenario(
   'PMM-T1226 - Verify Agents has process_exec_path option on Inventory page @inventory @exporters @nightly',
   async ({ I, pmmInventoryPage }) => {
-    if (pmmVersion >= 29 || pmmVersion === undefined) {
-      I.amOnPage(pmmInventoryPage.url);
-      await I.waitForVisible(pmmInventoryPage.fields.agentsLink, 20);
-      I.click(pmmInventoryPage.fields.agentsLink);
-      await I.waitForVisible(pmmInventoryPage.fields.tableRow);
-      const agentTextValues = await I.grabTextFromAll(pmmInventoryPage.fields.processExecPathExporters);
+    I.amOnPage(pmmInventoryPage.url);
+    await I.waitForVisible(pmmInventoryPage.fields.agentsLink, 20);
+    I.click(pmmInventoryPage.fields.agentsLink);
+    await I.waitForVisible(pmmInventoryPage.fields.tableRow);
+    const agentTextValues = await I.grabTextFromAll(pmmInventoryPage.fields.processExecPathExporters);
 
-      agentTextValues.forEach((value) => {
-        if (!value.toLowerCase().includes('qan')) {
-          assert.ok(value.includes('process_exec_path'), `process_exec_path is not present for exporter ${value}`);
-          const newValue = value.replace('process_exec_path:', '').trim();
+    agentTextValues.forEach((value) => {
+      if (!value.toLowerCase().includes('qan')) {
+        assert.ok(value.includes('process_exec_path'), `process_exec_path is not present for exporter ${value}`);
+        const newValue = value.replace('process_exec_path:', '').trim();
 
-          assert.ok(newValue.length > 0, `process_exec_path value is empty for ${value}`);
-        }
-      });
-    } else {
-      I.say('This test case is for PMM version 2.29.0 and higher');
-    }
+        assert.ok(newValue.length > 0, `process_exec_path value is empty for ${value}`);
+      }
+    });
   },
 );
 
 Scenario(
   'PMM-T1225 - Verify summary file includes process_exec_path for agents @inventory @exporters @nightly',
   async ({ I }) => {
-    if (pmmVersion >= 29 || pmmVersion === undefined) {
-      const response = await I.verifyCommand('pmm-admin summary');
-      const statusFile = JSON.parse(await I.readFileInZipArchive(response.split(' ')[0], 'client/status.json'));
-      const exporters = statusFile.agents_info.filter((agent) => !agent.agent_type.toLowerCase().includes('qan'));
+    const response = await I.verifyCommand('pmm-admin summary');
+    const statusFile = JSON.parse(await I.readFileInZipArchive(response.split(' ')[0], 'client/status.json'));
+    const exporters = statusFile.agents_info.filter((agent) => !agent.agent_type.toLowerCase().includes('qan'));
 
-      exporters.forEach((agent) => {
-        if (agent.process_exec_path) {
-          I.say(`process_exec_path for agent ${agent.agent_type} is ${agent.process_exec_path}`);
-          assert.ok(agent.process_exec_path.length > 0, `Process exec path for ${agent.agent_type} is empty`);
-        } else {
-          throw new Error(`Process exec path is not present for ${agent.agent_type}`);
-        }
-      });
-    } else {
-      I.say('This test case is for PMM version 2.29.0 and higher');
-    }
+    exporters.forEach((agent) => {
+      if (agent.process_exec_path) {
+        I.say(`process_exec_path for agent ${agent.agent_type} is ${agent.process_exec_path}`);
+        assert.ok(agent.process_exec_path.length > 0, `Process exec path for ${agent.agent_type} is empty`);
+      } else {
+        throw new Error(`Process exec path is not present for ${agent.agent_type}`);
+      }
+    });
   },
 );
