@@ -180,7 +180,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T1226 - Verify Agents has process_exec_path option on Inventory page @inventory @exporters @nightly @testTest',
+  'PMM-T1226 - Verify Agents has process_exec_path option on Inventory page @inventory @exporters @nightly',
   async ({ I, pmmInventoryPage }) => {
     if (pmmVersion >= 29 || pmmVersion === undefined) {
       I.amOnPage(pmmInventoryPage.url);
@@ -198,25 +198,29 @@ Scenario(
         }
       });
     } else {
-      I.say('This testcase is for PMM version 2.29.0 and higher');
+      I.say('This test case is for PMM version 2.29.0 and higher');
     }
   },
 );
 
 Scenario(
-  'PMM-T1225 - Verify summary file includes process_exec_path for agents @inventory @exporters @nightly @testTest2',
+  'PMM-T1225 - Verify summary file includes process_exec_path for agents @inventory @exporters @nightly',
   async ({ I }) => {
-    const response = await I.verifyCommand('pmm-admin summary');
-    const statusFile = JSON.parse(await I.readFileInZipArchive(response.split(' ')[0], 'client/status.json'));
-    const exporters = statusFile.agents_info.filter((agent) => !agent.agent_type.toLowerCase().includes('qan'));
+    if (pmmVersion >= 29 || pmmVersion === undefined) {
+      const response = await I.verifyCommand('pmm-admin summary');
+      const statusFile = JSON.parse(await I.readFileInZipArchive(response.split(' ')[0], 'client/status.json'));
+      const exporters = statusFile.agents_info.filter((agent) => !agent.agent_type.toLowerCase().includes('qan'));
 
-    exporters.forEach((agent) => {
-      if (agent.process_exec_path) {
-        I.say(`process_exec_path for agent ${agent.agent_type} is ${agent.process_exec_path}`);
-        assert.ok(agent.process_exec_path.length > 0, `Process exec path for ${agent.agent_type} is empty`);
-      } else {
-        throw new Error(`Process exec path is not present for ${agent.agent_type}`);
-      }
-    });
+      exporters.forEach((agent) => {
+        if (agent.process_exec_path) {
+          I.say(`process_exec_path for agent ${agent.agent_type} is ${agent.process_exec_path}`);
+          assert.ok(agent.process_exec_path.length > 0, `Process exec path for ${agent.agent_type} is empty`);
+        } else {
+          throw new Error(`Process exec path is not present for ${agent.agent_type}`);
+        }
+      });
+    } else {
+      I.say('This test case is for PMM version 2.29.0 and higher');
+    }
   },
 );
