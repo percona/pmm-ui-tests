@@ -177,7 +177,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T1226 - Verify Agents has process_exec_path option on Inventory page @inventory @exporters @pgsm-pmm-integration @cli',
+  'PMM-T1226 - Verify Agents has process_exec_path option on Inventory page @inventory @exporters @pgsm-pmm-integration',
   async ({ I, pmmInventoryPage }) => {
     I.amOnPage(pmmInventoryPage.url);
     await I.waitForVisible(pmmInventoryPage.fields.agentsLink, 20);
@@ -190,7 +190,7 @@ Scenario(
         assert.ok(value.includes('process_exec_path'), `process_exec_path is not present for exporter ${value}`);
         const newValue = value.replace('process_exec_path:', '').trim();
 
-        assert.ok(newValue.length > 0, `process_exec_path value is empty for ${value}`);
+        assert.ok(newValue.length, `process_exec_path value is empty for ${value}`);
       }
     });
   },
@@ -206,9 +206,9 @@ Scenario(
     exporters.forEach((agent) => {
       if (agent.process_exec_path) {
         I.say(`process_exec_path for agent ${agent.agent_type} is ${agent.process_exec_path}`);
-        assert.ok(agent.process_exec_path.length > 0, `Process exec path for ${agent.agent_type} is empty`);
+        assert.ok(agent.process_exec_path.length, `Process exec path for ${agent.agent_type} is empty`);
       } else {
-        throw new Error(`Process exec path is not present for ${agent.agent_type}`);
+        assert.fail(`Process exec path is not present for ${agent.agent_type}`);
       }
     });
   },
