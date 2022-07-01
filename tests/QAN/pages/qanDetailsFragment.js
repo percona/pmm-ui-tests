@@ -46,6 +46,14 @@ module.exports = {
     I.dontSeeElement(this.elements.noExamples);
   },
 
+  checkExamplesTabEmpty() {
+    I.waitForVisible(this.getTabLocator('Examples'), 30);
+    I.click(this.getTabLocator('Examples'));
+    qanFilters.waitForFiltersToLoad();
+    I.waitForVisible(this.elements.examplesCodeBlock, 30);
+    I.seeElement(this.elements.noExamples);
+  },
+
   checkExplainTab() {
     I.waitForVisible(this.getTabLocator('Explain'), 30);
     I.click(this.getTabLocator('Explain'));
