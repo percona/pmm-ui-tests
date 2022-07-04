@@ -65,8 +65,8 @@ Before(async ({ I }) => {
 
 BeforeSuite(async ({ I, codeceptjsConfig }) => {
   const mysqlComposeConnection = {
-    host: (process.env.AMI_UPGRADE_TESTING_INSTANCE === 'true' ? process.env.VM_CLIENT_IP : '127.0.0.1'),
-    port: (process.env.AMI_UPGRADE_TESTING_INSTANCE === 'true' ? remoteInstancesHelper.remote_instance.mysql.ps_5_7.port : '3309'),
+    host: (process.env.AMI_UPGRADE_TESTING_INSTANCE === 'true' || process.env.OVF_UPGRADE_TESTING_INSTANCE === 'true' ? process.env.VM_CLIENT_IP : '127.0.0.1'),
+    port: (process.env.AMI_UPGRADE_TESTING_INSTANCE === 'true' || process.env.OVF_UPGRADE_TESTING_INSTANCE === 'true' ? remoteInstancesHelper.remote_instance.mysql.ps_5_7.port : '3309'),
     username: connection.username,
     password: connection.password,
   };
@@ -75,8 +75,8 @@ BeforeSuite(async ({ I, codeceptjsConfig }) => {
 
   // Connect to MongoDB
   const mongoConnection = {
-    host: (process.env.AMI_UPGRADE_TESTING_INSTANCE === 'true' ? process.env.VM_CLIENT_IP : codeceptjsConfig.config.helpers.MongoDBHelper.host),
-    port: (process.env.AMI_UPGRADE_TESTING_INSTANCE === 'true' ? remoteInstancesHelper.remote_instance.mongodb.psmdb_4_2.port : codeceptjsConfig.config.helpers.MongoDBHelper.port),
+    host: (process.env.AMI_UPGRADE_TESTING_INSTANCE === 'true' || process.env.OVF_UPGRADE_TESTING_INSTANCE === 'true' ? process.env.VM_CLIENT_IP : codeceptjsConfig.config.helpers.MongoDBHelper.host),
+    port: (process.env.AMI_UPGRADE_TESTING_INSTANCE === 'true' || process.env.OVF_UPGRADE_TESTING_INSTANCE === 'true' ? remoteInstancesHelper.remote_instance.mongodb.psmdb_4_2.port : codeceptjsConfig.config.helpers.MongoDBHelper.port),
     username: codeceptjsConfig.config.helpers.MongoDBHelper.username,
     password: codeceptjsConfig.config.helpers.MongoDBHelper.password,
   };
@@ -97,7 +97,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T289 Verify Whats New link is presented on Update Widget @ami-upgrade @pre-upgrade @pmm-upgrade',
+  'PMM-T289 Verify Whats New link is presented on Update Widget @ovf-upgrade @ami-upgrade @pre-upgrade @pmm-upgrade',
   async ({ I, homePage }) => {
     const locators = homePage.getLocators(versionMinor);
 
@@ -115,7 +115,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T288 Verify user can see Update widget before upgrade [critical] @pre-upgrade @ami-upgrade @pmm-upgrade',
+  'PMM-T288 Verify user can see Update widget before upgrade [critical] @pre-upgrade @ovf-upgrade @ami-upgrade @pmm-upgrade',
   async ({ I, homePage }) => {
     I.amOnPage(homePage.url);
     await homePage.verifyPreUpdateWidgetIsPresent(versionMinor);
@@ -123,7 +123,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T391 Verify user is able to create and set custom home dashboard @pre-upgrade @ami-upgrade @pmm-upgrade',
+  'PMM-T391 Verify user is able to create and set custom home dashboard @pre-upgrade @ovf-upgrade @ami-upgrade @pmm-upgrade',
   async ({
     I, grafanaAPI, dashboardPage, searchDashboardsModal,
   }) => {
@@ -144,7 +144,7 @@ Scenario(
 );
 
 Scenario(
-  'Verify user is able to set custom Settings like Data_retention, Resolution @pre-upgrade @ami-upgrade @pmm-upgrade',
+  'Verify user is able to set custom Settings like Data_retention, Resolution @pre-upgrade @ovf-upgrade @ami-upgrade @pmm-upgrade',
   async ({ settingsAPI, I }) => {
     const body = {
       telemetry_enabled: true,
@@ -270,7 +270,7 @@ if (versionMinor >= 21) {
 }
 
 Scenario(
-  'Verify user can create Remote Instances before upgrade @pre-upgrade @ami-upgrade @pmm-upgrade',
+  'Verify user can create Remote Instances before upgrade @pre-upgrade @ovf-upgrade @ami-upgrade @pmm-upgrade',
   async ({ addInstanceAPI }) => {
     // Adding instances for monitoring
     for (const type of Object.values(remoteInstancesHelper.instanceTypes)) {
@@ -286,7 +286,7 @@ Scenario(
 
 if (versionMinor < 16 && versionMinor >= 10) {
   Scenario(
-    'PMM-T720 Verify Platform registration for PMM before 2.16.0 @pre-upgrade @ami-upgrade @pmm-upgrade',
+    'PMM-T720 Verify Platform registration for PMM before 2.16.0 @pre-upgrade @ovf-upgrade @ami-upgrade @pmm-upgrade',
     async ({ I }) => {
       const message = 'Please upgrade PMM to v2.16 or higher to use the new Percona Platform registration flow.';
       const body = {
@@ -313,7 +313,7 @@ if (versionMinor < 16 && versionMinor >= 10) {
 
 if (iaReleased) {
   Scenario.skip(
-    'PMM-T577 Verify user is able to see IA alerts before upgrade @pre-upgrade @ami-upgrade @pmm-upgrade',
+    'PMM-T577 Verify user is able to see IA alerts before upgrade @pre-upgrade @ovf-upgrade @ami-upgrade @pmm-upgrade',
     async ({
       settingsAPI, rulesAPI, alertsAPI,
     }) => {
@@ -328,7 +328,7 @@ if (iaReleased) {
 
 if (versionMinor >= 13) {
   Data(clientDbServices).Scenario(
-    'Adding annotation before upgrade At service Level @ami-upgrade @pre-upgrade @pmm-upgrade',
+    'Adding annotation before upgrade At service Level @ami-upgrade @ovf-upgrade @pre-upgrade @pmm-upgrade',
     async ({
       annotationAPI, inventoryAPI, current,
     }) => {
@@ -440,7 +440,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T3 Verify user is able to Upgrade PMM version [blocker] @pmm-upgrade @ami-upgrade  ',
+  'PMM-T3 Verify user is able to Upgrade PMM version [blocker] @pmm-upgrade @ovf-upgrade @ami-upgrade  ',
   async ({ I, homePage }) => {
     I.amOnPage(homePage.url);
     await homePage.upgradePMM(versionMinor);
@@ -458,7 +458,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T391 Verify that custom home dashboard stays as home dashboard after upgrade @post-upgrade @ami-upgrade @pmm-upgrade',
+  'PMM-T391 Verify that custom home dashboard stays as home dashboard after upgrade @post-upgrade @ovf-upgrade @ami-upgrade @pmm-upgrade',
   async ({ I, grafanaAPI, dashboardPage }) => {
     I.amOnPage('');
     dashboardPage.waitForDashboardOpened();
@@ -470,7 +470,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T998 - Verify dashboard folders after upgrade @pmm-upgrade @ami-upgrade @post-upgrade',
+  'PMM-T998 - Verify dashboard folders after upgrade @pmm-upgrade @ovf-upgrade @ami-upgrade @post-upgrade',
   async ({
     I, searchDashboardsModal, grafanaAPI, homePage,
   }) => {
@@ -485,7 +485,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T1091 - Verify PMM Dashboards folders are correct @pmm-upgrade @ami-upgrade @post-upgrade',
+  'PMM-T1091 - Verify PMM Dashboards folders are correct @pmm-upgrade @ovf-upgrade @ami-upgrade @post-upgrade',
   async ({
     I, searchDashboardsModal, grafanaAPI, homePage,
   }) => {
@@ -508,7 +508,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T1003 - Verify UI upgrade with Custom dashboard @pmm-upgrade @ami-upgrade @post-upgrade',
+  'PMM-T1003 - Verify UI upgrade with Custom dashboard @pmm-upgrade @ovf-upgrade @ami-upgrade @post-upgrade',
   async ({
     I, searchDashboardsModal, grafanaAPI, homePage,
   }) => {
@@ -647,7 +647,7 @@ if (versionMinor >= 16) {
 
 if (iaReleased) {
   Scenario.skip(
-    'PMM-T577 Verify user can see IA alerts after upgrade @ami-upgrade @pmm-upgrade',
+    'PMM-T577 Verify user can see IA alerts after upgrade @ovf-upgrade @ami-upgrade @pmm-upgrade',
     async ({
       I, alertsPage, alertsAPI,
     }) => {
@@ -665,7 +665,7 @@ if (iaReleased) {
   );
 } else {
   Scenario(
-    'PMM-T531 Verify IA is disabled by default after upgrading from older PMM version @post-upgrade @ami-upgrade @pmm-upgrade',
+    'PMM-T531 Verify IA is disabled by default after upgrading from older PMM version @post-upgrade @ovf-upgrade @ami-upgrade @pmm-upgrade',
     async ({
       I, pmmSettingsPage,
     }) => {
@@ -678,7 +678,7 @@ if (iaReleased) {
 }
 
 Scenario(
-  'Verify Agents are RUNNING after Upgrade (API) [critical] @post-upgrade @post-client-upgrade @ami-upgrade @pmm-upgrade',
+  'Verify Agents are RUNNING after Upgrade (API) [critical] @post-upgrade @post-client-upgrade @ovf-upgrade @ami-upgrade @pmm-upgrade',
   async ({ inventoryAPI }) => {
     for (const service of Object.values(remoteInstancesHelper.serviceTypes)) {
       if (service) {
@@ -692,7 +692,7 @@ Scenario(
 );
 
 Scenario(
-  'Verify user can see Update widget [critical] @post-upgrade @ami-upgrade @pmm-upgrade',
+  'Verify user can see Update widget [critical] @post-upgrade @ovf-upgrade @ami-upgrade @pmm-upgrade',
   async ({ I, homePage }) => {
     I.amOnPage(homePage.url);
     await homePage.verifyPostUpdateWidgetIsPresent();
@@ -700,7 +700,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T262 Open PMM Settings page and verify DATA_RETENTION value is set to 2 days, Custom Resolution is still preserved after upgrade @ami-upgrade @post-upgrade @pmm-upgrade',
+  'PMM-T262 Open PMM Settings page and verify DATA_RETENTION value is set to 2 days, Custom Resolution is still preserved after upgrade @ovf-upgrade @ami-upgrade @post-upgrade @pmm-upgrade',
   async ({ I, pmmSettingsPage }) => {
     const advancedSection = pmmSettingsPage.sectionTabsList.advanced;
     const metricResoltionSection = pmmSettingsPage.sectionTabsList.metrics;
@@ -720,7 +720,7 @@ Scenario(
 );
 
 Scenario(
-  'Verify user can see News Panel @post-upgrade @ami-upgrade @pmm-upgrade  ',
+  'Verify user can see News Panel @post-upgrade @ovf-upgrade @ami-upgrade @pmm-upgrade  ',
   async ({ I, homePage }) => {
     I.amOnPage(homePage.url);
     I.waitForVisible(homePage.fields.newsPanelTitleSelector, 30);
@@ -732,7 +732,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T424 Verify PT Summary Panel is available after Upgrade @post-upgrade @ami-upgrade @post-client-upgrade @pmm-upgrade',
+  'PMM-T424 Verify PT Summary Panel is available after Upgrade @post-upgrade @ovf-upgrade @ami-upgrade @post-client-upgrade @pmm-upgrade',
   async ({ I, dashboardPage }) => {
     const filter = 'Node Name';
 
@@ -747,7 +747,7 @@ Scenario(
 );
 
 Scenario(
-  'Verify Agents are RUNNING after Upgrade (UI) [critical] @ami-upgrade @post-upgrade @post-client-upgrade @pmm-upgrade',
+  'Verify Agents are RUNNING after Upgrade (UI) [critical] @ovf-upgrade @ami-upgrade @post-upgrade @post-client-upgrade @pmm-upgrade',
   async ({ I, pmmInventoryPage }) => {
     for (const service of Object.values(remoteInstancesHelper.upgradeServiceNames)) {
       if (service) {
@@ -759,7 +759,7 @@ Scenario(
 );
 
 Scenario(
-  'Verify Agents are Running and Metrics are being collected Post Upgrade (UI) [critical] @ami-upgrade @post-client-upgrade @post-upgrade @pmm-upgrade',
+  'Verify Agents are Running and Metrics are being collected Post Upgrade (UI) [critical] @ovf-upgrade @ami-upgrade @post-client-upgrade @post-upgrade @pmm-upgrade',
   async ({ grafanaAPI }) => {
     const metrics = Object.keys(remoteInstancesHelper.upgradeServiceMetricNames);
 
@@ -776,7 +776,7 @@ Scenario(
 );
 
 Data(clientDbServices).Scenario(
-  'Check Metrics for Client Nodes [critical] @post-client-upgrade  @ami-upgrade @post-upgrade @post-client-upgrade @pmm-upgrade',
+  'Check Metrics for Client Nodes [critical] @post-client-upgrade  @ovf-upgrade @ami-upgrade @post-upgrade @post-client-upgrade @pmm-upgrade',
   async ({
     inventoryAPI, grafanaAPI, current,
   }) => {
@@ -789,7 +789,7 @@ Data(clientDbServices).Scenario(
 );
 
 Scenario(
-  'Verify QAN has specific filters for Remote Instances after Upgrade (UI) @ami-upgrade @post-client-upgrade @post-upgrade @pmm-upgrade',
+  'Verify QAN has specific filters for Remote Instances after Upgrade (UI) @ovf-upgrade @ami-upgrade @post-client-upgrade @post-upgrade @pmm-upgrade',
   async ({
     I, qanPage, qanFilters, qanOverview,
   }) => {
@@ -813,7 +813,7 @@ Scenario(
 );
 
 Scenario(
-  'Verify Metrics from custom queries for mysqld_exporter after upgrade (UI) @post-client-upgrade @post-upgrade @ami-upgrade @pmm-upgrade',
+  'Verify Metrics from custom queries for mysqld_exporter after upgrade (UI) @post-client-upgrade @post-upgrade @ovf-upgrade @ami-upgrade @pmm-upgrade',
   async ({ grafanaAPI }) => {
     const metricName = 'mysql_performance_schema_memory_summary_current_bytes';
 
@@ -822,7 +822,7 @@ Scenario(
 );
 
 Scenario(
-  'Verify textfile collector extend metrics is still collected post upgrade (UI) @post-client-upgrade @post-upgrade @ami-upgrade @pmm-upgrade',
+  'Verify textfile collector extend metrics is still collected post upgrade (UI) @post-client-upgrade @post-upgrade @ovf-upgrade @ami-upgrade @pmm-upgrade',
   async ({ grafanaAPI }) => {
     const metricName = 'node_role';
 
@@ -840,7 +840,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T102 Verify Custom Prometheus Configuration File is still available at targets after Upgrade @ami-upgrade @post-upgrade @pmm-upgrade',
+  'PMM-T102 Verify Custom Prometheus Configuration File is still available at targets after Upgrade @ovf-upgrade @ami-upgrade @post-upgrade @pmm-upgrade',
   async ({ I }) => {
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
 
@@ -856,7 +856,7 @@ Scenario(
 
 if (versionMinor >= 13) {
   Data(clientDbServices).Scenario(
-    'Verify added Annotations at service level, also available post upgrade @ami-upgrade @post-client-upgrade @post-upgrade @pmm-upgrade',
+    'Verify added Annotations at service level, also available post upgrade @ovf-upgrade @ami-upgrade @post-client-upgrade @post-upgrade @pmm-upgrade',
     async ({
       I, dashboardPage, current, inventoryAPI,
     }) => {
