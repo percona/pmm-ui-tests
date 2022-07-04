@@ -14,6 +14,11 @@ module.exports = {
       queryAnalytics: '//div[a/span[text()="Query Analytics"]]',
     },
   },
+  elements: {
+    qanContainer: '.query-analytics-data',
+    qanRow: 'div[role="row"]',
+    noQueryAvailable: locate('h1').withText('No queries available for this combination of filters in the selected time frame'),
+  },
 
   waitForOpened() {
     I.waitForElement(this.fields.qanTitle, 5);
