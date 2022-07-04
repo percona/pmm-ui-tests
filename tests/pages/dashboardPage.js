@@ -477,6 +477,7 @@ module.exports = {
   },
   mysqlUserDetailsDashboard: {
     url: 'graph/d/mysql-user/mysql-user-details?orgId=1&refresh=1m&from=now-5m&to=now',
+    clearUrl: 'graph/d/mysql-user/mysql-user-details',
     metrics: [
       'Active Users',
       'Lost Connections',
@@ -550,6 +551,7 @@ module.exports = {
   },
   mySQLInstanceOverview: {
     url: 'graph/d/mysql-instance-overview/mysql-instances-overview?orgId=1&from=now-2m&to=now&refresh=1m',
+    clearUrl: 'graph/d/mysql-instance-overview/mysql-instances-overview',
     metrics: [
       'Services',
       'Min MySQL Uptime',
@@ -632,6 +634,7 @@ module.exports = {
   },
   mysqlInstancesCompareDashboard: {
     url: 'graph/d/mysql-instance-compare/mysql-instances-compare?orgId=1&refresh=1m&from=now-5m&to=now',
+    clearUrl: 'graph/d/mysql-instance-compare/mysql-instances-compare',
     metrics: [
       'Service Info',
       'MySQL Uptime',
@@ -669,6 +672,7 @@ module.exports = {
   },
   groupReplicationDashboard: {
     url: 'graph/d/mysql-group-replicaset-summary/mysql-group-replication-summary?orgId=1&refresh=1m',
+    clearUrl: 'graph/d/mysql-group-replicaset-summary/mysql-group-replication-summary',
     metrics: [
       'Group Replication Service States',
       'PRIMARY Service',
@@ -689,6 +693,7 @@ module.exports = {
   },
   mysqlPXCGaleraNodeSummaryDashboard: {
     url: 'graph/d/pxc-node-summary/pxc-galera-node-summary?orgId=1&refresh=1m',
+    clearUrl: 'graph/d/pxc-node-summary/pxc-galera-node-summary',
     metrics: [
       'Ready to Accept Queries',
       'Local State',
@@ -709,8 +714,9 @@ module.exports = {
       'Galera Network Usage Hourly',
     ],
   },
-  mysqlPXCGaleraNodesSummaryDashboard: {
+  mysqlPXCGaleraNodesCompareDashboard: {
     url: 'graph/d/pxc-nodes-compare/pxc-galera-nodes-compare?orgId=1&refresh=1m',
+    clearUrl: 'graph/d/pxc-nodes-compare/pxc-galera-nodes-compare',
     metrics: [
       'Ready to Accept Queries',
       'Local State',
@@ -845,9 +851,9 @@ module.exports = {
     panelLoading: locate('div').withAttr({ class: 'panel-loading' }),
     postgreSQLServiceSummaryContent: locate('pre').withText('Detected PostgreSQL version:'),
     reportTitleWithNA:
-      locate('.panel-title').inside(locate('.panel-container').withDescendant('//div[contains(text(),"N/A")]')),
+      locate('.panel-title').inside(locate('.panel-container').withDescendant('//span[contains(text(),"N/A")]')),
     reportTitleWithNoData:
-      locate('.panel-title').inside(locate('.panel-container').withDescendant('//div[contains(text(),"No data")]')),
+      locate('.panel-title').inside(locate('.panel-container').withDescendant('//span[contains(text(),"No data")]')),
     rootUser: '//div[contains(text(), "root")]',
     serviceSummary: locate('a').withText('Service Summary'),
     timeRangePickerButton: '.btn.navbar-button.navbar-button--tight',

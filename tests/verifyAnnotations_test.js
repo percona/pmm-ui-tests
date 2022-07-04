@@ -21,11 +21,18 @@ Data(annotation).Scenario(
     I, dashboardPage, pmmInventoryPage, annotationAPI, inventoryAPI, current,
   }) => {
     const { annotationName } = current;
+    let service_response;
 
     I.amOnPage(pmmInventoryPage.url);
     I.waitForVisible(pmmInventoryPage.fields.nodesLink, 30);
-    const service_response = await inventoryAPI.apiGetNodeInfoForAllNodesByServiceName(current.service_type, current.service);
-    const serviceName = service_response[0].service_name;
+
+    if (current.service !== 'pmm-server') {
+      service_response = await inventoryAPI.apiGetNodeInfoByServiceName(current.service_type, current.service, 'pmm-server');
+    } else {
+      service_response = await inventoryAPI.apiGetNodeInfoByServiceName(current.service_type, current.service);
+    }
+
+    const serviceName = service_response.service_name;
     const nodeID = await pmmInventoryPage.getNodeId(serviceName);
     const nodeName = await inventoryAPI.getNodeName(nodeID);
 
