@@ -2,7 +2,7 @@ const assert = require('assert');
 
 Feature('Inventory page');
 
-Before(async ({ I }) => {
+Before(async ({ I, homePage }) => {
   await I.Authorize();
 });
 
@@ -173,5 +173,43 @@ Scenario(
 
       assert.fail(`These services do not have RUNNING state: \n ${JSON.stringify(servicesNotRunning, null, 2)}`);
     }
+  },
+);
+
+Scenario(
+  'PMM-T1226 - Verify Agents has process_exec_path option on Inventory page @inventory @exporters @pgsm-pmm-integration',
+  async ({ I, pmmInventoryPage }) => {
+    I.amOnPage(pmmInventoryPage.url);
+    await I.waitForVisible(pmmInventoryPage.fields.agentsLink, 20);
+    I.click(pmmInventoryPage.fields.agentsLink);
+    await I.waitForVisible(pmmInventoryPage.fields.tableRow);
+    const agentTextValues = await I.grabTextFromAll(pmmInventoryPage.fields.processExecPathExporters);
+
+    agentTextValues.forEach((value) => {
+      if (!value.toLowerCase().includes('qan')) {
+        assert.ok(value.includes('process_exec_path'), `process_exec_path is not present for exporter ${value}`);
+        const newValue = value.replace('process_exec_path:', '').trim();
+
+        assert.ok(newValue.length, `process_exec_path value is empty for ${value}`);
+      }
+    });
+  },
+);
+
+Scenario(
+  'PMM-T1225 - Verify summary file includes process_exec_path for agents @inventory @exporters @pgsm-pmm-integration @cli',
+  async ({ I }) => {
+    const response = await I.verifyCommand('pmm-admin summary');
+    const statusFile = JSON.parse(await I.readFileInZipArchive(response.split(' ')[0], 'client/status.json'));
+    const exporters = statusFile.agents_info.filter((agent) => !agent.agent_type.toLowerCase().includes('qan'));
+
+    exporters.forEach((agent) => {
+      if (agent.process_exec_path) {
+        I.say(`process_exec_path for agent ${agent.agent_type} is ${agent.process_exec_path}`);
+        assert.ok(agent.process_exec_path.length, `Process exec path for ${agent.agent_type} is empty`);
+      } else {
+        assert.fail(`Process exec path is not present for ${agent.agent_type}`);
+      }
+    });
   },
 );

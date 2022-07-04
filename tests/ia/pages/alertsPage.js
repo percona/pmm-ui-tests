@@ -14,7 +14,7 @@ module.exports = {
     stateCell: (alertName) => `${alertRow(alertName)}/td[3]`,
     severityCell: (alertName) => `${alertRow(alertName)}/td[2]`,
     criticalSeverity: '//td[2]/span[text()="Critical"]',
-    highSeverity: '//td[2]/span[text()="High"]',
+    errorSeverity: '//td[2]/span[text()="Error"]',
     noticeSeverity: '//td[2]/span[text()="Notice"]',
     warningSeverity: '//td[2]/span[text()="Warning"]',
     columnHeaderLocator: (columnHeaderText) => `//th[text()="${columnHeaderText}"]`,
@@ -38,7 +38,7 @@ module.exports = {
   },
   colors: {
     critical: 'rgb(212, 74, 58)',
-    high: 'rgb(235, 123, 24)',
+    error: 'rgb(235, 123, 24)',
     notice: 'rgb(50, 116, 217)',
     warning: 'rgb(236, 187, 19)',
     silence: 'rgb(204, 204, 220)',
@@ -95,7 +95,7 @@ module.exports = {
   async checkAllAlertsColor(expectedStates) {
     const alertsStates = await I.grabTextFromAll('//td[3]');
     const criticalColor = await I.grabCssPropertyFrom(this.elements.criticalSeverity, 'color');
-    const highColor = await I.grabCssPropertyFrom(this.elements.highSeverity, 'color');
+    const errorColor = await I.grabCssPropertyFrom(this.elements.errorSeverity, 'color');
     const noticeColor = await I.grabCssPropertyFrom(this.elements.noticeSeverity, 'color');
     const warningColor = await I.grabCssPropertyFrom(this.elements.warningSeverity, 'color');
 
@@ -105,12 +105,12 @@ module.exports = {
 
     if (expectedStates === 'Silenced') {
       assert.equal(criticalColor, this.colors.silence, 'Critical alert is unsilence');
-      assert.equal(highColor, this.colors.silence, 'High alert is unsilence');
+      assert.equal(errorColor, this.colors.silence, 'Error alert is unsilence');
       assert.equal(noticeColor, this.colors.silence, 'Notice alert is unsilence');
       assert.equal(warningColor, this.colors.silence, 'Warning alert is unsilence');
     } else {
       assert.equal(criticalColor, this.colors.critical, 'Critical alert is silence');
-      assert.equal(highColor, this.colors.high, 'High alert is silence');
+      assert.equal(errorColor, this.colors.error, 'Error alert is silence');
       assert.equal(noticeColor, this.colors.notice, 'Notice alert is silence');
       assert.equal(warningColor, this.colors.warning, 'Warning alert is silence');
     }

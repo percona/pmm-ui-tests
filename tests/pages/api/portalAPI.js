@@ -96,6 +96,11 @@ module.exports = {
   },
 
   async oktaDeleteUserById(userId) {
+    this.oktaDeactivateUserById(userId);
+    this.oktaDeactivateUserById(userId);
+  },
+
+  async oktaDeactivateUserById(userId) {
     const oktaUrl = `${this.oktaUrl}api/v1/users/${userId}`;
     const headers = { Authorization: this.oktaToken };
     const response = await I.sendDeleteRequest(oktaUrl, headers);
@@ -129,6 +134,16 @@ module.exports = {
     assert.equal(response.status, 200);
 
     return response.data.orgs;
+  },
+
+  async apiGetOrgDetails(orgId, accessToken) {
+    const apiUrl = `${this.portalBaseUrl}/v1/orgs/${orgId}`;
+    const headers = { Authorization: `Bearer ${accessToken}` };
+    const response = await I.sendGetRequest(apiUrl, headers);
+
+    assert.equal(response.status, 200);
+
+    return response.data;
   },
 
   async apiInviteOrgMember(

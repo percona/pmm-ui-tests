@@ -107,7 +107,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T617 Verify user is able to silence failed check @stt @not-ovf',
+  'PMM-T617 Verify user is able to silence failed check @stt @not-ovf @fb',
   async ({
     I, databaseChecksPage,
   }) => {
@@ -162,7 +162,7 @@ Scenario(
 Scenario.skip(
   'PMM-T757 Verify disabled checks do not execute based on interval value [critical] @stt @not-ovf',
   async ({
-    securityChecksAPI, settingsAPI, databaseChecksPage,
+    securityChecksAPI, settingsAPI,
   }) => {
     await prepareFailedCheck();
     await securityChecksAPI.disableCheck(securityChecksAPI.checkNames.mysqlVersion);

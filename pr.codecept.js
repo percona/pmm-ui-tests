@@ -1,5 +1,7 @@
 const { pageObjects, getChunks } = require('./codeceptConfigHelper');
 
+require('dotenv').config();
+
 process.env.ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'admin';
 
 exports.config = {
@@ -53,6 +55,12 @@ exports.config = {
       require: './tests/helper/file_helper.js',
     },
     FileSystem: {},
+    PerformanceHelper: {
+      require: './tests/helper/performance_helper.js',
+    },
+    BrowserHelper: {
+      require: './tests/helper/browser_helper.js',
+    },
     REST: {
       endpoint: process.env.PMM_UI_URL || 'http://127.0.0.1/',
       timeout: 60000,
@@ -68,6 +76,9 @@ exports.config = {
     },
     ChaiWrapper: {
       require: 'codeceptjs-chai',
+    },
+    LocalStorageHelper: {
+      require: './tests/helper/localStorageHelper.js',
     },
   },
   include: pageObjects,
@@ -105,16 +116,10 @@ exports.config = {
         },
       },
       'mocha-junit-reporter': {
-        stdout: './tests/output/console.log',
+        stdout: '-',
         options: {
           mochaFile: './tests/output/result.xml',
-        },
-      },
-      mochawesome: {
-        stdout: './tests/output/mocharesult.log',
-        options: {
-          reportDir: './tests/output',
-          reportFilename: 'result.html',
+          jenkinsMode: true,
         },
       },
     },

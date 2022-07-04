@@ -96,15 +96,53 @@ Scenario(
     I.amOnPage(homePage.url);
     I.waitForVisible(homePage.fields.checksPanelSelector, 30);
     I.waitForVisible(homePage.fields.sttFailedChecksPanelSelector, 30);
-    const [critical, major, trivial] = (await I.grabTextFrom(homePage.fields.sttFailedChecksPanelSelector)).split(' / ').map(Number);
 
     // Verify failed checks pop up
     I.moveCursorTo(homePage.fields.sttFailedChecksPanelSelector);
     I.waitForVisible(homePage.fields.popUp, 5);
-    assert.ok(
-      (await I.grabTextFrom(homePage.fields.popUp)),
-      `Failed checks: ${critical + major + trivial}Critical – ${critical}Major – ${major}Trivial – ${trivial}`,
-    );
+    const [expectedCritical, expectedError, expectedWarning, expectedTrivial] = (await I.grabTextFrom(homePage.fields.sttFailedChecksPanelSelector)).split(' / ').map(Number);
+
+    const levels = await I.grabTextFromAll(locate('$checks-tooltip-body').find('div'));
+
+    let critical = 0;
+    let error = 0;
+    let warning = 0;
+    let trivial = 0;
+
+    // Calculate severity numbers taken from details popUp
+    levels.forEach((level) => {
+      const [l, num] = level.split(' – ');
+      const sum = parseInt(num, 10);
+
+      switch (l.trim()) {
+        case 'Emergency':
+        case 'Alert':
+        case 'Critical':
+          critical += sum;
+          break;
+        case 'Error':
+          error += sum;
+          break;
+        case 'Warning':
+          warning += sum;
+          break;
+        case 'Notice':
+        case 'Info':
+        case 'Debug':
+          trivial += sum;
+          break;
+        default:
+          assert.fail(`Got unexpected severity level ${l}`);
+      }
+    });
+
+    const errMsg = (severity, actualNum, expectedNum) => `Number of "${severity}" severities "${expectedNum}" does no match calculated number ${actualNum}. \n ${levels}`;
+
+    // Compare calculated numbers with number shown in the panel
+    assert.strictEqual(critical, expectedCritical, errMsg('Critical', critical, expectedCritical));
+    assert.strictEqual(error, expectedError, errMsg('Error', error, expectedError));
+    assert.strictEqual(warning, expectedWarning, errMsg('Warning', warning, expectedWarning));
+    assert.strictEqual(trivial, expectedTrivial, errMsg('Trivial', trivial, expectedTrivial));
 
     // Verify info icon message for Failed check panel
     I.moveCursorTo(homePage.fields.failedChecksPanelInfo);
@@ -118,7 +156,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T241 Verify user can see correct service name for failed checks [critical] @stt',
+  'PMM-T241 Verify user can see correct service name for failed checks [critical] @stt @fb',
   async ({
     I, databaseChecksPage, settingsAPI, securityChecksAPI, inventoryAPI, allChecksPage,
   }) => {

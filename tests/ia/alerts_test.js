@@ -1,7 +1,5 @@
 const assert = require('assert');
 
-const { ncPage } = inject();
-
 let ruleIdForAlerts;
 let ruleIdForNotificationsCheck;
 let webhookChannelId;
@@ -110,8 +108,8 @@ Scenario(
     I.amOnPage(alertsPage.url);
     I.waitForElement(alertsPage.elements.criticalSeverity, 30);
     I.seeCssPropertiesOnElements(alertsPage.elements.criticalSeverity, { color: alertsPage.colors.critical });
-    I.waitForElement(alertsPage.elements.highSeverity, 30);
-    I.seeCssPropertiesOnElements(alertsPage.elements.highSeverity, { color: alertsPage.colors.high });
+    I.waitForElement(alertsPage.elements.errorSeverity, 30);
+    I.seeCssPropertiesOnElements(alertsPage.elements.errorSeverity, { color: alertsPage.colors.error });
     I.waitForElement(alertsPage.elements.noticeSeverity, 30);
     I.seeCssPropertiesOnElements(alertsPage.elements.noticeSeverity, { color: alertsPage.colors.notice });
     I.waitForElement(alertsPage.elements.warningSeverity, 30);
@@ -154,7 +152,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T551 PMM-T569 PMM-T1044 PMM-T1045 PMM-T568 Verify Alerts on Email, Webhook and Pager Duty @ia',
+  'PMM-T551 PMM-T569 PMM-T1044 PMM-T1045 PMM-T568 Verify Alerts on Email, Webhook and Pager Duty @ia @fb',
   async ({ I, rulesAPI, alertsAPI }) => {
     const file = './testdata/ia/scripts/alert.txt';
 
