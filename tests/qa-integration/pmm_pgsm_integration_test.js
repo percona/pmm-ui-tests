@@ -203,7 +203,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T1253 Verify pg_stat_monitor.pgsm_normalized_query settings @pgsm-pmm-integration @nazarov',
+  'PMM-T1253 Verify pg_stat_monitor.pgsm_normalized_query settings @not-ui-pipeline @pgsm-pmm-integration @nazarov',
   async ({
     I, qanPage, qanOverview, qanFilters, qanDetails,
   }) => {
@@ -278,7 +278,7 @@ Scenario(
     await I.verifyCommand(`docker exec ${container_name} true > pmm-agent.log`);
     await I.verifyCommand(`docker exec ${container_name} pmm-admin list | grep "postgresql_pgstatmonitor_agent" | grep "Running"`);
     I.wait(defaultValue);
-    const log = await I.verifyCommand(`docker exec ${container_name} tail -n100 pmm-agent.log`);
+    let log = await I.verifyCommand(`docker exec ${container_name} tail -n100 pmm-agent.log`);
 
     assert.ok(!log.includes('non default bucket time value is not supported, status changed to WAITING'),
       'The log wasn\'t supposed to contain errors regarding bucket time but it does');
@@ -287,6 +287,11 @@ Scenario(
     await I.verifyCommand(`docker exec ${container_name} service postgresql restart`);
     output = await I.pgExecuteQueryOnDemand('SELECT * FROM pg_stat_monitor_settings WHERE name=\'pg_stat_monitor.pgsm_bucket_time\';', connection);
     assert.equal(output.rows[0].value, alteredValue, `The value of 'pg_stat_monitor.pgsm_bucket_time' should be equal to ${alteredValue}`);
+    I.wait(alteredValue);
+    log = await I.verifyCommand(`docker exec ${container_name} tail -n100 pmm-agent.log`);
+
+    assert.ok(log.includes('non default bucket time value is not supported, status changed to WAITING'),
+      'The log was supposed to contain errors regarding bucket time but it doesn\'t');
 
     await I.verifyCommand(`docker exec ${container_name} pmm-admin list | grep "postgresql_pgstatmonitor_agent" | grep "Waiting"`);
   },
