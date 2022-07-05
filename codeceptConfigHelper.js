@@ -37,6 +37,7 @@ module.exports = {
     perconaPlatformPage: './tests/pages/perconaPlatformPage/perconaPlatformPage.js',
     pmmDemoPage: './tests/pages/pmmDemoPage.js',
     pmmInventoryPage: './tests/pages/pmmInventoryPage.js',
+    pmmServerAdminSettingsPage: './tests/pages/pmmServerAdminSettingsPage.js',
     pmmSettingsPage: './tests/pages/pmmSettingsPage.js',
     portalAPI: './tests/pages/api/portalAPI.js',
     qanDetails: './tests/QAN/pages/qanDetailsFragment.js',
@@ -60,6 +61,7 @@ module.exports = {
     qanAPI: './tests/QAN/api/qanAPI.js',
     environmentOverviewPage: './tests/pages/environmentOverviewPage.js',
     tooltips: './tests/helper/tooltipHelper.js',
+    dataSourcePage: './tests/pages/pmmSettingsPages/dataSourcePage.js',
   },
   getChunks: (files) => {
     const dependentTests = files.filter((value) => /PMMSettings|stt|backup|permissions|Azure/.test(value));

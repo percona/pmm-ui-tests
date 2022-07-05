@@ -1,12 +1,17 @@
 const { I } = inject();
 const assert = require('assert');
 const FormData = require('form-data');
+const faker = require('faker');
+
+const rnd = faker.datatype.number();
 
 module.exports = {
   customDashboardName: 'auto-test-dashboard',
   customFolderName: 'auto-test-folder',
+  randomDashboardName: `auto-dashboard-${rnd}`,
+  randomTag: `tag-${rnd}`,
 
-  async createCustomDashboard(name, folderId = 0) {
+  async createCustomDashboard(name, folderId = 0, tags = ['pmm-qa']) {
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
     const body = {
       dashboard: {
@@ -72,7 +77,7 @@ module.exports = {
           to: 'now',
         },
         title: name,
-        tags: ['pmm-qa'],
+        tags,
         version: 0,
       },
       folderId,
@@ -148,7 +153,9 @@ module.exports = {
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
     const resp = await I.sendGetRequest('graph/api/folders', headers);
 
-    return Object.entries(resp.data).filter((folder) => folder.title === name);
+    const result = resp.data.filter((obj) => obj.title === name);
+
+    return result.length > 0 ? result[0] : null;
   },
 
   async deleteFolder(uid) {
@@ -218,6 +225,8 @@ module.exports = {
     const start = new Date().getTime();
     const timout = timeOutInSeconds * 1000;
     const interval = 1;
+
+    await I.say(`Wait ${timeOutInSeconds} seconds for Metrics ${metricName} with filters as ${JSON.stringify(queryBy)} being collected`);
 
     /* eslint no-constant-condition: ["error", { "checkLoops": false }] */
     while (true) {
