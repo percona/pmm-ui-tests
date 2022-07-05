@@ -1,5 +1,3 @@
-const assert = require('assert');
-
 const { searchDashboardsModal } = inject();
 
 const folders = new DataTable(['folderObject']);
