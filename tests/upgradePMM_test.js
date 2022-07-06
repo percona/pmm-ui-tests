@@ -720,7 +720,7 @@ Scenario(
 );
 
 Scenario(
-  'Verify user can see News Panel @post-upgrade @ovf-upgrade @ami-upgrade @pmm-upgrade  ',
+  'Verify user can see News Panel @post-upgrade @ami-upgrade @pmm-upgrade  ',
   async ({ I, homePage }) => {
     I.amOnPage(homePage.url);
     I.waitForVisible(homePage.fields.newsPanelTitleSelector, 30);
