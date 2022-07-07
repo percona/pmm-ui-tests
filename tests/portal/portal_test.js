@@ -60,7 +60,9 @@ Scenario(
       I.seeTextEquals('PMM Server Name *', elements.pmmServerNameFieldLabel);
       I.seeTextEquals('Percona Platform Access Token *', elements.accessTokenLabel);
       I.seeInField(fields.accessToken, '');
-      I.seeAttributesOnElements(elements.getAccessTokenLink, { href: links.portalProfile });
+      const tokenLink = await I.grabAttributeFrom(elements.getAccessTokenLink, 'href');
+
+      assert.ok(tokenLink === links.portalDevProfile || tokenLink === links.portalProfile, 'Get Token button points to wrong address');
       I.seeAttributesOnElements(buttons.connect, { disabled: true });
 
       // Focus on PMM Server Name and Access token fields to verify that fields are required
