@@ -682,7 +682,6 @@ module.exports = {
       'Replication Delay',
       'Transaction Apply Time',
       'Transaction Time Inside the Local Queue',
-      'Transactions',
       'Checked Transactions',
       'Transactions Row Validating',
       'Applied Transactions',
