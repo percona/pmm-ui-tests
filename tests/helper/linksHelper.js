@@ -8,7 +8,7 @@ module.exports = {
   forgotPassword: 'https://okta.percona.com/signin/forgot-password',
   imageRendererPlugin: 'https://www.percona.com/doc/percona-monitoring-and-management/2.x/how-to/render-dashboard-images.html',
   portalProfile: 'https://portal.percona.com/profile',
-  portalDevProfile: 'https://portal-dev.percona.com/profile',
+  portalDevProfile: 'https://platform-dev.percona.com/profile',
   metricsResolutionDocs: 'https://www.percona.com/doc/percona-monitoring-and-management/2.x/how-to/configure.html#server-admin-gui-metrics-resolution',
   dataRetentionDocs: 'https://www.percona.com/doc/percona-monitoring-and-management/2.x/how-to/configure.html#data-retention',
   telemetryDocs: 'https://www.percona.com/doc/percona-monitoring-and-management/2.x/how-to/configure.html#telemetry',
