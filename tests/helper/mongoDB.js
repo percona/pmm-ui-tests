@@ -104,8 +104,7 @@ class MongoDBHelper extends Helper {
    * @param rolesArr
    * @returns {Promise<unknown>}
    */
-  async mongoAddUser(username, password, rolesArr) {
-    const { roles = [{ role: 'userAdminAnyDatabase', db: 'admin' }] } = rolesArr;
+  async mongoAddUser(username, password, roles = [{ db: 'admin', role: 'userAdminAnyDatabase' }]) {
 
     return this.client.db().admin().addUser(username, password, { roles });
   }

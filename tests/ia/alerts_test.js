@@ -108,8 +108,8 @@ Scenario(
     I.amOnPage(alertsPage.url);
     I.waitForElement(alertsPage.elements.criticalSeverity, 30);
     I.seeCssPropertiesOnElements(alertsPage.elements.criticalSeverity, { color: alertsPage.colors.critical });
-    I.waitForElement(alertsPage.elements.highSeverity, 30);
-    I.seeCssPropertiesOnElements(alertsPage.elements.highSeverity, { color: alertsPage.colors.high });
+    I.waitForElement(alertsPage.elements.errorSeverity, 30);
+    I.seeCssPropertiesOnElements(alertsPage.elements.errorSeverity, { color: alertsPage.colors.error });
     I.waitForElement(alertsPage.elements.noticeSeverity, 30);
     I.seeCssPropertiesOnElements(alertsPage.elements.noticeSeverity, { color: alertsPage.colors.notice });
     I.waitForElement(alertsPage.elements.warningSeverity, 30);
