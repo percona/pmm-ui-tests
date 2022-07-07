@@ -682,7 +682,7 @@ module.exports = {
       'Replication Delay',
       'Transaction Apply Time',
       'Transaction Time Inside the Local Queue',
-      'Transactions Details',
+      'Transactions',
       'Checked Transactions',
       'Transactions Row Validating',
       'Applied Transactions',
@@ -897,6 +897,7 @@ module.exports = {
   // introducing methods
   verifyMetricsExistence(metrics) {
     for (const i in metrics) {
+      I.scrollIntoView(this.graphsLocator(metrics[i]));
       I.seeElement(this.graphsLocator(metrics[i]));
     }
   },
