@@ -220,7 +220,9 @@ Scenario(
       const { versionMinor } = homePage.getVersions();
 
       await I.Authorize();
-      I.amOnPage(homePage.url);
+      await I.amOnPage(homePage.url);
+      await I.waitForVisible(homePage.fields.updateWidget.latest.availableVersion);
+      I.say(`Upgrading PMM from the version: ${await I.grabTextFrom(homePage.fields.updateWidget.latest.currentVersion)} to the version: ${await I.grabTextFrom(homePage.fields.updateWidget.latest.availableVersion)}`);
       await homePage.upgradePMM(versionMinor);
     } else {
       I.say('This testcase is for PMM version 2.27.0 and higher');
