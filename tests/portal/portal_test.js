@@ -62,6 +62,7 @@ Scenario(
       I.seeInField(fields.accessToken, '');
       const tokenLink = await I.grabAttributeFrom(elements.getAccessTokenLink, 'href');
 
+      I.say(tokenLink);
       assert.ok(tokenLink === links.portalDevProfile || tokenLink === links.portalProfile, 'Get Token button points to wrong address');
       I.seeAttributesOnElements(buttons.connect, { disabled: true });
 
