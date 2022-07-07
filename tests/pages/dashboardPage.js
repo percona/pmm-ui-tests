@@ -896,7 +896,6 @@ module.exports = {
   // introducing methods
   verifyMetricsExistence(metrics) {
     for (const i in metrics) {
-      I.scrollIntoView(this.graphsLocator(metrics[i]));
       I.seeElement(this.graphsLocator(metrics[i]));
     }
   },
