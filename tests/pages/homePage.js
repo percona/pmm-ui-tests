@@ -85,7 +85,7 @@ module.exports = {
   failedChecksSinglestatsInfoMessage: 'Display the number of Advisors checks identified as failed during its most recent run.',
 
   serviceDashboardLocator: (serviceName) => locate('a').withText(serviceName),
-  isAmiUpgrade: process.env.AMI_UPGRADE_TESTING_INSTANCE === 'true',
+  isAmiUpgrade: process.env.AMI_UPGRADE_TESTING_INSTANCE === 'true' || process.env.OVF_UPGRADE_TESTING_INSTANCE === 'true',
   pmmServerName: process.env.VM_NAME ? process.env.VM_NAME : 'pmm-server',
 
   async open() {
