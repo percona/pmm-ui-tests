@@ -29,7 +29,6 @@ Data(filters).Scenario(
   }) => {
     const environmentName = 'pdpgsql-dev';
 
-    await I.waitForVisible('//*[@data-testid="not_existing_element"]');
     qanFilters.applyFilter(environmentName);
     I.waitForVisible(qanFilters.buttons.showSelected, 30);
 
