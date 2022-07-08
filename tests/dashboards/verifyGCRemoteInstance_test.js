@@ -67,6 +67,7 @@ Data(instances).Scenario(
 
     const instanceDetails = getInstance(instance);
 
+    instanceDetails.serviceName += `-${Math.floor(Math.random() * 100)}`;
     I.amOnPage(remoteInstancesPage.url);
     remoteInstancesPage.waitUntilRemoteInstancesPageLoaded();
     remoteInstancesPage.openAddRemotePage(instanceType);
