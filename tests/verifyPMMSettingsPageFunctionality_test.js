@@ -373,12 +373,12 @@ Scenario(
 
 Scenario(
   'PMM-T486 - Verify Public Address in PMM Settings @settings @nightly',
-  async ({ I, pmmSettingsPage }) => {
+  async ({ I, pmmSettingsPage, settingsAPI }) => {
+    await settingsAPI.changeSettings({ publicAddress: '' });
     await pmmSettingsPage.openAdvancedSettings();
     await pmmSettingsPage.verifyTooltip(pmmSettingsPage.tooltips.advancedSettings.publicAddress);
 
     await I.waitForVisible(pmmSettingsPage.fields.publicAddressInput, 30);
-    await pmmSettingsPage.clearPublicAddress();
     I.seeElement(pmmSettingsPage.fields.publicAddressButton);
     I.click(pmmSettingsPage.fields.publicAddressButton);
     const publicAddressValue = await I.grabValueFrom(pmmSettingsPage.fields.publicAddressInput);
