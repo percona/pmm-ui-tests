@@ -78,8 +78,8 @@ jobs:
         run: |
           wget https://repo.percona.com/apt/percona-release_latest.generic_all.deb
           sudo dpkg -i percona-release_latest.generic_all.deb
-          apt update
-          apt install -y pmm2-client
+          sudo apt update
+          sudo apt install -y pmm2-client
           bash ./pmm-qa/pmm-tests/pmm-framework.sh \
             --download \
             ${{ env.PMM_CLIENTS }} \
