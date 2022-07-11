@@ -76,7 +76,7 @@ jobs:
 
       - name: Setup Client for PMM-Server
         run: |
-          bash /srv/pmm-qa/pmm-tests/pmm-framework.sh \
+          bash ./pmm-qa/pmm-tests/pmm-framework.sh \
             --download \
             ${{ env.PMM_CLIENTS }} \
             --pmm2 \
