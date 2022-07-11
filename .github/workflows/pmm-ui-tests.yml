@@ -19,6 +19,10 @@ on:
       pmm_ui_tests_tag:
         description: 'Tag to run only specific part of tests'
         required: false
+      pmm_clients:
+        description: 'Clients for pmm-server'
+        default: '--addclient=ps,1'
+        required: true
 
 jobs:
   tests:
@@ -30,6 +34,7 @@ jobs:
 
       UI_TESTS_TAG: ${{ github.event.inputs.pmm_ui_tests_tag }}
       UI_TESTS_BRANCH: ${{ github.event.inputs.ui_tests_branch }}
+      PMM_CLIENTS: ${{ github.event.inputs.pmm_clients }}
       OAUTH_ISSUER_URL: 'https://id-dev.percona.com/oauth2/aus15pi5rjdtfrcH51d7'
 
     steps:
@@ -68,6 +73,14 @@ jobs:
         run: |
           cd ./pmm-ui-tests
           docker-compose up -d
+
+      - name: Setup Client for PMM-Server
+        run: |
+          bash /srv/pmm-qa/pmm-tests/pmm-framework.sh \
+            --download \
+            ${{ env.PMM_CLIENTS }} \
+            --pmm2 \
+            --pmm2-server-ip=127.0.0.1
 
       - name: Execute All UI Tests
         id: pmm-ui-tests-all
