@@ -56,6 +56,14 @@ jobs:
           repository: percona/pmm-ui-tests
           path: ./pmm-ui-tests
 
+      - name: Checkout pmm-qa Repo
+        uses: percona-platform/checkout@v2
+        with:
+          token: ${{ secrets.ROBOT_TOKEN }}
+          repository: percona/pmm-qa
+          path: ./pmm-qa
+          ref: main
+
       - name: Compose PMM-Sever
         run: |
           cd ./pmm-ui-tests
