@@ -101,6 +101,44 @@ Scenario(
   },
 );
 
+Data(filters).Scenario(
+  'PMM-T1261 - Verify the "Command type" filter for Postgres @not-ui-pipeline @pgsm-pmm-integration',
+  async ({
+    I, qanPage, qanOverview, qanFilters, current, adminPage,
+  }) => {
+    const serviceName = pgsm_service_name;
+    const {
+      filterSection, filterToApply, searchValue,
+    } = current;
+
+    I.amOnPage(qanPage.url);
+    qanOverview.waitForOverviewLoaded();
+    qanFilters.applyFilter(serviceName);
+    qanFilters.applyFilter(database);
+    I.waitForVisible(qanFilters.buttons.showSelected, 30);
+
+    qanFilters.applyFilterInSection(filterSection, filterToApply);
+  },
+);
+
+Scenario(
+  'PMM-T1262 - Verify Postgresql Dashboard Instance Summary has Data @not-ui-pipeline @pgsm-pmm-integration',
+  async ({
+    I, dashboardPage, adminPage,
+  }) => {
+    I.amOnPage(dashboardPage.postgresqlInstanceSummaryDashboard.url);
+    dashboardPage.waitForDashboardOpened();
+    await dashboardPage.applyFilter('Service Name', pgsm_service_name);
+    await dashboardPage.expandEachDashboardRow();
+    I.click(adminPage.fields.metricTitle);
+    adminPage.performPageDown(5);
+    adminPage.performPageUp(5);
+    dashboardPage.verifyMetricsExistence(dashboardPage.postgresqlInstanceSummaryDashboard.metrics);
+    await dashboardPage.verifyThereAreNoGraphsWithNA();
+    await dashboardPage.verifyThereAreNoGraphsWithoutData(1);
+  },
+);
+
 Scenario(
   'PMM-T1259 - Adding Load to Postgres test database and verifying PMM-Agent and PG_STAT_MONITOR QAN agent is in running status @pgsm-pmm-integration @not-ui-pipeline',
   async ({ I }) => {
@@ -164,43 +202,5 @@ Scenario(
         }
       }
     }
-  },
-);
-
-Data(filters).Scenario(
-  'PMM-T1261 - Verify the "Command type" filter for Postgres @not-ui-pipeline @pgsm-pmm-integration',
-  async ({
-    I, qanPage, qanOverview, qanFilters, current, adminPage,
-  }) => {
-    const serviceName = pgsm_service_name;
-    const {
-      filterSection, filterToApply, searchValue,
-    } = current;
-
-    I.amOnPage(qanPage.url);
-    qanOverview.waitForOverviewLoaded();
-    qanFilters.applyFilter(serviceName);
-    qanFilters.applyFilter(database);
-    I.waitForVisible(qanFilters.buttons.showSelected, 30);
-
-    qanFilters.applyFilterInSection(filterSection, filterToApply);
-  },
-);
-
-Scenario(
-  'PMM-T1262 - Verify Postgresql Dashboard Instance Summary has Data @not-ui-pipeline @pgsm-pmm-integration',
-  async ({
-    I, dashboardPage, adminPage,
-  }) => {
-    I.amOnPage(dashboardPage.postgresqlInstanceSummaryDashboard.url);
-    dashboardPage.waitForDashboardOpened();
-    await dashboardPage.applyFilter('Service Name', pgsm_service_name);
-    await dashboardPage.expandEachDashboardRow();
-    I.click(adminPage.fields.metricTitle);
-    adminPage.performPageDown(5);
-    adminPage.performPageUp(5);
-    dashboardPage.verifyMetricsExistence(dashboardPage.postgresqlInstanceSummaryDashboard.metrics);
-    await dashboardPage.verifyThereAreNoGraphsWithNA();
-    await dashboardPage.verifyThereAreNoGraphsWithoutData(1);
   },
 );
