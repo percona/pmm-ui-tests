@@ -30,7 +30,8 @@ Before(async ({ I }) => {
   await I.Authorize();
 });
 
-Scenario(
+// Skipped due to https://jira.percona.com/browse/PMM-10308.
+xScenario(
   'PMM-T317 - Open the MySQL Instance Summary Dashboard and verify Metrics are present and graphs are displayed @nightly @dashboards',
   async ({
     I, adminPage, dashboardPage,
