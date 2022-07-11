@@ -177,7 +177,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T1226 - Verify Agents has process_exec_path option on Inventory page @inventory @nightly @exporters @pgsm-pmm-integration',
+  'PMM-T1226 - Verify Agents has process_exec_path option on Inventory page @inventory @exporters @pgsm-pmm-integration',
   async ({ I, pmmInventoryPage }) => {
     I.amOnPage(pmmInventoryPage.url);
     await I.waitForVisible(pmmInventoryPage.fields.agentsLink, 20);
