@@ -48,8 +48,6 @@ Data(annotation).Scenario(
       await dashboardPage.applyFilter('Service Name', serviceName);
       dashboardPage.verifyAnnotationsLoaded(annotationName, 1);
     }
-
-    I.seeElement(dashboardPage.annotationText(annotationName), 10);
   },
 );
 
@@ -86,7 +84,7 @@ Scenario(
 
     I.amOnPage(`${dashboardPage.processDetailsDashboard.url}`);
     dashboardPage.waitForDashboardOpened();
-    dashboardPage.verifyAnnotationsLoaded('pmm-annotate-without-tags', 1);
+    await dashboardPage.verifyAnnotationsLoaded('pmm-annotate-without-tags', 1);
     I.seeElement(dashboardPage.annotationText(annotationTitle));
   },
 );
@@ -104,7 +102,7 @@ Scenario(
     );
     I.amOnPage(`${dashboardPage.processDetailsDashboard.url}`);
     dashboardPage.waitForDashboardOpened();
-    dashboardPage.verifyAnnotationsLoaded('pmm-annotate-tags', 2);
+    await dashboardPage.verifyAnnotationsLoaded('pmm-annotate-tags', 2);
     I.seeElement(dashboardPage.annotationText(annotationTitle2));
     I.seeElement(dashboardPage.annotationTagText(annotationTag1));
     I.seeElement(dashboardPage.annotationTagText(annotationTag2));
