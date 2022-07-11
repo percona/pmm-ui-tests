@@ -77,7 +77,7 @@ jobs:
       - name: Setup Client for PMM-Server
         run: |
           wget https://repo.percona.com/apt/percona-release_latest.generic_all.deb
-          dpkg -i percona-release_latest.generic_all.deb
+          sudo dpkg -i percona-release_latest.generic_all.deb
           apt update
           apt install -y pmm2-client
           bash ./pmm-qa/pmm-tests/pmm-framework.sh \
