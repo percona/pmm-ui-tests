@@ -83,13 +83,14 @@ jobs:
           set -o errexit
           set -o xtrace
           export PATH=\$PATH:/usr/sbin
-          sudo ./pmm-qa/pmm-tests/pmm-framework.sh \
+          sudo sh ./pmm-qa/pmm-tests/pmm-framework.sh \
             --download \
             ${{ env.PMM_CLIENTS }} \
             --pmm2 \
             --pmm2-server-ip=127.0.0.1
           sleep 30
           pmm-admin list
+        shell: bash
 
       - name: Execute All UI Tests
         id: pmm-ui-tests-all
