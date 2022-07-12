@@ -82,7 +82,7 @@ jobs:
           sudo apt install -y pmm2-client
           set -o errexit
           set -o xtrace
-          sudo ./pmm-qa/pmm-tests/pmm-framework.sh \
+          sudo bash ./pmm-qa/pmm-tests/pmm-framework.sh \
             --download \
             ${{ env.PMM_CLIENTS }} \
             --pmm2 \
