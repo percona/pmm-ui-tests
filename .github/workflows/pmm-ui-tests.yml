@@ -85,7 +85,6 @@ jobs:
             ${{ env.PMM_CLIENTS }} \
             --pmm2 \
             --pmm2-server-ip=127.0.0.1
-          sudo pmm-agent --config-file=/usr/local/percona/pmm2/config/pmm-agent.yaml
           sleep 30
           pmm-admin list
 
