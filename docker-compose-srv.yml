@@ -15,10 +15,7 @@ services:
       - PERCONA_TEST_VERSION_SERVICE_URL=https://check-dev.percona.com/versions/v1
       - PERCONA_TEST_TELEMETRY_INTERVAL=10s
       - PERCONA_TEST_TELEMETRY_RETRY_BACKOFF=10s
-      - PERCONA_TEST_PMM_CLICKHOUSE_ADDR=external-clickhouse:9000
-      - PERCONA_TEST_PMM_CLICKHOUSE_DATABASE=pmm
-      - PERCONA_TEST_PMM_CLICKHOUSE_POOL_SIZE=1
-      - PERCONA_TEST_PMM_CLICKHOUSE_BLOCK_SIZE=65000
+      - PMM_ADMIN_PASSWORD=new-flag-password
     volumes:
       - /srv:/testdata/srv/
 
@@ -30,7 +27,7 @@ services:
         condition: service_healthy
     environment:
       - PMM_AGENT_SETUP=1
-      - PMM_AGENT_SERVER_ADDRESS=pmm-server-external-clickhouse
+      - PMM_AGENT_SERVER_ADDRESS=pmm-server-srv
       - PMM_AGENT_SERVER_USERNAME=admin
       - PMM_AGENT_SERVER_PASSWORD=admin
       - PMM_AGENT_PORTS_MIN=41000
