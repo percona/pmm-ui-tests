@@ -85,6 +85,8 @@ jobs:
             ${{ env.PMM_CLIENTS }} \
             --pmm2 \
             --pmm2-server-ip=127.0.0.1
+          sleep 10
+          pmm-admin list
 
       - name: Execute All UI Tests
         id: pmm-ui-tests-all
