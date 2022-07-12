@@ -85,7 +85,8 @@ jobs:
             ${{ env.PMM_CLIENTS }} \
             --pmm2 \
             --pmm2-server-ip=127.0.0.1
-          sleep 10
+          pmm-agent --config-file=/usr/local/percona/pmm2/config/pmm-agent.yaml
+          sleep 30
           pmm-admin list
 
       - name: Execute All UI Tests
