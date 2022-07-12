@@ -29,7 +29,6 @@ filters.add(['Command Type', 'UPDATE']);
 filters.add(['Command Type', 'DELETE']);
 filters.add(['Application Name', 'pmm-codeceptjs']);
 filters.add(['Application Name', 'codeceptjs']);
-filters.add(['Database', database]);
 
 Feature('PMM + PGSM Integration Scenarios');
 
@@ -174,10 +173,7 @@ Data(filters).Scenario(
       filterSection, filterToApply, searchValue,
     } = current;
 
-    I.amOnPage(qanPage.url);
-    qanOverview.waitForOverviewLoaded();
-    qanFilters.applyFilter(serviceName);
-    qanFilters.applyFilter(database);
+    I.amOnPage(I.buildUrlWithParams(qanPage.clearUrl, { service_name: pgsm_service_name, database }));
     I.waitForVisible(qanFilters.buttons.showSelected, 30);
 
     qanFilters.applyFilterInSection(filterSection, filterToApply);
@@ -199,5 +195,29 @@ Scenario(
     dashboardPage.verifyMetricsExistence(dashboardPage.postgresqlInstanceSummaryDashboard.metrics);
     await dashboardPage.verifyThereAreNoGraphsWithNA();
     await dashboardPage.verifyThereAreNoGraphsWithoutData(1);
+  },
+);
+
+Scenario(
+  'PMM-T150 - Verify query details section works correctly for PostgreSQL @not-ui-pipeline @pgsm-pmm-integration',
+  async ({
+    I, qanPage, qanOverview, qanFilters, qanDetails,
+  }) => {
+    I.amOnPage(I.buildUrlWithParams(qanPage.clearUrl, { service_name: pgsm_service_name, database, cmd_type: 'SELECT' }));
+    I.waitForVisible(qanFilters.buttons.showSelected, 30);
+    qanOverview.selectRow(2);
+    qanFilters.waitForFiltersToLoad();
+
+    await within(qanDetails.root, () => {
+      I.waitForVisible(qanDetails.buttons.close, 30);
+      I.see('Details', qanDetails.getTabLocator('Details'));
+      I.see('Example', qanDetails.getTabLocator('Example'));
+      I.see('Tables', qanDetails.getTabLocator('Tables'));
+      I.see('Plan', qanDetails.getTabLocator('Plan'));
+    });
+    await qanDetails.verifyDetailsNotEmpty();
+    qanDetails.checkExamplesTab();
+    await qanDetails.checkTablesTab();
+    await qanDetails.checkPlanTabIsEmpty();
   },
 );
