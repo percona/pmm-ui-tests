@@ -9,7 +9,7 @@ BeforeSuite(async ({ I }) => {
 });
 
 AfterSuite(async ({ I }) => {
-  await I.verifyCommand('docker-compose -f docker-compose-clickhouse.yml down -v');
+  await I.verifyCommand('docker-compose -f docker-compose-srv.yml down -v');
 });
 
 Before(async ({ I }) => {
