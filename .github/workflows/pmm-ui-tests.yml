@@ -76,10 +76,11 @@ jobs:
 
       - name: Setup Client for PMM-Server
         run: |
+          sudo su
           wget https://repo.percona.com/apt/percona-release_latest.generic_all.deb
-          sudo dpkg -i percona-release_latest.generic_all.deb
-          sudo apt update
-          sudo apt install -y pmm2-client
+          dpkg -i percona-release_latest.generic_all.deb
+          apt update
+          apt install -y pmm2-client
           set -o errexit
           set -o xtrace
           export PATH=\$PATH:/usr/sbin
