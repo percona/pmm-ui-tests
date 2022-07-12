@@ -80,7 +80,9 @@ jobs:
           sudo dpkg -i percona-release_latest.generic_all.deb
           sudo apt update
           sudo apt install -y pmm2-client
-          export PATH="`pwd`/pmm2-client/bin:$PATH"
+          set -o errexit
+          set -o xtrace
+          export PATH=\$PATH:/usr/sbin
           sudo bash ./pmm-qa/pmm-tests/pmm-framework.sh \
             --download \
             ${{ env.PMM_CLIENTS }} \
