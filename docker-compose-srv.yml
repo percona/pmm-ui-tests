@@ -18,7 +18,7 @@ services:
       - PERCONA_TEST_TELEMETRY_RETRY_BACKOFF=10s
       - PMM_ADMIN_PASSWORD=new-flag-password
     volumes:
-      - /srv:/testdata/srv/2/
+      - ./wrongFolder:/srv
 
   pmm-client:
     image: perconalab/pmm-client:dev-latest
