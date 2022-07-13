@@ -56,7 +56,7 @@ const { versionMinor, patchVersionDiff, majorVersionDiff } = getVersions();
 
 const iaReleased = versionMinor >= 13;
 
-Feature('PMM server Upgrade Tests and Executing test cases related to Upgrade Testing Cycle').retry(1);
+Feature('PMM server Upgrade Tests and Executing test cases related to Upgrade Testing Cycle');
 
 Before(async ({ I }) => {
   await I.Authorize();
