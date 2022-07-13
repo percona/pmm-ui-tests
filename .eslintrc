@@ -33,7 +33,7 @@
         { "includeExports": true }
       ],
     // no-unused-vars doesn't work with typescript
-    "no-unused-vars": "off",
+    "no-unused-vars": "warn",
     // We use a lot of snake case variables in code interacting with API
     "camelcase": ["off"],
     // It's more convinient to declare big helpers functions below the main method
