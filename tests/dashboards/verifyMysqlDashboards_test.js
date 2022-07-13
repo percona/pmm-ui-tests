@@ -30,8 +30,7 @@ Before(async ({ I }) => {
   await I.Authorize();
 });
 
-// Skipped due to https://jira.percona.com/browse/PMM-10308.
-xScenario(
+Scenario(
   'PMM-T317 - Open the MySQL Instance Summary Dashboard and verify Metrics are present and graphs are displayed @nightly @dashboards',
   async ({
     I, adminPage, dashboardPage,
@@ -45,7 +44,8 @@ xScenario(
       I.click(adminPage.fields.metricTitle);
       adminPage.performPageDown(5);
       dashboardPage.verifyMetricsExistence(dashboardPage.mysqlInstanceSummaryDashboard.metrics);
-      await dashboardPage.verifyThereAreNoGraphsWithNA();
+      // Skipped due to https://jira.percona.com/browse/PMM-10308.
+      // await dashboardPage.verifyThereAreNoGraphsWithNA();
       await dashboardPage.verifyThereAreNoGraphsWithoutData(5);
     }
   },
