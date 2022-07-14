@@ -150,6 +150,9 @@ module.exports = {
     returnToMenuButton: locate('span').withText('Return to menu'),
     requiredFieldHostname: locate('$address-field-error-message'),
     requiredFieldPort: locate('$port-field-error-message'),
+    dontTrackingRadio: locate('label').withAttr({ for: 'radio-btn-1' }).withText("Don't track"),
+    pgStatStatementsRadio: locate('label').withAttr({ for: 'radio-btn-2' }).withText('PG Stat Statements'),
+    pgStatMonitorRadio:  locate('label').withAttr({ for: 'radio-btn-3' }).withText('PG Stat Monitor')
   },
 
   async getFileContent(filePath) {
