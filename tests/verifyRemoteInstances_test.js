@@ -216,9 +216,9 @@ Scenario(
     I.amOnPage(remoteInstancesPage.url);
     remoteInstancesPage.waitUntilRemoteInstancesPageLoaded();
     remoteInstancesPage.openAddRemotePage('postgresql');
-   I.click(remoteInstancesPage.fields.addService);
+    I.click(remoteInstancesPage.fields.addService);
     remoteInstancesPage.checkRequiredField();
-    // Verify fields on the page 
+    // Verify fields on the page
     I.waitForVisible(remoteInstancesPage.fields.returnToMenuButton, 30);
     I.waitForVisible(remoteInstancesPage.fields.hostName, 30);
     I.waitForVisible(remoteInstancesPage.fields.serviceName, 30);
@@ -232,9 +232,9 @@ Scenario(
     I.waitForVisible(remoteInstancesPage.fields.cluster, 30);
     I.waitForVisible(remoteInstancesPage.fields.customLabels, 30);
     I.waitForVisible(remoteInstancesPage.fields.skipConnectionCheck, 30);
-    I.waitForVisible(remoteInstancesPage.fields.dontTrackingRadio,30);
-    I.waitForVisible(remoteInstancesPage.fields.pgStatStatementsRadio,30);
-    I.waitForVisible(remoteInstancesPage.fields.pgStatMonitorRadio,30);
+    I.waitForVisible(remoteInstancesPage.fields.dontTrackingRadio, 30);
+    I.waitForVisible(remoteInstancesPage.fields.pgStatStatementsRadio, 30);
+    I.waitForVisible(remoteInstancesPage.fields.pgStatMonitorRadio, 30);
   },
 );
 
