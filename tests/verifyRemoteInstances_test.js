@@ -208,6 +208,35 @@ Scenario(
     await pmmInventoryPage.checkAgentOtherDetailsSection('listen_port:', `listen_port: ${remoteInstancesHelper.remote_instance.haproxy.haproxy_2.port}`, haproxyServiceName, serviceId);
   },
 );
+Scenario(
+  'PMM-T1089 - Verify UI elements for PostgreSQL Instance @instances',
+  async ({
+    I, remoteInstancesPage,
+  }) => {
+    I.amOnPage(remoteInstancesPage.url);
+    remoteInstancesPage.waitUntilRemoteInstancesPageLoaded();
+    remoteInstancesPage.openAddRemotePage('postgresql');
+   I.click(remoteInstancesPage.fields.addService);
+    remoteInstancesPage.checkRequiredField();
+    // Verify fields on the page 
+    I.waitForVisible(remoteInstancesPage.fields.returnToMenuButton, 30);
+    I.waitForVisible(remoteInstancesPage.fields.hostName, 30);
+    I.waitForVisible(remoteInstancesPage.fields.serviceName, 30);
+    I.waitForVisible(remoteInstancesPage.fields.portNumber, 30);
+    I.waitForVisible(remoteInstancesPage.fields.userName, 30);
+    I.waitForVisible(remoteInstancesPage.fields.password, 30);
+    I.waitForVisible(remoteInstancesPage.fields.environment, 30);
+    I.waitForVisible(remoteInstancesPage.fields.region, 30);
+    I.waitForVisible(remoteInstancesPage.fields.availabilityZone, 30);
+    I.waitForVisible(remoteInstancesPage.fields.replicationSet, 30);
+    I.waitForVisible(remoteInstancesPage.fields.cluster, 30);
+    I.waitForVisible(remoteInstancesPage.fields.customLabels, 30);
+    I.waitForVisible(remoteInstancesPage.fields.skipConnectionCheck, 30);
+    I.waitForVisible(remoteInstancesPage.fields.dontTrackingRadio,30);
+    I.waitForVisible(remoteInstancesPage.fields.pgStatStatementsRadio,30);
+    I.waitForVisible(remoteInstancesPage.fields.pgStatMonitorRadio,30);
+  },
+);
 
 Data(remotePostgreSQL).Scenario(
   'PMM-T441 - Verify adding Remote PostgreSQL Instance @instances',
