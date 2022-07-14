@@ -565,6 +565,8 @@ if (versionMinor >= 15) {
       const metricName = 'redis_uptime_in_seconds';
       const headers = { Authorization: `Basic ${await I.getAuth()}` };
 
+      I.wait(30);
+
       await grafanaAPI.checkMetricExist(metricName);
       await grafanaAPI.checkMetricExist(metricName, { type: 'node_name', value: 'redis_external_remote' });
       await grafanaAPI.checkMetricExist(metricName, { type: 'service_name', value: 'redis_external_2' });
