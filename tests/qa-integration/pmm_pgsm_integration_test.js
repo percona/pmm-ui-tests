@@ -102,19 +102,20 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T1259 - Adding Load to Postgres test database and verifying PMM-Agent and PG_STAT_MONITOR QAN agent is in running status @not-ui-pipeline',
+  'PMM-T1259 - Adding Load to Postgres test database and verifying PMM-Agent and PG_STAT_MONITOR QAN agent is in running status @pgsm-pmm-integration @not-ui-pipeline',
   async ({ I }) => {
     await I.pgExecuteQueryOnDemand('SELECT now();', connection);
+    const db = `${database}_pgbench`;
 
-    const output = await I.pgExecuteQueryOnDemand(`SELECT * FROM pg_database where datname= '${database}';`, connection);
+    const output = await I.pgExecuteQueryOnDemand(`SELECT * FROM pg_database where datname= '${db}';`, connection);
 
     if (output.rows.length === 0) {
-      await I.pgExecuteQueryOnDemand(`Create database ${database};`, connection);
+      await I.pgExecuteQueryOnDemand(`Create database ${db};`, connection);
     }
 
-    connection.database = database;
-    await I.verifyCommand(`docker exec ${container_name} pgbench -i -s 100 --username=pmm ${database}`);
-    await I.verifyCommand(`docker exec ${container_name} pgbench -c 2 -j 2 -T 60 --username=pmm ${database}`);
+    connection.database = db;
+    await I.verifyCommand(`docker exec ${container_name} pgbench -i -s 100 --username=pmm ${db}`);
+    await I.verifyCommand(`docker exec ${container_name} pgbench -c 2 -j 2 -T 300 --username=pmm ${db}`);
     connection.database = 'postgres';
     // wait for pmm-agent to push the execution as part of next bucket to clickhouse
     I.wait(120);
@@ -123,25 +124,27 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T1259 - Verifying data in Clickhouse and comparing with PGSM output @not-ui-pipeline',
+  'PMM-T1259 - Verifying data in Clickhouse and comparing with PGSM output @pgsm-pmm-integration @not-ui-pipeline',
   async ({ I, qanAPI }) => {
     const toStart = new Date();
+    const db = `${database}_pgbench`;
     let pgsm_output;
     // using 5 mins as time range hence multiplied 5 min to milliseconds value for
     const fromStart = new Date(toStart - (5 * 60000));
 
     if (version < 13) {
-      pgsm_output = await I.pgExecuteQueryOnDemand(`select query, queryid, planid, query_plan, calls, total_time as total_exec_time, mean_time as mean_exec_time  from pg_stat_monitor where datname='${database}';`, connection);
+      pgsm_output = await I.pgExecuteQueryOnDemand(`select query, queryid, planid, query_plan, calls, total_time as total_exec_time, mean_time as mean_exec_time  from pg_stat_monitor where datname='${db}';`, connection);
     } else {
-      pgsm_output = await I.pgExecuteQueryOnDemand(`select query, queryid, planid, query_plan, calls, total_exec_time, mean_exec_time  from pg_stat_monitor where datname='${database}';`, connection);
+      pgsm_output = await I.pgExecuteQueryOnDemand(`select query, queryid, planid, query_plan, calls, total_exec_time, mean_exec_time  from pg_stat_monitor where datname='${db}';`, connection);
     }
 
     for (let i = 0; i < pgsm_output.rows.length; i++) {
       const response = await qanAPI.getMetricByFilterAPI(pgsm_output.rows[i].queryid, 'queryid', labels, fromStart.toISOString(), toStart.toISOString());
-      // we do this conversion because clickhouse has values in micro seconds, while PGSM has in milliseconds.
-      const total_exec_time = parseFloat((pgsm_output.rows[i].total_exec_time / 1000).toFixed(7));
-      const average_exec_time = parseFloat((pgsm_output.rows[i].mean_exec_time / 1000).toFixed(7));
-      const query_cnt = parseInt(pgsm_output.rows[i].calls, 10);
+      const {
+        total_exec_time,
+        average_exec_time,
+        query_cnt,
+      } = await qanAPI.getMetricsFromPGSM(db, pgsm_output.rows[i].queryid, connection);
       const { query, queryid } = pgsm_output.rows[i];
 
       if (response.status !== 200) {
