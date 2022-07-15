@@ -5,13 +5,22 @@ Feature('Test PMM server with srv local folder');
 
 const basePmmUrl = 'http://127.0.0.1:8080/';
 
+const runContainer = async (I) => {
+  await I.verifyCommand('docker run -v $HOME/srv:/srv -d --restart always --publish 8080:80 --publish 8443:443 --name pmm-server-srv perconalab/pmm-server:2.29.0-rc');
+};
+
+const stopAndRemoveContainer = async (I) => {
+  await I.verifyCommand('docker stop pmm-server-srv');
+  await I.verifyCommand('docker rm pmm-server-srv');
+};
+
 BeforeSuite(async ({ I }) => {
-  await I.verifyCommand('docker-compose -f docker-compose-srv.yml up -d');
+  await runContainer(I);
   await I.wait(90);
 });
 
 AfterSuite(async ({ I }) => {
-  await I.verifyCommand('docker-compose -f docker-compose-srv.yml down -v');
+  await stopAndRemoveContainer(I);
 });
 
 Before(async ({ I }) => {
@@ -34,8 +43,8 @@ Scenario(
     await dashboardPage.verifyThereAreNoGraphsWithNA();
     await dashboardPage.verifyThereAreNoGraphsWithoutData();
 
-    await I.verifyCommand('docker-compose -f docker-compose-srv.yml down');
-    await I.verifyCommand('docker-compose -f docker-compose-srv.yml up -d');
+    await stopAndRemoveContainer(I);
+    await runContainer(I);
     await I.wait(60);
     await I.amOnPage(basePmmUrl + qanPage.url);
     adminPage.setAbsoluteTimeRange(moment().subtract({ hours: 12 }).format('YYYY-MM-DD HH:mm:00'), moment().subtract({ minutes: 2 }).format('YYYY-MM-DD HH:mm:00'));
@@ -49,5 +58,6 @@ Scenario(
     await I.amOnPage(basePmmUrl + dashboardPage.nodeSummaryDashboard.url);
     await dashboardPage.verifyThereAreNoGraphsWithNA();
     await dashboardPage.verifyThereAreNoGraphsWithoutData();
+    I.say(await I.verifyCommand('docker logs pmm-server-srv'));
   },
 );
