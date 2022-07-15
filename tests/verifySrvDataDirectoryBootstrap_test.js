@@ -1,48 +1,53 @@
 const assert = require('assert');
+const moment = require('moment');
 
 Feature('Test PMM server with srv local folder');
 
 const basePmmUrl = 'http://127.0.0.1:8080/';
 
 BeforeSuite(async ({ I }) => {
-  // await I.verifyCommand('docker-compose -f docker-compose-srv.yml up -d');
-  // await I.verifyCommand('docker exec pmm-client sh -c "pmm-admin add mysql --username=root --password=pass --query-source=perfschema  mysql5.7 mysql5.7:3306"');
-  // await I.wait(120);
+  await I.verifyCommand('docker-compose -f docker-compose-srv.yml up -d');
+  await I.wait(90);
 });
 
 AfterSuite(async ({ I }) => {
-  // await I.verifyCommand('docker-compose -f docker-compose-srv.yml down -v');
+  await I.verifyCommand('docker-compose -f docker-compose-srv.yml down -v');
 });
 
 Before(async ({ I }) => {
-  await I.Authorize();
+  await I.Authorize('admin', 'new-flag-password');
 });
 
 Scenario(
-  'PMM-T1243 Verify PMM Server without data container @srv3',
+  'PMM-T1243 Verify PMM Server without data container @srv',
   async ({
-    I, homePage,
+    I, adminPage, qanPage, dashboardPage,
   }) => {
-    I.amOnPage(basePmmUrl + homePage.url);
-    let path;
+    await I.amOnPage(basePmmUrl + qanPage.url);
+    I.dontSeeElement(qanPage.elements.noQueryAvailable);
+    await I.waitForVisible(qanPage.elements.qanRow);
+    const qanRows = await I.grabNumberOfVisibleElements(qanPage.elements.qanRow);
 
-    I.moveCursorTo(locate('li').find('a').withAttr({ 'aria-label': 'Help' }));
-    I.waitForElement('//div[contains(text(), \'PMM Logs\')]', 3);
+    assert.ok(qanRows > 0, 'Query Analytics are empty');
 
-    await I.usePlaywrightTo('download', async ({ page }) => {
-      const [download] = await Promise.all([
-        // Start waiting for the download
-        page.waitForEvent('download'),
-        // Perform the action that initiates download
-        page.locator('//div[contains(text(), \'PMM Logs\')]').click(),
-      ]);
+    await I.amOnPage(basePmmUrl + dashboardPage.nodeSummaryDashboard.url);
+    await dashboardPage.verifyThereAreNoGraphsWithNA();
+    await dashboardPage.verifyThereAreNoGraphsWithoutData();
 
-      // Wait for the download process to complete
-      path = await download.path();
-    });
-    const logData = await I.readFileInZipArchive(path, 'pmm-agent.yaml');
+    await I.verifyCommand('docker-compose -f docker-compose-srv.yml down');
+    await I.verifyCommand('docker-compose -f docker-compose-srv.yml up -d');
+    await I.wait(60);
+    await I.amOnPage(basePmmUrl + qanPage.url);
+    adminPage.setAbsoluteTimeRange(moment().subtract({ hours: 12 }).format('YYYY-MM-DD HH:mm:00'), moment().subtract({ minutes: 2 }).format('YYYY-MM-DD HH:mm:00'));
 
-    I.say(logData);
-    await I.wait(15);
+    I.dontSeeElement(qanPage.elements.noQueryAvailable);
+    await I.waitForVisible(qanPage.elements.qanRow);
+    const qanRowsAfterRestart = await I.grabNumberOfVisibleElements(qanPage.elements.qanRow);
+
+    assert.ok(qanRowsAfterRestart > 0, 'Query Analytics are empty after restart of docker container');
+
+    await I.amOnPage(basePmmUrl + dashboardPage.nodeSummaryDashboard.url);
+    await dashboardPage.verifyThereAreNoGraphsWithNA();
+    await dashboardPage.verifyThereAreNoGraphsWithoutData();
   },
 );

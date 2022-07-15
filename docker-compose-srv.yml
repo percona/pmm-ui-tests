@@ -4,11 +4,13 @@ version: '3.7'
 services:
   pmm-server-srv:
     #image: ${PMM_SERVER_IMAGE:-perconalab/pmm-server:dev-latest}
-    image: ${PMM_SERVER_IMAGE:-perconalab/pmm-server-fb:PR-2534-517015b}
+    image: ${PMM_SERVER_IMAGE:-perconalab/pmm-server:2.29.0-rc}
     container_name: pmm-server-srv
     ports:
       - '8080:80'
       - '8443:443'
+    volumes:
+      - $HOME/srv:/srv
     environment:
       - PMM_DEBUG=1
       - PERCONA_TEST_SAAS_HOST=check-dev.percona.com:443
@@ -16,21 +18,19 @@ services:
       - PERCONA_TEST_VERSION_SERVICE_URL=https://check-dev.percona.com/versions/v1
       - PERCONA_TEST_TELEMETRY_INTERVAL=10s
       - PERCONA_TEST_TELEMETRY_RETRY_BACKOFF=10s
-      - PMM_ADMIN_PASSWORD=new-flag-password
-    volumes:
-      - ./wrongFolder:/srv
+      - GF_SECURITY_ADMIN_PASSWORD=new-flag-password
 
   pmm-client:
     image: perconalab/pmm-client:dev-latest
     container_name: pmm-client
-    #depends_on:
-    #  pmm-server-srv:
+    depends_on:
+      - 'pmm-server-srv'
     #    condition: service_healthy
     environment:
       - PMM_AGENT_SETUP=1
       - PMM_AGENT_SERVER_ADDRESS=pmm-server-srv
       - PMM_AGENT_SERVER_USERNAME=admin
-      - PMM_AGENT_SERVER_PASSWORD=admin
+      - PMM_AGENT_SERVER_PASSWORD=new-flag-password
       - PMM_AGENT_PORTS_MIN=41000
       - PMM_AGENT_PORTS_MAX=41500
       - PMM_AGENT_SERVER_INSECURE_TLS=1
