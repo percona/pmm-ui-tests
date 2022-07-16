@@ -7,11 +7,11 @@ const basePmmUrl = 'http://127.0.0.1:8080/';
 let testCaseName = '';
 
 const runContainerWithoutDataContainer = async (I) => {
-  await I.verifyCommand('docker run -v $HOME/srv:/srv -d --restart always --publish 8080:80 --publish 8443:443 --name pmm-server-srv perconalab/pmm-server:2.29.0-rc');
+  await I.verifyCommand('docker run -v $HOME/srvNoData:/srv -d --restart always --publish 8080:80 --publish 8443:443 --name pmm-server-srv perconalab/pmm-server:2.29.0-rc');
 };
 
 const runContainerWithPasswordVariable = async (I) => {
-  await I.verifyCommand('docker run -v $HOME/srv:/srv -d -e GF_SECURITY_ADMIN_PASSWORD=newpass --restart always --publish 8080:80 --publish 8443:443 --name pmm-server-password perconalab/pmm-server:2.29.0-rc');
+  await I.verifyCommand('docker run -v $HOME/srvPassword:/srv -d -e GF_SECURITY_ADMIN_PASSWORD=newpass --restart always --publish 8080:80 --publish 8443:443 --name pmm-server-password perconalab/pmm-server:2.29.0-rc');
 };
 
 const runContainerWithDataContainer = async (I) => {
@@ -53,7 +53,7 @@ Scenario(
   }) => {
     await runContainerWithoutDataContainer(I);
     await I.Authorize('admin', 'admin');
-    await I.wait(90);
+    await I.wait(120);
     testCaseName = 'PMM-T1243';
     await I.amOnPage(basePmmUrl + qanPage.url);
     I.dontSeeElement(qanPage.elements.noQueryAvailable);
@@ -70,7 +70,7 @@ Scenario(
     await runContainerWithoutDataContainer(I);
     await I.wait(60);
     await I.amOnPage(basePmmUrl + qanPage.url);
-    adminPage.setAbsoluteTimeRange(moment().subtract({ hours: 12 }).format('YYYY-MM-DD HH:mm:00'), moment().subtract({ minutes: 2 }).format('YYYY-MM-DD HH:mm:00'));
+    adminPage.setAbsoluteTimeRange(moment().subtract({ hours: 12 }).format('YYYY-MM-DD HH:mm:00'), moment().subtract({ minutes: 1, seconds: 30 }).format('YYYY-MM-DD HH:mm:00'));
 
     I.dontSeeElement(qanPage.elements.noQueryAvailable);
     await I.waitForVisible(qanPage.elements.qanRow);
@@ -92,7 +92,7 @@ Scenario(
   }) => {
     await runContainerWithDataContainer(I);
     await I.Authorize('admin', 'admin');
-    await I.wait(90);
+    await I.wait(120);
     testCaseName = 'PMM-T1244';
     await I.amOnPage(basePmmUrl + qanPage.url);
     I.dontSeeElement(qanPage.elements.noQueryAvailable);
@@ -108,7 +108,7 @@ Scenario(
     await runContainerWithDataContainer(I);
     await I.wait(60);
     await I.amOnPage(basePmmUrl + qanPage.url);
-    adminPage.setAbsoluteTimeRange(moment().subtract({ hours: 12 }).format('YYYY-MM-DD HH:mm:00'), moment().subtract({ minutes: 2 }).format('YYYY-MM-DD HH:mm:00'));
+    adminPage.setAbsoluteTimeRange(moment().subtract({ hours: 12 }).format('YYYY-MM-DD HH:mm:00'), moment().subtract({ minutes: 1, seconds: 30 }).format('YYYY-MM-DD HH:mm:00'));
 
     I.dontSeeElement(qanPage.elements.noQueryAvailable);
     await I.waitForVisible(qanPage.elements.qanRow);
@@ -124,7 +124,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T1255 Verify GF_SECURITY_ADMIN_PASSWORD environment variable @srv33',
+  'PMM-T1255 Verify GF_SECURITY_ADMIN_PASSWORD environment variable @srv',
   async ({
     I, adminPage, qanPage, dashboardPage, homePage,
   }) => {
