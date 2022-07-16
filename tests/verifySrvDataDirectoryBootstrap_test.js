@@ -24,6 +24,11 @@ const stopAndRemoveContainerWithoutDataContainer = async (I) => {
   await I.verifyCommand('docker rm pmm-server-srv');
 };
 
+const stopAndRemoveContainerWithPasswordVariable = async (I) => {
+  await I.verifyCommand('docker stop pmm-server-password');
+  await I.verifyCommand('docker rm pmm-server-password');
+};
+
 const stopAndRemoveContainerWithDataContainer = async (I) => {
   await I.verifyCommand('docker stop pmm-server-srv');
   await I.verifyCommand('docker rm pmm-server-srv');
@@ -36,6 +41,8 @@ After(async ({ I }) => {
     await stopAndRemoveContainerWithoutDataContainer(I);
   } else if (testCaseName === 'PMM-T1244') {
     await stopAndRemoveContainerWithDataContainer(I);
+  } else if (testCaseName === 'PMM-T1255') {
+    await stopAndRemoveContainerWithPasswordVariable(I);
   }
 });
 
@@ -115,15 +122,16 @@ Scenario(
     I.say(await I.verifyCommand('docker logs pmm-server-srv'));
   },
 );
-/*
+
 Scenario(
-  'PMM-T1244 Verify PMM Server with empty data container @srv33',
+  'PMM-T1255 Verify GF_SECURITY_ADMIN_PASSWORD environment variable @srv',
   async ({
     I, adminPage, qanPage, dashboardPage, homePage,
   }) => {
-    // await runContainerWithPasswordVariable(I);
-    // await I.wait(90);
-    // I.say(await I.verifyCommand('docker logs pmm-server-password'));
+    await runContainerWithPasswordVariable(I);
+    await I.wait(30);
+    testCaseName = 'PMM-T125';
+    I.say(await I.verifyCommand('docker logs pmm-server-password'));
 
     await I.Authorize();
     await I.amOnPage(basePmmUrl + homePage.url);
@@ -134,7 +142,5 @@ Scenario(
     await I.wait(3);
     await I.refreshPage();
     await I.waitForElement(homePage.fields.dashboardHeaderLocator, 60);
-    await I.wait(160);
   },
 );
-*/
