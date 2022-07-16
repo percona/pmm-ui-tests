@@ -124,22 +124,24 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T1255 Verify GF_SECURITY_ADMIN_PASSWORD environment variable @srv',
+  'PMM-T1255 Verify GF_SECURITY_ADMIN_PASSWORD environment variable @srv33',
   async ({
     I, adminPage, qanPage, dashboardPage, homePage,
   }) => {
     await runContainerWithPasswordVariable(I);
     await I.wait(30);
     testCaseName = 'PMM-T125';
-    I.say(await I.verifyCommand('docker logs pmm-server-password'));
+    const logs = await I.verifyCommand('docker logs pmm-server-password');
+
+    assert.ok(!logs.includes('Configuration warning: unknown environment variable "GF_SECURITY_ADMIN_PASSWORD=newpass".'));
 
     await I.Authorize();
     await I.amOnPage(basePmmUrl + homePage.url);
     await I.waitForVisible('//*[contains(text(), "invalid username or password")]');
     await I.unAuthorize();
-    await I.wait(3);
+    await I.wait(1);
     await I.Authorize('admin', 'newpass');
-    await I.wait(3);
+    await I.wait(1);
     await I.refreshPage();
     await I.waitForElement(homePage.fields.dashboardHeaderLocator, 60);
   },
