@@ -118,7 +118,7 @@ module.exports = {
     url: 'graph/d/node-cpu-process/processes-details?from=now-45m&to=now',
   },
   nodeSummaryDashboard: {
-    url: 'graph/d/node-instance-summary/node-summary?orgId=1&refresh=5m',
+    url: 'graph/d/node-instance-summary/node-summary',
     metrics: [
       'System Uptime',
       'System Summary',
