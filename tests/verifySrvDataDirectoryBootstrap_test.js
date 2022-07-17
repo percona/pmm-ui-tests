@@ -184,6 +184,8 @@ Scenario(
     await I.Authorize('admin', 'newpass');
     await I.amOnPage(basePmmUrl + homePage.url);
     await I.waitForElement(homePage.fields.dashboardHeaderLocator, 60);
-    await I.waitForElement(qanPage.fields.qanTitle, 60);
+    const { versionMinor } = await homePage.getVersions();
+
+    await homePage.upgradePMM(versionMinor);
   },
 );
