@@ -61,7 +61,7 @@ Scenario(
 
     assert.ok(qanRows > 0, 'Query Analytics are empty');
     await I.amOnPage(`${basePmmUrl + dashboardPage.nodeSummaryDashboard.url}?orgId=1&refresh=5s`);
-    await dashboardPage.waitForAllGraphsToHaveData(180);
+    await dashboardPage.waitForAllGraphsToHaveData(300);
     await dashboardPage.verifyThereAreNoGraphsWithNA();
     await dashboardPage.verifyThereAreNoGraphsWithoutData();
 
