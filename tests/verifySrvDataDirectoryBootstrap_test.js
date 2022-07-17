@@ -14,7 +14,6 @@ const runContainerWithPasswordVariable = async (I) => {
 };
 
 const runContainerWithDataContainer = async (I) => {
-  await I.verifyCommand('docker volume create srvFolder');
   await I.verifyCommand('docker run -v srvFolder:/srv -d --restart always --publish 8083:80 --publish 8443:443 --name pmm-server-srv perconalab/pmm-server:2.29.0-rc');
 };
 
@@ -31,7 +30,6 @@ const stopAndRemoveContainerWithPasswordVariable = async (I) => {
 const stopAndRemoveContainerWithDataContainer = async (I) => {
   await I.verifyCommand('docker stop pmm-server-srv');
   await I.verifyCommand('docker rm pmm-server-srv');
-  await I.verifyCommand('docker volume rm srvFolder');
 };
 
 After(async ({ I }) => {
@@ -39,6 +37,7 @@ After(async ({ I }) => {
     await stopAndRemoveContainerWithoutDataContainer(I);
   } else if (testCaseName === 'PMM-T1244') {
     await stopAndRemoveContainerWithDataContainer(I);
+    await I.verifyCommand('docker volume rm srvFolder');
   } else if (testCaseName === 'PMM-T1255') {
     await stopAndRemoveContainerWithPasswordVariable(I);
   }
@@ -94,6 +93,7 @@ Scenario(
   }) => {
     const basePmmUrl = 'http://127.0.0.1:8083/';
 
+    await I.verifyCommand('docker volume create srvFolder');
     await runContainerWithDataContainer(I);
     await I.Authorize('admin', 'admin');
     await I.wait(120);
