@@ -53,7 +53,7 @@ Scenario(
 
     await runContainerWithoutDataContainer(I);
     await I.Authorize('admin', 'admin');
-    await I.wait(120);
+    await I.wait(60);
     testCaseName = 'PMM-T1243';
     await I.amOnPage(basePmmUrl + qanPage.url);
     I.dontSeeElement(qanPage.elements.noQueryAvailable);
@@ -61,16 +61,17 @@ Scenario(
     const qanRows = await I.grabNumberOfVisibleElements(qanPage.elements.qanRow);
 
     assert.ok(qanRows > 0, 'Query Analytics are empty');
-
-    await I.wait(60);
-
     await I.amOnPage(basePmmUrl + dashboardPage.nodeSummaryDashboard.url);
+    await dashboardPage.waitForAllGraphsToHaveData(180);
     await dashboardPage.verifyThereAreNoGraphsWithNA();
     await dashboardPage.verifyThereAreNoGraphsWithoutData();
 
     await stopAndRemoveContainerWithoutDataContainer(I);
     await runContainerWithoutDataContainer(I);
     await I.wait(60);
+    const logs = await I.verifyCommand('docker logs pmm-server-srv');
+
+    assert.ok(!logs.includes('Error: The directory named as part of the path /srv/logs/supervisord.log does not exist'));
     await I.amOnPage(basePmmUrl + qanPage.url);
     adminPage.setAbsoluteTimeRange(moment().subtract({ hours: 12 }).format('YYYY-MM-DD HH:mm:00'), moment().subtract({ minutes: 1, seconds: 30 }).format('YYYY-MM-DD HH:mm:00'));
 
@@ -83,7 +84,6 @@ Scenario(
     await I.amOnPage(basePmmUrl + dashboardPage.nodeSummaryDashboard.url);
     await dashboardPage.verifyThereAreNoGraphsWithNA();
     await dashboardPage.verifyThereAreNoGraphsWithoutData();
-    I.say(await I.verifyCommand('docker logs pmm-server-srv'));
   },
 );
 
@@ -112,6 +112,9 @@ Scenario(
     await stopAndRemoveContainerWithDataContainer(I);
     await runContainerWithDataContainer(I);
     await I.wait(60);
+    const logs = await I.verifyCommand('docker logs pmm-server-srv');
+
+    assert.ok(!logs.includes('Error: The directory named as part of the path /srv/logs/supervisord.log does not exist'));
     await I.amOnPage(basePmmUrl + qanPage.url);
     // adminPage.setAbsoluteTimeRange(moment().subtract({ hours: 12 }).format('YYYY-MM-DD HH:mm:00'), moment().subtract({ minutes: 1, seconds: 30 }).format('YYYY-MM-DD HH:mm:00'));
 
