@@ -13,6 +13,15 @@ const runContainerWithPasswordVariable = async (I) => {
   await I.verifyCommand('docker run -v $HOME/srvPassword:/srv -d -e GF_SECURITY_ADMIN_PASSWORD=newpass --restart always --publish 8082:80 --publish 8443:443 --name pmm-server-password perconalab/pmm-server:2.29.0-rc');
 };
 
+const runContainerWithPasswordVariableUpgrade = async (I) => {
+  await I.verifyCommand('docker run -v $HOME/srvPasswordUpgrade:/srv -d -e GF_SECURITY_ADMIN_PASSWORD=newpass --restart always --publish 8084:80 --publish 8443:443 --name pmm-server-password-upgrade perconalab/pmm-server:2.29.0-rc');
+  await I.verifyCommand('docker exec pmm-server-password-upgrade yum update -y percona-release');
+  await I.verifyCommand('docker exec pmm-server-password-upgrade sed -i\'\' -e \'s^/release/^/experimental/^\' /etc/yum.repos.d/pmm2-server.repo');
+  await I.verifyCommand('docker exec pmm-server-password-upgrade percona-release enable percona experimental');
+  await I.verifyCommand('docker exec pmm-server-password-upgrade yum clean all');
+  await I.verifyCommand('docker restart pmm-server-password-upgrade');
+};
+
 const runContainerWithDataContainer = async (I) => {
   await I.verifyCommand('docker run -v srvFolder:/srv -d --restart always --publish 8083:80 --publish 8443:443 --name pmm-server-srv perconalab/pmm-server:2.29.0-rc');
 };
@@ -158,6 +167,22 @@ Scenario(
     await I.Authorize('admin', 'anotherpass');
     await I.wait(5);
     await I.refreshPage();
+    await I.waitForElement(homePage.fields.dashboardHeaderLocator, 60);
+  },
+);
+
+Scenario(
+  'PMM-T1256 Verify GF_SECURITY_ADMIN_PASSWORD environment variable after upgrade @srv3',
+  async ({
+    I, adminPage, qanPage, dashboardPage, homePage,
+  }) => {
+    const basePmmUrl = 'http://127.0.0.1:8084/';
+
+    await runContainerWithPasswordVariableUpgrade(I);
+    await I.wait(30);
+    testCaseName = 'PMM-T1256';
+    await I.Authorize('admin', 'newpass');
+    await I.amOnPage(basePmmUrl + homePage.url);
     await I.waitForElement(homePage.fields.dashboardHeaderLocator, 60);
   },
 );
