@@ -919,6 +919,10 @@ module.exports = {
   tabLocator(tabName) {
     return `//a[contains(text(), '${tabName}')]`;
   },
+  async waitForAllGraphsToHaveData(timeout = 60) {
+    await I.waitForInvisible(this.fields.notAvailableMetrics, timeout);
+    await I.waitForInvisible(this.fields.notAvailableDataPoints, timeout);
+  },
 
   async verifyThereAreNoGraphsWithNA(acceptableNACount = 0) {
     const numberOfNAElements = await I.grabNumberOfVisibleElements(this.fields.notAvailableMetrics);
