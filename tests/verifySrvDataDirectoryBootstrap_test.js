@@ -184,5 +184,6 @@ Scenario(
     await I.Authorize('admin', 'newpass');
     await I.amOnPage(basePmmUrl + homePage.url);
     await I.waitForElement(homePage.fields.dashboardHeaderLocator, 60);
+    await I.waitForElement(qanPage.fields.qanTitle, 60);
   },
 );
