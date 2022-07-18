@@ -59,6 +59,8 @@ Scenario(
   }) => {
     const basePmmUrl = 'http://127.0.0.1:8081/';
 
+    I.say(`PMM version is: ${process.env.DOCKER_VERSION}`);
+
     await runContainerWithoutDataContainer(I);
     await I.Authorize('admin', 'admin');
     await I.wait(60);
