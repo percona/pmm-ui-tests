@@ -20,7 +20,7 @@ AfterSuite(async ({ I }) => {
 });
 
 Scenario(
-  'PMM-T1218 Verify PMM with external Clickhouse @qan',
+  'PMM-T1218 Verify PMM with external Clickhouse @qan @docker-configuration',
   async ({ I, dataSourcePage, qanPage }) => {
     await I.amOnPage(basePmmUrl + dataSourcePage.url);
     await I.waitForVisible(dataSourcePage.elements.clickHouseDescription);
