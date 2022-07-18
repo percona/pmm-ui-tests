@@ -287,7 +287,7 @@ Scenario(
       username: remoteInstancesHelper.remote_instance.aws.aurora.username,
       password: remoteInstancesHelper.remote_instance.aws.aurora.aurora2.password,
       instance_id: 'pmm-qa-aurora2-mysql-instance-1',
-      cluster: 'aurora2',
+      cluster: 'rdsaurora',
     };
 
     for (const type of Object.values(remoteInstancesHelper.instanceTypes)) {

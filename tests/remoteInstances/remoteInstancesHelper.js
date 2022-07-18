@@ -479,7 +479,7 @@ module.exports = {
   },
 
   // Used by Upgrade Job to test QAN filters
-  qanFilters: ['mysql', 'mongodb', 'postgresql', 'rds'],
+  qanFilters: ['mysql', 'mongodb', 'postgresql', 'rds', 'rdsaurora'],
 
   getInstanceStatus(instance) {
     return remoteInstanceStatus[Object.keys(remoteInstanceStatus).filter((dbtype) => dbtype === instance)];
