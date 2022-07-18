@@ -24,7 +24,6 @@ module.exports = {
     let query_cnt = 0;
     const query_output = await I.pgExecuteQueryOnDemand(`select query, queryid, planid, query_plan, calls, total_exec_time, mean_exec_time  from pg_stat_monitor where datname='${database}' and queryid='${queryId}';`, connection);
 
-    console.log(`Query Count is : ${query_output.rows.length}`);
     for (let i = 0; i < query_output.rows.length; i++) {
       total_exec_time += query_output.rows[i].total_exec_time;
       average_exec_time = parseFloat((query_output.rows[i].mean_exec_time / 1000).toFixed(7));
