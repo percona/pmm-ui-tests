@@ -53,7 +53,7 @@ After(async ({ I }) => {
 });
 
 Scenario(
-  'PMM-T1243 Verify PMM Server without data container @gcp',
+  'PMM-T1243 Verify PMM Server without data container @gcp @docker-configuration',
   async ({
     I, adminPage, qanPage, dashboardPage,
   }) => {
