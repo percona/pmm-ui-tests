@@ -187,5 +187,10 @@ Scenario(
     const { versionMinor } = await homePage.getVersions();
 
     await homePage.upgradePMM(versionMinor);
+    await I.unAuthorize();
+    await I.wait(5);
+    await I.Authorize('admin', 'newpass');
+    await I.refreshPage();
+    await I.waitForElement(homePage.fields.dashboardHeaderLocator, 60);
   },
 );
