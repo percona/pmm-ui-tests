@@ -4,13 +4,14 @@ const moment = require('moment');
 Feature('Test PMM server with srv volume and password enw variable');
 
 let testCaseName = '';
+const dockerVersion = process.env.DOCKER_VERSION || 'perconalab/pmm-server:dev-latest';
 
 const runContainerWithoutDataContainer = async (I) => {
-  await I.verifyCommand('docker run -v $HOME/srvNoData:/srv -d --restart always --publish 8081:80 --publish 8443:443 --name pmm-server-srv perconalab/pmm-server:2.29.0-rc');
+  await I.verifyCommand(`docker run -v $HOME/srvNoData:/srv -d --restart always --publish 8081:80 --publish 8443:443 --name pmm-server-srv ${dockerVersion}`);
 };
 
 const runContainerWithPasswordVariable = async (I) => {
-  await I.verifyCommand('docker run -v $HOME/srvPassword:/srv -d -e GF_SECURITY_ADMIN_PASSWORD=newpass --restart always --publish 8082:80 --publish 8443:443 --name pmm-server-password perconalab/pmm-server:2.29.0-rc');
+  await I.verifyCommand(`docker run -v $HOME/srvPassword:/srv -d -e GF_SECURITY_ADMIN_PASSWORD=newpass --restart always --publish 8082:80 --publish 8443:443 --name pmm-server-password ${dockerVersion}`);
 };
 
 const runContainerWithPasswordVariableUpgrade = async (I) => {
@@ -23,7 +24,7 @@ const runContainerWithPasswordVariableUpgrade = async (I) => {
 };
 
 const runContainerWithDataContainer = async (I) => {
-  await I.verifyCommand('docker run -v srvFolder:/srv -d --restart always --publish 8083:80 --publish 8443:443 --name pmm-server-srv perconalab/pmm-server:2.29.0-rc');
+  await I.verifyCommand(`docker run -v srvFolder:/srv -d --restart always --publish 8083:80 --publish 8443:443 --name pmm-server-srv ${dockerVersion}`);
 };
 
 const stopAndRemoveContainerWithoutDataContainer = async (I) => {
@@ -98,7 +99,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T1244 Verify PMM Server with empty data container @gcp',
+  'PMM-T1244 Verify PMM Server with empty data container @gcp @docker-configuration',
   async ({
     I, adminPage, qanPage, dashboardPage,
   }) => {
@@ -144,7 +145,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T1255 Verify GF_SECURITY_ADMIN_PASSWORD environment variable @gcp',
+  'PMM-T1255 Verify GF_SECURITY_ADMIN_PASSWORD environment variable @gcp @docker-configuration',
   async ({
     I, adminPage, qanPage, dashboardPage, homePage,
   }) => {
@@ -174,7 +175,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T1256 Verify GF_SECURITY_ADMIN_PASSWORD environment variable after upgrade @gcp',
+  'PMM-T1256 Verify GF_SECURITY_ADMIN_PASSWORD environment variable after upgrade @gcp @docker-configuration',
   async ({
     I, adminPage, qanPage, dashboardPage, homePage,
   }) => {
