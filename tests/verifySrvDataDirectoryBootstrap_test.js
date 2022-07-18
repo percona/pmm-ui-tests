@@ -53,7 +53,7 @@ After(async ({ I }) => {
 });
 
 Scenario(
-  'PMM-T1243 Verify PMM Server without data container @srv',
+  'PMM-T1243 Verify PMM Server without data container @gcp',
   async ({
     I, adminPage, qanPage, dashboardPage,
   }) => {
@@ -96,7 +96,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T1244 Verify PMM Server with empty data container @srv',
+  'PMM-T1244 Verify PMM Server with empty data container @gcp',
   async ({
     I, adminPage, qanPage, dashboardPage,
   }) => {
@@ -142,7 +142,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T1255 Verify GF_SECURITY_ADMIN_PASSWORD environment variable @srv',
+  'PMM-T1255 Verify GF_SECURITY_ADMIN_PASSWORD environment variable @gcp',
   async ({
     I, adminPage, qanPage, dashboardPage, homePage,
   }) => {
@@ -172,7 +172,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T1256 Verify GF_SECURITY_ADMIN_PASSWORD environment variable after upgrade @srv3',
+  'PMM-T1256 Verify GF_SECURITY_ADMIN_PASSWORD environment variable after upgrade @gcp',
   async ({
     I, adminPage, qanPage, dashboardPage, homePage,
   }) => {
