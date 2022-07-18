@@ -23,7 +23,7 @@ Before(async ({ I }) => {
   await I.Authorize();
 });
 
-Data(instances).Scenario('PMM-TXXX Verify adding Aurora remote instance @instances', async ({ I, addInstanceAPI, current }) => {
+Data(instances).Scenario('PMM-T1295 Verify adding Aurora remote instance @instances', async ({ I, addInstanceAPI, current }) => {
   const { service_name, password, instance_id, cluster_name } = current;
 
   const details = {
@@ -50,7 +50,7 @@ Data(instances).Scenario('PMM-TXXX Verify adding Aurora remote instance @instanc
 });
 
 Data(instances)
-  .Scenario('PMM-TXXX Verify Aurora instance metrics @instances', async ({ I, current, grafanaAPI }) => {
+  .Scenario('PMM-T1295 Verify Aurora instance metrics @instances', async ({ I, current, grafanaAPI }) => {
     const { instance_id } = current;
 
     // Waiting for metrics to start hitting for remotely added services
@@ -71,7 +71,7 @@ Data(instances)
   .retry(1);
 
 // FIXME: Add also check for Aurora3 once https://jira.percona.com/browse/PMM-10201 is fixed
-Scenario('PMM-TXXX Verify MySQL Amazon Aurora Details @instances', async ({ I, dashboardPage, adminPage }) => {
+Scenario('PMM-T1295 Verify MySQL Amazon Aurora Details @instances', async ({ I, dashboardPage, adminPage }) => {
   I.amOnPage(dashboardPage.mysqlAmazonAuroraDetails.url);
   dashboardPage.waitForDashboardOpened();
   await adminPage.applyTimeRange('Last 5 minutes');
@@ -82,7 +82,7 @@ Scenario('PMM-TXXX Verify MySQL Amazon Aurora Details @instances', async ({ I, d
 
 Data(instances)
   .Scenario(
-    'PMM-TXXX Verify dashboard after Aurora instance is added @instances',
+    'PMM-T1295 Verify dashboard after Aurora instance is added @instances',
     async ({ I, dashboardPage, adminPage, current }) => {
       const { instance_id } = current;
 
@@ -101,7 +101,7 @@ Data(instances)
 
 Data(instances)
   .Scenario(
-    'PMM-TXXX Verify QAN after Aurora instance is added @instances',
+    'PMM-T1295 Verify QAN after Aurora instance is added @instances',
     async ({ I, qanOverview, qanFilters, qanPage, current, adminPage }) => {
       const { instance_id } = current;
 
