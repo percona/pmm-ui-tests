@@ -27,7 +27,7 @@ Scenario(
     await I.waitForVisible(dataSourcePage.elements.clickHouseDescription);
     const clickHouseAddress = await I.grabTextFrom(dataSourcePage.elements.clickHouseDescription);
 
-    assert.ok(clickHouseAddress.includes('external-clickhouse:9000'), 'PMM is not using correct clickhouse address');
+    assert.ok(clickHouseAddress.includes('external-clickhouse:8123'), 'PMM is not using correct clickhouse address');
     await I.amOnPage(basePmmUrl + qanPage.clearUrl);
     await qanPage.waitForOpened();
     I.dontSeeElement(qanPage.elements.noQueryAvailable);
