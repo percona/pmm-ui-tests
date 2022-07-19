@@ -2,7 +2,7 @@ const assert = require('assert');
 
 const { homePage } = inject();
 
-Feature('Portal integration with PMM');
+Feature('Portal integration for Entitlements and Tickets with PMM');
 
 const fileName = 'portalCredentials';
 let portalCredentials = {};

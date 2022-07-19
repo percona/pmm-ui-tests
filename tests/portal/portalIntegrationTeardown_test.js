@@ -13,6 +13,8 @@ BeforeSuite(async ({ homePage }) => {
   pmmVersion = await homePage.getVersions().versionMinor;
 });
 
+Feature('Portal tests teardown.');
+
 Scenario(
   'Prepare credentials for PMM-Portal upgrade @not-ui-pipeline @pre-pmm-portal-upgrade @portal @post-pmm-portal-upgrade',
   async ({
