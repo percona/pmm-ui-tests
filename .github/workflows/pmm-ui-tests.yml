@@ -83,7 +83,7 @@ jobs:
           set -o errexit
           set -o xtrace
           export PATH=\$PATH:/usr/sbin
-          bash ./pmm-qa/pmm-tests/pmm-framework.sh \
+          sh ./pmm-qa/pmm-tests/pmm-framework.sh \
             --download \
             ${{ env.PMM_CLIENTS }} \
             --pmm2 \
