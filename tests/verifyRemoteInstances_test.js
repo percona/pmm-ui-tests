@@ -219,22 +219,22 @@ Scenario(
     I.click(remoteInstancesPage.fields.addService);
     remoteInstancesPage.checkRequiredField();
     // Verify fields on the page
-    I.waitForVisible(remoteInstancesPage.fields.returnToMenuButton, 30);
-    I.waitForVisible(remoteInstancesPage.fields.hostName, 30);
-    I.waitForVisible(remoteInstancesPage.fields.serviceName, 30);
-    I.waitForVisible(remoteInstancesPage.fields.portNumber, 30);
-    I.waitForVisible(remoteInstancesPage.fields.userName, 30);
-    I.waitForVisible(remoteInstancesPage.fields.password, 30);
-    I.waitForVisible(remoteInstancesPage.fields.environment, 30);
-    I.waitForVisible(remoteInstancesPage.fields.region, 30);
-    I.waitForVisible(remoteInstancesPage.fields.availabilityZone, 30);
-    I.waitForVisible(remoteInstancesPage.fields.replicationSet, 30);
-    I.waitForVisible(remoteInstancesPage.fields.cluster, 30);
-    I.waitForVisible(remoteInstancesPage.fields.customLabels, 30);
-    I.waitForVisible(remoteInstancesPage.fields.skipConnectionCheck, 30);
-    I.waitForVisible(remoteInstancesPage.fields.dontTrackingRadio, 30);
-    I.waitForVisible(remoteInstancesPage.fields.pgStatStatementsRadio, 30);
-    I.waitForVisible(remoteInstancesPage.fields.pgStatMonitorRadio, 30);
+    I.seeElement(remoteInstancesPage.fields.returnToMenuButton, 30);
+    I.seeElement(remoteInstancesPage.fields.hostName, 30);
+    I.seeElement(remoteInstancesPage.fields.serviceName, 30);
+    I.seeElement(remoteInstancesPage.fields.portNumber, 30);
+    I.seeElement(remoteInstancesPage.fields.userName, 30);
+    I.seeElement(remoteInstancesPage.fields.password, 30);
+    I.seeElement(remoteInstancesPage.fields.environment, 30);
+    I.seeElement(remoteInstancesPage.fields.region, 30);
+    I.seeElement(remoteInstancesPage.fields.availabilityZone, 30);
+    I.seeElement(remoteInstancesPage.fields.replicationSet, 30);
+    I.seeElement(remoteInstancesPage.fields.cluster, 30);
+    I.seeElement(remoteInstancesPage.fields.customLabels, 30);
+    I.seeElement(remoteInstancesPage.fields.skipConnectionCheck, 30);
+    I.seeElement(remoteInstancesPage.fields.dontTrackingRadio, 30);
+    I.seeElement(remoteInstancesPage.fields.pgStatStatementsRadio, 30);
+    I.seeElement(remoteInstancesPage.fields.pgStatMonitorRadio, 30);
   },
 );
 
