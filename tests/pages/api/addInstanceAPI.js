@@ -19,7 +19,9 @@ module.exports = {
       case remoteInstancesHelper.instanceTypes.postgresql:
         return this.addPostgresql(serviceName);
       case remoteInstancesHelper.instanceTypes.rds:
-        return this.addRDS(serviceName);
+        return this.addRDS(serviceName, creds);
+      case remoteInstancesHelper.instanceTypes.rdsAurora:
+        return this.addRDS(serviceName, creds);
       case remoteInstancesHelper.instanceTypes.postgresGC:
         return await this.addPostgreSQLGC(serviceName);
       default:
@@ -28,9 +30,7 @@ module.exports = {
   },
 
   async addMysql(serviceName, connection = {}) {
-    const {
-      host, port, username, password,
-    } = connection;
+    const { host, port, username, password } = connection;
     const body = {
       add_node: {
         node_name: serviceName,
@@ -48,7 +48,7 @@ module.exports = {
     };
 
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
-    const resp = await I.sendPostRequest('/v1/management/MySQL/Add', body, headers);
+    const resp = await I.sendPostRequest('v1/management/MySQL/Add', body, headers);
 
     assert.equal(resp.status, 200, `Instance ${serviceName} was not added for monitoring. ${resp.data.message}`);
 
@@ -219,28 +219,29 @@ module.exports = {
     assert.equal(resp.status, 200, `Instance ${connection.serviceName} was not added for monitoring`);
   },
 
-  async addRDS(serviceName) {
+  async addRDS(serviceName, connection = {}) {
+    const { port, username, password, address, cluster, aws_access_key, aws_secret_key } = connection;
     const body = {
       add_node: {
         node_name: serviceName,
         node_type: 'REMOTE_NODE',
       },
-      address: remoteInstancesHelper.remote_instance.aws.aws_rds_5_7.address,
-      aws_access_key: remoteInstancesHelper.remote_instance.aws.aws_access_key,
-      aws_secret_key: remoteInstancesHelper.remote_instance.aws.aws_secret_key,
+      address: address || remoteInstancesHelper.remote_instance.aws.aws_rds_5_7.address,
+      aws_access_key: aws_access_key || remoteInstancesHelper.remote_instance.aws.aws_access_key,
+      aws_secret_key: aws_secret_key || remoteInstancesHelper.remote_instance.aws.aws_secret_key,
       service_name: serviceName,
-      username: remoteInstancesHelper.remote_instance.aws.aws_rds_5_7.username,
-      password: remoteInstancesHelper.remote_instance.aws.aws_rds_5_7.password,
-      az: 'us-east-1c',
-      cluster: remoteInstancesHelper.remote_instance.aws.aws_rds_5_7.clusterName,
+      username: username || remoteInstancesHelper.remote_instance.aws.aws_rds_5_7.username,
+      password: password || remoteInstancesHelper.remote_instance.aws.aws_rds_5_7.password,
+      az: 'us-east-2a',
+      cluster: cluster || remoteInstancesHelper.remote_instance.aws.aws_rds_5_7.clusterName,
       engine: 'DISCOVER_RDS_MYSQL',
       instance_id: serviceName,
       isRDS: true,
       pmm_agent_id: 'pmm-server',
-      port: remoteInstancesHelper.remote_instance.aws.aws_rds_5_7.port,
+      port: port || remoteInstancesHelper.remote_instance.aws.aws_rds_5_7.port,
       qan_mysql_perfschema: true,
       rds_exporter: true,
-      region: 'us-east-1',
+      region: 'us-east-2',
       replication_set: 'rds_mysql_repl',
       tls_skip_verify: true,
       disable_basic_metrics: false,
@@ -271,7 +272,11 @@ module.exports = {
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
     const resp = await I.sendPostRequest('v1/management/External/Add', body, headers);
 
-    assert.equal(resp.status, 200, `External Service ${serviceName} was not added for monitoring got following response ${JSON.stringify(resp.data)}`);
+    assert.equal(
+      resp.status,
+      200,
+      `External Service ${serviceName} was not added for monitoring got following response ${JSON.stringify(resp.data)}`,
+    );
   },
 
   async addInstanceForSTT(connection, instanceName = 'stt-mysql-5.7.30') {
