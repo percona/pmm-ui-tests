@@ -4,7 +4,8 @@ const { remoteInstancesHelper, pmmInventoryPage } = inject();
 Feature('Monitoring Aurora instances');
 
 const instances = new DataTable(['service_name', 'password', 'instance_id', 'cluster_name']);
-const metric = 'mysql_global_status_max_used_connections';
+const mysql_metric = 'mysql_global_status_max_used_connections';
+const aurora_metric = 'mysql_global_status_aurora_total_op_memory';
 
 instances.add([
   remoteInstancesHelper.remote_instance.aws.aurora.aurora2.address,
@@ -49,6 +50,7 @@ Data(instances).Scenario('PMM-T1295 Verify adding Aurora remote instance @instan
   await pmmInventoryPage.verifyAgentHasStatusRunning(details.service_name);
 });
 
+// FIXME: Can be removed once https://jira.percona.com/browse/PMM-10201 is fixed
 Data(instances)
   .Scenario('PMM-T1295 Verify Aurora instance metrics @instances', async ({ I, current, grafanaAPI }) => {
     const { instance_id } = current;
@@ -56,8 +58,7 @@ Data(instances)
     // Waiting for metrics to start hitting for remotely added services
     I.wait(10);
 
-    // verify metric for client container node instance
-    const response = await grafanaAPI.checkMetricExist(metric, {
+    const response = await grafanaAPI.checkMetricExist(mysql_metric, {
       type: 'service_name',
       value: instance_id,
     });
@@ -65,10 +66,27 @@ Data(instances)
 
     assert.ok(
       response.data.data.result.length !== 0,
-      `Metrics ${metric} from ${instance_id} should be available but got empty ${result}`,
+      `Metrics ${mysql_metric} from ${instance_id} should be available but got empty ${result}`,
     );
   })
   .retry(1);
+
+// FIXME: Add also check for Aurora3 once https://jira.percona.com/browse/PMM-10201 is fixed
+Scenario('PMM-T1295 Verify Aurora instance metrics @instances', async ({ I, grafanaAPI }) =>{
+  // Waiting for metrics to start hitting for remotely added services
+  I.wait(10);
+
+  const response = await grafanaAPI.checkMetricExist(aurora_metric, {
+    type: 'service_name',
+    value: 'pmm-qa-aurora2-mysql-instance-1',
+  });
+  const result = JSON.stringify(response.data.data.result);
+
+  assert.ok(
+    response.data.data.result.length !== 0,
+    `Metrics ${aurora_metric} from pmm-qa-aurora2-mysql-instance-1 should be available but got empty ${result}`,
+  );
+}).retry(1);
 
 // FIXME: Add also check for Aurora3 once https://jira.percona.com/browse/PMM-10201 is fixed
 Scenario('PMM-T1295 Verify MySQL Amazon Aurora Details @instances', async ({ I, dashboardPage, adminPage }) => {
