@@ -102,7 +102,7 @@ Execute command in the Project Root folder
     @pmm-ami                legacy/deprecated
     @not-ui-pipeline        legacy/deprecated
     @not-pr-pipeline        legacy/deprecated
-    @pmm-admin              pmm-admin related cli tests
+    @cli                    cli related tests
 
 
 ## Contributing
