@@ -99,6 +99,7 @@ Execute command in the Project Root folder
     @post-pmm-portal-upgrade upgrade testing Scenarios to verify PMM connection to the Portal. Executed After the upgrade
     @pmm-portal-upgrade      upgrade testing Scenarios to verify UI PMM connected to the Portal
     @perf-testing           UI performance tests for PMM
+    @docker-configuration  Tests containing different docker configuration (env variables, ports, volumes etc.)
     @pmm-ami                legacy/deprecated
     @not-ui-pipeline        legacy/deprecated
     @not-pr-pipeline        legacy/deprecated
