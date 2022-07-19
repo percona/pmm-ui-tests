@@ -4,7 +4,8 @@ const { homePage } = inject();
 
 Feature('Portal integration with PMM');
 
-let snCredentials = {};
+const fileName = 'portalCredentials';
+let portalCredentials = {};
 let adminToken = '';
 const pmmVersion = homePage.getVersions().versionMinor;
 let serviceNowOrg;
@@ -13,22 +14,31 @@ let grafana_session_cookie;
 BeforeSuite(async ({
   I, portalAPI, settingsAPI, codeceptjsConfig,
 }) => {
-  snCredentials = await portalAPI.createServiceNowUsers();
-  await portalAPI.oktaCreateUser(snCredentials.admin1);
-  await portalAPI.oktaCreateUser(snCredentials.admin2);
-  await portalAPI.oktaCreateUser(snCredentials.technical);
-  adminToken = await portalAPI.getUserAccessToken(snCredentials.admin1.email, snCredentials.admin1.password);
-  serviceNowOrg = await portalAPI.apiCreateOrg(adminToken);
+  const userCredentials = await I.readFileSync(fileName, true);
 
-  const url = new URL(codeceptjsConfig.config.helpers.Playwright.url);
+  if (userCredentials !== null && userCredentials.length > 0) {
+    portalCredentials = JSON.parse(userCredentials);
+    adminToken = await portalAPI.getUserAccessToken(portalCredentials.admin1.email, portalCredentials.admin1.password);
+    serviceNowOrg = await portalAPI.apiGetOrg(adminToken);
+    I.say(JSON.stringify(serviceNowOrg));
+  } else {
+    portalCredentials = await portalAPI.createServiceNowUsers();
+    await portalAPI.oktaCreateUser(portalCredentials.admin1);
+    await portalAPI.oktaCreateUser(portalCredentials.admin2);
+    await portalAPI.oktaCreateUser(portalCredentials.technical);
+    adminToken = await portalAPI.getUserAccessToken(portalCredentials.admin1.email, portalCredentials.admin1.password);
+    serviceNowOrg = await portalAPI.apiCreateOrg(adminToken);
 
-  await settingsAPI.changeSettings({ publicAddress: url.host });
-  await portalAPI.connectPMMToPortal(adminToken);
-  await portalAPI.apiInviteOrgMember(adminToken, serviceNowOrg.id, { username: snCredentials.admin2.email, role: 'Admin' });
-  await portalAPI.apiInviteOrgMember(adminToken, serviceNowOrg.id, {
-    username: snCredentials.technical.email,
-    role: 'Technical',
-  });
+    const url = new URL(codeceptjsConfig.config.helpers.Playwright.url);
+
+    await settingsAPI.changeSettings({ publicAddress: url.host });
+    await portalAPI.connectPMMToPortal(adminToken);
+    await portalAPI.apiInviteOrgMember(adminToken, serviceNowOrg.id, { username: portalCredentials.admin2.email, role: 'Admin' });
+    await portalAPI.apiInviteOrgMember(adminToken, serviceNowOrg.id, {
+      username: portalCredentials.technical.email,
+      role: 'Technical',
+    });
+  }
 });
 
 AfterSuite(async ({ portalAPI }) => {
@@ -37,16 +47,16 @@ AfterSuite(async ({ portalAPI }) => {
   }
 
   await portalAPI.apiDeleteOrg(serviceNowOrg.id, adminToken);
-  await portalAPI.oktaDeleteUserByEmail(snCredentials.admin1.email);
-  await portalAPI.oktaDeleteUserByEmail(snCredentials.admin2.email);
-  await portalAPI.oktaDeleteUserByEmail(snCredentials.technical.email);
+  await portalAPI.oktaDeleteUserByEmail(portalCredentials.admin1.email);
+  await portalAPI.oktaDeleteUserByEmail(portalCredentials.admin2.email);
+  await portalAPI.oktaDeleteUserByEmail(portalCredentials.technical.email);
 });
 
 Scenario(
-  'PMM-T1132 Verify PMM user logged in using SSO and member of SN account is able to see tickets @portal @post-pmm-portal-upgrade',
+  'PMM-T1132 Verify PMM user logged in using SSO and member of SN account is able to see tickets @portal2 @post-pmm-portal-upgrade',
   async ({ I, homePage, organizationTicketsPage }) => {
     I.amOnPage('');
-    await I.loginWithSSO(snCredentials.admin1.email, snCredentials.admin1.password);
+    await I.loginWithSSO(portalCredentials.admin1.email, portalCredentials.admin1.password);
     await I.waitInUrl(homePage.landingUrl);
     grafana_session_cookie = await I.getBrowserGrafanaSessionCookies();
     I.amOnPage(organizationTicketsPage.url);
@@ -126,7 +136,7 @@ Scenario(
     I, organizationTicketsPage, homePage,
   }) => {
     I.amOnPage('');
-    await I.loginWithSSO(snCredentials.admin1.email, snCredentials.admin1.password);
+    await I.loginWithSSO(portalCredentials.admin1.email, portalCredentials.admin1.password);
     await I.waitInUrl(homePage.landingUrl);
     I.waitForVisible(organizationTicketsPage.elements.ticketsMenuIcon);
     await I.mockServer('**/v1/Platform/SearchOrganizationTickets', { tickets: [] });
@@ -153,7 +163,7 @@ Scenario(
     I, homePage, organizationEntitlementsPage,
   }) => {
     I.amOnPage('');
-    await I.loginWithSSO(snCredentials.admin1.email, snCredentials.admin1.password);
+    await I.loginWithSSO(portalCredentials.admin1.email, portalCredentials.admin1.password);
     await I.waitInUrl(homePage.landingUrl);
     grafana_session_cookie = await I.getBrowserGrafanaSessionCookies();
     I.amOnPage(organizationEntitlementsPage.url);
