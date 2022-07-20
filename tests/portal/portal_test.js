@@ -507,6 +507,39 @@ Scenario(
 );
 
 Scenario(
+  'PMM-T1247 Verify user cannot access platform functionality when PMM is not connected to the portal. @not-ui-pipeline @portal @post-pmm-portal-upgrade',
+  async ({
+    I, environmentOverviewPage, organizationEntitlementsPage, organizationTicketsPage,
+  }) => {
+    if (pmmVersion >= 27 || pmmVersion === undefined) {
+      await I.Authorize();
+      I.amOnPage(environmentOverviewPage.url);
+      await I.waitForVisible(environmentOverviewPage.elements.notConnectedToPortal);
+
+      assert.equal(
+        environmentOverviewPage.messages.notConnectedToPortal,
+        await I.grabTextFrom(environmentOverviewPage.elements.notConnectedToPortal),
+        'Displayed message is not correct.',
+      );
+      I.amOnPage(organizationEntitlementsPage.url);
+      await I.waitForVisible(environmentOverviewPage.elements.notConnectedToPortal);
+
+      assert.equal(
+        environmentOverviewPage.messages.notConnectedToPortal,
+        await I.grabTextFrom(environmentOverviewPage.elements.notConnectedToPortal),
+        'Displayed message is not correct.',
+      );
+      I.amOnPage(organizationTicketsPage.url);
+      assert.equal(
+        environmentOverviewPage.messages.notConnectedToPortal,
+        await I.grabTextFrom(environmentOverviewPage.elements.notConnectedToPortal),
+        'Displayed message is not correct.',
+      );
+    }
+  },
+);
+
+Scenario(
   'Perform cleanup after PMM upgrade @portal @not-ui-pipeline @post-pmm-portal-upgrade',
   async ({ portalAPI }) => {
     const orgResponse = await portalAPI.apiGetOrg(adminToken);
