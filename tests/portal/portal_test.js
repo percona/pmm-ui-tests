@@ -410,7 +410,6 @@ Scenario(
     await I.waitForVisible(organizationEntitlementsPage.elements.header);
     await I.waitForVisible(organizationEntitlementsPage.elements.noDataPage, 30);
     // Wait needed due to rerender, otherwise test fails.
-    pause();
     I.wait(5);
     const errorMessage = await I.grabTextFrom(organizationEntitlementsPage.elements.noDataPage);
 
