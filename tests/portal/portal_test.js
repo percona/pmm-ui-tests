@@ -276,6 +276,7 @@ Scenario(
 Scenario(
   'PMM-T1147 Verify PMM user that is not logged in with SSO can NOT see Tickets for organization @portal @post-pmm-portal-upgrade',
   async ({ I, organizationTicketsPage, portalAPI }) => {
+    I.say(`PMM version is: ${pmmVersion}`);
     const newUser = await portalAPI.getUser();
     const newUserId = await I.createUser(newUser.email, newUser.password);
 
