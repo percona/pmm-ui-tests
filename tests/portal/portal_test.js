@@ -276,7 +276,6 @@ Scenario(
 Scenario(
   'PMM-T1147 Verify PMM user that is not logged in with SSO can NOT see Tickets for organization @portal @post-pmm-portal-upgrade',
   async ({ I, organizationTicketsPage, portalAPI }) => {
-    I.say(`PMM version is: ${pmmVersion}`);
     const newUser = await portalAPI.getUser();
     const newUserId = await I.createUser(newUser.email, newUser.password);
 
@@ -286,7 +285,7 @@ Scenario(
     I.dontSeeElement(organizationTicketsPage.elements.ticketsMenuIcon);
     I.amOnPage(organizationTicketsPage.url);
     await I.waitForVisible(organizationTicketsPage.elements.header);
-    if (pmmVersion >= 28) {
+    if (pmmVersion >= 28 || pmmVersion === undefined) {
       await I.waitForVisible(organizationTicketsPage.elements.notPlatformUser, 30);
       assert.equal(
         await I.grabTextFrom(organizationTicketsPage.elements.notPlatformUser),
@@ -433,7 +432,7 @@ Scenario(
     await I.amOnPage('');
     I.amOnPage(organizationEntitlementsPage.url);
     await I.waitForVisible(organizationEntitlementsPage.elements.header);
-    if (pmmVersion >= 28) {
+    if (pmmVersion >= 28 || pmmVersion === undefined) {
       await I.waitForVisible(organizationEntitlementsPage.elements.notPlatformUser, 30);
       assert.strictEqual(
         organizationEntitlementsPage.messages.loginWithPercona,
