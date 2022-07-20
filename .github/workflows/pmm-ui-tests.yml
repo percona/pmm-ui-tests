@@ -81,7 +81,7 @@ jobs:
           sudo apt update
           sudo apt install -y pmm2-client
           sudo pmm-admin config --server-url=https://admin:admin@127.0.0.1:443 --server-insecure-tls
-          sh -x ./pmm-qa/pmm-tests/pmm-framework.sh \
+          bash ./pmm-qa/pmm-tests/pmm-framework.sh \
             --download \
             ${{ env.PMM_CLIENTS }} \
             --pmm2 \
