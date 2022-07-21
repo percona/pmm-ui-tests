@@ -203,7 +203,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T1253 Verify pg_stat_monitor.pgsm_normalized_query settings @not-ui-pipeline @pgsm-pmm-integration @nazarov',
+  'PMM-T1253 Verify pg_stat_monitor.pgsm_normalized_query settings @not-ui-pipeline @pgsm-pmm-integration',
   async ({
     I, qanPage, qanOverview, qanFilters, qanDetails,
   }) => {
@@ -264,7 +264,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T1254 Verify pg_stat_monitor.pgsm_bucket_time settings @not-ui-pipeline @pgsm-pmm-integration @nazarov',
+  'PMM-T1254 Verify pg_stat_monitor.pgsm_bucket_time settings @not-ui-pipeline @pgsm-pmm-integration',
   async ({ I }) => {
     const defaultValue = 60;
     const alteredValue = 61;
