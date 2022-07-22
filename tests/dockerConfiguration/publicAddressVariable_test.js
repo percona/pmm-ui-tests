@@ -35,7 +35,7 @@ Before(async ({ I, portalAPI }) => {
   adminToken = await portalAPI.getUserAccessToken(portalUser.email, portalUser.password);
   freeOrg = await portalAPI.apiCreateOrg(adminToken);
 
-  await I.Authorize();
+  await I.Authorize('admin', 'admin');
 });
 
 After(async ({ I, portalAPI }) => {
