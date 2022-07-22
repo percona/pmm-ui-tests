@@ -15,17 +15,17 @@ publicIPs.add(['PMM-T1174', 'ec2-18-188-74-98.us-east-2.compute.amazonaws.com'])
 publicIPs.add(['PMM-T1174', 'ec2-18-188-74-98.us-east-2.compute.amazonaws.com:8443']);
 
 const runContainerWithPublicAddressVariable = async (I, publicAddress) => {
-  await I.verifyCommand(`docker run -d --restart always -e PERCONA_TEST_PLATFORM_ADDRESS=https://check-dev.percona.com:443 -e PMM_PUBLIC_ADDRESS=${publicAddress} --publish 8085:80 --publish 8443:443 --name pmm-server ${dockerVersion}`);
+  await I.verifyCommand(`docker run -d --restart always -e PERCONA_TEST_PLATFORM_ADDRESS=https://check-dev.percona.com:443 -e PMM_PUBLIC_ADDRESS=${publicAddress} --publish 8085:80 --publish 8443:443 --name pmm-server-public-address ${dockerVersion}`);
   await I.wait(30);
 };
 
 const runContainerWithPublicAddressVariableUpgrade = async (I, publicAddress) => {
-  await I.verifyCommand(`docker run -d --restart always -e PERCONA_TEST_PLATFORM_ADDRESS=https://check-dev.percona.com:443 -e PMM_PUBLIC_ADDRESS=${publicAddress} --publish 8085:80 --publish 8443:443 --name pmm-server percona/pmm-server:latest`);
-  await I.verifyCommand('docker exec pmm-server yum update -y percona-release');
-  await I.verifyCommand('docker exec pmm-server sed -i\'\' -e \'s^/release/^/experimental/^\' /etc/yum.repos.d/pmm2-server.repo');
-  await I.verifyCommand('docker exec pmm-server percona-release enable percona experimental');
-  await I.verifyCommand('docker exec pmm-server yum clean all');
-  await I.verifyCommand('docker restart pmm-server');
+  await I.verifyCommand(`docker run -d --restart always -e PERCONA_TEST_PLATFORM_ADDRESS=https://check-dev.percona.com:443 -e PMM_PUBLIC_ADDRESS=${publicAddress} --publish 8085:80 --publish 8443:443 --name pmm-server-public-address percona/pmm-server:latest`);
+  await I.verifyCommand('docker exec pmm-server-public-address yum update -y percona-release');
+  await I.verifyCommand('docker exec pmm-server-public-address sed -i\'\' -e \'s^/release/^/experimental/^\' /etc/yum.repos.d/pmm2-server.repo');
+  await I.verifyCommand('docker exec pmm-server-public-address percona-release enable percona experimental');
+  await I.verifyCommand('docker exec pmm-server-public-address yum clean all');
+  await I.verifyCommand('docker restart pmm-server-public-address');
   await I.wait(30);
 };
 
@@ -41,14 +41,14 @@ Before(async ({ I, portalAPI }) => {
 After(async ({ I, portalAPI }) => {
   await portalAPI.apiDeleteOrg(freeOrg.id, adminToken);
   await portalAPI.oktaDeleteUserByEmail(portalUser.email);
-  await I.verifyCommand('docker stop pmm-server');
-  await I.verifyCommand('docker rm pmm-server');
+  await I.verifyCommand('docker stop pmm-server-public-address');
+  await I.verifyCommand('docker rm pmm-server-public-address');
 });
 
 Data(publicIPs).Scenario(
   'PMM-T1173 PMM-T1174 Verify PMM_PUBLIC_ADDRESS env variable with IP @docker-configuration',
   async ({
-    I, pmmSettingsPage, current, portalAPI, perconaPlatformPage,
+    I, pmmSettingsPage, current, perconaPlatformPage,
   }) => {
     const basePmmUrl = 'http://127.0.0.1:8085/';
     const { testCase, publicAddress } = current;
