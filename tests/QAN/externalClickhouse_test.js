@@ -21,7 +21,7 @@ AfterSuite(async ({ I }) => {
 
 // Tag only for adding into matrix job, to be fixed later.
 Scenario(
-  'PMM-T1218 Verify PMM with external Clickhouse @gcp',
+  'PMM-T1218 Verify PMM with external Clickhouse @docker-configuration',
   async ({ I, dataSourcePage, qanPage }) => {
     await I.amOnPage(basePmmUrl + dataSourcePage.url);
     await I.waitForVisible(dataSourcePage.elements.clickHouseDescription);
