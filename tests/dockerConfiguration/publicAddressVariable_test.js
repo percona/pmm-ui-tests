@@ -70,9 +70,10 @@ Scenario(
   async ({
     I, pmmSettingsPage, homePage,
   }) => {
-    const basePmmUrl = 'http://127.0.0.1:8085/';
+    const serverIP = '127.0.0.1';
+    const basePmmUrl = `http://${serverIP}:8085/`;
 
-    await runContainerWithPublicAddressVariableUpgrade(I, '127.0.0.1');
+    await runContainerWithPublicAddressVariableUpgrade(I, serverIP);
     await I.amOnPage(basePmmUrl + homePage.url);
     await I.waitForElement(homePage.fields.dashboardHeaderLocator, 60);
     const { versionMinor } = await homePage.getVersions();
@@ -83,7 +84,7 @@ Scenario(
     await I.waitForVisible(pmmSettingsPage.fields.publicAddressInput, 30);
     const setPublicAddress = await I.grabValueFrom(pmmSettingsPage.fields.publicAddressInput);
 
-    assert.ok(setPublicAddress === '127.0.0.1', 'Set public address does not equal to one specified in public address environment variable');
+    assert.ok(setPublicAddress === serverIP, 'Set public address does not equal to one specified in public address environment variable');
   },
 );
 
