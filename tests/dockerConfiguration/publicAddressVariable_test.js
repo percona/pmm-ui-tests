@@ -88,7 +88,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T117 Verify PMM_PUBLIC_ADDRESS env variable can be updated @docker-configuration2',
+  'PMM-T117 Verify PMM_PUBLIC_ADDRESS env variable can be updated @docker-configuration',
   async ({
     I, pmmSettingsPage, perconaPlatformPage,
   }) => {
