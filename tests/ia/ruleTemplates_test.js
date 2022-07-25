@@ -26,6 +26,7 @@ Before(async ({
   I, settingsAPI, templatesAPI, rulesAPI,
 }) => {
   await I.Authorize();
+  await I.wait(30);
   await settingsAPI.apiEnableIA();
   await rulesAPI.clearAllRules();
   await templatesAPI.clearAllTemplates();
