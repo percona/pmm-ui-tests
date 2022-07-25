@@ -3,14 +3,13 @@ const assert = require('assert');
 Feature('Tests for PMM_PUBLIC_ADDRESS environment variable');
 
 const dockerVersion = process.env.DOCKER_VERSION || 'perconalab/pmm-server:dev-latest';
-const serverIP = process.env.SERVER_IP || '127.0.0.1';
 let portalUser;
 let adminToken;
 let freeOrg;
 const publicIPs = new DataTable(['testCase', 'publicAddress']);
 
-publicIPs.add(['PMM-T1173', serverIP]);
-publicIPs.add(['PMM-T1173', `${serverIP}:8443`]);
+publicIPs.add(['PMM-T1173', '127.0.0.1']);
+publicIPs.add(['PMM-T1173', '127.0.0.1:8443']);
 publicIPs.add(['PMM-T1174', 'ec2-18-188-74-98.us-east-2.compute.amazonaws.com']);
 publicIPs.add(['PMM-T1174', 'ec2-18-188-74-98.us-east-2.compute.amazonaws.com:8443']);
 
@@ -51,9 +50,8 @@ Data(publicIPs).Scenario(
     I, pmmSettingsPage, current, perconaPlatformPage,
   }) => {
     const basePmmUrl = 'http://127.0.0.1:8085/';
-    const { testCase, publicAddress } = current;
+    const { publicAddress } = current;
 
-    I.say(testCase);
     await runContainerWithPublicAddressVariable(I, publicAddress);
     await I.amOnPage(basePmmUrl + pmmSettingsPage.advancedSettingsUrl);
     await I.waitForVisible(pmmSettingsPage.fields.publicAddressInput, 30);
