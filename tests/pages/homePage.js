@@ -72,7 +72,7 @@ module.exports = {
         availableVersion: '$update-latest-version',
         inProgressMessage: 'Upgrade in progress',
         successUpgradeMessage: 'PMM has been successfully upgraded to version',
-        whatsNewLink: '//a[@rel="noreferrer"]',
+        whatsNewLink: '$update-news-link',
       },
     },
   },
