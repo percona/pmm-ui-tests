@@ -22,11 +22,11 @@ templates.add(['tests/ia/templates/spaceInParam.yml',
 
 Feature('IA: Alert rule templates').retry(1);
 
-Before(async ({
+BeforeSuite(async ({
   I, settingsAPI, templatesAPI, rulesAPI,
 }) => {
   await I.Authorize();
-  await settingsAPI.changeSettings({ alerting: true });
+  await settingsAPI.apiEnableIA();
   // await rulesAPI.clearAllRules();
   await templatesAPI.clearAllTemplates();
 });

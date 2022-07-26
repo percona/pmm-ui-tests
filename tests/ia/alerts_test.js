@@ -7,20 +7,11 @@ let pagerDutyChannelId;
 let testEmail;
 const ruleNameForEmailCheck = 'Rule with BUILT_IN template (email, webhook)';
 const ruleName = 'PSQL immortal rule';
-const rulesForAlerts = [{
-  ruleName,
-  severity: 'SEVERITY_CRITICAL',
-}, {
-  ruleName,
-  severity: 'SEVERITY_ERROR',
-}, {
-  ruleName,
-  severity: 'SEVERITY_NOTICE',
-}, {
-  ruleName,
-  severity: 'SEVERITY_WARNING',
-},
-];
+const rulesForAlerts = [
+  { ruleName, severity: 'SEVERITY_CRITICAL' },
+  { ruleName, severity: 'SEVERITY_ERROR' },
+  { ruleName, severity: 'SEVERITY_NOTICE' },
+  { ruleName, severity: 'SEVERITY_WARNING' }];
 const alertName = 'PostgreSQL too many connections (pmm-server-postgresql)';
 
 const rulesToDelete = [];
@@ -99,7 +90,7 @@ AfterSuite(async ({
 }) => {
   await settingsAPI.apiEnableIA();
   await rulesAPI.clearAllRules(true);
-  await I.verifyCommand('docker-compose -f docker-compose-webhook.yml stop');
+  // await I.verifyCommand('docker-compose -f docker-compose-webhook.yml stop');
 });
 
 Scenario(
