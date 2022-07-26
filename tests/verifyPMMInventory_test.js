@@ -213,3 +213,25 @@ Scenario(
     });
   },
 );
+
+Scenario(
+  'PMM-T1275 - Verify webConfigPlaceholder is generated on every Node exporter restart @inventory @nightly @exporters @tempTest',
+  async ({ I, pmmInventoryPage }) => {
+    I.amOnPage(pmmInventoryPage.url);
+    await I.waitForVisible(pmmInventoryPage.fields.agentsLink, 20);
+    I.click(pmmInventoryPage.fields.agentsLink);
+    await I.waitForVisible(pmmInventoryPage.fields.tableRow);
+    const nodeStatus = await I.grabTextFrom(pmmInventoryPage.fields.nodeExporterStatus);
+
+    assert.ok(nodeStatus.includes('RUNNING'), 'Node Exporter is not running');
+
+    const nodeId = await I.verifyCommand('docker exec pmm-server ls /tmp/node_exporter/agent_id/');
+
+    I.say(nodeId);
+    await I.verifyCommand(`docker exec pmm-server rm /tmp/node_exporter/agent_id/${nodeId}/webConfigPlaceholder`);
+    const nodeIfolder2 = await I.verifyCommand(`docker exec pmm-server ls /tmp/node_exporter/agent_id/${nodeId}/`);
+
+    I.say(nodeIfolder2);
+    await I.verifyCommand('docker exec pmm-server pkill node_exporter');
+  },
+);
