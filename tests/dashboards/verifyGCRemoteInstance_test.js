@@ -13,7 +13,8 @@ instances.add(['pgsql11', 'postgresql', 'pg_stat_database_xact_rollback']);
 instances.add(['pgsql10', 'postgresql', 'pg_stat_database_xact_rollback']);
 instances.add(['pgsql96', 'postgresql', 'pg_stat_database_xact_rollback']);
 instances.add(['mysql57', 'mysql', 'mysql_global_status_max_used_connections']);
-instances.add(['mysql56', 'mysql', 'mysql_global_status_max_used_connections']);
+// To-DO bring back mysql56 GCP tests
+//instances.add(['mysql56', 'mysql', 'mysql_global_status_max_used_connections']);
 instances.add(['mysql80', 'mysql', 'mysql_global_status_max_used_connections']);
 
 // Mapping here to avoid datatables to add those details to test names in allure report
