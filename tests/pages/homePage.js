@@ -59,7 +59,7 @@ module.exports = {
         availableVersion: '[data-qa="update-latest-version"]',
         inProgressMessage: 'Upgrade in progress',
         successUpgradeMessage: 'PMM has been successfully upgraded to version',
-        whatsNewLink: '//a[@rel="noreferrer"]',
+        whatsNewLink: '$update-news-link',
       },
       latest: {
         checkUpdateButton: '$update-last-check-button',
