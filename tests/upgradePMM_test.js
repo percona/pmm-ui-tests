@@ -96,7 +96,7 @@ Scenario(
   },
 );
 
-xScenario(
+Scenario(
   'PMM-T289 Verify Whats New link is presented on Update Widget @ami-upgrade @pre-upgrade @pmm-upgrade',
   async ({ I, homePage }) => {
     const locators = homePage.getLocators(versionMinor);
