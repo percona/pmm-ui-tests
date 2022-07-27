@@ -322,6 +322,7 @@ module.exports = {
     iaSwitchSelector: locate('$advanced-alerting').find('label'),
     dbaasSwitchSelectorInput: locate('$advanced-dbaas').find('input'),
     dbaasSwitchSelector: locate('$advanced-dbaas').find('label'),
+    dbaasSwitchItem: '$advanced-dbaas',
     telemetryLabel: locate('$advanced-telemetry').find('span'),
     tooltipText: locate('div').withAttr({ class: 'popper__background' }).find('span'),
     tooltipReadMoreLink: locate('div').withAttr({ class: 'popper__background' }).find('a'),

@@ -71,12 +71,14 @@ Data(versionVerification).Scenario('PMM-T760 Verify Manage Components Versions @
     await dbaasManageVersionPage.verifyAllVersionSupportedByDefault(component, count);
   });
 
-Scenario('PMM-T765 Verify Manage Components Versions @dbaas',
+Scenario('PMM-T765 Verify Manage Components Versions' + 'PMM-T1315 - Verify DBaaS naming @dbaas',
   async ({
     I, dbaasPage, dbaasAPI, dbaasManageVersionPage,
   }) => {
     I.amOnPage(dbaasPage.url);
     dbaasPage.checkCluster(clusterName, false);
+    I.see(dbaasManageVersionPage.operatorVersion.PXC, dbaasPage.tabs.dbClusterTab.fields.clusterTableRow);
+    I.see(dbaasManageVersionPage.operatorVersion.PSMDB, dbaasPage.tabs.dbClusterTab.fields.clusterTableRow);
     dbaasManageVersionPage.waitForManageVersionPopup(clusterName);
     I.waitForText(
       dbaasManageVersionPage.manageVersion.dialogTitle,
