@@ -71,7 +71,8 @@ Data(versionVerification).Scenario('PMM-T760 Verify Manage Components Versions @
     await dbaasManageVersionPage.verifyAllVersionSupportedByDefault(component, count);
   });
 
-Scenario('PMM-T765 Verify Manage Components Versions' + 'PMM-T1315 - Verify DBaaS naming @dbaas',
+Scenario('PMM-T765 Verify Manage Components Versions' 
+ + 'PMM-T1315 - Verify DBaaS naming @dbaas',
   async ({
     I, dbaasPage, dbaasAPI, dbaasManageVersionPage,
   }) => {

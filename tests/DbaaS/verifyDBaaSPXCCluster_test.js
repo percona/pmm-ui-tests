@@ -246,7 +246,8 @@ Scenario('PMM-T525 PMM-T528 Verify Suspend & Resume for DB Cluster Works as expe
     await dbaasActionsPage.deleteXtraDBCluster(dbClusterRandomName, clusterName);
   });
 
-Scenario('Verify Adding PMM-Server Public Address via Settings works' + 'PMM-T1315 - Verify DBaaS naming @dbaas',
+Scenario('Verify Adding PMM-Server Public Address via Settings works' 
+ + 'PMM-T1315 - Verify DBaaS naming @dbaas',
   async ({ I, pmmSettingsPage }) => {
     await pmmSettingsPage.openAdvancedSettings();
     await pmmSettingsPage.verifyTooltip(pmmSettingsPage.tooltips.advancedSettings.publicAddress);
