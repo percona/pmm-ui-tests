@@ -1,9 +1,11 @@
 const pages = new DataTable(['page']);
+const { alertsAPI } = inject();
 
 pages.add(['channels']);
 // Commenting due to recent changes done with https://jira.percona.com/browse/PMM-8091
 // pages.add(['templates']);
 pages.add(['rules']);
+pages.add(['alerts']);
 
 Feature('IA: Pagination').retry(1);
 
@@ -24,11 +26,12 @@ After(async ({ channelsAPI, rulesAPI, templatesAPI }) => {
 });
 
 Data(pages).Scenario(
-  'PMM-T632 PMM-T697 PMM-T701 Verify Pagination navigation @ia @grafana-pr',
+  'PMM-T632 PMM-T697 PMM-T701 PMM-T1251 Verify Pagination navigation @ia @grafana-pr',
   async ({
     I, iaCommon, current,
   }) => {
     const isTemplatesPage = current.page === 'templates';
+    const isAlertsPage = current.page === 'alerts';
     const initialButtonsState = {
       firstPageButton: 'disabled',
       prevPageButton: 'disabled',
@@ -46,6 +49,9 @@ Data(pages).Scenario(
     }
 
     await createEntities(1);
+
+    if (isAlertsPage) await alertsAPI.waitForAlerts(180, 1);
+
     I.refreshPage();
 
     await iaCommon.verifyPaginationButtonsState(initialButtonsState);
@@ -60,6 +66,9 @@ Data(pages).Scenario(
     isTemplatesPage
       ? await createEntities(13)
       : await createEntities(25);
+
+    // Wait for alerts to appear
+    if (isAlertsPage) await alertsAPI.waitForAlerts(240, 26);
 
     I.say(`1st checkpoint, URL = ${url}, Count of elements = ${(await getListOfItems()).length}`);
 
@@ -94,6 +103,9 @@ Data(pages).Scenario(
 
     // Create entities for to have 3 pages (51 entities in sum)
     await createEntities(25);
+
+    // Wait for alerts to appear
+    if (isAlertsPage) await alertsAPI.waitForAlerts(240, 51);
 
     I.say(`2nd checkpoint, URL = ${url}, Count of elements = ${(await getListOfItems()).length}`);
     I.refreshPage();
@@ -171,14 +183,18 @@ Data(pages).Scenario(
 
 // nightly candidate
 Data(pages).Scenario(
-  'PMM-T662 PMM-T698 PMM-T702 PMM-T631 Pagination rows per page persistence @ia',
+  'PMM-T662 PMM-T698 PMM-T702 PMM-T631 PMM-T1251 Pagination rows per page persistence @ia',
   async ({
     I, iaCommon, current,
   }) => {
     const isTemplatesPage = current.page === 'templates';
+    const isAlertsPage = current.page === 'alerts';
     const { createEntities, url, getListOfItems } = iaCommon.getCreateEntitiesAndPageUrl(current.page);
 
     await createEntities(1);
+
+    // Wait for alerts to appear
+    if (isAlertsPage) await alertsAPI.waitForAlerts(240, 1);
 
     I.amOnPage(url);
 
@@ -194,6 +210,9 @@ Data(pages).Scenario(
     isTemplatesPage
       ? await createEntities(13)
       : await createEntities(25);
+
+    // Wait for alerts to appear
+    if (isAlertsPage) await alertsAPI.waitForAlerts(240, 26);
 
     // Rows per page is '50' after refreshing a page
     I.say(`1st checkpoint, URL = ${url}, Count of elements = ${(await getListOfItems()).length}`);
@@ -225,6 +244,9 @@ Data(pages).Scenario(
     // Create 75 entities more to have 101 in sum
     await createEntities(75);
 
+    // Wait for alerts to appear
+    if (isAlertsPage) await alertsAPI.waitForAlerts(240, 101);
+
     I.say(`2nd checkpoint, URL = ${url}, Count of elements = ${(await getListOfItems()).length}`);
     I.refreshPage();
 
@@ -252,17 +274,21 @@ Data(pages).Scenario(
 
 // nightly candidate
 Data(pages).Scenario(
-  'PMM-T631 PMM-T633 Changing rows per page resets view to 1 page @ia',
+  'PMM-T631 PMM-T633 PMM-T1251 Changing rows per page resets view to 1 page @ia',
   async ({
     I, iaCommon, current,
   }) => {
     const isTemplatesPage = current.page === 'templates';
+    const isAlertsPage = current.page === 'alerts';
     const { createEntities, url, getListOfItems } = iaCommon.getCreateEntitiesAndPageUrl(current.page);
 
     // Create entities for to have 2 pages
     isTemplatesPage
       ? await createEntities(89)
       : await createEntities(101);
+
+    // Wait for alerts to appear
+    if (isAlertsPage) await alertsAPI.waitForAlerts(240, 101);
 
     I.say(`Checkpoint, URL = ${url}, Count of elements = ${(await getListOfItems()).length}`);
     I.amOnPage(url);

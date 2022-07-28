@@ -101,69 +101,6 @@ Scenario(
   },
 );
 
-Scenario(
-  'PMM-T1259 - Adding Load to Postgres test database and verifying PMM-Agent and PG_STAT_MONITOR QAN agent is in running status @not-ui-pipeline',
-  async ({ I }) => {
-    await I.pgExecuteQueryOnDemand('SELECT now();', connection);
-
-    const output = await I.pgExecuteQueryOnDemand(`SELECT * FROM pg_database where datname= '${database}';`, connection);
-
-    if (output.rows.length === 0) {
-      await I.pgExecuteQueryOnDemand(`Create database ${database};`, connection);
-    }
-
-    connection.database = database;
-    await I.verifyCommand(`docker exec ${container_name} pgbench -i -s 100 --username=pmm ${database}`);
-    await I.verifyCommand(`docker exec ${container_name} pgbench -c 2 -j 2 -T 60 --username=pmm ${database}`);
-    connection.database = 'postgres';
-    // wait for pmm-agent to push the execution as part of next bucket to clickhouse
-    I.wait(120);
-    await I.verifyCommand(`docker exec ${container_name} pmm-admin list | grep "postgresql_pgstatmonitor_agent" | grep "Running"`);
-  },
-);
-
-Scenario(
-  'PMM-T1259 - Verifying data in Clickhouse and comparing with PGSM output @not-ui-pipeline',
-  async ({ I, qanAPI }) => {
-    const toStart = new Date();
-    let pgsm_output;
-    // using 5 mins as time range hence multiplied 5 min to milliseconds value for
-    const fromStart = new Date(toStart - (5 * 60000));
-
-    if (version < 13) {
-      pgsm_output = await I.pgExecuteQueryOnDemand(`select query, queryid, planid, query_plan, calls, total_time as total_exec_time, mean_time as mean_exec_time  from pg_stat_monitor where datname='${database}';`, connection);
-    } else {
-      pgsm_output = await I.pgExecuteQueryOnDemand(`select query, queryid, planid, query_plan, calls, total_exec_time, mean_exec_time  from pg_stat_monitor where datname='${database}';`, connection);
-    }
-
-    for (let i = 0; i < pgsm_output.rows.length; i++) {
-      const response = await qanAPI.getMetricByFilterAPI(pgsm_output.rows[i].queryid, 'queryid', labels, fromStart.toISOString(), toStart.toISOString());
-      // we do this conversion because clickhouse has values in micro seconds, while PGSM has in milliseconds.
-      const total_exec_time = parseFloat((pgsm_output.rows[i].total_exec_time / 1000).toFixed(7));
-      const average_exec_time = parseFloat((pgsm_output.rows[i].mean_exec_time / 1000).toFixed(7));
-      const query_cnt = parseInt(pgsm_output.rows[i].calls, 10);
-      const { query, queryid } = pgsm_output.rows[i];
-
-      if (response.status !== 200) {
-        I.say(`Expected queryid with id as ${queryid} and query as ${query} to have data in clickhouse but got response as ${response.code}`);
-      } else {
-        const clickhouse_sum = parseFloat((response.data.metrics.query_time.sum).toFixed(7));
-        const clickhouse_avg = parseFloat((response.data.metrics.query_time.avg).toFixed(7));
-
-        // Due to rounding difference we sometimes have values which differ in points 0.0000001
-        const avg_diff = Number(average_exec_time - clickhouse_avg).toFixed(7);
-        const total_diff = Number(total_exec_time - clickhouse_sum).toFixed(7);
-
-        if (query !== 'SELECT version()' && query !== 'SELECT /* pmm-agent:pgstatmonitor */ version()' && query !== 'END') {
-          assert.ok(total_diff <= 0.0000001, `Expected Total Query Time Metrics to be same for query ${query} with id as ${queryid} found ${clickhouse_sum} on clickhouse while PGSM has ${total_exec_time}`);
-          assert.ok(avg_diff <= 0.0000001, `Expected Average Query Time Metrics to be same for query ${query} with id as ${queryid} found ${clickhouse_avg} on clickhouse while PGSM has ${average_exec_time}`);
-          assert.ok(response.data.metrics.query_time.cnt === query_cnt, `Expected Total Query Count Metrics to be same for query ${query} with id as ${queryid} found in clickhouse as ${response.data.metrics.query_time.cnt} while pgsm has value as ${query_cnt}`);
-        }
-      }
-    }
-  },
-);
-
 Data(filters).Scenario(
   'PMM-T1261 - Verify the "Command type" filter for Postgres @not-ui-pipeline @pgsm-pmm-integration',
   async ({
@@ -199,5 +136,188 @@ Scenario(
     dashboardPage.verifyMetricsExistence(dashboardPage.postgresqlInstanceSummaryDashboard.metrics);
     await dashboardPage.verifyThereAreNoGraphsWithNA();
     await dashboardPage.verifyThereAreNoGraphsWithoutData(1);
+  },
+);
+
+Scenario(
+  'PMM-T1259 - Adding Load to Postgres test database and verifying PMM-Agent and PG_STAT_MONITOR QAN agent is in running status @pgsm-pmm-integration @not-ui-pipeline',
+  async ({ I }) => {
+    await I.pgExecuteQueryOnDemand('SELECT now();', connection);
+    const db = `${database}_pgbench`;
+
+    const output = await I.pgExecuteQueryOnDemand(`SELECT * FROM pg_database where datname= '${db}';`, connection);
+
+    if (output.rows.length === 0) {
+      await I.pgExecuteQueryOnDemand(`Create database ${db};`, connection);
+    }
+
+    connection.database = db;
+    await I.verifyCommand(`docker exec ${container_name} pgbench -i -s 100 --username=pmm ${db}`);
+    await I.verifyCommand(`docker exec ${container_name} pgbench -c 2 -j 2 -T 300 --username=pmm ${db}`);
+    connection.database = 'postgres';
+    // wait for pmm-agent to push the execution as part of next bucket to clickhouse
+    I.wait(120);
+    await I.verifyCommand(`docker exec ${container_name} pmm-admin list | grep "postgresql_pgstatmonitor_agent" | grep "Running"`);
+  },
+);
+
+Scenario(
+  'PMM-T1259 - Verifying data in Clickhouse and comparing with PGSM output @pgsm-pmm-integration @not-ui-pipeline',
+  async ({ I, qanAPI }) => {
+    const toStart = new Date();
+    const db = `${database}_pgbench`;
+    let pgsm_output;
+    // using 5 mins as time range hence multiplied 5 min to milliseconds value for
+    const fromStart = new Date(toStart - (5 * 60000));
+
+    if (version < 13) {
+      pgsm_output = await I.pgExecuteQueryOnDemand(`select query, queryid, planid, query_plan, calls, total_time as total_exec_time, mean_time as mean_exec_time  from pg_stat_monitor where datname='${db}';`, connection);
+    } else {
+      pgsm_output = await I.pgExecuteQueryOnDemand(`select query, queryid, planid, query_plan, calls, total_exec_time, mean_exec_time  from pg_stat_monitor where datname='${db}';`, connection);
+    }
+
+    for (let i = 0; i < pgsm_output.rows.length; i++) {
+      const response = await qanAPI.getMetricByFilterAPI(pgsm_output.rows[i].queryid, 'queryid', labels, fromStart.toISOString(), toStart.toISOString());
+      const {
+        total_exec_time,
+        average_exec_time,
+        query_cnt,
+      } = await qanAPI.getMetricsFromPGSM(db, pgsm_output.rows[i].queryid, connection);
+      const { query, queryid } = pgsm_output.rows[i];
+
+      if (response.status !== 200) {
+        I.say(`Expected queryid with id as ${queryid} and query as ${query} to have data in clickhouse but got response as ${response.code}`);
+      } else {
+        const clickhouse_sum = parseFloat((response.data.metrics.query_time.sum).toFixed(7));
+        const clickhouse_avg = parseFloat((response.data.metrics.query_time.avg).toFixed(7));
+
+        // Due to rounding difference we sometimes have values which differ in points 0.0000001
+        const avg_diff = Number(average_exec_time - clickhouse_avg).toFixed(7);
+        const total_diff = Number(total_exec_time - clickhouse_sum).toFixed(7);
+
+        if (query !== 'SELECT version()' && query !== 'SELECT /* pmm-agent:pgstatmonitor */ version()' && query !== 'END') {
+          assert.ok(total_diff <= 0.0000001, `Expected Total Query Time Metrics to be same for query ${query} with id as ${queryid} found ${clickhouse_sum} on clickhouse while PGSM has ${total_exec_time}`);
+          assert.ok(avg_diff <= 0.0000001, `Expected Average Query Time Metrics to be same for query ${query} with id as ${queryid} found ${clickhouse_avg} on clickhouse while PGSM has ${average_exec_time}`);
+          assert.ok(response.data.metrics.query_time.cnt === query_cnt, `Expected Total Query Count Metrics to be same for query ${query} with id as ${queryid} found in clickhouse as ${response.data.metrics.query_time.cnt} while pgsm has value as ${query_cnt}`);
+        }
+      }
+    }
+  },
+);
+
+Scenario(
+  'PMM-T1063 - Verify Application Name with pg_stat_monitor @pgsm-pmm-integration @not-ui-pipeline',
+  async ({
+    I, qanOverview, qanFilters, qanPage,
+  }) => {
+    // Set Application Name and run sample queries, wait for 60 seconds to see Data in QAN
+    const sql = await I.verifyCommand('cat testdata/pgsql/pgsm_applicationName.sql');
+    const applicationName = 'PMMT1063';
+
+    await I.pgExecuteQueryOnDemand(sql, connection);
+    I.wait(60);
+    await I.verifyCommand(`docker exec ${container_name} pmm-admin list | grep "postgresql_pgstatmonitor_agent" | grep "Running"`);
+    I.amOnPage(qanPage.url);
+    qanOverview.waitForOverviewLoaded();
+    I.waitForVisible(qanFilters.buttons.showSelected, 30);
+
+    qanFilters.applyFilterInSection('Application Name', applicationName);
+    qanOverview.waitForOverviewLoaded();
+    const count = await qanOverview.getCountOfItems();
+
+    assert.ok(parseInt(count, 10) === 5, `Expected only 5 Queries to show up for ${applicationName} based on the load script but found ${count}`);
+  },
+);
+
+Scenario(
+  'PMM-T1063 - Verify Top Query and Top QueryID with pg_stat_monitor @pgsm-pmm-integration @not-ui-pipeline',
+  async ({
+    I, qanOverview, qanFilters, qanPage, qanDetails,
+  }) => {
+    let pgsm_output;
+    const db = `${database}_topquery`;
+    const queryWithTopId = '(select $1 + $2)';
+    const topQuery = 'SELECT add2(1,2)';
+    const output = await I.pgExecuteQueryOnDemand(`SELECT * FROM pg_database where datname= '${db}';`, connection);
+
+    if (output.rows.length === 0) {
+      await I.pgExecuteQueryOnDemand(`Create database ${db};`, connection);
+    }
+
+    connection.database = db;
+    const sql = await I.verifyCommand('cat testdata/pgsql/pgsm_topQuery.sql');
+
+    await I.pgExecuteQueryOnDemand(sql, connection);
+    connection.database = 'postgres';
+    I.wait(60);
+    pgsm_output = await I.pgExecuteQueryOnDemand(`select query, queryid, top_queryid, top_query  from pg_stat_monitor where datname='${db}' and query like '${queryWithTopId}' and top_query IS NOT NULL;`, connection);
+    if (pgsm_output.rows.length === 0) {
+      // Need clarification on this workaround from PGSM team, looks like a bug <insufficient disk/shared space
+      pgsm_output = await I.pgExecuteQueryOnDemand(`select query, queryid, top_queryid, top_query  from pg_stat_monitor where datname='${db}' and query like '<insufficient disk/shared space' and top_query IS NOT NULL;`, connection);
+    }
+
+    for (let i = 0; i < pgsm_output.rows.length; i++) {
+      const topQueryId = pgsm_output.rows[i].top_queryid;
+      const queryId = pgsm_output.rows[i].queryid;
+      const pgsmTopQuery = pgsm_output.rows[i].top_query;
+      const pgsmQuery = pgsm_output.rows[i].query;
+
+      I.amOnPage(qanPage.url);
+      qanOverview.waitForOverviewLoaded();
+      I.waitForVisible(qanFilters.buttons.showSelected, 30);
+
+      qanFilters.applyFilterInSection('Database', db);
+      qanOverview.waitForOverviewLoaded();
+      qanOverview.searchByValue(queryId);
+      qanOverview.waitForOverviewLoaded();
+      qanOverview.selectRow(1);
+      I.waitForElement(qanDetails.elements.topQuery);
+      I.click(qanDetails.elements.topQuery);
+      qanOverview.waitForOverviewLoaded();
+      const queryid = await I.grabValueFrom(qanOverview.fields.searchBy);
+
+      assert.ok(pgsmTopQuery === topQuery, `Top Query for query ${pgsmQuery} found in pgsm view is ${pgsmTopQuery} while the expected query was ${topQuery}`);
+      assert.ok(queryid === topQueryId, `Top Query ID found in PGSM view was ${topQueryId} while the one present in QAN for ${queryWithTopId} is ${queryid}`);
+    }
+  },
+);
+
+Scenario(
+  'PMM-T1071 - Verify Histogram is displayed for each query with pg_stat_monitor @pgsm-pmm-integration @not-ui-pipeline',
+  async ({
+    I, qanOverview, qanFilters, qanPage, qanDetails,
+  }) => {
+    let countHistogram = 0;
+    const db = `${database}_histogram`;
+    const output = await I.pgExecuteQueryOnDemand(`SELECT * FROM pg_database where datname= '${db}';`, connection);
+
+    if (output.rows.length === 0) {
+      await I.pgExecuteQueryOnDemand(`Create database ${db};`, connection);
+    }
+
+    connection.database = db;
+    const sql = await I.verifyCommand('cat testdata/pgsql/pgsm_Histogram.sql');
+
+    await I.pgExecuteQueryOnDemand(sql, connection);
+    connection.database = 'postgres';
+    I.wait(60);
+    I.amOnPage(qanPage.url);
+    qanOverview.waitForOverviewLoaded();
+    I.waitForVisible(qanFilters.buttons.showSelected, 30);
+
+    qanFilters.applyFilterInSection('Database', db);
+    qanOverview.waitForOverviewLoaded();
+    const count = await qanOverview.getCountOfItems();
+
+    // Skipping the first one because thats the top query generated by select pg_sleep()
+    for (let i = 2; i <= count; i++) {
+      qanOverview.selectRow(i);
+      I.waitForElement(qanDetails.buttons.close, 30);
+      const count = await I.grabNumberOfVisibleElements(qanDetails.elements.histogramContainer);
+
+      countHistogram += count;
+    }
+
+    assert.ok(countHistogram > 5, `Expected Atleast 5 queries to have Histogram in query details, found ${countHistogram}`);
   },
 );
