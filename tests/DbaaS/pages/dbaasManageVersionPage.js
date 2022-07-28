@@ -4,7 +4,7 @@ module.exports = {
   loader: locate('$pmm-overlay-wrapper').find('//i[contains(@class,"fa-spinner")]'),
   operatorVersion: {
     PXC: 'Percona Operator for MySQL 1.11.0',
-    PSMDB: 'Percona Operator for MongoDB 1.12.0',
+    PSMDB: 'Percona Operator for MongoDB 1.11.0',
   },
   components: {
     PXC: {

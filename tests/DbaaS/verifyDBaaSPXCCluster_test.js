@@ -257,14 +257,14 @@ Scenario('Verify Adding PMM-Server Public Address via Settings works'
     I.click(pmmSettingsPage.fields.publicAddressButton);
     let publicAddress = await I.grabValueFrom(pmmSettingsPage.fields.publicAddressInput);
 
-    I.assertEqual(publicAddress, process.env.SERVER_IP,
-      `Expected the Public Address Input Field to Match ${process.env.SERVER_IP} but found ${publicAddress}`);
+    I.assertEqual(publicAddress, process.env.VM_IP,
+      `Expected the Public Address Input Field to Match ${process.env.VM_IP} but found ${publicAddress}`);
     pmmSettingsPage.applyChanges();
     I.refreshPage();
     await pmmSettingsPage.waitForPmmSettingsPageLoaded();
     publicAddress = await I.grabValueFrom(pmmSettingsPage.fields.publicAddressInput);
-    I.assertEqual(publicAddress, process.env.SERVER_IP,
-      `Expected the Public Address to be saved and Match ${process.env.SERVER_IP} but found ${publicAddress}`);
+    I.assertEqual(publicAddress, process.env.VM_IP,
+      `Expected the Public Address to be saved and Match ${process.env.VM_IP} but found ${publicAddress}`);
   });
 
 Scenario('PMM-T717 Verify insufficient resources warning @dbaas',
