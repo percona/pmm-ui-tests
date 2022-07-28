@@ -685,6 +685,8 @@ module.exports = {
       'Checked Transactions',
       'Transactions Row Validating',
       'Applied Transactions',
+      'Sent Transactions',
+      'Received Transactions Queue',
       'Rolled Back Transactions',
       'Transactions in the Queue for Checking',
       'Detected Conflicts',

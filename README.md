@@ -103,6 +103,7 @@ Execute command in the Project Root folder
     @pmm-ami                legacy/deprecated
     @not-ui-pipeline        legacy/deprecated
     @not-pr-pipeline        legacy/deprecated
+    @cli                    cli related tests
 
 
 ## Contributing
