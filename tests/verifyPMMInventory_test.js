@@ -235,7 +235,7 @@ Scenario(
     const nodeIfolder2 = await I.verifyCommand(`docker exec pmm-server ls /tmp/node_exporter/agent_id/${nodeId}/`);
 
     I.say(nodeIfolder2);
-    await I.verifyCommand('killall node_exporter');
+    await I.verifyCommand(`kill -9 ${processes}`);
 
     processes = await I.verifyCommand('pgrep node_exporter');
     I.say(processes);
