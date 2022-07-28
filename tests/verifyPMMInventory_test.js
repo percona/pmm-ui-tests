@@ -227,7 +227,7 @@ Scenario(
 
     const nodeId = await I.verifyCommand('docker exec pmm-server ls /tmp/node_exporter/agent_id/');
 
-    let processes = await I.verifyCommand('pgrep node_exporter');
+    let processes = await I.verifyCommand('pgrep node_exporter').split(' ');
 
     I.say(processes);
     I.say(nodeId);
@@ -235,7 +235,7 @@ Scenario(
     const nodeIfolder2 = await I.verifyCommand(`docker exec pmm-server ls /tmp/node_exporter/agent_id/${nodeId}/`);
 
     I.say(nodeIfolder2);
-    await I.verifyCommand(`kill -9 ${processes}`);
+    await I.verifyCommand(`kill -9 ${processes[0]}`);
 
     processes = await I.verifyCommand('pgrep node_exporter');
     I.say(processes);
