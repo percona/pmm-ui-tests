@@ -160,11 +160,15 @@ Scenario(
     await I.Authorize();
     await I.amOnPage(basePmmUrl + homePage.url);
     await I.waitForVisible('//*[contains(text(), "invalid username or password")]');
+    await I.unAuthorize();
+    await I.waitInUrl(homePage.landingPage);
     await I.Authorize('admin', 'newpass');
     await I.wait(1);
     await I.refreshPage();
     await I.waitForElement(homePage.fields.dashboardHeaderLocator, 60);
     await I.verifyCommand('docker exec -t pmm-server-password change-admin-password anotherpass');
+    await I.unAuthorize();
+    await I.waitInUrl(homePage.landingPage);
     await I.Authorize('admin', 'anotherpass');
     await I.wait(5);
     await I.refreshPage();
