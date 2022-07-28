@@ -3,9 +3,6 @@ const assert = require('assert');
 Feature('Tests for PMM_PUBLIC_ADDRESS environment variable');
 
 const dockerVersion = process.env.DOCKER_VERSION || 'perconalab/pmm-server:dev-latest';
-let portalUser;
-let adminToken;
-let freeOrg;
 const publicIPs = new DataTable(['testCase', 'publicAddress']);
 
 publicIPs.add(['PMM-T1173', '127.0.0.1']);
@@ -29,17 +26,10 @@ const runContainerWithPublicAddressVariableUpgrade = async (I, publicAddress) =>
 };
 
 Before(async ({ I, portalAPI }) => {
-  portalUser = await portalAPI.getUser();
-  await portalAPI.oktaCreateUser(portalUser);
-  adminToken = await portalAPI.getUserAccessToken(portalUser.email, portalUser.password);
-  freeOrg = await portalAPI.apiCreateOrg(adminToken);
-
   await I.Authorize('admin', 'admin');
 });
 
 After(async ({ I, portalAPI }) => {
-  await portalAPI.apiDeleteOrg(freeOrg.id, adminToken);
-  await portalAPI.oktaDeleteUserByEmail(portalUser.email);
   await I.verifyCommand('docker stop pmm-server-public-address');
   await I.verifyCommand('docker rm pmm-server-public-address');
 });
@@ -58,10 +48,6 @@ Data(publicIPs).Scenario(
     const setPublicAddress = await I.grabValueFrom(pmmSettingsPage.fields.publicAddressInput);
 
     assert.ok(setPublicAddress === publicAddress, 'Set public address does not equal to one specified in public address environment variable');
-
-    await I.amOnPage(basePmmUrl + perconaPlatformPage.url);
-    I.waitForVisible(perconaPlatformPage.elements.settingsContent, 30);
-    await perconaPlatformPage.connectToPortal(adminToken);
   },
 );
 
@@ -103,8 +89,5 @@ Scenario(
     const setPublicAddress = await I.grabValueFrom(pmmSettingsPage.fields.publicAddressInput);
 
     assert.ok(setPublicAddress === '127.0.0.1', 'Set public address does not equal to one specified in public address environment variable');
-    await I.amOnPage(basePmmUrl + perconaPlatformPage.url);
-    I.waitForVisible(perconaPlatformPage.elements.settingsContent, 30);
-    await perconaPlatformPage.connectToPortal(adminToken);
   },
 );
