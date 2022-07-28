@@ -227,24 +227,27 @@ Scenario(
 
     const nodeId = await I.verifyCommand('docker exec pmm-server ls /tmp/node_exporter/agent_id/');
 
-    let processes = await I.verifyCommand('pgrep node_exporter').split(' ');
+    let processIds = await I.verifyCommand('pgrep node_exporter');
 
-    I.say(processes);
+    I.say(processIds);
+    const processId = processIds.split(' ');
+
+    I.say(processId);
     I.say(nodeId);
     await I.verifyCommand(`docker exec pmm-server rm /tmp/node_exporter/agent_id/${nodeId}/webConfigPlaceholder`);
-    const nodeIfolder2 = await I.verifyCommand(`docker exec pmm-server ls /tmp/node_exporter/agent_id/${nodeId}/`);
+    const nodefolder2 = await I.verifyCommand(`docker exec pmm-server ls /tmp/node_exporter/agent_id/${nodeId}/`);
 
-    I.say(nodeIfolder2);
-    await I.verifyCommand(`kill -9 ${processes[0]}`);
+    I.say(nodefolder2);
+    await I.verifyCommand(`kill -9 ${processId[0]}`);
 
-    processes = await I.verifyCommand('pgrep node_exporter');
-    I.say(processes);
+    processIds = await I.verifyCommand('pgrep node_exporter');
+    I.say(processIds);
 
     const nodeId3 = await I.verifyCommand('docker exec pmm-server ls /tmp/node_exporter/agent_id/');
 
     I.say(nodeId3);
     await I.wait(15);
-    processes = await I.verifyCommand('pgrep node_exporter');
-    I.say(processes);
+    processIds = await I.verifyCommand('pgrep node_exporter');
+    I.say(processIds);
   },
 );
