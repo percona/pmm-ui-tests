@@ -18,6 +18,7 @@ services:
       - PERCONA_TEST_TELEMETRY_INTERVAL=10s
       - PERCONA_TEST_TELEMETRY_RETRY_BACKOFF=10s
       - PERCONA_TEST_PMM_CLICKHOUSE_ADDR=external-clickhouse:9000
+      - PERCONA_TEST_PMM_CLICKHOUSE_DATASOURCE_ADDR=external-clickhouse:8123
       - PERCONA_TEST_PMM_CLICKHOUSE_DATABASE=pmm
       - PERCONA_TEST_PMM_CLICKHOUSE_POOL_SIZE=1 
       - PERCONA_TEST_PMM_CLICKHOUSE_BLOCK_SIZE=65000
@@ -49,7 +50,7 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: pass
   external-clickhouse:
-    image: clickhouse/clickhouse-server:latest
+    image: clickhouse/clickhouse-server:22.5.2
     container_name: external-clickhouse
     healthcheck:
       test: ["CMD", "wget", "--spider", "-q", "localhost:8123/ping"]
