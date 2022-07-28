@@ -44,8 +44,9 @@ Scenario(
       I.click(adminPage.fields.metricTitle);
       adminPage.performPageDown(5);
       dashboardPage.verifyMetricsExistence(dashboardPage.mysqlInstanceSummaryDashboard.metrics);
-      // Should be 0 is 1 due to bug https://jira.percona.com/browse/PMM-10308.
-      await dashboardPage.verifyThereAreNoGraphsWithNA(1);
+      // eslint-disable-next-line no-inline-comments
+      await dashboardPage.verifyThereAreNoGraphsWithNA(1); // FIXME: 0 N/As once https://jira.percona.com/browse/PMM-10308 is fixed
+
       await dashboardPage.verifyThereAreNoGraphsWithoutData(5);
     }
   },
