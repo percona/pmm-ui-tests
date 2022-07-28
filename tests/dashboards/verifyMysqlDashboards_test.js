@@ -46,7 +46,6 @@ Scenario(
       dashboardPage.verifyMetricsExistence(dashboardPage.mysqlInstanceSummaryDashboard.metrics);
       // eslint-disable-next-line no-inline-comments
       await dashboardPage.verifyThereAreNoGraphsWithNA(1); // FIXME: 0 N/As once https://jira.percona.com/browse/PMM-10308 is fixed
-
       await dashboardPage.verifyThereAreNoGraphsWithoutData(5);
     }
   },
