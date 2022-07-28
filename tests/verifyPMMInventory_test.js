@@ -227,6 +227,9 @@ Scenario(
 
     const nodeId = await I.verifyCommand('docker exec pmm-server ls /tmp/node_exporter/agent_id/');
 
+    let processes = await I.verifyCommand('ps -aux');
+
+    I.say(processes);
     I.say(nodeId);
     await I.verifyCommand(`docker exec pmm-server rm /tmp/node_exporter/agent_id/${nodeId}/webConfigPlaceholder`);
     const nodeIfolder2 = await I.verifyCommand(`docker exec pmm-server ls /tmp/node_exporter/agent_id/${nodeId}/`);
@@ -234,8 +237,13 @@ Scenario(
     I.say(nodeIfolder2);
     await I.verifyCommand('pkill node_exporter');
 
+    processes = await I.verifyCommand('ps -aux');
+    I.say(processes);
+
     const nodeId3 = await I.verifyCommand('docker exec pmm-server ls /tmp/node_exporter/agent_id/');
 
     I.say(nodeId3);
+    processes = await I.verifyCommand('ps -aux');
+    I.say(processes);
   },
 );
