@@ -28,7 +28,7 @@ Before(async ({ I }) => {
 });
 
 Scenario(
-  'Adding Load to Postgres test database and verifying PMM-Agent and PG_STATEMENTS QAN agent is in running status @not-ui-pipeline @pgsm-pmm-integration',
+  'Adding Load to Postgres test database and verifying PMM-Agent and PG_STATEMENTS QAN agent is in running status @not-ui-pipeline @pgss-pmm-integration',
   async ({ I }) => {
     await I.pgExecuteQueryOnDemand('SELECT now();', connection);
 
@@ -50,7 +50,7 @@ Scenario(
 );
 
 Scenario(
-  'Verifying data in Clickhouse and comparing with pgss output @not-ui-pipeline @pgsm-pmm-integration',
+  'Verifying data in Clickhouse and comparing with pgss output @not-ui-pipeline @pgss-pmm-integration',
   async ({ I, qanAPI }) => {
     const toStart = new Date();
     // using 5 mins as time range hence multiplied 5 min to milliseconds value for
