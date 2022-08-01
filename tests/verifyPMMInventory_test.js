@@ -251,7 +251,7 @@ Scenario(
 
     assert.ok(folderRestart.length > 0, 'webConfigPlaceholder was not recreated after restart');
 
-    await I.verifyCommand('docker exec pmm-server rm /tmp/node_exporter/');
+    await I.verifyCommand('docker exec pmm-server rm -r /tmp/node_exporter/');
     let restartProcessId = nodeExporterRestart.split(/(\s+)/);
 
     await I.verifyCommand(`sudo kill -9 ${restartProcessId[0]}`);
