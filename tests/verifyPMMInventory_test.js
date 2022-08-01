@@ -230,7 +230,7 @@ Scenario(
     let processIds = await I.verifyCommand('pgrep node_exporter');
 
     I.say(processIds);
-    const processId = processIds.split(' ');
+    const processId = processIds.split(/(\s+)/);
 
     I.say(processId);
     I.say(nodeId);
