@@ -299,8 +299,8 @@ module.exports = {
       },
       gc_mysql56: {
         type: 'mysql',
-        // service name used here intentionally doesn't include mysql because we are only checking exporter agent status
-        serviceName: 'gcp56',
+        // service name used here intentionally include mysql because we are checking QAN and exporter agent status both
+        serviceName: 'gc-mysql56',
         port: '3306',
         host: secret(process.env.GCP_MYSQL56_HOST),
         username: secret(process.env.GCP_MYSQL56_USER),
