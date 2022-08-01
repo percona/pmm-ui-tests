@@ -245,7 +245,7 @@ Scenario(
     await I.wait(15);
     processIds = await I.verifyCommand('pgrep node_exporter');
     I.say(processIds);
-    const nodeId3 = await I.verifyCommand('docker exec pmm-server ls /tmp/node_exporter/agent_id/');
+    const nodeId3 = await I.verifyCommand(`docker exec pmm-server ls /tmp/node_exporter/agent_id/${nodeId}/`);
 
     I.say(nodeId3);
   },
