@@ -239,7 +239,7 @@ Scenario(
 
     I.say(nodefolder2);
     I.say(`test${processId[0]}test`);
-    await I.verifyCommand(`kill -9 ${processId[0]}`);
+    await I.verifyCommand(`sudo kill -9 ${processId[0]}`);
 
     processIds = await I.verifyCommand('pgrep node_exporter');
     I.say(processIds);
