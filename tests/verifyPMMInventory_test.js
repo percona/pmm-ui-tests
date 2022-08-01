@@ -228,19 +228,13 @@ Scenario(
     const nodeId = await I.verifyCommand('docker exec pmm-server ls /tmp/node_exporter/agent_id/');
 
     let processIds = await I.verifyCommand('pgrep node_exporter');
-
-    I.say(processIds);
     const processId = processIds.split(/(\s+)/);
 
-    I.say(processId);
-    I.say(nodeId);
     await I.verifyCommand(`docker exec pmm-server rm /tmp/node_exporter/agent_id/${nodeId}/webConfigPlaceholder`);
-    const nodefolder2 = await I.verifyCommand(`docker exec pmm-server ls /tmp/node_exporter/agent_id/${nodeId}/`);
+    const nodeFolder2 = await I.verifyCommand(`docker exec pmm-server ls /tmp/node_exporter/agent_id/${nodeId}/`);
 
-    I.say(nodefolder2);
-    I.say(`test${processId[0]}test`);
+    I.say(`Length of response is: ${nodeFolder2.length}`);
     await I.verifyCommand(`sudo kill -9 ${processId[0]}`);
-
     processIds = await I.verifyCommand('pgrep node_exporter');
     if (processId.length > 0) {
       await I.verifyCommand(`sudo kill -9 ${processIds}`);
