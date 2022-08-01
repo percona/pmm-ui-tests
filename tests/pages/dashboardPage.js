@@ -831,6 +831,18 @@ module.exports = {
     ],
   },
 
+  mysqlAmazonAuroraDetails: {
+    url: 'graph/d/mysql-amazonaurora/mysql-amazon-aurora-details?orgId=1&refresh=1m',
+    metrics: [
+      'Amazon Aurora Transaction Commits',
+      'Amazon Aurora Load',
+      'Aurora Memory Used',
+      'Amazon Aurora Statement Latency',
+      'Amazon Aurora Special Command Counters',
+      'Amazon Aurora Problems',
+    ],
+  },
+
   fields: {
     breadcrumbs: {
       folder: locate('.page-toolbar').find('[aria-label="Search links"] > a'),
