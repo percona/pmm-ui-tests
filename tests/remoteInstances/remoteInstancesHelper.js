@@ -82,6 +82,11 @@ const remoteInstanceStatus = {
       enabled: true,
     },
   },
+  aurora: {
+    aurora2: {
+      enabled: true,
+    },
+  },
 };
 
 let SERVER_HOST; let EXTERNAL_EXPORTER_HOST; let DB_CONFIG = {};
@@ -233,6 +238,24 @@ module.exports = {
         clusterName: 'aws_postgresql_12',
         port: 5432,
       },
+      aurora: {   
+        aws_access_key: process.env.PMM_QA_AWS_ACCESS_KEY_ID,
+        aws_secret_key: process.env.PMM_QA_AWS_ACCESS_KEY,
+        port: '42001',
+        username: 'pmm',
+        aurora2: {
+          address: process.env.PMM_QA_AURORA2_MYSQL_HOST,
+          password: process.env.PMM_QA_AURORA2_MYSQL_PASSWORD,
+          instance_id: "pmm-qa-aurora2-mysql-instance-1",
+          cluster_name: 'aws_aurora2',
+        },
+        aurora3: {
+          address: process.env.PMM_QA_AURORA3_MYSQL_HOST,
+          password: process.env.PMM_QA_AURORA3_MYSQL_PASSWORD,
+          instance_id: "pmm-qa-aurora3-mysql-instance-1",
+          cluster_name: 'aws_aurora3',
+        },
+      },
     },
     azure: {
       azure_client_id: secret(process.env.AZURE_CLIENT_ID),
@@ -367,10 +390,11 @@ module.exports = {
     mongodb: (remoteInstanceStatus.mongodb.psmdb_4_2.enabled ? 'MongoDB' : undefined),
     proxysql: (remoteInstanceStatus.proxysql.proxysql_2_1_1.enabled ? 'ProxySQL' : undefined),
     rds: (remoteInstanceStatus.aws.aws_rds_5_7.enabled ? 'RDS' : undefined),
+    rdsAurora: (remoteInstanceStatus.aurora.aurora2.enabled ? 'RDSAurora' : undefined),
     postgresGC: (remoteInstanceStatus.gc.gc_postgresql.enabled ? 'postgresGC' : undefined),
   },
 
-  // Generic object for each service type, used by both UI/Upgrade jobs depending on the service being used.
+  // Generic object for each service type, used by both UI/Upgrade jobs depending on the service being used - don't add RDS here
   serviceTypes: {
     mysql: (
       remoteInstanceStatus.mysql.ps_5_7.enabled ? {
@@ -441,6 +465,7 @@ module.exports = {
     proxysql: (remoteInstanceStatus.proxysql.proxysql_2_1_1.enabled ? 'proxysql_upgrade_service' : undefined),
     postgresql: (remoteInstanceStatus.postgresql.pdpgsql_13_3.enabled ? 'postgres_upgrade_service' : undefined),
     rds: (remoteInstanceStatus.aws.aws_rds_5_7.enabled ? 'mysql_rds_uprgade_service' : undefined),
+    rdsaurora: (remoteInstanceStatus.aurora.aurora2.enabled ? 'aurora_rds_upgrade_service' : undefined),
     postgresgc: (remoteInstanceStatus.gc.gc_postgresql.enabled ? 'postgresql_GC_remote_new' : undefined),
   },
 
@@ -454,7 +479,7 @@ module.exports = {
   },
 
   // Used by Upgrade Job to test QAN filters
-  qanFilters: ['mysql', 'mongodb', 'postgresql', 'rds'],
+  qanFilters: ['mysql', 'mongodb', 'postgresql', 'rds', 'rdsaurora'],
 
   getInstanceStatus(instance) {
     return remoteInstanceStatus[Object.keys(remoteInstanceStatus).filter((dbtype) => dbtype === instance)];
