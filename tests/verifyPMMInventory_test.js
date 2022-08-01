@@ -246,6 +246,7 @@ Scenario(
       await I.verifyCommand(`sudo kill -9 ${processIds}`);
     }
 
+    processIds = await I.verifyCommand('pgrep node_exporter');
     I.say(processIds);
 
     const nodeId3 = await I.verifyCommand('docker exec pmm-server ls /tmp/node_exporter/agent_id/');
