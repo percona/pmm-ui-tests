@@ -243,10 +243,30 @@ Scenario(
 
     await I.verifyCommand('pgrep node_exporter', '', 'fail');
     await I.wait(15);
-    processIds = await I.verifyCommand('pgrep node_exporter');
-    I.say(processIds);
-    const nodeId3 = await I.verifyCommand(`docker exec pmm-server ls /tmp/node_exporter/agent_id/${nodeId}/`);
 
-    I.say(nodeId3);
+    const nodeExporterRestart = await I.verifyCommand('pgrep node_exporter');
+
+    assert.ok(nodeExporterRestart.length > 0, 'Node exporter is not restarted');
+    const folderRestart = await I.verifyCommand(`docker exec pmm-server ls /tmp/node_exporter/agent_id/${nodeId}/`);
+
+    assert.ok(folderRestart.length > 0, 'webConfigPlaceholder was not recreated after restart');
+
+    await I.verifyCommand('docker exec pmm-server rm /tmp/node_exporter/');
+    let restartProcessId = nodeExporterRestart.split(/(\s+)/);
+
+    await I.verifyCommand(`sudo kill -9 ${restartProcessId[0]}`);
+    restartProcessId = await I.verifyCommand('pgrep node_exporter');
+    if (restartProcessId.length > 0) {
+      await I.verifyCommand(`sudo kill -9 ${restartProcessId}`);
+    }
+
+    await I.verifyCommand('pgrep node_exporter', '', 'fail');
+    await I.wait(15);
+    const nodeExporterRemoved = await I.verifyCommand('pgrep node_exporter');
+
+    assert.ok(nodeExporterRemoved.length > 0, 'Node exporter is not restarted');
+    const folderRemoveNodeExporter = await I.verifyCommand(`docker exec pmm-server ls /tmp/node_exporter/agent_id/${nodeId}/`);
+
+    assert.ok(folderRemoveNodeExporter.length > 0, 'webConfigPlaceholder was not recreated after restart');
   },
 );
