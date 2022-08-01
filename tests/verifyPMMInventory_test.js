@@ -233,21 +233,20 @@ Scenario(
     await I.verifyCommand(`docker exec pmm-server rm /tmp/node_exporter/agent_id/${nodeId}/webConfigPlaceholder`);
     const nodeFolder2 = await I.verifyCommand(`docker exec pmm-server ls /tmp/node_exporter/agent_id/${nodeId}/`);
 
-    I.say(`Length of response is: ${nodeFolder2.length}`);
+    assert.ok(nodeFolder2.length === 0, 'folder webConfigPlaceholder was not removed.');
+
     await I.verifyCommand(`sudo kill -9 ${processId[0]}`);
     processIds = await I.verifyCommand('pgrep node_exporter');
     if (processId.length > 0) {
       await I.verifyCommand(`sudo kill -9 ${processIds}`);
     }
 
-    processIds = await I.verifyCommand('pgrep node_exporter', '', 'fail');
-    I.say(processIds);
-
-    const nodeId3 = await I.verifyCommand('docker exec pmm-server ls /tmp/node_exporter/agent_id/');
-
-    I.say(nodeId3);
+    await I.verifyCommand('pgrep node_exporter', '', 'fail');
     await I.wait(15);
     processIds = await I.verifyCommand('pgrep node_exporter');
     I.say(processIds);
+    const nodeId3 = await I.verifyCommand('docker exec pmm-server ls /tmp/node_exporter/agent_id/');
+
+    I.say(nodeId3);
   },
 );
