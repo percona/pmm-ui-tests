@@ -682,10 +682,11 @@ module.exports = {
       'Replication Delay',
       'Transaction Apply Time',
       'Transaction Time Inside the Local Queue',
-      'Transactions Details',
       'Checked Transactions',
       'Transactions Row Validating',
       'Applied Transactions',
+      'Sent Transactions',
+      'Received Transactions Queue',
       'Rolled Back Transactions',
       'Transactions in the Queue for Checking',
       'Detected Conflicts',
@@ -827,6 +828,18 @@ module.exports = {
       'Memory Usage',
       'Threads',
       'Network  Usage',
+    ],
+  },
+
+  mysqlAmazonAuroraDetails: {
+    url: 'graph/d/mysql-amazonaurora/mysql-amazon-aurora-details?orgId=1&refresh=1m',
+    metrics: [
+      'Amazon Aurora Transaction Commits',
+      'Amazon Aurora Load',
+      'Aurora Memory Used',
+      'Amazon Aurora Statement Latency',
+      'Amazon Aurora Special Command Counters',
+      'Amazon Aurora Problems',
     ],
   },
 

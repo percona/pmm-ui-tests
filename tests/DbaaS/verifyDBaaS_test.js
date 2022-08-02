@@ -40,19 +40,21 @@ Before(async ({ I }) => {
 
 Scenario(
   'PMM-T426 - Verify adding new Kubernetes cluster minikube, PMM-T428 - Verify adding new Kubernetes cluster with same name, '
-  + 'PMM-T431 -Verify unregistering Kubernetes cluster, PMM-T1158 - Verify warning about unset public address @dbaas',
+  + 'PMM-T431 - Verify unregistering Kubernetes cluster, PMM-T1158 - Verify warning about unset public address @dbaas',
   async ({ I, dbaasPage, settingsAPI }) => {
     I.amOnPage(dbaasPage.url);
     I.waitForVisible(dbaasPage.tabs.kubernetesClusterTab.addKubernetesClusterButtonInTable, 30);
     I.click(dbaasPage.tabs.kubernetesClusterTab.addKubernetesClusterButton);
     I.seeElement(dbaasPage.tabs.kubernetesClusterTab.modalWindow);
     I.waitForElement(dbaasPage.tabs.dbClusterTab.monitoringWarningLocator, 30);
+    I.waitForText(dbaasPage.monitoringWarningMessage, 30);
     I.click(dbaasPage.tabs.kubernetesClusterTab.closeButton);
     await settingsAPI.changeSettings({ publicAddress: process.env.VM_IP });
     I.amOnPage(dbaasPage.url);
     I.click(dbaasPage.tabs.kubernetesClusterTab.addKubernetesClusterButton);
     I.seeElement(dbaasPage.tabs.kubernetesClusterTab.modalWindow);
     I.dontSeeElement(dbaasPage.tabs.dbClusterTab.monitoringWarningLocator, 30);
+    I.dontSee(dbaasPage.monitoringWarningMessage);
     I.click(dbaasPage.tabs.kubernetesClusterTab.closeButton);
     I.dontSeeElement(dbaasPage.tabs.kubernetesClusterTab.modalWindow);
     I.click(dbaasPage.tabs.kubernetesClusterTab.addKubernetesClusterButton);
@@ -151,8 +153,6 @@ Scenario('PMM-T728 Verify DB Cluster Tab Page Elements & Steps Background @dbaas
     I.click(dbaasPage.tabs.dbClusterTab.dbClusterTab);
     I.waitForEnabled(dbaasPage.tabs.dbClusterTab.dbClusterAddButtonTop, 10);
     I.click(dbaasPage.tabs.dbClusterTab.dbClusterAddButtonTop);
-    I.waitForElement(dbaasPage.tabs.dbClusterTab.monitoringWarningLocator, 30);
-    I.waitForText(dbaasPage.monitoringWarningMessage, 30);
     I.seeElement(dbaasPage.tabs.dbClusterTab.basicOptions.fields.clusterNameField);
     I.seeElement(dbaasPage.tabs.dbClusterTab.basicOptions.fields.kubernetesClusterDropDown);
     I.seeElement(dbaasPage.tabs.dbClusterTab.basicOptions.fields.dbClusterDatabaseTypeField);
@@ -192,8 +192,6 @@ Scenario('PMM-T456 PMM-T490 Verify DB Cluster Steps Background @dbaas',
     I.dontSeeElement(adminPage.fields.timePickerMenu);
     I.waitForEnabled(dbaasPage.tabs.dbClusterTab.dbClusterAddButtonTop, 10);
     I.click(dbaasPage.tabs.dbClusterTab.dbClusterAddButtonTop);
-    I.waitForElement(dbaasPage.tabs.dbClusterTab.monitoringWarningLocator, 30);
-    I.waitForText(dbaasPage.monitoringWarningMessage, 30);
     await adminPage.verifyBackgroundColor(dbaasPage.tabs.dbClusterTab.optionsCountLocator(1), 'rgb(235, 123, 24)');
     await adminPage.verifyBackgroundColor(dbaasPage.tabs.dbClusterTab.optionsCountLocator(2), 'rgb(142, 142, 142)');
     I.click(dbaasPage.tabs.dbClusterTab.optionsCountLocator(2));
