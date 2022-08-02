@@ -56,6 +56,7 @@ Scenario(
     qanFilters.waitForFiltersToLoad();
     I.seeElement(qanDetails.root);
     adminPage.setAbsoluteTimeRange(`${date} 00:00:00`, `${date} 23:59:59`);
+    I.say(await I.grabCurrentUrl());
     I.seeInCurrentUrl(`from=${fromString}&to=${toString}`);
     I.dontSeeElement(qanDetails.root);
     qanOverview.selectRow(1);
@@ -154,6 +155,7 @@ Scenario(
 
     adminPage.setAbsoluteTimeRange(from, to);
     qanOverview.waitForOverviewLoaded();
+    I.say(await I.grabCurrentUrl());
     I.seeInCurrentUrl(fromToString);
     I.click(qanOverview.buttons.copyButton);
 
