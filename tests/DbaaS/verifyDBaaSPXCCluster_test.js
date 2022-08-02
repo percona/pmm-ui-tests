@@ -4,7 +4,7 @@ const { dbaasAPI, dbaasPage } = inject();
 const clusterName = 'Kubernetes_Testing_Cluster_Minikube';
 const pxc_cluster_name = 'pxc-dbcluster';
 const pxc_cluster_type = 'DB_CLUSTER_TYPE_PXC';
-const mysql_recommended_version = 'MySQL 8.0.25';
+const mysql_recommended_version = 'MySQL 8.0.27';
 
 const pxcDBClusterDetails = new DataTable(['namespace', 'clusterName', 'node']);
 
