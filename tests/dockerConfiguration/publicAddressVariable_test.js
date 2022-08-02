@@ -37,7 +37,7 @@ After(async ({ I, portalAPI }) => {
 Data(publicIPs).Scenario(
   'PMM-T1173 PMM-T1174 Verify PMM_PUBLIC_ADDRESS env variable with IP @docker-configuration',
   async ({
-    I, pmmSettingsPage, current, perconaPlatformPage,
+    I, pmmSettingsPage, current,
   }) => {
     const basePmmUrl = 'http://127.0.0.1:8085/';
     const { publicAddress } = current;
@@ -77,9 +77,10 @@ Scenario(
 Scenario(
   'PMM-T117 Verify PMM_PUBLIC_ADDRESS env variable can be updated @docker-configuration',
   async ({
-    I, pmmSettingsPage, perconaPlatformPage,
+    I, pmmSettingsPage,
   }) => {
-    const basePmmUrl = 'http://127.0.0.1:8085/';
+    const serverIP = '127.0.0.1';
+    const basePmmUrl = `http://${serverIP}:8085/`;
 
     await runContainerWithPublicAddressVariable(I, '127.0.0.5');
     await I.amOnPage(basePmmUrl + pmmSettingsPage.advancedSettingsUrl);
@@ -88,6 +89,6 @@ Scenario(
     await pmmSettingsPage.addPublicAddress('127.0.0.1');
     const setPublicAddress = await I.grabValueFrom(pmmSettingsPage.fields.publicAddressInput);
 
-    assert.ok(setPublicAddress === '127.0.0.1', 'Set public address does not equal to one specified in public address environment variable');
+    assert.ok(setPublicAddress === serverIP, 'Set public address does not equal to one specified in public address environment variable');
   },
 );
