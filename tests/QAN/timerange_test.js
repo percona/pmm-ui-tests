@@ -48,19 +48,18 @@ Scenario(
     I, adminPage, qanDetails, qanFilters, qanOverview,
   }) => {
     const date = moment().format('YYYY-MM-DD');
-    const fromString = Date.parse(`${date} 00:00:00`);
-    const toString = Date.parse(`${date} 23:59:59`);
+    const fromString = moment(date).format('ddd MMM DD YYYY 00:00:00');
+    const toString = moment(date).format('ddd MMM DD YYYY 23:59:59');
 
     I.seeInCurrentUrl('from=now-5m&to=now');
     qanOverview.selectRow(1);
     qanFilters.waitForFiltersToLoad();
     I.seeElement(qanDetails.root);
     adminPage.setAbsoluteTimeRange(`${date} 00:00:00`, `${date} 23:59:59`);
-    let currentUrl = await I.grabCurrentUrl();
+    const currentUrl = decodeURI(await I.grabCurrentUrl());
 
-    currentUrl = currentUrl.replace('%20', '');
-    I.say(currentUrl);
-    I.seeInCurrentUrl(`from=${fromString}&to=${toString}`);
+    assert.ok(currentUrl.includes(`from=${fromString}`));
+    assert.ok(currentUrl.includes(`&to=${toString}`));
     I.dontSeeElement(qanDetails.root);
     qanOverview.selectRow(1);
     qanFilters.waitForFiltersToLoad();
@@ -156,10 +155,13 @@ Scenario(
     const from = moment(dateTime).subtract(1, 'hours').format('YYYY-MM-DD HH:mm:ss');
     const fromToString = `&from=${moment(from).format('x')}&to=${moment(to).format('x')}`;
 
-    adminPage.setAbsoluteTimeRange(from, to);
+    await adminPage.setAbsoluteTimeRange(from, to);
+
     qanOverview.waitForOverviewLoaded();
-    I.say(await I.grabCurrentUrl());
-    I.seeInCurrentUrl(fromToString);
+    const currentUrl = decodeURI(await I.grabCurrentUrl());
+
+    assert.ok(currentUrl.includes(`from=${moment(from).format('ddd MMM DD YYYY HH:mm:ss')}`));
+    assert.ok(currentUrl.includes(`&to=${moment(to).format('ddd MMM DD YYYY HH:mm:ss')}`));
     I.click(qanOverview.buttons.copyButton);
 
     const url = await I.grabTextFrom(qanOverview.elements.clipboardLink);
