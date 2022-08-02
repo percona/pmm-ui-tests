@@ -56,7 +56,10 @@ Scenario(
     qanFilters.waitForFiltersToLoad();
     I.seeElement(qanDetails.root);
     adminPage.setAbsoluteTimeRange(`${date} 00:00:00`, `${date} 23:59:59`);
-    I.say(await I.grabCurrentUrl());
+    let currentUrl = await I.grabCurrentUrl();
+
+    currentUrl = currentUrl.replace('%20', '');
+    I.say(currentUrl);
     I.seeInCurrentUrl(`from=${fromString}&to=${toString}`);
     I.dontSeeElement(qanDetails.root);
     qanOverview.selectRow(1);
