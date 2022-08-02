@@ -4,7 +4,7 @@ const { dbaasAPI, dbaasPage } = inject();
 const clusterName = 'Kubernetes_Testing_Cluster_Minikube';
 const pxc_cluster_name = 'pxc-dbcluster';
 const pxc_cluster_type = 'DB_CLUSTER_TYPE_PXC';
-const mysql_recommended_version = 'MySQL 8.0.25';
+const mysql_recommended_version = 'MySQL 8.0.27';
 
 const pxcDBClusterDetails = new DataTable(['namespace', 'clusterName', 'node']);
 
@@ -246,39 +246,26 @@ Scenario('PMM-T525 PMM-T528 Verify Suspend & Resume for DB Cluster Works as expe
     await dbaasActionsPage.deleteXtraDBCluster(dbClusterRandomName, clusterName);
   });
 
-// Skipped due to failure at I.waitForInvisible(dbaasPage.tabs.dbClusterTab.fields.clusterStatusDeleting, 60);
-xScenario('Verify Adding PMM-Server Public Address via Settings works @dbaas',
-  async ({ I, dbaasPage, pmmSettingsPage }) => {
+Scenario('Verify Adding PMM-Server Public Address via Settings works ' 
+ + 'PMM-T1315 - Verify DBaaS naming @dbaas',
+  async ({ I, pmmSettingsPage, settingsAPI }) => {
+    await settingsAPI.changeSettings({ publicAddress: '' });
     await pmmSettingsPage.openAdvancedSettings();
     await pmmSettingsPage.verifyTooltip(pmmSettingsPage.tooltips.advancedSettings.publicAddress);
     I.waitForVisible(pmmSettingsPage.fields.publicAddressInput, 30);
     I.seeElement(pmmSettingsPage.fields.publicAddressButton);
+    I.seeTextEquals('Database as a Service (DBaaS)', pmmSettingsPage.fields.dbaasSwitchItem);
     I.click(pmmSettingsPage.fields.publicAddressButton);
     let publicAddress = await I.grabValueFrom(pmmSettingsPage.fields.publicAddressInput);
 
-    I.assertEqual(publicAddress, process.env.SERVER_IP,
-      `Expected the Public Address Input Field to Match ${process.env.SERVER_IP} but found ${publicAddress}`);
+    I.assertEqual(publicAddress, process.env.VM_IP,
+      `Expected the Public Address Input Field to Match ${process.env.VM_IP} but found ${publicAddress}`);
     pmmSettingsPage.applyChanges();
     I.refreshPage();
     await pmmSettingsPage.waitForPmmSettingsPageLoaded();
     publicAddress = await I.grabValueFrom(pmmSettingsPage.fields.publicAddressInput);
-    I.assertEqual(publicAddress, process.env.SERVER_IP,
-      `Expected the Public Address to be saved and Match ${process.env.SERVER_IP} but found ${publicAddress}`);
-    await dbaasPage.waitForDbClusterTab(clusterName);
-    I.waitForInvisible(dbaasPage.tabs.kubernetesClusterTab.disabledAddButton, 30);
-    I.waitForInvisible(dbaasPage.tabs.kubernetesClusterTab.tableLoading, 30);
-    const count = await I.grabNumberOfVisibleElements(
-      dbaasPage.tabs.dbClusterTab.fields.clusterStatusDeleting,
-    );
-
-    if (count > 0) {
-      I.waitForInvisible(dbaasPage.tabs.dbClusterTab.fields.clusterStatusDeleting, 60);
-    }
-
-    I.click(dbaasPage.tabs.dbClusterTab.addDbClusterButton);
-    I.waitForVisible(dbaasPage.tabs.dbClusterTab.basicOptions.fields.clusterNameField, 30);
-    I.dontSeeElement(dbaasPage.tabs.dbClusterTab.monitoringWarningLocator, 30);
-    I.dontSee(dbaasPage.monitoringWarningMessage);
+    I.assertEqual(publicAddress, process.env.VM_IP,
+      `Expected the Public Address to be saved and Match ${process.env.VM_IP} but found ${publicAddress}`);
   });
 
 Scenario('PMM-T717 Verify insufficient resources warning @dbaas',
