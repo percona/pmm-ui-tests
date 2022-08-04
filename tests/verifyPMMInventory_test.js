@@ -234,8 +234,6 @@ Scenario(
     await I.verifyCommand(`docker exec pmm-server rm /tmp/node_exporter/agent_id/${nodeId}/webConfigPlaceholder`);
     const nodeFolder2 = await I.verifyCommand(`docker exec pmm-server ls /tmp/node_exporter/agent_id/${nodeId}/`);
 
-    I.say(nodeFolder2);
-
     assert.ok(nodeFolder2.length === 0, 'folder webConfigPlaceholder was not removed.');
 
     await I.verifyCommand(`sudo kill -9 ${processId[0]}`);
@@ -255,7 +253,7 @@ Scenario(
 
     const folderRestart = await I.verifyCommand(`docker exec pmm-server ls /tmp/node_exporter/agent_id/${nodeId}/`);
 
-    assert.ok(folderRestart.length, 'webConfigPlaceholder was not recreated after restart');
+    assert.ok(folderRestart.includes('webConfigPlaceholder'), 'webConfigPlaceholder was not recreated after restart');
 
     // remove node exporter folder
     await I.verifyCommand('docker exec pmm-server rm -r /tmp/node_exporter/');
@@ -275,7 +273,6 @@ Scenario(
     assert.ok(nodeExporterRemoved.length, 'Node exporter is not restarted');
     const folderRemoveNodeExporter = await I.verifyCommand(`docker exec pmm-server ls /tmp/node_exporter/agent_id/${nodeId}/`);
 
-    I.say(folderRemoveNodeExporter);
-    assert.ok(folderRemoveNodeExporter.length, 'webConfigPlaceholder was not recreated after restart');
+    assert.ok(folderRemoveNodeExporter.includes('webConfigPlaceholder'), 'webConfigPlaceholder was not recreated after restart');
   },
 );
