@@ -215,7 +215,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T1275 - Verify webConfigPlaceholder is generated on every Node exporter restart @inventory @nightly @exporters',
+  'PMM-T1275 - Verify webConfigPlaceholder is generated on every Node exporter restart @inventory @exporters',
   async ({ I, pmmInventoryPage }) => {
     I.amOnPage(pmmInventoryPage.url);
     await I.waitForVisible(pmmInventoryPage.fields.agentsLink, 20);
