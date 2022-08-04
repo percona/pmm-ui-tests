@@ -1,4 +1,5 @@
 const { I } = inject();
+const assert = require('assert');
 const perconaPlatformPage_2_26 = require('./perconaPlatformPage_2_26');
 
 module.exports = {
@@ -14,6 +15,7 @@ module.exports = {
     connectedWrapper: '$connected-wrapper',
     settingsContent: '$settings-tab-content',
     getAccessTokenLink: locate('a').after('$accessToken-field-container'),
+    forceDisconnectModalText: '$force-disconnect-modal',
   },
   fields: {
     pmmServerNameField: '$pmmServerName-text-input',
@@ -30,6 +32,7 @@ module.exports = {
     connect: '$connect-button',
     disconnect: '$disconnect-button',
     confirmDisconnect: locate('button').withAttr({ 'aria-label': 'Confirm Modal Danger Button' }),
+    cancelDisconnect: locate('button').withText('Cancel'),
   },
   messages: {
     technicalPreview: ' This feature is in Technical Preview stage',
@@ -39,6 +42,8 @@ module.exports = {
     pmmDisconnectedFromProtal: 'Successfully disconnected PMM from Percona Platform',
     disconnectPMM: 'Disconnect PMM from Percona Platform',
     pmmConnected: 'This PMM instance is connected to Percona Platform.',
+    forceDisconnectModalText: 'Are you sure you want to disconnect this PMM instance? This will unlink the instance from its current organization and stop all synchronization with Percona Platform. ',
+    forceDisconnectSuccess: 'You have successfully disconnected this server from Percona Platform',
   },
 
   async openPerconaPlatform() {
@@ -91,6 +96,21 @@ module.exports = {
     } else {
       I.verifyPopUpMessage(this.messages.pmmDisconnectedFromProtal);
     }
+  },
+
+  async forceDisconnectFromPortal() {
+    await I.click(this.fields.platformDisconnectButton);
+    await I.click(this.buttons.cancelDisconnect);
+    await I.click(this.fields.platformDisconnectButton);
+    await I.waitForVisible(this.elements.forceDisconnectModalText);
+    const serviceName = await I.grabTextFrom(this.elements.forceDisconnectModalText);
+
+    assert.ok(serviceName.includes(this.messages.forceDisconnectModalText), 'Force disconnect modal message is not correct.');
+    await I.seeAttributesOnElements(locate('a').withText('Read More...'), {
+      href: 'https://docs.percona.com/percona-monitoring-and-management/how-to/integrate-platform.html#disconnect-a-pmm-instance',
+    });
+    await I.click(this.buttons.confirmDisconnect);
+    await I.verifyPopUpMessage(this.messages.forceDisconnectSuccess);
   },
 
   async isPMMConnected() {

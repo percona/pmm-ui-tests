@@ -460,6 +460,7 @@ Scenario(
   async ({
     I, perconaPlatformPage, homePage, portalAPI,
   }) => {
+    I.say('PMM-T1204 Also covers: Verify the confirmation message appears when user\'s trying to logout from Portal');
     if (pmmVersion >= 27 || pmmVersion === undefined) {
       I.amOnPage('');
       I.loginWithSSO(portalCredentials.admin1.email, portalCredentials.admin1.password);
@@ -544,7 +545,23 @@ Scenario(
 );
 
 Scenario(
-  'Perform cleanup after PMM upgrade @portal @not-ui-pipeline @post-pmm-portal-upgrade',
+  'PMM-T1264 Verify that pmm admin user can force disconnect pmm from the portal. @portal @not-ui-pipeline @post-pmm-portal-upgrade',
+  async ({
+    I, perconaPlatformPage, homePage, portalAPI,
+  }) => {
+    await I.Authorize();
+    await I.amOnPage('');
+    await I.waitInUrl(homePage.landingUrl);
+    await perconaPlatformPage.openPerconaPlatform();
+    await perconaPlatformPage.connectToPortal(adminToken, `Test Server ${Date.now()}`);
+    await perconaPlatformPage.isPMMConnected();
+    await perconaPlatformPage.forceDisconnectFromPortal();
+    await I.waitForVisible(perconaPlatformPage.elements.connectForm);
+  },
+);
+
+Scenario(
+  'Perform cleanup after PMM upgrade @portal @not-ui-pipeline @post-pmm-portal-upgrade @tempTest',
   async ({ portalAPI }) => {
     const orgResponse = await portalAPI.apiGetOrg(adminToken);
 
