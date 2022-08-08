@@ -18,6 +18,8 @@ module.exports = {
     tooltipPlanId: locate('.popper__background.popper__background--info'),
     planText: locate('pre').find('code'),
     emptyPlanText: locate('pre').withText('No plan found'),
+    topQuery: locate('$top-query').find('div'),
+    histogramContainer: '$histogram-collapse-container',
   },
 
   getFilterSectionLocator: (filterSectionName) => `//span[contains(text(), '${filterSectionName}')]`,

@@ -29,6 +29,7 @@ module.exports = {
     // tests fail if locate is used
     disabledResetAll: '//button[@data-testid="qan-filters-reset-all" and @disabled ]',
     environmentLabel: '//span[contains(text(), "Environment")]',
+    filterItem: (section, filter) => `//span[contains(text(), '${section}')]/parent::p/following-sibling::div//span[contains(@class, 'checkbox-container__label-text') and contains(text(), '${filter}')]`,
     filterName: 'span.checkbox-container__label-text',
   },
   requests: {

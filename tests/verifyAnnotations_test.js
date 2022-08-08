@@ -48,8 +48,6 @@ Data(annotation).Scenario(
       await dashboardPage.applyFilter('Service Name', serviceName);
       dashboardPage.verifyAnnotationsLoaded(annotationName, 1);
     }
-
-    I.seeElement(dashboardPage.annotationText(annotationName), 10);
   },
 );
 

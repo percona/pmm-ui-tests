@@ -59,7 +59,7 @@ module.exports = {
         availableVersion: '[data-qa="update-latest-version"]',
         inProgressMessage: 'Upgrade in progress',
         successUpgradeMessage: 'PMM has been successfully upgraded to version',
-        whatsNewLink: '//a[@rel="noreferrer"]',
+        whatsNewLink: locate('//a[@rel="noreferrer"]').withText('What\'s new'),
       },
       latest: {
         checkUpdateButton: '$update-last-check-button',
@@ -72,7 +72,7 @@ module.exports = {
         availableVersion: '$update-latest-version',
         inProgressMessage: 'Upgrade in progress',
         successUpgradeMessage: 'PMM has been successfully upgraded to version',
-        whatsNewLink: '//a[@rel="noreferrer"]',
+        whatsNewLink: '//a[@rel="noreferrer"]//span[contains(text(), "What")]/parent::a',
       },
     },
   },
