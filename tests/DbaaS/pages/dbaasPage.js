@@ -403,7 +403,7 @@ module.exports = {
   },
 
   async pxcClusterMetricCheck(dbclusterName, serviceName, nodeName, haproxynodeName) {
-    await dashboardPage.genericDashboardLoadForDbaaSClusters(`${dashboardPage.pxcGaleraClusterSummaryDashboard.url}&var-cluster=pxc-${dbclusterName}`, 'Last 5 minutes', 4, 0, 2);
+    await dashboardPage.genericDashboardLoadForDbaaSClusters(`${dashboardPage.pxcGaleraClusterSummaryDashboard.url}&var-cluster=pxc-${dbclusterName}`, 'Last 5 minutes', 4, 0, 3);
     await dashboardPage.genericDashboardLoadForDbaaSClusters(`${dashboardPage.mysqlPXCGaleraNodeSummaryDashboard.url}?&var-service_name=${serviceName}`, 'Last 5 minutes', 4, 0, 2);
     await dashboardPage.genericDashboardLoadForDbaaSClusters(`${dashboardPage.nodeSummaryDashboard.url}?&var-node_name=${nodeName}`, 'Last 5 minutes', 4, 0, 1);
     await dashboardPage.genericDashboardLoadForDbaaSClusters(`${dashboardPage.mysqlInstanceSummaryDashboard.url}&var-service_name=${serviceName}`, 'Last 5 minutes', 4, 0, 5);
