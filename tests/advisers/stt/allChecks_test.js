@@ -157,7 +157,6 @@ Scenario(
     I.waitForVisible(allChecksPage.filter.searchFieldDescription);
     I.click(allChecksPage.filter.searchFieldDescription);
 
-
     await I.say(`Search for ${searchKey} and assert single check found`, 'pink');
     I.fillField(allChecksPage.filter.searchInput, searchKey);
     I.waitForVisible(allChecksPage.elements.tableBody, 5);
