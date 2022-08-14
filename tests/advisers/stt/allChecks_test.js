@@ -139,7 +139,7 @@ Scenario(
 );
 
 Scenario(
-  '@PMM-T1269 Verify ability to filter Advisor checks list @stt @imp',
+  '@PMM-T1269 Verify ability to filter Advisor checks list @stt',
   async ({
     I, allChecksPage, securityChecksAPI,
   }) => {
