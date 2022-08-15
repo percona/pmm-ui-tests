@@ -270,7 +270,7 @@ if (versionMinor >= 21) {
 }
 
 Scenario(
-  'Verify user can create Remote Instances before upgrade @pre-upgrade @ami-upgrade @pmm-upgrade',
+  'Verify user can create Remote Instances before upgrade @pre-upgrade @pmm-upgrade',
   async ({ addInstanceAPI }) => {
     // Adding instances for monitoring
 
