@@ -161,6 +161,7 @@ Scenario(
     await I.amOnPage(basePmmUrl + homePage.url);
     await I.waitForVisible('//*[contains(text(), "invalid username or password")]');
     await I.unAuthorize();
+    await I.refreshPage();
     await I.waitInUrl(homePage.landingPage);
     await I.Authorize('admin', 'newpass');
     await I.wait(1);
