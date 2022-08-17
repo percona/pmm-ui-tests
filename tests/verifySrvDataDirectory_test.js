@@ -65,8 +65,7 @@ Scenario(
     await I.wait(60);
     testCaseName = 'PMM-T1243';
     await I.amOnPage(basePmmUrl + qanPage.url);
-    await I.waitForVisible(qanPage.elements.noQueryAvailable);
-    I.dontSeeElement(qanPage.elements.noQueryAvailable);
+    await I.waitForInvisible(qanPage.elements.noQueryAvailable, 180);
     await I.waitForVisible(qanPage.elements.qanRow);
     const qanRows = await I.grabNumberOfVisibleElements(qanPage.elements.qanRow);
 
@@ -83,9 +82,9 @@ Scenario(
 
     assert.ok(!logs.includes('Error: The directory named as part of the path /srv/logs/supervisord.log does not exist'));
     await I.amOnPage(basePmmUrl + qanPage.url);
-    adminPage.setAbsoluteTimeRange(moment().subtract({ hours: 12 }).format('YYYY-MM-DD HH:mm:00'), moment().subtract({ minutes: 1, seconds: 30 }).format('YYYY-MM-DD HH:mm:00'));
+    adminPage.setAbsoluteTimeRange(moment().subtract({ hours: 12 }).format('YYYY-MM-DD HH:mm:00'), moment().subtract({ minutes: 1 }).format('YYYY-MM-DD HH:mm:00'));
 
-    I.dontSeeElement(qanPage.elements.noQueryAvailable);
+    await I.waitForInvisible(qanPage.elements.noQueryAvailable, 180);
     await I.waitForVisible(qanPage.elements.qanRow);
     const qanRowsAfterRestart = await I.grabNumberOfVisibleElements(qanPage.elements.qanRow);
 
