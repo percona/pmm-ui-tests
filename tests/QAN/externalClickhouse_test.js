@@ -3,7 +3,7 @@ const assert = require('assert');
 Feature('External Clickhouse Tests');
 
 // Address of PMM with external clickhouse created with docker compose.
-const basePmmUrl = 'http://127.0.0.1:8080/';
+const basePmmUrl = 'http://127.0.0.1:8081/';
 
 BeforeSuite(async ({ I }) => {
   await I.verifyCommand('docker-compose -f docker-compose-clickhouse.yml up -d');
