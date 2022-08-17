@@ -65,6 +65,7 @@ Scenario(
     await I.wait(60);
     testCaseName = 'PMM-T1243';
     await I.amOnPage(basePmmUrl + qanPage.url);
+    await I.waitForVisible(qanPage.elements.noQueryAvailable);
     I.dontSeeElement(qanPage.elements.noQueryAvailable);
     await I.waitForVisible(qanPage.elements.qanRow);
     const qanRows = await I.grabNumberOfVisibleElements(qanPage.elements.qanRow);
