@@ -192,7 +192,7 @@ Scenario(
     await I.waitForElement(homePage.fields.dashboardHeaderLocator, 60);
     const { versionMinor } = await homePage.getVersions();
 
-    await homePage.upgradePMM(versionMinor);
+    await homePage.upgradePMM(versionMinor, 'pmm-server-password-upgrade');
     await I.unAuthorize();
     await I.wait(5);
     await I.Authorize('admin', 'newpass');
