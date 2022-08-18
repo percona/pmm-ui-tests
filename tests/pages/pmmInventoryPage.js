@@ -31,6 +31,7 @@ module.exports = {
     // cannot be changed to locate() because of method: getCellValue()
     tableRow: '//tr[@data-testid="table-row"]',
     processExecPathExporters: '//td[contains(text(), "exporter")]//ancestor::tr[@data-testid="table-row"]//span[contains(text(), "process_exec_path")]',
+    nodeExporterStatus: '//td[contains(text(), "Node exporter")]//ancestor::tr[@data-testid="table-row"]//span[contains(text(), "status")]',
   },
 
   verifyRemoteServiceIsDisplayed(serviceName) {

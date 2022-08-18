@@ -1,15 +1,12 @@
 const { I } = inject();
 const assert = require('assert');
 const FormData = require('form-data');
-const faker = require('faker');
-
-const rnd = faker.datatype.number();
 
 module.exports = {
   customDashboardName: 'auto-test-dashboard',
   customFolderName: 'auto-test-folder',
-  randomDashboardName: `auto-dashboard-${rnd}`,
-  randomTag: `tag-${rnd}`,
+  randomDashboardName: 'uto-dashboard-custom',
+  randomTag: 'tag-random',
 
   async createCustomDashboard(name, folderId = 0, tags = ['pmm-qa']) {
     const headers = { Authorization: `Basic ${await I.getAuth()}` };

@@ -3,7 +3,7 @@ const assert = require('assert');
 Feature('External Clickhouse Tests');
 
 // Address of PMM with external clickhouse created with docker compose.
-const basePmmUrl = 'http://127.0.0.1:8080/';
+const basePmmUrl = 'http://127.0.0.1:8081/';
 
 BeforeSuite(async ({ I }) => {
   await I.verifyCommand('docker-compose -f docker-compose-clickhouse.yml up -d');
@@ -19,14 +19,15 @@ AfterSuite(async ({ I }) => {
   await I.verifyCommand('docker-compose -f docker-compose-clickhouse.yml down -v');
 });
 
+// Tag only for adding into matrix job, to be fixed later.
 Scenario(
-  'PMM-T1218 Verify PMM with external Clickhouse @qan',
+  'PMM-T1218 Verify PMM with external Clickhouse @docker-configuration',
   async ({ I, dataSourcePage, qanPage }) => {
     await I.amOnPage(basePmmUrl + dataSourcePage.url);
     await I.waitForVisible(dataSourcePage.elements.clickHouseDescription);
     const clickHouseAddress = await I.grabTextFrom(dataSourcePage.elements.clickHouseDescription);
 
-    assert.ok(clickHouseAddress.includes('external-clickhouse:9000'), 'PMM is not using correct clickhouse address');
+    assert.ok(clickHouseAddress.includes('external-clickhouse:8123'), 'PMM is not using correct clickhouse address');
     await I.amOnPage(basePmmUrl + qanPage.clearUrl);
     await qanPage.waitForOpened();
     I.dontSeeElement(qanPage.elements.noQueryAvailable);
