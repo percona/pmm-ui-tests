@@ -118,7 +118,7 @@ module.exports = {
     url: 'graph/d/node-cpu-process/processes-details?from=now-45m&to=now',
   },
   nodeSummaryDashboard: {
-    url: 'graph/d/node-instance-summary/node-summary?orgId=1&refresh=5m',
+    url: 'graph/d/node-instance-summary/node-summary',
     metrics: [
       'System Uptime',
       'System Summary',
@@ -931,6 +931,10 @@ module.exports = {
 
   tabLocator(tabName) {
     return `//a[contains(text(), '${tabName}')]`;
+  },
+  async waitForAllGraphsToHaveData(timeout = 60) {
+    await I.waitForInvisible(this.fields.notAvailableMetrics, timeout);
+    await I.waitForInvisible(this.fields.notAvailableDataPoints, timeout);
   },
 
   async verifyThereAreNoGraphsWithNA(acceptableNACount = 0) {
