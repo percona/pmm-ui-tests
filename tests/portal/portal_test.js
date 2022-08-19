@@ -514,7 +514,7 @@ Scenario(
 Scenario(
   'PMM-T1247 Verify user cannot access platform functionality when PMM is not connected to the portal. @not-ui-pipeline @portal @post-pmm-portal-upgrade',
   async ({
-    I, environmentOverviewPage, organizationEntitlementsPage, organizationTicketsPage,
+    I, environmentOverviewPage, organizationEntitlementsPage, organizationTicketsPage, perconaPlatformPage,
   }) => {
     if (pmmVersion >= 27 || pmmVersion === undefined) {
       await I.Authorize();
@@ -540,6 +540,9 @@ Scenario(
         await I.grabTextFrom(environmentOverviewPage.elements.notConnectedToPortal),
         'Displayed message is not correct.',
       );
+      await perconaPlatformPage.openPerconaPlatform();
+      await perconaPlatformPage.connectToPortal(adminToken, `Test Server ${Date.now()}`);
+      await perconaPlatformPage.isPMMConnected();
     }
   },
 );
@@ -547,21 +550,19 @@ Scenario(
 Scenario(
   'PMM-T1264 Verify that pmm admin user can force disconnect pmm from the portal. @portal @not-ui-pipeline @post-pmm-portal-upgrade',
   async ({
-    I, perconaPlatformPage, homePage, portalAPI,
+    I, perconaPlatformPage, homePage,
   }) => {
     await I.Authorize();
     await I.amOnPage('');
     await I.waitInUrl(homePage.landingUrl);
     await perconaPlatformPage.openPerconaPlatform();
-    await perconaPlatformPage.connectToPortal(adminToken, `Test Server ${Date.now()}`);
-    await perconaPlatformPage.isPMMConnected();
     await perconaPlatformPage.forceDisconnectFromPortal();
     await I.waitForVisible(perconaPlatformPage.elements.connectForm);
   },
 );
 
 Scenario(
-  'Perform cleanup after PMM upgrade @portal @not-ui-pipeline @post-pmm-portal-upgrade @tempTest',
+  'Perform cleanup after PMM upgrade @portal @not-ui-pipeline @post-pmm-portal-upgrade',
   async ({ portalAPI }) => {
     const orgResponse = await portalAPI.apiGetOrg(adminToken);
 
