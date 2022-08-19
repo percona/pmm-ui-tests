@@ -198,10 +198,12 @@ Scenario(
 
 Scenario(
   'PMM-T1225 - Verify summary file includes process_exec_path for agents @inventory @exporters @pgsm-pmm-integration @cli',
-  async ({ I }) => {
+  async ({ I, pmmInventoryPage }) => {
     const response = await I.verifyCommand('pmm-admin summary');
     const statusFile = JSON.parse(await I.readFileInZipArchive(response.split(' ')[0], 'client/status.json'));
     const exporters = statusFile.agents_info.filter((agent) => !agent.agent_type.toLowerCase().includes('qan'));
+
+    I.amOnPage(pmmInventoryPage.url);
 
     exporters.forEach((agent) => {
       if (agent.process_exec_path) {
