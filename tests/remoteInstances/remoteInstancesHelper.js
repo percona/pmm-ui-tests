@@ -99,7 +99,7 @@ DB_CONFIG = {
   PROXYSQL_SERVER_PORT: '6032',
 };
 
-if (process.env.AMI_UPGRADE_TESTING_INSTANCE === 'true') {
+if (process.env.AMI_UPGRADE_TESTING_INSTANCE === 'true' || process.env.OVF_UPGRADE_TESTING_INSTANCE === 'true') {
   PMM_SERVER_OVF_AMI_SETUP = 'true';
   SERVER_HOST = process.env.VM_CLIENT_IP;
   EXTERNAL_EXPORTER_HOST = process.env.VM_CLIENT_IP;
