@@ -177,7 +177,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T1226 - Verify Agents has process_exec_path option on Inventory page @inventory @nightly @exporters @pgsm-pmm-integration',
+  'PMM-T1226 - Verify Agents has process_exec_path option on Inventory page @inventory @nightly @exporters',
   async ({ I, pmmInventoryPage }) => {
     I.amOnPage(pmmInventoryPage.url);
     await I.waitForVisible(pmmInventoryPage.fields.agentsLink, 20);
@@ -197,11 +197,14 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T1225 - Verify summary file includes process_exec_path for agents @inventory @exporters @pgsm-pmm-integration @cli',
-  async ({ I }) => {
+  'PMM-T1225 - Verify summary file includes process_exec_path for agents @inventory @exporters @cli',
+  async ({ I, pmmInventoryPage }) => {
+    I.amOnPage(pmmInventoryPage.url);
     const response = await I.verifyCommand('pmm-admin summary');
     const statusFile = JSON.parse(await I.readFileInZipArchive(response.split(' ')[0], 'client/status.json'));
     const exporters = statusFile.agents_info.filter((agent) => !agent.agent_type.toLowerCase().includes('qan'));
+
+    I.amOnPage(pmmInventoryPage.url);
 
     exporters.forEach((agent) => {
       if (agent.process_exec_path) {
