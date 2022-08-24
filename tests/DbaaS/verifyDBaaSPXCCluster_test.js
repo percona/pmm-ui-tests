@@ -1,7 +1,7 @@
 const assert = require('assert');
 
 const { dbaasAPI, dbaasPage } = inject();
-const clusterName = 'Kubernetes_Testing_Cluster_Minikube';
+const clusterName = 'minikube';
 const pxc_cluster_name = 'pxc-dbcluster';
 const pxc_cluster_type = 'DB_CLUSTER_TYPE_PXC';
 const mysql_recommended_version = 'MySQL 8.0.27';
@@ -25,8 +25,7 @@ const singleNodeConfiguration = {
   dbType: mysql_recommended_version,
 };
 
-BeforeSuite(async ({ dbaasAPI, settingsAPI }) => {
-  await settingsAPI.changeSettings({ publicAddress: process.env.VM_IP });
+BeforeSuite(async ({ dbaasAPI }) => {
   if (!await dbaasAPI.apiCheckRegisteredClusterExist(clusterName)) {
     await dbaasAPI.apiRegisterCluster(process.env.kubeconfig_minikube, clusterName);
   }
