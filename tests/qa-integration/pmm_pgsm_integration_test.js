@@ -323,7 +323,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T1253 Verify pg_stat_monitor.pgsm_normalized_query settings @not-ui-pipeline @pgsm-pmm-integration',
+  'PMM-T1253 Verify pg_stat_monitor.pgsm_normalized_query settings @not-ui-pipeline @pgsm-pmm-integration @nazarov',
   async ({
     I, qanPage, qanOverview, qanFilters, qanDetails,
   }) => {
@@ -339,47 +339,40 @@ Scenario(
     assert.equal(output.rows[0].default_value, 'no', `The default value of 'pg_stat_monitor.pgsm_normalized_query' should be equal to '${defaultValue}'`);
 
     await I.Authorize();
-    I.amOnPage(qanPage.url);
-    qanOverview.waitForOverviewLoaded();
-    qanFilters.waitForFiltersToLoad();
-    qanFilters.applyFilter(pgsm_service_name);
-    for (let i = 1; i < queriesNumber; i++) {
-      const tableName = `PMM_T1253_${Date.now()}`;
 
-      I.pgExecuteQueryOnDemand(`CREATE TABLE ${tableName} ( TestId int );`, connection);
-      I.pgExecuteQueryOnDemand(`DROP TABLE ${tableName};`, connection);
-      await qanOverview.searchByValue(tableName, true);
-      qanOverview.selectRow(1);
+    //  Function used to produce data and check if examples are shown
+    async function checkForExamples(isNoExamplesVisible) {
+      console.log(`----------------------------------------------------------------------------------${isNoExamplesVisible}`);
+      I.amOnPage(qanPage.url);
+      qanOverview.waitForOverviewLoaded();
       qanFilters.waitForFiltersToLoad();
-      qanDetails.checkExamplesTab();
-      qanOverview.selectRow(2);
-      qanFilters.waitForFiltersToLoad();
-      qanDetails.checkExamplesTab();
+      qanFilters.applyFilter(pgsm_service_name);
+      for (let i = 1; i < queriesNumber; i++) {
+        const tableName = `PMM_T1253_${Date.now()}`;
+
+        //  Sql queries used to produce data for table
+        I.pgExecuteQueryOnDemand(`CREATE TABLE ${tableName} ( TestId int );`, connection);
+        I.pgExecuteQueryOnDemand(`DROP TABLE ${tableName};`, connection);
+        await qanOverview.searchByValue(tableName, true);
+        qanOverview.selectRow(1);
+        qanFilters.waitForFiltersToLoad();
+        //  Assertion that there are or there are no examples in the examples tab
+        qanDetails.checkExamplesTab(isNoExamplesVisible);
+        qanOverview.selectRow(2);
+        qanFilters.waitForFiltersToLoad();
+        qanDetails.checkExamplesTab(isNoExamplesVisible);
+      }
     }
 
+    await checkForExamples(false);
+    //  Sequence of actions used to alter default value for pgsm_normalized_query with container restart
     I.pgExecuteQueryOnDemand(`ALTER SYSTEM SET pg_stat_monitor.pgsm_normalized_query=${alteredValue};`, connection);
     await I.verifyCommand(`docker exec ${container_name} service postgresql restart`);
     I.wait(5);
     await I.verifyCommand(`docker exec ${container_name} pmm-admin list | grep "postgresql_pgstatmonitor_agent" | grep "Running"`);
     output = await I.pgExecuteQueryOnDemand('SELECT * FROM pg_stat_monitor_settings WHERE name=\'pg_stat_monitor.pgsm_normalized_query\';', connection);
     assert.equal(output.rows[0].value, 'yes', `The default value of 'pg_stat_monitor.pgsm_normalized_query' should be equal to '${alteredValue}'`);
-    I.amOnPage(qanPage.url);
-    qanOverview.waitForOverviewLoaded();
-    qanFilters.waitForFiltersToLoad();
-    qanFilters.applyFilter(pgsm_service_name);
-    for (let i = 1; i < queriesNumber; i++) {
-      const tableName = `PMM_T1253_${Date.now()}`;
-
-      I.pgExecuteQueryOnDemand(`CREATE TABLE ${tableName} ( TestId int );`, connection);
-      I.pgExecuteQueryOnDemand(`DROP TABLE ${tableName};`, connection);
-      await qanOverview.searchByValue(tableName, true);
-      qanOverview.selectRow(1);
-      qanFilters.waitForFiltersToLoad();
-      qanDetails.checkExamplesTab(true);
-      qanOverview.selectRow(2);
-      qanFilters.waitForFiltersToLoad();
-      qanDetails.checkExamplesTab(true);
-    }
+    await checkForExamples(true);
   },
 );
 

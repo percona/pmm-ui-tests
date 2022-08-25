@@ -9,7 +9,7 @@ module.exports = {
     searchBy: '//input[contains(@name, "search")]',
   },
   buttons: {
-    refresh: locate('$\'data-testid RefreshPicker run button\''),
+    refresh: I.useDataQA('data-testid RefreshPicker run button'),
     addColumn: '//span[contains(text(), "Add column")]',
     copyButton: '$copy-link-button',
   },
@@ -221,23 +221,17 @@ module.exports = {
     I.waitForVisible(this.elements.tooltipQueryValue, 30);
   },
 
+  async isNoDataMessageVisibleAfterRefresh() {
+    I.click(this.buttons.refresh);
+
+    return await I.grabNumberOfVisibleElements(this.elements.noResultTableText) === 0;
+  },
+
   async searchByValue(value, refresh = false) {
     I.waitForVisible(this.fields.searchBy, 30);
     I.clearField(this.fields.searchBy);
     I.fillField(this.fields.searchBy, value);
     I.pressKey('Enter');
-    if (refresh) {
-      let numberOfTriesLeft = 10;
-
-      while (numberOfTriesLeft > 0) {
-        I.click(this.buttons.refresh);
-        const noDataMessage = await I.grabNumberOfVisibleElements(this.elements.noResultTableText);
-
-        if (noDataMessage === 0) { numberOfTriesLeft = 0; }
-
-        numberOfTriesLeft -= 1;
-        I.wait(5);
-      }
-    }
+    await I.asyncWaitFor(async () => await this.isNoDataMessageVisibleAfterRefresh(), 300);
   },
 };
