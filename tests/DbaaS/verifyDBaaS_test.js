@@ -86,8 +86,8 @@ Scenario(
     const count = await I.grabNumberOfVisibleElements(dbaasPage.tabs.kubernetesClusterTab.requiredField);
 
     assert.ok(count === 2, `Count of error messages is: ${count} but should be 2`);
-    I.fillField(dbaasPage.tabs.kubernetesClusterTab.kubernetesClusterNameInput, clusterName);
     I.fillField(dbaasPage.tabs.kubernetesClusterTab.kubeconfigFileInput, 'Kubernetes_Config_Test');
+    I.fillField(dbaasPage.tabs.kubernetesClusterTab.kubernetesClusterNameInput, clusterName);
     I.dontSeeElement(dbaasPage.tabs.kubernetesClusterTab.disabledAddButton);
   },
 );
@@ -189,14 +189,16 @@ Scenario('PMM-T456 PMM-T490 Verify DB Cluster Steps Background @dbaas',
     I.dontSeeElement(adminPage.fields.timePickerMenu);
     I.waitForEnabled(dbaasPage.tabs.dbClusterTab.dbClusterAddButtonTop, 10);
     I.click(dbaasPage.tabs.dbClusterTab.dbClusterAddButtonTop);
-    await adminPage.verifyBackgroundColor(dbaasPage.tabs.dbClusterTab.optionsCountLocator(1), 'rgb(235, 123, 24)');
-    await adminPage.verifyBackgroundColor(dbaasPage.tabs.dbClusterTab.optionsCountLocator(2), 'rgb(142, 142, 142)');
+    /* eslint-disable-next-line no-inline-comments */
+    await adminPage.verifyBackgroundColor(dbaasPage.tabs.dbClusterTab.optionsCountLocator(1), 'rgb(235, 123, 24)'); // orange
+    await adminPage.verifyBackgroundColor(dbaasPage.tabs.dbClusterTab.optionsCountLocator(2), 'rgb(142, 142, 142)'); // gray
     I.click(dbaasPage.tabs.dbClusterTab.optionsCountLocator(2));
-    await adminPage.verifyBackgroundColor(dbaasPage.tabs.dbClusterTab.optionsCountLocator(1), 'rgb(209, 14, 92)');
-    await adminPage.verifyBackgroundColor(dbaasPage.tabs.dbClusterTab.optionsCountLocator(2), 'rgb(235, 123, 24)');
+    await adminPage.verifyBackgroundColor(dbaasPage.tabs.dbClusterTab.optionsCountLocator(1), 'rgb(26, 127, 75)'); // green
+    await adminPage.verifyBackgroundColor(dbaasPage.tabs.dbClusterTab.optionsCountLocator(3), 'rgb(235, 123, 24)'); // orange
     I.click(dbaasPage.tabs.dbClusterTab.optionsCountLocator(1));
-    await adminPage.verifyBackgroundColor(dbaasPage.tabs.dbClusterTab.optionsCountLocator(2), 'rgb(26, 127, 75)');
-    await adminPage.verifyBackgroundColor(dbaasPage.tabs.dbClusterTab.optionsCountLocator(1), 'rgb(235, 123, 24)');
+    await adminPage.verifyBackgroundColor(dbaasPage.tabs.dbClusterTab.optionsCountLocator(2), 'rgb(26, 127, 75)'); // green
+    await adminPage.verifyBackgroundColor(dbaasPage.tabs.dbClusterTab.optionsCountLocator(1), 'rgb(235, 123, 24)'); // orange
+    /* eslint-disable-next-line no-inline-comments */
     I.click(dbaasPage.tabs.dbClusterTab.optionsCountLocator(2));
     await dbaasAPI.apiUnregisterCluster(clusterName);
   });
