@@ -1,5 +1,5 @@
 const { dbaasAPI, dbaasPage } = inject();
-const clusterName = 'Kubernetes_Testing_Cluster_Minikube';
+const clusterName = 'minikube';
 const psmdb_cluster = 'psmdb-cluster';
 const assert = require('assert');
 
