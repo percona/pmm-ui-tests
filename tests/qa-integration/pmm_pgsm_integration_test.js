@@ -342,7 +342,6 @@ Scenario(
 
     //  Function used to produce data and check if examples are shown
     async function checkForExamples(isNoExamplesVisible) {
-      console.log(`----------------------------------------------------------------------------------${isNoExamplesVisible}`);
       I.amOnPage(qanPage.url);
       qanOverview.waitForOverviewLoaded();
       qanFilters.waitForFiltersToLoad();

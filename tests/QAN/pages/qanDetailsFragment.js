@@ -45,7 +45,7 @@ module.exports = {
     I.click(this.getTabLocator('Examples'));
     qanFilters.waitForFiltersToLoad();
     I.waitForVisible(this.elements.examplesCodeBlock, 30);
-    console.log(`----------------------------------------------------------------------------------${isNoExamplesVisible}`);
+
     if (isNoExamplesVisible) { I.seeElement(this.elements.noExamples); } else { I.dontSeeElement(this.elements.noExamples); }
   },
 
