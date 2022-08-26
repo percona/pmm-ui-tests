@@ -76,10 +76,22 @@ Scenario('PMM-T459, PMM-T473, PMM-T478, PMM-T524 Verify DB Cluster Details are l
       clusterDetails.clusterDashboardRedirectionLink);
   });
 
-Data(pxcDBClusterDetails).Scenario('PMM-T502, Verify Monitoring of PXC Clusters @dbaas',
-  async ({
-    I, dbaasPage, current,
-  }) => {
+Scenario(
+  'PMM-T502 Verify monitoring of PXC cluster @dbaas',
+  async ({ I, dbaasPage, dashboardPage, qanFilters, qanPage, qanOverview }) => {
+    await dbaasPage.waitForDbClusterTab(clusterName);
+    I.waitForVisible(dbaasPage.tabs.dbClusterTab.dbClusterAddButtonTop, 30);
+    await dashboardPage.genericDashboardLoadForDbaaSClusters(
+      `${dashboardPage.pxcGaleraClusterSummaryDashboard.url}&var-cluster=pxc-dbcluster-test-pxc`, 'Last 15 minutes', 4, 0, 2); //todo
+    I.amOnPage(I.buildUrlWithParams(qanPage.clearUrl, { from: 'now-3h' }));
+    qanOverview.waitForOverviewLoaded();
+    qanFilters.checkFilterExistInSection('Cluster', pxc_cluster_name);
+  },
+);
+
+Data(pxcDBClusterDetails).Scenario(
+  'PMM-T502 Verify monitoring of PXC service and node @dbaas',
+  async ({ I, dbaasPage, current }) => {
     await dbaasPage.waitForDbClusterTab(clusterName);
     I.waitForVisible(dbaasPage.tabs.dbClusterTab.dbClusterAddButtonTop, 30);
     const serviceName = `${current.namespace}-${current.clusterName}-pxc-${current.node}`;
@@ -88,7 +100,8 @@ Data(pxcDBClusterDetails).Scenario('PMM-T502, Verify Monitoring of PXC Clusters 
     await dbaasPage.pxcClusterMetricCheck(pxc_cluster_name, serviceName, serviceName, haproxyNodeName);
     await dbaasPage.dbaasQANCheck(pxc_cluster_name, serviceName, serviceName);
     await dbaasPage.dbClusterAgentStatusCheck(pxc_cluster_name, serviceName, 'MYSQL_SERVICE');
-  });
+  },
+);
 
 Scenario('PMM-T582 Verify Adding Cluster with Same Name and Same DB Type @dbaas',
   async ({ I, dbaasPage, dbaasActionsPage }) => {
