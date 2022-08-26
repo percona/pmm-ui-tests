@@ -399,17 +399,19 @@ Scenario('Verify update PXC DB Cluster version @dbaas', async ({ I, dbaasPage, d
 
   assert.ok(!version.includes(mysqlVersion), `Expected Version for PXC Cluster After Upgrade ${version} should not be same as Before Update Operation`);
   await dbaasActionsPage.deleteXtraDBCluster(dbClusterRandomName, clusterName);
-
-  Scenario('PMM-T509 Verify Deleting Db Cluster in Pending Status is possible @dbaas',
-    async ({ I, dbaasPage, dbaasActionsPage }) => {
-      const pxc_cluster_pending_delete = 'pxc-pending-delete';
-
-      await dbaasAPI.deleteAllDBCluster(clusterName);
-      await dbaasPage.waitForDbClusterTab(clusterName);
-      I.waitForInvisible(dbaasPage.tabs.kubernetesClusterTab.disabledAddButton, 30);
-      await dbaasActionsPage.createClusterBasicOptions(clusterName, pxc_cluster_pending_delete, 'MySQL');
-      I.click(dbaasPage.tabs.dbClusterTab.createClusterButton);
-      I.waitForText('Processing', 60, dbaasPage.tabs.dbClusterTab.fields.progressBarContent);
-      await dbaasActionsPage.deleteXtraDBCluster(pxc_cluster_pending_delete, clusterName);
-    });
 });
+
+Scenario(
+  'PMM-T509 Verify Deleting Db Cluster in Pending Status is possible @dbaas',
+  async ({ I, dbaasPage, dbaasActionsPage }) => {
+    const pxc_cluster_pending_delete = 'pxc-pending-delete';
+
+    await dbaasAPI.deleteAllDBCluster(clusterName);
+    await dbaasPage.waitForDbClusterTab(clusterName);
+    I.waitForInvisible(dbaasPage.tabs.kubernetesClusterTab.disabledAddButton, 30);
+    await dbaasActionsPage.createClusterBasicOptions(clusterName, pxc_cluster_pending_delete, 'MySQL');
+    I.click(dbaasPage.tabs.dbClusterTab.createClusterButton);
+    I.waitForText('Processing', 60, dbaasPage.tabs.dbClusterTab.fields.progressBarContent);
+    await dbaasActionsPage.deleteXtraDBCluster(pxc_cluster_pending_delete, clusterName);
+  },
+);

@@ -154,7 +154,7 @@ module.exports = {
     await dbaasAPI.waitForDBClusterState(dbClusterName, k8sClusterName, clusterDBType, 'DB_CLUSTER_STATE_READY');
   },
 
-  async deletePSMDBCluster(dbClusterName, k8sClusterName) {
+  async deletePSMDBCluster(dbClusterName, k8sClusterName, deleteCompleted = true) {
     I.waitForElement(dbaasPage.tabs.dbClusterTab.fields.clusterTableHeader, 30);
     I.click(dbaasPage.tabs.dbClusterTab.fields.clusterActionsMenu);
     await this.checkActionPossible('Delete', true);
@@ -167,7 +167,9 @@ module.exports = {
       dbaasPage.tabs.kubernetesClusterTab.modalContentText,
     );
     I.click(dbaasPage.tabs.dbClusterTab.fields.deleteDBClusterButton);
-    I.waitForElement(dbaasPage.tabs.dbClusterTab.fields.clusterStatusDeleting, 30);
+    if (deleteCompleted) {
+      I.waitForElement(dbaasPage.tabs.dbClusterTab.fields.clusterStatusDeleting, 30);
+    };
     await dbaasAPI.waitForDbClusterDeleted(dbClusterName, k8sClusterName, 'MongoDB');
   },
 
