@@ -189,16 +189,20 @@ Scenario('PMM-T456 PMM-T490 Verify DB Cluster Steps Background @dbaas',
     I.dontSeeElement(adminPage.fields.timePickerMenu);
     I.waitForEnabled(dbaasPage.tabs.dbClusterTab.dbClusterAddButtonTop, 10);
     I.click(dbaasPage.tabs.dbClusterTab.dbClusterAddButtonTop);
-    /* eslint-disable-next-line no-inline-comments */
-    await adminPage.verifyBackgroundColor(dbaasPage.tabs.dbClusterTab.optionsCountLocator(1), 'rgb(235, 123, 24)'); // orange
-    await adminPage.verifyBackgroundColor(dbaasPage.tabs.dbClusterTab.optionsCountLocator(2), 'rgb(142, 142, 142)'); // gray
+    // orange
+    await adminPage.verifyBackgroundColor(dbaasPage.tabs.dbClusterTab.optionsCountLocator(1), 'rgb(235, 123, 24)');
+    // gray
+    await adminPage.verifyBackgroundColor(dbaasPage.tabs.dbClusterTab.optionsCountLocator(2), 'rgb(142, 142, 142)');
     I.click(dbaasPage.tabs.dbClusterTab.optionsCountLocator(2));
-    await adminPage.verifyBackgroundColor(dbaasPage.tabs.dbClusterTab.optionsCountLocator(1), 'rgb(26, 127, 75)'); // green
-    await adminPage.verifyBackgroundColor(dbaasPage.tabs.dbClusterTab.optionsCountLocator(3), 'rgb(235, 123, 24)'); // orange
+    // green
+    await adminPage.verifyBackgroundColor(dbaasPage.tabs.dbClusterTab.optionsCountLocator(1), 'rgb(26, 127, 75)');
+    // orange
+    await adminPage.verifyBackgroundColor(dbaasPage.tabs.dbClusterTab.optionsCountLocator(3), 'rgb(235, 123, 24)');
     I.click(dbaasPage.tabs.dbClusterTab.optionsCountLocator(1));
-    await adminPage.verifyBackgroundColor(dbaasPage.tabs.dbClusterTab.optionsCountLocator(2), 'rgb(26, 127, 75)'); // green
-    await adminPage.verifyBackgroundColor(dbaasPage.tabs.dbClusterTab.optionsCountLocator(1), 'rgb(235, 123, 24)'); // orange
-    /* eslint-disable-next-line no-inline-comments */
+    // green
+    await adminPage.verifyBackgroundColor(dbaasPage.tabs.dbClusterTab.optionsCountLocator(2), 'rgb(26, 127, 75)');
+    // orange
+    await adminPage.verifyBackgroundColor(dbaasPage.tabs.dbClusterTab.optionsCountLocator(1), 'rgb(235, 123, 24)');
     I.click(dbaasPage.tabs.dbClusterTab.optionsCountLocator(2));
     await dbaasAPI.apiUnregisterCluster(clusterName);
   });
