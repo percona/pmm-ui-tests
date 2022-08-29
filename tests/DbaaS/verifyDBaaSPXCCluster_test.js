@@ -82,7 +82,7 @@ Scenario(
     await dbaasPage.waitForDbClusterTab(clusterName);
     I.waitForVisible(dbaasPage.tabs.dbClusterTab.dbClusterAddButtonTop, 30);
     await dashboardPage.genericDashboardLoadForDbaaSClusters(
-      `${dashboardPage.pxcGaleraClusterSummaryDashboard.url}&var-cluster=pxc-dbcluster-test-pxc`, 'Last 15 minutes', 4, 0, 2); //todo
+      `${dashboardPage.pxcGaleraClusterSummaryDashboard.url}&var-cluster=${pxc_cluster_name}-pxc`, 'Last 15 minutes', 4, 0, 2);
     I.amOnPage(I.buildUrlWithParams(qanPage.clearUrl, { from: 'now-3h' }));
     qanOverview.waitForOverviewLoaded();
     qanFilters.checkFilterExistInSection('Cluster', pxc_cluster_name);
