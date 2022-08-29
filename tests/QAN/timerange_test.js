@@ -50,13 +50,20 @@ Scenario(
     const date = moment().format('YYYY-MM-DD');
     const fromString = Date.parse(`${date} 00:00:00`);
     const toString = Date.parse(`${date} 23:59:59`);
+    const expectedFrom = new Date(fromString);
+    const expectedTo = new Date(toString);
 
     I.seeInCurrentUrl('from=now-5m&to=now');
     qanOverview.selectRow(1);
     qanFilters.waitForFiltersToLoad();
     I.seeElement(qanDetails.root);
     adminPage.setAbsoluteTimeRange(`${date} 00:00:00`, `${date} 23:59:59`);
-    I.seeInCurrentUrl(`from=${fromString}&to=${toString}`);
+    const u = new URL(await I.grabCurrentUrl());
+    const actualFrom = new Date(Date.parse(u.searchParams.get('from')));
+    const actualTo = new Date(Date.parse(u.searchParams.get('to')));
+
+    assert.deepStrictEqual(actualFrom, expectedFrom);
+    assert.deepStrictEqual(actualTo, expectedTo);
     I.dontSeeElement(qanDetails.root);
     qanOverview.selectRow(1);
     qanFilters.waitForFiltersToLoad();
@@ -87,39 +94,48 @@ Scenario(
   },
 );
 
-Scenario(
+// TODO: unskip after https://jira.percona.com/browse/PMM-10589
+Scenario.skip(
   'PMM-T1138 - Verify QAN Copy Button for URL @qan',
   async ({ I, adminPage, qanOverview }) => {
     await adminPage.applyTimeRange('Last 12 hours');
 
-    const dateTime = moment().format('x');
+    const dateTime = new Date(Number(moment().format('x')));
 
     qanOverview.waitForOverviewLoaded();
     qanOverview.selectRow(2);
+    qanOverview.waitForOverviewLoaded();
+
     I.click(qanOverview.buttons.copyButton);
-    I.waitForVisible(I.getPopUpLocator(), 10);
+    I.verifyPopUpMessage('Successfully copied Query Analytics link to clipboard');
+    I.appendField(qanOverview.fields.searchBy, '');
+    I.pressKey(['CommandOrControl', 'v']);
 
-    const url = new URL(await I.grabTextFrom(qanOverview.elements.clipboardLink));
-    const toTimeFromUrl1 = url.searchParams.get('to');
+    const val = await I.grabValueFrom(qanOverview.fields.searchBy);
 
-    assert.ok(Math.abs(dateTime - toTimeFromUrl1) < 30000, 'Difference between moment time and first copied time must be less then half of minute');
+    const url1 = new URL(val);
+    const toParamUrl1 = new Date(Number(url1.searchParams.get('to')));
+
+    assert.ok((dateTime - toParamUrl1) < 30000, 'Difference between moment time and first copied time must be less than 30s');
 
     I.wait(30);
     I.refreshPage();
     qanOverview.waitForOverviewLoaded();
     I.click(qanOverview.buttons.copyButton);
-    I.waitForVisible(I.getPopUpLocator(), 10);
 
-    const url2 = new URL(await I.grabTextFrom(qanOverview.elements.clipboardLink));
-    const toTimeFromUrl2 = url2.searchParams.get('to');
+    I.appendField(qanOverview.fields.searchBy, '');
+    I.pressKey(['CommandOrControl', 'v']);
 
-    assert.ok(Math.abs(toTimeFromUrl1 - toTimeFromUrl2) < 60000, 'Difference between moment time and second copied time must be less then one minute');
-    assert.notEqual(toTimeFromUrl1, toTimeFromUrl2, 'TimeFromUrl2 must not be the same as timeFromUrl1');
+    const url2 = new URL(await I.grabValueFrom(qanOverview.fields.searchBy));
 
-    I.openNewTab();
-    I.amOnPage(url.toString());
+    const toParamUrl2 = url2.searchParams.get('to');
+
+    assert.ok((toParamUrl1 - toParamUrl2) < 60000, 'Difference between moment time and second copied time must be less than 60s');
+    assert.notStrictEqual(toParamUrl1, toParamUrl2, 'TimeFromUrl2 must not be the same as timeFromUrl1');
+
+    I.amOnPage(url1.toString());
     qanOverview.waitForOverviewLoaded();
-    I.waitForVisible(qanOverview.getSelectedRowLocator(2));
+    I.waitForVisible(qanOverview.getSelectedRowLocator(2), 20);
   },
 );
 
@@ -146,22 +162,38 @@ Scenario(
 
 Scenario(
   'PMM-T1141 - Verify specific time range by new button to copy QAN URL @qan',
-  async ({ I, adminPage, qanOverview }) => {
+  async ({
+    I, adminPage, qanOverview,
+  }) => {
     const dateTime = moment();
     const to = dateTime.format('YYYY-MM-DD HH:mm:ss');
     const from = moment(dateTime).subtract(1, 'hours').format('YYYY-MM-DD HH:mm:ss');
-    const fromToString = `&from=${moment(from).format('x')}&to=${moment(to).format('x')}`;
 
     adminPage.setAbsoluteTimeRange(from, to);
     qanOverview.waitForOverviewLoaded();
-    I.seeInCurrentUrl(fromToString);
+
+    const prevURL = new URL(await I.grabCurrentUrl());
+    const expectedFrom = new Date(Date.parse(prevURL.searchParams.get('from')));
+    const expectedTo = new Date(Date.parse(prevURL.searchParams.get('to')));
+
     I.click(qanOverview.buttons.copyButton);
+    I.appendField(qanOverview.fields.searchBy, '');
+    I.pressKey(['CommandOrControl', 'v']);
 
-    const url = await I.grabTextFrom(qanOverview.elements.clipboardLink);
+    const copiedURL = await I.grabValueFrom(qanOverview.fields.searchBy);
 
-    I.openNewTab();
-    I.amOnPage(url);
-    I.seeInCurrentUrl(fromToString);
+    const u = new URL(copiedURL);
+    const actualFrom = new Date(Number(u.searchParams.get('from')));
+    const actualTo = new Date(Number(u.searchParams.get('to')));
+
+    I.amOnPage(copiedURL);
+    qanOverview.waitForOverviewLoaded();
+
+    const finalURL = new URL(await I.grabCurrentUrl());
+
+    assert.deepStrictEqual(prevURL, finalURL, 'Expected final URL to be equal to starting one');
+    assert.deepStrictEqual(actualFrom, expectedFrom, 'Expected "from" params to match');
+    assert.deepStrictEqual(actualTo, expectedTo, 'Expected "to" params to match');
   },
 );
 
