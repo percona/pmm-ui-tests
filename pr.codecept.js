@@ -117,6 +117,7 @@ exports.config = {
         options: {
           mochaFile: './tests/output/result.xml',
           jenkinsMode: true,
+          attachments: true,
         },
       },
     },
