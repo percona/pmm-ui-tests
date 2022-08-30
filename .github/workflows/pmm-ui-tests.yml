@@ -65,7 +65,7 @@ jobs:
       - name: Checkout pmm-qa Repo
         uses: percona-platform/checkout@v2
         with:
-          token: ${{ secrets.ROBOT_TOKEN }}
+          # token: ${{ secrets.ROBOT_TOKEN }}
           repository: percona/pmm-qa
           path: ./pmm-qa
           ref: main
