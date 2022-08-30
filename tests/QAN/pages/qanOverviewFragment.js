@@ -9,6 +9,7 @@ module.exports = {
     searchBy: '//input[contains(@name, "search")]',
   },
   buttons: {
+    refresh: I.useDataQA('data-testid RefreshPicker run button'),
     addColumn: '//span[contains(text(), "Add column")]',
     copyButton: '$copy-link-button',
   },
@@ -220,10 +221,17 @@ module.exports = {
     I.waitForVisible(this.elements.tooltipQueryValue, 30);
   },
 
-  searchByValue(value) {
+  async isNoDataMessageVisibleAfterRefresh() {
+    I.click(this.buttons.refresh);
+
+    return await I.grabNumberOfVisibleElements(this.elements.noResultTableText) === 0;
+  },
+
+  async searchByValue(value, refresh = false) {
     I.waitForVisible(this.fields.searchBy, 30);
     I.clearField(this.fields.searchBy);
     I.fillField(this.fields.searchBy, value);
     I.pressKey('Enter');
+    await I.asyncWaitFor(async () => await this.isNoDataMessageVisibleAfterRefresh(), 300);
   },
 };

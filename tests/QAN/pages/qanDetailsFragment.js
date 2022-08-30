@@ -10,7 +10,7 @@ module.exports = {
   },
   elements: {
     resizer: 'span.Resizer.horizontal',
-    noExamples: '//pre[contains(text(), "Sorry, no examples found for this query")]',
+    noExamples: locate('//pre[contains(text(), "Sorry, no examples found for this query")]').as('No examples message'),
     noClassic: '//pre[contains(text(), "No classic explain found")]',
     noJSON: '//pre[contains(text(), "No JSON explain found")]',
     examplesCodeBlock: '$pmm-overlay-wrapper',
@@ -40,12 +40,13 @@ module.exports = {
     compareCalculation(qpsvalue, result);
   },
 
-  checkExamplesTab() {
+  checkExamplesTab(isNoExamplesVisible = false) {
     I.waitForVisible(this.getTabLocator('Examples'), 30);
     I.click(this.getTabLocator('Examples'));
     qanFilters.waitForFiltersToLoad();
     I.waitForVisible(this.elements.examplesCodeBlock, 30);
-    I.dontSeeElement(this.elements.noExamples);
+
+    if (isNoExamplesVisible) { I.seeElement(this.elements.noExamples); } else { I.dontSeeElement(this.elements.noExamples); }
   },
 
   checkExplainTab() {

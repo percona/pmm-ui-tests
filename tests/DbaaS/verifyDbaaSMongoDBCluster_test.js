@@ -1,5 +1,5 @@
 const { dbaasAPI, dbaasPage } = inject();
-const clusterName = 'Kubernetes_Testing_Cluster_Minikube';
+const clusterName = 'minikube';
 const psmdb_cluster = 'psmdb-cluster';
 const assert = require('assert');
 
@@ -209,7 +209,7 @@ Scenario('PMM-T509 Verify Deleting Mongo Db Cluster in Pending Status is possibl
     await dbaasActionsPage.createClusterBasicOptions(clusterName, psmdb_cluster_pending_delete, 'MongoDB');
     I.click(dbaasPage.tabs.dbClusterTab.createClusterButton);
     I.waitForText('Processing', 30, dbaasPage.tabs.dbClusterTab.fields.progressBarContent);
-    await dbaasActionsPage.deletePSMDBCluster(psmdb_cluster_pending_delete, clusterName);
+    await dbaasActionsPage.deletePSMDBCluster(psmdb_cluster_pending_delete, clusterName, false);
   }).retry(1);
 
 Scenario('PMM-T704 PMM-T772 PMM-T849 PMM-T850 Resources, PV, Secrets verification @dbaas',

@@ -23,7 +23,7 @@ module.exports = {
   deletedAlertMessage: 'Cluster successfully unregistered',
   failedUnregisterCluster: (clusterName, dbType) => `Kubernetes cluster ${clusterName} has ${dbType} clusters`,
   configurationCopiedMessage: 'Copied',
-  monitoringWarningMessage: 'If you want to use monitoring, you need to set your PMM installation public address in',
+  monitoringWarningMessage: `This will also set "Public Address" as ${process.env.VM_IP}.`,
   requiredFieldError: 'Required field',
   valueGreatThanErrorText: (value) => `Value should be greater or equal to ${value}`,
   dbclusterNameError: 'Should start with a letter, may only contain lower case, number, dash and end with alphanumeric',
