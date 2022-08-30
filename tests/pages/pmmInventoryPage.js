@@ -4,7 +4,7 @@ const assert = require('assert');
 module.exports = {
   url: 'graph/inventory?orgId=1',
   fields: {
-    agentsLink: locate('li > a').withText('Agents').withAttr({ 'aria-label': 'Tab Agents' }),
+    agentsLink: locate('[role="tablist"] a').withText('Agents').withAttr({ 'aria-label': 'Tab Agents' }),
     agentsLinkOld: locate('a').withText('Agents'),
     deleteButton: locate('span').withText('Delete'),
     externalExporter: locate('td').withText('External exporter'),

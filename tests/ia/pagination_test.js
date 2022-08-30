@@ -1,11 +1,11 @@
 const pages = new DataTable(['page']);
 const { alertsAPI } = inject();
 
-pages.add(['channels']);
-// Commenting due to recent changes done with https://jira.percona.com/browse/PMM-8091
-// pages.add(['templates']);
-pages.add(['rules']);
-pages.add(['alerts']);
+// pages.add(['channels']);
+// // Commenting due to recent changes done with https://jira.percona.com/browse/PMM-8091
+// // pages.add(['templates']);
+// pages.add(['rules']);
+// pages.add(['alerts']);
 
 Feature('IA: Pagination').retry(1);
 

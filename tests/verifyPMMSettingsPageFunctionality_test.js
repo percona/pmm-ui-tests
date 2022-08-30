@@ -2,43 +2,43 @@ const { pmmSettingsPage } = inject();
 const communicationDefaults = new DataTable(['type', 'serverAddress', 'hello', 'from', 'authType', 'username', 'password', 'url', 'message']);
 const assert = require('assert');
 
-pmmSettingsPage.communicationData.forEach(({
-  type, serverAddress, hello, from, authType, username, password, url,
-}) => {
-  // eslint-disable-next-line max-len
-  communicationDefaults.add([type, serverAddress, hello, from, authType, username, password, url, pmmSettingsPage.messages.successPopUpMessage]);
-});
+// pmmSettingsPage.communicationData.forEach(({
+//   type, serverAddress, hello, from, authType, username, password, url,
+// }) => {
+//   // eslint-disable-next-line max-len
+//   communicationDefaults.add([type, serverAddress, hello, from, authType, username, password, url, pmmSettingsPage.messages.successPopUpMessage]);
+// });
 
-communicationDefaults.add([
-  pmmSettingsPage.emailDefaults.type,
-  'test.com',
-  pmmSettingsPage.emailDefaults.hello,
-  pmmSettingsPage.emailDefaults.from,
-  pmmSettingsPage.emailDefaults.authType,
-  null,
-  null,
-  null,
-  'Invalid argument: invalid server address, expected format host:port']);
-communicationDefaults.add([
-  pmmSettingsPage.emailDefaults.type,
-  pmmSettingsPage.emailDefaults.serverAddress,
-  '%',
-  pmmSettingsPage.emailDefaults.from,
-  pmmSettingsPage.emailDefaults.authType,
-  null,
-  null,
-  null,
-  'Invalid argument: invalid hello field, expected valid host']);
-communicationDefaults.add([
-  'slack',
-  null,
-  null,
-  null,
-  null,
-  null,
-  null,
-  'invalid@url',
-  'Invalid argument: invalid url value']);
+// communicationDefaults.add([
+//   pmmSettingsPage.emailDefaults.type,
+//   'test.com',
+//   pmmSettingsPage.emailDefaults.hello,
+//   pmmSettingsPage.emailDefaults.from,
+//   pmmSettingsPage.emailDefaults.authType,
+//   null,
+//   null,
+//   null,
+//   'Invalid argument: invalid server address, expected format host:port']);
+// communicationDefaults.add([
+//   pmmSettingsPage.emailDefaults.type,
+//   pmmSettingsPage.emailDefaults.serverAddress,
+//   '%',
+//   pmmSettingsPage.emailDefaults.from,
+//   pmmSettingsPage.emailDefaults.authType,
+//   null,
+//   null,
+//   null,
+//   'Invalid argument: invalid hello field, expected valid host']);
+// communicationDefaults.add([
+//   'slack',
+//   null,
+//   null,
+//   null,
+//   null,
+//   null,
+//   null,
+//   'invalid@url',
+//   'Invalid argument: invalid url value']);
 
 Feature('PMM Settings Functionality').retry(1);
 
@@ -263,9 +263,9 @@ Scenario('PMM-T532 PMM-T533 PMM-T536 - Verify user can enable/disable IA in Sett
     I.click(pmmSettingsPage.fields.advancedButton);
     I.waitForVisible(pmmSettingsPage.fields.iaSwitchSelectorInput, 30);
     pmmSettingsPage.verifySwitch(pmmSettingsPage.fields.iaSwitchSelectorInput, 'on');
-    I.moveCursorTo(adminPage.sideMenu.alertingBellIcon);
-    I.waitForVisible(adminPage.sideMenu.integratedAlertingManuItem, 20);
-    I.seeTextEquals('Integrated Alerting', adminPage.sideMenu.integratedAlerting);
+    // I.moveCursorTo(adminPage.sideMenu.alertingBellIcon);
+    // I.waitForVisible(adminPage.sideMenu.integratedAlertingManuItem, 20);
+    // I.seeTextEquals('Integrated Alerting', adminPage.sideMenu.integratedAlerting);
     I.seeTextEquals('Communication', pmmSettingsPage.communication.communicationSection);
     I.click(pmmSettingsPage.fields.iaSwitchSelector);
     pmmSettingsPage.verifySwitch(pmmSettingsPage.fields.iaSwitchSelectorInput, 'off');
@@ -427,10 +427,6 @@ Scenario(
       {
         subPage: pmmSettingsPage.perconaPlatformUrl,
         tooltips: pmmSettingsPage.tooltips.perconaPlatform,
-      },
-      {
-        subPage: pmmSettingsPage.communicationSettingsUrl,
-        tooltips: { ...pmmSettingsPage.tooltips.communication.email, ...pmmSettingsPage.tooltips.communication.slack },
       },
     ];
 

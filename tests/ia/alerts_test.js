@@ -99,11 +99,11 @@ AfterSuite(async ({
 }) => {
   await settingsAPI.apiEnableIA();
   await rulesAPI.clearAllRules(true);
-  //TO-DO to ensure this runs as expected.
-  //await I.verifyCommand('docker-compose -f docker-compose-webhook.yml stop');
+  // TO-DO to ensure this runs as expected.
+  // await I.verifyCommand('docker-compose -f docker-compose-webhook.yml stop');
 });
 
-Scenario(
+Scenario.skip(
   'PMM-T564 Verify Severity colors @ia',
   async ({ I, alertsPage }) => {
     I.amOnPage(alertsPage.url);
@@ -118,7 +118,7 @@ Scenario(
   },
 );
 
-Scenario(
+Scenario.skip(
   'PMM-T1146 Verify IA silence/unsilence all button @ia',
   async ({ I, alertmanagerAPI, alertsPage }) => {
     I.amOnPage(alertsPage.url);
@@ -136,7 +136,7 @@ Scenario(
   },
 );
 
-Scenario(
+Scenario.skip(
   'PMM-T659 Verify alerts are deleted after deleting rules @ia',
   async ({ I, alertsPage, rulesAPI }) => {
     // Deleting rules
@@ -152,7 +152,7 @@ Scenario(
   },
 );
 
-Scenario(
+Scenario.skip(
   'PMM-T551 PMM-T569 PMM-T1044 PMM-T1045 PMM-T568 Verify Alerts on Email, Webhook and Pager Duty @ia @fb',
   async ({ I, rulesAPI, alertsAPI }) => {
     const file = './testdata/ia/scripts/alert.txt';
@@ -177,7 +177,7 @@ Scenario(
   },
 );
 
-Scenario(
+Scenario.skip(
   'Verify Firing Alert, labels and existence in alertmanager @ia',
   async ({
     I, alertsPage, alertmanagerAPI,
@@ -193,7 +193,7 @@ Scenario(
   },
 );
 
-Scenario(
+Scenario.skip(
   'PMM-T1137 Verify that IA alerts are showing important labels first @ia',
   async ({ I, alertsPage }) => {
     I.amOnPage(alertsPage.url);
@@ -217,7 +217,7 @@ Scenario(
   },
 );
 
-Scenario(
+Scenario.skip(
   'PMM-T540 Alerts list columns @ia',
   async ({ I, alertsPage }) => {
     I.amOnPage(alertsPage.url);
@@ -233,7 +233,7 @@ Scenario(
   },
 );
 
-Scenario(
+Scenario.skip(
   'PMM-T541 Verify user is able to silence/activate the alert @ia',
   async ({
     I, alertsPage, alertmanagerAPI,
@@ -247,7 +247,7 @@ Scenario(
   },
 );
 
-Scenario(
+Scenario.skip(
   'PMM-T587 Verify user cant see Alert with non-existing filter @ia',
   async ({ I, alertsPage, rulesAPI }) => {
     const rule = {
@@ -271,7 +271,7 @@ Scenario(
 );
 
 // nightly candidate
-Scenario(
+Scenario.skip(
   'PMM-T625 Verify Alert disappears after issue in rule is fixed @ia',
   async ({
     I, alertsPage, rulesAPI, alertsAPI,

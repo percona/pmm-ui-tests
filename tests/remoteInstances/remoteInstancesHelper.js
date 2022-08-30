@@ -238,7 +238,7 @@ module.exports = {
         clusterName: 'aws_postgresql_12',
         port: 5432,
       },
-      aurora: {   
+      aurora: {
         aws_access_key: process.env.PMM_QA_AWS_ACCESS_KEY_ID,
         aws_secret_key: process.env.PMM_QA_AWS_ACCESS_KEY,
         port: '42001',
@@ -246,13 +246,13 @@ module.exports = {
         aurora2: {
           address: process.env.PMM_QA_AURORA2_MYSQL_HOST,
           password: process.env.PMM_QA_AURORA2_MYSQL_PASSWORD,
-          instance_id: "pmm-qa-aurora2-mysql-instance-1",
+          instance_id: 'pmm-qa-aurora2-mysql-instance-1',
           cluster_name: 'aws_aurora2',
         },
         aurora3: {
           address: process.env.PMM_QA_AURORA3_MYSQL_HOST,
           password: process.env.PMM_QA_AURORA3_MYSQL_PASSWORD,
-          instance_id: "pmm-qa-aurora3-mysql-instance-1",
+          instance_id: 'pmm-qa-aurora3-mysql-instance-1',
           cluster_name: 'aws_aurora3',
         },
       },
@@ -448,7 +448,7 @@ module.exports = {
 
   // General Remote Instances Service List, this is what UI-tests job uses to run remote instances tests.
   services: {
-    mysql: (remoteInstanceStatus.mysql.ps_5_7.enabled ? 'mysql_remote_new' : undefined),
+    mysql: (remoteInstanceStatus.mysql.ps_5_7.enabled ? 'mysql_remote_new2' : undefined),
     mongodb: (remoteInstanceStatus.mongodb.psmdb_4_2.enabled ? 'mongodb_remote_new' : undefined),
     postgresql: (remoteInstanceStatus.postgresql.pdpgsql_13_3.enabled ? 'postgresql_remote_new' : undefined),
     proxysql: (remoteInstanceStatus.proxysql.proxysql_2_1_1.enabled ? 'proxysql_remote_new' : undefined),
