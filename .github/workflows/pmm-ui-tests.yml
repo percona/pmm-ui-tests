@@ -36,7 +36,7 @@ jobs:
       UI_TESTS_BRANCH: ${{ github.event.inputs.pmm_ui_tests_branch }}
       PMM_CLIENTS: ${{ github.event.inputs.pmm_clients }}
       OAUTH_ISSUER_URL: 'https://id-dev.percona.com/oauth2/aus15pi5rjdtfrcH51d7'
-      GIT_TERMINAL_PROMPT: 0
+      GIT_TERMINAL_PROMPT: false
 
     steps:
       - name: Tests for ${{ github.event.inputs.branch || 'main' }} at ${{ github.event.inputs.repo || 'cicd' }} repo
