@@ -50,7 +50,7 @@ Scenario(
   },
 );
 
-Scenario(
+Scenario.only(
   'Verify rule templates list elements @ia @grafana-pr',
   async ({ I, ruleTemplatesPage }) => {
     ruleTemplatesPage.openRuleTemplatesTab();

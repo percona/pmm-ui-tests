@@ -6,7 +6,7 @@ module.exports = {
   columnHeaders: ['Name', 'Source', 'Created', 'Actions'],
   elements: {
     addedTemplate: '//td[text()="TemplateForAutomation"]/following-sibling::td[text()="User-defined (UI)"]',
-    ruleTemplateTab: '//li/a[@aria-label="Tab Alert Rule Templates"]',
+    ruleTemplateTab: '//div/a[@aria-label="Tab Alert Rule Templates"]',
     templatesTableHeader: '$alert-rule-templates-table-thead',
     templatesTable: '$table-tbody',
     templateName: '//tr/td[1]',

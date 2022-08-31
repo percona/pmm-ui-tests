@@ -116,7 +116,7 @@ Scenario(
   },
 );
 
-Data(instances).only.Scenario(
+Data(instances).Scenario(
   'Verify Remote Instance has Status Running [critical] @instances @fb',
   async ({
     I, pmmInventoryPage, current,
