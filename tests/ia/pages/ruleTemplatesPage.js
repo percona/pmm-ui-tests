@@ -36,8 +36,8 @@ module.exports = {
     fileInput: locate('$modal-content').find('input').withAttr({ type: 'file' }),
   },
   messages: {
-    modalHeaderText: 'Add alert rule template',
-    editModalHeaderText: (name) => `Edit "${name}" alert rule template`,
+    modalHeaderText: 'Add Alert Rule Template',
+    editModalHeaderText: (name) => `Edit "${name}" Alert Rule Template`,
     editModalWarning: 'Name cannot be changed. If you need to change it, please create a new Template.',
     deleteModalHeaderText: 'Delete Alert Rule Template',
     deleteModalMessage: (name) => `Are you sure you want to delete the alert rule template "${name}"?`,
