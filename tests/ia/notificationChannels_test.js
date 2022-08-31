@@ -2,9 +2,9 @@ const page = require('./pages/notificationChannelsPage');
 
 const notificationChannels = new DataTable(['name', 'type']);
 
-// for (const [, channel] of Object.entries(page.types)) {
-//   notificationChannels.add([channel.name, channel.type]);
-// }
+for (const [, channel] of Object.entries(page.types)) {
+  notificationChannels.add([channel.name, channel.type]);
+}
 
 Feature('IA: Notification Channels').retry(1);
 
@@ -22,7 +22,7 @@ After(async ({ channelsAPI, rulesAPI }) => {
   await channelsAPI.clearAllNotificationChannels();
 });
 
-Scenario.skip(
+Scenario(
   'Verify No Channels found message @ia',
   async ({ I, ncPage }) => {
     ncPage.openNotificationChannelsTab();
@@ -32,7 +32,7 @@ Scenario.skip(
 );
 
 // nightly candidate
-Scenario.skip(
+Scenario(
   'PMM-T561 Verify that "#" cannot be used in Slack channel name @ia @grafana-pr',
   async ({ I, ncPage }) => {
     ncPage.openNotificationChannelsTab();
@@ -54,7 +54,7 @@ Data(notificationChannels).Scenario(
   },
 );
 
-Scenario.skip(
+Scenario(
   'PMM-T645, PMM-T647 Add a Pager Duty with Service Key @ia @grafana-pr @fb',
   async ({ I, ncPage }) => {
     const channelName = 'Pager Duty with Service key';
@@ -73,7 +73,7 @@ Scenario.skip(
   },
 );
 
-Scenario.skip(
+Scenario(
   'PMM-T647 Verify toggle for Service/Routing key @ia @grafana-pr',
   async ({ I, ncPage }) => {
     ncPage.openNotificationChannelsTab();
@@ -127,7 +127,7 @@ Data(notificationChannels).Scenario(
   },
 );
 
-Scenario.skip(
+Scenario(
   ' Delete a notification channel @fb',
   async ({ I, ncPage, channelsAPI }) => {
     const name = 'Email Channel';
@@ -165,7 +165,7 @@ Data(notificationChannels).Scenario(
   },
 );
 
-Scenario.skip(
+Scenario(
   'PMM-T1045 Verify user is able to add WebHook notification channel @ia',
   async ({
     I, rulesAPI, ncPage,

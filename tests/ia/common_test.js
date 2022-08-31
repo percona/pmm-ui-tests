@@ -10,7 +10,7 @@ Before(async ({
   await channelsAPI.clearAllNotificationChannels();
 });
 
-Scenario.skip(
+Scenario(
   'PMM-T643 Verify message about disabled IA @ia @grafana-pr',
   async ({
     I, settingsAPI, iaCommon, pmmSettingsPage, codeceptjsConfig,
@@ -27,7 +27,7 @@ Scenario.skip(
   },
 );
 
-Scenario.skip(
+Scenario(
   'PMM-T1103 Verify Test Email configuration in Settings @ia',
   async ({
     I, settingsAPI, pmmSettingsPage,
@@ -51,7 +51,7 @@ Scenario.skip(
   },
 );
 
-Scenario.skip(
+Scenario(
   'PMM-T481 PMM-T619 PMM-T620 PMM-T776 Verify user is able to use tab bar, breadcrumb @ia @grafana-pr',
   async ({
     I, alertRulesPage, ruleTemplatesPage, iaCommon, ncPage,

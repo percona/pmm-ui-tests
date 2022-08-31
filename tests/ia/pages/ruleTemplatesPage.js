@@ -2,7 +2,7 @@ const { I } = inject();
 const YAML = require('yaml');
 
 module.exports = {
-  url: 'graph/alerting/alert-rule-templates',
+  url: 'graph/integrated-alerting/alert-rule-templates',
   columnHeaders: ['Name', 'Source', 'Created', 'Actions'],
   elements: {
     addedTemplate: '//td[text()="TemplateForAutomation"]/following-sibling::td[text()="User-defined (UI)"]',
@@ -90,8 +90,8 @@ module.exports = {
 
   openRuleTemplatesTab() {
     I.amOnPage(this.url);
-    // I.waitForVisible(this.elements.ruleTemplateTab, 30);
-    // I.click(this.elements.ruleTemplateTab);
+    I.waitForVisible(this.elements.ruleTemplateTab, 30);
+    I.click(this.elements.ruleTemplateTab);
     I.waitForVisible(this.elements.templatesTable, 30);
   },
 

@@ -50,7 +50,7 @@ AfterSuite(async ({
   await channelsAPI.clearAllNotificationChannels();
 });
 
-Scenario.skip(
+Scenario(
   'PMM-T518 Verify empty alert rules list @ia @grafana-pr',
   async ({ I, alertRulesPage }) => {
     alertRulesPage.openAlertRulesTab();
@@ -58,7 +58,7 @@ Scenario.skip(
   },
 );
 
-Scenario.skip(
+Scenario(
   'Verify alert rules list elements @ia @grafana-pr',
   async ({ I, alertRulesPage, rulesAPI }) => {
     const ruleName = 'QAA PSQL rules List test';
@@ -74,7 +74,7 @@ Scenario.skip(
   },
 );
 
-Scenario.skip(
+Scenario(
   'PMM-T1073 Add alert rule modal elements @ia @grafana-pr',
   async ({ I, alertRulesPage }) => {
     alertRulesPage.openAlertRulesTab();
@@ -104,7 +104,7 @@ Scenario.skip(
   },
 );
 
-Scenario.skip(
+Scenario(
   'PMM-T771 Verify fields dynamically change value after user changes a template @ia @grafana-pr',
   async ({ I, alertRulesPage }) => {
     alertRulesPage.openAlertRulesTab();
@@ -119,7 +119,7 @@ Scenario.skip(
   },
 );
 
-Scenario.skip(
+Scenario(
   'PMM-T538 Verify user is able to disable/enable a rule from the rules list @ia @grafana-pr',
   async ({ I, alertRulesPage, rulesAPI }) => {
     const ruleName = 'QAA PSQL Enable/Disable test';
@@ -143,7 +143,7 @@ Scenario.skip(
 );
 
 // nightly candidate
-Data(templates).Scenario.skip(
+Data(templates).Scenario(
   'PMM-T750 PMM-T752 Verify parsing a template in Add Alert rule dialog @ia',
   async ({ I, alertRulesPage, current }) => {
     const rule = {
@@ -168,7 +168,7 @@ Data(templates).Scenario.skip(
 );
 
 // nightly candidate
-Data(rules).Scenario.skip(
+Data(rules).Scenario(
   'PMM-T515 PMM-T543 PMM-T544 PMM-T545 PMM-T574 PMM-T596 PMM-T753 PMM-T624 Create Alert rule @ia',
   async ({
     I, alertRulesPage, current, rulesAPI,
@@ -200,7 +200,7 @@ Data(rules).Scenario.skip(
   },
 );
 
-Scenario.skip(
+Scenario(
   'Create Alert rule @fb',
   async ({ I, alertRulesPage }) => {
     const rule = alertRulesPage.rules[0];
@@ -218,7 +218,7 @@ Scenario.skip(
 );
 
 // TODO: check ovf failure
-Scenario.skip(
+Scenario(
   'PMM-T516 PMM-T687 Update Alert rule @ia @grafana-pr @not-ovf @fb',
   async ({
     I, alertRulesPage, rulesAPI, channelsAPI, ncPage,
@@ -263,7 +263,7 @@ Scenario.skip(
   },
 );
 
-Data(rulesStates).Scenario.skip(
+Data(rulesStates).Scenario(
   'PMM-T566 Verify user can copy Alert rule @ia @grafana-pr',
   async ({
     I, alertRulesPage, rulesAPI, current,
@@ -295,7 +295,7 @@ Data(rulesStates).Scenario.skip(
   },
 );
 
-Data(rulesStates).Scenario.skip(
+Data(rulesStates).Scenario(
   'PMM-T517 Verify user can delete Alert rule @ia @fb',
   async ({
     I, alertRulesPage, rulesAPI, current,
@@ -322,7 +322,7 @@ Data(rulesStates).Scenario.skip(
   },
 );
 
-Scenario.skip(
+Scenario(
   'PMM-T639 Verify alert rule details content @ia @grafana-pr',
   async ({
     I, ruleTemplatesPage, alertRulesPage, rulesAPI,
@@ -351,7 +351,7 @@ Scenario.skip(
 );
 
 // nightly candidate
-Scenario.skip(
+Scenario(
   'PMM-T646 Verify user can not create Rule with negative duration time @ia @grafana-pr',
   async ({
     I, alertRulesPage,
@@ -377,7 +377,7 @@ Scenario.skip(
   },
 );
 
-Scenario.skip(
+Scenario(
   'PMM-T1116 Verify user is able to copy alert rule, source template of which was deleted @ia',
   async ({
     I, ruleTemplatesPage, alertRulesPage, rulesAPI, templatesAPI,
