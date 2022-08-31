@@ -220,7 +220,7 @@ module.exports = {
     ],
   },
   pxcGaleraClusterSummaryDashboard: {
-    url: 'graph/d/pxc-cluster-summary/pxc-galera-cluster-summary',
+    url: 'graph/d/pxc-cluster-summary/pxc-galera-cluster-summary?orgId=1&',
     metrics: [
       'Percona XtraDB / Galera Cluster Size',
       'Flow Control Paused Time',
