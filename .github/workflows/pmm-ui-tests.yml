@@ -36,7 +36,36 @@ jobs:
       UI_TESTS_BRANCH: ${{ github.event.inputs.pmm_ui_tests_branch }}
       PMM_CLIENTS: ${{ github.event.inputs.pmm_clients }}
       OAUTH_ISSUER_URL: 'https://id-dev.percona.com/oauth2/aus15pi5rjdtfrcH51d7'
-      GIT_TERMINAL_PROMPT: false
+      
+      PMM_QA_AWS_ACCESS_KEY_ID: ${{ secrets.PMM_QA_AWS_ACCESS_KEY_ID }}
+      PMM_QA_AWS_ACCESS_KEY: ${{ secrets.PMM_QA_AWS_ACCESS_KEY }}
+      PMM_QA_RDS_PGSQL13_USER: ${{ secrets.PMM_QA_RDS_PGSQL13_USER }}
+      PMM_QA_RDS_PGSQL13_HOST: ${{ secrets.PMM_QA_RDS_PGSQL13_HOST }}
+      PMM_QA_RDS_PGSQL13_PASSWORD: ${{ secrets.PMM_QA_RDS_PGSQL13_PASSWORD }}
+
+      PMM_QA_RDS_PGSQL11_USER: ${{ secrets.PMM_QA_RDS_PGSQL11_USER }}
+      PMM_QA_RDS_PGSQL11_HOST: ${{ secrets.PMM_QA_RDS_PGSQL11_HOST }}
+      PMM_QA_RDS_PGSQL11_PASSWORD: ${{ secrets.PMM_QA_RDS_PGSQL11_PASSWORD }}
+
+      PMM_QA_AURORA3_MYSQL_USER: ${{ secrets.PMM_QA_AURORA3_MYSQL_USER }}
+      PMM_QA_AURORA3_MYSQL_HOST: ${{ secrets.PMM_QA_AURORA3_MYSQL_HOST }}
+      PMM_QA_AURORA3_MYSQL_PASSWORD: ${{ secrets.PMM_QA_AURORA3_MYSQL_PASSWORD }}
+      PMM_QA_AURORA3_MYSQL_PORT: ${{ secrets.PMM_QA_AURORA3_MYSQL_PORT }}
+
+      PMM_QA_AURORA2_MYSQL_USER: ${{ secrets.PMM_QA_AURORA2_MYSQL_USER }}
+      PMM_QA_AURORA2_MYSQL_HOST: ${{ secrets.PMM_QA_AURORA2_MYSQL_HOST }}
+      PMM_QA_AURORA2_MYSQL_PASSWORD: ${{ secrets.PMM_QA_AURORA2_MYSQL_PASSWORD }}
+      PMM_QA_AURORA2_MYSQL_PORT: ${{ secrets.PMM_QA_AURORA2_MYSQL_PORT }}
+      AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+      AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+      AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      AZURE_TENNANT_ID: ${{ secrets.AZURE_TENNANT_ID }}
+      AZURE_MYSQL_HOST: ${{ secrets.AZURE_MYSQL_HOST }}
+      AZURE_MYSQL_USER: ${{ secrets.AZURE_MYSQL_USER }}
+      AZURE_MYSQL_PASS: ${{ secrets.AZURE_MYSQL_PASS }}
+      AZURE_POSTGRES_HOST: ${{ secrets.AZURE_POSTGRES_HOST }}
+      AZURE_POSTGRES_USER: ${{ secrets.AZURE_POSTGRES_USER }}
+      AZURE_POSTGRES_PASS: ${{ secrets.AZURE_POSTGRES_PASS }}
 
     steps:
       - name: Tests for ${{ github.event.inputs.branch || 'main' }} at ${{ github.event.inputs.repo || 'cicd' }} repo
