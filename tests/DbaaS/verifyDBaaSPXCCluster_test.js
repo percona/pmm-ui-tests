@@ -57,7 +57,46 @@ async ({
   await dbaasPage.verifyLogPopup(18);
 });
 
-Scenario('PMM-T459, PMM-T473, PMM-T478, PMM-T524 Verify DB Cluster Details are listed, shortcut link for DB Cluster, Show/Hide password button @dbaas',
+Scenario('PMM-T582 Verify Adding Cluster with Same Name and Same DB Type @dbaas',
+  async ({ I, dbaasPage, dbaasActionsPage }) => {
+    await dbaasPage.waitForDbClusterTab(clusterName);
+    await dbaasActionsPage.createClusterBasicOptions(clusterName, pxc_cluster_name, 'MySQL');
+    I.click(dbaasPage.tabs.dbClusterTab.createClusterButton);
+    await dbaasPage.seeErrorForAddedDBCluster(pxc_cluster_name);
+});
+
+Scenario(
+  'PMM-T502 Verify monitoring of PXC cluster @dbaas',
+  async ({ I, dbaasPage, dashboardPage, qanFilters, qanPage, qanOverview }) => {
+    await dbaasPage.waitForDbClusterTab(clusterName);
+    I.waitForVisible(dbaasPage.tabs.dbClusterTab.dbClusterAddButtonTop, 30);
+    await dashboardPage.genericDashboardLoadForDbaaSClusters(
+      `${dashboardPage.pxcGaleraClusterSummaryDashboard.url}&var-cluster=${pxc_cluster_name}-pxc`, 'Last 15 minutes', 4, 0, 2);
+    I.amOnPage(I.buildUrlWithParams(qanPage.clearUrl, { from: 'now-3h' }));
+    qanOverview.waitForOverviewLoaded();
+    qanFilters.checkFilterExistInSection('Cluster', pxc_cluster_name);
+  },
+);
+
+Data(pxcDBClusterDetails).Scenario(
+  'PMM-T502 Verify monitoring of PXC service and node @dbaas',
+  async ({ I, dbaasPage, current }) => {
+    await dbaasPage.waitForDbClusterTab(clusterName);
+    I.waitForVisible(dbaasPage.tabs.dbClusterTab.dbClusterAddButtonTop, 30);
+    const serviceName = `${current.namespace}-${current.clusterName}-pxc-${current.node}`;
+    const haproxyNodeName = `${current.namespace}-${current.clusterName}-haproxy-${current.node}`;
+
+    await dbaasPage.pxcClusterMetricCheck(pxc_cluster_name, serviceName, serviceName, haproxyNodeName);
+    await dbaasPage.dbaasQANCheck(pxc_cluster_name, serviceName, serviceName);
+    await dbaasPage.dbClusterAgentStatusCheck(pxc_cluster_name, serviceName, 'MYSQL_SERVICE');
+  },
+);
+
+Scenario(
+'PMM-T459 Verify DB Cluster Details are listed '
+    + 'PMM-T473 Verify shortcut link for DB Clusters '
+    + 'PMM-T478 Verify Hide Password button on DB cluster page '
+    + 'PMM-T485 Verify user can restart Percona PXC cluster @dbaas',
   async ({ I, dbaasPage, dbaasActionsPage }) => {
     const clusterDetails = {
       clusterDashboardRedirectionLink: dbaasPage.clusterDashboardUrls.pxcDashboard(pxc_cluster_name),
@@ -69,34 +108,21 @@ Scenario('PMM-T459, PMM-T473, PMM-T478, PMM-T524 Verify DB Cluster Details are l
 
     await dbaasPage.waitForDbClusterTab(clusterName);
     I.waitForVisible(dbaasPage.tabs.dbClusterTab.fields.clusterTableHeader, 30);
-    await dbaasPage.validateClusterDetail(pxc_cluster_name, clusterName, clusterDetails,
-      clusterDetails.clusterDashboardRedirectionLink);
+    await dbaasPage.validateClusterDetail(
+      pxc_cluster_name,
+      clusterName,
+      clusterDetails,
+      clusterDetails.clusterDashboardRedirectionLink,
+    );
     await dbaasActionsPage.restartCluster(pxc_cluster_name, clusterName, 'MySQL');
-    await dbaasPage.validateClusterDetail(pxc_cluster_name, clusterName, clusterDetails,
-      clusterDetails.clusterDashboardRedirectionLink);
-  });
-
-Data(pxcDBClusterDetails).Scenario('PMM-T502, Verify Monitoring of PXC Clusters @dbaas',
-  async ({
-    I, dbaasPage, current,
-  }) => {
-    await dbaasPage.waitForDbClusterTab(clusterName);
-    I.waitForVisible(dbaasPage.tabs.dbClusterTab.dbClusterAddButtonTop, 30);
-    const serviceName = `${current.namespace}-${current.clusterName}-pxc-${current.node}`;
-    const haproxyNodeName = `${current.namespace}-${current.clusterName}-haproxy-${current.node}`;
-
-    await dbaasPage.pxcClusterMetricCheck(pxc_cluster_name, serviceName, serviceName, haproxyNodeName);
-    await dbaasPage.dbaasQANCheck(pxc_cluster_name, serviceName, serviceName);
-    await dbaasPage.dbClusterAgentStatusCheck(pxc_cluster_name, serviceName, 'MYSQL_SERVICE');
-  });
-
-Scenario('PMM-T582 Verify Adding Cluster with Same Name and Same DB Type @dbaas',
-  async ({ I, dbaasPage, dbaasActionsPage }) => {
-    await dbaasPage.waitForDbClusterTab(clusterName);
-    await dbaasActionsPage.createClusterBasicOptions(clusterName, pxc_cluster_name, 'MySQL');
-    I.click(dbaasPage.tabs.dbClusterTab.createClusterButton);
-    await dbaasPage.seeErrorForAddedDBCluster(pxc_cluster_name);
-  });
+    await dbaasPage.validateClusterDetail(
+      pxc_cluster_name,
+      clusterName,
+      clusterDetails,
+      clusterDetails.clusterDashboardRedirectionLink,
+    );
+  },
+);
 
 Scenario('PMM-T460, PMM-T452 Verify force unregistering Kubernetes cluster @dbaas',
   async ({ I, dbaasPage }) => {
