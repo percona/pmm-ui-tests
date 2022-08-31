@@ -17,40 +17,40 @@ metrics.add([externalExporterServiceName, 'redis_uptime_in_seconds']);
 metrics.add([haproxyServiceName, 'haproxy_process_start_time_seconds']);
 
 for (const [key, value] of Object.entries(remoteInstancesHelper.services)) {
-  // if (value) {
-  //   switch (key) {
-  //     case 'postgresql':
-  //       // TODO: https://jira.percona.com/browse/PMM-9011
-  //       // eslint-disable-next-line max-len
-  //       // remotePostgreSQL.add(['postgresPGStatStatements', remoteInstancesPage.fields.usePgStatStatements, pmmInventoryPage.fields.postgresPgStatements]);
-  //       // qanFilters.add([remoteInstancesPage.potgresqlSettings.environment]);
-  //       // dashboardCheck.add([remoteInstancesHelper.services.postgresql]);
-  //       // metrics.add([remoteInstancesHelper.services.postgresql, 'pg_stat_database_xact_rollback']);
-  //       break;
-  //     case 'mysql':
-  //       qanFilters.add([remoteInstancesPage.mysqlSettings.environment]);
-  //       metrics.add([remoteInstancesHelper.services.mysql, 'mysql_global_status_max_used_connections']);
-  //       break;
-  //     case 'postgresGC':
-  //       dashboardCheck.add([remoteInstancesHelper.services.postgresGC]);
-  //       qanFilters.add([remoteInstancesPage.postgresGCSettings.environment]);
-  //       break;
-  //     case 'mysql_ssl':
-  //       qanFilters.add([remoteInstancesHelper.remote_instance.mysql.ms_8_0_ssl.environment]);
-  //       break;
-  //     case 'postgres_ssl':
-  //       qanFilters.add([remoteInstancesHelper.remote_instance.postgresql.postgres_13_3_ssl.environment]);
-  //       break;
-  //     case 'mongodb':
-  //       metrics.add([remoteInstancesHelper.services.mongodb, 'mongodb_up']);
-  //       break;
-  //     case 'proxysql':
-  //       metrics.add([remoteInstancesHelper.services.proxysql, 'proxysql_up']);
-  //       break;
-  //     default:
-  //   }
-  //   instances.add([key]);
-  // }
+  if (value) {
+    switch (key) {
+      case 'postgresql':
+        // TODO: https://jira.percona.com/browse/PMM-9011
+        // eslint-disable-next-line max-len
+        // remotePostgreSQL.add(['postgresPGStatStatements', remoteInstancesPage.fields.usePgStatStatements, pmmInventoryPage.fields.postgresPgStatements]);
+        // qanFilters.add([remoteInstancesPage.potgresqlSettings.environment]);
+        // dashboardCheck.add([remoteInstancesHelper.services.postgresql]);
+        // metrics.add([remoteInstancesHelper.services.postgresql, 'pg_stat_database_xact_rollback']);
+        break;
+      case 'mysql':
+        qanFilters.add([remoteInstancesPage.mysqlSettings.environment]);
+        metrics.add([remoteInstancesHelper.services.mysql, 'mysql_global_status_max_used_connections']);
+        break;
+      case 'postgresGC':
+        dashboardCheck.add([remoteInstancesHelper.services.postgresGC]);
+        qanFilters.add([remoteInstancesPage.postgresGCSettings.environment]);
+        break;
+      case 'mysql_ssl':
+        qanFilters.add([remoteInstancesHelper.remote_instance.mysql.ms_8_0_ssl.environment]);
+        break;
+      case 'postgres_ssl':
+        qanFilters.add([remoteInstancesHelper.remote_instance.postgresql.postgres_13_3_ssl.environment]);
+        break;
+      case 'mongodb':
+        metrics.add([remoteInstancesHelper.services.mongodb, 'mongodb_up']);
+        break;
+      case 'proxysql':
+        metrics.add([remoteInstancesHelper.services.proxysql, 'proxysql_up']);
+        break;
+      default:
+    }
+    instances.add([key]);
+  }
 }
 
 instances.add(['mysql']);

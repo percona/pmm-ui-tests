@@ -448,7 +448,7 @@ module.exports = {
 
   // General Remote Instances Service List, this is what UI-tests job uses to run remote instances tests.
   services: {
-    mysql: (remoteInstanceStatus.mysql.ps_5_7.enabled ? 'mysql_remote_new2' : undefined),
+    mysql: (remoteInstanceStatus.mysql.ps_5_7.enabled ? 'mysql_remote_new' : undefined),
     mongodb: (remoteInstanceStatus.mongodb.psmdb_4_2.enabled ? 'mongodb_remote_new' : undefined),
     postgresql: (remoteInstanceStatus.postgresql.pdpgsql_13_3.enabled ? 'postgresql_remote_new' : undefined),
     proxysql: (remoteInstanceStatus.proxysql.proxysql_2_1_1.enabled ? 'proxysql_remote_new' : undefined),
