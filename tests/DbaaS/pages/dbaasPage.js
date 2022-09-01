@@ -409,13 +409,11 @@ module.exports = {
     await dashboardPage.genericDashboardLoadForDbaaSClusters(`${dashboardPage.mysqlInstanceSummaryDashboard.url}&var-service_name=${serviceName}`, 'Last 15 minutes', 4, 1, 5); //FIXME: Expected with N/A should be 0 after PMM-10308 is fixed
     await dashboardPage.genericDashboardLoadForDbaaSClusters(`graph/d/haproxy-instance-summary/haproxy-instance-summary?orgId=1&refresh=1m&var-service_name=${haproxynodeName}`, 'Last 15 minutes', 4, 0, 3);
   },
-
-  async psmdbClusterMetricCheck(dbclusterName, serviceName, nodeName) {
-    await dashboardPage.genericDashboardLoadForDbaaSClusters(`${dashboardPage.mongoDbClusterSummaryDashboard.url}?&var-cluster=${dbclusterName}`, 'Last 5 minutes', 4, 0, 9);
-    await dashboardPage.genericDashboardLoadForDbaaSClusters(`graph/d/mongodb-wiredtiger/mongodb-wiredtiger-details?orgId=1&refresh=1m&var-service_name=${serviceName}`, 'Last 5 minutes', 4, 6, 2);
-    await dashboardPage.genericDashboardLoadForDbaaSClusters(`${dashboardPage.mongodbOverviewDashboard.url}?&var-service_name=${serviceName}`, 'Last 5 minutes', 4, 3, 1);
-    await dashboardPage.genericDashboardLoadForDbaaSClusters(`graph/d/mongodb-replicaset-summary/mongodb-replset-summary?orgId=1&refresh=1m&var-service_name=${serviceName}`, 'Last 5 minutes', 4, 0, 1);
-    await dashboardPage.genericDashboardLoadForDbaaSClusters(`${dashboardPage.nodeSummaryDashboard.url}?&var-node_name=${nodeName}`, 'Last 5 minutes', 4, 0, 1);
+  async psmdbClusterMetricCheck(dbclusterName, serviceName, nodeName, replSet) {
+    await dashboardPage.genericDashboardLoadForDbaaSClusters(`graph/d/mongodb-wiredtiger/mongodb-wiredtiger-details?orgId=1&refresh=1m&var-service_name=${serviceName}`, 'Last 15 minutes', 4, 6, 2);
+    await dashboardPage.genericDashboardLoadForDbaaSClusters(`${dashboardPage.mongodbOverviewDashboard.url}?&var-service_name=${serviceName}`, 'Last 15 minutes', 4, 3, 1);
+    await dashboardPage.genericDashboardLoadForDbaaSClusters(`graph/d/mongodb-replicaset-summary/mongodb-replset-summary?orgId=1&refresh=1m&var-service_name=${serviceName}&var-replset=${replSet}&var-cluster=${dbclusterName}`, 'Last 15 minutes', 4, 0, 1);
+    await dashboardPage.genericDashboardLoadForDbaaSClusters(`${dashboardPage.nodeSummaryDashboard.url}?&var-node_name=${nodeName}`, 'Last 15 minutes', 4, 0, 1);
   },
 
   async dbaasQANCheck(dbclusterName, nodeName, serviceName) {

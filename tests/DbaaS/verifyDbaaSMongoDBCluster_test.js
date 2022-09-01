@@ -98,34 +98,51 @@ Scenario('PMM-T665 PMM-T642 PMM-T484 PSMDB Cluster with Custom Resources, Verify
     );
   });
 
-Data(psmdbClusterDetails).Scenario('PMM-T503, Verify monitoring of PSMDB cluster @dbaas',
-  async ({
-    I, dbaasPage, current,
-  }) => {
-    await dbaasPage.waitForDbClusterTab(clusterName);
-    I.waitForVisible(dbaasPage.tabs.dbClusterTab.dbClusterAddButtonTop, 30);
+Data(psmdbClusterDetails).Scenario(
+  'PMM-T503 Verify monitoring of PSMDB nodes and services @dbaas',
+  async ({ I, dbaasPage, current }) => {
     const serviceName = `${current.namespace}-${current.clusterName}-${current.nodeType}-${current.node}`;
+    const replSet = current.nodeType;
 
-    await dbaasPage.psmdbClusterMetricCheck(psmdb_cluster, serviceName, serviceName);
+    await dbaasPage.psmdbClusterMetricCheck(psmdb_cluster, serviceName, serviceName, replSet)
     await dbaasPage.dbaasQANCheck(psmdb_cluster, serviceName, serviceName);
     await dbaasPage.dbClusterAgentStatusCheck(psmdb_cluster, serviceName, 'MONGODB_SERVICE');
-  });
+  },
+);
 
-Scenario('PMM-T477 PMM-T461 Verify MongoDB Cluster can be restarted, unregister k8s Cluster when Db Cluster Exist, ' + 
-'PMM-T781 Verify API keys are deleted when DB cluster is deleted @dbaas',
-  async ({ I, dbaasPage, dbaasActionsPage }) => {
+Scenario(
+  'PMM-T503 PMM-T477 Verify monitoring of PSMDB cluster, '
+    + 'PMM-T484 PMM-T461 Verify MongoDB Cluster can be restarted, '
+    + 'PMM-T460 unregister k8s Cluster when Db Cluster Exist, '
+    + 'PMM-T781 Verify API keys are deleted when DB cluster is deleted @dbaas',
+  async ({ I, dbaasPage, dbaasActionsPage, dashboardPage, qanOverview, qanPage, qanFilters }) => {
+    //PMM-T503
+    await dashboardPage.genericDashboardLoadForDbaaSClusters(
+      `${dashboardPage.mongoDbClusterSummaryDashboard.url}?&var-cluster=${psmdb_cluster}`,
+      'Last 15 minutes', 4, 0, 9,
+    );
+    I.amOnPage(I.buildUrlWithParams(qanPage.clearUrl, { from: 'now-3h' }));
+    qanOverview.waitForOverviewLoaded();
+    qanFilters.checkFilterExistInSection('Cluster', psmdb_cluster);
+    //PMM-T460
     await dbaasPage.waitForKubernetesClusterTab(clusterName);
     dbaasPage.unregisterCluster(clusterName);
     I.waitForText(dbaasPage.failedUnregisterCluster(clusterName, 'PSMDB'));
+    //PMM-T484
     await dbaasPage.waitForDbClusterTab(clusterName);
     I.waitForInvisible(dbaasPage.tabs.kubernetesClusterTab.disabledAddButton, 30);
     await dbaasActionsPage.restartCluster(psmdb_cluster, clusterName, 'MongoDB');
-    await dbaasPage.validateClusterDetail(psmdb_cluster, clusterName, psmdb_configuration, 
-      psmdb_configuration.clusterDashboardRedirectionLink);
+    await dbaasPage.validateClusterDetail(
+      psmdb_cluster,
+      clusterName,
+      psmdb_configuration,
+      psmdb_configuration.clusterDashboardRedirectionLink,
+    );
     await dbaasActionsPage.deletePSMDBCluster(psmdb_cluster, clusterName);
-    //PMM-T781
+    // PMM-T781
     await dbaasPage.apiKeyCheck(clusterName, psmdb_cluster, 'psmdb', false);
-  });
+  },
+);
 
 Scenario('PMM-787 Verify Editing MonogDB Cluster is possible. @dbaas',
   async ({
