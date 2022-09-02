@@ -168,9 +168,9 @@ Scenario(
     const metricInDropdown = qanOverview.getMetricLocatorInDropdown(metricName);
     const oldMetric = qanOverview.getColumnLocator('Load');
 
-    I.waitForElement(qanOverview.buttons.addColumn, 30);
+    I.waitForElement(qanOverview.getColumnLocator('Add column'), 30);
     I.waitForElement(oldMetric, 30);
-    I.doubleClick(qanOverview.buttons.addColumn);
+    I.doubleClick(qanOverview.getColumnLocator('Add column'));
     I.waitForElement(qanOverview.elements.newMetricDropdown, 30);
     I.fillField(qanOverview.fields.columnSearchField, metricName);
     I.click(metricInDropdown);
@@ -377,7 +377,7 @@ Scenario(
 
     // fetch the query id field value, split to get just the queryId
     tooltipQueryId = tooltipQueryId[1].trim();
-    qanOverview.searchByValue(tooltipQueryId);
+    await qanOverview.searchByValue(tooltipQueryId);
     I.waitForElement(qanOverview.elements.querySelector, 30);
     const firstQuerySearchText = await I.grabTextFrom(qanOverview.elements.firstQueryValue);
 

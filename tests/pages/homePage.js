@@ -27,7 +27,7 @@ module.exports = {
     noFailedChecksInPanel: '$db-check-panel-zero-checks',
     failedChecksPanelInfo: '[aria-label="Failed Checks panel"] i',
     newsPanelTitleSelector: dashboardPage.graphsLocator('Percona News'),
-    pmmCustomMenu: locate('$navbar-section').find('.dropdown a[aria-label="PMM dashboards"]'),
+    pmmCustomMenu: locate('$sidemenu').find('a[aria-label="PMM dashboards"]'),
     servicesButton: locate('span').withText('Services'),
     newsPanelContentSelector:
       locate('.panel-content').inside('[aria-label="Percona News panel"]'),

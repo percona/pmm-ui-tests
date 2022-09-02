@@ -5,7 +5,8 @@ const { I, qanFilters } = inject();
 module.exports = {
   root: '.query-analytics-data',
   fields: {
-    columnSearchField: 'input.ant-select-search__field',
+    columnSearchField: locate('.manage-columns').find('input'),
+    // columnSearchField: 'input.ant-select-search__field',
     searchBy: '//input[contains(@name, "search")]',
   },
   buttons: {
@@ -21,7 +22,7 @@ module.exports = {
     newMetricDropdown: '.add-columns-selector-dropdown',
     noDataIcon: 'div.ant-empty-image',
     querySelector: 'div.tr-1',
-    removeMetricColumn: '//i[@aria-label="icon: minus"]',
+    removeMetricColumn: 'span[aria-label="minus-square"]',
     spinner: locate('$table-loading').find('//i[contains(@class,"fa-spinner")]'),
     tableRow: 'div.tr',
     tooltip: '.overview-column-tooltip',
@@ -42,17 +43,17 @@ module.exports = {
   getRowLocator: (rowNumber) => `div.tr-${rowNumber}`,
   getSelectedRowLocator: (rowNumber) => `div.tr-${rowNumber}.selected-overview-row`,
 
-  getColumnLocator: (columnName) => `//span[contains(text(), '${columnName}')]`,
+  getColumnLocator: (columnName) => locate('$manage-columns-selector').withText(columnName),
   getQANMetricHeader: (metricName) => `//div[@role='columnheader']//span[contains(text(), '${metricName}')]`,
 
-  getMetricLocatorInDropdown: (name) => `//li[@label='${name}']`,
+  getMetricLocatorInDropdown: (name) => locate('.rc-virtual-list').find(`[label='${name}']`),
 
   getCellValueLocator: (rowNumber, columnNumber) => `div.tr-${rowNumber} > div:nth-child(${columnNumber + 2}) span > div > span`,
 
   // using below to concatenate locators
   getMetricSortingLocator: (columnNumber) => `(//a[@data-testid='sort-by-control'])[${columnNumber}]`,
 
-  getGroupByOptionLocator: (option) => `//ul/li[@label='${option}']`,
+  getGroupByOptionLocator: (option) => locate('.rc-virtual-list').find(`[label="${option}"]`),
 
   waitForOverviewLoaded() {
     I.waitForDetached(this.elements.spinner, 30);
@@ -104,7 +105,6 @@ module.exports = {
 
     I.click(column);
     I.waitForElement(this.fields.columnSearchField, 10);
-    I.fillField(this.fields.columnSearchField, 'Remove column');
     I.waitForElement(this.elements.removeMetricColumn, 30);
     I.forceClick(this.elements.removeMetricColumn);
     this.waitForOverviewLoaded();
@@ -190,7 +190,7 @@ module.exports = {
 
   verifyGroupByIs(groupBy) {
     I.waitForText(groupBy, 30, this.elements.groupBy);
-    I.seeElement(locate(this.elements.groupBy).find(`div[title="${groupBy}"]`));
+    I.seeElement(locate(this.elements.groupBy).find(`span[title="${groupBy}"]`));
   },
 
   selectRow(rowNumber) {

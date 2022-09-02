@@ -871,7 +871,7 @@ module.exports = {
     serviceSummary: locate('a').withText('Service Summary'),
     timeRangePickerButton: '.btn.navbar-button.navbar-button--tight',
     openFiltersDropdownLocator: (filterName) => locate('.variable-link-wrapper').after(`label[for="var-${formatElementId(filterName)}"]`),
-    filterDropdownOptionsLocator: (filterName) => `[aria-controls="options-var-${formatElementId(filterName)}"]`,
+    filterDropdownOptionsLocator: (filterName) => locate('.variable-option').withText(filterName),
   },
 
   createAdvancedDataExplorationURL(metricName, time = '1m', nodeName = 'All') {
@@ -1038,7 +1038,7 @@ module.exports = {
 
   async applyFilter(filterName, filterValue) {
     const filterValueSelector = `//span[contains(text(), '${filterValue}')]`;
-    const filterDropdownOptionsLocator = this.fields.filterDropdownOptionsLocator(filterName);
+    const filterDropdownOptionsLocator = this.fields.filterDropdownOptionsLocator(filterValue);
     const dropdownLocator = this.fields.openFiltersDropdownLocator(filterName);
     const selectedFilterValue = await I.grabTextFrom(dropdownLocator);
 
