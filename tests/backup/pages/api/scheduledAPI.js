@@ -33,6 +33,7 @@ module.exports = {
       retries,
       enabled,
       retention,
+      data_model: 'LOGICAL',
     };
 
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
