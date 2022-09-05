@@ -98,23 +98,10 @@ Scenario('PMM-T665 PMM-T642 PMM-T484 PSMDB Cluster with Custom Resources, Verify
     );
   });
 
-Data(psmdbClusterDetails).Scenario(
-  'PMM-T503 Verify monitoring of PSMDB nodes and services @dbaas',
-  async ({ I, dbaasPage, current }) => {
-    const serviceName = `${current.namespace}-${current.clusterName}-${current.nodeType}-${current.node}`;
-    const replSet = current.nodeType;
-
-    await dbaasPage.psmdbClusterMetricCheck(psmdb_cluster, serviceName, serviceName, replSet)
-    await dbaasPage.dbaasQANCheck(psmdb_cluster, serviceName, serviceName);
-    await dbaasPage.dbClusterAgentStatusCheck(psmdb_cluster, serviceName, 'MONGODB_SERVICE');
-  },
-);
-
 Scenario(
   'PMM-T503 PMM-T477 Verify monitoring of PSMDB cluster, '
     + 'PMM-T484 PMM-T461 Verify MongoDB Cluster can be restarted, '
-    + 'PMM-T460 unregister k8s Cluster when Db Cluster Exist, '
-    + 'PMM-T781 Verify API keys are deleted when DB cluster is deleted @dbaas',
+    + 'PMM-T460 unregister k8s Cluster when Db Cluster Exist',
   async ({ I, dbaasPage, dbaasActionsPage, dashboardPage, qanOverview, qanPage, qanFilters }) => {
     //PMM-T503
     await dashboardPage.genericDashboardLoadForDbaaSClusters(
@@ -138,8 +125,22 @@ Scenario(
       psmdb_configuration,
       psmdb_configuration.clusterDashboardRedirectionLink,
     );
-    await dbaasActionsPage.deletePSMDBCluster(psmdb_cluster, clusterName);
+  },
+);
+
+Data(psmdbClusterDetails).Scenario(
+  'PMM-T503 Verify monitoring of PSMDB nodes and services @dbaas, '
+    + 'PMM-T781 Verify API keys are deleted when DB cluster is deleted @dbaas',
+  async ({ I, dbaasPage, current }) => {
+    const serviceName = `${current.namespace}-${current.clusterName}-${current.nodeType}-${current.node}`;
+    const replSet = current.nodeType;
+
+    // PMM-T503
+    await dbaasPage.psmdbClusterMetricCheck(psmdb_cluster, serviceName, serviceName, replSet);
+    await dbaasPage.dbaasQANCheck(psmdb_cluster, serviceName, serviceName);
+    await dbaasPage.dbClusterAgentStatusCheck(psmdb_cluster, serviceName, 'MONGODB_SERVICE');
     // PMM-T781
+    await dbaasActionsPage.deletePSMDBCluster(psmdb_cluster, clusterName);
     await dbaasPage.apiKeyCheck(clusterName, psmdb_cluster, 'psmdb', false);
   },
 );
