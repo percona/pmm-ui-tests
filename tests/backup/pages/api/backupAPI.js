@@ -8,6 +8,7 @@ module.exports = {
       location_id,
       name,
       description: '',
+      data_model: 'LOGICAL',
     };
 
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
