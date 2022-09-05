@@ -224,7 +224,7 @@ module.exports = {
   async isNoDataMessageVisibleAfterRefresh() {
     I.click(this.buttons.refresh);
 
-    return await I.grabNumberOfVisibleElements(this.elements.noResultTableText) === 0;
+    return Number(await I.grabNumberOfVisibleElements(this.elements.noResultTableText)) === 0;
   },
 
   async searchByValue(value, refresh = false) {
