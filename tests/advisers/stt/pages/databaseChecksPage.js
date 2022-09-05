@@ -28,7 +28,7 @@ module.exports = {
     toggleFailedCheckBySummary: (checkSummary) => locate(failedCheckRow(checkSummary)).find('$silence-button'),
   },
   fields: {
-    dbCheckPanelSelector: '$db-check-panel',
+    dbCheckPanelSelector: '$db-check-tab-content',
     dbCheckPanelEmptySelector: '$db-check-panel-table-empty',
     sttEnabledDBCheckPanelSelector: '$db-check-panel-home',
     disabledSTTMessageSelector: '$db-check-panel-settings-link',

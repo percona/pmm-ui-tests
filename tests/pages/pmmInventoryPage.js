@@ -20,7 +20,7 @@ module.exports = {
     pdphsqlServiceName: locate('td').withText('PGSQL'),
     pmmAgentLocator: locate('td').withText('PMM Agent'),
     pmmServerPostgresLocator: locate('td').withText('pmm-server-postgresql'),
-    pmmServicesSelector: locate('li > a').withText('Services').withAttr({ 'aria-label': 'Tab Services' }),
+    pmmServicesSelector: locate('[role="tablist"] a').withText('Services').withAttr({ 'aria-label': 'Tab Services' }),
     postgresExporter: locate('td').withText('Postgres exporter'),
     postgresPgStatements: locate('td').withText('QAN PostgreSQL PgStatements'),
     postgresPgstatmonitor: locate('td').withText('QAN PostgreSQL Pgstatmonitor'),
