@@ -208,11 +208,6 @@ module.exports = {
           text: 'SMTP authentication information',
           link: links.communicationDocs,
         },
-        testEmail: {
-          iconLocator: locate('$testEmail-field-container').find('div[class$="-Icon"]').as('Test email tooltip'),
-          text: 'Send a test email to this address',
-          link: false,
-        },
       },
       slack: {
         slackUrl: {
