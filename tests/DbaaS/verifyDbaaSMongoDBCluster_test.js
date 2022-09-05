@@ -129,23 +129,20 @@ Scenario(
 );
 
 Data(psmdbClusterDetails).Scenario(
-  'PMM-T503 Verify monitoring of PSMDB nodes and services @dbaas, '
-    + 'PMM-T781 Verify API keys are deleted when DB cluster is deleted @dbaas',
-  async ({ I, dbaasPage, current }) => {
+  'PMM-T503 Verify monitoring of PSMDB nodes and services @dbaas',
+  async ({ dbaasPage, current }) => {
     const serviceName = `${current.namespace}-${current.clusterName}-${current.nodeType}-${current.node}`;
     const replSet = current.nodeType;
 
-    // PMM-T503
     await dbaasPage.psmdbClusterMetricCheck(psmdb_cluster, serviceName, serviceName, replSet);
     await dbaasPage.dbaasQANCheck(psmdb_cluster, serviceName, serviceName);
     await dbaasPage.dbClusterAgentStatusCheck(psmdb_cluster, serviceName, 'MONGODB_SERVICE');
-    // PMM-T781
-    await dbaasActionsPage.deletePSMDBCluster(psmdb_cluster, clusterName);
-    await dbaasPage.apiKeyCheck(clusterName, psmdb_cluster, 'psmdb', false);
   },
 );
 
-Scenario('PMM-787 Verify Editing MonogDB Cluster is possible. @dbaas',
+Scenario(
+  'PMM-787 Verify Editing MonogDB Cluster is possible, '
+    + 'PMM-T781 Verify API keys are deleted when DB cluster is deleted @dbaas',
   async ({
     I, dbaasPage, dbaasAPI, dbaasActionsPage,
   }) => {
@@ -156,10 +153,15 @@ Scenario('PMM-787 Verify Editing MonogDB Cluster is possible. @dbaas',
     I.click(dbaasPage.tabs.dbClusterTab.createClusterButton);
     I.waitForText('Processing', 30, dbaasPage.tabs.dbClusterTab.fields.progressBarContent);
     await dbaasPage.postClusterCreationValidation(psmdb_cluster, clusterName, 'MongoDB');
-    await dbaasPage.validateClusterDetail(psmdb_cluster, clusterName, psmdb_configuration, 
-      psmdb_configuration.clusterDashboardRedirectionLink);
+    await dbaasPage.validateClusterDetail(
+      psmdb_cluster,
+      clusterName,
+      psmdb_configuration,
+      psmdb_configuration.clusterDashboardRedirectionLink,
+    );
     I.click(dbaasPage.tabs.dbClusterTab.fields.clusterActionsMenu);
     // await dbaasActionsPage.checkActionPossible('Update', false); skipped because latest mongodb is not recommended version
+    // PMM-787
     I.click(dbaasPage.tabs.dbClusterTab.fields.clusterActionsMenu);
     const psmdb_updated_configuration = {
       topology: 'Cluster',
@@ -176,10 +178,18 @@ Scenario('PMM-787 Verify Editing MonogDB Cluster is possible. @dbaas',
     I.click(dbaasPage.tabs.dbClusterTab.updateClusterButton);
     I.waitForText('Processing', 60, dbaasPage.tabs.dbClusterTab.fields.progressBarContent);
     await dbaasPage.postClusterCreationValidation(psmdb_cluster, clusterName, 'MongoDB');
-    await dbaasPage.validateClusterDetail(psmdb_cluster, clusterName, psmdb_updated_configuration, 
-      psmdb_updated_configuration.clusterDashboardRedirectionLink);
+    await dbaasPage.validateClusterDetail(
+      psmdb_cluster,
+      clusterName,
+      psmdb_updated_configuration,
+      psmdb_updated_configuration.clusterDashboardRedirectionLink,
+    );
+
+    // PMM-T781
     await dbaasActionsPage.deletePSMDBCluster(psmdb_cluster, clusterName);
-  }).retry(1);
+    await dbaasPage.apiKeyCheck(clusterName, psmdb_cluster, 'psmdb', false);
+  },
+).retry(1);
 
 Scenario('PMM-T525 PMM-T528 Verify Suspend & Resume for Mongo DB Cluster Works as expected @dbaas',
   async ({ I, dbaasPage, dbaasActionsPage }) => {
