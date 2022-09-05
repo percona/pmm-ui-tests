@@ -77,6 +77,9 @@ exports.config = {
     ChaiWrapper: {
       require: 'codeceptjs-chai',
     },
+    Mochawesome: {
+      uniqueScreenshotNames: 'true',
+    },
   },
   include: pageObjects,
   multiple: {
