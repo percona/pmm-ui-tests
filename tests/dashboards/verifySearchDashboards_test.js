@@ -16,7 +16,6 @@ Scenario(
   async ({ I, searchDashboardsModal, dashboardPage }) => {
     I.click(dashboardPage.fields.breadcrumbs.dashboardName);
     searchDashboardsModal.waitForOpened();
-    searchDashboardsModal.collapseFolder('Recent');
     const foldersNames = Object.values(searchDashboardsModal.folders).map((folder) => folder.name);
     const actualFolders = (await searchDashboardsModal.getFoldersList());
 

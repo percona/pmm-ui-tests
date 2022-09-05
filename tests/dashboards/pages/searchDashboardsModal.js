@@ -15,6 +15,10 @@ module.exports = {
         'VictoriaMetrics Agents Overview',
       ],
     },
+    general: {
+      name: 'General',
+      items: [],
+    },
     mongoDb: {
       name: 'MongoDB',
       items: [
@@ -95,6 +99,7 @@ module.exports = {
   },
   fields: {
     searchInput: 'input[placeholder="Search dashboards by name"]',
+    folderLocator: I.useDataQA('data-testid Search section'),
     collapsedFolderLocator: (folderName) => locate(folderWrapper)
       .withDescendant(locate('div').withText(folderName)),
     expandedFolderLocator: (folderName) => locate(folderWrapper).withDescendant('div').withText(folderName)
@@ -107,7 +112,8 @@ module.exports = {
   },
 
   waitForOpened() {
-    I.waitForElement(this.fields.searchInput, 5);
+    I.waitForElement(this.fields.searchInput, 10);
+    I.waitForVisible(this.fields.folderLocator, 10);
   },
 
   async countFolders() {
