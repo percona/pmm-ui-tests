@@ -165,32 +165,6 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T560 Verify IA related tooltips [trivial] @ia @settings @grafana-pr',
-  async ({ I, pmmSettingsPage, settingsAPI }) => {
-    await settingsAPI.apiEnableIA();
-
-    I.amOnPage(pmmSettingsPage.advancedSettingsUrl);
-    await pmmSettingsPage.waitForPmmSettingsPageLoaded();
-
-    // Verify tooltip for Enable/Disable IA toggle
-    await pmmSettingsPage.verifyTooltip(pmmSettingsPage.tooltips.advancedSettings.integratedAlerting);
-
-    I.amOnPage(pmmSettingsPage.communicationSettingsUrl);
-    I.waitForVisible(pmmSettingsPage.communication.email.serverAddress.locator, 30);
-
-    // Verify tooltips for Communication > Email fields
-    for (const formField of Object.keys(pmmSettingsPage.communication.email)) {
-      I.moveCursorTo(pmmSettingsPage.communication.submitEmailButton);
-      await pmmSettingsPage.verifyTooltip(pmmSettingsPage.tooltips.communication.email[formField]);
-    }
-
-    // Verify tooltips for Communication > Slack URL field
-    I.click(pmmSettingsPage.communication.slackTab);
-    await pmmSettingsPage.verifyTooltip(pmmSettingsPage.tooltips.communication.slack.slackUrl);
-  },
-);
-
-Scenario(
   'PMM-T254 PMM-T253 Verify disable telemetry while Advisers enabled @settings @stt @grafana-pr',
   async ({ I, pmmSettingsPage }) => {
     I.amOnPage(pmmSettingsPage.advancedSettingsUrl);
