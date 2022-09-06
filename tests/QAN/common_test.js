@@ -38,7 +38,7 @@ Scenario(
     await adminPage.applyTimeRange('Last 1 hour');
     qanOverview.waitForOverviewLoaded();
     qanFilters.applyFilter('ps-dev');
-    qanOverview.searchByValue('insert');
+    await qanOverview.searchByValue('insert');
     I.waitForElement(qanOverview.elements.querySelector, 30);
     qanOverview.selectRow(1);
     I.waitForVisible(cellValue, 30);

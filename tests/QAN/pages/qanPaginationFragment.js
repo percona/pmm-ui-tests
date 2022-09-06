@@ -18,7 +18,7 @@ module.exports = {
 
   getPageLocator: (number) => `//li[@class='ant-pagination-item ant-pagination-item-${number}']`,
 
-  getPerPageOptionLocator: (option) => `//div[contains(@class, 'ant-select-item-option-content') and contains(text(), '${option}' )]`,
+  getPerPageOptionLocator: (option) => locate('[role="listbox"]').find('li').withText(option),
 
   async getLastPageNumber() {
     return await I.grabAttributeFrom(this.buttons.lastPageNumber, 'title');
