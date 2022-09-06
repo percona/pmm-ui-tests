@@ -105,9 +105,9 @@ module.exports = {
     expandedFolderLocator: (folderName) => locate(folderWrapper).withDescendant('div').withText(folderName)
       .find('div')
       .at(1),
-    folderItemLocator: (itemName) => locate(I.useDataQA(`data-testid Dashboard search item ${itemName}`)).find('a'),
+    folderItemLocator: (itemName) => locate(I.useDataQA('data-testid Search section')).withText(itemName),
     folderItemWithTagLocator: (itemName, tag) => locate(I.useDataQA(`data-testid Dashboard search item ${itemName}`))
-      .find('a').withDescendant('span').withText(tag),
+      .find('[aria-label="Tags"] li').withText(tag),
     closeButton: locate('button[aria-label="Close search"]').as('Close button'),
   },
 
