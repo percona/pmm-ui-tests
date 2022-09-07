@@ -958,8 +958,6 @@ module.exports = {
       const titles = await this.grabFailedReportTitles(this.fields.reportTitleWithNoData);
       const url = await I.grabCurrentUrl();
 
-      I.say(this.fields.reportTitleWithNoData);
-
       await this.printFailedReportNames(acceptableNoDataCount, numberOfNoDataElements, titles, url);
     }
   },
