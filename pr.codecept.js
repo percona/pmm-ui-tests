@@ -8,8 +8,9 @@ exports.config = {
   output: 'tests/output',
   helpers: {
     Playwright: {
-      url: process.env.PMM_UI_URL || 'http://127.0.0.1/',
+      url: process.env.PMM_UI_URL || 'http://3.129.92.70/',
       restart: true,
+      show: true,
       browser: 'chromium',
       windowSize: '1920x1080',
       timeout: 20000,
@@ -62,7 +63,7 @@ exports.config = {
       require: './tests/helper/browser_helper.js',
     },
     REST: {
-      endpoint: process.env.PMM_UI_URL || 'http://127.0.0.1/',
+      endpoint: process.env.PMM_UI_URL || 'http://3.129.92.70/',
       timeout: 60000,
     },
     Mailosaur: {

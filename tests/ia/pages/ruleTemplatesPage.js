@@ -1,12 +1,14 @@
 const { I } = inject();
 const YAML = require('yaml');
 
+const templateRow = (templateName) => `//tr[td[contains(., "${templateName}")]]`;
+
 module.exports = {
-  url: 'graph/integrated-alerting/alert-rule-templates',
+  url: 'graph/alerting/alert-rule-templates',
   columnHeaders: ['Name', 'Source', 'Created', 'Actions'],
   elements: {
     addedTemplate: '//td[text()="TemplateForAutomation"]/following-sibling::td[text()="User-defined (UI)"]',
-    ruleTemplateTab: '//div/a[@aria-label="Tab Alert Rule Templates"]',
+    ruleTemplateTab: '//div/a[@aria-label="Tab Alert rule Templates"]',
     templatesTableHeader: '$alert-rule-templates-table-thead',
     templatesTable: '$table-tbody',
     templateName: '//tr/td[1]',
@@ -23,9 +25,9 @@ module.exports = {
     cancelAdding: '$alert-rule-template-cancel-button',
     confirmDelete: '$confirm-delete-modal-button',
     // editButtonBySource returns Edit template button locators for a given source
-    editButtonBySource: (source) => `//tr[descendant::td[contains(text(), "${source}")]]//button[@data-testid="edit-template-button"]`,
+    editButtonBySource: (source) => `//tr[descendant::div[contains(text(), "${source}")]]//button[@data-testid="edit-template-button"]`,
     // deleteButtonBySource returns Delete template button locators for a given source
-    deleteButtonBySource: (source) => `//tr[descendant::td[contains(text(), "${source}")]]//button[@data-testid="delete-template-button"]`,
+    deleteButtonBySource: (source) => `//tr[descendant::div[contains(text(), "${source}")]]//button[@data-testid="delete-template-button"]`,
     // editButtonByName returns Delete template button locator for a given Template name
     editButtonByName: (name) => `//td[contains(text(), "${name}")]/following-sibling::td//button[@data-testid="edit-template-button"]`,
     // deleteButtonByName returns Delete template button locator for a given Template name
@@ -36,10 +38,10 @@ module.exports = {
     fileInput: locate('$modal-content').find('input').withAttr({ type: 'file' }),
   },
   messages: {
-    modalHeaderText: 'Add Alert Rule Template',
-    editModalHeaderText: (name) => `Edit "${name}" Alert Rule Template`,
+    modalHeaderText: 'Add alert rule template',
+    editModalHeaderText: (name) => `Edit "${name}" alert rule template`,
     editModalWarning: 'Name cannot be changed. If you need to change it, please create a new Template.',
-    deleteModalHeaderText: 'Delete Alert Rule Template',
+    deleteModalHeaderText: 'Delete alert rule template',
     deleteModalMessage: (name) => `Are you sure you want to delete the alert rule template "${name}"?`,
     successfullyAdded: 'Alert rule template successfully added',
     successfullyEdited: 'Alert rule template successfully edited',
@@ -79,7 +81,8 @@ module.exports = {
   },
 
   getSourceLocator(templateName, source) {
-    return `//td[contains(text(), "${templateName}")]/following-sibling::td[text()="${source}"]`;
+    return locate(templateRow(templateName)).find('td').withText(source);
+    // return `//td[contains(text(), "${templateName}")]/following-sibling::td[text()="${source}"]`;
   },
 
   async verifyInputContent(ymlPath) {
@@ -90,8 +93,8 @@ module.exports = {
 
   openRuleTemplatesTab() {
     I.amOnPage(this.url);
-    I.waitForVisible(this.elements.ruleTemplateTab, 30);
-    I.click(this.elements.ruleTemplateTab);
+    // I.waitForVisible(this.elements.ruleTemplateTab, 30);
+    // I.click(this.elements.ruleTemplateTab);
     I.waitForVisible(this.elements.templatesTable, 30);
   },
 
