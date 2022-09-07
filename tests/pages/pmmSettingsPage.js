@@ -147,7 +147,7 @@ module.exports = {
       },
       integratedAlerting: {
         iconLocator: locate('$advanced-alerting').find('div[class$="-Icon"]').as('Alerting tooltip'),
-        text: 'Option to enable/disable Alerting features.',
+        text: 'Option to enable/disable Integrated Alerting features.',
         link: links.integratedAlertingDocs,
       },
       microsoftAzureMonitoring: {
@@ -207,11 +207,6 @@ module.exports = {
           iconLocator: locate('div').after(locate('span').withText('Password')).as('Password tooltip'),
           text: 'SMTP authentication information',
           link: links.communicationDocs,
-        },
-        testEmail: {
-          iconLocator: locate('$testEmail-field-container').find('div[class$="-Icon"]').as('Test email tooltip'),
-          text: 'Send a test email to this address',
-          link: false,
         },
       },
       slack: {

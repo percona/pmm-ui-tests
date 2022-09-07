@@ -19,10 +19,11 @@ Scenario(
     await qanOverview.verifyRowCount(27);
     qanFilters.applyFilter('ps-dev');
     I.waitForVisible(qanFilters.fields.filterBy, 30);
-    qanOverview.searchByValue('insert');
+    await qanOverview.searchByValue('insert');
     I.waitForVisible(qanOverview.elements.querySelector, 30);
-    I.click(qanOverview.elements.querySelector);
-    I.waitForVisible(qanOverview.getColumnLocator('Lock Time'), 30);
+    // TODO: find test case in TM4J
+    // I.click(qanOverview.elements.querySelector);
+    // I.waitForVisible(qanOverview.getColumnLocator('Lock Time'), 30);
   },
 );
 
@@ -37,7 +38,7 @@ Scenario(
     await adminPage.applyTimeRange('Last 1 hour');
     qanOverview.waitForOverviewLoaded();
     qanFilters.applyFilter('ps-dev');
-    qanOverview.searchByValue('insert');
+    await qanOverview.searchByValue('insert');
     I.waitForElement(qanOverview.elements.querySelector, 30);
     qanOverview.selectRow(1);
     I.waitForVisible(cellValue, 30);

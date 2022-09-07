@@ -23,9 +23,9 @@ module.exports = {
     cancelAdding: '$alert-rule-template-cancel-button',
     confirmDelete: '$confirm-delete-modal-button',
     // editButtonBySource returns Edit template button locators for a given source
-    editButtonBySource: (source) => `//tr[descendant::td/div[contains(text(), "${source}")]]//button[@data-testid="edit-template-button"]`,
+    editButtonBySource: (source) => `//tr[descendant::td[contains(text(), "${source}")]]//button[@data-testid="edit-template-button"]`,
     // deleteButtonBySource returns Delete template button locators for a given source
-    deleteButtonBySource: (source) => `//tr[descendant::td/div[contains(text(), "${source}")]]//button[@data-testid="delete-template-button"]`,
+    deleteButtonBySource: (source) => `//tr[descendant::td[contains(text(), "${source}")]]//button[@data-testid="delete-template-button"]`,
     // editButtonByName returns Delete template button locator for a given Template name
     editButtonByName: (name) => `//td[contains(text(), "${name}")]/following-sibling::td//button[@data-testid="edit-template-button"]`,
     // deleteButtonByName returns Delete template button locator for a given Template name

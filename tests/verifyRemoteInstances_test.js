@@ -53,8 +53,6 @@ for (const [key, value] of Object.entries(remoteInstancesHelper.services)) {
   }
 }
 
-instances.add(['mysql']);
-
 Feature('Remote DB Instances').retry(1);
 
 Before(async ({ I }) => {

@@ -22,7 +22,7 @@ module.exports = {
     newMetricDropdown: '.add-columns-selector-dropdown',
     noDataIcon: 'div.ant-empty-image',
     querySelector: 'div.tr-1',
-    removeMetricColumn: 'span[aria-label="minus-square"]',
+    removeMetricColumn: locate('div').withChild('.anticon-minus').withText('Remove column'),
     spinner: locate('$table-loading').find('//i[contains(@class,"fa-spinner")]'),
     tableRow: 'div.tr',
     tooltip: '.overview-column-tooltip',
@@ -46,14 +46,14 @@ module.exports = {
   getColumnLocator: (columnName) => locate('$manage-columns-selector').withText(columnName),
   getQANMetricHeader: (metricName) => `//div[@role='columnheader']//span[contains(text(), '${metricName}')]`,
 
-  getMetricLocatorInDropdown: (name) => locate('.rc-virtual-list').find(`[label='${name}']`),
+  getMetricLocatorInDropdown: (name) => locate('[role="listbox"]').find(`[label='${name}']`),
 
   getCellValueLocator: (rowNumber, columnNumber) => `div.tr-${rowNumber} > div:nth-child(${columnNumber + 2}) span > div > span`,
 
   // using below to concatenate locators
   getMetricSortingLocator: (columnNumber) => `(//a[@data-testid='sort-by-control'])[${columnNumber}]`,
 
-  getGroupByOptionLocator: (option) => locate('.rc-virtual-list').find(`[label="${option}"]`),
+  getGroupByOptionLocator: (option) => locate('[role="listbox"]').find(`[label="${option}"]`),
 
   waitForOverviewLoaded() {
     I.waitForDetached(this.elements.spinner, 30);
@@ -177,20 +177,15 @@ module.exports = {
     const locator = this.getGroupByOptionLocator(groupBy);
 
     I.waitForElement(this.elements.groupBy, 30);
-    I.click(this.elements.groupBy);
-    // For some reason dropdown is not opened sometimes
-    I.wait(1);
-    const dropdownOpened = await I.grabNumberOfVisibleElements(locator);
-
-    if (!dropdownOpened) I.click(this.elements.groupBy);
-
+    I.forceClick(this.elements.groupBy);
     I.waitForVisible(locator, 30);
     I.click(locator);
   },
 
   verifyGroupByIs(groupBy) {
     I.waitForText(groupBy, 30, this.elements.groupBy);
-    I.seeElement(locate(this.elements.groupBy).find(`span[title="${groupBy}"]`));
+    I.seeElement(locate(this.elements.groupBy).find(`[title="${groupBy}"]`));
+    I.seeTextEquals(groupBy, this.elements.groupBy);
   },
 
   selectRow(rowNumber) {
@@ -224,7 +219,7 @@ module.exports = {
   async isNoDataMessageVisibleAfterRefresh() {
     I.click(this.buttons.refresh);
 
-    return await I.grabNumberOfVisibleElements(this.elements.noResultTableText) === 0;
+    return Number(await I.grabNumberOfVisibleElements(this.elements.noResultTableText)) === 0;
   },
 
   async searchByValue(value, refresh = false) {
@@ -232,6 +227,6 @@ module.exports = {
     I.clearField(this.fields.searchBy);
     I.fillField(this.fields.searchBy, value);
     I.pressKey('Enter');
-    await I.asyncWaitFor(async () => await this.isNoDataMessageVisibleAfterRefresh(), 300);
+    // await I.asyncWaitFor(async () => await this.isNoDataMessageVisibleAfterRefresh(), 300);
   },
 };
