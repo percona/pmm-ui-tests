@@ -12,7 +12,7 @@ Before(async ({ I, homePage }) => {
 });
 
 Scenario(
-  'PMM-T1091 - Verify PMM Dashboards folders are correct @nightly @dashboards',
+  '@PMM-T1091 - Verify PMM Dashboards folders are correct @nightly @dashboards',
   async ({ I, searchDashboardsModal, dashboardPage }) => {
     I.click(dashboardPage.fields.breadcrumbs.dashboardName);
     searchDashboardsModal.waitForOpened();
@@ -25,7 +25,7 @@ Scenario(
 );
 
 Data(folders).Scenario(
-  'PMM-T1086 - Verify PMM Dashboards collections are present in correct folders @nightly @dashboards @post-upgrade',
+  '@PMM-T1086 - Verify PMM Dashboards collections are present in correct folders @nightly @dashboards @post-upgrade',
   async ({
     I, current, searchDashboardsModal, dashboardPage,
   }) => {
