@@ -85,14 +85,14 @@ function MenuOption(menuName, label, locator, path, menuLevel = 1) {
 
     /* top level menu options text is nested <div> and should be excluded from loop */
     for (let i = 2; i <= menuLevel; i++) {
-      this.locator = `(//div[@data-testid="navbar-section"]/.//li[descendant::a[text()="${label}"]])`;
-      I.moveCursorTo(`${this.locator}[position()=${i}]`);
+      this.locator = `(//li[@role="menuitem" and .//*[text()="${label}"]])`;
+      I.moveCursorTo(`${this.locator}[position()=${i - 1}]`);
     }
 
     /* top level menu options are handled without loop and locator from the argument */
     const elemToClick = this.locator === locator
       ? locator
-      : `//div[@data-testid="navbar-section"]/.//a[text()="${label}"]`;
+      : `//li[@role="menuitem"]/.//a[text()="${label}"]`;
 
     I.waitForVisible(elemToClick, 2);
     I.moveCursorTo(elemToClick);

@@ -8,7 +8,7 @@ const sy = 'System';
 const ms = 'MySQL';
 const mo = 'MongoDB';
 const ps = 'PostgreSQL';
-const sa = 'Server Admin';
+const sa = 'Server admin';
 const co = 'Configuration';
 const al = 'Alerting';
 
@@ -46,11 +46,11 @@ module.exports = {
       mySqlSummary: menuOption(ms, 'Summary', '/graph/d/mysql-instance-summary/mysql-instance-summary'),
       highAvailability: new SubMenu(ms, 'High availability', '#',
         {
-          mySqlGroupReplicationSummary: menuOption(ms, 'Group replication summary', '/graph/d/mysql-group-replicaset-summary/mysql-group-replication-summary'),
-          mySQLReplicationSummary: menuOption(ms, 'Replication summary', '/graph/d/mysql-replicaset-summary/mysql-replication-summary'),
-          pxc_galeraClusterSummary: menuOption(ms, 'PXC/Galera cluster summary', '/graph/d/pxc-cluster-summary/pxc-galera-cluster-summary'),
-          pxc_galeraNodeSummary: menuOption(ms, 'PXC/Galera node summary', '/graph/d/pxc-node-summary/pxc-galera-node-summary'),
-          pxc_galeraNodesCompare: menuOption(ms, 'PXC/Galera nodes compare', '/graph/d/pxc-nodes-compare/pxc-galera-nodes-compare'),
+          mySqlGroupReplicationSummary: menuOption(ms, 'Group replication summary', '/graph/d/mysql-group-replicaset-summary/mysql-group-replication-summary', 2),
+          mySQLReplicationSummary: menuOption(ms, 'Replication summary', '/graph/d/mysql-replicaset-summary/mysql-replication-summary', 2),
+          pxc_galeraClusterSummary: menuOption(ms, 'PXC/Galera cluster summary', '/graph/d/pxc-cluster-summary/pxc-galera-cluster-summary', 2),
+          pxc_galeraNodeSummary: menuOption(ms, 'PXC/Galera node summary', '/graph/d/pxc-node-summary/pxc-galera-node-summary', 2),
+          pxc_galeraNodesCompare: menuOption(ms, 'PXC/Galera nodes compare', '/graph/d/pxc-nodes-compare/pxc-galera-nodes-compare', 2),
         }),
       MySqlCommand_HandlerCountersCompare: menuOption(ms, 'Command/Handler counters compare', '/graph/d/mysql-commandhandler-compare/mysql-command-handler-counters-compare'),
       mySqlInnoDbDetails: menuOption(ms, 'InnoDB details', '/graph/d/mysql-innodb/mysql-innodb-details'),
@@ -84,7 +84,6 @@ module.exports = {
 
   queryAnalytics: new LeftMenu('Query Analytics (QAN)', '/graph/d/pmm-qan/pmm-query-analytics'),
   explore: new LeftMenu('Explore', '/graph/explore'),
-  // /* Skipping due to a conflict with Integrated Alerting item */
   alerting: new LeftMenu('Alerting', '/graph/alerting/list',
     {
       alertRules: menuOption(al, 'Alert rules', '/graph/alerting/list'),
@@ -95,7 +94,6 @@ module.exports = {
       alertingAdmin: menuOption(al, 'Admin', '/graph/alerting/admin'),
       newAlertRule: menuOption(al, 'New alert rule', '/graph/alerting/new'),
     }),
-  // */
   advisorChecks: new LeftMenu('Advisor Checks', '/graph/pmm-database-checks'),
   configuration: new LeftMenu('Configuration', '/graph/inventory/services',
     {
@@ -113,7 +111,7 @@ module.exports = {
         }),
       addInstance: menuOption(co, 'Add Instance to PMM', '/graph/add-instance'),
     }),
-  serverAdmin: new LeftMenu('Server Admin', '/graph/admin/users',
+  serverAdmin: new LeftMenu('Server admin', '/graph/admin/users',
     {
       stats: menuOption(sa, 'Stats and license', '/graph/admin/upgrading'),
       users: menuOption(sa, 'Users', '/graph/admin/users'),
