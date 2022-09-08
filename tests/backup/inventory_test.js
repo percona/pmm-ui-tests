@@ -100,7 +100,7 @@ Scenario(
     backupInventoryPage.selectDropdownOption(backupInventoryPage.fields.locationDropdown, location.name);
     I.seeTextEquals(location.name, backupInventoryPage.elements.selectedLocation);
 
-    I.seeInField(backupInventoryPage.elements.dataModelState, 'PHYSICAL');
+    // I.seeInField(backupInventoryPage.elements.dataModelState, 'PHYSICAL');
 
     // Verify retry times and retry interval default values
     I.seeInField(backupInventoryPage.elements.retryTimes, 2);
