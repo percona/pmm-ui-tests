@@ -864,7 +864,7 @@ module.exports = {
     panelLoading: locate('div').withAttr({ class: 'panel-loading' }),
     postgreSQLServiceSummaryContent: locate('pre').withText('Detected PostgreSQL version:'),
     reportTitleWithNA:
-      locate('.panel-title').inside(locate('.panel-container').withDescendant('//div[contains(text(),"N/A")]')),
+      locate('.panel-title').inside(locate('.panel-container').withDescendant('//span[contains(text(),"N/A")]')),
     reportTitleWithNoData:
       locate('.panel-title').inside(locate('.panel-container').withDescendant('//div[contains(text(),"No data")]')),
     rootUser: '//div[contains(text(), "root")]',
