@@ -52,13 +52,21 @@ Scenario(
 
 Scenario(
   'Verify rule templates list elements @ia @grafana-pr',
-  async ({ I, ruleTemplatesPage }) => {
-    ruleTemplatesPage.openRuleTemplatesTab();
-    ruleTemplatesPage.columnHeaders.forEach((header) => {
-      const columnHeader = ruleTemplatesPage.elements.columnHeaderLocator(header);
+  async ({ I, ruleTemplatesPage, templatesAPI }) => {
+    const path = ruleTemplatesPage.ruleTemplate.paths.yaml;
 
-      I.waitForVisible(columnHeader, 30);
-    });
+    ruleTemplatesPage.openRuleTemplatesTab();
+    I.waitForVisible(ruleTemplatesPage.elements.columnHeaderLocator('Name'), 30);
+    I.waitForVisible(ruleTemplatesPage.elements.columnHeaderLocator('Source'), 30);
+    I.waitForVisible(ruleTemplatesPage.elements.columnHeaderLocator('Actions'), 30);
+
+    await templatesAPI.createRuleTemplate(path);
+    I.refreshPage();
+
+    I.waitForVisible(ruleTemplatesPage.elements.columnHeaderLocator('Name'), 30);
+    I.waitForVisible(ruleTemplatesPage.elements.columnHeaderLocator('Source'), 30);
+    // I.waitForVisible(ruleTemplatesPage.elements.columnHeaderLocator('Created'), 30);
+    I.waitForVisible(ruleTemplatesPage.elements.columnHeaderLocator('Actions'), 30);
     const templateName = await I.grabTextFromAll(ruleTemplatesPage.elements.templateName);
 
     templateName.forEach((name) => {
@@ -268,7 +276,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T825 PMM-T821 Verify User can add Alert Rule Template in the file system @not-ovf @ia',
+  'PMM-T825 PMM-T821 Verify User can add Alert rule template in the file system @not-ovf @ia',
   async ({ I, ruleTemplatesPage }) => {
     const editButton = ruleTemplatesPage.buttons
       .editButtonBySource(ruleTemplatesPage.templateSources.file);

@@ -864,9 +864,9 @@ module.exports = {
     panelLoading: locate('div').withAttr({ class: 'panel-loading' }),
     postgreSQLServiceSummaryContent: locate('pre').withText('Detected PostgreSQL version:'),
     reportTitleWithNA:
-      locate('.panel-title').inside(locate('.panel-container').withDescendant('//span[contains(text(),"N/A")]')),
+      locate('.panel-title').inside(locate('.panel-container').withDescendant('//div[contains(text(),"N/A")]')),
     reportTitleWithNoData:
-      locate('.panel-title').inside(locate('.panel-container').withDescendant('//span[contains(text(),"No data")]')),
+      locate('.panel-title').inside(locate('.panel-container').withDescendant('//div[contains(text(),"No data")]')),
     rootUser: '//div[contains(text(), "root")]',
     serviceSummary: locate('a').withText('Service Summary'),
     timeRangePickerButton: '.btn.navbar-button.navbar-button--tight',
@@ -966,7 +966,7 @@ module.exports = {
     assert.equal(
       actualNumber <= expectedNumber,
       true,
-      `Expected ${expectedNumber} Elements with but found ${actualNumber} on Dashboard ${dashboardUrl}. Report Names are ${titles}`,
+      `Expected ${expectedNumber} Elements without data but found ${actualNumber} on Dashboard ${dashboardUrl}. Report Names are ${titles}`,
     );
   },
 

@@ -106,7 +106,7 @@ module.exports = {
           resourcesPerNode: (clusterSize) => `//label[contains(text(), "${clusterSize}")]`,
           dbClusterExternalAccessTooltip: locate('$expose-field-container').find('div').at(2),
           dbClusterExternalAccessCheckbox: '$expose-switch',
-          dbClusterExternalAccessTooltipText: '.popper',
+          dbClusterExternalAccessTooltipText: locate('div').withChild('.tooltip-arrow'),
           resourceBarCPU: '$dbcluster-resources-bar-cpu',
           resourceBarMemory: '$dbcluster-resources-bar-memory',
           resourceBarDisk: '$dbcluster-resources-bar-disk',

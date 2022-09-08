@@ -42,7 +42,7 @@ Scenario(
   },
 );
 
-Scenario(
+Scenario.skip(
   'PMM-T432 Open the QAN Dashboard and check that changing absolute time range updates the overview table, URL. @nightly @qan',
   async ({
     I, adminPage, qanDetails, qanFilters, qanOverview,
@@ -87,7 +87,7 @@ Scenario(
   },
 );
 
-Scenario(
+Scenario.skip(
   'PMM-T1138 - Verify QAN Copy Button for URL @qan',
   async ({ I, adminPage, qanOverview }) => {
     await adminPage.applyTimeRange('Last 12 hours');
@@ -144,7 +144,7 @@ Scenario(
   },
 );
 
-Scenario(
+Scenario.skip(
   'PMM-T1141 - Verify specific time range by new button to copy QAN URL @qan',
   async ({ I, adminPage, qanOverview }) => {
     const dateTime = moment();
