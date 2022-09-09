@@ -147,7 +147,7 @@ module.exports = {
       },
       integratedAlerting: {
         iconLocator: locate('$advanced-alerting').find('div[class$="-Icon"]').as('Alerting tooltip'),
-        text: 'Option to enable/disable Integrated Alerting features.',
+        text: 'Option to enable/disable Alerting features.',
         link: links.integratedAlertingDocs,
       },
       microsoftAzureMonitoring: {

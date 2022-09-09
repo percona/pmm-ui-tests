@@ -283,9 +283,9 @@ Scenario(
     const deleteButton = ruleTemplatesPage.buttons
       .deleteButtonBySource(ruleTemplatesPage.templateSources.file);
 
-    await I.verifyCommand('docker cp tests/ia/templates/customParam.yml pmm-server:/srv/ia/templates');
-    await I.verifyCommand('docker cp tests/ia/templates/spaceInParam.yml pmm-server:/srv/ia/templates');
-    await I.verifyCommand('docker cp tests/ia/templates/template.txt pmm-server:/srv/ia/templates');
+    await I.verifyCommand('docker cp tests/ia/templates/customParam.yml pmm-server:/srv/alerting/templates');
+    await I.verifyCommand('docker cp tests/ia/templates/spaceInParam.yml pmm-server:/srv/alerting/templates');
+    await I.verifyCommand('docker cp tests/ia/templates/template.txt pmm-server:/srv/alerting/templates');
 
     ruleTemplatesPage.openRuleTemplatesTab();
     I.seeElement(editButton);
