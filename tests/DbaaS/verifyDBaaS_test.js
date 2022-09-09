@@ -50,7 +50,7 @@ Scenario(
     I.waitForText(dbaasPage.monitoringWarningMessage, 30);
     I.click(dbaasPage.tabs.kubernetesClusterTab.closeButton);
     dbaasPage.registerKubernetesCluster(clusterName, process.env.kubeconfig_minikube);
-    I.waitForText(dbaasPage.addedAlertMessage, 10);
+    I.waitForText(dbaasPage.addedAlertMessage, 60);
     dbaasPage.checkCluster(clusterName, false);
     I.click(dbaasPage.tabs.kubernetesClusterTab.addKubernetesClusterButton);
     I.seeElement(dbaasPage.tabs.kubernetesClusterTab.modalWindow);
