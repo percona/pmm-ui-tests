@@ -6,6 +6,7 @@ const assert = require('assert');
 //   type, serverAddress, hello, from, authType, username, password, url,
 // }) => {
 //   // eslint-disable-next-line max-len
+// eslint-disable-next-line max-len
 //   communicationDefaults.add([type, serverAddress, hello, from, authType, username, password, url, pmmSettingsPage.messages.successPopUpMessage]);
 // });
 

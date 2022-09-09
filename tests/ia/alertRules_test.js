@@ -243,6 +243,7 @@
 //       thresholdUnit: '%',
 //       duration: '2',
 //       severity: 'Error',
+// eslint-disable-next-line max-len
 //       filters: [{ label: 'service_name_updated', operator: alertRulesPage.filterOperators.regex, value: 'pmm-server-postgresql-updated' }],
 //       channels: ['EmailChannelForRules', 'EmailChannelForEditRules'],
 //       activate: false,
