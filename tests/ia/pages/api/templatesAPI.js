@@ -27,7 +27,7 @@ module.exports = {
     const templates = await this.getTemplatesList();
 
     if (process.env.OVF_TEST !== 'yes') {
-      await I.verifyCommand('docker exec pmm-server rm -f /srv/ia/templates/*');
+      await I.verifyCommand('docker exec pmm-server rm -f /srv/alerting/templates/*');
     }
 
     for (const { source, name } of templates) {
@@ -38,6 +38,8 @@ module.exports = {
   async getTemplatesList() {
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
     const resp = await I.sendPostRequest('v1/management/alerting/Templates/List', {}, headers);
+
+    await I.say(JSON.stringify(resp.data), null, 2);
 
     return resp.data.templates;
   },
