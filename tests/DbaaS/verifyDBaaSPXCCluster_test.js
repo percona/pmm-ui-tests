@@ -57,6 +57,35 @@ async ({
   await dbaasPage.verifyLogPopup(18);
 });
 
+Scenario(
+  'PMM-T486 Verify Adding PMM-Server Public Address via Settings works ' + 'PMM-T1315 - Verify DBaaS naming @dbaas',
+  async ({ I, pmmSettingsPage, settingsAPI }) => {
+    await settingsAPI.changeSettings({ publicAddress: '' });
+    await pmmSettingsPage.openAdvancedSettings();
+    await pmmSettingsPage.verifyTooltip(pmmSettingsPage.tooltips.advancedSettings.publicAddress);
+    I.waitForVisible(pmmSettingsPage.fields.publicAddressInput, 30);
+    I.seeElement(pmmSettingsPage.fields.publicAddressButton);
+    I.seeTextEquals('Database as a Service (DBaaS)', pmmSettingsPage.fields.dbaasSwitchItem);
+    I.click(pmmSettingsPage.fields.publicAddressButton);
+    let publicAddress = await I.grabValueFrom(pmmSettingsPage.fields.publicAddressInput);
+
+    I.assertEqual(
+      publicAddress,
+      process.env.VM_IP,
+      `Expected the Public Address Input Field to Match ${process.env.VM_IP} but found ${publicAddress}`,
+    );
+    pmmSettingsPage.applyChanges();
+    I.refreshPage();
+    await pmmSettingsPage.waitForPmmSettingsPageLoaded();
+    publicAddress = await I.grabValueFrom(pmmSettingsPage.fields.publicAddressInput);
+    I.assertEqual(
+      publicAddress,
+      process.env.VM_IP,
+      `Expected the Public Address to be saved and Match ${process.env.VM_IP} but found ${publicAddress}`,
+    );
+  },
+);
+
 Scenario('PMM-T582 Verify Adding Cluster with Same Name and Same DB Type @dbaas',
   async ({ I, dbaasPage, dbaasActionsPage }) => {
     await dbaasPage.waitForDbClusterTab(clusterName);
@@ -86,8 +115,8 @@ Data(pxcDBClusterDetails).Scenario(
     const serviceName = `${current.namespace}-${current.clusterName}-pxc-${current.node}`;
     const haproxyNodeName = `${current.namespace}-${current.clusterName}-haproxy-${current.node}`;
 
-    await dbaasPage.pxcClusterMetricCheck(pxc_cluster_name, serviceName, serviceName, haproxyNodeName);
     await dbaasPage.dbaasQANCheck(pxc_cluster_name, serviceName, serviceName);
+    await dbaasPage.pxcClusterMetricCheck(pxc_cluster_name, serviceName, serviceName, haproxyNodeName);
     await dbaasPage.dbClusterAgentStatusCheck(pxc_cluster_name, serviceName, 'MYSQL_SERVICE');
   },
 );
@@ -269,28 +298,6 @@ Scenario('PMM-T525 PMM-T528 Verify Suspend & Resume for DB Cluster Works as expe
     I.seeElement(dbaasPage.tabs.dbClusterTab.fields.clusterStatusActive);
     await dbaasPage.validateClusterDetail(dbClusterRandomName, clusterName, clusterDetails, dbClusterRandomNameLink);
     await dbaasActionsPage.deleteXtraDBCluster(dbClusterRandomName, clusterName);
-  });
-
-Scenario('Verify Adding PMM-Server Public Address via Settings works ' 
- + 'PMM-T1315 - Verify DBaaS naming @dbaas',
-  async ({ I, pmmSettingsPage, settingsAPI }) => {
-    await settingsAPI.changeSettings({ publicAddress: '' });
-    await pmmSettingsPage.openAdvancedSettings();
-    await pmmSettingsPage.verifyTooltip(pmmSettingsPage.tooltips.advancedSettings.publicAddress);
-    I.waitForVisible(pmmSettingsPage.fields.publicAddressInput, 30);
-    I.seeElement(pmmSettingsPage.fields.publicAddressButton);
-    I.seeTextEquals('Database as a Service (DBaaS)', pmmSettingsPage.fields.dbaasSwitchItem);
-    I.click(pmmSettingsPage.fields.publicAddressButton);
-    let publicAddress = await I.grabValueFrom(pmmSettingsPage.fields.publicAddressInput);
-
-    I.assertEqual(publicAddress, process.env.VM_IP,
-      `Expected the Public Address Input Field to Match ${process.env.VM_IP} but found ${publicAddress}`);
-    pmmSettingsPage.applyChanges();
-    I.refreshPage();
-    await pmmSettingsPage.waitForPmmSettingsPageLoaded();
-    publicAddress = await I.grabValueFrom(pmmSettingsPage.fields.publicAddressInput);
-    I.assertEqual(publicAddress, process.env.VM_IP,
-      `Expected the Public Address to be saved and Match ${process.env.VM_IP} but found ${publicAddress}`);
   });
 
 Scenario('PMM-T717 Verify insufficient resources warning @dbaas',
