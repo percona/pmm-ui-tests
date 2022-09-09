@@ -2,7 +2,7 @@
 version: '3.8'
 services:
   pmm-server:
-    image: ${PMM_SERVER_IMAGE:-perconalab/pmm-server:dev-latest}
+    image: ${PMM_SERVER_IMAGE:-perconalab/pmm-server-fb:PR-2598-653b228}
     container_name: pmm-server
     ports:
       - "80:80"
@@ -19,7 +19,7 @@ services:
       - PERCONA_TEST_VERSION_SERVICE_URL=https://check-dev.percona.com/versions/v1
 
   pmm-client:
-    image: ${PMM_CLIENT_IMAGE:-perconalab/pmm-client:dev-latest}
+    image: ${PMM_CLIENT_IMAGE:-perconalab/pmm-client-fb:PR-2598-653b228}
     container_name: pmm-client
     ports:
       - "7778:7777"

@@ -83,7 +83,7 @@ services:
       - "27017:27017"
     environment:
       - MONGO_INITDB_ROOT_USERNAME=root
-      - MONGO_INITDB_ROOT_PASSWORD=root-!@#%^password
+      - MONGO_INITDB_ROOT_PASSWORD=root
     networks:
       - pmm-network
 
@@ -111,7 +111,7 @@ services:
     ports:
       - "5433:5432"
     environment:
-      - POSTGRES_PASSWORD=pmm-^*&@agent-password
+      - POSTGRES_PASSWORD=pmm
     networks:
       - pmm-network
 
