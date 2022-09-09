@@ -39,8 +39,6 @@ module.exports = {
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
     const resp = await I.sendPostRequest('v1/management/alerting/Templates/List', {}, headers);
 
-    await I.say(JSON.stringify(resp.data), null, 2);
-
     return resp.data.templates;
   },
 
