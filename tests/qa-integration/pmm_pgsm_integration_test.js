@@ -268,7 +268,7 @@ Scenario(
 
       qanFilters.applyFilterInSection('Database', db);
       qanOverview.waitForOverviewLoaded();
-      qanOverview.searchByValue(queryId);
+      await qanOverview.searchByValue(queryId);
       qanOverview.waitForOverviewLoaded();
       qanOverview.selectRow(1);
       I.waitForElement(qanDetails.elements.topQuery);
