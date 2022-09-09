@@ -58,7 +58,8 @@ async ({
 });
 
 Scenario(
-  'PMM-T486 Verify Adding PMM-Server Public Address via Settings works ' + 'PMM-T1315 - Verify DBaaS naming @dbaas',
+  'PMM-T486 Verify Adding PMM-Server Public Address via Settings works, ' 
+  + 'PMM-T1315 - Verify DBaaS naming @dbaas',
   async ({ I, pmmSettingsPage, settingsAPI }) => {
     await settingsAPI.changeSettings({ publicAddress: '' });
     await pmmSettingsPage.openAdvancedSettings();
