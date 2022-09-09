@@ -84,7 +84,7 @@ Scenario(
 ).retry(1);
 
 Scenario(
-  'PMM-T961 PMM-T1005 PMM-T1024 Verify create backup modal @backup @bm-mongo',
+  '@PMM-T961 @PMM-T1005 PMM-T1024 Verify create backup modal @backup @bm-mongo',
   async ({
     I, backupInventoryPage,
   }) => {

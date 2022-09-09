@@ -4,7 +4,7 @@ const {
 
 // to keep arguments short
 const da = 'Dashboards';
-const sy = 'System';
+const sy = 'Operating System (OS)';
 const ms = 'MySQL';
 const mo = 'MongoDB';
 const ps = 'PostgreSQL';
@@ -28,7 +28,7 @@ module.exports = {
       folder: menuOption(da, 'New folder', '/graph/dashboards/folder/new'),
       import: menuOption(da, 'Import', '/graph/dashboard/import'),
     }),
-  systemNode: new LeftMenu('System', '/graph/d/node-instance-overview/',
+  systemNode: new LeftMenu('Operating System (OS)', '/graph/d/node-instance-overview/',
     {
       nodeOverview: menuOption(sy, 'Overview', '/graph/d/node-instance-overview/nodes-overview'),
       nodeSummary: menuOption(sy, 'Summary', '/graph/d/node-instance-summary/node-summary'),
