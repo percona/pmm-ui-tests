@@ -109,7 +109,8 @@ Scenario('PMM-T765 Verify Manage Components Versions '
     I.click(dbaasManageVersionPage.manageVersion.operator);
   });
 
-Data(versionVerification).Scenario('PMM-T760 PMM-T762 PMM-T770 Saving Custom Version for Dbaas Operators @dbaas',
+// FIXME: Skip until https://jira.percona.com/browse/PMM-10683 is fixed
+xData(versionVerification).Scenario('PMM-T760 PMM-T762 PMM-T770 Saving Custom Version for Dbaas Operators @dbaas',
   async ({
     I, dbaasPage, dbaasActionsPage, dbaasManageVersionPage, current,
   }) => {
