@@ -130,7 +130,7 @@ module.exports = {
     setManualy: locate('label').withText('Set manually'),
     skipConnectionCheck: '//input[@name="skip_connection_check"]/following-sibling::*[2]',
     skipTLS: '//input[@name="tls_skip_verify"]',
-    skipTLSL: '//input[@name="tls_skip_verify"]/following-sibling::*[2]',
+    skipTLSL: '$tls_skip_verify-checkbox-input',
     startMonitoring: '/following-sibling::td/a',
     subscriptionID: '$azure_subscription_id-text-input',
     tableStatsGroupTableLimit: '$tablestats_group_table_limit-number-input',
@@ -448,7 +448,7 @@ module.exports = {
   createRemoteInstance(serviceName) {
     I.waitForVisible(this.fields.skipTLSL, 30);
     I.waitForVisible(this.fields.addService, 30);
-    I.click(this.fields.skipTLSL);
+    I.checkOption(this.fields.skipTLSL);
     // eslint-disable-next-line default-case
     switch (serviceName) {
       case remoteInstancesHelper.services.mongodb:

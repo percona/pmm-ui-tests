@@ -89,6 +89,8 @@ Scenario(
   async ({
     I, homePage, databaseChecksPage, settingsAPI, securityChecksAPI,
   }) => {
+    const failedChecksDetails = locate('$checks-tooltip-body').find('div');
+
     await settingsAPI.apiEnableSTT();
     await securityChecksAPI.startSecurityChecks(['mysql_version']);
     await securityChecksAPI.waitForFailedCheckExistance(detailsText, psServiceName);
@@ -99,10 +101,10 @@ Scenario(
 
     // Verify failed checks pop up
     I.moveCursorTo(homePage.fields.sttFailedChecksPanelSelector);
-    I.waitForVisible(homePage.fields.popUp, 5);
+    I.waitForVisible(failedChecksDetails, 5);
     const [expectedCritical, expectedError, expectedWarning, expectedTrivial] = (await I.grabTextFrom(homePage.fields.sttFailedChecksPanelSelector)).split(' / ').map(Number);
 
-    const levels = await I.grabTextFromAll(locate('$checks-tooltip-body').find('div'));
+    const levels = await I.grabTextFromAll(failedChecksDetails);
 
     let critical = 0;
     let error = 0;

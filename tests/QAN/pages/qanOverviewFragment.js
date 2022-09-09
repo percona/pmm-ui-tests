@@ -5,7 +5,8 @@ const { I, qanFilters } = inject();
 module.exports = {
   root: '.query-analytics-data',
   fields: {
-    columnSearchField: 'input.ant-select-search__field',
+    columnSearchField: locate('.manage-columns').find('input'),
+    // columnSearchField: 'input.ant-select-search__field',
     searchBy: '//input[contains(@name, "search")]',
   },
   buttons: {
@@ -21,7 +22,7 @@ module.exports = {
     newMetricDropdown: '.add-columns-selector-dropdown',
     noDataIcon: 'div.ant-empty-image',
     querySelector: 'div.tr-1',
-    removeMetricColumn: '//i[@aria-label="icon: minus"]',
+    removeMetricColumn: locate('div').withChild('.anticon-minus').withText('Remove column'),
     spinner: locate('$table-loading').find('//i[contains(@class,"fa-spinner")]'),
     tableRow: 'div.tr',
     tooltip: '.overview-column-tooltip',
@@ -42,17 +43,17 @@ module.exports = {
   getRowLocator: (rowNumber) => `div.tr-${rowNumber}`,
   getSelectedRowLocator: (rowNumber) => `div.tr-${rowNumber}.selected-overview-row`,
 
-  getColumnLocator: (columnName) => `//span[contains(text(), '${columnName}')]`,
+  getColumnLocator: (columnName) => locate('$manage-columns-selector').withText(columnName),
   getQANMetricHeader: (metricName) => `//div[@role='columnheader']//span[contains(text(), '${metricName}')]`,
 
-  getMetricLocatorInDropdown: (name) => `//li[@label='${name}']`,
+  getMetricLocatorInDropdown: (name) => locate('[role="listbox"]').find(`[label='${name}']`),
 
   getCellValueLocator: (rowNumber, columnNumber) => `div.tr-${rowNumber} > div:nth-child(${columnNumber + 2}) span > div > span`,
 
   // using below to concatenate locators
   getMetricSortingLocator: (columnNumber) => `(//a[@data-testid='sort-by-control'])[${columnNumber}]`,
 
-  getGroupByOptionLocator: (option) => `//ul/li[@label='${option}']`,
+  getGroupByOptionLocator: (option) => locate('[role="listbox"]').find(`[label="${option}"]`),
 
   waitForOverviewLoaded() {
     I.waitForDetached(this.elements.spinner, 30);
@@ -104,7 +105,6 @@ module.exports = {
 
     I.click(column);
     I.waitForElement(this.fields.columnSearchField, 10);
-    I.fillField(this.fields.columnSearchField, 'Remove column');
     I.waitForElement(this.elements.removeMetricColumn, 30);
     I.forceClick(this.elements.removeMetricColumn);
     this.waitForOverviewLoaded();
@@ -177,20 +177,15 @@ module.exports = {
     const locator = this.getGroupByOptionLocator(groupBy);
 
     I.waitForElement(this.elements.groupBy, 30);
-    I.click(this.elements.groupBy);
-    // For some reason dropdown is not opened sometimes
-    I.wait(1);
-    const dropdownOpened = await I.grabNumberOfVisibleElements(locator);
-
-    if (!dropdownOpened) I.click(this.elements.groupBy);
-
+    I.forceClick(this.elements.groupBy);
     I.waitForVisible(locator, 30);
     I.click(locator);
   },
 
   verifyGroupByIs(groupBy) {
     I.waitForText(groupBy, 30, this.elements.groupBy);
-    I.seeElement(locate(this.elements.groupBy).find(`div[title="${groupBy}"]`));
+    I.seeElement(locate(this.elements.groupBy).find(`[title="${groupBy}"]`));
+    I.seeTextEquals(groupBy, this.elements.groupBy);
   },
 
   selectRow(rowNumber) {
@@ -224,7 +219,7 @@ module.exports = {
   async isNoDataMessageVisibleAfterRefresh() {
     I.click(this.buttons.refresh);
 
-    return await I.grabNumberOfVisibleElements(this.elements.noResultTableText) === 0;
+    return Number(await I.grabNumberOfVisibleElements(this.elements.noResultTableText)) === 0;
   },
 
   async searchByValue(value, refresh = false) {
@@ -232,6 +227,6 @@ module.exports = {
     I.clearField(this.fields.searchBy);
     I.fillField(this.fields.searchBy, value);
     I.pressKey('Enter');
-    await I.asyncWaitFor(async () => await this.isNoDataMessageVisibleAfterRefresh(), 300);
+    // await I.asyncWaitFor(async () => await this.isNoDataMessageVisibleAfterRefresh(), 300);
   },
 };
