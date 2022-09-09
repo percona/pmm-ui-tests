@@ -624,8 +624,14 @@ module.exports = {
       'Top 5 MySQL Open Table Definitions',
       'Percentage of Open Table Definitions to Table Definition Cache',
     ],
+    serviceNameDropdown:
+      '//button[@id="service_name"]',
     serviceName:
-      '//label[contains(text(), "Service Name")]/following-sibling::value-select-dropdown/descendant::a[@class="variable-value-link"]',
+      '//button[@id="service_name"]/span',
+    serviceNameInput:
+      '//input[@aria-controls="options-service_name"]',
+    toggleAllValues:
+    '//a[@aria-label="Toggle all values"]',
     urlWithRDSFilter:
       'graph/d/mysql-instance-overview/mysql-instances-overview?orgId=1&'
       + 'from=now-5m&to=now&refresh=1m&var-interval=$__auto_interval_interval&var-region=All&'
@@ -840,6 +846,47 @@ module.exports = {
       'Amazon Aurora Statement Latency',
       'Amazon Aurora Special Command Counters',
       'Amazon Aurora Problems',
+    ],
+  },
+
+  mongoDbCollectionDetails: {
+    url: 'graph/d/mongodb-collection-details/mongodb-collection-details?orgId=1&refresh=1m',
+    metrics: [
+      'Top 10 Largest Collections by Document Count',
+      'Top 10 Largest Collections by Size',
+      'Total Databases Size',
+      'Top 5 Most Fragmented Collections by Freeable Size',
+      'Top 5 Collections by Documents Read',
+      'Top 5 Collections by Documents Changed',
+    ],
+  },
+  mongoDbCollectionsOverview: {
+    url: 'graph/d/mongodb-collections-overview/mongodb-collections-overview?orgId=1&refresh=1m',
+    metrics: [
+      'Top 5 Databases By Size',
+      'Collections in Database',
+      'Indexes in Database',
+      'Data Size for Database',
+      'Top 5 Hottest Collections by Read (Total)',
+      'Top 5 Hottest Collections by Write (Total)',
+      'Top 5 Hottest Collections by Read (Rate)',
+      'Top 5 Hottest Collections by Write (Rate)',
+      'Collections statistics from admin (rate)',
+      'Collections statistics from admin (summary)',
+      'Collections statistics admin',
+    ],
+  },
+  mongoDbOplogDetails: {
+    url: 'graph/d/mongodb-oplog-details/mongodb-oplog-details?orgId=1&refresh=1m',
+    metrics: [
+      'Oplog Recovery Window',
+      'Oplog Buffered Operations',
+      'Oplog Getmore Time',
+      'Oplog Processing Time',
+      'Oplog Buffer Capacity',
+      'Oplog Operations',
+      'Oplog B/Hr',
+      'Oplog Window',
     ],
   },
 
@@ -1079,6 +1126,18 @@ module.exports = {
         I.switchToNextTab(1);
         break;
       }
+    }
+  },
+
+  async changeServiceName(serviceName) {
+    if (serviceName !== await I.grabTextFrom(this.serviceName)) {
+      I.waitForClickable(this.serviceNameDropdown);
+      I.click(this.serviceNameDropdown);
+      I.waitForClickable(this.toggleAllValues);
+      I.click(this.toggleAllValues);
+      I.waitForClickable(this.serviceNameInput);
+      I.type(this.serviceNameInput, serviceName);
+      I.pressKey('Enter');
     }
   },
 };

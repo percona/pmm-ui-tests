@@ -138,4 +138,9 @@ module.exports = {
       I.see(item, this.fields.folderItemLocator(item));
     }
   },
+
+  openDashboard(name) {
+    I.waitForVisible(this.fields.folderItemLocator(name), 10);
+    I.click(this.fields.folderItemLocator(name));
+  },
 };
