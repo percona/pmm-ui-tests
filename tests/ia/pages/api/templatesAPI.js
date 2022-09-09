@@ -13,7 +13,7 @@ module.exports = {
     const body = {
       yaml: templateText,
     };
-    const resp = await I.sendPostRequest('v1/management/ia/Templates/Create', body, headers);
+    const resp = await I.sendPostRequest('v1/management/alerting/Templates/Create', body, headers);
 
     assert.ok(
       resp.status === 200,
@@ -37,7 +37,7 @@ module.exports = {
 
   async getTemplatesList() {
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
-    const resp = await I.sendPostRequest('v1/management/ia/Templates/List', {}, headers);
+    const resp = await I.sendPostRequest('v1/management/alerting/Templates/List', {}, headers);
 
     return resp.data.templates;
   },
@@ -47,7 +47,7 @@ module.exports = {
     const body = {
       name: templateId,
     };
-    const resp = await I.sendPostRequest('v1/management/ia/Templates/Delete', body, headers);
+    const resp = await I.sendPostRequest('v1/management/alerting/Templates/Delete', body, headers);
 
     assert.ok(
       resp.status === 200,

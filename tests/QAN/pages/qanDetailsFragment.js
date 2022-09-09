@@ -15,7 +15,7 @@ module.exports = {
     noJSON: '//pre[contains(text(), "No JSON explain found")]',
     examplesCodeBlock: '$pmm-overlay-wrapper',
     planInfoIcon: locate('$query-analytics-details').find('div').after('pre > code'),
-    tooltipPlanId: locate('.popper__background.popper__background--info'),
+    tooltipPlanId: locate('div').withChild('.tooltip-arrow'),
     planText: locate('pre').find('code'),
     emptyPlanText: locate('pre').withText('No plan found'),
     topQuery: locate('$top-query').find('div'),
@@ -24,7 +24,7 @@ module.exports = {
 
   getFilterSectionLocator: (filterSectionName) => `//span[contains(text(), '${filterSectionName}')]`,
 
-  getTabLocator: (tabName) => locate('li > a').withText(tabName),
+  getTabLocator: (tabName) => locate('a').withText(tabName),
 
   getMetricsCellLocator: (metricName, columnNumber) => `//td//span[contains(text(), "${metricName}")]/ancestor::tr/td[${columnNumber}]//span[1]`,
 
