@@ -117,7 +117,8 @@ Scenario(
     // FIXME: skip until https://jira.percona.com/browse/PMM-10688 is fixed
     // const configuration = await I.grabTextFrom(dbaasPage.tabs.kubernetesClusterTab.clusterConfigurationText);
 
-    // assert.ok(configuration === process.env.kubeconfig_minikube, `The configuration shown is not equal to the expected Cluster configuration, ${configuration}`);
+    // assert.ok(configuration === process.env.kubeconfig_minikube, 
+    //   `The configuration shown is not equal to the expected Cluster configuration, ${configuration}`);
     // PMM-T1130
     I.amOnPage(dbaasPage.apiKeysUrl);
     I.waitForText(dbaasPage.apiKeysPage.apiKeysWarningText, 10, dbaasPage.apiKeysPage.apiKeysWarningLocator);
