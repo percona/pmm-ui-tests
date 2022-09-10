@@ -99,8 +99,9 @@ Scenario('PMM-T427 - Verify elements on PMM DBaaS page @dbaas',
     I.waitForVisible(dbaasPage.tabs.kubernetesClusterTab.addKubernetesClusterButtonInTable, 30);
   });
 
-Scenario('PMM-T547 PMM-T548  Verify user is able to view config of registered Kubernetes cluster on Kubernetes Cluster Page, ' +
- 'PMM-T1130 - Verify warning about deleting an API key @dbaas',
+Scenario(
+  'PMM-T547 PMM-T548  Verify user is able to view config of registered Kubernetes cluster on Kubernetes Cluster Page, '
+    + 'PMM-T1130 - Verify warning about deleting an API key @dbaas',
   async ({ I, dbaasPage, dbaasAPI }) => {
     await dbaasAPI.apiRegisterCluster(process.env.kubeconfig_minikube, clusterName);
     I.amOnPage(dbaasPage.url);
@@ -113,14 +114,16 @@ Scenario('PMM-T547 PMM-T548  Verify user is able to view config of registered Ku
     I.seeElement(dbaasPage.tabs.kubernetesClusterTab.copyToClipboardButton);
     I.click(dbaasPage.tabs.kubernetesClusterTab.copyToClipboardButton);
     I.waitForText(dbaasPage.configurationCopiedMessage, 30);
-    const configuration = await I.grabTextFrom(dbaasPage.tabs.kubernetesClusterTab.clusterConfigurationText);
+    // FIXME: skip until https://jira.percona.com/browse/PMM-10688 is fixed
+    // const configuration = await I.grabTextFrom(dbaasPage.tabs.kubernetesClusterTab.clusterConfigurationText);
 
-    assert.ok(configuration === process.env.kubeconfig_minikube, `The configuration shown is not equal to the expected Cluster configuration, ${configuration}`);
+    // assert.ok(configuration === process.env.kubeconfig_minikube, `The configuration shown is not equal to the expected Cluster configuration, ${configuration}`);
     // PMM-T1130
     I.amOnPage(dbaasPage.apiKeysUrl);
     I.waitForText(dbaasPage.apiKeysPage.apiKeysWarningText, 10, dbaasPage.apiKeysPage.apiKeysWarningLocator);
     await dbaasAPI.apiUnregisterCluster(clusterName);
-  });
+  },
+);
 
 Scenario('Verify user is able to add same cluster config with different Name @dbaas',
   async ({ I, dbaasPage, dbaasAPI }) => {
