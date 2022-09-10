@@ -87,13 +87,38 @@ Scenario(
   },
 );
 
-Scenario('PMM-T582 Verify Adding Cluster with Same Name and Same DB Type @dbaas',
-  async ({ I, dbaasPage, dbaasActionsPage }) => {
-    await dbaasPage.waitForDbClusterTab(clusterName);
-    await dbaasActionsPage.createClusterBasicOptions(clusterName, pxc_cluster_name, 'MySQL');
-    I.click(dbaasPage.tabs.dbClusterTab.createClusterButton);
-    await dbaasPage.seeErrorForAddedDBCluster(pxc_cluster_name);
+Scenario('PMM-T582 Verify Adding Cluster with Same Name and Same DB Type @dbaas', async ({ I, dbaasPage, dbaasActionsPage }) => {
+  await dbaasPage.waitForDbClusterTab(clusterName);
+  await dbaasActionsPage.createClusterBasicOptions(clusterName, pxc_cluster_name, 'MySQL');
+  I.click(dbaasPage.tabs.dbClusterTab.createClusterButton);
+  await dbaasPage.seeErrorForAddedDBCluster(pxc_cluster_name);
 });
+
+Scenario(
+  'PMM-T717 Verify insufficient resources warning @dbaas',
+  async ({
+    I, dbaasPage, dbaasActionsPage,
+  }) => {
+    const pxc_resource_check_cluster_name = 'PXC-Check-Resources';
+    const pxc_configuration = {
+      topology: 'Cluster',
+      numberOfNodes: '1',
+      resourcePerNode: 'Custom',
+      memory: '50 GB',
+      cpu: '20',
+      disk: '120 GB',
+      dbType: 'MySQL',
+      clusterDashboardRedirectionLink: dbaasPage.clusterDashboardUrls.pxcDashboard(pxc_resource_check_cluster_name),
+    };
+
+    await dbaasPage.waitForDbClusterTab(clusterName);
+    I.waitForDetached(dbaasPage.tabs.kubernetesClusterTab.disabledAddButton, 30);
+    await dbaasActionsPage.createClusterAdvancedOption(clusterName, pxc_resource_check_cluster_name, 'MySQL', pxc_configuration);
+    await dbaasActionsPage.verifyInsufficientResources(dbaasPage.tabs.dbClusterTab.advancedOptions.fields.resourceBarCPU, 'Insufficient CPU');
+    await dbaasActionsPage.verifyInsufficientResources(dbaasPage.tabs.dbClusterTab.advancedOptions.fields.resourceBarMemory, 'Insufficient Memory');
+    await dbaasActionsPage.verifyInsufficientResources(dbaasPage.tabs.dbClusterTab.advancedOptions.fields.resourceBarDisk, 'Insufficient Disk');
+  },
+);
 
 Scenario(
   'PMM-T502 Verify monitoring of PXC cluster @dbaas',
@@ -299,33 +324,6 @@ Scenario('PMM-T525 PMM-T528 Verify Suspend & Resume for DB Cluster Works as expe
     I.seeElement(dbaasPage.tabs.dbClusterTab.fields.clusterStatusActive);
     await dbaasPage.validateClusterDetail(dbClusterRandomName, clusterName, clusterDetails, dbClusterRandomNameLink);
     await dbaasActionsPage.deleteXtraDBCluster(dbClusterRandomName, clusterName);
-  });
-
-Scenario('PMM-T717 Verify insufficient resources warning @dbaas',
-  async ({
-    I, dbaasPage, dbaasAPI, dbaasActionsPage, adminPage,
-  }) => {
-    const pxc_resource_check_cluster_name = 'PXC-Check-Resources';
-    const pxc_configuration = {
-      topology: 'Cluster',
-      numberOfNodes: '1',
-      resourcePerNode: 'Custom',
-      memory: '50 GB',
-      cpu: '20',
-      disk: '120 GB',
-      dbType: 'MySQL',
-      clusterDashboardRedirectionLink: dbaasPage.clusterDashboardUrls.pxcDashboard(
-        pxc_resource_check_cluster_name,
-      ),
-    };
-
-    await dbaasAPI.deleteAllDBCluster(clusterName);
-    await dbaasPage.waitForDbClusterTab(clusterName);
-    I.waitForDetached(dbaasPage.tabs.kubernetesClusterTab.disabledAddButton, 30);
-    await dbaasActionsPage.createClusterAdvancedOption(clusterName, pxc_resource_check_cluster_name, 'MySQL', pxc_configuration);
-    await dbaasActionsPage.verifyInsufficientResources(dbaasPage.tabs.dbClusterTab.advancedOptions.fields.resourceBarCPU, 'Insufficient CPU');
-    await dbaasActionsPage.verifyInsufficientResources(dbaasPage.tabs.dbClusterTab.advancedOptions.fields.resourceBarMemory, 'Insufficient Memory');
-    await dbaasActionsPage.verifyInsufficientResources(dbaasPage.tabs.dbClusterTab.advancedOptions.fields.resourceBarDisk, 'Insufficient Disk');
   });
 
 Scenario('PMM-T704 PMM-T772 PMM-T849 PMM-T850 Resources, PV, Secrets verification @dbaas',
