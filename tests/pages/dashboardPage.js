@@ -866,16 +866,19 @@ module.exports = {
       'Top 5 Databases By Size',
       'Collections in Database',
       'Indexes in Database',
+      'Avg Object Size in Database',
+      'Index Size in Database',
       'Data Size for Database',
-      'Top 5 Hottest Collections by Read (Total)',
+      'Top 5 Hottest Collections by Read  (Total)',
       'Top 5 Hottest Collections by Write (Total)',
       'Top 5 Hottest Collections by Read (Rate)',
       'Top 5 Hottest Collections by Write (Rate)',
-      'Collections statistics from admin (rate)',
-      'Collections statistics from admin (summary)',
-      'Collections statistics admin',
+      'Collections statistics  from admin (rate)',
+      'Collections statistics  from admin (summary)',
+      'Collections statistics  admin',
     ],
   },
+
   mongoDbOplogDetails: {
     url: 'graph/d/mongodb-oplog-details/mongodb-oplog-details?orgId=1&refresh=1m',
     metrics: [

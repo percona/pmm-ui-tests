@@ -17,13 +17,23 @@ const mongo_test_user = {
 const collectionNames = ['col1', 'col2', 'col3', 'col4', 'col5'];
 const dbNames = ['db1', 'db2', 'db3', 'db4'];
 
-BeforeSuite(async ({ I }) => {
-  // connection.port = await I.verifyCommand('pmm-admin list | grep mongodb_node_1 | awk -F " " \'{print $3}\' | awk -F ":" \'{print $2}\'');
-  // await I.mongoConnect(connection);
-  // await I.mongoAddUser(mongo_test_user.username, mongo_test_user.password);
-  // for (let i = 0; i < dbNames.length; i++) {
-  //   await I.mongoCreateBulkCollections(dbNames[i], collectionNames);
-  // }
+BeforeSuite(async ({ I, grafanaAPI }) => {
+  connection.port = await I.verifyCommand('pmm-admin list | grep mongodb_node_1 | awk -F " " \'{print $3}\' | awk -F ":" \'{print $2}\'');
+  await I.mongoConnect(connection);
+  await I.mongoConnectReplica({
+    username: 'admin',
+    password: 'password',
+  });
+  await I.mongoAddUser(mongo_test_user.username, mongo_test_user.password);
+  for (let i = 0; i < dbNames.length; i++) {
+    await I.mongoCreateBulkCollections(dbNames[i], collectionNames);
+  }
+  
+  await I.say(
+    await I.verifyCommand(`pmm-admin add mongodb --port=${connection.port} --password=${connection.password} --username='${connection.username}' --replication-set=rs0 --service-name=${mongodb_service_name_ac} --enable-all-collectors`),
+  );
+
+  await grafanaAPI.waitForMetric('mongodb_up', { type: 'service_name', value: mongodb_service_name_ac }, 65);
 });
 
 Before(async ({ I }) => {
@@ -31,8 +41,8 @@ Before(async ({ I }) => {
 });
 
 After(async ({ I }) => {
-  // await I.verifyCommand(`pmm-admin remove mongodb ${mongodb_service_name}`);
-  // await I.verifyCommand(`pmm-admin remove mongodb ${mongodb_service_name_ac}`);
+  await I.verifyCommand(`pmm-admin remove mongodb ${mongodb_service_name}`);
+  await I.verifyCommand(`pmm-admin remove mongodb ${mongodb_service_name_ac}`);
 });
 
 AfterSuite(async ({ I }) => {
@@ -40,7 +50,7 @@ AfterSuite(async ({ I }) => {
 });
 
 Scenario(
-  'PMM-T1241 - Verify add mongoDB service with "+" in user password @not-ui-pipeline @mongodb-exporter @exporters',
+  'PMM-T1241 - Verify add mongoDB service with "+" in user password @not-ui-pipeline @mongodb-exporter @exporters @nazarov',
   async ({ I, grafanaAPI }) => {
     await I.say(
       await I.verifyCommand(`pmm-admin add mongodb --port=${connection.port} --password=${mongo_test_user.password} --username='${mongo_test_user.username}' --service-name=${mongodb_service_name}`),
@@ -51,23 +61,17 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T1332 - Verify MongoDB - MongoDB Collection Details @mongodb-exporter @exporters @nazarov',
+  'PMM-T1332 - Verify MongoDB - MongoDB Collection Details @mongodb-exporter @exporters',
   async ({
     I, grafanaAPI, adminPage, homePage, dashboardPage, searchDashboardsModal,
   }) => {
-    await I.say(
-      await I.verifyCommand(`pmm-admin add mongodb --port=${connection.port} --password=${connection.password} --username='${connection.username}' --service-name=${mongodb_service_name_ac} --enable-all-collectors`),
-    );
-
-    await grafanaAPI.waitForMetric('mongodb_up', { type: 'service_name', value: mongodb_service_name_ac }, 65);
-
     await homePage.open();
     I.click(dashboardPage.fields.breadcrumbs.dashboardName);
     searchDashboardsModal.waitForOpened();
     searchDashboardsModal.expandFolder('Experimental');
     searchDashboardsModal.openDashboard('MongoDB Collection Details');
     dashboardPage.waitForDashboardOpened();
-    await dashboardPage.changeServiceName('mongodb_node_3');
+    await dashboardPage.changeServiceName(`${mongodb_service_name}`);
     I.click(adminPage.fields.metricTitle);
     adminPage.performPageDown(2);
     adminPage.performPageUp(2);
@@ -79,35 +83,46 @@ Scenario(
   },
 );
 
-// Scenario(
-//   'PMM-T1333 - Verify MongoDB - MongoDB Collections Overview @mongodb-exporter @exporters',
-//   async ({
-//     I, adminPage, homePage, dashboardPage, searchDashboardsModal,
-//   }) => {
-//     await homePage.open();
-//     I.click(dashboardPage.fields.breadcrumbs.dashboardName);
-//     searchDashboardsModal.waitForOpened();
-//     searchDashboardsModal.expandFolder('Experimental');
-//     searchDashboardsModal.openDashboard('MongoDB Collections Overview');
-//     dashboardPage.waitForDashboardOpened();
-//     dashboardPage.verifyMetricsExistence(dashboardPage.mongoDbCollectionsOverview.metrics);
-//   },
-// );
+Scenario(
+  'PMM-T1333 - Verify MongoDB - MongoDB Collections Overview @mongodb-exporter @exporters @nazarov',
+  async ({
+    I, grafanaAPI, adminPage, homePage, dashboardPage, searchDashboardsModal,
+  }) => {
+    await homePage.open();
+    I.click(dashboardPage.fields.breadcrumbs.dashboardName);
+    searchDashboardsModal.waitForOpened();
+    searchDashboardsModal.expandFolder('Experimental');
+    searchDashboardsModal.openDashboard('MongoDB Collections Overview');
+    dashboardPage.waitForDashboardOpened();
+    await dashboardPage.changeServiceName(`${mongodb_service_name}`);
 
-// Scenario(
-//   'PMM-T1334 - Verify MongoDB - MongoDB Oplog Details @mongodb-exporter @exporters',
-//   async ({
-//     I, adminPage, homePage, dashboardPage, searchDashboardsModal,
-//   }) => {
-//     await homePage.open();
-//     I.click(dashboardPage.fields.breadcrumbs.dashboardName);
-//     searchDashboardsModal.waitForOpened();
-//     searchDashboardsModal.expandFolder('Experimental');
-//     searchDashboardsModal.openDashboard('MongoDB Oplog Details');
-//     dashboardPage.waitForDashboardOpened();
-//     I.click(adminPage.fields.metricTitle);
-//     adminPage.performPageDown(3);
-//     adminPage.performPageUp(3);
-//     dashboardPage.verifyMetricsExistence(dashboardPage.mongoDbOplogDetails.metrics);
-//   },
-// );
+    I.click(adminPage.fields.metricTitle);
+    adminPage.performPageDown(3);
+    adminPage.performPageUp(3);
+    dashboardPage.verifyMetricsExistence(dashboardPage.mongoDbCollectionsOverview.metrics);
+    await dashboardPage.verifyThereAreNoGraphsWithNA();
+    await dashboardPage.verifyThereAreNoGraphsWithoutData(0);
+  },
+);
+
+Scenario(
+  'PMM-T1334 - Verify MongoDB - MongoDB Oplog Details @mongodb-exporter @exporters @nazarov',
+  async ({
+    I, adminPage, homePage, dashboardPage, searchDashboardsModal,
+  }) => {
+    await homePage.open();
+    I.click(dashboardPage.fields.breadcrumbs.dashboardName);
+    searchDashboardsModal.waitForOpened();
+    searchDashboardsModal.expandFolder('Experimental');
+    searchDashboardsModal.openDashboard('MongoDB Oplog Details');
+    dashboardPage.waitForDashboardOpened();
+    await dashboardPage.changeServiceName(`${mongodb_service_name}`);
+
+    I.click(adminPage.fields.metricTitle);
+    adminPage.performPageDown(3);
+    adminPage.performPageUp(3);
+    dashboardPage.verifyMetricsExistence(dashboardPage.mongoDbOplogDetails.metrics);
+    await dashboardPage.verifyThereAreNoGraphsWithNA();
+    await dashboardPage.verifyThereAreNoGraphsWithoutData(0);
+  },
+);
