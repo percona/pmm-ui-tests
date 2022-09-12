@@ -27,7 +27,7 @@ module.exports = {
     const templates = await this.getTemplatesList();
 
     if (process.env.OVF_TEST !== 'yes') {
-      await I.verifyCommand('docker exec pmm-server rm -f /srv/ia/templates/*');
+      await I.verifyCommand('docker exec pmm-server rm -f /srv/alerting/templates/*');
     }
 
     for (const { source, name } of templates) {
