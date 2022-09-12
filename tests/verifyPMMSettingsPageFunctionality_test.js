@@ -225,31 +225,30 @@ Scenario('PMM-T520 - Verify that alert is being fired to external Alert Manager 
   await pmmSettingsPage.verifyExternalAlertManager(pmmSettingsPage.alertManager.ruleName);
 });
 
-Scenario('PMM-T532 PMM-T533 PMM-T536 - Verify user can enable/disable IA in Settings @ia @settings',
+Scenario('PMM-T532 PMM-T533 PMM-T536 - Verify user can disable/enable IA in Settings @ia @settings',
   async ({
     I, pmmSettingsPage, settingsAPI, adminPage,
   }) => {
-    await settingsAPI.apiDisableIA();
+    await settingsAPI.apiEnableIA();
     I.amOnPage(pmmSettingsPage.advancedSettingsUrl);
     I.waitForVisible(pmmSettingsPage.fields.iaSwitchSelector, 30);
     I.click(pmmSettingsPage.fields.iaSwitchSelector);
     I.dontSeeElement(pmmSettingsPage.communication.communicationSection);
-    pmmSettingsPage.verifySwitch(pmmSettingsPage.fields.iaSwitchSelectorInput, 'on');
+    pmmSettingsPage.verifySwitch(pmmSettingsPage.fields.iaSwitchSelectorInput, 'off');
     I.click(pmmSettingsPage.fields.advancedButton);
     I.waitForVisible(pmmSettingsPage.fields.iaSwitchSelectorInput, 30);
-    pmmSettingsPage.verifySwitch(pmmSettingsPage.fields.iaSwitchSelectorInput, 'on');
+    pmmSettingsPage.verifySwitch(pmmSettingsPage.fields.iaSwitchSelectorInput, 'off');
     // I.moveCursorTo(adminPage.sideMenu.alertingBellIcon);
     // I.waitForVisible(adminPage.sideMenu.integratedAlertingManuItem, 20);
     // I.seeTextEquals('Integrated Alerting', adminPage.sideMenu.integratedAlerting);
     // I.seeTextEquals('Communication', pmmSettingsPage.communication.communicationSection);
     I.click(pmmSettingsPage.fields.iaSwitchSelector);
-    pmmSettingsPage.verifySwitch(pmmSettingsPage.fields.iaSwitchSelectorInput, 'off');
+    pmmSettingsPage.verifySwitch(pmmSettingsPage.fields.iaSwitchSelectorInput, 'on');
     I.click(pmmSettingsPage.fields.advancedButton);
     I.waitForVisible(pmmSettingsPage.fields.iaSwitchSelector, 30);
-    pmmSettingsPage.verifySwitch(pmmSettingsPage.fields.iaSwitchSelectorInput, 'off');
+    pmmSettingsPage.verifySwitch(pmmSettingsPage.fields.iaSwitchSelectorInput, 'on');
     I.dontSeeElementInDOM(adminPage.sideMenu.integratedAlerting);
     I.dontSeeElement(pmmSettingsPage.communication.communicationSection);
-    await settingsAPI.apiEnableIA();
   }).retry(2);
 
 Scenario('PMM-T785 - Verify DBaaS cannot be disabled with ENABLE_DBAAS or PERCONA_TEST_DBAAS @dbaas',
