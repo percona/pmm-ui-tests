@@ -45,16 +45,16 @@ module.exports = {
     const agentLinkLocator = this.fields.agentsLink;
 
     await inventoryAPI.waitForRunningState(serviceId);
-    I.click(agentLinkLocator);
-    I.waitForElement(this.fields.pmmAgentLocator, 60);
-    I.waitForElement(this.fields.inventoryTable, 60);
+    await I.click(agentLinkLocator);
+    await I.waitForElement(this.fields.pmmAgentLocator, 60);
+    await I.waitForElement(this.fields.inventoryTable, 60);
     I.scrollPageToBottom();
     const numberOfServices = await I.grabNumberOfVisibleElements(
       `//tr//td//span[contains(text(), "${serviceId}")]/../span[contains(text(), 'status: RUNNING')]`,
     );
 
     if (/mysql|mongo|psmdb|postgres|pgsql|rds/gim.test(service_name)) {
-      I.waitForVisible(
+      await I.waitForVisible(
         `//tr//td//span[contains(text(), "${serviceId}")]/../span[contains(text(), 'status: RUNNING')]`,
         30,
       );

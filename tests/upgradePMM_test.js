@@ -501,13 +501,14 @@ Scenario(
     I, searchDashboardsModal, grafanaAPI, homePage,
   }) => {
     await homePage.open();
+    await I.waitForVisible(dashboardPage.fields.breadcrumbs.dashboardName, 15);
     I.click(dashboardPage.fields.breadcrumbs.dashboardName);
     searchDashboardsModal.waitForOpened();
     const actualFolders = (await searchDashboardsModal.getFoldersList());
 
-    I.assertDeepIncludeMembers(actualFolders, ['Starred', grafanaAPI.customFolderName]);
-    I.click(searchDashboardsModal.fields.folderItemLocator(grafanaAPI.customFolderName));
-    I.seeElement(searchDashboardsModal.fields.folderItemLocator(grafanaAPI.customDashboardName));
+    await I.assertDeepIncludeMembers(actualFolders, ['Starred', grafanaAPI.customFolderName]);
+    await I.click(searchDashboardsModal.fields.folderItemLocator(grafanaAPI.customFolderName));
+    await I.waitForVisible(searchDashboardsModal.fields.folderItemLocator(grafanaAPI.customDashboardName), 15);
   },
 );
 
@@ -544,8 +545,11 @@ Scenario(
     searchDashboardsModal.waitForOpened();
     searchDashboardsModal.collapseFolder('Recent');
     searchDashboardsModal.expandFolder(searchDashboardsModal.folders.insight.name);
-    I.seeElement(searchDashboardsModal.fields.folderItemLocator(grafanaAPI.randomDashboardName));
-    I.seeElement(searchDashboardsModal.fields.folderItemWithTagLocator(grafanaAPI.randomDashboardName, grafanaAPI.randomTag));
+    await I.waitForVisible(searchDashboardsModal.fields.folderItemLocator(grafanaAPI.randomDashboardName), 15);
+    await I.waitForVisible(
+      searchDashboardsModal.fields.folderItemWithTagLocator(grafanaAPI.randomDashboardName, grafanaAPI.randomTag),
+      15,
+    );
   },
 );
 
