@@ -1013,13 +1013,13 @@ module.exports = {
     I.waitForElement(this.fields.metricTitle, 60);
   },
 
-  expandFilters(filterName) {
+  async expandFilters(filterName) {
     const dropdownLocator = this.fields.openFiltersDropdownLocator(filterName);
 
     // This is due to some instances with many services take filter to load
-    I.wait(3);
-    I.waitForElement(dropdownLocator, 30);
-    I.click(dropdownLocator);
+    await I.wait(3);
+    await I.waitForElement(dropdownLocator, 30);
+    await I.click(dropdownLocator);
 
     return '[aria-label="Variable options"]';
   },
@@ -1040,6 +1040,8 @@ module.exports = {
     const filterValueSelector = `//span[contains(text(), '${filterValue}')]`;
     const filterDropdownOptionsLocator = this.fields.filterDropdownOptionsLocator(filterValue);
     const dropdownLocator = this.fields.openFiltersDropdownLocator(filterName);
+
+    await I.waitForVisible(applyFilter, 15);
     const selectedFilterValue = await I.grabTextFrom(dropdownLocator);
 
     // If there is only one value for a filter it is selected by default
@@ -1047,8 +1049,8 @@ module.exports = {
       I.seeTextEquals(filterValue, dropdownLocator);
     } else {
       this.expandFilters(filterName);
-      I.waitForElement(filterDropdownOptionsLocator, 30);
-      I.waitForVisible(filterValueSelector, 30);
+      await I.waitForElement(filterDropdownOptionsLocator, 30);
+      await I.waitForVisible(filterValueSelector, 30);
       I.click(filterValueSelector);
     }
   },
