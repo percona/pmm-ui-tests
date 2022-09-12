@@ -6,6 +6,14 @@ const formatElementId = (text) => text.toLowerCase().replace(/ /g, '_');
 module.exports = {
   // insert your locators and methods here
   // setting locators
+  serviceNameDropdown:
+    '//button[@id="var-service_name"]',
+  serviceName:
+    '//button[@id="var-service_name"]/span',
+  serviceNameInput:
+    '//input[@aria-controls="options-service_name"]',
+  toggleAllValues:
+    '//a[@aria-label="Toggle all values"]',
   nodesCompareDashboard: {
     url: 'graph/d/node-instance-compare/nodes-compare?orgId=1&refresh=1m&from=now-5m&to=now',
     metrics: [
@@ -624,14 +632,6 @@ module.exports = {
       'Top 5 MySQL Open Table Definitions',
       'Percentage of Open Table Definitions to Table Definition Cache',
     ],
-    serviceNameDropdown:
-      '//button[@id="service_name"]',
-    serviceName:
-      '//button[@id="service_name"]/span',
-    serviceNameInput:
-      '//input[@aria-controls="options-service_name"]',
-    toggleAllValues:
-    '//a[@aria-label="Toggle all values"]',
     urlWithRDSFilter:
       'graph/d/mysql-instance-overview/mysql-instances-overview?orgId=1&'
       + 'from=now-5m&to=now&refresh=1m&var-interval=$__auto_interval_interval&var-region=All&'
@@ -1136,8 +1136,10 @@ module.exports = {
       I.waitForClickable(this.toggleAllValues);
       I.click(this.toggleAllValues);
       I.waitForClickable(this.serviceNameInput);
-      I.type(this.serviceNameInput, serviceName);
+      // I.click(this.serviceNameInput);
+      I.fillField(this.serviceNameInput, serviceName);
       I.pressKey('Enter');
+      I.wait(10);
     }
   },
 };

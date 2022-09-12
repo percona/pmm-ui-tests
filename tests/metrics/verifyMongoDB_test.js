@@ -53,13 +53,13 @@ Scenario(
 Scenario(
   'PMM-T1332 - Verify MongoDB - MongoDB Collection Details @mongodb-exporter @exporters @nazarov',
   async ({
-    I, grafanaAPI, homePage, dashboardPage, searchDashboardsModal,
+    I, grafanaAPI, adminPage, homePage, dashboardPage, searchDashboardsModal,
   }) => {
-    // await I.say(
-    //   await I.verifyCommand(`pmm-admin add mongodb --port=${connection.port} --password=${connection.password} --username='${connection.username}' --service-name=${mongodb_service_name_ac} --enable-all-collectors`),
-    // );
-    //
-    // await grafanaAPI.waitForMetric('mongodb_up', { type: 'service_name', value: mongodb_service_name_ac }, 65);
+    await I.say(
+      await I.verifyCommand(`pmm-admin add mongodb --port=${connection.port} --password=${connection.password} --username='${connection.username}' --service-name=${mongodb_service_name_ac} --enable-all-collectors`),
+    );
+
+    await grafanaAPI.waitForMetric('mongodb_up', { type: 'service_name', value: mongodb_service_name_ac }, 65);
 
     await homePage.open();
     I.click(dashboardPage.fields.breadcrumbs.dashboardName);
@@ -67,9 +67,15 @@ Scenario(
     searchDashboardsModal.expandFolder('Experimental');
     searchDashboardsModal.openDashboard('MongoDB Collection Details');
     dashboardPage.waitForDashboardOpened();
-    await dashboardPage.changeServiceName('mongodb_rs1_3');
+    await dashboardPage.changeServiceName('mongodb_node_3');
+    I.click(adminPage.fields.metricTitle);
+    adminPage.performPageDown(2);
+    adminPage.performPageUp(2);
+    I.seeTextEquals('The next two graphs are available only when --enable-all-collectors option is used in pmm-admin.', locate('$TextPanel-converted-content'));
 
     dashboardPage.verifyMetricsExistence(dashboardPage.mongoDbCollectionDetails.metrics);
+    await dashboardPage.verifyThereAreNoGraphsWithNA();
+    await dashboardPage.verifyThereAreNoGraphsWithoutData(0);
   },
 );
 
