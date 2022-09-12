@@ -546,6 +546,7 @@ Scenario(
     searchDashboardsModal.collapseFolder('Recent');
     searchDashboardsModal.expandFolder(searchDashboardsModal.folders.insight.name);
     await I.waitForVisible(searchDashboardsModal.fields.folderItemLocator(grafanaAPI.randomDashboardName), 15);
+    await I.waitForVisible('//*[./@data-testid = "data-testid Dashboard search item uto-dashboard-custom"]');
     await I.waitForVisible(
       searchDashboardsModal.fields.folderItemWithTagLocator(grafanaAPI.randomDashboardName, grafanaAPI.randomTag),
       15,
