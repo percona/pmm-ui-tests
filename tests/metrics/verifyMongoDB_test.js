@@ -67,7 +67,7 @@ Scenario(
     searchDashboardsModal.expandFolder('Experimental');
     searchDashboardsModal.openDashboard('MongoDB Collection Details');
     dashboardPage.waitForDashboardOpened();
-    await dashboardPage.changeServiceName(`${mongodb_service_name}`);
+    await dashboardPage.changeServiceName(`${mongodb_service_name_ac}`);
     I.click(adminPage.fields.metricTitle);
     adminPage.performPageDown(2);
     adminPage.performPageUp(2);
@@ -90,7 +90,7 @@ Scenario(
     searchDashboardsModal.expandFolder('Experimental');
     searchDashboardsModal.openDashboard('MongoDB Collections Overview');
     dashboardPage.waitForDashboardOpened();
-    await dashboardPage.changeServiceName(`${mongodb_service_name}`);
+    await dashboardPage.changeServiceName(`${mongodb_service_name_ac}`);
 
     I.click(adminPage.fields.metricTitle);
     adminPage.performPageDown(3);
@@ -112,7 +112,7 @@ Scenario(
     searchDashboardsModal.expandFolder('Experimental');
     searchDashboardsModal.openDashboard('MongoDB Oplog Details');
     dashboardPage.waitForDashboardOpened();
-    await dashboardPage.changeServiceName(`${mongodb_service_name}`);
+    await dashboardPage.changeServiceName(`${mongodb_service_name_ac}`);
 
     I.click(adminPage.fields.metricTitle);
     adminPage.performPageDown(3);
