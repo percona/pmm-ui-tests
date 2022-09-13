@@ -24,14 +24,13 @@ BeforeSuite(async ({ I, grafanaAPI }) => {
     username: 'admin',
     password: 'password',
   });
+  await I.say(
+    await I.verifyCommand(`pmm-admin add mongodb --port=${connection.port} --password=${connection.password} --username='${connection.username}' --replication-set=rs0 --service-name=${mongodb_service_name_ac} --enable-all-collectors`),
+  );
   await I.mongoAddUser(mongo_test_user.username, mongo_test_user.password);
   for (let i = 0; i < dbNames.length; i++) {
     await I.mongoCreateBulkCollections(dbNames[i], collectionNames);
   }
-  
-  await I.say(
-    await I.verifyCommand(`pmm-admin add mongodb --port=${connection.port} --password=${connection.password} --username='${connection.username}' --replication-set=rs0 --service-name=${mongodb_service_name_ac} --enable-all-collectors`),
-  );
 
   await grafanaAPI.waitForMetric('mongodb_up', { type: 'service_name', value: mongodb_service_name_ac }, 65);
 });
@@ -41,13 +40,13 @@ Before(async ({ I }) => {
 });
 
 AfterSuite(async ({ I }) => {
-  await I.verifyCommand(`pmm-admin remove mongodb ${mongodb_service_name}`);
+  // await I.verifyCommand(`pmm-admin remove mongodb ${mongodb_service_name}`);
   await I.verifyCommand(`pmm-admin remove mongodb ${mongodb_service_name_ac}`);
   await I.mongoDisconnect();
 });
 
 Scenario(
-  'PMM-T1241 - Verify add mongoDB service with "+" in user password @not-ui-pipeline @mongodb-exporter @exporters @nazarov',
+  'PMM-T1241 - Verify add mongoDB service with "+" in user password @not-ui-pipeline @mongodb-exporter @exporters',
   async ({ I, grafanaAPI }) => {
     await I.say(
       await I.verifyCommand(`pmm-admin add mongodb --port=${connection.port} --password=${mongo_test_user.password} --username='${mongo_test_user.username}' --service-name=${mongodb_service_name}`),
