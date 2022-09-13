@@ -40,12 +40,9 @@ Before(async ({ I }) => {
   await I.Authorize();
 });
 
-After(async ({ I }) => {
+AfterSuite(async ({ I }) => {
   await I.verifyCommand(`pmm-admin remove mongodb ${mongodb_service_name}`);
   await I.verifyCommand(`pmm-admin remove mongodb ${mongodb_service_name_ac}`);
-});
-
-AfterSuite(async ({ I }) => {
   await I.mongoDisconnect();
 });
 
@@ -61,7 +58,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T1332 - Verify MongoDB - MongoDB Collection Details @mongodb-exporter @exporters',
+  'PMM-T1332 - Verify MongoDB - MongoDB Collection Details @mongodb-exporter @exporters @nazarov',
   async ({
     I, grafanaAPI, adminPage, homePage, dashboardPage, searchDashboardsModal,
   }) => {
