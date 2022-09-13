@@ -130,7 +130,7 @@ module.exports = {
     setManualy: locate('label').withText('Set manually'),
     skipConnectionCheck: '//input[@name="skip_connection_check"]/following-sibling::*[2]',
     skipTLS: '//input[@name="tls_skip_verify"]',
-    skipTLSL: '$tls_skip_verify-checkbox-input',
+    skipTLSL: locate('$tls_skip_verify-field-container').find('span'),
     startMonitoring: '/following-sibling::td/a',
     subscriptionID: '$azure_subscription_id-text-input',
     tableStatsGroupTableLimit: '$tablestats_group_table_limit-number-input',
