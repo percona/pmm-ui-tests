@@ -12,7 +12,7 @@ module.exports = {
     inventoryTable: locate('table'),
     inventoryTableColumn: locate('table').find('td'),
     inventoryTableRows: locate('tr').after('table'),
-    inventoryTableRowCount: (count) => locate('span').withText(count),
+    inventoryTableRowCount: (count) => locate('span').withText(`${count}`),
     mongoServiceName: locate('td').withText('mongodb'),
     mysqlServiceName: locate('td').withText('ms-single'),
     // cannot be changed to locate because it's failing in I.waitForVisible()
@@ -57,7 +57,7 @@ module.exports = {
     await inventoryAPI.waitForRunningState(serviceId);
     I.click(agentLinkLocator);
     I.waitForElement(this.fields.pmmAgentLocator, 60);
-    this.changeRowsPerPage(100);
+    this.changeRowsPerPage('100');
     I.waitForElement(this.fields.inventoryTable, 60);
     I.scrollPageToBottom();
     const numberOfServices = await I.grabNumberOfVisibleElements(
