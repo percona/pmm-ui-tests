@@ -15,6 +15,10 @@ module.exports = {
         'VictoriaMetrics Agents Overview',
       ],
     },
+    general: {
+      name: 'General',
+      items: [],
+    },
     mongoDb: {
       name: 'MongoDB',
       items: [
@@ -84,6 +88,11 @@ module.exports = {
         'DB Cluster Summary',
         'Environments Overview (Designed for PMM)',
         'Environment Summary (Designed for PMM)',
+        'MongoDB Collection Details',
+        'MongoDB Collections Overview',
+        'MongoDB Oplog Details',
+        'New-Home Dashboard',
+        'PXC Galera Cluster Summary (experimental)',
       ],
     },
     queryAnalytics: {
@@ -95,19 +104,21 @@ module.exports = {
   },
   fields: {
     searchInput: 'input[placeholder="Search dashboards by name"]',
+    folderLocator: I.useDataQA('data-testid Search section'),
     collapsedFolderLocator: (folderName) => locate(folderWrapper)
       .withDescendant(locate('div').withText(folderName)),
     expandedFolderLocator: (folderName) => locate(folderWrapper).withDescendant('div').withText(folderName)
       .find('div')
       .at(1),
-    folderItemLocator: (itemName) => locate(I.useDataQA(`data-testid Dashboard search item ${itemName}`)).find('a'),
+    folderItemLocator: (itemName) => locate(I.useDataQA('data-testid Search section')).withText(itemName),
     folderItemWithTagLocator: (itemName, tag) => locate(I.useDataQA(`data-testid Dashboard search item ${itemName}`))
-      .find('a').withDescendant('span').withText(tag),
+      .find('[aria-label="Tags"] li').withText(tag),
     closeButton: locate('button[aria-label="Close search"]').as('Close button'),
   },
 
   waitForOpened() {
-    I.waitForElement(this.fields.searchInput, 5);
+    I.waitForElement(this.fields.searchInput, 10);
+    I.waitForVisible(this.fields.folderLocator, 10);
   },
 
   async countFolders() {

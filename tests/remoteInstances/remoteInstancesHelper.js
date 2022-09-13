@@ -238,7 +238,7 @@ module.exports = {
         clusterName: 'aws_postgresql_12',
         port: 5432,
       },
-      aurora: {   
+      aurora: {
         aws_access_key: process.env.PMM_QA_AWS_ACCESS_KEY_ID,
         aws_secret_key: process.env.PMM_QA_AWS_ACCESS_KEY,
         port: '42001',
@@ -246,13 +246,13 @@ module.exports = {
         aurora2: {
           address: process.env.PMM_QA_AURORA2_MYSQL_HOST,
           password: process.env.PMM_QA_AURORA2_MYSQL_PASSWORD,
-          instance_id: "pmm-qa-aurora2-mysql-instance-1",
+          instance_id: 'pmm-qa-aurora2-mysql-instance-1',
           cluster_name: 'aws_aurora2',
         },
         aurora3: {
           address: process.env.PMM_QA_AURORA3_MYSQL_HOST,
           password: process.env.PMM_QA_AURORA3_MYSQL_PASSWORD,
-          instance_id: "pmm-qa-aurora3-mysql-instance-1",
+          instance_id: 'pmm-qa-aurora3-mysql-instance-1',
           cluster_name: 'aws_aurora3',
         },
       },

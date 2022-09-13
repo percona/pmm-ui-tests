@@ -10,7 +10,7 @@ module.exports = {
   rules,
   templates,
   elements: {
-    rulesTab: '//li[@aria-label="Tab Alert Rules"]',
+    rulesTab: '//div/a[@aria-label="Tab Alert Rules"]',
     noRules: locate('$alert-rules-table-no-data').find('h1'),
     rulesTableHeader: '$alert-rules-table-thead',
     rulesTable: '$alert-rules-table-tbody',

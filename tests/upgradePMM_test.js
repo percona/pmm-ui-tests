@@ -298,8 +298,7 @@ Scenario(
             remoteInstancesHelper.upgradeServiceNames[type.toLowerCase()],
             aurora_details,
           );
-        }
-        else {
+        } else {
           await addInstanceAPI.apiAddInstance(
             type,
             remoteInstancesHelper.upgradeServiceNames[type.toLowerCase()],
@@ -506,6 +505,7 @@ Scenario(
     const actualFolders = (await searchDashboardsModal.getFoldersList());
 
     I.assertDeepIncludeMembers(actualFolders, ['Starred', grafanaAPI.customFolderName]);
+    I.click(searchDashboardsModal.fields.folderItemLocator(grafanaAPI.customFolderName));
     I.seeElement(searchDashboardsModal.fields.folderItemLocator(grafanaAPI.customDashboardName));
   },
 );
@@ -691,14 +691,14 @@ if (iaReleased) {
   );
 } else {
   Scenario(
-    'PMM-T531 Verify IA is disabled by default after upgrading from older PMM version @post-upgrade @ovf-upgrade @ami-upgrade @pmm-upgrade',
+    'PMM-T531 Verify IA is enabled by default after upgrading from older PMM version @post-upgrade @ovf-upgrade @ami-upgrade @pmm-upgrade',
     async ({
       I, pmmSettingsPage,
     }) => {
       I.amOnPage(pmmSettingsPage.advancedSettingsUrl);
       I.waitForVisible(pmmSettingsPage.fields.iaSwitchSelector, 30);
       I.dontSeeElement(pmmSettingsPage.communication.communicationSection);
-      pmmSettingsPage.verifySwitch(pmmSettingsPage.fields.iaSwitchSelectorInput, 'off');
+      pmmSettingsPage.verifySwitch(pmmSettingsPage.fields.iaSwitchSelectorInput, 'on');
     },
   );
 }
@@ -986,7 +986,7 @@ if (versionMinor >= 23) {
         adminPage.performPageDown(5);
         await dashboardPage.expandEachDashboardRow();
         adminPage.performPageUp(5);
-        await dashboardPage.verifyThereAreNoGraphsWithNA();
+        await dashboardPage.verifyThereAreNoGraphsWithNA(3);
         await dashboardPage.verifyThereAreNoGraphsWithoutData(3);
       }
     },

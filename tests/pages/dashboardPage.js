@@ -916,12 +916,12 @@ module.exports = {
     reportTitleWithNA:
       locate('.panel-title').inside(locate('.panel-container').withDescendant('//span[contains(text(),"N/A")]')),
     reportTitleWithNoData:
-      locate('.panel-title').inside(locate('.panel-container').withDescendant('//span[contains(text(),"No data")]')),
+      locate('.panel-title').inside(locate('.panel-container').withDescendant('//div[contains(text(),"No data")]')),
     rootUser: '//div[contains(text(), "root")]',
     serviceSummary: locate('a').withText('Service Summary'),
     timeRangePickerButton: '.btn.navbar-button.navbar-button--tight',
-    openFiltersDropdownLocator: (filterName) => locate('.variable-link-wrapper').after(`label[for="${formatElementId(filterName)}"]`),
-    filterDropdownOptionsLocator: (filterName) => `[aria-controls="options-${formatElementId(filterName)}"]`,
+    openFiltersDropdownLocator: (filterName) => locate('.variable-link-wrapper').after(`label[for="var-${formatElementId(filterName)}"]`),
+    filterDropdownOptionsLocator: (filterName) => locate('.variable-option').withText(filterName),
   },
 
   createAdvancedDataExplorationURL(metricName, time = '1m', nodeName = 'All') {
@@ -960,7 +960,7 @@ module.exports = {
   // introducing methods
   verifyMetricsExistence(metrics) {
     for (const i in metrics) {
-      I.seeElement(this.graphsLocator(metrics[i]));
+      I.waitForVisible(this.graphsLocator(metrics[i]), 5);
     }
   },
 
@@ -1016,7 +1016,7 @@ module.exports = {
     assert.equal(
       actualNumber <= expectedNumber,
       true,
-      `Expected ${expectedNumber} Elements with but found ${actualNumber} on Dashboard ${dashboardUrl}. Report Names are ${titles}`,
+      `Expected ${expectedNumber} Elements without data but found ${actualNumber} on Dashboard ${dashboardUrl}. Report Names are ${titles}`,
     );
   },
 
@@ -1088,7 +1088,7 @@ module.exports = {
 
   async applyFilter(filterName, filterValue) {
     const filterValueSelector = `//span[contains(text(), '${filterValue}')]`;
-    const filterDropdownOptionsLocator = this.fields.filterDropdownOptionsLocator(filterName);
+    const filterDropdownOptionsLocator = this.fields.filterDropdownOptionsLocator(filterValue);
     const dropdownLocator = this.fields.openFiltersDropdownLocator(filterName);
     const selectedFilterValue = await I.grabTextFrom(dropdownLocator);
 
