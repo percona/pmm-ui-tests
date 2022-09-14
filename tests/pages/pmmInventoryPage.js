@@ -36,12 +36,16 @@ module.exports = {
     nodeExporterStatus: '//td[contains(text(), "Node exporter")]//ancestor::tr[@data-testid="table-row"]//span[contains(text(), "status")]',
   },
 
-  changeRowsPerPage(count) {
+  async changeRowsPerPage(count) {
     I.scrollPageToBottom();
     I.waitForElement(this.fields.rowsPerPage, 30);
     I.click(this.fields.rowsPerPage);
     I.waitForElement(this.fields.inventoryTableRowCount(count), 30);
-    I.click(this.fields.inventoryTableRowCount(count));
+    // Temp Hack for making 100 in the page count rows
+    I.pressKey('ArrowDown');
+    I.pressKey('ArrowDown');
+    I.pressKey('Enter');
+    I.wait(2);
   },
 
   verifyRemoteServiceIsDisplayed(serviceName) {
@@ -57,7 +61,7 @@ module.exports = {
     await inventoryAPI.waitForRunningState(serviceId);
     I.click(agentLinkLocator);
     I.waitForElement(this.fields.pmmAgentLocator, 60);
-    this.changeRowsPerPage('100');
+    await this.changeRowsPerPage(100);
     I.waitForElement(this.fields.inventoryTable, 60);
     I.scrollPageToBottom();
     const numberOfServices = await I.grabNumberOfVisibleElements(
