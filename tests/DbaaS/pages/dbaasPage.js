@@ -391,7 +391,7 @@ module.exports = {
     I.seeTextEquals('Expand all', this.tabs.dbClusterTab.fields.dbClusterLogs.expandAllLogsButton);
     I.waitForElement(this.tabs.dbClusterTab.fields.dbClusterLogs.refreshLogsButton);
     I.click(this.tabs.dbClusterTab.fields.dbClusterLogs.refreshLogsButton);
-    I.waitForElement(this.tabs.dbClusterTab.fields.dbClusterLogs.refreshLogsSpinner);
+    //I.waitForElement(this.tabs.dbClusterTab.fields.dbClusterLogs.refreshLogsSpinner);
     I.waitForElement(this.tabs.dbClusterTab.fields.dbClusterLogs.podLogsHeader);
     I.click(this.tabs.dbClusterTab.fields.dbClusterLogs.podLogsHeader);
     numberOfExpanded = await I.grabNumberOfVisibleElements(
@@ -404,10 +404,10 @@ module.exports = {
 
   async pxcClusterMetricCheck(dbclusterName, serviceName, nodeName, haproxynodeName) {
     await dashboardPage.genericDashboardLoadForDbaaSClusters(`${dashboardPage.mysqlPXCGaleraNodeSummaryDashboard.url}?&var-service_name=${serviceName}`, 'Last 30 minutes', 4, 0, 2);
-    await dashboardPage.genericDashboardLoadForDbaaSClusters(`${dashboardPage.nodeSummaryDashboard.url}?&var-node_name=${nodeName}`, 'Last 30 minutes', 4, 0, 1);
+    await dashboardPage.genericDashboardLoadForDbaaSClusters(`graph/d/haproxy-instance-summary/haproxy-instance-summary?orgId=1&refresh=1m&var-service_name=${haproxynodeName}`, 'Last 30 minutes', 4, 0, 3);
     // eslint-disable-next-line no-inline-comments
     await dashboardPage.genericDashboardLoadForDbaaSClusters(`${dashboardPage.mysqlInstanceSummaryDashboard.url}&var-service_name=${serviceName}`, 'Last 30 minutes', 4, 1, 5); //FIXME: Expected with N/A should be 0 after PMM-10308 is fixed
-    await dashboardPage.genericDashboardLoadForDbaaSClusters(`graph/d/haproxy-instance-summary/haproxy-instance-summary?orgId=1&refresh=1m&var-service_name=${haproxynodeName}`, 'Last 30 minutes', 4, 0, 3);
+    await dashboardPage.genericDashboardLoadForDbaaSClusters(`${dashboardPage.nodeSummaryDashboard.url}?&var-node_name=${nodeName}`, 'Last 30 minutes', 4, 0, 1);
   },
   async psmdbClusterMetricCheck(dbclusterName, serviceName, nodeName, replSet) {
     await dashboardPage.genericDashboardLoadForDbaaSClusters(`graph/d/mongodb-wiredtiger/mongodb-wiredtiger-details?orgId=1&refresh=1m&var-service_name=${serviceName}`, 'Last 30 minutes', 4, 6, 2);
