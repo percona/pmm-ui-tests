@@ -12,6 +12,7 @@ module.exports = {
     inventoryTable: locate('table'),
     inventoryTableColumn: locate('table').find('td'),
     inventoryTableRows: locate('tr').after('table'),
+    inventoryTableRowCount: (count) => locate('span').withText(`${count}`),
     mongoServiceName: locate('td').withText('mongodb'),
     mysqlServiceName: locate('td').withText('ms-single'),
     // cannot be changed to locate because it's failing in I.waitForVisible()
@@ -26,12 +27,25 @@ module.exports = {
     postgresPgstatmonitor: locate('td').withText('QAN PostgreSQL Pgstatmonitor'),
     proceedButton: locate('span').withText('Proceed'),
     runningStatus: locate('span').withText('RUNNING'),
+    rowsPerPage: locate('$pagination').find('div'),
     serviceIdLocatorPrefix: '//table//tr/td[4][contains(text(),"',
     tableCheckbox: locate('$select-row').find('span'),
     // cannot be changed to locate() because of method: getCellValue()
     tableRow: '//tr[@data-testid="table-row"]',
     processExecPathExporters: '//td[contains(text(), "exporter")]//ancestor::tr[@data-testid="table-row"]//span[contains(text(), "process_exec_path")]',
     nodeExporterStatus: '//td[contains(text(), "Node exporter")]//ancestor::tr[@data-testid="table-row"]//span[contains(text(), "status")]',
+  },
+
+  async changeRowsPerPage(count) {
+    I.scrollPageToBottom();
+    I.waitForElement(this.fields.rowsPerPage, 30);
+    I.click(this.fields.rowsPerPage);
+    I.waitForElement(this.fields.inventoryTableRowCount(count), 30);
+    // Temp Hack for making 100 in the page count rows
+    I.pressKey('ArrowDown');
+    I.pressKey('ArrowDown');
+    I.pressKey('Enter');
+    I.wait(2);
   },
 
   verifyRemoteServiceIsDisplayed(serviceName) {
@@ -47,6 +61,7 @@ module.exports = {
     await inventoryAPI.waitForRunningState(serviceId);
     I.click(agentLinkLocator);
     I.waitForElement(this.fields.pmmAgentLocator, 60);
+    await this.changeRowsPerPage(100);
     I.waitForElement(this.fields.inventoryTable, 60);
     I.scrollPageToBottom();
     const numberOfServices = await I.grabNumberOfVisibleElements(
