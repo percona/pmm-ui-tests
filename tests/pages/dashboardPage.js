@@ -167,11 +167,11 @@ module.exports = {
   },
   sharePanel: {
     elements: {
-      imageRendererPluginInfoText: locate('p').withDescendant('.external-link'),
+      imageRendererPluginInfoText: '//div[@data-testid=\'data-testid Alert info\']//div[2]',
       imageRendererPluginLink: locate('[role="alert"]').find('.external-link'),
     },
     messages: {
-      imageRendererPlugin: 'To render a panel image, you must install the Image Renderer plugin. Please contact your PMM administrator to install the plugin.',
+      imageRendererPlugin: 'render a panel image, you must install the Grafana image renderer plugin. Please contact your Grafana administrator to install the plugin.',
     },
   },
   proxysqlInstanceSummaryDashboard: {

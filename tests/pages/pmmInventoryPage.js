@@ -31,7 +31,7 @@ module.exports = {
     serviceIdLocatorPrefix: '//table//tr/td[4][contains(text(),"',
     tableCheckbox: locate('$select-row').find('span'),
     // cannot be changed to locate() because of method: getCellValue()
-    tableRow: '//tr[@data-testid="table-row"]',
+    tableRow: '//tr[@data-testid="table-tbody-tr"]',
     processExecPathExporters: '//td[contains(text(), "exporter")]//ancestor::tr[@data-testid="table-row"]//span[contains(text(), "process_exec_path")]',
     nodeExporterStatus: '//td[contains(text(), "Node exporter")]//ancestor::tr[@data-testid="table-row"]//span[contains(text(), "status")]',
   },
