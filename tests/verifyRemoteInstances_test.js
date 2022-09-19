@@ -208,6 +208,7 @@ Scenario(
     await pmmInventoryPage.checkAgentOtherDetailsSection('listen_port:', `listen_port: ${remoteInstancesHelper.remote_instance.haproxy.haproxy_2.port}`, haproxyServiceName, serviceId);
   },
 );
+
 Scenario(
   'PMM-T1089 - Verify UI elements for PostgreSQL Instance @instances',
   async ({
@@ -232,6 +233,8 @@ Scenario(
     I.seeElement(remoteInstancesPage.fields.cluster, 30);
     I.seeElement(remoteInstancesPage.fields.customLabels, 30);
     I.seeElement(remoteInstancesPage.fields.skipConnectionCheck, 30);
+    I.seeElement(remoteInstancesPage.fields.useTLS, 30);
+    I.seeElement(remoteInstancesPage.fields.skipTLSL, 30);
     I.seeElement(remoteInstancesPage.fields.dontTrackingRadio, 30);
     I.seeElement(remoteInstancesPage.fields.pgStatStatementsRadio, 30);
     I.seeElement(remoteInstancesPage.fields.pgStatMonitorRadio, 30);
