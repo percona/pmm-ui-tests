@@ -16,7 +16,7 @@ module.exports = {
     applyCustomTimer: I.useDataQA('data-testid TimePicker submit button'),
     backToDashboard: '//button[@ng-click=\'ctrl.close()\']',
     discardChanges: '//button[@ng-click="ctrl.discard()"]',
-    metricTitle: '//div[@class="panel-title"]',
+    metricTitle: '(//div[@class="panel-title"])[2]',
     changeTimeZoneButton: locate('button').withText('Change time settings').inside('#TimePickerContent'),
     timeZoneSelector: '#TimePickerContent [aria-label="Time zone picker"]',
     reportTitleWithNA:

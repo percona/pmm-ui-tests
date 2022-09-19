@@ -84,7 +84,7 @@ module.exports = {
 
   queryAnalytics: new LeftMenu('Query Analytics (QAN)', '/graph/d/pmm-qan/pmm-query-analytics'),
   explore: new LeftMenu('Explore', '/graph/explore'),
-  alerting: new LeftMenu('Alerting', '/graph/alerting/list',
+  alerting: new LeftMenu('Alerting', '/graph/alerting/alerts',
     {
       alertRules: menuOption(al, 'Alert rules', '/graph/alerting/list'),
       receivers: menuOption(al, 'Contact points', '/graph/alerting/notifications'),
