@@ -40,8 +40,14 @@ Before(async ({ I }) => {
 });
 
 AfterSuite(async ({ I }) => {
-  // await I.verifyCommand(`pmm-admin remove mongodb ${mongodb_service_name}`);
-  await I.verifyCommand(`pmm-admin remove mongodb ${mongodb_service_name_ac}`);
+  const removeMongodbIfExists = async function (serviceName) {
+    if (await I.verifyCommand(`pmm-admin list | { grep ${serviceName} || true; }`) !== '') {
+      await I.verifyCommand(`pmm-admin remove mongodb ${serviceName}`);
+    }
+  };
+
+  await removeMongodbIfExists(mongodb_service_name);
+  await removeMongodbIfExists(mongodb_service_name_ac);
   await I.mongoDisconnect();
 });
 
