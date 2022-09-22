@@ -15,7 +15,7 @@ module.exports = {
     noJSON: '//pre[contains(text(), "No JSON explain found")]',
     examplesCodeBlock: '$pmm-overlay-wrapper',
     planInfoIcon: locate('$query-analytics-details').find('div').after('pre > code'),
-    tooltipPlanId: locate('div').withChild('.tooltip-arrow'),
+    tooltipPlanId: locate('div').withChild('.tippy-box'),
     planText: locate('pre').find('code'),
     emptyPlanText: locate('pre').withText('No plan found'),
     topQuery: locate('$top-query').find('div'),
