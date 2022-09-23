@@ -9,9 +9,9 @@ rs.initiate(
   {
     _id : 'rs0',
     members: [
-      { _id : 0, host : "mongors1:27027" },
-      { _id : 1, host : "mongors2:27028" },
-      { _id : 2, host : "mongors3:27029" }
+      { _id : 0, host : "mongors1:27027", priority: 2 },
+      { _id : 1, host : "mongors2:27028", priority: 1 },
+      { _id : 2, host : "mongors3:27029", priority: 1 }
     ]
   });
   sleep(40000);
