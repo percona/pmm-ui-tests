@@ -108,6 +108,7 @@ exports.config = {
   },
   mocha: {
     reporterOptions: {
+      reportDir: 'tests/output',
       'codeceptjs-cli-reporter': {
         stdout: '-',
         options: {
@@ -120,7 +121,6 @@ exports.config = {
         options: {
           mochaFile: './tests/output/result.xml',
           jenkinsMode: true,
-          attachments: true,
         },
       },
     },

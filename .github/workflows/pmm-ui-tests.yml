@@ -141,4 +141,4 @@ jobs:
         uses: percona-platform/upload-artifact@v2
         with:
           name: pmm-ui-tests-report
-          path: pmm-ui-tests/mochawesome-report
+          path: pmm-ui-tests/tests/output
