@@ -178,3 +178,27 @@ Data(instances).Scenario(
     }
   },
 ).retry(1);
+
+Data(instances).Scenario(
+  'PMM-T1276 (1.0) Verify tlsCa, tlsCert, tlsKey are generated on every MongoDB exporter (added with TLS flags) restart @ssl @ssl-remote @not-ui-pipeline',
+  async ({
+    I, current, dashboardPage,
+  }) => {
+    const {
+      container,
+    } = current;
+
+    I.amOnPage(dashboardPage.mySQLInstanceOverview.url);
+
+    const agent_id = await I.verifyCommand(`docker exec ${container} pmm-admin list | grep mongodb_exporter | awk -F" " '{print $4}' | awk -F"/" '{print $3}'`);
+
+    await I.verifyCommand(`docker exec ${container} ls -la /tmp/mongodb_exporter/agent_id/${agent_id}/ | grep caFile`);
+    await I.verifyCommand(`docker exec ${container} rm -r /tmp/mongodb_exporter/`);
+    await I.verifyCommand(`docker exec ${container} ls -la /tmp/mongodb_exporter/`, 'ls: cannot access \'/tmp/mongodb_exporter\': No such file or directory', 'fail');
+    await I.verifyCommand(`docker exec ${container} pmm-admin list | grep mongodb_exporter | grep Running`);
+    await I.verifyCommand(`docker exec ${container} pkill -f mongodb_exporter`);
+    I.wait(10);
+    await I.verifyCommand(`docker exec ${container} pmm-admin list | grep mongodb_exporter | grep Running`);
+    await I.verifyCommand(`docker exec ${container} ls -la /tmp/mongodb_exporter/agent_id/${agent_id}/ | grep caFile`);
+  },
+).retry(1);

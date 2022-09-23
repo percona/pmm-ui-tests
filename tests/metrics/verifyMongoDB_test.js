@@ -5,7 +5,7 @@ const connection = {
   // eslint-disable-next-line no-inline-comments
   port: '27023', // This is the port used by --addclient=modb,1 and docker-compose setup on a CI/CD
   username: 'mongoadmin',
-  password: 'secret',
+  password: 'GRgrO9301RuF',
 };
 const mongodb_service_name = 'mongodb_test_pass_plus';
 const mongo_test_user = {
