@@ -919,7 +919,9 @@ module.exports = {
       locate('.panel-title').inside(locate('.panel-container').withDescendant('//div[contains(text(),"No data")]')),
     rootUser: '//div[contains(text(), "root")]',
     serviceSummary: locate('a').withText('Service Summary'),
-    timeRangePickerButton: '.btn.navbar-button.navbar-button--tight',
+    // timeRangePickerButton: '.btn.navbar-button.navbar-button--tight',
+    timeRangePickerButton: I.useDataQA('data-testid TimePicker Open Button'),
+    timeRangeOption: (timeRange) => locate('li').withDescendant('label').withText(timeRange),
     openFiltersDropdownLocator: (filterName) => locate('.variable-link-wrapper').after(`label[for="var-${formatElementId(filterName)}"]`),
     filterDropdownOptionsLocator: (filterName) => locate('.variable-option').withText(filterName),
   },
@@ -1063,6 +1065,10 @@ module.exports = {
     I.waitForElement(this.fields.metricTitle, 60);
   },
 
+  waitForDataLoaded() {
+    I.waitForInvisible('//*[@aria-label="Loading indicator"]');
+  },
+
   expandFilters(filterName) {
     const dropdownLocator = this.fields.openFiltersDropdownLocator(filterName);
 
@@ -1107,6 +1113,12 @@ module.exports = {
     return await I.grabTextFrom(this.fields.timeRangePickerButton);
   },
 
+  setTimeRange(timeRange = 'Last 5 minutes') {
+    I.click(this.fields.timeRangePickerButton);
+    I.click(this.fields.timeRangeOption(timeRange));
+    this.waitForDataLoaded();
+  },
+
   async waitPTSummaryInformation() {
     const response = await I.waitForResponse(
       (response) => response.url().endsWith('v1/management/Actions/StartPTSummary') && response.status() === 200,
@@ -1134,15 +1146,12 @@ module.exports = {
 
   async changeServiceName(serviceName) {
     if (serviceName !== await I.grabTextFrom(this.serviceName)) {
-      I.waitForClickable(this.serviceNameDropdown);
       I.click(this.serviceNameDropdown);
-      I.waitForClickable(this.toggleAllValues);
       I.click(this.toggleAllValues);
-      I.waitForClickable(this.serviceNameInput);
-      // I.click(this.serviceNameInput);
       I.fillField(this.serviceNameInput, serviceName);
       I.pressKey('Enter');
-      I.wait(10);
     }
+
+    this.waitForDataLoaded();
   },
 };
