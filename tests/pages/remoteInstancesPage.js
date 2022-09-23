@@ -128,7 +128,7 @@ module.exports = {
     secretKeyInput: '$aws_secret_key-password-input',
     serviceName: '$serviceName-text-input',
     setManualy: locate('label').withText('Set manually'),
-    skipConnectionCheck: '//input[@name="skip_connection_check-checkbox-input"]/following-sibling::*[2]',
+    skipConnectionCheck: '//input[@data-testid="skip_connection_check-checkbox-input"]/following-sibling::*[2]',
     skipTLS: '//input[@name="tls_skip_verify"]',
     skipTLSL: locate('$tls_skip_verify-field-container').find('span'),
     startMonitoring: '/following-sibling::td/a',
