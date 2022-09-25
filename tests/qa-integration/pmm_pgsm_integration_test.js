@@ -322,7 +322,8 @@ Scenario(
   },
 );
 
-Scenario(
+// Need to fix this and revert skip
+xScenario(
   'PMM-T1253 Verify pg_stat_monitor.pgsm_normalized_query settings @not-ui-pipeline @pgsm-pmm-integration',
   async ({
     I, qanPage, qanOverview, qanFilters, qanDetails,
