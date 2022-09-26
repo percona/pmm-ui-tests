@@ -1,6 +1,6 @@
 const { I } = inject();
 
-const scheduleCell = (name) => `//tr[td/div/span[contains(text(), "${name}")]]`;
+const scheduleCell = (name) => `//tr[td[contains(text(), "${name}")]]`;
 
 module.exports = {
   url: 'graph/backup/scheduled',
@@ -61,7 +61,7 @@ module.exports = {
 
   openScheduledBackupsPage() {
     I.amOnPage(this.url);
-    I.waitForText('Add', 30, this.buttons.openAddScheduleModal);
+    I.waitForText('Create scheduled backup', 30, this.buttons.openAddScheduleModal);
   },
 
   openScheduleBackupModal() {
