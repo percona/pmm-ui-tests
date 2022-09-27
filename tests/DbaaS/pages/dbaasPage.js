@@ -434,6 +434,7 @@ module.exports = {
     const dbaasPage = this;
 
     I.amOnPage(dbaasPage.apiKeysUrl);
+    I.waitForElement(dbaasPage.apiKeysPage.apiKeysTable);
 
     if (keyExists) {
       I.waitForText(`${dbClusterType}-${clusterName}-${dbClusterName}`, 10, dbaasPage.apiKeysPage.apiKeysTable);
