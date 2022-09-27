@@ -7,8 +7,9 @@ dashboard.add([dashboardPage.mysqlInstanceSummaryDashboard.url,
   dashboardPage.fields.mySQLServiceSummaryContent, 'ps_']);
 dashboard.add([dashboardPage.postgresqlInstanceSummaryDashboard.url,
   dashboardPage.fields.postgreSQLServiceSummaryContent, 'PGSQL_']);
-dashboard.add([dashboardPage.mongoDbInstanceSummaryDashboard.url,
-  dashboardPage.fields.mongoDBServiceSummaryContent, 'mongodb_']);
+//FIXME: Skip mongo summary until https://jira.percona.com/browse/PMM-10719 is fixed
+// dashboard.add([dashboardPage.mongoDbInstanceSummaryDashboard.url,
+//   dashboardPage.fields.mongoDBServiceSummaryContent, 'mongodb_']);
 
 Before(async ({ I }) => {
   await I.Authorize();
