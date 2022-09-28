@@ -23,6 +23,7 @@ module.exports = {
   buttons: {
     resetAll: '$qan-filters-reset-all',
     showSelected: '$qan-filters-show-selected',
+    showAll: '//*[text()="Service Name"]//following-sibling::*[@data-testid="show-top-switcher"]',
   },
   elements: {
     spinner: locate('$pmm-overlay-wrapper').find('//i[contains(@class,"fa-spinner")]'),
@@ -31,6 +32,7 @@ module.exports = {
     environmentLabel: '//span[contains(text(), "Environment")]',
     filterItem: (section, filter) => `//span[contains(text(), '${section}')]/parent::p/following-sibling::div//span[contains(@class, 'checkbox-container__label-text') and contains(text(), '${filter}')]`,
     filterName: 'span.checkbox-container__label-text',
+    filterCheckbox: (filterValue) => locate(`.//div/div[@data-testid="filter-checkbox-${filterValue}"]`),
   },
   requests: {
     getReportPath: '/v0/qan/GetReport',
@@ -199,12 +201,26 @@ module.exports = {
   },
 
   async verifyShortcutAttributes(href, filterValue, timeRangeValue) {
-    const shortCutLocator = locate(`$filter-checkbox-${filterValue}`).find('a');
+    const shortCutLocator = this.elements.filterCheckbox(filterValue).find('a');
     const linkText = await I.grabAttributeFrom(shortCutLocator, 'href');
     const target = await I.grabAttributeFrom(shortCutLocator, 'target');
 
     assert.ok(linkText.includes(timeRangeValue), `The redirection link from QAN Filter section was expected to have selected Time range ${href} but the href attribute found was ${linkText}`);
     assert.ok(linkText.includes(href), `The redirection link on QAN Filter section was expected ${href} but the href attribute found was ${linkText}`);
     assert.ok(target === '_blank', `The redirection link on QAN Filter section was expected "_blank" but the href attribute found was ${target}`);
+  },
+
+  async selectServiceName(serviceName) {
+    if (await I.grabNumberOfVisibleElements(this.buttons.showAll) >= 1) { I.click(this.buttons.showAll); }
+
+    I.click(this.elements.filterCheckbox(serviceName));
+  },
+
+  async isServiceNameOnPage(serviceName) {
+    if (Number(await I.grabNumberOfVisibleElements(this.buttons.showAll)) >= 1) { I.click(this.buttons.showAll); }
+
+    I.fillField(this.fields.filterBy, serviceName);
+
+    return Number(await I.grabNumberOfVisibleElements(this.elements.filterCheckbox(serviceName))) > 0;
   },
 };

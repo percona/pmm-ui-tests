@@ -1,6 +1,6 @@
 const assert = require('assert');
 
-const { I, qanFilters } = inject();
+const { I, qanFilters, adminPage } = inject();
 
 module.exports = {
   root: '.query-analytics-data',
@@ -10,7 +10,6 @@ module.exports = {
     searchBy: '//input[contains(@name, "search")]',
   },
   buttons: {
-    refresh: I.useDataQA('data-testid RefreshPicker run button'),
     addColumn: '//span[contains(text(), "Add column")]',
     copyButton: '$copy-link-button',
   },
@@ -216,9 +215,7 @@ module.exports = {
     I.waitForVisible(this.elements.tooltipQueryValue, 30);
   },
 
-  async isNoDataMessageVisibleAfterRefresh() {
-    I.click(this.buttons.refresh);
-
+  async isNoDataMessageVisible() {
     return Number(await I.grabNumberOfVisibleElements(this.elements.noResultTableText)) === 0;
   },
 
@@ -227,6 +224,9 @@ module.exports = {
     I.clearField(this.fields.searchBy);
     I.fillField(this.fields.searchBy, value);
     I.pressKey('Enter');
-    // await I.asyncWaitFor(async () => await this.isNoDataMessageVisibleAfterRefresh(), 300);
+    // await I.asyncWaitFor(async () => {
+    //   I.click(adminPage.topMenu.refresh);
+    //   await this.isNoDataMessageVisible();
+    // }, 300);
   },
 };

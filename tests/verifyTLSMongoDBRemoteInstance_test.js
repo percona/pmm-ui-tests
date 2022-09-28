@@ -1,6 +1,5 @@
 const assert = require('assert');
 const faker = require('faker');
-const grafanaAPI = require('./pages/api/grafanaAPI');
 
 const { adminPage } = inject();
 const pmmFrameworkLoader = `bash ${adminPage.pathToFramework}`;
@@ -10,20 +9,20 @@ Feature('Monitoring SSL/TLS MongoDB instances');
 
 const instances = new DataTable(['serviceName', 'version', 'container', 'serviceType', 'metric']);
 
-// instances.add(['mongodb_4.4_ssl_service', '4.4', 'mongodb_4.4', 'mongodb_ssl', 'mongodb_connections']);
-// instances.add(['mongodb_4.2_ssl_service', '4.2', 'mongodb_4.2', 'mongodb_ssl', 'mongodb_connections']);
+instances.add(['mongodb_4.4_ssl_service', '4.4', 'mongodb_4.4', 'mongodb_ssl', 'mongodb_connections']);
+instances.add(['mongodb_4.2_ssl_service', '4.2', 'mongodb_4.2', 'mongodb_ssl', 'mongodb_connections']);
 instances.add(['mongodb_5.0_ssl_service', '5.0', 'mongodb_5.0', 'mongodb_ssl', 'mongodb_connections']);
 
 BeforeSuite(async ({ I, codeceptjsConfig }) => {
-  // await I.verifyCommand(`${pmmFrameworkLoader} --mo-version=4.2 --setup-mongodb-ssl --pmm2`);
-  // await I.verifyCommand(`${pmmFrameworkLoader} --mo-version=4.4 --setup-mongodb-ssl --pmm2`);
-  // await I.verifyCommand(`${pmmFrameworkLoader} --mo-version=5.0 --setup-mongodb-ssl --pmm2`);
+  await I.verifyCommand(`${pmmFrameworkLoader} --mo-version=4.2 --setup-mongodb-ssl --pmm2`);
+  await I.verifyCommand(`${pmmFrameworkLoader} --mo-version=4.4 --setup-mongodb-ssl --pmm2`);
+  await I.verifyCommand(`${pmmFrameworkLoader} --mo-version=5.0 --setup-mongodb-ssl --pmm2`);
 });
 
 AfterSuite(async ({ I }) => {
-  // await I.verifyCommand('docker stop mongodb_4.4 || docker rm mongodb_4.4');
-  // await I.verifyCommand('docker stop mongodb_4.2 || docker rm mongodb_4.2');
-  // await I.verifyCommand('docker stop mongodb_5.0 || docker rm mongodb_5.0');
+  await I.verifyCommand('docker stop mongodb_4.4 || docker rm mongodb_4.4');
+  await I.verifyCommand('docker stop mongodb_4.2 || docker rm mongodb_4.2');
+  await I.verifyCommand('docker stop mongodb_5.0 || docker rm mongodb_5.0');
 });
 
 Before(async ({ I, settingsAPI }) => {
@@ -205,12 +204,11 @@ Data(instances).Scenario(
 Data(instances).Scenario(
   'PMM-T1294 Verify that pmm-admin inventory add agent qan-mongodb-profiler-agent without --log-level flag adds QAN MongoDB Profiler Agent with log-level=warn @nazarov',
   async ({
-    I, current, inventoryAPI,
+    I, current, inventoryAPI, qanPage, qanFilters, qanOverview, adminPage,
   }) => {
     const {
       version,
       container,
-      metric,
     } = current;
 
     const serviceName = `mongodb_${version}_service${faker.random.alphaNumeric(3)}`;
@@ -223,17 +221,22 @@ Data(instances).Scenario(
     await I.verifyCommand(`docker exec ${container} pmm-admin inventory add agent qan-mongodb-profiler-agent --tls --tls-skip-verify `
       + '--authentication-mechanism=MONGODB-X509 --tls-certificate-key-file=/nodes/certificates/client.pem '
       + `--tls-certificate-key-file-password=/nodes/certificates/client.key --tls-ca-file=/nodes/certificates/ca.crt ${pmmAdminAgentId} ${serviceId}`);
-    I.wait(2);
+    I.wait(10);
     await I.verifyCommand(`docker exec ${container} pmm-admin list | grep ${serviceId} | grep Running`);
     const agentInfo = await inventoryAPI.apiGetPMMAgentInfoByServiceId(serviceId);
 
-    const response = await grafanaAPI.checkMetricExist(metric, { type: 'service_name', value: serviceName });
-    const result = JSON.stringify(response.data.data.result);
-
-    assert.ok(response.data.data.result.length !== 0, `Metrics ${metric} from ${serviceName} should be available but got empty ${result}`);
     // eslint-disable-next-line no-prototype-builtins
     assert.ok(agentInfo.hasOwnProperty('log_level'), `Was expecting qan-mongodb-profiler-agent  ${serviceName}(${serviceId}) to have "log_level" property`);
     assert.strictEqual(agentInfo.log_level, 'warn', `Was expecting qan-mongodb-profiler-agent for ${serviceName}(${serviceId}) to have "warn" as a log level`);
+    await I.Authorize();
+    I.amOnPage(qanPage.url);
+    qanOverview.waitForOverviewLoaded();
+    qanFilters.waitForFiltersToLoad();
+    await I.asyncWaitFor(async () => {
+      I.click(adminPage.topMenu.refresh);
+
+      return await qanFilters.isServiceNameOnPage(serviceName);
+    }, 300);
   },
 );
 // ).retry(1);

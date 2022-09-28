@@ -10,6 +10,9 @@ module.exports = {
     alertingBellIcon: locate('$navbar-section').at(2).find('li a[aria-label="Alerting"]'),
     integratedAlertingManuItem: locate('ul[aria-label="Alerting"]').find('[data-key=integrated-alerting]'),
   },
+  topMenu: {
+    refresh: I.useDataQA('data-testid RefreshPicker run button'),
+  },
   fields: {
     navigation: '//i[contains(@class, "navbar-page-btn__search")]',
     timePickerMenu: I.useDataQA('data-testid TimePicker Open Button'),
