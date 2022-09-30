@@ -8,6 +8,7 @@ exports.config = {
   output: 'tests/output',
   helpers: {
     Playwright: {
+      show: true,
       url: process.env.PMM_UI_URL || 'http://127.0.0.1/',
       restart: true,
       browser: 'chromium',

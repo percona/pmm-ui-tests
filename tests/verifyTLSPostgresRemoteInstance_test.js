@@ -1,4 +1,5 @@
 const assert = require('assert');
+const faker = require('faker');
 
 const { adminPage } = inject();
 const pmmFrameworkLoader = `bash ${adminPage.pathToFramework}`;
@@ -18,14 +19,14 @@ BeforeSuite(async ({ I, codeceptjsConfig }) => {
   // await I.verifyCommand(`${pmmFrameworkLoader} --pdpgsql-version=11 --setup-postgres-ssl --pmm2`);
   // await I.verifyCommand(`${pmmFrameworkLoader} --pdpgsql-version=12 --setup-postgres-ssl --pmm2`);
   // await I.verifyCommand(`${pmmFrameworkLoader} --pdpgsql-version=13 --setup-postgres-ssl --pmm2`);
-  await I.verifyCommand(`${pmmFrameworkLoader} --pdpgsql-version=14 --setup-postgres-ssl --pmm2`);
+  // await I.verifyCommand(`${pmmFrameworkLoader} --pdpgsql-version=14 --setup-postgres-ssl --pmm2`);
 });
 
 AfterSuite(async ({ I }) => {
   // await I.verifyCommand('docker stop pgsql_11 || docker rm pgsql_11');
   // await I.verifyCommand('docker stop pgsql_12 || docker rm pgsql_12');
   // await I.verifyCommand('docker stop pgsql_13 || docker rm pgsql_13');
-  await I.verifyCommand('docker stop pgsql_14 || docker rm pgsql_14');
+  // await I.verifyCommand('docker stop pgsql_14 || docker rm pgsql_14');
 });
 
 Before(async ({ I, settingsAPI }) => {
@@ -194,5 +195,47 @@ Data(instances).Scenario(
 
       assert.ok(count > 0, `The queries for service ${service} instance do NOT exist, check QAN Data`);
     }
+  },
+).retry(1);
+
+Data(instances).Scenario(
+  'PMM-T1294 Verify that pmm-admin inventory add agent qan-mongodb-profiler-agent without --log-level flag adds QAN MongoDB Profiler Agent with log-level=warn',
+  async ({
+    I, current, cliHelper,
+  }) => {
+    const {
+      version,
+      container,
+    } = current;
+
+    const dbName = 'postgresql';
+    const dbPort = '5432';
+    const agentName = 'postgres-exporter';
+    const agentFlags = '--tls --tls-skip-verify --tlsca-file=./certificates/ca.crt --tls-cert-file=./certificates/client.crt --tls-key-file=./certificates/client.pem';
+    const authInfo = 'pmm --password=pmm';
+
+    await cliHelper.setupAndVerifyAgent(dbName, version, dbPort, container, agentName, agentFlags, authInfo);
+  },
+).retry(1);
+Data(instances).Scenario(
+  'PMM-T1294 Verify that pmm-admin inventory add agent qan-mongodb-profiler-agent without --log-level flag adds QAN MongoDB Profiler Agent with log-level=warn',
+  async ({
+    I, current, inventoryAPI, qanPage, qanFilters, qanOverview, adminPage, cliHelper,
+  }) => {
+    const {
+      version,
+      container,
+    } = current;
+
+    const dbName = 'postgresql';
+    const dbPort = '5432';
+    const agentName = 'postgres-exporter';
+    const agentFlags = '--tls --tls-skip-verify --tlsca-file=./certificates/ca.crt --tls-cert-file=./certificates/client.crt --tls-key-file=./certificates/client.pem';
+
+    const serviceName = await cliHelper.setupAndVerifyAgent(dbName, version, dbPort, container, agentName, agentFlags);
+
+    await I.Authorize();
+    I.amOnPage(qanPage.url);
+    qanPage.verifyServicePresentInQAN(serviceName);
   },
 ).retry(1);

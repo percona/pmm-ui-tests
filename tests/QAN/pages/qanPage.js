@@ -1,4 +1,6 @@
-const { I } = inject();
+const {
+  I, qanFilters, qanOverview, adminPage,
+} = inject();
 
 module.exports = {
   url: 'graph/d/pmm-qan/pmm-query-analytics?from=now-5m&to=now',
@@ -23,5 +25,15 @@ module.exports = {
 
   waitForOpened() {
     I.waitForElement(this.fields.qanTitle, 5);
+  },
+
+  async verifyServicePresentInQAN(serviceName) {
+    qanOverview.waitForOverviewLoaded();
+    qanFilters.waitForFiltersToLoad();
+    await I.asyncWaitFor(async () => {
+      I.click(adminPage.topMenu.refresh);
+
+      return await qanFilters.isServiceNameOnPage(serviceName);
+    }, 300);
   },
 };

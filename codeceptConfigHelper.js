@@ -62,6 +62,7 @@ module.exports = {
     environmentOverviewPage: './tests/pages/environmentOverviewPage.js',
     tooltips: './tests/helper/tooltipHelper.js',
     dataSourcePage: './tests/pages/pmmSettingsPages/dataSourcePage.js',
+    cliHelper: './tests/helper/cliHelper.js',
   },
   getChunks: (files) => {
     const dependentTests = files.filter((value) => /PMMSettings|ia|stt|backup|permissions|Azure/.test(value));

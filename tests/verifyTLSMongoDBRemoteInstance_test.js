@@ -9,20 +9,20 @@ Feature('Monitoring SSL/TLS MongoDB instances');
 
 const instances = new DataTable(['serviceName', 'version', 'container', 'serviceType', 'metric']);
 
-instances.add(['mongodb_4.4_ssl_service', '4.4', 'mongodb_4.4', 'mongodb_ssl', 'mongodb_connections']);
-instances.add(['mongodb_4.2_ssl_service', '4.2', 'mongodb_4.2', 'mongodb_ssl', 'mongodb_connections']);
+// instances.add(['mongodb_4.4_ssl_service', '4.4', 'mongodb_4.4', 'mongodb_ssl', 'mongodb_connections']);
+// instances.add(['mongodb_4.2_ssl_service', '4.2', 'mongodb_4.2', 'mongodb_ssl', 'mongodb_connections']);
 instances.add(['mongodb_5.0_ssl_service', '5.0', 'mongodb_5.0', 'mongodb_ssl', 'mongodb_connections']);
 
 BeforeSuite(async ({ I, codeceptjsConfig }) => {
-  await I.verifyCommand(`${pmmFrameworkLoader} --mo-version=4.2 --setup-mongodb-ssl --pmm2`);
-  await I.verifyCommand(`${pmmFrameworkLoader} --mo-version=4.4 --setup-mongodb-ssl --pmm2`);
-  await I.verifyCommand(`${pmmFrameworkLoader} --mo-version=5.0 --setup-mongodb-ssl --pmm2`);
+  // await I.verifyCommand(`${pmmFrameworkLoader} --mo-version=4.2 --setup-mongodb-ssl --pmm2`);
+  // await I.verifyCommand(`${pmmFrameworkLoader} --mo-version=4.4 --setup-mongodb-ssl --pmm2`);
+  // await I.verifyCommand(`${pmmFrameworkLoader} --mo-version=5.0 --setup-mongodb-ssl --pmm2`);
 });
 
 AfterSuite(async ({ I }) => {
-  await I.verifyCommand('docker stop mongodb_4.4 || docker rm mongodb_4.4');
-  await I.verifyCommand('docker stop mongodb_4.2 || docker rm mongodb_4.2');
-  await I.verifyCommand('docker stop mongodb_5.0 || docker rm mongodb_5.0');
+  // await I.verifyCommand('docker stop mongodb_4.4 || docker rm mongodb_4.4');
+  // await I.verifyCommand('docker stop mongodb_4.2 || docker rm mongodb_4.2');
+  // await I.verifyCommand('docker stop mongodb_5.0 || docker rm mongodb_5.0');
 });
 
 Before(async ({ I, settingsAPI }) => {
@@ -202,41 +202,24 @@ Data(instances).Scenario(
 ).retry(1);
 
 Data(instances).Scenario(
-  'PMM-T1294 Verify that pmm-admin inventory add agent qan-mongodb-profiler-agent without --log-level flag adds QAN MongoDB Profiler Agent with log-level=warn @nazarov',
+  'PMM-T1294 Verify that pmm-admin inventory add agent qan-mongodb-profiler-agent without --log-level flag adds QAN MongoDB Profiler Agent with log-level=warn',
   async ({
-    I, current, inventoryAPI, qanPage, qanFilters, qanOverview, adminPage,
+    I, current, cliHelper, qanPage,
   }) => {
     const {
       version,
       container,
     } = current;
 
-    const serviceName = `mongodb_${version}_service${faker.random.alphaNumeric(3)}`;
-    const pmmAdminNodeId = await I.verifyCommand(`docker exec ${container} pmm-admin status | grep 'Node ID' | awk -F " " '{print $4}' | tr -d '\\n'`);
-    const pmmAdminAgentId = await I.verifyCommand(`docker exec ${container} pmm-admin status | grep 'Agent ID' | awk -F " " '{print $4}' | tr -d '\\n'`);
+    const dbName = 'mongodb';
+    const dbPort = '27017';
+    const agentName = 'qan-mongodb-profiler-agent';
+    const agentFlags = '--tls-skip-verify --tls --authentication-mechanism=MONGODB-X509 --tls-certificate-key-file=/nodes/certificates/client.pem --tls-certificate-key-file-password=/nodes/certificates/client.key --tls-ca-file=/nodes/certificates/ca.crt';
 
-    await I.verifyCommand(`docker exec ${container} pmm-admin inventory add service mongodb ${serviceName} ${pmmAdminNodeId} localhost 27017`);
-    const serviceId = await I.verifyCommand(`docker exec ${container} pmm-admin list | grep ${serviceName} | awk -F  " " '{print $4}' | tr -d '\\n'`);
+    const serviceName = await cliHelper.setupAndVerifyAgent(dbName, version, dbPort, container, agentName, agentFlags);
 
-    await I.verifyCommand(`docker exec ${container} pmm-admin inventory add agent qan-mongodb-profiler-agent --tls --tls-skip-verify `
-      + '--authentication-mechanism=MONGODB-X509 --tls-certificate-key-file=/nodes/certificates/client.pem '
-      + `--tls-certificate-key-file-password=/nodes/certificates/client.key --tls-ca-file=/nodes/certificates/ca.crt ${pmmAdminAgentId} ${serviceId}`);
-    I.wait(10);
-    await I.verifyCommand(`docker exec ${container} pmm-admin list | grep ${serviceId} | grep Running`);
-    const agentInfo = await inventoryAPI.apiGetPMMAgentInfoByServiceId(serviceId);
-
-    // eslint-disable-next-line no-prototype-builtins
-    assert.ok(agentInfo.hasOwnProperty('log_level'), `Was expecting qan-mongodb-profiler-agent  ${serviceName}(${serviceId}) to have "log_level" property`);
-    assert.strictEqual(agentInfo.log_level, 'warn', `Was expecting qan-mongodb-profiler-agent for ${serviceName}(${serviceId}) to have "warn" as a log level`);
     await I.Authorize();
     I.amOnPage(qanPage.url);
-    qanOverview.waitForOverviewLoaded();
-    qanFilters.waitForFiltersToLoad();
-    await I.asyncWaitFor(async () => {
-      I.click(adminPage.topMenu.refresh);
-
-      return await qanFilters.isServiceNameOnPage(serviceName);
-    }, 300);
+    qanPage.verifyServicePresentInQAN(serviceName);
   },
-);
-// ).retry(1);
+).retry(1);
