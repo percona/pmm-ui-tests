@@ -139,7 +139,9 @@ jobs:
       - name: Generating the report
         if: ${{ always() && (steps.pmm-ui-tests-all.outcome != 'skipped' || steps.pmm-ui-tests-tagged.outcome != 'skipped' ) }}
         run: |
+          ls tests/output/
           npx mochawesome-merge tests/output/*/*.json > tests/output/output.json
+          ls tests/output/
           marge tests/output/output.json
 
       - name: Attaching the report
