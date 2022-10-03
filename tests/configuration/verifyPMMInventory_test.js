@@ -2,7 +2,7 @@ const assert = require('assert');
 
 Feature('Inventory page');
 
-Before(async ({ I, homePage }) => {
+Before(async ({ I }) => {
   await I.Authorize();
 });
 
@@ -277,5 +277,82 @@ Scenario(
     const folderRemoveNodeExporter = await I.verifyCommand(`docker exec pmm-server ls /tmp/node_exporter/agent_id/${nodeId}/`);
 
     assert.ok(folderRemoveNodeExporter.includes('webConfigPlaceholder'), 'webConfigPlaceholder was not recreated after restart');
+  },
+);
+
+Scenario(
+  '@PMM-T1346 - Verify Inventory page has pagination on Services tab @inventory @nightly',
+  async ({ I, pmmInventoryPage, credentials }) => {
+    const serviceName = 'mongo-pagination-';
+    const detectedPort = await I.verifyCommand('pmm-admin list | grep mongodb_node_1 | awk -F " " \'{print $3}\' | awk -F ":" \'{print $2}\'');
+
+    for (let i = 1; i <= 25; i++) {
+      await I.verifyCommand(`pmm-admin add mongodb --port=${detectedPort} --username='${credentials.mongoDb.user}' --password=${credentials.mongoDb.password}  --service-name=${serviceName}${i}`);
+    }
+
+    await pmmInventoryPage.open();
+    await pmmInventoryPage.pagination.verifySelectedCountPerPage(25);
+    const totalItems = await pmmInventoryPage.pagination.getTotalOfItems();
+
+    I.seeAttributesOnElements(pmmInventoryPage.pagination.previousPageButton, { disabled: true });
+    I.click(pmmInventoryPage.pagination.nextPageButton);
+    pmmInventoryPage.pagination.verifyActivePageIs(2);
+    await pmmInventoryPage.pagination.verifyRange(`26-${totalItems}`);
+    I.click(pmmInventoryPage.pagination.firstPageButton);
+    await pmmInventoryPage.pagination.verifyRange('1-25');
+
+    for (let i = 1; i <= 25; i++) {
+      await I.verifyCommand(`pmm-admin remove mongodb ${serviceName}${i}`);
+    }
+  },
+);
+
+Scenario(
+  '@PMM-T1346 - Verify Inventory page has pagination on Agents tab @inventory @nightly',
+  async ({ I, pmmInventoryPage, credentials }) => {
+    const serviceName = 'mongo-pagination-';
+    const detectedPort = await I.verifyCommand('pmm-admin list | grep mongodb_node_1 | awk -F " " \'{print $3}\' | awk -F ":" \'{print $2}\'');
+
+    for (let i = 1; i <= 25; i++) {
+      await I.verifyCommand(`pmm-admin add mongodb --port=${detectedPort} --username='${credentials.mongoDb.user}' --password=${credentials.mongoDb.password}  --service-name=${serviceName}${i}`);
+    }
+
+    await pmmInventoryPage.open();
+    I.click(pmmInventoryPage.fields.agentsLink);
+    await pmmInventoryPage.pagination.verifySelectedCountPerPage(25);
+    const totalItems = await pmmInventoryPage.pagination.getTotalOfItems();
+
+    I.seeAttributesOnElements(pmmInventoryPage.pagination.previousPageButton, { disabled: true });
+    I.click(pmmInventoryPage.pagination.nextPageButton);
+    pmmInventoryPage.pagination.verifyActivePageIs(2);
+    await pmmInventoryPage.pagination.verifyRange(`26-${totalItems}`);
+    I.click(pmmInventoryPage.pagination.firstPageButton);
+    await pmmInventoryPage.pagination.verifyRange('1-25');
+
+    for (let i = 1; i <= 25; i++) {
+      await I.verifyCommand(`pmm-admin remove mongodb ${serviceName}${i}`);
+    }
+  },
+);
+
+Scenario(
+  '@PMM-T1346 - Verify Inventory page has pagination on Nodes tab @inventory @nightly',
+  async ({ I, pmmInventoryPage, credentials }) => {
+
+    // add 25 nodes
+
+    await pmmInventoryPage.open();
+    I.click(pmmInventoryPage.fields.nodesLink);
+    await pmmInventoryPage.pagination.verifySelectedCountPerPage(25);
+    const totalItems = await pmmInventoryPage.pagination.getTotalOfItems();
+
+    I.seeAttributesOnElements(pmmInventoryPage.pagination.previousPageButton, { disabled: true });
+    I.click(pmmInventoryPage.pagination.nextPageButton);
+    pmmInventoryPage.pagination.verifyActivePageIs(2);
+    await pmmInventoryPage.pagination.verifyRange(`26-${totalItems}`);
+    I.click(pmmInventoryPage.pagination.firstPageButton);
+    await pmmInventoryPage.pagination.verifyRange('1-25');
+
+    // clean added nodes
   },
 );
