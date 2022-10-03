@@ -36,7 +36,7 @@ jobs:
       UI_TESTS_BRANCH: ${{ github.event.inputs.pmm_ui_tests_branch }}
       PMM_CLIENTS: ${{ github.event.inputs.pmm_clients }}
       OAUTH_ISSUER_URL: 'https://id-dev.percona.com/oauth2/aus15pi5rjdtfrcH51d7'
-      
+
       PMM_QA_AWS_ACCESS_KEY_ID: ${{ secrets.PMM_QA_AWS_ACCESS_KEY_ID }}
       PMM_QA_AWS_ACCESS_KEY: ${{ secrets.PMM_QA_AWS_ACCESS_KEY }}
       PMM_QA_RDS_PGSQL13_USER: ${{ secrets.PMM_QA_RDS_PGSQL13_USER }}
@@ -135,6 +135,12 @@ jobs:
           cd ./pmm-ui-tests
           npm install
           ./node_modules/.bin/codeceptjs run-multiple parallel --debug --steps --reporter mochawesome -c pr.codecept.js --grep '${{ env.UI_TESTS_TAG }}'
+
+      - name: Generating the report
+        if: ${{ always() && (steps.pmm-ui-tests-all.outcome != 'skipped' || steps.pmm-ui-tests-tagged.outcome != 'skipped' ) }}
+        run: |
+          npx mochawesome-merge tests/output/*/*.json > tests/output/output.json
+          marge tests/output/output.json
 
       - name: Attaching the report
         if: ${{ always() && (steps.pmm-ui-tests-all.outcome != 'skipped' || steps.pmm-ui-tests-tagged.outcome != 'skipped' ) }}
