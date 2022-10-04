@@ -113,6 +113,7 @@ module.exports = {
     folderItemLocator: (itemName) => locate(I.useDataQA('data-testid Search section')).withText(itemName),
     folderItemWithTagLocator: (itemName, tag) => locate(I.useDataQA(`data-testid Dashboard search item ${itemName}`))
       .find('[aria-label="Tags"] li').withText(tag),
+    itemLocator: (itemName) => locate(I.useDataQA(`data-testid Dashboard search item ${itemName}`)),
     closeButton: locate('button[aria-label="Close search"]').as('Close button'),
   },
 
@@ -148,5 +149,10 @@ module.exports = {
       I.seeElementInDOM(this.fields.folderItemLocator(item));
       I.see(item, this.fields.folderItemLocator(item));
     }
+  },
+
+  openDashboard(name) {
+    I.waitForVisible(this.fields.itemLocator(name), 10);
+    I.click(this.fields.itemLocator(name));
   },
 };
