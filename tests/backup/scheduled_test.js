@@ -153,6 +153,8 @@ Scenario(
     await scheduledAPI.createScheduledBackup(schedule);
 
     await scheduledPage.openScheduledBackupsPage();
+    I.waitForVisible(scheduledPage.buttons.actionsMenuByName(schedule.name), 10);
+    I.click(scheduledPage.buttons.actionsMenuByName(schedule.name));
     I.click(scheduledPage.buttons.editByName(schedule.name));
 
     I.waitForVisible(scheduledPage.fields.backupName, 30);
@@ -276,9 +278,11 @@ Scenario('PMM-T900 Verify user can copy scheduled backup @backup @bm-mongo',
     await scheduledPage.openScheduledBackupsPage();
 
     // Copy existing schedule
-    I.click(scheduledPage.buttons.copyByName(schedule.name));
+    scheduledPage.copySchedule(schedule.name);
 
     // Verify copied schedule details
+    I.waitForVisible(scheduledPage.buttons.actionsMenuByName(newSchedule.name), 10);
+    I.click(scheduledPage.buttons.actionsMenuByName(newSchedule.name));
     I.waitForVisible(scheduledPage.buttons.deleteByName(newSchedule.name), 10);
     await scheduledPage.verifyBackupValues(newSchedule);
 
@@ -336,18 +340,15 @@ Scenario('PMM-T901 Verify user can delete scheduled backup @backup @bm-mongo',
     await scheduledAPI.createScheduledBackup(schedule);
     await scheduledPage.openScheduledBackupsPage();
 
-    // Open Delete modal
-    I.click(scheduledPage.buttons.deleteByName(schedule.name));
+    scheduledPage.openDeleteModal(schedule.name);
 
     // Click Cancel button and verify schedule still exists
-    I.waitForVisible(scheduledPage.buttons.confirmDelete, 10);
     I.click(scheduledPage.buttons.cancelDelete);
     I.dontSeeElement(scheduledPage.elements.modalContent);
-    I.seeElement(scheduledPage.buttons.deleteByName(schedule.name));
+    I.seeElement(scheduledPage.buttons.actionsMenuByName(schedule.name));
 
     // Open Delete modal again and verify it has a correct schedule name in message
-    I.click(scheduledPage.buttons.deleteByName(schedule.name));
-    I.waitForVisible(scheduledPage.buttons.confirmDelete, 10);
+    scheduledPage.openDeleteModal(schedule.name);
     I.seeTextEquals(scheduledPage.messages.confirmDelete(schedule.name),
       locate(scheduledPage.elements.modalContent).find('h4'));
 

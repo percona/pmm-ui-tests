@@ -111,8 +111,7 @@ Scenario(
 
     const artifactName = await I.grabTextFrom(backupInventoryPage.elements.artifactName(backupName));
 
-    I.click(backupInventoryPage.buttons.deleteByName(backupName));
-    I.waitForVisible(backupInventoryPage.elements.forceDeleteLabel, 20);
+    backupInventoryPage.openDeleteBackupModal(backupName);
     I.seeTextEquals(backupInventoryPage.messages.confirmDeleteText(artifactName), 'h4');
     I.seeTextEquals(backupInventoryPage.messages.forceDeleteLabelText, backupInventoryPage.elements.forceDeleteLabel);
     I.seeTextEquals(backupInventoryPage.messages.modalHeaderText, backupInventoryPage.elements.modalHeader);
@@ -180,6 +179,8 @@ Scenario(
     I.refreshPage();
     backupInventoryPage.verifyBackupSucceeded(backupName);
 
+    I.click(backupInventoryPage.buttons.actionsMenuByName(backupName));
+    I.waitForVisible(backupInventoryPage.buttons.restoreByName(backupName), 2);
     I.click(backupInventoryPage.buttons.restoreByName(backupName));
     I.waitForVisible(backupInventoryPage.buttons.modalRestore, 10);
     I.seeTextEquals(backupInventoryPage.messages.serviceNoLongerExists, backupInventoryPage.elements.backupModalError);

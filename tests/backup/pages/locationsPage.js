@@ -98,6 +98,7 @@ module.exports = {
     I.seeTextEquals(this.messages.modalHeaderText, this.elements.modalHeader);
     I.seeElement(this.buttons.closeModal);
   },
+
   openDeleteLocationModal(locationName) {
     I.waitForVisible(this.buttons.actionsMenuByName(locationName), 10);
     I.click(this.buttons.actionsMenuByName(locationName));

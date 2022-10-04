@@ -31,6 +31,7 @@ module.exports = {
   buttons: {
     openAddScheduleModal: '$scheduled-backup-add-modal-button',
     createSchedule: '$backup-add-button',
+    actionsMenuByName: (name) => locate('$dropdown-menu-toggle').inside(scheduleCell(name)),
     editByName: (name) => locate('$edit-scheduled-backpup-button').inside(scheduleCell(name)),
     deleteByName: (name) => locate('$delete-scheduled-backpup-button').inside(scheduleCell(name)),
     copyByName: (name) => locate('$copy-scheduled-backup-button').inside(scheduleCell(name)),
@@ -82,6 +83,20 @@ module.exports = {
     I.usePlaywrightTo('clear field', async ({ page }) => {
       await page.fill(I.useDataQA('retention-number-input'), '');
     });
+  },
+
+  copySchedule(name) {
+    I.waitForVisible(this.buttons.actionsMenuByName(name), 10);
+    I.click(this.buttons.actionsMenuByName(name));
+    I.click(this.buttons.copyByName(name));
+  },
+
+  openDeleteModal(scheduleName) {
+    I.waitForVisible(this.buttons.actionsMenuByName(scheduleName), 10);
+    I.click(this.buttons.actionsMenuByName(scheduleName));
+    I.waitForVisible(this.buttons.deleteByName(scheduleName), 2);
+    I.click(this.buttons.deleteByName(scheduleName));
+    I.waitForVisible(this.buttons.confirmDelete, 10);
   },
 
   verifyBackupValues(scheduleObj) {
