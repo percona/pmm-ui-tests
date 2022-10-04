@@ -2,7 +2,7 @@ const { storageLocationConnection, mongoStorageLocation } = require('./testData'
 
 const { I } = inject();
 
-const locationCell = (name) => `//tr[td/div/span[contains(text(), "${name}")]]`;
+const locationCell = (name) => `//tr[td[contains(text(), "${name}")]]`;
 
 module.exports = {
   storageLocationConnection,
@@ -45,12 +45,13 @@ module.exports = {
     cancel: '$storage-location-cancel-button',
     closeModal: '$modal-close-button',
     typeSelect: (locationType) => `//label[text()="${locationType}"]/preceding-sibling::input[1]`,
+    actionsMenuByName: (name) => locate('$dropdown-menu-toggle').inside(locationCell(name)),
     // editByName returns Edit storage location button locator for a given Location name
     editByName: (name) => locate('$edit-storage-location-button').inside(locationCell(name)),
     // deleteByName returns Delete storage location button locator for a given Location name
     deleteByName: (name) => locate('$delete-storage-location-button').inside(locationCell(name)),
-    showDetails: (name) => locate('$show-details').inside(locationCell(name)),
-    hideDetails: (name) => locate('$hide-details').inside(locationCell(name)),
+    showDetails: (name) => locate('$show-row-details').inside(locationCell(name)),
+    hideDetails: (name) => locate('$hide-row-details').inside(locationCell(name)),
     showSecret: locate('div').after('$small-secret-holder'),
     forceDeleteCheckbox: '$force-checkbox-input',
     cancelDelete: '$cancel-delete-modal-button',
@@ -98,7 +99,9 @@ module.exports = {
     I.seeElement(this.buttons.closeModal);
   },
   openDeleteLocationModal(locationName) {
-    I.waitForVisible(this.buttons.deleteByName(locationName), 10);
+    I.waitForVisible(this.buttons.actionsMenuByName(locationName), 10);
+    I.click(this.buttons.actionsMenuByName(locationName));
+    I.waitForVisible(this.buttons.deleteByName(locationName), 2);
     I.click(this.buttons.deleteByName(locationName));
     I.waitForVisible(this.buttons.forceDeleteCheckbox, 10);
   },
