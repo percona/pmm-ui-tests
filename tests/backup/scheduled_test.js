@@ -53,7 +53,6 @@ Before(async ({
   await c.deleteMany({ number: 2 });
 
   await I.Authorize();
-  await settingsAPI.changeSettings({ backup: true });
   await scheduledAPI.clearAllSchedules();
   await scheduledPage.openScheduledBackupsPage();
 });
@@ -277,7 +276,6 @@ Scenario('PMM-T900 Verify user can copy scheduled backup @backup @bm-mongo',
     await scheduledAPI.createScheduledBackup(schedule);
     await scheduledPage.openScheduledBackupsPage();
 
-    // Copy existing schedule
     scheduledPage.copySchedule(schedule.name);
 
     // Verify copied schedule details

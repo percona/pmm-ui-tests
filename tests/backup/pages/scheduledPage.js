@@ -37,6 +37,8 @@ module.exports = {
     copyByName: (name) => locate('$copy-scheduled-backup-button').inside(scheduleCell(name)),
     enableDisableByName: (name) => locate('label').after('$toggle-scheduled-backpup').inside(scheduleCell(name)),
     backupTypeSwitch: (type) => locate('label').after('$mode-radio-button').withText(type),
+    showDetails: (name) => locate('$show-row-details').inside(scheduleCell(name)),
+    hideDetails: (name) => locate('$hide-row-details').inside(scheduleCell(name)),
     confirmDelete: '$confirm-delete-modal-button',
     cancelDelete: '$cancel-delete-modal-button',
   },
@@ -118,8 +120,8 @@ module.exports = {
   },
 
   verifyBackupDetailsRow(name, description, dataModel, cronExpression) {
-    I.seeElement(this.elements.scheduleName(name));
-    I.click(this.elements.scheduleName(name));
+    I.seeElement(this.buttons.showDetails(name));
+    I.click(this.buttons.showDetails(name));
     I.waitForVisible(this.elements.detailedInfoRow.backupName, 2);
     I.seeTextEquals(name, this.elements.detailedInfoRow.backupName);
     I.seeTextEquals(description, this.elements.detailedInfoRow.description);
