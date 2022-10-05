@@ -20,14 +20,14 @@ AfterSuite(async ({ inventoryAPI, remoteInstancesHelper }) => {
 });
 
 Scenario(
-  '@PMM-T1346 - Verify Inventory page has pagination on Services tab @inventory @nightly',
+  '@PMM-T1346 - Verify Inventory page has pagination on Services tab @inventory',
   async ({ I, pmmInventoryPage }) => {
     await pmmInventoryPage.pagination.verifyPaginationFunctionality();
   },
 );
 
 Scenario(
-  '@PMM-T1346 - Verify Inventory page has pagination on Agents tab @inventory @nightly',
+  '@PMM-T1346 - Verify Inventory page has pagination on Agents tab @inventory',
   async ({ I, pmmInventoryPage }) => {
     I.click(pmmInventoryPage.fields.agentsLink);
     await pmmInventoryPage.pagination.verifyPaginationFunctionality();
@@ -35,7 +35,7 @@ Scenario(
 );
 
 Scenario(
-  '@PMM-T1346 - Verify Inventory page has pagination on Nodes tab @inventory @nightly ',
+  '@PMM-T1346 - Verify Inventory page has pagination on Nodes tab @inventory',
   async ({ I, pmmInventoryPage }) => {
     I.click(pmmInventoryPage.fields.nodesLink);
     await pmmInventoryPage.pagination.verifyPaginationFunctionality();
