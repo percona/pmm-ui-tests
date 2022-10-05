@@ -116,10 +116,32 @@ module.exports = {
       .filter(({ service_id }) => service_id === serviceId);
   },
 
+  /**
+   * Searches node by related service name and deletes if found using v1 API
+   *
+   * @param   serviceType   {@link remoteInstancesHelper.serviceTypes.*.serviceType}
+   * @param   serviceName   name of the service to search
+   * @param   force         {@link Boolean} flag
+   * @returns {Promise<void>}
+   */
   async deleteNodeByServiceName(serviceType, serviceName, force = true) {
     const node = await this.apiGetNodeInfoByServiceName(serviceType, serviceName);
 
-    if (node) await this.deleteNode(node.node_id, force);
+    if (node) {
+      await this.deleteNode(node.node_id, force);
+    } else {
+      await I.say(`Node for "${serviceName}" service is not found!`);
+    }
+  },
+
+  async deleteNodeByName(nodeName, force = true) {
+    const node = await this.getNodeByName(nodeName);
+
+    if (node) {
+      await this.deleteNode(node.node_id, force);
+    } else {
+      await I.say(`Node with name "${nodeName}" is not found!`);
+    }
   },
 
   async deleteNode(nodeID, force) {
@@ -148,6 +170,17 @@ module.exports = {
       resp.status === 200,
       `Failed to delete Service. Response message is "${resp.data.message}"`,
     );
+  },
+
+  async getNodeByName(nodeName) {
+    const headers = { Authorization: `Basic ${await I.getAuth()}`};
+    const resp = await I.sendPostRequest('v1/inventory/Nodes/List', {}, headers);
+
+    const node = Object.values(resp.data)
+      .flat(Infinity)
+      .find(({ node_name }) => node_name === nodeName);
+
+    return node ? node[0] : null;
   },
 
   async getNodeName(nodeID) {

@@ -88,4 +88,16 @@ module.exports = {
 
     I.assertEqual(count.includes(expectedRange), true, `The value ${expectedRange} should include ${count}`);
   },
+
+  async verifyPaginationFunctionality() {
+    await this.verifySelectedCountPerPage(25);
+    const totalItems = await this.getTotalOfItems();
+
+    I.seeAttributesOnElements(this.previousPageButton, { disabled: true });
+    I.click(this.nextPageButton);
+    this.verifyActivePageIs(2);
+    await this.verifyRange(`26-${totalItems <= 50 ? totalItems : 50}`);
+    I.click(this.firstPageButton);
+    await this.verifyRange('1-25');
+  },
 };
