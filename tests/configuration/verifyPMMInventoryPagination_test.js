@@ -4,7 +4,7 @@ Feature('Pagination on Inventory Page');
 
 BeforeSuite(async ({ addInstanceAPI, remoteInstancesHelper }) => {
   for (let i = 1; i <= 25; i++) {
-    await addInstanceAPI.apiAddInstance(remoteInstancesHelper.instanceTypes.mongodb, `${serviceName}${i}`, { password: 'root' });
+    await addInstanceAPI.apiAddInstance(remoteInstancesHelper.instanceTypes.mongodb, `${serviceName}${i}`);
   }
 });
 
