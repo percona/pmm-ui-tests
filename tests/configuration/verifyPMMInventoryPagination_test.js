@@ -1,10 +1,11 @@
-const serviceName = 'mongo-pagination-';
+const serviceName = 'pg-pagination-';
 
 Feature('Pagination on Inventory Page');
 
-BeforeSuite(async ({ addInstanceAPI, remoteInstancesHelper }) => {
+BeforeSuite(async ({ addInstanceAPI, remoteInstancesHelper, credentials }) => {
   for (let i = 1; i <= 25; i++) {
-    await addInstanceAPI.apiAddInstance(remoteInstancesHelper.instanceTypes.mongodb, `${serviceName}${i}`);
+    await addInstanceAPI.apiAddInstance(remoteInstancesHelper.instanceTypes.postgresql, `${serviceName}${i}`,
+      { host: 'localhost', username: credentials.postgreSql.pmmServerUser, password: credentials.postgreSql.pmmServerUser });
   }
 });
 
@@ -15,7 +16,7 @@ Before(async ({ I, pmmInventoryPage }) => {
 
 AfterSuite(async ({ inventoryAPI, remoteInstancesHelper }) => {
   for (let i = 1; i <= 25; i++) {
-    await inventoryAPI.deleteNodeByServiceName(remoteInstancesHelper.serviceTypes.mongodb.serviceType, `${serviceName}${i}`);
+    await inventoryAPI.deleteNodeByName(`${serviceName}${i}`);
   }
 });
 

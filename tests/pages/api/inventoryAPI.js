@@ -173,14 +173,14 @@ module.exports = {
   },
 
   async getNodeByName(nodeName) {
-    const headers = { Authorization: `Basic ${await I.getAuth()}`};
+    const headers = { Authorization: `Basic ${await I.getAuth()}` };
     const resp = await I.sendPostRequest('v1/inventory/Nodes/List', {}, headers);
 
     const node = Object.values(resp.data)
       .flat(Infinity)
       .find(({ node_name }) => node_name === nodeName);
 
-    return node ? node[0] : null;
+    return node || null;
   },
 
   async getNodeName(nodeID) {

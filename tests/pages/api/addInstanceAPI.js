@@ -26,7 +26,7 @@ module.exports = {
       case remoteInstancesHelper.instanceTypes.proxysql:
         return this.addProxysql(serviceName);
       case remoteInstancesHelper.instanceTypes.postgresql:
-        return this.addPostgresql(serviceName);
+        return this.addPostgresql(serviceName, creds);
       case remoteInstancesHelper.instanceTypes.rds:
         return this.addRDS(serviceName, creds);
       case remoteInstancesHelper.instanceTypes.rdsAurora:
@@ -90,17 +90,18 @@ module.exports = {
     I.assertEqual(resp.status, 200, `Instance ${connection.serviceName} was not added for monitoring`);
   },
 
-  async addPostgresql(serviceName) {
+  async addPostgresql(serviceName, creds = {}) {
+    const { host, port, username, password } = creds;
     const body = {
       add_node: {
         node_name: serviceName,
         node_type: 'REMOTE_NODE',
       },
-      port: remoteInstancesHelper.remote_instance.postgresql.pdpgsql_13_3.port,
-      address: remoteInstancesHelper.remote_instance.postgresql.pdpgsql_13_3.host,
+      port: port || remoteInstancesHelper.remote_instance.postgresql.pdpgsql_13_3.port,
+      address: host || remoteInstancesHelper.remote_instance.postgresql.pdpgsql_13_3.host,
       service_name: serviceName,
-      username: remoteInstancesHelper.remote_instance.postgresql.pdpgsql_13_3.username,
-      password: remoteInstancesHelper.remote_instance.postgresql.pdpgsql_13_3.password,
+      username: username || remoteInstancesHelper.remote_instance.postgresql.pdpgsql_13_3.username,
+      password: password || remoteInstancesHelper.remote_instance.postgresql.pdpgsql_13_3.password,
       cluster: remoteInstancesHelper.remote_instance.postgresql.pdpgsql_13_3.clusterName,
       pmm_agent_id: 'pmm-server',
       qan_postgresql_pgstatements_agent: true,
@@ -288,8 +289,14 @@ module.exports = {
 
   async addInstanceForSTT(connection, instanceName = 'stt-mysql-5.7.30') {
     await inventoryAPI.deleteNodeByServiceName(remoteInstancesHelper.serviceTypes.mysql.serviceType, instanceName);
-    const instance = await this.apiAddInstance(remoteInstancesHelper.instanceTypes.mysql, instanceName,
-      process.env.OVF_TEST === 'yes' ? {} : connection);
+    let instance;
+
+    if (process.env.OVF_TEST === 'yes') {
+      instance = await this.apiAddInstance(remoteInstancesHelper.instanceTypes.rds, instanceName);
+    } else {
+      instance = await this.apiAddInstance(remoteInstancesHelper.instanceTypes.mysql, instanceName, connection);
+    }
+
     const nodeId = instance.service.node_id;
     const serviceId = instance.service.service_id;
 

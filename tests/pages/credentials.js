@@ -13,6 +13,11 @@ module.exports = {
     adminUser: 'mongoadmin',
     adminPassword: 'GRgrO9301RuF',
   },
+  postgreSql: {
+    port: '5433',
+    pmmServerUser: 'pmm-managed',
+    pmmServerPassword: 'pmm-managed',
+  },
 
   async detectPort(serviceName) {
     return await I.verifyCommand(`pmm-admin list | grep ${serviceName} | awk -F " " '{print $3}' | awk -F ":" '{print $2}'`);
