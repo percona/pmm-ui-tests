@@ -29,7 +29,7 @@ const s3Errors = new DataTable(['field', 'value', 'error']);
 
 s3Errors.add(['bucket_name', 'pmm', 'AccessDenied: Access Denied']);
 s3Errors.add(['bucket_name', 'pmm-backup12', 'Bucket doesn\'t exist']);
-s3Errors.add(['bucket_name', 'random-bucket', '301 response missing Location header']);
+s3Errors.add(['bucket_name', 'random-bucket', '301 Moved Permanently: 301 Moved Permanently.']);
 s3Errors.add(['endpoint', 'unknown', 'no such host']);
 s3Errors.add(['access_key', 'invalid', 'InvalidAccessKeyId: The AWS Access Key Id you provided does not exist in our records.']);
 s3Errors.add(['secret_key', 'invalid', 'SignatureDoesNotMatch: The request signature we calculated does not match the signature you provided. Check your key and signing method.']);
