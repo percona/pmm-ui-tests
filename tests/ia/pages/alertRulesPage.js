@@ -4,14 +4,15 @@ const { rules, templates, filterOperators } = require('./testData');
 const rulesNameCell = (ruleName) => `//td[1][div/span[text()="${ruleName}"]]`;
 
 module.exports = {
-  url: 'graph/integrated-alerting/alert-rules',
-  columnHeaders: ['Name', 'Parameters', 'Duration', 'Severity', 'Filters', 'Created', 'Actions'],
+  url: 'graph/alerting/list',
+  columnHeaders: ['State', 'Name', 'Health', 'Summary'],
   filterOperators,
   rules,
   templates,
+  alertRuleFilters: ['Firing', 'Normal', 'Pending', 'Alert', 'Recording', 'List', 'Grouped', 'State'],
   elements: {
     rulesTab: '//div/a[@aria-label="Tab Alert Rules"]',
-    noRules: locate('$alert-rules-table-no-data').find('h1'),
+    noRules: 'div.page-body > div',
     rulesTableHeader: '$alert-rules-table-thead',
     rulesTable: '$alert-rules-table-tbody',
     rulesNameCell: (ruleName) => rulesNameCell(ruleName),
@@ -24,16 +25,20 @@ module.exports = {
     filtersCell: (ruleName) => `${rulesNameCell(ruleName)}/following-sibling::td[4]//span`,
     modalHeader: '$modal-header',
     modalContent: '$modal-content',
-    columnHeaderLocator: (columnHeaderText) => `//th[text()="${columnHeaderText}"]`,
+    columnHeaderLocator: (columnHeaderText) => locate('$header').withText(columnHeaderText),
     ruleDetails: '$alert-rules-details',
     expression: locate('$template-expression').find('pre'),
     templateAlert: locate('$template-alert').find('pre'),
     durationError: '$duration-field-error-message',
     ruleAdvancedSectionToggle: locate('$alert-rule-advanced-section').find('//*[text()="Advanced details"]'),
     tooltipMessage: '.popper__background',
+    //todo: move?
+    searchByDataSourceDropdown: '//div[@aria-label="Data source picker select container"]',
+    searchByLabel: '$input-wrapper',
+    ruleFilterLocator: (ruleFilterText) => locate('label').withText(ruleFilterText).after('//input[@type="radio"]'), //locateLabel
   },
   buttons: {
-    openAddRuleModal: '$alert-rule-template-add-modal-button',
+    openAddRuleModal: `//a[contains(.,'New alert rule')]`,
     editRule: '$edit-alert-rule-button',
     closeModal: '$modal-close-button',
     addRule: '$add-alert-rule-modal-add-button',
@@ -55,6 +60,9 @@ module.exports = {
     // toggleAlertRule returns Enable/Disable rule switch locator in alert rules list
     toggleAlertRule: (ruleName) => `${rulesNameCell(ruleName)}/following-sibling::td//input[@data-testid='toggle-alert-rule']/following-sibling::label`,
     toggleInModal: '//input[@data-testid="enabled-toggle-input"]/following-sibling::label',
+    groupCollapseToggle: '$group-collapse-toggle',
+    editFolderButton: (folderID, folderText)  => locate('[aria-label="edit folder"]').withAttr({ 'href': `/graph/dashboards/f/${folderID}/${folderText}/settings` }),
+    managePermissionsButton: (folderID, folderText)  => locate('[aria-label="manage permissions"]').withAttr({ 'href': `/graph/dashboards/f/${folderID}/${folderText}/permissions` }),
   },
   tooltips: {
     template: {

@@ -16,10 +16,10 @@ module.exports = {
         {
           key: 'service_name',
           value: 'pmm-server-postgresql',
-          type: 'EQUAL',
+          type: 'MATCH',
         },
       ],
-      for: `${(duration || 1)}s`,
+      for: `${(duration || 60)}s`,
       severity: severity || 'SEVERITY_CRITICAL',
       template_name: templateName || 'pmm_postgresql_too_many_connections',
       name: ruleName || 'Test Rule',
@@ -30,8 +30,10 @@ module.exports = {
           float: 1,
         },
       ],
+      group: 'default-alert-group',
+      folder_uid: 'fVQRmyV4z',
     };
-    const resp = await I.sendPostRequest('v1/management/ia/Rules/Create', body, headers);
+    const resp = await I.sendPostRequest('v1/management/alerting/Rules/Create', body, headers);
 
     assert.ok(
       resp.status === 200,
@@ -40,6 +42,44 @@ module.exports = {
 
     return resp.data.rule_id;
   },
+
+  // async createAlertRule(ruleObj, templateName) {
+  //   const headers = { Authorization: `Basic ${await I.getAuth()}` };
+  //   const {
+  //     ruleName, severity, filters, params, duration, channels, disabled,
+  //   } = ruleObj;
+  //   const body = {
+  //     custom_labels: {},
+  //     disabled: disabled || false,
+  //     channel_ids: channels || [],
+  //     filters: filters || [
+  //       {
+  //         key: 'service_name',
+  //         value: 'pmm-server-postgresql',
+  //         type: 'EQUAL',
+  //       },
+  //     ],
+  //     for: `${(duration || 1)}s`,
+  //     severity: severity || 'SEVERITY_CRITICAL',
+  //     template_name: templateName || 'pmm_postgresql_too_many_connections',
+  //     name: ruleName || 'Test Rule',
+  //     params: params || [
+  //       {
+  //         name: 'threshold',
+  //         type: 'FLOAT',
+  //         float: 1,
+  //       },
+  //     ],
+  //   };
+  //   const resp = await I.sendPostRequest('v1/management/ia/Rules/Create', body, headers);
+
+  //   assert.ok(
+  //     resp.status === 200,
+  //     `Failed to create alert rule with "${ruleName}". Response message is "${resp.data.message}"`,
+  //   );
+
+  //   return resp.data.rule_id;
+  // },
 
   async updateAlertRule(ruleObj, templateName) {
     const {
@@ -107,16 +147,13 @@ module.exports = {
     return resp.data.rules;
   },
 
-  async removeAlertRule(ruleId) {
+  async removeAlertRule(folder) {
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
-    const body = {
-      rule_id: ruleId,
-    };
-    const resp = await I.sendPostRequest('v1/management/ia/Rules/Delete', body, headers);
+    const resp = await I.sendDeleteRequest(`/graph/api/ruler/grafana/api/v1/rules/${folder}/default-alert-group?subtype=cortex`, headers);
 
     assert.ok(
-      resp.status === 200,
-      `Failed to remove alert rule with rule_id ${ruleId}. Response message is "${resp.data.message}"`,
+      resp.status === 202,
+      `Failed to remove alert rule. Response message is "${resp.data.message}"`,
     );
   },
 
