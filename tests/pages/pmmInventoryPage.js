@@ -111,6 +111,7 @@ module.exports = {
 
     I.waitForElement(servicesLink, 20);
     I.click(servicesLink);
+    await this.changeRowsPerPage(100);
     const nodeId = await this.getNodeId(serviceName);
 
     I.click(agentLinkLocator);
@@ -118,6 +119,7 @@ module.exports = {
 
     I.waitForElement(enhanceMetricsDisabled, 30);
     I.seeElement(enhanceMetricsDisabled);
+    await this.changeRowsPerPage(100);
     const basicMetricsDisabled = `//tr//td//span[contains(text(), "${nodeId}")]/../span[contains(text(),"basic_metrics_disabled: true")]`;
 
     I.seeElement(basicMetricsDisabled);
