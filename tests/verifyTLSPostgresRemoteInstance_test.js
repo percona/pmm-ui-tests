@@ -15,6 +15,13 @@ instances.add(['pgsql_14_ssl_service', '14', 'pgsql_14', 'postgres_ssl', 'pg_sta
 // instances.add(['pgsql_11_ssl_service', '11', 'pgsql_11', 'postgres_ssl', 'pg_stat_database_xact_rollback']);
 // instances.add(['pgsql_13_ssl_service', '13', 'pgsql_13', 'postgres_ssl', 'pg_stat_database_xact_rollback']);
 
+const logLevels = ['', 'debug' , 'info', 'warn', 'error', 'fatal'];
+
+const dbName = 'postgresql';
+const dbPort = '5432';
+const agentFlags = '--tls --tls-skip-verify --tlsca-file=./certificates/ca.crt --tls-cert-file=./certificates/client.crt --tls-key-file=./certificates/client.pem';
+const authInfo = 'pmm --password=pmm';
+
 BeforeSuite(async ({ I, codeceptjsConfig }) => {
   // await I.verifyCommand(`${pmmFrameworkLoader} --pdpgsql-version=11 --setup-postgres-ssl --pmm2`);
   // await I.verifyCommand(`${pmmFrameworkLoader} --pdpgsql-version=12 --setup-postgres-ssl --pmm2`);
@@ -237,5 +244,75 @@ Data(instances).Scenario(
     await I.Authorize();
     I.amOnPage(qanPage.url);
     qanPage.verifyServicePresentInQAN(serviceName);
+  },
+).retry(1);
+
+
+
+Data(instances).Scenario(
+  'PMM-T1283, PMM-T1292' +
+  'Verify that pmm-admin inventory add agent postgres-exporter with --log-level flag adds PostgreSQL exporter with corresponding log-level' +
+  'Verify that pmm-admin inventory add agent postgres-exporter with --log-level flag adds PostgreSQL exporter with log-level=warn @nazarov',
+  async ({
+           I, current, cliHelper, qanPage,
+         }) => {
+    const {
+      version,
+      container,
+    } = current;
+    
+    const agentName = 'postgres-exporter';
+    
+    for (const logLevel of logLevels) {
+      await cliHelper.setupAndVerifyAgent(dbName, version, dbPort, container, agentName, agentFlags, logLevel, authInfo);
+    }
+  },
+).retry(1);
+
+Data(instances).Scenario(
+  'PMM-T1300, PMM-T1301' +
+  'Verify that pmm-admin inventory add agent qan-postgresql-pgstatements-agent with --log-level flag adds QAN PostgreSQL PgStatements Agent with corresponding log-level' +
+  'Verify that pmm-admin inventory add agent qan-postgresql-pgstatements-agent with --log-level flag adds QAN PostgreSQL PgStatements Agent with log-level=warn',
+  async ({
+           I, current, cliHelper, qanPage,
+         }) => {
+    const {
+      version,
+      container,
+    } = current;
+    
+    const agentName = 'postgres-exporter';
+  
+    await I.verifyCommand(`docker exec ${container} psql postgres pmm-agent -c "CREATE EXTENSION pg_stat_statements SCHEMA public"`);
+    
+    for (const logLevel of logLevels) {
+      const serviceName = await cliHelper.setupAndVerifyAgent(dbName, version, dbPort, container, agentName, agentFlags, logLevel, authInfo);
+      
+      I.amOnPage(qanPage.url);
+      await qanPage.verifyServicePresentInQAN(serviceName);
+    }
+  },
+).retry(1);
+
+Data(instances).Scenario(
+  'PMM-T1302, PMM-T1303' +
+  'Verify that pmm-admin inventory add agent qan-postgresql-pgstatmonitor-agent with --log-level flag adds QAN PostgreSQL Pgstatmonitor Agent with corresponding log-level' +
+  'Verify that pmm-admin inventory add agent qan-postgresql-pgstatmonitor-agent with --log-level flag adds QAN PostgreSQL Pgstatmonitor Agent with log-level=warn',
+  async ({
+           I, current, cliHelper, qanPage,
+         }) => {
+    const {
+      version,
+      container,
+    } = current;
+    
+    const agentName = 'qan-postgresql-pgstatmonitor-agent';
+    
+    for (const logLevel of logLevels) {
+      const serviceName = await cliHelper.setupAndVerifyAgent(dbName, version, dbPort, container, agentName, agentFlags, logLevel, authInfo);
+      
+      I.amOnPage(qanPage.url);
+      await qanPage.verifyServicePresentInQAN(serviceName);
+    }
   },
 ).retry(1);

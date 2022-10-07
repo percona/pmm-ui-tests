@@ -12,6 +12,13 @@ const instances = new DataTable(['serviceName', 'version', 'container', 'service
 // instances.add(['mysql_5.7_ssl_service', '5.7', 'mysql_5.7', 'mysql_ssl', 'mysql_global_status_max_used_connections']);
 instances.add(['mysql_8.0_ssl_service', '8.0', 'mysql_8.0', 'mysql_ssl', 'mysql_global_status_max_used_connections']);
 
+const logLevels = ['', 'debug' , 'info', 'warn', 'error'];
+
+const dbName = 'mysql';
+const dbPort = '3306';
+const agentFlags = '--tls --server-insecure-tls --tls-skip-verify --tls-ca=/var/lib/mysql/ca.pem --tls-cert=/var/lib/mysql/client-cert.pem --tls-key=/var/lib/mysql/client-key.pem';
+const authInfo = 'pmm --password=pmm';
+
 BeforeSuite(async ({ I, codeceptjsConfig }) => {
   // await I.verifyCommand(`${pmmFrameworkLoader} --ps-version=5.7 --setup-mysql-ssl --pmm2`);
   // await I.verifyCommand(`${pmmFrameworkLoader} --ps-version=8.0 --setup-mysql-ssl --pmm2`);
@@ -200,21 +207,67 @@ Data(instances).Scenario(
 ).retry(1);
 
 Data(instances).Scenario(
-  'PMM-T1290 Verify that pmm-admin inventory add agent mysqld-exporter without --log-level flag adds MySQL exporter with log-level=warn @nazarov',
+  'PMM-T1281, PMM-T1290' +
+  'Verify that pmm-admin inventory add agent mysqld-exporter with --log-level flag adds MySQL exporter with corresponding log-level' +
+  'Verify that pmm-admin inventory add agent mysqld-exporter without --log-level flag adds MySQL exporter with log-level=warn',
   async ({
-    I, current, cliHelper,
-  }) => {
+           I, current, cliHelper, qanPage,
+         }) => {
     const {
       version,
       container,
     } = current;
-
-    const dbName = 'mysql';
-    const dbPort = '3306';
+  
     const agentName = 'mysqld-exporter';
-    const agentFlags = '--tls --server-insecure-tls --tls-skip-verify --tls-ca=/var/lib/mysql/ca.pem --tls-cert=/var/lib/mysql/client-cert.pem --tls-key=/var/lib/mysql/client-key.pem';
-    const authInfo = 'pmm --password=pmm';
+    
+    for (const logLevel of logLevels) {
+      await cliHelper.setupAndVerifyAgent(dbName, version, dbPort, container, agentName, agentFlags, logLevel, authInfo);
+    }
+  },
+).retry(1);
 
-    await cliHelper.setupAndVerifyAgent(dbName, version, dbPort, container, agentName, agentFlags, authInfo);
-  }
+Data(instances).Scenario(
+  'PMM-T1304, PMM-T1305' +
+  'Verify that pmm-admin inventory add agent qan-mysql-perfschema-agent with --log-level flag adds QAN MySQL Perfschema Agent with corresponding log-level' +
+  'Verify that pmm-admin inventory add agent qan-mysql-perfschema-agent with --log-level flag adds QAN MySQL Perfschema Agent with log-level=warn',
+  async ({
+           I, current, cliHelper, qanPage,
+         }) => {
+    const {
+      version,
+      container,
+    } = current;
+  
+    const agentName = 'qan-mysql-perfschema-agent';
+    
+    for (const logLevel of logLevels) {
+      const serviceName = await cliHelper.setupAndVerifyAgent(dbName, version, dbPort, container, agentName, agentFlags, logLevel, authInfo);
+  
+      I.amOnPage(qanPage.url);
+      await qanPage.verifyServicePresentInQAN(serviceName);
+    }
+  },
+).retry(1);
+
+Data(instances).Scenario(
+  'PMM-T1306, PMM-T1307' +
+  'Verify that pmm-admin inventory add agent qan-mysql-slowlog-agent with --log-level flag adds QAN MySQL Slowlog Agent with corresponding log-level' +
+  'Verify that pmm-admin inventory add agent qan-mysql-slowlog-agent with --log-level flag adds QAN MySQL Slowlog Agent with log-level=warn',
+  async ({
+           I, current, cliHelper, qanPage,
+         }) => {
+    const {
+      version,
+      container,
+    } = current;
+  
+    const agentName = 'qan-mysql-slowlog-agent';
+    
+    for (const logLevel of logLevels) {
+      const serviceName = await cliHelper.setupAndVerifyAgent(dbName, version, dbPort, container, agentName, agentFlags, logLevel, authInfo);
+      
+      I.amOnPage(qanPage.url);
+      await qanPage.verifyServicePresentInQAN(serviceName);
+    }
+  },
 ).retry(1);
