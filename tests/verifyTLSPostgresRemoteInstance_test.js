@@ -252,7 +252,7 @@ Data(instances).Scenario(
 Data(instances).Scenario(
   'PMM-T1283, PMM-T1292' +
   'Verify that pmm-admin inventory add agent postgres-exporter with --log-level flag adds PostgreSQL exporter with corresponding log-level' +
-  'Verify that pmm-admin inventory add agent postgres-exporter with --log-level flag adds PostgreSQL exporter with log-level=warn @nazarov',
+  'Verify that pmm-admin inventory add agent postgres-exporter with --log-level flag adds PostgreSQL exporter with log-level=warn',
   async ({
            I, current, cliHelper, qanPage,
          }) => {
@@ -283,7 +283,7 @@ Data(instances).Scenario(
     
     const agentName = 'postgres-exporter';
   
-    await I.verifyCommand(`docker exec ${container} psql postgres pmm-agent -c "CREATE EXTENSION pg_stat_statements SCHEMA public"`);
+    await I.verifyCommand(`docker exec ${container} psql postgres pmm -c "CREATE EXTENSION IF NOT EXISTS pg_stat_statements SCHEMA public"`);
     
     for (const logLevel of logLevels) {
       const serviceName = await cliHelper.setupAndVerifyAgent(dbName, version, dbPort, container, agentName, agentFlags, logLevel, authInfo);
@@ -292,7 +292,7 @@ Data(instances).Scenario(
       await qanPage.verifyServicePresentInQAN(serviceName);
     }
   },
-).retry(1);
+);//.retry(1);
 
 Data(instances).Scenario(
   'PMM-T1302, PMM-T1303' +

@@ -69,7 +69,6 @@ module.exports = {
     const data = Object.values(agents.data)
       .flat(Infinity)
       .filter(({ service_id }) => service_id === serviceId);
-
     return data[0];
   },
 
@@ -88,6 +87,15 @@ module.exports = {
     };
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
 
+    return I.sendPostRequest('v1/inventory/Agents/List', body, headers);
+  },
+  
+  async apiGetAgentsViaAgentId(agentId) {
+    const body = {
+      agent_id: agentId,
+    };
+    const headers = { Authorization: `Basic ${await I.getAuth()}` };
+    
     return I.sendPostRequest('v1/inventory/Agents/List', body, headers);
   },
 
