@@ -31,7 +31,7 @@ Scenario(
         await I.verifyCommand(`sudo docker exec pgsql_vacuum_db psql -U postgres -d dvdrental -c 'VACUUM  ( ANALYZE ) ${table.trim()}'`);
       }
     });
-    await I.waitForInvisible(experimentalDashboardsPage.elements.neverRunField, 600);
+    await I.waitForInvisible(experimentalDashboardsPage.elements.neverRunField, 1200);
     await I.refreshPage();
     await I.waitForVisible(perconaPlatformPage.perconaPlatformPage_2_26.elements.connectForm, 30);
   },
