@@ -1,12 +1,13 @@
 module.exports = {
   url: '',
   elements: {
+    barValue: '//div[@data-testid="data-testid Bar gauge value"]',
   },
   fields: {},
   buttons: {},
   messages: {
   },
   vacuumDashboardPostgres: {
-    url: 'graph/d/postgres_vacuum_monitoring/postgresql-vacuum-monitoring',
+    url: 'graph/d/postgres_vacuum_monitoring/postgresql-vacuum-monitoring?orgId=1&refresh=10s',
   },
 };
