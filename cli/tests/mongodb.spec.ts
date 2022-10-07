@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-// import cli = require('@helpers/cliHelper');
+// import cli = require('@helpers/cliHelper'); //optional way to import with local name
 import * as cli from '@helpers/cliHelper';
 
 test.describe('Spec file for MongoDB CLI tests ', async () => {
@@ -212,7 +212,7 @@ test.describe('Spec file for MongoDB CLI tests ', async () => {
     });
   });
 
-  test('run pmm-admin add mongodb --help to check metrics-mode="auto" @cli @mongo', async ({}) => {
+  test('run pmm-admin add mongodb --help to check metrics-mode="auto" @mongo', async ({}) => {
     let output;
 
     await test.step('run pmm-admin add mongodb --help', async () => {
@@ -222,35 +222,64 @@ test.describe('Spec file for MongoDB CLI tests ', async () => {
 //     echo "$output"
 //         [ "$status" -eq 0 ]
 //     echo "${output}" | grep "metrics-mode=\"auto\""
+    await test.step('Verify metrics-mode="auto" is present', async () => {
+      output.assertSuccess();
+      await expect(output.stdout).toContain('Usage: pmm-admin add mongodb [<name> [<address>]]');
+      await expect(output.stdout).toContain('metrics-mode="auto"');
+    });
+  });
+
+  test('run pmm-admin add mongodb --help to check host @mongo', async ({}) => {
+    let output;
+
+    await test.step('run pmm-admin add mongodb --help', async () => {
+      output = await cli.exec('pmm-admin add mongodb --help');
+    });
+
+//     echo "$output"
+//         [ "$status" -eq 0 ]
+//     echo "${output}" | grep "host"
     await test.step('Verify "metrics-mode="auto"" is present', async () => {
+      output.assertSuccess();
+      await expect(output.stdout).toContain('Usage: pmm-admin add mongodb [<name> [<address>]]');
+      await expect(output.stdout).toContain('host');
+    });
+  });
+
+  test('run pmm-admin add mongodb --help to check port @mongo', async ({}) => {
+    let output;
+
+    await test.step('run pmm-admin add mongodb --help', async () => {
+      output = await cli.exec('pmm-admin add mongodb --help');
+    });
+
+//     echo "$output"
+//         [ "$status" -eq 0 ]
+//     echo "${output}" | grep "port"
+    await test.step('Verify "port" is present', async () => {
       output.assertSuccess();
       await expect(output.stdout).toContain('Usage: pmm-admin add mongodb [<name> [<address>]]');
       await expect(output.stdout).toContain('--socket=STRING');
     });
   });
 
+  test('run pmm-admin add mongodb --help to check service-name @mongo', async ({}) => {
+    let output;
 
-// @test "run pmm-admin add mongodb --help to check host" {
-//     run pmm-admin add mongodb --help
-//     echo "$output"
-//         [ "$status" -eq 0 ]
-//     echo "${output}" | grep "host"
-//   }
-//
-// @test "run pmm-admin add mongodb --help to check port" {
-//     run pmm-admin add mongodb --help
-//     echo "$output"
-//         [ "$status" -eq 0 ]
-//     echo "${output}" | grep "port"
-//   }
-//
-// @test "run pmm-admin add mongodb --help to check service-name" {
-//     run pmm-admin add mongodb --help
+    await test.step('run pmm-admin add mongodb --help', async () => {
+      output = await cli.exec('pmm-admin add mongodb --help');
+    });
+
 //     echo "$output"
 //         [ "$status" -eq 0 ]
 //     echo "${output}" | grep "service-name"
-//   }
-//
+    await test.step('Verify "service-name" is present', async () => {
+      output.assertSuccess();
+      await expect(output.stdout).toContain('Usage: pmm-admin add mongodb [<name> [<address>]]');
+      await expect(output.stdout).toContain('service-name');
+    });
+  });
+
 // @test "run pmm-admin add mongodb based on running instances" {
 //     COUNTER=0
 //     IFS=$'\n'
@@ -318,19 +347,7 @@ test.describe('Spec file for MongoDB CLI tests ', async () => {
 //     echo "${lines[0]}" | grep "Service removed."
 //     done
 //   }
-//
-// @test "PMM-T925 - Verify help for pmm-admin add mongodb has TLS-related flags" {
-//     run pmm-admin add mongodb --help
-//     echo "$output"
-//         [ "$status" -eq 0 ]
-//     echo "${output}" | grep "tls                        Use TLS to connect to the database"
-//     echo "${output}" | grep "tls-skip-verify            Skip TLS certificates validation"
-//     echo "${output}" | grep "tls-certificate-key-file=STRING"
-//     echo "${output}" | grep "tls-certificate-key-file-password=STRING"
-//     echo "${output}" | grep "tls-ca-file=STRING         Path to certificate authority file"
-//     echo "${output}" | grep "authentication-mechanism=STRING"
-//     echo "${output}" | grep "authentication-database=STRING"
-//   }
+
   test('@PMM-T925 - Verify help for pmm-admin add mongodb has TLS-related flags @mongo', async ({}) => {
     let output = await cli.exec('pmm-admin add mongodb --help');
 
