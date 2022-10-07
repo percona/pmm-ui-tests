@@ -19,6 +19,7 @@ Scenario(
     values.forEach((value) => {
       const valueInt = parseInt(value.replace('%', ''), 10);
 
+      console.log(`Int Value is: ${valueInt}`);
       assert.ok(valueInt > 0, 'The value for Postgres vacuum is zero, it supposted to be > 0');
     });
 
@@ -30,11 +31,7 @@ Scenario(
         await I.verifyCommand(`sudo docker exec pgsql_vacuum_db psql -U postgres -d dvdrental -c 'VACUUM  ( ANALYZE ) ${table.trim()}'`);
       }
     });
-    // const failedReports = dashboardPage.grabFailedReportTitles();
-
-    // console.log(failedReports);
-
-    await I.wait(540);
+    await I.waitForInvisible(experimentalDashboardsPage.elements.neverRunField, 600);
     await I.refreshPage();
     await I.waitForVisible(perconaPlatformPage.perconaPlatformPage_2_26.elements.connectForm, 30);
   },

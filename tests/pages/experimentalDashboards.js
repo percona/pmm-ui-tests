@@ -2,6 +2,7 @@ module.exports = {
   url: '',
   elements: {
     barValue: '//div[@data-testid="data-testid Bar gauge value"]',
+    neverRunField: '//span[contains(text(), "Never")]',
   },
   fields: {},
   buttons: {},
