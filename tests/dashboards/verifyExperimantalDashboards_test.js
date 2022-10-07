@@ -14,7 +14,7 @@ Scenario(
     await I.amOnPage(experimentalDashboardsPage.vacuumDashboardPostgres.url);
     // await dashboardPage.verifyThereAreNoGraphsWithoutData(0);
     await I.waitForVisible(experimentalDashboardsPage.elements.barValue, 60)
-    const values = await I.grabTextFrom(experimentalDashboardsPage.elements.barValue);
+    const values = await I.grabTextFromAll(experimentalDashboardsPage.elements.barValue);
 
     console.log(values);
     const output = await I.verifyCommand('sudo docker exec pgsql_vacuum_db psql -U postgres -d dvdrental -c \'SELECT tablename FROM pg_catalog.pg_tables;\'');
