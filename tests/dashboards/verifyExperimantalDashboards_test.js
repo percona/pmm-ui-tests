@@ -32,8 +32,6 @@ Scenario(
       }
     });
     // await I.waitForInvisible(experimentalDashboardsPage.elements.neverRunField, 1200);
-    await I.wait(120);
-    await I.refreshPage();
-    await I.waitForVisible(perconaPlatformPage.perconaPlatformPage_2_26.elements.connectForm, 30);
+    await I.waitForVisible(perconaPlatformPage.perconaPlatformPage_2_26.elements.connectForm, 1200);
   },
 );
