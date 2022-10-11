@@ -27,7 +27,7 @@ Scenario(
     const allTables = output.split(/\r?\n/);
 
     allTables.forEach(async (table) => {
-      if (table.includes('film_testing')) {
+      if (table.includes('film_testing') || table.includes('dvdrental')) {
         await I.verifyCommand(`sudo docker exec pgsql_vacuum_db psql -U postgres -d dvdrental -c 'VACUUM  ( ANALYZE ) ${table.trim()}'`);
       }
     });
