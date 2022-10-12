@@ -12,7 +12,7 @@ const instances = new DataTable(['serviceName', 'version', 'container', 'service
 // instances.add(['mysql_5.7_ssl_service', '5.7', 'mysql_5.7', 'mysql_ssl', 'mysql_global_status_max_used_connections']);
 instances.add(['mysql_8.0_ssl_service', '8.0', 'mysql_8.0', 'mysql_ssl', 'mysql_global_status_max_used_connections']);
 
-const logLevels = ['', 'debug' , 'info', 'warn', 'error'];
+const logLevels = ['', 'debug', 'info', 'warn', 'error'];
 const dbName = 'mysql';
 const dbPort = '3306';
 const agentFlags = '--tls --server-insecure-tls --tls-skip-verify --tls-ca=/var/lib/mysql/ca.pem --tls-cert=/var/lib/mysql/client-cert.pem --tls-key=/var/lib/mysql/client-key.pem';
@@ -206,19 +206,19 @@ Data(instances).Scenario(
 ).retry(1);
 
 Data(instances).Scenario(
-  'PMM-T1281, PMM-T1290' +
-  'Verify that pmm-admin inventory add agent mysqld-exporter with --log-level flag adds MySQL exporter with corresponding log-level' +
-  'Verify that pmm-admin inventory add agent mysqld-exporter without --log-level flag adds MySQL exporter with log-level=warn',
+  'PMM-T1281, PMM-T1290'
+  + 'Verify that pmm-admin inventory add agent mysqld-exporter with --log-level flag adds MySQL exporter with corresponding log-level'
+  + 'Verify that pmm-admin inventory add agent mysqld-exporter without --log-level flag adds MySQL exporter with log-level=warn',
   async ({
-           I, current, cliHelper, qanPage,
-         }) => {
+    I, current, cliHelper, qanPage,
+  }) => {
     const {
       version,
       container,
     } = current;
-  
+
     const agentName = 'mysqld-exporter';
-    
+
     for (const logLevel of logLevels) {
       await cliHelper.setupAndVerifyAgent(dbName, version, dbPort, container, agentName, agentFlags, logLevel, authInfo);
     }
@@ -226,22 +226,23 @@ Data(instances).Scenario(
 ).retry(1);
 
 Data(instances).Scenario(
-  'PMM-T1304, PMM-T1305' +
-  'Verify that pmm-admin inventory add agent qan-mysql-perfschema-agent with --log-level flag adds QAN MySQL Perfschema Agent with corresponding log-level' +
-  'Verify that pmm-admin inventory add agent qan-mysql-perfschema-agent with --log-level flag adds QAN MySQL Perfschema Agent with log-level=warn',
+  'PMM-T1304, PMM-T1305'
+  + 'Verify that pmm-admin inventory add agent qan-mysql-perfschema-agent with --log-level flag adds QAN MySQL Perfschema Agent with corresponding log-level'
+  + 'Verify that pmm-admin inventory add agent qan-mysql-perfschema-agent with --log-level flag adds QAN MySQL Perfschema Agent with log-level=warn',
   async ({
-           I, current, cliHelper, qanPage,
-         }) => {
+    I, current, cliHelper, qanPage,
+  }) => {
     const {
       version,
       container,
     } = current;
-  
+
     const agentName = 'qan-mysql-perfschema-agent';
-    
+
     for (const logLevel of logLevels) {
-      const serviceName = await cliHelper.setupAndVerifyAgent(dbName, version, dbPort, container, agentName, agentFlags, logLevel, authInfo);
-  
+      const serviceName = await cliHelper
+        .setupAndVerifyAgent(dbName, version, dbPort, container, agentName, agentFlags, logLevel, authInfo);
+
       I.amOnPage(qanPage.url);
       await qanPage.verifyServicePresentInQAN(serviceName);
     }
@@ -249,46 +250,45 @@ Data(instances).Scenario(
 ).retry(1);
 
 Data(instances).Scenario(
-  'PMM-T1306, PMM-T1307' +
-  'Verify that pmm-admin inventory add agent qan-mysql-slowlog-agent with --log-level flag adds QAN MySQL Slowlog Agent with corresponding log-level' +
-  'Verify that pmm-admin inventory add agent qan-mysql-slowlog-agent with --log-level flag adds QAN MySQL Slowlog Agent with log-level=warn',
+  'PMM-T1306, PMM-T1307'
+  + 'Verify that pmm-admin inventory add agent qan-mysql-slowlog-agent with --log-level flag adds QAN MySQL Slowlog Agent with corresponding log-level'
+  + 'Verify that pmm-admin inventory add agent qan-mysql-slowlog-agent with --log-level flag adds QAN MySQL Slowlog Agent with log-level=warn',
   async ({
-           I, current, cliHelper, qanPage,
-         }) => {
+    I, current, cliHelper, qanPage,
+  }) => {
     const {
       version,
       container,
     } = current;
-  
+
     const agentName = 'qan-mysql-slowlog-agent';
-    
+
     for (const logLevel of logLevels) {
-      const serviceName = await cliHelper.setupAndVerifyAgent(dbName, version, dbPort, container, agentName, agentFlags, logLevel, authInfo);
-      
+      const serviceName = await cliHelper
+        .setupAndVerifyAgent(dbName, version, dbPort, container, agentName, agentFlags, logLevel, authInfo);
+
       I.amOnPage(qanPage.url);
       await qanPage.verifyServicePresentInQAN(serviceName);
     }
   },
 ).retry(1);
 
-
-Data(instances).Scenario( 'PMM-T1351 Verify that MySQL exporter cannot be added by pmm-admin inventory add agent mysqld-exporter with --log-level=fatal',
+Data(instances).Scenario('PMM-T1351 Verify that MySQL exporter cannot be added by pmm-admin inventory add agent mysqld-exporter with --log-level=fatal',
   async ({
-           I, current,
-         }) => {
+    I, current,
+  }) => {
     const {
       version,
       container,
     } = current;
     const serviceName = `${dbName}_${version}_service${faker.random.alphaNumeric(3)}`;
     const agentName = 'mysqld-exporter';
-      
+
     const pmmAdminNodeId = await I.verifyCommand(`docker exec ${container} pmm-admin status | grep 'Node ID' | awk -F " " '{print $4}' | tr -d '\\n'`);
     const pmmAdminAgentId = await I.verifyCommand(`docker exec ${container} pmm-admin status | grep 'Agent ID' | awk -F " " '{print $4}' | tr -d '\\n'`);
-      
+
     await I.verifyCommand(`docker exec ${container} pmm-admin inventory add service ${dbName} ${serviceName} ${pmmAdminNodeId} localhost ${dbPort}`);
     const serviceId = await I.verifyCommand(`docker exec ${container} pmm-admin list | grep ${serviceName} | awk -F  " " '{print $4}' | tr -d '\\n'`);
-      
-    await I.verifyCommand(`docker exec ${container} pmm-admin inventory add agent ${agentName} ${agentFlags} --log-level=fatal ${pmmAdminAgentId} ${serviceId} ${authInfo}`+ ' 2>&1 | grep "error: --log-level must be one of \\"debug\\",\\"info\\",\\"warn\\",\\"error\\" but got \\"fatal\\""');
-    }
-  );
+
+    await I.verifyCommand(`docker exec ${container} pmm-admin inventory add agent ${agentName} ${agentFlags} --log-level=fatal ${pmmAdminAgentId} ${serviceId} ${authInfo} 2>&1 | grep "error: --log-level must be one of \\"debug\\",\\"info\\",\\"warn\\",\\"error\\" but got \\"fatal\\""`);
+  });

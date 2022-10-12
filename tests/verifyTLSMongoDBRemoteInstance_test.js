@@ -13,12 +13,11 @@ const instances = new DataTable(['serviceName', 'version', 'container', 'service
 // instances.add(['mongodb_4.2_ssl_service', '4.2', 'mongodb_4.2', 'mongodb_ssl', 'mongodb_connections']);
 instances.add(['mongodb_5.0_ssl_service', '5.0', 'mongodb_5.0', 'mongodb_ssl', 'mongodb_connections']);
 
-const logLevels = ['', 'debug' , 'info', 'warn', 'error', 'fatal'];
+const logLevels = ['', 'debug', 'info', 'warn', 'error', 'fatal'];
 
 const dbName = 'mongodb';
 const dbPort = '27017';
 const agentFlags = '--tls-skip-verify --tls --authentication-mechanism=MONGODB-X509 --tls-certificate-key-file=/nodes/certificates/client.pem --tls-certificate-key-file-password=/nodes/certificates/client.key --tls-ca-file=/nodes/certificates/ca.crt';
-
 
 BeforeSuite(async ({ I, codeceptjsConfig }) => {
   // await I.verifyCommand(`${pmmFrameworkLoader} --mo-version=4.2 --setup-mongodb-ssl --pmm2`);
@@ -209,19 +208,19 @@ Data(instances).Scenario(
 ).retry(1);
 
 Data(instances).Scenario(
-  'PMM-T1280, PMM-T1289' +
-  'Verify that pmm-admin inventory add agent mongodb-exporter with --log-level flag adds MongoDB exporter with corresponding log-level' +
-  'Verify that pmm-admin inventory add agent mongodb-exporter without --log-level flag adds MongoDB exporter with log-level=warn',
+  'PMM-T1280, PMM-T1289'
+  + 'Verify that pmm-admin inventory add agent mongodb-exporter with --log-level flag adds MongoDB exporter with corresponding log-level'
+  + 'Verify that pmm-admin inventory add agent mongodb-exporter without --log-level flag adds MongoDB exporter with log-level=warn',
   async ({
-           I, current, cliHelper, qanPage,
-         }) => {
+    I, current, cliHelper, qanPage,
+  }) => {
     const {
       version,
       container,
     } = current;
-  
+
     const agentName = 'mongodb-exporter';
-    
+
     for (const logLevel of logLevels) {
       await cliHelper.setupAndVerifyAgent(dbName, version, dbPort, container, agentName, agentFlags, logLevel);
     }
@@ -229,22 +228,23 @@ Data(instances).Scenario(
 ).retry(1);
 
 Data(instances).Scenario(
-  'PMM-T1284, PMM-T1294' +
-  'Verify that pmm-admin inventory add agent qan-mongodb-profiler-agent with --log-level flag adds QAN MongoDB Profiler Agent with corresponding log-level' +
-  'Verify that pmm-admin inventory add agent qan-mongodb-profiler-agent without --log-level flag adds QAN MongoDB Profiler Agent with log-level=warn',
+  'PMM-T1284, PMM-T1294'
+  + 'Verify that pmm-admin inventory add agent qan-mongodb-profiler-agent with --log-level flag adds QAN MongoDB Profiler Agent with corresponding log-level'
+  + 'Verify that pmm-admin inventory add agent qan-mongodb-profiler-agent without --log-level flag adds QAN MongoDB Profiler Agent with log-level=warn',
   async ({
-           I, current, cliHelper, qanPage,
-         }) => {
+    I, current, cliHelper, qanPage,
+  }) => {
     const {
       version,
       container,
     } = current;
-  
+
     const agentName = 'qan-mongodb-profiler-agent';
-    
+
     for (const logLevel of logLevels) {
-      const serviceName = await cliHelper.setupAndVerifyAgent(dbName, version, dbPort, container, agentName, agentFlags, logLevel);
-      
+      const serviceName = await cliHelper
+        .setupAndVerifyAgent(dbName, version, dbPort, container, agentName, agentFlags, logLevel);
+
       I.amOnPage(qanPage.url);
       await qanPage.verifyServicePresentInQAN(serviceName);
     }
@@ -254,24 +254,20 @@ Data(instances).Scenario(
 Data(instances).Scenario(
   'PMM-T1282 Verify that pmm-admin inventory add agent node-exporter with --log-level flag adds Node exporter with corresponding log-level',
   async ({
-           I, current, inventoryAPI,
-         }) => {
+    I, current, inventoryAPI,
+  }) => {
     const {
       version,
       container,
     } = current;
-    
+
     const agentName = 'node-exporter';
     const pmmAdminAgentId = await I.verifyCommand(`docker exec ${container} pmm-admin status | grep 'Agent ID' | awk -F " " '{print $4}' | tr -d '\\n'`);
-    
+
     for (const logLevel of logLevels) {
       const agentId = await I.verifyCommand(`docker exec ${container} pmm-admin inventory add agent ${agentName} ${pmmAdminAgentId} | grep 'Agent ID' | awk -F " " '{print $4}' | tr -d '\\n'`);
-      
+
       const agentInfo = await inventoryAPI.apiGetAgentsViaAgentId(agentId);
-      console.log(agentInfo);
-      // eslint-disable-next-line no-prototype-builtins
-      assert.ok(agentInfo.hasOwnProperty('log_level'), `Was expecting qan-mongodb-profiler-agent ${serviceName}(${serviceId}) to have "log_level" property`);
-      assert.strictEqual(agentInfo.log_level, expectedLogLevel, `Was expecting qan-mongodb-profiler-agent for ${serviceName}(${serviceId}) to have "${expectedLogLevel}" as a log level`);
     }
   },
 ).retry(1);
@@ -279,15 +275,16 @@ Data(instances).Scenario(
 Data(instances).Scenario(
   'PMM-T1282 Verify that pmm-admin inventory add agent node-exporter with --log-level flag adds Node exporter with corresponding log-level @nazarov',
   async ({
-           I, current, inventoryAPI,
-         }) => {
+    I, current, inventoryAPI,
+  }) => {
     const {
       version,
       container,
     } = current;
-    
+
     const agentName = 'node-exporter';
     const pmmAdminNodeId = await I.verifyCommand(`docker exec ${container} pmm-admin status | grep 'Node ID' | awk -F " " '{print $4}' | tr -d '\\n'`);
+
     await I.verifyCommand(`docker exec ${container} pmm-admin inventory add service external --group= --node-id=${pmmAdminNodeId} --name=ext-service1`);
     await I.verifyCommand(`docker exec ${container} pmm-admin inventory add service external --group= --node-id=${pmmAdminNodeId} --name=ext-service2`);
     await I.verifyCommand(`docker exec ${container} pmm-admin inventory add service external --group=redis --node-id=${pmmAdminNodeId} --name=ext-service3`);
