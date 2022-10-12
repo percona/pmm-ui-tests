@@ -28,6 +28,6 @@ Scenario(
     await experimentalDashboardsPage.vacuumAnalyzeTables(allTables);
 
     // await I.waitForInvisible(experimentalDashboardsPage.elements.neverRunField, 1200);
-    await I.waitForVisible(perconaPlatformPage.perconaPlatformPage_2_26.elements.connectForm, 1200);
+    await I.waitForVisible(perconaPlatformPage.perconaPlatformPage_2_26.elements.connectForm, 1800);
   },
 );
