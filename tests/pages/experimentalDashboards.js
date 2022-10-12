@@ -15,7 +15,7 @@ module.exports = {
   },
 
   async vacuumAnalyzeTables(tables) {
-    for await (const table of tables.keys()) {
+    for await (const table of tables.values()) {
       if (table.includes('film_testing') || table.includes('dvdrental')) {
         await I.say(table);
         await I.verifyCommand(`sudo docker exec pgsql_vacuum_db psql -U postgres -d dvdrental -c 'VACUUM  ( ANALYZE ) ${table.trim()}'`);
