@@ -1,3 +1,5 @@
+const { I } = inject();
+
 module.exports = {
   url: '',
   elements: {
@@ -11,4 +13,13 @@ module.exports = {
   vacuumDashboardPostgres: {
     url: 'graph/d/postgres_vacuum_monitoring/postgresql-vacuum-monitoring?orgId=1&refresh=10s',
   },
+
+  async vacuumAnalyzeTables(tables) {
+    for await (const table of tables.keys()) {
+      if (table.includes('film_testing') || table.includes('dvdrental')) {
+        await I.say(table);
+        await I.verifyCommand(`sudo docker exec pgsql_vacuum_db psql -U postgres -d dvdrental -c 'VACUUM  ( ANALYZE ) ${table.trim()}'`);
+      }
+    }
+  }
 };
