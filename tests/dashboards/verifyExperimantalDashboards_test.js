@@ -1,6 +1,6 @@
 const assert = require('assert');
 
-Feature('Test Dashboards inside the MongoDB Folder');
+Feature('Test Experimental Dashboards');
 
 Before(async ({ I }) => {
   await I.Authorize();
@@ -12,7 +12,7 @@ Scenario(
     I, experimentalDashboardsPage, perconaPlatformPage,
   }) => {
     await I.amOnPage(experimentalDashboardsPage.vacuumDashboardPostgres.url);
-    await I.waitForVisible(experimentalDashboardsPage.elements.barValue, 60)
+    await I.waitForVisible(experimentalDashboardsPage.elements.barValue, 60);
     const values = await I.grabTextFromAll(experimentalDashboardsPage.elements.barValue);
 
     values.forEach((value) => {
@@ -28,6 +28,6 @@ Scenario(
     await experimentalDashboardsPage.vacuumAnalyzeTables(allTables);
 
     // await I.waitForInvisible(experimentalDashboardsPage.elements.neverRunField, 1200);
-    await I.waitForVisible(perconaPlatformPage.perconaPlatformPage_2_26.elements.connectForm, 1200);
+    await I.waitForVisible(perconaPlatformPage.perconaPlatformPage_2_26.elements.connectForm, 600);
   },
 );
