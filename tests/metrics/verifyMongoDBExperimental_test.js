@@ -33,11 +33,7 @@ Scenario(
   async ({
     I, grafanaAPI, adminPage, homePage, dashboardPage, searchDashboardsModal,
   }) => {
-    await homePage.open();
-    I.click(dashboardPage.fields.breadcrumbs.dashboardName);
-    searchDashboardsModal.waitForOpened();
-    searchDashboardsModal.expandFolder('Experimental');
-    searchDashboardsModal.openDashboard('MongoDB Collection Details');
+    I.amOnPage(I.buildUrlWithParams(dashboardPage.mongoDbCollectionDetails.clearUrl, { from: 'now-5m' }));
     dashboardPage.waitForDashboardOpened();
     dashboardPage.setTimeRange();
     await dashboardPage.changeServiceName(`${mongodb_service_name_ac}`);
@@ -56,11 +52,7 @@ Scenario(
   async ({
     I, grafanaAPI, adminPage, homePage, dashboardPage, searchDashboardsModal,
   }) => {
-    await homePage.open();
-    I.click(dashboardPage.fields.breadcrumbs.dashboardName);
-    searchDashboardsModal.waitForOpened();
-    searchDashboardsModal.expandFolder('Experimental');
-    searchDashboardsModal.openDashboard('MongoDB Collections Overview');
+    I.amOnPage(I.buildUrlWithParams(dashboardPage.mongoDbCollectionsOverview.clearUrl, { from: 'now-5m' }));
     dashboardPage.waitForDashboardOpened();
     dashboardPage.setTimeRange();
     await dashboardPage.changeServiceName(`${mongodb_service_name_ac}`);
@@ -78,11 +70,7 @@ Scenario(
   async ({
     I, adminPage, homePage, dashboardPage, searchDashboardsModal,
   }) => {
-    await homePage.open();
-    I.click(dashboardPage.fields.breadcrumbs.dashboardName);
-    searchDashboardsModal.waitForOpened();
-    searchDashboardsModal.expandFolder('Experimental');
-    searchDashboardsModal.openDashboard('MongoDB Oplog Details');
+    I.amOnPage(I.buildUrlWithParams(dashboardPage.mongoDbOplogDetails.clearUrl, { from: 'now-5m' }));
     dashboardPage.waitForDashboardOpened();
     dashboardPage.setTimeRange();
     await dashboardPage.changeServiceName(`${mongodb_service_name_ac}`);

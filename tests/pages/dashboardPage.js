@@ -851,6 +851,7 @@ module.exports = {
 
   mongoDbCollectionDetails: {
     url: 'graph/d/mongodb-collection-details/mongodb-collection-details?orgId=1&refresh=1m',
+    clearUrl: 'graph/d/mongodb-collection-details/mongodb-collection-details',
     metrics: [
       'Top 10 Largest Collections by Document Count',
       'Top 10 Largest Collections by Size',
@@ -862,6 +863,7 @@ module.exports = {
   },
   mongoDbCollectionsOverview: {
     url: 'graph/d/mongodb-collections-overview/mongodb-collections-overview?orgId=1&refresh=1m',
+    clearUrl: 'graph/d/mongodb-collections-overview/mongodb-collections-overview',
     metrics: [
       'Top 5 Databases By Size',
       'Collections in Database',
@@ -881,6 +883,7 @@ module.exports = {
 
   mongoDbOplogDetails: {
     url: 'graph/d/mongodb-oplog-details/mongodb-oplog-details?orgId=1&refresh=1m',
+    clearUrl: 'graph/d/mongodb-oplog-details/mongodb-oplog-details',
     metrics: [
       'Oplog Recovery Window',
       'Oplog Buffered Operations',
