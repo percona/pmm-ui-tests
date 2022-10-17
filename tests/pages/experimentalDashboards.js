@@ -5,6 +5,7 @@ module.exports = {
   elements: {
     barValue: '//div[@data-testid="data-testid Bar gauge value"]',
     lastVacuumValue: '//div[contains(@class, "react-grid-item")][6]//div[contains(text(), "dvdrental")]//following-sibling::*',
+    lastAnalyzeValue: '//div[contains(@class, "react-grid-item")][7]//div[contains(text(), "dvdrental")]//following-sibling::*',
   },
   fields: {},
   buttons: {},
@@ -34,9 +35,9 @@ module.exports = {
       }
     }
   },
-  async waitForLastVacuumValues(timeoutInSeconds) {
+  async waitForLastValues(element, timeoutInSeconds) {
     for (let index = 0; index <= timeoutInSeconds; index++) {
-      const lastVacuumValues = await I.grabTextFromAll(this.elements.lastVacuumValue);
+      const lastVacuumValues = await I.grabTextFromAll(element);
 
       for await (const lastVacuumValue of lastVacuumValues.values()) {
         if (!(new Date(lastVacuumValue).toString() === 'Invalid Date')) {
@@ -52,5 +53,13 @@ module.exports = {
         throw new Error('Vacuum operation data are not presented on the dashboard.');
       }
     }
+  },
+
+  async waitForLastVacuumValues(timeoutInSeconds) {
+    return this.waitForLastValues(this.elements.lastVacuumValue, timeoutInSeconds);
+  },
+
+  async waitForLastAnalyzeValues(timeoutInSeconds) {
+    return this.waitForLastValues(this.elements.lastAnalyzeValue, timeoutInSeconds);
   },
 };

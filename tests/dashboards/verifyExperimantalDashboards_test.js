@@ -25,7 +25,7 @@ Scenario(
     const allTables = output.split(/\r?\n/);
 
     await experimentalDashboardsPage.vacuumAnalyzeTables(allTables);
-
     await experimentalDashboardsPage.waitForLastVacuumValues(600);
+    await experimentalDashboardsPage.waitForLastAnalyzeValues(600);
   },
 );
