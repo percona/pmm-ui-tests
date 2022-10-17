@@ -41,8 +41,6 @@ module.exports = {
 
       for await (const lastVacuumValue of lastVacuumValues.values()) {
         if (!(new Date(lastVacuumValue).toString() === 'Invalid Date')) {
-          I.say(`Date of vacuum is: ${new Date(lastVacuumValue)}`);
-
           return;
         }
       }
