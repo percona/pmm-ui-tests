@@ -24,7 +24,7 @@ Scenario(
     const output = await I.verifyCommand('sudo docker exec pgsql_vacuum_db psql -U postgres -d dvdrental -c \'SELECT tablename FROM pg_catalog.pg_tables;\'');
     const allTables = output.split(/\r?\n/);
 
-    // await experimentalDashboardsPage.vacuumAnalyzeTables(allTables);
+    await experimentalDashboardsPage.vacuumAnalyzeTables(allTables);
 
     await experimentalDashboardsPage.waitForLastVacuumValues(600);
   },

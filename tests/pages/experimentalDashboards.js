@@ -49,7 +49,7 @@ module.exports = {
       await I.wait(1);
 
       if (index === timeoutInSeconds) {
-        throw new Error('Vacuum operation never occurred.');
+        throw new Error('Vacuum operation data are not presented on the dashboard.');
       }
     }
   },
