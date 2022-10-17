@@ -8,16 +8,25 @@ const {
 const { I } = inject();
 
 module.exports = {
-  async apiAddInstance(type, serviceName, creds) {
+  /**
+   * adds remote instance using API /v1/management/...
+   *
+   * @param   type          {@link remoteInstancesHelper.instanceTypes}
+   * @param   serviceName   name of the service to add
+   * @param   creds         optional objects with instance accessing details
+   * @returns               {Promise<*|void>}
+   * @throws                Assertion {Error} if instance was not added
+   */
+  async apiAddInstance(type, serviceName, creds = {}) {
     switch (type) {
       case remoteInstancesHelper.instanceTypes.mongodb:
-        return this.addMongodb(serviceName);
+        return this.addMongodb(serviceName, creds);
       case remoteInstancesHelper.instanceTypes.mysql:
         return this.addMysql(serviceName, creds);
       case remoteInstancesHelper.instanceTypes.proxysql:
         return this.addProxysql(serviceName);
       case remoteInstancesHelper.instanceTypes.postgresql:
-        return this.addPostgresql(serviceName);
+        return this.addPostgresql(serviceName, creds);
       case remoteInstancesHelper.instanceTypes.rds:
         return this.addRDS(serviceName, creds);
       case remoteInstancesHelper.instanceTypes.rdsAurora:
@@ -50,7 +59,7 @@ module.exports = {
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
     const resp = await I.sendPostRequest('v1/management/MySQL/Add', body, headers);
 
-    assert.equal(resp.status, 200, `Instance ${serviceName} was not added for monitoring. ${resp.data.message}`);
+    I.assertEqual(resp.status, 200, `Instance ${serviceName} was not added for monitoring. ${resp.data.message}`);
 
     return resp.data;
   },
@@ -78,20 +87,21 @@ module.exports = {
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
     const resp = await I.sendPostRequest('v1/management/MySQL/Add', body, headers);
 
-    assert.equal(resp.status, 200, `Instance ${connection.serviceName} was not added for monitoring`);
+    I.assertEqual(resp.status, 200, `Instance ${connection.serviceName} was not added for monitoring`);
   },
 
-  async addPostgresql(serviceName) {
+  async addPostgresql(serviceName, creds = {}) {
+    const { host, port, username, password } = creds;
     const body = {
       add_node: {
         node_name: serviceName,
         node_type: 'REMOTE_NODE',
       },
-      port: remoteInstancesHelper.remote_instance.postgresql.pdpgsql_13_3.port,
-      address: remoteInstancesHelper.remote_instance.postgresql.pdpgsql_13_3.host,
+      port: port || remoteInstancesHelper.remote_instance.postgresql.pdpgsql_13_3.port,
+      address: host || remoteInstancesHelper.remote_instance.postgresql.pdpgsql_13_3.host,
       service_name: serviceName,
-      username: remoteInstancesHelper.remote_instance.postgresql.pdpgsql_13_3.username,
-      password: remoteInstancesHelper.remote_instance.postgresql.pdpgsql_13_3.password,
+      username: username || remoteInstancesHelper.remote_instance.postgresql.pdpgsql_13_3.username,
+      password: password || remoteInstancesHelper.remote_instance.postgresql.pdpgsql_13_3.password,
       cluster: remoteInstancesHelper.remote_instance.postgresql.pdpgsql_13_3.clusterName,
       pmm_agent_id: 'pmm-server',
       qan_postgresql_pgstatements_agent: true,
@@ -100,7 +110,7 @@ module.exports = {
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
     const resp = await I.sendPostRequest('v1/management/PostgreSQL/Add', body, headers);
 
-    assert.equal(resp.status, 200, `Instance ${serviceName} was not added for monitoring`);
+    I.assertEqual(resp.status, 200, `Instance ${serviceName} was not added for monitoring`);
   },
 
   async addPostgreSqlSSL(connection) {
@@ -126,7 +136,7 @@ module.exports = {
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
     const resp = await I.sendPostRequest('v1/management/PostgreSQL/Add', body, headers);
 
-    assert.equal(resp.status, 200, `Instance ${connection.serviceName} was not added for monitoring`);
+    I.assertEqual(resp.status, 200, `Instance ${connection.serviceName} was not added for monitoring`);
   },
 
   async addPostgreSQLGC(serviceName) {
@@ -148,7 +158,7 @@ module.exports = {
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
     const resp = await I.sendPostRequest('v1/management/PostgreSQL/Add', body, headers);
 
-    assert.equal(resp.status, 200, `Instance ${serviceName} was not added for monitoring`);
+    I.assertEqual(resp.status, 200, `Instance ${serviceName} was not added for monitoring`);
   },
 
   async addProxysql(serviceName) {
@@ -169,20 +179,21 @@ module.exports = {
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
     const resp = await I.sendPostRequest('v1/management/ProxySQL/Add', body, headers);
 
-    assert.equal(resp.status, 200, `Instance ${serviceName} was not added for monitoring`);
+    I.assertEqual(resp.status, 200, `Instance ${serviceName} was not added for monitoring`);
   },
 
-  async addMongodb(serviceName) {
+  async addMongodb(serviceName, creds = {}) {
+    const { host, port, username, password } = creds;
     const body = {
       add_node: {
         node_name: serviceName,
         node_type: 'REMOTE_NODE',
       },
-      port: remoteInstancesHelper.remote_instance.mongodb.psmdb_4_2.port,
-      address: remoteInstancesHelper.remote_instance.mongodb.psmdb_4_2.host,
+      port: port || remoteInstancesHelper.remote_instance.mongodb.psmdb_4_2.port,
+      address: host || remoteInstancesHelper.remote_instance.mongodb.psmdb_4_2.host,
       service_name: serviceName,
-      username: remoteInstancesHelper.remote_instance.mongodb.psmdb_4_2.username,
-      password: remoteInstancesHelper.remote_instance.mongodb.psmdb_4_2.password,
+      username: username || remoteInstancesHelper.remote_instance.mongodb.psmdb_4_2.username,
+      password: password || remoteInstancesHelper.remote_instance.mongodb.psmdb_4_2.password,
       cluster: remoteInstancesHelper.remote_instance.mongodb.psmdb_4_2.clusterName,
       pmm_agent_id: 'pmm-server',
       qan_mongodb_profiler: true,
@@ -191,7 +202,7 @@ module.exports = {
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
     const resp = await I.sendPostRequest('v1/management/MongoDB/Add', body, headers);
 
-    assert.equal(resp.status, 200, `Instance ${serviceName} was not added for monitoring`);
+    I.assertEqual(resp.status, 200, `Instance ${serviceName} was not added for monitoring`);
   },
 
   async addMongoDBSSL(connection) {
@@ -216,7 +227,7 @@ module.exports = {
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
     const resp = await I.sendPostRequest('v1/management/MongoDB/Add', body, headers);
 
-    assert.equal(resp.status, 200, `Instance ${connection.serviceName} was not added for monitoring`);
+    I.assertEqual(resp.status, 200, `Instance ${connection.serviceName} was not added for monitoring`);
   },
 
   async addRDS(serviceName, connection = {}) {
@@ -250,7 +261,7 @@ module.exports = {
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
     const resp = await I.sendPostRequest('v1/management/RDS/Add', body, headers);
 
-    assert.equal(resp.status, 200, `Instance ${serviceName} was not added for monitoring`);
+    I.assertEqual(resp.status, 200, `Instance ${serviceName} was not added for monitoring`);
 
     return resp.data;
   },
@@ -272,30 +283,22 @@ module.exports = {
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
     const resp = await I.sendPostRequest('v1/management/External/Add', body, headers);
 
-    assert.equal(
-      resp.status,
-      200,
-      `External Service ${serviceName} was not added for monitoring got following response ${JSON.stringify(resp.data)}`,
-    );
+    I.assertEqual(resp.status, 200,
+      `External Service ${serviceName} was not added for monitoring got following response ${JSON.stringify(resp.data)}`);
   },
 
   async addInstanceForSTT(connection, instanceName = 'stt-mysql-5.7.30') {
-    let nodeId;
-    let serviceId;
+    await inventoryAPI.deleteNodeByServiceName(remoteInstancesHelper.serviceTypes.mysql.serviceType, instanceName);
+    let instance;
 
     if (process.env.OVF_TEST === 'yes') {
-      await inventoryAPI.deleteNodeByServiceName(remoteInstancesHelper.serviceTypes.mysql.serviceType, instanceName);
-      const instance = await this.apiAddInstance(remoteInstancesHelper.instanceTypes.rds, instanceName);
-
-      nodeId = instance.node.node_id;
-      serviceId = instance.service.service_id;
+      instance = await this.apiAddInstance(remoteInstancesHelper.instanceTypes.rds, instanceName);
     } else {
-      await inventoryAPI.deleteNodeByServiceName(remoteInstancesHelper.serviceTypes.mysql.serviceType, instanceName);
-      const instance = await this.apiAddInstance(remoteInstancesHelper.instanceTypes.mysql, instanceName, connection);
-
-      nodeId = instance.service.node_id;
-      serviceId = instance.service.service_id;
+      instance = await this.apiAddInstance(remoteInstancesHelper.instanceTypes.mysql, instanceName, connection);
     }
+
+    const nodeId = instance.service.node_id;
+    const serviceId = instance.service.service_id;
 
     return [nodeId, serviceId];
   },
