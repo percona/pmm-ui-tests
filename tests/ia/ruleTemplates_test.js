@@ -35,7 +35,8 @@ Before(async ({ templatesAPI }) => {
   await templatesAPI.clearAllTemplates();
 });
 
-Scenario(
+// TODO: Unskip after we bring back built-in templates
+Scenario.skip(
   'PMM-T510 Verify built-in rule templates are non-editable @ia @grafana-pr',
   async ({ I, ruleTemplatesPage }) => {
     const editButton = ruleTemplatesPage.buttons
@@ -235,19 +236,13 @@ Scenario(
 Scenario(
   'PMM-T884 Verify templates from Percona (SAAS) cannot be deleted or edited @ia @grafana-pr',
   async ({ I, ruleTemplatesPage }) => {
-    const builtInDeleteButton = ruleTemplatesPage.buttons
-      .deleteButtonBySource(ruleTemplatesPage.templateSources.builtin);
-    const builtInEditButton = ruleTemplatesPage.buttons
-      .editButtonBySource(ruleTemplatesPage.templateSources.builtin);
     const saasDeleteButton = ruleTemplatesPage.buttons
       .deleteButtonBySource(ruleTemplatesPage.templateSources.saas);
     const saasEditButton = ruleTemplatesPage.buttons
       .editButtonBySource(ruleTemplatesPage.templateSources.saas);
 
     ruleTemplatesPage.openRuleTemplatesTab();
-    I.waitForElement(builtInDeleteButton, 30);
-    I.seeAttributesOnElements(builtInDeleteButton, { disabled: true });
-    I.seeAttributesOnElements(builtInEditButton, { disabled: true });
+    I.waitForElement(saasDeleteButton, 30);
     I.seeAttributesOnElements(saasDeleteButton, { disabled: true });
     I.seeAttributesOnElements(saasEditButton, { disabled: true });
   },
