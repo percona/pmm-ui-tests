@@ -7,7 +7,7 @@ Before(async ({ I }) => {
 });
 
 Scenario(
-  'PMM-T1365 Verify PostgreSQL Vacuum monitoring dashboard @nightly @dashboards @tempTest',
+  'PMM-T1365 Verify PostgreSQL Vacuum monitoring dashboard @nightly @dashboards @tempTest', { timeout: 40 },
   async ({
     I, experimentalDashboardsPage, perconaPlatformPage,
   }) => {
