@@ -7,7 +7,7 @@ Before(async ({ I }) => {
 });
 
 Scenario(
-  'PMM-T1365 Verify PostgreSQL Vacuum monitoring dashboard @nightly @dashboards @tempTest', { timeout: 3000 },
+  'PMM-T1365 Verify PostgreSQL Vacuum monitoring dashboard @nightly @dashboards @tempTest',
   async ({
     I, experimentalDashboardsPage, perconaPlatformPage,
   }) => {
@@ -26,6 +26,6 @@ Scenario(
 
     // await experimentalDashboardsPage.vacuumAnalyzeTables(allTables);
 
-    await experimentalDashboardsPage.waitForLastVacuumValues(1200);
+    await experimentalDashboardsPage.waitForLastVacuumValues(600);
   },
 );

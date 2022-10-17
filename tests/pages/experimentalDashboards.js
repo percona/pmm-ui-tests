@@ -4,7 +4,6 @@ module.exports = {
   url: '',
   elements: {
     barValue: '//div[@data-testid="data-testid Bar gauge value"]',
-    neverRunField: '//span[contains(text(), "Never")]',
     lastVacuumValue: '//div[contains(@class, "react-grid-item")][6]//div[contains(text(), "dvdrental")]//following-sibling::*',
   },
   fields: {},
