@@ -24,10 +24,9 @@ Scenario(
     const output = await I.verifyCommand('sudo docker exec pgsql_vacuum_db psql -U postgres -d dvdrental -c \'SELECT tablename FROM pg_catalog.pg_tables;\'');
     const allTables = output.split(/\r?\n/);
 
-    await I.say(allTables);
     await experimentalDashboardsPage.vacuumAnalyzeTables(allTables);
 
     // await I.waitForInvisible(experimentalDashboardsPage.elements.neverRunField, 1200);
-    await I.waitForVisible(perconaPlatformPage.perconaPlatformPage_2_26.elements.connectForm, 1000);
+    await I.waitForVisible(perconaPlatformPage.perconaPlatformPage_2_26.elements.connectForm, 1100);
   },
 );
