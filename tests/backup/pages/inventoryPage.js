@@ -49,7 +49,7 @@ module.exports = {
     vendor: '$vendor-text-input',
     description: '$description-textarea-input',
     serviceNameDropdown: locate('div[class$="-select-value-container"]').inside(locate('div').withChild('$service-select-label')),
-    locationDropdown: locate('div[class$="-select-value-container"]').inside(locate('div').withChild('$location-select-label')),
+    locationDropdown: '//label[@data-testid="location-field-label"]/parent::div/following-sibling::div[1]//div[contains(@class, "-select-value-container")]',
   },
   messages: {
     modalHeaderText: 'Delete backup artifact',
