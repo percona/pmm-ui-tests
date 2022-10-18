@@ -998,17 +998,18 @@ if (versionMinor >= 23) {
       I, qanOverview, qanFilters, qanPage, current, adminPage,
     }) => {
       const {
-        serviceName,
+        serviceName, container,
       } = current;
 
       const serviceList = [serviceName, `remote_api_${serviceName}`];
 
+      if (container === 'pgsql_14') {
+        await I.verifyCommand(`docker exec ${container} psql -U postgres -c 'CREATE DATABASE db_post_upgrade;'`);
+        I.wait(60);
+      }
+
       for (const service of serviceList) {
         I.amOnPage(qanPage.url);
-        if (serviceName === 'pgsql_14_ssl_service') {
-          I.wait(60);
-        }
-
         qanOverview.waitForOverviewLoaded();
         await adminPage.applyTimeRange('Last 5 minutes');
         qanOverview.waitForOverviewLoaded();
