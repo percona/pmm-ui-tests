@@ -1005,10 +1005,6 @@ if (versionMinor >= 23) {
 
       for (const service of serviceList) {
         I.amOnPage(qanPage.url);
-        if (serviceName === 'pgsql_14_ssl_service') {
-          I.wait(60);
-        }
-
         qanOverview.waitForOverviewLoaded();
         await adminPage.applyTimeRange('Last 5 minutes');
         qanOverview.waitForOverviewLoaded();
