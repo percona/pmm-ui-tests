@@ -234,7 +234,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T884 Verify templates from Percona (SAAS) cannot be deleted or edited @ia @grafana-pr',
+  'PMM-T884 Verify templates from Percona (SAAS) cannot be deleted or edited @ia',
   async ({ I, ruleTemplatesPage }) => {
     const saasDeleteButton = ruleTemplatesPage.buttons
       .deleteButtonBySource(ruleTemplatesPage.templateSources.saas);

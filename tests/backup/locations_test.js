@@ -68,10 +68,6 @@ Scenario(
       locationsPage.buttons.typeSelect(locationsPage.locationType.client),
       { checked: null },
     );
-    I.seeAttributesOnElements(
-      locationsPage.buttons.typeSelect(locationsPage.locationType.server),
-      { checked: null },
-    );
 
     // Verify buttons state
     I.seeTextEquals('Add', locationsPage.buttons.addLocation);
