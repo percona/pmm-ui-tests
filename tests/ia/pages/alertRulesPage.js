@@ -36,6 +36,8 @@ module.exports = {
     searchByDataSourceDropdown: '//div[@aria-label="Data source picker select container"]',
     searchByLabel: '$input-wrapper',
     ruleFilterLocator: (ruleFilterText) => locate('label').withText(ruleFilterText).after('//input[@type="radio"]'), //locateLabel
+    totalRulesCounter: (count, folder) => locate('$rule-group-header').withText('Experimental'), //todo
+    alertsLearnMoreLinks: locate('a').withText('Learn more'),
   },
   buttons: {
     openAddRuleModal: `//a[contains(.,'New alert rule')]`,
@@ -60,7 +62,7 @@ module.exports = {
     // toggleAlertRule returns Enable/Disable rule switch locator in alert rules list
     toggleAlertRule: (ruleName) => `${rulesNameCell(ruleName)}/following-sibling::td//input[@data-testid='toggle-alert-rule']/following-sibling::label`,
     toggleInModal: '//input[@data-testid="enabled-toggle-input"]/following-sibling::label',
-    groupCollapseToggle: '$group-collapse-toggle',
+    groupCollapseButton: (folderText) =>  `//button[@data-testid='group-collapse-toggle'][following::h6[contains(., '${folderText}')]]`,
     editFolderButton: (folderID, folderText)  => locate('[aria-label="edit folder"]').withAttr({ 'href': `/graph/dashboards/f/${folderID}/${folderText}/settings` }),
     managePermissionsButton: (folderID, folderText)  => locate('[aria-label="manage permissions"]').withAttr({ 'href': `/graph/dashboards/f/${folderID}/${folderText}/permissions` }),
   },
@@ -92,12 +94,12 @@ module.exports = {
   },
   fields: {
     // searchDropdown returns a locator of a search input for a given label
-    searchDropdown: (field) => `//label[text()="${field}"]/parent::div/following-sibling::div[1]//input`,
+    searchDropdown: (field) => `//div[@id='${field}']`,
     dropdownValue: (dropdownLabel) => `//label[text()="${dropdownLabel}"]/parent::div/following-sibling::div[1]`,
     // resultsLocator returns item locator in a search dropdown based on a text
-    resultsLocator: (name) => `//div[@aria-label="Select option"]//span[text()="${name}"]`,
+    resultsLocator: (name) => `//div[@aria-label="Select option"]//div//span[text()="${name}"]`,
     ruleName: '$name-text-input',
-    threshold: '$threshold-number-input',
+    threshold: (input) => `input[name='${input}']`,
     duration: '$duration-number-input',
     filtersLabel: (index = 0) => I.useDataQA(`filters[${index}].label-text-input`),
     filtersValue: (index = 0) => I.useDataQA(`filters[${index}].value-text-input`),
@@ -208,6 +210,7 @@ module.exports = {
   },
 
   searchAndSelectResult(dropdownLabel, option) {
+    I.click(this.fields.searchDropdown(dropdownLabel));
     I.fillField(this.fields.searchDropdown(dropdownLabel), option);
     I.click(this.fields.resultsLocator(option));
   },

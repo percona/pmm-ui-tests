@@ -55,15 +55,18 @@ Scenario(
   async ({ I, alertRulesPage }) => {
     alertRulesPage.openAlertRulesTab();
     I.waitForText('You haven`t created any alert rules yet', alertRulesPage.elements.noRules);
-    //todo: link
+    const link = await I.grabAttributeFrom(alertRulesPage.elements.alertsLearnMoreLinks, 'href');
+
+    assert.ok(link === 'https://grafana.com/docs/', `Redirect link ${link} is incorrect please check`);
   },
 );
 
-Scenario.only(
+Scenario(
   'PMM-T1385 Verify alert rules elements @ia @grafana-pr',
   async ({ I, alertRulesPage, rulesAPI }) => {
     const ruleName = 'rule4';
     const ruleId = await rulesAPI.createAlertRule({ ruleName });
+    const ruleFolder = 'PostgreSQL'
 
     alertRulesPage.openAlertRulesTab();
     I.seeElement(alertRulesPage.elements.searchByDataSourceDropdown);
@@ -73,36 +76,40 @@ Scenario.only(
   
         I.waitForVisible(ruleFilter, 10);
     });
-    I.seeElement(alertRulesPage.buttons.groupCollapseToggle);
-    I.click(alertRulesPage.buttons.groupCollapseToggle);
+    I.click(alertRulesPage.buttons.groupCollapseButton(ruleFolder));
     alertRulesPage.columnHeaders.forEach((header) => {
       const columnHeader = alertRulesPage.elements.columnHeaderLocator(header);
 
       I.waitForVisible(columnHeader, 30);
     });
-    //todo: get id of postgresql folder, db type into const
-    I.seeElement(alertRulesPage.buttons.editFolderButton('fVQRmyV4z','postgresql'));
-    I.seeElement(alertRulesPage.buttons.managePermissionsButton('fVQRmyV4z','postgresql'));
+    const folderUID = await rulesAPI.getFolderUID(ruleFolder);
+
+    I.seeElement(alertRulesPage.buttons.editFolderButton(folderUID, ruleFolder.toLowerCase()));
+    I.seeElement(alertRulesPage.buttons.managePermissionsButton(folderUID, ruleFolder.toLowerCase()));
+    I.seeElement(alertRulesPage.elements.totalRulesCounter('3', 'Experimental')); //todo
 
     //folder header
     //counter
 
-    //await rulesAPI.removeAlertRule('PostgreSQL'); //TODO
+    await rulesAPI.removeAlertRule(ruleFolder);
   },
 );
 
 Scenario(
-  'PMM-T771 Verify fields dynamically change value after user changes a template @ia @grafana-pr',
+  'PMM-T1392 Verify fields dynamically change value when template is changed @ia @grafana-pr',
   async ({ I, alertRulesPage }) => {
+    //TODO: https://jira.percona.com/browse/PMM-10860 name doesn't change
     alertRulesPage.openAlertRulesTab();
     I.click(alertRulesPage.buttons.openAddRuleModal);
-    I.waitForVisible(alertRulesPage.elements.modalHeader, 5);
+    //percona templated alert by default
 
-    alertRulesPage.searchAndSelectResult('Template', 'Memory used by MongoDB');
-    I.waitForValue(alertRulesPage.fields.threshold, 80, 5);
+    alertRulesPage.searchAndSelectResult('template', 'MongoDB down');
 
-    alertRulesPage.searchAndSelectResult('Template', 'Memory used by MongoDB connections');
-    I.waitForValue(alertRulesPage.fields.threshold, 25, 5);
+    I.waitForValue(alertRulesPage.fields.threshold('duration'), '5s');
+
+    alertRulesPage.searchAndSelectResult('template', 'MySQL restarted');
+    I.waitForValue(alertRulesPage.fields.threshold('threshold'), 300);
+    I.waitForValue(alertRulesPage.fields.threshold('duration'), '60s');
   },
 );
 
