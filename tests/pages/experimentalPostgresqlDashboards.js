@@ -4,8 +4,8 @@ module.exports = {
   url: '',
   elements: {
     barValue: '//div[@data-testid="data-testid Bar gauge value"]',
-    lastVacuumValue: '//div[contains(@class, "react-grid-item")][6]//div[contains(text(), "dvdrental")]//following-sibling::*',
-    lastAnalyzeValue: '//div[contains(@class, "react-grid-item")][7]//div[contains(text(), "dvdrental")]//following-sibling::*',
+    lastVacuumValue: '//div[contains(@class, "react-grid-item")][5]//div[contains(text(), "dvdrental")]//following-sibling::*',
+    lastAnalyzeValue: '//div[contains(@class, "react-grid-item")][6]//div[contains(text(), "dvdrental")]//following-sibling::*',
   },
   fields: {},
   buttons: {},
