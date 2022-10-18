@@ -170,4 +170,17 @@ module.exports = {
       await this.createAlertRule({ ruleName: `${faker.lorem.word()}_alert_rule` });
     }
   },
+
+  async getFolderUID(folderName) {
+    const headers = { Authorization: `Basic ${await I.getAuth()}` };
+    const resp = await I.sendGetRequest('graph/api/folders', headers);
+    const foldersArray = resp.data;
+
+    for (const i in foldersArray) {
+      if (foldersArray[i].title === folderName) {
+        const folderUID = foldersArray[i].uid;
+        return folderUID;
+      }
+    }
+  }
 };
