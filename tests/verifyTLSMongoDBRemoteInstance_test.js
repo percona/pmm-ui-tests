@@ -262,10 +262,10 @@ Data(instances).Scenario(
     } = current;
 
     const agentName = 'node-exporter';
-    const pmmAdminAgentId = await I.verifyCommand(`docker exec ${container} pmm-admin status | grep 'Agent ID' | awk -F " " '{print $4}' | tr -d '\\n'`);
+    const pmmAdminAgentId = (await I.verifyCommand(`docker exec ${container} pmm-admin status | grep 'Agent ID' | awk -F " " '{print $4}' `)).trim();
 
     for (const logLevel of logLevels) {
-      const agentId = await I.verifyCommand(`docker exec ${container} pmm-admin inventory add agent ${agentName} ${pmmAdminAgentId} | grep 'Agent ID' | awk -F " " '{print $4}' | tr -d '\\n'`);
+      const agentId = (await I.verifyCommand(`docker exec ${container} pmm-admin inventory add agent ${agentName} ${pmmAdminAgentId} | grep 'Agent ID' | awk -F " " '{print $4}' `)).trim();
 
       const agentInfo = await inventoryAPI.apiGetAgentsViaAgentId(agentId);
     }
@@ -273,7 +273,7 @@ Data(instances).Scenario(
 ).retry(1);
 
 Data(instances).Scenario(
-  'PMM-T1282 Verify that pmm-admin inventory add agent node-exporter with --log-level flag adds Node exporter with corresponding log-level @nazarov',
+  'PMM-T1282 Verify that pmm-admin inventory add agent node-exporter with --log-level flag adds Node exporter with corresponding log-level',
   async ({
     I, current, inventoryAPI,
   }) => {
@@ -283,7 +283,7 @@ Data(instances).Scenario(
     } = current;
 
     const agentName = 'node-exporter';
-    const pmmAdminNodeId = await I.verifyCommand(`docker exec ${container} pmm-admin status | grep 'Node ID' | awk -F " " '{print $4}' | tr -d '\\n'`);
+    const pmmAdminNodeId = (await I.verifyCommand(`docker exec ${container} pmm-admin status | grep 'Node ID' | awk -F " " '{print $4}' `)).trim();
 
     await I.verifyCommand(`docker exec ${container} pmm-admin inventory add service external --group= --node-id=${pmmAdminNodeId} --name=ext-service1`);
     await I.verifyCommand(`docker exec ${container} pmm-admin inventory add service external --group= --node-id=${pmmAdminNodeId} --name=ext-service2`);
