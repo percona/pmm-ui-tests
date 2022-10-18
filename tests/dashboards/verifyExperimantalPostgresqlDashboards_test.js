@@ -1,6 +1,6 @@
 const assert = require('assert');
 
-Feature('Test Experimental Dashboards');
+Feature('Test PostgreSQL Experimental Dashboards');
 
 Before(async ({ I }) => {
   await I.Authorize();
@@ -9,11 +9,11 @@ Before(async ({ I }) => {
 Scenario(
   'PMM-T1365 Verify PostgreSQL Vacuum monitoring dashboard @nightly @dashboards @tempTest',
   async ({
-    I, experimentalDashboardsPage, perconaPlatformPage,
+    I, experimentalPostgresqlDashboardsPage,
   }) => {
-    await I.amOnPage(experimentalDashboardsPage.vacuumDashboardPostgres.url);
-    await I.waitForVisible(experimentalDashboardsPage.elements.barValue, 60);
-    const values = await I.grabTextFromAll(experimentalDashboardsPage.elements.barValue);
+    await I.amOnPage(experimentalPostgresqlDashboardsPage.vacuumDashboardPostgres.url);
+    await I.waitForVisible(experimentalPostgresqlDashboardsPage.elements.barValue, 60);
+    const values = await I.grabTextFromAll(experimentalPostgresqlDashboardsPage.elements.barValue);
 
     values.forEach((value) => {
       const valueInt = parseInt(value.replace('%', ''), 10);
@@ -24,8 +24,8 @@ Scenario(
     const output = await I.verifyCommand('sudo docker exec pgsql_vacuum_db psql -U postgres -d dvdrental -c \'SELECT tablename FROM pg_catalog.pg_tables;\'');
     const allTables = output.split(/\r?\n/);
 
-    await experimentalDashboardsPage.vacuumAnalyzeTables(allTables);
-    await experimentalDashboardsPage.waitForLastVacuumValues(600);
-    await experimentalDashboardsPage.waitForLastAnalyzeValues(600);
+    await experimentalPostgresqlDashboardsPage.vacuumAnalyzeTables(allTables);
+    await experimentalPostgresqlDashboardsPage.waitForLastVacuumValues(600);
+    await experimentalPostgresqlDashboardsPage.waitForLastAnalyzeValues(600);
   },
 );
