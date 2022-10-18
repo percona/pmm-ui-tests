@@ -342,7 +342,7 @@ Scenario('PMM-T901 Verify user can delete scheduled backup @backup @bm-mongo',
 
     // Click Cancel button and verify schedule still exists
     I.click(scheduledPage.buttons.cancelDelete);
-    I.dontSeeElement(scheduledPage.elements.modalContent);
+    I.waitForDetached(scheduledPage.elements.modalContent);
     I.seeElement(scheduledPage.buttons.actionsMenuByName(schedule.name));
 
     // Open Delete modal again and verify it has a correct schedule name in message
