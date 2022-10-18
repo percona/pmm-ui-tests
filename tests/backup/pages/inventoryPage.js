@@ -10,7 +10,7 @@ module.exports = {
     modalHeader: '$modal-header',
     columnHeaderLocator: (columnHeaderText) => `//th[text()="${columnHeaderText}"]`,
     dropdownOption: (text) => locate('div[class$="-select-option-body"]').find('span').withText(text),
-    selectedLocation: locate('div[class*="-singleValue"]').inside(locate('div').withChild('$location-select-label')),
+    selectedLocation: '//label[@data-testid="location-field-label"]/parent::div/following-sibling::div[1]//div[contains(@class, "-singleValue")]',
     selectedService: locate('div[class*="-singleValue"]').inside(locate('div').withChild('$service-select-label')),
     inProgressBackup: '$statusPending',
     backupStatus: '$statusMsg',
@@ -50,7 +50,7 @@ module.exports = {
     vendor: '$vendor-text-input',
     description: '$description-textarea-input',
     serviceNameDropdown: locate('div[class$="-select-value-container"]').inside(locate('div').withChild('$service-select-label')),
-    locationDropdown: locate('div[class$="-select-value-container"]').inside(locate('div').withChild('$location-select-label')),
+    locationDropdown: '//label[@data-testid="location-field-label"]/parent::div/following-sibling::div[1]//div[contains(@class, "-select-value-container")]',
   },
   messages: {
     modalHeaderText: 'Delete backup artifact',

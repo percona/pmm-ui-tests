@@ -2,7 +2,7 @@ const assert = require('assert');
 
 Feature('Inventory page');
 
-Before(async ({ I, homePage }) => {
+Before(async ({ I }) => {
   await I.Authorize();
 });
 
