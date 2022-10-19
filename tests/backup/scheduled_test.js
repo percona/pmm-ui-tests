@@ -177,7 +177,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T913, PMM-T922, PMM-T977 Verify user can schedule a backup for MongoDB with replica @backup @bm-mongo @fb',
+  '@PMM-T913, @PMM-T922, @PMM-T977 Verify user can schedule a backup for MongoDB with replica @backup @bm-mongo @fb',
   async ({
     I, backupInventoryPage, scheduledAPI, backupAPI, scheduledPage,
   }) => {
@@ -206,7 +206,10 @@ Scenario(
     // Verify local timestamp is shown in Last Backup column
     await scheduledAPI.waitForFirstExecution(schedule.name);
     scheduledPage.openScheduledBackupsPage();
-    I.seeTextEquals(moment().format('YYYY-MM-DDHH:mm:00'), scheduledPage.elements.lastBackupByName(schedule.name));
+    const lastBackup = await I.grabTextFrom(scheduledPage.elements.lastBackupByName(schedule.name));
+
+    I.assertStartsWith(lastBackup, moment().format('YYYY-MM-DD'));
+    I.assertEndsWith(lastBackup, moment().format('HH:mm:00'));
 
     await backupAPI.waitForBackupFinish(null, schedule.name, 300);
     const { scheduled_backup_id } = await scheduledAPI.getScheduleIdByName(schedule.name);
