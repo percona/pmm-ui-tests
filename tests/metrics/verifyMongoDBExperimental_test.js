@@ -5,7 +5,7 @@ const pmmFrameworkLoader = `bash ${adminPage.pathToFramework}`;
 const pathToPMMFramework = adminPage.pathToPMMTests;
 const connection = {
   // eslint-disable-next-line no-inline-comments
-  port: '27017', // This is the port used by ---addclient=mo,1 --with-replica --mongomagic
+  port: '27017', // This is the port used by --addclient=mo,1 --with-replica --mongomagic
   container_name: 'psmdb_pmm',
 };
 const mongodb_service_name_ac = 'mongodb_service_all_collectors';
@@ -29,7 +29,7 @@ AfterSuite(async ({ I }) => {
 });
 
 Scenario(
-  'PMM-T1332 - Verify MongoDB - MongoDB Collection Details @dashboards @mongodb-exporter',
+  'PMM-T1332 - Verify MongoDB - MongoDB Collection Details @dashboards @mongodb-exporter @nazarov',
   async ({
     I, grafanaAPI, adminPage, homePage, dashboardPage, searchDashboardsModal,
   }) => {
@@ -48,7 +48,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T1333 - Verify MongoDB - MongoDB Collections Overview @dashboards @mongodb-exporter',
+  'PMM-T1333 - Verify MongoDB - MongoDB Collections Overview @dashboards @mongodb-exporter @nazarov',
   async ({
     I, grafanaAPI, adminPage, homePage, dashboardPage, searchDashboardsModal,
   }) => {
@@ -66,7 +66,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T1334 - Verify MongoDB - MongoDB Oplog Details @dashboards @mongodb-exporter',
+  'PMM-T1334 - Verify MongoDB - MongoDB Oplog Details @dashboards @mongodb-exporter @nazarov',
   async ({
     I, adminPage, homePage, dashboardPage, searchDashboardsModal,
   }) => {
