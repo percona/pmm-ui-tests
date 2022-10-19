@@ -5,11 +5,7 @@ import * as cli from '@helpers/cliHelper';
 test.describe('Spec file for MongoDB CLI tests ', async () => {
 
   test('pmm-admin mongodb --help check for socket @cli @mongo', async ({}) => {
-    let output;
-
-    await test.step('run pmm-admin add mongodb --help', async () => {
-      output = await cli.exec('pmm-admin add mongodb --help');
-    });
+    let output = await cli.exec('pmm-admin add mongodb --help');
 /*
     echo "$output"
         [ "$status" -eq 0 ]
@@ -24,11 +20,7 @@ test.describe('Spec file for MongoDB CLI tests ', async () => {
   });
 
   test('run pmm-admin add mongodb --help to check metrics-mode="auto" @mongo', async ({}) => {
-    let output;
-
-    await test.step('run pmm-admin add mongodb --help', async () => {
-      output = await cli.exec('pmm-admin add mongodb --help');
-    });
+    let output = await cli.exec('pmm-admin add mongodb --help');
 /*
     echo "$output"
         [ "$status" -eq 0 ]
@@ -42,11 +34,7 @@ test.describe('Spec file for MongoDB CLI tests ', async () => {
   });
 
   test('run pmm-admin add mongodb --help to check host @mongo', async ({}) => {
-    let output;
-
-    await test.step('run pmm-admin add mongodb --help', async () => {
-      output = await cli.exec('pmm-admin add mongodb --help');
-    });
+    let output = await cli.exec('pmm-admin add mongodb --help');
 /*
     echo "$output"
         [ "$status" -eq 0 ]
@@ -60,11 +48,7 @@ test.describe('Spec file for MongoDB CLI tests ', async () => {
   });
 
   test('run pmm-admin add mongodb --help to check port @mongo', async ({}) => {
-    let output;
-
-    await test.step('run pmm-admin add mongodb --help', async () => {
-      output = await cli.exec('pmm-admin add mongodb --help');
-    });
+    let output = await cli.exec('pmm-admin add mongodb --help');
 /*
     echo "$output"
         [ "$status" -eq 0 ]
@@ -78,12 +62,7 @@ test.describe('Spec file for MongoDB CLI tests ', async () => {
   });
 
   test('run pmm-admin add mongodb --help to check service-name @mongo', async ({}) => {
-    let output;
-
-    await test.step('run pmm-admin add mongodb --help', async () => {
-      output = await cli.exec('pmm-admin add mongodb --help');
-    });
-
+    let output = await cli.exec('pmm-admin add mongodb --help');
 /*
     echo "$output"
         [ "$status" -eq 0 ]
@@ -110,7 +89,6 @@ test.describe('Spec file for MongoDB CLI tests ', async () => {
     echo "${output}" | grep "authentication-mechanism=STRING"
     echo "${output}" | grep "authentication-database=STRING"
 */
-
     await output.assertSuccess()
     await output.containsMany([
       'tls                        Use TLS to connect to the database',
