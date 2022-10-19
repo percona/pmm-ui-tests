@@ -110,14 +110,17 @@ test.describe('Spec file for MongoDB CLI tests ', async () => {
     echo "${output}" | grep "authentication-mechanism=STRING"
     echo "${output}" | grep "authentication-database=STRING"
 */
-    output.assertSuccess();
-    await expect(output.stdout).toContain('tls                        Use TLS to connect to the database');
-    await expect(output.stdout).toContain('tls-skip-verify            Skip TLS certificates validation');
-    await expect(output.stdout).toContain('tls-certificate-key-file=STRING');
-    await expect(output.stdout).toContain('tls-certificate-key-file-password=STRING');
-    await expect(output.stdout).toContain('tls-ca-file=STRING         Path to certificate authority file');
-    await expect(output.stdout).toContain('authentication-mechanism=STRING');
-    await expect(output.stdout).toContain('authentication-database=STRING');
+
+    await output.assertSuccess()
+    await output.containsMany([
+      'tls                        Use TLS to connect to the database',
+      'tls-skip-verify            Skip TLS certificates validation',
+      'tls-certificate-key-file=STRING',
+      'tls-certificate-key-file-password=STRING',
+      'tls-ca-file=STRING         Path to certificate authority file',
+      'authentication-mechanism=STRING',
+      'authentication-database=STRING',
+    ]);
   });
 
 });

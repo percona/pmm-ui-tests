@@ -1,4 +1,4 @@
-import {  expect } from '@playwright/test';
+import { test,  expect } from '@playwright/test';
 
 class Output {
   command: string;
@@ -13,8 +13,20 @@ class Output {
     this.stderr = stdErr;
   }
 
-  assertSuccess() {
-    expect(this.code, `"${this.command}" expected to exit with 0! Error: "${this.stderr}"`).toEqual(0);
+  async assertSuccess() {
+    await test.step(`Verify "${this.command}" command executed successfully`, async () => {
+      expect(this.code, `"${this.command}" expected to exit with 0! Error: "${this.stderr}"`).toEqual(0);
+    });
+  }
+
+  async containsMany(expectedValues: string[]) {
+    await test.step(`Verify "${this.command}" command output`, async () => {
+      for (const val of expectedValues) {
+        await test.step(`Verify command output contains ${val}`, async () => {
+          expect(this.stdout).toContain(val);
+        })
+      }
+    })
   }
 }
 
