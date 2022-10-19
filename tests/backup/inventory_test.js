@@ -1,5 +1,4 @@
 const assert = require('assert');
-const moment = require('moment');
 
 const { locationsPage } = inject();
 
@@ -166,8 +165,7 @@ Scenario(
 
     const artifactName = await I.grabTextFrom(backupInventoryPage.elements.artifactName(backupName));
 
-    I.click(backupInventoryPage.buttons.deleteByName(backupName));
-    I.waitForVisible(backupInventoryPage.elements.forceDeleteLabel, 20);
+    backupInventoryPage.openDeleteBackupModal(backupName);
     I.seeTextEquals(backupInventoryPage.messages.confirmDeleteText(artifactName), 'h4');
     I.seeTextEquals(backupInventoryPage.messages.forceDeleteLabelText, backupInventoryPage.elements.forceDeleteLabel);
     I.seeTextEquals(backupInventoryPage.messages.modalHeaderText, backupInventoryPage.modal.header);
@@ -235,6 +233,8 @@ Scenario(
     I.refreshPage();
     backupInventoryPage.verifyBackupSucceeded(backupName);
 
+    I.click(backupInventoryPage.buttons.actionsMenuByName(backupName));
+    I.waitForVisible(backupInventoryPage.buttons.restoreByName(backupName), 2);
     I.click(backupInventoryPage.buttons.restoreByName(backupName));
     I.waitForVisible(backupInventoryPage.buttons.modalRestore, 10);
     I.seeTextEquals(backupInventoryPage.messages.serviceNoLongerExists, backupInventoryPage.elements.backupModalError);
@@ -259,7 +259,7 @@ Scenario(
     I.fillField(backupInventoryPage.fields.description, 'Test description');
     I.click(backupInventoryPage.buttons.addBackup);
     backupInventoryPage.verifyBackupSucceeded(backupName);
-    I.seeCssPropertiesOnElements(backupInventoryPage.elements.backupNameSpan(backupName), { 'text-overflow': 'ellipsis' });
+    I.seeCssPropertiesOnElements(backupInventoryPage.elements.artifactName(backupName), { 'text-overflow': 'ellipsis' });
     I.click(backupInventoryPage.buttons.showDetails(backupName));
     I.see(backupName, backupInventoryPage.elements.fullBackUpName);
   },
@@ -286,14 +286,11 @@ Scenario(
     const scheduleId = await scheduledAPI.createScheduledBackup(schedule);
 
     await backupAPI.waitForBackupFinish(null, schedule.name, 240);
-
-    const date = await backupAPI.getArtifactDate(schedule.name);
-    const backupDate = moment(date).format('YYYY-MM-DDHH:mm:00');
-
     await scheduledAPI.disableScheduledBackup(scheduleId);
     I.refreshPage();
     backupInventoryPage.verifyBackupSucceeded(schedule.name);
-    I.seeTextEquals(backupDate, backupInventoryPage.elements.backupDateByName(schedule.name));
+    const backupDate = await I.grabTextFrom(backupInventoryPage.elements.backupDateByName(schedule.name));
+
     await scheduledPage.openScheduledBackupsPage();
     I.seeTextEquals(backupDate, scheduledPage.elements.lastBackupByName(schedule.name));
   },
