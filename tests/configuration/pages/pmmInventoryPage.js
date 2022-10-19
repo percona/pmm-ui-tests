@@ -1,5 +1,6 @@
-const { I, pmmInventoryPage, inventoryAPI } = inject();
+const { I, inventoryAPI } = inject();
 const assert = require('assert');
+const paginationPart = require('./paginationFragment');
 
 module.exports = {
   url: 'graph/inventory?orgId=1',
@@ -35,6 +36,13 @@ module.exports = {
     processExecPathExporters: '//td[contains(text(), "exporter")]//ancestor::tr[@data-testid="table-row"]//span[contains(text(), "process_exec_path")]',
     nodeExporterStatus: '//td[contains(text(), "Node exporter")]//ancestor::tr[@data-testid="table-row"]//span[contains(text(), "status")]',
   },
+  pagination: paginationPart,
+
+  async open() {
+    I.amOnPage(this.url);
+    I.waitForVisible(this.fields.nodesLink, 30);
+    await I.waitForVisible(this.fields.agentsLink, 2);
+  },
 
   async changeRowsPerPage(count) {
     I.scrollPageToBottom();
@@ -49,9 +57,9 @@ module.exports = {
   },
 
   verifyRemoteServiceIsDisplayed(serviceName) {
-    I.waitForVisible(pmmInventoryPage.fields.inventoryTableColumn, 30);
+    I.waitForVisible(this.fields.inventoryTableColumn, 30);
     I.scrollPageToBottom();
-    I.see(serviceName, pmmInventoryPage.fields.inventoryTableColumn);
+    I.see(serviceName, this.fields.inventoryTableColumn);
   },
 
   async verifyAgentHasStatusRunning(service_name) {
