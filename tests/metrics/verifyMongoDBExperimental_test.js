@@ -29,7 +29,7 @@ AfterSuite(async ({ I }) => {
 });
 
 Scenario(
-  'PMM-T1332 - Verify MongoDB - MongoDB Collection Details @dashboards @mongodb-exporter @nazarov',
+  'PMM-T1332 - Verify MongoDB - MongoDB Collection Details @dashboards @mongodb-exporter',
   async ({
     I, grafanaAPI, adminPage, homePage, dashboardPage, searchDashboardsModal,
   }) => {
@@ -48,7 +48,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T1333 - Verify MongoDB - MongoDB Collections Overview @dashboards @mongodb-exporter @nazarov',
+  'PMM-T1333 - Verify MongoDB - MongoDB Collections Overview @dashboards @mongodb-exporter',
   async ({
     I, grafanaAPI, adminPage, homePage, dashboardPage, searchDashboardsModal,
   }) => {
@@ -66,7 +66,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T1334 - Verify MongoDB - MongoDB Oplog Details @dashboards @mongodb-exporter @nazarov',
+  'PMM-T1334 - Verify MongoDB - MongoDB Oplog Details @dashboards @mongodb-exporter',
   async ({
     I, adminPage, homePage, dashboardPage, searchDashboardsModal,
   }) => {
