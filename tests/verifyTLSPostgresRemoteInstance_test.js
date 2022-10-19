@@ -356,7 +356,7 @@ Data(instances).Scenario(
       container,
     } = current;
 
-    const pmmAdminAgentId = (await I.verifyCommand(`docker exec ${container} pmm-admin status | grep 'Agent ID' | awk -F " " '{print $4}' `)).trim();
+    const pmmAdminAgentId = (await I.verifyCommand(`docker exec ${container} pmm-admin status | grep 'Agent ID' | awk -F " " '{print $4}'`)).trim();
 
     await I.verifyCommand(`docker exec ${container} pmm-admin inventory add agent node-exporter --server-insecure-tls --log-level=fatal ${pmmAdminAgentId} 2>&1 | grep "error: --log-level must be one of \\"debug\\",\\"info\\",\\"warn\\",\\"error\\" but got \\"fatal\\""`);
   },
