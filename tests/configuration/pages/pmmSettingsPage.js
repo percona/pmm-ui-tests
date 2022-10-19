@@ -1,5 +1,5 @@
 const assert = require('assert');
-const { communicationData, emailDefaults } = require('./testData');
+const { communicationData, emailDefaults } = require('../../pages/testData');
 
 const {
   I, adminPage, links, perconaPlatformPage,
