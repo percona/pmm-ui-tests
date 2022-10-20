@@ -1,4 +1,5 @@
 const assert = require('assert');
+const faker = require('faker');
 
 Feature('Inventory page');
 
@@ -277,5 +278,104 @@ Scenario(
     const folderRemoveNodeExporter = await I.verifyCommand(`docker exec pmm-server ls /tmp/node_exporter/agent_id/${nodeId}/`);
 
     assert.ok(folderRemoveNodeExporter.includes('webConfigPlaceholder'), 'webConfigPlaceholder was not recreated after restart');
+  },
+);
+
+Scenario(
+  'PMM-T164 Verify user cannot be able to add MySQL Service via pmm-admin inventory with specified socket and port @nazarov',
+  async ({
+    I,
+  }) => {
+    const pmmAdminNodeId = (await I.verifyCommand('pmm-admin status | grep \'Node ID\' | awk -F " " \'{print $4}\' ')).trim();
+
+    await I.verifyCommand(`pmm-admin inventory add service mysql --socket=/tmp/PXC_1.sock PXC-Inv ${pmmAdminNodeId} 127.0.0.1 3306 2>&1 | grep "Socket and address cannot be specified together."`);
+  },
+);
+
+Scenario(
+  'PMM-T611 Verify that pmm-admin inventory remove node with --force flag stops running agents and collecting data from exporters @nazarov',
+  async ({
+    I, inventoryAPI,
+  }) => {
+    const agentName = 'node-exporter';
+
+    const pmmAdminAgentId = (await I.verifyCommand('pmm-admin status | grep \'Agent ID\' | awk -F " " \'{print $4}\' ')).trim();
+    const pmmAdminNodeId = (await I.verifyCommand('pmm-admin status | grep \'Node ID\' | awk -F " " \'{print $4}\' ')).trim();
+
+    const agentId = (await I.verifyCommand(`pmm-admin inventory add agent ${agentName} --server-insecure-tls ${pmmAdminAgentId} | grep '^Agent ID' | grep -o '/agent_id/[a-z0-9-]*'`)).trim();
+
+    const agentInfo = await inventoryAPI.apiGetPMMAgentInfoByAgentId(agentId);
+  },
+);
+
+Scenario(
+  'PMM-T467 Verify pmm-admin inventory add service external using with --group flag @nazarov',
+  async ({
+    I,
+  }) => {
+    const firstServiceName = `service_${faker.random.alphaNumeric(3)}`;
+    const secondServiceName = `service_${faker.random.alphaNumeric(3)}`;
+    const thirdServiceName = `service_${faker.random.alphaNumeric(3)}`;
+    const groupName = `group_${faker.random.alphaNumeric(3)}`;
+
+    const agentName = 'node-exporter';
+    const pmmAdminNodeId = (await I.verifyCommand('pmm-admin status | grep \'Node ID\' | awk -F " " \'{print $4}\' ')).trim();
+
+    await I.verifyCommand(`pmm-admin inventory add service external --node-id=${pmmAdminNodeId} --name=${firstServiceName}`);
+    await I.verifyCommand(`pmm-admin inventory add service external --group= --node-id=${pmmAdminNodeId} --name=${secondServiceName}`);
+    await I.verifyCommand(`pmm-admin inventory add service external --group=${groupName} --node-id=${pmmAdminNodeId} --name=${thirdServiceName}`);
+
+    await I.verifyCommand(`pmm-admin list | grep '${firstServiceName}' | grep 'External:external'`);
+    await I.verifyCommand(`pmm-admin list | grep '${secondServiceName}' | grep 'External:external'`);
+    await I.verifyCommand(`pmm-admin list | grep '${thirdServiceName}' | grep 'External:${groupName}'`);
+  },
+);
+
+Scenario(
+  'PMM-T1352 Verify that Node exporter cannot be added by pmm-admin inventory add agent node-exporter with --log-level=fatal @nazarov',
+  async ({
+    I, current,
+  }) => {
+    const {
+      version,
+      container,
+    } = current;
+
+    const pmmAdminAgentId = (await I.verifyCommand(`docker exec ${container} pmm-admin status | grep 'Agent ID' | awk -F " " '{print $4}'`)).trim();
+
+    await I.verifyCommand(`docker exec ${container} pmm-admin inventory add agent node-exporter --server-insecure-tls --log-level=fatal ${pmmAdminAgentId} 2>&1 | grep "error: --log-level must be one of \\"debug\\",\\"info\\",\\"warn\\",\\"error\\" but got \\"fatal\\""`);
+  },
+);
+
+Scenario(
+  'PMM-T1282, PMM-T1291'
+  + 'Verify that pmm-admin inventory add agent node-exporter with --log-level flag adds Node exporter with corresponding log-level'
+  + 'Verify that pmm-admin inventory add agent node-exporter with --log-level flag adds Node exporter with log-level=warn @nazarov',
+  async ({
+    I, inventoryAPI,
+  }) => {
+    const logLevels = ['', 'debug', 'info', 'warn', 'error'];
+
+    const agentName = 'node-exporter';
+
+    const pmmAdminAgentId = (await I.verifyCommand('pmm-admin status | grep \'Agent ID\' | awk -F " " \'{print $4}\'')).trim();
+
+    for (const logLevel of logLevels) {
+      let expectedLogLevel = 'warn';
+      let flags = '--server-insecure-tls';
+
+      if (logLevel !== '') {
+        flags = `${flags} --log-level=${logLevel}`;
+        expectedLogLevel = logLevel;
+      }
+
+      const agentId = (await I.verifyCommand(`pmm-admin inventory add agent ${agentName} ${flags} ${pmmAdminAgentId} | grep '^Agent ID' | grep -o '/agent_id/[a-z0-9-]*'`)).trim();
+
+      const agentInfo = await inventoryAPI.apiGetPMMAgentInfoByAgentId(agentId);
+
+      // eslint-disable-next-line no-prototype-builtins
+      assert.ok(agentInfo.hasOwnProperty('log_level'), `Was expecting ${agentName} (${agentId}) to have "log_level" property`);
+      assert.strictEqual(agentInfo.log_level, expectedLogLevel, `Was expecting ${agentName} for (${agentId}) to have "${expectedLogLevel}" as a log level`);
+    }
   },
 );
