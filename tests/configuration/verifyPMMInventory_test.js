@@ -318,7 +318,6 @@ Scenario(
     const thirdServiceName = `service_${faker.random.alphaNumeric(3)}`;
     const groupName = `group_${faker.random.alphaNumeric(3)}`;
 
-    const agentName = 'node-exporter';
     const pmmAdminNodeId = (await I.verifyCommand('pmm-admin status | grep \'Node ID\' | awk -F " " \'{print $4}\' ')).trim();
 
     await I.verifyCommand(`pmm-admin inventory add service external --node-id=${pmmAdminNodeId} --name=${firstServiceName}`);
@@ -334,23 +333,18 @@ Scenario(
 Scenario(
   'PMM-T1352 Verify that Node exporter cannot be added by pmm-admin inventory add agent node-exporter with --log-level=fatal @nazarov',
   async ({
-    I, current,
+    I,
   }) => {
-    const {
-      version,
-      container,
-    } = current;
+    const pmmAdminAgentId = (await I.verifyCommand('pmm-admin status | grep \'Agent ID\' | awk -F " " \'{print $4}\'')).trim();
 
-    const pmmAdminAgentId = (await I.verifyCommand(`docker exec ${container} pmm-admin status | grep 'Agent ID' | awk -F " " '{print $4}'`)).trim();
-
-    await I.verifyCommand(`docker exec ${container} pmm-admin inventory add agent node-exporter --server-insecure-tls --log-level=fatal ${pmmAdminAgentId} 2>&1 | grep "error: --log-level must be one of \\"debug\\",\\"info\\",\\"warn\\",\\"error\\" but got \\"fatal\\""`);
+    await I.verifyCommand(`pmm-admin inventory add agent node-exporter --server-insecure-tls --log-level=fatal ${pmmAdminAgentId} 2>&1 | grep "error: --log-level must be one of \\"debug\\",\\"info\\",\\"warn\\",\\"error\\" but got \\"fatal\\""`);
   },
 );
 
 Scenario(
   'PMM-T1282, PMM-T1291'
-  + 'Verify that pmm-admin inventory add agent node-exporter with --log-level flag adds Node exporter with corresponding log-level'
-  + 'Verify that pmm-admin inventory add agent node-exporter with --log-level flag adds Node exporter with log-level=warn @nazarov',
+  + ' Verify that pmm-admin inventory add agent node-exporter with --log-level flag adds Node exporter with corresponding log-level'
+  + ' Verify that pmm-admin inventory add agent node-exporter with --log-level flag adds Node exporter with log-level=warn @nazarov',
   async ({
     I, inventoryAPI,
   }) => {

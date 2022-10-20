@@ -209,8 +209,8 @@ Data(instances).Scenario(
 
 Data(instances).Scenario(
   'PMM-T1280, PMM-T1289'
-  + 'Verify that pmm-admin inventory add agent mongodb-exporter with --log-level flag adds MongoDB exporter with corresponding log-level'
-  + 'Verify that pmm-admin inventory add agent mongodb-exporter without --log-level flag adds MongoDB exporter with log-level=warn',
+  + ' Verify that pmm-admin inventory add agent mongodb-exporter with --log-level flag adds MongoDB exporter with corresponding log-level'
+  + ' Verify that pmm-admin inventory add agent mongodb-exporter without --log-level flag adds MongoDB exporter with log-level=warn',
   async ({
     I, current, cliHelper, qanPage,
   }) => {
@@ -229,8 +229,8 @@ Data(instances).Scenario(
 
 Data(instances).Scenario(
   'PMM-T1284, PMM-T1294'
-  + 'Verify that pmm-admin inventory add agent qan-mongodb-profiler-agent with --log-level flag adds QAN MongoDB Profiler Agent with corresponding log-level'
-  + 'Verify that pmm-admin inventory add agent qan-mongodb-profiler-agent without --log-level flag adds QAN MongoDB Profiler Agent with log-level=warn',
+  + ' Verify that pmm-admin inventory add agent qan-mongodb-profiler-agent with --log-level flag adds QAN MongoDB Profiler Agent with corresponding log-level'
+  + ' Verify that pmm-admin inventory add agent qan-mongodb-profiler-agent without --log-level flag adds QAN MongoDB Profiler Agent with log-level=warn',
   async ({
     I, current, cliHelper, qanPage,
   }) => {

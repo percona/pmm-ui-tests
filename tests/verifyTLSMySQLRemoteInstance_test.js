@@ -207,8 +207,8 @@ Data(instances).Scenario(
 
 Data(instances).Scenario(
   'PMM-T1281, PMM-T1290'
-  + 'Verify that pmm-admin inventory add agent mysqld-exporter with --log-level flag adds MySQL exporter with corresponding log-level'
-  + 'Verify that pmm-admin inventory add agent mysqld-exporter without --log-level flag adds MySQL exporter with log-level=warn',
+  + ' Verify that pmm-admin inventory add agent mysqld-exporter with --log-level flag adds MySQL exporter with corresponding log-level'
+  + ' Verify that pmm-admin inventory add agent mysqld-exporter without --log-level flag adds MySQL exporter with log-level=warn',
   async ({
     I, current, cliHelper, qanPage,
   }) => {
@@ -227,8 +227,8 @@ Data(instances).Scenario(
 
 Data(instances).Scenario(
   'PMM-T1304, PMM-T1305'
-  + 'Verify that pmm-admin inventory add agent qan-mysql-perfschema-agent with --log-level flag adds QAN MySQL Perfschema Agent with corresponding log-level'
-  + 'Verify that pmm-admin inventory add agent qan-mysql-perfschema-agent with --log-level flag adds QAN MySQL Perfschema Agent with log-level=warn',
+  + ' Verify that pmm-admin inventory add agent qan-mysql-perfschema-agent with --log-level flag adds QAN MySQL Perfschema Agent with corresponding log-level'
+  + ' Verify that pmm-admin inventory add agent qan-mysql-perfschema-agent with --log-level flag adds QAN MySQL Perfschema Agent with log-level=warn',
   async ({
     I, current, cliHelper, qanPage,
   }) => {
@@ -251,8 +251,8 @@ Data(instances).Scenario(
 
 Data(instances).Scenario(
   'PMM-T1306, PMM-T1307'
-  + 'Verify that pmm-admin inventory add agent qan-mysql-slowlog-agent with --log-level flag adds QAN MySQL Slowlog Agent with corresponding log-level'
-  + 'Verify that pmm-admin inventory add agent qan-mysql-slowlog-agent with --log-level flag adds QAN MySQL Slowlog Agent with log-level=warn',
+  + ' Verify that pmm-admin inventory add agent qan-mysql-slowlog-agent with --log-level flag adds QAN MySQL Slowlog Agent with corresponding log-level'
+  + ' Verify that pmm-admin inventory add agent qan-mysql-slowlog-agent with --log-level flag adds QAN MySQL Slowlog Agent with log-level=warn',
   async ({
     I, current, cliHelper, qanPage,
   }) => {
