@@ -296,13 +296,13 @@ Data(instances).Scenario('PMM-T1351 Verify that MySQL exporter cannot be added b
 Data(instances).Scenario(
   'PMM-T1350 Verify that MySQL exporter cannot be added by pmm-admin add mysql with --log-level=fatal',
   async ({
-           I, current,
-         }) => {
+    I, current,
+  }) => {
     const {
       version,
       container,
     } = current;
-    
+
     await I.verifyCommand(`docker exec ${container} pmm-admin add mysql --username=root --password=root-password --log-level=fatal 2>&1 | grep "error: --log-level must be one of \\"debug\\",\\"info\\",\\"warn\\",\\"error\\" but got \\"fatal\\""`);
   },
 );
@@ -310,14 +310,35 @@ Data(instances).Scenario(
 Data(instances).Scenario(
   'PMM-T164 Verify user cannot be able to add MySQL Service via pmm-admin inventory with specified socket and port',
   async ({
-           I, current,
-         }) => {
+    I, current,
+  }) => {
     const {
       version,
       container,
     } = current;
     const pmmAdminNodeId = (await I.verifyCommand(`docker exec ${container} pmm-admin status | grep 'Node ID' | awk -F " " '{print $4}' `)).trim();
+
     await I.verifyCommand(`docker exec ${container} pmm-admin inventory add service mysql --socket=/tmp/PXC_1.sock PXC-Inv ${pmmAdminNodeId} 127.0.0.1 3306 2>&1 | grep "Socket and address cannot be specified together."`);
   },
 );
 
+Data(instances).Scenario(
+  'PMM-T611 Verify that pmm-admin inventory remove node with --force flag stops running agents and collecting data from exporters @nazarov',
+  async ({
+    I, current, inventoryAPI,
+  }) => {
+    const {
+      container,
+    } = current;
+
+    const agentName = 'node-exporter';
+
+    const pmmAdminAgentId = (await I.verifyCommand(`docker exec ${container} pmm-admin status | grep 'Agent ID' | awk -F " " '{print $4}' `)).trim();
+    const pmmAdminNodeId = (await I.verifyCommand(`docker exec ${container} pmm-admin status | grep 'Node ID' | awk -F " " '{print $4}' `)).trim();
+
+    console.log(pmmAdminNodeId);
+    const agentId = (await I.verifyCommand(`docker exec ${container} pmm-admin inventory add agent ${agentName} --server-insecure-tls ${pmmAdminAgentId} | grep '^Agent ID' | grep -o '/agent_id/[a-z0-9-]*'`)).trim();
+
+    const agentInfo = await inventoryAPI.apiGetPMMAgentInfoByAgentId(agentId);
+  },
+);

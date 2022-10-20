@@ -386,7 +386,7 @@ Data(instances).Scenario(
         expectedLogLevel = logLevel;
       }
 
-      const agentId = (await I.verifyCommand(`docker exec ${container} pmm-admin inventory add agent node-exporter ${flags} ${pmmAdminAgentId}| grep '^Agent ID' | grep -o '/agent_id/[a-z0-9-]*'`)).trim();
+      const agentId = (await I.verifyCommand(`docker exec ${container} pmm-admin inventory add agent ${agentName} ${flags} ${pmmAdminAgentId} | grep '^Agent ID' | grep -o '/agent_id/[a-z0-9-]*'`)).trim();
 
       const agentInfo = await inventoryAPI.apiGetPMMAgentInfoByAgentId(agentId);
 

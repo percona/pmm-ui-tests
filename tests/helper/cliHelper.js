@@ -23,7 +23,7 @@ module.exports = {
   async setupAndVerifyAgent(dbName, dbVersion, dbPort, containerName, agentName, agentFlags, logLevel = '', authInfo = '') {
     let expectedLogLevel = 'warn';
     let flags = agentFlags;
-    
+
     if (logLevel !== '') {
       flags = `${flags} --log-level=${logLevel}`;
       expectedLogLevel = logLevel;
