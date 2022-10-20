@@ -9,8 +9,8 @@ Feature('Monitoring SSL/TLS MongoDB instances');
 
 const instances = new DataTable(['serviceName', 'version', 'container', 'serviceType', 'metric']);
 
-// instances.add(['mongodb_4.4_ssl_service', '4.4', 'mongodb_4.4', 'mongodb_ssl', 'mongodb_connections']);
-// instances.add(['mongodb_4.2_ssl_service', '4.2', 'mongodb_4.2', 'mongodb_ssl', 'mongodb_connections']);
+instances.add(['mongodb_4.4_ssl_service', '4.4', 'mongodb_4.4', 'mongodb_ssl', 'mongodb_connections']);
+instances.add(['mongodb_4.2_ssl_service', '4.2', 'mongodb_4.2', 'mongodb_ssl', 'mongodb_connections']);
 instances.add(['mongodb_5.0_ssl_service', '5.0', 'mongodb_5.0', 'mongodb_ssl', 'mongodb_connections']);
 
 const logLevels = ['', 'debug', 'info', 'warn', 'error', 'fatal'];
@@ -20,15 +20,15 @@ const dbPort = '27017';
 const agentFlags = '--tls-skip-verify --tls --authentication-mechanism=MONGODB-X509 --tls-certificate-key-file=/nodes/certificates/client.pem --tls-certificate-key-file-password=/nodes/certificates/client.key --tls-ca-file=/nodes/certificates/ca.crt';
 
 BeforeSuite(async ({ I, codeceptjsConfig }) => {
-  // await I.verifyCommand(`${pmmFrameworkLoader} --mo-version=4.2 --setup-mongodb-ssl --pmm2`);
-  // await I.verifyCommand(`${pmmFrameworkLoader} --mo-version=4.4 --setup-mongodb-ssl --pmm2`);
-  // await I.verifyCommand(`${pmmFrameworkLoader} --mo-version=5.0 --setup-mongodb-ssl --pmm2`);
+  await I.verifyCommand(`${pmmFrameworkLoader} --mo-version=4.2 --setup-mongodb-ssl --pmm2`);
+  await I.verifyCommand(`${pmmFrameworkLoader} --mo-version=4.4 --setup-mongodb-ssl --pmm2`);
+  await I.verifyCommand(`${pmmFrameworkLoader} --mo-version=5.0 --setup-mongodb-ssl --pmm2`);
 });
 
 AfterSuite(async ({ I }) => {
-  // await I.verifyCommand('docker stop mongodb_4.4 || docker rm mongodb_4.4');
-  // await I.verifyCommand('docker stop mongodb_4.2 || docker rm mongodb_4.2');
-  // await I.verifyCommand('docker stop mongodb_5.0 || docker rm mongodb_5.0');
+  await I.verifyCommand('docker stop mongodb_4.4 || docker rm mongodb_4.4');
+  await I.verifyCommand('docker stop mongodb_4.2 || docker rm mongodb_4.2');
+  await I.verifyCommand('docker stop mongodb_5.0 || docker rm mongodb_5.0');
 });
 
 Before(async ({ I, settingsAPI }) => {
@@ -184,7 +184,7 @@ Data(instances).Scenario(
 ).retry(1);
 
 Data(instances).Scenario(
-  'PMM-T1276 (1.0) Verify tlsCa, tlsCert, tlsKey are generated on every MongoDB exporter (added with TLS flags) restart @ssl @ssl-remote @not-ui-pipeline',
+  'PMM-T1276 (1.0) Verify tlsCa, tlsCert, tlsKey are generated on every MongoDB exporter (added with TLS flags) restart @ssl @ssl-remote @not-ui-pipeline @nazarov',
   async ({
     I, current, dashboardPage,
   }) => {
@@ -210,7 +210,7 @@ Data(instances).Scenario(
 Data(instances).Scenario(
   'PMM-T1280, PMM-T1289'
   + ' Verify that pmm-admin inventory add agent mongodb-exporter with --log-level flag adds MongoDB exporter with corresponding log-level'
-  + ' Verify that pmm-admin inventory add agent mongodb-exporter without --log-level flag adds MongoDB exporter with log-level=warn',
+  + ' Verify that pmm-admin inventory add agent mongodb-exporter without --log-level flag adds MongoDB exporter with log-level=warn @nazarov',
   async ({
     I, current, cliHelper, qanPage,
   }) => {
@@ -230,7 +230,7 @@ Data(instances).Scenario(
 Data(instances).Scenario(
   'PMM-T1284, PMM-T1294'
   + ' Verify that pmm-admin inventory add agent qan-mongodb-profiler-agent with --log-level flag adds QAN MongoDB Profiler Agent with corresponding log-level'
-  + ' Verify that pmm-admin inventory add agent qan-mongodb-profiler-agent without --log-level flag adds QAN MongoDB Profiler Agent with log-level=warn',
+  + ' Verify that pmm-admin inventory add agent qan-mongodb-profiler-agent without --log-level flag adds QAN MongoDB Profiler Agent with log-level=warn @nazarov',
   async ({
     I, current, cliHelper, qanPage,
   }) => {
