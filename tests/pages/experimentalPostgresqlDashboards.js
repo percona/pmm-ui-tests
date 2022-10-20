@@ -35,29 +35,24 @@ module.exports = {
       }
     }
   },
-  async waitForLastValues(element, timeoutInSeconds) {
-    for (let index = 0; index <= timeoutInSeconds; index++) {
-      const lastVacuumValues = await I.grabTextFromAll(element);
 
-      for await (const lastVacuumValue of lastVacuumValues.values()) {
-        if (!(new Date(lastVacuumValue).toString() === 'Invalid Date')) {
-          return;
-        }
-      }
+  async checkVacuumValues(element) {
+    const lastVacuumValues = await I.grabTextFromAll(element);
 
-      await I.wait(1);
-
-      if (index === timeoutInSeconds) {
-        throw new Error('Vacuum operation data are not presented on the dashboard.');
+    for await (const lastVacuumValue of lastVacuumValues.values()) {
+      if (new Date(lastVacuumValue).toString() !== 'Invalid Date') {
+        return true;
       }
     }
+
+    return null;
   },
 
   async waitForLastVacuumValues(timeoutInSeconds) {
-    return this.waitForLastValues(this.elements.lastVacuumValue, timeoutInSeconds);
+    await I.asyncWaitFor(async () => this.checkVacuumValues(this.elements.lastVacuumValue), timeoutInSeconds);
   },
 
   async waitForLastAnalyzeValues(timeoutInSeconds) {
-    return this.waitForLastValues(this.elements.lastAnalyzeValue, timeoutInSeconds);
+    await I.asyncWaitFor(async () => this.checkVacuumValues(this.elements.lastAnalyzeValue), timeoutInSeconds);
   },
 };

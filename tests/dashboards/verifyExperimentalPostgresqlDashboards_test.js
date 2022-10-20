@@ -18,7 +18,7 @@ Scenario(
     values.forEach((value) => {
       const valueInt = parseInt(value.replace('%', ''), 10);
 
-      assert.ok(valueInt > 0, 'The value for Postgres vacuum is zero, it supposed to be > 0');
+      I.assertAbove(valueInt, 0, 'The value for Postgres vacuum is zero, it supposed to be > 0');
     });
 
     const output = await I.verifyCommand('sudo docker exec pgsql_vacuum_db psql -U postgres -d dvdrental -c \'SELECT tablename FROM pg_catalog.pg_tables;\'');
