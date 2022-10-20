@@ -3,10 +3,10 @@ const assert = require('assert');
 const faker = require('faker');
 
 module.exports = {
-  async createAlertRule(ruleObj, templateName) {
+  async createAlertRule(ruleObj, folder, templateName) {
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
     const {
-      ruleName, severity, filters, params, duration, channels, disabled,
+      ruleName, severity, filters, params, duration, channels, disabled //todo: channels, disabled, etc?
     } = ruleObj;
     const body = {
       custom_labels: {},
@@ -31,7 +31,7 @@ module.exports = {
         },
       ],
       group: 'default-alert-group',
-      folder_uid: 'fVQRmyV4z',
+      folder_uid: await this.getFolderUID(folder),
     };
     const resp = await I.sendPostRequest('v1/management/alerting/Rules/Create', body, headers);
 
@@ -39,47 +39,7 @@ module.exports = {
       resp.status === 200,
       `Failed to create alert rule with "${ruleName}". Response message is "${resp.data.message}"`,
     );
-
-    return resp.data.rule_id;
   },
-
-  // async createAlertRule(ruleObj, templateName) {
-  //   const headers = { Authorization: `Basic ${await I.getAuth()}` };
-  //   const {
-  //     ruleName, severity, filters, params, duration, channels, disabled,
-  //   } = ruleObj;
-  //   const body = {
-  //     custom_labels: {},
-  //     disabled: disabled || false,
-  //     channel_ids: channels || [],
-  //     filters: filters || [
-  //       {
-  //         key: 'service_name',
-  //         value: 'pmm-server-postgresql',
-  //         type: 'EQUAL',
-  //       },
-  //     ],
-  //     for: `${(duration || 1)}s`,
-  //     severity: severity || 'SEVERITY_CRITICAL',
-  //     template_name: templateName || 'pmm_postgresql_too_many_connections',
-  //     name: ruleName || 'Test Rule',
-  //     params: params || [
-  //       {
-  //         name: 'threshold',
-  //         type: 'FLOAT',
-  //         float: 1,
-  //       },
-  //     ],
-  //   };
-  //   const resp = await I.sendPostRequest('v1/management/ia/Rules/Create', body, headers);
-
-  //   assert.ok(
-  //     resp.status === 200,
-  //     `Failed to create alert rule with "${ruleName}". Response message is "${resp.data.message}"`,
-  //   );
-
-  //   return resp.data.rule_id;
-  // },
 
   async updateAlertRule(ruleObj, templateName) {
     const {

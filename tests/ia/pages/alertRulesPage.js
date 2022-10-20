@@ -1,4 +1,5 @@
 const { I } = inject();
+const { createAlertRule } = require('./api/rulesAPI');
 const { rules, templates, filterOperators } = require('./testData');
 
 const rulesNameCell = (ruleName) => `//td[1][div/span[text()="${ruleName}"]]`;
@@ -36,14 +37,14 @@ module.exports = {
     searchByDataSourceDropdown: '//div[@aria-label="Data source picker select container"]',
     searchByLabel: '$input-wrapper',
     ruleFilterLocator: (ruleFilterText) => locate('label').withText(ruleFilterText).after('//input[@type="radio"]'), //locateLabel
-    totalRulesCounter: (count, folder) => locate('$rule-group-header').withText('Experimental'), //todo
+    totalRulesCounter: (count, folder) => locate('$rule-group-header').withText(folder), //todo
     alertsLearnMoreLinks: locate('a').withText('Learn more'),
   },
   buttons: {
     openAddRuleModal: `//a[contains(.,'New alert rule')]`,
     editRule: '$edit-alert-rule-button',
     closeModal: '$modal-close-button',
-    addRule: '$add-alert-rule-modal-add-button',
+    addRule: locate('button').withText('Save and exit'),
     cancelAdding: '$add-alert-rule-modal-cancel-button',
     cancelDelete: '$cancel-delete-modal-button',
     delete: '$confirm-delete-modal-button',
@@ -94,13 +95,14 @@ module.exports = {
   },
   fields: {
     // searchDropdown returns a locator of a search input for a given label
-    searchDropdown: (field) => `//div[@id='${field}']`,
-    dropdownValue: (dropdownLabel) => `//label[text()="${dropdownLabel}"]/parent::div/following-sibling::div[1]`,
+    searchDropdown: (option) => `//div[@id='${option}']`,
+    folderLocator: I.useDataQA('data-testid Folder picker select container'),
+    dropdownValue: (option) => `//*[@id='${option}']/div/div[1]/div[1]`,
     // resultsLocator returns item locator in a search dropdown based on a text
     resultsLocator: (name) => `//div[@aria-label="Select option"]//div//span[text()="${name}"]`,
-    ruleName: '$name-text-input',
-    threshold: (input) => `input[name='${input}']`,
-    duration: '$duration-number-input',
+    ruleName: '$name-text-input', //todo: remove everywhere
+    inputField: (input) => `input[name='${input}']`,
+    duration: '$duration-number-input', //todo: remove everywhere
     filtersLabel: (index = 0) => I.useDataQA(`filters[${index}].label-text-input`),
     filtersValue: (index = 0) => I.useDataQA(`filters[${index}].value-text-input`),
     template: '//form[@data-testid="add-alert-rule-modal-form"]/div[2]//div[contains(@class, "singleValue")]',
@@ -112,10 +114,38 @@ module.exports = {
     confirmDelete: (name) => `Are you sure you want to delete the alert rule "${name}"?`,
     successfullyAdded: 'Alert rule created',
     successfullyCreated: (name) => `Alert rule ${name} successfully created`,
+    successRuleCreated: (name) => `Rule "${name}" saved.`,
     successfullyEdited: 'Alert rule updated',
     successfullyDeleted: (name) => `Alert rule ${name} successfully deleted`,
     successfullyDisabled: (name) => `Alert rule "${name}" successfully disabled`,
     successfullyEnabled: (name) => `Alert rule "${name}" successfully enabled`,
+  },
+
+  async fillPerconaAlert(template, alertObj) {
+    // const {
+    //   ruleName, threshold, duration,
+    //   severity, filters = '', channels, activate,
+    // } = alertObj;
+
+    I.waitForVisible(this.fields.searchDropdown('template'));
+    this.searchAndSelectResult('template', 'Node high CPU load');
+
+    //TODO: DNR
+
+    I.waitForValue(this.fields.inputField('name'), 'pmm_node_high_cpu_load Alerting Rule');
+    I.clearField(this.fields.inputField('name'));
+    I.fillField(this.fields.inputField('name'), 'Node high CPU load');
+
+    I.waitForValue(this.fields.inputField('threshold'), '80');
+    I.clearField(this.fields.inputField('threshold'));
+    I.fillField(this.fields.inputField('threshold'), 0);
+
+    I.waitForValue(this.fields.inputField('duration'), '300s');
+    I.clearField(this.fields.inputField('duration'));
+    I.fillField(this.fields.inputField('duration'), '1m');
+
+    this.searchAndSelectResult('severity', 'Emergency');
+    this.selectFolder('Experimental');
   },
 
   async fillRuleFields(ruleObj = this.rules[0]) {
@@ -212,6 +242,12 @@ module.exports = {
   searchAndSelectResult(dropdownLabel, option) {
     I.click(this.fields.searchDropdown(dropdownLabel));
     I.fillField(this.fields.searchDropdown(dropdownLabel), option);
+    I.click(this.fields.resultsLocator(option));
+  },
+
+  selectFolder(option) {
+    I.click(this.fields.folderLocator);
+    I.fillField(this.fields.folderLocator, option);
     I.click(this.fields.resultsLocator(option));
   },
 

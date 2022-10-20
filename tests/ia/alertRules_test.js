@@ -64,9 +64,9 @@ Scenario(
 Scenario(
   'PMM-T1385 Verify alert rules elements @ia @grafana-pr',
   async ({ I, alertRulesPage, rulesAPI }) => {
-    const ruleName = 'rule4';
-    const ruleId = await rulesAPI.createAlertRule({ ruleName });
+    const ruleName = 'testRule';
     const ruleFolder = 'PostgreSQL'
+    await rulesAPI.createAlertRule({ ruleName }, ruleFolder);
 
     alertRulesPage.openAlertRulesTab();
     I.seeElement(alertRulesPage.elements.searchByDataSourceDropdown);
@@ -86,7 +86,7 @@ Scenario(
 
     I.seeElement(alertRulesPage.buttons.editFolderButton(folderUID, ruleFolder.toLowerCase()));
     I.seeElement(alertRulesPage.buttons.managePermissionsButton(folderUID, ruleFolder.toLowerCase()));
-    I.seeElement(alertRulesPage.elements.totalRulesCounter('3', 'Experimental')); //todo
+    I.seeElement(alertRulesPage.elements.totalRulesCounter('3', ruleFolder)); //todo
 
     //folder header
     //counter
@@ -102,112 +102,30 @@ Scenario(
     alertRulesPage.openAlertRulesTab();
     I.click(alertRulesPage.buttons.openAddRuleModal);
     //percona templated alert by default
-
     alertRulesPage.searchAndSelectResult('template', 'MongoDB down');
-
-    I.waitForValue(alertRulesPage.fields.threshold('duration'), '5s');
-
+    I.waitForValue(alertRulesPage.fields.inputField('duration'), '5s');
+    I.seeTextEquals('Critical', alertRulesPage.fields.dropdownValue('severity'));;
     alertRulesPage.searchAndSelectResult('template', 'MySQL restarted');
-    I.waitForValue(alertRulesPage.fields.threshold('threshold'), 300);
-    I.waitForValue(alertRulesPage.fields.threshold('duration'), '60s');
+    I.waitForValue(alertRulesPage.fields.inputField('threshold'), 300);
+    I.waitForValue(alertRulesPage.fields.inputField('duration'), '60s');
+    I.seeTextEquals('Warning', alertRulesPage.fields.dropdownValue('severity'));
   },
 );
 
 Scenario(
-  'PMM-T538 Verify user is able to disable/enable a rule from the rules list @ia @grafana-pr',
-  async ({ I, alertRulesPage, rulesAPI }) => {
-    const ruleName = 'QAA PSQL Enable/Disable test';
-    const ruleId = await rulesAPI.createAlertRule({ ruleName });
-
-    alertRulesPage.openAlertRulesTab();
-    I.waitForVisible(alertRulesPage.buttons.toggleAlertRule(ruleName), 30);
-    const color = await I.grabCssPropertyFrom(alertRulesPage.elements.rulesNameCell(ruleName), 'background-color');
-
-    I.click(alertRulesPage.buttons.toggleAlertRule(ruleName));
-    I.verifyPopUpMessage(alertRulesPage.messages.successfullyDisabled(ruleName));
-    const newColor = await I.grabCssPropertyFrom(alertRulesPage.elements.rulesNameCell(ruleName), 'background-color');
-
-    assert.ok(color !== newColor, 'Background color should change after toggle');
-
-    I.click(alertRulesPage.buttons.toggleAlertRule(ruleName));
-    I.verifyPopUpMessage(alertRulesPage.messages.successfullyEnabled(ruleName));
-    I.seeCssPropertiesOnElements(alertRulesPage.elements.rulesNameCell(ruleName), { 'background-color': color });
-    await rulesAPI.removeAlertRule(ruleId);
-  },
-);
-
-// nightly candidate
-Data(templates).Scenario(
-  'PMM-T750 PMM-T752 Verify parsing a template in Add Alert rule dialog @ia',
-  async ({ I, alertRulesPage, current }) => {
-    const rule = {
-      template: current.template,
-      threshold: current.threshold,
-      duration: current.duration,
-      severity: current.severity,
-      expression: current.expression,
-      alert: current.alert,
-    };
-
-    alertRulesPage.openAlertRulesTab();
-    I.click(alertRulesPage.buttons.openAddRuleModal);
-
-    I.waitForVisible(alertRulesPage.fields.ruleName, 30);
-    alertRulesPage.searchAndSelectResult('Template', current.template);
-    I.click(alertRulesPage.elements.ruleAdvancedSectionToggle);
-    I.waitForVisible(alertRulesPage.elements.expression, 30);
-
-    alertRulesPage.verifyEditRuleDialogElements(rule);
-  },
-);
-
-// nightly candidate
-Data(rules).Scenario(
-  'PMM-T515 PMM-T543 PMM-T544 PMM-T545 PMM-T574 PMM-T596 PMM-T753 PMM-T624 Create Alert rule @ia',
-  async ({
-    I, alertRulesPage, current, rulesAPI,
-  }) => {
-    const rule = {
-      template: current.template,
-      templateType: current.templateType,
-      ruleName: current.ruleName,
-      threshold: current.threshold,
-      thresholdUnit: current.thresholdUnit,
-      duration: current.duration,
-      severity: current.severity,
-      filters: current.filters,
-      channels: current.channels,
-      activate: current.activate,
-    };
-
-    alertRulesPage.openAlertRulesTab();
-    I.click(alertRulesPage.buttons.openAddRuleModal);
-    await alertRulesPage.fillRuleFields(rule);
-    I.click(alertRulesPage.buttons.addRule);
-    I.verifyPopUpMessage(alertRulesPage.messages.successfullyAdded);
-    I.seeElement(alertRulesPage.elements.rulesNameCell(rule.ruleName));
-    if (rule.threshold.length === 0) { rule.threshold = 80; }
-
-    alertRulesPage.verifyRowValues(rule);
-
-    await rulesAPI.clearAllRules();
-  },
-);
-
-Scenario(
-  'Create Alert rule @fb',
+  'PMM-T1420 Verify user can create Percona templated alert @fb',
   async ({ I, alertRulesPage }) => {
     const rule = alertRulesPage.rules[0];
 
     alertRulesPage.openAlertRulesTab();
     I.click(alertRulesPage.buttons.openAddRuleModal);
-    await alertRulesPage.fillRuleFields(rule);
+    await alertRulesPage.fillPerconaAlert('Node high CPU load');
     I.click(alertRulesPage.buttons.addRule);
-    I.verifyPopUpMessage(alertRulesPage.messages.successfullyAdded);
-    I.seeElement(alertRulesPage.elements.rulesNameCell(rule.ruleName));
-    if (rule.threshold.length === 0) { rule.threshold = 80; }
+    I.verifyPopUpMessage(alertRulesPage.messages.successRuleCreated('Node high CPU load'));
+    // I.seeElement(alertRulesPage.elements.rulesNameCell(rule.ruleName));
+    // if (rule.threshold.length === 0) { rule.threshold = 80; }
 
-    alertRulesPage.verifyRowValues(rule);
+    // alertRulesPage.verifyRowValues(rule);
   },
 );
 
@@ -243,7 +161,7 @@ Scenario(
       activate: false,
     };
     const { ruleName } = rule;
-    const ruleId = await rulesAPI.createAlertRule({ ruleName });
+    await rulesAPI.createAlertRule({ ruleName });
 
     await channelsAPI.createNotificationChannel('EmailChannelForEditRules', ncPage.types.email.type);
     alertRulesPage.openAlertRulesTab();
@@ -399,7 +317,7 @@ Scenario(
       .templateNameAndContent(path);
 
     await templatesAPI.createRuleTemplate(path);
-    const ruleId = await rulesAPI.createAlertRule({ ruleName }, id);
+    await rulesAPI.createAlertRule({ ruleName }, id);
 
     ruleTemplatesPage.openRuleTemplatesTab();
     await templatesAPI.removeTemplate(id);
