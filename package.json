@@ -45,7 +45,7 @@
     "mocha": "^6.2.3",
     "mocha-junit-reporter": "^2.0.2",
     "mocha-multi": "^1.1.6",
-    "moment": "^2.29.2",
+    "moment": "^2.29.4",
     "mongodb": "^3.7.2",
     "mysql": "^2.18.1",
     "mysql2": "^2.3.3",
