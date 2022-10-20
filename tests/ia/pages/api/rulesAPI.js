@@ -6,7 +6,8 @@ module.exports = {
   async createAlertRule(ruleObj, folder, templateName) {
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
     const {
-      ruleName, severity, filters, params, duration, channels, disabled //todo: channels, disabled, etc?
+      //todo: channels, disabled, etc?
+      ruleName, severity, filters, params, duration, channels, disabled
     } = ruleObj;
     const body = {
       custom_labels: {},
@@ -135,12 +136,13 @@ module.exports = {
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
     const resp = await I.sendGetRequest('graph/api/folders', headers);
     const foldersArray = resp.data;
+    let folderUID;
 
     for (const i in foldersArray) {
       if (foldersArray[i].title === folderName) {
-        const folderUID = foldersArray[i].uid;
-        return folderUID;
+        folderUID = foldersArray[i].uid;
       }
     }
+    return folderUID;
   }
 };

@@ -36,7 +36,9 @@ module.exports = {
     //todo: move?
     searchByDataSourceDropdown: '//div[@aria-label="Data source picker select container"]',
     searchByLabel: '$input-wrapper',
+    // eslint-disable-next-line no-inline-comments
     ruleFilterLocator: (ruleFilterText) => locate('label').withText(ruleFilterText).after('//input[@type="radio"]'), //locateLabel
+    // eslint-disable-next-line no-inline-comments
     totalRulesCounter: (count, folder) => locate('$rule-group-header').withText(folder), //todo
     alertsLearnMoreLinks: locate('a').withText('Learn more'),
   },
@@ -100,9 +102,9 @@ module.exports = {
     dropdownValue: (option) => `//*[@id='${option}']/div/div[1]/div[1]`,
     // resultsLocator returns item locator in a search dropdown based on a text
     resultsLocator: (name) => `//div[@aria-label="Select option"]//div//span[text()="${name}"]`,
-    ruleName: '$name-text-input', //todo: remove everywhere
+    ruleName: '$name-text-input',
     inputField: (input) => `input[name='${input}']`,
-    duration: '$duration-number-input', //todo: remove everywhere
+    duration: '$duration-number-input',
     filtersLabel: (index = 0) => I.useDataQA(`filters[${index}].label-text-input`),
     filtersValue: (index = 0) => I.useDataQA(`filters[${index}].value-text-input`),
     template: '//form[@data-testid="add-alert-rule-modal-form"]/div[2]//div[contains(@class, "singleValue")]',

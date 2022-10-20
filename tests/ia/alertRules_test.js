@@ -86,7 +86,8 @@ Scenario(
 
     I.seeElement(alertRulesPage.buttons.editFolderButton(folderUID, ruleFolder.toLowerCase()));
     I.seeElement(alertRulesPage.buttons.managePermissionsButton(folderUID, ruleFolder.toLowerCase()));
-    I.seeElement(alertRulesPage.elements.totalRulesCounter('3', ruleFolder)); //todo
+    //todo
+    I.seeElement(alertRulesPage.elements.totalRulesCounter('3', ruleFolder));
 
     //folder header
     //counter
@@ -172,7 +173,7 @@ Scenario(
     I.verifyPopUpMessage(alertRulesPage.messages.successfullyEdited);
     alertRulesPage.verifyRowValues(ruleAfterUpdate);
 
-    await rulesAPI.removeAlertRule(ruleId);
+    // await rulesAPI.removeAlertRule(ruleId);
   },
 );
 
@@ -341,6 +342,6 @@ Scenario(
     I.waitForVisible(alertRulesPage.fields.ruleName, 30);
     alertRulesPage.verifyEditRuleDialogElements(ruleCopy, true);
 
-    await rulesAPI.removeAlertRule(ruleId);
+    // await rulesAPI.removeAlertRule(ruleId);
   },
 );
