@@ -154,6 +154,8 @@ Scenario(
     I.seeTextEquals('Actions', locate('th').at(4));
 
     // Verify storage location exists in locations list
+    I.waitForVisible(locationsPage.buttons.actionsMenuByName(location.name), 2);
+    I.click(locationsPage.buttons.actionsMenuByName(location.name));
     I.seeElement(locationsPage.buttons.deleteByName(location.name));
     I.seeElement(locationsPage.buttons.editByName(location.name));
     I.seeTextEquals(locationsPage.locationType.s3, locationsPage.elements.typeCellByName(location.name));
@@ -260,6 +262,8 @@ Scenario(
     await locationsAPI.createStorageLocation(location);
     locationsPage.openLocationsPage();
 
+    I.click(locationsPage.buttons.actionsMenuByName(location.name));
+    I.waitForVisible(locationsPage.buttons.editByName(location.name), 2);
     I.click(locationsPage.buttons.editByName(location.name));
 
     I.waitForText('Edit', 10, locationsPage.buttons.addLocation);
@@ -274,7 +278,8 @@ Scenario(
     I.click(locationsPage.buttons.addLocation);
     I.verifyPopUpMessage(locationsPage.messages.successfullyEdited(updatedLocation.name));
 
-    I.seeElement(locationsPage.buttons.editByName(updatedLocation.name));
+    I.click(locationsPage.buttons.actionsMenuByName(updatedLocation.name));
+    I.waitForVisible(locationsPage.buttons.editByName(updatedLocation.name), 2);
     I.click(locationsPage.buttons.editByName(updatedLocation.name));
     locationsPage.verifyLocationFields(updatedLocation);
   },
@@ -334,8 +339,7 @@ Scenario(
     await backupAPI.waitForRestoreFinish(restoreId);
 
     I.refreshPage();
-    I.waitForVisible(locationsPage.buttons.deleteByName(mongoLocation.name), 20);
-    I.click(locationsPage.buttons.deleteByName(mongoLocation.name));
+    locationsPage.openDeleteLocationModal(mongoLocation.name);
 
     I.waitForVisible(locationsPage.buttons.confirmDelete, 20);
     I.click(locationsPage.buttons.confirmDelete);
