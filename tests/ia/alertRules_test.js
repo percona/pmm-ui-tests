@@ -116,17 +116,21 @@ Scenario(
 Scenario(
   'PMM-T1420 Verify user can create Percona templated alert @fb',
   async ({ I, alertRulesPage }) => {
-    const rule = alertRulesPage.rules[0];
+    const rule = {
+      template: 'Node high CPU load',
+      ruleName: 'Node high CPU load rule',
+      threshold: '0',
+      duration: '1m',
+      severity: 'Critical',
+      folder: 'OS'
+    };
 
     alertRulesPage.openAlertRulesTab();
     I.click(alertRulesPage.buttons.openAddRuleModal);
-    await alertRulesPage.fillPerconaAlert('Node high CPU load');
+    await alertRulesPage.fillPerconaAlert(rule.template, rule);
     I.click(alertRulesPage.buttons.addRule);
-    I.verifyPopUpMessage(alertRulesPage.messages.successRuleCreated('Node high CPU load'));
-    // I.seeElement(alertRulesPage.elements.rulesNameCell(rule.ruleName));
-    // if (rule.threshold.length === 0) { rule.threshold = 80; }
-
-    // alertRulesPage.verifyRowValues(rule);
+    I.verifyPopUpMessage(alertRulesPage.messages.successRuleCreated(rule.ruleName));
+    alertRulesPage.verifyRuleList(rule.folder, rule.ruleName);
   },
 );
 

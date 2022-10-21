@@ -27,6 +27,7 @@ module.exports = {
     modalHeader: '$modal-header',
     modalContent: '$modal-content',
     columnHeaderLocator: (columnHeaderText) => locate('$header').withText(columnHeaderText),
+    ruleNameValue: `div[data-column='Name']`,
     ruleDetails: '$alert-rules-details',
     expression: locate('$template-expression').find('pre'),
     templateAlert: locate('$template-alert').find('pre'),
@@ -123,31 +124,18 @@ module.exports = {
     successfullyEnabled: (name) => `Alert rule "${name}" successfully enabled`,
   },
 
-  async fillPerconaAlert(template, alertObj) {
-    // const {
-    //   ruleName, threshold, duration,
-    //   severity, filters = '', channels, activate,
-    // } = alertObj;
+  async fillPerconaAlert(template, ruleObj = this.rules[0]) {
+    const {
+      ruleName, threshold, duration, severity, folder
+    } = ruleObj;
 
     I.waitForVisible(this.fields.searchDropdown('template'));
-    this.searchAndSelectResult('template', 'Node high CPU load');
-
-    //TODO: DNR
-
-    I.waitForValue(this.fields.inputField('name'), 'pmm_node_high_cpu_load Alerting Rule');
-    I.clearField(this.fields.inputField('name'));
-    I.fillField(this.fields.inputField('name'), 'Node high CPU load');
-
-    I.waitForValue(this.fields.inputField('threshold'), '80');
-    I.clearField(this.fields.inputField('threshold'));
-    I.fillField(this.fields.inputField('threshold'), 0);
-
-    I.waitForValue(this.fields.inputField('duration'), '300s');
-    I.clearField(this.fields.inputField('duration'));
-    I.fillField(this.fields.inputField('duration'), '1m');
-
-    this.searchAndSelectResult('severity', 'Emergency');
-    this.selectFolder('Experimental');
+    this.searchAndSelectResult('template', template);
+    this.verifyAndReplaceInputField('name', 'pmm_node_high_cpu_load Alerting Rule', ruleName)
+    this.verifyAndReplaceInputField('threshold', '80', threshold)
+    this.verifyAndReplaceInputField('duration', '300s', duration)
+    this.searchAndSelectResult('severity', severity);
+    this.selectFolder(folder);
   },
 
   async fillRuleFields(ruleObj = this.rules[0]) {
@@ -247,6 +235,12 @@ module.exports = {
     I.click(this.fields.resultsLocator(option));
   },
 
+  verifyAndReplaceInputField(fieldName, oldValue, newValue) {
+    I.waitForValue(this.fields.inputField(fieldName), oldValue);
+    I.clearField(this.fields.inputField(fieldName));
+    I.fillField(this.fields.inputField(fieldName), newValue);
+  },
+
   selectFolder(option) {
     I.click(this.fields.folderLocator);
     I.fillField(this.fields.folderLocator, option);
@@ -286,5 +280,11 @@ module.exports = {
 
     I.waitForVisible(this.elements.activateSwitch(ruleName), 30);
     I.seeAttributesOnElements(this.elements.activateSwitch(ruleName), { checked });
+  },
+
+  verifyRuleList(folder, ruleName) {
+    I.waitForVisible(this.buttons.groupCollapseButton(folder))
+    I.click(this.buttons.groupCollapseButton(folder));
+    I.seeTextEquals(ruleName, this.elements.ruleNameValue)
   },
 };
