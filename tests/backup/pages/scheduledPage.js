@@ -29,7 +29,7 @@ module.exports = {
     },
   },
   buttons: {
-    openAddScheduleModal: '$scheduled-backup-add-modal-button',
+    openAddScheduleModal: '$scheduled-backup-add-button',
     createSchedule: '$backup-add-button',
     actionsMenuByName: (name) => locate('$dropdown-menu-toggle').inside(scheduleCell(name)),
     editByName: (name) => locate('$edit-scheduled-backpup-button').inside(scheduleCell(name)),

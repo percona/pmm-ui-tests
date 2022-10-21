@@ -29,7 +29,7 @@ module.exports = {
     fullBackUpName: '$backup-artifact-details-name',
   },
   buttons: {
-    openAddBackupModal: '$backup-add-modal-button',
+    openAddBackupModal: '$backup-add-button',
     // restoreByName returns Restore button locator for a given Artifact name
     backupLogsByName: (name) => locate('span[role="button"]').inside(artifactCell(name)),
     actionsMenuByName: (name) => locate('$dropdown-menu-toggle').inside(artifactCell(name)),
