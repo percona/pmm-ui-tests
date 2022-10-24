@@ -1,5 +1,9 @@
 ---
 version: '3.8'
+volumes:
+  mongo1data:
+  mongo2data:
+  mongo3data:
 services:
   pmm-server:
     image: ${PMM_SERVER_IMAGE:-perconalab/pmm-server:dev-latest}
@@ -19,8 +23,12 @@ services:
       - PERCONA_TEST_VERSION_SERVICE_URL=https://check-dev.percona.com/versions/v1
 
   pmm-client:
-    image: ${PMM_CLIENT_IMAGE:-perconalab/pmm-client:dev-latest}
+    hostname: pmm-client
     container_name: pmm-client
+    user: "0"
+    build:
+      context: ./testdata/backup-management/mongodb
+      dockerfile: Dockerfile
     ports:
       - "7778:7777"
     depends_on:
@@ -34,63 +42,100 @@ services:
       - PMM_AGENT_PORTS_MIN=41000
       - PMM_AGENT_PORTS_MAX=41500
       - PMM_AGENT_SERVER_INSECURE_TLS=1
-      - PMM_AGENT_CONFIG_FILE=config/pmm-agent.yaml
+      - PMM_AGENT_CONFIG_FILE=pmm-agent.yaml
       - PMM_AGENT_SETUP_NODE_NAME=${PMM_AGENT_SETUP_NODE_NAME:-pmm-client-container}
       - PMM_AGENT_SETUP_FORCE=1
       - PMM_AGENT_SETUP_NODE_TYPE=container
       - PMM_AGENT_PRERUN_SCRIPT=${PMM_AGENT_PRERUN_SCRIPT}
+    command: "/usr/local/percona/pmm2/bin/pmm-agent-entrypoint"
     restart: on-failure
 
   mongors1:
     container_name: mongors1
-    image: 'percona/percona-server-mongodb:4.4'
+    hostname: mongors1
+    build:
+      context: ./testdata/backup-management/mongodb
+      dockerfile: Dockerfile
+    environment:
+      - MONGO_USER=admin
+      - MONGO_PASS=password
     ports:
       - 27027:27027
     restart: always
     volumes:
-      - '.:/root/pmm-agent'
-    command:
-      - --profile=2
-    entrypoint:
-      - /usr/bin/mongod
-      - '--bind_ip_all'
-      - '--port'
-      - '27027'
-      - '--replSet'
-      - rs0
+      - mongo1data:/data/db
+      - ./testdata/backup-management/mongodb/conf:/opt/pbm
+    command: "mongod --bind_ip_all --port 27027 --replSet rs0 --storageEngine wiredTiger --keyFile /opt/keyfile"
 
   mongors2:
     container_name: mongors2
-    image: 'percona/percona-server-mongodb:4.4'
+    hostname: mongors2
+    build:
+      context: ./testdata/backup-management/mongodb
+      dockerfile: Dockerfile
     ports:
       - 27028:27028
     restart: always
     volumes:
       - '.:/root/pmm-agent'
-    command:
-      - --profile=2
-    entrypoint:
-      - /usr/bin/mongod
-      - '--bind_ip_all'
-      - '--port'
-      - '27028'
-      - '--replSet'
-      - rs0
+    command: "mongod --bind_ip_all --port 27028 --replSet rs0 --storageEngine wiredTiger --keyFile /opt/keyfile"
 
   mongors3:
     container_name: mongors3
-    image: 'percona/percona-server-mongodb:4.4'
+    hostname: mongors3
+    build:
+      context: ./testdata/backup-management/mongodb
+      dockerfile: Dockerfile
     ports:
       - 27029:27029
     restart: always
     volumes:
       - '.:/root/pmm-agent'
-    command:
-      - --profile=2
-    entrypoint:
-      - /usr/bin/mongod
-      - '--bind_ip_all'
-      - '--port'
-      - '27029'
-      - '--replSet'
-      - rs0
+    command: "mongod --bind_ip_all --port 27029 --replSet rs0 --storageEngine wiredTiger --keyFile /opt/keyfile"
+
+  # pbm-agent containers are for running pmm-agents and pbm. They don't expose the port like the mongo nodes above.
+  # we decouple them from mongo containers so that when pbm stops mongo containers, pbm-agents can still be running
+  pbm-agent-rs1:
+    hostname: pbm-agent-rs1
+    container_name: pbm-agent-rs1
+    user: "1001"
+    build:
+      context: ./testdata/backup-management/mongodb
+      dockerfile: Dockerfile
+    volumes:
+      - mongo1data:/data/db
+    networks:
+      - ${NETWORK:-default}
+    environment:
+      - "PBM_MONGODB_URI=mongodb://pbmuser:password@mongors1:27027"
+    command: "pbm-agent"
+
+  pbm-agent-rs2:
+    hostname: pbm-agent-rs2
+    container_name: pbm-agent-rs2
+    user: "1001"
+    build:
+      context: ./testdata/backup-management/mongodb
+      dockerfile: Dockerfile
+    volumes:
+      - mongo2data:/data/db
+    networks:
+      - ${NETWORK:-default}
+    environment:
+      - "PBM_MONGODB_URI=mongodb://pbmuser:password@mongors2:27028"
+    command: "pbm-agent"
+
+  pbm-agent-rs3:
+    hostname: pbm-agent-rs3
+    container_name: pbm-agent-rs3
+    user: "1001"
+    build:
+      context: ./testdata/backup-management/mongodb
+      dockerfile: Dockerfile
+    volumes:
+      - mongo3data:/data/db
+    networks:
+      - ${NETWORK:-default}
+    environment:
+      - "PBM_MONGODB_URI=mongodb://pbmuser:password@mongors3:27029"
+    command: "pbm-agent"
