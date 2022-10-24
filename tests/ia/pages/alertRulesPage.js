@@ -28,7 +28,8 @@ module.exports = {
     modalContent: '$modal-content',
     columnHeaderLocator: (columnHeaderText) => locate('$header').withText(columnHeaderText),
     ruleNameValue: `div[data-column='Name']`,
-    ruleDetails: '$alert-rules-details',
+    ruleState: `//div[@data-column='State']//div//span`,
+    ruleDetails: `div[data-testid='expanded-content']`,
     expression: locate('$template-expression').find('pre'),
     templateAlert: locate('$template-alert').find('pre'),
     durationError: '$duration-field-error-message',
@@ -42,6 +43,10 @@ module.exports = {
     // eslint-disable-next-line no-inline-comments
     totalRulesCounter: (count, folder) => locate('$rule-group-header').withText(folder), //todo
     alertsLearnMoreLinks: locate('a').withText('Learn more'),
+    detailsEvaluateValue: `//div[text()="Evaluate"]/following-sibling::div`,
+    detailsDurationValue: `//div[text()="For"]/following-sibling::div`,
+    detailsSeverityLabel: (value) => locate('span').withText(`severity=${value}`).inside('//ul[@aria-label="Tags"]').at(2),
+    detailsFolderLabel: (value) => locate('span').withText(`grafana_folder=${value}`).inside('//ul[@aria-label="Tags"]'),
   },
   buttons: {
     openAddRuleModal: `//a[contains(.,'New alert rule')]`,
@@ -58,7 +63,7 @@ module.exports = {
     // hideDetails returns Hide rule details button locator for a given rule name
     hideDetails: (ruleName) => `${rulesNameCell(ruleName)}//button[@data-testid="hide-details"]`,
     // editAlertRule returns Edit rule button locator for a given rule name
-    editAlertRule: (ruleName) => `${rulesNameCell(ruleName)}/following-sibling::td//button[@data-testid='edit-alert-rule-button']`,
+    editAlertRule: (folderID) => `//a[contains(@href, 'edit?returnTo=%2Falerting%2Flist')]`,
     // duplicateAlertRule returns Copy rule button locator for a given rule name
     duplicateAlertRule: (ruleName) => `${rulesNameCell(ruleName)}/following-sibling::td//button[@data-testid='copy-alert-rule-button']`,
     // deleteAlertRule returns Delete rule button locator for a given rule name
@@ -67,6 +72,7 @@ module.exports = {
     toggleAlertRule: (ruleName) => `${rulesNameCell(ruleName)}/following-sibling::td//input[@data-testid='toggle-alert-rule']/following-sibling::label`,
     toggleInModal: '//input[@data-testid="enabled-toggle-input"]/following-sibling::label',
     groupCollapseButton: (folderText) =>  `//button[@data-testid='group-collapse-toggle'][following::h6[contains(., '${folderText}')]]`,
+    ruleCollapseButton: `button[aria-label='Expand row']`,
     editFolderButton: (folderID, folderText)  => locate('[aria-label="edit folder"]').withAttr({ 'href': `/graph/dashboards/f/${folderID}/${folderText}/settings` }),
     managePermissionsButton: (folderID, folderText)  => locate('[aria-label="manage permissions"]').withAttr({ 'href': `/graph/dashboards/f/${folderID}/${folderText}/permissions` }),
   },
@@ -109,6 +115,9 @@ module.exports = {
     filtersLabel: (index = 0) => I.useDataQA(`filters[${index}].label-text-input`),
     filtersValue: (index = 0) => I.useDataQA(`filters[${index}].value-text-input`),
     template: '//form[@data-testid="add-alert-rule-modal-form"]/div[2]//div[contains(@class, "singleValue")]',
+    editRuleThreshold: `input[name='evaluateFor']`,
+    editRuleEvaluate: `input[name='evaluateEvery']`,
+    editRuleSeverity: I.useDataQA('label-value-1'),
   },
   messages: {
     noRulesFound: 'No alert rules found',
@@ -117,25 +126,50 @@ module.exports = {
     confirmDelete: (name) => `Are you sure you want to delete the alert rule "${name}"?`,
     successfullyAdded: 'Alert rule created',
     successfullyCreated: (name) => `Alert rule ${name} successfully created`,
-    successRuleCreated: (name) => `Rule "${name}" saved.`,
+    successRuleCreate: (name) => `Rule "${name}" saved.`,
+    successRuleEdit: (name) => `Rule "${name}" updated.`,
     successfullyEdited: 'Alert rule updated',
     successfullyDeleted: (name) => `Alert rule ${name} successfully deleted`,
     successfullyDisabled: (name) => `Alert rule "${name}" successfully disabled`,
     successfullyEnabled: (name) => `Alert rule "${name}" successfully enabled`,
   },
 
-  async fillPerconaAlert(template, ruleObj = this.rules[0]) {
+  async fillPerconaAlert(defaultRuleObj, newruleObj) {
     const {
-      ruleName, threshold, duration, severity, folder
+      template, ruleName, threshold, duration, severity
+    } = defaultRuleObj;
+    
+    const editedRule = {
+      ruleName: newruleObj.ruleName,
+      threshold: newruleObj.threshold,
+      duration: newruleObj.duration,
+      severity: newruleObj.severity,
+      folder: newruleObj.folder,
+    };
+
+    I.waitForClickable(this.fields.searchDropdown('template'));
+    this.searchAndSelectResult('template', template);
+    this.verifyAndReplaceInputField('name', ruleName, editedRule.ruleName);
+    this.verifyAndReplaceInputField('threshold', threshold, editedRule.threshold);
+    this.verifyAndReplaceInputField('duration', duration, editedRule.duration);
+    I.see(severity, this.fields.searchDropdown('severity'));
+    this.searchAndSelectResult('severity', editedRule.severity);
+    this.selectFolder(editedRule.folder);
+  },
+
+  async editPerconaAlert(ruleObj) {
+    const {
+      ruleName, duration, severity, folder
     } = ruleObj;
 
-    I.waitForVisible(this.fields.searchDropdown('template'));
-    this.searchAndSelectResult('template', template);
-    this.verifyAndReplaceInputField('name', 'pmm_node_high_cpu_load Alerting Rule', ruleName)
-    this.verifyAndReplaceInputField('threshold', '80', threshold)
-    this.verifyAndReplaceInputField('duration', '300s', duration)
-    this.searchAndSelectResult('severity', severity);
+    I.waitForVisible(this.fields.inputField('name'));
+    I.fillField(this.fields.inputField('name'), ruleName);
     this.selectFolder(folder);
+    I.fillField(this.fields.editRuleSeverity, severity);
+    I.fillField(this.fields.editRuleThreshold, duration);
+    I.fillField(this.fields.editRuleEvaluate, '10s');
+    I.click(this.buttons.addRule);
+    I.verifyPopUpMessage(this.messages.successRuleEdit(ruleName));
   },
 
   async fillRuleFields(ruleObj = this.rules[0]) {
@@ -230,6 +264,7 @@ module.exports = {
   },
 
   searchAndSelectResult(dropdownLabel, option) {
+    I.waitForClickable(this.fields.searchDropdown(dropdownLabel));
     I.click(this.fields.searchDropdown(dropdownLabel));
     I.fillField(this.fields.searchDropdown(dropdownLabel), option);
     I.click(this.fields.resultsLocator(option));
@@ -271,6 +306,22 @@ module.exports = {
     I.seeElementsEnabled(this.buttons.deleteAlertRule(ruleName));
     I.seeElementsEnabled(this.buttons.editAlertRule(ruleName));
     I.seeElementsEnabled(this.buttons.duplicateAlertRule(ruleName));
+  },
+
+  verifyRuleDetails(ruleObj) {
+    const {
+      ruleName, threshold, duration, folder, severity, filters = [],
+    } = ruleObj;
+
+    this.verifyRuleList(folder, ruleName)
+    I.seeElement(this.buttons.ruleCollapseButton);
+    I.click(this.buttons.ruleCollapseButton);
+    I.waitForElement(this.elements.ruleDetails);
+    I.seeTextEquals(duration, this.elements.detailsDurationValue);
+    I.waitForElement(this.elements.detailsSeverityLabel(severity));
+    I.see(severity, this.elements.detailsSeverityLabel(severity));
+    I.waitForElement(this.elements.detailsFolderLabel(folder));
+    I.see(folder, this.elements.detailsFolderLabel(folder));
   },
 
   verifyRuleState(activate, ruleName) {

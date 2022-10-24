@@ -115,101 +115,46 @@ Scenario(
 
 Scenario(
   'PMM-T1420 Verify user can create Percona templated alert @fb',
-  async ({ I, alertRulesPage }) => {
-    const rule = {
-      template: 'Node high CPU load',
-      ruleName: 'Node high CPU load rule',
-      threshold: '0',
-      duration: '1m',
-      severity: 'Critical',
-      folder: 'OS'
-    };
+  async ({ I, alertRulesPage, rulesAPI }) => {
+    const rule =  page.rules[15];
+    const newRule = page.rules[0];
 
     alertRulesPage.openAlertRulesTab();
     I.click(alertRulesPage.buttons.openAddRuleModal);
-    await alertRulesPage.fillPerconaAlert(rule.template, rule);
+    await alertRulesPage.fillPerconaAlert(rule, newRule);
     I.click(alertRulesPage.buttons.addRule);
-    I.verifyPopUpMessage(alertRulesPage.messages.successRuleCreated(rule.ruleName));
-    alertRulesPage.verifyRuleList(rule.folder, rule.ruleName);
+    I.verifyPopUpMessage(alertRulesPage.messages.successRuleCreate(newRule.ruleName));
+    alertRulesPage.verifyRuleList(newRule.folder, newRule.ruleName);
+    I.seeTextEquals('Normal', alertRulesPage.elements.ruleState);
+    await rulesAPI.removeAlertRule(newRule.folder);
   },
 );
 
 // TODO: check ovf failure
 Scenario(
-  'PMM-T516 PMM-T687 Update Alert rule @ia @grafana-pr @not-ovf @fb',
+  'PMM-T1430 Verify user can edit Percona templated alert @not-ovf @fb',
   async ({
-    I, alertRulesPage, rulesAPI, channelsAPI, ncPage,
+    I, alertRulesPage, rulesAPI,
   }) => {
-    const rule = {
-      ruleName: 'QAA PSQL Update test',
-      template: 'PostgreSQL connections in use',
-      threshold: '1',
-      thresholdUnit: '%',
-      duration: '1',
-      severity: 'Critical',
-      filters: [{ label: 'service_name', operator: alertRulesPage.filterOperators.equal, value: 'pmm-server-postgresql' }],
-      channels: '',
-      activate: true,
-      expression: 'sum(pg_stat_activity_count{datname!~"template.*|postgres"})\n'
-        + '> pg_settings_max_connections * [[ .threshold ]] / 100',
-      alert: 'PostgreSQL too many connections ({{ $labels.service_name }})',
+    const ruleName = 'testRule';
+    const ruleFolder = 'PostgreSQL'
+    const editedRule = {
+      ruleName: 'EDITED rule',
+      duration: '2m',
+      severity: 'Alert',
+      folder: 'Experimental'
     };
-    const ruleAfterUpdate = {
-      ruleName: 'QAA PSQL Update test after Update',
-      threshold: '2',
-      thresholdUnit: '%',
-      duration: '2',
-      severity: 'Error',
-//eslint-disable-next-line max-len
-      filters: [{ label: 'service_name_updated', operator: alertRulesPage.filterOperators.regex, value: 'pmm-server-postgresql-updated' }],
-      channels: ['EmailChannelForRules', 'EmailChannelForEditRules'],
-      activate: false,
-    };
-    const { ruleName } = rule;
-    await rulesAPI.createAlertRule({ ruleName });
-
-    await channelsAPI.createNotificationChannel('EmailChannelForEditRules', ncPage.types.email.type);
+    
+    await rulesAPI.createAlertRule({ ruleName }, ruleFolder);
     alertRulesPage.openAlertRulesTab();
-    I.click(alertRulesPage.buttons.editAlertRule(rule.ruleName));
-    alertRulesPage.verifyEditRuleDialogElements(rule, true);
-    await alertRulesPage.fillRuleFields(ruleAfterUpdate);
-    I.click(alertRulesPage.buttons.addRule);
-    I.verifyPopUpMessage(alertRulesPage.messages.successfullyEdited);
-    alertRulesPage.verifyRowValues(ruleAfterUpdate);
-
-    // await rulesAPI.removeAlertRule(ruleId);
-  },
-);
-
-Data(rulesStates).Scenario(
-  'PMM-T566 Verify user can copy Alert rule @ia @grafana-pr',
-  async ({
-    I, alertRulesPage, rulesAPI, current,
-  }) => {
-    const rule = {
-      ruleName: 'QQAA PSQL duplicate test',
-      disabled: current.disabled,
-    };
-    const ruleCopy = {
-      ruleName: `Copy of ${rule.ruleName}`,
-      threshold: '1',
-      thresholdUnit: '%',
-      duration: '1',
-      severity: 'Critical',
-      filters: [{ label: 'service_name', operator: alertRulesPage.filterOperators.equal, value: 'pmm-server-postgresql' }],
-      channels: [],
-      activate: false,
-    };
-
-    await rulesAPI.createAlertRule(rule);
-
-    alertRulesPage.openAlertRulesTab();
-    alertRulesPage.verifyRuleState(!rule.disabled, rule.ruleName);
-    I.click(alertRulesPage.buttons.duplicateAlertRule(rule.ruleName));
-    I.verifyPopUpMessage(alertRulesPage.messages.successfullyCreated(ruleCopy.ruleName));
-    alertRulesPage.verifyRowValues(ruleCopy);
-
-    await rulesAPI.clearAllRules();
+    I.waitForElement(alertRulesPage.buttons.groupCollapseButton(ruleFolder));
+    I.click(alertRulesPage.buttons.groupCollapseButton(ruleFolder));
+    I.waitForElement(alertRulesPage.buttons.ruleCollapseButton);
+    I.click(alertRulesPage.buttons.ruleCollapseButton);
+    I.click(alertRulesPage.buttons.editAlertRule());
+    await alertRulesPage.editPerconaAlert(editedRule);
+    await alertRulesPage.verifyRuleDetails(editedRule);
+    await rulesAPI.removeAlertRule(editedRule.folder);
   },
 );
 

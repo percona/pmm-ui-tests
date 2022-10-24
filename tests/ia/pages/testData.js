@@ -6,6 +6,13 @@ const filterOperators = {
 module.exports = {
   filterOperators,
   rules: [{
+    template: 'PostgreSQL connections in use',
+    ruleName: 'Custom test pmm_postgresql_too_many_connections Alerting Rule',
+    threshold: '81',
+    duration: '301s',
+    severity: 'Info',
+    folder: 'Experimental',
+  }, {
     template: 'MongoDB down',
     ruleName: 'mongodb_down Alerting Rule',
     duration: '5s',
