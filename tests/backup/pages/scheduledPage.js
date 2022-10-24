@@ -1,6 +1,6 @@
 const { I } = inject();
 
-const scheduleCell = (name) => `//tr[td/div/span[contains(text(), "${name}")]]`;
+const scheduleCell = (name) => `//tr[td[contains(text(), "${name}")]]`;
 
 module.exports = {
   url: 'graph/backup/scheduled',
@@ -9,7 +9,7 @@ module.exports = {
     modalHeader: '$modal-header',
     modalContent: '$modal-content',
     dropdownOption: (text) => locate('div[class$="-select-option-body"]').find('span').withText(text),
-    selectedLocation: locate('div[class*="-singleValue"]').inside(locate('div').withChild('$location-select-label')),
+    selectedLocation: '//label[@data-testid="location-field-label"]/parent::div/following-sibling::div[1]//div[contains(@class, "-singleValue")]',
     selectedService: locate('div[class*="-singleValue"]').inside(locate('div').withChild('$service-select-label')),
     retentionValidation: '$retention-field-error-message',
     scheduleName: (name) => locate('td').at(1).inside(scheduleCell(name)),
@@ -31,11 +31,14 @@ module.exports = {
   buttons: {
     openAddScheduleModal: '$scheduled-backup-add-modal-button',
     createSchedule: '$backup-add-button',
+    actionsMenuByName: (name) => locate('$dropdown-menu-toggle').inside(scheduleCell(name)),
     editByName: (name) => locate('$edit-scheduled-backpup-button').inside(scheduleCell(name)),
     deleteByName: (name) => locate('$delete-scheduled-backpup-button').inside(scheduleCell(name)),
     copyByName: (name) => locate('$copy-scheduled-backup-button').inside(scheduleCell(name)),
     enableDisableByName: (name) => locate('label').after('$toggle-scheduled-backpup').inside(scheduleCell(name)),
     backupTypeSwitch: (type) => locate('label').after('$mode-radio-button').withText(type),
+    showDetails: (name) => locate('$show-row-details').inside(scheduleCell(name)),
+    hideDetails: (name) => locate('$hide-row-details').inside(scheduleCell(name)),
     confirmDelete: '$confirm-delete-modal-button',
     cancelDelete: '$cancel-delete-modal-button',
   },
@@ -44,7 +47,7 @@ module.exports = {
     vendor: '$vendor-text-input',
     description: '$description-textarea-input',
     serviceNameDropdown: locate('div[class$="-select-value-container"]').inside(locate('div').withChild('$service-select-label')),
-    locationDropdown: locate('div[class$="-select-value-container"]').inside(locate('div').withChild('$location-select-label')),
+    locationDropdown: '//label[@data-testid="location-field-label"]/parent::div/following-sibling::div[1]//div[contains(@class, "-select-value-container")]',
     everyDropdown: '//label[@data-testid="period-field-label"]/parent::div/following-sibling::div[1]//div[contains(@class, "-select-value-container")]',
     retention: '$retention-number-input',
   },
@@ -61,7 +64,7 @@ module.exports = {
 
   openScheduledBackupsPage() {
     I.amOnPage(this.url);
-    I.waitForText('Add', 30, this.buttons.openAddScheduleModal);
+    I.waitForText('Create scheduled backup', 30, this.buttons.openAddScheduleModal);
   },
 
   openScheduleBackupModal() {
@@ -84,6 +87,20 @@ module.exports = {
     });
   },
 
+  copySchedule(name) {
+    I.waitForVisible(this.buttons.actionsMenuByName(name), 10);
+    I.click(this.buttons.actionsMenuByName(name));
+    I.click(this.buttons.copyByName(name));
+  },
+
+  openDeleteModal(scheduleName) {
+    I.waitForVisible(this.buttons.actionsMenuByName(scheduleName), 10);
+    I.click(this.buttons.actionsMenuByName(scheduleName));
+    I.waitForVisible(this.buttons.deleteByName(scheduleName), 2);
+    I.click(this.buttons.deleteByName(scheduleName));
+    I.waitForVisible(this.buttons.confirmDelete, 10);
+  },
+
   verifyBackupValues(scheduleObj) {
     const {
       name, vendor, frequency, description, retention, type, location, dataModel, cronExpression,
@@ -103,8 +120,8 @@ module.exports = {
   },
 
   verifyBackupDetailsRow(name, description, dataModel, cronExpression) {
-    I.seeElement(this.elements.scheduleName(name));
-    I.click(this.elements.scheduleName(name));
+    I.seeElement(this.buttons.showDetails(name));
+    I.click(this.buttons.showDetails(name));
     I.waitForVisible(this.elements.detailedInfoRow.backupName, 2);
     I.seeTextEquals(name, this.elements.detailedInfoRow.backupName);
     I.seeTextEquals(description, this.elements.detailedInfoRow.description);

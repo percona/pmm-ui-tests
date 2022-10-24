@@ -1,6 +1,6 @@
 const { I } = inject();
 
-const artifactCell = (name) => `//tr[td/div/span[contains(text(), "${name}")]]`;
+const artifactCell = (name) => `//tr[td[contains(text(), "${name}")]]`;
 
 module.exports = {
   url: 'graph/backup/restore',
@@ -8,6 +8,7 @@ module.exports = {
     noData: '$table-no-data',
     modalHeader: '$modal-header',
     backupStatusByName: (name) => locate('$statusMsg').inside(artifactCell(name)),
+    backupStatusIconByName: (name) => locate('$statusMsg').inside(artifactCell(name)).find('div'),
   },
   buttons: {},
   fields: {},
@@ -17,6 +18,6 @@ module.exports = {
   waitForRestoreSuccess(backupName) {
     I.amOnPage(this.url);
     I.waitForVisible(this.elements.backupStatusByName(backupName), 180);
-    I.waitForText('Success', 30, this.elements.backupStatusByName(backupName));
+    I.seeAttributesOnElements(this.elements.backupStatusIconByName(backupName), { 'data-testid': 'success-icon' });
   },
 };
