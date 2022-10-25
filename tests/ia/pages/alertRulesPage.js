@@ -27,7 +27,7 @@ module.exports = {
     detailsSeverityLabel: (value) => locate('span').withText(`severity=${value}`).inside('//ul[@aria-label="Tags"]').at(2),
     detailsFolderLabel: (value) => locate('span').withText(`grafana_folder=${value}`).inside('//ul[@aria-label="Tags"]'),
     deleteRuleConfirmation: `//div[text()="Deleting this rule will permanently remove it from your alert rule list. Are you sure you want to delete this rule?"]`,
-    ruleValidationError: (error) => locate('div').withText(error).inside('div').withAttr({ 'role': 'alert'}),
+    ruleValidationError: (error) => locate('div').withText(error).inside('div').withAttr({ 'role': 'alert' }),
   },
   buttons: {
     openAddRuleModal: `//a[contains(.,'New alert rule')]`,
@@ -139,15 +139,6 @@ module.exports = {
     I.see(severity, this.elements.detailsSeverityLabel(severity));
     I.waitForElement(this.elements.detailsFolderLabel(folder));
     I.see(folder, this.elements.detailsFolderLabel(folder));
-  },
-
-  verifyRuleState(activate, ruleName) {
-    let checked = activate;
-
-    if (!activate) checked = null;
-
-    I.waitForVisible(this.elements.activateSwitch(ruleName), 30);
-    I.seeAttributesOnElements(this.elements.activateSwitch(ruleName), { checked });
   },
 
   verifyRuleList(folder, ruleName) {
