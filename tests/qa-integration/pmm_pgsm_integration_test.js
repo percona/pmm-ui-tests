@@ -149,6 +149,7 @@ Scenario(
 
     if (output.rows.length === 0) {
       await I.pgExecuteQueryOnDemand(`Create database ${db};`, connection);
+      await I.pgExecuteQueryOnDemand(`ALTER DATABASE ${db} owner to pmm;`, connection);
     }
 
     connection.database = db;
