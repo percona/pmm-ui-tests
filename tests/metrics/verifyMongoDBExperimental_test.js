@@ -33,9 +33,8 @@ Scenario(
   async ({
     I, adminPage, dashboardPage,
   }) => {
-    I.amOnPage(I.buildUrlWithParams(dashboardPage.mongoDbCollectionDetails.clearUrl, { from: 'now-5m' }));
+    I.amOnPage(I.buildUrlWithParams(dashboardPage.mongoDbCollectionDetails.clearUrl, { from: 'now-5m' , service_name: mongodb_service_name_ac}));
     dashboardPage.waitForDashboardOpened();
-    await dashboardPage.changeServiceName(`${mongodb_service_name_ac}`);
     I.click(adminPage.fields.metricTitle);
     adminPage.performPageDown(2);
     adminPage.performPageUp(2);
@@ -51,9 +50,8 @@ Scenario(
   async ({
     I, adminPage, dashboardPage,
   }) => {
-    I.amOnPage(I.buildUrlWithParams(dashboardPage.mongoDbCollectionsOverview.clearUrl, { from: 'now-5m' }));
+    I.amOnPage(I.buildUrlWithParams(dashboardPage.mongoDbCollectionsOverview.clearUrl, { from: 'now-5m' , service_name: mongodb_service_name_ac }));
     dashboardPage.waitForDashboardOpened();
-    await dashboardPage.changeServiceName(`${mongodb_service_name_ac}`);
     I.click(adminPage.fields.metricTitle);
     adminPage.performPageDown(3);
     adminPage.performPageUp(3);
@@ -68,9 +66,8 @@ Scenario(
   async ({
     I, adminPage, dashboardPage,
   }) => {
-    I.amOnPage(I.buildUrlWithParams(dashboardPage.mongoDbOplogDetails.clearUrl, { from: 'now-5m' }));
+    I.amOnPage(I.buildUrlWithParams(dashboardPage.mongoDbOplogDetails.clearUrl, { from: 'now-5m' , service_name: mongodb_service_name_ac}));
     dashboardPage.waitForDashboardOpened();
-    await dashboardPage.changeServiceName(`${mongodb_service_name_ac}`);
     I.click(adminPage.fields.metricTitle);
     adminPage.performPageDown(3);
     adminPage.performPageUp(3);
