@@ -22,27 +22,6 @@ Before(async ({ I }) => {
   await I.Authorize();
 });
 
-BeforeSuite(async ({
-  I, settingsAPI, rulesAPI, templatesAPI, channelsAPI, ncPage,
-}) => {
-//   await settingsAPI.apiEnableIA();
-//   await rulesAPI.clearAllRules();
-//   await templatesAPI.clearAllTemplates();
-//   await channelsAPI.clearAllNotificationChannels();
-//   await templatesAPI.createRuleTemplate('tests/ia/templates/templateForRules.yaml');
-//   await templatesAPI.createRuleTemplate('tests/ia/templates/range-empty.yaml');
-//   await channelsAPI.createNotificationChannel('EmailChannelForRules', ncPage.types.email.type);
-});
-
-AfterSuite(async ({
-  settingsAPI, rulesAPI, templatesAPI, channelsAPI,
-}) => {
-//   await settingsAPI.apiEnableIA();
-//   await rulesAPI.clearAllRules();
-//   await templatesAPI.clearAllTemplates();
-//   await channelsAPI.clearAllNotificationChannels();
-});
-
 Scenario(
   'PMM-T1384 Verify empty alert rules list @ia @grafana-pr',
   async ({ I, alertRulesPage }) => {
@@ -203,60 +182,5 @@ Scenario(
     I.verifyPopUpMessage(alertRulesPage.messages.failRuleCreateDuration);
     I.fillField(alertRulesPage.fields.inputField('duration'), 's');
     I.seeElement(alertRulesPage.elements.ruleValidationError('Must be of format "(number)(unit)", for example "1m", or just "0". Available units: s, m, h, d, w'));
-  },
-);
-
-Scenario(
-  'PMM-T1116 Verify user is able to copy alert rule, source template of which was deleted @ia',
-  async ({
-    I, ruleTemplatesPage, alertRulesPage, rulesAPI, templatesAPI,
-  }) => {
-    const ruleName = 'Rule for PMM-T1116';
-    const copiedRuleName = `Copy of ${ruleName}`;
-    const ruleCopy = {
-      template: 'E2E TemplateForAutomation YAML',
-      ruleName: copiedRuleName,
-      threshold: '1',
-      thresholdUnit: '%',
-      duration: '1',
-      severity: 'Critical',
-      expression: 'max_over_time(mysql_global_status_threads_connected[5m]) / ignoring (job)\n'
-                + 'mysql_global_variables_max_connections\n'
-                + '* 100\n'
-                + '> [[ .threshold ]]',
-      alert: 'MySQL too many connections (instance {{ $labels.instance }})',
-      filters: [{ label: 'service_name', operator: alertRulesPage.filterOperators.equal, value: 'pmm-server-postgresql' }],
-      activate: false,
-    };
-    const path = ruleTemplatesPage.ruleTemplate.paths.yaml;
-    const [, , id] = await ruleTemplatesPage.ruleTemplate
-      .templateNameAndContent(path);
-
-    await templatesAPI.createRuleTemplate(path);
-    await rulesAPI.createAlertRule({ ruleName }, id);
-
-    ruleTemplatesPage.openRuleTemplatesTab();
-    await templatesAPI.removeTemplate(id);
-    alertRulesPage.openAlertRulesTab();
-    I.click(alertRulesPage.buttons.duplicateAlertRule(ruleName));
-    I.verifyPopUpMessage(alertRulesPage.messages.successfullyCreated(copiedRuleName));
-    I.seeElement(alertRulesPage.elements.rulesNameCell(ruleName));
-    I.click(alertRulesPage.buttons.showDetails(ruleName));
-    I.waitForElement(alertRulesPage.elements.ruleDetails, 30);
-    const ruleDetails = await I.grabTextFrom(alertRulesPage.elements.ruleDetails);
-
-    I.click(alertRulesPage.buttons.hideDetails(ruleName));
-    I.click(alertRulesPage.buttons.showDetails(copiedRuleName));
-    I.waitForElement(alertRulesPage.elements.ruleDetails, 30);
-    const ruleDetails2 = await I.grabTextFrom(alertRulesPage.elements.ruleDetails);
-
-    I.click(alertRulesPage.buttons.hideDetails(copiedRuleName));
-    assert.equal(ruleDetails, ruleDetails2, `Details of rule '${ruleName}' must be the same for the rule '${copiedRuleName}'`);
-    alertRulesPage.verifyRowValues(ruleCopy);
-    I.click(alertRulesPage.buttons.editAlertRule(copiedRuleName));
-    I.waitForVisible(alertRulesPage.fields.ruleName, 30);
-    alertRulesPage.verifyEditRuleDialogElements(ruleCopy, true);
-
-    // await rulesAPI.removeAlertRule(ruleId);
   },
 );
