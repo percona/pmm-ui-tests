@@ -31,11 +31,10 @@ AfterSuite(async ({ I }) => {
 Scenario(
   'PMM-T1332 - Verify MongoDB - MongoDB Collection Details @dashboards @mongodb-exporter',
   async ({
-    I, grafanaAPI, adminPage, homePage, dashboardPage, searchDashboardsModal,
+    I, adminPage, dashboardPage,
   }) => {
     I.amOnPage(I.buildUrlWithParams(dashboardPage.mongoDbCollectionDetails.clearUrl, { from: 'now-5m' }));
     dashboardPage.waitForDashboardOpened();
-    dashboardPage.setTimeRange();
     await dashboardPage.changeServiceName(`${mongodb_service_name_ac}`);
     I.click(adminPage.fields.metricTitle);
     adminPage.performPageDown(2);
@@ -50,11 +49,10 @@ Scenario(
 Scenario(
   'PMM-T1333 - Verify MongoDB - MongoDB Collections Overview @dashboards @mongodb-exporter',
   async ({
-    I, grafanaAPI, adminPage, homePage, dashboardPage, searchDashboardsModal,
+    I, adminPage, dashboardPage,
   }) => {
     I.amOnPage(I.buildUrlWithParams(dashboardPage.mongoDbCollectionsOverview.clearUrl, { from: 'now-5m' }));
     dashboardPage.waitForDashboardOpened();
-    dashboardPage.setTimeRange();
     await dashboardPage.changeServiceName(`${mongodb_service_name_ac}`);
     I.click(adminPage.fields.metricTitle);
     adminPage.performPageDown(3);
@@ -68,11 +66,10 @@ Scenario(
 Scenario(
   'PMM-T1334 - Verify MongoDB - MongoDB Oplog Details @dashboards @mongodb-exporter',
   async ({
-    I, adminPage, homePage, dashboardPage, searchDashboardsModal,
+    I, adminPage, dashboardPage,
   }) => {
     I.amOnPage(I.buildUrlWithParams(dashboardPage.mongoDbOplogDetails.clearUrl, { from: 'now-5m' }));
     dashboardPage.waitForDashboardOpened();
-    dashboardPage.setTimeRange();
     await dashboardPage.changeServiceName(`${mongodb_service_name_ac}`);
     I.click(adminPage.fields.metricTitle);
     adminPage.performPageDown(3);
