@@ -58,12 +58,7 @@ Scenario(
 
     I.seeElement(alertRulesPage.buttons.editFolderButton(folderUID, ruleFolder.toLowerCase()));
     I.seeElement(alertRulesPage.buttons.managePermissionsButton(folderUID, ruleFolder.toLowerCase()));
-    //todo
-    I.seeElement(alertRulesPage.elements.totalRulesCounter('3', ruleFolder));
-
-    //folder header
-    //counter
-
+    I.seeElement(alertRulesPage.elements.totalRulesCounter('1 rule', ruleFolder));
     await rulesAPI.removeAlertRule(ruleFolder);
   },
 );
