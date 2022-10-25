@@ -9,11 +9,6 @@ Object.values(page.rules).forEach((rule) => {
     rule.thresholdUnit, rule.duration, rule.severity, rule.filters, rule.channels, rule.activate]);
 });
 
-const rulesStates = new DataTable(['disabled']);
-
-rulesStates.add([true]);
-rulesStates.add([false]);
-
 const templates = new DataTable(['template', 'threshold', 'duration', 'severity', 'expression', 'alert']);
 
 Object.values(page.templates).forEach((template) => {
@@ -23,10 +18,8 @@ Object.values(page.templates).forEach((template) => {
 
 Feature('IA: Alert rules').retry(1);
 
-Before(async ({ I, settingsAPI, rulesAPI }) => {
+Before(async ({ I }) => {
   await I.Authorize();
-  await settingsAPI.apiEnableIA();
-  await rulesAPI.clearAllRules();
 });
 
 BeforeSuite(async ({
@@ -54,7 +47,7 @@ Scenario(
   'PMM-T1384 Verify empty alert rules list @ia @grafana-pr',
   async ({ I, alertRulesPage }) => {
     alertRulesPage.openAlertRulesTab();
-    I.waitForText('You haven`t created any alert rules yet', alertRulesPage.elements.noRules);
+    I.waitForText(alertRulesPage.messages.noRulesFound, alertRulesPage.elements.noRules);
     const link = await I.grabAttributeFrom(alertRulesPage.elements.alertsLearnMoreLinks, 'href');
 
     assert.ok(link === 'https://grafana.com/docs/', `Redirect link ${link} is incorrect please check`);
@@ -147,41 +140,38 @@ Scenario(
     
     await rulesAPI.createAlertRule({ ruleName }, ruleFolder);
     alertRulesPage.openAlertRulesTab();
-    I.waitForElement(alertRulesPage.buttons.groupCollapseButton(ruleFolder));
-    I.click(alertRulesPage.buttons.groupCollapseButton(ruleFolder));
+    alertRulesPage.verifyRuleList(ruleFolder, ruleName);
     I.waitForElement(alertRulesPage.buttons.ruleCollapseButton);
     I.click(alertRulesPage.buttons.ruleCollapseButton);
-    I.click(alertRulesPage.buttons.editAlertRule());
+    I.click(alertRulesPage.buttons.editAlertRule);
     await alertRulesPage.editPerconaAlert(editedRule);
     await alertRulesPage.verifyRuleDetails(editedRule);
     await rulesAPI.removeAlertRule(editedRule.folder);
   },
 );
 
-Data(rulesStates).Scenario(
-  'PMM-T517 Verify user can delete Alert rule @ia @fb',
+Scenario(
+  'PMM-T1433 Verify user can delete Percona templated alert @ia @fb',
   async ({
-    I, alertRulesPage, rulesAPI, current,
+    I, alertRulesPage, rulesAPI,
   }) => {
-    const rule = {
-      ruleName: 'QAA PSQL delete test',
-      disabled: current.disabled,
-    };
+    const ruleName = 'testRule';
+    const ruleFolder = 'OS'
 
-    await rulesAPI.createAlertRule(rule);
-
+    await rulesAPI.createAlertRule({ ruleName }, ruleFolder);
     alertRulesPage.openAlertRulesTab();
-    alertRulesPage.verifyRuleState(!rule.disabled, rule.ruleName);
-    I.click(alertRulesPage.buttons.deleteAlertRule(rule.ruleName));
-    I.seeTextEquals(alertRulesPage.messages.deleteRuleModalHeader, alertRulesPage.elements.modalHeader);
-    I.seeElement(alertRulesPage.buttons.closeModal, alertRulesPage.elements.modalHeader);
-    I.seeTextEquals(alertRulesPage.messages.confirmDelete(rule.ruleName),
-      locate(alertRulesPage.elements.modalContent).find('h4'));
-    I.seeElement(alertRulesPage.buttons.cancelDelete);
-    I.seeElement(alertRulesPage.buttons.delete);
-    I.click(alertRulesPage.buttons.delete);
-    I.verifyPopUpMessage(alertRulesPage.messages.successfullyDeleted(rule.ruleName));
-    I.dontSeeElement(alertRulesPage.elements.rulesNameCell(rule.ruleName));
+    alertRulesPage.verifyRuleList(ruleFolder, ruleName);
+    I.waitForElement(alertRulesPage.buttons.ruleCollapseButton);
+    I.click(alertRulesPage.buttons.ruleCollapseButton);
+    I.click(alertRulesPage.buttons.deleteAlertRule);
+    I.waitForVisible(alertRulesPage.elements.deleteRuleConfirmation);
+    I.click(alertRulesPage.buttons.cancelModal);
+    I.click(alertRulesPage.buttons.deleteAlertRule);
+    I.click(alertRulesPage.buttons.confirmModal);
+    I.verifyPopUpMessage(alertRulesPage.messages.successfullyDeleted);
+    I.dontSeeElement(alertRulesPage.buttons.groupCollapseButton(ruleFolder));
+    I.waitForText(alertRulesPage.messages.noRulesFound, alertRulesPage.elements.noRules);
+    await rulesAPI.removeAlertRule(ruleFolder);
   },
 );
 

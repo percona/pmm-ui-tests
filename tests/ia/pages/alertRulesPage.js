@@ -47,6 +47,7 @@ module.exports = {
     detailsDurationValue: `//div[text()="For"]/following-sibling::div`,
     detailsSeverityLabel: (value) => locate('span').withText(`severity=${value}`).inside('//ul[@aria-label="Tags"]').at(2),
     detailsFolderLabel: (value) => locate('span').withText(`grafana_folder=${value}`).inside('//ul[@aria-label="Tags"]'),
+    deleteRuleConfirmation: `//div[text()="Deleting this rule will permanently remove it from your alert rule list. Are you sure you want to delete this rule?"]`,
   },
   buttons: {
     openAddRuleModal: `//a[contains(.,'New alert rule')]`,
@@ -62,12 +63,8 @@ module.exports = {
     showDetails: (ruleName) => `${rulesNameCell(ruleName)}//button[@data-testid="show-details"]`,
     // hideDetails returns Hide rule details button locator for a given rule name
     hideDetails: (ruleName) => `${rulesNameCell(ruleName)}//button[@data-testid="hide-details"]`,
-    // editAlertRule returns Edit rule button locator for a given rule name
-    editAlertRule: (folderID) => `//a[contains(@href, 'edit?returnTo=%2Falerting%2Flist')]`,
-    // duplicateAlertRule returns Copy rule button locator for a given rule name
-    duplicateAlertRule: (ruleName) => `${rulesNameCell(ruleName)}/following-sibling::td//button[@data-testid='copy-alert-rule-button']`,
-    // deleteAlertRule returns Delete rule button locator for a given rule name
-    deleteAlertRule: (ruleName) => `${rulesNameCell(ruleName)}/following-sibling::td//button[@data-testid='delete-alert-rule-button']`,
+    editAlertRule: `//a[contains(@href, 'edit?returnTo=%2Falerting%2Flist')]`,
+    deleteAlertRule: locate('span').withText('Delete').inside('button'),
     // toggleAlertRule returns Enable/Disable rule switch locator in alert rules list
     toggleAlertRule: (ruleName) => `${rulesNameCell(ruleName)}/following-sibling::td//input[@data-testid='toggle-alert-rule']/following-sibling::label`,
     toggleInModal: '//input[@data-testid="enabled-toggle-input"]/following-sibling::label',
@@ -75,6 +72,8 @@ module.exports = {
     ruleCollapseButton: `button[aria-label='Expand row']`,
     editFolderButton: (folderID, folderText)  => locate('[aria-label="edit folder"]').withAttr({ 'href': `/graph/dashboards/f/${folderID}/${folderText}/settings` }),
     managePermissionsButton: (folderID, folderText)  => locate('[aria-label="manage permissions"]').withAttr({ 'href': `/graph/dashboards/f/${folderID}/${folderText}/permissions` }),
+    confirmModal: `button[aria-label='Confirm Modal Danger Button']`,
+    cancelModal: locate('button').withText('Cancel'),
   },
   tooltips: {
     template: {
@@ -120,7 +119,7 @@ module.exports = {
     editRuleSeverity: I.useDataQA('label-value-1'),
   },
   messages: {
-    noRulesFound: 'No alert rules found',
+    noRulesFound: 'You haven`t created any alert rules yet',
     addRuleModalHeader: 'Add Alert Rule',
     deleteRuleModalHeader: 'Delete Alert Rule',
     confirmDelete: (name) => `Are you sure you want to delete the alert rule "${name}"?`,
@@ -129,7 +128,7 @@ module.exports = {
     successRuleCreate: (name) => `Rule "${name}" saved.`,
     successRuleEdit: (name) => `Rule "${name}" updated.`,
     successfullyEdited: 'Alert rule updated',
-    successfullyDeleted: (name) => `Alert rule ${name} successfully deleted`,
+    successfullyDeleted: 'Rule deleted.',
     successfullyDisabled: (name) => `Alert rule "${name}" successfully disabled`,
     successfullyEnabled: (name) => `Alert rule "${name}" successfully enabled`,
   },
@@ -334,8 +333,8 @@ module.exports = {
   },
 
   verifyRuleList(folder, ruleName) {
-    I.waitForVisible(this.buttons.groupCollapseButton(folder))
+    I.waitForVisible(this.buttons.groupCollapseButton(folder));
     I.click(this.buttons.groupCollapseButton(folder));
-    I.seeTextEquals(ruleName, this.elements.ruleNameValue)
+    I.seeTextEquals(ruleName, this.elements.ruleNameValue);
   },
 };
