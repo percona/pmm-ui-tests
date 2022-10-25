@@ -175,58 +175,34 @@ Scenario(
   },
 );
 
-Scenario(
-  'PMM-T639 Verify alert rule details content @ia @grafana-pr',
-  async ({
-    I, ruleTemplatesPage, alertRulesPage, rulesAPI,
-  }) => {
-    const ruleName = 'QAA PSQL yaml content test';
-    const ruleNameWithBuiltInTemplate = 'Rule with Built-In template';
-    const exprForBuiltInTemplate = 'sum(pg_stat_activity_count{datname!~"template.*|postgres"})\n'
-      + '> pg_settings_max_connections * [[ .threshold ]] / 100';
-    const [,, id, expr] = await ruleTemplatesPage.ruleTemplate
-      .templateNameAndContent('tests/ia/templates/templateForRules.yaml');
-
-    await rulesAPI.createAlertRule({ ruleName }, id);
-    await rulesAPI.createAlertRule({ ruleName: ruleNameWithBuiltInTemplate });
-    alertRulesPage.openAlertRulesTab();
-    I.click(alertRulesPage.buttons.showDetails(ruleName));
-    I.seeTextEquals(expr.replace('[[ .threshold ]]', '1'),
-      alertRulesPage.elements.ruleDetails);
-    I.click(alertRulesPage.buttons.hideDetails(ruleName));
-    I.dontSeeElement(alertRulesPage.elements.ruleDetails);
-    I.click(alertRulesPage.buttons.showDetails(ruleNameWithBuiltInTemplate));
-    I.seeTextEquals(exprForBuiltInTemplate.replace('[[ .threshold ]]', '1'),
-      alertRulesPage.elements.ruleDetails);
-    I.click(alertRulesPage.buttons.hideDetails(ruleNameWithBuiltInTemplate));
-    I.dontSeeElement(alertRulesPage.elements.ruleDetails);
-  },
-);
-
 // nightly candidate
 Scenario(
-  'PMM-T646 Verify user can not create Rule with negative duration time @ia @grafana-pr',
+  'PMM-T1434 Verify validation errors when creating new alert rule @ia @grafana-pr',
   async ({
     I, alertRulesPage,
   }) => {
+    const rule =  page.rules[2];
+    const wrongRule = {
+      threshold: '-1',
+      duration: '0',
+    }
+
     alertRulesPage.openAlertRulesTab();
     I.click(alertRulesPage.buttons.openAddRuleModal);
-
-    I.waitForVisible(alertRulesPage.fields.ruleName, 30);
-    alertRulesPage.searchAndSelectResult('Template', 'Memory used by MongoDB');
-    I.click(alertRulesPage.elements.ruleAdvancedSectionToggle);
-    I.waitForVisible(alertRulesPage.elements.expression, 30);
-
-    I.clearField(alertRulesPage.fields.duration);
-    I.fillField(alertRulesPage.fields.duration, '-1');
-
-    I.seeTextEquals('Must be greater than or equal to 1', alertRulesPage.elements.durationError);
-    I.seeElementsDisabled(alertRulesPage.buttons.addRule);
-
-    I.clearField(alertRulesPage.fields.duration);
-    I.fillField(alertRulesPage.fields.duration, '1');
-
-    I.seeTextEquals('', alertRulesPage.elements.durationError);
+    await alertRulesPage.fillPerconaAlert(rule, wrongRule);
+    I.clearField(alertRulesPage.fields.inputField('name'));
+    I.click(alertRulesPage.buttons.addRule);
+    I.verifyPopUpMessage(alertRulesPage.messages.failRuleCreate);
+    I.seeElement(alertRulesPage.elements.ruleValidationError('Must enter an alert name'));
+    I.seeElement(alertRulesPage.elements.ruleValidationError('Must be at least 0'));
+    I.fillField(alertRulesPage.fields.inputField('name'), 'rule');
+    I.dontSeeElement(alertRulesPage.elements.ruleValidationError('Must enter an alert name'));
+    I.fillField(alertRulesPage.fields.inputField('threshold'), '0');
+    I.dontSeeElement(alertRulesPage.elements.ruleValidationError('Must be at least 0'));
+    I.click(alertRulesPage.buttons.addRule);
+    I.verifyPopUpMessage(alertRulesPage.messages.failRuleCreateDuration);
+    I.fillField(alertRulesPage.fields.inputField('duration'), 's');
+    I.seeElement(alertRulesPage.elements.ruleValidationError('Must be of format "(number)(unit)", for example "1m", or just "0". Available units: s, m, h, d, w'));
   },
 );
 

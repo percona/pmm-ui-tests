@@ -48,6 +48,7 @@ module.exports = {
     detailsSeverityLabel: (value) => locate('span').withText(`severity=${value}`).inside('//ul[@aria-label="Tags"]').at(2),
     detailsFolderLabel: (value) => locate('span').withText(`grafana_folder=${value}`).inside('//ul[@aria-label="Tags"]'),
     deleteRuleConfirmation: `//div[text()="Deleting this rule will permanently remove it from your alert rule list. Are you sure you want to delete this rule?"]`,
+    ruleValidationError: (error) => locate('div').withText(error).inside('div').withAttr({ 'role': 'alert'}),
   },
   buttons: {
     openAddRuleModal: `//a[contains(.,'New alert rule')]`,
@@ -131,6 +132,8 @@ module.exports = {
     successfullyDeleted: 'Rule deleted.',
     successfullyDisabled: (name) => `Alert rule "${name}" successfully disabled`,
     successfullyEnabled: (name) => `Alert rule "${name}" successfully enabled`,
+    failRuleCreate: 'There are errors in the form. Please correct them and try again!',
+    failRuleCreateDuration: `Failed to save rule: Duration (0s) can't be less then evaluation interval for the given group (1m0s).; Duration (0s) can't be less then evaluation interval for the given group (1m0s).`,
   },
 
   async fillPerconaAlert(defaultRuleObj, newruleObj) {
@@ -139,14 +142,15 @@ module.exports = {
     } = defaultRuleObj;
     
     const editedRule = {
-      ruleName: newruleObj.ruleName,
-      threshold: newruleObj.threshold,
-      duration: newruleObj.duration,
-      severity: newruleObj.severity,
-      folder: newruleObj.folder,
+      ruleName: newruleObj.ruleName || 'test',
+      threshold: newruleObj.threshold || '1',
+      duration: newruleObj.duration || '2m',
+      severity: newruleObj.severity || 'Debug',
+      folder: newruleObj.folder || 'Insight',
     };
 
-    I.waitForClickable(this.fields.searchDropdown('template'));
+    // wait for templates to load
+    I.wait(2);
     this.searchAndSelectResult('template', template);
     this.verifyAndReplaceInputField('name', ruleName, editedRule.ruleName);
     this.verifyAndReplaceInputField('threshold', threshold, editedRule.threshold);
@@ -263,7 +267,6 @@ module.exports = {
   },
 
   searchAndSelectResult(dropdownLabel, option) {
-    I.waitForClickable(this.fields.searchDropdown(dropdownLabel));
     I.click(this.fields.searchDropdown(dropdownLabel));
     I.fillField(this.fields.searchDropdown(dropdownLabel), option);
     I.click(this.fields.resultsLocator(option));
