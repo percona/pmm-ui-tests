@@ -107,7 +107,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T1420 Verify user can create Percona templated alert @fb',
+  'PMM-T1420 Verify user can create Percona templated alert @ia @fb',
   async ({ I, alertRulesPage, rulesAPI }) => {
     const rule =  page.rules[15];
     const newRule = page.rules[0];
@@ -125,7 +125,7 @@ Scenario(
 
 // TODO: check ovf failure
 Scenario(
-  'PMM-T1430 Verify user can edit Percona templated alert @not-ovf @fb',
+  'PMM-T1430 Verify user can edit Percona templated alert @ia @not-ovf @fb',
   async ({
     I, alertRulesPage, rulesAPI,
   }) => {
