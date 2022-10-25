@@ -26,8 +26,8 @@ module.exports = {
     detailsDurationValue: `//div[text()="For"]/following-sibling::div`,
     detailsSeverityLabel: (value) => locate('span').withText(`severity=${value}`).inside('//ul[@aria-label="Tags"]').at(2),
     detailsFolderLabel: (value) => locate('span').withText(`grafana_folder=${value}`).inside('//ul[@aria-label="Tags"]'),
-    deleteRuleConfirmation: `//div[text()="Deleting this rule will permanently remove it from your alert rule list. Are you sure you want to delete this rule?"]`,
     ruleValidationError: (error) => locate('div').withText(error).inside('div').withAttr({ 'role': 'alert' }),
+    modalDialog: `div[role='dialog']`,
   },
   buttons: {
     openAddRuleModal: `//a[contains(.,'New alert rule')]`,
@@ -55,7 +55,7 @@ module.exports = {
   },
   messages: {
     noRulesFound: 'You haven`t created any alert rules yet',
-    confirmDelete: (name) => `Are you sure you want to delete the alert rule "${name}"?`,
+    confirmDelete: 'Deleting this rule will permanently remove it from your alert rule list. Are you sure you want to delete this rule?',
     successRuleCreate: (name) => `Rule "${name}" saved.`,
     successRuleEdit: (name) => `Rule "${name}" updated.`,
     successfullyDeleted: 'Rule deleted.',

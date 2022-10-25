@@ -138,7 +138,7 @@ Scenario(
     I.waitForElement(alertRulesPage.buttons.ruleCollapseButton);
     I.click(alertRulesPage.buttons.ruleCollapseButton);
     I.click(alertRulesPage.buttons.deleteAlertRule);
-    I.waitForVisible(alertRulesPage.elements.deleteRuleConfirmation);
+    I.waitForText(alertRulesPage.messages.confirmDelete, alertRulesPage.elements.modalDialog);
     I.click(alertRulesPage.buttons.cancelModal);
     I.click(alertRulesPage.buttons.deleteAlertRule);
     I.click(alertRulesPage.buttons.confirmModal);
