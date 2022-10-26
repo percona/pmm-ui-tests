@@ -76,8 +76,6 @@ module.exports = {
       folder: newruleObj.folder || 'Insight',
     };
 
-    // wait for templates to load
-    I.wait(2);
     this.searchAndSelectResult('template', template);
     this.verifyAndReplaceInputField('name', ruleName, editedRule.ruleName);
     this.verifyAndReplaceInputField('threshold', threshold, editedRule.threshold);
@@ -108,8 +106,10 @@ module.exports = {
   },
 
   searchAndSelectResult(dropdownLabel, option) {
+    I.wait(5);
     I.click(this.fields.searchDropdown(dropdownLabel));
     I.fillField(this.fields.searchDropdown(dropdownLabel), option);
+    I.waitForElement(this.fields.resultsLocator(option));
     I.click(this.fields.resultsLocator(option));
   },
 

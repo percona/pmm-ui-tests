@@ -69,7 +69,6 @@ Scenario(
     //TODO: https://jira.percona.com/browse/PMM-10860 name doesn't change
     alertRulesPage.openAlertRulesTab();
     I.click(alertRulesPage.buttons.openAddRuleModal);
-    //percona templated alert by default
     alertRulesPage.searchAndSelectResult('template', 'MongoDB down');
     I.waitForValue(alertRulesPage.fields.inputField('duration'), '5s');
     I.seeTextEquals('Critical', alertRulesPage.fields.dropdownValue('severity'));;
