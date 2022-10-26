@@ -149,6 +149,7 @@ Scenario(
 
     if (output.rows.length === 0) {
       await I.pgExecuteQueryOnDemand(`Create database ${db};`, connection);
+      await I.pgExecuteQueryOnDemand(`ALTER DATABASE ${db} owner to pmm;`, connection);
     }
 
     connection.database = db;
@@ -182,7 +183,7 @@ Scenario(
         total_exec_time,
         average_exec_time,
         query_cnt,
-      } = await qanAPI.getMetricsFromPGSM(db, pgsm_output.rows[i].queryid, connection);
+      } = await qanAPI.getMetricsFromPGSM(db, pgsm_output.rows[i].queryid, connection, version);
       const { query, queryid } = pgsm_output.rows[i];
 
       if (response.status !== 200) {
