@@ -381,7 +381,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T611 Verify that pmm-admin inventory remove node with --force flag stops running agents and collecting data from exporters @nazarov',
+  'PMM-T611 Verify that pmm-admin inventory remove node with --force flag stops running agents and collecting data from exporters',
   async ({
     I, inventoryAPI, grafanaAPI,
   }) => {
