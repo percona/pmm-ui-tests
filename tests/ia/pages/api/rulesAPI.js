@@ -81,31 +81,16 @@ module.exports = {
     );
   },
 
-  async clearAllRules(force = false) {
-    const rules = await this.getAlertRules();
-    let rulesToDelete;
-
-    // return if no rules found
-    if (!rules) return;
-
-    if (!force) {
-      rulesToDelete = rules.filter((rule) => !rule.summary.includes('immortal'));
-    } else {
-      rulesToDelete = rules;
-    }
-
-    for (const i in rulesToDelete) {
-      const rule = rulesToDelete[i];
-
-      await this.removeAlertRule(rule.rule_id);
-    }
-  },
-
-  async getAlertRules() {
+  async removeAllAlertRules() {
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
-    const resp = await I.sendPostRequest('v1/management/ia/Rules/List', {}, headers);
+    const resp = await I.sendGetRequest('graph/api/prometheus/grafana/api/v1/rules', headers);
+    const allRules = resp.data.data.groups;
 
-    return resp.data.rules;
+    if (allRules.length > 0) {
+      for (let i in allRules) {
+        this.removeAlertRule(allRules[i].file);
+      }
+    }
   },
 
   async removeAlertRule(folder) {
@@ -116,14 +101,6 @@ module.exports = {
       resp.status === 202,
       `Failed to remove alert rule. Response message is "${resp.data.message}"`,
     );
-  },
-
-  async getAlertNameFromRule(ruleId) {
-    const rules = await this.getAlertRules();
-
-    const rule = rules.filter((rule) => rule.rule_id === ruleId);
-
-    return rule[0].template.annotations.summary.replace('{{ $labels.service_name }}', rule[0].filters[0].value);
   },
 
   async createAlertRules(numberOfRulesToCreate) {

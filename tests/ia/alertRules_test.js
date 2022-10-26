@@ -1,5 +1,6 @@
 const assert = require('assert');
 const page = require('./pages/alertRulesPage');
+const rulesAPI = require('./pages/api/rulesAPI');
 
 const rules = new DataTable(['template', 'templateType', 'ruleName', 'threshold', 'thresholdUnit', 'duration',
   'severity', 'filters', 'channels', 'activate']);
@@ -16,10 +17,14 @@ Object.values(page.templates).forEach((template) => {
     template.expression, template.alert]);
 });
 
-Feature('IA: Alert rules').retry(1);
+Feature('IA: Alert rules');
 
 Before(async ({ I }) => {
   await I.Authorize();
+});
+
+After(async () => {
+  await rulesAPI.removeAllAlertRules();
 });
 
 Scenario(
@@ -144,7 +149,6 @@ Scenario(
     I.verifyPopUpMessage(alertRulesPage.messages.successfullyDeleted);
     I.dontSeeElement(alertRulesPage.buttons.groupCollapseButton(ruleFolder));
     I.waitForText(alertRulesPage.messages.noRulesFound, alertRulesPage.elements.noRules);
-    await rulesAPI.removeAlertRule(ruleFolder);
   },
 );
 
