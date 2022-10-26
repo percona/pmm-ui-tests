@@ -1003,20 +1003,17 @@ if (versionMinor >= 23) {
       } = current;
 
       const serviceList = [serviceName, `remote_api_${serviceName}`];
-      // Skip PGSQL_14 QAN verification due to bug with upgrade SSL remote instance and QAN
-      if (serviceName !== "pgsql_14_ssl_service" ) {
-        for (const service of serviceList) {
-          I.amOnPage(qanPage.url);
-          qanOverview.waitForOverviewLoaded();
-          await adminPage.applyTimeRange('Last 5 minutes');
-          qanOverview.waitForOverviewLoaded();
-          qanFilters.waitForFiltersToLoad();
-          await qanFilters.applySpecificFilter(service);
-          qanOverview.waitForOverviewLoaded();
-          const count = await qanOverview.getCountOfItems();
+      for (const service of serviceList) {
+        I.amOnPage(qanPage.url);
+        qanOverview.waitForOverviewLoaded();
+        await adminPage.applyTimeRange('Last 5 minutes');
+        qanOverview.waitForOverviewLoaded();
+        qanFilters.waitForFiltersToLoad();
+        await qanFilters.applySpecificFilter(service);
+        qanOverview.waitForOverviewLoaded();
+        const count = await qanOverview.getCountOfItems();
 
-          assert.ok(count > 0, `The queries for service ${service} instance do NOT exist, check QAN Data`);
-        }
+        assert.ok(count > 0, `The queries for service ${service} instance do NOT exist, check QAN Data`);
       }
     },
   ).retry(1);
