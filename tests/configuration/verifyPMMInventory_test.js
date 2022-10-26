@@ -371,10 +371,9 @@ Scenario(
 
     assert.ok(numberOfMentionsInVictoriaMetricsBefore > 0, 'mysqld-exporter configuration was not added');
     await I.verifyCommand('pmm-admin remove mysql mysql-pull');
-    await I.verifyCommand(`docker exec ${pmmServerContainer} cat /etc/victoriametrics-promscrape.yml | grep -c mysql`);
 
-    const numberOfMysqlExportersAfter = parseInt(await I.verifyCommand('ps -ax | grep -c [m]ysqld_exporter'), 10);
-    const numberOfMentionsInVictoriaMetricsAfter = parseInt(await I.verifyCommand(`docker exec ${pmmServerContainer} cat /etc/victoriametrics-promscrape.yml | grep -c mysql`), 10);
+    const numberOfMysqlExportersAfter = parseInt(await I.verifyCommand('ps -ax | grep -c [m]ysqld_exporter || true'), 10);
+    const numberOfMentionsInVictoriaMetricsAfter = parseInt(await I.verifyCommand(`docker exec ${pmmServerContainer} cat /etc/victoriametrics-promscrape.yml | grep -c mysqld || true`), 10);
 
     assert.strictEqual(numberOfMentionsInVictoriaMetricsAfter, 0, 'mysqld-exporter configuration was not deleted');
     assert.strictEqual(numberOfMysqlExportersAfter, numberOfMysqlExportersBefore - 1, 'The number of mysqld-exporters did not went down by one');
