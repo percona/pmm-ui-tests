@@ -9,7 +9,7 @@ Feature('Monitoring SSL/TLS MYSQL instances');
 
 const instances = new DataTable(['serviceName', 'version', 'container', 'serviceType', 'metric']);
 
-instances.add(['mysql_5.7_ssl_service', '5.7', 'mysql_5.7', 'mysql_ssl', 'mysql_global_status_max_used_connections']);
+// instances.add(['mysql_5.7_ssl_service', '5.7', 'mysql_5.7', 'mysql_ssl', 'mysql_global_status_max_used_connections']);
 instances.add(['mysql_8.0_ssl_service', '8.0', 'mysql_8.0', 'mysql_ssl', 'mysql_global_status_max_used_connections']);
 
 const logLevels = ['', 'debug', 'info', 'warn', 'error'];
@@ -19,13 +19,13 @@ const agentFlags = '--tls --server-insecure-tls --tls-skip-verify --tls-ca=/var/
 const authInfo = 'pmm --password=pmm';
 
 BeforeSuite(async ({ I, codeceptjsConfig }) => {
-  await I.verifyCommand(`${pmmFrameworkLoader} --ps-version=5.7 --setup-mysql-ssl --pmm2`);
-  await I.verifyCommand(`${pmmFrameworkLoader} --ps-version=8.0 --setup-mysql-ssl --pmm2`);
+  // await I.verifyCommand(`${pmmFrameworkLoader} --ps-version=5.7 --setup-mysql-ssl --pmm2`);
+  // await I.verifyCommand(`${pmmFrameworkLoader} --ps-version=8.0 --setup-mysql-ssl --pmm2`);
 });
 
 AfterSuite(async ({ I }) => {
-  await I.verifyCommand('docker stop mysql_5.7 || docker rm mysql_5.7');
-  await I.verifyCommand('docker stop mysql_8.0 || docker rm mysql_8.0');
+  // await I.verifyCommand('docker stop mysql_5.7 || docker rm mysql_5.7');
+  // await I.verifyCommand('docker stop mysql_8.0 || docker rm mysql_8.0');
 });
 
 Before(async ({ I, settingsAPI }) => {

@@ -282,7 +282,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T164 Verify user cannot be able to add MySQL Service via pmm-admin inventory with specified socket and port @nazarov',
+  'PMM-T164 Verify user cannot be able to add MySQL Service via pmm-admin inventory with specified socket and port',
   async ({
     I,
   }) => {
@@ -293,23 +293,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T611 Verify that pmm-admin inventory remove node with --force flag stops running agents and collecting data from exporters @nazarov',
-  async ({
-    I, inventoryAPI,
-  }) => {
-    const agentName = 'node-exporter';
-
-    const pmmAdminAgentId = (await I.verifyCommand('pmm-admin status | grep \'Agent ID\' | awk -F " " \'{print $4}\' ')).trim();
-    const pmmAdminNodeId = (await I.verifyCommand('pmm-admin status | grep \'Node ID\' | awk -F " " \'{print $4}\' ')).trim();
-
-    const agentId = (await I.verifyCommand(`pmm-admin inventory add agent ${agentName} --server-insecure-tls ${pmmAdminAgentId} | grep '^Agent ID' | grep -o '/agent_id/[a-z0-9-]*'`)).trim();
-
-    const agentInfo = await inventoryAPI.apiGetPMMAgentInfoByAgentId(agentId);
-  },
-);
-
-Scenario(
-  'PMM-T467 Verify pmm-admin inventory add service external using with --group flag @nazarov',
+  'PMM-T467 Verify pmm-admin inventory add service external using with --group flag',
   async ({
     I,
   }) => {
@@ -331,7 +315,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T1352 Verify that Node exporter cannot be added by pmm-admin inventory add agent node-exporter with --log-level=fatal @nazarov',
+  'PMM-T1352 Verify that Node exporter cannot be added by pmm-admin inventory add agent node-exporter with --log-level=fatal',
   async ({
     I,
   }) => {
@@ -344,7 +328,7 @@ Scenario(
 Scenario(
   'PMM-T1282, PMM-T1291'
   + ' Verify that pmm-admin inventory add agent node-exporter with --log-level flag adds Node exporter with corresponding log-level'
-  + ' Verify that pmm-admin inventory add agent node-exporter with --log-level flag adds Node exporter with log-level=warn @nazarov',
+  + ' Verify that pmm-admin inventory add agent node-exporter with --log-level flag adds Node exporter with log-level=warn',
   async ({
     I, inventoryAPI,
   }) => {
@@ -371,5 +355,45 @@ Scenario(
       assert.ok(agentInfo.hasOwnProperty('log_level'), `Was expecting ${agentName} (${agentId}) to have "log_level" property`);
       assert.strictEqual(agentInfo.log_level, expectedLogLevel, `Was expecting ${agentName} for (${agentId}) to have "${expectedLogLevel}" as a log level`);
     }
+  },
+);
+
+Scenario(
+  'PMM-T610 Verify that pmm-admin inventory remove service with --force flag stops running agents and collecting data from exporters @nazarov',
+  async ({
+    I,
+  }) => {
+    const pmmServerContainer = (await I.verifyCommand('docker ps | grep \'pmm-server\' | awk -F " " \'{print $NF}\'')).trim();
+
+    await I.verifyCommand('pmm-admin add mysql --username=root --password=GRgrO9301RuF --metrics-mode="pull" --query-source=perfschema mysql-pull 127.0.0.1:43306');
+    const numberOfMysqlExportersBefore = parseInt(await I.verifyCommand('ps -ax | grep -c [m]ysqld_exporter'), 10);
+    const numberOfMentionsInVictoriaMetricsBefore = parseInt(await I.verifyCommand(`docker exec ${pmmServerContainer} cat /etc/victoriametrics-promscrape.yml | grep -c mysql`), 10);
+
+    assert.ok(numberOfMentionsInVictoriaMetricsBefore > 0, 'mysqld-exporter configuration was not added');
+    await I.verifyCommand('pmm-admin remove mysql mysql-pull');
+    await I.verifyCommand(`docker exec ${pmmServerContainer} cat /etc/victoriametrics-promscrape.yml | grep -c mysql`);
+
+    const numberOfMysqlExportersAfter = parseInt(await I.verifyCommand('ps -ax | grep -c [m]ysqld_exporter'), 10);
+    const numberOfMentionsInVictoriaMetricsAfter = parseInt(await I.verifyCommand(`docker exec ${pmmServerContainer} cat /etc/victoriametrics-promscrape.yml | grep -c mysql`), 10);
+
+    assert.strictEqual(numberOfMentionsInVictoriaMetricsAfter, 0, 'mysqld-exporter configuration was not deleted');
+    assert.strictEqual(numberOfMysqlExportersAfter, numberOfMysqlExportersBefore - 1, 'The number of mysqld-exporters did not went down by one');
+  },
+);
+
+Scenario(
+  'PMM-T611 Verify that pmm-admin inventory remove node with --force flag stops running agents and collecting data from exporters @nazarov',
+  async ({
+    I, inventoryAPI, grafanaAPI,
+  }) => {
+    const numberOfNodesBefore = parseInt(await I.verifyCommand('ps -ax | grep -c [n]ode_exporter'), 10);
+
+    const pmmAdminNodeId = (await I.verifyCommand('pmm-admin status | grep \'Node ID\' | awk -F " " \'{print $4}\' ')).trim();
+
+    await I.verifyCommand(`pmm-admin inventory remove node ${pmmAdminNodeId} --force`);
+    const numberOfNodesAfter = parseInt(await I.verifyCommand('ps -ax | grep -c [n]ode_exporter'), 10);
+
+    assert.strictEqual(numberOfNodesAfter, numberOfNodesBefore - 1, 'The number of node-exporters did not went down by one');
+    await grafanaAPI.checkMetricAbsent('mysql_global_status_max_used_connections');
   },
 );
