@@ -27,7 +27,7 @@ Before(async ({
 }) => {
   await I.Authorize();
   await settingsAPI.apiEnableIA();
-  await rulesAPI.clearAllRules();
+  await rulesAPI.removeAllAlertRules();
   await templatesAPI.clearAllTemplates();
 });
 
