@@ -577,8 +577,6 @@ module.exports = {
     I.seeTextEquals(tooltipObj.text, this.fields.tooltipText.as('Tooltip text'));
     /* there are tooltip without "Read more" link */
     if (tooltipObj.link) {
-      I.say(`Provided Link is: ${this.fields.tooltipReadMoreLink}`);
-      I.say(`Expected Link is:  ${tooltipObj.link}`);
       I.seeAttributesOnElements(this.fields.tooltipReadMoreLink.as(`Tooltip "Read more" link for ${tooltipObj.iconLocator}`), { href: tooltipObj.link });
       const readMoreLink = (await I.grabAttributeFrom(this.fields.tooltipReadMoreLink, 'href'));
       const response = await I.sendGetRequest(readMoreLink);
