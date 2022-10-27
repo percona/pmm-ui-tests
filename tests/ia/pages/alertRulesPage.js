@@ -52,6 +52,7 @@ module.exports = {
     editRuleThreshold: `input[name='evaluateFor']`,
     editRuleEvaluate: `input[name='evaluateEvery']`,
     editRuleSeverity: I.useDataQA('label-value-1'),
+    templatesLoader: locate(`//div[@id='template']`).find('div').withText('Choose'),
   },
   messages: {
     noRulesFound: 'You haven`t created any alert rules yet',
@@ -76,6 +77,7 @@ module.exports = {
       folder: newruleObj.folder || 'Insight',
     };
 
+    I.waitForElement(this.fields.templatesLoader);
     this.searchAndSelectResult('template', template);
     this.verifyAndReplaceInputField('name', ruleName, editedRule.ruleName);
     this.verifyAndReplaceInputField('threshold', threshold, editedRule.threshold);
@@ -106,7 +108,6 @@ module.exports = {
   },
 
   searchAndSelectResult(dropdownLabel, option) {
-    I.wait(5);
     I.click(this.fields.searchDropdown(dropdownLabel));
     I.fillField(this.fields.searchDropdown(dropdownLabel), option);
     I.waitForElement(this.fields.resultsLocator(option));

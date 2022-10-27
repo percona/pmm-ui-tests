@@ -74,8 +74,9 @@ Scenario(
     //TODO: https://jira.percona.com/browse/PMM-10860 name doesn't change
     alertRulesPage.openAlertRulesTab();
     I.click(alertRulesPage.buttons.openAddRuleModal);
-    alertRulesPage.searchAndSelectResult('template', 'MongoDB down');
-    I.waitForValue(alertRulesPage.fields.inputField('duration'), '5s');
+    I.waitForElement(alertRulesPage.fields.templatesLoader);
+    alertRulesPage.searchAndSelectResult('template', 'PostgreSQL down');
+    I.waitForValue(alertRulesPage.fields.inputField('duration'), '60s');
     I.seeTextEquals('Critical', alertRulesPage.fields.dropdownValue('severity'));;
     alertRulesPage.searchAndSelectResult('template', 'MySQL restarted');
     I.waitForValue(alertRulesPage.fields.inputField('threshold'), 300);
