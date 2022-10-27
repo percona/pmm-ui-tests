@@ -1,5 +1,4 @@
 const assert = require('assert');
-const faker = require('faker');
 
 const { adminPage } = inject();
 const pmmFrameworkLoader = `bash ${adminPage.pathToFramework}`;
@@ -27,14 +26,14 @@ BeforeSuite(async ({ I, codeceptjsConfig }) => {
   // await I.verifyCommand(`${pmmFrameworkLoader} --pdpgsql-version=11 --setup-postgres-ssl --pmm2`);
   // await I.verifyCommand(`${pmmFrameworkLoader} --pdpgsql-version=12 --setup-postgres-ssl --pmm2`);
   // await I.verifyCommand(`${pmmFrameworkLoader} --pdpgsql-version=13 --setup-postgres-ssl --pmm2`);
-  await I.verifyCommand(`${pmmFrameworkLoader} --pdpgsql-version=14 --setup-postgres-ssl --pmm2`);
+  // await I.verifyCommand(`${pmmFrameworkLoader} --pdpgsql-version=14 --setup-postgres-ssl --pmm2`);
 });
 
 AfterSuite(async ({ I }) => {
   // await I.verifyCommand('docker stop pgsql_11 || docker rm pgsql_11');
   // await I.verifyCommand('docker stop pgsql_12 || docker rm pgsql_12');
   // await I.verifyCommand('docker stop pgsql_13 || docker rm pgsql_13');
-  await I.verifyCommand('docker stop pgsql_14 || docker rm pgsql_14');
+  // await I.verifyCommand('docker stop pgsql_14 || docker rm pgsql_14');
 });
 
 Before(async ({ I, settingsAPI }) => {
@@ -239,7 +238,7 @@ Data(instances).Scenario(
       container,
     } = current;
 
-    const agentName = 'postgres-exporter';
+    const agentName = 'qan-postgresql-pgstatements-agent';
 
     await I.verifyCommand(`docker exec ${container} psql postgres pmm -c "CREATE EXTENSION IF NOT EXISTS pg_stat_statements SCHEMA public"`);
 

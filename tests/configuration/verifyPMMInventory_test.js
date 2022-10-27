@@ -282,7 +282,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T164 Verify user cannot be able to add MySQL Service via pmm-admin inventory with specified socket and port',
+  'PMM-T164 Verify user cannot be able to add MySQL Service via pmm-admin inventory with specified socket and port @nazarov',
   async ({
     I,
   }) => {
@@ -293,7 +293,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T467 Verify pmm-admin inventory add service external using with --group flag',
+  'PMM-T467 Verify pmm-admin inventory add service external using with --group flag @nazarov',
   async ({
     I,
   }) => {
@@ -315,7 +315,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T1352 Verify that Node exporter cannot be added by pmm-admin inventory add agent node-exporter with --log-level=fatal',
+  'PMM-T1352 Verify that Node exporter cannot be added by pmm-admin inventory add agent node-exporter with --log-level=fatal @nazarov',
   async ({
     I,
   }) => {
@@ -328,7 +328,7 @@ Scenario(
 Scenario(
   'PMM-T1282, PMM-T1291'
   + ' Verify that pmm-admin inventory add agent node-exporter with --log-level flag adds Node exporter with corresponding log-level'
-  + ' Verify that pmm-admin inventory add agent node-exporter with --log-level flag adds Node exporter with log-level=warn',
+  + ' Verify that pmm-admin inventory add agent node-exporter with --log-level flag adds Node exporter with log-level=warn @nazarov',
   async ({
     I, inventoryAPI,
   }) => {
@@ -366,12 +366,13 @@ Scenario(
     const pmmServerContainer = (await I.verifyCommand('docker ps | grep \'pmm-server\' | awk -F " " \'{print $NF}\'')).trim();
 
     await I.verifyCommand('pmm-admin add mysql --username=root --password=GRgrO9301RuF --metrics-mode="pull" --query-source=perfschema mysql-pull 127.0.0.1:43306');
+    I.wait(5);
     const numberOfMysqlExportersBefore = parseInt(await I.verifyCommand('ps -ax | grep -c [m]ysqld_exporter'), 10);
-    const numberOfMentionsInVictoriaMetricsBefore = parseInt(await I.verifyCommand(`docker exec ${pmmServerContainer} cat /etc/victoriametrics-promscrape.yml | grep -c mysql`), 10);
+    const numberOfMentionsInVictoriaMetricsBefore = parseInt(await I.verifyCommand(`docker exec ${pmmServerContainer} cat /etc/victoriametrics-promscrape.yml | grep -c mysqld || true`), 10);
 
     assert.ok(numberOfMentionsInVictoriaMetricsBefore > 0, 'mysqld-exporter configuration was not added');
     await I.verifyCommand('pmm-admin remove mysql mysql-pull');
-
+    I.wait(5);
     const numberOfMysqlExportersAfter = parseInt(await I.verifyCommand('ps -ax | grep -c [m]ysqld_exporter || true'), 10);
     const numberOfMentionsInVictoriaMetricsAfter = parseInt(await I.verifyCommand(`docker exec ${pmmServerContainer} cat /etc/victoriametrics-promscrape.yml | grep -c mysqld || true`), 10);
 
@@ -381,9 +382,9 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T611 Verify that pmm-admin inventory remove node with --force flag stops running agents and collecting data from exporters',
+  'PMM-T611 Verify that pmm-admin inventory remove node with --force flag stops running agents and collecting data from exporters @nazarov',
   async ({
-    I, inventoryAPI, grafanaAPI,
+    I, grafanaAPI,
   }) => {
     const numberOfNodesBefore = parseInt(await I.verifyCommand('ps -ax | grep -c [n]ode_exporter'), 10);
 

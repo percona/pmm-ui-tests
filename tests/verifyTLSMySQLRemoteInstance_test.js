@@ -294,7 +294,7 @@ Data(instances).Scenario('PMM-T1351 Verify that MySQL exporter cannot be added b
   });
 
 Data(instances).Scenario(
-  'PMM-T1350 Verify that MySQL exporter cannot be added by pmm-admin add mysql with --log-level=fatal @nazarov',
+  'PMM-T1350 Verify that MySQL exporter cannot be added by pmm-admin add mysql with --log-level=fatal',
   async ({
     I, current,
   }) => {
