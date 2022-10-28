@@ -110,8 +110,8 @@ module.exports = {
   searchAndSelectResult(dropdownLabel, option) {
     I.waitForElement(this.fields.searchDropdown(dropdownLabel));
     I.click(this.fields.searchDropdown(dropdownLabel));
-    failhere;
     I.fillField(this.fields.searchDropdown(dropdownLabel), option);
+    failhere;
     I.waitForElement(this.fields.resultsLocator(option));
     I.click(this.fields.resultsLocator(option));
   },

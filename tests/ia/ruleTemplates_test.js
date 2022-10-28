@@ -260,7 +260,7 @@ Scenario(
       .deleteButtonByName(templateName);
 
     await templatesAPI.createRuleTemplate(path);
-    await rulesAPI.createAlertRule({ ruleName: 'Rule for PMM-T553' }, id);
+    await rulesAPI.createAlertRule({ ruleName: 'Rule for PMM-T553' }, 'PostgreSQL');
     ruleTemplatesPage.openRuleTemplatesTab();
 
     I.waitForElement(deleteButton, 30);
