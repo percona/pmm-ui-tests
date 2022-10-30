@@ -787,6 +787,24 @@ module.exports = {
       'Sys Uptime',
     ],
   },
+  mongodbReplicaSetSummaryDashboard: {
+    url: 'graph/d/mongodb-replicaset-summary/mongodb-replset-summary?orgId=1&refresh=1m&from=now-5m&to=now',
+    metrics: [
+      'Replication Lag',
+      'ReplSet States',
+      'ReplSet Members',
+      'Max Heartbeat Time',
+      'Elections',
+      'Oplog Recovery Window',
+      'Oplog Buffered Operations',
+      'Oplog Getmore Time',
+      'Services Details',
+      'Avg ReplSet Lag',
+      'Cluster Name',
+      'ReplSet Last Election',
+      'MongoDB Versions',
+    ],
+  },
   victoriaMetricsAgentsOverviewDashboard: {
     url: 'graph/d/vmagent/victoriametrics-agents-overview?orgId=1&refresh=1m',
     metrics: [
