@@ -110,7 +110,7 @@ Scenario(
       await dashboardPage.expandEachDashboardRow();
       adminPage.performPageUp(5);
       await dashboardPage.verifyThereAreNoGraphsWithNA(1);
-      await dashboardPage.verifyThereAreNoGraphsWithoutData(1);
+      await dashboardPage.verifyThereAreNoGraphsWithoutData(5);
       I.amOnPage(`${dashboardPage.mysqlPXCGaleraNodeSummaryDashboard.url}`);
       dashboardPage.waitForDashboardOpened();
       await dashboardPage.applyFilter('Service Name', service);
