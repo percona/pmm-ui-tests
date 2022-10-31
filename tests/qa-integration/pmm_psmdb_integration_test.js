@@ -11,12 +11,15 @@ Before(async ({ I, settingsAPI }) => {
 });
 
 const version = process.env.PSMDB_VERSION ? `${process.env.PSMDB_VERSION}` : '4.4';
-const container_name = `psmdb_pmm_${version}`;
+const replica_container_name = `psmdb_pmm_${version}_replica`;
+const regular_container_name = `psmdb_pmm_${version}_regular`;
 const remoteServiceName = 'remote_pmm-psmdb-integration';
 
 const connection = {
-  host: container_name,
+  host: regular_container_name,
   port: 27017,
+  username: 'pmm_mongodb',
+  password: 'GRgrO9301RuF',
 };
 
 Scenario(
@@ -28,7 +31,9 @@ Scenario(
       serviceName: remoteServiceName,
       serviceType: 'MONGODB_SERVICE',
       port: '27017',
-      host: container_name,
+      username: connection.username,
+      password: connection.password,
+      host: regular_container_name,
       cluster: 'mongodb_remote_cluster',
       environment: 'mongodb_remote_cluster',
     };
@@ -37,10 +42,15 @@ Scenario(
     remoteInstancesPage.waitUntilRemoteInstancesPageLoaded();
     remoteInstancesPage.openAddRemotePage('mongodb');
     I.fillField(remoteInstancesPage.fields.hostName, details.host);
+    I.clearField(remoteInstancesPage.fields.portNumber);
+    I.fillField(remoteInstancesPage.fields.portNumber, details.port);
+    I.fillField(remoteInstancesPage.fields.userName, details.username);
+    I.fillField(remoteInstancesPage.fields.serviceName, remoteServiceName);
+    I.fillField(remoteInstancesPage.fields.password, details.password);
     I.fillField(remoteInstancesPage.fields.environment, details.environment);
     I.fillField(remoteInstancesPage.fields.cluster, details.cluster);
     I.click(remoteInstancesPage.fields.useQANMongoDBProfiler);
-    I.click(this.fields.addService);
+    I.click(remoteInstancesPage.fields.addService);
     I.waitForVisible(pmmInventoryPage.fields.agentsLink, 30);
     await inventoryAPI.verifyServiceExistsAndHasRunningStatus(
       {
@@ -64,10 +74,10 @@ Scenario(
     let response; let result;
     const metricName = 'mongodb_connections';
 
-    await I.verifyCommand(`docker exec ${container_name} pmm-admin list | grep "mongodb_exporter" | grep "Running" | wc -l | grep "3"`);
-    await I.verifyCommand(`docker exec ${container_name} pmm-admin list | grep "mongodb_profiler_agent" | grep "Running" | wc -l | grep "3"`);
+    await I.verifyCommand(`docker exec ${replica_container_name} pmm-admin list | grep "mongodb_exporter" | grep "Running" | wc -l | grep "3"`);
+    await I.verifyCommand(`docker exec ${replica_container_name} pmm-admin list | grep "mongodb_profiler_agent" | grep "Running" | wc -l | grep "3"`);
 
-    const clientServiceName = await I.verifyCommand(`docker exec ${container_name} pmm-admin list | grep MongoDB | head -1 | awk -F" " '{print $2}'`);
+    const clientServiceName = (await I.verifyCommand(`docker exec ${replica_container_name} pmm-admin list | grep MongoDB | head -1 | awk -F" " '{print $2}'`)).trim();
 
     // Waiting for metrics to start hitting for remotely added services
     I.wait(10);
@@ -89,9 +99,9 @@ Scenario(
 Scenario(
   'Verify dashboard after MongoDB Instances are added @pmm-psmdb-integration @not-ui-pipeline',
   async ({
-    I, dashboardPage, adminPage, current,
+    I, dashboardPage, adminPage,
   }) => {
-    const clientServiceName = await I.verifyCommand(`docker exec ${container_name} pmm-admin list | grep MongoDB | head -1 | awk -F" " '{print $2}'`);
+    const clientServiceName = (await I.verifyCommand(`docker exec ${replica_container_name} pmm-admin list | grep MongoDB | head -1 | awk -F" " '{print $2}'`)).trim();
 
     const serviceList = [clientServiceName, remoteServiceName];
 
@@ -107,25 +117,23 @@ Scenario(
       await dashboardPage.verifyThereAreNoGraphsWithoutData(3);
     }
 
-    for (const service of serviceList) {
-      I.amOnPage(dashboardPage.mongodbReplicaSetSummaryDashboard.url);
-      dashboardPage.waitForDashboardOpened();
-      await adminPage.applyTimeRange('Last 5 minutes');
-      adminPage.performPageDown(5);
-      await dashboardPage.expandEachDashboardRow();
-      adminPage.performPageUp(5);
-      await dashboardPage.verifyThereAreNoGraphsWithNA();
-      await dashboardPage.verifyThereAreNoGraphsWithoutData(1);
-    }
+    I.amOnPage(`${dashboardPage.mongodbReplicaSetSummaryDashboard.url}&var-replset=rs1`);
+    dashboardPage.waitForDashboardOpened();
+    await adminPage.applyTimeRange('Last 5 minutes');
+    adminPage.performPageDown(5);
+    await dashboardPage.expandEachDashboardRow();
+    adminPage.performPageUp(5);
+    await dashboardPage.verifyThereAreNoGraphsWithNA();
+    await dashboardPage.verifyThereAreNoGraphsWithoutData(1);
   },
 ).retry(1);
 
 Scenario(
   'Verify QAN after MongoDB Instances is added @pmm-psmdb-integration @not-ui-pipeline',
   async ({
-    I, qanOverview, qanFilters, qanPage, current, adminPage,
+    I, qanOverview, qanFilters, qanPage, adminPage,
   }) => {
-    const clientServiceName = await I.verifyCommand(`docker exec ${container_name} pmm-admin list | grep MongoDB | head -1 | awk -F" " '{print $2}'`);
+    const clientServiceName = (await I.verifyCommand(`docker exec ${replica_container_name} pmm-admin list | grep MongoDB | head -1 | awk -F" " '{print $2}'`)).trim();
 
     const serviceList = [clientServiceName, remoteServiceName];
 
