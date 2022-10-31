@@ -1,7 +1,7 @@
 module.exports = {
   communicationDocs: 'https://www.percona.com/doc/percona-monitoring-and-management/2.x/how-to/configure.html#communication',
   dbaasDocs: 'https://www.percona.com/doc/percona-monitoring-and-management/2.x/how-to/configure.html#dbaas',
-  integratedAlertingDocs: 'https://www.percona.com/doc/percona-monitoring-and-management/2.x/how-to/configure.html#integrated-alerting',
+  integratedAlertingDocs: 'https://www.percona.com/doc/percona-monitoring-and-management/2.x/how-to/configure.html#alerting',
   advisorsDocs: 'https://www.percona.com/doc/percona-monitoring-and-management/2.x/how-to/configure.html#advisors',
   termsOfService: 'https://per.co.na/pmm/platform-terms',
   privacyPolicy: 'https://per.co.na/pmm/platform-privacy',

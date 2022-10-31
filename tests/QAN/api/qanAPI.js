@@ -18,11 +18,17 @@ module.exports = {
     return resp;
   },
 
-  async getMetricsFromPGSM(database, queryId, connection) {
+  async getMetricsFromPGSM(database, queryId, connection, version) {
     let total_exec_time = 0;
     let average_exec_time = 0;
     let query_cnt = 0;
-    const query_output = await I.pgExecuteQueryOnDemand(`select query, queryid, planid, query_plan, calls, total_exec_time, mean_exec_time  from pg_stat_monitor where datname='${database}' and queryid='${queryId}';`, connection);
+    let query_output;
+
+    if (version < 13) {
+      query_output = await I.pgExecuteQueryOnDemand(`select query, queryid, planid, query_plan, calls, total_time as total_exec_time, mean_time as mean_exec_time  from pg_stat_monitor where datname='${database}' and queryid='${queryId}';`, connection);
+    } else {
+      query_output = await I.pgExecuteQueryOnDemand(`select query, queryid, planid, query_plan, calls, total_exec_time, mean_exec_time  from pg_stat_monitor where datname='${database}' and queryid='${queryId}';`, connection);
+    }
 
     for (let i = 0; i < query_output.rows.length; i++) {
       total_exec_time += query_output.rows[i].total_exec_time;
