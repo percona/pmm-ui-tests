@@ -18,7 +18,7 @@ module.exports = {
     dbUnderMonitoringCount:
       locate('.panel-content span').inside('[aria-label="Monitored DB Services panel"]'),
     dashboardHeaderText: 'Percona Monitoring and Management',
-    dashboardHeaderLocator: '//div[contains(@class, "dashboard-header")]',
+    dashboardHeaderLocator: "//span[contains(text(),'Home Dashboard')]",
     oldLastCheckSelector: '#pmm-update-widget > .last-check-wrapper p',
     sttDisabledFailedChecksPanelSelector: '$db-check-panel-settings-link',
     failedSecurityChecksPmmSettingsLink: locate('$db-check-panel-settings-link').find('a'),

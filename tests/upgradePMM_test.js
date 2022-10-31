@@ -745,8 +745,9 @@ Scenario(
   },
 );
 
-Scenario(
-  'Verify user can see News Panel @post-upgrade @ami-upgrade @pmm-upgrade  ',
+// New Home dashboard for 2.32.0 doesn't have news panel on home dashboard
+xScenario(
+  'Verify user can see News Panel @post-upgrade @ami-upgrade @pmm-upgrade',
   async ({ I, homePage }) => {
     I.amOnPage(homePage.url);
     I.waitForVisible(homePage.fields.newsPanelTitleSelector, 30);
@@ -1002,7 +1003,6 @@ if (versionMinor >= 23) {
       } = current;
 
       const serviceList = [serviceName, `remote_api_${serviceName}`];
-
       for (const service of serviceList) {
         I.amOnPage(qanPage.url);
         qanOverview.waitForOverviewLoaded();
