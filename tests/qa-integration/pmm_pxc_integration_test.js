@@ -109,7 +109,12 @@ Scenario(
       adminPage.performPageDown(5);
       await dashboardPage.expandEachDashboardRow();
       adminPage.performPageUp(5);
-      await dashboardPage.verifyThereAreNoGraphsWithNA(1);
+      if (service === remoteServiceName) {
+        await dashboardPage.verifyThereAreNoGraphsWithNA(7);
+      } else {
+        await dashboardPage.verifyThereAreNoGraphsWithNA(1);
+      }
+
       await dashboardPage.verifyThereAreNoGraphsWithoutData(5);
       I.amOnPage(`${dashboardPage.mysqlPXCGaleraNodeSummaryDashboard.url}`);
       dashboardPage.waitForDashboardOpened();
