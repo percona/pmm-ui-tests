@@ -25,7 +25,7 @@ module.exports = {
     sttFailedChecksPanelSelector: '$db-check-panel-has-checks',
     checksPanelSelector: '$db-check-panel-home',
     noFailedChecksInPanel: '$db-check-panel-zero-checks',
-    failedChecksPanelInfo: '[aria-label="Failed Checks panel"] i',
+    failedChecksPanelInfo: '[aria-label="Environment Health panel"] i',
     newsPanelTitleSelector: dashboardPage.graphsLocator('Percona News'),
     pmmCustomMenu: locate('$sidemenu').find('a[aria-label="Dashboards"]'),
     servicesButton: locate('span').withText('Services'),
