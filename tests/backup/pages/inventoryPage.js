@@ -11,7 +11,7 @@ module.exports = {
     columnHeaderLocator: (columnHeaderText) => `//th[text()="${columnHeaderText}"]`,
     dropdownOption: (text) => locate('div[class$="-select-option-body"]').find('span').withText(text),
     selectedLocation: '//label[@data-testid="location-field-label"]/parent::div/following-sibling::div[1]//div[contains(@class, "-singleValue")]',
-    selectedService: locate('div[class*="-singleValue"]').inside(locate('div').withChild('$service-select-label')),
+    selectedService: locate('div[class*="-singleValue"]').inside(locate('span').withChild('$service-select-label')),
     inProgressBackup: '$statusPending',
     backupStatus: '$statusMsg',
     pendingBackupByName: (name) => locate('$statusPending').inside(artifactCell(name)),
@@ -29,7 +29,8 @@ module.exports = {
     fullBackUpName: '$backup-artifact-details-name',
   },
   buttons: {
-    openAddBackupModal: '$backup-add-modal-button',
+    openAddBackupModal: '$backup-add-button',
+    showAdvancedSettings: '//div[text()="Advanced Settings:"]/preceding-sibling::button',
     // restoreByName returns Restore button locator for a given Artifact name
     backupLogsByName: (name) => locate('span[role="button"]').inside(artifactCell(name)),
     actionsMenuByName: (name) => locate('$dropdown-menu-toggle').inside(artifactCell(name)),
@@ -49,7 +50,7 @@ module.exports = {
     backupName: '$backupName-text-input',
     vendor: '$vendor-text-input',
     description: '$description-textarea-input',
-    serviceNameDropdown: locate('div[class$="-select-value-container"]').inside(locate('div').withChild('$service-select-label')),
+    serviceNameDropdown: locate('div[class$="-select-value-container"]').inside(locate('span').withChild('$service-select-label')),
     locationDropdown: '//label[@data-testid="location-field-label"]/parent::div/following-sibling::div[1]//div[contains(@class, "-select-value-container")]',
   },
   messages: {
