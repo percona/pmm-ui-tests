@@ -111,11 +111,12 @@ Scenario(
       adminPage.performPageUp(5);
       if (service === remoteServiceName) {
         await dashboardPage.verifyThereAreNoGraphsWithNA(7);
+        await dashboardPage.verifyThereAreNoGraphsWithoutData(9);
       } else {
         await dashboardPage.verifyThereAreNoGraphsWithNA(1);
+        await dashboardPage.verifyThereAreNoGraphsWithoutData(5);
       }
 
-      await dashboardPage.verifyThereAreNoGraphsWithoutData(5);
       I.amOnPage(`${dashboardPage.mysqlPXCGaleraNodeSummaryDashboard.url}`);
       dashboardPage.waitForDashboardOpened();
       await dashboardPage.applyFilter('Service Name', service);
