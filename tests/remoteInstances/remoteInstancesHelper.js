@@ -216,14 +216,14 @@ module.exports = {
         username: process.env.REMOTE_AWS_MYSQL_USER,
         password: process.env.REMOTE_AWS_MYSQL_PASSWORD,
         clusterName: 'aws_rds_mysql_5_7',
-        port: 3306,
+        port: 42001,
       },
       aws_rds_8_0: {
         address: secret(process.env.REMOTE_AWS_MYSQL80_HOST),
         username: secret(process.env.REMOTE_AWS_MYSQL80_USER),
         password: secret(process.env.REMOTE_AWS_MYSQL80_PASSWORD),
         clusterName: 'aws_rds_mysql_8_0',
-        port: 3306,
+        port: 42001,
       },
       aws_rds_5_6: {
         address: secret(process.env.REMOTE_AWS_MYSQL57_HOST),
@@ -236,7 +236,7 @@ module.exports = {
         userName: secret(process.env.REMOTE_AWS_POSTGRES12_USER),
         password: secret(process.env.REMOTE_AWS_POSTGRES12_PASSWORD),
         clusterName: 'aws_postgresql_12',
-        port: 5432,
+        port: 42001,
       },
       aurora: {
         aws_access_key: process.env.PMM_QA_AWS_ACCESS_KEY_ID,

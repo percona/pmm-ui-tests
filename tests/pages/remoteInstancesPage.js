@@ -547,7 +547,7 @@ module.exports = {
       case 'pmm-qa-rds-mysql-5-7-39':
         this.fillFields(this.mysql57rdsInput);
         break;
-      case 'pmm-qa-postgres-12':
+      case 'pmm-qa-pgsql-12':
         this.fillFields(this.postgresqlInputs);
         break;
       case 'azure-MySQL':
