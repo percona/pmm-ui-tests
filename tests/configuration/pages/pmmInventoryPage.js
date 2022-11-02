@@ -45,6 +45,7 @@ module.exports = {
   },
 
   async changeRowsPerPage(count) {
+    I.waitForElement(this.fields.rowsPerPage, 30);
     I.scrollPageToBottom();
     I.waitForElement(this.fields.rowsPerPage, 30);
     I.click(this.fields.rowsPerPage);
@@ -119,9 +120,12 @@ module.exports = {
 
     I.waitForElement(servicesLink, 20);
     I.click(servicesLink);
+    await this.changeRowsPerPage(100);
     const nodeId = await this.getNodeId(serviceName);
 
     I.click(agentLinkLocator);
+    await this.changeRowsPerPage(100);
+
     const enhanceMetricsDisabled = `//tr//td//span[contains(text(), "${nodeId}")]/../span[contains(text(),"enhanced_metrics_disabled: true")]`;
 
     I.waitForElement(enhanceMetricsDisabled, 30);
