@@ -25,7 +25,7 @@ Scenario(
   async ({
     I, remoteInstancesPage, pmmInventoryPage,
   }) => {
-    const serviceName = 'pmm-qa-postgres-12';
+    const serviceName = 'pmm-qa-pgsql-12';
 
     I.amOnPage(remoteInstancesPage.url);
     remoteInstancesPage.waitUntilRemoteInstancesPageLoaded().openAddAWSRDSMySQLPage();
@@ -40,7 +40,8 @@ Scenario(
     remoteInstancesPage.fillRemoteRDSFields(serviceName);
     remoteInstancesPage.createRemoteInstance(serviceName);
     pmmInventoryPage.verifyRemoteServiceIsDisplayed(serviceName);
-    await pmmInventoryPage.verifyAgentHasStatusRunning(serviceName);
+    // Skipping due to QAN Setup part on AWS
+    // await pmmInventoryPage.verifyAgentHasStatusRunning(serviceName);
     await pmmInventoryPage.verifyMetricsFlags(serviceName);
   },
 );
@@ -50,7 +51,7 @@ Scenario(
   async ({
     I, dashboardPage, settingsAPI,
   }) => {
-    const serviceName = 'pmm-qa-postgres-12';
+    const serviceName = 'pmm-qa-pgsql-12';
 
     // Increase resolution to avoid failures for OVF execution
     if (process.env.OVF_TEST === 'yes') {
@@ -74,7 +75,8 @@ Scenario(
   },
 ).retry(2);
 
-Scenario(
+// Skip due to PGSQL instance setup on AWS
+xScenario(
   'PMM-T716 - Verify QAN for Postgres RDS added via UI @aws @instances',
   async ({
     I, qanOverview, qanFilters, qanPage,
