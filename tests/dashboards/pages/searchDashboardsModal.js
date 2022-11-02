@@ -90,7 +90,6 @@ module.exports = {
         'MongoDB Collection Details',
         'MongoDB Collections Overview',
         'MongoDB Oplog Details',
-        'New-Home Dashboard',
         'PXC Galera Cluster Summary (experimental)',
       ],
     },
