@@ -9,7 +9,7 @@ Before(async ({ I }) => {
 Scenario(
   'PMM-T138 Verify disabling enhanced metrics for RDS, PMM-T139 Verify disabling basic metrics for RDS, PMM-T9 Verify adding RDS instances [critical] @instances',
   async ({ I, remoteInstancesPage, pmmInventoryPage }) => {
-    const instanceIdToMonitor = remoteInstancesPage.rds['Service Name'];
+    const instanceIdToMonitor = remoteInstancesPage.mysql57rds['Service Name'];
 
     I.amOnPage(remoteInstancesPage.url);
     remoteInstancesPage.waitUntilRemoteInstancesPageLoaded().openAddAWSRDSMySQLPage();
@@ -35,9 +35,9 @@ xScenario(
 ).retry(1);
 
 Scenario(
-  'Verify AWS RDS MySQL 5.6 instance has status running [critical] @instances',
+  'Verify AWS RDS MySQL 5.7 instance has status running [critical] @instances',
   async ({ I, remoteInstancesPage, pmmInventoryPage }) => {
-    const serviceName = remoteInstancesPage.rds['Service Name'];
+    const serviceName = remoteInstancesPage.mysql57rds['Service Name'];
 
     I.amOnPage(pmmInventoryPage.url);
     pmmInventoryPage.verifyRemoteServiceIsDisplayed(serviceName);
@@ -50,7 +50,7 @@ xScenario(
   async ({
     I, qanPage, remoteInstancesPage, qanFilters,
   }) => {
-    const filters = remoteInstancesPage.rds;
+    const filters = remoteInstancesPage.mysql57rds;
 
     I.amOnPage(qanPage.url);
     qanFilters.waitForFiltersLoad();
@@ -65,7 +65,7 @@ xScenario(
 );
 
 Scenario(
-  'Verify MySQL Instances Overview Dashboard for AWS RDS MySQL 5.6 data after it was added for monitoring @instances',
+  'Verify MySQL Instances Overview Dashboard for AWS RDS MySQL 5.7 data after it was added for monitoring @instances',
   async ({ I, dashboardPage }) => {
     I.amOnPage(dashboardPage.mySQLInstanceOverview.urlWithRDSFilter);
     dashboardPage.waitForDashboardOpened();
@@ -76,9 +76,9 @@ Scenario(
 );
 
 Scenario(
-  'Verify MySQL Instances Overview Dashboard contains AWS RDS MySQL 5.6 filters @instances',
+  'Verify MySQL Instances Overview Dashboard contains AWS RDS MySQL 5.7 filters @instances',
   async ({ I, dashboardPage, remoteInstancesPage }) => {
-    const filters = remoteInstancesPage.rds;
+    const filters = remoteInstancesPage.mysql57rds;
 
     I.amOnPage(dashboardPage.mySQLInstanceOverview.url);
     dashboardPage.waitForDashboardOpened();
@@ -98,7 +98,7 @@ Scenario(
     grafanaAPI, remoteInstancesPage, inventoryAPI,
   }) => {
     const metricNames = ['aws_rds_cpu_credit_usage_average', 'rdsosmetrics_memory_total', 'rdsosmetrics_cpuUtilization_total'];
-    const serviceName = remoteInstancesPage.rds['Service Name'];
+    const serviceName = remoteInstancesPage.mysql57rds['Service Name'];
     const { node_id } = await inventoryAPI.apiGetNodeInfoByServiceName('MYSQL_SERVICE', serviceName);
     const response = await inventoryAPI.apiGetAgentsViaNodeId(node_id);
     const result = response.data.rds_exporter[0];
