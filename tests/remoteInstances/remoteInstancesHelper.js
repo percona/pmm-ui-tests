@@ -52,7 +52,7 @@ const remoteInstanceStatus = {
       enabled: true,
     },
     aws_rds_5_6: {
-      enabled: true,
+      enabled: false,
     },
     aws_postgresql_12: {
       enabled: true,
@@ -209,8 +209,8 @@ module.exports = {
       },
     },
     aws: {
-      aws_access_key: process.env.AWS_ACCESS_KEY_ID,
-      aws_secret_key: process.env.AWS_SECRET_ACCESS_KEY,
+      aws_access_key: process.env.PMM_QA_AWS_ACCESS_KEY_ID,
+      aws_secret_key: process.env.PMM_QA_AWS_ACCESS_KEY,
       aws_rds_5_7: {
         address: process.env.REMOTE_AWS_MYSQL57_HOST,
         username: process.env.REMOTE_AWS_MYSQL_USER,
