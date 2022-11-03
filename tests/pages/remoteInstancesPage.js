@@ -458,7 +458,7 @@ module.exports = {
       case remoteInstancesHelper.services.postgresql:
         I.click(this.fields.usePgStatStatements);
         break;
-      case 'pmm-qa-postgres-12':
+      case 'pmm-qa-pgsql-12':
         I.click(this.fields.disableEnhancedMetrics);
         I.click(this.fields.disableBasicMetrics);
         break;

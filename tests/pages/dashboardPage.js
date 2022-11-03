@@ -915,7 +915,7 @@ module.exports = {
   },
 
   openGraphDropdownMenu(metric) {
-    I.seeElement(this.graphsLocator(metric));
+    I.waitForVisible(this.graphsLocator(metric), 10);
     I.click(this.graphsLocator(metric));
   },
 
