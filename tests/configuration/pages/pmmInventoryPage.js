@@ -47,7 +47,6 @@ module.exports = {
   async changeRowsPerPage(count) {
     I.waitForElement(this.fields.rowsPerPage, 30);
     I.scrollPageToBottom();
-    I.waitForElement(this.fields.rowsPerPage, 30);
     I.click(this.fields.rowsPerPage);
     I.waitForElement(this.fields.inventoryTableRowCount(count), 30);
     // Temp Hack for making 100 in the page count rows
