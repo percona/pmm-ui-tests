@@ -13,6 +13,15 @@ module.exports = () => actor({
     this.click(systemMessageButtonClose);
   },
 
+  getPopUpMessage(timeout = 30) {
+    this.waitForElement(systemMessageText, timeout);
+    const messageText = this.grabTextFrom(systemMessageText);
+
+    this.click(systemMessageButtonClose);
+
+    return messageText;
+  },
+
   useDataQA: (selector) => `[data-testid="${selector}"]`,
   getSingleSelectOptionLocator: (optionName) => locate('[aria-label="Select option"]')
     .find('span')

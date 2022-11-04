@@ -464,6 +464,8 @@ module.exports = {
         break;
     }
     I.click(this.fields.addService);
+    const messageText = I.getPopUpMessage();
+    I.say(messageText);
     I.waitForVisible(pmmInventoryPage.fields.agentsLink, 30);
 
     return pmmInventoryPage;
