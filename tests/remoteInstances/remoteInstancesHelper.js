@@ -89,11 +89,14 @@ const remoteInstanceStatus = {
   },
 };
 
-let SERVER_HOST; let EXTERNAL_EXPORTER_HOST; let DB_CONFIG = {};
+let SERVER_HOST;
+let EXTERNAL_EXPORTER_HOST;
+let DB_CONFIG = {};
 let PMM_SERVER_OVF_AMI_SETUP = 'false';
 
 DB_CONFIG = {
-  MYSQL_SERVER_PORT: (PMM_SERVER_OVF_AMI_SETUP === 'true' ? '3309' : '3306'),
+  MYSQL_SERVER_PORT:
+    process.env.AMI_UPGRADE_TESTING_INSTANCE === 'true' || process.env.OVF_UPGRADE_TESTING_INSTANCE === 'true' ? '3309' : '3306',
   POSTGRES_SERVER_PORT: '5432',
   MONGODB_SERVER_PORT: '27017',
   PROXYSQL_SERVER_PORT: '6032',
@@ -120,7 +123,7 @@ module.exports = {
   remote_instance: {
     mysql: {
       ps_5_7: {
-        host: (PMM_SERVER_OVF_AMI_SETUP === 'true' ? SERVER_HOST : 'mysql'),
+        host: PMM_SERVER_OVF_AMI_SETUP === 'true' ? SERVER_HOST : 'mysql',
         port: DB_CONFIG.MYSQL_SERVER_PORT,
         username: 'pmm-agent',
         password: 'pmm%*&agent-password',
@@ -147,7 +150,7 @@ module.exports = {
     },
     mongodb: {
       psmdb_4_2: {
-        host: (PMM_SERVER_OVF_AMI_SETUP === 'true' ? SERVER_HOST : 'mongo'),
+        host: PMM_SERVER_OVF_AMI_SETUP === 'true' ? SERVER_HOST : 'mongo',
         port: DB_CONFIG.MONGODB_SERVER_PORT,
         username: 'root',
         password: 'root-!@#%^password',
@@ -165,7 +168,7 @@ module.exports = {
     },
     postgresql: {
       pdpgsql_13_3: {
-        host: (PMM_SERVER_OVF_AMI_SETUP === 'true' ? SERVER_HOST : 'postgres'),
+        host: PMM_SERVER_OVF_AMI_SETUP === 'true' ? SERVER_HOST : 'postgres',
         port: DB_CONFIG.POSTGRES_SERVER_PORT,
         username: 'postgres',
         password: 'pmm-^*&@agent-password',
@@ -183,7 +186,7 @@ module.exports = {
     },
     proxysql: {
       proxysql_2_1_1: {
-        host: (PMM_SERVER_OVF_AMI_SETUP === 'true' ? SERVER_HOST : 'proxysql'),
+        host: PMM_SERVER_OVF_AMI_SETUP === 'true' ? SERVER_HOST : 'proxysql',
         port: DB_CONFIG.PROXYSQL_SERVER_PORT,
         username: 'radmin',
         password: 'radmin',
@@ -192,14 +195,14 @@ module.exports = {
     },
     haproxy: {
       haproxy_2: {
-        host: (PMM_SERVER_OVF_AMI_SETUP === 'true' ? EXTERNAL_EXPORTER_HOST : '192.168.0.1'),
+        host: PMM_SERVER_OVF_AMI_SETUP === 'true' ? EXTERNAL_EXPORTER_HOST : '192.168.0.1',
         port: '42100',
         clusterName: 'haproxy_clst',
       },
     },
     external: {
       redis: {
-        host: (PMM_SERVER_OVF_AMI_SETUP === 'true' ? EXTERNAL_EXPORTER_HOST : '192.168.0.1'),
+        host: PMM_SERVER_OVF_AMI_SETUP === 'true' ? EXTERNAL_EXPORTER_HOST : '192.168.0.1',
         port: '42200',
         clusterName: 'redis_external_exporter',
         environment: 'redis_external',
@@ -385,88 +388,88 @@ module.exports = {
 
   // Used for Adding Remote Instance during Upgrade Tests runs for AMI and Docker via API
   instanceTypes: {
-    mysql: (remoteInstanceStatus.mysql.ps_5_7.enabled ? 'MySQL' : undefined),
-    postgresql: (remoteInstanceStatus.postgresql.pdpgsql_13_3.enabled ? 'PostgreSQL' : undefined),
-    mongodb: (remoteInstanceStatus.mongodb.psmdb_4_2.enabled ? 'MongoDB' : undefined),
-    proxysql: (remoteInstanceStatus.proxysql.proxysql_2_1_1.enabled ? 'ProxySQL' : undefined),
-    rds: (remoteInstanceStatus.aws.aws_rds_5_7.enabled ? 'RDS' : undefined),
-    rdsAurora: (remoteInstanceStatus.aurora.aurora2.enabled ? 'RDSAurora' : undefined),
-    postgresGC: (remoteInstanceStatus.gc.gc_postgresql.enabled ? 'postgresGC' : undefined),
+    mysql: remoteInstanceStatus.mysql.ps_5_7.enabled ? 'MySQL' : undefined,
+    postgresql: remoteInstanceStatus.postgresql.pdpgsql_13_3.enabled ? 'PostgreSQL' : undefined,
+    mongodb: remoteInstanceStatus.mongodb.psmdb_4_2.enabled ? 'MongoDB' : undefined,
+    proxysql: remoteInstanceStatus.proxysql.proxysql_2_1_1.enabled ? 'ProxySQL' : undefined,
+    rds: remoteInstanceStatus.aws.aws_rds_5_7.enabled ? 'RDS' : undefined,
+    rdsAurora: remoteInstanceStatus.aurora.aurora2.enabled ? 'RDSAurora' : undefined,
+    postgresGC: remoteInstanceStatus.gc.gc_postgresql.enabled ? 'postgresGC' : undefined,
   },
 
   // Generic object for each service type, used by both UI/Upgrade jobs depending on the service being used - don't add RDS here
   serviceTypes: {
-    mysql: (
-      remoteInstanceStatus.mysql.ps_5_7.enabled ? {
+    mysql: remoteInstanceStatus.mysql.ps_5_7.enabled
+      ? {
         serviceType: 'MYSQL_SERVICE',
         service: 'mysql',
-      } : undefined
-    ),
-    mongodb: (
-      remoteInstanceStatus.mongodb.psmdb_4_2.enabled ? {
+      }
+      : undefined,
+    mongodb: remoteInstanceStatus.mongodb.psmdb_4_2.enabled
+      ? {
         serviceType: 'MONGODB_SERVICE',
         service: 'mongodb',
-      } : undefined
-    ),
-    postgresql: (
-      remoteInstanceStatus.postgresql.pdpgsql_13_3.enabled ? {
+      }
+      : undefined,
+    postgresql: remoteInstanceStatus.postgresql.pdpgsql_13_3.enabled
+      ? {
         serviceType: 'POSTGRESQL_SERVICE',
         service: 'postgresql',
-      } : undefined
-    ),
-    proxysql: (
-      remoteInstanceStatus.proxysql.proxysql_2_1_1.enabled ? {
+      }
+      : undefined,
+    proxysql: remoteInstanceStatus.proxysql.proxysql_2_1_1.enabled
+      ? {
         serviceType: 'PROXYSQL_SERVICE',
         service: 'proxysql',
-      } : undefined
-    ),
-    postgresGC: (
-      remoteInstanceStatus.gc.gc_postgresql.enabled ? {
+      }
+      : undefined,
+    postgresGC: remoteInstanceStatus.gc.gc_postgresql.enabled
+      ? {
         serviceType: 'POSTGRESQL_SERVICE',
         service: 'postgresql',
-      } : undefined
-    ),
-    mysql_ssl: (
-      remoteInstanceStatus.mysql.ms_8_0_ssl.enabled ? {
+      }
+      : undefined,
+    mysql_ssl: remoteInstanceStatus.mysql.ms_8_0_ssl.enabled
+      ? {
         serviceType: 'MYSQL_SERVICE',
         service: 'mysql',
-      } : undefined
-    ),
-    mongodb_ssl: (
-      remoteInstanceStatus.mongodb.mongodb_4_4_ssl.enabled ? {
+      }
+      : undefined,
+    mongodb_ssl: remoteInstanceStatus.mongodb.mongodb_4_4_ssl.enabled
+      ? {
         serviceType: 'MONGODB_SERVICE',
         service: 'mongodb',
-      } : undefined
-    ),
-    postgres_ssl: (
-      remoteInstanceStatus.postgresql.postgres_13_3_ssl.enabled ? {
+      }
+      : undefined,
+    postgres_ssl: remoteInstanceStatus.postgresql.postgres_13_3_ssl.enabled
+      ? {
         serviceType: 'POSTGRESQL_SERVICE',
         service: 'postgresql',
-      } : undefined
-    ),
+      }
+      : undefined,
   },
 
   // General Remote Instances Service List, this is what UI-tests job uses to run remote instances tests.
   services: {
-    mysql: (remoteInstanceStatus.mysql.ps_5_7.enabled ? 'mysql_remote_new' : undefined),
-    mongodb: (remoteInstanceStatus.mongodb.psmdb_4_2.enabled ? 'mongodb_remote_new' : undefined),
-    postgresql: (remoteInstanceStatus.postgresql.pdpgsql_13_3.enabled ? 'postgresql_remote_new' : undefined),
-    proxysql: (remoteInstanceStatus.proxysql.proxysql_2_1_1.enabled ? 'proxysql_remote_new' : undefined),
-    postgresGC: (remoteInstanceStatus.gc.gc_postgresql.enabled ? 'postgresql_GC_remote_new' : undefined),
-    mysql_ssl: (remoteInstanceStatus.mysql.ms_8_0_ssl.enabled ? 'mysql_ssl_new' : undefined),
-    mongodb_ssl: (remoteInstanceStatus.mongodb.mongodb_4_4_ssl.enabled ? 'mongodb_ssl_new' : undefined),
-    postgres_ssl: (remoteInstanceStatus.postgresql.postgres_13_3_ssl.enabled ? 'postgres_ssl_new' : undefined),
+    mysql: remoteInstanceStatus.mysql.ps_5_7.enabled ? 'mysql_remote_new' : undefined,
+    mongodb: remoteInstanceStatus.mongodb.psmdb_4_2.enabled ? 'mongodb_remote_new' : undefined,
+    postgresql: remoteInstanceStatus.postgresql.pdpgsql_13_3.enabled ? 'postgresql_remote_new' : undefined,
+    proxysql: remoteInstanceStatus.proxysql.proxysql_2_1_1.enabled ? 'proxysql_remote_new' : undefined,
+    postgresGC: remoteInstanceStatus.gc.gc_postgresql.enabled ? 'postgresql_GC_remote_new' : undefined,
+    mysql_ssl: remoteInstanceStatus.mysql.ms_8_0_ssl.enabled ? 'mysql_ssl_new' : undefined,
+    mongodb_ssl: remoteInstanceStatus.mongodb.mongodb_4_4_ssl.enabled ? 'mongodb_ssl_new' : undefined,
+    postgres_ssl: remoteInstanceStatus.postgresql.postgres_13_3_ssl.enabled ? 'postgres_ssl_new' : undefined,
   },
 
   // Only add a service here when you want to include it as part of Upgrade tests cycle for AMI and Docker
   upgradeServiceNames: {
-    mysql: (remoteInstanceStatus.mysql.ps_5_7.enabled ? 'mysql_upgrade_service' : undefined),
-    mongodb: (remoteInstanceStatus.mongodb.psmdb_4_2.enabled ? 'psmdb_upgrade_scervice' : undefined),
-    proxysql: (remoteInstanceStatus.proxysql.proxysql_2_1_1.enabled ? 'proxysql_upgrade_service' : undefined),
-    postgresql: (remoteInstanceStatus.postgresql.pdpgsql_13_3.enabled ? 'postgres_upgrade_service' : undefined),
-    rds: (remoteInstanceStatus.aws.aws_rds_5_7.enabled ? 'mysql_rds_uprgade_service' : undefined),
-    rdsaurora: (remoteInstanceStatus.aurora.aurora2.enabled ? 'aurora_rds_upgrade_service' : undefined),
-    postgresgc: (remoteInstanceStatus.gc.gc_postgresql.enabled ? 'postgresql_GC_remote_new' : undefined),
+    mysql: remoteInstanceStatus.mysql.ps_5_7.enabled ? 'mysql_upgrade_service' : undefined,
+    mongodb: remoteInstanceStatus.mongodb.psmdb_4_2.enabled ? 'psmdb_upgrade_scervice' : undefined,
+    proxysql: remoteInstanceStatus.proxysql.proxysql_2_1_1.enabled ? 'proxysql_upgrade_service' : undefined,
+    postgresql: remoteInstanceStatus.postgresql.pdpgsql_13_3.enabled ? 'postgres_upgrade_service' : undefined,
+    rds: remoteInstanceStatus.aws.aws_rds_5_7.enabled ? 'mysql_rds_uprgade_service' : undefined,
+    rdsaurora: remoteInstanceStatus.aurora.aurora2.enabled ? 'aurora_rds_upgrade_service' : undefined,
+    postgresgc: remoteInstanceStatus.gc.gc_postgresql.enabled ? 'postgresql_GC_remote_new' : undefined,
   },
 
   // Metrics that needs to be checked post upgrade for each Service, only used by Docker Upgrade & AMI upgrade
