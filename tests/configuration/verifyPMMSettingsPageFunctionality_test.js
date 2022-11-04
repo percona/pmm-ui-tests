@@ -319,7 +319,8 @@ Scenario(
 
     // Open advanced settings and verify backup management switch is off
     I.amOnPage(pmmSettingsPage.advancedSettingsUrl);
-    pmmSettingsPage.verifySwitch(pmmSettingsPage.fields.backupManagementSwitchInput, 'off');
+    await I.waitForVisible(pmmSettingsPage.fields.backupManagementSwitchInput, 30);
+    await pmmSettingsPage.verifySwitch(pmmSettingsPage.fields.backupManagementSwitchInput, 'off');
 
     // Open scheduled backups page and verify message about disabled backup management
     I.amOnPage(scheduledPage.url);
