@@ -47,7 +47,8 @@ Data(azureServices).Scenario(
   },
 );
 
-Scenario(
+// Skip Due to changes Home Dashboard
+xScenario(
   'PMM-T756 - Verify Azure node is displayed on Home dashboard @instances',
   async ({
     I, homePage, dashboardPage,
