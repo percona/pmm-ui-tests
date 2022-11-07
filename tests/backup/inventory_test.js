@@ -75,7 +75,8 @@ Scenario(
     backupInventoryPage.selectDropdownOption(backupInventoryPage.fields.serviceNameDropdown, mongoServiceName);
     backupInventoryPage.selectDropdownOption(backupInventoryPage.fields.locationDropdown, location.name);
     I.fillField(backupInventoryPage.fields.backupName, backupName);
-    I.fillField(backupInventoryPage.fields.description, 'test description');
+    // TODO: uncomment when PMM-10899 will be fixed
+    // I.fillField(backupInventoryPage.fields.description, 'test description');
     I.click(backupInventoryPage.buttons.addBackup);
     I.waitForVisible(backupInventoryPage.elements.pendingBackupByName(backupName), 10);
     backupInventoryPage.verifyBackupSucceeded(backupName);
@@ -118,8 +119,8 @@ Scenario(
     I.seeElementsDisabled(backupInventoryPage.buttons.addBackup);
     I.fillField(backupInventoryPage.fields.backupName, backupName);
     I.seeElementsEnabled(backupInventoryPage.buttons.addBackup);
-
-    I.fillField(backupInventoryPage.fields.description, 'test description');
+    // TODO: uncomment when PMM-10899 will be fixed
+    // I.fillField(backupInventoryPage.fields.description, 'test description');
   },
 );
 
@@ -258,7 +259,8 @@ Scenario(
     I.seeTextEquals(mongoServiceName, backupInventoryPage.elements.selectedService);
     backupInventoryPage.selectDropdownOption(backupInventoryPage.fields.locationDropdown, location.name);
     I.seeTextEquals(location.name, backupInventoryPage.elements.selectedLocation);
-    I.fillField(backupInventoryPage.fields.description, 'Test description');
+    // TODO: uncomment when PMM-10899 will be fixed
+    // I.fillField(backupInventoryPage.fields.description, 'Test description');
     I.click(backupInventoryPage.buttons.addBackup);
     backupInventoryPage.verifyBackupSucceeded(backupName);
     I.seeCssPropertiesOnElements(backupInventoryPage.elements.artifactName(backupName), { 'text-overflow': 'ellipsis' });
