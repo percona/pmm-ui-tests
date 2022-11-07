@@ -39,7 +39,7 @@ AfterSuite(async ({ portalAPI }) => {
 });
 
 Scenario(
-  'PMM-T1202 Verify that Advisors reflect on user authority / platform role changes @stt',
+  'PMM-T1202 Verify that Advisors reflect on user authority / platform role changes @stt @not-ovf',
   async ({
     I, pmmSettingsPage, databaseChecksPage, portalAPI, homePage, settingsAPI,
   }) => {

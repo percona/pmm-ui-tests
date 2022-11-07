@@ -111,7 +111,7 @@ module.exports = {
   },
 
   verifyBackupRowValues(name, vendor, frequency, retention, type, location) {
-    I.seeElement(this.elements.scheduleName(name));
+    I.waitForVisible(this.elements.scheduleName(name), 60);
     I.seeTextEquals(vendor, this.elements.scheduleVendorByName(name));
     I.seeTextEquals(frequency, this.elements.frequencyByName(name));
     I.seeTextEquals(`${retention} backups`, this.elements.retentionByName(name));
@@ -120,7 +120,7 @@ module.exports = {
   },
 
   verifyBackupDetailsRow(name, description, dataModel, cronExpression) {
-    I.seeElement(this.buttons.showDetails(name));
+    I.waitForVisible(this.buttons.showDetails(name), 60);
     I.click(this.buttons.showDetails(name));
     I.waitForVisible(this.elements.detailedInfoRow.backupName, 2);
     I.seeTextEquals(name, this.elements.detailedInfoRow.backupName);

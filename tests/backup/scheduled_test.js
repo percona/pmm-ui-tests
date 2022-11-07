@@ -306,6 +306,7 @@ Scenario('@PMM-T908 Verify user can enable/disable scheduled backup @backup @bm-
     await scheduledPage.openScheduledBackupsPage();
 
     // Verify schedule is disabled
+    await I.waitForVisible(scheduledPage.elements.toggleByName(schedule.name), 60);
     I.seeAttributesOnElements(scheduledPage.elements.toggleByName(schedule.name), { checked: null });
 
     // Grab background-color of a row
@@ -313,6 +314,7 @@ Scenario('@PMM-T908 Verify user can enable/disable scheduled backup @backup @bm-
 
     // Enable schedule
     I.click(scheduledPage.buttons.enableDisableByName(schedule.name));
+    await I.waitForVisible(scheduledPage.elements.toggleByName(schedule.name), 60);
     I.seeAttributesOnElements(scheduledPage.elements.toggleByName(schedule.name), { checked: true });
 
     // Grab background-color of a row after enabling schedule
@@ -322,9 +324,11 @@ Scenario('@PMM-T908 Verify user can enable/disable scheduled backup @backup @bm-
 
     // Disable schedule
     I.click(scheduledPage.buttons.enableDisableByName(schedule.name));
+    await I.waitForVisible(scheduledPage.elements.toggleByName(schedule.name), 60);
     I.seeAttributesOnElements(scheduledPage.elements.toggleByName(schedule.name), { checked: null });
 
     // Verify the color is the same as before enabling
+    await I.waitForVisible(scheduledPage.elements.scheduleTypeByName(schedule.name), 60);
     I.seeCssPropertiesOnElements(scheduledPage.elements.scheduleTypeByName(schedule.name), { 'background-color': color });
   });
 
