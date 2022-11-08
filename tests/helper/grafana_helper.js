@@ -223,6 +223,14 @@ class Grafana extends Helper {
 
     return stderr;
   }
+
+  async suppressTour() {
+    const apiContext = this.helpers.REST;
+    const headers = { Authorization: `Basic ${await this.getAuth()}` };
+    const resp = await apiContext.sendPutRequest('v1/user', { product_tour_completed: true }, headers);
+
+    assert.equal(resp.status, 200, 'Failed to set tour finished flag!');
+  }
 }
 
 module.exports = Grafana;
