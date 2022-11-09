@@ -62,7 +62,7 @@ Scenario(
 
     await runContainerWithoutDataContainer(I);
     await I.Authorize('admin', 'admin');
-    await I.wait(60);
+    await I.wait(120);
     testCaseName = 'PMM-T1243';
     await I.amOnPage(basePmmUrl + qanPage.url);
     await I.waitForInvisible(qanPage.elements.noQueryAvailable, 180);
@@ -77,7 +77,7 @@ Scenario(
 
     await stopAndRemoveContainerWithoutDataContainer(I);
     await runContainerWithoutDataContainer(I);
-    await I.wait(30);
+    await I.wait(60);
     const logs = await I.verifyCommand('docker logs pmm-server-srv');
 
     assert.ok(!logs.includes('Error: The directory named as part of the path /srv/logs/supervisord.log does not exist'));
@@ -141,8 +141,8 @@ Scenario(
     I.say(await I.verifyCommand('docker logs pmm-server-srv'));
   },
 );
-
-Scenario(
+// Skipped due to bug: https://jira.percona.com/browse/PMM-10325
+Scenario.skip(
   'PMM-T1255 Verify GF_SECURITY_ADMIN_PASSWORD environment variable @docker-configuration',
   async ({
     I, adminPage, qanPage, dashboardPage, homePage,
