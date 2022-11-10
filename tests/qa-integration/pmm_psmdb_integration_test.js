@@ -106,10 +106,10 @@ Scenario(
     const serviceList = [clientServiceName, remoteServiceName];
 
     for (const service of serviceList) {
-      I.amOnPage(dashboardPage.mongoDbInstanceOverview.url);
+      const url = I.buildUrlWithParams(dashboardPage.mongoDbInstanceOverview.url, { from: 'now-5m', service_name: service });
+
+      I.amOnPage(url);
       dashboardPage.waitForDashboardOpened();
-      await adminPage.applyTimeRange('Last 5 minutes');
-      await dashboardPage.applyFilter('Service Name', service);
       adminPage.performPageDown(5);
       await dashboardPage.expandEachDashboardRow();
       adminPage.performPageUp(5);
@@ -117,9 +117,10 @@ Scenario(
       await dashboardPage.verifyThereAreNoGraphsWithoutData(3);
     }
 
-    I.amOnPage(`${dashboardPage.mongodbReplicaSetSummaryDashboard.url}&var-replset=rs1`);
+    const url = I.buildUrlWithParams(`${dashboardPage.mongodbReplicaSetSummaryDashboard.url}&var-replset=rs1`, { from: 'now-5m' });
+
+    I.amOnPage(url);
     dashboardPage.waitForDashboardOpened();
-    await adminPage.applyTimeRange('Last 5 minutes');
     adminPage.performPageDown(5);
     await dashboardPage.expandEachDashboardRow();
     adminPage.performPageUp(5);
@@ -138,9 +139,9 @@ Scenario(
     const serviceList = [clientServiceName, remoteServiceName];
 
     for (const service of serviceList) {
-      I.amOnPage(qanPage.url);
-      qanOverview.waitForOverviewLoaded();
-      await adminPage.applyTimeRange('Last 12 hours');
+      const url = I.buildUrlWithParams(qanPage.url, { from: 'now-120m' });
+
+      I.amOnPage(url);
       qanOverview.waitForOverviewLoaded();
       qanFilters.waitForFiltersToLoad();
       await qanFilters.applySpecificFilter(service);
