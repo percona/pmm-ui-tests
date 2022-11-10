@@ -31,7 +31,7 @@ module.exports = {
       host, port, username, password,
     } = connection;
 
-    mysql.createConnection({
+    c = mysql.createConnection({
       host,
       port,
       user: username,

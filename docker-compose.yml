@@ -115,7 +115,7 @@ services:
       postgresnodb:
         condition: service_healthy
     environment:
-      - PGPASSWORD=test
+      - PGPASSWORD=50mFC#z7lHZ1
     networks:
       - pmm-network
 
