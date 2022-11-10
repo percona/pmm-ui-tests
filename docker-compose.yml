@@ -87,15 +87,6 @@ services:
     networks:
       - pmm-network
 
-  mongonoauth:
-    image: ${MONGO_IMAGE:-percona/percona-server-mongodb:4.2.8}
-    container_name: pmm-agent_mongonoauth
-    command: --profile 2
-    ports:
-      - "27019:27017"
-    networks:
-      - pmm-network
-
   postgres:
     image: ${POSTGRES_IMAGE:-perconalab/percona-distribution-postgresql:13.3}
     container_name: pmm-agent_postgres

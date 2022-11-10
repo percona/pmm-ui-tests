@@ -7,7 +7,7 @@ Before(async ({ I }) => {
 });
 
 Scenario(
-  'PMM-T1365 Verify PostgreSQL Vacuum monitoring dashboard @nightly @dashboards',
+  'PMM-T1365 Verify PostgreSQL Vacuum monitoring dashboard @dashboards @experimental',
   async ({
     I, experimentalPostgresqlDashboardsPage,
   }) => {

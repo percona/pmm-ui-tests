@@ -629,7 +629,7 @@ module.exports = {
     urlWithRDSFilter:
       'graph/d/mysql-instance-overview/mysql-instances-overview?orgId=1&'
       + 'from=now-5m&to=now&refresh=1m&var-interval=$__auto_interval_interval&var-region=All&'
-      + 'var-environment=All&var-cluster=rds56-cluster&var-replication_set=All&var-az=&'
+      + 'var-environment=All&var-cluster=rds57-cluster&var-replication_set=All&var-az=&'
       + 'var-node_type=All&var-node_model=&var-database=All&var-service_type=All&var-schema=All',
   },
   mysqlInstancesCompareDashboard: {
@@ -933,7 +933,7 @@ module.exports = {
   },
 
   openGraphDropdownMenu(metric) {
-    I.seeElement(this.graphsLocator(metric));
+    I.waitForVisible(this.graphsLocator(metric), 10);
     I.click(this.graphsLocator(metric));
   },
 
