@@ -62,7 +62,7 @@ Scenario(
 
     await runContainerWithoutDataContainer(I);
     await I.Authorize('admin', 'admin');
-    await I.wait(60);
+    await I.wait(120);
     testCaseName = 'PMM-T1243';
     await I.amOnPage(basePmmUrl + qanPage.url);
     await I.waitForInvisible(qanPage.elements.noQueryAvailable, 180);
@@ -77,7 +77,7 @@ Scenario(
 
     await stopAndRemoveContainerWithoutDataContainer(I);
     await runContainerWithoutDataContainer(I);
-    await I.wait(30);
+    await I.wait(60);
     const logs = await I.verifyCommand('docker logs pmm-server-srv');
 
     assert.ok(!logs.includes('Error: The directory named as part of the path /srv/logs/supervisord.log does not exist'));
@@ -106,7 +106,7 @@ Scenario(
     await I.verifyCommand('docker volume create srvFolder');
     await runContainerWithDataContainer(I);
     await I.Authorize('admin', 'admin');
-    await I.wait(60);
+    await I.wait(120);
     testCaseName = 'PMM-T1244';
     await I.amOnPage(basePmmUrl + qanPage.url);
     I.dontSeeElement(qanPage.elements.noQueryAvailable);
@@ -121,12 +121,12 @@ Scenario(
 
     await stopAndRemoveContainerWithDataContainer(I);
     await runContainerWithDataContainer(I);
-    await I.wait(30);
+    await I.wait(60);
     const logs = await I.verifyCommand('docker logs pmm-server-srv');
 
     assert.ok(!logs.includes('Error: The directory named as part of the path /srv/logs/supervisord.log does not exist'));
     await I.amOnPage(basePmmUrl + qanPage.url);
-    adminPage.setAbsoluteTimeRange(moment().subtract({ hours: 12 }).format('YYYY-MM-DD HH:mm:00'), moment().subtract({ minutes: 1, seconds: 30 }).format('YYYY-MM-DD HH:mm:00'));
+    adminPage.setAbsoluteTimeRange(moment().subtract({ hours: 12 }).format('YYYY-MM-DD HH:mm:00'), moment().subtract({ minutes: 1 }).format('YYYY-MM-DD HH:mm:00'));
 
     I.dontSeeElement(qanPage.elements.noQueryAvailable);
     await I.waitForVisible(qanPage.elements.qanRow);
@@ -141,8 +141,8 @@ Scenario(
     I.say(await I.verifyCommand('docker logs pmm-server-srv'));
   },
 );
-
-Scenario(
+// Skipped due to bug: https://jira.percona.com/browse/PMM-10325
+Scenario.skip(
   'PMM-T1255 Verify GF_SECURITY_ADMIN_PASSWORD environment variable @docker-configuration',
   async ({
     I, adminPage, qanPage, dashboardPage, homePage,
