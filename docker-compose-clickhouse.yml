@@ -48,7 +48,7 @@ services:
     command: --default-authentication-plugin=mysql_native_password
     restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: pass
+      MYSQL_ROOT_PASSWORD: 7B*53@lCdflR
   external-clickhouse:
     image: clickhouse/clickhouse-server:22.5.2
     container_name: external-clickhouse

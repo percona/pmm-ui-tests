@@ -1,4 +1,5 @@
 const mysql = require('mysql2');
+
 const { I } = inject();
 
 let c;
@@ -22,14 +23,15 @@ module.exports = {
     host: 'mysql',
     port: 3306,
     username: 'root',
-    password: 'ps',
+    password: '^O6VrIoC1@9b',
   },
 
   connectToPS(connection = this.defaultConnection) {
     const {
       host, port, username, password,
     } = connection;
-    c = mysql.createConnection({
+
+    mysql.createConnection({
       host,
       port,
       user: username,
@@ -49,6 +51,7 @@ module.exports = {
     const {
       host, port, username, password,
     } = connection;
+
     await I.say('Connecting to MySQL');
     c = mysql.createConnection({
       host,
@@ -95,6 +98,7 @@ module.exports = {
 
   async isTableExists(name) {
     await I.say(`SHOW TABLES LIKE '${name}'`);
+
     return new Promise((resolve, reject) => {
       c.query(`SHOW TABLES LIKE '${name}'`, (error, results) => {
         if (error) {
