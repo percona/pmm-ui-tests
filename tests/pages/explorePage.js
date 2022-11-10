@@ -8,6 +8,6 @@ module.exports = {
 
   open() {
     I.amOnPage(this.url);
-    I.waitForVisible(this.elements.rawQueryToggleLabel);
+    I.waitForVisible(this.elements.rawQueryToggleLabel, 30);
   },
 };
