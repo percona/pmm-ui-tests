@@ -125,11 +125,6 @@ Data(versionVerification).Scenario('PMM-T760 PMM-T762 PMM-T770 Saving Custom Ver
     // To uncheck all supported versions.
     await dbaasManageVersionPage.selectAllSupportedVersions(component);
 
-    // Error Message for Required Field
-    I.see(
-      dbaasManageVersionPage.manageVersion.errorMessageRequiredField,
-      dbaasManageVersionPage.manageVersion.versionSelectorFieldErrorMessage(component),
-    );
     I.see(
       dbaasManageVersionPage.manageVersion.errorMessageRequiredField,
       dbaasManageVersionPage.manageVersion.defaultVersionSelectorFieldErrorMessage,
@@ -153,7 +148,6 @@ Data(versionVerification).Scenario('PMM-T760 PMM-T762 PMM-T770 Saving Custom Ver
       dbaasManageVersionPage.manageVersion.defaultVersionSelectorFieldErrorMessage,
     );
     I.seeAttributesOnElements(dbaasManageVersionPage.manageVersion.saveButton, { disabled: true });
-
     I.click(dbaasManageVersionPage.manageVersion.defaultVersionSelector);
     getRecommendedVersions.forEach((version) => {
       I.seeElement(dbaasManageVersionPage.manageVersion.defaultVersionOption(version));
@@ -166,7 +160,6 @@ Data(versionVerification).Scenario('PMM-T760 PMM-T762 PMM-T770 Saving Custom Ver
     unselectedVersions.forEach((version) => {
       I.dontSeeElement(dbaasManageVersionPage.manageVersion.defaultVersionOption(version));
     });
-    I.click(dbaasManageVersionPage.manageVersion.defaultVersionSelector);
 
     const defaultRecommendedVersion = await dbaasManageVersionPage.getRecommendedVersion(component);
 
@@ -201,6 +194,7 @@ Data(versionVerification).Scenario('PMM-T760 PMM-T762 PMM-T770 Saving Custom Ver
           defaultRecommendedVersion,
         ),
       );
+      I.click(dbaasPage.tabs.dbClusterTab.optionsCountLocator(2));
       I.click(dbaasPage.tabs.dbClusterTab.basicOptions.fields.dbClusterDatabaseVersionField);
       getRecommendedVersions.forEach((version) => {
         I.waitForElement(dbaasPage.tabs.dbClusterTab.basicOptions.fields.dbClusterDatabaseVersion(version));
