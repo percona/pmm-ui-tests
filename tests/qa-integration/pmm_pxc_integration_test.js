@@ -8,9 +8,9 @@ Before(async ({ I, settingsAPI }) => {
   await I.Authorize();
 });
 
-const version = process.env.PXC_VERSION ? `${process.env.PXC_VERSION}` : '4.4';
+const version = process.env.PXC_VERSION ? `${process.env.PXC_VERSION}` : '8.0';
 const container_name = `pxc_container_${version}`;
-const remoteServiceName = 'remote_pmm-pxc-integration';
+const remoteServiceName = 'remote_pmm-mysql-integration';
 
 const connection = {
   host: container_name,
