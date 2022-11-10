@@ -102,7 +102,7 @@ Scenario(
     const serviceList = [clientServiceName, remoteServiceName];
 
     for (const service of serviceList) {
-      const url = I.buildUrlWithParams(dashboardPage.mysqlInstanceSummaryDashboard.url, { from: 'now-5m', service_name: service });
+      const url = I.buildUrlWithParams(dashboardPage.mysqlInstanceSummaryDashboard.clearUrl, { from: 'now-5m', to: 'now', service_name: service });
 
       I.amOnPage(url);
       dashboardPage.waitForDashboardOpened();
@@ -130,7 +130,7 @@ Scenario(
     const serviceList = [clientServiceName, remoteServiceName];
 
     for (const service of serviceList) {
-      const url = I.buildUrlWithParams(qanPage.url, { from: 'now-120m' });
+      const url = I.buildUrlWithParams(qanPage.clearUrl, { from: 'now-120m', to: 'now' });
 
       I.amOnPage(url);
       qanOverview.waitForOverviewLoaded();

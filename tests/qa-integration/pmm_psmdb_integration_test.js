@@ -106,20 +106,23 @@ Scenario(
     const serviceList = [clientServiceName, remoteServiceName];
 
     for (const service of serviceList) {
-      const url = I.buildUrlWithParams(dashboardPage.mongoDbInstanceOverview.url, { from: 'now-5m', service_name: service });
+      const url = I.buildUrlWithParams(dashboardPage.mongoDbInstanceOverview.url, { from: 'now-5m', to: 'now', service_name: service });
 
       I.amOnPage(url);
       dashboardPage.waitForDashboardOpened();
       adminPage.performPageDown(5);
       await dashboardPage.expandEachDashboardRow();
       adminPage.performPageUp(5);
-      await dashboardPage.verifyThereAreNoGraphsWithNA();
-      await dashboardPage.verifyThereAreNoGraphsWithoutData(3);
+      if (service === remoteServiceName) {
+        await dashboardPage.verifyThereAreNoGraphsWithNA(1);
+        await dashboardPage.verifyThereAreNoGraphsWithoutData(9);
+      } else {
+        await dashboardPage.verifyThereAreNoGraphsWithNA();
+        await dashboardPage.verifyThereAreNoGraphsWithoutData(3);
+      }
     }
 
-    const url = I.buildUrlWithParams(`${dashboardPage.mongodbReplicaSetSummaryDashboard.url}&var-replset=rs1`, { from: 'now-5m' });
-
-    I.amOnPage(url);
+    I.amOnPage(`${dashboardPage.mongodbReplicaSetSummaryDashboard.url}&var-replset=rs1`);
     dashboardPage.waitForDashboardOpened();
     adminPage.performPageDown(5);
     await dashboardPage.expandEachDashboardRow();
@@ -139,7 +142,7 @@ Scenario(
     const serviceList = [clientServiceName, remoteServiceName];
 
     for (const service of serviceList) {
-      const url = I.buildUrlWithParams(qanPage.url, { from: 'now-120m' });
+      const url = I.buildUrlWithParams(qanPage.clearUrl, { from: 'now-120m', to: 'now' });
 
       I.amOnPage(url);
       qanOverview.waitForOverviewLoaded();

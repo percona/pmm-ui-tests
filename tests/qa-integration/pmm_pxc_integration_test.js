@@ -10,7 +10,7 @@ Before(async ({ I, settingsAPI }) => {
 
 const version = process.env.PXC_VERSION ? `${process.env.PXC_VERSION}` : '4.4';
 const container_name = `pxc_container_${version}`;
-const remoteServiceName = 'remote_pmm-mysql-integration';
+const remoteServiceName = 'remote_pmm-pxc-integration';
 
 const connection = {
   host: container_name,
@@ -150,7 +150,7 @@ Scenario(
     const serviceList = [clientServiceName, remoteServiceName];
 
     for (const service of serviceList) {
-      const url = I.buildUrlWithParams(qanPage.url, { from: 'now-120m' });
+      const url = I.buildUrlWithParams(qanPage.clearUrl, { from: 'now-120m', to: 'now' });
 
       I.amOnPage(url);
       qanOverview.waitForOverviewLoaded();
