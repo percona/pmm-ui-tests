@@ -41,7 +41,7 @@ jobs:
           node-version: 16.x
 
       - name: Set Client tar name env variable
-        run: echo "PMM_CLIENT_TAR=$(echo $PMM_CLIENT_TAR_URL | grep -o '[^/]*$')" >> $GITHUB_ENV
+        run: echo "PMM_CLIENT_TAR=$(echo ${{ env.CLIENT_TAR_URL }} | grep -o '[^/]*$')" >> $GITHUB_ENV
 
       - name: Download client
         run: |
