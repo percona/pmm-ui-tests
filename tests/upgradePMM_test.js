@@ -645,9 +645,11 @@ if (versionMinor >= 16) {
     'Verify silenced checks remain silenced after upgrade @post-upgrade @pmm-upgrade',
     async ({
       I,
-      databaseChecksPage, inventoryAPI,
+      databaseChecksPage, inventoryAPI, securityChecksAPI,
     }) => {
       const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName('MYSQL_SERVICE', psServiceName);
+
+      await securityChecksAPI.waitForFailedCheckExistance(failedCheckMessage, psServiceName);
 
       databaseChecksPage.openFailedChecksListForService(service_id);
 
