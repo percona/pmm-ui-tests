@@ -24,7 +24,7 @@ export function verifyCommand(command, result = 'pass', getError = false): Outpu
  */
 export async function exec(command): Promise<Output> {
   const { stdout, stderr, code } = await test.step(`Run "${command}" command`, async () => {
-    return shell.exec(command.replace(/(\r\n|\n|\r)/gm, ''), { silent: false });
+    return shell.exec(command.replace(/(\r\n|\n|\r)/gm, ''), { silent: true });
   });
 
   return new Output(command, code, stdout, stderr);
