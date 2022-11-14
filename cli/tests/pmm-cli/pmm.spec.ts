@@ -8,7 +8,7 @@ test.describe('PMM binary tests @pmm-cli', async () => {
     await output.assertSuccess();
   });
 
-  test('server docker install ', async ({}) => {
+  test('server docker install', async ({}) => {
     const output = await cli.exec('pmm server docker install --admin-password="test" --https-listen-port=443 --http-listen-port=80&> output.txt');
     // const output = await cli.exec('pmm server docker install --admin-password="test" --https-listen-port=443 --http-listen-port=80');
     // const output = await cli.exec('pmm server docker install --admin-password="test" --https-listen-port=443 --http-listen-port=80');
