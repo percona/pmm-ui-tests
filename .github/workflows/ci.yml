@@ -51,7 +51,9 @@ jobs:
         run: |
            tar -xzf ${{ env.PMM_CLIENT_TAR }}
            echo "PMM_CLIENT_BASEDIR=$(ls -1td pmm2-client-* 2>/dev/null | grep -v ".tar" | head -n1)" >> $GITHUB_ENV
-           mv ${{ env.PMM_CLIENT_BASEDIR }} pmm2-client
+
+      - name: Rename client folder
+        run: mv ${{ env.PMM_CLIENT_BASEDIR }} pmm2-client
 
       - name: Update bash profile
         working-directory: pmm2-client
