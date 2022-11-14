@@ -5,7 +5,7 @@ Before(async ({ I }) => {
 });
 
 Scenario(
-  '@PMM-T1419 Verify there is no Give feedback button on Explore page',
+  '@PMM-T1419 Verify there is no Give feedback button on Explore page @grafana-pr',
   async ({ I, explorePage }) => {
     explorePage.open();
     I.dontSee('Give feedback');
