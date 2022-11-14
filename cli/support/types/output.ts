@@ -1,4 +1,4 @@
-import { test,  expect } from '@playwright/test';
+import { test, expect } from '@playwright/test';
 
 class Output {
   command: string;
@@ -24,9 +24,9 @@ class Output {
       for (const val of expectedValues) {
         await test.step(`Verify command output contains ${val}`, async () => {
           expect(this.stdout).toContain(val);
-        })
+        });
       }
-    })
+    });
   }
 }
 

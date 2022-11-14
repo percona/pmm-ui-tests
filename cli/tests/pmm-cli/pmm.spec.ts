@@ -1,5 +1,6 @@
 import { test, expect } from '@playwright/test';
 import * as cli from '@helpers/cliHelper';
+import assert from 'assert';
 
 test.describe('PMM binary tests @pmm-cli', async () => {
   test('--version', async ({}) => {
@@ -8,11 +9,14 @@ test.describe('PMM binary tests @pmm-cli', async () => {
   });
 
   test('server docker install ', async ({}) => {
-    const output = await cli.exec('pmm server docker install --admin-password="test" --https-listen-port=443 --http-listen-port=80');
+    const output = await cli.exec('pmm server docker install --admin-password="test" --https-listen-port=443 --http-listen-port=80&> output.txt');
     // const output = await cli.exec('pmm server docker install --admin-password="test" --https-listen-port=443 --http-listen-port=80');
-    // await output.assertSuccess();
+    // const output = await cli.exec('pmm server docker install --admin-password="test" --https-listen-port=443 --http-listen-port=80');
+    await output.assertSuccess();
 
-    console.log(output.code);
+    await cli.asyncWaitFor(async () => {
+      return (await cli.exec('cat output.txt')).toString().includes('PMM Server is now available');
+    });
 
     await output.containsMany(['PMM Server is now available at http://localhost/']);
   });
