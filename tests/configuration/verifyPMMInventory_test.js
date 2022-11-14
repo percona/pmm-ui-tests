@@ -358,42 +358,42 @@ Scenario(
   },
 );
 
-Scenario(
-  'PMM-T610 Verify that pmm-admin inventory remove service with --force flag stops running agents and collecting data from exporters @nazarov',
-  async ({
-    I,
-  }) => {
-    const pmmServerContainer = (await I.verifyCommand('docker ps | grep \'pmm-server\' | awk -F " " \'{print $NF}\'')).trim();
-
-    await I.verifyCommand('pmm-admin add mysql --username=root --password=GRgrO9301RuF --metrics-mode="pull" --query-source=perfschema mysql-pull 127.0.0.1:43306');
-    I.wait(5);
-    const numberOfMysqlExportersBefore = parseInt(await I.verifyCommand('ps -ax | grep -c [m]ysqld_exporter'), 10);
-    const numberOfMentionsInVictoriaMetricsBefore = parseInt(await I.verifyCommand(`docker exec ${pmmServerContainer} cat /etc/victoriametrics-promscrape.yml | grep -c mysqld || true`), 10);
-
-    assert.ok(numberOfMentionsInVictoriaMetricsBefore > 0, 'mysqld-exporter configuration was not added');
-    await I.verifyCommand('pmm-admin remove mysql mysql-pull');
-    I.wait(5);
-    const numberOfMysqlExportersAfter = parseInt(await I.verifyCommand('ps -ax | grep -c [m]ysqld_exporter || true'), 10);
-    const numberOfMentionsInVictoriaMetricsAfter = parseInt(await I.verifyCommand(`docker exec ${pmmServerContainer} cat /etc/victoriametrics-promscrape.yml | grep -c mysqld || true`), 10);
-
-    assert.strictEqual(numberOfMentionsInVictoriaMetricsAfter, 0, 'mysqld-exporter configuration was not deleted');
-    assert.strictEqual(numberOfMysqlExportersAfter, numberOfMysqlExportersBefore - 1, 'The number of mysqld-exporters did not went down by one');
-  },
-);
-
-Scenario(
-  'PMM-T611 Verify that pmm-admin inventory remove node with --force flag stops running agents and collecting data from exporters @nazarov',
-  async ({
-    I, grafanaAPI,
-  }) => {
-    const numberOfNodesBefore = parseInt(await I.verifyCommand('ps -ax | grep -c [n]ode_exporter'), 10);
-
-    const pmmAdminNodeId = (await I.verifyCommand('pmm-admin status | grep \'Node ID\' | awk -F " " \'{print $4}\' ')).trim();
-
-    await I.verifyCommand(`pmm-admin inventory remove node ${pmmAdminNodeId} --force`);
-    const numberOfNodesAfter = parseInt(await I.verifyCommand('ps -ax | grep -c [n]ode_exporter'), 10);
-
-    assert.strictEqual(numberOfNodesAfter, numberOfNodesBefore - 1, 'The number of node-exporters did not went down by one');
-    await grafanaAPI.checkMetricAbsent('mysql_global_status_max_used_connections');
-  },
-);
+// Scenario(
+//   'PMM-T610 Verify that pmm-admin inventory remove service with --force flag stops running agents and collecting data from exporters @nazarov',
+//   async ({
+//     I,
+//   }) => {
+//     const pmmServerContainer = (await I.verifyCommand('docker ps | grep \'pmm-server\' | awk -F " " \'{print $NF}\'')).trim();
+//
+//     await I.verifyCommand('pmm-admin add mysql --username=root --password=GRgrO9301RuF --metrics-mode="pull" --query-source=perfschema mysql-pull 127.0.0.1:43306');
+//     I.wait(5);
+//     const numberOfMysqlExportersBefore = parseInt(await I.verifyCommand('ps -ax | grep -c [m]ysqld_exporter'), 10);
+//     const numberOfMentionsInVictoriaMetricsBefore = parseInt(await I.verifyCommand(`docker exec ${pmmServerContainer} cat /etc/victoriametrics-promscrape.yml | grep -c mysqld || true`), 10);
+//
+//     assert.ok(numberOfMentionsInVictoriaMetricsBefore > 0, 'mysqld-exporter configuration was not added');
+//     await I.verifyCommand('pmm-admin remove mysql mysql-pull');
+//     I.wait(5);
+//     const numberOfMysqlExportersAfter = parseInt(await I.verifyCommand('ps -ax | grep -c [m]ysqld_exporter || true'), 10);
+//     const numberOfMentionsInVictoriaMetricsAfter = parseInt(await I.verifyCommand(`docker exec ${pmmServerContainer} cat /etc/victoriametrics-promscrape.yml | grep -c mysqld || true`), 10);
+//
+//     assert.strictEqual(numberOfMentionsInVictoriaMetricsAfter, 0, 'mysqld-exporter configuration was not deleted');
+//     assert.strictEqual(numberOfMysqlExportersAfter, numberOfMysqlExportersBefore - 1, 'The number of mysqld-exporters did not went down by one');
+//   },
+// );
+//
+// Scenario(
+//   'PMM-T611 Verify that pmm-admin inventory remove node with --force flag stops running agents and collecting data from exporters @nazarov',
+//   async ({
+//     I, grafanaAPI,
+//   }) => {
+//     const numberOfNodesBefore = parseInt(await I.verifyCommand('ps -ax | grep -c [n]ode_exporter'), 10);
+//
+//     const pmmAdminNodeId = (await I.verifyCommand('pmm-admin status | grep \'Node ID\' | awk -F " " \'{print $4}\' ')).trim();
+//
+//     await I.verifyCommand(`pmm-admin inventory remove node ${pmmAdminNodeId} --force`);
+//     const numberOfNodesAfter = parseInt(await I.verifyCommand('ps -ax | grep -c [n]ode_exporter'), 10);
+//
+//     assert.strictEqual(numberOfNodesAfter, numberOfNodesBefore - 1, 'The number of node-exporters did not went down by one');
+//     await grafanaAPI.checkMetricAbsent('mysql_global_status_max_used_connections');
+//   },
+// );
