@@ -1,0 +1,8 @@
+{
+  "extends": ["../.eslintrc"],
+  "rules": {
+    "no-useless-constructor": ["off"],
+    "@typescript-eslint/no-useless-constructor": ["off"],
+    "lines-between-class-members": "off"
+  }
+}

@@ -14,18 +14,18 @@ module.exports = {
   requestEnd: '/v1/Updates/Check',
   fields: {
     systemsUnderMonitoringCount:
-      locate('.panel-content span').inside('[aria-label="Monitored nodes panel"]'),
+      locate('.panel-content span').inside('[aria-label="Monitored Nodes panel"]'),
     dbUnderMonitoringCount:
       locate('.panel-content span').inside('[aria-label="Monitored DB Services panel"]'),
     dashboardHeaderText: 'Percona Monitoring and Management',
-    dashboardHeaderLocator: '//div[contains(@class, "dashboard-header")]',
+    dashboardHeaderLocator: '//span[contains(text(),"Home Dashboard")]',
     oldLastCheckSelector: '#pmm-update-widget > .last-check-wrapper p',
     sttDisabledFailedChecksPanelSelector: '$db-check-panel-settings-link',
     failedSecurityChecksPmmSettingsLink: locate('$db-check-panel-settings-link').find('a'),
     sttFailedChecksPanelSelector: '$db-check-panel-has-checks',
     checksPanelSelector: '$db-check-panel-home',
     noFailedChecksInPanel: '$db-check-panel-zero-checks',
-    failedChecksPanelInfo: '[aria-label="Failed Checks panel"] i',
+    failedChecksPanelInfo: '[aria-label="Advisors check panel"] i',
     newsPanelTitleSelector: dashboardPage.graphsLocator('Percona News'),
     pmmCustomMenu: locate('$sidemenu').find('a[aria-label="Dashboards"]'),
     servicesButton: locate('span').withText('Services'),

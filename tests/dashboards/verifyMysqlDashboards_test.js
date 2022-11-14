@@ -10,7 +10,7 @@ const serviceList = [];
 const urlsAndMetrics = new DataTable(['metricName', 'startUrl']);
 
 urlsAndMetrics.add(['Client Connections (All Host Groups)', `${dashboardPage.proxysqlInstanceSummaryDashboard.url}?from=now-5m&to=now`]);
-urlsAndMetrics.add(['Percona News', homePage.url]);
+urlsAndMetrics.add(['PMM Upgrade', homePage.url]);
 
 Feature('Test Dashboards inside the MySQL Folder');
 

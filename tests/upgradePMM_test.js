@@ -213,7 +213,8 @@ if (versionMinor >= 15) {
 
         await securityChecksAPI.toggleChecksAlert(alert_id);
       } else {
-        I.click(failedCheckRowLocator.find('button').first());
+        I.waitForVisible(failedCheckRowLocator, 30);
+        I.click(failedCheckRowLocator.find('button').withText('Silence'));
       }
     },
   );
@@ -745,8 +746,9 @@ Scenario(
   },
 );
 
-Scenario(
-  'Verify user can see News Panel @post-upgrade @ami-upgrade @pmm-upgrade  ',
+// New Home dashboard for 2.32.0 doesn't have news panel on home dashboard
+xScenario(
+  'Verify user can see News Panel @post-upgrade @ami-upgrade @pmm-upgrade',
   async ({ I, homePage }) => {
     I.amOnPage(homePage.url);
     I.waitForVisible(homePage.fields.newsPanelTitleSelector, 30);

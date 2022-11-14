@@ -109,11 +109,14 @@ Data(instances).Scenario(
 Data(instances).Scenario(
   'PMM-T937 PMM-T938 Verify MySQL cannot be added without specified --tls-key, Verify MySQL cannot be added without specified --tls-cert @ssl @ssl-remote @not-ui-pipeline',
   async ({
-    I, current, grafanaAPI,
+    I, current, grafanaAPI, remoteInstancesPage,
   }) => {
     const {
       container,
     } = current;
+
+    I.amOnPage(remoteInstancesPage.url);
+
     let responseMessage = 'Connection check failed: register MySQL client cert failed: tls: failed to find any PEM data in key input.\n';
     let command = `docker exec ${container} pmm-admin add mysql --username=pmm --password=pmm --port=3306 --query-source=perfschema --tls --tls-skip-verify --tls-ca=/var/lib/mysql/ca.pem --tls-cert=/var/lib/mysql/client-cert.pem TLS_mysql`;
 

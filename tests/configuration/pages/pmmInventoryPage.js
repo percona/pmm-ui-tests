@@ -45,8 +45,8 @@ module.exports = {
   },
 
   async changeRowsPerPage(count) {
-    I.scrollPageToBottom();
     I.waitForElement(this.fields.rowsPerPage, 30);
+    I.scrollPageToBottom();
     I.click(this.fields.rowsPerPage);
     I.waitForElement(this.fields.inventoryTableRowCount(count), 30);
     // Temp Hack for making 100 in the page count rows
@@ -119,9 +119,12 @@ module.exports = {
 
     I.waitForElement(servicesLink, 20);
     I.click(servicesLink);
+    await this.changeRowsPerPage(100);
     const nodeId = await this.getNodeId(serviceName);
 
     I.click(agentLinkLocator);
+    await this.changeRowsPerPage(100);
+
     const enhanceMetricsDisabled = `//tr//td//span[contains(text(), "${nodeId}")]/../span[contains(text(),"enhanced_metrics_disabled: true")]`;
 
     I.waitForElement(enhanceMetricsDisabled, 30);

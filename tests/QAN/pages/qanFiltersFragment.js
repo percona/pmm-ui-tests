@@ -201,7 +201,9 @@ module.exports = {
   },
 
   async verifyShortcutAttributes(href, filterValue, timeRangeValue) {
-    const shortCutLocator = this.elements.filterCheckbox(filterValue).find('a');
+    const shortCutLocator = locate(`$filter-checkbox-${filterValue}`).find('a');
+
+    await I.waitForVisible(shortCutLocator, 20);
     const linkText = await I.grabAttributeFrom(shortCutLocator, 'href');
     const target = await I.grabAttributeFrom(shortCutLocator, 'target');
 
