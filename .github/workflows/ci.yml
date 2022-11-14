@@ -43,9 +43,12 @@ jobs:
       - name: Set Client tar name env variable
         run: echo "PMM_CLIENT_TAR=$(echo $PMM_CLIENT_TAR_URL | grep -o '[^/]*$')" >> $GITHUB_ENV
 
-      - name: Download and unzip client
+      - name: Download client
         run: |
            sudo wget ${{ env.CLIENT_TAR_URL }}
+
+      - name: Unzip client
+        run: |
            tar -xzf ${{ env.PMM_CLIENT_TAR }}
            echo "PMM_CLIENT_BASEDIR=$(ls -1td pmm2-client-* 2>/dev/null | grep -v ".tar" | head -n1)" >> $GITHUB_ENV
            pushd $PMM_CLIENT_BASEDIR > /dev/null
