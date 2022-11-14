@@ -62,7 +62,7 @@ jobs:
            source ~/.bash_profile
 
       - name: Check pmm version output
-        run : sudo pmm --version
+        run : pmm --version
 
       - name: Install Dependencies
         working-directory: cli

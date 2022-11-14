@@ -3,7 +3,7 @@ import * as cli from '@helpers/cliHelper';
 
 test.describe('PMM binary tests ', async () => {
   test('pmm cli @pmm-cli', async ({}) => {
-    const output = await cli.exec('sudo pmm --version');
+    const output = await cli.exec('pmm --version');
 
     console.log(output);
     await output.assertSuccess();
