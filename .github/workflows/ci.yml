@@ -55,14 +55,12 @@ jobs:
       - name: Rename client folder
         run: mv ${{ env.PMM_CLIENT_BASEDIR }} pmm2-client
 
-      - name: Update bash profile
-        working-directory: pmm2-client
-        run: |
-           echo "export PATH=$PATH:$PWD/bin" >> ~/.bash_profile
-           source ~/.bash_profile
-
       - name: Check pmm version output
-        run : pmm --version
+        working-directory: pmm2-client
+        run : |
+          echo "export PATH=$PATH:$PWD/bin" >> ~/.bash_profile
+          source ~/.bash_profile
+          pmm --version
 
       - name: Install Dependencies
         working-directory: cli
