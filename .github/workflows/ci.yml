@@ -68,7 +68,9 @@ jobs:
 
       - name: Run tests
         working-directory: cli
-        run: npm run test:pmm-cli
+        run: |
+          source ~/.bash_profile
+          npm run test:pmm-cli
 
       - name: Setup tmate session on failure
         if: ${{ failure() }}
