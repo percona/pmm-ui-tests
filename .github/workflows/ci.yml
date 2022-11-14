@@ -25,3 +25,44 @@ jobs:
       run: npm ci
     - name: Run lint:tests
       run: npm run lint:tests
+
+  pmm-cli:
+
+    runs-on: ubuntu-18.04
+    env:
+      CLIENT_TAR_URL: https://s3.us-east-2.amazonaws.com/pmm-build-cache/PR-BUILDS/pmm2-client/pmm2-client-PR-2881-ce126b6.tar.gz
+
+    steps:
+      - uses: percona-platform/checkout@v2
+
+      - name: Use Node.js 16.x
+        uses: percona-platform/setup-node@v2
+        with:
+          node-version: 16.x
+
+      - name: Set Client tar name env variable
+        run: echo "PMM_CLIENT_TAR=$(echo $PMM_CLIENT_TAR_URL | grep -o '[^/]*$')" >> $GITHUB_ENV
+
+      - name: Download and unzip client
+        run: |
+          - sudo wget ${{ env.CLIENT_TAR_URL }}
+          - tar -xzf ${{ env.PMM_CLIENT_TAR }}
+          - echo "PMM_CLIENT_BASEDIR=$(ls -1td pmm2-client-* 2>/dev/null | grep -v ".tar" | head -n1)" >> $GITHUB_ENV
+          - pushd $PMM_CLIENT_BASEDIR > /dev/null
+          - echo "export PATH=$PATH:$PWD/bin" >> ~/.bash_profile
+          - source ~/.bash_profile
+
+      - name: Check pmm version output
+        run : sudo pmm --version
+
+      - name: Install Dependencies
+        working-directory: cli
+        run: npm ci
+
+      - name: Run tests
+        working-directory: cli
+        run: npm run test:pmm-cli
+
+      - name: Setup tmate session on failure
+        if: ${{ failure() }}
+        uses: percona-platform/action-tmate@v2
