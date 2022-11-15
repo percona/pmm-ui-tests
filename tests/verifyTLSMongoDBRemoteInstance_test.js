@@ -1,5 +1,4 @@
 const assert = require('assert');
-const faker = require('faker');
 
 const { adminPage } = inject();
 const pmmFrameworkLoader = `bash ${adminPage.pathToFramework}`;
@@ -19,7 +18,7 @@ const dbName = 'mongodb';
 const dbPort = '27017';
 const agentFlags = '--tls-skip-verify --tls --authentication-mechanism=MONGODB-X509 --tls-certificate-key-file=/nodes/certificates/client.pem --tls-certificate-key-file-password=/nodes/certificates/client.key --tls-ca-file=/nodes/certificates/ca.crt';
 
-BeforeSuite(async ({ I, codeceptjsConfig }) => {
+BeforeSuite(async ({ I }) => {
   // await I.verifyCommand(`${pmmFrameworkLoader} --mo-version=4.2 --setup-mongodb-ssl --pmm2`);
   await I.verifyCommand(`${pmmFrameworkLoader} --mo-version=4.4 --setup-mongodb-ssl --pmm2`);
   await I.verifyCommand(`${pmmFrameworkLoader} --mo-version=5.0 --setup-mongodb-ssl --pmm2`);
@@ -31,14 +30,14 @@ AfterSuite(async ({ I }) => {
   await I.verifyCommand('docker stop mongodb_5.0 || docker rm mongodb_5.0');
 });
 
-Before(async ({ I, settingsAPI }) => {
+Before(async ({ I }) => {
   await I.Authorize();
 });
 
 Data(instances).Scenario(
   'PMM-T888 PMM-T919 Verify Adding SSL services remotely @ssl @ssl-remote @not-ui-pipeline',
   async ({
-    I, remoteInstancesPage, pmmInventoryPage, current, grafanaAPI, inventoryAPI,
+    I, remoteInstancesPage, pmmInventoryPage, current, inventoryAPI,
   }) => {
     const {
       serviceName, serviceType, version, container,
@@ -82,7 +81,7 @@ Data(instances).Scenario(
 Data(instances).Scenario(
   'Verify metrics from SSL instances on PMM-Server @ssl @ssl-remote @not-ui-pipeline',
   async ({
-    I, remoteInstancesPage, pmmInventoryPage, current, grafanaAPI,
+    I, current, grafanaAPI,
   }) => {
     const {
       serviceName, metric,
@@ -111,7 +110,7 @@ Data(instances).Scenario(
   'PMM-T926 PMM-T927 Verify there is no possibility to add MongoDB Service with only CA file specified,'
     + 'Verify there is no possibility to add MongoDB Service with only certificate file specified @ssl @ssl-remote @not-ui-pipeline',
   async ({
-    I, current, grafanaAPI,
+    I, current,
   }) => {
     const {
       container,
@@ -212,7 +211,7 @@ Data(instances).Scenario(
   + ' Verify that pmm-admin inventory add agent mongodb-exporter with --log-level flag adds MongoDB exporter with corresponding log-level'
   + ' Verify that pmm-admin inventory add agent mongodb-exporter without --log-level flag adds MongoDB exporter with log-level=warn @nazarov',
   async ({
-    I, current, cliHelper, qanPage,
+    current, cliHelper,
   }) => {
     const {
       version,

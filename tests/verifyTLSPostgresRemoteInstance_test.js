@@ -14,15 +14,15 @@ instances.add(['pgsql_14_ssl_service', '14', 'pgsql_14', 'postgres_ssl', 'pg_sta
 // instances.add(['pgsql_11_ssl_service', '11', 'pgsql_11', 'postgres_ssl', 'pg_stat_database_xact_rollback']);
 // instances.add(['pgsql_13_ssl_service', '13', 'pgsql_13', 'postgres_ssl', 'pg_stat_database_xact_rollback']);
 
-const logLevels = ['', 'debug', 'info', 'warn', 'error', 'fatal'];
+const logLevels = ['debug', 'debug', 'info', 'warn', 'error', 'fatal'];
 // 'fatal' is removed because of the bug
 
 const dbName = 'postgresql';
 const dbPort = '5432';
-const agentFlags = '--tls --tls-skip-verify --tlsca-file=./certificates/ca.crt --tls-cert-file=./certificates/client.crt --tls-key-file=./certificates/client.pem';
+const agentFlags = '--tls --tls-skip-verify --tls-ca-file=./certificates/ca.crt --tls-cert-file=./certificates/client.crt --tls-key-file=./certificates/client.pem';
 const authInfo = 'pmm --password=pmm';
 
-BeforeSuite(async ({ I, codeceptjsConfig }) => {
+BeforeSuite(async ({ I }) => {
   // await I.verifyCommand(`${pmmFrameworkLoader} --pdpgsql-version=11 --setup-postgres-ssl --pmm2`);
   // await I.verifyCommand(`${pmmFrameworkLoader} --pdpgsql-version=12 --setup-postgres-ssl --pmm2`);
   // await I.verifyCommand(`${pmmFrameworkLoader} --pdpgsql-version=13 --setup-postgres-ssl --pmm2`);
@@ -36,7 +36,7 @@ AfterSuite(async ({ I }) => {
   await I.verifyCommand('docker stop pgsql_14 || docker rm pgsql_14');
 });
 
-Before(async ({ I, settingsAPI }) => {
+Before(async ({ I }) => {
   await I.Authorize();
 });
 
@@ -90,7 +90,7 @@ Data(instances).Scenario(
 Data(instances).Scenario(
   'Verify metrics from SSL instances on PMM-Server @ssl @ssl-remote @not-ui-pipeline',
   async ({
-    I, remoteInstancesPage, pmmInventoryPage, current, grafanaAPI,
+    I, current, grafanaAPI,
   }) => {
     const {
       serviceName, metric,
@@ -118,7 +118,7 @@ Data(instances).Scenario(
 Data(instances).Scenario(
   'PMM-T946 Verify adding PostgreSQL with --tls flag and with missing TLS options @ssl @ssl-remote @not-ui-pipeline',
   async ({
-    I, current, grafanaAPI,
+    I, current,
   }) => {
     const {
       container,
@@ -210,7 +210,7 @@ Data(instances).Scenario(
   + ' Verify that pmm-admin inventory add agent postgres-exporter with --log-level flag adds PostgreSQL exporter with corresponding log-level'
   + ' Verify that pmm-admin inventory add agent postgres-exporter with --log-level flag adds PostgreSQL exporter with log-level=warn @nazarov',
   async ({
-    I, current, cliHelper,
+    current, cliHelper,
   }) => {
     const {
       version,
@@ -218,6 +218,8 @@ Data(instances).Scenario(
     } = current;
 
     const agentName = 'postgres-exporter';
+    // todo: fix flag after https://jira.percona.com/browse/PMM-10960 fixed
+    const agentFlags = '--tls --tls-skip-verify --tlsca-file=./certificates/ca.crt --tls-cert-file=./certificates/client.crt --tls-key-file=./certificates/client.pem';
 
     for (const logLevel of logLevels) {
       await cliHelper
@@ -251,27 +253,32 @@ Data(instances).Scenario(
     }
   },
 );
-
-Data(instances).Scenario(
-  'PMM-T1302, PMM-T1303'
-  + ' Verify that pmm-admin inventory add agent qan-postgresql-pgstatmonitor-agent with --log-level flag adds QAN PostgreSQL Pgstatmonitor Agent with corresponding log-level'
-  + ' Verify that pmm-admin inventory add agent qan-postgresql-pgstatmonitor-agent with --log-level flag adds QAN PostgreSQL Pgstatmonitor Agent with log-level=warn @nazarov',
-  async ({
-    I, current, cliHelper, qanPage,
-  }) => {
-    const {
-      version,
-      container,
-    } = current;
-
-    const agentName = 'qan-postgresql-pgstatmonitor-agent';
-
-    for (const logLevel of logLevels) {
-      const serviceName = await cliHelper
-        .setupAndVerifyAgent(dbName, version, dbPort, container, agentName, agentFlags, logLevel, authInfo);
-
-      I.amOnPage(qanPage.url);
-      await qanPage.verifyServicePresentInQAN(serviceName);
-    }
-  },
-);
+// todo: add setup for qan-postgresql-pgstatmonitor-agent
+// Data(instances).Scenario(
+//   'PMM-T1302, PMM-T1303'
+// eslint-disable-next-line max-len
+//   + ' Verify that pmm-admin inventory add agent qan-postgresql-pgstatmonitor-agent with --log-level flag adds QAN PostgreSQL Pgstatmonitor Agent with corresponding log-level'
+// eslint-disable-next-line max-len
+//   + ' Verify that pmm-admin inventory add agent qan-postgresql-pgstatmonitor-agent with --log-level flag adds QAN PostgreSQL Pgstatmonitor Agent with log-level=warn',
+//   async ({
+//     I, current, cliHelper, qanPage,
+//   }) => {
+//     const {
+//       version,
+//       container,
+//     } = current;
+//
+//     const agentName = 'qan-postgresql-pgstatmonitor-agent';
+//
+// eslint-disable-next-line max-len
+//     await I.verifyCommand(`docker exec ${container} psql postgres pmm -c "CREATE EXTENSION IF NOT EXISTS pg_stat_monitor SCHEMA public"`);
+//
+//     for (const logLevel of logLevels) {
+//       const serviceName = await cliHelper
+//         .setupAndVerifyAgent(dbName, version, dbPort, container, agentName, agentFlags, logLevel, authInfo);
+//
+//       I.amOnPage(qanPage.url);
+//       await qanPage.verifyServicePresentInQAN(serviceName);
+//     }
+//   },
+// );

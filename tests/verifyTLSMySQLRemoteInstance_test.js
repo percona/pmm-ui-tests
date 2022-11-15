@@ -1,6 +1,5 @@
 const assert = require('assert');
 const faker = require('faker');
-const { dbaasDocs } = require('./helper/linksHelper');
 
 const { adminPage } = inject();
 const pmmFrameworkLoader = `bash ${adminPage.pathToFramework}`;
@@ -18,7 +17,7 @@ const dbPort = '3306';
 const agentFlags = '--tls --server-insecure-tls --tls-skip-verify --tls-ca=/var/lib/mysql/ca.pem --tls-cert=/var/lib/mysql/client-cert.pem --tls-key=/var/lib/mysql/client-key.pem';
 const authInfo = 'pmm --password=pmm';
 
-BeforeSuite(async ({ I, codeceptjsConfig }) => {
+BeforeSuite(async ({ I }) => {
   await I.verifyCommand(`${pmmFrameworkLoader} --ps-version=5.7 --setup-mysql-ssl --pmm2`);
   await I.verifyCommand(`${pmmFrameworkLoader} --ps-version=8.0 --setup-mysql-ssl --pmm2`);
 });
@@ -28,7 +27,7 @@ AfterSuite(async ({ I }) => {
   await I.verifyCommand('docker stop mysql_8.0 || docker rm mysql_8.0');
 });
 
-Before(async ({ I, settingsAPI }) => {
+Before(async ({ I }) => {
   await I.Authorize();
 });
 
@@ -81,7 +80,7 @@ Data(instances).Scenario(
 Data(instances).Scenario(
   'Verify metrics from mysql SSL instances on PMM-Server @ssl @ssl-remote @not-ui-pipeline',
   async ({
-    I, remoteInstancesPage, pmmInventoryPage, current, grafanaAPI,
+    I, current, grafanaAPI,
   }) => {
     const {
       serviceName, metric,
@@ -109,7 +108,7 @@ Data(instances).Scenario(
 Data(instances).Scenario(
   'PMM-T937 PMM-T938 Verify MySQL cannot be added without specified --tls-key, Verify MySQL cannot be added without specified --tls-cert @ssl @ssl-remote @not-ui-pipeline',
   async ({
-    I, current, grafanaAPI, remoteInstancesPage,
+    I, current, remoteInstancesPage,
   }) => {
     const {
       container,
@@ -213,7 +212,7 @@ Data(instances).Scenario(
   + ' Verify that pmm-admin inventory add agent mysqld-exporter with --log-level flag adds MySQL exporter with corresponding log-level'
   + ' Verify that pmm-admin inventory add agent mysqld-exporter without --log-level flag adds MySQL exporter with log-level=warn @nazarov',
   async ({
-    I, current, cliHelper, qanPage,
+    current, cliHelper,
   }) => {
     const {
       version,
@@ -302,7 +301,6 @@ Data(instances).Scenario(
     I, current,
   }) => {
     const {
-      version,
       container,
     } = current;
 

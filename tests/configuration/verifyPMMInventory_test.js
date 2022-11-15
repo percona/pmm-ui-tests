@@ -359,30 +359,36 @@ Scenario(
 );
 
 // Scenario(
-//   'PMM-T610 Verify that pmm-admin inventory remove service with --force flag stops running agents and collecting data from exporters @nazarov',
+// eslint-disable-next-line max-len
+//   'PMM-T610 Verify that pmm-admin inventory remove service with --force flag stops running agents and collecting data from exporters ',
 //   async ({
 //     I,
 //   }) => {
 //     const pmmServerContainer = (await I.verifyCommand('docker ps | grep \'pmm-server\' | awk -F " " \'{print $NF}\'')).trim();
 //
+// eslint-disable-next-line max-len
 //     await I.verifyCommand('pmm-admin add mysql --username=root --password=GRgrO9301RuF --metrics-mode="pull" --query-source=perfschema mysql-pull 127.0.0.1:43306');
 //     I.wait(5);
 //     const numberOfMysqlExportersBefore = parseInt(await I.verifyCommand('ps -ax | grep -c [m]ysqld_exporter'), 10);
+// eslint-disable-next-line max-len
 //     const numberOfMentionsInVictoriaMetricsBefore = parseInt(await I.verifyCommand(`docker exec ${pmmServerContainer} cat /etc/victoriametrics-promscrape.yml | grep -c mysqld || true`), 10);
 //
 //     assert.ok(numberOfMentionsInVictoriaMetricsBefore > 0, 'mysqld-exporter configuration was not added');
 //     await I.verifyCommand('pmm-admin remove mysql mysql-pull');
 //     I.wait(5);
 //     const numberOfMysqlExportersAfter = parseInt(await I.verifyCommand('ps -ax | grep -c [m]ysqld_exporter || true'), 10);
+// eslint-disable-next-line max-len
 //     const numberOfMentionsInVictoriaMetricsAfter = parseInt(await I.verifyCommand(`docker exec ${pmmServerContainer} cat /etc/victoriametrics-promscrape.yml | grep -c mysqld || true`), 10);
 //
 //     assert.strictEqual(numberOfMentionsInVictoriaMetricsAfter, 0, 'mysqld-exporter configuration was not deleted');
+// eslint-disable-next-line max-len
 //     assert.strictEqual(numberOfMysqlExportersAfter, numberOfMysqlExportersBefore - 1, 'The number of mysqld-exporters did not went down by one');
 //   },
 // );
 //
 // Scenario(
-//   'PMM-T611 Verify that pmm-admin inventory remove node with --force flag stops running agents and collecting data from exporters @nazarov',
+// eslint-disable-next-line max-len
+//   'PMM-T611 Verify that pmm-admin inventory remove node with --force flag stops running agents and collecting data from exporters ',
 //   async ({
 //     I, grafanaAPI,
 //   }) => {
