@@ -15,7 +15,6 @@ instances.add(['pgsql_14_ssl_service', '14', 'pgsql_14', 'postgres_ssl', 'pg_sta
 // instances.add(['pgsql_13_ssl_service', '13', 'pgsql_13', 'postgres_ssl', 'pg_stat_database_xact_rollback']);
 
 const logLevels = ['debug', 'debug', 'info', 'warn', 'error', 'fatal'];
-// 'fatal' is removed because of the bug
 
 const dbName = 'postgresql';
 const dbPort = '5432';
@@ -220,6 +219,8 @@ Data(instances).Scenario(
     const agentName = 'postgres-exporter';
     // todo: fix flag after https://jira.percona.com/browse/PMM-10960 fixed
     const agentFlags = '--tls --tls-skip-verify --tlsca-file=./certificates/ca.crt --tls-cert-file=./certificates/client.crt --tls-key-file=./certificates/client.pem';
+    // todo: add fatal after https://jira.percona.com/browse/PMM-10960 fixed
+    const logLevels = ['debug', 'debug', 'info', 'warn', 'error'];
 
     for (const logLevel of logLevels) {
       await cliHelper
