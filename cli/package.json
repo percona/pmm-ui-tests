@@ -8,7 +8,8 @@
     "typecheck": "tsc --noEmit",
     "report": "playwright show-report",
     "test:pmm-cli": "playwright test --config=playwright.config.ts -g '@pmm-cli'",
-    "test:all": "playwright test --config=playwright.config.ts"
+    "test:all": "playwright test --config=playwright.config.ts",
+    "pmm": "pmm"
   },
   "dependencies": {
     "@playwright/test": "^1.27.1",
