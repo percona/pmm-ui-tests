@@ -230,7 +230,7 @@ Data(instances).Scenario(
 Data(instances).Scenario(
   'PMM-T1304, PMM-T1305'
   + ' Verify that pmm-admin inventory add agent qan-mysql-perfschema-agent with --log-level flag adds QAN MySQL Perfschema Agent with corresponding log-level'
-  + ' Verify that pmm-admin inventory add agent qan-mysql-perfschema-agent with --log-level flag adds QAN MySQL Perfschema Agent with log-level=warn @nazarov1',
+  + ' Verify that pmm-admin inventory add agent qan-mysql-perfschema-agent with --log-level flag adds QAN MySQL Perfschema Agent with log-level=warn @nazarov',
   async ({
     I, current, cliHelper, qanPage,
   }) => {
