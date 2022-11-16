@@ -16,11 +16,10 @@ test.describe('PMM binary tests @pmm-cli', async () => {
     );
 
     await output.assertSuccess();
-    await output.containsMany([
-      'Starting PMM Server',
-      'Checking if container is healthy...',
-      'Password changed',
-    ]);
+    await expect(output.stderr).toContain('Starting PMM Server');
+    await expect(output.stderr).toContain('Checking if container is healthy...');
+    await expect(output.stderr).toContain('Password changed');
+
     const client = new PMMRestClient('admin', adminPassword, httpPort);
     const resp = await client.doPost('/v1/Settings/Get');
     const respBody = await resp.json() as { settings };
