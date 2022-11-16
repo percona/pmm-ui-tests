@@ -229,7 +229,7 @@ Data(instances).Scenario(
         .setupAndVerifyAgent(dbName, version, dbPort, container, agentName, agentFlags, logLevel, authInfo);
     }
   },
-);
+).retry(1);
 
 Data(instances).Scenario(
   'PMM-T1300, PMM-T1301'
@@ -255,7 +255,8 @@ Data(instances).Scenario(
       await qanPage.verifyServicePresentInQAN(serviceName);
     }
   },
-);
+).retry(1);
+
 // todo: add setup for qan-postgresql-pgstatmonitor-agent
 // Data(instances).Scenario(
 //   'PMM-T1302, PMM-T1303'

@@ -275,7 +275,8 @@ Data(instances).Scenario(
   },
 ).retry(1);
 
-Data(instances).Scenario('PMM-T1351 Verify that MySQL exporter cannot be added by pmm-admin inventory add agent mysqld-exporter with --log-level=fatal @nazarov',
+Data(instances).Scenario(
+  'PMM-T1351 Verify that MySQL exporter cannot be added by pmm-admin inventory add agent mysqld-exporter with --log-level=fatal @nazarov',
   async ({
     I, current,
   }) => {
@@ -293,7 +294,8 @@ Data(instances).Scenario('PMM-T1351 Verify that MySQL exporter cannot be added b
     const serviceId = (await I.verifyCommand(`docker exec ${container} pmm-admin list | grep ${serviceName} | awk -F  " " '{print $4}' `)).trim();
 
     await I.verifyCommand(`docker exec ${container} pmm-admin inventory add agent ${agentName} ${agentFlags} --log-level=fatal ${pmmAdminAgentId} ${serviceId} ${authInfo} 2>&1 | grep "error: --log-level must be one of \\"debug\\",\\"info\\",\\"warn\\",\\"error\\" but got \\"fatal\\""`);
-  });
+  },
+).retry(1);
 
 Data(instances).Scenario(
   'PMM-T1350 Verify that MySQL exporter cannot be added by pmm-admin add mysql with --log-level=fatal',
@@ -306,4 +308,4 @@ Data(instances).Scenario(
 
     await I.verifyCommand(`docker exec ${container} pmm-admin add mysql --username=root --password=root-password --log-level=fatal 2>&1 | grep "error: --log-level must be one of \\"debug\\",\\"info\\",\\"warn\\",\\"error\\" but got \\"fatal\\""`);
   },
-);
+).retry(1);

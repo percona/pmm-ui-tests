@@ -290,7 +290,7 @@ Scenario(
 
     await I.verifyCommand(`pmm-admin inventory add service mysql --socket=/tmp/PXC_1.sock PXC-Inv ${pmmAdminNodeId} 127.0.0.1 3306 2>&1 | grep "Socket and address cannot be specified together."`);
   },
-);
+).retry(1);
 
 Scenario(
   'PMM-T467 Verify pmm-admin inventory add service external using with --group flag @nazarov',
@@ -312,7 +312,7 @@ Scenario(
     await I.verifyCommand(`pmm-admin list | grep '${secondServiceName}' | grep 'External:external'`);
     await I.verifyCommand(`pmm-admin list | grep '${thirdServiceName}' | grep 'External:${groupName}'`);
   },
-);
+).retry(1);
 
 Scenario(
   'PMM-T1352 Verify that Node exporter cannot be added by pmm-admin inventory add agent node-exporter with --log-level=fatal @nazarov',
@@ -323,7 +323,7 @@ Scenario(
 
     await I.verifyCommand(`pmm-admin inventory add agent node-exporter --server-insecure-tls --log-level=fatal ${pmmAdminAgentId} 2>&1 | grep "error: --log-level must be one of \\"debug\\",\\"info\\",\\"warn\\",\\"error\\" but got \\"fatal\\""`);
   },
-);
+).retry(1);
 
 Scenario(
   'PMM-T1282, PMM-T1291'
@@ -356,7 +356,7 @@ Scenario(
       assert.strictEqual(agentInfo.log_level, expectedLogLevel, `Was expecting ${agentName} for (${agentId}) to have "${expectedLogLevel}" as a log level`);
     }
   },
-);
+).retry(1);
 
 // Scenario(
 // eslint-disable-next-line max-len
