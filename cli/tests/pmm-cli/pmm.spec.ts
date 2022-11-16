@@ -10,8 +10,9 @@ test.describe('PMM binary tests @pmm-cli', async () => {
 
   test('server docker install', async ({ }) => {
     const httpPort = 80;
+    const adminPassword = 'admin';
     const output = await cli.exec(
-      `pmm server docker install --admin-password="test" --https-listen-port=443 --http-listen-port=${httpPort} --json`,
+      `pmm server docker install --admin-password="${adminPassword}" --https-listen-port=443 --http-listen-port=${httpPort} --json`,
     );
 
     await output.assertSuccess();
@@ -20,7 +21,7 @@ test.describe('PMM binary tests @pmm-cli', async () => {
       'Checking if container is healthy...',
       'Password changed',
     ]);
-    const client = new PMMRestClient('admin', 'admin', httpPort);
+    const client = new PMMRestClient('admin', adminPassword, httpPort);
     const resp = await client.doPost('/v1/Settings/Get');
     const respBody = await resp.json() as { settings };
 
