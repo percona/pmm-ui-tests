@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 import * as cli from '@helpers/cliHelper';
-import assert from 'assert';
+import PMMRestClient from '@support/types/request';
 
 test.describe('PMM binary tests @pmm-cli', async () => {
   test('--version', async ({}) => {
@@ -8,11 +8,23 @@ test.describe('PMM binary tests @pmm-cli', async () => {
     await output.assertSuccess();
   });
 
-  test('server docker install', async ({}) => {
-    const output = await cli.exec('pmm server docker install --admin-password="test" --https-listen-port=443 --http-listen-port=80 --json');
-    console.log(output);
-    await output.assertSuccess();
+  test('server docker install', async ({ }) => {
+    const httpPort = 80;
+    const output = await cli.exec(
+      `pmm server docker install --admin-password="test" --https-listen-port=443 --http-listen-port=${httpPort} --json`,
+    );
 
-    await output.containsMany(['PMM Server is now available at http://localhost/']);
+    await output.assertSuccess();
+    await output.containsMany([
+      'Starting PMM Server',
+      'Checking if container is healthy...',
+      'Password changed',
+    ]);
+    const client = new PMMRestClient('admin', 'admin', httpPort);
+    const resp = await client.doPost('/v1/Settings/Get');
+    const respBody = await resp.json() as { settings };
+
+    expect(resp.ok()).toBeTruthy();
+    expect(respBody).toHaveProperty('settings');
   });
 });
