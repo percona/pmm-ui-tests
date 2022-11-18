@@ -12,11 +12,10 @@ dotenv.config();
 /**
  * See https://playwright.dev/docs/test-configuration.
  */
-const cliTestFolder = './';
 
 const config: PlaywrightTestConfig = {
   testDir: './',
-  timeout: 120 * 1000,
+  timeout: 300_000,
   expect: {
     timeout: 2000,
   },
