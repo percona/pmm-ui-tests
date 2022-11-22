@@ -5,7 +5,7 @@ const alertRow = (alertName) => `//tr[td[contains(., "${alertName}")]]`;
 const details = '$alert-details-wrapper';
 
 module.exports = {
-  url: 'graph/integrated-alerting/alerts',
+  url: 'graph/alerting/alerts',
   columnHeaders: ['Name', 'Severity', 'State', 'Labels', 'Active Since', 'Last Notified', 'Actions'],
   elements: {
     noData: '$table-no-data',
@@ -13,10 +13,14 @@ module.exports = {
     labelsCell: (alertName) => `${alertRow(alertName)}/td[4]//span`,
     stateCell: (alertName) => `${alertRow(alertName)}/td[3]`,
     severityCell: (alertName) => `${alertRow(alertName)}/td[2]`,
-    criticalSeverity: '//td[2]/span[text()="Critical"]',
-    errorSeverity: '//td[2]/span[text()="Error"]',
-    noticeSeverity: '//td[2]/span[text()="Notice"]',
-    warningSeverity: '//td[2]/span[text()="Warning"]',
+    criticalSeverity: '//td[4]/span[text()="Critical"]',
+    errorSeverity: '//td[4]/span[text()="Error"]',
+    noticeSeverity: '//td[4]/span[text()="Notice"]',
+    warningSeverity: '//td[4]/span[text()="Warning"]',
+    emergencySeverity: '//td[4]/span[text()="Emergency"]',
+    alertSeverity: '//td[4]/span[text()="Alert"]',
+    debugSeverity: '//td[4]/span[text()="Debug"]',
+    infoSeverity: '//td[4]/span[text()="Info"]',
     columnHeaderLocator: (columnHeaderText) => `//th[text()="${columnHeaderText}"]`,
     details,
     detailsRuleExpression: locate(details).find('div').withText('Rule Expression'),
