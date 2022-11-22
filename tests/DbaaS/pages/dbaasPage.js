@@ -72,11 +72,7 @@ module.exports = {
           dbClusterDatabaseTypeFieldSelect: (dbtype) => `//div[@aria-label='Select option']//span[contains(@text, ${dbtype})]`,
           dbClusterDatabaseTypeFieldErrorMessage: '$select-field-error-message',
           dbClusterDatabaseVersionField: '$dbcluster-database-version-field',
-          dbClusterDatabaseVersion: (version) => locate(
-            '$dbcluster-database-version-field',
-          )
-            .find('span')
-            .withText(version),
+          dbClusterDatabaseVersion: (version) => `//span[text()='${version}']`,
           dbClusterDatabaseVersionSelect: (version) => locate('div').withAttr({ 'aria-label': 'Select option' }).find('span').withText(`${version}`),
           defaultDbVersionValue: (version) => locate(
             '$dbcluster-database-version-field',

@@ -150,7 +150,6 @@ module.exports = {
   },
 
   async selectDefaultVersion(version) {
-    I.click(this.manageVersion.defaultVersionSelector);
     I.waitForElement(
       this.manageVersion.defaultVersionOption(
         version,
