@@ -396,13 +396,11 @@ Scenario('Verify update PXC DB Cluster version @dbaas', async ({ I, dbaasPage, d
   const dbClusterRandomName = dbaasPage.randomizeClusterName(pxc_cluster_name);
 
   await dbaasAPI.deleteAllDBCluster(clusterName);
+  await dbaasAPI.createCustomPXC(clusterName, dbClusterRandomName, '1', `percona/percona-xtradb-cluster:${mysqlVersion}`);
+  await dbaasAPI.waitForDBClusterState(dbClusterRandomName, clusterName, 'MySQL', 'DB_CLUSTER_STATE_READY');
   await dbaasPage.waitForDbClusterTab(clusterName);
-
-  I.waitForInvisible(dbaasPage.tabs.kubernetesClusterTab.disabledAddButton, 30);
-  await dbaasActionsPage.createClusterAdvancedOption(clusterName, dbClusterRandomName, 'MySQL', singleNodeConfiguration, mysqlVersion);
-  await I.click(dbaasPage.tabs.dbClusterTab.createClusterButton);
-  await I.waitForText('Processing', 30, dbaasPage.tabs.dbClusterTab.fields.progressBarContent);
   await dbaasPage.postClusterCreationValidation(dbClusterRandomName, clusterName);
+
   const {
     username, password, host, port,
   } = await dbaasAPI.getDbClusterDetails(dbClusterRandomName, clusterName);

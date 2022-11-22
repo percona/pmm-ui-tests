@@ -249,29 +249,26 @@ Scenario('PMM-T509 Verify Deleting Mongo Db Cluster in Pending Status is possibl
 
 Scenario('PMM-T704 PMM-T772 PMM-T849 PMM-T850 Resources, PV, Secrets verification @dbaas',
   async ({
-    I, dbaasPage, dbaasAPI, dbaasActionsPage, adminPage,
+    I, dbaasPage, dbaasAPI,
   }) => {
     const psmdb_cluster_resource_check = 'psmdb-resource-1';
     const clusterDetails = {
       topology: 'Cluster',
       numberOfNodes: '1',
       resourcePerNode: 'Custom',
-      memory: '1 GB',
-      cpu: '1',
-      disk: '2 GB',
-      dbType: mongodb_recommended_version,
+      memory: '2 GB',
+      cpu: '0.5',
+      disk: '1 GB',
+      dbType: 'MongoDB 5.0.7',
       clusterDashboardRedirectionLink: dbaasPage.clusterDashboardUrls.psmdbDashboard(
         psmdb_cluster_resource_check,
       ),
     };
 
     await dbaasAPI.deleteAllDBCluster(clusterName);
+    await dbaasAPI.createCustomPSMDB(clusterName, psmdb_cluster_resource_check, '1');
+    await dbaasAPI.waitForDBClusterState(psmdb_cluster_resource_check, clusterName, 'MongoDB', 'DB_CLUSTER_STATE_READY');
     await dbaasPage.waitForDbClusterTab(clusterName);
-    I.waitForInvisible(dbaasPage.tabs.kubernetesClusterTab.disabledAddButton, 30);
-    await dbaasActionsPage.createClusterAdvancedOption(clusterName, psmdb_cluster_resource_check, 'MongoDB', clusterDetails);
-    I.click(dbaasPage.tabs.dbClusterTab.createClusterButton);
-    I.waitForText('Processing', 30, dbaasPage.tabs.dbClusterTab.fields.progressBarContent);
-    await dbaasPage.postClusterCreationValidation(psmdb_cluster_resource_check, clusterName, 'MongoDB');
     await dbaasPage.validateClusterDetail(psmdb_cluster_resource_check, clusterName, clusterDetails, 
       clusterDetails.clusterDashboardRedirectionLink);
     const {
@@ -283,11 +280,11 @@ Scenario('PMM-T704 PMM-T772 PMM-T849 PMM-T850 Resources, PV, Secrets verificatio
     );
     await I.verifyCommand(
       `kubectl get pods ${psmdb_cluster_resource_check}-rs0-0 -o json | grep -i requests -A2 | tail -2`,
-      '"cpu": "1"',
+      '"cpu": "0.5"',
     );
     await I.verifyCommand(
       `kubectl get pods ${psmdb_cluster_resource_check}-rs0-0 -o json | grep -i requests -A2 | tail -2`,
-      '"memory": "1G"',
+      '"memory": "2G"',
     );
     await I.verifyCommand(
       `kubectl get pv | grep ${psmdb_cluster_resource_check}`,
