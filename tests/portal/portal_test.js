@@ -15,10 +15,13 @@ BeforeSuite(async ({ homePage }) => {
 });
 
 Scenario(
-  'Prepare credentials for PMM-Portal upgrade @not-ui-pipeline @pre-pmm-portal-upgrade @portal @post-pmm-portal-upgrade',
+  'Prepare credentials for PMM-Portal upgrade @not-ui-pipeline @pre-pmm-portal-upgrade @portal @post-pmm-portal-upgrade @tempTest',
   async ({
     I, portalAPI, settingsAPI, pmmSettingsPage,
   }) => {
+    await I.addPassedTC('PMM-T1067');
+    await I.verifyDependedTestsPassed('PMM-T1065', ['PMM-T1066', 'PMM-T1067', 'PMM-T1068']);
+    await I.wait(600);
     const userCredentials = await I.readFileSync(fileName, true);
 
     if (userCredentials !== null && userCredentials.length > 0) {

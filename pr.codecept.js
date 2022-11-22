@@ -54,6 +54,9 @@ exports.config = {
     FileHelper: {
       require: './tests/helper/file_helper.js',
     },
+    DependentTestsHelper: {
+      require: './tests/helper/dependentTestsHelper.js',
+    },
     FileSystem: {},
     PerformanceHelper: {
       require: './tests/helper/performance_helper.js',
