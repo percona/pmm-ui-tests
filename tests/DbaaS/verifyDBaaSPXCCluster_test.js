@@ -399,7 +399,7 @@ Scenario('Verify update PXC DB Cluster version @dbaas', async ({ I, dbaasPage, d
   await dbaasAPI.createCustomPXC(clusterName, dbClusterRandomName, '1', `percona/percona-xtradb-cluster:${mysqlVersion}`);
   await dbaasAPI.waitForDBClusterState(dbClusterRandomName, clusterName, 'MySQL', 'DB_CLUSTER_STATE_READY');
   await dbaasPage.waitForDbClusterTab(clusterName);
-  await dbaasPage.postClusterCreationValidation(dbClusterRandomName, clusterName);
+  // await dbaasPage.postClusterCreationValidation(dbClusterRandomName, clusterName);
 
   const {
     username, password, host, port,

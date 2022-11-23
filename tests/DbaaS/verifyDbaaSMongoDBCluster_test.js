@@ -66,7 +66,7 @@ Scenario('PMM-T665 PMM-T642 PSMDB Cluster with Custom Resources, log popup ' +
   async ({
     I, dbaasPage, dbaasAPI, dbaasActionsPage,
   }) => {
-    const collectionNames = '[ "customers", "system.profile" ]';
+    const collectionNames = '[ "customers" ]';
     const dbName = 'tutorialkart2';
 
     await dbaasAPI.deleteAllDBCluster(clusterName);
