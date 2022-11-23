@@ -111,8 +111,8 @@ BeforeSuite(async ({
 //   // await I.verifyCommand('docker-compose -f docker-compose-webhook.yml stop');
 // });
 
-Scenario.only(
-  'PMM-T564 Verify Severity colors @ia',
+Scenario(
+  'PMM-T564 Verify fired alert severity colors @ia',
   async ({ I, alertsPage, rulesAPI }) => {
     //TODO
     I.wait(120);
@@ -129,24 +129,7 @@ Scenario.only(
   },
 );
 
-Scenario.skip(
-  'PMM-T1146 Verify IA silence/unsilence all button @ia',
-  async ({ I, alertmanagerAPI, alertsPage }) => {
-    I.amOnPage(alertsPage.url);
-    I.waitForVisible(alertsPage.buttons.silenceAllAlerts, 30);
-    I.waitForVisible(alertsPage.buttons.unsilenceAllAlerts, 30);
-    I.click(alertsPage.buttons.silenceAllAlerts);
-    I.waitForElement(alertsPage.elements.criticalSeverity, 30);
-    await alertmanagerAPI.verifyAlerts(rulesForSilensingAlerts, true);
-    await alertsPage.checkAllAlertsColor('Silenced');
-
-    I.click(alertsPage.buttons.unsilenceAllAlerts);
-    I.waitForElement(alertsPage.elements.criticalSeverity, 30);
-    await alertmanagerAPI.verifyAlerts(rulesForSilensingAlerts);
-    await alertsPage.checkAllAlertsColor('Firing');
-  },
-);
-
+// Skip until https://jira.percona.com/browse/PMM-11130
 Scenario.skip(
   'PMM-T659 Verify alerts are deleted after deleting rules @ia',
   async ({ I, alertsPage, rulesAPI }) => {
@@ -201,30 +184,6 @@ Scenario.skip(
 
     // Verify Alert exists in alertmanager
     await alertmanagerAPI.verifyAlerts([{ ruleId: ruleIdForAlerts, serviceName: 'pmm-server-postgresql' }]);
-  },
-);
-
-Scenario.skip(
-  'PMM-T1137 Verify that IA alerts are showing important labels first @ia',
-  async ({ I, alertsPage }) => {
-    I.amOnPage(alertsPage.url);
-    I.waitForElement(alertsPage.elements.alertRow(alertName), 30);
-    alertsPage.checkContainingLabels({
-      primaryLabels: ['node_name=pmm-server', 'service_name=pmm-server-postgresql'],
-      alertName,
-    });
-    I.click(alertsPage.buttons.arrowIcon(alertName));
-    I.waitForVisible(alertsPage.elements.details, 30);
-    I.seeElement(alertsPage.elements.detailsRuleExpression, 30);
-    I.seeElement(alertsPage.elements.detailsSecondaryLabels, 30);
-    alertsPage.checkContainingLabels({
-      secondaryLabels: ['agent_type=postgres_exporter',
-        'alertgroup=PMM Integrated Alerting',
-        'node_id=pmm-server',
-        'node_type=generic',
-        'server=127.0.0.1:5432',
-        'service_type=postgresql'],
-    });
   },
 );
 
