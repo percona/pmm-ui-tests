@@ -27,6 +27,7 @@ module.exports = {
     detailsSecondaryLabels: locate(details).find('div').withText('Secondary Labels'),
     primaryLabels: (alertName, text) => locate(`${alertRow(alertName)}/td[4]`).find('$chip').withText(text),
     secondaryLabels: (text) => locate(details).find('$chip').withText(text),
+    noAlerts: `//h1[text()=' No alerts detected']`,
   },
   buttons: {
     // silenceActivate returns silence/activate button locator for a given alert name

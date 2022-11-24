@@ -129,7 +129,7 @@ Scenario(
   },
 );
 
-// Skip until https://jira.percona.com/browse/PMM-11130
+// FIXME: Skip until https://jira.percona.com/browse/PMM-11130 is fixed
 Scenario.skip(
   'PMM-T659 Verify alerts are deleted after deleting rules @ia',
   async ({ I, alertsPage, rulesAPI }) => {
@@ -265,5 +265,14 @@ Scenario.skip(
     I.waitForVisible(alertsPage.elements.noData);
     I.seeTextEquals(alertsPage.messages.noAlertsFound, alertsPage.elements.noData);
     I.dontSeeElement(alertsPage.elements.alertRow(alertName));
+  },
+);
+
+Scenario.only(
+  'PMM-T1467 Verify empty Fired alerts list @ia',
+  async ({ I, alertsPage, rulesAPI }) => {
+    await rulesAPI.removeAllAlertRules();
+    I.amOnPage(alertsPage.url);
+    I.seeElement(alertsPage.elements.noAlerts);
   },
 );
