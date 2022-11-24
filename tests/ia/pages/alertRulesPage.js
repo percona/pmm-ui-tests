@@ -61,7 +61,7 @@ module.exports = {
     successRuleEdit: (name) => `Rule "${name}" updated.`,
     successfullyDeleted: 'Rule deleted.',
     failRuleCreate: 'There are errors in the form. Please correct them and try again!',
-    failRuleCreateDuration: `Failed to save rule: Duration (0s) can't be less then evaluation interval for the given group (1m0s).; Duration (0s) can't be less then evaluation interval for the given group (1m0s).`,
+    failRuleCreateDuration: `Failed to save rule: Duration (0s) can't be shorter than evaluation interval for the given group (1m0s).; Duration (0s) can't be shorter than evaluation interval for the given group (1m0s).`,
   },
 
   async fillPerconaAlert(defaultRuleObj, newruleObj) {
