@@ -276,11 +276,11 @@ Scenario('PMM-T704 PMM-T772 PMM-T849 PMM-T850 Resources, PV, Secrets verificatio
     } = await dbaasAPI.getDbClusterDetails(psmdb_cluster_resource_check, clusterName, 'MongoDB');
 
     await I.verifyCommand(
-      'kubectl run psmdb-client1 --image=percona/percona-server-mongodb:4.4.5-7 --restart=Never',
+      'kubectl run psmdb-client --image=percona/percona-server-mongodb:4.4.5-7 --restart=Never',
     );
     await I.verifyCommand(
       `kubectl get pods ${psmdb_cluster_resource_check}-rs0-0 -o json | grep -i requests -A2 | tail -2`,
-      '"cpu": "0.5"',
+      '"cpu": "500m"',
     );
     await I.verifyCommand(
       `kubectl get pods ${psmdb_cluster_resource_check}-rs0-0 -o json | grep -i requests -A2 | tail -2`,
@@ -310,6 +310,6 @@ Scenario('PMM-T704 PMM-T772 PMM-T849 PMM-T850 Resources, PV, Secrets verificatio
       '',
       'fail',
     );
-  }).retry(1);
+  });
 
 
