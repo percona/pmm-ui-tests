@@ -61,8 +61,8 @@ Scenario(
     });
     const folderUID = await rulesAPI.getFolderUID(ruleFolder);
 
-    I.seeElement(alertRulesPage.buttons.editFolderButton(folderUID, ruleFolder.toLowerCase()));
-    I.seeElement(alertRulesPage.buttons.managePermissionsButton(folderUID, ruleFolder.toLowerCase()));
+    I.seeElement(alertRulesPage.buttons.goToFolderButton(folderUID));
+    I.seeElement(alertRulesPage.buttons.managePermissionsButton(folderUID));
     I.seeElement(alertRulesPage.elements.totalRulesCounter('1 rule', ruleFolder));
     await rulesAPI.removeAlertRule(ruleFolder);
   },
