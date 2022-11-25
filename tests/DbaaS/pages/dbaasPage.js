@@ -33,7 +33,7 @@ module.exports = {
       addKubernetesClusterButton: '$kubernetes-new-cluster-button',
       addKubernetesClusterButtonInTable: '//div[@data-testid="table-no-data"]//span[contains(text(), "Register new Kubernetes Cluster")]',
       actionsLocator: (clusterName) => `//td[contains(text(), "${clusterName}")]//parent::tr//button[@data-testid="dropdown-menu-toggle"]`,
-      closeButton: '$modal-close-button',
+      cancelButton: '$cancel-button',
       clusterConfigurationText: locate('$pmm-overlay-wrapper').find('pre'),
       copyToClipboardButton: '//span[contains(text(), "Copy to clipboard")]',
       disabledAddButton: '//button[@data-testid="kubernetes-add-cluster-button" and @disabled]',
@@ -42,7 +42,6 @@ module.exports = {
       kubernetesAddButton: '$kubernetes-add-cluster-button',
       kubernetesClusterNameInput: '$name-text-input',
       modalWindow: '$modal-body',
-      modalCloseButton: '$modal-close-button',
       modalContent: '$modal-content',
       modalContentText: locate('$modal-content').find('h4'),
       proceedButton: '$delete-kubernetes-button',
@@ -51,6 +50,7 @@ module.exports = {
       unregisterButton: locate('$dropdown-menu-menu').find('span').at(1),
       viewClusterConfiguration: locate('$dropdown-menu-menu').find('span').at(2),
       manageVersions: locate('$dropdown-menu-menu').find('span').at(3),
+      registerKubernetesClusterButton: '$k8s-cluster-submit-button',
     },
     dbClusterTab: {
       defaultPassword: '***************',
@@ -224,11 +224,10 @@ module.exports = {
 
   registerKubernetesCluster(clusterName, config) {
     I.click(this.tabs.kubernetesClusterTab.addKubernetesClusterButton);
-    I.fillField(this.tabs.kubernetesClusterTab.kubernetesClusterNameInput, clusterName);
     I.usePlaywrightTo('Fill config to the input', async ({ page }) => {
       await page.type(this.tabs.kubernetesClusterTab.kubeconfigFileInput, config, { timeout: 120000 });
     });
-    I.click(this.tabs.kubernetesClusterTab.kubernetesAddButton);
+    I.click(this.tabs.kubernetesClusterTab.registerKubernetesClusterButton);
   },
 
   unregisterCluster(clusterName, force = false) {

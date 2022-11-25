@@ -45,27 +45,21 @@ Scenario(
     I.amOnPage(dbaasPage.url);
     I.waitForVisible(dbaasPage.tabs.kubernetesClusterTab.addKubernetesClusterButtonInTable, 30);
     I.click(dbaasPage.tabs.kubernetesClusterTab.addKubernetesClusterButton);
-    I.seeElement(dbaasPage.tabs.kubernetesClusterTab.modalWindow);
     I.waitForElement(dbaasPage.tabs.dbClusterTab.monitoringWarningLocator, 30);
     I.waitForText(dbaasPage.monitoringWarningMessage, 30);
-    I.click(dbaasPage.tabs.kubernetesClusterTab.closeButton);
+    I.click(dbaasPage.tabs.kubernetesClusterTab.cancelButton);
     dbaasPage.registerKubernetesCluster(clusterName, process.env.kubeconfig_minikube);
     I.waitForText(dbaasPage.addedAlertMessage, 60);
     dbaasPage.checkCluster(clusterName, false);
     I.click(dbaasPage.tabs.kubernetesClusterTab.addKubernetesClusterButton);
-    I.seeElement(dbaasPage.tabs.kubernetesClusterTab.modalWindow);
     I.dontSeeElement(dbaasPage.tabs.dbClusterTab.monitoringWarningLocator, 30);
     I.dontSee(dbaasPage.monitoringWarningMessage);
-    I.click(dbaasPage.tabs.kubernetesClusterTab.closeButton);
-    I.dontSeeElement(dbaasPage.tabs.kubernetesClusterTab.modalWindow);
-    I.click(dbaasPage.tabs.kubernetesClusterTab.addKubernetesClusterButton);
-    I.seeElement(dbaasPage.tabs.kubernetesClusterTab.modalWindow);
-    I.pressKey('Escape');
-    I.dontSeeElement(dbaasPage.tabs.kubernetesClusterTab.modalContent);
-    // cannot automate click outside the form
+    I.click(dbaasPage.tabs.kubernetesClusterTab.cancelButton);
+    I.waitForElement(dbaasPage.tabs.dbClusterTab.fields.clusterTableRow);
     // PMM-T428 - starting here
     dbaasPage.registerKubernetesCluster(clusterName, process.env.kubeconfig_minikube);
     dbaasPage.seeErrorForAddedCluster(clusterName);
+    I.click(dbaasPage.tabs.kubernetesClusterTab.cancelButton);
     // PMM-T431 starting here, unregister cluster using unregister option
     dbaasPage.unregisterCluster(clusterName);
     I.waitForText(dbaasPage.deletedAlertMessage, 20);
