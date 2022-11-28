@@ -154,7 +154,8 @@ Scenario(
 );
 
 // nightly candidate
-Scenario(
+// FIXME: flaky test fix and unskip
+xScenario(
   'PMM-T1434 Verify validation errors when creating new alert rule @ia @grafana-pr',
   async ({
     I, alertRulesPage,
