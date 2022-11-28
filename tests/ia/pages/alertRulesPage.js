@@ -36,7 +36,7 @@ module.exports = {
     deleteAlertRule: locate('span').withText('Delete').inside('button'),
     groupCollapseButton: (folderText) =>  `//button[@data-testid='group-collapse-toggle'][following::h6[contains(., '${folderText}')]]`,
     ruleCollapseButton: `button[aria-label='Expand row']`,
-    editFolderButton: (folderID, folderText)  => locate('[aria-label="edit folder"]').withAttr({ 'href': `/graph/dashboards/f/${folderID}/${folderText}/settings` }),
+    goToFolderButton: (folderID, folderText) => locate('[aria-label="go to folder"]').withAttr({ 'href': `/graph/dashboards/f/${folderID}/${folderText}` }),
     managePermissionsButton: (folderID, folderText)  => locate('[aria-label="manage permissions"]').withAttr({ 'href': `/graph/dashboards/f/${folderID}/${folderText}/permissions` }),
     confirmModal: `button[aria-label='Confirm Modal Danger Button']`,
     cancelModal: locate('button').withText('Cancel'),
