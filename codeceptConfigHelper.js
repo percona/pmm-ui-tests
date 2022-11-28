@@ -17,6 +17,7 @@ module.exports = {
     backupAPI: './tests/backup/pages/api/backupAPI.js',
     backupInventoryPage: './tests/backup/pages/inventoryPage.js',
     channelsAPI: './tests/ia/pages/api/channelsAPI.js',
+    contactPointsAPI: './tests/ia/pages/api/contactPointsAPI.js',
     dashboardPage: './tests/pages/dashboardPage.js',
     databaseChecksPage: './tests/advisers/stt/pages/databaseChecksPage.js',
     dbaasAPI: './tests/DbaaS/api/dbaasAPI.js',
