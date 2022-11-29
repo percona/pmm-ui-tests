@@ -127,22 +127,6 @@ Scenario(
   },
 );
 
-Scenario(
-  'Verify Firing Alert, labels and existence in alertmanager @ia',
-  async ({
-    I, alertsPage, alertmanagerAPI,
-  }) => {
-    I.amOnPage(alertsPage.url);
-    I.waitForElement(alertsPage.elements.alertRow(alertName), 30);
-
-    // Verify correct labels
-    I.see('Critical', alertsPage.elements.severityCell(alertName));
-
-    // Verify Alert exists in alertmanager
-    await alertmanagerAPI.verifyAlerts([{ ruleId: ruleIdForAlerts, serviceName: 'pmm-server-postgresql' }]);
-  },
-);
-
 Scenario.skip(
   'PMM-T540 Alerts list columns @ia',
   async ({ I, alertsPage }) => {
