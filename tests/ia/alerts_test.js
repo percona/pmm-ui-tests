@@ -1,4 +1,5 @@
 const assert = require('assert');
+const contactPointsAPI = require('./pages/api/contactPointsAPI');
 
 let ruleIdForAlerts;
 let ruleIdForNotificationsCheck;
@@ -40,66 +41,29 @@ Before(async ({ I }) => {
 BeforeSuite(async ({
   I, settingsAPI, rulesAPI, alertsAPI, channelsAPI, ncPage,
 }) => {
-    await rulesAPI.removeAllAlertRules();
-    
-    for (const rule of rulesForAlerts) {
-        await rulesAPI.createAlertRule({ ruleName: rule.severity, severity: rule.severity }, ruleFolder);
-    }
+  await rulesAPI.removeAllAlertRules();
+  await contactPointsAPI.createContactPoints();
+  await rulesAPI.createAlertRule({ ruleName }, 'OS');
 
-//   for (const rule of rulesForAlerts) {
-//     const ruleId = await rulesAPI.createAlertRule(rule);
+  //   for (const rule of rulesForAlerts) {
+  //     const ruleId = await rulesAPI.createAlertRule(rule);
 
-//     rulesToDelete.push(ruleId);
-//     rulesForSilensingAlerts.push({ ruleId, serviceName: 'pmm-server-postgresql' });
-//   }
+  //     rulesToDelete.push(ruleId);
+  //     rulesForSilensingAlerts.push({ ruleId, serviceName: 'pmm-server-postgresql' });
+  //   }
 
-//   ruleIdForAlerts = await rulesAPI.createAlertRule({ ruleName });
+  // Preparation steps for checking Alert via webhook server
+  // eslint-disable-next-line no-template-curly-in-string
+  await I.verifyCommand('bash -x ${PWD}/testdata/ia/gencerts.sh');
+  await I.verifyCommand('docker compose -f docker-compose-webhook.yml up -d');
+  const cert = await I.readFileSync('./testdata/ia/certs/self.crt');
 
-//   // Preparation steps for checking Alert via email
-//   const channelName = 'EmailChannel';
+  for (const rule of rulesForAlerts) {
+    await rulesAPI.createAlertRule({ ruleName: rule.severity, severity: rule.severity }, ruleFolder);
+  }
 
-//   testEmail = await I.generateNewEmail();
-
-//   await settingsAPI.setEmailAlertingSettings();
-//   const channelId = await channelsAPI.createNotificationChannel(
-//     channelName,
-//     ncPage.types.email.type,
-//     testEmail,
-//   );
-
-//   // Preparation steps for checking Alert via webhook server
-//   // eslint-disable-next-line no-template-curly-in-string
-//   await I.verifyCommand('bash -x ${PWD}/testdata/ia/gencerts.sh');
-//   await I.verifyCommand('docker-compose -f docker-compose-webhook.yml up -d');
-//   const cert = await I.readFileSync('./testdata/ia/certs/self.crt');
-
-//   webhookChannelId = await channelsAPI.createNotificationChannel(
-//     'Webhook channel',
-//     ncPage.types.webhook.type,
-//     {
-//       url: ncPage.types.webhook.url,
-//       ca_file_content: cert,
-//       insecure_skip_verify: true,
-//       username: 'alert',
-//       password: 'alert',
-//     },
-//   );
-
-//   pagerDutyChannelId = await channelsAPI.createNotificationChannel(
-//     'PD channel',
-//     ncPage.types.pagerDuty.type,
-//     {
-//       service_key: process.env.PAGER_DUTY_SERVICE_KEY,
-//     },
-//   );
-
-//   ruleIdForNotificationsCheck = await rulesAPI.createAlertRule({
-//     ruleName: ruleNameForEmailCheck,
-//     channels: [channelId, webhookChannelId, pagerDutyChannelId],
-//   });
-
-//   // Wait for all alerts to appear
-//   await alertsAPI.waitForAlerts(60, rulesToDelete.length + 2);
+  // Wait for all alerts to appear
+  //await alertsAPI.waitForAlerts(60, rulesToDelete.length + 2);
 });
 
 // AfterSuite(async ({
@@ -146,32 +110,23 @@ Scenario.skip(
   },
 );
 
-Scenario.skip(
+Scenario(
   'PMM-T551 PMM-T569 PMM-T1044 PMM-T1045 PMM-T568 Verify Alerts on Email, Webhook and Pager Duty @ia @fb',
-  async ({ I, rulesAPI, alertsAPI }) => {
+  async ({ I, alertsAPI }) => {
+    I.wait(120);
     const file = './testdata/ia/scripts/alert.txt';
-
-    // Get message from the inbox
-    const message = await I.getLastMessage(testEmail, 120000);
-
-    await I.seeTextInSubject('FIRING', message);
-    assert.ok(message.html.body.includes(ruleNameForEmailCheck));
 
     // Webhook notification check
     I.waitForFile(file, 100);
     I.seeFile(file);
-    I.seeInThisFile(ruleNameForEmailCheck);
-    I.seeInThisFile(ruleIdForNotificationsCheck);
-    I.seeInThisFile(webhookChannelId);
+    I.seeInThisFile(ruleName);
 
-    // Pager Duty notification check
-    await alertsAPI.verifyAlertInPagerDuty(ruleIdForNotificationsCheck);
-
-    await rulesAPI.removeAlertRule(ruleIdForNotificationsCheck);
+    // // Pager Duty notification check
+    // await alertsAPI.verifyAlertInPagerDuty(ruleIdForNotificationsCheck);
   },
 );
 
-Scenario.skip(
+Scenario(
   'Verify Firing Alert, labels and existence in alertmanager @ia',
   async ({
     I, alertsPage, alertmanagerAPI,
