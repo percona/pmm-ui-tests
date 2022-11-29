@@ -76,12 +76,13 @@ BeforeSuite(async ({
 // });
 
 Scenario(
-  'PMM-T564 Verify fired alert severity colors @ia',
-  async ({ I, alertsPage, rulesAPI }) => {
+  'PMM-T1482 PMM-T564 Verify fired alert and severity colors @ia',
+  async ({ I, alertsPage }) => {
     //TODO
     I.wait(120);
     I.amOnPage(alertsPage.url);
-    I.waitForElement(alertsPage.elements.criticalSeverity, 30);
+    rulesForAlerts.forEach((item) => I.waitForElement(alertsPage.elements.alertRow(item.severity), 10));
+    rulesForAlerts.forEach((item) => I.see('Active', alertsPage.elements.stateCell(item.severity)));
     I.seeCssPropertiesOnElements(alertsPage.elements.criticalSeverity, { color: alertsPage.colors.critical });
     I.seeCssPropertiesOnElements(alertsPage.elements.errorSeverity, { color: alertsPage.colors.error });
     I.seeCssPropertiesOnElements(alertsPage.elements.noticeSeverity, { color: alertsPage.colors.notice });
@@ -223,7 +224,7 @@ Scenario.skip(
   },
 );
 
-Scenario.only(
+Scenario(
   'PMM-T1467 Verify empty Fired alerts list @ia',
   async ({ I, alertsPage, rulesAPI }) => {
     await rulesAPI.removeAllAlertRules();
