@@ -127,33 +127,37 @@ Scenario(
   },
 );
 
-Scenario.skip(
+Scenario(
   'PMM-T540 Alerts list columns @ia',
   async ({ I, alertsPage }) => {
     I.amOnPage(alertsPage.url);
-    I.waitForElement(alertsPage.elements.alertRow(alertName), 30);
     alertsPage.columnHeaders.forEach((header) => {
       const columnHeader = alertsPage.elements.columnHeaderLocator(header);
 
-      I.waitForVisible(columnHeader, 30);
+      I.waitForVisible(columnHeader, 10);
     });
 
     // Verify there are no duplicate alerts
-    I.seeNumberOfElements(alertsPage.elements.alertRow(alertName), 1);
+    I.seeNumberOfElements(alertsPage.elements.alertRow('SEVERITY_ERROR'), 1);
   },
 );
 
-Scenario.skip(
+Scenario.only(
   'PMM-T541 Verify user is able to silence/activate the alert @ia',
   async ({
     I, alertsPage, alertmanagerAPI,
   }) => {
     I.amOnPage(alertsPage.url);
-    I.waitForVisible(alertsPage.elements.alertRow(alertName), 30);
-    await alertsPage.silenceAlert(alertName);
-    await alertmanagerAPI.verifyAlerts([{ ruleId: ruleIdForAlerts, serviceName: 'pmm-server-postgresql' }], true);
-    await alertsPage.activateAlert(alertName);
-    await alertmanagerAPI.verifyAlerts([{ ruleId: ruleIdForAlerts, serviceName: 'pmm-server-postgresql' }]);
+    I.waitForVisible(alertsPage.elements.alertRow('SEVERITY_ERROR'), 30);
+    await alertsPage.verifyAlert('SEVERITY_ERROR');
+    await alertsPage.silenceAlert('SEVERITY_ERROR');
+    I.amOnPage(alertsPage.url);
+    await alertsPage.verifyAlert('SEVERITY_ERROR', true);
+    const silences = await alertmanagerAPI.getSilenced();
+
+    await alertmanagerAPI.deleteSilences(silences);
+    I.amOnPage(alertsPage.url);
+    await alertsPage.verifyAlert('SEVERITY_ERROR', false);
   },
 );
 
