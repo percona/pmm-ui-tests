@@ -85,6 +85,12 @@ module.exports = {
     I.waitForVisible(this.elements.tooltipPlanId, 30);
   },
 
+  async getQueryExampleText() {
+    I.waitForVisible(this.elements.examplesCodeBlock, 30);
+    
+    console.log(I.grabValueFrom(this.elements.examplesCodeBlock));
+  },
+
   async verifyAvgQueryTime(timeRangeInSec = 300) {
     const timeLocator = this.getMetricsCellLocator('Query Time', 4);
     const countLocator = this.getMetricsCellLocator('Query Count', 3);

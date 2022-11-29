@@ -17,6 +17,7 @@ module.exports = {
     }
 
     assert.ok(responseService !== undefined, `Service ${serviceName} was not found`);
+    console.log(responseService.service_id);
     const agents = await this.waitForRunningState(responseService.service_id);
 
     assert.ok(agents, `One or more agents are not running for ${service.service}`);

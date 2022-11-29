@@ -15,16 +15,15 @@ const qanFilters = new DataTable(['filterName']);
 const dashboardCheck = new DataTable(['serviceName']);
 const metrics = new DataTable(['serviceName', 'metricName']);
 const maxQueryLengthTestData = new DataTable(['text']);
-const maxQueryLengthTestInstances = new DataTable(['instanceName', 'agentName']);
+const maxQueryLengthTestInstances = new DataTable(['instanceName', 'agentName', 'container']);
 
 metrics.add(['pmm-server-postgresql', 'pg_stat_database_xact_rollback']);
 metrics.add([externalExporterServiceName, 'redis_uptime_in_seconds']);
 metrics.add([haproxyServiceName, 'haproxy_process_start_time_seconds']);
 
-maxQueryLengthTestInstances.add(['mysql', '']);
-// maxQueryLengthTestInstances.add(['postgresql', '']);
-// maxQueryLengthTestInstances.add(['mongodb', '']);
-
+maxQueryLengthTestInstances.add(['mysql', 'QAN MySQL Perfschema Agent', 'mysql_8.0']);
+// maxQueryLengthTestInstances.add(['postgresql', '', '']);
+// maxQueryLengthTestInstances.add(['mongodb', '', '']);
 
 maxQueryLengthTestData.add(['---;']);
 maxQueryLengthTestData.add(['aa']);
@@ -34,7 +33,8 @@ maxQueryLengthTestData.add(['"']);
 
 for (const [key, value] of Object.entries(remoteInstancesHelper.services)) {
   if (value) {
-    let agentName = '';
+    const agentName = '';
+
     switch (key) {
       case 'postgresql':
         // TODO: https://jira.percona.com/browse/PMM-9011
@@ -379,10 +379,10 @@ Scenario(
 Scenario(
   'PMM-T1404 Verify Max Query Length option can be set to -1 on Add remote MySQL page',
   async ({
-           I, remoteInstancesPage, pmmInventoryPage, qanPage, qanOverview,
-         }) => {
+    I, remoteInstancesPage, pmmInventoryPage, qanPage, qanOverview,
+  }) => {
     const serviceName = remoteInstancesHelper.services.mysql;
-    
+
     I.amOnPage(remoteInstancesPage.url);
     remoteInstancesPage.waitUntilRemoteInstancesPageLoaded();
     remoteInstancesPage.openAddRemotePage('mysql');
@@ -401,14 +401,13 @@ Scenario(
   },
 );
 
-
 Data(maxQueryLengthTestData).Scenario(
   'PMM-T1405 Verify validation of Max Query Length option on Add remote MySQL page',
   async ({
-           I, remoteInstancesPage, pmmInventoryPage, qanPage, qanOverview, current
-         }) => {
+    I, remoteInstancesPage, pmmInventoryPage, qanPage, qanOverview, current,
+  }) => {
     const maxLength = current.text;
-    
+
     I.amOnPage(remoteInstancesPage.url);
     remoteInstancesPage.waitUntilRemoteInstancesPageLoaded();
     remoteInstancesPage.openAddRemotePage('mysql');
@@ -417,25 +416,73 @@ Data(maxQueryLengthTestData).Scenario(
   },
 );
 
-
-
 Data(maxQueryLengthTestInstances).Scenario(
   'PMM-T1405 Verify validation of Max Query Length option on Add remote MySQL page @nazarov',
   async ({
-           I, remoteInstancesPage, pmmInventoryPage, qanPage, qanOverview, current
-         }) => {
-    
-    const agentName = current.agentName;
-    const serviceName = remoteInstancesHelper.services[current.instanceName];
-  
+    I, remoteInstancesPage, pmmInventoryPage, qanPage, qanOverview, qanDetails, qanFilters, inventoryAPI, current,
+  }) => {
+    const { instanceName, agentName, container } = current;
+
+    let details;
+    let pathToSSL;
+    const remoteServiceName = `${faker.random.alpha(3)}remote_${instanceName}`;
+
+    switch (instanceName) {
+      case 'mysql':
+        pathToSSL = '~/WebstormProjects/pmm-qa/pmm-tests/tls-ssl-setup/mysql/8.0/';
+
+        details = {
+          serviceName: remoteServiceName,
+          serviceType: 'mysql_ssl',
+          port: '3306',
+          host: container,
+          username: 'pmm',
+          password: 'pmm',
+          cluster: 'mysql_remote_cluster',
+          environment: 'mysql_remote_cluster',
+          tlsCAFile: `${pathToSSL}ca.pem`,
+          tlsKeyFile: `${pathToSSL}client-key.pem`,
+          tlsCertFile: `${pathToSSL}client-cert.pem`,
+        };
+        break;
+      case 'postgresql': break;
+      case 'mongodb': break;
+      default:
+        break;
+    }
+
     I.amOnPage(remoteInstancesPage.url);
     remoteInstancesPage.waitUntilRemoteInstancesPageLoaded();
-    remoteInstancesPage.openAddRemotePage(current.instanceName);
-    await remoteInstancesPage.fillRemoteFields(serviceName);
+    remoteInstancesPage.openAddRemotePage(details.serviceType);
+    await remoteInstancesPage.addRemoteSSLDetails(details);
     I.fillField(remoteInstancesPage.fields.maxQueryLength, '10');
-    I.waitForVisible(remoteInstancesPage.fields.skipTLSL, 30);
-    I.click(remoteInstancesPage.fields.skipTLSL);
     I.click(remoteInstancesPage.fields.addService);
-    pmmInventoryPage.verifyRemoteServiceIsDisplayed(serviceName);
+    await inventoryAPI.verifyServiceExistsAndHasRunningStatus(
+      {
+        serviceType: 'MYSQL_SERVICE',
+        service: 'mysql',
+      },
+      remoteServiceName,
+    );
+
+    // Check Remote Instance also added and have running status
+    pmmInventoryPage.verifyRemoteServiceIsDisplayed(remoteServiceName);
+    await pmmInventoryPage.verifyAgentHasStatusRunning(remoteServiceName);
+    await pmmInventoryPage.openServices();
+    const serviceId = await pmmInventoryPage.getServiceId(remoteServiceName);
+
+    await pmmInventoryPage.openAgents();
+    await pmmInventoryPage.checkAgentOtherDetailsSection('max_query_length:', 'max_query_length: 10', remoteServiceName, serviceId);
+    I.wait(60);
+    I.amOnPage(I.buildUrlWithParams(qanPage.clearUrl, { from: 'now-5m' }));
+    qanOverview.waitForOverviewLoaded();
+    qanFilters.applyFilter(remoteServiceName);
+    // await qanFilters.waitForFilterVisible(remoteServiceName, 60);
+    I.waitForElement(qanOverview.elements.querySelector, 30);
+    qanOverview.selectRow(1);
+    qanFilters.waitForFiltersToLoad();
+    qanDetails.checkExamplesTab();
+    qanDetails.checkExplainTab();
+    // '--tls --server-insecure-tls --tls-skip-verify --tls-ca=/var/lib/mysql/ca.pem --tls-cert=/var/lib/mysql/client-cert.pem --tls-key=/var/lib/mysql/client-key.pem'
   },
 );

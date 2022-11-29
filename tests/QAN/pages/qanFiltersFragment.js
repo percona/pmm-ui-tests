@@ -21,6 +21,7 @@ module.exports = {
     filterCheckboxes: '.checkbox-container__checkmark',
   },
   buttons: {
+    refresh: I.useDataQA('data-testid RefreshPicker run button'),
     resetAll: '$qan-filters-reset-all',
     showSelected: '$qan-filters-show-selected',
   },
@@ -71,6 +72,14 @@ module.exports = {
 
   waitForFiltersToLoad() {
     I.waitForDetached(this.elements.spinner, 60);
+  },
+
+  async waitForFilterVisible(filterName, timeout) {
+    await I.asyncWaitFor(async () => {
+      I.click(this.buttons.refresh);
+
+      return I.seeElement(this.elements.filterItem('Service Name', filterName));
+    }, timeout);
   },
 
   async expandAllFilters() {

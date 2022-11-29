@@ -33,7 +33,7 @@ Data(instances).Scenario(
       serviceName, serviceType, version, container,
     } = current;
     let details;
-    const remoteServiceName = `remote_${serviceName}`;
+    const remoteServiceName = `${faker.random.alpha(3)}remote_${serviceName}`;
 
     if (serviceType === 'mysql_ssl') {
       details = {
@@ -61,7 +61,7 @@ Data(instances).Scenario(
         serviceType: 'MYSQL_SERVICE',
         service: 'mysql',
       },
-      serviceName,
+      remoteServiceName,
     );
 
     // Check Remote Instance also added and have running status
@@ -176,7 +176,7 @@ Data(instances).Scenario(
 Data(instances).Scenario(
   'PMM-T1277 (1.0) Verify tlsCa, tlsCert, tlsKey are generated on every MySQL exporter (added with TLS flags) restart @ssl @ssl-remote @not-ui-pipeline',
   async ({
-    I, current, dashboardPage
+    I, current, dashboardPage,
   }) => {
     const {
       container,
