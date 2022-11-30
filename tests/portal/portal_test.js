@@ -518,28 +518,32 @@ Scenario(
     if (pmmVersion >= 27 || pmmVersion === undefined) {
       await I.Authorize();
       I.amOnPage(environmentOverviewPage.url);
-      await I.waitForVisible(environmentOverviewPage.elements.notConnectedToPortal);
 
+      await I.waitForVisible(environmentOverviewPage.elements.notPlaformUser);
       assert.equal(
-        environmentOverviewPage.messages.notConnectedToPortal,
-        await I.grabTextFrom(environmentOverviewPage.elements.notConnectedToPortal),
+        environmentOverviewPage.messages.loginWithPerconaAccount,
+        await I.grabTextFrom(environmentOverviewPage.elements.notPlaformUser),
         'Displayed message is not correct.',
       );
+
       I.amOnPage(organizationEntitlementsPage.url);
-      await I.waitForVisible(environmentOverviewPage.elements.notConnectedToPortal);
 
+      await I.waitForVisible(environmentOverviewPage.elements.notPlaformUser);
       assert.equal(
-        environmentOverviewPage.messages.notConnectedToPortal,
-        await I.grabTextFrom(environmentOverviewPage.elements.notConnectedToPortal),
-        'Displayed message is not correct.',
-      );
-      I.amOnPage(organizationTicketsPage.url);
-      assert.equal(
-        environmentOverviewPage.messages.notConnectedToPortal,
-        await I.grabTextFrom(environmentOverviewPage.elements.notConnectedToPortal),
+        environmentOverviewPage.messages.loginWithPerconaAccount,
+        await I.grabTextFrom(environmentOverviewPage.elements.notPlaformUser),
         'Displayed message is not correct.',
       );
     }
+
+    I.amOnPage(organizationTicketsPage.url);
+
+    await I.waitForVisible(environmentOverviewPage.elements.notPlaformUser);
+    assert.equal(
+      environmentOverviewPage.messages.loginWithPerconaAccount,
+      await I.grabTextFrom(environmentOverviewPage.elements.notPlaformUser),
+      'Displayed message is not correct.',
+    );
   },
 );
 
