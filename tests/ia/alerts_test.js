@@ -142,7 +142,7 @@ Scenario(
   },
 );
 
-Scenario.only(
+Scenario(
   'PMM-T541 Verify user is able to silence/activate the alert @ia',
   async ({
     I, alertsPage, alertmanagerAPI,
@@ -161,26 +161,25 @@ Scenario.only(
   },
 );
 
-Scenario.skip(
+Scenario(
   'PMM-T587 Verify user cant see Alert with non-existing filter @ia',
   async ({ I, alertsPage, rulesAPI }) => {
-    const rule = {
-      ruleId: ruleIdForAlerts,
-      ruleName,
+    await rulesAPI.removeAllAlertRules();
+    const wrongFilterRule = {
+      ruleName: 'wrongFilterRule',
       filters: [
         {
-          key: 'service_name',
-          value: 'pmm-server-postgresql111',
-          type: 'EQUAL',
+          label: 'service_name',
+          regexp: 'wrong-service',
+          type: 'MATCH',
         },
       ],
     };
 
-    await rulesAPI.updateAlertRule(rule);
-
+    await rulesAPI.createAlertRule(wrongFilterRule, 'Insight');
+    I.wait(100);
     I.amOnPage(alertsPage.url);
-    I.waitForVisible(alertsPage.elements.noData);
-    I.dontSeeElement(alertsPage.elements.alertRow(alertName));
+    I.seeElement(alertsPage.elements.noAlerts);
   },
 );
 

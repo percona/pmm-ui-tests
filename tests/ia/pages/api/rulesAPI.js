@@ -9,14 +9,15 @@ module.exports = {
       // todo: channels, disabled, etc?
       ruleName, severity, filters, params, duration, channels, disabled,
     } = ruleObj;
+
     const body = {
       custom_labels: {},
       disabled: disabled || false,
       channel_ids: channels || [],
       filters: filters || [
         {
-          key: 'service_name',
-          value: 'pmm-server-postgresql',
+          label: 'service_name',
+          regexp: 'pmm-server-postgresql',
           type: 'MATCH',
         },
       ],
