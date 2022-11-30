@@ -501,7 +501,7 @@ Scenario(
       I.waitInUrl('graph/login', 10);
       I.dontSeeElement(locate('a').withAttr({ href: 'login/generic_oauth' }));
       I.amOnPage(homePage.genericOauthUrl);
-      I.waitForVisible(locate('div').withText('OAuth not enabled'));
+      I.waitForVisible(locate('h1').withText('Percona Monitoring and Management'));
       I.amOnPage('');
       I.waitForVisible(locate('h1').withText('Percona Monitoring and Management'));
     } else {
@@ -518,32 +518,28 @@ Scenario(
     if (pmmVersion >= 27 || pmmVersion === undefined) {
       await I.Authorize();
       I.amOnPage(environmentOverviewPage.url);
+      await I.waitForVisible(environmentOverviewPage.elements.notConnectedToPortal);
 
-      await I.waitForVisible(environmentOverviewPage.elements.notPlaformUser);
       assert.equal(
-        environmentOverviewPage.messages.loginWithPerconaAccount,
-        await I.grabTextFrom(environmentOverviewPage.elements.notPlaformUser),
+        environmentOverviewPage.messages.notConnectedToPortal,
+        await I.grabTextFrom(environmentOverviewPage.elements.notConnectedToPortal),
         'Displayed message is not correct.',
       );
-
       I.amOnPage(organizationEntitlementsPage.url);
+      await I.waitForVisible(environmentOverviewPage.elements.notConnectedToPortal);
 
-      await I.waitForVisible(environmentOverviewPage.elements.notPlaformUser);
       assert.equal(
-        environmentOverviewPage.messages.loginWithPerconaAccount,
-        await I.grabTextFrom(environmentOverviewPage.elements.notPlaformUser),
+        environmentOverviewPage.messages.notConnectedToPortal,
+        await I.grabTextFrom(environmentOverviewPage.elements.notConnectedToPortal),
+        'Displayed message is not correct.',
+      );
+      I.amOnPage(organizationTicketsPage.url);
+      assert.equal(
+        environmentOverviewPage.messages.notConnectedToPortal,
+        await I.grabTextFrom(environmentOverviewPage.elements.notConnectedToPortal),
         'Displayed message is not correct.',
       );
     }
-
-    I.amOnPage(organizationTicketsPage.url);
-
-    await I.waitForVisible(environmentOverviewPage.elements.notPlaformUser);
-    assert.equal(
-      environmentOverviewPage.messages.loginWithPerconaAccount,
-      await I.grabTextFrom(environmentOverviewPage.elements.notPlaformUser),
-      'Displayed message is not correct.',
-    );
   },
 );
 
