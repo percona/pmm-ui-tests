@@ -501,7 +501,12 @@ Scenario(
       I.waitInUrl('graph/login', 10);
       I.dontSeeElement(locate('a').withAttr({ href: 'login/generic_oauth' }));
       I.amOnPage(homePage.genericOauthUrl);
-      I.waitForVisible(locate('h1').withText('Percona Monitoring and Management'));
+      if (pmmVersion > 32) {
+        await I.waitForVisible(locate('h1').withText('Percona Monitoring and Management'));
+      } else {
+        await I.waitForVisible(locate('div').withText('OAuth not enabled'));
+      }
+
       I.amOnPage('');
       I.waitForVisible(locate('h1').withText('Percona Monitoring and Management'));
     } else {
