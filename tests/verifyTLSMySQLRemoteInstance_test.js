@@ -33,7 +33,7 @@ Data(instances).Scenario(
       serviceName, serviceType, version, container,
     } = current;
     let details;
-    const remoteServiceName = `${faker.random.alpha(3)}remote_${serviceName}`;
+    const remoteServiceName = `remote_${serviceName}`;
 
     if (serviceType === 'mysql_ssl') {
       details = {
