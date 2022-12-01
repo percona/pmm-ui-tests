@@ -8,7 +8,7 @@ const { remoteInstancesPage, remoteInstancesHelper, pmmInventoryPage } = inject(
 
 const externalExporterServiceName = 'external_service_new';
 const haproxyServiceName = 'haproxy_remote';
-const pathToSSL = '~/WebstormProjects/pmm-qa/pmm-tests/tls-ssl-setup/';
+const pathToSSL = `${adminPage.pathToPMMTests}tls-ssl-setup/`;
 const instanceDetails = {
   mysql: {
     details: {
