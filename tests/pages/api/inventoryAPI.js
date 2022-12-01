@@ -9,7 +9,6 @@ module.exports = {
     // 30 sec ping for getting created service name
     for (let i = 0; i < 30; i++) {
       const services = await this.apiGetServices(service.serviceType);
-
       responseService = services.data[service.service].find((obj) => obj.service_name === serviceName);
       if (responseService !== undefined) break;
 
@@ -17,7 +16,6 @@ module.exports = {
     }
 
     assert.ok(responseService !== undefined, `Service ${serviceName} was not found`);
-    console.log(responseService.service_id);
     const agents = await this.waitForRunningState(responseService.service_id);
 
     assert.ok(agents, `One or more agents are not running for ${service.service}`);

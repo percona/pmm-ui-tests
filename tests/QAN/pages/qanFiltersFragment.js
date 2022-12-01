@@ -98,12 +98,17 @@ module.exports = {
     }
   },
 
-  applyFilter(filterName) {
+  async applyFilter(filterName) {
     const filterToApply = `//span[contains(@class, 'checkbox-container__label-text') and contains(text(), '${filterName}')]`;
 
     I.waitForVisible(this.fields.filterBy, 30);
     I.fillField(this.fields.filterBy, filterName);
-    I.waitForVisible(filterToApply, 20);
+    await I.asyncWaitFor(async () => {
+      I.click(this.buttons.refresh);
+
+      return await I.grabNumberOfVisibleElements(filterToApply);
+    }, 60);
+    // I.waitForVisible(filterToApply, 20);
     I.forceClick(filterToApply);
     I.waitForDetached(this.elements.spinner, 30);
     I.waitForElement(this.fields.filterBy, 30);

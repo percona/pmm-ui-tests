@@ -86,9 +86,9 @@ module.exports = {
   },
 
   async getQueryExampleText() {
-    I.waitForVisible(this.elements.examplesCodeBlock, 30);
-    
-    console.log(I.grabValueFrom(this.elements.examplesCodeBlock));
+    this.checkExamplesTab();
+
+    return await I.grabTextFrom('$highlight-code');
   },
 
   async verifyAvgQueryTime(timeRangeInSec = 300) {
