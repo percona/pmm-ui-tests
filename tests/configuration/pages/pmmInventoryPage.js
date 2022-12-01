@@ -130,6 +130,12 @@ module.exports = {
     assert.ok(expectedResult === details, `Infomation '${expectedResult}' for service '${serviceName}' is missing!`);
   },
 
+  async checkAgentOtherDetailsMissing(detailsSection, serviceId) {
+    const locator = locate('span').withText(detailsSection).after(locate('span').withText(`service_id: ${serviceId}`));
+
+    I.dontSeeElement(locator);
+  },
+
   async verifyMetricsFlags(serviceName) {
     const servicesLink = this.fields.pmmServicesSelector;
     const agentLinkLocator = this.fields.agentsLink;
