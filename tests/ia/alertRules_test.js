@@ -94,7 +94,7 @@ Scenario(
     alertRulesPage.openAlertRulesTab();
     I.click(alertRulesPage.buttons.openAddRuleModal);
     await alertRulesPage.fillPerconaAlert(rule, newRule);
-    I.click(alertRulesPage.buttons.addRule);
+    I.click(alertRulesPage.buttons.saveAndExit);
     I.verifyPopUpMessage(alertRulesPage.messages.successRuleCreate(newRule.ruleName));
     alertRulesPage.verifyRuleList(newRule.folder, newRule.ruleName);
     I.seeTextEquals('Normal', alertRulesPage.elements.ruleState);
@@ -169,7 +169,7 @@ Scenario(
     I.click(alertRulesPage.buttons.openAddRuleModal);
     await alertRulesPage.fillPerconaAlert(rule, wrongRule);
     I.clearField(alertRulesPage.fields.inputField('name'));
-    I.click(alertRulesPage.buttons.addRule);
+    I.click(alertRulesPage.buttons.saveAndExit);
     I.verifyPopUpMessage(alertRulesPage.messages.failRuleCreate);
     I.seeElement(alertRulesPage.elements.ruleValidationError('Must enter an alert name'));
     I.seeElement(alertRulesPage.elements.ruleValidationError('Must be at least 0'));
@@ -177,7 +177,7 @@ Scenario(
     I.dontSeeElement(alertRulesPage.elements.ruleValidationError('Must enter an alert name'));
     I.fillField(alertRulesPage.fields.inputField('threshold'), '0');
     I.dontSeeElement(alertRulesPage.elements.ruleValidationError('Must be at least 0'));
-    I.click(alertRulesPage.buttons.addRule);
+    I.click(alertRulesPage.buttons.saveAndExit);
     I.verifyPopUpMessage(alertRulesPage.messages.failRuleCreateDuration);
     I.fillField(alertRulesPage.fields.inputField('duration'), 's');
     I.seeElement(alertRulesPage.elements.ruleValidationError('Must be of format "(number)(unit)", for example "1m", or just "0". Available units: s, m, h, d, w'));

@@ -31,8 +31,9 @@ module.exports = {
   },
   buttons: {
     openAddRuleModal: `//a[contains(.,'New alert rule')]`,
-    addRule: locate('button').withText('Save and exit'),
+    saveAndExit: locate('button').withText('Save and exit'),
     editAlertRule: `//a[contains(@href, 'edit?returnTo=%2Falerting%2Flist')]`,
+    editRuleOnView: '//span[text()="Edit"]',
     deleteAlertRule: locate('span').withText('Delete').inside('button'),
     groupCollapseButton: (folderText) =>  `//button[@data-testid='group-collapse-toggle'][following::h6[contains(., '${folderText}')]]`,
     ruleCollapseButton: `button[aria-label='Expand row']`,
@@ -98,7 +99,7 @@ module.exports = {
     I.fillField(this.fields.editRuleSeverity, severity);
     I.fillField(this.fields.editRuleThreshold, duration);
     I.fillField(this.fields.editRuleEvaluate, '10s');
-    I.click(this.buttons.addRule);
+    I.click(this.buttons.saveAndExit);
     I.verifyPopUpMessage(this.messages.successRuleEdit(ruleName));
   },
 
