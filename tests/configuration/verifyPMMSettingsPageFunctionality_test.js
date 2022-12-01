@@ -418,7 +418,7 @@ Scenario(
   },
 );
 
-Scenario('PMM-T1401 Verify Percona Alerting wording in Settings @NAZ', async ({
+Scenario('PMM-T1401 Verify Percona Alerting wording in Settings @nazarov', async ({
   I,
   pmmSettingsPage,
 }) => {

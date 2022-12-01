@@ -438,7 +438,7 @@ Scenario(
 );
 
 Data(maxQueryLengthTestData).Scenario(
-  'PMM-T1405 Verify validation of Max Query Length option on Add remote MySQL page',
+  'PMM-T1405 Verify validation of Max Query Length option on Add remote MySQL page @nazarov',
   async ({
     I, remoteInstancesPage, current,
   }) => {
