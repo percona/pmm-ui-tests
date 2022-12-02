@@ -124,4 +124,19 @@ module.exports = {
 
     return folderUID;
   },
+
+  async getAlertUID(ruleName, folder) {
+    const headers = { Authorization: `Basic ${await I.getAuth()}` };
+    const resp = await I.sendGetRequest(`graph/api/ruler/grafana/api/v1/rules/${folder}/default-alert-group`, headers);
+    const alerts = resp.data.rules;
+    let alertUID;
+
+    for (const i in alerts) {
+      if (alerts[i].grafana_alert.title === ruleName) {
+        alertUID = alerts[i].grafana_alert.uid;
+      }
+    }
+
+    return alertUID;
+  },
 };

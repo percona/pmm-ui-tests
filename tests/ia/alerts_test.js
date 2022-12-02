@@ -27,34 +27,31 @@ Before(async ({ I }) => {
   await I.Authorize();
 });
 
-BeforeSuite(async ({
-  I, rulesAPI,
-}) => {
+BeforeSuite(async ({ I, rulesAPI }) => {
   await rulesAPI.removeAllAlertRules();
   await contactPointsAPI.createContactPoints();
   await rulesAPI.createAlertRule({ ruleName }, ruleFolder);
 
   // Preparation steps for checking Alert via webhook server
   // eslint-disable-next-line no-template-curly-in-string
-  await I.verifyCommand('bash -x ${PWD}/testdata/ia/gencerts.sh');
+  // await I.verifyCommand('bash -x ${PWD}/testdata/ia/gencerts.sh');
   await I.verifyCommand('docker compose -f docker-compose-webhook.yml up -d');
   // const cert = await I.readFileSync('./testdata/ia/certs/self.crt');
-
-  // Wait for all alerts to appear
 });
 
-AfterSuite(async ({
-  settingsAPI, rulesAPI, I,
-}) => {
+AfterSuite(async ({ rulesAPI, I}) => {
   await rulesAPI.removeAllAlertRules();
   await I.verifyCommand('docker-compose -f docker-compose-webhook.yml stop');
 });
 
 Scenario(
   'PMM-T551 PMM-T569 PMM-T1044 PMM-T1045 PMM-T568 Verify Alerts on Email, Webhook and Pager Duty @ia @fb',
-  async ({ I, alertsAPI }) => {
-    I.wait(120);
+  async ({ I, alertsAPI, rulesAPI }) => {
     const file = './testdata/ia/scripts/alert.txt';
+    const alertUID = await rulesAPI.getAlertUID(ruleName, ruleFolder);
+    
+    await alertsAPI.waitForAlerts(24, 1);
+    I.wait(5);
 
     // Webhook notification check
     I.waitForFile(file, 100);
@@ -62,7 +59,7 @@ Scenario(
     I.seeInThisFile(ruleName);
 
     // // Pager Duty notification check
-    // await alertsAPI.verifyAlertInPagerDuty(ruleIdForNotificationsCheck);
+    await alertsAPI.verifyAlertInPagerDuty(alertUID);
   },
 );
 
@@ -153,13 +150,12 @@ Scenario(
 
 Scenario(
   'PMM-T1482 PMM-T564 Verify fired alert and severity colors @ia',
-  async ({ I, alertsPage, rulesAPI }) => {
+  async ({ I, alertsPage, rulesAPI, alertsAPI }) => {
     await rulesAPI.removeAllAlertRules();
     for (const rule of rulesForAlerts) {
       await rulesAPI.createAlertRule({ ruleName: rule.severity, severity: rule.severity }, ruleFolder);
     }
-    //TODO
-    I.wait(120);
+    await alertsAPI.waitForAlerts(24, 8);
     I.amOnPage(alertsPage.url);
     rulesForAlerts.forEach((item) => I.waitForElement(alertsPage.elements.alertRow(item.severity), 10));
     rulesForAlerts.forEach((item) => I.see('Active', alertsPage.elements.stateCell(item.severity)));
