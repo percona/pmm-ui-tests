@@ -209,7 +209,7 @@ Data(instances).Scenario(
 Data(instances).Scenario(
   'PMM-T1283, PMM-T1292'
   + ' Verify that pmm-admin inventory add agent postgres-exporter with --log-level flag adds PostgreSQL exporter with corresponding log-level'
-  + ' Verify that pmm-admin inventory add agent postgres-exporter with --log-level flag adds PostgreSQL exporter with log-level=warn @nazarov',
+  + ' Verify that pmm-admin inventory add agent postgres-exporter with --log-level flag adds PostgreSQL exporter with log-level=warn @inventory @exporters',
   async ({
     current, cliHelper,
   }) => {
@@ -234,7 +234,7 @@ Data(instances).Scenario(
 Data(instances).Scenario(
   'PMM-T1300, PMM-T1301'
   + ' Verify that pmm-admin inventory add agent qan-postgresql-pgstatements-agent with --log-level flag adds QAN PostgreSQL PgStatements Agent with corresponding log-level'
-  + ' Verify that pmm-admin inventory add agent qan-postgresql-pgstatements-agent with --log-level flag adds QAN PostgreSQL PgStatements Agent with log-level=warn @nazarov',
+  + ' Verify that pmm-admin inventory add agent qan-postgresql-pgstatements-agent with --log-level flag adds QAN PostgreSQL PgStatements Agent with log-level=warn @inventory @exporters',
   async ({
     I, current, cliHelper, qanPage,
   }) => {

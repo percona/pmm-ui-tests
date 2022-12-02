@@ -282,7 +282,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T164 Verify user cannot be able to add MySQL Service via pmm-admin inventory with specified socket and port @nazarov',
+  'PMM-T164 Verify user cannot be able to add MySQL Service via pmm-admin inventory with specified socket and port @inventory @exporters',
   async ({
     I,
   }) => {
@@ -293,7 +293,7 @@ Scenario(
 ).retry(1);
 
 Scenario(
-  'PMM-T467 Verify pmm-admin inventory add service external using with --group flag @nazarov',
+  'PMM-T467 Verify pmm-admin inventory add service external using with --group flag @inventory @exporters',
   async ({
     I,
   }) => {
@@ -315,7 +315,7 @@ Scenario(
 ).retry(1);
 
 Scenario(
-  'PMM-T1352 Verify that Node exporter cannot be added by pmm-admin inventory add agent node-exporter with --log-level=fatal @nazarov',
+  'PMM-T1352 Verify that Node exporter cannot be added by pmm-admin inventory add agent node-exporter with --log-level=fatal @inventory @exporters',
   async ({
     I,
   }) => {
@@ -328,7 +328,7 @@ Scenario(
 Scenario(
   'PMM-T1282, PMM-T1291'
   + ' Verify that pmm-admin inventory add agent node-exporter with --log-level flag adds Node exporter with corresponding log-level'
-  + ' Verify that pmm-admin inventory add agent node-exporter with --log-level flag adds Node exporter with log-level=warn @nazarov',
+  + ' Verify that pmm-admin inventory add agent node-exporter with --log-level flag adds Node exporter with log-level=warn @inventory @exporters',
   async ({
     I, inventoryAPI,
   }) => {
