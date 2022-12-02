@@ -36,10 +36,10 @@ module.exports = {
       cancelButton: '$cancel-button',
       clusterConfigurationText: locate('$pmm-overlay-wrapper').find('pre'),
       copyToClipboardButton: '//span[contains(text(), "Copy to clipboard")]',
-      disabledAddButton: '//button[@data-testid="kubernetes-add-cluster-button" and @disabled]',
+      disabledRegisterButton: '//button[@data-testid="k8s-cluster-submit-button" and @disabled]',
+      registerButton: '$k8s-cluster-submit-button',
       forceUnreigsterCheckBox: locate('$force-field-container').find('span').at(1),
       kubeconfigFileInput: '//textarea[@data-testid="kubeConfig-textarea-input"]',
-      kubernetesAddButton: '$kubernetes-add-cluster-button',
       kubernetesClusterNameInput: '$name-text-input',
       modalWindow: '$modal-body',
       modalContent: '$modal-content',
@@ -50,7 +50,6 @@ module.exports = {
       unregisterButton: locate('$dropdown-menu-menu').find('span').at(1),
       viewClusterConfiguration: locate('$dropdown-menu-menu').find('span').at(2),
       manageVersions: locate('$dropdown-menu-menu').find('span').at(3),
-      registerKubernetesClusterButton: '$k8s-cluster-submit-button',
     },
     dbClusterTab: {
       defaultPassword: '***************',
@@ -227,7 +226,7 @@ module.exports = {
     I.usePlaywrightTo('Fill config to the input', async ({ page }) => {
       await page.type(this.tabs.kubernetesClusterTab.kubeconfigFileInput, config, { timeout: 120000 });
     });
-    I.click(this.tabs.kubernetesClusterTab.registerKubernetesClusterButton);
+    I.click(this.tabs.kubernetesClusterTab.registerButton);
   },
 
   unregisterCluster(clusterName, force = false) {
