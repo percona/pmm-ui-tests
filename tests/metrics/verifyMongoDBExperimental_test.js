@@ -2,7 +2,6 @@ Feature('MongoDB Experimental Dashboards tests');
 
 const { adminPage } = inject();
 const pmmFrameworkLoader = `bash ${adminPage.pathToFramework}`;
-const pathToPMMFramework = adminPage.pathToPMMTests;
 const connection = {
   // eslint-disable-next-line no-inline-comments
   port: '27017', // This is the port used by --addclient=mo,1 --with-replica --mongomagic
@@ -29,11 +28,11 @@ AfterSuite(async ({ I }) => {
 });
 
 Scenario(
-  'PMM-T1332 - Verify MongoDB - MongoDB Collection Details @dashboards @mongodb-exporter @nazarov',
+  'PMM-T1332 - Verify MongoDB - MongoDB Collection Details @dashboards @mongodb-exporter',
   async ({
     I, adminPage, dashboardPage,
   }) => {
-    I.amOnPage(I.buildUrlWithParams(dashboardPage.mongoDbCollectionDetails.clearUrl, { from: 'now-5m' , service_name: mongodb_service_name_ac}));
+    I.amOnPage(I.buildUrlWithParams(dashboardPage.mongoDbCollectionDetails.clearUrl, { from: 'now-5m', service_name: mongodb_service_name_ac }));
     dashboardPage.waitForDashboardOpened();
     I.click(adminPage.fields.metricTitle);
     adminPage.performPageDown(2);
@@ -46,11 +45,11 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T1333 - Verify MongoDB - MongoDB Collections Overview @dashboards @mongodb-exporter @nazarov',
+  'PMM-T1333 - Verify MongoDB - MongoDB Collections Overview @dashboards @mongodb-exporter',
   async ({
     I, adminPage, dashboardPage,
   }) => {
-    I.amOnPage(I.buildUrlWithParams(dashboardPage.mongoDbCollectionsOverview.clearUrl, { from: 'now-5m' , service_name: mongodb_service_name_ac }));
+    I.amOnPage(I.buildUrlWithParams(dashboardPage.mongoDbCollectionsOverview.clearUrl, { from: 'now-5m', service_name: mongodb_service_name_ac }));
     dashboardPage.waitForDashboardOpened();
     I.click(adminPage.fields.metricTitle);
     adminPage.performPageDown(3);
@@ -62,11 +61,11 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T1334 - Verify MongoDB - MongoDB Oplog Details @dashboards @mongodb-exporter @nazarov',
+  'PMM-T1334 - Verify MongoDB - MongoDB Oplog Details @dashboards @mongodb-exporter',
   async ({
     I, adminPage, dashboardPage,
   }) => {
-    I.amOnPage(I.buildUrlWithParams(dashboardPage.mongoDbOplogDetails.clearUrl, { from: 'now-5m' , service_name: mongodb_service_name_ac}));
+    I.amOnPage(I.buildUrlWithParams(dashboardPage.mongoDbOplogDetails.clearUrl, { from: 'now-5m', service_name: mongodb_service_name_ac }));
     dashboardPage.waitForDashboardOpened();
     I.click(adminPage.fields.metricTitle);
     adminPage.performPageDown(3);

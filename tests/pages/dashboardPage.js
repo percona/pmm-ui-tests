@@ -1134,12 +1134,6 @@ module.exports = {
     return await I.grabTextFrom(this.fields.timeRangePickerButton);
   },
 
-  setTimeRange(timeRange = 'Last 5 minutes') {
-    I.click(this.fields.timeRangePickerButton);
-    I.click(this.fields.timeRangeOption(timeRange));
-    this.waitForDataLoaded();
-  },
-
   async waitPTSummaryInformation() {
     const response = await I.waitForResponse(
       (response) => response.url().endsWith('v1/management/Actions/StartPTSummary') && response.status() === 200,
@@ -1163,16 +1157,5 @@ module.exports = {
         break;
       }
     }
-  },
-
-  async changeServiceName(serviceName) {
-    if (serviceName !== await I.grabTextFrom(this.serviceName)) {
-      I.click(this.serviceNameDropdown);
-      I.click(this.toggleAllValues);
-      I.fillField(this.serviceNameInput, serviceName);
-      I.pressKey('Enter');
-    }
-
-    this.waitForDataLoaded();
   },
 };
