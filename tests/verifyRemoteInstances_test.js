@@ -6,7 +6,7 @@ const {
 } = inject();
 
 const pmmFrameworkLoader = `bash ${adminPage.pathToFramework}`;
-const pathToSSL = `${adminPage.pathToPMMTests}tls-ssl-setup`;
+const pathToSSL = `${adminPage.pathToPMMTests}tls-ssl-setup/`;
 
 const externalExporterServiceName = 'external_service_new';
 const haproxyServiceName = 'haproxy_remote';
