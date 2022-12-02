@@ -99,18 +99,18 @@ metrics.add(['pmm-server-postgresql', 'pg_stat_database_xact_rollback']);
 metrics.add([externalExporterServiceName, 'redis_uptime_in_seconds']);
 metrics.add([haproxyServiceName, 'haproxy_process_start_time_seconds']);
 
-maxQueryLengthTestInstances.add(['mysql', 'mysql_8.0', '']);
-maxQueryLengthTestInstances.add(['mysql', 'mysql_8.0', -1]);
+// maxQueryLengthTestInstances.add(['mysql', 'mysql_8.0', '']);
+// maxQueryLengthTestInstances.add(['mysql', 'mysql_8.0', -1]);
 maxQueryLengthTestInstances.add(['mysql', 'mysql_8.0', 10]);
-maxQueryLengthTestInstances.add(['mysql', 'mysql_8.0', 1000]);
-maxQueryLengthTestInstances.add(['mongodb', 'mongodb_5.0', '']);
-maxQueryLengthTestInstances.add(['mongodb', 'mongodb_5.0', -1]);
+// maxQueryLengthTestInstances.add(['mysql', 'mysql_8.0', 1000]);
+// maxQueryLengthTestInstances.add(['mongodb', 'mongodb_5.0', '']);
+// maxQueryLengthTestInstances.add(['mongodb', 'mongodb_5.0', -1]);
 maxQueryLengthTestInstances.add(['mongodb', 'mongodb_5.0', 10]);
-maxQueryLengthTestInstances.add(['mongodb', 'mongodb_5.0', 1000]);
-maxQueryLengthTestInstances.add(['postgresql', 'pgsql_14', '']);
-maxQueryLengthTestInstances.add(['postgresql', 'pgsql_14', -1]);
+// maxQueryLengthTestInstances.add(['mongodb', 'mongodb_5.0', 1000]);
+// maxQueryLengthTestInstances.add(['postgresql', 'pgsql_14', '']);
+// maxQueryLengthTestInstances.add(['postgresql', 'pgsql_14', -1]);
 maxQueryLengthTestInstances.add(['postgresql', 'pgsql_14', 10]);
-maxQueryLengthTestInstances.add(['postgresql', 'pgsql_14', 1000]);
+// maxQueryLengthTestInstances.add(['postgresql', 'pgsql_14', 1000]);
 
 maxQueryLengthTestData.add(['---;']);
 maxQueryLengthTestData.add(['aa']);
