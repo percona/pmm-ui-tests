@@ -6,7 +6,7 @@ const {
 } = inject();
 
 const pmmFrameworkLoader = `bash ${adminPage.pathToFramework}`;
-const pathToSSL = '~/WebstormProjects/pmm-qa/pmm-tests/tls-ssl-setup/';
+const pathToSSL = `${adminPage.pathToPMMTests}tls-ssl-setup`;
 
 const externalExporterServiceName = 'external_service_new';
 const haproxyServiceName = 'haproxy_remote';
@@ -90,8 +90,6 @@ BeforeSuite(async ({ I }) => {
 });
 
 AfterSuite(async ({ I }) => {
-  // remove after testrun
-  await I.verifyCommand('export CLIENT_VERSION=dev-latest');
   await I.verifyCommand('docker stop mysql_8.0 || docker rm mysql_8.0');
   await I.verifyCommand('docker stop mongodb_5.0 || docker rm mongodb_5.0');
   await I.verifyCommand('docker stop pgsql_14 || docker rm pgsql_14');
