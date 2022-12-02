@@ -60,7 +60,8 @@ Scenario(
     backupInventoryPage.selectDropdownOption(backupInventoryPage.fields.serviceNameDropdown, mysqlServiceName);
     backupInventoryPage.selectDropdownOption(backupInventoryPage.fields.locationDropdown, location.name);
     I.fillField(backupInventoryPage.fields.backupName, backupName);
-    I.fillField(backupInventoryPage.fields.description, 'test description');
+    // TODO: uncomment when PMM-10899 will be fixed
+    // I.fillField(backupInventoryPage.fields.description, 'test description');
     I.click(backupInventoryPage.buttons.addBackup);
     I.waitForVisible(backupInventoryPage.elements.pendingBackupByName(backupName), 10);
     backupInventoryPage.verifyBackupSucceeded(backupName);

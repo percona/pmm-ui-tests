@@ -64,7 +64,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T855 Verify user is able to perform MongoDB backup @backup @bm-mongo @fb',
+  '@PMM-T855 Verify user is able to perform MongoDB backup @backup @bm-mongo @fb',
   async ({
     I, backupInventoryPage,
   }) => {
@@ -75,7 +75,8 @@ Scenario(
     backupInventoryPage.selectDropdownOption(backupInventoryPage.fields.serviceNameDropdown, mongoServiceName);
     backupInventoryPage.selectDropdownOption(backupInventoryPage.fields.locationDropdown, location.name);
     I.fillField(backupInventoryPage.fields.backupName, backupName);
-    I.fillField(backupInventoryPage.fields.description, 'test description');
+    // TODO: uncomment when PMM-10899 will be fixed
+    // I.fillField(backupInventoryPage.fields.description, 'test description');
     I.click(backupInventoryPage.buttons.addBackup);
     I.waitForVisible(backupInventoryPage.elements.pendingBackupByName(backupName), 10);
     backupInventoryPage.verifyBackupSucceeded(backupName);
@@ -83,7 +84,7 @@ Scenario(
 ).retry(1);
 
 Scenario(
-  'PMM-T961 PMM-T1005 PMM-T1024 Verify create backup modal @backup @bm-mongo',
+  '@PMM-T961 @PMM-T1005 @PMM-T1024 Verify create backup modal @backup @bm-mongo',
   async ({
     I, backupInventoryPage,
   }) => {
@@ -102,6 +103,8 @@ Scenario(
     // I.seeInField(backupInventoryPage.elements.dataModelState, 'PHYSICAL');
 
     // Verify retry times and retry interval default values
+    I.click(backupInventoryPage.buttons.showAdvancedSettings);
+    I.waitForVisible(backupInventoryPage.elements.retryTimes, 2);
     I.seeInField(backupInventoryPage.elements.retryTimes, 2);
     I.seeInField(backupInventoryPage.elements.retryInterval, 30);
 
@@ -116,13 +119,13 @@ Scenario(
     I.seeElementsDisabled(backupInventoryPage.buttons.addBackup);
     I.fillField(backupInventoryPage.fields.backupName, backupName);
     I.seeElementsEnabled(backupInventoryPage.buttons.addBackup);
-
-    I.fillField(backupInventoryPage.fields.description, 'test description');
+    // TODO: uncomment when PMM-10899 will be fixed
+    // I.fillField(backupInventoryPage.fields.description, 'test description');
   },
 );
 
 Scenario(
-  'PMM-T862 Verify user is able to perform MongoDB restore @backup @bm-mongo @fb',
+  '@PMM-T862 Verify user is able to perform MongoDB restore @backup @bm-mongo @fb',
   async ({
     I, backupInventoryPage, backupAPI, inventoryAPI, restorePage,
   }) => {
@@ -150,7 +153,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T910 PMM-T911 Verify delete from storage is selected by default @backup @bm-mongo',
+  '@PMM-T910 @PMM-T911 Verify delete from storage is selected by default @backup @bm-mongo',
   async ({
     I, backupInventoryPage, backupAPI, inventoryAPI,
   }) => {
@@ -219,7 +222,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T848 Verify service no longer exists error message during restore @backup @bm-mongo',
+  '@PMM-T848 Verify service no longer exists error message during restore @backup @bm-mongo',
   async ({
     I, backupInventoryPage, backupAPI, inventoryAPI,
   }) => {
@@ -243,7 +246,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T1159 Verify that backup with long backup name is displayed correctly and PMM-T1160 Verify that backup names are limited to 100 chars length @backup',
+  '@PMM-T1159 Verify that backup with long backup name is displayed correctly and @PMM-T1160 Verify that backup names are limited to 100 chars length @backup',
   async ({
     I, backupInventoryPage,
   }) => {
@@ -256,7 +259,8 @@ Scenario(
     I.seeTextEquals(mongoServiceName, backupInventoryPage.elements.selectedService);
     backupInventoryPage.selectDropdownOption(backupInventoryPage.fields.locationDropdown, location.name);
     I.seeTextEquals(location.name, backupInventoryPage.elements.selectedLocation);
-    I.fillField(backupInventoryPage.fields.description, 'Test description');
+    // TODO: uncomment when PMM-10899 will be fixed
+    // I.fillField(backupInventoryPage.fields.description, 'Test description');
     I.click(backupInventoryPage.buttons.addBackup);
     backupInventoryPage.verifyBackupSucceeded(backupName);
     I.seeCssPropertiesOnElements(backupInventoryPage.elements.artifactName(backupName), { 'text-overflow': 'ellipsis' });
@@ -266,7 +270,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T1163 Verify that Backup time format is identical for whole feature @backup',
+  '@PMM-T1163 Verify that Backup time format is identical for whole feature @backup',
   async ({
     I, backupInventoryPage, backupAPI, scheduledAPI, scheduledPage,
   }) => {
@@ -292,12 +296,14 @@ Scenario(
     const backupDate = await I.grabTextFrom(backupInventoryPage.elements.backupDateByName(schedule.name));
 
     await scheduledPage.openScheduledBackupsPage();
-    I.seeTextEquals(backupDate, scheduledPage.elements.lastBackupByName(schedule.name));
+    const scheduleDate = await I.grabTextFrom(scheduledPage.elements.lastBackupByName(schedule.name));
+
+    I.assertEqual(backupDate, scheduleDate, 'Backup Date format from Inventory page does not match Scheduled backups!');
   },
 );
 
 Scenario(
-  'PMM-T1033 - Verify that user is able to display backup logs from MongoDB on UI @backup @bm-mongo',
+  '@PMM-T1033 - Verify that user is able to display backup logs from MongoDB on UI @backup @bm-mongo',
   async ({
     I, inventoryAPI, backupAPI, backupInventoryPage,
   }) => {

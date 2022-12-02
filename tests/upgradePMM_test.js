@@ -213,7 +213,8 @@ if (versionMinor >= 15) {
 
         await securityChecksAPI.toggleChecksAlert(alert_id);
       } else {
-        I.click(failedCheckRowLocator.find('button').first());
+        I.waitForVisible(failedCheckRowLocator, 30);
+        I.click(failedCheckRowLocator.find('button').withText('Silence'));
       }
     },
   );
@@ -1003,6 +1004,7 @@ if (versionMinor >= 23) {
       } = current;
 
       const serviceList = [serviceName, `remote_api_${serviceName}`];
+
       for (const service of serviceList) {
         I.amOnPage(qanPage.url);
         qanOverview.waitForOverviewLoaded();

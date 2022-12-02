@@ -87,11 +87,9 @@ module.exports = {
       items: [
         'DB Cluster Summary',
         'Environments Overview (Designed for PMM)',
-        'Environment Summary (Designed for PMM)',
         'MongoDB Collection Details',
         'MongoDB Collections Overview',
         'MongoDB Oplog Details',
-        'New-Home Dashboard',
         'PXC Galera Cluster Summary (experimental)',
       ],
     },

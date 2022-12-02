@@ -68,13 +68,13 @@ module.exports = {
   url: 'graph/add-instance?orgId=1',
   addMySQLRemoteURL: 'graph/add-instance?instance_type=mysql',
   mysql8rds: {
-    'Service Name': 'qa-mysql-8-0-17',
+    'Service Name': 'pmm-qa-mysql-8-0-30',
     Environment: 'RDS MySQL 8.0',
     'Replication Set': 'rds80-replication',
     Cluster: 'rds80-cluster',
   },
   mysql57rds: {
-    'Service Name': 'rds-mysql57',
+    'Service Name': 'pmm-qa-rds-mysql-5-7-39',
     Environment: 'RDS MySQL 5.7',
     'Replication Set': 'rds57-replication',
     Cluster: 'rds57-cluster',
@@ -140,7 +140,7 @@ module.exports = {
     tlsCertificateKeyInput: '$tls_key-textarea-input',
     tlsCertificateFilePasswordInput: '$tls_certificate_file_password-password-input',
     tlsCertificateKey: '$tls_certificate_key-textarea-input',
-    usePerformanceSchema2: '//input[@name="qan_mysql_perfschema"]/following-sibling::*[2]',
+    usePerformanceSchema2: '$qan_mysql_perfschema-field-container',
     usePgStatMonitor: '//label[text()="PG Stat Monitor"]',
     usePgStatStatements: '//label[text()="PG Stat Statements"]',
     useQANMongoDBProfiler: '$qan_mongodb_profiler-field-label',
@@ -458,7 +458,7 @@ module.exports = {
       case remoteInstancesHelper.services.postgresql:
         I.click(this.fields.usePgStatStatements);
         break;
-      case 'pmm-qa-postgres-12':
+      case 'pmm-qa-pgsql-12':
         I.click(this.fields.disableEnhancedMetrics);
         I.click(this.fields.disableBasicMetrics);
         break;
@@ -541,13 +541,13 @@ module.exports = {
       case 'rds-mysql56':
         this.fillFields(this.mysqlInputs);
         break;
-      case 'qa-mysql-8-0-17':
+      case 'pmm-qa-mysql-8-0-30':
         this.fillFields(this.mysql80rdsInput);
         break;
-      case 'rds-mysql57':
+      case 'pmm-qa-rds-mysql-5-7-39':
         this.fillFields(this.mysql57rdsInput);
         break;
-      case 'pmm-qa-postgres-12':
+      case 'pmm-qa-pgsql-12':
         this.fillFields(this.postgresqlInputs);
         break;
       case 'azure-MySQL':
