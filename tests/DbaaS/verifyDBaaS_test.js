@@ -351,7 +351,7 @@ Scenario(
 Failed to register pmm-agent on PMM Server: Post "https://https:%2F%2F1.2.3.4/v1/management/Node/Register": dial tcp: lookup ${address}: no such host.`;
 
     await settingsAPI.changeSettings({ publicAddress: address });
-    await dbaasAPI.apiCreatePXCCluster(dbClusterName, clusterName);
+    await dbaasAPI.createCustomPXC(clusterName, dbClusterName, '1');
 
     I.amOnPage(dbaasPage.url);
     dbaasPage.checkCluster(clusterName, false);
