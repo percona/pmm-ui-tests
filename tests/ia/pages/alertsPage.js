@@ -52,18 +52,18 @@ module.exports = {
   },
 
   async silenceAlert(alertName) {
+    I.waitForVisible(this.buttons.silenceActivate(alertName, 10));
     I.click(this.buttons.silenceActivate(alertName));
     I.click(this.buttons.submitSilence);
     I.verifyPopUpMessage(this.messages.successfullySilenced);
   },
 
   async verifyAlert(alertName, silenced = false) {
+    I.waitForVisible(this.elements.alertRow(alertName), 10);
     const bgColor = await I.grabCssPropertyFrom(
       `${this.elements.alertRow(alertName)}/td`,
       'background-color',
     );
-
-    I.waitForVisible(alertsPage.elements.alertRow(alertName), 10);
 
     if (silenced) {
       I.seeTextEquals('Suppressed', this.elements.stateCell(alertName));
@@ -74,7 +74,7 @@ module.exports = {
       );
     }
     else {
-      I.see('Active', alertsPage.elements.stateCell(alertName));
+      I.see('Active', this.elements.stateCell(alertName));
 
       assert.ok(
         bgColor === 'rgb(24, 27, 31)',

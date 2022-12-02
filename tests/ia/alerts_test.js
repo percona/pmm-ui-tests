@@ -59,7 +59,7 @@ Scenario(
     I.seeInThisFile(ruleName);
 
     // // Pager Duty notification check
-    await alertsAPI.verifyAlertInPagerDuty(alertUID);
+    // await alertsAPI.verifyAlertInPagerDuty(alertUID);
   },
 );
 
@@ -107,8 +107,8 @@ Scenario(
     I.click(alertRulesPage.buttons.editRuleOnView);
     I.fillField(alertRulesPage.fields.editRuleThreshold, '20m');
     I.click(alertRulesPage.buttons.saveAndExit);
-    I.wait(100);
     I.amOnPage(alertsPage.url);
+    I.wait(100);
     I.seeElement(alertsPage.elements.noAlerts);
     I.dontSeeElement(alertsPage.elements.alertRow(ruleName));
   },
@@ -142,8 +142,8 @@ Scenario(
     };
 
     await rulesAPI.createAlertRule(wrongFilterRule, 'Insight');
-    I.wait(100);
     I.amOnPage(alertsPage.url);
+    I.wait(100);
     I.seeElement(alertsPage.elements.noAlerts);
   },
 );
@@ -175,6 +175,7 @@ Scenario(
   async ({ I, alertsPage, rulesAPI }) => {
     await rulesAPI.removeAllAlertRules();
     I.amOnPage(alertsPage.url);
+    I.waitForVisible(alertsPage.elements.noAlerts, 10);
     I.seeElement(alertsPage.elements.noAlerts);
   },
 );
