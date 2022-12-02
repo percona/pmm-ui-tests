@@ -6,7 +6,6 @@ const {
 } = inject();
 
 const pmmFrameworkLoader = `bash ${adminPage.pathToFramework}`;
-const pathToSSL = `${adminPage.pathToPMMTests}tls-ssl-setup/`;
 
 const externalExporterServiceName = 'external_service_new';
 const haproxyServiceName = 'haproxy_remote';
@@ -21,9 +20,9 @@ const instanceDetails = {
       password: 'pmm',
       cluster: 'mysql_remote_cluster',
       environment: 'mysql_remote_cluster',
-      tlsCAFile: `${pathToSSL}mysql/8.0/ca.pem`,
-      tlsKeyFile: `${pathToSSL}mysql/8.0/client-key.pem`,
-      tlsCertFile: `${pathToSSL}mysql/8.0/client-cert.pem`,
+      tlsCAFile: `${adminPage.pathToPMMTests}tls-ssl-setup/mysql/8.0/ca.pem`,
+      tlsKeyFile: `${adminPage.pathToPMMTests}tls-ssl-setup/mysql/8.0/client-key.pem`,
+      tlsCertFile: `${adminPage.pathToPMMTests}tls-ssl-setup/mysql/8.0/client-cert.pem`,
     },
     serviceInfo: {
       serviceType: 'MYSQL_SERVICE',
@@ -38,9 +37,9 @@ const instanceDetails = {
       host: 'ASSIGN_HOST_NAME',
       cluster: 'mongodb_remote_cluster',
       environment: 'mongodb_remote_cluster',
-      tlsCAFile: `${pathToSSL}mongodb/5.0/ca.crt`,
-      tlsCertificateFilePasswordInput: `${pathToSSL}mongodb/5.0/client.key`,
-      tlsCertificateKeyFile: `${pathToSSL}mongodb/5.0/client.pem`,
+      tlsCAFile: `${adminPage.pathToPMMTests}tls-ssl-setup/mongodb/5.0/ca.crt`,
+      tlsCertificateFilePasswordInput: `${adminPage.pathToPMMTests}tls-ssl-setup/mongodb/5.0/client.key`,
+      tlsCertificateKeyFile: `${adminPage.pathToPMMTests}tls-ssl-setup/mongodb/5.0/client.pem`,
     },
     serviceInfo: {
       serviceType: 'MONGODB_SERVICE',
@@ -58,9 +57,9 @@ const instanceDetails = {
       password: 'pmm',
       cluster: 'pgsql_remote_cluster',
       environment: 'pgsql_remote_cluster',
-      tlsCAFile: `${pathToSSL}postgres/14/ca.crt`,
-      tlsKeyFile: `${pathToSSL}postgres/14/client.pem`,
-      tlsCertFile: `${pathToSSL}postgres/14/client.crt`,
+      tlsCAFile: `${adminPage.pathToPMMTests}tls-ssl-setup/postgres/14/ca.crt`,
+      tlsKeyFile: `${adminPage.pathToPMMTests}tls-ssl-setup/postgres/14/client.pem`,
+      tlsCertFile: `${adminPage.pathToPMMTests}tls-ssl-setup/postgres/14/client.crt`,
     },
     serviceInfo: {
       serviceType: 'POSTGRESQL_SERVICE',
@@ -84,15 +83,16 @@ sslInstances.add(['mongodb_5.0_ssl_service', '5.0', 'mongodb_5.0', 'mongodb_ssl'
 sslInstances.add(['pgsql_14_ssl_service', '14', 'pgsql_14', 'postgres_ssl', 'pg_stat_database_xact_rollback']);
 
 BeforeSuite(async ({ I }) => {
+  await I.verifyCommand('export CLIENT_VERSION=dev-latest');
   await I.verifyCommand(`${pmmFrameworkLoader} --ps-version=8.0 --setup-mysql-ssl --pmm2`);
   await I.verifyCommand(`${pmmFrameworkLoader} --mo-version=5.0 --setup-mongodb-ssl --pmm2`);
   await I.verifyCommand(`${pmmFrameworkLoader} --pdpgsql-version=14 --setup-postgres-ssl --pmm2`);
 });
 
 AfterSuite(async ({ I }) => {
-  await I.verifyCommand('docker stop mysql_8.0 || docker rm mysql_8.0');
-  await I.verifyCommand('docker stop mongodb_5.0 || docker rm mongodb_5.0');
-  await I.verifyCommand('docker stop pgsql_14 || docker rm pgsql_14');
+  await I.verifyCommand('docker rm -f mysql_8.0 || true');
+  await I.verifyCommand('docker rm -f mongodb_5.0 || true');
+  await I.verifyCommand('docker rm -f pgsql_14 || true');
 });
 
 metrics.add(['pmm-server-postgresql', 'pg_stat_database_xact_rollback']);
