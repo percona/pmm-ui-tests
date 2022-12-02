@@ -1,14 +1,15 @@
 const assert = require('assert');
 const faker = require('faker');
 
-const { adminPage } = inject();
-const pmmFrameworkLoader = `bash ${adminPage.pathToFramework}`;
+const {
+  adminPage, remoteInstancesPage, remoteInstancesHelper, pmmInventoryPage,
+} = inject();
 
-const { remoteInstancesPage, remoteInstancesHelper, pmmInventoryPage } = inject();
+const pmmFrameworkLoader = `bash ${adminPage.pathToFramework}`;
+const pathToSSL = '~/WebstormProjects/pmm-qa/pmm-tests/tls-ssl-setup/';
 
 const externalExporterServiceName = 'external_service_new';
 const haproxyServiceName = 'haproxy_remote';
-const pathToSSL = `${adminPage.pathToPMMTests}tls-ssl-setup/`;
 const instanceDetails = {
   mysql: {
     details: {
@@ -78,8 +79,8 @@ const maxQueryLengthTestInstances = new DataTable(['instanceName', 'container', 
 
 const sslInstances = new DataTable(['serviceName', 'version', 'container', 'serviceType', 'metric']);
 
-sslInstances.add(['mongodb_5.0_ssl_service', '5.0', 'mongodb_5.0', 'mongodb_ssl', 'mongodb_connections']);
 sslInstances.add(['mysql_8.0_ssl_service', '8.0', 'mysql_8.0', 'mysql_ssl', 'mysql_global_status_max_used_connections']);
+sslInstances.add(['mongodb_5.0_ssl_service', '5.0', 'mongodb_5.0', 'mongodb_ssl', 'mongodb_connections']);
 sslInstances.add(['pgsql_14_ssl_service', '14', 'pgsql_14', 'postgres_ssl', 'pg_stat_database_xact_rollback']);
 
 BeforeSuite(async ({ I }) => {
@@ -89,9 +90,11 @@ BeforeSuite(async ({ I }) => {
 });
 
 AfterSuite(async ({ I }) => {
+  // remove after testrun
+  await I.verifyCommand('export CLIENT_VERSION=dev-latest');
   await I.verifyCommand('docker stop mysql_8.0 || docker rm mysql_8.0');
-  await I.verifyCommand('docker stop pgsql_14 || docker rm pgsql_14');
   await I.verifyCommand('docker stop mongodb_5.0 || docker rm mongodb_5.0');
+  await I.verifyCommand('docker stop pgsql_14 || docker rm pgsql_14');
 });
 
 metrics.add(['pmm-server-postgresql', 'pg_stat_database_xact_rollback']);
