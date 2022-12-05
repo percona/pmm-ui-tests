@@ -415,7 +415,7 @@ Scenario(
       database: 'postgres',
       host: 'postgresnodb',
       username: 'test',
-      password: 'test',
+      password: '50mFC#z7lHZ1',
       environment: remoteInstancesPage.potgresqlSettings.environment,
       cluster: remoteInstancesPage.potgresqlSettings.cluster,
     };
