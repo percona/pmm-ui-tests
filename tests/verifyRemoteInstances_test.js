@@ -2,126 +2,24 @@ const assert = require('assert');
 const faker = require('faker');
 
 const {
-  adminPage, remoteInstancesPage, remoteInstancesHelper, pmmInventoryPage,
+  remoteInstancesPage, remoteInstancesHelper, pmmInventoryPage,
 } = inject();
-
-const pmmFrameworkLoader = `bash ${adminPage.pathToFramework}`;
 
 const externalExporterServiceName = 'external_service_new';
 const haproxyServiceName = 'haproxy_remote';
-const instanceDetails = {
-  mysql: {
-    details: {
-      serviceName: 'ASSIGN_SERVICE_NAME',
-      serviceType: 'mysql_ssl',
-      port: '3306',
-      host: 'ASSIGN_HOST_NAME',
-      username: 'pmm',
-      password: 'pmm',
-      cluster: 'mysql_remote_cluster',
-      environment: 'mysql_remote_cluster',
-      tlsCAFile: `${adminPage.pathToPMMTests}tls-ssl-setup/mysql/8.0/ca.pem`,
-      tlsKeyFile: `${adminPage.pathToPMMTests}tls-ssl-setup/mysql/8.0/client-key.pem`,
-      tlsCertFile: `${adminPage.pathToPMMTests}tls-ssl-setup/mysql/8.0/client-cert.pem`,
-    },
-    serviceInfo: {
-      serviceType: 'MYSQL_SERVICE',
-      service: 'mysql',
-    },
-  },
-  mongodb: {
-    details: {
-      serviceName: 'ASSIGN_SERVICE_NAME',
-      serviceType: 'mongodb_ssl',
-      port: '27017',
-      host: 'ASSIGN_HOST_NAME',
-      cluster: 'mongodb_remote_cluster',
-      environment: 'mongodb_remote_cluster',
-      tlsCAFile: `${adminPage.pathToPMMTests}tls-ssl-setup/mongodb/5.0/ca.crt`,
-      tlsCertificateFilePasswordInput: `${adminPage.pathToPMMTests}tls-ssl-setup/mongodb/5.0/client.key`,
-      tlsCertificateKeyFile: `${adminPage.pathToPMMTests}tls-ssl-setup/mongodb/5.0/client.pem`,
-    },
-    serviceInfo: {
-      serviceType: 'MONGODB_SERVICE',
-      service: 'mongodb',
-    },
-  },
-  postgresql: {
-    details: {
-      serviceName: 'ASSIGN_SERVICE_NAME',
-      serviceType: 'postgres_ssl',
-      port: '5432',
-      database: 'postgres',
-      host: 'ASSIGN_HOST_NAME',
-      username: 'pmm',
-      password: 'pmm',
-      cluster: 'pgsql_remote_cluster',
-      environment: 'pgsql_remote_cluster',
-      tlsCAFile: `${adminPage.pathToPMMTests}tls-ssl-setup/postgres/14/ca.crt`,
-      tlsKeyFile: `${adminPage.pathToPMMTests}tls-ssl-setup/postgres/14/client.pem`,
-      tlsCertFile: `${adminPage.pathToPMMTests}tls-ssl-setup/postgres/14/client.crt`,
-    },
-    serviceInfo: {
-      serviceType: 'POSTGRESQL_SERVICE',
-      service: 'postgresql',
-    },
-  },
-};
 
 const instances = new DataTable(['name']);
 const remotePostgreSQL = new DataTable(['instanceName', 'trackingOption', 'checkAgent']);
 const qanFilters = new DataTable(['filterName']);
 const dashboardCheck = new DataTable(['serviceName']);
 const metrics = new DataTable(['serviceName', 'metricName']);
-const maxQueryLengthTestData = new DataTable(['text']);
-const maxQueryLengthTestInstances = new DataTable(['instanceName', 'container', 'maxQueryLength']);
-
-const sslInstances = new DataTable(['serviceName', 'version', 'container', 'serviceType', 'metric']);
-
-sslInstances.add(['mysql_8.0_ssl_service', '8.0', 'mysql_8.0', 'mysql_ssl', 'mysql_global_status_max_used_connections']);
-sslInstances.add(['mongodb_5.0_ssl_service', '5.0', 'mongodb_5.0', 'mongodb_ssl', 'mongodb_connections']);
-sslInstances.add(['pgsql_14_ssl_service', '14', 'pgsql_14', 'postgres_ssl', 'pg_stat_database_xact_rollback']);
-
-BeforeSuite(async ({ I }) => {
-  await I.verifyCommand('export CLIENT_VERSION=dev-latest');
-  await I.verifyCommand(`${pmmFrameworkLoader} --ps-version=8.0 --setup-mysql-ssl --pmm2`);
-  await I.verifyCommand(`${pmmFrameworkLoader} --mo-version=5.0 --setup-mongodb-ssl --pmm2`);
-  await I.verifyCommand(`${pmmFrameworkLoader} --pdpgsql-version=14 --setup-postgres-ssl --pmm2`);
-});
-
-AfterSuite(async ({ I }) => {
-  await I.verifyCommand('docker rm -f mysql_8.0 || true');
-  await I.verifyCommand('docker rm -f mongodb_5.0 || true');
-  await I.verifyCommand('docker rm -f pgsql_14 || true');
-});
 
 metrics.add(['pmm-server-postgresql', 'pg_stat_database_xact_rollback']);
 metrics.add([externalExporterServiceName, 'redis_uptime_in_seconds']);
 metrics.add([haproxyServiceName, 'haproxy_process_start_time_seconds']);
 
-// maxQueryLengthTestInstances.add(['mysql', 'mysql_8.0', '']);
-// maxQueryLengthTestInstances.add(['mysql', 'mysql_8.0', -1]);
-maxQueryLengthTestInstances.add(['mysql', 'mysql_8.0', 10]);
-// maxQueryLengthTestInstances.add(['mysql', 'mysql_8.0', 1000]);
-// maxQueryLengthTestInstances.add(['mongodb', 'mongodb_5.0', '']);
-// maxQueryLengthTestInstances.add(['mongodb', 'mongodb_5.0', -1]);
-maxQueryLengthTestInstances.add(['mongodb', 'mongodb_5.0', 10]);
-// maxQueryLengthTestInstances.add(['mongodb', 'mongodb_5.0', 1000]);
-// maxQueryLengthTestInstances.add(['postgresql', 'pgsql_14', '']);
-// maxQueryLengthTestInstances.add(['postgresql', 'pgsql_14', -1]);
-maxQueryLengthTestInstances.add(['postgresql', 'pgsql_14', 10]);
-// maxQueryLengthTestInstances.add(['postgresql', 'pgsql_14', 1000]);
-
-maxQueryLengthTestData.add(['---;']);
-maxQueryLengthTestData.add(['aa']);
-maxQueryLengthTestData.add(['^']);
-maxQueryLengthTestData.add(['`']);
-maxQueryLengthTestData.add(['"']);
-
 for (const [key, value] of Object.entries(remoteInstancesHelper.services)) {
   if (value) {
-    const agentName = '';
-
     switch (key) {
       case 'postgresql':
         // TODO: https://jira.percona.com/browse/PMM-9011
@@ -435,87 +333,5 @@ Scenario(
     const result = JSON.stringify(response.data.data.result);
 
     assert.ok(response.data.data.result.length !== 0, `Metrics ${metric} from ${remoteServiceName} should be available but got empty ${result}`);
-  },
-);
-
-Data(maxQueryLengthTestData).Scenario(
-  'PMM-T1405 Verify validation of Max Query Length option on Add remote MySQL page @nazarov',
-  async ({
-    I, remoteInstancesPage, current,
-  }) => {
-    const maxLength = current.text;
-
-    I.amOnPage(remoteInstancesPage.url);
-    remoteInstancesPage.waitUntilRemoteInstancesPageLoaded();
-    remoteInstancesPage.openAddRemotePage('mysql');
-    I.fillField(remoteInstancesPage.fields.maxQueryLength, maxLength);
-    I.waitForText('Value should be greater or equal to -1', 30, remoteInstancesPage.fields.maxQueryLengthError);
-  },
-);
-
-Data(maxQueryLengthTestInstances).Scenario(
-  'PMM-T1403 Verify Max Query Length field is not required on Add remote MySQL instance page'
-  + ' PMM-T1404 Verify Max Query Length option can be set to -1 on Add remote MySQL page'
-  + ' PMM-T1426 Verify remote PostgreSQL can be added with specified Max Query Length'
-  + ' PMM-T1431 Verify adding MongoDB instance via UI with specified Max Query Length option @nazarov',
-  async ({
-    I, remoteInstancesPage, pmmInventoryPage, qanPage, qanOverview, qanFilters, qanDetails, inventoryAPI, current,
-  }) => {
-    const { instanceName, container, maxQueryLength } = current;
-    const { serviceInfo } = instanceDetails[instanceName];
-    const remoteServiceName = `${faker.random.alpha(3)}_remote_${instanceName}`;
-
-    const { details } = instanceDetails[instanceName];
-
-    details.serviceName = remoteServiceName;
-    details.host = container;
-
-    I.amOnPage(remoteInstancesPage.url);
-    remoteInstancesPage.waitUntilRemoteInstancesPageLoaded();
-    remoteInstancesPage.openAddRemotePage(details.serviceType);
-    await remoteInstancesPage.addRemoteSSLDetails(details);
-
-    if (maxQueryLength !== '') {
-      I.fillField(remoteInstancesPage.fields.maxQueryLength, maxQueryLength);
-    }
-
-    I.click(remoteInstancesPage.fields.addService);
-    await inventoryAPI.verifyServiceExistsAndHasRunningStatus(
-      serviceInfo,
-      remoteServiceName,
-    );
-
-    // Check Remote Instance also added and have running status
-    pmmInventoryPage.verifyRemoteServiceIsDisplayed(remoteServiceName);
-    await pmmInventoryPage.verifyAgentHasStatusRunning(remoteServiceName);
-    await pmmInventoryPage.openServices();
-    const serviceId = await pmmInventoryPage.getServiceId(remoteServiceName);
-
-    // Check Remote Instance also added and have correct max_query_length option set
-    await pmmInventoryPage.openAgents();
-
-    if (maxQueryLength !== '') {
-      await pmmInventoryPage.checkAgentOtherDetailsSection('max_query_length:', `max_query_length: ${maxQueryLength}`, remoteServiceName, serviceId);
-    } else {
-      await pmmInventoryPage.checkAgentOtherDetailsMissing('max_query_length:', serviceId);
-    }
-
-    // Check max visible query length is less than max_query_length option
-    I.amOnPage(I.buildUrlWithParams(qanPage.clearUrl, { from: 'now-5m' }));
-    qanOverview.waitForOverviewLoaded();
-    await qanFilters.applyFilter(remoteServiceName);
-    I.waitForElement(qanOverview.elements.querySelector, 30);
-    const queryFromRow = await qanOverview.getQueryFromRow(1);
-
-    if (maxQueryLength !== '' && maxQueryLength !== -1) {
-      assert.ok(queryFromRow.length <= maxQueryLength, `Query length exceeds max length boundary equals ${queryFromRow.length} is more than ${maxQueryLength}`);
-    } else {
-      // 6 is chosen because it's the length of "SELECT" any query that starts with that word should be longer
-      assert.ok(queryFromRow.length >= 6, `Query length is equal to ${queryFromRow.length} which is less than minimal possible length`);
-      qanOverview.selectRow(1);
-      qanFilters.waitForFiltersToLoad();
-      qanDetails.checkExamplesTab();
-      qanDetails.checkExplainTab();
-    }
   },
 );
