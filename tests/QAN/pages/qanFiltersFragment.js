@@ -108,7 +108,6 @@ module.exports = {
 
       return await I.grabNumberOfVisibleElements(filterToApply);
     }, 60);
-    // I.waitForVisible(filterToApply, 20);
     I.forceClick(filterToApply);
     I.waitForDetached(this.elements.spinner, 30);
     I.waitForElement(this.fields.filterBy, 30);
