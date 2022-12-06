@@ -249,23 +249,5 @@ Data(instances).Scenario(
     } else {
       await pmmInventoryPage.checkAgentOtherDetailsMissing('max_query_length:', serviceId);
     }
-
-    // Check max visible query length is less than max_query_length option
-    I.amOnPage(I.buildUrlWithParams(qanPage.clearUrl, { from: 'now-5m' }));
-    qanOverview.waitForOverviewLoaded();
-    await qanFilters.applyFilter(remoteServiceName);
-    I.waitForElement(qanOverview.elements.querySelector, 30);
-    const queryFromRow = await qanOverview.getQueryFromRow(1);
-
-    if (maxQueryLength !== '' && maxQueryLength !== -1) {
-      assert.ok(queryFromRow.length <= maxQueryLength, `Query length exceeds max length boundary equals ${queryFromRow.length} is more than ${maxQueryLength}`);
-    } else {
-      // 6 is chosen because it's the length of "SELECT" any query that starts with that word should be longer
-      assert.ok(queryFromRow.length >= 6, `Query length is equal to ${queryFromRow.length} which is less than minimal possible length`);
-      qanOverview.selectRow(1);
-      qanFilters.waitForFiltersToLoad();
-      qanDetails.checkExamplesTab();
-      qanDetails.checkExplainTab();
-    }
   },
 );
