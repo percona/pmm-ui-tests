@@ -97,7 +97,7 @@ module.exports = {
     addInstanceDiv: '//div[@class="view"]',
     addInstancesList: '//nav[@class="navigation"]',
     addMongoDBRemote: '$mongodb-instance',
-    addMySqlRemote: '$mysql-instance',
+    addMySqlButton: '$mysql-instance',
     addPostgreSQLRemote: '$postgresql-instance',
     addProxySQLRemote: '$proxysql-instance',
     addService: '#addInstance',
@@ -105,6 +105,7 @@ module.exports = {
     clientID: '$azure_client_id-text-input',
     clientSecret: '$azure_client_secret-password-input',
     cluster: '$cluster-text-input',
+    maxQueryLengthInput: '$maxQueryLength-text-input',
     customLabels: '$custom_labels-textarea-input',
     database: '$database-text-input',
     disableBasicMetrics: '//input[@id="input-disable_basic_metrics-id"]/following-sibling::*[2]',
@@ -155,6 +156,11 @@ module.exports = {
     pgStatMonitorRadio: locate('label').withAttr({ for: 'radio-btn-3' }).withText('PG Stat Monitor'),
   },
 
+  async open() {
+    I.amOnPage(this.url);
+    I.waitForElement(this.fields.addAWSRDSMySQLbtn, 60);
+  },
+
   async getFileContent(filePath) {
     let command;
 
@@ -189,8 +195,8 @@ module.exports = {
   },
 
   waitUntilRemoteInstancesPageLoaded() {
-    I.waitForElement(this.fields.addMySqlRemote, 30);
-    I.seeElement(this.fields.addMySqlRemote);
+    I.waitForElement(this.fields.addMySqlButton, 30);
+    I.seeElement(this.fields.addMySqlButton);
 
     return this;
   },
@@ -200,7 +206,7 @@ module.exports = {
     switch (instanceType) {
       case 'mysql':
       case 'mysql_ssl':
-        I.click(this.fields.addMySqlRemote);
+        I.click(this.fields.addMySqlButton);
         break;
       case 'mongodb':
       case 'mongodb_ssl':
@@ -561,6 +567,58 @@ module.exports = {
         this.fillFields(this.postgresqlAzureInputs);
     }
     I.scrollPageToBottom();
+  },
+
+  /**
+   * Fill "Add remote MySQL Instance" encapsulating all waits and checks.
+   * Takes an object with all values to fill in:
+   *  {
+   *    host: "Hostname",
+   *    serviceName: "Service name (default: Hostname)",
+   *    port: "Port",
+   *    username: "Username"
+   *    password: "Password"
+   *    maxQueryLength: integer (optional),
+   *    environment: "Environment" (optional),
+   *    region: "Region" (optional),
+   *    availabilityZone: "Availability Zone" (optional),
+   *    replicaSet: "Replication set" (optional),
+   *    cluster: "Cluster" (optional),
+   *    customLabels: { key1: value1, key2:value2 } (optional),
+   *    tableStatLimit = "disable|default|integer",
+   *    skipConnectionCheck:  true|false(optional),
+   *    useTlsForDb: true|false (Use TLS for database connections),
+   *    skipTlsCertificate: true|false (Skip TLS certificate and hostname validation)
+   *    usePerfSchema: true|false (Use performance schema)
+   * }
+   *
+   * @param formValues
+   */
+  fillRemoteMySqlForm(formValues) {
+    I.fillField(this.fields.hostName, formValues.host);
+    I.clearField(this.fields.portNumber);
+    I.fillField(this.fields.portNumber, formValues.port);
+    I.fillField(this.fields.userName, formValues.username);
+    I.fillField(this.fields.serviceName, formValues.serviceName);
+    I.fillField(this.fields.password, formValues.password);
+    I.fillField(this.fields.environment, formValues.environment);
+
+    if (Object.hasOwn(formValues, 'maxQueryLength')) {
+      I.fillField(this.fields.maxQueryLengthInput, formValues.maxQueryLength);
+    }
+
+    I.fillField(this.fields.cluster, formValues.cluster);
+    //   environment: "Environment" (optional),
+    //   region: "Region" (optional),
+    //   availabilityZone: "Availability Zone" (optional),
+    //   replicaSet: "Replication set" (optional),
+    //   customLabels: { key1: value1, key2:value2 } (optional),
+    //   tableStatLimit = "disable|default|integer",
+    //   skipConnectionCheck:  true|false(optional),
+    //   useTlsForDb: true|false (Use TLS for database connections),
+    // skipTlsCertificate: true|false (Skip TLS certificate and hostname validation)
+    // usePerfSchema: true|false (Use performance schema)
+
   },
 
   parseURL(url) {

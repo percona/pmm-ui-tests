@@ -110,7 +110,7 @@ module.exports = {
     const locator = locate('span').withText(detailsSection).after(locate('span').withText(`service_id: ${serviceId}`));
     const details = await I.grabTextFrom(locator);
 
-    assert.ok(expectedResult === details, `Infomation '${expectedResult}' for service '${serviceName}' is missing!`);
+    I.assertEqual(expectedResult, details, `Information '${expectedResult}' for service '${serviceName}' is missing!`);
   },
 
   async verifyMetricsFlags(serviceName) {
