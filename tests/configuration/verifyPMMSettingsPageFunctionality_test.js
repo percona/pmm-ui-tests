@@ -418,7 +418,7 @@ Scenario(
   },
 );
 
-Scenario('PMM-T1401 Verify Percona Alerting wording in Settings @settings', async ({
+Scenario('PMM-T1401 Verify Percona Alerting wording in Settings @max-length @settings', async ({
   I,
   pmmSettingsPage,
 }) => {
