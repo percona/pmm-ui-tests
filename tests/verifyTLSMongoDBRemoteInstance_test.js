@@ -201,9 +201,7 @@ Data(instances).Scenario(
 ).retry(1);
 
 Data(instances).Scenario(
-  ' PMM-T1404 Verify Max Query Length option can be set to -1 on Add remote page'
-  + ' PMM-T1426 Verify remote PostgreSQL can be added with specified Max Query Length'
-  + ' PMM-T1431 Verify adding MongoDB instance via UI with specified Max Query Length option @ssl @ssl-remote @not-ui-pipeline',
+  ' PMM-T1431 Verify adding MongoDB instance via UI with specified Max Query Length option @max-length @ssl @ssl-remote @not-ui-pipeline',
   async ({
     I, remoteInstancesPage, pmmInventoryPage, qanPage, qanOverview, qanFilters, qanDetails, inventoryAPI, current,
   }) => {

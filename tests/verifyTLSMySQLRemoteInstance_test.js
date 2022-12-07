@@ -6,6 +6,7 @@ const pmmFrameworkLoader = `bash ${adminPage.pathToFramework}`;
 Feature('Monitoring SSL/TLS MYSQL instances');
 
 const instances = new DataTable(['serviceName', 'version', 'container', 'serviceType', 'metric', 'maxQueryLength']);
+const maxQueryLengthInstances = new DataTable(['serviceName', 'version', 'container', 'serviceType', 'metric', 'maxQueryLength']);
 const maxQueryLengthTestData = new DataTable(['text']);
 
 maxQueryLengthTestData.add(['---;']);
@@ -16,6 +17,13 @@ maxQueryLengthTestData.add(['"']);
 
 instances.add(['mysql_5.7_ssl_service', '5.7', 'mysql_5.7', 'mysql_ssl', 'mysql_global_status_max_used_connections', '10']);
 instances.add(['mysql_8.0_ssl_service', '8.0', 'mysql_8.0', 'mysql_ssl', 'mysql_global_status_max_used_connections', '10']);
+
+maxQueryLengthInstances.add(['mysql_5.7_ssl_service', '5.7', 'mysql_5.7', 'mysql_ssl', 'mysql_global_status_max_used_connections', '10']);
+maxQueryLengthInstances.add(['mysql_8.0_ssl_service', '8.0', 'mysql_8.0', 'mysql_ssl', 'mysql_global_status_max_used_connections', '10']);
+maxQueryLengthInstances.add(['mysql_5.7_ssl_service', '5.7', 'mysql_5.7', 'mysql_ssl', 'mysql_global_status_max_used_connections', '-1']);
+maxQueryLengthInstances.add(['mysql_8.0_ssl_service', '8.0', 'mysql_8.0', 'mysql_ssl', 'mysql_global_status_max_used_connections', '-1']);
+maxQueryLengthInstances.add(['mysql_5.7_ssl_service', '5.7', 'mysql_5.7', 'mysql_ssl', 'mysql_global_status_max_used_connections', '']);
+maxQueryLengthInstances.add(['mysql_8.0_ssl_service', '8.0', 'mysql_8.0', 'mysql_ssl', 'mysql_global_status_max_used_connections', '']);
 
 BeforeSuite(async ({ I, codeceptjsConfig }) => {
   await I.verifyCommand(`${pmmFrameworkLoader} --ps-version=5.7 --setup-mysql-ssl --pmm2`);
@@ -222,7 +230,7 @@ Data(maxQueryLengthTestData).Scenario(
   },
 );
 
-Data(instances).Scenario(
+Data(maxQueryLengthInstances).Scenario(
   ' PMM-T1403 Verify Max Query Length field is not required on Add remote MySQL instance page'
     + ' PMM-T1404 Verify Max Query Length option can be set to -1 on Add remote MySQL page'
     + ' PMM-T1426 Verify remote PostgreSQL can be added with specified Max Query Length'
