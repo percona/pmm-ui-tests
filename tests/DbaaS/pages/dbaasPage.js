@@ -43,6 +43,7 @@ module.exports = {
       kubeconfigFileInput: '//textarea[@data-testid="kubeConfig-textarea-input"]',
       kubernetesClusterNameInput: '$name-text-input',
       modalWindow: '$modal-body',
+      modalCloseButton: '$modal-close-button',
       modalContent: '$modal-content',
       modalContentText: locate('$modal-content').find('h4'),
       proceedButton: '$delete-kubernetes-button',
