@@ -55,6 +55,7 @@ Data(versionVerification).Scenario('PMM-T760 Verify Manage Components Versions @
     } = current;
 
     I.amOnPage(dbaasPage.url);
+    await dbaasPage.goToKubernetesClusterTab();
     dbaasPage.checkCluster(clusterName, false);
     I.waitForElement(dbaasPage.tabs.kubernetesClusterTab.actionsLocator(clusterName), 30);
     I.click(dbaasPage.tabs.kubernetesClusterTab.actionsLocator(clusterName));
@@ -77,6 +78,7 @@ Scenario('PMM-T765 Verify Manage Components Versions '
     I, dbaasPage, dbaasManageVersionPage,
   }) => {
     I.amOnPage(dbaasPage.url);
+    await dbaasPage.goToKubernetesClusterTab();
     dbaasPage.checkCluster(clusterName, false);
     I.see(dbaasManageVersionPage.operatorVersion.PXC, dbaasPage.tabs.dbClusterTab.fields.clusterTableRow);
     I.see(dbaasManageVersionPage.operatorVersion.PSMDB, dbaasPage.tabs.dbClusterTab.fields.clusterTableRow);
@@ -118,6 +120,7 @@ Data(versionVerification).Scenario('PMM-T760 PMM-T762 PMM-T770 Saving Custom Ver
     } = current;
 
     I.amOnPage(dbaasPage.url);
+    await dbaasPage.goToKubernetesClusterTab();
     dbaasPage.checkCluster(clusterName, false);
     dbaasManageVersionPage.waitForManageVersionPopup(clusterName);
     await dbaasManageVersionPage.selectOperatorVersion(operatorVersion);
@@ -187,14 +190,15 @@ Data(versionVerification).Scenario('PMM-T760 PMM-T762 PMM-T770 Saving Custom Ver
       I.dontSeeElement(dbaasManageVersionPage.manageVersion.defaultVersionOption(version));
     });
     if (componentName !== dbaasManageVersionPage.components.HAPROXY.name) {
-      await dbaasPage.waitForDbClusterTab(clusterName);
+
+      I.amOnPage(dbaasPage.url);
       await dbaasActionsPage.createClusterBasicOptions(clusterName, dbClusterName, dbType);
       I.seeElement(
         dbaasPage.tabs.dbClusterTab.basicOptions.fields.defaultDbVersionValue(
           defaultRecommendedVersion,
         ),
       );
-      I.click(dbaasPage.tabs.dbClusterTab.optionsCountLocator(2));
+      I.click(dbaasPage.tabs.dbClusterTab.advancedOptionsButton);
       I.click(dbaasPage.tabs.dbClusterTab.basicOptions.fields.dbClusterDatabaseVersionField);
       getRecommendedVersions.forEach((version) => {
         I.waitForElement(dbaasPage.tabs.dbClusterTab.basicOptions.fields.dbClusterDatabaseVersion(version));
