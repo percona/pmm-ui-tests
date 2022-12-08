@@ -45,27 +45,9 @@ AfterSuite(async ({ rulesAPI, I}) => {
 });
 
 Scenario(
-  'PMM-T551 PMM-T569 PMM-T1044 PMM-T1045 PMM-T568 Verify Alerts on Email, Webhook and Pager Duty @ia @fb',
-  async ({ I, alertsAPI, rulesAPI }) => {
-    const file = './testdata/ia/scripts/alert.txt';
-    const alertUID = await rulesAPI.getAlertUID(ruleName, ruleFolder);
-
-    await alertsAPI.waitForAlerts(24, 1);
-    I.wait(5);
-
-    // Webhook notification check
-    I.waitForFile(file, 100);
-    I.seeFile(file);
-    I.seeInThisFile(ruleName);
-
-    // // Pager Duty notification check
-    // await alertsAPI.verifyAlertInPagerDuty(alertUID);
-  },
-);
-
-Scenario(
   'PMM-T540 Alerts list columns @ia',
-  async ({ I, alertsPage }) => {
+  async ({ I, alertsPage, alertsAPI }) => {
+    await alertsAPI.waitForAlerts(24, 1);
     I.amOnPage(alertsPage.url);
     alertsPage.columnHeaders.forEach((header) => {
       const columnHeader = alertsPage.elements.columnHeaderLocator(header);
@@ -75,6 +57,24 @@ Scenario(
 
     // Verify there are no duplicate alerts
     I.seeNumberOfElements(alertsPage.elements.alertRow(ruleName), 1);
+    // Wait for the firing alert to arrive in webhook and PD
+    I.wait(50);
+  },
+);
+
+Scenario(
+  'PMM-T551 PMM-T569 PMM-T1044 PMM-T1045 PMM-T568 Verify Alerts on Email, Webhook and Pager Duty @ia @fb',
+  async ({ I, alertsAPI, rulesAPI }) => {
+    const file = './testdata/ia/scripts/alert.txt';
+    const alertUID = await rulesAPI.getAlertUID(ruleName, ruleFolder);
+
+    // Webhook notification check
+    I.waitForFile(file, 100);
+    I.seeFile(file);
+    I.seeInThisFile(ruleName);
+
+    // // Pager Duty notification check
+    await alertsAPI.verifyAlertInPagerDuty(alertUID);
   },
 );
 
