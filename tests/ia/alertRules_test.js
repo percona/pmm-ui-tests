@@ -61,7 +61,7 @@ Scenario(
     });
     const folderUID = await rulesAPI.getFolderUID(ruleFolder);
 
-    I.seeElement(alertRulesPage.buttons.editFolderButton(folderUID, ruleFolder.toLowerCase()));
+    I.seeElement(alertRulesPage.buttons.goToFolderButton(folderUID, ruleFolder.toLowerCase()));
     I.seeElement(alertRulesPage.buttons.managePermissionsButton(folderUID, ruleFolder.toLowerCase()));
     I.seeElement(alertRulesPage.elements.totalRulesCounter('1 rule', ruleFolder));
     await rulesAPI.removeAlertRule(ruleFolder);
@@ -154,7 +154,8 @@ Scenario(
 );
 
 // nightly candidate
-Scenario(
+// FIXME: flaky test fix and unskip
+xScenario(
   'PMM-T1434 Verify validation errors when creating new alert rule @ia @grafana-pr',
   async ({
     I, alertRulesPage,
