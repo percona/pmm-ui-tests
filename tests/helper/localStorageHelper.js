@@ -5,7 +5,11 @@ class LocalStorage extends Helper {
 
     // TODO replace with better test to the tour
     await page.addInitScript(() => {
-      window.localStorage.setItem('percona.showTour', false);
+      if (window.localStorage.getItem('percona.tourTest') === true) {
+        window.localStorage.setItem('percona.showTour', true);
+      } else {
+        window.localStorage.setItem('percona.showTour', false);
+      }
     });
   }
 }
