@@ -255,7 +255,7 @@ Data(instances).Scenario(
     I.waitForElement(qanOverview.elements.querySelector, 30);
     const queryFromRow = await qanOverview.getQueryFromRow(1);
 
-    if (maxQueryLength !== '' && maxQueryLength !== -1) {
+    if (maxQueryLength !== '' && maxQueryLength !== '-1') {
       assert.ok(queryFromRow.length <= maxQueryLength, `Query length exceeds max length boundary equals ${queryFromRow.length} is more than ${maxQueryLength}`);
     } else {
       // 6 is chosen because it's the length of "SELECT" any query that starts with that word should be longer

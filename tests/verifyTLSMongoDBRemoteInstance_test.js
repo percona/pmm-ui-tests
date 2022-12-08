@@ -209,7 +209,7 @@ Data(instances).Scenario(
       serviceName, serviceType, version, container, maxQueryLength,
     } = current;
     let details;
-    const remoteServiceName = `MaxQueryLenth_remote_${serviceName}`;
+    const remoteServiceName = `MaxQueryLength_remote_${serviceName}`;
 
     if (serviceType === 'mongodb_ssl') {
       details = {
