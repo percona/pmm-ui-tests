@@ -73,7 +73,7 @@ Scenario(
     I.seeFile(file);
     I.seeInThisFile(ruleName);
 
-    // // Pager Duty notification check
+    // Pager Duty notification check
     await alertsAPI.verifyAlertInPagerDuty(alertUID);
   },
 );
