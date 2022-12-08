@@ -3,7 +3,7 @@ const rulesAPI = require('./ia/pages/api/rulesAPI');
 
 Feature('to go through new user Tour and verify it is shown once');
 
-Scenario('PMM-T1272 Verify user is able to pass a PMM tour @nazarov',
+Scenario('PMM-T1272 Verify user is able to pass a PMM tour',
   async ({
     I, homePage, pmmTourPage, loginPage,
   }) => {

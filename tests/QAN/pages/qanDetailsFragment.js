@@ -67,6 +67,15 @@ module.exports = {
     I.dontSeeElement(this.elements.noJSON);
   },
 
+  checkDetailsTab() {
+    I.waitForVisible(this.getTabLocator('Details'), 30);
+    I.click(this.getTabLocator('Details'));
+    I.wait(5);
+    qanFilters.waitForFiltersToLoad();
+    I.dontSeeElement(this.elements.noClassic);
+    I.dontSeeElement(this.elements.noJSON);
+  },
+
   async checkPlanTabIsNotEmpty() {
     I.dontSeeElement(this.elements.emptyPlanText);
     I.waitForVisible(this.elements.planText, 20);

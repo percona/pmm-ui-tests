@@ -197,6 +197,10 @@ module.exports = {
     I.waitForVisible(this.elements.selectedRow, 10);
   },
 
+  selectTotalRow() {
+    this.selectRow(0);
+  },
+
   async getQueryFromRow(rowNumber) {
     const rowSelector = this.getRowLocator(rowNumber);
 
