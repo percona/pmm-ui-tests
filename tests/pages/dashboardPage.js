@@ -6,6 +6,14 @@ const formatElementId = (text) => text.toLowerCase().replace(/ /g, '_');
 module.exports = {
   // insert your locators and methods here
   // setting locators
+  serviceNameDropdown:
+    '//button[@id="var-service_name"]',
+  serviceName:
+    '//button[@id="var-service_name"]/span',
+  serviceNameInput:
+    '//input[@aria-controls="options-service_name"]',
+  toggleAllValues:
+    '//a[@aria-label="Toggle all values"]',
   nodesCompareDashboard: {
     url: 'graph/d/node-instance-compare/nodes-compare?orgId=1&refresh=1m&from=now-5m&to=now',
     metrics: [
@@ -624,8 +632,6 @@ module.exports = {
       'Top 5 MySQL Open Table Definitions',
       'Percentage of Open Table Definitions to Table Definition Cache',
     ],
-    serviceName:
-      '//label[contains(text(), "Service Name")]/following-sibling::value-select-dropdown/descendant::a[@class="variable-value-link"]',
     urlWithRDSFilter:
       'graph/d/mysql-instance-overview/mysql-instances-overview?orgId=1&'
       + 'from=now-5m&to=now&refresh=1m&var-interval=$__auto_interval_interval&var-region=All&'
@@ -861,6 +867,53 @@ module.exports = {
     ],
   },
 
+  mongoDbCollectionDetails: {
+    url: 'graph/d/mongodb-collection-details/mongodb-collection-details?orgId=1&refresh=1m',
+    clearUrl: 'graph/d/mongodb-collection-details/mongodb-collection-details',
+    metrics: [
+      'Top 10 Largest Collections by Document Count',
+      'Top 10 Largest Collections by Size',
+      'Total Databases Size',
+      'Top 5 Most Fragmented Collections by Freeable Size',
+      'Top 5 Collections by Documents Read',
+      'Top 5 Collections by Documents Changed',
+    ],
+  },
+  mongoDbCollectionsOverview: {
+    url: 'graph/d/mongodb-collections-overview/mongodb-collections-overview?orgId=1&refresh=1m',
+    clearUrl: 'graph/d/mongodb-collections-overview/mongodb-collections-overview',
+    metrics: [
+      'Top 5 Databases By Size',
+      'Collections in Database',
+      'Indexes in Database',
+      'Avg Object Size in Database',
+      'Index Size in Database',
+      'Data Size for Database',
+      'Top 5 Hottest Collections by Read  (Total)',
+      'Top 5 Hottest Collections by Write (Total)',
+      'Top 5 Hottest Collections by Read (Rate)',
+      'Top 5 Hottest Collections by Write (Rate)',
+      'Collections statistics  for admin (rate)',
+      'Collections statistics  for admin (summary)',
+      'Collections statistics  admin',
+    ],
+  },
+
+  mongoDbOplogDetails: {
+    url: 'graph/d/mongodb-oplog-details/mongodb-oplog-details?orgId=1&refresh=1m',
+    clearUrl: 'graph/d/mongodb-oplog-details/mongodb-oplog-details',
+    metrics: [
+      'Oplog Recovery Window',
+      'Oplog Buffered Operations',
+      'Oplog Getmore Time',
+      'Oplog Processing Time',
+      'Oplog Buffer Capacity',
+      'Oplog Operations',
+      'Oplog GB/Hour',
+      'Oplog Window',
+    ],
+  },
+
   fields: {
     breadcrumbs: {
       folder: locate('.page-toolbar').find('[aria-label="Search links"] > a'),
@@ -887,7 +940,9 @@ module.exports = {
       locate('.panel-title').inside(locate('.panel-container').withDescendant('//div[contains(text(),"No data")]')),
     rootUser: '//div[contains(text(), "root")]',
     serviceSummary: locate('a').withText('Service Summary'),
-    timeRangePickerButton: '.btn.navbar-button.navbar-button--tight',
+    // timeRangePickerButton: '.btn.navbar-button.navbar-button--tight',
+    timeRangePickerButton: I.useDataQA('data-testid TimePicker Open Button'),
+    timeRangeOption: (timeRange) => locate('li').withDescendant('label').withText(timeRange),
     openFiltersDropdownLocator: (filterName) => locate('.variable-link-wrapper').after(`label[for="var-${formatElementId(filterName)}"]`),
     filterDropdownOptionsLocator: (filterName) => locate('.variable-option').withText(filterName),
   },
@@ -1029,6 +1084,10 @@ module.exports = {
 
   waitForDashboardOpened() {
     I.waitForElement(this.fields.metricTitle, 60);
+  },
+
+  waitForDataLoaded() {
+    I.waitForInvisible('//*[@aria-label="Loading indicator"]');
   },
 
   expandFilters(filterName) {

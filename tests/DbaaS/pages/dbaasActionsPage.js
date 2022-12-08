@@ -25,7 +25,6 @@ module.exports = {
 
   async createClusterBasicOptions(k8sClusterName, dbClusterName, dbType, dbVersion) {
     I.waitForElement(dbaasPage.tabs.dbClusterTab.dbClusterAddButtonTop, 30);
-    I.waitForInvisible(dbaasPage.tabs.kubernetesClusterTab.disabledAddButton, 30);
     I.waitForEnabled(dbaasPage.tabs.dbClusterTab.dbClusterAddButtonTop, 10);
     I.click(dbaasPage.tabs.dbClusterTab.dbClusterAddButtonTop);
     I.waitForElement(dbaasPage.tabs.dbClusterTab.basicOptions.fields.clusterNameField, 30);
@@ -55,7 +54,7 @@ module.exports = {
 
   async createClusterAdvancedOption(k8sClusterName, dbClusterName, dbType, configuration, dbVersion) {
     await this.createClusterBasicOptions(k8sClusterName, dbClusterName, dbType, dbVersion);
-    I.click(dbaasPage.tabs.dbClusterTab.optionsCountLocator(2));
+    I.click(dbaasPage.tabs.dbClusterTab.advancedOptionsButton);
     I.waitForElement(
       dbaasPage.tabs.dbClusterTab.advancedOptions.fields.clusterTopology(configuration.topology), 30,
     );

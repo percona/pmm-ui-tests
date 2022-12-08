@@ -50,6 +50,7 @@ Before(async ({
   serviceId = service_id;
   const c = await I.mongoGetCollection('test', 'e2e');
 
+
   await c.deleteMany({ number: 2 });
 
   await I.Authorize();

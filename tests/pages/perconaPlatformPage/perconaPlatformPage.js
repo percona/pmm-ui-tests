@@ -36,7 +36,7 @@ module.exports = {
     requiredField: 'Required field',
     invalidEmail: 'Invalid email address',
     connectedSuccess: 'Successfully connected PMM to Percona Platform',
-    pmmDisconnectedFromProtal: 'Successfully disconnected PMM from Percona Platform',
+    pmmDisconnectedFromPortal: 'Successfully disconnected PMM from Percona Platform',
     disconnectPMM: 'Disconnect PMM from Percona Platform',
     pmmConnected: 'This PMM instance is connected to Percona Platform.',
   },
@@ -83,13 +83,14 @@ module.exports = {
     I.waitForVisible(this.elements.connectedWrapper, 20);
   },
 
-  disconnectFromPortal(version) {
-    I.click(this.fields.platformDisconnectButton);
+  async disconnectFromPortal(version) {
+    await I.waitForVisible(this.fields.platformDisconnectButton);
+    await I.click(this.fields.platformDisconnectButton);
     if (version >= 28 || version === undefined) {
-      I.waitForText(this.messages.disconnectPMM);
-      I.click(this.fields.confirmDisconnectButton);
+      await I.waitForText(this.messages.disconnectPMM);
+      await I.click(this.fields.confirmDisconnectButton);
     } else {
-      I.verifyPopUpMessage(this.messages.pmmDisconnectedFromProtal);
+      await I.verifyPopUpMessage(this.messages.pmmDisconnectedFromPortal);
     }
   },
 
