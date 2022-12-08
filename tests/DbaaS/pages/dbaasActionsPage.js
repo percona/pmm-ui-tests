@@ -54,7 +54,7 @@ module.exports = {
 
   async createClusterAdvancedOption(k8sClusterName, dbClusterName, dbType, configuration, dbVersion) {
     await this.createClusterBasicOptions(k8sClusterName, dbClusterName, dbType, dbVersion);
-    I.click(dbaasPage.tabs.dbClusterTab.optionsCountLocator(2));
+    I.click(dbaasPage.tabs.dbClusterTab.advancedOptionsButton);
     I.waitForElement(
       dbaasPage.tabs.dbClusterTab.advancedOptions.fields.clusterTopology(configuration.topology), 30,
     );
