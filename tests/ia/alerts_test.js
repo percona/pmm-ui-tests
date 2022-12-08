@@ -45,7 +45,7 @@ AfterSuite(async ({ rulesAPI, I}) => {
 });
 
 Scenario(
-  'PMM-T540 Alerts list columns @ia',
+  'PMM-T1482 Verify fired alert @ia',
   async ({ I, alertsPage, alertsAPI }) => {
     await alertsAPI.waitForAlerts(24, 1);
     I.amOnPage(alertsPage.url);
@@ -63,7 +63,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T551 PMM-T569 PMM-T1044 PMM-T1045 PMM-T568 Verify Alerts on Email, Webhook and Pager Duty @ia @fb',
+  'PMM-T1494 PMM-T1495 Verify fired alert in Pager Duty and Webhook @ia',
   async ({ I, alertsAPI, rulesAPI }) => {
     const file = './testdata/ia/scripts/alert.txt';
     const alertUID = await rulesAPI.getAlertUID(ruleName, ruleFolder);
@@ -79,7 +79,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T541 Verify user is able to silence/activate the alert @ia',
+  'PMM-T1496 PMM-T1497 Verify it is possible to silence and unsilence alert @ia',
   async ({
     I, alertsPage, alertmanagerAPI,
   }) => {
@@ -97,7 +97,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T625 Verify Alert disappears after issue in rule is fixed @ia',
+  'PMM-T1498 Verify firing alerts dissappear when the condition is fixed @ia',
   async ({
     I, alertsPage, alertRulesPage,
   }) => {
@@ -127,7 +127,7 @@ Scenario.skip(
 );
 
 Scenario(
-  'PMM-T587 Verify user cant see Alert with non-existing filter @ia',
+  'PMM-T1499 Verify an alert with non-existing filter (label) does not show up in list @ia',
   async ({ I, alertsPage, rulesAPI }) => {
     await rulesAPI.removeAllAlertRules();
     const wrongFilterRule = {
@@ -149,7 +149,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T1482 PMM-T564 Verify fired alert and severity colors @ia',
+  'PMM-T564 Verify fired alert severity colors @ia',
   async ({ I, alertsPage, rulesAPI, alertsAPI }) => {
     await rulesAPI.removeAllAlertRules();
     for (const rule of rulesForAlerts) {
