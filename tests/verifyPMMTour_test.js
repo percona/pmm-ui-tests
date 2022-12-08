@@ -1,6 +1,8 @@
 const assert = require('assert');
+const rulesAPI = require('./ia/pages/api/rulesAPI');
 
 Feature('to go through new user Tour and verify it is shown once');
+
 Scenario('PMM-T1272 Verify user is able to pass a PMM tour @nazarov',
   async ({
     I, homePage, pmmTourPage, loginPage,
@@ -9,17 +11,27 @@ Scenario('PMM-T1272 Verify user is able to pass a PMM tour @nazarov',
 
     await I.amOnPage(loginPage.url);
     loginPage.login();
-    I.see(pmmTourPage.fields.startTourButton);
+    await I.executeScript(() => {
+      localStorage.setItem('percona.tourTest', true);
+      localStorage.setItem('percona.showTour', true);
+    });
+    I.openNewTab();
+    await I.amOnPage(homePage.landingUrl);
+    I.waitForElement(pmmTourPage.fields.startTourButton);
     I.click(pmmTourPage.fields.startTourButton);
     headers.forEach(((headerName) => {
-      I.see(pmmTourPage.slideHeader(headerName));
+      I.seeElement(pmmTourPage.slideHeader(headerName));
       I.click(pmmTourPage.fields.nextSlideButton);
     }));
-    I.see(pmmTourPage.slideHeader('Server Admin'));
+    I.seeElement(pmmTourPage.slideHeader('Server Admin'));
     I.click(pmmTourPage.fields.doneButton);
 
     await I.unAuthorize();
     await I.amOnPage(loginPage.url);
     loginPage.login();
     I.dontSee(pmmTourPage.fields.startTourButton);
+    await I.executeScript(() => {
+      localStorage.setItem('percona.tourTest', false);
+      localStorage.setItem('percona.showTour', false);
+    });
   });
