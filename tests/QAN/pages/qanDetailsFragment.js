@@ -76,6 +76,15 @@ module.exports = {
     I.dontSeeElement(this.elements.noJSON);
   },
 
+  checkMetricsTab() {
+    I.waitForVisible(this.getTabLocator('Metrics'), 30);
+    I.click(this.getTabLocator('Metrics'));
+    I.wait(5);
+    qanFilters.waitForFiltersToLoad();
+    I.seeElement('//*[@class="details-tabs"]//div[text()="Query time distribution"]');
+    I.dontSeeElement(this.elements.noJSON);
+  },
+
   async checkPlanTabIsNotEmpty() {
     I.dontSeeElement(this.elements.emptyPlanText);
     I.waitForVisible(this.elements.planText, 20);
