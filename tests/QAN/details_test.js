@@ -142,19 +142,3 @@ Scenario(
     I.dontSeeElement(qanDetails.getTabLocator('Plan'));
   },
 );
-
-Scenario(
-  'PMM-T195 Verify Metrics tab in details section has no empty values @qan @nazarov',
-  async ({
-    I, qanPage, searchDashboardsModal, qanOverview, qanDetails,
-  }) => {
-    qanPage.waitForOpened();
-    qanOverview.waitForOverviewLoaded();
-    qanOverview.selectTotalRow();
-    qanDetails.checkDetailsTab();
-    qanDetails.checkDetailsTab(qanDetails.getTabLocator('Examples'));
-    I.dontSeeElement(qanDetails.getTabLocator('Explain'));
-    I.dontSeeElement(qanDetails.getTabLocator('Tables'));
-    I.dontSeeElement(qanDetails.getTabLocator('Plan'));
-  },
-);
