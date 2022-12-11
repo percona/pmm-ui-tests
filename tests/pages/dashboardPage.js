@@ -965,6 +965,8 @@ module.exports = {
     timeRangePickerButton: '.btn.navbar-button.navbar-button--tight',
     openFiltersDropdownLocator: (filterName) => locate('.variable-link-wrapper').after(`label[for="var-${formatElementId(filterName)}"]`),
     filterDropdownOptionsLocator: (filterName) => locate('.variable-option').withText(filterName),
+    refreshIntervalPicker: I.useDataQA('data-testid RefreshPicker interval button'),
+    refreshIntervalOption: (interval) => locate(`//*[@role="menuitemradio" and text()="${interval}"]`),
   },
 
   createAdvancedDataExplorationURL(metricName, time = '1m', nodeName = 'All') {
