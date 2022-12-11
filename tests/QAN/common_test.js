@@ -94,3 +94,20 @@ Scenario(
     qanPage.waitForOpened();
   },
 );
+
+Scenario(
+  'PMM-T1207 - Verify dashboard search between QAN and dashboards @qan @nazarov123',
+  async ({
+    I, qanPage, searchDashboardsModal, qanOverview, dashboardPage,
+  }) => {
+    qanPage.waitForOpened();
+    I.wait(3);
+    I.click(dashboardPage.fields.refreshIntervalPicker);
+    I.click(dashboardPage.fields.refreshIntervalOption('5s'));
+    I.waitForElement(qanOverview.elements.spinner, 5);
+    I.waitForDetached(qanOverview.elements.spinner, 5);
+    qanOverview.waitForOverviewLoaded();
+    I.wait(120);
+
+  },
+);
