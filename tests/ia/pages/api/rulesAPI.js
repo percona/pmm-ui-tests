@@ -6,8 +6,8 @@ module.exports = {
   async createAlertRule(ruleObj, folder, templateName) {
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
     const {
-      //todo: channels, disabled, etc?
-      ruleName, severity, filters, params, duration, channels, disabled
+      // todo: channels, disabled, etc?
+      ruleName, severity, filters, params, duration, channels, disabled,
     } = ruleObj;
     const body = {
       custom_labels: {},
@@ -87,8 +87,8 @@ module.exports = {
     const allRules = resp.data.data.groups;
 
     if (allRules.length > 0) {
-      for (let i in allRules) {
-        this.removeAlertRule(allRules[i].file);
+      for (const i in allRules) {
+        await this.removeAlertRule(allRules[i].file);
       }
     }
   },
@@ -120,6 +120,7 @@ module.exports = {
         folderUID = foldersArray[i].uid;
       }
     }
+
     return folderUID;
-  }
+  },
 };
