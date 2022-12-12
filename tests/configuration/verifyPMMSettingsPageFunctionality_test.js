@@ -146,10 +146,12 @@ Scenario(
     // I.waitForElement(dbaasPage.disabledDbaaSMessage.settingsLinkLocator, 30);
     // const message = (await I.grabTextFrom(dbaasPage.disabledDbaaSMessage.emptyBlock)).replace(/\s+/g, ' ');
 
-    // assert.ok(message === dbaasPage.disabledDbaaSMessage.textMessage, `Message Shown on ${message} should be equal to ${dbaasPage.disabledDbaaSMessage.textMessage}`);
+    // assert.ok(message === dbaasPage.disabledDbaaSMessage.textMessage,
+    //   `Message Shown on ${message} should be equal to ${dbaasPage.disabledDbaaSMessage.textMessage}`);
     // const link = await I.grabAttributeFrom(dbaasPage.disabledDbaaSMessage.settingsLinkLocator, 'href');
 
-    // assert.ok(link.includes('/graph/settings/advanced-settings'), `Advanced Setting Link displayed on DbaaS Page, when DbaaS is not enabled ${link}, please check the link`);
+    // assert.ok(link.includes('/graph/settings/advanced-settings'),
+    //   `Advanced Setting Link displayed on DbaaS Page, when DbaaS is not enabled ${link}, please check the link`);
     // Enable DbaaS via Advanced Settings, Make sure Menu is visible.
     // await pmmSettingsPage.openAdvancedSettings();
     I.waitForVisible(pmmSettingsPage.tooltips.advancedSettings.dbaas.iconLocator, 30);
