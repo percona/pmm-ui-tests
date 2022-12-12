@@ -9,14 +9,15 @@ module.exports = {
       // todo: channels, disabled, etc?
       ruleName, severity, filters, params, duration, channels, disabled,
     } = ruleObj;
+
     const body = {
       custom_labels: {},
       disabled: disabled || false,
       channel_ids: channels || [],
       filters: filters || [
         {
-          key: 'service_name',
-          value: 'pmm-server-postgresql',
+          label: 'service_name',
+          regexp: 'pmm-server-postgresql',
           type: 'MATCH',
         },
       ],
@@ -122,5 +123,20 @@ module.exports = {
     }
 
     return folderUID;
+  },
+
+  async getAlertUID(ruleName, folder) {
+    const headers = { Authorization: `Basic ${await I.getAuth()}` };
+    const resp = await I.sendGetRequest(`graph/api/ruler/grafana/api/v1/rules/${folder}/default-alert-group`, headers);
+    const alerts = resp.data.rules;
+    let alertUID;
+
+    for (const i in alerts) {
+      if (alerts[i].grafana_alert.title === ruleName) {
+        alertUID = alerts[i].grafana_alert.uid;
+      }
+    }
+
+    return alertUID;
   },
 };
