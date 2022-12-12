@@ -556,7 +556,7 @@ Scenario(
   }) => {
     await homePage.open();
     I.dontSeeElement(homePage.fields.sttDisabledFailedChecksPanelSelector, 15);
-    I.waitForVisible(homePage.fields.sttFailedChecksPanelSelector, 30);
+    I.waitForVisible(homePage.fields.failedChecksPanelContent, 30);
   },
 );
 
@@ -645,10 +645,11 @@ if (versionMinor >= 16) {
     'Verify silenced checks remain silenced after upgrade @post-upgrade @pmm-upgrade',
     async ({
       I,
-      databaseChecksPage, inventoryAPI,
+      databaseChecksPage, inventoryAPI, securityChecksAPI,
     }) => {
       const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName('MYSQL_SERVICE', psServiceName);
 
+      await securityChecksAPI.waitForFailedCheckExistance(failedCheckMessage, psServiceName);
       databaseChecksPage.openFailedChecksListForService(service_id);
 
       I.waitForVisible(databaseChecksPage.elements.failedCheckRowBySummary(failedCheckMessage), 30);
@@ -803,18 +804,26 @@ Scenario(
   },
 );
 
-Data(clientDbServices).Scenario(
-  'Check Metrics for Client Nodes [critical] @post-client-upgrade  @ovf-upgrade @ami-upgrade @post-upgrade @post-client-upgrade @pmm-upgrade',
-  async ({
-    inventoryAPI, grafanaAPI, current,
-  }) => {
-    const metricName = current.metric;
-    const { node_id } = await inventoryAPI.apiGetNodeInfoByServiceName(current.serviceType, current.name);
-    const nodeName = await inventoryAPI.getNodeName(node_id);
+if (versionMinor > 14) {
+  Data(clientDbServices)
+    .Scenario(
+      'Check Metrics for Client Nodes [critical] @ovf-upgrade @ami-upgrade @post-upgrade @post-client-upgrade @pmm-upgrade',
+      async ({
+        inventoryAPI,
+        grafanaAPI,
+        current,
+      }) => {
+        const metricName = current.metric;
+        const { node_id } = await inventoryAPI.apiGetNodeInfoByServiceName(current.serviceType, current.name);
+        const nodeName = await inventoryAPI.getNodeName(node_id);
 
-    await grafanaAPI.checkMetricExist(metricName, { type: 'node_name', value: nodeName });
-  },
-);
+        await grafanaAPI.checkMetricExist(metricName, {
+          type: 'node_name',
+          value: nodeName,
+        });
+      },
+    );
+}
 
 Scenario(
   'Verify QAN has specific filters for Remote Instances after Upgrade (UI) @ovf-upgrade @ami-upgrade @post-client-upgrade @post-upgrade @pmm-upgrade',
