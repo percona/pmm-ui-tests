@@ -27,7 +27,7 @@ Before(async ({
 }) => {
   await I.Authorize();
   await settingsAPI.apiEnableIA();
-  await rulesAPI.clearAllRules();
+  await rulesAPI.removeAllAlertRules();
   await templatesAPI.clearAllTemplates();
 });
 
@@ -35,7 +35,8 @@ Before(async ({ templatesAPI }) => {
   await templatesAPI.clearAllTemplates();
 });
 
-Scenario(
+// TODO: Unskip after we bring back built-in templates
+Scenario.skip(
   'PMM-T510 Verify built-in rule templates are non-editable @ia @grafana-pr',
   async ({ I, ruleTemplatesPage }) => {
     const editButton = ruleTemplatesPage.buttons
@@ -52,13 +53,21 @@ Scenario(
 
 Scenario(
   'Verify rule templates list elements @ia @grafana-pr',
-  async ({ I, ruleTemplatesPage }) => {
-    ruleTemplatesPage.openRuleTemplatesTab();
-    ruleTemplatesPage.columnHeaders.forEach((header) => {
-      const columnHeader = ruleTemplatesPage.elements.columnHeaderLocator(header);
+  async ({ I, ruleTemplatesPage, templatesAPI }) => {
+    const path = ruleTemplatesPage.ruleTemplate.paths.yaml;
 
-      I.waitForVisible(columnHeader, 30);
-    });
+    ruleTemplatesPage.openRuleTemplatesTab();
+    I.waitForVisible(ruleTemplatesPage.elements.columnHeaderLocator('Name'), 30);
+    I.waitForVisible(ruleTemplatesPage.elements.columnHeaderLocator('Source'), 30);
+    I.waitForVisible(ruleTemplatesPage.elements.columnHeaderLocator('Actions'), 30);
+
+    await templatesAPI.createRuleTemplate(path);
+    I.refreshPage();
+
+    I.waitForVisible(ruleTemplatesPage.elements.columnHeaderLocator('Name'), 30);
+    I.waitForVisible(ruleTemplatesPage.elements.columnHeaderLocator('Source'), 30);
+    // I.waitForVisible(ruleTemplatesPage.elements.columnHeaderLocator('Created'), 30);
+    I.waitForVisible(ruleTemplatesPage.elements.columnHeaderLocator('Actions'), 30);
     const templateName = await I.grabTextFromAll(ruleTemplatesPage.elements.templateName);
 
     templateName.forEach((name) => {
@@ -225,21 +234,15 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T884 Verify templates from Percona (SAAS) cannot be deleted or edited @ia @grafana-pr',
+  'PMM-T884 Verify templates from Percona (SAAS) cannot be deleted or edited @ia',
   async ({ I, ruleTemplatesPage }) => {
-    const builtInDeleteButton = ruleTemplatesPage.buttons
-      .deleteButtonBySource(ruleTemplatesPage.templateSources.builtin);
-    const builtInEditButton = ruleTemplatesPage.buttons
-      .editButtonBySource(ruleTemplatesPage.templateSources.builtin);
     const saasDeleteButton = ruleTemplatesPage.buttons
       .deleteButtonBySource(ruleTemplatesPage.templateSources.saas);
     const saasEditButton = ruleTemplatesPage.buttons
       .editButtonBySource(ruleTemplatesPage.templateSources.saas);
 
     ruleTemplatesPage.openRuleTemplatesTab();
-    I.waitForElement(builtInDeleteButton, 30);
-    I.seeAttributesOnElements(builtInDeleteButton, { disabled: true });
-    I.seeAttributesOnElements(builtInEditButton, { disabled: true });
+    I.waitForElement(saasDeleteButton, 30);
     I.seeAttributesOnElements(saasDeleteButton, { disabled: true });
     I.seeAttributesOnElements(saasEditButton, { disabled: true });
   },
@@ -257,7 +260,7 @@ Scenario(
       .deleteButtonByName(templateName);
 
     await templatesAPI.createRuleTemplate(path);
-    await rulesAPI.createAlertRule({ ruleName: 'Rule for PMM-T553' }, id);
+    await rulesAPI.createAlertRule({ ruleName: 'Rule for PMM-T553' }, 'PostgreSQL');
     ruleTemplatesPage.openRuleTemplatesTab();
 
     I.waitForElement(deleteButton, 30);
@@ -268,16 +271,16 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T825 PMM-T821 Verify User can add Alert Rule Template in the file system @not-ovf @ia',
+  'PMM-T825 PMM-T821 Verify User can add Alert rule template in the file system @not-ovf @ia',
   async ({ I, ruleTemplatesPage }) => {
     const editButton = ruleTemplatesPage.buttons
       .editButtonBySource(ruleTemplatesPage.templateSources.file);
     const deleteButton = ruleTemplatesPage.buttons
       .deleteButtonBySource(ruleTemplatesPage.templateSources.file);
 
-    await I.verifyCommand('docker cp tests/ia/templates/customParam.yml pmm-server:/srv/ia/templates');
-    await I.verifyCommand('docker cp tests/ia/templates/spaceInParam.yml pmm-server:/srv/ia/templates');
-    await I.verifyCommand('docker cp tests/ia/templates/template.txt pmm-server:/srv/ia/templates');
+    await I.verifyCommand('docker cp tests/ia/templates/customParam.yml pmm-server:/srv/alerting/templates');
+    await I.verifyCommand('docker cp tests/ia/templates/spaceInParam.yml pmm-server:/srv/alerting/templates');
+    await I.verifyCommand('docker cp tests/ia/templates/template.txt pmm-server:/srv/alerting/templates');
 
     ruleTemplatesPage.openRuleTemplatesTab();
     I.seeElement(editButton);

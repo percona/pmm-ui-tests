@@ -101,11 +101,14 @@ Data(instances).Scenario(
 Data(instances).Scenario(
   'PMM-T937 PMM-T938 Verify MySQL cannot be added without specified --tls-key, Verify MySQL cannot be added without specified --tls-cert @ssl @ssl-remote @not-ui-pipeline',
   async ({
-    I, current, grafanaAPI,
+    I, current, grafanaAPI, remoteInstancesPage,
   }) => {
     const {
       container,
     } = current;
+
+    I.amOnPage(remoteInstancesPage.url);
+
     let responseMessage = 'Connection check failed: register MySQL client cert failed: tls: failed to find any PEM data in key input.\n';
     let command = `docker exec ${container} pmm-admin add mysql --username=pmm --password=pmm --port=3306 --query-source=perfschema --tls --tls-skip-verify --tls-ca=/var/lib/mysql/ca.pem --tls-cert=/var/lib/mysql/client-cert.pem TLS_mysql`;
 
@@ -170,5 +173,29 @@ Data(instances).Scenario(
 
       assert.ok(count > 0, `The queries for service ${service} instance do NOT exist, check QAN Data`);
     }
+  },
+).retry(1);
+
+Data(instances).Scenario(
+  'PMM-T1277 (1.0) Verify tlsCa, tlsCert, tlsKey are generated on every MySQL exporter (added with TLS flags) restart @ssl @ssl-remote @not-ui-pipeline',
+  async ({
+    I, current, dashboardPage,
+  }) => {
+    const {
+      container,
+    } = current;
+
+    I.amOnPage(dashboardPage.mySQLInstanceOverview.url);
+
+    const agent_id = await I.verifyCommand(`docker exec ${container} pmm-admin list | grep mysqld_exporter | awk -F" " '{print $4}' | awk -F"/" '{print $3}'`);
+
+    await I.verifyCommand(`docker exec ${container} ls -la /tmp/mysqld_exporter/agent_id/${agent_id}/ | grep tls`);
+    await I.verifyCommand(`docker exec ${container} rm -r /tmp/mysqld_exporter/`);
+    await I.verifyCommand(`docker exec ${container} ls -la /tmp/mysqld_exporter/`, 'ls: cannot access \'/tmp/mysqld_exporter\': No such file or directory', 'fail');
+    await I.verifyCommand(`docker exec ${container} pmm-admin list | grep mysqld_exporter | grep Running`);
+    await I.verifyCommand(`docker exec ${container} pkill -f mysqld_exporter`);
+    I.wait(10);
+    await I.verifyCommand(`docker exec ${container} pmm-admin list | grep mysqld_exporter | grep Running`);
+    await I.verifyCommand(`docker exec ${container} ls -la /tmp/mysqld_exporter/agent_id/${agent_id}/ | grep tls`);
   },
 ).retry(1);

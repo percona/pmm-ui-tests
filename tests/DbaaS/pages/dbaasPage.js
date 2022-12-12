@@ -23,23 +23,24 @@ module.exports = {
   deletedAlertMessage: 'Cluster successfully unregistered',
   failedUnregisterCluster: (clusterName, dbType) => `Kubernetes cluster ${clusterName} has ${dbType} clusters`,
   configurationCopiedMessage: 'Copied',
-  monitoringWarningMessage: 'If you want to use monitoring, you need to set your PMM installation public address in',
+  monitoringWarningMessage: `This will also set "Public Address" as ${process.env.VM_IP}.`,
   requiredFieldError: 'Required field',
   valueGreatThanErrorText: (value) => `Value should be greater or equal to ${value}`,
   dbclusterNameError: 'Should start with a letter, may only contain lower case, number, dash and end with alphanumeric',
   dbclusterNameLimitError: 'Must contain at most 20 characters',
   tabs: {
     kubernetesClusterTab: {
+      kubernetesClusterTabButton: 'a[aria-label="Tab Kubernetes Cluster"]',
       addKubernetesClusterButton: '$kubernetes-new-cluster-button',
       addKubernetesClusterButtonInTable: '//div[@data-testid="table-no-data"]//span[contains(text(), "Register new Kubernetes Cluster")]',
       actionsLocator: (clusterName) => `//td[contains(text(), "${clusterName}")]//parent::tr//button[@data-testid="dropdown-menu-toggle"]`,
-      closeButton: '$modal-close-button',
+      cancelButton: '$k8s-cluster-cancel-button',
       clusterConfigurationText: locate('$pmm-overlay-wrapper').find('pre'),
       copyToClipboardButton: '//span[contains(text(), "Copy to clipboard")]',
-      disabledAddButton: '//button[@data-testid="kubernetes-add-cluster-button" and @disabled]',
+      disabledRegisterButton: '//button[@data-testid="k8s-cluster-submit-button" and @disabled]',
+      registerButton: '$k8s-cluster-submit-button',
       forceUnreigsterCheckBox: locate('$force-field-container').find('span').at(1),
       kubeconfigFileInput: '//textarea[@data-testid="kubeConfig-textarea-input"]',
-      kubernetesAddButton: '$kubernetes-add-cluster-button',
       kubernetesClusterNameInput: '$name-text-input',
       modalWindow: '$modal-body',
       modalCloseButton: '$modal-close-button',
@@ -56,11 +57,11 @@ module.exports = {
       defaultPassword: '***************',
       addDbClusterButton: locate('$table-no-data').find('button'),
       dbClusterAddButtonTop: '$dbcluster-add-cluster-button',
-      createClusterButton: '$step-progress-submit-button',
+      createClusterButton: '$db-cluster-submit-button',
       updateClusterButton: '$dbcluster-update-cluster-button',
-      dbClusterTab: '//li/a[@aria-label="Tab DB Cluster"]',
+      dbClusterTab: 'a[aria-label="Tab DB Cluster"]',
       monitoringWarningLocator: '$pmm-server-url-warning',
-      optionsCountLocator: (step) => `(//div[@data-testid='step-header']//div[1])[${step}]`,
+      advancedOptionsButton: '$create-dbCluster-advanced-settings',
       optionsHeader: '$step-header',
       deleteDbClusterConfirmationText: (dbClusterName, clusterName, dbType) => `Are you sure that you want to delete ${dbType} cluster ${dbClusterName} from Kubernetes cluster ${clusterName} ?`,
       basicOptions: {
@@ -72,11 +73,7 @@ module.exports = {
           dbClusterDatabaseTypeFieldSelect: (dbtype) => `//div[@aria-label='Select option']//span[contains(@text, ${dbtype})]`,
           dbClusterDatabaseTypeFieldErrorMessage: '$select-field-error-message',
           dbClusterDatabaseVersionField: '$dbcluster-database-version-field',
-          dbClusterDatabaseVersion: (version) => locate(
-            '$dbcluster-database-version-field',
-          )
-            .find('span')
-            .withText(version),
+          dbClusterDatabaseVersion: (version) => `//span[text()='${version}']`,
           dbClusterDatabaseVersionSelect: (version) => locate('div').withAttr({ 'aria-label': 'Select option' }).find('span').withText(`${version}`),
           defaultDbVersionValue: (version) => locate(
             '$dbcluster-database-version-field',
@@ -104,9 +101,9 @@ module.exports = {
           nodesFieldErrorMessage: '$nodes-field-error-message',
           nodesNumberField: '$nodes-number-input',
           resourcesPerNode: (clusterSize) => `//label[contains(text(), "${clusterSize}")]`,
-          dbClusterExternalAccessTooltip: locate('$expose-field-container').find('div').at(2),
+          dbClusterExternalAccessTooltip: locate('$expose-field-container').find('div').at(4),
           dbClusterExternalAccessCheckbox: '$expose-switch',
-          dbClusterExternalAccessTooltipText: '.popper',
+          dbClusterExternalAccessTooltipText: locate('div').withChild('.tooltip-arrow'),
           resourceBarCPU: '$dbcluster-resources-bar-cpu',
           resourceBarMemory: '$dbcluster-resources-bar-memory',
           resourceBarDisk: '$dbcluster-resources-bar-disk',
@@ -228,11 +225,10 @@ module.exports = {
 
   registerKubernetesCluster(clusterName, config) {
     I.click(this.tabs.kubernetesClusterTab.addKubernetesClusterButton);
-    I.fillField(this.tabs.kubernetesClusterTab.kubernetesClusterNameInput, clusterName);
     I.usePlaywrightTo('Fill config to the input', async ({ page }) => {
       await page.type(this.tabs.kubernetesClusterTab.kubeconfigFileInput, config, { timeout: 120000 });
     });
-    I.click(this.tabs.kubernetesClusterTab.kubernetesAddButton);
+    I.click(this.tabs.kubernetesClusterTab.registerButton);
   },
 
   unregisterCluster(clusterName, force = false) {
@@ -304,6 +300,14 @@ module.exports = {
     I.amOnPage(dbaasPage.url);
     dbaasPage.checkCluster(k8sClusterName, false);
     I.waitForElement(dbaasPage.tabs.kubernetesClusterTab.addKubernetesClusterButton, 30);
+  },
+
+  async goToKubernetesClusterTab() {
+    const dbaasPage = this;
+
+    I.waitForVisible(dbaasPage.tabs.kubernetesClusterTab.kubernetesClusterTabButton);
+    I.click(dbaasPage.tabs.kubernetesClusterTab.kubernetesClusterTabButton);
+    I.seeInCurrentUrl('graph/dbaas/kubernetes');
   },
 
   async validateClusterDetail(dbsClusterName, k8sClusterName, configuration, link) {
@@ -391,7 +395,7 @@ module.exports = {
     I.seeTextEquals('Expand all', this.tabs.dbClusterTab.fields.dbClusterLogs.expandAllLogsButton);
     I.waitForElement(this.tabs.dbClusterTab.fields.dbClusterLogs.refreshLogsButton);
     I.click(this.tabs.dbClusterTab.fields.dbClusterLogs.refreshLogsButton);
-    I.waitForElement(this.tabs.dbClusterTab.fields.dbClusterLogs.refreshLogsSpinner);
+    //I.waitForElement(this.tabs.dbClusterTab.fields.dbClusterLogs.refreshLogsSpinner);
     I.waitForElement(this.tabs.dbClusterTab.fields.dbClusterLogs.podLogsHeader);
     I.click(this.tabs.dbClusterTab.fields.dbClusterLogs.podLogsHeader);
     numberOfExpanded = await I.grabNumberOfVisibleElements(
@@ -403,25 +407,22 @@ module.exports = {
   },
 
   async pxcClusterMetricCheck(dbclusterName, serviceName, nodeName, haproxynodeName) {
-    await dashboardPage.genericDashboardLoadForDbaaSClusters(`${dashboardPage.pxcGaleraClusterSummaryDashboard.url}&var-cluster=pxc-${dbclusterName}`, 'Last 5 minutes', 4, 0, 2);
-    await dashboardPage.genericDashboardLoadForDbaaSClusters(`${dashboardPage.mysqlPXCGaleraNodeSummaryDashboard.url}?&var-service_name=${serviceName}`, 'Last 5 minutes', 4, 0, 2);
-    await dashboardPage.genericDashboardLoadForDbaaSClusters(`${dashboardPage.nodeSummaryDashboard.url}?&var-node_name=${nodeName}`, 'Last 5 minutes', 4, 0, 1);
-    await dashboardPage.genericDashboardLoadForDbaaSClusters(`${dashboardPage.mysqlInstanceSummaryDashboard.url}&var-service_name=${serviceName}`, 'Last 5 minutes', 4, 0, 5);
-    await dashboardPage.genericDashboardLoadForDbaaSClusters(`graph/d/haproxy-instance-summary/haproxy-instance-summary?orgId=1&refresh=1m&var-node_name=${haproxynodeName}`, 'Last 5 minutes', 4, 0, 3);
+    await dashboardPage.genericDashboardLoadForDbaaSClusters(`${dashboardPage.mysqlPXCGaleraNodeSummaryDashboard.url}?&var-service_name=${serviceName}`, 'Last 30 minutes', 4, 0, 2);
+    await dashboardPage.genericDashboardLoadForDbaaSClusters(`graph/d/haproxy-instance-summary/haproxy-instance-summary?orgId=1&refresh=1m&var-service_name=${haproxynodeName}`, 'Last 30 minutes', 4, 0, 3);
+    // eslint-disable-next-line no-inline-comments
+    await dashboardPage.genericDashboardLoadForDbaaSClusters(`${dashboardPage.mysqlInstanceSummaryDashboard.url}&var-service_name=${serviceName}`, 'Last 30 minutes', 4, 1, 5); //FIXME: Expected with N/A should be 0 after PMM-10308 is fixed
+    await dashboardPage.genericDashboardLoadForDbaaSClusters(`${dashboardPage.nodeSummaryDashboard.url}?&var-node_name=${nodeName}`, 'Last 30 minutes', 4, 0, 1);
   },
-
-  async psmdbClusterMetricCheck(dbclusterName, serviceName, nodeName) {
-    await dashboardPage.genericDashboardLoadForDbaaSClusters(`${dashboardPage.mongoDbClusterSummaryDashboard.url}?&var-cluster=${dbclusterName}`, 'Last 5 minutes', 4, 0, 9);
-    await dashboardPage.genericDashboardLoadForDbaaSClusters(`graph/d/mongodb-wiredtiger/mongodb-wiredtiger-details?orgId=1&refresh=1m&var-service_name=${serviceName}`, 'Last 5 minutes', 4, 6, 2);
-    await dashboardPage.genericDashboardLoadForDbaaSClusters(`${dashboardPage.mongodbOverviewDashboard.url}?&var-service_name=${serviceName}`, 'Last 5 minutes', 4, 3, 1);
-    await dashboardPage.genericDashboardLoadForDbaaSClusters(`graph/d/mongodb-replicaset-summary/mongodb-replset-summary?orgId=1&refresh=1m&var-service_name=${serviceName}`, 'Last 5 minutes', 4, 0, 1);
-    await dashboardPage.genericDashboardLoadForDbaaSClusters(`${dashboardPage.nodeSummaryDashboard.url}?&var-node_name=${nodeName}`, 'Last 5 minutes', 4, 0, 1);
+  async psmdbClusterMetricCheck(dbclusterName, serviceName, nodeName, replSet) {
+    await dashboardPage.genericDashboardLoadForDbaaSClusters(`graph/d/mongodb-wiredtiger/mongodb-wiredtiger-details?orgId=1&refresh=1m&var-service_name=${serviceName}`, 'Last 30 minutes', 4, 6, 2);
+    await dashboardPage.genericDashboardLoadForDbaaSClusters(`${dashboardPage.mongodbOverviewDashboard.url}?&var-service_name=${serviceName}`, 'Last 30 minutes', 4, 3, 1);
+    await dashboardPage.genericDashboardLoadForDbaaSClusters(`graph/d/mongodb-replicaset-summary/mongodb-replset-summary?orgId=1&refresh=1m&var-service_name=${serviceName}&var-replset=${replSet}&var-cluster=${dbclusterName}`, 'Last 30 minutes', 4, 0, 1);
+    await dashboardPage.genericDashboardLoadForDbaaSClusters(`${dashboardPage.nodeSummaryDashboard.url}?&var-node_name=${nodeName}`, 'Last 30 minutes', 4, 0, 1);
   },
 
   async dbaasQANCheck(dbclusterName, nodeName, serviceName) {
-    I.amOnPage(I.buildUrlWithParams(qanPage.url, { from: 'now-3h' }));
+    I.amOnPage(I.buildUrlWithParams(qanPage.clearUrl, { from: 'now-3h' }));
     qanOverview.waitForOverviewLoaded();
-    qanFilters.checkFilterExistInSection('Cluster', dbclusterName);
     qanFilters.checkFilterExistInSection('Node Name', `${nodeName}`);
     qanFilters.checkFilterExistInSection('Service Name', `${serviceName}`);
     qanOverview.waitForOverviewLoaded();
@@ -437,6 +438,7 @@ module.exports = {
     const dbaasPage = this;
 
     I.amOnPage(dbaasPage.apiKeysUrl);
+    I.waitForElement(dbaasPage.apiKeysPage.apiKeysTable);
 
     if (keyExists) {
       I.waitForText(`${dbClusterType}-${clusterName}-${dbClusterName}`, 10, dbaasPage.apiKeysPage.apiKeysTable);

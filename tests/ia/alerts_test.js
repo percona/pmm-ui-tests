@@ -1,298 +1,181 @@
 const assert = require('assert');
-
-let ruleIdForAlerts;
-let ruleIdForNotificationsCheck;
-let webhookChannelId;
-let pagerDutyChannelId;
-let testEmail;
-const ruleNameForEmailCheck = 'Rule with BUILT_IN template (email, webhook)';
+const contactPointsAPI = require('./pages/api/contactPointsAPI');
 const ruleName = 'PSQL immortal rule';
+const ruleFolder = 'PostgreSQL'
 const rulesForAlerts = [{
-  ruleName,
-  severity: 'SEVERITY_CRITICAL',
+    severity: 'SEVERITY_CRITICAL',
 }, {
-  ruleName,
-  severity: 'SEVERITY_ERROR',
+    severity: 'SEVERITY_ERROR',
 }, {
-  ruleName,
-  severity: 'SEVERITY_NOTICE',
+    severity: 'SEVERITY_NOTICE',
 }, {
-  ruleName,
-  severity: 'SEVERITY_WARNING',
+    severity: 'SEVERITY_WARNING',
+}, {
+    severity: 'SEVERITY_ALERT',
+}, {
+    severity: 'SEVERITY_INFO',
+}, {
+    severity: 'SEVERITY_DEBUG',
+}, {
+    severity: 'SEVERITY_EMERGENCY',
 },
 ];
-const alertName = 'PostgreSQL too many connections (pmm-server-postgresql)';
-
-const rulesToDelete = [];
-const rulesForSilensingAlerts = [];
 
 Feature('IA: Alerts');
 
-Before(async ({ I, settingsAPI }) => {
+Before(async ({ I }) => {
   await I.Authorize();
-  await settingsAPI.apiEnableIA();
 });
 
-BeforeSuite(async ({
-  I, settingsAPI, rulesAPI, alertsAPI, channelsAPI, ncPage,
-}) => {
-  await settingsAPI.apiEnableIA();
-  await rulesAPI.clearAllRules(true);
-  for (const rule of rulesForAlerts) {
-    const ruleId = await rulesAPI.createAlertRule(rule);
-
-    rulesToDelete.push(ruleId);
-    rulesForSilensingAlerts.push({ ruleId, serviceName: 'pmm-server-postgresql' });
-  }
-
-  ruleIdForAlerts = await rulesAPI.createAlertRule({ ruleName });
-
-  // Preparation steps for checking Alert via email
-  const channelName = 'EmailChannel';
-
-  testEmail = await I.generateNewEmail();
-
-  await settingsAPI.setEmailAlertingSettings();
-  const channelId = await channelsAPI.createNotificationChannel(
-    channelName,
-    ncPage.types.email.type,
-    testEmail,
-  );
+BeforeSuite(async ({ I, rulesAPI }) => {
+  await rulesAPI.removeAllAlertRules();
+  await contactPointsAPI.createContactPoints();
+  await rulesAPI.createAlertRule({ ruleName }, ruleFolder);
 
   // Preparation steps for checking Alert via webhook server
   // eslint-disable-next-line no-template-curly-in-string
-  await I.verifyCommand('bash -x ${PWD}/testdata/ia/gencerts.sh');
+  // await I.verifyCommand('bash -x ${PWD}/testdata/ia/gencerts.sh');
   await I.verifyCommand('docker-compose -f docker-compose-webhook.yml up -d');
-  const cert = await I.readFileSync('./testdata/ia/certs/self.crt');
-
-  webhookChannelId = await channelsAPI.createNotificationChannel(
-    'Webhook channel',
-    ncPage.types.webhook.type,
-    {
-      url: ncPage.types.webhook.url,
-      ca_file_content: cert,
-      insecure_skip_verify: true,
-      username: 'alert',
-      password: 'alert',
-    },
-  );
-
-  pagerDutyChannelId = await channelsAPI.createNotificationChannel(
-    'PD channel',
-    ncPage.types.pagerDuty.type,
-    {
-      service_key: process.env.PAGER_DUTY_SERVICE_KEY,
-    },
-  );
-
-  ruleIdForNotificationsCheck = await rulesAPI.createAlertRule({
-    ruleName: ruleNameForEmailCheck,
-    channels: [channelId, webhookChannelId, pagerDutyChannelId],
-  });
-
-  // Wait for all alerts to appear
-  await alertsAPI.waitForAlerts(60, rulesToDelete.length + 2);
+  // const cert = await I.readFileSync('./testdata/ia/certs/self.crt');
 });
 
-AfterSuite(async ({
-  settingsAPI, rulesAPI, I,
-}) => {
-  await settingsAPI.apiEnableIA();
-  await rulesAPI.clearAllRules(true);
+AfterSuite(async ({ rulesAPI, I}) => {
+  await rulesAPI.removeAllAlertRules();
   await I.verifyCommand('docker-compose -f docker-compose-webhook.yml stop');
 });
 
 Scenario(
-  'PMM-T564 Verify Severity colors @ia',
-  async ({ I, alertsPage }) => {
+  'PMM-T1482 Verify fired alert @ia',
+  async ({ I, alertsPage, alertsAPI }) => {
+    await alertsAPI.waitForAlerts(24, 1);
     I.amOnPage(alertsPage.url);
-    I.waitForElement(alertsPage.elements.criticalSeverity, 30);
-    I.seeCssPropertiesOnElements(alertsPage.elements.criticalSeverity, { color: alertsPage.colors.critical });
-    I.waitForElement(alertsPage.elements.highSeverity, 30);
-    I.seeCssPropertiesOnElements(alertsPage.elements.highSeverity, { color: alertsPage.colors.high });
-    I.waitForElement(alertsPage.elements.noticeSeverity, 30);
-    I.seeCssPropertiesOnElements(alertsPage.elements.noticeSeverity, { color: alertsPage.colors.notice });
-    I.waitForElement(alertsPage.elements.warningSeverity, 30);
-    I.seeCssPropertiesOnElements(alertsPage.elements.warningSeverity, { color: alertsPage.colors.warning });
+    alertsPage.columnHeaders.forEach((header) => {
+      const columnHeader = alertsPage.elements.columnHeaderLocator(header);
+
+      I.waitForVisible(columnHeader, 10);
+    });
+
+    // Verify there are no duplicate alerts
+    I.seeNumberOfElements(alertsPage.elements.alertRow(ruleName), 1);
+    // Wait for the firing alert to arrive in webhook and PD
+    I.wait(50);
   },
 );
 
 Scenario(
-  'PMM-T1146 Verify IA silence/unsilence all button @ia',
-  async ({ I, alertmanagerAPI, alertsPage }) => {
-    I.amOnPage(alertsPage.url);
-    I.waitForVisible(alertsPage.buttons.silenceAllAlerts, 30);
-    I.waitForVisible(alertsPage.buttons.unsilenceAllAlerts, 30);
-    I.click(alertsPage.buttons.silenceAllAlerts);
-    I.waitForElement(alertsPage.elements.criticalSeverity, 30);
-    await alertmanagerAPI.verifyAlerts(rulesForSilensingAlerts, true);
-    await alertsPage.checkAllAlertsColor('Silenced');
-
-    I.click(alertsPage.buttons.unsilenceAllAlerts);
-    I.waitForElement(alertsPage.elements.criticalSeverity, 30);
-    await alertmanagerAPI.verifyAlerts(rulesForSilensingAlerts);
-    await alertsPage.checkAllAlertsColor('Firing');
-  },
-);
-
-Scenario(
-  'PMM-T659 Verify alerts are deleted after deleting rules @ia',
-  async ({ I, alertsPage, rulesAPI }) => {
-    // Deleting rules
-    for (const ruleId of rulesToDelete) {
-      await rulesAPI.removeAlertRule(ruleId);
-    }
-
-    I.amOnPage(alertsPage.url);
-    I.waitForElement(alertsPage.elements.alertRow(alertName), 30);
-
-    I.seeNumberOfElements(alertsPage.elements.alertRow(alertName), 2);
-    I.seeNumberOfElements(alertsPage.elements.criticalSeverity, 2);
-  },
-);
-
-Scenario(
-  'PMM-T551 PMM-T569 PMM-T1044 PMM-T1045 PMM-T568 Verify Alerts on Email, Webhook and Pager Duty @ia @fb',
-  async ({ I, rulesAPI, alertsAPI }) => {
+  'PMM-T1494 PMM-T1495 Verify fired alert in Pager Duty and Webhook @ia',
+  async ({ I, alertsAPI, rulesAPI }) => {
     const file = './testdata/ia/scripts/alert.txt';
-
-    // Get message from the inbox
-    const message = await I.getLastMessage(testEmail, 120000);
-
-    await I.seeTextInSubject('FIRING', message);
-    assert.ok(message.html.body.includes(ruleNameForEmailCheck));
+    const alertUID = await rulesAPI.getAlertUID(ruleName, ruleFolder);
 
     // Webhook notification check
     I.waitForFile(file, 100);
     I.seeFile(file);
-    I.seeInThisFile(ruleNameForEmailCheck);
-    I.seeInThisFile(ruleIdForNotificationsCheck);
-    I.seeInThisFile(webhookChannelId);
+    I.seeInThisFile(ruleName);
 
     // Pager Duty notification check
-    await alertsAPI.verifyAlertInPagerDuty(ruleIdForNotificationsCheck);
-
-    await rulesAPI.removeAlertRule(ruleIdForNotificationsCheck);
+    await alertsAPI.verifyAlertInPagerDuty(alertUID);
   },
 );
 
 Scenario(
-  'Verify Firing Alert, labels and existence in alertmanager @ia',
+  'PMM-T1496 PMM-T1497 Verify it is possible to silence and unsilence alert @ia',
   async ({
     I, alertsPage, alertmanagerAPI,
   }) => {
     I.amOnPage(alertsPage.url);
-    I.waitForElement(alertsPage.elements.alertRow(alertName), 30);
-
-    // Verify correct labels
-    I.see('Critical', alertsPage.elements.severityCell(alertName));
-
-    // Verify Alert exists in alertmanager
-    await alertmanagerAPI.verifyAlerts([{ ruleId: ruleIdForAlerts, serviceName: 'pmm-server-postgresql' }]);
-  },
-);
-
-Scenario(
-  'PMM-T1137 Verify that IA alerts are showing important labels first @ia',
-  async ({ I, alertsPage }) => {
+    await alertsPage.verifyAlert(ruleName);
+    await alertsPage.silenceAlert(ruleName);
     I.amOnPage(alertsPage.url);
-    I.waitForElement(alertsPage.elements.alertRow(alertName), 30);
-    alertsPage.checkContainingLabels({
-      primaryLabels: ['node_name=pmm-server', 'service_name=pmm-server-postgresql'],
-      alertName,
-    });
-    I.click(alertsPage.buttons.arrowIcon(alertName));
-    I.waitForVisible(alertsPage.elements.details, 30);
-    I.seeElement(alertsPage.elements.detailsRuleExpression, 30);
-    I.seeElement(alertsPage.elements.detailsSecondaryLabels, 30);
-    alertsPage.checkContainingLabels({
-      secondaryLabels: ['agent_type=postgres_exporter',
-        'alertgroup=PMM Integrated Alerting',
-        'node_id=pmm-server',
-        'node_type=generic',
-        'server=127.0.0.1:5432',
-        'service_type=postgresql'],
-    });
-  },
-);
+    await alertsPage.verifyAlert(ruleName, true);
+    const silences = await alertmanagerAPI.getSilenced();
 
-Scenario(
-  'PMM-T540 Alerts list columns @ia',
-  async ({ I, alertsPage }) => {
+    await alertmanagerAPI.deleteSilences(silences);
     I.amOnPage(alertsPage.url);
-    I.waitForElement(alertsPage.elements.alertRow(alertName), 30);
-    alertsPage.columnHeaders.forEach((header) => {
-      const columnHeader = alertsPage.elements.columnHeaderLocator(header);
-
-      I.waitForVisible(columnHeader, 30);
-    });
-
-    // Verify there are no duplicate alerts
-    I.seeNumberOfElements(alertsPage.elements.alertRow(alertName), 1);
+    await alertsPage.verifyAlert(ruleName, false);
   },
 );
 
 Scenario(
-  'PMM-T541 Verify user is able to silence/activate the alert @ia',
+  'PMM-T1498 Verify firing alerts dissappear when the condition is fixed @ia',
   async ({
-    I, alertsPage, alertmanagerAPI,
+    I, alertsPage, alertRulesPage,
   }) => {
     I.amOnPage(alertsPage.url);
-    I.waitForVisible(alertsPage.elements.alertRow(alertName), 30);
-    await alertsPage.silenceAlert(alertName);
-    await alertmanagerAPI.verifyAlerts([{ ruleId: ruleIdForAlerts, serviceName: 'pmm-server-postgresql' }], true);
-    await alertsPage.activateAlert(alertName);
-    await alertmanagerAPI.verifyAlerts([{ ruleId: ruleIdForAlerts, serviceName: 'pmm-server-postgresql' }]);
+    I.waitForElement(alertsPage.elements.firedAlertLink(ruleName));
+    I.click(alertsPage.elements.firedAlertLink(ruleName));
+    I.click(alertRulesPage.buttons.editRuleOnView);
+    I.fillField(alertRulesPage.fields.editRuleThreshold, '20m');
+    I.click(alertRulesPage.buttons.saveAndExit);
+    I.amOnPage(alertsPage.url);
+    I.wait(100);
+    I.seeElement(alertsPage.elements.noAlerts);
+    I.dontSeeElement(alertsPage.elements.alertRow(ruleName));
   },
 );
 
-Scenario(
-  'PMM-T587 Verify user cant see Alert with non-existing filter @ia',
+// FIXME: Skip until https://jira.percona.com/browse/PMM-11130 is fixed
+Scenario.skip(
+  'PMM-T659 Verify alerts are deleted after deleting rules @ia',
   async ({ I, alertsPage, rulesAPI }) => {
-    const rule = {
-      ruleId: ruleIdForAlerts,
-      ruleName,
+    // Deleting rules
+    await rulesAPI.removeAllAlertRules();
+
+    I.amOnPage(alertsPage.url);
+    I.seeElement(alertsPage.elements.noAlerts);
+  },
+);
+
+Scenario(
+  'PMM-T1499 Verify an alert with non-existing filter (label) does not show up in list @ia',
+  async ({ I, alertsPage, rulesAPI }) => {
+    await rulesAPI.removeAllAlertRules();
+    const wrongFilterRule = {
+      ruleName: 'wrongFilterRule',
       filters: [
         {
-          key: 'service_name',
-          value: 'pmm-server-postgresql111',
-          type: 'EQUAL',
+          label: 'service_name',
+          regexp: 'wrong-service',
+          type: 'MATCH',
         },
       ],
     };
 
-    await rulesAPI.updateAlertRule(rule);
-
+    await rulesAPI.createAlertRule(wrongFilterRule, 'Insight');
     I.amOnPage(alertsPage.url);
-    I.waitForVisible(alertsPage.elements.noData);
-    I.dontSeeElement(alertsPage.elements.alertRow(alertName));
+    I.wait(100);
+    I.seeElement(alertsPage.elements.noAlerts);
   },
 );
 
-// nightly candidate
 Scenario(
-  'PMM-T625 Verify Alert disappears after issue in rule is fixed @ia',
-  async ({
-    I, alertsPage, rulesAPI, alertsAPI,
-  }) => {
-    const rule = {
-      ruleId: ruleIdForAlerts,
-      ruleName,
-      params: [
-        {
-          name: 'threshold',
-          type: 'FLOAT',
-          float: 99,
-        },
-      ],
-    };
-
-    await rulesAPI.updateAlertRule(rule);
-    await alertsAPI.waitForAlertsToDisappear(60);
-
+  'PMM-T564 Verify fired alert severity colors @ia',
+  async ({ I, alertsPage, rulesAPI, alertsAPI }) => {
+    await rulesAPI.removeAllAlertRules();
+    for (const rule of rulesForAlerts) {
+      await rulesAPI.createAlertRule({ ruleName: rule.severity, severity: rule.severity }, ruleFolder);
+    }
+    await alertsAPI.waitForAlerts(24, 8);
     I.amOnPage(alertsPage.url);
-    I.waitForVisible(alertsPage.elements.noData);
-    I.seeTextEquals(alertsPage.messages.noAlertsFound, alertsPage.elements.noData);
-    I.dontSeeElement(alertsPage.elements.alertRow(alertName));
+    rulesForAlerts.forEach((item) => I.waitForElement(alertsPage.elements.alertRow(item.severity), 10));
+    rulesForAlerts.forEach((item) => I.see('Active', alertsPage.elements.stateCell(item.severity)));
+    I.seeCssPropertiesOnElements(alertsPage.elements.criticalSeverity, { color: alertsPage.colors.critical });
+    I.seeCssPropertiesOnElements(alertsPage.elements.errorSeverity, { color: alertsPage.colors.error });
+    I.seeCssPropertiesOnElements(alertsPage.elements.noticeSeverity, { color: alertsPage.colors.notice });
+    I.seeCssPropertiesOnElements(alertsPage.elements.warningSeverity, { color: alertsPage.colors.warning });
+    I.seeCssPropertiesOnElements(alertsPage.elements.emergencySeverity, { color: alertsPage.colors.critical });
+    I.seeCssPropertiesOnElements(alertsPage.elements.debugSeverity, { color: alertsPage.colors.notice });
+    I.seeCssPropertiesOnElements(alertsPage.elements.infoSeverity, { color: alertsPage.colors.notice });
+    I.seeCssPropertiesOnElements(alertsPage.elements.alertSeverity, { color: alertsPage.colors.critical });
+  },
+);
+
+Scenario(
+  'PMM-T1467 Verify empty Fired alerts list @ia',
+  async ({ I, alertsPage, rulesAPI }) => {
+    await rulesAPI.removeAllAlertRules();
+    I.amOnPage(alertsPage.url);
+    I.waitForVisible(alertsPage.elements.noAlerts, 10);
+    I.seeElement(alertsPage.elements.noAlerts);
   },
 );

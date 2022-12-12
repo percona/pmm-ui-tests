@@ -68,13 +68,13 @@ module.exports = {
   url: 'graph/add-instance?orgId=1',
   addMySQLRemoteURL: 'graph/add-instance?instance_type=mysql',
   mysql8rds: {
-    'Service Name': 'qa-mysql-8-0-17',
+    'Service Name': 'pmm-qa-mysql-8-0-30',
     Environment: 'RDS MySQL 8.0',
     'Replication Set': 'rds80-replication',
     Cluster: 'rds80-cluster',
   },
   mysql57rds: {
-    'Service Name': 'rds-mysql57',
+    'Service Name': 'pmm-qa-rds-mysql-5-7-39',
     Environment: 'RDS MySQL 5.7',
     'Replication Set': 'rds57-replication',
     Cluster: 'rds57-cluster',
@@ -107,8 +107,8 @@ module.exports = {
     cluster: '$cluster-text-input',
     customLabels: '$custom_labels-textarea-input',
     database: '$database-text-input',
-    disableBasicMetrics: '//input[@name="disable_basic_metrics"]/following-sibling::*[2]',
-    disableEnhancedMetrics: '//input[@name="disable_enhanced_metrics"]/following-sibling::*[2]',
+    disableBasicMetrics: '//input[@id="input-disable_basic_metrics-id"]/following-sibling::*[2]',
+    disableEnhancedMetrics: '//input[@id="input-disable_enhanced_metrics-id"]/following-sibling::*[2]',
     discoverBtn: '$credentials-search-button',
     discoveryResults: 'tbody[role="rowgroup"]',
     doNotTrack: locate('label').withText('Don\'t track'),
@@ -128,9 +128,9 @@ module.exports = {
     secretKeyInput: '$aws_secret_key-password-input',
     serviceName: '$serviceName-text-input',
     setManualy: locate('label').withText('Set manually'),
-    skipConnectionCheck: '//input[@name="skip_connection_check"]/following-sibling::*[2]',
+    skipConnectionCheck: '//input[@data-testid="skip_connection_check-checkbox-input"]/following-sibling::*[2]',
     skipTLS: '//input[@name="tls_skip_verify"]',
-    skipTLSL: '//input[@name="tls_skip_verify"]/following-sibling::*[2]',
+    skipTLSL: locate('$tls_skip_verify-field-container').find('span'),
     startMonitoring: '/following-sibling::td/a',
     subscriptionID: '$azure_subscription_id-text-input',
     tableStatsGroupTableLimit: '$tablestats_group_table_limit-number-input',
@@ -140,7 +140,7 @@ module.exports = {
     tlsCertificateKeyInput: '$tls_key-textarea-input',
     tlsCertificateFilePasswordInput: '$tls_certificate_file_password-password-input',
     tlsCertificateKey: '$tls_certificate_key-textarea-input',
-    usePerformanceSchema2: '//input[@name="qan_mysql_perfschema"]/following-sibling::*[2]',
+    usePerformanceSchema2: '$qan_mysql_perfschema-field-container',
     usePgStatMonitor: '//label[text()="PG Stat Monitor"]',
     usePgStatStatements: '//label[text()="PG Stat Statements"]',
     useQANMongoDBProfiler: '$qan_mongodb_profiler-field-label',
@@ -150,6 +150,9 @@ module.exports = {
     returnToMenuButton: locate('span').withText('Return to menu'),
     requiredFieldHostname: locate('$address-field-error-message'),
     requiredFieldPort: locate('$port-field-error-message'),
+    dontTrackingRadio: locate('label').withAttr({ for: 'radio-btn-1' }).withText('Don\'t track'),
+    pgStatStatementsRadio: locate('label').withAttr({ for: 'radio-btn-2' }).withText('PG Stat Statements'),
+    pgStatMonitorRadio: locate('label').withAttr({ for: 'radio-btn-3' }).withText('PG Stat Monitor'),
   },
 
   async getFileContent(filePath) {
@@ -445,7 +448,7 @@ module.exports = {
   createRemoteInstance(serviceName) {
     I.waitForVisible(this.fields.skipTLSL, 30);
     I.waitForVisible(this.fields.addService, 30);
-    I.click(this.fields.skipTLSL);
+    I.checkOption(this.fields.skipTLSL);
     // eslint-disable-next-line default-case
     switch (serviceName) {
       case remoteInstancesHelper.services.mongodb:
@@ -455,7 +458,7 @@ module.exports = {
       case remoteInstancesHelper.services.postgresql:
         I.click(this.fields.usePgStatStatements);
         break;
-      case 'pmm-qa-postgres-12':
+      case 'pmm-qa-pgsql-12':
         I.click(this.fields.disableEnhancedMetrics);
         I.click(this.fields.disableBasicMetrics);
         break;
@@ -538,13 +541,13 @@ module.exports = {
       case 'rds-mysql56':
         this.fillFields(this.mysqlInputs);
         break;
-      case 'qa-mysql-8-0-17':
+      case 'pmm-qa-mysql-8-0-30':
         this.fillFields(this.mysql80rdsInput);
         break;
-      case 'rds-mysql57':
+      case 'pmm-qa-rds-mysql-5-7-39':
         this.fillFields(this.mysql57rdsInput);
         break;
-      case 'pmm-qa-postgres-12':
+      case 'pmm-qa-pgsql-12':
         this.fillFields(this.postgresqlInputs);
         break;
       case 'azure-MySQL':

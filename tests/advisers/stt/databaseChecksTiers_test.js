@@ -43,7 +43,7 @@ Scenario(
   async ({
     I, pmmSettingsPage, databaseChecksPage, portalAPI, homePage, settingsAPI,
   }) => {
-    /* Checks for Anonymous user  */
+    I.say('Checks for Anonymous user');
     await I.Authorize();
     pmmSettingsPage.openAdvancedSettings();
     await pmmSettingsPage.waitForPmmSettingsPageLoaded();
@@ -78,7 +78,7 @@ Scenario(
     await I.unAuthorize();
     I.wait(5);
     I.refreshPage();
-    /* Checks for Registered user  */
+    I.say('Checks for Registered user');
     if (pmmVersion < 28) {
       await settingsAPI.changeSettings({ stt: false });
       await settingsAPI.changeSettings({ stt: true });
@@ -114,7 +114,7 @@ Scenario(
     await portalAPI.connectPMMToPortal(adminToken);
     I.wait(5);
     I.amOnPage('');
-    /* Checks for Paid user  */
+    I.say('Checks for Paid user');
     if (pmmVersion < 28) {
       await settingsAPI.changeSettings({ stt: false });
       await settingsAPI.changeSettings({ stt: true });

@@ -18,7 +18,7 @@ filters.add(['DELETE', 'UPDATE']);
 
 Before(async ({ I, qanPage, qanOverview }) => {
   await I.Authorize();
-  I.amOnPage(qanPage.url);
+  I.amOnPage(`${qanPage.url}&orgId=1&refresh=10s`);
   qanOverview.waitForOverviewLoaded();
 });
 
@@ -33,7 +33,7 @@ Data(filters).Scenario(
     I.waitForVisible(qanFilters.buttons.showSelected, 30);
 
     qanFilters.applyFilterInSection('Command Type', current.filterToApply);
-    qanOverview.searchByValue(current.searchValue);
+    await qanOverview.searchByValue(current.searchValue);
     I.waitForVisible(qanOverview.elements.noResultTableText, 30);
     I.seeTextEquals(qanOverview.messages.noResultTableText, qanOverview.elements.noResultTableText);
   },

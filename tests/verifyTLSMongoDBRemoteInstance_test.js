@@ -9,21 +9,18 @@ Feature('Monitoring SSL/TLS MongoDB instances');
 const instances = new DataTable(['serviceName', 'version', 'container', 'serviceType', 'metric']);
 
 instances.add(['mongodb_4.4_ssl_service', '4.4', 'mongodb_4.4', 'mongodb_ssl', 'mongodb_connections']);
-instances.add(['mongodb_4.2_ssl_service', '4.2', 'mongodb_4.2', 'mongodb_ssl', 'mongodb_connections']);
-instances.add(['mongodb_4.0_ssl_service', '4.0', 'mongodb_4.0', 'mongodb_ssl', 'mongodb_connections']);
+// instances.add(['mongodb_4.2_ssl_service', '4.2', 'mongodb_4.2', 'mongodb_ssl', 'mongodb_connections']);
 instances.add(['mongodb_5.0_ssl_service', '5.0', 'mongodb_5.0', 'mongodb_ssl', 'mongodb_connections']);
 
 BeforeSuite(async ({ I, codeceptjsConfig }) => {
-  await I.verifyCommand(`${pmmFrameworkLoader} --mo-version=4.0 --setup-mongodb-ssl --pmm2`);
-  await I.verifyCommand(`${pmmFrameworkLoader} --mo-version=4.2 --setup-mongodb-ssl --pmm2`);
+  // await I.verifyCommand(`${pmmFrameworkLoader} --mo-version=4.2 --setup-mongodb-ssl --pmm2`);
   await I.verifyCommand(`${pmmFrameworkLoader} --mo-version=4.4 --setup-mongodb-ssl --pmm2`);
   await I.verifyCommand(`${pmmFrameworkLoader} --mo-version=5.0 --setup-mongodb-ssl --pmm2`);
 });
 
 AfterSuite(async ({ I }) => {
   await I.verifyCommand('docker stop mongodb_4.4 || docker rm mongodb_4.4');
-  await I.verifyCommand('docker stop mongodb_4.2 || docker rm mongodb_4.2');
-  await I.verifyCommand('docker stop mongodb_4.0 || docker rm mongodb_4.0');
+  // await I.verifyCommand('docker stop mongodb_4.2 || docker rm mongodb_4.2');
   await I.verifyCommand('docker stop mongodb_5.0 || docker rm mongodb_5.0');
 });
 
@@ -176,5 +173,29 @@ Data(instances).Scenario(
 
       assert.ok(count > 0, `The queries for service ${service} instance do NOT exist, check QAN Data`);
     }
+  },
+).retry(1);
+
+Data(instances).Scenario(
+  'PMM-T1276 (1.0) Verify tlsCa, tlsCert, tlsKey are generated on every MongoDB exporter (added with TLS flags) restart @ssl @ssl-remote @not-ui-pipeline',
+  async ({
+    I, current, dashboardPage,
+  }) => {
+    const {
+      container,
+    } = current;
+
+    I.amOnPage(dashboardPage.mySQLInstanceOverview.url);
+
+    const agent_id = await I.verifyCommand(`docker exec ${container} pmm-admin list | grep mongodb_exporter | awk -F" " '{print $4}' | awk -F"/" '{print $3}'`);
+
+    await I.verifyCommand(`docker exec ${container} ls -la /tmp/mongodb_exporter/agent_id/${agent_id}/ | grep caFile`);
+    await I.verifyCommand(`docker exec ${container} rm -r /tmp/mongodb_exporter/`);
+    await I.verifyCommand(`docker exec ${container} ls -la /tmp/mongodb_exporter/`, 'ls: cannot access \'/tmp/mongodb_exporter\': No such file or directory', 'fail');
+    await I.verifyCommand(`docker exec ${container} pmm-admin list | grep mongodb_exporter | grep Running`);
+    await I.verifyCommand(`docker exec ${container} pkill -f mongodb_exporter`);
+    I.wait(10);
+    await I.verifyCommand(`docker exec ${container} pmm-admin list | grep mongodb_exporter | grep Running`);
+    await I.verifyCommand(`docker exec ${container} ls -la /tmp/mongodb_exporter/agent_id/${agent_id}/ | grep caFile`);
   },
 ).retry(1);

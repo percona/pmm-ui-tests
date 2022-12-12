@@ -2,43 +2,44 @@ const { pmmSettingsPage } = inject();
 const communicationDefaults = new DataTable(['type', 'serverAddress', 'hello', 'from', 'authType', 'username', 'password', 'url', 'message']);
 const assert = require('assert');
 
-pmmSettingsPage.communicationData.forEach(({
-  type, serverAddress, hello, from, authType, username, password, url,
-}) => {
-  // eslint-disable-next-line max-len
-  communicationDefaults.add([type, serverAddress, hello, from, authType, username, password, url, pmmSettingsPage.messages.successPopUpMessage]);
-});
+// pmmSettingsPage.communicationData.forEach(({
+//   type, serverAddress, hello, from, authType, username, password, url,
+// }) => {
+//   // eslint-disable-next-line max-len
+// eslint-disable-next-line max-len
+//   communicationDefaults.add([type, serverAddress, hello, from, authType, username, password, url, pmmSettingsPage.messages.successPopUpMessage]);
+// });
 
-communicationDefaults.add([
-  pmmSettingsPage.emailDefaults.type,
-  'test.com',
-  pmmSettingsPage.emailDefaults.hello,
-  pmmSettingsPage.emailDefaults.from,
-  pmmSettingsPage.emailDefaults.authType,
-  null,
-  null,
-  null,
-  'Invalid argument: invalid server address, expected format host:port']);
-communicationDefaults.add([
-  pmmSettingsPage.emailDefaults.type,
-  pmmSettingsPage.emailDefaults.serverAddress,
-  '%',
-  pmmSettingsPage.emailDefaults.from,
-  pmmSettingsPage.emailDefaults.authType,
-  null,
-  null,
-  null,
-  'Invalid argument: invalid hello field, expected valid host']);
-communicationDefaults.add([
-  'slack',
-  null,
-  null,
-  null,
-  null,
-  null,
-  null,
-  'invalid@url',
-  'Invalid argument: invalid url value']);
+// communicationDefaults.add([
+//   pmmSettingsPage.emailDefaults.type,
+//   'test.com',
+//   pmmSettingsPage.emailDefaults.hello,
+//   pmmSettingsPage.emailDefaults.from,
+//   pmmSettingsPage.emailDefaults.authType,
+//   null,
+//   null,
+//   null,
+//   'Invalid argument: invalid server address, expected format host:port']);
+// communicationDefaults.add([
+//   pmmSettingsPage.emailDefaults.type,
+//   pmmSettingsPage.emailDefaults.serverAddress,
+//   '%',
+//   pmmSettingsPage.emailDefaults.from,
+//   pmmSettingsPage.emailDefaults.authType,
+//   null,
+//   null,
+//   null,
+//   'Invalid argument: invalid hello field, expected valid host']);
+// communicationDefaults.add([
+//   'slack',
+//   null,
+//   null,
+//   null,
+//   null,
+//   null,
+//   null,
+//   'invalid@url',
+//   'Invalid argument: invalid url value']);
 
 Feature('PMM Settings Functionality').retry(1);
 
@@ -165,32 +166,6 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T560 Verify IA related tooltips [trivial] @ia @settings @grafana-pr',
-  async ({ I, pmmSettingsPage, settingsAPI }) => {
-    await settingsAPI.apiEnableIA();
-
-    I.amOnPage(pmmSettingsPage.advancedSettingsUrl);
-    await pmmSettingsPage.waitForPmmSettingsPageLoaded();
-
-    // Verify tooltip for Enable/Disable IA toggle
-    await pmmSettingsPage.verifyTooltip(pmmSettingsPage.tooltips.advancedSettings.integratedAlerting);
-
-    I.amOnPage(pmmSettingsPage.communicationSettingsUrl);
-    I.waitForVisible(pmmSettingsPage.communication.email.serverAddress.locator, 30);
-
-    // Verify tooltips for Communication > Email fields
-    for (const formField of Object.keys(pmmSettingsPage.communication.email)) {
-      I.moveCursorTo(pmmSettingsPage.communication.submitEmailButton);
-      await pmmSettingsPage.verifyTooltip(pmmSettingsPage.tooltips.communication.email[formField]);
-    }
-
-    // Verify tooltips for Communication > Slack URL field
-    I.click(pmmSettingsPage.communication.slackTab);
-    await pmmSettingsPage.verifyTooltip(pmmSettingsPage.tooltips.communication.slack.slackUrl);
-  },
-);
-
-Scenario(
   'PMM-T254 PMM-T253 Verify disable telemetry while Advisers enabled @settings @stt @grafana-pr',
   async ({ I, pmmSettingsPage }) => {
     I.amOnPage(pmmSettingsPage.advancedSettingsUrl);
@@ -250,31 +225,30 @@ Scenario('PMM-T520 - Verify that alert is being fired to external Alert Manager 
   await pmmSettingsPage.verifyExternalAlertManager(pmmSettingsPage.alertManager.ruleName);
 });
 
-Scenario('PMM-T532 PMM-T533 PMM-T536 - Verify user can enable/disable IA in Settings @ia @settings',
+Scenario('PMM-T532 PMM-T533 PMM-T536 - Verify user can disable/enable IA in Settings @ia @settings',
   async ({
     I, pmmSettingsPage, settingsAPI, adminPage,
   }) => {
-    await settingsAPI.apiDisableIA();
+    await settingsAPI.apiEnableIA();
     I.amOnPage(pmmSettingsPage.advancedSettingsUrl);
     I.waitForVisible(pmmSettingsPage.fields.iaSwitchSelector, 30);
     I.click(pmmSettingsPage.fields.iaSwitchSelector);
     I.dontSeeElement(pmmSettingsPage.communication.communicationSection);
-    pmmSettingsPage.verifySwitch(pmmSettingsPage.fields.iaSwitchSelectorInput, 'on');
+    pmmSettingsPage.verifySwitch(pmmSettingsPage.fields.iaSwitchSelectorInput, 'off');
     I.click(pmmSettingsPage.fields.advancedButton);
     I.waitForVisible(pmmSettingsPage.fields.iaSwitchSelectorInput, 30);
-    pmmSettingsPage.verifySwitch(pmmSettingsPage.fields.iaSwitchSelectorInput, 'on');
-    I.moveCursorTo(adminPage.sideMenu.alertingBellIcon);
-    I.waitForVisible(adminPage.sideMenu.integratedAlertingManuItem, 20);
-    I.seeTextEquals('Integrated Alerting', adminPage.sideMenu.integratedAlerting);
-    I.seeTextEquals('Communication', pmmSettingsPage.communication.communicationSection);
-    I.click(pmmSettingsPage.fields.iaSwitchSelector);
     pmmSettingsPage.verifySwitch(pmmSettingsPage.fields.iaSwitchSelectorInput, 'off');
+    // I.moveCursorTo(adminPage.sideMenu.alertingBellIcon);
+    // I.waitForVisible(adminPage.sideMenu.integratedAlertingManuItem, 20);
+    // I.seeTextEquals('Integrated Alerting', adminPage.sideMenu.integratedAlerting);
+    // I.seeTextEquals('Communication', pmmSettingsPage.communication.communicationSection);
+    I.click(pmmSettingsPage.fields.iaSwitchSelector);
+    pmmSettingsPage.verifySwitch(pmmSettingsPage.fields.iaSwitchSelectorInput, 'on');
     I.click(pmmSettingsPage.fields.advancedButton);
     I.waitForVisible(pmmSettingsPage.fields.iaSwitchSelector, 30);
-    pmmSettingsPage.verifySwitch(pmmSettingsPage.fields.iaSwitchSelectorInput, 'off');
+    pmmSettingsPage.verifySwitch(pmmSettingsPage.fields.iaSwitchSelectorInput, 'on');
     I.dontSeeElementInDOM(adminPage.sideMenu.integratedAlerting);
     I.dontSeeElement(pmmSettingsPage.communication.communicationSection);
-    await settingsAPI.apiEnableIA();
   }).retry(2);
 
 Scenario('PMM-T785 - Verify DBaaS cannot be disabled with ENABLE_DBAAS or PERCONA_TEST_DBAAS @dbaas',
@@ -373,10 +347,12 @@ Scenario(
 
 Scenario(
   'PMM-T486 - Verify Public Address in PMM Settings @settings @nightly',
-  async ({ I, pmmSettingsPage }) => {
+  async ({ I, pmmSettingsPage, settingsAPI }) => {
+    await settingsAPI.changeSettings({ publicAddress: '' });
     await pmmSettingsPage.openAdvancedSettings();
     await pmmSettingsPage.verifyTooltip(pmmSettingsPage.tooltips.advancedSettings.publicAddress);
-    I.waitForVisible(pmmSettingsPage.fields.publicAddressInput, 30);
+
+    await I.waitForVisible(pmmSettingsPage.fields.publicAddressInput, 30);
     I.seeElement(pmmSettingsPage.fields.publicAddressButton);
     I.click(pmmSettingsPage.fields.publicAddressButton);
     const publicAddressValue = await I.grabValueFrom(pmmSettingsPage.fields.publicAddressInput);
@@ -425,10 +401,6 @@ Scenario(
       {
         subPage: pmmSettingsPage.perconaPlatformUrl,
         tooltips: pmmSettingsPage.tooltips.perconaPlatform,
-      },
-      {
-        subPage: pmmSettingsPage.communicationSettingsUrl,
-        tooltips: { ...pmmSettingsPage.tooltips.communication.email, ...pmmSettingsPage.tooltips.communication.slack },
       },
     ];
 

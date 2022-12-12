@@ -50,10 +50,10 @@ Before(async ({
   serviceId = service_id;
   const c = await I.mongoGetCollection('test', 'e2e');
 
+
   await c.deleteMany({ number: 2 });
 
   await I.Authorize();
-  await settingsAPI.changeSettings({ backup: true });
   await scheduledAPI.clearAllSchedules();
   await scheduledPage.openScheduledBackupsPage();
 });
@@ -74,7 +74,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T902 Verify user is not able to schedule a backup without storage location @backup @bm-mongo',
+  '@PMM-T902 Verify user is not able to schedule a backup without storage location @backup @bm-mongo',
   async ({
     I, scheduledPage,
   }) => {
@@ -95,7 +95,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T954 PMM-T952 PMM-T956 PMM-T958 Verify validation errors for retention @backup @bm-mongo',
+  '@PMM-T954 @PMM-T952 @PMM-T956 @PMM-T958 Verify validation errors for retention @backup @bm-mongo',
   async ({
     I, scheduledPage,
   }) => {
@@ -131,7 +131,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T909 PMM-T952 PMM-T956 Verify user can update created scheduled backup @backup @bm-mongo',
+  '@PMM-T909 @PMM-T952 @PMM-T956 Verify user can update created scheduled backup @backup @bm-mongo',
   async ({
     I, scheduledPage, scheduledAPI,
   }) => {
@@ -153,6 +153,8 @@ Scenario(
     await scheduledAPI.createScheduledBackup(schedule);
 
     await scheduledPage.openScheduledBackupsPage();
+    I.waitForVisible(scheduledPage.buttons.actionsMenuByName(schedule.name), 10);
+    I.click(scheduledPage.buttons.actionsMenuByName(schedule.name));
     I.click(scheduledPage.buttons.editByName(schedule.name));
 
     I.waitForVisible(scheduledPage.fields.backupName, 30);
@@ -176,7 +178,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T913, PMM-T922, PMM-T977 Verify user can schedule a backup for MongoDB with replica @backup @bm-mongo @fb',
+  '@PMM-T913, @PMM-T922, @PMM-T977 Verify user can schedule a backup for MongoDB with replica @backup @bm-mongo @fb',
   async ({
     I, backupInventoryPage, scheduledAPI, backupAPI, scheduledPage,
   }) => {
@@ -205,7 +207,10 @@ Scenario(
     // Verify local timestamp is shown in Last Backup column
     await scheduledAPI.waitForFirstExecution(schedule.name);
     scheduledPage.openScheduledBackupsPage();
-    I.seeTextEquals(moment().format('YYYY-MM-DDHH:mm:00'), scheduledPage.elements.lastBackupByName(schedule.name));
+    const lastBackup = await I.grabTextFrom(scheduledPage.elements.lastBackupByName(schedule.name));
+
+    I.assertStartsWith(lastBackup, moment().format('YYYY-MM-DD'));
+    I.assertEndsWith(lastBackup, moment().format('HH:mm:00'));
 
     await backupAPI.waitForBackupFinish(null, schedule.name, 300);
     const { scheduled_backup_id } = await scheduledAPI.getScheduleIdByName(schedule.name);
@@ -217,7 +222,7 @@ Scenario(
 );
 
 Data(schedules).Scenario(
-  'PMM-T899 PMM-T903 PMM-T904 PMM-T905 PMM-T907 Verify user can create daily scheduled backup @backup @bm-mongo',
+  '@PMM-T899 @PMM-T903 @PMM-T904 @PMM-T905 @PMM-T907 Verify user can create daily scheduled backup @backup @bm-mongo',
   async ({
     scheduledPage, scheduledAPI, current,
   }) => {
@@ -247,7 +252,7 @@ Data(schedules).Scenario(
   },
 );
 
-Scenario('PMM-T900 Verify user can copy scheduled backup @backup @bm-mongo',
+Scenario('@PMM-T900 Verify user can copy scheduled backup @backup @bm-mongo',
   async ({
     I, scheduledPage, scheduledAPI,
   }) => {
@@ -275,10 +280,11 @@ Scenario('PMM-T900 Verify user can copy scheduled backup @backup @bm-mongo',
     await scheduledAPI.createScheduledBackup(schedule);
     await scheduledPage.openScheduledBackupsPage();
 
-    // Copy existing schedule
-    I.click(scheduledPage.buttons.copyByName(schedule.name));
+    scheduledPage.copySchedule(schedule.name);
 
     // Verify copied schedule details
+    I.waitForVisible(scheduledPage.buttons.actionsMenuByName(newSchedule.name), 10);
+    I.click(scheduledPage.buttons.actionsMenuByName(newSchedule.name));
     I.waitForVisible(scheduledPage.buttons.deleteByName(newSchedule.name), 10);
     await scheduledPage.verifyBackupValues(newSchedule);
 
@@ -286,7 +292,7 @@ Scenario('PMM-T900 Verify user can copy scheduled backup @backup @bm-mongo',
     I.seeAttributesOnElements(scheduledPage.elements.toggleByName(newSchedule.name), { checked: null });
   });
 
-Scenario('PMM-T908 Verify user can enable/disable scheduled backup @backup @bm-mongo @fb',
+Scenario('@PMM-T908 Verify user can enable/disable scheduled backup @backup @bm-mongo @fb',
   async ({
     I, scheduledPage, scheduledAPI,
   }) => {
@@ -323,7 +329,7 @@ Scenario('PMM-T908 Verify user can enable/disable scheduled backup @backup @bm-m
     I.seeCssPropertiesOnElements(scheduledPage.elements.scheduleTypeByName(schedule.name), { 'background-color': color });
   });
 
-Scenario('PMM-T901 Verify user can delete scheduled backup @backup @bm-mongo',
+Scenario('@PMM-T901 Verify user can delete scheduled backup @backup @bm-mongo',
   async ({
     I, scheduledPage, scheduledAPI,
   }) => {
@@ -336,18 +342,15 @@ Scenario('PMM-T901 Verify user can delete scheduled backup @backup @bm-mongo',
     await scheduledAPI.createScheduledBackup(schedule);
     await scheduledPage.openScheduledBackupsPage();
 
-    // Open Delete modal
-    I.click(scheduledPage.buttons.deleteByName(schedule.name));
+    scheduledPage.openDeleteModal(schedule.name);
 
     // Click Cancel button and verify schedule still exists
-    I.waitForVisible(scheduledPage.buttons.confirmDelete, 10);
     I.click(scheduledPage.buttons.cancelDelete);
-    I.dontSeeElement(scheduledPage.elements.modalContent);
-    I.seeElement(scheduledPage.buttons.deleteByName(schedule.name));
+    I.waitForDetached(scheduledPage.elements.modalContent);
+    I.seeElement(scheduledPage.buttons.actionsMenuByName(schedule.name));
 
     // Open Delete modal again and verify it has a correct schedule name in message
-    I.click(scheduledPage.buttons.deleteByName(schedule.name));
-    I.waitForVisible(scheduledPage.buttons.confirmDelete, 10);
+    scheduledPage.openDeleteModal(schedule.name);
     I.seeTextEquals(scheduledPage.messages.confirmDelete(schedule.name),
       locate(scheduledPage.elements.modalContent).find('h4'));
 
@@ -357,7 +360,7 @@ Scenario('PMM-T901 Verify user can delete scheduled backup @backup @bm-mongo',
   });
 
 Scenario(
-  'PMM-T924 - Verify user is able to schedule a backup for MongoDB with replica & MySQL '
+  '@PMM-T924 - Verify user is able to schedule a backup for MongoDB with replica & MySQL '
   + 'and try to run those backup schedule job in parallel @bm-mysql @bm-mongo',
   async ({
     I, backupInventoryPage, scheduledAPI, backupAPI, inventoryAPI,
@@ -403,7 +406,7 @@ Scenario(
   },
 );
 
-Data(scheduleErrors).Scenario('PMM-T1031 Verify PITR schedule errors @backup',
+Data(scheduleErrors).Scenario('@PMM-T1031 Verify PITR schedule errors @backup',
   async ({
     I, scheduledPage, scheduledAPI, current,
   }) => {

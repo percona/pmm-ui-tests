@@ -6,9 +6,11 @@ Before(async ({ I }) => {
 
 Scenario(
   'Open Advanced Exploration Dashboard and verify Metrics are present and graphs are displayed @nightly @dashboards',
-  async ({ I, dashboardPage }) => {
+  async ({ I, dashboardPage, adminPage }) => {
     I.amOnPage(dashboardPage.advancedDataExplorationDashboard.url);
     dashboardPage.waitForDashboardOpened();
+    I.click(adminPage.fields.metricTitle);
+    adminPage.performPageDown(5);
     dashboardPage.verifyMetricsExistence(dashboardPage.advancedDataExplorationDashboard.metrics);
     await dashboardPage.verifyThereAreNoGraphsWithNA();
     await dashboardPage.verifyThereAreNoGraphsWithoutData(1);
@@ -26,7 +28,7 @@ Scenario(
     await dashboardPage.expandEachDashboardRow();
     dashboardPage.verifyMetricsExistence(dashboardPage.prometheusExporterStatusDashboard.metrics);
     await dashboardPage.verifyThereAreNoGraphsWithNA(4);
-    await dashboardPage.verifyThereAreNoGraphsWithoutData(15);
+    await dashboardPage.verifyThereAreNoGraphsWithoutData(16);
   },
 );
 

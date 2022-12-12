@@ -1,7 +1,7 @@
 const assert = require('assert');
 
 const {
-  I, channelsAPI, alertRulesPage, ruleTemplatesPage, rulesAPI, templatesAPI, ncPage,
+  I, channelsAPI, alertRulesPage, ruleTemplatesPage, rulesAPI, templatesAPI, ncPage, alertsPage, alertsAPI,
 } = inject();
 
 module.exports = {
@@ -17,7 +17,7 @@ module.exports = {
     pagination: '$pagination',
     itemsShown: '$pagination-items-inverval',
     rowInTable: locate('$table-tbody').find('tr'),
-    tab: (tabName) => locate('li').find('a').withAttr({ 'aria-label': `Tab ${tabName}` }),
+    tab: (tabName) => locate('[role="tablist"] a').withAttr({ 'aria-label': `Tab ${tabName}` }),
     table: '$table-tbody',
     breadcrumbActive: locate('$breadcrumb-section').last(),
     disabledIa: '$empty-block',
@@ -71,6 +71,14 @@ module.exports = {
         createEntities: templatesAPI.createRuleTemplates,
         url: ruleTemplatesPage.url,
         getListOfItems: templatesAPI.getTemplatesList,
+      };
+    }
+
+    if (page === 'alerts') {
+      return {
+        createEntities: rulesAPI.createAlertRules,
+        url: alertsPage.url,
+        getListOfItems: alertsAPI.getAlertsList,
       };
     }
 

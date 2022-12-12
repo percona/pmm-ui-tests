@@ -2,6 +2,7 @@ module.exports = {
   pageObjects: {
     I: './tests/custom_steps.js',
     codeceptjsConfig: './pr.codecept.js',
+    credentials: './tests/pages/credentials.js',
     addInstanceAPI: './tests/pages/api/addInstanceAPI.js',
     addInstancePage: './tests/pages/addInstancePage.js',
     amiInstanceAPI: './tests/pages/api/amiInstanceAPI.js',
@@ -16,12 +17,14 @@ module.exports = {
     backupAPI: './tests/backup/pages/api/backupAPI.js',
     backupInventoryPage: './tests/backup/pages/inventoryPage.js',
     channelsAPI: './tests/ia/pages/api/channelsAPI.js',
+    contactPointsAPI: './tests/ia/pages/api/contactPointsAPI.js',
     dashboardPage: './tests/pages/dashboardPage.js',
     databaseChecksPage: './tests/advisers/stt/pages/databaseChecksPage.js',
     dbaasAPI: './tests/DbaaS/api/dbaasAPI.js',
     dbaasPage: './tests/DbaaS/pages/dbaasPage.js',
     dbaasActionsPage: './tests/DbaaS/pages/dbaasActionsPage.js',
     dbaasManageVersionPage: './tests/DbaaS/pages/dbaasManageVersionPage.js',
+    experimentalPostgresqlDashboardsPage: './tests/PageObjects/Dashboards/Postgresql/ExperimentalPostgresqlDashboards.js',
     grafanaAPI: './tests/pages/api/grafanaAPI.js',
     homePage: './tests/pages/homePage.js',
     inventoryAPI: './tests/pages/api/inventoryAPI.js',
@@ -36,8 +39,9 @@ module.exports = {
     organizationTicketsPage: './tests/pages/organizationTicketsPage.js',
     perconaPlatformPage: './tests/pages/perconaPlatformPage/perconaPlatformPage.js',
     pmmDemoPage: './tests/pages/pmmDemoPage.js',
-    pmmInventoryPage: './tests/pages/pmmInventoryPage.js',
-    pmmSettingsPage: './tests/pages/pmmSettingsPage.js',
+    pmmInventoryPage: './tests/configuration/pages/pmmInventoryPage.js',
+    pmmServerAdminSettingsPage: './tests/configuration/pages/pmmServerAdminSettingsPage.js',
+    pmmSettingsPage: './tests/configuration/pages/pmmSettingsPage.js',
     portalAPI: './tests/pages/api/portalAPI.js',
     qanDetails: './tests/QAN/pages/qanDetailsFragment.js',
     qanFilters: './tests/QAN/pages/qanFiltersFragment.js',
@@ -60,18 +64,17 @@ module.exports = {
     qanAPI: './tests/QAN/api/qanAPI.js',
     environmentOverviewPage: './tests/pages/environmentOverviewPage.js',
     tooltips: './tests/helper/tooltipHelper.js',
+    dataSourcePage: './tests/pages/pmmSettingsPages/dataSourcePage.js',
   },
   getChunks: (files) => {
-    const dependentTests = files.filter((value) => /PMMSettings|stt|backup|permissions|Azure/.test(value));
-    const iaTests = files.filter((value) => /ia/.test(value));
+    const dependentTests = files.filter((value) => /PMMSettings|ia|stt|backup|permissions|Azure/.test(value));
     const dbaasTests = files.filter((value) => /DbaaS|TLSMongo/.test(value));
     const portalTests = files.filter((value) => /portal/.test(value));
     const otherTests = files.filter((val) => !dependentTests.includes(val)
-      && !dbaasTests.includes(val) && !iaTests.includes(val) && !portalTests.includes(val));
+      && !dbaasTests.includes(val) && !portalTests.includes(val));
 
     return [
       dependentTests,
-      iaTests,
       portalTests,
       otherTests,
       dbaasTests,
