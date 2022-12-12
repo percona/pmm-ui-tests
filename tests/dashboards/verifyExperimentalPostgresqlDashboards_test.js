@@ -12,6 +12,7 @@ Scenario(
     I, experimentalPostgresqlDashboardsPage,
   }) => {
     await I.amOnPage(experimentalPostgresqlDashboardsPage.vacuumDashboardPostgres.url);
+    await experimentalPostgresqlDashboardsPage.selectServiceName('pgsql_vacuum_db');
     await I.waitForVisible(experimentalPostgresqlDashboardsPage.elements.barValue, 60);
     const values = await I.grabTextFromAll(experimentalPostgresqlDashboardsPage.elements.barValue);
 
