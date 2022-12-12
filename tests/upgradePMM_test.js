@@ -3,7 +3,7 @@ const faker = require('faker');
 const { generate } = require('generate-password');
 
 const {
-  adminPage, remoteInstancesHelper, psMySql, pmmSettingsPage, dashboardPage, databaseChecksPage,
+  adminPage, remoteInstancesHelper, psMySql, pmmSettingsPage, dashboardPage, databaseChecksPage, locationsPage,
 } = inject();
 
 const pathToPMMFramework = adminPage.pathToPMMTests;
@@ -33,6 +33,15 @@ const failedCheckRowLocator = databaseChecksPage.elements
 const ruleName = 'Alert Rule for upgrade';
 const failedCheckMessage = 'Newer version of Percona Server for MySQL is available';
 
+const mongoServiceName = 'mongo-backup-upgrade';
+const location = {
+  name: 'upgrade-location',
+  description: 'upgrade-location description',
+  ...locationsPage.mongoStorageLocation,
+};
+const backupName = 'upgrade backup test';
+const scheduleName = 'upgrade schedule';
+
 // For running on local env set PMM_SERVER_LATEST and DOCKER_VERSION variables
 function getVersions() {
   const [, pmmMinor, pmmPatch] = (process.env.PMM_SERVER_LATEST || '').split('.');
@@ -53,7 +62,6 @@ function getVersions() {
 }
 
 const { versionMinor, patchVersionDiff, majorVersionDiff } = getVersions();
-
 const iaReleased = versionMinor >= 13;
 
 Feature('PMM server Upgrade Tests and Executing test cases related to Upgrade Testing Cycle').retry(1);
@@ -82,6 +90,7 @@ BeforeSuite(async ({ I, codeceptjsConfig }) => {
   };
 
   await I.mongoConnect(mongoConnection);
+  await I.say(await I.verifyCommand(`pmm-admin add mongodb --port=27027 --service-name=${mongoServiceName} --replication-set=rs0`));
 });
 
 AfterSuite(async ({ I, psMySql }) => {
@@ -1019,4 +1028,107 @@ if (versionMinor >= 23) {
       }
     },
   ).retry(1);
+}
+
+if (versionMinor >= 32) {
+  Scenario(
+    'Create backups data to check after upgrade @ovf-upgrade @ami-upgrade @pre-upgrade @pmm-upgrade',
+    async ({
+      I, settingsAPI, locationsAPI, backupAPI, scheduledAPI, inventoryAPI, backupInventoryPage, scheduledPage,
+    }) => {
+      await settingsAPI.changeSettings({ backup: true });
+      await locationsAPI.clearAllLocations(true);
+      const locationId = await locationsAPI.createStorageLocation(location);
+
+      const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName('MONGODB_SERVICE', mongoServiceName);
+      const backupId = await backupAPI.startBackup(backupName, service_id, locationId);
+
+      // Every 20 mins schedule
+      const schedule = {
+        service_id,
+        location_id: locationId,
+        cron_expression: '*/20 * * * *',
+        name: scheduleName,
+        mode: scheduledAPI.backupModes.snapshot,
+        description: '',
+        retry_interval: '30s',
+        retries: 0,
+        enabled: true,
+        retention: 1,
+      };
+
+      await scheduledAPI.createScheduledBackup(schedule);
+
+      /** waits and success check grouped together to speedup test */
+      await backupAPI.waitForBackupFinish(backupId);
+      // await backupAPI.waitForBackupFinish(null, schedule.name, 240);
+      backupInventoryPage.openInventoryPage();
+      backupInventoryPage.verifyBackupSucceeded(backupName);
+      scheduledPage.openScheduledBackupsPage();
+      I.waitForVisible(scheduledPage.elements.scheduleName(schedule.name), 20);
+    },
+  );
+}
+
+if (versionMinor >= 32) {
+  Scenario(
+    '@PMM-T1503 - The user is able to do a restore for MongoDB after the upgrade @ovf-upgrade @ami-upgrade @post-upgrade @pmm-upgrade',
+    async ({ I, backupInventoryPage, restorePage }) => {
+      let c = await I.mongoGetCollection('test', 'e2e');
+
+      await c.insertOne({ number: 2, name: 'Anna' });
+
+      backupInventoryPage.openInventoryPage();
+      backupInventoryPage.startRestore(backupName);
+      restorePage.waitForRestoreSuccess(backupName);
+
+      c = await I.mongoGetCollection('test', 'e2e');
+      const record = await c.findOne({ number: 2, name: 'Anna' });
+
+      I.assertToBeA(record, null, `Was expecting to not have a record ${JSON.stringify(record, null, 2)} after restore operation`);
+
+    },
+  );
+
+  Scenario(
+    '@PMM-T1504 - The user is able to do a backup for MongoDB after upgrade @ovf-upgrade @ami-upgrade @post-upgrade @pmm-upgrade',
+    async ({
+      locationsAPI, inventoryAPI, backupAPI, backupInventoryPage,
+    }) => {
+      const backupName = 'backup after update';
+
+      const locationId = await locationsAPI.createStorageLocation(location);
+      const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName('MONGODB_SERVICE', mongoServiceName);
+      const backupId = await backupAPI.startBackup(backupName, service_id, locationId);
+
+      await backupAPI.waitForBackupFinish(backupId);
+      backupInventoryPage.openInventoryPage();
+      backupInventoryPage.verifyBackupSucceeded(backupName);
+    },
+  );
+
+  Scenario(
+    '@PMM-T1505 - The scheduled job still exists and remains enabled after the upgrade @ovf-upgrade @ami-upgrade @post-upgrade @pmm-upgrade',
+    async ({ I, scheduledPage }) => {
+      await scheduledPage.openScheduledBackupsPage();
+      I.seeAttributesOnElements(scheduledPage.elements.toggleByName(scheduleName), { checked: true });
+
+      // Disable schedule
+      I.click(scheduledPage.buttons.enableDisableByName(scheduleName));
+      I.seeAttributesOnElements(scheduledPage.elements.toggleByName(scheduleName), { checked: null });
+    },
+  );
+
+  Scenario(
+    '@PMM-T1506 - Storage Locations exist after upgrade @ovf-upgrade @ami-upgrade @post-upgrade @pmm-upgrade',
+    async ({ I, locationsPage }) => {
+      locationsPage.openLocationsPage();
+      I.waitForVisible(locationsPage.buttons.actionsMenuByName(location.name), 2);
+      I.click(locationsPage.buttons.actionsMenuByName(location.name));
+      I.seeElement(locationsPage.buttons.deleteByName(location.name));
+      I.seeElement(locationsPage.buttons.editByName(location.name));
+      I.seeTextEquals(locationsPage.locationType.s3, locationsPage.elements.typeCellByName(location.name));
+      I.seeTextEquals(location.endpoint, locationsPage.elements.endpointCellByName(location.name));
+    },
+  );
 }
