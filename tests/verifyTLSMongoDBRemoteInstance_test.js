@@ -6,11 +6,11 @@ const pathToPMMFramework = adminPage.pathToPMMTests;
 
 Feature('Monitoring SSL/TLS MongoDB instances');
 
-const instances = new DataTable(['serviceName', 'version', 'container', 'serviceType', 'metric']);
+const instances = new DataTable(['serviceName', 'version', 'container', 'serviceType', 'metric', 'maxQueryLength']);
 
-instances.add(['mongodb_4.4_ssl_service', '4.4', 'mongodb_4.4', 'mongodb_ssl', 'mongodb_connections']);
+instances.add(['mongodb_4.4_ssl_service', '4.4', 'mongodb_4.4', 'mongodb_ssl', 'mongodb_connections', '7']);
 // instances.add(['mongodb_4.2_ssl_service', '4.2', 'mongodb_4.2', 'mongodb_ssl', 'mongodb_connections']);
-instances.add(['mongodb_5.0_ssl_service', '5.0', 'mongodb_5.0', 'mongodb_ssl', 'mongodb_connections']);
+instances.add(['mongodb_5.0_ssl_service', '5.0', 'mongodb_5.0', 'mongodb_ssl', 'mongodb_connections', '7']);
 
 BeforeSuite(async ({ I, codeceptjsConfig }) => {
   // await I.verifyCommand(`${pmmFrameworkLoader} --mo-version=4.2 --setup-mongodb-ssl --pmm2`);
@@ -199,3 +199,53 @@ Data(instances).Scenario(
     await I.verifyCommand(`docker exec ${container} ls -la /tmp/mongodb_exporter/agent_id/${agent_id}/ | grep caFile`);
   },
 ).retry(1);
+
+Data(instances).Scenario(
+  ' PMM-T1431 Verify adding MongoDB instance via UI with specified Max Query Length option @max-length @ssl @ssl-remote @not-ui-pipeline',
+  async ({
+    I, remoteInstancesPage, pmmInventoryPage, qanPage, qanOverview, qanFilters, qanDetails, inventoryAPI, current,
+  }) => {
+    const {
+      serviceName, serviceType, version, container, maxQueryLength,
+    } = current;
+    let details;
+    const remoteServiceName = `MaxQueryLength_remote_${serviceName}`;
+
+    if (serviceType === 'mongodb_ssl') {
+      details = {
+        serviceName: remoteServiceName,
+        serviceType,
+        port: '27017',
+        host: container,
+        cluster: 'mongodb_remote_cluster',
+        environment: 'mongodb_remote_cluster',
+        tlsCAFile: `${pathToPMMFramework}tls-ssl-setup/mongodb/${version}/ca.crt`,
+        tlsCertificateFilePasswordInput: `${pathToPMMFramework}tls-ssl-setup/mongodb/${version}/client.key`,
+        tlsCertificateKeyFile: `${pathToPMMFramework}tls-ssl-setup/mongodb/${version}/client.pem`,
+      };
+    }
+
+    I.amOnPage(remoteInstancesPage.url);
+    remoteInstancesPage.waitUntilRemoteInstancesPageLoaded();
+    remoteInstancesPage.openAddRemotePage(serviceType);
+    await remoteInstancesPage.addRemoteSSLDetails(details);
+    I.fillField(remoteInstancesPage.fields.maxQueryLength, maxQueryLength);
+    I.click(remoteInstancesPage.fields.addService);
+
+    // Check Remote Instance also added and have running status
+    pmmInventoryPage.verifyRemoteServiceIsDisplayed(remoteServiceName);
+    await pmmInventoryPage.verifyAgentHasStatusRunning(remoteServiceName);
+    // Check Remote Instance also added and have running status
+    await pmmInventoryPage.openServices();
+    const serviceId = await pmmInventoryPage.getServiceId(remoteServiceName);
+
+    // Check Remote Instance also added and have correct max_query_length option set
+    await pmmInventoryPage.openAgents();
+
+    if (maxQueryLength !== '') {
+      await pmmInventoryPage.checkAgentOtherDetailsSection('max_query_length:', `max_query_length: ${maxQueryLength}`, remoteServiceName, serviceId);
+    } else {
+      await pmmInventoryPage.checkAgentOtherDetailsMissing('max_query_length:', serviceId);
+    }
+  },
+);
