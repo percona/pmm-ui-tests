@@ -67,7 +67,7 @@ Data(filters).Scenario('PMM-T746, PMM-T748 - Verify adding monitoring for Azure 
 }) => {
   I.amOnPage(qanPage.refreshRateFiveSecondsUrl);
   I.waitForElement(qanFilters.elements.filterItem('Environment', current.filter), 60);
-  qanFilters.applyFilter(current.filter);
+  await qanFilters.applyFilter(current.filter);
   qanOverview.waitForOverviewLoaded();
   const count = await qanOverview.getCountOfItems();
 

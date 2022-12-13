@@ -197,6 +197,14 @@ module.exports = {
     I.waitForVisible(this.elements.selectedRow, 10);
   },
 
+  async getQueryFromRow(rowNumber) {
+    const rowSelector = this.getRowLocator(rowNumber);
+
+    I.waitForElement(rowSelector, 60);
+
+    return await I.grabTextFrom(locate(rowSelector).find('./div[@role="cell"][2]'));
+  },
+
   async verifyRowCount(rowCount) {
     I.waitForVisible(this.elements.querySelector, 30);
     const count = await I.grabNumberOfVisibleElements(this.elements.tableRow);
