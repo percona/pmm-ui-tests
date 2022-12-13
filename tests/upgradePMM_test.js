@@ -90,7 +90,6 @@ BeforeSuite(async ({ I, codeceptjsConfig }) => {
   };
 
   await I.mongoConnect(mongoConnection);
-  await I.say(await I.verifyCommand(`pmm-admin add mongodb --port=27027 --service-name=${mongoServiceName} --replication-set=rs0`));
 });
 
 AfterSuite(async ({ I, psMySql }) => {
@@ -1045,6 +1044,7 @@ if (versionMinor >= 32) {
     async ({
       I, settingsAPI, locationsAPI, backupAPI, scheduledAPI, inventoryAPI, backupInventoryPage, scheduledPage,
     }) => {
+      await I.say(await I.verifyCommand(`pmm-admin add mongodb --port=27027 --service-name=${mongoServiceName} --replication-set=rs0`));
       await settingsAPI.changeSettings({ backup: true });
       await locationsAPI.clearAllLocations(true);
       const locationId = await locationsAPI.createStorageLocation(location);
@@ -1081,26 +1081,27 @@ if (versionMinor >= 32) {
 
 if (versionMinor >= 32) {
   Scenario(
-    '@PMM-T1503 - The user is able to do a restore for MongoDB after the upgrade ' +
-    '@ovf-upgrade @ami-upgrade @post-upgrade @pmm-upgrade',
+    '@PMM-T1503 - The user is able to do a restore for MongoDB after the upgrade'
+    + ' @ovf-upgrade @ami-upgrade @post-upgrade @pmm-upgrade',
     async ({ I, backupInventoryPage, restorePage }) => {
-      const replica = await I.getMongoReplicaClient({
-        username: 'admin',
-        password: 'password',
-      });
-      let collection = replica.db('test').collection('e2e');
+      const replica = await I.getMongoReplicaClient({ username: 'admin', password: 'password' });
 
-      await collection.insertOne({ number: 2, name: 'Anna' });
+      try {
+        let collection = replica.db('test').collection('e2e');
 
-      backupInventoryPage.openInventoryPage();
-      backupInventoryPage.startRestore(backupName);
-      restorePage.waitForRestoreSuccess(backupName);
+        await collection.insertOne({ number: 2, name: 'Anna' });
 
-      collection = replica.db('test').collection('e2e');
-      const record = await collection.findOne({ number: 2, name: 'Anna' });
+        backupInventoryPage.openInventoryPage();
+        backupInventoryPage.startRestore(backupName);
+        restorePage.waitForRestoreSuccess(backupName);
 
-      replica.close();
-      I.assertToBeA(record, null, `Was expecting to not have a record ${JSON.stringify(record, null, 2)} after restore operation`);
+        collection = replica.db('test').collection('e2e');
+        const record = await collection.findOne({ number: 2, name: 'Anna' });
+
+        I.assertToBeA(record, null, `Was expecting to not have a record ${JSON.stringify(record, null, 2)} after restore operation`);
+      } finally {
+        replica.close();
+      }
     },
   );
 
