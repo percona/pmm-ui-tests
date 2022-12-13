@@ -1235,4 +1235,9 @@ module.exports = {
       }
     }
   },
+
+  selectRefreshTimeInterval(timeInterval) {
+    I.click(this.fields.refreshIntervalPicker);
+    I.click(this.fields.refreshIntervalOption(timeInterval));
+  },
 };

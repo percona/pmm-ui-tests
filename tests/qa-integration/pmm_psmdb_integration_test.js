@@ -98,7 +98,7 @@ Scenario(
 
 Scenario(
   'Verify dashboard after MongoDB Instances are added '
-  + 'PMM-T307 Verify MongoDB - MongoDB Instances Overview dashboard@pmm-psmdb-integration @not-ui-pipeline @nazarov',
+  + 'PMM-T307 Verify MongoDB - MongoDB Instances Overview dashboard@pmm-psmdb-integration @not-ui-pipeline',
   async ({
     I, dashboardPage, adminPage,
   }) => {

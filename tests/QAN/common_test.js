@@ -1,4 +1,5 @@
 const assert = require('assert');
+const { qanFilters } = require('../remoteInstances/remoteInstancesHelper');
 
 Feature('QAN common').retry(1);
 
@@ -96,18 +97,37 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T1207 - Verify dashboard search between QAN and dashboards @qan @nazarov123',
+  'PMM-T188 Verify dashboard refresh @qan @nazarov',
   async ({
-    I, qanPage, searchDashboardsModal, qanOverview, dashboardPage,
+    I, qanPage, searchDashboardsModal, qanDetails, qanOverview, dashboardPage, qanFilters, adminPage,
   }) => {
     qanPage.waitForOpened();
-    I.wait(3);
-    I.click(dashboardPage.fields.refreshIntervalPicker);
-    I.click(dashboardPage.fields.refreshIntervalOption('5s'));
-    I.waitForElement(qanOverview.elements.spinner, 5);
-    I.waitForDetached(qanOverview.elements.spinner, 5);
-    qanOverview.waitForOverviewLoaded();
-    I.wait(120);
 
+    await qanOverview.changeMainMetric('Database');
+    qanOverview.changeSorting(2);
+    qanFilters.applyFilter('pmm-managed');
+    qanOverview.addSpecificColumn('Bytes Sent');
+    await adminPage.applyTimeRange('Last 1 hour');
+    await qanOverview.searchByValue('pmm-managed');
+    qanOverview.selectTotalRow();
+
+    dashboardPage.selectRefreshTimeInterval('5s');
+    // Sometimes refresh doesn't happen after 5s for the first time
+    await I.waitForElement(qanOverview.elements.spinner, 10);
+    await I.waitForDetached(qanOverview.elements.spinner, 5);
+
+    await qanOverview.verifyMainMetric('Database');
+    await qanOverview.verifySorting(2, 'asc');
+    await qanFilters.verifySelectedFilters('pmm-managed');
+    await qanOverview.verifyColumnPresent('Bytes Sent');
+    await qanDetails.checkDetailsTab();
+    await adminPage.verifyTimeRange('Last 1 hour');
+    await qanOverview.verifySearchByValue('pmm-managed');
+
+    dashboardPage.selectRefreshTimeInterval('1m');
+    await I.waitForElement(qanOverview.elements.spinner, 60);
+    await I.waitForDetached(qanOverview.elements.spinner, 5);
+    dashboardPage.selectRefreshTimeInterval('Off');
+    await I.verifyInvisible(qanOverview.elements.spinner, 70);
   },
 );
