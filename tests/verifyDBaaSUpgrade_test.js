@@ -33,30 +33,14 @@ Before(async ({ I, dbaasAPI }) => {
 
 Scenario(
   'PMM-T726 Prepare Setup for DBaaS Instance Before Upgrade [blocker] @dbaas-upgrade ',
-  async ({
-    I, homePage, settingsAPI, dbaasAPI, pmmSettingsPage, dbaasPage,
-  }) => {
+  async ({ settingsAPI, dbaasAPI }) => {
     await settingsAPI.changeSettings({ publicAddress: process.env.VM_IP });
-    if (!await dbaasAPI.apiCheckRegisteredClusterExist(clusterName)) {
-      await dbaasAPI.apiRegisterCluster(process.env.kubeconfig_minikube, clusterName);
-    }
-
-    await pmmSettingsPage.openAdvancedSettings();
-    I.seeElement(pmmSettingsPage.fields.publicAddressButton);
-    I.waitForVisible(pmmSettingsPage.fields.publicAddressInput, 30);
-    I.seeElement(pmmSettingsPage.fields.publicAddressButton);
-    const publicAddressValue = await I.grabValueFrom(pmmSettingsPage.fields.publicAddressInput);
-
-    assert.ok(publicAddressValue === process.env.VM_IP, `Expected the Public Address Input Field to be equal to ${process.env.VM_IP} but IP found as ${publicAddressValue}`);
-
-    I.amOnPage(dbaasPage.url);
-    dbaasPage.registerKubernetesCluster(clusterName, process.env.kubeconfig_minikube);
-    // MySQL 8.0.20?
-    await dbaasAPI.apiCreatePXCCluster(pxc_cluster_name, clusterName);
-    // MongoDB 4.2.8?
-    await dbaasAPI.apiCreatePSMDBCluster(psmdb_cluster_name, clusterName);
-    await dbaasAPI.apiWaitForDBClusterState(pxc_cluster_name, clusterName, 'MySQL', 'DB_CLUSTER_STATE_READY');
-    await dbaasAPI.apiWaitForDBClusterState(psmdb_cluster_name, clusterName, 'MongoDB', 'DB_CLUSTER_STATE_READY');
+    await dbaasAPI.apiRegisterCluster(process.env.kubeconfig_minikube, clusterName);
+    await dbaasAPI.apiCheckRegisteredClusterExist(clusterName);
+    await dbaasAPI.createCustomPXC(clusterName, pxc_cluster_name, '1');
+    await dbaasAPI.createCustomPSMDB(clusterName, psmdb_cluster_name);
+    await dbaasAPI.waitForDBClusterState(pxc_cluster_name, clusterName, 'MySQL', 'DB_CLUSTER_STATE_READY');
+    await dbaasAPI.waitForDBClusterState(psmdb_cluster_name, clusterName, 'MongoDB', 'DB_CLUSTER_STATE_READY');
   },
 ).retry(0);
 
