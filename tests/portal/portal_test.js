@@ -162,7 +162,7 @@ Scenario(
   },
 );
 
-xScenario(
+Scenario(
   'PMM-T1169 Verify PMM user logged in using SSO and member of organization in Portal BUT not a SN account is NOT able to see Contacts @not-ui-pipeline @portal @post-pmm-portal-upgrade',
   async ({
     I, homePage, environmentOverviewPage,
