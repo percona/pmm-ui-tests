@@ -3,7 +3,7 @@ const rulesAPI = require('./ia/pages/api/rulesAPI');
 
 Feature('to go through new user Tour and verify it is shown once');
 
-Scenario('PMM-T1272 Verify user is able to pass a PMM tour',
+Scenario('PMM-T1272 Verify user is able to pass a PMM tour @nazarov123',
   async ({
     I, homePage, pmmTourPage, loginPage,
   }) => {
@@ -13,7 +13,7 @@ Scenario('PMM-T1272 Verify user is able to pass a PMM tour',
     loginPage.login();
     await I.executeScript(() => {
       localStorage.setItem('percona.tourTest', true);
-      localStorage.setItem('percona.showTour', true);
+      localStorage.removeItem('percona.showTour');
     });
     I.openNewTab();
     await I.amOnPage(homePage.landingUrl);

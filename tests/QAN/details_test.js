@@ -128,7 +128,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T144 Verify that Details tab is the only one available when total row is selected @qan',
+  'PMM-T144 Verify that Details tab is the only one available when total row is selected @qan @nazarov',
   async ({
     I, qanPage, searchDashboardsModal, qanOverview, qanDetails,
   }) => {
