@@ -97,8 +97,7 @@ Scenario(
 ).retry(1);
 
 Scenario(
-  'Verify dashboard after MongoDB Instances are added '
-  + 'PMM-T307 Verify MongoDB - MongoDB Instances Overview dashboard@pmm-psmdb-integration @not-ui-pipeline @nazarov',
+  'Verify dashboard after MongoDB Instances are added @pmm-psmdb-integration @not-ui-pipeline',
   async ({
     I, dashboardPage, adminPage,
   }) => {
@@ -114,7 +113,6 @@ Scenario(
       adminPage.performPageDown(5);
       await dashboardPage.expandEachDashboardRow();
       adminPage.performPageUp(5);
-      dashboardPage.verifyMetricsExistence(dashboardPage.mongoDbInstanceOverview.metrics);
       if (service === remoteServiceName) {
         await dashboardPage.verifyThereAreNoGraphsWithNA(1);
         await dashboardPage.verifyThereAreNoGraphsWithoutData(9);

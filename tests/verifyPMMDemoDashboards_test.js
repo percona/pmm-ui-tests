@@ -109,7 +109,7 @@ xScenario(
 );
 
 Scenario(
-  'PMM-T307 MongoDB Instances Overview dashboard and verify Metrics are present and graphs are displayed [critical] @pmm-demo @not-ui-pipeline @not-pr-pipeline',
+  'PMM-T307 MongoDB Instances Overview dashboard and verify Metrics are present and graphs are displayed [critical] @pmm-demo @not-ui-pipeline @not-pr-pipeline @nazarov',
   async ({
     I, adminPage, dashboardPage, pmmDemoPage,
   }) => {
@@ -123,6 +123,7 @@ Scenario(
       await dashboardPage.applyFilter('Service Name', serviceName[i]);
       I.click(adminPage.fields.metricTitle);
       adminPage.performPageDown(5);
+      await dashboardPage.verifyMetricsExistence(dashboardPage.mongoDbInstanceOverview.metrics);
       await dashboardPage.verifyThereAreNoGraphsWithNA();
       await dashboardPage.verifyThereAreNoGraphsWithoutData(3);
     }
