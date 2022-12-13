@@ -145,7 +145,7 @@ module.exports = {
         clusterStatusDeleting: '$cluster-status-deleting',
         clusterStatusUpdating: '$cluster-status-updating',
         clusterTableHeader: locate('$table-header').find('th'),
-        clusterTableRow: '$table-row',
+        clusterTableRow: (dbClusterName) => locate('$table-row').withText(dbClusterName),
         clusterActionsMenu: '$dropdown-menu-toggle',
         deleteDBClusterButton: '$delete-dbcluster-button',
         dbClusterLogs: {

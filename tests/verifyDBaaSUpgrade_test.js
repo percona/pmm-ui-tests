@@ -51,7 +51,7 @@ Scenario('PMM-T3 Upgrade PMM via UI with DbaaS Clusters @dbaas-upgrade', async (
   await homePage.upgradePMM(versionMinor, true);
 });
 
-Scenario('PMM-T726 Verify existing DB clusters status after PMM Server upgrade @dbaas-upgrade',
+Scenario('PMM-T726 Verify DB clusters status and logs after PMM Server upgrade @dbaas-upgrade',
   async ({
     I, dbaasAPI, homePage, pmmSettingsPage, dbaasPage, dbaasActionsPage,
   }) => {
@@ -61,6 +61,13 @@ Scenario('PMM-T726 Verify existing DB clusters status after PMM Server upgrade @
 
     await dbaasPage.verifyLogPopup(33, psmdb_cluster_name);
     await dbaasPage.verifyLogPopup(6, pxc_cluster_name);
+});
+
+Scenario('PMM-T726 Verify actions on DB clusters after PMM Server upgrade @dbaas-upgrade',
+  async ({
+    I, dbaasAPI, homePage, pmmSettingsPage, dbaasPage, dbaasActionsPage,
+  }) => {
+    I.amOnPage('graph/dbaas/dbclusters');
     await dbaasActionsPage.suspendCluster(psmdb_cluster_name, clusterName, 'MongoDB');
     await dbaasActionsPage.suspendCluster(pxc_cluster_name, clusterName);
     await dbaasActionsPage.resumeCluster(psmdb_cluster_name, clusterName, 'MongoDB');
@@ -92,7 +99,7 @@ Scenario('PMM-T726 Verify existing DB clusters status after PMM Server upgrade @
     I.waitForElement(dbaasPage.tabs.dbClusterTab.fields.clusterActionsMenu(pxc_cluster_name));
     await dbaasAPI.apiWaitForDBClusterState(pxc_cluster_name, clusterName, 'MySQL', 'DB_CLUSTER_STATE_READY');
     await dbaasAPI.apiWaitForDBClusterState(psmdb_cluster_name, clusterName, 'MongoDB', 'DB_CLUSTER_STATE_READY');
-  });
+});
 
 const pxcDBClusterDetails = new DataTable(['namespace', 'clusterName', 'node']);
 
