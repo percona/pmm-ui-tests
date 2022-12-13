@@ -234,22 +234,22 @@ Scenario('PMM-T532 PMM-T533 PMM-T536 - Verify user can disable/enable IA in Sett
   }) => {
     await settingsAPI.apiEnableIA();
     I.amOnPage(pmmSettingsPage.advancedSettingsUrl);
-    I.waitForVisible(pmmSettingsPage.fields.iaSwitchSelector, 30);
-    I.click(pmmSettingsPage.fields.iaSwitchSelector);
+    I.waitForVisible(pmmSettingsPage.fields.perconaAlertingSwitch, 30);
+    I.click(pmmSettingsPage.fields.perconaAlertingSwitch);
     I.dontSeeElement(pmmSettingsPage.communication.communicationSection);
-    pmmSettingsPage.verifySwitch(pmmSettingsPage.fields.iaSwitchSelectorInput, 'off');
+    pmmSettingsPage.verifySwitch(pmmSettingsPage.fields.perconaAlertingSwitchInput, 'off');
     I.click(pmmSettingsPage.fields.advancedButton);
-    I.waitForVisible(pmmSettingsPage.fields.iaSwitchSelectorInput, 30);
-    pmmSettingsPage.verifySwitch(pmmSettingsPage.fields.iaSwitchSelectorInput, 'off');
+    I.waitForVisible(pmmSettingsPage.fields.perconaAlertingSwitchInput, 30);
+    pmmSettingsPage.verifySwitch(pmmSettingsPage.fields.perconaAlertingSwitchInput, 'off');
     // I.moveCursorTo(adminPage.sideMenu.alertingBellIcon);
     // I.waitForVisible(adminPage.sideMenu.integratedAlertingManuItem, 20);
     // I.seeTextEquals('Integrated Alerting', adminPage.sideMenu.integratedAlerting);
     // I.seeTextEquals('Communication', pmmSettingsPage.communication.communicationSection);
-    I.click(pmmSettingsPage.fields.iaSwitchSelector);
-    pmmSettingsPage.verifySwitch(pmmSettingsPage.fields.iaSwitchSelectorInput, 'on');
+    I.click(pmmSettingsPage.fields.perconaAlertingSwitch);
+    pmmSettingsPage.verifySwitch(pmmSettingsPage.fields.perconaAlertingSwitchInput, 'on');
     I.click(pmmSettingsPage.fields.advancedButton);
-    I.waitForVisible(pmmSettingsPage.fields.iaSwitchSelector, 30);
-    pmmSettingsPage.verifySwitch(pmmSettingsPage.fields.iaSwitchSelectorInput, 'on');
+    I.waitForVisible(pmmSettingsPage.fields.perconaAlertingSwitch, 30);
+    pmmSettingsPage.verifySwitch(pmmSettingsPage.fields.perconaAlertingSwitchInput, 'on');
     I.dontSeeElementInDOM(adminPage.sideMenu.integratedAlerting);
     I.dontSeeElement(pmmSettingsPage.communication.communicationSection);
   }).retry(2);
@@ -420,3 +420,13 @@ Scenario(
     }
   },
 );
+
+Scenario('PMM-T1401 Verify Percona Alerting wording in Settings @max-length @settings', async ({
+  I,
+  pmmSettingsPage,
+}) => {
+  I.amOnPage(pmmSettingsPage.advancedSettingsUrl);
+  await pmmSettingsPage.waitForPmmSettingsPageLoaded();
+  pmmSettingsPage.verifySwitch(pmmSettingsPage.fields.perconaAlertingSwitch, 'on');
+  await pmmSettingsPage.verifyTooltip(pmmSettingsPage.tooltips.advancedSettings.perconaAlerting);
+});

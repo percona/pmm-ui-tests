@@ -145,7 +145,7 @@ module.exports = {
         text: 'Option to enable/disable Backup Management features.',
         link: links.backupManagementDocs,
       },
-      integratedAlerting: {
+      perconaAlerting: {
         iconLocator: locate('$advanced-alerting').find('div[class$="-Icon"]').as('Alerting tooltip'),
         text: 'Option to enable/disable Percona Alerting features.',
         link: links.integratedAlertingDocs,
@@ -313,8 +313,8 @@ module.exports = {
     signUpBackToLogin: '$sign-up-to-sign-in-button',
     telemetrySwitchSelectorInput: locate('$advanced-telemetry').find('input'),
     telemetrySwitchSelector: locate('$advanced-telemetry').find('label'),
-    iaSwitchSelectorInput: locate('$advanced-alerting').find('input'),
-    iaSwitchSelector: locate('$advanced-alerting').find('label'),
+    perconaAlertingSwitchInput: locate('$advanced-alerting').find('input'),
+    perconaAlertingSwitch: locate('$advanced-alerting').find('label'),
     dbaasSwitchSelectorInput: locate('$advanced-dbaas').find('input'),
     dbaasSwitchSelector: locate('$advanced-dbaas').find('label'),
     dbaasSwitchItem: '$advanced-dbaas',
@@ -404,10 +404,10 @@ module.exports = {
   },
 
   async disableIA() {
-    const iaEnabled = await I.grabAttributeFrom(this.fields.iaSwitchSelectorInput, 'checked');
+    const iaEnabled = await I.grabAttributeFrom(this.fields.perconaAlertingSwitchInput, 'checked');
 
     if (iaEnabled) {
-      I.click(this.fields.iaSwitchSelector);
+      I.click(this.fields.perconaAlertingSwitch);
     }
   },
 

@@ -9,7 +9,6 @@ module.exports = {
     // 30 sec ping for getting created service name
     for (let i = 0; i < 30; i++) {
       const services = await this.apiGetServices(service.serviceType);
-
       responseService = services.data[service.service].find((obj) => obj.service_name === serviceName);
       if (responseService !== undefined) break;
 

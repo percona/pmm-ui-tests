@@ -113,11 +113,11 @@ Data(filters).Scenario(
 
     I.amOnPage(qanPage.url);
     qanOverview.waitForOverviewLoaded();
-    qanFilters.applyFilter(serviceName);
-    qanFilters.applyFilter(database);
+    await qanFilters.applyFilter(serviceName);
+    await qanFilters.applyFilter(database);
     I.waitForVisible(qanFilters.buttons.showSelected, 30);
 
-    qanFilters.applyFilterInSection(filterSection, filterToApply);
+    await qanFilters.applyFilterInSection(filterSection, filterToApply);
   },
 );
 
@@ -222,7 +222,7 @@ Scenario(
     qanOverview.waitForOverviewLoaded();
     I.waitForVisible(qanFilters.buttons.showSelected, 30);
 
-    qanFilters.applyFilterInSection('Application Name', applicationName);
+    await qanFilters.applyFilterInSection('Application Name', applicationName);
     qanOverview.waitForOverviewLoaded();
     const count = await qanOverview.getCountOfItems();
 
@@ -267,7 +267,7 @@ Scenario(
       qanOverview.waitForOverviewLoaded();
       I.waitForVisible(qanFilters.buttons.showSelected, 30);
 
-      qanFilters.applyFilterInSection('Database', db);
+      await qanFilters.applyFilterInSection('Database', db);
       qanOverview.waitForOverviewLoaded();
       await qanOverview.searchByValue(queryId);
       qanOverview.waitForOverviewLoaded();
@@ -306,7 +306,7 @@ Scenario(
     qanOverview.waitForOverviewLoaded();
     I.waitForVisible(qanFilters.buttons.showSelected, 30);
 
-    qanFilters.applyFilterInSection('Database', db);
+    await qanFilters.applyFilterInSection('Database', db);
     qanOverview.waitForOverviewLoaded();
     const count = await qanOverview.getCountOfItems();
 
@@ -347,7 +347,7 @@ xScenario(
       I.amOnPage(qanPage.url);
       qanOverview.waitForOverviewLoaded();
       qanFilters.waitForFiltersToLoad();
-      qanFilters.applyFilter(pgsm_service_name);
+      await qanFilters.applyFilter(pgsm_service_name);
       for (let i = 1; i < queriesNumber; i++) {
         const tableName = `PMM_T1253_${Date.now()}`;
 

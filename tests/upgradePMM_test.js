@@ -707,9 +707,9 @@ if (iaReleased) {
       I, pmmSettingsPage,
     }) => {
       I.amOnPage(pmmSettingsPage.advancedSettingsUrl);
-      I.waitForVisible(pmmSettingsPage.fields.iaSwitchSelector, 30);
+      I.waitForVisible(pmmSettingsPage.fields.perconaAlertingSwitch, 30);
       I.dontSeeElement(pmmSettingsPage.communication.communicationSection);
-      pmmSettingsPage.verifySwitch(pmmSettingsPage.fields.iaSwitchSelectorInput, 'on');
+      pmmSettingsPage.verifySwitch(pmmSettingsPage.fields.perconaAlertingSwitchInput, 'on');
     },
   );
 }
