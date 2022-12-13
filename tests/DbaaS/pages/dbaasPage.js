@@ -146,7 +146,7 @@ module.exports = {
         clusterStatusUpdating: '$cluster-status-updating',
         clusterTableHeader: locate('$table-header').find('th'),
         clusterTableRow: (dbClusterName) => locate('$table-row').withText(dbClusterName),
-        clusterActionsMenu: '$dropdown-menu-toggle',
+        clusterActionsMenu: (dbclusterName) => `//*[@data-testid="table-row" and contains(.//span, '${dbclusterName}')]//*[@data-testid="dropdown-menu-toggle"]`,
         deleteDBClusterButton: '$delete-dbcluster-button',
         dbClusterLogs: {
           dbClusterLogsAction: '$dbcluster-logs-actions',
@@ -162,7 +162,7 @@ module.exports = {
         },
         cancelDeleteDBCluster: '$cancel-delete-dbcluster-button',
         progressBarSteps: '$progress-bar-steps',
-        progressBarContent: '$progress-bar-message',
+        progressBarContent: (dbclusterName) => `//*[@data-testid="table-row" and contains(.//span, '${dbclusterName}')]//*[@data-testid="progress-bar-message"]`,
         updateClusterButton: '$confirm-update-dbcluster-button',
       },
     },
@@ -263,24 +263,24 @@ module.exports = {
   async postClusterCreationValidation(dbClusterName, k8sClusterName, clusterDBType = 'MySQL') {
     const dbaasPage = this;
 
-    I.waitForElement(dbaasPage.tabs.dbClusterTab.fields.clusterActionsMenu, 60);
-    I.click(dbaasPage.tabs.dbClusterTab.fields.clusterActionsMenu);
+    I.waitForElement(dbaasPage.tabs.dbClusterTab.fields.clusterActionsMenu(dbClusterName), 60);
+    I.click(dbaasPage.tabs.dbClusterTab.fields.clusterActionsMenu(dbClusterName));
     await dbaasActionsPage.checkActionPossible('Delete', true);
     await dbaasActionsPage.checkActionPossible('Edit', false);
     await dbaasActionsPage.checkActionPossible('Restart', false);
     await dbaasActionsPage.checkActionPossible('Resume', false);
-    I.click(dbaasPage.tabs.dbClusterTab.fields.clusterActionsMenu);
+    I.click(dbaasPage.tabs.dbClusterTab.fields.clusterActionsMenu(dbClusterName));
     await dbaasAPI.waitForDBClusterState(dbClusterName, k8sClusterName, clusterDBType, 'DB_CLUSTER_STATE_READY');
     I.waitForElement(dbaasPage.tabs.dbClusterTab.fields.clusterStatusActive, 120);
     I.seeElement(dbaasPage.tabs.dbClusterTab.fields.clusterStatusActive);
     I.waitForElement(dbaasPage.tabs.dbClusterTab.fields.clusterConnection.showPasswordButton, 30);
     I.click(dbaasPage.tabs.dbClusterTab.fields.clusterConnection.showPasswordButton);
-    I.click(dbaasPage.tabs.dbClusterTab.fields.clusterActionsMenu);
+    I.click(dbaasPage.tabs.dbClusterTab.fields.clusterActionsMenu(dbClusterName));
     await dbaasActionsPage.checkActionPossible('Delete', true);
     await dbaasActionsPage.checkActionPossible('Edit', true);
     await dbaasActionsPage.checkActionPossible('Restart', true);
     await dbaasActionsPage.checkActionPossible('Suspend', true);
-    I.click(dbaasPage.tabs.dbClusterTab.fields.clusterActionsMenu);
+    I.click(dbaasPage.tabs.dbClusterTab.fields.clusterActionsMenu(dbClusterName));
     I.click(dbaasPage.tabs.dbClusterTab.fields.clusterConnection.showPasswordButton);
   },
 
@@ -378,8 +378,8 @@ module.exports = {
     );
   },
 
-  async verifyLogPopup(numberOfElementsInLogSection) {
-    await dbaasActionsPage.showClusterLogs();
+  async verifyLogPopup(numberOfElementsInLogSection, dbClusterName) {
+    await dbaasActionsPage.showClusterLogs(dbClusterName);
     I.waitForElement(this.tabs.dbClusterTab.fields.dbClusterLogs.expandAllLogsButton);
     I.seeTextEquals('Expand all', this.tabs.dbClusterTab.fields.dbClusterLogs.expandAllLogsButton);
     I.click(this.tabs.dbClusterTab.fields.dbClusterLogs.expandAllLogsButton);
