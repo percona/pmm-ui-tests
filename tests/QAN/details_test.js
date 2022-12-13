@@ -13,7 +13,7 @@ Scenario(
   async ({
     I, qanDetails, qanOverview, qanFilters,
   }) => {
-    qanFilters.applyFilter('ps-dev');
+    await qanFilters.applyFilter('ps-dev');
     qanOverview.selectRow(2);
     qanFilters.waitForFiltersToLoad();
     await within(qanDetails.root, () => {
@@ -103,7 +103,7 @@ Scenario(
   async ({
     I, qanOverview, qanFilters, qanDetails,
   }) => {
-    qanFilters.applyFilter('mongodb');
+    await qanFilters.applyFilter('mongodb');
     I.waitForElement(qanOverview.elements.querySelector, 30);
     qanOverview.selectRow(1);
     qanFilters.waitForFiltersToLoad();

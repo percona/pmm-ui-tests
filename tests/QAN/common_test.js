@@ -18,7 +18,7 @@ Scenario(
     await qanPagination.verifyPagesAndCount(25);
     I.waitForVisible(qanFilters.elements.environmentLabel, 30);
     await qanOverview.verifyRowCount(27);
-    qanFilters.applyFilter('ps-dev');
+    await qanFilters.applyFilter('ps-dev');
     I.waitForVisible(qanFilters.fields.filterBy, 30);
     await qanOverview.searchByValue('insert');
     I.waitForVisible(qanOverview.elements.querySelector, 30);
@@ -38,7 +38,7 @@ Scenario(
     qanOverview.waitForOverviewLoaded();
     await adminPage.applyTimeRange('Last 1 hour');
     qanOverview.waitForOverviewLoaded();
-    qanFilters.applyFilter('ps-dev');
+    await qanFilters.applyFilter('ps-dev');
     await qanOverview.searchByValue('insert');
     I.waitForElement(qanOverview.elements.querySelector, 30);
     qanOverview.selectRow(1);

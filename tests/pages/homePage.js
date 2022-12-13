@@ -22,6 +22,7 @@ module.exports = {
     sttDisabledFailedChecksPanelSelector: '$db-check-panel-settings-link',
     failedSecurityChecksPmmSettingsLink: locate('$db-check-panel-settings-link').find('a'),
     sttFailedChecksPanelSelector: '$db-check-panel-has-checks',
+    failedChecksPanelContent: '$db-check-panel-home',
     checksPanelSelector: '$db-check-panel-home',
     noFailedChecksInPanel: '$db-check-panel-zero-checks',
     failedChecksPanelInfo: '[aria-label="Advisors check panel"] i',
