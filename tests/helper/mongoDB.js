@@ -74,6 +74,23 @@ class MongoDBHelper extends Helper {
     await this.client.close();
   }
 
+  async getMongoReplicaClient(parameters) {
+    const {
+      member1 = `${this.host}:27027`,
+      member2 = `${this.host}:27028`,
+      member3 = `${this.host}:27029`,
+      replicaName = 'rs0',
+      username,
+      password,
+    } = parameters;
+    const user = username || this.username;
+    const pass = password || this.password;
+    const url = `mongodb://${user}:${encodeURIComponent(pass)}@${member1},${member2},${member3}/?authSource=admin&replicaSet=${replicaName}`;
+    const client = new MongoClient(url, { useNewUrlParser: true, useUnifiedTopology: true, connectTimeoutMS: 30000 });
+
+    return await client.connect();
+  }
+
   /**
    * Runs a command against the current database
    * read more here: https://docs.mongodb.com/manual/reference/command/

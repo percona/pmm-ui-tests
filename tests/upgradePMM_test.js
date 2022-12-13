@@ -1072,21 +1072,26 @@ if (versionMinor >= 32) {
 
 if (versionMinor >= 32) {
   Scenario(
-    '@PMM-T1503 - The user is able to do a restore for MongoDB after the upgrade @ovf-upgrade @ami-upgrade @post-upgrade @pmm-upgrade',
+    '@PMM-T1503 - The user is able to do a restore for MongoDB after the upgrade ' +
+    '@ovf-upgrade @ami-upgrade @post-upgrade @pmm-upgrade',
     async ({ I, backupInventoryPage, restorePage }) => {
-      let c = await I.mongoGetCollection('test', 'e2e');
+      const replica = await I.getMongoReplicaClient({
+        username: 'admin',
+        password: 'password',
+      });
+      let collection = replica.db('test').collection('e2e');
 
-      await c.insertOne({ number: 2, name: 'Anna' });
+      await collection.insertOne({ number: 2, name: 'Anna' });
 
       backupInventoryPage.openInventoryPage();
       backupInventoryPage.startRestore(backupName);
       restorePage.waitForRestoreSuccess(backupName);
 
-      c = await I.mongoGetCollection('test', 'e2e');
-      const record = await c.findOne({ number: 2, name: 'Anna' });
+      collection = replica.db('test').collection('e2e');
+      const record = await collection.findOne({ number: 2, name: 'Anna' });
 
+      replica.close();
       I.assertToBeA(record, null, `Was expecting to not have a record ${JSON.stringify(record, null, 2)} after restore operation`);
-
     },
   );
 
