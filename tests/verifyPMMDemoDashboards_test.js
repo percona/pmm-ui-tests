@@ -109,7 +109,7 @@ xScenario(
 );
 
 Scenario(
-  'PMM-T307 MongoDB Instances Overview dashboard and verify Metrics are present and graphs are displayed [critical] @pmm-demo @not-ui-pipeline @not-pr-pipeline @nazarov',
+  'PMM-T307 MongoDB Instances Overview dashboard and verify Metrics are present and graphs are displayed [critical] @pmm-demo @not-ui-pipeline @not-pr-pipeline',
   async ({
     I, adminPage, dashboardPage, pmmDemoPage,
   }) => {

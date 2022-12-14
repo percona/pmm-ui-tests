@@ -1,7 +1,7 @@
 Feature('to go through new user Tour and verify it is shown once');
 
-// todo: stabilize test case
-Scenario('PMM-T1272 Verify user is able to pass a PMM tour',
+// todo: stabilize test case. Skip for now
+xScenario('PMM-T1272 Verify user is able to pass a PMM tour',
   async ({
     I, homePage, pmmTourPage, loginPage,
   }) => {

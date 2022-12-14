@@ -8,7 +8,7 @@ Scenario('Open the setup Page for AMI Instance @pmm-ami @not-ui-pipeline @not-pr
   I.Authorize();
 });
 
-Scenario('PMM-T10 Check correct link to AWS wizard page @pmm-ami @not-ui-pipeline @not-pr-pipeline @nazarov', async ({ I, amiInstanceSetupPage }) => {
+Scenario('PMM-T10 Check correct link to AWS wizard page @pmm-ami @not-ui-pipeline @not-pr-pipeline', async ({ I, amiInstanceSetupPage }) => {
   I.amOnPage(amiInstanceSetupPage.url);
   I.seeAttributesOnElements(amiInstanceSetupPage.fields.docLink, { href: amiInstanceSetupPage.docLinkUrl });
   const readMoreLink = (await I.grabAttributeFrom(amiInstanceSetupPage.fields.docLink, 'href'));
