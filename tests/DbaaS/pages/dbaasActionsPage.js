@@ -72,7 +72,7 @@ module.exports = {
     }
   },
 
-  async deleteXtraDBCluster(dbClusterName, k8sClusterName) {
+  async deleteXtraDBCluster(dbClusterName, k8sClusterName, deleteCompleted = true) {
     I.waitForElement(dbaasPage.tabs.dbClusterTab.fields.clusterTableHeader, 30);
     I.click(dbaasPage.tabs.dbClusterTab.fields.clusterActionsMenu(dbClusterName));
     await this.checkActionPossible('Delete', true, dbClusterName);
@@ -86,7 +86,9 @@ module.exports = {
     );
     I.click(dbaasPage.tabs.dbClusterTab.fields.deleteDBClusterButton);
     I.waitForElement(dbaasPage.tabs.dbClusterTab.fields.clusterStatusDeleting, 30);
-    await dbaasAPI.waitForDbClusterDeleted(dbClusterName, k8sClusterName);
+    if (deleteCompleted) {
+      await dbaasAPI.waitForDbClusterDeleted(dbClusterName, k8sClusterName);
+    };
   },
 
   async restartCluster(dbClusterName, k8sClusterName, clusterDBType = 'MySQL') {
@@ -167,10 +169,10 @@ module.exports = {
       dbaasPage.tabs.kubernetesClusterTab.modalContentText,
     );
     I.click(dbaasPage.tabs.dbClusterTab.fields.deleteDBClusterButton);
+    I.waitForElement(dbaasPage.tabs.dbClusterTab.fields.clusterStatusDeleting, 30);
     if (deleteCompleted) {
-      I.waitForElement(dbaasPage.tabs.dbClusterTab.fields.clusterStatusDeleting, 30);
+      await dbaasAPI.waitForDbClusterDeleted(dbClusterName, k8sClusterName, 'MongoDB');
     };
-    await dbaasAPI.waitForDbClusterDeleted(dbClusterName, k8sClusterName, 'MongoDB');
   },
 
   async showClusterLogs(dbClusterName) {
