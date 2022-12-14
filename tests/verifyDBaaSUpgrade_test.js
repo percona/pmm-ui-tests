@@ -1,8 +1,8 @@
-const assert = require('assert');
 const clusterName = 'minikube';
 const pxc_cluster_name = 'upgrade-pxc';
 const psmdb_cluster_name = 'upgrade-psmdb';
 const active_state = 'ACTIVE';
+const pmmServerContainerName = process.env.VM_NAME + '-server';
 
 // For running on local env set PMM_SERVER_LATEST and DOCKER_VERSION variables
 function getVersions() {
@@ -48,7 +48,7 @@ Scenario('PMM-T3 Upgrade PMM via UI with DbaaS Clusters @dbaas-upgrade', async (
   I, homePage,
 }) => {
   I.amOnPage(homePage.url);
-  await homePage.upgradePMM(versionMinor);
+  await homePage.upgradePMM(versionMinor, pmmServerContainerName);
   }
 );
 
