@@ -1,7 +1,9 @@
 const assert = require('assert');
 const faker = require('faker');
 
-const { remoteInstancesPage, remoteInstancesHelper, pmmInventoryPage } = inject();
+const {
+  remoteInstancesPage, remoteInstancesHelper, pmmInventoryPage,
+} = inject();
 
 const externalExporterServiceName = 'external_service_new';
 const haproxyServiceName = 'haproxy_remote';

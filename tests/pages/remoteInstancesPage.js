@@ -123,6 +123,8 @@ module.exports = {
     password: '$password-password-input',
     portNumber: '$port-text-input',
     region: '$region-text-input',
+    maxQueryLength: '$maxQueryLength-text-input',
+    maxQueryLengthError: '$maxQueryLength-field-error-message',
     remoteInstanceTitle: 'Add instance',
     remoteInstanceTitleLocator: '//section/h3',
     replicationSet: '$replication_set-text-input',

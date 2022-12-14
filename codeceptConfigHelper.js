@@ -24,7 +24,8 @@ module.exports = {
     dbaasPage: './tests/DbaaS/pages/dbaasPage.js',
     dbaasActionsPage: './tests/DbaaS/pages/dbaasActionsPage.js',
     dbaasManageVersionPage: './tests/DbaaS/pages/dbaasManageVersionPage.js',
-    experimentalPostgresqlDashboardsPage: './tests/pages/experimentalPostgresqlDashboards.js',
+    explorePage: './tests/pages/explorePage.js',
+    experimentalPostgresqlDashboardsPage: './tests/PageObjects/Dashboards/Postgresql/ExperimentalPostgresqlDashboards.js',
     grafanaAPI: './tests/pages/api/grafanaAPI.js',
     homePage: './tests/pages/homePage.js',
     inventoryAPI: './tests/pages/api/inventoryAPI.js',
@@ -65,6 +66,8 @@ module.exports = {
     environmentOverviewPage: './tests/pages/environmentOverviewPage.js',
     tooltips: './tests/helper/tooltipHelper.js',
     dataSourcePage: './tests/pages/pmmSettingsPages/dataSourcePage.js',
+    pmmTourPage: './tests/pages/pmmTourPage.js',
+    loginPage: './tests/pages/loginPage.js',
   },
   getChunks: (files) => {
     const dependentTests = files.filter((value) => /PMMSettings|ia|stt|backup|permissions|Azure/.test(value));

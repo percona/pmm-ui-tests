@@ -6,6 +6,14 @@ const formatElementId = (text) => text.toLowerCase().replace(/ /g, '_');
 module.exports = {
   // insert your locators and methods here
   // setting locators
+  serviceNameDropdown:
+    '//button[@id="var-service_name"]',
+  serviceName:
+    '//button[@id="var-service_name"]/span',
+  serviceNameInput:
+    '//input[@aria-controls="options-service_name"]',
+  toggleAllValues:
+    '//a[@aria-label="Toggle all values"]',
   nodesCompareDashboard: {
     url: 'graph/d/node-instance-compare/nodes-compare?orgId=1&refresh=1m&from=now-5m&to=now',
     metrics: [
@@ -533,6 +541,81 @@ module.exports = {
   },
   mongoDbInstanceOverview: {
     url: 'graph/d/mongodb-instance-overview/mongodb-instances-overview?orgId=1&refresh=1m',
+    clearUrl: 'graph/d/mongodb-instance-overview/mongodb-instances-overview',
+    metrics: [
+      'Services',
+      'Min MongoDB Uptime',
+      'Total Used Resident Memory',
+      'Total Used Virtual Memory',
+      'Total Used Mapped Memory',
+      'Total Current QPS',
+      'Top Connections',
+      'Top Opened Cursors',
+      'Min QPS',
+      'Max Latency',
+      'Top 5 Connections',
+      'Current Connections',
+      'Top 5 Total Cursors',
+      'Total Cursors',
+      'Pinned Cursors',
+      'Pinned Cursors',
+      'Top 5 noTimeout Cursors',
+      'noTimeout Cursors',
+      'Top 5 Command Latency',
+      'Command Latency',
+      'Top 5 Read Latency',
+      'Read Latency',
+      'Top 5 Write Latency',
+      'Write Latency',
+      'Min Index Scanned Ratio',
+      'Max Index Scanned Ratio',
+      'Min Document Scanned Ratio',
+      'Max Document Scanned Ratio',
+      'Top 5 Index Scan Ratios',
+      'Index Scan Ratios',
+      'Top 5 Document Scan Ratios',
+      'Document Scan Ratios',
+      'Top 5 Index Filtering Effectiveness',
+      'Index Filtering Effectiveness',
+      'Top Opcounters',
+      'Top Document Operations',
+      'Top Queued Operations',
+      'Total Assert Events',
+      'Top 5 Command Operations',
+      'Command Operations',
+      'Top 5 Getmore Operations',
+      'Getmore Operations',
+      'Top 5 Delete Operations',
+      'Delete Operations',
+      'Top 5 Insert Operations',
+      'Insert Operations',
+      'Top 5 Update Operations',
+      'Update Operations',
+      'Top 5 Query Operations',
+      'Query Operations',
+      'Top 5 Document Delete Operations',
+      'Document Delete Operations',
+      'Top 5 Document Insert Operations',
+      'Document Insert Operations',
+      'Top 5 Document Return Operations',
+      'Document Return Operations',
+      'Top 5 Document Update Operations',
+      'Document Update Operations',
+      'Top 5 Queued Read Operations',
+      'Queued Read Operations',
+      'Top 5 Queued Write Operations',
+      'Queued Write Operations',
+      'Top 5 Assert Msg Events',
+      'Assert Msg Events',
+      'Top 5 Assert Regular Events',
+      'Assert Regular Events',
+      'Top 5 Assert Rollovers Events',
+      'Assert Rollovers Events',
+      'Top 5 Assert User Events',
+      'Assert User Events',
+      'Top 5 Assert Msg Events',
+      'Assert Warning Events',
+    ],
   },
   homeDashboard: {
     metrics: [
@@ -624,8 +707,6 @@ module.exports = {
       'Top 5 MySQL Open Table Definitions',
       'Percentage of Open Table Definitions to Table Definition Cache',
     ],
-    serviceName:
-      '//label[contains(text(), "Service Name")]/following-sibling::value-select-dropdown/descendant::a[@class="variable-value-link"]',
     urlWithRDSFilter:
       'graph/d/mysql-instance-overview/mysql-instances-overview?orgId=1&'
       + 'from=now-5m&to=now&refresh=1m&var-interval=$__auto_interval_interval&var-region=All&'
@@ -861,6 +942,53 @@ module.exports = {
     ],
   },
 
+  mongoDbCollectionDetails: {
+    url: 'graph/d/mongodb-collection-details/mongodb-collection-details?orgId=1&refresh=1m',
+    clearUrl: 'graph/d/mongodb-collection-details/mongodb-collection-details',
+    metrics: [
+      'Top 10 Largest Collections by Document Count',
+      'Top 10 Largest Collections by Size',
+      'Total Databases Size',
+      'Top 5 Most Fragmented Collections by Freeable Size',
+      'Top 5 Collections by Documents Read',
+      'Top 5 Collections by Documents Changed',
+    ],
+  },
+  mongoDbCollectionsOverview: {
+    url: 'graph/d/mongodb-collections-overview/mongodb-collections-overview?orgId=1&refresh=1m',
+    clearUrl: 'graph/d/mongodb-collections-overview/mongodb-collections-overview',
+    metrics: [
+      'Top 5 Databases By Size',
+      'Collections in Database',
+      'Indexes in Database',
+      'Avg Object Size in Database',
+      'Index Size in Database',
+      'Data Size for Database',
+      'Top 5 Hottest Collections by Read  (Total)',
+      'Top 5 Hottest Collections by Write (Total)',
+      'Top 5 Hottest Collections by Read (Rate)',
+      'Top 5 Hottest Collections by Write (Rate)',
+      'Collections statistics  for admin (rate)',
+      'Collections statistics  for admin (summary)',
+      'Collections statistics  admin',
+    ],
+  },
+
+  mongoDbOplogDetails: {
+    url: 'graph/d/mongodb-oplog-details/mongodb-oplog-details?orgId=1&refresh=1m',
+    clearUrl: 'graph/d/mongodb-oplog-details/mongodb-oplog-details',
+    metrics: [
+      'Oplog Recovery Window',
+      'Oplog Buffered Operations',
+      'Oplog Getmore Time',
+      'Oplog Processing Time',
+      'Oplog Buffer Capacity',
+      'Oplog Operations',
+      'Oplog GB/Hour',
+      'Oplog Window',
+    ],
+  },
+
   fields: {
     breadcrumbs: {
       folder: locate('.page-toolbar').find('[aria-label="Search links"] > a'),
@@ -887,9 +1015,13 @@ module.exports = {
       locate('.panel-title').inside(locate('.panel-container').withDescendant('//div[contains(text(),"No data")]')),
     rootUser: '//div[contains(text(), "root")]',
     serviceSummary: locate('a').withText('Service Summary'),
-    timeRangePickerButton: '.btn.navbar-button.navbar-button--tight',
+    // timeRangePickerButton: '.btn.navbar-button.navbar-button--tight',
+    timeRangePickerButton: I.useDataQA('data-testid TimePicker Open Button'),
+    timeRangeOption: (timeRange) => locate('li').withDescendant('label').withText(timeRange),
     openFiltersDropdownLocator: (filterName) => locate('.variable-link-wrapper').after(`label[for="var-${formatElementId(filterName)}"]`),
     filterDropdownOptionsLocator: (filterName) => locate('.variable-option').withText(filterName),
+    refreshIntervalPicker: I.useDataQA('data-testid RefreshPicker interval button'),
+    refreshIntervalOption: (interval) => locate(`//*[@role="menuitemradio" and text()="${interval}"]`),
   },
 
   createAdvancedDataExplorationURL(metricName, time = '1m', nodeName = 'All') {
@@ -1031,6 +1163,10 @@ module.exports = {
     I.waitForElement(this.fields.metricTitle, 60);
   },
 
+  waitForDataLoaded() {
+    I.waitForInvisible('//*[@aria-label="Loading indicator"]');
+  },
+
   expandFilters(filterName) {
     const dropdownLocator = this.fields.openFiltersDropdownLocator(filterName);
 
@@ -1098,5 +1234,10 @@ module.exports = {
         break;
       }
     }
+  },
+
+  selectRefreshTimeInterval(timeInterval) {
+    I.click(this.fields.refreshIntervalPicker);
+    I.click(this.fields.refreshIntervalOption(timeInterval));
   },
 };

@@ -42,16 +42,17 @@ Scenario(
   'PMM-T1385 Verify alert rules elements @ia @grafana-pr',
   async ({ I, alertRulesPage, rulesAPI }) => {
     const ruleName = 'testRule';
-    const ruleFolder = 'PostgreSQL'
+    const ruleFolder = 'PostgreSQL';
+
     await rulesAPI.createAlertRule({ ruleName }, ruleFolder);
 
     alertRulesPage.openAlertRulesTab();
     I.seeElement(alertRulesPage.elements.searchByDataSourceDropdown);
     I.seeElement(alertRulesPage.elements.searchByLabel);
     alertRulesPage.alertRuleFilters.forEach((filter) => {
-        const ruleFilter = alertRulesPage.elements.ruleFilterLocator(filter);
-  
-        I.waitForVisible(ruleFilter, 10);
+      const ruleFilter = alertRulesPage.elements.ruleFilterLocator(filter);
+
+      I.waitForVisible(ruleFilter, 10);
     });
     I.click(alertRulesPage.buttons.groupCollapseButton(ruleFolder));
     alertRulesPage.columnHeaders.forEach((header) => {
@@ -71,13 +72,13 @@ Scenario(
 Scenario(
   'PMM-T1392 Verify fields dynamically change value when template is changed @ia @grafana-pr',
   async ({ I, alertRulesPage }) => {
-    //TODO: https://jira.percona.com/browse/PMM-10860 name doesn't change
+    // TODO: https://jira.percona.com/browse/PMM-10860 name doesn't change
     alertRulesPage.openAlertRulesTab();
     I.click(alertRulesPage.buttons.openAddRuleModal);
     I.waitForElement(alertRulesPage.fields.templatesLoader);
     alertRulesPage.searchAndSelectResult('template', 'PostgreSQL down');
     I.waitForValue(alertRulesPage.fields.inputField('duration'), '60s');
-    I.seeTextEquals('Critical', alertRulesPage.fields.dropdownValue('severity'));;
+    I.seeTextEquals('Critical', alertRulesPage.fields.dropdownValue('severity'));
     alertRulesPage.searchAndSelectResult('template', 'MySQL restarted');
     I.waitForValue(alertRulesPage.fields.inputField('threshold'), 300);
     I.waitForValue(alertRulesPage.fields.inputField('duration'), '60s');
@@ -88,13 +89,13 @@ Scenario(
 Scenario(
   'PMM-T1420 Verify user can create Percona templated alert @ia @fb',
   async ({ I, alertRulesPage, rulesAPI }) => {
-    const rule =  page.rules[15];
+    const rule = page.rules[15];
     const newRule = page.rules[0];
 
     alertRulesPage.openAlertRulesTab();
     I.click(alertRulesPage.buttons.openAddRuleModal);
     await alertRulesPage.fillPerconaAlert(rule, newRule);
-    I.click(alertRulesPage.buttons.addRule);
+    I.click(alertRulesPage.buttons.saveAndExit);
     I.verifyPopUpMessage(alertRulesPage.messages.successRuleCreate(newRule.ruleName));
     alertRulesPage.verifyRuleList(newRule.folder, newRule.ruleName);
     I.seeTextEquals('Normal', alertRulesPage.elements.ruleState);
@@ -109,14 +110,14 @@ Scenario(
     I, alertRulesPage, rulesAPI,
   }) => {
     const ruleName = 'testRule';
-    const ruleFolder = 'PostgreSQL'
+    const ruleFolder = 'PostgreSQL';
     const editedRule = {
       ruleName: 'EDITED rule',
       duration: '2m',
       severity: 'Alert',
-      folder: 'Experimental'
+      folder: 'Experimental',
     };
-    
+
     await rulesAPI.createAlertRule({ ruleName }, ruleFolder);
     alertRulesPage.openAlertRulesTab();
     alertRulesPage.verifyRuleList(ruleFolder, ruleName);
@@ -135,7 +136,7 @@ Scenario(
     I, alertRulesPage, rulesAPI,
   }) => {
     const ruleName = 'testRule';
-    const ruleFolder = 'OS'
+    const ruleFolder = 'OS';
 
     await rulesAPI.createAlertRule({ ruleName }, ruleFolder);
     alertRulesPage.openAlertRulesTab();
@@ -160,17 +161,17 @@ xScenario(
   async ({
     I, alertRulesPage,
   }) => {
-    const rule =  page.rules[2];
+    const rule = page.rules[2];
     const wrongRule = {
       threshold: '-1',
       duration: '0',
-    }
+    };
 
     alertRulesPage.openAlertRulesTab();
     I.click(alertRulesPage.buttons.openAddRuleModal);
     await alertRulesPage.fillPerconaAlert(rule, wrongRule);
     I.clearField(alertRulesPage.fields.inputField('name'));
-    I.click(alertRulesPage.buttons.addRule);
+    I.click(alertRulesPage.buttons.saveAndExit);
     I.verifyPopUpMessage(alertRulesPage.messages.failRuleCreate);
     I.seeElement(alertRulesPage.elements.ruleValidationError('Must enter an alert name'));
     I.seeElement(alertRulesPage.elements.ruleValidationError('Must be at least 0'));
@@ -178,7 +179,7 @@ xScenario(
     I.dontSeeElement(alertRulesPage.elements.ruleValidationError('Must enter an alert name'));
     I.fillField(alertRulesPage.fields.inputField('threshold'), '0');
     I.dontSeeElement(alertRulesPage.elements.ruleValidationError('Must be at least 0'));
-    I.click(alertRulesPage.buttons.addRule);
+    I.click(alertRulesPage.buttons.saveAndExit);
     I.verifyPopUpMessage(alertRulesPage.messages.failRuleCreateDuration);
     I.fillField(alertRulesPage.fields.inputField('duration'), 's');
     I.seeElement(alertRulesPage.elements.ruleValidationError('Must be of format "(number)(unit)", for example "1m", or just "0". Available units: s, m, h, d, w'));
