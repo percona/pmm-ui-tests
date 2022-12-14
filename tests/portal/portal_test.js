@@ -458,7 +458,7 @@ Scenario(
 Scenario(
   'Verify PMM is connected and user can disconnect an reconnect PMM server to the Portal @not-ui-pipeline @post-pmm-portal-upgrade',
   async ({
-    I, perconaPlatformPage, homePage, portalAPI,
+    I, perconaPlatformPage, homePage, portalAPI, loginPage,
   }) => {
     if (pmmVersion >= 27 || pmmVersion === undefined) {
       I.amOnPage('');
@@ -469,7 +469,7 @@ Scenario(
       await perconaPlatformPage.isPMMConnected();
       await perconaPlatformPage.disconnectFromPortal(pmmVersion);
       if (pmmVersion > 27 || pmmVersion === undefined) {
-        await I.waitInUrl(homePage.landingPage);
+        await I.waitInUrl(loginPage.url);
         I.Authorize();
         await perconaPlatformPage.openPerconaPlatform();
         await perconaPlatformPage.waitForPerconaPlatformPageLoaded();

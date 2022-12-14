@@ -126,3 +126,19 @@ Scenario(
     I.dontSeeElement(qanDetails.buttons.close);
   },
 );
+
+Scenario(
+  'PMM-T144 Verify that Details tab is the only one available when total row is selected @qan',
+  async ({
+    I, qanPage, searchDashboardsModal, qanOverview, qanDetails,
+  }) => {
+    qanPage.waitForOpened();
+    qanOverview.waitForOverviewLoaded();
+    qanOverview.selectTotalRow();
+    qanDetails.checkDetailsTab();
+    I.dontSeeElement(qanDetails.getTabLocator('Examples'));
+    I.dontSeeElement(qanDetails.getTabLocator('Explain'));
+    I.dontSeeElement(qanDetails.getTabLocator('Tables'));
+    I.dontSeeElement(qanDetails.getTabLocator('Plan'));
+  },
+);

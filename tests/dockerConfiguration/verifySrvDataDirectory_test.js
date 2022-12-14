@@ -145,7 +145,7 @@ Scenario(
 Scenario.skip(
   'PMM-T1255 Verify GF_SECURITY_ADMIN_PASSWORD environment variable @docker-configuration',
   async ({
-    I, adminPage, qanPage, dashboardPage, homePage,
+    I, adminPage, qanPage, dashboardPage, homePage, loginPage,
   }) => {
     I.say('Alo covers: PMM-T1279 Verify GF_SECURITY_ADMIN_PASSWORD environment variable with change-admin-password');
     const basePmmUrl = 'http://127.0.0.1:8082/';
@@ -162,14 +162,14 @@ Scenario.skip(
     await I.waitForVisible('//*[contains(text(), "invalid username or password")]');
     await I.unAuthorize();
     await I.refreshPage();
-    await I.waitInUrl(homePage.landingPage);
+    await I.waitInUrl(loginPage.url);
     await I.Authorize('admin', 'newpass');
     await I.wait(1);
     await I.refreshPage();
     await I.waitForElement(homePage.fields.dashboardHeaderLocator, 60);
     await I.verifyCommand('docker exec -t pmm-server-password change-admin-password anotherpass');
     await I.unAuthorize();
-    await I.waitInUrl(homePage.landingPage);
+    await I.waitInUrl(loginPage.url);
     await I.Authorize('admin', 'anotherpass');
     await I.wait(5);
     await I.refreshPage();

@@ -123,6 +123,7 @@ Scenario(
       await dashboardPage.applyFilter('Service Name', serviceName[i]);
       I.click(adminPage.fields.metricTitle);
       adminPage.performPageDown(5);
+      await dashboardPage.verifyMetricsExistence(dashboardPage.mongoDbInstanceOverview.metrics);
       await dashboardPage.verifyThereAreNoGraphsWithNA();
       await dashboardPage.verifyThereAreNoGraphsWithoutData(3);
     }
