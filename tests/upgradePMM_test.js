@@ -1076,7 +1076,7 @@ if (versionMinor >= 32) {
       scheduledPage.openScheduledBackupsPage();
       I.waitForVisible(scheduledPage.elements.scheduleName(schedule.name), 20);
     },
-  );
+  ).retry(0);
 }
 
 if (versionMinor >= 32) {
