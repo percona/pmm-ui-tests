@@ -10,7 +10,6 @@ module.exports = {
   url: 'graph/d/pmm-home/home-dashboard?orgId=1&refresh=1m&from=now-5m&to=now',
   landingUrl: 'graph/d/pmm-home/home-dashboard?orgId=1&refresh=1m',
   genericOauthUrl: 'graph/login/generic_oauth',
-  landingPage: 'graph/login',
   requestEnd: '/v1/Updates/Check',
   fields: {
     systemsUnderMonitoringCount:

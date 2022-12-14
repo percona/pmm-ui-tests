@@ -1,5 +1,5 @@
 const assert = require('assert');
-const { communicationData, emailDefaults } = require('../../pages/testData');
+const { communicationData, emailDefaults, telemetryTooltipData } = require('../../pages/testData');
 
 const {
   I, adminPage, links, perconaPlatformPage,
@@ -110,11 +110,11 @@ module.exports = {
         text: 'This is the value for how long data will be stored.',
         link: links.dataRetentionDocs,
       },
-      // telemetry: {
-      //   iconLocator: locate('$advanced-telemetry').find('div[class$="-Icon"]').as('Telemetry tooltip'),
-      //   text: 'Option to send usage data back to Percona to let us make our product better.',
-      //   link: links.telemetryDocs,
-      // },
+      telemetry: {
+        iconLocator: locate('$advanced-telemetry').find('div[class$="-Icon"]').as('Telemetry tooltip'),
+        text: telemetryTooltipData,
+        link: links.telemetryDocs,
+      },
       checkForUpdates: {
         iconLocator: locate('$advanced-updates').find('div[class$="-Icon"]').as('Check for updates tooltip'),
         text: 'Option to check new versions and ability to update PMM from UI.',
@@ -319,7 +319,7 @@ module.exports = {
     dbaasSwitchSelector: locate('$advanced-dbaas').find('label'),
     dbaasSwitchItem: '$advanced-dbaas',
     telemetryLabel: locate('$advanced-telemetry').find('span'),
-    tooltipText: locate('$info-tooltip').find('span'),
+    tooltipText: locate('$info-tooltip').find('./*[self::span or self::div]'),
     tooltipReadMoreLink: locate('$info-tooltip').find('a'),
     tabsSection: '$settings-tabs',
     tabContent: '$settings-tab-content',
@@ -573,10 +573,12 @@ module.exports = {
   async verifyTooltip(tooltipObj) {
     I.waitForVisible(tooltipObj.iconLocator, 5);
     I.moveCursorTo(tooltipObj.iconLocator);
+    I.scrollTo(this.fields.tooltipText);
     I.waitForVisible(this.fields.tooltipText, 5);
     I.seeTextEquals(tooltipObj.text, this.fields.tooltipText.as('Tooltip text'));
     /* there are tooltip without "Read more" link */
     if (tooltipObj.link) {
+      I.scrollTo(this.fields.tooltipReadMoreLink);
       I.seeAttributesOnElements(this.fields.tooltipReadMoreLink.as(`Tooltip "Read more" link for ${tooltipObj.iconLocator}`), { href: tooltipObj.link });
       const readMoreLink = (await I.grabAttributeFrom(this.fields.tooltipReadMoreLink, 'href'));
       const response = await I.sendGetRequest(readMoreLink);

@@ -79,6 +79,12 @@ module.exports = {
     I.click(timeRangeSelector);
   },
 
+  async verifyTimeRange(timeRange) {
+    const selectedTimeRange = locate(I.useDataQA('data-testid TimePicker Open Button')).find('span').withText(timeRange);
+
+    I.seeElement(selectedTimeRange);
+  },
+
   setAbsoluteTimeRange(from = '2022-01-10 09:09:59', to = '2022-01-10 10:00:59') {
     I.waitForElement(this.fields.timePickerMenu, 30);
     I.click(this.fields.timePickerMenu);

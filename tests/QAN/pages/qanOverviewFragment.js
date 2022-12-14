@@ -34,6 +34,8 @@ module.exports = {
     firstQueryInfoIcon: 'div.tr-1 > div.td:nth-child(2) div > svg',
     selectedRow: '.selected-overview-row',
     clipboardLink: locate(I.getPopUpLocator()).find('span'),
+    mainMetricDropdown: locate('$group-by'),
+    selectedMainMetric: locate('$group-by').find('//div[@class="ant-select-selection-selected-value"]'),
   },
   messages: {
     noResultTableText: 'No queries available for this combination of filters in the selected time frame',
@@ -54,6 +56,9 @@ module.exports = {
   getMetricSortingLocator: (columnNumber) => `(//a[@data-testid='sort-by-control'])[${columnNumber}]`,
 
   getGroupByOptionLocator: (option) => locate('[role="listbox"]').find(`[label="${option}"]`),
+
+  mainMetricByName: (metricName) => locate('$group-by').find(`//div[@class="ant-select-selection-selected-value" and text()="${metricName}"]`),
+  mainMetricFromDropdown: (metricName) => locate(`//li[@class="ant-select-dropdown-menu-item" and text()="${metricName}"]`),
 
   waitForOverviewLoaded() {
     I.waitForDetached(this.elements.spinner, 30);
@@ -100,6 +105,19 @@ module.exports = {
     I.dontSeeElement(oldMetric);
   },
 
+  async changeMainMetric(newMainMetric) {
+    const oldMainMetric = await I.grabTextFrom(this.elements.selectedMainMetric);
+
+    I.click(this.elements.mainMetricDropdown);
+    I.click(this.mainMetricFromDropdown(newMainMetric));
+    I.dontSeeElement(this.mainMetricByName(oldMainMetric));
+    I.seeElement(this.mainMetricByName(newMainMetric));
+  },
+
+  async verifyMainMetric(mainMetric) {
+    I.seeElement(this.mainMetricByName(mainMetric));
+  },
+
   removeMetricFromOverview(metricName) {
     const column = this.getColumnLocator(metricName);
 
@@ -113,10 +131,17 @@ module.exports = {
   },
 
   addSpecificColumn(columnName) {
+    I.click(this.buttons.addColumn);
     const column = `//span[contains(text(), '${columnName}')]`;
 
     I.waitForVisible(column, 30);
     I.click(column);
+  },
+
+  verifyColumnPresent(columnName) {
+    const column = `//span[contains(text(), '${columnName}')]`;
+
+    I.seeElement(column);
   },
 
   showTooltip(rowNumber, dataColumnNumber) {
@@ -139,15 +164,12 @@ module.exports = {
   verifySorting(columnNumber, sortDirection) {
     const sortingBlockSelector = this.getMetricSortingLocator(columnNumber);
 
-    if (!sortDirection) {
-      I.waitForElement(`${sortingBlockSelector}/span`, 30);
-      I.seeAttributesOnElements(`${sortingBlockSelector}/span`, { class: 'sort-by ' });
-
-      return;
-    }
-
     I.waitForElement(`${sortingBlockSelector}/span`, 30);
-    I.seeAttributesOnElements(`${sortingBlockSelector}/span`, { class: `sort-by ${sortDirection}` });
+    if (!sortDirection) {
+      I.seeAttributesOnElements(`${sortingBlockSelector}/span`, { class: 'sort-by ' });
+    } else {
+      I.seeAttributesOnElements(`${sortingBlockSelector}/span`, { class: `sort-by ${sortDirection}` });
+    }
   },
 
   async verifyMetricsSorted(metricName, columnNumber, sortOrder = 'down') {
@@ -205,6 +227,10 @@ module.exports = {
     return await I.grabTextFrom(locate(rowSelector).find('./div[@role="cell"][2]'));
   },
 
+  selectTotalRow() {
+    this.selectRow(0);
+  },
+
   async verifyRowCount(rowCount) {
     I.waitForVisible(this.elements.querySelector, 30);
     const count = await I.grabNumberOfVisibleElements(this.elements.tableRow);
@@ -236,5 +262,9 @@ module.exports = {
     I.fillField(this.fields.searchBy, value);
     I.pressKey('Enter');
     // await I.asyncWaitFor(async () => await this.isNoDataMessageVisibleAfterRefresh(), 300);
+  },
+
+  async verifySearchByValue(value) {
+    I.seeAttributesOnElements(this.fields.searchBy, { value });
   },
 };
