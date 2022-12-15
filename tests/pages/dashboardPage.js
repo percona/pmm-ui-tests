@@ -6,6 +6,14 @@ const formatElementId = (text) => text.toLowerCase().replace(/ /g, '_');
 module.exports = {
   // insert your locators and methods here
   // setting locators
+  serviceNameDropdown:
+    '//button[@id="var-service_name"]',
+  serviceName:
+    '//button[@id="var-service_name"]/span',
+  serviceNameInput:
+    '//input[@aria-controls="options-service_name"]',
+  toggleAllValues:
+    '//a[@aria-label="Toggle all values"]',
   nodesCompareDashboard: {
     url: 'graph/d/node-instance-compare/nodes-compare?orgId=1&refresh=1m&from=now-5m&to=now',
     metrics: [
@@ -118,7 +126,7 @@ module.exports = {
     url: 'graph/d/node-cpu-process/processes-details?from=now-45m&to=now',
   },
   nodeSummaryDashboard: {
-    url: 'graph/d/node-instance-summary/node-summary?orgId=1&refresh=5m',
+    url: 'graph/d/node-instance-summary/node-summary',
     metrics: [
       'System Uptime',
       'System Summary',
@@ -167,11 +175,11 @@ module.exports = {
   },
   sharePanel: {
     elements: {
-      imageRendererPluginInfoText: locate('p').withDescendant('.external-link'),
+      imageRendererPluginInfoText: '//div[@data-testid=\'data-testid Alert info\']//div[2]',
       imageRendererPluginLink: locate('[role="alert"]').find('.external-link'),
     },
     messages: {
-      imageRendererPlugin: 'To render a panel image, you must install the Image Renderer plugin. Please contact your PMM administrator to install the plugin.',
+      imageRendererPlugin: 'render a panel image, you must install the Grafana image renderer plugin. Please contact your Grafana administrator to install the plugin.',
     },
   },
   proxysqlInstanceSummaryDashboard: {
@@ -220,7 +228,7 @@ module.exports = {
     ],
   },
   pxcGaleraClusterSummaryDashboard: {
-    url: 'graph/d/pxc-cluster-summary/pxc-galera-cluster-summary',
+    url: 'graph/d/pxc-cluster-summary/pxc-galera-cluster-summary?orgId=1&',
     metrics: [
       'Percona XtraDB / Galera Cluster Size',
       'Flow Control Paused Time',
@@ -477,6 +485,7 @@ module.exports = {
   },
   mysqlUserDetailsDashboard: {
     url: 'graph/d/mysql-user/mysql-user-details?orgId=1&refresh=1m&from=now-5m&to=now',
+    clearUrl: 'graph/d/mysql-user/mysql-user-details',
     metrics: [
       'Active Users',
       'Lost Connections',
@@ -532,6 +541,81 @@ module.exports = {
   },
   mongoDbInstanceOverview: {
     url: 'graph/d/mongodb-instance-overview/mongodb-instances-overview?orgId=1&refresh=1m',
+    clearUrl: 'graph/d/mongodb-instance-overview/mongodb-instances-overview',
+    metrics: [
+      'Services',
+      'Min MongoDB Uptime',
+      'Total Used Resident Memory',
+      'Total Used Virtual Memory',
+      'Total Used Mapped Memory',
+      'Total Current QPS',
+      'Top Connections',
+      'Top Opened Cursors',
+      'Min QPS',
+      'Max Latency',
+      'Top 5 Connections',
+      'Current Connections',
+      'Top 5 Total Cursors',
+      'Total Cursors',
+      'Pinned Cursors',
+      'Pinned Cursors',
+      'Top 5 noTimeout Cursors',
+      'noTimeout Cursors',
+      'Top 5 Command Latency',
+      'Command Latency',
+      'Top 5 Read Latency',
+      'Read Latency',
+      'Top 5 Write Latency',
+      'Write Latency',
+      'Min Index Scanned Ratio',
+      'Max Index Scanned Ratio',
+      'Min Document Scanned Ratio',
+      'Max Document Scanned Ratio',
+      'Top 5 Index Scan Ratios',
+      'Index Scan Ratios',
+      'Top 5 Document Scan Ratios',
+      'Document Scan Ratios',
+      'Top 5 Index Filtering Effectiveness',
+      'Index Filtering Effectiveness',
+      'Top Opcounters',
+      'Top Document Operations',
+      'Top Queued Operations',
+      'Total Assert Events',
+      'Top 5 Command Operations',
+      'Command Operations',
+      'Top 5 Getmore Operations',
+      'Getmore Operations',
+      'Top 5 Delete Operations',
+      'Delete Operations',
+      'Top 5 Insert Operations',
+      'Insert Operations',
+      'Top 5 Update Operations',
+      'Update Operations',
+      'Top 5 Query Operations',
+      'Query Operations',
+      'Top 5 Document Delete Operations',
+      'Document Delete Operations',
+      'Top 5 Document Insert Operations',
+      'Document Insert Operations',
+      'Top 5 Document Return Operations',
+      'Document Return Operations',
+      'Top 5 Document Update Operations',
+      'Document Update Operations',
+      'Top 5 Queued Read Operations',
+      'Queued Read Operations',
+      'Top 5 Queued Write Operations',
+      'Queued Write Operations',
+      'Top 5 Assert Msg Events',
+      'Assert Msg Events',
+      'Top 5 Assert Regular Events',
+      'Assert Regular Events',
+      'Top 5 Assert Rollovers Events',
+      'Assert Rollovers Events',
+      'Top 5 Assert User Events',
+      'Assert User Events',
+      'Top 5 Assert Msg Events',
+      'Assert Warning Events',
+    ],
   },
   homeDashboard: {
     metrics: [
@@ -550,6 +634,7 @@ module.exports = {
   },
   mySQLInstanceOverview: {
     url: 'graph/d/mysql-instance-overview/mysql-instances-overview?orgId=1&from=now-2m&to=now&refresh=1m',
+    clearUrl: 'graph/d/mysql-instance-overview/mysql-instances-overview',
     metrics: [
       'Services',
       'Min MySQL Uptime',
@@ -622,16 +707,15 @@ module.exports = {
       'Top 5 MySQL Open Table Definitions',
       'Percentage of Open Table Definitions to Table Definition Cache',
     ],
-    serviceName:
-      '//label[contains(text(), "Service Name")]/following-sibling::value-select-dropdown/descendant::a[@class="variable-value-link"]',
     urlWithRDSFilter:
       'graph/d/mysql-instance-overview/mysql-instances-overview?orgId=1&'
       + 'from=now-5m&to=now&refresh=1m&var-interval=$__auto_interval_interval&var-region=All&'
-      + 'var-environment=All&var-cluster=rds56-cluster&var-replication_set=All&var-az=&'
+      + 'var-environment=All&var-cluster=rds57-cluster&var-replication_set=All&var-az=&'
       + 'var-node_type=All&var-node_model=&var-database=All&var-service_type=All&var-schema=All',
   },
   mysqlInstancesCompareDashboard: {
     url: 'graph/d/mysql-instance-compare/mysql-instances-compare?orgId=1&refresh=1m&from=now-5m&to=now',
+    clearUrl: 'graph/d/mysql-instance-compare/mysql-instances-compare',
     metrics: [
       'Service Info',
       'MySQL Uptime',
@@ -669,6 +753,7 @@ module.exports = {
   },
   groupReplicationDashboard: {
     url: 'graph/d/mysql-group-replicaset-summary/mysql-group-replication-summary?orgId=1&refresh=1m',
+    clearUrl: 'graph/d/mysql-group-replicaset-summary/mysql-group-replication-summary',
     metrics: [
       'Group Replication Service States',
       'PRIMARY Service',
@@ -678,10 +763,11 @@ module.exports = {
       'Replication Delay',
       'Transaction Apply Time',
       'Transaction Time Inside the Local Queue',
-      'Transactions Details',
       'Checked Transactions',
       'Transactions Row Validating',
       'Applied Transactions',
+      'Sent Transactions',
+      'Received Transactions Queue',
       'Rolled Back Transactions',
       'Transactions in the Queue for Checking',
       'Detected Conflicts',
@@ -689,6 +775,7 @@ module.exports = {
   },
   mysqlPXCGaleraNodeSummaryDashboard: {
     url: 'graph/d/pxc-node-summary/pxc-galera-node-summary?orgId=1&refresh=1m',
+    clearUrl: 'graph/d/pxc-node-summary/pxc-galera-node-summary',
     metrics: [
       'Ready to Accept Queries',
       'Local State',
@@ -709,8 +796,9 @@ module.exports = {
       'Galera Network Usage Hourly',
     ],
   },
-  mysqlPXCGaleraNodesSummaryDashboard: {
+  mysqlPXCGaleraNodesCompareDashboard: {
     url: 'graph/d/pxc-nodes-compare/pxc-galera-nodes-compare?orgId=1&refresh=1m',
+    clearUrl: 'graph/d/pxc-nodes-compare/pxc-galera-nodes-compare',
     metrics: [
       'Ready to Accept Queries',
       'Local State',
@@ -780,6 +868,24 @@ module.exports = {
       'Sys Uptime',
     ],
   },
+  mongodbReplicaSetSummaryDashboard: {
+    url: 'graph/d/mongodb-replicaset-summary/mongodb-replset-summary?orgId=1&refresh=1m&from=now-5m&to=now',
+    metrics: [
+      'Replication Lag',
+      'ReplSet States',
+      'ReplSet Members',
+      'Max Heartbeat Time',
+      'Elections',
+      'Oplog Recovery Window',
+      'Oplog Buffered Operations',
+      'Oplog Getmore Time',
+      'Services Details',
+      'Avg ReplSet Lag',
+      'Cluster Name',
+      'ReplSet Last Election',
+      'MongoDB Versions',
+    ],
+  },
   victoriaMetricsAgentsOverviewDashboard: {
     url: 'graph/d/vmagent/victoriametrics-agents-overview?orgId=1&refresh=1m',
     metrics: [
@@ -824,6 +930,65 @@ module.exports = {
     ],
   },
 
+  mysqlAmazonAuroraDetails: {
+    url: 'graph/d/mysql-amazonaurora/mysql-amazon-aurora-details?orgId=1&refresh=1m',
+    metrics: [
+      'Amazon Aurora Transaction Commits',
+      'Amazon Aurora Load',
+      'Aurora Memory Used',
+      'Amazon Aurora Statement Latency',
+      'Amazon Aurora Special Command Counters',
+      'Amazon Aurora Problems',
+    ],
+  },
+
+  mongoDbCollectionDetails: {
+    url: 'graph/d/mongodb-collection-details/mongodb-collection-details?orgId=1&refresh=1m',
+    clearUrl: 'graph/d/mongodb-collection-details/mongodb-collection-details',
+    metrics: [
+      'Top 10 Largest Collections by Document Count',
+      'Top 10 Largest Collections by Size',
+      'Total Databases Size',
+      'Top 5 Most Fragmented Collections by Freeable Size',
+      'Top 5 Collections by Documents Read',
+      'Top 5 Collections by Documents Changed',
+    ],
+  },
+  mongoDbCollectionsOverview: {
+    url: 'graph/d/mongodb-collections-overview/mongodb-collections-overview?orgId=1&refresh=1m',
+    clearUrl: 'graph/d/mongodb-collections-overview/mongodb-collections-overview',
+    metrics: [
+      'Top 5 Databases By Size',
+      'Collections in Database',
+      'Indexes in Database',
+      'Avg Object Size in Database',
+      'Index Size in Database',
+      'Data Size for Database',
+      'Top 5 Hottest Collections by Read  (Total)',
+      'Top 5 Hottest Collections by Write (Total)',
+      'Top 5 Hottest Collections by Read (Rate)',
+      'Top 5 Hottest Collections by Write (Rate)',
+      'Collections statistics  for admin (rate)',
+      'Collections statistics  for admin (summary)',
+      'Collections statistics  admin',
+    ],
+  },
+
+  mongoDbOplogDetails: {
+    url: 'graph/d/mongodb-oplog-details/mongodb-oplog-details?orgId=1&refresh=1m',
+    clearUrl: 'graph/d/mongodb-oplog-details/mongodb-oplog-details',
+    metrics: [
+      'Oplog Recovery Window',
+      'Oplog Buffered Operations',
+      'Oplog Getmore Time',
+      'Oplog Processing Time',
+      'Oplog Buffer Capacity',
+      'Oplog Operations',
+      'Oplog GB/Hour',
+      'Oplog Window',
+    ],
+  },
+
   fields: {
     breadcrumbs: {
       folder: locate('.page-toolbar').find('[aria-label="Search links"] > a'),
@@ -845,14 +1010,18 @@ module.exports = {
     panelLoading: locate('div').withAttr({ class: 'panel-loading' }),
     postgreSQLServiceSummaryContent: locate('pre').withText('Detected PostgreSQL version:'),
     reportTitleWithNA:
-      locate('.panel-title').inside(locate('.panel-container').withDescendant('//div[contains(text(),"N/A")]')),
+      locate('.panel-title').inside(locate('.panel-container').withDescendant('//span[contains(text(),"N/A")]')),
     reportTitleWithNoData:
       locate('.panel-title').inside(locate('.panel-container').withDescendant('//div[contains(text(),"No data")]')),
     rootUser: '//div[contains(text(), "root")]',
     serviceSummary: locate('a').withText('Service Summary'),
-    timeRangePickerButton: '.btn.navbar-button.navbar-button--tight',
-    openFiltersDropdownLocator: (filterName) => locate('.variable-link-wrapper').after(`label[for="${formatElementId(filterName)}"]`),
-    filterDropdownOptionsLocator: (filterName) => `[aria-controls="options-${formatElementId(filterName)}"]`,
+    // timeRangePickerButton: '.btn.navbar-button.navbar-button--tight',
+    timeRangePickerButton: I.useDataQA('data-testid TimePicker Open Button'),
+    timeRangeOption: (timeRange) => locate('li').withDescendant('label').withText(timeRange),
+    openFiltersDropdownLocator: (filterName) => locate('.variable-link-wrapper').after(`label[for="var-${formatElementId(filterName)}"]`),
+    filterDropdownOptionsLocator: (filterName) => locate('.variable-option').withText(filterName),
+    refreshIntervalPicker: I.useDataQA('data-testid RefreshPicker interval button'),
+    refreshIntervalOption: (interval) => locate(`//*[@role="menuitemradio" and text()="${interval}"]`),
   },
 
   createAdvancedDataExplorationURL(metricName, time = '1m', nodeName = 'All') {
@@ -891,12 +1060,12 @@ module.exports = {
   // introducing methods
   verifyMetricsExistence(metrics) {
     for (const i in metrics) {
-      I.seeElement(this.graphsLocator(metrics[i]));
+      I.waitForVisible(this.graphsLocator(metrics[i]), 5);
     }
   },
 
   openGraphDropdownMenu(metric) {
-    I.seeElement(this.graphsLocator(metric));
+    I.waitForVisible(this.graphsLocator(metric), 10);
     I.click(this.graphsLocator(metric));
   },
 
@@ -912,6 +1081,10 @@ module.exports = {
 
   tabLocator(tabName) {
     return `//a[contains(text(), '${tabName}')]`;
+  },
+  async waitForAllGraphsToHaveData(timeout = 60) {
+    await I.waitForInvisible(this.fields.notAvailableMetrics, timeout);
+    await I.waitForInvisible(this.fields.notAvailableDataPoints, timeout);
   },
 
   async verifyThereAreNoGraphsWithNA(acceptableNACount = 0) {
@@ -943,7 +1116,7 @@ module.exports = {
     assert.equal(
       actualNumber <= expectedNumber,
       true,
-      `Expected ${expectedNumber} Elements with but found ${actualNumber} on Dashboard ${dashboardUrl}. Report Names are ${titles}`,
+      `Expected ${expectedNumber} Elements without data but found ${actualNumber} on Dashboard ${dashboardUrl}. Report Names are ${titles}`,
     );
   },
 
@@ -990,6 +1163,10 @@ module.exports = {
     I.waitForElement(this.fields.metricTitle, 60);
   },
 
+  waitForDataLoaded() {
+    I.waitForInvisible('//*[@aria-label="Loading indicator"]');
+  },
+
   expandFilters(filterName) {
     const dropdownLocator = this.fields.openFiltersDropdownLocator(filterName);
 
@@ -1015,7 +1192,7 @@ module.exports = {
 
   async applyFilter(filterName, filterValue) {
     const filterValueSelector = `//span[contains(text(), '${filterValue}')]`;
-    const filterDropdownOptionsLocator = this.fields.filterDropdownOptionsLocator(filterName);
+    const filterDropdownOptionsLocator = this.fields.filterDropdownOptionsLocator(filterValue);
     const dropdownLocator = this.fields.openFiltersDropdownLocator(filterName);
     const selectedFilterValue = await I.grabTextFrom(dropdownLocator);
 
@@ -1057,5 +1234,10 @@ module.exports = {
         break;
       }
     }
+  },
+
+  selectRefreshTimeInterval(timeInterval) {
+    I.click(this.fields.refreshIntervalPicker);
+    I.click(this.fields.refreshIntervalOption(timeInterval));
   },
 };

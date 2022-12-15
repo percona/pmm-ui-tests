@@ -60,7 +60,8 @@ Scenario(
     backupInventoryPage.selectDropdownOption(backupInventoryPage.fields.serviceNameDropdown, mysqlServiceName);
     backupInventoryPage.selectDropdownOption(backupInventoryPage.fields.locationDropdown, location.name);
     I.fillField(backupInventoryPage.fields.backupName, backupName);
-    I.fillField(backupInventoryPage.fields.description, 'test description');
+    // TODO: uncomment when PMM-10899 will be fixed
+    // I.fillField(backupInventoryPage.fields.description, 'test description');
     I.click(backupInventoryPage.buttons.addBackup);
     I.waitForVisible(backupInventoryPage.elements.pendingBackupByName(backupName), 10);
     backupInventoryPage.verifyBackupSucceeded(backupName);
@@ -111,8 +112,7 @@ Scenario(
 
     const artifactName = await I.grabTextFrom(backupInventoryPage.elements.artifactName(backupName));
 
-    I.click(backupInventoryPage.buttons.deleteByName(backupName));
-    I.waitForVisible(backupInventoryPage.elements.forceDeleteLabel, 20);
+    backupInventoryPage.openDeleteBackupModal(backupName);
     I.seeTextEquals(backupInventoryPage.messages.confirmDeleteText(artifactName), 'h4');
     I.seeTextEquals(backupInventoryPage.messages.forceDeleteLabelText, backupInventoryPage.elements.forceDeleteLabel);
     I.seeTextEquals(backupInventoryPage.messages.modalHeaderText, backupInventoryPage.elements.modalHeader);
@@ -180,6 +180,8 @@ Scenario(
     I.refreshPage();
     backupInventoryPage.verifyBackupSucceeded(backupName);
 
+    I.click(backupInventoryPage.buttons.actionsMenuByName(backupName));
+    I.waitForVisible(backupInventoryPage.buttons.restoreByName(backupName), 2);
     I.click(backupInventoryPage.buttons.restoreByName(backupName));
     I.waitForVisible(backupInventoryPage.buttons.modalRestore, 10);
     I.seeTextEquals(backupInventoryPage.messages.serviceNoLongerExists, backupInventoryPage.elements.backupModalError);

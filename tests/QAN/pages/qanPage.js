@@ -2,6 +2,7 @@ const { I } = inject();
 
 module.exports = {
   url: 'graph/d/pmm-qan/pmm-query-analytics?from=now-5m&to=now',
+  refreshRateFiveSecondsUrl: 'graph/d/pmm-qan/pmm-query-analytics?from=now-5m&to=now&refresh=5s',
   clearUrl: 'graph/d/pmm-qan/pmm-query-analytics',
 
   fields: {
@@ -13,6 +14,11 @@ module.exports = {
     topMenu: {
       queryAnalytics: '//div[a/span[text()="Query Analytics"]]',
     },
+  },
+  elements: {
+    qanContainer: '.query-analytics-data',
+    qanRow: 'div[role="row"]',
+    noQueryAvailable: locate('h1').withText('No queries available for this combination of filters in the selected time frame'),
   },
 
   waitForOpened() {

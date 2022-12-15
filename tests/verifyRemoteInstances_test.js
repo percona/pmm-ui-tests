@@ -1,7 +1,9 @@
 const assert = require('assert');
 const faker = require('faker');
 
-const { remoteInstancesPage, remoteInstancesHelper, pmmInventoryPage } = inject();
+const {
+  remoteInstancesPage, remoteInstancesHelper, pmmInventoryPage,
+} = inject();
 
 const externalExporterServiceName = 'external_service_new';
 const haproxyServiceName = 'haproxy_remote';
@@ -208,6 +210,35 @@ Scenario(
     await pmmInventoryPage.checkAgentOtherDetailsSection('listen_port:', `listen_port: ${remoteInstancesHelper.remote_instance.haproxy.haproxy_2.port}`, haproxyServiceName, serviceId);
   },
 );
+Scenario(
+  'PMM-T1089 - Verify UI elements for PostgreSQL Instance @instances',
+  async ({
+    I, remoteInstancesPage,
+  }) => {
+    I.amOnPage(remoteInstancesPage.url);
+    remoteInstancesPage.waitUntilRemoteInstancesPageLoaded();
+    remoteInstancesPage.openAddRemotePage('postgresql');
+    I.click(remoteInstancesPage.fields.addService);
+    remoteInstancesPage.checkRequiredField();
+    // Verify fields on the page
+    I.seeElement(remoteInstancesPage.fields.returnToMenuButton, 30);
+    I.seeElement(remoteInstancesPage.fields.hostName, 30);
+    I.seeElement(remoteInstancesPage.fields.serviceName, 30);
+    I.seeElement(remoteInstancesPage.fields.portNumber, 30);
+    I.seeElement(remoteInstancesPage.fields.userName, 30);
+    I.seeElement(remoteInstancesPage.fields.password, 30);
+    I.seeElement(remoteInstancesPage.fields.environment, 30);
+    I.seeElement(remoteInstancesPage.fields.region, 30);
+    I.seeElement(remoteInstancesPage.fields.availabilityZone, 30);
+    I.seeElement(remoteInstancesPage.fields.replicationSet, 30);
+    I.seeElement(remoteInstancesPage.fields.cluster, 30);
+    I.seeElement(remoteInstancesPage.fields.customLabels, 30);
+    I.seeElement(remoteInstancesPage.fields.skipConnectionCheck, 30);
+    I.seeElement(remoteInstancesPage.fields.dontTrackingRadio, 30);
+    I.seeElement(remoteInstancesPage.fields.pgStatStatementsRadio, 30);
+    I.seeElement(remoteInstancesPage.fields.pgStatMonitorRadio, 30);
+  },
+);
 
 Data(remotePostgreSQL).Scenario(
   'PMM-T441 - Verify adding Remote PostgreSQL Instance @instances',
@@ -282,7 +313,7 @@ Scenario(
       database: 'postgres',
       host: 'postgresnodb',
       username: 'test',
-      password: 'test',
+      password: '50mFC#z7lHZ1',
       environment: remoteInstancesPage.potgresqlSettings.environment,
       cluster: remoteInstancesPage.potgresqlSettings.cluster,
     };

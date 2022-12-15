@@ -1,4 +1,5 @@
 const assert = require('assert');
+const { qanFilters } = require('../remoteInstances/remoteInstancesHelper');
 
 Feature('QAN common').retry(1);
 
@@ -17,12 +18,13 @@ Scenario(
     await qanPagination.verifyPagesAndCount(25);
     I.waitForVisible(qanFilters.elements.environmentLabel, 30);
     await qanOverview.verifyRowCount(27);
-    qanFilters.applyFilter('ps-dev');
+    await qanFilters.applyFilter('ps-dev');
     I.waitForVisible(qanFilters.fields.filterBy, 30);
-    qanOverview.searchByValue('insert');
+    await qanOverview.searchByValue('insert');
     I.waitForVisible(qanOverview.elements.querySelector, 30);
-    I.click(qanOverview.elements.querySelector);
-    I.waitForVisible(qanOverview.getColumnLocator('Lock Time'), 30);
+    // TODO: find test case in TM4J
+    // I.click(qanOverview.elements.querySelector);
+    // I.waitForVisible(qanOverview.getColumnLocator('Lock Time'), 30);
   },
 );
 
@@ -36,8 +38,8 @@ Scenario(
     qanOverview.waitForOverviewLoaded();
     await adminPage.applyTimeRange('Last 1 hour');
     qanOverview.waitForOverviewLoaded();
-    qanFilters.applyFilter('ps-dev');
-    qanOverview.searchByValue('insert');
+    await qanFilters.applyFilter('ps-dev');
+    await qanOverview.searchByValue('insert');
     I.waitForElement(qanOverview.elements.querySelector, 30);
     qanOverview.selectRow(1);
     I.waitForVisible(cellValue, 30);
@@ -91,5 +93,41 @@ Scenario(
     searchDashboardsModal.waitForOpened();
     I.click(searchDashboardsModal.fields.closeButton);
     qanPage.waitForOpened();
+  },
+);
+
+Scenario(
+  'PMM-T188 Verify dashboard refresh @qan',
+  async ({
+    I, qanPage, searchDashboardsModal, qanDetails, qanOverview, dashboardPage, qanFilters, adminPage,
+  }) => {
+    qanPage.waitForOpened();
+
+    await qanOverview.changeMainMetric('Database');
+    qanOverview.changeSorting(2);
+    qanFilters.applyFilter('pmm-managed');
+    qanOverview.addSpecificColumn('Bytes Sent');
+    await adminPage.applyTimeRange('Last 1 hour');
+    await qanOverview.searchByValue('pmm-managed');
+    qanOverview.selectTotalRow();
+
+    dashboardPage.selectRefreshTimeInterval('5s');
+    // Sometimes refresh doesn't happen after 5s for the first time
+    await I.waitForElement(qanOverview.elements.spinner, 10);
+    await I.waitForDetached(qanOverview.elements.spinner, 5);
+
+    await qanOverview.verifyMainMetric('Database');
+    await qanOverview.verifySorting(2, 'asc');
+    await qanFilters.verifySelectedFilters('pmm-managed');
+    await qanOverview.verifyColumnPresent('Bytes Sent');
+    await qanDetails.checkDetailsTab();
+    await adminPage.verifyTimeRange('Last 1 hour');
+    await qanOverview.verifySearchByValue('pmm-managed');
+
+    dashboardPage.selectRefreshTimeInterval('1m');
+    await I.waitForElement(qanOverview.elements.spinner, 60);
+    await I.waitForDetached(qanOverview.elements.spinner, 5);
+    dashboardPage.selectRefreshTimeInterval('Off');
+    await I.verifyInvisible(qanOverview.elements.spinner, 70);
   },
 );

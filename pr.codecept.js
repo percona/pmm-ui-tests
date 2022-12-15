@@ -77,6 +77,12 @@ exports.config = {
     ChaiWrapper: {
       require: 'codeceptjs-chai',
     },
+    LocalStorageHelper: {
+      require: './tests/helper/localStorageHelper.js',
+    },
+    ApiHelper: {
+      require: './tests/helper/apiHelper.js',
+    },
   },
   include: pageObjects,
   multiple: {

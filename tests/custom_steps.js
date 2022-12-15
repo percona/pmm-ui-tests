@@ -13,6 +13,22 @@ module.exports = () => actor({
     this.click(systemMessageButtonClose);
   },
 
+  async verifyInvisible(selector, timeOutInSeconds = 1) {
+    const start = new Date().getTime();
+    const timeout = timeOutInSeconds * 1000;
+    const interval = 0.1;
+
+    while (true) {
+      this.dontSeeElement(selector);
+      await this.wait(interval);
+      if (new Date().getTime() - start >= timeout) {
+        this.say(`Element ${selector} was not visible on page for ${timeOutInSeconds} seconds`);
+
+        return;
+      }
+    }
+  },
+
   useDataQA: (selector) => `[data-testid="${selector}"]`,
   getSingleSelectOptionLocator: (optionName) => locate('[aria-label="Select option"]')
     .find('span')
@@ -39,6 +55,16 @@ module.exports = () => actor({
     }
   },
 
+  async readFileInZipArchive(zipPath, filePath) {
+    try {
+      const zip = new AdmZip(zipPath);
+
+      return zip.readFile(filePath);
+    } catch (e) {
+      throw new Error(`Something went wrong when reading a zip file ${zipPath}. ${e}`);
+    }
+  },
+
   async seeEntriesInZip(filepath, entriesArray) {
     const entries = await this.readZipArchive(filepath);
 
@@ -57,7 +83,7 @@ module.exports = () => actor({
    */
   async asyncWaitFor(boolCallable, timeOutInSeconds) {
     const start = new Date().getTime();
-    const timout = timeOutInSeconds * 1000;
+    const timeout = timeOutInSeconds * 1000;
     const interval = 1;
 
     /* eslint no-constant-condition: ["error", { "checkLoops": false }] */
@@ -69,12 +95,12 @@ module.exports = () => actor({
 
       // Check the timeout after evaluating main condition
       // to ensure conditions with a zero timeout can succeed.
-      if (new Date().getTime() - start >= timout) {
+      if (new Date().getTime() - start >= timeout) {
         assert.fail(`"${boolCallable.name}" is false: 
         tried to check for ${timeOutInSeconds} second(s) with ${interval} second(s) with interval`);
       }
 
-      this.wait(interval);
+      await this.wait(interval);
     }
   },
 
