@@ -51,6 +51,6 @@ module.exports = {
     manageUsers: locate('a[href="/admin/users"]').withText('Manage users'),
   },
   async waitForStatsAndLicensePageLoaded() {
-    Object.values(this.buttons).forEach((val) => I.waitForVisible(val,30));
+    Object.values(this.buttons).forEach((val) => I.waitForVisible(val, 30));
   },
 };
