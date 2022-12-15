@@ -122,7 +122,7 @@ module.exports = {
         I.waitForText(locators.successUpgradeMessage, 1200, locators.successUpgradeMsgSelector);
 
         // Get upgrade logs from a container
-        const upgradeLogs = await I.verifyCommand(`docker exec ${containerName || this.pmmServerName} ls /srv/logs/`);
+        const upgradeLogs = await I.verifyCommand(`docker ps -a`);
         console.log(upgradeLogs);
 
         // milestones.forEach((milestone) => {
