@@ -2,7 +2,6 @@ const clusterName = 'minikube';
 const pxc_cluster_name = 'upgrade-pxc';
 const psmdb_cluster_name = 'upgrade-psmdb';
 const active_state = 'ACTIVE';
-const pmmServerContainerName = process.env.VM_NAME + '-server';
 
 Feature('Updates of DB clusters and operators and PMM Server upgrade related tests');
 
@@ -29,7 +28,7 @@ Scenario('PMM-T3 Upgrade PMM via UI with DbaaS Clusters @dbaas-upgrade', async (
   const { versionMinor } = await homePage.getVersions();
 
   I.amOnPage(homePage.url);
-  await homePage.upgradePMM(versionMinor, pmmServerContainerName);
+  await homePage.upgradePMM(versionMinor, '', skipUpgradeLogs = true);
   }
 );
 
