@@ -16,7 +16,7 @@ module.exports = {
     applyCustomTimer: I.useDataQA('data-testid TimePicker submit button'),
     backToDashboard: '//button[@ng-click=\'ctrl.close()\']',
     discardChanges: '//button[@ng-click="ctrl.discard()"]',
-    metricTitle: '//div[@class="panel-title"]',
+    metricTitle: '(//div[@class="panel-title"])[2]',
     changeTimeZoneButton: locate('button').withText('Change time settings').inside('#TimePickerContent'),
     timeZoneSelector: '#TimePickerContent [aria-label="Time zone picker"]',
     reportTitleWithNA:
@@ -77,6 +77,12 @@ module.exports = {
     I.forceClick(this.fields.timePickerMenu);
     I.waitForVisible(timeRangeSelector, 30);
     I.click(timeRangeSelector);
+  },
+
+  async verifyTimeRange(timeRange) {
+    const selectedTimeRange = locate(I.useDataQA('data-testid TimePicker Open Button')).find('span').withText(timeRange);
+
+    I.seeElement(selectedTimeRange);
   },
 
   setAbsoluteTimeRange(from = '2022-01-10 09:09:59', to = '2022-01-10 10:00:59') {

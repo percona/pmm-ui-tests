@@ -28,7 +28,7 @@ Before(async ({ I }) => {
 });
 
 Data(sidebar).Scenario(
-  'PMM-T433, PMM-T591 - Verify menu items on Grafana sidebar redirects to correct page @menu',
+  '@PMM-T433, @PMM-T591 - Verify menu items on Grafana sidebar redirects to correct page @menu',
   async ({ I, homePage, current }) => {
     await homePage.open();
     I.usePlaywrightTo('check browser version', async ({ browser }) => {
@@ -40,7 +40,7 @@ Data(sidebar).Scenario(
   },
 );
 
-// Needs to be removed, Advisors are on by default hence no settings link anymore
+// TODO: Needs to be removed, Advisors are on by default hence no settings link anymore
 xScenario(
   'PMM-T1051 - Verify PMM Settings page is opened from Home dashboard @menu',
   async ({ I, homePage, pmmSettingsPage }) => {
@@ -58,7 +58,7 @@ xScenario(
 );
 
 Scenario(
-  'PMM-9550 Verify downloading server diagnostics logs @menu',
+  '@PMM-9550 Verify downloading server diagnostics logs @menu',
   async ({ I, homePage }) => {
     await homePage.open();
     let path;

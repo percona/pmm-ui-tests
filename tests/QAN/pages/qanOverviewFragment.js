@@ -5,10 +5,12 @@ const { I, qanFilters } = inject();
 module.exports = {
   root: '.query-analytics-data',
   fields: {
-    columnSearchField: 'input.ant-select-search__field',
+    columnSearchField: locate('.manage-columns').find('input'),
+    // columnSearchField: 'input.ant-select-search__field',
     searchBy: '//input[contains(@name, "search")]',
   },
   buttons: {
+    refresh: I.useDataQA('data-testid RefreshPicker run button'),
     addColumn: '//span[contains(text(), "Add column")]',
     copyButton: '$copy-link-button',
   },
@@ -20,7 +22,7 @@ module.exports = {
     newMetricDropdown: '.add-columns-selector-dropdown',
     noDataIcon: 'div.ant-empty-image',
     querySelector: 'div.tr-1',
-    removeMetricColumn: '//i[@aria-label="icon: minus"]',
+    removeMetricColumn: locate('div').withChild('.anticon-minus').withText('Remove column'),
     spinner: locate('$table-loading').find('//i[contains(@class,"fa-spinner")]'),
     tableRow: 'div.tr',
     tooltip: '.overview-column-tooltip',
@@ -32,6 +34,8 @@ module.exports = {
     firstQueryInfoIcon: 'div.tr-1 > div.td:nth-child(2) div > svg',
     selectedRow: '.selected-overview-row',
     clipboardLink: locate(I.getPopUpLocator()).find('span'),
+    mainMetricDropdown: locate('$group-by'),
+    selectedMainMetric: locate('$group-by').find('//div[@class="ant-select-selection-selected-value"]'),
   },
   messages: {
     noResultTableText: 'No queries available for this combination of filters in the selected time frame',
@@ -41,17 +45,20 @@ module.exports = {
   getRowLocator: (rowNumber) => `div.tr-${rowNumber}`,
   getSelectedRowLocator: (rowNumber) => `div.tr-${rowNumber}.selected-overview-row`,
 
-  getColumnLocator: (columnName) => `//span[contains(text(), '${columnName}')]`,
+  getColumnLocator: (columnName) => locate('$manage-columns-selector').withText(columnName),
   getQANMetricHeader: (metricName) => `//div[@role='columnheader']//span[contains(text(), '${metricName}')]`,
 
-  getMetricLocatorInDropdown: (name) => `//li[@label='${name}']`,
+  getMetricLocatorInDropdown: (name) => locate('[role="listbox"]').find(`[label='${name}']`),
 
   getCellValueLocator: (rowNumber, columnNumber) => `div.tr-${rowNumber} > div:nth-child(${columnNumber + 2}) span > div > span`,
 
   // using below to concatenate locators
   getMetricSortingLocator: (columnNumber) => `(//a[@data-testid='sort-by-control'])[${columnNumber}]`,
 
-  getGroupByOptionLocator: (option) => `//ul/li[@label='${option}']`,
+  getGroupByOptionLocator: (option) => locate('[role="listbox"]').find(`[label="${option}"]`),
+
+  mainMetricByName: (metricName) => locate('$group-by').find(`//div[@class="ant-select-selection-selected-value" and text()="${metricName}"]`),
+  mainMetricFromDropdown: (metricName) => locate(`//li[@class="ant-select-dropdown-menu-item" and text()="${metricName}"]`),
 
   waitForOverviewLoaded() {
     I.waitForDetached(this.elements.spinner, 30);
@@ -98,12 +105,24 @@ module.exports = {
     I.dontSeeElement(oldMetric);
   },
 
+  async changeMainMetric(newMainMetric) {
+    const oldMainMetric = await I.grabTextFrom(this.elements.selectedMainMetric);
+
+    I.click(this.elements.mainMetricDropdown);
+    I.click(this.mainMetricFromDropdown(newMainMetric));
+    I.dontSeeElement(this.mainMetricByName(oldMainMetric));
+    I.seeElement(this.mainMetricByName(newMainMetric));
+  },
+
+  async verifyMainMetric(mainMetric) {
+    I.seeElement(this.mainMetricByName(mainMetric));
+  },
+
   removeMetricFromOverview(metricName) {
     const column = this.getColumnLocator(metricName);
 
     I.click(column);
     I.waitForElement(this.fields.columnSearchField, 10);
-    I.fillField(this.fields.columnSearchField, 'Remove column');
     I.waitForElement(this.elements.removeMetricColumn, 30);
     I.forceClick(this.elements.removeMetricColumn);
     this.waitForOverviewLoaded();
@@ -112,10 +131,17 @@ module.exports = {
   },
 
   addSpecificColumn(columnName) {
+    I.click(this.buttons.addColumn);
     const column = `//span[contains(text(), '${columnName}')]`;
 
     I.waitForVisible(column, 30);
     I.click(column);
+  },
+
+  verifyColumnPresent(columnName) {
+    const column = `//span[contains(text(), '${columnName}')]`;
+
+    I.seeElement(column);
   },
 
   showTooltip(rowNumber, dataColumnNumber) {
@@ -138,15 +164,12 @@ module.exports = {
   verifySorting(columnNumber, sortDirection) {
     const sortingBlockSelector = this.getMetricSortingLocator(columnNumber);
 
-    if (!sortDirection) {
-      I.waitForElement(`${sortingBlockSelector}/span`, 30);
-      I.seeAttributesOnElements(`${sortingBlockSelector}/span`, { class: 'sort-by ' });
-
-      return;
-    }
-
     I.waitForElement(`${sortingBlockSelector}/span`, 30);
-    I.seeAttributesOnElements(`${sortingBlockSelector}/span`, { class: `sort-by ${sortDirection}` });
+    if (!sortDirection) {
+      I.seeAttributesOnElements(`${sortingBlockSelector}/span`, { class: 'sort-by ' });
+    } else {
+      I.seeAttributesOnElements(`${sortingBlockSelector}/span`, { class: `sort-by ${sortDirection}` });
+    }
   },
 
   async verifyMetricsSorted(metricName, columnNumber, sortOrder = 'down') {
@@ -176,20 +199,15 @@ module.exports = {
     const locator = this.getGroupByOptionLocator(groupBy);
 
     I.waitForElement(this.elements.groupBy, 30);
-    I.click(this.elements.groupBy);
-    // For some reason dropdown is not opened sometimes
-    I.wait(1);
-    const dropdownOpened = await I.grabNumberOfVisibleElements(locator);
-
-    if (!dropdownOpened) I.click(this.elements.groupBy);
-
+    I.forceClick(this.elements.groupBy);
     I.waitForVisible(locator, 30);
     I.click(locator);
   },
 
   verifyGroupByIs(groupBy) {
     I.waitForText(groupBy, 30, this.elements.groupBy);
-    I.seeElement(locate(this.elements.groupBy).find(`div[title="${groupBy}"]`));
+    I.seeElement(locate(this.elements.groupBy).find(`[title="${groupBy}"]`));
+    I.seeTextEquals(groupBy, this.elements.groupBy);
   },
 
   selectRow(rowNumber) {
@@ -199,6 +217,18 @@ module.exports = {
     I.forceClick(rowSelector);
     this.waitForOverviewLoaded();
     I.waitForVisible(this.elements.selectedRow, 10);
+  },
+
+  async getQueryFromRow(rowNumber) {
+    const rowSelector = this.getRowLocator(rowNumber);
+
+    I.waitForElement(rowSelector, 60);
+
+    return await I.grabTextFrom(locate(rowSelector).find('./div[@role="cell"][2]'));
+  },
+
+  selectTotalRow() {
+    this.selectRow(0);
   },
 
   async verifyRowCount(rowCount) {
@@ -220,10 +250,21 @@ module.exports = {
     I.waitForVisible(this.elements.tooltipQueryValue, 30);
   },
 
-  searchByValue(value) {
+  async isNoDataMessageVisibleAfterRefresh() {
+    I.click(this.buttons.refresh);
+
+    return Number(await I.grabNumberOfVisibleElements(this.elements.noResultTableText)) === 0;
+  },
+
+  async searchByValue(value, refresh = false) {
     I.waitForVisible(this.fields.searchBy, 30);
     I.clearField(this.fields.searchBy);
     I.fillField(this.fields.searchBy, value);
     I.pressKey('Enter');
+    // await I.asyncWaitFor(async () => await this.isNoDataMessageVisibleAfterRefresh(), 300);
+  },
+
+  async verifySearchByValue(value) {
+    I.seeAttributesOnElements(this.fields.searchBy, { value });
   },
 };

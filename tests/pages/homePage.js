@@ -10,28 +10,28 @@ module.exports = {
   url: 'graph/d/pmm-home/home-dashboard?orgId=1&refresh=1m&from=now-5m&to=now',
   landingUrl: 'graph/d/pmm-home/home-dashboard?orgId=1&refresh=1m',
   genericOauthUrl: 'graph/login/generic_oauth',
-  landingPage: 'graph/login',
   requestEnd: '/v1/Updates/Check',
   fields: {
     systemsUnderMonitoringCount:
-      locate('.panel-content span').inside('[aria-label="Monitored nodes panel"]'),
+      locate('.panel-content span').inside('[aria-label="Monitored Nodes panel"]'),
     dbUnderMonitoringCount:
       locate('.panel-content span').inside('[aria-label="Monitored DB Services panel"]'),
     dashboardHeaderText: 'Percona Monitoring and Management',
-    dashboardHeaderLocator: '//div[contains(@class, "dashboard-header")]',
+    dashboardHeaderLocator: '//span[contains(text(),"Home Dashboard")]',
     oldLastCheckSelector: '#pmm-update-widget > .last-check-wrapper p',
     sttDisabledFailedChecksPanelSelector: '$db-check-panel-settings-link',
     failedSecurityChecksPmmSettingsLink: locate('$db-check-panel-settings-link').find('a'),
     sttFailedChecksPanelSelector: '$db-check-panel-has-checks',
+    failedChecksPanelContent: '$db-check-panel-home',
     checksPanelSelector: '$db-check-panel-home',
     noFailedChecksInPanel: '$db-check-panel-zero-checks',
-    failedChecksPanelInfo: '[aria-label="Failed Checks panel"] i',
+    failedChecksPanelInfo: '[aria-label="Advisors check panel"] i',
     newsPanelTitleSelector: dashboardPage.graphsLocator('Percona News'),
-    pmmCustomMenu: locate('$navbar-section').find('.dropdown a[aria-label="PMM dashboards"]'),
+    pmmCustomMenu: locate('$sidemenu').find('a[aria-label="Dashboards"]'),
     servicesButton: locate('span').withText('Services'),
     newsPanelContentSelector:
       locate('.panel-content').inside('[aria-label="Percona News panel"]'),
-    popUp: '.popper__background',
+    popUp: '.panel-info-content',
     noAccessRightsSelector: '$unauthorized',
     updateWidget: {
       base: {
@@ -59,7 +59,7 @@ module.exports = {
         availableVersion: '[data-qa="update-latest-version"]',
         inProgressMessage: 'Upgrade in progress',
         successUpgradeMessage: 'PMM has been successfully upgraded to version',
-        whatsNewLink: '//a[@rel="noreferrer"]',
+        whatsNewLink: locate('//a[@rel="noreferrer"]').withText('What\'s new'),
       },
       latest: {
         checkUpdateButton: '$update-last-check-button',
@@ -85,7 +85,7 @@ module.exports = {
   failedChecksSinglestatsInfoMessage: 'Display the number of Advisors checks identified as failed during its most recent run.',
 
   serviceDashboardLocator: (serviceName) => locate('a').withText(serviceName),
-  isAmiUpgrade: process.env.AMI_UPGRADE_TESTING_INSTANCE === 'true',
+  isAmiUpgrade: process.env.AMI_UPGRADE_TESTING_INSTANCE === 'true' || process.env.OVF_UPGRADE_TESTING_INSTANCE === 'true',
   pmmServerName: process.env.VM_NAME ? process.env.VM_NAME : 'pmm-server',
 
   async open() {
@@ -94,7 +94,7 @@ module.exports = {
   },
 
   // introducing methods
-  async upgradePMM(version) {
+  async upgradePMM(version, containerName) {
     let locators = this.getLocators(version);
     const milestones = this.upgradeMilestones;
 
@@ -121,7 +121,7 @@ module.exports = {
         I.waitForText(locators.successUpgradeMessage, 1200, locators.successUpgradeMsgSelector);
 
         // Get upgrade logs from a container
-        const upgradeLogs = await I.verifyCommand(`docker exec ${this.pmmServerName} cat /srv/logs/pmm-update-perform.log`);
+        const upgradeLogs = await I.verifyCommand(`docker exec ${containerName || this.pmmServerName} cat /srv/logs/pmm-update-perform.log`);
 
         milestones.forEach((milestone) => {
           assert.ok(upgradeLogs.includes(milestone), `Expected to see ${milestone} in upgrade logs`);

@@ -1,5 +1,5 @@
 const assert = require('assert');
-const { communicationData, emailDefaults } = require('./testData');
+const { communicationData, emailDefaults, telemetryTooltipData } = require('../../pages/testData');
 
 const {
   I, adminPage, links, perconaPlatformPage,
@@ -91,7 +91,7 @@ module.exports = {
   sectionButtonText: {
     applyChanges: 'Apply changes', applySSHKey: 'Apply SSH key', applyAlertmanager: 'Apply Alertmanager settings',
   },
-  tooltips : {
+  tooltips: {
     diagnostics: {
       iconLocator: locate('$diagnostics-label').find('div[class$="-Icon"]').as('Diagnostics tooltip'),
       text: 'You can download server logs to make the problem detection simpler. Please include this file if you are submitting a bug report.',
@@ -112,7 +112,7 @@ module.exports = {
       },
       telemetry: {
         iconLocator: locate('$advanced-telemetry').find('div[class$="-Icon"]').as('Telemetry tooltip'),
-        text: 'Option to send usage data back to Percona to let us make our product better.',
+        text: telemetryTooltipData,
         link: links.telemetryDocs,
       },
       checkForUpdates: {
@@ -145,9 +145,9 @@ module.exports = {
         text: 'Option to enable/disable Backup Management features.',
         link: links.backupManagementDocs,
       },
-      integratedAlerting: {
-        iconLocator: locate('$advanced-alerting').find('div[class$="-Icon"]').as('Integrated Alerting tooltip'),
-        text: 'Option to enable/disable Integrated Alerting features.',
+      perconaAlerting: {
+        iconLocator: locate('$advanced-alerting').find('div[class$="-Icon"]').as('Alerting tooltip'),
+        text: 'Option to enable/disable Percona Alerting features.',
         link: links.integratedAlertingDocs,
       },
       microsoftAzureMonitoring: {
@@ -208,15 +208,10 @@ module.exports = {
           text: 'SMTP authentication information',
           link: links.communicationDocs,
         },
-        testEmail: {
-          iconLocator: locate('$testEmail-field-container').find('div[class$="-Icon"]').as('Test email tooltip'),
-          text: 'Send a test email to this address',
-          link: false,
-        },
       },
       slack: {
         slackUrl: {
-          tabButton: locate('li').find('a').withAttr({'aria-label': 'Tab Slack'}).as('Slack Tab'),
+          tabButton: locate('li').find('a').withAttr({ 'aria-label': 'Tab Slack' }).as('Slack Tab'),
           iconLocator: locate('div').after(locate('span').withText('URL')).as('Slack URL tooltip'),
           text: 'Slack incoming webhook URL',
           link: links.communicationDocs,
@@ -257,11 +252,11 @@ module.exports = {
       },
     },
     communicationSection: locate('$settings-tabs')
-      .find('li a')
+      .find('div a')
       .withAttr({ 'aria-label': 'Tab Communication' }),
-    emailTab: 'li > a[aria-label="Tab Email"]',
+    emailTab: 'div a[aria-label="Tab Email"]',
     submitEmailButton: '$email-settings-submit-button',
-    slackTab: 'li > a[aria-label="Tab Slack"]',
+    slackTab: 'div a[aria-label="Tab Slack"]',
     submitSlackButton: '$slack-settings--submit-button',
   },
   fields: {
@@ -318,14 +313,14 @@ module.exports = {
     signUpBackToLogin: '$sign-up-to-sign-in-button',
     telemetrySwitchSelectorInput: locate('$advanced-telemetry').find('input'),
     telemetrySwitchSelector: locate('$advanced-telemetry').find('label'),
-    iaSwitchSelectorInput: locate('$advanced-alerting').find('input'),
-    iaSwitchSelector: locate('$advanced-alerting').find('label'),
+    perconaAlertingSwitchInput: locate('$advanced-alerting').find('input'),
+    perconaAlertingSwitch: locate('$advanced-alerting').find('label'),
     dbaasSwitchSelectorInput: locate('$advanced-dbaas').find('input'),
     dbaasSwitchSelector: locate('$advanced-dbaas').find('label'),
     dbaasSwitchItem: '$advanced-dbaas',
     telemetryLabel: locate('$advanced-telemetry').find('span'),
-    tooltipText: locate('div').withAttr({ class: 'popper__background' }).find('span'),
-    tooltipReadMoreLink: locate('div').withAttr({ class: 'popper__background' }).find('a'),
+    tooltipText: locate('$info-tooltip').find('./*[self::span or self::div]'),
+    tooltipReadMoreLink: locate('$info-tooltip').find('a'),
     tabsSection: '$settings-tabs',
     tabContent: '$settings-tab-content',
     termsOfService: '//span[contains(text(), "Terms of Service")]',
@@ -365,7 +360,7 @@ module.exports = {
   },
 
   async expandSection(sectionName, expectedContentLocator) {
-    const sectionExpandLocator = locate('$settings-tabs').find('li > a').withText(sectionName);
+    const sectionExpandLocator = locate('$settings-tabs').find('div > a').withText(sectionName);
 
     I.click(sectionExpandLocator);
     I.waitForVisible(expectedContentLocator, 30);
@@ -409,10 +404,10 @@ module.exports = {
   },
 
   async disableIA() {
-    const iaEnabled = await I.grabAttributeFrom(this.fields.iaSwitchSelectorInput, 'checked');
+    const iaEnabled = await I.grabAttributeFrom(this.fields.perconaAlertingSwitchInput, 'checked');
 
     if (iaEnabled) {
-      I.click(this.fields.iaSwitchSelector);
+      I.click(this.fields.perconaAlertingSwitch);
     }
   },
 
@@ -578,16 +573,20 @@ module.exports = {
   async verifyTooltip(tooltipObj) {
     I.waitForVisible(tooltipObj.iconLocator, 5);
     I.moveCursorTo(tooltipObj.iconLocator);
+    I.scrollTo(this.fields.tooltipText);
     I.waitForVisible(this.fields.tooltipText, 5);
     I.seeTextEquals(tooltipObj.text, this.fields.tooltipText.as('Tooltip text'));
     /* there are tooltip without "Read more" link */
     if (tooltipObj.link) {
-      I.seeAttributesOnElements(this.fields.tooltipReadMoreLink.as('Tooltip "Read more" link for ' + tooltipObj.iconLocator), { href: tooltipObj.link });
+      I.scrollTo(this.fields.tooltipReadMoreLink);
+      I.seeAttributesOnElements(this.fields.tooltipReadMoreLink.as(`Tooltip "Read more" link for ${tooltipObj.iconLocator}`), { href: tooltipObj.link });
       const readMoreLink = (await I.grabAttributeFrom(this.fields.tooltipReadMoreLink, 'href'));
       const response = await I.sendGetRequest(readMoreLink);
 
       assert.equal(response.status, 200, 'Read more link should lead to working documentation page. But the GET request response status is not 200');
     }
+
+    I.moveCursorTo(locate('li').withText('PMM Logs'));
   },
 
   verifySwitch(switchSelector, expectedSwitchState = 'on') {

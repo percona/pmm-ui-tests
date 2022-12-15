@@ -113,11 +113,11 @@ Data(filters).Scenario(
 
     I.amOnPage(qanPage.url);
     qanOverview.waitForOverviewLoaded();
-    qanFilters.applyFilter(serviceName);
-    qanFilters.applyFilter(database);
+    await qanFilters.applyFilter(serviceName);
+    await qanFilters.applyFilter(database);
     I.waitForVisible(qanFilters.buttons.showSelected, 30);
 
-    qanFilters.applyFilterInSection(filterSection, filterToApply);
+    await qanFilters.applyFilterInSection(filterSection, filterToApply);
   },
 );
 
@@ -149,6 +149,7 @@ Scenario(
 
     if (output.rows.length === 0) {
       await I.pgExecuteQueryOnDemand(`Create database ${db};`, connection);
+      await I.pgExecuteQueryOnDemand(`ALTER DATABASE ${db} owner to pmm;`, connection);
     }
 
     connection.database = db;
@@ -182,7 +183,7 @@ Scenario(
         total_exec_time,
         average_exec_time,
         query_cnt,
-      } = await qanAPI.getMetricsFromPGSM(db, pgsm_output.rows[i].queryid, connection);
+      } = await qanAPI.getMetricsFromPGSM(db, pgsm_output.rows[i].queryid, connection, version);
       const { query, queryid } = pgsm_output.rows[i];
 
       if (response.status !== 200) {
@@ -221,7 +222,7 @@ Scenario(
     qanOverview.waitForOverviewLoaded();
     I.waitForVisible(qanFilters.buttons.showSelected, 30);
 
-    qanFilters.applyFilterInSection('Application Name', applicationName);
+    await qanFilters.applyFilterInSection('Application Name', applicationName);
     qanOverview.waitForOverviewLoaded();
     const count = await qanOverview.getCountOfItems();
 
@@ -266,9 +267,9 @@ Scenario(
       qanOverview.waitForOverviewLoaded();
       I.waitForVisible(qanFilters.buttons.showSelected, 30);
 
-      qanFilters.applyFilterInSection('Database', db);
+      await qanFilters.applyFilterInSection('Database', db);
       qanOverview.waitForOverviewLoaded();
-      qanOverview.searchByValue(queryId);
+      await qanOverview.searchByValue(queryId);
       qanOverview.waitForOverviewLoaded();
       qanOverview.selectRow(1);
       I.waitForElement(qanDetails.elements.topQuery);
@@ -305,7 +306,7 @@ Scenario(
     qanOverview.waitForOverviewLoaded();
     I.waitForVisible(qanFilters.buttons.showSelected, 30);
 
-    qanFilters.applyFilterInSection('Database', db);
+    await qanFilters.applyFilterInSection('Database', db);
     qanOverview.waitForOverviewLoaded();
     const count = await qanOverview.getCountOfItems();
 
@@ -319,5 +320,93 @@ Scenario(
     }
 
     assert.ok(countHistogram > 5, `Expected Atleast 5 queries to have Histogram in query details, found ${countHistogram}`);
+  },
+);
+
+// Need to fix this and revert skip
+xScenario(
+  'PMM-T1253 Verify pg_stat_monitor.pgsm_normalized_query settings @not-ui-pipeline @pgsm-pmm-integration',
+  async ({
+    I, qanPage, qanOverview, qanFilters, qanDetails,
+  }) => {
+    const defaultValue = 'no';
+    const alteredValue = 'yes';
+    const queriesNumber = 2;
+
+    I.pgExecuteQueryOnDemand(`ALTER SYSTEM SET pg_stat_monitor.pgsm_normalized_query=${defaultValue};`, connection);
+    await I.verifyCommand(`docker exec ${container_name} service postgresql restart`);
+    let output = await I.pgExecuteQueryOnDemand('SELECT * FROM pg_stat_monitor_settings WHERE name=\'pg_stat_monitor.pgsm_normalized_query\';', connection);
+
+    assert.equal(output.rows[0].value, 'no', `The value of 'pg_stat_monitor.pgsm_normalized_query' should be equal to '${defaultValue}'`);
+    assert.equal(output.rows[0].default_value, 'no', `The default value of 'pg_stat_monitor.pgsm_normalized_query' should be equal to '${defaultValue}'`);
+
+    await I.Authorize();
+
+    //  Function used to produce data and check if examples are shown
+    async function checkForExamples(isNoExamplesVisible) {
+      I.amOnPage(qanPage.url);
+      qanOverview.waitForOverviewLoaded();
+      qanFilters.waitForFiltersToLoad();
+      await qanFilters.applyFilter(pgsm_service_name);
+      for (let i = 1; i < queriesNumber; i++) {
+        const tableName = `PMM_T1253_${Date.now()}`;
+
+        //  Sql queries used to produce data for table
+        I.pgExecuteQueryOnDemand(`CREATE TABLE ${tableName} ( TestId int );`, connection);
+        I.pgExecuteQueryOnDemand(`DROP TABLE ${tableName};`, connection);
+        await qanOverview.searchByValue(tableName, true);
+        qanOverview.selectRow(1);
+        qanFilters.waitForFiltersToLoad();
+        //  Assertion that there are or there are no examples in the examples tab
+        qanDetails.checkExamplesTab(isNoExamplesVisible);
+        qanOverview.selectRow(2);
+        qanFilters.waitForFiltersToLoad();
+        qanDetails.checkExamplesTab(isNoExamplesVisible);
+      }
+    }
+
+    await checkForExamples(false);
+    //  Sequence of actions used to alter default value for pgsm_normalized_query with container restart
+    I.pgExecuteQueryOnDemand(`ALTER SYSTEM SET pg_stat_monitor.pgsm_normalized_query=${alteredValue};`, connection);
+    await I.verifyCommand(`docker exec ${container_name} service postgresql restart`);
+    I.wait(5);
+    await I.verifyCommand(`docker exec ${container_name} pmm-admin list | grep "postgresql_pgstatmonitor_agent" | grep "Running"`);
+    output = await I.pgExecuteQueryOnDemand('SELECT * FROM pg_stat_monitor_settings WHERE name=\'pg_stat_monitor.pgsm_normalized_query\';', connection);
+    assert.equal(output.rows[0].value, 'yes', `The default value of 'pg_stat_monitor.pgsm_normalized_query' should be equal to '${alteredValue}'`);
+    await checkForExamples(true);
+  },
+);
+
+Scenario(
+  'PMM-T1254 Verify pg_stat_monitor.pgsm_bucket_time settings @not-ui-pipeline @pgsm-pmm-integration',
+  async ({ I }) => {
+    const defaultValue = 60;
+    const alteredValue = 61;
+
+    I.pgExecuteQueryOnDemand(`ALTER SYSTEM SET pg_stat_monitor.pgsm_bucket_time=${defaultValue};`, connection);
+    await I.verifyCommand(`docker exec ${container_name} service postgresql restart`);
+    let output = await I.pgExecuteQueryOnDemand('SELECT * FROM pg_stat_monitor_settings WHERE name=\'pg_stat_monitor.pgsm_bucket_time\';', connection);
+
+    assert.equal(output.rows[0].value, defaultValue, `The value of 'pg_stat_monitor.pgsm_bucket_time' should be equal to ${defaultValue}`);
+    assert.equal(output.rows[0].default_value, defaultValue, `The value of 'pg_stat_monitor.pgsm_bucket_time' should be equal to ${defaultValue}`);
+    await I.verifyCommand(`docker exec ${container_name} true > pmm-agent.log`);
+    await I.verifyCommand(`docker exec ${container_name} pmm-admin list | grep "postgresql_pgstatmonitor_agent" | grep "Running"`);
+    I.wait(defaultValue);
+    let log = await I.verifyCommand(`docker exec ${container_name} tail -n100 pmm-agent.log`);
+
+    assert.ok(!log.includes('non default bucket time value is not supported, status changed to WAITING'),
+      'The log wasn\'t supposed to contain errors regarding bucket time but it does');
+
+    I.pgExecuteQueryOnDemand(`ALTER SYSTEM SET pg_stat_monitor.pgsm_bucket_time=${alteredValue};`, connection);
+    await I.verifyCommand(`docker exec ${container_name} service postgresql restart`);
+    output = await I.pgExecuteQueryOnDemand('SELECT * FROM pg_stat_monitor_settings WHERE name=\'pg_stat_monitor.pgsm_bucket_time\';', connection);
+    assert.equal(output.rows[0].value, alteredValue, `The value of 'pg_stat_monitor.pgsm_bucket_time' should be equal to ${alteredValue}`);
+    I.wait(alteredValue);
+    log = await I.verifyCommand(`docker exec ${container_name} tail -n100 pmm-agent.log`);
+
+    assert.ok(log.includes('non default bucket time value is not supported, status changed to WAITING'),
+      'The log was supposed to contain errors regarding bucket time but it doesn\'t');
+
+    await I.verifyCommand(`docker exec ${container_name} pmm-admin list | grep "postgresql_pgstatmonitor_agent" | grep "Waiting"`);
   },
 );

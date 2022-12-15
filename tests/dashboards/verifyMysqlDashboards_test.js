@@ -10,7 +10,7 @@ const serviceList = [];
 const urlsAndMetrics = new DataTable(['metricName', 'startUrl']);
 
 urlsAndMetrics.add(['Client Connections (All Host Groups)', `${dashboardPage.proxysqlInstanceSummaryDashboard.url}?from=now-5m&to=now`]);
-urlsAndMetrics.add(['Percona News', homePage.url]);
+urlsAndMetrics.add(['PMM Upgrade', homePage.url]);
 
 Feature('Test Dashboards inside the MySQL Folder');
 
@@ -105,10 +105,13 @@ Data(urlsAndMetrics).Scenario(
         target: '_blank',
       },
     );
-    I.seeTextEquals('Image Renderer plugin', dashboardPage.sharePanel.elements.imageRendererPluginLink);
-    I.seeTextEquals(
-      dashboardPage.sharePanel.messages.imageRendererPlugin,
-      dashboardPage.sharePanel.elements.imageRendererPluginInfoText,
+    I.seeTextEquals('Grafana image renderer plugin', dashboardPage.sharePanel.elements.imageRendererPluginLink);
+    let textPlugin = await I.grabTextFrom(dashboardPage.sharePanel.elements.imageRendererPluginInfoText);
+
+    textPlugin = textPlugin.replace(/\u00a0/g, ' ');
+    assert.ok(
+      textPlugin.includes(dashboardPage.sharePanel.messages.imageRendererPlugin),
+      `Expected the share panel text: ${textPlugin} to include ${dashboardPage.sharePanel.messages.imageRendererPlugin}`,
     );
   },
 );
@@ -123,7 +126,7 @@ Scenario(
     await dashboardPage.expandEachDashboardRow();
     await dashboardPage.verifyMetricsExistence(dashboardPage.proxysqlInstanceSummaryDashboard.metrics);
     await dashboardPage.verifyThereAreNoGraphsWithNA();
-    await dashboardPage.verifyThereAreNoGraphsWithoutData(3);
+    await dashboardPage.verifyThereAreNoGraphsWithoutData(9);
   },
 );
 

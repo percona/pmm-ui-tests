@@ -259,7 +259,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T1132 Verify PMM user logged in using SSO and member of SN account is able to see tickets @portal @post-pmm-portal-upgrade',
+  'PMM-T1132 Verify PMM user logged in using SSO and member of SN account is able to see tickets @not-ui-pipeline @portal @post-pmm-portal-upgrade',
   async ({ I, homePage, organizationTicketsPage }) => {
     I.amOnPage('');
     await I.loginWithSSO(portalCredentials.admin1.email, portalCredentials.admin1.password);
@@ -278,7 +278,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T1147 Verify PMM user that is not logged in with SSO can NOT see Tickets for organization @portal @post-pmm-portal-upgrade',
+  'PMM-T1147 Verify PMM user that is not logged in with SSO can NOT see Tickets for organization @not-ui-pipeline @portal @post-pmm-portal-upgrade',
   async ({ I, organizationTicketsPage, portalAPI }) => {
     const newUser = await portalAPI.getUser();
     const newUserId = await I.createUser(newUser.email, newUser.password);
@@ -309,7 +309,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T1148 Verify PMM user logged in using SSO and member of organization in Portal BUT not a SN account is NOT able to see Tickets @portal @post-pmm-portal-upgrade',
+  'PMM-T1148 Verify PMM user logged in using SSO and member of organization in Portal BUT not a SN account is NOT able to see Tickets @not-ui-pipeline @portal @post-pmm-portal-upgrade',
   async ({
     I, organizationTicketsPage, portalAPI, homePage,
   }) => {
@@ -338,7 +338,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T1149 Verify PMM user logged in using SSO and is a member of SN account is able to see empty list of tickets @portal @post-pmm-portal-upgrade',
+  'PMM-T1149 Verify PMM user logged in using SSO and is a member of SN account is able to see empty list of tickets @not-ui-pipeline @portal @post-pmm-portal-upgrade',
   async ({
     I, organizationTicketsPage, homePage,
   }) => {
@@ -365,7 +365,7 @@ Scenario(
   */
 
 Scenario(
-  'PMM-T1152 Verify user logged in using SSO and is a member of SN account is able to see Entitlements @portal @post-pmm-portal-upgrade',
+  'PMM-T1152 Verify user logged in using SSO and is a member of SN account is able to see Entitlements @not-ui-pipeline @portal @post-pmm-portal-upgrade',
   async ({
     I, homePage, organizationEntitlementsPage,
   }) => {
@@ -397,7 +397,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T1153 Verify user logged in using SSO and is not a member of SN account is NOT able to see Entitlements @portal @post-pmm-portal-upgrade',
+  'PMM-T1153 Verify user logged in using SSO and is not a member of SN account is NOT able to see Entitlements @not-ui-pipeline @portal @post-pmm-portal-upgrade',
   async ({
     I, organizationEntitlementsPage, portalAPI, homePage,
   }) => {
@@ -426,7 +426,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T1154 Verify PMM user that is not logged in with SSO can NOT see Entitlements for organization @portal @post-pmm-portal-upgrade',
+  'PMM-T1154 Verify PMM user that is not logged in with SSO can NOT see Entitlements for organization @not-ui-pipeline @portal @post-pmm-portal-upgrade',
   async ({ I, organizationEntitlementsPage, portalAPI }) => {
     const newUser = await portalAPI.getUser();
     const newUserId = await I.createUser(newUser.email, newUser.password);
@@ -458,7 +458,7 @@ Scenario(
 Scenario(
   'Verify PMM is connected and user can disconnect an reconnect PMM server to the Portal @not-ui-pipeline @post-pmm-portal-upgrade',
   async ({
-    I, perconaPlatformPage, homePage, portalAPI,
+    I, perconaPlatformPage, homePage, portalAPI, loginPage,
   }) => {
     if (pmmVersion >= 27 || pmmVersion === undefined) {
       I.amOnPage('');
@@ -469,7 +469,7 @@ Scenario(
       await perconaPlatformPage.isPMMConnected();
       await perconaPlatformPage.disconnectFromPortal(pmmVersion);
       if (pmmVersion > 27 || pmmVersion === undefined) {
-        await I.waitInUrl(homePage.landingPage);
+        await I.waitInUrl(loginPage.url);
         I.Authorize();
         await perconaPlatformPage.openPerconaPlatform();
         await perconaPlatformPage.waitForPerconaPlatformPageLoaded();
@@ -501,9 +501,10 @@ Scenario(
       I.waitInUrl('graph/login', 10);
       I.dontSeeElement(locate('a').withAttr({ href: 'login/generic_oauth' }));
       I.amOnPage(homePage.genericOauthUrl);
-      I.seeElement(locate('div').withText('OAuth not enabled'));
+      await I.waitForVisible(locate('h1').withText('Percona Monitoring and Management'));
+
       I.amOnPage('');
-      I.seeElement(locate('h1').withText('Percona Monitoring and Management'));
+      I.waitForVisible(locate('h1').withText('Percona Monitoring and Management'));
     } else {
       I.say('This testcase is for PMM version 2.27.0 and higher');
     }

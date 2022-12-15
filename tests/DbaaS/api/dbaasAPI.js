@@ -238,18 +238,31 @@ module.exports = {
     }
   },
 
-  async apiCreatePXCCluster(dbClusterName, clusterName) {
-    const body = { kubernetes_cluster_name: clusterName, name: dbClusterName, params: {cluster_size: 1, 
-      pxc: {compute_resources: {cpu_m: 1000, memory_bytes: 2000000000}, disk_size: 1000000000}, 
-      haproxy: {compute_resources: {cpu_m: 1000, memory_bytes: 2000000000}}} } ;
+  async createDefaultPXC(clusterName) {
+    const body = { kubernetes_cluster_name: clusterName, params: { disk_size: 1000000000 } }
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
 
     await I.sendPostRequest('v1/management/DBaaS/PXCCluster/Create', body, headers);  
   },
 
-  async apiCreatePSMDBCluster(dbClusterName, clusterName) {
-    const body = { kubernetes_cluster_name: clusterName, name: dbClusterName, params: {cluster_size: 3, 
-      replicaset: {compute_resources: {cpu_m: 500, memory_bytes: 2000000000}, disk_size: 1000000000}} };
+  async createCustomPXC(clusterName, dbClusterName, clusterSize = '3', version = 'percona/percona-xtradb-cluster:8.0.22-13.1') {
+    const body = { kubernetes_cluster_name: clusterName, name: dbClusterName, params: { cluster_size: clusterSize,
+      pxc: { image: version, compute_resources: { disk_size: 1000000000 } } } }
+    const headers = { Authorization: `Basic ${await I.getAuth()}` };
+
+    await I.sendPostRequest('v1/management/DBaaS/PXCCluster/Create', body, headers);  
+  },
+
+  async createDefaultPSMDB(clusterName) {
+    const body = { kubernetes_cluster_name: clusterName, params: { replicaset: { disk_size: 1000000000 } } };
+    const headers = { Authorization: `Basic ${await I.getAuth()}` };
+
+    await I.sendPostRequest('v1/management/DBaaS/PSMDBCluster/Create', body, headers);  
+  },
+
+  async createCustomPSMDB(clusterName, dbClusterName, clusterSize = '3', version = 'percona/percona-server-mongodb:5.0.7-6') {
+    const body = { kubernetes_cluster_name: clusterName, name: dbClusterName, params: { cluster_size: clusterSize, 
+      replicaset: { compute_resources: { cpu_m: 500, memory_bytes: 2000000000 }, disk_size: 1000000000 }, image: version } };
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
 
     await I.sendPostRequest('v1/management/DBaaS/PSMDBCluster/Create', body, headers);  

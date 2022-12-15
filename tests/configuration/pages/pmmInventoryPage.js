@@ -1,10 +1,11 @@
-const { I, pmmInventoryPage, inventoryAPI } = inject();
+const { I, inventoryAPI } = inject();
 const assert = require('assert');
+const paginationPart = require('./paginationFragment');
 
 module.exports = {
   url: 'graph/inventory?orgId=1',
   fields: {
-    agentsLink: locate('li > a').withText('Agents').withAttr({ 'aria-label': 'Tab Agents' }),
+    agentsLink: locate('[role="tablist"] a').withText('Agents').withAttr({ 'aria-label': 'Tab Agents' }),
     agentsLinkOld: locate('a').withText('Agents'),
     deleteButton: locate('span').withText('Delete'),
     externalExporter: locate('td').withText('External exporter'),
@@ -12,31 +13,70 @@ module.exports = {
     inventoryTable: locate('table'),
     inventoryTableColumn: locate('table').find('td'),
     inventoryTableRows: locate('tr').after('table'),
+    inventoryTableRowCount: (count) => locate('span').withText(`${count}`),
     mongoServiceName: locate('td').withText('mongodb'),
     mysqlServiceName: locate('td').withText('ms-single'),
     // cannot be changed to locate because it's failing in I.waitForVisible()
-    nodesLink: '//li/a[contains(text(),"Nodes")][@aria-label="Tab Nodes"]',
+    nodesLink: locate('[role="tablist"] a').withText('Nodes').withAttr({ 'aria-label': 'Tab Nodes' }),
     nodesLinkOld: locate('a').withText('Nodes'),
     pdphsqlServiceName: locate('td').withText('PGSQL'),
     pmmAgentLocator: locate('td').withText('PMM Agent'),
     pmmServerPostgresLocator: locate('td').withText('pmm-server-postgresql'),
-    pmmServicesSelector: locate('li > a').withText('Services').withAttr({ 'aria-label': 'Tab Services' }),
+    pmmServicesSelector: locate('[role="tablist"] a').withText('Services').withAttr({ 'aria-label': 'Tab Services' }),
     postgresExporter: locate('td').withText('Postgres exporter'),
     postgresPgStatements: locate('td').withText('QAN PostgreSQL PgStatements'),
     postgresPgstatmonitor: locate('td').withText('QAN PostgreSQL Pgstatmonitor'),
     proceedButton: locate('span').withText('Proceed'),
     runningStatus: locate('span').withText('RUNNING'),
+    rowsPerPage: locate('$pagination').find('div'),
     serviceIdLocatorPrefix: '//table//tr/td[4][contains(text(),"',
     tableCheckbox: locate('$select-row').find('span'),
     // cannot be changed to locate() because of method: getCellValue()
-    tableRow: '//tr[@data-testid="table-row"]',
+    tableRow: '//tr[@data-testid="table-tbody-tr"]',
     processExecPathExporters: '//td[contains(text(), "exporter")]//ancestor::tr[@data-testid="table-row"]//span[contains(text(), "process_exec_path")]',
+    nodeExporterStatus: '//td[contains(text(), "Node exporter")]//ancestor::tr[@data-testid="table-row"]//span[contains(text(), "status")]',
+  },
+  pagination: paginationPart,
+
+  async open() {
+    I.amOnPage(this.url);
+    I.waitForVisible(this.fields.nodesLink, 30);
+    await I.waitForVisible(this.fields.agentsLink, 2);
+  },
+
+  async openServices() {
+    await I.waitForVisible(this.fields.pmmServicesSelector, 20);
+    I.click(this.fields.pmmServicesSelector);
+    await this.changeRowsPerPage(100);
+    I.waitForElement(this.fields.inventoryTable, 60);
+    I.scrollPageToBottom();
+  },
+
+  async openAgents() {
+    await I.waitForVisible(this.fields.agentsLink, 20);
+    I.click(this.fields.agentsLink);
+    I.waitForElement(this.fields.pmmAgentLocator, 60);
+    await this.changeRowsPerPage(100);
+    I.waitForElement(this.fields.inventoryTable, 60);
+    I.scrollPageToBottom();
+  },
+
+  async changeRowsPerPage(count) {
+    I.waitForElement(this.fields.rowsPerPage, 30);
+    I.scrollPageToBottom();
+    I.click(this.fields.rowsPerPage);
+    I.waitForElement(this.fields.inventoryTableRowCount(count), 30);
+    // Temp Hack for making 100 in the page count rows
+    I.pressKey('ArrowDown');
+    I.pressKey('ArrowDown');
+    I.pressKey('Enter');
+    I.wait(2);
   },
 
   verifyRemoteServiceIsDisplayed(serviceName) {
-    I.waitForVisible(pmmInventoryPage.fields.inventoryTableColumn, 30);
+    I.waitForVisible(this.fields.inventoryTableColumn, 30);
     I.scrollPageToBottom();
-    I.see(serviceName, pmmInventoryPage.fields.inventoryTableColumn);
+    I.see(serviceName, this.fields.inventoryTableColumn);
   },
 
   async verifyAgentHasStatusRunning(service_name) {
@@ -46,6 +86,7 @@ module.exports = {
     await inventoryAPI.waitForRunningState(serviceId);
     I.click(agentLinkLocator);
     I.waitForElement(this.fields.pmmAgentLocator, 60);
+    await this.changeRowsPerPage(100);
     I.waitForElement(this.fields.inventoryTable, 60);
     I.scrollPageToBottom();
     const numberOfServices = await I.grabNumberOfVisibleElements(
@@ -89,15 +130,24 @@ module.exports = {
     assert.ok(expectedResult === details, `Infomation '${expectedResult}' for service '${serviceName}' is missing!`);
   },
 
+  async checkAgentOtherDetailsMissing(detailsSection, serviceId) {
+    const locator = locate('span').withText(detailsSection).after(locate('span').withText(`service_id: ${serviceId}`));
+
+    I.dontSeeElement(locator);
+  },
+
   async verifyMetricsFlags(serviceName) {
     const servicesLink = this.fields.pmmServicesSelector;
     const agentLinkLocator = this.fields.agentsLink;
 
     I.waitForElement(servicesLink, 20);
     I.click(servicesLink);
+    await this.changeRowsPerPage(100);
     const nodeId = await this.getNodeId(serviceName);
 
     I.click(agentLinkLocator);
+    await this.changeRowsPerPage(100);
+
     const enhanceMetricsDisabled = `//tr//td//span[contains(text(), "${nodeId}")]/../span[contains(text(),"enhanced_metrics_disabled: true")]`;
 
     I.waitForElement(enhanceMetricsDisabled, 30);

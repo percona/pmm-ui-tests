@@ -52,7 +52,7 @@ const remoteInstanceStatus = {
       enabled: true,
     },
     aws_rds_5_6: {
-      enabled: true,
+      enabled: false,
     },
     aws_postgresql_12: {
       enabled: true,
@@ -99,7 +99,7 @@ DB_CONFIG = {
   PROXYSQL_SERVER_PORT: '6032',
 };
 
-if (process.env.AMI_UPGRADE_TESTING_INSTANCE === 'true') {
+if (process.env.AMI_UPGRADE_TESTING_INSTANCE === 'true' || process.env.OVF_UPGRADE_TESTING_INSTANCE === 'true') {
   PMM_SERVER_OVF_AMI_SETUP = 'true';
   SERVER_HOST = process.env.VM_CLIENT_IP;
   EXTERNAL_EXPORTER_HOST = process.env.VM_CLIENT_IP;
@@ -130,14 +130,14 @@ module.exports = {
         host: 'mysql8',
         port: '3307',
         username: 'pmm-agent',
-        password: 'pmm-agent-password',
+        password: 'pmm%&agent-password',
         clusterName: 'mysql_clstr',
       },
       ms_8_0_ssl: {
         host: '192.168.0.1',
         port: '3308',
         username: 'root',
-        password: 'r00tr00t',
+        password: 'lj#%zXe83hT4',
         clusterName: 'mysql-ssl-cluster',
         environment: 'mysql-ssl-env',
         tlsCAFile: '/tmp/ssl/pmm-ui-tests/testdata/mysql/ssl-cert-scripts/certs/root-ca.pem',
@@ -185,8 +185,8 @@ module.exports = {
       proxysql_2_1_1: {
         host: (PMM_SERVER_OVF_AMI_SETUP === 'true' ? SERVER_HOST : 'proxysql'),
         port: DB_CONFIG.PROXYSQL_SERVER_PORT,
-        username: 'radmin',
-        password: 'radmin',
+        username: 'proxyadmin',
+        password: 'yxZq!4SGv0A1',
         clusterName: 'proxy_clstr',
       },
     },
@@ -209,21 +209,21 @@ module.exports = {
       },
     },
     aws: {
-      aws_access_key: process.env.AWS_ACCESS_KEY_ID,
-      aws_secret_key: process.env.AWS_SECRET_ACCESS_KEY,
+      aws_access_key: process.env.PMM_QA_AWS_ACCESS_KEY_ID,
+      aws_secret_key: process.env.PMM_QA_AWS_ACCESS_KEY,
       aws_rds_5_7: {
         address: process.env.REMOTE_AWS_MYSQL57_HOST,
         username: process.env.REMOTE_AWS_MYSQL_USER,
         password: process.env.REMOTE_AWS_MYSQL_PASSWORD,
         clusterName: 'aws_rds_mysql_5_7',
-        port: 3306,
+        port: 42001,
       },
       aws_rds_8_0: {
         address: secret(process.env.REMOTE_AWS_MYSQL80_HOST),
         username: secret(process.env.REMOTE_AWS_MYSQL80_USER),
         password: secret(process.env.REMOTE_AWS_MYSQL80_PASSWORD),
         clusterName: 'aws_rds_mysql_8_0',
-        port: 3306,
+        port: 42001,
       },
       aws_rds_5_6: {
         address: secret(process.env.REMOTE_AWS_MYSQL57_HOST),
@@ -236,9 +236,9 @@ module.exports = {
         userName: secret(process.env.REMOTE_AWS_POSTGRES12_USER),
         password: secret(process.env.REMOTE_AWS_POSTGRES12_PASSWORD),
         clusterName: 'aws_postgresql_12',
-        port: 5432,
+        port: 42001,
       },
-      aurora: {   
+      aurora: {
         aws_access_key: process.env.PMM_QA_AWS_ACCESS_KEY_ID,
         aws_secret_key: process.env.PMM_QA_AWS_ACCESS_KEY,
         port: '42001',
@@ -246,13 +246,13 @@ module.exports = {
         aurora2: {
           address: process.env.PMM_QA_AURORA2_MYSQL_HOST,
           password: process.env.PMM_QA_AURORA2_MYSQL_PASSWORD,
-          instance_id: "pmm-qa-aurora2-mysql-instance-1",
+          instance_id: 'pmm-qa-aurora2-mysql-instance-1',
           cluster_name: 'aws_aurora2',
         },
         aurora3: {
           address: process.env.PMM_QA_AURORA3_MYSQL_HOST,
           password: process.env.PMM_QA_AURORA3_MYSQL_PASSWORD,
-          instance_id: "pmm-qa-aurora3-mysql-instance-1",
+          instance_id: 'pmm-qa-aurora3-mysql-instance-1',
           cluster_name: 'aws_aurora3',
         },
       },

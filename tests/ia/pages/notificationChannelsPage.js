@@ -26,7 +26,7 @@ module.exports = {
     },
   },
   elements: {
-    notificationChannelsTab: '//li[@aria-label="Tab Notification Channels"]',
+    notificationChannelsTab: '//div/a[@aria-label="Tab Notification Channels"]',
     channelInTable: (name, type) => `//td[text()="${name}"]/following-sibling::td[text()="${type}"]`,
     templatesTableHeader: '$alert-rule-templates-table-thead',
     noData: locate('$table-no-data').find('h1'),
