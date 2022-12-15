@@ -28,7 +28,7 @@ Scenario('PMM-T3 Upgrade PMM via UI with DbaaS Clusters @dbaas-upgrade', async (
   const { versionMinor } = await homePage.getVersions();
 
   I.amOnPage(homePage.url);
-  await homePage.upgradePMM(versionMinor, '', skipUpgradeLogs = true);
+  await homePage.upgradePMM(versionMinor, '', true);
   }
 );
 
