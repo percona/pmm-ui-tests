@@ -1103,7 +1103,7 @@ if (versionMinor >= 32) {
         collection = replica.db('test').collection('e2e');
         const record = await collection.findOne({ number: 2, name: 'Anna' });
 
-        I.assertToBeA(record, null, `Was expecting to not have a record ${JSON.stringify(record, null, 2)} after restore operation`);
+        I.assertEqual(record, null, `Was expecting to not have a record ${JSON.stringify(record, null, 2)} after restore operation`);
       } finally {
         replica.close();
       }
