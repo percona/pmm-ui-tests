@@ -7,7 +7,7 @@ Before(async ({
 });
 
 Scenario(
-  'PMM-10162 Verify that Grafana Enterprise is not present @grafana-pr1',
+  'PMM-10162 Verify that Grafana Enterprise is not present @grafana-pr',
   async ({
     I, statsAndLicensePage,
   }) => {
