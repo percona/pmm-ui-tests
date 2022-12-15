@@ -65,6 +65,7 @@ module.exports = {
     qanAPI: './tests/QAN/api/qanAPI.js',
     environmentOverviewPage: './tests/pages/environmentOverviewPage.js',
     tooltips: './tests/helper/tooltipHelper.js',
+    statsAndLicensePage: './tests/server-admin/pages/statsAndLicensePage.js',
     dataSourcePage: './tests/pages/pmmSettingsPages/dataSourcePage.js',
     pmmTourPage: './tests/pages/pmmTourPage.js',
     loginPage: './tests/pages/loginPage.js',
