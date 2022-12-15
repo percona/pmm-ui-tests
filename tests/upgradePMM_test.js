@@ -1092,12 +1092,14 @@ if (versionMinor >= 32) {
       try {
         let collection = replica.db('test').collection('e2e');
 
+        await I.say('I create test record in MongoDB after backup');
         await collection.insertOne({ number: 2, name: 'Anna' });
 
         backupInventoryPage.openInventoryPage();
         backupInventoryPage.startRestore(backupName);
         restorePage.waitForRestoreSuccess(backupName);
 
+        await I.say('I search for the record after MongoDB restored from backup');
         collection = replica.db('test').collection('e2e');
         const record = await collection.findOne({ number: 2, name: 'Anna' });
 

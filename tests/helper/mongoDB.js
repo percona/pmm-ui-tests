@@ -74,6 +74,13 @@ class MongoDBHelper extends Helper {
     await this.client.close();
   }
 
+  /**
+   * Builds new parallel connection to MongoDB replica. And returns connected client.
+   * Note! Please care to close connection whe it's no longer needed {@link MongoClient.close()}
+   *
+   * @param   parameters  Object credentials: { username: "string", password: "string" }
+   * @return              {Promise<MongoClient>} connected instance of client
+   */
   async getMongoReplicaClient(parameters) {
     const {
       member1 = `${this.host}:27027`,
