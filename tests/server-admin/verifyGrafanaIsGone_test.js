@@ -7,12 +7,13 @@ Before(async ({
 });
 
 Scenario(
-  'PMM-10162 Verify that Grafana Enterprise is not present @grafana-pr',
+  'PMM-10162 Verify that Grafana Enterprise is not present @grafana-pr1',
   async ({
     I, statsAndLicensePage,
   }) => {
     I.amOnPage(statsAndLicensePage.url);
     await statsAndLicensePage.waitForStatsAndLicensePageLoaded();
+    I.seeElement(locate('span').withText('Manage dashboards'));
     Object.values(statsAndLicensePage.fields).forEach((val) => I.dontSeeElement(val));
   },
 );
