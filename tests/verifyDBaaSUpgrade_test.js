@@ -4,27 +4,6 @@ const psmdb_cluster_name = 'upgrade-psmdb';
 const active_state = 'ACTIVE';
 const pmmServerContainerName = process.env.VM_NAME + '-server';
 
-// For running on local env set PMM_SERVER_LATEST and DOCKER_VERSION variables
-function getVersions() {
-  const [, pmmMinor, pmmPatch] = (process.env.PMM_SERVER_LATEST || '').split('.');
-  const [, versionMinor, versionPatch] = process.env.DOCKER_VERSION
-    ? (process.env.DOCKER_VERSION || '').split('.')
-    : (process.env.SERVER_VERSION || '').split('.');
-
-  const majorVersionDiff = pmmMinor - versionMinor;
-  const patchVersionDiff = pmmPatch - versionPatch;
-  const current = `2.${versionMinor}`;
-
-  return {
-    majorVersionDiff,
-    patchVersionDiff,
-    current,
-    versionMinor,
-  };
-}
-
-const { versionMinor, patchVersionDiff, majorVersionDiff } = getVersions();
-
 Feature('Updates of DB clusters and operators and PMM Server upgrade related tests');
 
 Before(async ({ I }) => {
@@ -47,6 +26,8 @@ Scenario(
 Scenario('PMM-T3 Upgrade PMM via UI with DbaaS Clusters @dbaas-upgrade', async ({
   I, homePage,
 }) => {
+  const { versionMinor } = await homePage.getVersions();
+
   I.amOnPage(homePage.url);
   await homePage.upgradePMM(versionMinor, pmmServerContainerName);
   }
@@ -122,7 +103,7 @@ Data(psmdbClusterDetails).Scenario('PMM-T726 Verify PSMDB cluster monitoring aft
     const serviceName = `${current.namespace}-${current.clusterName}-${current.nodeType}-${current.node}`;
     const replSet = current.nodeType;
 
-    await dbaasPage.dbClusterAgentStatusCheck(psmdb_cluster_name, serviceName, 'MONGODB_SERVICE');
+    // await dbaasPage.dbClusterAgentStatusCheck(psmdb_cluster_name, serviceName, 'MONGODB_SERVICE');
     await dbaasPage.psmdbClusterMetricCheck(psmdb_cluster_name, serviceName, serviceName, replSet);
     await dbaasPage.dbaasQANCheck(psmdb_cluster_name, serviceName, serviceName);
   }
