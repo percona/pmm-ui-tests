@@ -71,7 +71,7 @@ Before(async ({ I }) => {
   I.setRequestTimeout(60000);
 });
 
-BeforeSuite(async ({ I, codeceptjsConfig }) => {
+BeforeSuite(async ({ I, codeceptjsConfig, inventoryAPI }) => {
   const mysqlComposeConnection = {
     host: (process.env.AMI_UPGRADE_TESTING_INSTANCE === 'true' || process.env.OVF_UPGRADE_TESTING_INSTANCE === 'true' ? process.env.VM_CLIENT_IP : '127.0.0.1'),
     port: (process.env.AMI_UPGRADE_TESTING_INSTANCE === 'true' || process.env.OVF_UPGRADE_TESTING_INSTANCE === 'true' ? remoteInstancesHelper.remote_instance.mysql.ps_5_7.port : '3309'),
@@ -90,6 +90,10 @@ BeforeSuite(async ({ I, codeceptjsConfig }) => {
   };
 
   await I.mongoConnect(mongoConnection);
+
+  if (!await inventoryAPI.apiGetNodeInfoByServiceName('MONGODB_SERVICE', mongoServiceName)) {
+    await I.say(await I.verifyCommand(`pmm-admin add mongodb --port=27027 --service-name=${mongoServiceName} --replication-set=rs0`));
+  }
 });
 
 AfterSuite(async ({ I, psMySql }) => {
@@ -1044,7 +1048,6 @@ if (versionMinor >= 32) {
     async ({
       I, settingsAPI, locationsAPI, backupAPI, scheduledAPI, inventoryAPI, backupInventoryPage, scheduledPage,
     }) => {
-      await I.say(await I.verifyCommand(`pmm-admin add mongodb --port=27027 --service-name=${mongoServiceName} --replication-set=rs0`));
       await settingsAPI.changeSettings({ backup: true });
       await locationsAPI.clearAllLocations(true);
       const locationId = await locationsAPI.createStorageLocation(location);
@@ -1103,18 +1106,19 @@ if (versionMinor >= 32) {
         replica.close();
       }
     },
-  );
+  ).retry(0);
 
   Scenario(
-    '@PMM-T1504 - The user is able to do a backup for MongoDB after upgrade @ovf-upgrade @ami-upgrade @post-upgrade @pmm-upgrade',
+    '@PMM-T1504 - The user is able to do a backup for MongoDB after upgrade'
+    + ' @ovf-upgrade @ami-upgrade @post-upgrade @pmm-upgrade',
     async ({
       locationsAPI, inventoryAPI, backupAPI, backupInventoryPage,
     }) => {
       const backupName = 'backup after update';
 
-      const locationId = await locationsAPI.createStorageLocation(location);
+      const { location_id } = await locationsAPI.getLocationDetails(location.name);
       const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName('MONGODB_SERVICE', mongoServiceName);
-      const backupId = await backupAPI.startBackup(backupName, service_id, locationId);
+      const backupId = await backupAPI.startBackup(backupName, service_id, location_id);
 
       await backupAPI.waitForBackupFinish(backupId);
       backupInventoryPage.openInventoryPage();
@@ -1123,7 +1127,8 @@ if (versionMinor >= 32) {
   );
 
   Scenario(
-    '@PMM-T1505 - The scheduled job still exists and remains enabled after the upgrade @ovf-upgrade @ami-upgrade @post-upgrade @pmm-upgrade',
+    '@PMM-T1505 - The scheduled job still exists and remains enabled after the upgrade'
+    + ' @ovf-upgrade @ami-upgrade @post-upgrade @pmm-upgrade',
     async ({ I, scheduledPage }) => {
       await scheduledPage.openScheduledBackupsPage();
       I.seeAttributesOnElements(scheduledPage.elements.toggleByName(scheduleName), { checked: true });
@@ -1132,7 +1137,7 @@ if (versionMinor >= 32) {
       I.click(scheduledPage.buttons.enableDisableByName(scheduleName));
       I.seeAttributesOnElements(scheduledPage.elements.toggleByName(scheduleName), { checked: null });
     },
-  );
+  ).retry(0);
 
   Scenario(
     '@PMM-T1506 - Storage Locations exist after upgrade @ovf-upgrade @ami-upgrade @post-upgrade @pmm-upgrade',
