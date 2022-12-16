@@ -50,10 +50,10 @@ const pxcDBClusterDetails = new DataTable(['namespace', 'clusterName', 'node']);
 pxcDBClusterDetails.add(['default', `${pxc_cluster_name}`, '0']);
 
 Data(pxcDBClusterDetails).Scenario('PMM-T726 Verify PXC cluster monitoring after PMM Server upgrade @dbaas-upgrade',
-  async ({ dbaasPage, current }) => {
+  async ({ dbaasPage, current, grafanaAPI }) => {
     const serviceName = `${current.namespace}-${current.clusterName}-pxc-${current.node}`;
     const haproxyNodeName = `${current.namespace}-${current.clusterName}-haproxy-${current.node}`;
-
+    await grafanaAPI.checkMetricExist('mysql_global_status_uptime', { type: 'service_name', value: serviceName });
     await dbaasPage.dbClusterAgentStatusCheck(pxc_cluster_name, serviceName, 'MYSQL_SERVICE');
     await dbaasPage.dbaasQANCheck(pxc_cluster_name, serviceName, serviceName);
     await dbaasPage.pxcClusterMetricCheck(pxc_cluster_name, serviceName, serviceName, haproxyNodeName);
@@ -71,9 +71,10 @@ psmdbClusterDetails.add(['default', `${psmdb_cluster_name}`, '2', 'cfg']);
 
 Data(psmdbClusterDetails).Scenario('PMM-T726 Verify PSMDB cluster monitoring after PMM Server upgrade @dbaas-upgrade',
   async ({
-    I, dbaasAPI, dbaasPage, current,
+    I, dbaasAPI, dbaasPage, current, grafanaAPI
   }) => {
 
+    //TODO: run some queries before upgrade, check if the query is visible in QAN after upgrade, same for PXC
     // // run some load on mongodb to enable qan filters
     // const {
     //   username, password, host,
@@ -102,7 +103,9 @@ Data(psmdbClusterDetails).Scenario('PMM-T726 Verify PSMDB cluster monitoring aft
     const serviceName = `${current.namespace}-${current.clusterName}-${current.nodeType}-${current.node}`;
     const replSet = current.nodeType;
 
+    // TODO: debug why this occasionally fails later
     // await dbaasPage.dbClusterAgentStatusCheck(psmdb_cluster_name, serviceName, 'MONGODB_SERVICE');
+    await grafanaAPI.checkMetricExist('mongodb_up', { type: 'service_name', value: serviceName });
     await dbaasPage.psmdbClusterMetricCheck(psmdb_cluster_name, serviceName, serviceName, replSet);
     await dbaasPage.dbaasQANCheck(psmdb_cluster_name, serviceName, serviceName);
   }
