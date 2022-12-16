@@ -113,7 +113,7 @@ module.exports = {
         break;
       }
       else {
-        I.wait(10);
+        I.wait(20);
       }
     }
     I.say(`Status of PXC operator was ${pxcOperatorStatus}. Status of PSMDB operator was ${psmdbOperatorStatus}.`);
