@@ -219,7 +219,6 @@ xScenario(
     ];
 
     for (const i in columnsToAdd) {
-      I.click(qanOverview.buttons.addColumn);
       qanOverview.addSpecificColumn(columnsToAdd[i]);
     }
 
