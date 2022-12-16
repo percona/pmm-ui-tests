@@ -13,7 +13,7 @@ Scenario(
   async ({
     I, qanDetails, qanOverview, qanFilters,
   }) => {
-    qanFilters.applyFilter('ps-dev');
+    await qanFilters.applyFilter('ps-dev');
     qanOverview.selectRow(2);
     qanFilters.waitForFiltersToLoad();
     await within(qanDetails.root, () => {
@@ -103,7 +103,7 @@ Scenario(
   async ({
     I, qanOverview, qanFilters, qanDetails,
   }) => {
-    qanFilters.applyFilter('mongodb');
+    await qanFilters.applyFilter('mongodb');
     I.waitForElement(qanOverview.elements.querySelector, 30);
     qanOverview.selectRow(1);
     qanFilters.waitForFiltersToLoad();
@@ -124,5 +124,21 @@ Scenario(
     I.click(qanDetails.buttons.close);
     I.waitForInvisible(qanDetails.buttons.close, 30);
     I.dontSeeElement(qanDetails.buttons.close);
+  },
+);
+
+Scenario(
+  'PMM-T144 Verify that Details tab is the only one available when total row is selected @qan',
+  async ({
+    I, qanPage, searchDashboardsModal, qanOverview, qanDetails,
+  }) => {
+    qanPage.waitForOpened();
+    qanOverview.waitForOverviewLoaded();
+    qanOverview.selectTotalRow();
+    qanDetails.checkDetailsTab();
+    I.dontSeeElement(qanDetails.getTabLocator('Examples'));
+    I.dontSeeElement(qanDetails.getTabLocator('Explain'));
+    I.dontSeeElement(qanDetails.getTabLocator('Tables'));
+    I.dontSeeElement(qanDetails.getTabLocator('Plan'));
   },
 );

@@ -44,6 +44,23 @@ module.exports = {
     await I.waitForVisible(this.fields.agentsLink, 2);
   },
 
+  async openServices() {
+    await I.waitForVisible(this.fields.pmmServicesSelector, 20);
+    I.click(this.fields.pmmServicesSelector);
+    await this.changeRowsPerPage(100);
+    I.waitForElement(this.fields.inventoryTable, 60);
+    I.scrollPageToBottom();
+  },
+
+  async openAgents() {
+    await I.waitForVisible(this.fields.agentsLink, 20);
+    I.click(this.fields.agentsLink);
+    I.waitForElement(this.fields.pmmAgentLocator, 60);
+    await this.changeRowsPerPage(100);
+    I.waitForElement(this.fields.inventoryTable, 60);
+    I.scrollPageToBottom();
+  },
+
   async changeRowsPerPage(count) {
     I.waitForElement(this.fields.rowsPerPage, 30);
     I.scrollPageToBottom();
@@ -111,6 +128,12 @@ module.exports = {
     const details = await I.grabTextFrom(locator);
 
     assert.ok(expectedResult === details, `Infomation '${expectedResult}' for service '${serviceName}' is missing!`);
+  },
+
+  async checkAgentOtherDetailsMissing(detailsSection, serviceId) {
+    const locator = locate('span').withText(detailsSection).after(locate('span').withText(`service_id: ${serviceId}`));
+
+    I.dontSeeElement(locator);
   },
 
   async verifyMetricsFlags(serviceName) {

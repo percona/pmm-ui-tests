@@ -141,16 +141,19 @@ Scenario(
     }
 
     I.dontSeeElement(pmmSettingsPage.fields.dbaasMenuIconLocator);
-    I.amOnPage(dbaasPage.url);
-    I.waitForElement(dbaasPage.disabledDbaaSMessage.settingsLinkLocator, 30);
-    const message = (await I.grabTextFrom(dbaasPage.disabledDbaaSMessage.emptyBlock)).replace(/\s+/g, ' ');
+    // FIXME: skip until https://jira.percona.com/browse/PMM-11221 is fixed
+    // I.amOnPage(dbaasPage.url);
+    // I.waitForElement(dbaasPage.disabledDbaaSMessage.settingsLinkLocator, 30);
+    // const message = (await I.grabTextFrom(dbaasPage.disabledDbaaSMessage.emptyBlock)).replace(/\s+/g, ' ');
 
-    assert.ok(message === dbaasPage.disabledDbaaSMessage.textMessage, `Message Shown on ${message} should be equal to ${dbaasPage.disabledDbaaSMessage.textMessage}`);
-    const link = await I.grabAttributeFrom(dbaasPage.disabledDbaaSMessage.settingsLinkLocator, 'href');
+    // assert.ok(message === dbaasPage.disabledDbaaSMessage.textMessage,
+    //   `Message Shown on ${message} should be equal to ${dbaasPage.disabledDbaaSMessage.textMessage}`);
+    // const link = await I.grabAttributeFrom(dbaasPage.disabledDbaaSMessage.settingsLinkLocator, 'href');
 
-    assert.ok(link.includes('/graph/settings/advanced-settings'), `Advanced Setting Link displayed on DbaaS Page, when DbaaS is not enabled ${link}, please check the link`);
+    // assert.ok(link.includes('/graph/settings/advanced-settings'),
+    //   `Advanced Setting Link displayed on DbaaS Page, when DbaaS is not enabled ${link}, please check the link`);
     // Enable DbaaS via Advanced Settings, Make sure Menu is visible.
-    await pmmSettingsPage.openAdvancedSettings();
+    // await pmmSettingsPage.openAdvancedSettings();
     I.waitForVisible(pmmSettingsPage.tooltips.advancedSettings.dbaas.iconLocator, 30);
     I.click(pmmSettingsPage.fields.dbaasSwitchSelector);
     I.click(pmmSettingsPage.fields.applyButton);
@@ -231,22 +234,22 @@ Scenario('PMM-T532 PMM-T533 PMM-T536 - Verify user can disable/enable IA in Sett
   }) => {
     await settingsAPI.apiEnableIA();
     I.amOnPage(pmmSettingsPage.advancedSettingsUrl);
-    I.waitForVisible(pmmSettingsPage.fields.iaSwitchSelector, 30);
-    I.click(pmmSettingsPage.fields.iaSwitchSelector);
+    I.waitForVisible(pmmSettingsPage.fields.perconaAlertingSwitch, 30);
+    I.click(pmmSettingsPage.fields.perconaAlertingSwitch);
     I.dontSeeElement(pmmSettingsPage.communication.communicationSection);
-    pmmSettingsPage.verifySwitch(pmmSettingsPage.fields.iaSwitchSelectorInput, 'off');
+    pmmSettingsPage.verifySwitch(pmmSettingsPage.fields.perconaAlertingSwitchInput, 'off');
     I.click(pmmSettingsPage.fields.advancedButton);
-    I.waitForVisible(pmmSettingsPage.fields.iaSwitchSelectorInput, 30);
-    pmmSettingsPage.verifySwitch(pmmSettingsPage.fields.iaSwitchSelectorInput, 'off');
+    I.waitForVisible(pmmSettingsPage.fields.perconaAlertingSwitchInput, 30);
+    pmmSettingsPage.verifySwitch(pmmSettingsPage.fields.perconaAlertingSwitchInput, 'off');
     // I.moveCursorTo(adminPage.sideMenu.alertingBellIcon);
     // I.waitForVisible(adminPage.sideMenu.integratedAlertingManuItem, 20);
     // I.seeTextEquals('Integrated Alerting', adminPage.sideMenu.integratedAlerting);
     // I.seeTextEquals('Communication', pmmSettingsPage.communication.communicationSection);
-    I.click(pmmSettingsPage.fields.iaSwitchSelector);
-    pmmSettingsPage.verifySwitch(pmmSettingsPage.fields.iaSwitchSelectorInput, 'on');
+    I.click(pmmSettingsPage.fields.perconaAlertingSwitch);
+    pmmSettingsPage.verifySwitch(pmmSettingsPage.fields.perconaAlertingSwitchInput, 'on');
     I.click(pmmSettingsPage.fields.advancedButton);
-    I.waitForVisible(pmmSettingsPage.fields.iaSwitchSelector, 30);
-    pmmSettingsPage.verifySwitch(pmmSettingsPage.fields.iaSwitchSelectorInput, 'on');
+    I.waitForVisible(pmmSettingsPage.fields.perconaAlertingSwitch, 30);
+    pmmSettingsPage.verifySwitch(pmmSettingsPage.fields.perconaAlertingSwitchInput, 'on');
     I.dontSeeElementInDOM(adminPage.sideMenu.integratedAlerting);
     I.dontSeeElement(pmmSettingsPage.communication.communicationSection);
   }).retry(2);
@@ -378,7 +381,8 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T1227 - Verify tooltip "Read more" links on PMM Settings page redirect to working pages @settings',
+  'PMM-T1227 - Verify tooltip "Read more" links on PMM Settings page redirect to working pages '
+    + 'PMM-T1338 Verify that all the metrics from config are displayed on Telemetry tooltip in Settings > Advanced @settings',
   async ({ I, pmmSettingsPage, settingsAPI }) => {
     await settingsAPI.changeSettings({ alerting: true });
     const subPageTooltips = [
@@ -417,3 +421,13 @@ Scenario(
     }
   },
 );
+
+Scenario('PMM-T1401 Verify Percona Alerting wording in Settings @max-length @settings', async ({
+  I,
+  pmmSettingsPage,
+}) => {
+  I.amOnPage(pmmSettingsPage.advancedSettingsUrl);
+  await pmmSettingsPage.waitForPmmSettingsPageLoaded();
+  pmmSettingsPage.verifySwitch(pmmSettingsPage.fields.perconaAlertingSwitch, 'on');
+  await pmmSettingsPage.verifyTooltip(pmmSettingsPage.tooltips.advancedSettings.perconaAlerting);
+});
