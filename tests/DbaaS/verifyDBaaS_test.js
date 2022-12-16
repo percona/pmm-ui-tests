@@ -41,7 +41,7 @@ Before(async ({ I }) => {
 Scenario(
   'PMM-T426 - Verify adding new Kubernetes cluster minikube, PMM-T428 - Verify adding new Kubernetes cluster with same name, '
     + 'PMM-T431 - Verify unregistering Kubernetes cluster, PMM-T1344 - Verify public address is set automatically on DBaaS page,  @dbaas',
-  async ({ I, dbaasPage }) => {
+  async ({ I, dbaasPage, dbaasAPI }) => {
     I.amOnPage(dbaasPage.url);
     I.waitForVisible(dbaasPage.tabs.kubernetesClusterTab.addKubernetesClusterButtonInTable, 30);
     I.click(dbaasPage.tabs.kubernetesClusterTab.addKubernetesClusterButton);
@@ -61,6 +61,7 @@ Scenario(
     dbaasPage.seeErrorForAddedCluster(clusterName);
     I.click(dbaasPage.tabs.kubernetesClusterTab.cancelButton);
     // PMM-T431 starting here, unregister cluster using unregister option
+    await dbaasAPI.waitForOperators();
     dbaasPage.unregisterCluster(clusterName);
     I.waitForText(dbaasPage.deletedAlertMessage, 20);
     dbaasPage.checkCluster(clusterName, true);
