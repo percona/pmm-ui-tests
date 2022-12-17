@@ -99,3 +99,61 @@ Scenario(
     await I.verifyCommand(`docker exec ${connection.container_name} pmm-admin inventory add service mysql --socket=/tmp/mysql_sandbox3307.sock temp ${node_id} 127.0.0.1 3307`, 'Socket and address cannot be specified together.', 'fail');
   },
 );
+
+Scenario(
+  'PMM-T1275 - Verify webConfigPlaceholder is generated on every Node exporter restart @not-ui-pipeline @exporters',
+  async ({ I, pmmInventoryPage }) => {
+    I.amOnPage(pmmInventoryPage.url);
+    await I.waitForVisible(pmmInventoryPage.fields.agentsLink, 20);
+    I.click(pmmInventoryPage.fields.agentsLink);
+    await I.waitForVisible(pmmInventoryPage.fields.tableRow);
+    // Find node ID
+    const nodeId = (await I.verifyCommand(`docker exec ${connection.container_name} ls /tmp/node_exporter/agent_id/`)).trim();
+
+    // Verify and find ids of node exporter
+    let processIds = await I.verifyCommand(`docker exec ${connection.container_name} pgrep node_exporter`);
+    const processId = processIds.split(/(\s+)/);
+
+    await I.verifyCommand(`docker exec ${connection.container_name} rm /tmp/node_exporter/agent_id/${nodeId}/webConfigPlaceholder`);
+    const nodeFolder2 = await I.verifyCommand(`docker exec ${connection.container_name} ls /tmp/node_exporter/agent_id/${nodeId}/`);
+
+    assert.ok(nodeFolder2.length === 0, 'folder webConfigPlaceholder was not removed.');
+
+    await I.verifyCommand(`docker exec ${connection.container_name} kill -9 ${processId[0]}`);
+    I.wait(2);
+    processIds = await I.verifyCommand(`docker exec ${connection.container_name} pgrep node_exporter`);
+    if (processId.length) {
+      await I.verifyCommand(`docker exec ${connection.container_name} kill -9 ${processIds}`);
+    }
+
+    // Verify and find ids of node exporter
+    I.wait(10);
+    const nodeExporterRestart = await I.verifyCommand(`docker exec ${connection.container_name} pgrep node_exporter`);
+
+    assert.ok(nodeExporterRestart.length, 'Node exporter is not restarted');
+
+    const folderRestart = await I.verifyCommand(`docker exec ${connection.container_name} ls /tmp/node_exporter/agent_id/${nodeId}/`);
+
+    assert.ok(folderRestart.includes('webConfigPlaceholder'), 'webConfigPlaceholder was not recreated after restart');
+
+    // remove node exporter folder
+    await I.verifyCommand(`docker exec ${connection.container_name} rm -r /tmp/node_exporter/`);
+    let restartProcessId = nodeExporterRestart.split(/(\s+)/);
+
+    await I.verifyCommand(`docker exec ${connection.container_name} kill -9 ${restartProcessId[0]}`);
+    // Verify and find ids of node exporter
+    I.wait(10);
+    restartProcessId = await I.verifyCommand(`docker exec ${connection.container_name} pgrep node_exporter`);
+    if (restartProcessId.length) {
+      await I.verifyCommand(`docker exec ${connection.container_name} kill -9 ${restartProcessId}`);
+    }
+
+    await I.wait(15);
+    const nodeExporterRemoved = await I.verifyCommand(`docker exec ${connection.container_name} pgrep node_exporter`);
+
+    assert.ok(nodeExporterRemoved.length, 'Node exporter is not restarted');
+    const folderRemoveNodeExporter = await I.verifyCommand(`docker exec ${connection.container_name} ls /tmp/node_exporter/agent_id/${nodeId}/`);
+
+    assert.ok(folderRemoveNodeExporter.includes('webConfigPlaceholder'), 'webConfigPlaceholder was not recreated after restart');
+  },
+);
