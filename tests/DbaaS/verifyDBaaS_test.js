@@ -62,7 +62,7 @@ Scenario(
     I.click(dbaasPage.tabs.kubernetesClusterTab.cancelButton);
     // PMM-T431 starting here, unregister cluster using unregister option
     await dbaasAPI.waitForOperators();
-    dbaasPage.unregisterCluster(clusterName);
+    dbaasPage.unregisterCluster(clusterName, true);
     I.waitForText(dbaasPage.deletedAlertMessage, 20);
     dbaasPage.checkCluster(clusterName, true);
   },
