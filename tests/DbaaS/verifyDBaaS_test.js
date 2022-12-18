@@ -119,8 +119,8 @@ Scenario(
     // assert.ok(configuration === process.env.kubeconfig_minikube, 
     //   `The configuration shown is not equal to the expected Cluster configuration, ${configuration}`);
     // PMM-T1130
-    I.amOnPage(dbaasPage.apiKeysUrl);
-    I.waitForText(dbaasPage.apiKeysPage.apiKeysWarningText, 10, dbaasPage.apiKeysPage.apiKeysWarningLocator);
+    // I.amOnPage(dbaasPage.apiKeysUrl);
+    // I.waitForText(dbaasPage.apiKeysPage.apiKeysWarningText, 10, dbaasPage.apiKeysPage.apiKeysWarningLocator);
     await dbaasAPI.apiUnregisterCluster(clusterName);
   },
 );
