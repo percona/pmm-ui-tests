@@ -2,7 +2,7 @@ const assert = require('assert');
 
 Feature('pmm-admin summary tests');
 
-AfterSuite(async ({ I }) => {
+After(async ({ I }) => {
   await I.verifyCommand('rm -r pmm-summary.zip pmm-summary-logs');
 });
 
