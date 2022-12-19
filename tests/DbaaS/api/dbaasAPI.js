@@ -99,6 +99,26 @@ module.exports = {
     return false;
   },
 
+  async waitForOperators() {
+    const body = {};
+    const headers = { Authorization: `Basic ${await I.getAuth()}` };
+    let response, pxcOperatorStatus, psmdbOperatorStatus;
+
+    for (let i = 0; i < 30; i++) {
+      response = await I.sendPostRequest('v1/management/DBaaS/Kubernetes/List', body, headers);
+      pxcOperatorStatus = response.data.kubernetes_clusters[0].operators.pxc.status;
+      psmdbOperatorStatus = response.data.kubernetes_clusters[0].operators.psmdb.status;
+
+      if (pxcOperatorStatus && psmdbOperatorStatus === 'OPERATORS_STATUS_OK') {
+        break;
+      }
+      else {
+        I.wait(20);
+      }
+    }
+    I.say(`Status of PXC operator was ${pxcOperatorStatus}. Status of PSMDB operator was ${psmdbOperatorStatus}.`);
+  },
+
   async apiCheckDbClusterExist(dbClusterName, k8sClusterName, dbType = 'MySQL') {
     const body = {
       kubernetesClusterName: k8sClusterName,
