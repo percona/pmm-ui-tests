@@ -1,10 +1,16 @@
-const { qanFilters } = require('../remoteInstances/remoteInstancesHelper');
-
 Feature('QAN common').retry(1);
 
 Before(async ({ I, qanPage }) => {
   await I.Authorize();
   I.amOnPage(qanPage.url);
+});
+
+const pgServiceName = 'pg-qan-test';
+
+AfterSuite(async ({ inventoryAPI }) => {
+  if (await inventoryAPI.apiGetNodeInfoByServiceName('POSTGRESQL_SERVICE', pgServiceName)) {
+    await inventoryAPI.deleteNodeByName(pgServiceName);
+  }
 });
 
 const version = process.env.PS_VERSION ? `${process.env.PS_VERSION}` : '8.0';
@@ -142,7 +148,8 @@ Scenario(
 );
 
 Scenario(
-  '@PMM-T1402 - Verify adding MySQL instance via UI with specified Max Query Length option @qan @not-ui-pipeline',
+  '@PMM-T1402 - Verify adding MySQL instance via UI with specified Max Query Length option'
+  + ' @qan @not-ui-pipeline',
   async ({
     I, remoteInstancesPage, pmmInventoryPage, inventoryAPI,
   }) => {
@@ -179,5 +186,46 @@ Scenario(
     I.waitForVisible(pmmInventoryPage.fields.agentsLink, 30);
     I.click(pmmInventoryPage.fields.agentsLink);
     await pmmInventoryPage.checkAgentOtherDetailsSection('max_query_length:', 'max_query_length: 10', remoteServiceName, serviceId);
+  },
+);
+
+Scenario(
+  '@PMM-T1388 - Verify adding postgresql with --max-query-length=10 @qan @not-ui-pipeline',
+  async ({
+    I, pmmInventoryPage, inventoryAPI, qanPage, qanOverview, addInstanceAPI,
+    remoteInstancesHelper, credentials, qanFilters,
+  }) => {
+    const expectedQueryLength = 7;
+
+    if (!await inventoryAPI.apiGetNodeInfoByServiceName('POSTGRESQL_SERVICE', pgServiceName)) {
+      await addInstanceAPI.apiAddInstance(remoteInstancesHelper.instanceTypes.postgresql, pgServiceName,
+        {
+          host: 'localhost',
+          username: credentials.postgreSql.pmmServerUser,
+          password: credentials.postgreSql.pmmServerUser,
+          maxQueryLength: `${expectedQueryLength}`,
+        });
+    }
+
+    await pmmInventoryPage.open();
+    await inventoryAPI.verifyServiceExistsAndHasRunningStatus(
+      { serviceType: 'POSTGRESQL_SERVICE', service: 'postgresql' },
+      pgServiceName,
+    );
+    pmmInventoryPage.verifyRemoteServiceIsDisplayed(pgServiceName);
+    const serviceId = await pmmInventoryPage.getServiceId(pgServiceName);
+
+    await pmmInventoryPage.openAgents();
+    await pmmInventoryPage.checkAgentOtherDetailsSection(
+      'max_query_length:', `max_query_length: ${expectedQueryLength}`, pgServiceName, serviceId,
+    );
+
+    I.amOnPage(I.buildUrlWithParams(qanPage.clearUrl, { service_name: pgServiceName, cmd_type: 'SELECT' }));
+    I.waitForVisible(qanFilters.buttons.showSelected, 30);
+    qanOverview.selectRow(2);
+    qanFilters.waitForFiltersToLoad();
+    const queryFromRow = await qanOverview.getQueryFromRow(1);
+
+    I.assertLengthOf(queryFromRow, expectedQueryLength, `Query "${queryFromRow}" length does not match expected: ${expectedQueryLength}`);
   },
 );

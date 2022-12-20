@@ -107,6 +107,11 @@ module.exports = {
       qan_postgresql_pgstatements_agent: true,
       tls_skip_verify: true,
     };
+
+    if (Object.hasOwn(creds, 'maxQueryLength')) {
+      body.maxQueryLength = creds.maxQueryLength;
+    }
+
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
     const resp = await I.sendPostRequest('v1/management/PostgreSQL/Add', body, headers);
 
