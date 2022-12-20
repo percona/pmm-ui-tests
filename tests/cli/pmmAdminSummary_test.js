@@ -40,5 +40,5 @@ Scenario('@PMM-T1353 Verify pmm-admin summary doesn\'t save any credentials in f
   await I.verifyCommand('unzip pmm-summary.zip -d pmm-summary-logs');
   const pmmServerUrl = await I.verifyCommand('cat pmm-summary-logs/client/status.json | grep \'"https://x*:x*@.*:.*"\'');
 
-  assert.notEqual(pmmServerUrl, '', 'PMM server url does not match masked version. Login and password could be in danger.');
+  I.assertNotEqual(pmmServerUrl, '', 'PMM server url does not match masked version. Login and password could be in danger.');
 });
