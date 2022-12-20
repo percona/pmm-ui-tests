@@ -100,7 +100,7 @@ module.exports = {
           memoryFieldErrorMessage: '$memory-field-error-message',
           nodesFieldErrorMessage: '$nodes-field-error-message',
           nodesNumberField: '$nodes-number-input',
-          resourcesPerNode: (clusterSize) => `//label[contains(text(), "${clusterSize}")]`,
+          resourcesPerNode: (clusterSize) => `//div[contains(text(), "${clusterSize}")]`,
           dbClusterExternalAccessTooltip: locate('$expose-field-container').find('div').at(4),
           dbClusterExternalAccessCheckbox: '$expose-switch',
           dbClusterExternalAccessTooltipText: locate('div').withChild('.tooltip-arrow'),
