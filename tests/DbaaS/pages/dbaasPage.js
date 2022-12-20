@@ -61,7 +61,7 @@ module.exports = {
       updateClusterButton: '$dbcluster-update-cluster-button',
       dbClusterTab: 'a[aria-label="Tab DB Cluster"]',
       monitoringWarningLocator: '$pmm-server-url-warning',
-      advancedOptionsButton: '$create-dbCluster-advanced-settings',
+      advancedOptionsButton: '$dbCluster-advanced-settings',
       optionsHeader: '$step-header',
       deleteDbClusterConfirmationText: (dbClusterName, clusterName, dbType) => `Are you sure that you want to delete ${dbType} cluster ${dbClusterName} from Kubernetes cluster ${clusterName} ?`,
       basicOptions: {
