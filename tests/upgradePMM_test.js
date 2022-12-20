@@ -90,10 +90,6 @@ BeforeSuite(async ({ I, codeceptjsConfig, inventoryAPI }) => {
   };
 
   await I.mongoConnect(mongoConnection);
-
-  if (!await inventoryAPI.apiGetNodeInfoByServiceName('MONGODB_SERVICE', mongoServiceName)) {
-    await I.say(await I.verifyCommand(`pmm-admin add mongodb --port=27027 --service-name=${mongoServiceName} --replication-set=rs0`));
-  }
 });
 
 AfterSuite(async ({ I, psMySql }) => {
@@ -476,6 +472,50 @@ Scenario(
     await settingsAPI.changeSettings(alertManager);
   },
 );
+
+if (versionMinor >= 32) {
+  Scenario(
+    'Create backups data to check after upgrade @ovf-upgrade @ami-upgrade @pre-upgrade @pmm-upgrade',
+    async ({
+      I, settingsAPI, locationsAPI, backupAPI, scheduledAPI, inventoryAPI, backupInventoryPage, scheduledPage,
+    }) => {
+      if (!await inventoryAPI.apiGetNodeInfoByServiceName('MONGODB_SERVICE', mongoServiceName)) {
+        await I.say(await I.verifyCommand(`pmm-admin add mongodb --port=27027 --service-name=${mongoServiceName} --replication-set=rs0`));
+      }
+
+      await settingsAPI.changeSettings({ backup: true });
+      await locationsAPI.clearAllLocations(true);
+      const locationId = await locationsAPI.createStorageLocation(location);
+
+      const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName('MONGODB_SERVICE', mongoServiceName);
+      const backupId = await backupAPI.startBackup(backupName, service_id, locationId);
+
+      // Every 20 mins schedule
+      const schedule = {
+        service_id,
+        location_id: locationId,
+        cron_expression: '*/20 * * * *',
+        name: scheduleName,
+        mode: scheduledAPI.backupModes.snapshot,
+        description: '',
+        retry_interval: '30s',
+        retries: 0,
+        enabled: true,
+        retention: 1,
+      };
+
+      await scheduledAPI.createScheduledBackup(schedule);
+
+      /** waits and success check grouped together to speedup test */
+      await backupAPI.waitForBackupFinish(backupId);
+      // await backupAPI.waitForBackupFinish(null, schedule.name, 240);
+      backupInventoryPage.openInventoryPage();
+      backupInventoryPage.verifyBackupSucceeded(backupName);
+      scheduledPage.openScheduledBackupsPage();
+      I.waitForVisible(scheduledPage.elements.scheduleName(schedule.name), 20);
+    },
+  ).retry(0);
+}
 
 Scenario(
   'PMM-T3 Verify user is able to Upgrade PMM version [blocker] @pmm-upgrade @ovf-upgrade @ami-upgrade  ',
@@ -1044,73 +1084,6 @@ if (versionMinor >= 23) {
 
 if (versionMinor >= 32) {
   Scenario(
-    'Create backups data to check after upgrade @ovf-upgrade @ami-upgrade @pre-upgrade @pmm-upgrade',
-    async ({
-      I, settingsAPI, locationsAPI, backupAPI, scheduledAPI, inventoryAPI, backupInventoryPage, scheduledPage,
-    }) => {
-      await settingsAPI.changeSettings({ backup: true });
-      await locationsAPI.clearAllLocations(true);
-      const locationId = await locationsAPI.createStorageLocation(location);
-
-      const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName('MONGODB_SERVICE', mongoServiceName);
-      const backupId = await backupAPI.startBackup(backupName, service_id, locationId);
-
-      // Every 20 mins schedule
-      const schedule = {
-        service_id,
-        location_id: locationId,
-        cron_expression: '*/20 * * * *',
-        name: scheduleName,
-        mode: scheduledAPI.backupModes.snapshot,
-        description: '',
-        retry_interval: '30s',
-        retries: 0,
-        enabled: true,
-        retention: 1,
-      };
-
-      await scheduledAPI.createScheduledBackup(schedule);
-
-      /** waits and success check grouped together to speedup test */
-      await backupAPI.waitForBackupFinish(backupId);
-      // await backupAPI.waitForBackupFinish(null, schedule.name, 240);
-      backupInventoryPage.openInventoryPage();
-      backupInventoryPage.verifyBackupSucceeded(backupName);
-      scheduledPage.openScheduledBackupsPage();
-      I.waitForVisible(scheduledPage.elements.scheduleName(schedule.name), 20);
-    },
-  ).retry(0);
-}
-
-if (versionMinor >= 32) {
-  Scenario(
-    '@PMM-T1503 - The user is able to do a restore for MongoDB after the upgrade'
-    + ' @ovf-upgrade @ami-upgrade @post-upgrade @pmm-upgrade',
-    async ({ I, backupInventoryPage, restorePage }) => {
-      const replica = await I.getMongoReplicaClient({ username: 'admin', password: 'password' });
-
-      try {
-        let collection = replica.db('test').collection('e2e');
-
-        await I.say('I create test record in MongoDB after backup');
-        await collection.insertOne({ number: 2, name: 'Anna' });
-
-        backupInventoryPage.openInventoryPage();
-        backupInventoryPage.startRestore(backupName);
-        restorePage.waitForRestoreSuccess(backupName);
-
-        await I.say('I search for the record after MongoDB restored from backup');
-        collection = replica.db('test').collection('e2e');
-        const record = await collection.findOne({ number: 2, name: 'Anna' });
-
-        I.assertEqual(record, null, `Was expecting to not have a record ${JSON.stringify(record, null, 2)} after restore operation`);
-      } finally {
-        replica.close();
-      }
-    },
-  ).retry(0);
-
-  Scenario(
     '@PMM-T1504 - The user is able to do a backup for MongoDB after upgrade'
     + ' @ovf-upgrade @ami-upgrade @post-upgrade @pmm-upgrade',
     async ({
@@ -1153,4 +1126,31 @@ if (versionMinor >= 32) {
       I.seeTextEquals(location.endpoint, locationsPage.elements.endpointCellByName(location.name));
     },
   );
+
+  Scenario(
+    '@PMM-T1503 - The user is able to do a restore for MongoDB after the upgrade'
+    + ' @ovf-upgrade @ami-upgrade @post-upgrade @pmm-upgrade',
+    async ({ I, backupInventoryPage, restorePage }) => {
+      const replica = await I.getMongoReplicaClient({ username: 'admin', password: 'password' });
+
+      try {
+        let collection = replica.db('test').collection('e2e');
+
+        await I.say('I create test record in MongoDB after backup');
+        await collection.insertOne({ number: 2, name: 'Anna' });
+
+        backupInventoryPage.openInventoryPage();
+        backupInventoryPage.startRestore(backupName);
+        restorePage.waitForRestoreSuccess(backupName);
+
+        await I.say('I search for the record after MongoDB restored from backup');
+        collection = replica.db('test').collection('e2e');
+        const record = await collection.findOne({ number: 2, name: 'Anna' });
+
+        I.assertEqual(record, null, `Was expecting to not have a record ${JSON.stringify(record, null, 2)} after restore operation`);
+      } finally {
+        replica.close();
+      }
+    },
+  ).retry(0);
 }
