@@ -335,7 +335,7 @@ Failed to register pmm-agent on PMM Server: Post "https://https:%2F%2F1.2.3.4/v1
   },
 );
 
-Scenario('PMM-T1512 Verify tooltips work properly for DBaaS page @dbaas',
+Scenario('@PMM-T1512 Verify tooltips work properly for DBaaS page @dbaas',
   async ({
     I, dbaasPage, adminPage, dbaasActionsPage,
   }) => {
