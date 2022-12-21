@@ -11,6 +11,10 @@ AfterSuite(async ({ inventoryAPI }) => {
   if (await inventoryAPI.apiGetNodeInfoByServiceName('POSTGRESQL_SERVICE', pgServiceName)) {
     await inventoryAPI.deleteNodeByName(pgServiceName);
   }
+
+  if (await inventoryAPI.apiGetNodeInfoByServiceName('MYSQL_SERVICE', remoteServiceName)) {
+    await inventoryAPI.deleteNodeByName(remoteServiceName);
+  }
 });
 
 const version = process.env.PS_VERSION ? `${process.env.PS_VERSION}` : '8.0';
@@ -172,6 +176,12 @@ Scenario(
     remoteInstancesPage.fillRemoteMySqlForm(details);
 
     I.click(remoteInstancesPage.fields.addService);
+
+    // there is no message on success, ut there is on fail and need to report it
+    if (!await tryTo(() => I.waitInUrl(pmmInventoryPage.servicesUrl, 2))) {
+      I.verifyPopUpMessage('success', 1);
+    }
+
     I.waitForVisible(pmmInventoryPage.fields.agentsLink, 30);
     await inventoryAPI.verifyServiceExistsAndHasRunningStatus(
       {
@@ -187,7 +197,7 @@ Scenario(
     I.click(pmmInventoryPage.fields.agentsLink);
     await pmmInventoryPage.checkAgentOtherDetailsSection('max_query_length:', 'max_query_length: 10', remoteServiceName, serviceId);
   },
-);
+).retry(0);
 
 Scenario(
   '@PMM-T1388 - Verify adding postgresql with --max-query-length=10 @qan @not-ui-pipeline',

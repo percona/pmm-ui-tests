@@ -4,6 +4,7 @@ const paginationPart = require('./paginationFragment');
 
 module.exports = {
   url: 'graph/inventory?orgId=1',
+  servicesUrl: '/graph/inventory/services',
   fields: {
     agentsLink: locate('[role="tablist"] a').withText('Agents').withAttr({ 'aria-label': 'Tab Agents' }),
     agentsLinkOld: locate('a').withText('Agents'),
