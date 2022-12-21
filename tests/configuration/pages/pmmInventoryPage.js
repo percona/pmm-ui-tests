@@ -35,6 +35,7 @@ module.exports = {
     tableRow: '//tr[@data-testid="table-tbody-tr"]',
     processExecPathExporters: '//td[contains(text(), "exporter")]//ancestor::tr[@data-testid="table-row"]//span[contains(text(), "process_exec_path")]',
     nodeExporterStatus: '//td[contains(text(), "Node exporter")]//ancestor::tr[@data-testid="table-row"]//span[contains(text(), "status")]',
+    agentId: '//td[contains(text(), "agent_id") and not(following-sibling::td[text()="PMM Agent"])]',
   },
   pagination: paginationPart,
 
@@ -333,5 +334,16 @@ module.exports = {
   checkExistingAgent(agent) {
     I.click(this.fields.agentsLink);
     I.waitForVisible(agent, 30);
+  },
+
+  async checkAgentsPresent(expectedAgentIds) {
+    const actualAgentIds = (await I.grabTextFromAll(this.fields.agentId))
+      .map((string) => string.replace('/agent_id/', ''));
+
+    I.assertNotEqual(expectedAgentIds.length, actualAgentIds.length, `The number of actual Agents doesn't match expected (Expected ${expectedAgentIds.length} but got ${actualAgentIds.length})`);
+
+    expectedAgentIds.forEach((agentId) => {
+      I.assertTrue(actualAgentIds.includes(agentId), `Actual Agents don't include expected agent_id (Expected ${agentId} but didn't found)`);
+    });
   },
 };
