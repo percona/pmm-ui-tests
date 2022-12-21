@@ -96,7 +96,7 @@ Scenario(
 Scenario(
   'PMM-T1207 - Verify dashboard search between QAN and dashboards @qan',
   async ({
-    I, qanPage, searchDashboardsModal, qanOverview,
+    I, qanPage, searchDashboardsModal, qanOverview, qanDetails,
   }) => {
     qanPage.waitForOpened();
     I.click(qanPage.fields.breadcrumbs.dashboardName);
@@ -106,12 +106,16 @@ Scenario(
     qanPage.waitForOpened();
     qanOverview.waitForOverviewLoaded();
     qanOverview.selectRow(1);
+    await qanDetails.checkDetailsTab();
     I.click(qanPage.fields.topMenu.queryAnalytics);
     I.click(qanPage.fields.breadcrumbs.dashboardName);
     I.wait(3);
     searchDashboardsModal.waitForOpened();
     I.click(searchDashboardsModal.fields.closeButton);
     qanPage.waitForOpened();
+    qanOverview.waitForOverviewLoaded();
+    qanOverview.selectRow(2);
+    await qanDetails.checkDetailsTab();
   },
 );
 
