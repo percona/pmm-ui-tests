@@ -563,28 +563,10 @@ module.exports = {
     );
   },
 
-  /**
-   * Encapsulates Tooltip data verification.
-   * There could be only one tooltip popup on a page.
-   *
-   * @param   tooltipObj        one of {@link pmmSettingsPage.tooltips} or and object with similar structure
-   * @returns {Promise<void>}   requires await in test body.
-   */
   async verifyTooltip(tooltipObj) {
-    I.waitForVisible(tooltipObj.iconLocator, 5);
-    I.moveCursorTo(tooltipObj.iconLocator);
-    I.scrollTo(this.fields.tooltipText);
-    I.waitForVisible(this.fields.tooltipText, 5);
-    I.seeTextEquals(tooltipObj.text, this.fields.tooltipText.as('Tooltip text'));
-    /* there are tooltip without "Read more" link */
-    if (tooltipObj.link) {
-      I.scrollTo(this.fields.tooltipReadMoreLink);
-      I.seeAttributesOnElements(this.fields.tooltipReadMoreLink.as(`Tooltip "Read more" link for ${tooltipObj.iconLocator}`), { href: tooltipObj.link });
-      const readMoreLink = (await I.grabAttributeFrom(this.fields.tooltipReadMoreLink, 'href'));
-      const response = await I.sendGetRequest(readMoreLink);
-
-      assert.equal(response.status, 200, 'Read more link should lead to working documentation page. But the GET request response status is not 200');
-    }
+    tooltipObj.tooltipText = this.fields.tooltipText;
+    tooltipObj.tooltipReadMoreLink = this.fields.tooltipReadMoreLink;
+    await adminPage.verifyTooltip(tooltipObj);
 
     I.moveCursorTo(locate('li').withText('PMM Logs'));
   },
