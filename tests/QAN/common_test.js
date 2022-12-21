@@ -153,7 +153,7 @@ Scenario(
 
 Scenario(
   '@PMM-T1402 - Verify adding MySQL instance via UI with specified Max Query Length option'
-  + ' @qan @not-ui-pipeline',
+  + ' @ssl @ssl-remote @not-ui-pipeline',
   async ({
     I, remoteInstancesPage, pmmInventoryPage, inventoryAPI,
   }) => {
@@ -178,6 +178,7 @@ Scenario(
     I.click(remoteInstancesPage.fields.addService);
 
     // there is no message on success, ut there is on fail and need to report it
+    // eslint-disable-next-line no-undef
     if (!await tryTo(() => I.waitInUrl(pmmInventoryPage.servicesUrl, 2))) {
       I.verifyPopUpMessage('success', 1);
     }
@@ -200,7 +201,8 @@ Scenario(
 ).retry(0);
 
 Scenario(
-  '@PMM-T1388 - Verify adding postgresql with --max-query-length=10 @qan @not-ui-pipeline',
+  '@PMM-T1388 - Verify adding postgresql with --max-query-length=10'
+  + ' @ssl @ssl-remote @not-ui-pipeline',
   async ({
     I, pmmInventoryPage, inventoryAPI, qanPage, qanOverview, addInstanceAPI,
     remoteInstancesHelper, credentials, qanFilters,
