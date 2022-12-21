@@ -5,21 +5,19 @@ Before(async ({ I, qanPage }) => {
   I.amOnPage(qanPage.url);
 });
 
-const pgServiceName = 'pg-qan-test';
-
 AfterSuite(async ({ inventoryAPI }) => {
   if (await inventoryAPI.apiGetNodeInfoByServiceName('POSTGRESQL_SERVICE', pgServiceName)) {
     await inventoryAPI.deleteNodeByName(pgServiceName);
   }
 
-  if (await inventoryAPI.apiGetNodeInfoByServiceName('MYSQL_SERVICE', remoteServiceName)) {
-    await inventoryAPI.deleteNodeByName(remoteServiceName);
+  if (await inventoryAPI.apiGetNodeInfoByServiceName('MYSQL_SERVICE', mysqlServiceName)) {
+    await inventoryAPI.deleteNodeByName(mysqlServiceName);
   }
 });
 
-const version = process.env.PS_VERSION ? `${process.env.PS_VERSION}` : '8.0';
-const container_name = `ps_pmm_${version}`;
-const remoteServiceName = 'remote_pmm-mysql-integration';
+const container_name = 'mysql_8.0';
+const mysqlServiceName = 'remote_mysql-max-q';
+const pgServiceName = 'pg-qan-test';
 
 const connection = {
   host: container_name,
@@ -163,7 +161,7 @@ Scenario(
   }) => {
     const port = await I.verifyCommand(`docker exec ${container_name} pmm-admin list | grep "MySQL" | grep "mysql_client" | awk -F":" '{print $2}' | awk -F" " '{ print $1}' | head -1`);
     const details = {
-      serviceName: remoteServiceName,
+      serviceName: mysqlServiceName,
       serviceType: 'MYSQL_SERVICE',
       port,
       username: connection.username,
@@ -195,12 +193,12 @@ Scenario(
       },
       details.serviceName,
     );
-    pmmInventoryPage.verifyRemoteServiceIsDisplayed(remoteServiceName);
-    const serviceId = await pmmInventoryPage.getServiceId(remoteServiceName);
+    pmmInventoryPage.verifyRemoteServiceIsDisplayed(mysqlServiceName);
+    const serviceId = await pmmInventoryPage.getServiceId(mysqlServiceName);
 
     I.waitForVisible(pmmInventoryPage.fields.agentsLink, 30);
     I.click(pmmInventoryPage.fields.agentsLink);
-    await pmmInventoryPage.checkAgentOtherDetailsSection('max_query_length:', 'max_query_length: 10', remoteServiceName, serviceId);
+    await pmmInventoryPage.checkAgentOtherDetailsSection('max_query_length:', 'max_query_length: 10', mysqlServiceName, serviceId);
   },
 ).retry(0);
 
