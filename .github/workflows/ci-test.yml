@@ -4,6 +4,7 @@ name: Temp test
 
 on:
   push:
+  pull_request:
 
 jobs:
   lint:
@@ -21,5 +22,5 @@ jobs:
           inputs: |
             {
                 "pmm_qa_branch": "PMM-7_Migrate_Testsuite",
-                "sha": "${{ github.event.pull_request.head.sha }}",
+                "sha": "${{ github.event.pull_request.head.sha }}"
             }
