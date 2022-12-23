@@ -16,7 +16,7 @@ jobs:
         uses: percona-platform/workflow-dispatch@v1
         with:
           workflow: E2E
-          token: ${{ secrets.GH_API_TOKEN }}
+          token: ${{ secrets.GITHUB_TOKEN }}
           repo: percona/pmm-qa
           ref: PMM-7_Migrate_Testsuite
           inputs: |
