@@ -15,7 +15,7 @@ jobs:
       - name: Trigger dispatch
         uses: percona-platform/workflow-dispatch@v1
         with:
-          workflow: E2E
+          workflow: testsuite
           token: ${{ secrets.GITHUB_TOKEN }}
           repo: percona/pmm-qa
           ref: PMM-7_Migrate_Testsuite
