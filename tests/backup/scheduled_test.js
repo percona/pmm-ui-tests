@@ -50,7 +50,6 @@ Before(async ({
   serviceId = service_id;
   const c = await I.mongoGetCollection('test', 'e2e');
 
-
   await c.deleteMany({ number: 2 });
 
   await I.Authorize();
@@ -178,7 +177,7 @@ Scenario(
 );
 
 Scenario(
-  '@PMM-T913, @PMM-T922, @PMM-T977 Verify user can schedule a backup for MongoDB with replica @backup @bm-mongo @fb',
+  '@PMM-T913, @PMM-T922, @PMM-T977 Verify user can schedule a backup for MongoDB with replica @backup @bm-mongo @bm-fb',
   async ({
     I, backupInventoryPage, scheduledAPI, backupAPI, scheduledPage,
   }) => {
@@ -292,7 +291,7 @@ Scenario('@PMM-T900 Verify user can copy scheduled backup @backup @bm-mongo',
     I.seeAttributesOnElements(scheduledPage.elements.toggleByName(newSchedule.name), { checked: null });
   });
 
-Scenario('@PMM-T908 Verify user can enable/disable scheduled backup @backup @bm-mongo @fb',
+Scenario('@PMM-T908 Verify user can enable/disable scheduled backup @backup @bm-mongo @bm-fb',
   async ({
     I, scheduledPage, scheduledAPI,
   }) => {
