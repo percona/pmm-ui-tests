@@ -1,7 +1,8 @@
 name: pmm2-ui-tests-fb pipeline
 on:
-  # run with default inputs
+
   pull_request:
+  
   workflow_dispatch:
     inputs:
       server_image:
@@ -28,6 +29,7 @@ on:
         description: "SHA (leave empty if running manually, default - 'null')"
         required: false
         type: string
+        
   workflow_call:
     inputs:
       server_image:
@@ -56,7 +58,6 @@ on:
         type: string
 
 jobs:
-
   advisors:
       name: Advisors UI tests
       if: ${{ github.event_name == 'pull_request' }}
