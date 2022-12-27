@@ -58,7 +58,7 @@ jobs:
       - name: Checkout PMM-UI tests when Workflow_dispatch
 #        if: ${{ github.event_name == 'workflow_call' || github.event_name == 'workflow_dispatch' }}
         uses: percona-platform/checkout@v2
-        with:
+#       with:
 #          ref: ${{ env.PMM_UI_BRANCH }}
 #          repository: percona/pmm-ui-tests
 #          path: ./
