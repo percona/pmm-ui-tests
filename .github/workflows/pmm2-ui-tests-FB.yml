@@ -110,5 +110,4 @@ jobs:
       pmm_qa_branch: ${{ github.event.inputs.pmm_qa_branch || 'main' }}
       pmm_ui_branch: ${{ github.event.inputs.pmm_ui_branch || 'main' }}
       sha: ${{ github.event.inputs.sha || 'null' }}
-      client_flags: ''
       tags_for_tests: '@alerting-fb|@settings-fb'
