@@ -41,46 +41,6 @@ Before(async ({ I, settingsAPI }) => {
 });
 
 Data(instances).Scenario(
-  'Verify Adding SSL Mysql services remotely @ssl @ssl-remote @not-ui-pipeline',
-  async ({
-    I, remoteInstancesPage, pmmInventoryPage, current, inventoryAPI,
-  }) => {
-    const {
-      serviceName, serviceType, version, container,
-    } = current;
-    let details;
-    const remoteServiceName = `remote_${serviceName}_faker`;
-
-    if (serviceType === 'mysql_ssl') {
-      details = {
-        serviceName: remoteServiceName,
-        serviceType,
-        port: '3306',
-        host: container,
-        username: 'pmm',
-        password: 'pmm',
-        cluster: 'mysql_remote_cluster',
-        environment: 'mysql_remote_cluster',
-        tlsCAFile: `${adminPage.pathToPMMTests}tls-ssl-setup/mysql/${version}/ca.pem`,
-        tlsKeyFile: `${adminPage.pathToPMMTests}tls-ssl-setup/mysql/${version}/client-key.pem`,
-        tlsCertFile: `${adminPage.pathToPMMTests}tls-ssl-setup/mysql/${version}/client-cert.pem`,
-      };
-    }
-
-    I.amOnPage(remoteInstancesPage.url);
-    remoteInstancesPage.waitUntilRemoteInstancesPageLoaded();
-    remoteInstancesPage.openAddRemotePage(serviceType);
-    await remoteInstancesPage.addRemoteSSLDetails(details);
-    I.click(remoteInstancesPage.fields.addService);
-
-
-    // Check Remote Instance also added and have running status
-    pmmInventoryPage.verifyRemoteServiceIsDisplayed(remoteServiceName);
-    await pmmInventoryPage.verifyAgentHasStatusRunning(remoteServiceName);
-  },
-);
-
-Data(instances).Scenario(
   'Verify metrics from mysql SSL instances on PMM-Server @ssl @ssl-remote @not-ui-pipeline',
   async ({
     I, remoteInstancesPage, pmmInventoryPage, current, grafanaAPI,
