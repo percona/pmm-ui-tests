@@ -3,6 +3,7 @@ const assert = require('assert');
 const { I, remoteInstancesHelper } = inject();
 
 module.exports = {
+  // TODO: simplify argument secrive to just {String type}, apply fluent wait from custom steps
   async verifyServiceExistsAndHasRunningStatus(service, serviceName) {
     let responseService;
 

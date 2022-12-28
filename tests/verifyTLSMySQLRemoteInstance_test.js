@@ -72,13 +72,7 @@ Data(instances).Scenario(
     remoteInstancesPage.openAddRemotePage(serviceType);
     await remoteInstancesPage.addRemoteSSLDetails(details);
     I.click(remoteInstancesPage.fields.addService);
-    await inventoryAPI.verifyServiceExistsAndHasRunningStatus(
-      {
-        serviceType: 'MYSQL_SERVICE',
-        service: 'mysql',
-      },
-      serviceName,
-    );
+
 
     // Check Remote Instance also added and have running status
     pmmInventoryPage.verifyRemoteServiceIsDisplayed(remoteServiceName);
@@ -232,74 +226,67 @@ Data(maxQueryLengthTestData).Scenario(
 );
 
 Data(maxQueryLengthInstances).Scenario(
-  ' PMM-T1403 Verify Max Query Length field is not required on Add remote MySQL instance page'
-    + ' PMM-T1404 Verify Max Query Length option can be set to -1 on Add remote MySQL page'
-    + ' PMM-T1426 Verify remote PostgreSQL can be added with specified Max Query Length'
-    + ' PMM-T1431 Verify adding MongoDB instance via UI with specified Max Query Length option @max-length @ssl @ssl-remote @not-ui-pipeline',
+  '@PMM-T1402 @PMM-T1403 @PMM-T1404 - Verify adding MySQL instance via UI with specified Max Query Length option'
+    + '@max-length @ssl @ssl-remote @not-ui-pipeline',
   async ({
     I, remoteInstancesPage, pmmInventoryPage, qanPage, qanOverview, qanFilters, qanDetails, inventoryAPI, current,
   }) => {
     const {
       serviceName, serviceType, version, container, maxQueryLength,
     } = current;
-    let details;
     const remoteServiceName = `MaxQueryLength_remote_${serviceName}_${faker.random.alphaNumeric(3)}`;
-
-    if (serviceType === 'mysql_ssl') {
-      details = {
-        serviceName: remoteServiceName,
-        serviceType,
-        port: '3306',
-        host: container,
-        username: 'pmm',
-        password: 'pmm',
-        cluster: 'mysql_remote_cluster',
-        environment: 'mysql_remote_cluster',
-        tlsCAFile: `${adminPage.pathToPMMTests}tls-ssl-setup/mysql/${version}/ca.pem`,
-        tlsKeyFile: `${adminPage.pathToPMMTests}tls-ssl-setup/mysql/${version}/client-key.pem`,
-        tlsCertFile: `${adminPage.pathToPMMTests}tls-ssl-setup/mysql/${version}/client-cert.pem`,
-      };
-    }
+    const details = {
+      serviceName: remoteServiceName,
+      serviceType,
+      port: '3306',
+      host: container,
+      username: 'pmm',
+      password: 'pmm',
+      cluster: 'mysql_remote_cluster',
+      environment: 'mysql_remote_cluster',
+      tlsCAFile: `${adminPage.pathToPMMTests}tls-ssl-setup/mysql/${version}/ca.pem`,
+      tlsKeyFile: `${adminPage.pathToPMMTests}tls-ssl-setup/mysql/${version}/client-key.pem`,
+      tlsCertFile: `${adminPage.pathToPMMTests}tls-ssl-setup/mysql/${version}/client-cert.pem`,
+      maxQueryLength,
+    };
 
     I.amOnPage(remoteInstancesPage.url);
     remoteInstancesPage.waitUntilRemoteInstancesPageLoaded();
     remoteInstancesPage.openAddRemotePage(serviceType);
     await remoteInstancesPage.addRemoteSSLDetails(details);
-    I.fillField(remoteInstancesPage.fields.maxQueryLength, maxQueryLength);
     I.click(remoteInstancesPage.fields.addService);
 
-    // Check Remote Instance also added and have running status
+    // there is no message on success, ut there is on fail and need to report it
+    // eslint-disable-next-line no-undef
+    if (!await tryTo(() => I.waitInUrl(pmmInventoryPage.servicesUrl, 2))) {
+      I.verifyPopUpMessage('success', 1);
+    }
+
+    // Base check: Service exists and running
+    await inventoryAPI.verifyServiceExistsAndHasRunningStatus({ serviceType: 'MYSQL_SERVICE', service: 'mysql' }, serviceName);
+    I.waitForVisible(pmmInventoryPage.fields.agentsLink, 30);
     pmmInventoryPage.verifyRemoteServiceIsDisplayed(remoteServiceName);
-    await pmmInventoryPage.verifyAgentHasStatusRunning(remoteServiceName);
-    // Check Remote Instance also added and have running status
-    await pmmInventoryPage.openServices();
     const serviceId = await pmmInventoryPage.getServiceId(remoteServiceName);
 
-    // Check Remote Instance also added and have correct max_query_length option set
-    await pmmInventoryPage.openAgents();
+    await pmmInventoryPage.verifyAgentHasStatusRunning(remoteServiceName);
 
+    // Main check: correct max_query_length option displayed in Agent's details
     if (maxQueryLength !== '') {
       await pmmInventoryPage.checkAgentOtherDetailsSection('max_query_length:', `max_query_length: ${maxQueryLength}`, remoteServiceName, serviceId);
     } else {
       await pmmInventoryPage.checkAgentOtherDetailsMissing('max_query_length:', serviceId);
     }
 
-    // Check max visible query length is less than max_query_length option
-    I.amOnPage(I.buildUrlWithParams(qanPage.clearUrl, { from: 'now-5m' }));
-    qanOverview.waitForOverviewLoaded();
-    await qanFilters.applyFilter(remoteServiceName);
+    // Main check: Query label is cut of by max_query_length option on QAN Page
+    I.amOnPage(I.buildUrlWithParams(qanPage.clearUrl, { from: 'now-5m', service_name: remoteServiceName, search: 'SELECT' }));
     I.waitForElement(qanOverview.elements.querySelector, 30);
     const queryFromRow = await qanOverview.getQueryFromRow(1);
 
     if (maxQueryLength !== '' && maxQueryLength !== '-1') {
-      assert.ok(queryFromRow.length <= maxQueryLength, `Query length exceeds max length boundary equals ${queryFromRow.length} is more than ${maxQueryLength}`);
+      I.assertLengthOf(queryFromRow, parseInt(maxQueryLength, 10), `Query "${queryFromRow}" length does not match expected: ${maxQueryLength}`);
     } else {
-      // 6 is chosen because it's the length of "SELECT" any query that starts with that word should be longer
-      assert.ok(queryFromRow.length >= 6, `Query length is equal to ${queryFromRow.length} which is less than minimal possible length`);
-      qanOverview.selectRow(1);
-      qanFilters.waitForFiltersToLoad();
-      qanDetails.checkExamplesTab();
-      qanDetails.checkExplainTab();
+      // any "SELECT" query be longer then 6 without "max_query_length" option applied
+      I.assertTrue(queryFromRow.length >= 6, `Query length is equal to ${queryFromRow.length} which is less than minimal possible length`);
     }
   },
 );

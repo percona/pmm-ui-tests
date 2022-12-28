@@ -81,6 +81,7 @@ module.exports = {
     I.see(serviceName, this.fields.inventoryTableColumn);
   },
 
+  // TODO: extract page open action - navigation must be dedicated action or method
   async verifyAgentHasStatusRunning(service_name) {
     const serviceId = await this.getServiceId(service_name);
     const agentLinkLocator = this.fields.agentsLink;

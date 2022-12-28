@@ -90,7 +90,7 @@ module.exports = {
   },
   fields: {
     accessKeyInput: '$aws_access_key-text-input',
-    addAWSRDSMySQLbtn: '$rds-instance',
+    addAmazonRdsBtn: '$rds-instance',
     addAzureMySQLPostgreSQL: '$azure-instance',
     addExternalServiceRemote: '$external-instance',
     addHAProxy: '$haproxy-instance',
@@ -160,7 +160,7 @@ module.exports = {
 
   async open() {
     I.amOnPage(this.url);
-    I.waitForElement(this.fields.addAWSRDSMySQLbtn, 60);
+    I.waitForElement(this.fields.addAmazonRdsBtn, 60);
   },
 
   async getFileContent(filePath) {
@@ -247,6 +247,10 @@ module.exports = {
     I.fillField(this.fields.serviceName, details.serviceName);
     I.fillField(this.fields.environment, details.environment);
     I.fillField(this.fields.cluster, details.cluster);
+
+    if (Object.hasOwn(details, 'maxQueryLength')) {
+      I.fillField(this.fields.maxQueryLengthInput, details.maxQueryLength);
+    }
 
     // eslint-disable-next-line no-empty
     if (details.type === 'postgresql') {
@@ -493,8 +497,8 @@ module.exports = {
     this.waitForDiscovery();
   },
 
-  openAddAWSRDSMySQLPage() {
-    I.click(this.fields.addAWSRDSMySQLbtn);
+  openAddAmazonRdsPage() {
+    I.click(this.fields.addAmazonRdsBtn);
     I.waitForVisible(this.fields.accessKeyInput, 30);
     I.waitForVisible(this.fields.secretKeyInput, 30);
   },
