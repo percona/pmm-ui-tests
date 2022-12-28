@@ -5,26 +5,6 @@ Before(async ({ I, qanPage }) => {
   I.amOnPage(qanPage.url);
 });
 
-AfterSuite(async ({ inventoryAPI }) => {
-  if (await inventoryAPI.apiGetNodeInfoByServiceName('POSTGRESQL_SERVICE', pgServiceName)) {
-    await inventoryAPI.deleteNodeByName(pgServiceName);
-  }
-
-  if (await inventoryAPI.apiGetNodeInfoByServiceName('MYSQL_SERVICE', mysqlServiceName)) {
-    await inventoryAPI.deleteNodeByName(mysqlServiceName);
-  }
-});
-
-const container_name = 'mysql_8.0';
-const mysqlServiceName = 'remote_mysql-max-q';
-const pgServiceName = 'pg-qan-test';
-
-const connection = {
-  host: container_name,
-  username: 'msandbox',
-  password: 'msandbox',
-};
-
 Scenario(
   'PMM-T122 PMM-T269 - Verify QAN UI Elements are displayed @qan',
   async ({
