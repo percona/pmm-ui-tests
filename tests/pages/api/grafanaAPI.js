@@ -245,6 +245,42 @@ module.exports = {
     }
   },
 
+  /**
+   * Fluent wait for a specified metric to have empty body.
+   * Fails test if timeout exceeded.
+   *
+   * @param     metricName          name of the metric to lookup
+   * @param     queryBy             PrometheusQL expression, ex.: {node_name='MySQL Node'}
+   * @param     timeOutInSeconds    time to wait for a service to appear
+   * @returns   {Promise<Object>}   response Object, requires await when called
+   */
+  async waitForMetricAbsent(metricName, queryBy, timeOutInSeconds = 30) {
+    const start = new Date().getTime();
+    const timout = timeOutInSeconds * 1000;
+    const interval = 1;
+
+    await I.say(`Wait ${timeOutInSeconds} seconds for Metrics ${metricName} with filters as ${JSON.stringify(queryBy)} to stop being collected`);
+
+    /* eslint no-constant-condition: ["error", { "checkLoops": false }] */
+    while (true) {
+      // Main condition check: metric body is not empty
+      const response = await this.getMetric(metricName, queryBy);
+
+      if (response.data.data.result.length === 0) {
+        return response;
+      }
+
+      // Check the timeout after evaluating main condition
+      // to ensure conditions with a zero timeout can succeed.
+      if (new Date().getTime() - start >= timout) {
+        assert.fail(`Metrics "${metricName}" is still available:
+        tried to check for ${timeOutInSeconds} second(s) with ${interval} second(s) with interval`);
+      }
+
+      I.wait(interval);
+    }
+  },
+
   async checkMetricExist(metricName, refineBy) {
     const response = await this.getMetric(metricName, refineBy);
     const result = JSON.stringify(response.data.data.result);
