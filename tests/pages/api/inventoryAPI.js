@@ -259,7 +259,7 @@ module.exports = {
         await I.verifyCommand(`docker exec ${dbDetails.container_name} pmm-admin inventory remove agent ${agent_id}`);
         break;
       case 'pgstatements':
-        agent_id = (await I.verifyCommand(`docker exec ${dbDetails.container_name} pmm-admin inventory add agent qan-postgresql-pgstatements-agent --password=${dbDetails.password} --log-level=${logLevel} ${dbDetails.pmm_agent_id} ${dbDetails.service_id} ${dbDetails.username} | grep "Agent ID" | grep -v "PMM-Agent ID" | awk -F " " '{print $4}'`)).trim();
+        agent_id = (await I.verifyCommand(`docker exec ${dbDetails.container_name} pmm-admin inventory add agent qan-postgresql-pgstatements-agent --password=${dbDetails.password} ${logLvlFlag} ${dbDetails.pmm_agent_id} ${dbDetails.service_id} ${dbDetails.username} | grep "Agent ID" | grep -v "PMM-Agent ID" | awk -F " " '{print $4}'`)).trim();
         output = await this.apiGetAgentDetailsViaAgentId(agent_id);
         log_level = output.data.qan_postgresql_pgstatements_agent.log_level;
 
