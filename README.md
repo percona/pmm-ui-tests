@@ -104,6 +104,11 @@ Execute command in the Project Root folder
     @not-ui-pipeline        legacy/deprecated
     @not-pr-pipeline        legacy/deprecated
     @cli                    cli related tests
+    @alerting-fb            alerting related tests executed on FB
+    @advisors-fb            advisors related tests executed on FB
+    @bm-fb                  backup management related tests executed on FB
+    @instances-fb           remote instances related tests executed on FB
+    @settings-fb            settings related tests executed on FB
 
 
 ## Contributing
