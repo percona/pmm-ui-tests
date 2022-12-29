@@ -3,7 +3,7 @@ const faker = require('faker');
 const { generate } = require('generate-password');
 
 const {
-  adminPage, remoteInstancesHelper, psMySql, pmmSettingsPage, dashboardPage, databaseChecksPage,
+  adminPage, remoteInstancesHelper, psMySql, pmmSettingsPage, dashboardPage, databaseChecksPage, locationsPage,
 } = inject();
 
 const pathToPMMFramework = adminPage.pathToPMMTests;
@@ -33,6 +33,15 @@ const failedCheckRowLocator = databaseChecksPage.elements
 const ruleName = 'Alert Rule for upgrade';
 const failedCheckMessage = 'Newer version of Percona Server for MySQL is available';
 
+const mongoServiceName = 'mongo-backup-upgrade';
+const location = {
+  name: 'upgrade-location',
+  description: 'upgrade-location description',
+  ...locationsPage.mongoStorageLocation,
+};
+const backupName = 'upgrade backup test';
+const scheduleName = 'upgrade schedule';
+
 // For running on local env set PMM_SERVER_LATEST and DOCKER_VERSION variables
 function getVersions() {
   const [, pmmMinor, pmmPatch] = (process.env.PMM_SERVER_LATEST || '').split('.');
@@ -53,7 +62,6 @@ function getVersions() {
 }
 
 const { versionMinor, patchVersionDiff, majorVersionDiff } = getVersions();
-
 const iaReleased = versionMinor >= 13;
 
 Feature('PMM server Upgrade Tests and Executing test cases related to Upgrade Testing Cycle').retry(1);
@@ -63,7 +71,7 @@ Before(async ({ I }) => {
   I.setRequestTimeout(60000);
 });
 
-BeforeSuite(async ({ I, codeceptjsConfig }) => {
+BeforeSuite(async ({ I, codeceptjsConfig, inventoryAPI }) => {
   const mysqlComposeConnection = {
     host: (process.env.AMI_UPGRADE_TESTING_INSTANCE === 'true' || process.env.OVF_UPGRADE_TESTING_INSTANCE === 'true' ? process.env.VM_CLIENT_IP : '127.0.0.1'),
     port: (process.env.AMI_UPGRADE_TESTING_INSTANCE === 'true' || process.env.OVF_UPGRADE_TESTING_INSTANCE === 'true' ? remoteInstancesHelper.remote_instance.mysql.ps_5_7.port : '3309'),
@@ -465,6 +473,50 @@ Scenario(
   },
 );
 
+if (versionMinor >= 32) {
+  Scenario(
+    'Create backups data to check after upgrade @ovf-upgrade @ami-upgrade @pre-upgrade @pmm-upgrade',
+    async ({
+      I, settingsAPI, locationsAPI, backupAPI, scheduledAPI, inventoryAPI, backupInventoryPage, scheduledPage,
+    }) => {
+      if (!await inventoryAPI.apiGetNodeInfoByServiceName('MONGODB_SERVICE', mongoServiceName)) {
+        await I.say(await I.verifyCommand(`pmm-admin add mongodb --port=27027 --service-name=${mongoServiceName} --replication-set=rs0`));
+      }
+
+      await settingsAPI.changeSettings({ backup: true });
+      await locationsAPI.clearAllLocations(true);
+      const locationId = await locationsAPI.createStorageLocation(location);
+
+      const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName('MONGODB_SERVICE', mongoServiceName);
+      const backupId = await backupAPI.startBackup(backupName, service_id, locationId);
+
+      // Every 20 mins schedule
+      const schedule = {
+        service_id,
+        location_id: locationId,
+        cron_expression: '*/20 * * * *',
+        name: scheduleName,
+        mode: scheduledAPI.backupModes.snapshot,
+        description: '',
+        retry_interval: '30s',
+        retries: 0,
+        enabled: true,
+        retention: 1,
+      };
+
+      await scheduledAPI.createScheduledBackup(schedule);
+
+      /** waits and success check grouped together to speedup test */
+      await backupAPI.waitForBackupFinish(backupId);
+      // await backupAPI.waitForBackupFinish(null, schedule.name, 240);
+      backupInventoryPage.openInventoryPage();
+      backupInventoryPage.verifyBackupSucceeded(backupName);
+      scheduledPage.openScheduledBackupsPage();
+      I.waitForVisible(scheduledPage.elements.scheduleName(schedule.name), 20);
+    },
+  ).retry(0);
+}
+
 Scenario(
   'PMM-T3 Verify user is able to Upgrade PMM version [blocker] @pmm-upgrade @ovf-upgrade @ami-upgrade  ',
   async ({ I, homePage }) => {
@@ -556,7 +608,7 @@ Scenario(
   }) => {
     await homePage.open();
     I.dontSeeElement(homePage.fields.sttDisabledFailedChecksPanelSelector, 15);
-    I.waitForVisible(homePage.fields.sttFailedChecksPanelSelector, 30);
+    I.waitForVisible(homePage.fields.failedChecksPanelContent, 30);
   },
 );
 
@@ -645,10 +697,11 @@ if (versionMinor >= 16) {
     'Verify silenced checks remain silenced after upgrade @post-upgrade @pmm-upgrade',
     async ({
       I,
-      databaseChecksPage, inventoryAPI,
+      databaseChecksPage, inventoryAPI, securityChecksAPI,
     }) => {
       const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName('MYSQL_SERVICE', psServiceName);
 
+      await securityChecksAPI.waitForFailedCheckExistance(failedCheckMessage, psServiceName);
       databaseChecksPage.openFailedChecksListForService(service_id);
 
       I.waitForVisible(databaseChecksPage.elements.failedCheckRowBySummary(failedCheckMessage), 30);
@@ -697,9 +750,9 @@ if (iaReleased) {
       I, pmmSettingsPage,
     }) => {
       I.amOnPage(pmmSettingsPage.advancedSettingsUrl);
-      I.waitForVisible(pmmSettingsPage.fields.iaSwitchSelector, 30);
+      I.waitForVisible(pmmSettingsPage.fields.perconaAlertingSwitch, 30);
       I.dontSeeElement(pmmSettingsPage.communication.communicationSection);
-      pmmSettingsPage.verifySwitch(pmmSettingsPage.fields.iaSwitchSelectorInput, 'on');
+      pmmSettingsPage.verifySwitch(pmmSettingsPage.fields.perconaAlertingSwitchInput, 'on');
     },
   );
 }
@@ -803,18 +856,26 @@ Scenario(
   },
 );
 
-Data(clientDbServices).Scenario(
-  'Check Metrics for Client Nodes [critical] @post-client-upgrade  @ovf-upgrade @ami-upgrade @post-upgrade @post-client-upgrade @pmm-upgrade',
-  async ({
-    inventoryAPI, grafanaAPI, current,
-  }) => {
-    const metricName = current.metric;
-    const { node_id } = await inventoryAPI.apiGetNodeInfoByServiceName(current.serviceType, current.name);
-    const nodeName = await inventoryAPI.getNodeName(node_id);
+if (versionMinor > 14) {
+  Data(clientDbServices)
+    .Scenario(
+      'Check Metrics for Client Nodes [critical] @ovf-upgrade @ami-upgrade @post-upgrade @post-client-upgrade @pmm-upgrade',
+      async ({
+        inventoryAPI,
+        grafanaAPI,
+        current,
+      }) => {
+        const metricName = current.metric;
+        const { node_id } = await inventoryAPI.apiGetNodeInfoByServiceName(current.serviceType, current.name);
+        const nodeName = await inventoryAPI.getNodeName(node_id);
 
-    await grafanaAPI.checkMetricExist(metricName, { type: 'node_name', value: nodeName });
-  },
-);
+        await grafanaAPI.checkMetricExist(metricName, {
+          type: 'node_name',
+          value: nodeName,
+        });
+      },
+    );
+}
 
 Scenario(
   'Verify QAN has specific filters for Remote Instances after Upgrade (UI) @ovf-upgrade @ami-upgrade @post-client-upgrade @post-upgrade @pmm-upgrade',
@@ -1019,4 +1080,77 @@ if (versionMinor >= 23) {
       }
     },
   ).retry(1);
+}
+
+if (versionMinor >= 32) {
+  Scenario(
+    '@PMM-T1504 - The user is able to do a backup for MongoDB after upgrade'
+    + ' @ovf-upgrade @ami-upgrade @post-upgrade @pmm-upgrade',
+    async ({
+      locationsAPI, inventoryAPI, backupAPI, backupInventoryPage,
+    }) => {
+      const backupName = 'backup after update';
+
+      const { location_id } = await locationsAPI.getLocationDetails(location.name);
+      const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName('MONGODB_SERVICE', mongoServiceName);
+      const backupId = await backupAPI.startBackup(backupName, service_id, location_id);
+
+      await backupAPI.waitForBackupFinish(backupId);
+      backupInventoryPage.openInventoryPage();
+      backupInventoryPage.verifyBackupSucceeded(backupName);
+    },
+  );
+
+  Scenario(
+    '@PMM-T1505 - The scheduled job still exists and remains enabled after the upgrade'
+    + ' @ovf-upgrade @ami-upgrade @post-upgrade @pmm-upgrade',
+    async ({ I, scheduledPage }) => {
+      await scheduledPage.openScheduledBackupsPage();
+      I.seeAttributesOnElements(scheduledPage.elements.toggleByName(scheduleName), { checked: true });
+
+      // Disable schedule
+      I.click(scheduledPage.buttons.enableDisableByName(scheduleName));
+      I.seeAttributesOnElements(scheduledPage.elements.toggleByName(scheduleName), { checked: null });
+    },
+  ).retry(0);
+
+  Scenario(
+    '@PMM-T1506 - Storage Locations exist after upgrade @ovf-upgrade @ami-upgrade @post-upgrade @pmm-upgrade',
+    async ({ I, locationsPage }) => {
+      locationsPage.openLocationsPage();
+      I.waitForVisible(locationsPage.buttons.actionsMenuByName(location.name), 2);
+      I.click(locationsPage.buttons.actionsMenuByName(location.name));
+      I.seeElement(locationsPage.buttons.deleteByName(location.name));
+      I.seeElement(locationsPage.buttons.editByName(location.name));
+      I.seeTextEquals(locationsPage.locationType.s3, locationsPage.elements.typeCellByName(location.name));
+      I.seeTextEquals(location.endpoint, locationsPage.elements.endpointCellByName(location.name));
+    },
+  );
+
+  Scenario(
+    '@PMM-T1503 - The user is able to do a restore for MongoDB after the upgrade'
+    + ' @ovf-upgrade @ami-upgrade @post-upgrade @pmm-upgrade',
+    async ({ I, backupInventoryPage, restorePage }) => {
+      const replica = await I.getMongoReplicaClient({ username: 'admin', password: 'password' });
+
+      try {
+        let collection = replica.db('test').collection('e2e');
+
+        await I.say('I create test record in MongoDB after backup');
+        await collection.insertOne({ number: 2, name: 'Anna' });
+
+        backupInventoryPage.openInventoryPage();
+        backupInventoryPage.startRestore(backupName);
+        restorePage.waitForRestoreSuccess(backupName);
+
+        await I.say('I search for the record after MongoDB restored from backup');
+        collection = replica.db('test').collection('e2e');
+        const record = await collection.findOne({ number: 2, name: 'Anna' });
+
+        I.assertEqual(record, null, `Was expecting to not have a record ${JSON.stringify(record, null, 2)} after restore operation`);
+      } finally {
+        replica.close();
+      }
+    },
+  ).retry(0);
 }

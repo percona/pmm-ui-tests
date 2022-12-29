@@ -37,7 +37,7 @@ Scenario(
     I.click(adminPage.fields.metricTitle);
     adminPage.performPageDown(2);
     adminPage.performPageUp(2);
-    I.seeTextEquals('The next two graphs are available only when --enable-all-collectors option is used in pmm-admin.', locate('$TextPanel-converted-content').as('Explanation text field'));
+    I.seeTextEquals('The next two graphs are available only when --enable-all-collectors option is used in pmm-admin. Graph Top 5 Collection by Documents Changed displays data only on selecting the Primary node.', locate('$TextPanel-converted-content').as('Explanation text field'));
     dashboardPage.verifyMetricsExistence(dashboardPage.mongoDbCollectionDetails.metrics);
     await dashboardPage.verifyThereAreNoGraphsWithNA();
     await dashboardPage.verifyThereAreNoGraphsWithoutData(1);

@@ -193,9 +193,8 @@ Scenario(
     const environmentName = 'ps-dev';
     const columnName = 'Bytes Sent';
 
-    I.click(qanOverview.buttons.addColumn);
     qanOverview.addSpecificColumn(columnName);
-    qanFilters.applyFilter(environmentName);
+    await qanFilters.applyFilter(environmentName);
     qanOverview.waitForOverviewLoaded();
     I.click(qanOverview.buttons.copyButton);
     I.waitForVisible(I.getPopUpLocator(), 10);

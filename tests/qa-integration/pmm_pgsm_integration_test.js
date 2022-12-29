@@ -113,11 +113,11 @@ Data(filters).Scenario(
 
     I.amOnPage(qanPage.url);
     qanOverview.waitForOverviewLoaded();
-    qanFilters.applyFilter(serviceName);
-    qanFilters.applyFilter(database);
+    await qanFilters.applyFilter(serviceName);
+    await qanFilters.applyFilter(database);
     I.waitForVisible(qanFilters.buttons.showSelected, 30);
 
-    qanFilters.applyFilterInSection(filterSection, filterToApply);
+    await qanFilters.applyFilterInSection(filterSection, filterToApply);
   },
 );
 
@@ -222,7 +222,7 @@ Scenario(
     qanOverview.waitForOverviewLoaded();
     I.waitForVisible(qanFilters.buttons.showSelected, 30);
 
-    qanFilters.applyFilterInSection('Application Name', applicationName);
+    await qanFilters.applyFilterInSection('Application Name', applicationName);
     qanOverview.waitForOverviewLoaded();
     const count = await qanOverview.getCountOfItems();
 
@@ -267,7 +267,7 @@ Scenario(
       qanOverview.waitForOverviewLoaded();
       I.waitForVisible(qanFilters.buttons.showSelected, 30);
 
-      qanFilters.applyFilterInSection('Database', db);
+      await qanFilters.applyFilterInSection('Database', db);
       qanOverview.waitForOverviewLoaded();
       await qanOverview.searchByValue(queryId);
       qanOverview.waitForOverviewLoaded();
@@ -306,7 +306,7 @@ Scenario(
     qanOverview.waitForOverviewLoaded();
     I.waitForVisible(qanFilters.buttons.showSelected, 30);
 
-    qanFilters.applyFilterInSection('Database', db);
+    await qanFilters.applyFilterInSection('Database', db);
     qanOverview.waitForOverviewLoaded();
     const count = await qanOverview.getCountOfItems();
 
@@ -347,7 +347,7 @@ xScenario(
       I.amOnPage(qanPage.url);
       qanOverview.waitForOverviewLoaded();
       qanFilters.waitForFiltersToLoad();
-      qanFilters.applyFilter(pgsm_service_name);
+      await qanFilters.applyFilter(pgsm_service_name);
       for (let i = 1; i < queriesNumber; i++) {
         const tableName = `PMM_T1253_${Date.now()}`;
 
@@ -408,5 +408,45 @@ Scenario(
       'The log was supposed to contain errors regarding bucket time but it doesn\'t');
 
     await I.verifyCommand(`docker exec ${container_name} pmm-admin list | grep "postgresql_pgstatmonitor_agent" | grep "Waiting"`);
+  },
+);
+
+Scenario(
+  'PMM-T1292 PMM-T1302 PMM-T1303 PMM-T1283 Verify that pmm-admin inventory add agent postgres-exporter with --log-level flag adds PostgreSQL exporter with corresponding log-level @not-ui-pipeline @pgsm-pmm-integration',
+  async ({
+    I, inventoryAPI, grafanaAPI, dashboardPage,
+  }) => {
+    I.amOnPage(dashboardPage.postgresqlInstanceOverviewDashboard.url);
+    dashboardPage.waitForDashboardOpened();
+    const pgsql_service_name = 'pgsql_pgsm_inventory_service';
+
+    // adding service which will be used to verify various inventory addition commands
+    await I.say(await I.verifyCommand(`docker exec ${container_name} pmm-admin remove postgresql ${pgsql_service_name} || true`));
+    await I.say(await I.verifyCommand(`docker exec ${container_name} pmm-admin add postgresql --query-source=pgstatmonitor --agent-password='testing' --password=${connection.password} --username=${connection.user} --service-name=${pgsql_service_name}`));
+    //
+    const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName('POSTGRESQL_SERVICE', pgsql_service_name);
+    const pmm_agent_id = (await I.verifyCommand(`docker exec ${container_name} pmm-admin status | grep "Agent ID" | awk -F " " '{print $4}'`)).trim();
+
+    const dbDetails = {
+      username: 'pmm',
+      password: 'pmm',
+      pmm_agent_id,
+      service_id,
+      service_name: pgsql_service_name,
+      container_name,
+    };
+
+    await inventoryAPI.verifyAgentLogLevel('postgresql', dbDetails);
+    await inventoryAPI.verifyAgentLogLevel('pgstatmonitor', dbDetails);
+    await inventoryAPI.verifyAgentLogLevel('postgresql', dbDetails, 'debug');
+    await inventoryAPI.verifyAgentLogLevel('pgstatmonitor', dbDetails, 'debug');
+    await inventoryAPI.verifyAgentLogLevel('postgresql', dbDetails, 'info');
+    await inventoryAPI.verifyAgentLogLevel('pgstatmonitor', dbDetails, 'info');
+    await inventoryAPI.verifyAgentLogLevel('postgresql', dbDetails, 'warn');
+    await inventoryAPI.verifyAgentLogLevel('pgstatmonitor', dbDetails, 'warn');
+    await inventoryAPI.verifyAgentLogLevel('postgresql', dbDetails, 'error');
+    await inventoryAPI.verifyAgentLogLevel('pgstatmonitor', dbDetails, 'error');
+
+    await I.say(await I.verifyCommand(`docker exec ${container_name} pmm-admin remove postgresql ${pgsql_service_name}`));
   },
 );

@@ -33,7 +33,7 @@ Scenario(
   async ({
     I, adminPage, qanOverview, qanFilters, qanDetails,
   }) => {
-    qanFilters.applyFilter('pdpgsql-dev');
+    await qanFilters.applyFilter('pdpgsql-dev');
     qanOverview.waitForOverviewLoaded();
     await adminPage.applyTimeRange('Last 12 hours');
     qanOverview.waitForOverviewLoaded();
@@ -219,7 +219,6 @@ xScenario(
     ];
 
     for (const i in columnsToAdd) {
-      I.click(qanOverview.buttons.addColumn);
       qanOverview.addSpecificColumn(columnsToAdd[i]);
     }
 

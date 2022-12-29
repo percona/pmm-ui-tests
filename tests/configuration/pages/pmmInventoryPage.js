@@ -35,6 +35,7 @@ module.exports = {
     tableRow: '//tr[@data-testid="table-tbody-tr"]',
     processExecPathExporters: '//td[contains(text(), "exporter")]//ancestor::tr[@data-testid="table-row"]//span[contains(text(), "process_exec_path")]',
     nodeExporterStatus: '//td[contains(text(), "Node exporter")]//ancestor::tr[@data-testid="table-row"]//span[contains(text(), "status")]',
+    agentId: '//td[contains(text(), "agent_id") and not(following-sibling::td[text()="PMM Agent"])]',
   },
   pagination: paginationPart,
 
@@ -42,6 +43,23 @@ module.exports = {
     I.amOnPage(this.url);
     I.waitForVisible(this.fields.nodesLink, 30);
     await I.waitForVisible(this.fields.agentsLink, 2);
+  },
+
+  async openServices() {
+    await I.waitForVisible(this.fields.pmmServicesSelector, 20);
+    I.click(this.fields.pmmServicesSelector);
+    await this.changeRowsPerPage(100);
+    I.waitForElement(this.fields.inventoryTable, 60);
+    I.scrollPageToBottom();
+  },
+
+  async openAgents() {
+    await I.waitForVisible(this.fields.agentsLink, 20);
+    I.click(this.fields.agentsLink);
+    I.waitForElement(this.fields.pmmAgentLocator, 60);
+    await this.changeRowsPerPage(100);
+    I.waitForElement(this.fields.inventoryTable, 60);
+    I.scrollPageToBottom();
   },
 
   async changeRowsPerPage(count) {
@@ -111,6 +129,12 @@ module.exports = {
     const details = await I.grabTextFrom(locator);
 
     assert.ok(expectedResult === details, `Infomation '${expectedResult}' for service '${serviceName}' is missing!`);
+  },
+
+  async checkAgentOtherDetailsMissing(detailsSection, serviceId) {
+    const locator = locate('span').withText(detailsSection).after(locate('span').withText(`service_id: ${serviceId}`));
+
+    I.dontSeeElement(locator);
   },
 
   async verifyMetricsFlags(serviceName) {
@@ -310,5 +334,16 @@ module.exports = {
   checkExistingAgent(agent) {
     I.click(this.fields.agentsLink);
     I.waitForVisible(agent, 30);
+  },
+
+  async checkAgentsPresent(expectedAgentIds) {
+    const actualAgentIds = (await I.grabTextFromAll(this.fields.agentId))
+      .map((string) => string.replace('/agent_id/', ''));
+
+    I.assertNotEqual(expectedAgentIds.length, actualAgentIds.length, `The number of actual Agents doesn't match expected (Expected ${expectedAgentIds.length} but got ${actualAgentIds.length})`);
+
+    expectedAgentIds.forEach((agentId) => {
+      I.assertTrue(actualAgentIds.includes(agentId), `Actual Agents don't include expected agent_id (Expected ${agentId} but didn't found)`);
+    });
   },
 };
