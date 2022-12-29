@@ -274,3 +274,70 @@ Scenario(
     await grafanaAPI.checkMetricAbsent(smartMetricName, [{ type: 'service_name', value: `${mongodb_service_name}` }, { type: 'collector', value: 'top' }]);
   },
 );
+
+Scenario(
+  'PMM-T1280 Verify that pmm-admin inventory add agent mongodb-exporter with --log-level flag adds MongoDB exporter with corresponding log-level'
+  + 'PMM-T1282, PMM-T1284, PMM-T1291 Verify that pmm-admin inventory add agent node-exporter with --log-level flag adds Node exporter with corresponding log-level @not-ui-pipeline @mongodb-exporter @exporters',
+  async ({
+    I, inventoryAPI, grafanaAPI, dashboardPage,
+  }) => {
+    I.amOnPage(dashboardPage.mongoDbInstanceOverview.url);
+    dashboardPage.waitForDashboardOpened();
+    // adding service which will be used to verify various inventory addition commands
+    await I.say(await I.verifyCommand(`pmm-admin add mongodb --port=${connection.port} --agent-password='testing' --password=${pmm_user_mongodb.password} --username=${pmm_user_mongodb.username} --enable-all-collectors --service-name=${mongodb_service_name}`));
+    //
+    const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName('MONGODB_SERVICE', mongodb_service_name);
+    const pmm_agent_id = (await I.verifyCommand('pmm-admin status | grep "Agent ID" | awk -F " " \'{print $4}\'')).trim();
+
+    const dbDetails = {
+      username: pmm_user_mongodb.username,
+      password: pmm_user_mongodb.password,
+      pmm_agent_id,
+      service_id,
+      service_name: mongodb_service_name,
+    };
+
+    await inventoryAPI.verifyAgentLogLevel('mongodb', dbDetails);
+    await inventoryAPI.verifyAgentLogLevel('mongodb_profiler', dbDetails);
+    await inventoryAPI.verifyAgentLogLevel('node', dbDetails);
+    await inventoryAPI.verifyAgentLogLevel('mongodb', dbDetails, 'debug');
+    await inventoryAPI.verifyAgentLogLevel('mongodb_profiler', dbDetails, 'debug');
+    await inventoryAPI.verifyAgentLogLevel('node', dbDetails, 'debug');
+    await inventoryAPI.verifyAgentLogLevel('mongodb', dbDetails, 'info');
+    await inventoryAPI.verifyAgentLogLevel('mongodb_profiler', dbDetails, 'debug');
+    await inventoryAPI.verifyAgentLogLevel('node', dbDetails, 'info');
+    await inventoryAPI.verifyAgentLogLevel('mongodb', dbDetails, 'warn');
+    await inventoryAPI.verifyAgentLogLevel('mongodb_profiler', dbDetails, 'warn');
+    await inventoryAPI.verifyAgentLogLevel('node', dbDetails, 'warn');
+    await inventoryAPI.verifyAgentLogLevel('mongodb', dbDetails, 'error');
+    await inventoryAPI.verifyAgentLogLevel('mongodb_profiler', dbDetails, 'error');
+    await inventoryAPI.verifyAgentLogLevel('node', dbDetails, 'error');
+    await inventoryAPI.verifyAgentLogLevel('mongodb', dbDetails, 'fatal');
+    await inventoryAPI.verifyAgentLogLevel('mongodb_profiler', dbDetails, 'fatal');
+  },
+);
+
+Scenario(
+  'PMM-T1352 + PMM-T610 Verify that pmm-admin inventory remove service with --force flag stops running agents and collecting data from exporters @not-ui-pipeline @mongodb-exporter @exporters',
+  async ({
+    I, inventoryAPI, grafanaAPI, dashboardPage,
+  }) => {
+    I.amOnPage(dashboardPage.mongoDbInstanceOverview.url);
+    dashboardPage.waitForDashboardOpened();
+    const service_name = 'testing_force_flag';
+
+    // adding service which will be used to verify various inventory addition commands
+    await I.say(await I.verifyCommand(`pmm-admin add mongodb --port=${connection.port} --agent-password='testing' --password=${pmm_user_mongodb.password} --username=${pmm_user_mongodb.username} --enable-all-collectors --service-name=${mongodb_service_name}`));
+    const pmm_agent_id = (await I.verifyCommand('pmm-admin status | grep "Agent ID" | awk -F " " \'{print $4}\'')).trim();
+
+    // adding service which will be used to verify various inventory addition commands
+    await I.say(await I.verifyCommand(`pmm-admin add mongodb --port=${connection.port} --agent-password='testing' --password=${pmm_user_mongodb.password} --username=${pmm_user_mongodb.username} --enable-all-collectors --service-name=${service_name}`));
+    const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName('MONGODB_SERVICE', service_name);
+
+    await grafanaAPI.waitForMetric('mongodb_up', [{ type: 'service_name', value: service_name }], 90);
+    await I.verifyCommand(`pmm-admin inventory remove service ${service_id} --force`);
+    await grafanaAPI.waitForMetricAbsent('mongodb_up', [{ type: 'service_name', value: service_name }], 90);
+    // PMM-T1352 Verify that Node exporter cannot be added by pmm-admin inventory add agent node-exporter with --log-level=fatal
+    await I.verifyCommand(`pmm-admin inventory add agent node-exporter --log-level=fatal ${pmm_agent_id}`, 'pmm-admin: error: --log-level must be one of "debug","info","warn","error" but got "fatal"', 'fail');
+  },
+);
