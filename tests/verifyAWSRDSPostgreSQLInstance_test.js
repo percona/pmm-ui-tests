@@ -28,7 +28,7 @@ Scenario(
     const serviceName = 'pmm-qa-pgsql-12';
 
     I.amOnPage(remoteInstancesPage.url);
-    remoteInstancesPage.waitUntilRemoteInstancesPageLoaded().openAddAWSRDSMySQLPage();
+    remoteInstancesPage.waitUntilRemoteInstancesPageLoaded().openAddAmazonRdsPage();
     remoteInstancesPage.discoverRDS();
     remoteInstancesPage.verifyInstanceIsDiscovered(serviceName);
     remoteInstancesPage.startMonitoringOfInstance(serviceName);
