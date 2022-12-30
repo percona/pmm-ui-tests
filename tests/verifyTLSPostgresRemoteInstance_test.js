@@ -207,7 +207,8 @@ Data(instances).Scenario(
     }
 
     // Main check: Query label is cut of by max_query_length option on QAN Page
-    I.amOnPage(I.buildUrlWithParams(qanPage.clearUrl, { from: 'now-5m', service_name: remoteServiceName, search: 'SELECT' }));
+    // I.amOnPage(I.buildUrlWithParams(qanPage.clearUrl, { from: 'now-5m', service_name: remoteServiceName, search: 'SELECT' }));
+    I.amOnPage(I.buildUrlWithParams(qanPage.clearUrl, { from: 'now-5m', service_name: remoteServiceName }));
     I.waitForElement(qanOverview.elements.querySelector, 30);
     const queryFromRow = await qanOverview.getQueryFromRow(1);
 
