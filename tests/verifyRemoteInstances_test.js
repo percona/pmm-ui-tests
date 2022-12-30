@@ -62,7 +62,7 @@ Before(async ({ I }) => {
 });
 
 Scenario(
-  'PMM-T588 - Verify adding external exporter service via UI @instances @fb',
+  'PMM-T588 - Verify adding external exporter service via UI @instances @instances-fb',
   async ({ I, remoteInstancesPage, pmmInventoryPage }) => {
     I.amOnPage(remoteInstancesPage.url);
     remoteInstancesPage.waitUntilRemoteInstancesPageLoaded();
@@ -77,7 +77,7 @@ Scenario(
 );
 
 Data(instances).Scenario(
-  'PMM-T898 Verify Remote Instance Addition [critical] @instances @fb',
+  'PMM-T898 Verify Remote Instance Addition [critical] @instances @instances-fb',
   async ({ I, remoteInstancesPage, current }) => {
     const serviceName = remoteInstancesHelper.services[current.name];
 
@@ -117,7 +117,7 @@ Scenario(
 );
 
 Data(instances).Scenario(
-  'Verify Remote Instance has Status Running [critical] @instances @fb',
+  'Verify Remote Instance has Status Running [critical] @instances @instances-fb',
   async ({
     I, pmmInventoryPage, current,
   }) => {
@@ -180,7 +180,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T635 - Verify Adding HAProxy service via UI @instances @fb',
+  'PMM-T635 - Verify Adding HAProxy service via UI @instances @instances-fb',
   async ({
     I, remoteInstancesPage, pmmInventoryPage,
   }) => {
@@ -277,7 +277,7 @@ Data(dashboardCheck).Scenario(
 ).retry(2);
 
 Data(qanFilters).Scenario(
-  'PMM-T854 - Verify QAN after remote instance is added @instances @fb',
+  'PMM-T854 - Verify QAN after remote instance is added @instances @instances-fb',
   async ({
     I, qanOverview, qanFilters, qanPage, current,
   }) => {
@@ -292,7 +292,7 @@ Data(qanFilters).Scenario(
 ).retry(2);
 
 Data(metrics).Scenario(
-  'PMM-T743 Check metrics from exporters are hitting PMM Server @instances @fb',
+  'PMM-T743 Check metrics from exporters are hitting PMM Server @instances @instances-fb',
   async ({ grafanaAPI, current }) => {
     await grafanaAPI.waitForMetric(current.metricName, { type: 'service_name', value: current.serviceName }, 10);
   },
