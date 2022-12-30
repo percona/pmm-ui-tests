@@ -27,8 +27,8 @@ BeforeSuite(async ({
     password: 'password',
   });
 
-  I.say(await I.verifyCommand(`pmm-admin add mongodb --port=27027 --service-name=${mongoServiceName} --replication-set=rs0`));
-  I.say(await I.verifyCommand(`pmm-admin add mongodb --port=27027 --service-name=${mongoServiceNameToDelete} --replication-set=rs0`));
+  I.say(await I.verifyCommand(`sudo pmm-admin add mongodb --port=27027 --service-name=${mongoServiceName} --replication-set=rs0`));
+  I.say(await I.verifyCommand(`sudo pmm-admin add mongodb --port=27027 --service-name=${mongoServiceNameToDelete} --replication-set=rs0`));
 });
 
 Before(async ({
@@ -64,7 +64,7 @@ Scenario(
 );
 
 Scenario(
-  '@PMM-T855 Verify user is able to perform MongoDB backup @backup @bm-mongo @fb',
+  '@PMM-T855 Verify user is able to perform MongoDB backup @backup @bm-mongo @bm-fb',
   async ({
     I, backupInventoryPage,
   }) => {
@@ -125,7 +125,7 @@ Scenario(
 );
 
 Scenario(
-  '@PMM-T862 Verify user is able to perform MongoDB restore @backup @bm-mongo @fb',
+  '@PMM-T862 Verify user is able to perform MongoDB restore @backup @bm-mongo @bm-fb',
   async ({
     I, backupInventoryPage, backupAPI, inventoryAPI, restorePage,
   }) => {
