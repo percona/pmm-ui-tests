@@ -239,8 +239,14 @@ Data(maxQueryLengthInstances).Scenario(
 
     // Main check: Query label is cut of by max_query_length option on QAN Page
     // I.amOnPage(I.buildUrlWithParams(qanPage.clearUrl, { from: 'now-5m', service_name: remoteServiceName, search: 'SELECT' }));
-    I.wait(30);
-    I.amOnPage(I.buildUrlWithParams(qanPage.clearUrl, { from: 'now-5m', service_name: remoteServiceName }));
+    // I.wait(30);
+    // I.amOnPage(I.buildUrlWithParams(qanPage.clearUrl, { from: 'now-5m', service_name: remoteServiceName }));
+    // I.waitForElement(qanOverview.elements.querySelector, 30);
+    // const queryFromRow = await qanOverview.getQueryFromRow(1);
+    // Check max visible query length is less than max_query_length option
+    I.amOnPage(I.buildUrlWithParams(qanPage.clearUrl, { from: 'now-5m' }));
+    qanOverview.waitForOverviewLoaded();
+    await qanFilters.applyFilter(remoteServiceName);
     I.waitForElement(qanOverview.elements.querySelector, 30);
     const queryFromRow = await qanOverview.getQueryFromRow(1);
 
