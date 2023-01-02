@@ -33,7 +33,7 @@ Before(async ({ I, settingsAPI }) => {
 });
 
 Data(instances).Scenario(
-  'PMM-T948 PMM-T947 Verify Adding SSL services remotely @ssl @ssl-remote @not-ui-pipeline',
+  'PMM-T948 PMM-T947 Verify Adding SSL services remotely @ssl @ssl-postgres @ssl-remote @not-ui-pipeline',
   async ({
     I, remoteInstancesPage, pmmInventoryPage, current, inventoryAPI,
   }) => {
@@ -80,7 +80,7 @@ Data(instances).Scenario(
 );
 
 Data(instances).Scenario(
-  'Verify metrics from SSL instances on PMM-Server @ssl @ssl-remote @not-ui-pipeline',
+  'Verify metrics from SSL instances on PMM-Server @ssl @ssl-postgres @ssl-remote @not-ui-pipeline',
   async ({
     I, remoteInstancesPage, pmmInventoryPage, current, grafanaAPI,
   }) => {
@@ -108,7 +108,7 @@ Data(instances).Scenario(
 ).retry(1);
 
 Data(instances).Scenario(
-  'PMM-T946 Verify adding PostgreSQL with --tls flag and with missing TLS options @ssl @ssl-remote @not-ui-pipeline',
+  'PMM-T946 Verify adding PostgreSQL with --tls flag and with missing TLS options @ssl @ssl-remote @ssl-postgres @not-ui-pipeline',
   async ({
     I, current, grafanaAPI,
   }) => {
@@ -147,7 +147,7 @@ Data(instances).Scenario(
 ).retry(1);
 
 Data(instances).Scenario(
-  'Verify dashboard after PGSQL SSL Instances are added @ssl @ssl-remote @not-ui-pipeline',
+  'Verify dashboard after PGSQL SSL Instances are added @ssl @ssl-remote @ssl-postgres @not-ui-pipeline',
   async ({
     I, dashboardPage, adminPage, current,
   }) => {
@@ -172,7 +172,7 @@ Data(instances).Scenario(
 ).retry(2);
 
 Data(instances).Scenario(
-  'Verify QAN after PGSQL SSL Instances is added @ssl @ssl-remote @not-ui-pipeline',
+  'Verify QAN after PGSQL SSL Instances is added @ssl @ssl-remote @ssl-postgres @not-ui-pipeline',
   async ({
     I, qanOverview, qanFilters, qanPage, current, adminPage,
   }) => {
@@ -198,7 +198,7 @@ Data(instances).Scenario(
 ).retry(1);
 
 Data(instances).Scenario(
-  'PMM-T1426 Verify remote PostgreSQL can be added with specified Max Query Length @max-length @ssl @ssl-remote @not-ui-pipeline',
+  'PMM-T1426 Verify remote PostgreSQL can be added with specified Max Query Length @max-length @ssl @ssl-postgres @ssl-remote @not-ui-pipeline',
   async ({
     I, remoteInstancesPage, pmmInventoryPage, qanPage, qanOverview, qanFilters, qanDetails, inventoryAPI, current,
   }) => {

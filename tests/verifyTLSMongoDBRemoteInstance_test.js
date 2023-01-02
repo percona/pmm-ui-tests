@@ -29,7 +29,7 @@ Before(async ({ I, settingsAPI }) => {
 });
 
 Data(instances).Scenario(
-  'PMM-T888 PMM-T919 Verify Adding SSL services remotely @ssl @ssl-remote @not-ui-pipeline',
+  'PMM-T888 PMM-T919 Verify Adding SSL services remotely @ssl @ssl-remote @ssl-mongo @not-ui-pipeline',
   async ({
     I, remoteInstancesPage, pmmInventoryPage, current, grafanaAPI, inventoryAPI,
   }) => {
@@ -73,7 +73,7 @@ Data(instances).Scenario(
 );
 
 Data(instances).Scenario(
-  'Verify metrics from SSL instances on PMM-Server @ssl @ssl-remote @not-ui-pipeline',
+  'Verify metrics from SSL instances on PMM-Server @ssl @ssl-remote @ssl-mongo @not-ui-pipeline',
   async ({
     I, remoteInstancesPage, pmmInventoryPage, current, grafanaAPI,
   }) => {
@@ -102,7 +102,7 @@ Data(instances).Scenario(
 
 Data(instances).Scenario(
   'PMM-T926 PMM-T927 Verify there is no possibility to add MongoDB Service with only CA file specified,'
-    + 'Verify there is no possibility to add MongoDB Service with only certificate file specified @ssl @ssl-remote @not-ui-pipeline',
+    + 'Verify there is no possibility to add MongoDB Service with only certificate file specified @ssl @ssl-mongo @ssl-remote @not-ui-pipeline',
   async ({
     I, current, grafanaAPI,
   }) => {
@@ -126,7 +126,7 @@ Data(instances).Scenario(
 ).retry(1);
 
 Data(instances).Scenario(
-  'Verify dashboard after MongoDB SSL Instances are added @ssl @ssl-remote @not-ui-pipeline',
+  'Verify dashboard after MongoDB SSL Instances are added @ssl @ssl-remote @ssl-mongo @not-ui-pipeline',
   async ({
     I, dashboardPage, adminPage, current,
   }) => {
@@ -151,7 +151,7 @@ Data(instances).Scenario(
 ).retry(1);
 
 Data(instances).Scenario(
-  'Verify QAN after MongoDB SSL Instances is added @ssl @ssl-remote @not-ui-pipeline',
+  'Verify QAN after MongoDB SSL Instances is added @ssl @ssl-remote @ssl-mongo @not-ui-pipeline',
   async ({
     I, qanOverview, qanFilters, qanPage, current, adminPage,
   }) => {
@@ -177,7 +177,7 @@ Data(instances).Scenario(
 ).retry(1);
 
 Data(instances).Scenario(
-  'PMM-T1276 (1.0) Verify tlsCa, tlsCert, tlsKey are generated on every MongoDB exporter (added with TLS flags) restart @ssl @ssl-remote @not-ui-pipeline',
+  'PMM-T1276 (1.0) Verify tlsCa, tlsCert, tlsKey are generated on every MongoDB exporter (added with TLS flags) restart @ssl @ssl-remote @ssl-mongo @not-ui-pipeline',
   async ({
     I, current, dashboardPage,
   }) => {
@@ -201,7 +201,7 @@ Data(instances).Scenario(
 ).retry(1);
 
 Data(instances).Scenario(
-  ' PMM-T1431 Verify adding MongoDB instance via UI with specified Max Query Length option @max-length @ssl @ssl-remote @not-ui-pipeline',
+  ' PMM-T1431 Verify adding MongoDB instance via UI with specified Max Query Length option @max-length @ssl @ssl-remote @ssl-mongo @not-ui-pipeline',
   async ({
     I, remoteInstancesPage, pmmInventoryPage, qanPage, qanOverview, qanFilters, qanDetails, inventoryAPI, current,
   }) => {
