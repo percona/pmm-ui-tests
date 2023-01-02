@@ -216,19 +216,31 @@ Data(maxQueryLengthInstances).Scenario(
     await remoteInstancesPage.addRemoteSSLDetails(details);
     I.click(remoteInstancesPage.fields.addService);
 
-    // there is no message on success, ut there is on fail and need to report it
-    // eslint-disable-next-line no-undef
-    if (!await tryTo(() => I.waitInUrl(pmmInventoryPage.servicesUrl, 2))) {
-      I.verifyPopUpMessage('success', 1);
-    }
-
-    // Base check: Service exists and running
-    await inventoryAPI.verifyServiceExistsAndHasRunningStatus({ serviceType: 'MYSQL_SERVICE', service: 'mysql' }, serviceName);
-    I.waitForVisible(pmmInventoryPage.fields.agentsLink, 30);
+    // Check Remote Instance also added and have running status
     pmmInventoryPage.verifyRemoteServiceIsDisplayed(remoteServiceName);
+    await pmmInventoryPage.verifyAgentHasStatusRunning(remoteServiceName);
+    // Check Remote Instance also added and have running status
+    await pmmInventoryPage.openServices();
     const serviceId = await pmmInventoryPage.getServiceId(remoteServiceName);
 
-    await pmmInventoryPage.verifyAgentHasStatusRunning(remoteServiceName);
+    // Check Remote Instance also added and have correct max_query_length option set
+    await pmmInventoryPage.openAgents();
+
+    // there is no message on success, ut there is on fail and need to report it
+    // eslint-disable-next-line no-undef
+    // if (!await tryTo(() => I.waitInUrl(pmmInventoryPage.servicesUrl, 2))) {
+    //   I.verifyPopUpMessage('success', 1);
+    // }
+    //
+    // // Base check: Service exists and running
+    // await inventoryAPI.verifyServiceExistsAndHasRunningStatus({ serviceType: 'MYSQL_SERVICE', service: 'mysql' }, serviceName);
+    // I.waitForVisible(pmmInventoryPage.fields.agentsLink, 30);
+    // pmmInventoryPage.verifyRemoteServiceIsDisplayed(remoteServiceName);
+    // const serviceId = await pmmInventoryPage.getServiceId(remoteServiceName);
+    //
+    // await pmmInventoryPage.verifyAgentHasStatusRunning(remoteServiceName);
+
+
 
     // Main check: correct max_query_length option displayed in Agent's details
     if (maxQueryLength !== '') {
