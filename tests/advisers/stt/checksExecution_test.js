@@ -107,7 +107,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T617 Verify user is able to silence failed check @stt @not-ovf @fb',
+  'PMM-T617 Verify user is able to silence failed check @stt @not-ovf @advisors-fb',
   async ({
     I, databaseChecksPage,
   }) => {
