@@ -15,11 +15,23 @@ class Output {
 
   async assertSuccess() {
     await test.step(`Verify "${this.command}" command executed successfully`, async () => {
-      expect(this.code, `"${this.command}" expected to exit with 0! Error: "${this.stderr}"`).toEqual(0);
+      expect(this.code, `"${this.command}" expected to exit with 0! Error: "${this.stderr||this.stdout}"`).toEqual(0);
     });
   }
 
-  async containsMany(expectedValues: string[]) {
+  async exitCodeEquals(expectedValue: number) {
+    await test.step(`Verify "${this.command}" command exit code is ${expectedValue}`, async () => {
+      expect(this.code, `"${this.command}" expected to exit with ${expectedValue}!`).toEqual(expectedValue);
+    });
+  }
+
+  async outContains(expectedValue: string) {
+    await test.step(`Verify command output contains ${expectedValue}`, async () => {
+      expect(this.stdout).toContain(expectedValue);
+    })
+  }
+
+  async outContainsMany(expectedValues: string[]) {
     await test.step(`Verify "${this.command}" command output`, async () => {
       for (const val of expectedValues) {
         await test.step(`Verify command output contains ${val}`, async () => {
