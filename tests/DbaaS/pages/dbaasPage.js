@@ -11,7 +11,7 @@ module.exports = {
   apiKeysPage: {
     apiKeysWarningText: 'If a resource (for example, DB cluster) uses an API key, deleting that API key might affect the functionality of that resource.',
     apiKeysWarningLocator: '$warning-block',
-    apiKeysTable: '.filter-table',
+    apiKeysTable: '.page-body',
   },
   disabledDbaaSMessage: {
     textMessage: 'DBaaS is disabled. You can enable it in PMM Settings.',
