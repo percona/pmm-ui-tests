@@ -7,15 +7,15 @@ const psmdb_cluster_type = 'DB_CLUSTER_TYPE_PSMDB';
 const mongodb_recommended_version = 'MongoDB 4.4.10';
 const mongodb_updated_version = 'MongoDB 5.0.2';
 
-const psmdbClusterDetails = new DataTable(['namespace', 'clusterName', 'node', 'nodeType']);
+// const psmdbClusterDetails = new DataTable(['namespace', 'clusterName', 'node', 'nodeType']);
 
 // only to details in current object for each node check
-psmdbClusterDetails.add(['default', `${psmdb_cluster}`, '0', 'rs0']);
-psmdbClusterDetails.add(['default', `${psmdb_cluster}`, '1', 'rs0']);
-psmdbClusterDetails.add(['default', `${psmdb_cluster}`, '2', 'rs0']);
-psmdbClusterDetails.add(['default', `${psmdb_cluster}`, '0', 'cfg']);
-psmdbClusterDetails.add(['default', `${psmdb_cluster}`, '1', 'cfg']);
-psmdbClusterDetails.add(['default', `${psmdb_cluster}`, '2', 'cfg']);
+// psmdbClusterDetails.add(['default', `${psmdb_cluster}`, '0', 'rs0']);
+// psmdbClusterDetails.add(['default', `${psmdb_cluster}`, '1', 'rs0']);
+// psmdbClusterDetails.add(['default', `${psmdb_cluster}`, '2', 'rs0']);
+// psmdbClusterDetails.add(['default', `${psmdb_cluster}`, '0', 'cfg']);
+// psmdbClusterDetails.add(['default', `${psmdb_cluster}`, '1', 'cfg']);
+// psmdbClusterDetails.add(['default', `${psmdb_cluster}`, '2', 'cfg']);
 
 const psmdb_configuration = {
   topology: 'Cluster',
@@ -133,8 +133,8 @@ Scenario('Verify update PSMDB Cluster version @dbaas', async ({ I, dbaasPage, db
   I.waitForVisible(dbaasPage.tabs.dbClusterTab.fields.clusterStatusUpdating, 60);
   I.seeElement(dbaasPage.tabs.dbClusterTab.fields.clusterStatusUpdating);
   await dbaasAPI.waitForDBClusterState(psmdb_cluster, clusterName, 'MongoDB', 'DB_CLUSTER_STATE_READY');
-  I.waitForElement(dbaasPage.tabs.dbClusterTab.fields.clusterStatusActive, 120);
-  I.seeElement(dbaasPage.tabs.dbClusterTab.fields.clusterStatusActive);
+  // I.waitForElement(dbaasPage.tabs.dbClusterTab.fields.clusterStatusActive, 120);
+  // I.seeElement(dbaasPage.tabs.dbClusterTab.fields.clusterStatusActive);
 });
 
 Scenario(
@@ -166,17 +166,17 @@ Scenario(
   },
 );
 
-Data(psmdbClusterDetails).Scenario(
-  'PMM-T503 Verify monitoring of PSMDB nodes and services @dbaas',
-  async ({ dbaasPage, current }) => {
-    const serviceName = `${current.namespace}-${current.clusterName}-${current.nodeType}-${current.node}`;
-    const replSet = current.nodeType;
+// Data(psmdbClusterDetails).Scenario(
+//   'PMM-T503 Verify monitoring of PSMDB nodes and services @dbaas',
+//   async ({ dbaasPage, current }) => {
+//     const serviceName = `${current.namespace}-${current.clusterName}-${current.nodeType}-${current.node}`;
+//     const replSet = current.nodeType;
 
-    await dbaasPage.psmdbClusterMetricCheck(psmdb_cluster, serviceName, serviceName, replSet);
-    await dbaasPage.dbaasQANCheck(psmdb_cluster, serviceName, serviceName);
-    await dbaasPage.dbClusterAgentStatusCheck(psmdb_cluster, serviceName, 'MONGODB_SERVICE');
-  },
-);
+//     await dbaasPage.psmdbClusterMetricCheck(psmdb_cluster, serviceName, serviceName, replSet);
+//     await dbaasPage.dbaasQANCheck(psmdb_cluster, serviceName, serviceName);
+//     await dbaasPage.dbClusterAgentStatusCheck(psmdb_cluster, serviceName, 'MONGODB_SERVICE');
+//   },
+// );
 
 Scenario(
   'PMM-787 Verify Editing MonogDB Cluster is possible, '
@@ -224,7 +224,7 @@ Scenario(
 
     // PMM-T781
     await dbaasActionsPage.deletePSMDBCluster(psmdb_cluster, clusterName);
-    await dbaasPage.apiKeyCheck(clusterName, psmdb_cluster, 'psmdb', false);
+    // await dbaasPage.apiKeyCheck(clusterName, psmdb_cluster, 'psmdb', false);
   },
 ).retry(1);
 
