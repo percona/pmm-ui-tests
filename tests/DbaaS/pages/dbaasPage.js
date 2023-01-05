@@ -11,7 +11,7 @@ module.exports = {
   apiKeysPage: {
     apiKeysWarningText: 'If a resource (for example, DB cluster) uses an API key, deleting that API key might affect the functionality of that resource.',
     apiKeysWarningLocator: '$warning-block',
-    apiKeysTable: '.filter-table',
+    apiKeysTable: '.page-body',
   },
   disabledDbaaSMessage: {
     textMessage: 'DBaaS is disabled. You can enable it in PMM Settings.',
@@ -407,7 +407,7 @@ module.exports = {
   },
 
   async pxcClusterMetricCheck(dbclusterName, serviceName, nodeName, haproxynodeName) {
-    await dashboardPage.genericDashboardLoadForDbaaSClusters(`${dashboardPage.mysqlPXCGaleraNodeSummaryDashboard.url}?&var-service_name=${serviceName}`, 'Last 30 minutes', 4, 0, 2);
+    await dashboardPage.genericDashboardLoadForDbaaSClusters(`${dashboardPage.mysqlPXCGaleraNodeSummaryDashboard.url}?&var-service_name=${serviceName}`, 'Last 30 minutes', 4, 0, 3);
     await dashboardPage.genericDashboardLoadForDbaaSClusters(`graph/d/haproxy-instance-summary/haproxy-instance-summary?orgId=1&refresh=1m&var-service_name=${haproxynodeName}`, 'Last 30 minutes', 4, 0, 3);
     // eslint-disable-next-line no-inline-comments
     await dashboardPage.genericDashboardLoadForDbaaSClusters(`${dashboardPage.mysqlInstanceSummaryDashboard.url}&var-service_name=${serviceName}`, 'Last 30 minutes', 4, 1, 5); //FIXME: Expected with N/A should be 0 after PMM-10308 is fixed
