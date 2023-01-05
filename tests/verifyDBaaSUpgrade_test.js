@@ -45,8 +45,6 @@ Scenario('PMM-T726 Verify DB clusters status and logs after PMM Server upgrade @
   }
 );
 
-
-
 const pxcDbClusterDetails = new DataTable(['namespace', 'clusterName', 'node']);
 
 pxcDbClusterDetails.add(['default', `${pxc_cluster_name}`, '0']);
