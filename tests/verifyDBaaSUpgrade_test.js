@@ -45,11 +45,13 @@ Scenario('PMM-T726 Verify DB clusters status and logs after PMM Server upgrade @
   }
 );
 
-const pxcDBClusterDetails = new DataTable(['namespace', 'clusterName', 'node']);
 
-pxcDBClusterDetails.add(['default', `${pxc_cluster_name}`, '0']);
 
-Data(pxcDBClusterDetails).Scenario('PMM-T726 Verify PXC cluster monitoring after PMM Server upgrade @dbaas-upgrade',
+const pxcDbClusterDetails = new DataTable(['namespace', 'clusterName', 'node']);
+
+pxcDbClusterDetails.add(['default', `${pxc_cluster_name}`, '0']);
+
+Data(pxcDbClusterDetails).Scenario('PMM-T726 Verify PXC cluster monitoring after PMM Server upgrade @dbaas-upgrade',
   async ({ dbaasPage, current, grafanaAPI }) => {
     const serviceName = `${current.namespace}-${current.clusterName}-pxc-${current.node}`;
     const haproxyNodeName = `${current.namespace}-${current.clusterName}-haproxy-${current.node}`;

@@ -4,8 +4,13 @@ const {
 const assert = require('assert');
 
 module.exports = {
-
-  async checkActionPossible(actionName, actionPosibilty, dbclusterName) {
+  
+  /**
+   * @param actionName - one of 'Delete', 'Restart', 'Edit', 'Suspend', 'Resume'
+   * @param isActionPossible - true or false
+   * @param dbclusterName - name of DB cluster
+   */
+  async checkActionPossible(actionName, isActionPossible, dbclusterName) {
     const numOfElements = await I.grabNumberOfVisibleElements(
       dbaasPage.tabs.dbClusterTab.fields.clusterAction(actionName),
     );
@@ -16,7 +21,7 @@ module.exports = {
 
     const actionClass = await I.grabAttributeFrom(dbaasPage.tabs.dbClusterTab.fields.clusterAction(actionName), 'class');
 
-    if (actionPosibilty) {
+    if (isActionPossible) {
       assert.strictEqual(actionClass, null, `User Should be able to Perform ${actionName} on the DB Cluster`);
     } else {
       assert.notStrictEqual(actionClass, null, `User Should not be able to Perform ${actionName} on the DB Cluster`);
