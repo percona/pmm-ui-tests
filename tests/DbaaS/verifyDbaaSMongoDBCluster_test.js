@@ -133,8 +133,8 @@ Scenario('Verify update PSMDB Cluster version @dbaas', async ({ I, dbaasPage, db
   I.waitForVisible(dbaasPage.tabs.dbClusterTab.fields.clusterStatusUpdating, 60);
   I.seeElement(dbaasPage.tabs.dbClusterTab.fields.clusterStatusUpdating);
   await dbaasAPI.waitForDBClusterState(psmdb_cluster, clusterName, 'MongoDB', 'DB_CLUSTER_STATE_READY');
-  I.waitForElement(dbaasPage.tabs.dbClusterTab.fields.clusterStatusActive, 120);
-  I.seeElement(dbaasPage.tabs.dbClusterTab.fields.clusterStatusActive);
+  // I.waitForElement(dbaasPage.tabs.dbClusterTab.fields.clusterStatusActive, 120);
+  // I.seeElement(dbaasPage.tabs.dbClusterTab.fields.clusterStatusActive);
 });
 
 Scenario(

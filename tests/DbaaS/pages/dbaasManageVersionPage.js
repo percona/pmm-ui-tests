@@ -3,8 +3,7 @@ const { I, dbaasPage } = inject();
 module.exports = {
   loader: locate('$pmm-overlay-wrapper').find('//i[contains(@class,"fa-spinner")]'),
   operatorVersion: {
-    // FIXME: expected pxc operator should be 1.11.0 after https://jira.percona.com/browse/PMM-11024 is fixed
-    PXC: 'Percona Operator for MySQL 1.10.0',
+    PXC: 'Percona Operator for MySQL 1.11.0',
     PSMDB: 'Percona Operator for MongoDB 1.11.0',
   },
   components: {
