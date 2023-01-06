@@ -102,5 +102,11 @@ module.exports = {
       + 'K8s Clusters Count\n'
       + 'Advisor - number of downloaded checks per name\n'
       + 'Advisor - number of executed checks per name\n'
-      + 'Advisor - number of failed checks per name',
+      + 'Advisor - number of failed checks per name\n'
+      + 'Grafana Users Count\n'
+      + 'Grafana Dark Theme Users Count\n'
+      + 'Grafana Light Theme Users Count\n'
+      + 'Grafana Default Theme Users Count\n'
+      + 'Grafana Custom Dashboards Count\n'
+      + 'Grafana Custom Dashboards Count By Pillar',
 };
