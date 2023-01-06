@@ -265,10 +265,10 @@ module.exports = {
 
     I.waitForElement(dbaasPage.tabs.dbClusterTab.fields.clusterActionsMenu(dbClusterName), 60);
     I.click(dbaasPage.tabs.dbClusterTab.fields.clusterActionsMenu(dbClusterName));
-    await dbaasActionsPage.checkActionPossible('Delete', true);
-    await dbaasActionsPage.checkActionPossible('Edit', false);
-    await dbaasActionsPage.checkActionPossible('Restart', false);
-    await dbaasActionsPage.checkActionPossible('Resume', false);
+    await dbaasActionsPage.checkActionPossible('Delete', true, dbClusterName);
+    await dbaasActionsPage.checkActionPossible('Edit', false, dbClusterName);
+    await dbaasActionsPage.checkActionPossible('Restart', false, dbClusterName);
+    await dbaasActionsPage.checkActionPossible('Resume', false, dbClusterName);
     I.click(dbaasPage.tabs.dbClusterTab.fields.clusterActionsMenu(dbClusterName));
     await dbaasAPI.waitForDBClusterState(dbClusterName, k8sClusterName, clusterDBType, 'DB_CLUSTER_STATE_READY');
     I.waitForElement(dbaasPage.tabs.dbClusterTab.fields.clusterStatusActive, 120);
@@ -276,10 +276,10 @@ module.exports = {
     I.waitForElement(dbaasPage.tabs.dbClusterTab.fields.clusterConnection.showPasswordButton, 30);
     I.click(dbaasPage.tabs.dbClusterTab.fields.clusterConnection.showPasswordButton);
     I.click(dbaasPage.tabs.dbClusterTab.fields.clusterActionsMenu(dbClusterName));
-    await dbaasActionsPage.checkActionPossible('Delete', true);
-    await dbaasActionsPage.checkActionPossible('Edit', true);
-    await dbaasActionsPage.checkActionPossible('Restart', true);
-    await dbaasActionsPage.checkActionPossible('Suspend', true);
+    await dbaasActionsPage.checkActionPossible('Delete', true, dbClusterName);
+    await dbaasActionsPage.checkActionPossible('Edit', true, dbClusterName);
+    await dbaasActionsPage.checkActionPossible('Restart', true, dbClusterName);
+    await dbaasActionsPage.checkActionPossible('Suspend', true, dbClusterName);
     I.click(dbaasPage.tabs.dbClusterTab.fields.clusterActionsMenu(dbClusterName));
     I.click(dbaasPage.tabs.dbClusterTab.fields.clusterConnection.showPasswordButton);
   },
