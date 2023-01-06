@@ -70,7 +70,7 @@ module.exports = {
       + 'Monitored services count\n'
       + 'Monitored environments count\n'
       + 'Monitored clusters count\n'
-      + 'Agents versions\n'
+      + 'Agents version\n'
       + 'Agents version PMM_AGENT running on PMM server\n'
       + 'Agents version PMM_AGENT\n'
       + 'Agents version VM_AGENT\n'
@@ -108,5 +108,6 @@ module.exports = {
       + 'Grafana Light Theme Users Count\n'
       + 'Grafana Default Theme Users Count\n'
       + 'Grafana Custom Dashboards Count\n'
-      + 'Grafana Custom Dashboards Count By Pillar',
+      + 'Grafana Custom Dashboards Count By Pillar\n'
+      + 'PMM Server API usage',
 };
