@@ -62,7 +62,7 @@ Scenario(
     scheduledPage.openScheduleBackupModal();
     scheduledPage.selectDropdownOption(scheduledPage.fields.serviceNameDropdown, mysqlServiceName);
     I.fillField(scheduledPage.fields.backupName, schedule.name);
-    scheduledPage.selectDropdownOption(scheduledPage.fields.locationDropdown, `${location.name} (S3)`);
+    scheduledPage.selectDropdownOption(scheduledPage.fields.locationDropdown, location.name);
     scheduledPage.selectDropdownOption(scheduledPage.fields.everyDropdown, 'Minute');
     scheduledPage.clearRetentionField();
     I.fillField(scheduledPage.fields.retention, schedule.retention);
