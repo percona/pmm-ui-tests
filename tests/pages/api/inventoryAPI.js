@@ -47,6 +47,8 @@ module.exports = {
       .flat(Infinity)
       .filter(({ service_name }) => service_name.includes(serviceName));
 
+    if (data.length === 0) await I.say(`Service "${serviceName}" of "${serviceType}" type is no found!`);
+
     if (excludeSubstring) {
       return data.find(({ service_name }) => !service_name.includes(excludeSubstring));
     }
