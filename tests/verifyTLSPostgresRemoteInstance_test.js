@@ -3,6 +3,8 @@ const assert = require('assert');
 const { adminPage } = inject();
 const pmmFrameworkLoader = `bash ${adminPage.pathToFramework}`;
 const pathToPMMFramework = adminPage.pathToPMMTests;
+// const pmmFrameworkLoader = '/media/sf_work/PMM/pmm-qa/pmm-tests/pmm-framework.sh';
+// const pathToPMMFramework = '/media/sf_work/PMM/pmm-qa/pmm-tests/';
 
 Feature('Monitoring SSL/TLS PGSQL instances');
 
@@ -34,7 +36,7 @@ Before(async ({ I, settingsAPI }) => {
 
 Data(instances).Scenario(
   'New debug Max Query Length'
-  + ' @max-length @ssl @ssl-remote @not-ui-pipeline',
+  + ' @max-length @ssl @ssl-remote @ssl-postgres @not-ui-pipeline',
   async ({
     I, remoteInstancesPage, pmmInventoryPage, qanPage, qanOverview, qanFilters, qanDetails, inventoryAPI, current,
   }) => {
@@ -89,7 +91,7 @@ Data(instances).Scenario(
     }
 
     // Main check: Query label is cut of by max_query_length option on QAN Page
-    I.amOnPage(I.buildUrlWithParams(qanPage.clearUrl, { from: 'now-5m', service_name: remoteServiceName, search: 'SELECT' }));
+    I.amOnPage(I.buildUrlWithParams(qanPage.clearUrl, { from: 'now-5m', service_name: remoteServiceName }));
     I.waitForElement(qanOverview.elements.querySelector, 30);
     const queryFromRow = await qanOverview.getQueryFromRow(1);
 

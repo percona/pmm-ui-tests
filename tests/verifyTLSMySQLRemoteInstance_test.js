@@ -49,7 +49,7 @@ Data(maxQueryLengthInstances).Scenario(
     const {
       serviceName, serviceType, version, container, maxQueryLength,
     } = current;
-    const remoteServiceName = `MaxQueryLength_remote_${serviceName}_${faker.random.alphaNumeric(3)}`;
+    const remoteServiceName = `remote_${serviceName}_${faker.random.alphaNumeric(3)}`;
     const details = {
       serviceName: remoteServiceName,
       serviceType,
