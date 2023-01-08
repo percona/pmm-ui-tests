@@ -173,8 +173,8 @@ module.exports = {
   },
 
   async showClusterLogs() {
-    I.waitForElement(dbaasPage.tabs.dbClusterTab.fields.clusterTableHeader, 30);
-    I.click(dbaasPage.tabs.dbClusterTab.fields.clusterActionsMenu);
+    I.waitForElement(dbaasPage.tabs.dbClusterTab.fields.clusterActionsMenu, 30);
+    I.forceClick(dbaasPage.tabs.dbClusterTab.fields.clusterActionsMenu);
     I.waitForElement(dbaasPage.tabs.dbClusterTab.fields.clusterAction('View logs'), 30);
     I.click(dbaasPage.tabs.dbClusterTab.fields.clusterAction('View logs'));
   },

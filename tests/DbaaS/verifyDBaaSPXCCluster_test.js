@@ -4,8 +4,7 @@ const { dbaasAPI, dbaasPage } = inject();
 const clusterName = 'minikube';
 const pxc_cluster_name = 'pxc-dbcluster';
 const pxc_cluster_type = 'DB_CLUSTER_TYPE_PXC';
-// FIXME: recommended version should be 8.0.27 after https://jira.percona.com/browse/PMM-11024 is fixed
-const mysql_recommended_version = 'MySQL 8.0.25';
+const mysql_recommended_version = 'MySQL 8.0.27';
 
 const pxcDBClusterDetails = new DataTable(['namespace', 'clusterName', 'node']);
 
@@ -125,7 +124,7 @@ Scenario(
     I.amOnPage(dbaasPage.url);
     I.waitForVisible(dbaasPage.tabs.dbClusterTab.dbClusterAddButtonTop, 30);
     await dashboardPage.genericDashboardLoadForDbaaSClusters(
-      `${dashboardPage.pxcGaleraClusterSummaryDashboard.url}&var-cluster=${pxc_cluster_name}-pxc`, 'Last 15 minutes', 4, 0, 2);
+      `${dashboardPage.pxcGaleraClusterSummaryDashboard.url}&var-cluster=${pxc_cluster_name}-pxc`, 'Last 15 minutes', 4, 0, 3);
     I.amOnPage(I.buildUrlWithParams(qanPage.clearUrl, { from: 'now-3h' }));
     qanOverview.waitForOverviewLoaded();
     qanFilters.checkFilterExistInSection('Cluster', pxc_cluster_name);
