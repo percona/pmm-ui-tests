@@ -33,6 +33,76 @@ Before(async ({ I, settingsAPI }) => {
 });
 
 Data(instances).Scenario(
+  'New debug Max Query Length'
+  + ' @max-length @ssl @ssl-remote @not-ui-pipeline',
+  async ({
+    I, remoteInstancesPage, pmmInventoryPage, qanPage, qanOverview, qanFilters, qanDetails, inventoryAPI, current,
+  }) => {
+    const {
+      serviceName, serviceType, version, container, maxQueryLength,
+    } = current;
+    const remoteServiceName = `MaxQueryLength_remote_${serviceName}`;
+    const details = {
+      serviceName: remoteServiceName,
+      serviceType,
+      port: '5432',
+      database: 'postgres',
+      host: container,
+      username: 'pmm',
+      password: 'pmm',
+      cluster: 'pgsql_remote_cluster',
+      environment: 'pgsql_remote_cluster',
+      tlsCAFile: `${pathToPMMFramework}tls-ssl-setup/postgres/${version}/ca.crt`,
+      tlsKeyFile: `${pathToPMMFramework}tls-ssl-setup/postgres/${version}/client.pem`,
+      tlsCertFile: `${pathToPMMFramework}tls-ssl-setup/postgres/${version}/client.crt`,
+      maxQueryLength: `${maxQueryLength}`,
+    };
+
+    I.amOnPage(remoteInstancesPage.url);
+    remoteInstancesPage.waitUntilRemoteInstancesPageLoaded();
+    remoteInstancesPage.openAddRemotePage(serviceType);
+    await remoteInstancesPage.addRemoteSSLDetails(details);
+    I.click(remoteInstancesPage.fields.addService);
+
+    // there is no message on success, ut there is on fail and need to report it
+    // eslint-disable-next-line no-undef
+    if (!await tryTo(() => I.waitInUrl(pmmInventoryPage.servicesUrl, 2))) {
+      I.verifyPopUpMessage('success', 1);
+    }
+
+    // Base check: Service exists and running
+    await inventoryAPI.verifyServiceExistsAndHasRunningStatus(
+      { serviceType: 'POSTGRESQL_SERVICE', service: 'postgresql' },
+      serviceName,
+    );
+    I.waitForVisible(pmmInventoryPage.fields.agentsLink, 30);
+    pmmInventoryPage.verifyRemoteServiceIsDisplayed(remoteServiceName);
+    const serviceId = await pmmInventoryPage.getServiceId(remoteServiceName);
+
+    await pmmInventoryPage.verifyAgentHasStatusRunning(remoteServiceName);
+
+    // Main check: correct max_query_length option displayed in Agent's details
+    if (maxQueryLength !== '') {
+      await pmmInventoryPage.checkAgentOtherDetailsSection('max_query_length:', `max_query_length: ${maxQueryLength}`, remoteServiceName, serviceId);
+    } else {
+      await pmmInventoryPage.checkAgentOtherDetailsMissing('max_query_length:', serviceId);
+    }
+
+    // Main check: Query label is cut of by max_query_length option on QAN Page
+    I.amOnPage(I.buildUrlWithParams(qanPage.clearUrl, { from: 'now-5m', service_name: remoteServiceName, search: 'SELECT' }));
+    I.waitForElement(qanOverview.elements.querySelector, 30);
+    const queryFromRow = await qanOverview.getQueryFromRow(1);
+
+    if (maxQueryLength !== '' && maxQueryLength !== '-1') {
+      I.assertLengthOf(queryFromRow, parseInt(maxQueryLength, 10), `Query "${queryFromRow}" length does not match expected: ${maxQueryLength}`);
+    } else {
+      // any "SELECT" query be longer then 6 without "max_query_length" option applied
+      I.assertTrue(queryFromRow.length >= 6, `Query length is equal to ${queryFromRow.length} which is less than minimal possible length`);
+    }
+  },
+);
+
+Data(instances).Scenario(
   'Verify metrics from SSL instances on PMM-Server @ssl @ssl-remote @not-ui-pipeline',
   async ({
     I, remoteInstancesPage, pmmInventoryPage, current, grafanaAPI,
@@ -292,72 +362,4 @@ Data(instances).Scenario(
 //   },
 // );
 
-Data(instances).Scenario(
-  'New debug Max Query Length'
-  + ' @max-length @ssl @ssl-remote @not-ui-pipeline',
-  async ({
-    I, remoteInstancesPage, pmmInventoryPage, qanPage, qanOverview, qanFilters, qanDetails, inventoryAPI, current,
-  }) => {
-    const {
-      serviceName, serviceType, version, container, maxQueryLength,
-    } = current;
-    const remoteServiceName = `MaxQueryLength_remote_${serviceName}`;
-    const details = {
-      serviceName: remoteServiceName,
-      serviceType,
-      port: '5432',
-      database: 'postgres',
-      host: container,
-      username: 'pmm',
-      password: 'pmm',
-      cluster: 'pgsql_remote_cluster',
-      environment: 'pgsql_remote_cluster',
-      tlsCAFile: `${pathToPMMFramework}tls-ssl-setup/postgres/${version}/ca.crt`,
-      tlsKeyFile: `${pathToPMMFramework}tls-ssl-setup/postgres/${version}/client.pem`,
-      tlsCertFile: `${pathToPMMFramework}tls-ssl-setup/postgres/${version}/client.crt`,
-      maxQueryLength: `${maxQueryLength}`,
-    };
 
-    I.amOnPage(remoteInstancesPage.url);
-    remoteInstancesPage.waitUntilRemoteInstancesPageLoaded();
-    remoteInstancesPage.openAddRemotePage(serviceType);
-    await remoteInstancesPage.addRemoteSSLDetails(details);
-    I.click(remoteInstancesPage.fields.addService);
-
-    // there is no message on success, ut there is on fail and need to report it
-    // eslint-disable-next-line no-undef
-    if (!await tryTo(() => I.waitInUrl(pmmInventoryPage.servicesUrl, 2))) {
-      I.verifyPopUpMessage('success', 1);
-    }
-
-    // Base check: Service exists and running
-    await inventoryAPI.verifyServiceExistsAndHasRunningStatus(
-      { serviceType: 'POSTGRESQL_SERVICE', service: 'postgresql' },
-      serviceName,
-    );
-    I.waitForVisible(pmmInventoryPage.fields.agentsLink, 30);
-    pmmInventoryPage.verifyRemoteServiceIsDisplayed(remoteServiceName);
-    const serviceId = await pmmInventoryPage.getServiceId(remoteServiceName);
-
-    await pmmInventoryPage.verifyAgentHasStatusRunning(remoteServiceName);
-
-    // Main check: correct max_query_length option displayed in Agent's details
-    if (maxQueryLength !== '') {
-      await pmmInventoryPage.checkAgentOtherDetailsSection('max_query_length:', `max_query_length: ${maxQueryLength}`, remoteServiceName, serviceId);
-    } else {
-      await pmmInventoryPage.checkAgentOtherDetailsMissing('max_query_length:', serviceId);
-    }
-
-    // Main check: Query label is cut of by max_query_length option on QAN Page
-    I.amOnPage(I.buildUrlWithParams(qanPage.clearUrl, { from: 'now-5m', service_name: remoteServiceName, search: 'SELECT' }));
-    I.waitForElement(qanOverview.elements.querySelector, 30);
-    const queryFromRow = await qanOverview.getQueryFromRow(1);
-
-    if (maxQueryLength !== '' && maxQueryLength !== '-1') {
-      I.assertLengthOf(queryFromRow, parseInt(maxQueryLength, 10), `Query "${queryFromRow}" length does not match expected: ${maxQueryLength}`);
-    } else {
-      // any "SELECT" query be longer then 6 without "max_query_length" option applied
-      I.assertTrue(queryFromRow.length >= 6, `Query length is equal to ${queryFromRow.length} which is less than minimal possible length`);
-    }
-  },
-);
