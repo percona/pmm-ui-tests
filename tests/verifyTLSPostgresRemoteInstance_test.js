@@ -41,7 +41,7 @@ Data(instances).Scenario(
     const {
       serviceName, serviceType, version, container, maxQueryLength,
     } = current;
-    const remoteServiceName = `MaxQueryLength_remote_${serviceName}`;
+    const remoteServiceName = `remote_${serviceName}`;
     const details = {
       serviceName: remoteServiceName,
       serviceType,
