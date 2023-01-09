@@ -36,7 +36,7 @@ AfterSuite(async ({ I }) => {
   await I.verifyCommand('docker stop mysql_8.0 || docker rm mysql_8.0');
 });
 
-Before(async ({ I, settingsAPI }) => {
+Before(async ({ I }) => {
   await I.Authorize();
 });
 
