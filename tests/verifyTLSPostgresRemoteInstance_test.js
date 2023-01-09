@@ -30,7 +30,7 @@ AfterSuite(async ({ I }) => {
   await I.verifyCommand('docker stop pgsql_14 || docker rm pgsql_14');
 });
 
-Before(async ({ I, settingsAPI }) => {
+Before(async ({ I }) => {
   await I.Authorize();
 });
 
@@ -38,7 +38,7 @@ Data(instances).Scenario(
   'New debug Max Query Length'
   + ' @max-length @ssl @ssl-remote @ssl-postgres @not-ui-pipeline',
   async ({
-    I, remoteInstancesPage, pmmInventoryPage, qanPage, qanOverview, qanFilters, qanDetails, inventoryAPI, current,
+    I, remoteInstancesPage, pmmInventoryPage, qanPage, qanOverview, inventoryAPI, grafanaAPI, current,
   }) => {
     const {
       serviceName, serviceType, version, container, maxQueryLength,
@@ -91,6 +91,7 @@ Data(instances).Scenario(
     }
 
     // Main check: Query label is cut of by max_query_length option on QAN Page
+    await grafanaAPI.waitForMetric('pg_up', [{ type: 'service_name', value: remoteServiceName }], 90);
     I.amOnPage(I.buildUrlWithParams(qanPage.clearUrl, { from: 'now-5m', service_name: remoteServiceName }));
     I.waitForElement(qanOverview.elements.querySelector, 30);
     const queryFromRow = await qanOverview.getQueryFromRow(1);
