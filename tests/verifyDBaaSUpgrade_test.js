@@ -10,7 +10,7 @@ Before(async ({ I }) => {
 });
 
 Scenario(
-  'PMM-T726 Prepare Setup for DBaaS Instance Before Upgrade [blocker] @dbaas-upgrade ',
+  'PMM-T726 Prepare Setup for DBaaS Instance Before Upgrade [blocker] @upgrade-dbaas',
   async ({ settingsAPI, dbaasAPI }) => {
     await settingsAPI.changeSettings({ publicAddress: process.env.VM_IP });
     await dbaasAPI.apiRegisterCluster(process.env.kubeconfig_minikube, clusterName);
@@ -22,7 +22,7 @@ Scenario(
   },
 );
 
-Scenario('PMM-T3 Upgrade PMM via UI with DbaaS Clusters @dbaas-upgrade', async ({
+Scenario('PMM-T3 Upgrade PMM via UI with DbaaS Clusters @upgrade-dbaas', async ({
   I, homePage,
 }) => {
   const { versionMinor } = await homePage.getVersions();
@@ -32,7 +32,7 @@ Scenario('PMM-T3 Upgrade PMM via UI with DbaaS Clusters @dbaas-upgrade', async (
   }
 );
 
-Scenario('PMM-T726 Verify DB clusters status and logs after PMM Server upgrade @dbaas-upgrade',
+Scenario('PMM-T726 Verify DB clusters status and logs after PMM Server upgrade @upgrade-dbaas',
   async ({
     I, dbaasPage,
   }) => {
@@ -49,7 +49,7 @@ const pxcDbClusterDetails = new DataTable(['namespace', 'clusterName', 'node']);
 
 pxcDbClusterDetails.add(['default', `${pxc_cluster_name}`, '0']);
 
-Data(pxcDbClusterDetails).Scenario('PMM-T726 Verify PXC cluster monitoring after PMM Server upgrade @dbaas-upgrade',
+Data(pxcDbClusterDetails).Scenario('PMM-T726 Verify PXC cluster monitoring after PMM Server upgrade @upgrade-dbaas',
   async ({ dbaasPage, current, grafanaAPI }) => {
     const serviceName = `${current.namespace}-${current.clusterName}-pxc-${current.node}`;
     const haproxyNodeName = `${current.namespace}-${current.clusterName}-haproxy-${current.node}`;
@@ -69,7 +69,7 @@ psmdbClusterDetails.add(['default', `${psmdb_cluster_name}`, '0', 'cfg']);
 psmdbClusterDetails.add(['default', `${psmdb_cluster_name}`, '1', 'cfg']);
 psmdbClusterDetails.add(['default', `${psmdb_cluster_name}`, '2', 'cfg']);
 
-Data(psmdbClusterDetails).Scenario('PMM-T726 Verify PSMDB cluster monitoring after PMM Server upgrade @dbaas-upgrade',
+Data(psmdbClusterDetails).Scenario('PMM-T726 Verify PSMDB cluster monitoring after PMM Server upgrade @upgrade-dbaas',
   async ({
     I, dbaasAPI, dbaasPage, current, grafanaAPI
   }) => {
@@ -111,7 +111,7 @@ Data(psmdbClusterDetails).Scenario('PMM-T726 Verify PSMDB cluster monitoring aft
   }
 );
 
-Scenario('PMM-T726 Verify actions on DB clusters after PMM Server upgrade @dbaas-upgrade',
+Scenario('PMM-T726 Verify actions on DB clusters after PMM Server upgrade @upgrade-dbaas',
   async ({
     I, dbaasAPI, dbaasPage, dbaasActionsPage,
   }) => {
@@ -150,7 +150,7 @@ Scenario('PMM-T726 Verify actions on DB clusters after PMM Server upgrade @dbaas
   }
 );
 
-Scenario('PMM-T726 Verify removal of existing DB clusters after PMM Server upgrade @dbaas-upgrade',
+Scenario('PMM-T726 Verify removal of existing DB clusters after PMM Server upgrade @upgrade-dbaas',
   async ({ I, dbaasActionsPage }) => {
     I.amOnPage('graph/dbaas/dbclusters');
     await dbaasActionsPage.deletePSMDBCluster(psmdb_cluster_name, clusterName, false);
@@ -158,7 +158,7 @@ Scenario('PMM-T726 Verify removal of existing DB clusters after PMM Server upgra
   }
 );
 
-Scenario('PMM-T726 Verify creation and removal of new DB clusters after PMM Server upgrade @dbaas-upgrade',
+Scenario('PMM-T726 Verify creation and removal of new DB clusters after PMM Server upgrade @upgrade-dbaas',
   async ({
     I, dbaasPage, dbaasAPI,
   }) => {
