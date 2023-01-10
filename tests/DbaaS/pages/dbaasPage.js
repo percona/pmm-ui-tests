@@ -28,6 +28,7 @@ module.exports = {
   valueGreatThanErrorText: (value) => `Value should be greater or equal to ${value}`,
   dbclusterNameError: 'Should start with a letter, may only contain lower case, number, dash and end with an alphanumeric character',
   dbclusterNameLimitError: 'Must contain at most 20 characters',
+  numberOfNodesError: 'Only 1, 3 or more nodes allowed',
   tabs: {
     kubernetesClusterTab: {
       kubernetesClusterTabButton: 'a[aria-label="Tab Kubernetes Cluster"]',
