@@ -339,7 +339,12 @@ Scenario('@PMM-T1512 Verify tooltips work properly for DBaaS page @dbaas',
   async ({
     I, dbaasPage, adminPage, settingsAPI,
   }) => {
-    await settingsAPI.changeSettings({ dbaas: true });
+    let turnOffDbaas;
+
+    if (!(await settingsAPI.getSettings('dbaas_enabled'))) {
+      turnOffDbaas = true;
+      await settingsAPI.changeSettings({ dbaas: true });
+    }
 
     I.amOnPage(dbaasPage.url);
     I.waitForVisible(dbaasPage.tabs.dbClusterTab.addDbClusterButton, 60);
@@ -357,5 +362,7 @@ Scenario('@PMM-T1512 Verify tooltips work properly for DBaaS page @dbaas',
       await adminPage.verifyTooltip(tooltip);
     }
 
-    await settingsAPI.changeSettings({ dbaas: false });
+    if (turnOffDbaas) {
+      await settingsAPI.changeSettings({ dbaas: false });
+    }
   });
