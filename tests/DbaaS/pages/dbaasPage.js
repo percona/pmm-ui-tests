@@ -26,7 +26,7 @@ module.exports = {
   monitoringWarningMessage: `This will also set "Public Address" as ${process.env.VM_IP}.`,
   requiredFieldError: 'Required field',
   valueGreatThanErrorText: (value) => `Value should be greater or equal to ${value}`,
-  dbclusterNameError: 'Should start with a letter, may only contain lower case, number, dash and end with alphanumeric',
+  dbclusterNameError: 'Should start with a letter, may only contain lower case, number, dash and end with an alphanumeric character',
   dbclusterNameLimitError: 'Must contain at most 20 characters',
   tabs: {
     kubernetesClusterTab: {
@@ -90,7 +90,9 @@ module.exports = {
           cpuFieldErrorMessage: '$cpu-field-error-message',
           cpuNumberFields: '$cpu-number-input',
           clusterTopology: (type) => `//input[@data-testid='topology-radio-button']/../label[contains(text(), '${type}')]`,
-          dbClusterResourceFieldLabel: '$resources-field-label',
+          resourcesPerNodeLabel: '$resources-field-label',
+          resourcesPerNodeSelect: locate('$resources-field-container').find('div').at(4).as('Resources per Node Select'),
+          resourcesPerNodesOption: (option) => `$${option}-select-option`,
           dbClusterResourcesBarMemory: '$dbcluster-resources-bar-memory',
           dbClusterResourcesBarCpu: '$dbcluster-resources-bar-cpu',
           diskFieldErrorMessage: '$disk-field-error-message',
@@ -99,7 +101,6 @@ module.exports = {
           memoryFieldErrorMessage: '$memory-field-error-message',
           nodesFieldErrorMessage: '$nodes-field-error-message',
           nodesNumberField: '$nodes-number-input',
-          resourcesPerNode: (clusterSize) => `//label[contains(text(), "${clusterSize}")]`,
           dbClusterExposeLabel: '$expose-field-label',
           dbClusterExposeCheckbox: '$expose-checkbox-input',
           dbClusterExposeTooltipText: locate('div').withChild('.tooltip-arrow'),

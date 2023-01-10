@@ -61,7 +61,7 @@ module.exports = {
     I.click(dbaasPage.tabs.dbClusterTab.advancedOptions.fields.clusterTopology(configuration.topology));
     if (configuration.resourcePerNode === 'Custom') {
       I.click(
-        dbaasPage.tabs.dbClusterTab.advancedOptions.fields.resourcesPerNode(configuration.resourcePerNode),
+        dbaasPage.tabs.dbClusterTab.advancedOptions.fields.resourcesPerNodesOption(configuration.resourcePerNode),
       );
       adminPage.customClearField(dbaasPage.tabs.dbClusterTab.advancedOptions.fields.memoryField);
       I.fillField(dbaasPage.tabs.dbClusterTab.advancedOptions.fields.memoryField, configuration.memory);
@@ -123,7 +123,7 @@ module.exports = {
 
     if (configuration.resourcePerNode === 'Custom') {
       I.click(
-        dbaasPage.tabs.dbClusterTab.advancedOptions.fields.resourcesPerNode(configuration.resourcePerNode),
+        dbaasPage.tabs.dbClusterTab.advancedOptions.fields.resourcesPerNodesOption(configuration.resourcePerNode),
       );
       adminPage.customClearField(dbaasPage.tabs.dbClusterTab.advancedOptions.fields.memoryField);
       I.fillField(dbaasPage.tabs.dbClusterTab.advancedOptions.fields.memoryField, configuration.memory);
