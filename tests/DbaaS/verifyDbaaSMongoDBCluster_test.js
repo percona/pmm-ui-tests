@@ -224,7 +224,7 @@ Scenario(
 
     // PMM-T781
     await dbaasActionsPage.deletePSMDBCluster(psmdb_cluster, clusterName);
-    // await dbaasPage.apiKeyCheck(clusterName, psmdb_cluster, 'psmdb', false);
+    await dbaasPage.apiKeyCheck(clusterName, psmdb_cluster, 'psmdb', false);
   },
 ).retry(1);
 

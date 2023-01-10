@@ -119,8 +119,8 @@ Scenario(
     // assert.ok(configuration === process.env.kubeconfig_minikube, 
     //   `The configuration shown is not equal to the expected Cluster configuration, ${configuration}`);
     // PMM-T1130
-    // I.amOnPage(dbaasPage.apiKeysUrl);
-    // I.waitForText(dbaasPage.apiKeysPage.apiKeysWarningText, 10, dbaasPage.apiKeysPage.apiKeysWarningLocator);
+    I.amOnPage(dbaasPage.apiKeysUrl);
+    I.waitForText(dbaasPage.apiKeysPage.apiKeysWarningText, 10, dbaasPage.apiKeysPage.apiKeysWarningLocator);
     await dbaasAPI.apiUnregisterCluster(clusterName);
   },
 );
@@ -158,15 +158,14 @@ Scenario('PMM-T728 Verify DB Cluster Tab Page Elements & Steps Background @dbaas
     I.seeElement(dbaasPage.tabs.dbClusterTab.basicOptions.fields.dbClusterDatabaseTypeField);
     I.seeElement(dbaasPage.tabs.dbClusterTab.advancedOptionsButton);
     I.click(dbaasPage.tabs.dbClusterTab.advancedOptionsButton);
-    I.seeElement(dbaasPage.tabs.dbClusterTab.advancedOptions.fields.dbClusterTopologyFieldLabel);
     I.seeElement(dbaasPage.tabs.dbClusterTab.advancedOptions.fields.nodesNumberField);
-    I.seeElement(dbaasPage.tabs.dbClusterTab.advancedOptions.fields.dbClusterExternalAccessCheckbox);
+    I.scrollTo(dbaasPage.tabs.dbClusterTab.advancedOptions.fields.dbClusterExposeLabel);
     I.dontSeeCheckboxIsChecked(
-      dbaasPage.tabs.dbClusterTab.advancedOptions.fields.dbClusterExternalAccessCheckbox,
+      dbaasPage.tabs.dbClusterTab.advancedOptions.fields.dbClusterExposeCheckbox,
     );
-    I.moveCursorTo(dbaasPage.tabs.dbClusterTab.advancedOptions.fields.dbClusterExternalAccessTooltip);
-    I.seeTextEquals('Allows external access to the database cluster',
-      dbaasPage.tabs.dbClusterTab.advancedOptions.fields.dbClusterExternalAccessTooltipText);
+    I.moveCursorTo(dbaasPage.tabs.dbClusterTab.advancedOptions.fields.dbClusterExposeTooltip);
+    I.seeTextEquals('You will make this database cluster available to connect from the internet. To limit access you need to specify source ranges',
+      dbaasPage.tabs.dbClusterTab.advancedOptions.fields.dbClusterExposeTooltipText);
     I.seeElement(dbaasPage.tabs.dbClusterTab.advancedOptions.fields.dbClusterResourceFieldLabel);
     I.seeElement(dbaasPage.tabs.dbClusterTab.advancedOptions.fields.memoryField);
     I.seeElement(dbaasPage.tabs.dbClusterTab.advancedOptions.fields.cpuNumberFields);
