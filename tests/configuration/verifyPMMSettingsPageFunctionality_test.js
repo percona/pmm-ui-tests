@@ -353,8 +353,9 @@ Scenario(
     const newAdminUser = await portalAPI.getUser();
     await portalAPI.oktaCreateUser(newAdminUser);
     const platformToken = await portalAPI.getUserAccessToken(newAdminUser.email, newAdminUser.password)
+    await portalAPI.apiCreateOrg(platformToken);
     await perconaPlatformPage.openPerconaPlatform();
-    await perconaPlatformPage.connectToPortal(platformToken, `Test Server ${Date.now()}`);
+    await perconaPlatformPage.connectToPortal(platformToken, `Test Server ${Date.now()}`, true);
     await pmmSettingsPage.openAdvancedSettings();
     await pmmSettingsPage.verifyTooltip(pmmSettingsPage.tooltips.advancedSettings.publicAddress);
 
@@ -362,15 +363,15 @@ Scenario(
     I.seeElement(pmmSettingsPage.fields.publicAddressButton);
    
     const publicAddressValue = await I.grabValueFrom(pmmSettingsPage.fields.publicAddressInput);
-    const serverAddressIP = process.env.VM_IP
+    const serverAddressIP = await process.env.VM_IP;
 
     I.assertTrue(publicAddressValue.length > 0, 'Expected the Public Address Input Field to be not empty!');
     I.refreshPage();
     await pmmSettingsPage.waitForPmmSettingsPageLoaded();
 
-    I.assertEqual(serverAddressIP, publicAddressValue,
+    await I.assertEqual(serverAddressIP, publicAddressValue,
       `Expected the Public Address to be saved and Match ${publicAddressValue}`);
-    portalAPI.disconnectPMMFromPortal(platformToken)
+    await portalAPI.disconnectPMMFromPortal(platformToken);
   },
 );
 
