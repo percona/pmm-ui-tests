@@ -90,7 +90,6 @@ module.exports = {
         fields: {
           cpuFieldErrorMessage: '$cpu-field-error-message',
           cpuNumberFields: '$cpu-number-input',
-          clusterTopology: (type) => `//input[@data-testid='topology-radio-button']/../label[contains(text(), '${type}')]`,
           resourcesPerNodeLabel: '$resources-field-label',
           resourcesPerNodeSelect: locate('$resources-field-container').find('div').at(4).as('Resources per Node Select'),
           resourcesPerNodesOption: (option) => `$${option}-select-option`,
@@ -142,7 +141,6 @@ module.exports = {
         clusterName: locate('$table-row').find('td').at(1).find('span'),
         clusterSummaryDashboard: locate('$table-row').find('td').at(1).find('a'),
         clusterStatusActive: '$cluster-status-active',
-        clusterStatusPending: '$cluster-status-pending',
         clusterStatusPaused: '$cluster-status-suspended',
         clusterStatusDeleting: '$cluster-status-deleting',
         clusterStatusUpdating: '$cluster-status-updating',

@@ -55,10 +55,8 @@ module.exports = {
   async createClusterAdvancedOption(k8sClusterName, dbClusterName, dbType, configuration, dbVersion) {
     await this.createClusterBasicOptions(k8sClusterName, dbClusterName, dbType, dbVersion);
     I.click(dbaasPage.tabs.dbClusterTab.advancedOptionsButton);
-    I.waitForElement(
-      dbaasPage.tabs.dbClusterTab.advancedOptions.fields.clusterTopology(configuration.topology), 30,
-    );
-    I.click(dbaasPage.tabs.dbClusterTab.advancedOptions.fields.clusterTopology(configuration.topology));
+    I.click(dbaasPage.tabs.dbClusterTab.advancedOptions.fields.resourcesPerNodeSelect);
+    I.waitForVisible(dbaasPage.tabs.dbClusterTab.advancedOptions.fields.resourcesPerNodesOption(configuration.resourcePerNode), 10);
     if (configuration.resourcePerNode === 'Custom') {
       I.click(
         dbaasPage.tabs.dbClusterTab.advancedOptions.fields.resourcesPerNodesOption(configuration.resourcePerNode),
@@ -105,14 +103,10 @@ module.exports = {
     await this.checkActionPossible('Edit', true);
     I.waitForElement(dbaasPage.tabs.dbClusterTab.fields.clusterAction('Edit'), 30);
     I.click(dbaasPage.tabs.dbClusterTab.fields.clusterAction('Edit'));
-    I.waitForElement(
-      dbaasPage.tabs.dbClusterTab.advancedOptions.fields.clusterTopology(configuration.topology), 30,
-    );
     I.seeAttributesOnElements(
       dbaasPage.tabs.dbClusterTab.advancedOptions.fields.diskSizeInputField,
       { disabled: true },
     );
-    I.click(dbaasPage.tabs.dbClusterTab.advancedOptions.fields.clusterTopology(configuration.topology));
     if (configuration.numberOfNodes) {
       adminPage.customClearField(dbaasPage.tabs.dbClusterTab.advancedOptions.fields.nodesNumberField);
       I.fillField(
@@ -122,6 +116,8 @@ module.exports = {
     }
 
     if (configuration.resourcePerNode === 'Custom') {
+      I.click(dbaasPage.tabs.dbClusterTab.advancedOptions.fields.resourcesPerNodeSelect);
+      I.waitForVisible(dbaasPage.tabs.dbClusterTab.advancedOptions.fields.resourcesPerNodesOption(configuration.resourcePerNode), 10);
       I.click(
         dbaasPage.tabs.dbClusterTab.advancedOptions.fields.resourcesPerNodesOption(configuration.resourcePerNode),
       );
@@ -153,7 +149,7 @@ module.exports = {
     await dbaasAPI.waitForDBClusterState(dbClusterName, k8sClusterName, clusterDBType, 'DB_CLUSTER_STATE_READY');
   },
 
-  async deletePSMDBCluster(dbClusterName, k8sClusterName, deleteCompleted = true) {
+  async deletePSMDBCluster(dbClusterName, k8sClusterName) {
     I.waitForElement(dbaasPage.tabs.dbClusterTab.fields.clusterTableHeader, 30);
     I.click(dbaasPage.tabs.dbClusterTab.fields.clusterActionsMenu);
     await this.checkActionPossible('Delete', true);
@@ -166,9 +162,6 @@ module.exports = {
       dbaasPage.tabs.kubernetesClusterTab.modalContentText,
     );
     I.click(dbaasPage.tabs.dbClusterTab.fields.deleteDBClusterButton);
-    if (deleteCompleted) {
-      I.waitForElement(dbaasPage.tabs.dbClusterTab.fields.clusterStatusDeleting, 30);
-    };
     await dbaasAPI.waitForDbClusterDeleted(dbClusterName, k8sClusterName, 'MongoDB');
   },
 
