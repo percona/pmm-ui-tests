@@ -48,12 +48,13 @@ Before(async ({ I }) => {
 
 Data(versionVerification).Scenario('PMM-T760 Verify Manage Components Versions @dbaas',
   async ({
-    I, dbaasPage, dbaasManageVersionPage, current,
+    I, dbaasPage, dbaasManageVersionPage, current, dbaasAPI,
   }) => {
     const {
       component, operatorVersion, componentName, dbType,
     } = current;
 
+    await dbaasAPI.waitForClusterStatus();
     I.amOnPage(dbaasPage.url);
     await dbaasPage.goToKubernetesClusterTab();
     dbaasPage.checkCluster(clusterName, false);
