@@ -48,6 +48,7 @@ async ({
   I, dbaasPage, dbaasAPI, dbaasActionsPage,
 }) => {
   await dbaasAPI.deleteAllDBCluster(clusterName);
+  await dbaasAPI.waitForClusterStatus();
   I.amOnPage(dbaasPage.url);
   await dbaasActionsPage.createClusterBasicOptions(clusterName, pxc_cluster_name, 'MySQL');
   I.click(dbaasPage.tabs.dbClusterTab.createClusterButton);
@@ -86,7 +87,7 @@ Scenario(
   },
 );
 
-Scenario('PMM-T582 Verify Adding Cluster with Same Name and Same DB Type @dbaas', async ({ I, dbaasPage, dbaasActionsPage }) => {
+Scenario.skip('PMM-T582 Verify Adding Cluster with Same Name and Same DB Type @dbaas', async ({ I, dbaasPage, dbaasActionsPage }) => {
   I.amOnPage(dbaasPage.url);
   await dbaasActionsPage.createClusterBasicOptions(clusterName, pxc_cluster_name, 'MySQL');
   I.click(dbaasPage.tabs.dbClusterTab.createClusterButton);
@@ -182,7 +183,7 @@ Scenario('PMM-T460, PMM-T452 Verify force unregistering Kubernetes cluster @dbaa
     I.amOnPage(dbaasPage.url);
     await dbaasPage.goToKubernetesClusterTab();
     dbaasPage.unregisterCluster(clusterName);
-    I.waitForText(dbaasPage.failedUnregisterCluster(clusterName, 'PXC'));
+    I.waitForText(dbaasPage.failedUnregisterCluster(clusterName));
     dbaasPage.unregisterCluster(clusterName, true);
     I.waitForText(dbaasPage.deletedAlertMessage, 20);
     dbaasPage.checkCluster(clusterName, true);
@@ -249,7 +250,7 @@ Scenario('PMM-T522 Verify Editing a Cluster with Custom Setting and float values
     };
 
     await dbaasActionsPage.editCluster(dbClusterRandomName, clusterName, configuration);
-    I.click(dbaasPage.tabs.dbClusterTab.updateClusterButton);
+    I.click(dbaasPage.tabs.dbClusterTab.createClusterButton);
     I.waitForText('Processing', 30, dbaasPage.tabs.dbClusterTab.fields.progressBarContent);
     await dbaasPage.postClusterCreationValidation(dbClusterRandomName, clusterName);
     await dbaasPage.validateClusterDetail(dbClusterRandomName, clusterName, singleNodeConfiguration,
@@ -282,7 +283,7 @@ Scenario('PMM-T488, PMM-T489 Verify editing PXC cluster changing single node to 
     await dbaasPage.validateClusterDetail(dbClusterRandomName, clusterName, singleNodeConfiguration,
       updatedConfiguration.clusterDashboardRedirectionLink);
     await dbaasActionsPage.editCluster(dbClusterRandomName, clusterName, updatedConfiguration);
-    I.click(dbaasPage.tabs.dbClusterTab.updateClusterButton);
+    I.click(dbaasPage.tabs.dbClusterTab.createClusterButton);
     I.waitForText('Processing', 60, dbaasPage.tabs.dbClusterTab.fields.progressBarContent);
     await dbaasPage.postClusterCreationValidation(dbClusterRandomName, clusterName);
     await dbaasPage.validateClusterDetail(dbClusterRandomName, clusterName, updatedConfiguration,

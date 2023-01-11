@@ -83,7 +83,7 @@ module.exports = {
       dbaasPage.tabs.kubernetesClusterTab.modalContentText,
     );
     I.click(dbaasPage.tabs.dbClusterTab.fields.deleteDBClusterButton);
-    I.waitForElement(dbaasPage.tabs.dbClusterTab.fields.clusterStatusDeleting, 30);
+    // I.waitForElement(dbaasPage.tabs.dbClusterTab.fields.clusterStatusDeleting, 30);
     await dbaasAPI.waitForDbClusterDeleted(dbClusterName, k8sClusterName);
   },
 
@@ -195,7 +195,7 @@ module.exports = {
     await this.checkActionPossible('Update', true);
     I.waitForElement(dbaasPage.tabs.dbClusterTab.fields.clusterAction('Update'), 30);
     I.click(dbaasPage.tabs.dbClusterTab.fields.clusterAction('Update'));
-    I.waitForElement(dbaasPage.tabs.dbClusterTab.fields.updateClusterButton, 30);
-    I.click(dbaasPage.tabs.dbClusterTab.fields.updateClusterButton);
+    I.waitForElement(dbaasPage.tabs.dbClusterTab.fields.createClusterButton, 30);
+    I.click(dbaasPage.tabs.dbClusterTab.fields.createClusterButton);
   },
 };

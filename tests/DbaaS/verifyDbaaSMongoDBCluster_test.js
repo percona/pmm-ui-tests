@@ -153,7 +153,7 @@ Scenario(
     //PMM-T460
     await dbaasPage.waitForKubernetesClusterTab(clusterName);
     dbaasPage.unregisterCluster(clusterName);
-    I.waitForText(dbaasPage.failedUnregisterCluster(clusterName, 'PSMDB'));
+    I.waitForText(dbaasPage.failedUnregisterCluster(clusterName));
     //PMM-T484
     I.amOnPage(dbaasPage.url);
     await dbaasActionsPage.restartCluster(psmdb_cluster, clusterName, 'MongoDB');
