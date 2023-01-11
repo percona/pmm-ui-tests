@@ -347,6 +347,32 @@ Scenario(
     scheduledPage.openScheduledBackupsPage();
   },
 );
+Scenario(
+  'PMM-T1328 Verify public address is set automatically on Percona Platform page once connected to Portal @settings @nightly',
+  async ({ I, pmmSettingsPage, portalAPI,perconaPlatformPage}) => {
+    const newAdminUser = await portalAPI.getUser();
+    await portalAPI.oktaCreateUser(newAdminUser);
+    const platformToken = await portalAPI.getUserAccessToken(newAdminUser.email, newAdminUser.password)
+    await perconaPlatformPage.openPerconaPlatform();
+    await perconaPlatformPage.connectToPortal(platformToken, `Test Server ${Date.now()}`);
+    await pmmSettingsPage.openAdvancedSettings();
+    await pmmSettingsPage.verifyTooltip(pmmSettingsPage.tooltips.advancedSettings.publicAddress);
+
+    await I.waitForVisible(pmmSettingsPage.fields.publicAddressInput, 30);
+    I.seeElement(pmmSettingsPage.fields.publicAddressButton);
+   
+    const publicAddressValue = await I.grabValueFrom(pmmSettingsPage.fields.publicAddressInput);
+    const serverAddressIP = process.env.VM_IP
+
+    I.assertTrue(publicAddressValue.length > 0, 'Expected the Public Address Input Field to be not empty!');
+    I.refreshPage();
+    await pmmSettingsPage.waitForPmmSettingsPageLoaded();
+
+    I.assertEqual(serverAddressIP, publicAddressValue,
+      `Expected the Public Address to be saved and Match ${publicAddressValue}`);
+    portalAPI.disconnectPMMFromPortal(platformToken)
+  },
+);
 
 Scenario(
   'PMM-T486 - Verify Public Address in PMM Settings @settings @nightly',
