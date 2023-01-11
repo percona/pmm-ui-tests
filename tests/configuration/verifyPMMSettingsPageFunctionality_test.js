@@ -373,7 +373,7 @@ Scenario(
       `Expected the Public Address to be saved and Match ${publicAddressValue}`);
     await portalAPI.disconnectPMMFromPortal(platformToken);
   },
-);
+).retry(0);
 
 Scenario(
   'PMM-T486 - Verify Public Address in PMM Settings @settings @nightly',
