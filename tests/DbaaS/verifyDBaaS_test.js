@@ -245,6 +245,7 @@ Data(inputFields).Scenario('PMM-T456 Verify Create Cluster steps validation - fi
     await dbaasActionsPage.createClusterBasicOptions(clusterName, 'dbcluster', 'MySQL');
     I.seeElement(dbaasPage.tabs.dbClusterTab.advancedOptionsButton);
     I.click(dbaasPage.tabs.dbClusterTab.advancedOptionsButton);
+    I.waitForVisible(dbaasPage.tabs.dbClusterTab.advancedOptions.fields.resourcesPerNodeSelect);
     I.click(dbaasPage.tabs.dbClusterTab.advancedOptions.fields.resourcesPerNodeSelect);
     I.waitForVisible(dbaasPage.tabs.dbClusterTab.advancedOptions.fields.resourcesPerNodesOption('Custom'), 10);
     I.click(dbaasPage.tabs.dbClusterTab.advancedOptions.fields.resourcesPerNodesOption('Custom'));
@@ -274,11 +275,13 @@ Data(resourceFields).Scenario('PMM-T828 Verify the Configuration for Small, Medi
     I.click(dbaasPage.tabs.dbClusterTab.dbClusterAddButtonTop);
     I.waitForVisible(dbaasPage.tabs.dbClusterTab.advancedOptionsButton, 10);
     I.click(dbaasPage.tabs.dbClusterTab.advancedOptionsButton);
+    I.waitForVisible(dbaasPage.tabs.dbClusterTab.advancedOptions.fields.resourcesPerNodeSelect);
+    I.click(dbaasPage.tabs.dbClusterTab.advancedOptions.fields.resourcesPerNodeSelect);
     I.waitForVisible(
       dbaasPage.tabs.dbClusterTab.advancedOptions.fields.resourcesPerNodesOption(current.resourceType),
       30,
     );
-    I.click(dbaasPage.tabs.dbClusterTab.advancedOptions.fields.resourcesPerNode(current.resourceType));
+    I.click(dbaasPage.tabs.dbClusterTab.advancedOptions.fields.resourcesPerNodesOption(current.resourceType));
     let value = await I.grabAttributeFrom(dbaasPage.tabs.dbClusterTab.advancedOptions.fields.cpuNumberFields, 'value');
 
     await dbaasPage.validateResourcesField('cpu', current.resourceType, value);
