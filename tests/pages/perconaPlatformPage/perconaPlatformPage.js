@@ -79,11 +79,8 @@ module.exports = {
     I.fillField(this.fields.pmmServerNameField, serverName);
     I.fillField(this.fields.tokenField, token);
     I.click(this.buttons.connect);
-    if (inheredIp == true) {
+    if (inheredIp === true) {
     I.verifyPopUpMessage(this.messages.UpdateSuccess);
-    I.waitForVisible(this.elements.connectedWrapper, 20);
-    I.verifyPopUpMessage(this.elements.connectedSuccess);
-    I.refreshPage();
     }
     I.verifyPopUpMessage(this.messages.connectedSuccess);
     I.refreshPage();
