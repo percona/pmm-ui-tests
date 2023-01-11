@@ -371,7 +371,7 @@ Scenario(
 
     await I.assertEqual(serverAddressIP, publicAddressValue,
       `Expected the Public Address to be saved and Match ${publicAddressValue}`);
-    await portalAPI.disconnectPMMFromPortal(platformToken);
+    await perconaPlatformPage.disconnectFromPortal();
   },
 ).retry(0);
 
