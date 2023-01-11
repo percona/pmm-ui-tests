@@ -166,7 +166,7 @@ Scenario('PMM-T728 Verify DB Cluster Tab Page Elements & Steps Background @dbaas
     I.moveCursorTo(dbaasPage.tabs.dbClusterTab.advancedOptions.fields.dbClusterExposeTooltip);
     I.seeTextEquals('You will make this database cluster available to connect from the internet. To limit access you need to specify source ranges',
       dbaasPage.tabs.dbClusterTab.advancedOptions.fields.dbClusterExposeTooltipText);
-    I.seeElement(dbaasPage.tabs.dbClusterTab.advancedOptions.fields.resourcePerNodeLabel);
+    I.seeElement(dbaasPage.tabs.dbClusterTab.advancedOptions.fields.resourcesPerNodeLabel);
     I.seeElement(dbaasPage.tabs.dbClusterTab.advancedOptions.fields.memoryField);
     I.seeElement(dbaasPage.tabs.dbClusterTab.advancedOptions.fields.cpuNumberFields);
     I.seeElement(dbaasPage.tabs.dbClusterTab.advancedOptions.fields.diskSizeInputField);
