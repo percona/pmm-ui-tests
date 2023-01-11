@@ -70,7 +70,7 @@ module.exports = {
       + 'Monitored services count\n'
       + 'Monitored environments count\n'
       + 'Monitored clusters count\n'
-      + 'Agents versions\n'
+      + 'Agents version\n'
       + 'Agents version PMM_AGENT running on PMM server\n'
       + 'Agents version PMM_AGENT\n'
       + 'Agents version VM_AGENT\n'
@@ -102,5 +102,12 @@ module.exports = {
       + 'K8s Clusters Count\n'
       + 'Advisor - number of downloaded checks per name\n'
       + 'Advisor - number of executed checks per name\n'
-      + 'Advisor - number of failed checks per name',
+      + 'Advisor - number of failed checks per name\n'
+      + 'Grafana Users Count\n'
+      + 'Grafana Dark Theme Users Count\n'
+      + 'Grafana Light Theme Users Count\n'
+      + 'Grafana Default Theme Users Count\n'
+      + 'Grafana Custom Dashboards Count\n'
+      + 'Grafana Custom Dashboards Count By Pillar\n'
+      + 'PMM Server API usage',
 };
