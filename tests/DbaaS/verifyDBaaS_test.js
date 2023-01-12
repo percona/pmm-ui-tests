@@ -55,7 +55,7 @@ Scenario(
     I.dontSeeElement(dbaasPage.tabs.dbClusterTab.monitoringWarningLocator, 30);
     I.dontSee(dbaasPage.monitoringWarningMessage);
     I.click(dbaasPage.tabs.kubernetesClusterTab.cancelButton);
-    I.waitForElement(dbaasPage.tabs.dbClusterTab.fields.clusterTableRow);
+    I.waitForElement(dbaasPage.tabs.dbClusterTab.fields.clusterTableRow(clusterName));
     // PMM-T428 - starting here
     dbaasPage.registerKubernetesCluster(clusterName, process.env.kubeconfig_minikube);
     dbaasPage.seeErrorForAddedCluster(clusterName);
@@ -314,9 +314,9 @@ Failed to register pmm-agent on PMM Server: Post "https://https:%2F%2F1.2.3.4/v1
     await dbaasAPI.createCustomPXC(clusterName, dbClusterName, '1');
 
     I.amOnPage(dbaasPage.url);
-    I.waitForText('Processing', 30, dbaasPage.tabs.dbClusterTab.fields.progressBarContent);
+    I.waitForText('Processing', 30, dbaasPage.tabs.dbClusterTab.fields.progressBarContent(dbClusterName));
     await dbaasAPI.waitForDBClusterState(dbClusterName, clusterName, dbType, 'DB_CLUSTER_STATE_READY');
-    await dbaasActionsPage.showClusterLogs();
+    await dbaasActionsPage.showClusterLogs(dbClusterName);
     I.waitForElement(dbaasPage.tabs.dbClusterTab.fields.dbClusterLogs.expandAllLogsButton, 30);
     I.click(dbaasPage.tabs.dbClusterTab.fields.dbClusterLogs.expandAllLogsButton);
     I.waitForElement(dbaasPage.tabs.dbClusterTab.fields.dbClusterLogs.expandedContainersLogsSection, 30);

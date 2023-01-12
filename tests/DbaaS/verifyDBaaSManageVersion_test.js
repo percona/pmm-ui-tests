@@ -80,8 +80,8 @@ Scenario('PMM-T765 Verify Manage Components Versions '
     I.amOnPage(dbaasPage.url);
     await dbaasPage.goToKubernetesClusterTab();
     dbaasPage.checkCluster(clusterName, false);
-    I.see(dbaasManageVersionPage.operatorVersion.PXC, dbaasPage.tabs.dbClusterTab.fields.clusterTableRow);
-    I.see(dbaasManageVersionPage.operatorVersion.PSMDB, dbaasPage.tabs.dbClusterTab.fields.clusterTableRow);
+    I.see(dbaasManageVersionPage.operatorVersion.PXC, dbaasPage.tabs.dbClusterTab.fields.clusterTableRow(clusterName));
+    I.see(dbaasManageVersionPage.operatorVersion.PSMDB, dbaasPage.tabs.dbClusterTab.fields.clusterTableRow(clusterName));
     dbaasManageVersionPage.waitForManageVersionPopup(clusterName);
     I.waitForText(
       dbaasManageVersionPage.manageVersion.dialogTitle,
