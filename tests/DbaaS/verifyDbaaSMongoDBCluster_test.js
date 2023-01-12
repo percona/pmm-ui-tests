@@ -131,7 +131,7 @@ Scenario(
 Scenario('Verify update PSMDB Cluster version @dbaas', async ({ I, dbaasPage, dbaasActionsPage }) => {
   I.amOnPage(dbaasPage.url);
   await dbaasActionsPage.updateCluster();
-  I.waitForText('Processing', 30, dbaasPage.tabs.dbClusterTab.fields.progressBarContent);
+  I.waitForText('Processing', 30, dbaasPage.tabs.dbClusterTab.fields.progressBarContent(psmdb_cluster));
   await dbaasAPI.waitForDBClusterState(psmdb_cluster, clusterName, 'MongoDB', 'DB_CLUSTER_STATE_READY');
   // I.waitForElement(dbaasPage.tabs.dbClusterTab.fields.clusterStatusActive, 120);
   // I.seeElement(dbaasPage.tabs.dbClusterTab.fields.clusterStatusActive);
@@ -212,7 +212,7 @@ Scenario(
 
     await dbaasActionsPage.editCluster(psmdb_cluster, clusterName, psmdb_configuration_after_edit);
     I.click(dbaasPage.tabs.dbClusterTab.createClusterButton);
-    I.waitForText('Processing', 60, dbaasPage.tabs.dbClusterTab.fields.progressBarContent);
+    I.waitForText('Processing', 60, dbaasPage.tabs.dbClusterTab.fields.progressBarContent(psmdb_cluster));
     await dbaasPage.postClusterCreationValidation(psmdb_cluster, clusterName, 'MongoDB');
     await dbaasPage.validateClusterDetail(
       psmdb_cluster,
@@ -235,7 +235,7 @@ Scenario('PMM-T509 Verify Deleting Mongo Db Cluster in Pending Status is possibl
     I.amOnPage(dbaasPage.url);
     await dbaasActionsPage.createClusterBasicOptions(clusterName, psmdb_cluster_pending_delete, 'MongoDB');
     I.click(dbaasPage.tabs.dbClusterTab.createClusterButton);
-    I.waitForText('Processing', 30, dbaasPage.tabs.dbClusterTab.fields.progressBarContent);
+    I.waitForText('Processing', 30, dbaasPage.tabs.dbClusterTab.fields.progressBarContent(psmdb_cluster_pending_delete));
     await dbaasActionsPage.deletePSMDBCluster(psmdb_cluster_pending_delete, clusterName);
   }).retry(1);
 
