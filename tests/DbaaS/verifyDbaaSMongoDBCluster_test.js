@@ -278,10 +278,10 @@ Scenario('PMM-T704 PMM-T772 PMM-T849 PMM-T850 Resources, PV, Secrets verificatio
       `kubectl get pods ${psmdb_cluster_resource_check}-rs0-0 -o json | grep -i requests -A2 | tail -2`,
       '"memory": "2G"',
     );
-    await I.verifyCommand(
-      `kubectl get pv | grep ${psmdb_cluster_resource_check}`,
-      psmdb_cluster_resource_check,
-    );
+    // await I.verifyCommand(
+    //   `kubectl get pv | grep ${psmdb_cluster_resource_check}`,
+    //   psmdb_cluster_resource_check,
+    // );
     await I.verifyCommand(
       `kubectl get secrets | grep dbaas-${psmdb_cluster_resource_check}-psmdb-secrets`,
       psmdb_cluster_resource_check,

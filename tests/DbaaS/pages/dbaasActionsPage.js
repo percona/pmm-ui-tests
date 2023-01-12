@@ -195,7 +195,7 @@ module.exports = {
     await this.checkActionPossible('Update', true);
     I.waitForElement(dbaasPage.tabs.dbClusterTab.fields.clusterAction('Update'), 30);
     I.click(dbaasPage.tabs.dbClusterTab.fields.clusterAction('Update'));
-    I.waitForElement(dbaasPage.tabs.dbClusterTab.fields.createClusterButton, 30);
-    I.click(dbaasPage.tabs.dbClusterTab.fields.createClusterButton);
+    I.waitForElement(dbaasPage.tabs.dbClusterTab.confirmUpdateButton, 30);
+    I.click(dbaasPage.tabs.dbClusterTab.confirmUpdateButton);
   },
 };
