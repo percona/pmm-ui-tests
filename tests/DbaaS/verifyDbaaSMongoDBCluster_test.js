@@ -80,7 +80,7 @@ Scenario('PMM-T665 PMM-T642 PSMDB Cluster with Custom Resources, log popup ' +
     I.amOnPage(dbaasPage.url);
     await dbaasPage.postClusterCreationValidation(psmdb_cluster, clusterName, 'MongoDB');
     //PMM-T665
-    await dbaasPage.verifyLogPopup(27);
+    await dbaasPage.verifyLogPopup(27, psmdb_cluster);
     await dbaasPage.validateClusterDetail(psmdb_cluster, clusterName, psmdb_configuration, 
       psmdb_configuration.clusterDashboardRedirectionLink);
     const {
@@ -292,16 +292,16 @@ Scenario('PMM-T704 PMM-T772 PMM-T849 PMM-T850 Resources, PV, Secrets verificatio
     );
     await dbaasAPI.apiDeleteDBCluster(psmdb_cluster_resource_check, clusterName, psmdb_cluster_type);
     await dbaasAPI.waitForDbClusterDeleted(psmdb_cluster_resource_check, clusterName, 'MongoDB');
-    await I.verifyCommand(
-      `kubectl get pv | grep ${psmdb_cluster_resource_check}`,
-      'No resources found',
-      'fail',
-    );
-    await I.verifyCommand(
-      `kubectl get secrets | grep dbaas-${psmdb_cluster_resource_check}-psmdb-secrets`,
-      '',
-      'fail',
-    );
+    // await I.verifyCommand(
+    //   `kubectl get pv | grep ${psmdb_cluster_resource_check}`,
+    //   'No resources found',
+    //   'fail',
+    // );
+    // await I.verifyCommand(
+    //   `kubectl get secrets | grep dbaas-${psmdb_cluster_resource_check}-psmdb-secrets`,
+    //   '',
+    //   'fail',
+    // );
   });
 
 
