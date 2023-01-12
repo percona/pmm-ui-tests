@@ -52,9 +52,9 @@ async ({
   I.amOnPage(dbaasPage.url);
   await dbaasActionsPage.createClusterBasicOptions(clusterName, pxc_cluster_name, 'MySQL');
   I.click(dbaasPage.tabs.dbClusterTab.createClusterButton);
-  I.waitForText('Processing', 30, dbaasPage.tabs.dbClusterTab.fields.progressBarContent);
+  I.waitForText('Processing', 30, dbaasPage.tabs.dbClusterTab.fields.progressBarContent(pxc_cluster_name));
   await dbaasPage.postClusterCreationValidation(pxc_cluster_name, clusterName);
-  await dbaasPage.verifyLogPopup(18);
+  await dbaasPage.verifyLogPopup(18, pxc_cluster_name);
 });
 
 Scenario(
@@ -208,7 +208,7 @@ async ({
   I.amOnPage(dbaasPage.url);
   await dbaasActionsPage.createClusterAdvancedOption(clusterName, dbClusterRandomName, 'MySQL', singleNodeConfiguration);
   I.click(dbaasPage.tabs.dbClusterTab.createClusterButton);
-  I.waitForText('Processing', 30, dbaasPage.tabs.dbClusterTab.fields.progressBarContent);
+  I.waitForText('Processing', 30, dbaasPage.tabs.dbClusterTab.fields.progressBarContent(pxc_cluster_name));
   // PMM-T780
   await dbaasPage.apiKeyCheck(clusterName, dbClusterRandomName, 'pxc', true);
   I.amOnPage(dbaasPage.url);
@@ -237,7 +237,7 @@ Scenario('PMM-T522 Verify Editing a Cluster with Custom Setting and float values
     I.amOnPage(dbaasPage.url);
     await dbaasActionsPage.createClusterBasicOptions(clusterName, dbClusterRandomName, 'MySQL');
     I.click(dbaasPage.tabs.dbClusterTab.createClusterButton);
-    I.waitForText('Processing', 30, dbaasPage.tabs.dbClusterTab.fields.progressBarContent);
+    I.waitForText('Processing', 30, dbaasPage.tabs.dbClusterTab.fields.progressBarContent(pxc_cluster_name));
     await dbaasPage.postClusterCreationValidation(dbClusterRandomName, clusterName);
     const configuration = {
       topology: 'Single',
@@ -251,7 +251,7 @@ Scenario('PMM-T522 Verify Editing a Cluster with Custom Setting and float values
 
     await dbaasActionsPage.editCluster(dbClusterRandomName, clusterName, configuration);
     I.click(dbaasPage.tabs.dbClusterTab.createClusterButton);
-    I.waitForText('Processing', 30, dbaasPage.tabs.dbClusterTab.fields.progressBarContent);
+    I.waitForText('Processing', 30, dbaasPage.tabs.dbClusterTab.fields.progressBarContent(pxc_cluster_name));
     await dbaasPage.postClusterCreationValidation(dbClusterRandomName, clusterName);
     await dbaasPage.validateClusterDetail(dbClusterRandomName, clusterName, singleNodeConfiguration,
       configuration.clusterDashboardRedirectionLink);
@@ -278,13 +278,13 @@ Scenario('PMM-T488, PMM-T489 Verify editing PXC cluster changing single node to 
     I.amOnPage(dbaasPage.url);
     await dbaasActionsPage.createClusterAdvancedOption(clusterName, dbClusterRandomName, 'MySQL', singleNodeConfiguration);
     I.click(dbaasPage.tabs.dbClusterTab.createClusterButton);
-    I.waitForText('Processing', 30, dbaasPage.tabs.dbClusterTab.fields.progressBarContent);
+    I.waitForText('Processing', 30, dbaasPage.tabs.dbClusterTab.fields.progressBarContent(dbClusterRandomName));
     await dbaasPage.postClusterCreationValidation(dbClusterRandomName, clusterName);
     await dbaasPage.validateClusterDetail(dbClusterRandomName, clusterName, singleNodeConfiguration,
       updatedConfiguration.clusterDashboardRedirectionLink);
     await dbaasActionsPage.editCluster(dbClusterRandomName, clusterName, updatedConfiguration);
     I.click(dbaasPage.tabs.dbClusterTab.createClusterButton);
-    I.waitForText('Processing', 60, dbaasPage.tabs.dbClusterTab.fields.progressBarContent);
+    I.waitForText('Processing', 60, dbaasPage.tabs.dbClusterTab.fields.progressBarContent(dbClusterRandomName));
     await dbaasPage.postClusterCreationValidation(dbClusterRandomName, clusterName);
     await dbaasPage.validateClusterDetail(dbClusterRandomName, clusterName, updatedConfiguration,
       updatedConfiguration.clusterDashboardRedirectionLink);
@@ -306,11 +306,11 @@ Scenario('PMM-T525 PMM-T528 Verify Suspend & Resume for DB Cluster Works as expe
     I.amOnPage(dbaasPage.url);
     await dbaasActionsPage.createClusterBasicOptions(clusterName, dbClusterRandomName, 'MySQL');
     I.click(dbaasPage.tabs.dbClusterTab.createClusterButton);
-    I.waitForText('Processing', 30, dbaasPage.tabs.dbClusterTab.fields.progressBarContent);
+    I.waitForText('Processing', 30, dbaasPage.tabs.dbClusterTab.fields.progressBarContent(dbClusterRandomName));
     await dbaasPage.postClusterCreationValidation(dbClusterRandomName, clusterName);
-    I.click(dbaasPage.tabs.dbClusterTab.fields.clusterActionsMenu);
-    await dbaasActionsPage.checkActionPossible('Update', false);
-    I.click(dbaasPage.tabs.dbClusterTab.fields.clusterActionsMenu);
+    I.click(dbaasPage.tabs.dbClusterTab.fields.clusterActionsMenu(dbClusterRandomName));
+    await dbaasActionsPage.checkActionPossible('Update', false, pxc_cluster_name);
+    I.click(dbaasPage.tabs.dbClusterTab.fields.clusterActionsMenu(dbClusterRandomName));
     await dbaasActionsPage.suspendCluster(dbClusterRandomName, clusterName);
     I.waitForVisible(dbaasPage.tabs.dbClusterTab.fields.clusterStatusPaused, 60);
     I.seeElement(dbaasPage.tabs.dbClusterTab.fields.clusterStatusPaused);
@@ -323,7 +323,7 @@ Scenario('PMM-T525 PMM-T528 Verify Suspend & Resume for DB Cluster Works as expe
 
 Scenario('PMM-T704 PMM-T772 PMM-T849 PMM-T850 Resources, PV, Secrets verification @dbaas',
   async ({
-    I, dbaasPage, dbaasAPI, dbaasActionsPage, adminPage,
+    I, dbaasPage, dbaasAPI, dbaasActionsPage,
   }) => {
     const dbClusterRandomName = dbaasPage.randomizeClusterName(pxc_cluster_name);
     const pxc_configuration = {
@@ -343,7 +343,7 @@ Scenario('PMM-T704 PMM-T772 PMM-T849 PMM-T850 Resources, PV, Secrets verificatio
     I.amOnPage(dbaasPage.url);
     await dbaasActionsPage.createClusterAdvancedOption(clusterName, dbClusterRandomName, 'MySQL', pxc_configuration);
     I.click(dbaasPage.tabs.dbClusterTab.createClusterButton);
-    I.waitForText('Processing', 30, dbaasPage.tabs.dbClusterTab.fields.progressBarContent);
+    I.waitForText('Processing', 30, dbaasPage.tabs.dbClusterTab.fields.progressBarContent(pxc_cluster_name));
     await dbaasPage.postClusterCreationValidation(dbClusterRandomName, clusterName);
     const {
       username, password, host, port,
@@ -407,7 +407,7 @@ Scenario('Verify update PXC DB Cluster version @dbaas', async ({ I, dbaasPage, d
     'DBAAS_UPGRADE_TESTING',
   );
 
-  await dbaasActionsPage.updateCluster();
+  await dbaasActionsPage.updateCluster(dbClusterRandomName);
   I.waitForVisible(dbaasPage.tabs.dbClusterTab.fields.clusterStatusUpdating, 60);
   I.seeElement(dbaasPage.tabs.dbClusterTab.fields.clusterStatusUpdating);
   await dbaasAPI.waitForDBClusterState(dbClusterRandomName, clusterName, 'MySQL', 'DB_CLUSTER_STATE_READY');
@@ -434,7 +434,7 @@ Scenario(
     I.amOnPage(dbaasPage.url);
     await dbaasActionsPage.createClusterBasicOptions(clusterName, pxc_cluster_pending_delete, 'MySQL');
     I.click(dbaasPage.tabs.dbClusterTab.createClusterButton);
-    I.waitForText('Processing', 60, dbaasPage.tabs.dbClusterTab.fields.progressBarContent);
+    I.waitForText('Processing', 60, dbaasPage.tabs.dbClusterTab.fields.progressBarContent(pxc_cluster_pending_delete));
     await dbaasActionsPage.deleteXtraDBCluster(pxc_cluster_pending_delete, clusterName);
   },
 );

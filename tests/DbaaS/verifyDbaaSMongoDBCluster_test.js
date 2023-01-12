@@ -74,7 +74,7 @@ Scenario('PMM-T665 PMM-T642 PSMDB Cluster with Custom Resources, log popup ' +
     I.amOnPage(dbaasPage.url);
     await dbaasActionsPage.createClusterAdvancedOption(clusterName, psmdb_cluster, 'MongoDB', psmdb_configuration);
     I.click(dbaasPage.tabs.dbClusterTab.createClusterButton);
-    I.waitForText('Processing', 30, dbaasPage.tabs.dbClusterTab.fields.progressBarContent);
+    I.waitForText('Processing', 30, dbaasPage.tabs.dbClusterTab.fields.progressBarContent(psmdb_cluster));
     //PMM-T780
     await dbaasPage.apiKeyCheck(clusterName, psmdb_cluster, 'psmdb', true);
     I.amOnPage(dbaasPage.url);
@@ -188,7 +188,7 @@ Scenario(
     I.amOnPage(dbaasPage.url);
     await dbaasActionsPage.createClusterAdvancedOption(clusterName, psmdb_cluster, 'MongoDB', psmdb_configuration);
     I.click(dbaasPage.tabs.dbClusterTab.createClusterButton);
-    I.waitForText('Processing', 30, dbaasPage.tabs.dbClusterTab.fields.progressBarContent);
+    I.waitForText('Processing', 30, dbaasPage.tabs.dbClusterTab.fields.progressBarContent(psmdb_cluster));
     await dbaasPage.postClusterCreationValidation(psmdb_cluster, clusterName, 'MongoDB');
     await dbaasPage.validateClusterDetail(
       psmdb_cluster,
@@ -196,7 +196,7 @@ Scenario(
       psmdb_configuration,
       psmdb_configuration.clusterDashboardRedirectionLink,
     );
-    I.click(dbaasPage.tabs.dbClusterTab.fields.clusterActionsMenu);
+    // I.click(dbaasPage.tabs.dbClusterTab.fields.clusterActionsMenu(psmdb_cluster));
     // await dbaasActionsPage.checkActionPossible('Update', false); skipped because latest mongodb is not recommended version
     // PMM-787
     const psmdb_configuration_after_edit = {
