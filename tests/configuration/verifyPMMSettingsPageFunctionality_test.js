@@ -363,7 +363,7 @@ Scenario(
     I.seeElement(pmmSettingsPage.fields.publicAddressButton);
    
     const publicAddressValue = await I.grabValueFrom(pmmSettingsPage.fields.publicAddressInput);
-    const serverAddressIP = await process.env.VM_IP;
+    const serverAddressIP = process.env.VM_IP;
 
     I.assertTrue(publicAddressValue.length > 0, 'Expected the Public Address Input Field to be not empty!');
     I.refreshPage();
@@ -371,7 +371,6 @@ Scenario(
 
     await I.assertEqual(serverAddressIP, publicAddressValue,
       `Expected the Public Address to be saved and Match ${publicAddressValue}`);
-    await perconaPlatformPage.disconnectFromPortal();
   },
 ).retry(0);
 
