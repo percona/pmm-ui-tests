@@ -75,13 +75,10 @@ module.exports = {
     I.seeTextEquals('', this.elements.emailValidation);
   },
 
-  connectToPortal(token, serverName = 'Test Server', inheredIp = false) {
+  connectToPortal(token, serverName = 'Test Server') {
     I.fillField(this.fields.pmmServerNameField, serverName);
     I.fillField(this.fields.tokenField, token);
     I.click(this.buttons.connect);
-    if (inheredIp === true) {
-    I.verifyPopUpMessage(this.messages.connectedSuccess);
-    }
     I.verifyPopUpMessage(this.messages.connectedSuccess);
     I.refreshPage();
     I.waitForVisible(this.elements.connectedWrapper, 20);
