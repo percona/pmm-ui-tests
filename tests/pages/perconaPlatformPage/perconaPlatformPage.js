@@ -80,7 +80,7 @@ module.exports = {
     I.fillField(this.fields.tokenField, token);
     I.click(this.buttons.connect);
     if (inheredIp === true) {
-    I.verifyPopUpMessage(this.messages.UpdateSuccess);
+    I.verifyPopUpMessage(this.messages.connectedSuccess);
     }
     I.verifyPopUpMessage(this.messages.connectedSuccess);
     I.refreshPage();
