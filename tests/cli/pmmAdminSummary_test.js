@@ -12,6 +12,7 @@ Scenario('PMM-T1219 - Verify pmm-admin summary includes targets from vmagent @cl
     'pmm-summary.zip created.',
   );
 
+  await I.verifyCommand('unzip pmm-summary.zip -d pmm-summary-logs');
   await I.verifyCommand('unzip -l pmm-summary.zip | grep vmagent-targets.json',
     'client/vmagent-targets.json');
 

@@ -28,7 +28,7 @@ Before(async ({ I }) => {
 });
 
 Data(sidebar).Scenario(
-  '@PMM-T433, @PMM-T591 - Verify menu items on Grafana sidebar redirects to correct page @menu',
+  'PMM-T433, PMM-T591 - Verify menu items on Grafana sidebar redirects to correct page @menu',
   async ({ I, homePage, current }) => {
     await homePage.open();
     I.usePlaywrightTo('check browser version', async ({ browser }) => {

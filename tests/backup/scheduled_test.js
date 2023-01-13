@@ -190,7 +190,7 @@ Scenario(
     scheduledPage.selectDropdownOption(scheduledPage.fields.serviceNameDropdown, mongoServiceName);
     I.fillField(scheduledPage.fields.backupName, schedule.name);
     scheduledPage.selectDropdownOption(scheduledPage.fields.locationDropdown, location.name);
-    scheduledPage.selectDropdownOption(scheduledPage.fields.everyDropdown, 'Minute');
+    scheduledPage.selectDropdownOption(scheduledPage.fields.everyDropdown, 'Every minute');
     scheduledPage.clearRetentionField();
     I.fillField(scheduledPage.fields.retention, schedule.retention);
 
@@ -240,7 +240,7 @@ Data(schedules).Scenario(
       description: schedule.description,
       retention: 6,
       type: 'Full',
-      location: location.name,
+      location: `${location.name} (S3)`,
       dataModel: 'Logical',
       cronExpression: current.cronExpression,
     };
@@ -271,7 +271,7 @@ Scenario('@PMM-T900 Verify user can copy scheduled backup @backup @bm-mongo',
       frequency: 'At 00:00',
       retention: 7,
       type: 'Full',
-      location: location.name,
+      location: `${location.name} (S3)`,
       dataModel: 'Logical',
       cronExpression: schedule.cron_expression,
     };
