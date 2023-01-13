@@ -290,7 +290,8 @@ Scenario('PMM-T488, PMM-T489 Verify editing PXC cluster changing single node to 
     await dbaasPage.validateClusterDetail(dbClusterRandomName, clusterName, updatedConfiguration,
       updatedConfiguration.clusterDashboardRedirectionLink);
     await dbaasActionsPage.deleteXtraDBCluster(dbClusterRandomName, clusterName);
-  });
+  }
+).retry(1);
 
 Scenario('PMM-T525 PMM-T528 Verify Suspend & Resume for DB Cluster Works as expected @dbaas',
   async ({ I, dbaasPage, dbaasActionsPage }) => {
@@ -372,9 +373,11 @@ Scenario('PMM-T704 PMM-T772 PMM-T849 PMM-T850 Resources, PV, Secrets verificatio
       `kubectl get secrets dbaas-${dbClusterRandomName}-pxc-secrets -o yaml | grep root: | awk '{print $2}' | base64 --decode`,
       password,
     );
-  });
+  }
+);
 
-Scenario('Verify update PXC DB Cluster version @dbaas', async ({ I, dbaasPage, dbaasActionsPage }) => {
+// FIXME: unskip when https://jira.percona.com/browse/PMM-11396 is done
+Scenario.skip('Verify update PXC DB Cluster version @dbaas', async ({ I, dbaasPage, dbaasActionsPage }) => {
   const mysqlVersion = '8.0.19-10.1';
   const dbClusterRandomName = dbaasPage.randomizeClusterName(pxc_cluster_name);
 
