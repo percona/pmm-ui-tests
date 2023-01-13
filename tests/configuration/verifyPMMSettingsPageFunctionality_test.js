@@ -368,6 +368,8 @@ Scenario(
     I.assertTrue(publicAddressValue.length > 0, 'Expected the Public Address Input Field to be not empty!');
     I.refreshPage();
     await pmmSettingsPage.waitForPmmSettingsPageLoaded();
+    console.log(serverAddressIP);
+    console.log(process.env.VM_IP);
 
     await I.assertEqual(serverAddressIP, publicAddressValue,
       `Expected the Public Address to be saved and Match ${publicAddressValue}`);
