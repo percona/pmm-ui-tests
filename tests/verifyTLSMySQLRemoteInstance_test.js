@@ -46,6 +46,7 @@ Data(instances).Scenario(
     let details;
     const remoteServiceName = `remote_${serviceName}_faker`;
     await I.verifyCommand(`${pmmFrameworkLoader} --ps-version=${version} --setup-mysql-ssl --pmm2`);
+    await I.say(await I.verifyCommand(`docker exec ${container} bash -c 'source ~/.bash_profile || true; pmm-admin list'`));
 
     if (serviceType === 'mysql_ssl') {
       details = {
