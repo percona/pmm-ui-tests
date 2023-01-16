@@ -39,7 +39,7 @@ BeforeSuite(async ({
     password: 'password',
   });
 
-  I.say(await I.verifyCommand(`pmm-admin add mongodb --port=27027 --service-name=${mongoServiceName} --replication-set=rs0`));
+  I.say(await I.verifyCommand(`sudo pmm-admin add mongodb --port=27027 --service-name=${mongoServiceName} --replication-set=rs0`));
 });
 
 Before(async ({
@@ -49,7 +49,6 @@ Before(async ({
 
   serviceId = service_id;
   const c = await I.mongoGetCollection('test', 'e2e');
-
 
   await c.deleteMany({ number: 2 });
 
@@ -178,7 +177,7 @@ Scenario(
 );
 
 Scenario(
-  '@PMM-T913, @PMM-T922, @PMM-T977 Verify user can schedule a backup for MongoDB with replica @backup @bm-mongo @fb',
+  '@PMM-T913, @PMM-T922, @PMM-T977 Verify user can schedule a backup for MongoDB with replica @backup @bm-mongo @bm-fb',
   async ({
     I, backupInventoryPage, scheduledAPI, backupAPI, scheduledPage,
   }) => {
@@ -191,7 +190,7 @@ Scenario(
     scheduledPage.selectDropdownOption(scheduledPage.fields.serviceNameDropdown, mongoServiceName);
     I.fillField(scheduledPage.fields.backupName, schedule.name);
     scheduledPage.selectDropdownOption(scheduledPage.fields.locationDropdown, location.name);
-    scheduledPage.selectDropdownOption(scheduledPage.fields.everyDropdown, 'Minute');
+    scheduledPage.selectDropdownOption(scheduledPage.fields.everyDropdown, 'Every minute');
     scheduledPage.clearRetentionField();
     I.fillField(scheduledPage.fields.retention, schedule.retention);
 
@@ -241,7 +240,7 @@ Data(schedules).Scenario(
       description: schedule.description,
       retention: 6,
       type: 'Full',
-      location: location.name,
+      location: `${location.name} (S3)`,
       dataModel: 'Logical',
       cronExpression: current.cronExpression,
     };
@@ -272,7 +271,7 @@ Scenario('@PMM-T900 Verify user can copy scheduled backup @backup @bm-mongo',
       frequency: 'At 00:00',
       retention: 7,
       type: 'Full',
-      location: location.name,
+      location: `${location.name} (S3)`,
       dataModel: 'Logical',
       cronExpression: schedule.cron_expression,
     };
@@ -292,7 +291,7 @@ Scenario('@PMM-T900 Verify user can copy scheduled backup @backup @bm-mongo',
     I.seeAttributesOnElements(scheduledPage.elements.toggleByName(newSchedule.name), { checked: null });
   });
 
-Scenario('@PMM-T908 Verify user can enable/disable scheduled backup @backup @bm-mongo @fb',
+Scenario('@PMM-T908 Verify user can enable/disable scheduled backup @backup @bm-mongo @bm-fb',
   async ({
     I, scheduledPage, scheduledAPI,
   }) => {
