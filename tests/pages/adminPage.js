@@ -203,7 +203,7 @@ module.exports = {
       I.scrollTo(tooltipReadMoreLink);
       I.seeAttributesOnElements(tooltipReadMoreLink, { href: tooltipObj.link });
       const readMoreLink = (await I.grabAttributeFrom(tooltipReadMoreLink, 'href'));
-      const response = await I.sendGetRequest('https://docs.aws.amazon.com/general/latest/gr/aws-sec-cred-types1233333333.html');
+      const response = await I.sendGetRequest(readMoreLink);
 
       assert.equal(response.status, 200, 'Read more link should lead to working documentation page. But the GET request response status is not 200');
     }
