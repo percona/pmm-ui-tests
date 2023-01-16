@@ -1,4 +1,11 @@
+const assert = require('assert');
 const page = require('./pages/pmmSettingsPage');
+
+const {
+  codeceptjsConfig,
+} = inject();
+
+const url = new URL(codeceptjsConfig.config.helpers.Playwright.url);
 
 // Value should be in range from 1 to 3650 days, so put a value outside of the range
 const validationValues = ['2147483648', '-1', '0'];
@@ -130,5 +137,20 @@ xScenario(
 
     await pmmSettingsPage.waitForPmmSettingsPageLoaded();
     I.waitForValue(pmmSettingsPage.fields.dataRetentionCount, dataRetention, 30);
+  },
+);
+
+Scenario(
+  '@PMM-T1519 Verify that alerting link inside settings forwarding to correct page @settings',
+  async ({ I, pmmSettingsPage }) => {
+    const sectionNameToExpand = pmmSettingsPage.sectionTabsList.alertmanager;
+
+    await pmmSettingsPage.waitForPmmSettingsPageLoaded();
+    await pmmSettingsPage.expandSection(sectionNameToExpand, pmmSettingsPage.fields.alertmanagerButton);
+    I.seeAttributesOnElements(pmmSettingsPage.fields.perconaAlertingUrl, { href: `${url}graph/alerting/alerts` });
+    const link = (await I.grabAttributeFrom(pmmSettingsPage.fields.perconaAlertingUrl, 'href'));
+    const response = await I.sendGetRequest(link);
+
+    assert.equal(response.status, 200, 'Link should lead to working page. But the GET request response status is not 200');
   },
 );
