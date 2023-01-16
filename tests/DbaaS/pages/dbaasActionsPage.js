@@ -61,7 +61,8 @@ module.exports = {
     await this.createClusterBasicOptions(k8sClusterName, dbClusterName, dbType, dbVersion);
     I.click(dbaasPage.tabs.dbClusterTab.advancedOptionsButton);
     I.click(dbaasPage.tabs.dbClusterTab.advancedOptions.fields.resourcesPerNodeSelect);
-    I.waitForVisible(dbaasPage.tabs.dbClusterTab.advancedOptions.fields.resourcesPerNodesOption(configuration.resourcePerNode), 10);
+    I.waitForVisible(dbaasPage.tabs.dbClusterTab.advancedOptions.fields.resourcesPerNodesOption(
+      configuration.resourcePerNode), 10);
     if (configuration.resourcePerNode === 'Custom') {
       I.click(
         dbaasPage.tabs.dbClusterTab.advancedOptions.fields.resourcesPerNodesOption(configuration.resourcePerNode),
@@ -125,7 +126,8 @@ module.exports = {
 
     if (configuration.resourcePerNode === 'Custom') {
       I.click(dbaasPage.tabs.dbClusterTab.advancedOptions.fields.resourcesPerNodeSelect);
-      I.waitForVisible(dbaasPage.tabs.dbClusterTab.advancedOptions.fields.resourcesPerNodesOption(configuration.resourcePerNode), 10);
+      I.waitForVisible(dbaasPage.tabs.dbClusterTab.advancedOptions.fields.resourcesPerNodesOption(
+        configuration.resourcePerNode), 10);
       I.click(
         dbaasPage.tabs.dbClusterTab.advancedOptions.fields.resourcesPerNodesOption(configuration.resourcePerNode),
       );
