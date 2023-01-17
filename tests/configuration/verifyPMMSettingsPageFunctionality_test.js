@@ -363,7 +363,7 @@ Scenario.only(
     I.seeElement(pmmSettingsPage.fields.publicAddressButton);
    
     const publicAddressValue = await I.grabValueFrom(pmmSettingsPage.fields.publicAddressInput);
-    const serverAddressIP = env.VM_IP;
+    const serverAddressIP = process.env.VM_IP;
 
     I.assertTrue(publicAddressValue.length > 0, 'Expected the Public Address Input Field to be not empty!');
     I.refreshPage();
