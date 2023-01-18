@@ -80,7 +80,7 @@ module.exports = {
 
     I.waitForElement(this.fields.templatesLoader);
     this.searchAndSelectResult('template', template);
-    this.verifyAndReplaceInputField('name', ruleName, editedRule.ruleName);
+    this.verifyAndReplaceInputField('ruleName', ruleName, editedRule.ruleName);
     this.verifyAndReplaceInputField('threshold', threshold, editedRule.threshold);
     this.verifyAndReplaceInputField('duration', duration, editedRule.duration);
     I.see(severity, this.fields.searchDropdown('severity'));
