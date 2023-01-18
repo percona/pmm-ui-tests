@@ -347,8 +347,8 @@ Scenario(
     scheduledPage.openScheduledBackupsPage();
   },
 );
-Scenario.only(
-  'PMM-T1328 Verify public address is set automatically on Percona Platform page once connected to Portal @settings @nightly',
+Scenario(
+  'PMM-T1328 Verify public address is set automatically on Percona Platform page once connected to Portal @nightly',
   async ({ I, pmmSettingsPage, portalAPI,perconaPlatformPage}) => {
     const newAdminUser = await portalAPI.getUser();
     await portalAPI.oktaCreateUser(newAdminUser);
