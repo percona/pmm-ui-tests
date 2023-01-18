@@ -75,12 +75,12 @@ module.exports = {
     I.seeTextEquals('', this.elements.emailValidation);
   },
 
-  connectToPortal(token, serverName = 'Test Server', connectedViaPortalApi = false) {
+  connectToPortal(token, serverName = 'Test Server', perconaPlatformPage = false) {
     I.fillField(this.fields.pmmServerNameField, serverName);
     I.fillField(this.fields.tokenField, token);
     I.click(this.buttons.connect);
-    if (connectedViaPortalApi) {
-      I.verifyPopUpMessage(this.messages.UpdateSuccess)
+    if (perconaPlatformPage) {
+      I.verifyPopUpMessage(this.messages.updateSuccess)
     }
     I.verifyPopUpMessage(this.messages.connectedSuccess);
     I.refreshPage();
