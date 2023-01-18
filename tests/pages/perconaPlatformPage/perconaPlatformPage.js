@@ -36,7 +36,7 @@ module.exports = {
     requiredField: 'Required field',
     invalidEmail: 'Invalid email address',
     connectedSuccess: 'Successfully connected PMM to Percona Platform',
-    UpdateSuccess: 'Settings updated',
+    updateSuccess: 'Settings updated',
     pmmDisconnectedFromPortal: 'Successfully disconnected PMM from Percona Platform',
     disconnectPMM: 'Disconnect PMM from Percona Platform',
     pmmConnected: 'This PMM instance is connected to Percona Platform.',
