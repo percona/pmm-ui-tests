@@ -219,7 +219,8 @@ async ({
     username, password, host, port,
   } = await dbaasAPI.getDbClusterDetails(dbClusterRandomName, clusterName);
   const output = await I.verifyCommand(
-    `kubectl run -i --rm --tty pxc-client --image=percona:8.0 --restart=Never -- mysql -h ${host} -u${username} -p${password} -e "SHOW DATABASES;"`,
+    `kubectl run -i --rm --tty pxc-client --image=percona:8.0 --restart=Never -- mysql -h ${host} -u${username} -p${password}` + 
+    `-e "SHOW DATABASES;"`,
     'performance_schema',
   );
 
@@ -392,10 +393,12 @@ Scenario.skip('Verify update PXC DB Cluster version @dbaas', async ({ I, dbaasPa
   } = await dbaasAPI.getDbClusterDetails(dbClusterRandomName, clusterName);
 
   // await I.verifyCommand(
-  //   `kubectl run -i --rm --tty pxc-client --image=percona:8.0 --restart=Never -- mysql -h ${host} -u${username} -p${password} -e "CREATE DATABASE DBAAS_UPGRADE_TESTING;"`,
+  //   `kubectl run -i --rm --tty pxc-client --image=percona:8.0 --restart=Never -- mysql -h ${host} -u${username}` + 
+  //   `-p${password} -e "CREATE DATABASE DBAAS_UPGRADE_TESTING;"`,
   // );
   // await I.verifyCommand(
-  //   `kubectl run -i --rm --tty pxc-client --image=percona:8.0 --restart=Never -- mysql -h ${host} -u${username} -p${password} -e "SHOW DATABASES;"`,
+  //   `kubectl run -i --rm --tty pxc-client --image=percona:8.0 --restart=Never -- mysql -h ${host} -u${username}` + 
+  //   `-p${password} -e "SHOW DATABASES;"`,
   //   'DBAAS_UPGRADE_TESTING',
   // );
 
@@ -406,11 +409,13 @@ Scenario.skip('Verify update PXC DB Cluster version @dbaas', async ({ I, dbaasPa
   I.waitForElement(dbaasPage.tabs.dbClusterTab.fields.clusterStatusActive, 60);
   I.seeElement(dbaasPage.tabs.dbClusterTab.fields.clusterStatusActive);
   // await I.verifyCommand(
-  //   `kubectl run -i --rm --tty pxc-client --image=percona:8.0 --restart=Never -- mysql -h ${host} -u${username} -p${password} -e "SHOW DATABASES;"`,
+  //   `kubectl run -i --rm --tty pxc-client --image=percona:8.0 --restart=Never -- mysql -h ${host}` + 
+  //   `-u${username} -p${password} -e "SHOW DATABASES;"`,
   //   'DBAAS_UPGRADE_TESTING',
   // );
   const version = await I.verifyCommand(
-    `kubectl run -i --rm --tty pxc-client --image=percona:8.0 --restart=Never -- mysql -h ${host} -u${username} -p${password} -e "SELECT VERSION();"`,
+    `kubectl run -i --rm --tty pxc-client --image=percona:8.0 --restart=Never -- mysql -h ${host} -u${username} -p${password}` + 
+    `-e "SELECT VERSION();"`,
   );
 
   assert.ok(!version.includes(mysqlVersion), `Expected Version for PXC Cluster After Upgrade ${version} should not be same as Before Update Operation`);
