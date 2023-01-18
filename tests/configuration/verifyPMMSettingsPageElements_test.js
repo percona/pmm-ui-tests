@@ -141,7 +141,7 @@ xScenario(
 );
 
 Scenario(
-  '@PMM-T1519 Verify that alerting link inside settings forwarding to correct page @settings @ia',
+  '@PMM-T1519 Verify that alerting link inside settings forwarding to correct page @settings',
   async ({ I, pmmSettingsPage }) => {
     const sectionNameToExpand = pmmSettingsPage.sectionTabsList.alertmanager;
 
