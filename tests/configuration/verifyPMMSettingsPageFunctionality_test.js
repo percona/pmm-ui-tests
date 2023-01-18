@@ -366,7 +366,6 @@ Scenario(
     const serverAddressIP = process.env.VM_IP;
 
     I.assertTrue(publicAddressValue.length > 0, 'Expected the Public Address Input Field to be not empty!');
-    I.refreshPage();
     await pmmSettingsPage.waitForPmmSettingsPageLoaded();
 
     await I.assertEqual(serverAddressIP, publicAddressValue,
