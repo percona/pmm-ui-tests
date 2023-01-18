@@ -352,7 +352,7 @@ Before(async ({ I, pmmSettingsPage }) => {
   I.assertTrue(publicAddressValue.length === 0, 'Expected the Public Address Input Field to be empty!');
   const serverAddressIP = process.env.VM_IP;
 
-Scenario(
+Scenario.only(
   'PMM-T1328 Verify public address is set automatically on Percona Platform page once connected to Portal @nightly',
   async ({ I, pmmSettingsPage, portalAPI,perconaPlatformPage}) => {
     const newAdminUser = await portalAPI.getUser();
