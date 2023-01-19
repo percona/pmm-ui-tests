@@ -26,11 +26,6 @@ maxQueryLengthInstances.add(['mysql_8.0_ssl_service', '8.0', 'mysql_8.0', 'mysql
 maxQueryLengthInstances.add(['mysql_8.0_ssl_service', '8.0', 'mysql_8.0', 'mysql_ssl', 'mysql_global_status_max_used_connections', '-1']);
 maxQueryLengthInstances.add(['mysql_8.0_ssl_service', '8.0', 'mysql_8.0', 'mysql_ssl', 'mysql_global_status_max_used_connections', '']);
 
-BeforeSuite(async ({ I, codeceptjsConfig }) => {
-  await I.verifyCommand(`${pmmFrameworkLoader} --ps-version=5.7 --setup-mysql-ssl --pmm2`);
-  await I.verifyCommand(`${pmmFrameworkLoader} --ps-version=8.0 --setup-mysql-ssl --pmm2`);
-});
-
 AfterSuite(async ({ I }) => {
   await I.verifyCommand('docker stop mysql_5.7 || docker rm mysql_5.7');
   await I.verifyCommand('docker stop mysql_8.0 || docker rm mysql_8.0');
@@ -50,6 +45,8 @@ Data(instances).Scenario(
     } = current;
     let details;
     const remoteServiceName = `remote_${serviceName}_faker`;
+    await I.verifyCommand(`${pmmFrameworkLoader} --ps-version=${version} --setup-mysql-ssl --pmm2`);
+    await I.say(await I.verifyCommand(`docker exec ${container} bash -c 'source ~/.bash_profile || true; pmm-admin list'`));
 
     if (serviceType === 'mysql_ssl') {
       details = {
