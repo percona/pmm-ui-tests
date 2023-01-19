@@ -15,8 +15,8 @@ urlsAndMetrics.add(['PMM Upgrade', homePage.url]);
 Feature('Test Dashboards inside the MySQL Folder');
 
 BeforeSuite(async ({ I }) => {
-  const ps_service_response = await inventoryAPI.apiGetNodeInfoForAllNodesByServiceName('MYSQL_SERVICE', 'ps_');
   const ms_service_response = await inventoryAPI.apiGetNodeInfoForAllNodesByServiceName('MYSQL_SERVICE', 'ms-');
+  const ps_service_response = await inventoryAPI.apiGetNodeInfoForAllNodesByServiceName('MYSQL_SERVICE', 'ps_');
   const md_service_response = await inventoryAPI.apiGetNodeInfoForAllNodesByServiceName('MYSQL_SERVICE', 'md_');
   const pxc_service_response = await inventoryAPI.apiGetNodeInfoForAllNodesByServiceName('MYSQL_SERVICE', 'pxc_');
 
@@ -126,7 +126,7 @@ Scenario(
     await dashboardPage.expandEachDashboardRow();
     await dashboardPage.verifyMetricsExistence(dashboardPage.proxysqlInstanceSummaryDashboard.metrics);
     await dashboardPage.verifyThereAreNoGraphsWithNA();
-    await dashboardPage.verifyThereAreNoGraphsWithoutData(9);
+    await dashboardPage.verifyThereAreNoGraphsWithoutData(16);
   },
 );
 
@@ -205,7 +205,7 @@ Scenario(
 
     I.amOnPage(url);
     dashboardPage.waitForDashboardOpened();
-    await dashboardPage.applyFilter('Service Name', 'pxc_node_8.0');
+    await dashboardPage.applyFilter('Service Name', 'pxc_node');
     adminPage.performPageDown(5);
     dashboardPage.verifyMetricsExistence(dashboardPage.mysqlPXCGaleraNodeSummaryDashboard.metrics);
     await dashboardPage.verifyThereAreNoGraphsWithNA();
