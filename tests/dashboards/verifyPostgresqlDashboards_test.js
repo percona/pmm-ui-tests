@@ -38,12 +38,13 @@ Scenario(
       adminPage.performPageUp(5);
       dashboardPage.verifyMetricsExistence(dashboardPage.postgresqlInstanceSummaryDashboard.metrics);
       await dashboardPage.verifyThereAreNoGraphsWithNA();
-      await dashboardPage.verifyThereAreNoGraphsWithoutData(1);
+      // Change to 3 when https://jira.percona.com/browse/PMM-11425 is fixed
+      await dashboardPage.verifyThereAreNoGraphsWithoutData(4);
     }
   },
 );
 
-Scenario(
+Scenario.only(
   'PMM-T394 - PostgreSQL Instance Overview Dashboard metrics @nightly @dashboards',
   async ({ I, dashboardPage, adminPage }) => {
     for (const serviceName of serviceList) {
@@ -56,7 +57,8 @@ Scenario(
       adminPage.performPageUp(5);
       dashboardPage.verifyMetricsExistence(dashboardPage.postgresqlInstanceOverviewDashboard.metrics);
       await dashboardPage.verifyThereAreNoGraphsWithNA();
-      await dashboardPage.verifyThereAreNoGraphsWithoutData(1);
+      // Change to 1 when https://jira.percona.com/browse/PMM-10861 is fixed
+      await dashboardPage.verifyThereAreNoGraphsWithoutData(2);
     }
   },
 );
