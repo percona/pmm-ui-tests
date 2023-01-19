@@ -349,6 +349,7 @@ Scenario(
 );
 Before(async ({ I, pmmSettingsPage }) => {
   const publicAddressValue = await I.grabValueFrom(pmmSettingsPage.fields.publicAddressInput);
+  await settingsAPI.changeSettings({ publicAddress: '' });
   I.assertTrue(publicAddressValue.length === 0, 'Expected the Public Address Input Field to be empty!');
   const serverAddressIP = process.env.VM_IP;
 
