@@ -7,14 +7,11 @@ const serviceList = [];
 Feature('Test Dashboards inside the PostgreSQL Folder');
 
 BeforeSuite(async ({ I }) => {
-  // Skipping PDPGSQL metric check due to bug
-  // const pdpgsql_service_response = await inventoryAPI.apiGetNodeInfoForAllNodesByServiceName('POSTGRESQL_SERVICE', 'PDPGSQL_');
-
+  const pdpgsql_service_response = await inventoryAPI.apiGetNodeInfoForAllNodesByServiceName('POSTGRESQL_SERVICE', 'PDPGSQL_');
   const pgsql_service_response = await inventoryAPI.apiGetNodeInfoForAllNodesByServiceName('POSTGRESQL_SERVICE', 'PGSQL_');
   const pmm_server = await inventoryAPI.apiGetNodeInfoForAllNodesByServiceName('POSTGRESQL_SERVICE', 'pmm-server');
 
-  // skipping PDPGSQL from services list too
-  services = pmm_server.concat(pgsql_service_response);
+  services = pmm_server.concat(pgsql_service_response).concat(pdpgsql_service_response);
   for (const nodeInfo of services) {
     serviceList.push(nodeInfo.service_name);
   }
@@ -44,7 +41,7 @@ Scenario(
   },
 );
 
-Scenario.only(
+Scenario(
   'PMM-T394 - PostgreSQL Instance Overview Dashboard metrics @nightly @dashboards',
   async ({ I, dashboardPage, adminPage }) => {
     for (const serviceName of serviceList) {
@@ -68,6 +65,7 @@ Scenario(
   async ({ I, dashboardPage, adminPage }) => {
     I.amOnPage(dashboardPage.postgresqlInstanceCompareDashboard.url);
     dashboardPage.waitForDashboardOpened();
+    dashboardPage.selectRefreshTimeInterval('Off');
     for (const serviceName of serviceList) {
       await dashboardPage.applyFilter('Service Name', serviceName);
     }
@@ -78,6 +76,7 @@ Scenario(
     adminPage.performPageUp(5);
     dashboardPage.verifyMetricsExistence(dashboardPage.postgresqlInstanceCompareDashboard.metrics);
     await dashboardPage.verifyThereAreNoGraphsWithNA();
-    await dashboardPage.verifyThereAreNoGraphsWithoutData(1);
+    // Change when https://jira.percona.com/browse/PMM-11429 is fixed
+    await dashboardPage.verifyThereAreNoGraphsWithoutData(9);
   },
 );
