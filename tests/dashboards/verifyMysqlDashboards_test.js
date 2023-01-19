@@ -15,8 +15,8 @@ urlsAndMetrics.add(['PMM Upgrade', homePage.url]);
 Feature('Test Dashboards inside the MySQL Folder');
 
 BeforeSuite(async ({ I }) => {
-  const ms_service_response = await inventoryAPI.apiGetNodeInfoForAllNodesByServiceName('MYSQL_SERVICE', 'ms-');
   const ps_service_response = await inventoryAPI.apiGetNodeInfoForAllNodesByServiceName('MYSQL_SERVICE', 'ps_');
+  const ms_service_response = await inventoryAPI.apiGetNodeInfoForAllNodesByServiceName('MYSQL_SERVICE', 'ms-');
   const md_service_response = await inventoryAPI.apiGetNodeInfoForAllNodesByServiceName('MYSQL_SERVICE', 'md_');
   const pxc_service_response = await inventoryAPI.apiGetNodeInfoForAllNodesByServiceName('MYSQL_SERVICE', 'pxc_');
 
@@ -63,7 +63,7 @@ Scenario(
       I.click(adminPage.fields.metricTitle);
       adminPage.performPageDown(5);
       dashboardPage.verifyMetricsExistence(dashboardPage.mySQLInstanceOverview.metrics);
-      await dashboardPage.verifyThereAreNoGraphsWithNA();
+      await dashboardPage.verifyThereAreNoGraphsWithNA(1);
       await dashboardPage.verifyThereAreNoGraphsWithoutData(1);
     }
   },
