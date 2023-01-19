@@ -353,7 +353,6 @@ Scenario.only(
     I, pmmSettingsPage, portalAPI, perconaPlatformPage, settingsAPI,
   }) => {
     await settingsAPI.changeSettings({ publicAddress: '' });
-    const publicAddressValue = await I.grabValueFrom(pmmSettingsPage.fields.publicAddressInput);
 
     const serverAddressIP = process.env.VM_IP;
 
@@ -366,10 +365,12 @@ Scenario.only(
     await perconaPlatformPage.openPerconaPlatform();
     await perconaPlatformPage.connectToPortal(platformToken, `Test Server ${Date.now()}`, true);
     await pmmSettingsPage.openAdvancedSettings();
+
     await pmmSettingsPage.verifyTooltip(pmmSettingsPage.tooltips.advancedSettings.publicAddress);
 
     await I.waitForVisible(pmmSettingsPage.fields.publicAddressInput, 30);
     I.seeElement(pmmSettingsPage.fields.publicAddressButton);
+    const publicAddressValue = await I.grabValueFrom(pmmSettingsPage.fields.publicAddressInput);
 
     I.assertTrue(publicAddressValue.length > 0, 'Expected the Public Address Input Field to be not empty!');
     await pmmSettingsPage.waitForPmmSettingsPageLoaded();
