@@ -35,8 +35,7 @@ Scenario(
       adminPage.performPageUp(5);
       dashboardPage.verifyMetricsExistence(dashboardPage.postgresqlInstanceSummaryDashboard.metrics);
       await dashboardPage.verifyThereAreNoGraphsWithNA();
-      // Change to 3 when https://jira.percona.com/browse/PMM-11425 is fixed
-      await dashboardPage.verifyThereAreNoGraphsWithoutData(4);
+      await dashboardPage.verifyThereAreNoGraphsWithoutData();
     }
   },
 );
@@ -54,8 +53,7 @@ Scenario(
       adminPage.performPageUp(5);
       dashboardPage.verifyMetricsExistence(dashboardPage.postgresqlInstanceOverviewDashboard.metrics);
       await dashboardPage.verifyThereAreNoGraphsWithNA();
-      // Change to 1 when https://jira.percona.com/browse/PMM-10861 is fixed
-      await dashboardPage.verifyThereAreNoGraphsWithoutData(2);
+      await dashboardPage.verifyThereAreNoGraphsWithoutData();
     }
   },
 );
@@ -76,7 +74,6 @@ Scenario(
     adminPage.performPageUp(5);
     dashboardPage.verifyMetricsExistence(dashboardPage.postgresqlInstanceCompareDashboard.metrics);
     await dashboardPage.verifyThereAreNoGraphsWithNA();
-    // Change when https://jira.percona.com/browse/PMM-11429 is fixed
-    await dashboardPage.verifyThereAreNoGraphsWithoutData(9);
+    await dashboardPage.verifyThereAreNoGraphsWithoutData();
   },
 );
