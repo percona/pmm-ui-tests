@@ -1,4 +1,4 @@
-# This workflow will do a clean install  of node dependencies and run lint tests
+# This workflow will do a clean install of node dependencies and run lint tests
 
 name: CI
 
@@ -23,7 +23,7 @@ jobs:
 
   fb_tests:
     name: FB UI tests
-    uses: Percona-Lab/pmm-submodules/.github/workflows/pmm2-ui-tests-fb.yml@PMM-11426-run-tests-on-pr
+    uses: Percona-Lab/pmm-submodules/.github/workflows/pmm2-ui-tests-fb.yml@PMM-2.0
     secrets:
       BACKUP_LOCATION_ACCESS_KEY: ${{ secrets.BACKUP_LOCATION_ACCESS_KEY }}
       BACKUP_LOCATION_SECRET_KEY: ${{ secrets.BACKUP_LOCATION_SECRET_KEY }}
