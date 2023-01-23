@@ -9,9 +9,7 @@ on:
 
 jobs:
   lint:
-
     runs-on: ubuntu-18.04
-
     steps:
     - uses: percona-platform/checkout@v2
     - name: Use Node.js 16.x
@@ -26,10 +24,13 @@ jobs:
   fb_tests:
     name: FB UI tests
     uses: Percona-Lab/pmm-submodules/.github/workflows/pmm2-ui-tests-fb.yml@PMM-2.0
+    secrets:
+      BACKUP_LOCATION_ACCESS_KEY: ${{ secrets.BACKUP_LOCATION_ACCESS_KEY }}
+      BACKUP_LOCATION_SECRET_KEY: ${{ secrets.BACKUP_LOCATION_SECRET_KEY }}
     with:
       server_image: 'perconalab/pmm-server:dev-latest'
       client_version: 'dev-latest'
       client_image: 'perconalab/pmm-client:dev-latest'
       pmm_qa_branch: 'main'
       pmm_ui_branch: ${{ github.head_ref }}
-      sha: ${{ github.event.pull_request.head.sha ||  'null' }}
+      sha: 'null'
