@@ -56,6 +56,8 @@ module.exports = {
       + 'Returns number of arbiters in MongoDB replica set\n'
       + 'Returns number of shards in MongoDB cluster. If cluster is not sharded it returns 0\n'
       + 'Returns used engine type for MongoDB\n'
+      + 'Returns 1 if encryption at rest is enabled on the mongo instance, otherwise returns 0\n'
+      + 'Returns the type of how encryption at rest was enabled (using local file, kmip or vault)\n'
       + 'PostgreSQL version inside PMM server\n'
       + 'Monitored PostgreSQL services version\n'
       + 'Monitored HAProxy services version\n'
