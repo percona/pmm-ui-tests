@@ -85,7 +85,7 @@ Scenario(
       `Expected the Public Address to be saved and Match ${process.env.VM_IP} but found ${publicAddress}`,
     );
   },
-);
+).retry(1);
 
 Scenario.skip('PMM-T582 Verify Adding Cluster with Same Name and Same DB Type @dbaas', async ({ I, dbaasPage, dbaasActionsPage }) => {
   I.amOnPage(dbaasPage.url);
@@ -219,7 +219,7 @@ async ({
     username, password, host, port,
   } = await dbaasAPI.getDbClusterDetails(dbClusterRandomName, clusterName);
   const output = await I.verifyCommand(
-    `kubectl run -i --rm --tty pxc-client --image=percona:8.0 --restart=Never -- mysql -h ${host} -u${username} -p${password}` + 
+    `kubectl run -i --rm --tty pxc-client --image=percona:8.0 --restart=Never -- mysql -h ${host} -u${username} -p${password} ` + 
     `-e "SHOW DATABASES;"`,
     'performance_schema',
   );

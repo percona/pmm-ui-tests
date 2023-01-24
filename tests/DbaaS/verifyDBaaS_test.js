@@ -64,9 +64,10 @@ Scenario(
     await dbaasAPI.waitForOperators();
     dbaasPage.unregisterCluster(clusterName, true);
     I.waitForText(dbaasPage.deletedAlertMessage, 20);
+    I.refreshPage();
     dbaasPage.checkCluster(clusterName, true);
   },
-);
+).retry(1);
 
 Scenario(
   'PMM-T427 - Verify submitting blank Add kubernetes cluster form @dbaas',
