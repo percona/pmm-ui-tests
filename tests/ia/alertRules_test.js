@@ -87,7 +87,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T1420 Verify user can create Percona templated alert @ia @fb',
+  'PMM-T1420 Verify user can create Percona templated alert @ia @alerting-fb',
   async ({ I, alertRulesPage, rulesAPI }) => {
     const rule = page.rules[15];
     const newRule = page.rules[0];
@@ -96,7 +96,8 @@ Scenario(
     I.click(alertRulesPage.buttons.openAddRuleModal);
     await alertRulesPage.fillPerconaAlert(rule, newRule);
     I.click(alertRulesPage.buttons.saveAndExit);
-    I.verifyPopUpMessage(alertRulesPage.messages.successRuleCreate(newRule.ruleName));
+    // FIXME: unskip after https://jira.percona.com/browse/PMM-11399 is fixed
+    // I.verifyPopUpMessage(alertRulesPage.messages.successRuleCreate(newRule.ruleName));
     alertRulesPage.verifyRuleList(newRule.folder, newRule.ruleName);
     I.seeTextEquals('Normal', alertRulesPage.elements.ruleState);
     await rulesAPI.removeAlertRule(newRule.folder);
@@ -105,7 +106,7 @@ Scenario(
 
 // TODO: check ovf failure
 Scenario(
-  'PMM-T1430 Verify user can edit Percona templated alert @ia @not-ovf @fb',
+  'PMM-T1430 Verify user can edit Percona templated alert @ia @not-ovf @alerting-fb',
   async ({
     I, alertRulesPage, rulesAPI,
   }) => {
@@ -131,7 +132,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T1433 Verify user can delete Percona templated alert @ia @fb',
+  'PMM-T1433 Verify user can delete Percona templated alert @ia @alerting-fb',
   async ({
     I, alertRulesPage, rulesAPI,
   }) => {

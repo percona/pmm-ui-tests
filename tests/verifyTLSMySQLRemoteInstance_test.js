@@ -26,11 +26,6 @@ maxQueryLengthInstances.add(['mysql_8.0_ssl_service', '8.0', 'mysql_8.0', 'mysql
 maxQueryLengthInstances.add(['mysql_8.0_ssl_service', '8.0', 'mysql_8.0', 'mysql_ssl', 'mysql_global_status_max_used_connections', '-1']);
 maxQueryLengthInstances.add(['mysql_8.0_ssl_service', '8.0', 'mysql_8.0', 'mysql_ssl', 'mysql_global_status_max_used_connections', '']);
 
-BeforeSuite(async ({ I, codeceptjsConfig }) => {
-  await I.verifyCommand(`${pmmFrameworkLoader} --ps-version=5.7 --setup-mysql-ssl --pmm2`);
-  await I.verifyCommand(`${pmmFrameworkLoader} --ps-version=8.0 --setup-mysql-ssl --pmm2`);
-});
-
 AfterSuite(async ({ I }) => {
   await I.verifyCommand('docker stop mysql_5.7 || docker rm mysql_5.7');
   await I.verifyCommand('docker stop mysql_8.0 || docker rm mysql_8.0');
@@ -41,7 +36,7 @@ Before(async ({ I, settingsAPI }) => {
 });
 
 Data(instances).Scenario(
-  'Verify Adding SSL Mysql services remotely @ssl @ssl-remote @not-ui-pipeline',
+  'Verify Adding SSL Mysql services remotely @ssl @ssl-remote @ssl-mysql @not-ui-pipeline',
   async ({
     I, remoteInstancesPage, pmmInventoryPage, current, inventoryAPI,
   }) => {
@@ -50,6 +45,8 @@ Data(instances).Scenario(
     } = current;
     let details;
     const remoteServiceName = `remote_${serviceName}_faker`;
+    await I.verifyCommand(`${pmmFrameworkLoader} --ps-version=${version} --setup-mysql-ssl --pmm2`);
+    await I.say(await I.verifyCommand(`docker exec ${container} bash -c 'source ~/.bash_profile || true; pmm-admin list'`));
 
     if (serviceType === 'mysql_ssl') {
       details = {
@@ -87,7 +84,7 @@ Data(instances).Scenario(
 );
 
 Data(instances).Scenario(
-  'Verify metrics from mysql SSL instances on PMM-Server @ssl @ssl-remote @not-ui-pipeline',
+  'Verify metrics from mysql SSL instances on PMM-Server @ssl @ssl-mysql @ssl-remote @not-ui-pipeline',
   async ({
     I, remoteInstancesPage, pmmInventoryPage, current, grafanaAPI,
   }) => {
@@ -115,7 +112,7 @@ Data(instances).Scenario(
 ).retry(1);
 
 Data(instances).Scenario(
-  'PMM-T937 PMM-T938 Verify MySQL cannot be added without specified --tls-key, Verify MySQL cannot be added without specified --tls-cert @ssl @ssl-remote @not-ui-pipeline',
+  'PMM-T937 PMM-T938 Verify MySQL cannot be added without specified --tls-key, Verify MySQL cannot be added without specified --tls-cert @ssl @ssl-mysql @ssl-remote @not-ui-pipeline',
   async ({
     I, current, grafanaAPI, remoteInstancesPage,
   }) => {
@@ -142,7 +139,7 @@ Data(instances).Scenario(
 ).retry(1);
 
 Data(instances).Scenario(
-  'Verify dashboard after MySQL SSL Instances are added @ssl @ssl-remote @not-ui-pipeline',
+  'Verify dashboard after MySQL SSL Instances are added @ssl @ssl-mysql @ssl-remote @not-ui-pipeline',
   async ({
     I, dashboardPage, adminPage, current,
   }) => {
@@ -167,7 +164,7 @@ Data(instances).Scenario(
 ).retry(2);
 
 Data(instances).Scenario(
-  'Verify QAN after MySQL SSL Instances is added @ssl @ssl-remote @not-ui-pipeline',
+  'Verify QAN after MySQL SSL Instances is added @ssl @ssl-mysql @ssl-remote @not-ui-pipeline',
   async ({
     I, qanOverview, qanFilters, qanPage, current, adminPage,
   }) => {
@@ -193,7 +190,7 @@ Data(instances).Scenario(
 ).retry(1);
 
 Data(instances).Scenario(
-  'PMM-T1277 (1.0) Verify tlsCa, tlsCert, tlsKey are generated on every MySQL exporter (added with TLS flags) restart @ssl @ssl-remote @not-ui-pipeline',
+  'PMM-T1277 (1.0) Verify tlsCa, tlsCert, tlsKey are generated on every MySQL exporter (added with TLS flags) restart @ssl-mysql @ssl @ssl-remote @not-ui-pipeline',
   async ({
     I, current, dashboardPage,
   }) => {
@@ -217,7 +214,7 @@ Data(instances).Scenario(
 ).retry(1);
 
 Data(maxQueryLengthTestData).Scenario(
-  'PMM-T1405 Verify validation of Max Query Length option on Add remote MySQL page @max-length @ssl @ssl-remote @not-ui-pipeline',
+  'PMM-T1405 Verify validation of Max Query Length option on Add remote MySQL page @max-length @ssl @ssl-mysql @ssl-remote @not-ui-pipeline',
   async ({
     I, remoteInstancesPage, current,
   }) => {
@@ -235,7 +232,7 @@ Data(maxQueryLengthInstances).Scenario(
   ' PMM-T1403 Verify Max Query Length field is not required on Add remote MySQL instance page'
     + ' PMM-T1404 Verify Max Query Length option can be set to -1 on Add remote MySQL page'
     + ' PMM-T1426 Verify remote PostgreSQL can be added with specified Max Query Length'
-    + ' PMM-T1431 Verify adding MongoDB instance via UI with specified Max Query Length option @max-length @ssl @ssl-remote @not-ui-pipeline',
+    + ' PMM-T1431 Verify adding MongoDB instance via UI with specified Max Query Length option @max-length @ssl @ssl-remote @ssl-mysql @not-ui-pipeline',
   async ({
     I, remoteInstancesPage, pmmInventoryPage, qanPage, qanOverview, qanFilters, qanDetails, inventoryAPI, current,
   }) => {

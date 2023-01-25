@@ -475,7 +475,7 @@ Scenario(
 
 if (versionMinor >= 32) {
   Scenario(
-    'Create backups data to check after upgrade @ovf-upgrade @ami-upgrade @pre-upgrade @pmm-upgrade',
+    'Create backups data to check after upgrade @pre-upgrade @pmm-upgrade',
     async ({
       I, settingsAPI, locationsAPI, backupAPI, scheduledAPI, inventoryAPI, backupInventoryPage, scheduledPage,
     }) => {
@@ -654,7 +654,7 @@ if (versionMinor >= 15) {
       );
 
       const expectedScrapeUrl = `${remoteInstancesHelper.remote_instance.external.redis.schema}://${remoteInstancesHelper.remote_instance.external.redis.host
-      }:${remoteInstancesHelper.remote_instance.external.redis.port}${remoteInstancesHelper.remote_instance.external.redis.metricsPath}`;
+        }:${remoteInstancesHelper.remote_instance.external.redis.port}${remoteInstancesHelper.remote_instance.external.redis.metricsPath}`;
 
       assert.ok(targets.scrapeUrl === expectedScrapeUrl,
         `Active Target for external service Post Upgrade has wrong Address value, value found is ${targets.scrapeUrl} and value expected was ${expectedScrapeUrl}`);
@@ -1085,7 +1085,7 @@ if (versionMinor >= 23) {
 if (versionMinor >= 32) {
   Scenario(
     '@PMM-T1504 - The user is able to do a backup for MongoDB after upgrade'
-    + ' @ovf-upgrade @ami-upgrade @post-upgrade @pmm-upgrade',
+    + ' @post-upgrade @pmm-upgrade',
     async ({
       locationsAPI, inventoryAPI, backupAPI, backupInventoryPage,
     }) => {
@@ -1103,7 +1103,7 @@ if (versionMinor >= 32) {
 
   Scenario(
     '@PMM-T1505 - The scheduled job still exists and remains enabled after the upgrade'
-    + ' @ovf-upgrade @ami-upgrade @post-upgrade @pmm-upgrade',
+    + ' @post-upgrade @pmm-upgrade',
     async ({ I, scheduledPage }) => {
       await scheduledPage.openScheduledBackupsPage();
       I.seeAttributesOnElements(scheduledPage.elements.toggleByName(scheduleName), { checked: true });
@@ -1115,7 +1115,7 @@ if (versionMinor >= 32) {
   ).retry(0);
 
   Scenario(
-    '@PMM-T1506 - Storage Locations exist after upgrade @ovf-upgrade @ami-upgrade @post-upgrade @pmm-upgrade',
+    '@PMM-T1506 - Storage Locations exist after upgrade @post-upgrade @pmm-upgrade',
     async ({ I, locationsPage }) => {
       locationsPage.openLocationsPage();
       I.waitForVisible(locationsPage.buttons.actionsMenuByName(location.name), 2);
@@ -1129,7 +1129,7 @@ if (versionMinor >= 32) {
 
   Scenario(
     '@PMM-T1503 - The user is able to do a restore for MongoDB after the upgrade'
-    + ' @ovf-upgrade @ami-upgrade @post-upgrade @pmm-upgrade',
+    + ' @post-upgrade @pmm-upgrade',
     async ({ I, backupInventoryPage, restorePage }) => {
       const replica = await I.getMongoReplicaClient({ username: 'admin', password: 'password' });
 

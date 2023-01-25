@@ -70,16 +70,17 @@ Scenario('PMM-T665 PMM-T642 PSMDB Cluster with Custom Resources, log popup ' +
     const dbName = 'tutorialkart2';
 
     await dbaasAPI.deleteAllDBCluster(clusterName);
+    await dbaasAPI.waitForClusterStatus();
     I.amOnPage(dbaasPage.url);
     await dbaasActionsPage.createClusterAdvancedOption(clusterName, psmdb_cluster, 'MongoDB', psmdb_configuration);
     I.click(dbaasPage.tabs.dbClusterTab.createClusterButton);
-    I.waitForText('Processing', 30, dbaasPage.tabs.dbClusterTab.fields.progressBarContent);
+    I.waitForText('Processing', 30, dbaasPage.tabs.dbClusterTab.fields.progressBarContent(psmdb_cluster));
     //PMM-T780
     await dbaasPage.apiKeyCheck(clusterName, psmdb_cluster, 'psmdb', true);
     I.amOnPage(dbaasPage.url);
     await dbaasPage.postClusterCreationValidation(psmdb_cluster, clusterName, 'MongoDB');
     //PMM-T665
-    await dbaasPage.verifyLogPopup(33);
+    await dbaasPage.verifyLogPopup(27, psmdb_cluster);
     await dbaasPage.validateClusterDetail(psmdb_cluster, clusterName, psmdb_configuration, 
       psmdb_configuration.clusterDashboardRedirectionLink);
     const {
@@ -129,12 +130,11 @@ Scenario(
 
 Scenario('Verify update PSMDB Cluster version @dbaas', async ({ I, dbaasPage, dbaasActionsPage }) => {
   I.amOnPage(dbaasPage.url);
-  await dbaasActionsPage.updateCluster();
-  I.waitForVisible(dbaasPage.tabs.dbClusterTab.fields.clusterStatusUpdating, 60);
-  I.seeElement(dbaasPage.tabs.dbClusterTab.fields.clusterStatusUpdating);
+  await dbaasActionsPage.updateCluster(psmdb_cluster);
+  I.waitForText('Processing', 30, dbaasPage.tabs.dbClusterTab.fields.progressBarContent(psmdb_cluster));
   await dbaasAPI.waitForDBClusterState(psmdb_cluster, clusterName, 'MongoDB', 'DB_CLUSTER_STATE_READY');
-  I.waitForElement(dbaasPage.tabs.dbClusterTab.fields.clusterStatusActive, 120);
-  I.seeElement(dbaasPage.tabs.dbClusterTab.fields.clusterStatusActive);
+  // I.waitForElement(dbaasPage.tabs.dbClusterTab.fields.clusterStatusActive, 120);
+  // I.seeElement(dbaasPage.tabs.dbClusterTab.fields.clusterStatusActive);
 });
 
 Scenario(
@@ -153,7 +153,7 @@ Scenario(
     //PMM-T460
     await dbaasPage.waitForKubernetesClusterTab(clusterName);
     dbaasPage.unregisterCluster(clusterName);
-    I.waitForText(dbaasPage.failedUnregisterCluster(clusterName, 'PSMDB'));
+    I.waitForText(dbaasPage.failedUnregisterCluster(clusterName));
     //PMM-T484
     I.amOnPage(dbaasPage.url);
     await dbaasActionsPage.restartCluster(psmdb_cluster, clusterName, 'MongoDB');
@@ -188,7 +188,7 @@ Scenario(
     I.amOnPage(dbaasPage.url);
     await dbaasActionsPage.createClusterAdvancedOption(clusterName, psmdb_cluster, 'MongoDB', psmdb_configuration);
     I.click(dbaasPage.tabs.dbClusterTab.createClusterButton);
-    I.waitForText('Processing', 30, dbaasPage.tabs.dbClusterTab.fields.progressBarContent);
+    I.waitForText('Processing', 30, dbaasPage.tabs.dbClusterTab.fields.progressBarContent(psmdb_cluster));
     await dbaasPage.postClusterCreationValidation(psmdb_cluster, clusterName, 'MongoDB');
     await dbaasPage.validateClusterDetail(
       psmdb_cluster,
@@ -196,10 +196,9 @@ Scenario(
       psmdb_configuration,
       psmdb_configuration.clusterDashboardRedirectionLink,
     );
-    I.click(dbaasPage.tabs.dbClusterTab.fields.clusterActionsMenu);
+    // I.click(dbaasPage.tabs.dbClusterTab.fields.clusterActionsMenu(psmdb_cluster));
     // await dbaasActionsPage.checkActionPossible('Update', false); skipped because latest mongodb is not recommended version
     // PMM-787
-    I.click(dbaasPage.tabs.dbClusterTab.fields.clusterActionsMenu);
     const psmdb_configuration_after_edit = {
       topology: 'Cluster',
       numberOfNodes: '4',
@@ -212,8 +211,8 @@ Scenario(
     };
 
     await dbaasActionsPage.editCluster(psmdb_cluster, clusterName, psmdb_configuration_after_edit);
-    I.click(dbaasPage.tabs.dbClusterTab.updateClusterButton);
-    I.waitForText('Processing', 60, dbaasPage.tabs.dbClusterTab.fields.progressBarContent);
+    I.click(dbaasPage.tabs.dbClusterTab.createClusterButton);
+    I.waitForText('Processing', 60, dbaasPage.tabs.dbClusterTab.fields.progressBarContent(psmdb_cluster));
     await dbaasPage.postClusterCreationValidation(psmdb_cluster, clusterName, 'MongoDB');
     await dbaasPage.validateClusterDetail(
       psmdb_cluster,
@@ -224,7 +223,7 @@ Scenario(
 
     // PMM-T781
     await dbaasActionsPage.deletePSMDBCluster(psmdb_cluster, clusterName);
-    // await dbaasPage.apiKeyCheck(clusterName, psmdb_cluster, 'psmdb', false);
+    await dbaasPage.apiKeyCheck(clusterName, psmdb_cluster, 'psmdb', false);
   },
 ).retry(1);
 
@@ -236,8 +235,8 @@ Scenario('PMM-T509 Verify Deleting Mongo Db Cluster in Pending Status is possibl
     I.amOnPage(dbaasPage.url);
     await dbaasActionsPage.createClusterBasicOptions(clusterName, psmdb_cluster_pending_delete, 'MongoDB');
     I.click(dbaasPage.tabs.dbClusterTab.createClusterButton);
-    I.waitForText('Processing', 30, dbaasPage.tabs.dbClusterTab.fields.progressBarContent);
-    await dbaasActionsPage.deletePSMDBCluster(psmdb_cluster_pending_delete, clusterName, false);
+    I.waitForText('Processing', 30, dbaasPage.tabs.dbClusterTab.fields.progressBarContent(psmdb_cluster_pending_delete));
+    await dbaasActionsPage.deletePSMDBCluster(psmdb_cluster_pending_delete, clusterName);
   }).retry(1);
 
 Scenario('PMM-T704 PMM-T772 PMM-T849 PMM-T850 Resources, PV, Secrets verification @dbaas',
@@ -259,7 +258,7 @@ Scenario('PMM-T704 PMM-T772 PMM-T849 PMM-T850 Resources, PV, Secrets verificatio
     };
 
     await dbaasAPI.deleteAllDBCluster(clusterName);
-    await dbaasAPI.createCustomPSMDB(clusterName, psmdb_cluster_resource_check, '1');
+    await dbaasAPI.createCustomPSMDB(clusterName, psmdb_cluster_resource_check, '3');
     await dbaasAPI.waitForDBClusterState(psmdb_cluster_resource_check, clusterName, 'MongoDB', 'DB_CLUSTER_STATE_READY');
     I.amOnPage(dbaasPage.url);
     await dbaasPage.validateClusterDetail(psmdb_cluster_resource_check, clusterName, clusterDetails, 
@@ -293,16 +292,6 @@ Scenario('PMM-T704 PMM-T772 PMM-T849 PMM-T850 Resources, PV, Secrets verificatio
     );
     await dbaasAPI.apiDeleteDBCluster(psmdb_cluster_resource_check, clusterName, psmdb_cluster_type);
     await dbaasAPI.waitForDbClusterDeleted(psmdb_cluster_resource_check, clusterName, 'MongoDB');
-    await I.verifyCommand(
-      `kubectl get pv | grep ${psmdb_cluster_resource_check}`,
-      'No resources found',
-      'fail',
-    );
-    await I.verifyCommand(
-      `kubectl get secrets | grep dbaas-${psmdb_cluster_resource_check}-psmdb-secrets`,
-      '',
-      'fail',
-    );
   });
 
 

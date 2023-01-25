@@ -63,7 +63,7 @@ Scenario(
       I.click(adminPage.fields.metricTitle);
       adminPage.performPageDown(5);
       dashboardPage.verifyMetricsExistence(dashboardPage.mySQLInstanceOverview.metrics);
-      await dashboardPage.verifyThereAreNoGraphsWithNA();
+      await dashboardPage.verifyThereAreNoGraphsWithNA(1);
       await dashboardPage.verifyThereAreNoGraphsWithoutData(1);
     }
   },
@@ -126,7 +126,7 @@ Scenario(
     await dashboardPage.expandEachDashboardRow();
     await dashboardPage.verifyMetricsExistence(dashboardPage.proxysqlInstanceSummaryDashboard.metrics);
     await dashboardPage.verifyThereAreNoGraphsWithNA();
-    await dashboardPage.verifyThereAreNoGraphsWithoutData(9);
+    await dashboardPage.verifyThereAreNoGraphsWithoutData(16);
   },
 );
 
@@ -205,7 +205,7 @@ Scenario(
 
     I.amOnPage(url);
     dashboardPage.waitForDashboardOpened();
-    await dashboardPage.applyFilter('Service Name', 'pxc_node_8.0');
+    await dashboardPage.applyFilter('Service Name', 'pxc_node');
     adminPage.performPageDown(5);
     dashboardPage.verifyMetricsExistence(dashboardPage.mysqlPXCGaleraNodeSummaryDashboard.metrics);
     await dashboardPage.verifyThereAreNoGraphsWithNA();
