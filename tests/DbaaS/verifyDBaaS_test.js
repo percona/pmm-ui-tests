@@ -357,7 +357,7 @@ Scenario('@PMM-T1512 Verify tooltips work properly for DBaaS page @dbaas',
     }
 
     I.amOnPage(dbaasPage.url);
-    I.waitForVisible(dbaasPage.tabs.dbClusterTab.addDbClusterButton, 60);
+    I.waitForVisible(dbaasPage.tabs.dbClusterTab.dbClusterAddButtonTop, 60);
     await adminPage.verifyTooltip(dbaasPage.tooltips.technicalPreview);
     I.click(dbaasPage.tabs.kubernetesClusterTab.kubernetesClusterTabButton);
     I.click(dbaasPage.tabs.kubernetesClusterTab.addKubernetesClusterButton);
