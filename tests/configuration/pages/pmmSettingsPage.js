@@ -9,7 +9,7 @@ const locateLabel = (selector) => locate(I.useDataQA(selector)).find('span');
 
 module.exports = {
   url: 'graph/settings',
-  publicAddress: process.env.VM_IP ? process.env.VM_IP : process.env.SERVER_IP,
+  publicAddress: process.env.VM_IP ? process.env.VM_IP : process.env.SERVER_IP || '127.0.0.1',
   metricsResolutionUrl: 'graph/settings/metrics-resolution',
   advancedSettingsUrl: 'graph/settings/advanced-settings',
   sshKeyUrl: 'graph/settings/ssh-key',
