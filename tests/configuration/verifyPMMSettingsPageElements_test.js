@@ -142,15 +142,13 @@ xScenario(
 
 Scenario(
   '@PMM-T1519 Verify that alerting link inside settings forwarding to correct page @settings',
-  async ({ I, pmmSettingsPage }) => {
+  async ({ I, pmmSettingsPage, alertsPage }) => {
     const sectionNameToExpand = pmmSettingsPage.sectionTabsList.alertmanager;
 
     await pmmSettingsPage.waitForPmmSettingsPageLoaded();
     await pmmSettingsPage.expandSection(sectionNameToExpand, pmmSettingsPage.fields.alertmanagerButton);
-    I.seeAttributesOnElements(pmmSettingsPage.fields.perconaAlertingUrl, { href: `${url}graph/alerting/alerts` });
-    const link = (await I.grabAttributeFrom(pmmSettingsPage.fields.perconaAlertingUrl, 'href'));
-    const response = await I.sendGetRequest(link);
-
-    assert.equal(response.status, 200, 'Link should lead to working page. But the GET request response status is not 200');
+    I.click(pmmSettingsPage.fields.perconaAlertingUrl);
+    I.assertTrue((await I.grabCurrentUrl()).includes(alertsPage.url), 'Link should lead to IA page. But it does not');
+    I.waitForElement(alertsPage.elements.pageHeader, 30);
   },
 );
