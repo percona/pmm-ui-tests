@@ -4,20 +4,13 @@ import UpgradeModal from '../components/upgradeModal.component';
 import Duration from '../helpers/Duration';
 import { CommonPage } from './pmmSettings/Common.page';
 
-export default class homeDashboard extends CommonPage {
+export default class HomeDashboard extends CommonPage {
   constructor(page: Page) {
     super(page);
   }
 
-  // Components
   pmmUpgrade = new PmmUpgrade(this.page);
   upgradeModal = new UpgradeModal(this.page);
-  // Containers
-  // Elements
-
-  // Messages
-
-  // links
 
   upgradePMM = async () => {
     await this.pmmUpgrade.buttons.upgradeButton.waitFor({ state: 'visible', timeout: Duration.ThreeMinutes });

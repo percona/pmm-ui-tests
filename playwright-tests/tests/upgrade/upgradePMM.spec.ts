@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { test } from '@playwright/test';
 import apiHelper from '../../helpers/apiHelper';
 import grafanaHelper from '../../helpers/GrafanaHelper';
 import HomeDashboard from '../../pages/HomeDashboard.page';
