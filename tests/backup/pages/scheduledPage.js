@@ -111,6 +111,7 @@ module.exports = {
   },
 
   verifyBackupRowValues(name, vendor, frequency, retention, type, location) {
+    I.waitForVisible(this.elements.scheduleName(name), 10);
     I.seeElement(this.elements.scheduleName(name));
     I.seeTextEquals(vendor, this.elements.scheduleVendorByName(name));
     I.seeTextEquals(frequency, this.elements.frequencyByName(name));

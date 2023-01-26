@@ -45,13 +45,10 @@ Scenario(
   }) => {
     I.say('Checks for Anonymous user');
     await I.Authorize();
-    pmmSettingsPage.openAdvancedSettings();
-    await pmmSettingsPage.waitForPmmSettingsPageLoaded();
-    const publicAddress = await I.grabValueFrom(pmmSettingsPage.fields.publicAddressInput);
 
-    if (publicAddress.length !== 0) pmmSettingsPage.clearPublicAddress();
-
-    pmmSettingsPage.addPublicAddress();
+    await settingsAPI.changeSettings({
+      publicAddress: pmmSettingsPage.publicAddress,
+    });
 
     I.amOnPage(databaseChecksPage.allChecks);
     await I.waitForVisible(databaseChecksPage.elements.allChecksTable);
@@ -89,13 +86,16 @@ Scenario(
     grafana_session_cookie = await I.getBrowserGrafanaSessionCookies();
     await I.waitForVisible(databaseChecksPage.elements.allChecksTable);
 
-    databaseChecksPage.checks.anonymous.forEach((check) => {
-      databaseChecksPage.verifyAdvisorCheckExistence(check);
-    });
-    databaseChecksPage.checks.registered.forEach((check) => {
-      databaseChecksPage.verifyAdvisorCheckExistence(check);
-    });
-    databaseChecksPage.checks.registeredOnly.forEach((check) => {
+    const expectedRegisteredUserChecks = new Set([
+      ...databaseChecksPage.checks.anonymous,
+      ...databaseChecksPage.checks.registered,
+      ...databaseChecksPage.checks.registeredOnly,
+    ]);
+
+    await I.say(expectedRegisteredUserChecks);
+    await I.say(expectedRegisteredUserChecks.size);
+
+    expectedRegisteredUserChecks.forEach((check) => {
       databaseChecksPage.verifyAdvisorCheckExistence(check);
     });
     databaseChecksPage.checks.paid.forEach((check) => {
@@ -126,13 +126,14 @@ Scenario(
     I.amOnPage(databaseChecksPage.allChecks);
     await I.waitForVisible(databaseChecksPage.elements.allChecksTable);
 
-    databaseChecksPage.checks.anonymous.forEach((check) => {
-      databaseChecksPage.verifyAdvisorCheckExistence(check);
-    });
-    databaseChecksPage.checks.registered.forEach((check) => {
-      databaseChecksPage.verifyAdvisorCheckExistence(check);
-    });
-    databaseChecksPage.checks.paid.forEach((check) => {
+    const expectedPaidUserChecks = new Set([
+      ...databaseChecksPage.checks.anonymous,
+      ...databaseChecksPage.checks.registered,
+      ...databaseChecksPage.checks.registeredOnly,
+      ...databaseChecksPage.checks.paid,
+    ]);
+
+    expectedPaidUserChecks.forEach((check) => {
       databaseChecksPage.verifyAdvisorCheckExistence(check);
     });
 

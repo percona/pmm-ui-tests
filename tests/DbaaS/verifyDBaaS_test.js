@@ -24,7 +24,7 @@ inputFields.add([dbaasPage.tabs.dbClusterTab.advancedOptions.fields.memoryField,
 inputFields.add([dbaasPage.tabs.dbClusterTab.advancedOptions.fields.cpuNumberFields, ['a'], dbaasPage.tabs.dbClusterTab.advancedOptions.fields.cpuFieldErrorMessage, dbaasPage.requiredFieldError]);
 inputFields.add([dbaasPage.tabs.dbClusterTab.advancedOptions.fields.diskSizeInputField, ['a'], dbaasPage.tabs.dbClusterTab.advancedOptions.fields.diskFieldErrorMessage, dbaasPage.requiredFieldError]);
 inputFields.add([dbaasPage.tabs.dbClusterTab.advancedOptions.fields.nodesNumberField, ['-1', '0', '0.5'], dbaasPage.tabs.dbClusterTab.advancedOptions.fields.nodesFieldErrorMessage, dbaasPage.requiredFieldError]);
-inputFields.add([dbaasPage.tabs.dbClusterTab.advancedOptions.fields.nodesNumberField, ['1', '2'], dbaasPage.tabs.dbClusterTab.advancedOptions.fields.nodesFieldErrorMessage, dbaasPage.valueGreatThanErrorText(3)]);
+inputFields.add([dbaasPage.tabs.dbClusterTab.advancedOptions.fields.nodesNumberField, ['2'], dbaasPage.tabs.dbClusterTab.advancedOptions.fields.nodesFieldErrorMessage, dbaasPage.numberOfNodesError]);
 inputFields.add([dbaasPage.tabs.dbClusterTab.advancedOptions.fields.memoryField, ['0.01', '-0.3', '0.0'], dbaasPage.tabs.dbClusterTab.advancedOptions.fields.memoryFieldErrorMessage, dbaasPage.valueGreatThanErrorText(0.1)]);
 inputFields.add([dbaasPage.tabs.dbClusterTab.advancedOptions.fields.cpuNumberFields, ['0.01', '-0.3', '0.0'], dbaasPage.tabs.dbClusterTab.advancedOptions.fields.cpuFieldErrorMessage, dbaasPage.valueGreatThanErrorText(0.1)]);
 
@@ -64,9 +64,10 @@ Scenario(
     await dbaasAPI.waitForOperators();
     dbaasPage.unregisterCluster(clusterName, true);
     I.waitForText(dbaasPage.deletedAlertMessage, 20);
+    I.refreshPage();
     dbaasPage.checkCluster(clusterName, true);
   },
-);
+).retry(1);
 
 Scenario(
   'PMM-T427 - Verify submitting blank Add kubernetes cluster form @dbaas',
@@ -119,8 +120,8 @@ Scenario(
     // assert.ok(configuration === process.env.kubeconfig_minikube, 
     //   `The configuration shown is not equal to the expected Cluster configuration, ${configuration}`);
     // PMM-T1130
-    // I.amOnPage(dbaasPage.apiKeysUrl);
-    // I.waitForText(dbaasPage.apiKeysPage.apiKeysWarningText, 10, dbaasPage.apiKeysPage.apiKeysWarningLocator);
+    I.amOnPage(dbaasPage.apiKeysUrl);
+    I.waitForText(dbaasPage.apiKeysPage.apiKeysWarningText, 10, dbaasPage.apiKeysPage.apiKeysWarningLocator);
     await dbaasAPI.apiUnregisterCluster(clusterName);
   },
 );
@@ -149,6 +150,7 @@ Scenario('PMM-T728 Verify DB Cluster Tab Page Elements & Steps Background @dbaas
       await dbaasAPI.apiRegisterCluster(process.env.kubeconfig_minikube, clusterName);
     }
 
+    await dbaasAPI.waitForClusterStatus();
     I.amOnPage(dbaasPage.url);
     I.waitForEnabled(dbaasPage.tabs.dbClusterTab.dbClusterAddButtonTop, 10);
     I.click(dbaasPage.tabs.dbClusterTab.dbClusterAddButtonTop);
@@ -157,16 +159,15 @@ Scenario('PMM-T728 Verify DB Cluster Tab Page Elements & Steps Background @dbaas
     I.seeElement(dbaasPage.tabs.dbClusterTab.basicOptions.fields.dbClusterDatabaseTypeField);
     I.seeElement(dbaasPage.tabs.dbClusterTab.advancedOptionsButton);
     I.click(dbaasPage.tabs.dbClusterTab.advancedOptionsButton);
-    I.seeElement(dbaasPage.tabs.dbClusterTab.advancedOptions.fields.dbClusterTopologyFieldLabel);
     I.seeElement(dbaasPage.tabs.dbClusterTab.advancedOptions.fields.nodesNumberField);
-    I.seeElement(dbaasPage.tabs.dbClusterTab.advancedOptions.fields.dbClusterExternalAccessCheckbox);
+    I.scrollTo(dbaasPage.tabs.dbClusterTab.advancedOptions.fields.dbClusterExposeLabel);
     I.dontSeeCheckboxIsChecked(
-      dbaasPage.tabs.dbClusterTab.advancedOptions.fields.dbClusterExternalAccessCheckbox,
+      dbaasPage.tabs.dbClusterTab.advancedOptions.fields.dbClusterExposeCheckbox,
     );
-    I.moveCursorTo(dbaasPage.tabs.dbClusterTab.advancedOptions.fields.dbClusterExternalAccessTooltip);
-    I.seeTextEquals('Allows external access to the database cluster',
-      dbaasPage.tabs.dbClusterTab.advancedOptions.fields.dbClusterExternalAccessTooltipText);
-    I.seeElement(dbaasPage.tabs.dbClusterTab.advancedOptions.fields.dbClusterResourceFieldLabel);
+    I.moveCursorTo(dbaasPage.tabs.dbClusterTab.advancedOptions.fields.dbClusterExposeTooltip);
+    I.seeTextEquals('You will make this database cluster available to connect from the internet. To limit access you need to specify source ranges',
+      dbaasPage.tabs.dbClusterTab.advancedOptions.fields.dbClusterExposeTooltipText);
+    I.seeElement(dbaasPage.tabs.dbClusterTab.advancedOptions.fields.resourcesPerNodeLabel);
     I.seeElement(dbaasPage.tabs.dbClusterTab.advancedOptions.fields.memoryField);
     I.seeElement(dbaasPage.tabs.dbClusterTab.advancedOptions.fields.cpuNumberFields);
     I.seeElement(dbaasPage.tabs.dbClusterTab.advancedOptions.fields.diskSizeInputField);
@@ -182,6 +183,7 @@ Data(nameFields).Scenario('PMM-T456 Verify Create Cluster steps validation field
       await dbaasAPI.apiRegisterCluster(process.env.kubeconfig_minikube, clusterName);
     }
 
+    await dbaasAPI.waitForClusterStatus();
     I.amOnPage(dbaasPage.url);
     I.waitForVisible(dbaasPage.tabs.dbClusterTab.dbClusterTab);
     I.click(dbaasPage.tabs.dbClusterTab.dbClusterTab);
@@ -221,7 +223,9 @@ Data(nameFields).Scenario('PMM-T456 Verify Create Cluster steps validation field
       await I.grabAttributeFrom(dbaasPage.tabs.dbClusterTab.advancedOptions.fields.diskSizeInputField, 'disabled'),
       'Disk Size field must be disabled',
     );
-    I.click(dbaasPage.tabs.dbClusterTab.advancedOptions.fields.resourcesPerNode('Custom'));
+    I.click(dbaasPage.tabs.dbClusterTab.advancedOptions.fields.resourcesPerNodeSelect);
+    I.waitForVisible(dbaasPage.tabs.dbClusterTab.advancedOptions.fields.resourcesPerNodesOption('Custom'), 10);
+    I.click(dbaasPage.tabs.dbClusterTab.advancedOptions.fields.resourcesPerNodesOption('Custom'));
     I.waitForEnabled(dbaasPage.tabs.dbClusterTab.advancedOptions.fields.memoryField, 3);
     I.waitForEnabled(dbaasPage.tabs.dbClusterTab.advancedOptions.fields.diskSizeInputField, 3);
     I.waitForEnabled(dbaasPage.tabs.dbClusterTab.advancedOptions.fields.cpuNumberFields, 3);
@@ -236,12 +240,16 @@ Data(inputFields).Scenario('PMM-T456 Verify Create Cluster steps validation - fi
       await dbaasAPI.apiRegisterCluster(process.env.kubeconfig_minikube, clusterName);
     }
 
+    await dbaasAPI.waitForClusterStatus();
     I.amOnPage(dbaasPage.url);
     I.waitForVisible(dbaasPage.tabs.dbClusterTab.addDbClusterButton, 60);
     await dbaasActionsPage.createClusterBasicOptions(clusterName, 'dbcluster', 'MySQL');
     I.seeElement(dbaasPage.tabs.dbClusterTab.advancedOptionsButton);
     I.click(dbaasPage.tabs.dbClusterTab.advancedOptionsButton);
-    I.click(dbaasPage.tabs.dbClusterTab.advancedOptions.fields.resourcesPerNode('Custom'));
+    I.waitForVisible(dbaasPage.tabs.dbClusterTab.advancedOptions.fields.resourcesPerNodeSelect);
+    I.click(dbaasPage.tabs.dbClusterTab.advancedOptions.fields.resourcesPerNodeSelect);
+    I.waitForVisible(dbaasPage.tabs.dbClusterTab.advancedOptions.fields.resourcesPerNodesOption('Custom'), 10);
+    I.click(dbaasPage.tabs.dbClusterTab.advancedOptions.fields.resourcesPerNodesOption('Custom'));
     adminPage.customClearField(current.field);
     current.value.forEach((input) => dbaasPage.verifyInputValidationMessages(
       current.field,
@@ -268,11 +276,13 @@ Data(resourceFields).Scenario('PMM-T828 Verify the Configuration for Small, Medi
     I.click(dbaasPage.tabs.dbClusterTab.dbClusterAddButtonTop);
     I.waitForVisible(dbaasPage.tabs.dbClusterTab.advancedOptionsButton, 10);
     I.click(dbaasPage.tabs.dbClusterTab.advancedOptionsButton);
+    I.waitForVisible(dbaasPage.tabs.dbClusterTab.advancedOptions.fields.resourcesPerNodeSelect);
+    I.click(dbaasPage.tabs.dbClusterTab.advancedOptions.fields.resourcesPerNodeSelect);
     I.waitForVisible(
-      dbaasPage.tabs.dbClusterTab.advancedOptions.fields.resourcesPerNode(current.resourceType),
+      dbaasPage.tabs.dbClusterTab.advancedOptions.fields.resourcesPerNodesOption(current.resourceType),
       30,
     );
-    I.click(dbaasPage.tabs.dbClusterTab.advancedOptions.fields.resourcesPerNode(current.resourceType));
+    I.click(dbaasPage.tabs.dbClusterTab.advancedOptions.fields.resourcesPerNodesOption(current.resourceType));
     let value = await I.grabAttributeFrom(dbaasPage.tabs.dbClusterTab.advancedOptions.fields.cpuNumberFields, 'value');
 
     await dbaasPage.validateResourcesField('cpu', current.resourceType, value);
