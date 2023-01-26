@@ -461,3 +461,17 @@ Scenario(
     await I.verifyCommand(`docker exec ${container_name} service postgresql restart`);
   },
 );
+
+Scenario(
+  '@PMM-T836 Verify that databases can be deleted while PG is being monitored @not-ui-pipeline @pgsm-pmm-integration',
+  async ({ I, grafanaAPI }) => {
+    const dbName = 'testdatabase';
+
+    await I.verifyCommand(`docker exec ${container_name} psql -U postgres -c "CREATE DATABASE ${dbName};"`, 'CREATE DATABASE');
+    await I.verifyCommand(`docker exec ${container_name} psql -U postgres -c "\\l" | grep -o "${dbName}"`, dbName);
+    // need to wait for some time for connection otherwise test can be falsely positive
+    I.wait(10);
+    await I.verifyCommand(`docker exec ${container_name} psql -U postgres -c "DROP DATABASE ${dbName};"`);
+    await I.verifyCommand(`docker exec ${container_name} psql -U postgres -c "\\l" | grep -o "${dbName}"`, '', 'fail');
+  },
+);
