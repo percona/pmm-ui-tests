@@ -6,17 +6,39 @@ export default class PerconaPlatform extends CommonPage {
     super(page);
   }
   // Containers
-  perconaPlatformContainer = this.page.getByTestId('settings-tab-content');
+  perconaPlatformURL = 'graph/settings/percona-platform';
+  perconaPlatformContainer = this.page.getByTestId('connect-form');
 
   // Elements
-  serverNameInput = this.perconaPlatformContainer.getByTestId('pmmServerName-text-input');
-  serverNameInputError = this.perconaPlatformContainer.getByTestId('pmmServerName-field-error-message');
-  accessTokenInput = this.perconaPlatformContainer.getByTestId('accessToken-text-input');
-  accessTokenInputError = this.perconaPlatformContainer.getByTestId('accessToken-field-error-message');
-  connectButton = this.perconaPlatformContainer.getByTestId('connect-button');
+  platformElements = {
+    pmmServerIdHeader: this.perconaPlatformContainer.getByTestId('pmmServerId-field-label'),
+    pmmServerNameHeader: this.perconaPlatformContainer.getByTestId('pmmServerName-field-label'),
+    pmmServerNameError: this.perconaPlatformContainer.getByTestId('pmmServerName-field-error-message'),
+    accessTokenHeader: this.perconaPlatformContainer.getByTestId('accessToken-field-label'),
+    accessTokenError: this.perconaPlatformContainer.getByTestId('accessToken-field-error-message'),
+  }
 
-  // Messages
+  platformFields = {
+    pmmServerId: this.perconaPlatformContainer.getByTestId('pmmServerId-text-input'),
+    pmmServerName: this.perconaPlatformContainer.getByTestId('pmmServerName-text-input'),
+    accessToken: this.perconaPlatformContainer.getByTestId('accessToken-text-input'),
+  }
+  
+  platformLabels = {
+    header: 'Connect PMM to Percona Platform',
+    pmmServerId: 'PMM Server Id',
+    pmmServerName: 'PMM Server Name *',
+    accessToken: 'Percona Platform Access Token *',
+    getToken: 'Get token',
+    requiredField: 'Required field',
+  }
 
-  // links
-  perconaPlatformURL = 'graph/settings/percona-platform';
+  platformButtons = {
+    connect: this.perconaPlatformContainer.getByTestId('connect-button'),
+    getToken: this.perconaPlatformContainer.getByText(this.platformLabels.getToken),
+  }
+
+  platformLinks = {
+    getToken: 'https://portal-dev.percona.com/profile',
+  }
 }

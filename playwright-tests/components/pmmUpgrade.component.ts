@@ -30,6 +30,12 @@ export default class PmmUpgrade {
     return {versionMajor, versionMinor, versionPatch}
   };
 
+  getCurrentPMMVersion = async () => {
+    const versionString = await this.elements.currentVersion.textContent({ timeout: Duration.ThreeMinutes });
+    const [versionMajor, versionMinor, versionPatch] = versionString!.split('.');
+    return {versionMajor, versionMinor, versionPatch}
+  };
+
   verifyUpgradeWidget = async () => {
     await this.buttons.upgradeButton.waitFor({ state: 'visible', timeout: Duration.ThreeMinutes });
     await expect(this.elements.upToDate).toBeHidden();
