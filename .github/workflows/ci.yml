@@ -23,7 +23,7 @@ jobs:
 
   fb_tests:
     name: FB UI tests
-    uses: Percona-Lab/pmm-submodules/.github/workflows/pmm2-ui-tests-fb.yml@PMM-2.0
+    uses: Percona-Lab/pmm-submodules/.github/workflows/pmm2-ui-tests-fb.yml@PMM-7-debug-trigger-actions0
     secrets:
       BACKUP_LOCATION_ACCESS_KEY: ${{ secrets.BACKUP_LOCATION_ACCESS_KEY }}
       BACKUP_LOCATION_SECRET_KEY: ${{ secrets.BACKUP_LOCATION_SECRET_KEY }}
