@@ -5,11 +5,11 @@ export default class PerconaPlatform extends CommonPage {
   constructor(page: Page) {
     super(page);
   }
-  // Containers
+
   perconaPlatformURL = 'graph/settings/percona-platform';
   perconaPlatformContainer = this.page.getByTestId('connect-form');
+  connectedContainer = this.page.getByTestId('connected-wrapper'); 
 
-  // Elements
   platformElements = {
     pmmServerIdHeader: this.perconaPlatformContainer.getByTestId('pmmServerId-field-label'),
     pmmServerNameHeader: this.perconaPlatformContainer.getByTestId('pmmServerName-field-label'),
@@ -38,7 +38,23 @@ export default class PerconaPlatform extends CommonPage {
     getToken: this.perconaPlatformContainer.getByText(this.platformLabels.getToken),
   }
 
+  platformMessages = {
+    connectedSuccess: 'Successfully connected PMM to Percona Platform',
+    updateSuccess: 'Settings updated',
+  }
+
   platformLinks = {
     getToken: 'https://portal-dev.percona.com/profile',
+  }
+
+  connectToPortal = async (token: string, serverName = 'Test Server', isIPAddressSet = false) => {
+    await this.platformFields.pmmServerName.type(serverName);
+    await this.platformFields.accessToken.fill(token);
+    await this.platformButtons.connect.click();
+    if (!isIPAddressSet) {
+      await this.toast.checkToastMessage(this.platformMessages.updateSuccess);
+    }
+    await this.toast.checkToastMessage(this.platformMessages.connectedSuccess);
+    await this.connectedContainer.waitFor({ state: 'visible' })
   }
 }

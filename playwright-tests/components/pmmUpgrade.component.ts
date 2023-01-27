@@ -31,7 +31,8 @@ export default class PmmUpgrade {
   };
 
   getCurrentPMMVersion = async () => {
-    const versionString = await this.elements.currentVersion.textContent({ timeout: Duration.ThreeMinutes });
+    await expect(this.elements.currentVersion).toContainText('2.', { timeout: Duration.ThreeMinutes });
+    const versionString = await this.elements.currentVersion.textContent();
     const [versionMajor, versionMinor, versionPatch] = versionString!.split('.');
     return {versionMajor, versionMinor, versionPatch}
   };
@@ -43,6 +44,4 @@ export default class PmmUpgrade {
     const availableVersion = await this.elements.availableVersion.textContent();
     await expect(this.elements.currentVersion).not.toHaveText(availableVersion!);
   };
-
-
 }
