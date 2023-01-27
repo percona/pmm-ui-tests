@@ -33,28 +33,28 @@ test.describe('Spec file for Sign Up tests', async () => {
       await test.step('1. Open Percona Platform tab in PMM Settings',async () => {
         await page.goto(platformPage.perconaPlatformURL);
         await platformPage.perconaPlatformContainer.waitFor({state: 'visible'});
-        await page.getByText(platformPage.platformLabels.header).waitFor({state: 'visible'});  
+        await page.getByText(platformPage.labels.header).waitFor({state: 'visible'});  
       });
 
       await test.step('2. Verify all required element are displayed.',async () => {
-        await expect(platformPage.platformElements.pmmServerIdHeader).toHaveText(platformPage.platformLabels.pmmServerId);
-        await expect(platformPage.platformElements.pmmServerNameHeader).toHaveText(platformPage.platformLabels.pmmServerName);
-        await expect(platformPage.platformElements.accessTokenHeader).toHaveText(platformPage.platformLabels.accessToken);
-        await expect(platformPage.platformButtons.getToken).toHaveAttribute('href', platformPage.platformLinks.getToken);
+        await expect(platformPage.elements.pmmServerIdHeader).toHaveText(platformPage.labels.pmmServerId);
+        await expect(platformPage.elements.pmmServerNameHeader).toHaveText(platformPage.labels.pmmServerName);
+        await expect(platformPage.elements.accessTokenHeader).toHaveText(platformPage.labels.accessToken);
+        await expect(platformPage.buttons.getToken).toHaveAttribute('href', platformPage.links.getToken);
       });
 
       await test.step('3. Verify that pmm server name and access token are required.',async () => {
-        await platformPage.platformFields.pmmServerName.focus();
-        await platformPage.platformFields.accessToken.focus();
-        await platformPage.platformButtons.connect.click({ force: true });
-        await expect(platformPage.platformElements.pmmServerNameError).toHaveText(platformPage.platformLabels.requiredField);
-        await expect(platformPage.platformElements.accessTokenError).toHaveText(platformPage.platformLabels.requiredField);
+        await platformPage.fields.pmmServerName.focus();
+        await platformPage.fields.accessToken.focus();
+        await platformPage.buttons.connect.click({ force: true });
+        await expect(platformPage.elements.pmmServerNameError).toHaveText(platformPage.labels.requiredField);
+        await expect(platformPage.elements.accessTokenError).toHaveText(platformPage.labels.requiredField);
       });
 
       await test.step('4. Verify user can connect to the portal only when server name and access token are valid.',async () => {
-        await platformPage.platformFields.pmmServerName.type('Some Name');
-        await platformPage.platformFields.accessToken.type('Some Token');
-        await expect(platformPage.platformButtons.connect).toBeEnabled();
+        await platformPage.fields.pmmServerName.type('Some Name');
+        await platformPage.fields.accessToken.type('Some Token');
+        await expect(platformPage.buttons.connect).toBeEnabled();
       });
     } else {
       test.info().annotations.push({

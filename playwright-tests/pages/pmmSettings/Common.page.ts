@@ -8,4 +8,15 @@ export class CommonPage {
 
   toast = new Toast(this.page);
 
+  protected elements = {}
+
+  protected fields = {}
+
+  protected labels = {}
+
+  protected buttons = {}
+
+  protected messages = {}
+
+  protected links = {}
 }

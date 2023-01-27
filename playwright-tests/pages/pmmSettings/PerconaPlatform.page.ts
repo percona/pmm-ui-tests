@@ -10,7 +10,8 @@ export default class PerconaPlatform extends CommonPage {
   perconaPlatformContainer = this.page.getByTestId('connect-form');
   connectedContainer = this.page.getByTestId('connected-wrapper'); 
 
-  platformElements = {
+  elements = {
+    ...super.elements,
     pmmServerIdHeader: this.perconaPlatformContainer.getByTestId('pmmServerId-field-label'),
     pmmServerNameHeader: this.perconaPlatformContainer.getByTestId('pmmServerName-field-label'),
     pmmServerNameError: this.perconaPlatformContainer.getByTestId('pmmServerName-field-error-message'),
@@ -18,13 +19,15 @@ export default class PerconaPlatform extends CommonPage {
     accessTokenError: this.perconaPlatformContainer.getByTestId('accessToken-field-error-message'),
   }
 
-  platformFields = {
+  fields = {
+    ...super.fields,
     pmmServerId: this.perconaPlatformContainer.getByTestId('pmmServerId-text-input'),
     pmmServerName: this.perconaPlatformContainer.getByTestId('pmmServerName-text-input'),
     accessToken: this.perconaPlatformContainer.getByTestId('accessToken-text-input'),
   }
   
-  platformLabels = {
+  labels = {
+    ...super.labels,
     header: 'Connect PMM to Percona Platform',
     pmmServerId: 'PMM Server Id',
     pmmServerName: 'PMM Server Name *',
@@ -33,28 +36,31 @@ export default class PerconaPlatform extends CommonPage {
     requiredField: 'Required field',
   }
 
-  platformButtons = {
+  buttons = {
+    ...super.buttons,
     connect: this.perconaPlatformContainer.getByTestId('connect-button'),
-    getToken: this.perconaPlatformContainer.getByText(this.platformLabels.getToken),
+    getToken: this.perconaPlatformContainer.getByText(this.labels.getToken),
   }
 
-  platformMessages = {
+  messages = {
+    ...super.messages,
     connectedSuccess: 'Successfully connected PMM to Percona Platform',
     updateSuccess: 'Settings updated',
   }
 
-  platformLinks = {
+  links = {
+    ...super.links,
     getToken: 'https://portal-dev.percona.com/profile',
   }
 
   connectToPortal = async (token: string, serverName = 'Test Server', isIPAddressSet = false) => {
-    await this.platformFields.pmmServerName.type(serverName);
-    await this.platformFields.accessToken.fill(token);
-    await this.platformButtons.connect.click();
+    await this.fields.pmmServerName.type(serverName);
+    await this.fields.accessToken.fill(token);
+    await this.buttons.connect.click();
     if (!isIPAddressSet) {
-      await this.toast.checkToastMessage(this.platformMessages.updateSuccess);
+      await this.toast.checkToastMessage(this.messages.updateSuccess);
     }
-    await this.toast.checkToastMessage(this.platformMessages.connectedSuccess);
+    await this.toast.checkToastMessage(this.messages.connectedSuccess);
     await this.connectedContainer.waitFor({ state: 'visible' })
   }
 }
