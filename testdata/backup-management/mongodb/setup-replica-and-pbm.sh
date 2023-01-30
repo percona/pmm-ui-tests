@@ -52,6 +52,14 @@ docker cp setup-replica.js mongors1:/
 docker exec -u 0 mongors1 mongo --port=27027 --authenticationDatabase admin setup-replica.js
 
 # Install PBM 1.8.1
+
+sudo bash -x ./pmm-qa/pmm-tests/pmm2-client-setup.sh --pmm_server_ip 127.0.0.1 --client_version ${{ env.PMM_CLIENT_VERSION }} --admin_password admin --use_metrics_mode no
+          sudo pmm-admin status
+          
+docker exec -u 0 mongors1 /bin/bash -c "wget  https://raw.githubusercontent.com/percona/pmm-qa/main/pmm-tests/pmm2-client-setup.sh"
+docker exec -u 0 mongors2 /bin/bash -c "wget  https://raw.githubusercontent.com/percona/pmm-qa/main/pmm-tests/pmm2-client-setup.sh"
+docker exec -u 0 mongors3 /bin/bash -c "wget  https://raw.githubusercontent.com/percona/pmm-qa/main/pmm-tests/pmm2-client-setup.sh"
+
 docker exec -u 0 mongors1 /bin/bash -c "percona-release enable pbm release && yum -y install percona-backup-mongodb"
 docker exec -u 0 mongors2 /bin/bash -c "percona-release enable pbm release && yum -y install percona-backup-mongodb"
 docker exec -u 0 mongors3 /bin/bash -c "percona-release enable pbm release && yum -y install percona-backup-mongodb"
