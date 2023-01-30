@@ -114,13 +114,17 @@ test.describe('Spec file for Sign Up tests', async () => {
     }
   });
 
-  test('PMM-T1098 Verify All org users can login in connected PMM server @not-ui-pipeline @portal @pre-pmm-portal-upgrade @post-pmm-portal-upgrade', async ({ page }) => {
+  test('PMM-T1098 Verify All org users can login in connected PMM server @not-ui-pipeline @portal @pre-pmm-portal-upgrade @post-pmm-portal-upgrade', async ({ page, baseURL, context, browser }) => {
     const signInPage = new SignInPage(page);
     await signInPage.oktaLogin(firstAdmin.email, firstAdmin.password);
-    await signInPage.elements.mainView.waitFor({ state: 'visible'})
-    expect(page).toHaveURL(`${process.env.PMM_BASE_URL}/${signInPage.landingUrl}`)
-    // console.log('waiting.');
-    // await page.waitForTimeout(600000);
+    await signInPage.elements.mainView.waitFor({ state: 'visible'});
+    expect(page).toHaveURL(`${baseURL}/${signInPage.landingUrl}`);
+    await context.clearCookies();
+    console.log('waiting.');
+    await page.waitForTimeout(600000);
+
+
+
   });
 
 });
