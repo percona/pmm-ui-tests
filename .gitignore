@@ -78,6 +78,7 @@ typings/
 # UI tests output
 output
 playwright-report
+test-results
 
 # parcel-bundler cache (https://parceljs.org/)
 .cache

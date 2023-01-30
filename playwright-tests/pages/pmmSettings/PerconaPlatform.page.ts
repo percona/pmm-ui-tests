@@ -55,8 +55,9 @@ export default class PerconaPlatform extends CommonPage {
 
   connectToPortal = async (token: string, serverName = 'Test Server', isIPAddressSet = false) => {
     await this.fields.pmmServerName.type(serverName);
-    await this.fields.accessToken.fill(token);
+    await this.fields.accessToken.type(token);
     await this.buttons.connect.click();
+    
     if (!isIPAddressSet) {
       await this.toast.checkToastMessage(this.messages.updateSuccess);
     }

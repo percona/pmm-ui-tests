@@ -7,16 +7,23 @@ export class CommonPage {
   constructor(readonly page: Page) {}
 
   toast = new Toast(this.page);
+  landingUrl = 'graph/d/pmm-home/home-dashboard?orgId=1&refresh=1m';
 
-  protected elements = {}
+  protected baseElements = {
+    mainView: this.page.locator('//*[@class="main-view"]'),
+  };
 
-  protected fields = {}
+  protected fields = {};
 
-  protected labels = {}
+  protected labels = {};
 
-  protected buttons = {}
+  protected buttons = {};
 
-  protected messages = {}
+  protected messages = {};
 
-  protected links = {}
+  protected links = {};
+  
+  protected getElements() {
+    return this.baseElements;
+  };
 }

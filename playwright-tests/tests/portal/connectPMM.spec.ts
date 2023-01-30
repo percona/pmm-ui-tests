@@ -5,20 +5,49 @@ import grafanaHelper from '../../helpers/GrafanaHelper';
 import PerconaPlatform from '../../pages/pmmSettings/PerconaPlatform.page';
 import HomeDashboard from '../../pages/HomeDashboard.page'
 import { portalAPI } from '../../api/portalApi';
+import { SignInPage } from '../../pages/SignIn.page';
+import { serviceNowAPI } from '../../api/serviceNowApi';
+import User from '../../support/types/user.interface';
+import { oktaAPI } from '../../api/okta';
+import Duration from '../../helpers/Duration';
 
 test.describe('Spec file for Sign Up tests', async () => {
+  let firstAdmin: User;
+  let secondAdmin: User;
+  let technicalUser: User;
   let pmmVersion: number;
   const fileName = 'portalCredentials';
 
+  test.beforeAll(async () => {
+    [firstAdmin, secondAdmin, technicalUser] = await serviceNowAPI.createServiceNowUsers();
+    const adminToken = await portalAPI.getUserAccessToken(firstAdmin.email, firstAdmin.password);
+    const org = await portalAPI.createOrg(adminToken);
+    console.log(org);
+  })
+
   test.beforeEach(async ({page}) => {
     const homeDashboard = new HomeDashboard(page);
-    await grafanaHelper.authorize(page);
+    if (!test.info().title.includes('PMM-T1098')) {
+      await grafanaHelper.authorize(page);
+    }
     await apiHelper.confirmTour(page);
     await page.goto('');
     if(!pmmVersion) {
       const versionString = (await homeDashboard.pmmUpgrade.getCurrentPMMVersion()).versionMinor;
       pmmVersion = parseInt(versionString)
     }
+
+  });
+
+  test.afterAll(async () => {
+    const adminToken = await portalAPI.getUserAccessToken(firstAdmin.email, firstAdmin.password);
+    const org = await portalAPI.getOrg(adminToken);
+
+    if (org.orgs.length) {
+      await portalAPI.deleteOrg(adminToken, org.orgs[0].id);
+    }
+
+    await oktaAPI.deleteUsers([firstAdmin, secondAdmin, technicalUser]);
   });
 
 
@@ -74,7 +103,7 @@ test.describe('Spec file for Sign Up tests', async () => {
       });
 
       await test.step('2. Connect PMM to the Portal',async () => {
-        const adminToken = await portalAPI.getUserAccessToken('', '');
+        const adminToken = await portalAPI.getUserAccessToken(firstAdmin.email, firstAdmin.password);
         await platformPage.connectToPortal(adminToken, `Test Server ${Date.now()}`);
       });
     } else {
@@ -84,4 +113,14 @@ test.describe('Spec file for Sign Up tests', async () => {
       });
     }
   });
+
+  test('PMM-T1098 Verify All org users can login in connected PMM server @not-ui-pipeline @portal @pre-pmm-portal-upgrade @post-pmm-portal-upgrade', async ({ page }) => {
+    const signInPage = new SignInPage(page);
+    await signInPage.oktaLogin(firstAdmin.email, firstAdmin.password);
+    await signInPage.elements.mainView.waitFor({ state: 'visible'})
+    expect(page).toHaveURL(`${process.env.PMM_BASE_URL}/${signInPage.landingUrl}`)
+    // console.log('waiting.');
+    // await page.waitForTimeout(600000);
+  });
+
 });

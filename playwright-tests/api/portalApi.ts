@@ -12,4 +12,25 @@ export const portalAPI = {
   
   return response.access_token;
   },
+
+  async createOrg(accessToken: string, orgName = 'Test Organization') {
+    return portalAPIHelper.post({
+      path: '/v1/orgs',
+      accessToken,
+      data: { name: orgName },
+    });
+  },
+
+  async deleteOrg(accessToken: string, orgId: string) {
+    return portalAPIHelper.delete({
+      path: `/v1/orgs/${orgId}`,
+      accessToken,
+      data: {},
+    });
+  },
+
+  async getOrg(accessToken: string) {
+    return portalAPIHelper.post({ accessToken, path: '/v1/orgs:search' });
+  },
+
 }
