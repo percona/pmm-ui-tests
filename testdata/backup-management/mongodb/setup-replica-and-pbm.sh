@@ -57,17 +57,17 @@ docker exec -u 0 mongors1 /bin/bash -c "yum install wget -y"
 docker exec -u 0 mongors2 /bin/bash -c "yum install wget -y"
 docker exec -u 0 mongors3 /bin/bash -c "yum install wget -y"
 
-docker exec -u 0 mongors1 /bin/bash -c "wget https://raw.githubusercontent.com/percona/pmm-qa/main/pmm-tests/pmm2-client-setup.sh"
-docker exec -u 0 mongors2 /bin/bash -c "wget https://raw.githubusercontent.com/percona/pmm-qa/main/pmm-tests/pmm2-client-setup.sh"
-docker exec -u 0 mongors3 /bin/bash -c "wget https://raw.githubusercontent.com/percona/pmm-qa/main/pmm-tests/pmm2-client-setup.sh"
+docker exec -u 0 mongors1 /bin/bash -c "wget https://raw.githubusercontent.com/percona/pmm-qa/PMM-7-add-client-mongo-replica/pmm-tests/pmm2-client-setup-centos.sh"
+docker exec -u 0 mongors2 /bin/bash -c "wget https://raw.githubusercontent.com/percona/pmm-qa/PMM-7-add-client-mongo-replica/pmm-tests/pmm2-client-setup-centos.sh"
+docker exec -u 0 mongors3 /bin/bash -c "wget https://raw.githubusercontent.com/percona/pmm-qa/PMM-7-add-client-mongo-replica/pmm-tests/pmm2-client-setup-centos.sh"
 
-docker exec -u 0 mongors1 /bin/bash -c "bash ./pmm2-client-setup.sh --pmm_server_ip 127.0.0.1 --client_version 2.34.0 --admin_password admin --use_metrics_mode no"
+docker exec -u 0 mongors1 /bin/bash -c "bash ./pmm2-client-setup-centos.sh --pmm_server_ip 127.0.0.1 --client_version 2.34.0 --admin_password admin --use_metrics_mode no"
 docker exec -u 0 mongors1 /bin/bash -c "pmm-admin status"
 
-docker exec -u 0 mongors2 /bin/bash -c "bash ./pmm2-client-setup.sh --pmm_server_ip 127.0.0.1 --client_version 2.34.0 --admin_password admin --use_metrics_mode no"
+docker exec -u 0 mongors2 /bin/bash -c "bash ./pmm2-client-setup-centos.sh --pmm_server_ip 127.0.0.1 --client_version 2.34.0 --admin_password admin --use_metrics_mode no"
 docker exec -u 0 mongors2 /bin/bash -c "pmm-admin status"
 
-docker exec -u 0 mongors3 /bin/bash -c "bash ./pmm2-client-setup.sh --pmm_server_ip 127.0.0.1 --client_version 2.34.0 --admin_password admin --use_metrics_mode no"
+docker exec -u 0 mongors3 /bin/bash -c "bash ./pmm2-client-setup-centos.sh --pmm_server_ip 127.0.0.1 --client_version 2.34.0 --admin_password admin --use_metrics_mode no"
 docker exec -u 0 mongors3 /bin/bash -c "pmm-admin status"
 
 docker exec -u 0 mongors1 /bin/bash -c "percona-release enable pbm release && yum -y install percona-backup-mongodb"
