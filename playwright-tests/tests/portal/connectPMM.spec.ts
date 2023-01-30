@@ -22,20 +22,15 @@ test.describe('Spec file for Sign Up tests', async () => {
     [firstAdmin, secondAdmin, technicalUser] = await serviceNowAPI.createServiceNowUsers();
     const adminToken = await portalAPI.getUserAccessToken(firstAdmin.email, firstAdmin.password);
     const { org } = await portalAPI.createOrg(adminToken);
-    const secondAdminResponse = await portalAPI.inviteOrgMember(adminToken, org.id, {
+    await portalAPI.inviteOrgMember(adminToken, org.id, {
       username: secondAdmin.email,
       role: PortalUserRoles.admin,
     });
 
-    console.log(secondAdminResponse)
-
-    const technicalResponse = await portalAPI.inviteOrgMember(adminToken, org.id, {
+    await portalAPI.inviteOrgMember(adminToken, org.id, {
       username: technicalUser.email,
       role: PortalUserRoles.technical,
     });
-    console.log(technicalResponse)
-
-    console.log(org);
   })
 
   test.beforeEach(async ({page}) => {
@@ -49,7 +44,6 @@ test.describe('Spec file for Sign Up tests', async () => {
       const versionString = (await homeDashboard.pmmUpgrade.getCurrentPMMVersion()).versionMinor;
       pmmVersion = parseInt(versionString)
     }
-
   });
 
   test.afterAll(async () => {
@@ -131,22 +125,25 @@ test.describe('Spec file for Sign Up tests', async () => {
     const signInPage = new SignInPage(page);
     const homeDashboard = new HomeDashboard(page);
 
-    await signInPage.oktaLogin(firstAdmin.email, firstAdmin.password);
-    await homeDashboard.pmmUpgrade.elements.currentVersion.waitFor({ state: 'visible', timeout: Duration.ThreeMinutes });
-    await expect(page).toHaveURL(`${baseURL}/${signInPage.landingUrl}`);
-    await context.clearCookies();
+    await test.step('1. Login as admin user that created the org.',async () => {
+      await signInPage.oktaLogin(firstAdmin.email, firstAdmin.password);
+      await homeDashboard.pmmUpgrade.elements.currentVersion.waitFor({ state: 'visible', timeout: Duration.ThreeMinutes });
+      await expect(page).toHaveURL(`${baseURL}/${signInPage.landingUrl}`);
+      await context.clearCookies();  
+    });
 
-    await signInPage.oktaLogin(secondAdmin.email, secondAdmin.password);
-    await homeDashboard.pmmUpgrade.elements.currentVersion.waitFor({ state: 'visible', timeout: Duration.ThreeMinutes });
-    await expect(page).toHaveURL(`${baseURL}/${signInPage.landingUrl}`);
-    await context.clearCookies();
-
-    await signInPage.oktaLogin(technicalUser.email, technicalUser.password);
-    await homeDashboard.pmmUpgrade.elements.currentVersion.waitFor({ state: 'visible', timeout: Duration.ThreeMinutes });
-    await expect(page).toHaveURL(`${baseURL}/${signInPage.landingUrl}`);
-    await context.clearCookies();
-
-    console.log('waiting.');
-    await page.waitForTimeout(600000);
+    await test.step('1. Login as admin user that was invited to the org.',async () => {
+      await signInPage.oktaLogin(secondAdmin.email, secondAdmin.password);
+      await homeDashboard.pmmUpgrade.elements.currentVersion.waitFor({ state: 'visible', timeout: Duration.ThreeMinutes });
+      await expect(page).toHaveURL(`${baseURL}/${signInPage.landingUrl}`);
+      await context.clearCookies();
+    });
+    
+    await test.step('1. Login as technical user that was invited to the org.',async () => {
+      await signInPage.oktaLogin(technicalUser.email, technicalUser.password);
+      await homeDashboard.pmmUpgrade.elements.currentVersion.waitFor({ state: 'visible', timeout: Duration.ThreeMinutes });
+      await expect(page).toHaveURL(`${baseURL}/${signInPage.landingUrl}`);
+      await context.clearCookies();
+    });
   });
 });
