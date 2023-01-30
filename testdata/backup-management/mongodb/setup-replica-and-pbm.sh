@@ -66,13 +66,13 @@ docker network connect ${VM_NAME}-network mongors1
 docker network connect ${VM_NAME}-network mongors2
 docker network connect ${VM_NAME}-network mongors3
 
-docker exec -u 0 mongors1 /bin/bash -c "bash ./pmm2-client-setup-centos.sh --pmm_server_ip 127.0.0.1 --client_version ${CLIENT_VERSION} --admin_password admin --use_metrics_mode no"
+docker exec -u 0 mongors1 /bin/bash -c "bash ./pmm2-client-setup-centos.sh --pmm_server_ip ${PMM_SERVER_IP} --client_version ${CLIENT_VERSION} --admin_password admin --use_metrics_mode no"
 docker exec -u 0 mongors1 /bin/bash -c "pmm-admin status"
 
-docker exec -u 0 mongors2 /bin/bash -c "bash ./pmm2-client-setup-centos.sh --pmm_server_ip 127.0.0.1 --client_version ${CLIENT_VERSION} --admin_password admin --use_metrics_mode no"
+docker exec -u 0 mongors2 /bin/bash -c "bash ./pmm2-client-setup-centos.sh --pmm_server_ip ${PMM_SERVER_IP} --client_version ${CLIENT_VERSION} --admin_password admin --use_metrics_mode no"
 docker exec -u 0 mongors2 /bin/bash -c "pmm-admin status"
 
-docker exec -u 0 mongors3 /bin/bash -c "bash ./pmm2-client-setup-centos.sh --pmm_server_ip 127.0.0.1 --client_version ${CLIENT_VERSION} --admin_password admin --use_metrics_mode no"
+docker exec -u 0 mongors3 /bin/bash -c "bash ./pmm2-client-setup-centos.sh --pmm_server_ip ${PMM_SERVER_IP} --client_version ${CLIENT_VERSION} --admin_password admin --use_metrics_mode no"
 docker exec -u 0 mongors3 /bin/bash -c "pmm-admin status"
 
 docker exec -u 0 mongors1 /bin/bash -c "percona-release enable pbm release && yum -y install percona-backup-mongodb"
