@@ -53,6 +53,10 @@ docker exec -u 0 mongors1 mongo --port=27027 --authenticationDatabase admin setu
 
 # Install PBM 1.8.1
 
+docker exec -u 0 mongors1 /bin/bash -c "yum install wget -y"
+docker exec -u 0 mongors2 /bin/bash -c "yum install wget -y"
+docker exec -u 0 mongors3 /bin/bash -c "yum install wget -y"
+
 docker exec -u 0 mongors1 /bin/bash -c "wget https://raw.githubusercontent.com/percona/pmm-qa/main/pmm-tests/pmm2-client-setup.sh"
 docker exec -u 0 mongors2 /bin/bash -c "wget https://raw.githubusercontent.com/percona/pmm-qa/main/pmm-tests/pmm2-client-setup.sh"
 docker exec -u 0 mongors3 /bin/bash -c "wget https://raw.githubusercontent.com/percona/pmm-qa/main/pmm-tests/pmm2-client-setup.sh"
@@ -73,5 +77,9 @@ docker exec -u 0 mongors3 /bin/bash -c "percona-release enable pbm release && yu
 docker exec  -d mongors1 /bin/bash -c 'PBM_MONGODB_URI="mongodb://pbmuser:secretpwd@localhost:27027" pbm-agent'
 docker exec  -d mongors2 /bin/bash -c 'PBM_MONGODB_URI="mongodb://pbmuser:secretpwd@localhost:27028" pbm-agent'
 docker exec  -d mongors3 /bin/bash -c 'PBM_MONGODB_URI="mongodb://pbmuser:secretpwd@localhost:27029" pbm-agent'
+
+docker exec  -d mongors3 /bin/bash -c 'pmm-admin add mongodb --service-name=mongo1 --host=127.0.0.1 --port=27027 --cluster=rs0'
+docker exec  -d mongors3 /bin/bash -c 'pmm-admin add mongodb --service-name=mongo2 --host=127.0.0.1 --port=27027 --cluster=rs0'
+docker exec  -d mongors3 /bin/bash -c 'pmm-admin add mongodb --service-name=mongo3 --host=127.0.0.1 --port=27027 --cluster=rs0'
 
 sudo -- sh -c "echo '127.0.0.1 mongors1 mongors2 mongors3' >> /etc/hosts"
