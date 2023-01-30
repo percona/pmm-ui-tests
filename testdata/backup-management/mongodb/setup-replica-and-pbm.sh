@@ -53,13 +53,14 @@ docker exec -u 0 mongors1 mongo --port=27027 --authenticationDatabase admin setu
 
 # Install PBM 1.8.1
 
-docker exec -u 0 mongors1 /bin/bash -c "yum install wget -y"
-docker exec -u 0 mongors2 /bin/bash -c "yum install wget -y"
-docker exec -u 0 mongors3 /bin/bash -c "yum install wget -y"
+wget https://raw.githubusercontent.com/percona/pmm-qa/PMM-7-add-client-mongo-replica/pmm-tests/pmm2-client-setup-centos.sh
 
-docker exec -u 0 mongors1 /bin/bash -c "wget https://raw.githubusercontent.com/percona/pmm-qa/PMM-7-add-client-mongo-replica/pmm-tests/pmm2-client-setup-centos.sh"
-docker exec -u 0 mongors2 /bin/bash -c "wget https://raw.githubusercontent.com/percona/pmm-qa/PMM-7-add-client-mongo-replica/pmm-tests/pmm2-client-setup-centos.sh"
-docker exec -u 0 mongors3 /bin/bash -c "wget https://raw.githubusercontent.com/percona/pmm-qa/PMM-7-add-client-mongo-replica/pmm-tests/pmm2-client-setup-centos.sh"
+docker cp ./pmm2-client-setup-centos.sh mongors1:/pmm2-client-setup-centos.sh
+docker cp ./pmm2-client-setup-centos.sh mongors1:/pmm2-client-setup-centos.sh
+docker cp ./pmm2-client-setup-centos.sh mongors1:/pmm2-client-setup-centos.sh
+
+echo $VM_IP
+echo $VM_NAME
 
 docker exec -u 0 mongors1 /bin/bash -c "bash ./pmm2-client-setup-centos.sh --pmm_server_ip 127.0.0.1 --client_version 2.34.0 --admin_password admin --use_metrics_mode no"
 docker exec -u 0 mongors1 /bin/bash -c "pmm-admin status"
