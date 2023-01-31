@@ -59,9 +59,6 @@ docker cp ./pmm2-client-setup-centos.sh mongors1:/pmm2-client-setup-centos.sh
 docker cp ./pmm2-client-setup-centos.sh mongors2:/pmm2-client-setup-centos.sh
 docker cp ./pmm2-client-setup-centos.sh mongors3:/pmm2-client-setup-centos.sh
 
-echo $VM_NAME
-echo $PMM_SERVER_IP
-
 docker network connect ${VM_NAME}-network mongors1
 docker network connect ${VM_NAME}-network mongors2
 docker network connect ${VM_NAME}-network mongors3
