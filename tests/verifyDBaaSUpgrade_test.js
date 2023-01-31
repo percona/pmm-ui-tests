@@ -2,7 +2,6 @@ const clusterName = 'minikube';
 const pxc_cluster_name = 'upgrade-pxc';
 const psmdb_cluster_name = 'upgrade-psmdb';
 const active_state = 'ACTIVE';
-const { versionMinor } = await homePage.getVersions();
 
 Feature('Updates of DB clusters and operators and PMM Server upgrade related tests');
 
@@ -24,11 +23,27 @@ Scenario(
   },
 );
 
-Scenario('PMM-T3 Upgrade PMM via UI with DbaaS Clusters @upgrade-dbaas-before', async ({
+Scenario('PMM-T3 Upgrade PMM via UI with DbaaS Clusters @upgrade-dbaas-ui', async ({
   I, homePage,
 }) => {
+  const { versionMinor } = homePage.getVersions();
+
   I.amOnPage(homePage.url);
   await homePage.upgradePMM(versionMinor, '', true);
+  }
+);
+
+Scenario('Unregister Kubernetes cluster and register again @upgrade-dbaas-force-unregister',
+  async ({ I, dbaasPage, dbaasAPI }) => {
+    I.amOnPage(dbaasPage.url);
+    await dbaasPage.goToKubernetesClusterTab();
+    dbaasPage.unregisterCluster(clusterName, true);
+    I.waitForText(dbaasPage.deletedAlertMessage, 20);
+    dbaasPage.checkCluster(clusterName, true);
+    dbaasPage.registerKubernetesCluster(clusterName, process.env.kubeconfig_minikube);
+    I.waitForText(dbaasPage.addedAlertMessage, 60);
+    dbaasPage.checkCluster(clusterName, false);
+    await dbaasAPI.waitForOperators();
   }
 );
 
@@ -36,6 +51,8 @@ Scenario('PMM-T726 Verify DB clusters status and logs after PMM Server upgrade @
   async ({
     I, dbaasPage,
   }) => {
+    await dbaasAPI.waitForDBClusterState(pxc_cluster_name, clusterName, 'MySQL', 'DB_CLUSTER_STATE_READY');
+    await dbaasAPI.waitForDBClusterState(psmdb_cluster_name, clusterName, 'MongoDB', 'DB_CLUSTER_STATE_READY');
     I.amOnPage('graph/dbaas/dbclusters');
     I.waitForText(active_state, 10, dbaasPage.tabs.dbClusterTab.fields.clusterTableRow(pxc_cluster_name));
     I.waitForText(active_state, 10, dbaasPage.tabs.dbClusterTab.fields.clusterTableRow(psmdb_cluster_name));
