@@ -49,7 +49,7 @@ Scenario('Unregister Kubernetes cluster and register again @upgrade-dbaas-force-
 
 Scenario('PMM-T726 Verify DB clusters status and logs after PMM Server upgrade @upgrade-dbaas-after',
   async ({
-    I, dbaasPage,
+    I, dbaasPage, dbaasAPI,
   }) => {
     await dbaasAPI.waitForDBClusterState(pxc_cluster_name, clusterName, 'MySQL', 'DB_CLUSTER_STATE_READY');
     await dbaasAPI.waitForDBClusterState(psmdb_cluster_name, clusterName, 'MongoDB', 'DB_CLUSTER_STATE_READY');
