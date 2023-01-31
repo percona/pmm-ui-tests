@@ -53,6 +53,7 @@ module.exports = {
       unregisterButton: locate('$dropdown-menu-menu').find('span').at(1),
       viewClusterConfiguration: locate('$dropdown-menu-menu').find('span').at(2),
       manageVersions: locate('$dropdown-menu-menu').find('span').at(3),
+      freeClusterPromo: '$pmm-server-promote-portal-k8s-cluster-message',
     },
     dbClusterTab: {
       defaultPassword: '***************',
@@ -204,6 +205,8 @@ module.exports = {
     const clusterLocator = `//td[contains(text(), '${clusterName}')]`;
 
     if (deleted) {
+      I.refreshPage();
+      I.waitForVisible(this.tabs.kubernetesClusterTab.freeClusterPromo);
       I.dontSeeElement(clusterLocator);
     } else {
       I.waitForVisible(clusterLocator, 30);
