@@ -34,6 +34,10 @@ export const portalAPI = {
     return portalAPIHelper.post({ accessToken, path: '/v1/orgs:search' });
   },
 
+  async getOrgDetails(accessToken: string, orgId: string) {
+    return portalAPIHelper.get({ accessToken, path: `/v1/orgs/${orgId}` });
+  },
+
   async inviteUserToOrg(accessToken: string, orgId: string, username: string, role: PortalUserRoles) {
     return portalAPIHelper.post({
       path: `/v1/orgs/${orgId}/members`,

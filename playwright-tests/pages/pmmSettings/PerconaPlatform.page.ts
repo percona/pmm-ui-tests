@@ -41,20 +41,23 @@ export default class PerconaPlatform extends CommonPage {
   buttons = {
     ...super.buttons,
     connect: this.perconaPlatformContainer.getByTestId('connect-button'),
+    disconnect: this.connectedContainer.getByTestId('disconnect-button'),
+    confirmDisconnect: this.page.locator('//*[@aria-label="Confirm Modal Danger Button"]'),
     getToken: this.perconaPlatformContainer.getByText(this.labels.getToken),
   }
 
   messages = {
-    ...super.messages,
+    ...super.getMessages(),
     connectedSuccess: 'Successfully connected PMM to Percona Platform',
     updateSuccess: 'Settings updated',
     oldPmmVersionError: 'Authentication failed. Please update the PMM version.',
+    pmmDisconnectedFromPortal: 'Successfully disconnected PMM from Percona Platform',
   }
 
   links = {
     ...super.links,
-    getTokenDev: 'https://portal-dev.percona.com/profile',
-    getTokenProd: 'https://portal.percona.com/profile',
+    portalProfile: 'https://portal-dev.percona.com/profile',
+    platformProfile: 'https://platform-dev.percona.com/profile',
   }
 
   connectToPortal = async (token: string, serverName = 'Test Server', isIPAddressSet = false) => {

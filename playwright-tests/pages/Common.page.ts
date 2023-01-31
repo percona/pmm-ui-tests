@@ -16,6 +16,7 @@ export class CommonPage {
     mainView: this.page.locator('//*[@class="main-view"]'),
     emptyBlock: this.page.getByTestId('empty-block'),
     noDataTable: this.page.getByTestId('table-no-data'),
+    notPlatformUser: this.page.getByTestId('not-platform-user'),
   };
 
   protected fields = {};
@@ -24,11 +25,17 @@ export class CommonPage {
 
   protected buttons = {};
 
-  protected messages = {};
+  private baseMessages = {
+    loginWithPercona: 'Login with Percona Account to access this content',
+  };
 
   protected links = {};
   
   protected getElements() {
     return this.baseElements;
+  };
+
+  protected getMessages() {
+    return this.baseMessages;
   };
 }

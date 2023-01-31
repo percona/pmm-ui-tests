@@ -16,8 +16,6 @@ export default class TicketsPage extends CommonPage {
     table: this.ticketsContainer.getByTestId('table'),
     rows: this.tableBody.getByRole('row'),
     row: (index: number) => this.tableBody.getByRole('row').nth(index),
-    notPlatformUser: this.ticketsContainer.getByTestId('not-platform-user'),
-    
   }
 
   fields = {
@@ -33,8 +31,7 @@ export default class TicketsPage extends CommonPage {
   }
 
   messages = {
-    ...super.messages,
-    loginWithPercona: 'Login with Percona Account to access this content',
+    ...super.getMessages(),
     notConnectedToThePortal: 'Not connected to Portal.',
     noTicketsFound: 'No tickets found',
   }
