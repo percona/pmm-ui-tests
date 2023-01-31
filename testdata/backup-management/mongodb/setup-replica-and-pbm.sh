@@ -51,7 +51,7 @@ sleep 10
 docker cp setup-replica.js mongors1:/
 docker exec -u 0 mongors1 mongo --port=27027 --authenticationDatabase admin setup-replica.js
 
-wget https://raw.githubusercontent.com/percona/pmm-qa/PMM-7-add-client-mongo-replica/pmm-tests/pmm2-client-setup-centos.sh
+wget https://raw.githubusercontent.com/percona/pmm-qa/main/pmm-tests/pmm2-client-setup-centos.sh
 
 docker cp ./pmm2-client-setup-centos.sh mongors1:/pmm2-client-setup-centos.sh
 docker cp ./pmm2-client-setup-centos.sh mongors2:/pmm2-client-setup-centos.sh
