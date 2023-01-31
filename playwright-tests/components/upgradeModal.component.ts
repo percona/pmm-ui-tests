@@ -1,6 +1,5 @@
 import { expect, Page } from '@playwright/test';
-import Duration from '../helpers/Duration';
-import { CommonPage } from '../pages/pmmSettings/Common.page';
+import { CommonPage } from '../pages/Common.page';
 
 export default class UpgradeModal extends CommonPage {
   constructor(page: Page) {

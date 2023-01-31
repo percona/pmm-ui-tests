@@ -1,5 +1,5 @@
 import { Page } from '@playwright/test';
-import { CommonPage } from './Common.page';
+import { CommonPage } from '../Common.page';
 
 export default class PerconaPlatform extends CommonPage {
   constructor(page: Page) {

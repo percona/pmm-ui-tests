@@ -1,4 +1,4 @@
-import InviteUserToOrg from "../support/types/inviteUser.interface";
+import { PortalUserRoles } from "../support/enums/portalUserRoles";
 import { portalAPIHelper } from "./helpers/portalApiHelper";
 
 export const portalAPI = {
@@ -34,11 +34,11 @@ export const portalAPI = {
     return portalAPIHelper.post({ accessToken, path: '/v1/orgs:search' });
   },
 
-  async inviteOrgMember(accessToken: string, orgId: string, member: InviteUserToOrg) {
+  async inviteUserToOrg(accessToken: string, orgId: string, username: string, role: PortalUserRoles) {
     return portalAPIHelper.post({
       path: `/v1/orgs/${orgId}/members`,
       accessToken,
-      data: member,
+      data: { username, role },
     });
   },
 

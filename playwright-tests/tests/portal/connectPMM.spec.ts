@@ -8,44 +8,40 @@ import { portalAPI } from '../../api/portalApi';
 import { SignInPage } from '../../pages/SignIn.page';
 import { serviceNowAPI } from '../../api/serviceNowApi';
 import User from '../../support/types/user.interface';
-import { oktaAPI } from '../../api/okta';
 import Duration from '../../helpers/Duration';
 import { PortalUserRoles } from '../../support/enums/portalUserRoles';
 
-test.describe('Spec file for Sign Up tests', async () => {
+test.describe('Spec file for connecting PMM to the portal', async () => {
   let firstAdmin: User;
   let secondAdmin: User;
   let technicalUser: User;
   let pmmVersion: number;
+  const fileName = 'portalCredentials';
 
-  test.beforeAll(async () => {
-    [firstAdmin, secondAdmin, technicalUser] = await serviceNowAPI.createServiceNowUsers();
-    const adminToken = await portalAPI.getUserAccessToken(firstAdmin.email, firstAdmin.password);
-    const { org } = await portalAPI.createOrg(adminToken);
-    await portalAPI.inviteOrgMember(adminToken, org.id, {
-      username: secondAdmin.email,
-      role: PortalUserRoles.admin,
-    });
-
-    await portalAPI.inviteOrgMember(adminToken, org.id, {
-      username: technicalUser.email,
-      role: PortalUserRoles.technical,
-    });
+  test.beforeAll(async ({ baseURL }) => {
+    await apiHelper.changeSettings({pmm_public_address: baseURL!.replace(/(^\w+:|^)\/\//, '')})
+    if(!pmmVersion) {
+      const versionString = (await apiHelper.getPmmVersion()).versionMinor;
+      pmmVersion = parseInt(versionString)
+    }
+    const userCredentials = await fileHelper.readfile(fileName);
+    if (userCredentials) {
+      [firstAdmin, secondAdmin, technicalUser] = JSON.parse(userCredentials);
+    } else {
+      [firstAdmin, secondAdmin, technicalUser] = await serviceNowAPI.createServiceNowUsers();
+      const adminToken = await portalAPI.getUserAccessToken(firstAdmin.email, firstAdmin.password);
+      const { org } = await portalAPI.createOrg(adminToken);
+      await portalAPI.inviteUserToOrg(adminToken, org.id, secondAdmin.email, PortalUserRoles.admin);
+      await portalAPI.inviteUserToOrg(adminToken, org.id, technicalUser.email, PortalUserRoles.technical);
+      await fileHelper.writeFileSync(fileName, JSON.stringify([firstAdmin, secondAdmin, technicalUser]));
+    }
   })
 
   test.beforeEach(async ({page}) => {
-    const homeDashboard = new HomeDashboard(page);
-    if (!test.info().title.includes('PMM-T1098')) {
-      await grafanaHelper.authorize(page);
-    }
-    await apiHelper.confirmTour(page);
-    await page.goto('');
-    if(!pmmVersion) {
-      const versionString = (await homeDashboard.pmmUpgrade.getCurrentPMMVersion()).versionMinor;
-      pmmVersion = parseInt(versionString)
-    }
+    await apiHelper.confirmTour(page)
+    await page.goto('/');
   });
-
+/*
   test.afterAll(async () => {
     const adminToken = await portalAPI.getUserAccessToken(firstAdmin.email, firstAdmin.password);
     const org = await portalAPI.getOrg(adminToken);
@@ -56,7 +52,7 @@ test.describe('Spec file for Sign Up tests', async () => {
 
     await oktaAPI.deleteUsers([firstAdmin, secondAdmin, technicalUser]);
   });
-
+*/
 
   test('PMM-T398 Verify Percona Platform elements on PMM Settings Page @portal @pre-pmm-portal-upgrade', async ({ page }) => {
     if (pmmVersion >= 27) {
@@ -67,6 +63,7 @@ test.describe('Spec file for Sign Up tests', async () => {
       const platformPage = new PerconaPlatform(page);
 
       await test.step('1. Open Percona Platform tab in PMM Settings',async () => {
+        await grafanaHelper.authorize(page);
         await page.goto(platformPage.perconaPlatformURL);
         await platformPage.perconaPlatformContainer.waitFor({state: 'visible'});
         await page.getByText(platformPage.labels.header).waitFor({state: 'visible'});  
@@ -76,6 +73,7 @@ test.describe('Spec file for Sign Up tests', async () => {
         await expect(platformPage.elements.pmmServerIdHeader).toHaveText(platformPage.labels.pmmServerId);
         await expect(platformPage.elements.pmmServerNameHeader).toHaveText(platformPage.labels.pmmServerName);
         await expect(platformPage.elements.accessTokenHeader).toHaveText(platformPage.labels.accessToken);
+        // fix address for older pmm address is not portal-dev but just portal.
         await expect(platformPage.buttons.getToken).toHaveAttribute('href', platformPage.links.getToken);
       });
 
@@ -105,13 +103,15 @@ test.describe('Spec file for Sign Up tests', async () => {
       const platformPage = new PerconaPlatform(page);
 
       await test.step('1. Open Percona Platform tab in PMM Settings',async () => {
+        await grafanaHelper.authorize(page);
         await page.goto(platformPage.perconaPlatformURL);
         await platformPage.perconaPlatformContainer.waitFor({state: 'visible'});
       });
 
       await test.step('2. Connect PMM to the Portal',async () => {
         const adminToken = await portalAPI.getUserAccessToken(firstAdmin.email, firstAdmin.password);
-        await platformPage.connectToPortal(adminToken, `Test Server ${Date.now()}`);
+        // pmm address is not set automatically in older pmms.
+        await platformPage.connectToPortal(adminToken, `Test Server ${Date.now()}`, true);
       });
     } else {
       test.info().annotations.push({
@@ -122,28 +122,35 @@ test.describe('Spec file for Sign Up tests', async () => {
   });
 
   test('PMM-T1098 Verify All org users can login in connected PMM server @not-ui-pipeline @portal @pre-pmm-portal-upgrade @post-pmm-portal-upgrade', async ({ page, baseURL, context, browser }) => {
-    const signInPage = new SignInPage(page);
-    const homeDashboard = new HomeDashboard(page);
+    if (pmmVersion >= 27) {
+      const signInPage = new SignInPage(page);
+      const homeDashboard = new HomeDashboard(page);
 
-    await test.step('1. Login as admin user that created the org.',async () => {
-      await signInPage.oktaLogin(firstAdmin.email, firstAdmin.password);
-      await homeDashboard.pmmUpgrade.elements.currentVersion.waitFor({ state: 'visible', timeout: Duration.ThreeMinutes });
-      await expect(page).toHaveURL(`${baseURL}/${signInPage.landingUrl}`);
-      await context.clearCookies();  
-    });
+      await test.step('1. Login as admin user that created the org.',async () => {
+        await signInPage.oktaLogin(firstAdmin.email, firstAdmin.password);
+        await homeDashboard.pmmUpgrade.elements.currentVersion.waitFor({ state: 'visible', timeout: Duration.ThreeMinutes });
+        await expect(page).toHaveURL(`${baseURL}/${signInPage.landingUrl}`);
+        await context.clearCookies();  
+      });
 
-    await test.step('1. Login as admin user that was invited to the org.',async () => {
-      await signInPage.oktaLogin(secondAdmin.email, secondAdmin.password);
-      await homeDashboard.pmmUpgrade.elements.currentVersion.waitFor({ state: 'visible', timeout: Duration.ThreeMinutes });
-      await expect(page).toHaveURL(`${baseURL}/${signInPage.landingUrl}`);
-      await context.clearCookies();
-    });
+      await test.step('1. Login as admin user that was invited to the org.',async () => {
+        await signInPage.oktaLogin(secondAdmin.email, secondAdmin.password);
+        await homeDashboard.pmmUpgrade.elements.currentVersion.waitFor({ state: 'visible', timeout: Duration.ThreeMinutes });
+        await expect(page).toHaveURL(`${baseURL}/${signInPage.landingUrl}`);
+        await context.clearCookies();
+      });
     
-    await test.step('1. Login as technical user that was invited to the org.',async () => {
-      await signInPage.oktaLogin(technicalUser.email, technicalUser.password);
-      await homeDashboard.pmmUpgrade.elements.currentVersion.waitFor({ state: 'visible', timeout: Duration.ThreeMinutes });
-      await expect(page).toHaveURL(`${baseURL}/${signInPage.landingUrl}`);
-      await context.clearCookies();
-    });
+      await test.step('1. Login as technical user that was invited to the org.',async () => {
+        await signInPage.oktaLogin(technicalUser.email, technicalUser.password);
+        await homeDashboard.pmmUpgrade.elements.currentVersion.waitFor({ state: 'visible', timeout: Duration.ThreeMinutes });
+        await expect(page).toHaveURL(`${baseURL}/${signInPage.landingUrl}`);
+        await context.clearCookies();
+      });
+    } else {
+      test.info().annotations.push({
+        type: 'Old Version ',
+        description: 'This test is for PMM version 2.27.0 and higher',
+      });
+    };
   });
 });
