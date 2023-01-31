@@ -51,26 +51,17 @@ sleep 10
 docker cp setup-replica.js mongors1:/
 docker exec -u 0 mongors1 mongo --port=27027 --authenticationDatabase admin setup-replica.js
 
-# Install PBM 1.8.1
-
 wget https://raw.githubusercontent.com/percona/pmm-qa/PMM-7-add-client-mongo-replica/pmm-tests/pmm2-client-setup-centos.sh
 
 docker cp ./pmm2-client-setup-centos.sh mongors1:/pmm2-client-setup-centos.sh
 docker cp ./pmm2-client-setup-centos.sh mongors2:/pmm2-client-setup-centos.sh
 docker cp ./pmm2-client-setup-centos.sh mongors3:/pmm2-client-setup-centos.sh
 
-docker network connect ${VM_NAME}-network mongors1
-docker network connect ${VM_NAME}-network mongors2
-docker network connect ${VM_NAME}-network mongors3
-
 docker exec -u 0 mongors1 /bin/bash -c "bash ./pmm2-client-setup-centos.sh --pmm_server_ip ${PMM_SERVER_IP} --client_version ${CLIENT_VERSION} --admin_password admin --use_metrics_mode no"
-docker exec -u 0 mongors1 /bin/bash -c "pmm-admin status"
-
 docker exec -u 0 mongors2 /bin/bash -c "bash ./pmm2-client-setup-centos.sh --pmm_server_ip ${PMM_SERVER_IP} --client_version ${CLIENT_VERSION} --admin_password admin --use_metrics_mode no"
-docker exec -u 0 mongors2 /bin/bash -c "pmm-admin status"
-
 docker exec -u 0 mongors3 /bin/bash -c "bash ./pmm2-client-setup-centos.sh --pmm_server_ip ${PMM_SERVER_IP} --client_version ${CLIENT_VERSION} --admin_password admin --use_metrics_mode no"
-docker exec -u 0 mongors3 /bin/bash -c "pmm-admin status"
+
+# Install PBM 1.8.1
 
 docker exec -u 0 mongors1 /bin/bash -c "percona-release enable pbm release && yum -y install percona-backup-mongodb"
 docker exec -u 0 mongors2 /bin/bash -c "percona-release enable pbm release && yum -y install percona-backup-mongodb"
