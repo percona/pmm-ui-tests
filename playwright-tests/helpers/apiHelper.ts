@@ -1,4 +1,4 @@
-import { request } from "@playwright/test";
+import { Page, request } from "@playwright/test";
 import config from '../playwright.config';
 import Duration from "./Duration";
 import grafanaHelper from "./GrafanaHelper";
@@ -38,7 +38,17 @@ const apiHelper = {
 
     const response = await restConfig.post('/v1/Settings/Change', { data: settingsData });
     return await response.json();
-  }
+  },
+
+  async interceptBackEndCall(page: Page, interceptedRoute: string, data = {}) {
+    await page.route(interceptedRoute, async (route) => {
+      await route.fulfill({
+        body: JSON.stringify(data),
+        contentType: 'application/json',
+        headers: {},
+      });
+    });
+  },
 };
 
 export default apiHelper;

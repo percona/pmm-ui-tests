@@ -11,6 +11,7 @@ import Duration from '../../helpers/Duration';
 import TicketsPage from '../../pages/platformPages/Tickets.page';
 import grafanaHelper from '../../helpers/GrafanaHelper';
 import { oktaAPI } from '../../api/okta';
+import EntitlementsPage from '../../pages/platformPages/Entitlements.page';
 
 test.describe('Spec file for PMM connected the portal', async () => {
   let firstAdmin: User;
@@ -55,45 +56,96 @@ test.describe('Spec file for PMM connected the portal', async () => {
     const homeDashboard = new HomeDashboard(page);
     const ticketsPage = new TicketsPage(page);
 
-    await test.step('1. Login to he connected pmm with SSO',async () => {
-      await signInPage.oktaLogin(firstAdmin.email, firstAdmin.password);
-      await homeDashboard.pmmUpgrade.elements.currentVersion.waitFor({ state: 'visible', timeout: Duration.ThreeMinutes });
-    });
+    if (pmmVersion > 27) {
+      await test.step('1. Login to he connected pmm with SSO',async () => {
+        await signInPage.oktaLogin(firstAdmin.email, firstAdmin.password);
+        await homeDashboard.pmmUpgrade.elements.currentVersion.waitFor({ state: 'visible', timeout: Duration.ThreeMinutes });
+      });
 
-    await test.step('2. Verify that there is a side menu for organizational tickets',async () => {
-      await homeDashboard.sideMenu.elements.tickets.click();
-    });
+      await test.step('2. Verify that there is a side menu for organizational tickets',async () => {
+        await homeDashboard.sideMenu.elements.tickets.click();
+      });
 
-    await test.step('3. Verify user can see tickets for his org.',async () => {
-      await ticketsPage.elements.table.waitFor({state: 'visible'});
-      await expect(ticketsPage.elements.rows).toHaveCount(1);
-      const [newPage] = await Promise.all([
-        context.waitForEvent('page'),
-        ticketsPage.elements.row(0).click(),
-      ]);
-      await newPage.getByRole('form').waitFor({ state:'visible' });
-      expect(newPage.url()).toContain(ticketsPage.serviceNowUrl);
-      await newPage.close();
-    });
+      await test.step('3. Verify user can see tickets for his org.',async () => {
+        await ticketsPage.elements.table.waitFor({state: 'visible'});
+        await expect(ticketsPage.elements.rows).toHaveCount(1);
+        const [newPage] = await Promise.all([
+          context.waitForEvent('page'),
+          ticketsPage.elements.row(0).click(),
+        ]);
+        await newPage.getByRole('form').waitFor({ state:'visible' });
+        expect(newPage.url()).toContain(ticketsPage.serviceNowUrl);
+        await newPage.close();
+      });
+    } else {
+      test.info().annotations.push({
+        type: 'Old Version ',
+        description: 'This test is for PMM version 2.28.0 and higher',
+      });
+    }
+  });
+
+  test('PMM-T1152 Verify user logged in using SSO and is a member of SN account is able to see Entitlements @not-ui-pipeline @portal @post-pmm-portal-upgrade', async ({ page, context }) => {
+    const signInPage = new SignInPage(page);
+    const homeDashboard = new HomeDashboard(page);
+    const entitlementsPage = new EntitlementsPage(page);
+
+    if (pmmVersion > 27) {
+      await test.step('1. Login to he connected pmm with SSO',async () => {
+        await signInPage.oktaLogin(firstAdmin.email, firstAdmin.password);
+        await homeDashboard.pmmUpgrade.elements.currentVersion.waitFor({ state: 'visible', timeout: Duration.ThreeMinutes });
+      });
+
+      await test.step('2. Verify that there is a side menu for Entitlements',async () => {
+        await homeDashboard.sideMenu.elements.entitlements.click();
+      });
+
+      await test.step('3. Verify user can see entitlements for his org.',async () => {
+        await expect(entitlementsPage.elements.row).toHaveCount(3);
+        await page.waitForTimeout(6000);
+      });
+
+      await test.step('4. Verify user can see empty list of entitlements for his org.',async () => {
+        await apiHelper.interceptBackEndCall(page, '**/v1/Platform/SearchOrganizationEntitlements', { entitlements: [] })
+        await page.reload();
+        await expect(entitlementsPage.elements.noData).toHaveText(entitlementsPage.messages.noEntitlements);
+      });
+
+    } else {
+      test.info().annotations.push({
+        type: 'Old Version ',
+        description: 'This test is for PMM version 2.28.0 and higher',
+      });
+    }
   });
 
   test('PMM-T1147 Verify PMM user that is not logged in with SSO can NOT see Tickets for organization @not-ui-pipeline @portal @post-pmm-portal-upgrade', async ({ page, context }) => {
     const homeDashboard = new HomeDashboard(page);
     const ticketsPage = new TicketsPage(page);
+    if (pmmVersion > 27) {
+      await test.step('1. Login to he connected pmm with SSO',async () => {
+        await grafanaHelper.authorize(page);
+        await homeDashboard.pmmUpgrade.elements.currentVersion.waitFor({ state: 'visible', timeout: Duration.ThreeMinutes });
+      });
 
-    await grafanaHelper.authorize(page);
-    await homeDashboard.pmmUpgrade.elements.currentVersion.waitFor({ state: 'visible', timeout: Duration.ThreeMinutes });
-    if(!pmmVersion) {
-      const versionString = (await homeDashboard.pmmUpgrade.getCurrentPMMVersion()).versionMinor;
-      pmmVersion = parseInt(versionString)
-    }
-    await homeDashboard.sideMenu.elements.tickets.waitFor({ state: 'detached' });
-    await page.goto(ticketsPage.ticketsUrl);
-    if (pmmVersion >= 28) {
-      await expect(ticketsPage.elements.notPlatformUser).toHaveText(ticketsPage.messages.loginWithPercona);
+      await test.step('2. Verify that there is NO side menu for organizational tickets',async () => {
+        await homeDashboard.sideMenu.elements.tickets.waitFor({ state: 'detached' });
+      });
+
+      await test.step('3. Verify user can NOT see tickets.',async () => {
+        await page.goto(ticketsPage.ticketsUrl);
+        if (pmmVersion >= 28) {
+          await expect(ticketsPage.elements.notPlatformUser).toHaveText(ticketsPage.messages.loginWithPercona);
+        } else {
+          await expect(ticketsPage.elements.emptyBlock).toHaveText(ticketsPage.messages.notConnectedToThePortal);
+        } 
+      });
     } else {
-      await expect(ticketsPage.elements.emptyBlock).toHaveText(ticketsPage.messages.notConnectedToThePortal);
-    } 
+      test.info().annotations.push({
+        type: 'Old Version ',
+        description: 'This test is for PMM version 2.28.0 and higher',
+      });
+    }
   });
 
   test('PMM-T1148 Verify PMM user logged in using SSO and member of organization in Portal BUT not a SN account is NOT able to see Tickets @not-ui-pipeline @portal @post-pmm-portal-upgrade', async ({ page }) => { 
@@ -101,9 +153,24 @@ test.describe('Spec file for PMM connected the portal', async () => {
     const homeDashboard = new HomeDashboard(page);
     const ticketsPage = new TicketsPage(page);
 
-    await signInPage.oktaLogin(freeUser.email, freeUser.password);
-    await homeDashboard.pmmUpgrade.elements.currentVersion.waitFor({ state: 'visible', timeout: Duration.ThreeMinutes });
-    await homeDashboard.sideMenu.elements.tickets.click();
-    await expect(ticketsPage.elements.noDataTable).toHaveText(ticketsPage.messages.noTicketsFound);
+    if (pmmVersion > 27) {
+      await test.step('1. Login to he connected pmm with SSO',async () => {
+        await signInPage.oktaLogin(freeUser.email, freeUser.password);
+        await homeDashboard.pmmUpgrade.elements.currentVersion.waitFor({ state: 'visible', timeout: Duration.ThreeMinutes });
+      });
+
+      await test.step('2. Verify that there is a side menu for organizational tickets',async () => {
+        await homeDashboard.sideMenu.elements.tickets.click();
+      });
+
+      await test.step('3. Verify user can NOT see tickets for his org.',async () => {
+        await expect(ticketsPage.elements.noDataTable).toHaveText(ticketsPage.messages.noTicketsFound);
+      });
+    } else {
+      test.info().annotations.push({
+        type: 'Old Version ',
+        description: 'This test is for PMM version 2.28.0 and higher',
+      });
+    }
   });
 });
