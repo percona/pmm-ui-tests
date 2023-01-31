@@ -11,7 +11,7 @@ export default class PerconaPlatform extends CommonPage {
   connectedContainer = this.page.getByTestId('connected-wrapper'); 
 
   elements = {
-    ...super.elements,
+    ...super.getElements(),
     pmmServerIdHeader: this.perconaPlatformContainer.getByTestId('pmmServerId-field-label'),
     pmmServerNameHeader: this.perconaPlatformContainer.getByTestId('pmmServerName-field-label'),
     pmmServerNameError: this.perconaPlatformContainer.getByTestId('pmmServerName-field-error-message'),
@@ -22,6 +22,8 @@ export default class PerconaPlatform extends CommonPage {
   fields = {
     ...super.fields,
     pmmServerId: this.perconaPlatformContainer.getByTestId('pmmServerId-text-input'),
+    email: this.perconaPlatformContainer.getByTestId('email-text-input'),
+    password: this.perconaPlatformContainer.getByTestId('password-password-input'),
     pmmServerName: this.perconaPlatformContainer.getByTestId('pmmServerName-text-input'),
     accessToken: this.perconaPlatformContainer.getByTestId('accessToken-text-input'),
   }
@@ -46,11 +48,13 @@ export default class PerconaPlatform extends CommonPage {
     ...super.messages,
     connectedSuccess: 'Successfully connected PMM to Percona Platform',
     updateSuccess: 'Settings updated',
+    oldPmmVersionError: 'Authentication failed. Please update the PMM version.',
   }
 
   links = {
     ...super.links,
-    getToken: 'https://portal-dev.percona.com/profile',
+    getTokenDev: 'https://portal-dev.percona.com/profile',
+    getTokenProd: 'https://portal.percona.com/profile',
   }
 
   connectToPortal = async (token: string, serverName = 'Test Server', isIPAddressSet = false) => {

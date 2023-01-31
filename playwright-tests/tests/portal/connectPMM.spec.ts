@@ -74,7 +74,7 @@ test.describe('Spec file for connecting PMM to the portal', async () => {
         await expect(platformPage.elements.pmmServerNameHeader).toHaveText(platformPage.labels.pmmServerName);
         await expect(platformPage.elements.accessTokenHeader).toHaveText(platformPage.labels.accessToken);
         // fix address for older pmm address is not portal-dev but just portal.
-        await expect(platformPage.buttons.getToken).toHaveAttribute('href', platformPage.links.getToken);
+        await expect(platformPage.buttons.getToken).toHaveAttribute('href', platformPage.links.getTokenDev);
       });
 
       await test.step('3. Verify that pmm server name and access token are required.',async () => {
@@ -94,6 +94,25 @@ test.describe('Spec file for connecting PMM to the portal', async () => {
       test.info().annotations.push({
         type: 'Old Version ',
         description: 'This test is for PMM version 2.27.0 and higher',
+      });
+    }
+  });
+
+  test.only('PMM-T1224 Verify user is notified about using old PMM version while trying to connect to Portal @portal @pre-pmm-portal-upgrade @post-pmm-portal-upgrade', async ({ page }) => {
+    const platformPage = new PerconaPlatform(page);
+
+    if (pmmVersion < 27) {
+      await grafanaHelper.authorize(page);
+      await page.goto(platformPage.perconaPlatformURL);
+      await platformPage.fields.pmmServerName.type(`Test Server ${Date.now()}`)
+      await platformPage.fields.email.type(firstAdmin.email);
+      await platformPage.fields.password.type(firstAdmin.password);
+      await platformPage.buttons.connect.click();
+      await platformPage.toast.checkToastMessage(platformPage.messages.oldPmmVersionError);
+    } else {
+      test.info().annotations.push({
+        type: 'New Version ',
+        description: 'This test is for PMM version 2.26.0 and lower',
       });
     }
   });

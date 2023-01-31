@@ -5,8 +5,8 @@ import Duration from '../helpers/Duration';
 export class Toast {
   constructor(readonly page: Page) {}
 
-  toast = this.page.locator('//*[contains(@data-testid, "Alert")]');
-  closeButton = this.toast.locator('//*[@aria-label="Close alert"]');
+  toast = this.page.locator('//*[contains(@data-testid, "Alert") or @aria-label="Alert error"]');
+  closeButton = this.toast.locator('//*[@aria-label="Close alert" or @type="button"]');
   
   checkToastMessage = async (message: string, timeout: Duration = Duration.OneMinute) => {
     await this.toast.waitFor({ state: 'visible', timeout });
