@@ -103,7 +103,6 @@ jobs:
           ref: ${{ env.PMM_QA_BRANCH }}
 
       - name: Compose PMM-Sever
-        working-directory: pmm-ui-tests
         run: |
           ls
           docker-compose up -d
