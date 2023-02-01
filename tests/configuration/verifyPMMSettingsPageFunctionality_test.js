@@ -413,8 +413,8 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T1227 - Verify tooltip "Read more" links on PMM Settings page redirect to working pages '
-    + 'PMM-T1338 Verify that all the metrics from config are displayed on Telemetry tooltip in Settings > Advanced @settings',
+  '@PMM-T1227 - Verify tooltip "Read more" links on PMM Settings page redirect to working pages '
+    + '@PMM-T1338 Verify that all the metrics from config are displayed on Telemetry tooltip in Settings > Advanced @settings',
   async ({ I, pmmSettingsPage, settingsAPI }) => {
     await settingsAPI.changeSettings({ alerting: true });
     const subPageTooltips = [
