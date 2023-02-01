@@ -1,5 +1,5 @@
 ---
-name: pmm2-ui-tests
+name: pmm-portal-tests
 
 on:
   # run with default inputs
