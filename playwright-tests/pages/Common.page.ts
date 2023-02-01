@@ -21,24 +21,40 @@ export class CommonPage {
     notConnectedToPlatform: this.page.getByTestId('not-connected-platform'),
   };
 
-  protected fields = {};
+  private baseFields = {};
 
-  protected labels = {};
+  private baseLabels = {};
 
-  protected buttons = {};
+  private baseButtons = {};
 
   private baseMessages = {
     loginWithPercona: 'Login with Percona Account to access this content',
     notConnectedToThePortal: 'Not connected to Portal.',
   };
 
-  protected links = {};
+  private baseLinks = {};
   
   protected getElements() {
     return this.baseElements;
   };
 
+  protected getFields() {
+    return this.baseFields;
+  };
+
+  protected getLabels() {
+    return this.baseLabels;
+  };
+
+  protected getButtons() {
+    return this.baseButtons;
+  };
+
   protected getMessages() {
     return this.baseMessages;
+  };
+
+  protected getLinks() {
+    return this.baseLinks;
   };
 }

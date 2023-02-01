@@ -14,17 +14,17 @@ export class SignInPage extends CommonPage {
   }
 
   fields = {
-    ...super.fields,
+    ...super.getFields(),
     username: this.page.locator('//*[@name="username"]'),
     password: this.page.locator('//*[@name="password"]')
   }
 
   labels = {
-    ...super.labels,
+    ...super.getLabels(),
   }
 
   buttons = {
-    ...super.buttons,
+    ...super.getButtons(),
     oktaLogin: this.page.locator('//*[@href="login/generic_oauth"]'),
   }
 
@@ -33,7 +33,7 @@ export class SignInPage extends CommonPage {
   }
 
   links = {
-    ...super.links,
+    ...super.getLinks(),
   }
 
 

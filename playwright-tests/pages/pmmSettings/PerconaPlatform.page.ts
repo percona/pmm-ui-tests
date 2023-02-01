@@ -21,7 +21,7 @@ export default class PerconaPlatform extends CommonPage {
   }
 
   fields = {
-    ...super.fields,
+    ...super.getFields(),
     pmmServerId: this.perconaPlatformContainer.getByTestId('pmmServerId-text-input'),
     email: this.perconaPlatformContainer.getByTestId('email-text-input'),
     password: this.perconaPlatformContainer.getByTestId('password-password-input'),
@@ -30,7 +30,7 @@ export default class PerconaPlatform extends CommonPage {
   }
   
   labels = {
-    ...super.labels,
+    ...super.getLabels(),
     header: 'Connect PMM to Percona Platform',
     pmmServerId: 'PMM Server Id',
     pmmServerName: 'PMM Server Name *',
@@ -40,7 +40,7 @@ export default class PerconaPlatform extends CommonPage {
   }
 
   buttons = {
-    ...super.buttons,
+    ...super.getButtons(),
     connect: this.perconaPlatformContainer.getByTestId('connect-button'),
     disconnect: this.connectedContainer.getByTestId('disconnect-button'),
     confirmDisconnect: this.page.locator('//*[@aria-label="Confirm Modal Danger Button"]'),
@@ -57,7 +57,7 @@ export default class PerconaPlatform extends CommonPage {
   }
 
   links = {
-    ...super.links,
+    ...super.getLinks(),
     portalProfile: 'https://portal-dev.percona.com/profile',
     platformProfile: 'https://platform-dev.percona.com/profile',
     readMore: 'https://docs.percona.com/percona-monitoring-and-management/how-to/integrate-platform.html#disconnect-a-pmm-instance',

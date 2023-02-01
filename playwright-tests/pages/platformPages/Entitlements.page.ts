@@ -15,15 +15,15 @@ export default class EntitlementsPage extends CommonPage {
   }
 
   fields = {
-    ...super.fields,
+    ...super.getFields(),
   }
   
   labels = {
-    ...super.labels,
+    ...super.getLabels(),
   }
 
   buttons = {
-    ...super.buttons,
+    ...super.getButtons(),
   }
 
   messages = {
@@ -32,6 +32,6 @@ export default class EntitlementsPage extends CommonPage {
   }
 
   links = {
-    ...super.links,
+    ...super.getLinks(),
   }
 }
