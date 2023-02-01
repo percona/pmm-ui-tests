@@ -19,16 +19,19 @@ test.describe('Spec file for connecting PMM to the portal', async () => {
   const fileName = 'portalCredentials';
 
   test.beforeAll(async ({ baseURL }) => {
-    await apiHelper.changeSettings({pmm_public_address: baseURL!.replace(/(^\w+:|^)\/\//, '')})
+    console.log(`Base url is: ${baseURL!.replace(/(^\w+:|^)\/\//, '')}`)
+
     if(!pmmVersion) {
       const versionString = (await apiHelper.getPmmVersion()).versionMinor;
       pmmVersion = parseInt(versionString)
+      console.log(`pmm version is: ${pmmVersion}`);
     }
     const userCredentials = await fileHelper.readfile(fileName);
     if (userCredentials) {
       [firstAdmin, secondAdmin, technicalUser] = JSON.parse(userCredentials);
     } else {
       [firstAdmin, secondAdmin, technicalUser] = await serviceNowAPI.createServiceNowUsers();
+      console.log(`Admin user email is: ${firstAdmin.email}`);
       const adminToken = await portalAPI.getUserAccessToken(firstAdmin.email, firstAdmin.password);
       const { org } = await portalAPI.createOrg(adminToken);
       await portalAPI.inviteUserToOrg(adminToken, org.id, secondAdmin.email, PortalUserRoles.admin);
