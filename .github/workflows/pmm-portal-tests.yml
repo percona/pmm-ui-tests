@@ -92,7 +92,7 @@ jobs:
         with:
           ref: ${{ env.UI_TESTS_BRANCH }}
           repository: percona/pmm-ui-tests
-          path: ./
+          path: ./pmm-ui-tests
 
       - name: Checkout pmm-qa Repo
         uses: percona-platform/checkout@v2
@@ -103,6 +103,7 @@ jobs:
           ref: ${{ env.PMM_QA_BRANCH }}
 
       - name: Compose PMM-Sever
+        working-directory: pmm-ui-tests
         run: |
           ls
           docker-compose up -d
