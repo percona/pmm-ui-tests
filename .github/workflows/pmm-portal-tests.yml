@@ -57,6 +57,7 @@ jobs:
       OAUTH_CLIENT_SECRET: ${{ secrets.OKTA_OAUTH_CLIENT_SECRET }}
       OAUTH_PMM_CLIENT_ID: ${{ secrets.OKTA_OAUTH_PMM_CLIENT_ID }}
       OAUTH_PMM_CLIENT_SECRET: ${{ secrets.OKTA_OAUTH_PMM_CLIENT_SECRET }}
+      OAUTH_DEV_HOST: ${{ secrets.OAUTH_DEV_HOST }}
       OAUTH_SCOPES: percona
 
       # Variables for E2E tests
