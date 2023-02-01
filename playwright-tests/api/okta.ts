@@ -80,6 +80,8 @@ export const oktaAPI = {
       },
     };
 
+    console.log(`Okta Urls is: ${oktaUrl}/api/v1/users?activate=${activate}`);
+    console.log(`token length is: ${oktaToken.length}`);
     const response = await oktaRequest(
       oktaUrl,
       `/api/v1/users?activate=${activate}`,
@@ -88,6 +90,8 @@ export const oktaAPI = {
       data,
     );
 
+    console.log(response)
+
     expect(response.status).toEqual(200);
 
     return response;
@@ -95,8 +99,6 @@ export const oktaAPI = {
 
   async createTestUser(userEmail?: string): Promise<User> {
     const user = getUser(userEmail);
-
-    user.password = '4$GYs01tX7vX';
 
     await this.createUser(user);
 
