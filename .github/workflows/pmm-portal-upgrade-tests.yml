@@ -1,5 +1,5 @@
 ---
-name: pmm-portal-tests
+name: pmm-portal-upgrade-tests
 
 on:
   # run with default inputs
