@@ -45,6 +45,7 @@ const apiHelper = {
   },
 
   listOrgUsers: async () => {
+    console.log(`Base url is: ${config.use?.baseURL!}`);
     const restConfig = await request.newContext({
       baseURL: config.use?.baseURL!,
       extraHTTPHeaders: { Authorization: `Basic ${await grafanaHelper.getToken()}` }
