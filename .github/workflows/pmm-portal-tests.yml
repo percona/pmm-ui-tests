@@ -103,7 +103,7 @@ jobs:
         run: |
           ls
           npm install
-          sudo npx ts-node ./integration-setup.ts --setup-docker-pmm-server --pmm-server-version=${{ env.PMM_SERVER_VERSION }} --pmm-client-version=${{ env.PMM_CLIENT_VERSION }}
+          sudo npx ts-node ./integration-setup.ts --ci --setup-docker-pmm-server --pmm-server-version=${{ env.PMM_SERVER_VERSION }} --pmm-client-version=${{ env.PMM_CLIENT_VERSION }}
 
       - name: Setup Client for PMM-Server
         run: |
