@@ -105,6 +105,7 @@ jobs:
       - name: Compose PMM-Sever
         working-directory: pmm-ui-tests
         run: |
+          ls
           docker-compose up -d
 
       - name: Setup Client for PMM-Server
