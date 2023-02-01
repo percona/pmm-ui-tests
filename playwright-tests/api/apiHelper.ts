@@ -20,16 +20,12 @@ const apiHelper = {
   },
 
   getPmmVersion: async () => {
-    console.log(`Base url is: ${config.use?.baseURL!}`);
     const restConfig = await request.newContext({
       baseURL: config.use?.baseURL!,
       extraHTTPHeaders: { Authorization: `Basic ${await grafanaHelper.getToken()}` }
     });
 
     let response = await restConfig.post('/v1/Updates/Check', { timeout: Duration.ThreeMinutes });
-    console.log('Response Is:');
-    console.log(response);
-    console.log(await response.json());
     let [versionMajor, versionMinor, versionPatch] = (await response.json()).installed.version.split('.');
     if(!versionMajor) {
       response = await restConfig.post('/v1/Updates/Check', { timeout: Duration.ThreeMinutes });
