@@ -47,7 +47,6 @@ jobs:
       UI_TESTS_TAG: ${{ github.event.inputs.pmm_ui_tests_tag }}
       UI_TESTS_BRANCH: ${{ github.event.inputs.pmm_ui_tests_branch }}
       PMM_CLIENTS: ${{ github.event.inputs.pmm_clients }}
-      OAUTH_ISSUER_URL: 'https://id-dev.percona.com/oauth2/aus15pi5rjdtfrcH51d7'
 
       PMM_SERVER_VERSION: ${{ github.event.inputs.pmm_server_version }}
       PMM_CLIENT_VERSION:  ${{ github.event.inputs.pmm_client_version }}
