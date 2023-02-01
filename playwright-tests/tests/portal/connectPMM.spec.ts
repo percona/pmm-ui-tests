@@ -143,7 +143,9 @@ test.describe('Spec file for connecting PMM to the portal', async () => {
         await signInPage.oktaLogin(firstAdmin.email, firstAdmin.password);
         await homeDashboard.pmmUpgrade.elements.currentVersion.waitFor({ state: 'visible', timeout: Duration.ThreeMinutes });
         await expect(page).toHaveURL(`${baseURL}/${signInPage.landingUrl}`);
-        await context.clearCookies();  
+        await context.clearCookies();
+        await page.reload();
+        await signInPage.buttons.oktaLogin.click({ timeout: Duration.ThreeMinutes })
       });
 
       await test.step('1. Login as admin user that was invited to the org.',async () => {
@@ -151,6 +153,8 @@ test.describe('Spec file for connecting PMM to the portal', async () => {
         await homeDashboard.pmmUpgrade.elements.currentVersion.waitFor({ state: 'visible', timeout: Duration.ThreeMinutes });
         await expect(page).toHaveURL(`${baseURL}/${signInPage.landingUrl}`);
         await context.clearCookies();
+        await page.reload();
+        await signInPage.buttons.oktaLogin.click({ timeout: Duration.ThreeMinutes })
       });
     
       await test.step('1. Login as technical user that was invited to the org.',async () => {
@@ -158,7 +162,10 @@ test.describe('Spec file for connecting PMM to the portal', async () => {
         await homeDashboard.pmmUpgrade.elements.currentVersion.waitFor({ state: 'visible', timeout: Duration.ThreeMinutes });
         await expect(page).toHaveURL(`${baseURL}/${signInPage.landingUrl}`);
         await context.clearCookies();
+        await page.reload();
+        await signInPage.buttons.oktaLogin.click({ timeout: Duration.ThreeMinutes })
       });
+
     } else {
       test.info().annotations.push({
         type: 'Old Version ',
