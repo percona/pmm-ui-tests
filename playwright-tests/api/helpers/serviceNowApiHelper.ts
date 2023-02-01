@@ -15,7 +15,6 @@ export const serviceNowRequest = async (method: Method = 'post', data = {}) => {
 
 
   try {
-    console.log(devUrl);
     response = await axios.post(devUrl, data, {
       auth: {
         username,
