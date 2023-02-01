@@ -1,5 +1,5 @@
 import { test } from '@playwright/test';
-import apiHelper from '../../helpers/apiHelper';
+import apiHelper from '../../api/apiHelper';
 import grafanaHelper from '../../helpers/GrafanaHelper';
 import HomeDashboard from '../../pages/HomeDashboard.page';
 

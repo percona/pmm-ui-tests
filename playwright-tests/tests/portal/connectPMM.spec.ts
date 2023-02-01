@@ -1,5 +1,4 @@
 import { expect, test } from '@playwright/test';
-import apiHelper from '../../helpers/apiHelper';
 import { fileHelper } from '../../helpers/FileHelper';
 import grafanaHelper from '../../helpers/GrafanaHelper';
 import PerconaPlatform from '../../pages/pmmSettings/PerconaPlatform.page';
@@ -10,6 +9,7 @@ import { serviceNowAPI } from '../../api/serviceNowApi';
 import User from '../../support/types/user.interface';
 import Duration from '../../helpers/Duration';
 import { PortalUserRoles } from '../../support/enums/portalUserRoles';
+import apiHelper from '../../api/apiHelper';
 
 test.describe('Spec file for connecting PMM to the portal', async () => {
   let firstAdmin: User;

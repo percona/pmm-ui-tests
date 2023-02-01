@@ -17,6 +17,7 @@ export default class PerconaPlatform extends CommonPage {
     pmmServerNameError: this.perconaPlatformContainer.getByTestId('pmmServerName-field-error-message'),
     accessTokenHeader: this.perconaPlatformContainer.getByTestId('accessToken-field-label'),
     accessTokenError: this.perconaPlatformContainer.getByTestId('accessToken-field-error-message'),
+    readMore: this.page.getByText('Read More...'),
   }
 
   fields = {
@@ -49,6 +50,7 @@ export default class PerconaPlatform extends CommonPage {
   messages = {
     ...super.getMessages(),
     connectedSuccess: 'Successfully connected PMM to Percona Platform',
+    disconnectedSuccess: 'You have successfully disconnected this server from Percona Platform',
     updateSuccess: 'Settings updated',
     oldPmmVersionError: 'Authentication failed. Please update the PMM version.',
     pmmDisconnectedFromPortal: 'Successfully disconnected PMM from Percona Platform',
@@ -58,6 +60,7 @@ export default class PerconaPlatform extends CommonPage {
     ...super.links,
     portalProfile: 'https://portal-dev.percona.com/profile',
     platformProfile: 'https://platform-dev.percona.com/profile',
+    readMore: 'https://docs.percona.com/percona-monitoring-and-management/how-to/integrate-platform.html#disconnect-a-pmm-instance',
   }
 
   connectToPortal = async (token: string, serverName = 'Test Server', isIPAddressSet = false) => {

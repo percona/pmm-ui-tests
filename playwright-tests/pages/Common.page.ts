@@ -12,11 +12,13 @@ export class CommonPage {
 
   landingUrl = 'graph/d/pmm-home/home-dashboard?orgId=1&refresh=1m';
 
-  protected baseElements = {
+  private baseElements = {
     mainView: this.page.locator('//*[@class="main-view"]'),
     emptyBlock: this.page.getByTestId('empty-block'),
     noDataTable: this.page.getByTestId('table-no-data'),
     notPlatformUser: this.page.getByTestId('not-platform-user'),
+    noData: this.page.getByTestId('page-no-data'),
+    notConnectedToPlatform: this.page.getByTestId('not-connected-platform'),
   };
 
   protected fields = {};
@@ -27,6 +29,7 @@ export class CommonPage {
 
   private baseMessages = {
     loginWithPercona: 'Login with Percona Account to access this content',
+    notConnectedToThePortal: 'Not connected to Portal.',
   };
 
   protected links = {};

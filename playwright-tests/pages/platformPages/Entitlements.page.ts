@@ -12,7 +12,6 @@ export default class EntitlementsPage extends CommonPage {
   elements = {
     ...super.getElements(),
     row: this.entitlementsContainer.locator('//div[contains(@id, "collapse-label")]'),
-    noData: this.entitlementsContainer.getByTestId('page-no-data'),
   }
 
   fields = {
@@ -28,7 +27,7 @@ export default class EntitlementsPage extends CommonPage {
   }
 
   messages = {
-    ...super.messages,
+    ...super.getMessages(),
     noEntitlements: 'No entitlements found',
   }
 

@@ -1,7 +1,7 @@
 import { Page, request } from "@playwright/test";
 import config from '../playwright.config';
-import Duration from "./Duration";
-import grafanaHelper from "./GrafanaHelper";
+import Duration from "../helpers/Duration";
+import grafanaHelper from "../helpers/GrafanaHelper";
 
 export interface Settings {
   pmm_public_address: string;
@@ -37,6 +37,16 @@ const apiHelper = {
     });
 
     const response = await restConfig.post('/v1/Settings/Change', { data: settingsData });
+    return await response.json();
+  },
+
+  listOrgUsers: async () => {
+    const restConfig = await request.newContext({
+      baseURL: config.use?.baseURL!,
+      extraHTTPHeaders: { Authorization: `Basic ${await grafanaHelper.getToken()}` }
+    });
+
+    const response = await restConfig.get('/graph/api/org/users?accesscontrol=true');
     return await response.json();
   },
 

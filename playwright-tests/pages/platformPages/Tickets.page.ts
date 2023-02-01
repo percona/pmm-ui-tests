@@ -32,7 +32,6 @@ export default class TicketsPage extends CommonPage {
 
   messages = {
     ...super.getMessages(),
-    notConnectedToThePortal: 'Not connected to Portal.',
     noTicketsFound: 'No tickets found',
   }
 
