@@ -335,6 +335,7 @@ module.exports = {
     pmmServerNameInput: '$pmmServerName-text-input',
     perconaAccountEmailInput: '$email-text-input',
     perconaAccountPasswordInput: '$password-password-input',
+    perconaAlertingUrl: locate('$alertmanager-url-label').find('a'),
   },
 
   async openAdvancedSettings() {
