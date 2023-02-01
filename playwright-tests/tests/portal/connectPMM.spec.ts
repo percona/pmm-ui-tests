@@ -63,7 +63,7 @@ test.describe('Spec file for connecting PMM to the portal', async () => {
         await expect(platformPage.elements.pmmServerNameHeader).toHaveText(platformPage.labels.pmmServerName);
         await expect(platformPage.elements.accessTokenHeader).toHaveText(platformPage.labels.accessToken);
         // fix address for older pmm address is not portal-dev but just portal.
-        if(pmmVersion < 30) {
+        if(pmmVersion < 29) {
           await expect(platformPage.buttons.getToken).toHaveAttribute('href', platformPage.links.platformProfile);
         } else {
           await expect(platformPage.buttons.getToken).toHaveAttribute('href', platformPage.links.portalProfile);
