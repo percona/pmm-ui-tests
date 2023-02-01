@@ -53,6 +53,24 @@ jobs:
       PMM_CLIENT_VERSION:  ${{ github.event.inputs.pmm_client_version }}
       PMM_QA_BRANCH: ${{ github.event.inputs.pmm_qa_branch }}
 
+
+      OKTA_TOKEN: ${{ secrets.OKTA_TOKEN }}
+      OAUTH_ISSUER_URL: "https://id-dev.percona.com/oauth2/aus15pi5rjdtfrcH51d7"
+      OAUTH_CLIENT_ID: ${{ secrets.OKTA_OAUTH_CLIENT_ID }}
+      OAUTH_CLIENT_SECRET: ${{ secrets.OKTA_OAUTH_CLIENT_SECRET }}
+      OAUTH_PMM_CLIENT_ID: ${{ secrets.OKTA_OAUTH_PMM_CLIENT_ID }}
+      OAUTH_PMM_CLIENT_SECRET: ${{ secrets.OKTA_OAUTH_PMM_CLIENT_SECRET }}
+      OAUTH_SCOPES: percona
+
+      # Variables for E2E tests
+      MAILOSAUR_API_KEY: ${{ secrets.MAILOSAUR_API_KEY }}
+      MAILOSAUR_UI_TESTS_SERVER_ID: ${{ secrets.MAILOSAUR_UI_TESTS_SERVER_ID }}
+      MAILOSAUR_API_TESTS_SERVER_ID: ${{ secrets.MAILOSAUR_API_TESTS_SERVER_ID }}
+
+      SERVICENOW_LOGIN: percona_platform
+      SERVICENOW_PASSWORD: ${{ secrets.SERVICENOW_PASSWORD }}
+      SERVICENOW_DEV_URL: "https://perconadev.service-now.com/api/x_pellc_percona_pl/platform/settest"
+
     steps:
       - name: PMM ${{ github.event.inputs.pmm_server_version }} and Portal connections tests for branch ${{ github.event.inputs.branch || 'main' }} at ${{ github.event.inputs.repo || 'cicd' }} repo
         if: ${{ github.event_name == 'workflow_dispatch' && env.SHA != 'null' }}
@@ -75,7 +93,7 @@ jobs:
         with:
           ref: ${{ env.UI_TESTS_BRANCH }}
           repository: percona/pmm-ui-tests
-          path: ./pmm-ui-tests
+          path: ./
 
       - name: Checkout pmm-qa Repo
         uses: percona-platform/checkout@v2
@@ -86,8 +104,8 @@ jobs:
           ref: ${{ env.PMM_QA_BRANCH }}
 
       - name: Compose PMM-Sever
+        working-directory: pmm-ui-tests
         run: |
-          cd ./pmm-ui-tests
           docker-compose up -d
 
       - name: Setup Client for PMM-Server
@@ -106,6 +124,7 @@ jobs:
         id: ui-tests
         working-directory: pmm-ui-tests
         run: |
+          ls
           npm install
           npx playwright install
           touch portalCredentials
