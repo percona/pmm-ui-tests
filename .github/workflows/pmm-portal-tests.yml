@@ -16,9 +16,6 @@ on:
         description: 'Target branch for pmm-ui-tests repository'
         default: 'main'
         required: true
-      pmm_ui_tests_tag:
-        description: 'Tag to run only specific part of tests'
-        required: false
       pmm_server_version:
         description: 'Version of the pmm server used for testing'
         default: 'dev-latest'
@@ -44,7 +41,6 @@ jobs:
     env:
       SHA: ${{ github.event.inputs.sha || 'null' }}
 
-      UI_TESTS_TAG: ${{ github.event.inputs.pmm_ui_tests_tag }}
       UI_TESTS_BRANCH: ${{ github.event.inputs.pmm_ui_tests_branch }}
       PMM_CLIENTS: ${{ github.event.inputs.pmm_clients }}
 
@@ -71,7 +67,7 @@ jobs:
       SERVICENOW_DEV_URL: "https://perconadev.service-now.com/api/x_pellc_percona_pl/platform/settest"
 
     steps:
-      - name: PMM ${{ github.event.inputs.pmm_server_version }} and Portal connections tests for branch ${{ github.event.inputs.branch || 'main' }} at ${{ github.event.inputs.repo || 'cicd' }} repo
+      - name: PMM server version ${{ github.event.inputs.pmm_server_version }} and Portal connections tests for pmm-ui-tests branch ${{ github.event.inputs.pmm_ui_tests_branch }}
         if: ${{ github.event_name == 'workflow_dispatch' && env.SHA != 'null' }}
         uses: percona-platform/github-status-action@v1
         with:
@@ -103,10 +99,11 @@ jobs:
           ref: ${{ env.PMM_QA_BRANCH }}
 
       - name: Compose PMM-Sever
-        working-directory: pmm-ui-tests
+        working-directory: pmm-qa/pmm-integration
         run: |
           ls
-          docker-compose up -d
+          npm install
+          sudo npx ts-node ./integration-setup.ts --setup-docker-pmm-server --pmm-server-version=${{ env.PMM_SERVER_VERSION }} --pmm-client-version=${{ env.PMM_CLIENT_VERSION }}
 
       - name: Setup Client for PMM-Server
         run: |
