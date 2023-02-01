@@ -98,6 +98,7 @@ test.describe('Spec file for PMM connected the portal', async () => {
       await test.step('4. Verify user can see empty list of tickets for his org.',async () => {
         await apiHelper.interceptBackEndCall(page, '**/v1/Platform/SearchOrganizationTickets', { tickets: [] });
         await page.reload()
+        await ticketsPage.elements.noData.waitFor({ state: 'visible' });
         await expect(ticketsPage.elements.noData).toHaveText(ticketsPage.messages.noTicketsFound);
       });
 
