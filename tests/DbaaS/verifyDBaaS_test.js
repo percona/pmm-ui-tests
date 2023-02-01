@@ -347,15 +347,8 @@ Failed to register pmm-agent on PMM Server: Post "https://https:%2F%2F1.2.3.4/v1
 
 Scenario('@PMM-T1512 Verify tooltips work properly for DBaaS page @dbaas',
   async ({
-    I, dbaasPage, adminPage, settingsAPI,
+    I, dbaasPage, adminPage,
   }) => {
-    let turnOffDbaas;
-
-    if (!(await settingsAPI.getSettings('dbaas_enabled'))) {
-      turnOffDbaas = true;
-      await settingsAPI.changeSettings({ dbaas: true });
-    }
-
     I.amOnPage(dbaasPage.url);
     I.waitForVisible(dbaasPage.tabs.dbClusterTab.dbClusterAddButtonTop, 60);
     await adminPage.verifyTooltip(dbaasPage.tooltips.technicalPreview);
@@ -370,9 +363,5 @@ Scenario('@PMM-T1512 Verify tooltips work properly for DBaaS page @dbaas',
 
     for (const tooltip of tooltips) {
       await adminPage.verifyTooltip(tooltip);
-    }
-
-    if (turnOffDbaas) {
-      await settingsAPI.changeSettings({ dbaas: false });
     }
   });
