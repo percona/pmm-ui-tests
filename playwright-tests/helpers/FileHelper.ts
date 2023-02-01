@@ -1,5 +1,4 @@
 import fs from 'fs';
-import assert from 'assert';
 
 export const fileHelper = {
 	readfile: async (path, failOnError = true) => {

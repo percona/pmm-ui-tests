@@ -20,6 +20,7 @@ export const serviceNowAPI = {
 
   async createServiceNowUsers() {
     const credentials: ServiceNowResponse = await this.createServiceNowCredentials();
+    console.log(`Service now credentials are: ${credentials}`)
     const firstAdmin = await oktaAPI.createTestUser(credentials.contacts.admin1.email);
     const secondAdmin = await oktaAPI.createTestUser(credentials.contacts.admin2.email);
     const technicalUser = await oktaAPI.createTestUser(credentials.contacts.technical.email);

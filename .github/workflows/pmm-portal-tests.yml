@@ -103,7 +103,6 @@ jobs:
       - name: Compose PMM-Sever
         working-directory: pmm-qa/pmm-integration
         run: |
-          ls
           npm install
           sudo npx ts-node ./integration-setup.ts --ci --setup-docker-pmm-server --pmm-server-version=${{ env.PMM_SERVER_VERSION }} --pmm-client-version=${{ env.PMM_CLIENT_VERSION }}
 
@@ -123,7 +122,6 @@ jobs:
         id: ui-tests
         working-directory: pmm-ui-tests
         run: |
-          ls
           npm install
           npx playwright install
           touch portalCredentials

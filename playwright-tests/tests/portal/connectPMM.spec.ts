@@ -27,10 +27,11 @@ test.describe('Spec file for connecting PMM to the portal', async () => {
       console.log(`pmm version is: ${pmmVersion}`);
     }
     const userCredentials = await fileHelper.readfile(fileName);
-    console.log('User credentials read.');
     if (userCredentials) {
+      console.log('User credentials present.');
       [firstAdmin, secondAdmin, technicalUser] = JSON.parse(userCredentials);
     } else {
+      console.log('User credentials not present.');
       [firstAdmin, secondAdmin, technicalUser] = await serviceNowAPI.createServiceNowUsers();
       console.log(`Admin user email is: ${firstAdmin.email}`);
       const adminToken = await portalAPI.getUserAccessToken(firstAdmin.email, firstAdmin.password);
