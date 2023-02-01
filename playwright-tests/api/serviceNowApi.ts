@@ -1,6 +1,6 @@
-import ServiceNowResponse from '../support/types/serviceNowResponse.interface';
+import ServiceNowResponse from '@support/types/serviceNowResponse.interface';
 import { serviceNowRequest } from './helpers/serviceNowApiHelper';
-import { oktaAPI } from './okta';
+import { oktaAPI } from '@api/okta';
 
 export const serviceNowAPI = {
   async createServiceNowCredentials(): Promise<ServiceNowResponse> {

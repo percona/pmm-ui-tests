@@ -1,7 +1,7 @@
 import { test } from '@playwright/test';
-import apiHelper from '../../api/apiHelper';
-import grafanaHelper from '../../helpers/GrafanaHelper';
-import HomeDashboard from '../../pages/HomeDashboard.page';
+import apiHelper from '@api/apiHelper';
+import grafanaHelper from '@helpers/grafanaHelper';
+import HomeDashboard from '@pages/HomeDashboard.page';
 
 test.describe('Spec file for Upgrade PMM tests', async () => {
   
@@ -14,7 +14,6 @@ test.describe('Spec file for Upgrade PMM tests', async () => {
   })
 
   test('PMM-T288 Verify user can see Update widget before upgrade [critical] @pre-upgrade @ovf-upgrade @ami-upgrade @pmm-upgrade', async ({page}) => {
-    
     const homeDashboard = new HomeDashboard(page);
     await homeDashboard.pmmUpgrade.verifyUpgradeWidget();
   });

@@ -1,19 +1,19 @@
 import { expect, test } from '@playwright/test';
-import User from '../../support/types/user.interface';
-import { fileHelper } from '../../helpers/FileHelper';
-import { serviceNowAPI } from '../../api/serviceNowApi';
-import { portalAPI } from '../../api/portalApi';
-import { PortalUserRoles } from '../../support/enums/portalUserRoles';
-import apiHelper from '../../api/apiHelper';
-import HomeDashboard from '../../pages/HomeDashboard.page';
-import { SignInPage } from '../../pages/SignIn.page';
-import Duration from '../../helpers/Duration';
-import TicketsPage from '../../pages/platformPages/Tickets.page';
-import grafanaHelper from '../../helpers/GrafanaHelper';
-import { oktaAPI } from '../../api/okta';
-import EntitlementsPage from '../../pages/platformPages/Entitlements.page';
-import EnvironmentOverview from '../../pages/platformPages/EnvironmentOverview.page';
-import PerconaPlatform from '../../pages/pmmSettings/PerconaPlatform.page';
+import apiHelper from '@api/apiHelper';
+import User from '@support/types/user.interface';
+import { fileHelper } from '@helpers/FileHelper';
+import { portalAPI } from '@api/portalApi';
+import { oktaAPI } from '@api/okta';
+import { serviceNowAPI } from '@api/serviceNowApi';
+import { PortalUserRoles } from '@support/enums/portalUserRoles';
+import { SignInPage } from '@pages/SignIn.page';
+import HomeDashboard from '@pages/HomeDashboard.page';
+import TicketsPage from '@pages/platformPages/Tickets.page';
+import Duration from '@helpers/duration';
+import EntitlementsPage from '@pages/platformPages/Entitlements.page';
+import EnvironmentOverview from '@pages/platformPages/EnvironmentOverview.page';
+import grafanaHelper from '@helpers/grafanaHelper';
+import PerconaPlatform from '@pages/pmmSettings/PerconaPlatform.page';
 
 test.describe('Spec file for PMM connected the portal', async () => {
   let firstAdmin: User;

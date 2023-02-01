@@ -1,4 +1,4 @@
-import { PortalUserRoles } from "../support/enums/portalUserRoles";
+import { PortalUserRoles } from "@support/enums/portalUserRoles";
 import { portalAPIHelper } from "./helpers/portalApiHelper";
 
 export const portalAPI = {

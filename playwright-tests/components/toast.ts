@@ -1,6 +1,6 @@
 /* eslint-disable lines-between-class-members, no-empty-function */
 import { Page, expect, Locator } from '@playwright/test';
-import Duration from '../helpers/Duration';
+import Duration from '@helpers/duration';
 
 export class Toast {
   constructor(readonly page: Page) {}

@@ -1,15 +1,15 @@
 import { expect, test } from '@playwright/test';
-import { fileHelper } from '../../helpers/FileHelper';
-import grafanaHelper from '../../helpers/GrafanaHelper';
-import PerconaPlatform from '../../pages/pmmSettings/PerconaPlatform.page';
-import HomeDashboard from '../../pages/HomeDashboard.page'
-import { portalAPI } from '../../api/portalApi';
-import { SignInPage } from '../../pages/SignIn.page';
-import { serviceNowAPI } from '../../api/serviceNowApi';
-import User from '../../support/types/user.interface';
-import Duration from '../../helpers/Duration';
-import { PortalUserRoles } from '../../support/enums/portalUserRoles';
-import apiHelper from '../../api/apiHelper';
+import apiHelper from '@api/apiHelper';
+import { portalAPI } from '@api/portalApi';
+import { serviceNowAPI } from '@api/serviceNowApi';
+import Duration from '@helpers/duration';
+import { fileHelper } from '@helpers/fileHelper';
+import grafanaHelper from '@helpers/grafanaHelper';
+import HomeDashboard from '@pages/HomeDashboard.page';
+import PerconaPlatform from '@pages/pmmSettings/PerconaPlatform.page';
+import { SignInPage } from '@pages/SignIn.page';
+import { PortalUserRoles } from '@support/enums/portalUserRoles';
+import User from '@support/types/user.interface';
 
 test.describe('Spec file for connecting PMM to the portal', async () => {
   let firstAdmin: User;

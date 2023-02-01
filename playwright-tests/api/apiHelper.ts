@@ -1,7 +1,7 @@
 import { Page, request } from "@playwright/test";
-import config from '../playwright.config';
-import Duration from "../helpers/Duration";
-import grafanaHelper from "../helpers/GrafanaHelper";
+import config from '@tests/playwright.config';
+import Duration from "@helpers/duration";
+import grafanaHelper from "@helpers/grafanaHelper";
 
 export interface Settings {
   pmm_public_address: string;

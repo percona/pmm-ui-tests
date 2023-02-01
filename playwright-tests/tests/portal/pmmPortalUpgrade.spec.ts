@@ -1,14 +1,15 @@
 import { expect, test } from '@playwright/test';
-import User from '../../support/types/user.interface';
-import { fileHelper } from '../../helpers/FileHelper';
-import { serviceNowAPI } from '../../api/serviceNowApi';
-import { portalAPI } from '../../api/portalApi';
-import { PortalUserRoles } from '../../support/enums/portalUserRoles';
-import apiHelper from '../../api/apiHelper';
-import { oktaAPI } from '../../api/okta';
-import grafanaHelper from '../../helpers/GrafanaHelper';
-import HomeDashboard from '../../pages/HomeDashboard.page';
-import Duration from '../../helpers/Duration';
+import User from '@support/types/user.interface';
+import apiHelper from '@api/apiHelper';
+import { fileHelper } from '@helpers/FileHelper';
+import { portalAPI } from '@api/portalApi';
+import { serviceNowAPI } from '@api/serviceNowApi';
+import { PortalUserRoles } from '@support/enums/portalUserRoles';
+import Duration from '@helpers/duration';
+import HomeDashboard from '@pages/HomeDashboard.page';
+import grafanaHelper from '@helpers/grafanaHelper';
+import { oktaAPI } from '@api/okta';
+
 
 test.describe('Spec file for PMM connected the portal', async () => {
   test.describe.configure({ retries: 0 });

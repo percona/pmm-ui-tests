@@ -1,7 +1,7 @@
 import { expect, Page } from '@playwright/test';
-import { getUser } from '../helpers/portalHelper';
-import config from '../playwright.config';
-import User from '../support/types/user.interface';
+import { getUser } from '@helpers/portalHelper';
+import config from '@tests/playwright.config';
+import User from '@support/types/user.interface';
 import { oktaRequest } from './helpers/oktaApiHelper';
 import * as dotenv from 'dotenv';
 

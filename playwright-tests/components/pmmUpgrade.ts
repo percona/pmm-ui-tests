@@ -1,5 +1,5 @@
 import { expect, Page } from '@playwright/test';
-import Duration from '../helpers/Duration';
+import Duration from '@helpers/duration';
 
 export default class PmmUpgrade {
   constructor(readonly page: Page) {
@@ -33,8 +33,14 @@ export default class PmmUpgrade {
   getCurrentPMMVersion = async () => {
     await expect(this.elements.currentVersion).toContainText('2.', { timeout: Duration.ThreeMinutes });
     const versionString = await this.elements.currentVersion.textContent();
-    const [versionMajor, versionMinor, versionPatch] = versionString!.split('.');
-    return {versionMajor, versionMinor, versionPatch}
+    const [versionMajorString, versionMinorString, versionPatchString] = versionString!.split('.');
+    const versions = {
+      versionMajor: parseInt(versionMajorString),
+      versionMinor: parseInt(versionMinorString),
+      versionPatch: parseInt(versionPatchString)
+    }
+
+    return versions;
   };
 
   verifyUpgradeWidget = async () => {

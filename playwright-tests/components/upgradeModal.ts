@@ -1,5 +1,5 @@
-import { expect, Page } from '@playwright/test';
-import { CommonPage } from '../pages/Common.page';
+import { Page } from '@playwright/test';
+import { CommonPage } from '@pages/common.page';
 
 export default class UpgradeModal extends CommonPage {
   constructor(page: Page) {

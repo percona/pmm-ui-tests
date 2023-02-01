@@ -1,7 +1,7 @@
 /* eslint-disable lines-between-class-members */
 import { Page } from '@playwright/test';
-import { SideMenu } from '../components/sideMenu.component';
-import { Toast } from '../components/toast.component';
+import { SideMenu } from '@components/sideMenu';
+import { Toast } from '@components/toast';
 
 export class CommonPage {
   // eslint-disable-next-line no-empty-function

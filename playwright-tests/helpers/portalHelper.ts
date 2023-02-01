@@ -1,4 +1,4 @@
-import User from '@tests/support/types/user.interface';
+import User from '@support/types/user.interface';
 import faker from 'faker';
 import { generate } from 'generate-password';
 

@@ -1,6 +1,5 @@
 /* eslint-disable lines-between-class-members, no-empty-function */
-import { Page, expect } from '@playwright/test';
-import Duration from '../helpers/Duration';
+import { Page } from '@playwright/test';
 
 export class SideMenu {
   constructor(readonly page: Page) {}

@@ -1,6 +1,4 @@
 import { APIRequestContext, APIResponse, request } from '@playwright/test';
-import config from '../../playwright.config';
-
 
 const portalBaseUrl = process.env.PORTAL_BASE_URL || 'https://portal-dev.percona.com'
 

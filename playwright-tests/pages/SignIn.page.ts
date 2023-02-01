@@ -1,7 +1,7 @@
 /* eslint-disable lines-between-class-members */
 import { Page } from '@playwright/test';
-import { OktaSignInPage } from './OktaSignIn.page';
-import { CommonPage } from './Common.page';
+import { OktaSignInPage } from '@pages/oktaSignIn.page';
+import { CommonPage } from '@pages/common.page';
 
 export class SignInPage extends CommonPage {
   // eslint-disable-next-line no-empty-function
