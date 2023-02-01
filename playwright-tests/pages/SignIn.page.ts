@@ -29,7 +29,7 @@ export class SignInPage extends CommonPage {
   }
 
   messages = {
-    ...super.messages,
+    ...super.getMessages(),
   }
 
   links = {
