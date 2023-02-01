@@ -50,6 +50,7 @@ test.describe('Spec file for PMM connected the portal', async () => {
   });
 
   test('Verify user is able to Upgrade PMM version @not-ui-pipeline @pmm-portal-upgrade', async ({ page }) => {
+    test.setTimeout(Duration.TwentyMinutes);
     const homeDashboard = new HomeDashboard(page);
 
     await grafanaHelper.authorize(page);

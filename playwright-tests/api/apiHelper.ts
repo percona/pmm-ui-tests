@@ -25,8 +25,12 @@ const apiHelper = {
       extraHTTPHeaders: { Authorization: `Basic ${await grafanaHelper.getToken()}` }
     });
 
-    const response = await restConfig.post('/v1/Updates/Check',{ timeout: Duration.ThreeMinutes });
-    const [versionMajor, versionMinor, versionPatch] = (await response.json()).installed.version.split('.');
+    let response = await restConfig.post('/v1/Updates/Check', { timeout: Duration.ThreeMinutes });
+    let [versionMajor, versionMinor, versionPatch] = (await response.json()).installed.version.split('.');
+    if(!versionMajor) {
+      response = await restConfig.post('/v1/Updates/Check', { timeout: Duration.ThreeMinutes });
+    }
+    [versionMajor, versionMinor, versionPatch] = (await response.json()).installed.version.split('.');
     return {versionMajor, versionMinor, versionPatch}
   },
 
