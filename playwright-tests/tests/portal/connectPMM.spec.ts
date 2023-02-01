@@ -27,6 +27,7 @@ test.describe('Spec file for connecting PMM to the portal', async () => {
       console.log(`pmm version is: ${pmmVersion}`);
     }
     const userCredentials = await fileHelper.readfile(fileName);
+    console.log('User credentials read.');
     if (userCredentials) {
       [firstAdmin, secondAdmin, technicalUser] = JSON.parse(userCredentials);
     } else {
