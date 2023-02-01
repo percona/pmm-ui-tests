@@ -52,6 +52,17 @@ test.describe('Spec file for PMM connected the portal', async () => {
     await apiHelper.confirmTour(page);
     await page.goto('');
   });
+
+  test.afterAll(async () => {
+    const adminToken = await portalAPI.getUserAccessToken(firstAdmin.email, firstAdmin.password);
+    const org = await portalAPI.getOrg(adminToken);
+
+    if (org.orgs.length) {
+      await portalAPI.deleteOrg(adminToken, org.orgs[0].id);
+    }
+
+    await oktaAPI.deleteUsers([firstAdmin, secondAdmin, technicalUser]);
+  });
   
   test('PMM-T1132 Verify PMM user logged in using SSO and member of SN account is able to see tickets @not-ui-pipeline @portal @post-pmm-portal-upgrade', async ({ page, context }) => {
     test.info().annotations.push({

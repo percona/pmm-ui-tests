@@ -19,6 +19,7 @@ test.describe('Spec file for connecting PMM to the portal', async () => {
   const fileName = 'portalCredentials';
 
   test.beforeAll(async ({ baseURL }) => {
+    await apiHelper.changeSettings({ pmm_public_address: baseURL!.replace(/(^\w+:|^)\/\//, '')})
     if(!pmmVersion) {
       const versionString = (await apiHelper.getPmmVersion()).versionMinor;
       pmmVersion = parseInt(versionString)
@@ -40,18 +41,7 @@ test.describe('Spec file for connecting PMM to the portal', async () => {
     await apiHelper.confirmTour(page)
     await page.goto('/');
   });
-/*
-  test.afterAll(async () => {
-    const adminToken = await portalAPI.getUserAccessToken(firstAdmin.email, firstAdmin.password);
-    const org = await portalAPI.getOrg(adminToken);
 
-    if (org.orgs.length) {
-      await portalAPI.deleteOrg(adminToken, org.orgs[0].id);
-    }
-
-    await oktaAPI.deleteUsers([firstAdmin, secondAdmin, technicalUser]);
-  });
-*/
 
   test('PMM-T398 Verify Percona Platform elements on PMM Settings Page @portal @pre-pmm-portal-upgrade', async ({ page }) => {
     if (pmmVersion >= 27) {
