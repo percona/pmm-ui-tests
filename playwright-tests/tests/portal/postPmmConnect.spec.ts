@@ -52,18 +52,18 @@ test.describe('Spec file for PMM connected the portal', async () => {
     await apiHelper.confirmTour(page);
     await page.goto('');
   });
-/*
-  test.afterAll(async () => {
-    const adminToken = await portalAPI.getUserAccessToken(firstAdmin.email, firstAdmin.password);
-    const org = await portalAPI.getOrg(adminToken);
 
-    if (org.orgs.length) {
-      await portalAPI.deleteOrg(adminToken, org.orgs[0].id);
-    }
+  test('Verify user roles are untouched after PMM server upgrade @not-ui-pipeline @portal @post-pmm-portal-upgrade', async () => {
+    const users = await apiHelper.listOrgUsers()
+    const foundAdmin1User = users.find((user) => user.email === firstAdmin.email);
+    const foundAdmin2User = users.find((user) => user.email === secondAdmin.email);
+    const foundTechnicalUser = users.find((user) => user.email === technicalUser.email);
 
-    await oktaAPI.deleteUsers([firstAdmin, secondAdmin, technicalUser]);
+    expect(foundAdmin1User.role).toEqual('Admin');
+    expect(foundAdmin2User.role).toEqual('Admin');
+    expect(foundTechnicalUser.role).toEqual('Viewer');
   });
-  */
+
   test('PMM-T1132 Verify PMM user logged in using SSO and member of SN account is able to see tickets @not-ui-pipeline @portal @post-pmm-portal-upgrade', async ({ page, context }) => {
     test.info().annotations.push({
       type: 'Also Covers',
@@ -98,7 +98,6 @@ test.describe('Spec file for PMM connected the portal', async () => {
       await test.step('4. Verify user can see empty list of tickets for his org.',async () => {
         await apiHelper.interceptBackEndCall(page, '**/v1/Platform/SearchOrganizationTickets', { tickets: [] });
         await page.reload()
-        await ticketsPage.elements.noData.waitFor({ state: 'visible' });
         await expect(ticketsPage.elements.noDataTable).toHaveText(ticketsPage.messages.noTicketsFound);
       });
 
@@ -234,9 +233,6 @@ test.describe('Spec file for PMM connected the portal', async () => {
     }
   });
 
-
-  
-
   test('PMM-T1170 Verify PMM user that is not logged in with SSO can NOT see Contacts for organization @not-ui-pipeline @portal @post-pmm-portal-upgrade', async ({ page, context }) => {
     const homeDashboard = new HomeDashboard(page);
     const environmentOverview = new EnvironmentOverview(page);
@@ -310,7 +306,6 @@ test.describe('Spec file for PMM connected the portal', async () => {
     }
   });
 
-
   test('PMM-T1112 Verify user can disconnect pmm from portal success flow @portal @not-ui-pipeline @post-pmm-portal-upgrade', async ({ page }) => {
     const signInPage = new SignInPage(page);
     const homeDashboard = new HomeDashboard(page);
@@ -378,5 +373,16 @@ test.describe('Spec file for PMM connected the portal', async () => {
 
     await page.goto(ticketsPage.ticketsUrl);
     await expect(ticketsPage.elements.notConnectedToPlatform).toHaveText(ticketsPage.messages.notConnectedToThePortal);
+  });
+
+  test('After tests cleanup.', async () => {
+    const adminToken = await portalAPI.getUserAccessToken(firstAdmin.email, firstAdmin.password);
+    const org = await portalAPI.getOrg(adminToken);
+
+    if (org.orgs.length) {
+      await portalAPI.deleteOrg(adminToken, org.orgs[0].id);
+    }
+
+    await oktaAPI.deleteUsers([firstAdmin, secondAdmin, technicalUser]);
   });
 });
