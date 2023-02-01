@@ -80,8 +80,6 @@ export const oktaAPI = {
       },
     };
 
-    console.log(`Okta Urls is: ${oktaUrl}/api/v1/users?activate=${activate}`);
-    console.log(`token length is: ${oktaToken.length}`);
     const response = await oktaRequest(
       oktaUrl,
       `/api/v1/users?activate=${activate}`,
@@ -89,8 +87,6 @@ export const oktaAPI = {
       oktaToken,
       data,
     );
-
-    console.log(response)
 
     expect(response.status).toEqual(200);
 
@@ -157,7 +153,6 @@ export const oktaAPI = {
   },
 
   async getUserInfo(userToken: string) {
-    console.log(`Okta header is: Bearer ${userToken}`);
     const response = await oktaRequest(oktaIssuerUrl, '/v1/userinfo', 'GET', `Bearer ${userToken}`, {});
 
     expect(response.status).toEqual(200);
@@ -171,8 +166,6 @@ export const oktaAPI = {
       username: 'peter.sirotnak@3pillarglobal.com',
       options: { warnBeforePasswordExpired: true, multiOptionalFactorEnroll: false },
     });
-
-    console.log(response);
 
     // eslint-disable-next-line no-underscore-dangle
     return response.data._embedded.user.id;
