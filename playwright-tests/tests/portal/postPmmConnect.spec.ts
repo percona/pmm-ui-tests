@@ -52,7 +52,7 @@ test.describe('Spec file for PMM connected the portal', async () => {
     await apiHelper.confirmTour(page);
     await page.goto('');
   });
-
+/*
   test.afterAll(async () => {
     const adminToken = await portalAPI.getUserAccessToken(firstAdmin.email, firstAdmin.password);
     const org = await portalAPI.getOrg(adminToken);
@@ -63,7 +63,7 @@ test.describe('Spec file for PMM connected the portal', async () => {
 
     await oktaAPI.deleteUsers([firstAdmin, secondAdmin, technicalUser]);
   });
-  
+  */
   test('PMM-T1132 Verify PMM user logged in using SSO and member of SN account is able to see tickets @not-ui-pipeline @portal @post-pmm-portal-upgrade', async ({ page, context }) => {
     test.info().annotations.push({
       type: 'Also Covers',
@@ -99,7 +99,7 @@ test.describe('Spec file for PMM connected the portal', async () => {
         await apiHelper.interceptBackEndCall(page, '**/v1/Platform/SearchOrganizationTickets', { tickets: [] });
         await page.reload()
         await ticketsPage.elements.noData.waitFor({ state: 'visible' });
-        await expect(ticketsPage.elements.noData).toHaveText(ticketsPage.messages.noTicketsFound);
+        await expect(ticketsPage.elements.noDataTable).toHaveText(ticketsPage.messages.noTicketsFound);
       });
 
     } else {
