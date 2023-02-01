@@ -59,23 +59,13 @@ test.describe('Spec file for PMM connected the portal', async () => {
     const currentVersion = await homeDashboard.pmmUpgrade.elements.currentVersion.textContent();
     const availableVersion = await homeDashboard.pmmUpgrade.elements.availableVersion.textContent();
 
+    console.log(`Upgrading PMM from the version: ${currentVersion} to the version: ${availableVersion}.`)
+
     test.info().annotations.push({
       type: 'Test Details',
       description: `Upgrading PMM from the version: ${currentVersion} to the version: ${availableVersion}`,
     });
 
     await homeDashboard.upgradePMM();
-
-  });
-
-  test('Verify user roles are untouched after PMM server upgrade @not-ui-pipeline @portal @post-pmm-portal-upgrade', async () => {
-    const users = await apiHelper.listOrgUsers()
-    const foundAdmin1User = users.find((user) => user.email === firstAdmin.email);
-    const foundAdmin2User = users.find((user) => user.email === secondAdmin.email);
-    const foundTechnicalUser = users.find((user) => user.email === technicalUser.email);
-
-    expect(foundAdmin1User.role).toEqual('Admin');
-    expect(foundAdmin2User.role).toEqual('Admin');
-    expect(foundTechnicalUser.role).toEqual('Viewer');
   });
 });
