@@ -14,7 +14,7 @@ Feature('BM: Backup Locations').retry(1);
 
 BeforeSuite(async ({ I }) => {
   // await I.suppressTour();
-  I.say(await I.verifyCommand(`docker exec rs101 pmm-admin add mongodb --username=pmm --password=pmmpass --port=27027 --service-name=${mongoServiceName} --replication-set=rs0`));
+  I.say(await I.verifyCommand(`docker exec rs101 pmm-admin add mongodb --username=pmm --password=pmmpass --port=27027 --service-name=${mongoServiceName} --replication-set=rs0 `));
 });
 
 Before(async ({
