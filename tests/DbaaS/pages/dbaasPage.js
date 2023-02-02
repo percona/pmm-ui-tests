@@ -302,23 +302,23 @@ module.exports = {
     const dbaasPage = this;
 
     I.waitForElement(dbaasPage.tabs.dbClusterTab.fields.clusterActionsMenu(dbClusterName), 60);
-    I.click(dbaasPage.tabs.dbClusterTab.fields.clusterActionsMenu(dbClusterName));
+    I.forceClick(dbaasPage.tabs.dbClusterTab.fields.clusterActionsMenu(dbClusterName));
     await dbaasActionsPage.checkActionPossible('Delete', true, dbClusterName);
     await dbaasActionsPage.checkActionPossible('Edit', false, dbClusterName);
     await dbaasActionsPage.checkActionPossible('Restart', false, dbClusterName);
     await dbaasActionsPage.checkActionPossible('Resume', false, dbClusterName);
-    I.click(dbaasPage.tabs.dbClusterTab.fields.clusterActionsMenu(dbClusterName));
+    I.forceClick(dbaasPage.tabs.dbClusterTab.fields.clusterActionsMenu(dbClusterName));
     await dbaasAPI.waitForDBClusterState(dbClusterName, k8sClusterName, clusterDBType, 'DB_CLUSTER_STATE_READY');
     I.waitForElement(dbaasPage.tabs.dbClusterTab.fields.clusterStatusActive, 120);
     I.seeElement(dbaasPage.tabs.dbClusterTab.fields.clusterStatusActive);
     I.waitForElement(dbaasPage.tabs.dbClusterTab.fields.clusterConnection.showPasswordButton, 30);
     I.click(dbaasPage.tabs.dbClusterTab.fields.clusterConnection.showPasswordButton);
-    I.click(dbaasPage.tabs.dbClusterTab.fields.clusterActionsMenu(dbClusterName));
+    I.forceClick(dbaasPage.tabs.dbClusterTab.fields.clusterActionsMenu(dbClusterName));
     await dbaasActionsPage.checkActionPossible('Delete', true, dbClusterName);
     await dbaasActionsPage.checkActionPossible('Edit', true, dbClusterName);
     await dbaasActionsPage.checkActionPossible('Restart', true, dbClusterName);
     await dbaasActionsPage.checkActionPossible('Suspend', true, dbClusterName);
-    I.click(dbaasPage.tabs.dbClusterTab.fields.clusterActionsMenu(dbClusterName));
+    I.forceClick(dbaasPage.tabs.dbClusterTab.fields.clusterActionsMenu(dbClusterName));
     I.click(dbaasPage.tabs.dbClusterTab.fields.clusterConnection.showPasswordButton);
   },
 

@@ -196,7 +196,7 @@ Scenario(
       psmdb_configuration,
       psmdb_configuration.clusterDashboardRedirectionLink,
     );
-    // I.click(dbaasPage.tabs.dbClusterTab.fields.clusterActionsMenu(psmdb_cluster));
+    // I.forceClick(dbaasPage.tabs.dbClusterTab.fields.clusterActionsMenu(psmdb_cluster));
     // await dbaasActionsPage.checkActionPossible('Update', false); skipped because latest mongodb is not recommended version
     // PMM-787
     const psmdb_configuration_after_edit = {
