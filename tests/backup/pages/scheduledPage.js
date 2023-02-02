@@ -65,6 +65,7 @@ module.exports = {
     confirmDelete: (name) => `Are you sure you want to delete the scheduled backup "${name}"?`,
     successfullyDeleted: (name) => `Scheduled backup "${name}" successfully deleted.`,
     scheduleInModalLabel: 'UTC time',
+    mustBeMemberOfCluster: (name) => `Service ${name} must be a member of a cluster`,
   },
   locationType: {},
 

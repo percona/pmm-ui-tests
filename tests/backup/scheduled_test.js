@@ -13,6 +13,7 @@ let locationId;
 let serviceId;
 const mysqlServiceName = 'mysql-with-backup2';
 const mongoServiceName = 'mongo-backup-schedule';
+const mongoNameWithoutCluster = 'mongo-schedule-no-cluster';
 const scheduleErrors = new DataTable(['mode', 'error']);
 
 scheduleErrors.add(['PITR', 'A scheduled PITR backup can be enabled only if there no other scheduled backups.']);
@@ -40,6 +41,7 @@ BeforeSuite(async ({
   });
 
   I.say(await I.verifyCommand(`sudo pmm-admin add mongodb --port=27027 --service-name=${mongoServiceName} --replication-set=rs0 --cluster=rs0`));
+  I.say(await I.verifyCommand(`sudo pmm-admin add mongodb --port=27027 --service-name=${mongoNameWithoutCluster} --replication-set=rs0`));
 });
 
 Before(async ({
@@ -61,6 +63,7 @@ AfterSuite(async ({
   I,
 }) => {
   await I.mongoDisconnect();
+  // await I.verifyCommand(`pmm-admin remove mongodb ${mongoNameWithoutCluster}`);
 });
 
 Scenario(
@@ -439,5 +442,28 @@ Scenario(
     I.seeTextEquals('Every month', scheduledPage.fields.schedule.months);
     I.seeTextEquals('Every day', scheduledPage.fields.schedule.days);
     I.seeTextEquals('Every weekday', scheduledPage.fields.schedule.weekdays);
+  },
+);
+
+Scenario(
+  '@PMM-T1527 Verify BM Scheduler blocks mongo services that are not managed as cluster'
+  + ' @backup @bm-mongo @bm-fb',
+  async ({ I, scheduledPage }) => {
+    const schedule = {
+      name: 'test no cluster error',
+      retention: 1,
+    };
+
+    scheduledPage.openScheduleBackupModal();
+    scheduledPage.selectDropdownOption(scheduledPage.fields.serviceNameDropdown, mongoNameWithoutCluster);
+    I.fillField(scheduledPage.fields.backupName, schedule.name);
+    scheduledPage.selectDropdownOption(scheduledPage.fields.locationDropdown, location.name);
+    scheduledPage.selectDropdownOption(scheduledPage.fields.everyDropdown, 'Every minute');
+    scheduledPage.clearRetentionField();
+    I.fillField(scheduledPage.fields.retention, schedule.retention);
+
+    I.click(scheduledPage.buttons.createSchedule);
+
+    I.verifyPopUpMessage(scheduledPage.messages.mustBeMemberOfCluster(mongoNameWithoutCluster), 5);
   },
 );
