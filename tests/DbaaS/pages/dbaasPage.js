@@ -28,6 +28,35 @@ module.exports = {
   valueGreatThanErrorText: (value) => `Value should be greater or equal to ${value}`,
   dbclusterNameError: 'Should start with a letter, may only contain lower case, number, dash and end with an alphanumeric character',
   dbclusterNameLimitError: 'Must contain at most 20 characters',
+  tooltips: {
+    technicalPreview: {
+      tooltipText: locate('//div[@data-popper-escaped]//span'),
+      tooltipReadMoreLink: locate('//div[@data-popper-escaped]//a'),
+      iconLocator: locate('//h1[text()="This feature is in Technical Preview stage"]').find('div[class$="-Icon"]').as('Technical preview tooltip'),
+      text: 'Read more about feature status here',
+      link: 'https://per.co.na/pmm-feature-status',
+    },
+    clusterType: {
+      tooltipText: locate('//div[@data-popper-escaped]'),
+      iconLocator: locate('$eks-info-icon').as('EKS info tooltip'),
+      text: 'If using Amazon EKS and kubeconfig does not contain AWS access key ID and AWS secret access key please provide them below',
+      link: false,
+    },
+    awsAccessKeyId: {
+      tooltipText: locate('//div[@data-popper-escaped]//span'),
+      tooltipReadMoreLink: locate('//div[@data-popper-escaped]//a'),
+      iconLocator: locate('//div[label[@data-testid="awsAccessKeyID-field-label"]]').find('div[class$="-Icon"]').as('AWS Access Key ID tooltip'),
+      text: 'AWS Access Key ID of the root user or an IAM user with access to the EKS cluster',
+      link: 'https://docs.aws.amazon.com/general/latest/gr/aws-sec-cred-types.html',
+    },
+    awsSecretAccessKey: {
+      tooltipText: locate('//div[@data-popper-escaped]//span'),
+      tooltipReadMoreLink: locate('//div[@data-popper-escaped]//a'),
+      iconLocator: locate('//div[label[@data-testid="awsSecretAccessKey-field-label"]]').find('div[class$="-Icon"]').as('AWS Secret Access Key tooltip'),
+      text: 'AWS Secret Access Key of the root user or an IAM user with access to the EKS cluster',
+      link: 'https://docs.aws.amazon.com/general/latest/gr/aws-sec-cred-types.html',
+    },
+  },
   numberOfNodesError: 'Only 1, 3 or more nodes allowed',
   tabs: {
     kubernetesClusterTab: {

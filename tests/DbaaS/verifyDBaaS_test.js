@@ -1,4 +1,5 @@
 const assert = require('assert');
+const { forEach } = require('lodash');
 
 const { dbaasPage } = inject();
 
@@ -130,7 +131,7 @@ Scenario(
     // FIXME: skip until https://jira.percona.com/browse/PMM-10688 is fixed
     // const configuration = await I.grabTextFrom(dbaasPage.tabs.kubernetesClusterTab.clusterConfigurationText);
 
-    // assert.ok(configuration === process.env.kubeconfig_minikube, 
+    // assert.ok(configuration === process.env.kubeconfig_minikube,
     //   `The configuration shown is not equal to the expected Cluster configuration, ${configuration}`);
     // PMM-T1130
     I.amOnPage(dbaasPage.apiKeysUrl);
@@ -357,3 +358,23 @@ Failed to register pmm-agent on PMM Server: Post "https://https:%2F%2F1.2.3.4/v1
   },
 );
 
+Scenario('@PMM-T1512 Verify tooltips work properly for DBaaS page @dbaas',
+  async ({
+    I, dbaasPage, adminPage,
+  }) => {
+    I.amOnPage(dbaasPage.url);
+    I.waitForVisible(dbaasPage.tabs.dbClusterTab.dbClusterAddButtonTop, 60);
+    await adminPage.verifyTooltip(dbaasPage.tooltips.technicalPreview);
+    I.click(dbaasPage.tabs.kubernetesClusterTab.kubernetesClusterTabButton);
+    I.click(dbaasPage.tabs.kubernetesClusterTab.addKubernetesClusterButton);
+    I.click(dbaasPage.tabs.kubernetesClusterTab.amazonElasticKubernetesService);
+    const tooltips = [
+      dbaasPage.tooltips.clusterType,
+      dbaasPage.tooltips.awsAccessKeyId,
+      dbaasPage.tooltips.awsSecretAccessKey,
+    ];
+
+    for (const tooltip of tooltips) {
+      await adminPage.verifyTooltip(tooltip);
+    }
+  });
