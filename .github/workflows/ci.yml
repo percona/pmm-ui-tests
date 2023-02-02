@@ -23,14 +23,14 @@ jobs:
 
   fb_tests:
     name: FB UI tests
-    uses: Percona-Lab/pmm-submodules/.github/workflows/pmm2-ui-tests-fb.yml@PMM-2.0
+    uses: Percona-Lab/pmm-submodules/.github/workflows/pmm2-ui-tests-fb.yml@PMM-11500-reuse-setup
     secrets:
       BACKUP_LOCATION_ACCESS_KEY: ${{ secrets.BACKUP_LOCATION_ACCESS_KEY }}
       BACKUP_LOCATION_SECRET_KEY: ${{ secrets.BACKUP_LOCATION_SECRET_KEY }}
     with:
       server_image: 'perconalab/pmm-server:dev-latest'
-      client_version: 'dev-latest'
+      client_version: '2.34.0-6'
       client_image: 'perconalab/pmm-client:dev-latest'
-      pmm_qa_branch: 'main'
+      pmm_qa_branch: 'PMM-11500-reuse-setup'
       pmm_ui_branch: ${{ github.head_ref }}
       sha: 'null'
