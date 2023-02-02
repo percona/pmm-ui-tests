@@ -29,7 +29,7 @@ jobs:
       BACKUP_LOCATION_SECRET_KEY: ${{ secrets.BACKUP_LOCATION_SECRET_KEY }}
     with:
       server_image: 'perconalab/pmm-server:dev-latest'
-      client_version: '2.34.0-6'
+      client_version: 'dev-latest'
       client_image: 'perconalab/pmm-client:dev-latest'
       pmm_qa_branch: 'PMM-11500-reuse-setup'
       pmm_ui_branch: ${{ github.head_ref }}
