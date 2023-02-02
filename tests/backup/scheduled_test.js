@@ -35,11 +35,11 @@ BeforeSuite(async ({
   await locationsAPI.clearAllLocations(true);
   locationId = await locationsAPI.createStorageLocation(location);
   await I.mongoConnectReplica({
-    username: 'admin',
-    password: 'password',
+    username: 'pmm',
+    password: 'pmmpass',
   });
 
-  I.say(await I.verifyCommand(`sudo pmm-admin add mongodb --port=27027 --service-name=${mongoServiceName} --replication-set=rs0 --cluster=rs0`));
+  I.say(await I.verifyCommand(`sudo pmm-admin add mongodb --username=pmm --password=pmmpass --port=27027 --service-name=${mongoServiceName} --replication-set=rs0 --cluster=rs0`));
 });
 
 Before(async ({
