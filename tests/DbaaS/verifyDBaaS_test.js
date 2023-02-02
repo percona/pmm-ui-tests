@@ -49,6 +49,7 @@ Scenario(
     I.waitForText(dbaasPage.monitoringWarningMessage, 30);
     I.click(dbaasPage.tabs.kubernetesClusterTab.cancelButton);
     dbaasPage.registerKubernetesCluster(clusterName, process.env.kubeconfig_minikube);
+    I.waitForElement(dbaasPage.tabs.kubernetesClusterTab.spinner);
     I.waitForText(dbaasPage.addedAlertMessage, 60);
     dbaasPage.checkCluster(clusterName, false);
     I.click(dbaasPage.tabs.kubernetesClusterTab.addKubernetesClusterButton);
@@ -91,11 +92,23 @@ Scenario(
   },
 );
 
-Scenario('PMM-T427 - Verify elements on PMM DBaaS page @dbaas',
+Scenario('PMM-T1451 - Verify Register new Kubernetes Cluster page @dbaas',
   async ({ I, dbaasPage }) => {
     I.amOnPage(dbaasPage.url);
-    I.waitForVisible(dbaasPage.tabs.kubernetesClusterTab.addKubernetesClusterButton, 30);
     I.waitForVisible(dbaasPage.tabs.kubernetesClusterTab.addKubernetesClusterButtonInTable, 30);
+    I.click(dbaasPage.tabs.kubernetesClusterTab.addKubernetesClusterButtonInTable);
+    I.waitForVisible(dbaasPage.tabs.kubernetesClusterTab.registerNewClusterHeader);
+    I.seeElement(dbaasPage.tabs.kubernetesClusterTab.genericClusterLabel);
+    I.seeElement(dbaasPage.tabs.kubernetesClusterTab.eksClusterLabel);
+    I.seeCheckboxIsChecked(dbaasPage.tabs.kubernetesClusterTab.genericEksClusterRadio);
+    I.seeElement(dbaasPage.tabs.kubernetesClusterTab.pasteFromClipboardButton);
+    I.click(dbaasPage.tabs.kubernetesClusterTab.eksClusterLabel);
+    I.seeElement(dbaasPage.tabs.kubernetesClusterTab.kubeconfigFileInput);
+    I.seeElement(dbaasPage.tabs.kubernetesClusterTab.kubernetesClusterNameInput);
+    I.seeElement(dbaasPage.tabs.kubernetesClusterTab.awsAccessKeyInput);
+    I.seeElement(dbaasPage.tabs.kubernetesClusterTab.awsSecretKeyInput);
+    I.seeElement(dbaasPage.tabs.kubernetesClusterTab.pasteFromClipboardButton);
+    I.moveCursorTo(dbaasPage.tabs.kubernetesClusterTab.eksKeysInfoTooltip);
   });
 
 Scenario(
