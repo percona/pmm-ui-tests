@@ -56,6 +56,11 @@ module.exports = {
       text: 'AWS Secret Access Key of the root user or an IAM user with access to the EKS cluster',
       link: 'https://docs.aws.amazon.com/general/latest/gr/aws-sec-cred-types.html',
     },
+    expose: {
+      tooltipText: locate('//div[@data-popper-escaped]//span'),
+      iconLocator: locate('//div[label[@data-testid="expose-field-label"]]').find('div[class$="-Icon"]').as('Expose tooltip'),
+      text: 'You will make this database cluster available to connect from the internet. To limit access you need to specify source ranges',
+    },
   },
   numberOfNodesError: 'Only 1, 3 or more nodes allowed',
   tabs: {
@@ -102,7 +107,6 @@ module.exports = {
       dbClusterTab: 'a[aria-label="Tab DB Cluster"]',
       monitoringWarningLocator: '$pmm-server-url-warning',
       advancedOptionsButton: '$dbCluster-advanced-settings',
-      optionsHeader: '$step-header',
       deleteDbClusterConfirmationText: (dbClusterName, clusterName, dbType) => `Are you sure that you want to delete ${dbType} cluster ${dbClusterName} from Kubernetes cluster ${clusterName} ?`,
       basicOptions: {
         fields: {
@@ -153,6 +157,16 @@ module.exports = {
             .find('$resources-bar')
             .find('div')
             .at(1),
+          dbClusterConfigurationsLabel: (dbType) => locate('legend').withText(`${dbType} Configurations`),
+          dbClusterConfigurationLabel: (dbType) => locate('$configuration-field-label').withText(dbType),
+          storageClassLabel: '$storageClass-field-label',
+          networkAndSecurityLabel: locate('legend').withText('Network and Security'),
+          exposeLabel: '$expose-field-label',
+          internetFacingLabel: '$internetFacing-field-label',
+          sourceRangesLabel: locate('label').withText('Source Range'),
+          addNewSourceRangeButton: locate('button').find('span').withText('Add new').as('Add Source Range button'),
+          sourceRangeInput: locate('input').withAttr({placeholder: '181.170.213.40/32'}).as('Source Range input'),
+          deleteSourceRangeButton: locate('$network-and-security').find('button').at(2).as('Delete Source Range button'),
         },
       },
       fields: {

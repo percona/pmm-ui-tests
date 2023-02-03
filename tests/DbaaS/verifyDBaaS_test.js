@@ -109,7 +109,6 @@ Scenario('PMM-T1451 - Verify Register new Kubernetes Cluster page @dbaas',
     I.seeElement(dbaasPage.tabs.kubernetesClusterTab.awsAccessKeyInput);
     I.seeElement(dbaasPage.tabs.kubernetesClusterTab.awsSecretKeyInput);
     I.seeElement(dbaasPage.tabs.kubernetesClusterTab.pasteFromClipboardButton);
-    I.moveCursorTo(dbaasPage.tabs.kubernetesClusterTab.eksKeysInfoTooltip);
   });
 
 Scenario(
@@ -367,7 +366,7 @@ Scenario('@PMM-T1512 Verify tooltips work properly for DBaaS page @dbaas',
     await adminPage.verifyTooltip(dbaasPage.tooltips.technicalPreview);
     I.click(dbaasPage.tabs.kubernetesClusterTab.kubernetesClusterTabButton);
     I.click(dbaasPage.tabs.kubernetesClusterTab.addKubernetesClusterButton);
-    I.click(dbaasPage.tabs.kubernetesClusterTab.amazonElasticKubernetesService);
+    I.click(dbaasPage.tabs.kubernetesClusterTab.eksClusterLabel);
     const tooltips = [
       dbaasPage.tooltips.clusterType,
       dbaasPage.tooltips.awsAccessKeyId,
@@ -378,3 +377,48 @@ Scenario('@PMM-T1512 Verify tooltips work properly for DBaaS page @dbaas',
       await adminPage.verifyTooltip(tooltip);
     }
   });
+
+Scenario.only('PMM-XXXX Verify Create DB Cluster page @dbaas',
+  async ({ I, dbaasPage, adminPage }) => {
+    I.amOnPage(dbaasPage.url);
+    I.waitForEnabled(dbaasPage.tabs.dbClusterTab.dbClusterAddButtonTop, 10);
+    I.click(dbaasPage.tabs.dbClusterTab.dbClusterAddButtonTop);
+    I.waitForElement(dbaasPage.tabs.dbClusterTab.advancedOptionsButton);
+    I.dontSeeElement(dbaasPage.tabs.dbClusterTab.advancedOptions.fields.nodesNumberField);
+    I.click(dbaasPage.tabs.dbClusterTab.advancedOptionsButton);
+    I.waitForElement(dbaasPage.tabs.dbClusterTab.advancedOptions.fields.nodesNumberField);
+    I.scrollTo(dbaasPage.tabs.dbClusterTab.advancedOptions.fields.dbClusterConfigurationsLabel('MySQL'));
+    I.seeElement(dbaasPage.tabs.dbClusterTab.advancedOptions.fields.storageClassLabel);
+    I.seeElement(dbaasPage.tabs.dbClusterTab.advancedOptions.fields.dbClusterConfigurationLabel('MySQL'));
+    I.seeElement(dbaasPage.tabs.dbClusterTab.advancedOptions.fields.networkAndSecurityLabel);
+    I.seeElement(dbaasPage.tabs.dbClusterTab.advancedOptions.fields.exposeLabel);
+    await adminPage.verifyTooltip(dbaasPage.tooltips.expose);
+    I.seeElement(dbaasPage.tabs.dbClusterTab.advancedOptions.fields.internetFacingLabel);
+    I.scrollTo(dbaasPage.tabs.dbClusterTab.advancedOptions.fields.sourceRangesLabel);
+    I.click(dbaasPage.tabs.dbClusterTab.advancedOptions.fields.addNewSourceRangeButton);
+    let sourceRange = await I.grabNumberOfVisibleElements(
+      dbaasPage.tabs.dbClusterTab.advancedOptions.fields.sourceRangeInput);
+
+    assert.ok(sourceRange == 2, `There should be 2 Source Range Inputs but found ${sourceRange}`);
+
+    I.click(dbaasPage.tabs.dbClusterTab.advancedOptions.fields.deleteSourceRangeButton);
+
+    sourceRange = await I.grabNumberOfVisibleElements(dbaasPage.tabs.dbClusterTab.advancedOptions.fields.sourceRangeInput);
+
+    assert.ok(sourceRange == 1, `There should be 1 Source Range Input but found ${sourceRange}`);
+
+    I.click(dbaasPage.tabs.dbClusterTab.basicOptions.fields.dbClusterDatabaseTypeField);
+    I.fillField(dbaasPage.tabs.dbClusterTab.basicOptions.fields.dbClusterDatabaseTypeInputField, 'MongoDB');
+    I.waitForElement(
+      dbaasPage.tabs.dbClusterTab.basicOptions.fields.dbClusterDatabaseTypeFieldSelect('MongoDB'),
+    );
+    I.click(dbaasPage.tabs.dbClusterTab.basicOptions.fields.dbClusterDatabaseTypeFieldSelect('MongoDB'));
+    I.seeElement(dbaasPage.tabs.dbClusterTab.advancedOptions.fields.dbClusterConfigurationsLabel('MongoDB'));
+    I.seeElement(dbaasPage.tabs.dbClusterTab.advancedOptions.fields.storageClassLabel);
+    I.scrollTo(dbaasPage.tabs.dbClusterTab.advancedOptions.fields.dbClusterConfigurationLabel('MongoDB'));
+    I.seeElement(dbaasPage.tabs.dbClusterTab.advancedOptions.fields.networkAndSecurityLabel);
+    I.seeElement(dbaasPage.tabs.dbClusterTab.advancedOptions.fields.exposeLabel);
+    I.seeElement(dbaasPage.tabs.dbClusterTab.advancedOptions.fields.internetFacingLabel);
+    I.seeElement(dbaasPage.tabs.dbClusterTab.advancedOptions.fields.sourceRangesLabel);
+  }
+);
