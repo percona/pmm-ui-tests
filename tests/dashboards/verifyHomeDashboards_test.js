@@ -26,7 +26,7 @@ Data(panels).Scenario(
     const expectedDashboard = dashboardPage[dashboard];
 
     I.click(dashboardPage.fields.openFiltersDropdownLocator('Node Name'));
-    const nodeNames = await I.grabTextFromAll('//a[@role="checkbox"]/span[text()!="All"]');
+    const nodeNames = await I.grabTextFromAll(dashboardPage.fields.allFilterDropdownOptions);
 
     I.click(dashboardPage.fields.filterDropdownOptionsLocator(nodeNames[0]));
     I.click(dashboardPage.fields.filterDropdownOptionsLocator(nodeNames[1]));
@@ -48,11 +48,8 @@ Data(panels).Scenario(
     await I.assertEqual(await I.grabTextFrom(dashboardPage.fields.openFiltersDropdownLocator('Node Name')), expectedNodeName);
     await dashboardPage.expandEachDashboardRow();
 
-    // needed to refocus on new tab
-    I.click('//label[text()="PMM Annotations"]');
-    adminPage.performPageDown(1);
     dashboardPage.verifyMetricsExistence(expectedDashboard.metrics);
-    await dashboardPage.verifyThereAreNoGraphsWithNA(0);
-    await dashboardPage.verifyThereAreNoGraphsWithoutData(0);
+    await dashboardPage.verifyThereAreNoGraphsWithNA(expectedDashboard.naElements);
+    await dashboardPage.verifyThereAreNoGraphsWithoutData(expectedDashboard.noDataElements);
   },
 );

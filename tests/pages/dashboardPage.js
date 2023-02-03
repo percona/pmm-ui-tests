@@ -990,6 +990,8 @@ module.exports = {
   },
 
   osDiskDetails: {
+    noDataElements: 0,
+    naElements: 0,
     clearUrl: 'graph/d/node-disk/disk-details',
     metrics: [
       'Mountpoint Usage',
@@ -1004,6 +1006,8 @@ module.exports = {
   },
 
   osMemoryDetails: {
+    noDataElements: 5,
+    naElements: 0,
     clearUrl: 'graph/d/node-memory/memory-details',
     metrics: [
       'Memory Usage',
@@ -1048,6 +1052,8 @@ module.exports = {
   },
 
   osNodesOverview: {
+    noDataElements: 1,
+    naElements: 1,
     clearUrl: 'graph/d/node-instance-overview/nodes-overview',
     metrics: [
       'Nodes',
@@ -1163,6 +1169,7 @@ module.exports = {
     // timeRangePickerButton: '.btn.navbar-button.navbar-button--tight',
     timeRangePickerButton: I.useDataQA('data-testid TimePicker Open Button'),
     refresh: I.useDataQA('data-testid RefreshPicker run button'),
+    allFilterDropdownOptions: '//a[contains(@class, "variable-option")][span[text()][not(contains(text(), "All"))]]',
     timeRangeOption: (timeRange) => locate('li').withDescendant('label').withText(timeRange),
     openFiltersDropdownLocator: (filterName) => locate('.variable-link-wrapper').after(`label[for="var-${formatElementId(filterName)}"]`),
     filterDropdownOptionsLocator: (filterName) => locate('.variable-option').withText(filterName),
