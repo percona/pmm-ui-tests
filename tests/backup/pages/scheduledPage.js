@@ -36,6 +36,7 @@ module.exports = {
     deleteByName: (name) => locate('$delete-scheduled-backpup-button').inside(scheduleCell(name)),
     copyByName: (name) => locate('$copy-scheduled-backup-button').inside(scheduleCell(name)),
     enableDisableByName: (name) => locate('label').after('$toggle-scheduled-backpup').inside(scheduleCell(name)),
+    backupOnDemand: locate('button').withText('On Demand'),
     backupTypeSwitch: (type) => locate('label').after('$mode-radio-button').withText(type),
     showDetails: (name) => locate('$show-row-details').inside(scheduleCell(name)),
     hideDetails: (name) => locate('$hide-row-details').inside(scheduleCell(name)),

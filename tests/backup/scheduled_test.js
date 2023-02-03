@@ -13,11 +13,14 @@ let locationId;
 let serviceId;
 const mysqlServiceName = 'mysql-with-backup2';
 const mongoServiceName = 'mongo-backup-schedule';
+const mongoCluster = 'rs0';
+
 const mongoNameWithoutCluster = 'mongo-schedule-no-cluster';
 const scheduleErrors = new DataTable(['mode', 'error']);
 
-scheduleErrors.add(['PITR', 'A scheduled PITR backup can be enabled only if there no other scheduled backups.']);
-scheduleErrors.add(['Full', 'A scheduled snapshot backup can be enabled only if there are no enabled PITR backup.']);
+scheduleErrors.add(['PITR', `A PITR backup for the cluster '${mongoCluster}' can be enabled only if there are no other scheduled backups for this cluster.`]);
+scheduleErrors.add(['Full', `A snapshot backup for cluster '${mongoCluster}' can be performed only if there is no enabled PITR backup for this cluster.`]);
+scheduleErrors.add(['On Demand', `A snapshot backup for cluster '${mongoCluster}' can be performed only if there is no enabled PITR backup for this cluster.`]);
 
 const schedules = new DataTable(['cronExpression', 'name', 'frequency']);
 
@@ -40,12 +43,12 @@ BeforeSuite(async ({
     password: 'password',
   });
 
-  I.say(await I.verifyCommand(`sudo pmm-admin add mongodb --port=27027 --service-name=${mongoServiceName} --replication-set=rs0 --cluster=rs0`));
+  I.say(await I.verifyCommand(`sudo pmm-admin add mongodb --port=27027 --service-name=${mongoServiceName} --replication-set=rs0 --cluster=${mongoCluster}`));
   I.say(await I.verifyCommand(`sudo pmm-admin add mongodb --port=27027 --service-name=${mongoNameWithoutCluster} --replication-set=rs0`));
 });
 
 Before(async ({
-  I, settingsAPI, scheduledPage, inventoryAPI, scheduledAPI,
+  I, scheduledPage, inventoryAPI, scheduledAPI,
 }) => {
   const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName('MONGODB_SERVICE', mongoServiceName);
 
@@ -63,7 +66,8 @@ AfterSuite(async ({
   I,
 }) => {
   await I.mongoDisconnect();
-  // await I.verifyCommand(`pmm-admin remove mongodb ${mongoNameWithoutCluster}`);
+  await I.verifyCommand(`pmm-admin remove mongodb ${mongoNameWithoutCluster}`);
+  await I.verifyCommand(`pmm-admin remove mongodb ${mongoServiceName}`);
 });
 
 Scenario(
@@ -408,7 +412,9 @@ Scenario(
   },
 );
 
-Data(scheduleErrors).Scenario('@PMM-T1031 Verify PITR schedule errors @backup',
+Data(scheduleErrors).Scenario(
+  '@PMM-T1031 Verify that user can\'t enable PITR together with any another backup type'
+  + ' @backup @bm-mongo',
   async ({
     I, scheduledPage, scheduledAPI, current,
   }) => {
@@ -426,10 +432,14 @@ Data(scheduleErrors).Scenario('@PMM-T1031 Verify PITR schedule errors @backup',
     scheduledPage.selectDropdownOption(scheduledPage.fields.serviceNameDropdown, mongoServiceName);
     I.fillField(scheduledPage.fields.backupName, schedule.name);
     scheduledPage.selectDropdownOption(scheduledPage.fields.locationDropdown, location.name);
-    I.click(scheduledPage.buttons.backupTypeSwitch(current.mode));
-    I.click(scheduledPage.buttons.createSchedule);
+    if (current.mode === 'On Demand') {
+      I.click(scheduledPage.buttons.backupOnDemand);
+    } else {
+      I.click(scheduledPage.buttons.backupTypeSwitch(current.mode));
+    }
 
-    I.verifyPopUpMessage(current.error);
+    I.click(scheduledPage.buttons.createSchedule);
+    I.verifyPopUpMessage(current.error, 5);
   });
 
 Scenario(
