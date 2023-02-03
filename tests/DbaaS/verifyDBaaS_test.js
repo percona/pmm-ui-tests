@@ -378,7 +378,7 @@ Scenario('@PMM-T1512 Verify tooltips work properly for DBaaS page @dbaas',
     }
   });
 
-Scenario('PMM-XXXX Verify Create DB Cluster page @dbaas',
+Scenario('PMM-T1571 Verify Create DB Cluster page @dbaas',
   async ({ I, dbaasPage, adminPage }) => {
     I.amOnPage(dbaasPage.url);
     I.waitForEnabled(dbaasPage.tabs.dbClusterTab.dbClusterAddButtonTop, 10);
@@ -399,13 +399,13 @@ Scenario('PMM-XXXX Verify Create DB Cluster page @dbaas',
     let sourceRange = await I.grabNumberOfVisibleElements(
       dbaasPage.tabs.dbClusterTab.advancedOptions.fields.sourceRangeInput);
 
-    assert.ok(sourceRange == 2, `There should be 2 Source Range Inputs but found ${sourceRange}`);
+    assert.ok(sourceRange === 2, `There should be 2 Source Range Inputs but found ${sourceRange}`);
 
     I.click(dbaasPage.tabs.dbClusterTab.advancedOptions.fields.deleteSourceRangeButton);
 
     sourceRange = await I.grabNumberOfVisibleElements(dbaasPage.tabs.dbClusterTab.advancedOptions.fields.sourceRangeInput);
 
-    assert.ok(sourceRange == 1, `There should be 1 Source Range Input but found ${sourceRange}`);
+    assert.ok(sourceRange === 1, `There should be 1 Source Range Input but found ${sourceRange}`);
 
     I.click(dbaasPage.tabs.dbClusterTab.basicOptions.fields.dbClusterDatabaseTypeField);
     I.fillField(dbaasPage.tabs.dbClusterTab.basicOptions.fields.dbClusterDatabaseTypeInputField, 'MongoDB');
