@@ -1,7 +1,7 @@
 const assert = require('assert');
 const moment = require('moment');
 
-const { locationsPage } = inject();
+const { locationsPage, scheduledPage } = inject();
 
 const location = {
   name: 'mongo-location for scheduling',
@@ -13,14 +13,16 @@ let locationId;
 let serviceId;
 const mysqlServiceName = 'mysql-with-backup2';
 const mongoServiceName = 'mongo-backup-schedule';
+const mongoServiceName2 = 'mongo-pitr-test';
 const mongoCluster = 'rs0';
 
 const mongoNameWithoutCluster = 'mongo-schedule-no-cluster';
-const scheduleErrors = new DataTable(['mode', 'error']);
+const scheduleErrors = new DataTable(['mode', 'serviceName', 'error']);
 
-scheduleErrors.add(['PITR', `A PITR backup for the cluster '${mongoCluster}' can be enabled only if there are no other scheduled backups for this cluster.`]);
-scheduleErrors.add(['Full', `A snapshot backup for cluster '${mongoCluster}' can be performed only if there is no enabled PITR backup for this cluster.`]);
-scheduleErrors.add(['On Demand', `A snapshot backup for cluster '${mongoCluster}' can be performed only if there is no enabled PITR backup for this cluster.`]);
+scheduleErrors.add(['PITR', mongoServiceName2, scheduledPage.messages.clusterHasPitrNoMoreAllowed(mongoCluster)]);
+scheduleErrors.add(['PITR', mongoServiceName, scheduledPage.messages.clusterHasPitrNoMoreAllowed(mongoCluster)]);
+scheduleErrors.add(['Full', mongoServiceName, scheduledPage.messages.snapshotNotAllowedWhenClusterHasPitr(mongoCluster)]);
+scheduleErrors.add(['On Demand', mongoServiceName, scheduledPage.messages.snapshotNotAllowedWhenClusterHasPitr(mongoCluster)]);
 
 const schedules = new DataTable(['cronExpression', 'name', 'frequency']);
 
@@ -44,6 +46,7 @@ BeforeSuite(async ({
   });
 
   I.say(await I.verifyCommand(`sudo pmm-admin add mongodb --port=27027 --service-name=${mongoServiceName} --replication-set=rs0 --cluster=${mongoCluster}`));
+  I.say(await I.verifyCommand(`sudo pmm-admin add mongodb --port=27027 --service-name=${mongoServiceName2} --replication-set=rs0 --cluster=${mongoCluster}`));
   I.say(await I.verifyCommand(`sudo pmm-admin add mongodb --port=27027 --service-name=${mongoNameWithoutCluster} --replication-set=rs0`));
 });
 
@@ -66,8 +69,9 @@ AfterSuite(async ({
   I,
 }) => {
   await I.mongoDisconnect();
-  await I.verifyCommand(`pmm-admin remove mongodb ${mongoNameWithoutCluster}`);
   await I.verifyCommand(`pmm-admin remove mongodb ${mongoServiceName}`);
+  await I.verifyCommand(`pmm-admin remove mongodb ${mongoServiceName2}`);
+  await I.verifyCommand(`pmm-admin remove mongodb ${mongoNameWithoutCluster}`);
 });
 
 Scenario(
@@ -413,7 +417,7 @@ Scenario(
 );
 
 Data(scheduleErrors).Scenario(
-  '@PMM-T1031 Verify that user can\'t enable PITR together with any another backup type'
+  '@PMM-T1031 @PMM-T1530 Verify that user can\'t enable PITR together with any another backup type'
   + ' @backup @bm-mongo',
   async ({
     I, scheduledPage, scheduledAPI, current,
@@ -429,7 +433,7 @@ Data(scheduleErrors).Scenario(
     await scheduledPage.openScheduledBackupsPage();
 
     scheduledPage.openScheduleBackupModal();
-    scheduledPage.selectDropdownOption(scheduledPage.fields.serviceNameDropdown, mongoServiceName);
+    scheduledPage.selectDropdownOption(scheduledPage.fields.serviceNameDropdown, current.serviceName);
     I.fillField(scheduledPage.fields.backupName, schedule.name);
     scheduledPage.selectDropdownOption(scheduledPage.fields.locationDropdown, location.name);
     if (current.mode === 'On Demand') {
@@ -440,7 +444,8 @@ Data(scheduleErrors).Scenario(
 
     I.click(scheduledPage.buttons.createSchedule);
     I.verifyPopUpMessage(current.error, 5);
-  });
+  },
+);
 
 Scenario(
   '@PMM-T1517 Verify that BM Scheduler is more clear regarding frequency specification @backup',

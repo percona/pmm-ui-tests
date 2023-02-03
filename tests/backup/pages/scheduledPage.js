@@ -67,6 +67,8 @@ module.exports = {
     successfullyDeleted: (name) => `Scheduled backup "${name}" successfully deleted.`,
     scheduleInModalLabel: 'UTC time',
     mustBeMemberOfCluster: (name) => `Service ${name} must be a member of a cluster`,
+    clusterHasPitrNoMoreAllowed: (cluster) => `A PITR backup for the cluster '${cluster}' can be enabled only if there are no other scheduled backups for this cluster.`,
+    snapshotNotAllowedWhenClusterHasPitr: (cluster) => `A snapshot backup for cluster '${cluster}' can be performed only if there is no enabled PITR backup for this cluster.`,
   },
   locationType: {},
 
