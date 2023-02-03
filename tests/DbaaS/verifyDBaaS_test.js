@@ -378,7 +378,7 @@ Scenario('@PMM-T1512 Verify tooltips work properly for DBaaS page @dbaas',
     }
   });
 
-Scenario.only('PMM-XXXX Verify Create DB Cluster page @dbaas',
+Scenario('PMM-XXXX Verify Create DB Cluster page @dbaas',
   async ({ I, dbaasPage, adminPage }) => {
     I.amOnPage(dbaasPage.url);
     I.waitForEnabled(dbaasPage.tabs.dbClusterTab.dbClusterAddButtonTop, 10);
