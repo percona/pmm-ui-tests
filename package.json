@@ -58,6 +58,7 @@
   },
   "devDependencies": {
     "@playwright/test": "^1.30.0",
+    "@types/faker": "^6.6.9",
     "@types/node": "^18.8.3"
   }
 }

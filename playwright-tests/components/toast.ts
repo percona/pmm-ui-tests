@@ -1,5 +1,5 @@
 import { Page, expect, Locator } from '@playwright/test';
-import Duration from '@helpers/duration';
+import Duration from '@helpers/Duration';
 
 export class Toast {
   constructor(readonly page: Page) {}

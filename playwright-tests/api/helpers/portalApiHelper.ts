@@ -2,7 +2,7 @@ import { APIRequestContext, APIResponse, request } from '@playwright/test';
 
 const portalBaseUrl = process.env.PORTAL_BASE_URL || 'https://portal-dev.percona.com';
 
-const throwPortalRequestError = (e) => {
+const throwPortalRequestError = (e: string) => {
   throw new Error(`Failed to execute portal request. Error: ${e}`);
 };
 

@@ -5,9 +5,9 @@ import { fileHelper } from '@helpers/FileHelper';
 import { portalAPI } from '@api/portalApi';
 import { serviceNowAPI } from '@api/serviceNowApi';
 import { PortalUserRoles } from '@support/enums/portalUserRoles';
-import Duration from '@helpers/duration';
+import Duration from '@helpers/Duration';
 import HomeDashboard from '@pages/HomeDashboard.page';
-import grafanaHelper from '@helpers/grafanaHelper';
+import grafanaHelper from '@helpers/GrafanaHelper';
 import { oktaAPI } from '@api/okta';
 
 test.describe('Spec file for PMM connected the portal', async () => {

@@ -1,5 +1,5 @@
 import { expect, Page } from '@playwright/test';
-import Duration from '@helpers/duration';
+import Duration from '@helpers/Duration';
 
 export default class PmmUpgrade {
   constructor(readonly page: Page) {}
@@ -21,7 +21,7 @@ export default class PmmUpgrade {
 
   fields = {};
 
-  getPMMVersion = async (versionString) => {
+  getPMMVersion = async (versionString: string) => {
     const [versionMajor, versionMinor, versionPatch] = versionString.split('.');
     return { versionMajor, versionMinor, versionPatch };
   };

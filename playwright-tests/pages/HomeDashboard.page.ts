@@ -1,8 +1,8 @@
 import { expect, Page } from '@playwright/test';
 import PmmUpgrade from '@components/pmmUpgrade';
 import UpgradeModal from '@components/upgradeModal';
-import Duration from '@helpers/duration';
-import { CommonPage } from '@pages/common.page';
+import Duration from '@helpers/Duration';
+import { CommonPage } from '@pages/Common.page';
 
 export default class HomeDashboard extends CommonPage {
   constructor(page: Page) {

@@ -9,10 +9,10 @@ import { PortalUserRoles } from '@support/enums/portalUserRoles';
 import { SignInPage } from '@pages/SignIn.page';
 import HomeDashboard from '@pages/HomeDashboard.page';
 import TicketsPage from '@pages/platformPages/Tickets.page';
-import Duration from '@helpers/duration';
+import Duration from '@helpers/Duration';
 import EntitlementsPage from '@pages/platformPages/Entitlements.page';
 import EnvironmentOverview from '@pages/platformPages/EnvironmentOverview.page';
-import grafanaHelper from '@helpers/grafanaHelper';
+import grafanaHelper from '@helpers/GrafanaHelper';
 import PerconaPlatform from '@pages/pmmSettings/PerconaPlatform.page';
 
 test.describe('Spec file for PMM connected the portal', async () => {
@@ -22,7 +22,7 @@ test.describe('Spec file for PMM connected the portal', async () => {
   let freeUser: User;
   let pmmVersion: number;
   const fileName = 'portalCredentials';
-  let orgId;
+  let orgId: string;
 
   test.beforeAll(async () => {
     if (!pmmVersion) {
@@ -55,9 +55,9 @@ test.describe('Spec file for PMM connected the portal', async () => {
 
   test('Verify user roles are untouched after PMM server upgrade @not-ui-pipeline @portal @post-pmm-portal-upgrade', async () => {
     const users = await apiHelper.listOrgUsers();
-    const foundAdmin1User = users.find((user) => user.email === firstAdmin.email);
-    const foundAdmin2User = users.find((user) => user.email === secondAdmin.email);
-    const foundTechnicalUser = users.find((user) => user.email === technicalUser.email);
+    const foundAdmin1User = users.find((user: any) => user.email === firstAdmin.email);
+    const foundAdmin2User = users.find((user: any) => user.email === secondAdmin.email);
+    const foundTechnicalUser = users.find((user: any) => user.email === technicalUser.email);
 
     expect(foundAdmin1User.role).toEqual('Admin');
     expect(foundAdmin2User.role).toEqual('Admin');

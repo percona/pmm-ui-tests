@@ -1,6 +1,6 @@
 import { Page } from '@playwright/test';
-import { OktaSignInPage } from '@pages/oktaSignIn.page';
-import { CommonPage } from '@pages/common.page';
+import { OktaSignInPage } from '@pages/OktaSignIn.page';
+import { CommonPage } from '@pages/Common.page';
 
 export class SignInPage extends CommonPage {
   constructor(readonly page: Page) {
