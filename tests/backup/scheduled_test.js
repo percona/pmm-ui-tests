@@ -386,6 +386,7 @@ Scenario(
       name: 'mySQL for parallel backup test',
       mode: scheduledAPI.backupModes.snapshot,
       description: '',
+      isLogical: false,
       retry_interval: '30s',
       retries: 0,
       enabled: true,
