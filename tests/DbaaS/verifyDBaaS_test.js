@@ -100,7 +100,6 @@ Scenario('PMM-T1451 - Verify Register new Kubernetes Cluster page @dbaas',
     I.click(dbaasPage.tabs.kubernetesClusterTab.addKubernetesClusterButtonInTable);
     I.waitForVisible(dbaasPage.tabs.kubernetesClusterTab.registerNewClusterHeader);
     I.seeElement(dbaasPage.tabs.kubernetesClusterTab.genericClusterLabel);
-    I.seeElement(dbaasPage.tabs.kubernetesClusterTab.eksClusterLabel);
     I.seeCheckboxIsChecked(dbaasPage.tabs.kubernetesClusterTab.genericEksClusterRadio);
     I.seeElement(dbaasPage.tabs.kubernetesClusterTab.pasteFromClipboardButton);
     I.click(dbaasPage.tabs.kubernetesClusterTab.eksClusterLabel);
@@ -108,8 +107,8 @@ Scenario('PMM-T1451 - Verify Register new Kubernetes Cluster page @dbaas',
     I.seeElement(dbaasPage.tabs.kubernetesClusterTab.kubernetesClusterNameInput);
     I.seeElement(dbaasPage.tabs.kubernetesClusterTab.awsAccessKeyInput);
     I.seeElement(dbaasPage.tabs.kubernetesClusterTab.awsSecretKeyInput);
-    I.seeElement(dbaasPage.tabs.kubernetesClusterTab.pasteFromClipboardButton);
-  });
+  }
+);
 
 Scenario(
   'PMM-T547 PMM-T548  Verify user is able to view config of registered Kubernetes cluster on Kubernetes Cluster Page, '
@@ -173,13 +172,8 @@ Scenario('PMM-T728 Verify DB Cluster Tab Page Elements & Steps Background @dbaas
     I.seeElement(dbaasPage.tabs.dbClusterTab.advancedOptionsButton);
     I.click(dbaasPage.tabs.dbClusterTab.advancedOptionsButton);
     I.seeElement(dbaasPage.tabs.dbClusterTab.advancedOptions.fields.nodesNumberField);
-    I.scrollTo(dbaasPage.tabs.dbClusterTab.advancedOptions.fields.dbClusterExposeLabel);
-    I.dontSeeCheckboxIsChecked(
-      dbaasPage.tabs.dbClusterTab.advancedOptions.fields.dbClusterExposeCheckbox,
-    );
-    I.moveCursorTo(dbaasPage.tabs.dbClusterTab.advancedOptions.fields.dbClusterExposeTooltip);
-    I.seeTextEquals('You will make this database cluster available to connect from the internet. To limit access you need to specify source ranges',
-      dbaasPage.tabs.dbClusterTab.advancedOptions.fields.dbClusterExposeTooltipText);
+    I.scrollTo(dbaasPage.tabs.dbClusterTab.networkAndSecurity.exposeLabel);
+    I.dontSeeCheckboxIsChecked(dbaasPage.tabs.dbClusterTab.networkAndSecurity.exposeCheckbox);
     I.seeElement(dbaasPage.tabs.dbClusterTab.advancedOptions.fields.resourcesPerNodeLabel);
     I.seeElement(dbaasPage.tabs.dbClusterTab.advancedOptions.fields.memoryField);
     I.seeElement(dbaasPage.tabs.dbClusterTab.advancedOptions.fields.cpuNumberFields);
@@ -387,23 +381,23 @@ Scenario('PMM-T1571 Verify Create DB Cluster page @dbaas',
     I.dontSeeElement(dbaasPage.tabs.dbClusterTab.advancedOptions.fields.nodesNumberField);
     I.click(dbaasPage.tabs.dbClusterTab.advancedOptionsButton);
     I.waitForElement(dbaasPage.tabs.dbClusterTab.advancedOptions.fields.nodesNumberField);
-    I.scrollTo(dbaasPage.tabs.dbClusterTab.advancedOptions.fields.dbClusterConfigurationsLabel('MySQL'));
-    I.seeElement(dbaasPage.tabs.dbClusterTab.advancedOptions.fields.storageClassLabel);
-    I.seeElement(dbaasPage.tabs.dbClusterTab.advancedOptions.fields.dbClusterConfigurationLabel('MySQL'));
-    I.seeElement(dbaasPage.tabs.dbClusterTab.advancedOptions.fields.networkAndSecurityLabel);
-    I.seeElement(dbaasPage.tabs.dbClusterTab.advancedOptions.fields.exposeLabel);
+    I.scrollTo(dbaasPage.tabs.dbClusterTab.dbConfigurations.configurationsHeader('MySQL'));
+    I.seeElement(dbaasPage.tabs.dbClusterTab.dbConfigurations.storageClassLabel);
+    I.seeElement(dbaasPage.tabs.dbClusterTab.dbConfigurations.configurationLabel('MySQL'));
+    I.seeElement(dbaasPage.tabs.dbClusterTab.networkAndSecurity.networkAndSecurityHeader);
+    I.seeElement(dbaasPage.tabs.dbClusterTab.networkAndSecurity.exposeLabel);
     await adminPage.verifyTooltip(dbaasPage.tooltips.expose);
-    I.seeElement(dbaasPage.tabs.dbClusterTab.advancedOptions.fields.internetFacingLabel);
-    I.scrollTo(dbaasPage.tabs.dbClusterTab.advancedOptions.fields.sourceRangesLabel);
-    I.click(dbaasPage.tabs.dbClusterTab.advancedOptions.fields.addNewSourceRangeButton);
+    I.seeElement(dbaasPage.tabs.dbClusterTab.networkAndSecurity.internetFacingLabel);
+    I.scrollTo(dbaasPage.tabs.dbClusterTab.networkAndSecurity.sourceRangesLabel);
+    I.click(dbaasPage.tabs.dbClusterTab.networkAndSecurity.addNewSourceRangeButton);
     let sourceRange = await I.grabNumberOfVisibleElements(
-      dbaasPage.tabs.dbClusterTab.advancedOptions.fields.sourceRangeInput);
+      dbaasPage.tabs.dbClusterTab.networkAndSecurity.sourceRangeInput);
 
     assert.ok(sourceRange === 2, `There should be 2 Source Range Inputs but found ${sourceRange}`);
 
-    I.click(dbaasPage.tabs.dbClusterTab.advancedOptions.fields.deleteSourceRangeButton);
+    I.click(dbaasPage.tabs.dbClusterTab.networkAndSecurity.deleteSourceRangeButton);
 
-    sourceRange = await I.grabNumberOfVisibleElements(dbaasPage.tabs.dbClusterTab.advancedOptions.fields.sourceRangeInput);
+    sourceRange = await I.grabNumberOfVisibleElements(dbaasPage.tabs.dbClusterTab.networkAndSecurity.sourceRangeInput);
 
     assert.ok(sourceRange === 1, `There should be 1 Source Range Input but found ${sourceRange}`);
 
@@ -413,12 +407,12 @@ Scenario('PMM-T1571 Verify Create DB Cluster page @dbaas',
       dbaasPage.tabs.dbClusterTab.basicOptions.fields.dbClusterDatabaseTypeFieldSelect('MongoDB'),
     );
     I.click(dbaasPage.tabs.dbClusterTab.basicOptions.fields.dbClusterDatabaseTypeFieldSelect('MongoDB'));
-    I.seeElement(dbaasPage.tabs.dbClusterTab.advancedOptions.fields.dbClusterConfigurationsLabel('MongoDB'));
-    I.seeElement(dbaasPage.tabs.dbClusterTab.advancedOptions.fields.storageClassLabel);
-    I.scrollTo(dbaasPage.tabs.dbClusterTab.advancedOptions.fields.dbClusterConfigurationLabel('MongoDB'));
-    I.seeElement(dbaasPage.tabs.dbClusterTab.advancedOptions.fields.networkAndSecurityLabel);
-    I.seeElement(dbaasPage.tabs.dbClusterTab.advancedOptions.fields.exposeLabel);
-    I.seeElement(dbaasPage.tabs.dbClusterTab.advancedOptions.fields.internetFacingLabel);
-    I.seeElement(dbaasPage.tabs.dbClusterTab.advancedOptions.fields.sourceRangesLabel);
+    I.seeElement(dbaasPage.tabs.dbClusterTab.dbConfigurations.configurationsHeader('MongoDB'));
+    I.seeElement(dbaasPage.tabs.dbClusterTab.dbConfigurations.storageClassLabel);
+    I.scrollTo(dbaasPage.tabs.dbClusterTab.dbConfigurations.configurationLabel('MongoDB'));
+    I.seeElement(dbaasPage.tabs.dbClusterTab.networkAndSecurity.networkAndSecurityHeader);
+    I.seeElement(dbaasPage.tabs.dbClusterTab.networkAndSecurity.exposeLabel);
+    I.seeElement(dbaasPage.tabs.dbClusterTab.networkAndSecurity.internetFacingLabel);
+    I.seeElement(dbaasPage.tabs.dbClusterTab.networkAndSecurity.sourceRangesLabel);
   }
 );

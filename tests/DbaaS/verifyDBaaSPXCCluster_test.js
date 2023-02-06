@@ -57,6 +57,22 @@ async ({
   await dbaasPage.verifyLogPopup(18, pxc_cluster_name);
 });
 
+Scenario('PMM-XXXX Verify Edit DB Cluster page @dbaas',
+  async ({ I, dbaasPage }) => {
+    I.amOnPage(dbaasPage.url);
+    I.waitForVisible(dbaasPage.tabs.dbClusterTab.fields.clusterActionsMenu(pxc_cluster_name), 30);
+    I.forceClick(dbaasPage.tabs.dbClusterTab.fields.clusterActionsMenu(pxc_cluster_name));
+    I.waitForElement(dbaasPage.tabs.dbClusterTab.fields.clusterAction('Edit'), 30);
+    I.click(dbaasPage.tabs.dbClusterTab.fields.clusterAction('Edit'));
+    I.waitForElement(dbaasPage.tabs.dbClusterTab.fields.editDbClusterHeader);
+    I.dontSeeElement(dbaasPage.tabs.dbClusterTab.basicOptions.fields.allBasicOptions);
+    I.seeElement(dbaasPage.tabs.dbClusterTab.advancedOptions.fields.advancedSettingsLabel);
+    I.seeElement(dbaasPage.tabs.dbClusterTab.dbConfigurations.configurationsHeader('MySQL'));
+    I.seeElement(dbaasPage.tabs.dbClusterTab.networkAndSecurity.networkAndSecurityHeader);
+    await dbaasPage.verifyElementsInSection(dbaasPage.tabs.dbClusterTab.networkAndSecurity.disabled);
+  }
+);
+
 Scenario(
   'PMM-T486 Verify Adding PMM-Server Public Address via Settings works, ' 
   + 'PMM-T1315 - Verify DBaaS naming @dbaas',

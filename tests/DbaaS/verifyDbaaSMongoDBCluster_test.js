@@ -109,6 +109,22 @@ Scenario('PMM-T665 PMM-T642 PSMDB Cluster with Custom Resources, log popup ' +
     );
   });
 
+Scenario('PMM-XXXX Verify Edit DB Cluster page @dbaas',
+  async ({ I, dbaasPage }) => {
+    I.amOnPage(dbaasPage.url);
+    I.waitForVisible(dbaasPage.tabs.dbClusterTab.fields.clusterActionsMenu(psmdb_cluster), 30);
+    I.forceClick(dbaasPage.tabs.dbClusterTab.fields.clusterActionsMenu(psmdb_cluster));
+    I.waitForElement(dbaasPage.tabs.dbClusterTab.fields.clusterAction('Edit'), 30);
+    I.click(dbaasPage.tabs.dbClusterTab.fields.clusterAction('Edit'));
+    I.waitForElement(dbaasPage.tabs.dbClusterTab.fields.editDbClusterHeader);
+    I.dontSeeElement(dbaasPage.tabs.dbClusterTab.basicOptions.fields.allBasicOptions);
+    I.seeElement(dbaasPage.tabs.dbClusterTab.advancedOptions.fields.advancedSettingsLabel);
+    I.seeElement(dbaasPage.tabs.dbClusterTab.dbConfigurations.configurationsHeader('MongoDB'));
+    I.seeElement(dbaasPage.tabs.dbClusterTab.networkAndSecurity.networkAndSecurityHeader);
+    await dbaasPage.verifyElementsInSection(dbaasPage.tabs.dbClusterTab.networkAndSecurity.disabled);
+  }
+);  
+
 Scenario(
   'PMM-T525 PMM-T528 Verify Suspend & Resume for Mongo DB Cluster Works as expected @dbaas',
   async ({ I, dbaasPage, dbaasActionsPage }) => {
