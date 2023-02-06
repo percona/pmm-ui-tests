@@ -109,7 +109,7 @@ Scenario('PMM-T665 PMM-T642 PSMDB Cluster with Custom Resources, log popup ' +
     );
   });
 
-Scenario('PMM-XXXX Verify Edit DB Cluster page @dbaas',
+Scenario('PMM-T1577 Verify Edit DB Cluster page @dbaas',
   async ({ I, dbaasPage }) => {
     I.amOnPage(dbaasPage.url);
     I.waitForVisible(dbaasPage.tabs.dbClusterTab.fields.clusterActionsMenu(psmdb_cluster), 30);
@@ -122,6 +122,7 @@ Scenario('PMM-XXXX Verify Edit DB Cluster page @dbaas',
     I.seeElement(dbaasPage.tabs.dbClusterTab.dbConfigurations.configurationsHeader('MongoDB'));
     I.seeElement(dbaasPage.tabs.dbClusterTab.networkAndSecurity.networkAndSecurityHeader);
     await dbaasPage.verifyElementsInSection(dbaasPage.tabs.dbClusterTab.networkAndSecurity.disabled);
+    I.seeElement(dbaasPage.tabs.dbClusterTab.editClusterButtonDisabled);
   }
 );  
 

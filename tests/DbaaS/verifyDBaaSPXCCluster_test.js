@@ -57,7 +57,7 @@ async ({
   await dbaasPage.verifyLogPopup(18, pxc_cluster_name);
 });
 
-Scenario('PMM-XXXX Verify Edit DB Cluster page @dbaas',
+Scenario('PMM-T1577 Verify Edit DB Cluster page @dbaas',
   async ({ I, dbaasPage }) => {
     I.amOnPage(dbaasPage.url);
     I.waitForVisible(dbaasPage.tabs.dbClusterTab.fields.clusterActionsMenu(pxc_cluster_name), 30);
@@ -70,6 +70,7 @@ Scenario('PMM-XXXX Verify Edit DB Cluster page @dbaas',
     I.seeElement(dbaasPage.tabs.dbClusterTab.dbConfigurations.configurationsHeader('MySQL'));
     I.seeElement(dbaasPage.tabs.dbClusterTab.networkAndSecurity.networkAndSecurityHeader);
     await dbaasPage.verifyElementsInSection(dbaasPage.tabs.dbClusterTab.networkAndSecurity.disabled);
+    I.seeElement(dbaasPage.tabs.dbClusterTab.editClusterButtonDisabled);
   }
 );
 
