@@ -4,31 +4,17 @@
   "compilerOptions": {
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
-    "baseUrl": "./",
+    "baseUrl": ".",
     "moduleResolution": "node",
-    "lib": [ "ES2022" ],
+    "lib": ["ES2022"],
     "paths": {
-      "@tests/*": [
-        "./*"
-      ],
-      "@pages/*": [
-        "pages/*"
-      ],
-      "@api/*": [
-        "api/*"
-      ],
-      "@support/*": [
-        "support/*"
-      ],
-      "@root/*": [
-        "../*"
-      ],
-      "@helpers/*": [
-        "helpers/*"
-      ],
-      "@components/*": [
-        "components/*"
-      ],
+      "@tests/*": ["./*"],
+      "@pages/*": ["pages/*"],
+      "@api/*": ["api/*"],
+      "@support/*": ["support/*"],
+      "@root/*": ["../*"],
+      "@helpers/*": ["helpers/*"],
+      "@components/*": ["components/*"]
     }
   }
 }
