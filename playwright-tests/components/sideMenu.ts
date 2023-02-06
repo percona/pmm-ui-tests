@@ -1,10 +1,9 @@
-/* eslint-disable lines-between-class-members, no-empty-function */
 import { Page } from '@playwright/test';
 
 export class SideMenu {
   constructor(readonly page: Page) {}
 
-  sideMenu= this.page.getByTestId('sidemenu');
+  sideMenu = this.page.getByTestId('sidemenu');
 
   elements = {
     tickets: this.sideMenu.locator('//*[@href="/graph/tickets"]'),
@@ -12,5 +11,3 @@ export class SideMenu {
     environmentOverview: this.sideMenu.locator('//*[@href="/graph/environment-overview"]'),
   };
 }
-
-

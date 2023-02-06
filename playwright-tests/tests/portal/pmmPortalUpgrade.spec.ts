@@ -10,7 +10,6 @@ import HomeDashboard from '@pages/HomeDashboard.page';
 import grafanaHelper from '@helpers/grafanaHelper';
 import { oktaAPI } from '@api/okta';
 
-
 test.describe('Spec file for PMM connected the portal', async () => {
   test.describe.configure({ retries: 0 });
   let firstAdmin: User;
@@ -22,9 +21,9 @@ test.describe('Spec file for PMM connected the portal', async () => {
   let orgId;
 
   test.beforeAll(async () => {
-    if(!pmmVersion) {
+    if (!pmmVersion) {
       const versionString = (await apiHelper.getPmmVersion()).versionMinor;
-      pmmVersion = parseInt(versionString)
+      pmmVersion = parseInt(versionString);
     }
     const userCredentials = await fileHelper.readfile(fileName);
     let adminToken: string;
@@ -36,16 +35,16 @@ test.describe('Spec file for PMM connected the portal', async () => {
       [firstAdmin, secondAdmin, technicalUser] = await serviceNowAPI.createServiceNowUsers();
       adminToken = await portalAPI.getUserAccessToken(firstAdmin.email, firstAdmin.password);
       let { org } = await portalAPI.createOrg(adminToken);
-      orgId = org.id
+      orgId = org.id;
       await portalAPI.inviteUserToOrg(adminToken, org.id, secondAdmin.email, PortalUserRoles.admin);
       await portalAPI.inviteUserToOrg(adminToken, org.id, technicalUser.email, PortalUserRoles.technical);
       await fileHelper.writeFileSync(fileName, JSON.stringify([firstAdmin, secondAdmin, technicalUser]));
     }
     freeUser = await oktaAPI.createTestUser();
     await portalAPI.inviteUserToOrg(adminToken, orgId, freeUser.email, PortalUserRoles.admin);
-  })
+  });
 
-  test.beforeEach(async ({page}) => {
+  test.beforeEach(async ({ page }) => {
     await apiHelper.confirmTour(page);
     await page.goto('');
   });
@@ -60,7 +59,7 @@ test.describe('Spec file for PMM connected the portal', async () => {
     const currentVersion = await homeDashboard.pmmUpgrade.elements.currentVersion.textContent();
     const availableVersion = await homeDashboard.pmmUpgrade.elements.availableVersion.textContent();
 
-    console.log(`Upgrading PMM from the version: ${currentVersion} to the version: ${availableVersion}.`)
+    console.log(`Upgrading PMM from the version: ${currentVersion} to the version: ${availableVersion}.`);
 
     test.info().annotations.push({
       type: 'Test Details',

@@ -8,7 +8,7 @@ export default class PerconaPlatform extends CommonPage {
 
   perconaPlatformURL = 'graph/settings/percona-platform';
   perconaPlatformContainer = this.page.getByTestId('connect-form');
-  connectedContainer = this.page.getByTestId('connected-wrapper'); 
+  connectedContainer = this.page.getByTestId('connected-wrapper');
 
   elements = {
     ...super.getElements(),
@@ -18,7 +18,7 @@ export default class PerconaPlatform extends CommonPage {
     accessTokenHeader: this.perconaPlatformContainer.getByTestId('accessToken-field-label'),
     accessTokenError: this.perconaPlatformContainer.getByTestId('accessToken-field-error-message'),
     readMore: this.page.getByText('Read More...'),
-  }
+  };
 
   fields = {
     ...super.getFields(),
@@ -27,8 +27,8 @@ export default class PerconaPlatform extends CommonPage {
     password: this.perconaPlatformContainer.getByTestId('password-password-input'),
     pmmServerName: this.perconaPlatformContainer.getByTestId('pmmServerName-text-input'),
     accessToken: this.perconaPlatformContainer.getByTestId('accessToken-text-input'),
-  }
-  
+  };
+
   labels = {
     ...super.getLabels(),
     header: 'Connect PMM to Percona Platform',
@@ -37,7 +37,7 @@ export default class PerconaPlatform extends CommonPage {
     accessToken: 'Percona Platform Access Token *',
     getToken: 'Get token',
     requiredField: 'Required field',
-  }
+  };
 
   buttons = {
     ...super.getButtons(),
@@ -45,7 +45,7 @@ export default class PerconaPlatform extends CommonPage {
     disconnect: this.connectedContainer.getByTestId('disconnect-button'),
     confirmDisconnect: this.page.locator('//*[@aria-label="Confirm Modal Danger Button"]'),
     getToken: this.perconaPlatformContainer.getByText(this.labels.getToken),
-  }
+  };
 
   messages = {
     ...super.getMessages(),
@@ -54,24 +54,25 @@ export default class PerconaPlatform extends CommonPage {
     updateSuccess: 'Settings updated',
     oldPmmVersionError: 'Authentication failed. Please update the PMM version.',
     pmmDisconnectedFromPortal: 'Successfully disconnected PMM from Percona Platform',
-  }
+  };
 
   links = {
     ...super.getLinks(),
     portalProfile: 'https://portal-dev.percona.com/profile',
     platformProfile: 'https://platform-dev.percona.com/profile',
-    readMore: 'https://docs.percona.com/percona-monitoring-and-management/how-to/integrate-platform.html#disconnect-a-pmm-instance',
-  }
+    readMore:
+      'https://docs.percona.com/percona-monitoring-and-management/how-to/integrate-platform.html#disconnect-a-pmm-instance',
+  };
 
   connectToPortal = async (token: string, serverName = 'Test Server', isIPAddressSet = false) => {
     await this.fields.pmmServerName.type(serverName);
     await this.fields.accessToken.type(token);
     await this.buttons.connect.click();
-    
+
     if (!isIPAddressSet) {
       await this.toast.checkToastMessage(this.messages.updateSuccess);
     }
     await this.toast.checkToastMessage(this.messages.connectedSuccess, { variant: 'success' });
-    await this.connectedContainer.waitFor({ state: 'visible' })
-  }
+    await this.connectedContainer.waitFor({ state: 'visible' });
+  };
 }

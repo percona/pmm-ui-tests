@@ -1,16 +1,9 @@
 import axios, { Method } from 'axios';
-
-const https = require('https');
+import https from 'https';
 
 const httpsAgent = new https.Agent({ rejectUnauthorized: false });
 
-export const oktaRequest = async (
-  baseUrl: string,
-  urlSuffix: string,
-  method: Method = 'get',
-  token: string,
-  data = {},
-) => {
+export const oktaRequest = async (baseUrl: string, urlSuffix: string, method: Method = 'get', token: string, data = {}) => {
   let response;
 
   try {

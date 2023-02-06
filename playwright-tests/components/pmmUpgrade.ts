@@ -2,32 +2,28 @@ import { expect, Page } from '@playwright/test';
 import Duration from '@helpers/duration';
 
 export default class PmmUpgrade {
-  constructor(readonly page: Page) {
-  }
-  // Containers
+  constructor(readonly page: Page) {}
+
   containers = {
     upgradeContainer: this.page.locator('//*[@aria-label="PMM Upgrade panel"]'),
   };
-  
-  // Elements
+
   elements = {
     currentVersion: this.containers.upgradeContainer.getByTestId('update-installed-version'),
     availableVersion: this.containers.upgradeContainer.getByTestId('update-latest-version'),
     upToDate: this.containers.upgradeContainer.getByText('You are up to date'),
     lastUpgradeCheckDate: this.containers.upgradeContainer.getByTestId('update-last-check'),
-  }
+  };
 
   buttons = {
-    upgradeButton: this.containers.upgradeContainer.getByText('Upgrade to', {exact: false}),
-  }
-  
-  fields = {
+    upgradeButton: this.containers.upgradeContainer.getByText('Upgrade to', { exact: false }),
+  };
 
-  }
+  fields = {};
 
   getPMMVersion = async (versionString) => {
     const [versionMajor, versionMinor, versionPatch] = versionString.split('.');
-    return {versionMajor, versionMinor, versionPatch}
+    return { versionMajor, versionMinor, versionPatch };
   };
 
   getCurrentPMMVersion = async () => {
@@ -37,8 +33,8 @@ export default class PmmUpgrade {
     const versions = {
       versionMajor: parseInt(versionMajorString),
       versionMinor: parseInt(versionMinorString),
-      versionPatch: parseInt(versionPatchString)
-    }
+      versionPatch: parseInt(versionPatchString),
+    };
 
     return versions;
   };

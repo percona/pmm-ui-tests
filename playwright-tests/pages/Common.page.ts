@@ -1,10 +1,8 @@
-/* eslint-disable lines-between-class-members */
 import { Page } from '@playwright/test';
 import { SideMenu } from '@components/sideMenu';
 import { Toast } from '@components/toast';
 
 export class CommonPage {
-  // eslint-disable-next-line no-empty-function
   constructor(readonly page: Page) {}
 
   toast = new Toast(this.page);
@@ -33,28 +31,28 @@ export class CommonPage {
   };
 
   private baseLinks = {};
-  
+
   protected getElements() {
     return this.baseElements;
-  };
+  }
 
   protected getFields() {
     return this.baseFields;
-  };
+  }
 
   protected getLabels() {
     return this.baseLabels;
-  };
+  }
 
   protected getButtons() {
     return this.baseButtons;
-  };
+  }
 
   protected getMessages() {
     return this.baseMessages;
-  };
+  }
 
   protected getLinks() {
     return this.baseLinks;
-  };
+  }
 }

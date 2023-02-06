@@ -15,25 +15,25 @@ export default class EnvironmentOverview extends CommonPage {
     contactsHeader: this.environmentOverviewContainer.getByText('Percona Contacts'),
     contactsSubHeader: this.environmentOverviewContainer.getByText('Customer Success Manager'),
     emailIcon: this.environmentOverviewContainer.getByTestId('contact-email-icon'),
-  }
+  };
 
   fields = {
     ...super.getFields(),
-  }
-  
+  };
+
   labels = {
     ...super.getLabels(),
-  }
+  };
 
   buttons = {
     ...super.getButtons(),
-  }
+  };
 
   messages = {
     ...super.getMessages(),
-  }
+  };
 
   links = {
     ...super.getLinks(),
-  }
+  };
 }

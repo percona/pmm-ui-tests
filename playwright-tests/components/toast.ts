@@ -1,4 +1,3 @@
-/* eslint-disable lines-between-class-members, no-empty-function */
 import { Page, expect, Locator } from '@playwright/test';
 import Duration from '@helpers/duration';
 
@@ -10,8 +9,11 @@ export class Toast {
   toastWarning = this.page.locator('//div[@data-testid="data-testid Alert warning" or @aria-label="Alert warning"]');
   toastError = this.page.locator('//div[@data-testid="data-testid Alert error" or @aria-label="Alert error"]');
   closeButton = (selectedToast: Locator) => selectedToast.locator('//*[@aria-label="Close alert" or @type="button"]');
-  
-  checkToastMessage = async (message: string, options?: { timeout?: Duration.OneMinute, variant?: 'success' | 'warning' | 'error' }) => {
+
+  checkToastMessage = async (
+    message: string,
+    options?: { timeout?: Duration.OneMinute; variant?: 'success' | 'warning' | 'error' },
+  ) => {
     let selectedToast: Locator;
     switch (options?.variant) {
       case 'success':
@@ -26,11 +28,11 @@ export class Toast {
       default:
         selectedToast = this.toast;
         break;
-      }
+    }
 
-      await selectedToast.waitFor({ state: 'visible', timeout: options?.timeout });
-      await expect(selectedToast).toHaveText(message);
-      await this.closeButton(selectedToast).click();
-      await selectedToast.waitFor({ state: 'detached' });
-  }
+    await selectedToast.waitFor({ state: 'visible', timeout: options?.timeout });
+    await expect(selectedToast).toHaveText(message);
+    await this.closeButton(selectedToast).click();
+    await selectedToast.waitFor({ state: 'detached' });
+  };
 }

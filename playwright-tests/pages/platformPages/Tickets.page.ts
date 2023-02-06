@@ -16,26 +16,26 @@ export default class TicketsPage extends CommonPage {
     table: this.ticketsContainer.getByTestId('table'),
     rows: this.tableBody.getByRole('row'),
     row: (index: number) => this.tableBody.getByRole('row').nth(index),
-  }
+  };
 
   fields = {
     ...super.getFields(),
-  }
-  
+  };
+
   labels = {
     ...super.getLabels(),
-  }
+  };
 
   buttons = {
     ...super.getButtons(),
-  }
+  };
 
   messages = {
     ...super.getMessages(),
     noTicketsFound: 'No tickets found',
-  }
+  };
 
   links = {
     ...super.getLinks(),
-  }
+  };
 }

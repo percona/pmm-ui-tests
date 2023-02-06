@@ -12,26 +12,26 @@ export default class EntitlementsPage extends CommonPage {
   elements = {
     ...super.getElements(),
     row: this.entitlementsContainer.locator('//div[contains(@id, "collapse-label")]'),
-  }
+  };
 
   fields = {
     ...super.getFields(),
-  }
-  
+  };
+
   labels = {
     ...super.getLabels(),
-  }
+  };
 
   buttons = {
     ...super.getButtons(),
-  }
+  };
 
   messages = {
     ...super.getMessages(),
     noEntitlements: 'No entitlements found',
-  }
+  };
 
   links = {
     ...super.getLinks(),
-  }
+  };
 }

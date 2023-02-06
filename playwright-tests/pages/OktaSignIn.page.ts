@@ -1,30 +1,23 @@
-/* eslint-disable lines-between-class-members */
 import { Page } from '@playwright/test';
 
 export class OktaSignInPage {
-  // eslint-disable-next-line no-empty-function
-  constructor(readonly page: Page) {
-  }
+  constructor(readonly page: Page) {}
 
-  elements = {
-  }
+  elements = {};
 
   fields = {
     username: this.page.locator('//*[@name="username"]'),
-    password: this.page.locator('//*[@name="password"]')
-  }
+    password: this.page.locator('//*[@name="password"]'),
+  };
 
-  labels = {
-  }
+  labels = {};
 
   buttons = {
     next: this.page.locator('//*[@id="idp-discovery-submit"]'),
-    signIn: this.page.locator('//*[@id="okta-signin-submit"]')
-  }
+    signIn: this.page.locator('//*[@id="okta-signin-submit"]'),
+  };
 
-  messages = {
-  }
+  messages = {};
 
-  links = {
-  }
+  links = {};
 }

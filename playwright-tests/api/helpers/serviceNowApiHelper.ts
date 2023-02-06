@@ -1,8 +1,8 @@
 import axios, { Method } from 'axios';
-// import https from 'https';
+import https from 'https';
 import * as dotenv from 'dotenv';
 
-// const httpsAgent = new https.Agent({ rejectUnauthorized: false });
+const httpsAgent = new https.Agent({ rejectUnauthorized: false });
 
 dotenv.config();
 
@@ -12,15 +12,13 @@ export const serviceNowRequest = async (method: Method = 'post', data = {}) => {
   const devUrl = process.env.SERVICENOW_DEV_URL || '';
   let response;
 
-
-
   try {
     response = await axios.post(devUrl, data, {
       auth: {
         username,
         password,
       },
-      // httpsAgent,
+      httpsAgent,
     });
 
     return {

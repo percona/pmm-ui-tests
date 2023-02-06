@@ -1,8 +1,12 @@
 {
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "display": "Node 16",
   "compilerOptions": {
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
-    "baseUrl": ".",
+    "baseUrl": "./",
+    "moduleResolution": "node",
+    "lib": [ "ES2022" ],
     "paths": {
       "@tests/*": [
         "./*"

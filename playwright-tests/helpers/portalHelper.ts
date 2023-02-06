@@ -2,10 +2,6 @@ import User from '@support/types/user.interface';
 import faker from 'faker';
 import { generate } from 'generate-password';
 
-/*
-Using generate-password lib due to a bug in a faker when passing a regex to a password function.
-https://github.com/Marak/faker.js/issues/826
-*/
 export const getUser = (email: string = ''): User => {
   const firstName = faker.name.firstName();
   const lastName = faker.name.lastName();
