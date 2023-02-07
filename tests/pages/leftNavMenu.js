@@ -115,8 +115,7 @@ module.exports = {
     {
       stats: menuOption(sa, 'Stats and license', '/graph/admin/upgrading'),
       users: menuOption(sa, 'Users', '/graph/admin/users'),
-      orgs: menuOption(sa, 'Orgs', '/graph/admin/orgs'),
-      plugins: menuOption(sa, 'Plugins', '/graph/admin/plugins'),
+      orgs: menuOption(sa, 'Organizations', '/graph/admin/orgs'),
       settings: menuOption(sa, 'Settings', '/graph/admin/settings'),
     }),
 };

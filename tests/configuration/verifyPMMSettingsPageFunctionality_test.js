@@ -347,6 +347,38 @@ Scenario(
     scheduledPage.openScheduledBackupsPage();
   },
 );
+Scenario(
+  'PMM-T1328 Verify public address is set automatically on Percona Platform page once connected to Portal @nightly',
+  async ({
+    I, pmmSettingsPage, portalAPI, perconaPlatformPage, settingsAPI,
+  }) => {
+    await settingsAPI.changeSettings({ publicAddress: '' });
+
+    const serverAddressIP = process.env.VM_IP;
+
+    const newAdminUser = await portalAPI.getUser();
+
+    await portalAPI.oktaCreateUser(newAdminUser);
+    const platformToken = await portalAPI.getUserAccessToken(newAdminUser.email, newAdminUser.password);
+
+    await portalAPI.apiCreateOrg(platformToken);
+    await perconaPlatformPage.openPerconaPlatform();
+    await perconaPlatformPage.connectToPortal(platformToken, `Test Server ${Date.now()}`, true);
+    await pmmSettingsPage.openAdvancedSettings();
+
+    await pmmSettingsPage.verifyTooltip(pmmSettingsPage.tooltips.advancedSettings.publicAddress);
+
+    await I.waitForVisible(pmmSettingsPage.fields.publicAddressInput, 30);
+    I.seeElement(pmmSettingsPage.fields.publicAddressButton);
+    const publicAddressValue = await I.grabValueFrom(pmmSettingsPage.fields.publicAddressInput);
+
+    I.assertTrue(publicAddressValue.length > 0, 'Expected the Public Address Input Field to be not empty!');
+    await pmmSettingsPage.waitForPmmSettingsPageLoaded();
+
+    await I.assertEqual(serverAddressIP, publicAddressValue,
+      `Expected the Public Address to be saved and Match ${publicAddressValue}`);
+  },
+).retry(0);
 
 Scenario(
   'PMM-T486 - Verify Public Address in PMM Settings @settings @nightly',
@@ -381,8 +413,8 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T1227 - Verify tooltip "Read more" links on PMM Settings page redirect to working pages '
-    + 'PMM-T1338 Verify that all the metrics from config are displayed on Telemetry tooltip in Settings > Advanced @settings',
+  '@PMM-T1227 - Verify tooltip "Read more" links on PMM Settings page redirect to working pages '
+    + '@PMM-T1338 Verify that all the metrics from config are displayed on Telemetry tooltip in Settings > Advanced @settings',
   async ({ I, pmmSettingsPage, settingsAPI }) => {
     await settingsAPI.changeSettings({ alerting: true });
     const subPageTooltips = [

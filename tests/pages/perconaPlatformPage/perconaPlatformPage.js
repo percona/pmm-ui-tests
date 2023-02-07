@@ -36,6 +36,7 @@ module.exports = {
     requiredField: 'Required field',
     invalidEmail: 'Invalid email address',
     connectedSuccess: 'Successfully connected PMM to Percona Platform',
+    updateSuccess: 'Settings updated',
     pmmDisconnectedFromPortal: 'Successfully disconnected PMM from Percona Platform',
     disconnectPMM: 'Disconnect PMM from Percona Platform',
     pmmConnected: 'This PMM instance is connected to Percona Platform.',
@@ -74,10 +75,13 @@ module.exports = {
     I.seeTextEquals('', this.elements.emailValidation);
   },
 
-  connectToPortal(token, serverName = 'Test Server') {
+  connectToPortal(token, serverName = 'Test Server', isIPAddressSet = false) {
     I.fillField(this.fields.pmmServerNameField, serverName);
     I.fillField(this.fields.tokenField, token);
     I.click(this.buttons.connect);
+    if (isIPAddressSet) {
+      I.verifyPopUpMessage(this.messages.updateSuccess)
+    }
     I.verifyPopUpMessage(this.messages.connectedSuccess);
     I.refreshPage();
     I.waitForVisible(this.elements.connectedWrapper, 20);

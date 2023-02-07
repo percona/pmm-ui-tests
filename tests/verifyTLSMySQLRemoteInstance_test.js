@@ -26,10 +26,10 @@ maxQueryLengthInstances.add(['mysql_8.0_ssl_service', '8.0', 'mysql_8.0', 'mysql
 maxQueryLengthInstances.add(['mysql_8.0_ssl_service', '8.0', 'mysql_8.0', 'mysql_ssl', 'mysql_global_status_max_used_connections', '-1']);
 maxQueryLengthInstances.add(['mysql_8.0_ssl_service', '8.0', 'mysql_8.0', 'mysql_ssl', 'mysql_global_status_max_used_connections', '']);
 
-BeforeSuite(async ({ I, codeceptjsConfig }) => {
-  await I.verifyCommand(`${pmmFrameworkLoader} --ps-version=5.7 --setup-mysql-ssl --pmm2`);
-  await I.verifyCommand(`${pmmFrameworkLoader} --ps-version=8.0 --setup-mysql-ssl --pmm2`);
-});
+// BeforeSuite(async ({ I, codeceptjsConfig }) => {
+//   await I.verifyCommand(`${pmmFrameworkLoader} --ps-version=5.7 --setup-mysql-ssl --pmm2`);
+//   await I.verifyCommand(`${pmmFrameworkLoader} --ps-version=8.0 --setup-mysql-ssl --pmm2`);
+// });
 
 AfterSuite(async ({ I }) => {
   await I.verifyCommand('docker stop mysql_5.7 || docker rm mysql_5.7');
@@ -49,6 +49,26 @@ Data(maxQueryLengthInstances).Scenario(
     const {
       serviceName, serviceType, version, container, maxQueryLength,
     } = current;
+    let details;
+    const remoteServiceName = `remote_${serviceName}_faker`;
+    await I.verifyCommand(`${pmmFrameworkLoader} --ps-version=${version} --setup-mysql-ssl --pmm2`);
+    await I.say(await I.verifyCommand(`docker exec ${container} bash -c 'source ~/.bash_profile || true; pmm-admin list'`));
+
+    if (serviceType === 'mysql_ssl') {
+      details = {
+        serviceName: remoteServiceName,
+        serviceType,
+        port: '3306',
+        host: container,
+        username: 'pmm',
+        password: 'pmm',
+        cluster: 'mysql_remote_cluster',
+        environment: 'mysql_remote_cluster',
+        tlsCAFile: `${adminPage.pathToPMMTests}tls-ssl-setup/mysql/${version}/ca.pem`,
+        tlsKeyFile: `${adminPage.pathToPMMTests}tls-ssl-setup/mysql/${version}/client-key.pem`,
+        tlsCertFile: `${adminPage.pathToPMMTests}tls-ssl-setup/mysql/${version}/client-cert.pem`,
+      };
+    }
     const remoteServiceName = `remote_${serviceName}_${faker.random.alphaNumeric(3)}`;
     const details = {
       serviceName: remoteServiceName,

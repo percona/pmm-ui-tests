@@ -48,12 +48,13 @@ Before(async ({ I }) => {
 
 Data(versionVerification).Scenario('PMM-T760 Verify Manage Components Versions @dbaas',
   async ({
-    I, dbaasPage, dbaasManageVersionPage, current,
+    I, dbaasPage, dbaasManageVersionPage, current, dbaasAPI,
   }) => {
     const {
       component, operatorVersion, componentName, dbType,
     } = current;
 
+    await dbaasAPI.waitForClusterStatus();
     I.amOnPage(dbaasPage.url);
     await dbaasPage.goToKubernetesClusterTab();
     dbaasPage.checkCluster(clusterName, false);
@@ -80,8 +81,8 @@ Scenario('PMM-T765 Verify Manage Components Versions '
     I.amOnPage(dbaasPage.url);
     await dbaasPage.goToKubernetesClusterTab();
     dbaasPage.checkCluster(clusterName, false);
-    I.see(dbaasManageVersionPage.operatorVersion.PXC, dbaasPage.tabs.dbClusterTab.fields.clusterTableRow);
-    I.see(dbaasManageVersionPage.operatorVersion.PSMDB, dbaasPage.tabs.dbClusterTab.fields.clusterTableRow);
+    I.see(dbaasManageVersionPage.operatorVersion.PXC, dbaasPage.tabs.dbClusterTab.fields.clusterTableRow(clusterName));
+    I.see(dbaasManageVersionPage.operatorVersion.PSMDB, dbaasPage.tabs.dbClusterTab.fields.clusterTableRow(clusterName));
     dbaasManageVersionPage.waitForManageVersionPopup(clusterName);
     I.waitForText(
       dbaasManageVersionPage.manageVersion.dialogTitle,
