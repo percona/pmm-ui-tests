@@ -311,3 +311,13 @@ Scenario(
     I.dontSeeElement(deleteButton);
   },
 );
+
+Scenario(
+  '@PMM-T1514 Verify that alert rule templates has only 1 exit button @ia',
+  async ({ I, ruleTemplatesPage, alertRulesPage }) => {
+    ruleTemplatesPage.openRuleTemplatesTab();
+    ruleTemplatesPage.openAddDialog(await I.grabTextFrom(ruleTemplatesPage.elements.templateName));
+    I.dontSeeElement('//button[span[text()="Save"]]');
+    I.seeElement(alertRulesPage.buttons.saveAndExit);
+  },
+);

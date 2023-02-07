@@ -24,6 +24,8 @@ module.exports = {
     pmmDropdownMenuSelector: locate('a[data-toggle="dropdown"] > span').withText('PMM'),
     timeRangeFrom: locate('input').withAttr({ 'aria-label': 'Time Range from field' }),
     timeRangeTo: locate('input').withAttr({ 'aria-label': 'Time Range to field' }),
+    tooltipText: locate('$info-tooltip').find('./*[self::span or self::div]'),
+    tooltipReadMoreLink: locate('$info-tooltip').find('a'),
   },
 
   getTimeZoneOptionSelector: (timeZone) => I.getSingleSelectOptionLocator(timeZone),
@@ -174,5 +176,36 @@ module.exports = {
     I.appendField(field, '');
     I.pressKey(['Control', 'a']);
     I.pressKey('Backspace');
+  },
+
+  /**
+   * Encapsulates Tooltip data verification.
+   * There could be only one tooltip popup on a page.
+   *
+   * @param   tooltipObj        one of {@link pmmSettingsPage.tooltips} or an object with similar structure
+   * tooltipObj have to have field tooltipText containing selector for tooltip text and field tooltipReadMoreLink
+   * containing selector for tooltip doc link
+   * @returns {Promise<void>}   requires await in test body.
+   */
+  async verifyTooltip(tooltipObj) {
+    const tooltipIcon = tooltipObj.iconLocator;
+    const tooltipText = tooltipObj.tooltipText.as('Tooltip text');
+
+    I.waitForVisible(tooltipIcon, 5);
+    I.moveCursorTo(tooltipIcon);
+    I.scrollTo(tooltipText);
+    I.waitForVisible(tooltipText, 5);
+    I.seeTextEquals(tooltipObj.text, tooltipText);
+    /* there are tooltip without "Read more" link */
+    if (tooltipObj.link) {
+      const tooltipReadMoreLink = tooltipObj.tooltipReadMoreLink.as(`Tooltip "Read more" link for ${tooltipObj.iconLocator}`);
+
+      I.scrollTo(tooltipReadMoreLink);
+      I.seeAttributesOnElements(tooltipReadMoreLink, { href: tooltipObj.link });
+      const readMoreLink = (await I.grabAttributeFrom(tooltipReadMoreLink, 'href'));
+      const response = await I.sendGetRequest(readMoreLink);
+
+      assert.equal(response.status, 200, 'Read more link should lead to working documentation page. But the GET request response status is not 200');
+    }
   },
 };

@@ -39,7 +39,7 @@ BeforeSuite(async ({
     password: 'password',
   });
 
-  I.say(await I.verifyCommand(`sudo pmm-admin add mongodb --port=27027 --service-name=${mongoServiceName} --replication-set=rs0`));
+  I.say(await I.verifyCommand(`sudo pmm-admin add mongodb --port=27027 --service-name=${mongoServiceName} --replication-set=rs0 --cluster=rs0`));
 });
 
 Before(async ({
@@ -428,3 +428,16 @@ Data(scheduleErrors).Scenario('@PMM-T1031 Verify PITR schedule errors @backup',
 
     I.verifyPopUpMessage(current.error);
   });
+
+Scenario(
+  '@PMM-T1517 Verify that BM Scheduler is more clear regarding frequency specification @backup',
+  async ({
+    I, scheduledPage,
+  }) => {
+    scheduledPage.openScheduleBackupModal();
+    I.seeTextEquals('Every year', scheduledPage.fields.schedule.scheduledTime);
+    I.seeTextEquals('Every month', scheduledPage.fields.schedule.months);
+    I.seeTextEquals('Every day', scheduledPage.fields.schedule.days);
+    I.seeTextEquals('Every weekday', scheduledPage.fields.schedule.weekdays);
+  },
+);
