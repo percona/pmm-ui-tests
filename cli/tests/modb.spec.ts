@@ -292,7 +292,6 @@ test.describe('Spec file for Percona Server MongoDB (PSMDB) CLI tests ', async (
         test.skip(true, 'Skipping this test, because of Random Failures, need to fix this');
         let hosts = (await cli.exec(`pmm-admin list | grep "MongoDB" | grep "mongo_inst_" | awk -F" " '{print $3}'`))
             .stdout.trim().split('\n');
-        let n = 1;
         for (const host of hosts) {
 //         run sleep 20
             const ip = host.split(':')[0];
