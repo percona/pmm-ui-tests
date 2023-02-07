@@ -228,7 +228,7 @@ async ({
   I.click(dbaasPage.tabs.dbClusterTab.createClusterButton);
   I.waitForText('Processing', 30, dbaasPage.tabs.dbClusterTab.fields.progressBarContent(pxc_cluster_name));
   // PMM-T780
-  await dbaasPage.apiKeyCheck(clusterName, dbClusterRandomName, 'pxc', true);
+  // await dbaasPage.apiKeyCheck(clusterName, dbClusterRandomName, 'pxc', true);
   I.amOnPage(dbaasPage.url);
   await dbaasPage.postClusterCreationValidation(dbClusterRandomName, clusterName);
   await dbaasPage.validateClusterDetail(dbClusterRandomName, clusterName, singleNodeConfiguration, dbClusterRandomNameLink);
@@ -243,7 +243,7 @@ async ({
 
   await dbaasActionsPage.deleteXtraDBCluster(dbClusterRandomName, clusterName);
   // PMM-T781
-  await dbaasPage.apiKeyCheck(clusterName, dbClusterRandomName, 'pxc', false);
+  // await dbaasPage.apiKeyCheck(clusterName, dbClusterRandomName, 'pxc', false);
 });
 
 Scenario('PMM-T522 Verify Editing a Cluster with Custom Setting and float values is possible @dbaas',

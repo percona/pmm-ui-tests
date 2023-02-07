@@ -101,6 +101,7 @@ module.exports = {
       addDbClusterButton: locate('$table-no-data').find('button'),
       dbClusterAddButtonTop: '$dbcluster-add-cluster-button',
       createClusterButton: '$db-cluster-submit-button',
+      editClusterButtonDisabled: '//button[@data-testid="db-cluster-submit-button" and @disabled]//span[text()="Edit"]',
       confirmUpdateButton: '$confirm-update-dbcluster-button',
       dbClusterTab: 'a[aria-label="Tab DB Cluster"]',
       monitoringWarningLocator: '$pmm-server-url-warning',
