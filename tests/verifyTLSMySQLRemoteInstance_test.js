@@ -26,10 +26,10 @@ maxQueryLengthInstances.add(['mysql_8.0_ssl_service', '8.0', 'mysql_8.0', 'mysql
 maxQueryLengthInstances.add(['mysql_8.0_ssl_service', '8.0', 'mysql_8.0', 'mysql_ssl', 'mysql_global_status_max_used_connections', '-1']);
 maxQueryLengthInstances.add(['mysql_8.0_ssl_service', '8.0', 'mysql_8.0', 'mysql_ssl', 'mysql_global_status_max_used_connections', '']);
 
-// BeforeSuite(async ({ I, codeceptjsConfig }) => {
-//   await I.verifyCommand(`${pmmFrameworkLoader} --ps-version=5.7 --setup-mysql-ssl --pmm2`);
-//   await I.verifyCommand(`${pmmFrameworkLoader} --ps-version=8.0 --setup-mysql-ssl --pmm2`);
-// });
+BeforeSuite(async ({ I }) => {
+  await I.verifyCommand(`${pmmFrameworkLoader} --ps-version=5.7 --setup-mysql-ssl --pmm2`);
+  await I.verifyCommand(`${pmmFrameworkLoader} --ps-version=8.0 --setup-mysql-ssl --pmm2`);
+});
 
 AfterSuite(async ({ I }) => {
   await I.verifyCommand('docker stop mysql_5.7 || docker rm mysql_5.7');
@@ -49,26 +49,10 @@ Data(maxQueryLengthInstances).Scenario(
     const {
       serviceName, serviceType, version, container, maxQueryLength,
     } = current;
-    let details;
-    const remoteServiceName = `remote_${serviceName}_faker`;
-    await I.verifyCommand(`${pmmFrameworkLoader} --ps-version=${version} --setup-mysql-ssl --pmm2`);
+    // await I.verifyCommand(`${pmmFrameworkLoader} --ps-version=${version} --setup-mysql-ssl --pmm2`);
+
     await I.say(await I.verifyCommand(`docker exec ${container} bash -c 'source ~/.bash_profile || true; pmm-admin list'`));
 
-    if (serviceType === 'mysql_ssl') {
-      details = {
-        serviceName: remoteServiceName,
-        serviceType,
-        port: '3306',
-        host: container,
-        username: 'pmm',
-        password: 'pmm',
-        cluster: 'mysql_remote_cluster',
-        environment: 'mysql_remote_cluster',
-        tlsCAFile: `${adminPage.pathToPMMTests}tls-ssl-setup/mysql/${version}/ca.pem`,
-        tlsKeyFile: `${adminPage.pathToPMMTests}tls-ssl-setup/mysql/${version}/client-key.pem`,
-        tlsCertFile: `${adminPage.pathToPMMTests}tls-ssl-setup/mysql/${version}/client-cert.pem`,
-      };
-    }
     const remoteServiceName = `remote_${serviceName}_${faker.random.alphaNumeric(3)}`;
     const details = {
       serviceName: remoteServiceName,
@@ -85,37 +69,35 @@ Data(maxQueryLengthInstances).Scenario(
       maxQueryLength,
     };
 
-    I.amOnPage(remoteInstancesPage.url);
-    remoteInstancesPage.waitUntilRemoteInstancesPageLoaded();
-    remoteInstancesPage.openAddRemotePage(serviceType);
-    await remoteInstancesPage.addRemoteSSLDetails(details);
-    I.click(remoteInstancesPage.fields.addService);
-
-    // Check Remote Instance also added and have running status
-    pmmInventoryPage.verifyRemoteServiceIsDisplayed(remoteServiceName);
-    await pmmInventoryPage.verifyAgentHasStatusRunning(remoteServiceName);
-    // Check Remote Instance also added and have running status
-    await pmmInventoryPage.openServices();
-    const serviceId = await pmmInventoryPage.getServiceId(remoteServiceName);
-
-    // Check Remote Instance also added and have correct max_query_length option set
-    await pmmInventoryPage.openAgents();
+    // I.amOnPage(remoteInstancesPage.url);
+    // remoteInstancesPage.waitUntilRemoteInstancesPageLoaded();
+    // remoteInstancesPage.openAddRemotePage(serviceType);
+    // await remoteInstancesPage.addRemoteSSLDetails(details);
+    // I.click(remoteInstancesPage.fields.addService);
+    //
+    // // Check Remote Instance also added and have running status
+    // pmmInventoryPage.verifyRemoteServiceIsDisplayed(remoteServiceName);
+    // await pmmInventoryPage.verifyAgentHasStatusRunning(remoteServiceName);
+    // // Check Remote Instance also added and have running status
+    // await pmmInventoryPage.openServices();
+    // const serviceId = await pmmInventoryPage.getServiceId(remoteServiceName);
+    //
+    // // Check Remote Instance also added and have correct max_query_length option set
+    // await pmmInventoryPage.openAgents();
 
     // there is no message on success, ut there is on fail and need to report it
     // eslint-disable-next-line no-undef
-    // if (!await tryTo(() => I.waitInUrl(pmmInventoryPage.servicesUrl, 2))) {
-    //   I.verifyPopUpMessage('success', 1);
-    // }
-    //
-    // // Base check: Service exists and running
-    // await inventoryAPI.verifyServiceExistsAndHasRunningStatus({ serviceType: 'MYSQL_SERVICE', service: 'mysql' }, serviceName);
-    // I.waitForVisible(pmmInventoryPage.fields.agentsLink, 30);
-    // pmmInventoryPage.verifyRemoteServiceIsDisplayed(remoteServiceName);
-    // const serviceId = await pmmInventoryPage.getServiceId(remoteServiceName);
-    //
-    // await pmmInventoryPage.verifyAgentHasStatusRunning(remoteServiceName);
+    if (!await tryTo(() => I.waitInUrl(pmmInventoryPage.servicesUrl, 2))) {
+      I.verifyPopUpMessage('success', 1);
+    }
 
+    // Base check: Service exists and running
+    await inventoryAPI.verifyServiceExistsAndHasRunningStatus({ serviceType: 'MYSQL_SERVICE', service: 'mysql' }, serviceName);
+    I.waitForVisible(pmmInventoryPage.fields.agentsLink, 30);
+    pmmInventoryPage.verifyRemoteServiceIsDisplayed(remoteServiceName);
+    const serviceId = await pmmInventoryPage.getServiceId(remoteServiceName);
 
+    await pmmInventoryPage.verifyAgentHasStatusRunning(remoteServiceName);
 
     // Main check: correct max_query_length option displayed in Agent's details
     if (maxQueryLength !== '') {
@@ -134,7 +116,7 @@ Data(maxQueryLengthInstances).Scenario(
     I.amOnPage(I.buildUrlWithParams(qanPage.clearUrl, { from: 'now-5m' }));
     qanOverview.waitForOverviewLoaded();
     await qanFilters.applyFilter(remoteServiceName);
-    I.waitForElement(qanOverview.elements.querySelector, 30);
+    qanOverview.waitForOverviewLoaded();
     const queryFromRow = await qanOverview.getQueryFromRow(1);
 
     if (maxQueryLength !== '' && maxQueryLength !== '-1') {
