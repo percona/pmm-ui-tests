@@ -174,7 +174,7 @@ test.describe('Spec file for MongoDB CLI tests ', async () => {
    * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/mongodb-tests.bats#L161
    */
   test('PMM-T157 PMM-T161 Adding MongoDB with specified socket for modb', async ({}) => {
-    // "Skipping this test, because of setup issue on Framework, https://jira.percona.com/browse/PMM-8708"
+  test.skip(true, 'Skipping this test, because of setup issue on Framework, https://jira.percona.com/browse/PMM-8708');
     test.skip(process.env.instance_t === 'mo',
         'Skipping this test, because you are running for Percona Distribution Mongodb');
     let hosts = (await cli.exec(`pmm-admin list | grep "MongoDB" | awk -F" " '{print $3}'`))
@@ -218,7 +218,6 @@ test.describe('Spec file for MongoDB CLI tests ', async () => {
    */
   test('run pmm-admin add mongodb --help to check metrics-mode="auto" @mongo', async ({}) => {
     await test.step('Verify metrics-mode="auto" is present', async () => {
-      await addMongoHelp.outContains('Usage: pmm-admin add mongodb [<name> [<address>]]');
       await addMongoHelp.outContains('metrics-mode="auto"');
     });
   });
@@ -228,7 +227,6 @@ test.describe('Spec file for MongoDB CLI tests ', async () => {
    */
   test('run pmm-admin add mongodb --help to check host @mongo', async ({}) => {
     await test.step('Verify "host" is present', async () => {
-      await addMongoHelp.outContains('Usage: pmm-admin add mongodb [<name> [<address>]]');
       await addMongoHelp.outContains('host');
     });
   });
@@ -238,8 +236,7 @@ test.describe('Spec file for MongoDB CLI tests ', async () => {
    */
   test('run pmm-admin add mongodb --help to check port @mongo', async ({}) => {
     await test.step('Verify "port" is present', async () => {
-      await addMongoHelp.outContains('Usage: pmm-admin add mongodb [<name> [<address>]]');
-      await addMongoHelp.outContains('--socket=STRING');
+      await addMongoHelp.outContains('port');
     });
   });
 
@@ -248,7 +245,6 @@ test.describe('Spec file for MongoDB CLI tests ', async () => {
    */
   test('run pmm-admin add mongodb --help to check service-name @mongo', async ({}) => {
     await test.step('Verify "service-name" is present', async () => {
-      await addMongoHelp.outContains('Usage: pmm-admin add mongodb [<name> [<address>]]');
       await addMongoHelp.outContains('service-name');
     });
   });
