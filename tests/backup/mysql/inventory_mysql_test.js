@@ -51,7 +51,7 @@ AfterSuite(async ({ psMySql }) => {
 });
 
 Scenario(
-  'PMM-T769, PMM-T920 - Verify user is able to perform MySQL backup @bm-mysql @not-ui-pipeline',
+  '@PMM-T769, @PMM-T920 - Verify user is able to perform MySQL backup @bm-mysql @not-ui-pipeline',
   async ({ I, backupInventoryPage }) => {
     const backupName = 'mysql backup test';
 
@@ -70,7 +70,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T862 Verify user is able to perform MySQL restore @bm-mysql @not-ui-pipeline',
+  '@PMM-T862 Verify user is able to perform MySQL restore @bm-mysql @not-ui-pipeline',
   async ({
     I, backupInventoryPage, backupAPI, restorePage, psMySql,
   }) => {
@@ -97,7 +97,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T910 PMM-T911 Verify delete from storage is selected by default @bm-mysql @not-ui-pipeline',
+  '@PMM-T910 @PMM-T911 Verify delete from storage is selected by default @bm-mysql @not-ui-pipeline',
   async ({
     I, backupInventoryPage, backupAPI, inventoryAPI,
   }) => {
@@ -126,7 +126,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T810 Verify user can restore MySQL backup from a scheduled backup @bm-mysql @not-ui-pipeline',
+  '@PMM-T810 Verify user can restore MySQL backup from a scheduled backup @bm-mysql @not-ui-pipeline',
   async ({
     I, backupInventoryPage, scheduledAPI, backupAPI, restorePage, psMySql,
   }) => {
@@ -138,6 +138,7 @@ Scenario(
       name: 'for restore mysql test',
       mode: scheduledAPI.backupModes.snapshot,
       description: '',
+      isLogical: false,
       retry_interval: '30s',
       retries: 0,
       enabled: true,
@@ -166,7 +167,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T848 Verify service no longer exists error message during restore @bm-mysql @not-ui-pipeline',
+  '@PMM-T848 Verify service no longer exists error message during restore @bm-mysql @not-ui-pipeline',
   async ({
     I, backupInventoryPage, backupAPI, inventoryAPI,
   }) => {
