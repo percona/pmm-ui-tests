@@ -228,6 +228,7 @@ async ({
   I.click(dbaasPage.tabs.dbClusterTab.createClusterButton);
   I.waitForText('Processing', 30, dbaasPage.tabs.dbClusterTab.fields.progressBarContent(pxc_cluster_name));
   // PMM-T780
+  // FIXME: unskip when https://jira.percona.com/browse/PMM-11565 is fixed
   // await dbaasPage.apiKeyCheck(clusterName, dbClusterRandomName, 'pxc', true);
   I.amOnPage(dbaasPage.url);
   await dbaasPage.postClusterCreationValidation(dbClusterRandomName, clusterName);
@@ -243,6 +244,7 @@ async ({
 
   await dbaasActionsPage.deleteXtraDBCluster(dbClusterRandomName, clusterName);
   // PMM-T781
+  // FIXME: unskip when https://jira.percona.com/browse/PMM-11565 is fixed
   // await dbaasPage.apiKeyCheck(clusterName, dbClusterRandomName, 'pxc', false);
 });
 
