@@ -56,6 +56,11 @@ module.exports = {
       text: 'AWS Secret Access Key of the root user or an IAM user with access to the EKS cluster',
       link: 'https://docs.aws.amazon.com/general/latest/gr/aws-sec-cred-types.html',
     },
+    expose: {
+      tooltipText: locate('//div[@data-popper-escaped]//span'),
+      iconLocator: locate('//div[label[@data-testid="expose-field-label"]]').find('div[class$="-Icon"]').as('Expose tooltip'),
+      text: 'You will make this database cluster available to connect from the internet. To limit access you need to specify source ranges',
+    },
   },
   numberOfNodesError: 'Only 1, 3 or more nodes allowed',
   tabs: {
@@ -82,21 +87,29 @@ module.exports = {
       unregisterButton: locate('$dropdown-menu-menu').find('span').at(1),
       viewClusterConfiguration: locate('$dropdown-menu-menu').find('span').at(2),
       manageVersions: locate('$dropdown-menu-menu').find('span').at(3),
-      amazonElasticKubernetesService: '//label[contains(text(),"Amazon Elastic Kubernetes")]',
+      registerNewClusterHeader: locate('h2').withText('Register new Kubernetes Cluster'),
+      genericClusterLabel: locate('label').withText('Generic'),
+      genericEksClusterRadio: '$isEKS-radio-button',
+      eksClusterLabel: locate('label').withText('Amazon Elastic Kubernetes'),
+      pasteFromClipboardButton: '$kubernetes-paste-from-clipboard-button',
+      awsAccessKeyInput: '$awsAccessKeyID-text-input',
+      awsSecretKeyInput: '$awsSecretAccessKey-password-input',
+      spinner: '$Spinner',
     },
     dbClusterTab: {
       defaultPassword: '***************',
       addDbClusterButton: locate('$table-no-data').find('button'),
       dbClusterAddButtonTop: '$dbcluster-add-cluster-button',
       createClusterButton: '$db-cluster-submit-button',
+      editClusterButtonDisabled: '//button[@data-testid="db-cluster-submit-button" and @disabled]//span[text()="Edit"]',
       confirmUpdateButton: '$confirm-update-dbcluster-button',
       dbClusterTab: 'a[aria-label="Tab DB Cluster"]',
       monitoringWarningLocator: '$pmm-server-url-warning',
       advancedOptionsButton: '$dbCluster-advanced-settings',
-      optionsHeader: '$step-header',
       deleteDbClusterConfirmationText: (dbClusterName, clusterName, dbType) => `Are you sure that you want to delete ${dbType} cluster ${dbClusterName} from Kubernetes cluster ${clusterName} ?`,
       basicOptions: {
         fields: {
+          allBasicOptions: '$dbcluster-basic-options-step',
           clusterNameField: '$name-text-input',
           clusterNameFieldErrorMessage: '$name-field-error-message',
           dbClusterDatabaseTypeField: '$dbcluster-database-type-field',
@@ -131,10 +144,6 @@ module.exports = {
           memoryFieldErrorMessage: '$memory-field-error-message',
           nodesFieldErrorMessage: '$nodes-field-error-message',
           nodesNumberField: '$nodes-number-input',
-          dbClusterExposeLabel: '$expose-field-label',
-          dbClusterExposeCheckbox: '$expose-checkbox-input',
-          dbClusterExposeTooltipText: locate('div').withChild('.tooltip-arrow'),
-          dbClusterExposeTooltip: locate('$expose-field-container').find('div').at(3).as('Expose tooltip'),
           resourceBarCPU: '$dbcluster-resources-bar-cpu',
           resourceBarMemory: '$dbcluster-resources-bar-memory',
           resourceBarDisk: '$dbcluster-resources-bar-disk',
@@ -144,6 +153,30 @@ module.exports = {
             .find('$resources-bar')
             .find('div')
             .at(1),
+          advancedSettingsLabel: locate('legend').withText('Advanced Settings'),
+        },
+      },
+      dbConfigurations: {  
+        configurationsHeader: (dbType) => locate('legend').withText(`${dbType} Configurations`),
+        configurationLabel: (dbType) => locate('$configuration-field-label').withText(dbType),
+        storageClassLabel: '$storageClass-field-label',
+      },
+      networkAndSecurity: {
+        networkAndSecurityHeader: locate('legend').withText('Network and Security'),
+        exposeLabel: '$expose-field-label',
+        exposeCheckbox: '$expose-checkbox-input',
+        exposeTooltipText: locate('div').withChild('.tooltip-arrow'),
+        exposeTooltip: locate('$expose-field-container').find('div').at(3).as('Expose tooltip'),
+        internetFacingLabel: '$internetFacing-field-label',
+        internetFacingCheckbox: '$internetFacing-checkbox-input',
+        sourceRangesLabel: locate('label').withText('Source Range'),
+        addNewSourceRangeButton: locate('button').find('span').withText('Add new').as('Add Source Range button'),
+        sourceRangeInput: locate('input').withAttr({ placeholder: '181.170.213.40/32' }).as('Source Range input'),
+        deleteSourceRangeButton: locate('$network-and-security').find('button').at(2).as('Delete Source Range button'),
+        disabled: {
+          exposeCheckboxDisabled: '//input[@data-testid="expose-checkbox-input" and @disabled]',
+          internetFacingCheckboxDisabled: '//input[@data-testid="internetFacing-checkbox-input" and @disabled]',
+          addNewSourceRangeButtonDisabled: `//button[(@disabled)]//span[contains(., 'Add new')]`,
         },
       },
       fields: {
@@ -193,6 +226,7 @@ module.exports = {
         cancelDeleteDBCluster: '$cancel-delete-dbcluster-button',
         progressBarSteps: '$progress-bar-steps',
         progressBarContent: (dbclusterName) => `//*[@data-testid="table-row" and contains(.//span, '${dbclusterName}')]//*[@data-testid="progress-bar-message"]`,
+        editDbClusterHeader: locate('h2').withText('Edit DB Cluster'),
       },
     },
   },
@@ -279,7 +313,7 @@ module.exports = {
     I.seeTextEquals(message, errorField);
   },
 
-  async verifyElementInSection(section) {
+  async verifyConnectionAndDbClusterParameters(section) {
     for (const element in section) {
       I.waitForElement(section[element], 30);
       I.seeElement(section[element]);
@@ -289,27 +323,33 @@ module.exports = {
     }
   },
 
+  async verifyElementsInSection(section) {
+    for (const element in section) {
+      I.seeElement(section[element]);
+    }
+  },
+
   async postClusterCreationValidation(dbClusterName, k8sClusterName, clusterDBType = 'MySQL') {
     const dbaasPage = this;
 
     I.waitForElement(dbaasPage.tabs.dbClusterTab.fields.clusterActionsMenu(dbClusterName), 60);
-    I.click(dbaasPage.tabs.dbClusterTab.fields.clusterActionsMenu(dbClusterName));
+    I.forceClick(dbaasPage.tabs.dbClusterTab.fields.clusterActionsMenu(dbClusterName));
     await dbaasActionsPage.checkActionPossible('Delete', true, dbClusterName);
     await dbaasActionsPage.checkActionPossible('Edit', false, dbClusterName);
     await dbaasActionsPage.checkActionPossible('Restart', false, dbClusterName);
     await dbaasActionsPage.checkActionPossible('Resume', false, dbClusterName);
-    I.click(dbaasPage.tabs.dbClusterTab.fields.clusterActionsMenu(dbClusterName));
+    I.forceClick(dbaasPage.tabs.dbClusterTab.fields.clusterActionsMenu(dbClusterName));
     await dbaasAPI.waitForDBClusterState(dbClusterName, k8sClusterName, clusterDBType, 'DB_CLUSTER_STATE_READY');
     I.waitForElement(dbaasPage.tabs.dbClusterTab.fields.clusterStatusActive, 120);
     I.seeElement(dbaasPage.tabs.dbClusterTab.fields.clusterStatusActive);
     I.waitForElement(dbaasPage.tabs.dbClusterTab.fields.clusterConnection.showPasswordButton, 30);
     I.click(dbaasPage.tabs.dbClusterTab.fields.clusterConnection.showPasswordButton);
-    I.click(dbaasPage.tabs.dbClusterTab.fields.clusterActionsMenu(dbClusterName));
+    I.forceClick(dbaasPage.tabs.dbClusterTab.fields.clusterActionsMenu(dbClusterName));
     await dbaasActionsPage.checkActionPossible('Delete', true, dbClusterName);
     await dbaasActionsPage.checkActionPossible('Edit', true, dbClusterName);
     await dbaasActionsPage.checkActionPossible('Restart', true, dbClusterName);
     await dbaasActionsPage.checkActionPossible('Suspend', true, dbClusterName);
-    I.click(dbaasPage.tabs.dbClusterTab.fields.clusterActionsMenu(dbClusterName));
+    I.forceClick(dbaasPage.tabs.dbClusterTab.fields.clusterActionsMenu(dbClusterName));
     I.click(dbaasPage.tabs.dbClusterTab.fields.clusterConnection.showPasswordButton);
   },
 
@@ -372,8 +412,8 @@ module.exports = {
       clusterDBType.includes(configuration.dbType),
       `Expected DB Type was ${configuration.dbType}, but found ${clusterDBType}`,
     );
-    await dbaasPage.verifyElementInSection(dbaasPage.tabs.dbClusterTab.fields.clusterParameters);
-    await dbaasPage.verifyElementInSection(dbaasPage.tabs.dbClusterTab.fields.clusterConnection);
+    await dbaasPage.verifyConnectionAndDbClusterParameters(dbaasPage.tabs.dbClusterTab.fields.clusterParameters);
+    await dbaasPage.verifyConnectionAndDbClusterParameters(dbaasPage.tabs.dbClusterTab.fields.clusterConnection);
     I.seeElement(dbaasPage.tabs.dbClusterTab.fields.clusterConnection.showPasswordButton);
     await dbaasPage.validateClusterParameter(dbaasPage.tabs.dbClusterTab.fields.clusterDBPasswordValue, 'Password', dbaasPage.tabs.dbClusterTab.defaultPassword);
     I.click(dbaasPage.tabs.dbClusterTab.fields.clusterConnection.showPasswordButton);
