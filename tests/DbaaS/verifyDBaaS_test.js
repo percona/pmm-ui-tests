@@ -50,6 +50,7 @@ Scenario(
     I.waitForText(dbaasPage.monitoringWarningMessage, 30);
     I.click(dbaasPage.tabs.kubernetesClusterTab.cancelButton);
     dbaasPage.registerKubernetesCluster(clusterName, process.env.kubeconfig_minikube);
+    I.waitForElement(dbaasPage.tabs.kubernetesClusterTab.spinner);
     I.waitForText(dbaasPage.addedAlertMessage, 60);
     dbaasPage.checkCluster(clusterName, false);
     I.click(dbaasPage.tabs.kubernetesClusterTab.addKubernetesClusterButton);
@@ -92,12 +93,22 @@ Scenario(
   },
 );
 
-Scenario('PMM-T427 - Verify elements on PMM DBaaS page @dbaas',
+Scenario('PMM-T1451 - Verify Register new Kubernetes Cluster page @dbaas',
   async ({ I, dbaasPage }) => {
     I.amOnPage(dbaasPage.url);
-    I.waitForVisible(dbaasPage.tabs.kubernetesClusterTab.addKubernetesClusterButton, 30);
     I.waitForVisible(dbaasPage.tabs.kubernetesClusterTab.addKubernetesClusterButtonInTable, 30);
-  });
+    I.click(dbaasPage.tabs.kubernetesClusterTab.addKubernetesClusterButtonInTable);
+    I.waitForVisible(dbaasPage.tabs.kubernetesClusterTab.registerNewClusterHeader);
+    I.seeElement(dbaasPage.tabs.kubernetesClusterTab.genericClusterLabel);
+    I.seeCheckboxIsChecked(dbaasPage.tabs.kubernetesClusterTab.genericEksClusterRadio);
+    I.seeElement(dbaasPage.tabs.kubernetesClusterTab.pasteFromClipboardButton);
+    I.click(dbaasPage.tabs.kubernetesClusterTab.eksClusterLabel);
+    I.seeElement(dbaasPage.tabs.kubernetesClusterTab.kubeconfigFileInput);
+    I.seeElement(dbaasPage.tabs.kubernetesClusterTab.kubernetesClusterNameInput);
+    I.seeElement(dbaasPage.tabs.kubernetesClusterTab.awsAccessKeyInput);
+    I.seeElement(dbaasPage.tabs.kubernetesClusterTab.awsSecretKeyInput);
+  }
+);
 
 Scenario(
   'PMM-T547 PMM-T548  Verify user is able to view config of registered Kubernetes cluster on Kubernetes Cluster Page, '
@@ -161,13 +172,8 @@ Scenario('PMM-T728 Verify DB Cluster Tab Page Elements & Steps Background @dbaas
     I.seeElement(dbaasPage.tabs.dbClusterTab.advancedOptionsButton);
     I.click(dbaasPage.tabs.dbClusterTab.advancedOptionsButton);
     I.seeElement(dbaasPage.tabs.dbClusterTab.advancedOptions.fields.nodesNumberField);
-    I.scrollTo(dbaasPage.tabs.dbClusterTab.advancedOptions.fields.dbClusterExposeLabel);
-    I.dontSeeCheckboxIsChecked(
-      dbaasPage.tabs.dbClusterTab.advancedOptions.fields.dbClusterExposeCheckbox,
-    );
-    I.moveCursorTo(dbaasPage.tabs.dbClusterTab.advancedOptions.fields.dbClusterExposeTooltip);
-    I.seeTextEquals('You will make this database cluster available to connect from the internet. To limit access you need to specify source ranges',
-      dbaasPage.tabs.dbClusterTab.advancedOptions.fields.dbClusterExposeTooltipText);
+    I.scrollTo(dbaasPage.tabs.dbClusterTab.networkAndSecurity.exposeLabel);
+    I.dontSeeCheckboxIsChecked(dbaasPage.tabs.dbClusterTab.networkAndSecurity.exposeCheckbox);
     I.seeElement(dbaasPage.tabs.dbClusterTab.advancedOptions.fields.resourcesPerNodeLabel);
     I.seeElement(dbaasPage.tabs.dbClusterTab.advancedOptions.fields.memoryField);
     I.seeElement(dbaasPage.tabs.dbClusterTab.advancedOptions.fields.cpuNumberFields);
@@ -354,7 +360,7 @@ Scenario('@PMM-T1512 Verify tooltips work properly for DBaaS page @dbaas',
     await adminPage.verifyTooltip(dbaasPage.tooltips.technicalPreview);
     I.click(dbaasPage.tabs.kubernetesClusterTab.kubernetesClusterTabButton);
     I.click(dbaasPage.tabs.kubernetesClusterTab.addKubernetesClusterButton);
-    I.click(dbaasPage.tabs.kubernetesClusterTab.amazonElasticKubernetesService);
+    I.click(dbaasPage.tabs.kubernetesClusterTab.eksClusterLabel);
     const tooltips = [
       dbaasPage.tooltips.clusterType,
       dbaasPage.tooltips.awsAccessKeyId,
@@ -365,3 +371,48 @@ Scenario('@PMM-T1512 Verify tooltips work properly for DBaaS page @dbaas',
       await adminPage.verifyTooltip(tooltip);
     }
   });
+
+Scenario('PMM-T1571 Verify Create DB Cluster page @dbaas',
+  async ({ I, dbaasPage, adminPage }) => {
+    I.amOnPage(dbaasPage.url);
+    I.waitForEnabled(dbaasPage.tabs.dbClusterTab.dbClusterAddButtonTop, 10);
+    I.click(dbaasPage.tabs.dbClusterTab.dbClusterAddButtonTop);
+    I.waitForElement(dbaasPage.tabs.dbClusterTab.advancedOptionsButton);
+    I.dontSeeElement(dbaasPage.tabs.dbClusterTab.advancedOptions.fields.nodesNumberField);
+    I.click(dbaasPage.tabs.dbClusterTab.advancedOptionsButton);
+    I.waitForElement(dbaasPage.tabs.dbClusterTab.advancedOptions.fields.nodesNumberField);
+    I.scrollTo(dbaasPage.tabs.dbClusterTab.dbConfigurations.configurationsHeader('MySQL'));
+    I.seeElement(dbaasPage.tabs.dbClusterTab.dbConfigurations.storageClassLabel);
+    I.seeElement(dbaasPage.tabs.dbClusterTab.dbConfigurations.configurationLabel('MySQL'));
+    I.seeElement(dbaasPage.tabs.dbClusterTab.networkAndSecurity.networkAndSecurityHeader);
+    I.seeElement(dbaasPage.tabs.dbClusterTab.networkAndSecurity.exposeLabel);
+    await adminPage.verifyTooltip(dbaasPage.tooltips.expose);
+    I.seeElement(dbaasPage.tabs.dbClusterTab.networkAndSecurity.internetFacingLabel);
+    I.scrollTo(dbaasPage.tabs.dbClusterTab.networkAndSecurity.sourceRangesLabel);
+    I.click(dbaasPage.tabs.dbClusterTab.networkAndSecurity.addNewSourceRangeButton);
+    let sourceRange = await I.grabNumberOfVisibleElements(
+      dbaasPage.tabs.dbClusterTab.networkAndSecurity.sourceRangeInput);
+
+    assert.ok(sourceRange === 2, `There should be 2 Source Range Inputs but found ${sourceRange}`);
+
+    I.click(dbaasPage.tabs.dbClusterTab.networkAndSecurity.deleteSourceRangeButton);
+
+    sourceRange = await I.grabNumberOfVisibleElements(dbaasPage.tabs.dbClusterTab.networkAndSecurity.sourceRangeInput);
+
+    assert.ok(sourceRange === 1, `There should be 1 Source Range Input but found ${sourceRange}`);
+
+    I.click(dbaasPage.tabs.dbClusterTab.basicOptions.fields.dbClusterDatabaseTypeField);
+    I.fillField(dbaasPage.tabs.dbClusterTab.basicOptions.fields.dbClusterDatabaseTypeInputField, 'MongoDB');
+    I.waitForElement(
+      dbaasPage.tabs.dbClusterTab.basicOptions.fields.dbClusterDatabaseTypeFieldSelect('MongoDB'),
+    );
+    I.click(dbaasPage.tabs.dbClusterTab.basicOptions.fields.dbClusterDatabaseTypeFieldSelect('MongoDB'));
+    I.seeElement(dbaasPage.tabs.dbClusterTab.dbConfigurations.configurationsHeader('MongoDB'));
+    I.seeElement(dbaasPage.tabs.dbClusterTab.dbConfigurations.storageClassLabel);
+    I.scrollTo(dbaasPage.tabs.dbClusterTab.dbConfigurations.configurationLabel('MongoDB'));
+    I.seeElement(dbaasPage.tabs.dbClusterTab.networkAndSecurity.networkAndSecurityHeader);
+    I.seeElement(dbaasPage.tabs.dbClusterTab.networkAndSecurity.exposeLabel);
+    I.seeElement(dbaasPage.tabs.dbClusterTab.networkAndSecurity.internetFacingLabel);
+    I.seeElement(dbaasPage.tabs.dbClusterTab.networkAndSecurity.sourceRangesLabel);
+  }
+);
