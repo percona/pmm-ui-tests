@@ -2,7 +2,7 @@ const assert = require('assert');
 const faker = require('faker');
 
 const { adminPage } = inject();
-const pmmFrameworkLoader = `bash ${adminPage.pathToFramework}`;
+const pmmFrameworkCmd = `bash ${adminPage.pathToFramework}`;
 
 Feature('Monitoring SSL/TLS MYSQL instances');
 
@@ -26,11 +26,6 @@ maxQueryLengthInstances.add(['mysql_8.0_ssl_service', '8.0', 'mysql_8.0', 'mysql
 maxQueryLengthInstances.add(['mysql_8.0_ssl_service', '8.0', 'mysql_8.0', 'mysql_ssl', 'mysql_global_status_max_used_connections', '-1']);
 maxQueryLengthInstances.add(['mysql_8.0_ssl_service', '8.0', 'mysql_8.0', 'mysql_ssl', 'mysql_global_status_max_used_connections', '']);
 
-BeforeSuite(async ({ I }) => {
-  await I.verifyCommand(`${pmmFrameworkLoader} --ps-version=5.7 --setup-mysql-ssl --pmm2`);
-  await I.verifyCommand(`${pmmFrameworkLoader} --ps-version=8.0 --setup-mysql-ssl --pmm2`);
-});
-
 AfterSuite(async ({ I }) => {
   await I.verifyCommand('docker stop mysql_5.7 || docker rm mysql_5.7');
   await I.verifyCommand('docker stop mysql_8.0 || docker rm mysql_8.0');
@@ -49,9 +44,11 @@ Data(maxQueryLengthInstances).Scenario(
     const {
       serviceName, serviceType, version, container, maxQueryLength,
     } = current;
-    // await I.verifyCommand(`${pmmFrameworkLoader} --ps-version=${version} --setup-mysql-ssl --pmm2`);
 
-    await I.say(await I.verifyCommand(`docker exec ${container} bash -c 'source ~/.bash_profile || true; pmm-admin list'`));
+    if (!await tryTo(() => I.verifyCommand(`docker ps --format '{{.Names}}' | grep ${container}`))) {
+      await I.verifyCommand(`${pmmFrameworkCmd} --ps-version=${version} --setup-mysql-ssl --pmm2`);
+      await I.say(await I.verifyCommand(`docker exec ${container} bash -c 'source ~/.bash_profile || true; pmm-admin list'`));
+    }
 
     const remoteServiceName = `remote_${serviceName}_${faker.random.alphaNumeric(3)}`;
     const details = {
@@ -69,12 +66,12 @@ Data(maxQueryLengthInstances).Scenario(
       maxQueryLength,
     };
 
-    // I.amOnPage(remoteInstancesPage.url);
-    // remoteInstancesPage.waitUntilRemoteInstancesPageLoaded();
-    // remoteInstancesPage.openAddRemotePage(serviceType);
-    // await remoteInstancesPage.addRemoteSSLDetails(details);
-    // I.click(remoteInstancesPage.fields.addService);
-    //
+    I.amOnPage(remoteInstancesPage.url);
+    remoteInstancesPage.waitUntilRemoteInstancesPageLoaded();
+    remoteInstancesPage.openAddRemotePage(serviceType);
+    await remoteInstancesPage.addRemoteSSLDetails(details);
+    I.click(remoteInstancesPage.fields.addService);
+
     // // Check Remote Instance also added and have running status
     // pmmInventoryPage.verifyRemoteServiceIsDisplayed(remoteServiceName);
     // await pmmInventoryPage.verifyAgentHasStatusRunning(remoteServiceName);
@@ -85,7 +82,7 @@ Data(maxQueryLengthInstances).Scenario(
     // // Check Remote Instance also added and have correct max_query_length option set
     // await pmmInventoryPage.openAgents();
 
-    // there is no message on success, ut there is on fail and need to report it
+    /* there is no message on success, ut there is on fail and need to report it */
     // eslint-disable-next-line no-undef
     if (!await tryTo(() => I.waitInUrl(pmmInventoryPage.servicesUrl, 2))) {
       I.verifyPopUpMessage('success', 1);
