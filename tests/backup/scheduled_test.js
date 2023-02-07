@@ -69,9 +69,9 @@ AfterSuite(async ({
   I,
 }) => {
   await I.mongoDisconnect();
-  await I.verifyCommand(`pmm-admin remove mongodb ${mongoServiceName}`);
-  await I.verifyCommand(`pmm-admin remove mongodb ${mongoServiceName2}`);
-  await I.verifyCommand(`pmm-admin remove mongodb ${mongoNameWithoutCluster}`);
+  await I.verifyCommand(`sudo pmm-admin remove mongodb ${mongoServiceName}`);
+  await I.verifyCommand(`sudo pmm-admin remove mongodb ${mongoServiceName2}`);
+  await I.verifyCommand(`sudo pmm-admin remove mongodb ${mongoNameWithoutCluster}`);
 });
 
 Scenario(
