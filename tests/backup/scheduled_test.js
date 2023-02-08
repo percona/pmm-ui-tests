@@ -34,11 +34,16 @@ BeforeSuite(async ({
   await backupAPI.clearAllArtifacts();
   await locationsAPI.clearAllLocations(true);
   locationId = await locationsAPI.createStorageLocation(location);
-  await I.mongoConnectReplica({
+  await I.mongoConnect({
     username: 'pmm',
     password: 'pmmpass',
-    replicaName: 'rs',
+    port: 27027,
   });
+  // await I.mongoConnectReplica({
+  //   username: 'pmm',
+  //   password: 'pmmpass',
+  //   replicaName: 'rs',
+  // });
 
   I.say(await I.verifyCommand(`docker exec rs101 pmm-admin add mongodb --username=pmm --password=pmmpass --port=27017 --service-name=${mongoServiceName} --replication-set=rs0 --cluster=rs0`));
 });
