@@ -27,8 +27,13 @@ maxQueryLengthInstances.add(['mysql_8.0_ssl_service', '8.0', 'mysql_8.0', 'mysql
 maxQueryLengthInstances.add(['mysql_8.0_ssl_service', '8.0', 'mysql_8.0', 'mysql_ssl', 'mysql_global_status_max_used_connections', '']);
 
 AfterSuite(async ({ I }) => {
-  await I.verifyCommand('docker stop mysql_5.7 || docker rm mysql_5.7');
-  await I.verifyCommand('docker stop mysql_8.0 || docker rm mysql_8.0');
+  if (await tryTo(() => I.verifyCommand('docker ps --format \'{{.Names}}\' | grep ^mysql_5.7'))) {
+    await I.verifyCommand('docker stop mysql_5.7 || docker rm mysql_5.7');
+  }
+
+  if (await tryTo(() => I.verifyCommand('docker ps --format \'{{.Names}}\' | grep ^mysql_8.0'))) {
+    await I.verifyCommand('docker stop mysql_8.0 || docker rm mysql_8.0');
+  }
 });
 
 Before(async ({ I }) => {
@@ -45,7 +50,7 @@ Data(maxQueryLengthInstances).Scenario(
       serviceName, serviceType, version, container, maxQueryLength,
     } = current;
 
-    if (!await tryTo(() => I.verifyCommand(`docker ps --format '{{.Names}}' | grep ${container}`))) {
+    if (!await tryTo(() => I.verifyCommand(`docker ps --format '{{.Names}}' | grep ^${container}`))) {
       await I.verifyCommand(`${pmmFrameworkCmd} --ps-version=${version} --setup-mysql-ssl --pmm2`);
       await I.say(await I.verifyCommand(`docker exec ${container} bash -c 'source ~/.bash_profile || true; pmm-admin list'`));
     }
@@ -89,7 +94,7 @@ Data(maxQueryLengthInstances).Scenario(
     }
 
     // Base check: Service exists and running
-    await inventoryAPI.verifyServiceExistsAndHasRunningStatus({ serviceType: 'MYSQL_SERVICE', service: 'mysql' }, serviceName);
+    await inventoryAPI.verifyServiceExistsAndHasRunningStatus({ serviceType: 'MYSQL_SERVICE', service: 'mysql' }, remoteServiceName);
     I.waitForVisible(pmmInventoryPage.fields.agentsLink, 30);
     pmmInventoryPage.verifyRemoteServiceIsDisplayed(remoteServiceName);
     const serviceId = await pmmInventoryPage.getServiceId(remoteServiceName);
