@@ -44,11 +44,7 @@ Before(async ({
 
   serviceId = service_id;
 
-  const c = await I.mongoCreateCollection('test', 'e2e');
-
-  await c.insertMany([
-    { number: 1, name: 'John' },
-  ]);
+  const c = await I.mongoGetCollection('test', 'test');
 
   await c.deleteMany({ number: 2 });
 
@@ -148,14 +144,14 @@ Scenario(
     I.refreshPage();
     backupInventoryPage.verifyBackupSucceeded(backupName);
 
-    let c = await I.mongoGetCollection('test', 'e2e');
+    let c = await I.mongoGetCollection('test', 'test');
 
     await c.insertOne({ number: 2, name: 'Anna' });
 
     backupInventoryPage.startRestore(backupName);
     restorePage.waitForRestoreSuccess(backupName);
 
-    c = await I.mongoGetCollection('test', 'e2e');
+    c = await I.mongoGetCollection('test', 'test');
     const record = await c.findOne({ number: 2, name: 'Anna' });
 
     assert.ok(record === null, `Was expecting to not have a record ${JSON.stringify(record, null, 2)} after restore operation`);
@@ -215,7 +211,7 @@ Scenario(
     await backupAPI.waitForBackupFinish(null, schedule.name, 240);
     await scheduledAPI.disableScheduledBackup(scheduleId);
 
-    let c = await I.mongoGetCollection('test', 'e2e');
+    let c = await I.mongoGetCollection('test', 'test');
 
     await c.insertOne({ number: 2, name: 'BeforeRestore' });
     I.refreshPage();
@@ -224,7 +220,7 @@ Scenario(
     backupInventoryPage.startRestore(schedule.name);
     restorePage.waitForRestoreSuccess(schedule.name);
 
-    c = await I.mongoGetCollection('test', 'e2e');
+    c = await I.mongoGetCollection('test', 'test');
     const record = await c.findOne({ name: 'BeforeRestore' });
 
     assert.ok(record === null, `Was expecting to not have a record ${JSON.stringify(record, null, 2)} after restore operation`);

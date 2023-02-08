@@ -54,7 +54,7 @@ Before(async ({
   const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName('MONGODB_SERVICE', mongoServiceName);
 
   serviceId = service_id;
-  const c = await I.mongoGetCollection('test', 'e2e');
+  const c = await I.mongoGetCollection('test', 'test');
 
   await c.deleteMany({ number: 2 });
 
