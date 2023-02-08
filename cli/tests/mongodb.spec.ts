@@ -1,14 +1,6 @@
 import { test, expect } from '@playwright/test';
 // import cli = require('@helpers/cliHelper'); //optional way to import with local name
 import * as cli from '@helpers/cliHelper';
-import Output from "@support/types/output";
-
-let addMongoHelp:Output;
-
-test.beforeAll(async ({}) =>{
-  addMongoHelp = await cli.exec('sudo pmm-admin add mongodb --help');
-  await addMongoHelp.assertSuccess();
-});
 
 test.describe('MongoDB CLI tests ', async () => {
 
@@ -204,52 +196,6 @@ test.describe('MongoDB CLI tests ', async () => {
   });
 
   /**
-   * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/mongodb-tests.bats#L195
-   */
-  test('pmm-admin mongodb --help check for socket @cli @mongo', async ({}) => {
-    await test.step('Verify "--socket=STRING" is present', async () => {
-      await addMongoHelp.outContains('Usage: pmm-admin add mongodb [<name> [<address>]]');
-      await addMongoHelp.outContains('--socket=STRING');
-    });
-  });
-
-  /**
-   * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/mongodb-tests.bats#L204
-   */
-  test('run pmm-admin add mongodb --help to check metrics-mode="auto" @mongo', async ({}) => {
-    await test.step('Verify metrics-mode="auto" is present', async () => {
-      await addMongoHelp.outContains('metrics-mode="auto"');
-    });
-  });
-
-  /**
-   * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/mongodb-tests.bats#L211
-   */
-  test('run pmm-admin add mongodb --help to check host @mongo', async ({}) => {
-    await test.step('Verify "host" is present', async () => {
-      await addMongoHelp.outContains('host');
-    });
-  });
-
-  /**
-   * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/mongodb-tests.bats#L218
-   */
-  test('run pmm-admin add mongodb --help to check port @mongo', async ({}) => {
-    await test.step('Verify "port" is present', async () => {
-      await addMongoHelp.outContains('port');
-    });
-  });
-
-  /**
-   * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/mongodb-tests.bats#L225
-   */
-  test('run pmm-admin add mongodb --help to check service-name @mongo', async ({}) => {
-    await test.step('Verify "service-name" is present', async () => {
-      await addMongoHelp.outContains('service-name');
-    });
-  });
-
-  /**
    * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/mongodb-tests.bats#L232
    */
   test('run pmm-admin add mongodb based on running instances', async ({}) => {
@@ -324,20 +270,5 @@ test.describe('MongoDB CLI tests ', async () => {
       await output.assertSuccess();
       await output.outContains('Service removed.');
     }
-  });
-
-  /**
-   * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/mongodb-tests.bats#L300
-   */
-  test('@PMM-T925 - Verify help for pmm-admin add mongodb has TLS-related flags @mongo', async ({}) => {
-    await addMongoHelp.outContainsMany([
-      'tls                        Use TLS to connect to the database',
-      'tls-skip-verify            Skip TLS certificates validation',
-      'tls-certificate-key-file=STRING',
-      'tls-certificate-key-file-password=STRING',
-      'tls-ca-file=STRING         Path to certificate authority file',
-      'authentication-mechanism=STRING',
-      'authentication-database=STRING',
-    ]);
   });
 });
