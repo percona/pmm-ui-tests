@@ -15,8 +15,8 @@ test.describe('Percona Server MongoDB (PSMDB) CLI tests ', async () => {
      * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/modb-tests.bats#L22
      */
     test('run pmm-admin @mongo', async ({}) => {
-        const sudo = (parseInt((await cli.exec('id -u')).stdout) === 0) ? 'sudo' : ''
-        let output = await cli.exec(`${sudo} pmm-admin`);
+        const sudo = (parseInt((await cli.exec('id -u')).stdout) === 0) ? '' : 'sudo '
+        let output = await cli.exec(`${sudo}pmm-admin`);
         await output.exitCodeEquals(1);
         await output.outContains('Usage: pmm-admin <command>');
     });
@@ -101,7 +101,7 @@ test.describe('Percona Server MongoDB (PSMDB) CLI tests ', async () => {
         let n = 1;
         for (const host of hosts) {
             let output = await cli.exec(`sudo pmm-admin add mongodb --username=${MONGO_USERNAME} --password=${MONGO_PASSWORD} mongo_inst_${n++} ${host}`);
-            await output.assertSuccess();
+            await output.exitCodeEquals(1);
             await output.outContains('already exists.');
         }
     });
@@ -145,7 +145,7 @@ test.describe('Percona Server MongoDB (PSMDB) CLI tests ', async () => {
         let n = 1;
         for (const host of hosts) {
             let output = await cli.exec(`sudo pmm-admin remove mongodb mongo_inst_${n++}`);
-            await output.assertSuccess();
+            await output.exitCodeEquals(1);
             await output.outContains('not found.');
         }
     });

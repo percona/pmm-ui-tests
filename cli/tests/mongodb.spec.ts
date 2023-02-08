@@ -9,8 +9,8 @@ test.describe('MongoDB CLI tests ', async () => {
    * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/mongodb-tests.bats#L15
    */
   test('run pmm-admin @mongo', async ({}) => {
-    const sudo = (parseInt((await cli.exec('id -u')).stdout) === 0) ? 'sudo' : ''
-    let output = await cli.exec(`${sudo} pmm-admin`);
+    const sudo = (parseInt((await cli.exec('id -u')).stdout) === 0) ? '' : 'sudo '
+    let output = await cli.exec(`${sudo}pmm-admin`);
     await output.exitCodeEquals(1);
     await output.outContains('Usage: pmm-admin <command>');
   });
@@ -95,7 +95,7 @@ test.describe('MongoDB CLI tests ', async () => {
     let n = 1;
     for (const host of hosts) {
       let output = await cli.exec(`sudo pmm-admin add mongodb mongo_inst_${n++} ${host}`);
-      await output.assertSuccess();
+      await output.exitCodeEquals(1);
       await output.outContains('already exists.');
     }
   });
@@ -111,7 +111,7 @@ test.describe('MongoDB CLI tests ', async () => {
       console.log(host);
       const port = host.split(':')[1];
       let output = await cli.exec(`sudo pmm-admin add mongodb --socket=/tmp/mongodb-${port}.sock mongo_inst_${n++} ${host}`);
-      await output.assertSuccess();
+      await output.exitCodeEquals(1);
       await output.outContains('Socket and address cannot be specified together.');
     }
   });
@@ -139,7 +139,7 @@ test.describe('MongoDB CLI tests ', async () => {
     let n = 1;
     for (const host of hosts) {
       let output = await cli.exec(`sudo pmm-admin remove mongodb mongo_inst_${n++}`);
-      await output.assertSuccess();
+      await output.exitCodeEquals(1);
       await output.outContains('not found.');
     }
   });
