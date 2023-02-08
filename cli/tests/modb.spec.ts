@@ -117,7 +117,7 @@ test.describe('Percona Server MongoDB (PSMDB) CLI tests ', async () => {
             console.log(host);
             const port = host.split(':')[1];
             let output = await cli.exec(`sudo pmm-admin add mongodb --username=${MONGO_USERNAME} --password=${MONGO_PASSWORD} --socket=/tmp/mongodb-${port}.sock mongo_inst_${n++} ${host}`);
-            await output.assertSuccess();
+            await output.exitCodeEquals(1);
             await output.outContains('Socket and address cannot be specified together.');
         }
     });
