@@ -5,11 +5,11 @@ import Output from "@support/types/output";
 let addMongoHelp:Output;
 
 test.beforeAll(async ({}) =>{
-  addMongoHelp = await cli.exec('pmm-admin add mongodb --help');
+  addMongoHelp = await cli.exec('sudo pmm-admin add mongodb --help');
   await addMongoHelp.assertSuccess();
 });
 
-test.describe('Spec file for PMM Client "--help" validation', async () => {
+test.describe('PMM Client "--help" validation', async () => {
 
    /**
    * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/modb-tests.bats#L182
