@@ -178,6 +178,7 @@ test.describe('Percona Server MongoDB (PSMDB) CLI tests ', async () => {
         let hosts = (await cli.exec(`sudo pmm-admin list | grep "MongoDB" | grep "mongo_inst_" | awk -F" " '{print $3}'`))
             .stdout.trim().split('\n');
         let n = 1;
+        console.log(`length: ${hosts.length}`)
         for (const host of hosts) {
             console.log(`host: "${host}"`)
             let output = await cli.exec(`sudo pmm-admin remove mongodb mongo_inst_${n++}`);
