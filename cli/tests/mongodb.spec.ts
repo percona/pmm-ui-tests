@@ -119,7 +119,7 @@ test.describe('MongoDB CLI tests ', async () => {
   /**
    * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/mongodb-tests.bats#L116
    */
-  test('run pmm-admin remove mongodb', async ({}) => {
+  test('run pmm-admin remove mongodb instance added based on running instances', async ({}) => {
     let hosts = (await cli.exec(`sudo pmm-admin list | grep "MongoDB" | grep "mongo_inst_" | awk -F" " '{print $3}'`))
         .stdout.trim().split('\n');
     let n = 1;
@@ -184,12 +184,11 @@ test.describe('MongoDB CLI tests ', async () => {
   /**
    * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/mongodb-tests.bats#L182
    */
-  test('run pmm-admin remove mongodb', async ({}) => {
+  test('run pmm-admin remove mongodb Instance added with Socket Specified', async ({}) => {
     let hosts = (await cli.exec(`sudo pmm-admin list | grep "MongoDB" | grep "mongo_inst_" | awk -F" " '{print $3}'`))
-        .stdout.trim().split('\n');
-    let n = 1;
+        .stdout.trim().split('\n').filter( item => item.trim().length > 0);
     for (const host of hosts) {
-      let output = await cli.exec(`sudo pmm-admin remove mongodb mongo_inst_${n++}`);
+      let output = await cli.exec(`sudo pmm-admin remove mongodb ${host}`);
       await output.assertSuccess();
       await output.outContains('Service removed.');
     }
@@ -198,7 +197,8 @@ test.describe('MongoDB CLI tests ', async () => {
   /**
    * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/mongodb-tests.bats#L232
    */
-  test('run pmm-admin add mongodb based on running instances', async ({}) => {
+  test('run pmm-admin add mongodb based on running instances using service-name, port',
+      async ({}) => {
     let hosts = (await cli.exec(`sudo pmm-admin list | grep "MongoDB" | awk -F" " '{print $3}'`))
         .stdout.trim().split('\n');
     let n = 1;
@@ -214,7 +214,7 @@ test.describe('MongoDB CLI tests ', async () => {
   /**
    * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/mongodb-tests.bats#L246
    */
-  test('run pmm-admin remove mongodb', async ({}) => {
+  test('run pmm-admin remove mongodb for instances added with service-name and username password labels', async ({}) => {
     let hosts = (await cli.exec(`sudo pmm-admin list | grep "MongoDB" | grep "mongo_inst_" | awk -F" " '{print $3}'`))
         .stdout.trim().split('\n');
     let n = 1;
