@@ -179,6 +179,7 @@ test.describe('Percona Server MongoDB (PSMDB) CLI tests ', async () => {
             .stdout.trim().split('\n');
         let n = 1;
         for (const host of hosts) {
+            console.log(`host: "${host}"`)
             let output = await cli.exec(`sudo pmm-admin remove mongodb mongo_inst_${n++}`);
             await output.assertSuccess();
             await output.outContains('Service removed.');
