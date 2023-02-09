@@ -27,7 +27,7 @@ export async function exec(command): Promise<Output> {
         console.log(`Run: "${command}"`);
         return shell.exec(command.replace(/(\r\n|\n|\r)/gm, ''), { silent: false });
     });
-    if (stdout.length > 0) console.log(`Output: "${stdout}"`);
-    if (stderr.length > 0) console.log(`Output: "${stdout}"`);
+    if (stdout.length > 0) console.log(`Out: "${stdout}"`);
+    if (stderr.length > 0) console.log(`Error: "${stdout}"`);
     return new Output(command, code, stdout, stderr);
 }

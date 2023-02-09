@@ -102,6 +102,7 @@ test.describe('Percona Server MongoDB (PSMDB) CLI tests ', async () => {
         let n = 1;
         for (const host of hosts) {
             let output = await cli.exec(`sudo pmm-admin add mongodb --username=${MONGO_USERNAME} --password=${MONGO_PASSWORD} mongo_inst_${n++} ${host}`);
+            console.log(`Exit code: ${output.code}`)
             await output.exitCodeEquals(1);
             await output.outContains('already exists.');
         }
