@@ -21,7 +21,7 @@ class Output {
 
   async exitCodeEquals(expectedValue: number) {
     await test.step(`Verify "${this.command}" command exit code is ${expectedValue}`, async () => {
-      expect(this.code, `"${this.command}" expected to exit with ${expectedValue}!`).toEqual(expectedValue);
+      expect(this.code, `"${this.command}" expected to exit with ${expectedValue}! Output: "${this.stdout}"`).toEqual(expectedValue);
     });
   }
 

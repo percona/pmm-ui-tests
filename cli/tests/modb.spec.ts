@@ -90,6 +90,7 @@ test.describe('Percona Server MongoDB (PSMDB) CLI tests ', async () => {
             await output.assertSuccess();
             await output.outContains('MongoDB Service added');
         }
+        new Promise(resolve => setTimeout(resolve, 2000))
     });
 
     /**
@@ -167,6 +168,7 @@ test.describe('Percona Server MongoDB (PSMDB) CLI tests ', async () => {
             await output.assertSuccess();
             await output.outContains('MongoDB Service added');
         }
+        new Promise(resolve => setTimeout(resolve, 2000))
     });
 
     /**
