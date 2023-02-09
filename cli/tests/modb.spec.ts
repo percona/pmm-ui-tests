@@ -97,12 +97,11 @@ test.describe('Percona Server MongoDB (PSMDB) CLI tests ', async () => {
      * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/modb-tests.bats#L96
      */
     test('run pmm-admin add mongodb again based on running instances to check if fails with error message exists', async ({}) => {
-        let hosts = (await cli.exec(`sudo pmm-admin list | grep "MongoDB" | awk -F" " '{print $3}'`))
+        let hosts = (await cli.exec(`sudo pmm-admin list | grep "mongo_inst_" | awk -F" " '{print $3}'`))
             .stdout.trim().split('\n');
         let n = 1;
         for (const host of hosts) {
             let output = await cli.exec(`sudo pmm-admin add mongodb --username=${MONGO_USERNAME} --password=${MONGO_PASSWORD} mongo_inst_${n++} ${host}`);
-            console.log(`Exit code: ${output.code}`)
             await output.exitCodeEquals(1);
             await output.outContains('already exists.');
         }
