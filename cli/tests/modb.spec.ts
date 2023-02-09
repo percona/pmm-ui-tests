@@ -41,8 +41,7 @@ test.describe('Percona Server MongoDB (PSMDB) CLI tests ', async () => {
      */
     test('run pmm-admin remove mongodb instance added with metrics mode push', async ({}) => {
         let services = (await cli.exec(`sudo pmm-admin list | grep "MongoDB" | grep "mongo_inst_" | awk -F" " '{print $2}'`))
-            .stdout.trim().split('\n');
-        console.log(services);
+            .stdout.trim().split('\n').filter( item => item.trim().length > 0);
         for (const service of services) {
             let output = await cli.exec(`sudo pmm-admin remove mongodb ${service}`);
             await output.assertSuccess();
@@ -70,7 +69,7 @@ test.describe('Percona Server MongoDB (PSMDB) CLI tests ', async () => {
      */
     test('run pmm-admin remove mongodb instance added with metrics mode pull', async ({}) => {
         let services = (await cli.exec(`sudo pmm-admin list | grep "MongoDB" | grep "mongo_inst_" | awk -F" " '{print $2}'`))
-            .stdout.trim().split('\n');
+            .stdout.trim().split('\n').filter( item => item.trim().length > 0);
         for (const service of services) {
             let output = await cli.exec(`sudo pmm-admin remove mongodb ${service}`);
             await output.assertSuccess();
@@ -127,11 +126,10 @@ test.describe('Percona Server MongoDB (PSMDB) CLI tests ', async () => {
      * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/modb-tests.bats#L123
      */
     test('run pmm-admin remove mongodb instance added based on running instances', async ({}) => {
-        let hosts = (await cli.exec(`sudo pmm-admin list | grep "MongoDB" | grep "mongo_inst_" | awk -F" " '{print $3}'`))
-            .stdout.trim().split('\n');
-        let n = 1;
-        for (const host of hosts) {
-            let output = await cli.exec(`sudo pmm-admin remove mongodb mongo_inst_${n++}`);
+        let services = (await cli.exec(`sudo pmm-admin list | grep "MongoDB" | grep "mongo_inst_" | awk -F" " '{print $3}'`))
+            .stdout.trim().split('\n').filter( item => item.trim().length > 0);
+        for (const service of services) {
+            let output = await cli.exec(`sudo pmm-admin remove mongodb ${service}`);
             await output.assertSuccess();
             await output.outContains('Service removed.');
         }
@@ -141,11 +139,10 @@ test.describe('Percona Server MongoDB (PSMDB) CLI tests ', async () => {
      * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/modb-tests.bats#L136
      */
     test('run pmm-admin remove mongodb again', async ({}) => {
-        let hosts = (await cli.exec(`sudo pmm-admin list | grep "MongoDB" | awk -F" " '{print $3}'`))
+        let services = (await cli.exec(`sudo pmm-admin list | grep "MongoDB" | awk -F" " '{print $3}'`))
             .stdout.trim().split('\n');
-        let n = 1;
-        for (const host of hosts) {
-            let output = await cli.exec(`sudo pmm-admin remove mongodb mongo_inst_${n++}`);
+        for (const service of services) {
+            let output = await cli.exec(`sudo pmm-admin remove mongodb ${service}`);
             await output.exitCodeEquals(1);
             await output.outContains('not found.');
         }
@@ -175,10 +172,10 @@ test.describe('Percona Server MongoDB (PSMDB) CLI tests ', async () => {
      * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/modb-tests.bats#L169
      */
     test('run pmm-admin remove mongodb Instance added with Socket Specified @imp', async ({}) => {
-        let hosts = (await cli.exec(`sudo pmm-admin list | grep "MongoDB" | grep "mongo_inst_" | awk -F" " '{print $3}'`))
+        let services = (await cli.exec(`sudo pmm-admin list | grep "MongoDB" | grep "mongo_inst_" | awk -F" " '{print $3}'`))
             .stdout.trim().split('\n').filter( item => item.trim().length > 0);
-        for (const host of hosts) {
-            let output = await cli.exec(`sudo pmm-admin remove mongodb ${host}`);
+        for (const service of services) {
+            let output = await cli.exec(`sudo pmm-admin remove mongodb ${service}`);
             await output.assertSuccess();
             await output.outContains('Service removed.');
         }
@@ -205,11 +202,10 @@ test.describe('Percona Server MongoDB (PSMDB) CLI tests ', async () => {
      * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/modb-tests.bats#L233
      */
     test('run pmm-admin remove mongodb for instances added with servicename and username password labels', async ({}) => {
-        let hosts = (await cli.exec(`sudo pmm-admin list | grep "MongoDB" | grep "mongo_inst_" | awk -F" " '{print $3}'`))
-            .stdout.trim().split('\n');
-        let n = 1;
-        for (const host of hosts) {
-            let output = await cli.exec(`sudo pmm-admin remove mongodb mongo_inst_${n++}`);
+        let services = (await cli.exec(`sudo pmm-admin list | grep "MongoDB" | grep "mongo_inst_" | awk -F" " '{print $3}'`))
+            .stdout.trim().split('\n').filter( item => item.trim().length > 0);
+        for (const service of services) {
+            let output = await cli.exec(`sudo pmm-admin remove mongodb ${service}`);
             await output.assertSuccess();
             await output.outContains('Service removed.');
         }
@@ -252,11 +248,10 @@ test.describe('Percona Server MongoDB (PSMDB) CLI tests ', async () => {
      * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/modb-tests.bats#L275
      */
     test('run pmm-admin remove mongodb added with custom agent password', async ({}) => {
-        let hosts = (await cli.exec(`sudo pmm-admin list | grep "MongoDB" | grep "mongo_inst_" | awk -F" " '{print $3}'`))
-            .stdout.trim().split('\n');
-        let n = 1;
-        for (const host of hosts) {
-            let output = await cli.exec(`sudo pmm-admin remove mongodb mongo_inst_${n++}`);
+        let services = (await cli.exec(`sudo pmm-admin list | grep "MongoDB" | grep "mongo_inst_" | awk -F" " '{print $3}'`))
+            .stdout.trim().split('\n').filter( item => item.trim().length > 0);
+        for (const service of services) {
+            let output = await cli.exec(`sudo pmm-admin remove mongodb ${service}`);
             await output.assertSuccess();
             await output.outContains('Service removed.');
         }
