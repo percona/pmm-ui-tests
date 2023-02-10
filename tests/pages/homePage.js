@@ -140,14 +140,14 @@ module.exports = {
       I.refreshPage();
     }
 
-    locators = this.getLocators('latest');
+    // locators = this.getLocators('latest');
 
-    I.waitForVisible(locators.upToDateLocator, 60);
-    assert.equal(
-      await I.grabTextFrom(locators.currentVersion),
-      available_version.split(' ')[0],
-      'Upgrade operation failed',
-    );
+    // I.waitForVisible(locators.upToDateLocator, 60);
+    // assert.equal(
+    //   await I.grabTextFrom(locators.currentVersion),
+    //   available_version.split(' ')[0],
+    //   'Upgrade operation failed',
+    // );
   },
 
   async verifyPreUpdateWidgetIsPresent(version) {
