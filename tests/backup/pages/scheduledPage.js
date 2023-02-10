@@ -36,6 +36,7 @@ module.exports = {
     deleteByName: (name) => locate('$delete-scheduled-backpup-button').inside(scheduleCell(name)),
     copyByName: (name) => locate('$copy-scheduled-backup-button').inside(scheduleCell(name)),
     enableDisableByName: (name) => locate('label').after('$toggle-scheduled-backpup').inside(scheduleCell(name)),
+    backupOnDemand: locate('button').withText('On Demand'),
     backupTypeSwitch: (type) => locate('label').after('$mode-radio-button').withText(type),
     showDetails: (name) => locate('$show-row-details').inside(scheduleCell(name)),
     hideDetails: (name) => locate('$hide-row-details').inside(scheduleCell(name)),
@@ -50,6 +51,12 @@ module.exports = {
     locationDropdown: '//label[@data-testid="location-field-label"]/parent::div/following-sibling::div[1]//div[contains(@class, "-select-value-container")]',
     everyDropdown: '//label[@data-testid="period-field-label"]/parent::div/following-sibling::div[1]//div[contains(@class, "-select-value-container")]',
     retention: '$retention-number-input',
+    schedule: {
+      scheduledTime: '//div[div[label[@data-testid="period-field-label"]]]//div[contains(@class, "select")]/div[1]',
+      months: '//div[div[label[@data-testid="month-field-label"]]]//div[contains(@class, "select")]/div[1]',
+      days: '//div[div[label[@data-testid="day-field-label"]]]//div[contains(@class, "select")]/div[1]',
+      weekdays: '//div[div[label[@data-testid="weekDay-field-label"]]]//div[contains(@class, "select")]/div[1]',
+    },
   },
   messages: {
     modalHeaderText: 'Create Scheduled backup',
@@ -59,6 +66,9 @@ module.exports = {
     confirmDelete: (name) => `Are you sure you want to delete the scheduled backup "${name}"?`,
     successfullyDeleted: (name) => `Scheduled backup "${name}" successfully deleted.`,
     scheduleInModalLabel: 'UTC time',
+    mustBeMemberOfCluster: (name) => `Service ${name} must be a member of a cluster`,
+    clusterHasPitrNoMoreAllowed: (cluster) => `A PITR backup for the cluster '${cluster}' can be enabled only if there are no other scheduled backups for this cluster.`,
+    snapshotNotAllowedWhenClusterHasPitr: (cluster) => `A snapshot backup for cluster '${cluster}' can be performed only if there is no enabled PITR backup for this cluster.`,
   },
   locationType: {},
 

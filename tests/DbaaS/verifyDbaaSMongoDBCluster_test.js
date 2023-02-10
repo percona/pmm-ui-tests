@@ -80,7 +80,7 @@ Scenario('PMM-T665 PMM-T642 PSMDB Cluster with Custom Resources, log popup ' +
     I.amOnPage(dbaasPage.url);
     await dbaasPage.postClusterCreationValidation(psmdb_cluster, clusterName, 'MongoDB');
     //PMM-T665
-    await dbaasPage.verifyLogPopup(27, psmdb_cluster);
+    await dbaasPage.verifyLogPopup(33, psmdb_cluster);
     await dbaasPage.validateClusterDetail(psmdb_cluster, clusterName, psmdb_configuration, 
       psmdb_configuration.clusterDashboardRedirectionLink);
     const {
@@ -108,6 +108,23 @@ Scenario('PMM-T665 PMM-T642 PSMDB Cluster with Custom Resources, log popup ' +
       'pod "psmdb-client" deleted',
     );
   });
+
+Scenario('PMM-T1577 Verify Edit DB Cluster page @dbaas',
+  async ({ I, dbaasPage }) => {
+    I.amOnPage(dbaasPage.url);
+    I.waitForVisible(dbaasPage.tabs.dbClusterTab.fields.clusterActionsMenu(psmdb_cluster), 30);
+    I.forceClick(dbaasPage.tabs.dbClusterTab.fields.clusterActionsMenu(psmdb_cluster));
+    I.waitForElement(dbaasPage.tabs.dbClusterTab.fields.clusterAction('Edit'), 30);
+    I.click(dbaasPage.tabs.dbClusterTab.fields.clusterAction('Edit'));
+    I.waitForElement(dbaasPage.tabs.dbClusterTab.fields.editDbClusterHeader);
+    I.dontSeeElement(dbaasPage.tabs.dbClusterTab.basicOptions.fields.allBasicOptions);
+    I.seeElement(dbaasPage.tabs.dbClusterTab.advancedOptions.fields.advancedSettingsLabel);
+    I.seeElement(dbaasPage.tabs.dbClusterTab.dbConfigurations.configurationsHeader('MongoDB'));
+    I.seeElement(dbaasPage.tabs.dbClusterTab.networkAndSecurity.networkAndSecurityHeader);
+    await dbaasPage.verifyElementsInSection(dbaasPage.tabs.dbClusterTab.networkAndSecurity.disabled);
+    I.seeElement(dbaasPage.tabs.dbClusterTab.editClusterButtonDisabled);
+  }
+);  
 
 Scenario(
   'PMM-T525 PMM-T528 Verify Suspend & Resume for Mongo DB Cluster Works as expected @dbaas',
@@ -196,7 +213,7 @@ Scenario(
       psmdb_configuration,
       psmdb_configuration.clusterDashboardRedirectionLink,
     );
-    // I.click(dbaasPage.tabs.dbClusterTab.fields.clusterActionsMenu(psmdb_cluster));
+    // I.forceClick(dbaasPage.tabs.dbClusterTab.fields.clusterActionsMenu(psmdb_cluster));
     // await dbaasActionsPage.checkActionPossible('Update', false); skipped because latest mongodb is not recommended version
     // PMM-787
     const psmdb_configuration_after_edit = {

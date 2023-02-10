@@ -20,8 +20,10 @@ module.exports = {
       retries = 0,
       retention = 7,
       enabled = true,
+      isLogical = true,
     } = scheduleObj;
 
+    const data_model = isLogical ? 'LOGICAL' : 'PHYSICAL';
     const body = {
       service_id,
       location_id,
@@ -33,7 +35,7 @@ module.exports = {
       retries,
       enabled,
       retention,
-      data_model: 'LOGICAL',
+      data_model,
     };
 
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
