@@ -15,7 +15,7 @@ class Output {
 
   async assertSuccess() {
     await test.step(`Verify "${this.command}" command executed successfully`, async () => {
-      expect(this.code, `"${this.command}" expected to exit with 0! Error: "${this.stderr||this.stdout}"`).toEqual(0);
+      expect(this.code, `"${this.command}" expected to exit with 0! Error: "${this.stderr || this.stdout}"`).toEqual(0);
     });
   }
 
@@ -27,18 +27,28 @@ class Output {
 
   async outContains(expectedValue: string) {
     await test.step(`Verify command output contains ${expectedValue}`, async () => {
-      expect(this.stdout).toContain(expectedValue);
+      expect(this.stdout, `Stdout does not contain ${expectedValue}!`).toContain(expectedValue);
     })
   }
 
   async outContainsMany(expectedValues: string[]) {
-    await test.step(`Verify "${this.command}" command output`, async () => {
-      for (const val of expectedValues) {
-        await test.step(`Verify command output contains ${val}`, async () => {
-          expect(this.stdout).toContain(val);
-        })
-      }
-    })
+    for (const val of expectedValues) {
+      await test.step(`Verify command output contains ${val}`, async () => {
+        expect.soft(this.stdout,`Stdout does not contain '${val}'!`).toContain(val);
+      })
+    }
+    expect(
+        test.info().errors,
+        `'Contains all elements' failed with ${test.info().errors.length} error(s):\n${this.getErrors()}`
+    ).toHaveLength(0);
+  }
+
+  private getErrors(): string {
+    let errors: string[] = [];
+    for (const obj of test.info().errors) {
+      errors.push(`\t${obj.message.split('\n')[0]}`);
+    }
+    return errors.join('\n');
   }
 }
 
