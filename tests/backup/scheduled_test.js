@@ -14,7 +14,7 @@ let serviceId;
 const mysqlServiceName = 'mysql-with-backup2';
 const mongoServiceName = 'mongo-backup-schedule';
 const mongoServiceName2 = 'mongo-pitr-test';
-const mongoCluster = 'rs0';
+const mongoCluster = 'rs';
 
 const mongoNameWithoutCluster = 'mongo-schedule-no-cluster';
 const scheduleErrors = new DataTable(['mode', 'serviceName', 'error']);
@@ -40,14 +40,15 @@ BeforeSuite(async ({
   await backupAPI.clearAllArtifacts();
   await locationsAPI.clearAllLocations(true);
   locationId = await locationsAPI.createStorageLocation(location);
-  await I.mongoConnectReplica({
-    username: 'admin',
-    password: 'password',
+  await I.mongoConnect({
+    username: 'pmm',
+    password: 'pmmpass',
+    port: 27027,
   });
 
-  I.say(await I.verifyCommand(`sudo pmm-admin add mongodb --port=27027 --service-name=${mongoServiceName} --replication-set=rs0 --cluster=${mongoCluster}`));
-  I.say(await I.verifyCommand(`sudo pmm-admin add mongodb --port=27027 --service-name=${mongoServiceName2} --replication-set=rs0 --cluster=${mongoCluster}`));
-  I.say(await I.verifyCommand(`sudo pmm-admin add mongodb --port=27027 --service-name=${mongoNameWithoutCluster} --replication-set=rs0`));
+  I.say(await I.verifyCommand(`docker exec rs101 pmm-admin add mongodb --username=pmm --password=pmmpass --port=27017 --service-name=${mongoServiceName} --replication-set=rs --cluster=${mongoCluster}`));
+  I.say(await I.verifyCommand(`docker exec rs101 pmm-admin add mongodb --username=pmm --password=pmmpass --port=27017 --service-name=${mongoServiceName2} --replication-set=rs --cluster=${mongoCluster}`));
+  I.say(await I.verifyCommand(`docker exec rs101 pmm-admin add mongodb --username=pmm --password=pmmpass --port=27017 --service-name=${mongoNameWithoutCluster} --replication-set=rs`));
 });
 
 Before(async ({
@@ -56,7 +57,7 @@ Before(async ({
   const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName('MONGODB_SERVICE', mongoServiceName);
 
   serviceId = service_id;
-  const c = await I.mongoGetCollection('test', 'e2e');
+  const c = await I.mongoGetCollection('test', 'test');
 
   await c.deleteMany({ number: 2 });
 
