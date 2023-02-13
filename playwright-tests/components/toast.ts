@@ -29,8 +29,8 @@ export class Toast {
     options?: { timeout?: Duration.OneMinute; variant?: 'success' | 'warning' | 'error' },
   ) => {
     let selectedToast: Locator = this.selectToast(options?.variant);
-    
-    await selectedToast.waitFor({ state: 'visible', timeout: options?.timeout });
+
+    await selectedToast.waitFor({ state: 'visible', timeout: options?.timeout || 30000 });
     await expect(selectedToast).toHaveText(message);
     await this.closeButton(selectedToast).click();
     await selectedToast.waitFor({ state: 'detached' });

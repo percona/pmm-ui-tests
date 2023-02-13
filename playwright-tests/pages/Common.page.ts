@@ -1,12 +1,14 @@
 import { Page } from '@playwright/test';
 import { SideMenu } from '@components/sideMenu';
 import { Toast } from '@components/toast';
+import OptionsMenu from '@tests/components/optionsMenu';
 
 export class CommonPage {
   constructor(readonly page: Page) {}
 
   toast = new Toast(this.page);
   sideMenu = new SideMenu(this.page);
+  optionMenu = new OptionsMenu(this.page);
 
   landingUrl = 'graph/d/pmm-home/home-dashboard?orgId=1&refresh=1m';
 

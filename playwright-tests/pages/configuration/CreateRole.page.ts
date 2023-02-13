@@ -2,6 +2,14 @@ import { Page } from '@playwright/test';
 import RbacTable from '@tests/components/rbacTable';
 import { CommonPage } from '../Common.page';
 
+interface CreateRole {
+  roleName: string,
+  roleDescription?: string,
+  label: string,
+  operator?: string,
+  value: string,
+}
+
 export class CreateRolePage extends CommonPage {
   constructor(page: Page) {
     super(page);
@@ -42,6 +50,24 @@ export class CreateRolePage extends CommonPage {
 
   links = {
     ...super.getLinks(),
+  };
+
+  createNewRole = async (options: CreateRole) => {
+    await this.fields.roleName.type(options.roleName);
+    if (options.roleDescription) {
+      await this.fields.roleDescription.type(options.roleDescription);
+    }
+    await this.fields.selectLabel.click();
+    await this.elements.menuOption(options.label).click();
+    if (options.operator) {
+      await this.fields.selectMatchOperator.click()
+      await this.elements.menuOption(options.operator).click();
+    }
+    await this.fields.selectValue.click();
+    await this.elements.menuOption(options.value).click();
+    await this.buttons.submit.click();
+    await this.toast.checkToastMessage(this.messages.roleCreatedHeader(options.roleName) + this.messages.roleCreatedDescription);
+    
   };
 
 }

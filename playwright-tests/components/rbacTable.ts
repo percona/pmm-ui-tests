@@ -2,12 +2,18 @@ import { expect, Page } from '@playwright/test';
 import Table from './table';
 
 export default class RbacTable extends Table {
-  constructor(readonly page: Page) { 
+  constructor(page: Page) { 
     super(page);
   }
 
+  private optionsMenu = this.page.getByRole('menu');
+
   elements = {
     ...super.getTableElements(),
+    defaultBadge: this.page.getByTestId('role-default-badge'),
+    defaultRow: this.page.locator('//*[@data-testid="role-default-badge"]//ancestor::*[@data-testid="table-tbody-tr"]'),
+    rowOptions: (text: string) => super.getTableElements().rowByText(text).locator('//*[@aria-label="Open role options"]'),
+    setDefault: this.optionsMenu.getByText('Set as default'),
   };
 
   fields = {
