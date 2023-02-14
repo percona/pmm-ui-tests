@@ -1,5 +1,6 @@
 const assert = require('assert');
 
+const { adminPage } = inject();
 const connection = {
   host: '127.0.0.1',
   port: 5438,
@@ -18,8 +19,7 @@ const container = process.env.PGSQL_PGSS_CONTAINER ? `${process.env.PGSQL_PGSS_C
 const database = `pgss${Math.floor(Math.random() * 99) + 1}`;
 const pgss_service_name = `${container}_${version}_service`;
 const container_name = `${container}_${version}`;
-// const pmmFrameworkLoader = `bash ${adminPage.pathToFramework}`;
-const pmmFrameworkLoader = 'bash /home/nzv/projects/pmm-qa/pmm-tests/pmm-framework.sh';
+const pmmFrameworkLoader = `bash ${adminPage.pathToFramework}`;
 const pgsqlVersionPgss = new DataTable(['pgsqlVersion', 'expectedPgssVersion', 'expectedColumnName']);
 
 pgsqlVersionPgss.add([12, '1.7', 'total_time']);
