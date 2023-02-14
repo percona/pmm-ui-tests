@@ -282,4 +282,17 @@ test.describe('PMM Client "--help" validation', async () => {
       'tls-ca-file=STRING         TLS CA certificate file',
     ]);
   });
+
+  /**
+   * https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/pgsql-specific-tests.bats#L69
+   * https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/pgsql-specific-tests.bats#L76
+   * https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/pgsql-specific-tests.bats#L83
+   */
+  test('PMM-T443 Verify pmm-admin add postgresql --help', async ({}) => {
+    await addPostgreSqlHelp.outContainsMany([
+      'host',
+      'port',
+      'service-name',
+    ]);
+  });
 });
