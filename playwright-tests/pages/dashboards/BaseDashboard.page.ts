@@ -74,7 +74,6 @@ export class BaseDashboard extends CommonPage {
     const panelData = await this.baseDashboardElements.panelContent.elementHandles();
     for await (const [index, panel] of panelData.entries()) {
       await expect(this.baseDashboardElements.panelContent.nth(index)).not.toContainText('N/A' || 'No data')
-      console.log(await panel.textContent());
     }
   }
 

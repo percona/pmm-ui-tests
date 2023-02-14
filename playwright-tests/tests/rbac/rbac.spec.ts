@@ -102,7 +102,7 @@ test.describe('Spec file for Access Control (RBAC)', async () => {
     await test.step('3. Login as new user and verify that Node Dashboard does NOT show data.', async () => {
       await grafanaHelper.unAuthorize(page);
       await grafanaHelper.authorize(page, newUser.username, newUser.password);
-      // await homeDashboard.verifyAllPanelsDoesNotHaveData();
+      await homeDashboard.verifyAllPanelsDoesNotHaveData();
     });
 
     await test.step('4. Login as new user and verify that Node MySql Dashboard shows data.', async () => {
