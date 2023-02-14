@@ -54,18 +54,33 @@ test.describe('Spec file for connecting PMM to the portal', async () => {
         await grafanaHelper.authorize(page);
         await page.goto(platformPage.perconaPlatformURL);
         await platformPage.perconaPlatformContainer.waitFor({ state: 'visible' });
-        await page.getByText(platformPage.labels.header).waitFor({ state: 'visible' });
+        if (pmmVersion >= 35) {
+          await platformPage.elements.header_2_35.waitFor({state: 'visible'})
+        } else {
+          await page.getByText(platformPage.labels.header).waitFor({ state: 'visible' });
+        }
+        
       });
 
       await test.step('2. Verify all required element are displayed.', async () => {
-        await expect(platformPage.elements.pmmServerIdHeader).toHaveText(platformPage.labels.pmmServerId);
+        if (pmmVersion >= 35) {
+          await expect(platformPage.elements.pmmServerIdHeader).toHaveText(platformPage.labels.pmmServerId_35);
+        } else {
+          await expect(platformPage.elements.pmmServerIdHeader).toHaveText(platformPage.labels.pmmServerId);
+        }
         await expect(platformPage.elements.pmmServerNameHeader).toHaveText(platformPage.labels.pmmServerName);
         await expect(platformPage.elements.accessTokenHeader).toHaveText(platformPage.labels.accessToken);
+        if (pmmVersion >= 35) {
+          await expect(platformPage.buttons.createPerconaAccount).toHaveAttribute('href', platformPage.links.portalLogin);
+          await expect(platformPage.buttons.connect).toHaveText(platformPage.labels.validateConnection);
+        }
         // fix address for older pmm address is not portal-dev but just portal.
-        if (pmmVersion < 29) {
-          await expect(platformPage.buttons.getToken).toHaveAttribute('href', platformPage.links.platformProfile);
-        } else {
+        if (pmmVersion >= 35) {
+          await expect(platformPage.buttons.getToken35).toHaveAttribute('href', platformPage.links.portalProfile);
+        } else if (pmmVersion > 29 && pmmVersion < 35) {
           await expect(platformPage.buttons.getToken).toHaveAttribute('href', platformPage.links.portalProfile);
+        } else {
+          await expect(platformPage.buttons.getToken).toHaveAttribute('href', platformPage.links.platformProfile);
         }
       });
 

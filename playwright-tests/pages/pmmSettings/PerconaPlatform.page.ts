@@ -12,6 +12,7 @@ export default class PerconaPlatform extends CommonPage {
 
   elements = {
     ...super.getElements(),
+    header_2_35: this.page.getByText('Connect to Percona Platform'),
     pmmServerIdHeader: this.perconaPlatformContainer.getByTestId('pmmServerId-field-label'),
     pmmServerNameHeader: this.perconaPlatformContainer.getByTestId('pmmServerName-field-label'),
     pmmServerNameError: this.perconaPlatformContainer.getByTestId('pmmServerName-field-error-message'),
@@ -32,11 +33,15 @@ export default class PerconaPlatform extends CommonPage {
   labels = {
     ...super.getLabels(),
     header: 'Connect PMM to Percona Platform',
+    connectToPlatform: 'Connect to Percona Platform',
     pmmServerId: 'PMM Server Id',
+    pmmServerId_35: 'PMM Server ID',
     pmmServerName: 'PMM Server Name *',
     accessToken: 'Percona Platform Access Token *',
     getToken: 'Get token',
     requiredField: 'Required field',
+    createPerconaAccount: 'Create a Percona account',
+    validateConnection: 'Validate Platform connection',
   };
 
   buttons = {
@@ -45,6 +50,8 @@ export default class PerconaPlatform extends CommonPage {
     disconnect: this.connectedContainer.getByTestId('disconnect-button'),
     confirmDisconnect: this.page.locator('//*[@aria-label="Confirm Modal Danger Button"]'),
     getToken: this.perconaPlatformContainer.getByText(this.labels.getToken),
+    getToken35: this.page.locator(`//*[contains(text(), "${this.labels.getToken}")]//ancestor::a`),
+    createPerconaAccount: this.page.locator(`//*[contains(text(), "${this.labels.createPerconaAccount}")]//ancestor::a`),
   };
 
   messages = {
@@ -60,6 +67,7 @@ export default class PerconaPlatform extends CommonPage {
     ...super.getLinks(),
     portalProfile: 'https://portal-dev.percona.com/profile',
     platformProfile: 'https://platform-dev.percona.com/profile',
+    portalLogin: 'https://portal-dev.percona.com/login',
     readMore:
       'https://docs.percona.com/percona-monitoring-and-management/how-to/integrate-platform.html#disconnect-a-pmm-instance',
   };
