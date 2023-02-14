@@ -104,12 +104,9 @@ module.exports = {
       teams: menuOption(co, 'Teams', '/graph/org/teams'),
       dataSources: menuOption(co, 'Data sources', '/graph/datasources'),
       users: menuOption(co, 'Users', '/graph/org/users'),
-      pmmSettings: menuOption(co, 'PMM Settings', '/graph/settings/metrics-resolution'),
-      pmmInventory: new SubMenu(co, 'PMM Inventory', '/graph/inventory/services',
-        {
-          inventoryList: menuOption(co, 'Inventory List', '/graph/inventory/services', 2),
-        }),
-      addInstance: menuOption(co, 'Add Instance to PMM', '/graph/add-instance'),
+      pmmSettings: menuOption(co, 'Settings', '/graph/settings/metrics-resolution'),
+      pmmInventory: menuOption(co, 'Inventory', '/graph/inventory/services'),
+      addInstance: menuOption(co, 'Add Service', '/graph/add-instance'),
     }),
   serverAdmin: new LeftMenu('Server admin', '/graph/admin/users',
     {
