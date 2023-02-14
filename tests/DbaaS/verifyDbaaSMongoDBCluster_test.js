@@ -80,7 +80,7 @@ Scenario('PMM-T665 PMM-T642 PSMDB Cluster with Custom Resources, log popup ' +
     I.amOnPage(dbaasPage.url);
     await dbaasPage.postClusterCreationValidation(psmdb_cluster, clusterName, 'MongoDB');
     //PMM-T665
-    await dbaasPage.verifyLogPopup(27, psmdb_cluster);
+    await dbaasPage.verifyLogPopup(33, psmdb_cluster);
     await dbaasPage.validateClusterDetail(psmdb_cluster, clusterName, psmdb_configuration, 
       psmdb_configuration.clusterDashboardRedirectionLink);
     const {
