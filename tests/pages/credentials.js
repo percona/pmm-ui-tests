@@ -13,6 +13,12 @@ module.exports = {
     adminUser: 'mongoadmin',
     adminPassword: 'GRgrO9301RuF',
   },
+  mongoReplicaPrimaryForBackups: {
+    host: '127.0.0.1',
+    port: '27027',
+    username: 'pmm',
+    password: 'pmmpass',
+  },
   postgreSql: {
     port: '5433',
     pmmServerUser: 'pmm-managed',

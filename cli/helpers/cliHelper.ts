@@ -22,7 +22,7 @@ export function verifyCommand(command, result = 'pass', getError = false): Outpu
  * @param       command   sh command to execute
  * @return      {@link Output} instance
  */
-export async function exec(command: string, silent: boolean = false): Promise<Output> {
+export async function exec(command: string): Promise<Output> {
     const { stdout, stderr, code } = await test.step(`Run "${command}" command`, async () => {
         console.log(`Run: "${command}"`);
         return shell.exec(command.replace(/(\r\n|\n|\r)/gm, ''), { silent: false });

@@ -236,9 +236,7 @@ test.describe('Percona Server MongoDB (PSMDB) CLI tests ', async () => {
       //         run sleep 20
       const ip = host.split(':')[0];
       await (await cli.exec('sudo chmod +x /srv/pmm-qa/pmm-tests/pmm-2-0-bats-tests/check_metric.sh')).assertSuccess();
-      let output = await cli.exec(
-        `./pmm-tests/pmm-2-0-bats-tests/check_metric.sh mongo_inst_$COUNTER mongodb_up ${ip} mongodb_exporter pmm mypass`,
-      );
+      let output = await cli.exec(`./pmm-tests/pmm-2-0-bats-tests/check_metric.sh mongo_inst_$COUNTER mongodb_up ${ip} mongodb_exporter pmm mypass`);
       await output.assertSuccess();
       await output.outContains('mongodb_up 1');
     }
