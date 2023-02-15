@@ -7,6 +7,7 @@ import { CreateRolePage } from '@tests/pages/configuration/CreateRole.page';
 import { NewUserPage } from '@tests/pages/serverAdmin/NewUser.page';
 import { UsersConfigurationPage } from '@tests/pages/configuration/UsersConfiguration.page';
 import { MySqlDashboard } from '@tests/pages/dashboards/mysql/MySqlDashboard.page';
+import NodesOverviewDashboard from '@tests/pages/dashboards/nodes/NodesOverviewDashboard.page';
 
 test.describe('Spec file for Access Control (RBAC)', async () => {
   test.beforeEach(async ({ page }) => {
@@ -77,10 +78,10 @@ test.describe('Spec file for Access Control (RBAC)', async () => {
     const newUserPage = new NewUserPage(page);
     const usersConfigurationPage = new UsersConfigurationPage(page);
     const mySqlDashboard = new MySqlDashboard(page);
-    const homeDashboard = new HomeDashboard(page);
+    const nodesOverviewDashboard = new NodesOverviewDashboard(page);
 
-    const roleName = `Role Name ${new Date().getTime()}`
-    const roleDescription = `Role Description ${new Date().getTime()}`
+    const roleName = `Role Name Only MySql Access ${new Date().getTime()}`
+    const roleDescription = `Role Description Only MySql Access ${new Date().getTime()}`
     const newUser = { username: 'testUserRBAC', email: 'testUserRBAC@localhost', name: 'Test User', password: 'password' };
 
     await test.step('1. Navigate to the access role page then create role MySQL with label agent_type and value mysql_exporter', async () => {
@@ -102,12 +103,13 @@ test.describe('Spec file for Access Control (RBAC)', async () => {
     await test.step('3. Login as new user and verify that Node Dashboard does NOT show data.', async () => {
       await grafanaHelper.unAuthorize(page);
       await grafanaHelper.authorize(page, newUser.username, newUser.password);
-      await homeDashboard.verifyAllPanelsDoesNotHaveData();
+      await page.goto(nodesOverviewDashboard.url);
+      await nodesOverviewDashboard.verifyRoleAccessBlocksNodeExporter();
     });
 
     await test.step('4. Login as new user and verify that Node MySql Dashboard shows data.', async () => {
       await page.goto(mySqlDashboard.url)
-      await mySqlDashboard.verifyAllPanelsHaveData();
+      await mySqlDashboard.verifyAllPanelsHaveData(3);
     });
   });
 });
