@@ -34,7 +34,7 @@ Before(async ({ I }) => {
 });
 
 Scenario(
-  'PMM-T1312 Adding Load to Postgres test database and verifying PMM-Agent and PG_STATEMENTS QAN agent is in running status @not-ui-pipeline @pgss-pmm-integration',
+  '@PMM-T1312 Adding Load to Postgres test database and verifying PMM-Agent and PG_STATEMENTS QAN agent is in running status @not-ui-pipeline @pgss-pmm-integration',
   async ({ I }) => {
     await I.pgExecuteQueryOnDemand('SELECT now();', connection);
 
@@ -129,8 +129,8 @@ Scenario(
 );
 
 Data(pgsqlVersionPgss).Scenario(
-  '@PMM-T1540 Verify that QAN pg_stat_statements agent collects "total_time" column for pg_stat_statements version 1.7 and lower'
-    + '@PMM-T1541 Verify that QAN pg_stat_statements agent collects "total_exec_time" column for pg_stat_statements version 1.8 and higher @pgss-pmm-integration',
+  '@PMM-T1540 @PMM-T1541 Verify that QAN pg_stat_statements agent collects "total_time" column for pg_stat_statements version 1.7 and lower'
+    + 'Verify that QAN pg_stat_statements agent collects "total_exec_time" column for pg_stat_statements version 1.8 and higher @pgss-pmm-integration',
   async ({ I, inventoryAPI, current }) => {
     const {
       pgsqlVersion,
@@ -138,9 +138,10 @@ Data(pgsqlVersionPgss).Scenario(
       expectedColumnName,
     } = current;
     const containerName = `pgsql_pgss_${pgsqlVersion}`;
+    const exposedPort = '5500';
     const serviceName = `pgsql_pgss_${pgsqlVersion}_service`;
 
-    await I.verifyCommand(`${pmmFrameworkLoader}  --pmm2 --setup-pmm-pgss-integration --pgsql-version=${pgsqlVersion}`);
+    await I.verifyCommand(`${pmmFrameworkLoader} --pmm2 --setup-pmm-pgss-integration --pgsql-version=${pgsqlVersion} --pgsql-pgss-port=${exposedPort}`);
 
     await inventoryAPI.verifyServiceExistsAndHasRunningStatus(
       {
