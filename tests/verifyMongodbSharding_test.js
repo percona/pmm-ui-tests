@@ -11,7 +11,7 @@ exactMongoDbInfo.add(['4.4', '4.4.16-16', 'Community']);
 exactMongoDbInfo.add(['6.0', '6.0.2-1', 'Community']);
 
 Data(exactMongoDbInfo).Scenario(
-  '@PMM-T1539 Verify that MongoDB exporter shows version for mongos instance @observability-mongo',
+  '@PMM-T1539 Verify that MongoDB exporter shows version for mongos instance @mongodb-exporter',
   async ({
     I, current,
   }) => {
