@@ -36,7 +36,6 @@ module.exports = {
     + 'PMM Server DBaaS feature enabled/disabled\n'
     + 'PMM Server Check Updates feature disabled\n'
     + 'Detailed information about version and comment of monitored MySQL services\n'
-    + 'Plugins on the MySQL instance\n'
     + 'Number of monitored MySQL services with RocksDB Engine\n'
     + 'InnoDB buffer pool size\n'
     + 'Average number of running threads for last day\n'
