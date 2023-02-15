@@ -25,7 +25,9 @@ export class CommonPage {
 
   private baseLabels = {};
 
-  private baseButtons = {};
+  private baseButtons = {
+    home: this.page.locator('//*[@aria-label="Home"]'),
+  };
 
   private baseMessages = {
     loginWithPercona: 'Login with Percona Account to access this content',
