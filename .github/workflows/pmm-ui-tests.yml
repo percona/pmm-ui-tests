@@ -124,7 +124,7 @@ jobs:
 
       - name: Execute UI tests
         if: ${{ github.event.inputs.pmm_test_flag == 'null' }}
-        id: ui-tests
+        id: ui-tests-all
         working-directory: pmm-ui-tests
         run: |
           npm install
@@ -136,7 +136,7 @@ jobs:
 
       - name: Execute Flagged UI tests
         if: ${{ github.event.inputs.pmm_test_flag != 'null' }}
-        id: ui-tests
+        id: ui-tests-flagged
         working-directory: pmm-ui-tests
         run: |
           npm install
