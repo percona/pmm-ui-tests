@@ -405,7 +405,7 @@ Scenario(
     const mySqlScheduleId = await scheduledAPI.createScheduledBackup(scheduleMySql);
 
     await backupAPI.waitForBackupFinish(null, scheduleMySql.name, 240);
-    await backupAPI.waitForBackupFinish(null, scheduleMongo.name, 30);
+    await backupAPI.waitForBackupFinish(null, scheduleMongo.name, 120);
     await scheduledAPI.disableScheduledBackup(mongoScheduleId);
     await scheduledAPI.disableScheduledBackup(mySqlScheduleId);
 
