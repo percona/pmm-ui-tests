@@ -86,8 +86,8 @@ module.exports = {
 
     await inventoryAPI.waitForRunningState(serviceId);
     I.click(agentLinkLocator);
-    I.waitForElement(this.fields.pmmAgentLocator, 60);
     await this.changeRowsPerPage(100);
+    I.waitForElement(this.fields.pmmAgentLocator, 60);
     I.waitForElement(this.fields.inventoryTable, 60);
     I.scrollPageToBottom();
     const numberOfServices = await I.grabNumberOfVisibleElements(
