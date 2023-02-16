@@ -20,7 +20,7 @@ test.describe('Spec file for Access Control (RBAC)', async () => {
     await grafanaHelper.authorize(page, 'admin', 'admin');
   });
 
-  test('PMM-T1573 Verify Access Roles tab on Configuration page @rbac', async ({ page }) => {
+  test('PMM-T1573 Verify Access Roles tab on Configuration page @rbac @rbac-pre-upgrade', async ({ page }) => {
     test.info().annotations.push({
       type: 'Also Covers',
       description: 'PMM-T1579 Verify docker variable to enable Access control (RBAC)',
@@ -46,7 +46,7 @@ test.describe('Spec file for Access Control (RBAC)', async () => {
     });
   });
 
-  test('PMM-T1580 Verify creating Access Role @rbac', async ({ page }) => {
+  test('PMM-T1580 Verify creating Access Role @rbac @rbac-pre-upgrade', async ({ page }) => {
     const rbacPage = new RbacPage(page);
     const createRolePage = new CreateRolePage(page);
 
@@ -75,7 +75,7 @@ test.describe('Spec file for Access Control (RBAC)', async () => {
     });
   });
 
-  test('PMM-T1584 Verify assigning Access role to user @rbac', async ({ page }) => {
+  test('PMM-T1584 Verify assigning Access role to user @rbac @rbac-pre-upgrade', async ({ page }) => {
     const rbacPage = new RbacPage(page);
     const createRolePage = new CreateRolePage(page);
     const newUserPage = new NewUserPage(page);
@@ -115,7 +115,7 @@ test.describe('Spec file for Access Control (RBAC)', async () => {
     });
   });
 
-  test('PMM-T1585 Verify deleting Acces role @rbac', async ({ page }) => {
+  test('PMM-T1585 Verify deleting Acces role @rbac @rbac-post-upgrade', async ({ page }) => {
     const rbacPage = new RbacPage(page);
     const usersConfigurationPage = new UsersConfigurationPage(page);
 
