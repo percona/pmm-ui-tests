@@ -26,7 +26,9 @@ module.exports = {
     },
   ],
   telemetryTooltipData: 'Option to send usage data back to Percona to let us make our product better.\n'
+    + '\n'
     + 'We gather and send the following information to Percona:\n'
+    + '\n'
     + 'PMM Server Integration Alerting feature enabled/disabled\n'
     + 'Maximum number of active concurrent alerts in the last 24 hours\n'
     + 'Number of Alerts configured\n'
@@ -109,8 +111,5 @@ module.exports = {
     + 'Grafana Default Theme Users Count\n'
     + 'Grafana Custom Dashboards Count\n'
     + 'Grafana Custom Dashboards Count By Pillar\n'
-    + 'PMM Server API usage\n'
-    + 'How many storages configured by types\n'
-    + 'How many backup tasks scheduled by types\n'
-    + 'Backup/restore jobs sliced by different parameters',
+    + 'PMM Server API usage',
 };
