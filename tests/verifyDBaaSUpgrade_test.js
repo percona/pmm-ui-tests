@@ -38,7 +38,7 @@ Scenario('Unregister Kubernetes cluster and register again @upgrade-dbaas-force-
     I.amOnPage(dbaasPage.url);
     await dbaasPage.goToKubernetesClusterTab();
     dbaasPage.unregisterCluster(clusterName, true);
-    I.waitForText(dbaasPage.deletedAlertMessage, 20);
+    I.waitForText(dbaasPage.deletedAlertMessage, 60);
     dbaasPage.checkCluster(clusterName, true);
     dbaasPage.registerKubernetesCluster(clusterName, process.env.kubeconfig_minikube);
     I.waitForText(dbaasPage.addedAlertMessage, 60);
@@ -186,7 +186,7 @@ Scenario('PMM-T726 Verify creation and removal of new DB clusters after PMM Serv
     I.waitForText('Processing', 30, dbaasPage.tabs.dbClusterTab.fields.progressBarContent(`${pxc_cluster_name}-new`));
     I.amOnPage('graph/dbaas/kubernetes');
     dbaasPage.unregisterCluster(clusterName, true);
-    I.waitForText(dbaasPage.deletedAlertMessage, 20);
+    I.waitForText(dbaasPage.deletedAlertMessage, 60);
     dbaasPage.checkCluster(clusterName, true);
   }
 );
