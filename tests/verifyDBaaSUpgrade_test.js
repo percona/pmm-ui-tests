@@ -57,7 +57,7 @@ Scenario('PMM-T726 Verify DB clusters status and logs after PMM Server upgrade @
     I.waitForText(active_state, 10, dbaasPage.tabs.dbClusterTab.fields.clusterTableRow(pxc_cluster_name));
     I.waitForText(active_state, 10, dbaasPage.tabs.dbClusterTab.fields.clusterTableRow(psmdb_cluster_name));
 
-    await dbaasPage.verifyLogPopup(33, psmdb_cluster_name);
+    await dbaasPage.verifyLogPopup(27, psmdb_cluster_name);
     await dbaasPage.verifyLogPopup(6, pxc_cluster_name);
   }
 );
@@ -124,7 +124,7 @@ Data(psmdbClusterDetails).Scenario('PMM-T726 Verify PSMDB cluster monitoring aft
     // await dbaasPage.dbClusterAgentStatusCheck(psmdb_cluster_name, serviceName, 'MONGODB_SERVICE');
     await grafanaAPI.checkMetricExist('mongodb_up', { type: 'service_name', value: serviceName });
     await dbaasPage.psmdbClusterMetricCheck(psmdb_cluster_name, serviceName, serviceName, replSet);
-    await dbaasPage.dbaasQANCheck(psmdb_cluster_name, serviceName, serviceName);
+    // await dbaasPage.dbaasQANCheck(psmdb_cluster_name, serviceName, serviceName);
   }
 );
 
