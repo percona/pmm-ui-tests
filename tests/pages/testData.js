@@ -111,5 +111,8 @@ module.exports = {
     + 'Grafana Default Theme Users Count\n'
     + 'Grafana Custom Dashboards Count\n'
     + 'Grafana Custom Dashboards Count By Pillar\n'
-    + 'PMM Server API usage',
+    + 'PMM Server API usage\n'
+    + 'How many storages configured by types\n'
+    + 'How many backup tasks scheduled by types\n'
+    + 'Backup/restore jobs sliced by different parameters',
 };
