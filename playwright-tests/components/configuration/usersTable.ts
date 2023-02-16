@@ -1,8 +1,8 @@
-import { expect, Page } from '@playwright/test';
+import { Page } from '@playwright/test';
 import OptionsMenu from '../optionsMenu';
 
 export default class UsersTable {
-  constructor(readonly page: Page) { }
+  constructor(readonly page: Page) {}
 
   private optionMenu = new OptionsMenu(this.page);
 
@@ -12,17 +12,16 @@ export default class UsersTable {
 
   fields = {
     accessRole: (username: string) => this.elements.rowByText(username).locator('//*[@aria-label="Access Roles"]'),
+    assignRole: (roleName: string) => this.page.locator(`//*[contains(@data-testid, "${roleName}-select-option")]`),
+    removeRole: (username: string, roleName: string) =>
+      this.elements.rowByText(username).locator(`//*[@aria-label="Remove ${roleName}"]`),
   };
 
-  labels = {
-  };
+  labels = {};
 
-  buttons = {
-  };
+  buttons = {};
 
-  messages = {
-  };
+  messages = {};
 
-  links = {
-  };
+  links = {};
 }

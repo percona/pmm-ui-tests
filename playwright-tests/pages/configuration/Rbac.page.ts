@@ -7,7 +7,7 @@ export class RbacPage extends ConfigurationPage {
     super(page);
   }
 
-  url = 'graph/roles'
+  url = 'graph/roles';
 
   rbacTable = new RbacTable(this.page);
 
@@ -22,7 +22,6 @@ export class RbacPage extends ConfigurationPage {
   labels = {
     ...super.getConfigurationLabels(),
     create: 'Create',
-
   };
 
   buttons = {
@@ -36,7 +35,6 @@ export class RbacPage extends ConfigurationPage {
 
   links = {
     ...super.getConfigurationLinks(),
-    createRole: '/roles/create'
+    createRole: '/roles/create',
   };
-
 }
