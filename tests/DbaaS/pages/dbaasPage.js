@@ -95,6 +95,7 @@ module.exports = {
       awsAccessKeyInput: '$awsAccessKeyID-text-input',
       awsSecretKeyInput: '$awsSecretAccessKey-password-input',
       spinner: '$Spinner',
+      freeClusterPromo: '$pmm-server-promote-portal-k8s-cluster-message',
     },
     dbClusterTab: {
       defaultPassword: '***************',
