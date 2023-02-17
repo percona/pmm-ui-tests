@@ -20,9 +20,12 @@ Data(exactMongoDbInfo).Scenario(
     await I.verifyCommand(`${pmmFrameworkLoader} --mongomagic --with-sharding --pmm2 --mo-version=${version}`);
     const containerName = await I.verifyCommand(`docker ps --format "table {{.ID}}\\t{{.Image}}\\t{{.Names}}" | grep 'psmdb.*${version}_sharded' | awk -F " " '{print $3}'`);
     const agentId = await I.verifyCommand(`docker exec ${containerName} pmm-admin list | grep "42002" | awk -F " " '{print $4}'`);
+    const serviceId = await I.verifyCommand(`docker exec ${containerName} pmm-admin list | grep "mongodb_shraded" | awk -F " " '{print $4}'`);
+    const port = await I.verifyCommand(`docker exec ${containerName} pmm-admin list | grep "mongodb_exporter.*${serviceId}" | awk -F " " '{print $6}'`);
+    const versionInfo = await I.verifyCommand(`docker exec ${containerName} curl --silent -u pmm:${agentId} localhost:${port}/metrics | grep -o "mongodb_version_info{.*}"`);
 
-    const actualEdition = await I.verifyCommand(`docker exec ${containerName} curl --silent -u pmm:${agentId} localhost:42002/metrics | grep "mongodb_version_info" | grep -oP '(?<=edition=").*?(?=")'`);
-    const actualExactVersion = await I.verifyCommand(`docker exec ${containerName} curl --silent -u pmm:${agentId} localhost:42002/metrics | grep "mongodb_version_info" | grep -oP '(?<=mongodb=").*?(?=")'`);
+    const actualEdition = versionInfo.match('(?<=edition=").*?(?=")')[0];
+    const actualExactVersion = versionInfo.match('(?<=mongodb=").*?(?=")')[0];
 
     I.assertEqual(
       actualEdition,
