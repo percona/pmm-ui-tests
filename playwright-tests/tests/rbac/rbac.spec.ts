@@ -8,6 +8,7 @@ import { NewUserPage } from '@tests/pages/serverAdmin/NewUser.page';
 import { UsersConfigurationPage } from '@tests/pages/configuration/UsersConfiguration.page';
 import { MySqlDashboard } from '@tests/pages/dashboards/mysql/MySqlDashboard.page';
 import NodesOverviewDashboard from '@tests/pages/dashboards/nodes/NodesOverviewDashboard.page';
+import Duration from '@tests/helpers/Duration';
 
 test.describe('Spec file for Access Control (RBAC)', async () => {
   const newUser = { username: 'testUserRBAC', email: 'testUserRBAC@localhost', name: 'Test User', password: 'password' };
@@ -47,11 +48,16 @@ test.describe('Spec file for Access Control (RBAC)', async () => {
   });
 
   test('PMM-T1580 Verify creating Access Role @rbac @rbac-pre-upgrade', async ({ page }) => {
+    test.info().annotations.push({
+      type: 'Also Covers',
+      description: 'PMM-T1581 Verify assigning default role on Access roles page.',
+    });
     const rbacPage = new RbacPage(page);
     const createRolePage = new CreateRolePage(page);
 
     const roleNameCreate = `Role Name ${new Date().getTime()}`;
     const roleDescriptionCreate = `Role Description ${new Date().getTime()}`;
+    
     await test.step('1. Navigate to the Access Role page, then click create button.', async () => {
       await page.goto(rbacPage.url);
       await rbacPage.buttons.create.click();
@@ -100,6 +106,8 @@ test.describe('Spec file for Access Control (RBAC)', async () => {
       await page.goto(usersConfigurationPage.url);
       await usersConfigurationPage.usersTable.fields.accessRole('testUserRBAC@localhost').click();
       await usersConfigurationPage.optionMenu.selectOption(roleName);
+      await page.goto(mySqlDashboard.url);
+      await mySqlDashboard.waitForPanelToHaveData('Top MySQL Used Connections', 444, Duration.ThreeMinutes);
     });
 
     await test.step('3. Login as new user and verify that Node Dashboard does NOT show data.', async () => {
@@ -119,23 +127,32 @@ test.describe('Spec file for Access Control (RBAC)', async () => {
     const rbacPage = new RbacPage(page);
     const usersConfigurationPage = new UsersConfigurationPage(page);
 
-    await page.goto(rbacPage.url);
-    await rbacPage.rbacTable.elements.rowOptions(roleName).click();
-    await rbacPage.rbacTable.elements.delete.click();
-    await expect(rbacPage.rbacTable.elements.roleAssignedDialog).toContainText(
-      rbacPage.rbacTable.messages.userAssigned(roleName),
-    );
-    await rbacPage.rbacTable.buttons.closeDialog.click();
-    await page.goto(usersConfigurationPage.url);
-    await usersConfigurationPage.usersTable.fields.accessRole(newUser.username).click();
-    await usersConfigurationPage.usersTable.fields.assignRole('Full access').click();
-    await usersConfigurationPage.usersTable.fields.removeRole(newUser.username, roleName).click({ force: true });
-    await usersConfigurationPage.usersTable.fields.removeRole(newUser.username, roleName).click({ force: true });
-    await page.goto(rbacPage.url);
-    await rbacPage.rbacTable.elements.rowOptions(roleName).click();
-    await rbacPage.rbacTable.elements.delete.click();
-    await rbacPage.rbacTable.buttons.confirmAndDeleteRole.click();
-    await rbacPage.toast.checkToastMessageContains(rbacPage.rbacTable.messages.roleDeleted(roleName), { variant: 'success' });
-    await expect(rbacPage.rbacTable.elements.body).not.toContainText(roleName);
+    await test.step('1. Navigate to Access Control page and try to delete role that is assigned to the user.', async () => {
+      await page.goto(rbacPage.url);
+      await rbacPage.rbacTable.elements.rowOptions(roleName).click();
+      await rbacPage.rbacTable.elements.delete.click();
+      await expect(rbacPage.rbacTable.elements.roleAssignedDialog).toContainText(
+        rbacPage.rbacTable.messages.userAssigned(roleName),
+      );
+      await rbacPage.rbacTable.buttons.closeDialog.click();
+    });
+    
+    await test.step('2. Unassign role from the user.', async () => {
+      await page.goto(usersConfigurationPage.url);
+      await usersConfigurationPage.usersTable.fields.accessRole(newUser.username).click();
+      await usersConfigurationPage.usersTable.fields.assignRole('Full access').click();
+      await usersConfigurationPage.usersTable.fields.removeRole(newUser.username, roleName).click({ force: true });
+      await usersConfigurationPage.usersTable.fields.removeRole(newUser.username, roleName).click({ force: true });
+    });
+    
+    await test.step('3. Delete role and verify that role was successfully deleted.', async () => {
+      await page.goto(rbacPage.url);
+      await rbacPage.rbacTable.elements.rowOptions(roleName).click();
+      await rbacPage.rbacTable.elements.delete.click();
+      await rbacPage.rbacTable.buttons.confirmAndDeleteRole.click();
+      await rbacPage.toast.checkToastMessageContains(rbacPage.rbacTable.messages.roleDeleted(roleName), { variant: 'success' });
+      await expect(rbacPage.rbacTable.elements.body).not.toContainText(roleName);
+    });
+    
   });
 });

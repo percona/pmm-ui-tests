@@ -1,4 +1,5 @@
 import { expect, Page } from '@playwright/test';
+import Duration from '@tests/helpers/Duration';
 import { CommonPage } from '../Common.page';
 
 export class BaseDashboard extends CommonPage {
@@ -83,6 +84,12 @@ export class BaseDashboard extends CommonPage {
     await this.page.waitForTimeout(1000);
     await this.page.keyboard.press('PageUp');
     await this.page.waitForTimeout(1000);
+  }
+
+  waitForPanelToHaveData = async (panelHeader: string, panelId: number, timeout: Duration = Duration.OneMinute) => {
+    await this.openAllPanels();
+    await this.baseDashboardElements.getPanelByName(panelHeader, panelId).scrollIntoViewIfNeeded();
+    await expect(this.baseDashboardElements.getPanelByName(panelHeader, panelId)).not.toContainText('N/A' && 'No data', { ignoreCase: true, timeout });
   }
 
   verifyAllPanelsHaveData = async (panelsWithoutData: number) => {
