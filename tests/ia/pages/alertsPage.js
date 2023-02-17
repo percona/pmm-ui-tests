@@ -8,6 +8,7 @@ module.exports = {
   url: 'graph/alerting/alerts',
   columnHeaders: ['Triggered by rule', 'State', 'Summary', 'Severity', 'Active since', 'Last notified', 'Actions'],
   elements: {
+    pageHeader: '//div[@class="page-header"]//h1[text()="Alerting"]',
     noData: '$table-no-data',
     alertRow: (alertName) => alertRow(alertName),
     labelsCell: (alertName) => `${alertRow(alertName)}/td[4]//span`,
@@ -27,13 +28,13 @@ module.exports = {
     detailsSecondaryLabels: locate(details).find('div').withText('Secondary Labels'),
     primaryLabels: (alertName, text) => locate(`${alertRow(alertName)}/td[4]`).find('$chip').withText(text),
     secondaryLabels: (text) => locate(details).find('$chip').withText(text),
-    noAlerts: `//h1[text()=' No alerts detected']`,
+    noAlerts: '//h1[text()=\' No alerts detected\']',
     firedAlertLink: (alertName) => `//a[text()="${alertName}"]`,
   },
   buttons: {
     // silenceActivate returns silence/activate button locator for a given alert name
     silenceActivate: (alertName) => `${alertRow(alertName)}[1]/td//span[text()="Silence"]`,
-    submitSilence: `button[type='submit']`,
+    submitSilence: 'button[type=\'submit\']',
     silenceAllAlerts: locate('span').withText('Silence All'),
     unsilenceAllAlerts: locate('span').withText('Unsilence All'),
     arrowIcon: (alertName) => locate(`${alertRow(alertName)}`).find('$show-details'),
@@ -72,8 +73,7 @@ module.exports = {
         bgColor !== 'rgb(24, 27, 31)',
         `Suppressed alert should have different background color. Found ${bgColor}.`,
       );
-    }
-    else {
+    } else {
       I.see('Active', this.elements.stateCell(alertName));
 
       assert.ok(
@@ -83,7 +83,7 @@ module.exports = {
     }
   },
 
-  //TODO: move to silencesPage
+  // TODO: move to silencesPage
   async activateAlert(alertName) {
     const title = await I.grabAttributeFrom(`${this.buttons.silenceActivate(alertName)}`, 'title');
 

@@ -119,6 +119,25 @@ module.exports = {
     I.say(`Status of PXC operator was ${pxcOperatorStatus}. Status of PSMDB operator was ${psmdbOperatorStatus}.`);
   },
 
+  async waitForClusterStatus() {
+    const body = {};
+    const headers = { Authorization: `Basic ${await I.getAuth()}` };
+    let response, clusterStatus;
+
+    for (let i = 0; i < 30; i++) {
+      response = await I.sendPostRequest('v1/management/DBaaS/Kubernetes/List', body, headers);
+      clusterStatus = response.data.kubernetes_clusters[0].status;
+
+      if (clusterStatus === 'KUBERNETES_CLUSTER_STATUS_OK') {
+        break;
+      }
+      else {
+        I.wait(10);
+      }
+    }
+    I.say(`Kubernetes cluster status was ${clusterStatus}.`);
+  },
+
   async apiCheckDbClusterExist(dbClusterName, k8sClusterName, dbType = 'MySQL') {
     const body = {
       kubernetesClusterName: k8sClusterName,

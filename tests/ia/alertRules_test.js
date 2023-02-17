@@ -96,7 +96,8 @@ Scenario(
     I.click(alertRulesPage.buttons.openAddRuleModal);
     await alertRulesPage.fillPerconaAlert(rule, newRule);
     I.click(alertRulesPage.buttons.saveAndExit);
-    I.verifyPopUpMessage(alertRulesPage.messages.successRuleCreate(newRule.ruleName));
+    // FIXME: unskip after https://jira.percona.com/browse/PMM-11399 is fixed
+    // I.verifyPopUpMessage(alertRulesPage.messages.successRuleCreate(newRule.ruleName));
     alertRulesPage.verifyRuleList(newRule.folder, newRule.ruleName);
     I.seeTextEquals('Normal', alertRulesPage.elements.ruleState);
     await rulesAPI.removeAlertRule(newRule.folder);

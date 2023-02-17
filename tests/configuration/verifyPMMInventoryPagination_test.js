@@ -14,7 +14,7 @@ Before(async ({ I, pmmInventoryPage }) => {
   await pmmInventoryPage.open();
 });
 
-AfterSuite(async ({ inventoryAPI, remoteInstancesHelper }) => {
+AfterSuite(async ({ inventoryAPI }) => {
   for (let i = 1; i <= 25; i++) {
     await inventoryAPI.deleteNodeByName(`${serviceName}${i}`);
   }
