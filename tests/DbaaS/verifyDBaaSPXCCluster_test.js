@@ -57,6 +57,23 @@ async ({
   await dbaasPage.verifyLogPopup(18, pxc_cluster_name);
 });
 
+Scenario('PMM-T1577 Verify Edit DB Cluster page @dbaas',
+  async ({ I, dbaasPage }) => {
+    I.amOnPage(dbaasPage.url);
+    I.waitForVisible(dbaasPage.tabs.dbClusterTab.fields.clusterActionsMenu(pxc_cluster_name), 30);
+    I.forceClick(dbaasPage.tabs.dbClusterTab.fields.clusterActionsMenu(pxc_cluster_name));
+    I.waitForElement(dbaasPage.tabs.dbClusterTab.fields.clusterAction('Edit'), 30);
+    I.click(dbaasPage.tabs.dbClusterTab.fields.clusterAction('Edit'));
+    I.waitForElement(dbaasPage.tabs.dbClusterTab.fields.editDbClusterHeader);
+    I.dontSeeElement(dbaasPage.tabs.dbClusterTab.basicOptions.fields.allBasicOptions);
+    I.seeElement(dbaasPage.tabs.dbClusterTab.advancedOptions.fields.advancedSettingsLabel);
+    I.seeElement(dbaasPage.tabs.dbClusterTab.dbConfigurations.configurationsHeader('MySQL'));
+    I.seeElement(dbaasPage.tabs.dbClusterTab.networkAndSecurity.networkAndSecurityHeader);
+    await dbaasPage.verifyElementsInSection(dbaasPage.tabs.dbClusterTab.networkAndSecurity.disabled);
+    I.seeElement(dbaasPage.tabs.dbClusterTab.editClusterButtonDisabled);
+  }
+);
+
 Scenario(
   'PMM-T486 Verify Adding PMM-Server Public Address via Settings works, ' 
   + 'PMM-T1315 - Verify DBaaS naming @dbaas',
@@ -211,7 +228,8 @@ async ({
   I.click(dbaasPage.tabs.dbClusterTab.createClusterButton);
   I.waitForText('Processing', 30, dbaasPage.tabs.dbClusterTab.fields.progressBarContent(pxc_cluster_name));
   // PMM-T780
-  await dbaasPage.apiKeyCheck(clusterName, dbClusterRandomName, 'pxc', true);
+  // FIXME: unskip when https://jira.percona.com/browse/PMM-11565 is fixed
+  // await dbaasPage.apiKeyCheck(clusterName, dbClusterRandomName, 'pxc', true);
   I.amOnPage(dbaasPage.url);
   await dbaasPage.postClusterCreationValidation(dbClusterRandomName, clusterName);
   await dbaasPage.validateClusterDetail(dbClusterRandomName, clusterName, singleNodeConfiguration, dbClusterRandomNameLink);
@@ -226,7 +244,8 @@ async ({
 
   await dbaasActionsPage.deleteXtraDBCluster(dbClusterRandomName, clusterName);
   // PMM-T781
-  await dbaasPage.apiKeyCheck(clusterName, dbClusterRandomName, 'pxc', false);
+  // FIXME: unskip when https://jira.percona.com/browse/PMM-11565 is fixed
+  // await dbaasPage.apiKeyCheck(clusterName, dbClusterRandomName, 'pxc', false);
 });
 
 Scenario('PMM-T522 Verify Editing a Cluster with Custom Setting and float values is possible @dbaas',
@@ -311,9 +330,9 @@ Scenario('PMM-T525 PMM-T528 Verify Suspend & Resume for DB Cluster Works as expe
     I.click(dbaasPage.tabs.dbClusterTab.createClusterButton);
     I.waitForText('Processing', 30, dbaasPage.tabs.dbClusterTab.fields.progressBarContent(dbClusterRandomName));
     await dbaasPage.postClusterCreationValidation(dbClusterRandomName, clusterName);
-    I.click(dbaasPage.tabs.dbClusterTab.fields.clusterActionsMenu(dbClusterRandomName));
+    I.forceClick(dbaasPage.tabs.dbClusterTab.fields.clusterActionsMenu(dbClusterRandomName));
     await dbaasActionsPage.checkActionPossible('Update', false, pxc_cluster_name);
-    I.click(dbaasPage.tabs.dbClusterTab.fields.clusterActionsMenu(dbClusterRandomName));
+    I.forceClick(dbaasPage.tabs.dbClusterTab.fields.clusterActionsMenu(dbClusterRandomName));
     await dbaasActionsPage.suspendCluster(dbClusterRandomName, clusterName);
     I.waitForVisible(dbaasPage.tabs.dbClusterTab.fields.clusterStatusPaused, 60);
     I.seeElement(dbaasPage.tabs.dbClusterTab.fields.clusterStatusPaused);

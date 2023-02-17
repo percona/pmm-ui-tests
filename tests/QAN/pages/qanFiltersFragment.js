@@ -212,7 +212,11 @@ module.exports = {
   },
 
   async verifyShortcutAttributes(href, filterValue, timeRangeValue) {
-    const shortCutLocator = locate(`$filter-checkbox-${filterValue}`).find('a');
+    let shortCutLocator = locate(`$filter-checkbox-${filterValue}`).find('a');
+
+    if (filterValue === 'mongodb_rs1_2') {
+      shortCutLocator = '//div[contains(@data-testid, "filter-checkbox-mongodb_rs1_2")]//a';
+    }
 
     await I.waitForVisible(shortCutLocator, 20);
     const linkText = await I.grabAttributeFrom(shortCutLocator, 'href');
