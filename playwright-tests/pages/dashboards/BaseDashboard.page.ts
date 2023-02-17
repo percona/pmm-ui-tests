@@ -90,6 +90,7 @@ export class BaseDashboard extends CommonPage {
     await this.openAllPanels();
     await this.baseDashboardElements.getPanelByName(panelHeader, panelId).scrollIntoViewIfNeeded();
     await expect(this.baseDashboardElements.getPanelByName(panelHeader, panelId)).not.toContainText('N/A' && 'No data', { ignoreCase: true, timeout });
+    await this.page.keyboard.press('PageDown');
   }
 
   verifyAllPanelsHaveData = async (panelsWithoutData: number) => {
@@ -98,7 +99,7 @@ export class BaseDashboard extends CommonPage {
     const panelData = await this.baseDashboardElements.panelContent.elementHandles();
     for await (const [index, panel] of panelData.entries()) {
       await this.baseDashboardElements.panelContent.nth(index).scrollIntoViewIfNeeded();
-      await this.page.keyboard.press('PageUp');
+
       try {
         await expect(this.baseDashboardElements.panelContent.nth(index)).not.toContainText('N/A' && 'No data', { ignoreCase: true })
       } catch (err) {
@@ -107,6 +108,7 @@ export class BaseDashboard extends CommonPage {
           throw new Error(`Number of elements without data is greater than expected (${panelsWithoutData})`)
         }
       }
+      await this.page.keyboard.press('PageDown');
     }
   }
 
