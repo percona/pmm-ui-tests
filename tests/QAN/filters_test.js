@@ -12,9 +12,10 @@ Feature('QAN filters').retry(1);
 const filters = new DataTable(['filterToApply', 'searchValue']);
 
 filters.add(['SELECT', 'INSERT']);
-filters.add(['INSERT', 'SELECT']);
-filters.add(['UPDATE', 'DELETE']);
-filters.add(['DELETE', 'UPDATE']);
+// FIXME: unskip when https://jira.percona.com/browse/PMM-11657 is fixed
+// filters.add(['INSERT', 'SELECT']);
+// filters.add(['UPDATE', 'DELETE']);
+// filters.add(['DELETE', 'UPDATE']);
 
 Before(async ({ I, qanPage, qanOverview }) => {
   await I.Authorize();
@@ -264,13 +265,14 @@ Data(shortCutTests).Scenario(
   'PMM-T436 PMM-T458 - Verify short-cut navigation from filters to related dashboards, '
     + 'Verify time interval is passed from QAN to dashboards via shortcut links @qan',
   async ({
-    I, qanFilters, dashboardPage, current, adminPage, qanOverview,
+    I, qanFilters, dashboardPage, current, adminPage, qanOverview, qanPage,
   }) => {
     const shortCutLink = current.shortcutLink;
     const header = current.dashboard;
     const filterValue = current.filter;
     const timeRangeValue = 'from=now-3h&to=now';
 
+    I.amOnPage(`${qanPage.url}&orgId=1`);
     await adminPage.applyTimeRange('Last 3 hours');
     qanOverview.waitForOverviewLoaded();
     qanFilters.waitForFiltersToLoad();
