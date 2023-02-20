@@ -1,6 +1,6 @@
-const panels = new DataTable(['panelName', 'dashboardType', 'dashboardName', 'dashboard']);
-
 Feature('Test Dashboards collection inside the Folders').retry(1);
+
+const panels = new DataTable(['panelName', 'dashboardType', 'dashboardName', 'dashboard']);
 
 panels.add(['Disk Space Total', 'singleNode', 'Disk Details', 'osDiskDetails']);
 panels.add(['Disk Reads', 'singleNode', 'Disk Details', 'osDiskDetails']);
@@ -9,19 +9,18 @@ panels.add(['Total RAM', 'singleNode', 'Memory Details', 'osMemoryDetails']);
 panels.add(['Virtual Memory Total', 'multipleNodes', 'Nodes Overview', 'osNodesOverview']);
 panels.add(['Monitored Nodes', 'multipleNodes', 'Nodes Overview', 'osNodesOverview']);
 panels.add(['Total Virtual CPUs', 'multipleNodes', 'Nodes Overview', 'osNodesOverview']);
-Before(async ({ I, homePage }) => {
-  await I.Authorize();
-  await homePage.open();
-});
 
 Data(panels).Scenario(
-  '@PMM-T1565 Verify ability to access OS dashboards with correct filter setup from Home Dashboard @nightly @dashboards',
+  '@PMM-T21565 Verify ability to access OS dashboards with correct filter setup from Home Dashboard @nightly @dashboards',
   async ({
-    I, current, dashboardPage, adminPage,
+    I, current, dashboardPage, homePage,
   }) => {
     const {
       panelName, dashboardType, dashboardName, dashboard,
     } = current;
+
+    await I.Authorize();
+    await homePage.open();
 
     const expectedDashboard = dashboardPage[dashboard];
 
