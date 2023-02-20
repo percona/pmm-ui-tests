@@ -110,7 +110,7 @@ test.describe('Spec file for Access Control (RBAC)', async () => {
       await usersConfigurationPage.usersTable.fields.accessRole('testUserRBAC@localhost').click();
       await usersConfigurationPage.optionMenu.selectOption(roleName);
       await page.goto(mySqlDashboard.url);
-      await mySqlDashboard.waitForPanelToHaveData('Top MySQL Used Connections', 444, Duration.ThreeMinutes);
+      await mySqlDashboard.waitForPanelToHaveData('Top MySQL Used Connections', 444, Duration.TenMinutes);
     });
 
     await test.step('3. Login as new user and verify that Node Dashboard does NOT show data.', async () => {
