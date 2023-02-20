@@ -9,6 +9,7 @@ import { UsersConfigurationPage } from '@tests/pages/configuration/UsersConfigur
 import { MySqlDashboard } from '@tests/pages/dashboards/mysql/MySqlDashboard.page';
 import NodesOverviewDashboard from '@tests/pages/dashboards/nodes/NodesOverviewDashboard.page';
 import Duration from '@tests/helpers/Duration';
+import PostgresqlInstancesOverviewDashboard from '@tests/pages/dashboards/postgresql/postgresqlInstancesOverview.page';
 
 test.describe('Spec file for Access Control (RBAC)', async () => {
   const newUser = { username: 'testUserRBAC', email: 'testUserRBAC@localhost', name: 'Test User', password: 'password' };
@@ -81,6 +82,8 @@ test.describe('Spec file for Access Control (RBAC)', async () => {
     });
   });
 
+  
+
   test('PMM-T1584 Verify assigning Access role to user @rbac @rbac-pre-upgrade', async ({ page }) => {
     const rbacPage = new RbacPage(page);
     const createRolePage = new CreateRolePage(page);
@@ -123,7 +126,24 @@ test.describe('Spec file for Access Control (RBAC)', async () => {
     });
   });
 
-  test('PMM-T1585 Verify deleting Acces role @rbac @rbac-post-upgrade', async ({ page }) => {
+  test('PMM-T1599 Verify assigned role after upgrade @rbac @rbac-post-upgrade', async ({ page }) => {
+    const usersConfigurationPage = new UsersConfigurationPage(page);
+    const postgresqlInstancesOverviewDashboard = new PostgresqlInstancesOverviewDashboard(page);
+
+    await test.step('1. Verify user role is assigned after upgrade.', async () => {
+      await page.goto(usersConfigurationPage.url);
+      await expect(usersConfigurationPage.usersTable.elements.rowByText(newUser.username)).toContainText(roleName);
+    });
+
+    await test.step('2. Open PostgreSQL Overview dashboard and verify there is no any data.', async () => {
+      await grafanaHelper.unAuthorize(page);
+      await grafanaHelper.authorize(page, newUser.username, newUser.password);
+      await page.goto(postgresqlInstancesOverviewDashboard.url);
+      await postgresqlInstancesOverviewDashboard.verifyAllPanelsDoesNotHaveData();
+    });
+  });
+
+  test('PMM-T1585 Verify deleting Access role @rbac @rbac-post-upgrade', async ({ page }) => {
     const rbacPage = new RbacPage(page);
     const usersConfigurationPage = new UsersConfigurationPage(page);
 

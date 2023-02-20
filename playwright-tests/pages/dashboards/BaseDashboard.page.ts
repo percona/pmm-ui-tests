@@ -132,7 +132,12 @@ export class BaseDashboard extends CommonPage {
     await this.openAllPanels();
     const panelData = await this.baseDashboardElements.panelContent.elementHandles();
     for await (const [index, panel] of panelData.entries()) {
-      await expect(this.baseDashboardElements.panelContent.nth(index)).toContainText('N/A' && 'No data', { ignoreCase: true });
+      await this.baseDashboardElements.panelContent.nth(index).scrollIntoViewIfNeeded();
+      const text = (await this.baseDashboardElements.panelContent.nth(index).textContent())
+      if (!text?.includes('N/A') && !text?.toLocaleLowerCase().includes('no data')) {
+        expect(true, `Panel ${await this.baseDashboardElements.panelTitle.nth(index).textContent()} does contains data: "${text}"`).toEqual(false);
+      }
+      await this.page.keyboard.press('PageDown');
     }
   }
 }
