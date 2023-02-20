@@ -93,7 +93,7 @@ BeforeSuite(async ({ I, codeceptjsConfig, credentials }) => {
   console.log(`AMI TESTING IS: ${process.env.AMI_UPGRADE_TESTING_INSTANCE}`);
   console.log(`OVF TESTING IS: ${process.env.OVF_UPGRADE_TESTING_INSTANCE}`);
   // Init data for Backup Management test
-  if (process.env.AMI_UPGRADE_TESTING_INSTANCE !== 'true' || process.env.OVF_UPGRADE_TESTING_INSTANCE !== 'true') {
+  if (process.env.AMI_UPGRADE_TESTING_INSTANCE !== 'true' && process.env.OVF_UPGRADE_TESTING_INSTANCE !== 'true') {
     const replicaPrimary = await I.getMongoClient({
       username: credentials.mongoReplicaPrimaryForBackups.username,
       password: credentials.mongoReplicaPrimaryForBackups.password,
