@@ -16,7 +16,7 @@ on:
         required: true
       pmm_server_version:
         description: 'Version of the pmm server used for testing'
-        default: 'latest'
+        default: '2.34.0'
         required: true
       pmm_client_version:
         description: 'Version of the pmm client used for testing'
@@ -36,7 +36,7 @@ on:
         required: true
       experimental_repository:
         description: 'Branch for the pmm-qa repository.'
-        default: 'no'
+        default: 'yes'
         required: true
 
 jobs:
