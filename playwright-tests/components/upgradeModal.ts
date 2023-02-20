@@ -7,7 +7,7 @@ export default class UpgradeModal extends CommonPage {
   }
 
   containers = {
-    modalContainer: this.page.getByRole('dialog'),
+    modalContainer: this.page.locator('//*[role="dialog"] | //*[contains(@class,"modalHeader")]/parent::div'),
   };
 
   elements = {
