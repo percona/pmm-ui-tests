@@ -9,7 +9,7 @@ import { UsersConfigurationPage } from '@tests/pages/configuration/UsersConfigur
 import { MySqlDashboard } from '@tests/pages/dashboards/mysql/MySqlDashboard.page';
 import NodesOverviewDashboard from '@tests/pages/dashboards/nodes/NodesOverviewDashboard.page';
 import Duration from '@tests/helpers/Duration';
-import PostgresqlInstancesOverviewDashboard from '@tests/pages/dashboards/postgresql/postgresqlInstancesOverview.page';
+import PostgresqlInstancesOverviewDashboard from '@tests/pages/dashboards/postgresql/PostgresqlInstancesOverview.page';
 
 test.describe('Spec file for Access Control (RBAC)', async () => {
   const newUser = { username: 'testUserRBAC', email: 'testUserRBAC@localhost', name: 'Test User', password: 'password' };
