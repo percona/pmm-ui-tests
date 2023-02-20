@@ -16,11 +16,11 @@ on:
         required: true
       pmm_server_version:
         description: 'Version of the pmm server used for testing'
-        default: 'dev-latest'
+        default: 'latest'
         required: true
       pmm_client_version:
         description: 'Version of the pmm client used for testing'
-        default: 'dev-latest'
+        default: 'pmm2-latest'
         required: true        
       pmm_clients:
         description: 'Clients for pmm-server'
