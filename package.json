@@ -50,14 +50,14 @@
     "mysql": "^2.18.1",
     "mysql2": "^2.3.3",
     "pg": "^8.7.3",
-    "playwright": "^1.30.0",
-    "playwright-core": "^1.30.0",
+    "playwright": "^1.27.0",
+    "playwright-core": "^1.27.0",
     "prettier": "^2.2.1",
     "shelljs": "^0.8.5",
     "yaml": "^1.10.2"
   },
   "devDependencies": {
-    "@playwright/test": "^1.30.0",
+    "@playwright/test": "^1.27.0",
     "@types/faker": "^6.6.9",
     "@types/node": "^18.8.3"
   }
