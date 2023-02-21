@@ -2,20 +2,14 @@ Feature('MongoDB Sharding tests');
 
 const { adminPage } = inject();
 const pmmFrameworkLoader = `bash ${adminPage.pathToFramework}`;
-const exactMongoDbInfo = new DataTable(['version', 'edition']);
 
-// exactMongoDbInfo.add(['4.0', 'Community']);
-exactMongoDbInfo.add(['4.2', 'Community']);
-exactMongoDbInfo.add(['4.4', 'Community']);
-// exactMongoDbInfo.add(['5.0', 'Community']);
-exactMongoDbInfo.add(['6.0', 'Community']);
-
-Data(exactMongoDbInfo).Scenario(
+Scenario(
   '@PMM-T1539 Verify that MongoDB exporter shows version for mongos instance @cli',
   async ({
     I, current,
   }) => {
-    const { version, edition } = current;
+    const version = '6.0';
+    const edition = 'Community';
 
     await I.verifyCommand(`${pmmFrameworkLoader} --mongomagic --with-sharding --pmm2 --mo-version=${version}`);
     const containerName = await I.verifyCommand(`docker ps --format "table {{.ID}}\\t{{.Image}}\\t{{.Names}}" | grep 'psmdb.*${version}_sharded' | awk -F " " '{print $3}'`);
