@@ -2,12 +2,6 @@
 name: pmm-portal-upgrade-tests
 
 on:
-  # run with default inputs
-  schedule:
-    - cron: '0 0 * * *'
-  push:
-    branches:
-      - main
   workflow_dispatch:
     inputs:
       pmm_ui_tests_branch:
@@ -16,11 +10,11 @@ on:
         required: true
       pmm_server_version:
         description: 'Version of the pmm server used for testing'
-        default: '2.34.0'
+        default: 'dev-latest'
         required: true
       pmm_client_version:
         description: 'Version of the pmm client used for testing'
-        default: 'pmm2-latest'
+        default: 'dev-latest'
         required: true        
       pmm_clients:
         description: 'Clients for pmm-server'

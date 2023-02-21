@@ -5,9 +5,6 @@ on:
   # run with default inputs
   schedule:
     - cron: '0 0 * * *'
-  push:
-    branches:
-      - main
   workflow_dispatch:
     inputs:
       pmm_ui_tests_branch:
