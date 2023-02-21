@@ -10,6 +10,7 @@ import { MySqlDashboard } from '@tests/pages/dashboards/mysql/MySqlDashboard.pag
 import NodesOverviewDashboard from '@tests/pages/dashboards/nodes/NodesOverviewDashboard.page';
 import Duration from '@tests/helpers/Duration';
 import PostgresqlInstancesOverviewDashboard from '@tests/pages/dashboards/postgresql/PostgresqlInstancesOverview.page';
+import AdvancedSettings from '@tests/pages/pmmSettings/AdvancedSettings.page';
 
 test.describe('Spec file for Access Control (RBAC)', async () => {
   const newUser = { username: 'testUserRBAC', email: 'testUserRBAC@localhost', name: 'Test User', password: 'password' };
@@ -174,5 +175,35 @@ test.describe('Spec file for Access Control (RBAC)', async () => {
       await expect(rbacPage.rbacTable.elements.body).not.toContainText(roleName);
     });
     
+  });
+  test('PMM-T1629 Verify re-enabling of the Access Control @rbac @rbac-post-upgrade', async ({ page }) => {
+    const advancedSettings = new AdvancedSettings(page);
+    const homeDashboard = new HomeDashboard(page);
+    const rbacPage = new RbacPage(page);
+
+    await test.step('1.Navigate to the advanced settings and disable Access Control.', async () => {
+      await page.goto(advancedSettings.url);
+      await advancedSettings.fields.accessControl.click({ force: true });
+      await advancedSettings.buttons.applyChanges.click();
+    });
+
+    await test.step('2. Verify Access Control is disabled.', async () => {
+      await homeDashboard.sideMenu.elements.configuration.hover();
+      await homeDashboard.sideMenu.configuration.buttons.rbac.waitFor({ state: 'detached' });
+      await page.goto(rbacPage.url);
+      await expect(rbacPage.elements.emptyBlock).toHaveText(rbacPage.messages.featureDisabled);
+    });
+
+    await test.step('3. Re-enable Access Control.', async () => {
+      await page.goto(advancedSettings.url);
+      await advancedSettings.fields.accessControl.click({ force: true });
+      await advancedSettings.buttons.applyChanges.click();
+    });
+
+    await test.step('2. Verify Access Control is enabled.', async () => {
+      await homeDashboard.sideMenu.elements.configuration.hover();
+      await homeDashboard.sideMenu.configuration.buttons.rbac.waitFor({ state: 'visible' });
+    });
+
   });
 });

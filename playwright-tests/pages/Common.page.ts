@@ -32,6 +32,7 @@ export class CommonPage {
   private baseMessages = {
     loginWithPercona: 'Login with Percona Account to access this content',
     notConnectedToThePortal: 'Not connected to Portal.',
+    featureDisabled: 'Feature is disabled.',
   };
 
   private baseLinks = {};
