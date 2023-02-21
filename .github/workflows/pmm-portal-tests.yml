@@ -108,14 +108,14 @@ jobs:
           ref: ${{ env.PMM_QA_BRANCH }}
 
       - name: Compose PMM-Sever
-        if: ${{ env.FEATURE_BUILD == false }}
+        if: ${{ env.FEATURE_BUILD == 'false' }}
         working-directory: pmm-qa/pmm-integration
         run: |
           npm install
           sudo npx ts-node ./integration-setup.ts --ci --setup-docker-pmm-server --pmm-server-version=${{ env.PMM_SERVER_VERSION }} --pmm-client-version=${{ env.PMM_CLIENT_VERSION }}
       
       - name: Compose Feature Build PMM-Sever
-        if: ${{ env.FEATURE_BUILD == true }}
+        if: ${{ env.FEATURE_BUILD == 'true' }}
         working-directory: pmm-qa/pmm-integration
         run: |
           npm install
