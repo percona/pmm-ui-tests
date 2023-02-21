@@ -20,7 +20,7 @@
     "@types/lodash": "^4.14.168",
     "@types/mocha": "^8.2.2",
     "adm-zip": "^0.5.9",
-    "axios": "^0.21.4",
+    "axios": "1.2.6",
     "build-url": "^6.0.1",
     "chai": "^4.3.6",
     "codeceptjs": "^3.2.2",
@@ -50,14 +50,15 @@
     "mysql": "^2.18.1",
     "mysql2": "^2.3.3",
     "pg": "^8.7.3",
-    "playwright": "^1.27.1",
-    "playwright-core": "^1.27.1",
+    "playwright": "^1.30.0",
+    "playwright-core": "^1.30.0",
     "prettier": "^2.2.1",
     "shelljs": "^0.8.5",
     "yaml": "^1.10.2"
   },
   "devDependencies": {
-    "@playwright/test": "^1.27.1",
+    "@playwright/test": "^1.30.0",
+    "@types/faker": "^6.6.9",
     "@types/node": "^18.8.3"
   }
 }
