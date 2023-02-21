@@ -145,6 +145,10 @@ test.describe('Spec file for Access Control (RBAC)', async () => {
   });
 
   test('PMM-T1585 Verify deleting Access role @rbac @rbac-post-upgrade', async ({ page }) => {
+    test.info().annotations.push({
+      type: 'Also Covers',
+      description: 'PMM-T1578 Verify there is ability to enable Access control on Settings page.',
+    });
     const rbacPage = new RbacPage(page);
     const usersConfigurationPage = new UsersConfigurationPage(page);
 
