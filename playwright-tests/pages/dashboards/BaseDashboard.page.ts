@@ -89,7 +89,9 @@ export class BaseDashboard extends CommonPage {
   waitForPanelToHaveData = async (panelHeader: string, panelId: number, timeout: Duration = Duration.OneMinute) => {
     await this.openAllPanels();
     await this.baseDashboardElements.getPanelByName(panelHeader, panelId).scrollIntoViewIfNeeded();
-    await expect(this.baseDashboardElements.getPanelByName(panelHeader, panelId)).not.toContainText('N/A' && 'No data', { ignoreCase: true, timeout });
+    await expect(this.baseDashboardElements.getPanelByName(panelHeader, panelId)).not.toContainText('N/A', { ignoreCase: true, timeout });
+    await expect(this.baseDashboardElements.getPanelByName(panelHeader, panelId)).not.toContainText('No data', { ignoreCase: true, timeout });
+    await expect(this.baseDashboardElements.getPanelByName(panelHeader, panelId)).not.toContainText('Insufficient access permissions', { ignoreCase: true, timeout });
     await this.page.keyboard.press('PageDown');
   }
 
@@ -101,7 +103,9 @@ export class BaseDashboard extends CommonPage {
       await this.baseDashboardElements.panelContent.nth(index).scrollIntoViewIfNeeded();
 
       try {
-        await expect(this.baseDashboardElements.panelContent.nth(index)).not.toContainText('N/A' && 'No data', { ignoreCase: true })
+        await expect(this.baseDashboardElements.panelContent.nth(index)).not.toContainText('N/A',{ ignoreCase: true });
+        await expect(this.baseDashboardElements.panelContent.nth(index)).not.toContainText('No data', { ignoreCase: true });
+        await expect(this.baseDashboardElements.panelContent.nth(index)).not.toContainText('Insufficient access permissions', { ignoreCase: true });
       } catch (err) {
         noDataElements++;
         if(noDataElements > panelsWithoutData) {
@@ -133,7 +137,7 @@ export class BaseDashboard extends CommonPage {
     const panelData = await this.baseDashboardElements.panelContent.elementHandles();
     for await (const [index, panel] of panelData.entries()) {
       await this.baseDashboardElements.panelContent.nth(index).scrollIntoViewIfNeeded();
-      const text = (await this.baseDashboardElements.panelContent.nth(index).textContent())
+      const text = await this.baseDashboardElements.panelContent.nth(index).textContent();
       if (!text?.includes('N/A') && !text?.toLocaleLowerCase().includes('no data')) {
         expect(true, `Panel ${await this.baseDashboardElements.panelTitle.nth(index).textContent()} does contains data: "${text}"`).toEqual(false);
       }
