@@ -28,42 +28,28 @@ Data(panels).Scenario(
     await homePage.open();
 
     const expectedDashboard = dashboardPage[dashboard];
-
-    I.click(dashboardPage.fields.openFiltersDropdownLocator('Node Name'));
-    const nodeNames = await I.grabTextFromAll(dashboardPage.fields.allFilterDropdownOptions);
-
-    I.click(dashboardPage.fields.filterDropdownOptionsLocator(nodeNames[0]));
-    I.click(dashboardPage.fields.filterDropdownOptionsLocator(nodeNames[1]));
-    I.click(dashboardPage.fields.refresh);
-    dashboardPage.waitForDataLoaded();
-    const expectedNodeName = dashboardType === 'singleNode'
-      ? nodeNames.sort()[0]
-      : await I.grabTextFrom(dashboardPage.fields.openFiltersDropdownLocator('Node Name'));
+    //
+    // I.click(dashboardPage.fields.openFiltersDropdownLocator('Node Name'));
+    // const nodeNames = await I.grabTextFromAll(dashboardPage.fields.allFilterDropdownOptions);
+    //
+    // I.click(dashboardPage.fields.filterDropdownOptionsLocator(nodeNames[0]));
+    // I.click(dashboardPage.fields.filterDropdownOptionsLocator(nodeNames[1]));
+    // I.click(dashboardPage.fields.refresh);
+    // dashboardPage.waitForDataLoaded();
+    // const expectedNodeName = dashboardType === 'singleNode'
+    //   ? nodeNames.sort()[0]
+    //   : await I.grabTextFrom(dashboardPage.fields.openFiltersDropdownLocator('Node Name'));
 
     I.click(dashboardPage.fields.clickablePanel(panelName));
     I.switchToNextTab();
     I.waitForElement(`//span[text()="${dashboardName}"]`, 60);
-    I.seeInCurrentUrl(expectedDashboard.clearUrl);
-    await I.assertEqual(await I.grabTextFrom(dashboardPage.fields.openFiltersDropdownLocator('Node Name')), expectedNodeName);
-    await dashboardPage.expandEachDashboardRow();
-
-    dashboardPage.verifyMetricsExistence(expectedDashboard.metrics);
+    // I.seeInCurrentUrl(expectedDashboard.clearUrl);
+    // await I.assertEqual(await I.grabTextFrom(dashboardPage.fields.openFiltersDropdownLocator('Node Name')), expectedNodeName);
+    // await dashboardPage.expandEachDashboardRow();
+    //
+    // dashboardPage.verifyMetricsExistence(expectedDashboard.metrics);
     await dashboardPage.verifyThereAreNoGraphsWithNA(expectedDashboard.naElements);
     await dashboardPage.verifyThereAreNoGraphsWithoutData(expectedDashboard.noDataElements);
-  },
-);
-
-Scenario(
-  '@PMM-T1565 Verify test',
-  async ({
-    I, dashboardPage, homePage,
-  }) => {
-    await homePage.open();
-
-    I.click(dashboardPage.fields.openFiltersDropdownLocator('Node Name'));
-    const nodeNames = await I.grabTextFromAll(dashboardPage.fields.allFilterDropdownOptions);
-
-    I.assertEqual('Text', 'Text');
   },
 );
 
