@@ -65,6 +65,7 @@ Scenario(
       dashboardPage.verifyMetricsExistence(dashboardPage.mySQLInstanceOverview.metrics);
       await dashboardPage.verifyThereAreNoGraphsWithNA(1);
       await dashboardPage.verifyThereAreNoGraphsWithoutData(1);
+      await dashboardPage.verifyHexagonalGraphsHaveData();
     }
   },
 );

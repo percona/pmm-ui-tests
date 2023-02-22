@@ -5,7 +5,20 @@ Before(async ({ I }) => {
 });
 
 Scenario(
-  'PMM-T305 Open the MongoDB Instance Summary Dashboard and verify Metrics are present and graphs are displayed @nightly @dashboards',
+  'PMM-T305 Open the MongoDB Instances Overview Dashboard and verify Metrics are present and graphs are displayed @nightly @dashboards',
+  async ({ I, dashboardPage }) => {
+    I.amOnPage(dashboardPage.mongoDbInstanceOverview.url);
+    dashboardPage.waitForDashboardOpened();
+    await dashboardPage.expandEachDashboardRow();
+    await dashboardPage.verifyMetricsExistence(dashboardPage.mongoDbInstanceOverview.metrics);
+    await dashboardPage.verifyThereAreNoGraphsWithNA();
+    await dashboardPage.verifyThereAreNoGraphsWithoutData(3);
+    await dashboardPage.verifyHexagonalGraphsHaveData();
+  },
+);
+
+Scenario(
+  'PMM-T305 Open the MongoDB Instance Summary Dashboard and verify Metrics are present and graphs are displayed @nightly @dashboards ',
   async ({ I, dashboardPage }) => {
     I.amOnPage(dashboardPage.mongodbOverviewDashboard.url);
     dashboardPage.waitForDashboardOpened();
@@ -27,5 +40,6 @@ Scenario(
     dashboardPage.verifyMetricsExistence(dashboardPage.mongoDbClusterSummaryDashboard.metrics);
     await dashboardPage.verifyThereAreNoGraphsWithNA();
     await dashboardPage.verifyThereAreNoGraphsWithoutData(12);
+    await dashboardPage.verifyHexagonalGraphsHaveData();
   },
 );

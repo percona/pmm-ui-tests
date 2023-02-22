@@ -54,6 +54,7 @@ Scenario(
       dashboardPage.verifyMetricsExistence(dashboardPage.postgresqlInstanceOverviewDashboard.metrics);
       await dashboardPage.verifyThereAreNoGraphsWithNA();
       await dashboardPage.verifyThereAreNoGraphsWithoutData();
+      await dashboardPage.verifyHexagonalGraphsHaveData();
     }
   },
 );

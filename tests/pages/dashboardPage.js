@@ -1,5 +1,7 @@
 const { I, adminPage } = inject();
 const assert = require('assert');
+const nodeOverviewDashboard = require('./nodeDashboards/nodeOverviewDashboard');
+const nodeSummaryDashboard = require('./nodeDashboards/nodeSummaryDashboard');
 
 const formatElementId = (text) => text.toLowerCase().replace(/ /g, '_');
 
@@ -14,6 +16,10 @@ module.exports = {
     '//input[@aria-controls="options-service_name"]',
   toggleAllValues:
     '//a[@aria-label="Toggle all values"]',
+  hexagonalGraphValue:
+    '//*[contains(@class, "valueLabel")]',
+  hexagonalGraphHeader:
+    '//*[contains(@class, "valueLabel")]/ancestor::div[@class="panel-container"]//div[contains(@class, "panel-header")]',
   nodesCompareDashboard: {
     url: 'graph/d/node-instance-compare/nodes-compare?orgId=1&refresh=1m&from=now-5m&to=now',
     metrics: [
@@ -988,6 +994,8 @@ module.exports = {
       'Oplog Window',
     ],
   },
+  nodeOverviewDashboard,
+  newNodeSummaryDashboard: nodeSummaryDashboard,
 
   fields: {
     breadcrumbs: {
@@ -1006,7 +1014,7 @@ module.exports = {
     notAvailableDataPoints: '//div[contains(text(),"No data")]',
     notAvailableMetrics: '//span[contains(text(), "N/A")]',
     otherReportTitleWithNoData:
-    '//span[contains(text(),"No Data")]//ancestor::div[contains(@class,"panel-container")]//span[contains(@class,"panel-title-text")]',
+      '//span[contains(text(),"No Data")]//ancestor::div[contains(@class,"panel-container")]//span[contains(@class,"panel-title-text")]',
     panelLoading: locate('div').withAttr({ class: 'panel-loading' }),
     postgreSQLServiceSummaryContent: locate('pre').withText('Detected PostgreSQL version:'),
     reportTitleWithNA:
@@ -1109,6 +1117,25 @@ module.exports = {
       const url = await I.grabCurrentUrl();
 
       await this.printFailedReportNames(acceptableNoDataCount, numberOfNoDataElements, titles, url);
+    }
+  },
+
+  async verifyHexagonalGraphsHaveData() {
+    let numberOfHexagonalGraphs;
+
+    await I.usePlaywrightTo('Get Number of Hexagonal Graphs', async ({ page }) => {
+      numberOfHexagonalGraphs = await page.locator(this.hexagonalGraphValue).count();
+    });
+
+    for (let i = 1; i <= numberOfHexagonalGraphs; i++) {
+      const hexagonalGraphsValues = await I.grabTextFrom(`(${this.hexagonalGraphValue})[${i}]`);
+      const value = parseFloat(hexagonalGraphsValues.replace('%', ''));
+
+      if (Number.isNaN(value)) {
+        const panelHeader = await I.grabTextFrom(`(${this.hexagonalGraphHeader})[${i}]`);
+
+        throw Error(`Value for hexagonal Graph ${panelHeader} is not a number. Value is: "${hexagonalGraphsValues}"`);
+      }
     }
   },
 
