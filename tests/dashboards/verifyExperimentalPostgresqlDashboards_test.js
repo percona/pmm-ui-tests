@@ -42,7 +42,6 @@ Data(panels).Scenario(
 
     I.click(dashboardPage.fields.clickablePanel(panelName));
     I.switchToNextTab();
-    window.localStorage.setItem('percona.showTour', false);
     I.refreshPage();
     I.waitForElement(`//span[text()="${dashboardName}"]`, 60);
     I.seeInCurrentUrl(expectedDashboard.clearUrl);
