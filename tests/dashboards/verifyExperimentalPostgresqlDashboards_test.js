@@ -28,14 +28,14 @@ Data(panels).Scenario(
     await homePage.open();
 
     const expectedDashboard = dashboardPage[dashboard];
-    //
+
     // I.click(dashboardPage.fields.openFiltersDropdownLocator('Node Name'));
     // const nodeNames = await I.grabTextFromAll(dashboardPage.fields.allFilterDropdownOptions);
     //
     // I.click(dashboardPage.fields.filterDropdownOptionsLocator(nodeNames[0]));
     // I.click(dashboardPage.fields.filterDropdownOptionsLocator(nodeNames[1]));
     // I.click(dashboardPage.fields.refresh);
-    // dashboardPage.waitForDataLoaded();
+    dashboardPage.waitForDataLoaded();
     // const expectedNodeName = dashboardType === 'singleNode'
     //   ? nodeNames.sort()[0]
     //   : await I.grabTextFrom(dashboardPage.fields.openFiltersDropdownLocator('Node Name'));
