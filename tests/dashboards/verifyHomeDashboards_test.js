@@ -10,8 +10,12 @@ panels.add(['Virtual Memory Total', 'multipleNodes', 'Nodes Overview', 'osNodesO
 panels.add(['Monitored Nodes', 'multipleNodes', 'Nodes Overview', 'osNodesOverview']);
 panels.add(['Total Virtual CPUs', 'multipleNodes', 'Nodes Overview', 'osNodesOverview']);
 
+Before(async ({ I }) => {
+  await I.Authorize();
+});
+
 Data(panels).Scenario(
-  '@PMM-T21565 Verify ability to access OS dashboards with correct filter setup from Home Dashboard @nightly @dashboards',
+  '@PMM-T1565 Verify ability to access OS dashboards with correct filter setup from Home Dashboard @nightly @dashboards',
   async ({
     I, current, dashboardPage, homePage,
   }) => {
@@ -19,7 +23,6 @@ Data(panels).Scenario(
       panelName, dashboardType, dashboardName, dashboard,
     } = current;
 
-    await I.Authorize();
     await homePage.open();
 
     const expectedDashboard = dashboardPage[dashboard];
@@ -31,14 +34,9 @@ Data(panels).Scenario(
     I.click(dashboardPage.fields.filterDropdownOptionsLocator(nodeNames[1]));
     I.click(dashboardPage.fields.refresh);
     dashboardPage.waitForDataLoaded();
-    let expectedNodeName;
-
-    if (dashboardType === 'singleNode') {
-      // eslint-disable-next-line prefer-destructuring
-      expectedNodeName = nodeNames.sort()[0];
-    } else {
-      expectedNodeName = await I.grabTextFrom(dashboardPage.fields.openFiltersDropdownLocator('Node Name'));
-    }
+    const expectedNodeName = dashboardType === 'singleNode'
+      ? nodeNames.sort()[0]
+      : await I.grabTextFrom(dashboardPage.fields.openFiltersDropdownLocator('Node Name'));
 
     I.click(dashboardPage.fields.clickablePanel(panelName));
     I.switchToNextTab();
