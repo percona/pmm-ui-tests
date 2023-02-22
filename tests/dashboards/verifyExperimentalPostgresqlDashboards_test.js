@@ -44,10 +44,10 @@ Data(panels).Scenario(
     I.switchToNextTab();
     I.waitForElement(`//span[text()="${dashboardName}"]`, 60);
     I.seeInCurrentUrl(expectedDashboard.clearUrl);
-    // await I.assertEqual(await I.grabTextFrom(dashboardPage.fields.openFiltersDropdownLocator('Node Name')), expectedNodeName);
+    await I.assertEqual(await I.grabTextFrom(dashboardPage.fields.openFiltersDropdownLocator('Node Name')), expectedNodeName);
     // await dashboardPage.expandEachDashboardRow();
     //
-    // dashboardPage.verifyMetricsExistence(expectedDashboard.metrics);
+    dashboardPage.verifyMetricsExistence(expectedDashboard.metrics);
     await dashboardPage.verifyThereAreNoGraphsWithNA(expectedDashboard.naElements);
     await dashboardPage.verifyThereAreNoGraphsWithoutData(expectedDashboard.noDataElements);
   },
