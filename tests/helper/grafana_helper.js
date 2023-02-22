@@ -31,6 +31,7 @@ class Grafana extends Helper {
     const { Playwright } = this.helpers;
     const basicAuthEncoded = await this.getAuth(username, password);
 
+    await this.setTourOptions();
     Playwright.haveRequestHeaders({ Authorization: `Basic ${basicAuthEncoded}` });
   }
 
@@ -224,12 +225,18 @@ class Grafana extends Helper {
     return stdout;
   }
 
-  async suppressTour() {
+  async setTourOptions(productTour = true, alertingTour = true) {
     const apiContext = this.helpers.REST;
     const headers = { Authorization: `Basic ${await this.getAuth()}` };
-    const resp = await apiContext.sendPutRequest('v1/user', { product_tour_completed: true }, headers);
 
-    assert.equal(resp.status, 200, 'Failed to set tour finished flag!');
+    const body = {
+      product_tour_completed: productTour,
+      alerting_tour_completed: alertingTour,
+    };
+
+    const resp = await apiContext.sendPutRequest('v1/user', body, headers);
+
+    assert.equal(resp.status, 200, 'Failed to set up PMM tour options!');
   }
 }
 
