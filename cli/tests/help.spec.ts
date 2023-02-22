@@ -88,6 +88,9 @@ test.describe('PMM Client "--help" validation', async () => {
    * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/pdpgsql-tests.bats#L245
    * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/pdpgsql-tests.bats#L252
    * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/pdpgsql-tests.bats#L259
+   * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/pgsql-specific-tests.bats#L69
+   * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/pgsql-specific-tests.bats#L76
+   * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/pgsql-specific-tests.bats#L83
    */
   test('PMM-T443 Verify pmm-admin add postgresql --help', async ({}) => {
     await addPostgreSqlHelp.outContainsMany([
@@ -111,6 +114,9 @@ test.describe('PMM Client "--help" validation', async () => {
       'skip-connection-check',
       'disable-queryexamples',
       'database=STRING            PostgreSQL database',
+      'host',
+      'port',
+      'service-name',
     ]);
   });
 
@@ -124,19 +130,6 @@ test.describe('PMM Client "--help" validation', async () => {
       'tls-cert-file=STRING       TLS certificate file',
       'tls-key-file=STRING        TLS certificate key file',
       'tls-ca-file=STRING         TLS CA certificate file',
-    ]);
-  });
-
-  /**
-   * https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/pgsql-specific-tests.bats#L69
-   * https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/pgsql-specific-tests.bats#L76
-   * https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/pgsql-specific-tests.bats#L83
-   */
-  test('PMM-T443 Verify pmm-admin add postgresql --help', async ({}) => {
-    await addPostgreSqlHelp.outContainsMany([
-      'host',
-      'port',
-      'service-name',
     ]);
   });
 });
