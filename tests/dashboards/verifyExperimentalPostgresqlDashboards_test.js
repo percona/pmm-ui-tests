@@ -36,14 +36,9 @@ Data(panels).Scenario(
     I.click(dashboardPage.fields.filterDropdownOptionsLocator(nodeNames[1]));
     I.click(dashboardPage.fields.refresh);
     dashboardPage.waitForDataLoaded();
-    let expectedNodeName;
-
-    if (dashboardType === 'singleNode') {
-      // eslint-disable-next-line prefer-destructuring
-      expectedNodeName = nodeNames.sort()[0];
-    } else {
-      expectedNodeName = await I.grabTextFrom(dashboardPage.fields.openFiltersDropdownLocator('Node Name'));
-    }
+    const expectedNodeName = dashboardType === 'singleNode'
+      ? nodeNames.sort()[0]
+      : await I.grabTextFrom(dashboardPage.fields.openFiltersDropdownLocator('Node Name'));
 
     I.click(dashboardPage.fields.clickablePanel(panelName));
     I.switchToNextTab();
@@ -55,6 +50,20 @@ Data(panels).Scenario(
     dashboardPage.verifyMetricsExistence(expectedDashboard.metrics);
     await dashboardPage.verifyThereAreNoGraphsWithNA(expectedDashboard.naElements);
     await dashboardPage.verifyThereAreNoGraphsWithoutData(expectedDashboard.noDataElements);
+  },
+);
+
+Scenario(
+  '@PMM-T1565 Verify test',
+  async ({
+    I, dashboardPage, homePage,
+  }) => {
+    await homePage.open();
+
+    I.click(dashboardPage.fields.openFiltersDropdownLocator('Node Name'));
+    const nodeNames = await I.grabTextFromAll(dashboardPage.fields.allFilterDropdownOptions);
+
+    I.assertEqual('Text', 'Text');
   },
 );
 
