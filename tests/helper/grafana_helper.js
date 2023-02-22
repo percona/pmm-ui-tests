@@ -236,7 +236,7 @@ class Grafana extends Helper {
 
     const resp = await apiContext.sendPutRequest('v1/user', body, headers);
 
-    assert.equal(resp.status, 200, 'Failed to set up PMM tour options!');
+    assert.equal(resp.status, 200, `Failed to set up PMM tour options! Response with status ${resp.status}`);
   }
 }
 
