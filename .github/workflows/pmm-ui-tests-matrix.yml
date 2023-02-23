@@ -1,4 +1,4 @@
-name: pmm-ui-tests-matrix
+name: PMM2 UI Tests-Matrix
 
 on:
   pull_request:
