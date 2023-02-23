@@ -9,7 +9,7 @@ test.beforeAll(async ({}) =>{
   addMongoHelp = await cli.execSilent('sudo pmm-admin add mongodb --help');
   await addMongoHelp.assertSuccess();
   addPostgreSqlHelp = await cli.execSilent('sudo pmm-admin add postgresql --help');
-  await addMongoHelp.assertSuccess();
+  await addPostgreSqlHelp.assertSuccess();
 });
 
 test.describe('PMM Client "--help" validation', async () => {
