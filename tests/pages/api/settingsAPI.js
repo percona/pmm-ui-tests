@@ -229,7 +229,7 @@ module.exports = {
   },
   
   async setTourOptions(productTour = true, alertingTour = true) {
-    const headers = { Authorization: `Basic ${await this.getAuth()}` };
+    const headers = { Authorization: `Basic ${await I.getAuth()}` };
 
     const body = {
       product_tour_completed: productTour,
