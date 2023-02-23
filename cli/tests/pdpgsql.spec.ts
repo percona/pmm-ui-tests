@@ -15,10 +15,10 @@ test.describe('Percona Distribution for PostgreSQL CLI tests ', async () => {
       .stdout.trim().split('\n').filter((item) => item.trim().length > 0);
     let n = 1;
     for (const host of hosts) {
-      let output = await cli.exec(`sudo pmm-admin add postgresql --query-source=pgstatmonitor --username=${PGSQL_USER} --password=${PGSQL_PASSWORD} pgstatmonitor_${n++} ${host}`);
+      let output = await cli.exec(`sudo pmm-admin add postgresql --query-source=pgstatmonitor --username=${PGSQL_USER} --password=${PGSQL_PASSWORD} pgstatmonitor_${n} ${host}`);
       await output.assertSuccess();
       await output.outContains('PostgreSQL Service added.');
-      await output.outContains(`Service name: pgstatmonitor_${n}`);
+      await output.outContains(`Service name: pgstatmonitor_${n++}`);
     }
   });
 
@@ -72,7 +72,7 @@ test.describe('Percona Distribution for PostgreSQL CLI tests ', async () => {
       .stdout.trim().split('\n').filter((item) => item.trim().length > 0);
     let n = 1;
     for (const host of hosts) {
-      let output = await cli.exec(`sudo pmm-admin add postgresql --username=${PGSQL_USER} --password=${PGSQL_PASSWORD} --metrics-mode=pull pgsqlpush_${n} ${host}`);
+      let output = await cli.exec(`sudo pmm-admin add postgresql --username=${PGSQL_USER} --password=${PGSQL_PASSWORD} --metrics-mode=pull pgsqlpull_${n} ${host}`);
       await output.assertSuccess();
       await output.outContains('PostgreSQL Service added.');
       await output.outContains(`Service name: pgsqlpull_${n++}`);
