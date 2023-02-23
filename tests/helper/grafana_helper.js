@@ -224,19 +224,6 @@ class Grafana extends Helper {
     return stdout;
   }
 
-  async setTourOptions(productTour = true, alertingTour = true) {
-    const apiContext = this.helpers.REST;
-    const headers = { Authorization: `Basic ${await this.getAuth()}` };
-
-    const body = {
-      product_tour_completed: productTour,
-      alerting_tour_completed: alertingTour,
-    };
-
-    const resp = await apiContext.sendPutRequest('v1/user', body, headers);
-
-    assert.equal(resp.status, 200, `Failed to set up PMM tour options! Response with status ${resp.status}`);
-  }
 }
 
 module.exports = Grafana;
