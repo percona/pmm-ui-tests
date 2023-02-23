@@ -29,7 +29,7 @@ on:
 
 jobs:
    rbac:
-      name: Rbac UI tests
+      name: RBAC
       uses: ./.github/workflows/pmm-ui-tests.yml
       secrets: inherit
       with:
