@@ -3,30 +3,65 @@ name: pmm-ui-tests
 
 on:
   workflow_call:
-
-  workflow_dispatch:
     inputs:
       pmm_ui_tests_branch:
         description: 'Target branch for pmm-ui-tests repository'
+        type: string
         default: 'main'
         required: true
       pmm_test_flag:
         description: 'Flag to run only specific portion of the tests.'
+        type: string
         required: false
       pmm_server_version:
         description: 'Version of the pmm server used for testing'
+        type: string
         default: 'dev-latest'
         required: true
       pmm_client_version:
         description: 'Version of the pmm client used for testing'
+        type: string
         default: 'dev-latest'
         required: true
       pmm_clients:
         description: 'Clients for pmm-server'
+        type: string
         default: '--addclient=ps,1'
         required: true
       pmm_qa_branch:
         description: 'Branch for the pmm-qa repository.'
+        type: string
+        default: 'main'
+        required: true
+  workflow_dispatch:
+    inputs:
+      pmm_ui_tests_branch:
+        description: 'Target branch for pmm-ui-tests repository'
+        type: string
+        default: 'main'
+        required: true
+      pmm_test_flag:
+        description: 'Flag to run only specific portion of the tests.'
+        type: string
+        required: false
+      pmm_server_version:
+        description: 'Version of the pmm server used for testing'
+        type: string
+        default: 'dev-latest'
+        required: true
+      pmm_client_version:
+        description: 'Version of the pmm client used for testing'
+        type: string
+        default: 'dev-latest'
+        required: true
+      pmm_clients:
+        description: 'Clients for pmm-server'
+        type: string
+        default: '--addclient=ps,1'
+        required: true
+      pmm_qa_branch:
+        description: 'Branch for the pmm-qa repository.'
+        type: string
         default: 'main'
         required: true
 
