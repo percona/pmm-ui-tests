@@ -35,4 +35,5 @@ jobs:
         pmm_test_flag: '@rbac'
         pmm_server_version: ${{ github.event.inputs.pmm_server_version }}
         pmm_client_version: ${{ github.event.inputs.pmm_client_version }}
+        pmm_clients: ''
         pmm_qa_branch: ${{ github.event.inputs.pmm_qa_branch }}
