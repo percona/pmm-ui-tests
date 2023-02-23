@@ -1,4 +1,4 @@
-Feature('Test Dashboards collection inside the Folders').retry(1);
+Feature('Test Dashboards collection inside the Folders');
 
 const panels = new DataTable(['panelName', 'dashboardType', 'dashboardName', 'dashboard']);
 
@@ -11,6 +11,7 @@ panels.add(['Monitored Nodes', 'multipleNodes', 'Nodes Overview', 'osNodesOvervi
 panels.add(['Total Virtual CPUs', 'multipleNodes', 'Nodes Overview', 'osNodesOverview']);
 
 Before(async ({ I }) => {
+  await I.setTourOptions();
   await I.Authorize();
 });
 
