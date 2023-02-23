@@ -31,7 +31,6 @@ class Grafana extends Helper {
     const { Playwright } = this.helpers;
     const basicAuthEncoded = await this.getAuth(username, password);
 
-    await this.setTourOptions();
     Playwright.haveRequestHeaders({ Authorization: `Basic ${basicAuthEncoded}` });
   }
 
