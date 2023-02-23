@@ -11,14 +11,13 @@ panels.add(['Monitored Nodes', 'multipleNodes', 'Nodes Overview', 'osNodesOvervi
 panels.add(['Total Virtual CPUs', 'multipleNodes', 'Nodes Overview', 'osNodesOverview']);
 
 Before(async ({ I }) => {
-  await I.setTourOptions();
   await I.Authorize();
 });
 
 Data(panels).Scenario(
   '@PMM-T1565 Verify ability to access OS dashboards with correct filter setup from Home Dashboard @nightly @dashboards',
   async ({
-    I, current, dashboardPage, homePage,
+    I, current, dashboardPage, homePage, settingsAPI,
   }) => {
     const {
       panelName, dashboardType, dashboardName, dashboard,
@@ -27,6 +26,7 @@ Data(panels).Scenario(
     await homePage.open();
 
     const expectedDashboard = dashboardPage[dashboard];
+    await settingsAPI.setTourOptions();
 
     I.click(dashboardPage.fields.openFiltersDropdownLocator('Node Name'));
     const nodeNames = await I.grabTextFromAll(dashboardPage.fields.allFilterDropdownOptions);
