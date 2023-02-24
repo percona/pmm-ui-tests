@@ -155,14 +155,14 @@ jobs:
           ref: ${{ env.PMM_QA_BRANCH }}
 
       - name: Compose PMM-Sever
-        if: ${{ inputs.pmm_server_docker_tag == 'null' }}
+        if: ${{ inputs.pmm_server_docker_tag == '' }}
         working-directory: pmm-qa/pmm-integration
         run: |
           npm install
           sudo npx ts-node ./integration-setup.ts --ci --setup-docker-pmm-server --rbac --pmm-server-version=${{ env.PMM_SERVER_VERSION }} --pmm-client-version=${{ env.PMM_CLIENT_VERSION }}
 
       - name: Compose PMM-Sever with docker tag ${{ inputs.pmm_server_docker_tag }}
-        if: ${{ inputs.pmm_server_docker_tag != 'null' }}
+        if: ${{ inputs.pmm_server_docker_tag != '' }}
         working-directory: pmm-qa/pmm-integration
         run: |
           npm install
