@@ -1,5 +1,4 @@
 const { I, homePage } = inject();
-const assert = require('assert');
 
 module.exports = {
   url: 'graph/login',

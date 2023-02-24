@@ -21,6 +21,7 @@ Scenario(
     I, changePasswordPage, loginPage, pmmInventoryPage,
   }) => {
     await I.amOnPage(loginPage.url);
+    await I.say(`process.env.ADMIN_PASSWORD is '${process.env.ADMIN_PASSWORD}'`);
     loginPage.login();
     await changePasswordPage.open();
     changePasswordPage.fillChangePasswordForm(process.env.ADMIN_PASSWORD, NEW_ADMIN_PASSWORD);
