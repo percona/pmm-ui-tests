@@ -2,6 +2,54 @@
 name: pmm-ui-tests-upgrade
 
 on:
+  workflow_call:
+    inputs:
+      pmm_ui_tests_branch:
+        description: 'Target branch for pmm-ui-tests repository'
+        default: 'main'
+        type: string
+        required: true
+      pmm_pre_upgrade_flag:
+        description: 'Flag to run set of tests before upgrade.'
+        type: string
+        required: true
+      pmm_post_upgrade_flag:
+        description: 'Flag to run set of tests after upgrade.'
+        type: string
+        required: true
+      pmm_server_version:
+        description: 'Version of the pmm server used for testing'
+        default: 'dev-latest'
+        type: string
+        required: true
+      pmm_server_docker_tag:
+        description: 'Use when tag different to: "perconalab/pmm-server" is required'
+        type: string
+      pmm_client_version:
+        description: 'Version of the pmm client used for testing'
+        default: 'dev-latest'
+        type: string
+        required: true
+      pmm_clients:
+        description: 'Clients for pmm-server'
+        default: '--addclient=ps,1'
+        type: string
+        required: true
+      pmm_qa_branch:
+        description: 'Branch for the pmm-qa repository.'
+        default: 'main'
+        type: string
+        required: true
+      testing_repository:
+        description: 'Branch for the pmm-qa repository.'
+        default: 'no'
+        type: string
+        required: true
+      experimental_repository:
+        description: 'Branch for the pmm-qa repository.'
+        default: 'no'
+        type: string
+        required: true
   workflow_dispatch:
     inputs:
       pmm_ui_tests_branch:
@@ -10,10 +58,10 @@ on:
         required: true
       pmm_pre_upgrade_flag:
         description: 'Flag to run set of tests before upgrade.'
-        required: false
+        required: true
       pmm_post_upgrade_flag:
         description: 'Flag to run set of tests after upgrade.'
-        required: false
+        required: true
       pmm_server_version:
         description: 'Version of the pmm server used for testing'
         default: 'dev-latest'
@@ -107,10 +155,18 @@ jobs:
           ref: ${{ env.PMM_QA_BRANCH }}
 
       - name: Compose PMM-Sever
+        if: ${{ inputs.pmm_server_docker_tag == 'null' }}
         working-directory: pmm-qa/pmm-integration
         run: |
           npm install
           sudo npx ts-node ./integration-setup.ts --ci --setup-docker-pmm-server --rbac --pmm-server-version=${{ env.PMM_SERVER_VERSION }} --pmm-client-version=${{ env.PMM_CLIENT_VERSION }}
+
+      - name: Compose PMM-Sever with docker tag ${{ inputs.pmm_server_docker_tag }}
+        if: ${{ inputs.pmm_server_docker_tag != 'null' }}
+        working-directory: pmm-qa/pmm-integration
+        run: |
+          npm install
+          sudo npx ts-node ./integration-setup.ts --ci --setup-docker-pmm-server --rbac --pmm-server-docker-tag=${{ inputs.pmm_server_docker_tag }} --pmm-client-version=${{ env.PMM_CLIENT_VERSION }}          
 
       - name: Setup Client for PMM-Server
         run: |

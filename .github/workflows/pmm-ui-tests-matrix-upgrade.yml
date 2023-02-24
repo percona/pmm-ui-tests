@@ -1,0 +1,54 @@
+name: PMM2 UI Tests-Matrix-Upgrade
+
+on:
+  workflow_dispatch:
+    inputs:
+      pmm_ui_tests_branch:
+        description: 'Target branch for pmm-ui-tests repository'
+        default: 'main'
+        required: true
+      pmm_server_version:
+        description: 'Version of the pmm server used for testing'
+        default: 'dev-latest'
+        required: true
+      pmm_server_docker_tag:
+        description: 'Use when tag different to: "perconalab/pmm-server" is required'
+        type: string
+        required: true
+      pmm_client_version:
+        description: 'Version of the pmm client used for testing'
+        default: 'dev-latest'
+        required: true
+      pmm_clients:
+        description: 'Clients for pmm-server'
+        default: '--addclient=ps,1'
+        required: true
+      pmm_qa_branch:
+        description: 'Branch for the pmm-qa repository.'
+        default: 'main'
+        required: true
+      testing_repository:
+        description: 'Branch for the pmm-qa repository.'
+        default: 'no'
+        required: true
+      experimental_repository:
+        description: 'Branch for the pmm-qa repository.'
+        default: 'no'
+        required: true
+
+jobs:
+   rbac:
+      name: RBAC
+      uses: ./.github/workflows/pmm-ui-tests-upgrade.yml
+      secrets: inherit
+      with:
+        pmm_ui_tests_branch: ${{ inputs.pmm_ui_tests_branch || 'main' }}
+        pmm_pre_upgrade_flag: '@rbac-pre-upgrade'
+        pmm_post_upgrade_flag: '@rbac-post-upgrade'
+        pmm_server_version: ${{ inputs.pmm_server_version || 'dev-latest' }}
+        pmm_server_docker_tag: ${{ inputs.pmm_server_docker_tag }}
+        pmm_client_version: ${{ inputs.pmm_client_version || 'dev-latest' }}
+        pmm_clients: ${{ inputs.pmm_clients }}
+        pmm_qa_branch: ${{ inputs.pmm_qa_branch || 'main' }}
+        testing_repository: ${{ inputs.testing_repository }}
+        experimental_repository: ${{ inputs.experimental_repository }}
