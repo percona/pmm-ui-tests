@@ -1,6 +1,10 @@
 name: PMM2 UI Tests-Matrix-Upgrade
 
 on:
+  pull_request:
+    branches:
+      - main
+
   workflow_dispatch:
     inputs:
       pmm_ui_tests_branch:
