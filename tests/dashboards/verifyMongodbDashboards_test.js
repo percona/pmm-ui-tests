@@ -5,7 +5,7 @@ Before(async ({ I }) => {
 });
 
 Scenario(
-  'PMM-T305 Open the MongoDB Instances Overview Dashboard and verify Metrics are present and graphs are displayed @nightly @dashboards',
+  'PMM-T307 Open the MongoDB Instances Overview Dashboard and verify Metrics are present and graphs are displayed @nightly @dashboards',
   async ({ I, dashboardPage }) => {
     I.amOnPage(dashboardPage.mongoDbInstanceOverview.url);
     dashboardPage.waitForDashboardOpened();

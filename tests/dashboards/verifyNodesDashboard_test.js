@@ -5,7 +5,7 @@ Before(async ({ I }) => {
 });
 
 Scenario(
-  'PMM-T305 Open the MongoDB Instances Overview Dashboard and verify Metrics are present and graphs are displayed @nightly @dashboards',
+  'PMM-T1633 Verify Node Overview Dashboard and verify Metrics are present and graphs are displayed @nightly @dashboards',
   async ({ I, dashboardPage }) => {
     await I.amOnPage(dashboardPage.nodeOverviewDashboard.url);
     await dashboardPage.waitForDashboardOpened();
@@ -18,7 +18,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T305 Open the MongoDB Instances Overview Dashboard and verify Metrics are present and graphs are displayed @nightly @dashboards @tempTest',
+  'PMM-T65 Verify Node Summary Dashboard metrics @nightly @dashboards',
   async ({ I, dashboardPage, adminPage }) => {
     await I.amOnPage(dashboardPage.newNodeSummaryDashboard.url);
 
