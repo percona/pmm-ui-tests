@@ -57,7 +57,7 @@ Scenario('PMM-T726 Verify DB clusters status and logs after PMM Server upgrade @
     I.waitForText(active_state, 10, dbaasPage.tabs.dbClusterTab.fields.clusterTableRow(pxc_cluster_name));
     I.waitForText(active_state, 10, dbaasPage.tabs.dbClusterTab.fields.clusterTableRow(psmdb_cluster_name));
 
-    await dbaasPage.verifyLogPopup(27, psmdb_cluster_name);
+    await dbaasPage.verifyLogPopup(33, psmdb_cluster_name);
     await dbaasPage.verifyLogPopup(6, pxc_cluster_name);
   }
 );
@@ -148,7 +148,7 @@ Scenario('PMM-T726 Verify actions on DB clusters after PMM Server upgrade @upgra
     };
 
     await dbaasActionsPage.editCluster(psmdb_cluster_name, clusterName, psmdb_updated_configuration);
-    I.click(dbaasPage.tabs.dbClusterTab.updateClusterButton);
+    I.click(dbaasPage.tabs.dbClusterTab.createClusterButton);
     I.waitForText('Processing', 30, dbaasPage.tabs.dbClusterTab.fields.progressBarContent(psmdb_cluster_name));
     I.waitForElement(dbaasPage.tabs.dbClusterTab.fields.clusterActionsMenu(psmdb_cluster_name));
 
@@ -160,7 +160,7 @@ Scenario('PMM-T726 Verify actions on DB clusters after PMM Server upgrade @upgra
     };
 
     await dbaasActionsPage.editCluster(pxc_cluster_name, clusterName, pxc_updated_configuration);
-    I.click(dbaasPage.tabs.dbClusterTab.updateClusterButton);
+    I.click(dbaasPage.tabs.dbClusterTab.createClusterButton);
     I.waitForElement(dbaasPage.tabs.dbClusterTab.fields.clusterActionsMenu(pxc_cluster_name));
     await dbaasAPI.waitForDBClusterState(pxc_cluster_name, clusterName, 'MySQL', 'DB_CLUSTER_STATE_READY');
     await dbaasAPI.waitForDBClusterState(psmdb_cluster_name, clusterName, 'MongoDB', 'DB_CLUSTER_STATE_READY');
