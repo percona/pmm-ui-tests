@@ -2,9 +2,9 @@ import { expect, Page } from '@playwright/test';
 import PmmUpgrade from '@components/pmmUpgrade';
 import UpgradeModal from '@components/upgradeModal';
 import Duration from '@helpers/Duration';
-import { CommonPage } from '@pages/Common.page';
+import { BaseDashboard } from './dashboards/BaseDashboard.page';
 
-export default class HomeDashboard extends CommonPage {
+export default class HomeDashboard extends BaseDashboard {
   constructor(page: Page) {
     super(page);
   }
