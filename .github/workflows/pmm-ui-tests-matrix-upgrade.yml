@@ -1,10 +1,6 @@
 name: PMM2 UI Tests-Matrix-Upgrade
 
 on:
-  pull_request:
-    branches:
-      - main
-
   workflow_dispatch:
     inputs:
       pmm_ui_tests_branch:
@@ -18,7 +14,6 @@ on:
       pmm_server_docker_tag:
         description: 'Use when tag different to: "perconalab/pmm-server" is required'
         type: string
-        required: true
       pmm_client_version:
         description: 'Version of the pmm client used for testing'
         default: 'dev-latest'
