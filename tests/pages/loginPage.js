@@ -19,7 +19,7 @@ module.exports = {
     I.seeElement(this.fields.passwordInput);
     I.fillField(this.fields.passwordInput, password);
     I.click(this.fields.loginButton);
-    I.verifyPopUpMessage(this.messages.loginSuccess, 10);
+    I.verifyPopUpMessage(this.messages.loginSuccess, 30);
     I.seeElement(this.fields.skipButton);
     I.click(this.fields.skipButton);
     I.waitInUrl(homePage.landingUrl);

@@ -7,6 +7,7 @@
 Feature('PMM User Profile tests');
 
 const NEW_ADMIN_PASSWORD = 'admin1';
+// process.env['NODE_ENV'] = 'production';
 
 After(async ({ I, profileAPI }) => {
   await tryTo(() => {
