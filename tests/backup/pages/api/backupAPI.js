@@ -2,12 +2,14 @@ const { I } = inject();
 const assert = require('assert');
 
 module.exports = {
-  async startBackup(name, service_id, location_id) {
+  async startBackup(name, service_id, location_id, isLogical = true) {
+    const data_model = isLogical ? 'LOGICAL' : 'PHYSICAL';
     const body = {
       service_id,
       location_id,
       name,
       description: '',
+      data_model,
     };
 
     const headers = { Authorization: `Basic ${await I.getAuth()}` };

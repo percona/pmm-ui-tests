@@ -13,7 +13,8 @@ const mongoServiceName = 'mongo-backup-locations';
 Feature('BM: Backup Locations').retry(1);
 
 BeforeSuite(async ({ I }) => {
-  I.say(await I.verifyCommand(`pmm-admin add mongodb --port=27027 --service-name=${mongoServiceName} --replication-set=rs0`));
+  // await I.suppressTour();
+  I.say(await I.verifyCommand(`docker exec rs101 pmm-admin add mongodb --username=pmm --password=pmmpass --port=27017 --service-name=${mongoServiceName} --replication-set=rs0 --cluster=rs`));
 });
 
 Before(async ({
@@ -29,7 +30,7 @@ const s3Errors = new DataTable(['field', 'value', 'error']);
 
 s3Errors.add(['bucket_name', 'pmm', 'AccessDenied: Access Denied']);
 s3Errors.add(['bucket_name', 'pmm-backup12', 'Bucket doesn\'t exist']);
-s3Errors.add(['bucket_name', 'random-bucket', '301 response missing Location header']);
+s3Errors.add(['bucket_name', 'random-bucket', '301 Moved Permanently: 301 Moved Permanently.']);
 s3Errors.add(['endpoint', 'unknown', 'no such host']);
 s3Errors.add(['access_key', 'invalid', 'InvalidAccessKeyId: The AWS Access Key Id you provided does not exist in our records.']);
 s3Errors.add(['secret_key', 'invalid', 'SignatureDoesNotMatch: The request signature we calculated does not match the signature you provided. Check your key and signing method.']);
@@ -66,10 +67,6 @@ Scenario(
     );
     I.seeAttributesOnElements(
       locationsPage.buttons.typeSelect(locationsPage.locationType.client),
-      { checked: null },
-    );
-    I.seeAttributesOnElements(
-      locationsPage.buttons.typeSelect(locationsPage.locationType.server),
       { checked: null },
     );
 
@@ -138,7 +135,7 @@ Data(s3Errors).Scenario(
 );
 
 Scenario(
-  'PMM-T683 PMM-T684 Verify user is able to add storage location @backup @fb',
+  'PMM-T683 PMM-T684 Verify user is able to add storage location @backup @bm-fb',
   async ({
     I, locationsPage,
   }) => {
@@ -158,6 +155,8 @@ Scenario(
     I.seeTextEquals('Actions', locate('th').at(4));
 
     // Verify storage location exists in locations list
+    I.waitForVisible(locationsPage.buttons.actionsMenuByName(location.name), 2);
+    I.click(locationsPage.buttons.actionsMenuByName(location.name));
     I.seeElement(locationsPage.buttons.deleteByName(location.name));
     I.seeElement(locationsPage.buttons.editByName(location.name));
     I.seeTextEquals(locationsPage.locationType.s3, locationsPage.elements.typeCellByName(location.name));
@@ -184,7 +183,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T693 Verify user is able to delete storage location @backup @fb',
+  'PMM-T693 Verify user is able to delete storage location @backup @bm-fb',
   async ({
     I, locationsPage, locationsAPI,
   }) => {
@@ -264,6 +263,8 @@ Scenario(
     await locationsAPI.createStorageLocation(location);
     locationsPage.openLocationsPage();
 
+    I.click(locationsPage.buttons.actionsMenuByName(location.name));
+    I.waitForVisible(locationsPage.buttons.editByName(location.name), 2);
     I.click(locationsPage.buttons.editByName(location.name));
 
     I.waitForText('Edit', 10, locationsPage.buttons.addLocation);
@@ -278,7 +279,8 @@ Scenario(
     I.click(locationsPage.buttons.addLocation);
     I.verifyPopUpMessage(locationsPage.messages.successfullyEdited(updatedLocation.name));
 
-    I.seeElement(locationsPage.buttons.editByName(updatedLocation.name));
+    I.click(locationsPage.buttons.actionsMenuByName(updatedLocation.name));
+    I.waitForVisible(locationsPage.buttons.editByName(updatedLocation.name), 2);
     I.click(locationsPage.buttons.editByName(updatedLocation.name));
     locationsPage.verifyLocationFields(updatedLocation);
   },
@@ -338,8 +340,7 @@ Scenario(
     await backupAPI.waitForRestoreFinish(restoreId);
 
     I.refreshPage();
-    I.waitForVisible(locationsPage.buttons.deleteByName(mongoLocation.name), 20);
-    I.click(locationsPage.buttons.deleteByName(mongoLocation.name));
+    locationsPage.openDeleteLocationModal(mongoLocation.name);
 
     I.waitForVisible(locationsPage.buttons.confirmDelete, 20);
     I.click(locationsPage.buttons.confirmDelete);

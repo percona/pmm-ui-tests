@@ -1,7 +1,9 @@
 const assert = require('assert');
 const faker = require('faker');
 
-const { remoteInstancesPage, remoteInstancesHelper, pmmInventoryPage } = inject();
+const {
+  remoteInstancesPage, remoteInstancesHelper, pmmInventoryPage,
+} = inject();
 
 const externalExporterServiceName = 'external_service_new';
 const haproxyServiceName = 'haproxy_remote';
@@ -60,7 +62,7 @@ Before(async ({ I }) => {
 });
 
 Scenario(
-  'PMM-T588 - Verify adding external exporter service via UI @instances @fb',
+  'PMM-T588 - Verify adding external exporter service via UI @instances @instances-fb',
   async ({ I, remoteInstancesPage, pmmInventoryPage }) => {
     I.amOnPage(remoteInstancesPage.url);
     remoteInstancesPage.waitUntilRemoteInstancesPageLoaded();
@@ -75,7 +77,7 @@ Scenario(
 );
 
 Data(instances).Scenario(
-  'PMM-T898 Verify Remote Instance Addition [critical] @instances @fb',
+  'PMM-T898 Verify Remote Instance Addition [critical] @instances @instances-fb',
   async ({ I, remoteInstancesPage, current }) => {
     const serviceName = remoteInstancesHelper.services[current.name];
 
@@ -115,7 +117,7 @@ Scenario(
 );
 
 Data(instances).Scenario(
-  'Verify Remote Instance has Status Running [critical] @instances @fb',
+  'Verify Remote Instance has Status Running [critical] @instances @instances-fb',
   async ({
     I, pmmInventoryPage, current,
   }) => {
@@ -178,7 +180,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T635 - Verify Adding HAProxy service via UI @instances @fb',
+  'PMM-T635 - Verify Adding HAProxy service via UI @instances @instances-fb',
   async ({
     I, remoteInstancesPage, pmmInventoryPage,
   }) => {
@@ -206,6 +208,35 @@ Scenario(
     await pmmInventoryPage.checkAgentOtherDetailsSection('scheme:', 'scheme: http', haproxyServiceName, serviceId);
     await pmmInventoryPage.checkAgentOtherDetailsSection('metrics_path:', 'metrics_path: /metrics', haproxyServiceName, serviceId);
     await pmmInventoryPage.checkAgentOtherDetailsSection('listen_port:', `listen_port: ${remoteInstancesHelper.remote_instance.haproxy.haproxy_2.port}`, haproxyServiceName, serviceId);
+  },
+);
+Scenario(
+  'PMM-T1089 - Verify UI elements for PostgreSQL Instance @instances',
+  async ({
+    I, remoteInstancesPage,
+  }) => {
+    I.amOnPage(remoteInstancesPage.url);
+    remoteInstancesPage.waitUntilRemoteInstancesPageLoaded();
+    remoteInstancesPage.openAddRemotePage('postgresql');
+    I.click(remoteInstancesPage.fields.addService);
+    remoteInstancesPage.checkRequiredField();
+    // Verify fields on the page
+    I.seeElement(remoteInstancesPage.fields.returnToMenuButton, 30);
+    I.seeElement(remoteInstancesPage.fields.hostName, 30);
+    I.seeElement(remoteInstancesPage.fields.serviceName, 30);
+    I.seeElement(remoteInstancesPage.fields.portNumber, 30);
+    I.seeElement(remoteInstancesPage.fields.userName, 30);
+    I.seeElement(remoteInstancesPage.fields.password, 30);
+    I.seeElement(remoteInstancesPage.fields.environment, 30);
+    I.seeElement(remoteInstancesPage.fields.region, 30);
+    I.seeElement(remoteInstancesPage.fields.availabilityZone, 30);
+    I.seeElement(remoteInstancesPage.fields.replicationSet, 30);
+    I.seeElement(remoteInstancesPage.fields.cluster, 30);
+    I.seeElement(remoteInstancesPage.fields.customLabels, 30);
+    I.seeElement(remoteInstancesPage.fields.skipConnectionCheck, 30);
+    I.seeElement(remoteInstancesPage.fields.dontTrackingRadio, 30);
+    I.seeElement(remoteInstancesPage.fields.pgStatStatementsRadio, 30);
+    I.seeElement(remoteInstancesPage.fields.pgStatMonitorRadio, 30);
   },
 );
 
@@ -246,7 +277,7 @@ Data(dashboardCheck).Scenario(
 ).retry(2);
 
 Data(qanFilters).Scenario(
-  'PMM-T854 - Verify QAN after remote instance is added @instances @fb',
+  'PMM-T854 - Verify QAN after remote instance is added @instances @instances-fb',
   async ({
     I, qanOverview, qanFilters, qanPage, current,
   }) => {
@@ -261,7 +292,7 @@ Data(qanFilters).Scenario(
 ).retry(2);
 
 Data(metrics).Scenario(
-  'PMM-T743 Check metrics from exporters are hitting PMM Server @instances @fb',
+  'PMM-T743 Check metrics from exporters are hitting PMM Server @instances @instances-fb',
   async ({ grafanaAPI, current }) => {
     await grafanaAPI.waitForMetric(current.metricName, { type: 'service_name', value: current.serviceName }, 10);
   },
@@ -282,7 +313,7 @@ Scenario(
       database: 'postgres',
       host: 'postgresnodb',
       username: 'test',
-      password: 'test',
+      password: '50mFC#z7lHZ1',
       environment: remoteInstancesPage.potgresqlSettings.environment,
       cluster: remoteInstancesPage.potgresqlSettings.cluster,
     };

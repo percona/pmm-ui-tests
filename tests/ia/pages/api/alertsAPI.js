@@ -35,14 +35,14 @@ module.exports = {
   async getAlertsList() {
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
 
-    const resp = await I.sendPostRequest('v1/management/ia/Alerts/List', {}, headers);
+    const resp = await I.sendGetRequest('graph/api/alertmanager/grafana/api/v2/alerts', headers);
 
     assert.ok(
       resp.status === 200,
       `Failed to get Alerts. Response message is "${resp.data.message}"`,
     );
 
-    return resp.data.alerts;
+    return resp.data;
   },
 
   async verifyAlertInPagerDuty(ruleId) {
@@ -74,8 +74,8 @@ module.exports = {
 
     const alert = await getAlertFromPD(ruleId);
 
-    assert.ok(alert.incident.summary.includes('PostgreSQL too many connections (pmm-server-postgresql)'));
-    assert.ok(alert.body.details.firing.includes('PMM Integrated Alerting'));
+    assert.ok(alert.incident.summary.includes('PSQL immortal rule PostgreSQL'));
+    assert.ok(alert.body.details.firing.includes('PSQL immortal rule'));
     assert.ok(alert.body.details.firing.includes(ruleId));
 
     await pd({

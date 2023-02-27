@@ -68,7 +68,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T585 Verify user is able enable/disable checks [critical] @stt @fb',
+  'PMM-T585 Verify user is able enable/disable checks [critical] @stt @advisors-fb',
   async ({
     I, allChecksPage, securityChecksAPI, databaseChecksPage,
   }) => {
@@ -108,7 +108,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T723 Verify user can change check interval @stt @fb',
+  'PMM-T723 Verify user can change check interval @stt @advisors-fb',
   async ({
     I, allChecksPage, securityChecksAPI,
   }) => {
@@ -135,5 +135,70 @@ Scenario(
     I.seeTextEquals(interval, allChecksPage.elements.intervalCellByName(checkName));
 
     await securityChecksAPI.restoreDefaultIntervals();
+  },
+);
+
+Scenario(
+  '@PMM-T1269 Verify ability to filter Advisor checks list @stt',
+  async ({
+    I, allChecksPage, securityChecksAPI,
+  }) => {
+    const searchKey = 'CVE fixes';
+    const ruleName = 'MongoDB CVE Version';
+    const interval = 'Rare';
+    const tableRowLocator = '//tr[td]';
+
+    await allChecksPage.open();
+
+    await I.say('Click on magnifying glass icon then select search by Description field', 'pink');
+    I.click(allChecksPage.filter.searchButton);
+    I.waitForVisible(allChecksPage.filter.searchFieldDropdown, 5);
+    I.click(allChecksPage.filter.searchFieldDropdown);
+    I.waitForVisible(allChecksPage.filter.searchFieldDescription);
+    I.click(allChecksPage.filter.searchFieldDescription);
+
+    await I.say(`Search for ${searchKey} and assert single check found`, 'pink');
+    I.fillField(allChecksPage.filter.searchInput, searchKey);
+    I.waitForVisible(allChecksPage.elements.tableBody, 5);
+    I.seeNumberOfElements(tableRowLocator, 1);
+
+    await I.say(`Edit result: set "${interval}" and filter "Standard" then assert no checks found`, 'pink');
+    I.click(allChecksPage.buttons.openChangeInterval(ruleName));
+    I.waitForVisible(allChecksPage.elements.modalContent, 5);
+    I.click(allChecksPage.buttons.intervalValue(interval));
+    I.click(allChecksPage.buttons.applyIntervalChange);
+    I.click(allChecksPage.filter.filterButton);
+    I.waitForVisible(allChecksPage.filter.intervalDropdown, 5);
+    I.click(allChecksPage.filter.intervalDropdown);
+    I.waitForVisible(allChecksPage.filter.intervalStandard);
+    I.click(allChecksPage.filter.intervalStandard);
+    I.waitForVisible(allChecksPage.elements.noChecksFound, 5);
+
+    await I.say(`Filter "${interval}" checks and assert single check found`, 'pink');
+    I.click(allChecksPage.filter.intervalDropdown);
+    I.waitForVisible(allChecksPage.filter.intervalRare);
+    I.click(allChecksPage.filter.intervalRare);
+    I.waitForVisible(allChecksPage.elements.tableBody, 5);
+    I.seeNumberOfElements(tableRowLocator, 1);
+
+    await I.say('Edit result: disable then assert no checks found', 'pink');
+    I.click(allChecksPage.buttons.disableEnableCheck(ruleName));
+    I.click(allChecksPage.filter.statusEnabledRadio);
+    I.waitForVisible(allChecksPage.elements.noChecksFound, 5);
+
+    await I.say('Filter "Disabled" checks and assert single check found', 'pink');
+    I.click(allChecksPage.filter.statusDisabledRadio);
+    I.waitForVisible(allChecksPage.elements.tableBody, 5);
+    I.seeNumberOfElements(tableRowLocator, 1);
+
+    await I.say('Click "clear all" button then search and filter elements are not displayed', 'pink');
+    I.click(allChecksPage.filter.clearAllButton);
+    I.waitForInvisible(allChecksPage.filter.searchFieldDropdown, 5);
+    I.waitForInvisible(allChecksPage.filter.searchInput);
+    I.waitForInvisible(allChecksPage.filter.statusAllRadio);
+    I.waitForInvisible(allChecksPage.filter.intervalDropdown);
+
+    await securityChecksAPI.restoreDefaultIntervals();
+    await securityChecksAPI.enableCheck(ruleName);
   },
 );

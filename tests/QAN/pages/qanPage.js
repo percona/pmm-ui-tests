@@ -2,6 +2,7 @@ const { I } = inject();
 
 module.exports = {
   url: 'graph/d/pmm-qan/pmm-query-analytics?from=now-5m&to=now',
+  refreshRateFiveSecondsUrl: 'graph/d/pmm-qan/pmm-query-analytics?from=now-5m&to=now&refresh=5s',
   clearUrl: 'graph/d/pmm-qan/pmm-query-analytics',
 
   fields: {

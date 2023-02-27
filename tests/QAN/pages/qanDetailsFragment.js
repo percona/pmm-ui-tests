@@ -10,20 +10,22 @@ module.exports = {
   },
   elements: {
     resizer: 'span.Resizer.horizontal',
-    noExamples: '//pre[contains(text(), "Sorry, no examples found for this query")]',
+    noExamples: locate('//pre[contains(text(), "Sorry, no examples found for this query")]').as('No examples message'),
     noClassic: '//pre[contains(text(), "No classic explain found")]',
     noJSON: '//pre[contains(text(), "No JSON explain found")]',
     examplesCodeBlock: '$pmm-overlay-wrapper',
     tablesBlocks: '[data-testid="query-analytics-details"] [data-testid="pmm-overlay-wrapper"]',
     planInfoIcon: locate('$query-analytics-details').find('div').after('pre > code'),
-    tooltipPlanId: locate('.popper__background.popper__background--info'),
+    tooltipPlanId: locate('div').withChild('.tippy-box'),
     planText: locate('pre').find('code'),
     emptyPlanText: locate('pre').withText('No plan found'),
+    topQuery: locate('$top-query').find('div'),
+    histogramContainer: '$histogram-collapse-container',
   },
 
   getFilterSectionLocator: (filterSectionName) => `//span[contains(text(), '${filterSectionName}')]`,
 
-  getTabLocator: (tabName) => locate('li > a').withText(tabName),
+  getTabLocator: (tabName) => locate('a').withText(tabName),
 
   getMetricsCellLocator: (metricName, columnNumber) => `//td//span[contains(text(), "${metricName}")]/ancestor::tr/td[${columnNumber}]//span[1]`,
 
@@ -39,12 +41,13 @@ module.exports = {
     compareCalculation(qpsValue, result);
   },
 
-  checkExamplesTab() {
+  checkExamplesTab(isNoExamplesVisible = false) {
     I.waitForVisible(this.getTabLocator('Examples'), 30);
     I.click(this.getTabLocator('Examples'));
     qanFilters.waitForFiltersToLoad();
     I.waitForVisible(this.elements.examplesCodeBlock, 30);
-    I.dontSeeElement(this.elements.noExamples);
+
+    if (isNoExamplesVisible) { I.seeElement(this.elements.noExamples); } else { I.dontSeeElement(this.elements.noExamples); }
   },
 
   checkExplainTab() {
@@ -75,6 +78,24 @@ module.exports = {
     I.dontSeeElement(this.elements.noJSON);
   },
 
+  checkDetailsTab() {
+    I.waitForVisible(this.getTabLocator('Details'), 30);
+    I.click(this.getTabLocator('Details'));
+    I.wait(5);
+    qanFilters.waitForFiltersToLoad();
+    I.dontSeeElement(this.elements.noClassic);
+    I.dontSeeElement(this.elements.noJSON);
+  },
+
+  checkMetricsTab() {
+    I.waitForVisible(this.getTabLocator('Metrics'), 30);
+    I.click(this.getTabLocator('Metrics'));
+    I.wait(5);
+    qanFilters.waitForFiltersToLoad();
+    I.seeElement('//*[@class="details-tabs"]//div[text()="Query time distribution"]');
+    I.dontSeeElement(this.elements.noJSON);
+  },
+
   async checkPlanTabIsNotEmpty() {
     I.dontSeeElement(this.elements.emptyPlanText);
     I.waitForVisible(this.elements.planText, 20);
@@ -95,6 +116,12 @@ module.exports = {
   mouseOverPlanInfoIcon() {
     I.moveCursorTo(this.elements.planInfoIcon);
     I.waitForVisible(this.elements.tooltipPlanId, 30);
+  },
+
+  async getQueryExampleText() {
+    this.checkExamplesTab();
+
+    return await I.grabTextFrom('$highlight-code');
   },
 
   async verifyAvgQueryTime(timeRangeInSec = 300) {

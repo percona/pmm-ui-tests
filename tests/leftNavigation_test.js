@@ -40,7 +40,7 @@ Data(sidebar).Scenario(
   },
 );
 
-// Needs to be removed, Advisors are on by default hence no settings link anymore
+// TODO: Needs to be removed, Advisors are on by default hence no settings link anymore
 xScenario(
   'PMM-T1051 - Verify PMM Settings page is opened from Home dashboard @menu',
   async ({ I, homePage, pmmSettingsPage }) => {
@@ -58,7 +58,7 @@ xScenario(
 );
 
 Scenario(
-  'PMM-9550 Verify downloading server diagnostics logs @menu',
+  '@PMM-9550 Verify downloading server diagnostics logs @menu',
   async ({ I, homePage }) => {
     await homePage.open();
     let path;

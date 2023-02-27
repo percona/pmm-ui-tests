@@ -12,13 +12,14 @@ Feature('QAN filters').retry(1);
 const filters = new DataTable(['filterToApply', 'searchValue']);
 
 filters.add(['SELECT', 'INSERT']);
-filters.add(['INSERT', 'SELECT']);
-filters.add(['UPDATE', 'DELETE']);
-filters.add(['DELETE', 'UPDATE']);
+// FIXME: unskip when https://jira.percona.com/browse/PMM-11657 is fixed
+// filters.add(['INSERT', 'SELECT']);
+// filters.add(['UPDATE', 'DELETE']);
+// filters.add(['DELETE', 'UPDATE']);
 
 Before(async ({ I, qanPage, qanOverview }) => {
   await I.Authorize();
-  I.amOnPage(qanPage.url);
+  I.amOnPage(`${qanPage.url}&orgId=1&refresh=10s`);
   qanOverview.waitForOverviewLoaded();
 });
 
@@ -29,11 +30,11 @@ Data(filters).Scenario(
   }) => {
     const environmentName = 'pdpgsql-dev';
 
-    qanFilters.applyFilter(environmentName);
+    await qanFilters.applyFilter(environmentName);
     I.waitForVisible(qanFilters.buttons.showSelected, 30);
 
-    qanFilters.applyFilterInSection('Command Type', current.filterToApply);
-    qanOverview.searchByValue(current.searchValue);
+    await qanFilters.applyFilterInSection('Command Type', current.filterToApply);
+    await qanOverview.searchByValue(current.searchValue);
     I.waitForVisible(qanOverview.elements.noResultTableText, 30);
     I.seeTextEquals(qanOverview.messages.noResultTableText, qanOverview.elements.noResultTableText);
   },
@@ -47,7 +48,7 @@ Scenario(
     const countBefore = await qanOverview.getCountOfItems();
 
     qanFilters.waitForFiltersToLoad();
-    qanFilters.applyFilter(serviceName);
+    await qanFilters.applyFilter(serviceName);
     I.seeInCurrentUrl(`service_name=${serviceName}`);
     const countAfter = await qanOverview.getCountOfItems();
 
@@ -62,7 +63,7 @@ Scenario(
 
     const countBefore = await qanOverview.getCountOfItems();
 
-    qanFilters.applyFilter(environmentName);
+    await qanFilters.applyFilter(environmentName);
     I.seeInCurrentUrl(`environment=${environmentName}`);
     const countAfter = await qanOverview.getCountOfItems();
 
@@ -78,8 +79,8 @@ Scenario(
 
     const countBefore = await qanOverview.getCountOfItems();
 
-    qanFilters.applyFilter(environmentName1);
-    qanFilters.applyFilter(environmentName2);
+    await qanFilters.applyFilter(environmentName1);
+    await qanFilters.applyFilter(environmentName2);
     await qanOverview.waitForNewItemsCount(countBefore);
     const countAfter = await qanOverview.getCountOfItems();
 
@@ -114,8 +115,8 @@ Scenario(
     const environmentName1 = 'ps-dev';
     const environmentName2 = 'pgsql-dev';
 
-    qanFilters.applyFilter(environmentName1);
-    qanFilters.applyFilter(environmentName2);
+    await qanFilters.applyFilter(environmentName1);
+    await qanFilters.applyFilter(environmentName2);
     I.waitForVisible(qanFilters.buttons.showSelected, 30);
     I.click(qanFilters.buttons.showSelected);
     await qanFilters.verifyCountOfFilterLinks(2, false);
@@ -143,7 +144,7 @@ xScenario(
     const countBefore = await qanOverview.getCountOfItems();
 
     for (const i in filters) {
-      qanFilters.applyFilter(filters[i]);
+      await qanFilters.applyFilter(filters[i]);
       await qanOverview.waitForNewItemsCount(countBefore);
       const countAfter = await qanOverview.getCountOfItems();
       const locator = qanFilters.getFilterLocator(filters[i]);
@@ -173,18 +174,18 @@ Scenario(
     const environmentName1 = 'ps-dev';
     const environmentName2 = 'pgsql-dev';
 
-    qanFilters.applyFilter(environmentName1);
-    qanFilters.applyFilter(environmentName2);
+    await qanFilters.applyFilter(environmentName1);
+    await qanFilters.applyFilter(environmentName2);
     I.click(qanFilters.buttons.showSelected);
     await qanFilters.verifyCountOfFilterLinks(2, false);
     I.click(qanFilters.buttons.resetAll);
     I.waitForInvisible(qanFilters.elements.spinner, 30);
     await qanFilters.verifyCountOfFilterLinks(2, true);
 
-    qanFilters.applyFilter(environmentName1);
+    await qanFilters.applyFilter(environmentName1);
     I.click(qanFilters.buttons.showSelected);
     await qanFilters.verifyCountOfFilterLinks(1, false);
-    qanFilters.applyFilter(environmentName1);
+    await qanFilters.applyFilter(environmentName1);
     I.waitForInvisible(qanFilters.elements.spinner, 30);
     await qanFilters.verifyCountOfFilterLinks(1, true);
   },
@@ -211,14 +212,14 @@ Scenario(
     await adminPage.applyTimeRange('Last 3 hour');
     qanOverview.waitForOverviewLoaded();
     await qanFilters.applyShowAllLinkIfItIsVisible(section);
-    qanFilters.applyFilterInSection(section, db1);
+    await qanFilters.applyFilterInSection(section, db1);
     count = await qanOverview.waitForNewItemsCount(count);
     await qanFilters.applyShowAllLinkIfItIsVisible(section);
-    qanFilters.applyFilterInSection(section, db2);
+    await qanFilters.applyFilterInSection(section, db2);
     count = await qanOverview.waitForNewItemsCount(count);
-    qanFilters.applyFilter(serviceName);
+    await qanFilters.applyFilter(serviceName);
     await qanOverview.waitForNewItemsCount(count);
-    qanFilters.applyFilterInSection(section, db2);
+    await qanFilters.applyFilterInSection(section, db2);
     await within(qanOverview.root, () => {
       I.waitForText('No queries available for this combination of filters', 30);
     });
@@ -242,7 +243,7 @@ Scenario(
 
     const countOfFilters = await I.grabNumberOfVisibleElements(qanFilters.fields.filterCheckboxes);
 
-    qanFilters.applyFilter(serviceType);
+    await qanFilters.applyFilter(serviceType);
     const countAfter = await qanOverview.getCountOfItems();
 
     assert.ok(countAfter !== countBefore, 'Query count was expected to change');
@@ -250,7 +251,7 @@ Scenario(
     await qanFilters.verifyCountOfFilterLinks(countOfFilters, false);
     qanFilters.applyShowAllLink('Environment');
     qanFilters.checkDisabledFilter('Environment', environment);
-    qanFilters.applyFilter(serviceName);
+    await qanFilters.applyFilter(serviceName);
     const percentageAfter = await qanFilters.getPercentage('Service Type', serviceType);
 
     assert.ok(
@@ -264,13 +265,14 @@ Data(shortCutTests).Scenario(
   'PMM-T436 PMM-T458 - Verify short-cut navigation from filters to related dashboards, '
     + 'Verify time interval is passed from QAN to dashboards via shortcut links @qan',
   async ({
-    I, qanFilters, dashboardPage, current, adminPage, qanOverview,
+    I, qanFilters, dashboardPage, current, adminPage, qanOverview, qanPage,
   }) => {
     const shortCutLink = current.shortcutLink;
     const header = current.dashboard;
     const filterValue = current.filter;
     const timeRangeValue = 'from=now-3h&to=now';
 
+    I.amOnPage(`${qanPage.url}&orgId=1`);
     await adminPage.applyTimeRange('Last 3 hours');
     qanOverview.waitForOverviewLoaded();
     qanFilters.waitForFiltersToLoad();
