@@ -19,8 +19,8 @@ Scenario(
     await dbaasAPI.createCustomPXC(clusterName, pxc_cluster_name, '1', 'percona/percona-xtradb-cluster:8.0.27-18.1');
     await dbaasAPI.createCustomPSMDB(clusterName, psmdb_cluster_name);
     I.amOnPage(dbaasPage.url);
-    I.waitForText(active_state, 10, dbaasPage.tabs.dbClusterTab.fields.clusterTableRow(pxc_cluster_name));
-    I.waitForText(active_state, 10, dbaasPage.tabs.dbClusterTab.fields.clusterTableRow(psmdb_cluster_name));
+    I.waitForText('Processing', 10, dbaasPage.tabs.dbClusterTab.fields.clusterTableRow(pxc_cluster_name));
+    I.waitForText('Processing', 10, dbaasPage.tabs.dbClusterTab.fields.clusterTableRow(psmdb_cluster_name));
     await dbaasAPI.waitForDBClusterState(pxc_cluster_name, clusterName, 'MySQL', 'DB_CLUSTER_STATE_READY');
     await dbaasAPI.waitForDBClusterState(psmdb_cluster_name, clusterName, 'MongoDB', 'DB_CLUSTER_STATE_READY');
   },
