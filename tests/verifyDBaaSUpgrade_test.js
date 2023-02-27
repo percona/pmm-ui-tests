@@ -1,7 +1,7 @@
 const clusterName = 'minikube';
 const pxc_cluster_name = 'upgrade-pxc';
 const psmdb_cluster_name = 'upgrade-psmdb';
-const active_state = 'ACTIVE';
+const active_state = 'Active';
 
 Feature('Updates of DB clusters and operators and PMM Server upgrade related tests');
 
@@ -11,13 +11,16 @@ Before(async ({ I }) => {
 
 Scenario(
   'PMM-T726 Prepare Setup for DBaaS Instance Before Upgrade [blocker] @upgrade-dbaas-before',
-  async ({ settingsAPI, dbaasAPI }) => {
+  async ({ settingsAPI, dbaasAPI, I, dbaasPage }) => {
     await settingsAPI.changeSettings({ publicAddress: process.env.VM_IP });
     await dbaasAPI.apiRegisterCluster(process.env.kubeconfig_minikube, clusterName);
     await dbaasAPI.apiCheckRegisteredClusterExist(clusterName);
     await dbaasAPI.waitForOperators();
     await dbaasAPI.createCustomPXC(clusterName, pxc_cluster_name, '1', 'percona/percona-xtradb-cluster:8.0.27-18.1');
     await dbaasAPI.createCustomPSMDB(clusterName, psmdb_cluster_name);
+    I.amOnPage(dbaasPage.url);
+    I.waitForText(active_state, 10, dbaasPage.tabs.dbClusterTab.fields.clusterTableRow(pxc_cluster_name));
+    I.waitForText(active_state, 10, dbaasPage.tabs.dbClusterTab.fields.clusterTableRow(psmdb_cluster_name));
     await dbaasAPI.waitForDBClusterState(pxc_cluster_name, clusterName, 'MySQL', 'DB_CLUSTER_STATE_READY');
     await dbaasAPI.waitForDBClusterState(psmdb_cluster_name, clusterName, 'MongoDB', 'DB_CLUSTER_STATE_READY');
   },
