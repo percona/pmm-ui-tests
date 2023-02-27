@@ -10,28 +10,40 @@ export class Toast {
   toastError = this.page.locator('//div[@data-testid="data-testid Alert error" or @aria-label="Alert error"]');
   closeButton = (selectedToast: Locator) => selectedToast.locator('//*[@aria-label="Close alert" or @type="button"]');
 
+  private selectToast = (variant?: string) => {
+    switch (variant) {
+      case 'success':
+        return this.toastSuccess;
+      case 'warning':
+        return this.toastWarning;
+      case 'error':
+        return this.toastError;
+      default:
+        return this.toast;
+    }
+
+  }
+
   checkToastMessage = async (
     message: string,
     options?: { timeout?: Duration.OneMinute; variant?: 'success' | 'warning' | 'error' },
   ) => {
-    let selectedToast: Locator;
-    switch (options?.variant) {
-      case 'success':
-        selectedToast = this.toastSuccess;
-        break;
-      case 'warning':
-        selectedToast = this.toastWarning;
-        break;
-      case 'error':
-        selectedToast = this.toastError;
-        break;
-      default:
-        selectedToast = this.toast;
-        break;
-    }
+    let selectedToast: Locator = this.selectToast(options?.variant);
 
-    await selectedToast.waitFor({ state: 'visible', timeout: options?.timeout });
+    await selectedToast.waitFor({ state: 'visible', timeout: options?.timeout || 30000 });
     await expect(selectedToast).toHaveText(message);
+    await this.closeButton(selectedToast).click();
+    await selectedToast.waitFor({ state: 'detached' });
+  };
+
+  checkToastMessageContains = async (
+    message: string,
+    options?: { timeout?: Duration.OneMinute; variant?: 'success' | 'warning' | 'error' },
+  ) => {
+    let selectedToast: Locator = this.selectToast(options?.variant);
+    
+    await selectedToast.waitFor({ state: 'visible', timeout: options?.timeout });
+    await expect(selectedToast).toContainText(message);
     await this.closeButton(selectedToast).click();
     await selectedToast.waitFor({ state: 'detached' });
   };
