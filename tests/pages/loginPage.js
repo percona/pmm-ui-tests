@@ -12,7 +12,13 @@ module.exports = {
     loginSuccess: 'Logged in',
   },
 
-  // introducing methods
+  /**
+   * User action to authenticate to PMM Server.
+   * **should be used inside async with `await`**
+   *
+   * @param   {string} username   user name to log in; with default 'admin'
+   * @param   {string} password   a password for specified user; with default for 'admin' user
+   */
   async login(username = 'admin', password = process.env.ADMIN_PASSWORD) {
     I.seeElement(this.fields.loginInput);
     I.fillField(this.fields.loginInput, username);
@@ -20,7 +26,7 @@ module.exports = {
     I.fillField(this.fields.passwordInput, password);
     I.click(this.fields.loginButton);
 
-    // BUG: there is no message on success for changed password
+    // BUG: system message on success for changed password is gone before the next line executed
     // eslint-disable-next-line no-undef
     tryTo(() => I.verifyPopUpMessage(this.messages.loginSuccess, 5));
 

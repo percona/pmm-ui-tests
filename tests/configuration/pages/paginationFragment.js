@@ -59,9 +59,8 @@ module.exports = {
 
   async getTotalOfItems() {
     I.waitForVisible(this.elements.totalsLabel, 30);
-    const resultsCount = (await I.grabTextFrom(this.elements.totalsLabel)).split(' ');
 
-    return resultsCount[3];
+    return (await I.grabTextFrom(this.elements.totalsLabel)).split(' ')[3];
   },
 
   async getLastPageNumber() {
