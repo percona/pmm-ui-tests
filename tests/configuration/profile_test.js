@@ -25,10 +25,10 @@ Scenario(
     await I.amOnPage(loginPage.url);
     await loginPage.login();
 
-    await grafanaAPI.checkMetricExist('pg_stat_activity_count', null);
-    await grafanaAPI.checkMetricExist('mysql_global_status_threads_connected', null);
-    // await grafanaAPI.checkMetricExist('mongodb_mongod_op_counters_total', null);
-    await grafanaAPI.checkMetricExist('node_cpu_seconds_total', null);
+    await grafanaAPI.waitForMetric('pg_stat_activity_count', null);
+    await grafanaAPI.waitForMetric('mysql_global_status_threads_connected', null);
+    // await grafanaAPI.waitForMetric('mongodb_mongod_op_counters_total', null);
+    await grafanaAPI.waitForMetric('node_cpu_seconds_total', null);
 
     await changePasswordPage.open();
     changePasswordPage.fillChangePasswordForm(process.env.ADMIN_PASSWORD, NEW_ADMIN_PASSWORD);
