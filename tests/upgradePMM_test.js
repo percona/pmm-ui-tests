@@ -90,20 +90,21 @@ BeforeSuite(async ({ I, codeceptjsConfig, credentials }) => {
   };
 
   await I.mongoConnect(mongoConnection);
-
   // Init data for Backup Management test
-  const replicaPrimary = await I.getMongoClient({
-    username: credentials.mongoReplicaPrimaryForBackups.username,
-    password: credentials.mongoReplicaPrimaryForBackups.password,
-    port: credentials.mongoReplicaPrimaryForBackups.port,
-  });
+  if (process.env.AMI_UPGRADE_TESTING_INSTANCE !== 'true' && process.env.OVF_UPGRADE_TESTING_INSTANCE !== 'true') {
+    const replicaPrimary = await I.getMongoClient({
+      username: credentials.mongoReplicaPrimaryForBackups.username,
+      password: credentials.mongoReplicaPrimaryForBackups.password,
+      port: credentials.mongoReplicaPrimaryForBackups.port,
+    });
 
-  try {
-    const collection = replicaPrimary.db('test').collection('e2e');
+    try {
+      const collection = replicaPrimary.db('test').collection('e2e');
 
-    await collection.insertOne({ number: 1, name: 'John' });
-  } finally {
-    await replicaPrimary.close();
+      await collection.insertOne({ number: 1, name: 'John' });
+    } finally {
+      await replicaPrimary.close();
+    }
   }
 });
 
@@ -669,7 +670,7 @@ if (versionMinor >= 15) {
       );
 
       const expectedScrapeUrl = `${remoteInstancesHelper.remote_instance.external.redis.schema}://${remoteInstancesHelper.remote_instance.external.redis.host
-      }:${remoteInstancesHelper.remote_instance.external.redis.port}${remoteInstancesHelper.remote_instance.external.redis.metricsPath}`;
+        }:${remoteInstancesHelper.remote_instance.external.redis.port}${remoteInstancesHelper.remote_instance.external.redis.metricsPath}`;
 
       assert.ok(targets.scrapeUrl === expectedScrapeUrl,
         `Active Target for external service Post Upgrade has wrong Address value, value found is ${targets.scrapeUrl} and value expected was ${expectedScrapeUrl}`);
