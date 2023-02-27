@@ -155,12 +155,12 @@ jobs:
 
       - name: Setup Client for PMM-Server
         run: |
-          sudo bash ./pmm-qa/pmm-tests/pmm2-client-setup.sh --pmm_server_ip 192.168.0.1 --client_version ${{ env.PMM_CLIENT_VERSION }} --admin_password admin --use_metrics_mode no
+          sudo bash ./pmm-qa/pmm-tests/pmm2-client-setup.sh --pmm_server_ip 127.0.0.1 --client_version ${{ env.PMM_CLIENT_VERSION }} --admin_password admin --use_metrics_mode no
           sudo bash ./pmm-qa/pmm-tests/pmm-framework.sh \
             --download \
             ${{ env.PMM_CLIENTS }} \
             --pmm2 \
-            --pmm2-server-ip=192.168.0.1
+            --pmm2-server-ip=127.0.0.1
           sleep 30
           sudo pmm-admin list
         shell: bash
