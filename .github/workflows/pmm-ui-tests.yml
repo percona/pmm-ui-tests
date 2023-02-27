@@ -125,7 +125,7 @@ jobs:
 #          node-version: 16.14.1
 
       - name: Checkout UI tests
-        uses: percona-platform/checkout@v2
+        uses: actions/checkout@v3
         with:
           ref: ${{ env.UI_TESTS_BRANCH }}
           repository: percona/pmm-ui-tests
@@ -189,7 +189,7 @@ jobs:
 
       - name: Generate and Attach the report
         if: ${{ always() && steps.ui-tests.outcome != 'skipped' }}
-        uses: percona-platform/upload-artifact@v3
+        uses: actions/upload-artifact@v2
         with:
           name: ui-tests-report
           path: pmm-ui-tests/playwright-report
