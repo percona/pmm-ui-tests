@@ -232,6 +232,7 @@ module.exports = {
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
 
     const body = {
+      user_id: 1,
       product_tour_completed: productTour,
       alerting_tour_completed: alertingTour,
     };
