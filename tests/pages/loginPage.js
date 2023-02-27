@@ -28,7 +28,7 @@ module.exports = {
 
     // BUG: system message on success for changed password is gone before the next line executed
     // eslint-disable-next-line no-undef
-    tryTo(() => I.verifyPopUpMessage(this.messages.loginSuccess, 5));
+    await tryTo(() => I.verifyPopUpMessage(this.messages.loginSuccess, 5));
 
     if ((await I.grabCurrentUrl()).includes(this.url)) {
       I.seeElement(this.fields.skipButton);
