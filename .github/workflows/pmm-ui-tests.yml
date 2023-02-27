@@ -119,10 +119,10 @@ jobs:
           target_url: 'https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}'
           sha: ${{ env.SHA }}
 
-      - name: Install NodeJS v16
-        uses: percona-platform/setup-node@v2
-        with:
-          node-version: 16.14.1
+#      - name: Install NodeJS v16
+#        uses: percona-platform/setup-node@v2
+#        with:
+#          node-version: 16.14.1
 
       - name: Checkout UI tests
         uses: percona-platform/checkout@v2
