@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "display": "Node 16",
+  "compilerOptions": {
+    "allowJs": true,
+    "forceConsistentCasingInFileNames": true,
+    "isolatedModules": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "baseUrl": ".",
+    "moduleResolution": "node",
+    "module": "esnext",
+    "lib": ["esnext"],
+    "paths": {
+      "@tests/*": ["./*"],
+      "@pages/*": ["pages/*"],
+      "@api/*": ["api/*"],
+      "@support/*": ["support/*"],
+      "@root/*": ["../*"],
+      "@helpers/*": ["helpers/*"],
+      "@components/*": ["components/*"]
+    },
+    "noEmit": true,
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitAny": true,
+    "noImplicitReturns": true,
+    "noImplicitThis": true,
+    "resolveJsonModule": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "strictNullChecks": true,
+    "target": "es5"
+  },
+  "include": ["./"]
+}
