@@ -64,7 +64,7 @@ jobs:
       SERVICENOW_DEV_URL: "https://perconadev.service-now.com/api/x_pellc_percona_pl/platform/settest"
 
     steps:
-      - name: PMM server version ${{ env.PMM_SERVER_VERSION }} and Portal connections tests for pmm-ui-tests branch ${{ github.event.inputs.pmm_ui_tests_branch }}
+      - name: PMM server version ${{ env.PMM_SERVER_VERSION || 'dev-latest' }} and Portal connections tests for pmm-ui-tests branch ${{ github.event.inputs.pmm_ui_tests_branch || 'main'}}
         if: ${{ github.event_name == 'workflow_dispatch' && env.SHA != 'null' }}
         uses: percona-platform/github-status-action@v1
         with:
