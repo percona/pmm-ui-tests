@@ -76,6 +76,15 @@ Data(maxQueryLengthInstances).Scenario(
     remoteInstancesPage.openAddRemotePage(serviceType);
     await remoteInstancesPage.addRemoteSSLDetails(details);
     I.click(remoteInstancesPage.fields.addService);
+    // Add wait for service status to be updated
+    // I.wait(10);
+    // await inventoryAPI.verifyServiceExistsAndHasRunningStatus(
+    //   {
+    //     serviceType: 'MYSQL_SERVICE',
+    //     service: 'mysql',
+    //   },
+    //   serviceName,
+    // );
 
     // // Check Remote Instance also added and have running status
     // pmmInventoryPage.verifyRemoteServiceIsDisplayed(remoteServiceName);
@@ -139,7 +148,7 @@ Data(instances).Scenario(
       serviceName, metric,
     } = current;
     let response; let result;
-    const remoteServiceName = `remote_${serviceName}`;
+    const remoteServiceName = `remote_${serviceName}_faker`;
 
     // Waiting for metrics to start hitting for remotely added services
     I.wait(10);
@@ -219,7 +228,7 @@ Data(instances).Scenario(
       serviceName,
     } = current;
 
-    const serviceList = [serviceName, `remote_${serviceName}`];
+    const serviceList = [serviceName, `remote_${serviceName}_faker`];
 
     for (const service of serviceList) {
       I.amOnPage(qanPage.url);

@@ -38,8 +38,9 @@ AfterSuite(async ({ portalAPI }) => {
   }
 });
 
-Scenario(
-  'PMM-T1202 Verify that Advisors reflect on user authority / platform role changes @stt',
+// FIXME: https://jira.percona.com/browse/PMM-11655
+Scenario.skip(
+  'PMM-T1202 Verify that Advisors reflect on user authority / platform role changes',
   async ({
     I, pmmSettingsPage, databaseChecksPage, portalAPI, homePage, settingsAPI, loginPage,
   }) => {

@@ -71,7 +71,7 @@ Before(async ({ I }) => {
   I.setRequestTimeout(60000);
 });
 
-BeforeSuite(async ({ I, codeceptjsConfig, inventoryAPI }) => {
+BeforeSuite(async ({ I, codeceptjsConfig, credentials }) => {
   const mysqlComposeConnection = {
     host: (process.env.AMI_UPGRADE_TESTING_INSTANCE === 'true' || process.env.OVF_UPGRADE_TESTING_INSTANCE === 'true' ? process.env.VM_CLIENT_IP : '127.0.0.1'),
     port: (process.env.AMI_UPGRADE_TESTING_INSTANCE === 'true' || process.env.OVF_UPGRADE_TESTING_INSTANCE === 'true' ? remoteInstancesHelper.remote_instance.mysql.ps_5_7.port : '3309'),
@@ -90,6 +90,22 @@ BeforeSuite(async ({ I, codeceptjsConfig, inventoryAPI }) => {
   };
 
   await I.mongoConnect(mongoConnection);
+  // Init data for Backup Management test
+  if (process.env.AMI_UPGRADE_TESTING_INSTANCE !== 'true' && process.env.OVF_UPGRADE_TESTING_INSTANCE !== 'true') {
+    const replicaPrimary = await I.getMongoClient({
+      username: credentials.mongoReplicaPrimaryForBackups.username,
+      password: credentials.mongoReplicaPrimaryForBackups.password,
+      port: credentials.mongoReplicaPrimaryForBackups.port,
+    });
+
+    try {
+      const collection = replicaPrimary.db('test').collection('e2e');
+
+      await collection.insertOne({ number: 1, name: 'John' });
+    } finally {
+      await replicaPrimary.close();
+    }
+  }
 });
 
 AfterSuite(async ({ I, psMySql }) => {
@@ -477,10 +493,10 @@ if (versionMinor >= 32) {
   Scenario(
     'Create backups data to check after upgrade @pre-upgrade @pmm-upgrade',
     async ({
-      I, settingsAPI, locationsAPI, backupAPI, scheduledAPI, inventoryAPI, backupInventoryPage, scheduledPage,
+      I, settingsAPI, locationsAPI, backupAPI, scheduledAPI, inventoryAPI, backupInventoryPage, scheduledPage, credentials,
     }) => {
       if (!await inventoryAPI.apiGetNodeInfoByServiceName('MONGODB_SERVICE', mongoServiceName)) {
-        await I.say(await I.verifyCommand(`pmm-admin add mongodb --port=27027 --service-name=${mongoServiceName} --replication-set=rs0`));
+        await I.say(await I.verifyCommand(`docker exec rs101 pmm-admin add mongodb --port=27017 --username=${credentials.mongoReplicaPrimaryForBackups.username} --password=${credentials.mongoReplicaPrimaryForBackups.password} --service-name=${mongoServiceName} --replication-set=rs --cluster=rs`));
       }
 
       await settingsAPI.changeSettings({ backup: true });
@@ -1130,8 +1146,14 @@ if (versionMinor >= 32) {
   Scenario(
     '@PMM-T1503 - The user is able to do a restore for MongoDB after the upgrade'
     + ' @post-upgrade @pmm-upgrade',
-    async ({ I, backupInventoryPage, restorePage }) => {
-      const replica = await I.getMongoReplicaClient({ username: 'admin', password: 'password' });
+    async ({
+      I, backupInventoryPage, restorePage, credentials,
+    }) => {
+      const replica = await I.getMongoClient({
+        username: credentials.mongoReplicaPrimaryForBackups.username,
+        password: credentials.mongoReplicaPrimaryForBackups.password,
+        port: credentials.mongoReplicaPrimaryForBackups.port,
+      });
 
       try {
         let collection = replica.db('test').collection('e2e');
@@ -1149,7 +1171,7 @@ if (versionMinor >= 32) {
 
         I.assertEqual(record, null, `Was expecting to not have a record ${JSON.stringify(record, null, 2)} after restore operation`);
       } finally {
-        replica.close();
+        await replica.close();
       }
     },
   ).retry(0);
