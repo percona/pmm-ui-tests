@@ -219,9 +219,9 @@ class Grafana extends Helper {
       assert.ok(code !== 0, `The "${command}" command was expected to exit with error code, but exited with success code: "${code}"`);
     }
 
-    if (returnErrorPipe) return stderr;
+    if (returnErrorPipe) return stderr.trim();
 
-    return stdout;
+    return stdout.trim();
   }
 
   async suppressTour() {
