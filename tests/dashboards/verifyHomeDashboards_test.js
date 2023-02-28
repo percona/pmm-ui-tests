@@ -26,7 +26,6 @@ Data(panels).Scenario(
     await homePage.open();
 
     const expectedDashboard = dashboardPage[dashboard];
-    await settingsAPI.setTourOptions();
 
     I.click(dashboardPage.fields.openFiltersDropdownLocator('Node Name'));
     const nodeNames = await I.grabTextFromAll(dashboardPage.fields.allFilterDropdownOptions);
@@ -40,8 +39,12 @@ Data(panels).Scenario(
       : await I.grabTextFrom(dashboardPage.fields.openFiltersDropdownLocator('Node Name'));
 
     I.click(dashboardPage.fields.clickablePanel(panelName));
+
     I.switchToNextTab();
-    I.waitForElement(`//span[text()="${dashboardName}"]`, 60);
+    // need to skip PMM tour modal window due to new tab opening
+    await dashboardPage.clickSkipPmmTour();
+
+    I.waitForElement(dashboardPage.fields.dashboardTitle(dashboardName), 60);
     I.seeInCurrentUrl(expectedDashboard.clearUrl);
     await I.assertEqual(await I.grabTextFrom(dashboardPage.fields.openFiltersDropdownLocator('Node Name')), expectedNodeName);
     await dashboardPage.expandEachDashboardRow();

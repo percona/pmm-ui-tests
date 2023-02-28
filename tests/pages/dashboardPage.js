@@ -990,7 +990,7 @@ module.exports = {
   },
 
   osDiskDetails: {
-    noDataElements: 0,
+    noDataElements: 1,
     naElements: 0,
     clearUrl: 'graph/d/node-disk/disk-details',
     metrics: [
@@ -1170,12 +1170,14 @@ module.exports = {
     timeRangePickerButton: I.useDataQA('data-testid TimePicker Open Button'),
     refresh: I.useDataQA('data-testid RefreshPicker run button'),
     allFilterDropdownOptions: '//a[contains(@class, "variable-option")][span[text()][not(contains(text(), "All"))]]',
+    skipTourButton: '//button[span[text()="Skip"]]',
     timeRangeOption: (timeRange) => locate('li').withDescendant('label').withText(timeRange),
     openFiltersDropdownLocator: (filterName) => locate('.variable-link-wrapper').after(`label[for="var-${formatElementId(filterName)}"]`),
     filterDropdownOptionsLocator: (filterName) => locate('.variable-option').withText(filterName),
     refreshIntervalPicker: I.useDataQA('data-testid RefreshPicker interval button'),
     refreshIntervalOption: (interval) => locate(`//*[@role="menuitemradio" and text()="${interval}"]`),
     clickablePanel: (name) => `//section[@aria-label="${name} panel"]//a`,
+    dashboardTitle: (name) => locate('span').withText(name),
   },
 
   createAdvancedDataExplorationURL(metricName, time = '1m', nodeName = 'All') {
@@ -1394,5 +1396,14 @@ module.exports = {
   selectRefreshTimeInterval(timeInterval) {
     I.click(this.fields.refreshIntervalPicker);
     I.click(this.fields.refreshIntervalOption(timeInterval));
+  },
+
+  async clickSkipPmmTour() {
+    I.wait(2);
+    const numberOfElements = await I.grabNumberOfVisibleElements(this.fields.skipTourButton);
+
+    if (numberOfElements >= 1) {
+      I.click(this.fields.skipTourButton);
+    }
   },
 };
