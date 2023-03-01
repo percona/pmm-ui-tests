@@ -36,19 +36,20 @@ Scenario('PMM-T3 Upgrade PMM via UI with DbaaS Clusters @upgrade-dbaas-ui', asyn
   }
 );
 
-// Scenario('Unregister Kubernetes cluster and register again @upgrade-dbaas-force-unregister',
-//   async ({ I, dbaasPage, dbaasAPI }) => {
-//     I.amOnPage(dbaasPage.url);
-//     await dbaasPage.goToKubernetesClusterTab();
-//     dbaasPage.unregisterCluster(clusterName, true);
-//     I.waitForText(dbaasPage.deletedAlertMessage, 60);
-//     dbaasPage.checkCluster(clusterName, true);
-//     dbaasPage.registerKubernetesCluster(clusterName, process.env.kubeconfig_minikube);
-//     I.waitForText(dbaasPage.addedAlertMessage, 60);
-//     dbaasPage.checkCluster(clusterName, false);
-//     await dbaasAPI.waitForOperators();
-//   }
-// );
+// Skipped due to a bug in migration script in 2.35.0
+Scenario.skip('Unregister Kubernetes cluster and register again @upgrade-dbaas-force-unregister',
+  async ({ I, dbaasPage, dbaasAPI }) => {
+    I.amOnPage(dbaasPage.url);
+    await dbaasPage.goToKubernetesClusterTab();
+    dbaasPage.unregisterCluster(clusterName, true);
+    I.waitForText(dbaasPage.deletedAlertMessage, 60);
+    dbaasPage.checkCluster(clusterName, true);
+    dbaasPage.registerKubernetesCluster(clusterName, process.env.kubeconfig_minikube);
+    I.waitForText(dbaasPage.addedAlertMessage, 60);
+    dbaasPage.checkCluster(clusterName, false);
+    await dbaasAPI.waitForOperators();
+  }
+);
 
 Scenario('PMM-T726 Verify DB clusters status and logs after PMM Server upgrade @upgrade-dbaas-after',
   async ({
