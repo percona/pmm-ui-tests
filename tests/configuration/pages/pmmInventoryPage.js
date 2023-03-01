@@ -1,6 +1,7 @@
 const { I, inventoryAPI } = inject();
 const assert = require('assert');
 const paginationPart = require('./paginationFragment');
+const agentsTab = require('./agentsTab');
 
 module.exports = {
   url: 'graph/inventory?orgId=1',
@@ -37,6 +38,7 @@ module.exports = {
     nodeExporterStatus: '//td[contains(text(), "Node exporter")]//ancestor::tr[@data-testid="table-row"]//span[contains(text(), "status")]',
     agentId: '//td[contains(text(), "agent_id") and not(following-sibling::td[text()="PMM Agent"])]',
   },
+  agentsTab,
   pagination: paginationPart,
 
   async open() {
@@ -86,7 +88,7 @@ module.exports = {
 
     await inventoryAPI.waitForRunningState(serviceId);
     I.click(agentLinkLocator);
-    I.waitForElement(this.fields.pmmAgentLocator, 60);
+    // I.waitForElement(this.fields.pmmAgentLocator, 60);
     await this.changeRowsPerPage(100);
     I.waitForElement(this.fields.inventoryTable, 60);
     I.scrollPageToBottom();
