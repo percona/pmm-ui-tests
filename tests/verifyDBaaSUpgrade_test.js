@@ -173,8 +173,8 @@ Scenario('PMM-T726 Verify actions on DB clusters after PMM Server upgrade @upgra
 Scenario('PMM-T726 Verify removal of existing DB clusters after PMM Server upgrade @upgrade-dbaas-after',
   async ({ I, dbaasActionsPage }) => {
     I.amOnPage('graph/dbaas/dbclusters');
-    await dbaasActionsPage.deletePSMDBCluster(psmdb_cluster_name, clusterName, false);
-    await dbaasActionsPage.deleteXtraDBCluster(pxc_cluster_name, clusterName, false);
+    await dbaasActionsPage.deletePSMDBCluster(psmdb_cluster_name, clusterName);
+    await dbaasActionsPage.deleteXtraDBCluster(pxc_cluster_name, clusterName);
   }
 );
 

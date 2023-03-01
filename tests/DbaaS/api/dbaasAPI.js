@@ -212,7 +212,7 @@ module.exports = {
       let response = await I.sendPostRequest('v1/management/DBaaS/DBClusters/List', body, headers);
 
       if (response.data.pxc_clusters || response.data.psmdb_clusters) {
-        if (dbType === 'MySQL') {
+        if (dbType === 'MySQL' && response.data.pxc_clusters) {
           const pxc_cluster = response.data.pxc_clusters.find(
             (o) => o.name === dbClusterName,
           );
@@ -220,7 +220,8 @@ module.exports = {
           if (pxc_cluster === undefined) {
             break;
           }          
-        } else {
+        }
+        if (dbType === 'MongoDB' && response.data.psmdb_clusters) {
           const psmdb_cluster = response.data.psmdb_clusters.find(
             (o) => o.name === dbClusterName,
           );  
@@ -228,7 +229,7 @@ module.exports = {
           if (psmdb_cluster === undefined) {
             break;
           }     
-        }
+        } else break;
       } else break;
 
       await new Promise((r) => setTimeout(r, 10000));
