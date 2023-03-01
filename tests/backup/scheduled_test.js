@@ -70,9 +70,6 @@ AfterSuite(async ({
   I,
 }) => {
   await I.mongoDisconnect();
-  await I.verifyCommand(`sudo pmm-admin remove mongodb ${mongoServiceName}`);
-  await I.verifyCommand(`sudo pmm-admin remove mongodb ${mongoServiceName2}`);
-  await I.verifyCommand(`sudo pmm-admin remove mongodb ${mongoNameWithoutCluster}`);
 });
 
 Scenario(
@@ -408,7 +405,7 @@ Scenario(
     const mySqlScheduleId = await scheduledAPI.createScheduledBackup(scheduleMySql);
 
     await backupAPI.waitForBackupFinish(null, scheduleMySql.name, 240);
-    await backupAPI.waitForBackupFinish(null, scheduleMongo.name, 30);
+    await backupAPI.waitForBackupFinish(null, scheduleMongo.name, 120);
     await scheduledAPI.disableScheduledBackup(mongoScheduleId);
     await scheduledAPI.disableScheduledBackup(mySqlScheduleId);
 

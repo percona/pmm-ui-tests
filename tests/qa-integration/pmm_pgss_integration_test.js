@@ -1,5 +1,6 @@
 const assert = require('assert');
 
+const { adminPage } = inject();
 const connection = {
   host: '127.0.0.1',
   port: 5438,
@@ -18,6 +19,11 @@ const container = process.env.PGSQL_PGSS_CONTAINER ? `${process.env.PGSQL_PGSS_C
 const database = `pgss${Math.floor(Math.random() * 99) + 1}`;
 const pgss_service_name = `${container}_${version}_service`;
 const container_name = `${container}_${version}`;
+const pmmFrameworkLoader = `bash ${adminPage.pathToFramework}`;
+const pgsqlVersionPgss = new DataTable(['pgsqlVersion', 'expectedPgssVersion', 'expectedColumnName']);
+
+pgsqlVersionPgss.add([12, '1.7', 'total_time']);
+pgsqlVersionPgss.add([13, '1.8', 'total_exec_time']);
 
 const labels = [{ key: 'database', value: [`${database}`] }];
 
@@ -28,7 +34,7 @@ Before(async ({ I }) => {
 });
 
 Scenario(
-  'PMM-T1312 Adding Load to Postgres test database and verifying PMM-Agent and PG_STATEMENTS QAN agent is in running status @not-ui-pipeline @pgss-pmm-integration',
+  '@PMM-T1312 Adding Load to Postgres test database and verifying PMM-Agent and PG_STATEMENTS QAN agent is in running status @not-ui-pipeline @pgss-pmm-integration',
   async ({ I }) => {
     await I.pgExecuteQueryOnDemand('SELECT now();', connection);
 
@@ -119,5 +125,49 @@ Scenario(
     await inventoryAPI.verifyAgentLogLevel('pgstatements', dbDetails, 'error');
 
     await I.say(await I.verifyCommand(`docker exec ${container_name} pmm-admin remove postgresql ${pgsql_service_name}`));
+  },
+);
+
+Data(pgsqlVersionPgss).Scenario(
+  '@PMM-T1540 @PMM-T1541 Verify that QAN pg_stat_statements agent collects "total_time" column for pg_stat_statements version 1.7 and lower'
+    + 'Verify that QAN pg_stat_statements agent collects "total_exec_time" column for pg_stat_statements version 1.8 and higher @pgss-pmm-integration',
+  async ({ I, inventoryAPI, current }) => {
+    const {
+      pgsqlVersion,
+      expectedPgssVersion,
+      expectedColumnName,
+    } = current;
+    const containerName = `pgsql_pgss_${pgsqlVersion}`;
+    const exposedPort = '5500';
+    const serviceName = `pgsql_pgss_${pgsqlVersion}_service`;
+
+    await I.verifyCommand(`${pmmFrameworkLoader} --pmm2 --setup-pmm-pgss-integration --pgsql-version=${pgsqlVersion} --pgsql-pgss-port=${exposedPort}`);
+
+    await inventoryAPI.verifyServiceExistsAndHasRunningStatus(
+      {
+        serviceType: 'POSTGRESQL_SERVICE',
+        service: 'postgresql',
+      },
+      serviceName,
+    );
+    await I.assertContain(
+      await I.verifyCommand(`docker exec ${containerName} psql postgres postgres -c "select column_name from information_schema.columns where table_name='pg_stat_statements' and column_name='${expectedColumnName}'"`),
+      expectedColumnName,
+      `Expected to find column with name ${expectedColumnName} in pg_stat_statements table for pgsql version ${pgsqlVersion}`,
+    );
+    const actualPgssVersion = (await I.verifyCommand(`docker exec ${containerName} psql postgres postgres -c "SELECT pg_extension.extversion FROM pg_extension WHERE pg_extension.extname = 'pg_stat_statements'" | grep -Eo "[0-9]*\\.[0-9]*"`)).replace('\n', '');
+
+    await I.assertEqual(actualPgssVersion, expectedPgssVersion, `PGSS version is not correct for this version (${pgsqlVersion}) of PGSQL`);
+
+    await I.assertEqual(
+      parseInt(await I.verifyCommand(`tail -n100 ~/pmm-agent.log | grep -o "column pg_stat_statements.${expectedColumnName} does not exist" | wc -l`), 10),
+      0,
+      'Expected to have no errors regarding column name',
+    );
+
+    const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName('POSTGRESQL_SERVICE', serviceName);
+
+    await inventoryAPI.deleteService(service_id);
+    await I.verifyCommand(`docker rm -f ${containerName}`);
   },
 );
