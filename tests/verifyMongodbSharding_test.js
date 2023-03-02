@@ -6,7 +6,7 @@ const pmmFrameworkLoader = `bash ${adminPage.pathToFramework}`;
 Scenario(
   '@PMM-T1539 Verify that MongoDB exporter shows version for mongos instance @cli',
   async ({
-    I, current,
+    I,
   }) => {
     const version = '6.0';
     const edition = 'Community';
