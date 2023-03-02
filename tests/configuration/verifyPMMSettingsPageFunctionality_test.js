@@ -414,7 +414,7 @@ Scenario(
 
 Scenario(
   '@PMM-T1227 - Verify tooltip "Read more" links on PMM Settings page redirect to working pages '
-    + '@PMM-T1338 Verify that all the metrics from config are displayed on Telemetry tooltip in Settings > Advanced @settings',
+  + '@PMM-T1338 Verify that all the metrics from config are displayed on Telemetry tooltip in Settings > Advanced @settings',
   async ({ I, pmmSettingsPage, settingsAPI }) => {
     await settingsAPI.changeSettings({ alerting: true });
     const subPageTooltips = [
@@ -460,6 +460,6 @@ Scenario('PMM-T1401 Verify Percona Alerting wording in Settings @max-length @set
 }) => {
   I.amOnPage(pmmSettingsPage.advancedSettingsUrl);
   await pmmSettingsPage.waitForPmmSettingsPageLoaded();
-  pmmSettingsPage.verifySwitch(pmmSettingsPage.fields.perconaAlertingSwitch, 'on');
+  pmmSettingsPage.verifySwitch(pmmSettingsPage.fields.perconaAlertingSwitchInput, 'on');
   await pmmSettingsPage.verifyTooltip(pmmSettingsPage.tooltips.advancedSettings.perconaAlerting);
 });
