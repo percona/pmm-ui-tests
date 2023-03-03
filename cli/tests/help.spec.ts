@@ -14,40 +14,22 @@ test.beforeAll(async ({}) =>{
 
 test.describe('PMM Client "--help" validation', async () => {
 
-   /**
+  /**
    * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/modb-tests.bats#L182
-   */
-  test('pmm-admin mongodb --help check for socket', async ({}) => {
-    await addMongoHelp.outContains('Usage: pmm-admin add mongodb [<name> [<address>]]');
-    await addMongoHelp.outContains('--socket=STRING');
-  });
-
-  /**
    * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/modb-tests.bats#L191
-   */
-  test('run pmm-admin add mongodb --help to check metrics-mode="auto"', async ({}) => {
-    await addMongoHelp.outContains('metrics-mode="auto"');
-  });
-
-  /**
    * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/modb-tests.bats#L198
-   */
-  test('run pmm-admin add mongodb --help to check host', async ({}) => {
-    await addMongoHelp.outContains('host');
-  });
-
-  /**
    * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/modb-tests.bats#L205
-   */
-  test('run pmm-admin add mongodb --help to check port', async ({}) => {
-    await addMongoHelp.outContains('port');
-  });
-
-  /**
    * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/modb-tests.bats#L212
    */
-  test('run pmm-admin add mongodb --help to check service-name', async ({}) => {
-    await addMongoHelp.outContains('service-name');
+  test('pmm-admin mongodb --help validation', async ({}) => {
+    await addMongoHelp.outContainsMany([
+      'Usage: pmm-admin add mongodb [<name> [<address>]]',
+      '--socket=STRING',
+      'metrics-mode="auto"',
+      'host',
+      'port',
+      'service-name',
+    ]);
   });
 
   /**
