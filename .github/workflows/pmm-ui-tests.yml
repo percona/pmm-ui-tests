@@ -109,7 +109,6 @@ jobs:
 
     steps:
       - name: PMM server version ${{ inputs.pmm_server_version }} and UI tests for flag "${{ inputs.pmm_test_flag }}" and pmm-ui-tests branch ${{ inputs.pmm_ui_tests_branch }}
-        if: ${{ github.event_name == 'workflow_dispatch' && env.SHA != 'null' }}
         uses: percona-platform/github-status-action@v1
         continue-on-error: true
         with:
