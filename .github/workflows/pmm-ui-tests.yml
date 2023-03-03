@@ -113,6 +113,7 @@ jobs:
         uses: percona-platform/github-status-action@v1
         continue-on-error: true
         with:
+          authToken: ${{ secrets.ROBOT_TOKEN }}
           context: "${{ env.PMM_TEST_FLAG }} UI tests"
           description: "Test execution ${{ job.status }}"
           state: "pending"
