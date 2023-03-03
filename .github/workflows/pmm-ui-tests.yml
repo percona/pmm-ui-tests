@@ -109,7 +109,6 @@ jobs:
 
     steps:
       - name: Create status check
-        if: ${{ github.event_name != 'pull_request' }}
         uses: percona-platform/github-status-action@v1
         continue-on-error: true
         with:
