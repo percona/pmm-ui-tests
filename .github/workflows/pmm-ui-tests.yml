@@ -108,21 +108,17 @@ jobs:
       SERVICENOW_DEV_URL: 'https://perconadev.service-now.com/api/x_pellc_percona_pl/platform/settest'
 
     steps:
-      - name: PMM server version ${{ inputs.pmm_server_version }} and UI tests for flag "${{ inputs.pmm_test_flag }}" and pmm-ui-tests branch ${{ inputs.pmm_ui_tests_branch }}
-        if: ${{ github.event_name == 'workflow_dispatch' && env.SHA != 'null' }}
+      - name: Create status check
+        if: ${{ github.event_name != 'pull_request' }}
         uses: percona-platform/github-status-action@v1
+        continue-on-error: true
         with:
-          context: 'pmm2-ui-tests'
-          description: 'Tests execution has been started'
-          state: 'pending'
-          repository: ${{ inputs.repo }}
-          target_url: 'https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}'
+          context: "${{ env.PMM_TEST_FLAG }} UI tests"
+          description: "Test execution ${{ job.status }}"
+          state: "pending"
+          repository: ${{ github.repository }}
+          target_url: "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
           sha: ${{ env.SHA }}
-
-#      - name: Install NodeJS v16
-#        uses: percona-platform/setup-node@v2
-#        with:
-#          node-version: 16.14.1
 
       - name: Checkout UI tests
         uses: actions/checkout@v3
