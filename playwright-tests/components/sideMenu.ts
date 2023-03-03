@@ -12,6 +12,7 @@ export class SideMenu {
     tickets: this.sideMenu.locator('//*[@href="/graph/tickets"]'),
     entitlements: this.sideMenu.locator('//*[@href="/graph/entitlements"]'),
     environmentOverview: this.sideMenu.locator('//*[@href="/graph/environment-overview"]'),
-    configuration: this.sideMenu.locator('//a[@aria-label="Configuration"]')
+    configuration: this.sideMenu.locator('//a[@aria-label="Configuration"]'),
+    advisors: this.sideMenu.locator('//a[@aria-label="Advisors"]')
   };
 }
