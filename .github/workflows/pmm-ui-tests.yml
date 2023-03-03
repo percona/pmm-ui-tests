@@ -108,11 +108,10 @@ jobs:
       SERVICENOW_DEV_URL: 'https://perconadev.service-now.com/api/x_pellc_percona_pl/platform/settest'
 
     steps:
-      - name: Create status check
+      - name: PMM server version ${{ inputs.pmm_server_version }} and UI tests for flag "${{ inputs.pmm_test_flag }}" and pmm-ui-tests branch ${{ inputs.pmm_ui_tests_branch }}
+        if: ${{ github.event_name == 'workflow_dispatch' && env.SHA != 'null' }}
         uses: percona-platform/github-status-action@v1
-        continue-on-error: true
         with:
-          authToken: ${{ secrets.ROBOT_TOKEN }}
           context: "${{ env.PMM_TEST_FLAG }} UI tests"
           description: "Test execution ${{ job.status }}"
           state: "pending"
