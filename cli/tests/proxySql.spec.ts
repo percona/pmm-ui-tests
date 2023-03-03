@@ -83,11 +83,12 @@ test.describe('PMM Client CLI tests for ProxySQL', async () => {
           .stdout.trim();
       //TODO: implement fluent wait instead of sleep
       await cli.exec('sleep 20');
-      await (await cli.exec('sudo chmod +x /srv/pmm-qa/pmm-tests/pmm-2-0-bats-tests/check_metric.sh')).assertSuccess();
-      await (await cli.exec('docker cp /srv/pmm-qa/pmm-tests/pmm-2-0-bats-tests/check_metric.sh pxc_container_5.7:/')).assertSuccess();
-      let output = await cli.exec(`docker exec pxc_container_5.7 ./check_metric.sh proxysql_$COUNTER proxysql_up ${serverContainer} proxysql_exporter pmm mypass`);
-      await output.assertSuccess();
-      await output.outContains('proxysql_up 1');
+      // await (await cli.exec('sudo chmod +x /srv/pmm-qa/pmm-tests/pmm-2-0-bats-tests/check_metric.sh')).assertSuccess();
+      // await (await cli.exec('docker cp /srv/pmm-qa/pmm-tests/pmm-2-0-bats-tests/check_metric.sh pxc_container_5.7:/')).assertSuccess();
+      // let output = await cli.exec(`docker exec pxc_container_5.7 ./check_metric.sh ${host} proxysql_up ${serverContainer} proxysql_exporter pmm mypass`);
+      let metrics = await cli.getMetrics(host, 'pmm', 'mypass', 'pxc_container_5.7');
+      let expectedValue = 'proxysql_up 1';
+      expect(metrics, `Scraped metrics do not contain ${expectedValue}!`).toContain(expectedValue);
     }
   });
 

@@ -4,12 +4,14 @@ class Output {
   command: string;
   code: number;
   stdout: string;
+  stdoutLines: string[];
   stderr: string;
 
   constructor(command: string, exitCode: number, stdOut: string, stdErr: string) {
     this.command = command;
     this.code = exitCode;
     this.stdout = stdOut;
+    this.stdoutLines = stdOut.trim().split('\n').filter((item) => item.trim().length > 0);
     this.stderr = stdErr;
   }
 
