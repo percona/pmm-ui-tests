@@ -1,0 +1,41 @@
+name: PMM2 UI Tests-Matrix
+
+on:
+  pull_request:
+    branches:
+      - main
+
+  workflow_dispatch:
+    inputs:
+      pmm_ui_tests_branch:
+        description: 'Target branch for pmm-ui-tests repository'
+        default: 'main'
+        required: true
+      pmm_test_flag:
+          description: 'Flag to run only specific portion of the tests.'
+          required: false
+      pmm_server_version:
+        description: 'Version of the pmm server used for testing'
+        default: 'dev-latest'
+        required: true
+      pmm_client_version:
+        description: 'Version of the pmm client used for testing'
+        default: 'dev-latest'
+        required: true
+      pmm_qa_branch:
+        description: 'Branch for the pmm-qa repository.'
+        default: 'main'
+        required: true
+
+jobs:
+   rbac:
+      name: RBAC
+      uses: ./.github/workflows/pmm-ui-tests.yml
+      secrets: inherit
+      with:
+        pmm_ui_tests_branch: ${{ github.event.inputs.pmm_ui_tests_branch || 'main '}}
+        pmm_test_flag: '@rbac'
+        pmm_server_version: ${{ github.event.inputs.pmm_server_version || 'dev-latest' }}
+        pmm_client_version: ${{ github.event.inputs.pmm_client_version || 'dev-latest' }}
+        pmm_clients: '--addclient=ps,1'
+        pmm_qa_branch: ${{ github.event.inputs.pmm_qa_branch || 'main' }}
