@@ -55,7 +55,7 @@ export async function getMetrics(serviceName: string, agentUser: string, agentPa
     if (out.length > 0) console.log(`Out: "${out}"`);
     if (err.length > 0) console.log(`Error: "${err}"`);
 
-    const agentList = new Output(listCmd, c, out, err).stdoutLines;
+    const agentList = new Output(listCmd, c, out, err).getStdOutLines()
 
     const serviceId = agentList.find((item) => item.includes(serviceName))
         .split(' ')

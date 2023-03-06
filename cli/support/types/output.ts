@@ -4,20 +4,19 @@ class Output {
   command: string;
   code: number;
   stdout: string;
-  stdoutLines: string[];
   stderr: string;
 
   constructor(command: string, exitCode: number, stdOut: string, stdErr: string) {
     this.command = command;
     this.code = exitCode;
     this.stdout = stdOut;
-    this.stdoutLines = stdOut! ? this.setStdOutLines(stdOut) : [];
     this.stderr = stdErr;
   }
 
-  private setStdOutLines(stdOut: string): string[] {
-    return stdOut.trim().split('\n').filter((item) => item.trim().length > 0);
+  getStdOutLines(): string[] {
+    return this.stdout.trim().split('\n').filter((item) => item.trim().length > 0);
   }
+
   async assertSuccess() {
     await test.step(`Verify "${this.command}" command executed successfully`, async () => {
       expect(this.code, `"${this.command}" expected to exit with 0! Error: "${this.stderr||this.stdout}"`).toEqual(0);
