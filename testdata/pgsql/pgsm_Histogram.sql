@@ -7,7 +7,7 @@ Declare
     query_id text;
 BEGIN
     select bucket into bucket_id from pg_stat_monitor order by calls desc limit 1;
-    select queryid into query_id from pg_stat_monitor order by calls desc limit 1;
+    select pgsm_query_id into query_id from pg_stat_monitor order by calls desc limit 1;
     --RAISE INFO 'bucket_id %', bucket_id;
     --RAISE INFO 'query_id %', query_id;
     return query

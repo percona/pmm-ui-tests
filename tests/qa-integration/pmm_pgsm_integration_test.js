@@ -345,6 +345,7 @@ xScenario(
     const queriesNumber = 2;
 
     await I.pgExecuteQueryOnDemand(`ALTER SYSTEM SET pg_stat_monitor.pgsm_normalized_query=${defaultValue};`, connection);
+    I.wait(10);
     await I.verifyCommand(`docker exec ${container_name} service postgresql restart`);
     let output = await I.pgExecuteQueryOnDemand('SELECT * FROM pg_stat_monitor_settings WHERE name=\'pg_stat_monitor.pgsm_normalized_query\';', connection);
 
