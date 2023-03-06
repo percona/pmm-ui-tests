@@ -5,14 +5,14 @@ import Output from "@support/types/output";
 let addMongoHelp:Output;
 let addPostgreSqlHelp:Output;
 
-test.beforeAll(async ({}) =>{
-  addMongoHelp = await cli.execSilent('sudo pmm-admin add mongodb --help');
-  await addMongoHelp.assertSuccess();
-  addPostgreSqlHelp = await cli.execSilent('sudo pmm-admin add postgresql --help');
-  await addPostgreSqlHelp.assertSuccess();
-});
-
 test.describe('PMM Client "--help" validation', async () => {
+
+  test.beforeAll(async ({}) =>{
+    addMongoHelp = await cli.execSilent('sudo pmm-admin add mongodb --help');
+    await addMongoHelp.assertSuccess();
+    addPostgreSqlHelp = await cli.execSilent('sudo pmm-admin add postgresql --help');
+    await addPostgreSqlHelp.assertSuccess();
+  });
 
   /**
    * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/modb-tests.bats#L182
