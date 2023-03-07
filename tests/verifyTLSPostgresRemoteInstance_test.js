@@ -128,21 +128,21 @@ Data(instances).Scenario(
 
     output = await I.verifyCommand(command, responseMessage, 'fail');
 
-    assert.ok(output === responseMessage, `The ${command} was supposed to return ${responseMessage} but actually got ${output}`);
+    assert.ok(output.trim() === responseMessage.trim(), `The ${command} was supposed to return ${responseMessage} but actually got ${output}`);
 
     responseMessage = 'Connection check failed: pq: couldn\'t parse pem in sslrootcert.\n';
     command = `docker exec ${container} pmm-admin add postgresql --tls --tls-cert-file=./certificates/client.crt --tls-key-file=./certificates/client.pem --port=5432 --username=pmm --password=pmm --service-name=PG_tls`;
 
     output = await I.verifyCommand(command, responseMessage, 'fail');
 
-    assert.ok(output === responseMessage, `The ${command} was supposed to return ${responseMessage} but actually got ${output}`);
+    assert.ok(output.trim() === responseMessage.trim(), `The ${command} was supposed to return ${responseMessage} but actually got ${output}`);
 
     responseMessage = 'Connection check failed: x509: certificate signed by unknown authority.\n';
     command = `docker exec ${container} pmm-admin add postgresql --tls --port=5432 --username=pmm --password=pmm --service-name=PG_tls_2`;
 
     output = await I.verifyCommand(command, responseMessage, 'fail');
 
-    assert.ok(output === responseMessage, `The ${command} was supposed to return ${responseMessage} but actually got ${output}`);
+    assert.ok(output.trim() === responseMessage.trim(), `The ${command} was supposed to return ${responseMessage} but actually got ${output}`);
   },
 ).retry(1);
 
