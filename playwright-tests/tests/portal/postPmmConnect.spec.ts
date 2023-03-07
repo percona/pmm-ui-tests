@@ -371,8 +371,9 @@ test.describe('Spec file for PMM connected the portal', async () => {
       await page.waitForTimeout(5000);
       await page.reload();
       await platformPage.buttons.connect.waitFor({ state: 'visible' });
-      // await platformPage.toast.checkToastMessage(platformPage.messages.disconnectedSuccess);
-      await page.waitForTimeout(60000);
+      await platformPage.toast.checkToastMessage(platformPage.messages.disconnectedSuccess);
+      await platformPage.connectedContainer.waitFor({ state: 'detached' });
+      await expect(platformPage.elements.pmmServerNameHeader).toHaveText(platformPage.labels.pmmServerName);
     } else {
       test.info().annotations.push({
         type: 'Old Version ',
