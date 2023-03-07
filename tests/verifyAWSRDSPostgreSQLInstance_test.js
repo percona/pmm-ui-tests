@@ -51,7 +51,7 @@ Scenario(
     I.say(`Logs does not contains both: ${!logs.includes('rdsadmin') && !logs.includes('ERRO')}`);
     I.say(logs);
 
-    assert.ok(!logs.includes('rdsadmin') && !logs.includes('ERRO'), 'Logs contains errors about rdsadmin database being used!');
+    assert.ok((!logs.includes('rdsadmin') && !logs.includes('ERRO')), 'Logs contains errors about rdsadmin database being used!');
   },
 );
 
