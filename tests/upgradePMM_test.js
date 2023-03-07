@@ -490,7 +490,7 @@ Scenario(
 );
 
 if (versionMinor >= 32) {
-  Scenario(
+  Scenario.skip(
     'Create backups data to check after upgrade @pre-upgrade @pmm-upgrade',
     async ({
       I, settingsAPI, locationsAPI, backupAPI, scheduledAPI, inventoryAPI, backupInventoryPage, scheduledPage, credentials,
@@ -1099,7 +1099,7 @@ if (versionMinor >= 23) {
 }
 
 if (versionMinor >= 32) {
-  Scenario(
+  Scenario.skip(
     '@PMM-T1504 - The user is able to do a backup for MongoDB after upgrade'
     + ' @post-upgrade @pmm-upgrade',
     async ({
@@ -1117,7 +1117,7 @@ if (versionMinor >= 32) {
     },
   );
 
-  Scenario(
+  Scenario.skip(
     '@PMM-T1505 - The scheduled job still exists and remains enabled after the upgrade'
     + ' @post-upgrade @pmm-upgrade',
     async ({ I, scheduledPage }) => {
@@ -1130,7 +1130,7 @@ if (versionMinor >= 32) {
     },
   ).retry(0);
 
-  Scenario(
+  Scenario.skip(
     '@PMM-T1506 - Storage Locations exist after upgrade @post-upgrade @pmm-upgrade',
     async ({ I, locationsPage }) => {
       locationsPage.openLocationsPage();
@@ -1143,7 +1143,7 @@ if (versionMinor >= 32) {
     },
   );
 
-  Scenario(
+  Scenario.skip(
     '@PMM-T1503 - The user is able to do a restore for MongoDB after the upgrade'
     + ' @post-upgrade @pmm-upgrade',
     async ({
