@@ -21,7 +21,7 @@ After(async ({ settingsAPI }) => {
 });
 
 Scenario(
-  'PMM-T716 - Verify adding PostgreSQL RDS monitoring to PMM via UI @aws @instances',
+  '@PMM-T716 - Verify adding PostgreSQL RDS monitoring to PMM via UI @aws @instances',
   async ({
     I, remoteInstancesPage, pmmInventoryPage,
   }) => {
@@ -43,6 +43,10 @@ Scenario(
     // Skipping due to QAN Setup part on AWS
     // await pmmInventoryPage.verifyAgentHasStatusRunning(serviceName);
     await pmmInventoryPage.verifyMetricsFlags(serviceName);
+    const logs = await I.verifyCommand('tail -f /srv/logs/pmm-agent.log');
+
+    I.say('Logs are:');
+    I.say(logs);
   },
 );
 
