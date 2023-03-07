@@ -73,6 +73,8 @@ test.describe('Spec file for connecting PMM to the portal', async () => {
         if (pmmVersion >= 35) {
           await expect(platformPage.buttons.createPerconaAccount).toHaveAttribute('href', platformPage.links.portalLogin);
           await expect(platformPage.buttons.connect).toHaveText(platformPage.labels.validateConnection);
+        } else {
+          await expect(platformPage.buttons.connect).toHaveText(platformPage.labels.connect);
         }
         // fix address for older pmm address is not portal-dev but just portal.
         if (pmmVersion >= 35) {
