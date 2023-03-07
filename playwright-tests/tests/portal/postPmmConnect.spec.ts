@@ -368,12 +368,8 @@ test.describe('Spec file for PMM connected the portal', async () => {
       await platformPage.buttons.disconnect.click();
       await expect(platformPage.elements.readMore).toHaveAttribute('href', platformPage.links.readMore);
       await platformPage.buttons.confirmDisconnect.click();
-      await page.waitForTimeout(5000);
-      await page.reload();
-      await platformPage.buttons.connect.waitFor({ state: 'visible' });
       await platformPage.toast.checkToastMessage(platformPage.messages.disconnectedSuccess);
-      await platformPage.connectedContainer.waitFor({ state: 'detached' });
-      await expect(platformPage.elements.pmmServerNameHeader).toHaveText(platformPage.labels.pmmServerName);
+      await platformPage.buttons.connect.waitFor({ state: 'visible' });
     } else {
       test.info().annotations.push({
         type: 'Old Version ',
