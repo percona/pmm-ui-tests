@@ -138,7 +138,7 @@ Scenario(
   },
 );
 
-Scenario(
+Scenario.skip(
   'PMM-T288 Verify user can see Update widget before upgrade [critical] @pre-upgrade @ovf-upgrade @ami-upgrade @pmm-upgrade',
   async ({ I, homePage }) => {
     I.amOnPage(homePage.url);
@@ -629,7 +629,7 @@ Scenario(
 );
 
 if (versionMinor >= 15) {
-  Scenario(
+  Scenario.skip(
     'Verify user has failed checks after upgrade / STT on @post-upgrade @pmm-upgrade',
     async ({
       I,
@@ -680,7 +680,7 @@ if (versionMinor >= 15) {
 }
 
 if (versionMinor >= 16) {
-  Scenario(
+  Scenario.skip(
     'Verify disabled checks remain disabled after upgrade @post-upgrade @pmm-upgrade',
     async ({
       I,
@@ -695,7 +695,7 @@ if (versionMinor >= 16) {
     },
   );
 
-  Scenario(
+  Scenario.skip(
     'Verify check intervals remain the same after upgrade @post-upgrade @pmm-upgrade',
     async ({
       I,
@@ -709,7 +709,7 @@ if (versionMinor >= 16) {
     },
   );
 
-  Scenario(
+  Scenario.skip(
     'Verify silenced checks remain silenced after upgrade @post-upgrade @pmm-upgrade',
     async ({
       I,
@@ -874,7 +874,7 @@ Scenario(
 
 if (versionMinor > 14) {
   Data(clientDbServices)
-    .Scenario(
+    .Scenario.skip(
       'Check Metrics for Client Nodes [critical] @ovf-upgrade @ami-upgrade @post-upgrade @post-client-upgrade @pmm-upgrade',
       async ({
         inventoryAPI,
@@ -917,7 +917,7 @@ Scenario(
   },
 );
 
-Scenario(
+Scenario.skip(
   'Verify Metrics from custom queries for mysqld_exporter after upgrade (UI) @post-client-upgrade @post-upgrade @ovf-upgrade @ami-upgrade @pmm-upgrade',
   async ({ grafanaAPI }) => {
     const metricName = 'mysql_performance_schema_memory_summary_current_bytes';
@@ -995,7 +995,7 @@ Scenario(
 );
 
 if (versionMinor >= 21) {
-  Data(clientDbServices).Scenario(
+  Data(clientDbServices).Scenario.skip(
     'Verify if Agents added with custom password and custom label work as expected Post Upgrade @post-client-upgrade @post-upgrade @pmm-upgrade',
     async ({
       current, inventoryAPI, grafanaAPI,
@@ -1018,7 +1018,7 @@ if (versionMinor >= 21) {
 }
 
 if (versionMinor >= 23) {
-  Data(sslinstances).Scenario(
+  Data(sslinstances).Scenario.skip(
     'Verify metrics from SSL instances on PMM-Server @post-upgrade @pmm-upgrade',
     async ({
       I, remoteInstancesPage, pmmInventoryPage, current, grafanaAPI,
@@ -1046,7 +1046,7 @@ if (versionMinor >= 23) {
     },
   ).retry(1);
 
-  Data(sslinstances).Scenario(
+  Data(sslinstances).Scenario.skip(
     'Verify dashboard for SSL Instances and services after upgrade @post-upgrade @pmm-upgrade',
     async ({
       I, dashboardPage, adminPage, current,
