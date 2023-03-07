@@ -4,8 +4,7 @@ import * as cli from '@helpers/cliHelper';
 test.describe('PMM Client "unregister" CLI tests', async () => {
   let PMM_VERSION;
   if ( process.env.CLIENT_VERSION == "dev-latest") {
-    const output = (await cli.exec('curl -s https://raw.githubusercontent.com/Percona-Lab/pmm-submodules/PMM-2.0/VERSION | xargs'));
-    PMM_VERSION = output.stdout
+    PMM_VERSION = cli.execute('curl -s https://raw.githubusercontent.com/Percona-Lab/pmm-submodules/PMM-2.0/VERSION | xargs');
   }
 
   /**

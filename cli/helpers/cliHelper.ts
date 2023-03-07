@@ -3,6 +3,21 @@ import Output from "@support/types/output";
 const shell = require('shelljs');
 
 /**
+ * Shell(sh) exec() wrapper to use outside outside {@link test}
+ * returns handy {@link Output} object.
+ *
+ * @param       command   sh command to execute
+ * @return      {@link Output} instance
+ */
+export function execute(command: string): Output {
+  console.log(`exec: "${command}"`);
+  const { stdout, stderr, code } = shell.exec(command.replace(/(\r\n|\n|\r)/gm, ''), { silent: false });
+  if (stdout.length > 0) console.log(`Out: "${stdout}"`);
+  if (stderr.length > 0) console.log(`Error: "${stderr}"`);
+  return new Output(command, code, stdout, stderr);
+}
+
+/**
  * Shell(sh) exec() wrapper to return handy {@link Output} object.
  *
  * @param       command   sh command to execute
