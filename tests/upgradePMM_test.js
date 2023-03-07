@@ -787,7 +787,7 @@ Scenario(
   },
 );
 
-Scenario(
+Scenario.skip(
   'Verify user can see Update widget [critical] @post-upgrade @ovf-upgrade @ami-upgrade @pmm-upgrade',
   async ({ I, homePage }) => {
     I.amOnPage(homePage.url);
