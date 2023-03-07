@@ -21,7 +21,7 @@ After(async ({ settingsAPI }) => {
 });
 
 Scenario(
-  '@PMM-T716 - Verify adding PostgreSQL RDS monitoring to PMM via UI @aws @instances',
+  'PMM-T716 - Verify adding PostgreSQL RDS monitoring to PMM via UI @aws @instances',
   async ({
     I, remoteInstancesPage, pmmInventoryPage,
   }) => {
