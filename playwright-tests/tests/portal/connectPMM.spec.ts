@@ -76,7 +76,7 @@ test.describe('Spec file for connecting PMM to the portal', async () => {
         } else {
           await expect(platformPage.buttons.connect).toHaveText(platformPage.labels.connect);
         }
-        // fix address for older pmm address is not portal-dev but just portal.
+
         if (pmmVersion >= 35) {
           await expect(platformPage.buttons.getToken35).toHaveAttribute('href', platformPage.links.portalProfile);
         } else if (pmmVersion > 29 && pmmVersion < 35) {
