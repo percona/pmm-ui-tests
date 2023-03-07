@@ -873,24 +873,23 @@ Scenario(
 );
 
 if (versionMinor > 14) {
-  Data(clientDbServices)
-    .Scenario.skip(
-      'Check Metrics for Client Nodes [critical] @ovf-upgrade @ami-upgrade @post-upgrade @post-client-upgrade @pmm-upgrade',
-      async ({
-        inventoryAPI,
-        grafanaAPI,
-        current,
-      }) => {
-        const metricName = current.metric;
-        const { node_id } = await inventoryAPI.apiGetNodeInfoByServiceName(current.serviceType, current.name);
-        const nodeName = await inventoryAPI.getNodeName(node_id);
+  Scenario.skip(
+    'Check Metrics for Client Nodes [critical] @ovf-upgrade @ami-upgrade @post-upgrade @post-client-upgrade @pmm-upgrade',
+    async ({
+      inventoryAPI,
+      grafanaAPI,
+      current,
+    }) => {
+      const metricName = current.metric;
+      const { node_id } = await inventoryAPI.apiGetNodeInfoByServiceName(current.serviceType, current.name);
+      const nodeName = await inventoryAPI.getNodeName(node_id);
 
-        await grafanaAPI.checkMetricExist(metricName, {
-          type: 'node_name',
-          value: nodeName,
-        });
-      },
-    );
+      await grafanaAPI.checkMetricExist(metricName, {
+        type: 'node_name',
+        value: nodeName,
+      });
+    },
+  );
 }
 
 Scenario(
@@ -995,7 +994,7 @@ Scenario(
 );
 
 if (versionMinor >= 21) {
-  Data(clientDbServices).Scenario.skip(
+  Scenario.skip(
     'Verify if Agents added with custom password and custom label work as expected Post Upgrade @post-client-upgrade @post-upgrade @pmm-upgrade',
     async ({
       current, inventoryAPI, grafanaAPI,
@@ -1018,7 +1017,7 @@ if (versionMinor >= 21) {
 }
 
 if (versionMinor >= 23) {
-  Data(sslinstances).Scenario.skip(
+  Scenario.skip(
     'Verify metrics from SSL instances on PMM-Server @post-upgrade @pmm-upgrade',
     async ({
       I, remoteInstancesPage, pmmInventoryPage, current, grafanaAPI,
@@ -1046,7 +1045,7 @@ if (versionMinor >= 23) {
     },
   ).retry(1);
 
-  Data(sslinstances).Scenario.skip(
+  Scenario.skip(
     'Verify dashboard for SSL Instances and services after upgrade @post-upgrade @pmm-upgrade',
     async ({
       I, dashboardPage, adminPage, current,
