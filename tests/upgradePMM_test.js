@@ -1143,7 +1143,7 @@ if (versionMinor >= 32) {
     },
   );
 
-  Scenario.skip(
+  Scenario(
     '@PMM-T1503 - The user is able to do a restore for MongoDB after the upgrade'
     + ' @post-upgrade @pmm-upgrade',
     async ({
