@@ -556,7 +556,7 @@ Scenario('@PMM-T1647 Verify pmm-server package doesn\'t exist @post-upgrade @pmm
 
   I.say('Available packages are: ');
   I.say(packages);
-  I.asserTrue(!packages.includes('pmm-server'), 'Pmm server package present in package list.');
+  I.assertTrue(!packages.includes('pmm-server'), 'Pmm server package present in package list.');
 });
 
 Scenario(
