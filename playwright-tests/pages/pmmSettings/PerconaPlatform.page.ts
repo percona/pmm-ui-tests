@@ -42,6 +42,7 @@ export default class PerconaPlatform extends CommonPage {
     requiredField: 'Required field',
     createPerconaAccount: 'Create a Percona account',
     validateConnection: 'Validate Platform connection',
+    connect: 'Connect'
   };
 
   buttons = {
