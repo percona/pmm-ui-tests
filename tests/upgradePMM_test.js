@@ -552,7 +552,7 @@ Scenario(
 );
 
 Scenario('@PMM-T1647 Verify pmm-server package doesn\'t exist', async ({ I }) => {
-  const packages = await I.verifyCommand('rpm -qa');
+  const packages = await I.verifyCommand('docker exec pmm-server rpm -qa');
 
   I.say('Available packages are: ');
   I.say(packages);
