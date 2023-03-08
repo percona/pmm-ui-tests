@@ -551,6 +551,14 @@ Scenario(
   },
 );
 
+Scenario('@PMM-T1647 Verify pmm-server package doesn\'t exist', async ({ I }) => {
+  const packages = await I.verifyCommand('rpm -qa');
+
+  I.say('Available packages are: ');
+  I.say(packages);
+  assert.ok(!packages.includes('pmm-server'), 'Pmm server package present in package list.');
+});
+
 Scenario(
   'PMM-T391 Verify that custom home dashboard stays as home dashboard after upgrade @post-upgrade @ovf-upgrade @ami-upgrade @pmm-upgrade',
   async ({ I, grafanaAPI, dashboardPage }) => {
@@ -670,7 +678,7 @@ if (versionMinor >= 15) {
       );
 
       const expectedScrapeUrl = `${remoteInstancesHelper.remote_instance.external.redis.schema}://${remoteInstancesHelper.remote_instance.external.redis.host
-        }:${remoteInstancesHelper.remote_instance.external.redis.port}${remoteInstancesHelper.remote_instance.external.redis.metricsPath}`;
+      }:${remoteInstancesHelper.remote_instance.external.redis.port}${remoteInstancesHelper.remote_instance.external.redis.metricsPath}`;
 
       assert.ok(targets.scrapeUrl === expectedScrapeUrl,
         `Active Target for external service Post Upgrade has wrong Address value, value found is ${targets.scrapeUrl} and value expected was ${expectedScrapeUrl}`);
