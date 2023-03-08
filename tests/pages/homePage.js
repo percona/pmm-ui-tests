@@ -1,6 +1,8 @@
 const { I, dashboardPage } = inject();
 const assert = require('assert');
-const moment = require('moment');
+// The original regex source is https://regexlib.com/REDetails.aspx?regexp_id=5055
+// eslint-disable-next-line no-useless-escape
+const lastCheckRegex = /^(?:(((Jan(uary)?|Ma(r(ch)?|y)|Jul(y)?|Aug(ust)?|Oct(ober)?|Dec(ember)?)\ 31)|((Jan(uary)?|Ma(r(ch)?|y)|Apr(il)?|Ju((ly?)|(ne?))|Aug(ust)?|Oct(ober)?|(Sept|Nov|Dec)(ember)?) (0?[1-9]|([12]\d)|30))|(Feb(ruary)? (0?[1-9]|1\d|2[0-8]|(29(?=, ))))),) (?:[0-1]?[0-9]|[2][1-4]):[0-5]?[0-9]?\s??$/gim;
 
 module.exports = {
   // insert your locators and methods here
@@ -177,10 +179,9 @@ module.exports = {
     I.seeElement(locators.upToDateLocator);
     I.seeElement(locators.currentVersion);
     I.seeElement(locators.checkUpdateButton);
-    const lastCheckText = await I.grabTextFrom(locators.lastCheckSelector);
-    const date = moment(lastCheckText);
+    const date = await I.grabTextFrom(locators.lastCheckSelector);
 
-    I.assertTrue(date.isValid(), `"Last Check Date" is not a valid date string: ${lastCheckText}`);
+    assert.ok(lastCheckRegex.test(date), `Last Check Date has unexpected pattern: ${date}`);
   },
 
   verifyVisibleService(serviceName) {
