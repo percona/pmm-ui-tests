@@ -490,7 +490,7 @@ Scenario(
 );
 
 if (versionMinor >= 32) {
-  Scenario.skip(
+  Scenario(
     'Create backups data to check after upgrade @pre-upgrade @pmm-upgrade',
     async ({
       I, settingsAPI, locationsAPI, backupAPI, scheduledAPI, inventoryAPI, backupInventoryPage, scheduledPage, credentials,
@@ -670,7 +670,7 @@ if (versionMinor >= 15) {
       );
 
       const expectedScrapeUrl = `${remoteInstancesHelper.remote_instance.external.redis.schema}://${remoteInstancesHelper.remote_instance.external.redis.host
-        }:${remoteInstancesHelper.remote_instance.external.redis.port}${remoteInstancesHelper.remote_instance.external.redis.metricsPath}`;
+      }:${remoteInstancesHelper.remote_instance.external.redis.port}${remoteInstancesHelper.remote_instance.external.redis.metricsPath}`;
 
       assert.ok(targets.scrapeUrl === expectedScrapeUrl,
         `Active Target for external service Post Upgrade has wrong Address value, value found is ${targets.scrapeUrl} and value expected was ${expectedScrapeUrl}`);
@@ -1099,7 +1099,7 @@ if (versionMinor >= 23) {
 }
 
 if (versionMinor >= 32) {
-  Scenario.skip(
+  Scenario(
     '@PMM-T1504 - The user is able to do a backup for MongoDB after upgrade'
     + ' @post-upgrade @pmm-upgrade',
     async ({
@@ -1117,7 +1117,7 @@ if (versionMinor >= 32) {
     },
   );
 
-  Scenario.skip(
+  Scenario(
     '@PMM-T1505 - The scheduled job still exists and remains enabled after the upgrade'
     + ' @post-upgrade @pmm-upgrade',
     async ({ I, scheduledPage }) => {
@@ -1130,7 +1130,7 @@ if (versionMinor >= 32) {
     },
   ).retry(0);
 
-  Scenario.skip(
+  Scenario(
     '@PMM-T1506 - Storage Locations exist after upgrade @post-upgrade @pmm-upgrade',
     async ({ I, locationsPage }) => {
       locationsPage.openLocationsPage();
