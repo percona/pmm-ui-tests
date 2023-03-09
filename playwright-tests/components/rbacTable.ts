@@ -36,7 +36,7 @@ export default class RbacTable extends Table {
   messages = {
     ...super.getTableMessages(),
     userAssigned: (roleName: string) =>
-      `There are users associated to this role. Please assign a different role to users with the ”${roleName}” role.`,
+      `There are users associated to this role. By deleting the role “${roleName}“ all its users will be transferred to a new role. Please select the new role below.`,
     roleDeleted: (roleName: string) => `Role “${roleName}“ deleted`,
   };
 
