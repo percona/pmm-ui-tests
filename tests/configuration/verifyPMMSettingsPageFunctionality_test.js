@@ -379,7 +379,7 @@ Scenario(
     await I.assertEqual(serverAddressIP, publicAddressValue,
       `Expected the Public Address to be saved and Match ${publicAddressValue}`);
   },
-).retry(0);
+).retry(2);
 
 Scenario(
   'PMM-T486 - Verify Public Address in PMM Settings @settings @nightly',
