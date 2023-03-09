@@ -68,19 +68,18 @@ Scenario(
     const fromStart = new Date(toStart - (5 * 60000));
 
     if (version < 13) {
-      pgsm_output = await I.pgExecuteQueryOnDemand(`select query, pgsm_query_id, planid, query_plan, calls, total_time as total_exec_time, mean_time as mean_exec_time  from pg_stat_monitor where datname='${database}';`, connection);
+      pgsm_output = await I.pgExecuteQueryOnDemand(`select query, queryid, planid, query_plan, calls, total_time as total_exec_time, mean_time as mean_exec_time  from pg_stat_monitor where datname='${database}';`, connection);
     } else {
-      pgsm_output = await I.pgExecuteQueryOnDemand(`select query, pgsm_query_id, planid, query_plan, calls, total_exec_time, mean_exec_time  from pg_stat_monitor where datname='${database}';`, connection);
+      pgsm_output = await I.pgExecuteQueryOnDemand(`select query, queryid, planid, query_plan, calls, total_exec_time, mean_exec_time  from pg_stat_monitor where datname='${database}';`, connection);
     }
 
     for (let i = 0; i < pgsm_output.rows.length; i++) {
-      const queryid = pgsm_output.rows[i].pgsm_query_id;
-      const response = await qanAPI.getMetricByFilterAPI(queryid, 'queryid', labels, fromStart.toISOString(), toStart.toISOString());
+      const response = await qanAPI.getMetricByFilterAPI(pgsm_output.rows[i].queryid, 'queryid', labels, fromStart.toISOString(), toStart.toISOString());
       // we do this conversion because clickhouse has values in micro seconds, while PGSM has in milliseconds.
       const total_exec_time = parseFloat((pgsm_output.rows[i].total_exec_time / 1000).toFixed(7));
       const average_exec_time = parseFloat((pgsm_output.rows[i].mean_exec_time / 1000).toFixed(7));
       const query_cnt = parseInt(pgsm_output.rows[i].calls, 10);
-      const { query } = pgsm_output.rows[i];
+      const { query, queryid } = pgsm_output.rows[i];
 
       if (response.status !== 200) {
         I.say(`Expected queryid with id as ${queryid} and query as ${query} to have data in clickhouse but got response as ${response.status}`);
@@ -182,20 +181,19 @@ xScenario(
     const fromStart = new Date(toStart - (3 * 60000));
 
     if (version < 13) {
-      pgsm_output = await I.pgExecuteQueryOnDemand(`select query, pgsm_query_id, planid, query_plan, calls, total_time as total_exec_time, mean_time as mean_exec_time  from pg_stat_monitor where datname='${db}';`, connection);
+      pgsm_output = await I.pgExecuteQueryOnDemand(`select query, queryid, planid, query_plan, calls, total_time as total_exec_time, mean_time as mean_exec_time  from pg_stat_monitor where datname='${db}';`, connection);
     } else {
-      pgsm_output = await I.pgExecuteQueryOnDemand(`select query, pgsm_query_id, planid, query_plan, calls, total_exec_time, mean_exec_time  from pg_stat_monitor where datname='${db}';`, connection);
+      pgsm_output = await I.pgExecuteQueryOnDemand(`select query, queryid, planid, query_plan, calls, total_exec_time, mean_exec_time  from pg_stat_monitor where datname='${db}';`, connection);
     }
 
     for (let i = 0; i < pgsm_output.rows.length; i++) {
-      const queryid = pgsm_output.rows[i].pgsm_query_id;
-      const response = await qanAPI.getMetricByFilterAPI(queryid, 'queryid', labels, fromStart.toISOString(), toStart.toISOString());
+      const response = await qanAPI.getMetricByFilterAPI(pgsm_output.rows[i].queryid, 'queryid', labels, fromStart.toISOString(), toStart.toISOString());
       const {
         total_exec_time,
         average_exec_time,
         query_cnt,
       } = await qanAPI.getMetricsFromPGSM(db, pgsm_output.rows[i].queryid, connection, version);
-      const { query } = pgsm_output.rows[i];
+      const { query, queryid } = pgsm_output.rows[i];
 
       if (response.status !== 200) {
         I.say(`Expected queryid with id as ${queryid} and query as ${query} to have data in clickhouse but got response as ${response.status}`);
@@ -227,7 +225,7 @@ Scenario(
     const applicationName = 'PMMT1063';
 
     await I.pgExecuteQueryOnDemand(sql, connection);
-    I.wait(60);
+    I.wait(90);
     await I.verifyCommand(`docker exec ${container_name} pmm-admin list | grep "postgresql_pgstatmonitor_agent" | grep "Running"`);
     I.amOnPage(qanPage.url);
     qanOverview.waitForOverviewLoaded();
@@ -261,16 +259,16 @@ Scenario(
 
     await I.pgExecuteQueryOnDemand(sql, connection);
     connection.database = 'postgres';
-    I.wait(60);
-    pgsm_output = await I.pgExecuteQueryOnDemand(`select query, pgsm_query_id, top_queryid, top_query  from pg_stat_monitor where datname='${db}' and query like '${queryWithTopId}' and top_query IS NOT NULL;`, connection);
+    I.wait(90);
+    pgsm_output = await I.pgExecuteQueryOnDemand(`select query, queryid, top_queryid, top_query  from pg_stat_monitor where datname='${db}' and query like '${queryWithTopId}' and top_query IS NOT NULL;`, connection);
     if (pgsm_output.rows.length === 0) {
       // Need clarification on this workaround from PGSM team, looks like a bug <insufficient disk/shared space
-      pgsm_output = await I.pgExecuteQueryOnDemand(`select query, pgsm_query_id, top_queryid, top_query  from pg_stat_monitor where datname='${db}' and query like '<insufficient disk/shared space' and top_query IS NOT NULL;`, connection);
+      pgsm_output = await I.pgExecuteQueryOnDemand(`select query, queryid, top_queryid, top_query  from pg_stat_monitor where datname='${db}' and query like '<insufficient disk/shared space' and top_query IS NOT NULL;`, connection);
     }
 
     for (let i = 0; i < pgsm_output.rows.length; i++) {
       const topQueryId = pgsm_output.rows[i].top_queryid;
-      const queryId = pgsm_output.rows[i].pgsm_query_id;
+      const queryId = pgsm_output.rows[i].queryid;
       const pgsmTopQuery = pgsm_output.rows[i].top_query;
       const pgsmQuery = pgsm_output.rows[i].query;
 
@@ -312,7 +310,7 @@ Scenario(
 
     await I.pgExecuteQueryOnDemand(sql, connection);
     connection.database = 'postgres';
-    I.wait(60);
+    I.wait(90);
     I.amOnPage(qanPage.url);
     qanOverview.waitForOverviewLoaded();
     I.waitForVisible(qanFilters.buttons.showSelected, 30);
@@ -344,8 +342,7 @@ xScenario(
     const alteredValue = 'yes';
     const queriesNumber = 2;
 
-    await I.pgExecuteQueryOnDemand(`ALTER SYSTEM SET pg_stat_monitor.pgsm_normalized_query=${defaultValue};`, connection);
-    I.wait(10);
+    I.pgExecuteQueryOnDemand(`ALTER SYSTEM SET pg_stat_monitor.pgsm_normalized_query=${defaultValue};`, connection);
     await I.verifyCommand(`docker exec ${container_name} service postgresql restart`);
     let output = await I.pgExecuteQueryOnDemand('SELECT * FROM pg_stat_monitor_settings WHERE name=\'pg_stat_monitor.pgsm_normalized_query\';', connection);
 
@@ -364,8 +361,8 @@ xScenario(
         const tableName = `PMM_T1253_${Date.now()}`;
 
         //  Sql queries used to produce data for table
-        await I.pgExecuteQueryOnDemand(`CREATE TABLE ${tableName} ( TestId int );`, connection);
-        await I.pgExecuteQueryOnDemand(`DROP TABLE ${tableName};`, connection);
+        I.pgExecuteQueryOnDemand(`CREATE TABLE ${tableName} ( TestId int );`, connection);
+        I.pgExecuteQueryOnDemand(`DROP TABLE ${tableName};`, connection);
         await qanOverview.searchByValue(tableName, true);
         qanOverview.selectRow(1);
         qanFilters.waitForFiltersToLoad();
@@ -379,7 +376,7 @@ xScenario(
 
     await checkForExamples(false);
     //  Sequence of actions used to alter default value for pgsm_normalized_query with container restart
-    await I.pgExecuteQueryOnDemand(`ALTER SYSTEM SET pg_stat_monitor.pgsm_normalized_query=${alteredValue};`, connection);
+    I.pgExecuteQueryOnDemand(`ALTER SYSTEM SET pg_stat_monitor.pgsm_normalized_query=${alteredValue};`, connection);
     await I.verifyCommand(`docker exec ${container_name} service postgresql restart`);
     I.wait(5);
     await I.verifyCommand(`docker exec ${container_name} pmm-admin list | grep "postgresql_pgstatmonitor_agent" | grep "Running"`);
@@ -435,12 +432,12 @@ Scenario(
     const defaultValue = 60;
     const alteredValue = 61;
 
-    await I.pgExecuteQueryOnDemand(`ALTER SYSTEM SET pg_stat_monitor.pgsm_bucket_time=${defaultValue};`, connection);
+    I.pgExecuteQueryOnDemand(`ALTER SYSTEM SET pg_stat_monitor.pgsm_bucket_time=${defaultValue};`, connection);
     await I.verifyCommand(`docker exec ${container_name} service postgresql restart`);
     let output = await I.pgExecuteQueryOnDemand('SELECT * FROM pg_stat_monitor_settings WHERE name=\'pg_stat_monitor.pgsm_bucket_time\';', connection);
 
-    assert.equal(output.rows[0].value, defaultValue, `The value of 'pg_stat_monitor.pgsm_bucket_time' should be equal to ${defaultValue}`);
-    assert.equal(output.rows[0].default_value, defaultValue, `The value of 'pg_stat_monitor.pgsm_bucket_time' should be equal to ${defaultValue}`);
+    assert.equal(output.rows[0].setting, defaultValue, `The value of 'pg_stat_monitor.pgsm_bucket_time' should be equal to ${defaultValue}`);
+    assert.equal(output.rows[0].reset_val, defaultValue, `The value of 'pg_stat_monitor.pgsm_bucket_time' should be equal to ${defaultValue}`);
     await I.verifyCommand(`docker exec ${container_name} true > pmm-agent.log`);
     await I.verifyCommand(`docker exec ${container_name} pmm-admin list | grep "postgresql_pgstatmonitor_agent" | grep "Running"`);
     I.wait(defaultValue);
@@ -449,10 +446,10 @@ Scenario(
     assert.ok(!log.includes('non default bucket time value is not supported, status changed to WAITING'),
       'The log wasn\'t supposed to contain errors regarding bucket time but it does');
 
-    await I.pgExecuteQueryOnDemand(`ALTER SYSTEM SET pg_stat_monitor.pgsm_bucket_time=${alteredValue};`, connection);
+    I.pgExecuteQueryOnDemand(`ALTER SYSTEM SET pg_stat_monitor.pgsm_bucket_time=${alteredValue};`, connection);
     await I.verifyCommand(`docker exec ${container_name} service postgresql restart`);
     output = await I.pgExecuteQueryOnDemand('SELECT * FROM pg_stat_monitor_settings WHERE name=\'pg_stat_monitor.pgsm_bucket_time\';', connection);
-    assert.equal(output.rows[0].value, alteredValue, `The value of 'pg_stat_monitor.pgsm_bucket_time' should be equal to ${alteredValue}`);
+    assert.equal(output.rows[0].setting, alteredValue, `The value of 'pg_stat_monitor.pgsm_bucket_time' should be equal to ${alteredValue}`);
     I.wait(alteredValue);
     log = await I.verifyCommand(`docker exec ${container_name} tail -n100 pmm-agent.log`);
 
@@ -460,7 +457,7 @@ Scenario(
       'The log was supposed to contain errors regarding bucket time but it doesn\'t');
 
     await I.verifyCommand(`docker exec ${container_name} pmm-admin list | grep "postgresql_pgstatmonitor_agent" | grep "Waiting"`);
-    await I.pgExecuteQueryOnDemand(`ALTER SYSTEM SET pg_stat_monitor.pgsm_bucket_time=${defaultValue};`, connection);
+    I.pgExecuteQueryOnDemand(`ALTER SYSTEM SET pg_stat_monitor.pgsm_bucket_time=${defaultValue};`, connection);
     await I.verifyCommand(`docker exec ${container_name} service postgresql restart`);
   },
 );
