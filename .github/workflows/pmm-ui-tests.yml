@@ -184,13 +184,6 @@ jobs:
         env:
           NODE_TLS_REJECT_UNAUTHORIZED: 0
 
-      - name: Generate and Attach the report
-        if: ${{ always() && steps.ui-tests.outcome != 'skipped' }}
-        uses: actions/upload-artifact@v2
-        with:
-          name: ui-tests-report
-          path: pmm-ui-tests/playwright-report
-
       - name: Create status check
         uses: percona-platform/github-status-action@v1
         if: ${{ github.event_name != 'pull_request' && always() }}
