@@ -164,7 +164,7 @@ Scenario(
 );
 
 // The numbers don't entirely match, we need to find a way to track based on difference
-xScenario(
+Scenario(
   'PMM-T1259 - Verifying data in Clickhouse and comparing with PGSM output @pgsm-pmm-integration @not-ui-pipeline',
   async ({ I, qanAPI }) => {
     const toStart = new Date();
@@ -285,7 +285,7 @@ Scenario(
       qanOverview.selectRow(1);
       I.waitForElement(qanDetails.elements.topQuery);
       I.click(qanDetails.elements.topQuery);
-      qanOverview.waitForOverviewLoaded();
+      // qanOverview.waitForOverviewLoaded();
       const queryid = await I.grabValueFrom(qanOverview.fields.searchBy);
 
       assert.ok(pgsmTopQuery === topQuery, `Top Query for query ${pgsmQuery} found in pgsm view is ${pgsmTopQuery} while the expected query was ${topQuery}`);
