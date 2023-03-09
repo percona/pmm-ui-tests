@@ -25,11 +25,11 @@ on:
         default: 'main'
         required: true
       testing_repository:
-        description: 'Branch for the pmm-qa repository.'
+        description: 'Enable Testing Repository.'
         default: 'no'
         required: true
       experimental_repository:
-        description: 'Branch for the pmm-qa repository.'
+        description: 'Enable Experimental Repository.'
         default: 'no'
         required: true
 
