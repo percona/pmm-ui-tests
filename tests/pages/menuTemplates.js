@@ -98,7 +98,7 @@ function MenuOption(menuName, label, locator, path, menuLevel = 1) {
     I.moveCursorTo(elemToClick);
 
     // special check for 'Advisors' because elemToClick locator matches more than one element
-    if (label != 'Advisors') {
+    if (label !== 'Advisors') {
       I.seeTextEquals(label, elemToClick);
     }
     else {
