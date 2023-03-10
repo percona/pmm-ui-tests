@@ -25,9 +25,9 @@ module.exports = {
     let query_output;
 
     if (version < 13) {
-      query_output = await I.pgExecuteQueryOnDemand(`select query, pgsm_query_id, planid, query_plan, calls, total_time as total_exec_time, mean_time as mean_exec_time  from pg_stat_monitor where datname='${database}' and queryid='${queryId}';`, connection);
+      query_output = await I.pgExecuteQueryOnDemand(`select query, pgsm_query_id, planid, query_plan, calls, total_time as total_exec_time, mean_time as mean_exec_time  from pg_stat_monitor where datname='${database}' and pgsm_query_id='${queryId}';`, connection);
     } else {
-      query_output = await I.pgExecuteQueryOnDemand(`select query, pgsm_query_id, planid, query_plan, calls, total_exec_time, mean_exec_time  from pg_stat_monitor where datname='${database}' and queryid='${queryId}';`, connection);
+      query_output = await I.pgExecuteQueryOnDemand(`select query, pgsm_query_id, planid, query_plan, calls, total_exec_time, mean_exec_time  from pg_stat_monitor where datname='${database}' and pgsm_query_id='${queryId}';`, connection);
     }
 
     for (let i = 0; i < query_output.rows.length; i++) {
