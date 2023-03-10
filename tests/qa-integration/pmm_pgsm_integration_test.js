@@ -163,7 +163,7 @@ Scenario(
 );
 
 // The numbers don't entirely match, we need to find a way to track based on difference
-xScenario(
+Scenario(
   'PMM-T1259 - Verifying data in Clickhouse and comparing with PGSM output @pgsm-pmm-integration @not-ui-pipeline',
   async ({ I, qanAPI }) => {
     const toStart = new Date();
