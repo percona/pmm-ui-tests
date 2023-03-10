@@ -96,7 +96,15 @@ function MenuOption(menuName, label, locator, path, menuLevel = 1) {
 
     I.waitForVisible(elemToClick, 2);
     I.moveCursorTo(elemToClick);
-    I.seeTextEquals(label, elemToClick);
+
+    // special check for 'Advisors' because elemToClick locator matches more than one element
+    if (label != 'Advisors') {
+      I.seeTextEquals(label, elemToClick);
+    }
+    else {
+      I.seeTextEquals(label, `.//ul[./@aria-label = 'Advisors']//div[text()="Advisors"]`);
+    }
+    
     I.seeAttributesOnElements(elemToClick, { target: null });
     I.click(elemToClick);
   };
