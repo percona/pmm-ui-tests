@@ -21,9 +21,19 @@ const pmm_user_mongodb = {
 const metrics = {
   collstats: 'mongodb_collstats_latencyStats_commands_latency',
   dbstats: 'mongodb_dbstats_collections',
+  diagnosticdata: 'mongodb_ss_metrics_commands_getDiagnosticData_total',
   indexstats: 'mongodb_indexstats_accesses_ops',
   topmetrics: 'mongodb_top_total_count',
-  diagnosticdata: 'mongodb_ss_metrics_commands_getDiagnosticData_total',
+};
+
+const telemetry = {
+  collstats: 'mongodb_collector_scrape_time_collstats',
+  dbstats: 'mongodb_collector_scrape_time_dbstats',
+  diagnosticData: 'mongodb_collector_scrape_time_diagnostic_data',
+  general: 'mongodb_collector_scrape_time_general',
+  indexstats: 'mongodb_collector_scrape_time_indexstats',
+  top: 'mongodb_collector_scrape_time_top',
+  replsetStatus: 'mongodb_collector_scrape_time_replset_status',
 };
 
 BeforeSuite(async ({ I }) => {
@@ -95,7 +105,8 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T1210 - Verify metrics of MongoDB with "--enable-all-collectors" was specified @not-ui-pipeline @mongodb-exporter @exporters',
+  'PMM-T1210 PMM-T1458 - Verify metrics of MongoDB with "--enable-all-collectors" was specified'
+  + ' @not-ui-pipeline @mongodb-exporter @exporters',
   async ({ I, inventoryAPI, grafanaAPI }) => {
     await I.say(await I.verifyCommand(`pmm-admin add mongodb --port=${connection.port} --agent-password='testing' --password=${pmm_user_mongodb.password} --username=${pmm_user_mongodb.username} --enable-all-collectors --service-name=${mongodb_service_name} --replication-set=rs0s`));
 
@@ -112,6 +123,13 @@ Scenario(
     await grafanaAPI.checkMetricExist(metrics.collstats, { type: 'service_name', value: mongodb_service_name });
     await grafanaAPI.checkMetricExist(metrics.indexstats, { type: 'service_name', value: mongodb_service_name });
     await grafanaAPI.checkMetricExist(metrics.topmetrics, { type: 'service_name', value: mongodb_service_name });
+    await grafanaAPI.checkMetricExist(telemetry.collstats, { type: 'service_name', value: mongodb_service_name });
+    await grafanaAPI.checkMetricExist(telemetry.dbstats, { type: 'service_name', value: mongodb_service_name });
+    await grafanaAPI.checkMetricExist(telemetry.diagnosticData, { type: 'service_name', value: mongodb_service_name });
+    await grafanaAPI.checkMetricExist(telemetry.general, { type: 'service_name', value: mongodb_service_name });
+    await grafanaAPI.checkMetricExist(telemetry.indexstats, { type: 'service_name', value: mongodb_service_name });
+    await grafanaAPI.checkMetricExist(telemetry.top, { type: 'service_name', value: mongodb_service_name });
+    await grafanaAPI.checkMetricExist(telemetry.replsetStatus, { type: 'service_name', value: mongodb_service_name });
   },
 );
 
