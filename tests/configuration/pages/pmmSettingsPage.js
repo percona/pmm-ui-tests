@@ -112,7 +112,7 @@ module.exports = {
       },
       telemetry: {
         iconLocator: locate('$advanced-telemetry').find('div[class$="-Icon"]').as('Telemetry tooltip'),
-        text: telemetryTooltipData,
+        text: '',
         link: links.telemetryDocs,
       },
       checkForUpdates: {
@@ -582,5 +582,38 @@ module.exports = {
         break;
       default:
     }
+  },
+
+  async getSubpageTooltips() {
+    const headers = { Authorization: `Basic ${await I.getAuth()}` };
+
+    // setting tooltip for telemetry in accordance with API call
+    this.tooltips.advancedSettings.telemetry.text = `${'Option to send usage data back to Percona to let us make our product better.\n'
+    + '\n'
+    + 'We gather and send the following information to Percona:\n'
+    + '\n'}${(await I.sendPostRequest('v1/Settings/Get', '{}', headers)).data.settings.telemetry_summaries.join('\n').replace(/\s{2,}/g, ' ')}`;
+
+    return [
+      {
+        subPage: this.metricsResolutionUrl,
+        tooltips: this.tooltips.metricsResolution,
+      },
+      {
+        subPage: this.advancedSettingsUrl,
+        tooltips: this.tooltips.advancedSettings,
+      },
+      {
+        subPage: this.sshKeyUrl,
+        tooltips: this.tooltips.ssh,
+      },
+      {
+        subPage: this.alertManagerIntegrationUrl,
+        tooltips: this.tooltips.alertManagerIntegration,
+      },
+      {
+        subPage: this.perconaPlatformUrl,
+        tooltips: this.tooltips.perconaPlatform,
+      },
+    ];
   },
 };
