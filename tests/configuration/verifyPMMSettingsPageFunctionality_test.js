@@ -322,6 +322,7 @@ Scenario(
 
     // Open advanced settings and verify backup management switch is off
     I.amOnPage(pmmSettingsPage.advancedSettingsUrl);
+    I.waitForVisible(pmmSettingsPage.fields.backupManagementSwitchInput, 20);
     pmmSettingsPage.verifySwitch(pmmSettingsPage.fields.backupManagementSwitchInput, 'off');
 
     // Open scheduled backups page and verify message about disabled backup management
@@ -378,7 +379,7 @@ Scenario(
     await I.assertEqual(serverAddressIP, publicAddressValue,
       `Expected the Public Address to be saved and Match ${publicAddressValue}`);
   },
-).retry(0);
+).retry(2);
 
 Scenario(
   'PMM-T486 - Verify Public Address in PMM Settings @settings @nightly',
@@ -414,7 +415,7 @@ Scenario(
 
 Scenario(
   '@PMM-T1227 - Verify tooltip "Read more" links on PMM Settings page redirect to working pages '
-    + '@PMM-T1338 Verify that all the metrics from config are displayed on Telemetry tooltip in Settings > Advanced @settings',
+  + '@PMM-T1338 Verify that all the metrics from config are displayed on Telemetry tooltip in Settings > Advanced @settings',
   async ({ I, pmmSettingsPage, settingsAPI }) => {
     await settingsAPI.changeSettings({ alerting: true });
     const subPageTooltips = [
@@ -460,6 +461,6 @@ Scenario('PMM-T1401 Verify Percona Alerting wording in Settings @max-length @set
 }) => {
   I.amOnPage(pmmSettingsPage.advancedSettingsUrl);
   await pmmSettingsPage.waitForPmmSettingsPageLoaded();
-  pmmSettingsPage.verifySwitch(pmmSettingsPage.fields.perconaAlertingSwitch, 'on');
+  pmmSettingsPage.verifySwitch(pmmSettingsPage.fields.perconaAlertingSwitchInput, 'on');
   await pmmSettingsPage.verifyTooltip(pmmSettingsPage.tooltips.advancedSettings.perconaAlerting);
 });

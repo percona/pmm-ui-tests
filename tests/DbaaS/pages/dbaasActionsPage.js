@@ -76,7 +76,7 @@ module.exports = {
     }
   },
 
-  async deleteXtraDBCluster(dbClusterName, k8sClusterName, deleteCompleted = true) {
+  async deleteXtraDBCluster(dbClusterName, k8sClusterName) {
     I.waitForElement(dbaasPage.tabs.dbClusterTab.fields.clusterTableHeader, 30);
     I.waitForVisible(dbaasPage.tabs.dbClusterTab.fields.clusterActionsMenu(dbClusterName), 30);
     I.forceClick(dbaasPage.tabs.dbClusterTab.fields.clusterActionsMenu(dbClusterName));
@@ -90,7 +90,6 @@ module.exports = {
       dbaasPage.tabs.kubernetesClusterTab.modalContentText,
     );
     I.click(dbaasPage.tabs.dbClusterTab.fields.deleteDBClusterButton);
-    // I.waitForElement(dbaasPage.tabs.dbClusterTab.fields.clusterStatusDeleting, 30);
     await dbaasAPI.waitForDbClusterDeleted(dbClusterName, k8sClusterName);
   },
 
