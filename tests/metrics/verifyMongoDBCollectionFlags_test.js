@@ -119,7 +119,8 @@ Scenario(
     I.assertTrue(Object.hasOwn(agentInfo, 'enable_all_collectors'), `Was expecting Mongo Exporter for service ${mongodb_service_name} to have "enable_all_collectors" property`);
     I.assertTrue(agentInfo.enable_all_collectors, `Was expecting Mongo Exporter for service ${mongodb_service_name} to have "enable_all_collectors" property with "true"`);
     await I.say('Wait 60 seconds for Metrics being collected for the new service');
-    await grafanaAPI.waitForMetric(metrics.dbstats, { type: 'service_name', value: mongodb_service_name }, 60);
+    await I.wait(60);
+    await grafanaAPI.checkMetricExist(metrics.dbstats, { type: 'service_name', value: mongodb_service_name }, 60);
     await grafanaAPI.checkMetricExist(metrics.collstats, { type: 'service_name', value: mongodb_service_name });
     await grafanaAPI.checkMetricExist(metrics.indexstats, { type: 'service_name', value: mongodb_service_name });
     await grafanaAPI.checkMetricExist(metrics.topmetrics, { type: 'service_name', value: mongodb_service_name });
