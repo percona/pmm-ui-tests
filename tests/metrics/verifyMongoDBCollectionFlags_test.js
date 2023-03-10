@@ -59,7 +59,8 @@ AfterSuite(async ({ I }) => {
 });
 
 Scenario(
-  'PMM-T1208 - Verify metrics of MongoDB added with default flags @not-ui-pipeline @mongodb-exporter @exporters',
+  'PMM-T1208 - Verify metrics of MongoDB added with default flags'
+  + ' @not-ui-pipeline @mongodb-exporter @exporters',
   async ({ I, inventoryAPI, grafanaAPI }) => {
     await I.say(await I.verifyCommand(`pmm-admin add mongodb --port=${connection.port} --agent-password='testing' --password=${pmm_user_mongodb.password} --username=${pmm_user_mongodb.username} --service-name=${mongodb_service_name} --replication-set=rs0s`));
 
@@ -79,7 +80,8 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T1209 - Verify metrics of MongoDB with --disable-collectors=topmetrics and --enable-all-collectors were specified @not-ui-pipeline @mongodb-exporter @exporters',
+  'PMM-T1209 - Verify metrics of MongoDB with --disable-collectors=topmetrics and --enable-all-collectors were specified'
+  + ' @not-ui-pipeline @mongodb-exporter @exporters',
   async ({ I, inventoryAPI, grafanaAPI }) => {
     await I.say(await I.verifyCommand(`pmm-admin add mongodb --port=${connection.port} --agent-password='testing' --password=${pmm_user_mongodb.password} --username=${pmm_user_mongodb.username} --enable-all-collectors  --disable-collectors=topmetrics --service-name=${mongodb_service_name} --replication-set=rs0s`));
 
@@ -114,12 +116,10 @@ Scenario(
     const agentInfo = await inventoryAPI.apiGetPMMAgentInfoByServiceId(service_id);
 
     // assert dbstats and topmetrics collectors are enabled
-    // eslint-disable-next-line no-prototype-builtins
-    assert.ok(agentInfo.hasOwnProperty('enable_all_collectors'), `Was expecting Mongo Exporter for service ${mongodb_service_name} to have "enable_all_collectors" property`);
-    assert.ok(agentInfo.enable_all_collectors, `Was expecting Mongo Exporter for service ${mongodb_service_name} to have "enable_all_collectors" property with "true"`);
-    I.say('Wait 60 seconds for Metrics being collected for the new service');
-    await I.wait(60);
-    await grafanaAPI.checkMetricExist(metrics.dbstats, { type: 'service_name', value: mongodb_service_name });
+    I.assertTrue(Object.hasOwn(agentInfo, 'enable_all_collectors'), `Was expecting Mongo Exporter for service ${mongodb_service_name} to have "enable_all_collectors" property`);
+    I.assertTrue(agentInfo.enable_all_collectors, `Was expecting Mongo Exporter for service ${mongodb_service_name} to have "enable_all_collectors" property with "true"`);
+    await I.say('Wait 60 seconds for Metrics being collected for the new service');
+    await grafanaAPI.waitForMetric(metrics.dbstats, { type: 'service_name', value: mongodb_service_name }, 60);
     await grafanaAPI.checkMetricExist(metrics.collstats, { type: 'service_name', value: mongodb_service_name });
     await grafanaAPI.checkMetricExist(metrics.indexstats, { type: 'service_name', value: mongodb_service_name });
     await grafanaAPI.checkMetricExist(metrics.topmetrics, { type: 'service_name', value: mongodb_service_name });
@@ -134,7 +134,8 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T1211 - Verify metrics of MongoDB with --disable-collectors="" and --enable-all-collectors were specified @not-ui-pipeline @mongodb-exporter @exporters',
+  'PMM-T1211 - Verify metrics of MongoDB with --disable-collectors="" and --enable-all-collectors were specified'
+  + ' @not-ui-pipeline @mongodb-exporter @exporters',
   async ({ I, inventoryAPI, grafanaAPI }) => {
     await I.say(await I.verifyCommand(`pmm-admin add mongodb --port=${connection.port} --agent-password='testing' --password=${pmm_user_mongodb.password} --username=${pmm_user_mongodb.username} --enable-all-collectors  --disable-collectors="" --service-name=${mongodb_service_name} --replication-set=rs0s`));
 
@@ -155,7 +156,8 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T1212 - Verify metrics of MongoDB with --disable-collectors="collstats,dbstats,topmetrics" was specified @not-ui-pipeline @mongodb-exporter @exporters',
+  'PMM-T1212 - Verify metrics of MongoDB with --disable-collectors="collstats,dbstats,topmetrics" specified'
+  + ' @not-ui-pipeline @mongodb-exporter @exporters',
   async ({ I, inventoryAPI, grafanaAPI }) => {
     await I.say(await I.verifyCommand(`pmm-admin add mongodb --port=${connection.port} --agent-password='testing' --password=${pmm_user_mongodb.password} --username=${pmm_user_mongodb.username} --enable-all-collectors  --disable-collectors="collstats,dbstats,topmetrics" --service-name=${mongodb_service_name} --replication-set=rs0s`));
 
@@ -183,7 +185,8 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T1213 - Verify metrics of MongoDB with --stats-collections=db1,db2.col2 specified @not-ui-pipeline @mongodb-exporter @exporters',
+  'PMM-T1213 - Verify metrics of MongoDB with --stats-collections=db1,db2.col2 specified'
+  + ' @not-ui-pipeline @mongodb-exporter @exporters',
   async ({ I, inventoryAPI, grafanaAPI }) => {
     await I.say(await I.verifyCommand(`pmm-admin add mongodb --port=${connection.port} --agent-password='testing' --password=${pmm_user_mongodb.password} --username=${pmm_user_mongodb.username} --enable-all-collectors --stats-collections=db1,db2.col2 --service-name=${mongodb_service_name} --replication-set=rs0s`));
 
@@ -209,7 +212,8 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T1213 - Verify metrics of MongoDB with --stats-collections=db1,db2.col2 & --max-collections-limit=5 specified when total collections across db1, db2 and the filters are 6 @not-ui-pipeline @mongodb-exporter @exporters',
+  'PMM-T1213 - Verify metrics of MongoDB with --stats-collections=db1,db2.col2 & --max-collections-limit=5 specified when total collections across db1, db2 and the filters are 6'
+  + ' @not-ui-pipeline @mongodb-exporter @exporters',
   async ({ I, inventoryAPI, grafanaAPI }) => {
     await I.say(await I.verifyCommand(`pmm-admin add mongodb --port=${connection.port} --agent-password='testing' --password=${pmm_user_mongodb.password} --username=${pmm_user_mongodb.username} --enable-all-collectors --max-collections-limit=5 --stats-collections=db1,db2.col2 --service-name=${mongodb_service_name} --replication-set=rs0s`));
 
@@ -235,7 +239,8 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T1213 - Verify metrics of MongoDB with --stats-collections=db1,db2.col2 & --max-collections-limit=400 specified to allow fetching metrics from all collectors @not-ui-pipeline @mongodb-exporter @exporters',
+  'PMM-T1213 - Verify metrics of MongoDB with --stats-collections=db1,db2.col2 & --max-collections-limit=400 specified to allow fetching metrics from all collectors'
+  + ' @not-ui-pipeline @mongodb-exporter @exporters',
   async ({ I, inventoryAPI, grafanaAPI }) => {
     await I.say(await I.verifyCommand(`pmm-admin add mongodb --port=${connection.port} --agent-password='testing' --password=${pmm_user_mongodb.password} --username=${pmm_user_mongodb.username} --enable-all-collectors --max-collections-limit=400 --stats-collections=db1,db2.col2 --service-name=${mongodb_service_name} --replication-set=rs0s`));
 
@@ -261,7 +266,8 @@ Scenario(
 );
 
 Scenario(
-  'PMM-9919 Verify smart metrics of MongoDB with --stats-collections=db1,db2.col2 & --max-collections-limit=400 specified to allow fetching metrics from all collectors @not-ui-pipeline @mongodb-exporter @exporters',
+  'PMM-9919 Verify smart metrics of MongoDB with --stats-collections=db1,db2.col2 & --max-collections-limit=400 specified to allow fetching metrics from all collectors'
+  + ' @not-ui-pipeline @mongodb-exporter @exporters',
   async ({ I, inventoryAPI, grafanaAPI }) => {
     await I.say(await I.verifyCommand(`pmm-admin add mongodb --port=${connection.port} --agent-password='testing' --password=${pmm_user_mongodb.password} --username=${pmm_user_mongodb.username} --enable-all-collectors --max-collections-limit=400 --stats-collections=db1,db2.col2 --service-name=${mongodb_service_name} --replication-set=rs0s`));
 
@@ -336,7 +342,8 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T1352 + PMM-T610 Verify that pmm-admin inventory remove service with --force flag stops running agents and collecting data from exporters @not-ui-pipeline @mongodb-exporter @exporters',
+  'PMM-T1352 + PMM-T610 Verify that pmm-admin inventory remove service with --force flag stops running agents and collecting data from exporters'
+  + ' @not-ui-pipeline @mongodb-exporter @exporters',
   async ({
     I, inventoryAPI, grafanaAPI, dashboardPage,
   }) => {
