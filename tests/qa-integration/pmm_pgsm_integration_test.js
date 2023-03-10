@@ -194,7 +194,7 @@ Scenario(
         total_exec_time,
         average_exec_time,
         query_cnt,
-      } = await qanAPI.getMetricsFromPGSM(db, pgsm_output.rows[i].queryid, connection, version);
+      } = await qanAPI.getMetricsFromPGSM(db, pgsm_output.rows[i].pgsm_query_id, connection, version);
       const { query } = pgsm_output.rows[i];
 
       if (response.status !== 200) {
