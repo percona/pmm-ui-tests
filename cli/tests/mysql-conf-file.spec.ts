@@ -1,5 +1,6 @@
 import { test, expect } from '@playwright/test';
 import * as cli from '@helpers/cliHelper';
+const shell = require('shelljs');
 
 const MYSQL_USER = 'msandbox';
 const MYSQL_PASSWORD = "msandbox";
@@ -10,11 +11,10 @@ test.describe('Percona Server MySql (PS) Configuration file test ', async () => 
 
     // Create pmm-admin-mysql.conf file at any folder and put credentials to MySQL to this file in any text editor or using terminal:
     const confFilePath = '/tmp/mysql-credentials.conf';
-    const catCmd = `cat <<EOF >${confFilePath}\n
-    --username=${MYSQL_USER}\n
-    --password=${MYSQL_PASSWORD}\n
-    EOF`
-    await (await cli.exec(catCmd)).assertSuccess();
+    await test.step(`Create ${confFilePath} file and put credentials to MySQL to this file`, async () => {
+      shell.echo(`--username=${MYSQL_USER}\n--password=${MYSQL_PASSWORD}`).to(confFilePath);
+    });
+
 
     let hosts = (await cli.exec(`sudo pmm-admin list | grep "MySQL" | awk -F" " '{print $3}'`))
         .stdout.trim().split('\n').filter( item => item.trim().length > 0);
