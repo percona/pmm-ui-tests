@@ -174,11 +174,6 @@ module.exports = {
         addNewSourceRangeButton: locate('button').find('span').withText('Add new').as('Add Source Range button'),
         sourceRangeInput: locate('input').withAttr({ placeholder: '181.170.213.40/32' }).as('Source Range input'),
         deleteSourceRangeButton: (order) => `$deleteButton-${order}`,
-        disabled: {
-          exposeCheckboxDisabled: '//input[@data-testid="expose-checkbox-input" and @disabled]',
-          internetFacingCheckboxDisabled: '//input[@data-testid="internetFacing-checkbox-input" and @disabled]',
-          addNewSourceRangeButtonDisabled: `//button[(@disabled)]//span[contains(., 'Add new')]`,
-        },
       },
       fields: {
         clusterDetailHeaders: ['Name', 'Database', 'Connection', 'DB Cluster Parameters', 'Cluster Status', 'Actions'],

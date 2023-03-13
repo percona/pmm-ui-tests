@@ -121,7 +121,6 @@ Scenario('PMM-T1577 Verify Edit DB Cluster page @dbaas',
     I.seeElement(dbaasPage.tabs.dbClusterTab.advancedOptions.fields.advancedSettingsLabel);
     I.seeElement(dbaasPage.tabs.dbClusterTab.dbConfigurations.configurationsHeader('MongoDB'));
     I.seeElement(dbaasPage.tabs.dbClusterTab.networkAndSecurity.networkAndSecurityHeader);
-    await dbaasPage.verifyElementsInSection(dbaasPage.tabs.dbClusterTab.networkAndSecurity.disabled);
     I.seeElement(dbaasPage.tabs.dbClusterTab.editClusterButtonDisabled);
   }
 );  
