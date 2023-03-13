@@ -390,17 +390,14 @@ Scenario('PMM-T1571 Verify Create DB Cluster page @dbaas',
     I.seeElement(dbaasPage.tabs.dbClusterTab.networkAndSecurity.internetFacingLabel);
     I.scrollTo(dbaasPage.tabs.dbClusterTab.networkAndSecurity.sourceRangesLabel);
     I.click(dbaasPage.tabs.dbClusterTab.networkAndSecurity.addNewSourceRangeButton);
-    let sourceRange = await I.grabNumberOfVisibleElements(
-      dbaasPage.tabs.dbClusterTab.networkAndSecurity.sourceRangeInput);
-
-    assert.ok(sourceRange === 2, `There should be 2 Source Range Inputs but found ${sourceRange}`);
-
-    I.click(dbaasPage.tabs.dbClusterTab.networkAndSecurity.deleteSourceRangeButton);
-
-    sourceRange = await I.grabNumberOfVisibleElements(dbaasPage.tabs.dbClusterTab.networkAndSecurity.sourceRangeInput);
-
-    assert.ok(sourceRange === 1, `There should be 1 Source Range Input but found ${sourceRange}`);
-
+    I.click(dbaasPage.tabs.dbClusterTab.networkAndSecurity.addNewSourceRangeButton);
+    await dbaasPage.verifySourceRangeCount(3);
+    I.click(dbaasPage.tabs.dbClusterTab.networkAndSecurity.deleteSourceRangeButton(2));
+    await dbaasPage.verifySourceRangeCount(2);
+    I.click(dbaasPage.tabs.dbClusterTab.networkAndSecurity.deleteSourceRangeButton(1));
+    await dbaasPage.verifySourceRangeCount(1);
+    I.click(dbaasPage.tabs.dbClusterTab.networkAndSecurity.deleteSourceRangeButton(0));
+    await dbaasPage.verifySourceRangeCount(1);
     I.click(dbaasPage.tabs.dbClusterTab.basicOptions.fields.dbClusterDatabaseTypeField);
     I.fillField(dbaasPage.tabs.dbClusterTab.basicOptions.fields.dbClusterDatabaseTypeInputField, 'MongoDB');
     I.waitForElement(
