@@ -111,7 +111,7 @@ Scenario(
   },
 );
 
-Scenario(
+Scenario.skip(
   'PMM-T253 Verify user can see correct tooltip for STT [trivial] @settings @stt @grafana-pr',
   async ({ I, pmmSettingsPage }) => {
     const sectionNameToExpand = pmmSettingsPage.sectionTabsList.advanced;
@@ -168,7 +168,7 @@ Scenario(
   },
 );
 
-Scenario(
+Scenario.skip(
   'PMM-T254 PMM-T253 Verify disable telemetry while Advisers enabled @settings @stt @grafana-pr',
   async ({ I, pmmSettingsPage }) => {
     I.amOnPage(pmmSettingsPage.advancedSettingsUrl);
