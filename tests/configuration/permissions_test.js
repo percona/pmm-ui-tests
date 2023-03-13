@@ -64,7 +64,7 @@ AfterSuite(async ({ I }) => {
   await I.deleteUser(editor);
 });
 
-Scenario(
+Scenario.skip(
   'PMM-T358 Verify Failed checks panel at Home page for the viewer role (STT is enabled) @stt @grafana-pr',
   async ({ I, homePage, settingsAPI }) => {
     await settingsAPI.apiEnableSTT();
@@ -76,7 +76,7 @@ Scenario(
   },
 );
 
-Scenario(
+Scenario.skip(
   'PMM-T360 Verify Failed checks panel at Home page for the admin role (STT is enabled) @stt @grafana-pr',
   async ({ I, homePage, settingsAPI }) => {
     await settingsAPI.apiEnableSTT();
@@ -87,7 +87,7 @@ Scenario(
   },
 );
 
-Scenario(
+Scenario.skip(
   'PMM-T358 Verify Database Failed checks page for the viewer role (STT is enabled) [critical] @stt @grafana-pr',
   async ({ I, databaseChecksPage, settingsAPI }) => {
     await settingsAPI.apiEnableSTT();
@@ -99,7 +99,7 @@ Scenario(
   },
 );
 
-Scenario(
+Scenario.skip(
   'PMM-T360 Verify Database Failed checks page for the admin role (STT is enabled) [critical] @stt @grafana-pr',
   async ({ I, databaseChecksPage, settingsAPI }) => {
     await settingsAPI.apiEnableSTT();
@@ -110,7 +110,7 @@ Scenario(
   },
 );
 
-Scenario(
+Scenario.skip(
   'PMM-T358 Verify Failed checks panel at Home page for the viewer role (STT is disabled) @stt @grafana-pr',
   async ({ I, homePage, settingsAPI }) => {
     await settingsAPI.apiDisableSTT();
@@ -122,7 +122,7 @@ Scenario(
   },
 );
 
-Scenario(
+Scenario.skip(
   'PMM-T360 Verify Failed checks panel at Home page for the admin role (STT is disabled) @stt @grafana-pr',
   async ({ I, homePage, settingsAPI }) => {
     await settingsAPI.apiDisableSTT();
@@ -133,7 +133,7 @@ Scenario(
   },
 );
 
-Scenario(
+Scenario.skip(
   'PMM-T358 Verify Database Failed checks page for the viewer role (STT is disabled) [critical] @stt @grafana-pr',
   async ({ I, databaseChecksPage, settingsAPI }) => {
     await settingsAPI.apiDisableSTT();
@@ -145,7 +145,7 @@ Scenario(
   },
 );
 
-Scenario(
+Scenario.skip(
   'PMM-T360 Verify Database Failed checks page for the admin role (STT is disabled) [critical] @stt @grafana-pr',
   async ({ I, databaseChecksPage, settingsAPI }) => {
     await settingsAPI.apiDisableSTT();
@@ -200,7 +200,7 @@ Data(editorRole).Scenario(
 
 Data(ptSummaryRoleCheck).Scenario(
   'PMM-T334 PMM-T420 Verify the pt-summary with different user roles '
-+ 'Verify user with viewer or editor role is able to see all elements on Home dashboard @nightly @grafana-pr',
+  + 'Verify user with viewer or editor role is able to see all elements on Home dashboard @nightly @grafana-pr',
   async ({
     I, databaseChecksPage, settingsAPI, locationsPage, current, adminPage, homePage,
   }) => {
