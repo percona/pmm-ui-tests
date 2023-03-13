@@ -47,7 +47,7 @@ Scenario.skip(
   },
 );
 
-Data(urls).Scenario.skip(
+Scenario.skip(
   'PMM-T295 PMM-T276 PMM-T470 Verify user is able to see message about Disabled STT at Database Checks page [critical] @stt',
   async ({
     I, databaseChecksPage, pmmSettingsPage, settingsAPI, current,
