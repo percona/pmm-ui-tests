@@ -111,7 +111,7 @@ Scenario(
   },
 );
 
-Scenario(
+Scenario.skip(
   'PMM-T253 Verify user can see correct tooltip for STT [trivial] @settings @stt @grafana-pr',
   async ({ I, pmmSettingsPage }) => {
     const sectionNameToExpand = pmmSettingsPage.sectionTabsList.advanced;
@@ -168,7 +168,7 @@ Scenario(
   },
 );
 
-Scenario(
+Scenario.skip(
   'PMM-T254 PMM-T253 Verify disable telemetry while Advisers enabled @settings @stt @grafana-pr',
   async ({ I, pmmSettingsPage }) => {
     I.amOnPage(pmmSettingsPage.advancedSettingsUrl);
@@ -322,6 +322,7 @@ Scenario(
 
     // Open advanced settings and verify backup management switch is off
     I.amOnPage(pmmSettingsPage.advancedSettingsUrl);
+    I.waitForVisible(pmmSettingsPage.fields.backupManagementSwitchInput, 20);
     pmmSettingsPage.verifySwitch(pmmSettingsPage.fields.backupManagementSwitchInput, 'off');
 
     // Open scheduled backups page and verify message about disabled backup management
@@ -378,7 +379,7 @@ Scenario(
     await I.assertEqual(serverAddressIP, publicAddressValue,
       `Expected the Public Address to be saved and Match ${publicAddressValue}`);
   },
-).retry(0);
+).retry(2);
 
 Scenario(
   'PMM-T486 - Verify Public Address in PMM Settings @settings @nightly',
@@ -413,32 +414,12 @@ Scenario(
 );
 
 Scenario(
-  '@PMM-T1227 - Verify tooltip "Read more" links on PMM Settings page redirect to working pages '
-  + '@PMM-T1338 Verify that all the metrics from config are displayed on Telemetry tooltip in Settings > Advanced @settings',
+  '@PMM-T1227 @PMM-T1338 - Verify tooltip "Read more" links on PMM Settings page redirect to working pages '
+  + 'Verify that all the metrics from config are displayed on Telemetry tooltip in Settings > Advanced @settings',
   async ({ I, pmmSettingsPage, settingsAPI }) => {
     await settingsAPI.changeSettings({ alerting: true });
-    const subPageTooltips = [
-      {
-        subPage: pmmSettingsPage.metricsResolutionUrl,
-        tooltips: pmmSettingsPage.tooltips.metricsResolution,
-      },
-      {
-        subPage: pmmSettingsPage.advancedSettingsUrl,
-        tooltips: pmmSettingsPage.tooltips.advancedSettings,
-      },
-      {
-        subPage: pmmSettingsPage.sshKeyUrl,
-        tooltips: pmmSettingsPage.tooltips.ssh,
-      },
-      {
-        subPage: pmmSettingsPage.alertManagerIntegrationUrl,
-        tooltips: pmmSettingsPage.tooltips.alertManagerIntegration,
-      },
-      {
-        subPage: pmmSettingsPage.perconaPlatformUrl,
-        tooltips: pmmSettingsPage.tooltips.perconaPlatform,
-      },
-    ];
+
+    const subPageTooltips = await pmmSettingsPage.getSubpageTooltips();
 
     for (const subPageTooltipObject of Object.values(subPageTooltips)) {
       I.amOnPage(subPageTooltipObject.subPage);

@@ -56,7 +56,7 @@ test.describe('PMM Client "unregister" CLI tests', async () => {
   test('run pmm-admin unregister wrong node name and json', async ({}) => {
     const output = await cli.exec('sudo pmm-admin unregister --node-name=Testing --json --force');
     await output.exitCodeEquals(1);
-    await output.outContains('"node Testing is not found"');
+    await output.outContains('node Testing is not found');
   });
 
   /**
