@@ -295,7 +295,7 @@ Scenario(
   },
 );
 
-Scenario.only(
+Scenario(
   'PMM-T1063 - Verify Top Query and Top QueryID with pg_stat_monitor @pgsm-pmm-integration @not-ui-pipeline',
   async ({
     I, qanOverview, qanFilters, qanPage, qanDetails,
