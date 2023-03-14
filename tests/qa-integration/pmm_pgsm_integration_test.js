@@ -63,20 +63,20 @@ Scenario(
     // wait for pmm-agent to push the execution as part of next bucket to clickhouse
     await I.verifyCommand(`docker exec ${container_name} pmm-admin list | grep "postgresql_pgstatmonitor_agent" | grep "Running"`);
 
-    let toStart = new Date();
-
-    toStart = new Date(toStart + 60000);
-    let pgsm_output;
-    // using 3 mins as time range hence multiplied 5 min to milliseconds value for
-    const fromStart = new Date(toStart - (3 * 60000));
-
     if (version < 13) {
       pgsm_output = await I.pgExecuteQueryOnDemand(`select query, pgsm_query_id, planid, query_plan, calls, total_time as total_exec_time, mean_time as mean_exec_time  from pg_stat_monitor where datname='${database}';`, connection);
     } else {
       pgsm_output = await I.pgExecuteQueryOnDemand(`select query, pgsm_query_id, planid, query_plan, calls, total_exec_time, mean_exec_time  from pg_stat_monitor where datname='${database}';`, connection);
     }
 
-    I.wait(60);
+    I.wait(90);
+
+    let toStart = new Date();
+
+    toStart = new Date(toStart);
+    let pgsm_output;
+    // using 3 mins as time range hence multiplied 5 min to milliseconds value for
+    const fromStart = new Date(toStart - (3 * 60000));
 
     for (let i = 0; i < pgsm_output.rows.length; i++) {
       const queryid = pgsm_output.rows[i].pgsm_query_id;
@@ -167,11 +167,6 @@ Scenario(
       await I.pgExecuteQueryOnDemand(`Create database ${db};`, connection);
       await I.pgExecuteQueryOnDemand(`ALTER DATABASE ${db} owner to pmm;`, connection);
     }
-
-    let t = new Date();
-
-    t = new Date(t);
-    I.say(t.toISOString());
 
     connection.database = db;
     await I.verifyCommand(`docker exec ${container_name} pgbench -i -s 100 --username=pmm ${db}`);
