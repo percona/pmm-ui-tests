@@ -414,32 +414,12 @@ Scenario(
 );
 
 Scenario(
-  '@PMM-T1227 - Verify tooltip "Read more" links on PMM Settings page redirect to working pages '
-  + '@PMM-T1338 Verify that all the metrics from config are displayed on Telemetry tooltip in Settings > Advanced @settings',
+  '@PMM-T1227 @PMM-T1338 - Verify tooltip "Read more" links on PMM Settings page redirect to working pages '
+  + 'Verify that all the metrics from config are displayed on Telemetry tooltip in Settings > Advanced @settings',
   async ({ I, pmmSettingsPage, settingsAPI }) => {
     await settingsAPI.changeSettings({ alerting: true });
-    const subPageTooltips = [
-      {
-        subPage: pmmSettingsPage.metricsResolutionUrl,
-        tooltips: pmmSettingsPage.tooltips.metricsResolution,
-      },
-      {
-        subPage: pmmSettingsPage.advancedSettingsUrl,
-        tooltips: pmmSettingsPage.tooltips.advancedSettings,
-      },
-      {
-        subPage: pmmSettingsPage.sshKeyUrl,
-        tooltips: pmmSettingsPage.tooltips.ssh,
-      },
-      {
-        subPage: pmmSettingsPage.alertManagerIntegrationUrl,
-        tooltips: pmmSettingsPage.tooltips.alertManagerIntegration,
-      },
-      {
-        subPage: pmmSettingsPage.perconaPlatformUrl,
-        tooltips: pmmSettingsPage.tooltips.perconaPlatform,
-      },
-    ];
+
+    const subPageTooltips = await pmmSettingsPage.getSubpageTooltips();
 
     for (const subPageTooltipObject of Object.values(subPageTooltips)) {
       I.amOnPage(subPageTooltipObject.subPage);
