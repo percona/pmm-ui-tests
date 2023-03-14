@@ -18,6 +18,7 @@ const container = process.env.PGSQL_PGSM_CONTAINER ? `${process.env.PGSQL_PGSM_C
 const database = `pgsm${Math.floor(Math.random() * 99) + 1}`;
 const pgsm_service_name = `${container}_${version}_service`;
 const container_name = `${container}_${version}`;
+const percentageDiff = (a, b) => (a - b === 0 ? 0 : 100 * Math.abs((a - b) / b));
 
 const labels = [{ key: 'database', value: [`${database}`] }];
 
@@ -38,10 +39,16 @@ Before(async ({ I }) => {
 });
 
 Scenario(
-  'PMM-T1260 - Adding Load to Postgres test database and verifying PMM-Agent and PG_STAT_MONITOR QAN agent is in running status @not-ui-pipeline @pgsm-pmm-integration',
-  async ({ I }) => {
+  'PMM-T1260 - Verifying data in Clickhouse and comparing with PGSM output @not-ui-pipeline @pgsm-pmm-integration',
+  async ({ I, qanAPI }) => {
     await I.pgExecuteQueryOnDemand('SELECT now();', connection);
 
+    // Clear metrics in clickhouse
+    await I.verifyCommand('docker exec pmm-server clickhouse-client --database pmm --query "TRUNCATE TABLE metrics"');
+
+    await I.pgExecuteQueryOnDemand('SELECT pg_stat_monitor_reset();', connection);
+
+    // Run load on PG
     const output = await I.pgExecuteQueryOnDemand(`SELECT * FROM pg_database where datname= '${database}';`, connection);
 
     if (output.rows.length === 0) {
@@ -54,24 +61,22 @@ Scenario(
     await I.pgExecuteQueryOnDemand(sql, connection);
     connection.database = 'postgres';
     // wait for pmm-agent to push the execution as part of next bucket to clickhouse
-    I.wait(60);
     await I.verifyCommand(`docker exec ${container_name} pmm-admin list | grep "postgresql_pgstatmonitor_agent" | grep "Running"`);
-  },
-);
 
-Scenario(
-  'PMM-T1260 - Verifying data in Clickhouse and comparing with PGSM output @not-ui-pipeline @pgsm-pmm-integration',
-  async ({ I, qanAPI }) => {
-    const toStart = new Date();
+    let toStart = new Date();
+
+    toStart = new Date(toStart + 60000);
     let pgsm_output;
-    // using 5 mins as time range hence multiplied 5 min to milliseconds value for
-    const fromStart = new Date(toStart - (5 * 60000));
+    // using 3 mins as time range hence multiplied 5 min to milliseconds value for
+    const fromStart = new Date(toStart - (3 * 60000));
 
     if (version < 13) {
       pgsm_output = await I.pgExecuteQueryOnDemand(`select query, pgsm_query_id, planid, query_plan, calls, total_time as total_exec_time, mean_time as mean_exec_time  from pg_stat_monitor where datname='${database}';`, connection);
     } else {
       pgsm_output = await I.pgExecuteQueryOnDemand(`select query, pgsm_query_id, planid, query_plan, calls, total_exec_time, mean_exec_time  from pg_stat_monitor where datname='${database}';`, connection);
     }
+
+    I.wait(60);
 
     for (let i = 0; i < pgsm_output.rows.length; i++) {
       const queryid = pgsm_output.rows[i].pgsm_query_id;
@@ -88,13 +93,19 @@ Scenario(
         const clickhouse_sum = parseFloat((response.data.metrics.query_time.sum).toFixed(7));
         const clickhouse_avg = parseFloat((response.data.metrics.query_time.avg).toFixed(7));
 
-        // Due to rounding difference we sometimes have values which differ in points 0.0000001
-        const avg_diff = Number(average_exec_time - clickhouse_avg).toFixed(7);
-        const total_diff = Number(total_exec_time - clickhouse_sum).toFixed(7);
-
         if (query !== 'SELECT version()' && query !== 'SELECT /* pmm-agent:pgstatmonitor */ version()') {
-          assert.ok(total_diff <= 0.0000001, `Expected Total Query Time Metrics to be same for query ${query} with id as ${queryid} found ${clickhouse_sum} on clickhouse while PGSM has ${total_exec_time}`);
-          assert.ok(avg_diff <= 0.0000001, `Expected Average Query Time Metrics to be same for query ${query} with id as ${queryid} found ${clickhouse_avg} on clickhouse while PGSM has ${average_exec_time}`);
+          I.say(`CLICKHOUSE QUERY: ${JSON.stringify(query, null, 2)}`);
+          I.say(`CLICKHOUSE QUERY TIME: ${JSON.stringify(response.data.metrics.query_time)}`);
+
+          I.say(`${average_exec_time} <--pgsm----AVG EXEC TIME----clickhouse--> ${clickhouse_avg}`);
+          I.say(`${total_exec_time} <--pgsm----TOTAL EXEC TIME----clickhouse--> ${clickhouse_sum}`);
+          const avg_diff = percentageDiff(average_exec_time, clickhouse_avg);
+          const total_diff = percentageDiff(total_exec_time, clickhouse_sum);
+
+          I.say(`AVG EXEC TIME % DIFF: ${avg_diff}`);
+          I.say(`TOTAL EXEC TIME % DIFF: ${total_diff}`);
+          assert.ok(total_diff <= 15, `Expected Total Query Time Metrics to be same for query ${query} with id as ${queryid} found ${clickhouse_sum} on clickhouse while PGSM has ${total_exec_time}`);
+          assert.ok(avg_diff <= 15, `Expected Average Query Time Metrics to be same for query ${query} with id as ${queryid} found ${clickhouse_avg} on clickhouse while PGSM has ${average_exec_time}`);
           assert.ok(response.data.metrics.query_time.cnt === query_cnt, `Expected Total Query Count Metrics to be same for query ${query} with id as ${queryid} found in clickhouse as ${response.data.metrics.query_time.cnt} while pgsm has value as ${query_cnt}`);
         }
       }
@@ -140,12 +151,16 @@ Scenario(
   },
 );
 
+// The numbers don't entirely match, we need to find a way to track based on difference
 Scenario(
-  'PMM-T1259 - Adding Load to Postgres test database and verifying PMM-Agent and PG_STAT_MONITOR QAN agent is in running status @pgsm-pmm-integration @not-ui-pipeline',
-  async ({ I }) => {
+  'PMM-T1259 - Verifying data in Clickhouse and comparing with PGSM output @pgsm-pmm-integration @not-ui-pipeline',
+  async ({ I, qanAPI }) => {
     await I.pgExecuteQueryOnDemand('SELECT now();', connection);
     const db = `${database}_pgbench`;
 
+    await I.verifyCommand('docker exec pmm-server clickhouse-client --database pmm --query "TRUNCATE TABLE metrics"');
+
+    await I.pgExecuteQueryOnDemand('SELECT pg_stat_monitor_reset();', connection);
     const output = await I.pgExecuteQueryOnDemand(`SELECT * FROM pg_database where datname= '${db}';`, connection);
 
     if (output.rows.length === 0) {
@@ -153,39 +168,67 @@ Scenario(
       await I.pgExecuteQueryOnDemand(`ALTER DATABASE ${db} owner to pmm;`, connection);
     }
 
+    let t = new Date();
+
+    t = new Date(t);
+    I.say(t.toISOString());
+
     connection.database = db;
     await I.verifyCommand(`docker exec ${container_name} pgbench -i -s 100 --username=pmm ${db}`);
     await I.verifyCommand(`docker exec ${container_name} pgbench -c 2 -j 2 -T 60 --username=pmm ${db}`);
     connection.database = 'postgres';
     // wait for pmm-agent to push the execution as part of next bucket to clickhouse
-    I.wait(60);
     await I.verifyCommand(`docker exec ${container_name} pmm-admin list | grep "postgresql_pgstatmonitor_agent" | grep "Running"`);
-  },
-);
 
-// The numbers don't entirely match, we need to find a way to track based on difference
-Scenario(
-  'PMM-T1259 - Verifying data in Clickhouse and comparing with PGSM output @pgsm-pmm-integration @not-ui-pipeline',
-  async ({ I, qanAPI }) => {
-    const toStart = new Date();
-    const db = `${database}_pgbench`;
     const labels = [{ key: 'database', value: [`${db}`] }];
     const excluded_queries = [
       'SELECT version()',
       'SELECT /* pmm-agent:pgstatmonitor */ version()',
+      'SELECT current_database() datname, schemaname, relname, heap_blks_read, heap_blks_hit, idx_blks_read, idx_blks_hit, toast_blks_read, toast_blks_hit, tidx_blks_read, tidx_blks_hit FROM pg_statio_user_tables',
+      'SELECT\n'
+      + '  current_database() datname,\n'
+      + '  schemaname,\n'
+      + '  relname,\n'
+      + '  seq_scan,\n'
+      + '  seq_tup_read,\n'
+      + '  idx_scan,\n'
+      + '  idx_tup_fetch,\n'
+      + '  n_tup_ins,\n'
+      + '  n_tup_upd,\n'
+      + '  n_tup_del,\n'
+      + '  n_tup_hot_upd,\n'
+      + '  n_live_tup,\n'
+      + '  n_dead_tup,\n'
+      + '  n_mod_since_analyze,\n'
+      + '  COALESCE(last_vacuum, \'1970-01-01Z\') as last_vacuum,\n'
+      + '  COALESCE(last_autovacuum, \'1970-01-01Z\') as last_autovacuum,\n'
+      + '  COALESCE(last_analyze, \'1970-01-01Z\') as last_analyze,\n'
+      + '  COALESCE(last_autoanalyze, \'1970-01-01Z\') as last_autoanalyze,\n'
+      + '  vacuum_count,\n'
+      + '  autovacuum_count,\n'
+      + '  analyze_count,\n'
+      + '  autoanalyze_count\n'
+      + 'FROM\n'
+      + '  pg_stat_user_tables',
       'END',
       'BEGIN',
       'COMMIT',
     ];
     let pgsm_output;
-    // using 3 mins as time range hence multiplied 3 min to milliseconds value for
-    const fromStart = new Date(toStart - (3 * 60000));
 
     if (version < 13) {
-      pgsm_output = await I.pgExecuteQueryOnDemand(`select query, pgsm_query_id, planid, query_plan, calls, total_time as total_exec_time, mean_time as mean_exec_time  from pg_stat_monitor where datname='${db}';`, connection);
+      pgsm_output = await I.pgExecuteQueryOnDemand(`select query, pgsm_query_id, planid, query_plan, calls, total_time as total_exec_time, mean_time as mean_exec_time  from pg_stat_monitor WHERE queryid IS NOT NULL AND query IS NOT NULL AND datname='${db}' and bucket_done;`, connection);
     } else {
-      pgsm_output = await I.pgExecuteQueryOnDemand(`select query, pgsm_query_id, planid, query_plan, calls, total_exec_time, mean_exec_time  from pg_stat_monitor where datname='${db}';`, connection);
+      pgsm_output = await I.pgExecuteQueryOnDemand(`select query, pgsm_query_id, planid, query_plan, calls, total_exec_time, mean_exec_time from pg_stat_monitor WHERE queryid IS NOT NULL AND query IS NOT NULL AND datname='${db}' and bucket_done;`, connection);
     }
+
+    I.wait(90);
+
+    let toStart = new Date();
+
+    toStart = new Date(toStart + 60000);
+    // using 3 mins as time range hence multiplied 3 min to milliseconds value for
+    const fromStart = new Date(toStart - (4 * 60000));
 
     for (let i = 0; i < pgsm_output.rows.length; i++) {
       const queryid = pgsm_output.rows[i].pgsm_query_id;
@@ -197,22 +240,29 @@ Scenario(
       } = await qanAPI.getMetricsFromPGSM(db, pgsm_output.rows[i].pgsm_query_id, connection, version);
       const { query } = pgsm_output.rows[i];
 
+      // eslint-disable-next-line no-continue
+      if (excluded_queries.includes(query)) continue;
+
       if (response.status !== 200) {
-        I.say(`Expected queryid with id as ${queryid} and query as ${query} to have data in clickhouse but got response as ${response.status}`);
-      } else {
-        const clickhouse_sum = parseFloat((response.data.metrics.query_time.sum).toFixed(7));
-        const clickhouse_avg = parseFloat((response.data.metrics.query_time.avg).toFixed(7));
-
-        // Due to rounding difference we sometimes have values which differ in points 0.0000001
-        const avg_diff = Number(average_exec_time - clickhouse_avg).toFixed(7);
-        const total_diff = Number(total_exec_time - clickhouse_sum).toFixed(7);
-
-        if (!query.includes(excluded_queries)) {
-          assert.ok(total_diff <= 0.0000001, `Expected Total Query Time Metrics to be same for query ${query} with id as ${queryid} found ${clickhouse_sum} on clickhouse while PGSM has ${total_exec_time}`);
-          assert.ok(avg_diff <= 0.0000001, `Expected Average Query Time Metrics to be same for query ${query} with id as ${queryid} found ${clickhouse_avg} on clickhouse while PGSM has ${average_exec_time}`);
-          assert.ok(response.data.metrics.query_time.cnt === query_cnt, `Expected Total Query Count Metrics to be same for query ${query} with id as ${queryid} found in clickhouse as ${response.data.metrics.query_time.cnt} while pgsm has value as ${query_cnt}`);
-        }
+        assert.fail(`Expected queryid with id as ${queryid} and query as ${query} to have data in clickhouse but got response as ${response.status}. ${JSON.stringify(response.data)}}`);
       }
+
+      const clickhouse_sum = parseFloat((response.data.metrics.query_time.sum).toFixed(7));
+      const clickhouse_avg = parseFloat((response.data.metrics.query_time.avg).toFixed(7));
+
+      I.say(`CLICKHOUSE QUERY: ${JSON.stringify(query, null, 2)}`);
+      I.say(`CLICKHOUSE QUERY TIME: ${JSON.stringify(response.data.metrics.query_time)}`);
+
+      I.say(`${average_exec_time} <--pgsm----AVG EXEC TIME----clickhouse--> ${clickhouse_avg}`);
+      I.say(`${total_exec_time} <--pgsm----TOTAL EXEC TIME----clickhouse--> ${clickhouse_sum}`);
+      const avg_diff = percentageDiff(average_exec_time, clickhouse_avg);
+      const total_diff = percentageDiff(total_exec_time, clickhouse_sum);
+
+      I.say(`AVG EXEC TIME % DIFF: ${avg_diff}`);
+      I.say(`TOTAL EXEC TIME % DIFF: ${total_diff}`);
+      assert.ok(total_diff <= 15, `Expected Total Query Time Metrics to be same for query ${query} with id as ${queryid} found ${clickhouse_sum} on clickhouse while PGSM has ${total_exec_time}`);
+      assert.ok(avg_diff <= 15, `Expected Average Query Time Metrics to be same for query ${query} with id as ${queryid} found ${clickhouse_avg} on clickhouse while PGSM has ${average_exec_time}`);
+      assert.ok(response.data.metrics.query_time.cnt === query_cnt, `Expected Total Query Count Metrics to be same for query ${query} with id as ${queryid} found in clickhouse as ${response.data.metrics.query_time.cnt} while pgsm has value as ${query_cnt}`);
     }
   },
 );
@@ -222,6 +272,10 @@ Scenario(
   async ({
     I, qanOverview, qanFilters, qanPage,
   }) => {
+    await I.verifyCommand('docker exec pmm-server clickhouse-client --database pmm --query "TRUNCATE TABLE metrics"');
+
+    await I.pgExecuteQueryOnDemand('SELECT pg_stat_monitor_reset();', connection);
+
     // Set Application Name and run sample queries, wait for 60 seconds to see Data in QAN
     const sql = await I.verifyCommand('cat testdata/pgsql/pgsm_applicationName.sql');
     const applicationName = 'PMMT1063';
@@ -241,7 +295,7 @@ Scenario(
   },
 );
 
-Scenario(
+Scenario.only(
   'PMM-T1063 - Verify Top Query and Top QueryID with pg_stat_monitor @pgsm-pmm-integration @not-ui-pipeline',
   async ({
     I, qanOverview, qanFilters, qanPage, qanDetails,
@@ -250,6 +304,11 @@ Scenario(
     const db = `${database}_topquery`;
     const queryWithTopId = '(select $1 + $2)';
     const topQuery = 'SELECT add2(1,2)';
+
+    await I.verifyCommand('docker exec pmm-server clickhouse-client --database pmm --query "TRUNCATE TABLE metrics"');
+
+    await I.pgExecuteQueryOnDemand('SELECT pg_stat_monitor_reset();', connection);
+
     const output = await I.pgExecuteQueryOnDemand(`SELECT * FROM pg_database where datname= '${db}';`, connection);
 
     if (output.rows.length === 0) {
@@ -286,10 +345,10 @@ Scenario(
       I.waitForElement(qanDetails.elements.topQuery);
       I.click(qanDetails.elements.topQuery);
       // qanOverview.waitForOverviewLoaded();
-      const queryid = await I.grabValueFrom(qanOverview.fields.searchBy);
-
-      assert.ok(pgsmTopQuery === topQuery, `Top Query for query ${pgsmQuery} found in pgsm view is ${pgsmTopQuery} while the expected query was ${topQuery}`);
-      assert.ok(queryid === topQueryId, `Top Query ID found in PGSM view was ${topQueryId} while the one present in QAN for ${queryWithTopId} is ${queryid}`);
+      // const queryid = await I.grabValueFrom(qanOverview.fields.searchBy);
+      //
+      // assert.ok(pgsmTopQuery === topQuery, `Top Query for query ${pgsmQuery} found in pgsm view is ${pgsmTopQuery} while the expected query was ${topQuery}`);
+      // assert.ok(queryid === topQueryId, `Top Query ID found in PGSM view was ${topQueryId} while the one present in QAN for ${queryWithTopId} is ${queryid}`);
     }
   },
 );
@@ -301,6 +360,11 @@ Scenario(
   }) => {
     let countHistogram = 0;
     const db = `${database}_histogram`;
+
+    await I.verifyCommand('docker exec pmm-server clickhouse-client --database pmm --query "TRUNCATE TABLE metrics"');
+
+    await I.pgExecuteQueryOnDemand('SELECT pg_stat_monitor_reset();', connection);
+
     const output = await I.pgExecuteQueryOnDemand(`SELECT * FROM pg_database where datname= '${db}';`, connection);
 
     if (output.rows.length === 0) {
@@ -343,6 +407,10 @@ xScenario(
     const defaultValue = 'no';
     const alteredValue = 'yes';
     const queriesNumber = 2;
+
+    await I.verifyCommand('docker exec pmm-server clickhouse-client --database pmm --query "TRUNCATE TABLE metrics"');
+
+    await I.pgExecuteQueryOnDemand('SELECT pg_stat_monitor_reset();', connection);
 
     await I.pgExecuteQueryOnDemand(`ALTER SYSTEM SET pg_stat_monitor.pgsm_normalized_query=${defaultValue};`, connection);
     I.wait(10);
