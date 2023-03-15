@@ -344,7 +344,9 @@ Scenario(
       // qanOverview.waitForOverviewLoaded();
       // const queryid = await I.grabValueFrom(qanOverview.fields.searchBy);
       //
+      // eslint-disable-next-line max-len
       // assert.ok(pgsmTopQuery === topQuery, `Top Query for query ${pgsmQuery} found in pgsm view is ${pgsmTopQuery} while the expected query was ${topQuery}`);
+      // eslint-disable-next-line max-len
       // assert.ok(queryid === topQueryId, `Top Query ID found in PGSM view was ${topQueryId} while the one present in QAN for ${queryWithTopId} is ${queryid}`);
     }
   },
