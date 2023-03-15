@@ -38,7 +38,7 @@ Before(async ({ I }) => {
   await I.Authorize();
 });
 
-Scenario.only(
+Scenario(
   'PMM-T1260 - Verifying data in Clickhouse and comparing with PGSM output @not-ui-pipeline @pgsm-pmm-integration',
   async ({ I, qanAPI }) => {
     await I.pgExecuteQueryOnDemand('SELECT now();', connection);
