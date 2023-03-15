@@ -1129,10 +1129,12 @@ if (versionMinor >= 32) {
     + ' @post-upgrade @pmm-upgrade',
     async ({ I, scheduledPage }) => {
       await scheduledPage.openScheduledBackupsPage();
+      await I.waitForVisible(scheduledPage.elements.toggleByName(scheduleName))
       I.seeAttributesOnElements(scheduledPage.elements.toggleByName(scheduleName), { checked: true });
 
       // Disable schedule
       I.click(scheduledPage.buttons.enableDisableByName(scheduleName));
+      await I.waitForVisible(scheduledPage.elements.toggleByName(scheduleName))
       I.seeAttributesOnElements(scheduledPage.elements.toggleByName(scheduleName), { checked: null });
     },
   ).retry(0);
