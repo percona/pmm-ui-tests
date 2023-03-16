@@ -14,10 +14,9 @@ const connection = {
 // Docker Container Name: ${PGSQL_PGSM_CONTAINER}_${PGSQL_VERSION}
 
 const version = process.env.PGSQL_VERSION ? `${process.env.PGSQL_VERSION}` : '14';
-const container = process.env.PGSQL_PGSM_CONTAINER ? `${process.env.PGSQL_PGSM_CONTAINER}` : 'pgsql_pgsm';
+const container_name = process.env.PGSQL_PGSM_CONTAINER ? `${process.env.PGSQL_PGSM_CONTAINER}` : 'pgsql_pgsm';
 const database = `pgsm${Math.floor(Math.random() * 99) + 1}`;
-const pgsm_service_name = `${container}_${version}_service`;
-const container_name = `${container}_${version}`;
+const pgsm_service_name = `${container_name}_service`;
 const percentageDiff = (a, b) => (a - b === 0 ? 0 : 100 * Math.abs((a - b) / b));
 
 const labels = [{ key: 'database', value: [`${database}`] }];
