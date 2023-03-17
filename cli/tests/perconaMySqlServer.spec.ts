@@ -37,7 +37,7 @@ test.describe('PMM Client CLI tests for Percona Server Database', async () => {
    * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/ps-specific-tests.bats#L44
    */
   test('run pmm-admin add mysql again based on running instances', async ({ }) => {
-    let hosts = (await cli.exec(`pmm-admin list | grep "MySQL" | awk -F" " '{print $3}'`))
+    let hosts = (await cli.exec(`pmm-admin list | grep "MySQL" | grep "mysql_" | awk -F" " '{print $3}'`))
       .stdout.trim().split('\n').filter((item) => item.trim().length > 0);
     let n = 1;
     console.log(hosts);
