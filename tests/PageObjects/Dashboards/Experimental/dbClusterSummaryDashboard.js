@@ -1,13 +1,10 @@
 const { I } = inject();
-const BaseDashboardPage = require('../BaseDashboard');
 
 module.exports = {
-  ...BaseDashboardPage,
   url: 'graph/d/db-cluster-summary/db-cluster-summary?from=now-15m&to=now',
   elements: {
     podName: '//label[@for="var-pod"]//following-sibling::*',
-    serviceNameDropdown: '//*[@id="options-pod"]',
-    serviceNameDropdownSelect: async (databaseName) => `//*[@id="options-pod"]//span[contains(@data-testid, "${databaseName}")]`,
+    podNameDropdownSelect: async (podName) => `//*[@id="options-pod"]//span[contains(@data-testid, "${podName}")]`,
   },
   metrics: [
     'Uptime',
@@ -34,6 +31,6 @@ module.exports = {
   async selectPod(podName) {
     await I.waitForVisible(this.elements.podName), 10;
     await I.click(this.elements.podName);
-    await I.click(await this.elements.serviceNameDropdownSelect(podName));
+    await I.click(await this.elements.podNameDropdownSelect(podName));
   }
 };
