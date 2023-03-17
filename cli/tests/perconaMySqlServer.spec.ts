@@ -59,7 +59,7 @@ test.describe('PMM Client CLI tests for Percona Server Database', async () => {
    */
   test('run pmm-admin status check for RUNNING string in output for VM_AGENT', async ({ }) => {
     const output = await cli.exec(`pmm-admin status | grep "vmagent Running"`);
-    console.log(output);
+    console.log(await cli.exec(`pmm-admin status`));
     await output.assertSuccess();
   });
 });
