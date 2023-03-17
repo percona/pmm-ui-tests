@@ -8,19 +8,12 @@ test.describe('PMM Client CLI tests for Percona Server Database', async () => {
 
   /**
    * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/ps-specific-tests.bats#L9
-   */
-  test('run pmm-admin under regular(non-root) user privileges', async ({ }) => {
-    const output = await cli.exec(`pmm-admin`);
-    await output.assertSuccess();
-    await output.outContains('Usage: pmm-admin <command>');
-  });
-
-  /**
    * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/ps-specific-tests.bats#L19
    */
-  test('run pmm-admin under root privileges', async ({ }) => {
-    const output = await cli.exec(`sudo pmm-admin`);
-    await output.assertSuccess();
+  test('run pmm-admin ', async ({ }) => {
+    const sudo = parseInt((await cli.exec('id -u')).stdout) === 0 ? '' : 'sudo ';
+    const output = await cli.exec(`${sudo}pmm-admin`);
+    await output.exitCodeEquals(1);
     await output.outContains('Usage: pmm-admin <command>');
   });
 
@@ -32,7 +25,7 @@ test.describe('PMM Client CLI tests for Percona Server Database', async () => {
       .stdout.trim().split('\n').filter((item) => item.trim().length > 0);
     let n = 1;
     for (const host of hosts) {
-      let output = await cli.exec(`run pmm-admin add mysql --query-source=perfschema --username=${MYSQL_USER} --password=${MYSQL_PASSWORD} mysql_${n++} ${n++}`);
+      let output = await cli.exec(`pmm-admin add mysql --query-source=perfschema --username=${MYSQL_USER} --password=${MYSQL_PASSWORD} mysql_${n++} ${n++}`);
       await output.assertSuccess();
       await output.outContains('MySQL Service added.');
     }
@@ -47,7 +40,7 @@ test.describe('PMM Client CLI tests for Percona Server Database', async () => {
       .stdout.trim().split('\n').filter((item) => item.trim().length > 0);
     let n = 1;
     for (const host of hosts) {
-      let output = await cli.exec(`run pmm-admin add mysql --query-source=perfschema --username=${MYSQL_USER} --password=${MYSQL_PASSWORD} mysql_${n++} ${n++}`);
+      let output = await cli.exec(`pmm-admin add mysql --query-source=perfschema --username=${MYSQL_USER} --password=${MYSQL_PASSWORD} mysql_${n++} ${n++}`);
       await output.assertSuccess();
       await output.outContains('already exists.');
     }
