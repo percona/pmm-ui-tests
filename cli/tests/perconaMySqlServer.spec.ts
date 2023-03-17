@@ -25,7 +25,7 @@ test.describe('PMM Client CLI tests for Percona Server Database', async () => {
       .stdout.trim().split('\n').filter((item) => item.trim().length > 0);
     let n = 1;
     for (const host of hosts) {
-      let output = await cli.exec(`pmm-admin add mysql --query-source=perfschema --username=${MYSQL_USER} --password=${MYSQL_PASSWORD} mysql_${n++} ${n++}`);
+      let output = await cli.exec(`pmm-admin add mysql --query-source=perfschema --username=${MYSQL_USER} --password=${MYSQL_PASSWORD} mysql_${n++} ${host}`);
       await output.assertSuccess();
       await output.outContains('MySQL Service added.');
     }
@@ -40,8 +40,8 @@ test.describe('PMM Client CLI tests for Percona Server Database', async () => {
       .stdout.trim().split('\n').filter((item) => item.trim().length > 0);
     let n = 1;
     for (const host of hosts) {
-      let output = await cli.exec(`pmm-admin add mysql --query-source=perfschema --username=${MYSQL_USER} --password=${MYSQL_PASSWORD} mysql_${n++} ${n++}`);
-      await output.assertSuccess();
+      let output = await cli.exec(`pmm-admin add mysql --query-source=perfschema --username=${MYSQL_USER} --password=${MYSQL_PASSWORD} mysql_${n++} ${host}`);
+      await output.exitCodeEquals(1);
       await output.outContains('already exists.');
     }
   });
@@ -59,6 +59,7 @@ test.describe('PMM Client CLI tests for Percona Server Database', async () => {
    */
   test('run pmm-admin status check for RUNNING string in output for VM_AGENT', async ({ }) => {
     const output = await cli.exec(`pmm-admin status | grep "vmagent Running"`);
+    console.log(output);
     await output.assertSuccess();
   });
 });
