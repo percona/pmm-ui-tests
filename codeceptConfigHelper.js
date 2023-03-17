@@ -24,6 +24,7 @@ module.exports = {
     dbaasPage: './tests/DbaaS/pages/dbaasPage.js',
     dbaasActionsPage: './tests/DbaaS/pages/dbaasActionsPage.js',
     dbaasManageVersionPage: './tests/DbaaS/pages/dbaasManageVersionPage.js',
+    dbClusterSummaryDashboardPage: './tests/PageObjects/Dashboards/Experimental/dbClusterSummaryDashboard.js',
     explorePage: './tests/pages/explorePage.js',
     experimentalPostgresqlDashboardsPage: './tests/PageObjects/Dashboards/Postgresql/ExperimentalPostgresqlDashboards.js',
     grafanaAPI: './tests/pages/api/grafanaAPI.js',
