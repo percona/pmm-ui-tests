@@ -8,7 +8,8 @@ export class AdvisorsPage extends CommonPage {
 
   private advisorsElements = {
     ...super.getElements(),
-    advisorRow: (advisorName: string) => this.page.locator(`//td[text()="${advisorName}"]//ancestor::tr`)
+    advisorRow: (advisorName: string) => this.page.locator(`//td[text()="${advisorName}"]//ancestor::tr`),
+    advisorsCategory: (categoryName: string) => this.page.locator(`//*[text()="${categoryName}"]//ancestor::*[@data-testid="collapse-clickable"]`),
   };
 
   private advisorsFields = {
@@ -21,6 +22,7 @@ export class AdvisorsPage extends CommonPage {
 
   private advisorsButtons = {
     ...super.getButtons(),
+    runChecks: this.page.locator('//*[text()="Run Checks"]/parent::button'),
     connectToPlatform: this.page.locator('//*[text()="Connect to Percona Platform"]/parent::*'),
     advisorInsights: this.page.locator('//*[@aria-label="Tab Advisor Insights"]'),
     securityAdvisors: this.page.locator('//*[@aria-label="Tab Security Advisors"]'),
