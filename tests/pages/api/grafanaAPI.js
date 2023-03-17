@@ -286,7 +286,7 @@ module.exports = {
     const result = JSON.stringify(response.data.data.result);
 
     I.assertTrue(response.data.data.result.length !== 0,
-      `Metrics ${metricName} with filters as ${JSON.stringify(refineBy)} Should be available but got empty ${result}`);
+      `Metrics '${metricName}' ${refineBy === null ? '' : `with filters as ${JSON.stringify(refineBy)} `}should be available but got empty ${result}`);
 
     return response;
   },

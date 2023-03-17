@@ -7,6 +7,11 @@ const grafanaHelper = {
     await page.reload();
   },
 
+  async unAuthorize(page: Page) {
+    await page.setExtraHTTPHeaders({ });
+    await page.reload();
+  },
+
   async getToken(username: string = 'admin', password = process.env.ADMIN_PASSWORD) {
     return Buffer.from(`${username}:${password}`).toString('base64');
   },

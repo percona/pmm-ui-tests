@@ -21,7 +21,8 @@ After(async ({ settingsAPI }) => {
 });
 
 Scenario(
-  'PMM-T716 - Verify adding PostgreSQL RDS monitoring to PMM via UI @aws @instances',
+  '@PMM-T716 - Verify adding PostgreSQL RDS monitoring to PMM via UI @aws @instances'
+  + '@PMM-T1596 Verify that PostgreSQL exporter ignores connection error to "rdsadmin" database for Amazon RDS instance @aws @instances',
   async ({
     I, remoteInstancesPage, pmmInventoryPage,
   }) => {
@@ -43,6 +44,9 @@ Scenario(
     // Skipping due to QAN Setup part on AWS
     // await pmmInventoryPage.verifyAgentHasStatusRunning(serviceName);
     await pmmInventoryPage.verifyMetricsFlags(serviceName);
+    const logs = await I.verifyCommand('docker exec pmm-server tail -n 100 /srv/logs/pmm-agent.log');
+
+    assert.ok((!logs.includes('rdsadmin') && !logs.includes('ERRO')), 'Logs contains errors about rdsadmin database being used!');
   },
 );
 

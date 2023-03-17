@@ -2,14 +2,6 @@
 name: pmm-portal-upgrade-tests
 
 on:
-  # run with default inputs
-  schedule:
-    - cron: '0 0 * * *'
-  push:
-    branches:
-      - main
-  pull_request:
-
   workflow_dispatch:
     inputs:
       pmm_ui_tests_branch:
@@ -33,11 +25,11 @@ on:
         default: 'main'
         required: true
       testing_repository:
-        description: 'Branch for the pmm-qa repository.'
+        description: 'Enable Testing Repository.'
         default: 'no'
         required: true
       experimental_repository:
-        description: 'Branch for the pmm-qa repository.'
+        description: 'Enable Experimental Repository.'
         default: 'no'
         required: true
 
@@ -175,10 +167,3 @@ jobs:
           npx playwright test --config="playwright-tests/playwright.config.ts" --grep="@post-pmm-portal-upgrade"
         env:
           NODE_TLS_REJECT_UNAUTHORIZED: 0
-
-      - name: Generate and Attach the report
-        if: ${{ always() && steps.ui-tests.outcome != 'skipped' }}
-        uses: percona-platform/upload-artifact@v3
-        with:
-          name: ui-tests-report
-          path: pmm-ui-tests/playwright-report
