@@ -24,6 +24,7 @@ test.describe('PMM Client CLI tests for Percona Server Database', async () => {
     let hosts = (await cli.exec(`pmm-admin list | grep "MySQL" | awk -F" " '{print $3}'`))
       .stdout.trim().split('\n').filter((item) => item.trim().length > 0);
     let n = 1;
+    console.log(hosts);
     for (const host of hosts) {
       let output = await cli.exec(`pmm-admin add mysql --query-source=perfschema --username=${MYSQL_USER} --password=${MYSQL_PASSWORD} mysql_${n++} ${host}`);
       await output.assertSuccess();
@@ -39,6 +40,7 @@ test.describe('PMM Client CLI tests for Percona Server Database', async () => {
     let hosts = (await cli.exec(`pmm-admin list | grep "MySQL" | awk -F" " '{print $3}'`))
       .stdout.trim().split('\n').filter((item) => item.trim().length > 0);
     let n = 1;
+    console.log(hosts);
     for (const host of hosts) {
       let output = await cli.exec(`pmm-admin add mysql --query-source=perfschema --username=${MYSQL_USER} --password=${MYSQL_PASSWORD} mysql_${n++} ${host}`);
       await output.exitCodeEquals(1);
