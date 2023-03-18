@@ -133,7 +133,7 @@ test.describe('PMM Client CLI tests for Percona Server Database', async () => {
       .stdout.trim().split('\n').filter((item) => item.trim().length > 0);
     let n = 1;
     for (const host of hosts) {
-      let output = await cli.exec(`run pmm-admin remove mysql mysql_${n++}`);
+      let output = await cli.exec(`pmm-admin remove mysql mysql_${n++}`);
       await output.assertSuccess();
       await output.outContains('Service removed.');
     }
