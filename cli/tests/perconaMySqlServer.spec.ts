@@ -48,9 +48,12 @@ test.describe('PMM Client CLI tests for Percona Server Database', async () => {
 
   /**
    * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/ps-specific-tests.bats#L57
+   * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/ps-specific-tests.bats#L81
    */
-  test('run pmm-admin status --json check for RUNNING string in output', async ({ }) => {
-    const output = await cli.exec(`pmm-admin status --json | grep "RUNNING"`);
+  test('run pmm-admin status --json check for Running string in output', async ({ }) => {
+    const output = await cli.exec(`pmm-admin status --json`);
+    await output.outContains('Running');
+    await output.outputNotContains('RUNNING');
     await output.assertSuccess();
   });
 
@@ -88,15 +91,4 @@ test.describe('PMM Client CLI tests for Percona Server Database', async () => {
     const output = await cli.exec(`pmm-admin status | grep "RUNNING"`);
     await output.exitCodeEquals(1);
   });
-
-  /**
-   * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/ps-specific-tests.bats#L81
-   */
-  test('run pmm-admin status check for RUNNING string in output', async ({ }) => {
-    const output = await cli.exec(`pmm-admin status --json | grep "Running"`);
-    await output.exitCodeEquals(1);
-  });
-
-
-
 });
