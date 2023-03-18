@@ -157,4 +157,21 @@ test.describe('PMM Client CLI tests for Percona Server Database', async () => {
     await output.outContains('disable-tablestats-limit=NUMBER');
   });
 
+  /**
+   * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/ps-specific-tests.bats#L137
+   */
+  test('run pmm-admin add mysql --help to check host', async ({ }) => {
+    const output = await cli.exec('pmm-admin add mysql --help');
+    await output.assertSuccess();
+    await output.outContains('host');
+  });
+
+  /**
+   * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/ps-specific-tests.bats#L144
+   */
+  test('run pmm-admin add mysql --help to check port', async ({ }) => {
+    const output = await cli.exec('pmm-admin add mysql --help');
+    await output.assertSuccess();
+    await output.outContains('port');
+  });
 });
