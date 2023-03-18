@@ -174,4 +174,29 @@ test.describe('PMM Client CLI tests for Percona Server Database', async () => {
     await output.assertSuccess();
     await output.outContains('port');
   });
+
+  /**
+   * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/ps-specific-tests.bats#L151
+   */
+  test('run pmm-admin add mysql --help to check service-name', async ({ }) => {
+    const output = await cli.exec('pmm-admin add mysql --help');
+    await output.assertSuccess();
+    await output.outContains('service-name');
+  });
+
+  /**
+   * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/ps-specific-tests.bats#L158
+   */
+  test('run pmm-admin add mysql based on running intsances using host, port and service name', async ({ }) => {
+    let hosts = (await cli.exec(`sudo pmm-admin list | grep "MySQL" | awk -F" " '{print $3}'`))
+      .stdout.trim().split('\n').filter((item) => item.trim().length > 0);
+    let n = 1;
+    for (const host of hosts) {
+      const ip = host.split(':')[0];
+      const port = host.split(':')[1];
+      let output = await cli.exec(`sudo pmm-admin add mysql --query-source=perfschema --username=${MYSQL_USER} --password=${MYSQL_PASSWORD}  --host=${ip} --port=${port} --service-name=mysql_${n++}`);
+      await output.assertSuccess();
+      await output.outContains('MySQL Service added.');
+    }
+  });
 });
