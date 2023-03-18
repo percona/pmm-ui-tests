@@ -224,7 +224,7 @@ test.describe('PMM Client CLI tests for Percona Server Database', async () => {
       console.log(host);
       let output = await cli.exec(`sudo pmm-admin add mysql --query-source=perfschema --disable-tablestats --disable-tablestats-limit=50 --username=${MYSQL_USER} --password=${MYSQL_PASSWORD} mysql_${n++} ${host}`);
       console.log(output)
-      await output.assertSuccess();
+      await output.exitCodeEquals(1);
       await output.outContains('both --disable-tablestats and --disable-tablestats-limit are passed');
     }
   });
