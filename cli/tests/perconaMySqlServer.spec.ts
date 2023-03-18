@@ -52,8 +52,8 @@ test.describe('PMM Client CLI tests for Percona Server Database', async () => {
    */
   test('run pmm-admin status --json check for Running string in output', async ({ }) => {
     const output = await cli.exec(`pmm-admin status --json`);
-    await output.outContains('Running');
-    await output.outputNotContains('RUNNING');
+    await output.outputNotContains('Running');
+    await output.outContains('RUNNING');
     await output.assertSuccess();
   });
 
