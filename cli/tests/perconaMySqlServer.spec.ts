@@ -138,4 +138,23 @@ test.describe('PMM Client CLI tests for Percona Server Database', async () => {
       await output.outContains('Service removed.');
     }
   });
+
+  /**
+   * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/ps-specific-tests.bats#L123
+   */
+  test('run pmm-admin add mysql --help contains disable-tablestats', async ({ }) => {
+    const output = await cli.exec('pmm-admin add mysql --help');
+    await output.assertSuccess();
+    await output.outContains('disable-tablestats');
+  });
+
+  /**
+   * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/ps-specific-tests.bats#L130
+   */
+  test('run pmm-admin add mysql --help contains disable-tablestats-limit', async ({ }) => {
+    const output = await cli.exec('pmm-admin add mysql --help');
+    await output.assertSuccess();
+    await output.outContains('disable-tablestats-limit=NUMBER');
+  });
+
 });
