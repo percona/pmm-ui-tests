@@ -91,4 +91,20 @@ test.describe('PMM Client CLI tests for Percona Server Database', async () => {
     const output = await cli.exec(`pmm-admin status | grep "RUNNING"`);
     await output.exitCodeEquals(1);
   });
+
+  /**
+   * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/ps-specific-tests.bats#L87
+   */
+  test('run pmm-admin list check for msqld_exporter string in output', async ({ }) => {
+    const output = await cli.exec('pmm-admin list | grep "msqld_exporter"');
+    await output.exitCodeEquals(1);
+  });
+
+  /**
+   * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/ps-specific-tests.bats#L93
+   */
+  test('run pmm-admin status check for MYSQLD_EXPORTER string in output', async ({ }) => {
+    const output = await cli.exec('pmm-admin status | grep "MYSQLD_EXPORTER"');
+    await output.exitCodeEquals(1);
+  });
 });
