@@ -254,4 +254,32 @@ test.describe('PMM Client CLI tests for Percona Server Database', async () => {
       await output.outContains('Service removed.');
     }
   });
+
+  /**
+   * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/ps-specific-tests.bats#L226
+   */
+  test('run pmm-admin add mysql with disable-tablestats-limit=50', async ({ }) => {
+    let hosts = (await cli.exec(`sudo pmm-admin list | grep "MySQL" | awk -F" " '{print $3}'`))
+      .stdout.trim().split('\n').filter((item) => item.trim().length > 0);
+    let n = 1;
+    for (const host of hosts) {
+      let output = await cli.exec(`sudo pmm-admin add mysql --query-source=perfschema --disable-tablestats-limit=50 --username=${MYSQL_USER} --password=${MYSQL_PASSWORD} mysql_${n++} ${host}`);
+      await output.assertSuccess();
+      await output.outContains('Table statistics collection disabled');
+    }
+  });
+
+  /**
+ * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/ps-specific-tests.bats#L240
+ */
+  test('run pmm-admin remove mysql added using disable-tablestats-limit', async ({ }) => {
+    let services = (await cli.exec(`sudo pmm-admin list | grep "MySQL" | grep "mysql_"`))
+      .stdout.trim().split('\n').filter((item) => item.trim().length > 0);
+    let n = 1;
+    for (const service of services) {
+      let output = await cli.exec(`sudo pmm-admin remove mysql mysql_${n++}`);
+      await output.assertSuccess();
+      await output.outContains('Service removed.');
+    }
+  });
 });
