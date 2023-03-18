@@ -124,4 +124,18 @@ test.describe('PMM Client CLI tests for Percona Server Database', async () => {
     const output = await cli.exec('pmm-admin status --json | grep "MYSQLD_EXPORTER"');
     await output.assertSuccess();
   });
+
+  /**
+  * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/ps-specific-tests.bats#L111
+ */
+  test('run pmm-admin remove mysql added with basic', async ({ }) => {
+    let hosts = (await cli.exec(`pmm-admin list | grep "MySQL" | grep "mysql_"`))
+      .stdout.trim().split('\n').filter((item) => item.trim().length > 0);
+    let n = 1;
+    for (const host of hosts) {
+      let output = await cli.exec(`run pmm-admin remove mysql mysql_${n++}`);
+      await output.assertSuccess();
+      await output.outContains('Service removed.');
+    }
+  });
 });
