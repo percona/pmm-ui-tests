@@ -212,4 +212,20 @@ test.describe('PMM Client CLI tests for Percona Server Database', async () => {
       await output.outContains('Service removed.');
     }
   });
+
+  /**
+   * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/ps-specific-tests.bats#L186
+   */
+  test('run pmm-admin add mysql with both disable-tablestats and disable-tablestats-limit', async ({ }) => {
+    let hosts = (await cli.exec(`sudo pmm-admin list | grep "MySQL" | awk -F" " '{print $3}'`))
+      .stdout.trim().split('\n').filter((item) => item.trim().length > 0);
+    let n = 1;
+    for (const host of hosts) {
+      const ip = host.split(':')[0];
+      const port = host.split(':')[1];
+      let output = await cli.exec(`sudo pmm-admin add mysql --query-source=perfschema --disable-tablestats --disable-tablestats-limit=50 --username=${MYSQL_USER} --password=${MYSQL_PASSWORD} mysql_${n++} ${host}`);
+      await output.assertSuccess();
+      await output.outContains('both --disable-tablestats and --disable-tablestats-limit are passed');
+    }
+  });
 });
