@@ -13,7 +13,7 @@ const nameFields = new DataTable(['field', 'value', 'errorMessageField', 'errorM
 
 const podName = new DataTable(['podNameValue', 'noDataCount']);
 
-podName.add(['dbaas-operator', '0']);
+podName.add(['dbaas-operator', '1']);
 podName.add(['kube-state-metrics', '4']);
 podName.add(['percona-server-mongodb-operator', '4']);
 podName.add(['percona-xtradb-cluster-operator', '4']);
