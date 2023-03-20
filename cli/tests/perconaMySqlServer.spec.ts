@@ -320,10 +320,11 @@ test.describe('PMM Client CLI tests for Percona Server Database', async () => {
     let n = 1;
     for (const host of hosts) {
       await cli.exec('sleep 20');
-      console.log(await cli.exec('ls /home/runner/work/pmm-submodules/pmm-tests/pmm-2-0-bats-tests/'));
+      console.log(await cli.exec('ls /home/runner/work/pmm-submodules/pmm-submodules/'));
+      console.log(await cli.exec('ls /home/runner/work/pmm-submodules/pmm-submodules/pmm-tests/'));
       console.log(await cli.exec('pwd'));
-      await (await cli.exec('sudo chmod +x /home/runner/work/pmm-submodules/pmm-tests/pmm-2-0-bats-tests/check_metric.sh')).assertSuccess();
-      let output = await cli.exec(`/home/runner/work/pmm-submodules/pmm-tests/pmm-2-0-bats-tests/check_metric.sh mysql_${n++} mysql_up 127.0.0.1 mysqld_exporter pmm mypass`);
+      await (await cli.exec('sudo chmod +x /home/runner/work/pmm-submodules/pmm-submodules/pmm-tests/pmm-2-0-bats-tests/check_metric.sh')).assertSuccess();
+      let output = await cli.exec(`/home/runner/work/pmm-submodules/pmm-submodules/pmm-tests/pmm-2-0-bats-tests/check_metric.sh mysql_${n++} mysql_up 127.0.0.1 mysqld_exporter pmm mypass`);
       await output.assertSuccess();
       await output.outContains('mysql_up 1');
     }
