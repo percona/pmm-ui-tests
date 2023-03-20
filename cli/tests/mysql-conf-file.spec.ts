@@ -26,8 +26,14 @@ test.describe('Percona Server MySql (PS) Configuration file test ', async () => 
       // Check that MySQL exporter is RUNNING:
       const serviceId = output.getStdOutLines().find((item) => item.includes('/service_id/')).trim()
           .split(':').find((item) => item.includes('/service_id/')).trim();
-      output = await cli.exec(`sudo pmm-admin list | grep _exporter | grep ${serviceId}`);
-      await output.outContains('Running');
+      await expect(async () => {
+        output = await cli.exec(`sudo pmm-admin list | grep _exporter | grep ${serviceId}`);
+        await output.outContains('Running');
+      }).toPass({
+        // Probe, wait 1s, probe, wait 2s, probe, wait 2s, probe, wait 2s, probe, ....
+        intervals: [1_000, 2_000, 2_000],
+        timeout: 10_000
+      });
     }
   });
 });
