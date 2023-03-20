@@ -381,7 +381,7 @@ test.describe('PMM Client CLI tests for Percona Server Database', async () => {
     for (const host of hosts) {
       const mysql_ip = host.split(':')[0];
       const mysql_port = host.split(':')[1];
-      let output = await cli.exec(`sudo pmm-admin add mysql --query-source=perfschema --username=${MYSQL_USER} --password=${MYSQL_PASSWORD} --host=${mysql_ip} --port=${mysql_port} --service-name=mysql_$COUNTER --metrics-mode=pull`);
+      let output = await cli.exec(`sudo pmm-admin add mysql --query-source=perfschema --username=${MYSQL_USER} --password=${MYSQL_PASSWORD} --host=${mysql_ip} --port=${mysql_port} --service-name=mysql_${n++} --metrics-mode=pull`);
       await output.assertSuccess();
       await output.outContains('MySQL Service added.');
     }
