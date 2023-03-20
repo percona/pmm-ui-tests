@@ -321,7 +321,7 @@ test.describe('PMM Client CLI tests for Percona Server Database', async () => {
     for (const host of hosts) {
       await cli.exec('sleep 20');
       await cli.exec('sudo chmod +x ./pmm-tests/pmm-2-0-bats-tests/check_metric.sh');
-      let output = await cli.exec(`sudo ./pmm-tests/pmm-2-0-bats-tests/check_metric.sh mysql_${n++} mysql_up 127.0.0.1 mysqld_exporter pmm mypass`);
+      let output = await cli.exec(`./pmm-tests/pmm-2-0-bats-tests/check_metric.sh mysql_${n++} mysql_up 127.0.0.1 mysqld_exporter pmm mypass`);
       await output.assertSuccess();
       await output.outContains('mysql_up 1');
     }
