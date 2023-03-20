@@ -432,4 +432,16 @@ test.describe('PMM Client CLI tests for Percona Server Database', async () => {
       await output.outContains('Socket and port cannot be specified together.');
     }
   });
+
+  /**
+   * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/ps-specific-tests.bats#L392
+   */
+  test("PMM-T159 User can't use both socket and port while using pmm-admin add mysql", async ({ }) => {
+    const output = await cli.exec(`sudo pmm-admin add mysql --help'`);
+    await output.assertSuccess();
+    await output.trimWhitespace();
+    await output.outContains('tls                        Use TLS to connect to the database');
+    await output.outContains('tls-skip-verify            Skip TLS certificates validation');
+    await output.outContains('tls-ca=STRING              Path to certificate authority certificate file');
+  });
 });

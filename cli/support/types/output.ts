@@ -53,6 +53,12 @@ class Output {
     ).toHaveLength(0);
   }
 
+  async trimWhitespace() {
+    this.stdout = this.stdout.replace(/ +(?= )/g, '');
+    console.log('Output is: ');
+    console.log(this.stdout);
+  }
+
   private getErrors(): string {
     let errors: string[] = [];
     for (const obj of test.info().errors) {
