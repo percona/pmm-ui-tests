@@ -3,20 +3,18 @@ import Output from "@support/types/output";
 const shell = require('shelljs');
 
 /**
- * Shell(sh) exec() wrapper to return handy {@link Output} object.
+ * Shell(sh) echo().to() wrapper to use in tests with handy logs creation
  *
- * @param       command   sh command to execute
- * @return      {@link Output} instance
+ * @param   pathToFile  path to the file including file name
+ * @param   content     content {@code string} to insert as file content
+ * @param   stepTitle   optional custom test step label
  */
-export async function createFile(pathToFile: string, content: string,  stepTitle: string = null): Promise<Output> {
+export async function createFile(pathToFile: string, content: string,  stepTitle: string = null) {
   const stepName = stepTitle ? stepTitle : `Create "${pathToFile}" file with content:\n"${content}"`;
-  const command = `echo: "${content}" >> ${pathToFile}`;
-  const { stdout, stderr, code } = await test.step(stepName, async () => {
-    console.log(command);
-    return shell.echo(content).to(pathToFile);
+  await test.step(stepName, async () => {
+    console.log(`echo: "${content}" >> ${pathToFile}`);
+    shell.echo(content).to(pathToFile);
   });
-  if (stdout.length > 0) console.log(`Out: "${stdout}"`);
-  return new Output(command, code, stdout, stderr);
 }
 
 /**
