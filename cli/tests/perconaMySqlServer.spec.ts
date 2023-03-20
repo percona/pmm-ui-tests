@@ -315,7 +315,7 @@ test.describe('PMM Client CLI tests for Percona Server Database', async () => {
    * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/ps-specific-tests.bats#L277
    */
   test('PMM-T962 check metrics from service with custom agent password', async ({ }) => {
-    let hosts = (await cli.exec(`sudo pmm-admin list | grep "MySQL" | grep "mysql_"'`))
+    let hosts = (await cli.exec(`sudo pmm-admin list | grep "MySQL" | grep "mysql_"`))
       .stdout.trim().split('\n').filter((item) => item.trim().length > 0);
     let n = 1;
     for (const host of hosts) {
@@ -331,7 +331,7 @@ test.describe('PMM Client CLI tests for Percona Server Database', async () => {
    * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/ps-specific-tests.bats#L291
    */
   test('run pmm-admin remove mysql added with custom agent password', async ({ }) => {
-    let hosts = (await cli.exec(`sudo pmm-admin list | grep "MySQL" | grep "mysql_"'`))
+    let hosts = (await cli.exec(`sudo pmm-admin list | grep "MySQL" | grep "mysql_"`))
       .stdout.trim().split('\n').filter((item) => item.trim().length > 0);
     let n = 1;
     for (const host of hosts) {
@@ -351,7 +351,6 @@ test.describe('PMM Client CLI tests for Percona Server Database', async () => {
     for (const host of hosts) {
       const mysql_ip = host.split(':')[0];
       const mysql_port = host.split(':')[1];
-      await cli.exec('sleep 10');
       let output = await cli.exec(`sudo pmm-admin add mysql --query-source=perfschema --username=${MYSQL_USER} --password=${MYSQL_PASSWORD} --host=${mysql_ip} --port=${mysql_port} --service-name=mysql_${n++} --metrics-mode=push`);
       await output.assertSuccess();
       await output.outContains('MySQL Service added.');
