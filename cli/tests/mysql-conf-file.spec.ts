@@ -19,7 +19,7 @@ test.describe('Percona Server MySql (PS) Configuration file test ', async () => 
     let n = 1;
     for (const host of hosts) {
       // Add MySQL to monitoring using conf file:
-      let output = await cli.exec(`sudo pmm-admin add mysql --query-source=perfschema @${confFilePath} --service-name=mysql_conf_${n++} ${host}`);
+      let output = await cli.exec(`sudo pmm-admin add mysql --query-source=perfschema @${confFilePath} mysql_conf_${n++} ${host}`);
       await output.assertSuccess();
       await output.outContains('MySQL Service added.');
 
