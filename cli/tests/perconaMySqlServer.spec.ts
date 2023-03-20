@@ -444,6 +444,6 @@ test.describe('PMM Client CLI tests for Percona Server Database', async () => {
     await output.outContains('tls-skip-verify Skip TLS certificates validation');
     await output.outContains('tls-ca=STRING Path to certificate authority certificate');
     await output.outContains('tls-cert=STRING Path to client certificate file');
-    await output.outContains('tls-key=STRING CPath to client key file');
+    await output.outContains('tls-key=STRING Path to client key file');
   });
 });
