@@ -440,8 +440,11 @@ test.describe('PMM Client CLI tests for Percona Server Database', async () => {
     const output = await cli.exec(`sudo pmm-admin add mysql --help`);
     await output.assertSuccess();
     await output.trimWhitespace();
-    await output.outContains('tls                        Use TLS to connect to the database');
-    await output.outContains('tls-skip-verify            Skip TLS certificates validation');
-    await output.outContains('tls-ca=STRING              Path to certificate authority certificate file');
+    await output.outContains('tls Use TLS to connect to the database');
+    await output.outContains('tls-skip-verify Skip TLS certificates validation');
+    await output.outContains('tls-ca=STRING Path to certificate authority certificate \
+file');
+    await output.outContains('tls-cert=STRING Path to client certificate file');
+    await output.outContains('tls-key=STRING Path to client key file');
   });
 });
