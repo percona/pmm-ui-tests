@@ -310,4 +310,34 @@ test.describe('PMM Client CLI tests for Percona Server Database', async () => {
       await output.outContains('MySQL Service added.');
     }
   });
+
+  /**
+   * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/ps-specific-tests.bats#L277
+   */
+  test('PMM-T962 check metrics from service with custom agent password', async ({ }) => {
+    let hosts = (await cli.exec(`sudo pmm-admin list | grep "MySQL" | grep "mysql_"'`))
+      .stdout.trim().split('\n').filter((item) => item.trim().length > 0);
+    let n = 1;
+    for (const host of hosts) {
+      await cli.exec('sleep 20');
+      await cli.exec('sudo chmod +x ./pmm-tests/pmm-2-0-bats-tests/check_metric.sh');
+      let output = await cli.exec(`sudo ./pmm-tests/pmm-2-0-bats-tests/check_metric.sh mysql_${n++} mysql_up 127.0.0.1 mysqld_exporter pmm mypass`);
+      await output.assertSuccess();
+      await output.outContains('mysql_up 1');
+    }
+  });
+
+  /**
+   * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/ps-specific-tests.bats#L291
+   */
+  test('run pmm-admin remove mysql added with custom agent password', async ({ }) => {
+    let hosts = (await cli.exec(`sudo pmm-admin list | grep "MySQL" | grep "mysql_"'`))
+      .stdout.trim().split('\n').filter((item) => item.trim().length > 0);
+    let n = 1;
+    for (const host of hosts) {
+      let output = await cli.exec(`sudo pmm-admin remove mysql mysql_${n++}`);
+      await output.assertSuccess();
+      await output.outContains('Service removed.');
+    }
+  });
 });
