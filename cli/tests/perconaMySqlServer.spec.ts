@@ -437,7 +437,7 @@ test.describe('PMM Client CLI tests for Percona Server Database', async () => {
    * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/ps-specific-tests.bats#L392
    */
   test("PMM-T789 - Verify help for pmm-admin add mysql has TLS-related flags", async ({ }) => {
-    const output = await cli.exec(`sudo pmm-admin add mysql --help'`);
+    const output = await cli.exec(`sudo pmm-admin add mysql --help`);
     await output.assertSuccess();
     await output.trimWhitespace();
     await output.outContains('tls                        Use TLS to connect to the database');
