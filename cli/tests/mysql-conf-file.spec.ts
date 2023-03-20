@@ -11,17 +11,16 @@ test.describe('Percona Server MySql (PS) Configuration file test ', async () => 
 
     // Create pmm-admin-mysql.conf file at any folder and put credentials to MySQL to this file in any text editor or using terminal:
     const confFilePath = '/tmp/mysql-credentials.conf';
-    await test.step(`Create ${confFilePath} file and put credentials to MySQL to this file`, async () => {
-      shell.echo(`--username=${MYSQL_USER}\n--password=${MYSQL_PASSWORD}`).to(confFilePath);
-    });
-
+    const configOut = await cli.createFile(confFilePath, `--username=${MYSQL_USER}\n--password=${MYSQL_PASSWORD}`,
+        `Create ${confFilePath} file and put credentials to MySQL to this file`);
+    await configOut.assertSuccess();
 
     let hosts = (await cli.exec(`sudo pmm-admin list | grep "MySQL" | awk -F" " '{print $3}'`))
         .stdout.trim().split('\n').filter( item => item.trim().length > 0);
     let n = 1;
     for (const host of hosts) {
       // Add MySQL to monitoring using conf file:
-      let output = await cli.exec(`sudo pmm-admin add mysql --query-source=perfschema @${confFilePath} --service-name=mysql_${n++} ${host}`);
+      let output = await cli.exec(`sudo pmm-admin add mysql --query-source=perfschema @${confFilePath} --service-name=mysql_conf_${n++} ${host}`);
       await output.assertSuccess();
       await output.outContains('MySQL Service added.');
 

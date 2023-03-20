@@ -3,6 +3,24 @@ import Output from "@support/types/output";
 const shell = require('shelljs');
 
 /**
+ * Shell(sh) exec() wrapper to return handy {@link Output} object.
+ *
+ * @param       command   sh command to execute
+ * @return      {@link Output} instance
+ */
+export async function createFile(pathToFile: string, content: string,  stepTitle: string = null): Promise<Output> {
+  const stepName = stepTitle ? stepTitle : `Create "${pathToFile}" file with content:\n"${content}"`;
+  const command = `echo: "${content}" >> ${pathToFile}`;
+  const { stdout, stderr, code } = await test.step(stepName, async () => {
+    console.log(command);
+    return shell.echo(content).to(pathToFile);
+  });
+  if (stdout.length > 0) console.log(`Out: "${stdout}"`);
+  if (stderr.length > 0) console.log(`Error: "${stderr}"`);
+  return new Output(command, code, stdout, stderr);
+}
+
+/**
  * Shell(sh) exec() wrapper to use outside outside {@link test}
  * returns handy {@link Output} object.
  *
@@ -24,13 +42,9 @@ export function execute(command: string): Output {
  * @return      {@link Output} instance
  */
 export async function exec(command: string): Promise<Output> {
-  const { stdout, stderr, code } = await test.step(`Run "${command}" command`, async () => {
-    console.log(`Run: "${command}"`);
-    return shell.exec(command.replace(/(\r\n|\n|\r)/gm, ''), { silent: false });
+  return await test.step(`Run "${command}" command`, async () => {
+    return this.execute(command);
   });
-  if (stdout.length > 0) console.log(`Out: "${stdout}"`);
-  if (stderr.length > 0) console.log(`Error: "${stderr}"`);
-  return new Output(command, code, stdout, stderr);
 }
 
 /**
