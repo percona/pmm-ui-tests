@@ -436,7 +436,7 @@ test.describe('PMM Client CLI tests for Percona Server Database', async () => {
   /**
    * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/ps-specific-tests.bats#L392
    */
-  test("PMM-T159 User can't use both socket and port while using pmm-admin add mysql", async ({ }) => {
+  test("PMM-T789 - Verify help for pmm-admin add mysql has TLS-related flags", async ({ }) => {
     const output = await cli.exec(`sudo pmm-admin add mysql --help'`);
     await output.assertSuccess();
     await output.trimWhitespace();
