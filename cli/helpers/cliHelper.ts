@@ -16,7 +16,6 @@ export async function createFile(pathToFile: string, content: string,  stepTitle
     return shell.echo(content).to(pathToFile);
   });
   if (stdout.length > 0) console.log(`Out: "${stdout}"`);
-  if (stderr.length > 0) console.log(`Error: "${stderr}"`);
   return new Output(command, code, stdout, stderr);
 }
 
