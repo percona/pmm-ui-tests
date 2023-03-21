@@ -20,9 +20,8 @@ Scenario(
   async ({
     I, nodesOverviewPage, dashboardPage,
   }) => {
+    console.log(`PMM Server Version is: ${pmmVersion}`);
     if (pmmVersion > 36) {
-      console.log(`PMM Server Version is: ${pmmVersion}`);
-
       await I.verifyCommand(`docker run \
         --rm \
         --name pmm-client \
