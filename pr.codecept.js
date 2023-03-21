@@ -123,8 +123,6 @@ exports.config = {
         options: {
           mochaFile: './tests/output/result.xml',
           jenkinsMode: true,
-          // verbose: false,
-          // steps: false,
         },
       },
     },
