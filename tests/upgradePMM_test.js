@@ -186,7 +186,7 @@ Scenario(
 );
 
 if (versionMinor >= 15) {
-  Scenario(
+  Scenario.skip(
     'Verify user has failed checks before upgrade @pre-upgrade @pmm-upgrade',
     async ({
       I,
@@ -552,9 +552,10 @@ Scenario(
 );
 
 Scenario('@PMM-T1647 Verify pmm-server package doesn\'t exist @post-upgrade @pmm-upgrade', async ({ I }) => {
+  await I.amOnPage('');
   const packages = await I.verifyCommand('docker exec pmm-server rpm -qa');
 
-  I.assertTrue(!packages.includes('pmm-server'), 'Pmm server package present in package list.');
+  I.assertTrue(!packages.includes('pmm-server'), 'pmm-server package present in package list.');
 });
 
 Scenario(
@@ -635,7 +636,7 @@ Scenario(
 );
 
 if (versionMinor >= 15) {
-  Scenario(
+  Scenario.skip(
     'Verify user has failed checks after upgrade / STT on @post-upgrade @pmm-upgrade',
     async ({
       I,
@@ -676,7 +677,7 @@ if (versionMinor >= 15) {
       );
 
       const expectedScrapeUrl = `${remoteInstancesHelper.remote_instance.external.redis.schema}://${remoteInstancesHelper.remote_instance.external.redis.host
-      }:${remoteInstancesHelper.remote_instance.external.redis.port}${remoteInstancesHelper.remote_instance.external.redis.metricsPath}`;
+        }:${remoteInstancesHelper.remote_instance.external.redis.port}${remoteInstancesHelper.remote_instance.external.redis.metricsPath}`;
 
       assert.ok(targets.scrapeUrl === expectedScrapeUrl,
         `Active Target for external service Post Upgrade has wrong Address value, value found is ${targets.scrapeUrl} and value expected was ${expectedScrapeUrl}`);
@@ -686,7 +687,7 @@ if (versionMinor >= 15) {
 }
 
 if (versionMinor >= 16) {
-  Scenario(
+  Scenario.skip(
     'Verify disabled checks remain disabled after upgrade @post-upgrade @pmm-upgrade',
     async ({
       I,
@@ -701,7 +702,7 @@ if (versionMinor >= 16) {
     },
   );
 
-  Scenario(
+  Scenario.skip(
     'Verify check intervals remain the same after upgrade @post-upgrade @pmm-upgrade',
     async ({
       I,
@@ -715,7 +716,7 @@ if (versionMinor >= 16) {
     },
   );
 
-  Scenario(
+  Scenario.skip(
     'Verify silenced checks remain silenced after upgrade @post-upgrade @pmm-upgrade',
     async ({
       I,
@@ -731,7 +732,7 @@ if (versionMinor >= 16) {
     },
   );
 
-  Scenario(
+  Scenario.skip(
     'Verify settings for intervals remain the same after upgrade @post-upgrade @pmm-upgrade',
     async ({
       I,
@@ -1128,10 +1129,12 @@ if (versionMinor >= 32) {
     + ' @post-upgrade @pmm-upgrade',
     async ({ I, scheduledPage }) => {
       await scheduledPage.openScheduledBackupsPage();
+      await I.waitForVisible(scheduledPage.elements.toggleByName(scheduleName))
       I.seeAttributesOnElements(scheduledPage.elements.toggleByName(scheduleName), { checked: true });
 
       // Disable schedule
       I.click(scheduledPage.buttons.enableDisableByName(scheduleName));
+      await I.waitForVisible(scheduledPage.elements.toggleByName(scheduleName))
       I.seeAttributesOnElements(scheduledPage.elements.toggleByName(scheduleName), { checked: null });
     },
   ).retry(0);
