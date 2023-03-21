@@ -13,12 +13,22 @@ const mongo_test_user = {
   password: 'pass+',
 };
 
+const telemetry = {
+  collstats: 'mongodb_collector_scrape_time_collstats',
+  dbstats: 'mongodb_collector_scrape_time_dbstats',
+  diagnosticData: 'mongodb_collector_scrape_time_diagnostic_data',
+  general: 'mongodb_collector_scrape_time_general',
+  indexstats: 'mongodb_collector_scrape_time_indexstats',
+  top: 'mongodb_collector_scrape_time_top',
+  replsetStatus: 'mongodb_collector_scrape_time_replset_status',
+};
+
 BeforeSuite(async ({ I }) => {
   const detectedPort = await I.verifyCommand('pmm-admin list | grep mongodb_node_1 | awk -F " " \'{print $3}\' | awk -F ":" \'{print $2}\'');
 
   connection.port = detectedPort;
-  await I.mongoConnect(connection);
-  await I.mongoAddUser(mongo_test_user.username, mongo_test_user.password);
+  // await I.mongoConnect(connection);
+  // await I.mongoAddUser(mongo_test_user.username, mongo_test_user.password);
 });
 
 Before(async ({ I }) => {
@@ -41,5 +51,27 @@ Scenario(
     );
 
     await grafanaAPI.waitForMetric('mongodb_up', { type: 'service_name', value: mongodb_service_name }, 65);
+  },
+);
+
+Scenario(
+  'PMM-T1458 - Verify MongoDB exporter meta-metrics supporting @not-ui-pipeline @mongodb-exporter @exporters',
+  async ({ I }) => {
+    await I.say(await I.verifyCommand(`pmm-admin add mongodb --port=${connection.port} --password=${connection.password} --username=${connection.username} --service-name=${mongodb_service_name} --enable-all-collectors`));
+    let logs = '';
+
+    await I.asyncWaitFor(async () => {
+      logs = await I.verifyCommand('docker exec pmm-server cat /srv/logs/pmm-managed.log | grep mongodb_collector_scrape_');
+      // const logs = await I.verifyCommand('docker exec pmm-server tail -n 100 /srv/logs/pmm-agent.log');
+
+      return logs.length > 0;
+    }, 60);
+    I.assertTrue(logs.includes(telemetry.collstats), `/srv/logs/pmm-managed.log expected to contain '${telemetry.collstats}'`);
+    I.assertTrue(logs.includes(telemetry.dbstats), `/srv/logs/pmm-managed.log expected to contain '${telemetry.dbstats}'`);
+    I.assertTrue(logs.includes(telemetry.diagnosticData), `/srv/logs/pmm-managed.log expected to contain '${telemetry.diagnosticData}'`);
+    I.assertTrue(logs.includes(telemetry.general), `/srv/logs/pmm-managed.log expected to contain '${telemetry.general}'`);
+    I.assertTrue(logs.includes(telemetry.indexstats), `/srv/logs/pmm-managed.log expected to contain '${telemetry.indexstats}'`);
+    I.assertTrue(logs.includes(telemetry.top), `/srv/logs/pmm-managed.log expected to contain '${telemetry.top}'`);
+    I.assertTrue(logs.includes(telemetry.replsetStatus), `/srv/logs/pmm-managed.log expected to contain '${telemetry.replsetStatus}'`);
   },
 );
