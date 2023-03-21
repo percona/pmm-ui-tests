@@ -1,8 +1,7 @@
 const { pmmSettingsPage } = inject();
+const { homePage } = inject();
 const communicationDefaults = new DataTable(['type', 'serverAddress', 'hello', 'from', 'authType', 'username', 'password', 'url', 'message']);
 const assert = require('assert');
-
-const homePage = inject();
 
 // pmmSettingsPage.communicationData.forEach(({
 //   type, serverAddress, hello, from, authType, username, password, url,
@@ -364,7 +363,7 @@ Scenario(
     I.assertEqual(settingEndpointResponse, true);
     I.amOnPage(pmmSettingsPage.advancedSettingsUrl);
     I.waitForVisible(pmmSettingsPage.fields.backupManagementSwitch, 30);
-    pmmSettingsPage.verifySwitch(pmmSettingsPage.fields.backupManagementSwitchInput, 'on');
+    await pmmSettingsPage.verifySwitch(pmmSettingsPage.fields.backupManagementSwitchInput, 'on');
     assert.ok(settingEndpointResponse, `Backup managment should be turned on by default from 2.36.0 release but found ${settingEndpointResponse}`);
   },
 ).retry(2);
