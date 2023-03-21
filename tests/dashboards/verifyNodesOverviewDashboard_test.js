@@ -16,13 +16,13 @@ After(async ({ I }) => {
 });
 
 Scenario(
-  'PMM-T1642 - Verify that filtering by Environment works OS dashboards @docker-configuration',
+  '@PMM-T1642 - Verify that filtering by Environment works OS dashboards @docker-configuration',
   async ({
     I, nodesOverviewPage, dashboardPage,
   }) => {
     await I.amOnPage('');
     console.log(`PMM Server Version is: ${pmmVersion}`);
-    if (pmmVersion > 36) {
+    if (pmmVersion >= 36 || pmmVersion === undefined) {
       await I.verifyCommand(`docker run \
         --rm \
         --name pmm-client \
