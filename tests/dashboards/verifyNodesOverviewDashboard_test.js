@@ -1,5 +1,5 @@
-
 Feature('Tests for Operation System Dashboards');
+
 const dockerVersion = process.env.CLIENT_VERSION || 'perconalab/pmm-client:dev-latest';
 let pmmVersion;
 
@@ -7,16 +7,14 @@ BeforeSuite(async ({ homePage }) => {
   pmmVersion = await homePage.getVersions().versionMinor;
 });
 
-
 Before(async ({ I }) => {
   await I.Authorize();
 });
 
-
 Scenario(
   'PMM-T1642 - Verify that filtering by Environment works OS dashboards @docker-configuration',
   async ({
-    I, nodesOverviewPage, dashboardPage
+    I, nodesOverviewPage, dashboardPage,
   }) => {
     if (pmmVersion > 36) {
       await I.verifyCommand(`docker run \
@@ -39,9 +37,12 @@ Scenario(
       const envName = await I.grabTextFromAll(nodesOverviewPage.buttons.environment);
 
       I.say(`Env Name is: ${envName}`);
+      console.log(`Env Name is: ${envName}`);
       await I.assertEqual(envName, 'prod', `The value of selected environment "${envName}" does not equal expected one "dev"}`);
       await dashboardPage.waitForAllGraphsToHaveData(180);
     } else {
-      I.say('This functionality was added in PMM 2.36.0')
+      console.log('This functionality was added in PMM 2.36.0');
+      I.say('This functionality was added in PMM 2.36.0');
     }
-  });
+  },
+);
