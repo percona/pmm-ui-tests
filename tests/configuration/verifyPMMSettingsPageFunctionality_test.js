@@ -352,14 +352,15 @@ Scenario(
 Scenario(
   'PMM-11640-backup-managment-enabled-by-default @backup @nightly',
   async ({
-    I, pmmSettingsPage, portalAPI, perconaPlatformPage, settingsAPI,
+    I, pmmSettingsPage, settingsAPI,
   }) => {
-    const serverAddressIP = process.env.VM_IP;
-    const settingsEndpoint = `https://${serverAddressIP}v1/Settings/Get`;
-    const response = await I.sendGetRequest(settingsEndpoint);
-    const jsonResponse = response.data;
+    // const serverAddressIP = process.env.VM_IP;
+    // const settingsEndpoint = `https://${serverAddressIP}v1/Settings/Get`;
+    // const response = await I.sendGetRequest(settingsEndpoint);
+    // const jsonResponse = response.data;
+    const settingEndpointResponse = settingsAPI.getSettings();
 
-    I.assertEqual(jsonResponse['backup management'], 'true');
+    I.assertEqual(settingEndpointResponse['backup management'], 'true');
     I.amOnPage(pmmSettingsPage.advancedSettingsUrl);
     I.waitForVisible(pmmSettingsPage.fields.backupManagementSwitch, 30);
     pmmSettingsPage.verifySwitch(pmmSettingsPage.fields.backupManagementSwitchInput, 'on');
