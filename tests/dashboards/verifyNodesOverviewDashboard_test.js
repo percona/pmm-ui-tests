@@ -20,6 +20,7 @@ Scenario(
   async ({
     I, nodesOverviewPage, dashboardPage,
   }) => {
+    await I.amOnPage('');
     console.log(`PMM Server Version is: ${pmmVersion}`);
     if (pmmVersion > 36) {
       await I.verifyCommand(`docker run \
@@ -36,7 +37,7 @@ Scenario(
         --env PMM_AGENT_SETUP_REGION=EU \
         --volumes-from pmm-client-data \
         ${dockerVersion}`);
-      await I.amOnPage('');
+
       await nodesOverviewPage.selectEnvironment('dev');
 
       const envName = await I.grabTextFromAll(nodesOverviewPage.buttons.environment);
