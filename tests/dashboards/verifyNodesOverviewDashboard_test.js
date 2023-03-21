@@ -11,12 +11,18 @@ Before(async ({ I }) => {
   await I.Authorize();
 });
 
+After(async ({ I }) => {
+  await I.unAuthorize();
+});
+
 Scenario(
   'PMM-T1642 - Verify that filtering by Environment works OS dashboards @docker-configuration',
   async ({
     I, nodesOverviewPage, dashboardPage,
   }) => {
     if (pmmVersion > 36) {
+      console.log(`PMM Server Version is: ${pmmVersion}`);
+
       await I.verifyCommand(`docker run \
         --rm \
         --name pmm-client \
