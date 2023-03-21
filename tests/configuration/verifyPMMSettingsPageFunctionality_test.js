@@ -1,6 +1,8 @@
 const { pmmSettingsPage } = inject();
 const communicationDefaults = new DataTable(['type', 'serverAddress', 'hello', 'from', 'authType', 'username', 'password', 'url', 'message']);
 const assert = require('assert');
+const { homeDashboard } = require('../pages/dashboardPage');
+const homePage = require('../pages/homePage');
 
 // pmmSettingsPage.communicationData.forEach(({
 //   type, serverAddress, hello, from, authType, username, password, url,
@@ -352,14 +354,18 @@ Scenario(
 Scenario(
   'PMM-T1658-backup-managment-enabled-by-default @backup',
   async ({
-    I, pmmSettingsPage, settingsAPI,
+    I, pmmSettingsPage, settingsAPI, homePage,
   }) => {
     const settingEndpointResponse = await settingsAPI.getSettings('backup_management_enabled');
+    const bmIcon = locate('a[type="button"][aria-label="Backup"]');
 
+    I.amOnPage(homePage.url);
+    I.waitForElement(bmIcon, 30);
     I.assertEqual(settingEndpointResponse, true);
     I.amOnPage(pmmSettingsPage.advancedSettingsUrl);
     I.waitForVisible(pmmSettingsPage.fields.backupManagementSwitch, 30);
     pmmSettingsPage.verifySwitch(pmmSettingsPage.fields.backupManagementSwitchInput, 'on');
+    assert.ok(settingEndpointResponse, `Backup managment should be turned on by default from 2.36.0 release but found ${settingEndpointResponse}`);
   },
 ).retry(2);
 
