@@ -35,7 +35,7 @@ Scenario(
 
       console.log(output);
 
-      await I.wait(30);
+      await I.wait(300);
       await I.click(nodesOverviewPage.buttons.refreshDashboard);
       await nodesOverviewPage.selectEnvironment('dev');
       const envName = await I.grabTextFromAll(nodesOverviewPage.buttons.environment);
