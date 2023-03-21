@@ -115,7 +115,7 @@ exports.config = {
         stdout: '-',
         options: {
           verbose: false,
-          steps: true,
+          steps: false,
         },
       },
       'mocha-junit-reporter': {
@@ -123,6 +123,8 @@ exports.config = {
         options: {
           mochaFile: './tests/output/result.xml',
           jenkinsMode: true,
+          verbose: false,
+          steps: false,
         },
       },
     },
