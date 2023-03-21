@@ -4,10 +4,10 @@ CREATE OR REPLACE FUNCTION generate_histogram()
   )  AS $$
 Declare
     bucket_id integer;
-    query_id text;
+    query_id bigint;
 BEGIN
     select bucket into bucket_id from pg_stat_monitor order by calls desc limit 1;
-    select queryid into query_id from pg_stat_monitor order by calls desc limit 1;
+    select pgsm_query_id into query_id from pg_stat_monitor order by calls desc limit 1;
     --RAISE INFO 'bucket_id %', bucket_id;
     --RAISE INFO 'query_id %', query_id;
     return query
@@ -20,9 +20,9 @@ DECLARE
     loops ALIAS FOR $1;
 BEGIN
     FOR i IN 1..loops LOOP
-	--RAISE INFO 'Current timestamp: %', timeofday()::TIMESTAMP;
-	RAISE INFO 'Sleep % seconds', i;
-	PERFORM pg_sleep(i);
+    --RAISE INFO 'Current timestamp: %', timeofday()::TIMESTAMP;
+    RAISE INFO 'Sleep % seconds', i;
+    PERFORM pg_sleep(i);
     END LOOP;
 END;
 $$ LANGUAGE 'plpgsql' STRICT;

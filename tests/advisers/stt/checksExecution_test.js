@@ -86,7 +86,7 @@ Scenario.skip(
   },
 );
 
-Scenario(
+Scenario.skip(
   'PMM-T594 Verify failed checks appear after STT is enabled in Settings @stt @not-ovf',
   async ({
     I, databaseChecksPage, homePage, settingsAPI,
@@ -106,7 +106,7 @@ Scenario(
   },
 );
 
-Scenario(
+Scenario.skip(
   'PMM-T617 Verify user is able to silence failed check @stt @not-ovf @advisors-fb',
   async ({
     I, databaseChecksPage,

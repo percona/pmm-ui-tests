@@ -11,6 +11,15 @@ const resourceFields = new DataTable(['resourceType']);
 
 const nameFields = new DataTable(['field', 'value', 'errorMessageField', 'errorMessage']);
 
+const podName = new DataTable(['podNameValue', 'noDataCount']);
+
+podName.add(['dbaas-operator', '1']);
+podName.add(['kube-state-metrics', '4']);
+podName.add(['percona-server-mongodb-operator', '4']);
+podName.add(['percona-xtradb-cluster-operator', '4']);
+podName.add(['vm-operator', '1']);
+podName.add(['vmagent-pmm-vmagent', '0']);
+
 // This is Data table for Resources available for DB Cluster, used for checking Default Values.
 
 resourceFields.add(['Small']);
@@ -108,6 +117,21 @@ Scenario('PMM-T1451 - Verify Register new Kubernetes Cluster page @dbaas',
     I.seeElement(dbaasPage.tabs.kubernetesClusterTab.awsAccessKeyInput);
     I.seeElement(dbaasPage.tabs.kubernetesClusterTab.awsSecretKeyInput);
   }
+);
+
+Data(podName).Scenario('PMM-T1122 Verify DB Cluster Summary dashboard @dbaas',
+  async ({
+    I, dbClusterSummaryDashboardPage, dashboardPage, adminPage, current
+  }) => {
+    await I.amOnPage(dbClusterSummaryDashboardPage.url);
+    dashboardPage.waitForDashboardOpened();
+    await dashboardPage.applyFilter('Pod', current.podNameValue);
+    await dashboardPage.expandEachDashboardRow();
+    I.click(adminPage.fields.metricTitle);
+    dashboardPage.verifyMetricsExistence(dbClusterSummaryDashboardPage.metrics);
+    await dashboardPage.verifyThereAreNoGraphsWithNA();
+    await dashboardPage.verifyThereAreNoGraphsWithoutData(current.noDataCount);
+  },
 );
 
 Scenario(
@@ -390,17 +414,14 @@ Scenario('PMM-T1571 Verify Create DB Cluster page @dbaas',
     I.seeElement(dbaasPage.tabs.dbClusterTab.networkAndSecurity.internetFacingLabel);
     I.scrollTo(dbaasPage.tabs.dbClusterTab.networkAndSecurity.sourceRangesLabel);
     I.click(dbaasPage.tabs.dbClusterTab.networkAndSecurity.addNewSourceRangeButton);
-    let sourceRange = await I.grabNumberOfVisibleElements(
-      dbaasPage.tabs.dbClusterTab.networkAndSecurity.sourceRangeInput);
-
-    assert.ok(sourceRange === 2, `There should be 2 Source Range Inputs but found ${sourceRange}`);
-
-    I.click(dbaasPage.tabs.dbClusterTab.networkAndSecurity.deleteSourceRangeButton);
-
-    sourceRange = await I.grabNumberOfVisibleElements(dbaasPage.tabs.dbClusterTab.networkAndSecurity.sourceRangeInput);
-
-    assert.ok(sourceRange === 1, `There should be 1 Source Range Input but found ${sourceRange}`);
-
+    I.click(dbaasPage.tabs.dbClusterTab.networkAndSecurity.addNewSourceRangeButton);
+    await dbaasPage.verifySourceRangeCount(3);
+    I.click(dbaasPage.tabs.dbClusterTab.networkAndSecurity.deleteSourceRangeButton(2));
+    await dbaasPage.verifySourceRangeCount(2);
+    I.click(dbaasPage.tabs.dbClusterTab.networkAndSecurity.deleteSourceRangeButton(1));
+    await dbaasPage.verifySourceRangeCount(1);
+    I.click(dbaasPage.tabs.dbClusterTab.networkAndSecurity.deleteSourceRangeButton(0));
+    await dbaasPage.verifySourceRangeCount(1);
     I.click(dbaasPage.tabs.dbClusterTab.basicOptions.fields.dbClusterDatabaseTypeField);
     I.fillField(dbaasPage.tabs.dbClusterTab.basicOptions.fields.dbClusterDatabaseTypeInputField, 'MongoDB');
     I.waitForElement(

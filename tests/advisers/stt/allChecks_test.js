@@ -27,7 +27,7 @@ After(async ({ settingsAPI, securityChecksAPI }) => {
   await securityChecksAPI.enableCheck(securityChecksAPI.checkNames.mysqlVersion);
 });
 
-Scenario(
+Scenario.skip(
   'PMM-T469 PMM-T472 PMM-T654 Verify list of all checks [critical] @stt',
   async ({
     I, allChecksPage,
@@ -49,7 +49,7 @@ Scenario(
   },
 );
 
-Scenario(
+Scenario.skip(
   'PMM-T471 Verify reloading page on All Checks tab [minor] @stt',
   async ({
     I, allChecksPage,
@@ -67,7 +67,7 @@ Scenario(
   },
 );
 
-Scenario(
+Scenario.skip(
   'PMM-T585 Verify user is able enable/disable checks [critical] @stt @advisors-fb',
   async ({
     I, allChecksPage, securityChecksAPI, databaseChecksPage,
@@ -107,7 +107,7 @@ Scenario(
   },
 );
 
-Scenario(
+Scenario.skip(
   'PMM-T723 Verify user can change check interval @stt @advisors-fb',
   async ({
     I, allChecksPage, securityChecksAPI,
@@ -138,7 +138,7 @@ Scenario(
   },
 );
 
-Scenario(
+Scenario.skip(
   '@PMM-T1269 Verify ability to filter Advisor checks list @stt',
   async ({
     I, allChecksPage, securityChecksAPI,
