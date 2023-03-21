@@ -19,7 +19,7 @@ Scenario(
     await I.amOnPage(nodesOverviewPage.url);
     console.log(`PMM Server Version is: ${pmmVersion}`);
     if (pmmVersion >= 36 || pmmVersion === undefined) {
-      await I.verifyCommand(`docker run \
+      const output = await I.verifyCommand(`docker run \
         -d --rm \
         --name pmm-T1642-client \
         --add-host host.docker.internal:host-gateway \
@@ -32,6 +32,8 @@ Scenario(
         --env PMM_AGENT_SETUP_CUSTOM_LABELS="environment=dev" \
         --env PMM_AGENT_SETUP_REGION=EU \
         ${dockerVersion}`);
+
+      console.log(output);
 
       await I.wait(30);
       await I.click(nodesOverviewPage.buttons.refreshDashboard);
