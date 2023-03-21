@@ -173,12 +173,7 @@ module.exports = {
         sourceRangesLabel: locate('label').withText('Source Range'),
         addNewSourceRangeButton: locate('button').find('span').withText('Add new').as('Add Source Range button'),
         sourceRangeInput: locate('input').withAttr({ placeholder: '181.170.213.40/32' }).as('Source Range input'),
-        deleteSourceRangeButton: locate('$network-and-security').find('button').at(2).as('Delete Source Range button'),
-        disabled: {
-          exposeCheckboxDisabled: '//input[@data-testid="expose-checkbox-input" and @disabled]',
-          internetFacingCheckboxDisabled: '//input[@data-testid="internetFacing-checkbox-input" and @disabled]',
-          addNewSourceRangeButtonDisabled: `//button[(@disabled)]//span[contains(., 'Add new')]`,
-        },
+        deleteSourceRangeButton: (order) => `$deleteButton-${order}`,
       },
       fields: {
         clusterDetailHeaders: ['Name', 'Database', 'Connection', 'DB Cluster Parameters', 'Cluster Status', 'Actions'],
@@ -517,5 +512,11 @@ module.exports = {
     } else {
       I.dontSee(`${dbClusterType}-${dbClusterName}`, dbaasPage.apiKeysPage.apiKeysTable);
     }
+  },
+
+  async verifySourceRangeCount(count) {
+    let sourceRange = await I.grabNumberOfVisibleElements(this.tabs.dbClusterTab.networkAndSecurity.sourceRangeInput);
+
+    assert.ok(sourceRange === count, `There should be ${count} Source Range Inputs but found ${sourceRange}`);
   },
 };
