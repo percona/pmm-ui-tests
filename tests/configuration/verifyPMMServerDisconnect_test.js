@@ -1,12 +1,13 @@
 const assert = require('assert');
 
-Feature('External Clickhouse Tests');
+Feature('Pmm Server stability');
 
-// Address of PMM with external clickhouse created with docker compose.
+// Address of PMM to be disconected.
 const basePmmUrl = 'http://127.0.0.1:8180/';
 
 BeforeSuite(async ({ I }) => {
   await I.verifyCommand('docker-compose -f docker-compose-disconnect.yml up -d');
+  await I.asyncWaitFor(async () => (await I.verifyCommand('docker ps | grep "pmm-client-disconnect"')).includes('Up'), 10);
   await I.verifyCommand('docker exec pmm-client-disconnect sh -c "pmm-admin add mysql --username=root --password=7B*53@lCdflR --query-source=perfschema mysql-disconnect-5.7 mysql-disconnect-5.7:3306"');
   await I.wait(80);
 });
