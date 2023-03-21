@@ -85,7 +85,7 @@ Data(createBackupTests).Scenario(
   async ({
     I, backupInventoryPage, current,
   }) => {
-    const backupName = 'mongo backup test';
+    const backupName = `mongo backup test ${current.storageLocationName}`;
 
     I.click(backupInventoryPage.buttons.openAddBackupModal);
 
