@@ -354,13 +354,9 @@ Scenario(
   async ({
     I, pmmSettingsPage, settingsAPI,
   }) => {
-    // const serverAddressIP = process.env.VM_IP;
-    // const settingsEndpoint = `https://${serverAddressIP}v1/Settings/Get`;
-    // const response = await I.sendGetRequest(settingsEndpoint);
-    // const jsonResponse = response.data;
-    const settingEndpointResponse = settingsAPI.getSettings();
+    const settingEndpointResponse = await settingsAPI.getSettings('backup_management_enabled');
 
-    I.assertEqual(settingEndpointResponse['backup management'], 'true');
+    I.assertEqual(settingEndpointResponse, true);
     I.amOnPage(pmmSettingsPage.advancedSettingsUrl);
     I.waitForVisible(pmmSettingsPage.fields.backupManagementSwitch, 30);
     pmmSettingsPage.verifySwitch(pmmSettingsPage.fields.backupManagementSwitchInput, 'on');
