@@ -1,8 +1,8 @@
 const { pmmSettingsPage } = inject();
 const communicationDefaults = new DataTable(['type', 'serverAddress', 'hello', 'from', 'authType', 'username', 'password', 'url', 'message']);
 const assert = require('assert');
-const { homeDashboard } = require('../pages/dashboardPage');
-const homePage = require('../pages/homePage');
+
+const homePage = inject();
 
 // pmmSettingsPage.communicationData.forEach(({
 //   type, serverAddress, hello, from, authType, username, password, url,
