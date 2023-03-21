@@ -20,7 +20,7 @@ Scenario(
     console.log(`PMM Server Version is: ${pmmVersion}`);
     if (pmmVersion >= 36 || pmmVersion === undefined) {
       await I.verifyCommand(`docker run \
-        --rm \
+        -d --rm \
         --name pmm-T1642-client \
         --add-host host.docker.internal:host-gateway \
         --env PMM_AGENT_SERVER_ADDRESS=127.0.0.1 \
