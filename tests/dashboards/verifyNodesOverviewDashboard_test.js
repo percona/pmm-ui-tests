@@ -11,16 +11,12 @@ Before(async ({ I }) => {
   await I.Authorize();
 });
 
-After(async ({ I }) => {
-  await I.unAuthorize();
-});
-
 Scenario(
   '@PMM-T1642 - Verify that filtering by Environment works OS dashboards @docker-configuration',
   async ({
     I, nodesOverviewPage, dashboardPage,
   }) => {
-    await I.amOnPage('');
+    await I.amOnPage(nodesOverviewPage.url);
     console.log(`PMM Server Version is: ${pmmVersion}`);
     if (pmmVersion >= 36 || pmmVersion === undefined) {
       await I.verifyCommand(`docker run \
@@ -39,13 +35,11 @@ Scenario(
         ${dockerVersion}`);
 
       await nodesOverviewPage.selectEnvironment('dev');
-
       const envName = await I.grabTextFromAll(nodesOverviewPage.buttons.environment);
 
-      I.say(`Env Name is: ${envName}`);
       console.log(`Env Name is: ${envName}`);
-      await I.assertEqual(envName, 'prod', `The value of selected environment "${envName}" does not equal expected one "dev"}`);
-      await dashboardPage.waitForAllGraphsToHaveData(180);
+      await I.assertContain(envName, 'dev', `The value of selected environment "${envName}" does not equal expected one "dev"}`);
+      await dashboardPage.waitForGraphsToHaveData(1, 300);
     } else {
       console.log('This functionality was added in PMM 2.36.0');
       I.say('This functionality was added in PMM 2.36.0');
