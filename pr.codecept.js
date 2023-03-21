@@ -115,7 +115,7 @@ exports.config = {
         stdout: '-',
         options: {
           verbose: false,
-          steps: true,
+          steps: false,
         },
       },
       'mocha-junit-reporter': {
