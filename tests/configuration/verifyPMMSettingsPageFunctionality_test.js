@@ -350,7 +350,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-11640-backup-managment-enabled-by-default @backup @nightly',
+  'PMM-11640-backup-managment-enabled-by-default @backup',
   async ({
     I, pmmSettingsPage, settingsAPI,
   }) => {
