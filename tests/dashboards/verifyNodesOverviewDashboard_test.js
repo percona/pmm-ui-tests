@@ -21,7 +21,7 @@ Scenario(
     if (pmmVersion >= 36 || pmmVersion === undefined) {
       await I.verifyCommand(`docker run \
         --rm \
-        --name pmm-client \
+        --name pmm-T1642-client \
         --add-host host.docker.internal:host-gateway \
         --env PMM_AGENT_SERVER_ADDRESS=127.0.0.1 \
         --env PMM_AGENT_SERVER_USERNAME=admin \
@@ -31,7 +31,6 @@ Scenario(
         --env PMM_AGENT_CONFIG_FILE=config/pmm-agent.yaml \
         --env PMM_AGENT_SETUP_CUSTOM_LABELS="environment=dev" \
         --env PMM_AGENT_SETUP_REGION=EU \
-        --volumes-from pmm-client-data \
         ${dockerVersion}`);
 
       await nodesOverviewPage.selectEnvironment('dev');
