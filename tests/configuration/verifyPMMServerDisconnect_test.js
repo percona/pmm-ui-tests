@@ -20,7 +20,7 @@ AfterSuite(async ({ I }) => {
 });
 
 Scenario(
-  '@PMM-T1442 Verify metrics are saved if PMM server was offline',
+  '@PMM-T1442 Verify metrics are saved if PMM server was offline @cli',
   async ({ I, dashboardPage, qanPage }) => {
     const withCustomBaseUrl = (url) => `${basePmmUrl}${url}`;
 
@@ -38,7 +38,7 @@ Scenario(
 );
 
 xScenario(
-  '@PMM-T1443 Verify metrics are saved if PMM server was offline',
+  '@PMM-T1443 Verify metrics are saved if pmm-agent is stopped',
   async ({ I, dashboardPage, qanPage }) => {
     const withCustomBaseUrl = (url) => `${basePmmUrl}${url}`;
 
