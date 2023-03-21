@@ -33,6 +33,7 @@ Scenario(
         --env PMM_AGENT_SETUP_REGION=EU \
         ${dockerVersion}`);
 
+      await I.refreshPage();
       await nodesOverviewPage.selectEnvironment('dev');
       const envName = await I.grabTextFromAll(nodesOverviewPage.buttons.environment);
 
