@@ -1,10 +1,17 @@
 const assert = require('assert');
 
-const { dbaasAPI, dbaasPage } = inject();
+const { dbaasAPI, dbaasPage, locationsPage } = inject();
 const clusterName = 'minikube';
 const pxc_cluster_name = 'pxc-dbcluster';
 const pxc_cluster_type = 'DB_CLUSTER_TYPE_PXC';
 const mysql_recommended_version = 'MySQL 8.0.27';
+const mysql_recommended_version_image = 'percona/percona-xtradb-cluster:8.0.27-18.1';
+
+const location = {
+  name: 'S3 Location DBaaS',
+  description: 'test description',
+  ...locationsPage.mongoStorageLocation,
+};
 
 const pxcDBClusterDetails = new DataTable(['namespace', 'clusterName', 'node']);
 
@@ -16,7 +23,6 @@ pxcDBClusterDetails.add(['default', `${pxc_cluster_name}`, '2']);
 Feature('DbaaS: PXC Cluster Creation, Modifications, Actions, Verification tests');
 
 const singleNodeConfiguration = {
-  topology: 'Single',
   numberOfNodes: '1',
   resourcePerNode: 'Custom',
   memory: '1.2 GB',
@@ -247,20 +253,19 @@ async ({
   // await dbaasPage.apiKeyCheck(clusterName, dbClusterRandomName, 'pxc', false);
 });
 
-Scenario('PMM-T522 Verify Editing a Cluster with Custom Setting and float values is possible @dbaas',
+Scenario('PMM-T522 Verify Editing a Cluster with Custom Setting and float values is possible, change from 3 node to single node possible @dbaas',
   async ({
     I, dbaasPage, dbaasActionsPage, dbaasAPI,
   }) => {
+    await dbaasAPI.deleteAllDBCluster(clusterName);
     const dbClusterRandomName = dbaasPage.randomizeClusterName(pxc_cluster_name);
 
-    await dbaasAPI.deleteAllDBCluster(clusterName);
+    await dbaasAPI.createCustomPXC(clusterName, dbClusterRandomName, '3', mysql_recommended_version_image);
     I.amOnPage(dbaasPage.url);
-    await dbaasActionsPage.createClusterBasicOptions(clusterName, dbClusterRandomName, 'MySQL');
-    I.click(dbaasPage.tabs.dbClusterTab.createClusterButton);
     I.waitForText('Processing', 30, dbaasPage.tabs.dbClusterTab.fields.progressBarContent(pxc_cluster_name));
     await dbaasPage.postClusterCreationValidation(dbClusterRandomName, clusterName);
     const configuration = {
-      topology: 'Single',
+      numberOfNodes: '1',
       resourcePerNode: 'Custom',
       memory: '1.2 GB',
       cpu: '0.2',
@@ -446,10 +451,30 @@ Scenario(
     const pxc_cluster_pending_delete = 'pxc-pending-delete';
 
     await dbaasAPI.deleteAllDBCluster(clusterName);
+    await dbaasAPI.createCustomPXC(clusterName, pxc_cluster_pending_delete, '1');
     I.amOnPage(dbaasPage.url);
-    await dbaasActionsPage.createClusterBasicOptions(clusterName, pxc_cluster_pending_delete, 'MySQL');
-    I.click(dbaasPage.tabs.dbClusterTab.createClusterButton);
     I.waitForText('Processing', 60, dbaasPage.tabs.dbClusterTab.fields.progressBarContent(pxc_cluster_pending_delete));
     await dbaasActionsPage.deleteXtraDBCluster(pxc_cluster_pending_delete, clusterName);
+  },
+);
+
+Scenario(
+  'PMM-T1602 Verify PXC backup on DBaaS @dbaas',
+  async ({ I, dbaasPage, dbaasActionsPage, locationsAPI }) => {
+    await locationsAPI.createStorageLocation(location);
+    await dbaasAPI.deleteAllDBCluster(clusterName);
+    const pxc_backup_cluster = 'pxc-backup-test';
+
+    I.amOnPage(dbaasPage.url);
+    await dbaasActionsPage.createClusterBasicOptions(clusterName, pxc_backup_cluster, 'MySQL');
+    await dbaasActionsPage.enableBackup();
+    await dbaasActionsPage.selectLocation(location.name);
+    await dbaasActionsPage.selectSchedule();
+    I.click(dbaasPage.tabs.dbClusterTab.createClusterButton);
+    I.waitForText('Processing', 60, dbaasPage.tabs.dbClusterTab.fields.progressBarContent(pxc_backup_cluster));
+    await dbaasAPI.waitForDBClusterState(pxc_backup_cluster, clusterName, 'MySQL', 'DB_CLUSTER_STATE_READY');
+    // Wait for backup to complete
+    I.wait(120);
+    I.say(await I.verifyCommand(`kubectl get psmdb-backup | grep ${pxc_backup_cluster}`, 'ready'));
   },
 );
