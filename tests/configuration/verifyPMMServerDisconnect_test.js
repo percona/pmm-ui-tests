@@ -7,6 +7,7 @@ const basePmmUrl = 'http://127.0.0.1:8180/';
 
 BeforeSuite(async ({ I }) => {
   await I.verifyCommand('docker-compose -f docker-compose-disconnect.yml up -d');
+  I.say(await I.verifyCommand('docker ps'));
   await I.asyncWaitFor(async () => (await I.verifyCommand('docker ps | grep "pmm-client-disconnect"')).includes('Up'), 10);
   await I.verifyCommand('docker exec pmm-client-disconnect sh -c "pmm-admin add mysql --username=root --password=7B*53@lCdflR --query-source=perfschema mysql-disconnect-5.7 mysql-disconnect-5.7:3306"');
   await I.wait(80);
