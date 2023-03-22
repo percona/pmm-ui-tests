@@ -9,6 +9,8 @@ module.exports = {
     modalHeader: '$modal-header',
     backupStatusByName: (name) => locate('$statusMsg').inside(artifactCell(name)),
     backupStatusIconByName: (name) => locate('$statusMsg').inside(artifactCell(name)).find('div'),
+    targetServiceByName: (name) => locate('td').at(6).inside(artifactCell(name)),
+
   },
   buttons: {},
   fields: {},
