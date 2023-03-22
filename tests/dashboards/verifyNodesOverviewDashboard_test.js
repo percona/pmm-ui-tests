@@ -43,6 +43,10 @@ Scenario(
 
       console.log(await inventoryAPI.listNodes());
       console.log(containers);
+
+      const logs = await I.verifyCommand('sudo docker logs pmm-T1642-client');
+
+      console.log(logs);
       await I.click(nodesOverviewPage.buttons.refreshDashboard);
       await nodesOverviewPage.selectEnvironment('dev');
       const envName = await I.grabTextFromAll(nodesOverviewPage.buttons.environment);
