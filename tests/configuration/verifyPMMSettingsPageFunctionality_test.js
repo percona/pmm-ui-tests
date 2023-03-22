@@ -355,16 +355,22 @@ Scenario(
   async ({
     I, pmmSettingsPage, settingsAPI, homePage,
   }) => {
+    const pmmVersion = await homePage.getVersions().versionMinor;
+
     const settingEndpointResponse = await settingsAPI.getSettings('backup_management_enabled');
     const bmIcon = locate('a[type="button"][aria-label="Backup"]');
 
-    I.amOnPage(homePage.url);
-    I.waitForElement(bmIcon, 30);
-    I.assertEqual(settingEndpointResponse, true);
-    I.amOnPage(pmmSettingsPage.advancedSettingsUrl);
-    I.waitForVisible(pmmSettingsPage.fields.backupManagementSwitch, 30);
-    await pmmSettingsPage.verifySwitch(pmmSettingsPage.fields.backupManagementSwitchInput, 'on');
-    assert.ok(settingEndpointResponse, `Backup managment should be turned on by default from 2.36.0 release but found ${settingEndpointResponse}`);
+    if (pmmVersion >= 36 || pmmVersion === undefined) {
+      I.amOnPage(homePage.url);
+      I.waitForElement(bmIcon, 30);
+      I.assertEqual(settingEndpointResponse, true);
+      I.amOnPage(pmmSettingsPage.advancedSettingsUrl);
+      I.waitForVisible(pmmSettingsPage.fields.backupManagementSwitch, 30);
+      await pmmSettingsPage.verifySwitch(pmmSettingsPage.fields.backupManagementSwitchInput, 'on');
+      assert.ok(settingEndpointResponse, `Backup managment should be turned on by default from 2.36.0 release but found ${settingEndpointResponse}`);
+    } else {
+      I.say('Skipping this test because PMM Server version is lower then Feature fix version');
+    }
   },
 ).retry(2);
 
