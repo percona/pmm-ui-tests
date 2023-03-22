@@ -1,20 +1,18 @@
-const assert = require('assert');
-
 Feature('Pmm Server stability');
 
-// Address of PMM to be disconected.
+// Address of PMM to be disconnected.
 const basePmmUrl = 'http://127.0.0.1:8180/';
 
 BeforeSuite(async ({ I }) => {
   await I.verifyCommand('docker-compose -f docker-compose-disconnect.yml up -d');
   I.say(await I.verifyCommand('docker ps'));
-  await I.asyncWaitFor(async () => (await I.verifyCommand('docker ps | grep "pmm-client-disconnect"')).includes('Up'), 10);
-  await I.verifyCommand('docker exec pmm-client-disconnect sh -c "pmm-admin add mysql --username=root --password=7B*53@lCdflR --query-source=perfschema mysql-disconnect-5.7 mysql-disconnect-5.7:3306"');
+  await I.wait(60);
+  I.say(await I.verifyCommand('docker exec pmm-client-disconnect pmm-admin add mysql --username=root --password=7B*53@lCdflR --host=mysql-disconnect-5.7 --port=3306 --query-source=perfschema mysql-disconnect-5.7'));
   await I.wait(80);
 });
 
 Before(async ({ I }) => {
-  await I.Authorize('admin', 'admin');
+  await I.Authorize();
 });
 
 AfterSuite(async ({ I }) => {
@@ -29,7 +27,6 @@ Scenario(
     await I.amOnPage(withCustomBaseUrl(dashboardPage.mySQLInstanceOverview.url));
     I.wait(5);
     I.dontSeeElement(dashboardPage.fields.metricPanelNa('Services panel'));
-    await I.verifyCommand('docker-compose -f docker-compose-disconnect.yml up -d');
     await I.verifyCommand('docker stop pmm-server-disconnect');
     I.wait(180);
     await I.verifyCommand('docker start pmm-server-disconnect');
