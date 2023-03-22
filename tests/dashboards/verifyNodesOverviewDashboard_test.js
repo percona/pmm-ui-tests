@@ -14,7 +14,7 @@ Before(async ({ I }) => {
 Scenario(
   '@PMM-T1642 - Verify that filtering by Environment works OS dashboards @docker-configuration',
   async ({
-    I, nodesOverviewPage, dashboardPage,
+    I, nodesOverviewPage, dashboardPage, inventoryAPI,
   }) => {
     await I.amOnPage(nodesOverviewPage.url);
     console.log(`PMM Server Version is: ${pmmVersion}`);
@@ -41,6 +41,7 @@ Scenario(
       await I.wait(60);
       const containers = await I.verifyCommand('sudo docker ps -a');
 
+      console.log(await inventoryAPI.listNodes());
       console.log(containers);
       await I.click(nodesOverviewPage.buttons.refreshDashboard);
       await nodesOverviewPage.selectEnvironment('dev');
