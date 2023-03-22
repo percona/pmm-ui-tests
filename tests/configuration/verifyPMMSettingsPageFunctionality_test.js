@@ -1,5 +1,3 @@
-const { pmmSettingsPage } = inject();
-const { homePage } = inject();
 const communicationDefaults = new DataTable(['type', 'serverAddress', 'hello', 'from', 'authType', 'username', 'password', 'url', 'message']);
 const assert = require('assert');
 const leftNavMenu = require('../pages/leftNavMenu');
