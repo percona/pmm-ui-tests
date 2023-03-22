@@ -3,7 +3,6 @@ const connection = psMySql.defaultConnection;
 const location = {
   name: 'mysql backups',
   description: 'MySQL backup location',
-  ...locationsPage.mongoStorageLocation,
 };
 
 let locationId;
@@ -25,7 +24,12 @@ BeforeSuite(async ({
 }) => {
   await settingsAPI.changeSettings({ backup: true });
   await locationsAPI.clearAllLocations(true);
-  locationId = await locationsAPI.createStorageLocation(location);
+  locationId = await locationsAPI.createStorageLocation(
+    location.name,
+    locationsAPI.storageType.s3,
+    locationsAPI.storageLocationConnection,
+    location.description,
+  );
 
   psMySql.connectToPS(mysqlCredentials);
 
