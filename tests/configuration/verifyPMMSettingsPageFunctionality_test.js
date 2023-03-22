@@ -350,7 +350,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T1658-backup-managment-enabled-by-default @backup',
+  'PMM-T1658-backup-managment-enabled-by-default @backup @bm-fb',
   async ({
     I, pmmSettingsPage, settingsAPI, homePage,
   }) => {
