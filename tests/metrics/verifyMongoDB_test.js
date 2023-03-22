@@ -62,18 +62,10 @@ Scenario(
 
     await I.asyncWaitFor(async () => {
       logs = await I.verifyCommand('docker exec pmm-server cat /srv/logs/pmm-managed.log | grep mongodb_collector_scrape_time');
-      // const logs = await I.verifyCommand('docker exec pmm-server tail -n 100 /srv/logs/pmm-agent.log');
-      console.log(logs);
-      await I.say(logs);
 
-      return logs.includes(telemetry.collstats)
-        && logs.includes(telemetry.dbstats)
-        && logs.includes(telemetry.diagnosticData)
-        && logs.includes(telemetry.general)
-        && logs.includes(telemetry.indexstats)
-        && logs.includes(telemetry.top)
+      return logs.includes(telemetry.collstats) && logs.includes(telemetry.dbstats) && logs.includes(telemetry.diagnosticData)
+        && logs.includes(telemetry.general) && logs.includes(telemetry.indexstats) && logs.includes(telemetry.top)
         && logs.includes(telemetry.replsetStatus);
-      // return logs.length > 1;
     }, 60);
     I.assertTrue(logs.includes(telemetry.collstats), `/srv/logs/pmm-managed.log expected to contain '${telemetry.collstats}'`);
     I.assertTrue(logs.includes(telemetry.dbstats), `/srv/logs/pmm-managed.log expected to contain '${telemetry.dbstats}'`);
