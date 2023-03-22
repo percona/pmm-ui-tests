@@ -27,6 +27,9 @@ module.exports = {
     backupNameInput: '$backupName-text-input',
     backUpNameInputError: '$backupName-field-error-message',
     fullBackUpName: '$backup-artifact-details-name',
+    addBackupModalErrorsContainer: '$backup-errors',
+    addBackupModalError: locate('$backup-errors').find('span'),
+    addBackupModalErrorReadMore: locate('$backup-errors').find('a'),
   },
   buttons: {
     openAddBackupModal: '$backup-add-button',

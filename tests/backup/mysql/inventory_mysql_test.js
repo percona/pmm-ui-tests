@@ -10,6 +10,7 @@ let serviceId;
 
 const mysqlServiceName = 'mysql-with-backup-inventory';
 const mysqlServiceNameToDelete = 'mysql-service-to-delete';
+const mysqlServiceNameForPreCheckTest = 'mysql-backup-pre-checks';
 const mysqlCredentials = {
   host: '127.0.0.1',
   port: '3306',
@@ -20,7 +21,7 @@ const mysqlCredentials = {
 Feature('BM: MySQL Backup Inventory');
 
 BeforeSuite(async ({
-  I, locationsAPI, settingsAPI, psMySql,
+  I, locationsAPI, settingsAPI, psMySql, inventoryAPI,
 }) => {
   await settingsAPI.changeSettings({ backup: true });
   await locationsAPI.clearAllLocations(true);
@@ -30,6 +31,11 @@ BeforeSuite(async ({
     locationsAPI.storageLocationConnection,
     location.description,
   );
+  await inventoryAPI.deleteNodeByServiceName('MYSQL_SERVICE', mysqlServiceNameForPreCheckTest);
+
+  await I.verifyCommand('docker exec pmm-server yum remove -y Percona-Server-server-57');
+  await I.verifyCommand('docker exec pmm-server yum remove -y percona-xtrabackup-24');
+  await I.verifyCommand('docker exec pmm-server yum remove -y qpress');
 
   psMySql.connectToPS(mysqlCredentials);
 
@@ -191,5 +197,41 @@ Scenario(
     I.waitForVisible(backupInventoryPage.buttons.modalRestore, 10);
     I.seeTextEquals(backupInventoryPage.messages.serviceNoLongerExists, backupInventoryPage.elements.backupModalError);
     I.seeElementsDisabled(backupInventoryPage.buttons.modalRestore);
+  },
+);
+
+Scenario(
+  '@PMM-T1057 @PMM-T1058 Verify pre checks for PS tools before backup @bm-mysql @not-ui-pipeline',
+  async ({
+    I, backupInventoryPage, addInstanceAPI, links,
+  }) => {
+    const backupName = 'test pre checks';
+
+    await addInstanceAPI.addMysql(mysqlServiceNameForPreCheckTest);
+
+    I.click(backupInventoryPage.buttons.openAddBackupModal);
+
+    backupInventoryPage.selectDropdownOption(backupInventoryPage.fields.serviceNameDropdown, mysqlServiceNameForPreCheckTest);
+    backupInventoryPage.selectDropdownOption(backupInventoryPage.fields.locationDropdown, location.name);
+    I.fillField(backupInventoryPage.fields.backupName, backupName);
+    I.click(backupInventoryPage.buttons.addBackup);
+    await I.verifyPopUpMessage('software "mysqld" is not installed: incompatible service');
+
+    await I.verifyCommand('docker exec pmm-server percona-release setup ps57');
+    await I.verifyCommand('docker exec pmm-server yum install -y Percona-Server-server-57');
+    I.click(backupInventoryPage.buttons.addBackup);
+    await I.verifyPopUpMessage('software "xtrabackup" is not installed: xtrabackup is not installed');
+
+    I.seeTextEquals('Xtrabackup is not installed. ', backupInventoryPage.elements.addBackupModalError);
+    I.seeAttributesOnElements(backupInventoryPage.elements.addBackupModalErrorReadMore, { href: links.xtrabackup80Docs });
+
+    await I.verifyCommand('docker exec pmm-server yum install -y percona-xtrabackup-24');
+    I.click(backupInventoryPage.buttons.addBackup);
+    await I.verifyPopUpMessage('software "qpress" is not installed: incompatible service');
+
+    await I.verifyCommand('docker exec pmm-server yum install -y qpress');
+    I.click(backupInventoryPage.buttons.addBackup);
+
+    I.waitForVisible(backupInventoryPage.elements.pendingBackupByName(backupName), 10);
   },
 );
