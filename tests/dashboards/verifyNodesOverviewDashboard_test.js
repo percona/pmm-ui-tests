@@ -22,8 +22,7 @@ Scenario(
       const networks = await I.verifyCommand('sudo docker network ls');
 
       console.log(networks);
-      const output = await I.verifyCommand(`docker run \
-        -d --rm \
+      const output = await I.verifyCommand(`docker run -d \
         --name pmm-T1642-client \
         --network="pmm2-ui-tests_pmm-network"
         --add-host host.docker.internal:host-gateway \
