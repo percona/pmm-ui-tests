@@ -33,7 +33,7 @@ Scenario(
         --env PMM_AGENT_SETUP_REGION=EU \
         ${dockerVersion}`);
 
-      await I.waitForVisible(nodesOverviewPage.buttons.refreshDashboard, 60);
+      await I.wait(30);
       await I.click(nodesOverviewPage.buttons.refreshDashboard);
       await nodesOverviewPage.selectEnvironment('dev');
       const envName = await I.grabTextFromAll(nodesOverviewPage.buttons.environment);
