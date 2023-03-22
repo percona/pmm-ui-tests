@@ -1247,9 +1247,6 @@ module.exports = {
   async waitForGraphsToHaveData(acceptableElementsWithoutData, timeout = 60, retries = 0) {
     const noDataElements = await this.getNumberOfGraphsWithoutData(timeout);
 
-    console.log(`Number of Elements without data is: ${noDataElements}`);
-    console.log(`Number of retries is: ${retries}`);
-    console.log(`Acceptable elements without data ${acceptableElementsWithoutData}`);
     if (noDataElements > acceptableElementsWithoutData) {
       if (retries === 4) {
         I.assertTrue(false, `Expected ${acceptableElementsWithoutData} Elements without data but found ${noDataElements}`);

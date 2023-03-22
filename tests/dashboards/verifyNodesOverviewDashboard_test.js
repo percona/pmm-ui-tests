@@ -39,7 +39,7 @@ Scenario(
       const envName = await I.grabTextFromAll(nodesOverviewPage.buttons.environment);
 
       await I.assertContain(envName, 'dev', `The value of selected environment "${envName}" does not equal expected one "dev"}`);
-      await dashboardPage.waitForGraphsToHaveData(3, 300);
+      await dashboardPage.waitForGraphsToHaveData(5, 300);
     } else {
       I.say('This functionality was added in PMM 2.36.0');
     }
