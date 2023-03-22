@@ -1,6 +1,7 @@
 Feature('Tests for Operation System Dashboards');
 
 const dockerVersion = process.env.CLIENT_VERSION ? `perconalab/pmm-client:${process.env.CLIENT_VERSION}` : 'perconalab/pmm-client:dev-latest';
+const adminPassword = process.env.ADMIN_PASSWORD || 'admin';
 let pmmVersion;
 
 BeforeSuite(async ({ homePage }) => {
@@ -28,7 +29,7 @@ Scenario(
         --add-host host.docker.internal:host-gateway \
         --env PMM_AGENT_SERVER_ADDRESS=pmm-server \
         --env PMM_AGENT_SERVER_USERNAME=admin \
-        --env PMM_AGENT_SERVER_PASSWORD=admin \
+        --env PMM_AGENT_SERVER_PASSWORD=${adminPassword} \
         --env PMM_AGENT_SERVER_INSECURE_TLS=1 \
         --env PMM_AGENT_SETUP=1 \
         --env PMM_AGENT_CONFIG_FILE=config/pmm-agent.yaml \
