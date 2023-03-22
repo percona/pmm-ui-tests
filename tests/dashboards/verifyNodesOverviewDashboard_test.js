@@ -22,8 +22,9 @@ Scenario(
       const output = await I.verifyCommand(`docker run \
         -d --rm \
         --name pmm-T1642-client \
+        --network="pmm-network"
         --add-host host.docker.internal:host-gateway \
-        --env PMM_AGENT_SERVER_ADDRESS=127.0.0.1 \
+        --env PMM_AGENT_SERVER_ADDRESS=pmm-server \
         --env PMM_AGENT_SERVER_USERNAME=admin \
         --env PMM_AGENT_SERVER_PASSWORD=admin \
         --env PMM_AGENT_SERVER_INSECURE_TLS=1 \
@@ -36,6 +37,9 @@ Scenario(
       console.log(output);
 
       await I.wait(60);
+      const containers = await I.verifyCommand('sudo docker ps -a');
+
+      console.log(containers);
       await I.click(nodesOverviewPage.buttons.refreshDashboard);
       await nodesOverviewPage.selectEnvironment('dev');
       const envName = await I.grabTextFromAll(nodesOverviewPage.buttons.environment);
