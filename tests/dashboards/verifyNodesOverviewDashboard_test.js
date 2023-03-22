@@ -35,13 +35,13 @@ Scenario(
         --env PMM_AGENT_SETUP_REGION=EU \
         ${dockerVersion}`);
 
-      await I.wait(30);
+      await I.wait(45);
       await I.click(nodesOverviewPage.buttons.refreshDashboard);
       await nodesOverviewPage.selectEnvironment(expectedEnvName);
       const envName = await I.grabTextFromAll(nodesOverviewPage.buttons.environment);
 
       await I.assertContain(envName, expectedEnvName, `The value of selected environment "${envName}" does not equal expected one "${expectedEnvName}"}`);
-      await dashboardPage.waitForGraphsToHaveData(1, 300);
+      await dashboardPage.waitForGraphsToHaveData(3, 300);
     } else {
       I.say('This functionality was added in PMM 2.36.0');
     }
