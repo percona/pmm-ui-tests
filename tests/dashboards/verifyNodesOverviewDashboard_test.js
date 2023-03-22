@@ -19,7 +19,7 @@ Scenario(
     await I.amOnPage(nodesOverviewPage.url);
     console.log(`PMM Server Version is: ${pmmVersion}`);
     if (pmmVersion >= 36 || pmmVersion === undefined) {
-      const networks = await I.verifyCommand('sudo docker network ls');
+      const networks = await I.verifyCommand('docker inspect pmm-server');
 
       console.log(networks);
       const output = await I.verifyCommand(`docker run -d \
