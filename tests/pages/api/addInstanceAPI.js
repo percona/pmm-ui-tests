@@ -39,7 +39,9 @@ module.exports = {
   },
 
   async addMysql(serviceName, connection = {}) {
-    const { host, port, username, password } = connection;
+    const {
+      host, port, username, password,
+    } = connection;
     const body = {
       add_node: {
         node_name: serviceName,
@@ -91,7 +93,9 @@ module.exports = {
   },
 
   async addPostgresql(serviceName, creds = {}) {
-    const { host, port, username, password } = creds;
+    const {
+      host, port, username, password,
+    } = creds;
     const body = {
       add_node: {
         node_name: serviceName,
@@ -183,7 +187,9 @@ module.exports = {
   },
 
   async addMongodb(serviceName, creds = {}) {
-    const { host, port, username, password } = creds;
+    const {
+      host, port, username, password,
+    } = creds;
     const body = {
       add_node: {
         node_name: serviceName,
@@ -202,7 +208,7 @@ module.exports = {
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
     const resp = await I.sendPostRequest('v1/management/MongoDB/Add', body, headers);
 
-    I.assertEqual(resp.status, 200, `Instance ${serviceName} was not added for monitoring`);
+    I.assertEqual(resp.status, 200, `Instance ${serviceName} was not added for monitoring, \n ${JSON.stringify(resp.data, null, 2)}`);
   },
 
   async addMongoDBSSL(connection) {
@@ -231,7 +237,9 @@ module.exports = {
   },
 
   async addRDS(serviceName, connection = {}) {
-    const { port, username, password, address, cluster, aws_access_key, aws_secret_key } = connection;
+    const {
+      port, username, password, address, cluster, aws_access_key, aws_secret_key,
+    } = connection;
     const body = {
       add_node: {
         node_name: serviceName,
