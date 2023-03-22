@@ -17,7 +17,7 @@ services:
       - PERCONA_TEST_TELEMETRY_RETRY_BACKOFF=10s
 
   pmm-client:
-    image: perconalab/pmm-client:dev-latest
+    image: perconalab/pmm-client:pmm2-rc
     container_name: pmm-client-disconnect
     depends_on:
       pmm-server-disconnect:
