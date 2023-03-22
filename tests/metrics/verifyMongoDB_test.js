@@ -27,8 +27,8 @@ BeforeSuite(async ({ I }) => {
   const detectedPort = await I.verifyCommand('pmm-admin list | grep mongodb_node_1 | awk -F " " \'{print $3}\' | awk -F ":" \'{print $2}\'');
 
   connection.port = detectedPort;
-  // await I.mongoConnect(connection);
-  // await I.mongoAddUser(mongo_test_user.username, mongo_test_user.password);
+  await I.mongoConnect(connection);
+  await I.mongoAddUser(mongo_test_user.username, mongo_test_user.password);
 });
 
 Before(async ({ I }) => {
