@@ -373,3 +373,22 @@ Scenario(
     // I.assertEqual(clipboardText, logs);
   },
 );
+
+Scenario(
+  '@PMM-T1551 - Verify Mongod binary error during backup @backup @bm-mongo',
+  async ({
+    I, addInstanceAPI, backupInventoryPage,
+  }) => {
+    const serviceName = 'mongo binary test';
+
+    await addInstanceAPI.addMongodb(serviceName);
+    I.click(backupInventoryPage.buttons.openAddBackupModal);
+
+    backupInventoryPage.selectDropdownOption(backupInventoryPage.fields.serviceNameDropdown, serviceName);
+    backupInventoryPage.selectDropdownOption(backupInventoryPage.fields.locationDropdown, location.name);
+    I.fillField(backupInventoryPage.fields.backupName, 'test error');
+    I.click(backupInventoryPage.buttons.addBackup);
+
+    await I.verifyPopUpMessage('software "mongodb" is not installed: incompatible service');
+  },
+);
