@@ -1,4 +1,4 @@
-const { dbaasAPI, dbaasPage } = inject();
+const { dbaasAPI, dbaasPage, locationsPage } = inject();
 const clusterName = 'minikube';
 const psmdb_cluster = 'psmdb-cluster';
 const assert = require('assert');
@@ -6,6 +6,11 @@ const assert = require('assert');
 const psmdb_cluster_type = 'DB_CLUSTER_TYPE_PSMDB';
 const mongodb_recommended_version = 'MongoDB 4.4.10';
 const mongodb_updated_version = 'MongoDB 5.0.2';
+
+const location = {
+  name: 'TEST-LOCATION',
+  ...locationsPage.mongoStorageLocation,
+};
 
 // const psmdbClusterDetails = new DataTable(['namespace', 'clusterName', 'node', 'nodeType']);
 
@@ -310,4 +315,23 @@ Scenario('PMM-T704 PMM-T772 PMM-T849 PMM-T850 Resources, PV, Secrets verificatio
     await dbaasAPI.waitForDbClusterDeleted(psmdb_cluster_resource_check, clusterName, 'MongoDB');
   });
 
+  Scenario(
+    'PMM-T1603 Verify PSMDB backup on DBaaS @dbaas',
+    async ({ I, dbaasPage, dbaasActionsPage, locationsAPI }) => {
+      await locationsAPI.createStorageLocation(location);
+      await dbaasAPI.deleteAllDBCluster(clusterName);
+      const psmdb_backup_cluster = 'psmdb-backup-test';
 
+      I.amOnPage(dbaasPage.url);
+      await dbaasActionsPage.createClusterBasicOptions(clusterName, psmdb_backup_cluster, 'MongoDB');
+      await dbaasActionsPage.enableBackup();
+      await dbaasActionsPage.selectLocation(location.name);
+      await dbaasActionsPage.selectSchedule();
+      I.click(dbaasPage.tabs.dbClusterTab.createClusterButton);
+      I.waitForText('Processing', 60, dbaasPage.tabs.dbClusterTab.fields.progressBarContent(psmdb_backup_cluster));
+      await dbaasAPI.waitForDBClusterState(psmdb_backup_cluster, clusterName, 'MongoDB', 'DB_CLUSTER_STATE_READY');
+      // Wait for backup to complete
+      I.wait(120);
+      I.say(await I.verifyCommand(`kubectl get psmdb-backup | grep ${psmdb_backup_cluster}`, 'ready'));
+    },
+  );

@@ -76,6 +76,26 @@ module.exports = {
     }
   },
 
+  async enableBackup() {
+    I.seeElement(dbaasPage.tabs.dbClusterTab.backups.enableBackupsToggle, 10);
+    I.click(dbaasPage.tabs.dbClusterTab.backups.enableBackupsToggle);
+    I.waitForElement(dbaasPage.tabs.dbClusterTab.backups.backupInformationLabel, 10);
+  },
+
+  async selectLocation(locationName) {
+    I.seeElement(dbaasPage.tabs.dbClusterTab.backups.locationSelect);
+    I.click(dbaasPage.tabs.dbClusterTab.backups.locationSelect);
+    I.waitForElement(dbaasPage.common.selectOptionInDropdown(locationName));
+    I.click(dbaasPage.common.selectOptionInDropdown(locationName));
+  },
+
+  async selectSchedule(schedule = 'Every minute') {
+    I.seeElement(dbaasPage.tabs.dbClusterTab.backups.scheduledTimeSelect);
+    I.click(dbaasPage.tabs.dbClusterTab.backups.scheduledTimeSelect);
+    I.waitForElement(dbaasPage.common.selectOptionInDropdown(schedule));
+    I.click(dbaasPage.common.selectOptionInDropdown(schedule));
+  },
+
   async deleteXtraDBCluster(dbClusterName, k8sClusterName) {
     I.waitForElement(dbaasPage.tabs.dbClusterTab.fields.clusterTableHeader, 30);
     I.waitForVisible(dbaasPage.tabs.dbClusterTab.fields.clusterActionsMenu(dbClusterName), 30);

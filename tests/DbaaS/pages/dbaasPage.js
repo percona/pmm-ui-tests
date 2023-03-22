@@ -63,6 +63,9 @@ module.exports = {
     },
   },
   numberOfNodesError: 'Only 1, 3 or more nodes allowed',
+  common: {
+    selectOptionInDropdown: (value) => `//div[@data-testid="${value}-select-option"]`,
+  },
   tabs: {
     kubernetesClusterTab: {
       kubernetesClusterTabButton: 'a[aria-label="Tab Kubernetes Cluster"]',
@@ -129,6 +132,13 @@ module.exports = {
           kubernetesClusterDropDownSelect: (clusterName) => `//div[@aria-label='Select option']//span[contains(@text, ${clusterName})]`,
           kubernetesClusterErrorMessage: '$select-field-error-message',
         },
+      },
+      restore: { },
+      backups: {
+        enableBackupsToggle: '//div[text()="Enable backups"]/following-sibling::div',
+        backupInformationLabel: locate('legend').withText('Backup Information'),
+        locationSelect: locate('$location-select-wrapper').find('div').at(3).as('Location Select'),
+        scheduledTimeSelect: locate('$period-field-container').find('div').at(2).as('Scheduled Time Select'),
       },
       advancedOptions: {
         fields: {
