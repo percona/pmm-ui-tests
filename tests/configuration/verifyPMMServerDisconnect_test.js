@@ -8,6 +8,7 @@ BeforeSuite(async ({ I }) => {
   I.say(await I.verifyCommand('docker ps'));
   await I.wait(60);
   I.say(await I.verifyCommand('docker ps'));
+  I.say(await I.verifyCommand('docker container logs pmm-client-disconnect'));
   I.say(await I.verifyCommand('docker exec pmm-client-disconnect pmm-admin add mysql --username=root --password=7B*53@lCdflR --host=mysql-disconnect-5.7 --port=3306 --query-source=perfschema mysql-disconnect-5.7'));
   await I.wait(80);
 });
@@ -17,7 +18,7 @@ Before(async ({ I }) => {
 });
 
 AfterSuite(async ({ I }) => {
-  await I.verifyCommand('docker-compose -f docker-compose-disconnect.yml down -v');
+  // await I.verifyCommand('docker-compose -f docker-compose-disconnect.yml down -v');
 });
 
 Scenario(
