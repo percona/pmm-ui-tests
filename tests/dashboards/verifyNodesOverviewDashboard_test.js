@@ -25,7 +25,7 @@ Scenario(
       const output = await I.verifyCommand(`docker run \
         -d --rm \
         --name pmm-T1642-client \
-        --network="pmm-network"
+        --network="pmm2-ui-tests_pmm-network"
         --add-host host.docker.internal:host-gateway \
         --env PMM_AGENT_SERVER_ADDRESS=pmm-server \
         --env PMM_AGENT_SERVER_USERNAME=admin \
