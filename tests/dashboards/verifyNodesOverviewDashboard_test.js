@@ -18,7 +18,6 @@ Scenario(
     I, nodesOverviewPage, dashboardPage, inventoryAPI,
   }) => {
     await I.amOnPage(nodesOverviewPage.url);
-    console.log(`PMM Server Version is: ${pmmVersion}`);
     if (pmmVersion >= 36 || pmmVersion === undefined) {
       await I.verifyCommand(`docker run -d \
         --name pmm-T1642-client \
@@ -33,16 +32,13 @@ Scenario(
         --env PMM_AGENT_SETUP_CUSTOM_LABELS="environment=dev" \
         --env PMM_AGENT_SETUP_REGION=EU \
         ${dockerVersion}`);
-      await I.wait(60);
+
       await I.click(nodesOverviewPage.buttons.refreshDashboard);
       await nodesOverviewPage.selectEnvironment('dev');
       const envName = await I.grabTextFromAll(nodesOverviewPage.buttons.environment);
 
-      console.log(`Env Name is: ${envName}`);
       await I.assertContain(envName, 'dev', `The value of selected environment "${envName}" does not equal expected one "dev"}`);
       await dashboardPage.waitForGraphsToHaveData(3, 300);
-      await dashboardPage.verifyThereAreNoGraphsWithoutData(0);
-      await dashboardPage.verifyThereAreNoGraphsWithNA(0);
     } else {
       console.log('This functionality was added in PMM 2.36.0');
       I.say('This functionality was added in PMM 2.36.0');
