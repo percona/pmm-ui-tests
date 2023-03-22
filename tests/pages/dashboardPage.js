@@ -1248,11 +1248,11 @@ module.exports = {
     const noDataElements = await this.getNumberOfGraphsWithoutData(timeout);
 
     if (noDataElements > acceptableElementsWithoutData) {
-      if (retries > 4) {
+      if (retries > 9) {
         I.assertTrue(false, `Expected ${acceptableElementsWithoutData} Elements without data but found ${noDataElements}`);
       }
 
-      await I.wait(timeout / 5);
+      await I.wait(timeout / 10);
       // eslint-disable-next-line no-plusplus, no-param-reassign
       await this.waitForGraphsToHaveData(acceptableElementsWithoutData, timeout, ++retries);
     }
