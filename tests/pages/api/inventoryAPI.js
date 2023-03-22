@@ -183,13 +183,6 @@ module.exports = {
     );
   },
 
-  async listNodes() {
-    const headers = { Authorization: `Basic ${await I.getAuth()}` };
-    const resp = await I.sendPostRequest('v1/inventory/Nodes/List', {}, headers);
-
-    return resp.data;
-  },
-
   async getNodeByName(nodeName) {
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
     const resp = await I.sendPostRequest('v1/inventory/Nodes/List', {}, headers);

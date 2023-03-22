@@ -1248,7 +1248,7 @@ module.exports = {
     const noDataElements = await this.getNumberOfGraphsWithoutData(timeout);
 
     if (noDataElements > acceptableElementsWithoutData) {
-      if (retries === 4) {
+      if (retries > 4) {
         I.assertTrue(false, `Expected ${acceptableElementsWithoutData} Elements without data but found ${noDataElements}`);
       }
 
