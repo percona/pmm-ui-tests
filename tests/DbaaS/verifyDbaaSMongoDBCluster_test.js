@@ -316,7 +316,7 @@ Scenario('PMM-T704 PMM-T772 PMM-T849 PMM-T850 Resources, PV, Secrets verificatio
   });
 
 Scenario(
-  'PMM-T1603 Verify PSMDB backup on DBaaS @dbaas',
+  'PMM-T1603 Verify PSMDB backup @dbaas',
   async ({ I, dbaasPage, dbaasActionsPage, locationsAPI }) => {
     await locationsAPI.createStorageLocation(location);
     await dbaasAPI.deleteAllDBCluster(clusterName);
@@ -333,5 +333,20 @@ Scenario(
     // Wait for backup to complete
     I.wait(120);
     I.say(await I.verifyCommand(`kubectl get psmdb-backup | grep ${psmdb_backup_cluster}`, 'ready'));
+  },
+);
+
+Scenario.skip(
+  'PMM-T1605 Verify PSMDB restore @dbaas',
+  async ({ I, dbaasPage, dbaasActionsPage }) => {
+    const psmdb_restore_cluster = 'psmdb-restore-test';
+
+    I.amOnPage(dbaasPage.url);
+    await dbaasActionsPage.createClusterBasicOptions(clusterName, psmdb_restore_cluster, 'MongoDB');
+    await dbaasActionsPage.enableRestore();
+    await dbaasActionsPage.selectRestoreFrom(location.name);
+    // Wait for restore to complete
+    // I.wait(120);
+    // I.say(await I.verifyCommand(`kubectl get psmdb-restore | grep ${psmdb_restore_cluster}`, 'ready'));
   },
 );

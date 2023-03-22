@@ -33,12 +33,12 @@ module.exports = {
     I.waitForEnabled(dbaasPage.tabs.dbClusterTab.dbClusterAddButtonTop, 10);
     I.click(dbaasPage.tabs.dbClusterTab.dbClusterAddButtonTop);
     I.waitForElement(dbaasPage.tabs.dbClusterTab.basicOptions.fields.clusterNameField, 30);
-    I.click(dbaasPage.tabs.dbClusterTab.basicOptions.fields.kubernetesClusterDropDown);
-    I.waitForElement(
-      dbaasPage.tabs.dbClusterTab.basicOptions.fields.kubernetesClusterDropDownSelect(k8sClusterName),
-      30,
-    );
-    I.click(dbaasPage.tabs.dbClusterTab.basicOptions.fields.kubernetesClusterDropDownSelect(k8sClusterName));
+    // I.click(dbaasPage.tabs.dbClusterTab.basicOptions.fields.kubernetesClusterDropDown);
+    // I.waitForElement(
+    //   dbaasPage.tabs.dbClusterTab.basicOptions.fields.kubernetesClusterDropDownSelect(k8sClusterName),
+    //   30,
+    // );
+    // I.click(dbaasPage.tabs.dbClusterTab.basicOptions.fields.kubernetesClusterDropDownSelect(k8sClusterName));
     I.click(dbaasPage.tabs.dbClusterTab.basicOptions.fields.dbClusterDatabaseTypeField);
     I.fillField(dbaasPage.tabs.dbClusterTab.basicOptions.fields.dbClusterDatabaseTypeInputField, dbType);
     I.waitForElement(
@@ -77,7 +77,7 @@ module.exports = {
   },
 
   async enableBackup() {
-    I.seeElement(dbaasPage.tabs.dbClusterTab.backups.enableBackupsToggle, 10);
+    I.seeElement(dbaasPage.tabs.dbClusterTab.backups.enableBackupsToggle);
     I.click(dbaasPage.tabs.dbClusterTab.backups.enableBackupsToggle);
     I.waitForElement(dbaasPage.tabs.dbClusterTab.backups.backupInformationLabel, 10);
   },
@@ -94,6 +94,31 @@ module.exports = {
     I.click(dbaasPage.tabs.dbClusterTab.backups.scheduledTimeSelect);
     I.waitForElement(dbaasPage.common.selectOptionInDropdown(schedule));
     I.click(dbaasPage.common.selectOptionInDropdown(schedule));
+  },
+
+  async enableRestore() {
+    I.seeElement(dbaasPage.tabs.dbClusterTab.restore.enableRestoreToggle);
+    I.click(dbaasPage.tabs.dbClusterTab.restore.enableRestoreToggle);
+    I.seeElement(dbaasPage.tabs.dbClusterTab.restore.restoreFromLabel);
+  },
+
+  async selectRestoreFrom(locationName) {
+    I.seeElement(dbaasPage.tabs.dbClusterTab.restore.restoreFromLocationSelect);
+    I.click(dbaasPage.tabs.dbClusterTab.restore.restoreFromLocationSelect);
+    I.waitForElement(dbaasPage.common.selectOptionInDropdown(locationName));
+    I.click(dbaasPage.common.selectOptionInDropdown(locationName));
+  },
+
+  async selectBackupArtifact(artifactName) {
+    I.seeElement(dbaasPage.tabs.dbClusterTab.restore.backupArtifactSelect);
+    I.click(dbaasPage.tabs.dbClusterTab.restore.backupArtifactSelect);
+    I.waitForElement(dbaasPage.common.selectOptionInDropdown(artifactName));
+    I.click(dbaasPage.common.selectOptionInDropdown(artifactName));
+  },
+
+  async selectSecretsName(secret) {
+    I.waitForElement(dbaasPage.common.selectOptionInDropdown(secret));
+    I.click(dbaasPage.common.selectOptionInDropdown(secret));
   },
 
   async deleteXtraDBCluster(dbClusterName, k8sClusterName) {

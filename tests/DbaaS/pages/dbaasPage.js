@@ -133,7 +133,13 @@ module.exports = {
           kubernetesClusterErrorMessage: '$select-field-error-message',
         },
       },
-      restore: { },
+      restore: {
+        enableRestoreToggle: '//div[text()="Enable restore"]/following-sibling::div',
+        restoreFromLabel: '$restoreFrom-field-label',
+        restoreFromLocationSelect: locate('$locations-select-wrapper').find('div').at(3).as('Restore from Select'),
+        backupArtifactSelect: locate('$backupArtifact-field-container').find('div').at(2).as('Backup artifact Select'),
+        secretsNameSelect: locate('$secretsName-field-container').find('div').at(2).as('Secrets Name Select'),
+      },
       backups: {
         enableBackupsToggle: '//div[text()="Enable backups"]/following-sibling::div',
         backupInformationLabel: locate('legend').withText('Backup Information'),
