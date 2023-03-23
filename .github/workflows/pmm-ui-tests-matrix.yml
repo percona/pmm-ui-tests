@@ -37,5 +37,5 @@ jobs:
       pmm_test_flag: '@rbac'
       pmm_server_version: ${{ github.event.inputs.pmm_server_version || 'dev-latest' }}
       pmm_client_version: ${{ github.event.inputs.pmm_client_version || 'dev-latest' }}
-      pmm_clients: '--addclient=ps,1'
+      pmm_clients: '--addclient=ps,1 --addclient=pdpgsql,1'
       pmm_qa_branch: ${{ github.event.inputs.pmm_qa_branch || 'main' }}
