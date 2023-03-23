@@ -16,6 +16,7 @@ export default class RbacTable extends Table {
     setDefault: this.optionsMenu.getByText('Set as default'),
     delete: this.optionsMenu.getByText('Delete'),
     roleAssignedDialog: this.page.getByRole('dialog'),
+    roleAssignedDialogRoleSelect: this.page.locator('//div[contains(@class, "singleValue")]'),
   };
 
   fields = {
