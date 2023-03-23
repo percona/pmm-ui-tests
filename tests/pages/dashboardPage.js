@@ -1178,7 +1178,7 @@ module.exports = {
     refreshIntervalOption: (interval) => locate(`//*[@role="menuitemradio" and text()="${interval}"]`),
     clickablePanel: (name) => `//section[@aria-label="${name} panel"]//a`,
     dashboardTitle: (name) => locate('span').withText(name),
-    metricPanelNa: (name) => `//section[@aria-label="${name} panel"]//span[text()="N/A"]`,
+    metricPanelNa: (name) => `//section[@aria-label="${name}"]//span[text()="N/A"]`,
   },
 
   createAdvancedDataExplorationURL(metricName, time = '1m', nodeName = 'All') {
