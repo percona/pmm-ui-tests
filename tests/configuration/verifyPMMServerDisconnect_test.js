@@ -2,17 +2,15 @@ Feature('Pmm Server stability');
 
 // Address of PMM to be disconnected.
 const basePmmUrl = 'http://127.0.0.1:8180/';
+let clientServerNetwork = 'pmm-ui-tests_server-network';
 
 BeforeSuite(async ({ I }) => {
-  await I.say(`!!! Env variable ADMIN_PASSWORD equals ${process.env.ADMIN_PASSWORD}`);
   await I.verifyCommand('docker-compose -f docker-compose-disconnect.yml up -d pmm-server-disconnect');
   await I.verifyCommand('timeout 100 bash -c \'while [[ "$(curl -s -o /dev/null -w \'\'%{http_code}\'\' 127.0.0.1:8180/ping)" != "200" ]]; do sleep 5; done\' || false');
   await I.verifyCommand('docker-compose -f docker-compose-disconnect.yml up -d pmm-client');
   await I.verifyCommand('docker-compose -f docker-compose-disconnect.yml up -d mysql5.7');
-  I.say(await I.verifyCommand('docker ps'));
   await I.wait(60);
-  I.say(await I.verifyCommand('docker ps'));
-  I.say(await I.verifyCommand('docker container logs pmm-client-disconnect'));
+  clientServerNetwork = await I.verifyCommand('docker inspect pmm-client-disconnect -f \'{{range $k, $v := .NetworkSettings.Networks}}{{printf "%s\\n" $k}}{{end}}\' | grep -o \'.*server-network\'');
   I.say(await I.verifyCommand('docker exec pmm-client-disconnect pmm-admin add mysql --username=root --password=7B*53@lCdflR --host=mysql-disconnect-5.7 --port=3306 --query-source=perfschema mysql-disconnect-5.7'));
   await I.wait(80);
 });
@@ -56,9 +54,9 @@ Scenario(
     await dashboardPage.expandEachDashboardRow();
     I.wait(5);
     I.dontSeeElement(dashboardPage.fields.metricPanelNa('Services panel'));
-    await I.verifyCommand('docker network disconnect pmm-ui-tests_server-network pmm-client-disconnect');
+    await I.verifyCommand(`docker network disconnect ${clientServerNetwork} pmm-client-disconnect`);
     I.wait(600);
-    await I.verifyCommand('docker network connect pmm-ui-tests_server-network pmm-client-disconnect');
+    await I.verifyCommand(`docker network connect ${clientServerNetwork} pmm-client-disconnect`);
     I.wait(60);
     await I.amOnPage(withCustomBaseUrl(`${dashboardPage.mysqlInstanceSummaryDashboard.clearUrl}?orgId=1&from=now-3m&to=now-1m`));
     await dashboardPage.waitForDashboardOpened();
