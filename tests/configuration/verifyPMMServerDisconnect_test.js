@@ -4,6 +4,7 @@ Feature('Pmm Server stability');
 const basePmmUrl = 'http://127.0.0.1:8180/';
 
 BeforeSuite(async ({ I }) => {
+  await I.say(`!!! Env variable ADMIN_PASSWORD equals ${process.env.ADMIN_PASSWORD}`);
   await I.verifyCommand('docker-compose -f docker-compose-disconnect.yml up -d pmm-server-disconnect');
   await I.verifyCommand('timeout 100 bash -c \'while [[ "$(curl -s -o /dev/null -w \'\'%{http_code}\'\' 127.0.0.1:8180/ping)" != "200" ]]; do sleep 5; done\' || false');
   await I.verifyCommand('docker-compose -f docker-compose-disconnect.yml up -d pmm-client');
