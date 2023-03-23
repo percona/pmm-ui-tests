@@ -55,8 +55,6 @@ class Output {
 
   async trimWhitespace() {
     this.stdout = this.stdout.replace(/ +(?= )/g, '');
-    console.log('Output is: ');
-    console.log(this.stdout);
   }
 
   private getErrors(): string {
