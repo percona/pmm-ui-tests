@@ -360,7 +360,7 @@ Scenario(
 
     if (pmmVersion >= 36 || pmmVersion === undefined) {
       I.amOnPage(homePage.url);
-      I.waitForElement(leftNavMenu.backups.locator, 30);
+      I.waitForVisible(leftNavMenu.backups.locator, 30);
       I.assertEqual(settingEndpointResponse, true);
       I.amOnPage(pmmSettingsPage.advancedSettingsUrl);
       I.waitForVisible(pmmSettingsPage.fields.backupManagementSwitch, 30);
