@@ -18,6 +18,8 @@ export class AdvisorsPage extends CommonPage {
 
   private advisorsLabels = {
     ...super.getLabels(),
+    pgsqlVersion: 'postgresql_version_check',
+    pgsqlVersionDescription: 'Check if PostgreSQL version is EOL',
   };
 
   private advisorsButtons = {
