@@ -150,6 +150,9 @@ jobs:
           npm install
           sudo npx ts-node ./integration-setup.ts --ci --setup-docker-pmm-server --rbac --pmm-server-docker-tag=${{ inputs.pmm_server_docker_tag }} --pmm-client-version=${{ env.PMM_CLIENT_VERSION }}          
 
+      - name: Health check for PMM2-server
+        run: timeout 100 bash -c 'while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' localhost/ping)" != "200" ]]; do sleep 5; done' || false
+
       - name: Setup Client for PMM-Server
         run: |
           sudo bash ./pmm-qa/pmm-tests/pmm2-client-setup.sh --pmm_server_ip 127.0.0.1 --client_version ${{ env.PMM_CLIENT_VERSION }} --admin_password admin --use_metrics_mode no

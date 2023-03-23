@@ -161,6 +161,9 @@ jobs:
           npm install
           sudo npx ts-node ./integration-setup.ts --ci --setup-docker-pmm-server --rbac --pmm-server-version=${{ env.PMM_SERVER_VERSION }} --pmm-client-version=${{ env.PMM_CLIENT_VERSION }}
 
+      - name: Health check for PMM2-server
+        run: timeout 100 bash -c 'while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' localhost/ping)" != "200" ]]; do sleep 5; done' || false
+
       - name: Compose PMM-Sever with docker tag ${{ inputs.pmm_server_docker_tag }}
         if: ${{ inputs.pmm_server_docker_tag != '' }}
         working-directory: pmm-qa/pmm-integration
