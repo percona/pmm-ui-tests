@@ -52,7 +52,7 @@ test.describe('PMM Client CLI tests for Percona Server Database', async () => {
    */
   test('run pmm-admin status --json check for Running string in output', async ({ }) => {
     const output = await cli.exec(`pmm-admin status --json`);
-    await output.outputNotContains('Running');
+    await output.outNotContains('Running');
     await output.outContains('RUNNING');
     await output.assertSuccess();
   });
@@ -439,11 +439,12 @@ test.describe('PMM Client CLI tests for Percona Server Database', async () => {
   test("PMM-T789 - Verify help for pmm-admin add mysql has TLS-related flags", async ({ }) => {
     const output = await cli.exec(`sudo pmm-admin add mysql --help`);
     await output.assertSuccess();
-    await output.trimWhitespace();
-    await output.outContains('tls Use TLS to connect to the database');
-    await output.outContains('tls-skip-verify Skip TLS certificates validation');
-    await output.outContains('tls-ca=STRING Path to certificate authority certificate');
-    await output.outContains('tls-cert=STRING Path to client certificate file');
-    await output.outContains('tls-key=STRING Path to client key file');
+    await output.outContainsNormalizedMany([
+      'tls Use TLS to connect to the database',
+      'tls-skip-verify Skip TLS certificates validation',
+      'tls-ca=STRING Path to certificate authority certificate',
+      'tls-cert=STRING Path to client certificate file',
+      'tls-key=STRING Path to client key file',
+    ]);
   });
 });

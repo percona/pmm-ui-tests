@@ -35,10 +35,22 @@ class Output {
     })
   }
 
-  async outputNotContains(expectedValue: string) {
+  async outNotContains(expectedValue: string) {
     await test.step(`Verify command output contains ${expectedValue}`, async () => {
       expect(this.stdout, `Stdout does not contain ${expectedValue}!`).not.toContain(expectedValue);
     })
+  }
+
+  async outContainsNormalizedMany(expectedValues: string[]) {
+    for (const val of expectedValues) {
+      await test.step(`Verify command output contains ${val}`, async () => {
+        expect.soft(this.stdout.replace(/ +(?= )/g, ''), `Stdout does not contain '${val}'!`).toContain(val);
+      })
+    }
+    expect(
+      test.info().errors,
+      `'Contains all elements' failed with ${test.info().errors.length} error(s):\n${this.getErrors()}`
+    ).toHaveLength(0);
   }
 
   async outContainsMany(expectedValues: string[]) {
@@ -51,10 +63,6 @@ class Output {
       test.info().errors,
       `'Contains all elements' failed with ${test.info().errors.length} error(s):\n${this.getErrors()}`
     ).toHaveLength(0);
-  }
-
-  async trimWhitespace() {
-    this.stdout = this.stdout.replace(/ +(?= )/g, '');
   }
 
   private getErrors(): string {
