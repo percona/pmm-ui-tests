@@ -16,6 +16,8 @@ test.describe('Spec file for Access Control (RBAC)', async () => {
   const newUser = { username: 'testUserRBAC', email: 'testUserRBAC@localhost', name: 'Test User', password: 'password' };
   const roleName = `Role Name Only MySql Access`;
   const roleDescription = `Role Description Only MySql Access`;
+  const roleNameCreate = `Role Name ${new Date().getTime()}`;
+  const roleDescriptionCreate = `Role Description ${new Date().getTime()}`;
 
   test.beforeEach(async ({ page }) => {
     await apiHelper.confirmTour(page);
@@ -57,8 +59,6 @@ test.describe('Spec file for Access Control (RBAC)', async () => {
     const rbacPage = new RbacPage(page);
     const createRolePage = new CreateRolePage(page);
 
-    const roleNameCreate = `Role Name ${new Date().getTime()}`;
-    const roleDescriptionCreate = `Role Description ${new Date().getTime()}`;
 
     await test.step('1. Navigate to the Access Role page, then click create button.', async () => {
       await page.goto(rbacPage.url);
@@ -188,12 +188,18 @@ test.describe('Spec file for Access Control (RBAC)', async () => {
     const usersConfigurationPage = new UsersConfigurationPage(page);
 
     const newRoleName = `Role Name Only MySql Access - Replace ${Date.now()}`;
-    const newUserRoleDelete = { username: 'testUserRBAC_RoleDelete', email: 'testUserRBAC_RoleDelete@localhost', name: 'Test User', password: 'password' };
+    const newUserRoleDelete = { username: 'testUserRBAC_RoleDelete', email: 'testUserRBAC_RoleDelete@localhost', name: 'Test User Role Delete', password: 'password' };
 
     await test.step(
-      '1. Navigate to the access role page then create role MySQL with label agent_type and value mysql_exporter',
+      '1. Navigate to the access role page delete old roles then create role MySQL with label agent_type and value mysql_exporter',
       async () => {
         await page.goto(rbacPage.url);
+        await rbacPage.rbacTable.elements.rowOptions('Full access').click();
+        await rbacPage.rbacTable.elements.setDefault.click();
+        await rbacPage.rbacTable.elements.rowOptions(roleNameCreate).click();
+        await rbacPage.rbacTable.elements.delete.click();
+        await rbacPage.rbacTable.buttons.confirmAndDeleteRole.click();
+        await rbacPage.toast.checkToastMessageContains(rbacPage.rbacTable.messages.roleDeleted(roleNameCreate), { variant: 'success' });
         await rbacPage.buttons.create.click();
         await createRolePage.createNewRole({ roleName: newRoleName, roleDescription, label: 'agent_type', value: 'mysqld_exporter' });
         await rbacPage.rbacTable.verifyRowData(newRoleName, roleDescription, 'agent_type', '=', 'mysqld_exporter');
