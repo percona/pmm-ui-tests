@@ -102,10 +102,7 @@ module.exports = {
       configurationAdvisors: menuOption(ad, 'Configuration Advisors', '/graph/advisors/configuration'),
       securityAdvisors: menuOption(ad, 'Security Advisors', '/graph/advisors/security'),
     }),
-  backups: new LeftMenu('Backup', '/graph/backup', {
-    backupsInventory: menuOption(bm, 'All DBaaSBackups', '/graph/backup/inventory'),
-
-  }),
+  backups: new LeftMenu('Backup', '/graph/backup'),
   configuration: new LeftMenu('Configuration', '/graph/inventory/services',
     {
       serviceAccounts: menuOption(co, 'Service accounts', '/graph/org/serviceaccounts'),
