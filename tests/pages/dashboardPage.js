@@ -1216,6 +1216,8 @@ module.exports = {
   // introducing methods
   verifyMetricsExistence(metrics) {
     for (const i in metrics) {
+      I.waitForElement(this.graphsLocator(metrics[i]), 5);
+      I.scrollTo(this.graphsLocator(metrics[i]));
       I.waitForVisible(this.graphsLocator(metrics[i]), 5);
     }
   },
