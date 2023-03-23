@@ -25,8 +25,8 @@ module.exports = {
       accessKeyFieldValidation: '$accessKey-field-error-message',
       secretKeyFieldValidation: '$secretKey-field-error-message',
     },
-    typeCellByName: (name) => locate('td').at(2).inside(locationCell(name)),
-    endpointCellByName: (name) => locate('td').at(3).inside(locationCell(name)),
+    typeCellByName: (name) => locate('//td[2]').inside(locationCell(name)),
+    endpointCellByName: (name) => locate('//td[3]').inside(locationCell(name)),
     locationDetails: {
       description: locate('$storage-location-description').find('pre'),
       bucket: locate('$storage-location-bucket').find('span').at(2),

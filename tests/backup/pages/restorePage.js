@@ -7,10 +7,14 @@ module.exports = {
   elements: {
     noData: '$table-no-data',
     modalHeader: '$modal-header',
+    modalContent: '$modal-content',
     backupStatusByName: (name) => locate('$statusMsg').inside(artifactCell(name)),
     backupStatusIconByName: (name) => locate('$statusMsg').inside(artifactCell(name)).find('div'),
-    targetServiceByName: (name) => locate('td').at(6).inside(artifactCell(name)),
-
+    targetServiceByName: (name) => locate('//td[6]').inside(artifactCell(name)),
+    startedAtByName: (name) => locate('//td[4]').inside(artifactCell(name)),
+    finishedAtByName: (name) => locate('//td[5]').inside(artifactCell(name)),
+    logsByName: (name) => locate('span').withText('Logs').inside(artifactCell(name)),
+    logsText: locate('$modal-content').find('pre'),
   },
   buttons: {},
   fields: {},
@@ -21,5 +25,11 @@ module.exports = {
     I.amOnPage(this.url);
     I.waitForVisible(this.elements.backupStatusByName(backupName), 180);
     I.seeAttributesOnElements(this.elements.backupStatusIconByName(backupName), { 'data-testid': 'success-icon' });
+  },
+
+  waitForRestoreFailure(backupName) {
+    I.amOnPage(this.url);
+    I.waitForVisible(this.elements.backupStatusByName(backupName), 180);
+    I.seeAttributesOnElements(this.elements.backupStatusIconByName(backupName), { 'data-testid': 'fail-icon' });
   },
 };

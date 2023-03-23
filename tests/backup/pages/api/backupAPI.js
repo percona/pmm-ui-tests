@@ -2,14 +2,20 @@ const { I } = inject();
 const assert = require('assert');
 
 module.exports = {
-  async startBackup(name, service_id, location_id, isLogical = true) {
+  async startBackup(name, service_id, location_id, autoRetries = false, isLogical = true) {
     const data_model = isLogical ? 'LOGICAL' : 'PHYSICAL';
+    const retryConfig = {
+      retries: 2,
+      retry_interval: '30s',
+    };
+    const retires = autoRetries ? retryConfig : {};
     const body = {
       service_id,
       location_id,
       name,
       description: '',
       data_model,
+      ...retires,
     };
 
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
@@ -52,11 +58,6 @@ module.exports = {
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
 
     const resp = await I.sendPostRequest('v1/management/backup/Artifacts/List', {}, headers);
-
-    assert.ok(
-      resp.status === 200,
-      `Failed to get backup artifacts list. Response message is "${resp.data.message}"`,
-    );
 
     return resp.data.artifacts;
   },

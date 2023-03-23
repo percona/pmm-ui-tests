@@ -88,7 +88,7 @@ Scenario(
     const tableName = 'test';
 
     await psMySql.deleteTable(tableName);
-    const artifactId = await backupAPI.startBackup(backupName, serviceId, locationId, false);
+    const artifactId = await backupAPI.startBackup(backupName, serviceId, locationId, false, false);
 
     await backupAPI.waitForBackupFinish(artifactId);
     I.refreshPage();
@@ -113,7 +113,7 @@ Scenario(
   }) => {
     const backupName = 'mysql artifact delete test';
     const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName('MYSQL_SERVICE', mysqlServiceName);
-    const artifactId = await backupAPI.startBackup(backupName, service_id, locationId, false);
+    const artifactId = await backupAPI.startBackup(backupName, service_id, locationId, false, false);
 
     await backupAPI.waitForBackupFinish(artifactId);
 
@@ -183,7 +183,7 @@ Scenario(
   }) => {
     const backupName = 'service remove backup';
     const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName('MYSQL_SERVICE', mysqlServiceNameToDelete);
-    const artifactId = await backupAPI.startBackup(backupName, service_id, locationId, false);
+    const artifactId = await backupAPI.startBackup(backupName, service_id, locationId, false, false);
 
     await backupAPI.waitForBackupFinish(artifactId);
     await inventoryAPI.deleteService(service_id);
