@@ -24,11 +24,11 @@ AfterSuite(async ({ I }) => {
   await I.verifyCommand('docker-compose -f docker-compose-disconnect.yml down -v');
 });
 
+const withCustomBaseUrl = (url) => `${basePmmUrl}${url}`;
+
 Scenario(
   '@PMM-T1442 Verify metrics are saved if PMM server was offline @cli',
   async ({ I, dashboardPage }) => {
-    const withCustomBaseUrl = (url) => `${basePmmUrl}${url}`;
-
     await I.amOnPage(withCustomBaseUrl(dashboardPage.mysqlInstanceSummaryDashboard.url));
     await dashboardPage.waitForDashboardOpened();
     await dashboardPage.expandEachDashboardRow();
@@ -48,17 +48,18 @@ Scenario(
 );
 
 xScenario(
-  '@PMM-T1443 Verify metrics are saved if pmm-agent is stopped',
+  '@PMM-T1443 Verify metrics are saved if pmm-agent is stopped @cli',
   async ({ I, dashboardPage, qanPage }) => {
-    const withCustomBaseUrl = (url) => `${basePmmUrl}${url}`;
-
-    await I.amOnPage(withCustomBaseUrl(dashboardPage.mySQLInstanceOverview.url));
+    await I.amOnPage(withCustomBaseUrl(dashboardPage.mysqlInstanceSummaryDashboard.url));
+    await dashboardPage.waitForDashboardOpened();
+    await dashboardPage.expandEachDashboardRow();
     I.wait(5);
     I.dontSeeElement(dashboardPage.fields.metricPanelNa('Services panel'));
-    await I.verifyCommand('docker-compose -f docker-compose-disconnect.yml up -d');
-    // todo: find a way to put pmm-agent offline without collateralAd
+    await I.verifyCommand('docker network disconnect pmm-ui-tests_server-network pmm-client-disconnect');
+    I.wait(600);
+    await I.verifyCommand('docker network connect pmm-ui-tests_server-network pmm-client-disconnect');
     I.wait(60);
-    await I.amOnPage(withCustomBaseUrl(`${dashboardPage.mySQLInstanceOverview.clearUrl}?orgId=1&from=now-2m&to=now-1m`));
+    await I.amOnPage(withCustomBaseUrl(`${dashboardPage.mysqlInstanceSummaryDashboard.clearUrl}?orgId=1&from=now-3m&to=now-1m`));
     await dashboardPage.waitForDashboardOpened();
     await dashboardPage.expandEachDashboardRow();
     await dashboardPage.verifyThereAreNoGraphsWithNA(1);
