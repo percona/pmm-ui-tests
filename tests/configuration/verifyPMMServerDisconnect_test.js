@@ -47,7 +47,7 @@ Scenario(
   },
 );
 
-xScenario(
+Scenario(
   '@PMM-T1443 Verify metrics are saved if pmm-agent is stopped @cli',
   async ({ I, dashboardPage, qanPage }) => {
     await I.amOnPage(withCustomBaseUrl(dashboardPage.mysqlInstanceSummaryDashboard.url));
