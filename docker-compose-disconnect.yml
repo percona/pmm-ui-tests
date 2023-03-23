@@ -1,6 +1,20 @@
 ---
 version: '3.7'
 
+networks:
+  server-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 192.140.0.0/16
+          gateway: 192.140.0.1
+  mysql-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 192.150.0.0/16
+          gateway: 192.150.0.1
+
 services:
   pmm-server-disconnect:
     image: ${PMM_SERVER_IMAGE:-perconalab/pmm-server:dev-latest}
@@ -15,9 +29,11 @@ services:
       - PERCONA_TEST_VERSION_SERVICE_URL=https://check-dev.percona.com/versions/v1
       - PERCONA_TEST_TELEMETRY_INTERVAL=10s
       - PERCONA_TEST_TELEMETRY_RETRY_BACKOFF=10s
+    networks:
+      - server-network
 
   pmm-client:
-    image: perconalab/pmm-client:2.36.0-rc
+    image: perconalab/pmm-client:dev-latest
     container_name: pmm-client-disconnect
     depends_on:
       pmm-server-disconnect:
@@ -35,6 +51,9 @@ services:
       - PMM_AGENT_SETUP_FORCE=1
       - PMM_AGENT_SETUP_NODE_TYPE=container
     restart: on-failure
+    networks:
+      - server-network
+      - mysql-network
 
   mysql5.7:
     container_name: mysql-disconnect-5.7
@@ -43,3 +62,5 @@ services:
     restart: always
     environment:
       MYSQL_ROOT_PASSWORD: 7B*53@lCdflR
+    networks:
+      - mysql-network
