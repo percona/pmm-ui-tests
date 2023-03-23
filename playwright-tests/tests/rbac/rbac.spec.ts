@@ -223,7 +223,6 @@ test.describe('Spec file for Access Control (RBAC)', async () => {
     });
   });
 
-
   test('PMM-T1629 Verify re-enabling of the Access Control @rbac @rbac-post-upgrade', async ({ page }) => {
     const advancedSettings = new AdvancedSettings(page);
     const homeDashboard = new HomeDashboard(page);
