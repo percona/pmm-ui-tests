@@ -103,10 +103,10 @@ module.exports = {
       securityAdvisors: menuOption(ad, 'Security Advisors', '/graph/advisors/security'),
     }),
   backups: new LeftMenu('Backup', '/graph/backup/inventory', {
-    allBackups: menuOption(bm, 'Tab All Backups', '/graph/backup/inventory'),
-    scheduledBackupJobs: menuOption(bm, 'Tab Scheduled Backup Jobs', '/graph/backup/scheduled'),
-    restores: menuOption(bm, 'Tab Restores', '/graph/backup/restore'),
-    storageLocations: menuOption(bm, 'Tab Storage Locations', '/graph/backup/locations'),
+    allBackups: menuOption(bm, 'All Backups', '/graph/backup/inventory'),
+    scheduledBackupJobs: menuOption(bm, 'Scheduled Backup Jobs', '/graph/backup/scheduled'),
+    restores: menuOption(bm, 'Restores', '/graph/backup/restore'),
+    storageLocations: menuOption(bm, 'Storage Locations', '/graph/backup/locations'),
   }),
   configuration: new LeftMenu('Configuration', '/graph/inventory/services',
     {
