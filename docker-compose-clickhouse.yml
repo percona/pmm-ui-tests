@@ -2,7 +2,7 @@
 version: '3.7'
 
 services:
-  pmm-server-external-clickhouse:
+  pmm-server:
     image: ${PMM_SERVER_IMAGE:-perconalab/pmm-server:dev-latest}
     container_name: pmm-server-clickhouse
     depends_on:
@@ -22,9 +22,10 @@ services:
       - PERCONA_TEST_PMM_CLICKHOUSE_DATABASE=pmm
       - PERCONA_TEST_PMM_CLICKHOUSE_POOL_SIZE=1
       - PERCONA_TEST_PMM_CLICKHOUSE_BLOCK_SIZE=65000
+
   pmm-client:
     image: perconalab/pmm-client:dev-latest
-    container_name: pmm-client
+    container_name: pmm-client-clickhouse
     depends_on:
       pmm-server-external-clickhouse:
         condition: service_healthy
@@ -37,7 +38,7 @@ services:
       - PMM_AGENT_PORTS_MAX=41500
       - PMM_AGENT_SERVER_INSECURE_TLS=1
       - PMM_AGENT_CONFIG_FILE=config/pmm-agent.yaml
-      - PMM_AGENT_SETUP_NODE_NAME=-pmm-client-container
+      - PMM_AGENT_SETUP_NODE_NAME=pmm-client-clickhouse-container
       - PMM_AGENT_SETUP_FORCE=1
       - PMM_AGENT_SETUP_NODE_TYPE=container
     restart: on-failure
@@ -49,6 +50,7 @@ services:
     restart: always
     environment:
       MYSQL_ROOT_PASSWORD: 7B*53@lCdflR
+
   external-clickhouse:
     image: clickhouse/clickhouse-server:22.5.2
     container_name: external-clickhouse
