@@ -13,7 +13,7 @@ BeforeSuite(async ({ I }) => {
   await I.verifyCommand('docker-compose -f docker-compose-clickhouse.yml up -d mysql5.7');
   await I.verifyCommand('docker-compose -f docker-compose-clickhouse.yml up -d external-clickhouse');
   await I.wait(30);
-  await I.verifyCommand('docker exec pmm-client-clickhouse pmm-admin add mysql --username=root --password=7B*53@lCdflR --query-source=perfschema  mysql5.7 mysql5.7:3306');
+  await I.verifyCommand('docker exec pmm-client-clickhouse pmm-admin add mysql --username=root --password=7B*53@lCdflR --query-source=perfschema mysql5.7 mysql5.7:3306');
   await I.wait(60);
 });
 
