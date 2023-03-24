@@ -27,7 +27,7 @@ services:
     image: perconalab/pmm-client:dev-latest
     container_name: pmm-client-clickhouse
     depends_on:
-      pmm-server-external-clickhouse:
+      pmm-server:
         condition: service_healthy
     environment:
       - PMM_AGENT_SETUP=1
