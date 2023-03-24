@@ -9,7 +9,7 @@ const mongodb_updated_version = 'MongoDB 5.0.2';
 
 const location = {
   name: 'TEST-LOCATION',
-  ...locationsPage.mongoStorageLocation,
+  config: locationsPage.storageLocationConnection,
 };
 
 // const psmdbClusterDetails = new DataTable(['namespace', 'clusterName', 'node', 'nodeType']);
@@ -318,7 +318,11 @@ Scenario('PMM-T704 PMM-T772 PMM-T849 PMM-T850 Resources, PV, Secrets verificatio
 Scenario(
   'PMM-T1603 Verify PSMDB backup @dbaas',
   async ({ I, dbaasPage, dbaasActionsPage, locationsAPI }) => {
-    await locationsAPI.createStorageLocation(location);
+    await locationsAPI.createStorageLocation(
+      location.name,
+      locationsAPI.storageType.s3,
+      locationsAPI.storageLocationConnection,
+    );
     await dbaasAPI.deleteAllDBCluster(clusterName);
     const psmdb_backup_cluster = 'psmdb-backup-test';
 

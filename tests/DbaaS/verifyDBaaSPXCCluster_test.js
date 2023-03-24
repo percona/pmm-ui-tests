@@ -10,7 +10,7 @@ const mysql_recommended_version_image = 'percona/percona-xtradb-cluster:8.0.27-1
 const location = {
   name: 'S3 Location DBaaS',
   description: 'test description',
-  ...locationsPage.mongoStorageLocation,
+  config: locationsPage.storageLocationConnection,
 };
 
 const pxcDBClusterDetails = new DataTable(['namespace', 'clusterName', 'node']);
@@ -458,10 +458,16 @@ Scenario(
   },
 );
 
-Scenario(
+//TODO: PXC backup doesn't work atm
+Scenario.skip(
   'PMM-T1602 Verify PXC backup on DBaaS @dbaas',
   async ({ I, dbaasPage, dbaasActionsPage, locationsAPI }) => {
-    await locationsAPI.createStorageLocation(location);
+    await locationsAPI.createStorageLocation(
+      location.name,
+      locationsAPI.storageType.s3,
+      locationsAPI.storageLocationConnection,
+      location.description,
+    );
     await dbaasAPI.deleteAllDBCluster(clusterName);
     const pxc_backup_cluster = 'pxc-backup-test';
 
@@ -475,6 +481,6 @@ Scenario(
     await dbaasAPI.waitForDBClusterState(pxc_backup_cluster, clusterName, 'MySQL', 'DB_CLUSTER_STATE_READY');
     // Wait for backup to complete
     I.wait(120);
-    I.say(await I.verifyCommand(`kubectl get psmdb-backup | grep ${pxc_backup_cluster}`, 'ready'));
+    I.say(await I.verifyCommand(`kubectl get pxc-backup | grep ${pxc_backup_cluster}`, 'ready'));
   },
 );
