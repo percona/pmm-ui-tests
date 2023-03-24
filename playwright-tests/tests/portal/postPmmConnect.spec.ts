@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import apiHelper from '@api/apiHelper';
+import apiHelper from '@api/helpers/apiHelper';
 import User from '@support/types/user.interface';
 import { fileHelper } from '@helpers/FileHelper';
 import { portalAPI } from '@api/portalApi';
@@ -14,6 +14,7 @@ import EntitlementsPage from '@pages/platformPages/Entitlements.page';
 import EnvironmentOverview from '@pages/platformPages/EnvironmentOverview.page';
 import grafanaHelper from '@helpers/GrafanaHelper';
 import PerconaPlatform from '@pages/pmmSettings/PerconaPlatform.page';
+import {v1} from "@api/v1";
 
 test.describe('Spec file for PMM connected the portal', async () => {
   let firstAdmin: User;
@@ -49,7 +50,7 @@ test.describe('Spec file for PMM connected the portal', async () => {
   });
 
   test.beforeEach(async ({ page }) => {
-    await apiHelper.confirmTour(page);
+    await v1.confirmTour(page);
     await page.goto('');
   });
 
@@ -365,7 +366,7 @@ test.describe('Spec file for PMM connected the portal', async () => {
       await test.step('1. Login into the pmm and navigate to the percona platform page.', async () => {
         await grafanaHelper.authorize(page);
         await page.goto(platformPage.perconaPlatformURL);
-        await platformPage.connectedContainer.waitFor({ state: 'visible' });  
+        await platformPage.connectedContainer.waitFor({ state: 'visible' });
       });
 
       await test.step('2. Force disconnect from the platform.', async () => {
@@ -373,12 +374,12 @@ test.describe('Spec file for PMM connected the portal', async () => {
         await expect(platformPage.elements.readMore).toHaveAttribute('href', platformPage.links.readMore);
         await platformPage.buttons.confirmDisconnect.click();
       });
-      
+
       await test.step('3. Verify that force disconnect was successful.', async () => {
         await platformPage.toast.checkToastMessage(platformPage.messages.disconnectedSuccess);
         await platformPage.buttons.connect.waitFor({ state: 'visible' });
       });
-      
+
     } else {
       test.info().annotations.push({
         type: 'Old Version ',

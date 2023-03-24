@@ -1,25 +1,22 @@
-import { Page, request } from '@playwright/test';
+import {APIRequestContext, Page, request} from '@playwright/test';
 import config from '@tests/playwright.config';
 import Duration from '@helpers/Duration';
 import grafanaHelper from '@helpers/GrafanaHelper';
+import {APIResponse} from "playwright-core";
 
 export interface Settings {
   pmm_public_address: string;
 }
 
+const getConfiguredRestApi = async (): Promise<APIRequestContext> => {
+  return request.newContext({
+    baseURL: config.use?.baseURL!,
+    extraHTTPHeaders: { Authorization: `Basic ${await grafanaHelper.getToken()}` },
+  });
+};
+
 const apiHelper = {
-  confirmTour: async (page: Page) => {
-    await page.route('**/v1/user', (route) =>
-      route.fulfill({
-        status: 200,
-        body: JSON.stringify({
-          user_id: 1,
-          product_tour_completed: true,
-          alerting_tour_completed: true,
-        }),
-      }),
-    );
-  },
+
 
   getPmmVersion: async () => {
     const restConfig = await request.newContext({
@@ -60,6 +57,17 @@ const apiHelper = {
         headers: {},
       });
     });
+  },
+
+  /**
+   * Implements HTTP POST to PMM Server API
+   *
+   * @param   path      API endpoint path
+   * @param   payload   request body {@code Object}
+   * @return            Promise<APIResponse> instance
+   */
+  post: async (path: string, payload: Object): Promise<APIResponse> => {
+    return (await getConfiguredRestApi()).post(path, payload);
   },
 };
 

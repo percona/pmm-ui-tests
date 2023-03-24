@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test';
 import User from '@support/types/user.interface';
-import apiHelper from '@api/apiHelper';
+import apiHelper from '@api/helpers/apiHelper';
 import { fileHelper } from '@helpers/FileHelper';
 import { portalAPI } from '@api/portalApi';
 import { serviceNowAPI } from '@api/serviceNowApi';
@@ -9,6 +9,7 @@ import Duration from '@helpers/Duration';
 import HomeDashboard from '@pages/HomeDashboard.page';
 import grafanaHelper from '@helpers/GrafanaHelper';
 import { oktaAPI } from '@api/okta';
+import {v1} from "@api/v1";
 
 test.describe('Spec file for PMM connected the portal', async () => {
   test.describe.configure({ retries: 0 });
@@ -45,7 +46,7 @@ test.describe('Spec file for PMM connected the portal', async () => {
   });
 
   test.beforeEach(async ({ page }) => {
-    await apiHelper.confirmTour(page);
+    await v1.confirmTour(page);
     await page.goto('');
   });
 

@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import apiHelper from '@api/apiHelper';
+import apiHelper from '@api/helpers/apiHelper';
 import HomeDashboard from '@tests/pages/HomeDashboard.page';
 import grafanaHelper from '@tests/helpers/GrafanaHelper';
 import { RbacPage } from '@tests/pages/configuration/Rbac.page';
@@ -59,7 +59,7 @@ test.describe('Spec file for Access Control (RBAC)', async () => {
 
     const roleNameCreate = `Role Name ${new Date().getTime()}`;
     const roleDescriptionCreate = `Role Description ${new Date().getTime()}`;
-    
+
     await test.step('1. Navigate to the Access Role page, then click create button.', async () => {
       await page.goto(rbacPage.url);
       await rbacPage.buttons.create.click();
@@ -83,7 +83,7 @@ test.describe('Spec file for Access Control (RBAC)', async () => {
     });
   });
 
-  
+
 
   test('PMM-T1584 Verify assigning Access role to user @rbac @rbac-pre-upgrade', async ({ page }) => {
     const rbacPage = new RbacPage(page);
@@ -161,7 +161,7 @@ test.describe('Spec file for Access Control (RBAC)', async () => {
       );
       await rbacPage.rbacTable.buttons.closeDialog.click();
     });
-    
+
     await test.step('2. Unassign role from the user.', async () => {
       await page.goto(usersConfigurationPage.url);
       await usersConfigurationPage.usersTable.fields.accessRole(newUser.username).click();
@@ -169,7 +169,7 @@ test.describe('Spec file for Access Control (RBAC)', async () => {
       await usersConfigurationPage.usersTable.fields.removeRole(newUser.username, roleName).click({ force: true });
       await usersConfigurationPage.usersTable.fields.removeRole(newUser.username, roleName).click({ force: true });
     });
-    
+
     await test.step('3. Delete role and verify that role was successfully deleted.', async () => {
       await page.goto(rbacPage.url);
       await rbacPage.rbacTable.elements.rowOptions(roleName).click();
@@ -178,7 +178,7 @@ test.describe('Spec file for Access Control (RBAC)', async () => {
       await rbacPage.toast.checkToastMessageContains(rbacPage.rbacTable.messages.roleDeleted(roleName), { variant: 'success' });
       await expect(rbacPage.rbacTable.elements.body).not.toContainText(roleName);
     });
-    
+
   });
   test('PMM-T1629 Verify re-enabling of the Access Control @rbac @rbac-post-upgrade', async ({ page }) => {
     const advancedSettings = new AdvancedSettings(page);

@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import apiHelper from '@api/apiHelper';
+import apiHelper from '@api/helpers/apiHelper';
 import { portalAPI } from '@api/portalApi';
 import { serviceNowAPI } from '@api/serviceNowApi';
 import Duration from '@helpers/Duration';
@@ -10,6 +10,7 @@ import PerconaPlatform from '@pages/pmmSettings/PerconaPlatform.page';
 import { SignInPage } from '@pages/SignIn.page';
 import { PortalUserRoles } from '@support/enums/portalUserRoles';
 import User from '@support/types/user.interface';
+import {v1} from "@api/v1";
 
 test.describe('Spec file for connecting PMM to the portal', async () => {
   let firstAdmin: User;
@@ -38,7 +39,7 @@ test.describe('Spec file for connecting PMM to the portal', async () => {
   });
 
   test.beforeEach(async ({ page }) => {
-    await apiHelper.confirmTour(page);
+    await v1.confirmTour(page);
     await page.goto('/');
   });
 
@@ -59,7 +60,7 @@ test.describe('Spec file for connecting PMM to the portal', async () => {
         } else {
           await page.getByText(platformPage.labels.header).waitFor({ state: 'visible' });
         }
-        
+
       });
 
       await test.step('2. Verify all required element are displayed.', async () => {
