@@ -11,6 +11,7 @@ BeforeSuite(async ({ I }) => {
   await I.verifyCommand('docker-compose -f docker-compose-disconnect.yml up -d pmm-client');
   await I.verifyCommand('docker-compose -f docker-compose-disconnect.yml up -d mysql5.7');
   clientServerNetwork = await I.verifyCommand('docker inspect pmm-client-disconnect -f \'{{range $k, $v := .NetworkSettings.Networks}}{{printf "%s\\n" $k}}{{end}}\' | grep -o \'.*server-network\'');
+  await I.wait(10);
   I.say(await I.verifyCommand('docker exec pmm-client-disconnect pmm-admin add mysql --username=root --password=7B*53@lCdflR --host=mysql-disconnect-5.7 --port=3306 --query-source=perfschema mysql-disconnect-5.7'));
   await I.wait(60);
 });
