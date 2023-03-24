@@ -314,7 +314,7 @@ Scenario(
 );
 
 Scenario(
-  '@PMM-T1658 Verify that backup management is enabled by default @backup @bm-fb',
+  'PMM-T841 - Verify user is able to enable Backup Management @backup',
   async ({
     I, pmmSettingsPage, scheduledPage, settingsAPI, codeceptjsConfig,
   }) => {
