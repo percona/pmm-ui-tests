@@ -1,6 +1,5 @@
 const communicationDefaults = new DataTable(['type', 'serverAddress', 'hello', 'from', 'authType', 'username', 'password', 'url', 'message']);
 const assert = require('assert');
-const leftNavMenu = require('../pages/leftNavMenu');
 
 // pmmSettingsPage.communicationData.forEach(({
 //   type, serverAddress, hello, from, authType, username, password, url,
@@ -352,7 +351,7 @@ Scenario(
 Scenario(
   '@PMM-T1658 Verify that backup management is enabled by default @backup @bm-fb',
   async ({
-    I, pmmSettingsPage, settingsAPI, homePage,
+    I, pmmSettingsPage, settingsAPI, homePage, leftNavMenu,
   }) => {
     const pmmVersion = await homePage.getVersions().versionMinor;
 
