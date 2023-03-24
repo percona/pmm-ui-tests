@@ -16,13 +16,8 @@ const getConfiguredRestApi = async (): Promise<APIRequestContext> => {
 };
 
 const apiHelper = {
-
-
   getPmmVersion: async () => {
-    const restConfig = await request.newContext({
-      baseURL: config.use?.baseURL!,
-      extraHTTPHeaders: { Authorization: `Basic ${await grafanaHelper.getToken()}` },
-    });
+    const restConfig = await getConfiguredRestApi();
 
     const response = await restConfig.get('/v1/version', { timeout: Duration.ThreeMinutes });
     const [versionMajor, versionMinor, versionPatch] = (await response.json()).version.split('.');
@@ -30,20 +25,14 @@ const apiHelper = {
   },
 
   changeSettings: async (settingsData: Settings) => {
-    const restConfig = await request.newContext({
-      baseURL: config.use?.baseURL!,
-      extraHTTPHeaders: { Authorization: `Basic ${await grafanaHelper.getToken()}` },
-    });
+    const restConfig = await getConfiguredRestApi();
 
     const response = await restConfig.post('/v1/Settings/Change', { data: settingsData });
     return await response.json();
   },
 
   listOrgUsers: async () => {
-    const restConfig = await request.newContext({
-      baseURL: config.use?.baseURL!,
-      extraHTTPHeaders: { Authorization: `Basic ${await grafanaHelper.getToken()}` },
-    });
+    const restConfig = await getConfiguredRestApi();
 
     const response = await restConfig.get('/graph/api/org/users?accesscontrol=true');
     return await response.json();

@@ -11,6 +11,7 @@ import NodesOverviewDashboard from '@tests/pages/dashboards/nodes/NodesOverviewD
 import Duration from '@tests/helpers/Duration';
 import PostgresqlInstancesOverviewDashboard from '@tests/pages/dashboards/postgresql/PostgresqlInstancesOverview.page';
 import AdvancedSettings from '@tests/pages/pmmSettings/AdvancedSettings.page';
+import {v1} from "@api/v1";
 
 test.describe('Spec file for Access Control (RBAC)', async () => {
   const newUser = { username: 'testUserRBAC', email: 'testUserRBAC@localhost', name: 'Test User', password: 'password' };
@@ -18,7 +19,7 @@ test.describe('Spec file for Access Control (RBAC)', async () => {
   const roleDescription = `Role Description Only MySql Access`;
 
   test.beforeEach(async ({ page }) => {
-    await apiHelper.confirmTour(page);
+    await v1.confirmTour(page);
     await page.goto('');
     await grafanaHelper.authorize(page, 'admin', 'admin');
   });
