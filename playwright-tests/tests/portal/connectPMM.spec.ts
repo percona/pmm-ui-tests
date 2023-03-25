@@ -10,7 +10,6 @@ import PerconaPlatform from '@pages/pmmSettings/PerconaPlatform.page';
 import { SignInPage } from '@pages/SignIn.page';
 import { PortalUserRoles } from '@support/enums/portalUserRoles';
 import User from '@support/types/user.interface';
-import {v1} from "@api/v1";
 
 test.describe('Spec file for connecting PMM to the portal', async () => {
   let firstAdmin: User;
@@ -39,7 +38,7 @@ test.describe('Spec file for connecting PMM to the portal', async () => {
   });
 
   test.beforeEach(async ({ page }) => {
-    await v1.confirmTour(page);
+    await apiHelper.confirmTour(page);
     await page.goto('/');
   });
 

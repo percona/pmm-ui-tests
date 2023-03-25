@@ -14,7 +14,6 @@ import EntitlementsPage from '@pages/platformPages/Entitlements.page';
 import EnvironmentOverview from '@pages/platformPages/EnvironmentOverview.page';
 import grafanaHelper from '@helpers/GrafanaHelper';
 import PerconaPlatform from '@pages/pmmSettings/PerconaPlatform.page';
-import {v1} from "@api/v1";
 
 test.describe('Spec file for PMM connected the portal', async () => {
   let firstAdmin: User;
@@ -50,7 +49,7 @@ test.describe('Spec file for PMM connected the portal', async () => {
   });
 
   test.beforeEach(async ({ page }) => {
-    await v1.confirmTour(page);
+    await apiHelper.confirmTour(page);
     await page.goto('');
   });
 

@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import apiHelper from '@api/helpers/apiHelper';
+import apiHelper from "@api/helpers/apiHelper";
 import HomeDashboard from '@tests/pages/HomeDashboard.page';
 import grafanaHelper from '@tests/helpers/GrafanaHelper';
 import { RbacPage } from '@tests/pages/configuration/Rbac.page';
@@ -11,7 +11,6 @@ import NodesOverviewDashboard from '@tests/pages/dashboards/nodes/NodesOverviewD
 import Duration from '@tests/helpers/Duration';
 import PostgresqlInstancesOverviewDashboard from '@tests/pages/dashboards/postgresql/PostgresqlInstancesOverview.page';
 import AdvancedSettings from '@tests/pages/pmmSettings/AdvancedSettings.page';
-import {v1} from "@api/v1";
 
 test.describe('Spec file for Access Control (RBAC)', async () => {
   const newUser = { username: 'testUserRBAC', email: 'testUserRBAC@localhost', name: 'Test User', password: 'password' };
@@ -19,7 +18,7 @@ test.describe('Spec file for Access Control (RBAC)', async () => {
   const roleDescription = `Role Description Only MySql Access`;
 
   test.beforeEach(async ({ page }) => {
-    await v1.confirmTour(page);
+    await apiHelper.confirmTour(page);
     await page.goto('');
     await grafanaHelper.authorize(page, 'admin', 'admin');
   });
