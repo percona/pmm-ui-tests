@@ -2,7 +2,7 @@ import {serverAPIv1} from "@api/serverApiV1";
 import {settingsAPIv1} from "@api/settingsApiV1";
 
 /**
- * User facing api collection. Accessible by /swagger path.
+ * User facing api collection. Accessible on Frontend via /swagger path.
  * API version intentionally included into the API groups to have
  * obvious which API and which version is used.
  */

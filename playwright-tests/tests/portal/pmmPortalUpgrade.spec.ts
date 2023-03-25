@@ -9,7 +9,6 @@ import Duration from '@helpers/Duration';
 import HomeDashboard from '@pages/HomeDashboard.page';
 import grafanaHelper from '@helpers/GrafanaHelper';
 import { oktaAPI } from '@api/okta';
-import {api} from "@api/api";
 
 test.describe('Spec file for PMM connected the portal', async () => {
   test.describe.configure({ retries: 0 });
@@ -46,7 +45,7 @@ test.describe('Spec file for PMM connected the portal', async () => {
   });
 
   test.beforeEach(async ({ page }) => {
-    await api.confirmTour(page);
+    await apiHelper.confirmTour(page);
     await page.goto('');
   });
 

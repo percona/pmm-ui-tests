@@ -1,9 +1,9 @@
 import {expect, test} from '@playwright/test';
 import {api} from '@api/api';
+import apiHelper from "@api/helpers/apiHelper";
 import grafanaHelper from '@helpers/GrafanaHelper';
 import HomeDashboard from '@pages/HomeDashboard.page';
 import {SettingProperty} from "@api/settingsApiV1";
-// import apiHelper from "@api/helpers/apiHelper";
 
 test.describe('General Upgrade PMM tests', async () => {
   test.describe.configure({ retries: 0 });
@@ -17,7 +17,7 @@ test.describe('General Upgrade PMM tests', async () => {
 
   test.beforeEach(async ({ page }) => {
     await grafanaHelper.authorize(page);
-    await api.confirmTour(page);
+    await apiHelper.confirmTour(page);
     await page.goto('');
   });
 
