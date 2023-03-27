@@ -44,9 +44,9 @@ BeforeSuite(async ({
   );
   await I.mongoConnect(mongoConnection);
 
-  // I.say(await I.verifyCommand(`docker exec rs101 pmm-admin add mongodb --username=pmm --password=pmmpass --port=27017 --service-name=${mongoServiceName} --replication-set=rs --cluster=rs`));
-  // I.say(await I.verifyCommand(`docker exec rs102 pmm-admin add mongodb --username=pmm --password=pmmpass --port=27017 --service-name=${mongoServiceName2} --replication-set=rs --cluster=rs`));
-  // I.say(await I.verifyCommand(`docker exec rs103 pmm-admin add mongodb --username=pmm --password=pmmpass --port=27017 --service-name=${mongoServiceName3} --replication-set=rs --cluster=rs`));
+  I.say(await I.verifyCommand(`docker exec rs101 pmm-admin add mongodb --username=pmm --password=pmmpass --port=27017 --service-name=${mongoServiceName} --replication-set=rs --cluster=rs`));
+  I.say(await I.verifyCommand(`docker exec rs102 pmm-admin add mongodb --username=pmm --password=pmmpass --port=27017 --service-name=${mongoServiceName2} --replication-set=rs --cluster=rs`));
+  I.say(await I.verifyCommand(`docker exec rs103 pmm-admin add mongodb --username=pmm --password=pmmpass --port=27017 --service-name=${mongoServiceName3} --replication-set=rs --cluster=rs`));
 });
 
 Before(async ({
@@ -261,7 +261,7 @@ Scenario(
 );
 
 Scenario(
-  '@PMM-T928 @PMM-T992 Verify schedule retries and restore from a scheduled backup artifact @backup @bm-mongo @bm-mongo',
+  '@PMM-T928 @PMM-T992 Verify schedule retries and restore from a scheduled backup artifact @backup @bm-mongo',
   async ({
     I, backupInventoryPage, scheduledAPI, backupAPI, restorePage,
   }) => {
@@ -337,7 +337,7 @@ Scenario(
 );
 
 Scenario(
-  '@PMM-T1159 @PMM-T1160 Verify that backup with long backup name is displayed correctly, Verify that backup names are limited to 100 chars length @backup',
+  '@PMM-T1159 @PMM-T1160 Verify that backup with long backup name is displayed correctly, Verify that backup names are limited to 100 chars length @backup @bm-mongo',
   async ({
     I, backupInventoryPage,
   }) => {
@@ -361,7 +361,7 @@ Scenario(
 );
 
 Scenario(
-  '@PMM-T1163 Verify that Backup time format is identical for whole feature @backup',
+  '@PMM-T1163 Verify that Backup time format is identical for whole feature @backup @bm-mongo',
   async ({
     I, backupInventoryPage, backupAPI, scheduledAPI, scheduledPage,
   }) => {

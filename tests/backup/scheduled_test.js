@@ -108,7 +108,7 @@ Scenario(
   },
 );
 
-Scenario.only(
+Scenario(
   '@PMM-T954 @PMM-T952 @PMM-T956 @PMM-T958 @PMM-T1500 Verify validation errors for retention and existing name @backup @bm-mongo',
   async ({
     I, scheduledPage, scheduledAPI,
@@ -494,7 +494,7 @@ Data(scheduleErrors).Scenario(
 );
 
 Scenario(
-  '@PMM-T1517 Verify that BM Scheduler is more clear regarding frequency specification @backup',
+  '@PMM-T1517 Verify that BM Scheduler is more clear regarding frequency specification @backup @bm-mongo',
   async ({
     I, scheduledPage,
   }) => {
