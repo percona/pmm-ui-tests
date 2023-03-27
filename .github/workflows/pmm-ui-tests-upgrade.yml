@@ -232,6 +232,7 @@ jobs:
             echo "Yes it is Testing REO"
             sudo percona-release enable pmm2-client testing
             sudo apt-get upgrade
+            sudo apt list -a pmm2-client
             sudo apt -y install pmm2-client
           fi
 
