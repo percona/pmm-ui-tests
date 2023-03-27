@@ -1,4 +1,4 @@
-name: PMM2 UI Tests-Matrix-Upgrade
+name: PMM2 UI Tests Upgrade Matrix
 
 on:
   workflow_dispatch:
