@@ -25,13 +25,14 @@ on:
         description: 'Branch for the pmm-qa repository.'
         default: 'main'
         required: true
-      testing_repository:
-        description: 'Enable Testing Repository.'
-        default: 'no'
-        required: true
-      experimental_repository:
-        description: 'Enable Experimental Repository.'
-        default: 'no'
+      repository:
+        description: 'Enable Selected Repository.'
+        default: 'release'
+        type: choice
+        options: 
+        - release
+        - testing
+        - experimental
         required: true
 
 jobs:
@@ -49,8 +50,7 @@ jobs:
         pmm_client_upgrade_version: ${{ inputs.pmm_client_upgrade_version }}
         pmm_clients: '--addclient=ps,1 --addclient=pdpgsql,1'
         pmm_qa_branch: ${{ inputs.pmm_qa_branch || 'main' }}
-        testing_repository: ${{ inputs.testing_repository }}
-        experimental_repository: ${{ inputs.experimental_repository }}
+        repository: ${{ inputs.repository }}
 
    portal:
       name: Portal
@@ -66,6 +66,4 @@ jobs:
         pmm_client_upgrade_version: ${{ inputs.pmm_client_upgrade_version }}
         pmm_clients: ''
         pmm_qa_branch: ${{ inputs.pmm_qa_branch || 'main' }}
-        testing_repository: ${{ inputs.testing_repository }}
-        experimental_repository: ${{ inputs.experimental_repository }}
-
+        repository: ${{ inputs.repository }}

@@ -44,15 +44,14 @@ on:
         default: 'main'
         type: string
         required: true
-      testing_repository:
-        description: 'Enable Testing Repository.'
-        default: 'no'
-        type: string
-        required: true
-      experimental_repository:
-        description: 'Enable Experimental Repository.'
-        default: 'no'
-        type: string
+      repository:
+        description: 'Enable Selected Repository.'
+        default: 'release'
+        type: choice
+        options: 
+        - release
+        - testing
+        - experimental
         required: true
   workflow_dispatch:
     inputs:
@@ -85,13 +84,14 @@ on:
         description: 'Branch for the pmm-qa repository.'
         default: 'main'
         required: true
-      testing_repository:
-        description: 'Enable Testing Repository.'
-        default: 'no'
-        required: true
-      experimental_repository:
-        description: 'Enable Experimental Repository.'
-        default: 'no'
+      repository:
+        description: 'Enable Selected Repository.'
+        default: 'release'
+        type: choice
+        options: 
+        - release
+        - testing
+        - experimental
         required: true
 
 jobs:
@@ -187,29 +187,28 @@ jobs:
           sudo pmm-admin list
         shell: bash
       
-      - name: Enable Test Repository.
-        if: ${{ inputs.testing_repository == 'yes'}}
+      - name: Enable Repository.
         run: |
             docker exec pmm-integration-server bash -c "echo exclude=mirror.es.its.nyu.edu | tee -a /etc/yum/pluginconf.d/fastestmirror.conf"
             docker exec pmm-integration-server yum update -y percona-release
             docker exec pmm-integration-server sed -i'' -e 's^/release/^/testing/^' /etc/yum.repos.d/pmm2-server.repo
-            docker exec pmm-integration-server percona-release enable percona testing
-            docker exec pmm-integration-server yum clean all
 
-            sudo percona-release enable percona testing
-
-      - name: Enable Experimental Repository.
-        if: ${{ inputs.experimental_repository == 'yes'}}
-        run: |
-          set -o errexit
-          set -o xtrace
-          docker exec pmm-integration-server bash -c "echo exclude=mirror.es.its.nyu.edu | tee -a /etc/yum/pluginconf.d/fastestmirror.conf"
-          docker exec pmm-integration-server yum update -y percona-release
-          docker exec pmm-integration-server sed -i'' -e 's^/release/^/experimental/^' /etc/yum.repos.d/pmm2-server.repo
-          docker exec pmm-integration-server percona-release enable percona experimental
-          docker exec pmm-integration-server yum clean all
-
-          sudo percona-release enable percona experimental
+            if [[ ${{ inputs.repository }} == "testing" ]]; then
+              docker exec pmm-integration-server percona-release enable percona testing
+              docker exec pmm-integration-server yum update
+              sudo percona-release enable percona testing
+              sudo apt-get update
+            elif [[  ${{ inputs.repository }} == "experimental" ]]; then
+              docker exec pmm-integration-server percona-release enable percona experimental
+              docker exec pmm-integration-server yum update
+              sudo percona-release enable percona experimental
+              sudo apt-get update
+            else
+              docker exec pmm-integration-server percona-release enable percona release
+              docker exec pmm-integration-server yum update
+              sudo percona-release enable percona release
+              sudo apt-get update
+            fi
 
       - name: Execute Pre Upgrade UI tests
         id: ui-tests-flagged
