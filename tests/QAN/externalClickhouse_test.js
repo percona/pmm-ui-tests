@@ -9,6 +9,7 @@ BeforeSuite(async ({ I }) => {
   await I.verifyCommand(`PMM_SERVER_IMAGE=${process.env.DOCKER_VERSION} docker-compose up -d docker-compose -f docker-compose-clickhouse.yml up -d`);
   await I.verifyCommand('docker exec pmm-client sh -c "pmm-admin add mysql --username=root --password=7B*53@lCdflR --query-source=perfschema  mysql5.7 mysql5.7:3306"');
   await I.wait(60);
+  console.log(await I.verifyCommand('docker ps -a'));
 });
 
 Before(async ({ I }) => {
