@@ -239,6 +239,7 @@ jobs:
             echo "Yes it is Experimental REPO"
             sudo percona-release enable pmm2-client experimental
             sudo apt-get upgrade
+            sudo apt list -a pmm2-client
             sudo apt -y install pmm2-client
           fi
           sudo npx ts-node ./integration-setup.ts --ci --upgrade-pmm-client-version=2.36.0
