@@ -30,20 +30,20 @@ Scenario(
   '@PMM-T1442 Verify metrics are saved if PMM server was offline @disconnect',
   async ({ I, dashboardPage }) => {
     await I.amOnPage(withCustomBaseUrl(dashboardPage.mysqlInstanceSummaryDashboard.url));
-    // await dashboardPage.waitForDashboardOpened();
-    // await dashboardPage.expandEachDashboardRow();
-    // I.wait(5);
-    // I.dontSeeElement(dashboardPage.fields.metricPanelNa('Services panel'));
-    // await I.verifyCommand('docker stop pmm-server-disconnect');
-    // I.wait(600);
-    // await I.verifyCommand('docker start pmm-server-disconnect');
-    // I.wait(60);
-    // await I.amOnPage(withCustomBaseUrl(`${dashboardPage.mysqlInstanceSummaryDashboard.clearUrl}?orgId=1&from=now-3m&to=now-1m`));
-    // await dashboardPage.waitForDashboardOpened();
-    // await dashboardPage.expandEachDashboardRow();
-    // await dashboardPage.verifyThereAreNoGraphsWithNA(1);
-    // await dashboardPage.verifyThereAreNoGraphsWithoutData(1);
-    // I.dontSeeElement(dashboardPage.fields.metricPanelNa('Services panel'));
+    await dashboardPage.waitForDashboardOpened();
+    await dashboardPage.expandEachDashboardRow();
+    I.wait(5);
+    I.dontSeeElement(dashboardPage.fields.metricPanelNa('Services panel'));
+    await I.verifyCommand('docker stop pmm-server-disconnect');
+    I.wait(600);
+    await I.verifyCommand('docker start pmm-server-disconnect');
+    I.wait(60);
+    await I.amOnPage(withCustomBaseUrl(`${dashboardPage.mysqlInstanceSummaryDashboard.clearUrl}?orgId=1&from=now-3m&to=now-1m`));
+    await dashboardPage.waitForDashboardOpened();
+    await dashboardPage.expandEachDashboardRow();
+    await dashboardPage.verifyThereAreNoGraphsWithNA(1);
+    await dashboardPage.verifyThereAreNoGraphsWithoutData(1);
+    I.dontSeeElement(dashboardPage.fields.metricPanelNa('Services panel'));
   },
 );
 
@@ -51,19 +51,19 @@ Scenario(
   '@PMM-T1443 Verify metrics are saved if pmm-agent is stopped @disconnect',
   async ({ I, dashboardPage, qanPage }) => {
     await I.amOnPage(withCustomBaseUrl(dashboardPage.mysqlInstanceSummaryDashboard.url));
-    // await dashboardPage.waitForDashboardOpened();
-    // await dashboardPage.expandEachDashboardRow();
-    // I.wait(5);
-    // I.dontSeeElement(dashboardPage.fields.metricPanelNa('Services panel'));
-    // await I.verifyCommand(`docker network disconnect ${clientServerNetwork} pmm-client-disconnect`);
-    // I.wait(600);
-    // await I.verifyCommand(`docker network connect ${clientServerNetwork} pmm-client-disconnect`);
-    // I.wait(60);
-    // await I.amOnPage(withCustomBaseUrl(`${dashboardPage.mysqlInstanceSummaryDashboard.clearUrl}?orgId=1&from=now-3m&to=now-1m`));
-    // await dashboardPage.waitForDashboardOpened();
-    // await dashboardPage.expandEachDashboardRow();
-    // await dashboardPage.verifyThereAreNoGraphsWithNA(1);
-    // await dashboardPage.verifyThereAreNoGraphsWithoutData(1);
-    // I.dontSeeElement(dashboardPage.fields.metricPanelNa('Services panel'));
+    await dashboardPage.waitForDashboardOpened();
+    await dashboardPage.expandEachDashboardRow();
+    I.wait(5);
+    I.dontSeeElement(dashboardPage.fields.metricPanelNa('Services panel'));
+    await I.verifyCommand(`docker network disconnect ${clientServerNetwork} pmm-client-disconnect`);
+    I.wait(600);
+    await I.verifyCommand(`docker network connect ${clientServerNetwork} pmm-client-disconnect`);
+    I.wait(60);
+    await I.amOnPage(withCustomBaseUrl(`${dashboardPage.mysqlInstanceSummaryDashboard.clearUrl}?orgId=1&from=now-3m&to=now-1m`));
+    await dashboardPage.waitForDashboardOpened();
+    await dashboardPage.expandEachDashboardRow();
+    await dashboardPage.verifyThereAreNoGraphsWithNA(1);
+    await dashboardPage.verifyThereAreNoGraphsWithoutData(1);
+    I.dontSeeElement(dashboardPage.fields.metricPanelNa('Services panel'));
   },
 );
