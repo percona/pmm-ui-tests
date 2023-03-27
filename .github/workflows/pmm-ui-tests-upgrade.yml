@@ -227,10 +227,7 @@ jobs:
       - name: Execute pmm-client Upgrade
         working-directory: pmm-ui-tests
         run: |
-          echo "Upgrading pmm2-client";
-          sudo apt clean all
-          sudo apt -y install pmm2-client
-          sleep 30
+          sudo npx ts-node ./integration-setup.ts --ci --upgrade-pmm-client-version=2.36.0
 
       - name: Execute Post Upgrade UI tests
         working-directory: pmm-ui-tests
