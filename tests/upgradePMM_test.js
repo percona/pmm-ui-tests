@@ -1,9 +1,10 @@
 const assert = require('assert');
 const faker = require('faker');
 const { generate } = require('generate-password');
+const { storageLocationConnection } = require('./backup/pages/testData');
 
 const {
-  adminPage, remoteInstancesHelper, psMySql, pmmSettingsPage, dashboardPage, databaseChecksPage, scheduledAPI,
+  adminPage, remoteInstancesHelper, psMySql, pmmSettingsPage, dashboardPage, databaseChecksPage, scheduledAPI, locationsAPI,
 } = inject();
 
 const pathToPMMFramework = adminPage.pathToPMMTests;
@@ -37,6 +38,7 @@ const mongoServiceName = 'mongo-backup-upgrade';
 const location = {
   name: 'upgrade-location',
   description: 'upgrade-location description',
+  ...locationsAPI.storageLocationConnection,
 };
 const backupName = 'upgrade backup test';
 const scheduleName = 'upgrade schedule';
