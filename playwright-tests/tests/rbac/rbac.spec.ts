@@ -32,7 +32,7 @@ test.describe('Spec file for Access Control (RBAC)', async () => {
   });
 
   test('PMM-T1573 Verify Access Roles tab on Configuration page @rbac @rbac-pre-upgrade', async ({ page }) => {
-    if (pmmVersion > 35) {
+    if (pmmVersion > 34) {
       test.info().annotations.push({
         type: 'Also Covers',
         description: 'PMM-T1579 Verify docker variable to enable Access control (RBAC)',
@@ -65,7 +65,7 @@ test.describe('Spec file for Access Control (RBAC)', async () => {
   });
 
   test('PMM-T1580 Verify creating Access Role @rbac @rbac-pre-upgrade', async ({ page }) => {
-    if (pmmVersion > 35) {
+    if (pmmVersion > 34) {
       test.info().annotations.push({
         type: 'Also Covers',
         description: 'PMM-T1581 Verify assigning default role on Access roles page.',
@@ -108,7 +108,7 @@ test.describe('Spec file for Access Control (RBAC)', async () => {
 
 
   test('PMM-T1584 Verify assigning Access role to user @rbac @rbac-pre-upgrade', async ({ page }) => {
-    if (pmmVersion > 35) {
+    if (pmmVersion > 34) {
       const rbacPage = new RbacPage(page);
       const createRolePage = new CreateRolePage(page);
       const newUserPage = new NewUserPage(page);
@@ -157,7 +157,7 @@ test.describe('Spec file for Access Control (RBAC)', async () => {
   });
 
   test('PMM-T1599 Verify assigned role after upgrade @rbac @rbac-post-upgrade', async ({ page }) => {
-    if (pmmVersion > 35) {
+    if (pmmVersion > 34) {
       const usersConfigurationPage = new UsersConfigurationPage(page);
       const postgresqlInstancesOverviewDashboard = new PostgresqlInstancesOverviewDashboard(page);
 
@@ -181,7 +181,7 @@ test.describe('Spec file for Access Control (RBAC)', async () => {
   });
 
   test('PMM-T1585 Verify deleting Access role @rbac @rbac-post-upgrade', async ({ page }) => {
-    if (pmmVersion > 35) {
+    if (pmmVersion > 34) {
       test.info().annotations.push({
         type: 'Also Covers',
         description: 'PMM-T1578 Verify there is ability to enable Access control on Settings page.',
@@ -224,7 +224,7 @@ test.describe('Spec file for Access Control (RBAC)', async () => {
   });
 
   test('PMM-T1629 Verify re-enabling of the Access Control @rbac @rbac-post-upgrade', async ({ page }) => {
-    if (pmmVersion > 35) {
+    if (pmmVersion > 34) {
       const advancedSettings = new AdvancedSettings(page);
       const homeDashboard = new HomeDashboard(page);
       const rbacPage = new RbacPage(page);
