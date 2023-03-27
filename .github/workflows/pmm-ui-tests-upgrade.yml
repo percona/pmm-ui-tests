@@ -192,19 +192,19 @@ jobs:
 
             if [[ ${{ inputs.repository }} == "testing" ]]; then
               docker exec pmm-integration-server percona-release enable percona testing
-              docker exec pmm-integration-server yum update
+              docker exec pmm-integration-server yum update -y
               sudo percona-release enable percona testing
-              sudo apt-get update
+              sudo apt-get update -y
             elif [[  ${{ inputs.repository }} == "experimental" ]]; then
               docker exec pmm-integration-server percona-release enable percona experimental
-              docker exec pmm-integration-server yum update
+              docker exec pmm-integration-server yum update -y
               sudo percona-release enable percona experimental
-              sudo apt-get update
+              sudo apt-get update -y
             else
               docker exec pmm-integration-server percona-release enable percona release
-              docker exec pmm-integration-server yum update
+              docker exec pmm-integration-server yum update -y
               sudo percona-release enable percona release
-              sudo apt-get update
+              sudo apt-get update -y
             fi
 
       - name: Execute Pre Upgrade UI tests
