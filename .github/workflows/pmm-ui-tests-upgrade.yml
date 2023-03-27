@@ -30,6 +30,10 @@ on:
         default: 'dev-latest'
         type: string
         required: true
+      pmm_client_upgrade_version:
+        description: 'Version of the pmm client to upgrade to, if left empty, then version based on repository will be selected.'
+        default: 'dev-latest'
+        type: string
       pmm_clients:
         description: 'Clients for pmm-server'
         default: '--addclient=ps,1'
@@ -70,6 +74,10 @@ on:
         description: 'Version of the pmm client used for testing'
         default: 'dev-latest'
         required: true
+      pmm_client_upgrade_version:
+        description: 'Version of the pmm client to upgrade to, if left empty, then version based on repository will be selected.'
+        default: 'dev-latest'
+        type: string
       pmm_clients:
         description: 'Clients for pmm-server'
         default: '--addclient=ps,1'
@@ -224,26 +232,24 @@ jobs:
 #        env:
 #          NODE_TLS_REJECT_UNAUTHORIZED: 0
 
-      - name: Execute pmm-client Upgrade
-        working-directory: pmm-qa/pmm-integration
+      - name: Execute pmm-client Upgrade.
+        if: ${{ inputs.pmm_client_upgrade_version == '' }}
         run: |
-          echo ${{ inputs.testing_repository }}
           if [ ${{ inputs.testing_repository }} == 'yes' ];then
-            echo "Yes it is Testing REO"
             sudo percona-release enable pmm2-client testing
             sudo apt-get upgrade
-            sudo apt list -a pmm2-client
+            sudo apt -y install pmm2-client
+          elif [ ${{ inputs.experimental_repository }} == 'yes' ];then
+            sudo percona-release enable pmm2-client experimental
+            sudo apt-get upgrade
             sudo apt -y install pmm2-client
           fi
 
-          if [ ${{ inputs.experimental_repository }} == 'yes' ];then
-            echo "Yes it is Experimental REPO"
-            sudo percona-release enable pmm2-client experimental
-            sudo apt-get upgrade
-            sudo apt list -a pmm2-client
-            sudo apt -y install pmm2-client
-          fi
-          sudo npx ts-node ./integration-setup.ts --ci --upgrade-pmm-client-version=2.36.0
+      - name: Execute pmm-client Upgrade to selected version
+        if: ${{ inputs.pmm_client_upgrade_version != '' }}
+        working-directory: pmm-qa/pmm-integration
+        run: |
+          sudo npx ts-node ./integration-setup.ts --ci --upgrade-pmm-client-version=${{ inputs.pmm_client_upgrade_version }}
 
       - name: Execute Post Upgrade UI tests
         working-directory: pmm-ui-tests
