@@ -230,6 +230,12 @@ jobs:
           echo ${{ inputs.testing_repository }}
           if [ ${{ inputs.testing_repository }} == 'yes' ];then
             echo "Yes it is Testing REO"
+            sudo apt -y install pmm2-client
+          fi
+
+          if [ ${{ inputs.experimental_repository }} == 'yes' ];then
+            echo "Yes it is Experimental REPO"
+            sudo apt -y install pmm2-client
           fi
           sudo npx ts-node ./integration-setup.ts --ci --upgrade-pmm-client-version=2.36.0
 
