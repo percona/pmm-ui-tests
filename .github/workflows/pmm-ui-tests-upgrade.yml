@@ -189,6 +189,13 @@ jobs:
             docker exec pmm-integration-server percona-release enable percona testing
             docker exec pmm-integration-server yum clean all
 
+            wget https://repo.percona.com/apt/percona-release_latest.$(lsb_release -sc)_all.deb
+            sudo dpkg -i percona-release_latest.$(lsb_release -sc)_all.deb
+            echo exclude=mirror.es.its.nyu.edu | tee -a /etc/yum/pluginconf.d/fastestmirror.conf
+            apt update -y percona-release
+            percona-release enable percona testing
+            yum clean all
+
       - name: Enable Experimental Repository.
         if: ${{ inputs.experimental_repository == 'yes'}}
         run: |
@@ -199,6 +206,13 @@ jobs:
           docker exec pmm-integration-server sed -i'' -e 's^/release/^/experimental/^' /etc/yum.repos.d/pmm2-server.repo
           docker exec pmm-integration-server percona-release enable percona experimental
           docker exec pmm-integration-server yum clean all
+
+          wget https://repo.percona.com/apt/percona-release_latest.$(lsb_release -sc)_all.deb
+          sudo dpkg -i percona-release_latest.$(lsb_release -sc)_all.deb
+          echo exclude=mirror.es.its.nyu.edu | tee -a /etc/yum/pluginconf.d/fastestmirror.conf
+          apt update -y percona-release
+          percona-release enable percona experimental
+          apt clean all
 
       - name: Execute Pre Upgrade UI tests
         id: ui-tests-flagged
@@ -211,7 +225,7 @@ jobs:
         env:
           NODE_TLS_REJECT_UNAUTHORIZED: 0
 
-      - name: Execute UI Upgrade
+      - name: Execute UI pmm-server Upgrade
         working-directory: pmm-ui-tests
         run: |
           npm install
@@ -219,6 +233,14 @@ jobs:
           npx playwright test --config="playwright-tests/playwright.config.ts" --grep="@pmm-upgrade"
         env:
           NODE_TLS_REJECT_UNAUTHORIZED: 0
+
+      - name: Execute pmm-client Upgrade
+        working-directory: pmm-ui-tests
+        run: |
+          echo "Upgrading pmm2-client";
+          sudo apt clean all
+          sudo apt -y install pmm2-client
+          sleep 30
 
       - name: Execute Post Upgrade UI tests
         working-directory: pmm-ui-tests
