@@ -2,7 +2,7 @@
 version: '3.7'
 
 services:
-  pmm-server:
+  pmm-server-external-clickhouse:
     image: ${PMM_SERVER_IMAGE:-perconalab/pmm-server:dev-latest}
     container_name: pmm-server-external-clickhouse
     depends_on:
@@ -27,7 +27,7 @@ services:
     image: perconalab/pmm-client:dev-latest
     container_name: pmm-client-clickhouse
     depends_on:
-      pmm-server:
+      pmm-server-external-clickhouse:
         condition: service_healthy
     environment:
       - PMM_AGENT_SETUP=1

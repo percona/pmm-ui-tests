@@ -7,7 +7,7 @@ const pmmServerPort = '8081';
 const basePmmUrl = `http://127.0.0.1:${pmmServerPort}/`;
 
 BeforeSuite(async ({ I }) => {
-  await I.verifyCommand('docker-compose -f docker-compose-clickhouse.yml up -d pmm-server');
+  await I.verifyCommand('docker-compose -f docker-compose-clickhouse.yml up -d pmm-server-external-clickhouse');
   await I.verifyCommand(`timeout 100 bash -c 'while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' 127.0.0.1:${pmmServerPort}/ping)" != "200" ]]; do sleep 5; done' || false`);
   await I.verifyCommand('docker-compose -f docker-compose-clickhouse.yml up -d pmm-client');
   await I.verifyCommand('docker-compose -f docker-compose-clickhouse.yml up -d mysql5.7');
