@@ -1,4 +1,4 @@
-name: PMM2 UI Tests-Matrix-Upgrade
+name: PMM2 UI Tests Upgrade Matrix
 
 on:
   workflow_dispatch:
@@ -18,22 +18,22 @@ on:
         description: 'Version of the pmm client used for testing'
         default: 'dev-latest'
         required: true
-      pmm_clients:
-        description: 'Clients for pmm-server'
-        default: '--addclient=ps,1'
-        required: true
+      pmm_client_upgrade_version:
+        description: 'Version of the pmm client to upgrade to, if left empty, then version based on repository will be selected.'
+        type: string
       pmm_qa_branch:
         description: 'Branch for the pmm-qa repository.'
         default: 'main'
         required: true
-      testing_repository:
-        description: 'Enable Testing Repository.'
-        default: 'no'
+      repository:
+        description: 'Upgrade to:'
         required: true
-      experimental_repository:
-        description: 'Enable Experimental Repository.'
-        default: 'no'
-        required: true
+        default: 'release'
+        type: choice
+        options:
+        - release
+        - testing
+        - experimental
 
 jobs:
    rbac:
@@ -47,10 +47,26 @@ jobs:
         pmm_server_version: ${{ inputs.pmm_server_version || 'dev-latest' }}
         pmm_server_docker_tag: ${{ inputs.pmm_server_docker_tag }}
         pmm_client_version: ${{ inputs.pmm_client_version || 'dev-latest' }}
-        pmm_clients: ${{ inputs.pmm_clients }}
+        pmm_client_upgrade_version: ${{ inputs.pmm_client_upgrade_version }}
+        pmm_clients: '--addclient=ps,1 --addclient=pdpgsql,1'
         pmm_qa_branch: ${{ inputs.pmm_qa_branch || 'main' }}
-        testing_repository: ${{ inputs.testing_repository }}
-        experimental_repository: ${{ inputs.experimental_repository }}
+        repository: ${{ inputs.repository }}
+
+   portal:
+      name: Portal
+      uses: ./.github/workflows/pmm-ui-tests-upgrade.yml
+      secrets: inherit
+      with:
+        pmm_ui_tests_branch: ${{ inputs.pmm_ui_tests_branch || 'main' }}
+        pmm_pre_upgrade_flag: '@pre-pmm-portal-upgrade'
+        pmm_post_upgrade_flag: '@post-pmm-portal-upgrade'
+        pmm_server_version: ${{ inputs.pmm_server_version || 'dev-latest' }}
+        pmm_server_docker_tag: ${{ inputs.pmm_server_docker_tag }}
+        pmm_client_version: ${{ inputs.pmm_client_version || 'dev-latest' }}
+        pmm_client_upgrade_version: ${{ inputs.pmm_client_upgrade_version }}
+        pmm_clients: ''
+        pmm_qa_branch: ${{ inputs.pmm_qa_branch || 'main' }}
+        repository: ${{ inputs.repository }}
 
    general:
      name: General

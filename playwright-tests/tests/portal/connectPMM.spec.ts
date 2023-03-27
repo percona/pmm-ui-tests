@@ -10,6 +10,7 @@ import PerconaPlatform from '@pages/pmmSettings/PerconaPlatform.page';
 import { SignInPage } from '@pages/SignIn.page';
 import { PortalUserRoles } from '@support/enums/portalUserRoles';
 import User from '@support/types/user.interface';
+import { executeCommand } from '@tests/helpers/commandLineHelper';
 
 test.describe('Spec file for connecting PMM to the portal', async () => {
   let firstAdmin: User;
@@ -24,7 +25,7 @@ test.describe('Spec file for connecting PMM to the portal', async () => {
       const versionString = (await apiHelper.getPmmVersion()).versionMinor;
       pmmVersion = parseInt(versionString);
     }
-    const userCredentials = await fileHelper.readfile(fileName);
+    const userCredentials = await fileHelper.readfile(fileName, false);
     if (userCredentials) {
       [firstAdmin, secondAdmin, technicalUser] = JSON.parse(userCredentials);
     } else {
@@ -55,7 +56,7 @@ test.describe('Spec file for connecting PMM to the portal', async () => {
         await page.goto(platformPage.perconaPlatformURL);
         await platformPage.perconaPlatformContainer.waitFor({ state: 'visible' });
         if (pmmVersion >= 35) {
-          await platformPage.elements.header_2_35.waitFor({state: 'visible'})
+          await platformPage.elements.header_2_35.waitFor({ state: 'visible' })
         } else {
           await page.getByText(platformPage.labels.header).waitFor({ state: 'visible' });
         }

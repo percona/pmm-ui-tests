@@ -416,5 +416,6 @@ test.describe('Spec file for PMM connected the portal', async () => {
     }
 
     await oktaAPI.deleteUsers([firstAdmin, secondAdmin, technicalUser]);
+    await fileHelper.removeFileSync('portalCredentials');
   });
 });
