@@ -3,8 +3,7 @@ const assert = require('assert');
 const { dbaasAPI, dbaasPage, locationsPage } = inject();
 const clusterName = 'minikube';
 const pxc_cluster_name = 'pxc-dbcluster';
-const pxc_cluster_type = 'DB_CLUSTER_TYPE_PXC';
-const mysql_recommended_version = 'MySQL 8.0.27';
+const mysql_recommended_version = 'MySQL 8.0.29';
 const mysql_recommended_version_image = 'percona/percona-xtradb-cluster:8.0.27-18.1';
 
 const location = {
