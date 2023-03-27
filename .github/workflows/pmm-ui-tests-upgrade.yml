@@ -212,25 +212,24 @@ jobs:
 
           sudo percona-release enable percona experimental
 
-#      - name: Execute Pre Upgrade UI tests
-#        id: ui-tests-flagged
-#        working-directory: pmm-ui-tests
-#        run: |
-#          npm install
-#          npx playwright install
-#          touch portalCredentials
-#          npx playwright test --config="playwright-tests/playwright.config.ts" --grep="${{ inputs.pmm_pre_upgrade_flag }}"
-#        env:
-#          NODE_TLS_REJECT_UNAUTHORIZED: 0
+      - name: Execute Pre Upgrade UI tests
+        id: ui-tests-flagged
+        working-directory: pmm-ui-tests
+        run: |
+          npm install
+          npx playwright install
+          npx playwright test --config="playwright-tests/playwright.config.ts" --grep="${{ inputs.pmm_pre_upgrade_flag }}"
+        env:
+          NODE_TLS_REJECT_UNAUTHORIZED: 0
 
-#      - name: Execute UI pmm-server Upgrade
-#        working-directory: pmm-ui-tests
-#        run: |
-#          npm install
-#          npx playwright install
-#          npx playwright test --config="playwright-tests/playwright.config.ts" --grep="@pmm-upgrade"
-#        env:
-#          NODE_TLS_REJECT_UNAUTHORIZED: 0
+      - name: Execute UI pmm-server Upgrade
+        working-directory: pmm-ui-tests
+        run: |
+          npm install
+          npx playwright install
+          npx playwright test --config="playwright-tests/playwright.config.ts" --grep="@pmm-upgrade"
+        env:
+          NODE_TLS_REJECT_UNAUTHORIZED: 0
 
       - name: Execute pmm-client Upgrade.
         if: ${{ inputs.pmm_client_upgrade_version == '' }}
