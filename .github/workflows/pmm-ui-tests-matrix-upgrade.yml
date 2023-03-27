@@ -18,6 +18,10 @@ on:
         description: 'Version of the pmm client used for testing'
         default: 'dev-latest'
         required: true
+      pmm_client_upgrade_version:
+        description: 'Version of the pmm client to upgrade to, if left empty, then version based on repository will be selected.'
+        default: 'dev-latest'
+        type: string
       pmm_qa_branch:
         description: 'Branch for the pmm-qa repository.'
         default: 'main'
@@ -43,6 +47,7 @@ jobs:
         pmm_server_version: ${{ inputs.pmm_server_version || 'dev-latest' }}
         pmm_server_docker_tag: ${{ inputs.pmm_server_docker_tag }}
         pmm_client_version: ${{ inputs.pmm_client_version || 'dev-latest' }}
+        pmm_client_upgrade_version: ${{ inputs.pmm_client_upgrade_version }}
         pmm_clients: '--addclient=ps,1 --addclient=pdpgsql,1'
         pmm_qa_branch: ${{ inputs.pmm_qa_branch || 'main' }}
         testing_repository: ${{ inputs.testing_repository }}
@@ -59,6 +64,7 @@ jobs:
         pmm_server_version: ${{ inputs.pmm_server_version || 'dev-latest' }}
         pmm_server_docker_tag: ${{ inputs.pmm_server_docker_tag }}
         pmm_client_version: ${{ inputs.pmm_client_version || 'dev-latest' }}
+        pmm_client_upgrade_version: ${{ inputs.pmm_client_upgrade_version }}
         pmm_clients: ''
         pmm_qa_branch: ${{ inputs.pmm_qa_branch || 'main' }}
         testing_repository: ${{ inputs.testing_repository }}
