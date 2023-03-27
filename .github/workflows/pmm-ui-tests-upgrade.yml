@@ -48,11 +48,7 @@ on:
         description: 'Enable Selected Repository.'
         required: true
         default: 'release'
-        type: choice
-        options:
-        - release
-        - testing
-        - experimental
+        type: string
 
   workflow_dispatch:
     inputs:
@@ -91,9 +87,9 @@ on:
         default: 'release'
         type: choice
         options:
-        - release
-        - testing
-        - experimental
+          - release
+          - testing
+          - experimental
 
 jobs:
   tests:
