@@ -416,7 +416,7 @@ Scenario('@PMM-T901 Verify user can delete scheduled backup @backup @bm-mongo',
 
 Scenario(
   '@PMM-T924 - Verify user is able to schedule a backup for MongoDB with replica & MySQL '
-  + 'and try to run those backup schedule job in parallel @bm-mysql @bm-mongo',
+  + 'and try to run those backup schedule job in parallel @bm-common',
   async ({
     I, backupInventoryPage, scheduledAPI, backupAPI, inventoryAPI,
   }) => {
@@ -494,7 +494,7 @@ Data(scheduleErrors).Scenario(
 );
 
 Scenario(
-  '@PMM-T1517 Verify that BM Scheduler is more clear regarding frequency specification @backup @bm-mongo',
+  '@PMM-T1517 Verify that BM Scheduler is more clear regarding frequency specification @backup @bm-common',
   async ({
     I, scheduledPage,
   }) => {
