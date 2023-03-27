@@ -51,3 +51,19 @@ jobs:
         pmm_qa_branch: ${{ inputs.pmm_qa_branch || 'main' }}
         testing_repository: ${{ inputs.testing_repository }}
         experimental_repository: ${{ inputs.experimental_repository }}
+
+   general:
+     name: General
+     uses: ./.github/workflows/pmm-ui-tests-upgrade.yml
+     secrets: inherit
+     with:
+       pmm_ui_tests_branch: ${{ inputs.pmm_ui_tests_branch || 'main' }}
+       pmm_pre_upgrade_flag: '@pre-upgrade'
+       pmm_post_upgrade_flag: '@post-upgrade'
+       pmm_server_version: ${{ inputs.pmm_server_version || 'dev-latest' }}
+       pmm_server_docker_tag: ${{ inputs.pmm_server_docker_tag }}
+       pmm_client_version: ${{ inputs.pmm_client_version || 'dev-latest' }}
+       pmm_clients: ${{ inputs.pmm_clients }}
+       pmm_qa_branch: ${{ inputs.pmm_qa_branch || 'main' }}
+       testing_repository: ${{ inputs.testing_repository }}
+       experimental_repository: ${{ inputs.experimental_repository }}
