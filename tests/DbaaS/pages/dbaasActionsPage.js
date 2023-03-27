@@ -112,13 +112,15 @@ module.exports = {
   async selectBackupArtifact(artifactName) {
     I.seeElement(dbaasPage.tabs.dbClusterTab.restore.backupArtifactSelect);
     I.click(dbaasPage.tabs.dbClusterTab.restore.backupArtifactSelect);
-    I.waitForElement(dbaasPage.common.selectOptionInDropdown(artifactName));
-    I.click(dbaasPage.common.selectOptionInDropdown(artifactName));
+    I.waitForElement(dbaasPage.tabs.dbClusterTab.restore.backupArtifactSelectValue(artifactName));
+    I.click(dbaasPage.tabs.dbClusterTab.restore.backupArtifactSelectValue(artifactName));
   },
 
   async selectSecretsName(secret) {
-    I.waitForElement(dbaasPage.common.selectOptionInDropdown(secret));
-    I.click(dbaasPage.common.selectOptionInDropdown(secret));
+    I.seeElement(dbaasPage.tabs.dbClusterTab.restore.secretsNameSelect);
+    I.click(dbaasPage.tabs.dbClusterTab.restore.secretsNameSelect);
+    I.waitForElement(dbaasPage.tabs.dbClusterTab.restore.secretsNameSelectValue(secret));
+    I.click(dbaasPage.tabs.dbClusterTab.restore.secretsNameSelectValue(secret));
   },
 
   async deleteXtraDBCluster(dbClusterName, k8sClusterName) {

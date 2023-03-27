@@ -138,7 +138,9 @@ module.exports = {
         restoreFromLabel: '$restoreFrom-field-label',
         restoreFromLocationSelect: locate('$locations-select-wrapper').find('div').at(3).as('Restore from Select'),
         backupArtifactSelect: locate('$backupArtifact-field-container').find('div').at(2).as('Backup artifact Select'),
-        secretsNameSelect: locate('$secretsName-field-container').find('div').at(2).as('Secrets Name Select'),
+        secretsNameSelect: locate('$secretsName-field-container').find('div').at(4).as('Secrets Name Select'),
+        backupArtifactSelectValue: (artifactName) => `//div[@data-testid="s3://pmm-backup1/${artifactName}-select-option"]`,
+        secretsNameSelectValue: (clusterName) => `//div[@data-testid="dbaas-${clusterName}-psmdb-secrets-select-option"]`,
       },
       backups: {
         enableBackupsToggle: '//div[text()="Enable backups"]/following-sibling::div',
