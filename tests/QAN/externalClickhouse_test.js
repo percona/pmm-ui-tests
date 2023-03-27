@@ -6,7 +6,7 @@ Feature('External Clickhouse Tests');
 const basePmmUrl = 'http://127.0.0.1:8081/';
 
 BeforeSuite(async ({ I }) => {
-  await I.verifyCommand('docker-compose -f docker-compose-clickhouse.yml up -d');
+  await I.verifyCommand(`PMM_SERVER_IMAGE=${process.env.DOCKER_VERSION} docker-compose -f docker-compose-clickhouse.yml up -d`);
   await I.verifyCommand('docker exec pmm-client sh -c "pmm-admin add mysql --username=root --password=7B*53@lCdflR --query-source=perfschema  mysql5.7 mysql5.7:3306"');
   await I.wait(60);
 });
