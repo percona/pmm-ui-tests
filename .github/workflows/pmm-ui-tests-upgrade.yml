@@ -76,7 +76,6 @@ on:
         required: true
       pmm_client_upgrade_version:
         description: 'Version of the pmm client to upgrade to, if left empty, then version based on repository will be selected.'
-        default: 'dev-latest'
         type: string
       pmm_clients:
         description: 'Clients for pmm-server'
