@@ -189,7 +189,7 @@ jobs:
             docker exec pmm-integration-server percona-release enable percona testing
             docker exec pmm-integration-server yum clean all
 
-            percona-release enable percona testing
+            sudo percona-release enable percona testing
 
       - name: Enable Experimental Repository.
         if: ${{ inputs.experimental_repository == 'yes'}}
@@ -202,7 +202,7 @@ jobs:
           docker exec pmm-integration-server percona-release enable percona experimental
           docker exec pmm-integration-server yum clean all
 
-          percona-release enable percona experimental
+          sudo percona-release enable percona experimental
 
       - name: Execute Pre Upgrade UI tests
         id: ui-tests-flagged
