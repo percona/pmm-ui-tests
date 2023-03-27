@@ -18,10 +18,6 @@ on:
         description: 'Version of the pmm client used for testing'
         default: 'dev-latest'
         required: true
-      pmm_clients:
-        description: 'Clients for pmm-server'
-        default: '--addclient=ps,1'
-        required: true
       pmm_qa_branch:
         description: 'Branch for the pmm-qa repository.'
         default: 'main'
@@ -47,7 +43,7 @@ jobs:
         pmm_server_version: ${{ inputs.pmm_server_version || 'dev-latest' }}
         pmm_server_docker_tag: ${{ inputs.pmm_server_docker_tag }}
         pmm_client_version: ${{ inputs.pmm_client_version || 'dev-latest' }}
-        pmm_clients: ${{ inputs.pmm_clients }}
+        pmm_clients: '--addclient=ps,1 --addclient=pdpgsql,1'
         pmm_qa_branch: ${{ inputs.pmm_qa_branch || 'main' }}
         testing_repository: ${{ inputs.testing_repository }}
         experimental_repository: ${{ inputs.experimental_repository }}
@@ -63,7 +59,7 @@ jobs:
         pmm_server_version: ${{ inputs.pmm_server_version || 'dev-latest' }}
         pmm_server_docker_tag: ${{ inputs.pmm_server_docker_tag }}
         pmm_client_version: ${{ inputs.pmm_client_version || 'dev-latest' }}
-        pmm_clients: ${{ inputs.pmm_clients }}
+        pmm_clients: ''
         pmm_qa_branch: ${{ inputs.pmm_qa_branch || 'main' }}
         testing_repository: ${{ inputs.testing_repository }}
         experimental_repository: ${{ inputs.experimental_repository }}
