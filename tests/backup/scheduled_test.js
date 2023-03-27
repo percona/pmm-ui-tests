@@ -1,12 +1,11 @@
 const assert = require('assert');
 const moment = require('moment');
 
-const { locationsPage, scheduledPage } = inject();
+const { scheduledPage } = inject();
 
 const location = {
   name: 'mongo-location for scheduling',
   description: 'test description',
-  ...locationsPage.mongoStorageLocation,
 };
 
 let locationId;
@@ -39,7 +38,12 @@ BeforeSuite(async ({
   await settingsAPI.changeSettings({ backup: true });
   await backupAPI.clearAllArtifacts();
   await locationsAPI.clearAllLocations(true);
-  locationId = await locationsAPI.createStorageLocation(location);
+  locationId = await locationsAPI.createStorageLocation(
+    location.name,
+    locationsAPI.storageType.s3,
+    locationsAPI.storageLocationConnection,
+    location.description,
+  );
   await I.mongoConnect({
     username: 'pmm',
     password: 'pmmpass',
