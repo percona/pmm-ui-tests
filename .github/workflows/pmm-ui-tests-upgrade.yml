@@ -228,7 +228,7 @@ jobs:
         working-directory: pmm-qa/pmm-integration
         run: |
           echo ${{ inputs.testing_repository }}
-          if [ ${{ inputs.testing_repository }} -eq 'yes' ];then
+          if [ ${{ inputs.testing_repository }} == 'yes' ];then
             echo "Yes it is Testing REO"
           fi
           sudo npx ts-node ./integration-setup.ts --ci --upgrade-pmm-client-version=2.36.0
