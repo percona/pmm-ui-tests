@@ -233,15 +233,8 @@ jobs:
       - name: Execute pmm-client Upgrade.
         if: ${{ inputs.pmm_client_upgrade_version == '' }}
         run: |
-          if [ ${{ inputs.testing_repository }} == 'yes' ];then
-            sudo percona-release enable pmm2-client testing
-            sudo apt-get upgrade
+            sudo apt-get update
             sudo apt -y install pmm2-client
-          elif [ ${{ inputs.experimental_repository }} == 'yes' ];then
-            sudo percona-release enable pmm2-client experimental
-            sudo apt-get upgrade
-            sudo apt -y install pmm2-client
-          fi
 
       - name: Execute pmm-client Upgrade to selected version
         if: ${{ inputs.pmm_client_upgrade_version != '' }}
