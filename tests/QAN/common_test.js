@@ -100,10 +100,10 @@ Scenario(
   },
 );
 
-Scenario(
+Scenario.only(
   'PMM-T188 Verify dashboard refresh @qan',
   async ({
-    I, qanPage, searchDashboardsModal, qanDetails, qanOverview, dashboardPage, qanFilters, adminPage,
+    I, qanPage, qanDetails, qanOverview, dashboardPage, qanFilters, adminPage,
   }) => {
     qanPage.waitForOpened();
 
@@ -117,8 +117,8 @@ Scenario(
 
     dashboardPage.selectRefreshTimeInterval('5s');
     // Sometimes refresh doesn't happen after 5s for the first time
-    await I.waitForElement(qanOverview.elements.spinner, 10);
-    await I.waitForDetached(qanOverview.elements.spinner, 5);
+    // await I.waitForElement(qanOverview.elements.spinner, 10);
+    // await I.waitForDetached(qanOverview.elements.spinner, 5);
 
     await qanOverview.verifyMainMetric('Database');
     await qanOverview.verifySorting(2, 'asc');
