@@ -7,13 +7,13 @@ import {SettingProperty} from "@api/settingsApiV1";
 
 test.describe('General Upgrade PMM tests', async () => {
   test.describe.configure({ retries: 0 });
-    let pmmVersion: number = (await api.serverV1.getPmmVersion()).minor;
+    let pmmVersion: number;
 
-  // test.beforeAll(async () => {
-  //   if (!pmmVersion) {
-  //     pmmVersion = (await api.serverV1.getPmmVersion()).minor;
-  //   }
-  // });
+  test.beforeAll(async () => {
+    if (!pmmVersion) {
+      pmmVersion = (await api.serverV1.getPmmVersion()).minor;
+    }
+  });
 
   test.beforeEach(async ({ page }) => {
     await grafanaHelper.authorize(page);
