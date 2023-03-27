@@ -16,7 +16,7 @@ networks:
           gateway: 192.150.0.1
 
 services:
-  pmm-server:
+  pmm-server-disconnect:
     image: ${PMM_SERVER_IMAGE:-perconalab/pmm-server:dev-latest}
     container_name: pmm-server-disconnect
     ports:
@@ -36,7 +36,7 @@ services:
     image: perconalab/pmm-client:dev-latest
     container_name: pmm-client-disconnect
     depends_on:
-      pmm-server:
+      pmm-server-disconnect:
         condition: service_healthy
     environment:
       - PMM_AGENT_SETUP=1
