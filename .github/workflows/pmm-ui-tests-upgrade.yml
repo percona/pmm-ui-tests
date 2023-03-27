@@ -46,13 +46,14 @@ on:
         required: true
       repository:
         description: 'Enable Selected Repository.'
+        required: true
         default: 'release'
         type: choice
-        options: 
+        options:
         - release
         - testing
         - experimental
-        required: true
+
   workflow_dispatch:
     inputs:
       pmm_ui_tests_branch:
@@ -86,13 +87,13 @@ on:
         required: true
       repository:
         description: 'Enable Selected Repository.'
+        required: true
         default: 'release'
         type: choice
-        options: 
+        options:
         - release
         - testing
         - experimental
-        required: true
 
 jobs:
   tests:
