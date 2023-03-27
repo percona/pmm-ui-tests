@@ -3,6 +3,21 @@ import Output from "@support/types/output";
 const shell = require('shelljs');
 
 /**
+ * Shell(sh) echo().to() wrapper to use in tests with handy logs creation
+ *
+ * @param   pathToFile  path to the file including file name
+ * @param   content     content {@code string} to insert as file content
+ * @param   stepTitle   optional custom test step label
+ */
+export async function createFile(pathToFile: string, content: string,  stepTitle: string = null) {
+  const stepName = stepTitle ? stepTitle : `Create "${pathToFile}" file with content:\n"${content}"`;
+  await test.step(stepName, async () => {
+    console.log(`echo: "${content}" >> ${pathToFile}`);
+    shell.echo(content).to(pathToFile);
+  });
+}
+
+/**
  * Shell(sh) exec() wrapper to use outside outside {@link test}
  * returns handy {@link Output} object.
  *
@@ -24,13 +39,9 @@ export function execute(command: string): Output {
  * @return      {@link Output} instance
  */
 export async function exec(command: string): Promise<Output> {
-  const { stdout, stderr, code } = await test.step(`Run "${command}" command`, async () => {
-    console.log(`Run: "${command}"`);
-    return shell.exec(command.replace(/(\r\n|\n|\r)/gm, ''), { silent: false });
+  return await test.step(`Run "${command}" command`, async () => {
+    return this.execute(command);
   });
-  if (stdout.length > 0) console.log(`Out: "${stdout}"`);
-  if (stderr.length > 0) console.log(`Error: "${stderr}"`);
-  return new Output(command, code, stdout, stderr);
 }
 
 /**
