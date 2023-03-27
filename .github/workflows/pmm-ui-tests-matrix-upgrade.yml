@@ -31,9 +31,9 @@ on:
         default: 'release'
         type: choice
         options:
-        - release
-        - testing
-        - experimental
+          - release
+          - release candidate
+          - dev-latest
 
 jobs:
    rbac:
@@ -79,7 +79,7 @@ jobs:
        pmm_server_version: ${{ inputs.pmm_server_version || 'dev-latest' }}
        pmm_server_docker_tag: ${{ inputs.pmm_server_docker_tag }}
        pmm_client_version: ${{ inputs.pmm_client_version || 'dev-latest' }}
-       pmm_clients: ${{ inputs.pmm_clients }}
+       pmm_client_upgrade_version: ${{ inputs.pmm_client_upgrade_version }}
+       pmm_clients: ''
        pmm_qa_branch: ${{ inputs.pmm_qa_branch || 'main' }}
-       testing_repository: ${{ inputs.testing_repository }}
-       experimental_repository: ${{ inputs.experimental_repository }}
+       repository: ${{ inputs.repository }}

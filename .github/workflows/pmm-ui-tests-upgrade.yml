@@ -10,23 +10,23 @@ on:
         type: string
         required: true
       pmm_pre_upgrade_flag:
-        description: 'Flag to run set of tests before upgrade.'
+        description: 'Tag to run tests before upgrade.'
         type: string
         required: true
       pmm_post_upgrade_flag:
-        description: 'Flag to run set of tests after upgrade.'
+        description: 'Tag to run tests after upgrade.'
         type: string
         required: true
       pmm_server_version:
-        description: 'Version of the pmm server used for testing'
+        description: 'pmm server image tag to upgrade from'
         default: 'dev-latest'
         type: string
         required: true
       pmm_server_docker_tag:
-        description: 'Use when tag different to: "perconalab/pmm-server" is required'
+        description: 'PMM Server docker image: "perconalab/pmm-server" to upgrade "from"'
         type: string
       pmm_client_version:
-        description: 'Version of the pmm client used for testing'
+        description: 'PMM Client version to upgrade from (dev-latest|pmm2-latest|pmm2-rc)'
         default: 'dev-latest'
         type: string
         required: true
@@ -45,7 +45,7 @@ on:
         type: string
         required: true
       repository:
-        description: 'Enable Selected Repository.'
+        description: 'Upgrade to:'
         required: true
         default: 'release'
         type: string
@@ -82,14 +82,14 @@ on:
         default: 'main'
         required: true
       repository:
-        description: 'Enable Selected Repository.'
+        description: 'Upgrade to:'
         required: true
         default: 'release'
         type: choice
         options:
           - release
-          - testing
-          - experimental
+          - release candidate
+          - dev-latest
 
 jobs:
   tests:
@@ -187,25 +187,30 @@ jobs:
           sudo pmm-admin list
         shell: bash
 
+      - name: Convert repo choice
+        uses: actions/github-script@v6
+        if: ${{ always() }}
+        id: target_repo
+        with:
+          script: |
+            switch (inputs.repository) {
+              case 'release':
+                return 'release';
+              case 'release candidate':
+                return 'testing'
+              case 'dev-latest':
+                return 'experimental'
+            }
+          result-encoding: string
+
       - name: Enable Repository.
         run: |
             docker exec pmm-integration-server bash -c "echo exclude=mirror.es.its.nyu.edu | tee -a /etc/yum/pluginconf.d/fastestmirror.conf"
             docker exec pmm-integration-server yum update -y percona-release
             docker exec pmm-integration-server sed -i'' -e 's^/release/^/testing/^' /etc/yum.repos.d/pmm2-server.repo
-
-            if [[ ${{ inputs.repository }} == testing ]]; then
-              docker exec pmm-integration-server percona-release enable percona testing
-              sudo percona-release enable percona testing
-              sudo apt-get update -y
-            elif [[ ${{ inputs.repository }} == experimental ]]; then
-              docker exec pmm-integration-server percona-release enable percona experimental
-              sudo percona-release enable percona experimental
-              sudo apt-get update -y
-            else
-              docker exec pmm-integration-server percona-release enable percona release
-              sudo percona-release enable percona release
-              sudo apt-get update -y
-            fi
+            docker exec pmm-integration-server percona-release enable percona ${{ steps.artifact_name.outputs.result }}
+            sudo percona-release enable percona ${{ steps.target_repo.outputs.result }}
+            sudo apt-get update -y
 
       - name: Install  playwright
         working-directory: pmm-ui-tests
