@@ -180,7 +180,6 @@ jobs:
         run: |
           npm install
           npx playwright install
-          touch portalCredentials
           npx playwright test --config="playwright-tests/playwright.config.ts" --grep="${{ env.PMM_TEST_FLAG }}"
         env:
           NODE_TLS_REJECT_UNAUTHORIZED: 0
