@@ -230,11 +230,15 @@ jobs:
           echo ${{ inputs.testing_repository }}
           if [ ${{ inputs.testing_repository }} == 'yes' ];then
             echo "Yes it is Testing REO"
+            percona-release enable pmm2-client testing
+            sudo apt-get upgrade
             sudo apt -y install pmm2-client
           fi
 
           if [ ${{ inputs.experimental_repository }} == 'yes' ];then
             echo "Yes it is Experimental REPO"
+            percona-release enable pmm2-client experimental
+            sudo apt-get upgrade
             sudo apt -y install pmm2-client
           fi
           sudo npx ts-node ./integration-setup.ts --ci --upgrade-pmm-client-version=2.36.0
