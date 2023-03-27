@@ -97,7 +97,7 @@ Scenario(
     /* connection must be closed in correct way before restore backup. Restore procedure restarts mysql service */
     await psMySql.disconnectFromPS();
     backupInventoryPage.startRestore(backupName);
-    restorePage.waitForRestoreSuccess(backupName);
+    await restorePage.waitForRestoreSuccess(backupName);
 
     await psMySql.asyncConnectToPS(mysqlCredentials);
     const tableExists = await psMySql.isTableExists(tableName);
@@ -167,7 +167,7 @@ Scenario(
     /* connection must be closed in correct way before restore backup. Restore procedure restarts mysql service */
     await psMySql.disconnectFromPS();
     backupInventoryPage.startRestore(schedule.name);
-    restorePage.waitForRestoreSuccess(schedule.name);
+    await restorePage.waitForRestoreSuccess(schedule.name);
 
     await psMySql.asyncConnectToPS(mysqlCredentials);
     const tableExists = await psMySql.isTableExists(tableName);

@@ -1185,7 +1185,7 @@ if (versionMinor >= 32) {
 
         backupInventoryPage.openInventoryPage();
         backupInventoryPage.startRestore(backupName);
-        restorePage.waitForRestoreSuccess(backupName);
+        await restorePage.waitForRestoreSuccess(backupName);
 
         await I.say('I search for the record after MongoDB restored from backup');
         collection = replica.db('test').collection('e2e');

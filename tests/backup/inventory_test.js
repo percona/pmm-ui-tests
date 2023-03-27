@@ -14,7 +14,15 @@ let localStorageLocationId;
 let locationId;
 let serviceId;
 
-const mongoServiceName = 'mongo-backup-inventory';
+const mongoServiceName = 'mongo-backup-inventory-1';
+const mongoServiceName2 = 'mongo-backup-inventory-2';
+const mongoServiceName3 = 'mongo-backup-inventory-3';
+
+const mongoConnection = {
+  username: 'pmm',
+  password: 'pmmpass',
+  port: 27027,
+};
 
 Feature('BM: Backup Inventory');
 
@@ -34,13 +42,11 @@ BeforeSuite(async ({
     locationsAPI.storageLocationConnection,
     location.description,
   );
-  await I.mongoConnect({
-    username: 'pmm',
-    password: 'pmmpass',
-    port: 27027,
-  });
+  await I.mongoConnect(mongoConnection);
 
-  I.say(await I.verifyCommand(`docker exec rs101 pmm-admin add mongodb --username=pmm --password=pmmpass --port=27017 --service-name=${mongoServiceName} --replication-set=rs --cluster=rs`));
+  // I.say(await I.verifyCommand(`docker exec rs101 pmm-admin add mongodb --username=pmm --password=pmmpass --port=27017 --service-name=${mongoServiceName} --replication-set=rs --cluster=rs`));
+  // I.say(await I.verifyCommand(`docker exec rs102 pmm-admin add mongodb --username=pmm --password=pmmpass --port=27017 --service-name=${mongoServiceName2} --replication-set=rs --cluster=rs`));
+  // I.say(await I.verifyCommand(`docker exec rs103 pmm-admin add mongodb --username=pmm --password=pmmpass --port=27017 --service-name=${mongoServiceName3} --replication-set=rs --cluster=rs`));
 });
 
 Before(async ({
@@ -151,10 +157,12 @@ Scenario(
   },
 );
 
-const restoreFromDifferentStorageLocationsTests = new DataTable(['storageType']);
+const restoreFromDifferentStorageLocationsTests = new DataTable(['storageType', 'backupType']);
 
-restoreFromDifferentStorageLocationsTests.add([locationsAPI.storageType.s3]);
-restoreFromDifferentStorageLocationsTests.add([locationsAPI.storageType.localClient]);
+restoreFromDifferentStorageLocationsTests.add([locationsAPI.storageType.s3, 'PHYSICAL']);
+restoreFromDifferentStorageLocationsTests.add([locationsAPI.storageType.localClient, 'PHYSICAL']);
+restoreFromDifferentStorageLocationsTests.add([locationsAPI.storageType.s3, 'LOGICAL']);
+restoreFromDifferentStorageLocationsTests.add([locationsAPI.storageType.localClient, 'LOGICAL']);
 
 Data(restoreFromDifferentStorageLocationsTests).Scenario(
   '@PMM-T862 PMM-T1508 @PMM-T1393 @PMM-T1394 @PMM-T1508 @PMM-T1520 @PMM-T1452 PMM-T1583 Verify user is able to perform MongoDB restore from different storage locations @backup @bm-mongo @bm-fb',
@@ -163,9 +171,11 @@ Data(restoreFromDifferentStorageLocationsTests).Scenario(
   }) => {
     const currentLocationId = current.storageType === locationsAPI.storageType.s3
       ? locationId : localStorageLocationId;
-    const backupName = `mongo restore test ${current.storageType}`;
+    const backupName = `mongo-restore-${current.storageType}-${current.backupType}`;
+    const isLogical = current.backupType === 'LOGICAL';
+
     const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName('MONGODB_SERVICE', mongoServiceName);
-    let artifactId = await backupAPI.startBackup(backupName, service_id, currentLocationId);
+    const artifactId = await backupAPI.startBackup(backupName, service_id, currentLocationId, false, isLogical);
 
     await backupAPI.waitForBackupFinish(artifactId);
 
@@ -184,12 +194,17 @@ Data(restoreFromDifferentStorageLocationsTests).Scenario(
 
     await c.insertOne({ number: 2, name: 'Anna' });
 
-    backupInventoryPage.startRestore(backupName);
+    backupInventoryPage.startRestore(artifactName);
 
     // PMM-T1520 PMM-T1508
-    I.waitForVisible(restorePage.elements.targetServiceByName(backupName), 10);
-    I.seeTextEquals(mongoServiceName, restorePage.elements.targetServiceByName(backupName));
-    restorePage.waitForRestoreSuccess(backupName);
+    I.waitForVisible(restorePage.elements.targetServiceByName(artifactName), 10);
+    I.seeTextEquals(mongoServiceName, restorePage.elements.targetServiceByName(artifactName));
+    await restorePage.waitForRestoreSuccess(artifactName);
+
+    // Wait 30 seconds to have all members restarted
+    if (current.backupType === 'PHYSICAL') {
+      I.wait(30);
+    }
 
     c = await I.mongoGetCollection('test', 'test');
     const record = await c.findOne({ number: 2, name: 'Anna' });
@@ -197,8 +212,8 @@ Data(restoreFromDifferentStorageLocationsTests).Scenario(
     assert.ok(record === null, `Was expecting to not have a record ${JSON.stringify(record, null, 2)} after restore operation`);
 
     // PMM-T1452
-    const startedAt = await I.grabTextFrom(restorePage.elements.startedAtByName(backupName));
-    const finishedAt = await I.grabTextFrom(restorePage.elements.finishedAtByName(backupName));
+    const startedAt = await I.grabTextFrom(restorePage.elements.startedAtByName(artifactName));
+    const finishedAt = await I.grabTextFrom(restorePage.elements.finishedAtByName(artifactName));
 
     I.assertStartsWith(startedAt, moment().format('YYYY-MM-DD'));
     I.assertStartsWith(finishedAt, moment().format('YYYY-MM-DD'));
@@ -206,14 +221,15 @@ Data(restoreFromDifferentStorageLocationsTests).Scenario(
     if (current.storageType === locationsAPI.storageType.localClient) {
       // PMM-T1583
       // Create new backup to rewrite pbm config and start restore from the very first backup artifact
-      artifactId = await backupAPI.startBackup(backupName, service_id, currentLocationId);
-      await backupAPI.waitForBackupFinish(artifactId);
+      const newArtifactId = await backupAPI.startBackup(backupName, service_id, currentLocationId, false, isLogical);
+
+      await backupAPI.waitForBackupFinish(newArtifactId);
 
       await backupAPI.startRestore(service_id, artifactId);
-      restorePage.waitForRestoreSuccess(backupName);
+      await restorePage.waitForRestoreSuccess(artifactName);
     }
   },
-);
+).retry(1);
 
 Scenario(
   '@PMM-T910 @PMM-T911 Verify delete from storage is selected by default @backup @bm-mongo',
@@ -284,7 +300,7 @@ Scenario(
 
     backupInventoryPage.verifyBackupSucceeded(schedule.name);
     backupInventoryPage.startRestore(schedule.name);
-    restorePage.waitForRestoreSuccess(schedule.name);
+    await restorePage.waitForRestoreSuccess(schedule.name);
 
     c = await I.mongoGetCollection('test', 'test');
     const record = await c.findOne({ name: 'BeforeRestore' });
@@ -474,7 +490,7 @@ Data(deleteArtifactsTests).Scenario(
   async ({
     I, inventoryAPI, backupInventoryPage, backupAPI, restorePage, current,
   }) => {
-    const backupName = 'mongo error no artifact';
+    const backupName = `mongo-error-no-artifact-${current.storageType}`;
     const isS3Type = current.storageType === locationsAPI.storageType.s3;
     const currentLocationId = isS3Type ? locationId : localStorageLocationId;
     const commandToClearStorage = isS3Type ? 'rm -rfv /tmp/minio/backups/bcp/*' : 'docker exec rs101 rm -rfv /tmp/backup_data/*';

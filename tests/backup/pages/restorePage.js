@@ -9,6 +9,7 @@ module.exports = {
     modalHeader: '$modal-header',
     modalContent: '$modal-content',
     backupStatusByName: (name) => locate('$statusMsg').inside(artifactCell(name)),
+    backupPendingStatusByName: (name) => locate('$statusPending').inside(artifactCell(name)),
     backupStatusIconByName: (name) => locate('$statusMsg').inside(artifactCell(name)).find('div'),
     targetServiceByName: (name) => locate('//td[6]').inside(artifactCell(name)),
     startedAtByName: (name) => locate('//td[4]').inside(artifactCell(name)),
@@ -21,10 +22,16 @@ module.exports = {
   messages: {},
   locationType: {},
 
-  waitForRestoreSuccess(backupName) {
+  async waitForRestoreSuccess(backupName) {
     I.amOnPage(this.url);
     I.waitForVisible(this.elements.backupStatusByName(backupName), 180);
-    I.seeAttributesOnElements(this.elements.backupStatusIconByName(backupName), { 'data-testid': 'success-icon' });
+    I.waitForInvisible(this.elements.backupPendingStatusByName(backupName), 180);
+    const similarRestores = await I.grabNumberOfVisibleElements(this.elements.backupStatusByName(backupName));
+
+    for (let i = 1; i <= similarRestores; i++) {
+      I.waitForVisible(this.elements.backupStatusByName(backupName).at(i), 180);
+      I.seeAttributesOnElements(this.elements.backupStatusIconByName(backupName).at(i), { 'data-testid': 'success-icon' });
+    }
   },
 
   waitForRestoreFailure(backupName) {
