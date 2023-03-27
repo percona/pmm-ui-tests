@@ -365,7 +365,7 @@ test.describe('Spec file for PMM connected the portal', async () => {
       await test.step('1. Login into the pmm and navigate to the percona platform page.', async () => {
         await grafanaHelper.authorize(page);
         await page.goto(platformPage.perconaPlatformURL);
-        await platformPage.connectedContainer.waitFor({ state: 'visible' });  
+        await platformPage.connectedContainer.waitFor({ state: 'visible' });
       });
 
       await test.step('2. Force disconnect from the platform.', async () => {
@@ -373,12 +373,12 @@ test.describe('Spec file for PMM connected the portal', async () => {
         await expect(platformPage.elements.readMore).toHaveAttribute('href', platformPage.links.readMore);
         await platformPage.buttons.confirmDisconnect.click();
       });
-      
+
       await test.step('3. Verify that force disconnect was successful.', async () => {
         await platformPage.toast.checkToastMessage(platformPage.messages.disconnectedSuccess);
         await platformPage.buttons.connect.waitFor({ state: 'visible' });
       });
-      
+
     } else {
       test.info().annotations.push({
         type: 'Old Version ',
@@ -416,5 +416,6 @@ test.describe('Spec file for PMM connected the portal', async () => {
     }
 
     await oktaAPI.deleteUsers([firstAdmin, secondAdmin, technicalUser]);
+    await fileHelper.removeFileSync('portalCredentials');
   });
 });
