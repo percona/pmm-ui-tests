@@ -1,5 +1,5 @@
 ---
-name: pmm-ui-tests-upgrade
+name: PMM2 UI Tests Upgrade
 
 on:
   workflow_call:
