@@ -225,7 +225,7 @@ jobs:
           NODE_TLS_REJECT_UNAUTHORIZED: 0
 
       - name: Execute pmm-client Upgrade
-        working-directory: pmm-ui-tests
+        working-directory: pmm-qa/pmm-integration
         run: |
           sudo npx ts-node ./integration-setup.ts --ci --upgrade-pmm-client-version=2.36.0
 
