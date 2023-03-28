@@ -1,10 +1,6 @@
 name: PMM2 UI Tests-Matrix
 
 on:
-  pull_request:
-    branches:
-      - main
-
   workflow_dispatch:
     inputs:
       pmm_ui_tests_branch:
@@ -38,4 +34,16 @@ jobs:
       pmm_server_version: ${{ github.event.inputs.pmm_server_version || 'dev-latest' }}
       pmm_client_version: ${{ github.event.inputs.pmm_client_version || 'dev-latest' }}
       pmm_clients: '--addclient=ps,1 --addclient=pdpgsql,1'
+      pmm_qa_branch: ${{ github.event.inputs.pmm_qa_branch || 'main' }}
+
+  portal:
+    name: Portal
+    uses: ./.github/workflows/pmm-ui-tests.yml
+    secrets: inherit
+    with:
+      pmm_ui_tests_branch: ${{ github.event.inputs.pmm_ui_tests_branch || github.head_ref || 'main '}}
+      pmm_test_flag: '@portal'
+      pmm_server_version: ${{ github.event.inputs.pmm_server_version || 'dev-latest' }}
+      pmm_client_version: ${{ github.event.inputs.pmm_client_version || 'dev-latest' }}
+      pmm_clients: ''
       pmm_qa_branch: ${{ github.event.inputs.pmm_qa_branch || 'main' }}

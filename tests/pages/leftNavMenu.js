@@ -12,6 +12,7 @@ const sa = 'Server admin';
 const co = 'Configuration';
 const al = 'Alerting';
 const ad = 'Advisors';
+const bm = 'Backups';
 
 /**
  * Implements left Navigation Grafana Menu. Intended to be used UX goes, ex.:
@@ -101,6 +102,12 @@ module.exports = {
       configurationAdvisors: menuOption(ad, 'Configuration Advisors', '/graph/advisors/configuration'),
       securityAdvisors: menuOption(ad, 'Security Advisors', '/graph/advisors/security'),
     }),
+  backups: new LeftMenu('Backup', '/graph/backup/inventory', {
+    allBackups: menuOption(bm, 'All Backups', '/graph/backup/inventory'),
+    scheduledBackupJobs: menuOption(bm, 'Scheduled Backup Jobs', '/graph/backup/scheduled'),
+    restores: menuOption(bm, 'Restores', '/graph/backup/restore'),
+    storageLocations: menuOption(bm, 'Storage Locations', '/graph/backup/locations'),
+  }),
   configuration: new LeftMenu('Configuration', '/graph/inventory/services',
     {
       serviceAccounts: menuOption(co, 'Service accounts', '/graph/org/serviceaccounts'),
