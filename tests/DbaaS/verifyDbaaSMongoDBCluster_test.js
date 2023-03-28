@@ -5,7 +5,6 @@ const assert = require('assert');
 
 const psmdb_cluster_type = 'DB_CLUSTER_TYPE_PSMDB';
 const mongodb_recommended_version = 'MongoDB 5.0.11';
-const mongodb_updated_version = 'MongoDB 5.0.2';
 const psmdb_backup_cluster = 'psmdb-backup-test';
 const dbName = 'tutorialkart2';
 
@@ -303,6 +302,7 @@ Scenario(
       locationsAPI.storageLocationConnection,
     );
     await dbaasAPI.deleteAllDBCluster(clusterName);
+    await I.verifyCommand('kubectl delete pod psmdb-client');
 
     I.amOnPage(dbaasPage.url);
     await dbaasActionsPage.createClusterBasicOptions(clusterName, psmdb_backup_cluster, 'MongoDB');
