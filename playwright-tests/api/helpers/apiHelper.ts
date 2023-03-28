@@ -94,7 +94,7 @@ const apiHelper = {
         params?: { [key: string]: string | number | boolean; } | undefined;
         timeout?: number | undefined; } | undefined
   ): Promise<APIResponse> => {
-    console.log(`GET: ${path}${options ? ` with ${options}` : ''}`);
+    console.log(`GET: ${path}${options ? ` with ${JSON.stringify(options)}` : ''}`);
     return (await getConfiguredRestApi()).get(path, options);
   },
 
@@ -106,8 +106,10 @@ const apiHelper = {
    * @return            Promise<APIResponse> instance
    */
   post: async (path: string, payload: Object): Promise<APIResponse> => {
-      console.log(`POST: ${path}\nPayload: ${payload}`);
-    return (await getConfiguredRestApi()).post(path, payload);
+    console.log(`POST: ${path}\nPayload: ${JSON.stringify(payload)}`);
+    const response = await (await getConfiguredRestApi()).post(path, payload);
+    console.log(`Status: ${response.status()} ${response.statusText()}`);
+    return response;
   },
 };
 
