@@ -34,14 +34,14 @@ test.describe('Spec file for Access Control (RBAC)', async () => {
   });
 
   test('PMM-T1573 Verify Access Roles tab on Configuration page @rbac @rbac-pre-upgrade', async ({ page }) => {
-    test.info().annotations.push({
-      type: 'Also Covers',
-      description: 'PMM-T1579 Verify docker variable to enable Access control (RBAC)',
-    });
-    const homeDashboard = new HomeDashboard(page);
-    const rbacPage = new RbacPage(page);
-
     if (pmmVersion > 34) {
+      test.info().annotations.push({
+        type: 'Also Covers',
+        description: 'PMM-T1579 Verify docker variable to enable Access control (RBAC)',
+      });
+      const homeDashboard = new HomeDashboard(page);
+      const rbacPage = new RbacPage(page);
+
       await test.step('1. Click on Configuration on the left menu and then select Access roles link', async () => {
         await homeDashboard.sideMenu.elements.configuration.hover();
         await expect(homeDashboard.sideMenu.configuration.buttons.rbac).toHaveText(
@@ -67,15 +67,14 @@ test.describe('Spec file for Access Control (RBAC)', async () => {
   });
 
   test('PMM-T1580 Verify creating Access Role @rbac @rbac-pre-upgrade', async ({ page }) => {
-    test.info().annotations.push({
-      type: 'Also Covers',
-      description: 'PMM-T1581 Verify assigning default role on Access roles page.',
-    });
-
-    const rbacPage = new RbacPage(page);
-    const createRolePage = new CreateRolePage(page);
-
     if (pmmVersion > 34) {
+      test.info().annotations.push({
+        type: 'Also Covers',
+        description: 'PMM-T1581 Verify assigning default role on Access roles page.',
+      });
+
+      const rbacPage = new RbacPage(page);
+      const createRolePage = new CreateRolePage(page);
 
       await test.step('1. Navigate to the Access Role page, then click create button.', async () => {
         await page.goto(rbacPage.url);
