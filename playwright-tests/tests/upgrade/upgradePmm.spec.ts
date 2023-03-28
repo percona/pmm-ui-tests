@@ -11,6 +11,7 @@ test.describe('General Upgrade PMM tests', async () => {
 
   test.beforeAll(async () => {
     pmmVersion = (await api.serverV1.getPmmVersion()).minor;
+    console.log(pmmVersion);
   });
 
   test.beforeEach(async ({ page }) => {
