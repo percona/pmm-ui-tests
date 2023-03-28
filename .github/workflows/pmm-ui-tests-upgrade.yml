@@ -192,17 +192,12 @@ jobs:
         id: target_repo
         with:
           script: |
-            const choice = context.payload.inputs.repository;
-            console.log(choice);
-            switch (choice) {
+            switch (context.payload.inputs.repository) {
               case 'release':
-                console.log('rel');
                 return 'release';
               case 'release candidate':
-                console.log('rc');
                 return 'testing'
               case 'dev-latest':
-                console.log('exp');
                 return 'experimental'
             }
           result-encoding: string
