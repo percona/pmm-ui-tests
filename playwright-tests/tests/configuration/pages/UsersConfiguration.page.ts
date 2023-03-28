@@ -1,5 +1,5 @@
 import { Page } from '@playwright/test';
-import UsersTable from '@tests/components/configuration/usersTable';
+import UsersTable from '@components/configuration/usersTable';
 import { ConfigurationPage } from './Configuration.page';
 
 export class UsersConfigurationPage extends ConfigurationPage {

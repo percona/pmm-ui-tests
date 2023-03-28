@@ -8,7 +8,7 @@ export enum SettingProperty {
   bm = "backup_management_enabled",
 }
 
-export const settingsAPIv1 = {
+export const settings = {
   /**
    * Looks up a single Setting Property from returned.
    *

@@ -1,6 +1,6 @@
 import { Page } from '@playwright/test';
-import RbacTable from '@tests/components/rbacTable';
-import { CommonPage } from '../Common.page';
+import RbacTable from '@components/rbacTable';
+import { CommonPage } from '@pages/Common.page';
 
 interface CreateRole {
   roleName: string,
@@ -67,7 +67,7 @@ export class CreateRolePage extends CommonPage {
     await this.elements.menuOption(options.value).click();
     await this.buttons.submit.click();
     await this.toast.checkToastMessage(this.messages.roleCreatedHeader(options.roleName) + this.messages.roleCreatedDescription);
-    
+
   };
 
 }

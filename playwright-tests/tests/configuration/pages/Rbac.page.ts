@@ -1,5 +1,5 @@
 import { Page } from '@playwright/test';
-import RbacTable from '@tests/components/rbacTable';
+import RbacTable from '@components/rbacTable';
 import { ConfigurationPage } from './Configuration.page';
 
 export class RbacPage extends ConfigurationPage {

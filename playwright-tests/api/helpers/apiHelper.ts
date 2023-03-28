@@ -32,7 +32,7 @@ const apiHelper = {
   },
 
   /**
-   * @deprecated use {@link serverAPIv1#getPmmVersion()}
+   * @deprecated use {@link api.pmm.serverV1.getPmmVersion()}
    */
   getPmmVersion: async () => {
     const restConfig = await getConfiguredRestApi();
@@ -43,7 +43,7 @@ const apiHelper = {
   },
 
   /**
-   * @deprecated use {@link settingsAPIv1#changeSettings()}
+   * @deprecated use {@link api.pmm.serverV1.changeSettings()}
    */
   changeSettings: async (settingsData: Settings) => {
     const restConfig = await getConfiguredRestApi();

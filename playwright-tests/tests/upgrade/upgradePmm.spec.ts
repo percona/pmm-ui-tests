@@ -3,15 +3,13 @@ import {api} from '@api/api';
 import apiHelper from "@api/helpers/apiHelper";
 import grafanaHelper from '@helpers/GrafanaHelper';
 import HomeDashboard from '@pages/HomeDashboard.page';
-import {SettingProperty} from "@api/settingsApiV1";
 
-test.describe('General Upgrade PMM tests', async () => {
+test.describe('Common Upgrade PMM tests', async () => {
   test.describe.configure({ retries: 0 });
   let pmmVersion: number;
 
   test.beforeAll(async () => {
-    pmmVersion = (await api.serverV1.getPmmVersion()).minor;
-    console.log(pmmVersion);
+    pmmVersion = (await api.pmm.serverV1.getPmmVersion()).minor;
   });
 
   test.beforeEach(async ({ page }) => {
@@ -32,19 +30,5 @@ test.describe('General Upgrade PMM tests', async () => {
     async ({ page }) => {
       const homeDashboard = new HomeDashboard(page);
       await homeDashboard.upgradePMM();
-  });
-
-  test('PMM-T1659 ensure BM is OFF by default before 2.36.0 version @pre-upgrade @ovf-upgrade @ami-upgrade',
-    async ({}) => {
-      test.skip(pmmVersion > 35, 'Test is for versions earlier 2.36.0');
-      const property = await api.settingsV1.getSettingsProperty(SettingProperty.bm);
-      await expect(property).toBeUndefined();
-  });
-
-  test('PMM-T1659 Verify that BM is enabled by default after upgrade starting to 2.36.0 and newer @post-upgrade',
-    async ({}) => {
-      test.skip(pmmVersion <= 36, 'Test is for versions 2.36.0+');
-      const property = await api.settingsV1.getSettingsProperty(SettingProperty.bm);
-      await expect(property).toBe(true);
   });
 });

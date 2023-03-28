@@ -1,7 +1,7 @@
 import apiHelper from "@api/helpers/apiHelper";
 import Duration from "@helpers/Duration";
 
-export const serverAPIv1 = {
+export const server = {
 
   /**
    * @returns   Promise<{

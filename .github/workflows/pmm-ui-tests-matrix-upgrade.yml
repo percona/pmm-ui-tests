@@ -36,6 +36,22 @@ on:
           - dev-latest
 
 jobs:
+  general:
+    name: General
+    uses: ./.github/workflows/pmm-ui-tests-upgrade.yml
+    secrets: inherit
+    with:
+      pmm_ui_tests_branch: ${{ inputs.pmm_ui_tests_branch || 'main' }}
+      pmm_pre_upgrade_flag: '@pre-upgrade'
+      pmm_post_upgrade_flag: '@post-upgrade'
+      pmm_server_version: ${{ inputs.pmm_server_version || 'dev-latest' }}
+      pmm_server_docker_tag: ${{ inputs.pmm_server_docker_tag }}
+      pmm_client_version: ${{ inputs.pmm_client_version || 'dev-latest' }}
+      pmm_client_upgrade_version: ${{ inputs.pmm_client_upgrade_version }}
+      pmm_clients: ''
+      pmm_qa_branch: ${{ inputs.pmm_qa_branch || 'main' }}
+      repository: ${{ inputs.repository }}
+
    rbac:
       name: RBAC
       uses: ./.github/workflows/pmm-ui-tests-upgrade.yml
@@ -68,18 +84,18 @@ jobs:
         pmm_qa_branch: ${{ inputs.pmm_qa_branch || 'main' }}
         repository: ${{ inputs.repository }}
 
-   general:
-     name: General
-     uses: ./.github/workflows/pmm-ui-tests-upgrade.yml
-     secrets: inherit
-     with:
-       pmm_ui_tests_branch: ${{ inputs.pmm_ui_tests_branch || 'main' }}
-       pmm_pre_upgrade_flag: '@pre-upgrade'
-       pmm_post_upgrade_flag: '@post-upgrade'
-       pmm_server_version: ${{ inputs.pmm_server_version || 'dev-latest' }}
-       pmm_server_docker_tag: ${{ inputs.pmm_server_docker_tag }}
-       pmm_client_version: ${{ inputs.pmm_client_version || 'dev-latest' }}
-       pmm_client_upgrade_version: ${{ inputs.pmm_client_upgrade_version }}
-       pmm_clients: ''
-       pmm_qa_branch: ${{ inputs.pmm_qa_branch || 'main' }}
-       repository: ${{ inputs.repository }}
+    configuration:
+      name: Configuration / Settings
+      uses: ./.github/workflows/pmm-ui-tests-upgrade.yml
+      secrets: inherit
+      with:
+        pmm_ui_tests_branch: ${{ inputs.pmm_ui_tests_branch || 'main' }}
+        pmm_pre_upgrade_flag: '@config-pre-upgrade'
+        pmm_post_upgrade_flag: '@config-post-upgrade'
+        pmm_server_version: ${{ inputs.pmm_server_version || 'dev-latest' }}
+        pmm_server_docker_tag: ${{ inputs.pmm_server_docker_tag }}
+        pmm_client_version: ${{ inputs.pmm_client_version || 'dev-latest' }}
+        pmm_client_upgrade_version: ${{ inputs.pmm_client_upgrade_version }}
+        pmm_clients: ''
+        pmm_qa_branch: ${{ inputs.pmm_qa_branch || 'main' }}
+        repository: ${{ inputs.repository }}
