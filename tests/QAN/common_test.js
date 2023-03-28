@@ -114,12 +114,7 @@ Scenario(
     await adminPage.applyTimeRange('Last 1 hour');
     await qanOverview.searchByValue('pmm-managed');
     qanOverview.selectTotalRow();
-
     dashboardPage.selectRefreshTimeInterval('5s');
-    // Sometimes refresh doesn't happen after 5s for the first time
-    // await I.waitForElement(qanOverview.elements.spinner, 10);
-    // await I.waitForDetached(qanOverview.elements.spinner, 5);
-
     await qanOverview.verifyMainMetric('Database');
     await qanOverview.verifySorting(2, 'asc');
     await qanFilters.verifySelectedFilters('pmm-managed');
