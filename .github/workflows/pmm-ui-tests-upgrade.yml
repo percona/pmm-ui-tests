@@ -189,7 +189,6 @@ jobs:
 
       - name: Convert repo choice
         uses: actions/github-script@v6
-        if: ${{ always() }}
         id: target_repo
         with:
           script: |
