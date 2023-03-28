@@ -192,6 +192,7 @@ jobs:
         id: target_repo
         with:
           script: |
+            const choice = ${{ inputs.repository }};
             switch (inputs.repository) {
               case 'release':
                 return 'release';
