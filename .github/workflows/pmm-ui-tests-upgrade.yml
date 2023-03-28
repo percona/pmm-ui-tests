@@ -193,9 +193,8 @@ jobs:
         with:
           script: |
             console.log("start");
-            console.log(context);
+            console.log(context.payload.inputs.repository);
             console.log("parsing!");
-            console.log(inputs.repository);
             const choice = `${{ inputs.repository }}`;
             console.log(choice);
             switch (choice) {
