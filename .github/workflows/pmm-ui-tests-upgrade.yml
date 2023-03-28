@@ -87,9 +87,9 @@ on:
         default: 'release'
         type: choice
         options:
-          - release
-          - release candidate
-          - dev-latest
+          - 'release'
+          - 'release candidate'
+          - 'dev-latest'
 
 jobs:
   tests:
@@ -192,6 +192,7 @@ jobs:
         id: target_repo
         with:
           script: |
+            console.log("start");
             const choice = ${{ inputs.repository }};
             console.log(inputs.repository);
             console.log(choice);
