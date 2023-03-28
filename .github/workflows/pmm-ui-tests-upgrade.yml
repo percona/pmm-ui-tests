@@ -1,5 +1,5 @@
 ---
-name: pmm-ui-tests-upgrade
+name: PMM2 UI Tests Upgrade
 
 on:
   workflow_call:
@@ -30,6 +30,10 @@ on:
         default: 'dev-latest'
         type: string
         required: true
+      pmm_client_upgrade_version:
+        description: 'Version of the pmm client to upgrade to, if left empty, then version based on repository will be selected.'
+        default: 'dev-latest'
+        type: string
       pmm_clients:
         description: 'Clients for pmm-server'
         default: '--addclient=ps,1'
@@ -40,16 +44,12 @@ on:
         default: 'main'
         type: string
         required: true
-      testing_repository:
-        description: 'Enable Testing Repository.'
-        default: 'no'
-        type: string
+      repository:
+        description: 'Enable Selected Repository.'
         required: true
-      experimental_repository:
-        description: 'Enable Experimental Repository.'
-        default: 'no'
+        default: 'release'
         type: string
-        required: true
+
   workflow_dispatch:
     inputs:
       pmm_ui_tests_branch:
@@ -70,6 +70,9 @@ on:
         description: 'Version of the pmm client used for testing'
         default: 'dev-latest'
         required: true
+      pmm_client_upgrade_version:
+        description: 'Version of the pmm client to upgrade to, if left empty, then version based on repository will be selected.'
+        type: string
       pmm_clients:
         description: 'Clients for pmm-server'
         default: '--addclient=ps,1'
@@ -78,14 +81,15 @@ on:
         description: 'Branch for the pmm-qa repository.'
         default: 'main'
         required: true
-      testing_repository:
-        description: 'Enable Testing Repository.'
-        default: 'no'
+      repository:
+        description: 'Enable Selected Repository.'
         required: true
-      experimental_repository:
-        description: 'Enable Experimental Repository.'
-        default: 'no'
-        required: true
+        default: 'release'
+        type: choice
+        options:
+          - release
+          - testing
+          - experimental
 
 jobs:
   tests:
@@ -168,6 +172,9 @@ jobs:
           npm install
           sudo npx ts-node ./integration-setup.ts --ci --setup-docker-pmm-server --rbac --pmm-server-docker-tag=${{ inputs.pmm_server_docker_tag }} --pmm-client-version=${{ env.PMM_CLIENT_VERSION }}          
 
+      - name: Health check for PMM2-server
+        run: timeout 100 bash -c 'while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' localhost/ping)" != "200" ]]; do sleep 5; done' || false
+
       - name: Setup Client for PMM-Server
         run: |
           sudo bash ./pmm-qa/pmm-tests/pmm2-client-setup.sh --pmm_server_ip 127.0.0.1 --client_version ${{ env.PMM_CLIENT_VERSION }} --admin_password admin --use_metrics_mode no
@@ -180,25 +187,25 @@ jobs:
           sudo pmm-admin list
         shell: bash
       
-      - name: Enable Test Repository.
-        if: ${{ inputs.testing_repository == 'yes'}}
+      - name: Enable Repository.
         run: |
             docker exec pmm-integration-server bash -c "echo exclude=mirror.es.its.nyu.edu | tee -a /etc/yum/pluginconf.d/fastestmirror.conf"
             docker exec pmm-integration-server yum update -y percona-release
             docker exec pmm-integration-server sed -i'' -e 's^/release/^/testing/^' /etc/yum.repos.d/pmm2-server.repo
-            docker exec pmm-integration-server percona-release enable percona testing
-            docker exec pmm-integration-server yum clean all
 
-      - name: Enable Experimental Repository.
-        if: ${{ inputs.experimental_repository == 'yes'}}
-        run: |
-          set -o errexit
-          set -o xtrace
-          docker exec pmm-integration-server bash -c "echo exclude=mirror.es.its.nyu.edu | tee -a /etc/yum/pluginconf.d/fastestmirror.conf"
-          docker exec pmm-integration-server yum update -y percona-release
-          docker exec pmm-integration-server sed -i'' -e 's^/release/^/experimental/^' /etc/yum.repos.d/pmm2-server.repo
-          docker exec pmm-integration-server percona-release enable percona experimental
-          docker exec pmm-integration-server yum clean all
+            if [[ ${{ inputs.repository }} == testing ]]; then
+              docker exec pmm-integration-server percona-release enable percona testing
+              sudo percona-release enable percona testing
+              sudo apt-get update -y
+            elif [[ ${{ inputs.repository }} == experimental ]]; then
+              docker exec pmm-integration-server percona-release enable percona experimental
+              sudo percona-release enable percona experimental
+              sudo apt-get update -y
+            else
+              docker exec pmm-integration-server percona-release enable percona release
+              sudo percona-release enable percona release
+              sudo apt-get update -y
+            fi
 
       - name: Execute Pre Upgrade UI tests
         id: ui-tests-flagged
@@ -206,12 +213,11 @@ jobs:
         run: |
           npm install
           npx playwright install
-          touch portalCredentials
           npx playwright test --config="playwright-tests/playwright.config.ts" --grep="${{ inputs.pmm_pre_upgrade_flag }}"
         env:
           NODE_TLS_REJECT_UNAUTHORIZED: 0
 
-      - name: Execute UI Upgrade
+      - name: Execute UI pmm-server Upgrade
         working-directory: pmm-ui-tests
         run: |
           npm install
@@ -219,6 +225,18 @@ jobs:
           npx playwright test --config="playwright-tests/playwright.config.ts" --grep="@pmm-upgrade"
         env:
           NODE_TLS_REJECT_UNAUTHORIZED: 0
+
+      - name: Execute pmm-client Upgrade.
+        if: ${{ inputs.pmm_client_upgrade_version == '' }}
+        run: |
+            sudo apt-get update
+            sudo apt -y install pmm2-client
+
+      - name: Execute pmm-client Upgrade to selected version
+        if: ${{ inputs.pmm_client_upgrade_version != '' }}
+        working-directory: pmm-qa/pmm-integration
+        run: |
+          sudo npx ts-node ./integration-setup.ts --ci --upgrade-pmm-client-version=${{ inputs.pmm_client_upgrade_version }}
 
       - name: Execute Post Upgrade UI tests
         working-directory: pmm-ui-tests
