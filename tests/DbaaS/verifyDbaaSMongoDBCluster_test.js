@@ -322,6 +322,10 @@ Scenario(
     );
     I.wait(30);
 
+    await I.verifyCommand(
+      'kubectl cp /srv/pmm-qa/pmm-tests/psmdb_cluster_connection_check.js psmdb-client:/tmp/',
+    );
+
     const output = await I.verifyCommand(
       `kubectl exec psmdb-client -- mongo "mongodb://${username}:${password}@${host}/admin?ssl=false" /tmp/psmdb_cluster_connection_check.js`,
     );
@@ -329,7 +333,7 @@ Scenario(
     assert.ok(output.includes(dbName), `The ${output} for psmdb cluster setup dump was expected to have db name ${dbName}, but found ${output}`);
 
     // Wait for backup to complete
-    I.wait(120);
+    I.wait(180);
     I.say(await I.verifyCommand(`kubectl get psmdb-backup | grep ${psmdb_backup_cluster}`, 'ready'));
   },
 );
@@ -344,6 +348,8 @@ Scenario(
     const artifactName = await I.verifyCommand(
       `kubectl get psmdb-backup -l cluster=${psmdb_backup_cluster} | grep ready | awk '{print $4}' | head -n 1`
     );
+
+    console.log(artifactName);
 
     I.amOnPage(dbaasPage.url);
     await dbaasActionsPage.createClusterBasicOptions(clusterName, psmdb_restore_cluster, 'MongoDB');
