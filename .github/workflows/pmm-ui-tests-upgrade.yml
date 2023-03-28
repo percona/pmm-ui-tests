@@ -193,7 +193,7 @@ jobs:
         with:
           script: |
             console.log("start");
-            const choice = ${{ inputs.repository }};
+            const choice = `${{ inputs.repository }}`;
             console.log(inputs.repository);
             console.log(choice);
             switch (choice) {
