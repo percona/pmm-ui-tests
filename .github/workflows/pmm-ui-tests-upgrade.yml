@@ -193,12 +193,17 @@ jobs:
         with:
           script: |
             const choice = ${{ inputs.repository }};
-            switch (inputs.repository) {
+            console.log(inputs.repository);
+            console.log(choice);
+            switch (choice) {
               case 'release':
+                console.log('rel');
                 return 'release';
               case 'release candidate':
+                console.log('rc');
                 return 'testing'
               case 'dev-latest':
+                console.log('exp');
                 return 'experimental'
             }
           result-encoding: string
