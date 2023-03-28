@@ -85,7 +85,7 @@ jobs:
         repository: ${{ inputs.repository }}
 
     configuration:
-      name: Configuration / Settings
+      name: 'Configuration / Settings'
       uses: ./.github/workflows/pmm-ui-tests-upgrade.yml
       secrets: inherit
       with:
