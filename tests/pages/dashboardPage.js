@@ -1151,7 +1151,7 @@ module.exports = {
     dataLinkForRoot: '//div[contains(text(), "Data links")]/..//a',
     Last2Days: '//span[contains(text(), "Last 2 days")]',
     metricTitle: '//div[@class="panel-title"]',
-    metricPanel: '//*[@class="panel-container"]',
+    metricPanel: '//section[@class="panel-container"]',
     mongoDBServiceSummaryContent: locate('pre').withText('Mongo Executable'),
     mySQLServiceSummaryContent: locate('pre').withText('Percona Toolkit MySQL Summary Report'),
     navbarLocator: '.page-toolbar',

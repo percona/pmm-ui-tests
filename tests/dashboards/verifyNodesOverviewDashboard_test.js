@@ -1,6 +1,6 @@
 Feature('Tests for Operation System Dashboards');
 
-const dockerVersion = process.env.CLIENT_VERSION ? `perconalab/pmm-client:${process.env.CLIENT_VERSION}` : 'perconalab/pmm-client:dev-latest';
+const dockerVersion = 'perconalab/pmm-client:dev-latest';
 const adminPassword = process.env.ADMIN_PASSWORD || 'admin';
 let pmmVersion;
 

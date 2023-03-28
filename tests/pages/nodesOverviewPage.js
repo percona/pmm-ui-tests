@@ -6,8 +6,8 @@ module.exports = {
   fields: {},
   buttons: {
     environment: '//button[@id="var-environment"]/span',
-    selectEnvironment: (envName) => `//*[@role="checkbox"]//*[text()="${envName}"]`,
-    refreshDashboard: '//*[@aria-label="Refresh dashboard"]',
+    selectEnvironment: (envName) => `//a[@role="checkbox"]//span[text()="${envName}"]`,
+    refreshDashboard: '//button[@aria-label="Refresh dashboard"]',
   },
   messages: {},
 
