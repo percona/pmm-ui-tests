@@ -8,11 +8,11 @@ const grafanaHelper = {
   },
 
   async unAuthorize(page: Page) {
-    await page.setExtraHTTPHeaders({ });
+    await page.setExtraHTTPHeaders({});
     await page.reload();
   },
 
-  async getToken(username: string = 'admin', password = process.env.ADMIN_PASSWORD) {
+  async getToken(username: string = 'admin', password = process.env.ADMIN_PASSWORD || 'admin') {
     return Buffer.from(`${username}:${password}`).toString('base64');
   },
 };

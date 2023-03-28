@@ -276,6 +276,72 @@ test.describe('Spec file for Access Control (RBAC)', async () => {
     }
   });
 
+  test('PMM-T1668 Verify removing Access role for deleted user. @rbac @rbac-post-upgrade', async ({ page }) => {
+    test.info().annotations.push({
+      type: 'Also Covers',
+      description: 'PMM-T1601 Verify Grafana Does not crash when filtering users from the admin page.',
+    });
+    if (pmmVersion >= 36) {
+      const rbacPage = new RbacPage(page);
+      const createRolePage = new CreateRolePage(page);
+      const newUserPage = new NewUserPage(page);
+      const usersConfigurationPage = new UsersConfigurationPage(page);
+      const deleteUser = {
+        username: `userRBACDelete_${Date.now()}`, email: `userRBACDelete@localhost_${Date.now()}`, name: 'Delete User', password: 'password'
+      };
+      const deleteUserRole = `Delete Role PgSql Access - ${Date.now()
+        } `;
+
+      await test.step(
+        '1. Navigate to the access role page then create role PgSql with label agent_type and value postgres_exporter',
+        async () => {
+          await page.goto(rbacPage.url);
+          await rbacPage.buttons.create.click();
+          await createRolePage.createNewRole({ roleName: deleteUserRole, roleDescription, label: 'agent_type', value: 'postgres_exporter' });
+          await rbacPage.rbacTable.verifyRowData(deleteUserRole, roleDescription, 'agent_type', '=', 'postgres_exporter');
+        },
+      );
+
+      await test.step(`2. Create new user: "${deleteUser.email}" and assign new role: "${deleteUserRole}" to the user.`, async () => {
+        await page.goto(newUserPage.url);
+        await newUserPage.createUser(deleteUser.name, deleteUser.email, deleteUser.username, deleteUser.password);
+
+        await page.goto(usersConfigurationPage.url);
+        await usersConfigurationPage.usersTable.fields.accessRole(deleteUser.name).click();
+        await usersConfigurationPage.optionMenu.selectOption(deleteUserRole);
+      });
+
+      await test.step('3. Search for non existing user, and verify page does not crash.', async () => {
+        await usersConfigurationPage.fields.searchUsers.type('NonExistingUser');
+        await usersConfigurationPage.buttons.deleteUser(deleteUser.email).waitFor({ state: 'hidden' });
+        await expect(usersConfigurationPage.elements.usersTable).toBeVisible();
+        await usersConfigurationPage.fields.searchUsers.clear();
+      });
+
+      await test.step(`3. Delete user assigned to the role: ${deleteUserRole} `, async () => {
+        await usersConfigurationPage.deleteUser(deleteUser.email);
+        await usersConfigurationPage.verifyUserNotExists(deleteUser.email);
+      });
+
+      await test.step(`4. Delete user role: ${deleteUserRole}.`, async () => {
+        await page.goto(rbacPage.url);
+        await rbacPage.rbacTable.elements.rowOptions(deleteUserRole).click();
+        await rbacPage.rbacTable.elements.delete.click();
+        await expect(rbacPage.rbacTable.elements.roleAssignedDialog).toContainText(
+          rbacPage.rbacTable.messages.deleteRole(deleteUserRole),
+        );
+        await rbacPage.rbacTable.buttons.confirmAndDeleteRole.click();
+        await rbacPage.toast.checkToastMessageContains(rbacPage.rbacTable.messages.roleDeleted(deleteUserRole), { variant: 'success' });
+      });
+
+    } else {
+      test.info().annotations.push({
+        type: 'Old Version ',
+        description: 'This test is for PMM version 2.35.0 and higher',
+      });
+    }
+  })
+
   test('PMM-T1629 Verify re-enabling of the Access Control @rbac @rbac-post-upgrade', async ({ page }) => {
     if (pmmVersion > 34) {
       const advancedSettings = new AdvancedSettings(page);

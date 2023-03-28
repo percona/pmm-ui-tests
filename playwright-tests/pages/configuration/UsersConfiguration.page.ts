@@ -1,4 +1,4 @@
-import { Page } from '@playwright/test';
+import { expect, Page } from '@playwright/test';
 import UsersTable from '@tests/components/configuration/usersTable';
 import { ConfigurationPage } from './Configuration.page';
 
@@ -12,10 +12,12 @@ export class UsersConfigurationPage extends ConfigurationPage {
 
   elements = {
     ...super.getConfigurationElements(),
+    usersTable: this.page.locator('//table'),
   };
 
   fields = {
     ...super.getConfigurationFields(),
+    searchUsers: this.page.locator('//input[contains(@placeholder, "Search user")]'),
   };
 
   labels = {
@@ -25,6 +27,8 @@ export class UsersConfigurationPage extends ConfigurationPage {
 
   buttons = {
     ...super.getConfigurationButtons(),
+    deleteUser: (userEmail: string) => this.page.locator(`//span[text()="${userEmail}"]//ancestor::tr//button[@aria-label="Delete user"]`),
+    confirmDeleteUser: this.page.locator('//button[@aria-label="Confirm Modal Danger Button"]'),
   };
 
   messages = {
@@ -34,5 +38,14 @@ export class UsersConfigurationPage extends ConfigurationPage {
   links = {
     ...super.getConfigurationLinks(),
   };
+
+  deleteUser = async (userEmail: string) => {
+    await this.buttons.deleteUser(userEmail).click();
+    await this.buttons.confirmDeleteUser.click();
+  }
+
+  verifyUserNotExists = async (userEmail: string) => {
+    await expect(this.elements.usersTable).not.toContainText(userEmail);
+  }
 
 }
