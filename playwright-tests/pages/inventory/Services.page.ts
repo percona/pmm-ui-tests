@@ -13,6 +13,7 @@ export class ServicesPage extends InventoryPage {
 
   elements = {
     ...super.getInventoryElements(),
+    runningStatusAgent: this.page.locator('//span[text()="Running"]'),
   };
 
   fields = {
@@ -26,7 +27,6 @@ export class ServicesPage extends InventoryPage {
   buttons = {
     ...super.getInventoryButtons(),
     addService: this.page.locator('//span[text()="Add Service"]//ancestor::button'),
-    deleteService: this.page.locator('//span[text()="Delete"]//ancestor::button'),
   };
 
   messages = {

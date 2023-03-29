@@ -22,6 +22,7 @@ export class InventoryPage extends CommonPage {
     ...super.getButtons(),
     servicesTab: this.page.locator('//a[@aria-label="Tab Services"]'),
     nodesTab: this.page.locator('//a[@aria-label="Tab Nodes"]'),
+    delete: this.page.locator('//span[text()="Delete"]//ancestor::button'),
   };
 
   private inventoryMessages = {

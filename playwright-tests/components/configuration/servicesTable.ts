@@ -19,10 +19,12 @@ export default class ServicesTable extends Table {
   elements = {
     ...super.getTableElements(),
     serviceName: (serviceName: string) => super.getTableElements().rowByText(serviceName).locator('td').nth(1),
-    nodeName: (nodeName: string) => super.getTableElements().rowByText(nodeName).locator('td').nth(2),
-    monitoring: (status: string) => super.getTableElements().rowByText(status).locator('td').nth(3),
-    address: (address: string) => super.getTableElements().rowByText(address).locator('td').nth(4),
-    port: (address: string) => super.getTableElements().rowByText(address).locator('td').nth(5),
+    nodeName: (serviceName: string) => super.getTableElements().rowByText(serviceName).locator('td').nth(2),
+    monitoring: (serviceName: string) => super.getTableElements().rowByText(serviceName).locator('td').nth(3).locator('//a'),
+    address: (serviceName: string) => super.getTableElements().rowByText(serviceName).locator('td').nth(4),
+    port: (serviceName: string) => super.getTableElements().rowByText(serviceName).locator('td').nth(5),
+    serviceStatuses: super.getTableElements().row.locator('//td[4]'),
+    agentStatus: this.page.locator('//span[@data-testid="details-row-content"]//div[contains(@data-testid, "status-badge")]'),
   };
 
   fields = {
@@ -57,4 +59,11 @@ export default class ServicesTable extends Table {
     await expect(this.elements.address(details.serviceName)).toContainText(details.address);
     await expect(this.elements.port(details.serviceName)).toContainText(details.port);
   };
+
+  verifyAllMonitoring = async (expectedStatus: string) => {
+    const numberOfServices = await this.elements.serviceStatuses.count()
+    for (let i = 0; i < numberOfServices; i++) {
+      await expect(this.elements.serviceStatuses.nth(i)).toHaveText(expectedStatus);
+    }
+  }
 }

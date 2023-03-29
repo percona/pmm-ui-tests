@@ -1,11 +1,13 @@
 import { expect, test } from '@playwright/test';
 import apiHelper from '@tests/api/apiHelper';
+import { NodeDetails } from '@tests/components/configuration/nodesTable';
 import { ServiceDetails } from '@tests/components/configuration/servicesTable';
 import { pmmClientCommands, pmmServerCommands } from '@tests/helpers/CommandLine';
 import grafanaHelper from '@tests/helpers/GrafanaHelper';
 import { MongoDBInstanceSummary } from '@tests/pages/dashboards/mongo/MongoDBInstanceSummary.page';
 import HomeDashboard from '@tests/pages/HomeDashboard.page';
 import { AddServicePage } from '@tests/pages/inventory/AddService.page';
+import { NodesPage } from '@tests/pages/inventory/Nodes.page';
 import { ServicesPage } from '@tests/pages/inventory/Services.page';
 import { QAN } from '@tests/pages/QAN/QueryAnalytics.page';
 
@@ -88,22 +90,34 @@ test.describe('Spec file for PMM inventory tests.', async () => {
 
   test('PMM-T1670 Verify PMM Inventory redesign : Layout & Nodes @inventory @inventory-pre-upgrade @inventory-post-upgrade', async ({ page }) => {
     const servicesPage = new ServicesPage(page);
-    const homeDashboard = new HomeDashboard(page);
-    const mongoDBInstanceSummary = new MongoDBInstanceSummary(page);
-    const qan = new QAN(page);
-    let nodeDetails: { nodeId?: any, nodeType?: any, nodeName?: any, address?: any } = {};
+    const nodesPage = new NodesPage(page);
+    let nodeDetails: NodeDetails = {};
 
     // Change to 37
     if (pmmVersion >= 36) {
       await test.step('1. Verify navigation to the Inventory Nodes page.', async () => {
         await page.goto(servicesPage.url);
         await servicesPage.buttons.nodesTab.click();
+      });
+
+      await test.step('2. Verify navigation to the Inventory Nodes page.', async () => {
         const nodeId = await pmmClientCommands.getNodeId();
         nodeDetails = await pmmServerCommands.getNodeDetails(nodeId);
         nodeDetails.nodeId = nodeId;
         console.log('node Details Are:');
         console.log(nodeDetails)
+        await nodesPage.nodesTable.verifyNode(nodeDetails)
       });
+
+      await test.step('3. Verify navigation to the Inventory Nodes page.', async () => {
+        await nodesPage.nodesTable.buttons.selectNode(nodeDetails.nodeName).check({ force: true });
+        await expect(nodesPage.buttons.delete).toBeEnabled();
+        await nodesPage.buttons.delete.click();
+        await expect(nodesPage.nodesTable.elements.modalHeader).toHaveText(nodesPage.nodesTable.messages.confirmNodeDeleteHeader());
+        await nodesPage.nodesTable.buttons.submit.click();
+        await nodesPage.toast.checkToastMessage(nodesPage.nodesTable.messages.hasAgents(nodeDetails.nodeId), { variant: 'error' });
+      });
+
     } else {
       test.info().annotations.push({
         type: 'Old Version ',
@@ -128,6 +142,29 @@ test.describe('Spec file for PMM inventory tests.', async () => {
         await expect(page).toHaveURL(addServicePage.url);
       });
 
+    } else {
+      test.info().annotations.push({
+        type: 'Old Version ',
+        description: 'This test is for PMM version 2.37.0 and higher',
+      });
+    }
+  });
+
+  test('PMM-T1672 Verify PMM Inventory redesign : State of the agents @inventory @inventory-pre-upgrade @inventory-post-upgrade', async ({ page }) => {
+    // Change to 37
+    if (pmmVersion >= 36) {
+      const servicesPage = new ServicesPage(page);
+      const addServicePage = new AddServicePage(page);
+
+      await test.step('1. Go to services page and click "Add Service".', async () => {
+        await page.goto(servicesPage.url);
+        await servicesPage.servicesTable.elements.rowByText(localService.serviceName).waitFor({ state: 'visible' })
+        await servicesPage.servicesTable.verifyAllMonitoring('OK');
+        await servicesPage.servicesTable.buttons.showRowDetails(localService.serviceName).click();
+        await expect(servicesPage.servicesTable.elements.agentStatus).toHaveText('4/4 running');
+        await servicesPage.servicesTable.elements.monitoring(localService.serviceName).click();
+        await expect(servicesPage.elements.runningStatusAgent).toHaveCount(4);
+      });
     } else {
       test.info().annotations.push({
         type: 'Old Version ',
