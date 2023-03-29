@@ -7,9 +7,6 @@ on:
         description: 'Target branch for pmm-ui-tests repository'
         default: 'main'
         required: true
-      pmm_test_flag:
-        description: 'Flag to run only specific portion of the tests.'
-        required: false
       pmm_server_version:
         description: 'Version of the pmm server used for testing'
         default: 'dev-latest'
