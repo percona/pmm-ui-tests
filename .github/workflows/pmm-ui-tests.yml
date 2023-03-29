@@ -156,8 +156,14 @@ jobs:
       - name: Setup Client for PMM-Server
         run: |
           sudo bash ./pmm-qa/pmm-tests/pmm2-client-setup.sh --pmm_server_ip 127.0.0.1 --client_version ${{ env.PMM_CLIENT_VERSION }} --admin_password admin --use_metrics_mode no
+
+        shell: bash
+      
+      - name: Setup Databases for the PMM-Server
+        working-directory: pmm-qa/pmm-integration
+        run: |
           sudo npx ts-node ./integration-setup.ts --ci \
-            ${{ env.PMM_CLIENTS }} \
+          ${{ env.PMM_CLIENTS }} \
           sleep 30
           sudo pmm-admin list
         shell: bash
