@@ -165,7 +165,7 @@ restoreFromDifferentStorageLocationsTests.add([locationsAPI.storageType.s3, 'LOG
 restoreFromDifferentStorageLocationsTests.add([locationsAPI.storageType.localClient, 'LOGICAL']);
 
 Data(restoreFromDifferentStorageLocationsTests).Scenario(
-  '@PMM-T862 PMM-T1508 @PMM-T1393 @PMM-T1394 @PMM-T1508 @PMM-T1520 @PMM-T1452 PMM-T1583 Verify user is able to perform MongoDB restore from different storage locations @backup @bm-mongo @bm-fb',
+  '@PMM-T862 PMM-T1508 @PMM-T1393 @PMM-T1394 @PMM-T1508 @PMM-T1520 @PMM-T1452 PMM-T1583 PMM-T1674 PMM-T1675 Verify user is able to perform MongoDB restore from different storage locations @backup @bm-mongo @bm-fb',
   async ({
     I, backupInventoryPage, backupAPI, inventoryAPI, restorePage, current,
   }) => {
