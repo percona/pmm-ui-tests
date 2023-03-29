@@ -163,7 +163,7 @@ jobs:
         working-directory: pmm-qa/pmm-integration
         run: |
           sudo npx ts-node ./integration-setup.ts --ci \
-          ${{ env.PMM_CLIENTS }} \
+          ${{ env.PMM_CLIENTS }}
           sleep 30
           sudo pmm-admin list
         shell: bash
