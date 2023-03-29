@@ -39,6 +39,8 @@ export default class ServicesTable extends Table {
     deleteService: this.dropdownMenu.locator('//span[text()="Delete"]'),
     serviceDashboard: this.dropdownMenu.locator('//span[text()="Dashboard"]'),
     qan: this.dropdownMenu.locator('//span[text()="QAN"]'),
+    showRowDetails: (serviceName: string) => super.getTableElements().rowByText(serviceName).getByTestId('show-row-details'),
+    hideRowDetails: (serviceName: string) => super.getTableElements().rowByText(serviceName).getByTestId('hide-row-details')
   };
 
   messages = {

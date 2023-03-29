@@ -1,9 +1,11 @@
 import { expect, test } from '@playwright/test';
 import apiHelper from '@tests/api/apiHelper';
 import { ServiceDetails } from '@tests/components/configuration/servicesTable';
+import { executeCommand } from '@tests/helpers/CommandLine';
 import grafanaHelper from '@tests/helpers/GrafanaHelper';
 import { MongoDBInstanceSummary } from '@tests/pages/dashboards/mongo/MongoDBInstanceSummary.page';
 import HomeDashboard from '@tests/pages/HomeDashboard.page';
+import { AddServicePage } from '@tests/pages/inventory/AddService.page';
 import { ServicesPage } from '@tests/pages/inventory/Services.page';
 import { QAN } from '@tests/pages/QAN/QueryAnalytics.page';
 
@@ -74,6 +76,77 @@ test.describe('Spec file for PMM inventory tests.', async () => {
         await servicesPage.servicesTable.buttons.options(localService.serviceName).click();
         await servicesPage.servicesTable.buttons.qan.click();
         await expect(qan.buttons.serviceNameCheckbox(localService.serviceName)).toBeChecked();
+      });
+
+    } else {
+      test.info().annotations.push({
+        type: 'Old Version ',
+        description: 'This test is for PMM version 2.37.0 and higher',
+      });
+    }
+  });
+
+  test.skip('PMM-T1670 Verify PMM Inventory redesign : Layout & Nodes @inventory @inventory-pre-upgrade @inventory-post-upgrade', async ({ page }) => {
+    const servicesPage = new ServicesPage(page);
+    const homeDashboard = new HomeDashboard(page);
+    const mongoDBInstanceSummary = new MongoDBInstanceSummary(page);
+    const qan = new QAN(page);
+    const nodeDetails: { nodeName?, nodeId?} = {};
+
+    // Change to 37
+    if (pmmVersion >= 36) {
+      await test.step('1. Verify navigation to the Inventory Nodes page.', async () => {
+        await page.goto(servicesPage.url);
+        await servicesPage.buttons.nodesTab.click();
+        // const mongoExporter = (await executeCommand('sudo docker exec pmm-integration-client pmm-admin status | grep "Node name"')).stdout;
+        const status = `Agent ID : /agent_id/7a35736c-4c00-4779-8733-f3259955ea6f
+        Node ID  : /node_id/4896b722-c00c-44b6-bc63-55bd5e8a5aa4
+        Node name: adf96aa1f51e
+        
+        PMM Server:
+                URL    : https://pmm-integration-server:443/
+                Version: 2.36.0-HEAD-cee641db
+        
+        PMM Client:
+                Connected        : true
+                Time drift       : 135.55µs
+                Latency          : 468.95µs
+                Connection uptime: 100
+                pmm-admin version: 2.37.0
+                pmm-agent version: 2.37.0
+        Agents:
+                /agent_id/16924389-4946-4860-8df2-a5be62100f4a vmagent Running 42000
+                /agent_id/24272020-eaa1-4563-86ea-de3e0e2829d4 mongodb_exporter Running 42002
+                /agent_id/692d3907-34f1-4c6d-9774-614a7d9c30fd node_exporter Running 42001
+                /agent_id/6b06f457-0878-4323-b217-d9ce35bc7062 mongodb_profiler_agent Running 0`.replaceAll(' ', '');
+        const statusLines = status.split(/\r?\n/);
+        console.log(statusLines)
+        nodeDetails.nodeName = statusLines.find((line) => line.includes('Nodename:'))?.replace('Nodename:', '');
+        nodeDetails.nodeId = statusLines.find((line) => line.includes('NodeID:'))?.replace('NodeID:', '');
+        console.log(nodeDetails);
+      });
+    } else {
+      test.info().annotations.push({
+        type: 'Old Version ',
+        description: 'This test is for PMM version 2.37.0 and higher',
+      });
+    }
+  });
+
+  test('PMM-T1671 Verify PMM Inventory redesign : Add service button @inventory @inventory-pre-upgrade @inventory-post-upgrade', async ({ page }) => {
+    // Change to 37
+    if (pmmVersion >= 36) {
+      const servicesPage = new ServicesPage(page);
+      const addServicePage = new AddServicePage(page);
+
+      await test.step('1. Go to services page and click "Add Service".', async () => {
+        await page.goto(servicesPage.url);
+        await servicesPage.buttons.addService.click();
+      });
+
+      await test.step('2. Verify that user in on Add Service page.', async () => {
+        await addServicePage.verifyAllButtonsVisible();
+        await expect(page).toHaveURL(addServicePage.url);
       });
 
     } else {
