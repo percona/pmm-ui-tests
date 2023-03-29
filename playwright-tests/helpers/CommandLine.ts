@@ -18,7 +18,7 @@ export const pmmServerCommands = {
       .stdout.replaceAll('|', '').replace(/ +(?= )/g, '').split(' ').filter((row) => row !== '');
     console.log(response)
 
-    return { nodeId: response[0], nodeType: response[1], nodeName: response[2], address: response[4] };
+    return { nodeId: response[0], nodeType: response[1], nodeName: response[2], address: response[5] };
   },
 
 }
