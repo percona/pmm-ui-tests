@@ -158,7 +158,6 @@ jobs:
           result-encoding: string
 
       - name: 'Setup PMM Sever: ${{ steps.pmm_server_image.outputs.result }}'
-        if: ${{ inputs.pmm_server_docker_tag != '' }}
         working-directory: pmm-qa/pmm-integration
         run: |
           npm install
