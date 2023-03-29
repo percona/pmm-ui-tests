@@ -95,7 +95,9 @@ const apiHelper = {
         timeout?: number | undefined; } | undefined
   ): Promise<APIResponse> => {
     console.log(`GET: ${path}${options ? ` with ${JSON.stringify(options)}` : ''}`);
-    return (await getConfiguredRestApi()).get(path, options);
+    const response = await (await getConfiguredRestApi()).get(path, options);
+    console.log(`Status: ${response.status()} ${response.statusText()}`);
+    return response;
   },
 
   /**
