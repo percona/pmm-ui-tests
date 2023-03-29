@@ -41,7 +41,7 @@ export class ServicesPage extends InventoryPage {
     await expect(this.buttons.servicesTab).toBeVisible();
     await expect(this.buttons.nodesTab).toBeVisible();
     await expect(this.buttons.addService).toBeVisible();
-    await expect(this.buttons.deleteService).toBeVisible();
+    await expect(this.buttons.delete).toBeVisible();
     await expect(this.servicesTable.elements.body).toBeVisible();
   }
 }

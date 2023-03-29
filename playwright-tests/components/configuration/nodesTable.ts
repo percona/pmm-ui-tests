@@ -19,7 +19,7 @@ export default class NodesTable extends Table {
     ...super.getTableElements(),
     nodeName: (nodeName: string) => super.getTableElements().rowByText(nodeName).locator('td').nth(1),
     nodeId: (nodeName: string) => super.getTableElements().rowByText(nodeName).locator('td').nth(2),
-    nodeType: (nodeName: string) => super.getTableElements().rowByText(nodeName).locator('td').nth(3).locator('//a'),
+    nodeType: (nodeName: string) => super.getTableElements().rowByText(nodeName).locator('td').nth(3),
     address: (nodeName: string) => super.getTableElements().rowByText(nodeName).locator('td').nth(4),
     modalHeader: this.page.getByRole('dialog').locator('//h4'),
   };
