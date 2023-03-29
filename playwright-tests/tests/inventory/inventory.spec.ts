@@ -33,7 +33,9 @@ test.describe('Spec file for PMM inventory tests.', async () => {
     await page.goto('');
     await grafanaHelper.authorize(page, 'admin', 'admin');
   });
-
+  /*
+    Finished
+  */
   test('PMM-T1669 Verify PMM Inventory redesign : Layout & Services @inventory @inventory-pre-upgrade @inventory-post-upgrade', async ({ page }) => {
     const servicesPage = new ServicesPage(page);
     const homeDashboard = new HomeDashboard(page);
@@ -73,7 +75,7 @@ test.describe('Spec file for PMM inventory tests.', async () => {
         await expect(mongoDBInstanceSummary.buttons.serviceName).toContainText(localService.serviceName);
       });
 
-      await test.step('4. Verify redirect for the QAN.', async () => {
+      await test.step('5. Verify redirect for the QAN.', async () => {
         await page.goto(servicesPage.url);
         await servicesPage.servicesTable.buttons.options(localService.serviceName).click();
         await servicesPage.servicesTable.buttons.qan.click();
@@ -87,7 +89,9 @@ test.describe('Spec file for PMM inventory tests.', async () => {
       });
     }
   });
-
+  /*
+    Make sure that deleting of node is not required.
+  */
   test('PMM-T1670 Verify PMM Inventory redesign : Layout & Nodes @inventory @inventory-pre-upgrade @inventory-post-upgrade', async ({ page }) => {
     const servicesPage = new ServicesPage(page);
     const nodesPage = new NodesPage(page);
@@ -100,7 +104,7 @@ test.describe('Spec file for PMM inventory tests.', async () => {
         await servicesPage.buttons.nodesTab.click();
       });
 
-      await test.step('2. Verify navigation to the Inventory Nodes page.', async () => {
+      await test.step('2. Verify node details.', async () => {
         const nodeId = await pmmClientCommands.getNodeId();
         nodeDetails = await pmmServerCommands.getNodeDetails(nodeId);
         nodeDetails.nodeId = nodeId;
@@ -109,7 +113,7 @@ test.describe('Spec file for PMM inventory tests.', async () => {
         await nodesPage.nodesTable.verifyNode(nodeDetails)
       });
 
-      await test.step('3. Verify navigation to the Inventory Nodes page.', async () => {
+      await test.step('3. Try to delete node.', async () => {
         await nodesPage.nodesTable.buttons.selectNode(nodeDetails.nodeName).check({ force: true });
         await expect(nodesPage.buttons.delete).toBeEnabled();
         await nodesPage.buttons.delete.click();
@@ -125,7 +129,9 @@ test.describe('Spec file for PMM inventory tests.', async () => {
       });
     }
   });
-
+  /*
+    Finished
+  */
   test('PMM-T1671 Verify PMM Inventory redesign : Add service button @inventory @inventory-pre-upgrade @inventory-post-upgrade', async ({ page }) => {
     // Change to 37
     if (pmmVersion >= 36) {
@@ -149,7 +155,9 @@ test.describe('Spec file for PMM inventory tests.', async () => {
       });
     }
   });
-
+  /*
+    Needs test for the kill of the agent
+  */
   test('PMM-T1672 Verify PMM Inventory redesign : State of the agents @inventory @inventory-pre-upgrade @inventory-post-upgrade', async ({ page }) => {
     // Change to 37
     if (pmmVersion >= 36) {
