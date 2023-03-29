@@ -4,7 +4,7 @@ const { dbaasAPI, dbaasPage, locationsPage } = inject();
 const clusterName = 'minikube';
 const pxc_cluster_name = 'pxc-dbcluster';
 const mysql_recommended_version = 'MySQL 8.0.29';
-const mysql_recommended_version_image = 'percona/percona-xtradb-cluster:8.0.27-18.1';
+const mysql_recommended_version_image = 'percona/percona-xtradb-cluster:8.0.29-21.1';
 
 const location = {
   name: 'S3 Location DBaaS',

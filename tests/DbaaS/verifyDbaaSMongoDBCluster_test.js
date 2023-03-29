@@ -296,13 +296,13 @@ Scenario('PMM-T704 PMM-T772 PMM-T849 PMM-T850 Resources, PV, Secrets verificatio
 Scenario(
   'PMM-T1603 Verify PSMDB backup @dbaas',
   async ({ I, dbaasPage, dbaasActionsPage, locationsAPI }) => {
+    await dbaasAPI.deleteAllDBCluster(clusterName);
+    await I.verifyCommand('kubectl delete pod psmdb-client');
     await locationsAPI.createStorageLocation(
       location.name,
       locationsAPI.storageType.s3,
       locationsAPI.storageLocationConnection,
     );
-    await dbaasAPI.deleteAllDBCluster(clusterName);
-    await I.verifyCommand('kubectl delete pod psmdb-client');
 
     I.amOnPage(dbaasPage.url);
     await dbaasActionsPage.createClusterBasicOptions(clusterName, psmdb_backup_cluster, 'MongoDB');
@@ -312,19 +312,13 @@ Scenario(
     I.click(dbaasPage.tabs.dbClusterTab.createClusterButton);
     I.waitForText('Processing', 60, dbaasPage.tabs.dbClusterTab.fields.progressBarContent(psmdb_backup_cluster));
     await dbaasAPI.waitForDBClusterState(psmdb_backup_cluster, clusterName, 'MongoDB', 'DB_CLUSTER_STATE_READY');
-
     I.waitForVisible(dbaasPage.tabs.dbClusterTab.fields.clusterStatusActive, 60);
 
     const { username, password, host } = await dbaasAPI.getDbClusterDetails(psmdb_backup_cluster, clusterName, 'MongoDB');
 
-    await I.verifyCommand(
-      'kubectl run psmdb-client --image=percona/percona-server-mongodb:4.4.5-7 --restart=Never',
-    );
+    await I.verifyCommand('kubectl run psmdb-client --image=percona/percona-server-mongodb:4.4.5-7 --restart=Never');
     I.wait(30);
-
-    await I.verifyCommand(
-      'kubectl cp /srv/pmm-qa/pmm-tests/psmdb_cluster_connection_check.js psmdb-client:/tmp/',
-    );
+    await I.verifyCommand('kubectl cp /srv/pmm-qa/pmm-tests/psmdb_cluster_connection_check.js psmdb-client:/tmp/');
 
     const output = await I.verifyCommand(
       `kubectl exec psmdb-client -- mongo "mongodb://${username}:${password}@${host}/admin?ssl=false" /tmp/psmdb_cluster_connection_check.js`,
@@ -333,7 +327,7 @@ Scenario(
     assert.ok(output.includes(dbName), `The ${output} for psmdb cluster setup dump was expected to have db name ${dbName}, but found ${output}`);
 
     // Wait for backup to complete
-    I.wait(180);
+    I.wait(120);
     I.say(await I.verifyCommand(`kubectl get psmdb-backup | grep ${psmdb_backup_cluster}`, 'ready'));
   },
 );
@@ -360,7 +354,7 @@ Scenario(
     I.click(dbaasPage.tabs.dbClusterTab.createClusterButton);
 
     await dbaasAPI.waitForDBClusterState(psmdb_restore_cluster, clusterName, 'MongoDB', 'DB_CLUSTER_STATE_READY');
-    
+
     // Wait for restore to complete
     I.wait(120);
     I.say(await I.verifyCommand(`kubectl get psmdb-restore | grep ${psmdb_restore_cluster}`, 'ready'));
