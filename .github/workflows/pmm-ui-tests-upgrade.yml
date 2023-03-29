@@ -197,8 +197,9 @@ jobs:
         run: |
             docker exec pmm-integration-server bash -c "echo exclude=mirror.es.its.nyu.edu | tee -a /etc/yum/pluginconf.d/fastestmirror.conf"
             docker exec pmm-integration-server yum update -y percona-release
-            docker exec pmm-integration-server sed -i'' -e 's^/release/^/testing/^' /etc/yum.repos.d/pmm2-server.repo
+            docker exec pmm-integration-server sed -i'' -e 's^/release/^/${{ steps.target_repo.outputs.result }}/^' /etc/yum.repos.d/pmm2-server.repo
             docker exec pmm-integration-server percona-release enable percona ${{ steps.target_repo.outputs.result }}
+            docker exec pmm-integration-server yum update -y
             sudo percona-release enable percona ${{ steps.target_repo.outputs.result }}
             sudo apt-get update -y
 
