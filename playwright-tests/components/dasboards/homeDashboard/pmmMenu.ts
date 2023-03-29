@@ -3,8 +3,6 @@ import { Page } from '@playwright/test';
 export default class PmmMenu {
   constructor(readonly page: Page) { }
 
-  private selectOptionsMenuContainer = this.page.locator('//*[@aria-label="Select options menu"]')
-
   elements = {
     container: this.page.getByRole('menu'),
   };
@@ -15,7 +13,7 @@ export default class PmmMenu {
 
   buttons = {
     menu: this.page.locator('//span[text()="PMM"]//ancestor::button'),
-    option: (option: string) => this.selectOptionsMenuContainer.locator(`//a[contains(@aria-label, "${option}")]`),
+    option: (option: string) => this.page.locator(`//a[contains(@aria-label, "${option}")]`),
   };
 
   messages = {};
