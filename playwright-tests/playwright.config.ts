@@ -27,7 +27,7 @@ const config: PlaywrightTestConfig = {
   workers: 1,
   reporter: [
     ['github'],
-    ['list'],
+    ['line'],
     ['html', { open: 'never' }]
   ],
 
