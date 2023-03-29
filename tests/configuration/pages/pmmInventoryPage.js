@@ -6,6 +6,7 @@ const agentsTab = require('./agentsTab');
 module.exports = {
   url: 'graph/inventory?orgId=1',
   fields: {
+    servicesLink: locate('[role="tablist"] a').withText('Services').withAttr({ 'aria-label': 'Tab Services' }),
     agentsLink: locate('[role="tablist"] a').withText('Agents').withAttr({ 'aria-label': 'Tab Agents' }),
     agentsLinkOld: locate('a').withText('Agents'),
     deleteButton: locate('span').withText('Delete'),
@@ -37,6 +38,10 @@ module.exports = {
     processExecPathExporters: '//td[contains(text(), "exporter")]//ancestor::tr[@data-testid="table-row"]//span[contains(text(), "process_exec_path")]',
     nodeExporterStatus: '//td[contains(text(), "Node exporter")]//ancestor::tr[@data-testid="table-row"]//span[contains(text(), "status")]',
     agentId: '//td[contains(text(), "agent_id") and not(following-sibling::td[text()="PMM Agent"])]',
+    selectAllCheckbox: locate('$select-all'),
+    selectRowCheckbox: locate('$select-row'),
+    removalDialogMessage: '//form/h4',
+    selectedCheckbox: '//div[descendant::input[@value="true"] and @data-testid="select-row"]',
   },
   agentsTab,
   pagination: paginationPart,
