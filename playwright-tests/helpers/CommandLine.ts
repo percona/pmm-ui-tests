@@ -13,11 +13,19 @@ export const executeCommand = async (command: string) => {
 };
 
 export const pmmServerCommands = {
-  getNodeDetails: async () => {
-    const response = (await executeCommand(`sudo docker exec -u postgres pmm-integration-server psql -U pmm-managed  -c "SELECT * FROM nodes WHERE node_id = '/node_id/4896b722-c00c-44b6-bc63-55bd5e8a5aa4'; " | grep '/node_id/'`))
+  getNodeDetails: async (nodeId: string) => {
+    const response = (await executeCommand(`sudo docker exec -u postgres pmm-integration-server psql -U pmm-managed  -c "SELECT * FROM nodes WHERE node_id = '${nodeId}'; " | grep '/node_id/'`))
       .stdout.replaceAll('|', '').replace(/ +(?= )/g, '').split(' ').filter((row) => row !== '');
     console.log(response)
 
     return { nodeId: response[0], nodeType: response[1], nodeName: response[2], nodeAddress: response[4] };
   },
+
+}
+
+export const pmmClientCommands = {
+  getNodeId: async () => {
+    const prefix = process.env.CI ? '' : 'sudo docker exec pmm-integration-client ';
+    return (await executeCommand(`${prefix}pmm-admin status | grep "Node ID"`)).stdout.replaceAll(' ', '').replace('NodeID:', '');
+  }
 }
