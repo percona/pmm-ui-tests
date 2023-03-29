@@ -16,6 +16,7 @@ export default class RbacTable extends Table {
     setDefault: this.optionsMenu.getByText('Set as default'),
     delete: this.optionsMenu.getByText('Delete'),
     roleAssignedDialog: this.page.getByRole('dialog'),
+    roleAssignedDialogRoleSelect: this.page.locator('//div[contains(@class, "singleValue")]'),
   };
 
   fields = {
@@ -37,6 +38,7 @@ export default class RbacTable extends Table {
     ...super.getTableMessages(),
     userAssigned: (roleName: string) =>
       `There are users associated to this role. By deleting the role “${roleName}“ all its users will be transferred to a new role. Please select the new role below.`,
+    deleteRole: (roleName: string) => `Delete "${roleName}" roleAre you sure you want to delete this role? You won’t be able to recover it. Please confirm your action below.`,
     roleDeleted: (roleName: string) => `Role “${roleName}“ deleted`,
   };
 
