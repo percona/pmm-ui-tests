@@ -1,7 +1,7 @@
 import { expect, test } from '@playwright/test';
 import apiHelper from '@tests/api/apiHelper';
 import { ServiceDetails } from '@tests/components/configuration/servicesTable';
-import { pmmServerCommand } from '@tests/helpers/CommandLine';
+import { pmmServerCommands } from '@tests/helpers/CommandLine';
 import grafanaHelper from '@tests/helpers/GrafanaHelper';
 import { MongoDBInstanceSummary } from '@tests/pages/dashboards/mongo/MongoDBInstanceSummary.page';
 import HomeDashboard from '@tests/pages/HomeDashboard.page';
@@ -120,25 +120,12 @@ test.describe('Spec file for PMM inventory tests.', async () => {
                 /agent_id/692d3907-34f1-4c6d-9774-614a7d9c30fd node_exporter Running 42001
                 /agent_id/6b06f457-0878-4323-b217-d9ce35bc7062 mongodb_profiler_agent Running 0`.replaceAll(' ', '');
         const statusLines = status.split(/\r?\n/);
-        // console.log(statusLines)
         nodeDetails.nodeName = statusLines.find((line) => line.includes('Nodename:'))?.replace('Nodename:', '');
         nodeDetails.nodeId = statusLines.find((line) => line.includes('NodeID:'))?.replace('NodeID:', '');
-        const nodeId = `                    node_id
-        -----------------------------------------------
-         pmm-server
-         /node_id/4896b722-c00c-44b6-bc63-55bd5e8a5aa4
-        (2 rows)`
-        const nodeType = ` node_type 
-        -----------
-         generic
-         container
-        (2 rows)`
-        // NODE_TYPE_INVALID GENERIC_NODE CONTAINER_NODE REMOTE_NODE REMOTE_RDS_NODE REMOTE_AZURE_DATABASE_NODE
-        // console.log(nodeType.split(/\r?\n/).filter((type) => (!type.includes('node_type') || !type.includes('------') || !type.includes('row'))))
-        console.log(nodeType.split(/\r?\n/).filter((type) => (!type.includes('node_type') && !type.includes('-----') && !type.includes('rows'))))
-        console.log(nodeId.split(/\r?\n/).find((row) => row.includes('/node_id/')));
-        console.log('PMM Server node IDs are: ');
-        console.log(await pmmServerCommand.getNodeIds());
+
+        const nodeDetails2 = await pmmServerCommands.getNodeDetails();
+        console.log('node Details Are:');
+        console.log(nodeDetails2)
       });
     } else {
       test.info().annotations.push({
