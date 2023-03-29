@@ -38,7 +38,7 @@ Data(subPages).Scenario(
 );
 
 Data(subPages).Scenario(
-  '@PMM-T1441 Check all checkboxes button should work fine for selected agents/nodes/services',
+  '@PMM-T1441 Check all checkboxes button should work fine for selected agents/nodes/services @inventory',
   async ({
     I, pmmInventoryPage, current,
   }) => {
@@ -56,7 +56,7 @@ Data(subPages).Scenario(
 );
 
 Data(subPages).Scenario(
-  '@PMM-T1445 Verification of Select all Functiality for multiple page',
+  '@PMM-T1445 Verification of Select all Functiality for multiple page @inventory',
   async ({
     I, pmmInventoryPage, current,
   }) => {
