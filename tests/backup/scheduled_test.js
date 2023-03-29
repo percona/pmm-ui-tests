@@ -9,6 +9,7 @@ const location = {
 };
 
 let locationId;
+let locationIdForPS;
 let serviceId;
 const mysqlServiceName = 'mysql-with-backup2';
 const mongoServiceName = 'mongo-backup-schedule';
@@ -44,6 +45,12 @@ BeforeSuite(async ({
     location.name,
     locationsAPI.storageType.s3,
     locationsAPI.storageLocationConnection,
+    location.description,
+  );
+  locationIdForPS = await locationsAPI.createStorageLocation(
+    location.name,
+    locationsAPI.storageType.s3,
+    locationsAPI.psStorageLocationConnection,
     location.description,
   );
   await I.mongoConnect({
@@ -437,7 +444,7 @@ Scenario(
     const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName('MYSQL_SERVICE', mysqlServiceName);
     const scheduleMySql = {
       service_id,
-      location_id: locationId,
+      location_id: locationIdForPS,
       cron_expression: '*/2 * * * *',
       name: 'mySQL for parallel backup test',
       mode: scheduledAPI.backupModes.snapshot,

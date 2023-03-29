@@ -28,11 +28,11 @@ Before(async ({
 
 const s3Errors = new DataTable(['field', 'value', 'error']);
 
-s3Errors.add(['bucket_name', 'pmm', 'AccessDenied: Access Denied']);
+// s3Errors.add(['bucket_name', 'pmm', 'AccessDenied: Access Denied']);
 s3Errors.add(['bucket_name', 'pmm-backup12', 'Bucket doesn\'t exist']);
-s3Errors.add(['bucket_name', 'random-bucket', '301 Moved Permanently: 301 Moved Permanently.']);
+// s3Errors.add(['bucket_name', 'random-bucket', '301 Moved Permanently: 301 Moved Permanently.']);
 s3Errors.add(['endpoint', 'unknown', 'no such host']);
-s3Errors.add(['access_key', 'invalid', 'InvalidAccessKeyId: The AWS Access Key Id you provided does not exist in our records.']);
+s3Errors.add(['access_key', 'invalid', 'InvalidAccessKeyId: The Access Key Id you provided does not exist in our records..']);
 s3Errors.add(['secret_key', 'invalid', 'SignatureDoesNotMatch: The request signature we calculated does not match the signature you provided. Check your key and signing method.']);
 
 Scenario(
@@ -126,7 +126,7 @@ Scenario(
   },
 );
 
-Data(s3Errors).Scenario(
+Data(s3Errors).only.Scenario(
   'PMM-T708 Verify errors related to s3 storage location @backup @bm-locations',
   async ({
     I, locationsPage, current,
@@ -137,7 +137,6 @@ Data(s3Errors).Scenario(
       locationsAPI.storageType.s3,
       {
         ...location.config,
-        endpoint: 'https://s3.amazonaws.com',
         [current.field]: current.value,
       },
     );

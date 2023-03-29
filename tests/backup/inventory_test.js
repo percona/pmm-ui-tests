@@ -493,7 +493,7 @@ Data(deleteArtifactsTests).Scenario(
     const backupName = `mongo-error-no-artifact-${current.storageType}`;
     const isS3Type = current.storageType === locationsAPI.storageType.s3;
     const currentLocationId = isS3Type ? locationId : localStorageLocationId;
-    const commandToClearStorage = isS3Type ? 'rm -rfv /tmp/minio/backups/bcp/*' : 'docker exec rs101 rm -rfv /tmp/backup_data/*';
+    const commandToClearStorage = isS3Type ? 'sudo rm -rfv /tmp/minio/backups/bcp/*' : 'docker exec rs101 rm -rfv /tmp/backup_data/*';
 
     const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName('MONGODB_SERVICE', mongoServiceName);
     const artifactId = await backupAPI.startBackup(backupName, service_id, currentLocationId);

@@ -21,7 +21,7 @@ BeforeSuite(async ({
   locationId = await locationsAPI.createStorageLocation(
     location.name,
     locationsAPI.storageType.s3,
-    locationsAPI.storageLocationConnection,
+    locationsAPI.psStorageLocationConnection,
     location.description,
   );
   const mysqlComposeConnection = {

@@ -28,7 +28,7 @@ BeforeSuite(async ({
   locationId = await locationsAPI.createStorageLocation(
     location.name,
     locationsAPI.storageType.s3,
-    locationsAPI.storageLocationConnection,
+    locationsAPI.psStorageLocationConnection,
     location.description,
   );
   await inventoryAPI.deleteNodeByServiceName('MYSQL_SERVICE', mysqlServiceNameForPreCheckTest);
