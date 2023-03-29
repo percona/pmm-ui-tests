@@ -4,66 +4,73 @@ on:
   workflow_dispatch:
     inputs:
       pmm_ui_tests_branch:
-        description: 'Target branch for pmm-ui-tests repository'
+        description: 'pmm-ui-tests repository branch'
         default: 'main'
         required: true
-      pmm_server_version:
-        description: 'Version of the pmm server used for testing'
-        default: 'dev-latest'
+      pmm_server_start_version:
+        description: 'PMM Server version to upgrade (latest|dev-latest|x.xx.x|x.xx.x-rc)'
+        default: 'latest'
         required: true
-      pmm_server_docker_tag:
-        description: 'Use when tag different to: "perconalab/pmm-server" is required'
-        type: string
-      pmm_client_version:
-        description: 'Version of the pmm client used for testing'
-        default: 'dev-latest'
+      pmm_client_start_version:
+        description: 'PMM Client version to upgrade from (dev-latest|pmm2-latest|pmm2-rc|x.xx.x)'
+        default: 'pmm2-latest'
         required: true
       pmm_client_upgrade_version:
         description: 'Version of the pmm client to upgrade to, if left empty, then version based on repository will be selected.'
         type: string
       pmm_qa_branch:
-        description: 'Branch for the pmm-qa repository.'
+        description: 'pmm-qa repository branch(for setup)'
         default: 'main'
         required: true
       repository:
-        description: 'Enable Selected Repository.'
+        description: 'Upgrade to:'
         required: true
-        default: 'release'
+        default: 'dev-latest'
         type: choice
         options:
-        - release
-        - testing
-        - experimental
+          - release
+          - release candidate
+          - dev-latest
 
 jobs:
-   rbac:
-      name: RBAC
-      uses: ./.github/workflows/pmm-ui-tests-upgrade.yml
-      secrets: inherit
-      with:
-        pmm_ui_tests_branch: ${{ inputs.pmm_ui_tests_branch || 'main' }}
-        pmm_pre_upgrade_flag: '@rbac-pre-upgrade'
-        pmm_post_upgrade_flag: '@rbac-post-upgrade'
-        pmm_server_version: ${{ inputs.pmm_server_version || 'dev-latest' }}
-        pmm_server_docker_tag: ${{ inputs.pmm_server_docker_tag }}
-        pmm_client_version: ${{ inputs.pmm_client_version || 'dev-latest' }}
-        pmm_client_upgrade_version: ${{ inputs.pmm_client_upgrade_version }}
-        pmm_clients: '--addclient=ps,1 --addclient=pdpgsql,1'
-        pmm_qa_branch: ${{ inputs.pmm_qa_branch || 'main' }}
-        repository: ${{ inputs.repository }}
+  general:
+    name: General
+    uses: ./.github/workflows/pmm-ui-tests-upgrade.yml
+    secrets: inherit
+    with:
+      pmm_ui_tests_branch: ${{ inputs.pmm_ui_tests_branch || 'main' }}
+      pre_upgrade_tests: '@pre-upgrade'
+      post_upgrade_tests: ''
+      pmm_server_start_version: ${{ inputs.pmm_server_start_version || 'latest' }}
+      pmm_client_start_version: ${{ inputs.pmm_client_start_version || 'pmm2-latest' }}
+      pmm_qa_branch: ${{ inputs.pmm_qa_branch || 'main' }}
+      services_list: ''
+      repository: ${{ inputs.repository }}
 
-   portal:
-      name: Portal
-      uses: ./.github/workflows/pmm-ui-tests-upgrade.yml
-      secrets: inherit
-      with:
-        pmm_ui_tests_branch: ${{ inputs.pmm_ui_tests_branch || 'main' }}
-        pmm_pre_upgrade_flag: '@pre-pmm-portal-upgrade'
-        pmm_post_upgrade_flag: '@post-pmm-portal-upgrade'
-        pmm_server_version: ${{ inputs.pmm_server_version || 'dev-latest' }}
-        pmm_server_docker_tag: ${{ inputs.pmm_server_docker_tag }}
-        pmm_client_version: ${{ inputs.pmm_client_version || 'dev-latest' }}
-        pmm_client_upgrade_version: ${{ inputs.pmm_client_upgrade_version }}
-        pmm_clients: ''
-        pmm_qa_branch: ${{ inputs.pmm_qa_branch || 'main' }}
-        repository: ${{ inputs.repository }}
+  rbac:
+    name: RBAC
+    uses: ./.github/workflows/pmm-ui-tests-upgrade.yml
+    secrets: inherit
+    with:
+      pmm_ui_tests_branch: ${{ inputs.pmm_ui_tests_branch || 'main' }}
+      pre_upgrade_tests: '@rbac-pre-upgrade'
+      post_upgrade_tests: '@rbac-post-upgrade'
+      pmm_server_start_version: ${{ inputs.pmm_server_start_version || 'latest' }}
+      pmm_client_start_version: ${{ inputs.pmm_client_start_version || 'pmm2-latest' }}
+      pmm_qa_branch: ${{ inputs.pmm_qa_branch || 'main' }}
+      services_list: '--addclient=ps,1 --addclient=pdpgsql,1'
+      repository: ${{ inputs.repository }}
+
+  portal:
+    name: Portal
+    uses: ./.github/workflows/pmm-ui-tests-upgrade.yml
+    secrets: inherit
+    with:
+      pmm_ui_tests_branch: ${{ inputs.pmm_ui_tests_branch || 'main' }}
+      pre_upgrade_tests: '@pre-pmm-portal-upgrade'
+      post_upgrade_tests: '@post-pmm-portal-upgrade'
+      pmm_server_start_version: ${{ inputs.pmm_server_start_version || 'latest' }}
+      pmm_client_start_version: ${{ inputs.pmm_client_start_version || 'pmm2-latest' }}
+      pmm_qa_branch: ${{ inputs.pmm_qa_branch || 'main' }}
+      services_list: ''
+      repository: ${{ inputs.repository }}
