@@ -48,7 +48,7 @@ BeforeSuite(async ({
     location.description,
   );
   locationIdForPS = await locationsAPI.createStorageLocation(
-    location.name,
+    'ps-location for scheduling',
     locationsAPI.storageType.s3,
     locationsAPI.psStorageLocationConnection,
     location.description,
