@@ -25,7 +25,7 @@ export const pmmServerCommands = {
 
 export const pmmClientCommands = {
   getNodeId: async () => {
-    const prefix = process.env.CI ? '' : 'sudo docker exec pmm-integration-client ';
+    const prefix = process.env.CI ? 'sudo ' : 'sudo docker exec pmm-integration-client ';
     return (await executeCommand(`${prefix}pmm-admin status | grep "Node ID"`)).stdout.replaceAll(' ', '').replace('NodeID:', '');
   }
 }
