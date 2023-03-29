@@ -14,7 +14,7 @@ test.describe('Spec file for PMM inventory tests.', async () => {
     serviceName: 'mo-integration-',
     nodeName: '',
     monitoring: 'OK',
-    address: 'mo-integration-',
+    address: process.env.CI ? '127.0.0.1' : 'mo-integration-',
     port: '27017'
   };
   let pmmVersion: number;
