@@ -1,5 +1,5 @@
 ---
-name: PMM2 UI Tests Upgrade
+name: PMM UI Upgrade Tests Runner
 
 on:
   workflow_call:
@@ -35,6 +35,7 @@ on:
       services_list:
         description: 'Services for pmm-server'
         default: '--addclient=ps,1'
+        type: string
         required: true
       repository:
         description: 'Upgrade to:'
