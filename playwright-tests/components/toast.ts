@@ -31,8 +31,7 @@ export class Toast {
     let selectedToast: Locator = this.selectToast(options?.variant);
 
     await selectedToast.waitFor({ state: 'visible', timeout: options?.timeout || 30000 });
-    const toastMessage = await selectedToast.textContent();
-    expect(toastMessage).toEqual(message);
+    await expect(selectedToast).toHaveText(message);
     await this.closeButton(selectedToast).click();
     await selectedToast.waitFor({ state: 'detached' });
   };

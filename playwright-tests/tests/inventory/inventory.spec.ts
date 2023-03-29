@@ -119,7 +119,7 @@ test.describe('Spec file for PMM inventory tests.', async () => {
         await nodesPage.buttons.delete.click();
         await expect(nodesPage.nodesTable.elements.modalHeader).toHaveText(nodesPage.nodesTable.messages.confirmNodeDeleteHeader());
         await nodesPage.nodesTable.buttons.submit.click();
-        await nodesPage.toast.checkToastMessage(nodesPage.nodesTable.messages.hasAgents(nodeDetails.nodeId), { variant: 'error' });
+        await nodesPage.toast.checkToastMessage(nodesPage.nodesTable.messages.hasAgents(nodeDetails.nodeId).replace('\n', ''), { variant: 'error' });
       });
 
     } else {
