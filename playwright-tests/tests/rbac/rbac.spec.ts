@@ -97,6 +97,13 @@ test.describe('Spec file for Access Control (RBAC)', async () => {
         await expect(rbacPage.rbacTable.elements.defaultRow).toContainText(roleNameCreate);
         await expect(rbacPage.rbacTable.elements.rowByText(rbacPage.rbacTable.labels.fullAccess)).not.toContainText('Default');
       });
+
+      await test.step('4. Assign default role back to Full Access.', async () => {
+        await rbacPage.rbacTable.elements.rowOptions(rbacPage.rbacTable.labels.fullAccess).click();
+        await rbacPage.rbacTable.elements.setDefault.click();
+        await expect(rbacPage.rbacTable.elements.defaultRow).toContainText(rbacPage.rbacTable.labels.fullAccess);
+
+      });
     } else {
       test.info().annotations.push({
         type: 'Old Version ',
@@ -191,7 +198,10 @@ test.describe('Spec file for Access Control (RBAC)', async () => {
         await page.goto(rbacPage.url);
         await rbacPage.rbacTable.elements.rowOptions(roleName).click();
         await rbacPage.rbacTable.elements.delete.click();
-        await expect(rbacPage.rbacTable.elements.roleAssignedDialog).toContainText(
+        await expect(rbacPage.rbacTable.elements.confirmDeleteRoleHeader).toContainText(
+          rbacPage.rbacTable.messages.deleteRoleHeader(roleName),
+        );
+        await expect(rbacPage.rbacTable.elements.confirmDeleteRoleBody).toContainText(
           rbacPage.rbacTable.messages.userAssigned(roleName),
         );
         await rbacPage.rbacTable.buttons.closeDialog.click();
@@ -228,19 +238,12 @@ test.describe('Spec file for Access Control (RBAC)', async () => {
       const newUserPage = new NewUserPage(page);
       const usersConfigurationPage = new UsersConfigurationPage(page);
 
-      const newRoleName = `Role Name Only MySql Access - Replace ${Date.now()}`;
-      const newUserRoleDelete = { username: 'testUserRBAC_RoleDelete', email: 'testUserRBAC_RoleDelete@localhost', name: 'Test User Role Delete', password: 'password' };
-
+      const newRoleName = `Replace Role Test Role ${Date.now()}`;
+      const newUserRoleDelete = { username: 'replaceRoleTestUser', email: 'replaceRoleTestUser@localhost', name: 'Replace Role Test User', password: 'password' };
       await test.step(
         '1. Navigate to the access role page delete old roles then create role MySQL with label agent_type and value mysql_exporter',
         async () => {
           await page.goto(rbacPage.url);
-          await rbacPage.rbacTable.elements.rowOptions('Full access').click();
-          await rbacPage.rbacTable.elements.setDefault.click();
-          await rbacPage.rbacTable.elements.rowOptions(roleNameCreate).click();
-          await rbacPage.rbacTable.elements.delete.click();
-          await rbacPage.rbacTable.buttons.confirmAndDeleteRole.click();
-          await rbacPage.toast.checkToastMessageContains(rbacPage.rbacTable.messages.roleDeleted(roleNameCreate), { variant: 'success' });
           await rbacPage.buttons.create.click();
           await createRolePage.createNewRole({ roleName: newRoleName, roleDescription, label: 'agent_type', value: 'mysqld_exporter' });
           await rbacPage.rbacTable.verifyRowData(newRoleName, roleDescription, 'agent_type', '=', 'mysqld_exporter');
@@ -260,7 +263,10 @@ test.describe('Spec file for Access Control (RBAC)', async () => {
         await page.goto(rbacPage.url);
         await rbacPage.rbacTable.elements.rowOptions(newRoleName).click();
         await rbacPage.rbacTable.elements.delete.click();
-        await expect(rbacPage.rbacTable.elements.roleAssignedDialog).toContainText(
+        await expect(rbacPage.rbacTable.elements.confirmDeleteRoleHeader).toContainText(
+          rbacPage.rbacTable.messages.deleteRoleHeader(newRoleName),
+        );
+        await expect(rbacPage.rbacTable.elements.confirmDeleteRoleBody).toContainText(
           rbacPage.rbacTable.messages.userAssigned(newRoleName),
         );
         await expect(rbacPage.rbacTable.elements.roleAssignedDialogRoleSelect).toHaveText(rbacPage.rbacTable.labels.fullAccess);
@@ -327,8 +333,11 @@ test.describe('Spec file for Access Control (RBAC)', async () => {
         await page.goto(rbacPage.url);
         await rbacPage.rbacTable.elements.rowOptions(deleteUserRole).click();
         await rbacPage.rbacTable.elements.delete.click();
-        await expect(rbacPage.rbacTable.elements.roleAssignedDialog).toContainText(
-          rbacPage.rbacTable.messages.deleteRole(deleteUserRole),
+        await expect(rbacPage.rbacTable.elements.confirmDeleteRoleHeader).toContainText(
+          rbacPage.rbacTable.messages.deleteRoleHeader(deleteUserRole),
+        );
+        await expect(rbacPage.rbacTable.elements.confirmDeleteRoleBody).toContainText(
+          rbacPage.rbacTable.messages.deleteRoleBody,
         );
         await rbacPage.rbacTable.buttons.confirmAndDeleteRole.click();
         await rbacPage.toast.checkToastMessageContains(rbacPage.rbacTable.messages.roleDeleted(deleteUserRole), { variant: 'success' });

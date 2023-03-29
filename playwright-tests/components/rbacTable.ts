@@ -7,6 +7,7 @@ export default class RbacTable extends Table {
   }
 
   private optionsMenu = this.page.getByRole('menu');
+  private confirmDeleteRole = this.page.getByRole('dialog');
 
   elements = {
     ...super.getTableElements(),
@@ -15,8 +16,9 @@ export default class RbacTable extends Table {
     rowOptions: (text: string) => super.getTableElements().rowByText(text).locator('//*[@aria-label="Open role options"]'),
     setDefault: this.optionsMenu.getByText('Set as default'),
     delete: this.optionsMenu.getByText('Delete'),
-    roleAssignedDialog: this.page.getByRole('dialog'),
     roleAssignedDialogRoleSelect: this.page.locator('//div[contains(@class, "singleValue")]'),
+    confirmDeleteRoleHeader: this.confirmDeleteRole.locator('//h2'),
+    confirmDeleteRoleBody: this.confirmDeleteRole.locator('//p'),
   };
 
   fields = {
@@ -38,7 +40,8 @@ export default class RbacTable extends Table {
     ...super.getTableMessages(),
     userAssigned: (roleName: string) =>
       `There are users associated to this role. By deleting the role “${roleName}“ all its users will be transferred to a new role. Please select the new role below.`,
-    deleteRole: (roleName: string) => `Delete "${roleName}" roleAre you sure you want to delete this role? You won’t be able to recover it. Please confirm your action below.`,
+    deleteRoleHeader: (roleName: string) => `Delete "${roleName}" role`,
+    deleteRoleBody: "Are you sure you want to delete this role? You won’t be able to recover it. Please confirm your action below.",
     roleDeleted: (roleName: string) => `Role “${roleName}“ deleted`,
   };
 
