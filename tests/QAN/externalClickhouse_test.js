@@ -3,11 +3,17 @@ const assert = require('assert');
 Feature('External Clickhouse Tests');
 
 // Address of PMM with external clickhouse created with docker compose.
-const basePmmUrl = 'http://127.0.0.1:8081/';
+const pmmServerPort = '8081';
+const basePmmUrl = `http://127.0.0.1:${pmmServerPort}/`;
 
 BeforeSuite(async ({ I }) => {
-  await I.verifyCommand(`PMM_SERVER_IMAGE=${process.env.DOCKER_VERSION} docker-compose -f docker-compose-clickhouse.yml up -d`);
-  await I.verifyCommand('docker exec pmm-client sh -c "pmm-admin add mysql --username=root --password=7B*53@lCdflR --query-source=perfschema  mysql5.7 mysql5.7:3306"');
+  await I.verifyCommand('PMM_SERVER_IMAGE=process.env.DOCKER_VERSION docker-compose -f docker-compose-clickhouse.yml up -d pmm-server-external-clickhouse');
+  await I.verifyCommand(`timeout 100 bash -c 'while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' 127.0.0.1:${pmmServerPort}/ping)" != "200" ]]; do sleep 5; done' || false`);
+  await I.verifyCommand('docker-compose -f docker-compose-clickhouse.yml up -d pmm-client');
+  await I.verifyCommand('docker-compose -f docker-compose-clickhouse.yml up -d mysql5.7');
+  await I.verifyCommand('docker-compose -f docker-compose-clickhouse.yml up -d external-clickhouse');
+  await I.wait(30);
+  await I.verifyCommand('docker exec pmm-client-clickhouse pmm-admin add mysql --username=root --password=7B*53@lCdflR --query-source=perfschema mysql5.7 mysql5.7:3306');
   await I.wait(60);
 });
 
@@ -21,7 +27,7 @@ AfterSuite(async ({ I }) => {
 
 // Tag only for adding into matrix job, to be fixed later.
 Scenario(
-  'PMM-T1218 Verify PMM with external Clickhouse @docker-configuration',
+  '@PMM-T1218 Verify PMM with external Clickhouse @docker-configuration @cli',
   async ({ I, dataSourcePage, qanPage }) => {
     await I.amOnPage(basePmmUrl + dataSourcePage.url);
     await I.waitForVisible(dataSourcePage.elements.clickHouseDescription);
