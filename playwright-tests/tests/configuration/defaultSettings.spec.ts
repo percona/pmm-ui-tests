@@ -24,7 +24,7 @@ test.describe('Default Settings tests', async () => {
   test('PMM-T1659 Verify that BM is enabled by default after upgrade in 2.36.0+' +
       ' @config-post-upgrade @config',
     async ({}) => {
-      test.skip(pmmVersion <= 36, 'Test is for versions 2.36.0+');
+      test.skip(pmmVersion < 36, 'Test is for versions 2.36.0+');
       const property = await api.pmm.settingsV1.getSettingsProperty(SettingProperty.bm);
       await expect(property).toBe(true);
   });
