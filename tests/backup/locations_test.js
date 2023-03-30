@@ -1,11 +1,11 @@
 const faker = require('faker');
 
-const { locationsPage } = inject();
+const { locationsPage, locationsAPI } = inject();
 
 const location = {
   name: `${faker.lorem.word()}_location`,
   description: 'test description',
-  ...locationsPage.storageLocationConnection,
+  config: locationsPage.storageLocationConnection,
 };
 
 const mongoServiceName = 'mongo-backup-locations';
@@ -86,13 +86,13 @@ Scenario(
     I, locationsPage,
   }) => {
     locationsPage.openAddLocationModal();
+    I.click(locationsPage.fields.name);
+    I.click(locationsPage.fields.endpoint);
+    I.click(locationsPage.fields.bucket);
+    I.click(locationsPage.fields.accessKey);
+    I.click(locationsPage.fields.secretKey);
 
-    Object.entries(locationsPage.fields)
-      .filter(([key]) => key !== 'description')
-      .forEach(([, locator]) => {
-        I.click(locator);
-      });
-
+    // Additional click to have unfocused previous field
     I.click(locationsPage.fields.description);
 
     Object.entries(locationsPage.elements.validation)
@@ -110,7 +110,11 @@ Scenario(
     locationsPage.openAddLocationModal();
 
     // Fill required fields
-    locationsPage.fillLocationFields(location);
+    locationsPage.fillLocationFields(
+      location.name,
+      locationsAPI.storageType.s3,
+      location.config,
+    );
 
     // Verify buttons become enabled
     I.seeAttributesOnElements(locationsPage.buttons.addLocation, { disabled: null });
@@ -128,7 +132,15 @@ Data(s3Errors).Scenario(
     I, locationsPage, current,
   }) => {
     locationsPage.openAddLocationModal();
-    locationsPage.fillLocationFields({ ...location, [current.field]: current.value });
+    locationsPage.fillLocationFields(
+      location.name,
+      locationsAPI.storageType.s3,
+      {
+        ...location.config,
+        endpoint: 'https://s3.amazonaws.com',
+        [current.field]: current.value,
+      },
+    );
     I.click(locationsPage.buttons.testLocation);
     I.verifyPopUpMessage(current.error, 40);
   },
@@ -142,7 +154,11 @@ Scenario(
     locationsPage.openAddLocationModal();
 
     // Fill required fields
-    locationsPage.fillLocationFields(location);
+    locationsPage.fillLocationFields(
+      location.name,
+      locationsAPI.storageType.s3,
+      location.config,
+    );
 
     // Verify success message
     I.click(locationsPage.buttons.addLocation);
@@ -160,7 +176,7 @@ Scenario(
     I.seeElement(locationsPage.buttons.deleteByName(location.name));
     I.seeElement(locationsPage.buttons.editByName(location.name));
     I.seeTextEquals(locationsPage.locationType.s3, locationsPage.elements.typeCellByName(location.name));
-    I.seeTextEquals(location.endpoint, locationsPage.elements.endpointCellByName(location.name));
+    I.seeTextEquals(location.config.endpoint, locationsPage.elements.endpointCellByName(location.name));
   },
 );
 
@@ -169,14 +185,23 @@ Scenario(
   async ({
     I, locationsPage, locationsAPI,
   }) => {
-    await locationsAPI.createStorageLocation(location);
+    await locationsAPI.createStorageLocation(
+      location.name,
+      locationsAPI.storageType.s3,
+      locationsAPI.storageLocationConnection,
+      location.description,
+    );
     locationsPage.openLocationsPage();
     locationsPage.openAddLocationModal();
 
     // Fill required fields
-    locationsPage.fillLocationFields(location);
+    locationsPage.fillLocationFields(
+      location.name,
+      locationsAPI.storageType.s3,
+      location.config,
+    );
 
-    // Verify success message
+    // Verify validation message
     I.click(locationsPage.buttons.addLocation);
     I.verifyPopUpMessage(locationsPage.messages.locationAlreadyExists(location.name));
   },
@@ -187,7 +212,12 @@ Scenario(
   async ({
     I, locationsPage, locationsAPI,
   }) => {
-    await locationsAPI.createStorageLocation(location);
+    await locationsAPI.createStorageLocation(
+      location.name,
+      locationsAPI.storageType.s3,
+      locationsAPI.storageLocationConnection,
+      location.description,
+    );
     locationsPage.openLocationsPage();
     locationsPage.openDeleteLocationModal(location.name);
 
@@ -215,7 +245,12 @@ Scenario(
     I, locationsPage, locationsAPI, backupAPI, inventoryAPI,
   }) => {
     const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName('MONGODB_SERVICE', mongoServiceName);
-    const location_id = await locationsAPI.createStorageLocation(location);
+    const location_id = await locationsAPI.createStorageLocation(
+      location.name,
+      locationsAPI.storageType.s3,
+      locationsAPI.storageLocationConnection,
+      location.description,
+    );
 
     await backupAPI.startBackup('delete location', service_id, location_id);
     locationsPage.openLocationsPage();
@@ -233,7 +268,12 @@ Scenario(
   }) => {
     const backupName = 'delete location';
     const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName('MONGODB_SERVICE', mongoServiceName);
-    const location_id = await locationsAPI.createStorageLocation(location);
+    const location_id = await locationsAPI.createStorageLocation(
+      location.name,
+      locationsAPI.storageType.s3,
+      locationsAPI.storageLocationConnection,
+      location.description,
+    );
 
     await backupAPI.startBackup(backupName, service_id, location_id);
     locationsPage.openLocationsPage();
@@ -260,7 +300,12 @@ Scenario(
       description: 'updated description',
     };
 
-    await locationsAPI.createStorageLocation(location);
+    await locationsAPI.createStorageLocation(
+      location.name,
+      locationsAPI.storageType.s3,
+      locationsAPI.storageLocationConnection,
+      location.description,
+    );
     locationsPage.openLocationsPage();
 
     I.click(locationsPage.buttons.actionsMenuByName(location.name));
@@ -270,7 +315,12 @@ Scenario(
     I.waitForText('Edit', 10, locationsPage.buttons.addLocation);
     I.seeAttributesOnElements(locationsPage.buttons.addLocation, { disabled: true });
 
-    locationsPage.verifyLocationFields(location);
+    locationsPage.verifyLocationFields(
+      location.name,
+      locationsAPI.storageType.s3,
+      locationsAPI.storageLocationConnection,
+      location.description,
+    );
 
     I.clearField(locationsPage.fields.name);
     I.fillField(locationsPage.fields.name, updatedLocation.name);
@@ -282,7 +332,12 @@ Scenario(
     I.click(locationsPage.buttons.actionsMenuByName(updatedLocation.name));
     I.waitForVisible(locationsPage.buttons.editByName(updatedLocation.name), 2);
     I.click(locationsPage.buttons.editByName(updatedLocation.name));
-    locationsPage.verifyLocationFields(updatedLocation);
+    locationsPage.verifyLocationFields(
+      updatedLocation.name,
+      locationsAPI.storageType.s3,
+      locationsAPI.storageLocationConnection,
+      updatedLocation.description,
+    );
   },
 );
 
@@ -291,7 +346,12 @@ Scenario(
   async ({
     I, locationsPage, locationsAPI,
   }) => {
-    await locationsAPI.createStorageLocation(location);
+    await locationsAPI.createStorageLocation(
+      location.name,
+      locationsAPI.storageType.s3,
+      locationsAPI.storageLocationConnection,
+      location.description,
+    );
     locationsPage.openLocationsPage();
 
     // Open details row
@@ -299,11 +359,11 @@ Scenario(
 
     // Verify storage location details
     I.seeTextEquals(location.description, locationsPage.elements.locationDetails.description);
-    I.seeTextEquals(location.bucket_name, locationsPage.elements.locationDetails.bucket);
-    I.see(location.access_key, locationsPage.elements.locationDetails.accessKey);
+    I.seeTextEquals(location.config.bucket_name, locationsPage.elements.locationDetails.bucket);
+    I.see(location.config.access_key, locationsPage.elements.locationDetails.accessKey);
     I.see('*****', locationsPage.elements.locationDetails.secretKey);
     I.click(locationsPage.buttons.showSecret);
-    I.see(location.secret_key, locationsPage.elements.locationDetails.secretKey);
+    I.see(location.config.secret_key, locationsPage.elements.locationDetails.secretKey);
 
     // Hide details
     I.click(locationsPage.buttons.hideDetails(location.name));
@@ -325,10 +385,14 @@ Scenario(
     const mongoLocation = {
       name: 'mongo l',
       description: 'test description',
-      ...locationsPage.mongoStorageLocation,
     };
 
-    const locationId = await locationsAPI.createStorageLocation(mongoLocation);
+    const locationId = await locationsAPI.createStorageLocation(
+      mongoLocation.name,
+      locationsAPI.storageType.s3,
+      locationsAPI.storageLocationConnection,
+      mongoLocation.description,
+    );
 
     const backupName = 'mongo force delete locations test';
     const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName('MONGODB_SERVICE', mongoServiceName);

@@ -1,11 +1,10 @@
 const moment = require('moment');
 
-const { locationsPage, psMySql } = inject();
+const { psMySql } = inject();
 const connection = psMySql.defaultConnection;
 const location = {
   name: 'mysql scheduled backup location',
   description: 'MySQL location for scheduling',
-  ...locationsPage.mongoStorageLocation,
 };
 const mysqlServiceName = 'mysql-with-backup';
 let locationId;
@@ -19,7 +18,12 @@ BeforeSuite(async ({
   await settingsAPI.changeSettings({ backup: true });
   await backupAPI.clearAllArtifacts();
   await locationsAPI.clearAllLocations(true);
-  locationId = await locationsAPI.createStorageLocation(location);
+  locationId = await locationsAPI.createStorageLocation(
+    location.name,
+    locationsAPI.storageType.s3,
+    locationsAPI.storageLocationConnection,
+    location.description,
+  );
   const mysqlComposeConnection = {
     host: '127.0.0.1',
     port: '3306',

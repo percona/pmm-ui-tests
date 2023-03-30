@@ -37,7 +37,6 @@ const mongoServiceName = 'mongo-backup-upgrade';
 const location = {
   name: 'upgrade-location',
   description: 'upgrade-location description',
-  ...locationsPage.mongoStorageLocation,
 };
 const backupName = 'upgrade backup test';
 const scheduleName = 'upgrade schedule';
@@ -501,7 +500,12 @@ if (versionMinor >= 32) {
 
       await settingsAPI.changeSettings({ backup: true });
       await locationsAPI.clearAllLocations(true);
-      const locationId = await locationsAPI.createStorageLocation(location);
+      const locationId = await locationsAPI.createStorageLocation(
+        location.name,
+        locationsAPI.storageType.s3,
+        locationsAPI.storageLocationConnection,
+        location.description,
+      );
 
       const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName('MONGODB_SERVICE', mongoServiceName);
       const backupId = await backupAPI.startBackup(backupName, service_id, locationId);
@@ -677,7 +681,7 @@ if (versionMinor >= 15) {
       );
 
       const expectedScrapeUrl = `${remoteInstancesHelper.remote_instance.external.redis.schema}://${remoteInstancesHelper.remote_instance.external.redis.host
-        }:${remoteInstancesHelper.remote_instance.external.redis.port}${remoteInstancesHelper.remote_instance.external.redis.metricsPath}`;
+      }:${remoteInstancesHelper.remote_instance.external.redis.port}${remoteInstancesHelper.remote_instance.external.redis.metricsPath}`;
 
       assert.ok(targets.scrapeUrl === expectedScrapeUrl,
         `Active Target for external service Post Upgrade has wrong Address value, value found is ${targets.scrapeUrl} and value expected was ${expectedScrapeUrl}`);
@@ -1153,7 +1157,7 @@ if (versionMinor >= 32) {
   );
 
   Scenario(
-    '@PMM-T1503 - The user is able to do a restore for MongoDB after the upgrade'
+    '@PMM-T1503 PMM-T970 - The user is able to do a restore for MongoDB after the upgrade'
     + ' @post-upgrade @pmm-upgrade',
     async ({
       I, backupInventoryPage, restorePage, credentials,

@@ -1,13 +1,14 @@
 const assert = require('assert');
 
-const { locationsPage } = inject();
+const { locationsAPI } = inject();
 
 const location = {
   name: 'mongo-location',
   description: 'test description',
-  ...locationsPage.mongoStorageLocation,
 };
+const localStorageLocationName = 'mongo-local-client';
 
+let localStorageLocationId;
 let locationId;
 let serviceId;
 
@@ -21,7 +22,17 @@ BeforeSuite(async ({
 }) => {
   await settingsAPI.changeSettings({ backup: true });
   await locationsAPI.clearAllLocations(true);
-  locationId = await locationsAPI.createStorageLocation(location);
+  localStorageLocationId = await locationsAPI.createStorageLocation(
+    localStorageLocationName,
+    locationsAPI.storageType.localClient,
+    locationsAPI.localStorageDefaultConfig,
+  );
+  locationId = await locationsAPI.createStorageLocation(
+    location.name,
+    locationsAPI.storageType.s3,
+    locationsAPI.storageLocationConnection,
+    location.description,
+  );
   await I.mongoConnect({
     username: 'pmm',
     password: 'pmmpass',
@@ -64,23 +75,34 @@ Scenario(
   },
 );
 
-Scenario(
-  '@PMM-T855 Verify user is able to perform MongoDB backup @backup @bm-mongo @bm-fb',
+const createBackupTests = new DataTable(['storageLocationName']);
+
+createBackupTests.add([location.name]);
+createBackupTests.add([localStorageLocationName]);
+
+Data(createBackupTests).Scenario(
+  '@PMM-T855 @PMM-T1393 Verify user is able to perform MongoDB backup @backup @bm-mongo @bm-fb',
   async ({
-    I, backupInventoryPage,
+    I, backupInventoryPage, current,
   }) => {
-    const backupName = 'mongo backup test';
+    const backupName = `mongo backup test ${current.storageLocationName}`;
 
     I.click(backupInventoryPage.buttons.openAddBackupModal);
 
     backupInventoryPage.selectDropdownOption(backupInventoryPage.fields.serviceNameDropdown, mongoServiceName);
-    backupInventoryPage.selectDropdownOption(backupInventoryPage.fields.locationDropdown, location.name);
+    backupInventoryPage.selectDropdownOption(backupInventoryPage.fields.locationDropdown, current.storageLocationName);
     I.fillField(backupInventoryPage.fields.backupName, backupName);
     // TODO: uncomment when PMM-10899 will be fixed
     // I.fillField(backupInventoryPage.fields.description, 'test description');
     I.click(backupInventoryPage.buttons.addBackup);
     I.waitForVisible(backupInventoryPage.elements.pendingBackupByName(backupName), 10);
     backupInventoryPage.verifyBackupSucceeded(backupName);
+
+    const artifactName = await I.grabTextFrom(backupInventoryPage.elements.artifactName(backupName));
+
+    if (current.storageLocationName === localStorageLocationName) {
+      await I.verifyCommand('ls -la /tmp/backup_data', artifactName);
+    }
   },
 ).retry(1);
 
@@ -125,25 +147,44 @@ Scenario(
   },
 );
 
-Scenario(
-  '@PMM-T862 Verify user is able to perform MongoDB restore @backup @bm-mongo @bm-fb',
+const restoreFromDifferentStorageLocationsTests = new DataTable(['storageType']);
+
+restoreFromDifferentStorageLocationsTests.add([locationsAPI.storageType.s3]);
+restoreFromDifferentStorageLocationsTests.add([locationsAPI.storageType.localClient]);
+
+Data(restoreFromDifferentStorageLocationsTests).Scenario(
+  '@PMM-T862 PMM-T1508 @PMM-T1393 @PMM-T1394 @PMM-T1508 @PMM-T1520 Verify user is able to perform MongoDB restore from different storage locations @backup @bm-mongo @bm-fb',
   async ({
-    I, backupInventoryPage, backupAPI, inventoryAPI, restorePage,
+    I, backupInventoryPage, backupAPI, inventoryAPI, restorePage, current,
   }) => {
-    const backupName = 'mongo restore test';
+    const currentLocationId = current.storageType === locationsAPI.storageType.s3
+      ? locationId : localStorageLocationId;
+    const backupName = `mongo restore test ${current.storageType}`;
     const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName('MONGODB_SERVICE', mongoServiceName);
-    const artifactId = await backupAPI.startBackup(backupName, service_id, locationId);
+    const artifactId = await backupAPI.startBackup(backupName, service_id, currentLocationId);
 
     await backupAPI.waitForBackupFinish(artifactId);
 
     I.refreshPage();
+    I.waitForVisible(backupInventoryPage.elements.artifactName(backupName), 10);
     backupInventoryPage.verifyBackupSucceeded(backupName);
+
+    const artifactName = await I.grabTextFrom(backupInventoryPage.elements.artifactName(backupName));
+
+    if (current.storageType === locationsAPI.storageType.localClient) {
+      await I.verifyCommand('ls -la /tmp/backup_data', artifactName);
+      // TODO: add check if the folder is not empty
+    }
 
     let c = await I.mongoGetCollection('test', 'test');
 
     await c.insertOne({ number: 2, name: 'Anna' });
 
     backupInventoryPage.startRestore(backupName);
+
+    // PMM-T1520 PMM-T1508
+    I.waitForVisible(restorePage.elements.targetServiceByName(backupName), 10);
+    I.seeTextEquals(mongoServiceName, restorePage.elements.targetServiceByName(backupName));
     restorePage.waitForRestoreSuccess(backupName);
 
     c = await I.mongoGetCollection('test', 'test');
@@ -247,7 +288,7 @@ Scenario(
 );
 
 Scenario(
-  '@PMM-T1159 Verify that backup with long backup name is displayed correctly and @PMM-T1160 Verify that backup names are limited to 100 chars length @backup',
+  '@PMM-T1159 @PMM-T1160 Verify that backup with long backup name is displayed correctly, Verify that backup names are limited to 100 chars length @backup',
   async ({
     I, backupInventoryPage,
   }) => {
@@ -330,5 +371,24 @@ Scenario(
     // const clipboardText = I.readClipboard();
     //
     // I.assertEqual(clipboardText, logs);
+  },
+);
+
+Scenario(
+  '@PMM-T1551 - Verify Mongod binary error during backup @backup @bm-mongo',
+  async ({
+    I, addInstanceAPI, backupInventoryPage,
+  }) => {
+    const serviceName = 'mongo binary test';
+
+    await addInstanceAPI.addMongodb(serviceName);
+    I.click(backupInventoryPage.buttons.openAddBackupModal);
+
+    backupInventoryPage.selectDropdownOption(backupInventoryPage.fields.serviceNameDropdown, serviceName);
+    backupInventoryPage.selectDropdownOption(backupInventoryPage.fields.locationDropdown, location.name);
+    I.fillField(backupInventoryPage.fields.backupName, 'test error');
+    I.click(backupInventoryPage.buttons.addBackup);
+
+    await I.verifyPopUpMessage('software "mongodb" is not installed: incompatible service');
   },
 );

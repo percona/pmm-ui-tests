@@ -3,8 +3,7 @@ const assert = require('assert');
 const { dbaasAPI, dbaasPage } = inject();
 const clusterName = 'minikube';
 const pxc_cluster_name = 'pxc-dbcluster';
-const pxc_cluster_type = 'DB_CLUSTER_TYPE_PXC';
-const mysql_recommended_version = 'MySQL 8.0.27';
+const mysql_recommended_version = 'MySQL 8.0.29';
 
 const pxcDBClusterDetails = new DataTable(['namespace', 'clusterName', 'node']);
 

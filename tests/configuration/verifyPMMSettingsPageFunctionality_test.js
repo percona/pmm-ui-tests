@@ -1,4 +1,3 @@
-const { pmmSettingsPage } = inject();
 const communicationDefaults = new DataTable(['type', 'serverAddress', 'hello', 'from', 'authType', 'username', 'password', 'url', 'message']);
 const assert = require('assert');
 
@@ -348,6 +347,30 @@ Scenario(
     scheduledPage.openScheduledBackupsPage();
   },
 );
+
+Scenario(
+  '@PMM-T1658 Verify that backup management is enabled by default @backup @bm-fb',
+  async ({
+    I, pmmSettingsPage, settingsAPI, homePage, leftNavMenu,
+  }) => {
+    const pmmVersion = await homePage.getVersions().versionMinor;
+
+    const settingEndpointResponse = await settingsAPI.getSettings('backup_management_enabled');
+
+    if (pmmVersion >= 36 || pmmVersion === undefined) {
+      I.amOnPage(homePage.url);
+      I.waitForVisible(leftNavMenu.backups.locator, 30);
+      I.assertEqual(settingEndpointResponse, true);
+      I.amOnPage(pmmSettingsPage.advancedSettingsUrl);
+      I.waitForVisible(pmmSettingsPage.fields.backupManagementSwitch, 30);
+      await pmmSettingsPage.verifySwitch(pmmSettingsPage.fields.backupManagementSwitchInput, 'on');
+      assert.ok(settingEndpointResponse, `Backup managment should be turned on by default from 2.36.0 release but found ${settingEndpointResponse}`);
+    } else {
+      I.say('Skipping this test PMM-T1658, because PMM Server version is lower then Feature fix version');
+    }
+  },
+).retry(2);
+
 Scenario(
   'PMM-T1328 Verify public address is set automatically on Percona Platform page once connected to Portal @nightly',
   async ({

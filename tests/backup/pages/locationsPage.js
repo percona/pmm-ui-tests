@@ -1,12 +1,11 @@
-const { storageLocationConnection, mongoStorageLocation } = require('./testData');
+const { storageLocationConnection } = require('./testData');
 
-const { I } = inject();
+const { I, locationsAPI } = inject();
 
 const locationCell = (name) => `//tr[td[contains(text(), "${name}")]]`;
 
 module.exports = {
   storageLocationConnection,
-  mongoStorageLocation,
   url: 'graph/backup/locations',
   columnHeaders: ['Name', 'Source', 'Created', 'Actions'],
   elements: {
@@ -64,6 +63,7 @@ module.exports = {
     bucket: '$bucketName-text-input',
     accessKey: '$accessKey-text-input',
     secretKey: '$secretKey-text-input',
+    path: '$client-text-input',
   },
   messages: {
     noLocations: 'No storage locations found',
@@ -107,24 +107,29 @@ module.exports = {
     I.waitForVisible(this.buttons.forceDeleteCheckbox, 10);
   },
 
-  fillLocationFields(locationObj) {
+  fillLocationFields(name, type, config, desc = '') {
     const {
-      name, description, endpoint, bucket_name, access_key, secret_key,
-    } = locationObj;
+      path, endpoint, bucket_name, access_key, secret_key,
+    } = config;
 
     I.fillField(this.fields.name, name);
-    if (description) I.fillField(this.fields.description, description);
+    I.fillField(this.fields.description, desc);
 
-    I.fillField(this.fields.endpoint, endpoint);
-    I.fillField(this.fields.bucket, bucket_name);
-    I.fillField(this.fields.accessKey, access_key);
-    I.fillField(this.fields.secretKey, secret_key);
+    if (type === locationsAPI.storageType.s3) {
+      I.fillField(this.fields.endpoint, endpoint);
+      I.fillField(this.fields.bucket, bucket_name);
+      I.fillField(this.fields.accessKey, access_key);
+      I.fillField(this.fields.secretKey, secret_key);
+    } else {
+      I.click(this.buttons.typeSelect(this.locationType.client));
+      I.fillField(this.fields.path, path);
+    }
   },
 
-  verifyLocationFields(locationObj) {
+  verifyLocationFields(name, type, config, description = '') {
     const {
-      name, description = '', endpoint, bucket_name, access_key, secret_key,
-    } = locationObj;
+      path, endpoint, bucket_name, access_key, secret_key,
+    } = config;
 
     I.waitForVisible(this.fields.name, 30);
     I.seeInField(this.fields.name, name);

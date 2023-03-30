@@ -1,26 +1,25 @@
 const { I } = inject();
 const { storageLocationConnection } = require('../testData');
 
+const storageType = {
+  s3: 's3_config',
+  localClient: 'filesystem_config',
+};
+
+const localStorageDefaultConfig = {
+  path: '/tmp/backup_data/',
+};
+
 module.exports = {
-  async createStorageLocation(locationObj) {
-    const {
-      name,
-      description = '',
-      type = 's3_config',
-      endpoint = storageLocationConnection.endpoint,
-      access_key = storageLocationConnection.access_key,
-      secret_key = storageLocationConnection.secret_key,
-      bucket_name = storageLocationConnection.bucket_name,
-    } = locationObj;
+  storageType,
+  localStorageDefaultConfig,
+  storageLocationConnection,
+
+  async createStorageLocation(name, type, config, description = '') {
     const body = {
       name,
       description,
-      [type]: {
-        endpoint,
-        access_key,
-        secret_key,
-        bucket_name,
-      },
+      [type]: config,
     };
 
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
