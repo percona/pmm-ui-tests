@@ -127,7 +127,7 @@ Scenario(
 );
 
 Data(s3Errors).Scenario(
-  'PMM-T708 Verify errors related to s3 storage location @backup @bm-locations',
+  'PMM-T708 Verify errors related to s3 storage location @backup @bm-locations ',
   async ({
     I, locationsPage, current,
   }) => {
