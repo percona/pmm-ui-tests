@@ -186,7 +186,7 @@ jobs:
           sleep 30
           sudo pmm-admin list
         shell: bash
-      
+
       - name: Enable Repository.
         run: |
             docker exec pmm-integration-server bash -c "echo exclude=mirror.es.its.nyu.edu | tee -a /etc/yum/pluginconf.d/fastestmirror.conf"
