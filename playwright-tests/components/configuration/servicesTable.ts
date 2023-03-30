@@ -23,7 +23,7 @@ export default class ServicesTable extends Table {
     monitoring: (serviceName: string) => super.getTableElements().rowByText(serviceName).locator('td').nth(4).locator('//a'),
     address: (serviceName: string) => super.getTableElements().rowByText(serviceName).locator('td').nth(5),
     port: (serviceName: string) => super.getTableElements().rowByText(serviceName).locator('td').nth(6),
-    serviceStatuses: super.getTableElements().row.locator('//td[4]'),
+    serviceStatuses: super.getTableElements().row.locator('//td[5]'),
     agentStatus: this.page.locator('//span[@data-testid="details-row-content"]//div[contains(@data-testid, "status-badge")]'),
   };
 
