@@ -27,6 +27,7 @@ export class ServicesPage extends InventoryPage {
   buttons = {
     ...super.getInventoryButtons(),
     addService: this.page.locator('//span[text()="Add Service"]//ancestor::button'),
+    goBackToServices: this.page.getByText('Go back to services'),
   };
 
   messages = {
