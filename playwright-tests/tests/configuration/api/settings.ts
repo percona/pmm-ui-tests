@@ -20,6 +20,7 @@ export const settings = {
    */
   async getSettingsProperty(name: SettingProperty) {
     const responseBody = await (await apiHelper.post(PATH_GET, {})).json();
+    console.log(JSON.stringify(responseBody));
     return Object.hasOwn(responseBody, name) ? responseBody[name] : undefined;
   },
 
