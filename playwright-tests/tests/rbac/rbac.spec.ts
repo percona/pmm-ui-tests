@@ -1,11 +1,11 @@
 import { expect, test } from '@playwright/test';
-import apiHelper from '@api/apiHelper';
+import apiHelper from "@api/helpers/apiHelper";
 import HomeDashboard from '@tests/pages/HomeDashboard.page';
 import grafanaHelper from '@tests/helpers/GrafanaHelper';
-import { RbacPage } from '@tests/pages/configuration/Rbac.page';
-import { CreateRolePage } from '@tests/pages/configuration/CreateRole.page';
+import { RbacPage } from '@tests/tests/configuration/pages/Rbac.page';
+import { CreateRolePage } from '@tests/tests/configuration/pages/CreateRole.page';
 import { NewUserPage } from '@tests/pages/serverAdmin/NewUser.page';
-import { UsersConfigurationPage } from '@tests/pages/configuration/UsersConfiguration.page';
+import { UsersConfigurationPage } from '@tests/tests/configuration/pages/UsersConfiguration.page';
 import { MySqlDashboard } from '@tests/pages/dashboards/mysql/MySqlDashboard.page';
 import NodesOverviewDashboard from '@tests/pages/dashboards/nodes/NodesOverviewDashboard.page';
 import Duration from '@tests/helpers/Duration';
@@ -96,6 +96,13 @@ test.describe('Spec file for Access Control (RBAC)', async () => {
         await rbacPage.rbacTable.elements.setDefault.click();
         await expect(rbacPage.rbacTable.elements.defaultRow).toContainText(roleNameCreate);
         await expect(rbacPage.rbacTable.elements.rowByText(rbacPage.rbacTable.labels.fullAccess)).not.toContainText('Default');
+      });
+
+      await test.step('4. Assign default role back to Full Access.', async () => {
+        await rbacPage.rbacTable.elements.rowOptions(rbacPage.rbacTable.labels.fullAccess).click();
+        await rbacPage.rbacTable.elements.setDefault.click();
+        await expect(rbacPage.rbacTable.elements.defaultRow).toContainText(rbacPage.rbacTable.labels.fullAccess);
+
       });
     } else {
       test.info().annotations.push({
@@ -191,7 +198,10 @@ test.describe('Spec file for Access Control (RBAC)', async () => {
         await page.goto(rbacPage.url);
         await rbacPage.rbacTable.elements.rowOptions(roleName).click();
         await rbacPage.rbacTable.elements.delete.click();
-        await expect(rbacPage.rbacTable.elements.roleAssignedDialog).toContainText(
+        await expect(rbacPage.rbacTable.elements.confirmDeleteRoleHeader).toContainText(
+          rbacPage.rbacTable.messages.deleteRoleHeader(roleName),
+        );
+        await expect(rbacPage.rbacTable.elements.confirmDeleteRoleBody).toContainText(
           rbacPage.rbacTable.messages.userAssigned(roleName),
         );
         await rbacPage.rbacTable.buttons.closeDialog.click();
@@ -228,19 +238,12 @@ test.describe('Spec file for Access Control (RBAC)', async () => {
       const newUserPage = new NewUserPage(page);
       const usersConfigurationPage = new UsersConfigurationPage(page);
 
-      const newRoleName = `Role Name Only MySql Access - Replace ${Date.now()}`;
-      const newUserRoleDelete = { username: 'testUserRBAC_RoleDelete', email: 'testUserRBAC_RoleDelete@localhost', name: 'Test User Role Delete', password: 'password' };
-
+      const newRoleName = `Replace Role Test Role ${Date.now()}`;
+      const newUserRoleDelete = { username: 'replaceRoleTestUser', email: 'replaceRoleTestUser@localhost', name: 'Replace Role Test User', password: 'password' };
       await test.step(
         '1. Navigate to the access role page delete old roles then create role MySQL with label agent_type and value mysql_exporter',
         async () => {
           await page.goto(rbacPage.url);
-          await rbacPage.rbacTable.elements.rowOptions('Full access').click();
-          await rbacPage.rbacTable.elements.setDefault.click();
-          await rbacPage.rbacTable.elements.rowOptions(roleNameCreate).click();
-          await rbacPage.rbacTable.elements.delete.click();
-          await rbacPage.rbacTable.buttons.confirmAndDeleteRole.click();
-          await rbacPage.toast.checkToastMessageContains(rbacPage.rbacTable.messages.roleDeleted(roleNameCreate), { variant: 'success' });
           await rbacPage.buttons.create.click();
           await createRolePage.createNewRole({ roleName: newRoleName, roleDescription, label: 'agent_type', value: 'mysqld_exporter' });
           await rbacPage.rbacTable.verifyRowData(newRoleName, roleDescription, 'agent_type', '=', 'mysqld_exporter');
@@ -260,7 +263,10 @@ test.describe('Spec file for Access Control (RBAC)', async () => {
         await page.goto(rbacPage.url);
         await rbacPage.rbacTable.elements.rowOptions(newRoleName).click();
         await rbacPage.rbacTable.elements.delete.click();
-        await expect(rbacPage.rbacTable.elements.roleAssignedDialog).toContainText(
+        await expect(rbacPage.rbacTable.elements.confirmDeleteRoleHeader).toContainText(
+          rbacPage.rbacTable.messages.deleteRoleHeader(newRoleName),
+        );
+        await expect(rbacPage.rbacTable.elements.confirmDeleteRoleBody).toContainText(
           rbacPage.rbacTable.messages.userAssigned(newRoleName),
         );
         await expect(rbacPage.rbacTable.elements.roleAssignedDialogRoleSelect).toHaveText(rbacPage.rbacTable.labels.fullAccess);
@@ -275,6 +281,75 @@ test.describe('Spec file for Access Control (RBAC)', async () => {
       });
     }
   });
+
+  test('PMM-T1668 Verify removing Access role for deleted user. @rbac @rbac-post-upgrade', async ({ page }) => {
+    test.info().annotations.push({
+      type: 'Also Covers',
+      description: 'PMM-T1601 Verify Grafana Does not crash when filtering users from the admin page.',
+    });
+    if (pmmVersion >= 36) {
+      const rbacPage = new RbacPage(page);
+      const createRolePage = new CreateRolePage(page);
+      const newUserPage = new NewUserPage(page);
+      const usersConfigurationPage = new UsersConfigurationPage(page);
+      const deleteUser = {
+        username: `userRBACDelete_${Date.now()}`, email: `userRBACDelete@localhost_${Date.now()}`, name: 'Delete User', password: 'password'
+      };
+      const deleteUserRole = `Delete Role PgSql Access - ${Date.now()
+        } `;
+
+      await test.step(
+        '1. Navigate to the access role page then create role PgSql with label agent_type and value postgres_exporter',
+        async () => {
+          await page.goto(rbacPage.url);
+          await rbacPage.buttons.create.click();
+          await createRolePage.createNewRole({ roleName: deleteUserRole, roleDescription, label: 'agent_type', value: 'postgres_exporter' });
+          await rbacPage.rbacTable.verifyRowData(deleteUserRole, roleDescription, 'agent_type', '=', 'postgres_exporter');
+        },
+      );
+
+      await test.step(`2. Create new user: "${deleteUser.email}" and assign new role: "${deleteUserRole}" to the user.`, async () => {
+        await page.goto(newUserPage.url);
+        await newUserPage.createUser(deleteUser.name, deleteUser.email, deleteUser.username, deleteUser.password);
+
+        await page.goto(usersConfigurationPage.url);
+        await usersConfigurationPage.usersTable.fields.accessRole(deleteUser.name).click();
+        await usersConfigurationPage.optionMenu.selectOption(deleteUserRole);
+      });
+
+      await test.step('3. Search for non existing user, and verify page does not crash.', async () => {
+        await usersConfigurationPage.fields.searchUsers.type('NonExistingUser');
+        await usersConfigurationPage.buttons.deleteUser(deleteUser.email).waitFor({ state: 'hidden' });
+        await expect(usersConfigurationPage.elements.usersTable).toBeVisible();
+        await usersConfigurationPage.fields.searchUsers.clear();
+      });
+
+      await test.step(`3. Delete user assigned to the role: ${deleteUserRole} `, async () => {
+        await usersConfigurationPage.deleteUser(deleteUser.email);
+        await usersConfigurationPage.verifyUserNotExists(deleteUser.email);
+      });
+
+      await test.step(`4. Delete user role: ${deleteUserRole}.`, async () => {
+        await page.goto(rbacPage.url);
+        await rbacPage.rbacTable.elements.rowOptions(deleteUserRole).click();
+        await rbacPage.rbacTable.elements.delete.click();
+        await expect(rbacPage.rbacTable.elements.confirmDeleteRoleHeader).toContainText(
+          rbacPage.rbacTable.messages.deleteRoleHeader(deleteUserRole),
+        );
+        await expect(rbacPage.rbacTable.elements.confirmDeleteRoleBody).toContainText(
+          rbacPage.rbacTable.messages.deleteRoleBody,
+        );
+        await rbacPage.rbacTable.buttons.confirmAndDeleteRole.click();
+        await rbacPage.toast.checkToastMessageContains(rbacPage.rbacTable.messages.roleDeleted(deleteUserRole), { variant: 'success' });
+      });
+
+    } else {
+      test.info().annotations.push({
+        type: 'Old Version ',
+        description: 'This test is for PMM version 2.35.0 and higher',
+      });
+    }
+  })
 
   test('PMM-T1629 Verify re-enabling of the Access Control @rbac @rbac-post-upgrade', async ({ page }) => {
     if (pmmVersion > 34) {
