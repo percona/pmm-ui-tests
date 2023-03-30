@@ -18,11 +18,11 @@ export default class ServicesTable extends Table {
 
   elements = {
     ...super.getTableElements(),
-    serviceName: (serviceName: string) => super.getTableElements().rowByText(serviceName).locator('td').nth(1),
-    nodeName: (serviceName: string) => super.getTableElements().rowByText(serviceName).locator('td').nth(2),
-    monitoring: (serviceName: string) => super.getTableElements().rowByText(serviceName).locator('td').nth(3).locator('//a'),
-    address: (serviceName: string) => super.getTableElements().rowByText(serviceName).locator('td').nth(4),
-    port: (serviceName: string) => super.getTableElements().rowByText(serviceName).locator('td').nth(5),
+    serviceName: (serviceName: string) => super.getTableElements().rowByText(serviceName).locator('td').nth(2),
+    nodeName: (serviceName: string) => super.getTableElements().rowByText(serviceName).locator('td').nth(3),
+    monitoring: (serviceName: string) => super.getTableElements().rowByText(serviceName).locator('td').nth(4).locator('//a'),
+    address: (serviceName: string) => super.getTableElements().rowByText(serviceName).locator('td').nth(5),
+    port: (serviceName: string) => super.getTableElements().rowByText(serviceName).locator('td').nth(6),
     serviceStatuses: super.getTableElements().row.locator('//td[4]'),
     agentStatus: this.page.locator('//span[@data-testid="details-row-content"]//div[contains(@data-testid, "status-badge")]'),
   };
