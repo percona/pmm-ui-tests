@@ -38,12 +38,14 @@ export default class NodesTable extends Table {
     showRowDetails: (nodeName: string) => super.getTableElements().rowByText(nodeName).getByTestId('show-row-details'),
     hideRowDetails: (nodeName: string) => super.getTableElements().rowByText(nodeName).getByTestId('hide-row-details'),
     submit: this.page.locator('//button[@type="submit"]'),
+    force: this.page.locator('//input[@id="input-force-id"]'),
   };
 
   messages = {
     ...super.getTableMessages(),
     confirmNodeDeleteHeader: (numberNodes: number = 1) => `Are you sure that you want to permanently delete ${numberNodes} nodes`,
     hasAgents: (nodeId?: string) => `Node with ID "${nodeId}" has agents.`,
+    nodesSuccessfullyDeleted: (number: number) => `${number} of ${number} nodes successfully deleted`
   };
 
   links = {

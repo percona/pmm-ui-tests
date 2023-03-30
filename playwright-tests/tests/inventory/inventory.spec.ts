@@ -3,6 +3,7 @@ import apiHelper from '@tests/api/apiHelper';
 import { NodeDetails } from '@tests/components/configuration/nodesTable';
 import { ServiceDetails } from '@tests/components/configuration/servicesTable';
 import { pmmClientCommands, pmmServerCommands } from '@tests/helpers/CommandLine';
+import Duration from '@tests/helpers/Duration';
 import grafanaHelper from '@tests/helpers/GrafanaHelper';
 import { MongoDBInstanceSummary } from '@tests/pages/dashboards/mongo/MongoDBInstanceSummary.page';
 import HomeDashboard from '@tests/pages/HomeDashboard.page';
@@ -120,6 +121,15 @@ test.describe('Spec file for PMM inventory tests.', async () => {
         await expect(nodesPage.nodesTable.elements.modalHeader).toHaveText(nodesPage.nodesTable.messages.confirmNodeDeleteHeader());
         await nodesPage.nodesTable.buttons.submit.click();
         await nodesPage.toast.checkToastMessage(nodesPage.nodesTable.messages.hasAgents(nodeDetails.nodeId).replace('\n', ''), { variant: 'error' });
+      });
+
+      await test.step('4. Force delete the node.', async () => {
+        await nodesPage.buttons.delete.click();
+        await nodesPage.nodesTable.buttons.force.check({ force: true });
+        await nodesPage.nodesTable.buttons.submit.click();
+        await nodesPage.toast.checkToastMessage(nodesPage.nodesTable.messages.nodesSuccessfullyDeleted(1), { variant: 'success', assertionTimeout: Duration.OneSecond });
+        await nodesPage.nodesTable.verifyTableDoesNotContain(nodeDetails.nodeId!);
+        await nodesPage.nodesTable.verifyTableDoesNotContain(nodeDetails.nodeName!);
       });
 
     } else {

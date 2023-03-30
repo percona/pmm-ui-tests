@@ -1,4 +1,4 @@
-import { Page } from '@playwright/test';
+import { expect, Page } from '@playwright/test';
 
 export default class Table {
   constructor(readonly page: Page) { }
@@ -48,6 +48,15 @@ export default class Table {
 
   protected getTableLinks() {
     return this.tableLinks;
+  }
+
+  verifyTableDoesNotContain = async (text: string) => {
+    try {
+      await this.tableElements.row.waitFor({ state: 'visible' });
+    } catch(e) {
+      // fails if multiple rows displayed
+    }
+    await expect(this.tableElements.body).not.toContainText(text);
   }
 
 }
