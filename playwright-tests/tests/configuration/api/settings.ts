@@ -10,19 +10,19 @@ export enum SettingProperty {
 
 export const settings = {
   /**
-   * Looks up a single Setting Property from returned.
+   * Looks up a single Settings Property from returned.
    *
    * Note that most of {@code false} properties are not returned.
    * So design test verifications accordingly via {@code undefined} check
    * or use getSettings() method to parse object manually for result
    *
-   * @param  name {@link SettingProperty}
+   * @param   name  {@link SettingProperty}
+   * @returns       if property found - property value; {@code undefined} otherwise
    */
   async getSettingsProperty(name: SettingProperty) {
     const responseBody = await (await apiHelper.post(PATH_GET, {})).json();
-
-    console.log(`json: ${JSON.stringify(responseBody)}`);
-    return Object.hasOwn(responseBody, name) ? responseBody[name] : undefined;
+    console.log(`Response:\n${JSON.stringify(responseBody)}`);
+    return Object.hasOwn(responseBody.settings, name) ? responseBody.settings[name] : undefined;
   },
 
   changeSettings: async (settingsData: Settings):Promise<APIResponse> => {
