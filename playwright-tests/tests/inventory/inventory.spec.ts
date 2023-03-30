@@ -182,6 +182,8 @@ test.describe('Spec file for PMM inventory tests.', async () => {
         await expect(servicesPage.servicesTable.elements.agentStatus).toHaveText('4/4 running');
         await servicesPage.servicesTable.elements.monitoring(localService.serviceName).click();
         await expect(servicesPage.elements.runningStatusAgent).toHaveCount(4);
+        const mongoExporterProccessId =await pmmClientCommands.getProcesId('mongodb_exporter');
+        console.log(`MongoDb Exporter Proccess id is: ${mongoExporterProccessId}`);
       });
     } else {
       test.info().annotations.push({
