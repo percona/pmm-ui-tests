@@ -13,6 +13,7 @@ import { ServicesPage } from '@tests/pages/inventory/Services.page';
 import { QAN } from '@tests/pages/QAN/QueryAnalytics.page';
 
 test.describe('Spec file for PMM inventory tests.', async () => {
+  test.describe.configure({ mode: 'serial' });
   const localService: ServiceDetails = {
     serviceName: 'mo-integration-',
     nodeName: '',
