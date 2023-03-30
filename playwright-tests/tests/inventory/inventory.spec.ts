@@ -142,6 +142,7 @@ test.describe('Spec file for PMM inventory tests.', async () => {
           '/usr/local/percona/pmm2/exporters/mongodb_exporter_error');
         await pmmClientCommands.killProccess(mongoExporterProccessId.stdout);
         await page.reload();
+        await servicesPage.servicesTable.elements.agentStatus.waitFor({ state: 'visible' });
         await expect(servicesPage.servicesTable.elements.agentStatus).toHaveText('3/4 running');
         await pmmClientCommands.moveFile(
           '/usr/local/percona/pmm2/exporters/vmagent',
@@ -149,6 +150,7 @@ test.describe('Spec file for PMM inventory tests.', async () => {
         const vmagentProccessId = await pmmClientCommands.getProcesId('vmagent');
         await pmmClientCommands.killProccess(vmagentProccessId.stdout);
         await page.reload();
+        await servicesPage.servicesTable.elements.agentStatus.waitFor({ state: 'visible' });
         await expect(servicesPage.servicesTable.elements.agentStatus).toHaveText('2/4 running');
       });
     } else {
