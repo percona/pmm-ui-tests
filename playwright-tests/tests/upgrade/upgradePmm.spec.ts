@@ -1,9 +1,9 @@
-import { test } from '@playwright/test';
-import apiHelper from '@api/apiHelper';
+import {expect, test} from '@playwright/test';
+import apiHelper from "@api/helpers/apiHelper";
 import grafanaHelper from '@helpers/GrafanaHelper';
 import HomeDashboard from '@pages/HomeDashboard.page';
 
-test.describe('Spec file for Upgrade PMM tests', async () => {
+test.describe('Common Upgrade PMM tests', async () => {
   test.describe.configure({ retries: 0 });
 
   test.beforeEach(async ({ page }) => {

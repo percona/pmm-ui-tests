@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test';
 import User from '@support/types/user.interface';
-import apiHelper from '@api/apiHelper';
+import apiHelper from '@api/helpers/apiHelper';
 import { fileHelper } from '@helpers/FileHelper';
 import { portalAPI } from '@api/portalApi';
 import { serviceNowAPI } from '@api/serviceNowApi';
