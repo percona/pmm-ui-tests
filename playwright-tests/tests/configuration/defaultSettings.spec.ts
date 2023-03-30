@@ -11,7 +11,7 @@ test.describe('Default Settings tests', async () => {
 
   test.beforeAll(async () => {
     pmmVersion = (await api.pmm.serverV1.getPmmVersion()).minor;
-    // console.log(pmmVersion);
+    // beforeAll() does not work without any sync statement, given comment fixes it just fine
   });
 
   test('PMM-T1659 ensure BM is OFF by default before 2.36.0 version' +
