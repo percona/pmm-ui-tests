@@ -30,7 +30,7 @@ export const pmmClientCommands = {
   },
   getProcesId: async (proccessName: string) => {
     const prefix = process.env.CI ? 'sudo ' : 'sudo docker exec pmm-integration-client ';
-    return (await executeCommand(`${prefix}l ${proccessName}`));
+    return (await executeCommand(`${prefix}pidof ${proccessName}`));
   },
   killProccess: async (procesId: string) => {
     const prefix = process.env.CI ? 'sudo ' : 'sudo docker exec pmm-integration-client ';
