@@ -14,6 +14,7 @@ export class ServicesPage extends InventoryPage {
   elements = {
     ...super.getInventoryElements(),
     runningStatusAgent: this.page.locator('//span[text()="Running"]'),
+    waitingStatusAgent: this.page.locator('//span[text()="Waiting"]'),
   };
 
   fields = {

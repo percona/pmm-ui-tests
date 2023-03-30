@@ -127,7 +127,7 @@ test.describe('Spec file for PMM inventory tests.', async () => {
       const servicesPage = new ServicesPage(page);
       const addServicePage = new AddServicePage(page);
 
-      await test.step('1. Go to services page and click "Add Service".', async () => {
+      await test.step('1. Navigate to the Inventory page and expand Mongo service".', async () => {
         await page.goto(servicesPage.url);
         await servicesPage.servicesTable.elements.rowByText(localService.serviceName).waitFor({ state: 'visible' })
         await servicesPage.servicesTable.verifyAllMonitoring('OK');
@@ -136,8 +136,10 @@ test.describe('Spec file for PMM inventory tests.', async () => {
         await servicesPage.servicesTable.elements.monitoring(localService.serviceName).click();
         await expect(servicesPage.elements.runningStatusAgent).toHaveCount(4);
         await servicesPage.buttons.goBackToServices.click();
+      });
+
+      await test.step('2. Kill process mongodb_exporter and verify that Navigate to the Inventory page and expand Mongo service".', async () => {
         const mongoExporterProccessId = await pmmClientCommands.getProcesId('mongodb_exporter');
-        console.log(`MongoDb Exporter Proccess id is: ${mongoExporterProccessId.stdout}`);
         await pmmClientCommands.moveFile(
           '/usr/local/percona/pmm2/exporters/mongodb_exporter',
           '/usr/local/percona/pmm2/exporters/mongodb_exporter_error');
@@ -145,6 +147,12 @@ test.describe('Spec file for PMM inventory tests.', async () => {
         await page.reload();
         await servicesPage.servicesTable.buttons.showRowDetails(localService.serviceName).click();
         await expect(servicesPage.servicesTable.elements.agentStatus).toHaveText('3/4 running');
+        await servicesPage.servicesTable.elements.monitoring(localService.serviceName).click();
+        await expect(servicesPage.elements.waitingStatusAgent).toHaveCount(1);
+        await servicesPage.buttons.goBackToServices.click();
+      });
+
+      await test.step('2. Kill process mongodb_exporter and verify that Navigate to the Inventory page and expand Mongo service".', async () => {
         await pmmClientCommands.moveFile(
           '/usr/local/percona/pmm2/exporters/vmagent',
           '/usr/local/percona/pmm2/exporters/vmagent_error');
@@ -153,6 +161,9 @@ test.describe('Spec file for PMM inventory tests.', async () => {
         await page.reload();
         await servicesPage.servicesTable.buttons.showRowDetails(localService.serviceName).click();
         await expect(servicesPage.servicesTable.elements.agentStatus).toHaveText('2/4 running');
+        await servicesPage.servicesTable.elements.monitoring(localService.serviceName).click();
+        await expect(servicesPage.elements.waitingStatusAgent).toHaveCount(2);
+        await servicesPage.buttons.goBackToServices.click();
       });
     } else {
       test.info().annotations.push({
@@ -181,8 +192,6 @@ test.describe('Spec file for PMM inventory tests.', async () => {
         const nodeId = await pmmClientCommands.getNodeId();
         nodeDetails = await pmmServerCommands.getNodeDetails(nodeId);
         nodeDetails.nodeId = nodeId;
-        console.log('node Details Are:');
-        console.log(nodeDetails)
         await nodesPage.nodesTable.verifyNode(nodeDetails)
       });
 
