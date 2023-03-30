@@ -32,6 +32,8 @@ module.exports = {
   },
 
   async getSelectedCountPerPage() {
+    I.waitForVisible(this.elements.rowsPerPageDropdown);
+
     return parseInt(await I.grabTextFrom(this.elements.rowsPerPageDropdown), 10);
   },
 
@@ -68,6 +70,8 @@ module.exports = {
   },
 
   async getLastPageNumber() {
+    I.waitForVisible(this.elements.pageNumberButtonLast, 30);
+
     return await I.grabTextFrom(this.elements.pageNumberButtonLast);
   },
 

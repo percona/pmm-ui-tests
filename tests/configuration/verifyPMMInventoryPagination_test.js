@@ -32,7 +32,10 @@ subPages.add(['nodes']);
 Data(subPages).Scenario(
   '@PMM-T1346 - Verify Inventory page has pagination on Services tab @inventory',
   async ({ I, pmmInventoryPage, current }) => {
-    I.click(pmmInventoryPage.fields[`${current.name}Link`]);
+    const subPageLocator = pmmInventoryPage.fields[`${current.name}Link`];
+
+    I.waitForClickable(subPageLocator, 30);
+    I.click(subPageLocator);
     await pmmInventoryPage.pagination.verifyPaginationFunctionality();
   },
 );
@@ -42,14 +45,23 @@ Data(subPages).Scenario(
   async ({
     I, pmmInventoryPage, current,
   }) => {
-    I.click(pmmInventoryPage.fields[`${current.name}Link`]);
+    const subPageLocator = pmmInventoryPage.fields[`${current.name}Link`];
+
+    I.waitForClickable(subPageLocator, 30);
+    I.click(subPageLocator);
+    I.waitForClickable(pmmInventoryPage.fields.slectAllCheckbox);
     I.click(pmmInventoryPage.fields.selectAllCheckbox);
+    I.waitForVisible(pmmInventoryPage.fields.selectedCheckbox);
     let selectedCheckboxNumber = await I.grabNumberOfVisibleElements(pmmInventoryPage.fields.selectedCheckbox);
 
+    I.waitForClickable(pmmInventoryPage.pagination.elements.nextPageButton);
     I.click(pmmInventoryPage.pagination.elements.nextPageButton);
+    I.waitForClickable(pmmInventoryPage.fields.selectRowCheckbox);
     I.click(pmmInventoryPage.fields.selectRowCheckbox);
+    I.waitForVisible(pmmInventoryPage.fields.selectedCheckbox);
     selectedCheckboxNumber += await I.grabNumberOfVisibleElements(pmmInventoryPage.fields.selectedCheckbox);
 
+    I.waitForClickable(pmmInventoryPage.fields.deleteButton);
     I.click(pmmInventoryPage.fields.deleteButton);
     I.seeTextEquals(`Are you sure that you want to permanently delete ${selectedCheckboxNumber} ${current.name}?`, pmmInventoryPage.fields.removalDialogMessage);
   },
@@ -60,10 +72,16 @@ Data(subPages).Scenario(
   async ({
     I, pmmInventoryPage, current,
   }) => {
-    I.click(pmmInventoryPage.fields[`${current.name}Link`]);
-    I.click(locate(pmmInventoryPage.fields.selectAllCheckbox));
-    I.seeNumberOfElements(pmmInventoryPage.fields.selectedCheckbox, await pmmInventoryPage.pagination.getSelectedCountPerPage());
+    const subPageLocator = pmmInventoryPage.fields[`${current.name}Link`];
+
+    I.waitForClickable(subPageLocator, 30);
+    I.click(subPageLocator);
+    I.waitForClickable(pmmInventoryPage.fields.selectAllCheckbox);
+    I.click(pmmInventoryPage.fields.selectAllCheckbox);
+    I.waitNumberOfVisibleElements(pmmInventoryPage.fields.selectedCheckbox,
+      await pmmInventoryPage.pagination.getSelectedCountPerPage());
+    I.waitForClickable(pmmInventoryPage.pagination.elements.nextPageButton);
     I.click(pmmInventoryPage.pagination.elements.nextPageButton);
-    I.seeNumberOfElements(pmmInventoryPage.fields.selectedCheckbox, 0);
+    I.waitNumberOfVisibleElements(pmmInventoryPage.fields.selectedCheckbox, 0);
   },
 );
