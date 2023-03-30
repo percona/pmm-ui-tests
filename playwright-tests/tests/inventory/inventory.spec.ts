@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import apiHelper from '@tests/api/apiHelper';
+import apiHelper from '@tests/api/helpers/apiHelper';
 import { NodeDetails } from '@tests/components/configuration/nodesTable';
 import { ServiceDetails } from '@tests/components/configuration/servicesTable';
 import { pmmClientCommands, pmmServerCommands } from '@tests/helpers/CommandLine';
