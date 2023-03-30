@@ -135,7 +135,11 @@ test.describe('Spec file for PMM inventory tests.', async () => {
         await servicesPage.servicesTable.elements.monitoring(localService.serviceName).click();
         await expect(servicesPage.elements.runningStatusAgent).toHaveCount(4);
         const mongoExporterProccessId = await pmmClientCommands.getProcesId('mongodb_exporter');
-        console.log(`MongoDb Exporter Proccess id is: ${mongoExporterProccessId}`);
+        console.log(`MongoDb Exporter Proccess id is: ${mongoExporterProccessId.stdout}`);
+        await pmmClientCommands.moveFile(
+          '/usr/local/percona/pmm2/exporters/mongodb_exporter',
+          '/usr/local/percona/pmm2/exporters/mongodb_exporter_error');
+        await pmmClientCommands.killProccess(mongoExporterProccessId.stdout);
       });
     } else {
       test.info().annotations.push({
