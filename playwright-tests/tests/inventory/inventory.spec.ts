@@ -2,7 +2,7 @@ import { expect, test } from '@playwright/test';
 import apiHelper from '@tests/api/helpers/apiHelper';
 import { NodeDetails } from '@tests/components/configuration/nodesTable';
 import { ServiceDetails } from '@tests/components/configuration/servicesTable';
-import { pmmClientCommands, pmmServerCommands } from '@tests/helpers/CommandLine';
+import { pmmClientCommands, pmmServerCommands, systemCommands } from '@tests/helpers/CommandLine';
 import Duration from '@tests/helpers/Duration';
 import grafanaHelper from '@tests/helpers/GrafanaHelper';
 import { MongoDBInstanceSummary } from '@tests/pages/dashboards/mongo/MongoDBInstanceSummary.page';
@@ -139,11 +139,11 @@ test.describe('Spec file for PMM inventory tests.', async () => {
       });
 
       await test.step('2. Kill process mongodb_exporter and verify that Navigate to the Inventory page and expand Mongo service".', async () => {
-        const mongoExporterProccessId = await pmmClientCommands.getProcesId('mongodb_exporter');
+        const mongoExporterProccessId = await pmmClientCommands.getProcessId('mongodb_exporter');
         await pmmClientCommands.moveFile(
           '/usr/local/percona/pmm2/exporters/mongodb_exporter',
           '/usr/local/percona/pmm2/exporters/mongodb_exporter_error');
-        await pmmClientCommands.killProccess(mongoExporterProccessId.stdout);
+        await pmmClientCommands.killProcess(mongoExporterProccessId.stdout);
         await page.reload();
         await servicesPage.servicesTable.buttons.showRowDetails(localService.serviceName).click();
         await expect(servicesPage.servicesTable.elements.agentStatus).toHaveText('3/4 running');
@@ -156,8 +156,8 @@ test.describe('Spec file for PMM inventory tests.', async () => {
         await pmmClientCommands.moveFile(
           '/usr/local/percona/pmm2/exporters/vmagent',
           '/usr/local/percona/pmm2/exporters/vmagent_error');
-        const vmagentProccessId = await pmmClientCommands.getProcesId('vmagent');
-        await pmmClientCommands.killProccess(vmagentProccessId.stdout);
+        const vmagentProccessId = await pmmClientCommands.getProcessId('vmagent');
+        await pmmClientCommands.killProcess(vmagentProccessId.stdout);
         await page.reload();
         await servicesPage.servicesTable.buttons.showRowDetails(localService.serviceName).click();
         await expect(servicesPage.servicesTable.elements.agentStatus).toHaveText('2/4 running');
@@ -208,9 +208,20 @@ test.describe('Spec file for PMM inventory tests.', async () => {
         await nodesPage.buttons.delete.click();
         await nodesPage.nodesTable.buttons.force.check({ force: true });
         await nodesPage.nodesTable.buttons.submit.click();
-        await nodesPage.toast.checkToastMessage(nodesPage.nodesTable.messages.nodesSuccessfullyDeleted(1), { variant: 'success', assertionTimeout: Duration.OneSecond });
+        await nodesPage.toast.checkToastMessage(
+          nodesPage.nodesTable.messages.nodesSuccessfullyDeleted(1),
+          { variant: 'success', assertionTimeout: Duration.OneSecond }
+        );
         await nodesPage.nodesTable.verifyTableDoesNotContain(nodeDetails.nodeId!);
         await nodesPage.nodesTable.verifyTableDoesNotContain(nodeDetails.nodeName!);
+      });
+
+      await test.step('5. Return env to clean state.', async () => {
+        const containers = await systemCommands.getRunningContainerNames();
+        await pmmClientCommands.setupAgent();
+        await pmmClientCommands.startAgent();
+        await page.waitForTimeout(5000);
+        await pmmClientCommands.addMongoDb(containers.find((container) => container.includes('mo-integration')) || '');
       });
 
     } else {
