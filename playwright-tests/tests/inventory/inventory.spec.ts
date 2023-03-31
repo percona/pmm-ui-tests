@@ -13,7 +13,6 @@ import { ServicesPage } from '@tests/pages/inventory/Services.page';
 import { QAN } from '@tests/pages/QAN/QueryAnalytics.page';
 
 test.describe('Spec file for PMM inventory tests.', async () => {
-  test.describe.configure({ mode: 'serial' });
   const localService: ServiceDetails = {
     serviceName: 'mo-integration-',
     nodeName: '',
@@ -61,7 +60,6 @@ test.describe('Spec file for PMM inventory tests.', async () => {
 
       await test.step('2. Verify local MongoDB service.', async () => {
         await servicesPage.servicesTable.verifyService(localService);
-
       });
 
       await test.step('3. Verify kebab menu for local MongoDB service.', async () => {
@@ -221,7 +219,8 @@ test.describe('Spec file for PMM inventory tests.', async () => {
         await pmmClientCommands.setupAgent();
         await pmmClientCommands.startAgent();
         await page.waitForTimeout(5000);
-        await pmmClientCommands.addMongoDb(containers.find((container) => container.includes('mo-integration')) || '');
+        const mongoAddress = process.env.CI ? '127.0.0.1' : containers.find((container) => container.includes('mo-integration'));
+        await pmmClientCommands.addMongoDb(mongoAddress || '');
       });
 
     } else {
