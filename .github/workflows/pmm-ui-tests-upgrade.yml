@@ -232,7 +232,7 @@ jobs:
         working-directory: pmm-ui-tests
         run: |
           echo "Upgrade way fork will be here soon..."
-#          docker exec pmm-integration-server bash -c "echo exclude=mirror.es.its.nyu.edu | tee -a /etc/yum/pluginconf.d/fastestmirror.conf"
+          # docker exec pmm-integration-server bash -c "echo exclude=mirror.es.its.nyu.edu | tee -a /etc/yum/pluginconf.d/fastestmirror.conf"
           docker exec pmm-integration-server yum update -y percona-release || ture
           if [[ "${{ inputs.repository }}" != "release" ]]; then
             docker exec pmm-integration-server sed -i'' -e 's^/release/^/${{ steps.target_repo.outputs.result }}/^' /etc/yum.repos.d/pmm2-server.repo
