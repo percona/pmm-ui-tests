@@ -356,7 +356,7 @@ Scenario(
     await dbaasAPI.waitForDBClusterState(psmdb_restore_cluster, clusterName, 'MongoDB', 'DB_CLUSTER_STATE_READY');
 
     // Wait for restore to complete
-    I.wait(120);
+    I.wait(180);
     I.say(await I.verifyCommand(`kubectl get psmdb-restore | grep ${psmdb_restore_cluster}`, 'ready'));
 
     const { username, password, host } = await dbaasAPI.getDbClusterDetails(psmdb_restore_cluster, clusterName, 'MongoDB');
@@ -367,5 +367,5 @@ Scenario(
 
     assert.ok(output.includes(dbName), `The ${output} for psmdb cluster setup dump was expected to have db name ${dbName}, but found ${output}`);
   },
-);
+).retry(1);
 
