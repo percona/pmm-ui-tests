@@ -28,17 +28,11 @@ module.exports = {
     }
   },
 
-  async createClusterBasicOptions(k8sClusterName, dbClusterName, dbType, dbVersion) {
+  async createClusterBasicOptions(dbClusterName, dbType, dbVersion) {
     I.waitForElement(dbaasPage.tabs.dbClusterTab.dbClusterAddButtonTop, 30);
     I.waitForEnabled(dbaasPage.tabs.dbClusterTab.dbClusterAddButtonTop, 10);
     I.click(dbaasPage.tabs.dbClusterTab.dbClusterAddButtonTop);
     I.waitForElement(dbaasPage.tabs.dbClusterTab.basicOptions.fields.clusterNameField, 30);
-    // I.click(dbaasPage.tabs.dbClusterTab.basicOptions.fields.kubernetesClusterDropDown);
-    // I.waitForElement(
-    //   dbaasPage.tabs.dbClusterTab.basicOptions.fields.kubernetesClusterDropDownSelect(k8sClusterName),
-    //   30,
-    // );
-    // I.click(dbaasPage.tabs.dbClusterTab.basicOptions.fields.kubernetesClusterDropDownSelect(k8sClusterName));
     I.click(dbaasPage.tabs.dbClusterTab.basicOptions.fields.dbClusterDatabaseTypeField);
     I.fillField(dbaasPage.tabs.dbClusterTab.basicOptions.fields.dbClusterDatabaseTypeInputField, dbType);
     I.waitForElement(
