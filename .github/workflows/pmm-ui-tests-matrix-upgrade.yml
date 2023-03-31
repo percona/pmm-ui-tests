@@ -45,7 +45,12 @@ jobs:
     name: Push repo versions
     runs-on: ubuntu-latest
     timeout-minutes: 1
+    outputs:
+      start_version: ${{ steps.set-matrix.outputs.matrix }}
+      finish_version: '2.XX.X'
     steps:
+      - id: set-matrix
+          run: echo "::set-output name=matrix::{\"include\":[{\"project\":\"foo\",\"config\":\"Debug\"},{\"project\":\"bar\",\"config\":\"Release\"}]}"
       - name: Get release latest version
         shell: bash
         run: |
@@ -73,7 +78,8 @@ jobs:
       pmm_qa_branch: ${{ inputs.pmm_qa_branch }}
       services_list: ''
       repository: ${{ inputs.repository }}
-      version_string_from: ${{ env.release_latest }}
+      version_string_from: ${{needs.get_versions.outputs.start_version}}
+      version_string_to: ${{needs.get_versions.outputs.finish_version}}
 
   rbac:
     name: RBAC
