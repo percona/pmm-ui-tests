@@ -103,7 +103,7 @@ on:
 
 jobs:
   tests:
-    name: 'UI way upgrade from "${{ inputs.version_string_from || inputs.pmm_server_start_version }}" to "${{ inputs.version_string_to || inputs.repository }}"'
+    name: 'UI way upgrade "${{ inputs.version_string_from || inputs.pmm_server_start_version }}" -> "${{ inputs.version_string_to || inputs.repository }}"'
     runs-on: ubuntu-latest
     timeout-minutes: 60
     env:
@@ -154,7 +154,6 @@ jobs:
       - name: Install  playwright
         working-directory: pmm-ui-tests
         run: |
-          echo "from ${{ inputs.version_string_from }} to ${{ inputs.version_string_to }}"
           npm install
           npx playwright install
 

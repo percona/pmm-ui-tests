@@ -41,23 +41,37 @@ on:
           - dev-latest
 
 jobs:
-  get_versions:
+  push_versions:
     name: Push repo versions
     runs-on: ubuntu-latest
     timeout-minutes: 1
     outputs:
-      start_version: ${{ steps.get-version.outputs.r_latest }}
-      finish_version: '2.XX.X'
+      output1: ${{ steps.step1.outputs.test }}
+      output2: ${{ steps.step2.outputs.test }}
+      start_version: ${{ steps.get-start.outputs.result }}
+      finish_version: ${{ steps.get-finish.outputs.result }}
     steps:
-      - name: Get release latest version
-        id: get-version
+      - id: step1
+        run: echo "test=hello" >> "$GITHUB_OUTPUT"
+
+      - id: step2
+        run: echo "test=world" >> "$GITHUB_OUTPUT"
+
+      - name: Get start version string
+        id: get-start
         shell: bash
         run: |
           latest=$(wget -q https://registry.hub.docker.com/v2/repositories/percona/pmm-server/tags -O - | jq -r .results[].name  | grep -v latest | sort -V | tail -n1 | awk -F. '{print $2}')
           if [[ "${{ inputs.repository }}" != "release" ]]; then
             echo "release_latest=$latest" >> $GITHUB_ENV
           fi
-          echo "::set-output name=r_latest::$latest"
+          echo "result=latest" >> "$GITHUB_OUTPUT"
+
+      - name: Get finish version string
+        id: get-finish
+        shell: bash
+        run: |
+          echo "result=2.XX.X" >> "$GITHUB_OUTPUT"
 
       - name: print version
         shell: bash
@@ -78,8 +92,8 @@ jobs:
       pmm_qa_branch: ${{ inputs.pmm_qa_branch }}
       services_list: ''
       repository: ${{ inputs.repository }}
-      version_string_from: '2.20.0'
-      version_string_to: '2.30.1'
+      version_string_from: ${{needs.push_versions.outputs.start_version}}
+      version_string_to: ${{needs.push_versions.outputs.finish_version}}
 
   rbac:
     name: RBAC
@@ -95,8 +109,8 @@ jobs:
       pmm_qa_branch: ${{ inputs.pmm_qa_branch }}
       services_list: '--addclient=ps,1 --addclient=pdpgsql,1'
       repository: ${{ inputs.repository }}
-      version_string_from: ${{needs.get_versions.outputs.start_version}}
-      version_string_to: ${{needs.get_versions.outputs.finish_version}}
+      version_string_from: ${{needs.push_versions.outputs.start_version}}
+      version_string_to: ${{needs.push_versions.outputs.finish_version}}
 
   portal:
     name: Portal
