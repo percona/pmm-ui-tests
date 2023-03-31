@@ -78,8 +78,8 @@ jobs:
       pmm_qa_branch: ${{ inputs.pmm_qa_branch }}
       services_list: ''
       repository: ${{ inputs.repository }}
-      version_string_from: ${{needs.get_versions.outputs.start_version}}
-      version_string_to: ${{needs.get_versions.outputs.finish_version}}
+      version_string_from: '2.20.0'
+      version_string_to: '2.30.1'
 
   rbac:
     name: RBAC
@@ -95,6 +95,8 @@ jobs:
       pmm_qa_branch: ${{ inputs.pmm_qa_branch }}
       services_list: '--addclient=ps,1 --addclient=pdpgsql,1'
       repository: ${{ inputs.repository }}
+      version_string_from: ${{needs.get_versions.outputs.start_version}}
+      version_string_to: ${{needs.get_versions.outputs.finish_version}}
 
   portal:
     name: Portal
