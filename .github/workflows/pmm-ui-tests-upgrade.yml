@@ -250,9 +250,9 @@ jobs:
           NODE_TLS_REJECT_UNAUTHORIZED: 0
 
       - name: 'Run tests before < PMM Client > upgrade'
-          working-directory: pmm-ui-tests
-          run: |
-            echo "Hook to inject tests: test are coming soon..."
+        working-directory: pmm-ui-tests
+        run: |
+          echo "Hook to inject tests: test are coming soon..."
 
       - name: 'Upgrade < PMM Client >'
         if: ${{ inputs.pmm_client_upgrade_version == '' }}
