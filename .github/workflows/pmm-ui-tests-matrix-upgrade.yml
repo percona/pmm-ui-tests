@@ -46,18 +46,20 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 1
     outputs:
-      start_version: ${{ steps.set-matrix.outputs.matrix }}
+      start_version: ${{ steps.get-version.outputs.r_latest }}
       finish_version: '2.XX.X'
     steps:
       - id: set-matrix
           run: echo "::set-output name=matrix::{\"include\":[{\"project\":\"foo\",\"config\":\"Debug\"},{\"project\":\"bar\",\"config\":\"Release\"}]}"
       - name: Get release latest version
+        id: get-version
         shell: bash
         run: |
           latest=$(wget -q https://registry.hub.docker.com/v2/repositories/percona/pmm-server/tags -O - | jq -r .results[].name  | grep -v latest | sort -V | tail -n1 | awk -F. '{print $2}')
           if [[ "${{ inputs.repository }}" != "release" ]]; then
             echo "release_latest=$latest" >> $GITHUB_ENV
           fi
+          echo "::set-output name=r_latest::$latest"
 
       - name: print version
         shell: bash
