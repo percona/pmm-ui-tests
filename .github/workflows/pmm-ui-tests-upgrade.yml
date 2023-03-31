@@ -96,11 +96,24 @@ on:
           - dev-latest
 
 jobs:
+  get_versions:
+    name: Get latest versions
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - name: Get release latest version
+        shell: bash
+        run: |
+          latest=$(wget -q https://registry.hub.docker.com/v2/repositories/percona/pmm-server/tags -O - | jq -r .results[].name  | grep -v latest | sort -V | tail -n1 | awk -F. '{print $2}')
+          echo "release_latest=$latest" >> $GITHUB_ENV
+
+      - name: print version
+        shell: bash
+        run: |
+          echo ${{ env.release_latest }}
+
   tests:
-    name: '${{ inputs.pre_upgrade_tests }} > ${{ inputs.post_upgrade_tests }}'
-            currentBuild.description = "Docker way upgrade from ${env.DOCKER_VERSION} to ${env.PMM_SERVER_LATEST}"
-          } else {
-            currentBuild.description = "UI way upgrade from ${env.DOCKER_VERSION} to ${env.PMM_SERVER_LATEST}"
+    name: 'UI way upgrade from ${{ inputs.pmm_server_start_version }} to ${{ inputs.repository }}'
     runs-on: ubuntu-latest
     timeout-minutes: 60
     env:
