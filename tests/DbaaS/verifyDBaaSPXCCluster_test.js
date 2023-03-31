@@ -472,9 +472,10 @@ Scenario.skip(
 
     I.amOnPage(dbaasPage.url);
     await dbaasActionsPage.createClusterBasicOptions(clusterName, pxc_backup_cluster, 'MySQL');
-    await dbaasActionsPage.enableBackup();
-    await dbaasActionsPage.selectLocation(location.name);
-    await dbaasActionsPage.selectSchedule();
+    await dbaasActionsPage.enableFeatureToggle(dbaasPage.tabs.dbClusterTab.backups.enableBackupsToggle,
+      dbaasPage.tabs.dbClusterTab.backups.backupInformationLabel);
+    await dbaasActionsPage.selectDropdownItem(dbaasPage.tabs.dbClusterTab.backups.locationSelect, location.name);
+    await dbaasActionsPage.selectDropdownItem(dbaasPage.tabs.dbClusterTab.backups.scheduledTimeSelect, 'Every minute');
     I.click(dbaasPage.tabs.dbClusterTab.createClusterButton);
     I.waitForText('Processing', 60, dbaasPage.tabs.dbClusterTab.fields.progressBarContent(pxc_backup_cluster));
     await dbaasAPI.waitForDBClusterState(pxc_backup_cluster, clusterName, 'MySQL', 'DB_CLUSTER_STATE_READY');
