@@ -49,8 +49,6 @@ jobs:
       start_version: ${{ steps.get-version.outputs.r_latest }}
       finish_version: '2.XX.X'
     steps:
-      - id: set-matrix
-          run: echo "::set-output name=matrix::{\"include\":[{\"project\":\"foo\",\"config\":\"Debug\"},{\"project\":\"bar\",\"config\":\"Release\"}]}"
       - name: Get release latest version
         id: get-version
         shell: bash
