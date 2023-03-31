@@ -74,9 +74,9 @@ on:
         default: 'UI way'
         type: choice
         options:
-          - UI way
-          - Docker way
-          - Side container
+          - 'UI way'
+          - 'Docker way'
+          - 'Side container'
       pmm_qa_branch:
         description: 'pmm-qa repository branch(for setup)'
         default: 'main'
@@ -91,9 +91,9 @@ on:
         default: 'dev-latest'
         type: choice
         options:
-          - release
-          - release candidate
-          - dev-latest
+          - 'release'
+          - 'release candidate'
+          - 'dev-latest'
 
 jobs:
   get_versions:
