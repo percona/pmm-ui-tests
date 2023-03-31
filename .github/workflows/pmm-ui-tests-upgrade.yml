@@ -232,11 +232,14 @@ jobs:
         working-directory: pmm-ui-tests
         run: |
           echo "Upgrade way fork will be here soon..."
-          docker exec pmm-integration-server bash -c "echo exclude=mirror.es.its.nyu.edu | tee -a /etc/yum/pluginconf.d/fastestmirror.conf"
-          docker exec pmm-integration-server yum update -y percona-release
-          docker exec pmm-integration-server sed -i'' -e 's^/release/^/${{ steps.target_repo.outputs.result }}/^' /etc/yum.repos.d/pmm2-server.repo
-          docker exec pmm-integration-server percona-release enable percona ${{ steps.target_repo.outputs.result }}
-          docker exec pmm-integration-server yum update -y
+#          docker exec pmm-integration-server bash -c "echo exclude=mirror.es.its.nyu.edu | tee -a /etc/yum/pluginconf.d/fastestmirror.conf"
+          docker exec pmm-integration-server yum update -y percona-release || ture
+          if [[ "${{ inputs.repository }}" != "release" ]]; then
+            docker exec pmm-integration-server sed -i'' -e 's^/release/^/${{ steps.target_repo.outputs.result }}/^' /etc/yum.repos.d/pmm2-server.repo
+            docker exec pmm-integration-server percona-release enable percona ${{ steps.target_repo.outputs.result }}
+          fi
+          docker exec pmm-integration-server yum clean all
+  
           npx playwright test --config="playwright-tests/playwright.config.ts" --grep="@pmm-upgrade"
         env:
           NODE_TLS_REJECT_UNAUTHORIZED: 0
