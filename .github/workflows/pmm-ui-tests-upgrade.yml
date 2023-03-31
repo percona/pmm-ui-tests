@@ -144,11 +144,6 @@ jobs:
           target_url: 'https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}'
           sha: ${{ env.SHA }}
 
-      - name: Install NodeJS v16
-        uses: actions/setup-node@v3
-        with:
-          node-version: 16.14.1
-
       - name: Checkout UI tests
         uses: actions/checkout@v3
         with:
@@ -159,6 +154,7 @@ jobs:
       - name: Install  playwright
         working-directory: pmm-ui-tests
         run: |
+          echo "from ${{ inputs.version_string_from }} to ${{ inputs.version_string_to }}"
           npm install
           npx playwright install
 
