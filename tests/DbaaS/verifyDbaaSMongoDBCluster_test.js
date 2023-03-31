@@ -306,9 +306,10 @@ Scenario(
 
     I.amOnPage(dbaasPage.url);
     await dbaasActionsPage.createClusterBasicOptions(clusterName, psmdb_backup_cluster, 'MongoDB');
-    await dbaasActionsPage.enableBackup();
-    await dbaasActionsPage.selectLocation(location.name);
-    await dbaasActionsPage.selectSchedule();
+    await dbaasActionsPage.enableFeatureToggle(dbaasPage.tabs.dbClusterTab.backups.enableBackupsToggle,
+      dbaasPage.tabs.dbClusterTab.backups.backupInformationLabel);
+    await dbaasActionsPage.selectDropdownItem(dbaasPage.tabs.dbClusterTab.backups.locationSelect, location.name);
+    await dbaasActionsPage.selectDropdownItem(dbaasPage.tabs.dbClusterTab.backups.scheduledTimeSelect, 'Every minute');
     I.click(dbaasPage.tabs.dbClusterTab.createClusterButton);
     I.waitForText('Processing', 60, dbaasPage.tabs.dbClusterTab.fields.progressBarContent(psmdb_backup_cluster));
     await dbaasAPI.waitForDBClusterState(psmdb_backup_cluster, clusterName, 'MongoDB', 'DB_CLUSTER_STATE_READY');
@@ -343,12 +344,11 @@ Scenario(
       `kubectl get psmdb-backup -l cluster=${psmdb_backup_cluster} | grep ready | awk '{print $4}' | head -n 1`
     );
 
-    console.log(artifactName);
-
     I.amOnPage(dbaasPage.url);
     await dbaasActionsPage.createClusterBasicOptions(clusterName, psmdb_restore_cluster, 'MongoDB');
-    await dbaasActionsPage.enableRestore();
-    await dbaasActionsPage.selectRestoreFrom(location.name);
+    await dbaasActionsPage.enableFeatureToggle(dbaasPage.tabs.dbClusterTab.restore.enableRestoreToggle,
+      dbaasPage.tabs.dbClusterTab.restore.restoreFromLabel);
+    await dbaasActionsPage.selectDropdownItem(dbaasPage.tabs.dbClusterTab.restore.restoreFromLocationSelect, location.name);
     await dbaasActionsPage.selectBackupArtifact(artifactName);
     await dbaasActionsPage.selectSecretsName(psmdb_backup_cluster);
     I.click(dbaasPage.tabs.dbClusterTab.createClusterButton);

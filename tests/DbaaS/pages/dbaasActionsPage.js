@@ -76,37 +76,17 @@ module.exports = {
     }
   },
 
-  async enableBackup() {
-    I.seeElement(dbaasPage.tabs.dbClusterTab.backups.enableBackupsToggle);
-    I.click(dbaasPage.tabs.dbClusterTab.backups.enableBackupsToggle);
-    I.waitForElement(dbaasPage.tabs.dbClusterTab.backups.backupInformationLabel, 10);
+  async enableFeatureToggle(toggleLocator, locatorToBeVisible) {
+    I.seeElement(toggleLocator);
+    I.click(toggleLocator);
+    I.waitForElement(locatorToBeVisible, 10);
   },
 
-  async selectLocation(locationName) {
-    I.seeElement(dbaasPage.tabs.dbClusterTab.backups.locationSelect);
-    I.click(dbaasPage.tabs.dbClusterTab.backups.locationSelect);
-    I.waitForElement(dbaasPage.common.selectOptionInDropdown(locationName));
-    I.click(dbaasPage.common.selectOptionInDropdown(locationName));
-  },
-
-  async selectSchedule(schedule = 'Every minute') {
-    I.seeElement(dbaasPage.tabs.dbClusterTab.backups.scheduledTimeSelect);
-    I.click(dbaasPage.tabs.dbClusterTab.backups.scheduledTimeSelect);
-    I.waitForElement(dbaasPage.common.selectOptionInDropdown(schedule));
-    I.click(dbaasPage.common.selectOptionInDropdown(schedule));
-  },
-
-  async enableRestore() {
-    I.seeElement(dbaasPage.tabs.dbClusterTab.restore.enableRestoreToggle);
-    I.click(dbaasPage.tabs.dbClusterTab.restore.enableRestoreToggle);
-    I.seeElement(dbaasPage.tabs.dbClusterTab.restore.restoreFromLabel);
-  },
-
-  async selectRestoreFrom(locationName) {
-    I.seeElement(dbaasPage.tabs.dbClusterTab.restore.restoreFromLocationSelect);
-    I.click(dbaasPage.tabs.dbClusterTab.restore.restoreFromLocationSelect);
-    I.waitForElement(dbaasPage.common.selectOptionInDropdown(locationName));
-    I.click(dbaasPage.common.selectOptionInDropdown(locationName));
+  async selectDropdownItem(dropdownLocator, itemToSelect) {
+    I.seeElement(dropdownLocator);
+    I.click(dropdownLocator);
+    I.waitForElement(dbaasPage.common.selectOptionInDropdown(itemToSelect));
+    I.click(dbaasPage.common.selectOptionInDropdown(itemToSelect));
   },
 
   async selectBackupArtifact(artifactName) {
