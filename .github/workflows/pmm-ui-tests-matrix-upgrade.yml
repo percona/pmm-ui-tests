@@ -46,17 +46,9 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 1
     outputs:
-      output1: ${{ steps.step1.outputs.test }}
-      output2: ${{ steps.step2.outputs.test }}
       start_version: ${{ steps.get-start.outputs.result }}
       finish_version: ${{ steps.get-finish.outputs.result }}
     steps:
-      - id: step1
-        run: echo "test=hello" >> "$GITHUB_OUTPUT"
-
-      - id: step2
-        run: echo "test=world" >> "$GITHUB_OUTPUT"
-
       - name: Get start version string
         id: get-start
         shell: bash
@@ -82,6 +74,7 @@ jobs:
     name: 'Configuration / Settings'
     uses: ./.github/workflows/pmm-ui-tests-upgrade.yml
     secrets: inherit
+    needs: push_versions
     with:
       pmm_ui_tests_branch: ${{ inputs.pmm_ui_tests_branch }}
       pre_upgrade_tests: '@config-pre-upgrade'
@@ -99,6 +92,7 @@ jobs:
     name: RBAC
     uses: ./.github/workflows/pmm-ui-tests-upgrade.yml
     secrets: inherit
+    needs: push_versions
     with:
       pmm_ui_tests_branch: ${{ inputs.pmm_ui_tests_branch }}
       pre_upgrade_tests: '@rbac-pre-upgrade'
