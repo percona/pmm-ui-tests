@@ -55,33 +55,18 @@ jobs:
         run: |
           echo ${{ env.release_latest }}
 
-  common:
-    name: Common tests
-    uses: ./.github/workflows/pmm-ui-tests-upgrade.yml
-    secrets: inherit
-    with:
-      pmm_ui_tests_branch: ${{ inputs.pmm_ui_tests_branch || 'main' }}
-      pre_upgrade_tests: '@pre-upgrade'
-      post_upgrade_tests: ''
-      pmm_server_start_version: ${{ inputs.pmm_server_start_version || 'latest' }}
-      pmm_client_start_version: ${{ inputs.pmm_client_start_version || 'pmm2-latest' }}
-      upgrade_type: ${{ inputs.upgrade_type }}
-      pmm_qa_branch: ${{ inputs.pmm_qa_branch || 'main' }}
-      services_list: ''
-      repository: ${{ inputs.repository }}
-
   configuration:
     name: 'Configuration / Settings'
     uses: ./.github/workflows/pmm-ui-tests-upgrade.yml
     secrets: inherit
     with:
-      pmm_ui_tests_branch: ${{ inputs.pmm_ui_tests_branch || 'main' }}
+      pmm_ui_tests_branch: ${{ inputs.pmm_ui_tests_branch }}
       pre_upgrade_tests: '@config-pmm-portal-upgrade'
       post_upgrade_tests: '@config-pmm-portal-upgrade'
-      pmm_server_start_version: ${{ inputs.pmm_server_start_version || 'latest' }}
-      pmm_client_start_version: ${{ inputs.pmm_client_start_version || 'pmm2-latest' }}
+      pmm_server_start_version: ${{ inputs.pmm_server_start_version }}
+      pmm_client_start_version: ${{ inputs.pmm_client_start_version }}
       upgrade_type: ${{ inputs.upgrade_type }}
-      pmm_qa_branch: ${{ inputs.pmm_qa_branch || 'main' }}
+      pmm_qa_branch: ${{ inputs.pmm_qa_branch }}
       services_list: ''
       repository: ${{ inputs.repository }}
 
@@ -90,13 +75,13 @@ jobs:
     uses: ./.github/workflows/pmm-ui-tests-upgrade.yml
     secrets: inherit
     with:
-      pmm_ui_tests_branch: ${{ inputs.pmm_ui_tests_branch || 'main' }}
+      pmm_ui_tests_branch: ${{ inputs.pmm_ui_tests_branch }}
       pre_upgrade_tests: '@rbac-pre-upgrade'
       post_upgrade_tests: '@rbac-post-upgrade'
-      pmm_server_start_version: ${{ inputs.pmm_server_start_version || 'latest' }}
-      pmm_client_start_version: ${{ inputs.pmm_client_start_version || 'pmm2-latest' }}
+      pmm_server_start_version: ${{ inputs.pmm_server_start_version }}
+      pmm_client_start_version: ${{ inputs.pmm_client_start_version }}
       upgrade_type: ${{ inputs.upgrade_type }}
-      pmm_qa_branch: ${{ inputs.pmm_qa_branch || 'main' }}
+      pmm_qa_branch: ${{ inputs.pmm_qa_branch }}
       services_list: '--addclient=ps,1 --addclient=pdpgsql,1'
       repository: ${{ inputs.repository }}
 
@@ -105,12 +90,12 @@ jobs:
     uses: ./.github/workflows/pmm-ui-tests-upgrade.yml
     secrets: inherit
     with:
-      pmm_ui_tests_branch: ${{ inputs.pmm_ui_tests_branch || 'main' }}
+      pmm_ui_tests_branch: ${{ inputs.pmm_ui_tests_branch }}
       pre_upgrade_tests: '@pre-pmm-portal-upgrade'
       post_upgrade_tests: '@post-pmm-portal-upgrade'
-      pmm_server_start_version: ${{ inputs.pmm_server_start_version || 'latest' }}
-      pmm_client_start_version: ${{ inputs.pmm_client_start_version || 'pmm2-latest' }}
+      pmm_server_start_version: ${{ inputs.pmm_server_start_version }}
+      pmm_client_start_version: ${{ inputs.pmm_client_start_version }}
       upgrade_type: ${{ inputs.upgrade_type }}
-      pmm_qa_branch: ${{ inputs.pmm_qa_branch || 'main' }}
+      pmm_qa_branch: ${{ inputs.pmm_qa_branch }}
       services_list: ''
       repository: ${{ inputs.repository }}
