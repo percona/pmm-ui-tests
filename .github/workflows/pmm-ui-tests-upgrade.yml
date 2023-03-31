@@ -32,10 +32,6 @@ on:
         required: true
         default: 'UI way'
         type: choice
-        options:
-          - UI way
-          - Docker way
-          - Side container
       pmm_qa_branch:
         description: 'pmm-qa repository branch(for setup)'
         default: 'main'
@@ -50,7 +46,7 @@ on:
         description: 'Upgrade to:'
         required: true
         default: 'dev-latest'
-        type: string
+        type: choice
 
   workflow_dispatch:
     inputs:
