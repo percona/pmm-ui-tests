@@ -9,6 +9,10 @@ on:
         description: 'pmm-ui-tests repository branch'
         default: 'main'
         required: true
+      pmm_qa_branch:
+        description: 'pmm-qa repository branch(for setup)'
+        default: 'main'
+        required: true
       pmm_server_start_version:
         description: 'PMM Server version to upgrade (latest|dev-latest|x.xx.x|x.xx.x-rc)'
         default: 'latest'
@@ -26,10 +30,6 @@ on:
           - UI way
           - Docker way
           - Side container
-      pmm_qa_branch:
-        description: 'pmm-qa repository branch(for setup)'
-        default: 'main'
-        required: true
       repository:
         description: 'Upgrade to:'
         required: true
@@ -69,10 +69,6 @@ jobs:
           rc_minor=$(echo $rc_latest | awk -F. '{print $2}')
           d_latest="2.$((++rc_minor)).0"
           
-          echo $r_latest
-          echo $rc_latest
-          echo $d_latest         
-          
           echo "release_latest=$r_latest" >> $GITHUB_ENV
           echo "rc_latest=$rc_latest" >> $GITHUB_ENV
           echo "dev_latest=$d_latest" >> $GITHUB_ENV
@@ -81,8 +77,6 @@ jobs:
         id: get-start
         shell: bash
         run: |
-          echo $release_latest
-          echo $dev_latest
           if [[ "${{ inputs.pmm_server_start_version }}" = "latest" ]]; then
             echo "result=$release_latest" >> "$GITHUB_OUTPUT"
           fi
@@ -94,10 +88,6 @@ jobs:
         id: get-finish
         shell: bash
         run: |
-          echo $release_latest
-          echo $rc_latest
-          echo $dev_latest
-          
           if [[ "${{ inputs.repository }}" = "dev-latest" ]]; then
             echo "result=$dev_latest" >> "$GITHUB_OUTPUT"
           fi          
