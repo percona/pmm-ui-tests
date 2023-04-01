@@ -1,5 +1,5 @@
 ---
-name: upgrade-tests-runner
+name: upgrade-tests-pipeline
 
 on:
   workflow_call:
@@ -152,7 +152,7 @@ jobs:
           path: ./pmm-ui-tests
 
       - name: Install  playwright
-        working-directory: pmm-ui-tests
+        working-directory: ./pmm-ui-tests/playwright-tests
         run: |
           npm install
           npx playwright install
@@ -214,15 +214,15 @@ jobs:
 
       - name: Run tests before upgrade
         id: ui-tests-flagged
-        working-directory: pmm-ui-tests
+        working-directory: ./pmm-ui-tests/playwright-tests
         run: |
           touch portalCredentials
-          npx playwright test --config="playwright-tests/playwright.config.ts" --grep="${{ inputs.pre_upgrade_tests }}"
+          npx playwright test --grep="${{ inputs.pre_upgrade_tests }}"
         env:
           NODE_TLS_REJECT_UNAUTHORIZED: 0
 
       - name: 'Upgrade pmm-server: < UI way >'
-        working-directory: pmm-ui-tests
+        working-directory: ./pmm-ui-tests/playwright-tests
         run: |
           echo "Upgrade way fork will be here soon..."
           # docker exec pmm-integration-server bash -c "echo exclude=mirror.es.its.nyu.edu | tee -a /etc/yum/pluginconf.d/fastestmirror.conf"
@@ -232,13 +232,13 @@ jobs:
             docker exec pmm-integration-server percona-release enable percona ${{ steps.target_repo.outputs.result }}
           fi
           docker exec pmm-integration-server yum clean all
-  
-          npx playwright test --config="playwright-tests/playwright.config.ts" --grep="@pmm-upgrade"
+          sleep 30
+          npx playwright test --grep="@pmm-upgrade"
         env:
           NODE_TLS_REJECT_UNAUTHORIZED: 0
 
       - name: 'Run tests before < PMM Client > upgrade'
-        working-directory: pmm-ui-tests
+        working-directory: ./pmm-ui-tests/playwright-tests
         run: |
           echo "Hook to inject tests: test are coming soon..."
 
@@ -250,8 +250,7 @@ jobs:
           sudo apt -y install pmm2-client
 
       - name: Run tests after upgrade
-        working-directory: pmm-ui-tests
-        run: |
-          npx playwright test --config="playwright-tests/playwright.config.ts" --grep="${{ inputs.post_upgrade_tests }}"
+        working-directory: ./pmm-ui-tests/playwright-tests
+        run: npx playwright test --grep="${{ inputs.post_upgrade_tests }}"
         env:
           NODE_TLS_REJECT_UNAUTHORIZED: 0
