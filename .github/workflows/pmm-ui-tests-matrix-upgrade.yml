@@ -67,8 +67,8 @@ jobs:
           r_latest=$(wget -q https://registry.hub.docker.com/v2/repositories/percona/pmm-server/tags -O - | jq -r .results[].name  | grep -v latest | sort -V | tail -n1)
           rc_latest=$(wget -q "https://registry.hub.docker.com/v2/repositories/perconalab/pmm-server/tags?page_size=25&name=rc" -O - | jq -r .results[].name  | grep 2.*.*-rc$ | sort -V | tail -n1)
           rc_minor=$(echo $rc_latest | awk -F. '{print $2}')
-          d_minor=$((rc_minor + 1))
-          d_latest="2.${d_minor}.0"
+          d_latest="2.$((++rc_minor)).0"
+         
           echo "release_latest=$r_latest" >> $GITHUB_ENV
           echo "rc_latest=$rc_latest" >> $GITHUB_ENV
           echo "dev_latest=$d_latest" >> $GITHUB_ENV
@@ -89,13 +89,13 @@ jobs:
         shell: bash
         run: |
           if [[ "${{ inputs.repository }}" = "dev-latest" ]]; then
-            echo "result=$release_latest" >> "$GITHUB_OUTPUT"
+            echo "result=$dev_latest" >> "$GITHUB_OUTPUT"
           fi          
           if [[ "${{ inputs.repository }}" = "release candidate" ]]; then
-            echo "result=rc_latest" >> "$GITHUB_OUTPUT"
+            echo "result=$rc_latest" >> "$GITHUB_OUTPUT"
           fi
           if [[ "${{ inputs.repository }}" = "release" ]]; then
-            echo "result=dev_latest" >> "$GITHUB_OUTPUT"
+            echo "result=$release_latest" >> "$GITHUB_OUTPUT"
           fi
 
   configuration:
