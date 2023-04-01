@@ -49,26 +49,41 @@ jobs:
       start_version: ${{ steps.get-start.outputs.result }}
       finish_version: ${{ steps.get-finish.outputs.result }}
     steps:
+      - name: Discover latest versions
+        shell: bash
+        run: |
+          r_latest=$(wget -q https://registry.hub.docker.com/v2/repositories/percona/pmm-server/tags -O - | jq -r .results[].name  | grep -v latest | sort -V | tail -n1)
+          rc_latest=$(wget -q "https://registry.hub.docker.com/v2/repositories/perconalab/pmm-server/tags?page_size=25&name=rc" -O - | jq -r .results[].name  | grep 2.*.*-rc$ | sort -V | tail -n1)
+          rc_minor=$(echo $rc_latest | awk -F. '{print $2}')
+          d_latest="2.${++rc_minor}.0"
+          echo "release_latest=r_latest" >> $GITHUB_ENV
+          echo "rc_latest=rc_latest" >> $GITHUB_ENV
+          echo "dev_latest=d_latest" >> $GITHUB_ENV
+
       - name: Get start version string
         id: get-start
         shell: bash
         run: |
-          latest=$(wget -q https://registry.hub.docker.com/v2/repositories/percona/pmm-server/tags -O - | jq -r .results[].name  | grep -v latest | sort -V | tail -n1 | awk -F. '{print $2}')
-          if [[ "${{ inputs.repository }}" != "release" ]]; then
-            echo "release_latest=$latest" >> $GITHUB_ENV
+          if [[ "${{ inputs.pmm_server_start_version }}" = "latest" ]]; then
+            echo "result=release_latest" >> "$GITHUB_OUTPUT"
           fi
-          echo "result=latest" >> "$GITHUB_OUTPUT"
+          if [[ "${{ inputs.pmm_server_start_version }}" = "dev-latest" ]]; then
+            echo "result=dev_latest" >> "$GITHUB_OUTPUT"
+          fi
 
       - name: Get finish version string
         id: get-finish
         shell: bash
         run: |
-          echo "result=2.XX.X" >> "$GITHUB_OUTPUT"
-
-      - name: print version
-        shell: bash
-        run: |
-          echo ${{ env.release_latest }}
+          if [[ "${{ inputs.repository }}" = "dev-latest" ]]; then
+            echo "result=$release_latest" >> "$GITHUB_OUTPUT"
+          fi          
+          if [[ "${{ inputs.repository }}" = "release candidate" ]]; then
+            echo "result=rc_latest" >> "$GITHUB_OUTPUT"
+          fi
+          if [[ "${{ inputs.repository }}" = "release" ]]; then
+            echo "result=dev_latest" >> "$GITHUB_OUTPUT"
+          fi
 
   configuration:
     name: 'Configuration / Settings'
@@ -110,6 +125,7 @@ jobs:
     name: Portal
     uses: ./.github/workflows/pmm-ui-tests-upgrade.yml
     secrets: inherit
+    needs: push_versions
     with:
       pmm_ui_tests_branch: ${{ inputs.pmm_ui_tests_branch }}
       pre_upgrade_tests: '@pre-pmm-portal-upgrade'
@@ -120,3 +136,5 @@ jobs:
       pmm_qa_branch: ${{ inputs.pmm_qa_branch }}
       services_list: ''
       repository: ${{ inputs.repository }}
+      version_string_from: ${{needs.push_versions.outputs.start_version}}
+      version_string_to: ${{needs.push_versions.outputs.finish_version}}
