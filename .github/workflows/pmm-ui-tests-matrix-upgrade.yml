@@ -49,14 +49,14 @@ jobs:
       start_version: ${{ steps.get-start.outputs.result }}
       finish_version: ${{ steps.get-finish.outputs.result }}
     steps:
-      - name: Prevent same version
+      - name: Prevent upgrade to the same version
         shell: bash
         run: |
           if [[ "${{ inputs.pmm_server_start_version }}" = "latest" && "${{ inputs.repository }}" = "release" ]]; then
             echo "Upgrade to the same version is forbidden!"
             exit 1
           fi
-          if [[ "${{ inputs.pmm_server_start_version }}" = "dev_latest" && "${{ inputs.repository }}" = "dev-latest" ]]; then
+          if [[ "${{ inputs.pmm_server_start_version }}" = "dev-latest" && "${{ inputs.repository }}" = "dev-latest" ]]; then
             echo "Upgrade to the same version is forbidden!"
             exit 1
           fi
