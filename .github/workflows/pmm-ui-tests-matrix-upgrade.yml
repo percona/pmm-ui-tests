@@ -68,7 +68,11 @@ jobs:
           rc_latest=$(wget -q "https://registry.hub.docker.com/v2/repositories/perconalab/pmm-server/tags?page_size=25&name=rc" -O - | jq -r .results[].name  | grep 2.*.*-rc$ | sort -V | tail -n1)
           rc_minor=$(echo $rc_latest | awk -F. '{print $2}')
           d_latest="2.$((++rc_minor)).0"
-         
+          
+          echo $r_latest
+          echo $rc_latest
+          echo $d_latest         
+          
           echo "release_latest=$r_latest" >> $GITHUB_ENV
           echo "rc_latest=$rc_latest" >> $GITHUB_ENV
           echo "dev_latest=$d_latest" >> $GITHUB_ENV
@@ -77,6 +81,8 @@ jobs:
         id: get-start
         shell: bash
         run: |
+          echo $release_latest
+          echo $dev_latest
           if [[ "${{ inputs.pmm_server_start_version }}" = "latest" ]]; then
             echo "result=$release_latest" >> "$GITHUB_OUTPUT"
           fi
@@ -88,6 +94,10 @@ jobs:
         id: get-finish
         shell: bash
         run: |
+          echo $release_latest
+          echo $rc_latest
+          echo $dev_latest
+          
           if [[ "${{ inputs.repository }}" = "dev-latest" ]]; then
             echo "result=$dev_latest" >> "$GITHUB_OUTPUT"
           fi          
