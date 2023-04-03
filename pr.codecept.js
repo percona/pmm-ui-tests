@@ -101,10 +101,6 @@ exports.config = {
       attribute: 'data-testid',
       showActual: false,
     },
-    allure: {
-      enabled: true,
-      outputDir: 'tests/output/allure',
-    },
     tryTo: {
       enabled: true,
     },
