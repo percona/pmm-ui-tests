@@ -887,7 +887,7 @@ module.exports = {
     ],
   },
   victoriaMetricsAgentsOverviewDashboard: {
-    url: 'graph/d/vmagent/victoriametrics-agents-overview?orgId=1&refresh=1m',
+    url: 'graph/d/vmagent/victoriametrics-agents-overview?orgId=1&refresh=5m',
     metrics: [
       'Current Uptime',
       'Scraped Targets UP',
