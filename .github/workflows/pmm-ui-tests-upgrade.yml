@@ -104,7 +104,7 @@ jobs:
       UI_TESTS_BRANCH: ${{ inputs.pmm_ui_tests_branch }}
       PMM_CLIENTS: ${{ inputs.pmm_clients }}
 
-      PMM_SERVER_VERSION: ${{ inputs.pmm_server_version }}
+
       PMM_CLIENT_VERSION: ${{ inputs.pmm_client_version }}
       PMM_QA_BRANCH: ${{ inputs.pmm_qa_branch }}
 
@@ -118,6 +118,7 @@ jobs:
       OAUTH_SCOPES: percona
 
       # Variables for E2E tests
+      PMM_SERVER_START_VERSION: ${{ inputs.pmm_server_version }}
       MAILOSAUR_API_KEY: ${{ secrets.MAILOSAUR_API_KEY }}
       MAILOSAUR_UI_TESTS_SERVER_ID: ${{ secrets.MAILOSAUR_UI_TESTS_SERVER_ID }}
       MAILOSAUR_API_TESTS_SERVER_ID: ${{ secrets.MAILOSAUR_API_TESTS_SERVER_ID }}

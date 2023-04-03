@@ -2,7 +2,7 @@ import apiHelper, {Settings} from "@api/helpers/apiHelper";
 import {APIResponse} from "playwright-core";
 
 const PATH_GET = 'v1/Settings/Get';
-const PATH_CHANGE = 'v1/Settings/Get';
+const PATH_CHANGE = 'v1/Settings/Change';
 
 export enum SettingProperty {
   bm = "backup_management_enabled",

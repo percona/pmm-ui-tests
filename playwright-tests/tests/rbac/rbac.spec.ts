@@ -11,6 +11,7 @@ import NodesOverviewDashboard from '@tests/pages/dashboards/nodes/NodesOverviewD
 import Duration from '@tests/helpers/Duration';
 import PostgresqlInstancesOverviewDashboard from '@tests/pages/dashboards/postgresql/PostgresqlInstancesOverview.page';
 import AdvancedSettings from '@tests/pages/pmmSettings/AdvancedSettings.page';
+import {api} from "@api/api";
 
 test.describe('Spec file for Access Control (RBAC)', async () => {
   const newUser = { username: 'testUserRBAC', email: 'testUserRBAC@localhost', name: 'Test User', password: 'password' };
@@ -19,12 +20,11 @@ test.describe('Spec file for Access Control (RBAC)', async () => {
   const roleNameCreate = `Role Name ${new Date().getTime()}`;
   const roleDescriptionCreate = `Role Description ${new Date().getTime()}`;
   let pmmVersion: number;
+  let pmmStartVersion: PmmVersion;
 
   test.beforeAll(async () => {
-    if (!pmmVersion) {
-      const versionString = (await apiHelper.getPmmVersion()).versionMinor;
-      pmmVersion = parseInt(versionString);
-    }
+    pmmStartVersion = new PmmVersion(process.env.PMM_SERVER_START_VERSION!);
+    pmmVersion = (await api.pmm.serverV1.getPmmVersion()).minor;
   });
 
   test.beforeEach(async ({ page }) => {
@@ -34,7 +34,7 @@ test.describe('Spec file for Access Control (RBAC)', async () => {
   });
 
   test('PMM-T1573 Verify Access Roles tab on Configuration page @rbac @rbac-pre-upgrade', async ({ page }) => {
-    if (pmmVersion > 34) {
+    if (pmmStartVersion.minor > 34) {
       test.info().annotations.push({
         type: 'Also Covers',
         description: 'PMM-T1579 Verify docker variable to enable Access control (RBAC)',
@@ -67,7 +67,7 @@ test.describe('Spec file for Access Control (RBAC)', async () => {
   });
 
   test('PMM-T1580 Verify creating Access Role @rbac @rbac-pre-upgrade', async ({ page }) => {
-    if (pmmVersion > 34) {
+    if (pmmStartVersion.minor > 34) {
       test.info().annotations.push({
         type: 'Also Covers',
         description: 'PMM-T1581 Verify assigning default role on Access roles page.',
@@ -113,7 +113,7 @@ test.describe('Spec file for Access Control (RBAC)', async () => {
   });
 
   test('PMM-T1584 Verify assigning Access role to user @rbac @rbac-pre-upgrade', async ({ page }) => {
-    if (pmmVersion > 34) {
+    if (pmmStartVersion.minor > 34) {
       const rbacPage = new RbacPage(page);
       const createRolePage = new CreateRolePage(page);
       const newUserPage = new NewUserPage(page);
@@ -162,7 +162,7 @@ test.describe('Spec file for Access Control (RBAC)', async () => {
   });
 
   test('PMM-T1599 Verify assigned role after upgrade @rbac @rbac-post-upgrade', async ({ page }) => {
-    if (pmmVersion > 34) {
+    if (pmmStartVersion.minor > 34) {
       const usersConfigurationPage = new UsersConfigurationPage(page);
       const postgresqlInstancesOverviewDashboard = new PostgresqlInstancesOverviewDashboard(page);
 
@@ -186,7 +186,7 @@ test.describe('Spec file for Access Control (RBAC)', async () => {
   });
 
   test('PMM-T1585 Verify deleting Access role @rbac @rbac-post-upgrade', async ({ page }) => {
-    if (pmmVersion > 34) {
+    if (pmmStartVersion.minor > 34) {
       test.info().annotations.push({
         type: 'Also Covers',
         description: 'PMM-T1578 Verify there is ability to enable Access control on Settings page.',
@@ -232,7 +232,7 @@ test.describe('Spec file for Access Control (RBAC)', async () => {
   });
 
   test('PMM-T1652 Verify replacing the role while removing it @rbac @rbac-post-upgrade', async ({ page }) => {
-    if (pmmVersion > 34) {
+    if (pmmStartVersion.minor > 34) {
       const rbacPage = new RbacPage(page);
       const createRolePage = new CreateRolePage(page);
       const newUserPage = new NewUserPage(page);
@@ -287,7 +287,7 @@ test.describe('Spec file for Access Control (RBAC)', async () => {
       type: 'Also Covers',
       description: 'PMM-T1601 Verify Grafana Does not crash when filtering users from the admin page.',
     });
-    if (pmmVersion >= 36) {
+    if (pmmStartVersion.minor >= 36) {
       const rbacPage = new RbacPage(page);
       const createRolePage = new CreateRolePage(page);
       const newUserPage = new NewUserPage(page);
@@ -352,7 +352,7 @@ test.describe('Spec file for Access Control (RBAC)', async () => {
   })
 
   test('PMM-T1629 Verify re-enabling of the Access Control @rbac @rbac-post-upgrade', async ({ page }) => {
-    if (pmmVersion > 34) {
+    if (pmmStartVersion.minor > 34) {
       const advancedSettings = new AdvancedSettings(page);
       const homeDashboard = new HomeDashboard(page);
       const rbacPage = new RbacPage(page);
