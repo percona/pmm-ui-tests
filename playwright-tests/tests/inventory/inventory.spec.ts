@@ -150,18 +150,47 @@ test.describe('Spec file for PMM inventory tests.', async () => {
         await servicesPage.buttons.goBackToServices.click();
       });
 
-      await test.step('2. Kill process mongodb_exporter and verify that Navigate to the Inventory page and expand Mongo service".', async () => {
+      await test.step('2. Kill process vmagent and verify that Inventory page shows vmagent as not running".', async () => {
         await pmmClientCommands.moveFile(
           '/usr/local/percona/pmm2/exporters/vmagent',
           '/usr/local/percona/pmm2/exporters/vmagent_error');
-        const vmagentProccessId = await pmmClientCommands.getProcessId('vmagent');
-        await pmmClientCommands.killProcess(vmagentProccessId.stdout);
+        const vmagentProcessId = await pmmClientCommands.getProcessId('vmagent');
+        await pmmClientCommands.killProcess(vmagentProcessId.stdout);
         await page.reload();
         await servicesPage.servicesTable.buttons.showRowDetails(localService.serviceName).click();
         await expect(servicesPage.servicesTable.elements.agentStatus).toHaveText('2/4 running');
         await servicesPage.servicesTable.elements.monitoring(localService.serviceName).click();
         await expect(servicesPage.elements.waitingStatusAgent).toHaveCount(2);
         await servicesPage.buttons.goBackToServices.click();
+      });
+
+      await test.step('3. Kill process mongodb_exporter and verify that Inventory page shows mongodb exporter as not running".', async () => {
+        await pmmClientCommands.moveFile(
+          '/usr/sbin/pmm-agent',
+          '/usr/sbin/pmm-agent_error');
+        const pmmAgentProcessId = await pmmClientCommands.getProcessId('pmm-agent');
+        await pmmClientCommands.killProcess(pmmAgentProcessId.stdout);
+        await page.reload();
+        await servicesPage.servicesTable.buttons.showRowDetails(localService.serviceName).click();
+        await expect(servicesPage.servicesTable.elements.agentStatus).toHaveText('4/4 not running');
+        await servicesPage.servicesTable.elements.monitoring(localService.serviceName).click();
+        await expect(servicesPage.elements.waitingStatusAgent).not.toBeVisible();
+        await servicesPage.buttons.goBackToServices.click();
+      });
+
+      await test.step('3. Clean the environment and start all of the agents.', async () => {
+        await pmmClientCommands.moveFile('/usr/sbin/pmm-agent_error', '/usr/sbin/pmm-agent');
+        await pmmClientCommands.moveFile(
+          '/usr/local/percona/pmm2/exporters/vmagent_error',
+          '/usr/local/percona/pmm2/exporters/vmagent');
+        await pmmClientCommands.moveFile(
+          '/usr/local/percona/pmm2/exporters/mongodb_exporter_error',
+          '/usr/local/percona/pmm2/exporters/mongodb_exporter');
+        await page.reload();
+        await servicesPage.servicesTable.buttons.showRowDetails(localService.serviceName).click();
+        await expect(servicesPage.servicesTable.elements.agentStatus).toHaveText('4/4 running');
+        await servicesPage.servicesTable.elements.monitoring(localService.serviceName).click();
+        await expect(servicesPage.elements.waitingStatusAgent).toHaveCount(1);
       });
     } else {
       test.info().annotations.push({
