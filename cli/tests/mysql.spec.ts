@@ -66,4 +66,77 @@ test.describe('PMM Client CLI tests for MySQL', async () => {
     await output.assertSuccess();
     await output.outContains(`metrics-mode=\"auto\"`);
   });
+
+  /**
+   * @link 
+   */
+  test('run pmm-admin add mysql --help to check host', async ({ }) => {
+    const output = await cli.exec('pmm-admin add mysql --help');
+    await output.assertSuccess();
+    await output.outContains('host');
+  });
+
+  /**
+   * @link 
+   */  
+  test('run pmm-admin add mysql --help to check port', async ({ }) => {
+    const output = await cli.exec('pmm-admin add mysql --help');
+    await output.assertSuccess();
+    await output.outContains('port');
+  });
+
+  /**
+   * @link 
+   */  
+  test('run pmm-admin add mysql --help to check service-name', async ({ }) => {
+    const output = await cli.exec('pmm-admin add mysql --help');
+    await output.assertSuccess();
+    await output.outContains('service-name');
+  });
+
+  /**
+   * @link 
+   */
+  test('run pmm-admin add mysql --help', async ({ }) => {
+    const output = await cli.exec('pmm-admin add mysql --help');
+    await output.assertSuccess();
+    await output.outContainsMany([
+      'help',
+      'server-url=SERVER-URL',
+      'server-insecure-tls',
+      'debug',
+      'trace',
+      'pmm-agent-listen-port=7777',
+      'json',
+      'version',
+      'socket=STRING',
+      'node-id=STRING',
+      'pmm-agent-id=STRING',
+      'username="root"',
+      'password=STRING',
+      'agent-password=STRING',
+      'query-source="slowlog"',
+      'max-query-length=NUMBER',
+      'disable-queryexamples',
+      'size-slow-logs=size',
+      'disable-tablestats',
+      'disable-tablestats-limit=NUMBER',
+      'environment=STRING',
+      'cluster=STRING',
+      'replication-set=STRING',
+      'custom-labels=KEY=VALUE,...',
+      'skip-connection-check',
+      'tls',
+      'tls-skip-verify',
+      'tls-ca=STRING',
+      'tls-cert=STRING',
+      'tls-key=STRING',
+      'metrics-mode="auto"',
+      'disable-collectors=DISABLE-COLLECTORS,',
+      'service-name=NAME',
+      'host=HOST',
+      'port=PORT',
+      'log-level="warn"',
+    ]);
+  });
 });
