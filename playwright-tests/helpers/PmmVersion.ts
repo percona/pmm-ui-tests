@@ -8,7 +8,7 @@ class PmmVersion {
   public minor: number;
   public patch: number;
 
-  constructor(versionString: string) {
+  public constructor(versionString: string) {
     if (!versionString.includes('.') || versionString.split('.').length !== 3 ) {
       throw new Error('Provided argument is not a PMM version string');
     }
