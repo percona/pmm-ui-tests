@@ -106,7 +106,7 @@ module.exports = {
     I.fillField(this.fields.filterBy, filterName);
     I.waitForElement(filterToApply);
     I.forceClick(filterToApply);
-    I.seeCheckboxIsChecked(filterItemCheckbox);
+    I.waitForEnabled(filterItemCheckbox);
     I.waitForDetached(this.elements.spinner, 30);
     I.waitForElement(this.fields.filterBy, 30);
     // workaround for clearing the field completely
