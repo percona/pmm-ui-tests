@@ -12,6 +12,7 @@ import Duration from '@tests/helpers/Duration';
 import PostgresqlInstancesOverviewDashboard from '@tests/pages/dashboards/postgresql/PostgresqlInstancesOverview.page';
 import AdvancedSettings from '@tests/pages/pmmSettings/AdvancedSettings.page';
 import {api} from "@api/api";
+import {PmmVersion} from "@helpers/PmmVersion";
 
 test.describe('Spec file for Access Control (RBAC)', async () => {
   const newUser = { username: 'testUserRBAC', email: 'testUserRBAC@localhost', name: 'Test User', password: 'password' };
@@ -23,6 +24,7 @@ test.describe('Spec file for Access Control (RBAC)', async () => {
   let pmmStartVersion: PmmVersion;
 
   test.beforeAll(async () => {
+    //TODO: move to update class
     pmmStartVersion = new PmmVersion(process.env.PMM_SERVER_START_VERSION!);
     pmmVersion = (await api.pmm.serverV1.getPmmVersion()).minor;
   });

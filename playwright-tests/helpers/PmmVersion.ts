@@ -2,7 +2,7 @@
  * Encapsulates parsing of version sting into split collection of numbers
  * to reduce and simplify code across tests
  */
-class PmmVersion {
+export class PmmVersion {
   version: string;
   public major: number;
   public minor: number;
