@@ -107,6 +107,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 60
     env:
+      # TODO: each variable/group must have comment where it is used
       SHA: ${{ inputs.sha || 'null' }}
       PMM_BASE_URL: https://127.0.0.1
       ADMIN_PASSWORD: admin
@@ -144,20 +145,20 @@ jobs:
           target_url: 'https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}'
           sha: ${{ env.SHA }}
 
-      - name: Checkout UI tests
+      - name: 'Checkout UI tests: "${{ inputs.pmm_qa_branch }}"'
         uses: actions/checkout@v3
         with:
           ref: ${{ inputs.pmm_qa_branch }}
           repository: percona/pmm-ui-tests
           path: ./pmm-ui-tests
 
-      - name: Install  playwright
+      - name: 'Install  playwright'
         working-directory: ./pmm-ui-tests/playwright-tests
         run: |
           npm install
           npx playwright install
 
-      - name: Checkout pmm-qa ${{ inputs.pmm_qa_branch }} branch
+      - name: 'Checkout pmm-qa: "${{ inputs.pmm_qa_branch }}"'
         uses: actions/checkout@v3
         with:
           # token: ${{ secrets.ROBOT_TOKEN }}
@@ -165,7 +166,7 @@ jobs:
           ref: ${{ inputs.pmm_qa_branch }}
           path: ./pmm-qa
 
-      - name: Convert repo choice
+      - name: 'Convert choice into repo'
         uses: actions/github-script@v6
         id: target_repo
         with:
@@ -180,7 +181,7 @@ jobs:
             }
           result-encoding: string
 
-      - name: 'Select < PMM Server > image'
+      - name: 'Select <PMM Server> image'
         uses: actions/github-script@v6
         id: pmm_server_image
         with:
@@ -193,26 +194,28 @@ jobs:
             return `${repo}/pmm-server:${tag}`
           result-encoding: string
 
-      - name: 'Setup PMM Sever: ${{ steps.pmm_server_image.outputs.result }}'
+      - name: 'Setup <PMM Sever>: "${{ steps.pmm_server_image.outputs.result }}"'
         working-directory: pmm-qa/pmm-integration
         run: |
           npm install
           sudo npx ts-node ./integration-setup.ts --ci --setup-docker-pmm-server --rbac --pmm-server-docker-tag=${{ steps.pmm_server_image.outputs.result }} --pmm-client-version=${{ inputs.pmm_client_start_version }}          
           timeout 100 bash -c 'while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' localhost/ping)" != "200" ]]; do sleep 5; done' || false
 
-      - name: 'Setup <PMM Client> and Services'
+      - name: 'Setup <PMM Client: ${{ inputs.pmm_client_start_version }}> and Services'
         run: |
+          # TODO: un-hardcode pmm server ip and admin password
           sudo bash ./pmm-qa/pmm-tests/pmm2-client-setup.sh --pmm_server_ip 127.0.0.1 --client_version ${{ inputs.pmm_client_start_version }} --admin_password admin --use_metrics_mode no
           sudo bash ./pmm-qa/pmm-tests/pmm-framework.sh \
             --download \
             ${{ inputs.services_list }} \
             --pmm2 \
             --pmm2-server-ip=127.0.0.1
+          # TODO: change sleep into fluent wait
           sleep 30
           sudo pmm-admin list
         shell: bash
 
-      - name: Run tests before upgrade
+      - name: 'Run tests before upgrade'
         id: ui-tests-flagged
         working-directory: ./pmm-ui-tests/playwright-tests
         run: |
@@ -255,9 +258,10 @@ jobs:
           sudo percona-release enable-only percona ${{ steps.target_repo.outputs.result }}
           sudo apt-get update -y
           sudo apt -y install pmm2-client
-          # post client check here
+          
+          # TODO: add client check after update here
 
-      - name: Run tests after upgrading Client and Server
+      - name: 'Run tests after upgrading Client and Server'
         working-directory: ./pmm-ui-tests/playwright-tests
         run: npx playwright test --grep="${{ inputs.post_upgrade_tests }}"
         env:
