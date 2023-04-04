@@ -10,7 +10,7 @@ const dbName = 'tutorialkart2';
 
 const location = {
   name: 'TEST-LOCATION',
-  config: locationsPage.storageLocationConnection,
+  config: locationsPage.psStorageLocationConnection,
 };
 
 // const psmdbClusterDetails = new DataTable(['namespace', 'clusterName', 'node', 'nodeType']);
@@ -301,7 +301,7 @@ Scenario(
     await locationsAPI.createStorageLocation(
       location.name,
       locationsAPI.storageType.s3,
-      locationsAPI.storageLocationConnection,
+      locationsAPI.psStorageLocationConnection,
     );
 
     I.amOnPage(dbaasPage.url);
@@ -327,9 +327,7 @@ Scenario(
 
     assert.ok(output.includes(dbName), `The ${output} for psmdb cluster setup dump was expected to have db name ${dbName}, but found ${output}`);
 
-    // Wait for backup to complete
-    I.wait(120);
-    I.say(await I.verifyCommand(`kubectl get psmdb-backup | grep ${psmdb_backup_cluster}`, 'ready'));
+    await dbaasAPI.waitForOutput(`kubectl get psmdb-backup | grep ${psmdb_backup_cluster}`, 'ready');
   },
 );
 
@@ -341,7 +339,7 @@ Scenario(
     await dbaasAPI.deleteAllDBCluster(clusterName);
 
     const artifactName = await I.verifyCommand(
-      `kubectl get psmdb-backup -l cluster=${psmdb_backup_cluster} | grep ready | awk '{print $4}' | head -n 1`
+      `kubectl get psmdb-backup -l cluster=${psmdb_backup_cluster} | grep ready | awk '{print $4}' | head -n 1`, '20'
     );
 
     I.amOnPage(dbaasPage.url);
@@ -354,10 +352,7 @@ Scenario(
     I.click(dbaasPage.tabs.dbClusterTab.createClusterButton);
 
     await dbaasAPI.waitForDBClusterState(psmdb_restore_cluster, clusterName, 'MongoDB', 'DB_CLUSTER_STATE_READY');
-
-    // Wait for restore to complete
-    I.wait(180);
-    I.say(await I.verifyCommand(`kubectl get psmdb-restore | grep ${psmdb_restore_cluster}`, 'ready'));
+    await dbaasAPI.waitForOutput(`kubectl get psmdb-restore | grep ${psmdb_restore_cluster}`, 'ready');
 
     const { username, password, host } = await dbaasAPI.getDbClusterDetails(psmdb_restore_cluster, clusterName, 'MongoDB');
 
