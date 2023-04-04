@@ -24,7 +24,7 @@ test.describe('Spec file for Access Control (RBAC)', async () => {
   let pmmStartVersion: PmmVersion;
 
   test.beforeAll(async () => {
-    //TODO: move to update class
+    //TODO: move to update file
     pmmStartVersion = new PmmVersion(process.env.PMM_SERVER_START_VERSION!);
     pmmVersion = (await api.pmm.serverV1.getPmmVersion()).minor;
   });
