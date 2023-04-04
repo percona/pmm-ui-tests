@@ -200,7 +200,7 @@ jobs:
           sudo npx ts-node ./integration-setup.ts --ci --setup-docker-pmm-server --rbac --pmm-server-docker-tag=${{ steps.pmm_server_image.outputs.result }} --pmm-client-version=${{ inputs.pmm_client_start_version }}          
           timeout 100 bash -c 'while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' localhost/ping)" != "200" ]]; do sleep 5; done' || false
 
-      - name: 'Setup < PMM Client > and Services'
+      - name: 'Setup <PMM Client> and Services'
         run: |
           sudo bash ./pmm-qa/pmm-tests/pmm2-client-setup.sh --pmm_server_ip 127.0.0.1 --client_version ${{ inputs.pmm_client_start_version }} --admin_password admin --use_metrics_mode no
           sudo bash ./pmm-qa/pmm-tests/pmm-framework.sh \
@@ -221,35 +221,43 @@ jobs:
         env:
           NODE_TLS_REJECT_UNAUTHORIZED: 0
 
-      - name: 'Upgrade pmm-server: < UI way >'
+      - name: 'Enable repo in pmm-server container: ${{ steps.target_repo.outputs.result }}'
         working-directory: ./pmm-ui-tests/playwright-tests
         run: |
           echo "Upgrade way fork will be here soon..."
-          # docker exec pmm-integration-server bash -c "echo exclude=mirror.es.its.nyu.edu | tee -a /etc/yum/pluginconf.d/fastestmirror.conf"
-          docker exec pmm-integration-server yum update -y percona-release || ture
+          docker exec pmm-integration-server yum update -y percona-release || true
           if [[ "${{ inputs.repository }}" != "release" ]]; then
             docker exec pmm-integration-server sed -i'' -e 's^/release/^/${{ steps.target_repo.outputs.result }}/^' /etc/yum.repos.d/pmm2-server.repo
             docker exec pmm-integration-server percona-release enable-only percona ${{ steps.target_repo.outputs.result }}
           fi
           docker exec pmm-integration-server yum clean all
-          sleep 30
+          
+          # TODO: could be exchanged to the clicking "refresh" button in tests
+          sleep 60
+        env:
+          NODE_TLS_REJECT_UNAUTHORIZED: 0
+
+      - name: 'Upgrade pmm-server: <UI way>'
+        working-directory: ./pmm-ui-tests/playwright-tests
+        run: |
           npx playwright test --grep="@pmm-upgrade"
         env:
           NODE_TLS_REJECT_UNAUTHORIZED: 0
 
-      - name: 'Run tests before < PMM Client > upgrade'
+      - name: 'Run tests before <PMM Client> upgrade'
         working-directory: ./pmm-ui-tests/playwright-tests
         run: |
           echo "Hook to inject tests: test are coming soon..."
 
-      - name: 'Upgrade < PMM Client >'
+      - name: 'Upgrade <PMM Client> to the latest on "${{ steps.target_repo.outputs.result }}" repo'
         if: ${{ inputs.pmm_client_upgrade_version == '' }}
         run: |
           sudo percona-release enable-only percona ${{ steps.target_repo.outputs.result }}
           sudo apt-get update -y
           sudo apt -y install pmm2-client
+          # post client check here
 
-      - name: Run tests after upgrade
+      - name: Run tests after upgrading Client and Server
         working-directory: ./pmm-ui-tests/playwright-tests
         run: npx playwright test --grep="${{ inputs.post_upgrade_tests }}"
         env:
