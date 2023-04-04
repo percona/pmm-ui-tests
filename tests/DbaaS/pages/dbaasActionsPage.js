@@ -28,7 +28,7 @@ module.exports = {
     }
   },
 
-  async createClusterBasicOptions(dbClusterName, dbType, dbVersion) {
+  async createClusterBasicOptions(k8sClusterName, dbClusterName, dbType, dbVersion) {
     I.waitForElement(dbaasPage.tabs.dbClusterTab.dbClusterAddButtonTop, 30);
     I.waitForEnabled(dbaasPage.tabs.dbClusterTab.dbClusterAddButtonTop, 10);
     I.click(dbaasPage.tabs.dbClusterTab.dbClusterAddButtonTop);
