@@ -359,6 +359,10 @@ test.describe('Spec file for PMM connected the portal', async () => {
   test('PMM-T1264 Verify that pmm admin user can force disconnect pmm from the portal. @not-ui-pipeline @portal @post-pmm-portal-upgrade', async ({
     page,
   }) => {
+    test.info().annotations.push({
+      type: 'Also Covers:',
+      description: "PMM-T1204 - Verify the confirmation message appears when user's trying to logout from Portal",
+    });
     const platformPage = new PerconaPlatform(page);
 
     if (pmmVersion > 28) {
@@ -370,6 +374,8 @@ test.describe('Spec file for PMM connected the portal', async () => {
 
       await test.step('2. Force disconnect from the platform.', async () => {
         await platformPage.buttons.disconnect.click();
+        await expect(platformPage.elements.forceDisconnectModalHeader).toHaveText(platformPage.messages.forceDisconnectPMMHeader);
+        await expect(platformPage.elements.forceDisconnectModalBody).toHaveText(platformPage.messages.forceDisconnectPMM);
         await expect(platformPage.elements.readMore).toHaveAttribute('href', platformPage.links.readMore);
         await platformPage.buttons.confirmDisconnect.click();
       });
