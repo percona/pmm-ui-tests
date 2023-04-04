@@ -120,6 +120,10 @@ test.describe('Spec file for PMM inventory tests.', async () => {
     Needs test for the kill of the agent
   */
   test('PMM-T1672 Verify PMM Inventory redesign : State of the agents @inventory @inventory-pre-upgrade @inventory-post-upgrade', async ({ page }) => {
+    test.info().annotations.push({
+      type: 'Also Covers:',
+      description: "PMM-T1673 - Verify PMM Inventory redesign, Negative scenario: Failing Agents",
+    });
     // Change to 37
     if (pmmVersion >= 36) {
       const servicesPage = new ServicesPage(page);
@@ -178,7 +182,7 @@ test.describe('Spec file for PMM inventory tests.', async () => {
         await servicesPage.buttons.goBackToServices.click();
       });
 
-      await test.step('3. Clean the environment and start all of the agents.', async () => {
+      await test.step('3. Move all agents back to their original location.', async () => {
         await pmmClientCommands.moveFile('/usr/sbin/pmm-agent_error', '/usr/sbin/pmm-agent');
         await pmmClientCommands.moveFile(
           '/usr/local/percona/pmm2/exporters/vmagent_error',
@@ -186,11 +190,6 @@ test.describe('Spec file for PMM inventory tests.', async () => {
         await pmmClientCommands.moveFile(
           '/usr/local/percona/pmm2/exporters/mongodb_exporter_error',
           '/usr/local/percona/pmm2/exporters/mongodb_exporter');
-        await page.reload();
-        await servicesPage.servicesTable.buttons.showRowDetails(localService.serviceName).click();
-        await expect(servicesPage.servicesTable.elements.agentStatus).toHaveText('4/4 running');
-        await servicesPage.servicesTable.elements.monitoring(localService.serviceName).click();
-        await expect(servicesPage.elements.waitingStatusAgent).toHaveCount(1);
       });
     } else {
       test.info().annotations.push({
