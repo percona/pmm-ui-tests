@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import apiHelper from '@tests/api/apiHelper';
+import apiHelper from '@tests/api/helpers/apiHelper';
 import grafanaHelper from '@tests/helpers/GrafanaHelper';
 import { AdvisorInsights } from '@tests/pages/advisors/AdvisorInsights.page';
 import { ConfigurationAdvisors } from '@tests/pages/advisors/ConfigurationAdvisors.page';

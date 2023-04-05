@@ -1,7 +1,8 @@
-import {server} from "@api/server";
-import {settings} from "@tests/tests/configuration/api/settings";
-import {oktaAPI} from "@api/okta";
-import {portalAPI} from "@api/portalApi";
+import { server } from "@api/server";
+import { settings } from "@tests/api/settings";
+import { oktaAPI } from "@api/okta";
+import { portalAPI } from "@api/portalApi";
+import { platform } from "./platform";
 
 /**
  * User facing api collection. Accessible on Frontend via /swagger path.
@@ -10,9 +11,10 @@ import {portalAPI} from "@api/portalApi";
  */
 export const api = {
   grafana: {},
-  pmm:  {
+  pmm: {
     settingsV1: settings,
     serverV1: server,
+    platformV1: platform,
   },
   okta: oktaAPI,
   portal: portalAPI,

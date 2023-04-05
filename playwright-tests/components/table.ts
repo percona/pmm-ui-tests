@@ -5,7 +5,7 @@ export default class Table {
 
   private tableElements = {
     body: this.page.getByTestId('table-tbody'),
-    row: this.page.getByTestId('table-tbody-tr'),
+    row: this.page.locator('//tbody//tr'),
     rowByText: (text: string) => this.page.locator(`//span[contains(text(),"${text}")]//ancestor::*[@data-testid="table-tbody-tr"]`),
   };
 

@@ -1,15 +1,18 @@
 import { Page } from '@playwright/test';
 import { CommonPage } from '../Common.page';
+import AdvisorsTable from '@tests/components/advisors/advisorsTable';
 
 export class AdvisorsPage extends CommonPage {
   constructor(page: Page) {
     super(page);
   }
 
+  advisorsTable = new AdvisorsTable(this.page);
   private advisorsElements = {
     ...super.getElements(),
     advisorRow: (advisorName: string) => this.page.locator(`//td[text()="${advisorName}"]//ancestor::tr`),
     advisorsCategory: (categoryName: string) => this.page.locator(`//*[text()="${categoryName}"]//ancestor::*[@data-testid="collapse-clickable"]`),
+    advisorsCategoryCollapse: this.page.getByTestId('collapse-clickable'),
   };
 
   private advisorsFields = {
@@ -36,6 +39,7 @@ export class AdvisorsPage extends CommonPage {
 
   private advisorsMessages = {
     ...super.getMessages(),
+    advisorsRunning: 'All checks started running in the background',
   };
 
   private advisorsLinks = {
@@ -64,5 +68,26 @@ export class AdvisorsPage extends CommonPage {
 
   protected getAdvisorsLinks() {
     return this.advisorsLinks;
+  }
+
+  getNumberOfAllAvailableAdvisors = async (): Promise<number> => {
+    let numberOfAdvisors: number = 0;
+    await this.advisorsButtons.configurationAdvisors.click();
+    await this.openAllCategoryCollapseElements();
+    numberOfAdvisors = await this.advisorsTable.elements.row.count();
+
+    await this.advisorsButtons.securityAdvisors.click();
+    await this.openAllCategoryCollapseElements();
+    numberOfAdvisors = numberOfAdvisors + await this.advisorsTable.elements.row.count();
+
+    return numberOfAdvisors;
+  }
+
+  openAllCategoryCollapseElements = async () => {
+    await this.advisorsElements.advisorsCategoryCollapse.first().waitFor({ state: 'visible' });
+    const numberOfElements = await this.advisorsElements.advisorsCategoryCollapse.count();
+    for (let i = 0; i < numberOfElements; i++) {
+      await this.advisorsElements.advisorsCategoryCollapse.nth(i).click();
+    }
   }
 }

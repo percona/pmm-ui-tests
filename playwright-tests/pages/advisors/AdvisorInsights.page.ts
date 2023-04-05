@@ -1,13 +1,15 @@
 import { Page } from '@playwright/test';
 import Duration from '@tests/helpers/Duration';
 import { AdvisorsPage } from './Advisors.page';
+import InsightsTable from '@tests/components/advisors/insightsTable';
 
 export class AdvisorInsights extends AdvisorsPage {
   constructor(page: Page) {
     super(page);
   }
 
-  url = 'graph/roles';
+  url = 'graph/advisors/insights';
+  insightsTable = new InsightsTable(this.page);
 
   elements = {
     ...super.getAdvisorsElements(),

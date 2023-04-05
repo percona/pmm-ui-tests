@@ -1,8 +1,8 @@
-import apiHelper, {Settings} from "@api/helpers/apiHelper";
-import {APIResponse} from "playwright-core";
+import apiHelper, { Settings } from "@api/helpers/apiHelper";
+import { APIResponse } from "playwright-core";
 
 const PATH_GET = 'v1/Settings/Get';
-const PATH_CHANGE = 'v1/Settings/Get';
+const PATH_CHANGE = '/v1/Settings/Change';
 
 export enum SettingProperty {
   bm = "backup_management_enabled",
@@ -21,11 +21,10 @@ export const settings = {
    */
   async getSettingsProperty(name: SettingProperty) {
     const responseBody = await (await apiHelper.post(PATH_GET, {})).json();
-    console.log(`Response:\n${JSON.stringify(responseBody)}`);
     return Object.hasOwn(responseBody.settings, name) ? responseBody.settings[name] : undefined;
   },
 
-  changeSettings: async (settingsData: Settings):Promise<APIResponse> => {
-    return await apiHelper.post(PATH_CHANGE, {data: settingsData});
+  changeSettings: async (settingsData: Settings): Promise<APIResponse> => {
+    return await apiHelper.post(PATH_CHANGE, { data: settingsData });
   },
 };
