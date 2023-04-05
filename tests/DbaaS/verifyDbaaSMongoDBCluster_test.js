@@ -340,6 +340,7 @@ Scenario(
 
     await dbaasAPI.deleteAllDBCluster(clusterName);
 
+    await I.wait(120);
     const artifactName = await I.verifyCommand(
       `kubectl get psmdb-backup -l cluster=${psmdb_backup_cluster} | grep ready | awk '{print $4}' | head -n 1`, '20'
     );
