@@ -2,6 +2,7 @@ const { dbaasAPI, dbaasPage, locationsPage } = inject();
 const clusterName = 'minikube';
 const psmdb_cluster = 'psmdb-cluster';
 const assert = require('assert');
+const faker = require('faker');
 
 const psmdb_cluster_type = 'DB_CLUSTER_TYPE_PSMDB';
 const mongodb_recommended_version = 'MongoDB 5.0.11';
@@ -45,6 +46,7 @@ BeforeSuite(async ({ dbaasAPI, settingsAPI }) => {
 
 AfterSuite(async ({ dbaasAPI }) => {
   await dbaasAPI.apiUnregisterCluster(clusterName, true);
+  await dbaasAPI.deleteAllDBCluster(clusterName);
 });
 
 Before(async ({ I, dbaasAPI }) => {
@@ -334,7 +336,7 @@ Scenario(
 Scenario(
   'PMM-T1605 Verify PSMDB restore @dbaas',
   async ({ I, dbaasPage, dbaasActionsPage }) => {
-    const psmdb_restore_cluster = 'psmdb-restore-test';
+    const psmdb_restore_cluster = `psmdb-restore-${faker.lorem.word(4)}`;
 
     await dbaasAPI.deleteAllDBCluster(clusterName);
 
@@ -355,12 +357,14 @@ Scenario(
     await dbaasAPI.waitForOutput(`kubectl get psmdb-restore | grep ${psmdb_restore_cluster}`, 'ready');
 
     const { username, password, host } = await dbaasAPI.getDbClusterDetails(psmdb_restore_cluster, clusterName, 'MongoDB');
+    I.waitForVisible(dbaasPage.tabs.dbClusterTab.fields.clusterStatusActive, 60);
 
     const output = await I.verifyCommand(
       `kubectl exec psmdb-client -- mongo --eval 'db.adminCommand({listDatabases: 1}).databases.forEach(function(database) {print(database.name)})' "mongodb://${username}:${password}@${host}/admin?ssl=false"`,
     );
 
     assert.ok(output.includes(dbName), `The ${output} for psmdb cluster setup dump was expected to have db name ${dbName}, but found ${output}`);
+    await dbaasAPI.apiDeleteDBCluster(psmdb_restore_cluster, clusterName, psmdb_cluster_type);
   },
 ).retry(1);
 
