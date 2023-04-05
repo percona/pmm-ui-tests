@@ -224,7 +224,7 @@ jobs:
         env:
           NODE_TLS_REJECT_UNAUTHORIZED: 0
 
-      - name: 'Enable repo in pmm-server container: ${{ steps.target_repo.outputs.result }}'
+      - name: 'Enable <${{ steps.target_repo.outputs.result }}> repo in pmm-server container'
         working-directory: ./pmm-ui-tests/playwright-tests
         run: |
           echo "Upgrade way fork will be here soon..."
