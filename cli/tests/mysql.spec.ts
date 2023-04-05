@@ -10,7 +10,7 @@ test.describe('PMM Client CLI tests for MySQL', async () => {
   /**
    * @link 
    */
-  test('run pmm-admin add mysql based on running intsancess', async ({ }) => {
+  test('run pmm-admin add mysql based on running instances', async ({ }) => {
     let hosts = (await cli.exec(`pmm-admin list | grep "MySQL" | awk -F" " '{print $3}'`))
       .stdout.trim().split('\n').filter((item) => item.trim().length > 0);
     let n = 1;
@@ -78,7 +78,7 @@ test.describe('PMM Client CLI tests for MySQL', async () => {
 
   /**
    * @link 
-   */  
+   */
   test('run pmm-admin add mysql --help to check port', async ({ }) => {
     const output = await cli.exec('pmm-admin add mysql --help');
     await output.assertSuccess();
@@ -87,11 +87,29 @@ test.describe('PMM Client CLI tests for MySQL', async () => {
 
   /**
    * @link 
-   */  
+   */
   test('run pmm-admin add mysql --help to check service-name', async ({ }) => {
     const output = await cli.exec('pmm-admin add mysql --help');
     await output.assertSuccess();
     await output.outContains('service-name');
+  });
+
+  /**
+   * @link 
+   */  
+  test('run pmm-admin add mysql --help to check socket', async ({ }) => {
+    const output = await cli.exec('pmm-admin add mysql --help');
+    await output.assertSuccess();
+    await output.outContains('socket=STRING');
+  });
+
+  /**
+   * @link 
+   */  
+  test('run pmm-admin add mysql --help to check disable-tablestats-limit', async ({ }) => {
+    const output = await cli.exec('pmm-admin add mysql --help');
+    await output.assertSuccess();
+    await output.outContains('disable-tablestats-limit=NUMBER');
   });
 
   /**
@@ -139,4 +157,78 @@ test.describe('PMM Client CLI tests for MySQL', async () => {
       'log-level="warn"',
     ]);
   });
+
+  /**
+   * @link
+   */
+  test('run pmm-admin add mysql based on running instances using host, port and service name', async ({ }) => {
+    let hosts = (await cli.exec(`sudo pmm-admin list | grep "MySQL" | awk -F" " '{print $3}'`))
+      .stdout.trim().split('\n').filter((item) => item.trim().length > 0);
+    let n = 1;
+    for (const host of hosts) {
+      const ip = host.split(':')[0];
+      const port = host.split(':')[1];
+      let output = await cli.exec(`sudo pmm-admin add mysql --query-source=perfschema --username=${MYSQL_USER} --password=${MYSQL_PASSWORD}  --host=${ip} --port=${port} --service-name=mysql_${n++}`);
+      await output.assertSuccess();
+      await output.outContains('MySQL Service added.');
+    }
+  });
+
+  /**
+   * @link
+   */
+  test('run pmm-admin remove mysql added using host, port and service name', async ({ }) => {
+    let services = (await cli.exec(`sudo pmm-admin list | grep "MySQL" | grep "mysql_" | awk -F" " '{print $2}'`))
+      .stdout.trim().split('\n').filter((item) => item.trim().length > 0);
+    for (const service of services) {
+      let output = await cli.exec(`sudo pmm-admin remove mysql ${service}`);
+      await output.assertSuccess();
+      await output.outContains('Service removed.');
+    }
+  });
+
+  /**
+   * @link
+   */
+  test("PMM-T157 Adding MySQL with specified socket", async ({ }) => {
+    let hosts = (await cli.exec(`sudo pmm-admin list | grep "MySQL" | awk -F" " '{print $3}'`))
+      .stdout.trim().split('\n').filter((item) => item.trim().length > 0);
+    let n = 1;
+    for (const host of hosts) {
+      const mysql_ip = host.split(':')[0];
+      const mysql_port = host.split(':')[1];
+      let output = await cli.exec(`sudo pmm-admin add mysql --query-source=perfschema --username=${MYSQL_USER} --password=${MYSQL_PASSWORD} --socket=/tmp/mysql_sandbox${mysql_port}.sock mysql_socket${n++} ${host}`);
+      await output.assertSuccess();
+      await output.outContains('MySQL Service added.');
+    }
+  });
+
+  /**
+   * @link
+   */  
+  test("Removing MySQL with specified socket", async ({ }) => {
+    let services = (await cli.exec(`sudo pmm-admin list | grep "MySQL" | grep "mysql_socket" | awk -F" " '{print $2}'`))
+      .stdout.trim().split('\n').filter((item) => item.trim().length > 0);
+    for (const service of services) {
+      let output = await cli.exec(`sudo pmm-admin remove mysql ${service}`);
+      await output.assertSuccess();
+      await output.outContains('Service removed.');
+    }
+  });
+
+  /**
+   * @link
+   */
+  test('run pmm-admin add mysql with both disable-tablestats and disable-tablestats-limit', async ({ }) => {
+    let hosts = (await cli.exec(`sudo pmm-admin list | grep "MySQL" | awk -F" " '{print $3}'`))
+      .stdout.trim().split('\n').filter((item) => item.trim().length > 0);
+    let n = 1;
+    for (const host of hosts) {
+      let output = await cli.exec(`sudo pmm-admin add mysql --query-source=perfschema --disable-tablestats --disable-tablestats-limit=50 --username=${MYSQL_USER} --password=${MYSQL_PASSWORD} mysql_both${n++} ${host}`);
+      await output.exitCodeEquals(1);
+      await output.outContains('both --disable-tablestats and --disable-tablestats-limit are passed');
+      output = await cli.exec(`sudo pmm-admin list | grep MySQL`);
+      await output.outNotContains('mysql_both');
+    }
+  });  
 });
