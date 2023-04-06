@@ -50,7 +50,7 @@ export const pmmClientCommands = {
   },
   addMongoDb: async (address: string, password: string = "GRgrO9301RuF") => {
     await executeCommand(`${getClientPrefix()} pmm-admin add mongodb --cluster=${address} \
-    --username=mongoadmin --password=${password} --environment=modb-prod ${address} --debug ${address}:27017
+    --username=mongoadmin --password=${password} --environment=modb-prod mo-integration-${Date.now()}-0 --debug ${address}:27017
     `);
   }
 }
