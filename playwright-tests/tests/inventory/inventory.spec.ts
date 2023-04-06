@@ -190,6 +190,7 @@ test.describe('Spec file for PMM inventory tests.', async () => {
       const addServicePage = new AddServicePage(page);
 
       await test.step('1. Navigate to the Inventory page and expand Mongo service".', async () => {
+        await page.waitForTimeout(Duration.OneMinute);
         await page.goto(servicesPage.url);
         await servicesPage.servicesTable.elements.rowByText(localService.serviceName).waitFor({ state: 'visible' })
         await servicesPage.servicesTable.verifyAllMonitoring('OK');
