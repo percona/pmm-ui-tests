@@ -334,7 +334,7 @@ Scenario(
   },
 );
 
-// Skipping for now because the restore is unstable
+// Skipping for now because the restore is unstable https://jira.percona.com/browse/PMM-11946
 Scenario.skip(
   'PMM-T1605 Verify PSMDB restore @dbaas',
   async ({ I, dbaasPage, dbaasActionsPage }) => {

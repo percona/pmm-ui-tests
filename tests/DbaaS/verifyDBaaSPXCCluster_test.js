@@ -457,7 +457,7 @@ Scenario(
   },
 );
 
-//TODO: PXC backup doesn't work atm
+//TODO: PXC backup doesn't work atm https://jira.percona.com/browse/PMM-11945
 Scenario.skip(
   'PMM-T1602 Verify PXC backup on DBaaS @dbaas',
   async ({ I, dbaasPage, dbaasActionsPage, locationsAPI }) => {
