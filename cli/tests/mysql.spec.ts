@@ -227,8 +227,25 @@ test.describe('PMM Client CLI tests for MySQL', async () => {
       let output = await cli.exec(`sudo pmm-admin add mysql --query-source=perfschema --disable-tablestats --disable-tablestats-limit=50 --username=${MYSQL_USER} --password=${MYSQL_PASSWORD} mysql_both${n++} ${host}`);
       await output.exitCodeEquals(1);
       await output.outContains('both --disable-tablestats and --disable-tablestats-limit are passed');
-      output = await cli.exec(`sudo pmm-admin list | grep MySQL`);
+      output = await cli.exec('sudo pmm-admin list | grep MySQL');
       await output.outNotContains('mysql_both');
     }
-  });  
+  });
+  
+  /**
+   * @link
+   */
+  test.only('run pmm-admin add mysql with disable-tablestats', async ({ }) => {
+    let hosts = (await cli.exec(`sudo pmm-admin list | grep "MySQL" | awk -F" " '{print $3}'`))
+      .stdout.trim().split('\n').filter((item) => item.trim().length > 0);
+    let n = 1;
+    for (const host of hosts) {
+      let output = await cli.exec(`sudo pmm-admin add mysql --query-source=perfschema --disable-tablestats --username=${MYSQL_USER} --password=${MYSQL_PASSWORD} mysql_dis_tablestats${n++} ${host}`);
+      await output.assertSuccess();
+      await output.outContains('Table statistics collection disabled (always).');
+      output = await cli.exec('sudo pmm-admin list | grep MySQL');
+      await output.outContains('mysql_dis_tablestats');
+    }
+  });
+
 });
