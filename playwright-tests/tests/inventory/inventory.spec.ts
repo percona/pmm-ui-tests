@@ -192,6 +192,7 @@ test.describe('Spec file for PMM inventory tests.', async () => {
       await test.step('1. Navigate to the Inventory page and expand Mongo service".', async () => {
         await page.waitForTimeout(Duration.OneMinute);
         await page.goto(servicesPage.url);
+        console.log(await pmmClientCommands.listServices());
         const rows = await servicesPage.servicesTable.elements.row.elementHandles()
         for await (const row of rows.entries()) {
           const rowText = await row[1].textContent()
