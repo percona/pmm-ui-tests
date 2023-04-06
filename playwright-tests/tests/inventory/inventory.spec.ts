@@ -192,6 +192,9 @@ test.describe('Spec file for PMM inventory tests.', async () => {
       await test.step('1. Navigate to the Inventory page and expand Mongo service".', async () => {
         await page.waitForTimeout(Duration.OneMinute);
         await page.goto(servicesPage.url);
+        for (let i = 0; i < await servicesPage.servicesTable.elements.row.count(); i++) {
+          console.log(`Row text is: ${await servicesPage.servicesTable.elements.row.nth(i).textContent()}`);
+        }
         await servicesPage.servicesTable.elements.rowByText(localService.serviceName).waitFor({ state: 'visible' })
         await servicesPage.servicesTable.verifyAllMonitoring('OK');
         await servicesPage.servicesTable.buttons.showRowDetails(localService.serviceName).click();
