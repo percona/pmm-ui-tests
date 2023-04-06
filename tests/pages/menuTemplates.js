@@ -97,12 +97,12 @@ function MenuOption(menuName, label, locator, path, menuLevel = 1) {
     I.waitForVisible(elemToClick, 2);
     I.moveCursorTo(elemToClick);
 
-    // special check for 'Advisors' because elemToClick locator matches more than one element
-    if (label !== 'Advisors') {
-      I.seeTextEquals(label, elemToClick);
+    // special check for 'Advisors' and 'Backup' because elemToClick locator matches more than one element
+    if (label == 'Advisors' || label == 'Backup') {
+      I.seeTextEquals(label, `.//ul[./@aria-label = '${label}']//div[text()="${label}"]`);
     }
     else {
-      I.seeTextEquals(label, `.//ul[./@aria-label = 'Advisors']//div[text()="Advisors"]`);
+      I.seeTextEquals(label, elemToClick);
     }
     
     I.seeAttributesOnElements(elemToClick, { target: null });
