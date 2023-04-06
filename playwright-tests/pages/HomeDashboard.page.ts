@@ -53,9 +53,17 @@ export default class HomeDashboard extends BaseDashboard {
       await expect.soft(this.elements.failedAdvisorsPanel.noticeAdvisors).toHaveText(options.notice.toString(), { timeout: Duration.ThreeMinutes })
     }
 
+    let errors: string[] = [];
+    for (const obj of test.info().errors) {
+      if (obj.message) {
+        errors.push(`\t${obj.message.split('\n')[0]}`);
+      }
+
+    }
+
     expect(
       test.info().errors,
-      `'Contains all elements' failed with ${test.info().errors.length} error(s):\n${test.info().error}`
+      `'Failed advisors status' failed with ${test.info().errors.length} error(s):\n${errors.join('\n')}`
     ).toHaveLength(0);
   }
 }
