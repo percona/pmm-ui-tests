@@ -31,6 +31,9 @@ export const pmmClientCommands = {
   getNodeId: async () => {
     return (await executeCommand(`${getClientPrefix()}pmm-admin status | grep "Node ID"`)).stdout.replaceAll(' ', '').replace('NodeID:', '');
   },
+  listServices: async () => {
+    return (await executeCommand(`${getClientPrefix()}pmm-admin list`)).stdout;
+  },
   getProcessId: async (processName: string) => {
     return (await executeCommand(`${getClientPrefix()}pidof ${processName}`));
   },
