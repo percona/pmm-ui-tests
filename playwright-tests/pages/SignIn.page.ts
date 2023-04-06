@@ -1,4 +1,4 @@
-import { Page } from '@playwright/test';
+import { Page, expect } from '@playwright/test';
 import { OktaSignInPage } from '@pages/OktaSignIn.page';
 import { CommonPage } from '@pages/Common.page';
 import Duration from '@tests/helpers/Duration';
@@ -14,7 +14,7 @@ export class SignInPage extends CommonPage {
 
   fields = {
     ...super.getFields(),
-    username: this.page.locator('//*[@name="username"]'),
+    username: this.page.locator('//*[@name="username" or @name="user"]'),
     password: this.page.locator('//*[@name="password"]'),
   };
 
@@ -45,4 +45,16 @@ export class SignInPage extends CommonPage {
     await oktaSignInPage.buttons.signIn.click();
     await this.sideMenu.elements.home.waitFor({ state: 'visible', timeout: Duration.OneMinute });
   };
+
+  waitForOktaLogin = async (timeout: Duration = Duration.OneMinute) => {
+    let retries = 0;
+    while (!(await this.buttons.oktaLogin.isVisible())) {
+      await this.page.reload();
+      await this.page.waitForTimeout(Duration.TenSeconds);
+      retries++;
+      if (retries > timeout / Duration.TenSeconds) {
+        expect(false, 'Okta login button was not displayed in requested time.').toBeTruthy();
+      }
+    }
+  }
 }

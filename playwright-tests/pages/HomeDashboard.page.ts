@@ -1,4 +1,4 @@
-import { expect, Page } from '@playwright/test';
+import { expect, Page, test } from '@playwright/test';
 import PmmUpgrade from '@components/pmmUpgrade';
 import UpgradeModal from '@components/upgradeModal';
 import Duration from '@helpers/Duration';
@@ -41,16 +41,21 @@ export default class HomeDashboard extends BaseDashboard {
 
   verifyFailedAdvisorsStatus = async (options: { critical?: number, error?: number, warning?: number, notice?: number }) => {
     if (options.critical) {
-      await expect(this.elements.failedAdvisorsPanel.criticalAdvisors).toHaveText(options.critical.toString())
+      await expect.soft(this.elements.failedAdvisorsPanel.criticalAdvisors).toHaveText(options.critical.toString(), { timeout: Duration.ThreeMinutes })
     }
     if (options.error) {
-      await expect(this.elements.failedAdvisorsPanel.errorAdvisors).toHaveText(options.error.toString())
+      await expect.soft(this.elements.failedAdvisorsPanel.errorAdvisors).toHaveText(options.error.toString(), { timeout: Duration.ThreeMinutes })
     }
     if (options.warning) {
-      await expect(this.elements.failedAdvisorsPanel.warningAdvisors).toHaveText(options.warning.toString())
+      await expect.soft(this.elements.failedAdvisorsPanel.warningAdvisors).toHaveText(options.warning.toString(), { timeout: Duration.ThreeMinutes })
     }
     if (options.notice) {
-      await expect(this.elements.failedAdvisorsPanel.noticeAdvisors).toHaveText(options.notice.toString())
+      await expect.soft(this.elements.failedAdvisorsPanel.noticeAdvisors).toHaveText(options.notice.toString(), { timeout: Duration.ThreeMinutes })
     }
+
+    expect(
+      test.info().errors,
+      `'Contains all elements' failed with ${test.info().errors.length} error(s):\n${test.info().error}`
+    ).toHaveLength(0);
   }
 }
