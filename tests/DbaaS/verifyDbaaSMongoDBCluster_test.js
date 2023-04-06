@@ -5,7 +5,7 @@ const assert = require('assert');
 const faker = require('faker');
 
 const psmdb_cluster_type = 'DB_CLUSTER_TYPE_PSMDB';
-const mongodb_recommended_version = 'MongoDB 5.0.11';
+const mongodb_recommended_version = 'MongoDB 6.0.4';
 const psmdb_backup_cluster = 'psmdb-backup-test';
 const dbName = 'tutorialkart2';
 
@@ -248,7 +248,7 @@ Scenario('PMM-T704 PMM-T772 PMM-T849 PMM-T850 Resources, PV, Secrets verificatio
       memory: '2 GB',
       cpu: '0.5',
       disk: '1 GB',
-      dbType: 'MongoDB 5.0.4',
+      dbType: 'MongoDB 4.4.18',
       clusterDashboardRedirectionLink: dbaasPage.clusterDashboardUrls.psmdbDashboard(
         psmdb_cluster_resource_check,
       ),
