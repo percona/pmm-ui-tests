@@ -122,7 +122,7 @@ module.exports = {
       },
       stt: {
         iconLocator: locate('$advanced-advisors').find('div[class$="-Icon"]').as('Advanced advisors tooltip'),
-        text: 'Enable Advisor Checks and get updated checks from Percona.',
+        text: 'Enable Advisors and get updated checks from Percona..',
         link: links.advisorsDocs,
       },
       publicAddress: {
