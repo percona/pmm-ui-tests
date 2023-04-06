@@ -90,6 +90,40 @@ test.describe('Spec file for PMM inventory tests.', async () => {
     }
   });
 
+  test('PMM-T343 Verify agent can be removed on PMM Inventory page @inventory @inventory-pre-upgrade @inventory-post-upgrade', async ({ page }) => {
+    if (pmmVersion >= 36) {
+      const servicesPage = new ServicesPage(page);
+      const serviceName = 'ps_integration_';
+
+      await test.step('1. Go to services page and and verify mysql database is present.', async () => {
+        await page.goto(servicesPage.url);
+        await servicesPage.servicesTable.elements.rowByText(serviceName).waitFor({ state: 'visible' });
+      });
+
+      await test.step('2. Select MySql options and verify all agents are running.', async () => {
+        await servicesPage.servicesTable.buttons.showRowDetails(serviceName).click();
+        await expect(servicesPage.servicesTable.elements.agentStatus).toHaveText('4/4 running');
+      });
+
+      await test.step('3. Navigate to the agents, and delete mysql exporter.', async () => {
+        await servicesPage.servicesTable.elements.agentStatus.click();
+        await servicesPage.agentsTable.elements.checkbox('Mysqld exporter').check({ force: true });
+        await servicesPage.agentsTable.buttons.delete.click();
+        await servicesPage.agentsTable.buttons.proceed.click();
+        await servicesPage.toast.checkToastMessage(servicesPage.agentsTable.messages.successfullyDeleted(1));
+        await servicesPage.buttons.goBackToServices.click();
+        await servicesPage.servicesTable.buttons.showRowDetails(serviceName).click();
+        await expect(servicesPage.servicesTable.elements.agentStatus).toHaveText('3/3 running');
+      });
+
+    } else {
+      test.info().annotations.push({
+        type: 'Old Version ',
+        description: 'This test is for PMM version 2.37.0 and higher',
+      });
+    }
+  });
+
   /*
     Finished
   */
@@ -162,6 +196,7 @@ test.describe('Spec file for PMM inventory tests.', async () => {
 
       await test.step('5. Return env to clean state.', async () => {
         const containers = await systemCommands.getRunningContainerNames();
+        await page.waitForTimeout(Duration.OneMinute);
         await pmmClientCommands.setupAgent();
         await pmmClientCommands.startAgent();
         await page.waitForTimeout(5000);
