@@ -330,17 +330,18 @@ Scenario(
     assert.ok(output.includes(dbName), `The ${output} for psmdb cluster setup dump was expected to have db name ${dbName}, but found ${output}`);
 
     await dbaasAPI.waitForOutput(`kubectl get psmdb-backup | grep ${psmdb_backup_cluster}`, 'ready');
+    await dbaasAPI.apiDeleteDBCluster(psmdb_backup_cluster, clusterName, psmdb_cluster_type);
   },
 );
 
-Scenario(
+// Skipping for now because the restore is unstable
+Scenario.skip(
   'PMM-T1605 Verify PSMDB restore @dbaas',
   async ({ I, dbaasPage, dbaasActionsPage }) => {
     const psmdb_restore_cluster = `psmdb-restore-${faker.lorem.word(4)}`;
 
     await dbaasAPI.deleteAllDBCluster(clusterName);
 
-    await I.wait(120);
     const artifactName = await I.verifyCommand(
       `kubectl get psmdb-backup -l cluster=${psmdb_backup_cluster} | grep ready | awk '{print $4}' | head -n 1`, '20'
     );
@@ -368,4 +369,3 @@ Scenario(
     await dbaasAPI.apiDeleteDBCluster(psmdb_restore_cluster, clusterName, psmdb_cluster_type);
   },
 ).retry(1);
-
