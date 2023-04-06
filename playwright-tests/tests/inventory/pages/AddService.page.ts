@@ -1,6 +1,6 @@
 import { expect, Page } from '@playwright/test';
-import ServicesTable from '@tests/components/configuration/servicesTable';
-import { CommonPage } from '../Common.page';
+import ServicesTable from '@tests/tests/inventory/components/servicesTable';
+import { CommonPage } from '../../../pages/Common.page';
 
 export class AddServicePage extends CommonPage {
   constructor(page: Page) {

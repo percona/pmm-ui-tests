@@ -1,15 +1,15 @@
 import { expect, test } from '@playwright/test';
 import apiHelper from '@tests/api/helpers/apiHelper';
-import { NodeDetails } from '@tests/components/configuration/nodesTable';
-import { ServiceDetails } from '@tests/components/configuration/servicesTable';
+import { NodeDetails } from '@tests/tests/inventory/components/nodesTable';
+import { ServiceDetails } from '@tests/tests/inventory/components/servicesTable';
 import { pmmClientCommands, pmmServerCommands, systemCommands } from '@tests/helpers/CommandLine';
 import Duration from '@tests/helpers/Duration';
 import grafanaHelper from '@tests/helpers/GrafanaHelper';
 import { MongoDBInstanceSummary } from '@tests/pages/dashboards/mongo/MongoDBInstanceSummary.page';
 import HomeDashboard from '@tests/pages/HomeDashboard.page';
-import { AddServicePage } from '@tests/pages/inventory/AddService.page';
-import { NodesPage } from '@tests/pages/inventory/Nodes.page';
-import { ServicesPage } from '@tests/pages/inventory/Services.page';
+import { AddServicePage } from '@tests/tests/inventory/pages/AddService.page';
+import { NodesPage } from '@tests/tests/inventory/pages/Nodes.page';
+import { ServicesPage } from '@tests/tests/inventory/pages/Services.page';
 import { QAN } from '@tests/pages/QAN/QueryAnalytics.page';
 
 test.describe('Spec file for PMM inventory tests.', async () => {

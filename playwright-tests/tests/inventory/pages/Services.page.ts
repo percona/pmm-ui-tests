@@ -1,5 +1,5 @@
 import { expect, Page } from '@playwright/test';
-import ServicesTable from '@tests/components/configuration/servicesTable';
+import ServicesTable from '@tests/tests/inventory/components/servicesTable';
 import { InventoryPage } from './Inventory.page';
 
 export class ServicesPage extends InventoryPage {

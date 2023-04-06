@@ -1,5 +1,5 @@
 import { expect, Page } from '@playwright/test';
-import Table from '../table';
+import Table from '../../../components/table';
 
 export interface ServiceDetails {
   serviceName: string;
