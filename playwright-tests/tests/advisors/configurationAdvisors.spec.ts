@@ -74,7 +74,7 @@ test.describe('Spec file for basic database version control of Advisors. ', asyn
 
     await test.step('3. Verify that failed advisors are displayed on home dashboard.', async () => {
       await advisorInsights.sideMenu.elements.home.click();
-      await homeDashboard.verifyFailedAdvisorsStatus({ warning: 1, notice: 3 })
+      await homeDashboard.verifyFailedAdvisorsNumberIsGreater({ warning: 1, notice: 3 })
     });
 
     await test.step('4. Verify that advisors link from home dashboard links to advisors page.', async () => {
@@ -106,7 +106,7 @@ test.describe('Spec file for basic database version control of Advisors. ', asyn
 
     await test.step('8. Verify that failed advisors are displayed on home dashboard for registered user.', async () => {
       await advisorInsights.sideMenu.elements.home.click();
-      await homeDashboard.verifyFailedAdvisorsStatus({ warning: 9, notice: 10 })
+      await homeDashboard.verifyFailedAdvisorsNumberIsGreater({ warning: 9, notice: 10 })
       await page.goto(perconaPlatformPage.perconaPlatformURL)
       await perconaPlatformPage.buttons.disconnect.click();
       await perconaPlatformPage.buttons.confirmDisconnect.click();

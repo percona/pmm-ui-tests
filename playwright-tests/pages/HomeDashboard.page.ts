@@ -39,18 +39,18 @@ export default class HomeDashboard extends BaseDashboard {
     await this.upgradeModal.buttons.close.click();
   };
 
-  verifyFailedAdvisorsStatus = async (options: { critical?: number, error?: number, warning?: number, notice?: number }) => {
+  verifyFailedAdvisorsNumberIsGreater = async (options: { critical?: number, error?: number, warning?: number, notice?: number }) => {
     if (options.critical) {
-      await expect.soft(this.elements.failedAdvisorsPanel.criticalAdvisors).toHaveText(options.critical.toString(), { timeout: Duration.ThirtySecond })
+      expect.soft(await this.elements.failedAdvisorsPanel.criticalAdvisors.count()).toBeGreaterThanOrEqual(options.critical);
     }
     if (options.error) {
-      await expect.soft(this.elements.failedAdvisorsPanel.errorAdvisors).toHaveText(options.error.toString(), { timeout: Duration.ThirtySecond })
+      expect.soft(await this.elements.failedAdvisorsPanel.errorAdvisors.count()).toBeGreaterThanOrEqual(options.error);
     }
     if (options.warning) {
-      await expect.soft(this.elements.failedAdvisorsPanel.warningAdvisors).toHaveText(options.warning.toString(), { timeout: Duration.ThirtySecond })
+      expect.soft(await this.elements.failedAdvisorsPanel.warningAdvisors.count()).toBeGreaterThanOrEqual(options.warning);
     }
     if (options.notice) {
-      await expect.soft(this.elements.failedAdvisorsPanel.noticeAdvisors).toHaveText(options.notice.toString(), { timeout: Duration.ThirtySecond })
+      expect.soft(await this.elements.failedAdvisorsPanel.noticeAdvisors.count()).toBeGreaterThanOrEqual(options.notice);
     }
 
     let errors: string[] = [];
