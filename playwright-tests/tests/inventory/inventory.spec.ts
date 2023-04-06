@@ -116,6 +116,66 @@ test.describe('Spec file for PMM inventory tests.', async () => {
       });
     }
   });
+
+  /*
+    Finished
+  */
+  test('PMM-T1670 Verify PMM Inventory redesign : Layout & Nodes @inventory @inventory-pre-upgrade @inventory-post-upgrade', async ({ page }) => {
+    const servicesPage = new ServicesPage(page);
+    const nodesPage = new NodesPage(page);
+    let nodeDetails: NodeDetails = {};
+
+    // Change to 37
+    if (pmmVersion >= 36) {
+      await test.step('1. Verify navigation to the Inventory Nodes page.', async () => {
+        await page.goto(servicesPage.url);
+        await servicesPage.buttons.nodesTab.click();
+      });
+
+      await test.step('2. Verify node details.', async () => {
+        const nodeId = await pmmClientCommands.getNodeId();
+        nodeDetails = await pmmServerCommands.getNodeDetails(nodeId);
+        nodeDetails.nodeId = nodeId;
+        await nodesPage.nodesTable.verifyNode(nodeDetails)
+      });
+
+      await test.step('3. Try to delete node.', async () => {
+        await nodesPage.nodesTable.buttons.selectNode(nodeDetails.nodeName).check({ force: true });
+        await expect(nodesPage.buttons.delete).toBeEnabled();
+        await nodesPage.buttons.delete.click();
+        await expect(nodesPage.nodesTable.elements.modalHeader).toHaveText(nodesPage.nodesTable.messages.confirmNodeDeleteHeader());
+        await nodesPage.nodesTable.buttons.submit.click();
+        await nodesPage.toast.checkToastMessage(nodesPage.nodesTable.messages.hasAgents(nodeDetails.nodeId).replace('\n', ''), { variant: 'error' });
+      });
+
+      await test.step('4. Force delete the node.', async () => {
+        await nodesPage.buttons.delete.click();
+        await nodesPage.nodesTable.buttons.force.check({ force: true });
+        await nodesPage.nodesTable.buttons.submit.click();
+        await nodesPage.toast.checkToastMessage(
+          nodesPage.nodesTable.messages.nodesSuccessfullyDeleted(1),
+          { variant: 'success', assertionTimeout: Duration.OneSecond }
+        );
+        await nodesPage.nodesTable.verifyTableDoesNotContain(nodeDetails.nodeId!);
+        await nodesPage.nodesTable.verifyTableDoesNotContain(nodeDetails.nodeName!);
+      });
+
+      await test.step('5. Return env to clean state.', async () => {
+        const containers = await systemCommands.getRunningContainerNames();
+        await pmmClientCommands.setupAgent();
+        await pmmClientCommands.startAgent();
+        await page.waitForTimeout(5000);
+        const mongoAddress = process.env.CI ? '127.0.0.1' : containers.find((container) => container.includes('mo-integration'));
+        await pmmClientCommands.addMongoDb(mongoAddress || '');
+      });
+
+    } else {
+      test.info().annotations.push({
+        type: 'Old Version ',
+        description: 'This test is for PMM version 2.37.0 and higher',
+      });
+    }
+  });
   /*
     Needs test for the kill of the agent
   */
@@ -199,63 +259,5 @@ test.describe('Spec file for PMM inventory tests.', async () => {
     }
   });
 
-  /*
-    Finished
-  */
-  test('PMM-T1670 Verify PMM Inventory redesign : Layout & Nodes @inventory @inventory-pre-upgrade @inventory-post-upgrade', async ({ page }) => {
-    const servicesPage = new ServicesPage(page);
-    const nodesPage = new NodesPage(page);
-    let nodeDetails: NodeDetails = {};
 
-    // Change to 37
-    if (pmmVersion >= 36) {
-      await test.step('1. Verify navigation to the Inventory Nodes page.', async () => {
-        await page.goto(servicesPage.url);
-        await servicesPage.buttons.nodesTab.click();
-      });
-
-      await test.step('2. Verify node details.', async () => {
-        const nodeId = await pmmClientCommands.getNodeId();
-        nodeDetails = await pmmServerCommands.getNodeDetails(nodeId);
-        nodeDetails.nodeId = nodeId;
-        await nodesPage.nodesTable.verifyNode(nodeDetails)
-      });
-
-      await test.step('3. Try to delete node.', async () => {
-        await nodesPage.nodesTable.buttons.selectNode(nodeDetails.nodeName).check({ force: true });
-        await expect(nodesPage.buttons.delete).toBeEnabled();
-        await nodesPage.buttons.delete.click();
-        await expect(nodesPage.nodesTable.elements.modalHeader).toHaveText(nodesPage.nodesTable.messages.confirmNodeDeleteHeader());
-        await nodesPage.nodesTable.buttons.submit.click();
-        await nodesPage.toast.checkToastMessage(nodesPage.nodesTable.messages.hasAgents(nodeDetails.nodeId).replace('\n', ''), { variant: 'error' });
-      });
-
-      await test.step('4. Force delete the node.', async () => {
-        await nodesPage.buttons.delete.click();
-        await nodesPage.nodesTable.buttons.force.check({ force: true });
-        await nodesPage.nodesTable.buttons.submit.click();
-        await nodesPage.toast.checkToastMessage(
-          nodesPage.nodesTable.messages.nodesSuccessfullyDeleted(1),
-          { variant: 'success', assertionTimeout: Duration.OneSecond }
-        );
-        await nodesPage.nodesTable.verifyTableDoesNotContain(nodeDetails.nodeId!);
-        await nodesPage.nodesTable.verifyTableDoesNotContain(nodeDetails.nodeName!);
-      });
-
-      await test.step('5. Return env to clean state.', async () => {
-        const containers = await systemCommands.getRunningContainerNames();
-        await pmmClientCommands.setupAgent();
-        await pmmClientCommands.startAgent();
-        await page.waitForTimeout(5000);
-        const mongoAddress = process.env.CI ? '127.0.0.1' : containers.find((container) => container.includes('mo-integration'));
-        await pmmClientCommands.addMongoDb(mongoAddress || '');
-      });
-
-    } else {
-      test.info().annotations.push({
-        type: 'Old Version ',
-        description: 'This test is for PMM version 2.37.0 and higher',
-      });
-    }
-  });
 });
