@@ -41,16 +41,16 @@ export default class HomeDashboard extends BaseDashboard {
 
   verifyFailedAdvisorsStatus = async (options: { critical?: number, error?: number, warning?: number, notice?: number }) => {
     if (options.critical) {
-      await expect.soft(this.elements.failedAdvisorsPanel.criticalAdvisors).toHaveText(options.critical.toString(), { timeout: Duration.ThreeMinutes })
+      await expect.soft(this.elements.failedAdvisorsPanel.criticalAdvisors).toHaveText(options.critical.toString(), { timeout: Duration.ThirtySecond })
     }
     if (options.error) {
-      await expect.soft(this.elements.failedAdvisorsPanel.errorAdvisors).toHaveText(options.error.toString(), { timeout: Duration.ThreeMinutes })
+      await expect.soft(this.elements.failedAdvisorsPanel.errorAdvisors).toHaveText(options.error.toString(), { timeout: Duration.ThirtySecond })
     }
     if (options.warning) {
-      await expect.soft(this.elements.failedAdvisorsPanel.warningAdvisors).toHaveText(options.warning.toString(), { timeout: Duration.ThreeMinutes })
+      await expect.soft(this.elements.failedAdvisorsPanel.warningAdvisors).toHaveText(options.warning.toString(), { timeout: Duration.ThirtySecond })
     }
     if (options.notice) {
-      await expect.soft(this.elements.failedAdvisorsPanel.noticeAdvisors).toHaveText(options.notice.toString(), { timeout: Duration.ThreeMinutes })
+      await expect.soft(this.elements.failedAdvisorsPanel.noticeAdvisors).toHaveText(options.notice.toString(), { timeout: Duration.ThirtySecond })
     }
 
     let errors: string[] = [];
