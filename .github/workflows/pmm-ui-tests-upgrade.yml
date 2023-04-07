@@ -218,9 +218,7 @@ jobs:
       - name: 'Run tests before upgrade'
         id: ui-tests-flagged
         working-directory: ./pmm-ui-tests/playwright-tests
-        run: |
-          touch portalCredentials
-          npx playwright test --grep="${{ inputs.pre_upgrade_tests }}"
+        run: npx playwright test --grep="${{ inputs.pre_upgrade_tests }}"
         env:
           NODE_TLS_REJECT_UNAUTHORIZED: 0
 
@@ -242,8 +240,7 @@ jobs:
 
       - name: 'Upgrade pmm-server: <UI way>'
         working-directory: ./pmm-ui-tests/playwright-tests
-        run: |
-          npx playwright test --grep="@pmm-upgrade"
+        run: npx playwright test --grep="@pmm-upgrade"
         env:
           NODE_TLS_REJECT_UNAUTHORIZED: 0
 
