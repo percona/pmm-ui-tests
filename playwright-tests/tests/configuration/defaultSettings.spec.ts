@@ -1,8 +1,5 @@
 import {expect, test} from '@playwright/test';
 import {api} from '@api/api';
-import apiHelper from "@api/helpers/apiHelper";
-import grafanaHelper from '@helpers/GrafanaHelper';
-import HomeDashboard from '@pages/HomeDashboard.page';
 import {SettingProperty} from "@tests/tests/configuration/api/settings";
 
 test.describe('Default Settings tests', async () => {
