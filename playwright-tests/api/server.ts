@@ -1,5 +1,6 @@
 import apiHelper from "@api/helpers/apiHelper";
 import Duration from "@helpers/Duration";
+import {expect} from "@playwright/test";
 
 export const server = {
 
@@ -13,6 +14,7 @@ export const server = {
    */
   getPmmVersion: async ():Promise<{major:number, minor:number, patch:number}> => {
     const response = await apiHelper.get('/v1/version', { timeout: Duration.ThreeMinutes });
+    await expect(response).toBeOK();
     const version = (await response.json()).version
     const [versionMajor, versionMinor, versionPatch] = version.split('.');
     console.log(`PMM Server version: ${version}`)
