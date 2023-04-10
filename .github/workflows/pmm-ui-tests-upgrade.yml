@@ -265,8 +265,8 @@ jobs:
           NODE_TLS_REJECT_UNAUTHORIZED: 0
 
       - name: Generate and Attach the report
-        if: ${{ always() }}
+        if: failure()
         uses: actions/upload-artifact@v3
         with:
-          name: "report-t"
+          name: "html-report"
           path: ./pmm-ui-tests/playwright-tests/playwright-report

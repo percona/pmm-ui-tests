@@ -28,7 +28,7 @@ const config: PlaywrightTestConfig = {
   reporter: [
     ['github'],
     ['list'],
-    ['html', { open: 'never' }]
+    ['html', { open: 'never', outputFolder: './playwright-report' }]
   ],
 
   use: {
