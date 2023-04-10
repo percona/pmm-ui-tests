@@ -124,6 +124,9 @@ jobs:
       OAUTH_DEV_HOST: ${{ secrets.OAUTH_DEV_HOST }}
       OAUTH_SCOPES: percona
 
+      ### inject "upgrade from" version for test conditional
+      PMM_SERVER_START_VERSION: ${{ inputs.pmm_server_version }}
+
       # Variables for E2E tests
       MAILOSAUR_API_KEY: ${{ secrets.MAILOSAUR_API_KEY }}
       MAILOSAUR_UI_TESTS_SERVER_ID: ${{ secrets.MAILOSAUR_UI_TESTS_SERVER_ID }}
