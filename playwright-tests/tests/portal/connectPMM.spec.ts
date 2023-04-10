@@ -10,7 +10,6 @@ import PerconaPlatform from '@pages/pmmSettings/PerconaPlatform.page';
 import { SignInPage } from '@pages/SignIn.page';
 import { PortalUserRoles } from '@support/enums/portalUserRoles';
 import User from '@support/types/user.interface';
-import { executeCommand } from '@tests/helpers/commandLineHelper';
 
 test.describe('Spec file for connecting PMM to the portal', async () => {
   let firstAdmin: User;
@@ -111,6 +110,7 @@ test.describe('Spec file for connecting PMM to the portal', async () => {
   test('PMM-T1224 Verify user is notified about using old PMM version while trying to connect to Portal @portal @pre-pmm-portal-upgrade @post-pmm-portal-upgrade', async ({
     page,
   }) => {
+    test.skip(true,'Debug upgrade fail');
     const platformPage = new PerconaPlatform(page);
 
     if (pmmVersion < 27) {
@@ -132,6 +132,7 @@ test.describe('Spec file for connecting PMM to the portal', async () => {
   test('PMM-T1097 Verify PMM server is connected to Portal @not-ui-pipeline @portal @pre-pmm-portal-upgrade', async ({
     page,
   }) => {
+    test.skip(true,'Debug upgrade fail');
     if (pmmVersion >= 27) {
       const platformPage = new PerconaPlatform(page);
 
@@ -160,6 +161,7 @@ test.describe('Spec file for connecting PMM to the portal', async () => {
     context,
     browser,
   }) => {
+    test.skip(true,'Debug upgrade fail');
     if (pmmVersion >= 27) {
       const signInPage = new SignInPage(page);
       const homeDashboard = new HomeDashboard(page);

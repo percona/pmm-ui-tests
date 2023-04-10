@@ -1,5 +1,6 @@
-import {expect, test} from '@playwright/test';
 import {api} from '@api/api';
+import {PmmVersion} from "@helpers/PmmVersion";
+import {expect, test} from '@playwright/test';
 import {SettingProperty} from "@tests/tests/configuration/api/settings";
 
 test.describe('Default Settings tests', async () => {
