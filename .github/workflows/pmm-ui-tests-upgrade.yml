@@ -145,10 +145,10 @@ jobs:
           target_url: 'https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}'
           sha: ${{ env.SHA }}
 
-      - name: 'Checkout UI tests: "${{ inputs.pmm_qa_branch }}"'
+      - name: 'Checkout UI tests: "${{ inputs.pmm_ui_tests_branch }}"'
         uses: actions/checkout@v3
         with:
-          ref: ${{ inputs.pmm_qa_branch }}
+          ref: ${{ inputs.pmm_ui_tests_branch }}
           repository: percona/pmm-ui-tests
           path: ./pmm-ui-tests
 
