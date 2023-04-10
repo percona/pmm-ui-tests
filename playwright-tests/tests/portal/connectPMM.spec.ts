@@ -10,6 +10,7 @@ import PerconaPlatform from '@pages/pmmSettings/PerconaPlatform.page';
 import { SignInPage } from '@pages/SignIn.page';
 import { PortalUserRoles } from '@support/enums/portalUserRoles';
 import User from '@support/types/user.interface';
+import {api} from "@api/api";
 
 test.describe('Spec file for connecting PMM to the portal', async () => {
   let firstAdmin: User;
@@ -20,10 +21,7 @@ test.describe('Spec file for connecting PMM to the portal', async () => {
 
   test.beforeAll(async ({ baseURL }) => {
     await apiHelper.changeSettings({ pmm_public_address: baseURL!.replace(/(^\w+:|^)\/\//, '') });
-    if (!pmmVersion) {
-      const versionString = (await apiHelper.getPmmVersion()).versionMinor;
-      pmmVersion = parseInt(versionString);
-    }
+    pmmVersion = (await api.pmm.serverV1.getPmmVersion()).minor;
     const userCredentials = await fileHelper.readfile(fileName, false);
     if (userCredentials) {
       [firstAdmin, secondAdmin, technicalUser] = JSON.parse(userCredentials);
@@ -110,7 +108,6 @@ test.describe('Spec file for connecting PMM to the portal', async () => {
   test('PMM-T1224 Verify user is notified about using old PMM version while trying to connect to Portal @portal @pre-pmm-portal-upgrade @post-pmm-portal-upgrade', async ({
     page,
   }) => {
-    test.skip(true,'Debug upgrade fail');
     const platformPage = new PerconaPlatform(page);
 
     if (pmmVersion < 27) {
