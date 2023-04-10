@@ -24,10 +24,6 @@ test.beforeAll(async () => {
 });
 
 test.describe('Spec file for Access Control (RBAC)', async () => {
-  test.info().annotations.push({
-    type: 'Old Version ',
-    description: 'This test is for PMM version 2.35.0 and higher',
-  });
   test.skip(pmmVersion < 35, 'This test is for PMM version 2.35.0 and higher');
   const newUser = { username: 'testUserRBAC', email: 'testUserRBAC@localhost', name: 'Test User', password: 'password' };
   const roleName = `Role Name Only MySql Access`;
