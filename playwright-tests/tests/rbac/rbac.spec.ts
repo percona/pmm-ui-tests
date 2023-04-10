@@ -11,7 +11,6 @@ import NodesOverviewDashboard from '@tests/pages/dashboards/nodes/NodesOverviewD
 import Duration from '@tests/helpers/Duration';
 import PostgresqlInstancesOverviewDashboard from '@tests/pages/dashboards/postgresql/PostgresqlInstancesOverview.page';
 import AdvancedSettings from '@tests/pages/pmmSettings/AdvancedSettings.page';
-import {api} from "@api/api";
 
 test.describe('Spec file for Access Control (RBAC)', async () => {
   const newUser = { username: 'testUserRBAC', email: 'testUserRBAC@localhost', name: 'Test User', password: 'password' };
@@ -22,8 +21,10 @@ test.describe('Spec file for Access Control (RBAC)', async () => {
   let pmmVersion: number;
 
   test.beforeAll(async () => {
-    pmmVersion = (await api.pmm.serverV1.getPmmVersion()).minor;
-    // beforeAll() does not work without any sync statement, given comment fixes it just fine
+    if (!pmmVersion) {
+      const versionString = (await apiHelper.getPmmVersion()).versionMinor;
+      pmmVersion = parseInt(versionString);
+    }
   });
 
   test.beforeEach(async ({ page }) => {
