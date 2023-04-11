@@ -1,9 +1,10 @@
 const assert = require('assert');
 const faker = require('faker');
 const { generate } = require('generate-password');
+const { storageLocationConnection } = require('./backup/pages/testData');
 
 const {
-  adminPage, remoteInstancesHelper, psMySql, pmmSettingsPage, dashboardPage, databaseChecksPage, locationsPage,
+  adminPage, remoteInstancesHelper, psMySql, pmmSettingsPage, dashboardPage, databaseChecksPage, scheduledAPI, locationsAPI,
 } = inject();
 
 const pathToPMMFramework = adminPage.pathToPMMTests;
@@ -37,9 +38,20 @@ const mongoServiceName = 'mongo-backup-upgrade';
 const location = {
   name: 'upgrade-location',
   description: 'upgrade-location description',
+  ...locationsAPI.storageLocationConnection,
 };
 const backupName = 'upgrade backup test';
 const scheduleName = 'upgrade schedule';
+const scheduleSettings = {
+  cron_expression: '*/20 * * * *',
+  name: scheduleName,
+  mode: scheduledAPI.backupModes.snapshot,
+  description: '',
+  retry_interval: '30s',
+  retries: 0,
+  enabled: true,
+  retention: 1,
+};
 
 // For running on local env set PMM_SERVER_LATEST and DOCKER_VERSION variables
 function getVersions() {
@@ -514,14 +526,7 @@ if (versionMinor >= 32) {
       const schedule = {
         service_id,
         location_id: locationId,
-        cron_expression: '*/20 * * * *',
-        name: scheduleName,
-        mode: scheduledAPI.backupModes.snapshot,
-        description: '',
-        retry_interval: '30s',
-        retries: 0,
-        enabled: true,
-        retention: 1,
+        ...scheduleSettings,
       };
 
       await scheduledAPI.createScheduledBackup(schedule);
@@ -1129,16 +1134,22 @@ if (versionMinor >= 32) {
   );
 
   Scenario(
-    '@PMM-T1505 - The scheduled job still exists and remains enabled after the upgrade'
-    + ' @post-upgrade @pmm-upgrade',
+    '@PMM-T1505 @PMM-T971 - The scheduled job still exists and remains enabled after the upgrade @post-upgrade @pmm-upgrade',
     async ({ I, scheduledPage }) => {
       await scheduledPage.openScheduledBackupsPage();
-      await I.waitForVisible(scheduledPage.elements.toggleByName(scheduleName))
+      await I.waitForVisible(scheduledPage.elements.toggleByName(scheduleName));
       I.seeAttributesOnElements(scheduledPage.elements.toggleByName(scheduleName), { checked: true });
+
+      // Verify settings for scheduled job
+      I.seeTextEquals('Every 20 minutes', scheduledPage.elements.frequencyByName(scheduleName));
+      I.seeTextEquals('MongoDB', scheduledPage.elements.scheduleVendorByName(scheduleName));
+      I.seeTextEquals('Full', scheduledPage.elements.scheduleTypeByName(scheduleName));
+      I.seeTextEquals(`${location.name} (S3)`, scheduledPage.elements.scheduleLocationByName(scheduleName));
+      I.seeTextEquals('1 backup', scheduledPage.elements.retentionByName(scheduleName));
 
       // Disable schedule
       I.click(scheduledPage.buttons.enableDisableByName(scheduleName));
-      await I.waitForVisible(scheduledPage.elements.toggleByName(scheduleName))
+      await I.waitForVisible(scheduledPage.elements.toggleByName(scheduleName));
       I.seeAttributesOnElements(scheduledPage.elements.toggleByName(scheduleName), { checked: null });
     },
   ).retry(0);
@@ -1176,7 +1187,7 @@ if (versionMinor >= 32) {
 
         backupInventoryPage.openInventoryPage();
         backupInventoryPage.startRestore(backupName);
-        restorePage.waitForRestoreSuccess(backupName);
+        await restorePage.waitForRestoreSuccess(backupName);
 
         await I.say('I search for the record after MongoDB restored from backup');
         collection = replica.db('test').collection('e2e');
