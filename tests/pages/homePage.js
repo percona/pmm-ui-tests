@@ -178,7 +178,8 @@ module.exports = {
     I.seeElement(locators.currentVersion);
     I.seeElement(locators.checkUpdateButton);
     const lastCheckText = await I.grabTextFrom(locators.lastCheckSelector);
-    const date = moment(lastCheckText);
+    // moment(lastCheckText, ["MM-DD-YYYY", "YYYY-MM-DD"]); alternative solution without Date class
+    const date = moment(new Date(lastCheckText));
 
     I.assertTrue(date.isValid(), `"Last Check Date" is not a valid date string: ${lastCheckText}`);
   },

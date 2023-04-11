@@ -1,15 +1,27 @@
 ---
 version: '3.7'
 
+networks:
+  server-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 192.140.0.0/16
+          gateway: 192.140.0.1
+  mysql-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 192.150.0.0/16
+          gateway: 192.150.0.1
+
 services:
-  pmm-server-external-clickhouse:
+  pmm-server-disconnect:
     image: ${PMM_SERVER_IMAGE:-perconalab/pmm-server:dev-latest}
-    container_name: pmm-server-external-clickhouse
-    depends_on:
-      - external-clickhouse
+    container_name: pmm-server-disconnect
     ports:
-      - '8081:80'
-      - '8444:443'
+      - '8180:80'
+      - '8143:443'
     environment:
       - PMM_DEBUG=1
       - PERCONA_TEST_SAAS_HOST=check-dev.percona.com:443
@@ -17,42 +29,38 @@ services:
       - PERCONA_TEST_VERSION_SERVICE_URL=https://check-dev.percona.com/versions/v1
       - PERCONA_TEST_TELEMETRY_INTERVAL=10s
       - PERCONA_TEST_TELEMETRY_RETRY_BACKOFF=10s
-      - PERCONA_TEST_PMM_CLICKHOUSE_ADDR=external-clickhouse:9000
-      - PERCONA_TEST_PMM_CLICKHOUSE_DATASOURCE_ADDR=external-clickhouse:8123
-      - PERCONA_TEST_PMM_CLICKHOUSE_DATABASE=pmm
-      - PERCONA_TEST_PMM_CLICKHOUSE_POOL_SIZE=1
-      - PERCONA_TEST_PMM_CLICKHOUSE_BLOCK_SIZE=65000
+    networks:
+      - server-network
 
   pmm-client:
     image: perconalab/pmm-client:dev-latest
-    container_name: pmm-client-clickhouse
+    container_name: pmm-client-disconnect
     depends_on:
-      pmm-server-external-clickhouse:
+      pmm-server-disconnect:
         condition: service_healthy
     environment:
       - PMM_AGENT_SETUP=1
-      - PMM_AGENT_SERVER_ADDRESS=pmm-server-external-clickhouse
+      - PMM_AGENT_SERVER_ADDRESS=pmm-server-disconnect
       - PMM_AGENT_SERVER_USERNAME=admin
       - PMM_AGENT_SERVER_PASSWORD=admin
       - PMM_AGENT_PORTS_MIN=41000
       - PMM_AGENT_PORTS_MAX=41500
       - PMM_AGENT_SERVER_INSECURE_TLS=1
       - PMM_AGENT_CONFIG_FILE=config/pmm-agent.yaml
-      - PMM_AGENT_SETUP_NODE_NAME=pmm-client-clickhouse-container
+      - PMM_AGENT_SETUP_NODE_NAME=pmm-agent-disconnect
       - PMM_AGENT_SETUP_FORCE=1
       - PMM_AGENT_SETUP_NODE_TYPE=container
     restart: on-failure
+    networks:
+      - server-network
+      - mysql-network
 
   mysql5.7:
-    container_name: mysql5.7
+    container_name: mysql-disconnect-5.7
     image: mysql:5.7
     command: --default-authentication-plugin=mysql_native_password
     restart: always
     environment:
       MYSQL_ROOT_PASSWORD: 7B*53@lCdflR
-
-  external-clickhouse:
-    image: clickhouse/clickhouse-server:22.5.2
-    container_name: external-clickhouse
-    healthcheck:
-      test: ['CMD', 'wget', '--spider', '-q', 'localhost:8123/ping']
+    networks:
+      - mysql-network

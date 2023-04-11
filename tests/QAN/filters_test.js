@@ -19,7 +19,7 @@ filters.add(['SELECT', 'INSERT']);
 
 Before(async ({ I, qanPage, qanOverview }) => {
   await I.Authorize();
-  I.amOnPage(`${qanPage.url}&orgId=1&refresh=10s`);
+  I.amOnPage(`${qanPage.url}&orgId=1`);
   qanOverview.waitForOverviewLoaded();
 });
 
