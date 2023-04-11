@@ -45,6 +45,11 @@ export const pmmClientCommands = {
     await executeCommand(`${getClientPrefix()}pmm-agent setup --config-file=/usr/local/percona/pmm2/config/pmm-agent.yaml \
     --server-address=${serverAddress} --server-insecure-tls --server-username=admin --server-password=admin`)
   },
+  forceSetupAgent: async () => {
+    const serverAddress = process.env.CI ? '127.0.0.1' : 'pmm-integration-server:443';
+    await executeCommand(`${getClientPrefix()}pmm-agent setup --config-file=/usr/local/percona/pmm2/config/pmm-agent.yaml \
+    --server-address=${serverAddress} --server-insecure-tls --server-username=admin --server-password=admin --force`)
+  },
   startAgent: async () => {
     exec(`${getClientPrefix()}pmm-agent --config-file=/usr/local/percona/pmm2/config/pmm-agent.yaml`)
   },

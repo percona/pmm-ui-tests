@@ -162,7 +162,9 @@ test.describe('Spec file for PMM inventory tests.', async () => {
 
       await test.step('5. Return env to clean state.', async () => {
         const containers = await systemCommands.getRunningContainerNames();
-        await pmmClientCommands.setupAgent();
+        const pmmAgentProcessId = await pmmClientCommands.getProcessId('pmm-agent');
+        await pmmClientCommands.killProcess(pmmAgentProcessId.stdout);
+        await pmmClientCommands.forceSetupAgent();
         await pmmClientCommands.startAgent();
         await page.waitForTimeout(5000);
         const mongoAddress = process.env.CI ? '127.0.0.1' : containers.find((container) => container.includes('mo-integration'));
