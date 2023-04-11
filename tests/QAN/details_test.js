@@ -13,7 +13,7 @@ Scenario(
   async ({
     I, qanDetails, qanOverview, qanFilters,
   }) => {
-    await qanFilters.applyFilter('ps-dev');
+    await qanFilters.applyFilter('ps-dev-cluster');
     qanOverview.selectRow(2);
     qanFilters.waitForFiltersToLoad();
     await within(qanDetails.root, () => {
@@ -24,7 +24,7 @@ Scenario(
       I.see('Tables', qanDetails.getTabLocator('Tables'));
     });
   },
-);
+).retry(1);
 
 Scenario(
   'PMM-T223 - Verify time metrics are AVG per query (not per second) @qan',

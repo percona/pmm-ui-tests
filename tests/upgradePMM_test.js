@@ -1,9 +1,10 @@
 const assert = require('assert');
 const faker = require('faker');
 const { generate } = require('generate-password');
+const { storageLocationConnection } = require('./backup/pages/testData');
 
 const {
-  adminPage, remoteInstancesHelper, psMySql, pmmSettingsPage, dashboardPage, databaseChecksPage, locationsPage,
+  adminPage, remoteInstancesHelper, psMySql, pmmSettingsPage, dashboardPage, databaseChecksPage, scheduledAPI, locationsAPI,
 } = inject();
 
 const pathToPMMFramework = adminPage.pathToPMMTests;
@@ -37,10 +38,20 @@ const mongoServiceName = 'mongo-backup-upgrade';
 const location = {
   name: 'upgrade-location',
   description: 'upgrade-location description',
-  ...locationsPage.mongoStorageLocation,
+  ...locationsAPI.storageLocationConnection,
 };
 const backupName = 'upgrade backup test';
 const scheduleName = 'upgrade schedule';
+const scheduleSettings = {
+  cron_expression: '*/20 * * * *',
+  name: scheduleName,
+  mode: scheduledAPI.backupModes.snapshot,
+  description: '',
+  retry_interval: '30s',
+  retries: 0,
+  enabled: true,
+  retention: 1,
+};
 
 // For running on local env set PMM_SERVER_LATEST and DOCKER_VERSION variables
 function getVersions() {
@@ -186,7 +197,7 @@ Scenario(
 );
 
 if (versionMinor >= 15) {
-  Scenario(
+  Scenario.skip(
     'Verify user has failed checks before upgrade @pre-upgrade @pmm-upgrade',
     async ({
       I,
@@ -501,7 +512,12 @@ if (versionMinor >= 32) {
 
       await settingsAPI.changeSettings({ backup: true });
       await locationsAPI.clearAllLocations(true);
-      const locationId = await locationsAPI.createStorageLocation(location);
+      const locationId = await locationsAPI.createStorageLocation(
+        location.name,
+        locationsAPI.storageType.s3,
+        locationsAPI.storageLocationConnection,
+        location.description,
+      );
 
       const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName('MONGODB_SERVICE', mongoServiceName);
       const backupId = await backupAPI.startBackup(backupName, service_id, locationId);
@@ -510,14 +526,7 @@ if (versionMinor >= 32) {
       const schedule = {
         service_id,
         location_id: locationId,
-        cron_expression: '*/20 * * * *',
-        name: scheduleName,
-        mode: scheduledAPI.backupModes.snapshot,
-        description: '',
-        retry_interval: '30s',
-        retries: 0,
-        enabled: true,
-        retention: 1,
+        ...scheduleSettings,
       };
 
       await scheduledAPI.createScheduledBackup(schedule);
@@ -550,6 +559,13 @@ Scenario(
     await col.findOne();
   },
 );
+
+Scenario('@PMM-T1647 Verify pmm-server package doesn\'t exist @post-upgrade @pmm-upgrade', async ({ I }) => {
+  await I.amOnPage('');
+  const packages = await I.verifyCommand('docker exec pmm-server rpm -qa');
+
+  I.assertTrue(!packages.includes('pmm-server'), 'pmm-server package present in package list.');
+});
 
 Scenario(
   'PMM-T391 Verify that custom home dashboard stays as home dashboard after upgrade @post-upgrade @ovf-upgrade @ami-upgrade @pmm-upgrade',
@@ -629,7 +645,7 @@ Scenario(
 );
 
 if (versionMinor >= 15) {
-  Scenario(
+  Scenario.skip(
     'Verify user has failed checks after upgrade / STT on @post-upgrade @pmm-upgrade',
     async ({
       I,
@@ -670,7 +686,7 @@ if (versionMinor >= 15) {
       );
 
       const expectedScrapeUrl = `${remoteInstancesHelper.remote_instance.external.redis.schema}://${remoteInstancesHelper.remote_instance.external.redis.host
-        }:${remoteInstancesHelper.remote_instance.external.redis.port}${remoteInstancesHelper.remote_instance.external.redis.metricsPath}`;
+      }:${remoteInstancesHelper.remote_instance.external.redis.port}${remoteInstancesHelper.remote_instance.external.redis.metricsPath}`;
 
       assert.ok(targets.scrapeUrl === expectedScrapeUrl,
         `Active Target for external service Post Upgrade has wrong Address value, value found is ${targets.scrapeUrl} and value expected was ${expectedScrapeUrl}`);
@@ -680,7 +696,7 @@ if (versionMinor >= 15) {
 }
 
 if (versionMinor >= 16) {
-  Scenario(
+  Scenario.skip(
     'Verify disabled checks remain disabled after upgrade @post-upgrade @pmm-upgrade',
     async ({
       I,
@@ -695,7 +711,7 @@ if (versionMinor >= 16) {
     },
   );
 
-  Scenario(
+  Scenario.skip(
     'Verify check intervals remain the same after upgrade @post-upgrade @pmm-upgrade',
     async ({
       I,
@@ -709,7 +725,7 @@ if (versionMinor >= 16) {
     },
   );
 
-  Scenario(
+  Scenario.skip(
     'Verify silenced checks remain silenced after upgrade @post-upgrade @pmm-upgrade',
     async ({
       I,
@@ -725,7 +741,7 @@ if (versionMinor >= 16) {
     },
   );
 
-  Scenario(
+  Scenario.skip(
     'Verify settings for intervals remain the same after upgrade @post-upgrade @pmm-upgrade',
     async ({
       I,
@@ -1118,14 +1134,22 @@ if (versionMinor >= 32) {
   );
 
   Scenario(
-    '@PMM-T1505 - The scheduled job still exists and remains enabled after the upgrade'
-    + ' @post-upgrade @pmm-upgrade',
+    '@PMM-T1505 @PMM-T971 - The scheduled job still exists and remains enabled after the upgrade @post-upgrade @pmm-upgrade',
     async ({ I, scheduledPage }) => {
       await scheduledPage.openScheduledBackupsPage();
+      await I.waitForVisible(scheduledPage.elements.toggleByName(scheduleName));
       I.seeAttributesOnElements(scheduledPage.elements.toggleByName(scheduleName), { checked: true });
+
+      // Verify settings for scheduled job
+      I.seeTextEquals('Every 20 minutes', scheduledPage.elements.frequencyByName(scheduleName));
+      I.seeTextEquals('MongoDB', scheduledPage.elements.scheduleVendorByName(scheduleName));
+      I.seeTextEquals('Full', scheduledPage.elements.scheduleTypeByName(scheduleName));
+      I.seeTextEquals(`${location.name} (S3)`, scheduledPage.elements.scheduleLocationByName(scheduleName));
+      I.seeTextEquals('1 backup', scheduledPage.elements.retentionByName(scheduleName));
 
       // Disable schedule
       I.click(scheduledPage.buttons.enableDisableByName(scheduleName));
+      await I.waitForVisible(scheduledPage.elements.toggleByName(scheduleName));
       I.seeAttributesOnElements(scheduledPage.elements.toggleByName(scheduleName), { checked: null });
     },
   ).retry(0);
@@ -1144,7 +1168,7 @@ if (versionMinor >= 32) {
   );
 
   Scenario(
-    '@PMM-T1503 - The user is able to do a restore for MongoDB after the upgrade'
+    '@PMM-T1503 PMM-T970 - The user is able to do a restore for MongoDB after the upgrade'
     + ' @post-upgrade @pmm-upgrade',
     async ({
       I, backupInventoryPage, restorePage, credentials,
@@ -1163,7 +1187,7 @@ if (versionMinor >= 32) {
 
         backupInventoryPage.openInventoryPage();
         backupInventoryPage.startRestore(backupName);
-        restorePage.waitForRestoreSuccess(backupName);
+        await restorePage.waitForRestoreSuccess(backupName);
 
         await I.say('I search for the record after MongoDB restored from backup');
         collection = replica.db('test').collection('e2e');

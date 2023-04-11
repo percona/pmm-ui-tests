@@ -11,6 +11,8 @@ const ps = 'PostgreSQL';
 const sa = 'Server admin';
 const co = 'Configuration';
 const al = 'Alerting';
+const ad = 'Advisors';
+const bm = 'Backup';
 
 /**
  * Implements left Navigation Grafana Menu. Intended to be used UX goes, ex.:
@@ -94,7 +96,19 @@ module.exports = {
       alertingAdmin: menuOption(al, 'Admin', '/graph/alerting/admin'),
       newAlertRule: menuOption(al, 'New alert rule', '/graph/alerting/new'),
     }),
-  advisorChecks: new LeftMenu('Advisor Checks', '/graph/pmm-database-checks'),
+  advisors: new LeftMenu('Advisors', '/graph/advisors/insights',
+    {
+      advisorInsights: menuOption(ad, 'Advisor Insights', '/graph/advisors/insights'),
+      configurationAdvisors: menuOption(ad, 'Configuration Advisors', '/graph/advisors/configuration'),
+      securityAdvisors: menuOption(ad, 'Security Advisors', '/graph/advisors/security'),
+    }),
+  backups: new LeftMenu('Backup', '/graph/backup/inventory',
+    {
+      allBackups: menuOption(bm, 'All Backups', '/graph/backup/inventory'),
+      scheduledBackupJobs: menuOption(bm, 'Scheduled Backup Jobs', '/graph/backup/scheduled'),
+      restores: menuOption(bm, 'Restores', '/graph/backup/restore'),
+      storageLocations: menuOption(bm, 'Storage Locations', '/graph/backup/locations'),
+    }),
   configuration: new LeftMenu('Configuration', '/graph/inventory/services',
     {
       serviceAccounts: menuOption(co, 'Service accounts', '/graph/org/serviceaccounts'),

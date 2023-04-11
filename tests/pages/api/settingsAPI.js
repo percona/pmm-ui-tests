@@ -227,4 +227,18 @@ module.exports = {
 
     return resp.data.settings[property];
   },
+  
+  async setTourOptions(productTour = true, alertingTour = true) {
+    const headers = { Authorization: `Basic ${await I.getAuth()}` };
+
+    const body = {
+      user_id: 1,
+      product_tour_completed: productTour,
+      alerting_tour_completed: alertingTour,
+    };
+
+    const resp = await I.sendPutRequest('v1/user', body, headers);
+
+    assert.equal(resp.status, 200, `Failed to set up PMM tour options! Response with status ${resp.status}`);
+  },
 };

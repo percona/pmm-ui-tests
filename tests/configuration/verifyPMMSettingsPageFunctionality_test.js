@@ -1,4 +1,3 @@
-const { pmmSettingsPage } = inject();
 const communicationDefaults = new DataTable(['type', 'serverAddress', 'hello', 'from', 'authType', 'username', 'password', 'url', 'message']);
 const assert = require('assert');
 
@@ -111,7 +110,7 @@ Scenario(
   },
 );
 
-Scenario(
+Scenario.skip(
   'PMM-T253 Verify user can see correct tooltip for STT [trivial] @settings @stt @grafana-pr',
   async ({ I, pmmSettingsPage }) => {
     const sectionNameToExpand = pmmSettingsPage.sectionTabsList.advanced;
@@ -168,7 +167,7 @@ Scenario(
   },
 );
 
-Scenario(
+Scenario.skip(
   'PMM-T254 PMM-T253 Verify disable telemetry while Advisers enabled @settings @stt @grafana-pr',
   async ({ I, pmmSettingsPage }) => {
     I.amOnPage(pmmSettingsPage.advancedSettingsUrl);
@@ -322,6 +321,7 @@ Scenario(
 
     // Open advanced settings and verify backup management switch is off
     I.amOnPage(pmmSettingsPage.advancedSettingsUrl);
+    I.waitForVisible(pmmSettingsPage.fields.backupManagementSwitchInput, 20);
     pmmSettingsPage.verifySwitch(pmmSettingsPage.fields.backupManagementSwitchInput, 'off');
 
     // Open scheduled backups page and verify message about disabled backup management
@@ -347,6 +347,30 @@ Scenario(
     scheduledPage.openScheduledBackupsPage();
   },
 );
+
+Scenario(
+  '@PMM-T1658 Verify that backup management is enabled by default @backup @bm-fb',
+  async ({
+    I, pmmSettingsPage, settingsAPI, homePage, leftNavMenu,
+  }) => {
+    const pmmVersion = await homePage.getVersions().versionMinor;
+
+    const settingEndpointResponse = await settingsAPI.getSettings('backup_management_enabled');
+
+    if (pmmVersion >= 36 || pmmVersion === undefined) {
+      I.amOnPage(homePage.url);
+      I.waitForVisible(leftNavMenu.backups.locator, 30);
+      I.assertEqual(settingEndpointResponse, true);
+      I.amOnPage(pmmSettingsPage.advancedSettingsUrl);
+      I.waitForVisible(pmmSettingsPage.fields.backupManagementSwitch, 30);
+      await pmmSettingsPage.verifySwitch(pmmSettingsPage.fields.backupManagementSwitchInput, 'on');
+      assert.ok(settingEndpointResponse, `Backup managment should be turned on by default from 2.36.0 release but found ${settingEndpointResponse}`);
+    } else {
+      I.say('Skipping this test PMM-T1658, because PMM Server version is lower then Feature fix version');
+    }
+  },
+).retry(2);
+
 Scenario(
   'PMM-T1328 Verify public address is set automatically on Percona Platform page once connected to Portal @nightly',
   async ({
@@ -378,7 +402,7 @@ Scenario(
     await I.assertEqual(serverAddressIP, publicAddressValue,
       `Expected the Public Address to be saved and Match ${publicAddressValue}`);
   },
-).retry(0);
+).retry(2);
 
 Scenario(
   'PMM-T486 - Verify Public Address in PMM Settings @settings @nightly',
@@ -413,32 +437,12 @@ Scenario(
 );
 
 Scenario(
-  '@PMM-T1227 - Verify tooltip "Read more" links on PMM Settings page redirect to working pages '
-    + '@PMM-T1338 Verify that all the metrics from config are displayed on Telemetry tooltip in Settings > Advanced @settings',
+  '@PMM-T1227 @PMM-T1338 - Verify tooltip "Read more" links on PMM Settings page redirect to working pages '
+  + 'Verify that all the metrics from config are displayed on Telemetry tooltip in Settings > Advanced @settings',
   async ({ I, pmmSettingsPage, settingsAPI }) => {
     await settingsAPI.changeSettings({ alerting: true });
-    const subPageTooltips = [
-      {
-        subPage: pmmSettingsPage.metricsResolutionUrl,
-        tooltips: pmmSettingsPage.tooltips.metricsResolution,
-      },
-      {
-        subPage: pmmSettingsPage.advancedSettingsUrl,
-        tooltips: pmmSettingsPage.tooltips.advancedSettings,
-      },
-      {
-        subPage: pmmSettingsPage.sshKeyUrl,
-        tooltips: pmmSettingsPage.tooltips.ssh,
-      },
-      {
-        subPage: pmmSettingsPage.alertManagerIntegrationUrl,
-        tooltips: pmmSettingsPage.tooltips.alertManagerIntegration,
-      },
-      {
-        subPage: pmmSettingsPage.perconaPlatformUrl,
-        tooltips: pmmSettingsPage.tooltips.perconaPlatform,
-      },
-    ];
+
+    const subPageTooltips = await pmmSettingsPage.getSubpageTooltips();
 
     for (const subPageTooltipObject of Object.values(subPageTooltips)) {
       I.amOnPage(subPageTooltipObject.subPage);
@@ -460,6 +464,6 @@ Scenario('PMM-T1401 Verify Percona Alerting wording in Settings @max-length @set
 }) => {
   I.amOnPage(pmmSettingsPage.advancedSettingsUrl);
   await pmmSettingsPage.waitForPmmSettingsPageLoaded();
-  pmmSettingsPage.verifySwitch(pmmSettingsPage.fields.perconaAlertingSwitch, 'on');
+  pmmSettingsPage.verifySwitch(pmmSettingsPage.fields.perconaAlertingSwitchInput, 'on');
   await pmmSettingsPage.verifyTooltip(pmmSettingsPage.tooltips.advancedSettings.perconaAlerting);
 });

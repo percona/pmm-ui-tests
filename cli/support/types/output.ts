@@ -13,6 +13,10 @@ class Output {
     this.stderr = stdErr;
   }
 
+  getStdOutLines(): string[] {
+    return this.stdout.trim().split('\n').filter((item) => item.trim().length > 0);
+  }
+
   async assertSuccess() {
     await test.step(`Verify "${this.command}" command executed successfully`, async () => {
       expect(this.code, `"${this.command}" expected to exit with 0! Error: "${this.stderr||this.stdout}"`).toEqual(0);

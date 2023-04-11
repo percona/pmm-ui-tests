@@ -33,12 +33,6 @@ module.exports = {
     I.waitForEnabled(dbaasPage.tabs.dbClusterTab.dbClusterAddButtonTop, 10);
     I.click(dbaasPage.tabs.dbClusterTab.dbClusterAddButtonTop);
     I.waitForElement(dbaasPage.tabs.dbClusterTab.basicOptions.fields.clusterNameField, 30);
-    I.click(dbaasPage.tabs.dbClusterTab.basicOptions.fields.kubernetesClusterDropDown);
-    I.waitForElement(
-      dbaasPage.tabs.dbClusterTab.basicOptions.fields.kubernetesClusterDropDownSelect(k8sClusterName),
-      30,
-    );
-    I.click(dbaasPage.tabs.dbClusterTab.basicOptions.fields.kubernetesClusterDropDownSelect(k8sClusterName));
     I.click(dbaasPage.tabs.dbClusterTab.basicOptions.fields.dbClusterDatabaseTypeField);
     I.fillField(dbaasPage.tabs.dbClusterTab.basicOptions.fields.dbClusterDatabaseTypeInputField, dbType);
     I.waitForElement(
@@ -76,7 +70,34 @@ module.exports = {
     }
   },
 
-  async deleteXtraDBCluster(dbClusterName, k8sClusterName, deleteCompleted = true) {
+  async enableFeatureToggle(toggleLocator, locatorToBeVisible) {
+    I.seeElement(toggleLocator);
+    I.click(toggleLocator);
+    I.waitForElement(locatorToBeVisible, 10);
+  },
+
+  async selectDropdownItem(dropdownLocator, itemToSelect) {
+    I.seeElement(dropdownLocator);
+    I.click(dropdownLocator);
+    I.waitForElement(dbaasPage.common.selectOptionInDropdown(itemToSelect));
+    I.click(dbaasPage.common.selectOptionInDropdown(itemToSelect));
+  },
+
+  async selectBackupArtifact(artifactName) {
+    I.seeElement(dbaasPage.tabs.dbClusterTab.restore.backupArtifactSelect);
+    I.click(dbaasPage.tabs.dbClusterTab.restore.backupArtifactSelect);
+    I.waitForElement(dbaasPage.tabs.dbClusterTab.restore.backupArtifactSelectValue(artifactName));
+    I.click(dbaasPage.tabs.dbClusterTab.restore.backupArtifactSelectValue(artifactName));
+  },
+
+  async selectSecretsName(secret) {
+    I.seeElement(dbaasPage.tabs.dbClusterTab.restore.secretsNameSelect);
+    I.click(dbaasPage.tabs.dbClusterTab.restore.secretsNameSelect);
+    I.waitForElement(dbaasPage.tabs.dbClusterTab.restore.secretsNameSelectValue(secret));
+    I.click(dbaasPage.tabs.dbClusterTab.restore.secretsNameSelectValue(secret));
+  },
+
+  async deleteXtraDBCluster(dbClusterName, k8sClusterName) {
     I.waitForElement(dbaasPage.tabs.dbClusterTab.fields.clusterTableHeader, 30);
     I.waitForVisible(dbaasPage.tabs.dbClusterTab.fields.clusterActionsMenu(dbClusterName), 30);
     I.forceClick(dbaasPage.tabs.dbClusterTab.fields.clusterActionsMenu(dbClusterName));
@@ -90,7 +111,6 @@ module.exports = {
       dbaasPage.tabs.kubernetesClusterTab.modalContentText,
     );
     I.click(dbaasPage.tabs.dbClusterTab.fields.deleteDBClusterButton);
-    // I.waitForElement(dbaasPage.tabs.dbClusterTab.fields.clusterStatusDeleting, 30);
     await dbaasAPI.waitForDbClusterDeleted(dbClusterName, k8sClusterName);
   },
 
