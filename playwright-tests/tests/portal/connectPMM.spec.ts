@@ -108,6 +108,7 @@ test.describe('Spec file for connecting PMM to the portal', async () => {
   test('PMM-T1224 Verify user is notified about using old PMM version while trying to connect to Portal @portal @pre-pmm-portal-upgrade @post-pmm-portal-upgrade', async ({
     page,
   }) => {
+    test.skip(pmmVersion >= 35, 'It prevents UI upgrade');
     const platformPage = new PerconaPlatform(page);
 
     if (pmmVersion < 27) {
@@ -129,7 +130,6 @@ test.describe('Spec file for connecting PMM to the portal', async () => {
   test('PMM-T1097 Verify PMM server is connected to Portal @not-ui-pipeline @portal @pre-pmm-portal-upgrade', async ({
     page,
   }) => {
-    test.skip(true,'Debug upgrade fail');
     if (pmmVersion >= 27) {
       const platformPage = new PerconaPlatform(page);
 
@@ -158,7 +158,6 @@ test.describe('Spec file for connecting PMM to the portal', async () => {
     context,
     browser,
   }) => {
-    test.skip(true,'Debug upgrade fail');
     if (pmmVersion >= 27) {
       const signInPage = new SignInPage(page);
       const homeDashboard = new HomeDashboard(page);
