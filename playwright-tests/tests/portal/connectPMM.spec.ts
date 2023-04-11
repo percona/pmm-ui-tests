@@ -131,6 +131,7 @@ test.describe('Spec file for connecting PMM to the portal', async () => {
     page,
   }) => {
     if (pmmVersion >= 27) {
+      test.skip(pmmVersion >= 35, 'It prevents UI upgrade');
       const platformPage = new PerconaPlatform(page);
 
       await test.step('1. Open Percona Platform tab in PMM Settings', async () => {
@@ -157,6 +158,7 @@ test.describe('Spec file for connecting PMM to the portal', async () => {
     baseURL,
     context,
   }) => {
+    test.skip(pmmVersion >= 35, 'It prevents UI upgrade');
     if (pmmVersion >= 27) {
       const signInPage = new SignInPage(page);
       const homeDashboard = new HomeDashboard(page);
