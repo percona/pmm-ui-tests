@@ -14,11 +14,12 @@ module.exports = {
     selectedService: locate('div[class*="-singleValue"]').inside(locate('span').withChild('$service-select-label')),
     inProgressBackup: '$statusPending',
     backupStatus: '$statusMsg',
+    successIconByName: (name) => locate('$success-icon').inside(artifactCell(name)),
     pendingBackupByName: (name) => locate('$statusPending').inside(artifactCell(name)),
     backupStatusByName: (name) => locate('$statusMsg').inside(artifactCell(name)),
     backupStatusIconByName: (name) => locate('$statusMsg').inside(artifactCell(name)).find('div'),
     backupDateByName: (name) => locate('$detailed-date').inside(artifactCell(name)),
-    artifactName: (name) => locate('td').at(2).inside(artifactCell(name)),
+    artifactName: (name) => locate('//td[2]').inside(artifactCell(name)),
     forceDeleteLabel: '$force-field-label',
     retryTimes: '$retryTimes-number-input',
     retryInterval: '$retryInterval-number-input',
@@ -27,6 +28,9 @@ module.exports = {
     backupNameInput: '$backupName-text-input',
     backUpNameInputError: '$backupName-field-error-message',
     fullBackUpName: '$backup-artifact-details-name',
+    addBackupModalErrorsContainer: '$backup-errors',
+    addBackupModalError: locate('$backup-errors').find('span'),
+    addBackupModalErrorReadMore: locate('$backup-errors').find('a'),
   },
   buttons: {
     openAddBackupModal: '$backup-add-button',
@@ -83,6 +87,12 @@ module.exports = {
     I.amOnPage(this.url);
     I.waitForVisible(this.elements.backupStatusByName(backupName), 120);
     I.seeAttributesOnElements(this.elements.backupStatusIconByName(backupName), { 'data-testid': 'success-icon' });
+  },
+
+  verifyBackupFailed(backupName) {
+    I.amOnPage(this.url);
+    I.waitForVisible(this.elements.backupStatusByName(backupName), 120);
+    I.seeAttributesOnElements(this.elements.backupStatusIconByName(backupName), { 'data-testid': 'fail-icon' });
   },
 
   openDeleteBackupModal(backupName) {
