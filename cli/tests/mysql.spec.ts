@@ -235,7 +235,7 @@ test.describe('PMM Client CLI tests for MySQL', async () => {
   /**
    * @link
    */
-  test.only('run pmm-admin add mysql with disable-tablestats', async ({ }) => {
+  test('run pmm-admin add mysql with disable-tablestats', async ({ }) => {
     let hosts = (await cli.exec(`sudo pmm-admin list | grep "MySQL" | awk -F" " '{print $3}'`))
       .stdout.trim().split('\n').filter((item) => item.trim().length > 0);
     let n = 1;
@@ -322,6 +322,32 @@ test.describe('PMM Client CLI tests for MySQL', async () => {
   });
 
   /**
-   * @link
+   *
    */
+  test('PMM-T962 check metrics from service with custom agent password', async ({ }) => {
+    let hosts = (await cli.exec(`sudo pmm-admin list | grep "MySQL" | grep "mysql_"`))
+      .stdout.trim().split('\n').filter((item) => item.trim().length > 0);
+    let n = 1;
+    for (const host of hosts) {
+      await cli.exec('sleep 20');
+      await (await cli.exec('sudo chmod +x /home/runner/work/pmm-submodules/pmm-submodules/pmm-tests/pmm-2-0-bats-tests/check_metric.sh')).assertSuccess();
+      let output = await cli.exec(`/home/runner/work/pmm-submodules/pmm-submodules/pmm-tests/pmm-2-0-bats-tests/check_metric.sh mysql_${n++} mysql_up 127.0.0.1 mysqld_exporter pmm mypass`);
+      await output.assertSuccess();
+      await output.outContains('mysql_up 1');
+    }
+  });
+
+  /**
+   *
+   */
+  test('run pmm-admin remove mysql added with custom agent password', async ({ }) => {
+    let hosts = (await cli.exec(`sudo pmm-admin list | grep "MySQL" | grep "mysql_"`))
+      .stdout.trim().split('\n').filter((item) => item.trim().length > 0);
+    let n = 1;
+    for (const host of hosts) {
+      let output = await cli.exec(`sudo pmm-admin remove mysql mysql_${n++}`);
+      await output.assertSuccess();
+      await output.outContains('Service removed.');
+    }
+  });  
 });
