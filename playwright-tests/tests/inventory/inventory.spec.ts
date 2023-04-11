@@ -13,12 +13,19 @@ import { ServicesPage } from '@tests/tests/inventory/pages/Services.page';
 import { QAN } from '@tests/pages/QAN/QueryAnalytics.page';
 
 test.describe('Spec file for PMM inventory tests.', async () => {
-  const localService: ServiceDetails = {
+  const mongoLocalService: ServiceDetails = {
     serviceName: 'mo-integration-',
     nodeName: '',
     monitoring: 'OK',
     address: process.env.CI ? '127.0.0.1' : 'mo-integration-',
     port: '27017'
+  };
+  const psLocalService: ServiceDetails = {
+    serviceName: 'ps_integration_',
+    nodeName: '',
+    monitoring: 'OK',
+    address: process.env.CI ? '127.0.0.1' : 'ps_integration_',
+    port: '3306'
   };
   let pmmVersion: number;
 
@@ -59,11 +66,11 @@ test.describe('Spec file for PMM inventory tests.', async () => {
       });
 
       await test.step('2. Verify local MongoDB service.', async () => {
-        await servicesPage.servicesTable.verifyService(localService);
+        await servicesPage.servicesTable.verifyService(mongoLocalService);
       });
 
       await test.step('3. Verify kebab menu for local MongoDB service.', async () => {
-        await servicesPage.servicesTable.buttons.options(localService.serviceName).click();
+        await servicesPage.servicesTable.buttons.options(mongoLocalService.serviceName).click();
         await expect(servicesPage.servicesTable.buttons.deleteService).toBeVisible();
         await expect(servicesPage.servicesTable.buttons.serviceDashboard).toBeVisible();
         await expect(servicesPage.servicesTable.buttons.qan).toBeVisible();
@@ -72,14 +79,14 @@ test.describe('Spec file for PMM inventory tests.', async () => {
       await test.step('4. Verify redirect for the dashboard page.', async () => {
         await servicesPage.servicesTable.buttons.serviceDashboard.click();
         await expect(mongoDBInstanceSummary.elements.dashboardName).toHaveText(mongoDBInstanceSummary.labels.dashboardName);
-        await expect(mongoDBInstanceSummary.buttons.serviceName).toContainText(localService.serviceName);
+        await expect(mongoDBInstanceSummary.buttons.serviceName).toContainText(mongoLocalService.serviceName);
       });
 
       await test.step('5. Verify redirect for the QAN.', async () => {
         await page.goto(servicesPage.url);
-        await servicesPage.servicesTable.buttons.options(localService.serviceName).click();
+        await servicesPage.servicesTable.buttons.options(mongoLocalService.serviceName).click();
         await servicesPage.servicesTable.buttons.qan.click();
-        await expect(qan.buttons.serviceNameCheckbox(localService.serviceName)).toBeChecked();
+        await expect(qan.buttons.serviceNameCheckbox(mongoLocalService.serviceName)).toBeChecked();
       });
 
     } else {
@@ -88,6 +95,69 @@ test.describe('Spec file for PMM inventory tests.', async () => {
         description: 'This test is for PMM version 2.37.0 and higher',
       });
     }
+  });
+
+  test('PMM-T554 Check that all agents have status "RUNNING" @inventory @inventory-pre-upgrade @inventory-post-upgrade', async ({ page }) => {
+    const servicesPage = new ServicesPage(page);
+    const nodesPage = new NodesPage(page);
+
+    test.info().annotations.push({
+      type: 'Also Covers',
+      description: 'PMM-T342 Verify pmm-server node cannot be removed from PMM Inventory page',
+    }, {
+      type: 'Also Covers',
+      description: 'PMM-T346 Verify Inventory page has pagination for all tabs',
+    });
+
+    await test.step('1. Go to services page and and verify mysql database is present.', async () => {
+      await page.goto(servicesPage.url);
+      await servicesPage.servicesTable.elements.rowByText(psLocalService.serviceName).waitFor({ state: 'visible' });
+    });
+
+    await test.step('2. Verify pagination on the services table.', async () => {
+      await servicesPage.servicesTable.verifyPagination(3);
+    });
+
+    await test.step('3. Navigate to the mysql agents page.', async () => {
+      await servicesPage.servicesTable.buttons.showRowDetails(psLocalService.serviceName).click();
+      await expect(servicesPage.servicesTable.elements.agentStatus).toHaveText('4/4 running');
+      await servicesPage.servicesTable.elements.agentStatus.click();
+    });
+
+    await test.step('4. Verify pagination on the agents table.', async () => {
+      await servicesPage.servicesTable.verifyPagination(4);
+    });
+
+    await test.step('3. Verify that all mysql agent have status running.', async () => {
+      await servicesPage.agentsTable.verifyAllAgentsStatus('Running');
+      await servicesPage.buttons.goBackToServices.click();
+    });
+
+    await test.step('4. Verify that all mongo agent have status running.', async () => {
+      await servicesPage.servicesTable.buttons.showRowDetails(mongoLocalService.serviceName).click();
+      await expect(servicesPage.servicesTable.elements.agentStatus).toHaveText('4/4 running');
+      await servicesPage.servicesTable.elements.agentStatus.click();
+      await servicesPage.agentsTable.verifyAllAgentsStatus('Running');
+      await servicesPage.buttons.goBackToServices.click();
+    });
+
+    await test.step('4. Verify pagination on the nodes table.', async () => {
+      await servicesPage.buttons.nodesTab.click();
+      await servicesPage.servicesTable.verifyPagination(2);
+    });
+
+    await test.step('5. Verify that pmm-server cannot be removed from the nodes table.', async () => {
+      await nodesPage.nodesTable.buttons.selectNode('pmm-server').check({ force: true });
+      await nodesPage.buttons.delete.click();
+      await nodesPage.nodesTable.buttons.force.check({ force: true });
+      await nodesPage.nodesTable.buttons.submit.click();
+      await nodesPage.toast.checkToastMessage(
+        nodesPage.messages.pmmServerCannotBeRemoved,
+        { variant: 'error' }
+      );
+      await page.reload();
+      await nodesPage.nodesTable.elements.rowByText('pmm-server').waitFor({ state: 'visible' })
+    });
   });
 
   test('PMM-T343 Verify agent can be removed on PMM Inventory page @inventory @inventory-pre-upgrade @inventory-post-upgrade', async ({ page }) => {
@@ -226,11 +296,11 @@ test.describe('Spec file for PMM inventory tests.', async () => {
 
       await test.step('1. Navigate to the Inventory page and expand Mongo service".', async () => {
         await page.goto(servicesPage.url);
-        await servicesPage.servicesTable.elements.rowByText(localService.serviceName).waitFor({ state: 'visible' })
+        await servicesPage.servicesTable.elements.rowByText(mongoLocalService.serviceName).waitFor({ state: 'visible' })
         await servicesPage.servicesTable.verifyAllMonitoring('OK');
-        await servicesPage.servicesTable.buttons.showRowDetails(localService.serviceName).click();
+        await servicesPage.servicesTable.buttons.showRowDetails(mongoLocalService.serviceName).click();
         await expect(servicesPage.servicesTable.elements.agentStatus).toHaveText('4/4 running');
-        await servicesPage.servicesTable.elements.monitoring(localService.serviceName).click();
+        await servicesPage.servicesTable.elements.monitoring(mongoLocalService.serviceName).click();
         await expect(servicesPage.elements.runningStatusAgent).toHaveCount(4);
         await servicesPage.buttons.goBackToServices.click();
       });
@@ -242,9 +312,9 @@ test.describe('Spec file for PMM inventory tests.', async () => {
           '/usr/local/percona/pmm2/exporters/mongodb_exporter_error');
         await pmmClientCommands.killProcess(mongoExporterProccessId.stdout);
         await page.reload();
-        await servicesPage.servicesTable.buttons.showRowDetails(localService.serviceName).click();
+        await servicesPage.servicesTable.buttons.showRowDetails(mongoLocalService.serviceName).click();
         await expect(servicesPage.servicesTable.elements.agentStatus).toHaveText('3/4 running');
-        await servicesPage.servicesTable.elements.monitoring(localService.serviceName).click();
+        await servicesPage.servicesTable.elements.monitoring(mongoLocalService.serviceName).click();
         await expect(servicesPage.elements.waitingStatusAgent).toHaveCount(1);
         await servicesPage.buttons.goBackToServices.click();
       });
@@ -256,9 +326,9 @@ test.describe('Spec file for PMM inventory tests.', async () => {
         const vmagentProcessId = await pmmClientCommands.getProcessId('vmagent');
         await pmmClientCommands.killProcess(vmagentProcessId.stdout);
         await page.reload();
-        await servicesPage.servicesTable.buttons.showRowDetails(localService.serviceName).click();
+        await servicesPage.servicesTable.buttons.showRowDetails(mongoLocalService.serviceName).click();
         await expect(servicesPage.servicesTable.elements.agentStatus).toHaveText('2/4 running');
-        await servicesPage.servicesTable.elements.monitoring(localService.serviceName).click();
+        await servicesPage.servicesTable.elements.monitoring(mongoLocalService.serviceName).click();
         await expect(servicesPage.elements.waitingStatusAgent).toHaveCount(2);
         await servicesPage.buttons.goBackToServices.click();
       });
@@ -270,9 +340,9 @@ test.describe('Spec file for PMM inventory tests.', async () => {
         const pmmAgentProcessId = await pmmClientCommands.getProcessId('pmm-agent');
         await pmmClientCommands.killProcess(pmmAgentProcessId.stdout);
         await page.reload();
-        await servicesPage.servicesTable.buttons.showRowDetails(localService.serviceName).click();
+        await servicesPage.servicesTable.buttons.showRowDetails(mongoLocalService.serviceName).click();
         await expect(servicesPage.servicesTable.elements.agentStatus).toHaveText('4/4 not running');
-        await servicesPage.servicesTable.elements.monitoring(localService.serviceName).click();
+        await servicesPage.servicesTable.elements.monitoring(mongoLocalService.serviceName).click();
         await expect(servicesPage.elements.waitingStatusAgent).not.toBeVisible();
         await servicesPage.buttons.goBackToServices.click();
       });

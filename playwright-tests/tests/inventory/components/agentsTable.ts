@@ -1,4 +1,4 @@
-import { expect, Page } from '@playwright/test';
+import { ElementHandle, expect, Page } from '@playwright/test';
 import Table from '../../../components/table';
 
 export default class AgentsTable extends Table {
@@ -14,6 +14,7 @@ export default class AgentsTable extends Table {
     status: (serviceName: string) => super.getTableElements().rowByText(serviceName).locator('td').nth(1),
     agentType: (serviceName: string) => super.getTableElements().rowByText(serviceName).locator('td').nth(2),
     agentId: (serviceName: string) => super.getTableElements().rowByText(serviceName).locator('td').nth(3),
+    statuses: super.getTableElements().row.locator('//td[2]'),
   };
 
   fields = {
@@ -41,4 +42,12 @@ export default class AgentsTable extends Table {
   links = {
     ...super.getTableLinks(),
   };
+
+  verifyAllAgentsStatus = async (expectedStatus: string) => {
+    await this.elements.statuses.first().waitFor({ state: 'visible' });
+    const agents: ElementHandle[] = await this.elements.statuses.elementHandles();
+    for await (const [_, agent] of agents.entries()) {
+      expect(await agent.textContent()).toEqual(expectedStatus);
+    }
+  }
 }
