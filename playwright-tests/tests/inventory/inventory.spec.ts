@@ -27,6 +27,14 @@ test.describe('Spec file for PMM inventory tests.', async () => {
     address: process.env.CI ? '127.0.0.1' : 'ps_integration_',
     port: '3306'
   };
+  const pdpgsqlLocalService: ServiceDetails = {
+    serviceName: 'pdpgsql-integration-',
+    nodeName: '',
+    monitoring: 'OK',
+    address: process.env.CI ? '127.0.0.1' : 'pdpgsql-integration-',
+    port: '5432'
+  };
+
   let pmmVersion: number;
 
   test.beforeAll(async () => {
@@ -160,18 +168,54 @@ test.describe('Spec file for PMM inventory tests.', async () => {
     });
   });
 
+  test('PMM-T345 Verify removing pmm-agent on PMM Inventory page removes all associated agents @inventory @inventory-pre-upgrade @inventory-post-upgrade', async ({ page }) => {
+    const servicesPage = new ServicesPage(page);
+    const nodesPage = new NodesPage(page);
+
+    await test.step('1. Go to services page and and verify postgres database is present.', async () => {
+      await page.goto(servicesPage.url);
+      await servicesPage.servicesTable.elements.rowByText(pdpgsqlLocalService.serviceName).waitFor({ state: 'visible' });
+    });
+
+    await test.step('2. Navigate to the agent for the pdpgsql database.', async () => {
+      await servicesPage.servicesTable.buttons.showRowDetails(pdpgsqlLocalService.serviceName).click();
+      await expect(servicesPage.servicesTable.elements.agentStatus).toHaveText('4/4 running');
+      await servicesPage.servicesTable.elements.agentStatus.click();
+    });
+
+    await test.step('3. Remove pmm agent.', async () => {
+      await servicesPage.agentsTable.elements.checkbox('Pmm agent').check({ force: true });
+      await servicesPage.agentsTable.buttons.delete.click();
+      await nodesPage.nodesTable.buttons.force.check({ force: true });
+      await servicesPage.agentsTable.buttons.proceed.click();
+      await servicesPage.toast.checkToastMessage(servicesPage.agentsTable.messages.successfullyDeleted(1));
+      await expect(servicesPage.elements.noDataTable).toHaveText(servicesPage.agentsTable.messages.noAgents);
+    });
+
+    await test.step('3. Remove pmm agent.', async () => {
+      await pmmClientCommands.moveFile(
+        '/usr/local/bin/pmm-agent',
+        '/usr/local/bin/pmm-agent_error');
+      const pmmAgentProcessId = await pmmClientCommands.getProcessId('pmm-agent');
+      await pmmClientCommands.killProcess(pmmAgentProcessId.stdout);
+      await pmmClientCommands.moveFile(
+        '/usr/local/bin/pmm-agent_error',
+        '/usr/local/bin/pmm-agent');
+      await pmmClientCommands.setupAgent();
+    });
+  });
+
   test('PMM-T343 Verify agent can be removed on PMM Inventory page @inventory @inventory-pre-upgrade @inventory-post-upgrade', async ({ page }) => {
     if (pmmVersion >= 36) {
       const servicesPage = new ServicesPage(page);
-      const serviceName = 'ps_integration_';
 
       await test.step('1. Go to services page and and verify mysql database is present.', async () => {
         await page.goto(servicesPage.url);
-        await servicesPage.servicesTable.elements.rowByText(serviceName).waitFor({ state: 'visible' });
+        await servicesPage.servicesTable.elements.rowByText(psLocalService.serviceName).waitFor({ state: 'visible' });
       });
 
       await test.step('2. Select MySql options and verify all agents are running.', async () => {
-        await servicesPage.servicesTable.buttons.showRowDetails(serviceName).click();
+        await servicesPage.servicesTable.buttons.showRowDetails(psLocalService.serviceName).click();
         await expect(servicesPage.servicesTable.elements.agentStatus).toHaveText('4/4 running');
       });
 
@@ -182,7 +226,7 @@ test.describe('Spec file for PMM inventory tests.', async () => {
         await servicesPage.agentsTable.buttons.proceed.click();
         await servicesPage.toast.checkToastMessage(servicesPage.agentsTable.messages.successfullyDeleted(1));
         await servicesPage.buttons.goBackToServices.click();
-        await servicesPage.servicesTable.buttons.showRowDetails(serviceName).click();
+        await servicesPage.servicesTable.buttons.showRowDetails(psLocalService.serviceName).click();
         await expect(servicesPage.servicesTable.elements.agentStatus).toHaveText('3/3 running');
       });
 

@@ -37,6 +37,7 @@ export default class AgentsTable extends Table {
   messages = {
     ...super.getTableMessages(),
     successfullyDeleted: (number: number) => `${number} of ${number} agents successfully deleted`,
+    noAgents: 'No agents available',
   };
 
   links = {
