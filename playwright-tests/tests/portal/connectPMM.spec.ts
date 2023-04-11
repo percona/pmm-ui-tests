@@ -156,7 +156,6 @@ test.describe('Spec file for connecting PMM to the portal', async () => {
     page,
     baseURL,
     context,
-    browser,
   }) => {
     if (pmmVersion >= 27) {
       const signInPage = new SignInPage(page);
