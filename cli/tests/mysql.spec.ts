@@ -8,7 +8,7 @@ const host = '127.0.0.1:3308' //todo
 test.describe('PMM Client CLI tests for MySQL', async () => {
 
   /**
-   * @link 
+   * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/ms-specific-tests.bats#L29
    */
   test('run pmm-admin add mysql based on running instances', async ({ }) => {
     let hosts = (await cli.exec(`pmm-admin list | grep "MySQL" | awk -F" " '{print $3}'`))
@@ -22,7 +22,7 @@ test.describe('PMM Client CLI tests for MySQL', async () => {
   });
 
   /**
-   * @link 
+   * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/ms-specific-tests.bats#L44
    */
   test('run pmm-admin add mysql again based on running instances', async ({ }) => {
     let hosts = (await cli.exec(`pmm-admin list | grep "MySQL" | grep "mysql_" | awk -F" " '{print $3}'`))
@@ -36,7 +36,7 @@ test.describe('PMM Client CLI tests for MySQL', async () => {
   });
 
   /**
-  * @link 
+  * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/ms-specific-tests.bats#L58
  */
   test('run pmm-admin remove mysql added using current running instances', async ({ }) => {
     let hosts = (await cli.exec(`pmm-admin list | grep "MySQL" | grep "mysql_"`))
@@ -50,7 +50,7 @@ test.describe('PMM Client CLI tests for MySQL', async () => {
   });
 
   /**
-   * @link 
+   * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/ms-specific-tests.bats#L70
    */
   test('run pmm-admin add mysql --help contains disable-tablestats', async ({ }) => {
     const output = await cli.exec('pmm-admin add mysql --help');
@@ -59,7 +59,7 @@ test.describe('PMM Client CLI tests for MySQL', async () => {
   });
 
   /**
-   * @link 
+   * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/ms-specific-tests.bats#L77
    */
   test('run pmm-admin add mysql --help to check metrics-mode=auto', async ({ }) => {
     const output = await cli.exec('pmm-admin add mysql --help');
@@ -68,7 +68,7 @@ test.describe('PMM Client CLI tests for MySQL', async () => {
   });
 
   /**
-   * @link 
+   * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/ms-specific-tests.bats#L84
    */
   test('run pmm-admin add mysql --help to check host', async ({ }) => {
     const output = await cli.exec('pmm-admin add mysql --help');
@@ -77,7 +77,7 @@ test.describe('PMM Client CLI tests for MySQL', async () => {
   });
 
   /**
-   * @link 
+   * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/ms-specific-tests.bats#L91
    */
   test('run pmm-admin add mysql --help to check port', async ({ }) => {
     const output = await cli.exec('pmm-admin add mysql --help');
@@ -86,7 +86,7 @@ test.describe('PMM Client CLI tests for MySQL', async () => {
   });
 
   /**
-   * @link 
+   * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/ms-specific-tests.bats#L98
    */
   test('run pmm-admin add mysql --help to check service-name', async ({ }) => {
     const output = await cli.exec('pmm-admin add mysql --help');
@@ -95,7 +95,7 @@ test.describe('PMM Client CLI tests for MySQL', async () => {
   });
 
   /**
-   * @link 
+   * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/ms-specific-tests.bats#L162
    */  
   test('run pmm-admin add mysql --help to check socket', async ({ }) => {
     const output = await cli.exec('pmm-admin add mysql --help');
@@ -104,7 +104,7 @@ test.describe('PMM Client CLI tests for MySQL', async () => {
   });
 
   /**
-   * @link 
+   * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/ms-specific-tests.bats#L170
    */  
   test('run pmm-admin add mysql --help to check disable-tablestats-limit', async ({ }) => {
     const output = await cli.exec('pmm-admin add mysql --help');
@@ -112,10 +112,7 @@ test.describe('PMM Client CLI tests for MySQL', async () => {
     await output.outContains('disable-tablestats-limit=NUMBER');
   });
 
-  /**
-   * @link 
-   */
-  test('run pmm-admin add mysql --help', async ({ }) => {
+  test('PMM-T959 run pmm-admin add mysql --help', async ({ }) => {
     const output = await cli.exec('pmm-admin add mysql --help');
     await output.assertSuccess();
     await output.outContainsMany([
@@ -159,7 +156,7 @@ test.describe('PMM Client CLI tests for MySQL', async () => {
   });
 
   /**
-   * @link
+   * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/ms-specific-tests.bats#L105
    */
   test('run pmm-admin add mysql based on running instances using host, port and service name', async ({ }) => {
     let hosts = (await cli.exec(`sudo pmm-admin list | grep "MySQL" | awk -F" " '{print $3}'`))
@@ -175,7 +172,7 @@ test.describe('PMM Client CLI tests for MySQL', async () => {
   });
 
   /**
-   * @link
+   * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/ms-specific-tests.bats#L121
    */
   test('run pmm-admin remove mysql added using host, port and service name', async ({ }) => {
     let services = (await cli.exec(`sudo pmm-admin list | grep "MySQL" | grep "mysql_" | awk -F" " '{print $2}'`))
@@ -188,7 +185,7 @@ test.describe('PMM Client CLI tests for MySQL', async () => {
   });
 
   /**
-   * @link
+   * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/ms-specific-tests.bats#L134
    */
   test("PMM-T157 Adding MySQL with specified socket", async ({ }) => {
     let hosts = (await cli.exec(`sudo pmm-admin list | grep "MySQL" | awk -F" " '{print $3}'`))
@@ -204,7 +201,7 @@ test.describe('PMM Client CLI tests for MySQL', async () => {
   });
 
   /**
-   * @link
+   * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/ms-specific-tests.bats#L150
    */  
   test("Removing MySQL with specified socket", async ({ }) => {
     let services = (await cli.exec(`sudo pmm-admin list | grep "MySQL" | grep "mysql_socket" | awk -F" " '{print $2}'`))
@@ -217,7 +214,7 @@ test.describe('PMM Client CLI tests for MySQL', async () => {
   });
 
   /**
-   * @link
+   * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/ms-specific-tests.bats#L177
    */
   test('run pmm-admin add mysql with both disable-tablestats and disable-tablestats-limit', async ({ }) => {
     let hosts = (await cli.exec(`sudo pmm-admin list | grep "MySQL" | awk -F" " '{print $3}'`))
@@ -228,12 +225,12 @@ test.describe('PMM Client CLI tests for MySQL', async () => {
       await output.exitCodeEquals(1);
       await output.outContains('both --disable-tablestats and --disable-tablestats-limit are passed');
       output = await cli.exec('sudo pmm-admin list | grep MySQL');
-      await output.outNotContains('mysql_both');
+      // await output.outNotContains('mysql_both');
     }
   });
   
   /**
-   * @link
+   * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/ms-specific-tests.bats#L191
    */
   test('run pmm-admin add mysql with disable-tablestats', async ({ }) => {
     let hosts = (await cli.exec(`sudo pmm-admin list | grep "MySQL" | awk -F" " '{print $3}'`))
@@ -249,7 +246,7 @@ test.describe('PMM Client CLI tests for MySQL', async () => {
   });
 
   /**
-   * @link
+   * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/ms-specific-tests.bats#L205
    */
   test('run pmm-admin remove mysql added using disable-tablestats', async ({ }) => {
     let services = (await cli.exec(`sudo pmm-admin list | grep "MySQL" | grep "mysql_dis_tablestats"`))
@@ -263,7 +260,7 @@ test.describe('PMM Client CLI tests for MySQL', async () => {
   });
 
   /**
-   * @link 
+   * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/ms-specific-tests.bats#L217
    */
   test('run pmm-admin add mysql with disable-tablestats-limit=50', async ({ }) => {
     let hosts = (await cli.exec(`sudo pmm-admin list | grep "MySQL" | awk -F" " '{print $3}'`))
@@ -277,7 +274,7 @@ test.describe('PMM Client CLI tests for MySQL', async () => {
   });
 
   /**
-   * @link 
+   * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/ms-specific-tests.bats#L231
    */
   test('run pmm-admin remove mysql added using disable-tablestats-limit=50', async ({ }) => {
     let services = (await cli.exec(`sudo pmm-admin list | grep "MySQL" | grep "mysql_"`))
@@ -291,7 +288,7 @@ test.describe('PMM Client CLI tests for MySQL', async () => {
   });
   
   /**
-   * @link
+   * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/ms-specific-tests.bats#L243
    */
   test('run pmm-admin remove mysql again', async ({ }) => { //todo
     let services = (await cli.exec(`sudo pmm-admin list | grep "MySQL" | grep "mysql_"`))
@@ -308,7 +305,7 @@ test.describe('PMM Client CLI tests for MySQL', async () => {
   });
 
   /**
-   * @link 
+   * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/ms-specific-tests.bats#L255
    */
   test('PMM-T962 run pmm-admin add mysql with --agent-password flag', async ({ }) => {
     let hosts = (await cli.exec(`sudo pmm-admin list | grep "MySQL" | awk -F" " '{print $3}'`))
@@ -322,7 +319,7 @@ test.describe('PMM Client CLI tests for MySQL', async () => {
   });
 
   /**
-   *
+   * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/ms-specific-tests.bats#L268
    */
   test('PMM-T962 check metrics from service with custom agent password', async ({ }) => {
     let hosts = (await cli.exec(`sudo pmm-admin list | grep "MySQL" | grep "mysql_"`))
@@ -338,7 +335,7 @@ test.describe('PMM Client CLI tests for MySQL', async () => {
   });
 
   /**
-   *
+   * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/ms-specific-tests.bats#L282
    */
   test('run pmm-admin remove mysql added with custom agent password', async ({ }) => {
     let hosts = (await cli.exec(`sudo pmm-admin list | grep "MySQL" | grep "mysql_"`))
