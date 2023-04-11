@@ -1,14 +1,15 @@
 import { Page } from '@playwright/test';
-import UsersTable from '@tests/components/configuration/usersTable';
+import RbacTable from '@components/rbacTable';
 import { ConfigurationPage } from './Configuration.page';
 
-export class UsersConfigurationPage extends ConfigurationPage {
+export class RbacPage extends ConfigurationPage {
   constructor(page: Page) {
     super(page);
   }
 
-  url = 'graph/org/users'
-  usersTable = new UsersTable(this.page);
+  url = 'graph/roles';
+
+  rbacTable = new RbacTable(this.page);
 
   elements = {
     ...super.getConfigurationElements(),
@@ -20,11 +21,12 @@ export class UsersConfigurationPage extends ConfigurationPage {
 
   labels = {
     ...super.getConfigurationLabels(),
-
+    create: 'Create',
   };
 
   buttons = {
     ...super.getConfigurationButtons(),
+    create: this.page.getByTestId('access-roles-create-role'),
   };
 
   messages = {
@@ -33,6 +35,6 @@ export class UsersConfigurationPage extends ConfigurationPage {
 
   links = {
     ...super.getConfigurationLinks(),
+    createRole: '/roles/create',
   };
-
 }

@@ -63,6 +63,9 @@ module.exports = {
     },
   },
   numberOfNodesError: 'Only 1, 3 or more nodes allowed',
+  common: {
+    selectOptionInDropdown: (value) => `//div[@data-testid="${value}-select-option"]`,
+  },
   tabs: {
     kubernetesClusterTab: {
       kubernetesClusterTabButton: 'a[aria-label="Tab Kubernetes Cluster"]',
@@ -95,6 +98,7 @@ module.exports = {
       awsAccessKeyInput: '$awsAccessKeyID-text-input',
       awsSecretKeyInput: '$awsSecretAccessKey-password-input',
       spinner: '$Spinner',
+      freeClusterPromo: '$pmm-server-promote-portal-k8s-cluster-message',
     },
     dbClusterTab: {
       defaultPassword: '***************',
@@ -128,6 +132,21 @@ module.exports = {
           kubernetesClusterDropDownSelect: (clusterName) => `//div[@aria-label='Select option']//span[contains(@text, ${clusterName})]`,
           kubernetesClusterErrorMessage: '$select-field-error-message',
         },
+      },
+      restore: {
+        enableRestoreToggle: '//div[text()="Enable restore"]/following-sibling::div',
+        restoreFromLabel: '$restoreFrom-field-label',
+        restoreFromLocationSelect: locate('$locations-select-wrapper').find('div').at(3).as('Restore from Select'),
+        backupArtifactSelect: locate('$backupArtifact-field-container').find('div').at(2).as('Backup artifact Select'),
+        secretsNameSelect: locate('$secretsName-field-container').find('div').at(4).as('Secrets Name Select'),
+        backupArtifactSelectValue: (artifactName) => `//div[@data-testid="s3://pmm-backup1/${artifactName}-select-option"]`,
+        secretsNameSelectValue: (clusterName) => `//div[@data-testid="dbaas-${clusterName}-psmdb-secrets-select-option"]`,
+      },
+      backups: {
+        enableBackupsToggle: '//div[text()="Enable backups"]/following-sibling::div',
+        backupInformationLabel: locate('legend').withText('Backup Information'),
+        locationSelect: locate('$location-select-wrapper').find('div').at(3).as('Location Select'),
+        scheduledTimeSelect: locate('$period-field-container').find('div').at(2).as('Scheduled Time Select'),
       },
       advancedOptions: {
         fields: {
@@ -172,12 +191,7 @@ module.exports = {
         sourceRangesLabel: locate('label').withText('Source Range'),
         addNewSourceRangeButton: locate('button').find('span').withText('Add new').as('Add Source Range button'),
         sourceRangeInput: locate('input').withAttr({ placeholder: '181.170.213.40/32' }).as('Source Range input'),
-        deleteSourceRangeButton: locate('$network-and-security').find('button').at(2).as('Delete Source Range button'),
-        disabled: {
-          exposeCheckboxDisabled: '//input[@data-testid="expose-checkbox-input" and @disabled]',
-          internetFacingCheckboxDisabled: '//input[@data-testid="internetFacing-checkbox-input" and @disabled]',
-          addNewSourceRangeButtonDisabled: `//button[(@disabled)]//span[contains(., 'Add new')]`,
-        },
+        deleteSourceRangeButton: (order) => `$deleteButton-${order}`,
       },
       fields: {
         clusterDetailHeaders: ['Name', 'Database', 'Connection', 'DB Cluster Parameters', 'Cluster Status', 'Actions'],
@@ -268,6 +282,8 @@ module.exports = {
     const clusterLocator = `//td[contains(text(), '${clusterName}')]`;
 
     if (deleted) {
+      I.refreshPage();
+      I.waitForVisible(this.tabs.kubernetesClusterTab.freeClusterPromo);
       I.dontSeeElement(clusterLocator);
     } else {
       I.waitForVisible(clusterLocator, 30);
@@ -514,5 +530,11 @@ module.exports = {
     } else {
       I.dontSee(`${dbClusterType}-${dbClusterName}`, dbaasPage.apiKeysPage.apiKeysTable);
     }
+  },
+
+  async verifySourceRangeCount(count) {
+    let sourceRange = await I.grabNumberOfVisibleElements(this.tabs.dbClusterTab.networkAndSecurity.sourceRangeInput);
+
+    assert.ok(sourceRange === count, `There should be ${count} Source Range Inputs but found ${sourceRange}`);
   },
 };

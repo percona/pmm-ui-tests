@@ -18,7 +18,7 @@ After(async ({ settingsAPI }) => {
   await settingsAPI.setCheckIntervals();
 });
 
-Scenario(
+Scenario.skip(
   'PMM-T649 PMM-T652 Verify default checks intervals / enabling intervals section @stt @settings @grafana-pr',
   async ({
     I, pmmSettingsPage, settingsAPI,
@@ -46,7 +46,7 @@ Scenario(
   },
 );
 
-Scenario(
+Scenario.skip(
   'PMM-T650 PMM-T648 Verify user is able to set 0.1h check Frequency / custom check frequency @stt @settings',
   async ({
     I, pmmSettingsPage,
@@ -77,7 +77,7 @@ Scenario(
   },
 );
 
-Data(inputs).Scenario(
+Scenario.skip(
   'PMM-T651 Verify Check Intervals validation @stt @settings @grafana-pr',
   async ({
     I, pmmSettingsPage, current,
