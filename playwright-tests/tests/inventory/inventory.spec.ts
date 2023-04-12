@@ -2,7 +2,7 @@ import { expect, test } from '@playwright/test';
 import apiHelper from '@tests/api/helpers/apiHelper';
 import { NodeDetails } from '@tests/tests/inventory/components/nodesTable';
 import { ServiceDetails } from '@tests/tests/inventory/components/servicesTable';
-import { pmmClientCommands, pmmServerCommands, systemCommands } from '@tests/helpers/CommandLine';
+import cli from '@tests/helpers/CommandLine';
 import Duration from '@tests/helpers/Duration';
 import grafanaHelper from '@tests/helpers/GrafanaHelper';
 import { MongoDBInstanceSummary } from '@tests/pages/dashboards/mongo/MongoDBInstanceSummary.page';
@@ -11,6 +11,7 @@ import { AddServicePage } from '@tests/tests/inventory/pages/AddService.page';
 import { NodesPage } from '@tests/tests/inventory/pages/Nodes.page';
 import { ServicesPage } from '@tests/tests/inventory/pages/Services.page';
 import { QAN } from '@tests/pages/QAN/QueryAnalytics.page';
+import { api } from '@tests/api/api';
 
 test.describe('Spec file for PMM inventory tests.', async () => {
   const mongoLocalService: ServiceDetails = {
@@ -123,7 +124,7 @@ test.describe('Spec file for PMM inventory tests.', async () => {
     });
 
     await test.step('2. Verify pagination on the services table.', async () => {
-      await servicesPage.servicesTable.verifyPagination(3);
+      await servicesPage.servicesTable.verifyPagination(4);
     });
 
     await test.step('3. Navigate to the mysql agents page.', async () => {
@@ -192,16 +193,20 @@ test.describe('Spec file for PMM inventory tests.', async () => {
       await expect(servicesPage.elements.noDataTable).toHaveText(servicesPage.agentsTable.messages.noAgents);
     });
 
-    await test.step('3. Remove pmm agent.', async () => {
-      await pmmClientCommands.moveFile(
-        '/usr/local/bin/pmm-agent',
-        '/usr/local/bin/pmm-agent_error');
-      const pmmAgentProcessId = await pmmClientCommands.getProcessId('pmm-agent');
-      await pmmClientCommands.killProcess(pmmAgentProcessId.stdout);
-      await pmmClientCommands.moveFile(
-        '/usr/local/bin/pmm-agent_error',
-        '/usr/local/bin/pmm-agent');
-      await pmmClientCommands.setupAgent();
+    await test.step('4. Clean up env.', async () => {
+      const pmmAgentProcessId = await cli.pmmClientCommands.getProcessId('pmm-agent');
+      await cli.pmmClientCommands.killProcess(pmmAgentProcessId.stdout);
+      const nodes = await api.pmm.inventoryV1.listNodes();
+      await cli.pmmClientCommands.forceSetupAgent({ name: nodes.container![0].node_name, address: nodes.container![0].address, type: 'container' });
+      await cli.pmmClientCommands.startAgent();
+      await page.waitForTimeout(5000);
+      const containerNames = await cli.systemCommands.getRunningContainerNames()
+      const mongoAddress = process.env.CI ? '127.0.0.1' : containerNames.find((container: string | string[]) => container.includes('mo-integration'));
+      const psAddress = process.env.CI ? '127.0.0.1' : containerNames.find((container: string | string[]) => container.includes('ps_integration_'));
+      const pdpgsqlAddress = process.env.CI ? '127.0.0.1' : containerNames.find((container: string | string[]) => container.includes('pdpgsql-integration-'));
+      await cli.pmmClientCommands.addMongoDb({ address: mongoAddress || '', name: mongoAddress || '' });
+      await cli.pmmClientCommands.addMySql({ address: psAddress || '', name: psAddress || '' });
+      await cli.pmmClientCommands.addPgSql({ address: pdpgsqlAddress || '', name: pdpgsqlAddress || '' });
     });
   });
 
@@ -281,8 +286,8 @@ test.describe('Spec file for PMM inventory tests.', async () => {
       });
 
       await test.step('2. Verify node details.', async () => {
-        const nodeId = await pmmClientCommands.getNodeId();
-        nodeDetails = await pmmServerCommands.getNodeDetails(nodeId);
+        const nodeId = await cli.pmmClientCommands.getNodeId();
+        nodeDetails = await cli.pmmServerCommands.getNodeDetails(nodeId);
         nodeDetails.nodeId = nodeId;
         await nodesPage.nodesTable.verifyNode(nodeDetails)
       });
@@ -309,14 +314,14 @@ test.describe('Spec file for PMM inventory tests.', async () => {
       });
 
       await test.step('5. Return env to clean state.', async () => {
-        const containers = await systemCommands.getRunningContainerNames();
-        const pmmAgentProcessId = await pmmClientCommands.getProcessId('pmm-agent');
-        await pmmClientCommands.killProcess(pmmAgentProcessId.stdout);
-        await pmmClientCommands.forceSetupAgent();
-        await pmmClientCommands.startAgent();
+        const containers = await cli.systemCommands.getRunningContainerNames();
+        const pmmAgentProcessId = await cli.pmmClientCommands.getProcessId('pmm-agent');
+        await cli.pmmClientCommands.killProcess(pmmAgentProcessId.stdout);
+        await cli.pmmClientCommands.forceSetupAgent();
+        await cli.pmmClientCommands.startAgent();
         await page.waitForTimeout(5000);
-        const mongoAddress = process.env.CI ? '127.0.0.1' : containers.find((container) => container.includes('mo-integration'));
-        await pmmClientCommands.addMongoDb(mongoAddress || '');
+        const mongoAddress = process.env.CI ? '127.0.0.1' : containers.find((container: string | string[]) => container.includes('mo-integration'));
+        await cli.pmmClientCommands.addMongoDb({ address: mongoAddress || '' });
       });
 
     } else {
@@ -351,11 +356,11 @@ test.describe('Spec file for PMM inventory tests.', async () => {
       });
 
       await test.step('2. Kill process mongodb_exporter and verify that Navigate to the Inventory page and expand Mongo service".', async () => {
-        const mongoExporterProccessId = await pmmClientCommands.getProcessId('mongodb_exporter');
-        await pmmClientCommands.moveFile(
+        const mongoExporterProccessId = await cli.pmmClientCommands.getProcessId('mongodb_exporter');
+        await cli.pmmClientCommands.moveFile(
           '/usr/local/percona/pmm2/exporters/mongodb_exporter',
           '/usr/local/percona/pmm2/exporters/mongodb_exporter_error');
-        await pmmClientCommands.killProcess(mongoExporterProccessId.stdout);
+        await cli.pmmClientCommands.killProcess(mongoExporterProccessId.stdout);
         await page.reload();
         await servicesPage.servicesTable.buttons.showRowDetails(mongoLocalService.serviceName).click();
         await expect(servicesPage.servicesTable.elements.agentStatus).toHaveText('3/4 running');
@@ -365,11 +370,11 @@ test.describe('Spec file for PMM inventory tests.', async () => {
       });
 
       await test.step('2. Kill process vmagent and verify that Inventory page shows vmagent as not running".', async () => {
-        await pmmClientCommands.moveFile(
+        await cli.pmmClientCommands.moveFile(
           '/usr/local/percona/pmm2/exporters/vmagent',
           '/usr/local/percona/pmm2/exporters/vmagent_error');
-        const vmagentProcessId = await pmmClientCommands.getProcessId('vmagent');
-        await pmmClientCommands.killProcess(vmagentProcessId.stdout);
+        const vmagentProcessId = await cli.pmmClientCommands.getProcessId('vmagent');
+        await cli.pmmClientCommands.killProcess(vmagentProcessId.stdout);
         await page.reload();
         await servicesPage.servicesTable.buttons.showRowDetails(mongoLocalService.serviceName).click();
         await expect(servicesPage.servicesTable.elements.agentStatus).toHaveText('2/4 running');
@@ -379,11 +384,11 @@ test.describe('Spec file for PMM inventory tests.', async () => {
       });
 
       await test.step('3. Kill process mongodb_exporter and verify that Inventory page shows mongodb exporter as not running".', async () => {
-        await pmmClientCommands.moveFile(
+        await cli.pmmClientCommands.moveFile(
           '/usr/local/bin/pmm-agent',
           '/usr/local/bin/pmm-agent_error');
-        const pmmAgentProcessId = await pmmClientCommands.getProcessId('pmm-agent');
-        await pmmClientCommands.killProcess(pmmAgentProcessId.stdout);
+        const pmmAgentProcessId = await cli.pmmClientCommands.getProcessId('pmm-agent');
+        await cli.pmmClientCommands.killProcess(pmmAgentProcessId.stdout);
         await page.reload();
         await servicesPage.servicesTable.buttons.showRowDetails(mongoLocalService.serviceName).click();
         await expect(servicesPage.servicesTable.elements.agentStatus).toHaveText('4/4 not running');
@@ -393,11 +398,11 @@ test.describe('Spec file for PMM inventory tests.', async () => {
       });
 
       await test.step('3. Move all agents back to their original location.', async () => {
-        await pmmClientCommands.moveFile('/usr/local/bin/pmm-agent_error', '/usr/local/bin/pmm-agent');
-        await pmmClientCommands.moveFile(
+        await cli.pmmClientCommands.moveFile('/usr/local/bin/pmm-agent_error', '/usr/local/bin/pmm-agent');
+        await cli.pmmClientCommands.moveFile(
           '/usr/local/percona/pmm2/exporters/vmagent_error',
           '/usr/local/percona/pmm2/exporters/vmagent');
-        await pmmClientCommands.moveFile(
+        await cli.pmmClientCommands.moveFile(
           '/usr/local/percona/pmm2/exporters/mongodb_exporter_error',
           '/usr/local/percona/pmm2/exporters/mongodb_exporter');
       });
