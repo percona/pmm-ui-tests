@@ -3,7 +3,6 @@ import * as cli from '@helpers/cliHelper';
 
 const MYSQL_USER = 'msandbox'
 const MYSQL_PASSWORD = "msandbox"
-const host = '127.0.0.1:3308' //todo
 
 test.describe('PMM Client CLI tests for MySQL', async () => {
 
@@ -263,45 +262,29 @@ test.describe('PMM Client CLI tests for MySQL', async () => {
    * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/ms-specific-tests.bats#L217
    */
   test('run pmm-admin add mysql with disable-tablestats-limit=50', async ({ }) => {
-    let hosts = (await cli.exec(`sudo pmm-admin list | grep "MySQL" | awk -F" " '{print $3}'`))
+    let host = (await cli.exec(`sudo pmm-admin list | grep "MySQL" | awk -F" " '{print $3}'`))
       .stdout.trim().split('\n').filter((item) => item.trim().length > 0);
-    let n = 1;
-    for (const host of hosts) {
-      let output = await cli.exec(`sudo pmm-admin add mysql --query-source=perfschema --disable-tablestats-limit=50 --username=${MYSQL_USER} --password=${MYSQL_PASSWORD} mysql_${n++} ${host}`);
-      await output.assertSuccess();
-      await output.outContains('Table statistics collection disabled');
-    }
+    let output = await cli.exec(`sudo pmm-admin add mysql --query-source=perfschema --disable-tablestats-limit=50 --username=${MYSQL_USER} --password=${MYSQL_PASSWORD} mysql_limit_remove ${host}`);
+    await output.assertSuccess();
+    await output.outContains('Table statistics collection disabled');
   });
 
   /**
    * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/ms-specific-tests.bats#L231
    */
   test('run pmm-admin remove mysql added using disable-tablestats-limit=50', async ({ }) => {
-    let services = (await cli.exec(`sudo pmm-admin list | grep "MySQL" | grep "mysql_"`))
-      .stdout.trim().split('\n').filter((item) => item.trim().length > 0);
-    let n = 1;
-    for (const service of services) {
-      let output = await cli.exec(`sudo pmm-admin remove mysql mysql_${n++}`);
-      await output.assertSuccess();
-      await output.outContains('Service removed.');
-    }
+    let output = await cli.exec(`sudo pmm-admin remove mysql mysql_limit_remove`);
+    await output.assertSuccess();
+    await output.outContains('Service removed.');
   });
   
   /**
    * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/ms-specific-tests.bats#L243
    */
-  test('run pmm-admin remove mysql again', async ({ }) => { //todo
-    let services = (await cli.exec(`sudo pmm-admin list | grep "MySQL" | grep "mysql_"`))
-      .stdout.trim().split('\n').filter((item) => item.trim().length > 0);
-    let n = 1;
-    console.log(services)
-    for (const service of services) {
-      console.log(service)
-      console.log(services)
-      let output = await cli.exec(`sudo pmm-admin remove mysql mysql_${n++}`);
-      await output.exitCodeEquals(1);
-      await output.outContains('not found.');
-    }
+  test('run pmm-admin remove mysql again', async ({ }) => {
+    let output = await cli.exec(`sudo pmm-admin remove mysql mysql_limit_remove`);
+    await output.exitCodeEquals(1);
+    await output.outContains('not found.');
   });
 
   /**
@@ -346,5 +329,5 @@ test.describe('PMM Client CLI tests for MySQL', async () => {
       await output.assertSuccess();
       await output.outContains('Service removed.');
     }
-  });  
+  });
 });
