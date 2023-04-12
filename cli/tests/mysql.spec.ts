@@ -194,7 +194,7 @@ test.describe('PMM Client CLI tests for MySQL', async () => {
     for (const host of hosts) {
       const mysql_ip = host.split(':')[0];
       const mysql_port = host.split(':')[1];
-      let output = await cli.exec(`sudo pmm-admin add mysql --query-source=perfschema --username=${MYSQL_USER} --password=${MYSQL_PASSWORD} --socket=/tmp/mysql_sandbox${mysql_port}.sock mysql_socket${n++} ${host}`);
+      let output = await cli.exec(`sudo pmm-admin add mysql --query-source=perfschema --username=${MYSQL_USER} --password=${MYSQL_PASSWORD} --socket=/tmp/mysql_sandbox${mysql_port}.sock --service-name=mysql_socket${n++}`);
       await output.assertSuccess();
       await output.outContains('MySQL Service added.');
     }
