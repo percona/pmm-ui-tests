@@ -224,7 +224,6 @@ test.describe('PMM Client CLI tests for MySQL', async () => {
       await output.exitCodeEquals(1);
       await output.outContains('both --disable-tablestats and --disable-tablestats-limit are passed');
       output = await cli.exec('sudo pmm-admin list | grep MySQL');
-      // await output.outNotContains('mysql_both');
     }
   });
   
