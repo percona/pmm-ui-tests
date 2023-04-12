@@ -49,15 +49,6 @@ test.describe('PMM Client CLI tests for MySQL', async () => {
   });
 
   /**
-   * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/ms-specific-tests.bats#L70
-   */
-  test('run pmm-admin add mysql --help contains disable-tablestats', async ({ }) => {
-    const output = await cli.exec('sudo pmm-admin add mysql --help');
-    await output.assertSuccess();
-    await output.outContains('disable-tablestats');
-  });
-
-  /**
    * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/ms-specific-tests.bats#L77
    */
   test('run pmm-admin add mysql --help to check metrics-mode=auto', async ({ }) => {
@@ -67,48 +58,12 @@ test.describe('PMM Client CLI tests for MySQL', async () => {
   });
 
   /**
-   * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/ms-specific-tests.bats#L84
-   */
-  test('run pmm-admin add mysql --help to check host', async ({ }) => {
-    const output = await cli.exec('sudo pmm-admin add mysql --help');
-    await output.assertSuccess();
-    await output.outContains('host');
-  });
-
-  /**
-   * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/ms-specific-tests.bats#L91
-   */
-  test('run pmm-admin add mysql --help to check port', async ({ }) => {
-    const output = await cli.exec('sudo pmm-admin add mysql --help');
-    await output.assertSuccess();
-    await output.outContains('port');
-  });
-
-  /**
-   * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/ms-specific-tests.bats#L98
-   */
-  test('run pmm-admin add mysql --help to check service-name', async ({ }) => {
-    const output = await cli.exec('sudo pmm-admin add mysql --help');
-    await output.assertSuccess();
-    await output.outContains('service-name');
-  });
-
-  /**
    * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/ms-specific-tests.bats#L162
    */  
   test('run pmm-admin add mysql --help to check socket', async ({ }) => {
     const output = await cli.exec('sudo pmm-admin add mysql --help');
     await output.assertSuccess();
     await output.outContains('socket=STRING');
-  });
-
-  /**
-   * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/ms-specific-tests.bats#L170
-   */  
-  test('run pmm-admin add mysql --help to check disable-tablestats-limit', async ({ }) => {
-    const output = await cli.exec('sudo pmm-admin add mysql --help');
-    await output.assertSuccess();
-    await output.outContains('disable-tablestats-limit=NUMBER');
   });
 
   test('PMM-T959 run pmm-admin add mysql --help', async ({ }) => {
