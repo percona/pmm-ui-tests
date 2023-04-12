@@ -24,7 +24,7 @@ Before(async ({ I }) => {
   await I.Authorize();
 });
 
-Data(instances).Scenario('PMM-T1295 Verify adding Aurora remote instance @instances', async ({ I, addInstanceAPI, current }) => {
+Data(instances).Scenario('@PMM-T1295 Verify adding Aurora remote instance @instances', async ({ I, addInstanceAPI, current }) => {
   const { service_name, password, instance_id, cluster_name } = current;
 
   const details = {
@@ -72,7 +72,7 @@ Data(instances)
   .retry(1);
 
 // FIXME: Add also check for Aurora3 once https://jira.percona.com/browse/PMM-10201 is fixed
-Scenario('PMM-T1295 Verify Aurora instance metrics @instances', async ({ I, grafanaAPI }) =>{
+Scenario('PMM-T1295 Verify Aurora instance metrics @instances', async ({ I, grafanaAPI }) => {
   // Waiting for metrics to start hitting for remotely added services
   I.wait(10);
 

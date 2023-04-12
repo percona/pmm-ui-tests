@@ -6,6 +6,8 @@ const agentsTab = require('./agentsTab');
 module.exports = {
   url: 'graph/inventory?orgId=1',
   fields: {
+    showServiceDetails: (serviceName) => `//span[contains(text(), '${serviceName}')]//ancestor::tr//button[@data-testid="show-row-details"]`,
+    agentsLinkNew: '//div[contains(@data-testid,"status-badge")]',
     agentsLink: locate('[role="tablist"] a').withText('Agents').withAttr({ 'aria-label': 'Tab Agents' }),
     agentsLinkOld: locate('a').withText('Agents'),
     deleteButton: locate('span').withText('Delete'),
@@ -84,30 +86,29 @@ module.exports = {
 
   async verifyAgentHasStatusRunning(service_name) {
     const serviceId = await this.getServiceId(service_name);
-    const agentLinkLocator = this.fields.agentsLink;
 
     await inventoryAPI.waitForRunningState(serviceId);
-    I.click(agentLinkLocator);
+    await I.click(this.fields.showServiceDetails(service_name));
+    I.click(this.fields.agentsLinkNew);
     // I.waitForElement(this.fields.pmmAgentLocator, 60);
     await this.changeRowsPerPage(100);
     I.waitForElement(this.fields.inventoryTable, 60);
     I.scrollPageToBottom();
-    const numberOfServices = await I.grabNumberOfVisibleElements(
-      `//tr//td//span[contains(text(), "${serviceId}")]/../span[contains(text(), 'status: RUNNING')]`,
-    );
+
+    const runningStatus = '//span[contains(text(), "Running")]';
+
+    const numberOfServices = await I.grabNumberOfVisibleElements(runningStatus);
 
     if (/mysql|mongo|psmdb|postgres|pgsql|rds/gim.test(service_name)) {
-      I.waitForVisible(
-        `//tr//td//span[contains(text(), "${serviceId}")]/../span[contains(text(), 'status: RUNNING')]`,
-        30,
-      );
+      await I.waitForVisible(runningStatus, 30);
+
       assert.equal(
         numberOfServices,
-        2,
-        ` Service ID must have only 2 Agents running for different services ${serviceId} , Actual Number of Services found is ${numberOfServices} for ${service_name}`,
+        4,
+        ` Service ID must have only 4 Agents running for different services ${serviceId} , Actual Number of Services found is ${numberOfServices} for ${service_name}`,
       );
     } else {
-      assert.equal(numberOfServices, 1, ` Service ID must have only 1 Agent running ${serviceId} , Actual Number of Services found is ${numberOfServices} for ${service_name}`);
+      assert.equal(numberOfServices, 3, ` Service ID must have only 3 Agent running ${serviceId} , Actual Number of Services found is ${numberOfServices} for ${service_name}`);
     }
   },
 
