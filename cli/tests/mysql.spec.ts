@@ -7,7 +7,7 @@ const host = '127.0.0.1:3308' //todo
 
 test.describe('PMM Client CLI tests for MySQL', async () => {
 
-  test.only('run pmm-admin list', async ({ }) => {
+  test('run pmm-admin list', async ({ }) => {
     const sudo = parseInt((await cli.exec('id -u')).stdout) === 0 ? '' : 'sudo ';
     const output = await cli.exec(`${sudo}pmm-admin list`);
   });
