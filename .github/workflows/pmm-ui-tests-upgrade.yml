@@ -194,16 +194,16 @@ jobs:
             docker exec pmm-integration-server sed -i'' -e 's^/release/^/testing/^' /etc/yum.repos.d/pmm2-server.repo
 
             if [[ ${{ inputs.repository }} == testing ]]; then
-              docker exec pmm-integration-server percona-release enable percona testing
-              sudo percona-release enable percona testing
+              docker exec pmm-integration-server percona-release enable-only percona testing
+              sudo percona-release enable-only percona testing
               sudo apt-get update -y
             elif [[ ${{ inputs.repository }} == experimental ]]; then
-              docker exec pmm-integration-server percona-release enable percona experimental
-              sudo percona-release enable percona experimental
+              docker exec pmm-integration-server percona-release enable-only percona experimental
+              sudo percona-release enable-only percona experimental
               sudo apt-get update -y
             else
-              docker exec pmm-integration-server percona-release enable percona release
-              sudo percona-release enable percona release
+              docker exec pmm-integration-server percona-release enable-only percona release
+              sudo percona-release enable-only percona release
               sudo apt-get update -y
             fi
 

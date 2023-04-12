@@ -41,8 +41,11 @@ export default class HomeDashboard extends BaseDashboard {
 
   upgradePMM = async () => {
     await this.pmmUpgrade.buttons.upgradeButton.waitFor({ state: 'visible', timeout: Duration.ThreeMinutes });
+    const currentVersion = await this.pmmUpgrade.elements.currentVersion.textContent();
     await this.pmmUpgrade.buttons.upgradeButton.click();
     const availableVersion = await this.pmmUpgrade.elements.availableVersion.textContent();
+
+    console.log(`Upgrading pmm server from version: ${currentVersion} to the version: ${availableVersion}`)
 
     await this.upgradeModal.containers.modalContainer.waitFor({ state: 'visible', timeout: Duration.OneMinute });
     await this.upgradeModal.elements.upgradeInProgressHeader.waitFor({ state: 'visible', timeout: Duration.OneMinute });
