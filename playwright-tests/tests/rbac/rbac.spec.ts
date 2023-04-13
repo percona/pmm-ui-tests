@@ -39,20 +39,22 @@ test.describe('Spec file for Access Control (RBAC)', async () => {
     const homeDashboard = new HomeDashboard(page);
     const rbacPage = new RbacPage(page);
 
-    console.log(`pmm-server version is ${process.env.PMM_SERVER_VERSION}`)
+    console.log(`pmm-server version is ${apiHelper.splitPmmVersion(process.env.PMM_SERVER_VERSION || "").minor}`)
 
-    await test.step('1.Navigate to the advanced settings and disable Access Control.', async () => {
-      await page.goto(advancedSettings.url);
-      await advancedSettings.fields.accessControl.click({ force: true });
-      await advancedSettings.buttons.applyChanges.click();
-    });
+    if (apiHelper.splitPmmVersion(process.env.PMM_SERVER_VERSION || "").minor >= 35) {
+      await test.step('1.Navigate to the advanced settings and disable Access Control.', async () => {
+        await page.goto(advancedSettings.url);
+        await advancedSettings.fields.accessControl.click({ force: true });
+        await advancedSettings.buttons.applyChanges.click();
+      });
 
-    await test.step('2. Verify Access Control is disabled.', async () => {
-      await homeDashboard.sideMenu.elements.configuration.hover();
-      await homeDashboard.sideMenu.configuration.buttons.rbac.waitFor({ state: 'detached' });
-      await page.goto(rbacPage.url);
-      await expect(rbacPage.elements.emptyBlock).toHaveText(rbacPage.messages.featureDisabled);
-    });
+      await test.step('2. Verify Access Control is disabled.', async () => {
+        await homeDashboard.sideMenu.elements.configuration.hover();
+        await homeDashboard.sideMenu.configuration.buttons.rbac.waitFor({ state: 'detached' });
+        await page.goto(rbacPage.url);
+        await expect(rbacPage.elements.emptyBlock).toHaveText(rbacPage.messages.featureDisabled);
+      });
+    }
 
     await test.step('3. Re-enable Access Control.', async () => {
       await page.goto(advancedSettings.url);
