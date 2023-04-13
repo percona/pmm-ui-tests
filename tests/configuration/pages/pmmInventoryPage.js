@@ -7,7 +7,8 @@ module.exports = {
   url: 'graph/inventory?orgId=1',
   fields: {
     serviceRow: (serviceName) => `//span[contains(text(), '${serviceName}')]//ancestor::tr`,
-    showDetails: (serviceName) => `//*[contains(text(), '${serviceName}')]//ancestor::tr//button[@data-testid="show-row-details"]`,
+    showDetails: (serviceName) => `//span[contains(text(), '${serviceName}')]//ancestor::tr//button[@data-testid="show-row-details"]`,
+    showAgentDetails: (agentName) => `//td[contains(text(), '${agentName}')]//ancestor::tr//button[@data-testid="show-row-details"]`,
     showRowDetails: '//button[@data-testid="show-row-details"]',
     backToServices: '//span[text()="Go back to services"]',
     agentsLinkNew: '//div[contains(@data-testid,"status-badge")]',
@@ -90,7 +91,7 @@ module.exports = {
     const serviceId = await this.getServiceId(service_name);
 
     await inventoryAPI.waitForRunningState(serviceId);
-    await I.click(this.fields.showDetails(service_name));
+    await I.click(this.fields.showServiceDetails(service_name));
     I.click(this.fields.agentsLinkNew);
     // I.waitForElement(this.fields.pmmAgentLocator, 60);
     await this.changeRowsPerPage(100);
@@ -156,7 +157,7 @@ module.exports = {
     await this.changeRowsPerPage(100);
     // const nodeId = await this.getNodeId(serviceName);
 
-    // await I.click(this.fields.showDetails(serviceName));
+    // await I.click(this.fields.showServiceDetails(serviceName));
     // await I.click(this.fields.agentsLinkNew);
     await this.changeRowsPerPage(100);
 
@@ -182,7 +183,7 @@ module.exports = {
   },
 
   async getServiceId(serviceName) {
-    await I.click(this.fields.showDetails(serviceName));
+    await I.click(this.fields.showServiceDetails(serviceName));
     const serviceIdLocator = '//span[text()="Service ID"]/following-sibling::div//span';
 
     I.waitForVisible(serviceIdLocator, 30);
@@ -350,7 +351,7 @@ module.exports = {
   },
 
   async checkExistingAgent(agent, serviceName) {
-    await I.click(this.fields.showDetails(serviceName));
+    await I.click(this.fields.showServiceDetails(serviceName));
     I.click(this.fields.agentsLinkNew);
     await I.waitForVisible(agent, 30);
     I.click(this.fields.backToServices);
