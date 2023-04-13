@@ -202,14 +202,15 @@ Scenario(
     I.waitForVisible(remoteInstancesPage.fields.addService, 30);
     I.click(remoteInstancesPage.fields.addService);
     pmmInventoryPage.verifyRemoteServiceIsDisplayed(haproxyServiceName);
-    const serviceId = await pmmInventoryPage.getServiceId(haproxyServiceName);
 
-    I.click(pmmInventoryPage.fields.agentsLink);
-    await pmmInventoryPage.checkAgentOtherDetailsSection('scheme:', 'scheme: http', haproxyServiceName, serviceId);
-    await pmmInventoryPage.checkAgentOtherDetailsSection('metrics_path:', 'metrics_path: /metrics', haproxyServiceName, serviceId);
-    await pmmInventoryPage.checkAgentOtherDetailsSection('listen_port:', `listen_port: ${remoteInstancesHelper.remote_instance.haproxy.haproxy_2.port}`, haproxyServiceName, serviceId);
+    await I.click(pmmInventoryPage.fields.agentsLinkNew);
+    await I.click(pmmInventoryPage.fields.showDetails('External exporter'));
+    await pmmInventoryPage.checkAgentOtherDetailsSection('metrics_scheme', 'metrics_scheme=http', haproxyServiceName);
+    await pmmInventoryPage.checkAgentOtherDetailsSection('metrics_path', 'metrics_path=/metrics', haproxyServiceName);
+    await pmmInventoryPage.checkAgentOtherDetailsSection('listen_port', `listen_port=${remoteInstancesHelper.remote_instance.haproxy.haproxy_2.port}`, haproxyServiceName);
   },
 );
+
 Scenario(
   'PMM-T1089 - Verify UI elements for PostgreSQL Instance @instances',
   async ({
