@@ -101,8 +101,6 @@ module.exports = {
 
     const numberOfAgents = await I.grabNumberOfVisibleElements(runningStatus);
 
-    await I.click(this.fields.backToServices);
-
     if (/mysql|mongo|psmdb|postgres|pgsql|rds/gim.test(service_name)) {
       assert.equal(
         numberOfAgents,
@@ -112,6 +110,8 @@ module.exports = {
     } else {
       assert.equal(numberOfAgents, 1, ` Service ID must have only 1 Agent running ${serviceId} , Actual Number of Agents found is ${numberOfAgents} for ${service_name}`);
     }
+
+    await I.click(this.fields.backToServices);
   },
 
   async getServiceIdWithStatus(status) {
