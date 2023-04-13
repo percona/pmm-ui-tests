@@ -71,7 +71,8 @@ test.describe('Spec file for Access Control (RBAC)', async () => {
       description: 'PMM-T1581 Verify assigning default role on Access roles page.',
     });
 
-    if (roles.roles.length === 1) {
+    // For updating from version without RBAC (<35)
+    if (roles?.roles.length === 1) {
       const rbacPage = new RbacPage(page);
       const createRolePage = new CreateRolePage(page);
 
@@ -107,7 +108,9 @@ test.describe('Spec file for Access Control (RBAC)', async () => {
 
   test('PMM-T1584 Verify assigning Access role to user @rbac @rbac-pre-upgrade @rbac-post-upgrade', async ({ page }) => {
     test.skip(pmmVersion < 35, 'Test is for versions 2.35.0+');
-    if (roles.roles.length === 1) {
+
+    // For updating from version without RBAC (<35)
+    if (roles?.roles.length === 1) {
       const rbacPage = new RbacPage(page);
       const createRolePage = new CreateRolePage(page);
       const newUserPage = new NewUserPage(page);
