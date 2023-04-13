@@ -246,3 +246,11 @@ jobs:
           npx playwright test --config="playwright-tests/playwright.config.ts" --grep="${{ inputs.pmm_post_upgrade_flag }}"
         env:
           NODE_TLS_REJECT_UNAUTHORIZED: 0
+
+      - name: Generate and Attach the report
+        if: ${{ always() }}
+        uses: percona-platform/upload-artifact@v3
+        with:
+          name: ui-tests-report
+          path: pmm-ui-tests/playwright-report
+  
