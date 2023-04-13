@@ -25,7 +25,6 @@ test.describe('Spec file for Access Control (RBAC)', async () => {
 
   test.beforeAll(async () => {
     roles = await api.pmm.managementV1.listRoles();
-    console.log(roles)
     if (!pmmVersion) {
       const versionString = (await apiHelper.getPmmVersion()).versionMinor;
       pmmVersion = parseInt(versionString);
