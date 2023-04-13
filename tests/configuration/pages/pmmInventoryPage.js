@@ -7,6 +7,7 @@ module.exports = {
   url: 'graph/inventory?orgId=1',
   fields: {
     showServiceDetails: (serviceName) => `//span[contains(text(), '${serviceName}')]//ancestor::tr//button[@data-testid="show-row-details"]`,
+    showRowDetails: '//button[@data-testid="show-row-details"]',
     backToServices: '//span[text()="Go back to services"]',
     agentsLinkNew: '//div[contains(@data-testid,"status-badge")]',
     agentsLink: locate('[role="tablist"] a').withText('Agents').withAttr({ 'aria-label': 'Tab Agents' }),
@@ -145,21 +146,27 @@ module.exports = {
 
   async verifyMetricsFlags(serviceName) {
     const servicesLink = this.fields.pmmServicesSelector;
-    const agentLinkLocator = this.fields.agentsLink;
 
     I.waitForElement(servicesLink, 20);
     I.click(servicesLink);
     await this.changeRowsPerPage(100);
-    const nodeId = await this.getNodeId(serviceName);
+    // const nodeId = await this.getNodeId(serviceName);
 
-    I.click(agentLinkLocator);
+    await I.click(this.fields.showServiceDetails(serviceName));
+    await I.click(this.fields.agentsLinkNew);
     await this.changeRowsPerPage(100);
 
-    const enhanceMetricsDisabled = `//tr//td//span[contains(text(), "${nodeId}")]/../span[contains(text(),"enhanced_metrics_disabled: true")]`;
+    const rows = await I.grabNumberOfVisibleElements(this.fields.showRowDetails);
+
+    for (let i = 1; i <= rows; i++) {
+      await I.click(`(${this.fields.showRowDetails})[${i}]`);
+    }
+
+    const enhanceMetricsDisabled = '//span[contains(text(),"enhanced_metrics_disabled: true")]';
 
     I.waitForElement(enhanceMetricsDisabled, 30);
     I.seeElement(enhanceMetricsDisabled);
-    const basicMetricsDisabled = `//tr//td//span[contains(text(), "${nodeId}")]/../span[contains(text(),"basic_metrics_disabled: true")]`;
+    const basicMetricsDisabled = '//span[contains(text(),"basic_metrics_disabled: true")]';
 
     I.seeElement(basicMetricsDisabled);
   },
