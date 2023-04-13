@@ -399,8 +399,7 @@ Scenario('PMM-T704 PMM-T772 PMM-T849 PMM-T850 Resources, PV, Secrets verificatio
   }
 );
 
-// FIXME: unskip when https://jira.percona.com/browse/PMM-11396 is done
-Scenario.skip('Verify update PXC DB Cluster version @dbaas', async ({ I, dbaasPage, dbaasActionsPage }) => {
+Scenario('PMM-T1184 Verify there are no users with empty passwords, verify update PXC DB Cluster version @dbaas', async ({ I, dbaasPage, dbaasActionsPage }) => {
   const mysqlVersion = '8.0.19-10.1';
   const dbClusterRandomName = dbaasPage.randomizeClusterName(pxc_cluster_name);
 
@@ -411,30 +410,39 @@ Scenario.skip('Verify update PXC DB Cluster version @dbaas', async ({ I, dbaasPa
   // await dbaasPage.postClusterCreationValidation(dbClusterRandomName, clusterName);
 
   const {
-    username, password, host, port,
+    username, password, host,
   } = await dbaasAPI.getDbClusterDetails(dbClusterRandomName, clusterName);
 
-  // await I.verifyCommand(
-  //   `kubectl run -i --rm --tty pxc-client --image=percona:8.0 --restart=Never -- mysql -h ${host} -u${username}` + 
-  //   `-p${password} -e "CREATE DATABASE DBAAS_UPGRADE_TESTING;"`,
-  // );
-  // await I.verifyCommand(
-  //   `kubectl run -i --rm --tty pxc-client --image=percona:8.0 --restart=Never -- mysql -h ${host} -u${username}` + 
-  //   `-p${password} -e "SHOW DATABASES;"`,
-  //   'DBAAS_UPGRADE_TESTING',
-  // );
+  await I.verifyCommand(
+    `kubectl run -i --rm --tty pxc-client --image=percona:8.0 --restart=Never -- mysql -h ${host} -u${username} ` + 
+    `-p${password} -e "CREATE DATABASE DBAAS_UPGRADE_TESTING;"`,
+  );
+  await I.verifyCommand(
+    `kubectl run -i --rm --tty pxc-client --image=percona:8.0 --restart=Never -- mysql -h ${host} -u${username} ` + 
+    `-p${password} -e "SHOW DATABASES;"`,
+    'DBAAS_UPGRADE_TESTING',
+  );
+
+  const output = await I.verifyCommand(
+    `kubectl run -i --rm --tty pxc-client --image=percona:8.0 --restart=Never -- mysql -h ${host} -u${username} -p${password} ` + 
+    `-e "select user, authentication_string from mysql.user where account_locked = 'N' and authentication_string = ''"`,
+  );
+
+  console.log(output)
+  console.log(output.length)
+
+  assert.ok(output.length === 106, `Output length should be 106`);
 
   await dbaasActionsPage.updateCluster(dbClusterRandomName);
-  I.waitForVisible(dbaasPage.tabs.dbClusterTab.fields.clusterStatusUpdating, 60);
-  I.seeElement(dbaasPage.tabs.dbClusterTab.fields.clusterStatusUpdating);
+  I.waitForText('Processing', 60, dbaasPage.tabs.dbClusterTab.fields.progressBarContent(dbClusterRandomName));
   await dbaasAPI.waitForDBClusterState(dbClusterRandomName, clusterName, 'MySQL', 'DB_CLUSTER_STATE_READY');
   I.waitForElement(dbaasPage.tabs.dbClusterTab.fields.clusterStatusActive, 60);
   I.seeElement(dbaasPage.tabs.dbClusterTab.fields.clusterStatusActive);
-  // await I.verifyCommand(
-  //   `kubectl run -i --rm --tty pxc-client --image=percona:8.0 --restart=Never -- mysql -h ${host}` + 
-  //   `-u${username} -p${password} -e "SHOW DATABASES;"`,
-  //   'DBAAS_UPGRADE_TESTING',
-  // );
+  await I.verifyCommand(
+    `kubectl run -i --rm --tty pxc-client --image=percona:8.0 --restart=Never -- mysql -h ${host} ` + 
+    `-u${username} -p${password} -e "SHOW DATABASES;"`,
+    'DBAAS_UPGRADE_TESTING',
+  );
   const version = await I.verifyCommand(
     `kubectl run -i --rm --tty pxc-client --image=percona:8.0 --restart=Never -- mysql -h ${host} -u${username} -p${password}` + 
     `-e "SELECT VERSION();"`,
