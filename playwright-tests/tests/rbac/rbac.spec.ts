@@ -21,7 +21,7 @@ test.describe('Spec file for Access Control (RBAC)', async () => {
   const roleNameCreate = `Role Name ${new Date().getTime()}`;
   const roleDescriptionCreate = `Role Description ${new Date().getTime()}`;
   let pmmVersion: number;
-  let roles: ListRoles;
+  let roles: ListRoles | undefined;
 
   test.beforeAll(async () => {
     roles = await api.pmm.managementV1.listRoles();

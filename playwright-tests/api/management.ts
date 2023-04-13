@@ -11,8 +11,11 @@ interface Role {
 };
 
 export const management = {
-  listRoles: async (): Promise<ListRoles> => {
+  listRoles: async (): Promise<ListRoles | undefined> => {
     const response = await apiHelper.post('/v1/management/Role/List', {});
-    return await response.json()
+    if (response.status() !== 200) {
+      return;
+    }
+    return await response.json();
   },
 };
