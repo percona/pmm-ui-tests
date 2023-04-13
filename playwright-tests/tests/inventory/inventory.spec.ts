@@ -349,8 +349,8 @@ test.describe('Spec file for PMM inventory tests.', async () => {
 
     await test.step('3. Kill process mongodb_exporter and verify that Inventory page shows mongodb exporter as not running".', async () => {
       await cli.pmmClientCommands.moveFile(
-        '/usr/local/bin/pmm-agent',
-        '/usr/local/bin/pmm-agent_error');
+        '/usr/sbin/pmm-agent',
+        '/usr/sbin/pmm-agent_error');
       const pmmAgentProcessId = await cli.pmmClientCommands.getProcessId('pmm-agent');
       await cli.pmmClientCommands.killProcess(pmmAgentProcessId.stdout);
       await page.reload();
@@ -362,7 +362,7 @@ test.describe('Spec file for PMM inventory tests.', async () => {
     });
 
     await test.step('3. Move all agents back to their original location.', async () => {
-      await cli.pmmClientCommands.moveFile('/usr/local/bin/pmm-agent_error', '/usr/local/bin/pmm-agent');
+      await cli.pmmClientCommands.moveFile('/usr/sbin/pmm-agent_error', '/usr/sbin/pmm-agent');
       await cli.pmmClientCommands.moveFile(
         '/usr/local/percona/pmm2/exporters/vmagent_error',
         '/usr/local/percona/pmm2/exporters/vmagent');
