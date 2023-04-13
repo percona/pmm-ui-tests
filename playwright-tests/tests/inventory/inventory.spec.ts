@@ -35,7 +35,7 @@ test.describe('Spec file for PMM inventory tests.', async () => {
     await grafanaHelper.authorize(page, 'admin', 'admin');
   });
 
-  test('PMM-T1669 Verify PMM Inventory redesign : Layout & Services @inventory @inventory-post-upgrade', async ({ page }) => {
+  test('PMM-T1669 Verify PMM Inventory redesign : Layout & Services @inventory @inventory-pre-upgrade @inventory-post-upgrade', async ({ page }) => {
     test.skip(pmmVersion < 37, 'Test is for versions 2.37.0+');
     const servicesPage = new ServicesPage(page);
     const homeDashboard = new HomeDashboard(page);
