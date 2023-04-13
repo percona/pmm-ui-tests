@@ -12,6 +12,7 @@ import Duration from '@tests/helpers/Duration';
 import PostgresqlInstancesOverviewDashboard from '@tests/pages/dashboards/postgresql/PostgresqlInstancesOverview.page';
 import AdvancedSettings from '@tests/pages/pmmSettings/AdvancedSettings.page';
 import { api } from '@tests/api/api';
+import { ListRoles } from '@tests/api/management';
 
 test.describe('Spec file for Access Control (RBAC)', async () => {
   const newUser = { username: 'testUserRBAC', email: 'testUserRBAC@localhost', name: 'Test User', password: 'password' };
@@ -20,9 +21,11 @@ test.describe('Spec file for Access Control (RBAC)', async () => {
   const roleNameCreate = `Role Name ${new Date().getTime()}`;
   const roleDescriptionCreate = `Role Description ${new Date().getTime()}`;
   let pmmVersion: number;
-  const roles = await api.pmm.managementV1.listRoles();
+  let roles: ListRoles;
 
   test.beforeAll(async () => {
+    roles = await api.pmm.managementV1.listRoles();
+    console.log(roles)
     if (!pmmVersion) {
       const versionString = (await apiHelper.getPmmVersion()).versionMinor;
       pmmVersion = parseInt(versionString);
