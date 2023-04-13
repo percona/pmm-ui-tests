@@ -8,6 +8,7 @@ module.exports = {
   fields: {
     serviceRow: (serviceName) => `//span[contains(text(), '${serviceName}')]//ancestor::tr`,
     showServiceDetails: (serviceName) => `//span[contains(text(), '${serviceName}')]//ancestor::tr//button[@data-testid="show-row-details"]`,
+    hideServiceDetails: (serviceName) => `//span[contains(text(), '${serviceName}')]//ancestor::tr//button[@data-testid="hide-row-details"]`,
     showAgentDetails: (agentName) => `//td[contains(text(), '${agentName}')]//ancestor::tr//button[@data-testid="show-row-details"]`,
     showRowDetails: '//button[@data-testid="show-row-details"]',
     backToServices: '//span[text()="Go back to services"]',
@@ -195,7 +196,11 @@ module.exports = {
       `There must be only one entry for the newly added service with name ${serviceName}`,
     );
 
-    return await I.grabTextFrom(serviceIdLocator);
+    const serviceId = await I.grabTextFrom(serviceIdLocator);
+
+    await I.click(this.fields.hideServiceDetails(serviceName));
+
+    return serviceId;
   },
 
   selectService(serviceName) {

@@ -203,6 +203,7 @@ Scenario(
     I.click(remoteInstancesPage.fields.addService);
     pmmInventoryPage.verifyRemoteServiceIsDisplayed(haproxyServiceName);
 
+    await I.click(pmmInventoryPage.fields.showServiceDetails(haproxyServiceName));
     await I.click(pmmInventoryPage.fields.agentsLinkNew);
     await I.click(pmmInventoryPage.fields.showAgentDetails('External exporter'));
     await pmmInventoryPage.checkAgentOtherDetailsSection('metrics_scheme', 'metrics_scheme=http', haproxyServiceName);
