@@ -7,7 +7,7 @@ module.exports = {
   url: 'graph/inventory?orgId=1',
   fields: {
     serviceRow: (serviceName) => `//span[contains(text(), '${serviceName}')]//ancestor::tr`,
-    showDetails: (serviceName) => `//span[contains(text(), '${serviceName}')]//ancestor::tr//button[@data-testid="show-row-details"]`,
+    showServiceDetails: (serviceName) => `//span[contains(text(), '${serviceName}')]//ancestor::tr//button[@data-testid="show-row-details"]`,
     showAgentDetails: (agentName) => `//td[contains(text(), '${agentName}')]//ancestor::tr//button[@data-testid="show-row-details"]`,
     showRowDetails: '//button[@data-testid="show-row-details"]',
     backToServices: '//span[text()="Go back to services"]',
