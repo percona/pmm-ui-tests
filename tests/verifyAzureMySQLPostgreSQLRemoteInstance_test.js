@@ -28,7 +28,7 @@ Before(async ({ I }) => {
 });
 
 Data(azureServices).Scenario(
-  'PMM-T744, PMM-T746, PMM-T748 - Verify adding monitoring for Azure @instances',
+  '@PMM-T744, PMM-T746, PMM-T748 - Verify adding monitoring for Azure @instances',
   async ({
     I, remoteInstancesPage, pmmInventoryPage, settingsAPI, current,
   }) => {

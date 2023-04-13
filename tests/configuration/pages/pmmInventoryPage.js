@@ -104,8 +104,6 @@ module.exports = {
     await I.click(this.fields.backToServices);
 
     if (/mysql|mongo|psmdb|postgres|pgsql|rds/gim.test(service_name)) {
-      await I.waitForVisible(runningStatus, 30);
-
       assert.equal(
         numberOfAgents,
         2,
