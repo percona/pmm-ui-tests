@@ -33,6 +33,39 @@ test.describe('Spec file for Access Control (RBAC)', async () => {
     await grafanaHelper.authorize(page, 'admin', 'admin');
   });
 
+  test('PMM-T1629 Verify re-enabling of the Access Control @rbac @rbac-post-upgrade', async ({ page }) => {
+    test.skip(pmmVersion < 35, 'Test is for versions 2.35.0+');
+    const advancedSettings = new AdvancedSettings(page);
+    const homeDashboard = new HomeDashboard(page);
+    const rbacPage = new RbacPage(page);
+
+    console.log(`pmm-server version is ${process.env.PMM_SERVER_VERSION}`)
+
+    await test.step('1.Navigate to the advanced settings and disable Access Control.', async () => {
+      await page.goto(advancedSettings.url);
+      await advancedSettings.fields.accessControl.click({ force: true });
+      await advancedSettings.buttons.applyChanges.click();
+    });
+
+    await test.step('2. Verify Access Control is disabled.', async () => {
+      await homeDashboard.sideMenu.elements.configuration.hover();
+      await homeDashboard.sideMenu.configuration.buttons.rbac.waitFor({ state: 'detached' });
+      await page.goto(rbacPage.url);
+      await expect(rbacPage.elements.emptyBlock).toHaveText(rbacPage.messages.featureDisabled);
+    });
+
+    await test.step('3. Re-enable Access Control.', async () => {
+      await page.goto(advancedSettings.url);
+      await advancedSettings.fields.accessControl.click({ force: true });
+      await advancedSettings.buttons.applyChanges.click();
+    });
+
+    await test.step('2. Verify Access Control is enabled.', async () => {
+      await homeDashboard.sideMenu.elements.configuration.hover();
+      await homeDashboard.sideMenu.configuration.buttons.rbac.waitFor({ state: 'visible' });
+    });
+  });
+
   test('PMM-T1573 Verify Access Roles tab on Configuration page @rbac @rbac-pre-upgrade', async ({ page }) => {
     test.skip(pmmVersion < 35, 'Test is for versions 2.35.0+');
     test.info().annotations.push({
@@ -307,35 +340,4 @@ test.describe('Spec file for Access Control (RBAC)', async () => {
       await rbacPage.toast.checkToastMessageContains(rbacPage.rbacTable.messages.roleDeleted(deleteUserRole), { variant: 'success' });
     });
   })
-
-  test('PMM-T1629 Verify re-enabling of the Access Control @rbac @rbac-post-upgrade', async ({ page }) => {
-    test.skip(pmmVersion < 35, 'Test is for versions 2.35.0+');
-    const advancedSettings = new AdvancedSettings(page);
-    const homeDashboard = new HomeDashboard(page);
-    const rbacPage = new RbacPage(page);
-
-    await test.step('1.Navigate to the advanced settings and disable Access Control.', async () => {
-      await page.goto(advancedSettings.url);
-      await advancedSettings.fields.accessControl.click({ force: true });
-      await advancedSettings.buttons.applyChanges.click();
-    });
-
-    await test.step('2. Verify Access Control is disabled.', async () => {
-      await homeDashboard.sideMenu.elements.configuration.hover();
-      await homeDashboard.sideMenu.configuration.buttons.rbac.waitFor({ state: 'detached' });
-      await page.goto(rbacPage.url);
-      await expect(rbacPage.elements.emptyBlock).toHaveText(rbacPage.messages.featureDisabled);
-    });
-
-    await test.step('3. Re-enable Access Control.', async () => {
-      await page.goto(advancedSettings.url);
-      await advancedSettings.fields.accessControl.click({ force: true });
-      await advancedSettings.buttons.applyChanges.click();
-    });
-
-    await test.step('2. Verify Access Control is enabled.', async () => {
-      await homeDashboard.sideMenu.elements.configuration.hover();
-      await homeDashboard.sideMenu.configuration.buttons.rbac.waitFor({ state: 'visible' });
-    });
-  });
 });
