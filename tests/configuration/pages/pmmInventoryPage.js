@@ -7,6 +7,7 @@ module.exports = {
   url: 'graph/inventory?orgId=1',
   fields: {
     showServiceDetails: (serviceName) => `//span[contains(text(), '${serviceName}')]//ancestor::tr//button[@data-testid="show-row-details"]`,
+    backToServices: '//span[text()="Go back to services"]',
     agentsLinkNew: '//div[contains(@data-testid,"status-badge")]',
     agentsLink: locate('[role="tablist"] a').withText('Agents').withAttr({ 'aria-label': 'Tab Agents' }),
     agentsLinkOld: locate('a').withText('Agents'),
@@ -98,6 +99,8 @@ module.exports = {
     const runningStatus = '//span[contains(text(), "Running")]';
 
     const numberOfAgents = await I.grabNumberOfVisibleElements(runningStatus);
+
+    await I.click(this.fields.backToServices);
 
     if (/mysql|mongo|psmdb|postgres|pgsql|rds/gim.test(service_name)) {
       await I.waitForVisible(runningStatus, 30);
