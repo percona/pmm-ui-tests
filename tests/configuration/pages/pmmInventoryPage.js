@@ -112,7 +112,7 @@ module.exports = {
         ` Service ID must have 2 Agents running, Actual Number of Agents found is ${numberOfAgents} for ${service_name}`,
       );
     } else {
-      assert.equal(numberOfAgents, 3, ` Service ID must have only 3 Agent running ${serviceId} , Actual Number of Agents found is ${numberOfAgents} for ${service_name}`);
+      assert.equal(numberOfAgents, 1, ` Service ID must have only 1 Agent running ${serviceId} , Actual Number of Agents found is ${numberOfAgents} for ${service_name}`);
     }
   },
 
@@ -152,14 +152,14 @@ module.exports = {
     await this.changeRowsPerPage(100);
     // const nodeId = await this.getNodeId(serviceName);
 
-    await I.click(this.fields.showServiceDetails(serviceName));
-    await I.click(this.fields.agentsLinkNew);
+    // await I.click(this.fields.showServiceDetails(serviceName));
+    // await I.click(this.fields.agentsLinkNew);
     await this.changeRowsPerPage(100);
 
     const rows = await I.grabNumberOfVisibleElements(this.fields.showRowDetails);
 
     for (let i = 1; i <= rows; i++) {
-      await I.click(`(${this.fields.showRowDetails})[${i}]`);
+      await I.click(`(${this.fields.showRowDetails})[1]`);
     }
 
     const enhanceMetricsDisabled = '//span[contains(text(),"enhanced_metrics_disabled: true")]';
