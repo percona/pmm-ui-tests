@@ -6,6 +6,7 @@ const agentsTab = require('./agentsTab');
 module.exports = {
   url: 'graph/inventory?orgId=1',
   fields: {
+    serviceRow: (serviceName) => `//span[contains(text(), '${serviceName}')]//ancestor::tr//`,
     showServiceDetails: (serviceName) => `//span[contains(text(), '${serviceName}')]//ancestor::tr//button[@data-testid="show-row-details"]`,
     showRowDetails: '//button[@data-testid="show-row-details"]',
     backToServices: '//span[text()="Go back to services"]',
@@ -47,8 +48,7 @@ module.exports = {
 
   async open() {
     I.amOnPage(this.url);
-    I.waitForVisible(this.fields.nodesLink, 30);
-    await I.waitForVisible(this.fields.agentsLink, 2);
+    await I.waitForVisible(this.fields.nodesLink, 30);
   },
 
   async openServices() {
@@ -344,9 +344,11 @@ module.exports = {
     }
   },
 
-  checkExistingAgent(agent) {
-    I.click(this.fields.agentsLink);
-    I.waitForVisible(agent, 30);
+  async checkExistingAgent(agent, serviceName) {
+    await I.click(this.fields.showServiceDetails(serviceName));
+    I.click(this.fields.agentsLinkNew);
+    await I.waitForVisible(agent, 30);
+    I.click(this.fields.backToServices);
   },
 
   async checkAgentsPresent(expectedAgentIds) {
