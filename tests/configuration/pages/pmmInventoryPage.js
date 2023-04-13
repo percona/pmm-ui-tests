@@ -101,7 +101,13 @@ module.exports = {
 
     const numberOfAgents = await I.grabNumberOfVisibleElements(runningStatus);
 
-    if (/mysql|mongo|psmdb|postgres|pgsql|rds/gim.test(service_name)) {
+    if (service_name.includes('azure')) {
+      assert.equal(
+        numberOfAgents,
+        3,
+        ` Service ID must have 3 Agents running, Actual Number of Agents found is ${numberOfAgents} for ${service_name}`,
+      );
+    } else if (/mysql|mongo|psmdb|postgres|pgsql|rds/gim.test(service_name)) {
       assert.equal(
         numberOfAgents,
         2,
