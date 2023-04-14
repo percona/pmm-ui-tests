@@ -49,23 +49,9 @@ test.describe('PMM Client CLI tests for MySQL', async () => {
   });
 
   /**
-   * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/ms-specific-tests.bats#L77
-   */
-  test('run pmm-admin add mysql --help to check metrics-mode=auto', async ({ }) => {
-    const output = await cli.exec('sudo pmm-admin add mysql --help');
-    await output.assertSuccess();
-    await output.outContains(`metrics-mode=\"auto\"`);
-  });
-
-  /**
-   * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/ms-specific-tests.bats#L162
-   */  
-  test('run pmm-admin add mysql --help to check socket', async ({ }) => {
-    const output = await cli.exec('sudo pmm-admin add mysql --help');
-    await output.assertSuccess();
-    await output.outContains('socket=STRING');
-  });
-
+  * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/ms-specific-tests.bats#L77
+  * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/ms-specific-tests.bats#L162
+ */
   test('PMM-T959 run pmm-admin add mysql --help', async ({ }) => {
     const output = await cli.exec('sudo pmm-admin add mysql --help');
     await output.assertSuccess();
