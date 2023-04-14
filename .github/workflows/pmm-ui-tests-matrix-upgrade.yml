@@ -83,3 +83,20 @@ jobs:
       pmm_clients: ''
       pmm_qa_branch: ${{ inputs.pmm_qa_branch || 'main' }}
       repository: ${{ inputs.repository }}
+
+  inventory:
+    name: 'Inventory'
+    uses: ./.github/workflows/pmm-ui-tests-upgrade.yml
+    secrets: inherit
+    with:
+      pmm_ui_tests_branch: ${{ inputs.pmm_ui_tests_branch || 'main' }}
+      pmm_pre_upgrade_flag: '@inventory-pre-upgrade'
+      pmm_post_upgrade_flag: '@inventory-post-upgrade'
+      pmm_server_version: ${{ inputs.pmm_server_version || 'dev-latest' }}
+      pmm_server_docker_tag: ${{ inputs.pmm_server_docker_tag }}
+      pmm_client_version: ${{ inputs.pmm_client_version || 'dev-latest' }}
+      pmm_client_upgrade_version: ${{ inputs.pmm_client_upgrade_version }}
+      pmm_clients: '--addclient=modb,1'
+      pmm_qa_branch: ${{ inputs.pmm_qa_branch || 'main' }}
+      repository: ${{ inputs.repository }}
+    
