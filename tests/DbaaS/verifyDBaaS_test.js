@@ -196,8 +196,6 @@ Scenario('PMM-T728 Verify DB Cluster Tab Page Elements & Steps Background @dbaas
     I.seeElement(dbaasPage.tabs.dbClusterTab.advancedOptionsButton);
     I.click(dbaasPage.tabs.dbClusterTab.advancedOptionsButton);
     I.seeElement(dbaasPage.tabs.dbClusterTab.advancedOptions.fields.nodesNumberField);
-    I.scrollTo(dbaasPage.tabs.dbClusterTab.networkAndSecurity.exposeLabel);
-    I.dontSeeCheckboxIsChecked(dbaasPage.tabs.dbClusterTab.networkAndSecurity.exposeCheckbox);
     I.seeElement(dbaasPage.tabs.dbClusterTab.advancedOptions.fields.resourcesPerNodeLabel);
     I.seeElement(dbaasPage.tabs.dbClusterTab.advancedOptions.fields.memoryField);
     I.seeElement(dbaasPage.tabs.dbClusterTab.advancedOptions.fields.cpuNumberFields);
@@ -403,25 +401,27 @@ Scenario('PMM-T1571 Verify Create DB Cluster page @dbaas',
     I.click(dbaasPage.tabs.dbClusterTab.dbClusterAddButtonTop);
     I.waitForElement(dbaasPage.tabs.dbClusterTab.advancedOptionsButton);
     I.dontSeeElement(dbaasPage.tabs.dbClusterTab.advancedOptions.fields.nodesNumberField);
+    I.seeElement(dbaasPage.tabs.dbClusterTab.externalAccess.enableExtAcceessLabel);
+    I.click(dbaasPage.tabs.dbClusterTab.externalAccess.enableExtAcceessToggle);
+    await adminPage.verifyTooltip(dbaasPage.tooltips.externalAccess);
+    await adminPage.verifyTooltip(dbaasPage.tooltips.internetFacing);
+    I.seeElement(dbaasPage.tabs.dbClusterTab.externalAccess.internetFacingLabel);
+    I.scrollTo(dbaasPage.tabs.dbClusterTab.externalAccess.sourceRangesLabel);
+    I.click(dbaasPage.tabs.dbClusterTab.externalAccess.addNewSourceRangeButton);
+    I.click(dbaasPage.tabs.dbClusterTab.externalAccess.addNewSourceRangeButton);
+    await dbaasPage.verifySourceRangeCount(3);
+    I.click(dbaasPage.tabs.dbClusterTab.externalAccess.deleteSourceRangeButton(2));
+    await dbaasPage.verifySourceRangeCount(2);
+    I.click(dbaasPage.tabs.dbClusterTab.externalAccess.deleteSourceRangeButton(1));
+    await dbaasPage.verifySourceRangeCount(1);
+    I.click(dbaasPage.tabs.dbClusterTab.externalAccess.deleteSourceRangeButton(0));
+    await dbaasPage.verifySourceRangeCount(1);
+
     I.click(dbaasPage.tabs.dbClusterTab.advancedOptionsButton);
     I.waitForElement(dbaasPage.tabs.dbClusterTab.advancedOptions.fields.nodesNumberField);
     I.scrollTo(dbaasPage.tabs.dbClusterTab.dbConfigurations.configurationsHeader('MySQL'));
     I.seeElement(dbaasPage.tabs.dbClusterTab.dbConfigurations.storageClassLabel);
     I.seeElement(dbaasPage.tabs.dbClusterTab.dbConfigurations.configurationLabel('MySQL'));
-    I.seeElement(dbaasPage.tabs.dbClusterTab.networkAndSecurity.networkAndSecurityHeader);
-    I.seeElement(dbaasPage.tabs.dbClusterTab.networkAndSecurity.exposeLabel);
-    await adminPage.verifyTooltip(dbaasPage.tooltips.expose);
-    I.seeElement(dbaasPage.tabs.dbClusterTab.networkAndSecurity.internetFacingLabel);
-    I.scrollTo(dbaasPage.tabs.dbClusterTab.networkAndSecurity.sourceRangesLabel);
-    I.click(dbaasPage.tabs.dbClusterTab.networkAndSecurity.addNewSourceRangeButton);
-    I.click(dbaasPage.tabs.dbClusterTab.networkAndSecurity.addNewSourceRangeButton);
-    await dbaasPage.verifySourceRangeCount(3);
-    I.click(dbaasPage.tabs.dbClusterTab.networkAndSecurity.deleteSourceRangeButton(2));
-    await dbaasPage.verifySourceRangeCount(2);
-    I.click(dbaasPage.tabs.dbClusterTab.networkAndSecurity.deleteSourceRangeButton(1));
-    await dbaasPage.verifySourceRangeCount(1);
-    I.click(dbaasPage.tabs.dbClusterTab.networkAndSecurity.deleteSourceRangeButton(0));
-    await dbaasPage.verifySourceRangeCount(1);
     I.click(dbaasPage.tabs.dbClusterTab.basicOptions.fields.dbClusterDatabaseTypeField);
     I.fillField(dbaasPage.tabs.dbClusterTab.basicOptions.fields.dbClusterDatabaseTypeInputField, 'MongoDB');
     I.waitForElement(
@@ -431,9 +431,7 @@ Scenario('PMM-T1571 Verify Create DB Cluster page @dbaas',
     I.seeElement(dbaasPage.tabs.dbClusterTab.dbConfigurations.configurationsHeader('MongoDB'));
     I.seeElement(dbaasPage.tabs.dbClusterTab.dbConfigurations.storageClassLabel);
     I.scrollTo(dbaasPage.tabs.dbClusterTab.dbConfigurations.configurationLabel('MongoDB'));
-    I.seeElement(dbaasPage.tabs.dbClusterTab.networkAndSecurity.networkAndSecurityHeader);
-    I.seeElement(dbaasPage.tabs.dbClusterTab.networkAndSecurity.exposeLabel);
-    I.seeElement(dbaasPage.tabs.dbClusterTab.networkAndSecurity.internetFacingLabel);
-    I.seeElement(dbaasPage.tabs.dbClusterTab.networkAndSecurity.sourceRangesLabel);
+    I.seeElement(dbaasPage.tabs.dbClusterTab.externalAccess.internetFacingLabel);
+    I.seeElement(dbaasPage.tabs.dbClusterTab.externalAccess.sourceRangesLabel);
   }
 );
