@@ -184,6 +184,7 @@ module.exports = {
   },
 
   async getServiceId(serviceName) {
+    await I.waitForVisible(this.fields.showServiceDetails(serviceName), 60);
     await I.click(this.fields.showServiceDetails(serviceName));
     const serviceIdLocator = '//span[text()="Service ID"]/following-sibling::div//span';
 
