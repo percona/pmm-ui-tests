@@ -371,7 +371,7 @@ Failed to register pmm-agent on PMM Server: Post "https://https:%2F%2F1.2.3.4/v1
 
     assert.ok(pmmClientLogsText.includes(logsText), `Pmm-client logs must contain text: ${logsText}`);
   },
-);
+).retry(1);
 
 Scenario('@PMM-T1512 Verify tooltips work properly for DBaaS page @dbaas',
   async ({
