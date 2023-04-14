@@ -5,7 +5,7 @@ const assert = require('assert');
 const faker = require('faker');
 
 const psmdb_cluster_type = 'DB_CLUSTER_TYPE_PSMDB';
-const mongodb_recommended_version = 'MongoDB 6.0.4';
+const mongodb_recommended_version = 'MongoDB 6.0.5';
 const psmdb_backup_cluster = 'psmdb-backup-test';
 const dbName = 'tutorialkart2';
 
