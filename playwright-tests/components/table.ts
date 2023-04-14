@@ -1,4 +1,4 @@
-import { Page } from '@playwright/test';
+import { expect, Page } from '@playwright/test';
 
 export default class Table {
   constructor(readonly page: Page) { }
@@ -6,7 +6,7 @@ export default class Table {
   private tableElements = {
     body: this.page.getByTestId('table-tbody'),
     row: this.page.getByTestId('table-tbody-tr'),
-    rowByText: (text: string) => this.page.locator(`//span[contains(text(),"${text}")]//ancestor::*[@data-testid="table-tbody-tr"]`),
+    rowByText: (text: string) => this.page.locator(`//*[contains(text(),"${text}")]//ancestor::*[@data-testid="table-tbody-tr"]`),
   };
 
   private tableFields = {
@@ -48,6 +48,15 @@ export default class Table {
 
   protected getTableLinks() {
     return this.tableLinks;
+  }
+
+  verifyTableDoesNotContain = async (text: string) => {
+    try {
+      await this.tableElements.row.waitFor({ state: 'visible' });
+    } catch(e) {
+      // fails if multiple rows displayed
+    }
+    await expect(this.tableElements.body).not.toContainText(text);
   }
 
 }
