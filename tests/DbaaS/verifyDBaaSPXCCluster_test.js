@@ -414,22 +414,19 @@ Scenario('PMM-T1184 Verify there are no users with empty passwords, verify updat
   } = await dbaasAPI.getDbClusterDetails(dbClusterRandomName, clusterName);
 
   await I.verifyCommand(
-    `kubectl run -i --rm --tty pxc-client --image=percona:8.0 --restart=Never -- mysql -h ${host} -u${username} ` + 
+    `kubectl run -i --rm --tty pxc-client --image=percona:8.0 --restart=Never -- mysql -h ${host} -u${username} ` +
     `-p${password} -e "CREATE DATABASE DBAAS_UPGRADE_TESTING;"`,
   );
   await I.verifyCommand(
-    `kubectl run -i --rm --tty pxc-client --image=percona:8.0 --restart=Never -- mysql -h ${host} -u${username} ` + 
+    `kubectl run -i --rm --tty pxc-client --image=percona:8.0 --restart=Never -- mysql -h ${host} -u${username} ` +
     `-p${password} -e "SHOW DATABASES;"`,
     'DBAAS_UPGRADE_TESTING',
   );
 
   const output = await I.verifyCommand(
-    `kubectl run -i --rm --tty pxc-client --image=percona:8.0 --restart=Never -- mysql -h ${host} -u${username} -p${password} ` + 
+    `kubectl run -i --rm --tty pxc-client --image=percona:8.0 --restart=Never -- mysql -h ${host} -u${username} -p${password} ` +
     `-e "select user, authentication_string from mysql.user where account_locked = 'N' and authentication_string = ''"`,
   );
-
-  console.log(output)
-  console.log(output.length)
 
   assert.ok(output.length === 106, `Output length should be 106`);
 
@@ -439,12 +436,12 @@ Scenario('PMM-T1184 Verify there are no users with empty passwords, verify updat
   I.waitForElement(dbaasPage.tabs.dbClusterTab.fields.clusterStatusActive, 60);
   I.seeElement(dbaasPage.tabs.dbClusterTab.fields.clusterStatusActive);
   await I.verifyCommand(
-    `kubectl run -i --rm --tty pxc-client --image=percona:8.0 --restart=Never -- mysql -h ${host} ` + 
+    `kubectl run -i --rm --tty pxc-client --image=percona:8.0 --restart=Never -- mysql -h ${host} ` +
     `-u${username} -p${password} -e "SHOW DATABASES;"`,
     'DBAAS_UPGRADE_TESTING',
   );
   const version = await I.verifyCommand(
-    `kubectl run -i --rm --tty pxc-client --image=percona:8.0 --restart=Never -- mysql -h ${host} -u${username} -p${password}` + 
+    `kubectl run -i --rm --tty pxc-client --image=percona:8.0 --restart=Never -- mysql -h ${host} -u${username} -p${password} ` +
     `-e "SELECT VERSION();"`,
   );
 
