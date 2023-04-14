@@ -423,6 +423,7 @@ Scenario('PMM-T1184 Verify there are no users with empty passwords, verify updat
     'DBAAS_UPGRADE_TESTING',
   );
 
+  // PMM-T1184
   const output = await I.verifyCommand(
     `kubectl run -i --rm --tty pxc-client --image=percona:8.0 --restart=Never -- mysql -h ${host} -u${username} -p${password} ` +
     `-e "select user, authentication_string from mysql.user where account_locked = 'N' and authentication_string = ''"`,
