@@ -1,7 +1,7 @@
 import { Page } from '@playwright/test';
 
 const grafanaHelper = {
-  async authorize(page: Page, username: string = 'admin', password = process.env.ADMIN_PASSWORD) {
+  async authorize(page: Page, username: string = 'admin', password = process.env.ADMIN_PASSWORD || 'admin') {
     const authToken = await this.getToken(username, password);
     await page.setExtraHTTPHeaders({ Authorization: `Basic ${authToken}` });
     await page.reload();
