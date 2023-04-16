@@ -162,13 +162,12 @@ module.exports = {
     // await I.click(this.fields.agentsLinkNew);
     await this.changeRowsPerPage(100);
 
-    /*
-        const rows = await I.grabNumberOfVisibleElements(this.fields.showRowDetails);
-    
-        for (let i = 1; i <= rows; i++) {
-          await I.click(`(${this.fields.showRowDetails})[1]`);
-        }
-    */
+    const rows = await I.grabNumberOfVisibleElements(this.fields.showRowDetails);
+
+    for (let i = 1; i <= rows; i++) {
+      await I.click(`(${this.fields.showRowDetails})[1]`);
+    }
+
     await I.click(this.fields.showServiceDetails(serviceName));
     await I.click(this.fields.agentsLinkNew);
 
