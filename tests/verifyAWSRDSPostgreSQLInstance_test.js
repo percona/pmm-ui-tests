@@ -43,6 +43,8 @@ Scenario(
     pmmInventoryPage.verifyRemoteServiceIsDisplayed(serviceName);
     // Skipping due to QAN Setup part on AWS
     // await pmmInventoryPage.verifyAgentHasStatusRunning(serviceName);
+    await I.click(pmmInventoryPage.fields.showServiceDetails(serviceName));
+    I.click(pmmInventoryPage.fields.agentsLinkNew);
     await pmmInventoryPage.verifyMetricsFlags(serviceName);
     const logs = await I.verifyCommand('docker exec pmm-server tail -n 100 /srv/logs/pmm-agent.log');
 
