@@ -62,7 +62,7 @@ Before(async ({ I }) => {
 });
 
 Scenario(
-  'PMM-T588 - Verify adding external exporter service via UI @instances @instances-fb',
+  '@PMM-T588 - Verify adding external exporter service via UI @instances @instances-fb',
   async ({ I, remoteInstancesPage, pmmInventoryPage }) => {
     I.amOnPage(remoteInstancesPage.url);
     remoteInstancesPage.waitUntilRemoteInstancesPageLoaded();
