@@ -71,7 +71,8 @@ Scenario(
     I.waitForVisible(remoteInstancesPage.fields.addService, 30);
     I.click(remoteInstancesPage.fields.addService);
     pmmInventoryPage.verifyRemoteServiceIsDisplayed(externalExporterServiceName);
-    I.click(pmmInventoryPage.fields.agentsLink);
+    await I.click(this.fields.showServiceDetails(externalExporterServiceName));
+    await I.click(this.fields.agentsLinkNew);
     I.waitForVisible(pmmInventoryPage.fields.externalExporter, 30);
   },
 ).retry(0);
