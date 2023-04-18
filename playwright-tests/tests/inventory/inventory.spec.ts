@@ -37,6 +37,7 @@ test.describe('Spec file for PMM inventory tests.', async () => {
   };
 
   let pmmVersion: number;
+  let agentLocation: string[];
 
   test.beforeAll(async () => {
     if (!pmmVersion) {
@@ -51,7 +52,7 @@ test.describe('Spec file for PMM inventory tests.', async () => {
     await grafanaHelper.authorize(page, 'admin', 'admin');
   });
 
-  test('PMM-T1669 Verify PMM Inventory redesign : Layout & Services @inventory @inventory-post-upgrade', async ({ page }) => {
+  test('PMM-T1669 Verify PMM Inventory redesign : Layout & Services @inventory @inventory-pre-upgrade @inventory-post-upgrade', async ({ page }) => {
     test.skip(pmmVersion < 37, 'Test is for versions 2.37.0+');
     const servicesPage = new ServicesPage(page);
     const homeDashboard = new HomeDashboard(page);
@@ -348,12 +349,13 @@ test.describe('Spec file for PMM inventory tests.', async () => {
     });
 
     await test.step('3. Kill process mongodb_exporter and verify that Inventory page shows mongodb exporter as not running".', async () => {
+      agentLocation = await cli.pmmClientCommands.findFile('pmm-agent')
       await cli.pmmClientCommands.moveFile(
-        '/usr/sbin/pmm-agent',
-        '/usr/sbin/pmm-agent_error');
+        agentLocation[0],
+        `${agentLocation[0]}_error`);
       const pmmAgentProcessId = await cli.pmmClientCommands.getProcessId('pmm-agent');
       await cli.pmmClientCommands.killProcess(pmmAgentProcessId.stdout);
-      await page.reload();
+      await page.reload();;
       await servicesPage.servicesTable.buttons.showRowDetails(mongoLocalService.serviceName).click();
       await expect(servicesPage.servicesTable.elements.agentStatus).toHaveText('4/4 not running');
       await servicesPage.servicesTable.elements.monitoring(mongoLocalService.serviceName).click();
@@ -362,7 +364,7 @@ test.describe('Spec file for PMM inventory tests.', async () => {
     });
 
     await test.step('3. Move all agents back to their original location.', async () => {
-      await cli.pmmClientCommands.moveFile('/usr/sbin/pmm-agent_error', '/usr/sbin/pmm-agent');
+      await cli.pmmClientCommands.moveFile(`${agentLocation[0]}_error`, agentLocation[0]);
       await cli.pmmClientCommands.moveFile(
         '/usr/local/percona/pmm2/exporters/vmagent_error',
         '/usr/local/percona/pmm2/exporters/vmagent');
