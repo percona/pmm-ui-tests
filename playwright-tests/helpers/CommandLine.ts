@@ -57,6 +57,10 @@ export const pmmClientCommands = {
     await executeCommand(`${getClientPrefix()} pmm-admin add mongodb --cluster=${address} \
     --username=mongoadmin --password=${password} --environment=modb-prod mo-integration-${Date.now()}-0 --debug ${address}:27017
     `);
+  },
+  findFile: async (fileName: string): Promise<string[]> => {
+    const locations = await executeCommand(`${getClientPrefix()} find / -name ${fileName}`);
+    return locations.stdout.split('\n');
   }
 }
 

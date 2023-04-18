@@ -21,6 +21,7 @@ test.describe('Spec file for PMM inventory tests.', async () => {
     port: '27017'
   };
   let pmmVersion: number;
+  let agentLocation: string[];
 
   test.beforeAll(async () => {
     if (!pmmVersion) {
@@ -195,9 +196,10 @@ test.describe('Spec file for PMM inventory tests.', async () => {
     });
 
     await test.step('3. Kill process mongodb_exporter and verify that Inventory page shows mongodb exporter as not running".', async () => {
+      agentLocation = await pmmClientCommands.findFile('pmm-agent')
       await pmmClientCommands.moveFile(
-        '/usr/sbin/pmm-agent',
-        '/usr/sbin/pmm-agent_error');
+        agentLocation[0],
+        `${agentLocation[0]}_error`);
       const pmmAgentProcessId = await pmmClientCommands.getProcessId('pmm-agent');
       await pmmClientCommands.killProcess(pmmAgentProcessId.stdout);
       await page.reload();;
@@ -209,7 +211,7 @@ test.describe('Spec file for PMM inventory tests.', async () => {
     });
 
     await test.step('3. Move all agents back to their original location.', async () => {
-      await pmmClientCommands.moveFile('/usr/sbin/pmm-agent_error', '/usr/sbin/pmm-agent');
+      await pmmClientCommands.moveFile(`${agentLocation[0]}_error`, agentLocation[0]);
       await pmmClientCommands.moveFile(
         '/usr/local/percona/pmm2/exporters/vmagent_error',
         '/usr/local/percona/pmm2/exporters/vmagent');
