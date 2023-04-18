@@ -1,6 +1,6 @@
 module.exports = {
   url: 'graph/datasources',
   elements: {
-    clickHouseDescription: '//h2[text()="ClickHouse"]/following-sibling::*',
+    clickHouseDescription: '//a[contains(text(), "ClickHouse")]/ancestor::h2/following-sibling::*[2]',
   },
 };

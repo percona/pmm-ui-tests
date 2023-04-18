@@ -1,22 +1,28 @@
 const assert = require('assert');
 const moment = require('moment');
 
-const { locationsPage } = inject();
+const { scheduledPage } = inject();
 
 const location = {
   name: 'mongo-location for scheduling',
   description: 'test description',
-  ...locationsPage.mongoStorageLocation,
 };
 
 let locationId;
+let locationIdForPS;
 let serviceId;
 const mysqlServiceName = 'mysql-with-backup2';
 const mongoServiceName = 'mongo-backup-schedule';
-const scheduleErrors = new DataTable(['mode', 'error']);
+const mongoServiceName2 = 'mongo-pitr-test';
+const mongoCluster = 'rs';
 
-scheduleErrors.add(['PITR', 'A scheduled PITR backup can be enabled only if there no other scheduled backups.']);
-scheduleErrors.add(['Full', 'A scheduled snapshot backup can be enabled only if there are no enabled PITR backup.']);
+const mongoNameWithoutCluster = 'mongo-schedule-no-cluster';
+const scheduleErrors = new DataTable(['mode', 'serviceName', 'error']);
+
+scheduleErrors.add(['PITR', mongoServiceName2, scheduledPage.messages.clusterHasPitrNoMoreAllowed(mongoCluster)]);
+scheduleErrors.add(['PITR', mongoServiceName, scheduledPage.messages.clusterHasPitrNoMoreAllowed(mongoCluster)]);
+scheduleErrors.add(['Full', mongoServiceName, scheduledPage.messages.snapshotNotAllowedWhenClusterHasPitr(mongoCluster)]);
+scheduleErrors.add(['On Demand', mongoServiceName, scheduledPage.messages.snapshotNotAllowedWhenClusterHasPitr(mongoCluster)]);
 
 const schedules = new DataTable(['cronExpression', 'name', 'frequency']);
 
@@ -24,6 +30,8 @@ schedules.add(['30 8 * * *', 'schedule daily', 'At 08:30']);
 schedules.add(['0 0 * * 2', 'schedule weekly', 'At 00:00, only on Tuesday']);
 schedules.add(['0 0 1 * *', 'schedule monthly', 'At 00:00, on day 1 of the month']);
 schedules.add(['0 1 1 9 2', 'schedule odd', 'At 01:00, on day 1 of the month, and on Tuesday, only in September']);
+
+const immortalScheduleName = 'immortal schedule';
 
 Feature('BM: Scheduled backups');
 
@@ -33,27 +41,40 @@ BeforeSuite(async ({
   await settingsAPI.changeSettings({ backup: true });
   await backupAPI.clearAllArtifacts();
   await locationsAPI.clearAllLocations(true);
-  locationId = await locationsAPI.createStorageLocation(location);
-  await I.mongoConnectReplica({
-    username: 'admin',
-    password: 'password',
+  locationId = await locationsAPI.createStorageLocation(
+    location.name,
+    locationsAPI.storageType.s3,
+    locationsAPI.storageLocationConnection,
+    location.description,
+  );
+  locationIdForPS = await locationsAPI.createStorageLocation(
+    'ps-location for scheduling',
+    locationsAPI.storageType.s3,
+    locationsAPI.psStorageLocationConnection,
+    location.description,
+  );
+  await I.mongoConnect({
+    username: 'pmm',
+    password: 'pmmpass',
+    port: 27027,
   });
 
-  I.say(await I.verifyCommand(`pmm-admin add mongodb --port=27027 --service-name=${mongoServiceName} --replication-set=rs0`));
+  I.say(await I.verifyCommand(`docker exec rs101 pmm-admin add mongodb --username=pmm --password=pmmpass --port=27017 --service-name=${mongoServiceName} --replication-set=rs --cluster=${mongoCluster}`));
+  I.say(await I.verifyCommand(`docker exec rs101 pmm-admin add mongodb --username=pmm --password=pmmpass --port=27017 --service-name=${mongoServiceName2} --replication-set=rs --cluster=${mongoCluster}`));
+  I.say(await I.verifyCommand(`docker exec rs101 pmm-admin add mongodb --username=pmm --password=pmmpass --port=27017 --service-name=${mongoNameWithoutCluster} --replication-set=rs`));
 });
 
 Before(async ({
-  I, settingsAPI, scheduledPage, inventoryAPI, scheduledAPI,
+  I, scheduledPage, inventoryAPI, scheduledAPI,
 }) => {
   const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName('MONGODB_SERVICE', mongoServiceName);
 
   serviceId = service_id;
-  const c = await I.mongoGetCollection('test', 'e2e');
+  const c = await I.mongoGetCollection('test', 'test');
 
   await c.deleteMany({ number: 2 });
 
   await I.Authorize();
-  await settingsAPI.changeSettings({ backup: true });
   await scheduledAPI.clearAllSchedules();
   await scheduledPage.openScheduledBackupsPage();
 });
@@ -74,7 +95,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T902 Verify user is not able to schedule a backup without storage location @backup @bm-mongo',
+  '@PMM-T902 Verify user is not able to schedule a backup without storage location @backup @bm-mongo',
   async ({
     I, scheduledPage,
   }) => {
@@ -95,15 +116,29 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T954 PMM-T952 PMM-T956 PMM-T958 Verify validation errors for retention @backup @bm-mongo',
+  '@PMM-T954 @PMM-T952 @PMM-T956 @PMM-T958 @PMM-T1500 Verify validation errors for retention and existing name @backup @bm-mongo',
   async ({
-    I, scheduledPage,
+    I, scheduledPage, scheduledAPI,
   }) => {
-    const scheduleName = 'schedule';
+    const scheduleName = 'new schedule';
+    const immortalSchedule = {
+      service_id: serviceId,
+      location_id: locationId,
+      cron_expression: '0 0 * * *',
+      name: 'immortal schedule',
+      mode: scheduledAPI.backupModes.snapshot,
+      description: 'description',
+      retry_interval: '30s',
+      retries: 0,
+      enabled: true,
+      retention: 6,
+    };
+
+    await scheduledAPI.createScheduledBackup(immortalSchedule);
 
     scheduledPage.openScheduleBackupModal();
     scheduledPage.selectDropdownOption(scheduledPage.fields.serviceNameDropdown, mongoServiceName);
-    I.fillField(scheduledPage.fields.backupName, scheduleName);
+
     scheduledPage.selectDropdownOption(scheduledPage.fields.locationDropdown, location.name);
     I.seeInField(scheduledPage.fields.retention, 7);
 
@@ -122,6 +157,14 @@ Scenario(
     I.fillField(scheduledPage.fields.retention, '0.5');
     I.seeTextEquals('', scheduledPage.elements.retentionValidation);
 
+    // Existing schedule name
+    I.fillField(scheduledPage.fields.backupName, immortalScheduleName);
+    I.click(scheduledPage.buttons.createSchedule);
+    I.verifyPopUpMessage(`couldn't create task with name ${immortalScheduleName}: already exists`);
+
+    // Non existing schedule name
+    I.clearField(scheduledPage.fields.backupName);
+    I.fillField(scheduledPage.fields.backupName, scheduleName);
     I.click(scheduledPage.buttons.createSchedule);
 
     I.verifyPopUpMessage(scheduledPage.messages.backupScheduled);
@@ -131,12 +174,13 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T909 PMM-T952 PMM-T956 Verify user can update created scheduled backup @backup @bm-mongo',
+  '@PMM-T909 @PMM-T952 @PMM-T956 @PMM-T1501 Verify user can update created scheduled backup @backup @bm-mongo',
   async ({
     I, scheduledPage, scheduledAPI,
   }) => {
     const newScheduleName = 'updated schedule';
     const newScheduleDescr = 'new description';
+
     const schedule = {
       service_id: serviceId,
       location_id: locationId,
@@ -149,13 +193,33 @@ Scenario(
       enabled: true,
       retention: 6,
     };
+    const immortalSchedule = {
+      service_id: serviceId,
+      location_id: locationId,
+      cron_expression: '0 0 * * *',
+      name: 'immortal schedule',
+      mode: scheduledAPI.backupModes.snapshot,
+      description: 'description',
+      retry_interval: '30s',
+      retries: 0,
+      enabled: true,
+      retention: 6,
+    };
 
     await scheduledAPI.createScheduledBackup(schedule);
+    await scheduledAPI.createScheduledBackup(immortalSchedule);
 
     await scheduledPage.openScheduledBackupsPage();
+    I.waitForVisible(scheduledPage.buttons.actionsMenuByName(schedule.name), 10);
+    I.click(scheduledPage.buttons.actionsMenuByName(schedule.name));
     I.click(scheduledPage.buttons.editByName(schedule.name));
 
     I.waitForVisible(scheduledPage.fields.backupName, 30);
+    I.clearField(scheduledPage.fields.backupName);
+    I.fillField(scheduledPage.fields.backupName, immortalScheduleName);
+    I.click(scheduledPage.buttons.createSchedule);
+    I.verifyPopUpMessage(`couldn't change task name to ${immortalScheduleName}: already exists`);
+
     I.clearField(scheduledPage.fields.backupName);
     I.fillField(scheduledPage.fields.backupName, newScheduleName);
 
@@ -176,7 +240,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T913, PMM-T922, PMM-T977 Verify user can schedule a backup for MongoDB with replica @backup @bm-mongo @fb',
+  '@PMM-T913, @PMM-T922, @PMM-T977 Verify user can schedule a backup for MongoDB with replica @backup @bm-mongo @bm-fb',
   async ({
     I, backupInventoryPage, scheduledAPI, backupAPI, scheduledPage,
   }) => {
@@ -189,7 +253,7 @@ Scenario(
     scheduledPage.selectDropdownOption(scheduledPage.fields.serviceNameDropdown, mongoServiceName);
     I.fillField(scheduledPage.fields.backupName, schedule.name);
     scheduledPage.selectDropdownOption(scheduledPage.fields.locationDropdown, location.name);
-    scheduledPage.selectDropdownOption(scheduledPage.fields.everyDropdown, 'Minute');
+    scheduledPage.selectDropdownOption(scheduledPage.fields.everyDropdown, 'Every minute');
     scheduledPage.clearRetentionField();
     I.fillField(scheduledPage.fields.retention, schedule.retention);
 
@@ -205,7 +269,10 @@ Scenario(
     // Verify local timestamp is shown in Last Backup column
     await scheduledAPI.waitForFirstExecution(schedule.name);
     scheduledPage.openScheduledBackupsPage();
-    I.seeTextEquals(moment().format('YYYY-MM-DDHH:mm:00'), scheduledPage.elements.lastBackupByName(schedule.name));
+    const lastBackup = await I.grabTextFrom(scheduledPage.elements.lastBackupByName(schedule.name));
+
+    I.assertStartsWith(lastBackup, moment().format('YYYY-MM-DD'));
+    I.assertEndsWith(lastBackup, moment().format('HH:mm:00'));
 
     await backupAPI.waitForBackupFinish(null, schedule.name, 300);
     const { scheduled_backup_id } = await scheduledAPI.getScheduleIdByName(schedule.name);
@@ -217,7 +284,7 @@ Scenario(
 );
 
 Data(schedules).Scenario(
-  'PMM-T899 PMM-T903 PMM-T904 PMM-T905 PMM-T907 Verify user can create daily scheduled backup @backup @bm-mongo',
+  '@PMM-T899 @PMM-T903 @PMM-T904 @PMM-T905 @PMM-T907 Verify user can create daily scheduled backup @backup @bm-mongo',
   async ({
     scheduledPage, scheduledAPI, current,
   }) => {
@@ -236,7 +303,7 @@ Data(schedules).Scenario(
       description: schedule.description,
       retention: 6,
       type: 'Full',
-      location: location.name,
+      location: `${location.name} (S3)`,
       dataModel: 'Logical',
       cronExpression: current.cronExpression,
     };
@@ -247,7 +314,7 @@ Data(schedules).Scenario(
   },
 );
 
-Scenario('PMM-T900 Verify user can copy scheduled backup @backup @bm-mongo',
+Scenario('@PMM-T900 Verify user can copy scheduled backup @backup @bm-mongo',
   async ({
     I, scheduledPage, scheduledAPI,
   }) => {
@@ -267,7 +334,7 @@ Scenario('PMM-T900 Verify user can copy scheduled backup @backup @bm-mongo',
       frequency: 'At 00:00',
       retention: 7,
       type: 'Full',
-      location: location.name,
+      location: `${location.name} (S3)`,
       dataModel: 'Logical',
       cronExpression: schedule.cron_expression,
     };
@@ -275,10 +342,11 @@ Scenario('PMM-T900 Verify user can copy scheduled backup @backup @bm-mongo',
     await scheduledAPI.createScheduledBackup(schedule);
     await scheduledPage.openScheduledBackupsPage();
 
-    // Copy existing schedule
-    I.click(scheduledPage.buttons.copyByName(schedule.name));
+    scheduledPage.copySchedule(schedule.name);
 
     // Verify copied schedule details
+    I.waitForVisible(scheduledPage.buttons.actionsMenuByName(newSchedule.name), 10);
+    I.click(scheduledPage.buttons.actionsMenuByName(newSchedule.name));
     I.waitForVisible(scheduledPage.buttons.deleteByName(newSchedule.name), 10);
     await scheduledPage.verifyBackupValues(newSchedule);
 
@@ -286,7 +354,7 @@ Scenario('PMM-T900 Verify user can copy scheduled backup @backup @bm-mongo',
     I.seeAttributesOnElements(scheduledPage.elements.toggleByName(newSchedule.name), { checked: null });
   });
 
-Scenario('PMM-T908 Verify user can enable/disable scheduled backup @backup @bm-mongo @fb',
+Scenario('@PMM-T908 Verify user can enable/disable scheduled backup @backup @bm-mongo @bm-fb',
   async ({
     I, scheduledPage, scheduledAPI,
   }) => {
@@ -323,7 +391,7 @@ Scenario('PMM-T908 Verify user can enable/disable scheduled backup @backup @bm-m
     I.seeCssPropertiesOnElements(scheduledPage.elements.scheduleTypeByName(schedule.name), { 'background-color': color });
   });
 
-Scenario('PMM-T901 Verify user can delete scheduled backup @backup @bm-mongo',
+Scenario('@PMM-T901 Verify user can delete scheduled backup @backup @bm-mongo',
   async ({
     I, scheduledPage, scheduledAPI,
   }) => {
@@ -336,18 +404,15 @@ Scenario('PMM-T901 Verify user can delete scheduled backup @backup @bm-mongo',
     await scheduledAPI.createScheduledBackup(schedule);
     await scheduledPage.openScheduledBackupsPage();
 
-    // Open Delete modal
-    I.click(scheduledPage.buttons.deleteByName(schedule.name));
+    scheduledPage.openDeleteModal(schedule.name);
 
     // Click Cancel button and verify schedule still exists
-    I.waitForVisible(scheduledPage.buttons.confirmDelete, 10);
     I.click(scheduledPage.buttons.cancelDelete);
-    I.dontSeeElement(scheduledPage.elements.modalContent);
-    I.seeElement(scheduledPage.buttons.deleteByName(schedule.name));
+    I.waitForDetached(scheduledPage.elements.modalContent);
+    I.seeElement(scheduledPage.buttons.actionsMenuByName(schedule.name));
 
     // Open Delete modal again and verify it has a correct schedule name in message
-    I.click(scheduledPage.buttons.deleteByName(schedule.name));
-    I.waitForVisible(scheduledPage.buttons.confirmDelete, 10);
+    scheduledPage.openDeleteModal(schedule.name);
     I.seeTextEquals(scheduledPage.messages.confirmDelete(schedule.name),
       locate(scheduledPage.elements.modalContent).find('h4'));
 
@@ -357,8 +422,8 @@ Scenario('PMM-T901 Verify user can delete scheduled backup @backup @bm-mongo',
   });
 
 Scenario(
-  'PMM-T924 - Verify user is able to schedule a backup for MongoDB with replica & MySQL '
-  + 'and try to run those backup schedule job in parallel @bm-mysql @bm-mongo',
+  '@PMM-T924 - Verify user is able to schedule a backup for MongoDB with replica & MySQL '
+  + 'and try to run those backup schedule job in parallel @bm-common',
   async ({
     I, backupInventoryPage, scheduledAPI, backupAPI, inventoryAPI,
   }) => {
@@ -379,11 +444,12 @@ Scenario(
     const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName('MYSQL_SERVICE', mysqlServiceName);
     const scheduleMySql = {
       service_id,
-      location_id: locationId,
+      location_id: locationIdForPS,
       cron_expression: '*/2 * * * *',
       name: 'mySQL for parallel backup test',
       mode: scheduledAPI.backupModes.snapshot,
       description: '',
+      isLogical: false,
       retry_interval: '30s',
       retries: 0,
       enabled: true,
@@ -393,7 +459,7 @@ Scenario(
     const mySqlScheduleId = await scheduledAPI.createScheduledBackup(scheduleMySql);
 
     await backupAPI.waitForBackupFinish(null, scheduleMySql.name, 240);
-    await backupAPI.waitForBackupFinish(null, scheduleMongo.name, 30);
+    await backupAPI.waitForBackupFinish(null, scheduleMongo.name, 120);
     await scheduledAPI.disableScheduledBackup(mongoScheduleId);
     await scheduledAPI.disableScheduledBackup(mySqlScheduleId);
 
@@ -403,7 +469,9 @@ Scenario(
   },
 );
 
-Data(scheduleErrors).Scenario('PMM-T1031 Verify PITR schedule errors @backup',
+Data(scheduleErrors).Scenario(
+  '@PMM-T1031 @PMM-T1530 Verify that user can\'t enable PITR together with any another backup type'
+  + ' @backup @bm-mongo',
   async ({
     I, scheduledPage, scheduledAPI, current,
   }) => {
@@ -418,11 +486,52 @@ Data(scheduleErrors).Scenario('PMM-T1031 Verify PITR schedule errors @backup',
     await scheduledPage.openScheduledBackupsPage();
 
     scheduledPage.openScheduleBackupModal();
-    scheduledPage.selectDropdownOption(scheduledPage.fields.serviceNameDropdown, mongoServiceName);
+    scheduledPage.selectDropdownOption(scheduledPage.fields.serviceNameDropdown, current.serviceName);
     I.fillField(scheduledPage.fields.backupName, schedule.name);
     scheduledPage.selectDropdownOption(scheduledPage.fields.locationDropdown, location.name);
-    I.click(scheduledPage.buttons.backupTypeSwitch(current.mode));
+    if (current.mode === 'On Demand') {
+      I.click(scheduledPage.buttons.backupOnDemand);
+    } else {
+      I.click(scheduledPage.buttons.backupTypeSwitch(current.mode));
+    }
+
+    I.click(scheduledPage.buttons.createSchedule);
+    I.verifyPopUpMessage(current.error, 5);
+  },
+);
+
+Scenario(
+  '@PMM-T1517 Verify that BM Scheduler is more clear regarding frequency specification @backup @bm-common',
+  async ({
+    I, scheduledPage,
+  }) => {
+    scheduledPage.openScheduleBackupModal();
+    I.seeTextEquals('Every year', scheduledPage.fields.schedule.scheduledTime);
+    I.seeTextEquals('Every month', scheduledPage.fields.schedule.months);
+    I.seeTextEquals('Every day', scheduledPage.fields.schedule.days);
+    I.seeTextEquals('Every weekday', scheduledPage.fields.schedule.weekdays);
+  },
+);
+
+Scenario(
+  '@PMM-T1527 Verify BM Scheduler blocks mongo services that are not managed as cluster'
+  + ' @backup @bm-mongo @bm-fb',
+  async ({ I, scheduledPage }) => {
+    const schedule = {
+      name: 'test no cluster error',
+      retention: 1,
+    };
+
+    scheduledPage.openScheduleBackupModal();
+    scheduledPage.selectDropdownOption(scheduledPage.fields.serviceNameDropdown, mongoNameWithoutCluster);
+    I.fillField(scheduledPage.fields.backupName, schedule.name);
+    scheduledPage.selectDropdownOption(scheduledPage.fields.locationDropdown, location.name);
+    scheduledPage.selectDropdownOption(scheduledPage.fields.everyDropdown, 'Every minute');
+    scheduledPage.clearRetentionField();
+    I.fillField(scheduledPage.fields.retention, schedule.retention);
+
     I.click(scheduledPage.buttons.createSchedule);
 
-    I.verifyPopUpMessage(current.error);
-  });
+    I.verifyPopUpMessage(scheduledPage.messages.mustBeMemberOfCluster(mongoNameWithoutCluster), 5);
+  },
+);

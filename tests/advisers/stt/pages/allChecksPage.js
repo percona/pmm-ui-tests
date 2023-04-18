@@ -14,6 +14,7 @@ module.exports = {
     statusCellByName: (checkName) => locate(checkRow(checkName)).find('td').at(3),
     intervalCellByName: (checkName) => locate(checkRow(checkName)).find('td').at(4),
     tableBody: '$table-tbody',
+    noChecksFound: '$table-no-data',
     modalContent: '$modal-content',
   },
   buttons: {
@@ -22,6 +23,34 @@ module.exports = {
     intervalValue: (intervalName) => locate('label').withText(intervalName),
     startDBChecks: locate('$db-check-panel-actions').find('button'),
     applyIntervalChange: '$change-check-interval-modal-save',
+  },
+  filter: {
+    searchButton: locate('$open-search-fields'),
+    searchFieldDropdown: locate('div').after('$open-search-fields')
+      .find('//div[contains(@class, "grafana-select-value")]'),
+    searchFieldALL: locate('[aria-label="Select options menu"]').find('div')
+      .withChild('span').withText('All'),
+    searchFieldName: locate('[aria-label="Select options menu"]').find('div')
+      .withChild('span').withText('Name'),
+    searchFieldDescription: locate('[aria-label="Select options menu"]')
+      .find('div').withChild('span').withText('Description'),
+    searchInput: locate('$search-text-input'),
+    filterButton: '$advance-filter-button',
+    statusAllRadio: locate('label[for^="radio-btn"]').at(1),
+    statusEnabledRadio: locate('label[for^="radio-btn"]').at(2),
+    statusDisabledRadio: locate('label[for^="radio-btn"]').at(3),
+    intervalDropdown: locate('div')
+      .after(locate('div').withChild('//label[@data-testid="interval-field-label"]'))
+      .find('//div[contains(@class, "grafana-select-value")]'),
+    intervalAll: locate('[aria-label="Select options menu"]')
+      .find('div').withChild('span').withText('All'),
+    intervalStandard: locate('[aria-label="Select options menu"]')
+      .find('div').withChild('span').withText('Standard'),
+    intervalRare: locate('[aria-label="Select options menu"]')
+      .find('div').withChild('span').withText('Rare'),
+    intervalFrequent: locate('[aria-label="Select options menu"]')
+      .find('div').withChild('span').withText('Frequent'),
+    clearAllButton: locate('$clear-all-button'),
   },
   messages: {
     successIntervalChange: (checkName) => `Interval changed for ${checkName}`,
@@ -42,6 +71,12 @@ module.exports = {
       interval: 'Standard',
     },
   ],
+
+  async open() {
+    I.amOnPage(this.url);
+    I.waitForVisible(this.elements.tableBody, 30);
+  },
+
   async runDBChecks() {
     I.amOnPage(this.url);
     I.waitForVisible(this.buttons.startDBChecks, 30);

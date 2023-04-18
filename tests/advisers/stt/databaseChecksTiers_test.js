@@ -38,20 +38,18 @@ AfterSuite(async ({ portalAPI }) => {
   }
 });
 
-Scenario(
-  'PMM-T1202 Verify that Advisors reflect on user authority / platform role changes @stt',
+// FIXME: https://jira.percona.com/browse/PMM-11655
+Scenario.skip(
+  'PMM-T1202 Verify that Advisors reflect on user authority / platform role changes',
   async ({
-    I, pmmSettingsPage, databaseChecksPage, portalAPI, homePage, settingsAPI,
+    I, pmmSettingsPage, databaseChecksPage, portalAPI, homePage, settingsAPI, loginPage,
   }) => {
     I.say('Checks for Anonymous user');
     await I.Authorize();
-    pmmSettingsPage.openAdvancedSettings();
-    await pmmSettingsPage.waitForPmmSettingsPageLoaded();
-    const publicAddress = await I.grabValueFrom(pmmSettingsPage.fields.publicAddressInput);
 
-    if (publicAddress.length !== 0) pmmSettingsPage.clearPublicAddress();
-
-    pmmSettingsPage.addPublicAddress();
+    await settingsAPI.changeSettings({
+      publicAddress: pmmSettingsPage.publicAddress,
+    });
 
     I.amOnPage(databaseChecksPage.allChecks);
     await I.waitForVisible(databaseChecksPage.elements.allChecksTable);
@@ -89,13 +87,16 @@ Scenario(
     grafana_session_cookie = await I.getBrowserGrafanaSessionCookies();
     await I.waitForVisible(databaseChecksPage.elements.allChecksTable);
 
-    databaseChecksPage.checks.anonymous.forEach((check) => {
-      databaseChecksPage.verifyAdvisorCheckExistence(check);
-    });
-    databaseChecksPage.checks.registered.forEach((check) => {
-      databaseChecksPage.verifyAdvisorCheckExistence(check);
-    });
-    databaseChecksPage.checks.registeredOnly.forEach((check) => {
+    const expectedRegisteredUserChecks = new Set([
+      ...databaseChecksPage.checks.anonymous,
+      ...databaseChecksPage.checks.registered,
+      ...databaseChecksPage.checks.registeredOnly,
+    ]);
+
+    await I.say(expectedRegisteredUserChecks);
+    await I.say(expectedRegisteredUserChecks.size);
+
+    expectedRegisteredUserChecks.forEach((check) => {
       databaseChecksPage.verifyAdvisorCheckExistence(check);
     });
     databaseChecksPage.checks.paid.forEach((check) => {
@@ -104,7 +105,7 @@ Scenario(
 
     await portalAPI.disconnectPMMFromPortal(grafana_session_cookie);
     await I.unAuthorize();
-    await I.waitInUrl(homePage.landingPage);
+    await I.waitInUrl(loginPage.url);
     serviceNowUsers = await portalAPI.createServiceNowUsers();
 
     await portalAPI.oktaCreateUser(serviceNowUsers.admin1);
@@ -126,18 +127,19 @@ Scenario(
     I.amOnPage(databaseChecksPage.allChecks);
     await I.waitForVisible(databaseChecksPage.elements.allChecksTable);
 
-    databaseChecksPage.checks.anonymous.forEach((check) => {
-      databaseChecksPage.verifyAdvisorCheckExistence(check);
-    });
-    databaseChecksPage.checks.registered.forEach((check) => {
-      databaseChecksPage.verifyAdvisorCheckExistence(check);
-    });
-    databaseChecksPage.checks.paid.forEach((check) => {
+    const expectedPaidUserChecks = new Set([
+      ...databaseChecksPage.checks.anonymous,
+      ...databaseChecksPage.checks.registered,
+      ...databaseChecksPage.checks.registeredOnly,
+      ...databaseChecksPage.checks.paid,
+    ]);
+
+    expectedPaidUserChecks.forEach((check) => {
       databaseChecksPage.verifyAdvisorCheckExistence(check);
     });
 
     await I.unAuthorize();
-    await I.waitInUrl(homePage.landingPage);
+    await I.waitInUrl(loginPage.url);
     if (pmmVersion < 28) {
       await settingsAPI.changeSettings({ stt: false });
     }

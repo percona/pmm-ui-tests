@@ -21,11 +21,12 @@ After(async ({ settingsAPI }) => {
 });
 
 Scenario(
-  'PMM-T716 - Verify adding PostgreSQL RDS monitoring to PMM via UI @aws @instances',
+  '@PMM-T716 - Verify adding PostgreSQL RDS monitoring to PMM via UI @aws @instances'
+  + '@PMM-T1596 Verify that PostgreSQL exporter ignores connection error to "rdsadmin" database for Amazon RDS instance @aws @instances',
   async ({
     I, remoteInstancesPage, pmmInventoryPage,
   }) => {
-    const serviceName = 'pmm-qa-postgres-12';
+    const serviceName = 'pmm-qa-pgsql-12';
 
     I.amOnPage(remoteInstancesPage.url);
     remoteInstancesPage.waitUntilRemoteInstancesPageLoaded().openAddAWSRDSMySQLPage();
@@ -40,8 +41,12 @@ Scenario(
     remoteInstancesPage.fillRemoteRDSFields(serviceName);
     remoteInstancesPage.createRemoteInstance(serviceName);
     pmmInventoryPage.verifyRemoteServiceIsDisplayed(serviceName);
-    await pmmInventoryPage.verifyAgentHasStatusRunning(serviceName);
+    // Skipping due to QAN Setup part on AWS
+    // await pmmInventoryPage.verifyAgentHasStatusRunning(serviceName);
     await pmmInventoryPage.verifyMetricsFlags(serviceName);
+    const logs = await I.verifyCommand('docker exec pmm-server tail -n 100 /srv/logs/pmm-agent.log');
+
+    assert.ok((!logs.includes('rdsadmin') && !logs.includes('ERRO')), 'Logs contains errors about rdsadmin database being used!');
   },
 );
 
@@ -50,7 +55,7 @@ Scenario(
   async ({
     I, dashboardPage, settingsAPI,
   }) => {
-    const serviceName = 'pmm-qa-postgres-12';
+    const serviceName = 'pmm-qa-pgsql-12';
 
     // Increase resolution to avoid failures for OVF execution
     if (process.env.OVF_TEST === 'yes') {
@@ -74,14 +79,15 @@ Scenario(
   },
 ).retry(2);
 
-Scenario(
+// Skip due to PGSQL instance setup on AWS
+xScenario(
   'PMM-T716 - Verify QAN for Postgres RDS added via UI @aws @instances',
   async ({
     I, qanOverview, qanFilters, qanPage,
   }) => {
     I.amOnPage(qanPage.url);
     qanOverview.waitForOverviewLoaded();
-    qanFilters.applyFilter('RDS Postgres');
+    await qanFilters.applyFilter('RDS Postgres');
     qanOverview.waitForOverviewLoaded();
     const count = await qanOverview.getCountOfItems();
 

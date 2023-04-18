@@ -75,6 +75,51 @@ class MongoDBHelper extends Helper {
   }
 
   /**
+   * Builds new parallel connection to MongoDB replica. And returns connected client.
+   * Note! Please care to close connection whe it's no longer needed {@link MongoClient.close()}
+   *
+   * @param   parameters  Object credentials: { username: "string", password: "string" }
+   * @return              {Promise<MongoClient>} connected instance of client
+   */
+  async getMongoReplicaClient(parameters) {
+    const {
+      member1 = `${this.host}:27027`,
+      member2 = `${this.host}:27028`,
+      member3 = `${this.host}:27029`,
+      replicaName = 'rs0',
+      username,
+      password,
+    } = parameters;
+    const user = username || this.username;
+    const pass = password || this.password;
+    const url = `mongodb://${user}:${encodeURIComponent(pass)}@${member1},${member2},${member3}/?authSource=admin&replicaSet=${replicaName}`;
+    const client = new MongoClient(url, { useNewUrlParser: true, useUnifiedTopology: true, connectTimeoutMS: 30000 });
+
+    return await client.connect();
+  }
+
+  /**
+   * Builds new parallel connection to MongoDB. And returns connected client.
+   * Note! Please care to close connection when it's no longer needed {@link MongoClient.close()}
+   *
+   * @param   parameters  Object credentials: { username: "string", password: "string", port: "string" }
+   * @return              {Promise<MongoClient>} connected instance of client
+   */
+  async getMongoClient(parameters) {
+    const {
+      port = '27017',
+      username,
+      password,
+    } = parameters;
+    const user = username || this.username;
+    const pass = password || this.password;
+    const url = `mongodb://${user}:${encodeURIComponent(pass)}@${this.host}:${port}/?authSource=admin`;
+    const client = new MongoClient(url, { useNewUrlParser: true, useUnifiedTopology: true, connectTimeoutMS: 30000 });
+
+    return await client.connect();
+  }
+
+  /**
    * Runs a command against the current database
    * read more here: https://docs.mongodb.com/manual/reference/command/
    * @example await I.mongoExecuteCommand({ getLastError: 1 })
@@ -105,7 +150,6 @@ class MongoDBHelper extends Helper {
    * @returns {Promise<unknown>}
    */
   async mongoAddUser(username, password, roles = [{ db: 'admin', role: 'userAdminAnyDatabase' }]) {
-
     return this.client.db().admin().addUser(username, password, { roles });
   }
 

@@ -1,12 +1,11 @@
-const { storageLocationConnection, mongoStorageLocation } = require('./testData');
+const { storageLocationConnection } = require('./testData');
 
-const { I } = inject();
+const { I, locationsAPI } = inject();
 
-const locationCell = (name) => `//tr[td/div/span[contains(text(), "${name}")]]`;
+const locationCell = (name) => `//tr[td[contains(text(), "${name}")]]`;
 
 module.exports = {
   storageLocationConnection,
-  mongoStorageLocation,
   url: 'graph/backup/locations',
   columnHeaders: ['Name', 'Source', 'Created', 'Actions'],
   elements: {
@@ -26,8 +25,8 @@ module.exports = {
       accessKeyFieldValidation: '$accessKey-field-error-message',
       secretKeyFieldValidation: '$secretKey-field-error-message',
     },
-    typeCellByName: (name) => locate('td').at(2).inside(locationCell(name)),
-    endpointCellByName: (name) => locate('td').at(3).inside(locationCell(name)),
+    typeCellByName: (name) => locate('//td[2]').inside(locationCell(name)),
+    endpointCellByName: (name) => locate('//td[3]').inside(locationCell(name)),
     locationDetails: {
       description: locate('$storage-location-description').find('pre'),
       bucket: locate('$storage-location-bucket').find('span').at(2),
@@ -45,12 +44,13 @@ module.exports = {
     cancel: '$storage-location-cancel-button',
     closeModal: '$modal-close-button',
     typeSelect: (locationType) => `//label[text()="${locationType}"]/preceding-sibling::input[1]`,
+    actionsMenuByName: (name) => locate('$dropdown-menu-toggle').inside(locationCell(name)),
     // editByName returns Edit storage location button locator for a given Location name
     editByName: (name) => locate('$edit-storage-location-button').inside(locationCell(name)),
     // deleteByName returns Delete storage location button locator for a given Location name
     deleteByName: (name) => locate('$delete-storage-location-button').inside(locationCell(name)),
-    showDetails: (name) => locate('$show-details').inside(locationCell(name)),
-    hideDetails: (name) => locate('$hide-details').inside(locationCell(name)),
+    showDetails: (name) => locate('$show-row-details').inside(locationCell(name)),
+    hideDetails: (name) => locate('$hide-row-details').inside(locationCell(name)),
     showSecret: locate('div').after('$small-secret-holder'),
     forceDeleteCheckbox: '$force-checkbox-input',
     cancelDelete: '$cancel-delete-modal-button',
@@ -63,6 +63,7 @@ module.exports = {
     bucket: '$bucketName-text-input',
     accessKey: '$accessKey-text-input',
     secretKey: '$secretKey-text-input',
+    path: '$client-text-input',
   },
   messages: {
     noLocations: 'No storage locations found',
@@ -97,30 +98,38 @@ module.exports = {
     I.seeTextEquals(this.messages.modalHeaderText, this.elements.modalHeader);
     I.seeElement(this.buttons.closeModal);
   },
+
   openDeleteLocationModal(locationName) {
-    I.waitForVisible(this.buttons.deleteByName(locationName), 10);
+    I.waitForVisible(this.buttons.actionsMenuByName(locationName), 10);
+    I.click(this.buttons.actionsMenuByName(locationName));
+    I.waitForVisible(this.buttons.deleteByName(locationName), 2);
     I.click(this.buttons.deleteByName(locationName));
     I.waitForVisible(this.buttons.forceDeleteCheckbox, 10);
   },
 
-  fillLocationFields(locationObj) {
+  fillLocationFields(name, type, config, desc = '') {
     const {
-      name, description, endpoint, bucket_name, access_key, secret_key,
-    } = locationObj;
+      path, endpoint, bucket_name, access_key, secret_key,
+    } = config;
 
     I.fillField(this.fields.name, name);
-    if (description) I.fillField(this.fields.description, description);
+    I.fillField(this.fields.description, desc);
 
-    I.fillField(this.fields.endpoint, endpoint);
-    I.fillField(this.fields.bucket, bucket_name);
-    I.fillField(this.fields.accessKey, access_key);
-    I.fillField(this.fields.secretKey, secret_key);
+    if (type === locationsAPI.storageType.s3) {
+      I.fillField(this.fields.endpoint, endpoint);
+      I.fillField(this.fields.bucket, bucket_name);
+      I.fillField(this.fields.accessKey, access_key);
+      I.fillField(this.fields.secretKey, secret_key);
+    } else {
+      I.click(this.buttons.typeSelect(this.locationType.client));
+      I.fillField(this.fields.path, path);
+    }
   },
 
-  verifyLocationFields(locationObj) {
+  verifyLocationFields(name, type, config, description = '') {
     const {
-      name, description = '', endpoint, bucket_name, access_key, secret_key,
-    } = locationObj;
+      path, endpoint, bucket_name, access_key, secret_key,
+    } = config;
 
     I.waitForVisible(this.fields.name, 30);
     I.seeInField(this.fields.name, name);

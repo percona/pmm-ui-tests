@@ -33,11 +33,11 @@ Scenario(
   async ({
     I, adminPage, qanOverview, qanFilters, qanDetails,
   }) => {
-    qanFilters.applyFilter('pdpgsql-dev');
+    await qanFilters.applyFilter('pdpgsql-dev');
     qanOverview.waitForOverviewLoaded();
     await adminPage.applyTimeRange('Last 12 hours');
     qanOverview.waitForOverviewLoaded();
-    qanOverview.searchByValue('SELECT current_database() datname, schemaname, relname, heap_blks_read, heap_blks_hit, idx_blks_read');
+    await qanOverview.searchByValue('SELECT current_database() datname, schemaname, relname, heap_blks_read, heap_blks_hit, idx_blks_read');
     qanOverview.waitForOverviewLoaded();
     qanOverview.mouseOverFirstInfoIcon();
 
@@ -59,7 +59,7 @@ Scenario(
 
     assert.notEqual(tooltipQueryId, tooltipPlanId, 'Plan Id should not be equal to Query Id');
     I.click(qanFilters.buttons.resetAll);
-    qanOverview.searchByValue('SELECT * FROM pg_stat_database');
+    await qanOverview.searchByValue('SELECT * FROM pg_stat_database');
     qanOverview.waitForOverviewLoaded();
     qanOverview.selectRow(1);
     qanFilters.waitForFiltersToLoad();
@@ -168,9 +168,9 @@ Scenario(
     const metricInDropdown = qanOverview.getMetricLocatorInDropdown(metricName);
     const oldMetric = qanOverview.getColumnLocator('Load');
 
-    I.waitForElement(qanOverview.buttons.addColumn, 30);
+    I.waitForElement(qanOverview.getColumnLocator('Add column'), 30);
     I.waitForElement(oldMetric, 30);
-    I.doubleClick(qanOverview.buttons.addColumn);
+    I.doubleClick(qanOverview.getColumnLocator('Add column'));
     I.waitForElement(qanOverview.elements.newMetricDropdown, 30);
     I.fillField(qanOverview.fields.columnSearchField, metricName);
     I.click(metricInDropdown);
@@ -219,7 +219,6 @@ xScenario(
     ];
 
     for (const i in columnsToAdd) {
-      I.click(qanOverview.buttons.addColumn);
       qanOverview.addSpecificColumn(columnsToAdd[i]);
     }
 
@@ -295,10 +294,12 @@ Scenario(
 
     qanOverview.changeSorting(1);
     qanOverview.verifySorting(1, 'desc');
+    I.waitForVisible(firstCell, 10);
     I.moveCursorTo(firstCell);
     I.waitForVisible(qanOverview.elements.tooltipQPSValue, 10);
     qanOverview.changeMetric('Query Time', 'Innodb Queue Wait');
     qanOverview.waitForOverviewLoaded();
+    I.waitForVisible(secondCell, 10);
     I.moveCursorTo(secondCell);
     I.dontSeeElement(qanOverview.elements.tooltip);
     I.dontSeeElement(qanOverview.elements.tooltipQPSValue);
@@ -315,7 +316,7 @@ Scenario(
     qanOverview.waitForOverviewLoaded();
     await adminPage.applyTimeRange('Last 1 hour');
     qanOverview.waitForOverviewLoaded();
-    qanOverview.searchByValue(query);
+    await qanOverview.searchByValue(query);
     I.waitForElement(qanOverview.elements.querySelector, 30);
     const firstQueryText = await I.grabTextFrom(qanOverview.elements.firstQueryValue);
 
@@ -334,7 +335,7 @@ Scenario(
     await qanOverview.changeGroupBy(groupBy);
     qanOverview.verifyGroupByIs(groupBy);
     qanOverview.waitForOverviewLoaded();
-    qanOverview.searchByValue(query);
+    await qanOverview.searchByValue(query);
     I.waitForElement(qanOverview.elements.querySelector, 30);
     const firstQueryText = await I.grabTextFrom(qanOverview.elements.firstQueryValue);
 
@@ -377,7 +378,7 @@ Scenario(
 
     // fetch the query id field value, split to get just the queryId
     tooltipQueryId = tooltipQueryId[1].trim();
-    qanOverview.searchByValue(tooltipQueryId);
+    await qanOverview.searchByValue(tooltipQueryId);
     I.waitForElement(qanOverview.elements.querySelector, 30);
     const firstQuerySearchText = await I.grabTextFrom(qanOverview.elements.firstQueryValue);
 

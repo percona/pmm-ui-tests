@@ -3,7 +3,6 @@ const connection = psMySql.defaultConnection;
 const location = {
   name: 'mysql backups',
   description: 'MySQL backup location',
-  ...locationsPage.mongoStorageLocation,
 };
 
 let locationId;
@@ -11,6 +10,7 @@ let serviceId;
 
 const mysqlServiceName = 'mysql-with-backup-inventory';
 const mysqlServiceNameToDelete = 'mysql-service-to-delete';
+const mysqlServiceNameForPreCheckTest = 'mysql-backup-pre-checks';
 const mysqlCredentials = {
   host: '127.0.0.1',
   port: '3306',
@@ -21,11 +21,21 @@ const mysqlCredentials = {
 Feature('BM: MySQL Backup Inventory');
 
 BeforeSuite(async ({
-  I, locationsAPI, settingsAPI, psMySql,
+  I, locationsAPI, settingsAPI, psMySql, inventoryAPI,
 }) => {
   await settingsAPI.changeSettings({ backup: true });
   await locationsAPI.clearAllLocations(true);
-  locationId = await locationsAPI.createStorageLocation(location);
+  locationId = await locationsAPI.createStorageLocation(
+    location.name,
+    locationsAPI.storageType.s3,
+    locationsAPI.psStorageLocationConnection,
+    location.description,
+  );
+  await inventoryAPI.deleteNodeByServiceName('MYSQL_SERVICE', mysqlServiceNameForPreCheckTest);
+
+  await I.verifyCommand('docker exec pmm-server yum remove -y Percona-Server-server-57');
+  await I.verifyCommand('docker exec pmm-server yum remove -y percona-xtrabackup-24');
+  await I.verifyCommand('docker exec pmm-server yum remove -y qpress');
 
   psMySql.connectToPS(mysqlCredentials);
 
@@ -51,7 +61,7 @@ AfterSuite(async ({ psMySql }) => {
 });
 
 Scenario(
-  'PMM-T769, PMM-T920 - Verify user is able to perform MySQL backup @bm-mysql @not-ui-pipeline',
+  '@PMM-T769, @PMM-T920 - Verify user is able to perform MySQL backup @bm-mysql @not-ui-pipeline',
   async ({ I, backupInventoryPage }) => {
     const backupName = 'mysql backup test';
 
@@ -60,7 +70,8 @@ Scenario(
     backupInventoryPage.selectDropdownOption(backupInventoryPage.fields.serviceNameDropdown, mysqlServiceName);
     backupInventoryPage.selectDropdownOption(backupInventoryPage.fields.locationDropdown, location.name);
     I.fillField(backupInventoryPage.fields.backupName, backupName);
-    I.fillField(backupInventoryPage.fields.description, 'test description');
+    // TODO: uncomment when PMM-10899 will be fixed
+    // I.fillField(backupInventoryPage.fields.description, 'test description');
     I.click(backupInventoryPage.buttons.addBackup);
     I.waitForVisible(backupInventoryPage.elements.pendingBackupByName(backupName), 10);
     backupInventoryPage.verifyBackupSucceeded(backupName);
@@ -69,7 +80,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T862 Verify user is able to perform MySQL restore @bm-mysql @not-ui-pipeline',
+  '@PMM-T862 Verify user is able to perform MySQL restore @bm-mysql @not-ui-pipeline',
   async ({
     I, backupInventoryPage, backupAPI, restorePage, psMySql,
   }) => {
@@ -77,7 +88,7 @@ Scenario(
     const tableName = 'test';
 
     await psMySql.deleteTable(tableName);
-    const artifactId = await backupAPI.startBackup(backupName, serviceId, locationId);
+    const artifactId = await backupAPI.startBackup(backupName, serviceId, locationId, false, false);
 
     await backupAPI.waitForBackupFinish(artifactId);
     I.refreshPage();
@@ -86,7 +97,7 @@ Scenario(
     /* connection must be closed in correct way before restore backup. Restore procedure restarts mysql service */
     await psMySql.disconnectFromPS();
     backupInventoryPage.startRestore(backupName);
-    restorePage.waitForRestoreSuccess(backupName);
+    await restorePage.waitForRestoreSuccess(backupName);
 
     await psMySql.asyncConnectToPS(mysqlCredentials);
     const tableExists = await psMySql.isTableExists(tableName);
@@ -96,13 +107,13 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T910 PMM-T911 Verify delete from storage is selected by default @bm-mysql @not-ui-pipeline',
+  '@PMM-T910 @PMM-T911 Verify delete from storage is selected by default @bm-mysql @not-ui-pipeline',
   async ({
     I, backupInventoryPage, backupAPI, inventoryAPI,
   }) => {
     const backupName = 'mysql artifact delete test';
     const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName('MYSQL_SERVICE', mysqlServiceName);
-    const artifactId = await backupAPI.startBackup(backupName, service_id, locationId);
+    const artifactId = await backupAPI.startBackup(backupName, service_id, locationId, false, false);
 
     await backupAPI.waitForBackupFinish(artifactId);
 
@@ -111,8 +122,7 @@ Scenario(
 
     const artifactName = await I.grabTextFrom(backupInventoryPage.elements.artifactName(backupName));
 
-    I.click(backupInventoryPage.buttons.deleteByName(backupName));
-    I.waitForVisible(backupInventoryPage.elements.forceDeleteLabel, 20);
+    backupInventoryPage.openDeleteBackupModal(backupName);
     I.seeTextEquals(backupInventoryPage.messages.confirmDeleteText(artifactName), 'h4');
     I.seeTextEquals(backupInventoryPage.messages.forceDeleteLabelText, backupInventoryPage.elements.forceDeleteLabel);
     I.seeTextEquals(backupInventoryPage.messages.modalHeaderText, backupInventoryPage.elements.modalHeader);
@@ -126,7 +136,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T810 Verify user can restore MySQL backup from a scheduled backup @bm-mysql @not-ui-pipeline',
+  '@PMM-T810 Verify user can restore MySQL backup from a scheduled backup @bm-mysql @not-ui-pipeline',
   async ({
     I, backupInventoryPage, scheduledAPI, backupAPI, restorePage, psMySql,
   }) => {
@@ -138,6 +148,7 @@ Scenario(
       name: 'for restore mysql test',
       mode: scheduledAPI.backupModes.snapshot,
       description: '',
+      isLogical: false,
       retry_interval: '30s',
       retries: 0,
       enabled: true,
@@ -156,7 +167,7 @@ Scenario(
     /* connection must be closed in correct way before restore backup. Restore procedure restarts mysql service */
     await psMySql.disconnectFromPS();
     backupInventoryPage.startRestore(schedule.name);
-    restorePage.waitForRestoreSuccess(schedule.name);
+    await restorePage.waitForRestoreSuccess(schedule.name);
 
     await psMySql.asyncConnectToPS(mysqlCredentials);
     const tableExists = await psMySql.isTableExists(tableName);
@@ -166,13 +177,13 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T848 Verify service no longer exists error message during restore @bm-mysql @not-ui-pipeline',
+  '@PMM-T848 Verify service no longer exists error message during restore @bm-mysql @not-ui-pipeline',
   async ({
     I, backupInventoryPage, backupAPI, inventoryAPI,
   }) => {
     const backupName = 'service remove backup';
     const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName('MYSQL_SERVICE', mysqlServiceNameToDelete);
-    const artifactId = await backupAPI.startBackup(backupName, service_id, locationId);
+    const artifactId = await backupAPI.startBackup(backupName, service_id, locationId, false, false);
 
     await backupAPI.waitForBackupFinish(artifactId);
     await inventoryAPI.deleteService(service_id);
@@ -180,9 +191,47 @@ Scenario(
     I.refreshPage();
     backupInventoryPage.verifyBackupSucceeded(backupName);
 
+    I.click(backupInventoryPage.buttons.actionsMenuByName(backupName));
+    I.waitForVisible(backupInventoryPage.buttons.restoreByName(backupName), 2);
     I.click(backupInventoryPage.buttons.restoreByName(backupName));
     I.waitForVisible(backupInventoryPage.buttons.modalRestore, 10);
     I.seeTextEquals(backupInventoryPage.messages.serviceNoLongerExists, backupInventoryPage.elements.backupModalError);
     I.seeElementsDisabled(backupInventoryPage.buttons.modalRestore);
+  },
+);
+
+Scenario(
+  '@PMM-T1057 @PMM-T1058 Verify pre checks for PS tools before backup @bm-mysql @not-ui-pipeline',
+  async ({
+    I, backupInventoryPage, addInstanceAPI, links,
+  }) => {
+    const backupName = 'test pre checks';
+
+    await addInstanceAPI.addMysql(mysqlServiceNameForPreCheckTest);
+
+    I.click(backupInventoryPage.buttons.openAddBackupModal);
+
+    backupInventoryPage.selectDropdownOption(backupInventoryPage.fields.serviceNameDropdown, mysqlServiceNameForPreCheckTest);
+    backupInventoryPage.selectDropdownOption(backupInventoryPage.fields.locationDropdown, location.name);
+    I.fillField(backupInventoryPage.fields.backupName, backupName);
+    I.click(backupInventoryPage.buttons.addBackup);
+    await I.verifyPopUpMessage('software "mysqld" is not installed: incompatible service');
+
+    await I.verifyCommand('docker exec pmm-server percona-release setup ps57');
+    await I.verifyCommand('docker exec pmm-server yum install -y Percona-Server-server-57');
+    I.click(backupInventoryPage.buttons.addBackup);
+    await I.verifyPopUpMessage('software "xtrabackup" is not installed: xtrabackup is not installed');
+
+    I.seeTextEquals('Xtrabackup is not installed. ', backupInventoryPage.elements.addBackupModalError);
+    I.seeAttributesOnElements(backupInventoryPage.elements.addBackupModalErrorReadMore, { href: links.xtrabackup80Docs });
+
+    await I.verifyCommand('docker exec pmm-server yum install -y percona-xtrabackup-24');
+    I.click(backupInventoryPage.buttons.addBackup);
+    await I.verifyPopUpMessage('software "qpress" is not installed: incompatible service');
+
+    await I.verifyCommand('docker exec pmm-server yum install -y qpress');
+    I.click(backupInventoryPage.buttons.addBackup);
+
+    I.waitForVisible(backupInventoryPage.elements.pendingBackupByName(backupName), 10);
   },
 );

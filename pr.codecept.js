@@ -80,6 +80,9 @@ exports.config = {
     LocalStorageHelper: {
       require: './tests/helper/localStorageHelper.js',
     },
+    ApiHelper: {
+      require: './tests/helper/apiHelper.js',
+    },
   },
   include: pageObjects,
   multiple: {
@@ -98,10 +101,6 @@ exports.config = {
       attribute: 'data-testid',
       showActual: false,
     },
-    allure: {
-      enabled: true,
-      outputDir: 'tests/output/allure',
-    },
     tryTo: {
       enabled: true,
     },
@@ -112,7 +111,7 @@ exports.config = {
         stdout: '-',
         options: {
           verbose: false,
-          steps: true,
+          steps: false,
         },
       },
       'mocha-junit-reporter': {

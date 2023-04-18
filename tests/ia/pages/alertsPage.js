@@ -1,39 +1,47 @@
-const { I } = inject();
+const { I, alertsPage } = inject();
 const assert = require('assert');
 
 const alertRow = (alertName) => `//tr[td[contains(., "${alertName}")]]`;
 const details = '$alert-details-wrapper';
 
 module.exports = {
-  url: 'graph/integrated-alerting/alerts',
-  columnHeaders: ['Name', 'Severity', 'State', 'Labels', 'Active Since', 'Last Notified', 'Actions'],
+  url: 'graph/alerting/alerts',
+  columnHeaders: ['Triggered by rule', 'State', 'Summary', 'Severity', 'Active since', 'Last notified', 'Actions'],
   elements: {
+    pageHeader: '//div[@class="page-header"]//h1[text()="Alerting"]',
     noData: '$table-no-data',
     alertRow: (alertName) => alertRow(alertName),
     labelsCell: (alertName) => `${alertRow(alertName)}/td[4]//span`,
-    stateCell: (alertName) => `${alertRow(alertName)}/td[3]`,
-    severityCell: (alertName) => `${alertRow(alertName)}/td[2]`,
-    criticalSeverity: '//td[2]/span[text()="Critical"]',
-    errorSeverity: '//td[2]/span[text()="Error"]',
-    noticeSeverity: '//td[2]/span[text()="Notice"]',
-    warningSeverity: '//td[2]/span[text()="Warning"]',
+    stateCell: (alertName) => `${alertRow(alertName)}/td[2]`,
+    severityCell: (alertName) => `${alertRow(alertName)}/td[4]`,
+    criticalSeverity: '//td[4]/span[text()="Critical"]',
+    errorSeverity: '//td[4]/span[text()="Error"]',
+    noticeSeverity: '//td[4]/span[text()="Notice"]',
+    warningSeverity: '//td[4]/span[text()="Warning"]',
+    emergencySeverity: '//td[4]/span[text()="Emergency"]',
+    alertSeverity: '//td[4]/span[text()="Alert"]',
+    debugSeverity: '//td[4]/span[text()="Debug"]',
+    infoSeverity: '//td[4]/span[text()="Info"]',
     columnHeaderLocator: (columnHeaderText) => `//th[text()="${columnHeaderText}"]`,
     details,
     detailsRuleExpression: locate(details).find('div').withText('Rule Expression'),
     detailsSecondaryLabels: locate(details).find('div').withText('Secondary Labels'),
     primaryLabels: (alertName, text) => locate(`${alertRow(alertName)}/td[4]`).find('$chip').withText(text),
     secondaryLabels: (text) => locate(details).find('$chip').withText(text),
+    noAlerts: '//h1[text()=\' No alerts detected\']',
+    firedAlertLink: (alertName) => `//a[text()="${alertName}"]`,
   },
   buttons: {
     // silenceActivate returns silence/activate button locator for a given alert name
-    silenceActivate: (alertName) => `${alertRow(alertName)}[1]/td//button[@data-testid="silence-button"]`,
+    silenceActivate: (alertName) => `${alertRow(alertName)}[1]/td//span[text()="Silence"]`,
+    submitSilence: 'button[type=\'submit\']',
     silenceAllAlerts: locate('span').withText('Silence All'),
     unsilenceAllAlerts: locate('span').withText('Unsilence All'),
     arrowIcon: (alertName) => locate(`${alertRow(alertName)}`).find('$show-details'),
   },
   messages: {
     noAlertsFound: 'No alerts',
-    successfullySilenced: 'Alert silenced',
+    successfullySilenced: 'Silence created',
     successfullyActivated: 'Alert activated',
   },
   colors: {
@@ -45,29 +53,37 @@ module.exports = {
   },
 
   async silenceAlert(alertName) {
-    const title = await I.grabAttributeFrom(this.buttons.silenceActivate(alertName), 'title');
+    I.waitForVisible(this.buttons.silenceActivate(alertName, 10));
+    I.click(this.buttons.silenceActivate(alertName));
+    I.click(this.buttons.submitSilence);
+    I.verifyPopUpMessage(this.messages.successfullySilenced);
+  },
 
-    if (title === 'Silence') {
-      const bgColorBeforeAction = await I.grabCssPropertyFrom(
-        `${this.elements.alertRow(alertName)}/td`,
-        'background-color',
-      );
+  async verifyAlert(alertName, silenced = false) {
+    I.waitForVisible(this.elements.alertRow(alertName), 10);
+    const bgColor = await I.grabCssPropertyFrom(
+      `${this.elements.alertRow(alertName)}/td`,
+      'background-color',
+    );
 
-      I.click(this.buttons.silenceActivate(alertName));
-      I.verifyPopUpMessage(this.messages.successfullySilenced);
-      I.seeTextEquals('Silenced', this.elements.stateCell(alertName));
-      const bgColorAfterAction = await I.grabCssPropertyFrom(
-        `${this.elements.alertRow(alertName)}/td`,
-        'background-color',
-      );
+    if (silenced) {
+      I.seeTextEquals('Suppressed', this.elements.stateCell(alertName));
 
       assert.ok(
-        bgColorBeforeAction !== bgColorAfterAction,
-        'Cell background color should change after silencing the alert',
+        bgColor !== 'rgb(24, 27, 31)',
+        `Suppressed alert should have different background color. Found ${bgColor}.`,
+      );
+    } else {
+      I.see('Active', this.elements.stateCell(alertName));
+
+      assert.ok(
+        bgColor === 'rgb(24, 27, 31)',
+        `Active alert should have different background color. Expected rgb(24, 27, 31) but found ${bgColor}.`,
       );
     }
   },
 
+  // TODO: move to silencesPage
   async activateAlert(alertName) {
     const title = await I.grabAttributeFrom(`${this.buttons.silenceActivate(alertName)}`, 'title');
 

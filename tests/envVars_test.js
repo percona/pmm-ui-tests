@@ -22,6 +22,7 @@ Scenario(
     pmmSettingsPage.verifySwitch(pmmSettingsPage.fields.telemetrySwitchSelectorInput, 'off');
     I.click(pmmSettingsPage.fields.advancedButton);
     I.refreshPage();
+    await pmmSettingsPage.waitForPmmSettingsPageLoaded();
     pmmSettingsPage.verifySwitch(pmmSettingsPage.fields.telemetrySwitchSelectorInput, 'off');
   },
 );

@@ -17,7 +17,7 @@ services:
       - "42300:3306"
     restart: always
     environment:
-      - MYSQL_ROOT_PASSWORD=ps
+      - MYSQL_ROOT_PASSWORD=^O6VrIoC1@9b
       - MYSQL_USER=pmm-agent
       - MYSQL_PASSWORD=pmm%*&agent-password
       - UMASK=0777  # for slowlog file
@@ -87,14 +87,14 @@ services:
               --host=mysql \
               --port=3306 \
               --user=root \
-              --password=ps \
+              --password=^O6VrIoC1@9b \
               -e 'CREATE DATABASE IF NOT EXISTS sbtest'
           sysbench \
               --db-driver=mysql \
               --mysql-host=mysql \
               --mysql-port=3306 \
               --mysql-user=root \
-              --mysql-password=ps \
+              --mysql-password=^O6VrIoC1@9b \
               --mysql-db=sbtest \
               --mysql-table-engine=innodb \
               --oltp-table-size=1000000 \
@@ -111,7 +111,7 @@ services:
               --mysql-host=mysql \
               --mysql-port=3306 \
               --mysql-user=root \
-              --mysql-password=ps \
+              --mysql-password=^O6VrIoC1@9b \
               --mysql-db=sbtest \
               --mysql-table-engine=innodb \
               --oltp-reconnect \

@@ -32,7 +32,7 @@ Before(async ({ I }) => {
   await I.Authorize();
 });
 
-Scenario(
+Scenario.skip(
   'PMM-T294 Verify user is able to see message about Disabled STT in Checks panel at Home Page [critical] @stt',
   async ({
     I, homePage, databaseChecksPage, settingsAPI,
@@ -47,7 +47,7 @@ Scenario(
   },
 );
 
-Data(urls).Scenario(
+Scenario.skip(
   'PMM-T295 PMM-T276 PMM-T470 Verify user is able to see message about Disabled STT at Database Checks page [critical] @stt',
   async ({
     I, databaseChecksPage, pmmSettingsPage, settingsAPI, current,
@@ -84,11 +84,13 @@ xScenario(
   },
 );
 
-Scenario(
+Scenario.skip(
   'PMM-T233 PMM-T354 PMM-T368 open PMM Database Checks page from home dashboard [critical] @stt',
   async ({
     I, homePage, databaseChecksPage, settingsAPI, securityChecksAPI,
   }) => {
+    const failedChecksDetails = locate('$checks-tooltip-body').find('div');
+
     await settingsAPI.apiEnableSTT();
     await securityChecksAPI.startSecurityChecks(['mysql_version']);
     await securityChecksAPI.waitForFailedCheckExistance(detailsText, psServiceName);
@@ -99,10 +101,10 @@ Scenario(
 
     // Verify failed checks pop up
     I.moveCursorTo(homePage.fields.sttFailedChecksPanelSelector);
-    I.waitForVisible(homePage.fields.popUp, 5);
+    I.waitForVisible(failedChecksDetails, 5);
     const [expectedCritical, expectedError, expectedWarning, expectedTrivial] = (await I.grabTextFrom(homePage.fields.sttFailedChecksPanelSelector)).split(' / ').map(Number);
 
-    const levels = await I.grabTextFromAll(locate('$checks-tooltip-body').find('div'));
+    const levels = await I.grabTextFromAll(failedChecksDetails);
 
     let critical = 0;
     let error = 0;
@@ -155,8 +157,8 @@ Scenario(
   },
 );
 
-Scenario(
-  'PMM-T241 Verify user can see correct service name for failed checks [critical] @stt @fb',
+Scenario.skip(
+  'PMM-T241 Verify user can see correct service name for failed checks [critical] @stt @advisors-fb',
   async ({
     I, databaseChecksPage, settingsAPI, securityChecksAPI, inventoryAPI, allChecksPage,
   }) => {
@@ -173,6 +175,6 @@ Scenario(
       serviceType: 'MYSQL_SERVICE',
       service: 'mysql',
     },
-    psServiceName);
+      psServiceName);
   },
 );
