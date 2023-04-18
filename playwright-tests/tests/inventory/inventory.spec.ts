@@ -115,7 +115,7 @@ test.describe('Spec file for PMM inventory tests.', async () => {
     });
 
     await test.step('2. Verify pagination on the services table.', async () => {
-      await servicesPage.servicesTable.verifyPagination(4);
+      await servicesPage.servicesTable.verifyPagination(5);
     });
 
     await test.step('3. Navigate to the mysql agents page.', async () => {
