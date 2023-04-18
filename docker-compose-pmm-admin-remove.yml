@@ -36,3 +36,18 @@
         restart: always
         environment:
           MYSQL_ROOT_PASSWORD: gfaks4d8OH
+
+      mongo4.2:
+        image: ${MONGO_IMAGE:-percona/percona-server-mongodb:4.2}
+        container_name: mongo4.2
+        command: --profile 2
+        environment:
+          - MONGO_INITDB_ROOT_USERNAME=root
+          - MONGO_INITDB_ROOT_PASSWORD=gfaks4d8OH
+
+      postgres11:
+        image: ${POSTGRES_IMAGE:-postgres:11}
+        container_name: postgres11
+        environment:
+          - POSTGRES_USER=postgres
+          - POSTGRES_PASSWORD=gfaks4d8OH
