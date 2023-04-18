@@ -13,6 +13,7 @@ module.exports = {
     showRowDetails: '//button[@data-testid="show-row-details"]',
     backToServices: '//span[text()="Go back to services"]',
     agentsLinkNew: '//div[contains(@data-testid,"status-badge")]',
+    agentDetailsLabelByText: (label) => locate('[aria-label="Tags"]').find('li').withText(label),
     agentsLink: locate('[role="tablist"] a').withText('Agents').withAttr({ 'aria-label': 'Tab Agents' }),
     agentsLinkOld: locate('a').withText('Agents'),
     deleteButton: locate('span').withText('Delete'),
@@ -61,13 +62,9 @@ module.exports = {
     I.scrollPageToBottom();
   },
 
-  async openAgents() {
-    await I.waitForVisible(this.fields.agentsLink, 20);
-    I.click(this.fields.agentsLink);
-    I.waitForElement(this.fields.pmmAgentLocator, 60);
+  async openAgents(serviceId) {
+    I.amOnPage(`graph/inventory/services/${serviceId.split('/')[2]}/agents`);
     await this.changeRowsPerPage(100);
-    I.waitForElement(this.fields.inventoryTable, 60);
-    I.scrollPageToBottom();
   },
 
   async changeRowsPerPage(count) {
@@ -137,11 +134,14 @@ module.exports = {
     return serviceIds;
   },
 
-  async checkAgentOtherDetailsSection(detailsSection, expectedResult, serviceName) {
-    const locator = `//span[contains(text(), '${detailsSection}')]`;
-    const details = await I.grabTextFrom(locator);
+  async checkAgentOtherDetailsSection(agentType, expectedResult, isDisplayed = true) {
+    I.click(this.fields.showAgentDetails(agentType));
 
-    assert.ok(expectedResult === details, `Infomation '${expectedResult}' for service '${serviceName}' is missing!`);
+    if (isDisplayed) {
+      I.waitForVisible(this.fields.agentDetailsLabelByText(expectedResult), 10);
+    } else {
+      I.dontSeeElement(this.fields.agentDetailsLabelByText(expectedResult));
+    }
   },
 
   async checkAgentOtherDetailsMissing(detailsSection, serviceId) {

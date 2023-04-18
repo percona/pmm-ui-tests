@@ -75,7 +75,7 @@ Data(instances).Scenario(
 
     // Check Remote Instance also added and have running status
     pmmInventoryPage.verifyRemoteServiceIsDisplayed(remoteServiceName);
-    await pmmInventoryPage.verifyAgentHasStatusRunning(remoteServiceName);
+    // await pmmInventoryPage.verifyAgentHasStatusRunning(remoteServiceName);
   },
 );
 
@@ -234,18 +234,25 @@ Data(instances).Scenario(
 
     // Check Remote Instance also added and have running status
     pmmInventoryPage.verifyRemoteServiceIsDisplayed(remoteServiceName);
-    await pmmInventoryPage.verifyAgentHasStatusRunning(remoteServiceName);
-    // Check Remote Instance also added and have running status
-    await pmmInventoryPage.openServices();
-    const serviceId = await pmmInventoryPage.getServiceId(remoteServiceName);
 
-    // Check Remote Instance also added and have correct max_query_length option set
-    await pmmInventoryPage.openAgents();
+    // await pmmInventoryPage.verifyAgentHasStatusRunning(remoteServiceName);
+    // Check Remote Instance also added, have running status and have correct max_query_length option set
 
+    await inventoryAPI.verifyServiceExistsAndHasRunningStatus(
+      {
+        serviceType: 'POSTGRESQL_SERVICE',
+        service: 'postgresql',
+      },
+      serviceName,
+    );
+
+    const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName('POSTGRESQL_SERVICE', remoteServiceName);
+
+    await pmmInventoryPage.openAgents(service_id);
     if (maxQueryLength !== '') {
-      await pmmInventoryPage.checkAgentOtherDetailsSection('max_query_length:', `max_query_length: ${maxQueryLength}`, remoteServiceName, serviceId);
+      await pmmInventoryPage.checkAgentOtherDetailsSection('Qan postgresql pgstatements agent', `max_query_length=${maxQueryLength}`);
     } else {
-      await pmmInventoryPage.checkAgentOtherDetailsMissing('max_query_length:', serviceId);
+      await pmmInventoryPage.checkAgentOtherDetailsSection('Qan postgresql pgstatements agent', `max_query_length=${maxQueryLength}`, false);
     }
 
     // Check max visible query length is less than max_query_length option

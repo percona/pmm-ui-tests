@@ -1,4 +1,5 @@
 const assert = require('assert');
+
 const { remoteInstancesHelper, pmmInventoryPage } = inject();
 
 Feature('Monitoring Aurora instances');
@@ -24,8 +25,12 @@ Before(async ({ I }) => {
   await I.Authorize();
 });
 
-Data(instances).Scenario('@PMM-T1295 Verify adding Aurora remote instance @instances', async ({ I, addInstanceAPI, current }) => {
-  const { service_name, password, instance_id, cluster_name } = current;
+Data(instances).Scenario('@PMM-T1295 Verify adding Aurora remote instance @instances', async ({
+  I, addInstanceAPI, inventoryAPI, current,
+}) => {
+  const {
+    service_name, password, instance_id, cluster_name,
+  } = current;
 
   const details = {
     add_node: {
@@ -38,8 +43,8 @@ Data(instances).Scenario('@PMM-T1295 Verify adding Aurora remote instance @insta
     service_name: instance_id,
     port: remoteInstancesHelper.remote_instance.aws.aurora.port,
     username: remoteInstancesHelper.remote_instance.aws.aurora.username,
-    password: password,
-    instance_id: instance_id,
+    password,
+    instance_id,
     cluster: cluster_name,
   };
 
@@ -47,7 +52,14 @@ Data(instances).Scenario('@PMM-T1295 Verify adding Aurora remote instance @insta
 
   I.amOnPage(pmmInventoryPage.url);
   pmmInventoryPage.verifyRemoteServiceIsDisplayed(details.service_name);
-  await pmmInventoryPage.verifyAgentHasStatusRunning(details.service_name);
+  await inventoryAPI.verifyServiceExistsAndHasRunningStatus(
+    {
+      serviceType: 'MYSQL_SERVICE',
+      service: 'mysql',
+    },
+    details.service_name,
+  );
+  // await pmmInventoryPage.verifyAgentHasStatusRunning(details.service_name);
 });
 
 // FIXME: Can be removed once https://jira.percona.com/browse/PMM-10201 is fixed
@@ -101,7 +113,9 @@ Scenario('PMM-T1295 Verify MySQL Amazon Aurora Details @instances', async ({ I, 
 Data(instances)
   .Scenario(
     'PMM-T1295 Verify dashboard after Aurora instance is added @instances',
-    async ({ I, dashboardPage, adminPage, current }) => {
+    async ({
+      I, dashboardPage, adminPage, current,
+    }) => {
       const { instance_id } = current;
 
       I.amOnPage(dashboardPage.mySQLInstanceOverview.url);
@@ -120,7 +134,9 @@ Data(instances)
 Data(instances)
   .Scenario(
     'PMM-T1295 Verify QAN after Aurora instance is added @instances',
-    async ({ I, qanOverview, qanFilters, qanPage, current, adminPage }) => {
+    async ({
+      I, qanOverview, qanFilters, qanPage, current, adminPage,
+    }) => {
       const { instance_id } = current;
 
       I.amOnPage(qanPage.url);
