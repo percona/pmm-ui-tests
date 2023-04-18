@@ -40,6 +40,10 @@ const pmmClientCommands = {
     await executeCommand(`${getClientPrefix()}pmm-admin add postgresql --username=postgres --password=${options.password || 'oFukiBRg7GujAJXq3tmd'} \
     --environment=${options.env || 'pdpgsql-dev'} --cluster=pdpgsql-dev-cluster --query-source=${options.querySource || 'pgstatmonitor'} \
     --replication-set=pdpgsql-repl1 ${options.name || `pdpgsql-integration-${Date.now()}-0`}  ${options.address}:${options.port || '5432'}`);
+  },
+  findFile: async (fileName: string): Promise<string[]> => {
+    const locations = await executeCommand(`${getClientPrefix()} find / -name ${fileName}`);
+    return locations.stdout.split('\n');
   }
 }
 
