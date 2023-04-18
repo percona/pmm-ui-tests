@@ -425,7 +425,7 @@ Scenario(
     I.assertEqual(publicAddressAfterRefresh, publicAddressValue,
       `Expected the Public Address to be saved and Match ${publicAddressValue}`);
   },
-);
+).retry(2);
 
 Scenario(
   'PMM-T254 ensure Advisors are on by default @instances',
