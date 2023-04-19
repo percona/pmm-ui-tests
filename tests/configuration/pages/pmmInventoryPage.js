@@ -364,15 +364,4 @@ module.exports = {
     await I.waitForVisible(agent, 30);
     I.click(this.fields.backToServices);
   },
-
-  async checkAgentsPresent(expectedAgentIds) {
-    const actualAgentIds = (await I.grabTextFromAll(this.fields.agentId))
-      .map((string) => string.replace('/agent_id/', ''));
-
-    I.assertNotEqual(expectedAgentIds.length, actualAgentIds.length, `The number of actual Agents doesn't match expected (Expected ${expectedAgentIds.length} but got ${actualAgentIds.length})`);
-
-    expectedAgentIds.forEach((agentId) => {
-      I.assertTrue(actualAgentIds.includes(agentId), `Actual Agents don't include expected agent_id (Expected ${agentId} but didn't found)`);
-    });
-  },
 };
