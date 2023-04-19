@@ -6,7 +6,8 @@ Before(async ({ I }) => {
   await I.Authorize();
 });
 
-Scenario(
+// Skipping temporarily because sorting is not yet implemented in new Inventory page (PMM 2.37.0)
+Scenario.skip(
   'PMM-T371 - Verify sorting in Inventory page(Services tab) @inventory @nightly',
   async ({ I, pmmInventoryPage }) => {
     I.amOnPage(pmmInventoryPage.url);
@@ -14,17 +15,7 @@ Scenario(
   },
 );
 
-Scenario(
-  'PMM-T371 - Verify sorting in Inventory page(Agents tab) @inventory @nightly',
-  async ({ I, pmmInventoryPage }) => {
-    I.amOnPage(pmmInventoryPage.url);
-    I.waitForVisible(pmmInventoryPage.fields.agentsLink, 20);
-    I.click(pmmInventoryPage.fields.agentsLink);
-    await pmmInventoryPage.checkSort(3);
-  },
-);
-
-Scenario(
+Scenario.skip(
   'PMM-T371 - Verify sorting in Inventory page(Nodes tab) @inventory @nightly',
   async ({ I, pmmInventoryPage }) => {
     I.amOnPage(pmmInventoryPage.url);
