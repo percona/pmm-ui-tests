@@ -44,13 +44,23 @@ Data(azureServices).Scenario(
     I.click(remoteInstancesPage.fields.addService);
     pmmInventoryPage.verifyRemoteServiceIsDisplayed(serviceName);
 
-    await inventoryAPI.verifyServiceExistsAndHasRunningStatus(
-      {
-        serviceType: 'POSTGRESQL_SERVICE',
-        service: 'postgresql',
-      },
-      serviceName,
-    );
+    if (serviceName === 'azure-MySQL') {
+      await inventoryAPI.verifyServiceExistsAndHasRunningStatus(
+        {
+          serviceType: 'MYSQL_SERVICE',
+          service: 'mysql',
+        },
+        serviceName,
+      );
+    } else {
+      await inventoryAPI.verifyServiceExistsAndHasRunningStatus(
+        {
+          serviceType: 'POSTGRESQL_SERVICE',
+          service: 'postgresql',
+        },
+        serviceName,
+      );
+    }
 
     // await pmmInventoryPage.verifyAgentHasStatusRunning(serviceName);
   },

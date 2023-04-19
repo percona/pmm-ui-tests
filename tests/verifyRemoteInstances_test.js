@@ -55,7 +55,7 @@ for (const [key, value] of Object.entries(remoteInstancesHelper.services)) {
   }
 }
 
-Feature('Remote DB Instances').retry(1);
+Feature('Remote DB Instances');
 
 Before(async ({ I }) => {
   await I.Authorize();
@@ -71,8 +71,8 @@ Scenario(
     I.waitForVisible(remoteInstancesPage.fields.addService, 30);
     I.click(remoteInstancesPage.fields.addService);
     pmmInventoryPage.verifyRemoteServiceIsDisplayed(externalExporterServiceName);
-    await I.click(this.fields.showServiceDetails(externalExporterServiceName));
-    await I.click(this.fields.agentsLinkNew);
+    await I.click(pmmInventoryPage.fields.showServiceDetails(externalExporterServiceName));
+    await I.click(pmmInventoryPage.fields.agentsLinkNew);
     I.waitForVisible(pmmInventoryPage.fields.externalExporter, 30);
   },
 ).retry(0);
