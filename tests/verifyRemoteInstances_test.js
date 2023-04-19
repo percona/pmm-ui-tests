@@ -207,9 +207,9 @@ Scenario(
     await I.click(pmmInventoryPage.fields.showServiceDetails(haproxyServiceName));
     await I.click(pmmInventoryPage.fields.agentsLinkNew);
     await I.click(pmmInventoryPage.fields.showAgentDetails('External exporter'));
-    await pmmInventoryPage.checkAgentOtherDetailsSection('metrics_scheme', 'metrics_scheme=http', haproxyServiceName);
-    await pmmInventoryPage.checkAgentOtherDetailsSection('metrics_path', 'metrics_path=/metrics', haproxyServiceName);
-    await pmmInventoryPage.checkAgentOtherDetailsSection('listen_port', `listen_port=${remoteInstancesHelper.remote_instance.haproxy.haproxy_2.port}`, haproxyServiceName);
+    await pmmInventoryPage.checkAgentOtherDetailsSection('External exporter', 'metrics_scheme=http');
+    I.seeElement(this.fields.agentDetailsLabelByText('metrics_path=/metrics'));
+    I.seeElement(this.fields.agentDetailsLabelByText(`listen_port=${remoteInstancesHelper.remote_instance.haproxy.haproxy_2.port}`));
   },
 );
 
