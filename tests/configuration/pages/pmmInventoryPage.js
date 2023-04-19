@@ -144,6 +144,10 @@ module.exports = {
     }
   },
 
+  async checkAgentsLabel(expectedResult) {
+    await I.waitForVisible(this.fields.agentDetailsLabelByText(expectedResult), 10);
+  },
+
   async checkAgentOtherDetailsMissing(detailsSection, serviceId) {
     const locator = locate('span').withText(detailsSection).after(locate('span').withText(`service_id: ${serviceId}`));
 
