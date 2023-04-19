@@ -7,7 +7,6 @@ const services = ['mysql', 'mongodb', 'postgresql', 'proxysql', 'external', 'hap
 
 BeforeSuite(async ({ I }) => {
   await I.verifyCommand(`PMM_SERVER_IMAGE=${process.env.DOCKER_VERSION} docker-compose -f docker-compose-pmm-admin-remove.yml up -d pmm-server-remove`);
-  // await I.verifyCommand(`timeout 100 bash -c 'while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' 127.0.0.1:${pmmServerPort}/ping)" != "200" ]]; do sleep 5; done' || false`);
   await I.verifyCommand('docker-compose -f docker-compose-pmm-admin-remove.yml up -d pmm-client-remove');
   await I.verifyCommand('docker-compose -f docker-compose-pmm-admin-remove.yml up -d mysql5.7');
   await I.verifyCommand('docker-compose -f docker-compose-pmm-admin-remove.yml up -d mongo4.2');
