@@ -100,15 +100,13 @@ module.exports = {
 
   async applyFilter(filterName) {
     const filterToApply = `//span[contains(@class, 'checkbox-container__label-text') and contains(text(), '${filterName}')]`;
+    const filterItemCheckbox = locate('span').before(filterToApply);
 
     I.waitForVisible(this.fields.filterBy, 30);
     I.fillField(this.fields.filterBy, filterName);
-    await I.asyncWaitFor(async () => {
-      I.click(this.buttons.refresh);
-
-      return await I.grabNumberOfVisibleElements(filterToApply);
-    }, 60);
+    I.waitForElement(filterToApply);
     I.forceClick(filterToApply);
+    I.waitForEnabled(filterItemCheckbox);
     I.waitForDetached(this.elements.spinner, 30);
     I.waitForElement(this.fields.filterBy, 30);
     // workaround for clearing the field completely
