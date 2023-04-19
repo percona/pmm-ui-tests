@@ -47,7 +47,7 @@ Scenario(
     // await pmmInventoryPage.verifyMetricsFlags(serviceName);
     const logs = await I.verifyCommand('docker exec pmm-server tail -n 100 /srv/logs/pmm-agent.log');
 
-    assert.ok((!logs.includes('rdsadmin') && !logs.includes('ERRO')), 'Logs contains errors about rdsadmin database being used!');
+    I.assertFalse(logs.includes('rdsadmin') && logs.includes('ERRO'), 'Logs contains errors about rdsadmin database being used!');
   },
 );
 
