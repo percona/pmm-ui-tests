@@ -1,5 +1,6 @@
 import { expect, Page } from '@playwright/test';
 import Table from '../../../components/table';
+import AgentsTable from './agentsTable';
 
 export interface ServiceDetails {
   serviceName: string;
@@ -25,6 +26,7 @@ export default class ServicesTable extends Table {
     port: (serviceName: string) => super.getTableElements().rowByText(serviceName).locator('td').nth(6),
     serviceStatuses: super.getTableElements().row.locator('//td[5]'),
     agentStatus: this.page.locator('//span[@data-testid="details-row-content"]//div[contains(@data-testid, "status-badge")]'),
+    rowMonitoring: super.getTableElements().row.locator('//td[5]').locator('//a'),
   };
 
   fields = {
@@ -42,7 +44,8 @@ export default class ServicesTable extends Table {
     serviceDashboard: this.dropdownMenu.locator('//span[text()="Dashboard"]'),
     qan: this.dropdownMenu.locator('//span[text()="QAN"]'),
     showRowDetails: (serviceName: string) => super.getTableElements().rowByText(serviceName).getByTestId('show-row-details'),
-    hideRowDetails: (serviceName: string) => super.getTableElements().rowByText(serviceName).getByTestId('hide-row-details')
+    hideRowDetails: (serviceName: string) => super.getTableElements().rowByText(serviceName).getByTestId('hide-row-details'),
+    showDetails: this.page.getByTestId('show-row-details'),
   };
 
   messages = {
@@ -65,5 +68,17 @@ export default class ServicesTable extends Table {
     for (let i = 0; i < numberOfServices; i++) {
       await expect(this.elements.serviceStatuses.nth(i)).toHaveText(expectedStatus);
     }
-  }
+  };
+
+  verifyAllServicesAgentsLabelsExcept = async (labelName: string, agentsException: string[]) => {
+    await this.elements.row.nth(0).waitFor({ state: 'visible' });
+    const services = await this.elements.row.count();
+    const agentsTable = new AgentsTable(this.page);
+    for (let index = 0; index < services; index++) {
+      await this.elements.rowMonitoring.nth(index).waitFor({ state: 'visible' });
+      await this.elements.rowMonitoring.nth(index).click();
+      await agentsTable.verifyAgentLabeVisibleForAgentsExcept(labelName, agentsException);
+      await agentsTable.buttons.goBackToServices.click();
+    }
+  };
 }

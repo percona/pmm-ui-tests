@@ -97,6 +97,27 @@ test.describe('Spec file for PMM inventory tests.', async () => {
     });
   });
 
+  test('PMM-T1226 Verify Agents has process_exec_path option on Inventory page @inventory @inventory-pre-upgrade @inventory-post-upgrade', async ({ page }) => {
+    test.skip(pmmVersion < 37, 'Test is for versions 2.37.0+');
+    const servicesPage = new ServicesPage(page);
+
+    await test.step('1. Navigate to the Inventory page.', async () => {
+      await page.goto(servicesPage.url);
+    });
+
+    await test.step('2. Verify agents have process_exec_path.', async () => {
+      await servicesPage.servicesTable.verifyAllServicesAgentsLabelsExcept(
+        'process_exec_path',
+        [
+          'Qan mysql perfschema agent',
+          'Qan mongodb profiler agent',
+          'Qan postgresql pgstatmonitor agent',
+          'Qan postgresql pgstatements agent',
+          'Pmm agent'
+        ]);
+    });
+  });
+
   test('PMM-T554 Check that all agents have status "RUNNING" @inventory @inventory-pre-upgrade @inventory-post-upgrade', async ({ page }) => {
     const servicesPage = new ServicesPage(page);
     const nodesPage = new NodesPage(page);
