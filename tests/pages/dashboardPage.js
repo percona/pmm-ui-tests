@@ -887,7 +887,7 @@ module.exports = {
     ],
   },
   victoriaMetricsAgentsOverviewDashboard: {
-    url: 'graph/d/vmagent/victoriametrics-agents-overview?orgId=1&refresh=1m',
+    url: 'graph/d/vmagent/victoriametrics-agents-overview?orgId=1&refresh=5m',
     metrics: [
       'Current Uptime',
       'Scraped Targets UP',
@@ -1217,6 +1217,8 @@ module.exports = {
   // introducing methods
   verifyMetricsExistence(metrics) {
     for (const i in metrics) {
+      I.waitForElement(this.graphsLocator(metrics[i]), 5);
+      I.scrollTo(this.graphsLocator(metrics[i]));
       I.waitForVisible(this.graphsLocator(metrics[i]), 5);
     }
   },
