@@ -127,7 +127,7 @@ test.describe('Spec file for PMM inventory tests.', async () => {
       description: 'PMM-T342 Verify pmm-server node cannot be removed from PMM Inventory page',
     }, {
       type: 'Also Covers',
-      description: 'PMM-T346 Verify Inventory page has pagination for all tabs',
+      description: 'PMM-T1346 Verify Inventory page has pagination for all tabs',
     });
 
     await test.step('1. Go to services page and and verify mysql database is present.', async () => {
