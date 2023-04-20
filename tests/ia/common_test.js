@@ -43,7 +43,8 @@ Scenario(
     };
 
     verifyTitle('Fired alerts');
-    iaCommon.openAndVerifyTab(iaCommon.tabNames.ruleTemplates, ruleTemplatesPage.buttons.openAddTemplateModal, ruleTemplatesPage.url);
+    iaCommon.openAndVerifyTab(iaCommon.tabNames.ruleTemplates, ruleTemplatesPage.buttons.openAddTemplateModal,
+      ruleTemplatesPage.url);
     verifyTitle('Alert rule templates');
     iaCommon.openAndVerifyTab(iaCommon.tabNames.alertRules, alertRulesPage.buttons.openAddRuleModal, alertRulesPage.url);
     verifyTitle('Alert rules');
