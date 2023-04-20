@@ -34,7 +34,6 @@ export default class AgentsTable extends Table {
     delete: this.page.getByText('Delete'),
     showRowDetails: (serviceName: string) => super.getTableElements().rowByText(serviceName).getByTestId('show-row-details'),
     hideRowDetails: (serviceName: string) => super.getTableElements().rowByText(serviceName).getByTestId('hide-row-details'),
-    proceed: this.page.getByText('Proceed'),
     showDetails: this.page.getByTestId('show-row-details'),
     hideDetails: this.page.getByTestId('hide-row-details'),
     goBackToServices: this.page.getByText('Go back to services'),

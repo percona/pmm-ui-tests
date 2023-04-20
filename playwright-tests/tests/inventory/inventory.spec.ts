@@ -40,10 +40,7 @@ test.describe('Spec file for PMM inventory tests.', async () => {
   let agentLocation: string[];
 
   test.beforeAll(async () => {
-    if (!pmmVersion) {
-      const versionString = (await apiHelper.getPmmVersion()).versionMinor;
-      pmmVersion = parseInt(versionString);
-    }
+    pmmVersion = (await api.pmm.serverV1.getPmmVersion()).minor;
   })
 
   test.beforeEach(async ({ page }) => {
@@ -136,7 +133,7 @@ test.describe('Spec file for PMM inventory tests.', async () => {
     });
 
     await test.step('2. Verify pagination on the services table.', async () => {
-      await servicesPage.servicesTable.verifyPagination(5);
+      await servicesPage.servicesTable.verifyPagination(4);
     });
 
     await test.step('3. Navigate to the mysql agents page.', async () => {
@@ -170,8 +167,8 @@ test.describe('Spec file for PMM inventory tests.', async () => {
     await test.step('5. Verify that pmm-server cannot be removed from the nodes table.', async () => {
       await nodesPage.nodesTable.buttons.selectNode('pmm-server').check({ force: true });
       await nodesPage.buttons.delete.click();
-      await nodesPage.nodesTable.buttons.force.check({ force: true });
-      await nodesPage.nodesTable.buttons.submit.click();
+      await nodesPage.confirmDeleteModal.buttons.force.check({ force: true });
+      await nodesPage.confirmDeleteModal.buttons.proceed.click();
       await nodesPage.toast.checkToastMessage(
         nodesPage.messages.pmmServerCannotBeRemoved,
         { variant: 'error' }
@@ -199,8 +196,8 @@ test.describe('Spec file for PMM inventory tests.', async () => {
     await test.step('3. Remove pmm agent.', async () => {
       await servicesPage.agentsTable.elements.checkbox('Pmm agent').check({ force: true });
       await servicesPage.agentsTable.buttons.delete.click();
-      await nodesPage.nodesTable.buttons.force.check({ force: true });
-      await servicesPage.agentsTable.buttons.proceed.click();
+      await nodesPage.confirmDeleteModal.buttons.force.check({ force: true });
+      await servicesPage.confirmDeleteModal.buttons.proceed.click();
       await servicesPage.toast.checkToastMessage(servicesPage.agentsTable.messages.successfullyDeleted(1));
       await expect(servicesPage.elements.noDataTable).toHaveText(servicesPage.agentsTable.messages.noAgents);
     });
@@ -223,36 +220,29 @@ test.describe('Spec file for PMM inventory tests.', async () => {
   });
 
   test('PMM-T343 Verify agent can be removed on PMM Inventory page @inventory @inventory-pre-upgrade @inventory-post-upgrade', async ({ page }) => {
-    if (pmmVersion >= 36) {
-      const servicesPage = new ServicesPage(page);
+    test.skip(pmmVersion < 37, 'Test is for versions 2.37.0+');
+    const servicesPage = new ServicesPage(page);
 
-      await test.step('1. Go to services page and and verify mysql database is present.', async () => {
-        await page.goto(servicesPage.url);
-        await servicesPage.servicesTable.elements.rowByText(psLocalService.serviceName).waitFor({ state: 'visible' });
-      });
+    await test.step('1. Go to services page and and verify mysql database is present.', async () => {
+      await page.goto(servicesPage.url);
+      await servicesPage.servicesTable.elements.rowByText(psLocalService.serviceName).waitFor({ state: 'visible' });
+    });
 
-      await test.step('2. Select MySql options and verify all agents are running.', async () => {
-        await servicesPage.servicesTable.buttons.showRowDetails(psLocalService.serviceName).click();
-        await expect(servicesPage.servicesTable.elements.agentStatus).toHaveText('4/4 running');
-      });
+    await test.step('2. Select MySql options and verify all agents are running.', async () => {
+      await servicesPage.servicesTable.buttons.showRowDetails(psLocalService.serviceName).click();
+      await expect(servicesPage.servicesTable.elements.agentStatus).toHaveText('4/4 running');
+    });
 
-      await test.step('3. Navigate to the agents, and delete mysql exporter.', async () => {
-        await servicesPage.servicesTable.elements.agentStatus.click();
-        await servicesPage.agentsTable.elements.checkbox('Mysqld exporter').check({ force: true });
-        await servicesPage.agentsTable.buttons.delete.click();
-        await servicesPage.agentsTable.buttons.proceed.click();
-        await servicesPage.toast.checkToastMessage(servicesPage.agentsTable.messages.successfullyDeleted(1));
-        await servicesPage.buttons.goBackToServices.click();
-        await servicesPage.servicesTable.buttons.showRowDetails(psLocalService.serviceName).click();
-        await expect(servicesPage.servicesTable.elements.agentStatus).toHaveText('3/3 running');
-      });
-
-    } else {
-      test.info().annotations.push({
-        type: 'Old Version ',
-        description: 'This test is for PMM version 2.37.0 and higher',
-      });
-    }
+    await test.step('3. Navigate to the agents, and delete mysql exporter.', async () => {
+      await servicesPage.servicesTable.elements.agentStatus.click();
+      await servicesPage.agentsTable.elements.checkbox('Mysqld exporter').check({ force: true });
+      await servicesPage.agentsTable.buttons.delete.click();
+      await servicesPage.confirmDeleteModal.buttons.proceed.click();
+      await servicesPage.toast.checkToastMessage(servicesPage.agentsTable.messages.successfullyDeleted(1));
+      await servicesPage.buttons.goBackToServices.click();
+      await servicesPage.servicesTable.buttons.showRowDetails(psLocalService.serviceName).click();
+      await expect(servicesPage.servicesTable.elements.agentStatus).toHaveText('3/3 running');
+    });
   });
 
   test('PMM-T1671 Verify PMM Inventory redesign : Add service button @inventory @inventory-post-upgrade', async ({ page }) => {
@@ -277,6 +267,11 @@ test.describe('Spec file for PMM inventory tests.', async () => {
     const nodesPage = new NodesPage(page);
     let nodeDetails: NodeDetails = {};
 
+    test.info().annotations.push({
+      type: 'Also Covers',
+      description: 'PMM-T340 Verify node with agents, services can be removed on PMM Inventory page',
+    });
+
     await test.step('1. Verify navigation to the Inventory Nodes page.', async () => {
       await page.goto(servicesPage.url);
       await servicesPage.buttons.nodesTab.click();
@@ -293,15 +288,15 @@ test.describe('Spec file for PMM inventory tests.', async () => {
       await nodesPage.nodesTable.buttons.selectNode(nodeDetails.nodeName).check({ force: true });
       await expect(nodesPage.buttons.delete).toBeEnabled();
       await nodesPage.buttons.delete.click();
-      await expect(nodesPage.nodesTable.elements.modalHeader).toHaveText(nodesPage.nodesTable.messages.confirmNodeDeleteHeader());
-      await nodesPage.nodesTable.buttons.submit.click();
+      await expect(nodesPage.confirmDeleteModal.elements.modalHeader).toHaveText(nodesPage.confirmDeleteModal.messages.confirmNodeDeleteHeader());
+      await nodesPage.confirmDeleteModal.buttons.proceed.click();
       await nodesPage.toast.checkToastMessage(nodesPage.nodesTable.messages.hasAgents(nodeDetails.nodeId).replace('\n', ''), { variant: 'error' });
     });
 
     await test.step('4. Force delete the node.', async () => {
       await nodesPage.buttons.delete.click();
-      await nodesPage.nodesTable.buttons.force.check({ force: true });
-      await nodesPage.nodesTable.buttons.submit.click();
+      await nodesPage.confirmDeleteModal.buttons.force.check({ force: true });
+      await nodesPage.confirmDeleteModal.buttons.proceed.click();
       await nodesPage.toast.checkToastMessage(
         nodesPage.nodesTable.messages.nodesSuccessfullyDeleted(1),
         { variant: 'success', assertionTimeout: Duration.OneSecond }
@@ -318,7 +313,11 @@ test.describe('Spec file for PMM inventory tests.', async () => {
       await cli.pmmClientCommands.startAgent();
       await page.waitForTimeout(5000);
       const mongoAddress = process.env.CI ? '127.0.0.1' : containers.find((container: string | string[]) => container.includes('mo-integration'));
-      await cli.pmmClientCommands.addMongoDb({ address: mongoAddress || '' });
+      const psAddress = process.env.CI ? '127.0.0.1' : containers.find((container: string | string[]) => container.includes('ps_integration_'));
+      const pdpgsqlAddress = process.env.CI ? '127.0.0.1' : containers.find((container: string | string[]) => container.includes('pdpgsql-integration-'));
+      await cli.pmmClientCommands.addMongoDb({ address: mongoAddress || '', name: mongoAddress || '' });
+      await cli.pmmClientCommands.addMySql({ address: psAddress || '', name: psAddress || '' });
+      await cli.pmmClientCommands.addPgSql({ address: pdpgsqlAddress || '', name: pdpgsqlAddress || '' });
     });
   });
 
@@ -392,6 +391,37 @@ test.describe('Spec file for PMM inventory tests.', async () => {
       await cli.pmmClientCommands.moveFile(
         '/usr/local/percona/pmm2/exporters/mongodb_exporter_error',
         '/usr/local/percona/pmm2/exporters/mongodb_exporter');
+    });
+  });
+
+  test('PMM-T339 Verify MySQL service is removed on PMM Inventory page @inventory @inventory-post-upgrade', async ({ page }) => {
+    test.skip(pmmVersion < 37, 'Test is for versions 2.37.0+');
+    const servicesPage = new ServicesPage(page);
+    let serviceId: string;
+
+    await test.step('1. Navigate to the Inventory page".', async () => {
+      await page.goto(servicesPage.url);
+    });
+
+    await test.step('2. Get Service id for the MySql service.', async () => {
+      const services = await api.pmm.managementV1.listServices();
+      serviceId = services.services.find((service: any) => service.service_name.includes(psLocalService.serviceName)).service_id;
+      console.log(serviceId);
+    });
+
+    await test.step('3. Select MySql service and try to delete.', async () => {
+      await servicesPage.servicesTable.buttons.selectService(psLocalService.serviceName).check({ force: true });
+      await servicesPage.buttons.delete.click();
+      await servicesPage.confirmDeleteModal.buttons.proceed.click();
+      await servicesPage.toast.checkToastMessage(servicesPage.confirmDeleteModal.messages.serviceHasAgents(serviceId));
+    });
+
+    await test.step('4. Force Delete MySql service.', async () => {
+      await servicesPage.buttons.delete.click();
+      await servicesPage.confirmDeleteModal.buttons.force.check({ force: true });
+      await servicesPage.confirmDeleteModal.buttons.proceed.click();
+      await servicesPage.toast.checkToastMessage(servicesPage.servicesTable.messages.successfullyDeleted(1));
+      await servicesPage.servicesTable.elements.rowByText(psLocalService.serviceName).waitFor({ state: 'detached' });
     });
   });
 });

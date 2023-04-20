@@ -46,10 +46,12 @@ export default class ServicesTable extends Table {
     showRowDetails: (serviceName: string) => super.getTableElements().rowByText(serviceName).getByTestId('show-row-details'),
     hideRowDetails: (serviceName: string) => super.getTableElements().rowByText(serviceName).getByTestId('hide-row-details'),
     showDetails: this.page.getByTestId('show-row-details'),
+    selectService: (serviceName: string) => super.getTableElements().rowByText(serviceName).locator('//input[contains(@id, "input-table-select")]'),
   };
 
   messages = {
     ...super.getTableMessages(),
+    successfullyDeleted: (number: number) => `${number} of ${number} services successfully deleted`,
   };
 
   links = {
