@@ -864,6 +864,7 @@ Scenario(
   async ({ I, pmmInventoryPage }) => {
     for (const service of Object.values(remoteInstancesHelper.upgradeServiceNames)) {
       if (service) {
+        console.log(`Test for service ${service.service}`);
         I.amOnPage(pmmInventoryPage.url);
         await I.scrollPageToBottom();
         await pmmInventoryPage.verifyAgentHasStatusRunning(service);
