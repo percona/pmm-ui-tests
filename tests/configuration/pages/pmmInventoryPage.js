@@ -89,7 +89,7 @@ module.exports = {
     const serviceId = await this.getServiceId(service_name);
 
     await inventoryAPI.waitForRunningState(serviceId);
-    I.scrollIntoView(this.fields.showServiceDetails(service_name));
+    await I.scrollTo(this.fields.showServiceDetails(service_name));
     await I.click(this.fields.showServiceDetails(service_name));
     I.click(this.fields.agentsLinkNew);
     // I.waitForElement(this.fields.pmmAgentLocator, 60);
