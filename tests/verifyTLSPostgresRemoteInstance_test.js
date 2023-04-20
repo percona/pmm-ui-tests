@@ -3,6 +3,8 @@ const assert = require('assert');
 const { adminPage } = inject();
 const pmmFrameworkLoader = `bash ${adminPage.pathToFramework}`;
 const pathToPMMFramework = adminPage.pathToPMMTests;
+// const pmmFrameworkLoader = '/media/sf_work/PMM/pmm-qa/pmm-tests/pmm-framework.sh';
+// const pathToPMMFramework = '/media/sf_work/PMM/pmm-qa/pmm-tests/';
 
 Feature('Monitoring SSL/TLS PGSQL instances');
 
@@ -28,59 +30,85 @@ AfterSuite(async ({ I }) => {
   await I.verifyCommand('docker stop pgsql_14 || docker rm pgsql_14');
 });
 
-Before(async ({ I, settingsAPI }) => {
+Before(async ({ I }) => {
   await I.Authorize();
 });
 
 Data(instances).Scenario(
-  'PMM-T948 PMM-T947 Verify Adding SSL services remotely @ssl @ssl-postgres @ssl-remote @not-ui-pipeline',
+  'New debug Max Query Length'
+  + ' @max-length @ssl @ssl-remote @ssl-postgres @not-ui-pipeline',
   async ({
-    I, remoteInstancesPage, pmmInventoryPage, current, inventoryAPI,
+    I, remoteInstancesPage, pmmInventoryPage, qanPage, qanOverview, inventoryAPI, grafanaAPI, current,
   }) => {
     const {
-      serviceName, serviceType, version, container,
+      serviceName, serviceType, version, container, maxQueryLength,
     } = current;
-    let details;
     const remoteServiceName = `remote_${serviceName}`;
-
-    if (serviceType === 'postgres_ssl') {
-      details = {
-        serviceName: remoteServiceName,
-        serviceType,
-        port: '5432',
-        database: 'postgres',
-        host: container,
-        username: 'pmm',
-        password: 'pmm',
-        cluster: 'pgsql_remote_cluster',
-        environment: 'pgsql_remote_cluster',
-        tlsCAFile: `${pathToPMMFramework}tls-ssl-setup/postgres/${version}/ca.crt`,
-        tlsKeyFile: `${pathToPMMFramework}tls-ssl-setup/postgres/${version}/client.pem`,
-        tlsCertFile: `${pathToPMMFramework}tls-ssl-setup/postgres/${version}/client.crt`,
-      };
-    }
+    const details = {
+      serviceName: remoteServiceName,
+      serviceType,
+      port: '5432',
+      database: 'postgres',
+      host: container,
+      username: 'pmm',
+      password: 'pmm',
+      cluster: 'pgsql_remote_cluster',
+      environment: 'pgsql_remote_cluster',
+      tlsCAFile: `${pathToPMMFramework}tls-ssl-setup/postgres/${version}/ca.crt`,
+      tlsKeyFile: `${pathToPMMFramework}tls-ssl-setup/postgres/${version}/client.pem`,
+      tlsCertFile: `${pathToPMMFramework}tls-ssl-setup/postgres/${version}/client.crt`,
+      maxQueryLength: `${maxQueryLength}`,
+    };
 
     I.amOnPage(remoteInstancesPage.url);
     remoteInstancesPage.waitUntilRemoteInstancesPageLoaded();
     remoteInstancesPage.openAddRemotePage(serviceType);
     await remoteInstancesPage.addRemoteSSLDetails(details);
     I.click(remoteInstancesPage.fields.addService);
+
+    // there is no message on success, ut there is on fail and need to report it
+    // eslint-disable-next-line no-undef
+    if (!await tryTo(() => I.waitInUrl(pmmInventoryPage.servicesUrl, 2))) {
+      I.verifyPopUpMessage('success', 1);
+    }
+
+    // Base check: Service exists and running
     await inventoryAPI.verifyServiceExistsAndHasRunningStatus(
-      {
-        serviceType: 'POSTGRESQL_SERVICE',
-        service: 'postgresql',
-      },
+      { serviceType: 'POSTGRESQL_SERVICE', service: 'postgresql' },
       serviceName,
     );
-
-    // Check Remote Instance also added and have running status
+    I.waitForVisible(pmmInventoryPage.fields.agentsLink, 30);
     pmmInventoryPage.verifyRemoteServiceIsDisplayed(remoteServiceName);
+    const serviceId = await pmmInventoryPage.getServiceId(remoteServiceName);
+
     await pmmInventoryPage.verifyAgentHasStatusRunning(remoteServiceName);
+
+    // Main check: correct max_query_length option displayed in Agent's details
+    if (maxQueryLength !== '') {
+      await pmmInventoryPage.checkAgentOtherDetailsSection('max_query_length:', `max_query_length: ${maxQueryLength}`, remoteServiceName, serviceId);
+    } else {
+      await pmmInventoryPage.checkAgentOtherDetailsMissing('max_query_length:', serviceId);
+    }
+
+    // Main check: Query label is cut of by max_query_length option on QAN Page
+    // I.amOnPage(I.buildUrlWithParams(qanPage.clearUrl, { from: 'now-5m', service_name: remoteServiceName }));
+    I.amOnPage(I.buildUrlWithParams(qanPage.clearUrl, { from: 'now-5m' }));
+    qanOverview.waitForOverviewLoaded();
+    await qanFilters.applyFilter(remoteServiceName);
+    qanOverview.waitForOverviewLoaded();
+    const queryFromRow = await qanOverview.getQueryFromRow(1);
+
+    if (maxQueryLength !== '' && maxQueryLength !== '-1') {
+      I.assertLengthOf(queryFromRow, parseInt(maxQueryLength, 10), `Query "${queryFromRow}" length does not match expected: ${maxQueryLength}`);
+    } else {
+      // any "SELECT" query be longer then 6 without "max_query_length" option applied
+      I.assertTrue(queryFromRow.length >= 6, `Query length is equal to ${queryFromRow.length} which is less than minimal possible length`);
+    }
   },
 );
 
 Data(instances).Scenario(
-  'Verify metrics from SSL instances on PMM-Server @ssl @ssl-postgres @ssl-remote @not-ui-pipeline',
+  'Verify metrics from SSL instances on PMM-Server @ssl @ssl-remote @not-ui-pipeline',
   async ({
     I, remoteInstancesPage, pmmInventoryPage, current, grafanaAPI,
   }) => {
@@ -183,12 +211,13 @@ Data(instances).Scenario(
     const serviceList = [serviceName, `remote_${serviceName}`];
 
     for (const service of serviceList) {
-      I.amOnPage(qanPage.url);
-      qanOverview.waitForOverviewLoaded();
-      await adminPage.applyTimeRange('Last 12 hours');
-      qanOverview.waitForOverviewLoaded();
-      qanFilters.waitForFiltersToLoad();
-      await qanFilters.applySpecificFilter(service);
+      I.amOnPage(I.buildUrlWithParams(qanPage.clearUrl, { from: 'now-12h', service_name: service }));
+      // I.amOnPage(qanPage.url);
+      // qanOverview.waitForOverviewLoaded();
+      // await adminPage.applyTimeRange('Last 12 hours');
+      // qanOverview.waitForOverviewLoaded();
+      // qanFilters.waitForFiltersToLoad();
+      // await qanFilters.applySpecificFilter(service);
       qanOverview.waitForOverviewLoaded();
       const count = await qanOverview.getCountOfItems();
 
@@ -267,3 +296,73 @@ Data(instances).Scenario(
     }
   },
 );
+
+// Data(instances).Scenario(
+//   '@PMM-T948 @PMM-T947 @PMM-T1388 @PMM-T1426 Verify remote PostgreSQL can be added with specified Max Query Length'
+//   + ' @max-length @ssl @ssl-remote @not-ui-pipeline',
+//   async ({
+//     I, remoteInstancesPage, pmmInventoryPage, qanPage, qanOverview, qanFilters, qanDetails, inventoryAPI, current,
+//   }) => {
+//     const {
+//       serviceName, serviceType, version, container, maxQueryLength,
+//     } = current;
+//     let details;
+//     const remoteServiceName = `MaxQueryLenth_remote_${serviceName}`;
+//
+//     if (serviceType === 'postgres_ssl') {
+//       details = {
+//         serviceName: remoteServiceName,
+//         serviceType,
+//         port: '5432',
+//         database: 'postgres',
+//         host: container,
+//         username: 'pmm',
+//         password: 'pmm',
+//         cluster: 'pgsql_remote_cluster',
+//         environment: 'pgsql_remote_cluster',
+//         tlsCAFile: `${pathToPMMFramework}tls-ssl-setup/postgres/${version}/ca.crt`,
+//         tlsKeyFile: `${pathToPMMFramework}tls-ssl-setup/postgres/${version}/client.pem`,
+//         tlsCertFile: `${pathToPMMFramework}tls-ssl-setup/postgres/${version}/client.crt`,
+//       };
+//     }
+//
+//     I.amOnPage(remoteInstancesPage.url);
+//     remoteInstancesPage.waitUntilRemoteInstancesPageLoaded();
+//     remoteInstancesPage.openAddRemotePage(serviceType);
+//     await remoteInstancesPage.addRemoteSSLDetails(details);
+//     I.fillField(remoteInstancesPage.fields.maxQueryLength, maxQueryLength);
+//     I.click(remoteInstancesPage.fields.addService);
+//
+//     // Check Remote Instance also added and have running status
+//     pmmInventoryPage.verifyRemoteServiceIsDisplayed(remoteServiceName);
+//     await pmmInventoryPage.verifyAgentHasStatusRunning(remoteServiceName);
+//
+//     // Main check: correct max_query_length option displayed in Agent's details
+//     if (maxQueryLength !== '') {
+//       await pmmInventoryPage.checkAgentOtherDetailsSection('max_query_length:', `max_query_length: ${maxQueryLength}`, remoteServiceName, serviceId);
+//     } else {
+//       await pmmInventoryPage.checkAgentOtherDetailsMissing('max_query_length:', serviceId);
+//     }
+//
+//     // Check max visible query length is less than max_query_length option
+//     // Main check: Query label is cut of by max_query_length option on QAN Page
+//     // I.amOnPage(I.buildUrlWithParams(qanPage.clearUrl, { from: 'now-5m', service_name: remoteServiceName, search: 'SELECT' }));
+//     // I.wait(30);
+//     // I.amOnPage(I.buildUrlWithParams(qanPage.clearUrl, { from: 'now-5m', service_name: remoteServiceName }));
+//     // I.waitForElement(qanOverview.elements.querySelector, 30);
+//     // const queryFromRow = await qanOverview.getQueryFromRow(1);
+//
+//     I.amOnPage(I.buildUrlWithParams(qanPage.clearUrl, { from: 'now-5m' }));
+//     qanOverview.waitForOverviewLoaded();
+//     await qanFilters.applyFilter(remoteServiceName);
+//     I.waitForElement(qanOverview.elements.querySelector, 30);
+//     const queryFromRow = await qanOverview.getQueryFromRow(1);
+//
+//     if (maxQueryLength !== '' && maxQueryLength !== '-1') {
+//       I.assertLengthOf(queryFromRow, parseInt(maxQueryLength, 10), `Query "${queryFromRow}" length does not match expected: ${maxQueryLength}`);
+//     } else {
+//       // any "SELECT" query be longer then 6 without "max_query_length" option applied
+//       I.assertTrue(queryFromRow.length >= 6, `Query length is equal to ${queryFromRow.length} which is less than minimal possible length`);
+//     }
+//   },
+// );

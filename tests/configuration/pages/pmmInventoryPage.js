@@ -5,6 +5,7 @@ const agentsTab = require('./agentsTab');
 
 module.exports = {
   url: 'graph/inventory?orgId=1',
+  servicesUrl: '/graph/inventory/services',
   fields: {
     agentsLink: locate('[role="tablist"] a').withText('Agents').withAttr({ 'aria-label': 'Tab Agents' }),
     agentsLinkOld: locate('a').withText('Agents'),
@@ -82,6 +83,7 @@ module.exports = {
     I.see(serviceName, this.fields.inventoryTableColumn);
   },
 
+  // TODO: extract page open action - navigation must be dedicated action or method
   async verifyAgentHasStatusRunning(service_name) {
     const serviceId = await this.getServiceId(service_name);
     const agentLinkLocator = this.fields.agentsLink;
@@ -130,7 +132,7 @@ module.exports = {
     const locator = locate('span').withText(detailsSection).after(locate('span').withText(`service_id: ${serviceId}`));
     const details = await I.grabTextFrom(locator);
 
-    assert.ok(expectedResult === details, `Infomation '${expectedResult}' for service '${serviceName}' is missing!`);
+    I.assertEqual(expectedResult, details, `Information '${expectedResult}' for service '${serviceName}' is missing!`);
   },
 
   async checkAgentOtherDetailsMissing(detailsSection, serviceId) {

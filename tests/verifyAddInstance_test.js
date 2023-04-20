@@ -10,6 +10,6 @@ Scenario(
   'PMM-T1106 - Verify the name RDS button on Add instance page @instances',
   async ({ I, addInstancePage }) => {
     addInstancePage.open();
-    I.waitForVisible(addInstancePage.fields.addAmazonRDSbtn, 30);
+    I.waitForVisible(addInstancePage.elements.addAmazonRDSbtn, 30);
   },
 );

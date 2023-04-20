@@ -1,6 +1,3 @@
-const assert = require('assert');
-const { qanFilters } = require('../remoteInstances/remoteInstancesHelper');
-
 Feature('QAN common').retry(1);
 
 Before(async ({ I, qanPage }) => {
@@ -46,12 +43,12 @@ Scenario(
     let overviewValue = await I.grabTextFrom(qanOverview.getCellValueLocator(1, 2));
     let detailsValue = await I.grabTextFrom(qanDetails.getMetricsCellLocator('Query Count', 2));
 
-    assert.ok(overviewValue === detailsValue, `Query Count value in Overview and Detail should match. Overview:'${overviewValue}'!=Detail:'${detailsValue}'`);
+    I.assertEqual(overviewValue, detailsValue, `Query Count value in Overview and Detail should match. Overview:'${overviewValue}'!=Detail:'${detailsValue}'`);
 
     overviewValue = await I.grabTextFrom(qanOverview.getCellValueLocator(1, 3));
     detailsValue = await I.grabTextFrom(qanDetails.getMetricsCellLocator('Query Time', 4));
 
-    assert.ok(overviewValue === detailsValue, `Query Time value in Overview and Detail should match. Overview:'${overviewValue}'!=Detail:'${detailsValue}'`);
+    I.assertEqual(overviewValue, detailsValue, `Query Time value in Overview and Detail should match. Overview:'${overviewValue}'!=Detail:'${detailsValue}'`);
   },
 );
 

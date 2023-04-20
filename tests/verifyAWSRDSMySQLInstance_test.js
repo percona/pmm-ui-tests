@@ -12,7 +12,7 @@ Scenario(
     const instanceIdToMonitor = remoteInstancesPage.mysql57rds['Service Name'];
 
     I.amOnPage(remoteInstancesPage.url);
-    remoteInstancesPage.waitUntilRemoteInstancesPageLoaded().openAddAWSRDSMySQLPage();
+    remoteInstancesPage.waitUntilRemoteInstancesPageLoaded().openAddAmazonRdsPage();
     remoteInstancesPage.discoverRDS();
     remoteInstancesPage.verifyInstanceIsDiscovered(instanceIdToMonitor);
     remoteInstancesPage.startMonitoringOfInstance(instanceIdToMonitor);
@@ -29,7 +29,7 @@ xScenario(
   'Verify RDS allows discovery without credentials @instances',
   async ({ I, remoteInstancesPage }) => {
     I.amOnPage(remoteInstancesPage.url);
-    remoteInstancesPage.waitUntilRemoteInstancesPageLoaded().openAddAWSRDSMySQLPage();
+    remoteInstancesPage.waitUntilRemoteInstancesPageLoaded().openAddAmazonRdsPage();
     remoteInstancesPage.discoverRDSWithoutCredentials();
   },
 ).retry(1);
