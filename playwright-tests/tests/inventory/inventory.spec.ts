@@ -206,6 +206,8 @@ test.describe('Spec file for PMM inventory tests.', async () => {
       const pmmAgentProcessId = await cli.pmmClientCommands.getProcessId('pmm-agent');
       await cli.pmmClientCommands.killProcess(pmmAgentProcessId.stdout);
       const nodes = await api.pmm.inventoryV1.listNodes();
+      console.log('Available nodes are: ');
+      console.log(nodes);
       await cli.pmmClientCommands.forceSetupAgent({ name: nodes.container![0].node_name, address: nodes.container![0].address, type: 'container' });
       await cli.pmmClientCommands.startAgent();
       await page.waitForTimeout(5000);
