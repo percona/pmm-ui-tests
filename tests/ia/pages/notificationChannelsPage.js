@@ -44,7 +44,8 @@ module.exports = {
     skipTlsVerifyFieldLabel: '$skipVerify-field-label',
   },
   buttons: {
-    openAddChannelModal: '$notification-channel-add-modal-button',
+    // openAddChannelModal: '$notification-channel-add-modal-button',
+    newPolicy: locate('button').find('span').withText('New specific policy'),
     closeModal: '$modal-close-button',
     addChannel: '$notification-channel-add-button',
     cancelAdding: '$notification-channel-cancel-button',

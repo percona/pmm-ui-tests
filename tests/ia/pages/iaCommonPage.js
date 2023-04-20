@@ -5,12 +5,26 @@ const {
 } = inject();
 
 module.exports = {
-  url: 'graph/integrated-alerting',
+  url: {
+    firedAlerts: 'graph/alerting/alerts',
+    ruleTemplates: 'graph/alerting/alert-rule-templates',
+    alertRules: 'graph/alerting/list',
+    contactPoints: 'graph/alerting/notifications',
+    notificationPolicies: 'graph/alerting/routes',
+    silences: 'graph/alerting/silences',
+    alertGroups: 'graph/alerting/groups',
+    admin: 'graph/alerting/admin',
+
+  },
   tabNames: {
-    alerts: 'Alerts',
-    alertRules: 'Alert Rules',
-    ruleTemplates: 'Alert Rule Templates',
-    notificationChannels: 'Notification Channels',
+    firedAlerts: 'Fired alerts',
+    ruleTemplates: 'Alert rule templates',
+    alertRules: 'Alert rules',
+    contactPoints: 'Contact points',
+    notificationPolicies: 'Notification policies',
+    silences: 'Silences',
+    alertGroups: 'Alert groups',
+    admin: 'Admin',
   },
   elements: {
     noData: locate('$table-no-data').find('h1'),
@@ -35,18 +49,18 @@ module.exports = {
   },
   messages: {
     itemsShown: (leftNumber, rightNumber, totalItems) => `Showing ${leftNumber}-${rightNumber} of ${totalItems} items`,
-    disabledIa: 'Integrated Alerting is disabled. You can enable it in  \n'
+    disabledIa: 'Percona Alerting is disabled. You can enable it in  \n'
       + 'PMM Settings.',
   },
 
   openTab(tabName) {
     I.waitForVisible(this.elements.tab(tabName), 30);
     I.click(this.elements.tab(tabName));
-    if (tabName === this.tabNames.ruleTemplates) {
-      I.waitForVisible(this.elements.table, 30);
-    } else {
-      I.waitForVisible(this.elements.noData, 30);
-    }
+    // if (tabName === this.tabNames.ruleTemplates) {
+    //   I.waitForVisible(this.elements.table, 30);
+    // } else {
+    //   I.waitForVisible(this.elements.noData, 30);
+    // }
   },
 
   getCreateEntitiesAndPageUrl(page) {
@@ -114,11 +128,5 @@ module.exports = {
     const className = await I.grabAttributeFrom(this.elements.tab(tabName), 'class');
 
     assert.ok(className.endsWith('activeTabStyle'), `Tab ${tabName} should be active`);
-  },
-
-  checkBreadcrumbText(text, locator) {
-    const breadcrumbSectionText = ` / ${text}`;
-
-    I.seeTextEquals(breadcrumbSectionText, locator);
   },
 };
