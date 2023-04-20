@@ -5,17 +5,6 @@ const {
 } = inject();
 
 module.exports = {
-  url: {
-    firedAlerts: 'graph/alerting/alerts',
-    ruleTemplates: 'graph/alerting/alert-rule-templates',
-    alertRules: 'graph/alerting/list',
-    contactPoints: 'graph/alerting/notifications',
-    notificationPolicies: 'graph/alerting/routes',
-    silences: 'graph/alerting/silences',
-    alertGroups: 'graph/alerting/groups',
-    admin: 'graph/alerting/admin',
-
-  },
   tabNames: {
     firedAlerts: 'Fired alerts',
     ruleTemplates: 'Alert rule templates',
