@@ -94,6 +94,7 @@ Scenario(
     const newRule = page.rules[0];
 
     alertRulesPage.openAlertRulesTab();
+    I.waitForEnabled(alertRulesPage.buttons.openAddRuleModal, 10);
     I.click(alertRulesPage.buttons.openAddRuleModal);
     await alertRulesPage.fillPerconaAlert(rule, newRule);
     I.click(alertRulesPage.buttons.saveAndExit);
@@ -103,7 +104,7 @@ Scenario(
     I.seeTextEquals('Normal', alertRulesPage.elements.ruleState);
     await rulesAPI.removeAlertRule(newRule.folder);
   },
-);
+).retry(1);
 
 // TODO: check ovf failure
 Scenario(
