@@ -36,9 +36,10 @@ Scenario(
     };
 
     I.amOnPage(alertsPage.url);
+    // give title time to change from 'Grafana'
+    I.wait(10);
     // PMM-T776
     const verifyTitle = (page) => {
-      I.waitForDetached(locate('title').withText('Grafana'), 10);
       I.seeTitleEquals(`${page} - Alerting - Percona Monitoring and Management`);
     };
 

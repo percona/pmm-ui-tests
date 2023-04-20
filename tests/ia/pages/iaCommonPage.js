@@ -38,6 +38,7 @@ module.exports = {
     disabledIa: 'Percona Alerting is disabled. You can enable it in  \n'
       + 'PMM Settings.',
   },
+  
   /**
    * @param  {} tabName
    * @param  {} tabElement  - element (locator) that exist in tab
