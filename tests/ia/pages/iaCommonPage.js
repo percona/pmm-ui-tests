@@ -17,12 +17,9 @@ module.exports = {
   },
   elements: {
     noData: locate('$table-no-data').find('h1'),
-    pagination: '$pagination',
-    itemsShown: '$pagination-items-inverval',
     rowInTable: locate('$table-tbody').find('tr'),
     tab: (tabName) => locate('[role="tablist"] a').withAttr({ 'aria-label': `Tab ${tabName}` }),
     table: '$table-tbody',
-    breadcrumbActive: locate('$breadcrumb-section').last(),
     disabledIa: '$empty-block',
     settingsLink: '$settings-link',
   },
