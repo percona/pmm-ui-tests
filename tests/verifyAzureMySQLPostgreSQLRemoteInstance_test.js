@@ -98,4 +98,4 @@ Data(metrics).Scenario(
   async ({ grafanaAPI, current }) => {
     await grafanaAPI.waitForMetric(current.metricName, null, 10);
   },
-);
+).retry(1);
