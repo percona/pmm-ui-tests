@@ -2,7 +2,7 @@ const { I } = inject();
 const assert = require('assert');
 
 module.exports = {
-  url: 'graph/integrated-alerting/notification-channels',
+  url: 'graph/alerting/routes',
   types: {
     email: {
       name: 'Email Channel',

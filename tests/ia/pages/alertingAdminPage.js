@@ -2,11 +2,11 @@ const assert = require('assert');
 const { I } = inject();
 
 module.exports = {
-  url: '/graph/alerting/silences',
+  url: 'graph/alerting/admin',
   elements: {
+    configTextarea: `textarea[id='configuration']`,
   },
   buttons: {
-    newSilence: locate('a').find('span').withText('New silence'),
   },
   messages: {
   },

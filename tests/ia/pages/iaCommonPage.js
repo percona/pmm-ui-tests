@@ -52,15 +52,20 @@ module.exports = {
     disabledIa: 'Percona Alerting is disabled. You can enable it in  \n'
       + 'PMM Settings.',
   },
-
-  openTab(tabName) {
+  /**
+   * @param  {} tabName
+   * @param  {} tabElement  - element (locator) that exist in tab
+   * @param  {} tabUrl - expected url in tab
+   */
+  async openAndVerifyTab(tabName, tabElement, tabUrl) {
     I.waitForVisible(this.elements.tab(tabName), 30);
     I.click(this.elements.tab(tabName));
-    // if (tabName === this.tabNames.ruleTemplates) {
-    //   I.waitForVisible(this.elements.table, 30);
-    // } else {
-    //   I.waitForVisible(this.elements.noData, 30);
-    // }
+    I.waitForVisible(tabElement, 10);
+    I.seeInCurrentUrl(tabUrl);
+
+    const className = await I.grabAttributeFrom(this.elements.tab(tabName), 'class');
+
+    assert.ok(className.endsWith('activeTabStyle'), `Tab ${tabName} should be active`);
   },
 
   getCreateEntitiesAndPageUrl(page) {
@@ -122,11 +127,5 @@ module.exports = {
 
   shouldBeDisabled(value) {
     return value === 'disabled' ? { disabled: true } : { disabled: null };
-  },
-
-  async verifyTabIsActive(tabName) {
-    const className = await I.grabAttributeFrom(this.elements.tab(tabName), 'class');
-
-    assert.ok(className.endsWith('activeTabStyle'), `Tab ${tabName} should be active`);
   },
 };

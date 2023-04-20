@@ -2,11 +2,11 @@ const assert = require('assert');
 const { I } = inject();
 
 module.exports = {
-  url: '/graph/alerting/silences',
+  url: 'graph/alerting/groups',
   elements: {
+    groupByContainer: '$group-by-container',
   },
   buttons: {
-    newSilence: locate('a').find('span').withText('New silence'),
   },
   messages: {
   },

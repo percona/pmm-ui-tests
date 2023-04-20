@@ -1,22 +1,19 @@
-Feature('IA: Navigation, breadcrumb').retry(1);
+const { settingsAPI, iaCommon, alertsPage } = inject();
 
-Before(async ({
-  I, channelsAPI, settingsAPI, rulesAPI, templatesAPI,
-}) => {
+Feature('IA: Tabs and navigation');
+
+Before(async ({ I, rulesAPI }) => {
   await I.Authorize();
-//   await settingsAPI.apiEnableIA();
-//   await rulesAPI.clearAllRules(true);
-//   await templatesAPI.clearAllTemplates();
-//   await channelsAPI.clearAllNotificationChannels();
+  await rulesAPI.removeAllAlertRules();
 });
 
 Scenario(
-  'PMM-T643 Verify message about disabled IA @ia @grafana-pr',
+  'PMM-T643 Verify message about disabled IA @ia @alerting-fb',
   async ({
-    I, settingsAPI, iaCommon, pmmSettingsPage, codeceptjsConfig,
+    I, pmmSettingsPage, codeceptjsConfig
   }) => {
     await settingsAPI.apiDisableIA();
-    I.amOnPage(iaCommon.tabNames.ruleTemplates);
+    I.amOnPage(alertsPage.url);
     I.waitForVisible(iaCommon.elements.disabledIa, 30);
     I.seeTextEquals(iaCommon.messages.disabledIa, iaCommon.elements.disabledIa);
 
@@ -27,59 +24,44 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T481 PMM-T620 PMM-T776 Verify user is able to use tab bar, breadcrumb @ia @grafana-pr',
+  'PMM-T481 Verify IA tab bar, ' +
+  'PMM-T620 Verify after reloading the page user is on the same IA tab, ' +
+  'PMM-T776 Verify that user is able to see valid HTML Title on alerts page @ia @alerting-fb',
   async ({
-    I, alertRulesPage, ruleTemplatesPage, iaCommon, ncPage,
+    I, alertRulesPage, ruleTemplatesPage, contactPointsPage, ncPage, silencesPage, alertGroupsPage, aiAdminPage
   }) => {
+    await settingsAPI.apiEnableIA();
     const verifyNotificationChannelsPage = async () => {
-      I.seeInCurrentUrl(`/graph/alerting/routes`);
-      I.seeElement(ncPage.buttons.newPolicy);
-      await iaCommon.verifyTabIsActive(iaCommon.tabNames.notificationPolicies);
+      I.waitForVisible(ncPage.buttons.newPolicy, 30);
     };
 
-    I.amOnPage(iaCommon.url.firedAlerts);
-    I.waitForVisible(iaCommon.elements.tab(iaCommon.tabNames.firedAlerts));
-    I.seeInCurrentUrl(iaCommon.url.firedAlerts);
-    await iaCommon.verifyTabIsActive(iaCommon.tabNames.firedAlerts);
+    I.amOnPage(alertsPage.url);
 
-    iaCommon.openTab(iaCommon.tabNames.ruleTemplates);
-    I.seeInCurrentUrl(iaCommon.url.ruleTemplates);
-    I.seeElement(ruleTemplatesPage.buttons.openAddTemplateModal);
-    await iaCommon.verifyTabIsActive(iaCommon.tabNames.ruleTemplates);
+    // PMM-T776
+    const verifyTitle = (page) => {
+      I.seeTitleEquals(`${page} - Alerting - Percona Monitoring and Management`);
+    };
 
-    iaCommon.openTab(iaCommon.tabNames.alertRules);
-    I.seeInCurrentUrl(iaCommon.url.alertRules);
-    I.seeElement(alertRulesPage.buttons.openAddRuleModal);
-    await iaCommon.verifyTabIsActive(iaCommon.tabNames.alertRules);
+    verifyTitle('Fired alerts');
+    iaCommon.openAndVerifyTab(iaCommon.tabNames.ruleTemplates, ruleTemplatesPage.buttons.openAddTemplateModal, ruleTemplatesPage.url);
+    verifyTitle('Alert rule templates');
+    iaCommon.openAndVerifyTab(iaCommon.tabNames.alertRules, alertRulesPage.buttons.openAddRuleModal, alertRulesPage.url);
+    verifyTitle('Alert rules');
+    iaCommon.openAndVerifyTab(iaCommon.tabNames.contactPoints, contactPointsPage.buttons.newContactPoint, contactPointsPage.url);
+    verifyTitle('Contact points');
+    iaCommon.openAndVerifyTab(iaCommon.tabNames.notificationPolicies, ncPage.buttons.newPolicy, ncPage.url);
+    verifyTitle('Notification policies');
 
-    iaCommon.openTab(iaCommon.tabNames.contactPoints);
-    I.seeInCurrentUrl(iaCommon.url.contactPoints);
-    // I.seeElement(alertRulesPage.buttons.openAddRuleModal);
-    await iaCommon.verifyTabIsActive(iaCommon.tabNames.contactPoints);
-
-    iaCommon.openTab(iaCommon.tabNames.notificationPolicies);
-    await verifyNotificationChannelsPage();
+    // PMM-T620
     I.refreshPage();
-    I.waitForVisible(ncPage.buttons.newPolicy, 30);
     await verifyNotificationChannelsPage();
 
-    iaCommon.openTab(iaCommon.tabNames.silences);
-    I.seeInCurrentUrl(iaCommon.url.silences);
-    // I.seeElement(alertRulesPage.buttons.openAddRuleModal);
-    await iaCommon.verifyTabIsActive(iaCommon.tabNames.silences);
-
-    iaCommon.openTab(iaCommon.tabNames.alertGroups);
-    I.seeInCurrentUrl(iaCommon.url.alertGroups);
-    // I.seeElement(alertRulesPage.buttons.openAddRuleModal);
-    await iaCommon.verifyTabIsActive(iaCommon.tabNames.alertGroups);
-
-    iaCommon.openTab(iaCommon.tabNames.admin);
-    I.seeInCurrentUrl(iaCommon.url.admin);
-    // I.seeElement(alertRulesPage.buttons.openAddRuleModal);
-    await iaCommon.verifyTabIsActive(iaCommon.tabNames.admin);
-
-    iaCommon.openTab(iaCommon.tabNames.firedAlerts);
-    I.seeInCurrentUrl(iaCommon.url.firedAlerts);
-    await iaCommon.verifyTabIsActive(iaCommon.tabNames.firedAlerts);
+    iaCommon.openAndVerifyTab(iaCommon.tabNames.silences, silencesPage.buttons.newSilence, silencesPage.url);
+    verifyTitle('Silences');
+    iaCommon.openAndVerifyTab(iaCommon.tabNames.alertGroups, alertGroupsPage.elements.groupByContainer, alertGroupsPage.url);
+    verifyTitle('Alert groups');
+    iaCommon.openAndVerifyTab(iaCommon.tabNames.admin, aiAdminPage.elements.configTextarea, aiAdminPage.url);
+    verifyTitle('Admin');
+    iaCommon.openAndVerifyTab(iaCommon.tabNames.firedAlerts, alertsPage.elements.noAlerts, alertsPage.url);
   },
 );
