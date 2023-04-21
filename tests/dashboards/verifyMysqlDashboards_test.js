@@ -36,9 +36,10 @@ Scenario(
     I, adminPage, dashboardPage,
   }) => {
     for (const serviceName of serviceList) {
-      const url = I.buildUrlWithParams(dashboardPage.mysqlInstanceSummaryDashboard.clearUrl, { service_name: serviceName, from: 'now-15m' });
+      const url = I.buildUrlWithParams(dashboardPage.mysqlInstanceSummaryDashboard.clearUrl, { from: 'now-15m' });
 
       I.amOnPage(url);
+      await dashboardPage.applyFilter('Service Name', serviceName);
       dashboardPage.waitForDashboardOpened();
       await dashboardPage.expandEachDashboardRow();
       I.click(adminPage.fields.metricTitle);
@@ -55,9 +56,10 @@ Scenario(
   'PMM-T319 - Open the MySQL Instances Overview dashboard and verify Metrics are present and graphs are displayed @nightly @dashboards',
   async ({ I, adminPage, dashboardPage }) => {
     for (const serviceName of serviceList) {
-      const url = I.buildUrlWithParams(dashboardPage.mySQLInstanceOverview.clearUrl, { service_name: serviceName, from: 'now-15m' });
+      const url = I.buildUrlWithParams(dashboardPage.mySQLInstanceOverview.clearUrl, { from: 'now-15m' });
 
       I.amOnPage(url);
+      await dashboardPage.applyFilter('Service Name', serviceName);
       dashboardPage.waitForDashboardOpened();
       await dashboardPage.expandEachDashboardRow();
       I.click(adminPage.fields.metricTitle);
