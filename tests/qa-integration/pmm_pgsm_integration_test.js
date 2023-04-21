@@ -531,3 +531,27 @@ Scenario(
     await I.verifyCommand(`docker exec ${container_name} service postgresql restart`);
   },
 );
+
+Scenario(
+  'PMM-T150 - Verify query details section works correctly for PostgreSQL @not-ui-pipeline @pgsm-pmm-integration',
+  async ({
+    I, qanPage, qanOverview, qanFilters, qanDetails,
+  }) => {
+    I.amOnPage(I.buildUrlWithParams(qanPage.clearUrl, { service_name: pgsm_service_name, database, cmd_type: 'SELECT' }));
+    I.waitForVisible(qanFilters.buttons.showSelected, 30);
+    qanOverview.selectRow(2);
+    qanFilters.waitForFiltersToLoad();
+
+    await within(qanDetails.root, () => {
+      I.waitForVisible(qanDetails.buttons.close, 30);
+      I.see('Details', qanDetails.getTabLocator('Details'));
+      I.see('Example', qanDetails.getTabLocator('Example'));
+      I.see('Tables', qanDetails.getTabLocator('Tables'));
+      I.see('Plan', qanDetails.getTabLocator('Plan'));
+    });
+    await qanDetails.verifyDetailsNotEmpty();
+    qanDetails.checkExamplesTab();
+    await qanDetails.checkTablesTab();
+    await qanDetails.checkPlanTabIsEmpty();
+  },
+);
