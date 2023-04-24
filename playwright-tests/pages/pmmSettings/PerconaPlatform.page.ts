@@ -19,6 +19,8 @@ export default class PerconaPlatform extends CommonPage {
     accessTokenHeader: this.perconaPlatformContainer.getByTestId('accessToken-field-label'),
     accessTokenError: this.perconaPlatformContainer.getByTestId('accessToken-field-error-message'),
     readMore: this.page.getByText('Read More...'),
+    forceDisconnectModal: this.page.getByTestId('force-disconnect-modal'),
+    modalMessage: this.page.locator('//*[@role="dialog"]//p'),
   };
 
   fields = {
@@ -62,6 +64,8 @@ export default class PerconaPlatform extends CommonPage {
     updateSuccess: 'Settings updated',
     oldPmmVersionError: 'Authentication failed. Please update the PMM version.',
     pmmDisconnectedFromPortal: 'Successfully disconnected PMM from Percona Platform',
+    forceDisconnectWarning: 'Are you sure you want to disconnect this PMM instance? This will unlink the instance from its current organization and stop all synchronization with Percona Platform',
+    disconnectWarning: 'Are you sure you want to disconnect from Percona Platform? This will automatically log you out from PMM.',
   };
 
   links = {
