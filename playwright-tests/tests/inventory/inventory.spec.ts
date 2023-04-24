@@ -217,14 +217,12 @@ test.describe('Spec file for PMM inventory tests.', async () => {
       await cli.pmmClientCommands.startAgent();
       await page.waitForTimeout(5000);
       const containerNames = await cli.systemCommands.getRunningContainerNames()
-      console.log('Containers are: ');
-      console.log(containerNames);
       const mongoAddress = process.env.CI ? '127.0.0.1' : containerNames.find((container: string | string[]) => container.includes('mo-integration'));
-      const psAddress = process.env.CI ? '127.0.0.1' : containerNames.find((container: string | string[]) => container.includes('ps_integration_'));
-      console.log(`PS address is: ${psAddress}`);
+      const psContainerName = containerNames.find((container: string | string[]) => container.includes('ps_integration_')) || '';
+      console.log(`PS container name is: ${psContainerName}`);
       const pdpgsqlAddress = process.env.CI ? '127.0.0.1' : containerNames.find((container: string | string[]) => container.includes('pdpgsql-integration-'));
       await cli.pmmClientCommands.addMongoDb({ address: mongoAddress || '', name: mongoAddress || '' });
-      await cli.pmmClientCommands.addMySql({ address: psAddress || '', name: psAddress || '', port: 43306 });
+      await cli.pmmClientCommands.addMySql({ address: process.env.CI ? '127.0.0.1' : psContainerName, name: psContainerName, port: process.env.CI ? 43306 : 3306 });
       await cli.pmmClientCommands.addPgSql({ address: pdpgsqlAddress || '', name: pdpgsqlAddress || '', port: 6432 });
     });
   });
