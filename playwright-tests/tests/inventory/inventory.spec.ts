@@ -224,8 +224,8 @@ test.describe('Spec file for PMM inventory tests.', async () => {
       console.log(`PS address is: ${psAddress}`);
       const pdpgsqlAddress = process.env.CI ? '127.0.0.1' : containerNames.find((container: string | string[]) => container.includes('pdpgsql-integration-'));
       await cli.pmmClientCommands.addMongoDb({ address: mongoAddress || '', name: mongoAddress || '' });
-      await cli.pmmClientCommands.addMySql({ address: psAddress || '', name: psAddress || '' });
-      await cli.pmmClientCommands.addPgSql({ address: pdpgsqlAddress || '', name: pdpgsqlAddress || '' });
+      await cli.pmmClientCommands.addMySql({ address: psAddress || '', name: psAddress || '', port: 43306 });
+      await cli.pmmClientCommands.addPgSql({ address: pdpgsqlAddress || '', name: pdpgsqlAddress || '', port: 6432 });
     });
   });
 
