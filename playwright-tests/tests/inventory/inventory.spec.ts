@@ -377,6 +377,8 @@ test.describe('Spec file for PMM inventory tests.', async () => {
 
     await test.step('3. Kill process mongodb_exporter and verify that Inventory page shows mongodb exporter as not running".', async () => {
       agentLocation = await cli.pmmClientCommands.findFile('pmm-agent')
+      console.log('Agent Location is: ')
+      console.log(agentLocation)
       await cli.pmmClientCommands.moveFile(
         agentLocation[0],
         `${agentLocation[0]}_error`);
