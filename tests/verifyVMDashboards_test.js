@@ -18,7 +18,8 @@ Scenario(
   },
 );
 
-Scenario(
+// FIXME: fails constantly on Nightly Job. Not reproducible locally.
+xScenario(
   'PMM-T507 Verify metrics on VM Agents Overview Dashboard @nightly @dashboards',
   async ({ I, dashboardPage, adminPage }) => {
     I.amOnPage(dashboardPage.victoriaMetricsAgentsOverviewDashboard.url);

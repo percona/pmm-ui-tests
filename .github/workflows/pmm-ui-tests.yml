@@ -156,11 +156,14 @@ jobs:
       - name: Setup Client for PMM-Server
         run: |
           sudo bash ./pmm-qa/pmm-tests/pmm2-client-setup.sh --pmm_server_ip 127.0.0.1 --client_version ${{ env.PMM_CLIENT_VERSION }} --admin_password admin --use_metrics_mode no
-          sudo bash ./pmm-qa/pmm-tests/pmm-framework.sh \
-            --download \
-            ${{ env.PMM_CLIENTS }} \
-            --pmm2 \
-            --pmm2-server-ip=127.0.0.1
+
+        shell: bash
+      
+      - name: Setup Databases for the PMM-Server
+        working-directory: pmm-qa/pmm-integration
+        run: |
+          sudo npx ts-node ./integration-setup.ts --ci \
+          ${{ env.PMM_CLIENTS }}
           sleep 30
           sudo pmm-admin list
         shell: bash
@@ -186,6 +189,15 @@ jobs:
           npx playwright test --config="playwright-tests/playwright.config.ts" --grep="${{ env.PMM_TEST_FLAG }}"
         env:
           NODE_TLS_REJECT_UNAUTHORIZED: 0
+
+      - name: Generate and Attach the report
+        if: ${{ always() && steps.ui-tests.outcome != 'skipped' }}
+        uses: percona-platform/upload-artifact@v3
+        with:
+          name: ui-tests-videos-screenshots
+          path: |
+            pmm-ui-tests/playwright-report/data/*webm
+            pmm-ui-tests/playwright-report/data/*png
 
       - name: Create status check
         uses: percona-platform/github-status-action@v1
