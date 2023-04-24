@@ -208,7 +208,12 @@ test.describe('Spec file for PMM inventory tests.', async () => {
       const nodes = await api.pmm.inventoryV1.listNodes();
       console.log('Available nodes are: ');
       console.log(nodes);
-      await cli.pmmClientCommands.forceSetupAgent({ name: nodes.container![0].node_name, address: nodes.container![0].address, type: 'container' });
+      if (process.env.CI) {
+        await cli.pmmClientCommands.forceSetupAgent({ name: nodes.generic![0].node_name, address: nodes.generic![0].address, type: 'generic' });
+      } else {
+        await cli.pmmClientCommands.forceSetupAgent({ name: nodes.container![0].node_name, address: nodes.container![0].address, type: 'container' });
+      }
+
       await cli.pmmClientCommands.startAgent();
       await page.waitForTimeout(5000);
       const containerNames = await cli.systemCommands.getRunningContainerNames()
