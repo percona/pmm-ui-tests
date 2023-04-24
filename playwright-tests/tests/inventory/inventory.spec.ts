@@ -384,7 +384,7 @@ test.describe('Spec file for PMM inventory tests.', async () => {
         `${agentLocation[0]}_error`);
       const pmmAgentProcessId = await cli.pmmClientCommands.getProcessId('pmm-agent');
       await cli.pmmClientCommands.killProcess(pmmAgentProcessId.stdout);
-      await page.reload();;
+      await page.reload();
       await servicesPage.servicesTable.buttons.showRowDetails(mongoLocalService.serviceName).click();
       await expect(servicesPage.servicesTable.elements.agentStatus).toHaveText('4/4 not running');
       await servicesPage.servicesTable.elements.monitoring(mongoLocalService.serviceName).click();
