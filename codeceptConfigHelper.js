@@ -46,6 +46,7 @@ module.exports = {
     perconaPlatformPage: './tests/pages/perconaPlatformPage/perconaPlatformPage.js',
     pmmDemoPage: './tests/pages/pmmDemoPage.js',
     pmmInventoryPage: './tests/configuration/pages/pmmInventoryPage.js',
+    agentsPage: './tests/configuration/pages/agentsPage.js',
     pmmServerAdminSettingsPage: './tests/configuration/pages/pmmServerAdminSettingsPage.js',
     pmmSettingsPage: './tests/configuration/pages/pmmSettingsPage.js',
     portalAPI: './tests/pages/api/portalAPI.js',
@@ -76,6 +77,7 @@ module.exports = {
     dataSourcePage: './tests/pages/pmmSettingsPages/dataSourcePage.js',
     pmmTourPage: './tests/pages/pmmTourPage.js',
     loginPage: './tests/pages/loginPage.js',
+    nodesOverviewPage: './tests/pages/nodesOverviewPage.js',
   },
   getChunks: (files) => {
     const dependentTests = files.filter((value) => /PMMSettings|ia|stt|backup|permissions|Azure/.test(value));
