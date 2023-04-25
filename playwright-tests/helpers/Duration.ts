@@ -1,4 +1,5 @@
 enum Duration {
+  FiveSeconds = 5000,
   TenSeconds = 10000,
   ThirtySecond = 30000,
   OneMinute = 60000,

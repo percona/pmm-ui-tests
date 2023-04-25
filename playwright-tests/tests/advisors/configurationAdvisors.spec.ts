@@ -8,11 +8,12 @@ import Duration from '@tests/helpers/Duration';
 import grafanaHelper from '@tests/helpers/GrafanaHelper';
 import HomeDashboard from '@tests/pages/HomeDashboard.page';
 import { SignInPage } from '@tests/pages/SignIn.page';
-import { AdvisorInsights } from '@tests/pages/advisors/AdvisorInsights.page';
+import { AdvisorInsights, FailedAdvisorType } from '@tests/pages/advisors/AdvisorInsights.page';
 import { ConfigurationAdvisors } from '@tests/pages/advisors/ConfigurationAdvisors.page';
 import PerconaPlatform from '@tests/pages/pmmSettings/PerconaPlatform.page';
 import config from '@tests/playwright.config';
 import User from '@tests/support/types/user.interface';
+import { MongoDbAdvisors, MySqlAdvisors, PgSqlAdvisors } from './helpers/advisors';
 
 test.describe('Spec file for basic database version control of Advisors. ', async () => {
   let freePlatformUser: User;
@@ -50,6 +51,10 @@ test.describe('Spec file for basic database version control of Advisors. ', asyn
   });
 
   test('PMM-T1631 Verify integrity of the new Advisors PoC @advisors', async ({ page }) => {
+    test.info().annotations.push({
+      type: 'Also Covers',
+      description: 'PMM-T1679 Verify integrity of the new Advisors : Verify that basic Advisors regarding services versions are displayed',
+    });
     const configurationAdvisors = new ConfigurationAdvisors(page);
     const advisorInsights = new AdvisorInsights(page);
     const homeDashboard = new HomeDashboard(page);
@@ -60,21 +65,48 @@ test.describe('Spec file for basic database version control of Advisors. ', asyn
       await page.goto(configurationAdvisors.url);
       await configurationAdvisors.buttons.runChecks.click();
       await configurationAdvisors.toast.checkToastMessageContains(configurationAdvisors.messages.advisorsRunning, { variant: 'success' });
+      numberOfAdvisorsNonRegistered = await configurationAdvisors.getNumberOfAllAvailableAdvisors();
     });
+
+
 
     await test.step('2. Verify that check passed with results.', async () => {
       await configurationAdvisors.buttons.advisorInsights.click();
+      await advisorInsights.verifyFailedAdvisorsForServiceAndType('mo-integration-', FailedAdvisorType.Notice, 1);
+      await advisorInsights.verifyFailedAdvisorsForServiceAndType('pdpgsql-integration-', FailedAdvisorType.Warning, 1);
+      await advisorInsights.verifyFailedAdvisorsForServiceAndType('ps_integration_', FailedAdvisorType.Warning, 1);
+      await advisorInsights.verifyFailedAdvisorsForServiceAndType('ps_integration_', FailedAdvisorType.Notice, 1);
+      await advisorInsights.verifyFailedAdvisorsForServiceAndType('mo-ps-integration-', FailedAdvisorType.Error, 2);
+    });
 
-      await advisorInsights.insightsTable.waitForWarningAdvisorsDisplayed(1);
-      await expect(advisorInsights.insightsTable.elements.warningAdvisor.first()).toBeVisible();
+    await test.step('3. Verify Correct failed advisors for the Percona Server for MongoDb', async () => {
+      await advisorInsights.elements.failedAdvisorRowByServiceName('mo-ps-integration-').click();
+      await advisorInsights.elements.failedAdvisorRow(MongoDbAdvisors.mongoDbEndOfLife).waitFor({ state: 'visible' });
+      await advisorInsights.elements.failedAdvisorRow(MongoDbAdvisors.mongoDbUnsupportedVersion).waitFor({ state: 'visible' });
+    });
 
-      await advisorInsights.insightsTable.waitForNoticeAdvisorsDisplayed(3);
-      await expect(advisorInsights.insightsTable.elements.noticeAdvisor.first()).toBeVisible();
+    await test.step('3. Verify Correct failed advisors for the Percona Server for MySql', async () => {
+      await configurationAdvisors.buttons.advisorInsights.click();
+      await advisorInsights.elements.failedAdvisorRowByServiceName('ps_integration_').click();
+      await advisorInsights.elements.failedAdvisorRow(MySqlAdvisors.mysqlVersionEndOfLife57).waitFor({ state: 'visible' });
+      await advisorInsights.elements.failedAdvisorRow(MySqlAdvisors.mysqlVersion).waitFor({ state: 'visible' });
+    });
+
+    await test.step('3. Verify Correct failed advisors for the Percona Server for PgSql', async () => {
+      await configurationAdvisors.buttons.advisorInsights.click();
+      await advisorInsights.elements.failedAdvisorRowByServiceName('pdpgsql-integration-').click();
+      await advisorInsights.elements.failedAdvisorRow(PgSqlAdvisors.pgsqlVersionCheck).waitFor({ state: 'visible' });
+    });
+
+    await test.step('3. Verify Correct failed advisors for the MongoDb', async () => {
+      await configurationAdvisors.buttons.advisorInsights.click();
+      await advisorInsights.elements.failedAdvisorRowByServiceName('mo-integration-').click();
+      await advisorInsights.elements.failedAdvisorRow(MongoDbAdvisors.mongoDbVersion).waitFor({ state: 'visible' });
     });
 
     await test.step('3. Verify that failed advisors are displayed on home dashboard.', async () => {
       await advisorInsights.sideMenu.elements.home.click();
-      await homeDashboard.verifyFailedAdvisorsNumberIsGreater({ warning: 1, notice: 3 })
+      await homeDashboard.verifyFailedAdvisorsNumberIsGreaterThen({ error: 2, warning: 2, notice: 2 });
     });
 
     await test.step('4. Verify that advisors link from home dashboard links to advisors page.', async () => {
@@ -88,25 +120,24 @@ test.describe('Spec file for basic database version control of Advisors. ', asyn
       await page.waitForTimeout(3000);
       await grafanaHelper.unAuthorize(page);
       await signInPage.oktaLogin(freePlatformUser.email, freePlatformUser.password);
-    });
-
-    await test.step('6. re-run advisors check', async () => {
       await page.goto(configurationAdvisors.url);
       await configurationAdvisors.buttons.runChecks.click();
       await configurationAdvisors.toast.checkToastMessageContains(configurationAdvisors.messages.advisorsRunning, { variant: 'success' });
+    });
+
+    await test.step('6. Verify that failed advisors are displayed on home dashboard.', async () => {
+      await page.waitForTimeout(Duration.OneMinute);
+      await advisorInsights.sideMenu.elements.home.click();
+      await homeDashboard.verifyFailedAdvisorsNumberIsGreaterThen({ error: 2, warning: 10, notice: 3 });
+    });
+
+    await test.step('7. Verify Number of advisors available', async () => {
+      await page.goto(configurationAdvisors.url);
       numberOfAdvisorsRegistered = await configurationAdvisors.getNumberOfAllAvailableAdvisors();
       expect(numberOfAdvisorsRegistered).toBeGreaterThan(numberOfAdvisorsNonRegistered);
     });
 
-    await test.step('7. Verify that check passed with results.', async () => {
-      await configurationAdvisors.buttons.advisorInsights.click();
-      await advisorInsights.insightsTable.waitForWarningAdvisorsDisplayed(2, Duration.ThreeMinutes);
-      await advisorInsights.insightsTable.waitForNoticeAdvisorsDisplayed(4, Duration.ThreeMinutes);
-    });
-
-    await test.step('8. Verify that failed advisors are displayed on home dashboard for registered user.', async () => {
-      await advisorInsights.sideMenu.elements.home.click();
-      await homeDashboard.verifyFailedAdvisorsNumberIsGreater({ warning: 9, notice: 10 })
+    await test.step('8. Disconnect PMM from the registered org.', async () => {
       await page.goto(perconaPlatformPage.perconaPlatformURL)
       await perconaPlatformPage.buttons.disconnect.click();
       await perconaPlatformPage.buttons.confirmDisconnect.click();
@@ -116,7 +147,18 @@ test.describe('Spec file for basic database version control of Advisors. ', asyn
     await test.step('9. Login as paid user and rerun checks.', async () => {
       await api.pmm.platformV1.connect('Test Server', await portalAPI.getUserAccessToken(paidPlatformUser.email, paidPlatformUser.password));
       await signInPage.waitForOktaLogin();
-      await signInPage.oktaLogin(paidPlatformUser.email, paidPlatformUser.password)
+      await signInPage.oktaLogin(paidPlatformUser.email, paidPlatformUser.password);
+      await page.goto(configurationAdvisors.url);
+      await configurationAdvisors.buttons.runChecks.click();
+      await configurationAdvisors.toast.checkToastMessageContains(configurationAdvisors.messages.advisorsRunning, { variant: 'success' });
+      numberOfAdvisorsPaid = await configurationAdvisors.getNumberOfAllAvailableAdvisors();
+      expect(numberOfAdvisorsPaid).toBeGreaterThan(numberOfAdvisorsRegistered);
+    });
+
+    await test.step('6. Verify that failed advisors are displayed on home dashboard.', async () => {
+      await page.waitForTimeout(Duration.OneMinute);
+      await advisorInsights.sideMenu.elements.home.click();
+      await homeDashboard.verifyFailedAdvisorsNumberIsGreaterThen({ error: 2, warning: 10, notice: 3 });
     });
   });
 });

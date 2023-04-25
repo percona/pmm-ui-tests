@@ -39,18 +39,23 @@ export default class HomeDashboard extends BaseDashboard {
     await this.upgradeModal.buttons.close.click();
   };
 
-  verifyFailedAdvisorsNumberIsGreater = async (options: { critical?: number, error?: number, warning?: number, notice?: number }) => {
+  verifyFailedAdvisorsNumberIsGreaterThen = async (options: { critical?: number, error?: number, warning?: number, notice?: number }) => {
+    await this.elements.failedAdvisorsPanel.criticalAdvisors.waitFor({ state: 'visible', timeout: Duration.ThirtySecond });
     if (options.critical) {
-      expect.soft(await this.elements.failedAdvisorsPanel.criticalAdvisors.count()).toBeGreaterThanOrEqual(options.critical);
+      const criticalAdvisors = await this.elements.failedAdvisorsPanel.criticalAdvisors.textContent();
+      expect.soft(parseInt(criticalAdvisors || '')).toBeGreaterThanOrEqual(options.critical);
     }
     if (options.error) {
-      expect.soft(await this.elements.failedAdvisorsPanel.errorAdvisors.count()).toBeGreaterThanOrEqual(options.error);
+      const errorAdvisors = await this.elements.failedAdvisorsPanel.errorAdvisors.textContent()
+      expect.soft(parseInt(errorAdvisors || '')).toBeGreaterThanOrEqual(options.error);
     }
     if (options.warning) {
-      expect.soft(await this.elements.failedAdvisorsPanel.warningAdvisors.count()).toBeGreaterThanOrEqual(options.warning);
+      const warningAdvisors = await this.elements.failedAdvisorsPanel.warningAdvisors.textContent()
+      expect.soft(parseInt(warningAdvisors || '')).toBeGreaterThanOrEqual(options.warning);
     }
     if (options.notice) {
-      expect.soft(await this.elements.failedAdvisorsPanel.noticeAdvisors.count()).toBeGreaterThanOrEqual(options.notice);
+      const noticeAdvisors = await this.elements.failedAdvisorsPanel.noticeAdvisors.textContent()
+      expect.soft(parseInt(noticeAdvisors || '')).toBeGreaterThanOrEqual(options.notice);
     }
 
     let errors: string[] = [];
