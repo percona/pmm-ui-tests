@@ -32,6 +32,7 @@ Scenario(
   async ({ I, alertRulesPage }) => {
     alertRulesPage.openAlertRulesTab();
     I.waitForText(alertRulesPage.messages.noRulesFound, alertRulesPage.elements.noRules);
+    I.waitForVisible(alertRulesPage.elements.alertsLearnMoreLinks, 10);
     const link = await I.grabAttributeFrom(alertRulesPage.elements.alertsLearnMoreLinks, 'href');
 
     assert.ok(link === 'https://grafana.com/docs/', `Redirect link ${link} is incorrect please check`);
@@ -93,6 +94,7 @@ Scenario(
     const newRule = page.rules[0];
 
     alertRulesPage.openAlertRulesTab();
+    I.waitForEnabled(alertRulesPage.buttons.openAddRuleModal, 10);
     I.click(alertRulesPage.buttons.openAddRuleModal);
     await alertRulesPage.fillPerconaAlert(rule, newRule);
     I.click(alertRulesPage.buttons.saveAndExit);
@@ -102,7 +104,7 @@ Scenario(
     I.seeTextEquals('Normal', alertRulesPage.elements.ruleState);
     await rulesAPI.removeAlertRule(newRule.folder);
   },
-);
+).retry(1);
 
 // TODO: check ovf failure
 Scenario(

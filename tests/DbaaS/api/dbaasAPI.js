@@ -1,4 +1,5 @@
 const assert = require('assert');
+const shell = require('shelljs');
 
 const { I } = inject();
 const psmdb_cluster_type = 'DB_CLUSTER_TYPE_PSMDB';
@@ -113,7 +114,7 @@ module.exports = {
         break;
       }
       else {
-        I.wait(20);
+        await I.wait(20);
       }
     }
     I.say(`Status of PXC operator was ${pxcOperatorStatus}. Status of PSMDB operator was ${psmdbOperatorStatus}.`);
@@ -132,7 +133,7 @@ module.exports = {
         break;
       }
       else {
-        I.wait(10);
+        await I.wait(10);
       }
     }
     I.say(`Kubernetes cluster status was ${clusterStatus}.`);
@@ -307,4 +308,27 @@ module.exports = {
 
     await I.sendPostRequest('v1/management/DBaaS/PSMDBCluster/Create', body, headers);  
   },
+
+  /**
+   * @param  {} command - command to run
+   * @param  {} output - string to search in command output
+   * @param  {} retry=10 - number of retries (loops)
+   * @param  {} timeout=20 - time in seconds to wait before another loop
+   */
+  async waitForOutput(command, output, retry = 10, timeout = 20) {
+    let stdout;
+    
+    for (let i = 0; i < retry; i++) {
+      stdout = shell.exec(command.replace(/(\r\n|\n|\r)/gm, ''), { silent: true });
+      if (stdout.includes(output)) {
+        break;
+      }
+      else {
+        await I.wait(timeout);
+      }
+    }
+
+    assert.ok(stdout.includes(output), `The "${command}" output expected to include "${output}" but found "${stdout}"`);
+    return stdout.trim();
+  }
 };

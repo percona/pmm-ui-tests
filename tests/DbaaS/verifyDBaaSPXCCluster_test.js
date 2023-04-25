@@ -1,9 +1,16 @@
 const assert = require('assert');
 
-const { dbaasAPI, dbaasPage } = inject();
+const { dbaasAPI, dbaasPage, locationsPage } = inject();
 const clusterName = 'minikube';
 const pxc_cluster_name = 'pxc-dbcluster';
-const mysql_recommended_version = 'MySQL 8.0.29';
+const mysql_recommended_version = 'MySQL 8.0.31';
+const mysql_recommended_version_image = 'percona/percona-xtradb-cluster:8.0.31-23.2';
+
+const location = {
+  name: 'S3 Location DBaaS',
+  description: 'test description',
+  config: locationsPage.storageLocationConnection,
+};
 
 const pxcDBClusterDetails = new DataTable(['namespace', 'clusterName', 'node']);
 
@@ -15,7 +22,6 @@ pxcDBClusterDetails.add(['default', `${pxc_cluster_name}`, '2']);
 Feature('DbaaS: PXC Cluster Creation, Modifications, Actions, Verification tests');
 
 const singleNodeConfiguration = {
-  topology: 'Single',
   numberOfNodes: '1',
   resourcePerNode: 'Custom',
   memory: '1.2 GB',
@@ -67,7 +73,7 @@ Scenario('PMM-T1577 Verify Edit DB Cluster page @dbaas',
     I.dontSeeElement(dbaasPage.tabs.dbClusterTab.basicOptions.fields.allBasicOptions);
     I.seeElement(dbaasPage.tabs.dbClusterTab.advancedOptions.fields.advancedSettingsLabel);
     I.seeElement(dbaasPage.tabs.dbClusterTab.dbConfigurations.configurationsHeader('MySQL'));
-    I.seeElement(dbaasPage.tabs.dbClusterTab.networkAndSecurity.networkAndSecurityHeader);
+    I.seeElement(dbaasPage.tabs.dbClusterTab.externalAccess.enableExtAcceessToggle);
     I.seeElement(dbaasPage.tabs.dbClusterTab.editClusterButtonDisabled);
   }
 );
@@ -246,20 +252,19 @@ async ({
   // await dbaasPage.apiKeyCheck(clusterName, dbClusterRandomName, 'pxc', false);
 });
 
-Scenario('PMM-T522 Verify Editing a Cluster with Custom Setting and float values is possible @dbaas',
+Scenario('PMM-T522 Verify Editing a Cluster with Custom Setting and float values is possible, change from 3 node to single node possible @dbaas',
   async ({
     I, dbaasPage, dbaasActionsPage, dbaasAPI,
   }) => {
+    await dbaasAPI.deleteAllDBCluster(clusterName);
     const dbClusterRandomName = dbaasPage.randomizeClusterName(pxc_cluster_name);
 
-    await dbaasAPI.deleteAllDBCluster(clusterName);
+    await dbaasAPI.createCustomPXC(clusterName, dbClusterRandomName, '3', mysql_recommended_version_image);
     I.amOnPage(dbaasPage.url);
-    await dbaasActionsPage.createClusterBasicOptions(clusterName, dbClusterRandomName, 'MySQL');
-    I.click(dbaasPage.tabs.dbClusterTab.createClusterButton);
     I.waitForText('Processing', 30, dbaasPage.tabs.dbClusterTab.fields.progressBarContent(pxc_cluster_name));
     await dbaasPage.postClusterCreationValidation(dbClusterRandomName, clusterName);
     const configuration = {
-      topology: 'Single',
+      numberOfNodes: '1',
       resourcePerNode: 'Custom',
       memory: '1.2 GB',
       cpu: '0.2',
@@ -394,8 +399,7 @@ Scenario('PMM-T704 PMM-T772 PMM-T849 PMM-T850 Resources, PV, Secrets verificatio
   }
 );
 
-// FIXME: unskip when https://jira.percona.com/browse/PMM-11396 is done
-Scenario.skip('Verify update PXC DB Cluster version @dbaas', async ({ I, dbaasPage, dbaasActionsPage }) => {
+Scenario('PMM-T1184 Verify there are no users with empty passwords, verify update PXC DB Cluster version @dbaas', async ({ I, dbaasPage, dbaasActionsPage }) => {
   const mysqlVersion = '8.0.19-10.1';
   const dbClusterRandomName = dbaasPage.randomizeClusterName(pxc_cluster_name);
 
@@ -406,32 +410,39 @@ Scenario.skip('Verify update PXC DB Cluster version @dbaas', async ({ I, dbaasPa
   // await dbaasPage.postClusterCreationValidation(dbClusterRandomName, clusterName);
 
   const {
-    username, password, host, port,
+    username, password, host,
   } = await dbaasAPI.getDbClusterDetails(dbClusterRandomName, clusterName);
 
-  // await I.verifyCommand(
-  //   `kubectl run -i --rm --tty pxc-client --image=percona:8.0 --restart=Never -- mysql -h ${host} -u${username}` + 
-  //   `-p${password} -e "CREATE DATABASE DBAAS_UPGRADE_TESTING;"`,
-  // );
-  // await I.verifyCommand(
-  //   `kubectl run -i --rm --tty pxc-client --image=percona:8.0 --restart=Never -- mysql -h ${host} -u${username}` + 
-  //   `-p${password} -e "SHOW DATABASES;"`,
-  //   'DBAAS_UPGRADE_TESTING',
-  // );
+  await I.verifyCommand(
+    `kubectl run -i --rm --tty pxc-client --image=percona:8.0 --restart=Never -- mysql -h ${host} -u${username} ` +
+    `-p${password} -e "CREATE DATABASE DBAAS_UPGRADE_TESTING;"`,
+  );
+  await I.verifyCommand(
+    `kubectl run -i --rm --tty pxc-client --image=percona:8.0 --restart=Never -- mysql -h ${host} -u${username} ` +
+    `-p${password} -e "SHOW DATABASES;"`,
+    'DBAAS_UPGRADE_TESTING',
+  );
+
+  // PMM-T1184
+  const output = await I.verifyCommand(
+    `kubectl run -i --rm --tty pxc-client --image=percona:8.0 --restart=Never -- mysql -h ${host} -u${username} -p${password} ` +
+    `-e "select user, authentication_string from mysql.user where account_locked = 'N' and authentication_string = ''"`,
+  );
+
+  assert.ok(output.length === 106, `Output length should be 106`);
 
   await dbaasActionsPage.updateCluster(dbClusterRandomName);
-  I.waitForVisible(dbaasPage.tabs.dbClusterTab.fields.clusterStatusUpdating, 60);
-  I.seeElement(dbaasPage.tabs.dbClusterTab.fields.clusterStatusUpdating);
+  I.waitForText('Processing', 60, dbaasPage.tabs.dbClusterTab.fields.progressBarContent(dbClusterRandomName));
   await dbaasAPI.waitForDBClusterState(dbClusterRandomName, clusterName, 'MySQL', 'DB_CLUSTER_STATE_READY');
   I.waitForElement(dbaasPage.tabs.dbClusterTab.fields.clusterStatusActive, 60);
   I.seeElement(dbaasPage.tabs.dbClusterTab.fields.clusterStatusActive);
-  // await I.verifyCommand(
-  //   `kubectl run -i --rm --tty pxc-client --image=percona:8.0 --restart=Never -- mysql -h ${host}` + 
-  //   `-u${username} -p${password} -e "SHOW DATABASES;"`,
-  //   'DBAAS_UPGRADE_TESTING',
-  // );
+  await I.verifyCommand(
+    `kubectl run -i --rm --tty pxc-client --image=percona:8.0 --restart=Never -- mysql -h ${host} ` +
+    `-u${username} -p${password} -e "SHOW DATABASES;"`,
+    'DBAAS_UPGRADE_TESTING',
+  );
   const version = await I.verifyCommand(
-    `kubectl run -i --rm --tty pxc-client --image=percona:8.0 --restart=Never -- mysql -h ${host} -u${username} -p${password}` + 
+    `kubectl run -i --rm --tty pxc-client --image=percona:8.0 --restart=Never -- mysql -h ${host} -u${username} -p${password} ` +
     `-e "SELECT VERSION();"`,
   );
 
@@ -445,10 +456,37 @@ Scenario(
     const pxc_cluster_pending_delete = 'pxc-pending-delete';
 
     await dbaasAPI.deleteAllDBCluster(clusterName);
+    await dbaasAPI.createCustomPXC(clusterName, pxc_cluster_pending_delete, '1');
     I.amOnPage(dbaasPage.url);
-    await dbaasActionsPage.createClusterBasicOptions(clusterName, pxc_cluster_pending_delete, 'MySQL');
-    I.click(dbaasPage.tabs.dbClusterTab.createClusterButton);
     I.waitForText('Processing', 60, dbaasPage.tabs.dbClusterTab.fields.progressBarContent(pxc_cluster_pending_delete));
     await dbaasActionsPage.deleteXtraDBCluster(pxc_cluster_pending_delete, clusterName);
+  },
+);
+
+//TODO: PXC backup doesn't work atm https://jira.percona.com/browse/PMM-11945
+Scenario.skip(
+  'PMM-T1602 Verify PXC backup on DBaaS @dbaas',
+  async ({ I, dbaasPage, dbaasActionsPage, locationsAPI }) => {
+    await locationsAPI.createStorageLocation(
+      location.name,
+      locationsAPI.storageType.s3,
+      locationsAPI.storageLocationConnection,
+      location.description,
+    );
+    await dbaasAPI.deleteAllDBCluster(clusterName);
+    const pxc_backup_cluster = 'pxc-backup-test';
+
+    I.amOnPage(dbaasPage.url);
+    await dbaasActionsPage.createClusterBasicOptions(clusterName, pxc_backup_cluster, 'MySQL');
+    await dbaasActionsPage.enableFeatureToggle(dbaasPage.tabs.dbClusterTab.backups.enableBackupsToggle,
+      dbaasPage.tabs.dbClusterTab.backups.backupInformationLabel);
+    await dbaasActionsPage.selectDropdownItem(dbaasPage.tabs.dbClusterTab.backups.locationSelect, location.name);
+    await dbaasActionsPage.selectDropdownItem(dbaasPage.tabs.dbClusterTab.backups.scheduledTimeSelect, 'Every minute');
+    I.click(dbaasPage.tabs.dbClusterTab.createClusterButton);
+    I.waitForText('Processing', 60, dbaasPage.tabs.dbClusterTab.fields.progressBarContent(pxc_backup_cluster));
+    await dbaasAPI.waitForDBClusterState(pxc_backup_cluster, clusterName, 'MySQL', 'DB_CLUSTER_STATE_READY');
+    // Wait for backup to complete
+    I.wait(120);
+    I.say(await I.verifyCommand(`kubectl get pxc-backup | grep ${pxc_backup_cluster}`, 'ready'));
   },
 );

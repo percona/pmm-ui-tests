@@ -6,7 +6,8 @@ Before(async ({ I }) => {
   await I.Authorize();
 });
 
-Scenario(
+// Skipping temporarily because sorting is not yet implemented in new Inventory page (PMM 2.37.0)
+Scenario.skip(
   'PMM-T371 - Verify sorting in Inventory page(Services tab) @inventory @nightly',
   async ({ I, pmmInventoryPage }) => {
     I.amOnPage(pmmInventoryPage.url);
@@ -14,17 +15,7 @@ Scenario(
   },
 );
 
-Scenario(
-  'PMM-T371 - Verify sorting in Inventory page(Agents tab) @inventory @nightly',
-  async ({ I, pmmInventoryPage }) => {
-    I.amOnPage(pmmInventoryPage.url);
-    I.waitForVisible(pmmInventoryPage.fields.agentsLink, 20);
-    I.click(pmmInventoryPage.fields.agentsLink);
-    await pmmInventoryPage.checkSort(3);
-  },
-);
-
-Scenario(
+Scenario.skip(
   'PMM-T371 - Verify sorting in Inventory page(Nodes tab) @inventory @nightly',
   async ({ I, pmmInventoryPage }) => {
     I.amOnPage(pmmInventoryPage.url);
@@ -178,21 +169,31 @@ Scenario(
 
 Scenario(
   'PMM-T1226 - Verify Agents has process_exec_path option on Inventory page @inventory @nightly @exporters',
-  async ({ I, pmmInventoryPage }) => {
+  async ({ I, pmmInventoryPage, inventoryAPI }) => {
     I.amOnPage(pmmInventoryPage.url);
-    await I.waitForVisible(pmmInventoryPage.fields.agentsLink, 20);
-    I.click(pmmInventoryPage.fields.agentsLink);
-    await I.waitForVisible(pmmInventoryPage.fields.tableRow);
-    const agentTextValues = await I.grabTextFromAll(pmmInventoryPage.fields.processExecPathExporters);
+    const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName('POSTGRESQL_SERVICE', 'pmm-server-postgresql');
 
-    agentTextValues.forEach((value) => {
-      if (!value.toLowerCase().includes('qan')) {
-        assert.ok(value.includes('process_exec_path'), `process_exec_path is not present for exporter ${value}`);
-        const newValue = value.replace('process_exec_path:', '').trim();
+    await pmmInventoryPage.openAgents(service_id);
+    await pmmInventoryPage.checkAgentOtherDetailsSection('Postgres exporter', 'process_exec_path=/usr/local/percona/pmm2/exporters/postgres_exporter');
 
-        assert.ok(newValue.length, `process_exec_path value is empty for ${value}`);
+    const actAg = await inventoryAPI.apiGetAgents();
+    const arr = [];
+
+    for (const key of Object.keys(actAg.data)) {
+      if (key.endsWith('exporter')) {
+        // eslint-disable-next-line no-return-assign
+        actAg.data[key].map((o) => o.type = key);
+
+        arr.push(...actAg.data[key]);
       }
-    });
+    }
+
+    assert.ok(arr.length, 'no exporter agents found');
+
+    for (const key of arr) {
+      await I.say(JSON.stringify(key, null, 2));
+      assert.ok(key.process_exec_path, `process_exec_path value is empty for ${key.type}`);
+    }
   },
 );
 
