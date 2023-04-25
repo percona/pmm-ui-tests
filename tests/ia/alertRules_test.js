@@ -93,8 +93,8 @@ Scenario(
     const newRule = page.rules[0];
 
     alertRulesPage.openAlertRulesTab();
-    I.waitForElement(alertRulesPage.buttons.openAddRuleModal);
-    I.forceClick(alertRulesPage.buttons.openAddRuleModal);
+    I.waitForEnabled(alertRulesPage.buttons.openAddRuleModal, 10);
+    I.click(alertRulesPage.buttons.openAddRuleModal);
     await alertRulesPage.fillPerconaAlert(rule, newRule);
     I.click(alertRulesPage.buttons.saveAndExit);
     // FIXME: unskip after https://jira.percona.com/browse/PMM-11399 is fixed
