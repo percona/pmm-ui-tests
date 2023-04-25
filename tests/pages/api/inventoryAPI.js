@@ -76,9 +76,12 @@ module.exports = {
   },
 
   async apiGetAgents(serviceId) {
-    const body = {
-      service_id: serviceId,
-    };
+    const body = {};
+
+    if (serviceId) {
+      body.service_id = serviceId;
+    }
+
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
 
     return I.sendPostRequest('v1/inventory/Agents/List', body, headers);

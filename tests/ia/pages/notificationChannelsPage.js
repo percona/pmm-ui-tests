@@ -2,7 +2,7 @@ const { I } = inject();
 const assert = require('assert');
 
 module.exports = {
-  url: 'graph/integrated-alerting/notification-channels',
+  url: 'graph/alerting/routes',
   types: {
     email: {
       name: 'Email Channel',
@@ -44,7 +44,7 @@ module.exports = {
     skipTlsVerifyFieldLabel: '$skipVerify-field-label',
   },
   buttons: {
-    openAddChannelModal: '$notification-channel-add-modal-button',
+    newPolicy: locate('button').find('span').withText('New specific policy'),
     closeModal: '$modal-close-button',
     addChannel: '$notification-channel-add-button',
     cancelAdding: '$notification-channel-cancel-button',
