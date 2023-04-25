@@ -327,6 +327,12 @@ test.describe('Spec file for PMM connected the portal', async () => {
   test('PMM-T1112 Verify user can disconnect pmm from portal success flow @portal @not-ui-pipeline @post-pmm-portal-upgrade', async ({
     page,
   }) => {
+    test.info().annotations.push({
+      type: 'Also Covers',
+      description:
+        "PMM-T1204 Verify the confirmation message appears when user's trying to logout from Portal",
+    });
+
     const signInPage = new SignInPage(page);
     const homeDashboard = new HomeDashboard(page);
     const platformPage = new PerconaPlatform(page);
@@ -338,8 +344,8 @@ test.describe('Spec file for PMM connected the portal', async () => {
       await platformPage.connectedContainer.waitFor({ state: 'visible' });
       await platformPage.buttons.disconnect.click();
       if (pmmVersion >= 28) {
-        await platformPage.buttons.confirmDisconnect.click();
         await expect(platformPage.elements.modalMessage).toHaveText(platformPage.messages.disconnectWarning);
+        await platformPage.buttons.confirmDisconnect.click();
         await page.locator('//input[@name="user"]').waitFor({ state: 'visible' });
       } else {
         await platformPage.toast.checkToastMessage(platformPage.messages.pmmDisconnectedFromPortal);
