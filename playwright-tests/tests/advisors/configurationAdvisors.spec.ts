@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { Page, expect, test } from '@playwright/test';
 import { api } from '@tests/api/api';
 import apiHelper from '@tests/api/helpers/apiHelper';
 import { oktaAPI } from '@tests/api/okta';
@@ -50,16 +50,17 @@ test.describe('Spec file for basic database version control of Advisors. ', asyn
     await oktaAPI.deleteUserByEmail(paidPlatformUser.email);
   });
 
-  test('PMM-T1631 Verify integrity of the new Advisors PoC @advisors', async ({ page }) => {
+  test('PMM-T1631 Verify integrity of the new Advisors PoC @advisors', async ({ page, context, browser }) => {
     test.info().annotations.push({
       type: 'Also Covers',
       description: 'PMM-T1679 Verify integrity of the new Advisors : Verify that basic Advisors regarding services versions are displayed',
     });
-    const configurationAdvisors = new ConfigurationAdvisors(page);
-    const advisorInsights = new AdvisorInsights(page);
-    const homeDashboard = new HomeDashboard(page);
-    const signInPage = new SignInPage(page);
-    const perconaPlatformPage = new PerconaPlatform(page);
+    let configurationAdvisors = new ConfigurationAdvisors(page);
+    let advisorInsights = new AdvisorInsights(page);
+    let homeDashboard = new HomeDashboard(page);
+    let signInPage = new SignInPage(page);
+    let perconaPlatformPage = new PerconaPlatform(page);
+    let paidPage: Page;
 
     await test.step('1. Login and run advisors check', async () => {
       await page.goto(configurationAdvisors.url);
@@ -67,8 +68,6 @@ test.describe('Spec file for basic database version control of Advisors. ', asyn
       await configurationAdvisors.toast.checkToastMessageContains(configurationAdvisors.messages.advisorsRunning, { variant: 'success' });
       numberOfAdvisorsNonRegistered = await configurationAdvisors.getNumberOfAllAvailableAdvisors();
     });
-
-
 
     await test.step('2. Verify that check passed with results.', async () => {
       await configurationAdvisors.buttons.advisorInsights.click();
@@ -109,44 +108,75 @@ test.describe('Spec file for basic database version control of Advisors. ', asyn
       await homeDashboard.verifyFailedAdvisorsNumberIsGreaterThen({ error: 2, warning: 2, notice: 2 });
     });
 
+
+
     await test.step('4. Verify that advisors link from home dashboard links to advisors page.', async () => {
       await homeDashboard.elements.failedAdvisorsPanel.advisorLink.click();
       await expect(page).toHaveURL(`${config.use?.baseURL}/${advisorInsights.url}`);
       numberOfAdvisorsNonRegistered = await configurationAdvisors.getNumberOfAllAvailableAdvisors();
     });
 
-    await test.step('5. Login as free registered platform user.', async () => {
+    await test.step('5. Connect free Org and open new browser window.', async () => {
       await api.pmm.platformV1.connect('Test Server', await portalAPI.getUserAccessToken(freePlatformUser.email, freePlatformUser.password));
-      await page.waitForTimeout(3000);
+
+      await page.close();
+      page = await context.newPage()
+      await apiHelper.confirmTour(page);
+      configurationAdvisors = new ConfigurationAdvisors(page);
+      advisorInsights = new AdvisorInsights(page);
+      homeDashboard = new HomeDashboard(page);
+      signInPage = new SignInPage(page);
+      perconaPlatformPage = new PerconaPlatform(page);
+      await page.waitForTimeout(Duration.TenSeconds);
+      await page.goto('')
       await grafanaHelper.unAuthorize(page);
+    });
+
+    await test.step('6. Login as free registered platform user.', async () => {
       await signInPage.oktaLogin(freePlatformUser.email, freePlatformUser.password);
       await page.goto(configurationAdvisors.url);
       await configurationAdvisors.buttons.runChecks.click();
       await configurationAdvisors.toast.checkToastMessageContains(configurationAdvisors.messages.advisorsRunning, { variant: 'success' });
     });
 
-    await test.step('6. Verify that failed advisors are displayed on home dashboard.', async () => {
+    await test.step('7. Verify that failed advisors are displayed on home dashboard.', async () => {
       await page.waitForTimeout(Duration.OneMinute);
       await advisorInsights.sideMenu.elements.home.click();
       await homeDashboard.verifyFailedAdvisorsNumberIsGreaterThen({ error: 2, warning: 10, notice: 3 });
     });
 
-    await test.step('7. Verify Number of advisors available', async () => {
+    await test.step('8. Verify Number of advisors available', async () => {
       await page.goto(configurationAdvisors.url);
       numberOfAdvisorsRegistered = await configurationAdvisors.getNumberOfAllAvailableAdvisors();
       expect(numberOfAdvisorsRegistered).toBeGreaterThan(numberOfAdvisorsNonRegistered);
     });
 
-    await test.step('8. Disconnect PMM from the registered org.', async () => {
+    await test.step('9. Disconnect PMM from the registered org.', async () => {
       await page.goto(perconaPlatformPage.perconaPlatformURL)
       await perconaPlatformPage.buttons.disconnect.click();
       await perconaPlatformPage.buttons.confirmDisconnect.click();
       await signInPage.fields.username.waitFor({ state: 'visible', timeout: Duration.ThreeMinutes });
     });
 
-    await test.step('9. Login as paid user and rerun checks.', async () => {
+    await test.step('5. Connect paid Org and open new browser window.', async () => {
       await api.pmm.platformV1.connect('Test Server', await portalAPI.getUserAccessToken(paidPlatformUser.email, paidPlatformUser.password));
+      const paidContext = await browser.newContext();
+      await page.close();
+      page = await paidContext.newPage()
+      await apiHelper.confirmTour(page);
+      configurationAdvisors = new ConfigurationAdvisors(page);
+      advisorInsights = new AdvisorInsights(page);
+      homeDashboard = new HomeDashboard(page);
+      signInPage = new SignInPage(page);
+      perconaPlatformPage = new PerconaPlatform(page);
+      await page.waitForTimeout(Duration.TenSeconds);
+      await page.goto('')
+      await grafanaHelper.unAuthorize(page);
+    });
+
+    await test.step('10. Login as paid user and rerun checks.', async () => {
       await signInPage.waitForOktaLogin();
+
       await signInPage.oktaLogin(paidPlatformUser.email, paidPlatformUser.password);
       await page.goto(configurationAdvisors.url);
       await configurationAdvisors.buttons.runChecks.click();
@@ -155,7 +185,7 @@ test.describe('Spec file for basic database version control of Advisors. ', asyn
       expect(numberOfAdvisorsPaid).toBeGreaterThan(numberOfAdvisorsRegistered);
     });
 
-    await test.step('6. Verify that failed advisors are displayed on home dashboard.', async () => {
+    await test.step('11. Verify that failed advisors are displayed on home dashboard.', async () => {
       await page.waitForTimeout(Duration.OneMinute);
       await advisorInsights.sideMenu.elements.home.click();
       await homeDashboard.verifyFailedAdvisorsNumberIsGreaterThen({ error: 2, warning: 10, notice: 3 });
