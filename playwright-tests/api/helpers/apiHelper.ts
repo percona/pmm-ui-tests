@@ -32,6 +32,11 @@ const apiHelper = {
     );
   },
 
+  splitPmmVersion: (pmmVersion: string) => {
+    const [versionMajor, versionMinor, versionPatch] = pmmVersion.split('.');
+    return { major: parseInt(versionMajor), minor: parseInt(versionMinor), patch: parseInt(versionPatch) };
+  },
+
   /**
    * @deprecated use {@link api.pmm.serverV1.getPmmVersion()}
    */

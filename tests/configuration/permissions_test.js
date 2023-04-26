@@ -27,7 +27,6 @@ const viewerRole = new DataTable(['username', 'password', 'dashboard']);
 viewerRole.add([users.viewer.username, users.viewer.password, remoteInstancesPage.url]);
 viewerRole.add([users.viewer.username, users.viewer.password, pmmSettingsPage.url]);
 viewerRole.add([users.viewer.username, users.viewer.password, 'graph/inventory/nodes?orgId=1']);
-viewerRole.add([users.viewer.username, users.viewer.password, 'graph/inventory/agents?orgId=1']);
 viewerRole.add([users.viewer.username, users.viewer.password, 'graph/inventory/services?orgId=1']);
 
 const editorRole = new DataTable(['username', 'password', 'dashboard']);
@@ -35,7 +34,6 @@ const editorRole = new DataTable(['username', 'password', 'dashboard']);
 editorRole.add([users.editor.username, users.editor.password, remoteInstancesPage.url]);
 editorRole.add([users.editor.username, users.editor.password, pmmSettingsPage.url]);
 editorRole.add([users.editor.username, users.editor.password, 'graph/inventory/nodes?orgId=1']);
-editorRole.add([users.editor.username, users.editor.password, 'graph/inventory/agents?orgId=1']);
 editorRole.add([users.editor.username, users.editor.password, 'graph/inventory/services?orgId=1']);
 
 const ptSummaryRoleCheck = new DataTable(['username', 'password', 'dashboard']);
