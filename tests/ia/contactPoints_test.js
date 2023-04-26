@@ -1,6 +1,7 @@
 const page = require('./pages/notificationChannelsPage');
 const { settingsAPI, contactPointsPage } = inject();
 
+const slackCPName = 'Slack contact point'
 const notificationChannels = new DataTable(['name', 'type']);
 
 // for (const [, channel] of Object.entries(page.types)) {
@@ -24,11 +25,28 @@ After(async ({ channelsAPI, rulesAPI }) => {
 });
 
 Scenario(
-  'PMM-T513,PMM-T512, PMM-T491 Add a notification channel @ia',
+  'PMM-T1703 Verify Slack contact point can be created @ia',
   async ({ I }) => {
-    contactPointsPage.openContactPointsTab();
-    contactPointsPage.createSlackCP('Slack test');
+    await contactPointsPage.openContactPointsTab();
+    // TODO url
+    await contactPointsPage.createSlackCP(slackCPName);
     I.verifyPopUpMessage(contactPointsPage.messages.cPCreatedSuccess);
+    I.waitForVisible(contactPointsPage.elements.cPTable, 10);
+    I.see(slackCPName, contactPointsPage.elements.cPTable);
+  },
+);
+
+Scenario(
+  'PMM-T1704 Verify Slack contact point can be deleted @ia',
+  async ({ I }) => {
+    await contactPointsPage.openContactPointsTab();
+    I.waitForVisible(contactPointsPage.buttons.deleteCP(2), 10);
+    I.click(contactPointsPage.buttons.deleteCP(2));
+    I.waitForVisible(contactPointsPage.elements.deleteCPDialogHeader, 10);
+    I.see(contactPointsPage.messages.deleteCPConfirm(slackCPName));
+    I.click(contactPointsPage.buttons.confirmDeleteCP);
+    I.verifyPopUpMessage(contactPointsPage.messages.cPDeletedSuccess);
+    I.dontSee(slackCPName, contactPointsPage.elements.cPTable);
   },
 );
 
