@@ -48,8 +48,8 @@ Scenario(
     const scrapeSizeTarball = await I.verifyCommand('ps aux | grep -v \'grep\' | grep \'vm_agent\' | tail -1 | grep -o \'promscrape.maxScrapeSize=.*MiB\'');
     const scrapeSizeContainer = await I.verifyCommand('docker logs pmm-client-scrape 2>&1 | grep \'promscrape.maxScrapeSize.*vm_agent\' | tail -1 | grep -o \'promscrape.maxScrapeSize=".*MiB"\'');
 
-    I.assertEqual(scrapeSizeContainer, `promscrape.maxScrapeSize"${expectedScrapeSize}MiB"`, 'Max scrape size from client container logs does not match expected value!');
-    I.assertEqual(scrapeSizeTarball, `promscrape.maxScrapeSize${expectedScrapeSize}MiB`, 'Max scrape size from local client logs does not match expected value!');
+    I.assertEqual(scrapeSizeContainer, `promscrape.maxScrapeSize="${expectedScrapeSize}MiB"`, 'Max scrape size from client container logs does not match expected value!');
+    I.assertEqual(scrapeSizeTarball, `promscrape.maxScrapeSize=${expectedScrapeSize}MiB`, 'Max scrape size from local client logs does not match expected value!');
   },
 );
 
@@ -71,7 +71,7 @@ Scenario(
     const scrapeSizeTarball = await I.verifyCommand('ps aux | grep -v \'grep\' | grep \'vm_agent\' | tail -1 | grep -o \'promscrape.maxScrapeSize=.*MiB\'');
     const scrapeSizeContainer = await I.verifyCommand('docker logs pmm-client-scrape 2>&1 | grep \'promscrape.maxScrapeSize.*vm_agent\' | tail -1 | grep -o \'promscrape.maxScrapeSize=".*MiB"\'');
 
-    I.assertEqual(scrapeSizeContainer, `promscrape.maxScrapeSize"${expectedScrapeSize}MiB"`, 'Max scrape size from client container logs does not match expected value!');
-    I.assertEqual(scrapeSizeTarball, `promscrape.maxScrapeSize${expectedScrapeSize}MiB`, 'Max scrape size from local client logs does not match expected value!');
+    I.assertEqual(scrapeSizeContainer, `promscrape.maxScrapeSize="${expectedScrapeSize}MiB"`, 'Max scrape size from client container logs does not match expected value!');
+    I.assertEqual(scrapeSizeTarball, `promscrape.maxScrapeSize=${expectedScrapeSize}MiB`, 'Max scrape size from local client logs does not match expected value!');
   },
 );
