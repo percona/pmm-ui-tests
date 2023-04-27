@@ -24,6 +24,7 @@ module.exports = {
     settingsLink: '$settings-link',
     selectDropdownOption: (option) => `$${option}-select-option`,
     inputField: (id) => `input[id='${id}']`,
+    modalDialog: 'div[role=\'dialog\']',
   },
   buttons: {
     firstPageButton: '$first-page-button',

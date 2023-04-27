@@ -27,7 +27,6 @@ module.exports = {
     detailsSeverityLabel: (value) => locate('span').withText(`severity=${value}`).inside('//ul[@aria-label="Tags"]').at(2),
     detailsFolderLabel: (value) => locate('span').withText(`grafana_folder=${value}`).inside('//ul[@aria-label="Tags"]'),
     ruleValidationError: (error) => locate('div').withText(error).inside('div').withAttr({ role: 'alert' }),
-    modalDialog: 'div[role=\'dialog\']',
   },
   buttons: {
     openAddRuleModal: '//a[contains(.,\'New alert rule\')]',
