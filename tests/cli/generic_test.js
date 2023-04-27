@@ -11,7 +11,7 @@ After(async ({ I }) => {
   const username = 'admin';
   const password = process.env.ADMIN_PASSWORD || 'admin';
 
-  await I.verifyCommand(`sudo pmm-admin config '--server-url=https://${username}:${password}@0.0.0.0:443' --server-insecure-tls ${serverIp}`);
+  await I.verifyCommand(`sudo pmm-admin config --force '--server-url=https://${username}:${password}@0.0.0.0:443' --server-insecure-tls ${serverIp}`);
 });
 
 Scenario(
@@ -44,7 +44,7 @@ Scenario(
     const containerIp = await I.verifyCommand(`docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' ${containerName}`);
 
     await I.verifyCommand(`docker run -d --name pmm-client-scrape --env PMM_AGENT_SETUP=1 --env PMM_AGENT_SERVER_ADDRESS=${containerIp}:443 --env PMM_AGENT_SERVER_USERNAME=admin --env PMM_AGENT_SERVER_PASSWORD=admin --env PMM_AGENT_PORTS_MIN=41000 --env PMM_AGENT_PORTS_MAX=41500 --env PMM_AGENT_SERVER_INSECURE_TLS=1 --env PMM_AGENT_CONFIG_FILE=config/pmm-agent.yaml --env PMM_AGENT_SETUP_NODE_NAME=pmm-client-scrape-container --env PMM_AGENT_SETUP_FORCE=1 --env PMM_AGENT_SETUP_NODE_TYPE=container perconalab/pmm-client:dev-latest`);
-    await I.verifyCommand(`sudo pmm-admin config '--server-url=https://admin:admin@0.0.0.0:1443' --server-insecure-tls ${serverIp}`);
+    await I.verifyCommand(`sudo pmm-admin config --force '--server-url=https://admin:admin@0.0.0.0:1443' --server-insecure-tls ${serverIp}`);
 
     const scrapeSizeContainer = await I.verifyCommand('ps aux | grep -v \'grep\' | grep \'vm_agent\' | tail -1 | grep \'promscrape.maxScrapeSize=.*MiB\'');
     const scrapeSizeTarball = await I.verifyCommand('docker logs pmm-client-scrape 2>&1 | grep \'promscrape.maxScrapeSize.*vm_agent\' | tail -1 | grep \'promscrape.maxScrapeSize=".*MiB"\'');
@@ -67,7 +67,7 @@ Scenario(
     const containerIp = await I.verifyCommand(`docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' ${containerName}`);
 
     await I.verifyCommand(`docker run -d --name pmm-client-scrape --env PMM_AGENT_SETUP=1 --env PMM_AGENT_SERVER_ADDRESS=${containerIp}:443 --env PMM_AGENT_SERVER_USERNAME=admin --env PMM_AGENT_SERVER_PASSWORD=admin --env PMM_AGENT_PORTS_MIN=41000 --env PMM_AGENT_PORTS_MAX=41500 --env PMM_AGENT_SERVER_INSECURE_TLS=1 --env PMM_AGENT_CONFIG_FILE=config/pmm-agent.yaml --env PMM_AGENT_SETUP_NODE_NAME=pmm-client-scrape-container --env PMM_AGENT_SETUP_FORCE=1 --env PMM_AGENT_SETUP_NODE_TYPE=container perconalab/pmm-client:dev-latest`);
-    await I.verifyCommand(`sudo pmm-admin config '--server-url=https://admin:admin@0.0.0.0:2443' --server-insecure-tls ${serverIp}`);
+    await I.verifyCommand(`sudo pmm-admin config --force '--server-url=https://admin:admin@0.0.0.0:2443' --server-insecure-tls ${serverIp}`);
 
     const scrapeSizeContainer = await I.verifyCommand('ps aux | grep -v \'grep\' | grep \'vm_agent\' | tail -1 | grep -o \'promscrape.maxScrapeSize=.*MiB\'');
     const scrapeSizeTarball = await I.verifyCommand('docker logs pmm-client-scrape 2>&1 | grep \'promscrape.maxScrapeSize.*vm_agent\' | tail -1 | grep -o \'promscrape.maxScrapeSize=".*MiB"\'');
