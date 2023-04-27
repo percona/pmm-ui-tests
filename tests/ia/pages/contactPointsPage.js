@@ -32,13 +32,13 @@ module.exports = {
     testNotification: 'You will send a test notification that uses a predefined alert. If you have defined a custom template or message, for better results switch to custom notification message, from above.',
     testSent: 'Test alert sent.',
   },
-  id: {
-    cPTypeInput: 'contact-point-type-items.0.',
-    webhookUrlInput: 'items.0.secureSettings.url',
-    url: 'items.0.settings.url',
-    key: 'items.0.secureSettings.integrationKey',
-  },
-
+  fields: {
+    cPName: `input[id=\'name\']`,
+    cPType: `input[id=\'contact-point-type-items.0.\']`,
+    slackWebhookUrl: 'input[id=\'items.0.secureSettings.url\']',
+    webhookUrl: 'input[id=\'items.0.settings.url\']',
+    pagerDutyKey: 'input[id=\'items.0.secureSettings.integrationKey\']',
+  },  
 
   async openContactPointsTab() {
     I.amOnPage(this.url);
@@ -48,11 +48,11 @@ module.exports = {
   async createCP(name, type) {
     I.waitForVisible(this.buttons.newContactPoint, 10);
     I.click(this.buttons.newContactPoint);
-    I.waitForVisible(iaCommon.elements.inputField(this.id.cPTypeInput), 10);
-    I.click(iaCommon.elements.inputField(this.id.cPTypeInput));
+    I.waitForVisible(this.fields.cPType, 10);
+    I.click(this.fields.cPType);
     I.waitForVisible(iaCommon.elements.selectDropdownOption(type), 10);
     I.click(iaCommon.elements.selectDropdownOption(type));
-    I.fillField(iaCommon.elements.inputField('name'), name);
+    I.fillField(this.fields.cPName, name);
   },
 
   async deleteCP(rowNumber) {

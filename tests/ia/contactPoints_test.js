@@ -10,10 +10,10 @@ Before(async ({ I }) => {
 
 Scenario(
   'PMM-T1703 Verify Slack contact point can be created @ia',
-  async ({ I, iaCommon }) => {
+  async ({ I }) => {
     await contactPointsPage.openContactPointsTab();
     await contactPointsPage.createCP(slackCPName, 'Slack');
-    I.fillField(iaCommon.elements.inputField(contactPointsPage.id.webhookUrlInput), slackCPName);
+    I.fillField(contactPointsPage.fields.slackWebhookUrl, slackCPName);
     I.click(contactPointsPage.buttons.saveCP);
     I.verifyPopUpMessage(contactPointsPage.messages.cPCreatedSuccess);
     await contactPointsPage.verifyCPInTable(slackCPName);
@@ -22,12 +22,12 @@ Scenario(
 
 Scenario(
   'PMM-T1707 Verify Slack contact point can be edited @ia',
-  async ({ I, iaCommon }) => {
+  async ({ I }) => {
     await contactPointsPage.openContactPointsTab();
     I.waitForVisible(contactPointsPage.buttons.editCP(2), 10);
     I.click(contactPointsPage.buttons.editCP(2));
     I.waitForVisible(contactPointsPage.elements.cPEditHeader, 10);
-    I.fillField(iaCommon.elements.inputField('name'), editedCPName);
+    I.fillField(contactPointsPage.fields.cPName, editedCPName);
     I.click(contactPointsPage.buttons.saveCP);
     I.verifyPopUpMessage(contactPointsPage.messages.cPEditedSuccess);
     I.waitForVisible(contactPointsPage.elements.cPTable, 10);
@@ -62,11 +62,12 @@ Scenario(
 
 Scenario(
   'PMM-T1709 Verify Webhook contact point can be created @ia',
-  async ({ I, iaCommon }) => {
+  async ({ I }) => {
     const webhook = 'webhook test';
+
     await contactPointsPage.openContactPointsTab();
     await contactPointsPage.createCP(webhook, 'Webhook');
-    I.fillField(iaCommon.elements.inputField(contactPointsPage.id.url), webhook);
+    I.fillField(contactPointsPage.fields.webhookUrl, webhook);
     I.click(contactPointsPage.buttons.saveCP);
     I.verifyPopUpMessage(contactPointsPage.messages.cPCreatedSuccess);
     await contactPointsPage.verifyCPInTable(webhook);
@@ -83,11 +84,11 @@ Scenario(
     I.waitForVisible(contactPointsPage.buttons.saveCP, 10);
     I.click(contactPointsPage.buttons.saveCP);
     I.verifyPopUpMessage(contactPointsPage.messages.missingRequired);
-    I.click(iaCommon.elements.inputField(contactPointsPage.id.cPTypeInput));
+    I.click(contactPointsPage.fields.cPType);
     I.waitForVisible(iaCommon.elements.selectDropdownOption('PagerDuty'), 10);
     I.click(iaCommon.elements.selectDropdownOption('PagerDuty'));
-    I.fillField(iaCommon.elements.inputField('name'), 'test');
-    I.fillField(iaCommon.elements.inputField(contactPointsPage.id.key), process.env.PAGER_DUTY_SERVICE_KEY);
+    I.fillField(contactPointsPage.fields.cPName, 'test');
+    I.fillField(contactPointsPage.fields.pagerDutyKey, process.env.PAGER_DUTY_SERVICE_KEY);
     I.click(contactPointsPage.buttons.testCP);
     I.see(contactPointsPage.messages.testNotification, iaCommon.elements.modalDialog);
     I.click(contactPointsPage.buttons.sendTest);
