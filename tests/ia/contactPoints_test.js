@@ -2,7 +2,7 @@ const { settingsAPI, contactPointsPage } = inject();
 const slackCPName = 'Slack contact point';
 const editedCPName = 'Edited CP';
 
-Feature('IA: Notification Channels').retry(1);
+Feature('Alerting: Contact Points');
 
 Before(async ({ I }) => {
   await I.Authorize();

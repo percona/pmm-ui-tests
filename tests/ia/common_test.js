@@ -1,6 +1,6 @@
 const { settingsAPI, iaCommon, alertsPage } = inject();
 
-Feature('IA: Tabs and navigation');
+Feature('Alerting: Tabs and navigation');
 
 Before(async ({ I, rulesAPI }) => {
   await I.Authorize();

@@ -21,7 +21,7 @@ const rulesForAlerts = [{
 },
 ];
 
-Feature('IA: Alerts');
+Feature('Alerting: Alerts');
 
 Before(async ({ I }) => {
   await I.Authorize();

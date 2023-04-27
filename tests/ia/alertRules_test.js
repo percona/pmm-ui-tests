@@ -17,7 +17,7 @@ Object.values(page.templates).forEach((template) => {
     template.expression, template.alert]);
 });
 
-Feature('IA: Alert rules');
+Feature('Alerting: Alert rules');
 
 Before(async ({ I }) => {
   await I.Authorize();
