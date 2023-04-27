@@ -31,7 +31,7 @@ Scenario(
   },
 );
 Scenario(
-  '@PMM-T1664 Verify vm_agents default value of -promscrape.maxScapeSize flag',
+  '@PMM-T1664 Verify vm_agents default value of -promscrape.maxScapeSize flag @cli',
   async ({ I }) => {
     const serverIp = await I.verifyCommand('curl ifconfig.me');
     const containerName = 'pmm-server-default-scrape';
@@ -54,7 +54,7 @@ Scenario(
 );
 
 Scenario(
-  '@PMM-T1665 Verify that vm_agents -promscrape.maxScapeSize flag value can be set by user',
+  '@PMM-T1665 Verify that vm_agents -promscrape.maxScapeSize flag value can be set by user @cli',
   async ({ I }) => {
     const serverIp = await I.verifyCommand('curl ifconfig.me');
     const containerName = 'pmm-server-custom-scrape';
