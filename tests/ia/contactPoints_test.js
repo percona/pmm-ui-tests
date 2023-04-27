@@ -1,28 +1,11 @@
-const page = require('./pages/notificationChannelsPage');
 const { settingsAPI, contactPointsPage } = inject();
-
 const slackCPName = 'Slack contact point';
 const editedCPName = 'Edited CP';
-const notificationChannels = new DataTable(['name', 'type']);
-
-// for (const [, channel] of Object.entries(page.types)) {
-//   notificationChannels.add([channel.name, channel.type]);
-// }
 
 Feature('IA: Notification Channels').retry(1);
 
-Before(async ({
-  I, channelsAPI, settingsAPI, rulesAPI,
-}) => {
+Before(async ({ I }) => {
   await I.Authorize();
-  //   await settingsAPI.apiEnableIA();
-  //   await rulesAPI.clearAllRules();
-  //   await channelsAPI.clearAllNotificationChannels();
-});
-
-After(async ({ channelsAPI, rulesAPI }) => {
-  //   await rulesAPI.clearAllRules();
-  //   await channelsAPI.clearAllNotificationChannels();
 });
 
 Scenario(
