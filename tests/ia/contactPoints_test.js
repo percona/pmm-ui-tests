@@ -1,6 +1,11 @@
-const { settingsAPI, contactPointsPage } = inject();
-const slackCPName = 'Slack contact point';
-const editedCPName = 'Edited CP';
+const { contactPointsPage } = inject();
+const editedCPName = 'Edited';
+const page = require('./pages/contactPointsPage.js');
+const notificationChannels = new DataTable(['name', 'type']);
+
+for (const [, channel] of Object.entries(page.types)) {
+  notificationChannels.add([channel.name, channel.type]);
+}
 
 Feature('Alerting: Contact Points');
 
@@ -8,30 +13,29 @@ Before(async ({ I }) => {
   await I.Authorize();
 });
 
-Scenario(
-  'PMM-T1703 Verify Slack contact point can be created @ia',
-  async ({ I }) => {
+Data(notificationChannels).Scenario(
+  'PMM-T1703 Verify Slack contact point can be created @ia ', +
+'PMM-T1709 Verify Webhook contact point can be created @ia',
+  async ({ I, current }) => {
     await contactPointsPage.openContactPointsTab();
-    await contactPointsPage.createCP(slackCPName, 'Slack');
-    I.fillField(contactPointsPage.fields.slackWebhookUrl, slackCPName);
+    await contactPointsPage.createCP(current.name, current.type);
     I.click(contactPointsPage.buttons.saveCP);
     I.verifyPopUpMessage(contactPointsPage.messages.cPCreatedSuccess);
-    await contactPointsPage.verifyCPInTable(slackCPName);
+    await contactPointsPage.verifyCPInTable(current.name);
   },
 );
 
-Scenario(
+Data(notificationChannels).Scenario(
   'PMM-T1707 Verify Slack contact point can be edited @ia',
-  async ({ I }) => {
+  async ({ I, current }) => {
     await contactPointsPage.openContactPointsTab();
-    I.waitForVisible(contactPointsPage.buttons.editCP(2), 10);
-    I.click(contactPointsPage.buttons.editCP(2));
+    I.waitForVisible(contactPointsPage.buttons.editCP(current.name), 10);
+    I.click(contactPointsPage.buttons.editCP(current.name));
     I.waitForVisible(contactPointsPage.elements.cPEditHeader, 10);
-    I.fillField(contactPointsPage.fields.cPName, editedCPName);
+    I.appendField(contactPointsPage.fields.cPName, editedCPName);
     I.click(contactPointsPage.buttons.saveCP);
     I.verifyPopUpMessage(contactPointsPage.messages.cPEditedSuccess);
-    I.waitForVisible(contactPointsPage.elements.cPTable, 10);
-    I.see(editedCPName, contactPointsPage.elements.cPTable);
+    await contactPointsPage.verifyCPInTable(current.name + editedCPName);
   },
 );
 
@@ -39,7 +43,7 @@ Scenario(
   'PMM-T1706 Verify default contact point cannot be deleted @ia',
   async ({ I }) => {
     await contactPointsPage.openContactPointsTab();
-    await contactPointsPage.deleteCP(1);
+    await contactPointsPage.deleteCP('default');
     I.waitForVisible(contactPointsPage.elements.cannotdeleteCPDialogHeader, 10);
     I.see(contactPointsPage.messages.cPCannotDelete);
     I.click(contactPointsPage.buttons.closeModal);
@@ -47,36 +51,24 @@ Scenario(
   },
 );
 
-Scenario(
+Data(notificationChannels).Scenario(
   'PMM-T1704 Verify Slack contact point can be deleted @ia',
-  async ({ I }) => {
+  async ({ I, current }) => {
+    const name = current.name + editedCPName;
+
     await contactPointsPage.openContactPointsTab();
-    await contactPointsPage.deleteCP(2);
+    await contactPointsPage.deleteCP(name);
     I.waitForVisible(contactPointsPage.elements.deleteCPDialogHeader, 10);
-    I.see(contactPointsPage.messages.deleteCPConfirm(editedCPName));
+    I.see(contactPointsPage.messages.deleteCPConfirm(name));
     I.click(contactPointsPage.buttons.confirmDeleteCP);
     I.verifyPopUpMessage(contactPointsPage.messages.cPDeletedSuccess);
-    I.dontSee(editedCPName, contactPointsPage.elements.cPTable);
-  },
-);
-
-Scenario(
-  'PMM-T1709 Verify Webhook contact point can be created @ia',
-  async ({ I }) => {
-    const webhook = 'webhook test';
-
-    await contactPointsPage.openContactPointsTab();
-    await contactPointsPage.createCP(webhook, 'Webhook');
-    I.fillField(contactPointsPage.fields.webhookUrl, webhook);
-    I.click(contactPointsPage.buttons.saveCP);
-    I.verifyPopUpMessage(contactPointsPage.messages.cPCreatedSuccess);
-    await contactPointsPage.verifyCPInTable(webhook);
+    I.dontSee(name, contactPointsPage.elements.cPTable);
   },
 );
 
 Scenario(
   'PMM-T1710 Verify saving a contact point when required info is missing ', +
-  'PMM-T1711 Verify contact point test @ia',
+'PMM-T1711 Verify contact point test @ia',
   async ({ I, iaCommon }) => {
     await contactPointsPage.openContactPointsTab();
     I.waitForVisible(contactPointsPage.buttons.newContactPoint, 10);

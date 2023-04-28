@@ -5,22 +5,45 @@ const {
 
 module.exports = {
   url: 'graph/alerting/notifications',
+  types: {
+    email: {
+      name: 'Email Channel',
+      type: 'Email',
+      addresses: 'some@email.com',
+    },
+    pagerDuty: {
+      name: 'PagerDuty Channel',
+      type: 'PagerDuty',
+      key: 'routingKey',
+    },
+    slack: {
+      name: 'Slack Channel',
+      type: 'Slack',
+      slackChannel: 'slackChannel',
+    },
+    webhook: {
+      name: 'Webhook Channel',
+      type: 'Webhook',
+      url: 'https://webhookd:8080/alert',
+    },
+  },
   elements: {
     cPHeader: locate('h4').withText('Contact points'),
     cPTable: '$dynamic-table',
     deleteCPDialogHeader: locate('h2').withText('Delete contact point'),
     cannotdeleteCPDialogHeader: locate('h2').withText('Cannot delete contact point'),
     cPEditHeader: locate('h4').withText('Update contact point'),
+    cPTableRow: (name) => `//*[@data-testid="row"][contains(., '${name}')]`,
   },
   buttons: {
     newContactPoint: locate('button').find('span').withText('New contact point'),
     saveCP: locate('button').find('span').withText('Save contact point'),
-    deleteCP: (rowNumber) =>  locate('button').withAttr({ 'aria-label': 'Delete contact point' }).at(rowNumber),
+    deleteCP: (name) => `//*[@data-testid="row"][contains(., '${name}')]//button[@aria-label = 'Delete contact point']`,
     confirmDeleteCP: locate('button').find('span').withText('Yes, delete'),
-    editCP: (rowNumber) =>  locate('$edit').at(rowNumber),
+    editCP: (name) => `//*[@data-testid="row"][contains(., '${name}')]//a[@aria-label = 'Edit contact point']`,
     closeModal: locate('button').find('span').withText('Close'),
     testCP: locate('button').find('span').withText('Test'),
-    sendTest: locate('button').find('span').withText('Send test notification'), 
+    sendTest: locate('button').find('span').withText('Send test notification'),
   },
   messages: {
     cPCreatedSuccess: 'Contact point created',
@@ -38,7 +61,8 @@ module.exports = {
     slackWebhookUrl: 'input[id=\'items.0.secureSettings.url\']',
     webhookUrl: 'input[id=\'items.0.settings.url\']',
     pagerDutyKey: 'input[id=\'items.0.secureSettings.integrationKey\']',
-  },  
+    emailAddress: 'textarea[id=\'items.0.settings.addresses\']',
+  },
 
   async openContactPointsTab() {
     I.amOnPage(this.url);
@@ -52,7 +76,7 @@ module.exports = {
     I.click(this.fields.cPType);
     I.waitForVisible(iaCommon.elements.selectDropdownOption(type), 10);
     I.click(iaCommon.elements.selectDropdownOption(type));
-    I.fillField(this.fields.cPName, name);
+    await this.fillFields(name, type);
   },
 
   async deleteCP(rowNumber) {
@@ -62,6 +86,27 @@ module.exports = {
 
   async verifyCPInTable(name) {
     I.waitForVisible(this.elements.cPTable, 10);
-    I.see(name, this.elements.cPTable);
-  }
+    I.seeElement(this.elements.cPTableRow(name));
+  },
+
+  async fillFields(name, type) {
+    I.fillField(this.fields.cPName, name);
+
+    switch (type) {
+      case this.types.email.type:
+        I.fillField(this.fields.emailAddress, this.types.email.addresses);
+        break;
+      case this.types.pagerDuty.type:
+        I.fillField(this.fields.pagerDutyKey, this.types.pagerDuty.key);
+        break;
+      case this.types.slack.type:
+        I.fillField(this.fields.slackWebhookUrl, this.types.slack.slackChannel);
+        break;
+      case this.types.webhook.type:
+        I.fillField(this.fields.webhookUrl, this.types.webhook.url);
+        break;
+      default:
+        assert.ok(false, `Did not find a matching notification channel type ${type}`);
+    }
+  },
 }
