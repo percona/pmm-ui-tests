@@ -29,6 +29,7 @@ export class AdvisorsPage extends CommonPage {
     ...super.getButtons(),
     runChecks: this.page.locator('//*[text()="Run Checks"]/parent::button'),
     connectToPlatform: this.page.locator('//*[text()="Connect to Percona Platform"]/parent::*'),
+    developmentAdvisors: this.page.locator('//*[@aria-label="Tab Development Advisors"]'),
     advisorInsights: this.page.locator('//*[@aria-label="Tab Advisor Insights"]'),
     securityAdvisors: this.page.locator('//*[@aria-label="Tab Security Advisors"]'),
     configurationAdvisors: this.page.locator('//*[@aria-label="Tab Configuration Advisors"]'),
@@ -40,6 +41,7 @@ export class AdvisorsPage extends CommonPage {
   private advisorsMessages = {
     ...super.getMessages(),
     advisorsRunning: 'All checks started running in the background',
+    advisorRunning: (advisorName: string) => `${advisorName} check started running in the background`
   };
 
   private advisorsLinks = {

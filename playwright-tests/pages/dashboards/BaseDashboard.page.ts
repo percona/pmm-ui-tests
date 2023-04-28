@@ -7,8 +7,6 @@ export class BaseDashboard extends CommonPage {
     super(page);
   }
 
-
-
   private baseDashboardElements = {
     ...super.getElements(),
     collapsedPanel: this.page.locator('//*[contains(@class, "dashboard-row--collapsed")]'),

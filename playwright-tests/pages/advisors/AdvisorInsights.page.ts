@@ -2,6 +2,7 @@ import { Page, expect } from '@playwright/test';
 import Duration from '@tests/helpers/Duration';
 import { AdvisorsPage } from './Advisors.page';
 import InsightsTable from '@tests/components/advisors/insightsTable';
+import FailedChecksTable from '@tests/components/advisors/failedChecksTable';
 
 export enum FailedAdvisorType {
   Warning = 'Warning',
@@ -16,6 +17,7 @@ export class AdvisorInsights extends AdvisorsPage {
 
   url = 'graph/advisors/insights';
   insightsTable = new InsightsTable(this.page);
+  failedChecksTable = new FailedChecksTable(this.page);
 
   elements = {
     ...super.getAdvisorsElements(),
@@ -47,8 +49,8 @@ export class AdvisorInsights extends AdvisorsPage {
     ...super.getAdvisorsLinks(),
   };
 
-  verifyFailedAdvisorsForServiceAndType = async (serviceName: string, advisorType: FailedAdvisorType, count: number) => {
-    await this.waitForFailedAdvisorDisplayed(serviceName, advisorType);
+  verifyFailedAdvisorsForServiceAndType = async (serviceName: string, advisorType: FailedAdvisorType, count: number, timeout?: Duration) => {
+    await this.waitForFailedAdvisorDisplayed(serviceName, advisorType, timeout);
     const failedAdvisor = (await this.elements.failedAdvisorsForServiceByType(serviceName, advisorType).textContent()) || ''
     expect(parseInt(failedAdvisor.replace(/\D/g, ''))).toEqual(count);
   }
@@ -68,7 +70,7 @@ export class AdvisorInsights extends AdvisorsPage {
   };
 
   waitForFailedAdvisorDisplayed = async (serviceName: string, type: FailedAdvisorType, timeout: number = Duration.OneMinute) => {
-    for (let i = 0; i < 10; i++) {
+    for (let i = 0; i < 20; i++) {
       try {
         await this.elements.failedAdvisorsForServiceByType(serviceName, type).waitFor({ state: 'visible', timeout: Duration.FiveSeconds });
         break;
