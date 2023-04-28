@@ -1,10 +1,10 @@
 const { contactPointsPage } = inject();
 const page = require('./pages/contactPointsPage.js');
 const editedCPName = 'Edited';
-const notificationChannels = new DataTable(['name', 'type']);
+const contactPoints = new DataTable(['name', 'type']);
 
 for (const [, channel] of Object.entries(page.types)) {
-  notificationChannels.add([channel.name, channel.type]);
+  contactPoints.add([channel.name, channel.type]);
 }
 
 Feature('Alerting: Contact Points');
@@ -13,9 +13,9 @@ Before(async ({ I }) => {
   await I.Authorize();
 });
 
-Data(notificationChannels).Scenario(
-  'PMM-T1703 Verify Slack contact point can be created ', +
-'PMM-T1709 Verify Webhook contact point can be created @ia',
+Data(contactPoints).Scenario(
+  'PMM-T1703 Verify Slack contact point can be created, ' +
+  'PMM-T1709 Verify Webhook contact point can be created @ia',
   async ({ I, current }) => {
     await contactPointsPage.openContactPointsTab();
     await contactPointsPage.createCP(current.name, current.type);
@@ -25,7 +25,7 @@ Data(notificationChannels).Scenario(
   },
 );
 
-Data(notificationChannels).Scenario(
+Data(contactPoints).Scenario(
   'PMM-T1707 Verify Slack contact point can be edited @ia',
   async ({ I, current }) => {
     await contactPointsPage.openContactPointsTab();
@@ -51,7 +51,7 @@ Scenario(
   },
 );
 
-Data(notificationChannels).Scenario(
+Data(contactPoints).Scenario(
   'PMM-T1704 Verify Slack contact point can be deleted @ia',
   async ({ I, current }) => {
     const name = current.name + editedCPName;
@@ -67,8 +67,8 @@ Data(notificationChannels).Scenario(
 );
 
 Scenario(
-  'PMM-T1710 Verify saving a contact point when required info is missing ', +
-'PMM-T1711 Verify contact point test @ia',
+  'PMM-T1710 Verify saving a contact point when required info is missing, ' +
+  'PMM-T1711 Verify contact point test @ia',
   async ({ I, iaCommon }) => {
     await contactPointsPage.openContactPointsTab();
     I.waitForVisible(contactPointsPage.buttons.newContactPoint, 10);
