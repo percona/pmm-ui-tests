@@ -1,6 +1,6 @@
 const { contactPointsPage } = inject();
-const editedCPName = 'Edited';
 const page = require('./pages/contactPointsPage.js');
+const editedCPName = 'Edited';
 const notificationChannels = new DataTable(['name', 'type']);
 
 for (const [, channel] of Object.entries(page.types)) {
@@ -14,7 +14,7 @@ Before(async ({ I }) => {
 });
 
 Data(notificationChannels).Scenario(
-  'PMM-T1703 Verify Slack contact point can be created @ia ', +
+  'PMM-T1703 Verify Slack contact point can be created ', +
 'PMM-T1709 Verify Webhook contact point can be created @ia',
   async ({ I, current }) => {
     await contactPointsPage.openContactPointsTab();
