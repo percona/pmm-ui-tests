@@ -51,4 +51,3 @@
         environment:
           - POSTGRES_USER=postgres
           - POSTGRES_PASSWORD=gfaks4d8OH
-          
