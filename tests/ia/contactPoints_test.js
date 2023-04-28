@@ -28,9 +28,7 @@ Data(contactPoints).Scenario(
   'PMM-T1707 Verify Slack contact point can be edited @ia',
   async ({ I, current }) => {
     await contactPointsPage.openContactPointsTab();
-    I.waitForVisible(contactPointsPage.buttons.editCP(current.name), 10);
-    I.click(contactPointsPage.buttons.editCP(current.name));
-    I.waitForVisible(contactPointsPage.elements.cPEditHeader, 10);
+    await contactPointsPage.editCP(current.name);
     I.appendField(contactPointsPage.fields.cPName, editedCPName);
     I.click(contactPointsPage.buttons.saveCP);
     I.verifyPopUpMessage(contactPointsPage.messages.cPEditedSuccess);

@@ -79,9 +79,15 @@ module.exports = {
     await this.fillFields(name, type);
   },
 
-  async deleteCP(rowNumber) {
-    I.waitForVisible(this.buttons.deleteCP(rowNumber), 10);
-    I.click(this.buttons.deleteCP(rowNumber));
+  async deleteCP(name) {
+    I.waitForVisible(this.buttons.deleteCP(name), 10);
+    I.click(this.buttons.deleteCP(name));
+  },
+
+  async editCP(name) {
+    I.waitForVisible(this.buttons.editCP(name), 10);
+    I.click(this.buttons.editCP(name));
+    I.waitForVisible(this.elements.cPEditHeader, 10);
   },
 
   async verifyCPInTable(name) {
