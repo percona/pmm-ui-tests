@@ -22,6 +22,9 @@ module.exports = {
     table: '$table-tbody',
     disabledIa: '$empty-block',
     settingsLink: '$settings-link',
+    selectDropdownOption: (option) => `$${option}-select-option`,
+    inputField: (id) => `input[id='${id}']`,
+    modalDialog: 'div[role=\'dialog\']',
   },
   buttons: {
     firstPageButton: '$first-page-button',
@@ -38,7 +41,7 @@ module.exports = {
     disabledIa: 'Percona Alerting is disabled. You can enable it in  \n'
       + 'PMM Settings.',
   },
-  
+
   /**
    * @param  {} tabName
    * @param  {} tabElement  - element (locator) that exist in tab
