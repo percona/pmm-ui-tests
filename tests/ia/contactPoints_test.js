@@ -1,10 +1,9 @@
 const { contactPointsPage } = inject();
-const page = require('./pages/contactPointsPage.js');
 const editedCPName = 'Edited';
 const contactPoints = new DataTable(['name', 'type']);
 
-for (const [, channel] of Object.entries(page.types)) {
-  contactPoints.add([channel.name, channel.type]);
+for (const [, cp] of Object.entries(contactPointsPage.types)) {
+  contactPoints.add([cp.name, cp.type]);
 }
 
 Feature('Alerting: Contact Points');
