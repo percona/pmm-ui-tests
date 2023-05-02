@@ -4,10 +4,11 @@ export default class Table {
   constructor(readonly page: Page) { }
 
   private pagination = this.page.getByTestId('pagination');
+  private tableBody = this.page.getByTestId('table-tbody');
 
   private tableElements = {
     body: this.page.getByTestId('table-tbody'),
-    row: this.page.getByTestId('table-tbody-tr'),
+    row: this.tableBody.getByTestId('table-tbody-tr'),
     rowByText: (text: string) => this.page.locator(`//*[contains(text(),"${text}")]//ancestor::*[@data-testid="table-tbody-tr"]`),
     pagination: this.pagination,
     paginationInterval: this.pagination.getByTestId('pagination-items-inverval'),
