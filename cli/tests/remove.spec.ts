@@ -6,7 +6,7 @@ const services = ['mysql', 'mongodb', 'postgresql', 'proxysql', 'external', 'hap
 test.describe('PMM Server CLI tests for Docker Environment Variables', async () => {
   test.beforeAll(async () => {
     await cli.exec(`PMM_SERVER_IMAGE=${process.env.DOCKER_VERSION} docker-compose -f docker-compose-pmm-admin-remove.yml up -d pmm-server-remove`);
-    await cli.exec('docker-compose -f docker-compose-pmm-admin-remove.yml up -d pmm-client-remove');
+    await cli.exec(`PMM_CLIENT_IMAGE=${process.env.CLIENT_DOCKER_VERSION} docker-compose -f docker-compose-pmm-admin-remove.yml up -d pmm-client-remove`);
     await cli.exec('docker-compose -f docker-compose-pmm-admin-remove.yml up -d mysql5.7');
     await cli.exec('docker-compose -f docker-compose-pmm-admin-remove.yml up -d mongo4.2');
     await cli.exec('docker-compose -f docker-compose-pmm-admin-remove.yml up -d postgres11');

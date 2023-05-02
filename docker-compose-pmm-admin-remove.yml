@@ -10,9 +10,8 @@
           - '8444:443'
         environment:
           - PMM_DEBUG=1
-    
       pmm-client-remove:
-        image: perconalab/pmm-client:dev-latest
+        image: ${PMM_CLIENT_IMAGE:-perconalab/pmm-client:dev-latest}
         container_name: pmm-client-remove
         depends_on:
           pmm-server-remove:
