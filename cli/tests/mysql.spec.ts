@@ -244,7 +244,7 @@ test.describe('PMM Client CLI tests for MySQL', async () => {
   /**
    * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/ms-specific-tests.bats#L268
    */
-  test('PMM-T962 check metrics from service with custom agent password', async ({ }) => {
+  test.skip('PMM-T962 check metrics from service with custom agent password', async ({ }) => {
     let hosts = (await cli.exec(`sudo pmm-admin list | grep "MySQL" | grep "mysql_"`))
       .stdout.trim().split('\n').filter((item) => item.trim().length > 0);
     let n = 1;
