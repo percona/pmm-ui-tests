@@ -63,11 +63,7 @@ export default class Table {
   }
 
   verifyTableDoesNotContain = async (text: string) => {
-    try {
-      await this.tableElements.row.waitFor({ state: 'visible' });
-    } catch (e) {
-      // fails if multiple rows displayed
-    }
+    await this.tableElements.row.first().waitFor({ state: 'visible' });
     await expect(this.tableElements.body).not.toContainText(text);
   }
 
