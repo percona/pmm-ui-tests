@@ -11,7 +11,7 @@ module.exports = {
     firstPageButton: '$first-page-button',
     previousPageButton: '$previous-page-button',
     pageNumberButton: (number) => locate('$page-button').withText(`${number}`),
-    pageNumberButtonLast: locate('$page-button').last(),
+    pageNumberButtonLast: '(//button[@data-testid="page-button-active" or @data-testid="page-button"])[last()]',
     nextPageButton: '$next-page-button',
     lastPageButton: '$last-page-button',
   },

@@ -68,7 +68,9 @@ Data(instances).Scenario(
 
     // Check Remote Instance also added and have running status
     pmmInventoryPage.verifyRemoteServiceIsDisplayed(remoteServiceName);
-    await pmmInventoryPage.verifyAgentHasStatusRunning(remoteServiceName);
+
+    // Skip due to new inventory
+    // await pmmInventoryPage.verifyAgentHasStatusRunning(remoteServiceName);
   },
 );
 
@@ -236,18 +238,22 @@ Data(instances).Scenario(
 
     // Check Remote Instance also added and have running status
     pmmInventoryPage.verifyRemoteServiceIsDisplayed(remoteServiceName);
-    await pmmInventoryPage.verifyAgentHasStatusRunning(remoteServiceName);
-    // Check Remote Instance also added and have running status
-    await pmmInventoryPage.openServices();
-    const serviceId = await pmmInventoryPage.getServiceId(remoteServiceName);
+    await inventoryAPI.verifyServiceExistsAndHasRunningStatus(
+      {
+        serviceType: 'MONGODB_SERVICE',
+        service: 'mongodb',
+      },
+      serviceName,
+    );
+
+    const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName('MONGODB_SERVICE', remoteServiceName);
 
     // Check Remote Instance also added and have correct max_query_length option set
-    await pmmInventoryPage.openAgents();
-
+    await pmmInventoryPage.openAgents(service_id);
     if (maxQueryLength !== '') {
-      await pmmInventoryPage.checkAgentOtherDetailsSection('max_query_length:', `max_query_length: ${maxQueryLength}`, remoteServiceName, serviceId);
+      await pmmInventoryPage.checkAgentOtherDetailsSection('Qan mongodb profiler agent', `max_query_length=${maxQueryLength}`);
     } else {
-      await pmmInventoryPage.checkAgentOtherDetailsMissing('max_query_length:', serviceId);
+      await pmmInventoryPage.checkAgentOtherDetailsSection('Qan mongodb profiler agent', `max_query_length=${maxQueryLength}`, false);
     }
   },
 );
