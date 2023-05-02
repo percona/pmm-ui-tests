@@ -219,6 +219,18 @@ module.exports = {
     I.waitForVisible(this.elements.selectedRow, 10);
   },
 
+  selectRowByText(text) {
+    const rowSelector = `//div[@role="row" and descendant::div[text()='${text}']]`;
+    //div[@role='row' and descendant::div[text()='select * from test.cities where id = ?']]
+    //div[@role="row" and descendant::div[text()='${text}']]
+
+    // I.wait(5000);
+    I.waitForElement(rowSelector, 60);
+    I.forceClick(rowSelector);
+    this.waitForOverviewLoaded();
+    I.waitForVisible(this.elements.selectedRow, 10);
+  },
+
   async getQueryFromRow(rowNumber) {
     const rowSelector = this.getRowLocator(rowNumber);
 
