@@ -62,12 +62,12 @@ module.exports = {
     I.scrollPageToBottom();
   },
 
-  async openAgents(serviceId) {
+  openAgents(serviceId) {
     I.amOnPage(`graph/inventory/services/${serviceId.split('/')[2]}/agents`);
-    await this.changeRowsPerPage(100);
+    this.changeRowsPerPage(100);
   },
 
-  async changeRowsPerPage(count) {
+  changeRowsPerPage(count) {
     I.waitForElement(this.fields.rowsPerPage, 30);
     I.scrollPageToBottom();
     I.click(this.fields.rowsPerPage);
@@ -89,8 +89,7 @@ module.exports = {
     const serviceId = await this.getServiceId(service_name);
 
     await inventoryAPI.waitForRunningState(serviceId);
-    await I.click(this.fields.showServiceDetails(service_name));
-    I.click(this.fields.agentsLinkNew);
+    this.openAgents(serviceId);
     // I.waitForElement(this.fields.pmmAgentLocator, 60);
     await this.changeRowsPerPage(100);
     I.waitForElement(this.fields.inventoryTable, 60);

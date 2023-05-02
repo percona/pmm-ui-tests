@@ -17,7 +17,7 @@ Object.values(page.templates).forEach((template) => {
     template.expression, template.alert]);
 });
 
-Feature('IA: Alert rules');
+Feature('Alerting: Alert rules');
 
 Before(async ({ I }) => {
   await I.Authorize();
@@ -136,7 +136,7 @@ Scenario(
 Scenario(
   'PMM-T1433 Verify user can delete Percona templated alert @ia @alerting-fb',
   async ({
-    I, alertRulesPage, rulesAPI,
+    I, alertRulesPage, rulesAPI, iaCommon
   }) => {
     const ruleName = 'testRule';
     const ruleFolder = 'OS';
@@ -147,7 +147,7 @@ Scenario(
     I.waitForElement(alertRulesPage.buttons.ruleCollapseButton);
     I.click(alertRulesPage.buttons.ruleCollapseButton);
     I.click(alertRulesPage.buttons.deleteAlertRule);
-    I.waitForText(alertRulesPage.messages.confirmDelete, alertRulesPage.elements.modalDialog);
+    I.waitForText(alertRulesPage.messages.confirmDelete, iaCommon.elements.modalDialog);
     I.click(alertRulesPage.buttons.cancelModal);
     I.click(alertRulesPage.buttons.deleteAlertRule);
     I.click(alertRulesPage.buttons.confirmModal);
