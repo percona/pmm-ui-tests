@@ -36,7 +36,7 @@ BeforeSuite(async ({ I }) => {
   // await I.verifyCommand('docker network connect external-pg pgsql_14');
   await I.verifyCommand('docker-compose -f docker-compose-external-pg.yml up -d');
   // await I.verifyCommand(runPMMWithExternalPGWithSSL);
-  await I.wait(30);
+  await I.wait(60);
 });
 
 Before(async ({ I }) => {
@@ -49,7 +49,7 @@ AfterSuite(async ({ I }) => {
 });
 
 Data(data).Scenario(
-  '@PMM-T1678 @PMM-T1678 Verify PMM with external PostgreSQL @docker-configuration1',
+  '@PMM-T1678 @PMM-T1678 Verify PMM with external PostgreSQL @docker-configuration1 @now',
   async ({
     I, dashboardPage, qanPage, qanOverview, pmmInventoryPage, current,
   }) => {
