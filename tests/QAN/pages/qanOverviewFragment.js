@@ -250,18 +250,11 @@ module.exports = {
     I.waitForVisible(this.elements.tooltipQueryValue, 30);
   },
 
-  async isNoDataMessageVisibleAfterRefresh() {
-    I.click(this.buttons.refresh);
-
-    return Number(await I.grabNumberOfVisibleElements(this.elements.noResultTableText)) === 0;
-  },
-
   async searchByValue(value, refresh = false) {
     I.waitForVisible(this.fields.searchBy, 30);
     I.clearField(this.fields.searchBy);
     I.fillField(this.fields.searchBy, value);
     I.pressKey('Enter');
-    // await I.asyncWaitFor(async () => await this.isNoDataMessageVisibleAfterRefresh(), 300);
   },
 
   async verifySearchByValue(value) {
