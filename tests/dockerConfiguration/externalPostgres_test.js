@@ -1,4 +1,5 @@
 const assert = require('assert');
+const { homeDashboard } = require('../pages/dashboardPage');
 
 const { adminPage } = inject();
 
@@ -51,7 +52,7 @@ AfterSuite(async ({ I }) => {
 Data(data).Scenario(
   '@PMM-T1678 @PMM-T1678 Verify PMM with external PostgreSQL @docker-configuration1',
   async ({
-    I, dashboardPage, qanPage, qanOverview, pmmInventoryPage, current,
+    I, dashboardPage, qanPage, qanOverview, pmmInventoryPage, homePage, current,
   }) => {
     const basePmmUrl = `http://127.0.0.1:${current.serverPort}/`;
     const serviceName = 'pmm-server-postgresql';
@@ -59,6 +60,9 @@ Data(data).Scenario(
     const output = await I.verifyCommand(`docker-compose exec ${current.containerName} supervisorctl status`);
 
     assert.ok(!output.includes('postgres'));
+
+    I.amOnPage(`${basePmmUrl}`);
+    I.waitForVisible(homePage.updateWidget.latest.currentVersion, 30);
 
     const postgresDataSourceLocator = locate('div').withChild(locate('h2 > a').withText('PostgreSQL'));
 
@@ -81,4 +85,4 @@ Data(data).Scenario(
     I.amOnPage(I.buildUrlWithParams(`${basePmmUrl}${qanPage.clearUrl}`, { service_name: serviceName, node_name: 'pmm-server-db' }));
     qanOverview.waitForOverviewLoaded();
   },
-).retry(1);
+).retry(2);
