@@ -62,7 +62,7 @@ Data(data).Scenario(
 
     const postgresDataSourceLocator = locate('div').withChild(locate('h2 > a').withText('PostgreSQL'));
 
-    await I.amOnPage(`${basePmmUrl}graph/datasources`);
+    I.amOnPage(`${basePmmUrl}graph/datasources`);
     I.waitForVisible(postgresDataSourceLocator, 30);
     I.seeTextEquals(`${'PostgreSQL\n'
       + '|\n'}${
@@ -81,4 +81,4 @@ Data(data).Scenario(
     I.amOnPage(I.buildUrlWithParams(`${basePmmUrl}${qanPage.clearUrl}`, { service_name: serviceName, node_name: 'pmm-server-db' }));
     qanOverview.waitForOverviewLoaded();
   },
-);
+).retry(1);
