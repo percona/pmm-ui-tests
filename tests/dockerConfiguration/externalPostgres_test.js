@@ -62,7 +62,7 @@ Data(data).Scenario(
     assert.ok(!output.includes('postgres'));
 
     I.amOnPage(`${basePmmUrl}`);
-    I.waitForVisible(homePage.updateWidget.latest.currentVersion, 30);
+    I.waitForVisible(homePage.fields.updateWidget.latest.currentVersion, 30);
 
     const postgresDataSourceLocator = locate('div').withChild(locate('h2 > a').withText('PostgreSQL'));
 
