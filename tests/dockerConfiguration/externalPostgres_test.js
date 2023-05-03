@@ -61,6 +61,10 @@ Data(data).Scenario(
 
     assert.ok(!output.includes('postgres'));
 
+    await I.say(await I.verifyCommand(`docker logs ${current.containerName}`));
+    await I.say(await I.verifyCommand(`docker-compose exec ${current.containerName} supervisorctl logs pmm-managed`));
+
+    await I.wait(60);
     I.amOnPage(basePmmUrl);
     I.waitForVisible(homePage.fields.updateWidget.latest.currentVersion, 30);
 
