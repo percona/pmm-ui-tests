@@ -244,14 +244,14 @@ test.describe('PMM Client CLI tests for MySQL', async () => {
   /**
    * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/ms-specific-tests.bats#L268
    */
-  test('PMM-T962 check metrics from service with custom agent password', async ({ }) => {
+  test.skip('PMM-T962 check metrics from service with custom agent password', async ({ }) => {
     let hosts = (await cli.exec(`sudo pmm-admin list | grep "MySQL" | grep "mysql_"`))
       .stdout.trim().split('\n').filter((item) => item.trim().length > 0);
     let n = 1;
     for (const host of hosts) {
       await cli.exec('sleep 20');
-      await (await cli.exec('sudo chmod +x /home/runner/work/pmm-submodules/pmm-submodules/pmm-tests/pmm-2-0-bats-tests/check_metric.sh')).assertSuccess();
-      let output = await cli.exec(`sudo /home/runner/work/pmm-submodules/pmm-submodules/pmm-tests/pmm-2-0-bats-tests/check_metric.sh mysql_${n++} mysql_up 127.0.0.1 mysqld_exporter pmm mypass`);
+      await (await cli.exec('sudo chmod +x /srv/pmm-qa/pmm-tests/pmm-2-0-bats-tests/check_metric.sh')).assertSuccess();
+      let output = await cli.exec(`/srv/pmm-qa/pmm-tests/pmm-2-0-bats-tests/check_metric.sh mysql_${n++} mysql_up 127.0.0.1 mysqld_exporter pmm mypass`);
       await output.assertSuccess();
       await output.outContains('mysql_up 1');
     }

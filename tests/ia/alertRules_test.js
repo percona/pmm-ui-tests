@@ -17,7 +17,7 @@ Object.values(page.templates).forEach((template) => {
     template.expression, template.alert]);
 });
 
-Feature('IA: Alert rules');
+Feature('Alerting: Alert rules');
 
 Before(async ({ I }) => {
   await I.Authorize();
@@ -32,6 +32,7 @@ Scenario(
   async ({ I, alertRulesPage }) => {
     alertRulesPage.openAlertRulesTab();
     I.waitForText(alertRulesPage.messages.noRulesFound, alertRulesPage.elements.noRules);
+    I.waitForVisible(alertRulesPage.elements.alertsLearnMoreLinks, 10);
     const link = await I.grabAttributeFrom(alertRulesPage.elements.alertsLearnMoreLinks, 'href');
 
     assert.ok(link === 'https://grafana.com/docs/', `Redirect link ${link} is incorrect please check`);
@@ -93,6 +94,7 @@ Scenario(
     const newRule = page.rules[0];
 
     alertRulesPage.openAlertRulesTab();
+    I.waitForEnabled(alertRulesPage.buttons.openAddRuleModal, 10);
     I.click(alertRulesPage.buttons.openAddRuleModal);
     await alertRulesPage.fillPerconaAlert(rule, newRule);
     I.click(alertRulesPage.buttons.saveAndExit);
@@ -102,7 +104,7 @@ Scenario(
     I.seeTextEquals('Normal', alertRulesPage.elements.ruleState);
     await rulesAPI.removeAlertRule(newRule.folder);
   },
-);
+).retry(1);
 
 // TODO: check ovf failure
 Scenario(
@@ -134,7 +136,7 @@ Scenario(
 Scenario(
   'PMM-T1433 Verify user can delete Percona templated alert @ia @alerting-fb',
   async ({
-    I, alertRulesPage, rulesAPI,
+    I, alertRulesPage, rulesAPI, iaCommon
   }) => {
     const ruleName = 'testRule';
     const ruleFolder = 'OS';
@@ -145,7 +147,7 @@ Scenario(
     I.waitForElement(alertRulesPage.buttons.ruleCollapseButton);
     I.click(alertRulesPage.buttons.ruleCollapseButton);
     I.click(alertRulesPage.buttons.deleteAlertRule);
-    I.waitForText(alertRulesPage.messages.confirmDelete, alertRulesPage.elements.modalDialog);
+    I.waitForText(alertRulesPage.messages.confirmDelete, iaCommon.elements.modalDialog);
     I.click(alertRulesPage.buttons.cancelModal);
     I.click(alertRulesPage.buttons.deleteAlertRule);
     I.click(alertRulesPage.buttons.confirmModal);

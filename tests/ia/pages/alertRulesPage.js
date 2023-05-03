@@ -12,9 +12,9 @@ module.exports = {
   elements: {
     noRules: 'div.page-body > div',
     columnHeaderLocator: (columnHeaderText) => locate('$header').withText(columnHeaderText),
-    ruleNameValue: `div[data-column='Name']`,
-    ruleState: `//div[@data-column='State']//div//span`,
-    ruleDetails: `div[data-testid='expanded-content']`,
+    ruleNameValue: 'div[data-column=\'Name\']',
+    ruleState: '//div[@data-column=\'State\']//div//span',
+    ruleDetails: 'div[data-testid=\'expanded-content\']',
     searchByDataSourceDropdown: '//div[@aria-label="Data source picker select container"]',
     searchByLabel: '$input-wrapper',
     // eslint-disable-next-line no-inline-comments
@@ -22,24 +22,23 @@ module.exports = {
     // eslint-disable-next-line no-inline-comments
     totalRulesCounter: (count, folder) => locate('$rule-group-header').withText(folder).find('span').withText(count),
     alertsLearnMoreLinks: locate('a').withText('Learn more'),
-    detailsEvaluateValue: `//div[text()="Evaluate"]/following-sibling::div`,
-    detailsDurationValue: `//div[text()="For"]/following-sibling::div`,
+    detailsEvaluateValue: '//div[text()="Evaluate"]/following-sibling::div',
+    detailsDurationValue: '//div[text()="For"]/following-sibling::div',
     detailsSeverityLabel: (value) => locate('span').withText(`severity=${value}`).inside('//ul[@aria-label="Tags"]').at(2),
     detailsFolderLabel: (value) => locate('span').withText(`grafana_folder=${value}`).inside('//ul[@aria-label="Tags"]'),
-    ruleValidationError: (error) => locate('div').withText(error).inside('div').withAttr({ 'role': 'alert' }),
-    modalDialog: `div[role='dialog']`,
+    ruleValidationError: (error) => locate('div').withText(error).inside('div').withAttr({ role: 'alert' }),
   },
   buttons: {
-    openAddRuleModal: `//a[contains(.,'New alert rule')]`,
+    openAddRuleModal: '//a[contains(.,\'New alert rule\')]',
     saveAndExit: locate('button').withText('Save and exit'),
-    editAlertRule: `//a[contains(@href, 'edit?returnTo=%2Falerting%2Flist')]`,
+    editAlertRule: '//a[contains(@href, \'edit?returnTo=%2Falerting%2Flist\')]',
     editRuleOnView: '//span[text()="Edit"]',
     deleteAlertRule: locate('span').withText('Delete').inside('button'),
-    groupCollapseButton: (folderText) =>  `//button[@data-testid='group-collapse-toggle'][following::h6[contains(., '${folderText}')]]`,
-    ruleCollapseButton: `button[aria-label='Expand row']`,
-    goToFolderButton: (folderID, folderText) => locate('[aria-label="go to folder"]').withAttr({ 'href': `/graph/dashboards/f/${folderID}/${folderText}` }),
-    managePermissionsButton: (folderID, folderText)  => locate('[aria-label="manage permissions"]').withAttr({ 'href': `/graph/dashboards/f/${folderID}/${folderText}/permissions` }),
-    confirmModal: `button[aria-label='Confirm Modal Danger Button']`,
+    groupCollapseButton: (folderText) => `//button[@data-testid='group-collapse-toggle'][following::h6[contains(., '${folderText}')]]`,
+    ruleCollapseButton: 'button[aria-label=\'Expand row\']',
+    goToFolderButton: (folderID, folderText) => locate('[aria-label="go to folder"]').withAttr({ href: `/graph/dashboards/f/${folderID}/${folderText}` }),
+    managePermissionsButton: (folderID, folderText) => locate('[aria-label="manage permissions"]').withAttr({ href: `/graph/dashboards/f/${folderID}/${folderText}/permissions` }),
+    confirmModal: 'button[aria-label=\'Confirm Modal Danger Button\']',
     cancelModal: locate('button').withText('Cancel'),
   },
   fields: {
@@ -50,10 +49,10 @@ module.exports = {
     // resultsLocator returns item locator in a search dropdown based on a text
     resultsLocator: (name) => `//div[@aria-label="Select option"]//div//span[text()="${name}"]`,
     inputField: (input) => `input[name='${input}']`,
-    editRuleThreshold: `input[name='evaluateFor']`,
-    editRuleEvaluate: `input[name='evaluateEvery']`,
+    editRuleThreshold: 'input[name=\'evaluateFor\']',
+    editRuleEvaluate: 'input[name=\'evaluateEvery\']',
     editRuleSeverity: I.useDataQA('label-value-1'),
-    templatesLoader: locate(`//div[@id='template']`).find('div').withText('Choose'),
+    templatesLoader: locate('//div[@id=\'template\']').find('div').withText('Choose'),
   },
   messages: {
     noRulesFound: 'You haven`t created any alert rules yet',
@@ -62,14 +61,14 @@ module.exports = {
     successRuleEdit: (name) => `Rule "${name}" updated.`,
     successfullyDeleted: 'Rule deleted.',
     failRuleCreate: 'There are errors in the form. Please correct them and try again!',
-    failRuleCreateDuration: `Failed to save rule: Duration (0s) can't be shorter than evaluation interval for the given group (1m0s).; Duration (0s) can't be shorter than evaluation interval for the given group (1m0s).`,
+    failRuleCreateDuration: 'Failed to save rule: Duration (0s) can\'t be shorter than evaluation interval for the given group (1m0s).; Duration (0s) can\'t be shorter than evaluation interval for the given group (1m0s).',
   },
 
   async fillPerconaAlert(defaultRuleObj, newruleObj) {
     const {
-      template, ruleName, threshold, duration, severity
+      template, ruleName, threshold, duration, severity,
     } = defaultRuleObj;
-    
+
     const editedRule = {
       ruleName: newruleObj.ruleName || 'test',
       threshold: newruleObj.threshold || '1',
@@ -90,7 +89,7 @@ module.exports = {
 
   async editPerconaAlert(ruleObj) {
     const {
-      ruleName, duration, severity, folder
+      ruleName, duration, severity, folder,
     } = ruleObj;
 
     I.waitForVisible(this.fields.inputField('name'));
@@ -132,7 +131,7 @@ module.exports = {
       ruleName, threshold, duration, folder, severity, filters = [],
     } = ruleObj;
 
-    this.verifyRuleList(folder, ruleName)
+    this.verifyRuleList(folder, ruleName);
     I.seeElement(this.buttons.ruleCollapseButton);
     I.click(this.buttons.ruleCollapseButton);
     I.waitForElement(this.elements.ruleDetails);
