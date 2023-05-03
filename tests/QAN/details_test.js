@@ -183,8 +183,6 @@ Data(querySources).Scenario(
     I.click(qanDetails.getTabLocator('Explain'));
     qanFilters.waitForFiltersToLoad();
     I.fillField(qanDetails.elements.firstPlaceholder, '1');
-    // I.scrollTo(qanDetails.elements.submitButton);
-    // I.click(qanDetails.elements.submitButton);
     I.waitForVisible(qanDetails.elements.explainTable);
     I.assertEqual(await I.grabNumberOfVisibleElements(locate('$query-analytics-details').find('$table-row')), 1, 'Explain is expected to have one row in a table, but found more');
   },
