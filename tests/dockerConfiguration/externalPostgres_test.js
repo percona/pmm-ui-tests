@@ -3,7 +3,7 @@ const { homeDashboard } = require('../pages/dashboardPage');
 
 const { adminPage } = inject();
 
-Feature('Test PMM server with external PostgreSQL');
+Feature('Test PMM server with external PostgreSQL').retry(2);
 
 const pmmFrameworkLoader = `bash ${adminPage.pathToFramework}`;
 const pathToPMMFramework = adminPage.pathToPMMTests;
@@ -61,7 +61,7 @@ Data(data).Scenario(
 
     assert.ok(!output.includes('postgres'));
 
-    I.amOnPage(`${basePmmUrl}`);
+    I.amOnPage(basePmmUrl);
     I.waitForVisible(homePage.fields.updateWidget.latest.currentVersion, 30);
 
     const postgresDataSourceLocator = locate('div').withChild(locate('h2 > a').withText('PostgreSQL'));
@@ -85,4 +85,4 @@ Data(data).Scenario(
     I.amOnPage(I.buildUrlWithParams(`${basePmmUrl}${qanPage.clearUrl}`, { service_name: serviceName, node_name: 'pmm-server-db' }));
     qanOverview.waitForOverviewLoaded();
   },
-).retry(2);
+);
