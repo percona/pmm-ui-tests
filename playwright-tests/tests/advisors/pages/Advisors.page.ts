@@ -1,5 +1,5 @@
 import { Page } from '@playwright/test';
-import { CommonPage } from '../Common.page';
+import { CommonPage } from '../../../pages/Common.page';
 import AdvisorsTable from '@tests/components/advisors/advisorsTable';
 
 export class AdvisorsPage extends CommonPage {
