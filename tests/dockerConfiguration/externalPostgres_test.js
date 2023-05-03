@@ -61,8 +61,7 @@ Data(data).Scenario(
 
     assert.ok(!output.includes('postgres'));
 
-    await I.say(await I.verifyCommand(`docker logs ${current.containerName}`));
-    await I.say(await I.verifyCommand(`docker-compose exec ${current.containerName} supervisorctl logs pmm-managed`));
+    await I.say(await I.verifyCommand(`docker-compose exec ${current.containerName} cat /srv/logs/pmm-managed.log`));
 
     await I.wait(60);
     I.amOnPage(basePmmUrl);
