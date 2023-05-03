@@ -28,11 +28,11 @@ Scenario(
   'PMM-T620 Verify after reloading the page user is on the same IA tab, ' +
   'PMM-T776 Verify that user is able to see valid HTML Title on alerts page @ia @alerting-fb',
   async ({
-    I, alertRulesPage, ruleTemplatesPage, contactPointsPage, ncPage, silencesPage, alertGroupsPage, aiAdminPage
+    I, alertRulesPage, ruleTemplatesPage, contactPointsPage, nPoliciesPage, silencesPage, alertGroupsPage, aiAdminPage
   }) => {
     await settingsAPI.apiEnableIA();
     const verifyNotificationChannelsPage = async () => {
-      I.waitForVisible(ncPage.buttons.newPolicy, 30);
+      I.waitForVisible(nPoliciesPage.buttons.newPolicy, 30);
     };
 
     I.amOnPage(alertsPage.url);
@@ -47,11 +47,11 @@ Scenario(
     iaCommon.openAndVerifyTab(iaCommon.tabNames.ruleTemplates, ruleTemplatesPage.buttons.openAddTemplateModal,
       ruleTemplatesPage.url);
     verifyTitle('Alert rule templates');
-    iaCommon.openAndVerifyTab(iaCommon.tabNames.alertRules, alertRulesPage.buttons.openAddRuleModal, alertRulesPage.url);
+    iaCommon.openAndVerifyTab(iaCommon.tabNames.alertRules, alertRulesPage.buttons.newAlertRule, alertRulesPage.url);
     verifyTitle('Alert rules');
     iaCommon.openAndVerifyTab(iaCommon.tabNames.contactPoints, contactPointsPage.buttons.newContactPoint, contactPointsPage.url);
     verifyTitle('Contact points');
-    iaCommon.openAndVerifyTab(iaCommon.tabNames.notificationPolicies, ncPage.buttons.newPolicy, ncPage.url);
+    iaCommon.openAndVerifyTab(iaCommon.tabNames.notificationPolicies, nPoliciesPage.buttons.newPolicy, nPoliciesPage.url);
     verifyTitle('Notification policies');
 
     // PMM-T620

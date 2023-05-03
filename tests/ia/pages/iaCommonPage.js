@@ -1,7 +1,7 @@
 const assert = require('assert');
 
 const {
-  I, channelsAPI, alertRulesPage, ruleTemplatesPage, rulesAPI, templatesAPI, ncPage, alertsPage, alertsAPI,
+  I, alertRulesPage, ruleTemplatesPage, rulesAPI, templatesAPI, alertsPage, alertsAPI,
 } = inject();
 
 module.exports = {
@@ -17,6 +17,8 @@ module.exports = {
   },
   elements: {
     noData: locate('$table-no-data').find('h1'),
+    pagination: '$pagination',
+    itemsShown: '$pagination-items-inverval',
     rowInTable: locate('$table-tbody').find('tr'),
     tab: (tabName) => locate('[role="tablist"] a').withAttr({ 'aria-label': `Tab ${tabName}` }),
     table: '$table-tbody',
@@ -34,7 +36,7 @@ module.exports = {
     nextPageButton: '$next-page-button',
     lastPageButton: '$last-page-button',
     rowsPerPage: locate('$pagination').find('div[class*="-singleValue"]'),
-    rowsPerPageOption: (count) => locate('$pagination').find('[aria-label="Select option"] span').withText(count.toString()),
+    rowsPerPageOption: (count) => locate('[aria-label="Select option"] span').withText(count.toString()),
   },
   messages: {
     itemsShown: (leftNumber, rightNumber, totalItems) => `Showing ${leftNumber}-${rightNumber} of ${totalItems} items`,
@@ -59,14 +61,6 @@ module.exports = {
   },
 
   getCreateEntitiesAndPageUrl(page) {
-    if (page === 'channels') {
-      return {
-        createEntities: channelsAPI.createNotificationChannels,
-        url: ncPage.url,
-        getListOfItems: channelsAPI.getChannelsList,
-      };
-    }
-
     if (page === 'rules') {
       return {
         createEntities: rulesAPI.createAlertRules,
