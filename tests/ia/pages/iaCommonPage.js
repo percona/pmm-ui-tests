@@ -1,7 +1,7 @@
 const assert = require('assert');
 
 const {
-  I, channelsAPI, alertRulesPage, ruleTemplatesPage, rulesAPI, templatesAPI, ncPage, alertsPage, alertsAPI,
+  I, alertRulesPage, ruleTemplatesPage, rulesAPI, templatesAPI, alertsPage, alertsAPI,
 } = inject();
 
 module.exports = {
@@ -61,14 +61,6 @@ module.exports = {
   },
 
   getCreateEntitiesAndPageUrl(page) {
-    if (page === 'channels') {
-      return {
-        createEntities: channelsAPI.createNotificationChannels,
-        url: ncPage.url,
-        getListOfItems: channelsAPI.getChannelsList,
-      };
-    }
-
     if (page === 'rules') {
       return {
         createEntities: rulesAPI.createAlertRules,
