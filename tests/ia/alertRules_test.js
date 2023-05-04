@@ -17,7 +17,7 @@ Object.values(page.templates).forEach((template) => {
     template.expression, template.alert]);
 });
 
-Feature('IA: Alert rules');
+Feature('Alerting: Alert rules');
 
 Before(async ({ I }) => {
   await I.Authorize();
@@ -32,6 +32,7 @@ Scenario(
   async ({ I, alertRulesPage }) => {
     alertRulesPage.openAlertRulesTab();
     I.waitForText(alertRulesPage.messages.noRulesFound, alertRulesPage.elements.noRules);
+    I.waitForVisible(alertRulesPage.elements.alertsLearnMoreLinks, 10);
     const link = await I.grabAttributeFrom(alertRulesPage.elements.alertsLearnMoreLinks, 'href');
 
     assert.ok(link === 'https://grafana.com/docs/', `Redirect link ${link} is incorrect please check`);
@@ -74,7 +75,7 @@ Scenario(
   async ({ I, alertRulesPage }) => {
     // TODO: https://jira.percona.com/browse/PMM-10860 name doesn't change
     alertRulesPage.openAlertRulesTab();
-    I.click(alertRulesPage.buttons.openAddRuleModal);
+    I.click(alertRulesPage.buttons.newAlertRule);
     I.waitForElement(alertRulesPage.fields.templatesLoader);
     alertRulesPage.searchAndSelectResult('template', 'PostgreSQL down');
     I.waitForValue(alertRulesPage.fields.inputField('duration'), '60s');
@@ -93,7 +94,8 @@ Scenario(
     const newRule = page.rules[0];
 
     alertRulesPage.openAlertRulesTab();
-    I.click(alertRulesPage.buttons.openAddRuleModal);
+    I.waitForEnabled(alertRulesPage.buttons.newAlertRule, 10);
+    I.click(alertRulesPage.buttons.newAlertRule);
     await alertRulesPage.fillPerconaAlert(rule, newRule);
     I.click(alertRulesPage.buttons.saveAndExit);
     // FIXME: unskip after https://jira.percona.com/browse/PMM-11399 is fixed
@@ -102,7 +104,7 @@ Scenario(
     I.seeTextEquals('Normal', alertRulesPage.elements.ruleState);
     await rulesAPI.removeAlertRule(newRule.folder);
   },
-);
+).retry(1);
 
 // TODO: check ovf failure
 Scenario(
@@ -134,7 +136,7 @@ Scenario(
 Scenario(
   'PMM-T1433 Verify user can delete Percona templated alert @ia @alerting-fb',
   async ({
-    I, alertRulesPage, rulesAPI,
+    I, alertRulesPage, rulesAPI, iaCommon
   }) => {
     const ruleName = 'testRule';
     const ruleFolder = 'OS';
@@ -145,7 +147,7 @@ Scenario(
     I.waitForElement(alertRulesPage.buttons.ruleCollapseButton);
     I.click(alertRulesPage.buttons.ruleCollapseButton);
     I.click(alertRulesPage.buttons.deleteAlertRule);
-    I.waitForText(alertRulesPage.messages.confirmDelete, alertRulesPage.elements.modalDialog);
+    I.waitForText(alertRulesPage.messages.confirmDelete, iaCommon.elements.modalDialog);
     I.click(alertRulesPage.buttons.cancelModal);
     I.click(alertRulesPage.buttons.deleteAlertRule);
     I.click(alertRulesPage.buttons.confirmModal);

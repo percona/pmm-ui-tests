@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import apiHelper from '@api/apiHelper';
+import apiHelper from '@api/helpers/apiHelper';
 import User from '@support/types/user.interface';
 import { fileHelper } from '@helpers/FileHelper';
 import { portalAPI } from '@api/portalApi';
@@ -327,6 +327,12 @@ test.describe('Spec file for PMM connected the portal', async () => {
   test('PMM-T1112 Verify user can disconnect pmm from portal success flow @portal @not-ui-pipeline @post-pmm-portal-upgrade', async ({
     page,
   }) => {
+    test.info().annotations.push({
+      type: 'Also Covers',
+      description:
+        "PMM-T1204 Verify the confirmation message appears when user's trying to logout from Portal",
+    });
+
     const signInPage = new SignInPage(page);
     const homeDashboard = new HomeDashboard(page);
     const platformPage = new PerconaPlatform(page);
@@ -338,6 +344,7 @@ test.describe('Spec file for PMM connected the portal', async () => {
       await platformPage.connectedContainer.waitFor({ state: 'visible' });
       await platformPage.buttons.disconnect.click();
       if (pmmVersion >= 28) {
+        await expect(platformPage.elements.modalMessage).toHaveText(platformPage.messages.disconnectWarning);
         await platformPage.buttons.confirmDisconnect.click();
         await page.locator('//input[@name="user"]').waitFor({ state: 'visible' });
       } else {
@@ -359,32 +366,27 @@ test.describe('Spec file for PMM connected the portal', async () => {
   test('PMM-T1264 Verify that pmm admin user can force disconnect pmm from the portal. @not-ui-pipeline @portal @post-pmm-portal-upgrade', async ({
     page,
   }) => {
+    test.skip(pmmVersion < 29, 'This test is for PMM version 2.29.0 and higher')
     const platformPage = new PerconaPlatform(page);
 
-    if (pmmVersion > 28) {
-      await test.step('1. Login into the pmm and navigate to the percona platform page.', async () => {
-        await grafanaHelper.authorize(page);
-        await page.goto(platformPage.perconaPlatformURL);
-        await platformPage.connectedContainer.waitFor({ state: 'visible' });
-      });
+    await test.step('1. Login into the pmm and navigate to the percona platform page.', async () => {
+      await grafanaHelper.authorize(page);
+      await page.goto(platformPage.perconaPlatformURL);
+      await platformPage.connectedContainer.waitFor({ state: 'visible' });
+    });
 
-      await test.step('2. Force disconnect from the platform.', async () => {
-        await platformPage.buttons.disconnect.click();
-        await expect(platformPage.elements.readMore).toHaveAttribute('href', platformPage.links.readMore);
-        await platformPage.buttons.confirmDisconnect.click();
-      });
+    await test.step('2. Force disconnect from the platform.', async () => {
+      await platformPage.buttons.disconnect.click();
+      await expect(platformPage.elements.forceDisconnectModal).toHaveText(platformPage.messages.forceDisconnectWarning);
+      await expect(platformPage.elements.readMore).toHaveAttribute('href', platformPage.links.readMore);
+      await platformPage.buttons.confirmDisconnect.click();
+    });
 
-      await test.step('3. Verify that force disconnect was successful.', async () => {
-        await platformPage.toast.checkToastMessage(platformPage.messages.disconnectedSuccess);
-        await platformPage.buttons.connect.waitFor({ state: 'visible' });
-      });
+    await test.step('3. Verify that force disconnect was successful.', async () => {
+      await platformPage.toast.checkToastMessage(platformPage.messages.disconnectedSuccess);
+      await platformPage.buttons.connect.waitFor({ state: 'visible' });
+    });
 
-    } else {
-      test.info().annotations.push({
-        type: 'Old Version ',
-        description: 'This test is for PMM version 2.29.0 and higher',
-      });
-    }
   });
 
   test('PMM-T1247 Verify user cannot access platform functionality when PMM is not connected to the portal. @not-ui-pipeline @portal @post-pmm-portal-upgrade', async ({

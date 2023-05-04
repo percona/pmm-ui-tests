@@ -136,25 +136,6 @@ class Grafana extends Helper {
     page.hover(locator);
   }
 
-  // eslint-disable-next-line no-underscore-dangle, class-methods-use-this
-  async _before(test) {
-    const allure = codeceptjs.container.plugins('allure');
-
-    switch (true) {
-      case test.title.includes('[blocker]'):
-        allure.severity('blocker');
-        break;
-      case test.title.includes('[critical]'):
-        allure.severity('critical');
-        break;
-      case test.title.includes('[minor]'):
-        allure.severity('minor');
-        break;
-      default:
-        allure.severity('normal');
-    }
-  }
-
   async createUser(username, password) {
     const apiContext = this.helpers.REST;
     const body = {
@@ -223,7 +204,6 @@ class Grafana extends Helper {
 
     return stdout.trim();
   }
-
 }
 
 module.exports = Grafana;

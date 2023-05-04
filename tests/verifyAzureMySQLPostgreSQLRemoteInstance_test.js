@@ -28,9 +28,9 @@ Before(async ({ I }) => {
 });
 
 Data(azureServices).Scenario(
-  'PMM-T744, PMM-T746, PMM-T748 - Verify adding monitoring for Azure @instances',
+  '@PMM-T744, PMM-T746, PMM-T748 - Verify adding monitoring for Azure @instances',
   async ({
-    I, remoteInstancesPage, pmmInventoryPage, settingsAPI, current,
+    I, remoteInstancesPage, pmmInventoryPage, settingsAPI, current, inventoryAPI,
   }) => {
     const serviceName = current.name;
 
@@ -43,7 +43,26 @@ Data(azureServices).Scenario(
     remoteInstancesPage.fillRemoteRDSFields(serviceName);
     I.click(remoteInstancesPage.fields.addService);
     pmmInventoryPage.verifyRemoteServiceIsDisplayed(serviceName);
-    await pmmInventoryPage.verifyAgentHasStatusRunning(serviceName);
+
+    if (serviceName === 'azure-MySQL') {
+      await inventoryAPI.verifyServiceExistsAndHasRunningStatus(
+        {
+          serviceType: 'MYSQL_SERVICE',
+          service: 'mysql',
+        },
+        serviceName,
+      );
+    } else {
+      await inventoryAPI.verifyServiceExistsAndHasRunningStatus(
+        {
+          serviceType: 'POSTGRESQL_SERVICE',
+          service: 'postgresql',
+        },
+        serviceName,
+      );
+    }
+
+    // await pmmInventoryPage.verifyAgentHasStatusRunning(serviceName);
   },
 );
 
@@ -79,4 +98,4 @@ Data(metrics).Scenario(
   async ({ grafanaAPI, current }) => {
     await grafanaAPI.waitForMetric(current.metricName, null, 10);
   },
-);
+).retry(1);

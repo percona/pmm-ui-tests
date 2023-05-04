@@ -55,14 +55,14 @@ for (const [key, value] of Object.entries(remoteInstancesHelper.services)) {
   }
 }
 
-Feature('Remote DB Instances').retry(1);
+Feature('Remote DB Instances');
 
 Before(async ({ I }) => {
   await I.Authorize();
 });
 
 Scenario(
-  'PMM-T588 - Verify adding external exporter service via UI @instances @instances-fb',
+  '@PMM-T588 - Verify adding external exporter service via UI @instances @instances-fb',
   async ({ I, remoteInstancesPage, pmmInventoryPage }) => {
     I.amOnPage(remoteInstancesPage.url);
     remoteInstancesPage.waitUntilRemoteInstancesPageLoaded();
@@ -71,10 +71,11 @@ Scenario(
     I.waitForVisible(remoteInstancesPage.fields.addService, 30);
     I.click(remoteInstancesPage.fields.addService);
     pmmInventoryPage.verifyRemoteServiceIsDisplayed(externalExporterServiceName);
-    I.click(pmmInventoryPage.fields.agentsLink);
+    await I.click(pmmInventoryPage.fields.showServiceDetails(externalExporterServiceName));
+    await I.click(pmmInventoryPage.fields.agentsLinkNew);
     I.waitForVisible(pmmInventoryPage.fields.externalExporter, 30);
   },
-);
+).retry(0);
 
 Data(instances).Scenario(
   'PMM-T898 Verify Remote Instance Addition [critical] @instances @instances-fb',
@@ -180,7 +181,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T635 - Verify Adding HAProxy service via UI @instances @instances-fb',
+  '@PMM-T635 - Verify Adding HAProxy service via UI @instances @instances-fb',
   async ({
     I, remoteInstancesPage, pmmInventoryPage,
   }) => {
@@ -202,14 +203,16 @@ Scenario(
     I.waitForVisible(remoteInstancesPage.fields.addService, 30);
     I.click(remoteInstancesPage.fields.addService);
     pmmInventoryPage.verifyRemoteServiceIsDisplayed(haproxyServiceName);
-    const serviceId = await pmmInventoryPage.getServiceId(haproxyServiceName);
 
-    I.click(pmmInventoryPage.fields.agentsLink);
-    await pmmInventoryPage.checkAgentOtherDetailsSection('scheme:', 'scheme: http', haproxyServiceName, serviceId);
-    await pmmInventoryPage.checkAgentOtherDetailsSection('metrics_path:', 'metrics_path: /metrics', haproxyServiceName, serviceId);
-    await pmmInventoryPage.checkAgentOtherDetailsSection('listen_port:', `listen_port: ${remoteInstancesHelper.remote_instance.haproxy.haproxy_2.port}`, haproxyServiceName, serviceId);
+    await I.click(pmmInventoryPage.fields.showServiceDetails(haproxyServiceName));
+    await I.click(pmmInventoryPage.fields.agentsLinkNew);
+    await I.click(pmmInventoryPage.fields.showAgentDetails('External exporter'));
+    await pmmInventoryPage.checkAgentsLabel('metrics_scheme=http');
+    await pmmInventoryPage.checkAgentsLabel('metrics_path=/metrics');
+    await pmmInventoryPage.checkAgentsLabel(`listen_port=${remoteInstancesHelper.remote_instance.haproxy.haproxy_2.port}`);
   },
 );
+
 Scenario(
   'PMM-T1089 - Verify UI elements for PostgreSQL Instance @instances',
   async ({
