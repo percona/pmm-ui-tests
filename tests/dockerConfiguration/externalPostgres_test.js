@@ -16,7 +16,6 @@ const runPMMWithExternalPGWithSSL = `docker run -d -p 8082:80 -p 447:443 \
     --name PMM-T1681 \
     --network external-pg \
     -v ${pathToPMMFramework}tls-ssl-setup/postgres/14:/certs \
-    -e PERCONA_TEST_PMM_DISABLE_BUILTIN_POSTGRES=1 \
     -e PERCONA_TEST_POSTGRES_SSL_CA_PATH=/certs/ca.crt \
     -e PERCONA_TEST_POSTGRES_SSL_KEY_PATH=/certs/client.pem \
     -e PERCONA_TEST_POSTGRES_SSL_CERT_PATH=/certs/client.crt \
