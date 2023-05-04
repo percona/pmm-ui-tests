@@ -59,7 +59,7 @@ Data(data).Scenario(
     const serviceName = 'pmm-server-postgresql';
     const { postgresqlAddress } = current;
 
-    await I.verifyCommand(`docker-compose exec ${current.containerName} cat /srv/logs/****-managed.log`);
+    await I.verifyCommand(`docker-compose exec ${current.containerName} cat /srv/logs/pmm-managed.log`);
 
     I.amOnPage(basePmmUrl);
     I.waitForVisible(homePage.fields.updateWidget.latest.currentVersion, 30);
