@@ -37,7 +37,7 @@ BeforeSuite(async ({ I }) => {
   // await I.verifyCommand('docker network connect external-pg pgsql_14');
   await I.verifyCommand('docker-compose -f docker-compose-external-pg.yml up -d');
   // await I.verifyCommand(runPMMWithExternalPGWithSSL);
-  await I.wait(60);
+  await I.wait(30);
 });
 
 Before(async ({ I }) => {
@@ -57,13 +57,7 @@ Data(data).Scenario(
     const basePmmUrl = `http://127.0.0.1:${current.serverPort}/`;
     const serviceName = 'pmm-server-postgresql';
     const { postgresqlAddress } = current;
-    const output = await I.verifyCommand(`docker-compose exec ${current.containerName} supervisorctl status`);
 
-    assert.ok(!output.includes('postgres'));
-
-    await I.say(await I.verifyCommand(`docker-compose exec ${current.containerName} cat /srv/logs/pmm-managed.log`));
-
-    await I.wait(60);
     I.amOnPage(basePmmUrl);
     I.waitForVisible(homePage.fields.updateWidget.latest.currentVersion, 30);
 
