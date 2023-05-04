@@ -29,14 +29,14 @@ const runPMMWithExternalPGWithSSL = `docker run -d -p 8082:80 -p 447:443 \
 const data = new DataTable(['containerName', 'postgresqlAddress', 'serverPort']);
 
 data.add(['pmm-server-external-postgres', 'external-postgres:5432', '8081']);
-// data.add(['PMM-T1681', 'pgsql_14:5432', '8082']);
+data.add(['PMM-T1681', 'pgsql_14:5432', '8082']);
 
 BeforeSuite(async ({ I }) => {
-  // await I.verifyCommand(`${pmmFrameworkLoader} --pdpgsql-version=14 --setup-postgres-ssl --pmm2`);
-  // await I.verifyCommand('docker network create external-pg');
-  // await I.verifyCommand('docker network connect external-pg pgsql_14');
+  await I.verifyCommand(`${pmmFrameworkLoader} --pdpgsql-version=14 --setup-postgres-ssl --pmm2`);
+  await I.verifyCommand('docker network create external-pg');
+  await I.verifyCommand('docker network connect external-pg pgsql_14');
   await I.verifyCommand('docker-compose -f docker-compose-external-pg.yml up -d');
-  // await I.verifyCommand(runPMMWithExternalPGWithSSL);
+  await I.verifyCommand(runPMMWithExternalPGWithSSL);
   await I.wait(30);
 });
 
@@ -46,7 +46,7 @@ Before(async ({ I }) => {
 
 AfterSuite(async ({ I }) => {
   await I.verifyCommand('docker-compose -f docker-compose-external-pg.yml down -v');
-  // await I.verifyCommand('docker stop pgsql_14 || docker rm pgsql_14');
+  await I.verifyCommand('docker stop pgsql_14 || docker rm pgsql_14');
 });
 
 Data(data).Scenario(
