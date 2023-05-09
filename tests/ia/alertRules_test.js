@@ -75,7 +75,7 @@ Scenario(
   async ({ I, alertRulesPage }) => {
     // TODO: https://jira.percona.com/browse/PMM-10860 name doesn't change
     alertRulesPage.openAlertRulesTab();
-    I.click(alertRulesPage.buttons.openAddRuleModal);
+    I.click(alertRulesPage.buttons.newAlertRule);
     I.waitForElement(alertRulesPage.fields.templatesLoader);
     alertRulesPage.searchAndSelectResult('template', 'PostgreSQL down');
     I.waitForValue(alertRulesPage.fields.inputField('duration'), '60s');
@@ -94,8 +94,8 @@ Scenario(
     const newRule = page.rules[0];
 
     alertRulesPage.openAlertRulesTab();
-    I.waitForEnabled(alertRulesPage.buttons.openAddRuleModal, 10);
-    I.click(alertRulesPage.buttons.openAddRuleModal);
+    I.waitForEnabled(alertRulesPage.buttons.newAlertRule, 10);
+    I.click(alertRulesPage.buttons.newAlertRule);
     await alertRulesPage.fillPerconaAlert(rule, newRule);
     I.click(alertRulesPage.buttons.saveAndExit);
     // FIXME: unskip after https://jira.percona.com/browse/PMM-11399 is fixed

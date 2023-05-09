@@ -1,5 +1,4 @@
 const { I } = inject();
-const { createAlertRule } = require('./api/rulesAPI');
 const { rules, templates, filterOperators } = require('./testData');
 
 module.exports = {
@@ -29,7 +28,7 @@ module.exports = {
     ruleValidationError: (error) => locate('div').withText(error).inside('div').withAttr({ role: 'alert' }),
   },
   buttons: {
-    openAddRuleModal: '//a[contains(.,\'New alert rule\')]',
+    newAlertRule: '//a[contains(.,\'New alert rule\')]',
     saveAndExit: locate('button').withText('Save and exit'),
     editAlertRule: '//a[contains(@href, \'edit?returnTo=%2Falerting%2Flist\')]',
     editRuleOnView: '//span[text()="Edit"]',
@@ -104,7 +103,7 @@ module.exports = {
 
   openAlertRulesTab() {
     I.amOnPage(this.url);
-    I.waitForVisible(this.buttons.openAddRuleModal, 30);
+    I.waitForVisible(this.buttons.newAlertRule, 30);
   },
 
   searchAndSelectResult(dropdownLabel, option) {
