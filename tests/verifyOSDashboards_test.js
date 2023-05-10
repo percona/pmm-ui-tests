@@ -73,8 +73,12 @@ Scenario(
 
 Scenario(
   'PMM-T1695 Verify that user is able to filter OS / Node Compare dashboard by Node Name @nightly @dashboards',
-  async ({ I, dashboardPage, adminPage }) => {
-    const nodeName = await I.verifyCommand(`pmm-admin inventory list nodes | awk '$2 ~ /^ip-/ {print $2}'`);
+  async ({ I, dashboardPage, adminPage, inventoryAPI }) => {
+    const nodes = await inventoryAPI.getAllNodes();
+
+    // get first two generic node names
+    const node1 = nodes.generic[0].node_name;
+    const node2 = nodes.generic[1].node_name;
 
     I.amOnPage(dashboardPage.nodesCompareDashboard.url);
     dashboardPage.waitForDashboardOpened();
@@ -83,7 +87,7 @@ Scenario(
     dashboardPage.expandFilters('Node Name');
     I.click(dashboardPage.toggleAllValues);
 
-    await dashboardPage.applyFilter('Node Name', 'pmm-server');
+    await dashboardPage.applyFilter('Node Name', node1);
     await dashboardPage.expandEachDashboardRow();
 
     let numOfPanels = await I.grabNumberOfVisibleElements(dashboardPage.panel);
@@ -91,17 +95,17 @@ Scenario(
     assert.ok(numOfPanels === 28, `There should be 28 panels for one node but found "${numOfPanels}".`);
 
     I.scrollTo(adminPage.fields.metricTitle);
-    I.dontSeeElement(dashboardPage.systemUptimePanel(nodeName));
-    I.seeElement(dashboardPage.systemUptimePanel('pmm-server'));
+    I.dontSeeElement(dashboardPage.systemUptimePanel(node2));
+    I.seeElement(dashboardPage.systemUptimePanel(node1));
 
-    await dashboardPage.applyFilter('Node Name', nodeName);
+    await dashboardPage.applyFilter('Node Name', node2);
     I.click(adminPage.fields.metricTitle);
 
     numOfPanels = await I.grabNumberOfVisibleElements(dashboardPage.panel);
 
     assert.ok(numOfPanels === 50, `There should be 50 panels for two nodes but found "${numOfPanels}".`);
 
-    I.seeElement(dashboardPage.systemUptimePanel(nodeName));
-    I.seeElement(dashboardPage.systemUptimePanel('pmm-server'));
+    I.seeElement(dashboardPage.systemUptimePanel(node2));
+    I.seeElement(dashboardPage.systemUptimePanel(node1));
   },
 );
