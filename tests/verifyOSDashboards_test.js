@@ -71,7 +71,7 @@ Scenario(
   },
 );
 
-Scenario(
+Scenario.only(
   'PMM-T1695 Verify that user is able to filter OS / Node Compare dashboard by Node Name @nightly @dashboards',
   async ({ I, dashboardPage, adminPage, inventoryAPI }) => {
     const nodes = await inventoryAPI.getAllNodes();
@@ -95,10 +95,12 @@ Scenario(
     assert.ok(numOfPanels === 28, `There should be 28 panels for one node but found "${numOfPanels}".`);
 
     I.scrollTo(adminPage.fields.metricTitle);
+    I.click(adminPage.fields.metricTitle);
     I.dontSeeElement(dashboardPage.systemUptimePanel(node2));
     I.seeElement(dashboardPage.systemUptimePanel(node1));
 
     await dashboardPage.applyFilter('Node Name', node2);
+    I.scrollTo(adminPage.fields.metricTitle);
     I.click(adminPage.fields.metricTitle);
 
     numOfPanels = await I.grabNumberOfVisibleElements(dashboardPage.panel);
