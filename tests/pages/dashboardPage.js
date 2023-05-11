@@ -14,6 +14,8 @@ module.exports = {
     '//input[@aria-controls="options-service_name"]',
   toggleAllValues:
     '//a[@aria-label="Toggle all values"]',
+  panel: 'div[data-panelid]',
+  systemUptimePanel: (nodeName) => `//div[@class="panel-title"]//h2[text()="${nodeName} - System Uptime"]`,
   nodesCompareDashboard: {
     url: 'graph/d/node-instance-compare/nodes-compare?orgId=1&refresh=1m&from=now-5m&to=now',
     metrics: [
