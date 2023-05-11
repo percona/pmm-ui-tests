@@ -6,6 +6,7 @@ const servicesTab = require('./servicesTab');
 module.exports = {
   url: 'graph/inventory?orgId=1',
   fields: {
+    servicesLink: locate('[role="tablist"] a').withText('Services').withAttr({ 'aria-label': 'Tab Services' }),
     serviceRow: (serviceName) => `//span[contains(text(), '${serviceName}')]//ancestor::tr`,
     showServiceDetails: (serviceName) => `//span[contains(text(), '${serviceName}')]//ancestor::tr//button[@data-testid="show-row-details"]`,
     hideServiceDetails: (serviceName) => `//span[contains(text(), '${serviceName}')]//ancestor::tr//button[@data-testid="hide-row-details"]`,
@@ -45,6 +46,10 @@ module.exports = {
     processExecPathExporters: '//td[contains(text(), "exporter")]//ancestor::tr[@data-testid="table-row"]//span[contains(text(), "process_exec_path")]',
     nodeExporterStatus: '//td[contains(text(), "Node exporter")]//ancestor::tr[@data-testid="table-row"]//span[contains(text(), "status")]',
     agentId: '//td[contains(text(), "agent_id") and not(following-sibling::td[text()="PMM Agent"])]',
+    selectAllCheckbox: locate('$select-all'),
+    selectRowCheckbox: locate('$select-row'),
+    removalDialogMessage: '//form/h4',
+    selectedCheckbox: '//div[descendant::input[@value="true"] and @data-testid="select-row"]',
   },
   servicesTab,
   pagination: paginationPart,
