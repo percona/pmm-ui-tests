@@ -10,7 +10,6 @@ import PerconaPlatform from '@pages/pmmSettings/PerconaPlatform.page';
 import { SignInPage } from '@pages/SignIn.page';
 import { PortalUserRoles } from '@support/enums/portalUserRoles';
 import User from '@support/types/user.interface';
-import { executeCommand } from '@tests/helpers/commandLineHelper';
 
 test.describe('Spec file for connecting PMM to the portal', async () => {
   let firstAdmin: User;

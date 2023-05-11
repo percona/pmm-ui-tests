@@ -104,9 +104,6 @@ Scenario(
   'PMM-T1275 - Verify webConfigPlaceholder is generated on every Node exporter restart @not-ui-pipeline @exporters',
   async ({ I, pmmInventoryPage }) => {
     I.amOnPage(pmmInventoryPage.url);
-    await I.waitForVisible(pmmInventoryPage.fields.agentsLink, 20);
-    I.click(pmmInventoryPage.fields.agentsLink);
-    await I.waitForVisible(pmmInventoryPage.fields.tableRow);
     // Find node ID
     const nodeId = (await I.verifyCommand(`docker exec ${connection.container_name} ls /tmp/node_exporter/agent_id/`)).trim();
 

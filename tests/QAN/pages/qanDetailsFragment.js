@@ -20,6 +20,9 @@ module.exports = {
     emptyPlanText: locate('pre').withText('No plan found'),
     topQuery: locate('$top-query').find('div'),
     histogramContainer: '$histogram-collapse-container',
+    firstPlaceholder: locate('$input-wrapper'),
+    submitButton: locate('$query-analytics-details').find('./button[@type="submit"]'),
+    explainTable: locate('$classic-explain-value'),
   },
 
   getFilterSectionLocator: (filterSectionName) => `//span[contains(text(), '${filterSectionName}')]`,
