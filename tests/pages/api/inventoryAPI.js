@@ -197,6 +197,13 @@ module.exports = {
     return node || null;
   },
 
+  async getAllNodes() {
+    const headers = { Authorization: `Basic ${await I.getAuth()}` };
+    const resp = await I.sendPostRequest('v1/inventory/Nodes/List', {}, headers);
+
+    return resp.data;
+  },
+
   async getNodeName(nodeID) {
     const body = {
       node_id: nodeID,

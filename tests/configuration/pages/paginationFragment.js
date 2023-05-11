@@ -31,6 +31,12 @@ module.exports = {
     });
   },
 
+  async getSelectedCountPerPage() {
+    I.waitForVisible(this.elements.rowsPerPageDropdown);
+
+    return parseInt(await I.grabTextFrom(this.elements.rowsPerPageDropdown), 10);
+  },
+
   async selectRowsPerPage(option) {
     I.assertContain([25, 50, 100], option, 'Specified option is not the one available options to select in dropdown');
 
@@ -64,6 +70,8 @@ module.exports = {
   },
 
   async getLastPageNumber() {
+    I.waitForVisible(this.elements.pageNumberButtonLast, 30);
+
     return await I.grabTextFrom(this.elements.pageNumberButtonLast);
   },
 
