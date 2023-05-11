@@ -95,13 +95,13 @@ Scenario.only(
     assert.ok(numOfPanels === 28, `There should be 28 panels for one node but found "${numOfPanels}".`);
 
     I.scrollTo(adminPage.fields.metricTitle);
-    I.click(adminPage.fields.metricTitle);
+    I.forceClick(adminPage.fields.metricTitle);
     I.dontSeeElement(dashboardPage.systemUptimePanel(node2));
     I.seeElement(dashboardPage.systemUptimePanel(node1));
 
     await dashboardPage.applyFilter('Node Name', node2);
     I.scrollTo(adminPage.fields.metricTitle);
-    I.click(adminPage.fields.metricTitle);
+    I.forceClick(adminPage.fields.metricTitle);
 
     numOfPanels = await I.grabNumberOfVisibleElements(dashboardPage.panel);
 
