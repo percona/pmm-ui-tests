@@ -47,15 +47,16 @@ Scenario(
       I.assertEqual(status, 'Running', `'${name}' is expected to have 'Running' status in pmm-admin status, but found: '${status}'`);
     }
 
-    await pmmInventoryPage.agentsTab.open();
-    await pmmInventoryPage.agentsTab.pagination.selectRowsPerPage(100);
+    await pmmInventoryPage.servicesTab.open();
+    await pmmInventoryPage.servicesTab.pagination.selectRowsPerPage(100);
 
     // TODO: improve inventoryAPI.apiGetServices() to handle flexible auth.
     const services = Object.values((await inventoryAPI.apiGetServices()).data).flat(Infinity)
       .map((o) => ({ id: o.service_id, name: o.service_name }));
 
     for (const service of services) {
-      await pmmInventoryPage.agentsTab.verifyAgentOtherDetailsSection('status:', 'status: RUNNING', service.name, service.id);
+      I.assertEqual(await pmmInventoryPage.servicesTab.getServiceMonitoringStatus(service.name), 'OK',
+        `'${service.name}' is expected to have 'OK' status when all the agents are 'Running'`);
     }
 
     await I.say('Verify QAN continues to receive data');

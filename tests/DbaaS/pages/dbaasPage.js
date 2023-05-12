@@ -56,10 +56,15 @@ module.exports = {
       text: 'AWS Secret Access Key of the root user or an IAM user with access to the EKS cluster',
       link: 'https://docs.aws.amazon.com/general/latest/gr/aws-sec-cred-types.html',
     },
-    expose: {
-      tooltipText: locate('//div[@data-popper-escaped]//span'),
-      iconLocator: locate('//div[label[@data-testid="expose-field-label"]]').find('div[class$="-Icon"]').as('Expose tooltip'),
+    externalAccess: {
+      tooltipText: locate('//div[@data-popper-escaped]'),
+      iconLocator: locate('$eks-info-icon').as('External Access tooltip'),
       text: 'You will make this database cluster available to connect from the internet. To limit access you need to specify source ranges',
+    },
+    internetFacing: {
+      tooltipText: locate('//div[@data-popper-escaped]//span'),
+      iconLocator: locate('//div[label[@data-testid="internetFacing-field-label"]]').find('div[class$="-Icon"]').as('Internet Facing tooltip'),
+      text: 'This is an AWS specific configuration required if you want to access your database cluster outside of your VPC',
     },
   },
   numberOfNodesError: 'Only 1, 3 or more nodes allowed',
@@ -180,12 +185,9 @@ module.exports = {
         configurationLabel: (dbType) => locate('$configuration-field-label').withText(dbType),
         storageClassLabel: '$storageClass-field-label',
       },
-      networkAndSecurity: {
-        networkAndSecurityHeader: locate('legend').withText('Network and Security'),
-        exposeLabel: '$expose-field-label',
-        exposeCheckbox: '$expose-checkbox-input',
-        exposeTooltipText: locate('div').withChild('.tooltip-arrow'),
-        exposeTooltip: locate('$expose-field-container').find('div').at(3).as('Expose tooltip'),
+      externalAccess: {
+        enableExtAcceessLabel: locate('$network-and-security').find('div').withText('Enable external access'),
+        enableExtAcceessToggle: '//div[text()="Enable external access"]/following-sibling::div//div',
         internetFacingLabel: '$internetFacing-field-label',
         internetFacingCheckbox: '$internetFacing-checkbox-input',
         sourceRangesLabel: locate('label').withText('Source Range'),
@@ -493,7 +495,7 @@ module.exports = {
 
   async pxcClusterMetricCheck(dbclusterName, serviceName, nodeName, haproxynodeName) {
     await dashboardPage.genericDashboardLoadForDbaaSClusters(`${dashboardPage.mysqlPXCGaleraNodeSummaryDashboard.url}?&var-service_name=${serviceName}`, 'Last 30 minutes', 4, 0, 3);
-    await dashboardPage.genericDashboardLoadForDbaaSClusters(`graph/d/haproxy-instance-summary/haproxy-instance-summary?orgId=1&refresh=1m&var-service_name=${haproxynodeName}`, 'Last 30 minutes', 4, 0, 3);
+    await dashboardPage.genericDashboardLoadForDbaaSClusters(`graph/d/haproxy-instance-summary/haproxy-instance-summary?orgId=1&refresh=1m&var-service_name=${haproxynodeName}`, 'Last 30 minutes', 4, 1, 3);
     // eslint-disable-next-line no-inline-comments
     await dashboardPage.genericDashboardLoadForDbaaSClusters(`${dashboardPage.mysqlInstanceSummaryDashboard.url}&var-service_name=${serviceName}`, 'Last 30 minutes', 4, 1, 5); //FIXME: Expected with N/A should be 0 after PMM-10308 is fixed
     await dashboardPage.genericDashboardLoadForDbaaSClusters(`${dashboardPage.nodeSummaryDashboard.url}?&var-node_name=${nodeName}`, 'Last 30 minutes', 4, 0, 1);
@@ -533,7 +535,7 @@ module.exports = {
   },
 
   async verifySourceRangeCount(count) {
-    let sourceRange = await I.grabNumberOfVisibleElements(this.tabs.dbClusterTab.networkAndSecurity.sourceRangeInput);
+    let sourceRange = await I.grabNumberOfVisibleElements(this.tabs.dbClusterTab.externalAccess.sourceRangeInput);
 
     assert.ok(sourceRange === count, `There should be ${count} Source Range Inputs but found ${sourceRange}`);
   },

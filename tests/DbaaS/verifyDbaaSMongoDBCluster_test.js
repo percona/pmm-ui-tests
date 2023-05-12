@@ -5,7 +5,7 @@ const assert = require('assert');
 const faker = require('faker');
 
 const psmdb_cluster_type = 'DB_CLUSTER_TYPE_PSMDB';
-const mongodb_recommended_version = 'MongoDB 6.0.4';
+const mongodb_recommended_version = 'MongoDB 6.0.5';
 const psmdb_backup_cluster = 'psmdb-backup-test';
 const dbName = 'tutorialkart2';
 
@@ -116,7 +116,7 @@ Scenario('PMM-T1577 Verify Edit DB Cluster page @dbaas',
     I.dontSeeElement(dbaasPage.tabs.dbClusterTab.basicOptions.fields.allBasicOptions);
     I.seeElement(dbaasPage.tabs.dbClusterTab.advancedOptions.fields.advancedSettingsLabel);
     I.seeElement(dbaasPage.tabs.dbClusterTab.dbConfigurations.configurationsHeader('MongoDB'));
-    I.seeElement(dbaasPage.tabs.dbClusterTab.networkAndSecurity.networkAndSecurityHeader);
+    I.seeElement(dbaasPage.tabs.dbClusterTab.externalAccess.enableExtAcceessToggle);
     I.seeElement(dbaasPage.tabs.dbClusterTab.editClusterButtonDisabled);
   }
 );  

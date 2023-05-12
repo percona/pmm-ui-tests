@@ -11,7 +11,7 @@ module.exports = {
     firstPageButton: '$first-page-button',
     previousPageButton: '$previous-page-button',
     pageNumberButton: (number) => locate('$page-button').withText(`${number}`),
-    pageNumberButtonLast: locate('$page-button').last(),
+    pageNumberButtonLast: '(//button[@data-testid="page-button-active" or @data-testid="page-button"])[last()]',
     nextPageButton: '$next-page-button',
     lastPageButton: '$last-page-button',
   },
@@ -29,6 +29,12 @@ module.exports = {
     await within(this.elements.rowsPerPageDropdown, () => {
       I.see(expectedNumber);
     });
+  },
+
+  async getSelectedCountPerPage() {
+    I.waitForVisible(this.elements.rowsPerPageDropdown);
+
+    return parseInt(await I.grabTextFrom(this.elements.rowsPerPageDropdown), 10);
   },
 
   async selectRowsPerPage(option) {
@@ -64,6 +70,8 @@ module.exports = {
   },
 
   async getLastPageNumber() {
+    I.waitForVisible(this.elements.pageNumberButtonLast, 30);
+
     return await I.grabTextFrom(this.elements.pageNumberButtonLast);
   },
 
