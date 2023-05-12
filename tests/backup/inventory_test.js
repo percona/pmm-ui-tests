@@ -95,7 +95,7 @@ Data(createBackupTests).Scenario(
   async ({
     I, backupInventoryPage, current,
   }) => {
-    const backupName = `mongo backup test ${current.storageLocationName}`;
+    const backupName = `mongo_backup_test_${current.storageLocationName}`;
 
     I.click(backupInventoryPage.buttons.openAddBackupModal);
 
@@ -121,7 +121,7 @@ Scenario(
   async ({
     I, backupInventoryPage,
   }) => {
-    const backupName = 'backup modal test';
+    const backupName = 'backup_modal_test';
 
     I.click(backupInventoryPage.buttons.openAddBackupModal);
 
@@ -236,7 +236,7 @@ Scenario(
   async ({
     I, backupInventoryPage, backupAPI, inventoryAPI,
   }) => {
-    const backupName = 'mongo artifact delete test';
+    const backupName = 'mongo_artifact_delete_test';
     const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName('MONGODB_SERVICE', mongoServiceName);
     const artifactId = await backupAPI.startBackup(backupName, service_id, locationId);
 
@@ -270,7 +270,7 @@ Scenario(
       service_id: serviceId,
       location_id: locationId,
       cron_expression: '*/2 * * * *',
-      name: 'schedule for restore',
+      name: 'schedule_for_restore',
       mode: scheduledAPI.backupModes.snapshot,
       description: '',
       retry_interval: '10s',
