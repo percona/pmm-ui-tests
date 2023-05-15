@@ -1,23 +1,24 @@
 const assert = require('assert');
 const contactPointsAPI = require('./pages/api/contactPointsAPI');
+
 const ruleName = 'PSQL immortal rule';
-const ruleFolder = 'PostgreSQL'
+const ruleFolder = 'PostgreSQL';
 const rulesForAlerts = [{
-    severity: 'SEVERITY_CRITICAL',
+  severity: 'SEVERITY_CRITICAL',
 }, {
-    severity: 'SEVERITY_ERROR',
+  severity: 'SEVERITY_ERROR',
 }, {
-    severity: 'SEVERITY_NOTICE',
+  severity: 'SEVERITY_NOTICE',
 }, {
-    severity: 'SEVERITY_WARNING',
+  severity: 'SEVERITY_WARNING',
 }, {
-    severity: 'SEVERITY_ALERT',
+  severity: 'SEVERITY_ALERT',
 }, {
-    severity: 'SEVERITY_INFO',
+  severity: 'SEVERITY_INFO',
 }, {
-    severity: 'SEVERITY_DEBUG',
+  severity: 'SEVERITY_DEBUG',
 }, {
-    severity: 'SEVERITY_EMERGENCY',
+  severity: 'SEVERITY_EMERGENCY',
 },
 ];
 
@@ -39,13 +40,13 @@ BeforeSuite(async ({ I, rulesAPI }) => {
   // const cert = await I.readFileSync('./testdata/ia/certs/self.crt');
 });
 
-AfterSuite(async ({ rulesAPI, I}) => {
+AfterSuite(async ({ rulesAPI, I }) => {
   await rulesAPI.removeAllAlertRules();
   await I.verifyCommand('docker-compose -f docker-compose-webhook.yml stop');
 });
 
 Scenario(
-  'PMM-T1482 Verify fired alert @ia',
+  'PMM-T1482 Verify fired alert @ia1',
   async ({ I, alertsPage, alertsAPI }) => {
     await alertsAPI.waitForAlerts(24, 1);
     I.amOnPage(alertsPage.url);
@@ -63,7 +64,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T1494 PMM-T1495 Verify fired alert in Pager Duty and Webhook @ia',
+  'PMM-T1494 PMM-T1495 Verify fired alert in Pager Duty and Webhook @ia1',
   async ({ I, alertsAPI, rulesAPI }) => {
     const file = './testdata/ia/scripts/alert.txt';
     const alertUID = await rulesAPI.getAlertUID(ruleName, ruleFolder);
@@ -150,11 +151,14 @@ Scenario(
 
 Scenario(
   'PMM-T564 Verify fired alert severity colors @ia',
-  async ({ I, alertsPage, rulesAPI, alertsAPI }) => {
+  async ({
+    I, alertsPage, rulesAPI, alertsAPI,
+  }) => {
     await rulesAPI.removeAllAlertRules();
     for (const rule of rulesForAlerts) {
       await rulesAPI.createAlertRule({ ruleName: rule.severity, severity: rule.severity }, ruleFolder);
     }
+
     await alertsAPI.waitForAlerts(24, 8);
     I.amOnPage(alertsPage.url);
     rulesForAlerts.forEach((item) => I.waitForElement(alertsPage.elements.alertRow(item.severity), 10));
