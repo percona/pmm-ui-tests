@@ -46,7 +46,7 @@ AfterSuite(async ({ rulesAPI, I }) => {
 });
 
 Scenario(
-  'PMM-T1482 Verify fired alert @ia1',
+  'PMM-T1482 Verify fired alert @ia',
   async ({ I, alertsPage, alertsAPI }) => {
     await alertsAPI.waitForAlerts(24, 1);
     I.amOnPage(alertsPage.url);
@@ -64,7 +64,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T1494 PMM-T1495 Verify fired alert in Pager Duty and Webhook @ia1',
+  'PMM-T1494 PMM-T1495 Verify fired alert in Pager Duty and Webhook @ia',
   async ({ I, alertsAPI, rulesAPI }) => {
     const file = './testdata/ia/scripts/alert.txt';
     const alertUID = await rulesAPI.getAlertUID(ruleName, ruleFolder);
