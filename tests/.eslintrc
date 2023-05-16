@@ -42,6 +42,7 @@
       }
     ],
     "no-await-in-loop": ["off"],
-    "no-return-await": ["off"]
+    "no-return-await": ["off"],
+    "no-useless-escape": ["off"]
   }
 }
