@@ -3,8 +3,9 @@ const assert = require('assert');
 
 module.exports = {
   url: 'graph/d/pmm-home/home-dashboard?orgId=1',
-  pathToFramework: '/srv/pmm-qa/pmm-tests/pmm-framework.sh',
-  pathToPMMTests: '/srv/pmm-qa/pmm-tests/',
+  pathToPmmQaRepo: process.env.PATH_TO_PMM_QA || '/srv/pmm-qa',
+  pathToFramework: `${this.pathToPmmQaRepo}/pmm-tests/pmm-framework.sh`,
+  pathToPMMTests: `${this.pathToPmmQaRepo}/pmm-tests/`,
   sideMenu: {
     integratedAlerting: 'li > a[href="/graph/integrated-alerting"]',
     alertingBellIcon: locate('$navbar-section').at(2).find('li a[aria-label="Alerting"]'),
