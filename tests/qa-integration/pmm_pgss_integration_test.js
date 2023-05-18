@@ -171,7 +171,11 @@ Data(pgsqlVersionPgss).Scenario(
     const exposedPort = '5500';
     const serviceName = `pgsql_pgss_${pgsqlVersion}_service`;
 
-    await I.verifyCommand(`${pmmFrameworkLoader} --pmm2 --setup-pmm-pgss-integration --pgsql-version=${pgsqlVersion} --pgsql-pgss-port=${exposedPort}`);
+    await I.say(`sudo ${pmmFrameworkLoader} --pmm2 --setup-pmm-pgss-integration --pgsql-version=${pgsqlVersion} --pgsql-pgss-port=${exposedPort}`);
+
+    const out = await I.verifyCommand(`sudo ${pmmFrameworkLoader} --pmm2 --setup-pmm-pgss-integration --pgsql-version=${pgsqlVersion} --pgsql-pgss-port=${exposedPort}`);
+
+    await I.say(out);
 
     await I.wait(30);
 
