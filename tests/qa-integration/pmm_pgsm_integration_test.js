@@ -72,12 +72,13 @@ Scenario(
       pgsm_output = await I.pgExecuteQueryOnDemand(`select query, pgsm_query_id, planid, query_plan, calls, total_exec_time, mean_exec_time from pg_stat_monitor where datname='${database}' and query NOT IN ('SELECT version()', 'SELECT /* pmm-agent:pgstatmonitor */ version()');`, connection);
     }
 
-    I.wait(90);
+    I.wait(150);
 
-    let toStart = new Date();
+    const now = new Date();
 
-    toStart = new Date(toStart + (2 * 60000));
-    const fromStart = new Date(toStart - (7 * 60000));
+    const fromStart = new Date(now.getTime() - (10 * 60000));
+
+    const toStart = new Date(now.getTime() + (10 * 60000));
 
     for (let i = 0; i < pgsm_output.rows.length; i++) {
       const queryid = pgsm_output.rows[i].pgsm_query_id;
@@ -94,9 +95,6 @@ Scenario(
       }
 
       await I.say(`query is : ${query}`);
-      await I.say(`query is : ${JSON.stringify(query)}`);
-      await I.say(`response is : ${JSON.stringify(response.data, 2, null)}`);
-      await I.say(`response is : ${JSON.stringify(response.data.metrics, 2, null)}`);
 
       const clickhouse_sum = parseFloat((response.data.metrics.query_time.sum).toFixed(7));
       const clickhouse_avg = parseFloat((response.data.metrics.query_time.avg).toFixed(7));
@@ -222,12 +220,13 @@ Scenario(
       pgsm_output = await I.pgExecuteQueryOnDemand(`select query, pgsm_query_id, planid, query_plan, calls, total_exec_time, mean_exec_time from pg_stat_monitor WHERE queryid IS NOT NULL AND query IS NOT NULL AND datname='${db}' and bucket_done;`, connection);
     }
 
-    I.wait(90);
+    I.wait(150);
 
-    let toStart = new Date();
+    const now = new Date();
 
-    toStart = new Date(toStart + (2 * 60000));
-    const fromStart = new Date(toStart - (7 * 60000));
+    const fromStart = new Date(now.getTime() - (10 * 60000));
+
+    const toStart = new Date(now.getTime() + (10 * 60000));
 
     for (let i = 0; i < pgsm_output.rows.length; i++) {
       const queryid = pgsm_output.rows[i].pgsm_query_id;
@@ -280,7 +279,7 @@ Scenario(
     const applicationName = 'PMMT1063';
 
     await I.pgExecuteQueryOnDemand(sql, connection);
-    I.wait(90);
+    I.wait(120);
     await I.verifyCommand(`docker exec ${container_name} pmm-admin list | grep "postgresql_pgstatmonitor_agent" | grep "Running"`);
     I.amOnPage(qanPage.url);
     qanOverview.waitForOverviewLoaded();
@@ -319,7 +318,7 @@ Scenario(
 
     await I.pgExecuteQueryOnDemand(sql, connection);
     connection.database = 'postgres';
-    I.wait(90);
+    I.wait(120);
     pgsm_output = await I.pgExecuteQueryOnDemand(`select query, pgsm_query_id, top_queryid, top_query  from pg_stat_monitor where datname='${db}' and query like '${queryWithTopId}' and top_query IS NOT NULL;`, connection);
     if (pgsm_output.rows.length === 0) {
       // Need clarification on this workaround from PGSM team, looks like a bug <insufficient disk/shared space
@@ -377,7 +376,7 @@ Scenario(
 
     await I.pgExecuteQueryOnDemand(sql, connection);
     connection.database = 'postgres';
-    I.wait(90);
+    I.wait(120);
     I.amOnPage(qanPage.url);
     qanOverview.waitForOverviewLoaded();
     I.waitForVisible(qanFilters.buttons.showSelected, 30);
