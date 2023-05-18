@@ -29,6 +29,7 @@ export class NodesPage extends InventoryPage {
 
   messages = {
     ...super.getInventoryMessages(),
+    pmmServerCannotBeRemoved: "PMM Server node can't be removed.",
   };
 
   links = {
