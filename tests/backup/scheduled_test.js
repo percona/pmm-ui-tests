@@ -4,7 +4,7 @@ const moment = require('moment');
 const { scheduledPage } = inject();
 
 const location = {
-  name: 'mongo-location for scheduling',
+  name: 'mongo-location-for-scheduling',
   description: 'test description',
 };
 
@@ -48,7 +48,7 @@ BeforeSuite(async ({
     location.description,
   );
   locationIdForPS = await locationsAPI.createStorageLocation(
-    'ps-location for scheduling',
+    'ps_location_for_scheduling',
     locationsAPI.storageType.s3,
     locationsAPI.psStorageLocationConnection,
     location.description,
