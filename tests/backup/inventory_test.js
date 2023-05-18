@@ -8,7 +8,7 @@ const location = {
   name: 'mongo-location',
   description: 'test description',
 };
-const localStorageLocationName = 'mongo-local-client';
+const localStorageLocationName = '/tmp/backup_data';
 
 let localStorageLocationId;
 let locationId;
@@ -398,7 +398,7 @@ Scenario(
   async ({
     I, inventoryAPI, backupAPI, backupInventoryPage,
   }) => {
-    const backupName = 'mongo backup logs test';
+    const backupName = 'mongo_backup_logs_test';
     const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName('MONGODB_SERVICE', mongoServiceName);
     const artifactId = await backupAPI.startBackup(backupName, service_id, locationId);
 
@@ -453,7 +453,7 @@ Scenario(
   async ({
     I, inventoryAPI, backupInventoryPage, backupAPI, restorePage,
   }) => {
-    const backupName = 'mongo error logs';
+    const backupName = 'mongo_error_logs';
     const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName('MONGODB_SERVICE', mongoServiceName);
     const artifactId = await backupAPI.startBackup(backupName, service_id, locationId);
 
