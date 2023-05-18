@@ -62,5 +62,5 @@ jobs:
       pmm_server_version: ${{ github.event.inputs.pmm_server_version || 'dev-latest' }}
       pmm_server_docker_tag: ${{ inputs.pmm_server_docker_tag }}
       pmm_client_version: ${{ github.event.inputs.pmm_client_version || 'dev-latest' }}
-      pmm_clients: '--addclient=modb,1'
+      pmm_clients: '--addclient=modb,1 --addclient=ps,1 --addclient=pdpgsql,1'
       pmm_qa_branch: ${{ github.event.inputs.pmm_qa_branch || 'main' }}
