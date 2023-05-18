@@ -8,7 +8,7 @@ const location = {
   name: 'mongo-location',
   description: 'test description',
 };
-const localStorageLocationName = '/tmp/backup_data';
+const localStorageLocationName = 'mongoLocation';
 
 let localStorageLocationId;
 let locationId;
