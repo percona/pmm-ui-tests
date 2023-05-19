@@ -171,6 +171,8 @@ Data(pgsqlVersionPgss).Scenario(
     const exposedPort = '5444';
     const serviceName = `pgsql_pgss_${pgsqlVersion}_service`;
 
+    await I.say(`admin password is: ${process.env.ADMIN_PASSWORD}`);
+
     await I.say(`sudo ${pmmFrameworkLoader} --pmm2 --setup-pmm-pgss-integration --pgsql-version=${pgsqlVersion} --pgsql-pgss-port=${exposedPort}`);
 
     const out = await I.verifyCommand(`sudo ${pmmFrameworkLoader} --pmm2 --setup-pmm-pgss-integration --pgsql-version=${pgsqlVersion} --pgsql-pgss-port=${exposedPort}`);
