@@ -168,7 +168,7 @@ Data(pgsqlVersionPgss).Scenario(
       expectedColumnName,
     } = current;
     const containerName = `pgsql_pgss_${pgsqlVersion}`;
-    const exposedPort = '5500';
+    const exposedPort = '5433';
     const serviceName = `pgsql_pgss_${pgsqlVersion}_service`;
 
     await I.say(`sudo ${pmmFrameworkLoader} --pmm2 --setup-pmm-pgss-integration --pgsql-version=${pgsqlVersion} --pgsql-pgss-port=${exposedPort}`);
