@@ -174,8 +174,9 @@ Data(pgsqlVersionPgss).Scenario(
     await I.say(`admin password is: ${process.env.ADMIN_PASSWORD}`);
 
     await I.say(`${pmmFrameworkLoader} --pmm2 --setup-pmm-pgss-integration --pgsql-version=${pgsqlVersion} --pgsql-pgss-port=${exposedPort}`);
+    await I.verifyCommand(`export ADMIN_PASSWORD=${process.env.ADMIN_PASSWORD}`);
 
-    const out = await I.verifyCommand(`${pmmFrameworkLoader} --pmm2 --setup-pmm-pgss-integration --pgsql-version=${pgsqlVersion} --pgsql-pgss-port=${exposedPort}`);
+    const out = await I.verifyCommand(`sudo ${pmmFrameworkLoader} --pmm2 --setup-pmm-pgss-integration --pgsql-version=${pgsqlVersion} --pgsql-pgss-port=${exposedPort}`);
 
     await I.say(out);
 
