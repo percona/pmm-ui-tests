@@ -314,7 +314,7 @@ Scenario(
   async ({
     I, backupInventoryPage, backupAPI, inventoryAPI,
   }) => {
-    const backupName = 'service remove backup';
+    const backupName = 'service_remove_backup';
     const serviceName = `mongo-service-to-delete-${faker.datatype.number(2)}`;
 
     I.say(await I.verifyCommand(`docker exec rs101 pmm-admin add mongodb --username=pmm --password=pmmpass --port=27017 --service-name=${serviceName} --replication-set=rs --cluster=rs`));
@@ -370,7 +370,7 @@ Scenario(
       service_id: serviceId,
       location_id: locationId,
       cron_expression: '*/2 * * * *',
-      name: 'PMM-T1163 schedule',
+      name: 'PMM-T1163_schedule',
       mode: scheduledAPI.backupModes.snapshot,
       description: '',
       retry_interval: '30s',

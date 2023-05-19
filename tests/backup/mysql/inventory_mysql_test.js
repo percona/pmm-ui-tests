@@ -181,7 +181,7 @@ Scenario(
   async ({
     I, backupInventoryPage, backupAPI, inventoryAPI,
   }) => {
-    const backupName = 'service remove backup';
+    const backupName = 'service_remove_backup';
     const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName('MYSQL_SERVICE', mysqlServiceNameToDelete);
     const artifactId = await backupAPI.startBackup(backupName, service_id, locationId, false, false);
 
