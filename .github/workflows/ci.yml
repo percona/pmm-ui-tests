@@ -29,8 +29,13 @@ jobs:
       BACKUP_LOCATION_SECRET_KEY: ${{ secrets.BACKUP_LOCATION_SECRET_KEY }}
     with:
       server_image: 'perconalab/pmm-server-fb:PR-3167-47e17d4'
+<<<<<<< HEAD
       client_version: 'dev-latest'
       client_image: 'perconalab/pmm-client:dev-latest'
+=======
+      client_version: 'PR-3167-47e17d4'
+      client_image: 'perconalab/pmm-client-fb:PR-3167-47e17d4'
+>>>>>>> PMM-T1720_FixBackupsRelated_Variables_Cause_Of_New_Validation_Rules
       pmm_qa_branch: 'main'
       pmm_ui_branch: ${{ github.head_ref }}
       sha: 'null'
