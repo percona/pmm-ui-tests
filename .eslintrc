@@ -59,6 +59,7 @@
     "no-shadow": ["off"],
     // enable it later, it happens because null coalesion operator
     "no-unused-expressions": ["off"],
-    "class-methods-use-this": ["off"]
+    "class-methods-use-this": ["off"],
+    "no-continue": ["off"]
   }
 }
