@@ -441,7 +441,7 @@ Scenario(
 
     backupInventoryPage.selectDropdownOption(backupInventoryPage.fields.serviceNameDropdown, serviceName);
     backupInventoryPage.selectDropdownOption(backupInventoryPage.fields.locationDropdown, location.name);
-    I.fillField(backupInventoryPage.fields.backupName, 'test error');
+    I.fillField(backupInventoryPage.fields.backupName, 'test_error');
     I.click(backupInventoryPage.buttons.addBackup);
 
     await I.verifyPopUpMessage('software "mongodb" is not installed: incompatible service');
@@ -526,7 +526,7 @@ Scenario(
   async ({
     I, inventoryAPI, backupInventoryPage, backupAPI,
   }) => {
-    const backupName = 'mongo retry';
+    const backupName = 'mongo_retry';
     const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName('MONGODB_SERVICE', mongoServiceName);
     const artifactId = await backupAPI.startBackup(backupName, service_id, locationId, true);
 
