@@ -1,23 +1,24 @@
 const assert = require('assert');
 const contactPointsAPI = require('./pages/api/contactPointsAPI');
+
 const ruleName = 'PSQL immortal rule';
-const ruleFolder = 'PostgreSQL'
+const ruleFolder = 'PostgreSQL';
 const rulesForAlerts = [{
-    severity: 'SEVERITY_CRITICAL',
+  severity: 'SEVERITY_CRITICAL',
 }, {
-    severity: 'SEVERITY_ERROR',
+  severity: 'SEVERITY_ERROR',
 }, {
-    severity: 'SEVERITY_NOTICE',
+  severity: 'SEVERITY_NOTICE',
 }, {
-    severity: 'SEVERITY_WARNING',
+  severity: 'SEVERITY_WARNING',
 }, {
-    severity: 'SEVERITY_ALERT',
+  severity: 'SEVERITY_ALERT',
 }, {
-    severity: 'SEVERITY_INFO',
+  severity: 'SEVERITY_INFO',
 }, {
-    severity: 'SEVERITY_DEBUG',
+  severity: 'SEVERITY_DEBUG',
 }, {
-    severity: 'SEVERITY_EMERGENCY',
+  severity: 'SEVERITY_EMERGENCY',
 },
 ];
 
@@ -39,7 +40,7 @@ BeforeSuite(async ({ I, rulesAPI }) => {
   // const cert = await I.readFileSync('./testdata/ia/certs/self.crt');
 });
 
-AfterSuite(async ({ rulesAPI, I}) => {
+AfterSuite(async ({ rulesAPI, I }) => {
   await rulesAPI.removeAllAlertRules();
   await I.verifyCommand('docker-compose -f docker-compose-webhook.yml stop');
 });
@@ -150,11 +151,14 @@ Scenario(
 
 Scenario(
   'PMM-T564 Verify fired alert severity colors @ia',
-  async ({ I, alertsPage, rulesAPI, alertsAPI }) => {
+  async ({
+    I, alertsPage, rulesAPI, alertsAPI,
+  }) => {
     await rulesAPI.removeAllAlertRules();
     for (const rule of rulesForAlerts) {
       await rulesAPI.createAlertRule({ ruleName: rule.severity, severity: rule.severity }, ruleFolder);
     }
+
     await alertsAPI.waitForAlerts(24, 8);
     I.amOnPage(alertsPage.url);
     rulesForAlerts.forEach((item) => I.waitForElement(alertsPage.elements.alertRow(item.severity), 10));

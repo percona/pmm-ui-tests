@@ -45,51 +45,55 @@ module.exports = {
     return resp.data;
   },
 
-  async verifyAlertInPagerDuty(ruleId) {
-    const pd = api({ token: process.env.PAGER_DUTY_API_KEY });
+  async getAlertsForIncident(pd, incidentId, ruleId) {
+    return await pd.get(`/incidents/${incidentId}/alerts?limit=100`).then(({ data }) => {
+      if (!data.alerts.length) return null;
 
-    const getAlertFromPD = async (ruleId) => await pd.get('/incidents?statuses[]=triggered')
-      .then(async ({ data: { incidents } }) => {
+      return data.alerts
+        .find(({ body: { details: { firing } } }) => firing.includes(ruleId));
+    })
+      .catch((e) => Error(`failed to get alerts for incident: ${e}`));
+  },
+
+  async getAlertFromPD(pd, ruleId) {
+    return await pd.get('/incidents?statuses[]=triggered&limit=100')
+      .then(async ({ data }) => {
+        const { incidents } = data;
         let alert;
 
         for (const i in incidents) {
           const { id } = incidents[i];
 
-          alert = await getAlertsForIncident(id, ruleId);
+          alert = await this.getAlertsForIncident(pd, id, ruleId);
           if (alert) break;
         }
 
         return alert;
       })
       .catch((e) => Error(`failed to get incidents from PD: ${e}`));
+  },
 
-    const getAlertsForIncident = async (incidentId, ruleId) => await pd.get(`/incidents/${incidentId}/alerts`)
-      .then(({ data }) => {
-        if (!data.alerts.length) return null;
+  async verifyAlertInPagerDuty(ruleId) {
+    const pd = api({ token: process.env.PAGER_DUTY_API_KEY });
+    const alert = await this.getAlertFromPD(pd, ruleId);
 
-        return data.alerts
-          .find(({ body: { details: { firing } } }) => firing.includes(ruleId));
-      })
-      .catch((e) => Error(`failed to get alerts for incident: ${e}`));
-
-    const alert = await getAlertFromPD(ruleId);
-
-    assert.ok(alert.incident.summary.includes('PSQL immortal rule PostgreSQL'));
-    assert.ok(alert.body.details.firing.includes('PSQL immortal rule'));
-    assert.ok(alert.body.details.firing.includes(ruleId));
-
-    await pd({
-      method: 'put',
-      endpoint: `/incidents/${alert.incident.id}/alerts/${alert.id}`,
-      headers: {
-        From: 'platform.qa.automation@percona.com',
-      },
-      data: {
-        alert: {
-          status: 'resolved',
+    try {
+      assert.ok(alert.incident.summary.includes('PSQL immortal rule PostgreSQL'));
+      assert.ok(alert.body.details.firing.includes('PSQL immortal rule'));
+      assert.ok(alert.body.details.firing.includes(ruleId));
+    } finally {
+      await pd({
+        method: 'put',
+        endpoint: `/incidents/${alert.incident.id}/alerts/${alert.id}`,
+        headers: {
+          From: 'platform.qa.automation@percona.com',
         },
-      },
-    })
-      .catch((e) => Error(`failed to resolve alert for an incident: ${e}`));
+        data: {
+          alert: {
+            status: 'resolved',
+          },
+        },
+      }).catch((e) => Error(`failed to resolve alert for an incident: ${e}`));
+    }
   },
 };
