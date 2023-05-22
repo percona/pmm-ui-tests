@@ -59,4 +59,10 @@ export default class Table {
     await expect(this.tableElements.body).not.toContainText(text);
   }
 
+
+  verifyTableDoesContain = async (text: string) => {
+    await this.tableElements.row.first().waitFor({ state: 'visible' });
+    await expect(this.tableElements.body).toContainText(text);
+  }
+
 }

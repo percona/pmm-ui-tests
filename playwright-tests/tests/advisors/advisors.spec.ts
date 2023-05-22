@@ -8,12 +8,13 @@ import Duration from '@tests/helpers/Duration';
 import grafanaHelper from '@tests/helpers/GrafanaHelper';
 import HomeDashboard from '@tests/pages/HomeDashboard.page';
 import { SignInPage } from '@tests/pages/SignIn.page';
-import { AdvisorInsights, FailedAdvisorType } from '@tests/pages/advisors/AdvisorInsights.page';
-import { ConfigurationAdvisors } from '@tests/pages/advisors/ConfigurationAdvisors.page';
+import { AdvisorInsights, FailedAdvisorType } from '@tests/tests/advisors/pages/AdvisorInsights.page';
+import { ConfigurationAdvisors } from '@tests/tests/advisors/pages/ConfigurationAdvisors.page';
 import PerconaPlatform from '@tests/pages/pmmSettings/PerconaPlatform.page';
 import config from '@tests/playwright.config';
 import User from '@tests/support/types/user.interface';
 import { MongoDbAdvisors, MySqlAdvisors, PgSqlAdvisors } from './helpers/advisors';
+import { executeCommand } from '@tests/helpers/CommandLine';
 
 test.describe('Spec file for basic database version control of Advisors. ', async () => {
   let freePlatformUser: User;
@@ -37,7 +38,11 @@ test.describe('Spec file for basic database version control of Advisors. ', asyn
     console.log(paidPlatformUser);
   });
 
-  test.beforeEach(async ({ page }) => {
+  test.beforeEach(async ({ page }, testInfo) => {
+    if (testInfo.title.includes('PMM-T1645')) {
+      executeCommand('npx ts-node ../pmm-qa/pmm-integration/integration-setup.ts --clear-all-setups')
+      executeCommand('npx ts-node ../pmm-qa/pmm-integration/integration-setup.ts --addclient=modb,2 --pmm-server-flags="-e PERCONA_TEST_CHECKS_FILE=/opt/checks/mongodb-clickhouse-qan-enabled.yml"')
+    }
     await apiHelper.confirmTour(page);
     await grafanaHelper.authorize(page, 'admin', 'admin');
     await page.goto('');
@@ -108,8 +113,6 @@ test.describe('Spec file for basic database version control of Advisors. ', asyn
       await homeDashboard.verifyFailedAdvisorsNumberIsGreaterThen({ error: 2, warning: 2, notice: 2 });
     });
 
-
-
     await test.step('4. Verify that advisors link from home dashboard links to advisors page.', async () => {
       await homeDashboard.elements.failedAdvisorsPanel.advisorLink.click();
       await expect(page).toHaveURL(`${config.use?.baseURL}/${advisorInsights.url}`);
@@ -158,7 +161,7 @@ test.describe('Spec file for basic database version control of Advisors. ', asyn
       await signInPage.fields.username.waitFor({ state: 'visible', timeout: Duration.ThreeMinutes });
     });
 
-    await test.step('5. Connect paid Org and open new browser window.', async () => {
+    await test.step('10. Connect paid Org and open new browser window.', async () => {
       await api.pmm.platformV1.connect('Test Server', await portalAPI.getUserAccessToken(paidPlatformUser.email, paidPlatformUser.password));
       const paidContext = await browser.newContext();
       await page.close();
@@ -174,7 +177,7 @@ test.describe('Spec file for basic database version control of Advisors. ', asyn
       await grafanaHelper.unAuthorize(page);
     });
 
-    await test.step('10. Login as paid user and rerun checks.', async () => {
+    await test.step('11. Login as paid user and rerun checks.', async () => {
       await signInPage.waitForOktaLogin();
 
       await signInPage.oktaLogin(paidPlatformUser.email, paidPlatformUser.password);
@@ -185,7 +188,7 @@ test.describe('Spec file for basic database version control of Advisors. ', asyn
       expect(numberOfAdvisorsPaid).toBeGreaterThan(numberOfAdvisorsRegistered);
     });
 
-    await test.step('11. Verify that failed advisors are displayed on home dashboard.', async () => {
+    await test.step('12. Verify that failed advisors are displayed on home dashboard.', async () => {
       await page.waitForTimeout(Duration.OneMinute);
       await advisorInsights.sideMenu.elements.home.click();
       await homeDashboard.verifyFailedAdvisorsNumberIsGreaterThen({ error: 2, warning: 10, notice: 3 });
