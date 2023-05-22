@@ -28,7 +28,7 @@ jobs:
       BACKUP_LOCATION_ACCESS_KEY: ${{ secrets.BACKUP_LOCATION_ACCESS_KEY }}
       BACKUP_LOCATION_SECRET_KEY: ${{ secrets.BACKUP_LOCATION_SECRET_KEY }}
     with:
-      server_image: 'perconalab/pmm-server:dev-latest'
+      server_image: 'perconalab/pmm-server-fb:PR-3167-47e17d4'
       client_version: 'dev-latest'
       client_image: 'perconalab/pmm-client:dev-latest'
       pmm_qa_branch: 'main'
