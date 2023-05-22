@@ -138,7 +138,7 @@ Scenario.skip(
   },
 );
 
-Scenario.only(
+Scenario(
   'PMM-T554 - Check that all agents have status "RUNNING" @inventory @nightly',
   async ({ I, pmmInventoryPage, inventoryAPI }) => {
     await I.amOnPage(pmmInventoryPage.url);
@@ -171,7 +171,7 @@ Scenario(
     const arr = [];
 
     for (const key of Object.keys(actAg.data)) {
-      if (key.endsWith('exporter')) {
+      if (key.endsWith('exporter') && key !== 'external_exporter') {
         // eslint-disable-next-line no-return-assign
         actAg.data[key].map((o) => o.type = key);
 
