@@ -193,7 +193,7 @@ test.describe('Spec file for basic database version control of Advisors. ', asyn
   });
 
 
-  test('PMM-T1684 Verify integrity of the new Advisors: Test example Check @advisors', async ({ page, context, browser }) => {
+  test('PMM-T1684 Verify integrity of the new Advisors: Test example Check @developmentAdvisors', async ({ page, context, browser }) => {
     let configurationAdvisors = new ConfigurationAdvisors(page);
     let advisorInsights = new AdvisorInsights(page);
 
@@ -211,7 +211,7 @@ test.describe('Spec file for basic database version control of Advisors. ', asyn
     });
   });
 
-  test('PMM-T1689 Verify Advisors : MongoDB replica sets Actions executed always on the corresponding node @advisors', async ({ page, context, browser }) => {
+  test('PMM-T1689 Verify Advisors : MongoDB replica sets Actions executed always on the corresponding node @developmentAdvisors', async ({ page, context, browser }) => {
     let advisorInsights = new AdvisorInsights(page);
     const advisorName = 'Check that advisor hits proper service';
 
