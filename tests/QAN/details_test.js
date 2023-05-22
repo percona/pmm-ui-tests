@@ -149,7 +149,7 @@ Scenario(
 );
 
 Data(querySources).Scenario(
-  '@PMM-T1667 Verify that SQL injection is filtered in placeholders on QAN tab @qan',
+  '@PMM-T1667 Verify that SQL injection is filtered in placeholders on QAN tab @cli',
   async ({
     I, qanPage, adminPage, qanOverview, qanDetails, qanFilters, current,
   }) => {
