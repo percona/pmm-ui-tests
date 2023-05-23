@@ -51,6 +51,7 @@ module.exports = {
     locationDropdown: '//label[@data-testid="location-field-label"]/parent::div/following-sibling::div[1]//div[contains(@class, "-select-value-container")]',
     everyDropdown: '//label[@data-testid="period-field-label"]/parent::div/following-sibling::div[1]//div[contains(@class, "-select-value-container")]',
     retention: '$retention-number-input',
+    folder: '$folder-text-input',
     schedule: {
       scheduledTime: '//div[div[label[@data-testid="period-field-label"]]]//div[contains(@class, "select")]/div[1]',
       months: '//div[div[label[@data-testid="month-field-label"]]]//div[contains(@class, "select")]/div[1]',
