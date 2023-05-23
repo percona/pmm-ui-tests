@@ -59,7 +59,6 @@ Data(data).Scenario(
     I.amOnPage(`${basePmmUrl}graph/datasources`);
     I.waitForVisible(postgresDataSourceLocator, 30);
 
-    await pause();
     // Docker way upgrade
     await I.verifyCommand(`PMM_SERVER_IMAGE=${DOCKER_IMAGE} docker-compose -f docker-compose-external-pg.yml up -d pmm-server-external-postgres`);
     await I.wait(120);
