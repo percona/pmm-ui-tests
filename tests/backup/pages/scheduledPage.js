@@ -84,6 +84,7 @@ module.exports = {
   },
 
   selectDropdownOption(dropdownLocator, text) {
+    I.waitForVisible(dropdownLocator, 10);
     I.click(dropdownLocator);
     I.waitForVisible(this.elements.dropdownOption(text), 30);
     I.click(this.elements.dropdownOption(text));
