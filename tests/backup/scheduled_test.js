@@ -180,10 +180,12 @@ Scenario(
   }) => {
     const newScheduleName = 'updated_schedule';
     const newScheduleDescr = 'new_description';
+    const defaultFolder = 'replicaset';
 
     const schedule = {
       service_id: serviceId,
       location_id: locationId,
+      folder: defaultFolder,
       cron_expression: '0 0 * * *',
       name: 'schedule_for_update',
       mode: scheduledAPI.backupModes.snapshot,
@@ -196,6 +198,7 @@ Scenario(
     const immortalSchedule = {
       service_id: serviceId,
       location_id: locationId,
+      folder: defaultFolder,
       cron_expression: '0 0 * * *',
       name: 'immortal_schedule',
       mode: scheduledAPI.backupModes.snapshot,
@@ -520,11 +523,13 @@ Scenario(
     const schedule = {
       name: 'test_no_cluster_error',
       retention: 1,
+      folder: 'test',
     };
 
     scheduledPage.openScheduleBackupModal();
     scheduledPage.selectDropdownOption(scheduledPage.fields.serviceNameDropdown, mongoNameWithoutCluster);
     I.fillField(scheduledPage.fields.backupName, schedule.name);
+    I.fillField(scheduledPage.fields.folder, schedule.folder);
     scheduledPage.selectDropdownOption(scheduledPage.fields.locationDropdown, location.name);
     scheduledPage.selectDropdownOption(scheduledPage.fields.everyDropdown, 'Every minute');
     scheduledPage.clearRetentionField();
