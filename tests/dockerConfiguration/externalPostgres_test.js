@@ -45,7 +45,7 @@ AfterSuite(async ({ I }) => {
 });
 
 Data(data).Scenario(
-  '@PMM-T1678 Verify PMM with external PostgreSQL @docker-configuration',
+  '@PMM-T1678 Verify PMM with external PostgreSQL including upgrade @docker-configuration',
   async ({
     I, dashboardPage, qanPage, qanOverview, pmmInventoryPage, current,
   }) => {
