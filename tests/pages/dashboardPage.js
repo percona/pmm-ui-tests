@@ -646,7 +646,7 @@ module.exports = {
       'Total InnoDB Buffer Pool Size',
       'Top MySQL Used Connections',
       'Top MySQL Client Threads Connected',
-      'Top MySQL Active Client Threads',
+      'Top MySQL Idle Client Threads',
       'Top MySQL Threads Cached',
       'Top 5 MySQL Used Connections',
       'MySQL Used Connections',
