@@ -28,8 +28,8 @@ jobs:
       BACKUP_LOCATION_ACCESS_KEY: ${{ secrets.BACKUP_LOCATION_ACCESS_KEY }}
       BACKUP_LOCATION_SECRET_KEY: ${{ secrets.BACKUP_LOCATION_SECRET_KEY }}
     with:
-      server_image: 'perconalab/pmm-server-fb:PR-3167-47e17d4'
-      client_version: 'https://s3.us-east-2.amazonaws.com/pmm-build-cache/PR-BUILDS/pmm2-client/pmm2-client-PR-3167-47e17d4.tar.gz'
+      server_image: 'perconalab/pmm-server-fb:PR-3167-0ce57f0'
+      client_version: 'https://s3.us-east-2.amazonaws.com/pmm-build-cache/PR-BUILDS/pmm2-client/pmm2-client-PR-3167-0ce57f0.tar.gz'
       client_image: 'dev-latest'
 
       pmm_qa_branch: 'main'
