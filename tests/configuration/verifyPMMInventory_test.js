@@ -141,28 +141,19 @@ Scenario.skip(
 Scenario(
   'PMM-T554 - Check that all agents have status "RUNNING" @inventory @nightly',
   async ({ I, pmmInventoryPage, inventoryAPI }) => {
-    const statuses = ['WAITING', 'STARTING', 'UNKNOWN'];
-    const serviceIdsNotRunning = [];
-    const servicesNotRunning = [];
+    await I.amOnPage(pmmInventoryPage.url);
+    await I.waitForVisible(pmmInventoryPage.fields.showRowDetails, 10);
+    await pmmInventoryPage.servicesTab.pagination.selectRowsPerPage(50);
 
-    I.amOnPage(pmmInventoryPage.url);
-    I.waitForVisible(pmmInventoryPage.fields.agentsLink, 20);
-    I.click(pmmInventoryPage.fields.agentsLink);
+    const services = Object.values((await inventoryAPI.apiGetServices()).data).flat(Infinity)
+      .map((o) => (o.service_name));
 
-    for (const status of statuses) {
-      const ids = await pmmInventoryPage.getServiceIdWithStatus(status);
-
-      serviceIdsNotRunning.push(...ids);
-    }
-
-    if (serviceIdsNotRunning.length) {
-      for (const id of serviceIdsNotRunning) {
-        const service = await inventoryAPI.getServiceById(id);
-
-        servicesNotRunning.push(...service);
-      }
-
-      assert.fail(`These services do not have RUNNING state: \n ${JSON.stringify(servicesNotRunning, null, 2)}`);
+    for (const sn of services) {
+      await I.waitForVisible(pmmInventoryPage.fields.showServiceDetails(sn), 10);
+      await I.click(pmmInventoryPage.fields.showServiceDetails(sn));
+      await I.waitForText('running', pmmInventoryPage.fields.agentStatus);
+      await I.waitForVisible(pmmInventoryPage.fields.hideServiceDetails(sn), 10);
+      await I.click(pmmInventoryPage.fields.hideServiceDetails(sn));
     }
   },
 );
@@ -180,7 +171,7 @@ Scenario(
     const arr = [];
 
     for (const key of Object.keys(actAg.data)) {
-      if (key.endsWith('exporter')) {
+      if (key.endsWith('exporter') && key !== 'external_exporter') {
         // eslint-disable-next-line no-return-assign
         actAg.data[key].map((o) => o.type = key);
 
