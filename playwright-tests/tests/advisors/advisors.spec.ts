@@ -39,10 +39,6 @@ test.describe('Spec file for basic database version control of Advisors. ', asyn
   });
 
   test.beforeEach(async ({ page }, testInfo) => {
-    if (testInfo.title.includes('PMM-T1645')) {
-      executeCommand('npx ts-node ../pmm-qa/pmm-integration/integration-setup.ts --clear-all-setups')
-      executeCommand('npx ts-node ../pmm-qa/pmm-integration/integration-setup.ts --addclient=modb,2 --pmm-server-flags="-e PERCONA_TEST_CHECKS_FILE=/opt/checks/mongodb-clickhouse-qan-enabled.yml"')
-    }
     await apiHelper.confirmTour(page);
     await grafanaHelper.authorize(page, 'admin', 'admin');
     await page.goto('');

@@ -3,8 +3,16 @@ import Duration from '@tests/helpers/Duration';
 import { AdvisorInsights, FailedAdvisorType } from './pages/AdvisorInsights.page';
 import { ConfigurationAdvisors } from './pages/ConfigurationAdvisors.page';
 import { DevelopmentAdvisors } from './pages/DevelopmentAdvisors.page';
+import apiHelper from '@tests/api/helpers/apiHelper';
+import grafanaHelper from '@tests/helpers/GrafanaHelper';
 
 test.describe('Spec file for Development Advisors. ', async () => {
+
+  test.beforeEach(async ({ page }, testInfo) => {
+    await apiHelper.confirmTour(page);
+    await grafanaHelper.authorize(page);
+    await page.goto('');
+  });
 
   test('PMM-T1645 Verify integrity of the new Advisors : Verify that Clickhouse as a DataSource is detect by QAN @developmentAdvisors', async ({ page, context, browser }) => {
     const developmentAdvisors = new DevelopmentAdvisors(page);
