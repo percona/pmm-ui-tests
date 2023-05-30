@@ -19,6 +19,7 @@ test.describe('Spec file for Development Advisors. ', async () => {
 
     await test.step('1. Verify that check file was properly loaded to Advisors', async () => {
       await page.goto(developmentAdvisors.url);
+      await developmentAdvisors.elements.advisorsCategoryCollapse.click()
       await developmentAdvisors.advisorsTable.verifyTableDoesContain('Sample Clickhouse advisor that checks if QAN is on a MongoDB instance');
     })
   });
@@ -37,7 +38,7 @@ test.describe('Spec file for Development Advisors. ', async () => {
 
     await test.step('1. Login and run advisors check', async () => {
       await configurationAdvisors.buttons.advisorInsights.click();
-      await advisorInsights.verifyFailedAdvisorsForServiceAndType('ps_integration_', FailedAdvisorType.Warning, 5, Duration.TwentyMinutes);
+      await advisorInsights.verifyFailedAdvisorsForServiceAndType('ps_integration_', FailedAdvisorType.Warning, 5, Duration.ThreeMinutes);
     });
   });
 
@@ -56,7 +57,7 @@ test.describe('Spec file for Development Advisors. ', async () => {
     await test.step('2. Verify that check for the first node is executed on the first node.', async () => {
       const serviceName = 'mo-replica-integration-0';
       await advisorInsights.buttons.advisorInsights.click();
-      await advisorInsights.verifyFailedAdvisorsForServiceAndType(serviceName, FailedAdvisorType.Notice, 1, Duration.TwentyMinutes);
+      await advisorInsights.verifyFailedAdvisorsForServiceAndType(serviceName, FailedAdvisorType.Notice, 1, Duration.ThreeMinutes);
       await advisorInsights.elements.failedAdvisorRow(serviceName).click();
       await advisorInsights.failedChecksTable.elements.showDetails('test_check').click();
       await expect(advisorInsights.failedChecksTable.elements.serviceName('test_check')).toContainText(serviceName);
@@ -65,7 +66,7 @@ test.describe('Spec file for Development Advisors. ', async () => {
     await test.step('3. Verify that check for the second node is executed on the second node.', async () => {
       const serviceName = 'mo-replica-integration-1';
       await advisorInsights.buttons.advisorInsights.click();
-      await advisorInsights.verifyFailedAdvisorsForServiceAndType(serviceName, FailedAdvisorType.Notice, 1, Duration.TwentyMinutes);
+      await advisorInsights.verifyFailedAdvisorsForServiceAndType(serviceName, FailedAdvisorType.Notice, 1, Duration.ThreeMinutes);
       await advisorInsights.elements.failedAdvisorRow(serviceName).click();
       await advisorInsights.failedChecksTable.elements.showDetails('test_check').click();
       await expect(advisorInsights.failedChecksTable.elements.serviceName('test_check')).toContainText(serviceName);
@@ -74,7 +75,7 @@ test.describe('Spec file for Development Advisors. ', async () => {
     await test.step('2. Verify that check for the third node is executed on the third node.', async () => {
       const serviceName = 'mo-replica-integration-2';
       await advisorInsights.buttons.advisorInsights.click();
-      await advisorInsights.verifyFailedAdvisorsForServiceAndType(serviceName, FailedAdvisorType.Notice, 1, Duration.TwentyMinutes);
+      await advisorInsights.verifyFailedAdvisorsForServiceAndType(serviceName, FailedAdvisorType.Notice, 1, Duration.ThreeMinutes);
       await advisorInsights.elements.failedAdvisorRow(serviceName).click();
       await advisorInsights.failedChecksTable.elements.showDetails('test_check').click();
       await expect(advisorInsights.failedChecksTable.elements.serviceName('test_check')).toContainText(serviceName);
