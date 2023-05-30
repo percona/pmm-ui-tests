@@ -13,7 +13,7 @@ export default class HomeDashboard extends BaseDashboard {
   pmmUpgrade = new PmmUpgrade(this.page);
   upgradeModal = new UpgradeModal(this.page);
   pmmMenu = new PmmMenu(this.page);
-  private failedAdvisorsPanel = this.page.locator('//section[@aria-label="Failed Advisors panel"]');
+  private failedAdvisorsPanel = this.page.locator('//section[@aria-label="Failed Advisors panel" or @aria-label="Failed advisors panel"]');
 
   elements = {
     ...super.getBaseDashboardElements(),
