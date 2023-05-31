@@ -24,24 +24,6 @@ test.describe('Spec file for Development Advisors. ', async () => {
     })
   });
 
-  test('PMM-T1684 Verify integrity of the new Advisors: Test example Check @developmentAdvisors', async ({ page }) => {
-    let configurationAdvisors = new ConfigurationAdvisors(page);
-    let advisorInsights = new AdvisorInsights(page);
-
-    await test.step('1. Login and run advisors check', async () => {
-      await page.goto(advisorInsights.url);
-      await advisorInsights.buttons.developmentAdvisors.click();
-      await advisorInsights.openAllCategoryCollapseElements();
-      await advisorInsights.buttons.runAdvisor('Check format V2').click();
-      await advisorInsights.toast.checkToastMessage(advisorInsights.messages.advisorRunning('Check format V2'), { variant: 'success' });
-    });
-
-    await test.step('1. Login and run advisors check', async () => {
-      await configurationAdvisors.buttons.advisorInsights.click();
-      await advisorInsights.verifyFailedAdvisorsForServiceAndType('ps_integration_', FailedAdvisorType.Warning, 5, Duration.ThreeMinutes);
-    });
-  });
-
   test('PMM-T1689 Verify Advisors : MongoDB replica sets Actions executed always on the corresponding node @developmentAdvisors', async ({ page }) => {
     let advisorInsights = new AdvisorInsights(page);
     const advisorName = 'Check that advisor hits proper service';
@@ -80,6 +62,23 @@ test.describe('Spec file for Development Advisors. ', async () => {
       await advisorInsights.failedChecksTable.elements.showDetails('test_check').click();
       await expect(advisorInsights.failedChecksTable.elements.serviceName('test_check')).toContainText(serviceName);
     });
+  });
 
+  test('PMM-T1684 Verify integrity of the new Advisors: Test example Check @developmentAdvisors', async ({ page }) => {
+    let configurationAdvisors = new ConfigurationAdvisors(page);
+    let advisorInsights = new AdvisorInsights(page);
+
+    await test.step('1. Login and run advisors check', async () => {
+      await page.goto(advisorInsights.url);
+      await advisorInsights.buttons.developmentAdvisors.click();
+      await advisorInsights.openAllCategoryCollapseElements();
+      await advisorInsights.buttons.runAdvisor('Check format V2').click();
+      await advisorInsights.toast.checkToastMessage(advisorInsights.messages.advisorRunning('Check format V2'), { variant: 'success' });
+    });
+
+    await test.step('1. Login and run advisors check', async () => {
+      await configurationAdvisors.buttons.advisorInsights.click();
+      await advisorInsights.verifyFailedAdvisorsForServiceAndType('ps_integration_', FailedAdvisorType.Warning, 5, Duration.ThreeMinutes);
+    });
   });
 });
