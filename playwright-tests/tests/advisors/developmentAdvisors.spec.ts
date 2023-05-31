@@ -72,12 +72,6 @@ test.describe('Spec file for Development Advisors. ', async () => {
     let mysqlDashboard = new MySqlDashboard(page);
 
     await test.step('1. Login and run advisors check', async () => {
-      await page.waitForTimeout(Duration.ThirtySecond);
-      await page.screenshot({ path: 'screenshot1.png' });
-      await page.goto(mysqlDashboard.url);
-      await page.waitForTimeout(Duration.ThirtySecond);
-      await page.screenshot({ path: './playwright-report/data/screenshot.png' });
-      await page.screenshot({ path: 'screenshot.png2' });
       await page.goto(advisorInsights.url);
       await advisorInsights.buttons.developmentAdvisors.click();
       await advisorInsights.openAllCategoryCollapseElements();
