@@ -88,6 +88,6 @@ jobs:
       pmm_server_version: ${{ github.event.inputs.pmm_server_version || 'dev-latest' }}
       pmm_server_docker_tag: ${{ inputs.pmm_server_docker_tag }}
       pmm_client_version: ${{ github.event.inputs.pmm_client_version || 'dev-latest' }}
-      pmm_clients: '--addclient=ps,1 --pmm-server-flags="-e PERCONA_TEST_CHECKS_FILE=/opt/checks/replica_set_test_advisor.yml" --mongo-replica-for-backup --ps-version=5.7'
+      pmm_clients: '--addclient=ps,1 --mongo-replica-for-backup --ps-version=5.7'
       pmm_qa_branch: ${{ github.event.inputs.pmm_qa_branch || 'main' }}
-    
+      pmm_server_flags: '--pmm-server-flags="-e PERCONA_TEST_CHECKS_FILE=/opt/checks/replica_set_test_advisor.yml"'
