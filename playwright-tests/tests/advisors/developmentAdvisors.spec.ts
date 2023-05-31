@@ -6,6 +6,7 @@ import { DevelopmentAdvisors } from './pages/DevelopmentAdvisors.page';
 import apiHelper from '@tests/api/helpers/apiHelper';
 import grafanaHelper from '@tests/helpers/GrafanaHelper';
 import { MySqlDashboard } from '@tests/pages/dashboards/mysql/MySqlDashboard.page';
+import { executeCommand } from '@tests/helpers/CommandLine';
 
 test.describe('Spec file for Development Advisors. ', async () => {
 
@@ -86,6 +87,8 @@ test.describe('Spec file for Development Advisors. ', async () => {
 
     await test.step('1. Login and run advisors check', async () => {
       await configurationAdvisors.buttons.advisorInsights.click();
+      await page.waitForTimeout(Duration.OneMinute);
+      await executeCommand('sudo docker exec pmm-integration-server cat /srv/logs/pmm-managed.log')
       await advisorInsights.verifyFailedAdvisorsForServiceAndType('ps_integration_', FailedAdvisorType.Warning, 5, Duration.OneMinute);
     });
   });
