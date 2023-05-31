@@ -29,6 +29,10 @@ class Output {
     });
   }
 
+  async outEquals(expectedValue: string) {
+    expect(this.stdout, `Stdout should equal ${expectedValue}!`).toBe(expectedValue);
+  }
+
   async outContains(expectedValue: string) {
     await test.step(`Verify command output contains ${expectedValue}`, async () => {
       expect(this.stdout, `Stdout does not contain ${expectedValue}!`).toContain(expectedValue);

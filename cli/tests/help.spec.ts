@@ -2,14 +2,14 @@ import { test, expect } from '@playwright/test';
 import * as cli from '@helpers/cliHelper';
 import Output from "@support/types/output";
 
-let addMongoHelp:Output;
+let output:Output;
 let addPostgreSqlHelp:Output;
 
 test.describe('PMM Client "--help" validation', async () => {
 
   test.beforeAll(async ({}) =>{
-    addMongoHelp = await cli.execSilent('sudo pmm-admin add mongodb --help');
-    await addMongoHelp.assertSuccess();
+    output = await cli.execSilent('sudo pmm-admin add mongodb --help');
+    await output.assertSuccess();
     addPostgreSqlHelp = await cli.execSilent('sudo pmm-admin add postgresql --help');
     await addPostgreSqlHelp.assertSuccess();
   });
@@ -22,7 +22,7 @@ test.describe('PMM Client "--help" validation', async () => {
    * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/modb-tests.bats#L212
    */
   test('pmm-admin mongodb --help validation', async ({}) => {
-    await addMongoHelp.outContainsMany([
+    await output.outContainsMany([
       'Usage: pmm-admin add mongodb [<name> [<address>]]',
       '--socket=STRING',
       'metrics-mode="auto"',
@@ -36,7 +36,7 @@ test.describe('PMM Client "--help" validation', async () => {
    * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/modb-tests.bats#L287
    */
   test('PMM-T925 Verify pmm-admin add mongodb --help has TLS-related flags', async ({}) => {
-    await addMongoHelp.outContainsMany([
+    await output.outContainsMany([
       'tls                        Use TLS to connect to the database',
       'tls-skip-verify            Skip TLS certificates validation',
       'tls-certificate-key-file=STRING',
@@ -112,6 +112,42 @@ test.describe('PMM Client "--help" validation', async () => {
       'tls-cert-file=STRING       TLS certificate file',
       'tls-key-file=STRING        TLS certificate key file',
       'tls-ca-file=STRING         TLS CA certificate file',
+    ]);
+  });
+
+  /**
+   * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/generic-tests.bats#L312
+   */
+  test('run pmm-admin annotate --help', async ({}) => {
+    const output = await cli.execSilent('sudo pmm-admin annotate --help');
+    await output.assertSuccess();
+    await output.outContainsMany([
+      'Usage: pmm-admin annotate <text>',
+      '<text>    Text of annotation',
+      'Add an annotation to Grafana charts',
+    ]);
+  });
+
+  /**
+   * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/generic-tests.bats#L335
+   */
+  test('run pmm-admin --help to check if Annotation exist in help output', async ({}) => {
+    const output = await cli.execSilent('sudo pmm-admin --help');
+    await output.assertSuccess();
+    await output.outContains('annotate      Add an annotation to Grafana charts');
+  });
+
+  /**
+   * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/generic-tests.bats#L356
+   */
+  test('run pmm-admin config --help to check for Metrics Mode option', async ({}) => {
+    const output = await cli.execSilent('sudo pmm-admin config --help');
+    await output.assertSuccess();
+    await output.outContainsMany([
+      'Metrics flow mode for agents node-exporter,',
+      'can be push - agent will push metrics, pull -',
+      'server scrape metrics from agent or auto -',
+      'chosen by server.',
     ]);
   });
 });
