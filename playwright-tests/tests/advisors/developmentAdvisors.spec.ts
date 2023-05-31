@@ -69,6 +69,7 @@ test.describe('Spec file for Development Advisors. ', async () => {
     let advisorInsights = new AdvisorInsights(page);
 
     await test.step('1. Login and run advisors check', async () => {
+      await page.waitForTimeout(Duration.TenMinutes);
       await page.goto(advisorInsights.url);
       await advisorInsights.buttons.developmentAdvisors.click();
       await advisorInsights.openAllCategoryCollapseElements();
