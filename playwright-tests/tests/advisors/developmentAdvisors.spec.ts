@@ -5,6 +5,7 @@ import { ConfigurationAdvisors } from './pages/ConfigurationAdvisors.page';
 import { DevelopmentAdvisors } from './pages/DevelopmentAdvisors.page';
 import apiHelper from '@tests/api/helpers/apiHelper';
 import grafanaHelper from '@tests/helpers/GrafanaHelper';
+import { MySqlDashboard } from '@tests/pages/dashboards/mysql/MySqlDashboard.page';
 
 test.describe('Spec file for Development Advisors. ', async () => {
 
@@ -67,9 +68,15 @@ test.describe('Spec file for Development Advisors. ', async () => {
   test('PMM-T1684 Verify integrity of the new Advisors: Test example Check @developmentAdvisors', async ({ page }) => {
     let configurationAdvisors = new ConfigurationAdvisors(page);
     let advisorInsights = new AdvisorInsights(page);
+    let mysqlDashboard = new MySqlDashboard(page);
 
     await test.step('1. Login and run advisors check', async () => {
-      await page.waitForTimeout(Duration.TenMinutes);
+      await page.waitForTimeout(Duration.ThirtySecond);
+      await page.screenshot({ path: 'screenshot1.png' });
+      await page.goto(mysqlDashboard.url);
+      await page.waitForTimeout(Duration.ThirtySecond);
+      await page.screenshot({ path: './playwright-report/data/screenshot.png' });
+      await page.screenshot({ path: 'screenshot.png2' });
       await page.goto(advisorInsights.url);
       await advisorInsights.buttons.developmentAdvisors.click();
       await advisorInsights.openAllCategoryCollapseElements();
