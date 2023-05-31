@@ -78,7 +78,7 @@ test.describe('Spec file for Development Advisors. ', async () => {
 
     await test.step('1. Login and run advisors check', async () => {
       await configurationAdvisors.buttons.advisorInsights.click();
-      await advisorInsights.verifyFailedAdvisorsForServiceAndType('ps_integration_', FailedAdvisorType.Warning, 5, Duration.ThreeMinutes);
+      await advisorInsights.verifyFailedAdvisorsForServiceAndType('ps_integration_', FailedAdvisorType.Warning, 5, Duration.OneMinute);
     });
   });
 });
