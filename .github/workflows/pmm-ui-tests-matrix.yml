@@ -82,6 +82,8 @@ jobs:
     name: Advisors
     uses: ./.github/workflows/pmm-ui-tests.yml
     secrets: inherit
+    env:
+      WORKSPACE: ${{ github.workspace }}
     with:
       pmm_ui_tests_branch: ${{ github.event.inputs.pmm_ui_tests_branch || github.head_ref || 'main '}}
       pmm_test_flag: '@developmentAdvisors'
