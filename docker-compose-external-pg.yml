@@ -1,6 +1,9 @@
 ---
 version: '3.7'
 
+volumes:
+  pmm-server-external-pg:
+
 services:
   pmm-server-external-postgres:
     image: ${PMM_SERVER_IMAGE:-perconalab/pmm-server:dev-latest}
@@ -10,6 +13,8 @@ services:
     ports:
       - '8081:80'
       - '8444:443'
+    volumes:
+      - pmm-server-external-pg:/srv
     environment:
       - PMM_DEBUG=1
       - PERCONA_TEST_POSTGRES_DBNAME=postgres
