@@ -1,6 +1,3 @@
-const assert = require('assert');
-const { homeDashboard } = require('../pages/dashboardPage');
-
 const { adminPage } = inject();
 
 Feature('Test PMM server with external PostgreSQL').retry(1);
@@ -9,7 +6,7 @@ const pathToPMMFramework = adminPage.pathToPMMTests;
 const DOCKER_IMAGE = process.env.DOCKER_VERSION || 'perconalab/pmm-server:dev-latest';
 
 const runPMMWithExternalPGWithSSL = `docker run -d -p 8082:80 -p 447:443 \ 
-    --name PMM-T1681 \
+    --name PMM-T1678 \
     --network external-pg \
     -v ${pathToPMMFramework}tls-ssl-setup/postgres/14:/certs \
     -e PERCONA_TEST_POSTGRES_SSL_CA_PATH=/certs/ca.crt \
@@ -22,17 +19,15 @@ const runPMMWithExternalPGWithSSL = `docker run -d -p 8082:80 -p 447:443 \
     -e PERCONA_TEST_POSTGRES_DBPASSWORD=pmm \
     ${DOCKER_IMAGE}`;
 
-const data = new DataTable(['containerName', 'postgresqlAddress', 'serverPort']);
+const data = new DataTable(['composeName', 'containerName', 'postgresqlAddress', 'serverPort']);
 
-data.add(['pmm-server-external-postgres', 'external-postgres:5432', '8081']);
-// data.add(['PMM-T1681', 'pgsql_14:5432', '8082']);
+data.add(['docker-compose-external-pg', 'pmm-server-external-postgres', 'external-postgres:5432', '8081']);
+data.add(['docker-compose-external-pg-ssl', 'pmm-server-external-postgres-ssl', 'external-postgres-ssl:5432', '8082']);
 
 BeforeSuite(async ({ I }) => {
-  // await I.verifyCommand(`${pmmFrameworkLoader} --pdpgsql-version=14 --setup-postgres-ssl --pmm2`);
-  // await I.verifyCommand('docker network create external-pg || true');
-  // await I.verifyCommand('docker network connect external-pg pgsql_14 || true');
-  await I.verifyCommand('docker-compose -f docker-compose-external-pg.yml up -d');
-  // await I.verifyCommand(runPMMWithExternalPGWithSSL);
+  // Start PMM with latest released version
+  await I.verifyCommand('PMM_SERVER_IMAGE=percona/pmm-server:latest docker-compose -f docker-compose-external-pg.yml up -d');
+  await I.verifyCommand(`PMM_SERVER_IMAGE=${DOCKER_IMAGE} docker-compose -f docker-compose-external-pg-ssl.yml up -d`);
   await I.wait(30);
 });
 
@@ -41,21 +36,32 @@ Before(async ({ I }) => {
 });
 
 AfterSuite(async ({ I }) => {
-  await I.verifyCommand('docker-compose -f docker-compose-external-pg.yml down -v');
-  // await I.verifyCommand('docker stop pgsql_14 || docker rm pgsql_14');
+  await I.verifyCommand('docker-compose -f docker-compose-external-pg.yml down -v || true');
+  await I.verifyCommand('docker-compose -f docker-compose-external-pg-ssl.yml down -v || true');
 });
 
 Data(data).Scenario(
-  '@PMM-T1678 Verify PMM with external PostgreSQL @docker-configuration',
+  '@PMM-T1678 Verify PMM with external PostgreSQL including upgrade @docker-configuration1',
   async ({
     I, dashboardPage, qanPage, qanOverview, pmmInventoryPage, current,
   }) => {
     const basePmmUrl = `http://127.0.0.1:${current.serverPort}/`;
     const serviceName = 'pmm-server-postgresql';
-    const { postgresqlAddress } = current;
+    const { postgresqlAddress, composeName, containerName } = current;
 
     const postgresDataSourceLocator = locate('div').withChild(locate('h2 > a').withText('PostgreSQL'));
 
+    if (composeName === 'docker-compose-external-pg') {
+      // Verify the env variable works on released version
+      I.amOnPage(`${basePmmUrl}graph/datasources`);
+      I.waitForVisible(postgresDataSourceLocator, 30);
+
+      // Docker way upgrade
+      await I.verifyCommand(`PMM_SERVER_IMAGE=${DOCKER_IMAGE} docker-compose -f ${composeName}.yml up -d ${containerName}`);
+      await I.wait(120);
+    }
+
+    await I.Authorize('admin', 'admin');
     I.amOnPage(`${basePmmUrl}graph/datasources`);
     I.waitForVisible(postgresDataSourceLocator, 30);
     I.seeTextEquals(`${'PostgreSQL\n'

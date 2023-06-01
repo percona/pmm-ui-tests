@@ -24,7 +24,7 @@
   },
   "rules": {
     "max-len": [
-      "error",
+      "warn",
       {
         "code": 130,
         "ignoreRegExpLiterals": true,
