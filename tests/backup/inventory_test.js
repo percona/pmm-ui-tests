@@ -93,7 +93,7 @@ createBackupTests.add([localStorageLocationName]);
 Data(createBackupTests).Scenario(
   '@PMM-T855 @PMM-T1393 Verify user is able to perform MongoDB backup @backup @bm-mongo @bm-fb',
   async ({
-    I, backupInventoryPage, current,
+    I, backupInventoryPage, backupAPI, current,
   }) => {
     const backupName = `mongo_backup_test_${current.storageLocationName}`;
 
@@ -109,9 +109,10 @@ Data(createBackupTests).Scenario(
     backupInventoryPage.verifyBackupSucceeded(backupName);
 
     const artifactName = await I.grabTextFrom(backupInventoryPage.elements.artifactName(backupName));
+    const artifact = await backupAPI.getArtifactByName(artifactName);
 
     if (current.storageLocationName === localStorageLocationName) {
-      await I.verifyCommand('ls -la /tmp/backup_data', artifactName);
+      await I.verifyCommand('ls -la /tmp/backup_data/rs', artifact.metadata_list[0].name);
     }
   },
 ).retry(1);
@@ -184,9 +185,10 @@ Data(restoreFromDifferentStorageLocationsTests).Scenario(
     backupInventoryPage.verifyBackupSucceeded(backupName);
 
     const artifactName = await I.grabTextFrom(backupInventoryPage.elements.artifactName(backupName));
+    const artifact = await backupAPI.getArtifactByName(artifactName);
 
     if (current.storageType === locationsAPI.storageType.localClient) {
-      await I.verifyCommand('ls -la /tmp/backup_data', artifactName);
+      await I.verifyCommand('ls -la /tmp/backup_data/rs', artifact.metadata_list[0].name);
       // TODO: add check if the folder is not empty
     }
 
@@ -515,7 +517,7 @@ Data(deleteArtifactsTests).Scenario(
     const logsText = await I.grabTextFrom(restorePage.elements.logsText);
 
     assert.ok(
-      logsText.includes('failed to find backup entity'),
+      logsText.includes('backup record not found by backup tool'),
       `Received unexpected logs: \n "${logsText}"`,
     );
   },
