@@ -195,9 +195,16 @@ jobs:
           npm install
           npx playwright install
           npx playwright test --config="playwright-tests/playwright.config.ts" --grep="${{ env.PMM_TEST_FLAG }}"
-          sudo docker exec pmm-integration-server cat /srv/logs/pmm-managed.log > pmm-managed.log
         env:
           NODE_TLS_REJECT_UNAUTHORIZED: 0
+
+      - name: Generate Logs
+        if: ${{ always() }}
+        working-directory: pmm-ui-tests
+        run: |
+          sudo docker exec pmm-integration-server cat /srv/logs/pmm-managed.log > pmm-managed.log
+        env:
+         NODE_TLS_REJECT_UNAUTHORIZED: 0
 
       - name: Generate and Attach the report
         if: ${{ always() && steps.ui-tests.outcome != 'skipped' }}
