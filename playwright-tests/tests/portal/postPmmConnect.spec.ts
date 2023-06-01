@@ -91,7 +91,7 @@ test.describe('Spec file for PMM connected the portal', async () => {
         await ticketsPage.elements.table.waitFor({ state: 'visible' });
         await expect(ticketsPage.elements.rows).toHaveCount(1);
         const [newPage] = await Promise.all([context.waitForEvent('page'), ticketsPage.elements.row(0).click()]);
-        await newPage.getByRole('form').waitFor({ state: 'visible' });
+        await newPage.getByRole('main').waitFor({ state: 'visible' });
         expect(newPage.url()).toContain(ticketsPage.serviceNowUrl);
         await newPage.close();
       });
