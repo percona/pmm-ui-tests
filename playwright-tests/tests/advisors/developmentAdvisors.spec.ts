@@ -82,7 +82,7 @@ test.describe('Spec file for Development Advisors. ', async () => {
     await test.step('1. Login and run advisors check', async () => {
       await configurationAdvisors.buttons.advisorInsights.click();
       await page.waitForTimeout(Duration.OneMinute);
-      await executeCommand('sudo docker exec pmm-integration-server cat /srv/logs/pmm-managed.log')
+      await executeCommand('sudo docker exec pmm-integration-server cat /srv/logs/pmm-managed.log', false)
       await advisorInsights.verifyFailedAdvisorsForServiceAndType('ps_integration_', FailedAdvisorType.Warning, 5, Duration.OneMinute);
     });
   });
