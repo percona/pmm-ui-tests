@@ -207,7 +207,7 @@ jobs:
           path: |
             pmm-ui-tests/playwright-report/data/*webm
             pmm-ui-tests/playwright-report/data/*png
-            pmm-managed.log
+            pmm-ui-tests/pmm-managed.log
 
       - name: Create status check
         uses: percona-platform/github-status-action@v1
