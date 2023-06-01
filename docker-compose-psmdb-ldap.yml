@@ -1,0 +1,60 @@
+# PSMDB_SERVER - default percona/percona-server-mongodb:5.0
+# PSMDB_CLI - default mongo, use mongosh with images percona-server-mongodb:6.0/latest
+# PMM_CLIENT - default perconalab/pmm-client:dev-latest
+# PMM_SERVER - default perconalab/pmm-server:dev-latest
+# AWS_USERNAME - username of AWS user whose creds are provided, by default AWS auth is disabled (not supported for PSMDB 4.2)
+# AWS_ACCESS_KEY_ID / AWS_SECRET_ACCESS_KEY self descriptive
+---
+services:
+  psmdbserver:
+    container_name: psmdbserver
+    hostname: psmdbserver
+    image: ${PSMDB_SERVER:-percona/percona-server-mongodb:5.0}
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=dba
+      - MONGO_INITDB_ROOT_PASSWORD=secret
+      - MONGO_INITDB_DATABASE=admin
+      - PSMDB_CLI=${PSMDB_CLI:-mongo}
+    entrypoint:
+      - bash
+      - -c
+      - |
+        cp /mongodb_data/keyfile.devel /home/mongodb/keyfile
+        chmod 400 /home/mongodb/keyfile
+        exec /entrypoint.sh $$@
+    command:
+      - mongod
+      - --bind_ip=0.0.0.0
+      - --replSet=rs0
+      - --keyFile=/home/mongodb/keyfile
+      - --tlsMode=allowTLS
+      - --tlsCAFile=/mongodb_data/certs/ca.crt
+      - --tlsCertificateKeyFile=/mongodb_data/certs/server.pem
+      - --config=/mongodb_data/mongod.conf
+      - --setParameter=authenticationMechanisms=SCRAM-SHA-1,PLAIN,MONGODB-X509$${AWS_USERNAME:+,MONGODB-AWS}
+    volumes:
+      - ./conf:/mongodb_data
+      - ./init:/docker-entrypoint-initdb.d/
+      - 'psmdb-server-data:/data/db'
+
+
+  ldapserver:
+    container_name: ldapserver
+    hostname: ldapserver
+    image: bitnami/openldap:2
+    environment:
+      - LDAP_ADMIN_USERNAME=admin
+      - LDAP_ADMIN_PASSWORD=adminpassword
+      - LDAP_USERS=pmm-test,${AWS_USERNAME:-awsuser}
+      - LDAP_PASSWORDS=password1,${AWS_USERNAME:-awspass}
+    ports:
+      - '1389:1389'
+      - '1636:1636'
+    volumes:
+      - 'openldap-data:/bitnami/openldap'
+
+volumes:
+  psmdb-server-data:
+    driver: local
+  openldap-data:
+    driver: local

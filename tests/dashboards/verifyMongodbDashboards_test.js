@@ -1,7 +1,7 @@
 Feature('Test Dashboards inside the MongoDB Folder');
 
 Before(async ({ I }) => {
-  await I.Authorize();
+  await I.Authorize('admin', 'pmm2023fortesting!');
 });
 
 Scenario(
@@ -27,5 +27,17 @@ Scenario(
     dashboardPage.verifyMetricsExistence(dashboardPage.mongoDbClusterSummaryDashboard.metrics);
     await dashboardPage.verifyThereAreNoGraphsWithNA();
     await dashboardPage.verifyThereAreNoGraphsWithoutData(12);
+  },
+);
+
+Scenario(
+  '@PMM-T1698 Verify that "Disk I/O and Swap Activity" and "Network Traffic" panels have graphs if Node name contains dot symbol',
+  async ({ I, dashboardPage }) => {
+    I.amOnPage(dashboardPage.mongodbReplicaSetSummaryDashboard.url);
+    dashboardPage.waitForDashboardOpened();
+    await dashboardPage.expandEachDashboardRow();
+    await dashboardPage.verifyMetricsExistence(dashboardPage.mongodbReplicaSetSummaryDashboard.metrics);
+    await dashboardPage.verifyThereAreNoGraphsWithNA();
+    await dashboardPage.verifyThereAreNoGraphsWithoutData();
   },
 );
