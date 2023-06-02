@@ -1,6 +1,6 @@
 Feature('Generic PMM Server CLI Tests').retry(1);
 
-AfterSuite(async ({ I }) => {
+After(async ({ I }) => {
   await I.verifyCommand('docker rm -f pg-local ubuntu');
 });
 
