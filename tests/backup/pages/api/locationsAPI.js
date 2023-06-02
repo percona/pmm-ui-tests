@@ -7,7 +7,7 @@ const storageType = {
 };
 
 const localStorageDefaultConfig = {
-  path: '/tmp/backup_data/',
+  path: '/tmp/backup_data',
 };
 
 module.exports = {
