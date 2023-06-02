@@ -221,6 +221,18 @@ module.exports = {
     I.waitForVisible(this.elements.selectedRow, 10);
   },
 
+  selectRowByText(text) {
+    const rowSelector = `//div[@role="row" and descendant::div[text()='${text}']]`;
+    //div[@role='row' and descendant::div[text()='select * from test.cities where id = ?']]
+    //div[@role="row" and descendant::div[text()='${text}']]
+
+    // I.wait(5000);
+    I.waitForElement(rowSelector, 60);
+    I.forceClick(rowSelector);
+    this.waitForOverviewLoaded();
+    I.waitForVisible(this.elements.selectedRow, 10);
+  },
+
   async getQueryFromRow(rowNumber) {
     const rowSelector = this.getRowLocator(rowNumber);
 
@@ -252,18 +264,11 @@ module.exports = {
     I.waitForVisible(this.elements.tooltipQueryValue, 30);
   },
 
-  async isNoDataMessageVisibleAfterRefresh() {
-    I.click(this.buttons.refresh);
-
-    return Number(await I.grabNumberOfVisibleElements(this.elements.noResultTableText)) === 0;
-  },
-
   async searchByValue(value, refresh = false) {
     I.waitForVisible(this.fields.searchBy, 30);
     I.clearField(this.fields.searchBy);
     I.fillField(this.fields.searchBy, value);
     I.pressKey('Enter');
-    // await I.asyncWaitFor(async () => await this.isNoDataMessageVisibleAfterRefresh(), 300);
   },
 
   async verifySearchByValue(value) {
