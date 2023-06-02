@@ -53,6 +53,15 @@ module.exports = {
     }
   },
 
+  // getArtifactByName returns artifact object by name
+  async getArtifactByName(artifactName) {
+    if (!artifactName) throw new Error('artifactName can not be undefined or null');
+
+    const artifacts = await this.getArtifactsList();
+
+    return artifacts.find(({ name }) => name === artifactName);
+  },
+
   // getArtifactsList returns array of artifacts
   async getArtifactsList() {
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
@@ -133,7 +142,7 @@ module.exports = {
       remove_files,
     };
 
-    const resp = await I.sendPostRequest('v1/management/backup/Artifacts/Delete', body, headers);
+    await I.sendPostRequest('v1/management/backup/Artifacts/Delete', body, headers);
 
     // assert.ok(
     //   resp.status === 200,
