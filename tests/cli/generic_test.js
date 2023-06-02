@@ -30,9 +30,9 @@ Scenario(
 
     await I.verifyCommand('docker exec ubuntu apt-get update');
     // await I.verifyCommand('docker exec ubuntu apt-get upgrade -y');
-    await I.verifyCommand('docker exec ubuntu apt-get install wget curl lsb-release gnupg2 -y');
-    await I.verifyCommand('docker exec ubuntu wget https://repo.percona.com/apt/percona-release_latest.$(lsb_release -sc)_all.deb');
-    await I.verifyCommand('docker exec ubuntu dpkg -i percona-release_latest.$(lsb_release -sc)_all.deb');
+    await I.verifyCommand('docker exec ubuntu apt-get install wget curl gnupg2 -y');
+    await I.verifyCommand('docker exec ubuntu wget https://repo.percona.com/apt/percona-release_latest.jammy_all.deb');
+    await I.verifyCommand('docker exec ubuntu dpkg -i percona-release_latest.jammy_all.deb');
     await I.verifyCommand('docker exec ubuntu percona-release enable-only original experimental');
     await I.verifyCommand('docker exec ubuntu apt-get update');
     await I.verifyCommand('docker exec ubuntu apt-get install pmm2-client -y');
