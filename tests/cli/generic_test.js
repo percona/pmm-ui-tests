@@ -29,9 +29,8 @@ Scenario(
     await I.verifyCommand('docker run -d --name pg-local -e POSTGRES_PASSWORD=postgres -e POSTGRES_USER=postgres -p 5444:5432 postgres:14');
 
     await I.verifyCommand('docker exec ubuntu apt-get update');
-    await I.verifyCommand('docker exec ubuntu apt-get upgrade -y');
+    // await I.verifyCommand('docker exec ubuntu apt-get upgrade -y');
     await I.verifyCommand('docker exec ubuntu apt-get install wget curl lsb-release gnupg2 -y');
-    console.log(await I.verifyCommand('docker exec ubuntu lsb_release -sc'));
     await I.verifyCommand('docker exec ubuntu wget https://repo.percona.com/apt/percona-release_latest.$(lsb_release -sc)_all.deb');
     await I.verifyCommand('docker exec ubuntu dpkg -i percona-release_latest.$(lsb_release -sc)_all.deb');
     await I.verifyCommand('docker exec ubuntu percona-release enable-only original experimental');
