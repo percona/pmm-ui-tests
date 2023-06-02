@@ -161,9 +161,6 @@ Scenario(
   async ({
     I, remoteInstancesPage, pmmInventoryPage, inventoryAPI, grafanaAPI,
   }) => {
-    let response; let result;
-    const metricName = 'mongodb_connections';
-
     await I.verifyCommand('docker-compose -f docker-compose-psmdb-ldap.yml up -d');
     console.log(await I.verifyCommand('docker ps -a'));
     const psmdbServerIp = await I.verifyCommand('docker inspect -f \'{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}\' psmdbserver');
