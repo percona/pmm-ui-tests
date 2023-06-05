@@ -235,10 +235,13 @@ test.describe('Percona Server MongoDB (PSMDB) CLI tests ', async () => {
     for (const host of hosts) {
       //         run sleep 20
       const ip = host.split(':')[0];
-      await (await cli.exec('sudo chmod +x /srv/pmm-qa/pmm-tests/pmm-2-0-bats-tests/check_metric.sh')).assertSuccess();
-      let output = await cli.exec(`./pmm-tests/pmm-2-0-bats-tests/check_metric.sh mongo_inst_$COUNTER mongodb_up ${ip} mongodb_exporter pmm mypass`);
-      await output.assertSuccess();
-      await output.outContains('mongodb_up 1');
+      // await (await cli.exec('sudo chmod +x /srv/pmm-qa/pmm-tests/pmm-2-0-bats-tests/check_metric.sh')).assertSuccess();
+      // let output = await cli.exec(`./pmm-tests/pmm-2-0-bats-tests/check_metric.sh mongo_inst_$COUNTER mongodb_up ${ip} mongodb_exporter pmm mypass`);
+      // await output.assertSuccess();
+      // await output.outContains('mongodb_up 1');
+      let metrics = await cli.getMetrics(host, 'pmm', 'mypass', ip);
+      let expectedValue = 'mongodb_up 1';
+      expect(metrics, `Scraped metrics do not contain ${expectedValue}!`).toContain(expectedValue);
     }
   });
 
