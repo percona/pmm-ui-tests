@@ -1,4 +1,4 @@
-import { test } from '@playwright/test';
+import { test, expect } from '@playwright/test';
 import * as cli from '@helpers/cliHelper';
 
 const MYSQL_USER = 'root'
@@ -323,7 +323,7 @@ test.describe('PMM Client CLI tests for Percona Server Database', async () => {
       // let output = await cli.exec(`sudo /home/runner/work/pmm-submodules/pmm-submodules/pmm-tests/pmm-2-0-bats-tests/check_metric.sh mysql_${n++} mysql_up 127.0.0.1 mysqld_exporter pmm mypass`);
       // await output.assertSuccess();
       // await output.outContains('mysql_up 1');
-      let metrics = await cli.getMetrics(host, 'pmm', 'mypass', '127.0.0.1');
+      let metrics = await cli.getMetrics(host, 'pmm', 'mypass');
       let expectedValue = 'mysql_up 1';
       expect(metrics, `Scraped metrics do not contain ${expectedValue}!`).toContain(expectedValue);
     }
