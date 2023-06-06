@@ -76,9 +76,12 @@ module.exports = {
   },
 
   async apiGetAgents(serviceId) {
-    const body = {
-      service_id: serviceId,
-    };
+    const body = {};
+
+    if (serviceId) {
+      body.service_id = serviceId;
+    }
+
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
 
     return I.sendPostRequest('v1/inventory/Agents/List', body, headers);
@@ -192,6 +195,13 @@ module.exports = {
       .find(({ node_name }) => node_name === nodeName);
 
     return node || null;
+  },
+
+  async getAllNodes() {
+    const headers = { Authorization: `Basic ${await I.getAuth()}` };
+    const resp = await I.sendPostRequest('v1/inventory/Nodes/List', {}, headers);
+
+    return resp.data;
   },
 
   async getNodeName(nodeID) {

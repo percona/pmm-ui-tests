@@ -14,6 +14,8 @@ module.exports = {
     '//input[@aria-controls="options-service_name"]',
   toggleAllValues:
     '//a[@aria-label="Toggle all values"]',
+  panel: 'div[data-panelid]',
+  systemUptimePanel: (nodeName) => `//div[@class="panel-title"]//h2[text()="${nodeName} - System Uptime"]`,
   nodesCompareDashboard: {
     url: 'graph/d/node-instance-compare/nodes-compare?orgId=1&refresh=1m&from=now-5m&to=now',
     metrics: [
@@ -190,13 +192,13 @@ module.exports = {
       'Client Questions',
       'Active Backend Connections',
       'Failed Backend Connections',
-      'Active Frontend Connections',
+      'Top 30 Active Frontend Connections',
       'Client Frontend Connections',
       'Endpoint Status',
       'Queries Routed',
-      'Query processor time efficecy',
+      'Query processor time efficiency',
       'Connection Free',
-      'Latency',
+      'Endpoints Latency',
       'Executed Queries',
       'Queries Execution Time',
       'Queries Latency',
@@ -250,6 +252,7 @@ module.exports = {
   },
   postgresqlInstanceSummaryDashboard: {
     url: 'graph/d/postgresql-instance-summary/postgresql-instance-summary?orgId=1&from=now-5m&to=now',
+    cleanUrl: 'graph/d/postgresql-instance-summary/postgresql-instance-summary',
     metrics: [
       'Version',
       'Max Connections',
@@ -643,7 +646,7 @@ module.exports = {
       'Total InnoDB Buffer Pool Size',
       'Top MySQL Used Connections',
       'Top MySQL Client Threads Connected',
-      'Top MySQL Active Client Threads',
+      'Top MySQL Idle Client Threads',
       'Top MySQL Threads Cached',
       'Top 5 MySQL Used Connections',
       'MySQL Used Connections',
@@ -887,7 +890,7 @@ module.exports = {
     ],
   },
   victoriaMetricsAgentsOverviewDashboard: {
-    url: 'graph/d/vmagent/victoriametrics-agents-overview?orgId=1&refresh=1m',
+    url: 'graph/d/vmagent/victoriametrics-agents-overview?orgId=1&refresh=5m',
     metrics: [
       'Current Uptime',
       'Scraped Targets UP',
@@ -1151,13 +1154,14 @@ module.exports = {
     dataLinkForRoot: '//div[contains(text(), "Data links")]/..//a',
     Last2Days: '//span[contains(text(), "Last 2 days")]',
     metricTitle: '//div[@class="panel-title"]',
+    metricPanel: '//section[@class="panel-container"]',
     mongoDBServiceSummaryContent: locate('pre').withText('Mongo Executable'),
     mySQLServiceSummaryContent: locate('pre').withText('Percona Toolkit MySQL Summary Report'),
     navbarLocator: '.page-toolbar',
     notAvailableDataPoints: '//div[contains(text(),"No data")]',
     notAvailableMetrics: '//span[contains(text(), "N/A")]',
     otherReportTitleWithNoData:
-    '//span[contains(text(),"No Data")]//ancestor::div[contains(@class,"panel-container")]//span[contains(@class,"panel-title-text")]',
+      '//span[contains(text(),"No Data")]//ancestor::div[contains(@class,"panel-container")]//span[contains(@class,"panel-title-text")]',
     panelLoading: locate('div').withAttr({ class: 'panel-loading' }),
     postgreSQLServiceSummaryContent: locate('pre').withText('Detected PostgreSQL version:'),
     reportTitleWithNA:
@@ -1217,6 +1221,8 @@ module.exports = {
   // introducing methods
   verifyMetricsExistence(metrics) {
     for (const i in metrics) {
+      I.waitForElement(this.graphsLocator(metrics[i]), 5);
+      I.scrollTo(this.graphsLocator(metrics[i]));
       I.waitForVisible(this.graphsLocator(metrics[i]), 5);
     }
   },
@@ -1242,6 +1248,27 @@ module.exports = {
   async waitForAllGraphsToHaveData(timeout = 60) {
     await I.waitForInvisible(this.fields.notAvailableMetrics, timeout);
     await I.waitForInvisible(this.fields.notAvailableDataPoints, timeout);
+  },
+
+  async waitForGraphsToHaveData(acceptableElementsWithoutData, timeout = 60, retries = 0) {
+    const noDataElements = await this.getNumberOfGraphsWithoutData(timeout);
+
+    if (noDataElements > acceptableElementsWithoutData) {
+      if (retries > 9) {
+        I.assertTrue(false, `Expected ${acceptableElementsWithoutData} Elements without data but found ${noDataElements}`);
+      }
+
+      await I.wait(timeout / 10);
+      // eslint-disable-next-line no-plusplus, no-param-reassign
+      await this.waitForGraphsToHaveData(acceptableElementsWithoutData, timeout, ++retries);
+    }
+  },
+
+  async getNumberOfGraphsWithoutData(timeout) {
+    const naElements = await I.grabNumberOfVisibleElements(this.fields.notAvailableMetrics, timeout);
+    const noDataElements = await I.grabNumberOfVisibleElements(this.fields.notAvailableDataPoints, timeout);
+
+    return naElements + noDataElements;
   },
 
   async verifyThereAreNoGraphsWithNA(acceptableNACount = 0) {

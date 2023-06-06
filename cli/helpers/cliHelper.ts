@@ -73,11 +73,13 @@ export async function getMetrics(serviceName: string, agentUser: string, agentPa
   const output = await test.step(
       `Scraping "${serviceName}" metrics${dockerContainer ? `in "${dockerContainer}" container` : ''}`,
       async () => {
-    const prefix = dockerContainer ? `docker exec ${dockerContainer} ` : '';
+    const prefix = dockerContainer ? `sudo docker exec ${dockerContainer} ` : '';
     const listCmd = `${prefix ? prefix : 'sudo '}pmm-admin list`;
 
     console.log(`Run: "${listCmd}"`);
-    const { out, err, c } = shell.exec(listCmd.replace(/(\r\n|\n|\r)/gm, ''), { silent: false });
+    const output = shell.exec(listCmd.replace(/(\r\n|\n|\r)/gm, ''), { silent: false });
+    const { stdout: out, stderr: err, c } = output;
+
     if (out.length > 0) console.log(`Out: "${out}"`);
     if (err.length > 0) console.log(`Error: "${err}"`);
 

@@ -8,7 +8,7 @@ const location = {
   name: 'mongo-location',
   description: 'test description',
 };
-const localStorageLocationName = 'mongo-local-client';
+const localStorageLocationName = 'mongoLocation';
 
 let localStorageLocationId;
 let locationId;
@@ -93,9 +93,9 @@ createBackupTests.add([localStorageLocationName]);
 Data(createBackupTests).Scenario(
   '@PMM-T855 @PMM-T1393 Verify user is able to perform MongoDB backup @backup @bm-mongo @bm-fb',
   async ({
-    I, backupInventoryPage, current,
+    I, backupInventoryPage, backupAPI, current,
   }) => {
-    const backupName = `mongo backup test ${current.storageLocationName}`;
+    const backupName = `mongo_backup_test_${current.storageLocationName}`;
 
     I.click(backupInventoryPage.buttons.openAddBackupModal);
 
@@ -109,9 +109,10 @@ Data(createBackupTests).Scenario(
     backupInventoryPage.verifyBackupSucceeded(backupName);
 
     const artifactName = await I.grabTextFrom(backupInventoryPage.elements.artifactName(backupName));
+    const artifact = await backupAPI.getArtifactByName(artifactName);
 
     if (current.storageLocationName === localStorageLocationName) {
-      await I.verifyCommand('ls -la /tmp/backup_data', artifactName);
+      await I.verifyCommand('ls -la /tmp/backup_data/rs', artifact.metadata_list[0].name);
     }
   },
 ).retry(1);
@@ -121,7 +122,7 @@ Scenario(
   async ({
     I, backupInventoryPage,
   }) => {
-    const backupName = 'backup modal test';
+    const backupName = 'backup_modal_test';
 
     I.click(backupInventoryPage.buttons.openAddBackupModal);
 
@@ -184,9 +185,10 @@ Data(restoreFromDifferentStorageLocationsTests).Scenario(
     backupInventoryPage.verifyBackupSucceeded(backupName);
 
     const artifactName = await I.grabTextFrom(backupInventoryPage.elements.artifactName(backupName));
+    const artifact = await backupAPI.getArtifactByName(artifactName);
 
     if (current.storageType === locationsAPI.storageType.localClient) {
-      await I.verifyCommand('ls -la /tmp/backup_data', artifactName);
+      await I.verifyCommand('ls -la /tmp/backup_data/rs', artifact.metadata_list[0].name);
       // TODO: add check if the folder is not empty
     }
 
@@ -236,7 +238,7 @@ Scenario(
   async ({
     I, backupInventoryPage, backupAPI, inventoryAPI,
   }) => {
-    const backupName = 'mongo artifact delete test';
+    const backupName = 'mongo_artifact_delete_test';
     const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName('MONGODB_SERVICE', mongoServiceName);
     const artifactId = await backupAPI.startBackup(backupName, service_id, locationId);
 
@@ -270,7 +272,7 @@ Scenario(
       service_id: serviceId,
       location_id: locationId,
       cron_expression: '*/2 * * * *',
-      name: 'schedule for restore',
+      name: 'schedule_for_restore',
       mode: scheduledAPI.backupModes.snapshot,
       description: '',
       retry_interval: '10s',
@@ -314,7 +316,7 @@ Scenario(
   async ({
     I, backupInventoryPage, backupAPI, inventoryAPI,
   }) => {
-    const backupName = 'service remove backup';
+    const backupName = 'service_remove_backup';
     const serviceName = `mongo-service-to-delete-${faker.datatype.number(2)}`;
 
     I.say(await I.verifyCommand(`docker exec rs101 pmm-admin add mongodb --username=pmm --password=pmmpass --port=27017 --service-name=${serviceName} --replication-set=rs --cluster=rs`));
@@ -370,7 +372,7 @@ Scenario(
       service_id: serviceId,
       location_id: locationId,
       cron_expression: '*/2 * * * *',
-      name: 'PMM-T1163 schedule',
+      name: 'PMM-T1163_schedule',
       mode: scheduledAPI.backupModes.snapshot,
       description: '',
       retry_interval: '30s',
@@ -398,7 +400,7 @@ Scenario(
   async ({
     I, inventoryAPI, backupAPI, backupInventoryPage,
   }) => {
-    const backupName = 'mongo backup logs test';
+    const backupName = 'mongo_backup_logs_test';
     const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName('MONGODB_SERVICE', mongoServiceName);
     const artifactId = await backupAPI.startBackup(backupName, service_id, locationId);
 
@@ -441,7 +443,7 @@ Scenario(
 
     backupInventoryPage.selectDropdownOption(backupInventoryPage.fields.serviceNameDropdown, serviceName);
     backupInventoryPage.selectDropdownOption(backupInventoryPage.fields.locationDropdown, location.name);
-    I.fillField(backupInventoryPage.fields.backupName, 'test error');
+    I.fillField(backupInventoryPage.fields.backupName, 'test_error');
     I.click(backupInventoryPage.buttons.addBackup);
 
     await I.verifyPopUpMessage('software "mongodb" is not installed: incompatible service');
@@ -453,7 +455,7 @@ Scenario(
   async ({
     I, inventoryAPI, backupInventoryPage, backupAPI, restorePage,
   }) => {
-    const backupName = 'mongo error logs';
+    const backupName = 'mongo_error_logs';
     const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName('MONGODB_SERVICE', mongoServiceName);
     const artifactId = await backupAPI.startBackup(backupName, service_id, locationId);
 
@@ -515,7 +517,7 @@ Data(deleteArtifactsTests).Scenario(
     const logsText = await I.grabTextFrom(restorePage.elements.logsText);
 
     assert.ok(
-      logsText.includes('failed to find backup entity'),
+      logsText.includes('backup record not found by backup tool'),
       `Received unexpected logs: \n "${logsText}"`,
     );
   },
@@ -526,7 +528,7 @@ Scenario(
   async ({
     I, inventoryAPI, backupInventoryPage, backupAPI,
   }) => {
-    const backupName = 'mongo retry';
+    const backupName = 'mongo_retry';
     const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName('MONGODB_SERVICE', mongoServiceName);
     const artifactId = await backupAPI.startBackup(backupName, service_id, locationId, true);
 

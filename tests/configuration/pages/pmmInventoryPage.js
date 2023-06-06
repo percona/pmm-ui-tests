@@ -1,11 +1,21 @@
 const { I, inventoryAPI } = inject();
 const assert = require('assert');
 const paginationPart = require('./paginationFragment');
-const agentsTab = require('./agentsTab');
+const servicesTab = require('./servicesTab');
 
 module.exports = {
   url: 'graph/inventory?orgId=1',
   fields: {
+    servicesLink: locate('[role="tablist"] a').withText('Services').withAttr({ 'aria-label': 'Tab Services' }),
+    serviceRow: (serviceName) => `//span[contains(text(), '${serviceName}')]//ancestor::tr`,
+    showServiceDetails: (serviceName) => `//span[contains(text(), '${serviceName}')]//ancestor::tr//button[@data-testid="show-row-details"]`,
+    hideServiceDetails: (serviceName) => `//span[contains(text(), '${serviceName}')]//ancestor::tr//button[@data-testid="hide-row-details"]`,
+    showAgentDetails: (agentName) => `//td[contains(text(), '${agentName}')]//ancestor::tr//button[@data-testid="show-row-details"]`,
+    showRowDetails: '//button[@data-testid="show-row-details"]',
+    agentStatus: locate('$details-row-content').find('a'),
+    backToServices: '//span[text()="Go back to services"]',
+    agentsLinkNew: '//div[contains(@data-testid,"status-badge")]',
+    agentDetailsLabelByText: (label) => locate('[aria-label="Tags"]').find('li').withText(label),
     agentsLink: locate('[role="tablist"] a').withText('Agents').withAttr({ 'aria-label': 'Tab Agents' }),
     agentsLinkOld: locate('a').withText('Agents'),
     deleteButton: locate('span').withText('Delete'),
@@ -37,14 +47,17 @@ module.exports = {
     processExecPathExporters: '//td[contains(text(), "exporter")]//ancestor::tr[@data-testid="table-row"]//span[contains(text(), "process_exec_path")]',
     nodeExporterStatus: '//td[contains(text(), "Node exporter")]//ancestor::tr[@data-testid="table-row"]//span[contains(text(), "status")]',
     agentId: '//td[contains(text(), "agent_id") and not(following-sibling::td[text()="PMM Agent"])]',
+    selectAllCheckbox: locate('$select-all'),
+    selectRowCheckbox: locate('$select-row'),
+    removalDialogMessage: '//form/h4',
+    selectedCheckbox: '//div[descendant::input[@value="true"] and @data-testid="select-row"]',
   },
-  agentsTab,
+  servicesTab,
   pagination: paginationPart,
 
   async open() {
     I.amOnPage(this.url);
-    I.waitForVisible(this.fields.nodesLink, 30);
-    await I.waitForVisible(this.fields.agentsLink, 2);
+    await I.waitForVisible(this.fields.nodesLink, 30);
   },
 
   async openServices() {
@@ -55,16 +68,12 @@ module.exports = {
     I.scrollPageToBottom();
   },
 
-  async openAgents() {
-    await I.waitForVisible(this.fields.agentsLink, 20);
-    I.click(this.fields.agentsLink);
-    I.waitForElement(this.fields.pmmAgentLocator, 60);
-    await this.changeRowsPerPage(100);
-    I.waitForElement(this.fields.inventoryTable, 60);
-    I.scrollPageToBottom();
+  openAgents(serviceId) {
+    I.amOnPage(`graph/inventory/services/${serviceId.split('/')[2]}/agents`);
+    this.changeRowsPerPage(100);
   },
 
-  async changeRowsPerPage(count) {
+  changeRowsPerPage(count) {
     I.waitForElement(this.fields.rowsPerPage, 30);
     I.scrollPageToBottom();
     I.click(this.fields.rowsPerPage);
@@ -84,31 +93,35 @@ module.exports = {
 
   async verifyAgentHasStatusRunning(service_name) {
     const serviceId = await this.getServiceId(service_name);
-    const agentLinkLocator = this.fields.agentsLink;
 
     await inventoryAPI.waitForRunningState(serviceId);
-    I.click(agentLinkLocator);
+    this.openAgents(serviceId);
     // I.waitForElement(this.fields.pmmAgentLocator, 60);
     await this.changeRowsPerPage(100);
     I.waitForElement(this.fields.inventoryTable, 60);
     I.scrollPageToBottom();
-    const numberOfServices = await I.grabNumberOfVisibleElements(
-      `//tr//td//span[contains(text(), "${serviceId}")]/../span[contains(text(), 'status: RUNNING')]`,
-    );
 
-    if (/mysql|mongo|psmdb|postgres|pgsql|rds/gim.test(service_name)) {
-      I.waitForVisible(
-        `//tr//td//span[contains(text(), "${serviceId}")]/../span[contains(text(), 'status: RUNNING')]`,
-        30,
-      );
+    const runningStatus = '//span[contains(text(), "Running")]';
+
+    const numberOfAgents = await I.grabNumberOfVisibleElements(runningStatus);
+
+    if (service_name.includes('azure')) {
       assert.equal(
-        numberOfServices,
+        numberOfAgents,
+        3,
+        ` Service ID must have 3 Agents running, Actual Number of Agents found is ${numberOfAgents} for ${service_name}`,
+      );
+    } else if (/mysql|mongo|psmdb|postgres|pgsql|rds/gim.test(service_name)) {
+      assert.equal(
+        numberOfAgents,
         2,
-        ` Service ID must have only 2 Agents running for different services ${serviceId} , Actual Number of Services found is ${numberOfServices} for ${service_name}`,
+        ` Service ID must have 2 Agents running, Actual Number of Agents found is ${numberOfAgents} for ${service_name}`,
       );
     } else {
-      assert.equal(numberOfServices, 1, ` Service ID must have only 1 Agent running ${serviceId} , Actual Number of Services found is ${numberOfServices} for ${service_name}`);
+      assert.equal(numberOfAgents, 1, ` Service ID must have only 1 Agent running ${serviceId} , Actual Number of Agents found is ${numberOfAgents} for ${service_name}`);
     }
+
+    await I.click(this.fields.backToServices);
   },
 
   async getServiceIdWithStatus(status) {
@@ -126,11 +139,18 @@ module.exports = {
     return serviceIds;
   },
 
-  async checkAgentOtherDetailsSection(detailsSection, expectedResult, serviceName, serviceId) {
-    const locator = locate('span').withText(detailsSection).after(locate('span').withText(`service_id: ${serviceId}`));
-    const details = await I.grabTextFrom(locator);
+  async checkAgentOtherDetailsSection(agentType, expectedResult, isDisplayed = true) {
+    I.click(this.fields.showAgentDetails(agentType));
 
-    assert.ok(expectedResult === details, `Infomation '${expectedResult}' for service '${serviceName}' is missing!`);
+    if (isDisplayed) {
+      I.waitForVisible(this.fields.agentDetailsLabelByText(expectedResult), 10);
+    } else {
+      I.dontSeeElement(this.fields.agentDetailsLabelByText(expectedResult));
+    }
+  },
+
+  async checkAgentsLabel(expectedResult) {
+    await I.waitForVisible(this.fields.agentDetailsLabelByText(expectedResult), 10);
   },
 
   async checkAgentOtherDetailsMissing(detailsSection, serviceId) {
@@ -141,21 +161,29 @@ module.exports = {
 
   async verifyMetricsFlags(serviceName) {
     const servicesLink = this.fields.pmmServicesSelector;
-    const agentLinkLocator = this.fields.agentsLink;
 
     I.waitForElement(servicesLink, 20);
     I.click(servicesLink);
     await this.changeRowsPerPage(100);
-    const nodeId = await this.getNodeId(serviceName);
+    // const nodeId = await this.getNodeId(serviceName);
 
-    I.click(agentLinkLocator);
+    // await I.click(this.fields.showServiceDetails(serviceName));
+    // await I.click(this.fields.agentsLinkNew);
     await this.changeRowsPerPage(100);
 
-    const enhanceMetricsDisabled = `//tr//td//span[contains(text(), "${nodeId}")]/../span[contains(text(),"enhanced_metrics_disabled: true")]`;
+    await I.click(this.fields.showServiceDetails(serviceName));
+    await I.click(this.fields.agentsLinkNew);
+    const rows = await I.grabNumberOfVisibleElements(this.fields.showRowDetails);
+
+    for (let i = 1; i <= rows; i++) {
+      await I.click(`(${this.fields.showRowDetails})[1]`);
+    }
+
+    const enhanceMetricsDisabled = '//span[contains(text(),"enhanced_metrics_disabled: true")]';
 
     I.waitForElement(enhanceMetricsDisabled, 30);
     I.seeElement(enhanceMetricsDisabled);
-    const basicMetricsDisabled = `//tr//td//span[contains(text(), "${nodeId}")]/../span[contains(text(),"basic_metrics_disabled: true")]`;
+    const basicMetricsDisabled = '//span[contains(text(),"basic_metrics_disabled: true")]';
 
     I.seeElement(basicMetricsDisabled);
   },
@@ -167,7 +195,9 @@ module.exports = {
   },
 
   async getServiceId(serviceName) {
-    const serviceIdLocator = `${this.fields.serviceIdLocatorPrefix}${serviceName}")]/preceding-sibling::td[2]`;
+    await I.waitForVisible(this.fields.showServiceDetails(serviceName), 60);
+    await I.click(this.fields.showServiceDetails(serviceName));
+    const serviceIdLocator = '//span[text()="Service ID"]/following-sibling::div//span';
 
     I.waitForVisible(serviceIdLocator, 30);
     const matchedServices = await I.grabNumberOfVisibleElements(serviceIdLocator);
@@ -178,7 +208,11 @@ module.exports = {
       `There must be only one entry for the newly added service with name ${serviceName}`,
     );
 
-    return await I.grabTextFrom(serviceIdLocator);
+    const serviceId = await I.grabTextFrom(serviceIdLocator);
+
+    await I.click(this.fields.hideServiceDetails(serviceName));
+
+    return serviceId;
   },
 
   selectService(serviceName) {
@@ -333,19 +367,10 @@ module.exports = {
     }
   },
 
-  checkExistingAgent(agent) {
-    I.click(this.fields.agentsLink);
-    I.waitForVisible(agent, 30);
-  },
-
-  async checkAgentsPresent(expectedAgentIds) {
-    const actualAgentIds = (await I.grabTextFromAll(this.fields.agentId))
-      .map((string) => string.replace('/agent_id/', ''));
-
-    I.assertNotEqual(expectedAgentIds.length, actualAgentIds.length, `The number of actual Agents doesn't match expected (Expected ${expectedAgentIds.length} but got ${actualAgentIds.length})`);
-
-    expectedAgentIds.forEach((agentId) => {
-      I.assertTrue(actualAgentIds.includes(agentId), `Actual Agents don't include expected agent_id (Expected ${agentId} but didn't found)`);
-    });
+  async checkExistingAgent(agent, serviceName) {
+    await I.click(this.fields.showServiceDetails(serviceName));
+    I.click(this.fields.agentsLinkNew);
+    await I.waitForVisible(agent, 30);
+    I.click(this.fields.backToServices);
   },
 };

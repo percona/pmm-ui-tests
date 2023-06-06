@@ -40,8 +40,8 @@ const location = {
   description: 'upgrade-location description',
   ...locationsAPI.storageLocationConnection,
 };
-const backupName = 'upgrade backup test';
-const scheduleName = 'upgrade schedule';
+const backupName = 'upgrade_backup_test';
+const scheduleName = 'upgrade_schedule';
 const scheduleSettings = {
   cron_expression: '*/20 * * * *',
   name: scheduleName,
@@ -686,7 +686,7 @@ if (versionMinor >= 15) {
       );
 
       const expectedScrapeUrl = `${remoteInstancesHelper.remote_instance.external.redis.schema}://${remoteInstancesHelper.remote_instance.external.redis.host
-      }:${remoteInstancesHelper.remote_instance.external.redis.port}${remoteInstancesHelper.remote_instance.external.redis.metricsPath}`;
+        }:${remoteInstancesHelper.remote_instance.external.redis.port}${remoteInstancesHelper.remote_instance.external.redis.metricsPath}`;
 
       assert.ok(targets.scrapeUrl === expectedScrapeUrl,
         `Active Target for external service Post Upgrade has wrong Address value, value found is ${targets.scrapeUrl} and value expected was ${expectedScrapeUrl}`);
@@ -865,6 +865,7 @@ Scenario(
     for (const service of Object.values(remoteInstancesHelper.upgradeServiceNames)) {
       if (service) {
         I.amOnPage(pmmInventoryPage.url);
+        await I.scrollPageToBottom();
         await pmmInventoryPage.verifyAgentHasStatusRunning(service);
       }
     }
@@ -1121,7 +1122,7 @@ if (versionMinor >= 32) {
     async ({
       locationsAPI, inventoryAPI, backupAPI, backupInventoryPage,
     }) => {
-      const backupName = 'backup after update';
+      const backupName = 'backup_after_update';
 
       const { location_id } = await locationsAPI.getLocationDetails(location.name);
       const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName('MONGODB_SERVICE', mongoServiceName);

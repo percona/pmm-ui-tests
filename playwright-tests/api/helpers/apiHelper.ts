@@ -1,8 +1,8 @@
-import {APIRequestContext, Page, request} from '@playwright/test';
+import { APIRequestContext, Page, expect, request } from '@playwright/test';
 import config from '@tests/playwright.config';
 import Duration from '@helpers/Duration';
 import grafanaHelper from '@helpers/GrafanaHelper';
-import {APIResponse} from "playwright-core";
+import { APIResponse } from "playwright-core";
 import { ReadStream } from 'fs';
 
 export interface Settings {
@@ -12,7 +12,8 @@ export interface Settings {
 const getConfiguredRestApi = async (): Promise<APIRequestContext> => {
   return request.newContext({
     baseURL: config.use?.baseURL!,
-    extraHTTPHeaders: {Authorization: `Basic ${await grafanaHelper.getToken()}`},
+    extraHTTPHeaders: { Authorization: `Basic ${await grafanaHelper.getToken()}` },
+    ignoreHTTPSErrors: true,
   });
 };
 
@@ -20,15 +21,20 @@ const apiHelper = {
   //TODO: move it from the helper to proper file API? It's not actually API call.
   confirmTour: async (page: Page) => {
     await page.route('**/v1/user', (route) =>
-        route.fulfill({
-          status: 200,
-          body: JSON.stringify({
-            user_id: 1,
-            product_tour_completed: true,
-            alerting_tour_completed: true,
-          }),
+      route.fulfill({
+        status: 200,
+        body: JSON.stringify({
+          user_id: 1,
+          product_tour_completed: true,
+          alerting_tour_completed: true,
         }),
+      }),
     );
+  },
+
+  splitPmmVersion: (pmmVersion: string) => {
+    const [versionMajor, versionMinor, versionPatch] = pmmVersion.split('.');
+    return { major: parseInt(versionMajor), minor: parseInt(versionMinor), patch: parseInt(versionPatch) };
   },
 
   /**
@@ -37,9 +43,9 @@ const apiHelper = {
   getPmmVersion: async () => {
     const restConfig = await getConfiguredRestApi();
 
-    const response = await restConfig.get('/v1/version', {timeout: Duration.ThreeMinutes});
+    const response = await restConfig.get('/v1/version', { timeout: Duration.ThreeMinutes });
     const [versionMajor, versionMinor, versionPatch] = (await response.json()).version.split('.');
-    return {versionMajor, versionMinor, versionPatch};
+    return { versionMajor, versionMinor, versionPatch };
   },
 
   /**
@@ -48,7 +54,7 @@ const apiHelper = {
   changeSettings: async (settingsData: Settings) => {
     const restConfig = await getConfiguredRestApi();
 
-    const response = await restConfig.post('/v1/Settings/Change', {data: settingsData});
+    const response = await restConfig.post('/v1/Settings/Change', { data: settingsData });
     return await response.json();
   },
 
@@ -81,22 +87,22 @@ const apiHelper = {
    * @return            Promise<APIResponse> instance
    */
   get: async (path: string, options?:
-      {
-        data?: any;
-        failOnStatusCode?: boolean | undefined;
-        form?: { [key: string]: string | number | boolean; } | undefined;
-        headers?: { [key: string]: string; } | undefined;
-        ignoreHTTPSErrors?: boolean | undefined;
-        maxRedirects?: number | undefined;
-        multipart?: {
-          [key: string]: string | number | boolean | ReadStream | { name: string; mimeType: string; buffer: Buffer; };
-        } | undefined;
-        params?: { [key: string]: string | number | boolean; } | undefined;
-        timeout?: number | undefined; } | undefined
+    {
+      data?: any;
+      failOnStatusCode?: boolean | undefined;
+      form?: { [key: string]: string | number | boolean; } | undefined;
+      headers?: { [key: string]: string; } | undefined;
+      ignoreHTTPSErrors?: boolean | undefined;
+      maxRedirects?: number | undefined;
+      multipart?: {
+        [key: string]: string | number | boolean | ReadStream | { name: string; mimeType: string; buffer: Buffer; };
+      } | undefined;
+      params?: { [key: string]: string | number | boolean; } | undefined;
+      timeout?: number | undefined;
+    } | undefined
   ): Promise<APIResponse> => {
-    console.log(`GET: ${path}${options ? ` with ${JSON.stringify(options)}` : ''}`);
     const response = await (await getConfiguredRestApi()).get(path, options);
-    console.log(`Status: ${response.status()} ${response.statusText()}`);
+    expect(response.status(), `Request was not successful. Response status: ${response.status()}. Response Message: ${response.statusText()}`).toEqual(200);
     return response;
   },
 
@@ -108,9 +114,8 @@ const apiHelper = {
    * @return            Promise<APIResponse> instance
    */
   post: async (path: string, payload: Object): Promise<APIResponse> => {
-    console.log(`POST: ${path}\nPayload: ${JSON.stringify(payload)}`);
     const response = await (await getConfiguredRestApi()).post(path, payload);
-    console.log(`Status: ${response.status()} ${response.statusText()}`);
+    expect(response.status(), `Request was not successful. Response status: ${response.status()}. Response Message: ${response.statusText()}`).toEqual(200);
     return response;
   },
 };
