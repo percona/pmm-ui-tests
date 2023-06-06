@@ -28,15 +28,10 @@ test.describe('Spec file for Access Control (RBAC)', async () => {
   const roleDescription = `Role Description Only MySql Access`;
   const roleNameCreate = `Role Name ${new Date().getTime()}`;
   const roleDescriptionCreate = `Role Description ${new Date().getTime()}`;
-  let pmmVersion: number;
   let roles: ListRoles | undefined;
 
   test.beforeAll(async () => {
     roles = await api.pmm.managementV1.listRoles();
-    if (!pmmVersion) {
-      const versionString = (await apiHelper.getPmmVersion()).versionMinor;
-      pmmVersion = parseInt(versionString);
-    }
   });
 
   test.beforeEach(async ({ page }) => {
@@ -126,33 +121,33 @@ test.describe('Spec file for Access Control (RBAC)', async () => {
       const mySqlDashboard = new MySqlDashboard(page);
       const nodesOverviewDashboard = new NodesOverviewDashboard(page);
 
-    await test.step(
-      '1. Navigate to the access role page then create role MySQL with label agent_type and value mysql_exporter',
-      async () => {
-        await page.goto(rbacPage.url);
-        await rbacPage.buttons.create.click();
-        await createRolePage.createNewRole({ roleName, roleDescription, label: 'agent_type', value: 'mysqld_exporter' });
-        await rbacPage.rbacTable.verifyRowData(roleName, roleDescription, 'agent_type', '=', 'mysqld_exporter');
-      },
-    );
+      await test.step(
+        '1. Navigate to the access role page then create role MySQL with label agent_type and value mysql_exporter',
+        async () => {
+          await page.goto(rbacPage.url);
+          await rbacPage.buttons.create.click();
+          await createRolePage.createNewRole({ roleName, roleDescription, label: 'agent_type', value: 'mysqld_exporter' });
+          await rbacPage.rbacTable.verifyRowData(roleName, roleDescription, 'agent_type', '=', 'mysqld_exporter');
+        },
+      );
 
-    await test.step('2. Create new user and assign new role to the user.', async () => {
-      await page.goto(newUserPage.url);
-      await newUserPage.createUser(newUser.name, newUser.email, newUser.username, newUser.password);
+      await test.step('2. Create new user and assign new role to the user.', async () => {
+        await page.goto(newUserPage.url);
+        await newUserPage.createUser(newUser.name, newUser.email, newUser.username, newUser.password);
 
-      await page.goto(usersConfigurationPage.url);
-      await usersConfigurationPage.usersTable.fields.accessRole('testUserRBAC@localhost').click();
-      await usersConfigurationPage.optionMenu.selectOption(roleName);
-      await page.goto(mySqlDashboard.url);
-      await mySqlDashboard.waitForPanelToHaveData('Top MySQL Used Connections', 444, Duration.TenMinutes);
-    });
+        await page.goto(usersConfigurationPage.url);
+        await usersConfigurationPage.usersTable.fields.accessRole('testUserRBAC@localhost').click();
+        await usersConfigurationPage.optionMenu.selectOption(roleName);
+        await page.goto(mySqlDashboard.url);
+        await mySqlDashboard.waitForPanelToHaveData('Top MySQL Used Connections', 444, Duration.TenMinutes);
+      });
 
-    await test.step('3. Login as new user and verify that Node Dashboard does NOT show data.', async () => {
-      await grafanaHelper.unAuthorize(page);
-      await grafanaHelper.authorize(page, newUser.username, newUser.password);
-      await page.goto(nodesOverviewDashboard.url);
-      await nodesOverviewDashboard.verifyRoleAccessBlocksNodeExporter();
-    });
+      await test.step('3. Login as new user and verify that Node Dashboard does NOT show data.', async () => {
+        await grafanaHelper.unAuthorize(page);
+        await grafanaHelper.authorize(page, newUser.username, newUser.password);
+        await page.goto(nodesOverviewDashboard.url);
+        await nodesOverviewDashboard.verifyRoleAccessBlocksNodeExporter();
+      });
 
       await test.step('4. Login as new user and verify that Node MySql Dashboard shows data.', async () => {
         await page.goto(mySqlDashboard.url);
