@@ -1,6 +1,7 @@
 import { expect, Page } from '@playwright/test';
 import ServicesTable from '@tests/tests/inventory/components/servicesTable';
 import { InventoryPage } from './Inventory.page';
+import AgentsTable from '../components/agentsTable';
 
 export class ServicesPage extends InventoryPage {
   constructor(page: Page) {
@@ -10,6 +11,7 @@ export class ServicesPage extends InventoryPage {
   url = 'graph/inventory/services';
 
   servicesTable = new ServicesTable(this.page);
+  agentsTable = new AgentsTable(this.page);
 
   elements = {
     ...super.getInventoryElements(),

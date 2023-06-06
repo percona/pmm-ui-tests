@@ -24,7 +24,6 @@ Data(annotation).Scenario(
     let service_response;
 
     I.amOnPage(pmmInventoryPage.url);
-    I.waitForVisible(pmmInventoryPage.fields.nodesLink, 30);
 
     if (current.service !== 'pmm-server') {
       service_response = await inventoryAPI.apiGetNodeInfoByServiceName(current.service_type, current.service, 'pmm-server');
@@ -33,7 +32,7 @@ Data(annotation).Scenario(
     }
 
     const serviceName = service_response.service_name;
-    const nodeID = await pmmInventoryPage.getNodeId(serviceName);
+    const nodeID = service_response.node_id;
     const nodeName = await inventoryAPI.getNodeName(nodeID);
 
     await annotationAPI.setAnnotation(annotationName, 'PMM-T878', nodeName, serviceName, 200);

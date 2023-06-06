@@ -251,7 +251,7 @@ Scenario(
       location.description,
     );
 
-    await backupAPI.startBackup('delete location', service_id, location_id);
+    await backupAPI.startBackup('delete_location', service_id, location_id);
     locationsPage.openLocationsPage();
     locationsPage.openDeleteLocationModal(location.name);
     I.click(locationsPage.buttons.confirmDelete);
@@ -265,7 +265,7 @@ Scenario(
   async ({
     I, locationsPage, locationsAPI, backupAPI, backupInventoryPage, inventoryAPI,
   }) => {
-    const backupName = 'delete location';
+    const backupName = 'delete_location';
     const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName('MONGODB_SERVICE', mongoServiceName);
     const location_id = await locationsAPI.createStorageLocation(
       location.name,
@@ -382,7 +382,7 @@ Scenario(
     I, locationsPage, backupAPI, inventoryAPI, locationsAPI, restorePage, backupInventoryPage,
   }) => {
     const mongoLocation = {
-      name: 'mongo l',
+      name: 'mongoL',
       description: 'test description',
     };
 
@@ -393,7 +393,7 @@ Scenario(
       mongoLocation.description,
     );
 
-    const backupName = 'mongo force delete locations test';
+    const backupName = 'mongo_force_delete_locations_test';
     const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName('MONGODB_SERVICE', mongoServiceName);
     const artifactId = await backupAPI.startBackup(backupName, service_id, locationId);
 

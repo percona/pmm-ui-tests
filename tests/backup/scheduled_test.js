@@ -4,7 +4,7 @@ const moment = require('moment');
 const { scheduledPage } = inject();
 
 const location = {
-  name: 'mongo-location for scheduling',
+  name: 'mongo-location-for-scheduling',
   description: 'test description',
 };
 
@@ -26,12 +26,12 @@ scheduleErrors.add(['On Demand', mongoServiceName, scheduledPage.messages.snapsh
 
 const schedules = new DataTable(['cronExpression', 'name', 'frequency']);
 
-schedules.add(['30 8 * * *', 'schedule daily', 'At 08:30']);
-schedules.add(['0 0 * * 2', 'schedule weekly', 'At 00:00, only on Tuesday']);
-schedules.add(['0 0 1 * *', 'schedule monthly', 'At 00:00, on day 1 of the month']);
-schedules.add(['0 1 1 9 2', 'schedule odd', 'At 01:00, on day 1 of the month, and on Tuesday, only in September']);
+schedules.add(['30 8 * * *', 'schedule_daily', 'At 08:30']);
+schedules.add(['0 0 * * 2', 'schedule_weekly', 'At 00:00, only on Tuesday']);
+schedules.add(['0 0 1 * *', 'schedule_monthly', 'At 00:00, on day 1 of the month']);
+schedules.add(['0 1 1 9 2', 'schedule_odd', 'At 01:00, on day 1 of the month, and on Tuesday, only in September']);
 
-const immortalScheduleName = 'immortal schedule';
+const immortalScheduleName = 'immortal_schedule';
 
 Feature('BM: Scheduled backups');
 
@@ -48,7 +48,7 @@ BeforeSuite(async ({
     location.description,
   );
   locationIdForPS = await locationsAPI.createStorageLocation(
-    'ps-location for scheduling',
+    'ps_location_for_scheduling',
     locationsAPI.storageType.s3,
     locationsAPI.psStorageLocationConnection,
     location.description,
@@ -120,12 +120,12 @@ Scenario(
   async ({
     I, scheduledPage, scheduledAPI,
   }) => {
-    const scheduleName = 'new schedule';
+    const scheduleName = 'new_schedule';
     const immortalSchedule = {
       service_id: serviceId,
       location_id: locationId,
       cron_expression: '0 0 * * *',
-      name: 'immortal schedule',
+      name: 'immortal_schedule',
       mode: scheduledAPI.backupModes.snapshot,
       description: 'description',
       retry_interval: '30s',
@@ -178,14 +178,16 @@ Scenario(
   async ({
     I, scheduledPage, scheduledAPI,
   }) => {
-    const newScheduleName = 'updated schedule';
-    const newScheduleDescr = 'new description';
+    const newScheduleName = 'updated_schedule';
+    const newScheduleDescr = 'new_description';
+    const defaultFolder = 'replicaset';
 
     const schedule = {
       service_id: serviceId,
       location_id: locationId,
+      folder: defaultFolder,
       cron_expression: '0 0 * * *',
-      name: 'schedule for update',
+      name: 'schedule_for_update',
       mode: scheduledAPI.backupModes.snapshot,
       description: 'description',
       retry_interval: '30s',
@@ -196,8 +198,9 @@ Scenario(
     const immortalSchedule = {
       service_id: serviceId,
       location_id: locationId,
+      folder: defaultFolder,
       cron_expression: '0 0 * * *',
-      name: 'immortal schedule',
+      name: 'immortal_schedule',
       mode: scheduledAPI.backupModes.snapshot,
       description: 'description',
       retry_interval: '30s',
@@ -245,7 +248,7 @@ Scenario(
     I, backupInventoryPage, scheduledAPI, backupAPI, scheduledPage,
   }) => {
     const schedule = {
-      name: 'schedule for backup',
+      name: 'schedule_for_backup',
       retention: 1,
     };
 
@@ -321,13 +324,13 @@ Scenario('@PMM-T900 Verify user can copy scheduled backup @backup @bm-mongo',
     const schedule = {
       service_id: serviceId,
       location_id: locationId,
-      name: 'test schedule copy',
+      name: 'test_schedule_copy',
       description: 'some description',
       cron_expression: '0 0 * * *',
     };
 
     const newSchedule = {
-      name: `Copy of ${schedule.name}`,
+      name: `Copy_of_${schedule.name}`,
       vendor: 'MongoDB',
       description: schedule.description,
       enabled: false,
@@ -361,7 +364,7 @@ Scenario('@PMM-T908 Verify user can enable/disable scheduled backup @backup @bm-
     const schedule = {
       service_id: serviceId,
       location_id: locationId,
-      name: 'test schedule enable/disable',
+      name: 'test_schedule_enable_disable',
       enabled: false,
     };
 
@@ -398,7 +401,7 @@ Scenario('@PMM-T901 Verify user can delete scheduled backup @backup @bm-mongo',
     const schedule = {
       service_id: serviceId,
       location_id: locationId,
-      name: 'test schedule delete',
+      name: 'test_schedule_delete',
     };
 
     await scheduledAPI.createScheduledBackup(schedule);
@@ -433,7 +436,7 @@ Scenario(
       service_id: serviceId,
       location_id: locationId,
       cron_expression: '*/2 * * * *',
-      name: 'Mongo for parallel backup test',
+      name: 'Mongo_for_parallel_backup_test',
       mode: scheduledAPI.backupModes.snapshot,
       description: '',
       retry_interval: '30s',
@@ -446,7 +449,7 @@ Scenario(
       service_id,
       location_id: locationIdForPS,
       cron_expression: '*/2 * * * *',
-      name: 'mySQL for parallel backup test',
+      name: 'mySQL_for_parallel_backup_test',
       mode: scheduledAPI.backupModes.snapshot,
       description: '',
       isLogical: false,
@@ -478,7 +481,7 @@ Data(scheduleErrors).Scenario(
     const schedule = {
       service_id: serviceId,
       location_id: locationId,
-      name: `test schedule ${current.mode}`,
+      name: 'test_schedule_On_Demand',
       mode: scheduledAPI.backupModes.pitr,
     };
 
@@ -518,13 +521,15 @@ Scenario(
   + ' @backup @bm-mongo @bm-fb',
   async ({ I, scheduledPage }) => {
     const schedule = {
-      name: 'test no cluster error',
+      name: 'test_no_cluster_error',
       retention: 1,
+      folder: 'test',
     };
 
     scheduledPage.openScheduleBackupModal();
     scheduledPage.selectDropdownOption(scheduledPage.fields.serviceNameDropdown, mongoNameWithoutCluster);
     I.fillField(scheduledPage.fields.backupName, schedule.name);
+    I.fillField(scheduledPage.fields.folder, schedule.folder);
     scheduledPage.selectDropdownOption(scheduledPage.fields.locationDropdown, location.name);
     scheduledPage.selectDropdownOption(scheduledPage.fields.everyDropdown, 'Every minute');
     scheduledPage.clearRetentionField();

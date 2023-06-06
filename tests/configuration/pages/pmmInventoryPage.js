@@ -12,6 +12,7 @@ module.exports = {
     hideServiceDetails: (serviceName) => `//span[contains(text(), '${serviceName}')]//ancestor::tr//button[@data-testid="hide-row-details"]`,
     showAgentDetails: (agentName) => `//td[contains(text(), '${agentName}')]//ancestor::tr//button[@data-testid="show-row-details"]`,
     showRowDetails: '//button[@data-testid="show-row-details"]',
+    agentStatus: locate('$details-row-content').find('a'),
     backToServices: '//span[text()="Go back to services"]',
     agentsLinkNew: '//div[contains(@data-testid,"status-badge")]',
     agentDetailsLabelByText: (label) => locate('[aria-label="Tags"]').find('li').withText(label),
