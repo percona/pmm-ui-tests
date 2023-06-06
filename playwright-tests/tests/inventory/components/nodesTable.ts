@@ -15,10 +15,10 @@ export default class NodesTable extends Table {
 
   elements = {
     ...super.getTableElements(),
-    nodeName: (nodeName: string) => super.getTableElements().rowByText(nodeName).locator('td').nth(1),
-    nodeId: (nodeName: string) => super.getTableElements().rowByText(nodeName).locator('td').nth(2),
-    nodeType: (nodeName: string) => super.getTableElements().rowByText(nodeName).locator('td').nth(3),
-    address: (nodeName: string) => super.getTableElements().rowByText(nodeName).locator('td').nth(4),
+    nodeName: (nodeName: string) => super.getTableElements().rowByText(nodeName).locator('td').nth(2),
+    nodeId: (nodeName: string) => super.getTableElements().rowByText(nodeName).locator('td').nth(3),
+    nodeType: (nodeName: string) => super.getTableElements().rowByText(nodeName).locator('td').nth(4),
+    address: (nodeName: string) => super.getTableElements().rowByText(nodeName).locator('td').nth(5),
   };
 
   fields = {
