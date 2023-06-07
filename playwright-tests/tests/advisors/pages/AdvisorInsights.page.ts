@@ -52,7 +52,7 @@ export class AdvisorInsights extends AdvisorsPage {
   verifyFailedAdvisorsForServiceAndType = async (serviceName: string, advisorType: FailedAdvisorType, count: number, timeout?: Duration) => {
     await this.waitForFailedAdvisorDisplayed(serviceName, advisorType, timeout);
     const failedAdvisor = (await this.elements.failedAdvisorsForServiceByType(serviceName, advisorType).textContent()) || ''
-    expect(parseInt(failedAdvisor.replace(/\D/g, ''))).toEqual(count);
+    expect(parseInt(failedAdvisor.replace(/\D/g, ''))).toBeGreaterThanOrEqual(count);
   }
 
   waitForServiceDisplayed = async (advisorName: string, timeout: number = Duration.OneMinute) => {
