@@ -20,7 +20,7 @@ test.describe('Spec file for connecting PMM to the portal', async () => {
   const fileName = 'portalCredentials';
 
   test.beforeAll(async ({ baseURL }) => {
-    await apiHelper.changeSettings({ pmm_public_address: baseURL!.replace(/(^\w+:|^)\/\//, '') });
+    await api.pmm.settingsV1.changeSettings({ pmm_public_address: baseURL!.replace(/(^\w+:|^)\/\//, '') });
     pmmVersion = (await api.pmm.serverV1.getPmmVersion()).minor;
     const userCredentials = await fileHelper.readfile(fileName, false);
     if (userCredentials) {
@@ -158,7 +158,6 @@ test.describe('Spec file for connecting PMM to the portal', async () => {
     baseURL,
     context,
   }) => {
-    test.skip(pmmVersion >= 35, 'It prevents UI upgrade');
     if (pmmVersion >= 27) {
       const signInPage = new SignInPage(page);
       const homeDashboard = new HomeDashboard(page);
