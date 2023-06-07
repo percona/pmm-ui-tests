@@ -49,6 +49,9 @@ on:
         required: true
         default: 'release'
         type: string
+      pmm_server_flags:
+        description: 'Flags for pmm server'
+        type: string
 
   workflow_dispatch:
     inputs:
@@ -90,6 +93,9 @@ on:
           - release
           - testing
           - experimental
+      pmm_server_flags:
+        description: 'Flags for pmm server'
+        type: string
 
 jobs:
   tests:
@@ -163,14 +169,14 @@ jobs:
         working-directory: pmm-qa/pmm-integration
         run: |
           npm install
-          sudo npx ts-node ./integration-setup.ts --ci --setup-docker-pmm-server --rbac --pmm-server-version=${{ env.PMM_SERVER_VERSION }} --pmm-client-version=${{ env.PMM_CLIENT_VERSION }}
+          sudo npx ts-node ./integration-setup.ts --ci --setup-docker-pmm-server --rbac --pmm-server-version=${{ env.PMM_SERVER_VERSION }} --pmm-client-version=${{ env.PMM_CLIENT_VERSION }}  ${{ inputs.pmm_server_flags }}
 
       - name: Compose PMM-Sever with docker tag ${{ inputs.pmm_server_docker_tag }}
         if: ${{ inputs.pmm_server_docker_tag != '' }}
         working-directory: pmm-qa/pmm-integration
         run: |
           npm install
-          sudo npx ts-node ./integration-setup.ts --ci --setup-docker-pmm-server --rbac --pmm-server-docker-tag=${{ inputs.pmm_server_docker_tag }} --pmm-client-version=${{ env.PMM_CLIENT_VERSION }}          
+          sudo npx ts-node ./integration-setup.ts --ci --setup-docker-pmm-server --rbac --pmm-server-docker-tag=${{ inputs.pmm_server_docker_tag }} --pmm-client-version=${{ env.PMM_CLIENT_VERSION }} ${{ inputs.pmm_server_flags }}
 
       - name: Health check for PMM2-server
         run: timeout 100 bash -c 'while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' localhost/ping)" != "200" ]]; do sleep 5; done' || false
