@@ -280,5 +280,5 @@ jobs:
         if: failure()
         uses: actions/upload-artifact@v3
         with:
-          name: "html-report"
+          name: "${{ job.name }}-html-report"
           path: ./pmm-ui-tests/playwright-tests/playwright-report
