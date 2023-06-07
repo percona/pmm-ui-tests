@@ -385,8 +385,8 @@ Scenario('@PMM-T1512 Verify tooltips work properly for DBaaS page @dbaas',
     I.click(dbaasPage.tabs.kubernetesClusterTab.eksClusterLabel);
     const tooltips = [
       dbaasPage.tooltips.clusterType,
-      dbaasPage.tooltips.awsAccessKeyId,
       dbaasPage.tooltips.awsSecretAccessKey,
+      dbaasPage.tooltips.awsAccessKeyId,
     ];
 
     for (const tooltip of tooltips) {

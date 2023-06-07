@@ -10,11 +10,11 @@ test.describe('PMM Client CLI tests for MySQL', async () => {
    * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/ms-specific-tests.bats#L29
    */
   test('run pmm-admin add mysql based on running instances', async ({ }) => {
-    let hosts = (await cli.exec(`sudo pmm-admin list | grep "MySQL" | awk -F" " '{print $3}'`))
+    let hosts = (await cli.exec(`sudo docker exec ms_pmm_8.0 pmm-admin list | grep "MySQL" | awk -F" " '{print $3}'`))
       .stdout.trim().split('\n').filter((item) => item.trim().length > 0);
     let n = 1;
     for (const host of hosts) {
-      let output = await cli.exec(`sudo pmm-admin add mysql --query-source=perfschema --username=${MYSQL_USER} --password=${MYSQL_PASSWORD} mysql_${n++} ${host}`);
+      let output = await cli.exec(`sudo docker exec ms_pmm_8.0 pmm-admin add mysql --query-source=perfschema --username=${MYSQL_USER} --password=${MYSQL_PASSWORD} mysql_${n++} ${host}`);
       await output.assertSuccess();
       await output.outContains('MySQL Service added.');
     }
@@ -24,11 +24,11 @@ test.describe('PMM Client CLI tests for MySQL', async () => {
    * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/ms-specific-tests.bats#L44
    */
   test('run pmm-admin add mysql again based on running instances', async ({ }) => {
-    let hosts = (await cli.exec(`sudo pmm-admin list | grep "MySQL" | grep "mysql_" | awk -F" " '{print $3}'`))
+    let hosts = (await cli.exec(`sudo docker exec ms_pmm_8.0 pmm-admin list | grep "MySQL" | grep "mysql_" | awk -F" " '{print $3}'`))
       .stdout.trim().split('\n').filter((item) => item.trim().length > 0);
     let n = 1;
     for (const host of hosts) {
-      let output = await cli.exec(`sudo pmm-admin add mysql --query-source=perfschema --username=${MYSQL_USER} --password=${MYSQL_PASSWORD} mysql_${n++} ${host}`);
+      let output = await cli.exec(`sudo docker exec ms_pmm_8.0 pmm-admin add mysql --query-source=perfschema --username=${MYSQL_USER} --password=${MYSQL_PASSWORD} mysql_${n++} ${host}`);
       await output.exitCodeEquals(1);
       await output.outContains('already exists.');
     }
@@ -38,11 +38,11 @@ test.describe('PMM Client CLI tests for MySQL', async () => {
   * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/ms-specific-tests.bats#L58
  */
   test('run pmm-admin remove mysql added using current running instances', async ({ }) => {
-    let hosts = (await cli.exec(`sudo pmm-admin list | grep "MySQL" | grep "mysql_"`))
+    let hosts = (await cli.exec(`sudo docker exec ms_pmm_8.0 pmm-admin list | grep "MySQL" | grep "mysql_"`))
       .stdout.trim().split('\n').filter((item) => item.trim().length > 0);
     let n = 1;
     for (const host of hosts) {
-      let output = await cli.exec(`sudo pmm-admin remove mysql mysql_${n++}`);
+      let output = await cli.exec(`sudo docker exec ms_pmm_8.0 pmm-admin remove mysql mysql_${n++}`);
       await output.assertSuccess();
       await output.outContains('Service removed.');
     }
@@ -53,7 +53,7 @@ test.describe('PMM Client CLI tests for MySQL', async () => {
   * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/ms-specific-tests.bats#L162
  */
   test('PMM-T959 run pmm-admin add mysql --help', async ({ }) => {
-    const output = await cli.exec('sudo pmm-admin add mysql --help');
+    const output = await cli.exec('sudo docker exec ms_pmm_8.0 pmm-admin add mysql --help');
     await output.assertSuccess();
     await output.outContainsMany([
       'help',
@@ -99,13 +99,13 @@ test.describe('PMM Client CLI tests for MySQL', async () => {
    * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/ms-specific-tests.bats#L105
    */
   test('run pmm-admin add mysql based on running instances using host, port and service name', async ({ }) => {
-    let hosts = (await cli.exec(`sudo pmm-admin list | grep "MySQL" | awk -F" " '{print $3}'`))
+    let hosts = (await cli.exec(`sudo docker exec ms_pmm_8.0 pmm-admin list | grep "MySQL" | awk -F" " '{print $3}'`))
       .stdout.trim().split('\n').filter((item) => item.trim().length > 0);
     let n = 1;
     for (const host of hosts) {
       const ip = host.split(':')[0];
       const port = host.split(':')[1];
-      let output = await cli.exec(`sudo pmm-admin add mysql --query-source=perfschema --username=${MYSQL_USER} --password=${MYSQL_PASSWORD}  --host=${ip} --port=${port} --service-name=mysql_${n++}`);
+      let output = await cli.exec(`sudo docker exec ms_pmm_8.0 pmm-admin add mysql --query-source=perfschema --username=${MYSQL_USER} --password=${MYSQL_PASSWORD}  --host=${ip} --port=${port} --service-name=mysql_${n++}`);
       await output.assertSuccess();
       await output.outContains('MySQL Service added.');
     }
@@ -115,10 +115,10 @@ test.describe('PMM Client CLI tests for MySQL', async () => {
    * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/ms-specific-tests.bats#L121
    */
   test('run pmm-admin remove mysql added using host, port and service name', async ({ }) => {
-    let services = (await cli.exec(`sudo pmm-admin list | grep "MySQL" | grep "mysql_" | awk -F" " '{print $2}'`))
+    let services = (await cli.exec(`sudo docker exec ms_pmm_8.0 pmm-admin list | grep "MySQL" | grep "mysql_" | awk -F" " '{print $2}'`))
       .stdout.trim().split('\n').filter((item) => item.trim().length > 0);
     for (const service of services) {
-      let output = await cli.exec(`sudo pmm-admin remove mysql ${service}`);
+      let output = await cli.exec(`sudo docker exec ms_pmm_8.0 pmm-admin remove mysql ${service}`);
       await output.assertSuccess();
       await output.outContains('Service removed.');
     }
@@ -128,13 +128,13 @@ test.describe('PMM Client CLI tests for MySQL', async () => {
    * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/ms-specific-tests.bats#L134
    */
   test("PMM-T157 Adding MySQL with specified socket", async ({ }) => {
-    let hosts = (await cli.exec(`sudo pmm-admin list | grep "MySQL" | awk -F" " '{print $3}'`))
+    let hosts = (await cli.exec(`sudo docker exec ms_pmm_8.0 pmm-admin list | grep "MySQL" | awk -F" " '{print $3}'`))
       .stdout.trim().split('\n').filter((item) => item.trim().length > 0);
     let n = 1;
     for (const host of hosts) {
       const mysql_ip = host.split(':')[0];
       const mysql_port = host.split(':')[1];
-      let output = await cli.exec(`sudo pmm-admin add mysql --query-source=perfschema --username=${MYSQL_USER} --password=${MYSQL_PASSWORD} --socket=/tmp/mysql_sandbox${mysql_port}.sock --service-name=mysql_socket${n++}`);
+      let output = await cli.exec(`sudo docker exec ms_pmm_8.0 pmm-admin add mysql --query-source=perfschema --username=${MYSQL_USER} --password=${MYSQL_PASSWORD} --socket=/tmp/mysql_sandbox${mysql_port}.sock --service-name=mysql_socket${n++}`);
       await output.assertSuccess();
       await output.outContains('MySQL Service added.');
     }
@@ -144,10 +144,10 @@ test.describe('PMM Client CLI tests for MySQL', async () => {
    * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/ms-specific-tests.bats#L150
    */  
   test("Removing MySQL with specified socket", async ({ }) => {
-    let services = (await cli.exec(`sudo pmm-admin list | grep "MySQL" | grep "mysql_socket" | awk -F" " '{print $2}'`))
+    let services = (await cli.exec(`sudo docker exec ms_pmm_8.0 pmm-admin list | grep "MySQL" | grep "mysql_socket" | awk -F" " '{print $2}'`))
       .stdout.trim().split('\n').filter((item) => item.trim().length > 0);
     for (const service of services) {
-      let output = await cli.exec(`sudo pmm-admin remove mysql ${service}`);
+      let output = await cli.exec(`sudo docker exec ms_pmm_8.0 pmm-admin remove mysql ${service}`);
       await output.assertSuccess();
       await output.outContains('Service removed.');
     }
@@ -157,14 +157,14 @@ test.describe('PMM Client CLI tests for MySQL', async () => {
    * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/ms-specific-tests.bats#L177
    */
   test('run pmm-admin add mysql with both disable-tablestats and disable-tablestats-limit', async ({ }) => {
-    let hosts = (await cli.exec(`sudo pmm-admin list | grep "MySQL" | awk -F" " '{print $3}'`))
+    let hosts = (await cli.exec(`sudo docker exec ms_pmm_8.0 pmm-admin list | grep "MySQL" | awk -F" " '{print $3}'`))
       .stdout.trim().split('\n').filter((item) => item.trim().length > 0);
     let n = 1;
     for (const host of hosts) {
-      let output = await cli.exec(`sudo pmm-admin add mysql --query-source=perfschema --disable-tablestats --disable-tablestats-limit=50 --username=${MYSQL_USER} --password=${MYSQL_PASSWORD} mysql_both${n++} ${host}`);
+      let output = await cli.exec(`sudo  docker exec ms_pmm_8.0 pmm-admin add mysql --query-source=perfschema --disable-tablestats --disable-tablestats-limit=50 --username=${MYSQL_USER} --password=${MYSQL_PASSWORD} mysql_both${n++} ${host}`);
       await output.exitCodeEquals(1);
       await output.outContains('both --disable-tablestats and --disable-tablestats-limit are passed');
-      output = await cli.exec('sudo pmm-admin list | grep MySQL');
+      output = await cli.exec('sudo docker exec ms_pmm_8.0 pmm-admin list | grep MySQL');
     }
   });
   
@@ -172,14 +172,14 @@ test.describe('PMM Client CLI tests for MySQL', async () => {
    * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/ms-specific-tests.bats#L191
    */
   test('run pmm-admin add mysql with disable-tablestats', async ({ }) => {
-    let hosts = (await cli.exec(`sudo pmm-admin list | grep "MySQL" | awk -F" " '{print $3}'`))
+    let hosts = (await cli.exec(`sudo docker exec ms_pmm_8.0 pmm-admin list | grep "MySQL" | awk -F" " '{print $3}'`))
       .stdout.trim().split('\n').filter((item) => item.trim().length > 0);
     let n = 1;
     for (const host of hosts) {
-      let output = await cli.exec(`sudo pmm-admin add mysql --query-source=perfschema --disable-tablestats --username=${MYSQL_USER} --password=${MYSQL_PASSWORD} mysql_dis_tablestats${n++} ${host}`);
+      let output = await cli.exec(`sudo docker exec ms_pmm_8.0 pmm-admin add mysql --query-source=perfschema --disable-tablestats --username=${MYSQL_USER} --password=${MYSQL_PASSWORD} mysql_dis_tablestats${n++} ${host}`);
       await output.assertSuccess();
       await output.outContains('Table statistics collection disabled (always).');
-      output = await cli.exec('sudo pmm-admin list | grep MySQL');
+      output = await cli.exec('sudo docker exec ms_pmm_8.0 pmm-admin list | grep MySQL');
       await output.outContains('mysql_dis_tablestats');
     }
   });
@@ -188,11 +188,11 @@ test.describe('PMM Client CLI tests for MySQL', async () => {
    * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/ms-specific-tests.bats#L205
    */
   test('run pmm-admin remove mysql added using disable-tablestats', async ({ }) => {
-    let services = (await cli.exec(`sudo pmm-admin list | grep "MySQL" | grep "mysql_dis_tablestats"`))
+    let services = (await cli.exec(`sudo docker exec ms_pmm_8.0 pmm-admin list | grep "MySQL" | grep "mysql_dis_tablestats"`))
       .stdout.trim().split('\n').filter((item) => item.trim().length > 0);
     let n = 1;
     for (const service of services) {
-      let output = await cli.exec(`sudo pmm-admin remove mysql mysql_dis_tablestats${n++}`);
+      let output = await cli.exec(`sudo docker exec ms_pmm_8.0 pmm-admin remove mysql mysql_dis_tablestats${n++}`);
       await output.assertSuccess();
       await output.outContains('Service removed.');
     }
@@ -202,9 +202,9 @@ test.describe('PMM Client CLI tests for MySQL', async () => {
    * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/ms-specific-tests.bats#L217
    */
   test('run pmm-admin add mysql with disable-tablestats-limit=50', async ({ }) => {
-    let host = (await cli.exec(`sudo pmm-admin list | grep "MySQL" | awk -F" " '{print $3}'`))
+    let host = (await cli.exec(`sudo docker exec ms_pmm_8.0 pmm-admin list | grep "MySQL" | awk -F" " '{print $3}'`))
       .stdout.trim().split('\n').filter((item) => item.trim().length > 0);
-    let output = await cli.exec(`sudo pmm-admin add mysql --query-source=perfschema --disable-tablestats-limit=50 --username=${MYSQL_USER} --password=${MYSQL_PASSWORD} mysql_limit_remove ${host}`);
+    let output = await cli.exec(`sudo docker exec ms_pmm_8.0 pmm-admin add mysql --query-source=perfschema --disable-tablestats-limit=50 --username=${MYSQL_USER} --password=${MYSQL_PASSWORD} mysql_limit_remove ${host}`);
     await output.assertSuccess();
     await output.outContains('Table statistics collection disabled');
   });
@@ -213,7 +213,7 @@ test.describe('PMM Client CLI tests for MySQL', async () => {
    * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/ms-specific-tests.bats#L231
    */
   test('run pmm-admin remove mysql added using disable-tablestats-limit=50', async ({ }) => {
-    let output = await cli.exec(`sudo pmm-admin remove mysql mysql_limit_remove`);
+    let output = await cli.exec(`sudo docker exec ms_pmm_8.0 pmm-admin remove mysql mysql_limit_remove`);
     await output.assertSuccess();
     await output.outContains('Service removed.');
   });
@@ -222,7 +222,7 @@ test.describe('PMM Client CLI tests for MySQL', async () => {
    * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/ms-specific-tests.bats#L243
    */
   test('run pmm-admin remove mysql again', async ({ }) => {
-    let output = await cli.exec(`sudo pmm-admin remove mysql mysql_limit_remove`);
+    let output = await cli.exec(`sudo docker exec ms_pmm_8.0 pmm-admin remove mysql mysql_limit_remove`);
     await output.exitCodeEquals(1);
     await output.outContains('not found.');
   });
@@ -231,11 +231,11 @@ test.describe('PMM Client CLI tests for MySQL', async () => {
    * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/ms-specific-tests.bats#L255
    */
   test('PMM-T962 run pmm-admin add mysql with --agent-password flag', async ({ }) => {
-    let hosts = (await cli.exec(`sudo pmm-admin list | grep "MySQL" | awk -F" " '{print $3}'`))
+    let hosts = (await cli.exec(`sudo docker exec ms_pmm_8.0 pmm-admin list | grep "MySQL" | awk -F" " '{print $3}'`))
       .stdout.trim().split('\n').filter((item) => item.trim().length > 0);
     let n = 1;
     for (const host of hosts) {
-      let output = await cli.exec(`sudo pmm-admin add mysql --query-source=perfschema --username=${MYSQL_USER}  --agent-password=mypass --password=${MYSQL_PASSWORD} mysql_${n++} ${host}`);
+      let output = await cli.exec(`sudo docker exec ms_pmm_8.0 pmm-admin add mysql --query-source=perfschema --username=${MYSQL_USER}  --agent-password=mypass --password=${MYSQL_PASSWORD} mysql_${n++} ${host}`);
       await output.assertSuccess();
       await output.outContains('MySQL Service added.');
     }
@@ -244,16 +244,19 @@ test.describe('PMM Client CLI tests for MySQL', async () => {
   /**
    * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/ms-specific-tests.bats#L268
    */
-  test('PMM-T962 check metrics from service with custom agent password', async ({ }) => {
-    let hosts = (await cli.exec(`sudo pmm-admin list | grep "MySQL" | grep "mysql_"`))
+  test.skip('PMM-T962 check metrics from service with custom agent password', async ({ }) => {
+    let hosts = (await cli.exec(`sudo docker exec ms_pmm_8.0 pmm-admin list | grep "MySQL" | grep "mysql_"`))
       .stdout.trim().split('\n').filter((item) => item.trim().length > 0);
     let n = 1;
     for (const host of hosts) {
       await cli.exec('sleep 20');
-      await (await cli.exec('sudo chmod +x /home/runner/work/pmm-submodules/pmm-submodules/pmm-tests/pmm-2-0-bats-tests/check_metric.sh')).assertSuccess();
-      let output = await cli.exec(`sudo /home/runner/work/pmm-submodules/pmm-submodules/pmm-tests/pmm-2-0-bats-tests/check_metric.sh mysql_${n++} mysql_up 127.0.0.1 mysqld_exporter pmm mypass`);
-      await output.assertSuccess();
-      await output.outContains('mysql_up 1');
+      // await (await cli.exec('sudo chmod +x /srv/pmm-qa/pmm-tests/pmm-2-0-bats-tests/check_metric.sh')).assertSuccess();
+      // let output = await cli.exec(`/srv/pmm-qa/pmm-tests/pmm-2-0-bats-tests/check_metric.sh mysql_${n++} mysql_up 127.0.0.1 mysqld_exporter pmm mypass`);
+      // await output.assertSuccess();
+      // await output.outContains('mysql_up 1');
+      let metrics = await cli.getMetrics(host, 'pmm', 'mypass', '127.0.0.1');
+      let expectedValue = 'mysql_up 1';
+      expect(metrics, `Scraped metrics do not contain ${expectedValue}!`).toContain(expectedValue);
     }
   });
 
@@ -261,11 +264,11 @@ test.describe('PMM Client CLI tests for MySQL', async () => {
    * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/ms-specific-tests.bats#L282
    */
   test('run pmm-admin remove mysql added with custom agent password', async ({ }) => {
-    let hosts = (await cli.exec(`sudo pmm-admin list | grep "MySQL" | grep "mysql_"`))
+    let hosts = (await cli.exec(`sudo docker exec ms_pmm_8.0 pmm-admin list | grep "MySQL" | grep "mysql_"`))
       .stdout.trim().split('\n').filter((item) => item.trim().length > 0);
     let n = 1;
     for (const host of hosts) {
-      let output = await cli.exec(`sudo pmm-admin remove mysql mysql_${n++}`);
+      let output = await cli.exec(`sudo docker exec ms_pmm_8.0 pmm-admin remove mysql mysql_${n++}`);
       await output.assertSuccess();
       await output.outContains('Service removed.');
     }

@@ -101,9 +101,8 @@ const apiHelper = {
       timeout?: number | undefined;
     } | undefined
   ): Promise<APIResponse> => {
-    console.log(`GET: ${path}${options ? ` with ${JSON.stringify(options)}` : ''}`);
     const response = await (await getConfiguredRestApi()).get(path, options);
-    console.log(`Status: ${response.status()} ${response.statusText()}`);
+    expect(response.status(), `Request was not successful. Response status: ${response.status()}. Response Message: ${response.statusText()}`).toEqual(200);
     return response;
   },
 
@@ -116,9 +115,7 @@ const apiHelper = {
    */
   post: async (path: string, payload: Object): Promise<APIResponse> => {
     const response = await (await getConfiguredRestApi()).post(path, payload);
-    if (response.status() !== 200) {
-      expect(false, `Api call for endpoint "${path}" was not successful. Response: ${response.status()} ${response.statusText()}`).toBeTruthy()
-    }
+    expect(response.status(), `Request was not successful. Response status: ${response.status()}. Response Message: ${response.statusText()}`).toEqual(200);
     return response;
   },
 };

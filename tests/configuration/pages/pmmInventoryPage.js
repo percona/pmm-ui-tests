@@ -6,11 +6,13 @@ const servicesTab = require('./servicesTab');
 module.exports = {
   url: 'graph/inventory?orgId=1',
   fields: {
+    servicesLink: locate('[role="tablist"] a').withText('Services').withAttr({ 'aria-label': 'Tab Services' }),
     serviceRow: (serviceName) => `//span[contains(text(), '${serviceName}')]//ancestor::tr`,
     showServiceDetails: (serviceName) => `//span[contains(text(), '${serviceName}')]//ancestor::tr//button[@data-testid="show-row-details"]`,
     hideServiceDetails: (serviceName) => `//span[contains(text(), '${serviceName}')]//ancestor::tr//button[@data-testid="hide-row-details"]`,
     showAgentDetails: (agentName) => `//td[contains(text(), '${agentName}')]//ancestor::tr//button[@data-testid="show-row-details"]`,
     showRowDetails: '//button[@data-testid="show-row-details"]',
+    agentStatus: locate('$details-row-content').find('a'),
     backToServices: '//span[text()="Go back to services"]',
     agentsLinkNew: '//div[contains(@data-testid,"status-badge")]',
     agentDetailsLabelByText: (label) => locate('[aria-label="Tags"]').find('li').withText(label),
@@ -45,6 +47,10 @@ module.exports = {
     processExecPathExporters: '//td[contains(text(), "exporter")]//ancestor::tr[@data-testid="table-row"]//span[contains(text(), "process_exec_path")]',
     nodeExporterStatus: '//td[contains(text(), "Node exporter")]//ancestor::tr[@data-testid="table-row"]//span[contains(text(), "status")]',
     agentId: '//td[contains(text(), "agent_id") and not(following-sibling::td[text()="PMM Agent"])]',
+    selectAllCheckbox: locate('$select-all'),
+    selectRowCheckbox: locate('$select-row'),
+    removalDialogMessage: '//form/h4',
+    selectedCheckbox: '//div[descendant::input[@value="true"] and @data-testid="select-row"]',
   },
   servicesTab,
   pagination: paginationPart,
@@ -62,12 +68,12 @@ module.exports = {
     I.scrollPageToBottom();
   },
 
-  async openAgents(serviceId) {
+  openAgents(serviceId) {
     I.amOnPage(`graph/inventory/services/${serviceId.split('/')[2]}/agents`);
-    await this.changeRowsPerPage(100);
+    this.changeRowsPerPage(100);
   },
 
-  async changeRowsPerPage(count) {
+  changeRowsPerPage(count) {
     I.waitForElement(this.fields.rowsPerPage, 30);
     I.scrollPageToBottom();
     I.click(this.fields.rowsPerPage);
@@ -89,8 +95,7 @@ module.exports = {
     const serviceId = await this.getServiceId(service_name);
 
     await inventoryAPI.waitForRunningState(serviceId);
-    await I.click(this.fields.showServiceDetails(service_name));
-    I.click(this.fields.agentsLinkNew);
+    this.openAgents(serviceId);
     // I.waitForElement(this.fields.pmmAgentLocator, 60);
     await this.changeRowsPerPage(100);
     I.waitForElement(this.fields.inventoryTable, 60);

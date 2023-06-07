@@ -2,11 +2,11 @@ const assert = require('assert');
 const { I } = inject();
 
 module.exports = {
-  url: '/graph/alerting/silences',
+  url: 'graph/alerting/routes',
   elements: {
   },
   buttons: {
-    newSilence: locate('$silences-table').find('a').withText('New'),
+    newPolicy: locate('button').find('span').withText('New specific policy'),
   },
   messages: {
   },

@@ -220,10 +220,8 @@ Scenario(
 
     I.amOnPage(url);
     dashboardPage.waitForDashboardOpened();
-    adminPage.performPageDown(5);
-    await dashboardPage.expandEachDashboardRow();
     await dashboardPage.applyFilter('Service Name', 'pxc');
-    adminPage.performPageUp(5);
+    await dashboardPage.expandEachDashboardRow();
     dashboardPage.verifyMetricsExistence(dashboardPage.mysqlPXCGaleraNodesCompareDashboard.metrics);
     dashboardPage.verifyTabExistence(dashboardPage.mysqlPXCGaleraNodesCompareDashboard.tabs);
     await dashboardPage.verifyThereAreNoGraphsWithNA();

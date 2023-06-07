@@ -4,6 +4,7 @@ import { oktaAPI } from "@api/okta";
 import { portalAPI } from "@api/portalApi";
 import { platform } from "@api/platform";
 import { management } from "@api/management";
+import { inventory } from "@api/inventory";
 
 /**
  * User facing api collection. Accessible on Frontend via /swagger path.
@@ -13,6 +14,7 @@ import { management } from "@api/management";
 export const api = {
   grafana: {},
   pmm: {
+    inventoryV1: inventory,
     settingsV1: settings,
     serverV1: server,
     platformV1: platform,

@@ -14,6 +14,8 @@ module.exports = {
     '//input[@aria-controls="options-service_name"]',
   toggleAllValues:
     '//a[@aria-label="Toggle all values"]',
+  panel: 'div[data-panelid]',
+  systemUptimePanel: (nodeName) => `//div[@class="panel-title"]//h2[text()="${nodeName} - System Uptime"]`,
   nodesCompareDashboard: {
     url: 'graph/d/node-instance-compare/nodes-compare?orgId=1&refresh=1m&from=now-5m&to=now',
     metrics: [
@@ -190,13 +192,13 @@ module.exports = {
       'Client Questions',
       'Active Backend Connections',
       'Failed Backend Connections',
-      'Active Frontend Connections',
+      'Top 30 Active Frontend Connections',
       'Client Frontend Connections',
       'Endpoint Status',
       'Queries Routed',
-      'Query processor time efficecy',
+      'Query processor time efficiency',
       'Connection Free',
-      'Latency',
+      'Endpoints Latency',
       'Executed Queries',
       'Queries Execution Time',
       'Queries Latency',
@@ -250,6 +252,7 @@ module.exports = {
   },
   postgresqlInstanceSummaryDashboard: {
     url: 'graph/d/postgresql-instance-summary/postgresql-instance-summary?orgId=1&from=now-5m&to=now',
+    cleanUrl: 'graph/d/postgresql-instance-summary/postgresql-instance-summary',
     metrics: [
       'Version',
       'Max Connections',
@@ -643,7 +646,7 @@ module.exports = {
       'Total InnoDB Buffer Pool Size',
       'Top MySQL Used Connections',
       'Top MySQL Client Threads Connected',
-      'Top MySQL Active Client Threads',
+      'Top MySQL Idle Client Threads',
       'Top MySQL Threads Cached',
       'Top 5 MySQL Used Connections',
       'MySQL Used Connections',
