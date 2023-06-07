@@ -116,7 +116,7 @@ test.describe('Spec file for basic database version control of Advisors. ', asyn
     });
 
     await test.step('5. Connect free Org and open new browser window.', async () => {
-      await api.pmm.platformV1.connect('Test Server', await portalAPI.getUserAccessToken(freePlatformUser.email, freePlatformUser.password));
+      await api.pmm.platformV1.connect(`Test Server ${Date.now()}`, await portalAPI.getUserAccessToken(freePlatformUser.email, freePlatformUser.password));
 
       await page.close();
       page = await context.newPage()
@@ -158,7 +158,7 @@ test.describe('Spec file for basic database version control of Advisors. ', asyn
     });
 
     await test.step('10. Connect paid Org and open new browser window.', async () => {
-      await api.pmm.platformV1.connect('Test Server', await portalAPI.getUserAccessToken(paidPlatformUser.email, paidPlatformUser.password));
+      await api.pmm.platformV1.connect(`Test Server ${Date.now()}`, await portalAPI.getUserAccessToken(paidPlatformUser.email, paidPlatformUser.password));
       const paidContext = await browser.newContext();
       await page.close();
       page = await paidContext.newPage()
@@ -188,6 +188,13 @@ test.describe('Spec file for basic database version control of Advisors. ', asyn
       await page.waitForTimeout(Duration.OneMinute);
       await advisorInsights.sideMenu.elements.home.click();
       await homeDashboard.verifyFailedAdvisorsNumberIsGreaterThen({ error: 2, warning: 10, notice: 3 });
+    });
+
+    await test.step('13. Disconnect PMM from the paid org.', async () => {
+      await page.goto(perconaPlatformPage.perconaPlatformURL)
+      await perconaPlatformPage.buttons.disconnect.click();
+      await perconaPlatformPage.buttons.confirmDisconnect.click();
+      await signInPage.fields.username.waitFor({ state: 'visible', timeout: Duration.ThreeMinutes });
     });
   });
 });
