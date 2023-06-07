@@ -16,7 +16,7 @@ dotenv.config();
  */
 const config: PlaywrightTestConfig = {
   testDir: './tests',
-  timeout: Duration.TwentyMinutes,
+  timeout: Duration.TenMinutes,
   expect: {
     timeout: 5000,
   },
