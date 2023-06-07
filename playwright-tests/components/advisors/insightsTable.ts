@@ -44,7 +44,6 @@ export default class InsightsTable extends Table {
   private waitForAdvisorsDisplayed = async (locator: Locator, minFailedAdvisors: number, timeout: Duration = Duration.OneMinute) => {
     let retries = 0;
     while (await locator.count() < minFailedAdvisors) {
-      console.log(await locator.count());
       await this.page.reload();
       await this.page.waitForTimeout(Duration.TenSeconds);
       retries++;
