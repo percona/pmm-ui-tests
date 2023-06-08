@@ -179,6 +179,7 @@ jobs:
         id: target_repo
         with:
           script: |
+            console.log('${{ inputs.repository }}');
             switch (context.payload.inputs.repository) {
               case 'release':
                 return 'release';
