@@ -283,7 +283,7 @@ jobs:
         run: |
           job_tag=$(echo "${{ inputs.pre_upgrade_tests }}" | sed -e "s/-pre-upgrade//" -e "s/@//")
           echo $job_tag
-          echo "$((job_tag))-html-report"
+          echo "$(($job_tag))-html-report"
           echo "report_name=$((job_tag))-html-report" >> $GITHUB_ENV
           echo "${{ env.report_name }}"
 
