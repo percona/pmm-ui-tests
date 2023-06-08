@@ -148,31 +148,6 @@ jobs:
           target_url: 'https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}'
           sha: ${{ env.SHA }}
 
-      - name: Dump GitHub context
-        env:
-          GITHUB_CONTEXT: ${{ toJson(github) }}
-        run: echo $GITHUB_CONTEXT
-      - name: Dump job context
-        env:
-          JOB_CONTEXT: ${{ toJson(job) }}
-        run: echo $JOB_CONTEXT
-      - name: Dump steps context
-        env:
-          STEPS_CONTEXT: ${{ toJson(steps) }}
-        run: echo $STEPS_CONTEXT
-      - name: Dump runner context
-        env:
-          RUNNER_CONTEXT: ${{ toJson(runner) }}
-        run: echo $RUNNER_CONTEXT
-      - name: Dump strategy context
-        env:
-          STRATEGY_CONTEXT: ${{ toJson(strategy) }}
-        run: echo $STRATEGY_CONTEXT
-      - name: Dump matrix context
-        env:
-          MATRIX_CONTEXT: ${{ toJson(matrix) }}
-        run: echo $MATRIX_CONTEXT
-
       - name: 'Checkout UI tests: "${{ inputs.pmm_ui_tests_branch }}"'
         uses: actions/checkout@v3
         with:
@@ -279,7 +254,7 @@ jobs:
         working-directory: ./pmm-ui-tests
         run: |
           # TODO: implement qa-integration docker upgrade
-          sudo chmod 755 ../pmm-qa/pmm-tests/docker_way_upgrade.sh
+          sudo chmod 755 ../pmm-qa/pmm-tests/docker_way_upgrade1.sh
           bash -xe ../pmm-qa/pmm-tests/docker_way_upgrade.sh ${{ steps.pmm_server_image.outputs.result }}
           sleep 30
 
@@ -303,9 +278,19 @@ jobs:
         env:
           NODE_TLS_REJECT_UNAUTHORIZED: 0
 
+      - name: 'Create report name'
+        if: failure()
+        uses: actions/github-script@v6
+        id: report_name
+        with:
+          script: |
+            const tag = context.payload.inputs.pre_upgrade_tests
+            return `${tag.replace('@', '').replace('@', '-pre-upgrade')}-html-report`
+          result-encoding: string
+
       - name: Generate and Attach the report
         if: failure()
         uses: actions/upload-artifact@v3
         with:
-          name: "${{ job.name }}-html-report"
+          name: "${{ steps.report_name.outputs.result }}"
           path: ./pmm-ui-tests/playwright-tests/playwright-report
