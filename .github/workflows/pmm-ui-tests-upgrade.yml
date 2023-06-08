@@ -282,11 +282,13 @@ jobs:
         if: failure()
         run: |
           job_tag=$(echo "${{ inputs.pre_upgrade_tests }}" | sed -e "s/-pre-upgrade//" -e "s/@//")
-          echo $job_tag
           report_name="$job_tag"-html-report
-          echo $report_name
           echo "REPORT_NAME=$report_name" >> $GITHUB_ENV
-          echo "${{ env.REPORT_NAME }}"
+
+      - name: 'test report name'
+        if: failure()
+        run: |
+          echo ${{ env.REPORT_NAME }}
 
       - name: Generate and Attach the report
         if: failure()
