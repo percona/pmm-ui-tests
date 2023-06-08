@@ -42,7 +42,7 @@ jobs:
         old_version: [ 2.37.0, 2.36.0, 2.35.0, 2.34.0, 2.33.0 ]
     with:
       pmm_ui_tests_branch: ${{ inputs.pmm_ui_tests_branch }}
-      pmm_server_start_version: ${{ matrix.old_version }}gh
+      pmm_server_start_version: ${{ matrix.old_version }}
       pmm_client_start_version: ${{ matrix.old_version }}
       upgrade_type: ${{ inputs.upgrade_type }}
       pmm_qa_branch: ${{ inputs.pmm_qa_branch }}
