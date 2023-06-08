@@ -158,7 +158,7 @@ jobs:
       - name: 'Install  playwright'
         working-directory: ./pmm-ui-tests/playwright-tests
         run: |
-          npm install
+          npm installff
           npx playwright install
 
       - name: 'Checkout pmm-qa: "${{ inputs.pmm_qa_branch }}"'
@@ -254,7 +254,7 @@ jobs:
         working-directory: ./pmm-ui-tests
         run: |
           # TODO: implement qa-integration docker upgrade
-          sudo chmod 755 ../pmm-qa/pmm-tests/docker_way_upgrade1.sh
+          sudo chmod 755 ../pmm-qa/pmm-tests/docker_way_upgrade.sh
           bash -xe ../pmm-qa/pmm-tests/docker_way_upgrade.sh ${{ steps.pmm_server_image.outputs.result }}
           sleep 30
 
@@ -285,7 +285,11 @@ jobs:
         with:
           script: |
             const tag = context.payload.inputs.pre_upgrade_tests
-            return `${tag.replace('@', '').replace('@', '-pre-upgrade')}-html-report`
+              .replace('@', '').replace('-pre-upgrade','')
+            console.log(context.payload.inputs);
+            console.log(${{ inputs.pre_upgrade_tests }});
+            console.log(inputs.pre_upgrade_tests);
+            return `${tag}-html-report`
           result-encoding: string
 
       - name: Generate and Attach the report
