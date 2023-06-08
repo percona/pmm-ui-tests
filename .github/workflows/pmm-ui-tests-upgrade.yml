@@ -153,7 +153,7 @@ jobs:
         id: target_repo
         with:
           script: |
-            switch (${{ inputs.repository }}) {
+            switch ('${{ inputs.repository }}') {
               case 'release':
                 return 'release';
               case 'release candidate':
