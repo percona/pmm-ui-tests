@@ -1,37 +1,49 @@
-# This workflow will do a clean install of node dependencies  and run lint tests
-
-name: CI
+name: "Demo matrix"
 
 on:
-  pull_request:
-    branches:
-      - main
+  schedule:
+    - cron: '0 0 * * *'
+  workflow_dispatch:
+    inputs:
+      pmm_ui_tests_branch:
+        description: 'pmm-ui-tests repository branch'
+        default: 'main'
+        required: true
+      pmm_qa_branch:
+        description: 'pmm-qa repository branch(for setup)'
+        default: 'main'
+        required: true
+      upgrade_type:
+        description: 'Upgrade way:'
+        required: true
+        default: 'UI way'
+        type: choice
+        options:
+          - UI way
+          - Docker way
+      repository:
+        description: 'Upgrade to:'
+        required: true
+        default: 'dev-latest'
+        type: choice
+        options:
+          - release
+          - release candidate
+          - dev-latest
 
 jobs:
-  lint:
-    runs-on: ubuntu-20.04
-    steps:
-    - uses: percona-platform/checkout@v2
-    - name: Use Node.js 16.x
-      uses: percona-platform/setup-node@v2
-      with:
-        node-version: 16.x
-    - name: Install Dependencies
-      run: npm ci
-    - name: Run lint:tests
-      run: npm run lint:tests
-
-  fb_tests:
-    name: FB UI tests
-    uses: Percona-Lab/pmm-submodules/.github/workflows/pmm2-ui-tests-fb.yml@PMM-2.0
-    secrets:
-      BACKUP_LOCATION_ACCESS_KEY: ${{ secrets.BACKUP_LOCATION_ACCESS_KEY }}
-      BACKUP_LOCATION_SECRET_KEY: ${{ secrets.BACKUP_LOCATION_SECRET_KEY }}
+  upgrade-tests:
+    name: 'Upgrade'
+    uses: ./.github/workflows/pmm-ui-tests-matrix-upgrade.yml
+    secrets: inherit
+    strategy:
+      fail-fast: false
+      matrix:
+        old_version: [ 2.37.0, 2.36.0, 2.35.0, 2.34.0, 2.33.0 ]
     with:
-      server_image: 'perconalab/pmm-server:dev-latest'
-      client_version: 'dev-latest'
-      client_image: 'perconalab/pmm-client:dev-latest'
-
-      pmm_qa_branch: 'main'
-      pmm_ui_branch: ${{ github.head_ref }}
-      sha: 'null'
+      pmm_ui_tests_branch: ${{ inputs.pmm_ui_tests_branch }}
+      pmm_server_start_version: ${{ matrix.old_version }}gh
+      pmm_client_start_version: ${{ matrix.old_version }}
+      upgrade_type: ${{ inputs.upgrade_type }}
+      pmm_qa_branch: ${{ inputs.pmm_qa_branch }}
+      repository: ${{ inputs.repository }}

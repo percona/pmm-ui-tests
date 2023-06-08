@@ -30,9 +30,6 @@ on:
           - release
           - release candidate
           - dev-latest
-  push:
-    branches:
-      - PMM-7-update-action-update
 
 jobs:
   upgrade-tests:
