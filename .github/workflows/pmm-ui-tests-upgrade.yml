@@ -144,7 +144,7 @@ jobs:
           context: 'pmm2-ui-tests'
           description: 'Tests execution has been started'
           state: 'pending'
-          repository: ${{ inputs.repo }}
+          repository: ${{ inputs.repository }}
           target_url: 'https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}'
           sha: ${{ env.SHA }}
 
@@ -168,6 +168,11 @@ jobs:
           repository: percona/pmm-qa
           ref: ${{ inputs.pmm_qa_branch }}
           path: ./pmm-qa
+
+      - name: 'debug repo'
+        working-directory: ./pmm-ui-tests/playwright-tests
+        run: |
+          echo ${{ inputs.repository }}
 
       - name: 'Convert choice into repo'
         uses: actions/github-script@v6
