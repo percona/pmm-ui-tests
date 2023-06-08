@@ -148,39 +148,12 @@ jobs:
           target_url: 'https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}'
           sha: ${{ env.SHA }}
 
-      - name: 'Checkout UI tests: "${{ inputs.pmm_ui_tests_branch }}"'
-        uses: actions/checkout@v3
-        with:
-          ref: ${{ inputs.pmm_ui_tests_branch }}
-          repository: percona/pmm-ui-tests
-          path: ./pmm-ui-tests
-
-      - name: 'Install  playwright'
-        working-directory: ./pmm-ui-tests/playwright-tests
-        run: |
-          npm install
-          npx playwright install
-
-      - name: 'Checkout pmm-qa: "${{ inputs.pmm_qa_branch }}"'
-        uses: actions/checkout@v3
-        with:
-          # token: ${{ secrets.ROBOT_TOKEN }}
-          repository: percona/pmm-qa
-          ref: ${{ inputs.pmm_qa_branch }}
-          path: ./pmm-qa
-
-      - name: 'debug repo'
-        working-directory: ./pmm-ui-tests/playwright-tests
-        run: |
-          echo ${{ inputs.repository }}
-
       - name: 'Convert choice into repo'
         uses: actions/github-script@v6
         id: target_repo
         with:
           script: |
-            console.log('${{ inputs.repository }}');
-            switch (context.payload.inputs.repository) {
+            switch (${{ inputs.repository }}) {
               case 'release':
                 return 'release';
               case 'release candidate':
@@ -203,6 +176,27 @@ jobs:
             console.log(JSON.stringify(context.payload));
             return `${repo}/pmm-server:${tag}`
           result-encoding: string
+
+      - name: 'Checkout UI tests: "${{ inputs.pmm_ui_tests_branch }}"'
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ inputs.pmm_ui_tests_branch }}
+          repository: percona/pmm-ui-tests
+          path: ./pmm-ui-tests
+
+      - name: 'Install  playwright'
+        working-directory: ./pmm-ui-tests/playwright-tests
+        run: |
+          npm install
+          npx playwright install
+
+      - name: 'Checkout pmm-qa: "${{ inputs.pmm_qa_branch }}"'
+        uses: actions/checkout@v3
+        with:
+          # token: ${{ secrets.ROBOT_TOKEN }}
+          repository: percona/pmm-qa
+          ref: ${{ inputs.pmm_qa_branch }}
+          path: ./pmm-qa
 
       - name: 'Setup <PMM Sever>: "${{ steps.pmm_server_image.outputs.result }}"'
         working-directory: pmm-qa/pmm-integration
