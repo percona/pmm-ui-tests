@@ -194,6 +194,7 @@ jobs:
             if (tag.includes('dev-') || tag.includes('-rc')) {
               repo = 'perconalab';
             }
+            console.log(JSON.stringify(context.payload));
             return `${repo}/pmm-server:${tag}`
           result-encoding: string
 
@@ -250,10 +251,11 @@ jobs:
 
       - name: 'Upgrade pmm-server: <Docker way>'
         if: ${{ inputs.upgrade_type == 'Docker way' }}
-        working-directory: pmm-qa/pmm-tests
+        working-directory: ./pmm-ui-tests
         run: |
-          sudo chmod 755 ./docker_way_upgrade.sh
-          bash -xe ./docker_way_upgrade.sh ${{ steps.pmm_server_image.outputs.result }}
+          # TODO: implement qa-integration docker upgrade
+          sudo chmod 755 ./pmm-qa/pmm-tests/docker_way_upgrade.sh
+          bash -xe ./pmm-qa/pmm-tests/docker_way_upgrade.sh ${{ steps.pmm_server_image.outputs.result }}
           sleep 30
 
       - name: 'Run tests before <PMM Client> upgrade'
