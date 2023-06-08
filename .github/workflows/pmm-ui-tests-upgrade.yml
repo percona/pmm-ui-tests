@@ -103,7 +103,7 @@ on:
 
 jobs:
   tests:
-    name: '${{ inputs.upgrade_type }}" upgrade "${{ inputs.version_string_from || inputs.pmm_server_start_version }}" -> "${{ inputs.version_string_to || inputs.repository }}"'
+    name: '${{ inputs.upgrade_type }} "${{ inputs.version_string_from || inputs.pmm_server_start_version }}" -> "${{ inputs.version_string_to || inputs.repository }}"'
     runs-on: ubuntu-latest
     timeout-minutes: 60
     env:
