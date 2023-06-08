@@ -168,7 +168,7 @@ jobs:
         id: pmm_server_image
         with:
           script: |
-            const tag = context.payload.inputs.pmm_server_start_version
+            const tag = '${{ inputs.pmm_server_start_version }}';
             let repo = 'percona';
             if (tag.includes('dev-') || tag.includes('-rc')) {
               repo = 'perconalab';
