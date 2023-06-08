@@ -285,7 +285,7 @@ jobs:
         with:
           script: |
             const tag = context.payload.inputs.pre_upgrade_tests
-#              .replace('@', '').replace('-pre-upgrade','')
+             // .replace('@', '').replace('-pre-upgrade','')
             console.log(context.payload.inputs);
             console.log(${{ inputs.pre_upgrade_tests }});
             console.log(inputs.pre_upgrade_tests);
