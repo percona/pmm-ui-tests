@@ -40,7 +40,7 @@ services:
       - pmm-network
 
   postgres:
-    image: ${POSTGRES_IMAGE:-perconalab/percona-distribution-postgresql:13.3}
+    image: ${POSTGRES_IMAGE:-perconalab/percona-distribution-postgresql:14.7}
     container_name: pmm-agent_postgres
     restart: always
     command: >
@@ -49,6 +49,7 @@ services:
       -c pg_stat_statements.max=10000
       -c pg_stat_monitor.pgsm_query_max_len=10000
       -c pg_stat_monitor.pgsm_normalized_query=0
+      -c pg_stat_monitor.pgsm_extract_comments=yes
       -c pg_stat_statements.track=all
       -c pg_stat_statements.save=off
       -c track_io_timing=on
