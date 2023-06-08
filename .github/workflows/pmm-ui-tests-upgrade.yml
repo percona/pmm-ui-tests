@@ -158,7 +158,7 @@ jobs:
       - name: 'Install  playwright'
         working-directory: ./pmm-ui-tests/playwright-tests
         run: |
-          npm installff
+          npm install
           npx playwright install
 
       - name: 'Checkout pmm-qa: "${{ inputs.pmm_qa_branch }}"'
@@ -285,14 +285,9 @@ jobs:
           report_name="$job_tag"-html-report
           echo "REPORT_NAME=$report_name" >> $GITHUB_ENV
 
-      - name: 'test report name'
-        if: failure()
-        run: |
-          echo ${{ env.REPORT_NAME }}
-
       - name: Generate and Attach the report
         if: failure()
         uses: actions/upload-artifact@v3
         with:
-          name: "${{ env.REPORT_NAME }}"
+          name: ${{ env.REPORT_NAME }}
           path: ./pmm-ui-tests/playwright-tests/playwright-report
