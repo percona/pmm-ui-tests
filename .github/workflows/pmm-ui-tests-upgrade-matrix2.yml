@@ -1,4 +1,4 @@
-name: PMM Upgrade UI Tests
+name: "PMM Upgrade Matrix 2 (e2e tests)"
 
 on:
   schedule:
