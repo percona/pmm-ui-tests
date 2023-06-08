@@ -285,6 +285,7 @@ jobs:
           echo $job_tag
           echo "$((job_tag))-html-report"
           echo "report_name=$((job_tag))-html-report" >> $GITHUB_ENV
+          echo "${{ env.report_name }}"
 
       - name: Generate and Attach the report
         if: failure()
