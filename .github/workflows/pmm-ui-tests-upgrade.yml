@@ -280,21 +280,15 @@ jobs:
 
       - name: 'Create report name'
         if: failure()
-        uses: actions/github-script@v6
-        id: report_name
-        with:
-          script: |
-            const tag = ''; //context.payload.inputs.pre_upgrade_tests
-            // .replace('@', '').replace('-pre-upgrade','')
-            console.log(context);
-            console.log(context.payload);
-            console.log(inputs.pre_upgrade_tests);
-            return `${tag}-html-report`
-          result-encoding: string
+        run: |
+          job_tag=$(echo "${{ inputs.pre_upgrade_tests }}" | sed "s/@//" | sed "s/'-pre-upgrade//")
+          echo $job_tag
+          echo "$((job_tag))-html-report"
+          echo "report_name=$((job_tag))-html-report" >> $GITHUB_ENV
 
       - name: Generate and Attach the report
         if: failure()
         uses: actions/upload-artifact@v3
         with:
-          name: "${{ steps.report_name.outputs.result }}"
+          name: "${{ env.report_name }}"
           path: ./pmm-ui-tests/playwright-tests/playwright-report
