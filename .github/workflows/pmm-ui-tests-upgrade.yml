@@ -279,8 +279,8 @@ jobs:
         working-directory: ./pmm-ui-tests
         run: |
           # TODO: implement qa-integration docker upgrade
-          sudo chmod 755 ./pmm-qa/pmm-tests/docker_way_upgrade.sh
-          bash -xe ./pmm-qa/pmm-tests/docker_way_upgrade.sh ${{ steps.pmm_server_image.outputs.result }}
+          sudo chmod 755 ../pmm-qa/pmm-tests/docker_way_upgrade.sh
+          bash -xe ../pmm-qa/pmm-tests/docker_way_upgrade.sh ${{ steps.pmm_server_image.outputs.result }}
           sleep 30
 
       - name: 'Run tests before <PMM Client> upgrade'
