@@ -288,7 +288,8 @@ test.describe('Spec file for PMM inventory tests.', async () => {
       const nodeId = await cli.pmmClientCommands.getNodeId();
       nodeDetails = await cli.pmmServerCommands.getNodeDetails(nodeId);
       nodeDetails.nodeId = nodeId;
-      await nodesPage.nodesTable.verifyNode(nodeDetails)
+      nodeDetails.services = ['3 services']
+      await nodesPage.nodesTable.verifyNode(nodeDetails, pmmVersion);
     });
 
     await test.step('3. Try to delete node.', async () => {
