@@ -88,6 +88,7 @@ jobs:
       fail-fast: false
       matrix:
         old_version: ${{ fromJSON(needs.push_versions.outputs.version_matrix) }}
+        upgrade_type: ["UI way", "Docker way"]
     with:
       pmm_ui_tests_branch: ${{ inputs.pmm_ui_tests_branch || 'PMM-7-fix-version-conditional' }}
       pre_upgrade_tests: '@config-pre-upgrade'
@@ -110,6 +111,7 @@ jobs:
       fail-fast: false
       matrix:
         old_version: ${{ fromJSON(needs.push_versions.outputs.version_matrix) }}
+        upgrade_type: ["UI way", "Docker way"]
     with:
       pmm_ui_tests_branch: ${{ inputs.pmm_ui_tests_branch || 'PMM-7-fix-version-conditional' }}
       pre_upgrade_tests: '@rbac-pre-upgrade'
