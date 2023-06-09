@@ -34,6 +34,7 @@ on:
   push:
     branches:
       - PMM-7-update-action-update
+      - PMM-7-fix-version-conditional
 
 jobs:
   push_versions:
