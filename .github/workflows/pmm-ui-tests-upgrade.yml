@@ -282,11 +282,9 @@ jobs:
         if: failure()
         run: |
           # TODO: add job id for matrix call
-          echo ${{ github.run_id }}
-          echo ${{ github.job }}
-          echo ${{ job.container.id }}
           job_tag=$(echo "${{ inputs.pre_upgrade_tests }}" | sed -e "s/-pre-upgrade//" -e "s/@//")
-          report_name="$job_tag"-report
+          report_name="$job_tag"-${{ inputs.version_string_from || inputs.pmm_server_start_version }}-report
+          echo $report_name
           echo "REPORT_NAME=$report_name" >> $GITHUB_ENV
 
       - name: Generate and Attach the report
