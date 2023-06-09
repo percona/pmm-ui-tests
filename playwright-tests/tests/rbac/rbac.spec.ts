@@ -15,11 +15,9 @@ import {api} from "@api/api";
 import { ListRoles } from '@tests/api/management';
 
 let pmmVersion: number;
-let roles: ListRoles | undefined;
 
 test.beforeAll(async () => {
   pmmVersion = (await api.pmm.serverV1.getPmmVersion()).minor;
-  roles = await api.pmm.managementV1.listRoles();
   // beforeAll() does not work without any sync statement, given comment fixes it just fine
 });
 
@@ -30,6 +28,12 @@ test.describe('Spec file for Access Control (RBAC)', async () => {
   const roleDescription = `Role Description Only MySql Access`;
   const roleNameCreate = `Role Name ${new Date().getTime()}`;
   const roleDescriptionCreate = `Role Description ${new Date().getTime()}`;
+  let roles: ListRoles | undefined;
+
+  test.beforeAll(async () => {
+    roles = await api.pmm.managementV1.listRoles();
+    // beforeAll() does not work without any sync statement, given comment fixes it just fine
+  });
 
   test.beforeEach(async ({ page }) => {
     await apiHelper.confirmTour(page);
