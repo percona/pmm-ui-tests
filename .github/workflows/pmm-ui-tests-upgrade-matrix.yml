@@ -1,4 +1,4 @@
-name: "PMM Upgrade Matrix 2 (e2e tests)"
+name: "PMM Upgrade Matrix (e2e tests)"
 
 on:
   schedule:
@@ -45,18 +45,6 @@ jobs:
       finish_version: ${{ steps.get-finish.outputs.result }}
       version_matrix: ${{ steps.get-matrix.outputs.result }}
     steps:
-      - name: Prevent upgrade to the same version
-        shell: bash
-        run: |
-          if [[ "${{ inputs.pmm_server_start_version }}" = "latest" && "${{ inputs.repository }}" = "release" ]]; then
-            echo "Upgrade to the same version is forbidden!"
-            exit 1
-          fi
-          if [[ "${{ inputs.pmm_server_start_version }}" = "dev-latest" && "${{ inputs.repository }}" = "dev-latest" ]]; then
-            echo "Upgrade to the same version is forbidden!"
-            exit 1
-          fi
-
       - name: Discover latest versions
         shell: bash
         run: |
@@ -68,17 +56,6 @@ jobs:
           echo "release_latest=$r_latest" >> $GITHUB_ENV
           echo "rc_latest=$rc_latest" >> $GITHUB_ENV
           echo "dev_latest=$d_latest" >> $GITHUB_ENV
-
-      - name: Get start version string
-        id: get-start
-        shell: bash
-        run: |
-          if [[ "${{ inputs.pmm_server_start_version }}" = "latest" ]]; then
-            echo "result=$release_latest" >> "$GITHUB_OUTPUT"
-          fi
-          if [[ "${{ inputs.pmm_server_start_version }}" = "dev-latest" ]]; then
-            echo "result=$dev_latest" >> "$GITHUB_OUTPUT"
-          fi
 
       - name: Get finish version string
         id: get-finish
@@ -93,6 +70,8 @@ jobs:
           if [[ "${{ inputs.repository }}" = "release" ]]; then
             echo "result=$release_latest" >> "$GITHUB_OUTPUT"
           fi
+          ### Debug only! remove with push!
+          echo "result=$release_latest" >> "$GITHUB_OUTPUT"
 
       - name: Get versions matrix
         id: get-matrix
