@@ -103,7 +103,7 @@ jobs:
       version_string_to: ${{needs.push_versions.outputs.finish_version}}
 
   rbac:
-    name: RBAC
+    name: "RBAC / User Roles"
     uses: ./.github/workflows/pmm-ui-tests-upgrade.yml
     secrets: inherit
     needs: push_versions
