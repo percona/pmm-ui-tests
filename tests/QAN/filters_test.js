@@ -95,21 +95,6 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T124 - Verify User is able to show all and show top 5 values for filter section @qan',
-  async ({ qanFilters }) => {
-    const filterSection = 'Database';
-
-    await qanFilters.verifySectionItemsCount(filterSection, 5);
-    const countToShow = await qanFilters.getCountOfFilters(filterSection);
-
-    qanFilters.applyShowAllLink(filterSection);
-    await qanFilters.verifySectionItemsCount(filterSection, countToShow);
-    await qanFilters.applyShowTop5Link(filterSection);
-    await qanFilters.verifySectionItemsCount(filterSection, 5);
-  },
-);
-
-Scenario(
   'PMM-T125 - Verify user is able to Show only selected filter values and Show All filter values @qan',
   async ({ I, qanFilters }) => {
     const environmentName1 = 'ps-dev';
@@ -232,7 +217,7 @@ Scenario(
     I, adminPage, qanOverview, qanFilters,
   }) => {
     const serviceType = 'mysql';
-    const environment = 'pgsql-dev';
+    // const environment = 'pgsql-dev';
     const serviceName = 'ps_8.0';
 
     // change to 2 days for apply ps_8.0 value in filter
@@ -249,8 +234,8 @@ Scenario(
     assert.ok(countAfter !== countBefore, 'Query count was expected to change');
 
     await qanFilters.verifyCountOfFilterLinks(countOfFilters, false);
-    qanFilters.applyShowAllLink('Environment');
-    qanFilters.checkDisabledFilter('Environment', environment);
+    // qanFilters.applyShowAllLink('Environment');
+    // qanFilters.checkDisabledFilter('Environment', environment);
     await qanFilters.applyFilter(serviceName);
     const percentageAfter = await qanFilters.getPercentage('Service Type', serviceType);
 

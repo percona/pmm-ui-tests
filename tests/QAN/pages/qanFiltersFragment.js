@@ -186,13 +186,6 @@ module.exports = {
     }
   },
 
-  async applyShowTop5Link(groupName) {
-    const showTop5Link = `//span[contains(text(), '${groupName}')]/following-sibling::span[contains(text(), 'Show top 5')]`;
-
-    I.waitForVisible(showTop5Link, 30);
-    I.click(showTop5Link);
-  },
-
   checkDisabledFilter(groupName, filter) {
     const filterLocator = `//span[contains(text(), '${groupName}')]/parent::p/following-sibling::div[@data-testid='filter-checkbox-${filter}']//input[contains(@name, '${filter}') and @disabled]`;
 
