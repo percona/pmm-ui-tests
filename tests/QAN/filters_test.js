@@ -276,7 +276,7 @@ Data(shortCutTests).Scenario(
 
 Scenario('PMM-T437 - Verify short-cut navigation for n/a items @qan', async ({ I, qanFilters }) => {
   qanFilters.waitForFiltersToLoad();
-  qanFilters.checkLink('Cluster', 'ps-dev-cluster', true);
+  qanFilters.checkLink('Cluster', 'dev-cluster', true);
   I.fillField(qanFilters.fields.filterBy, 'n/a');
   qanFilters.checkLink('Cluster', 'undefined', false);
   qanFilters.checkLink('Replication Set', 'undefined', false);
