@@ -54,7 +54,7 @@ module.exports = {
   },
 
   checkLink(section, filter, visibility) {
-    const dashboardLink = locate(`$filter-checkbox-${filter === 'n/a' ? '' : filter}`).find('a');
+    const dashboardLink = locate(`$filter-checkbox-${filter}`).find('a');
     const locator = locate(dashboardLink).inside(this.getFilterSectionLocator(section));
 
     if (visibility) {
