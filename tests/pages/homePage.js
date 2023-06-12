@@ -77,7 +77,7 @@ module.exports = {
   upgradeMilestones: [
     'TASK [Gathering Facts]',
     'TASK [dashboards_upgrade : Copy file with image version]',
-    'TASK [Delete content & directory]',
+    'TASK [Cleanup yum cache]',
     'failed=0',
   ],
   failedChecksSinglestatsInfoMessage: 'Display the number of Advisors checks identified as failed during its most recent run.',
