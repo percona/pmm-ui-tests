@@ -217,7 +217,6 @@ Scenario(
     I, adminPage, qanOverview, qanFilters,
   }) => {
     const serviceType = 'mysql';
-    // const environment = 'pgsql-dev';
     const serviceName = 'ps_8.0';
 
     // change to 2 days for apply ps_8.0 value in filter
@@ -234,8 +233,6 @@ Scenario(
     assert.ok(countAfter !== countBefore, 'Query count was expected to change');
 
     await qanFilters.verifyCountOfFilterLinks(countOfFilters, false);
-    // qanFilters.applyShowAllLink('Environment');
-    // qanFilters.checkDisabledFilter('Environment', environment);
     await qanFilters.applyFilter(serviceName);
     const percentageAfter = await qanFilters.getPercentage('Service Type', serviceType);
 
