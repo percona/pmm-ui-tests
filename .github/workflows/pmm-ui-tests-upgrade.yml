@@ -82,7 +82,6 @@ on:
         options:
           - 'UI way'
           - 'Docker way'
-          - 'Side container'
       pmm_qa_branch:
         description: 'pmm-qa repository branch(for setup)'
         default: 'main'
@@ -125,7 +124,7 @@ jobs:
       OAUTH_SCOPES: percona
 
       ### inject "upgrade from" version for test conditional
-      PMM_SERVER_START_VERSION: ${{ inputs.pmm_server_version }}
+      PMM_SERVER_START_VERSION: ${{ inputs.pmm_server_start_version }}
 
       # Variables for E2E tests
       MAILOSAUR_API_KEY: ${{ secrets.MAILOSAUR_API_KEY }}
@@ -163,9 +162,9 @@ jobs:
             }
           result-encoding: string
 
-      - name: 'Select <PMM Server> image'
+      - name: 'Select <PMM Server> from image'
         uses: actions/github-script@v6
-        id: pmm_server_image
+        id: pmm_server_start_image
         with:
           script: |
             const tag = '${{ inputs.pmm_server_start_version }}';
@@ -177,6 +176,30 @@ jobs:
             return `${repo}/pmm-server:${tag}`
           result-encoding: string
 
+      - name: 'Select <PMM Server> to image'
+        id: pmm_server_to_image
+        shell: bash
+        run: |
+          if [[ "${{ inputs.repository }}" = "dev-latest" ]]; then
+            echo "IMAGE=perconalab/pmm-server:dev-latest" >> "$GITHUB_OUTPUT"
+          fi
+          if [[ "${{ inputs.repository }}" = "release candidate" ]]; then
+            if [[ z "${{ inputs.version_string_to }}" ]]; then
+              rc_latest=$(wget -q "https://registry.hub.docker.com/v2/repositories/perconalab/pmm-client/tags?page_size=25&name=rc" -O - | jq -r .results[].name  | grep 2.*.*-rc$ | sort -V | tail -n1)
+              echo "IMAGE=perconalab/pmm-server:$rc_latest" >> "$GITHUB_OUTPUT"
+            else
+              echo "IMAGE=perconalab/pmm-server:${{ inputs.version_string_to }}" >> "$GITHUB_OUTPUT"
+            fi
+          fi
+          if [[ "${{ inputs.repository }}" = "release" ]]; then
+            if [[ z "${{ inputs.version_string_to }}" ]]; then
+              r_latest=$(wget -q https://registry.hub.docker.com/v2/repositories/percona/pmm-client/tags -O - | jq -r .results[].name  | grep -v latest | sort -V | tail -n1)
+              echo "IMAGE=percona/pmm-server:$r_latest" >> "$GITHUB_OUTPUT"
+            else
+              echo "IMAGE=percona/pmm-server:${{ inputs.version_string_to }}" >> "$GITHUB_OUTPUT"
+            fi
+          fi
+
       - name: 'Checkout UI tests: "${{ inputs.pmm_ui_tests_branch }}"'
         uses: actions/checkout@v3
         with:
@@ -184,7 +207,7 @@ jobs:
           repository: percona/pmm-ui-tests
           path: ./pmm-ui-tests
 
-      - name: 'Install  playwright'
+      - name: 'Install playwright'
         working-directory: ./pmm-ui-tests/playwright-tests
         run: |
           npm install
@@ -198,11 +221,11 @@ jobs:
           ref: ${{ inputs.pmm_qa_branch }}
           path: ./pmm-qa
 
-      - name: 'Setup <PMM Sever>: "${{ steps.pmm_server_image.outputs.result }}"'
+      - name: 'Setup <PMM Sever>: "${{ steps.pmm_server_start_image.outputs.result }}"'
         working-directory: pmm-qa/pmm-integration
         run: |
           npm install
-          sudo npx ts-node ./integration-setup.ts --ci --setup-docker-pmm-server --rbac --pmm-server-docker-tag=${{ steps.pmm_server_image.outputs.result }} --pmm-client-version=${{ inputs.pmm_client_start_version }}          
+          sudo npx ts-node ./integration-setup.ts --ci --setup-docker-pmm-server --rbac --pmm-server-docker-tag=${{ steps.pmm_server_start_image.outputs.result }} --pmm-client-version=${{ inputs.pmm_client_start_version }}          
           timeout 100 bash -c 'while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' localhost/ping)" != "200" ]]; do sleep 5; done' || false
 
       - name: 'Setup <PMM Client: ${{ inputs.pmm_client_start_version }}> and Services'
@@ -255,7 +278,8 @@ jobs:
         run: |
           # TODO: implement qa-integration docker upgrade
           sudo chmod 755 ../pmm-qa/pmm-tests/docker_way_upgrade.sh
-          bash -xe ../pmm-qa/pmm-tests/docker_way_upgrade.sh ${{ steps.pmm_server_image.outputs.result }}
+          echo "Upgrading to ${{ steps.pmm_server_to_image.outputs.IMAGE }}"
+          bash -xe ../pmm-qa/pmm-tests/docker_way_upgrade.sh ${{ steps.pmm_server_to_image.outputs.IMAGE }}
           sleep 30
 
       - name: 'Run tests before <PMM Client> upgrade'
