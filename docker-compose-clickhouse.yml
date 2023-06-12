@@ -52,7 +52,7 @@ services:
       MYSQL_ROOT_PASSWORD: 7B*53@lCdflR
 
   external-clickhouse:
-    image: clickhouse/clickhouse-server:latest
+    image: clickhouse/clickhouse-server:22.5.2
     container_name: external-clickhouse
     healthcheck:
       test: ['CMD', 'wget', '--spider', '-q', 'localhost:8123/ping']
