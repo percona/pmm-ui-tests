@@ -184,7 +184,7 @@ jobs:
             echo "IMAGE=perconalab/pmm-server:dev-latest" >> "$GITHUB_OUTPUT"
           fi
           if [[ "${{ inputs.repository }}" = "release candidate" ]]; then
-            if [[ z "${{ inputs.version_string_to }}" ]]; then
+            if [[ -z "${{ inputs.version_string_to }}" ]]; then
               rc_latest=$(wget -q "https://registry.hub.docker.com/v2/repositories/perconalab/pmm-client/tags?page_size=25&name=rc" -O - | jq -r .results[].name  | grep 2.*.*-rc$ | sort -V | tail -n1)
               echo "IMAGE=perconalab/pmm-server:$rc_latest" >> "$GITHUB_OUTPUT"
             else
@@ -192,7 +192,7 @@ jobs:
             fi
           fi
           if [[ "${{ inputs.repository }}" = "release" ]]; then
-            if [[ z "${{ inputs.version_string_to }}" ]]; then
+            if [[ -z "${{ inputs.version_string_to }}" ]]; then
               r_latest=$(wget -q https://registry.hub.docker.com/v2/repositories/percona/pmm-client/tags -O - | jq -r .results[].name  | grep -v latest | sort -V | tail -n1)
               echo "IMAGE=percona/pmm-server:$r_latest" >> "$GITHUB_OUTPUT"
             else
