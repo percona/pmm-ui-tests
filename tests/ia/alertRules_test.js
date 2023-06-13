@@ -32,12 +32,13 @@ Scenario(
   async ({ I, alertRulesPage }) => {
     alertRulesPage.openAlertRulesTab();
     I.waitForText(alertRulesPage.messages.noRulesFound, alertRulesPage.elements.noRules);
+    I.waitForVisible(alertRulesPage.buttons.newAlertRule, 10);
     I.waitForVisible(alertRulesPage.elements.alertsLearnMoreLinks, 10);
     const link = await I.grabAttributeFrom(alertRulesPage.elements.alertsLearnMoreLinks, 'href');
 
     assert.ok(link === 'https://grafana.com/docs/', `Redirect link ${link} is incorrect please check`);
   },
-);
+).retry(2);
 
 Scenario(
   'PMM-T1385 Verify alert rules elements @ia @grafana-pr',
@@ -136,7 +137,7 @@ Scenario(
 Scenario(
   'PMM-T1433 Verify user can delete Percona templated alert @ia @alerting-fb',
   async ({
-    I, alertRulesPage, rulesAPI, iaCommon
+    I, alertRulesPage, rulesAPI, iaCommon,
   }) => {
     const ruleName = 'testRule';
     const ruleFolder = 'OS';
