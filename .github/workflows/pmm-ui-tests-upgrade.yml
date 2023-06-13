@@ -138,7 +138,7 @@ jobs:
     steps:
       - name: 'PMM Server(${{ inputs.pmm_server_start_version }}) and UI tests with tags "${{ inputs.pre_upgrade_tests }}, ${{ inputs.post_upgrade_tests }}" from pmm-ui-tests branch: ${{ inputs.pmm_ui_tests_branch }}'
         if: ${{ github.event_name == 'workflow_dispatch' && env.SHA != 'null' }}
-        uses: actions/github-status-action@v1
+        uses: percona/gh-action-Sibz-github-status-action@v1
         with:
           context: 'pmm2-ui-tests'
           description: 'Tests execution has been started'
