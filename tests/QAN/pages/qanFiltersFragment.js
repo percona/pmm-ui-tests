@@ -54,7 +54,7 @@ module.exports = {
   },
 
   checkLink(section, filter, visibility) {
-    const dashboardLink = locate(`$filter-checkbox-${filter === 'n/a' ? '' : filter}`).find('a');
+    const dashboardLink = locate(`$filter-checkbox-${filter}`).find('a');
     const locator = locate(dashboardLink).inside(this.getFilterSectionLocator(section));
 
     if (visibility) {
@@ -184,13 +184,6 @@ module.exports = {
     if (numOfShowAllLinkSectionCount) {
       this.applyShowAllLink(groupName);
     }
-  },
-
-  async applyShowTop5Link(groupName) {
-    const showTop5Link = `//span[contains(text(), '${groupName}')]/following-sibling::span[contains(text(), 'Show top 5')]`;
-
-    I.waitForVisible(showTop5Link, 30);
-    I.click(showTop5Link);
   },
 
   checkDisabledFilter(groupName, filter) {
