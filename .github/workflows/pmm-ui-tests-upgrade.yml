@@ -67,7 +67,7 @@ on:
         description: 'Tag(s) to run tests after upgrade'
         required: true
       pmm_server_start_version:
-        description: 'PMM Server version to upgrade (latest|dev-latest|x.xx.x|x.xx.x-rc)'
+        description: 'PMM Server version to upgrade from (latest|dev-latest|x.xx.x|x.xx.x-rc)'
         default: 'latest'
         required: true
       pmm_client_start_version:
@@ -111,9 +111,6 @@ jobs:
       PMM_BASE_URL: https://127.0.0.1
       ADMIN_PASSWORD: admin
 
-      PMM_SERVER_VERSION: ${{ inputs.pmm_server_start_version }}
-      PMM_CLIENT_VERSION: ${{ inputs.pmm_client_start_version }}
-
       OKTA_TOKEN: ${{ secrets.OKTA_TOKEN }}
       OAUTH_ISSUER_URL: 'https://id-dev.percona.com/oauth2/aus15pi5rjdtfrcH51d7'
       OAUTH_CLIENT_ID: ${{ secrets.OKTA_OAUTH_CLIENT_ID }}
@@ -124,7 +121,7 @@ jobs:
       OAUTH_SCOPES: percona
 
       ### inject "upgrade from" version for test conditional
-      PMM_SERVER_START_VERSION: ${{ inputs.pmm_server_start_version }}
+      PMM_SERVER_START_VERSION: ${{ inputs.version_string_from || inputs.pmm_server_start_version }}
 
       # Variables for E2E tests
       MAILOSAUR_API_KEY: ${{ secrets.MAILOSAUR_API_KEY }}
@@ -242,7 +239,7 @@ jobs:
           sudo pmm-admin list
         shell: bash
 
-      - name: 'Tests BEFORE upgrade'
+      - name: 'Tests <BEFORE> upgrade'
         id: ui-tests-flagged
         working-directory: ./pmm-ui-tests/playwright-tests
         run: npx playwright test --grep="${{ inputs.pre_upgrade_tests }}" --pass-with-no-tests
@@ -290,7 +287,7 @@ jobs:
             ${{ steps.pmm_server_to_image.outputs.IMAGE }}
           sleep 30
 
-      - name: 'Tests before <PMM Client> upgrade'
+      - name: 'Tests <before PMM Client> upgrade'
         working-directory: ./pmm-ui-tests/playwright-tests
         run: |
           echo "Hook to inject tests: test are coming soon..."
@@ -304,7 +301,7 @@ jobs:
           
           # TODO: add client check after update here
 
-      - name: 'Tests AFTER upgrading Client and Server'
+      - name: 'Tests <AFTER> upgrading Client and Server'
         working-directory: ./pmm-ui-tests/playwright-tests
         run: npx playwright test --grep="${{ inputs.post_upgrade_tests }}" --pass-with-no-tests
         env:
