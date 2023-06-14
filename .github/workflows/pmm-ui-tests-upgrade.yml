@@ -242,7 +242,7 @@ jobs:
           sudo pmm-admin list
         shell: bash
 
-      - name: 'Tests before upgrade'
+      - name: 'Tests BEFORE upgrade'
         id: ui-tests-flagged
         working-directory: ./pmm-ui-tests/playwright-tests
         run: npx playwright test --grep="${{ inputs.pre_upgrade_tests }}" --pass-with-no-tests
@@ -284,14 +284,13 @@ jobs:
           docker run --detach --restart always \
             --network="pmm-integration-network" \
             -e PMM_DEBUG=1 \
-            --publish 80:80 \
-            --publish 443:443 \
+            --publish 80:80 --publish 443:443 \
             --volumes-from pmm-integration-server-data \
             --name pmm-integration-server \
             ${{ steps.pmm_server_to_image.outputs.IMAGE }}
           sleep 30
 
-      - name: 'Run tests before <PMM Client> upgrade'
+      - name: 'Tests before <PMM Client> upgrade'
         working-directory: ./pmm-ui-tests/playwright-tests
         run: |
           echo "Hook to inject tests: test are coming soon..."
@@ -305,7 +304,7 @@ jobs:
           
           # TODO: add client check after update here
 
-      - name: 'Run tests after upgrading Client and Server'
+      - name: 'Tests AFTER upgrading Client and Server'
         working-directory: ./pmm-ui-tests/playwright-tests
         run: npx playwright test --grep="${{ inputs.post_upgrade_tests }}" --pass-with-no-tests
         env:
