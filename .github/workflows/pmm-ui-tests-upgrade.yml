@@ -282,15 +282,15 @@ jobs:
           docker pull ${{ steps.pmm_server_to_image.outputs.IMAGE }}
           docker rename pmm-integration-server pmm-integration-server-old
           docker run \
-          --detach \
-          --restart always \
-          --network="pmm-integration-network" \
-          -e PMM_DEBUG=1 \
-          --publish 80:80 \
-          --publish 443:443 \
-          --volumes-from pmm-integration-server-data
-          --name pmm-integration-server \
-          ${{ steps.pmm_server_to_image.outputs.IMAGE }}
+            --detach \
+            --restart always \
+            --network="pmm-integration-network" \
+            -e PMM_DEBUG=1 \
+            --publish 80:80 \
+            --publish 443:443 \
+            --volumes-from pmm-integration-server-data
+            --name pmm-integration-server \
+            ${{ steps.pmm_server_to_image.outputs.IMAGE }}
           sleep 30
 
       - name: 'Run tests before <PMM Client> upgrade'
