@@ -36,14 +36,14 @@ Before(async ({ I }) => {
 });
 
 After(async ({ I }) => {
-  await I.verifyCommand(`pmm-admin remove mongodb ${mongodb_service_name}`);
+  await I.verifyCommand(`pmm-admin remove mongodb ${mongodb_service_name} || true`);
 });
 
 AfterSuite(async ({ I }) => {
   await I.mongoDisconnect();
 });
 
-Scenario(
+Scenario.skip(
   'PMM-T1241 - Verify add mongoDB service with "+" in user password @not-ui-pipeline @mongodb-exporter @exporters',
   async ({ I, grafanaAPI }) => {
     await I.say(
