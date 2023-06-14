@@ -88,7 +88,7 @@ jobs:
       pmm_server_start_version: ${{ matrix.old_version }}
       pmm_client_start_version: ${{ matrix.old_version }}
       upgrade_type: ${{ matrix.upgrade_type }}
-      pmm_qa_branch: ${{ inputs.pmm_qa_branch || 'main' }}
+      pmm_qa_branch: ${{ inputs.pmm_qa_branch || 'PMM-7-fix-pmm-server-volume' }}
       services_list: ''
       repository: ${{ inputs.repository || 'release' }}
       version_string_from: ${{needs.push_versions.outputs.start_version}}
@@ -111,7 +111,7 @@ jobs:
       pmm_server_start_version: ${{ matrix.old_version }}
       pmm_client_start_version: ${{ matrix.old_version }}
       upgrade_type: ${{ matrix.upgrade_type }}
-      pmm_qa_branch: ${{ inputs.pmm_qa_branch || 'main' }}
+      pmm_qa_branch: ${{ inputs.pmm_qa_branch || 'PMM-7-fix-pmm-server-volume' }}
       services_list: '--addclient=ps,1 --addclient=pdpgsql,1'
       repository: ${{ inputs.repository || 'release' }}
       version_string_from: ${{needs.push_versions.outputs.start_version}}
