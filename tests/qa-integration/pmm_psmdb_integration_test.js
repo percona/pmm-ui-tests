@@ -162,7 +162,7 @@ Scenario(
     I, remoteInstancesPage, pmmInventoryPage, inventoryAPI, grafanaAPI,
   }) => {
     await I.verifyCommand('docker-compose -f docker-compose-psmdb-ldap.yml up -d');
-    console.log(await I.verifyCommand('docker ps -a'));
+    await I.verifyCommand('docker ps -a');
     const psmdbServerIp = await I.verifyCommand('docker inspect -f \'{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}\' psmdbserver');
 
     await I.verifyCommand(`pmm-admin add mongodb psmdbserver --username="CN=pmm-test" --password=password1 --host=${psmdbServerIp} --port 27017 --authentication-mechanism=PLAIN --authentication-database='$external'`);
