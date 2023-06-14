@@ -281,9 +281,7 @@ jobs:
           docker stop pmm-integration-server
           docker pull ${{ steps.pmm_server_to_image.outputs.IMAGE }}
           docker rename pmm-integration-server pmm-integration-server-old
-          docker run \
-            --detach \
-            --restart always \
+          docker run  --detach --restart always \
             --network="pmm-integration-network" \
             -e PMM_DEBUG=1 \
             --publish 80:80 \
