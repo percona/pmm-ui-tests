@@ -1,7 +1,7 @@
 const { locationsPage, psMySql } = inject();
 const connection = psMySql.defaultConnection;
 const location = {
-  name: 'mysql backups',
+  name: 'mysql_backups',
   description: 'MySQL backup location',
 };
 
@@ -63,7 +63,7 @@ AfterSuite(async ({ psMySql }) => {
 Scenario(
   '@PMM-T769, @PMM-T920 - Verify user is able to perform MySQL backup @bm-mysql @not-ui-pipeline',
   async ({ I, backupInventoryPage }) => {
-    const backupName = 'mysql backup test';
+    const backupName = 'mysql_backup_test';
 
     I.click(backupInventoryPage.buttons.openAddBackupModal);
 
@@ -84,7 +84,7 @@ Scenario(
   async ({
     I, backupInventoryPage, backupAPI, restorePage, psMySql,
   }) => {
-    const backupName = 'mysql restore test';
+    const backupName = 'mysql_restore_test';
     const tableName = 'test';
 
     await psMySql.deleteTable(tableName);
@@ -111,7 +111,7 @@ Scenario(
   async ({
     I, backupInventoryPage, backupAPI, inventoryAPI,
   }) => {
-    const backupName = 'mysql artifact delete test';
+    const backupName = 'mysql_artifact_delete_test';
     const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName('MYSQL_SERVICE', mysqlServiceName);
     const artifactId = await backupAPI.startBackup(backupName, service_id, locationId, false, false);
 
@@ -145,7 +145,7 @@ Scenario(
       service_id: serviceId,
       location_id: locationId,
       cron_expression: '*/2 * * * *',
-      name: 'for restore mysql test',
+      name: 'for_restore_mysql_test',
       mode: scheduledAPI.backupModes.snapshot,
       description: '',
       isLogical: false,
@@ -205,7 +205,7 @@ Scenario(
   async ({
     I, backupInventoryPage, addInstanceAPI, links,
   }) => {
-    const backupName = 'test pre checks';
+    const backupName = 'test_pre_checks';
 
     await addInstanceAPI.addMysql(mysqlServiceNameForPreCheckTest);
 

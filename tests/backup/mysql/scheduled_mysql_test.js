@@ -3,7 +3,7 @@ const moment = require('moment');
 const { psMySql } = inject();
 const connection = psMySql.defaultConnection;
 const location = {
-  name: 'mysql scheduled backup location',
+  name: 'mysql_scheduled_backup_location',
   description: 'MySQL location for scheduling',
 };
 const mysqlServiceName = 'mysql-with-backup';
@@ -59,7 +59,7 @@ Scenario(
     I, backupInventoryPage, scheduledAPI, backupAPI, scheduledPage,
   }) => {
     const schedule = {
-      name: 'schedule for backup',
+      name: 'schedule_for_backup',
       retention: 1,
     };
 
