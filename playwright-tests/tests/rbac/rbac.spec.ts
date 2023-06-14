@@ -13,9 +13,9 @@ import PostgresqlInstancesOverviewDashboard from '@tests/pages/dashboards/postgr
 import AdvancedSettings from '@tests/pages/pmmSettings/AdvancedSettings.page';
 import {api} from "@api/api";
 import { ListRoles } from '@tests/api/management';
+import {PmmVersion} from "@helpers/PmmVersion";
 
-// TODO: add env.var initialization for github actions
-let pmmVersion: number;
+let pmmVersion: number = new PmmVersion(process.env.PMM_SERVER_START_VERSION! as string).minor;
 let roles: ListRoles | undefined;
 
 const getRolesObj = async (): Promise<ListRoles | undefined> => {
