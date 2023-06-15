@@ -1,6 +1,5 @@
 import { APIRequestContext, Page, expect, request } from '@playwright/test';
 import config from '@tests/playwright.config';
-import Duration from '@helpers/Duration';
 import grafanaHelper from '@helpers/GrafanaHelper';
 import { APIResponse } from "playwright-core";
 import { ReadStream } from 'fs';
@@ -30,32 +29,6 @@ const apiHelper = {
         }),
       }),
     );
-  },
-
-  splitPmmVersion: (pmmVersion: string) => {
-    const [versionMajor, versionMinor, versionPatch] = pmmVersion.split('.');
-    return { major: parseInt(versionMajor), minor: parseInt(versionMinor), patch: parseInt(versionPatch) };
-  },
-
-  /**
-   * @deprecated use {@link api.pmm.serverV1.getPmmVersion()}
-   */
-  getPmmVersion: async () => {
-    const restConfig = await getConfiguredRestApi();
-
-    const response = await restConfig.get('/v1/version', { timeout: Duration.ThreeMinutes });
-    const [versionMajor, versionMinor, versionPatch] = (await response.json()).version.split('.');
-    return { versionMajor, versionMinor, versionPatch };
-  },
-
-  /**
-   * @deprecated use {@link api.pmm.serverV1.changeSettings()}
-   */
-  changeSettings: async (settingsData: Settings) => {
-    const restConfig = await getConfiguredRestApi();
-
-    const response = await restConfig.post('/v1/Settings/Change', { data: settingsData });
-    return await response.json();
   },
 
   //TODO: move it from the helper to proper file API. Suggestion: grafanaApi
@@ -101,8 +74,9 @@ const apiHelper = {
       timeout?: number | undefined;
     } | undefined
   ): Promise<APIResponse> => {
+    console.log(`GET: ${path}${options ? ` with ${JSON.stringify(options)}` : ''}`);
     const response = await (await getConfiguredRestApi()).get(path, options);
-    expect(response.status(), `Request was not successful. Response status: ${response.status()}. Response Message: ${response.statusText()}`).toEqual(200);
+    expect(response.status(), `Status: ${response.status()} ${response.statusText()}`).toEqual(200);
     return response;
   },
 
@@ -114,8 +88,9 @@ const apiHelper = {
    * @return            Promise<APIResponse> instance
    */
   post: async (path: string, payload: Object): Promise<APIResponse> => {
+    console.log(`POST: ${path}\nPayload: ${JSON.stringify(payload)}`);
     const response = await (await getConfiguredRestApi()).post(path, payload);
-    expect(response.status(), `Request was not successful. Response status: ${response.status()}. Response Message: ${response.statusText()}`).toEqual(200);
+    expect(response.status(), `Status: ${response.status()} ${response.statusText()}`).toEqual(200);
     return response;
   },
 };

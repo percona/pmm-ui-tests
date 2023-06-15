@@ -124,6 +124,7 @@ jobs:
       PMM_SERVER_START_VERSION: ${{ inputs.version_string_from || inputs.pmm_server_start_version }}
 
       # Variables for E2E tests
+      PMM_SERVER_START_VERSION: ${{ inputs.pmm_server_version }}
       MAILOSAUR_API_KEY: ${{ secrets.MAILOSAUR_API_KEY }}
       MAILOSAUR_UI_TESTS_SERVER_ID: ${{ secrets.MAILOSAUR_UI_TESTS_SERVER_ID }}
       MAILOSAUR_API_TESTS_SERVER_ID: ${{ secrets.MAILOSAUR_API_TESTS_SERVER_ID }}
