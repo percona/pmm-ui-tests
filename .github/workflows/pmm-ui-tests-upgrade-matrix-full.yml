@@ -113,6 +113,7 @@ jobs:
       version_string_from: ${{needs.push_versions.outputs.start_version}}
       version_string_to: ${{needs.push_versions.outputs.finish_version}}
 
+# TODO: add / in the job names for good sub-jobs grouping
 #  portal:
 #    name: Portal
 #    uses: ./.github/workflows/pmm-ui-tests-upgrade.yml
