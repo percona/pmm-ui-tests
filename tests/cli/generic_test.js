@@ -7,6 +7,7 @@ BeforeSuite(async ({ I }) => {
 AfterSuite(async ({ I }) => {
   await I.verifyCommand('docker rm -f pmm-server-default-scrape');
   await I.verifyCommand('docker rm -f pmm-server-custom-scrape');
+  await I.verifyCommand('docker-compose -f docker-compose-ubuntu.yml down -v');
 });
 
 After(async ({ I }) => {

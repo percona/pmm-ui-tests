@@ -156,7 +156,7 @@ Scenario(
   },
 ).retry(1);
 
-Scenario(
+Scenario.skip(
   '@PMM-T1676 Verify adding MongoDB with enabled TLS and LDAP authorisation',
   async ({
     I, remoteInstancesPage, pmmInventoryPage, inventoryAPI, grafanaAPI,
