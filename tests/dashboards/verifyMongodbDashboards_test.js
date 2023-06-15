@@ -31,7 +31,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T1698 Verify that "Disk I/O and Swap Activity" and "Network Traffic" panels have graphs if Node name contains dot symbol @nightly @dashboards',
+  'PMM-T1698 Verify that Disk I/O and Swap Activity and Network Traffic panels have graphs if Node name contains dot symbol @nightly @dashboards',
   async ({ I, dashboardPage }) => {
     I.amOnPage(dashboardPage.mongodbReplicaSetSummaryDashboard.url);
     dashboardPage.waitForDashboardOpened();
