@@ -155,24 +155,3 @@ Scenario(
     }
   },
 ).retry(1);
-
-Scenario.skip(
-  '@PMM-T1676 Verify adding MongoDB with enabled TLS and LDAP authorisation',
-  async ({
-    I, remoteInstancesPage, pmmInventoryPage, inventoryAPI, grafanaAPI,
-  }) => {
-    await I.verifyCommand('docker-compose -f docker-compose-psmdb-ldap.yml up -d');
-    await I.verifyCommand('docker ps -a');
-    const psmdbServerIp = await I.verifyCommand('docker inspect -f \'{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}\' psmdbserver');
-
-    await I.verifyCommand(`pmm-admin add mongodb psmdbserver --username="CN=pmm-test" --password=password1 --host=${psmdbServerIp} --port 27017 --authentication-mechanism=PLAIN --authentication-database='$external'`);
-
-    await inventoryAPI.verifyServiceExistsAndHasRunningStatus(
-      {
-        serviceType: 'MONGODB_SERVICE',
-        service: 'mongodb',
-      },
-      'psmdbserver',
-    );
-  },
-);
