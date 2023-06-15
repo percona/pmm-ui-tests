@@ -23,10 +23,6 @@ on:
           - release candidate
           - dev-latest
 
-  push:
-    branches:
-      - PMM-7-update-action-update
-
 jobs:
   push_versions:
     name: Push repo versions
