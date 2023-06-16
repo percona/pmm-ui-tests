@@ -189,4 +189,31 @@ test.describe('Percona Distribution for PostgreSQL CLI tests ', async () => {
       await output.outContains('Service removed.');
     }
   });
+
+   /**
+   * @link https://jira.percona.com/secure/Tests.jspa#/testCase/PMM-T1729
+   */
+ test('PMM-T1729 run pmm-admin add postgresql based on running intsances using socket and service name', async ({}) => {
+   let services = (await cli.exec(`sudo pmm-admin list | grep "PostgreSQL" | grep "pgsql_" | awk -F" " '{print $2}'`))
+      .stdout.trim().split('\n').filter((item) => item.trim().length > 0);
+    for (const service of services) {
+      let output = await cli.exec(`sudo pmm-admin add postgresql --username=${PGSQL_USER} --password=${PGSQL_PASSWORD} --socket=${service} --service-name=pgsql_${n++}`);
+      await output.assertSuccess();
+      await output.outContains('PostgreSQL Service added.');
+    }
+
+ });
+
+  /**
+   * @link https://jira.percona.com/secure/Tests.jspa#/testCase/PMM-T1729
+   */
+  test('PMM-T1729 run pmm-admin remove postgresql using service name', async ({}) => {
+    let services = (await cli.exec(`sudo pmm-admin list | grep "PostgreSQL" | grep "pgsql_" | awk -F" " '{print $2}'`))
+      .stdout.trim().split('\n').filter((item) => item.trim().length > 0);
+    for (const service of services) {
+      let output = await cli.exec(`sudo pmm-admin remove postgreSQL ${service}`);
+      await output.assertSuccess();
+      await output.outContains('Service removed.');
+    }
+  });
 });
