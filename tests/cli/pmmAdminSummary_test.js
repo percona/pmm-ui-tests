@@ -19,7 +19,7 @@ Scenario('PMM-T1219 - Verify pmm-admin summary includes targets from vmagent @cl
   await I.verifyCommand('unzip -l pmm-summary.zip | grep vmagent-targets.html',
     'client/vmagent-targets.html');
 });
-
+// unskip after https://jira.percona.com/browse/PMM-12152
 Scenario.skip('@PMM-T1325 Verify that pmm-admin summary generates ZIP file, which contains separate log file for each exporter and agent @cli', async ({ I, pmmInventoryPage, inventoryAPI }) => {
   await I.verifyCommand('pmm-admin summary --filename=pmm-summary.zip', 'pmm-summary.zip created.');
 
