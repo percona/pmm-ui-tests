@@ -1,6 +1,10 @@
 module.exports = {
   url: 'graph/datasources',
   elements: {
-    clickHouseDescription: '//a[contains(text(), "ClickHouse")]/ancestor::h2/following-sibling::*[2]',
+    clickHouseDatasource: locate('h2').withText('ClickHouse'),
+  },
+  fields: {
+    clickhouseServerAddress: locate('[aria-label="Server address"]'),
+    clickhouseServerPort: locate('[aria-label="Server port"]'),
   },
 };

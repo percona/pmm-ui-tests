@@ -127,10 +127,13 @@ test.describe('PMM Client CLI tests for PostgreSQL Data Base', async () => {
       .stdout.trim().split('\n').filter((item) => item.trim().length > 0);
     for (const host of hosts) {
       const ip = host.split(':')[0];
-      await (await cli.exec('sudo chmod +x /srv/pmm-qa/pmm-tests/pmm-2-0-bats-tests/check_metric.sh')).assertSuccess();
-      let output = await cli.exec(`./pmm-tests/pmm-2-0-bats-tests/check_metric.sh pgsql_$COUNTER pg_up ${ip} postgres_exporter pmm mypass`);
-      await output.assertSuccess();
-      await output.outContains('pg_up 1');
+      // await (await cli.exec('sudo chmod +x /srv/pmm-qa/pmm-tests/pmm-2-0-bats-tests/check_metric.sh')).assertSuccess();
+      // let output = await cli.exec(`./pmm-tests/pmm-2-0-bats-tests/check_metric.sh pgsql_$COUNTER pg_up ${ip} postgres_exporter pmm mypass`);
+      // await output.assertSuccess();
+      // await output.outContains('pg_up 1');
+      let metrics = await cli.getMetrics(host, 'pmm', 'mypass', ip);
+      let expectedValue = 'pg_up 1';
+      expect(metrics, `Scraped metrics do not contain ${expectedValue}!`).toContain(expectedValue);
     }
   });
 

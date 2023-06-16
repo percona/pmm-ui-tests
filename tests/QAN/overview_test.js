@@ -314,7 +314,7 @@ Scenario(
     const query = 'SELECT * FROM pg_stat_bgwriter';
 
     qanOverview.waitForOverviewLoaded();
-    await adminPage.applyTimeRange('Last 1 hour');
+    await adminPage.applyTimeRange('Last 3 hours');
     qanOverview.waitForOverviewLoaded();
     await qanOverview.searchByValue(query);
     I.waitForElement(qanOverview.elements.querySelector, 30);

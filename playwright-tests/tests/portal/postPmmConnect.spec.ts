@@ -14,6 +14,7 @@ import EntitlementsPage from '@pages/platformPages/Entitlements.page';
 import EnvironmentOverview from '@pages/platformPages/EnvironmentOverview.page';
 import grafanaHelper from '@helpers/GrafanaHelper';
 import PerconaPlatform from '@pages/pmmSettings/PerconaPlatform.page';
+import {api} from "@api/api";
 
 test.describe('Spec file for PMM connected the portal', async () => {
   let firstAdmin: User;
@@ -26,8 +27,7 @@ test.describe('Spec file for PMM connected the portal', async () => {
 
   test.beforeAll(async () => {
     if (!pmmVersion) {
-      const versionString = (await apiHelper.getPmmVersion()).versionMinor;
-      pmmVersion = parseInt(versionString);
+      pmmVersion = (await api.pmm.serverV1.getPmmVersion()).minor;
     }
     const userCredentials = await fileHelper.readfile(fileName);
     let adminToken;
@@ -91,7 +91,7 @@ test.describe('Spec file for PMM connected the portal', async () => {
         await ticketsPage.elements.table.waitFor({ state: 'visible' });
         await expect(ticketsPage.elements.rows).toHaveCount(1);
         const [newPage] = await Promise.all([context.waitForEvent('page'), ticketsPage.elements.row(0).click()]);
-        await newPage.getByRole('form').waitFor({ state: 'visible' });
+        await newPage.getByRole('main').waitFor({ state: 'visible' });
         expect(newPage.url()).toContain(ticketsPage.serviceNowUrl);
         await newPage.close();
       });

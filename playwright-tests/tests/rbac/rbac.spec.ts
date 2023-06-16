@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import {APIRequestContext, expect, request, test} from '@playwright/test';
 import apiHelper from "@api/helpers/apiHelper";
 import HomeDashboard from '@tests/pages/HomeDashboard.page';
 import grafanaHelper from '@tests/helpers/GrafanaHelper';
@@ -11,23 +11,31 @@ import NodesOverviewDashboard from '@tests/pages/dashboards/nodes/NodesOverviewD
 import Duration from '@tests/helpers/Duration';
 import PostgresqlInstancesOverviewDashboard from '@tests/pages/dashboards/postgresql/PostgresqlInstancesOverview.page';
 import AdvancedSettings from '@tests/pages/pmmSettings/AdvancedSettings.page';
-import { api } from '@tests/api/api';
+import {api} from "@api/api";
 import { ListRoles } from '@tests/api/management';
+import {PmmVersion} from "@helpers/PmmVersion";
+
+let pmmVersion: number = new PmmVersion(process.env.PMM_SERVER_START_VERSION! as string).minor;
+let roles: ListRoles | undefined;
+
+const getRolesObj = async (): Promise<ListRoles | undefined> => {
+  if (!roles) {
+    roles = await api.pmm.managementV1.listRoles();
+  }
+  return roles;
+};
 
 test.describe('Spec file for Access Control (RBAC)', async () => {
+  test.skip(pmmVersion < 35, 'Test is for PMM version 2.35.0+');
   const newUser = { username: 'testUserRBAC', email: 'testUserRBAC@localhost', name: 'Test User', password: 'password' };
   const roleName = `Role Name Only MySql Access`;
   const roleDescription = `Role Description Only MySql Access`;
   const roleNameCreate = `Role Name ${new Date().getTime()}`;
   const roleDescriptionCreate = `Role Description ${new Date().getTime()}`;
-  let pmmVersion: number;
-  let roles: ListRoles | undefined;
 
   test.beforeAll(async () => {
-    roles = await api.pmm.managementV1.listRoles();
     if (!pmmVersion) {
-      const versionString = (await apiHelper.getPmmVersion()).versionMinor;
-      pmmVersion = parseInt(versionString);
+      pmmVersion = (await api.pmm.serverV1.getPmmVersion()).minor;
     }
   });
 
@@ -70,87 +78,81 @@ test.describe('Spec file for Access Control (RBAC)', async () => {
       type: 'Also Covers',
       description: 'PMM-T1581 Verify assigning default role on Access roles page.',
     });
+    test.skip((await getRolesObj())?.roles.length !== 1, 'For updating from version without RBAC (<35)');
+    const rbacPage = new RbacPage(page);
+    const createRolePage = new CreateRolePage(page);
 
-    // For updating from version without RBAC (<35)
-    if (roles?.roles.length === 1) {
-      const rbacPage = new RbacPage(page);
-      const createRolePage = new CreateRolePage(page);
+    await test.step('1. Navigate to the Access Role page, then click create button.', async () => {
+      await page.goto(rbacPage.url);
+      await rbacPage.buttons.create.click();
+    });
 
-      await test.step('1. Navigate to the Access Role page, then click create button.', async () => {
-        await page.goto(rbacPage.url);
-        await rbacPage.buttons.create.click();
+    await test.step('2. Create new role agent_type=mysqld_exporter.', async () => {
+      await createRolePage.createNewRole({
+        roleName: roleNameCreate,
+        roleDescription: roleDescriptionCreate,
+        label: 'agent_type',
+        value: 'mysqld_exporter',
       });
+      await rbacPage.rbacTable.verifyRowData(roleNameCreate, roleDescriptionCreate, 'agent_type', '=', 'mysqld_exporter');
+    });
 
-      await test.step('2. Create new role agent_type=mysqld_exporter.', async () => {
-        await createRolePage.createNewRole({
-          roleName: roleNameCreate,
-          roleDescription: roleDescriptionCreate,
-          label: 'agent_type',
-          value: 'mysqld_exporter',
-        });
-        await rbacPage.rbacTable.verifyRowData(roleNameCreate, roleDescriptionCreate, 'agent_type', '=', 'mysqld_exporter');
-      });
+    await test.step('3. Assign new role as a default one.', async () => {
+      await rbacPage.rbacTable.elements.rowOptions(roleNameCreate).click();
+      await rbacPage.rbacTable.elements.setDefault.click();
+      await expect(rbacPage.rbacTable.elements.defaultRow).toContainText(roleNameCreate);
+      await expect(rbacPage.rbacTable.elements.rowByText(rbacPage.rbacTable.labels.fullAccess)).not.toContainText('Default');
+    });
 
-      await test.step('3. Assign new role as a default one.', async () => {
-        await rbacPage.rbacTable.elements.rowOptions(roleNameCreate).click();
-        await rbacPage.rbacTable.elements.setDefault.click();
-        await expect(rbacPage.rbacTable.elements.defaultRow).toContainText(roleNameCreate);
-        await expect(rbacPage.rbacTable.elements.rowByText(rbacPage.rbacTable.labels.fullAccess)).not.toContainText('Default');
-      });
-
-      await test.step('4. Assign default role back to Full Access.', async () => {
-        await rbacPage.rbacTable.elements.rowOptions(rbacPage.rbacTable.labels.fullAccess).click();
-        await rbacPage.rbacTable.elements.setDefault.click();
-        await expect(rbacPage.rbacTable.elements.defaultRow).toContainText(rbacPage.rbacTable.labels.fullAccess);
-      });
-    }
+    await test.step('4. Assign default role back to Full Access.', async () => {
+      await rbacPage.rbacTable.elements.rowOptions(rbacPage.rbacTable.labels.fullAccess).click();
+      await rbacPage.rbacTable.elements.setDefault.click();
+      await expect(rbacPage.rbacTable.elements.defaultRow).toContainText(rbacPage.rbacTable.labels.fullAccess);
+    });
   });
 
   test('PMM-T1584 Verify assigning Access role to user @rbac @rbac-pre-upgrade @rbac-post-upgrade', async ({ page }) => {
     test.skip(pmmVersion < 35, 'Test is for versions 2.35.0+');
+    test.skip((await getRolesObj())?.roles.length !== 1, 'For updating from version without RBAC (<35)');
+    const rbacPage = new RbacPage(page);
+    const createRolePage = new CreateRolePage(page);
+    const newUserPage = new NewUserPage(page);
+    const usersConfigurationPage = new UsersConfigurationPage(page);
+    const mySqlDashboard = new MySqlDashboard(page);
+    const nodesOverviewDashboard = new NodesOverviewDashboard(page);
 
-    // For updating from version without RBAC (<35)
-    if (roles?.roles.length === 1) {
-      const rbacPage = new RbacPage(page);
-      const createRolePage = new CreateRolePage(page);
-      const newUserPage = new NewUserPage(page);
-      const usersConfigurationPage = new UsersConfigurationPage(page);
-      const mySqlDashboard = new MySqlDashboard(page);
-      const nodesOverviewDashboard = new NodesOverviewDashboard(page);
+    await test.step(
+      '1. Navigate to the access role page then create role MySQL with label agent_type and value mysql_exporter',
+      async () => {
+        await page.goto(rbacPage.url);
+        await rbacPage.buttons.create.click();
+        await createRolePage.createNewRole({ roleName, roleDescription, label: 'agent_type', value: 'mysqld_exporter' });
+        await rbacPage.rbacTable.verifyRowData(roleName, roleDescription, 'agent_type', '=', 'mysqld_exporter');
+      },
+    );
 
-      await test.step(
-        '1. Navigate to the access role page then create role MySQL with label agent_type and value mysql_exporter',
-        async () => {
-          await page.goto(rbacPage.url);
-          await rbacPage.buttons.create.click();
-          await createRolePage.createNewRole({ roleName, roleDescription, label: 'agent_type', value: 'mysqld_exporter' });
-          await rbacPage.rbacTable.verifyRowData(roleName, roleDescription, 'agent_type', '=', 'mysqld_exporter');
-        },
-      );
+    await test.step('2. Create new user and assign new role to the user.', async () => {
+      await page.goto(newUserPage.url);
+      await newUserPage.createUser(newUser.name, newUser.email, newUser.username, newUser.password);
 
-      await test.step('2. Create new user and assign new role to the user.', async () => {
-        await page.goto(newUserPage.url);
-        await newUserPage.createUser(newUser.name, newUser.email, newUser.username, newUser.password);
+      await page.goto(usersConfigurationPage.url);
+      await usersConfigurationPage.usersTable.fields.accessRole('testUserRBAC@localhost').click();
+      await usersConfigurationPage.optionMenu.selectOption(roleName);
+      await page.goto(mySqlDashboard.url);
+      await mySqlDashboard.waitForPanelToHaveData('Top MySQL Used Connections', 444, Duration.TenMinutes);
+    });
 
-        await page.goto(usersConfigurationPage.url);
-        await usersConfigurationPage.usersTable.fields.accessRole('testUserRBAC@localhost').click();
-        await usersConfigurationPage.optionMenu.selectOption(roleName);
-        await page.goto(mySqlDashboard.url);
-        await mySqlDashboard.waitForPanelToHaveData('Top MySQL Used Connections', 444, Duration.TenMinutes);
-      });
+    await test.step('3. Login as new user and verify that Node Dashboard does NOT show data.', async () => {
+      await grafanaHelper.unAuthorize(page);
+      await grafanaHelper.authorize(page, newUser.username, newUser.password);
+      await page.goto(nodesOverviewDashboard.url);
+      await nodesOverviewDashboard.verifyRoleAccessBlocksNodeExporter();
+    });
 
-      await test.step('3. Login as new user and verify that Node Dashboard does NOT show data.', async () => {
-        await grafanaHelper.unAuthorize(page);
-        await grafanaHelper.authorize(page, newUser.username, newUser.password);
-        await page.goto(nodesOverviewDashboard.url);
-        await nodesOverviewDashboard.verifyRoleAccessBlocksNodeExporter();
-      });
-
-      await test.step('4. Login as new user and verify that Node MySql Dashboard shows data.', async () => {
-        await page.goto(mySqlDashboard.url);
-        await mySqlDashboard.verifyAllPanelsHaveData(3);
-      });
-    }
+    await test.step('4. Login as new user and verify that Node MySql Dashboard shows data.', async () => {
+      await page.goto(mySqlDashboard.url);
+      await mySqlDashboard.verifyAllPanelsHaveData(3);
+    });
   });
 
   test('PMM-T1599 Verify assigned role after upgrade @rbac @rbac-post-upgrade', async ({ page }) => {
