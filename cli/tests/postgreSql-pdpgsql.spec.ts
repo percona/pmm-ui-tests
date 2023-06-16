@@ -198,7 +198,8 @@ test.describe('Percona Distribution for PostgreSQL CLI tests ', async () => {
       .stdout.trim().split('\n').filter((item) => item.trim().length > 0);
     let n = 1;
     for (const service of services) {
-      let output = await cli.exec(`sudo pmm-admin add postgresql --username=${PGSQL_USER} --password=${PGSQL_PASSWORD} --socket=${service} --service-name=pgsql_${n++}`);
+      let socket = "/tmp/".concat(service);
+      let output = await cli.exec(`sudo pmm-admin add postgresql --username=${PGSQL_USER} --password=${PGSQL_PASSWORD} --socket=${socket} --service-name=pdpgsql-${n++}`);
       await output.assertSuccess();
       await output.outContains('PostgreSQL Service added.');
     }
