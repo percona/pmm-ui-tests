@@ -58,8 +58,6 @@ jobs:
           if [[ "${{ inputs.repository }}" = "release" ]]; then
             echo "result=$release_latest" >> "$GITHUB_OUTPUT"
           fi
-          ### Debug only! remove with push!
-          echo "result=$release_latest" >> "$GITHUB_OUTPUT"
 
       - name: Get versions matrix
         id: get-matrix
