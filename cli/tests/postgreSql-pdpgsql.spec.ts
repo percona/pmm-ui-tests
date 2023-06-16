@@ -212,7 +212,7 @@ test.describe('Percona Distribution for PostgreSQL CLI tests ', async () => {
     let services = (await cli.exec(`sudo pmm-admin list | grep "PostgreSQL" | grep "pdpgsql-" | awk -F" " '{print $2}'`))
       .stdout.trim().split('\n').filter((item) => item.trim().length > 0);
     for (const service of services) {
-      let output = await cli.exec(`sudo pmm-admin remove postgreSQL ${service}`);
+      let output = await cli.exec(`sudo pmm-admin remove postgresql ${service}`);
       await output.assertSuccess();
       await output.outContains('Service removed.');
     }
