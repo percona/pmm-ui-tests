@@ -36,6 +36,7 @@ module.exports = {
     clipboardLink: locate(I.getPopUpLocator()).find('span'),
     mainMetricDropdown: locate('$group-by'),
     selectedMainMetric: locate('$group-by').find('//div[@class="ant-select-selection-selected-value"]'),
+    tooltipContent: locate('div.tippy-content'),
   },
   messages: {
     noResultTableText: 'No queries available for this combination of filters in the selected time frame',
@@ -51,6 +52,7 @@ module.exports = {
   getMetricLocatorInDropdown: (name) => locate('[role="listbox"]').find(`[label='${name}']`),
 
   getCellValueLocator: (rowNumber, columnNumber) => `div.tr-${rowNumber} > div:nth-child(${columnNumber + 2}) span > div > span`,
+  getLoadLocator: (rowNumber) => `div.tr-${rowNumber} .td canvas`,
 
   // using below to concatenate locators
   getMetricSortingLocator: (columnNumber) => `(//a[@data-testid='sort-by-control'])[${columnNumber}]`,
