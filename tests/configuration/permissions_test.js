@@ -207,9 +207,9 @@ Data(ptSummaryRoleCheck).Scenario(
     await I.Authorize(username, password);
     I.amOnPage(homePage.url);
     I.waitForVisible(homePage.fields.checksPanelSelector, 30);
-    I.seeElement(homePage.fields.pmmCustomMenu);
-    I.seeElement(homePage.fields.systemsUnderMonitoringCount);
-    I.seeElement(homePage.fields.dbUnderMonitoringCount);
+    I.waitForVisible(homePage.fields.pmmCustomMenu, 30);
+    I.waitForVisible(homePage.fields.systemsUnderMonitoringCount, 30);
+    I.waitForVisible(homePage.fields.dbUnderMonitoringCount, 30);
     I.amOnPage(dashboard);
     dashboardPage.waitForDashboardOpened();
     I.click(adminPage.fields.metricTitle);

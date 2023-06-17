@@ -1,8 +1,13 @@
 Feature('Generic PMM Server CLI Tests');
 
+BeforeSuite(async ({ I }) => {
+  await I.verifyCommand(`PMM_SERVER_IMAGE=${process.env.DOCKER_VERSION} docker-compose -f docker-compose-ubuntu.yml up -d`);
+});
+
 AfterSuite(async ({ I }) => {
   await I.verifyCommand('docker rm -f pmm-server-default-scrape');
   await I.verifyCommand('docker rm -f pmm-server-custom-scrape');
+  await I.verifyCommand('docker-compose -f docker-compose-ubuntu.yml down -v');
 });
 
 After(async ({ I }) => {
@@ -12,7 +17,9 @@ After(async ({ I }) => {
 
   await I.verifyCommand('docker rm -f pmm-client-scrape');
   await I.verifyCommand(`sudo pmm-admin config --force '--server-url=https://${username}:${password}@0.0.0.0:443' --server-insecure-tls ${serverIp}`);
+  await I.verifyCommand('docker rm -f pg-local ubuntu');
 });
+
 
 Scenario(
   'PMM-T1201 Verify yum-cron updates are removed from PMM Server @settings',
@@ -78,5 +85,15 @@ Scenario(
 
     I.assertEqual(scrapeSizeContainer, `promscrape.maxScrapeSize="${expectedScrapeSize}MiB"`, 'Max scrape size from client container logs does not match expected value!');
     I.assertEqual(scrapeSizeTarball, `promscrape.maxScrapeSize=${expectedScrapeSize}MiB`, 'Max scrape size from local client logs does not match expected value!');
+  },
+);
+
+Scenario(
+  '@PMM-T1696 Verify that PostgreSQL exporter collects uptime on Ubuntu @cli',
+  async ({ I }) => {
+    await I.wait(120);
+    await I.verifyCommand('docker exec pmm-client-ubuntu pmm-admin list', 'postgres-ubuntu', 'pass');
+    await I.verifyCommand('docker exec pmm-client-ubuntu curl -s -u pmm:agentpass localhost:42002/metrics | grep "pg_postmaster_uptime_seconds"',
+      'pg_postmaster_uptime_seconds', 'pass');
   },
 );
