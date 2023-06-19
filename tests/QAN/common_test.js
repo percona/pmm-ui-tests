@@ -100,7 +100,7 @@ Scenario(
   },
 );
 
-Scenario.only(
+Scenario(
   'PMM-T188 Verify dashboard refresh @qan',
   async ({
     I, qanPage, qanDetails, qanOverview, dashboardPage, qanFilters, adminPage,
