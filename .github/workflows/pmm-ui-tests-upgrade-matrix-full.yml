@@ -63,7 +63,9 @@ jobs:
         id: get-matrix
         shell: bash
         run: |
-          echo "result=[\"2.37.0\", \"2.36.0\", \"2.35.0\", \"2.34.0\", \"2.33.0\"]" >> "$GITHUB_OUTPUT"
+          array=$(wget -q https://registry.hub.docker.com/v2/repositories/percona/pmm-client/tags?page_size=50 -O - | jq -r .results[].name | grep -v latest | sort -V | grep -E '[[:digit:]]\.[[:digit:]]+\.[[:digit:]]' | tail -10)
+          jq -c -n '$ARGS.positional' --args ${array[@]}
+          echo "result=$(jq -c -n '$ARGS.positional' --args '2.11.0' ${array[@]})" >> "$GITHUB_OUTPUT"
 
   configuration:
     name: 'Configuration / Settings'
