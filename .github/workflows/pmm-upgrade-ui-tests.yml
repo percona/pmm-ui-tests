@@ -133,7 +133,7 @@ jobs:
 
   configuration:
     name: 'Configuration / Settings'
-    uses: ./.github/workflows/pmm-ui-tests-upgrade.yml
+    uses: ./.github/workflows/upgrade-tests-pipeline.yml
     secrets: inherit
     needs: push_versions
     with:
@@ -151,7 +151,7 @@ jobs:
 
   rbac:
     name: RBAC
-    uses: ./.github/workflows/pmm-ui-tests-upgrade.yml
+    uses: ./.github/workflows/upgrade-tests-pipeline.yml
     secrets: inherit
     needs: push_versions
     with:
@@ -169,7 +169,7 @@ jobs:
 
 #  portal:
 #    name: Portal
-#    uses: ./.github/workflows/pmm-ui-tests-upgrade.yml
+#    uses: ./.github/workflows/upgrade-tests-pipeline.yml
 #    secrets: inherit
 #    needs: push_versions
 #    with:
@@ -187,7 +187,7 @@ jobs:
 #
 #  inventory:
 #    name: 'Inventory'
-#    uses: ./.github/workflows/pmm-ui-tests-upgrade.yml
+#    uses: ./.github/workflows/upgrade-tests-pipeline.yml
 #    secrets: inherit
 #    needs: push_versions
 #    with:
