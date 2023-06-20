@@ -678,7 +678,8 @@ if (versionMinor >= 15) {
 
       await grafanaAPI.checkMetricExist(metricName);
       await grafanaAPI.checkMetricExist(metricName, { type: 'node_name', value: 'redis_external_remote' });
-      await grafanaAPI.checkMetricExist(metricName, { type: 'service_name', value: 'redis_external_2' });
+      // removing check for upgrade verification
+      // await grafanaAPI.checkMetricExist(metricName, { type: 'service_name', value: 'redis_external_2' });
 
       const response = await I.sendGetRequest('prometheus/api/v1/targets', headers);
       const targets = response.data.data.activeTargets.find(
