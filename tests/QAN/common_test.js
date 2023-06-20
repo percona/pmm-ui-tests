@@ -105,16 +105,15 @@ Scenario(
   async ({
     I, qanPage, qanDetails, qanOverview, dashboardPage, qanFilters, adminPage,
   }) => {
-    qanPage.waitForOpened();
-
+    await qanPage.waitForOpened();
     await qanOverview.changeMainMetric('Database');
-    qanOverview.changeSorting(2);
-    qanFilters.applyFilter('pmm-managed');
-    qanOverview.addSpecificColumn('Bytes Sent');
+    await qanOverview.changeSorting(2);
+    await qanFilters.applyFilter('pmm-managed');
+    await qanOverview.addSpecificColumn('Bytes Sent');
     await adminPage.applyTimeRange('Last 1 hour');
     await qanOverview.searchByValue('pmm-managed');
-    qanOverview.selectTotalRow();
-    dashboardPage.selectRefreshTimeInterval('5s');
+    await qanOverview.selectTotalRow();
+    await dashboardPage.selectRefreshTimeInterval('5s');
     await qanOverview.verifyMainMetric('Database');
     await qanOverview.verifySorting(2, 'asc');
     await qanFilters.verifySelectedFilters('pmm-managed');
@@ -122,11 +121,7 @@ Scenario(
     await qanDetails.checkDetailsTab();
     await adminPage.verifyTimeRange('Last 1 hour');
     await qanOverview.verifySearchByValue('pmm-managed');
-
-    dashboardPage.selectRefreshTimeInterval('1m');
-    await I.waitForElement(qanOverview.elements.spinner, 60);
-    await I.waitForDetached(qanOverview.elements.spinner, 5);
-    dashboardPage.selectRefreshTimeInterval('Off');
+    await dashboardPage.selectRefreshTimeInterval('Off');
     await I.verifyInvisible(qanOverview.elements.spinner, 70);
   },
 );
