@@ -1,4 +1,4 @@
-name: "PMM Upgrade Full Matrix (e2e tests)"
+name: "PMM Upgrade Matrix (e2e tests)"
 
 on:
   schedule:
@@ -13,6 +13,14 @@ on:
         description: 'pmm-qa repository branch(for setup)'
         default: 'main'
         required: true
+      upgrade_type:
+        description: 'Upgrade way:'
+        required: true
+        default: 'Docker way'
+        type: choice
+        options:
+          - UI way
+          - Docker way
       repository:
         description: 'Upgrade to:'
         required: true
@@ -58,16 +66,20 @@ jobs:
           if [[ "${{ inputs.repository }}" = "release" ]]; then
             echo "result=$release_latest" >> "$GITHUB_OUTPUT"
           fi
+          ### Debug only! remove with push!
+          echo "result=$release_latest" >> "$GITHUB_OUTPUT"
 
       - name: Get versions matrix
         id: get-matrix
         shell: bash
         run: |
-          echo "result=[\"2.37.0\", \"2.36.0\", \"2.35.0\", \"2.34.0\", \"2.33.0\"]" >> "$GITHUB_OUTPUT"
+          array=$(wget -q https://registry.hub.docker.com/v2/repositories/percona/pmm-client/tags?page_size=50 -O - | jq -r .results[].name | grep -v latest | sort -V | grep -E '[[:digit:]]\.[[:digit:]]+\.[[:digit:]]' | tail -10)
+          jq -c -n '$ARGS.positional' --args ${array[@]}
+          echo "result=$(jq -c -n '$ARGS.positional' --args '2.11.0' ${array[@]})" >> "$GITHUB_OUTPUT"
 
   configuration:
     name: 'Configuration / Settings'
-    uses: ./.github/workflows/pmm-ui-tests-upgrade.yml
+    uses: ./.github/workflows/upgrade-tests-pipeline.yml
     secrets: inherit
     needs: push_versions
     strategy:
@@ -90,7 +102,7 @@ jobs:
 
   rbac:
     name: "RBAC / User Roles"
-    uses: ./.github/workflows/pmm-ui-tests-upgrade.yml
+    uses: ./.github/workflows/upgrade-tests-pipeline.yml
     secrets: inherit
     needs: push_versions
     strategy:
@@ -107,14 +119,14 @@ jobs:
       upgrade_type: ${{ matrix.upgrade_type }}
       pmm_qa_branch: ${{ inputs.pmm_qa_branch || 'main' }}
       services_list: '--addclient=ps,1 --addclient=pdpgsql,1'
-      repository: ${{ inputs.repository || 'dev-latest'}}
+      repository: ${{ inputs.repository }}
       version_string_from: ${{needs.push_versions.outputs.start_version}}
       version_string_to: ${{needs.push_versions.outputs.finish_version}}
 
 # TODO: add / in the job names for good sub-jobs grouping
 #  portal:
 #    name: Portal
-#    uses: ./.github/workflows/pmm-ui-tests-upgrade.yml
+#    uses: ./.github/workflows/upgrade-tests-pipeline.yml
 #    secrets: inherit
 #    needs: push_versions
 #    with:
@@ -132,7 +144,7 @@ jobs:
 #
 #  inventory:
 #    name: 'Inventory'
-#    uses: ./.github/workflows/pmm-ui-tests-upgrade.yml
+#    uses: ./.github/workflows/upgrade-tests-pipeline.yml
 #    secrets: inherit
 #    needs: push_versions
 #    with:
