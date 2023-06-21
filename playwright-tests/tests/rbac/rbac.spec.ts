@@ -17,7 +17,7 @@ import {PmmVersion} from "@helpers/PmmVersion";
 import * as console from "console";
 
 console.log(`${!!process.env.PMM_SERVER_START_VERSION}`)
-let pmmVersion = !!process.env.PMM_SERVER_START_VERSION
+let pmmVersion = process.env.PMM_SERVER_START_VERSION
     ? new PmmVersion(process.env.PMM_SERVER_START_VERSION as string).minor
     : null;
 let roles: ListRoles | undefined;
