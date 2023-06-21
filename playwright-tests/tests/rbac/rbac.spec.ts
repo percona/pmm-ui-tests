@@ -14,8 +14,10 @@ import AdvancedSettings from '@tests/pages/pmmSettings/AdvancedSettings.page';
 import {api} from "@api/api";
 import { ListRoles } from '@tests/api/management';
 import {PmmVersion} from "@helpers/PmmVersion";
+import * as console from "console";
 
-let pmmVersion = process.env.PMM_SERVER_START_VERSION
+console.log(`${!!process.env.PMM_SERVER_START_VERSION}`)
+let pmmVersion = !!process.env.PMM_SERVER_START_VERSION
     ? new PmmVersion(process.env.PMM_SERVER_START_VERSION as string).minor
     : null;
 let roles: ListRoles | undefined;
