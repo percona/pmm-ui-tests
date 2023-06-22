@@ -46,7 +46,7 @@ Scenario(
   'PMM-T1482 Verify fired alert @ia',
   async ({ I, alertsPage, alertsAPI }) => {
     await alertsAPI.waitForAlerts(24, 1);
-    I.amOnPage(alertsPage.url);
+    await I.amOnPage(alertsPage.url);
     alertsPage.columnHeaders.forEach((header) => {
       const columnHeader = alertsPage.elements.columnHeaderLocator(header);
 
@@ -54,9 +54,9 @@ Scenario(
     });
 
     // Verify there are no duplicate alerts
-    I.seeNumberOfElements(alertsPage.elements.alertRow(ruleName), 1);
+    await I.seeNumberOfElements(alertsPage.elements.alertRow(ruleName), 1);
     // Wait for the firing alert to arrive in webhook and PD
-    I.wait(50);
+    await I.wait(60);
   },
 );
 
