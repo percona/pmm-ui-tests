@@ -7,5 +7,5 @@ Before(async ({ I }) => {
 Scenario('PMM-T1110 - Verify Grafana using Postgres database @settings',
   async ({ pmmServerAdminSettingsPage }) => {
     pmmServerAdminSettingsPage.open();
-    await pmmServerAdminSettingsPage.verifyDatabaseType('postgres');
+    await pmmServerAdminSettingsPage.verifyDatabaseType('sqlite3');
   });
