@@ -77,22 +77,22 @@ test.describe('PMM Server CLI tests for Docker Environment Variables', async () 
    * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/docker-env-variable-tests.bats#L67
    */
   test('Basic Sanity using Clickhouse shipped with PMM-Server, Check Connection, Run a Query', async ({}) => {
-    await (await cli.exec(`clickhouse-client --database pmm --query "select any(example),sum(num_queries) cnt, max(m_query_time_max) slowest  from metrics where period_start>subtractHours(now(),6)  group by queryid order by slowest desc limit 10"`))
+    await (await cli.exec(
+        `clickhouse-client \
+        --database pmm \
+        --query "select any(example),sum(num_queries) cnt, \
+        max(m_query_time_max) slowest from metrics where period_start>subtractHours(now(),6) \
+        group by queryid order by slowest desc limit 10"`))
         .assertSuccess();
 
-    // Check PMM Database Exist
-    let output = await cli.exec(`clickhouse-client --query 'SELECT * FROM system.databases' | grep pmm | awk -F' ' '{print $1}'`);
+    let output = await cli.exec(
+        `clickhouse-client --query 'SELECT * FROM system.databases' | grep pmm | tr -s '[:blank:]' '\n'`);
     await output.assertSuccess();
-    await output.outContains('pmm');
 
-    // Check Data path matches expected Value
-    output = await cli.exec(`clickhouse-client --query 'SELECT * FROM system.databases' | grep pmm | awk -F' ' '{print $3}'`);
-    await output.assertSuccess();
-    await output.outContains('/srv/clickhouse/data/pmm/');
-
-    //   ## Check Metadata path matches expected Value
-    output = await cli.exec(`clickhouse-client --query 'SELECT * FROM system.databases' | grep pmm | awk -F' ' '{print $4}'`);
-    await output.assertSuccess();
-    await output.outContains('/srv/clickhouse/metadata/pmm/');
+    const expectedPath = '/srv/clickhouse/store/';
+    expect(output.getStdOutLines()[0], `Verify "pmm" Database Exists`).toEqual('pmm');
+    expect(output.getStdOutLines()[1], `Verify Clickhouse engine is "Atomic"`).toEqual('Atomic');
+    expect(output.getStdOutLines()[2], `Verify Clickhouse data_path is "${expectedPath}"`).toEqual(expectedPath);
+    expect(output.getStdOutLines()[3], `Verify Clickhouse metadata_path contains "${expectedPath}"`).toContain(expectedPath);
   });
 });
