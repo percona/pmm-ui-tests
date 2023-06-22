@@ -86,7 +86,7 @@ test.describe('PMM Server CLI tests for Docker Environment Variables', async () 
         .assertSuccess();
 
     let output = await cli.exec(
-        `clickhouse-client --query 'SELECT * FROM system.databases' | grep pmm | tr -s '[:blank:]' '\n'`);
+        `clickhouse-client --query 'SELECT * FROM system.databases' | grep pmm | tr -s '[:blank:]' '\\n'`);
     await output.assertSuccess();
 
     const expectedPath = '/srv/clickhouse/store/';
