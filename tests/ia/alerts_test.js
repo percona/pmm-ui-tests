@@ -34,10 +34,7 @@ BeforeSuite(async ({ I, rulesAPI }) => {
   await rulesAPI.createAlertRule({ ruleName }, ruleFolder);
 
   // Preparation steps for checking Alert via webhook server
-  // eslint-disable-next-line no-template-curly-in-string
-  // await I.verifyCommand('bash -x ${PWD}/testdata/ia/gencerts.sh');
   await I.verifyCommand('docker-compose -f docker-compose-webhook.yml up -d');
-  // const cert = await I.readFileSync('./testdata/ia/certs/self.crt');
 });
 
 AfterSuite(async ({ rulesAPI, I }) => {
@@ -49,7 +46,7 @@ Scenario(
   'PMM-T1482 Verify fired alert @ia',
   async ({ I, alertsPage, alertsAPI }) => {
     await alertsAPI.waitForAlerts(24, 1);
-    I.amOnPage(alertsPage.url);
+    await I.amOnPage(alertsPage.url);
     alertsPage.columnHeaders.forEach((header) => {
       const columnHeader = alertsPage.elements.columnHeaderLocator(header);
 
@@ -57,9 +54,9 @@ Scenario(
     });
 
     // Verify there are no duplicate alerts
-    I.seeNumberOfElements(alertsPage.elements.alertRow(ruleName), 1);
+    await I.seeNumberOfElements(alertsPage.elements.alertRow(ruleName), 1);
     // Wait for the firing alert to arrive in webhook and PD
-    I.wait(50);
+    await I.wait(60);
   },
 );
 
@@ -160,7 +157,8 @@ Scenario(
     }
 
     await alertsAPI.waitForAlerts(24, 8);
-    I.amOnPage(alertsPage.url);
+    await I.wait(10);
+    await I.amOnPage(alertsPage.url);
     rulesForAlerts.forEach((item) => I.waitForElement(alertsPage.elements.alertRow(item.severity), 10));
     rulesForAlerts.forEach((item) => I.see('Active', alertsPage.elements.stateCell(item.severity)));
     I.seeCssPropertiesOnElements(alertsPage.elements.criticalSeverity, { color: alertsPage.colors.critical });
