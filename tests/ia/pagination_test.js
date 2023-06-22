@@ -30,11 +30,11 @@ Scenario(
     await iaCommon.verifyPaginationButtonsState(initialButtonsState);
 
     // There's 16 templates by default
-    I.seeNumberOfElements(iaCommon.elements.rowInTable, 16)
+    I.seeNumberOfElements(iaCommon.elements.rowInTable, 17);
     I.seeNumberOfElements(iaCommon.buttons.pageButtonActive, 1);
 
-    // Create 10 more templates to have 2 pages (26 in sum)
-    await createEntities(10);
+    // Create 9 more templates to have 2 pages (26 in sum)
+    await createEntities(9);
     I.say(`1st checkpoint, URL = ${url}, Count of elements = ${(await getListOfItems()).length}`);
     I.refreshPage();
 
@@ -159,8 +159,8 @@ Scenario(
     iaCommon.selectRowsPerPage(50);
     I.seeTextEquals('50', iaCommon.buttons.rowsPerPage);
 
-    // Create 10 templates to have 2 pages (26 in sum)
-    await createEntities(10);
+    // Create 9 templates to have 2 pages (26 in sum)
+    await createEntities(9);
 
     // Rows per page is '50' after refreshing a page
     I.say(`1st checkpoint, URL = ${url}, Count of elements = ${(await getListOfItems()).length}`);
@@ -222,8 +222,8 @@ Scenario(
   }) => {
     const { createEntities, url, getListOfItems } = iaCommon.getCreateEntitiesAndPageUrl(page);
 
-    // Create 85 templates (101 in sum)
-    await createEntities(85);
+    // Create 84 templates (101 in sum)
+    await createEntities(84);
 
     I.say(`Checkpoint, URL = ${url}, Count of elements = ${(await getListOfItems()).length}`);
     I.amOnPage(url);

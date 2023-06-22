@@ -34,10 +34,7 @@ BeforeSuite(async ({ I, rulesAPI }) => {
   await rulesAPI.createAlertRule({ ruleName }, ruleFolder);
 
   // Preparation steps for checking Alert via webhook server
-  // eslint-disable-next-line no-template-curly-in-string
-  // await I.verifyCommand('bash -x ${PWD}/testdata/ia/gencerts.sh');
   await I.verifyCommand('docker-compose -f docker-compose-webhook.yml up -d');
-  // const cert = await I.readFileSync('./testdata/ia/certs/self.crt');
 });
 
 AfterSuite(async ({ rulesAPI, I }) => {
