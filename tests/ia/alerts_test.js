@@ -157,7 +157,7 @@ Scenario(
     }
 
     await alertsAPI.waitForAlerts(24, 8);
-    I.amOnPage(alertsPage.url);
+    await I.amOnPage(alertsPage.url);
     rulesForAlerts.forEach((item) => I.waitForElement(alertsPage.elements.alertRow(item.severity), 10));
     rulesForAlerts.forEach((item) => I.see('Active', alertsPage.elements.stateCell(item.severity)));
     I.seeCssPropertiesOnElements(alertsPage.elements.criticalSeverity, { color: alertsPage.colors.critical });
