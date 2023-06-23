@@ -9,7 +9,7 @@ After=time-sync.target
 Type=simple
 
 # set environment for this unit
-Environment=PMM_PUBLIC_PORT=8443
+Environment=PMM_PUBLIC_PORT=443
 Environment=PMM_VOLUME_NAME=%N
 Environment=PMM_TAG=dev-latest
 Environment=SERVER_IMAGE=perconalab/pmm-server:dev-latest
