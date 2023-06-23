@@ -30,7 +30,7 @@ on:
 
 jobs:
   push_versions:
-    name: Push repo versions
+    name: Get versions
     runs-on: ubuntu-latest
     timeout-minutes: 1
     outputs:
@@ -41,11 +41,11 @@ jobs:
       - name: Prevent upgrade to the same version
         shell: bash
         run: |
-          if [[ "${{ inputs.pmm_server_start_version }}" = "latest" && "${{ inputs.repository }}" = "release" ]]; then
+          if [[ "${{ inputs.pmm_server_start_version }}" == "latest" && "${{ inputs.repository }}" == "release" ]]; then
             echo "Upgrade to the same version is forbidden!"
             exit 1
           fi
-          if [[ "${{ inputs.pmm_server_start_version }}" = "dev-latest" && "${{ inputs.repository }}" = "dev-latest" ]]; then
+          if [[ "${{ inputs.pmm_server_start_version }}" == "dev-latest" && "${{ inputs.repository }}" == "dev-latest" ]]; then
             echo "Upgrade to the same version is forbidden!"
             exit 1
           fi
@@ -66,10 +66,10 @@ jobs:
         id: get-start
         shell: bash
         run: |
-          if [[ "${{ inputs.pmm_server_start_version }}" = "latest" ]]; then
+          if [[ "${{ inputs.pmm_server_start_version }}" == "latest" ]]; then
             echo "result=$release_latest" >> "$GITHUB_OUTPUT"
           fi
-          if [[ "${{ inputs.pmm_server_start_version }}" = "dev-latest" ]]; then
+          if [[ "${{ inputs.pmm_server_start_version }}" == "dev-latest" ]]; then
             echo "result=$dev_latest" >> "$GITHUB_OUTPUT"
           fi
 
