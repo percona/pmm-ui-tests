@@ -24,48 +24,12 @@ on:
           - dev-latest
 
 jobs:
-  push_versions:
-    name: Push repo versions
-    runs-on: ubuntu-latest
-    timeout-minutes: 1
-    outputs:
-      start_version: ${{ steps.get-start.outputs.result }}
-      finish_version: ${{ steps.get-finish.outputs.result }}
-      version_matrix: ${{ steps.get-matrix.outputs.result }}
-    steps:
-      - name: Discover latest versions
-        shell: bash
-        run: |
-          r_latest=$(wget -q https://registry.hub.docker.com/v2/repositories/percona/pmm-client/tags -O - | jq -r .results[].name  | grep -v latest | sort -V | tail -n1)
-          rc_latest=$(wget -q "https://registry.hub.docker.com/v2/repositories/perconalab/pmm-client/tags?page_size=25&name=rc" -O - | jq -r .results[].name  | grep 2.*.*-rc$ | sort -V | tail -n1)
-          rc_minor=$(echo $rc_latest | awk -F. '{print $2}')
-          d_latest="2.$((++rc_minor)).0"
-          
-          echo "release_latest=$r_latest" >> $GITHUB_ENV
-          echo "rc_latest=$rc_latest" >> $GITHUB_ENV
-          echo "dev_latest=$d_latest" >> $GITHUB_ENV
-
-      - name: Get finish version string
-        id: get-finish
-        shell: bash
-        run: |
-          if [[ "${{ inputs.repository }}" = "dev-latest" ]]; then
-            echo "result=$dev_latest" >> "$GITHUB_OUTPUT"
-          fi          
-          if [[ "${{ inputs.repository }}" = "release candidate" ]]; then
-            echo "result=$rc_latest" >> "$GITHUB_OUTPUT"
-          fi
-          if [[ "${{ inputs.repository }}" = "release" ]]; then
-            echo "result=$release_latest" >> "$GITHUB_OUTPUT"
-          fi
-
-      - name: Get versions matrix
-        id: get-matrix
-        shell: bash
-        run: |
-          array=$(wget -q https://registry.hub.docker.com/v2/repositories/percona/pmm-client/tags?page_size=50 -O - | jq -r .results[].name | grep -v latest | sort -V | grep -E '[[:digit:]]\.[[:digit:]]+\.[[:digit:]]' | tail -10)
-          jq -c -n '$ARGS.positional' --args ${array[@]}
-          echo "result=$(jq -c -n '$ARGS.positional' --args '2.11.0' ${array[@]})" >> "$GITHUB_OUTPUT"
+  get_versions:
+    name: Get versions
+    uses: ./.github/workflows/pmm-version-getter.yml
+    with:
+      repository: ${{ inputs.repository || 'dev-latest'}}
+      matrix_range: 10
 
   configuration:
     name: 'Configuration / Settings'
@@ -75,7 +39,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        old_version: ${{ fromJSON(needs.push_versions.outputs.version_matrix) }}
+        old_version: ${{ fromJSON(needs.get_versions.outputs.version_matrix) }}
         upgrade_type: ["UI way", "Docker way"]
     with:
       pmm_ui_tests_branch: ${{ inputs.pmm_ui_tests_branch || 'main' }}
@@ -87,8 +51,8 @@ jobs:
       pmm_qa_branch: ${{ inputs.pmm_qa_branch || 'main' }}
       services_list: ''
       repository: ${{ inputs.repository || 'dev-latest'}}
-      version_string_from: ${{needs.push_versions.outputs.start_version}}
-      version_string_to: ${{needs.push_versions.outputs.finish_version}}
+      version_string_from: ${{needs.get_versions.outputs.start_version}}
+      version_string_to: ${{needs.get_versions.outputs.finish_version}}
 
   rbac:
     name: "RBAC / User Roles"
@@ -98,7 +62,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        old_version: ${{ fromJSON(needs.push_versions.outputs.version_matrix) }}
+        old_version: ${{ fromJSON(needs.get_versions.outputs.version_matrix) }}
         upgrade_type: ["UI way", "Docker way"]
     with:
       pmm_ui_tests_branch: ${{ inputs.pmm_ui_tests_branch || 'main' }}
@@ -110,8 +74,8 @@ jobs:
       pmm_qa_branch: ${{ inputs.pmm_qa_branch || 'main' }}
       services_list: '--addclient=ps,1 --addclient=pdpgsql,1'
       repository: ${{ inputs.repository || 'dev-latest'}}
-      version_string_from: ${{needs.push_versions.outputs.start_version}}
-      version_string_to: ${{needs.push_versions.outputs.finish_version}}
+      version_string_from: ${{needs.get_versions.outputs.start_version}}
+      version_string_to: ${{needs.get_versions.outputs.finish_version}}
 
 # TODO: add / in the job names for good sub-jobs grouping
 #  portal:
@@ -129,8 +93,8 @@ jobs:
 #      pmm_qa_branch: ${{ inputs.pmm_qa_branch }}
 #      services_list: ''
 #      repository: ${{ inputs.repository }}
-#      version_string_from: ${{needs.push_versions.outputs.start_version}}
-#      version_string_to: ${{needs.push_versions.outputs.finish_version}}
+#      version_string_from: ${{needs.get_versions.outputs.start_version}}
+#      version_string_to: ${{needs.get_versions.outputs.finish_version}}
 #
 #  inventory:
 #    name: 'Inventory'
@@ -147,5 +111,5 @@ jobs:
 #      pmm_qa_branch: ${{ inputs.pmm_qa_branch }}
 #      services_list: '--addclient=modb,1'
 #      repository: ${{ inputs.repository }}
-#      version_string_from: ${{needs.push_versions.outputs.start_version}}
-#      version_string_to: ${{needs.push_versions.outputs.finish_version}}
+#      version_string_from: ${{needs.get_versions.outputs.start_version}}
+#      version_string_to: ${{needs.get_versions.outputs.finish_version}}
