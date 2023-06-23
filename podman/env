@@ -1,4 +1,4 @@
 PMM_TAG=dev-latest
 PMM_IMAGE=docker.io/perconalab/pmm-server
 PMM_PUBLIC_PORT=443
-SERVER_IMAGE=perconalab/pmm-server
+SERVER_IMAGE=perconalab/pmm-server:dev-latest
