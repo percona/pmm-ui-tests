@@ -37,7 +37,7 @@ jobs:
       sha: 'null'
 
   podman_tests:
-    name: PODMAN E2E tests
+    name: Podman E2E tests
     uses: Percona-Lab/pmm-submodules/.github/workflows/pmm2-ui-tests-podman.yml@PMM-7_worker_podman
     secrets:
       BACKUP_LOCATION_ACCESS_KEY: ${{ secrets.BACKUP_LOCATION_ACCESS_KEY }}
