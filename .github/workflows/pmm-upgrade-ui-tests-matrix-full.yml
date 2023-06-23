@@ -35,7 +35,7 @@ jobs:
     name: 'Configuration / Settings'
     uses: ./.github/workflows/upgrade-tests-pipeline.yml
     secrets: inherit
-    needs: push_versions
+    needs: get_versions
     strategy:
       fail-fast: false
       matrix:
@@ -58,7 +58,7 @@ jobs:
     name: "RBAC / User Roles"
     uses: ./.github/workflows/upgrade-tests-pipeline.yml
     secrets: inherit
-    needs: push_versions
+    needs: get_versions
     strategy:
       fail-fast: false
       matrix:
@@ -82,7 +82,7 @@ jobs:
 #    name: Portal
 #    uses: ./.github/workflows/upgrade-tests-pipeline.yml
 #    secrets: inherit
-#    needs: push_versions
+#    needs: get_versions
 #    with:
 #      pmm_ui_tests_branch: ${{ inputs.pmm_ui_tests_branch }}
 #      pre_upgrade_tests: '@pre-pmm-portal-upgrade'
@@ -100,7 +100,7 @@ jobs:
 #    name: 'Inventory'
 #    uses: ./.github/workflows/upgrade-tests-pipeline.yml
 #    secrets: inherit
-#    needs: push_versions
+#    needs: get_versions
 #    with:
 #      pmm_ui_tests_branch: ${{ inputs.pmm_ui_tests_branch }}
 #      pre_upgrade_tests: '@inventory-pre-upgrade'
