@@ -6,7 +6,7 @@ const details = '$alert-details-wrapper';
 
 module.exports = {
   url: 'graph/alerting/alerts',
-  columnHeaders: ['Triggered by rule', 'State', 'Summary', 'Severity', 'Active since', 'Last notified', 'Actions'],
+  columnHeaders: ['Triggered by rule', 'State', 'Summary', 'Severity', 'Active since', 'Last triggered', 'Actions'],
   elements: {
     pageHeader: '//div[@class="page-header"]//h1[text()="Alerting"]',
     alertRow: (alertName) => alertRow(alertName),
@@ -58,11 +58,11 @@ module.exports = {
     );
 
     if (silenced) {
-      I.seeTextEquals('Suppressed', this.elements.stateCell(alertName));
+      I.seeTextEquals('Silenced', this.elements.stateCell(alertName));
 
       assert.ok(
         bgColor !== 'rgb(24, 27, 31)',
-        `Suppressed alert should have different background color. Found ${bgColor}.`,
+        `Silenced alert should have different background color. Found ${bgColor}.`,
       );
     } else {
       I.see('Active', this.elements.stateCell(alertName));
