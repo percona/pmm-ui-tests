@@ -91,6 +91,11 @@ jobs:
         id: get-matrix
         shell: bash
         run: |
-          array=$(wget -q https://registry.hub.docker.com/v2/repositories/percona/pmm-client/tags?page_size=50 -O - | jq -r .results[].name | grep -v latest | sort -V | grep -E '[[:digit:]]\.[[:digit:]]+\.[[:digit:]]' | tail -10)
+          range=${{ inputs.matrix_range }}
+          if [[ "${{ inputs.repository }}" == "release" ]]; then
+            array=$(wget -q https://registry.hub.docker.com/v2/repositories/percona/pmm-client/tags?page_size=50 -O - | jq -r .results[].name | grep -v latest | sort -V | grep -E '[[:digit:]]\.[[:digit:]]+\.[[:digit:]]' | tail -$((++range)) | head -$((range))
+          else
+            array=$(wget -q https://registry.hub.docker.com/v2/repositories/percona/pmm-client/tags?page_size=50 -O - | jq -r .results[].name | grep -v latest | sort -V | grep -E '[[:digit:]]\.[[:digit:]]+\.[[:digit:]]' | tail -$((range))
+          fi
           jq -c -n '$ARGS.positional' --args ${array[@]}
           echo "result=$(jq -c -n '$ARGS.positional' --args '2.11.0' ${array[@]})" >> "$GITHUB_OUTPUT"
