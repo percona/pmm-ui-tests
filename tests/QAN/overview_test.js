@@ -314,7 +314,7 @@ Scenario(
     const query = 'SELECT * FROM pg_stat_bgwriter';
 
     qanOverview.waitForOverviewLoaded();
-    await adminPage.applyTimeRange('Last 1 hour');
+    await adminPage.applyTimeRange('Last 3 hours');
     qanOverview.waitForOverviewLoaded();
     await qanOverview.searchByValue(query);
     I.waitForElement(qanOverview.elements.querySelector, 30);
@@ -425,5 +425,33 @@ Scenario(
     I.waitForElement(qanOverview.fields.columnSearchField, 10);
     I.fillField(qanOverview.fields.columnSearchField, 'Remove column');
     I.dontSeeElement(qanOverview.elements.removeMetricColumn);
+  },
+);
+
+Scenario(
+  '@PMM-T1699 Verify that query time is shown in UTC timezone after hovering Load graph for query if user selected UTC timezone @qan',
+  async ({ I, adminPage, qanOverview }) => {
+    qanOverview.waitForOverviewLoaded();
+    const firstLoadCell = qanOverview.getLoadLocator(2);
+
+    I.moveCursorTo(firstLoadCell);
+    let timestamp = await I.grabTextFrom(qanOverview.elements.tooltipContent);
+
+    const clientTimeOffset = new Intl.NumberFormat('en-US', {
+      minimumIntegerDigits: 2,
+      signDisplay: 'exceptZero',
+    }).format(-new Date().getTimezoneOffset() / 60);
+    const clientTimeZone = `${clientTimeOffset}:00`;
+
+    I.assertContain(timestamp, clientTimeOffset,
+      `Timestamp does not contain expected local time offset, but contains ${timestamp}`);
+
+    adminPage.applyTimeZone('Coordinated Universal Time');
+    I.click(qanOverview.buttons.refresh);
+    I.moveCursorTo(firstLoadCell);
+    timestamp = await I.grabTextFrom(qanOverview.elements.tooltipContent);
+
+    I.assertContain(timestamp, '+00:00',
+      `Timestamp does not contain expected zero UTC time offset, but contains ${timestamp}`);
   },
 );

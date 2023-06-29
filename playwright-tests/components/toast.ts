@@ -1,8 +1,9 @@
 import { Page, expect, Locator } from '@playwright/test';
 import Duration from '@helpers/Duration';
+import config from '@tests/playwright.config';
 
 export class Toast {
-  constructor(readonly page: Page) {}
+  constructor(readonly page: Page) { }
 
   toast = this.page.locator('//div[contains(@data-testid, "Alert") or contains(@aria-label, "Alert")]');
   toastSuccess = this.page.locator('//div[@data-testid="data-testid Alert success" or @aria-label="Alert success"]');
@@ -10,28 +11,40 @@ export class Toast {
   toastError = this.page.locator('//div[@data-testid="data-testid Alert error" or @aria-label="Alert error"]');
   closeButton = (selectedToast: Locator) => selectedToast.locator('//*[@aria-label="Close alert" or @type="button"]');
 
-  checkToastMessage = async (
-    message: string,
-    options?: { timeout?: Duration.OneMinute; variant?: 'success' | 'warning' | 'error' },
-  ) => {
-    let selectedToast: Locator;
-    switch (options?.variant) {
+  private selectToast = (variant?: string) => {
+    switch (variant) {
       case 'success':
-        selectedToast = this.toastSuccess;
-        break;
+        return this.toastSuccess;
       case 'warning':
-        selectedToast = this.toastWarning;
-        break;
+        return this.toastWarning;
       case 'error':
-        selectedToast = this.toastError;
-        break;
+        return this.toastError;
       default:
-        selectedToast = this.toast;
-        break;
+        return this.toast;
     }
 
+  }
+
+  checkToastMessage = async (
+    message: string,
+    options?: { timeout?: number; variant?: 'success' | 'warning' | 'error', assertionTimeout?: number },
+  ) => {
+    let selectedToast: Locator = this.selectToast(options?.variant);
+
+    await selectedToast.waitFor({ state: 'visible', timeout: options?.timeout || 30000 });
+    await expect(selectedToast).toHaveText(message, { timeout: options?.assertionTimeout || config.expect?.timeout });
+    await this.closeButton(selectedToast).click();
+    await selectedToast.waitFor({ state: 'detached' });
+  };
+
+  checkToastMessageContains = async (
+    message: string,
+    options?: { timeout?: number; variant?: 'success' | 'warning' | 'error', assertionTimeout?: number },
+  ) => {
+    let selectedToast: Locator = this.selectToast(options?.variant);
+
     await selectedToast.waitFor({ state: 'visible', timeout: options?.timeout });
-    await expect(selectedToast).toHaveText(message);
+    await expect(selectedToast).toContainText(message, { timeout: options?.assertionTimeout || config.expect?.timeout });
     await this.closeButton(selectedToast).click();
     await selectedToast.waitFor({ state: 'detached' });
   };

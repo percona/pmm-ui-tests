@@ -11,6 +11,15 @@ const resourceFields = new DataTable(['resourceType']);
 
 const nameFields = new DataTable(['field', 'value', 'errorMessageField', 'errorMessage']);
 
+const podName = new DataTable(['podNameValue', 'noDataCount']);
+
+podName.add(['dbaas-operator', '1']);
+podName.add(['kube-state-metrics', '4']);
+podName.add(['percona-server-mongodb-operator', '4']);
+podName.add(['percona-xtradb-cluster-operator', '4']);
+podName.add(['vm-operator', '1']);
+podName.add(['vmagent-pmm-vmagent', '0']);
+
 // This is Data table for Resources available for DB Cluster, used for checking Default Values.
 
 resourceFields.add(['Small']);
@@ -110,6 +119,21 @@ Scenario('PMM-T1451 - Verify Register new Kubernetes Cluster page @dbaas',
   }
 );
 
+Data(podName).Scenario('PMM-T1122 Verify DB Cluster Summary dashboard @dbaas',
+  async ({
+    I, dbClusterSummaryDashboardPage, dashboardPage, adminPage, current
+  }) => {
+    await I.amOnPage(dbClusterSummaryDashboardPage.url);
+    dashboardPage.waitForDashboardOpened();
+    await dashboardPage.applyFilter('Pod', current.podNameValue);
+    await dashboardPage.expandEachDashboardRow();
+    I.click(adminPage.fields.metricTitle);
+    dashboardPage.verifyMetricsExistence(dbClusterSummaryDashboardPage.metrics);
+    await dashboardPage.verifyThereAreNoGraphsWithNA();
+    await dashboardPage.verifyThereAreNoGraphsWithoutData(current.noDataCount);
+  },
+);
+
 Scenario(
   'PMM-T547 PMM-T548  Verify user is able to view config of registered Kubernetes cluster on Kubernetes Cluster Page, '
     + 'PMM-T1130 - Verify warning about deleting an API key @dbaas',
@@ -172,8 +196,6 @@ Scenario('PMM-T728 Verify DB Cluster Tab Page Elements & Steps Background @dbaas
     I.seeElement(dbaasPage.tabs.dbClusterTab.advancedOptionsButton);
     I.click(dbaasPage.tabs.dbClusterTab.advancedOptionsButton);
     I.seeElement(dbaasPage.tabs.dbClusterTab.advancedOptions.fields.nodesNumberField);
-    I.scrollTo(dbaasPage.tabs.dbClusterTab.networkAndSecurity.exposeLabel);
-    I.dontSeeCheckboxIsChecked(dbaasPage.tabs.dbClusterTab.networkAndSecurity.exposeCheckbox);
     I.seeElement(dbaasPage.tabs.dbClusterTab.advancedOptions.fields.resourcesPerNodeLabel);
     I.seeElement(dbaasPage.tabs.dbClusterTab.advancedOptions.fields.memoryField);
     I.seeElement(dbaasPage.tabs.dbClusterTab.advancedOptions.fields.cpuNumberFields);
@@ -349,7 +371,7 @@ Failed to register pmm-agent on PMM Server: Post "https://https:%2F%2F1.2.3.4/v1
 
     assert.ok(pmmClientLogsText.includes(logsText), `Pmm-client logs must contain text: ${logsText}`);
   },
-);
+).retry(1);
 
 Scenario('@PMM-T1512 Verify tooltips work properly for DBaaS page @dbaas',
   async ({
@@ -363,8 +385,8 @@ Scenario('@PMM-T1512 Verify tooltips work properly for DBaaS page @dbaas',
     I.click(dbaasPage.tabs.kubernetesClusterTab.eksClusterLabel);
     const tooltips = [
       dbaasPage.tooltips.clusterType,
-      dbaasPage.tooltips.awsAccessKeyId,
       dbaasPage.tooltips.awsSecretAccessKey,
+      dbaasPage.tooltips.awsAccessKeyId,
     ];
 
     for (const tooltip of tooltips) {
@@ -379,28 +401,27 @@ Scenario('PMM-T1571 Verify Create DB Cluster page @dbaas',
     I.click(dbaasPage.tabs.dbClusterTab.dbClusterAddButtonTop);
     I.waitForElement(dbaasPage.tabs.dbClusterTab.advancedOptionsButton);
     I.dontSeeElement(dbaasPage.tabs.dbClusterTab.advancedOptions.fields.nodesNumberField);
+    I.seeElement(dbaasPage.tabs.dbClusterTab.externalAccess.enableExtAcceessLabel);
+    I.click(dbaasPage.tabs.dbClusterTab.externalAccess.enableExtAcceessToggle);
+    await adminPage.verifyTooltip(dbaasPage.tooltips.externalAccess);
+    await adminPage.verifyTooltip(dbaasPage.tooltips.internetFacing);
+    I.seeElement(dbaasPage.tabs.dbClusterTab.externalAccess.internetFacingLabel);
+    I.scrollTo(dbaasPage.tabs.dbClusterTab.externalAccess.sourceRangesLabel);
+    I.click(dbaasPage.tabs.dbClusterTab.externalAccess.addNewSourceRangeButton);
+    I.click(dbaasPage.tabs.dbClusterTab.externalAccess.addNewSourceRangeButton);
+    await dbaasPage.verifySourceRangeCount(3);
+    I.click(dbaasPage.tabs.dbClusterTab.externalAccess.deleteSourceRangeButton(2));
+    await dbaasPage.verifySourceRangeCount(2);
+    I.click(dbaasPage.tabs.dbClusterTab.externalAccess.deleteSourceRangeButton(1));
+    await dbaasPage.verifySourceRangeCount(1);
+    I.click(dbaasPage.tabs.dbClusterTab.externalAccess.deleteSourceRangeButton(0));
+    await dbaasPage.verifySourceRangeCount(1);
+
     I.click(dbaasPage.tabs.dbClusterTab.advancedOptionsButton);
     I.waitForElement(dbaasPage.tabs.dbClusterTab.advancedOptions.fields.nodesNumberField);
     I.scrollTo(dbaasPage.tabs.dbClusterTab.dbConfigurations.configurationsHeader('MySQL'));
     I.seeElement(dbaasPage.tabs.dbClusterTab.dbConfigurations.storageClassLabel);
     I.seeElement(dbaasPage.tabs.dbClusterTab.dbConfigurations.configurationLabel('MySQL'));
-    I.seeElement(dbaasPage.tabs.dbClusterTab.networkAndSecurity.networkAndSecurityHeader);
-    I.seeElement(dbaasPage.tabs.dbClusterTab.networkAndSecurity.exposeLabel);
-    await adminPage.verifyTooltip(dbaasPage.tooltips.expose);
-    I.seeElement(dbaasPage.tabs.dbClusterTab.networkAndSecurity.internetFacingLabel);
-    I.scrollTo(dbaasPage.tabs.dbClusterTab.networkAndSecurity.sourceRangesLabel);
-    I.click(dbaasPage.tabs.dbClusterTab.networkAndSecurity.addNewSourceRangeButton);
-    let sourceRange = await I.grabNumberOfVisibleElements(
-      dbaasPage.tabs.dbClusterTab.networkAndSecurity.sourceRangeInput);
-
-    assert.ok(sourceRange === 2, `There should be 2 Source Range Inputs but found ${sourceRange}`);
-
-    I.click(dbaasPage.tabs.dbClusterTab.networkAndSecurity.deleteSourceRangeButton);
-
-    sourceRange = await I.grabNumberOfVisibleElements(dbaasPage.tabs.dbClusterTab.networkAndSecurity.sourceRangeInput);
-
-    assert.ok(sourceRange === 1, `There should be 1 Source Range Input but found ${sourceRange}`);
-
     I.click(dbaasPage.tabs.dbClusterTab.basicOptions.fields.dbClusterDatabaseTypeField);
     I.fillField(dbaasPage.tabs.dbClusterTab.basicOptions.fields.dbClusterDatabaseTypeInputField, 'MongoDB');
     I.waitForElement(
@@ -410,9 +431,7 @@ Scenario('PMM-T1571 Verify Create DB Cluster page @dbaas',
     I.seeElement(dbaasPage.tabs.dbClusterTab.dbConfigurations.configurationsHeader('MongoDB'));
     I.seeElement(dbaasPage.tabs.dbClusterTab.dbConfigurations.storageClassLabel);
     I.scrollTo(dbaasPage.tabs.dbClusterTab.dbConfigurations.configurationLabel('MongoDB'));
-    I.seeElement(dbaasPage.tabs.dbClusterTab.networkAndSecurity.networkAndSecurityHeader);
-    I.seeElement(dbaasPage.tabs.dbClusterTab.networkAndSecurity.exposeLabel);
-    I.seeElement(dbaasPage.tabs.dbClusterTab.networkAndSecurity.internetFacingLabel);
-    I.seeElement(dbaasPage.tabs.dbClusterTab.networkAndSecurity.sourceRangesLabel);
+    I.seeElement(dbaasPage.tabs.dbClusterTab.externalAccess.internetFacingLabel);
+    I.seeElement(dbaasPage.tabs.dbClusterTab.externalAccess.sourceRangesLabel);
   }
 );

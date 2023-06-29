@@ -136,25 +136,6 @@ class Grafana extends Helper {
     page.hover(locator);
   }
 
-  // eslint-disable-next-line no-underscore-dangle, class-methods-use-this
-  async _before(test) {
-    const allure = codeceptjs.container.plugins('allure');
-
-    switch (true) {
-      case test.title.includes('[blocker]'):
-        allure.severity('blocker');
-        break;
-      case test.title.includes('[critical]'):
-        allure.severity('critical');
-        break;
-      case test.title.includes('[minor]'):
-        allure.severity('minor');
-        break;
-      default:
-        allure.severity('normal');
-    }
-  }
-
   async createUser(username, password) {
     const apiContext = this.helpers.REST;
     const body = {
@@ -206,7 +187,7 @@ class Grafana extends Helper {
     return resp.data;
   }
 
-  async verifyCommand(command, output, result = 'pass', returnErrorPipe = false) {
+  async verifyCommand(command, output = null, result = 'pass', returnErrorPipe = false) {
     const { stdout, stderr, code } = shell.exec(command.replace(/(\r\n|\n|\r)/gm, ''), { silent: true });
 
     if (output && result === 'pass') {
@@ -219,17 +200,9 @@ class Grafana extends Helper {
       assert.ok(code !== 0, `The "${command}" command was expected to exit with error code, but exited with success code: "${code}"`);
     }
 
-    if (returnErrorPipe) return stderr;
+    if (returnErrorPipe) return stderr.trim();
 
-    return stdout;
-  }
-
-  async suppressTour() {
-    const apiContext = this.helpers.REST;
-    const headers = { Authorization: `Basic ${await this.getAuth()}` };
-    const resp = await apiContext.sendPutRequest('v1/user', { product_tour_completed: true }, headers);
-
-    assert.equal(resp.status, 200, 'Failed to set tour finished flag!');
+    return stdout.trim();
   }
 }
 

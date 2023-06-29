@@ -36,6 +36,7 @@ module.exports = {
     clipboardLink: locate(I.getPopUpLocator()).find('span'),
     mainMetricDropdown: locate('$group-by'),
     selectedMainMetric: locate('$group-by').find('//div[@class="ant-select-selection-selected-value"]'),
+    tooltipContent: locate('div.tippy-content'),
   },
   messages: {
     noResultTableText: 'No queries available for this combination of filters in the selected time frame',
@@ -51,6 +52,7 @@ module.exports = {
   getMetricLocatorInDropdown: (name) => locate('[role="listbox"]').find(`[label='${name}']`),
 
   getCellValueLocator: (rowNumber, columnNumber) => `div.tr-${rowNumber} > div:nth-child(${columnNumber + 2}) span > div > span`,
+  getLoadLocator: (rowNumber) => `div.tr-${rowNumber} .td canvas`,
 
   // using below to concatenate locators
   getMetricSortingLocator: (columnNumber) => `(//a[@data-testid='sort-by-control'])[${columnNumber}]`,
@@ -111,7 +113,7 @@ module.exports = {
     I.click(this.elements.mainMetricDropdown);
     I.click(this.mainMetricFromDropdown(newMainMetric));
     I.dontSeeElement(this.mainMetricByName(oldMainMetric));
-    I.seeElement(this.mainMetricByName(newMainMetric));
+    I.waitForElement(this.mainMetricByName(newMainMetric), 10);
   },
 
   async verifyMainMetric(mainMetric) {
@@ -219,6 +221,18 @@ module.exports = {
     I.waitForVisible(this.elements.selectedRow, 10);
   },
 
+  selectRowByText(text) {
+    const rowSelector = `//div[@role="row" and descendant::div[text()='${text}']]`;
+    //div[@role='row' and descendant::div[text()='select * from test.cities where id = ?']]
+    //div[@role="row" and descendant::div[text()='${text}']]
+
+    // I.wait(5000);
+    I.waitForElement(rowSelector, 60);
+    I.forceClick(rowSelector);
+    this.waitForOverviewLoaded();
+    I.waitForVisible(this.elements.selectedRow, 10);
+  },
+
   async getQueryFromRow(rowNumber) {
     const rowSelector = this.getRowLocator(rowNumber);
 
@@ -250,18 +264,11 @@ module.exports = {
     I.waitForVisible(this.elements.tooltipQueryValue, 30);
   },
 
-  async isNoDataMessageVisibleAfterRefresh() {
-    I.click(this.buttons.refresh);
-
-    return Number(await I.grabNumberOfVisibleElements(this.elements.noResultTableText)) === 0;
-  },
-
   async searchByValue(value, refresh = false) {
     I.waitForVisible(this.fields.searchBy, 30);
     I.clearField(this.fields.searchBy);
     I.fillField(this.fields.searchBy, value);
     I.pressKey('Enter');
-    // await I.asyncWaitFor(async () => await this.isNoDataMessageVisibleAfterRefresh(), 300);
   },
 
   async verifySearchByValue(value) {

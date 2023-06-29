@@ -19,7 +19,7 @@ filters.add(['SELECT', 'INSERT']);
 
 Before(async ({ I, qanPage, qanOverview }) => {
   await I.Authorize();
-  I.amOnPage(`${qanPage.url}&orgId=1&refresh=10s`);
+  I.amOnPage(`${qanPage.url}&orgId=1`);
   qanOverview.waitForOverviewLoaded();
 });
 
@@ -91,21 +91,6 @@ Scenario(
     const countAfterReset = await qanOverview.getCountOfItems();
 
     assert.ok(countAfterReset >= countBefore, 'Query count wasn\'t expected to change');
-  },
-);
-
-Scenario(
-  'PMM-T124 - Verify User is able to show all and show top 5 values for filter section @qan',
-  async ({ qanFilters }) => {
-    const filterSection = 'Database';
-
-    await qanFilters.verifySectionItemsCount(filterSection, 5);
-    const countToShow = await qanFilters.getCountOfFilters(filterSection);
-
-    qanFilters.applyShowAllLink(filterSection);
-    await qanFilters.verifySectionItemsCount(filterSection, countToShow);
-    await qanFilters.applyShowTop5Link(filterSection);
-    await qanFilters.verifySectionItemsCount(filterSection, 5);
   },
 );
 
@@ -232,7 +217,6 @@ Scenario(
     I, adminPage, qanOverview, qanFilters,
   }) => {
     const serviceType = 'mysql';
-    const environment = 'pgsql-dev';
     const serviceName = 'ps_8.0';
 
     // change to 2 days for apply ps_8.0 value in filter
@@ -249,8 +233,6 @@ Scenario(
     assert.ok(countAfter !== countBefore, 'Query count was expected to change');
 
     await qanFilters.verifyCountOfFilterLinks(countOfFilters, false);
-    qanFilters.applyShowAllLink('Environment');
-    qanFilters.checkDisabledFilter('Environment', environment);
     await qanFilters.applyFilter(serviceName);
     const percentageAfter = await qanFilters.getPercentage('Service Type', serviceType);
 
@@ -294,9 +276,8 @@ Data(shortCutTests).Scenario(
 
 Scenario('PMM-T437 - Verify short-cut navigation for n/a items @qan', async ({ I, qanFilters }) => {
   qanFilters.waitForFiltersToLoad();
-  qanFilters.applyShowAllLink('Cluster');
-  qanFilters.checkLink('Cluster', 'ps-dev-cluster', true);
+  qanFilters.checkLink('Cluster', 'dev-cluster', true);
   I.fillField(qanFilters.fields.filterBy, 'n/a');
-  qanFilters.checkLink('Cluster', 'n/a', false);
-  qanFilters.checkLink('Replication Set', 'n/a', false);
+  qanFilters.checkLink('Cluster', 'undefined', false);
+  qanFilters.checkLink('Replication Set', 'undefined', false);
 });

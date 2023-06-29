@@ -1,6 +1,7 @@
 import type { PlaywrightTestConfig } from '@playwright/test';
 import { devices } from '@playwright/test';
 import * as dotenv from 'dotenv';
+import Duration from './helpers/Duration';
 
 /**
  * Read environment variables from file.
@@ -15,7 +16,7 @@ dotenv.config();
  */
 const config: PlaywrightTestConfig = {
   testDir: './tests',
-  timeout: 240 * 1000,
+  timeout: Duration.TenMinutes,
   expect: {
     timeout: 5000,
   },
@@ -26,8 +27,8 @@ const config: PlaywrightTestConfig = {
   workers: 1,
   reporter: [
     ['github'],
-    ['line'],
-    ['html', { open: 'never' }]
+    ['list'],
+    ['html', { open: 'never', outputFolder: './playwright-report' }]
   ],
 
   use: {

@@ -68,7 +68,9 @@ Data(instances).Scenario(
 
     // Check Remote Instance also added and have running status
     pmmInventoryPage.verifyRemoteServiceIsDisplayed(remoteServiceName);
-    await pmmInventoryPage.verifyAgentHasStatusRunning(remoteServiceName);
+
+    // Skip due to new inventory
+    // await pmmInventoryPage.verifyAgentHasStatusRunning(remoteServiceName);
   },
 );
 
@@ -104,13 +106,15 @@ Data(instances).Scenario(
   'PMM-T926 PMM-T927 Verify there is no possibility to add MongoDB Service with only CA file specified,'
     + 'Verify there is no possibility to add MongoDB Service with only certificate file specified @ssl @ssl-mongo @ssl-remote @not-ui-pipeline',
   async ({
-    I, current, grafanaAPI,
+    I, current, dashboardPage,
   }) => {
     const {
       container,
     } = current;
     let responseMessage = 'Connection check failed: server selection error: server selection timeout, current topology:';
     let command = `docker exec ${container} pmm-admin add mongodb --tls --tls-skip-verify --authentication-mechanism=MONGODB-X509 --authentication-database=$external --tls-ca-file=/nodes/certificates/ca.crt TLS_MongoDB_Service`;
+
+    I.amOnPage(dashboardPage.mongoDbInstanceOverview.url);
 
     let output = await I.verifyCommand(command, responseMessage, 'fail');
 
@@ -234,18 +238,22 @@ Data(instances).Scenario(
 
     // Check Remote Instance also added and have running status
     pmmInventoryPage.verifyRemoteServiceIsDisplayed(remoteServiceName);
-    await pmmInventoryPage.verifyAgentHasStatusRunning(remoteServiceName);
-    // Check Remote Instance also added and have running status
-    await pmmInventoryPage.openServices();
-    const serviceId = await pmmInventoryPage.getServiceId(remoteServiceName);
+    await inventoryAPI.verifyServiceExistsAndHasRunningStatus(
+      {
+        serviceType: 'MONGODB_SERVICE',
+        service: 'mongodb',
+      },
+      serviceName,
+    );
+
+    const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName('MONGODB_SERVICE', remoteServiceName);
 
     // Check Remote Instance also added and have correct max_query_length option set
-    await pmmInventoryPage.openAgents();
-
+    await pmmInventoryPage.openAgents(service_id);
     if (maxQueryLength !== '') {
-      await pmmInventoryPage.checkAgentOtherDetailsSection('max_query_length:', `max_query_length: ${maxQueryLength}`, remoteServiceName, serviceId);
+      await pmmInventoryPage.checkAgentOtherDetailsSection('Qan mongodb profiler agent', `max_query_length=${maxQueryLength}`);
     } else {
-      await pmmInventoryPage.checkAgentOtherDetailsMissing('max_query_length:', serviceId);
+      await pmmInventoryPage.checkAgentOtherDetailsSection('Qan mongodb profiler agent', `max_query_length=${maxQueryLength}`, false);
     }
   },
 );

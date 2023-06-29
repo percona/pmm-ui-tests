@@ -192,7 +192,7 @@ module.exports = {
     },
     haproxy: {
       haproxy_2: {
-        host: (PMM_SERVER_OVF_AMI_SETUP === 'true' ? EXTERNAL_EXPORTER_HOST : '192.168.0.1'),
+        host: (PMM_SERVER_OVF_AMI_SETUP === 'true' ? EXTERNAL_EXPORTER_HOST : 'HAPROXY'),
         port: '42100',
         clusterName: 'haproxy_clst',
       },

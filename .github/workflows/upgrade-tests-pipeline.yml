@@ -1,0 +1,324 @@
+---
+name: upgrade-tests-pipeline
+
+on:
+  workflow_call:
+    inputs:
+      pmm_ui_tests_branch:
+        description: 'pmm-ui-tests repository branch'
+        default: 'main'
+        type: string
+        required: true
+      pre_upgrade_tests:
+        description: 'Tag(s) to run tests before upgrade'
+        type: string
+        required: true
+      post_upgrade_tests:
+        description: 'Tag(s) to run tests after upgrade'
+        type: string
+        required: true
+      pmm_server_start_version:
+        description: 'PMM Server version to upgrade (latest|dev-latest|x.xx.x|x.xx.x-rc)'
+        default: 'latest'
+        type: string
+        required: true
+      pmm_client_start_version:
+        description: 'PMM Client version to upgrade from (dev-latest|pmm2-latest|pmm2-rc|x.xx.x)'
+        default: 'pmm2-latest'
+        type: string
+        required: true
+      upgrade_type:
+        description: 'Upgrade way:'
+        required: true
+        default: 'UI way'
+        type: string
+      pmm_qa_branch:
+        description: 'pmm-qa repository branch(for setup)'
+        default: 'main'
+        type: string
+        required: true
+      services_list:
+        description: 'Services for pmm-server'
+        default: '--addclient=ps,1'
+        type: string
+        required: true
+      repository:
+        description: 'Upgrade to:'
+        required: true
+        default: 'dev-latest'
+        type: string
+      version_string_from:
+        description: 'start version string'
+        type: string
+      version_string_to:
+        description: 'finish version string'
+        type: string
+
+  workflow_dispatch:
+    inputs:
+      pmm_ui_tests_branch:
+        description: 'pmm-ui-tests repository branch'
+        default: 'main'
+        required: true
+      pre_upgrade_tests:
+        description: 'Tag(s) to run tests before upgrade'
+        required: true
+      post_upgrade_tests:
+        description: 'Tag(s) to run tests after upgrade'
+        required: true
+      pmm_server_start_version:
+        description: 'PMM Server version to upgrade from (latest|dev-latest|x.xx.x|x.xx.x-rc)'
+        default: 'latest'
+        required: true
+      pmm_client_start_version:
+        description: 'PMM Client version to upgrade from (dev-latest|pmm2-latest|pmm2-rc|x.xx.x)'
+        default: 'pmm2-latest'
+        required: true
+      upgrade_type:
+        description: 'Upgrade way:'
+        required: true
+        default: 'UI way'
+        type: choice
+        options:
+          - 'UI way'
+          - 'Docker way'
+      pmm_qa_branch:
+        description: 'pmm-qa repository branch(for setup)'
+        default: 'main'
+        required: true
+      services_list:
+        description: 'Services for pmm-server'
+        default: '--addclient=ps,1'
+        required: true
+      repository:
+        description: 'Upgrade to:'
+        required: true
+        default: 'dev-latest'
+        type: choice
+        options:
+          - 'release'
+          - 'release candidate'
+          - 'dev-latest'
+
+jobs:
+  tests:
+    name: '${{ inputs.upgrade_type }} "${{ inputs.version_string_from || inputs.pmm_server_start_version }}" -> "${{ inputs.version_string_to || inputs.repository }}"'
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    env:
+      # TODO: each variable/group must have comment where it is used
+      SHA: ${{ inputs.sha || 'null' }}
+      PMM_BASE_URL: https://127.0.0.1
+      ADMIN_PASSWORD: admin
+
+      OKTA_TOKEN: ${{ secrets.OKTA_TOKEN }}
+      OAUTH_ISSUER_URL: 'https://id-dev.percona.com/oauth2/aus15pi5rjdtfrcH51d7'
+      OAUTH_CLIENT_ID: ${{ secrets.OKTA_OAUTH_CLIENT_ID }}
+      OAUTH_CLIENT_SECRET: ${{ secrets.OKTA_OAUTH_CLIENT_SECRET }}
+      OAUTH_PMM_CLIENT_ID: ${{ secrets.OKTA_OAUTH_PMM_CLIENT_ID }}
+      OAUTH_PMM_CLIENT_SECRET: ${{ secrets.OKTA_OAUTH_PMM_CLIENT_SECRET }}
+      OAUTH_DEV_HOST: ${{ secrets.OAUTH_DEV_HOST }}
+      OAUTH_SCOPES: percona
+
+      ### inject "upgrade from" version for test conditional
+      PMM_SERVER_START_VERSION: ${{ inputs.version_string_from || inputs.pmm_server_start_version }}
+
+      # Variables for E2E tests
+      MAILOSAUR_API_KEY: ${{ secrets.MAILOSAUR_API_KEY }}
+      MAILOSAUR_UI_TESTS_SERVER_ID: ${{ secrets.MAILOSAUR_UI_TESTS_SERVER_ID }}
+      MAILOSAUR_API_TESTS_SERVER_ID: ${{ secrets.MAILOSAUR_API_TESTS_SERVER_ID }}
+
+      SERVICENOW_LOGIN: percona_platform
+      SERVICENOW_PASSWORD: ${{ secrets.SERVICENOW_PASSWORD }}
+      SERVICENOW_DEV_URL: 'https://perconadev.service-now.com/api/x_pellc_percona_pl/platform/settest'
+
+    steps:
+      - name: 'PMM Server(${{ inputs.pmm_server_start_version }}) and UI tests with tags "${{ inputs.pre_upgrade_tests }}, ${{ inputs.post_upgrade_tests }}" from pmm-ui-tests branch: ${{ inputs.pmm_ui_tests_branch }}'
+        if: ${{ github.event_name == 'workflow_dispatch' && env.SHA != 'null' }}
+        uses: percona/gh-action-Sibz-github-status-action@v1
+        with:
+          context: 'pmm2-ui-tests'
+          description: 'Tests execution has been started'
+          state: 'pending'
+          repository: ${{ inputs.repository }}
+          target_url: 'https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}'
+          sha: ${{ env.SHA }}
+
+      - name: 'Convert choice into repo'
+        uses: actions/github-script@v6
+        id: target_repo
+        with:
+          script: |
+            switch ('${{ inputs.repository }}') {
+              case 'release':
+                return 'release';
+              case 'release candidate':
+                return 'testing'
+              case 'dev-latest':
+                return 'experimental'
+            }
+          result-encoding: string
+
+      - name: 'Select <PMM Server> from image'
+        uses: actions/github-script@v6
+        id: pmm_server_start_image
+        with:
+          script: |
+            const tag = '${{ inputs.pmm_server_start_version }}';
+            let repo = 'percona';
+            if (tag.includes('dev-') || tag.includes('-rc')) {
+              repo = 'perconalab';
+            }
+            console.log(JSON.stringify(context.payload));
+            return `${repo}/pmm-server:${tag}`
+          result-encoding: string
+
+      - name: 'Select <PMM Server> to image'
+        id: pmm_server_to_image
+        shell: bash
+        run: |
+          if [[ "${{ inputs.repository }}" = "dev-latest" ]]; then
+            echo "IMAGE=perconalab/pmm-server:dev-latest" >> "$GITHUB_OUTPUT"
+          fi
+          if [[ "${{ inputs.repository }}" = "release candidate" ]]; then
+            if [[ -z "${{ inputs.version_string_to }}" ]]; then
+              rc_latest=$(wget -q "https://registry.hub.docker.com/v2/repositories/perconalab/pmm-client/tags?page_size=25&name=rc" -O - | jq -r .results[].name  | grep 2.*.*-rc$ | sort -V | tail -n1)
+              echo "IMAGE=perconalab/pmm-server:$rc_latest" >> "$GITHUB_OUTPUT"
+            else
+              echo "IMAGE=perconalab/pmm-server:${{ inputs.version_string_to }}" >> "$GITHUB_OUTPUT"
+            fi
+          fi
+          if [[ "${{ inputs.repository }}" = "release" ]]; then
+            if [[ -z "${{ inputs.version_string_to }}" ]]; then
+              r_latest=$(wget -q https://registry.hub.docker.com/v2/repositories/percona/pmm-client/tags -O - | jq -r .results[].name  | grep -v latest | sort -V | tail -n1)
+              echo "IMAGE=percona/pmm-server:$r_latest" >> "$GITHUB_OUTPUT"
+            else
+              echo "IMAGE=percona/pmm-server:${{ inputs.version_string_to }}" >> "$GITHUB_OUTPUT"
+            fi
+          fi
+
+      - name: 'Checkout UI tests: "${{ inputs.pmm_ui_tests_branch }}"'
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ inputs.pmm_ui_tests_branch }}
+          repository: percona/pmm-ui-tests
+          path: ./pmm-ui-tests
+
+      - name: 'Install playwright'
+        working-directory: ./pmm-ui-tests/playwright-tests
+        run: |
+          npm install
+          npx playwright install
+
+      - name: 'Checkout pmm-qa: "${{ inputs.pmm_qa_branch }}"'
+        uses: actions/checkout@v3
+        with:
+          # token: ${{ secrets.ROBOT_TOKEN }}
+          repository: percona/pmm-qa
+          ref: ${{ inputs.pmm_qa_branch }}
+          path: ./pmm-qa
+
+      - name: 'Setup <PMM Sever>: "${{ steps.pmm_server_start_image.outputs.result }}"'
+        working-directory: pmm-qa/pmm-integration
+        run: |
+          npm install
+          sudo npx ts-node ./integration-setup.ts --ci --setup-docker-pmm-server --rbac --pmm-server-docker-tag=${{ steps.pmm_server_start_image.outputs.result }} --pmm-client-version=${{ inputs.pmm_client_start_version }}          
+          timeout 100 bash -c 'while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' localhost/ping)" != "200" ]]; do sleep 5; done' || false
+
+      - name: 'Setup <PMM Client: ${{ inputs.pmm_client_start_version }}> and Services'
+        run: |
+          # TODO: un-hardcode pmm server ip and admin password
+          sudo bash ./pmm-qa/pmm-tests/pmm2-client-setup.sh --pmm_server_ip 127.0.0.1 --client_version ${{ inputs.pmm_client_start_version }} --admin_password admin --use_metrics_mode no
+          sudo bash ./pmm-qa/pmm-tests/pmm-framework.sh \
+            --download \
+            ${{ inputs.services_list }} \
+            --pmm2 \
+            --pmm2-server-ip=127.0.0.1
+          # TODO: change sleep into fluent wait
+          sleep 30
+          sudo pmm-admin list
+        shell: bash
+
+      - name: 'Tests <BEFORE> upgrade'
+        id: ui-tests-flagged
+        working-directory: ./pmm-ui-tests/playwright-tests
+        run: npx playwright test --grep="${{ inputs.pre_upgrade_tests }}" --pass-with-no-tests
+        env:
+          NODE_TLS_REJECT_UNAUTHORIZED: 0
+
+      - name: 'Enable <${{ steps.target_repo.outputs.result }}> repo in pmm-server container'
+        if: ${{ inputs.upgrade_type == 'UI way' }}
+        working-directory: ./pmm-ui-tests/playwright-tests
+        run: |
+          docker exec pmm-integration-server yum update -y percona-release || true
+          if [[ "${{ inputs.repository }}" != "release" ]]; then
+            docker exec pmm-integration-server sed -i'' -e 's^/release/^/${{ steps.target_repo.outputs.result }}/^' /etc/yum.repos.d/pmm2-server.repo
+            docker exec pmm-integration-server percona-release enable-only original ${{ steps.target_repo.outputs.result }}
+          fi
+          docker exec pmm-integration-server yum clean all
+          
+          # TODO: could be exchanged to the clicking "refresh" button in tests
+          sleep 60
+        env:
+          NODE_TLS_REJECT_UNAUTHORIZED: 0
+
+      - name: 'Upgrade pmm-server: <UI way>'
+        if: ${{ inputs.upgrade_type == 'UI way' }}
+        working-directory: ./pmm-ui-tests/playwright-tests
+        run: npx playwright test --grep="@pmm-upgrade"
+        env:
+          NODE_TLS_REJECT_UNAUTHORIZED: 0
+
+      - name: 'Upgrade pmm-server: <Docker way>'
+        if: ${{ inputs.upgrade_type == 'Docker way' }}
+        working-directory: ./pmm-ui-tests
+        run: |
+          # TODO: implement qa-integration docker upgrade
+          echo "Upgrading to ${{ steps.pmm_server_to_image.outputs.IMAGE }}"
+          docker stop pmm-integration-server
+          docker pull ${{ steps.pmm_server_to_image.outputs.IMAGE }}
+          docker rename pmm-integration-server pmm-integration-server-old
+          docker run --detach --restart always \
+            --network="pmm-integration-network" \
+            -e PMM_DEBUG=1 \
+            --publish 80:80 --publish 443:443 \
+            --volumes-from pmm-integration-server-data \
+            --name pmm-integration-server \
+            ${{ steps.pmm_server_to_image.outputs.IMAGE }}
+          sleep 30
+
+      - name: 'Tests <before PMM Client> upgrade'
+        working-directory: ./pmm-ui-tests/playwright-tests
+        run: |
+          echo "Hook to inject tests: test are coming soon..."
+
+      - name: 'Upgrade <PMM Client> to the latest on "${{ steps.target_repo.outputs.result }}" repo'
+        if: ${{ inputs.pmm_client_upgrade_version == '' }}
+        run: |
+          sudo percona-release enable-only original ${{ steps.target_repo.outputs.result }}
+          sudo apt-get update -y
+          sudo apt -y install pmm2-client
+          
+          # TODO: add client check after update here
+
+      - name: 'Tests <AFTER> upgrading Client and Server'
+        working-directory: ./pmm-ui-tests/playwright-tests
+        run: npx playwright test --grep="${{ inputs.post_upgrade_tests }}" --pass-with-no-tests
+        env:
+          NODE_TLS_REJECT_UNAUTHORIZED: 0
+
+      - name: 'Create report name'
+        if: failure()
+        run: |
+          # TODO: add job id for matrix call
+          job_tag=$(echo "${{ inputs.pre_upgrade_tests }}" | sed -e "s/-pre-upgrade//" -e "s/@//")
+          report_name="$job_tag"-${{ inputs.version_string_from || inputs.pmm_server_start_version }}-report
+          echo $report_name
+          echo "REPORT_NAME=$report_name" >> $GITHUB_ENV
+
+      - name: Generate and Attach the report
+        if: failure()
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ env.REPORT_NAME }}
+          path: ./pmm-ui-tests/playwright-tests/playwright-report

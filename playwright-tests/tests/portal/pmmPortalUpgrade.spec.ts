@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test';
 import User from '@support/types/user.interface';
-import apiHelper from '@api/apiHelper';
+import apiHelper from '@api/helpers/apiHelper';
 import { fileHelper } from '@helpers/FileHelper';
 import { portalAPI } from '@api/portalApi';
 import { serviceNowAPI } from '@api/serviceNowApi';
@@ -9,6 +9,7 @@ import Duration from '@helpers/Duration';
 import HomeDashboard from '@pages/HomeDashboard.page';
 import grafanaHelper from '@helpers/GrafanaHelper';
 import { oktaAPI } from '@api/okta';
+import {api} from "@api/api";
 
 test.describe('Spec file for PMM connected the portal', async () => {
   test.describe.configure({ retries: 0 });
@@ -22,8 +23,7 @@ test.describe('Spec file for PMM connected the portal', async () => {
 
   test.beforeAll(async () => {
     if (!pmmVersion) {
-      const versionString = (await apiHelper.getPmmVersion()).versionMinor;
-      pmmVersion = parseInt(versionString);
+      pmmVersion = (await api.pmm.serverV1.getPmmVersion()).minor;
     }
     const userCredentials = await fileHelper.readfile(fileName);
     let adminToken: string;

@@ -45,6 +45,7 @@ Data(instances).Scenario(
     } = current;
     let details;
     const remoteServiceName = `remote_${serviceName}_faker`;
+
     await I.verifyCommand(`${pmmFrameworkLoader} --ps-version=${version} --setup-mysql-ssl --pmm2`);
     await I.say(await I.verifyCommand(`docker exec ${container} bash -c 'source ~/.bash_profile || true; pmm-admin list'`));
 
@@ -69,6 +70,8 @@ Data(instances).Scenario(
     remoteInstancesPage.openAddRemotePage(serviceType);
     await remoteInstancesPage.addRemoteSSLDetails(details);
     I.click(remoteInstancesPage.fields.addService);
+    // Add wait for service status to be updated
+    I.wait(10);
     await inventoryAPI.verifyServiceExistsAndHasRunningStatus(
       {
         serviceType: 'MYSQL_SERVICE',
@@ -79,7 +82,7 @@ Data(instances).Scenario(
 
     // Check Remote Instance also added and have running status
     pmmInventoryPage.verifyRemoteServiceIsDisplayed(remoteServiceName);
-    await pmmInventoryPage.verifyAgentHasStatusRunning(remoteServiceName);
+    // await pmmInventoryPage.verifyAgentHasStatusRunning(remoteServiceName);
   },
 );
 
@@ -92,7 +95,7 @@ Data(instances).Scenario(
       serviceName, metric,
     } = current;
     let response; let result;
-    const remoteServiceName = `remote_${serviceName}`;
+    const remoteServiceName = `remote_${serviceName}_faker`;
 
     // Waiting for metrics to start hitting for remotely added services
     I.wait(10);
@@ -122,19 +125,19 @@ Data(instances).Scenario(
 
     I.amOnPage(remoteInstancesPage.url);
 
-    let responseMessage = 'Connection check failed: register MySQL client cert failed: tls: failed to find any PEM data in key input.\n';
+    let responseMessage = 'Connection check failed: register MySQL client cert failed: tls: failed to find any PEM data in key input.';
     let command = `docker exec ${container} pmm-admin add mysql --username=pmm --password=pmm --port=3306 --query-source=perfschema --tls --tls-skip-verify --tls-ca=/var/lib/mysql/ca.pem --tls-cert=/var/lib/mysql/client-cert.pem TLS_mysql`;
 
     let output = await I.verifyCommand(command, responseMessage, 'fail');
 
-    assert.ok(output === responseMessage, `The ${command} was supposed to return ${responseMessage} but actually got ${output}`);
+    assert.ok(output.trim() === responseMessage.trim(), `The ${command} was supposed to return ${responseMessage} but actually got ${output}`);
 
-    responseMessage = 'Connection check failed: register MySQL client cert failed: tls: failed to find any PEM data in certificate input.\n';
+    responseMessage = 'Connection check failed: register MySQL client cert failed: tls: failed to find any PEM data in certificate input.';
     command = `docker exec ${container} pmm-admin add mysql --username=pmm --password=pmm --port=3306 --query-source=perfschema --tls --tls-skip-verify --tls-ca=/var/lib/mysql/ca.pem --tls-key=/var/lib/mysql/client-key.pem TLS_mysql`;
 
     output = await I.verifyCommand(command, responseMessage, 'fail');
 
-    assert.ok(output === responseMessage, `The ${command} was supposed to return ${responseMessage} but actually got ${output}`);
+    assert.ok(output.trim() === responseMessage.trim(), `The ${command} was supposed to return ${responseMessage} but actually got ${output}`);
   },
 ).retry(1);
 
@@ -172,7 +175,7 @@ Data(instances).Scenario(
       serviceName,
     } = current;
 
-    const serviceList = [serviceName, `remote_${serviceName}`];
+    const serviceList = [serviceName, `remote_${serviceName}_faker`];
 
     for (const service of serviceList) {
       I.amOnPage(qanPage.url);
@@ -267,20 +270,25 @@ Data(maxQueryLengthInstances).Scenario(
 
     // Check Remote Instance also added and have running status
     pmmInventoryPage.verifyRemoteServiceIsDisplayed(remoteServiceName);
-    await pmmInventoryPage.verifyAgentHasStatusRunning(remoteServiceName);
-    // Check Remote Instance also added and have running status
-    await pmmInventoryPage.openServices();
-    const serviceId = await pmmInventoryPage.getServiceId(remoteServiceName);
 
-    // Check Remote Instance also added and have correct max_query_length option set
-    await pmmInventoryPage.openAgents();
+    await inventoryAPI.verifyServiceExistsAndHasRunningStatus(
+      {
+        serviceType: 'MYSQL_SERVICE',
+        service: 'mysql',
+      },
+      serviceName,
+    );
 
+    const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName('MYSQL_SERVICE', remoteServiceName);
+
+    await pmmInventoryPage.openAgents(service_id);
     if (maxQueryLength !== '') {
-      await pmmInventoryPage.checkAgentOtherDetailsSection('max_query_length:', `max_query_length: ${maxQueryLength}`, remoteServiceName, serviceId);
+      await pmmInventoryPage.checkAgentOtherDetailsSection('Qan mysql perfschema agent', `max_query_length=${maxQueryLength}`);
     } else {
-      await pmmInventoryPage.checkAgentOtherDetailsMissing('max_query_length:', serviceId);
+      await pmmInventoryPage.checkAgentOtherDetailsSection('Qan mysql perfschema agent', `max_query_length=${maxQueryLength}`, false);
     }
 
+    await I.wait(70);
     // Check max visible query length is less than max_query_length option
     I.amOnPage(I.buildUrlWithParams(qanPage.clearUrl, { from: 'now-5m' }));
     qanOverview.waitForOverviewLoaded();

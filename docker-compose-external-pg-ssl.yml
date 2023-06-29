@@ -1,0 +1,80 @@
+---
+version: '3.8'
+
+volumes:
+  pmm-server-external-pg-ssl:
+
+services:
+  ca-generator:
+    image: phusion/baseimage:focal-1.2.0
+    volumes:
+      - ./ssl:/certs
+    entrypoint: sh -c "apt install openssl && openssl genrsa -out /certs/ca.key 2048 && openssl req -x509 -new -nodes -key /certs/ca.key -sha256 -days 3650 -subj '/CN=CA' -out /certs/ca.crt"
+
+  cert-generator:
+    image: phusion/baseimage:focal-1.2.0
+    depends_on:
+      - ca-generator
+    volumes:
+      - ./ssl:/certs
+    entrypoint: sh -c "apt install openssl && openssl genrsa -out /certs/server.key 2048 && openssl req -new -key /certs/server.key -subj '/CN=localhost' -out /certs/server.csr && openssl x509 -req -in /certs/server.csr -CA /certs/ca.crt -CAkey /certs/ca.key -CAcreateserial -out /certs/server.crt -days 365 -sha256"
+
+  client-cert-generator:
+    image: phusion/baseimage:focal-1.2.0
+    depends_on:
+      - ca-generator
+    volumes:
+      - ./ssl:/certs
+    entrypoint: sh -c "apt install openssl && openssl genrsa -out /certs/client.key 2048 && openssl req -new -key /certs/client.key -subj '/CN=client' -out /certs/client.csr && openssl x509 -req -in /certs/client.csr -CA /certs/ca.crt -CAkey /certs/ca.key -CAcreateserial -out /certs/client.crt -days 365 -sha256"
+
+
+  external-postgres-ssl:
+    image: ${POSTGRES_IMAGE:-perconalab/percona-distribution-postgresql:14}
+    container_name: external-postgres-ssl
+    restart: always
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    depends_on:
+      - cert-generator
+    environment:
+      - POSTGRES_PASSWORD=externalPG^*&@
+    volumes:
+      - ./data:/var/lib/postgresql/data
+      - ./ssl:/var/lib/postgresql/ssl
+    command: postgres -c ssl=on -c ssl_cert_file=/var/lib/postgresql/ssl/server.crt -c ssl_key_file=/var/lib/postgresql/ssl/server.key -c shared_preload_libraries=pg_stat_statements -c pg_stat_statements.track=all -c max_connections=1000
+
+  create_extention_ssl:
+    image: ${POSTGRES_IMAGE:-perconalab/percona-distribution-postgresql:14}
+    container_name: create_extention_ssl
+    command: >
+      psql -Upostgres -hexternal-postgres-ssl -dpostgres -c 'CREATE EXTENSION IF NOT EXISTS pg_stat_statements;'
+    depends_on:
+      external-postgres-ssl:
+        condition: service_healthy
+    environment:
+      - PGPASSWORD=externalPG^*&@
+
+  pmm-server-external-postgres-ssl:
+    image: ${PMM_SERVER_IMAGE:-perconalab/pmm-server:dev-latest}
+    container_name: pmm-server-external-postgres-ssl
+    depends_on:
+      - create_extention_ssl
+    restart: always
+    ports:
+      - '8082:80'
+      - '447:443'
+    environment:
+      - PERCONA_TEST_POSTGRES_DBNAME=postgres
+      - PERCONA_TEST_POSTGRES_ADDR=external-postgres-ssl:5432
+      - PERCONA_TEST_POSTGRES_USERNAME=postgres
+      - PERCONA_TEST_POSTGRES_DBPASSWORD=externalPG^*&@
+      - PERCONA_TEST_POSTGRES_SSL_MODE=verify-ca
+      - PERCONA_TEST_POSTGRES_SSL_CA_PATH=/etc/ssl/postgresql/ca.crt
+      - PERCONA_TEST_POSTGRES_SSL_KEY_PATH=/etc/ssl/postgresql/client.key
+      - PERCONA_TEST_POSTGRES_SSL_CERT_PATH=/etc/ssl/postgresql/client.crt
+    volumes:
+      - pmm-server-external-pg-ssl:/srv
+      - ./ssl:/etc/ssl/postgresql

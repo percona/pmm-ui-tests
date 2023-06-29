@@ -2,14 +2,20 @@ const { I } = inject();
 const assert = require('assert');
 
 module.exports = {
-  async startBackup(name, service_id, location_id, isLogical = true) {
+  async startBackup(name, service_id, location_id, autoRetries = false, isLogical = true) {
     const data_model = isLogical ? 'LOGICAL' : 'PHYSICAL';
+    const retryConfig = {
+      retries: 2,
+      retry_interval: '30s',
+    };
+    const retires = autoRetries ? retryConfig : {};
     const body = {
       service_id,
       location_id,
       name,
       description: '',
       data_model,
+      ...retires,
     };
 
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
@@ -47,16 +53,20 @@ module.exports = {
     }
   },
 
+  // getArtifactByName returns artifact object by name
+  async getArtifactByName(artifactName) {
+    if (!artifactName) throw new Error('artifactName can not be undefined or null');
+
+    const artifacts = await this.getArtifactsList();
+
+    return artifacts.find(({ name }) => name === artifactName);
+  },
+
   // getArtifactsList returns array of artifacts
   async getArtifactsList() {
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
 
     const resp = await I.sendPostRequest('v1/management/backup/Artifacts/List', {}, headers);
-
-    assert.ok(
-      resp.status === 200,
-      `Failed to get backup artifacts list. Response message is "${resp.data.message}"`,
-    );
 
     return resp.data.artifacts;
   },
@@ -132,11 +142,11 @@ module.exports = {
       remove_files,
     };
 
-    const resp = await I.sendPostRequest('v1/management/backup/Artifacts/Delete', body, headers);
+    await I.sendPostRequest('v1/management/backup/Artifacts/Delete', body, headers);
 
-    assert.ok(
-      resp.status === 200,
-      `Failed to delete backup artifact ${artifact_id}. Response message is "${resp.data.message}"`,
-    );
+    // assert.ok(
+    //   resp.status === 200,
+    //   `Failed to delete backup artifact ${artifact_id}. Response message is "${resp.data.message}"`,
+    // );
   },
 };

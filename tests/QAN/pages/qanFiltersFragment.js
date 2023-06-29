@@ -54,7 +54,7 @@ module.exports = {
   },
 
   checkLink(section, filter, visibility) {
-    const dashboardLink = locate(`$filter-checkbox-${filter === 'n/a' ? '' : filter}`).find('a');
+    const dashboardLink = locate(`$filter-checkbox-${filter}`).find('a');
     const locator = locate(dashboardLink).inside(this.getFilterSectionLocator(section));
 
     if (visibility) {
@@ -100,15 +100,13 @@ module.exports = {
 
   async applyFilter(filterName) {
     const filterToApply = `//span[contains(@class, 'checkbox-container__label-text') and contains(text(), '${filterName}')]`;
+    const filterItemCheckbox = locate('span').before(filterToApply);
 
     I.waitForVisible(this.fields.filterBy, 30);
     I.fillField(this.fields.filterBy, filterName);
-    await I.asyncWaitFor(async () => {
-      I.click(this.buttons.refresh);
-
-      return await I.grabNumberOfVisibleElements(filterToApply);
-    }, 60);
+    I.waitForElement(filterToApply);
     I.forceClick(filterToApply);
+    I.waitForEnabled(filterItemCheckbox);
     I.waitForDetached(this.elements.spinner, 30);
     I.waitForElement(this.fields.filterBy, 30);
     // workaround for clearing the field completely
@@ -186,13 +184,6 @@ module.exports = {
     if (numOfShowAllLinkSectionCount) {
       this.applyShowAllLink(groupName);
     }
-  },
-
-  async applyShowTop5Link(groupName) {
-    const showTop5Link = `//span[contains(text(), '${groupName}')]/following-sibling::span[contains(text(), 'Show top 5')]`;
-
-    I.waitForVisible(showTop5Link, 30);
-    I.click(showTop5Link);
   },
 
   checkDisabledFilter(groupName, filter) {

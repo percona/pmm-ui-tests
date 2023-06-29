@@ -14,6 +14,8 @@ module.exports = {
     '//input[@aria-controls="options-service_name"]',
   toggleAllValues:
     '//a[@aria-label="Toggle all values"]',
+  panel: 'div[data-panelid]',
+  systemUptimePanel: (nodeName) => `//div[@class="panel-title"]//h2[text()="${nodeName} - System Uptime"]`,
   nodesCompareDashboard: {
     url: 'graph/d/node-instance-compare/nodes-compare?orgId=1&refresh=1m&from=now-5m&to=now',
     metrics: [
@@ -190,13 +192,13 @@ module.exports = {
       'Client Questions',
       'Active Backend Connections',
       'Failed Backend Connections',
-      'Active Frontend Connections',
+      'Top 30 Active Frontend Connections',
       'Client Frontend Connections',
       'Endpoint Status',
       'Queries Routed',
-      'Query processor time efficecy',
+      'Query processor time efficiency',
       'Connection Free',
-      'Latency',
+      'Endpoints Latency',
       'Executed Queries',
       'Queries Execution Time',
       'Queries Latency',
@@ -250,6 +252,7 @@ module.exports = {
   },
   postgresqlInstanceSummaryDashboard: {
     url: 'graph/d/postgresql-instance-summary/postgresql-instance-summary?orgId=1&from=now-5m&to=now',
+    cleanUrl: 'graph/d/postgresql-instance-summary/postgresql-instance-summary',
     metrics: [
       'Version',
       'Max Connections',
@@ -643,7 +646,7 @@ module.exports = {
       'Total InnoDB Buffer Pool Size',
       'Top MySQL Used Connections',
       'Top MySQL Client Threads Connected',
-      'Top MySQL Active Client Threads',
+      'Top MySQL Idle Client Threads',
       'Top MySQL Threads Cached',
       'Top 5 MySQL Used Connections',
       'MySQL Used Connections',
@@ -887,7 +890,7 @@ module.exports = {
     ],
   },
   victoriaMetricsAgentsOverviewDashboard: {
-    url: 'graph/d/vmagent/victoriametrics-agents-overview?orgId=1&refresh=1m',
+    url: 'graph/d/vmagent/victoriametrics-agents-overview?orgId=1&refresh=5m',
     metrics: [
       'Current Uptime',
       'Scraped Targets UP',
@@ -989,6 +992,157 @@ module.exports = {
     ],
   },
 
+  osDiskDetails: {
+    noDataElements: 1,
+    naElements: 0,
+    clearUrl: 'graph/d/node-disk/disk-details',
+    metrics: [
+      'Mountpoint Usage',
+      'Disk Latency',
+      'Disk Operations',
+      'Disk Bandwidth',
+      'Disk Load',
+      'Disk IO Utilization',
+      'Avg Disks Operations Merge Ratio',
+      'Disk IO Size',
+    ],
+  },
+
+  osMemoryDetails: {
+    noDataElements: 5,
+    naElements: 0,
+    clearUrl: 'graph/d/node-memory/memory-details',
+    metrics: [
+      'Memory Usage',
+      'Free Memory Percent',
+      'Total Pages Size',
+      'Anonymous Memory Size',
+      'File Cache Memory Size',
+      'Swap Activity',
+      'Swap Space',
+      'Memory Usage Types',
+      'Vmalloc',
+      'Shared Memory',
+      'Kernel Memory Stack',
+      'Committed Memory',
+      'Non-file Backed Pages Size',
+      'Kernel Cache',
+      'DirectMap Pages',
+      'Bounce Memory',
+      'NFS Pages Size',
+      'Unevictable/MLocked Memory',
+      'Huge Pages Size',
+      'HugePages Statistic',
+      'Memory Pages',
+      'IO activity',
+      'Cache Pages',
+      'Anonymous Memory Pages',
+      'Shmem Pages',
+      'Dirty Pages',
+      'Pages Allocated to Page Tables',
+      'Bounce Buffer Pages',
+      'Misc Pages',
+      'Pages Mapped by Files',
+      'Kernel Stack Pages',
+      'Slab Pages',
+      'Allocations',
+      'Refill',
+      'Direct Scan',
+      'Kswapd Scan',
+      'Steal Direct',
+      'Steal Kswapd',
+    ],
+  },
+
+  osNodesOverview: {
+    noDataElements: 1,
+    naElements: 1,
+    clearUrl: 'graph/d/node-instance-overview/nodes-overview',
+    metrics: [
+      'Nodes',
+      'Min Node Uptime',
+      'DB Instances',
+      'Min DB Uptime',
+      'Total Virtual CPUs',
+      'Total RAM',
+      'Virtual Memory Total',
+      'Disk Space Total',
+      'Regions',
+      'Types',
+      'Nodes',
+      'Regions',
+      'Service Types',
+      'Services',
+      'Top Usage',
+      'Top Steal',
+      'Top I/O Wait',
+      'Top Saturation',
+      'Top Switches',
+      'Top Load',
+      'Top Runnable Procs',
+      'Top Blocked Procs',
+      'Top 5 CPU Usage',
+      'CPU Usage',
+      'Top 5 CPU Steal',
+      'CPU Steal',
+      'Top 5 CPU I/O Wait',
+      'CPU I/O Wait',
+      'Top 5 CPU Saturation',
+      'CPU Saturation',
+      'Top 5 Context Switches',
+      'Switches',
+      'Top 5 Runnable Processes',
+      'Runnable Processes',
+      'Top 5 Blocked Processes',
+      'Blocked Processes',
+      'Min Memory Available',
+      'Min Virtual Memory Available',
+      'Top File Cache Active Memory',
+      'Min Swap Available',
+      'Top Swap Reads',
+      'Top Swap Writes',
+      'Free Memory Percent',
+      'Available Virtual Memory Percent',
+      'Free Swap Space Percent',
+      'Top 5 Used Memory',
+      'Top 5 Free Memory',
+      'Top 5 Used Virtual Memory',
+      'Top 5 Available Virtual Memory',
+      'Top 5 Used Swap Space',
+      'Top 5 Free Swap Space',
+      'Top 5 Swap In (Reads)',
+      'Top 5 Swap Out (Writes)',
+      'Min Free Space Available',
+      'Top I/O Load',
+      'Top Disk Latency',
+      'Top Disk Operations',
+      'Top Disk Bandwidth',
+      'Top I/O Activity',
+      'Top 5 Disk I/O Load',
+      'Disk I/O Load',
+      'Top 5 Disk Latency',
+      'Disk Latency',
+      'Top 5 Disk Bandwidth',
+      'Disk Bandwidth',
+      'Top 5 I/O Activity',
+      'I/O Activity',
+      'Top Receive Network Traffic',
+      'Top Transmit Network Traffic',
+      'Top Errors',
+      'Top Drop',
+      'Top Retransmission',
+      'Top Retransmit rate',
+      'Top 5 Network Traffic',
+      'Network Traffic',
+      'Top 5 Local Network Errors',
+      'Errors',
+      'Top 5 TCP Retransmission',
+      'Retransmission',
+      'Top 5 Local Network Drop',
+      'Drop',
+    ],
+  },
+
   fields: {
     breadcrumbs: {
       folder: locate('.page-toolbar').find('[aria-label="Search links"] > a'),
@@ -1000,13 +1154,14 @@ module.exports = {
     dataLinkForRoot: '//div[contains(text(), "Data links")]/..//a',
     Last2Days: '//span[contains(text(), "Last 2 days")]',
     metricTitle: '//div[@class="panel-title"]',
+    metricPanel: '//section[@class="panel-container"]',
     mongoDBServiceSummaryContent: locate('pre').withText('Mongo Executable'),
     mySQLServiceSummaryContent: locate('pre').withText('Percona Toolkit MySQL Summary Report'),
     navbarLocator: '.page-toolbar',
     notAvailableDataPoints: '//div[contains(text(),"No data")]',
     notAvailableMetrics: '//span[contains(text(), "N/A")]',
     otherReportTitleWithNoData:
-    '//span[contains(text(),"No Data")]//ancestor::div[contains(@class,"panel-container")]//span[contains(@class,"panel-title-text")]',
+      '//span[contains(text(),"No Data")]//ancestor::div[contains(@class,"panel-container")]//span[contains(@class,"panel-title-text")]',
     panelLoading: locate('div').withAttr({ class: 'panel-loading' }),
     postgreSQLServiceSummaryContent: locate('pre').withText('Detected PostgreSQL version:'),
     reportTitleWithNA:
@@ -1017,11 +1172,17 @@ module.exports = {
     serviceSummary: locate('a').withText('Service Summary'),
     // timeRangePickerButton: '.btn.navbar-button.navbar-button--tight',
     timeRangePickerButton: I.useDataQA('data-testid TimePicker Open Button'),
+    refresh: I.useDataQA('data-testid RefreshPicker run button'),
+    allFilterDropdownOptions: '//a[contains(@class, "variable-option")][span[text()][not(contains(text(), "All"))]]',
+    skipTourButton: '//button[span[text()="Skip"]]',
     timeRangeOption: (timeRange) => locate('li').withDescendant('label').withText(timeRange),
     openFiltersDropdownLocator: (filterName) => locate('.variable-link-wrapper').after(`label[for="var-${formatElementId(filterName)}"]`),
     filterDropdownOptionsLocator: (filterName) => locate('.variable-option').withText(filterName),
     refreshIntervalPicker: I.useDataQA('data-testid RefreshPicker interval button'),
     refreshIntervalOption: (interval) => locate(`//*[@role="menuitemradio" and text()="${interval}"]`),
+    clickablePanel: (name) => `//section[@aria-label="${name} panel"]//a`,
+    dashboardTitle: (name) => locate('span').withText(name),
+    metricPanelNa: (name) => `//section[@aria-label="${name}"]//span[text()="N/A"]`,
   },
 
   createAdvancedDataExplorationURL(metricName, time = '1m', nodeName = 'All') {
@@ -1060,6 +1221,8 @@ module.exports = {
   // introducing methods
   verifyMetricsExistence(metrics) {
     for (const i in metrics) {
+      I.waitForElement(this.graphsLocator(metrics[i]), 5);
+      I.scrollTo(this.graphsLocator(metrics[i]));
       I.waitForVisible(this.graphsLocator(metrics[i]), 5);
     }
   },
@@ -1085,6 +1248,27 @@ module.exports = {
   async waitForAllGraphsToHaveData(timeout = 60) {
     await I.waitForInvisible(this.fields.notAvailableMetrics, timeout);
     await I.waitForInvisible(this.fields.notAvailableDataPoints, timeout);
+  },
+
+  async waitForGraphsToHaveData(acceptableElementsWithoutData, timeout = 60, retries = 0) {
+    const noDataElements = await this.getNumberOfGraphsWithoutData(timeout);
+
+    if (noDataElements > acceptableElementsWithoutData) {
+      if (retries > 9) {
+        I.assertTrue(false, `Expected ${acceptableElementsWithoutData} Elements without data but found ${noDataElements}`);
+      }
+
+      await I.wait(timeout / 10);
+      // eslint-disable-next-line no-plusplus, no-param-reassign
+      await this.waitForGraphsToHaveData(acceptableElementsWithoutData, timeout, ++retries);
+    }
+  },
+
+  async getNumberOfGraphsWithoutData(timeout) {
+    const naElements = await I.grabNumberOfVisibleElements(this.fields.notAvailableMetrics, timeout);
+    const noDataElements = await I.grabNumberOfVisibleElements(this.fields.notAvailableDataPoints, timeout);
+
+    return naElements + noDataElements;
   },
 
   async verifyThereAreNoGraphsWithNA(acceptableNACount = 0) {
@@ -1164,6 +1348,7 @@ module.exports = {
   },
 
   waitForDataLoaded() {
+    I.waitForVisible('//*[@aria-label="Loading indicator"]');
     I.waitForInvisible('//*[@aria-label="Loading indicator"]');
   },
 
@@ -1239,5 +1424,14 @@ module.exports = {
   selectRefreshTimeInterval(timeInterval) {
     I.click(this.fields.refreshIntervalPicker);
     I.click(this.fields.refreshIntervalOption(timeInterval));
+  },
+
+  async clickSkipPmmTour() {
+    I.wait(2);
+    const numberOfElements = await I.grabNumberOfVisibleElements(this.fields.skipTourButton);
+
+    if (numberOfElements >= 1) {
+      I.click(this.fields.skipTourButton);
+    }
   },
 };

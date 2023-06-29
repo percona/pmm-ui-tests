@@ -14,7 +14,15 @@ export const fileHelper = {
 
   writeFileSync: async (path: fs.PathOrFileDescriptor, data: string | NodeJS.ArrayBufferView, failOnError = true) => {
     try {
-      return fs.writeFileSync(path, data, { flag: 'rs+' });
+      return fs.writeFileSync(path, data, { flag: 'w+' });
+    } catch (e) {
+      if (failOnError) throw new Error(`Could not write into file: ${path}, because of error: ${e}`);
+    }
+  },
+
+  removeFileSync: async (path: fs.PathLike, failOnError = true) => {
+    try {
+      return fs.rmSync(path);
     } catch (e) {
       if (failOnError) throw new Error(`Could not write into file: ${path}, because of error: ${e}`);
     }

@@ -1,9 +1,8 @@
 const { locationsPage, psMySql } = inject();
 const connection = psMySql.defaultConnection;
 const location = {
-  name: 'mysql backups',
+  name: 'mysql_backups',
   description: 'MySQL backup location',
-  ...locationsPage.mongoStorageLocation,
 };
 
 let locationId;
@@ -11,6 +10,7 @@ let serviceId;
 
 const mysqlServiceName = 'mysql-with-backup-inventory';
 const mysqlServiceNameToDelete = 'mysql-service-to-delete';
+const mysqlServiceNameForPreCheckTest = 'mysql-backup-pre-checks';
 const mysqlCredentials = {
   host: '127.0.0.1',
   port: '3306',
@@ -21,11 +21,21 @@ const mysqlCredentials = {
 Feature('BM: MySQL Backup Inventory');
 
 BeforeSuite(async ({
-  I, locationsAPI, settingsAPI, psMySql,
+  I, locationsAPI, settingsAPI, psMySql, inventoryAPI,
 }) => {
   await settingsAPI.changeSettings({ backup: true });
   await locationsAPI.clearAllLocations(true);
-  locationId = await locationsAPI.createStorageLocation(location);
+  locationId = await locationsAPI.createStorageLocation(
+    location.name,
+    locationsAPI.storageType.s3,
+    locationsAPI.psStorageLocationConnection,
+    location.description,
+  );
+  await inventoryAPI.deleteNodeByServiceName('MYSQL_SERVICE', mysqlServiceNameForPreCheckTest);
+
+  await I.verifyCommand('docker exec pmm-server yum remove -y Percona-Server-server-57');
+  await I.verifyCommand('docker exec pmm-server yum remove -y percona-xtrabackup-24');
+  await I.verifyCommand('docker exec pmm-server yum remove -y qpress');
 
   psMySql.connectToPS(mysqlCredentials);
 
@@ -53,7 +63,7 @@ AfterSuite(async ({ psMySql }) => {
 Scenario(
   '@PMM-T769, @PMM-T920 - Verify user is able to perform MySQL backup @bm-mysql @not-ui-pipeline',
   async ({ I, backupInventoryPage }) => {
-    const backupName = 'mysql backup test';
+    const backupName = 'mysql_backup_test';
 
     I.click(backupInventoryPage.buttons.openAddBackupModal);
 
@@ -74,11 +84,11 @@ Scenario(
   async ({
     I, backupInventoryPage, backupAPI, restorePage, psMySql,
   }) => {
-    const backupName = 'mysql restore test';
+    const backupName = 'mysql_restore_test';
     const tableName = 'test';
 
     await psMySql.deleteTable(tableName);
-    const artifactId = await backupAPI.startBackup(backupName, serviceId, locationId, false);
+    const artifactId = await backupAPI.startBackup(backupName, serviceId, locationId, false, false);
 
     await backupAPI.waitForBackupFinish(artifactId);
     I.refreshPage();
@@ -87,7 +97,7 @@ Scenario(
     /* connection must be closed in correct way before restore backup. Restore procedure restarts mysql service */
     await psMySql.disconnectFromPS();
     backupInventoryPage.startRestore(backupName);
-    restorePage.waitForRestoreSuccess(backupName);
+    await restorePage.waitForRestoreSuccess(backupName);
 
     await psMySql.asyncConnectToPS(mysqlCredentials);
     const tableExists = await psMySql.isTableExists(tableName);
@@ -101,9 +111,9 @@ Scenario(
   async ({
     I, backupInventoryPage, backupAPI, inventoryAPI,
   }) => {
-    const backupName = 'mysql artifact delete test';
+    const backupName = 'mysql_artifact_delete_test';
     const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName('MYSQL_SERVICE', mysqlServiceName);
-    const artifactId = await backupAPI.startBackup(backupName, service_id, locationId, false);
+    const artifactId = await backupAPI.startBackup(backupName, service_id, locationId, false, false);
 
     await backupAPI.waitForBackupFinish(artifactId);
 
@@ -135,7 +145,7 @@ Scenario(
       service_id: serviceId,
       location_id: locationId,
       cron_expression: '*/2 * * * *',
-      name: 'for restore mysql test',
+      name: 'for_restore_mysql_test',
       mode: scheduledAPI.backupModes.snapshot,
       description: '',
       isLogical: false,
@@ -157,7 +167,7 @@ Scenario(
     /* connection must be closed in correct way before restore backup. Restore procedure restarts mysql service */
     await psMySql.disconnectFromPS();
     backupInventoryPage.startRestore(schedule.name);
-    restorePage.waitForRestoreSuccess(schedule.name);
+    await restorePage.waitForRestoreSuccess(schedule.name);
 
     await psMySql.asyncConnectToPS(mysqlCredentials);
     const tableExists = await psMySql.isTableExists(tableName);
@@ -171,9 +181,9 @@ Scenario(
   async ({
     I, backupInventoryPage, backupAPI, inventoryAPI,
   }) => {
-    const backupName = 'service remove backup';
+    const backupName = 'service_remove_backup';
     const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName('MYSQL_SERVICE', mysqlServiceNameToDelete);
-    const artifactId = await backupAPI.startBackup(backupName, service_id, locationId, false);
+    const artifactId = await backupAPI.startBackup(backupName, service_id, locationId, false, false);
 
     await backupAPI.waitForBackupFinish(artifactId);
     await inventoryAPI.deleteService(service_id);
@@ -187,5 +197,41 @@ Scenario(
     I.waitForVisible(backupInventoryPage.buttons.modalRestore, 10);
     I.seeTextEquals(backupInventoryPage.messages.serviceNoLongerExists, backupInventoryPage.elements.backupModalError);
     I.seeElementsDisabled(backupInventoryPage.buttons.modalRestore);
+  },
+);
+
+Scenario(
+  '@PMM-T1057 @PMM-T1058 Verify pre checks for PS tools before backup @bm-mysql @not-ui-pipeline',
+  async ({
+    I, backupInventoryPage, addInstanceAPI, links,
+  }) => {
+    const backupName = 'test_pre_checks';
+
+    await addInstanceAPI.addMysql(mysqlServiceNameForPreCheckTest);
+
+    I.click(backupInventoryPage.buttons.openAddBackupModal);
+
+    backupInventoryPage.selectDropdownOption(backupInventoryPage.fields.serviceNameDropdown, mysqlServiceNameForPreCheckTest);
+    backupInventoryPage.selectDropdownOption(backupInventoryPage.fields.locationDropdown, location.name);
+    I.fillField(backupInventoryPage.fields.backupName, backupName);
+    I.click(backupInventoryPage.buttons.addBackup);
+    await I.verifyPopUpMessage('software "mysqld" is not installed: incompatible service');
+
+    await I.verifyCommand('docker exec pmm-server percona-release setup ps57');
+    await I.verifyCommand('docker exec pmm-server yum install -y Percona-Server-server-57');
+    I.click(backupInventoryPage.buttons.addBackup);
+    await I.verifyPopUpMessage('software "xtrabackup" is not installed: xtrabackup is not installed');
+
+    I.seeTextEquals('Xtrabackup is not installed. ', backupInventoryPage.elements.addBackupModalError);
+    I.seeAttributesOnElements(backupInventoryPage.elements.addBackupModalErrorReadMore, { href: links.xtrabackup80Docs });
+
+    await I.verifyCommand('docker exec pmm-server yum install -y percona-xtrabackup-24');
+    I.click(backupInventoryPage.buttons.addBackup);
+    await I.verifyPopUpMessage('software "qpress" is not installed: incompatible service');
+
+    await I.verifyCommand('docker exec pmm-server yum install -y qpress');
+    I.click(backupInventoryPage.buttons.addBackup);
+
+    I.waitForVisible(backupInventoryPage.elements.pendingBackupByName(backupName), 10);
   },
 );

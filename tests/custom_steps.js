@@ -32,7 +32,7 @@ module.exports = () => actor({
   useDataQA: (selector) => `[data-testid="${selector}"]`,
   getSingleSelectOptionLocator: (optionName) => locate('[aria-label="Select option"]')
     .find('span')
-    .withText(optionName)
+    .withText(optionName.toString())
     .inside('[aria-label="Select options menu"]'),
   getClosePopUpButtonLocator: () => systemMessageButtonClose,
   getPopUpLocator: () => systemMessageText,
@@ -153,5 +153,9 @@ module.exports = () => actor({
     });
 
     return buildUrl(url, { queryParams });
+  },
+
+  signOut() {
+    this.amOnPage('graph/logout');
   },
 });

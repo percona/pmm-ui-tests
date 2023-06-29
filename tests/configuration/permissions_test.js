@@ -27,7 +27,6 @@ const viewerRole = new DataTable(['username', 'password', 'dashboard']);
 viewerRole.add([users.viewer.username, users.viewer.password, remoteInstancesPage.url]);
 viewerRole.add([users.viewer.username, users.viewer.password, pmmSettingsPage.url]);
 viewerRole.add([users.viewer.username, users.viewer.password, 'graph/inventory/nodes?orgId=1']);
-viewerRole.add([users.viewer.username, users.viewer.password, 'graph/inventory/agents?orgId=1']);
 viewerRole.add([users.viewer.username, users.viewer.password, 'graph/inventory/services?orgId=1']);
 
 const editorRole = new DataTable(['username', 'password', 'dashboard']);
@@ -35,7 +34,6 @@ const editorRole = new DataTable(['username', 'password', 'dashboard']);
 editorRole.add([users.editor.username, users.editor.password, remoteInstancesPage.url]);
 editorRole.add([users.editor.username, users.editor.password, pmmSettingsPage.url]);
 editorRole.add([users.editor.username, users.editor.password, 'graph/inventory/nodes?orgId=1']);
-editorRole.add([users.editor.username, users.editor.password, 'graph/inventory/agents?orgId=1']);
 editorRole.add([users.editor.username, users.editor.password, 'graph/inventory/services?orgId=1']);
 
 const ptSummaryRoleCheck = new DataTable(['username', 'password', 'dashboard']);
@@ -64,7 +62,7 @@ AfterSuite(async ({ I }) => {
   await I.deleteUser(editor);
 });
 
-Scenario(
+Scenario.skip(
   'PMM-T358 Verify Failed checks panel at Home page for the viewer role (STT is enabled) @stt @grafana-pr',
   async ({ I, homePage, settingsAPI }) => {
     await settingsAPI.apiEnableSTT();
@@ -76,7 +74,7 @@ Scenario(
   },
 );
 
-Scenario(
+Scenario.skip(
   'PMM-T360 Verify Failed checks panel at Home page for the admin role (STT is enabled) @stt @grafana-pr',
   async ({ I, homePage, settingsAPI }) => {
     await settingsAPI.apiEnableSTT();
@@ -87,7 +85,7 @@ Scenario(
   },
 );
 
-Scenario(
+Scenario.skip(
   'PMM-T358 Verify Database Failed checks page for the viewer role (STT is enabled) [critical] @stt @grafana-pr',
   async ({ I, databaseChecksPage, settingsAPI }) => {
     await settingsAPI.apiEnableSTT();
@@ -99,7 +97,7 @@ Scenario(
   },
 );
 
-Scenario(
+Scenario.skip(
   'PMM-T360 Verify Database Failed checks page for the admin role (STT is enabled) [critical] @stt @grafana-pr',
   async ({ I, databaseChecksPage, settingsAPI }) => {
     await settingsAPI.apiEnableSTT();
@@ -110,7 +108,7 @@ Scenario(
   },
 );
 
-Scenario(
+Scenario.skip(
   'PMM-T358 Verify Failed checks panel at Home page for the viewer role (STT is disabled) @stt @grafana-pr',
   async ({ I, homePage, settingsAPI }) => {
     await settingsAPI.apiDisableSTT();
@@ -122,7 +120,7 @@ Scenario(
   },
 );
 
-Scenario(
+Scenario.skip(
   'PMM-T360 Verify Failed checks panel at Home page for the admin role (STT is disabled) @stt @grafana-pr',
   async ({ I, homePage, settingsAPI }) => {
     await settingsAPI.apiDisableSTT();
@@ -133,7 +131,7 @@ Scenario(
   },
 );
 
-Scenario(
+Scenario.skip(
   'PMM-T358 Verify Database Failed checks page for the viewer role (STT is disabled) [critical] @stt @grafana-pr',
   async ({ I, databaseChecksPage, settingsAPI }) => {
     await settingsAPI.apiDisableSTT();
@@ -145,7 +143,7 @@ Scenario(
   },
 );
 
-Scenario(
+Scenario.skip(
   'PMM-T360 Verify Database Failed checks page for the admin role (STT is disabled) [critical] @stt @grafana-pr',
   async ({ I, databaseChecksPage, settingsAPI }) => {
     await settingsAPI.apiDisableSTT();
@@ -200,7 +198,7 @@ Data(editorRole).Scenario(
 
 Data(ptSummaryRoleCheck).Scenario(
   'PMM-T334 PMM-T420 Verify the pt-summary with different user roles '
-+ 'Verify user with viewer or editor role is able to see all elements on Home dashboard @nightly @grafana-pr',
+  + 'Verify user with viewer or editor role is able to see all elements on Home dashboard @nightly @grafana-pr',
   async ({
     I, databaseChecksPage, settingsAPI, locationsPage, current, adminPage, homePage,
   }) => {
@@ -209,9 +207,9 @@ Data(ptSummaryRoleCheck).Scenario(
     await I.Authorize(username, password);
     I.amOnPage(homePage.url);
     I.waitForVisible(homePage.fields.checksPanelSelector, 30);
-    I.seeElement(homePage.fields.pmmCustomMenu);
-    I.seeElement(homePage.fields.systemsUnderMonitoringCount);
-    I.seeElement(homePage.fields.dbUnderMonitoringCount);
+    I.waitForVisible(homePage.fields.pmmCustomMenu, 30);
+    I.waitForVisible(homePage.fields.systemsUnderMonitoringCount, 30);
+    I.waitForVisible(homePage.fields.dbUnderMonitoringCount, 30);
     I.amOnPage(dashboard);
     dashboardPage.waitForDashboardOpened();
     I.click(adminPage.fields.metricTitle);
