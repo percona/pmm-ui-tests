@@ -23,7 +23,7 @@ export class SignInPage extends CommonPage {
 
   buttons = {
     ...super.getButtons(),
-    oktaLogin: this.page.locator('//*[@href="login/generic_oauth"]'),
+    oktaLogin: this.page.locator('//*[@id="okta-signin-submit"]'),
   };
 
   messages = {
