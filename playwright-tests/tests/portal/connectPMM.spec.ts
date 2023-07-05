@@ -108,49 +108,35 @@ test.describe('Spec file for connecting PMM to the portal', async () => {
   test('PMM-T1224 Verify user is notified about using old PMM version while trying to connect to Portal @portal @pre-pmm-portal-upgrade @post-pmm-portal-upgrade', async ({
     page,
   }) => {
-    test.skip(pmmVersion >= 35, 'It prevents UI upgrade');
+    test.skip(pmmVersion > 27, 'This test is for PMM version 2.26.0 and lower');
     const platformPage = new PerconaPlatform(page);
 
-    if (pmmVersion < 27) {
-      await grafanaHelper.authorize(page);
-      await page.goto(platformPage.perconaPlatformURL);
-      await platformPage.fields.pmmServerName.type(`Test Server ${Date.now()}`);
-      await platformPage.fields.email.type(firstAdmin.email);
-      await platformPage.fields.password.type(firstAdmin.password);
-      await platformPage.buttons.connect.click();
-      await platformPage.toast.checkToastMessage(platformPage.messages.oldPmmVersionError);
-    } else {
-      test.info().annotations.push({
-        type: 'New Version ',
-        description: 'This test is for PMM version 2.26.0 and lower',
-      });
-    }
+    await grafanaHelper.authorize(page);
+    await page.goto(platformPage.perconaPlatformURL);
+    await platformPage.fields.pmmServerName.type(`Test Server ${Date.now()}`);
+    await platformPage.fields.email.type(firstAdmin.email);
+    await platformPage.fields.password.type(firstAdmin.password);
+    await platformPage.buttons.connect.click();
+    await platformPage.toast.checkToastMessage(platformPage.messages.oldPmmVersionError);
   });
 
   test('PMM-T1097 Verify PMM server is connected to Portal @not-ui-pipeline @portal @pre-pmm-portal-upgrade', async ({
     page,
   }) => {
-    if (pmmVersion >= 27) {
-      test.skip(pmmVersion >= 35, 'It prevents UI upgrade');
-      const platformPage = new PerconaPlatform(page);
+    test.skip(pmmVersion >= 27, 'This test is for PMM version 2.27.0 and higher');
+    const platformPage = new PerconaPlatform(page);
 
-      await test.step('1. Open Percona Platform tab in PMM Settings', async () => {
-        await grafanaHelper.authorize(page);
-        await page.goto(platformPage.perconaPlatformURL);
-        await platformPage.perconaPlatformContainer.waitFor({ state: 'visible' });
-      });
+    await test.step('1. Open Percona Platform tab in PMM Settings', async () => {
+      await grafanaHelper.authorize(page);
+      await page.goto(platformPage.perconaPlatformURL);
+      await platformPage.perconaPlatformContainer.waitFor({ state: 'visible' });
+    });
 
-      await test.step('2. Connect PMM to the Portal', async () => {
-        const adminToken = await portalAPI.getUserAccessToken(firstAdmin.email, firstAdmin.password);
-        // pmm address is not set automatically in older pmms.
-        await platformPage.connectToPortal(adminToken, `Test Server ${Date.now()}`, true);
-      });
-    } else {
-      test.info().annotations.push({
-        type: 'Old Version ',
-        description: 'This test is for PMM version 2.27.0 and higher',
-      });
-    }
+    await test.step('2. Connect PMM to the Portal', async () => {
+      const adminToken = await portalAPI.getUserAccessToken(firstAdmin.email, firstAdmin.password);
+      // pmm address is not set automatically in older pmms.
+      await platformPage.connectToPortal(adminToken, `Test Server ${Date.now()}`, true);
+    });
   });
 
   test('PMM-T1098 Verify All org users can login in connected PMM server @not-ui-pipeline @portal @pre-pmm-portal-upgrade @post-pmm-portal-upgrade', async ({
