@@ -123,7 +123,7 @@ test.describe('Spec file for connecting PMM to the portal', async () => {
   test('PMM-T1097 Verify PMM server is connected to Portal @not-ui-pipeline @portal @pre-pmm-portal-upgrade', async ({
     page,
   }) => {
-    test.skip(pmmVersion >= 27, 'This test is for PMM version 2.27.0 and higher');
+    test.skip(pmmVersion <= 27, 'This test is for PMM version 2.27.0 and higher');
     const platformPage = new PerconaPlatform(page);
 
     await test.step('1. Open Percona Platform tab in PMM Settings', async () => {
