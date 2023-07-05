@@ -6,8 +6,8 @@ module.exports = {
   async verifyServiceExistsAndHasRunningStatus(service, serviceName) {
     let responseService;
 
-    // 30 sec ping for getting created service name
-    for (let i = 0; i < 30; i++) {
+    // 60 sec ping for getting created service name
+    for (let i = 0; i < 60; i++) {
       const services = await this.apiGetServices(service.serviceType);
 
       responseService = services.data[service.service].find((obj) => obj.service_name === serviceName);
