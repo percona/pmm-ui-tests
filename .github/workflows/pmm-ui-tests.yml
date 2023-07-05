@@ -145,7 +145,6 @@ jobs:
           timeout 100 bash -c 'while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' localhost/ping)" != "200" ]]; do sleep 5; done' || false
 
       - name: 'Setup <PMM Client: ${{ inputs.pmm_client_version }}> and Services'
-      - name: Setup Client for PMM-Server
         run: |
           sudo bash ./pmm-qa/pmm-tests/pmm2-client-setup.sh --pmm_server_ip 127.0.0.1 --client_version ${{ env.PMM_CLIENT_VERSION }} --admin_password admin --use_metrics_mode no
           sudo npx ts-node ./pmm-qa/pmm-integration/integration-setup.ts --ci \
