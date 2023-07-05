@@ -41,74 +41,67 @@ test.describe('Spec file for connecting PMM to the portal', async () => {
   });
 
   test('PMM-T398 Verify Percona Platform elements on PMM Settings Page @portal @pre-pmm-portal-upgrade', async ({ page }) => {
-    if (pmmVersion >= 27) {
-      test.info().annotations.push({
-        type: 'Also Covers',
-        description: 'PMM-T809 Verify validation for Percona Platform connect form',
-      });
-      const platformPage = new PerconaPlatform(page);
+    test.skip(pmmVersion < 27, 'This test is for PMM version 2.27.0 and higher');
+    test.info().annotations.push({
+      type: 'Also Covers',
+      description: 'PMM-T809 Verify validation for Percona Platform connect form',
+    });
+    const platformPage = new PerconaPlatform(page);
 
-      await test.step('1. Open Percona Platform tab in PMM Settings', async () => {
-        await grafanaHelper.authorize(page);
-        await page.goto(platformPage.perconaPlatformURL);
-        await platformPage.perconaPlatformContainer.waitFor({ state: 'visible' });
-        if (pmmVersion >= 35) {
-          await platformPage.elements.header_2_35.waitFor({ state: 'visible' })
-        } else {
-          await page.getByText(platformPage.labels.header).waitFor({ state: 'visible' });
-        }
+    await test.step('1. Open Percona Platform tab in PMM Settings', async () => {
+      await grafanaHelper.authorize(page);
+      await page.goto(platformPage.perconaPlatformURL);
+      await platformPage.perconaPlatformContainer.waitFor({ state: 'visible' });
+      if (pmmVersion >= 35) {
+        await platformPage.elements.header_2_35.waitFor({ state: 'visible' })
+      } else {
+        await page.getByText(platformPage.labels.header).waitFor({ state: 'visible' });
+      }
+    });
 
-      });
+    await test.step('2. Verify all required element are displayed.', async () => {
+      if (pmmVersion >= 35) {
+        await expect(platformPage.elements.pmmServerIdHeader).toHaveText(platformPage.labels.pmmServerId_35);
+      } else {
+        await expect(platformPage.elements.pmmServerIdHeader).toHaveText(platformPage.labels.pmmServerId);
+      }
+      await expect(platformPage.elements.pmmServerNameHeader).toHaveText(platformPage.labels.pmmServerName);
+      await expect(platformPage.elements.accessTokenHeader).toHaveText(platformPage.labels.accessToken);
+      if (pmmVersion >= 35) {
+        await expect(platformPage.buttons.createPerconaAccount).toHaveAttribute('href', platformPage.links.portalLogin);
+        await expect(platformPage.buttons.connect).toHaveText(platformPage.labels.validateConnection);
+      } else {
+        await expect(platformPage.buttons.connect).toHaveText(platformPage.labels.connect);
+      }
 
-      await test.step('2. Verify all required element are displayed.', async () => {
-        if (pmmVersion >= 35) {
-          await expect(platformPage.elements.pmmServerIdHeader).toHaveText(platformPage.labels.pmmServerId_35);
-        } else {
-          await expect(platformPage.elements.pmmServerIdHeader).toHaveText(platformPage.labels.pmmServerId);
-        }
-        await expect(platformPage.elements.pmmServerNameHeader).toHaveText(platformPage.labels.pmmServerName);
-        await expect(platformPage.elements.accessTokenHeader).toHaveText(platformPage.labels.accessToken);
-        if (pmmVersion >= 35) {
-          await expect(platformPage.buttons.createPerconaAccount).toHaveAttribute('href', platformPage.links.portalLogin);
-          await expect(platformPage.buttons.connect).toHaveText(platformPage.labels.validateConnection);
-        } else {
-          await expect(platformPage.buttons.connect).toHaveText(platformPage.labels.connect);
-        }
+      if (pmmVersion >= 35) {
+        await expect(platformPage.buttons.getToken35).toHaveAttribute('href', platformPage.links.portalProfile);
+      } else if (pmmVersion > 29 && pmmVersion < 35) {
+        await expect(platformPage.buttons.getToken).toHaveAttribute('href', platformPage.links.portalProfile);
+      } else {
+        await expect(platformPage.buttons.getToken).toHaveAttribute('href', platformPage.links.platformProfile);
+      }
+    });
 
-        if (pmmVersion >= 35) {
-          await expect(platformPage.buttons.getToken35).toHaveAttribute('href', platformPage.links.portalProfile);
-        } else if (pmmVersion > 29 && pmmVersion < 35) {
-          await expect(platformPage.buttons.getToken).toHaveAttribute('href', platformPage.links.portalProfile);
-        } else {
-          await expect(platformPage.buttons.getToken).toHaveAttribute('href', platformPage.links.platformProfile);
-        }
-      });
+    await test.step('3. Verify that pmm server name and access token are required.', async () => {
+      await platformPage.fields.pmmServerName.focus();
+      await platformPage.fields.accessToken.focus();
+      await platformPage.buttons.connect.click({ force: true });
+      await expect(platformPage.elements.pmmServerNameError).toHaveText(platformPage.labels.requiredField);
+      await expect(platformPage.elements.accessTokenError).toHaveText(platformPage.labels.requiredField);
+    });
 
-      await test.step('3. Verify that pmm server name and access token are required.', async () => {
-        await platformPage.fields.pmmServerName.focus();
-        await platformPage.fields.accessToken.focus();
-        await platformPage.buttons.connect.click({ force: true });
-        await expect(platformPage.elements.pmmServerNameError).toHaveText(platformPage.labels.requiredField);
-        await expect(platformPage.elements.accessTokenError).toHaveText(platformPage.labels.requiredField);
-      });
-
-      await test.step('4. Verify user can connect to the portal only when server name and access token are valid.', async () => {
-        await platformPage.fields.pmmServerName.type('Some Name');
-        await platformPage.fields.accessToken.type('Some Token');
-        await expect(platformPage.buttons.connect).toBeEnabled();
-      });
-    } else {
-      test.info().annotations.push({
-        type: 'Old Version ',
-        description: 'This test is for PMM version 2.27.0 and higher',
-      });
-    }
+    await test.step('4. Verify user can connect to the portal only when server name and access token are valid.', async () => {
+      await platformPage.fields.pmmServerName.type('Some Name');
+      await platformPage.fields.accessToken.type('Some Token');
+      await expect(platformPage.buttons.connect).toBeEnabled();
+    });
   });
 
   test('PMM-T1224 Verify user is notified about using old PMM version while trying to connect to Portal @portal @pre-pmm-portal-upgrade @post-pmm-portal-upgrade', async ({
     page,
   }) => {
-    test.skip(pmmVersion > 27, 'This test is for PMM version 2.26.0 and lower');
+    test.skip(pmmVersion > 26, 'This test is for PMM version 2.26.0 and lower');
     const platformPage = new PerconaPlatform(page);
 
     await grafanaHelper.authorize(page);
@@ -123,7 +116,7 @@ test.describe('Spec file for connecting PMM to the portal', async () => {
   test('PMM-T1097 Verify PMM server is connected to Portal @not-ui-pipeline @portal @pre-pmm-portal-upgrade', async ({
     page,
   }) => {
-    test.skip(pmmVersion <= 27, 'This test is for PMM version 2.27.0 and higher');
+    test.skip(pmmVersion < 27, 'This test is for PMM version 2.27.0 and higher');
     const platformPage = new PerconaPlatform(page);
 
     await test.step('1. Open Percona Platform tab in PMM Settings', async () => {
@@ -144,38 +137,32 @@ test.describe('Spec file for connecting PMM to the portal', async () => {
     baseURL,
     context,
   }) => {
-    if (pmmVersion >= 27) {
-      const signInPage = new SignInPage(page);
-      const homeDashboard = new HomeDashboard(page);
+    test.skip(pmmVersion < 27, 'This test is for PMM version 2.27.0 and higher');
+    const signInPage = new SignInPage(page);
+    const homeDashboard = new HomeDashboard(page);
 
-      await test.step('1. Login as admin user that created the org.', async () => {
-        await signInPage.oktaLogin(firstAdmin.email, firstAdmin.password);
-        await homeDashboard.pmmUpgrade.elements.currentVersion.waitFor({ state: 'visible', timeout: Duration.ThreeMinutes });
-        await expect(page).toHaveURL(`${baseURL}/${signInPage.landingUrl}`);
-        await context.clearCookies();
-        await page.reload();
-      });
+    await test.step('1. Login as admin user that created the org.', async () => {
+      await signInPage.oktaLogin(firstAdmin.email, firstAdmin.password);
+      await homeDashboard.pmmUpgrade.elements.currentVersion.waitFor({ state: 'visible', timeout: Duration.ThreeMinutes });
+      await expect(page).toHaveURL(`${baseURL}/${signInPage.landingUrl}`);
+      await context.clearCookies();
+      await page.reload();
+    });
 
-      await test.step('1. Login as admin user that was invited to the org.', async () => {
-        await signInPage.oktaLogin(secondAdmin.email, secondAdmin.password);
-        await homeDashboard.pmmUpgrade.elements.currentVersion.waitFor({ state: 'visible', timeout: Duration.ThreeMinutes });
-        await expect(page).toHaveURL(`${baseURL}/${signInPage.landingUrl}`);
-        await context.clearCookies();
-        await page.reload();
-      });
+    await test.step('1. Login as admin user that was invited to the org.', async () => {
+      await signInPage.oktaLogin(secondAdmin.email, secondAdmin.password);
+      await homeDashboard.pmmUpgrade.elements.currentVersion.waitFor({ state: 'visible', timeout: Duration.ThreeMinutes });
+      await expect(page).toHaveURL(`${baseURL}/${signInPage.landingUrl}`);
+      await context.clearCookies();
+      await page.reload();
+    });
 
-      await test.step('1. Login as technical user that was invited to the org.', async () => {
-        await signInPage.oktaLogin(technicalUser.email, technicalUser.password);
-        await homeDashboard.pmmUpgrade.elements.currentVersion.waitFor({ state: 'visible', timeout: Duration.ThreeMinutes });
-        await expect(page).toHaveURL(`${baseURL}/${signInPage.landingUrl}`);
-        await context.clearCookies();
-        await page.reload();
-      });
-    } else {
-      test.info().annotations.push({
-        type: 'Old Version ',
-        description: 'This test is for PMM version 2.27.0 and higher',
-      });
-    }
+    await test.step('1. Login as technical user that was invited to the org.', async () => {
+      await signInPage.oktaLogin(technicalUser.email, technicalUser.password);
+      await homeDashboard.pmmUpgrade.elements.currentVersion.waitFor({ state: 'visible', timeout: Duration.ThreeMinutes });
+      await expect(page).toHaveURL(`${baseURL}/${signInPage.landingUrl}`);
+      await context.clearCookies();
+      await page.reload();
+    });
   });
 });
