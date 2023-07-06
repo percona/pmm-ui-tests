@@ -77,17 +77,16 @@ jobs:
       version_string_from: ${{needs.get_versions.outputs.start_version}}
       version_string_to: ${{needs.get_versions.outputs.finish_version}}
 
-
   portal:
     ### '/' in the job name is for good sub-jobs grouping
     name: Portal / Portal
     uses: ./.github/workflows/upgrade-tests-pipeline.yml
     secrets: inherit
-    needs: push_versions
+    needs: get_versions
     strategy:
       fail-fast: false
       matrix:
-        old_version: ${{ fromJSON(needs.push_versions.outputs.version_matrix) }}
+        old_version: ${{ fromJSON(needs.get_versions.outputs.version_matrix) }}
         upgrade_type: [ "UI way", "Docker way" ]
     with:
       pmm_ui_tests_branch: ${{ inputs.pmm_ui_tests_branch || 'main' }}
@@ -99,8 +98,8 @@ jobs:
       pmm_qa_branch: ${{ inputs.pmm_qa_branch || 'main' }}
       services_list: ''
       repository: ${{ inputs.repository || 'dev-latest'}}
-      version_string_from: ${{needs.push_versions.outputs.start_version}}
-      version_string_to: ${{needs.push_versions.outputs.finish_version}}
+      version_string_from: ${{needs.get_versions.outputs.start_version}}
+      version_string_to: ${{needs.get_versions.outputs.finish_version}}
 
 #  inventory:
 #     # TODO: add / in the job names for good sub-jobs grouping
@@ -108,6 +107,11 @@ jobs:
 #    uses: ./.github/workflows/upgrade-tests-pipeline.yml
 #    secrets: inherit
 #    needs: get_versions
+#    strategy:
+#      fail-fast: false
+#      matrix:
+#        old_version: ${{ fromJSON(needs.get_versions.outputs.version_matrix) }}
+#        upgrade_type: [ "UI way", "Docker way" ]
 #    with:
 #      pmm_ui_tests_branch: ${{ inputs.pmm_ui_tests_branch }}
 #      pre_upgrade_tests: '@inventory-pre-upgrade'
