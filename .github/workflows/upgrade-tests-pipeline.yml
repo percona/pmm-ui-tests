@@ -133,17 +133,17 @@ jobs:
       SERVICENOW_DEV_URL: 'https://perconadev.service-now.com/api/x_pellc_percona_pl/platform/settest'
 
     steps:
-      - name: 'Create job tag'
+      - name: 'Set job tag'
         run: |
           job_tag=$(echo "${{ inputs.pre_upgrade_tests }}" | sed -e "s/-pre-upgrade//" -e "s/@//")
           echo $job_tag
           echo "JOB_TAG=$job_tag" >> $GITHUB_ENV
 
       - name: 'PMM Server(${{ inputs.pmm_server_start_version }}) and UI tests with tags "${{ inputs.pre_upgrade_tests }}, ${{ inputs.post_upgrade_tests }}" from pmm-ui-tests branch: ${{ inputs.pmm_ui_tests_branch }}'
-        if: ${{ github.event_name == 'workflow_dispatch' && env.SHA != 'null' }}
+        if: ${{ env.SHA != 'null' }}
         uses: percona/gh-action-Sibz-github-status-action@v1
         with:
-          context: 'PMM Upgrade Tests: ${{ env.REPORT_NAME }}'
+          context: 'PMM Upgrade Tests ${{ env.REPORT_NAME }}'
           description: "Test execution ${{ job.status }}"
           state: 'pending'
           repository: ${{ inputs.repository }}
