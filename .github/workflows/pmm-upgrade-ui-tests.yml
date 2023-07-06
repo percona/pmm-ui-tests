@@ -1,8 +1,6 @@
 name: PMM Upgrade UI Tests
 
 on:
-  schedule:
-    - cron: '0 0 * * *'
   workflow_dispatch:
     inputs:
       pmm_ui_tests_branch:
@@ -74,68 +72,19 @@ on:
         type: string
 
 jobs:
-  push_versions:
-    name: Push repo versions
-    runs-on: ubuntu-latest
-    timeout-minutes: 1
-    outputs:
-      start_version: ${{ steps.get-start.outputs.result }}
-      finish_version: ${{ steps.get-finish.outputs.result }}
-    steps:
-      - name: Prevent upgrade to the same version
-        shell: bash
-        run: |
-          if [[ "${{ inputs.pmm_server_start_version }}" = "latest" && "${{ inputs.repository }}" = "release" ]]; then
-            echo "Upgrade to the same version is forbidden!"
-            exit 1
-          fi
-          if [[ "${{ inputs.pmm_server_start_version }}" = "dev-latest" && "${{ inputs.repository }}" = "dev-latest" ]]; then
-            echo "Upgrade to the same version is forbidden!"
-            exit 1
-          fi
-
-      - name: Discover latest versions
-        shell: bash
-        run: |
-          r_latest=$(wget -q https://registry.hub.docker.com/v2/repositories/percona/pmm-client/tags -O - | jq -r .results[].name  | grep -v latest | sort -V | tail -n1)
-          rc_latest=$(wget -q "https://registry.hub.docker.com/v2/repositories/perconalab/pmm-client/tags?page_size=25&name=rc" -O - | jq -r .results[].name  | grep 2.*.*-rc$ | sort -V | tail -n1)
-          rc_minor=$(echo $rc_latest | awk -F. '{print $2}')
-          d_latest="2.$((++rc_minor)).0"
-          
-          echo "release_latest=$r_latest" >> $GITHUB_ENV
-          echo "rc_latest=$rc_latest" >> $GITHUB_ENV
-          echo "dev_latest=$d_latest" >> $GITHUB_ENV
-
-      - name: Get start version string
-        id: get-start
-        shell: bash
-        run: |
-          if [[ "${{ inputs.pmm_server_start_version }}" = "latest" ]]; then
-            echo "result=$release_latest" >> "$GITHUB_OUTPUT"
-          fi
-          if [[ "${{ inputs.pmm_server_start_version }}" = "dev-latest" ]]; then
-            echo "result=$dev_latest" >> "$GITHUB_OUTPUT"
-          fi
-
-      - name: Get finish version string
-        id: get-finish
-        shell: bash
-        run: |
-          if [[ "${{ inputs.repository }}" = "dev-latest" ]]; then
-            echo "result=$dev_latest" >> "$GITHUB_OUTPUT"
-          fi          
-          if [[ "${{ inputs.repository }}" = "release candidate" ]]; then
-            echo "result=$rc_latest" >> "$GITHUB_OUTPUT"
-          fi
-          if [[ "${{ inputs.repository }}" = "release" ]]; then
-            echo "result=$release_latest" >> "$GITHUB_OUTPUT"
-          fi
+  get_versions:
+    name: Get versions
+    uses: ./.github/workflows/pmm-version-getter.yml
+    with:
+      pmm_server_start_version: ${{ inputs.pmm_server_start_version || 'latest'}}
+      repository: ${{ inputs.repository || 'dev-latest'}}
+      matrix_range: 10
 
   configuration:
     name: 'Configuration / Settings'
     uses: ./.github/workflows/upgrade-tests-pipeline.yml
     secrets: inherit
-    needs: push_versions
+    needs: get_versions
     with:
       pmm_ui_tests_branch: ${{ inputs.pmm_ui_tests_branch }}
       pre_upgrade_tests: '@config-pre-upgrade'
@@ -146,14 +95,14 @@ jobs:
       pmm_qa_branch: ${{ inputs.pmm_qa_branch }}
       services_list: ''
       repository: ${{ inputs.repository }}
-      version_string_from: ${{needs.push_versions.outputs.start_version}}
-      version_string_to: ${{needs.push_versions.outputs.finish_version}}
+      version_string_from: ${{needs.get_versions.outputs.start_version}}
+      version_string_to: ${{needs.get_versions.outputs.finish_version}}
 
   rbac:
     name: RBAC
     uses: ./.github/workflows/upgrade-tests-pipeline.yml
     secrets: inherit
-    needs: push_versions
+    needs: get_versions
     with:
       pmm_ui_tests_branch: ${{ inputs.pmm_ui_tests_branch }}
       pre_upgrade_tests: '@rbac-pre-upgrade'
@@ -164,14 +113,14 @@ jobs:
       pmm_qa_branch: ${{ inputs.pmm_qa_branch }}
       services_list: '--addclient=ps,1 --addclient=pdpgsql,1'
       repository: ${{ inputs.repository }}
-      version_string_from: ${{needs.push_versions.outputs.start_version}}
-      version_string_to: ${{needs.push_versions.outputs.finish_version}}
+      version_string_from: ${{needs.get_versions.outputs.start_version}}
+      version_string_to: ${{needs.get_versions.outputs.finish_version}}
 
 #  portal:
-#    name: Portal
+#    name: Portal / Portal
 #    uses: ./.github/workflows/upgrade-tests-pipeline.yml
 #    secrets: inherit
-#    needs: push_versions
+#    needs: get_versions
 #    with:
 #      pmm_ui_tests_branch: ${{ inputs.pmm_ui_tests_branch }}
 #      pre_upgrade_tests: '@pre-pmm-portal-upgrade'
@@ -182,14 +131,14 @@ jobs:
 #      pmm_qa_branch: ${{ inputs.pmm_qa_branch }}
 #      services_list: ''
 #      repository: ${{ inputs.repository }}
-#      version_string_from: ${{needs.push_versions.outputs.start_version}}
-#      version_string_to: ${{needs.push_versions.outputs.finish_version}}
+#      version_string_from: ${{needs.get_versions.outputs.start_version}}
+#      version_string_to: ${{needs.get_versions.outputs.finish_version}}
 #
 #  inventory:
 #    name: 'Inventory'
 #    uses: ./.github/workflows/upgrade-tests-pipeline.yml
 #    secrets: inherit
-#    needs: push_versions
+#    needs: get_versions
 #    with:
 #      pmm_ui_tests_branch: ${{ inputs.pmm_ui_tests_branch }}
 #      pre_upgrade_tests: '@inventory-pre-upgrade'
@@ -200,5 +149,5 @@ jobs:
 #      pmm_qa_branch: ${{ inputs.pmm_qa_branch }}
 #      services_list: '--addclient=modb,1'
 #      repository: ${{ inputs.repository }}
-#      version_string_from: ${{needs.push_versions.outputs.start_version}}
-#      version_string_to: ${{needs.push_versions.outputs.finish_version}}
+#      version_string_from: ${{needs.get_versions.outputs.start_version}}
+#      version_string_to: ${{needs.get_versions.outputs.finish_version}}
