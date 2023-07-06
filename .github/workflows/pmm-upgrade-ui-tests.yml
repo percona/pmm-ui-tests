@@ -117,7 +117,7 @@ jobs:
       version_string_to: ${{needs.get_versions.outputs.finish_version}}
 
 #  portal:
-#    name: Portal
+#    name: Portal / Portal
 #    uses: ./.github/workflows/upgrade-tests-pipeline.yml
 #    secrets: inherit
 #    needs: get_versions
