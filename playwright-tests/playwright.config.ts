@@ -36,9 +36,7 @@ const config: PlaywrightTestConfig = {
     baseURL: process.env.PMM_BASE_URL || 'http://localhost',
     ignoreHTTPSErrors: true,
     screenshot: 'only-on-failure',
-    video: 'on',
     actionTimeout: 15 * 1000,
-    trace: 'retain-on-failure',
   },
   projects: [
     {
