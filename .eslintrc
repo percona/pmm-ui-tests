@@ -4,7 +4,6 @@
     "browser": true
   },
   "root": true,
-  "plugins": ["eslint-plugin-no-inline-styles"],
   "rules": {
     "comma-dangle": [
       "error",
