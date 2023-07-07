@@ -7,7 +7,7 @@ dashboard.add([dashboardPage.mysqlInstanceSummaryDashboard.url,
   dashboardPage.fields.mySQLServiceSummaryContent, 'ps_']);
 dashboard.add([dashboardPage.postgresqlInstanceSummaryDashboard.url,
   dashboardPage.fields.postgreSQLServiceSummaryContent, 'PGSQL_']);
-// FIXME: unskip when https://jira.percona.com/browse/PMM-11406 is fixed 
+// FIXME: unskip when https://jira.percona.com/browse/PMM-11406 is fixed
 // dashboard.add([dashboardPage.mongoDbInstanceSummaryDashboard.url,
 //   dashboardPage.fields.mongoDBServiceSummaryContent, 'mongodb_']);
 

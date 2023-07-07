@@ -60,7 +60,7 @@ Scenario(
     const serviceName = await I.grabTextFrom(pmmInventoryPage.fields.mysqlServiceName);
 
     // wrong node name
-    await annotationAPI.setAnnotation(`wrong-node-name`, 'PMM-T878', 'random1', serviceName, 404);
+    await annotationAPI.setAnnotation('wrong-node-name', 'PMM-T878', 'random1', serviceName, 404);
 
     // wrong service name
     await annotationAPI.setAnnotation('wrong-service-name', 'PMM-T878', 'pmm-server', 'random2', 404);

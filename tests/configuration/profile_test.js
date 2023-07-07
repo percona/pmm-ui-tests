@@ -55,8 +55,11 @@ Scenario(
       .map((o) => ({ id: o.service_id, name: o.service_name }));
 
     for (const service of services) {
-      I.assertEqual(await pmmInventoryPage.servicesTab.getServiceMonitoringStatus(service.name), 'OK',
-        `'${service.name}' is expected to have 'OK' status when all the agents are 'Running'`);
+      I.assertEqual(
+        await pmmInventoryPage.servicesTab.getServiceMonitoringStatus(service.name),
+        'OK',
+        `'${service.name}' is expected to have 'OK' status when all the agents are 'Running'`,
+      );
     }
 
     await I.say('Verify QAN continues to receive data');

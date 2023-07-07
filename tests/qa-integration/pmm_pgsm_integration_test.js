@@ -514,8 +514,10 @@ Scenario(
     I.wait(defaultValue);
     let log = await I.verifyCommand(`docker exec ${container_name} tail -n100 pmm-agent.log`);
 
-    assert.ok(!log.includes('non default bucket time value is not supported, status changed to WAITING'),
-      'The log wasn\'t supposed to contain errors regarding bucket time but it does');
+    assert.ok(
+      !log.includes('non default bucket time value is not supported, status changed to WAITING'),
+      'The log wasn\'t supposed to contain errors regarding bucket time but it does',
+    );
 
     await I.pgExecuteQueryOnDemand(`ALTER SYSTEM SET pg_stat_monitor.pgsm_bucket_time=${alteredValue};`, connection);
     await I.verifyCommand(`docker exec ${container_name} service postgresql restart`);
@@ -524,8 +526,10 @@ Scenario(
     I.wait(alteredValue);
     log = await I.verifyCommand(`docker exec ${container_name} tail -n100 pmm-agent.log`);
 
-    assert.ok(log.includes('non default bucket time value is not supported, status changed to WAITING'),
-      'The log was supposed to contain errors regarding bucket time but it doesn\'t');
+    assert.ok(
+      log.includes('non default bucket time value is not supported, status changed to WAITING'),
+      'The log was supposed to contain errors regarding bucket time but it doesn\'t',
+    );
 
     await I.verifyCommand(`docker exec ${container_name} pmm-admin list | grep "postgresql_pgstatmonitor_agent" | grep "Waiting"`);
     await I.pgExecuteQueryOnDemand(`ALTER SYSTEM SET pg_stat_monitor.pgsm_bucket_time=${defaultValue};`, connection);

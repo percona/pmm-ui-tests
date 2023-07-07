@@ -285,8 +285,10 @@ module.exports = {
     const response = await this.getMetric(metricName, refineBy);
     const result = JSON.stringify(response.data.data.result);
 
-    I.assertTrue(response.data.data.result.length !== 0,
-      `Metrics '${metricName}' ${refineBy === null ? '' : `with filters as ${JSON.stringify(refineBy)} `}should be available but got empty ${result}`);
+    I.assertTrue(
+      response.data.data.result.length !== 0,
+      `Metrics '${metricName}' ${refineBy === null ? '' : `with filters as ${JSON.stringify(refineBy)} `}should be available but got empty ${result}`,
+    );
 
     return response;
   },
@@ -295,7 +297,10 @@ module.exports = {
     const response = await this.getMetric(metricName, refineBy);
     const result = JSON.stringify(response.data.data.result);
 
-    I.assertEqual(response.data.data.result.length, 0,
-      `Metrics "${metricName}" with filters as ${JSON.stringify(refineBy)} should be empty but got available ${result}`);
+    I.assertEqual(
+      response.data.data.result.length,
+      0,
+      `Metrics "${metricName}" with filters as ${JSON.stringify(refineBy)} should be empty but got available ${result}`,
+    );
   },
 };

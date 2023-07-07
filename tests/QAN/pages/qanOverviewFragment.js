@@ -223,8 +223,8 @@ module.exports = {
 
   selectRowByText(text) {
     const rowSelector = `//div[@role="row" and descendant::div[text()='${text}']]`;
-    //div[@role='row' and descendant::div[text()='select * from test.cities where id = ?']]
-    //div[@role="row" and descendant::div[text()='${text}']]
+    // div[@role='row' and descendant::div[text()='select * from test.cities where id = ?']]
+    // div[@role="row" and descendant::div[text()='${text}']]
 
     // I.wait(5000);
     I.waitForElement(rowSelector, 60);

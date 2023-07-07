@@ -13,7 +13,7 @@ module.exports = {
       responseService = services.data[service.service].find((obj) => obj.service_name === serviceName);
       if (responseService !== undefined) break;
 
-      await new Promise((r) => setTimeout(r, 1000));
+      I.wait(1);
     }
 
     assert.ok(responseService !== undefined, `Service ${serviceName} was not found`);
@@ -34,7 +34,7 @@ module.exports = {
         return agents;
       }
 
-      await new Promise((r) => setTimeout(r, 1000));
+      I.wait(1);
     }
 
     return false;

@@ -227,7 +227,7 @@ module.exports = {
 
     return resp.data.settings[property];
   },
-  
+
   async setTourOptions(productTour = true, alertingTour = true) {
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
 
