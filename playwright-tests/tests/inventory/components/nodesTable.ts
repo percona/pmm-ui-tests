@@ -1,4 +1,4 @@
-import { expect, Page } from '@playwright/test';
+import { expect } from '@playwright/test';
 import Table from '../../../components/table';
 
 export interface NodeDetails {
@@ -12,10 +12,6 @@ export interface NodeDetails {
 }
 
 export default class NodesTable extends Table {
-  constructor(page: Page) {
-    super(page);
-  }
-
   elements = {
     ...super.getTableElements(),
     version_2_37: {
@@ -42,7 +38,7 @@ export default class NodesTable extends Table {
 
   buttons = {
     ...super.getTableButtons(),
-    selectNode: (nodeName: string = '') => super.getTableElements().rowByText(nodeName).locator('input'),
+    selectNode: (nodeName = '') => super.getTableElements().rowByText(nodeName).locator('input'),
     showRowDetails: (nodeName: string) => super.getTableElements().rowByText(nodeName).getByTestId('show-row-details'),
     hideRowDetails: (nodeName: string) => super.getTableElements().rowByText(nodeName).getByTestId('hide-row-details'),
   };
@@ -50,7 +46,7 @@ export default class NodesTable extends Table {
   messages = {
     ...super.getTableMessages(),
     hasAgents: (nodeId?: string) => `Node with ID "${nodeId}" has agents.`,
-    nodesSuccessfullyDeleted: (number: number) => `${number} of ${number} nodes successfully deleted`
+    nodesSuccessfullyDeleted: (number: number) => `${number} of ${number} nodes successfully deleted`,
   };
 
   links = {
@@ -64,6 +60,7 @@ export default class NodesTable extends Table {
       await expect(this.elements.version_2_37.nodeType(details.nodeName!)).toContainText(details.nodeType!);
       await expect(this.elements.version_2_37.address(details.nodeName!)).toContainText(details.address!);
     }
+
     await expect(this.elements.status(details.nodeName!)).toContainText(details.status || 'Up');
     await expect(this.elements.nodeName(details.nodeName!)).toContainText(details.nodeName!);
     await expect(this.elements.nodeType(details.nodeName!)).toContainText(details.nodeType!);

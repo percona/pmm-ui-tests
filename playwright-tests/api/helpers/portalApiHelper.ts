@@ -7,7 +7,7 @@ const throwPortalRequestError = (e: string) => {
 };
 
 const checkAndReturnResponse = (r: APIResponse) => {
-  if (r.ok() === true) {
+  if (r.ok()) {
     return r.json();
   }
 
@@ -27,9 +27,7 @@ interface OptsInterface {
   extraHTTPHeaders: {} | undefined;
 }
 
-export const getRequestContext = async ({
-  accessToken,
-}: {
+export const getRequestContext = async ({ accessToken }: {
   baseURL?: string;
   accessToken?: string;
 }): Promise<APIRequestContext> => {
@@ -38,7 +36,11 @@ export const getRequestContext = async ({
     extraHTTPHeaders: undefined,
   };
 
-  if (accessToken) opts.extraHTTPHeaders = { Authorization: `Bearer ${accessToken}` };
+  if (accessToken) {
+    opts.extraHTTPHeaders = {
+      Authorization: `Bearer ${accessToken}`,
+    };
+  }
 
   return request.newContext(opts);
 };
@@ -48,14 +50,18 @@ export const portalAPIHelper = {
     const ctx = await getRequestContext(params);
 
     return ctx
-      .post(params.path, { data: params.data })
+      .post(params.path, {
+        data: params.data,
+      })
       .then((response: APIResponse) => checkAndReturnResponse(response))
       .catch(throwPortalRequestError);
   },
   async put(params: RequestParams) {
     const ctx = await getRequestContext(params);
 
-    return ctx.put(params.path, { data: params.data }).then(checkAndReturnResponse).catch(throwPortalRequestError);
+    return ctx.put(params.path, {
+      data: params.data,
+    }).then(checkAndReturnResponse).catch(throwPortalRequestError);
   },
   async get(params: RequestParams) {
     const ctx = await getRequestContext(params);

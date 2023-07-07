@@ -9,24 +9,28 @@ import Duration from '@helpers/Duration';
 import HomeDashboard from '@pages/HomeDashboard.page';
 import grafanaHelper from '@helpers/GrafanaHelper';
 import { oktaAPI } from '@api/okta';
-import {api} from "@api/api";
+import { api } from '@api/api';
 
 test.describe('Spec file for PMM connected the portal', async () => {
-  test.describe.configure({ retries: 0 });
+  test.describe.configure({
+    retries: 0,
+  });
   let firstAdmin: User;
   let secondAdmin: User;
   let technicalUser: User;
   let freeUser: User;
   let pmmVersion: number;
   const fileName = 'portalCredentials';
-  let orgId;
+  let orgId: string;
 
   test.beforeAll(async () => {
     if (!pmmVersion) {
       pmmVersion = (await api.pmm.serverV1.getPmmVersion()).minor;
     }
+
     const userCredentials = await fileHelper.readfile(fileName);
     let adminToken: string;
+
     if (userCredentials) {
       [firstAdmin, secondAdmin, technicalUser] = JSON.parse(userCredentials);
       adminToken = await portalAPI.getUserAccessToken(firstAdmin.email, firstAdmin.password);
@@ -34,12 +38,14 @@ test.describe('Spec file for PMM connected the portal', async () => {
     } else {
       [firstAdmin, secondAdmin, technicalUser] = await serviceNowAPI.createServiceNowUsers();
       adminToken = await portalAPI.getUserAccessToken(firstAdmin.email, firstAdmin.password);
-      let { org } = await portalAPI.createOrg(adminToken);
+      const { org } = await portalAPI.createOrg(adminToken);
+
       orgId = org.id;
       await portalAPI.inviteUserToOrg(adminToken, org.id, secondAdmin.email, PortalUserRoles.admin);
       await portalAPI.inviteUserToOrg(adminToken, org.id, technicalUser.email, PortalUserRoles.technical);
       await fileHelper.writeFileSync(fileName, JSON.stringify([firstAdmin, secondAdmin, technicalUser]));
     }
+
     freeUser = await oktaAPI.createTestUser();
     await portalAPI.inviteUserToOrg(adminToken, orgId, freeUser.email, PortalUserRoles.admin);
   });
@@ -54,7 +60,9 @@ test.describe('Spec file for PMM connected the portal', async () => {
     const homeDashboard = new HomeDashboard(page);
 
     await grafanaHelper.authorize(page);
-    await homeDashboard.pmmUpgrade.elements.currentVersion.waitFor({ state: 'visible', timeout: Duration.ThreeMinutes });
+    await homeDashboard.pmmUpgrade.elements.currentVersion.waitFor({
+      state: 'visible', timeout: Duration.ThreeMinutes,
+    });
 
     const currentVersion = await homeDashboard.pmmUpgrade.elements.currentVersion.textContent();
     const availableVersion = await homeDashboard.pmmUpgrade.elements.availableVersion.textContent();

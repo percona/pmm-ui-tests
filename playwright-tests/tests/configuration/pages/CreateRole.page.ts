@@ -1,5 +1,3 @@
-import { Page } from '@playwright/test';
-import RbacTable from '@components/rbacTable';
 import { CommonPage } from '@pages/Common.page';
 
 interface CreateRole {
@@ -11,13 +9,9 @@ interface CreateRole {
 }
 
 export class CreateRolePage extends CommonPage {
-  constructor(page: Page) {
-    super(page);
-  }
-
-  url = 'graph/roles/create'
+  url = 'graph/roles/create';
   metricsAccessRowContainer = this.page.getByTestId('prometheus-dimensions-filter-item');
-  selectOptionsMenuContainer = this.page.locator('//*[@aria-label="Select options menu"]')
+  selectOptionsMenuContainer = this.page.locator('//*[@aria-label="Select options menu"]');
 
   elements = {
     ...super.getElements(),
@@ -57,19 +51,17 @@ export class CreateRolePage extends CommonPage {
     if (options.roleDescription) {
       await this.fields.roleDescription.type(options.roleDescription);
     }
+
     await this.fields.selectLabel.click();
     await this.elements.menuOption(options.label).click();
     if (options.operator) {
-      await this.fields.selectMatchOperator.click()
+      await this.fields.selectMatchOperator.click();
       await this.elements.menuOption(options.operator).click();
     }
+
     await this.fields.selectValue.click();
     await this.elements.menuOption(options.value).click();
     await this.buttons.submit.click();
     await this.toast.checkToastMessage(this.messages.roleCreatedHeader(options.roleName) + this.messages.roleCreatedDescription);
-
   };
-
 }
-
-

@@ -1,12 +1,7 @@
-import { Page } from '@playwright/test';
-import { CommonPage } from '../../../pages/Common.page';
+import { CommonPage } from '@pages/Common.page';
 import ConfirmDeleteModal from '../components/confirmDeleteModal';
 
 export class InventoryPage extends CommonPage {
-  constructor(page: Page) {
-    super(page);
-  }
-
   confirmDeleteModal = new ConfirmDeleteModal(this.page);
 
   private inventoryElements = {

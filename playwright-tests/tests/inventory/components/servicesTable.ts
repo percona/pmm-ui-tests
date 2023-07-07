@@ -11,17 +11,14 @@ export interface ServiceDetails {
 }
 
 export default class ServicesTable extends Table {
-  constructor(page: Page) {
-    super(page);
-  }
-
   private dropdownMenu = this.page.locator('//div[@data-testid="dropdown-menu-menu"]');
 
   elements = {
     ...super.getTableElements(),
     serviceName: (serviceName: string) => super.getTableElements().rowByText(serviceName).locator('td').nth(2),
     nodeName: (serviceName: string) => super.getTableElements().rowByText(serviceName).locator('td').nth(3),
-    monitoring: (serviceName: string) => super.getTableElements().rowByText(serviceName).locator('td').nth(4).locator('//a'),
+    monitoring: (serviceName: string) => super.getTableElements().rowByText(serviceName).locator('td').nth(4)
+      .locator('//a'),
     address: (serviceName: string) => super.getTableElements().rowByText(serviceName).locator('td').nth(5),
     port: (serviceName: string) => super.getTableElements().rowByText(serviceName).locator('td').nth(6),
     serviceStatuses: super.getTableElements().row.locator('//td[5]'),
@@ -66,18 +63,24 @@ export default class ServicesTable extends Table {
   };
 
   verifyAllMonitoring = async (expectedStatus: string) => {
-    const numberOfServices = await this.elements.serviceStatuses.count()
+    const numberOfServices = await this.elements.serviceStatuses.count();
+
     for (let i = 0; i < numberOfServices; i++) {
       await expect(this.elements.serviceStatuses.nth(i)).toHaveText(expectedStatus);
     }
   };
 
   verifyAllServicesAgentsLabelsExcept = async (labelName: string, agentsException: string[]) => {
-    await this.elements.row.nth(0).waitFor({ state: 'visible' });
+    await this.elements.row.nth(0).waitFor({
+      state: 'visible',
+    });
     const services = await this.elements.row.count();
     const agentsTable = new AgentsTable(this.page);
+
     for (let index = 0; index < services; index++) {
-      await this.elements.rowMonitoring.nth(index).waitFor({ state: 'visible' });
+      await this.elements.rowMonitoring.nth(index).waitFor({
+        state: 'visible',
+      });
       await this.elements.rowMonitoring.nth(index).click();
       await agentsTable.verifyAgentLabeVisibleForAgentsExcept(labelName, agentsException);
       await agentsTable.buttons.goBackToServices.click();

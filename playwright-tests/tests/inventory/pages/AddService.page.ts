@@ -1,12 +1,7 @@
 import { expect, Page } from '@playwright/test';
-import ServicesTable from '@tests/tests/inventory/components/servicesTable';
-import { CommonPage } from '../../../pages/Common.page';
+import { CommonPage } from '@pages/Common.page';
 
 export class AddServicePage extends CommonPage {
-  constructor(page: Page) {
-    super(page);
-  }
-
   url = 'graph/add-instance';
 
   elements = {
@@ -48,5 +43,5 @@ export class AddServicePage extends CommonPage {
     await expect(this.buttons.proxySql).toBeVisible();
     await expect(this.buttons.externalService).toBeVisible();
     await expect(this.buttons.haProxy).toBeVisible();
-  }
+  };
 }

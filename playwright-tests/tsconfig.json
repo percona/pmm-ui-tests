@@ -10,7 +10,10 @@
     "baseUrl": ".",
     "moduleResolution": "node",
     "module": "esnext",
-    "lib": ["esnext"],
+    "lib": [
+      "esnext",
+      "dom"
+    ],
     "paths": {
       "@tests/*": ["./*"],
       "@pages/*": ["pages/*"],

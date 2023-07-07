@@ -3,27 +3,19 @@ import { devices } from '@playwright/test';
 import * as dotenv from 'dotenv';
 import Duration from './helpers/Duration';
 
-/**
- * Read environment variables from file.
- * https://github.com/motdotla/dotenv
- */
-
 dotenv.config({ path: '.env.local' });
 dotenv.config();
 
-/**
- * See https://playwright.dev/docs/test-configuration.
- */
 const config: PlaywrightTestConfig = {
   testDir: './tests',
-  timeout: Duration.TenMinutes,
+  timeout: Duration.FiveMinutes,
   expect: {
-    timeout: 5000,
+    timeout: 10_000,
   },
 
   fullyParallel: false,
   forbidOnly: !!process.env.CI,
-  retries: process.env.CI ? 2 : 0,
+  retries: process.env.CI ? 1 : 0,
   workers: 1,
   reporter: [
     ['github'],
@@ -32,11 +24,11 @@ const config: PlaywrightTestConfig = {
   ],
 
   use: {
-    navigationTimeout: 30 * 1000,
-    baseURL: process.env.PMM_BASE_URL || 'http://localhost',
+    navigationTimeout: 30_000,
+    baseURL: process.env.PMM_BASE_URL || 'https://localhost',
     ignoreHTTPSErrors: true,
     screenshot: 'only-on-failure',
-    actionTimeout: 15 * 1000,
+    actionTimeout: 15_000,
   },
   projects: [
     {

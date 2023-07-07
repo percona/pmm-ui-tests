@@ -20,7 +20,7 @@ export default class ConfirmDeleteModal {
 
   messages = {
     serviceHasAgents: (serviceId: string) => `Service with ID "${serviceId}" has agents.`,
-    confirmNodeDeleteHeader: (numberNodes: number = 1) => `Are you sure that you want to permanently delete ${numberNodes} nodes`,
+    confirmNodeDeleteHeader: (numberNodes = 1) => `Are you sure that you want to permanently delete ${numberNodes} nodes`,
   };
 
   links = {};

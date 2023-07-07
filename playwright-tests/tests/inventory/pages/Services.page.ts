@@ -1,13 +1,9 @@
-import { expect, Page } from '@playwright/test';
+import { expect } from '@playwright/test';
 import ServicesTable from '@tests/tests/inventory/components/servicesTable';
 import { InventoryPage } from './Inventory.page';
 import AgentsTable from '../components/agentsTable';
 
 export class ServicesPage extends InventoryPage {
-  constructor(page: Page) {
-    super(page);
-  }
-
   url = 'graph/inventory/services';
 
   servicesTable = new ServicesTable(this.page);
@@ -47,5 +43,5 @@ export class ServicesPage extends InventoryPage {
     await expect(this.buttons.addService).toBeVisible();
     await expect(this.buttons.delete).toBeVisible();
     await expect(this.servicesTable.elements.body).toBeVisible();
-  }
+  };
 }

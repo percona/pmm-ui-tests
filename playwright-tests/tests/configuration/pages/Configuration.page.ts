@@ -1,11 +1,6 @@
-import { Page } from '@playwright/test';
 import { CommonPage } from '@pages/Common.page';
 
 export class ConfigurationPage extends CommonPage {
-  constructor(page: Page) {
-    super(page);
-  }
-
   private configurationElements = {
     ...super.getElements(),
   };

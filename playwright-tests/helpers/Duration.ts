@@ -1,9 +1,13 @@
+const oneSecond = 1000;
+const oneMin = 60 * oneSecond;
+
 enum Duration {
-  OneSecond = 1000,
-  OneMinute = 60000,
-  ThreeMinutes = 180000,
-  TenMinutes = 600000,
-  TwentyMinutes = 1200000,
+  OneSecond = oneSecond,
+  OneMinute = oneMin,
+  ThreeMinutes = 3 * oneMin,
+  FiveMinutes = 5 * oneMin,
+  TenMinutes = 10 * oneMin,
+  TwentyMinutes = 20 * oneMin,
 }
 
 export default Duration;
