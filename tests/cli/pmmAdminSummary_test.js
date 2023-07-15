@@ -3,7 +3,20 @@ const assert = require('assert');
 Feature('pmm-admin summary tests');
 
 After(async ({ I }) => {
-  await I.verifyCommand('rm -r pmm-summary.zip pmm-summary-logs');
+  await I.verifyCommand('rm -r pmm-summary.zip pmm-summary-logs || true');
+});
+
+Scenario('PMM-T1738 (1.0) - Verify downloading very big log file @cli', async ({ I, pmmSettingsPage }) => {
+  await I.Authorize();
+  I.amOnPage(pmmSettingsPage.advancedSettingsUrl);
+  await pmmSettingsPage.waitForPmmSettingsPageLoaded();
+  await I.verifyCommand('docker exec pmm-server fallocate -l 100MB /srv/logs/clickhouse-server.log');
+  await I.verifyCommand('rm -r PMMT1738* || true');
+  await I.verifyCommand(`curl --user "${process.env.GRAFANA_USERNAME}:${process.env.GRAFANA_PASSWORD}" -v -k -X GET '${process.env.PMM_UI_URL}logs.zip' --output PMMT1738.zip`);
+  I.wait(60);
+  await I.verifyCommand('ls -la PMMT1738.zip');
+  await I.verifyCommand('unzip -o PMMT1738.zip -d PMMT1738 > unzip_log');
+  await I.verifyCommand('cat PMMT1738/clickhouse-server.log | grep -v "bufio.Scanner: token too long"');
 });
 
 Scenario('PMM-T1219 - Verify pmm-admin summary includes targets from vmagent @cli', async ({ I }) => {
@@ -19,6 +32,7 @@ Scenario('PMM-T1219 - Verify pmm-admin summary includes targets from vmagent @cl
   await I.verifyCommand('unzip -l pmm-summary.zip | grep vmagent-targets.html',
     'client/vmagent-targets.html');
 });
+
 // unskip after https://jira.percona.com/browse/PMM-12152
 Scenario.skip('@PMM-T1325 Verify that pmm-admin summary generates ZIP file, which contains separate log file for each exporter and agent @cli', async ({ I, pmmInventoryPage, inventoryAPI }) => {
   await I.verifyCommand('pmm-admin summary --filename=pmm-summary.zip', 'pmm-summary.zip created.');

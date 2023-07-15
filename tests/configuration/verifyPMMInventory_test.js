@@ -1,4 +1,5 @@
 const assert = require('assert');
+const { fi } = require('@faker-js/faker/lib/locales');
 
 Feature('Inventory page');
 
@@ -206,5 +207,47 @@ Scenario(
         assert.fail(`Process exec path is not present for ${agent.agent_type}`);
       }
     });
+  },
+);
+
+Scenario(
+  'PMM-T1718 Verify Filtering for Services in Inventory @inventory',
+  async ({ I, pmmInventoryPage, inventoryAPI }) => {
+    await I.amOnPage(pmmInventoryPage.url);
+    await I.waitForVisible(pmmInventoryPage.fields.showRowDetails, 10);
+    await pmmInventoryPage.servicesTab.pagination.selectRowsPerPage(100);
+    const serviceName = 'pmm-server-postgresql';
+    const filterCriteria = {
+      'Service Name': 'pmm-server-postgresql',
+      'Node Name': 'pmm-server',
+      Address: '127.0.0.1',
+      Port: '5432',
+    };
+
+    for (const filter in filterCriteria) {
+      await pmmInventoryPage.useSearchFilters(filter, filterCriteria[filter]);
+      I.see(serviceName, pmmInventoryPage.fields.tableRow);
+    }
+  },
+);
+
+Scenario(
+  'PMM-T1727 Verify filtering for Inventory Node tabs @inventory',
+  async ({ I, pmmInventoryPage, inventoryAPI }) => {
+    await I.amOnPage(pmmInventoryPage.url);
+    await I.waitForVisible(pmmInventoryPage.fields.showRowDetails, 10);
+    I.waitForVisible(pmmInventoryPage.fields.nodesLink, 20);
+    I.click(pmmInventoryPage.fields.nodesLink);
+    await pmmInventoryPage.servicesTab.pagination.selectRowsPerPage(100);
+    const serviceName = 'pmm-server-postgresql';
+    const filterCriteria = {
+      'Node Name': 'pmm-server',
+      Address: '127.0.0.1',
+    };
+
+    for (const filter in filterCriteria) {
+      await pmmInventoryPage.useSearchFilters(filter, filterCriteria[filter]);
+      I.see(serviceName, pmmInventoryPage.fields.tableRow);
+    }
   },
 );
