@@ -61,6 +61,12 @@ Before(async ({ I }) => {
   await I.Authorize();
 });
 
+// The test relies on --setup-external-service flag setup from pmm-framework
+Scenario('@PMM-T1700 - External service name is properly displayed @instances', async ({ I, pmmInventoryPage }) => {
+  I.amOnPage(pmmInventoryPage.url);
+  I.waitForVisible(pmmInventoryPage.fields.serviceRow('redis_external'), 10);
+});
+
 Scenario(
   '@PMM-T588 - Verify adding external exporter service via UI @instances @instances-fb',
   async ({ I, remoteInstancesPage, pmmInventoryPage }) => {
