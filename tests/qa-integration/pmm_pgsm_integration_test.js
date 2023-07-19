@@ -17,6 +17,7 @@ const version = process.env.PGSQL_VERSION ? `${process.env.PGSQL_VERSION}` : '14
 const container = process.env.PGSQL_PGSM_CONTAINER ? `${process.env.PGSQL_PGSM_CONTAINER}` : 'pgsql_pgsm';
 const database = `pgsm${Math.floor(Math.random() * 99) + 1}`;
 const pgsm_service_name = `${container}_${version}_service`;
+const pgsm_service_name_socket = `socket_${container}_${version}_service`;
 const container_name = `${container}_${version}`;
 const percentageDiff = (a, b) => (a - b === 0 ? 0 : 100 * Math.abs((a - b) / b));
 
@@ -144,6 +145,24 @@ Scenario(
     I.amOnPage(dashboardPage.postgresqlInstanceSummaryDashboard.url);
     dashboardPage.waitForDashboardOpened();
     await dashboardPage.applyFilter('Service Name', pgsm_service_name);
+    await dashboardPage.expandEachDashboardRow();
+    I.click(adminPage.fields.metricTitle);
+    adminPage.performPageDown(5);
+    adminPage.performPageUp(5);
+    dashboardPage.verifyMetricsExistence(dashboardPage.postgresqlInstanceSummaryDashboard.metrics);
+    await dashboardPage.verifyThereAreNoGraphsWithNA();
+    await dashboardPage.verifyThereAreNoGraphsWithoutData(1);
+  },
+);
+
+Scenario(
+  'PMM-T2261 - Verify Postgresql Dashboard Instance Summary has Data with socket based service @not-ui-pipeline @pgsm-pmm-integration',
+  async ({
+    I, dashboardPage, adminPage,
+  }) => {
+    I.amOnPage(dashboardPage.postgresqlInstanceSummaryDashboard.url);
+    dashboardPage.waitForDashboardOpened();
+    await dashboardPage.applyFilter('Service Name', pgsm_service_name_socket);
     await dashboardPage.expandEachDashboardRow();
     I.click(adminPage.fields.metricTitle);
     adminPage.performPageDown(5);
