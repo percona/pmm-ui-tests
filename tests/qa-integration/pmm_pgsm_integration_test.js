@@ -156,7 +156,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T2261 - Verify Postgresql Dashboard Instance Summary has Data with socket based service @not-ui-pipeline @pgsm-pmm-integration',
+  'PMM-T2261 - Verify Postgresql Dashboard Instance Summary has Data with socket based service and Agent log @not-ui-pipeline @pgsm-pmm-integration',
   async ({
     I, dashboardPage, adminPage,
   }) => {
@@ -170,6 +170,9 @@ Scenario(
     dashboardPage.verifyMetricsExistence(dashboardPage.postgresqlInstanceSummaryDashboard.metrics);
     await dashboardPage.verifyThereAreNoGraphsWithNA();
     await dashboardPage.verifyThereAreNoGraphsWithoutData(1);
+    let log = await I.verifyCommand(`docker exec ${container_name} cat pmm-agent.log`);
+    assert.ok(!log.includes('Error opening connection to database \(postgres'),
+      'The log wasn\'t supposed to contain errors regarding connection to postgress database but it does')
   },
 );
 
