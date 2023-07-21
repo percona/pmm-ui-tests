@@ -18,9 +18,6 @@ on:
         type: string
         default: 'dev-latest'
         required: true
-      pmm_server_docker_tag:
-        description: 'Use when tag different to: "perconalab/pmm-server" is required'
-        type: string
       pmm_client_version:
         description: 'Version of the pmm client used for testing'
         type: string
@@ -36,6 +33,7 @@ on:
         type: string
         default: 'main'
         required: true
+
   workflow_dispatch:
     inputs:
       pmm_ui_tests_branch:
@@ -52,9 +50,6 @@ on:
         type: string
         default: 'dev-latest'
         required: true
-      pmm_server_docker_tag:
-        description: 'Use when tag different to: "perconalab/pmm-server" is required'
-        type: string
       pmm_client_version:
         description: 'Version of the pmm client used for testing'
         type: string
@@ -136,19 +131,11 @@ jobs:
           path: ./pmm-qa
           ref: ${{ env.PMM_QA_BRANCH }}
 
-      - name: Compose PMM-Sever
-        if: ${{ inputs.pmm_server_docker_tag == '' }}
+      - name: Setup PMM-Sever
         working-directory: pmm-qa/pmm-integration
         run: |
           npm install
-          sudo npx ts-node ./integration-setup.ts --ci --setup-docker-pmm-server --rbac --pmm-server-version=${{ env.PMM_SERVER_VERSION }} --pmm-client-version=${{ env.PMM_CLIENT_VERSION }}
-
-      - name: Compose PMM-Sever with docker tag ${{ inputs.pmm_server_docker_tag }}
-        if: ${{ inputs.pmm_server_docker_tag != '' }}
-        working-directory: pmm-qa/pmm-integration
-        run: |
-          npm install
-          sudo npx ts-node ./integration-setup.ts --ci --setup-docker-pmm-server --rbac --pmm-server-docker-tag=${{ inputs.pmm_server_docker_tag }} --pmm-client-version=${{ env.PMM_CLIENT_VERSION }}          
+          sudo npx ts-node ./integration-setup.ts --ci --setup-docker-pmm-server --rbac --pmm-server-docker-tag=${{ env.PMM_SERVER_VERSION }} --pmm-client-version=${{ env.PMM_CLIENT_VERSION }}
 
       - name: Health check for PMM2-server
         run: timeout 100 bash -c 'while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' localhost/ping)" != "200" ]]; do sleep 5; done' || false
@@ -158,7 +145,7 @@ jobs:
           sudo bash ./pmm-qa/pmm-tests/pmm2-client-setup.sh --pmm_server_ip 127.0.0.1 --client_version ${{ env.PMM_CLIENT_VERSION }} --admin_password admin --use_metrics_mode no
 
         shell: bash
-      
+
       - name: Setup Databases for the PMM-Server
         working-directory: pmm-qa/pmm-integration
         run: |
