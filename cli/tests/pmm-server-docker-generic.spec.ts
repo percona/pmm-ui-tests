@@ -89,10 +89,11 @@ test.describe('PMM Server CLI tests for Docker Environment Variables', async () 
         `clickhouse-client --query 'SELECT * FROM system.databases' | grep pmm | tr -s '[:blank:]' '\\n'`);
     await output.assertSuccess();
 
+    /** Make sure files are in mounted "/srv/" folder */
     const expectedPath = '/srv/clickhouse/';
     expect(output.getStdOutLines()[0], `Verify "pmm" Database Exists`).toEqual('pmm');
     expect(output.getStdOutLines()[1], `Verify Clickhouse engine is "Atomic"`).toEqual('Atomic');
-    expect(output.getStdOutLines()[2], `Verify Clickhouse data_path is "${expectedPath}"`).toEqual(expectedPath);
+    expect(output.getStdOutLines()[2], `Verify Clickhouse data_path is "${expectedPath}"`).toContain(expectedPath);
     expect(output.getStdOutLines()[3], `Verify Clickhouse metadata_path contains "${expectedPath}"`).toContain(expectedPath);
   });
 });
