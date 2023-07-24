@@ -39,6 +39,27 @@ Before(async ({ I }) => {
 });
 
 Scenario(
+  'PMM-T1728 - pg_stat_monitor agent does not continuously try to create pg_stat_monitor_settings view @not-ui-pipeline @pgsm-pmm-integration',
+  async ({ I }) => {
+    await I.verifyCommand(
+      `docker exec ${container_name} cat /var/log/postgresql/postgresql-${version}-main.log | grep 'ERROR: relation "pg_stat_monitor_settings" already exists'`,
+      '',
+      'fail',
+    );
+    await I.verifyCommand(
+      `docker exec ${container_name} cat /var/log/postgresql/postgresql-${version}-main.log | grep 'STATEMENT: CREATE VIEW pg_stat_monitor_settings AS SELECT * FROM pg_settings WHERE name like'`,
+      '',
+      'fail',
+    );
+
+    const out = await I.pgExecuteQueryOnDemand('select table_name from INFORMATION_SCHEMA.views;', connection);
+    const viewNamesArr = out.rows.map((v) => v.table_name);
+
+    assert.ok(!viewNamesArr.includes('pg_stat_monitor_settings'), 'PG should not have "pg_stat_monitor_settings" view');
+  },
+);
+
+Scenario(
   'PMM-T1260 - Verifying data in Clickhouse and comparing with PGSM output @not-ui-pipeline @pgsm-pmm-integration',
   async ({ I, qanAPI }) => {
     await I.pgExecuteQueryOnDemand('SELECT now();', connection);
