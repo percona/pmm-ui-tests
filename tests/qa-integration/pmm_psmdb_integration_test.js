@@ -155,3 +155,19 @@ Scenario(
     }
   },
 ).retry(1);
+
+Scenario(
+  'T2269 Verify Replicaset dashboard for MongoDB Instances contains ARBITER node @pmm-psmdb-integration @not-ui-pipeline',
+  async ({
+    I, dashboardPage, adminPage,
+  }) => {
+
+    const arbiterLocator = '(//div[@ng-show=\'ctrl.panel.showLegendValues\'][contains(.,\'ARBITER\')])[1]';
+
+    I.amOnPage(`${dashboardPage.mongodbReplicaSetSummaryDashboard.url}&var-replset=rs1`);
+    dashboardPage.waitForDashboardOpened();
+    await I.waitForElement({xpath: arbiterLocator},60);
+    const numberOfVisibleElements = await I.grabNumberOfVisibleElements(arbiterLocator);
+    I.assertEqual(numberOfVisibleElements,1 , "No of ARBITER elements for ReplicatSet are not as expected");
+  },
+);
