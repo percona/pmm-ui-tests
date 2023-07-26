@@ -17,6 +17,7 @@ const version = process.env.PGSQL_VERSION ? `${process.env.PGSQL_VERSION}` : '14
 const container = process.env.PGSQL_PGSM_CONTAINER ? `${process.env.PGSQL_PGSM_CONTAINER}` : 'pgsql_pgsm';
 const database = `pgsm${Math.floor(Math.random() * 99) + 1}`;
 const pgsm_service_name = `${container}_${version}_service`;
+const pgsm_service_name_socket = `socket_${container}_${version}_service`;
 const container_name = `${container}_${version}`;
 const percentageDiff = (a, b) => (a - b === 0 ? 0 : 100 * Math.abs((a - b) / b));
 
@@ -37,6 +38,27 @@ Feature('PMM + PGSM Integration Scenarios');
 Before(async ({ I }) => {
   await I.Authorize();
 });
+
+Scenario(
+  'PMM-T1728 - pg_stat_monitor agent does not continuously try to create pg_stat_monitor_settings view @not-ui-pipeline @pgsm-pmm-integration',
+  async ({ I }) => {
+    await I.verifyCommand(
+      `docker exec ${container_name} cat /var/log/postgresql/postgresql-${version}-main.log | grep 'ERROR: relation "pg_stat_monitor_settings" already exists'`,
+      '',
+      'fail',
+    );
+    await I.verifyCommand(
+      `docker exec ${container_name} cat /var/log/postgresql/postgresql-${version}-main.log | grep 'STATEMENT: CREATE VIEW pg_stat_monitor_settings AS SELECT * FROM pg_settings WHERE name like'`,
+      '',
+      'fail',
+    );
+
+    const out = await I.pgExecuteQueryOnDemand('select table_name from INFORMATION_SCHEMA.views;', connection);
+    const viewNamesArr = out.rows.map((v) => v.table_name);
+
+    assert.ok(!viewNamesArr.includes('pg_stat_monitor_settings'), 'PG should not have "pg_stat_monitor_settings" view');
+  },
+);
 
 Scenario(
   'PMM-T1260 - Verifying data in Clickhouse and comparing with PGSM output @not-ui-pipeline @pgsm-pmm-integration',
@@ -151,6 +173,27 @@ Scenario(
     dashboardPage.verifyMetricsExistence(dashboardPage.postgresqlInstanceSummaryDashboard.metrics);
     await dashboardPage.verifyThereAreNoGraphsWithNA();
     await dashboardPage.verifyThereAreNoGraphsWithoutData(1);
+  },
+);
+
+Scenario(
+  'PMM-T2261 - Verify Postgresql Dashboard Instance Summary has Data with socket based service and Agent log @not-ui-pipeline @pgsm-pmm-integration',
+  async ({
+    I, dashboardPage, adminPage,
+  }) => {
+    I.amOnPage(dashboardPage.postgresqlInstanceSummaryDashboard.url);
+    dashboardPage.waitForDashboardOpened();
+    await dashboardPage.applyFilter('Service Name', pgsm_service_name_socket);
+    await dashboardPage.expandEachDashboardRow();
+    I.click(adminPage.fields.metricTitle);
+    adminPage.performPageDown(5);
+    adminPage.performPageUp(5);
+    dashboardPage.verifyMetricsExistence(dashboardPage.postgresqlInstanceSummaryDashboard.metrics);
+    await dashboardPage.verifyThereAreNoGraphsWithNA();
+    await dashboardPage.verifyThereAreNoGraphsWithoutData(1);
+    let log = await I.verifyCommand(`docker exec ${container_name} cat pmm-agent.log`);
+    I.assertFalse(log.includes('Error opening connection to database \(postgres'),
+      'The log wasn\'t supposed to contain errors regarding connection to postgress database but it does')
   },
 );
 
