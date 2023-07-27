@@ -79,7 +79,7 @@ jobs:
       upgrade_type: ${{ inputs.upgrade_type || 'Docker way' }}
       pmm_qa_branch: ${{ inputs.pmm_qa_branch || 'main' }}
       services_list: '--addclient=ps,1 --addclient=pdpgsql,1'
-      repository: ${{ inputs.repository }}
+      repository: ${{ inputs.repository || 'dev-latest'}}
       version_string_from: ${{needs.get_versions.outputs.start_version}}
       version_string_to: ${{needs.get_versions.outputs.finish_version}}
 
