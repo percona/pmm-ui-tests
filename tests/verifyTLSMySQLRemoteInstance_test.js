@@ -205,14 +205,14 @@ Data(instances).Scenario(
 
     const agent_id = await I.verifyCommand(`docker exec ${container} pmm-admin list | grep mysqld_exporter | awk -F" " '{print $4}' | awk -F"/" '{print $3}'`);
 
-    await I.verifyCommand(`docker exec ${container} ls -la /tmp/mysqld_exporter/agent_id/${agent_id}/ | grep tls`);
-    await I.verifyCommand(`docker exec ${container} rm -r /tmp/mysqld_exporter/`);
-    await I.verifyCommand(`docker exec ${container} ls -la /tmp/mysqld_exporter/`, 'ls: cannot access \'/tmp/mysqld_exporter\': No such file or directory', 'fail');
+    await I.verifyCommand(`docker exec ${container} ls -la /usr/local/percona/pmm2/tmp/mysqld_exporter/agent_id/${agent_id}/ | grep tls`);
+    await I.verifyCommand(`docker exec ${container} rm -r /usr/local/percona/pmm2/tmp/mysqld_exporter/`);
+    await I.verifyCommand(`docker exec ${container} ls -la /usr/local/percona/pmm2/tmp/mysqld_exporter/`, 'ls: cannot access \'/usr/local/percona/pmm2/tmp/mysqld_exporter\': No such file or directory', 'fail');
     await I.verifyCommand(`docker exec ${container} pmm-admin list | grep mysqld_exporter | grep Running`);
     await I.verifyCommand(`docker exec ${container} pkill -f mysqld_exporter`);
     I.wait(10);
     await I.verifyCommand(`docker exec ${container} pmm-admin list | grep mysqld_exporter | grep Running`);
-    await I.verifyCommand(`docker exec ${container} ls -la /tmp/mysqld_exporter/agent_id/${agent_id}/ | grep tls`);
+    await I.verifyCommand(`docker exec ${container} ls -la /usr/local/percona/pmm2/tmp/mysqld_exporter/agent_id/${agent_id}/ | grep tls`);
   },
 ).retry(1);
 
