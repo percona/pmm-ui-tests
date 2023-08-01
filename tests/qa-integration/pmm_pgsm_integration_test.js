@@ -85,7 +85,7 @@ Scenario(
     // wait for pmm-agent to push the execution as part of next bucket to clickhouse
     await I.verifyCommand(`docker exec ${container_name} pmm-admin list | grep "postgresql_pgstatmonitor_agent" | grep "Running"`);
 
-    I.wait(5);
+    I.wait(30);
     let pgsm_output;
 
     if (version < 13) {
@@ -191,9 +191,10 @@ Scenario(
     dashboardPage.verifyMetricsExistence(dashboardPage.postgresqlInstanceSummaryDashboard.metrics);
     await dashboardPage.verifyThereAreNoGraphsWithNA();
     await dashboardPage.verifyThereAreNoGraphsWithoutData(1);
-    let log = await I.verifyCommand(`docker exec ${container_name} cat pmm-agent.log`);
+    const log = await I.verifyCommand(`docker exec ${container_name} cat pmm-agent.log`);
+
     I.assertFalse(log.includes('Error opening connection to database \(postgres'),
-      'The log wasn\'t supposed to contain errors regarding connection to postgress database but it does')
+      'The log wasn\'t supposed to contain errors regarding connection to postgress database but it does');
   },
 );
 
@@ -255,6 +256,8 @@ Scenario(
       'BEGIN',
       'COMMIT',
     ];
+
+    I.wait(30);
     let pgsm_output;
 
     if (version < 13) {
