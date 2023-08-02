@@ -349,7 +349,7 @@ Scenario(
       mode: scheduledAPI.backupModes.snapshot,
       description: 'd',
       retry_interval: '10s',
-      retries: 1,
+      retries: 5,
       enabled: true,
       retention: 1,
     };
