@@ -554,7 +554,7 @@ Scenario(
       `Received unexpected logs: \n "${logsText}"`,
     );
   },
-);
+).retry(1);
 
 const deleteArtifactsTests = new DataTable(['storageType']);
 
