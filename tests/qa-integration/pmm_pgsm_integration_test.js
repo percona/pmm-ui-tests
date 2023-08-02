@@ -21,7 +21,10 @@ const pgsm_service_name_socket = `socket_${container}_${version}_service`;
 const container_name = `${container}_${version}`;
 const percentageDiff = (a, b) => (a - b === 0 ? 0 : 100 * Math.abs((a - b) / b));
 
-const labels = [{ key: 'database', value: [`${database}`] }];
+const labels = [
+  { key: 'database', value: [database] },
+  { key: 'service_name', value: [pgsm_service_name] },
+];
 
 const filters = new DataTable(['filterSection', 'filterToApply']);
 
