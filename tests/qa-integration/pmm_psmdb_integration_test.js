@@ -23,7 +23,7 @@ const connection = {
 };
 
 Scenario(
-  'Verify Adding MongoDB services remotely @pmm-psmdb-integration @not-ui-pipeline',
+  'Verify Adding MongoDB services remotely @pmm-psmdb-regular-integration @not-ui-pipeline',
   async ({
     I, remoteInstancesPage, pmmInventoryPage, inventoryAPI, grafanaAPI,
   }) => {
@@ -67,7 +67,7 @@ Scenario(
 );
 
 Scenario(
-  'Verify metrics from PSMDB instances on PMM-Server @pmm-psmdb-integration @not-ui-pipeline',
+  'Verify metrics from PSMDB instances on PMM-Server @pmm-psmdb-replica-integration @not-ui-pipeline',
   async ({
     I, remoteInstancesPage, pmmInventoryPage, inventoryAPI, grafanaAPI,
   }) => {
@@ -97,7 +97,7 @@ Scenario(
 ).retry(1);
 
 Scenario(
-  'Verify dashboard after MongoDB Instances are added @pmm-psmdb-integration @not-ui-pipeline',
+  'Verify dashboard after MongoDB Instances are added @pmm-psmdb-replica-integration @not-ui-pipeline',
   async ({
     I, dashboardPage, adminPage,
   }) => {
@@ -133,7 +133,7 @@ Scenario(
 ).retry(1);
 
 Scenario(
-  'Verify QAN after MongoDB Instances is added @pmm-psmdb-integration @not-ui-pipeline',
+  'Verify QAN after MongoDB Instances is added @pmm-psmdb-replica-integration @not-ui-pipeline',
   async ({
     I, qanOverview, qanFilters, qanPage, adminPage,
   }) => {
@@ -155,3 +155,19 @@ Scenario(
     }
   },
 ).retry(1);
+
+Scenario(
+  'T2269 Verify Replicaset dashboard for MongoDB Instances contains ARBITER node @pmm-psmdb-arbiter-integration @not-ui-pipeline',
+  async ({
+    I, dashboardPage, adminPage,
+  }) => {
+
+    const arbiterLocator = '(//div[@ng-show=\'ctrl.panel.showLegendValues\'][contains(.,\'ARBITER\')])[1]';
+
+    I.amOnPage(`${dashboardPage.mongodbReplicaSetSummaryDashboard.url}&var-replset=rs1`);
+    dashboardPage.waitForDashboardOpened();
+    await I.waitForElement({xpath: arbiterLocator},60);
+    const numberOfVisibleElements = await I.grabNumberOfVisibleElements(arbiterLocator);
+    I.assertEqual(numberOfVisibleElements,1 , "No of ARBITER elements for ReplicatSet are not as expected");
+  },
+);
