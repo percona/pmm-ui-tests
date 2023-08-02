@@ -345,7 +345,7 @@ Scenario(
       service_id: serviceId,
       location_id: locationId,
       cron_expression: '*/2 * * * *',
-      name: `schedule_for_restore_${faker.datatype.string()}}`,
+      name: `schedule_for_restore_${faker.lorem.word()}}`,
       mode: scheduledAPI.backupModes.snapshot,
       description: '',
       retry_interval: '10s',
