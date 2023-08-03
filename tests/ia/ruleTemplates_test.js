@@ -186,7 +186,7 @@ Scenario(
 
     ruleTemplatesPage.openRuleTemplatesTab();
     ruleTemplatesPage.openEditDialog(templateName);
-    ruleTemplatesPage.verifyRuleTemplateContent(fileContent);
+    await ruleTemplatesPage.verifyRuleTemplateContent(fileContent);
     I.seeElementsDisabled(ruleTemplatesPage.buttons.editTemplate);
     I.clearField(ruleTemplatesPage.fields.templateInput);
     I.fillField(ruleTemplatesPage.fields.templateInput, updatedTemplateText);
@@ -195,7 +195,7 @@ Scenario(
     I.click(ruleTemplatesPage.buttons.editTemplate);
     I.verifyPopUpMessage(ruleTemplatesPage.messages.successfullyEdited);
     ruleTemplatesPage.openEditDialog(newTemplateName);
-    ruleTemplatesPage.verifyRuleTemplateContent(updatedTemplateText);
+    await ruleTemplatesPage.verifyRuleTemplateContent(updatedTemplateText);
 
     // Checking Updated Rule template name in modal header
     ruleTemplatesPage.verifyEditModalHeaderAndWarning(newTemplateName);

@@ -49,12 +49,14 @@ module.exports = {
     retryModeOption: (option) => locate('$retry-mode-selector').find('div').at(1).find('label')
       .withText(option),
     dataModel: '$dataModel-radio-button',
+    compatibleServicesLabel: locate('label').withText('Compatible services').inside('$modal-content'),
   },
   fields: {
     backupName: '$backupName-text-input',
     vendor: '$vendor-text-input',
     description: '$description-textarea-input',
     serviceNameDropdown: locate('div[class$="-select-value-container"]').inside(locate('span').withChild('$service-select-label')),
+    serviceNameRestoreDropdown: locate('div[class$="-select-value-container"]').inside(locate('div').withChild('$service-select-label')),
     locationDropdown: '//label[@data-testid="location-field-label"]/parent::div/following-sibling::div[1]//div[contains(@class, "-select-value-container")]',
   },
   messages: {
@@ -108,6 +110,17 @@ module.exports = {
     I.waitForVisible(this.buttons.restoreByName(backupName), 2);
     I.click(this.buttons.restoreByName(backupName));
     I.waitForVisible(this.buttons.modalRestore, 10);
+    I.click(this.buttons.modalRestore);
+  },
+
+  startRestoreCompatible(backupName, serviceName) {
+    I.click(this.buttons.actionsMenuByName(backupName));
+    I.waitForVisible(this.buttons.restoreByName(backupName), 2);
+    I.click(this.buttons.restoreByName(backupName));
+    I.waitForVisible(this.buttons.modalRestore, 10);
+    I.click(this.buttons.compatibleServicesLabel);
+    I.waitForVisible(this.fields.serviceNameRestoreDropdown, 10);
+    this.selectDropdownOption(this.fields.serviceNameRestoreDropdown, serviceName);
     I.click(this.buttons.modalRestore);
   },
 
