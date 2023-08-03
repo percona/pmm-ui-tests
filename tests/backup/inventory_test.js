@@ -347,7 +347,7 @@ Scenario(
       cron_expression: '*/2 * * * *',
       name: `schedule_for_restore_${faker.lorem.word()}`,
       mode: scheduledAPI.backupModes.snapshot,
-      description: 'd',
+      description: '',
       retry_interval: '10s',
       retries: 5,
       enabled: true,
