@@ -225,7 +225,11 @@ Scenario(
     // wait for pmm-agent to push the execution as part of next bucket to clickhouse
     await I.verifyCommand(`docker exec ${container_name} pmm-admin list | grep "postgresql_pgstatmonitor_agent" | grep "Running"`);
 
-    const labels = [{ key: 'database', value: [`${db}`] }];
+    const labels = [
+      { key: 'database', value: [`${db}`] },
+      { key: 'service_name', value: [pgsm_service_name] },
+    ];
+
     const excluded_queries = [
       'SELECT version()',
       'SELECT /* pmm-agent:pgstatmonitor */ version()',
