@@ -108,8 +108,10 @@ jobs:
     env:
       # TODO: each variable/group must have comment where it is used
       SHA: ${{ inputs.sha || 'null' }}
+      PMM_BASE_URL: https://127.0.0.1
+
+      ### IP and Pass to use in pipeline
       PMM_SERVER_IP: 127.0.0.1
-      PMM_BASE_URL: https://${{ env.PMM_SERVER_IP }}
       ADMIN_PASSWORD: admin1
 
       OKTA_TOKEN: ${{ secrets.OKTA_TOKEN }}
