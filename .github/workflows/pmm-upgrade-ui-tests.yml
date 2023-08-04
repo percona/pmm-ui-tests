@@ -27,7 +27,7 @@ on:
         options:
           - UI way
           - Docker way
-          - Side container
+          - Podman way
       repository:
         description: 'Upgrade to:'
         required: true
