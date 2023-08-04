@@ -384,7 +384,7 @@ jobs:
           mkdir -p ~/.config/pmm-server/
           echo "PMM_SERVER_IMAGE=docker.io/${{ steps.pmm_server_to_image.outputs.IMAGE }}" > ~/.config/pmm-server/env
           source ~/.config/pmm-server/env
-          podman pull ${{ steps.pmm_server_to_image.outputs.IMAGE }}
+          podman pull docker.io/${{ steps.pmm_server_to_image.outputs.IMAGE }}
           systemctl --user restart pmm-server
 
           # sleep 30
