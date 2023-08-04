@@ -229,6 +229,7 @@ jobs:
           sudo apt-get update
           sudo apt-get -y upgrade
           sudo apt-get install -y podman
+          sudo sysctl net.ipv4.ip_unprivileged_port_start=80
 
       - name: 'Setup Podman <PMM Sever>: "${{ steps.pmm_server_start_image.outputs.result }}"'
         if: ${{ inputs.upgrade_type == 'Podman way' }}
@@ -279,6 +280,7 @@ jobs:
           PERCONA_TEST_VERSION_SERVICE_URL=https://check-dev.percona.com/versions/v1
           PERCONA_TEST_TELEMETRY_INTERVAL=10s
           PERCONA_TEST_TELEMETRY_RETRY_BACKOFF=10s
+          
           EOF
           
           ### run service
