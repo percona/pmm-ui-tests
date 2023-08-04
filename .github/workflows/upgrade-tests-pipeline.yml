@@ -317,7 +317,6 @@ jobs:
 
       - name: 'Setup <PMM Client: ${{ inputs.pmm_client_start_version }}> and Services'
         run: |
-          # TODO: un-hardcode pmm server ip and admin password
           sudo bash ./pmm-qa/pmm-tests/pmm2-client-setup.sh --pmm_server_ip ${{ env.PMM_SERVER_IP }} --client_version ${{ inputs.pmm_client_start_version }} --admin_password ${{ env.ADMIN_PASSWORD }} --use_metrics_mode no
           sudo bash ./pmm-qa/pmm-tests/pmm-framework.sh \
             --download \
