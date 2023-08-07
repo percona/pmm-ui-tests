@@ -109,7 +109,10 @@ jobs:
       # TODO: each variable/group must have comment where it is used
       SHA: ${{ inputs.sha || 'null' }}
       PMM_BASE_URL: https://127.0.0.1
-      ADMIN_PASSWORD: admin
+
+      ### IP and Pass to use in pipeline
+      PMM_SERVER_IP: 127.0.0.1
+      ADMIN_PASSWORD: admin1
 
       OKTA_TOKEN: ${{ secrets.OKTA_TOKEN }}
       OAUTH_ISSUER_URL: 'https://id-dev.percona.com/oauth2/aus15pi5rjdtfrcH51d7'
@@ -300,7 +303,7 @@ jobs:
             fi
             sleep 10
           done;
-          timeout 100 bash -c 'while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' http://admin:admin@127.0.0.1/ping)" != "200" ]]; do sleep 5; done' || false
+          timeout 100 bash -c 'while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' http://admin:admin@${{ env.PMM_SERVER_IP }}/ping)" != "200" ]]; do sleep 5; done' || false
           podman exec pmm-server change-admin-password ${{ env.ADMIN_PASSWORD }}
 
       - name: 'Setup <PMM Sever>: "${{ steps.pmm_server_start_image.outputs.result }}"'
@@ -310,16 +313,16 @@ jobs:
           npm install
           sudo npx ts-node ./integration-setup.ts --ci --setup-docker-pmm-server --rbac --pmm-server-docker-tag=${{ steps.pmm_server_start_image.outputs.result }} --pmm-client-version=${{ inputs.pmm_client_start_version }}          
           timeout 100 bash -c 'while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' localhost/ping)" != "200" ]]; do sleep 5; done' || false
+          docker exec pmm-integration-server change-admin-password ${{ env.ADMIN_PASSWORD }}
 
       - name: 'Setup <PMM Client: ${{ inputs.pmm_client_start_version }}> and Services'
         run: |
-          # TODO: un-hardcode pmm server ip and admin password
-          sudo bash ./pmm-qa/pmm-tests/pmm2-client-setup.sh --pmm_server_ip 127.0.0.1 --client_version ${{ inputs.pmm_client_start_version }} --admin_password admin --use_metrics_mode no
+          sudo bash ./pmm-qa/pmm-tests/pmm2-client-setup.sh --pmm_server_ip ${{ env.PMM_SERVER_IP }} --client_version ${{ inputs.pmm_client_start_version }} --admin_password ${{ env.ADMIN_PASSWORD }} --use_metrics_mode no
           sudo bash ./pmm-qa/pmm-tests/pmm-framework.sh \
             --download \
             ${{ inputs.services_list }} \
             --pmm2 \
-            --pmm2-server-ip=127.0.0.1
+            --pmm2-server-ip=${{ env.PMM_SERVER_IP }}
           # TODO: change sleep into fluent wait
           sleep 30
           sudo pmm-admin list
@@ -381,7 +384,7 @@ jobs:
           mkdir -p ~/.config/pmm-server/
           echo "PMM_SERVER_IMAGE=docker.io/${{ steps.pmm_server_to_image.outputs.IMAGE }}" > ~/.config/pmm-server/env
           source ~/.config/pmm-server/env
-          podman pull ${{ steps.pmm_server_to_image.outputs.IMAGE }}
+          podman pull docker.io/${{ steps.pmm_server_to_image.outputs.IMAGE }}
           systemctl --user restart pmm-server
 
           # sleep 30
@@ -399,7 +402,7 @@ jobs:
             fi
             sleep 10
           done;
-          timeout 100 bash -c 'while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' http://admin:admin@127.0.0.1/ping)" != "200" ]]; do sleep 5; done' || false
+          timeout 100 bash -c 'while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' http://admin:${{env.ADMIN_PASSWORD}}@${{ env.PMM_SERVER_IP }}/ping)" != "200" ]]; do sleep 5; done' || false
 
       - name: 'Tests <before PMM Client> upgrade'
         working-directory: ./pmm-ui-tests/playwright-tests

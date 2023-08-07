@@ -46,7 +46,7 @@ test.describe('Spec file for PMM inventory tests.', async () => {
   test.beforeEach(async ({ page }) => {
     await apiHelper.confirmTour(page);
     await page.goto('');
-    await grafanaHelper.authorize(page, 'admin', 'admin');
+    await grafanaHelper.authorize(page);
   });
 
   test('PMM-T1669 Verify PMM Inventory redesign : Layout & Services @inventory @inventory-pre-upgrade @inventory-post-upgrade', async ({ page }) => {
