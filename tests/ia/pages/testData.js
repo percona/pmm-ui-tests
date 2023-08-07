@@ -255,6 +255,20 @@ module.exports = {
     ],
     channels: [],
     activate: true,
+  }, {
+    template: 'PMM agent down',
+    ruleName: 'pmm_agent_down Alerting Rule',
+    threshold: null,
+    duration: '60s',
+    severity: 'Critical',
+    folder: 'Experimental',
+  }, {
+    template: 'PMM agent down',
+    ruleName: 'Custom pmm_agent_down Alerting Rule',
+    threshold: null,
+    duration: '60s',
+    severity: 'Critical',
+    folder: 'Experimental',
   }],
   templates: [{
     template: 'Memory used by MongoDB connections',

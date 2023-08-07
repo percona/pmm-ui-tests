@@ -47,7 +47,7 @@ module.exports = {
     successfullyAdded: 'Alert rule template successfully added',
     successfullyEdited: 'Alert rule template successfully edited',
     successfullyDeleted: (name) => `Alert rule template "${name}" successfully deleted.`,
-    failedToParse: 'Failed to parse rule template.',
+    failedToParse: 'Failed to parse rule template',
     failedToDelete: (name) => `You can't delete the "${name}" rule template when it's being used by a rule.`,
     duplicateTemplate: (id) => `Template with name "${id}" already exists.`,
   },
@@ -114,9 +114,12 @@ module.exports = {
     I.click(this.buttons.editButtonByName(templateName));
   },
 
-  verifyRuleTemplateContent(content) {
+  async verifyRuleTemplateContent(content) {
     I.waitForVisible(this.fields.templateInput, 30);
-    I.seeInField(this.fields.templateInput, content);
+    const expected = content.replaceAll(/ +(?= )/g, '');
+    const val = (await I.grabValueFrom(this.fields.templateInput)).replaceAll(/ +(?= )/g, '');
+
+    I.assertEqual(val, expected);
   },
 
   openAddDialog(templateName) {

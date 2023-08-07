@@ -52,7 +52,7 @@ test.describe('Spec file for Access Control (RBAC)', async () => {
   test.beforeEach(async ({ page }) => {
     await apiHelper.confirmTour(page);
     await page.goto('');
-    await grafanaHelper.authorize(page, 'admin', 'admin');
+    await grafanaHelper.authorize(page);
   });
 
   test('PMM-T1573 Verify Access Roles tab on Configuration page @rbac @rbac-pre-upgrade', async ({ page }) => {
