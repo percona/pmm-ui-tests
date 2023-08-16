@@ -49,7 +49,7 @@ jobs:
 
       UI_TESTS_BRANCH: "PMM-7-fix-portal-pipeline"
       PMM_CLIENTS: ${{ inputs.pmm_clients || '' }}
-      PMM_TEST_FLAG: 'T398'
+      PMM_TEST_FLAG: ${{ inputs.pmm_test_flag || '@portal' }}
 
       PMM_SERVER_VERSION: ${{ inputs.pmm_server_version || 'perconalab/pmm-server:dev-latest' }}
       PMM_CLIENT_VERSION: ${{ inputs.pmm_client_version || 'dev-latest' }}
