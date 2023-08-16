@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import apiHelper from '@api/helpers/apiHelper';
+import { apiHelper } from '@api/helpers/apiHelper';
 import HomeDashboard from '@tests/pages/HomeDashboard.page';
 import grafanaHelper from '@helpers/grafanaHelper';
 import { RbacPage } from '@tests/tests/configuration/pages/Rbac.page';

@@ -30,7 +30,7 @@ const oktaRequest = async (method: Method, apiPath: string, payload = {}): Promi
   return response;
 };
 
-export const okta = {
+export const oktaApi = {
   async loginByOktaApi(user: PortalUser, page: Page) {
     const credentials = {
       username: user.email,

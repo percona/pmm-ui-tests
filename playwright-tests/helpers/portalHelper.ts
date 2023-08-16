@@ -1,12 +1,10 @@
-import { serviceNowAPI } from '@api/serviceNowApi';
-import { portalAPI } from '@api/portalApi';
 import { PortalUserRoles } from '@helpers/enums/portalUserRoles';
 import { fileHelper } from '@helpers/fileHelper';
 import { PortalUser } from '@helpers/types/PortalUser';
 import { Constants } from '@helpers/Constants';
 import * as dotenv from 'dotenv';
-import { ServiceNowResponse} from '@helpers/types/serviceNowResponse.interface';
-import { okta } from '@api/okta';
+import { ServiceNowResponse } from '@helpers/types/serviceNowResponse.interface';
+import { api } from '@api/api';
 
 dotenv.config();
 
@@ -26,6 +24,14 @@ export const portalHelper = {
     if (fileHelper.fileExists(Constants.portal.credentialsFile)) {
       console.log(`Using existing users from file: ${Constants.portal.credentialsFile}`);
       [firstAdmin, secondAdmin, technicalUser] = JSON.parse(fileHelper.readFile(Constants.portal.credentialsFile));
+      if (!Object.hasOwn(firstAdmin, 'org')) {
+        const adminToken = await api.portal.getUserAccessToken(firstAdmin.email, firstAdmin.password);
+        const orgId = Object.hasOwn(firstAdmin, 'org') ? firstAdmin.org!.id
+          : (await api.portal.getOrg(adminToken)).orgs[0].id;
+        firstAdmin.org = { id: orgId, role: PortalUserRoles.admin };
+        secondAdmin.org = { id: orgId, role: PortalUserRoles.admin };
+        technicalUser.org = { id: orgId, role: PortalUserRoles.technical };
+      }
     } else {
       [firstAdmin, secondAdmin, technicalUser] = await portalHelper.createNewUsers();
       fileHelper.writeToFile(Constants.portal.credentialsFile, JSON.stringify([firstAdmin, secondAdmin, technicalUser]));
@@ -37,16 +43,41 @@ export const portalHelper = {
    * Encapsulates all actions required to create Portal user for tests.
    */
   createNewUsers: async () => {
-    const credentials: ServiceNowResponse = await serviceNowAPI.getServiceNowCredentials();
-    const firstAdmin = await okta.createTestUser(credentials.contacts.admin1.email);
-    const secondAdmin = await okta.createTestUser(credentials.contacts.admin2.email);
-    const technicalUser = await okta.createTestUser(credentials.contacts.technical.email);
+    const credentials: ServiceNowResponse = await api.serviceNow.getServiceNowCredentials();
+    const firstAdmin: PortalUser = await api.okta.createTestUser(credentials.contacts.admin1.email);
+    const secondAdmin: PortalUser = await api.okta.createTestUser(credentials.contacts.admin2.email);
+    const technicalUser: PortalUser = await api.okta.createTestUser(credentials.contacts.technical.email);
 
-    const adminToken = await portalAPI.getUserAccessToken(firstAdmin.email, firstAdmin.password);
-    const { org } = await portalAPI.createOrg(adminToken);
+    const adminToken = await api.portal.getUserAccessToken(firstAdmin.email, firstAdmin.password);
+    const { org } = await api.portal.createOrg(adminToken);
 
-    await portalAPI.inviteUserToOrg(adminToken, org.id, secondAdmin.email, PortalUserRoles.admin);
-    await portalAPI.inviteUserToOrg(adminToken, org.id, technicalUser.email, PortalUserRoles.technical);
+    await api.portal.inviteUserToOrg(adminToken, org.id, secondAdmin.email, PortalUserRoles.admin);
+    await api.portal.inviteUserToOrg(adminToken, org.id, technicalUser.email, PortalUserRoles.technical);
+
+    firstAdmin.org = { id: org.id, role: PortalUserRoles.admin };
+    secondAdmin.org = { id: org.id, role: PortalUserRoles.admin };
+    technicalUser.org = { id: org.id, role: PortalUserRoles.technical };
+
     return [firstAdmin, secondAdmin, technicalUser];
+  },
+
+  /**
+   * Encapsulates generating random Portal user(email could be specified)
+   * and adding it to the admin organization with specified role.
+   *
+   * @param   adminUser   admin user to provide credentials and target organization for new user
+   * @param   role        target {@link PortalUserRoles} role for new user to be added as
+   * @param   email       optional email for user, all the rest details will be generated
+   */
+  addRandomUserToOrg: async (adminUser: PortalUser, role: PortalUserRoles.admin, email?: string) => {
+    const randomUser: PortalUser = await api.okta.createTestUser(email || '');
+    const adminToken = await api.portal.getUserAccessToken(adminUser.email, adminUser.password);
+    const orgId = Object.hasOwn(adminUser, 'org') ? adminUser.org!.id
+      : (await api.portal.getOrg(adminToken)).orgs[0].id;
+
+    await api.portal.inviteUserToOrg(adminToken, orgId, randomUser.email, role);
+    randomUser.org = { id: orgId, role: PortalUserRoles.admin };
+
+    return randomUser;
   },
 };

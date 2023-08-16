@@ -2,8 +2,6 @@ import { expect, test } from '@playwright/test';
 import { apiHelper } from '@api/helpers/apiHelper';
 import { PortalUser } from '@helpers/types/PortalUser';
 import { fileHelper } from '@helpers/fileHelper';
-import { portalAPI } from '@api/portalApi';
-import { okta } from '@api/okta';
 import { SignInPage } from '@pages/SignIn.page';
 import HomeDashboard from '@pages/HomeDashboard.page';
 import TicketsPage from '@pages/platformPages/Tickets.page';
@@ -14,6 +12,7 @@ import grafanaHelper from '@helpers/grafanaHelper';
 import PerconaPlatform from '@pages/pmmSettings/PerconaPlatform.page';
 import { api } from '@api/api';
 import { portalHelper } from '@helpers/portalHelper';
+import { PortalUserRoles } from '@helpers/enums/portalUserRoles';
 
 test.describe('Spec file for PMM connected the portal', async () => {
   let firstAdmin: PortalUser;
@@ -21,32 +20,14 @@ test.describe('Spec file for PMM connected the portal', async () => {
   let technicalUser: PortalUser;
   let freeUser: PortalUser;
   let pmmVersion: number;
-  let orgId: string;
+  // let orgId: string;
 
   test.beforeAll(async () => {
     if (!pmmVersion) {
       pmmVersion = (await api.pmm.serverV1.getPmmVersion()).minor;
     }
     [firstAdmin, secondAdmin, technicalUser] = await portalHelper.loadTestUsers();
-    // let adminToken;
-    //
-    // if (userCredentials) {
-    //   [firstAdmin, secondAdmin, technicalUser] = JSON.parse(userCredentials);
-    //   adminToken = await portalAPI.getUserAccessToken(firstAdmin.email, firstAdmin.password);
-    //   orgId = (await portalAPI.getOrg(adminToken)).orgs[0].id;
-    // } else {
-    //   [firstAdmin, secondAdmin, technicalUser] = await serviceNowAPI.createServiceNowUsers();
-    //   adminToken = await portalAPI.getUserAccessToken(firstAdmin.email, firstAdmin.password);
-    //   const { org } = await portalAPI.createOrg(adminToken);
-    //
-    //   orgId = org.id;
-    //   await portalAPI.inviteUserToOrg(adminToken, org.id, secondAdmin.email, PortalUserRoles.admin);
-    //   await portalAPI.inviteUserToOrg(adminToken, org.id, technicalUser.email, PortalUserRoles.technical);
-    //   await fileHelper.writeToFile(fileName, JSON.stringify([firstAdmin, secondAdmin, technicalUser]));
-    // }
-
-    freeUser = await okta.createTestUser();
-    // await portalAPI.inviteUserToOrg(adminToken, orgId, freeUser.email, PortalUserRoles.admin);
+    freeUser = await portalHelper.addRandomUserToOrg(firstAdmin, PortalUserRoles.admin);
   });
 
   test.beforeEach(async ({ page }) => {
@@ -168,8 +149,8 @@ test.describe('Spec file for PMM connected the portal', async () => {
     const homeDashboard = new HomeDashboard(page);
     const signInPage = new SignInPage(page);
     const environmentOverviewPage = new EnvironmentOverview(page);
-    const userToken = await portalAPI.getUserAccessToken(firstAdmin.email, firstAdmin.password);
-    const contactsEmail = (await portalAPI.getOrgDetails(userToken, orgId)).contacts.customer_success.email;
+    const userToken = await api.portal.getUserAccessToken(firstAdmin.email, firstAdmin.password);
+    const contactsEmail = (await api.portal.getOrgDetails(userToken, firstAdmin.org!.id)).contacts.customer_success.email;
 
     if (pmmVersion >= 29) {
       await signInPage.oktaLogin(firstAdmin.email, firstAdmin.password);
@@ -383,7 +364,7 @@ test.describe('Spec file for PMM connected the portal', async () => {
         state: 'visible', timeout: Duration.ThreeMinutes,
       });
       await page.goto(platformPage.perconaPlatformURL);
-      const adminToken = await portalAPI.getUserAccessToken(firstAdmin.email, firstAdmin.password);
+      const adminToken = await api.portal.getUserAccessToken(firstAdmin.email, firstAdmin.password);
 
       await platformPage.connectToPortal(adminToken, `Test Server ${Date.now()}`, true);
     } else {
@@ -440,14 +421,14 @@ test.describe('Spec file for PMM connected the portal', async () => {
   });
 
   test('After tests cleanup.', async () => {
-    const adminToken = await portalAPI.getUserAccessToken(firstAdmin.email, firstAdmin.password);
-    const org = await portalAPI.getOrg(adminToken);
+    const adminToken = await api.portal.getUserAccessToken(firstAdmin.email, firstAdmin.password);
+    const org = await api.portal.getOrg(adminToken);
 
     if (org.orgs.length) {
-      await portalAPI.deleteOrg(adminToken, org.orgs[0].id);
+      await api.portal.deleteOrg(adminToken, org.orgs[0].id);
     }
 
-    await okta.deleteUsers([firstAdmin, secondAdmin, technicalUser]);
+    await api.okta.deleteUsers([firstAdmin, secondAdmin, technicalUser]);
     await fileHelper.removeFile('portalCredentials');
   });
 });

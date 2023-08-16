@@ -1,5 +1,6 @@
 import { apiHelper, Settings } from '@api/helpers/apiHelper';
 import { APIResponse } from 'playwright-core';
+import {string} from "yaml/dist/schema/common/string";
 
 const PATH_GET = 'v1/Settings/Get';
 const PATH_CHANGE = 'v1/Settings/Change';
@@ -7,6 +8,10 @@ const PATH_CHANGE = 'v1/Settings/Change';
 export enum SettingProperty {
   bm = 'backup_management_enabled',
 }
+
+type SettingObject = {
+  settings: { [key: string]: never },
+};
 
 export const settings = {
   /**
@@ -20,7 +25,7 @@ export const settings = {
    * @returns       if property found - property value; {@code undefined} otherwise
    */
   async getSettingsProperty(name: SettingProperty): Promise<string | undefined> {
-    const responseBody = await (await apiHelper.post(PATH_GET, {})).json();
+    const responseBody: SettingObject = await (await apiHelper.post(PATH_GET, {})).json();
     console.log(`Response:\n${JSON.stringify(responseBody)}`);
     return Object.hasOwn(responseBody.settings, name) ? responseBody.settings[name] as string : undefined;
   },

@@ -1,4 +1,5 @@
 import { faker } from '@faker-js/faker';
+import { PortalUserRoles } from '@helpers/enums/portalUserRoles';
 
 /**
  * Type holder and generators collection for Portal Users used for tests.
@@ -9,6 +10,7 @@ export class PortalUser {
   public password: string;
   public firstName: string;
   public lastName: string;
+  public org?: { id: string, role: PortalUserRoles };
 
   public constructor(email = '') {
     const firstName = faker.person.firstName();
