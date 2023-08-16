@@ -104,7 +104,7 @@ jobs:
         uses: actions/checkout@v3
         with:
           repository: percona/pmm-qa
-          ref: ${{ PMM_QA_BRANCH }}
+          ref: ${{ env.PMM_QA_BRANCH }}
           path: ./pmm-qa
 
       - name: 'Setup <PMM Sever>: "${{ env.PMM_SERVER_VERSION }}"'
