@@ -25,7 +25,7 @@ jobs:
     with:
       pmm_ui_tests_branch: ${{ inputs.pmm_ui_tests_branch || 'main' }}
       pmm_test_flag: '@portal'
-      pmm_server_version: 'percona/pmm-server:'${{ matrix.old_version }}
+      pmm_server_version: 'percona/pmm-server:'+${{ matrix.old_version }}
       pmm_client_version: ${{ matrix.old_version }}
       pmm_qa_branch: ${{ inputs.pmm_qa_branch || 'main' }}
       pmm_clients: ''
