@@ -35,8 +35,7 @@ test.describe('Spec file for PMM connected the portal', async () => {
     await page.goto('');
   });
 
-  test('Verify user roles are untouched after PMM server upgrade @not-ui-pipeline @portal @post-pmm-portal-upgrade', async () => {
-    test.skip();
+  test.skip('Verify user roles are untouched after PMM server upgrade @not-ui-pipeline @portal @post-pmm-portal-upgrade', async () => {
     const users = await apiHelper.listOrgUsers();
     const foundAdmin1User = users.find((user: any) => user.email === firstAdmin.email);
     const foundAdmin2User = users.find((user: any) => user.email === secondAdmin.email);
