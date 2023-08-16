@@ -1,5 +1,5 @@
 ---
-name: pmm-ui-tests
+name: portal-ui-tests
 
 on:
   workflow_call:
