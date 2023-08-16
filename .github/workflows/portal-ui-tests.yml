@@ -39,7 +39,7 @@ on:
 
 jobs:
   tests:
-    name: '"${{ inputs.version_string_from || inputs.pmm_server_version || \'dev-latest\' }}"'
+    name: ${{ inputs.version_string_from || inputs.pmm_server_version || 'dev-latest' }}
     runs-on: ubuntu-latest
     timeout-minutes: 60
     env:
