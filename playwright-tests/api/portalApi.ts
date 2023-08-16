@@ -10,7 +10,6 @@ export const portalAPI = {
         password,
       },
     });
-
     return response.access_token as string;
   },
 

@@ -2,7 +2,7 @@ import { APIRequestContext, APIResponse, request } from '@playwright/test';
 import { Constants } from '@helpers/Constants';
 
 const throwPortalRequestError = (e: string) => {
-  throw new Error(`Failed to execute portal request. Error: ${e}`);
+  throw new Error(`Failed to execute portal request. ${e}`);
 };
 
 const checkAndReturnResponse = (r: APIResponse) => {

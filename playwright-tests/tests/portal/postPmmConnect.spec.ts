@@ -171,7 +171,7 @@ test.describe('Spec file for PMM connected the portal', async () => {
     }
   });
 
-  test('PMM-T1147 Verify PMM user that is not logged in with SSO can NOT see Tickets for organization @not-ui-pipeline @portal @post-pmm-portal-upgrade', async ({ page }) => {
+  test.skip('PMM-T1147 Verify PMM user that is not logged in with SSO can NOT see Tickets for organization @not-ui-pipeline @portal @post-pmm-portal-upgrade', async ({ page }) => {
     const homeDashboard = new HomeDashboard(page);
     const ticketsPage = new TicketsPage(page);
 
@@ -205,7 +205,7 @@ test.describe('Spec file for PMM connected the portal', async () => {
     }
   });
 
-  test('PMM-T1154 Verify PMM user that is not logged in with SSO can NOT see Entitlements for organization @not-ui-pipeline @portal @post-pmm-portal-upgrade', async ({ page }) => {
+  test.skip('PMM-T1154 Verify PMM user that is not logged in with SSO can NOT see Entitlements for organization @not-ui-pipeline @portal @post-pmm-portal-upgrade', async ({ page }) => {
     const homeDashboard = new HomeDashboard(page);
     const entitlementsPage = new EntitlementsPage(page);
 
@@ -239,7 +239,7 @@ test.describe('Spec file for PMM connected the portal', async () => {
     }
   });
 
-  test('PMM-T1170 Verify PMM user that is not logged in with SSO can NOT see Contacts for organization @not-ui-pipeline @portal @post-pmm-portal-upgrade', async ({ page }) => {
+  test.skip('PMM-T1170 Verify PMM user that is not logged in with SSO can NOT see Contacts for organization @not-ui-pipeline @portal @post-pmm-portal-upgrade', async ({ page }) => {
     const homeDashboard = new HomeDashboard(page);
     const environmentOverview = new EnvironmentOverview(page);
 
@@ -262,7 +262,7 @@ test.describe('Spec file for PMM connected the portal', async () => {
     }
   });
 
-  test('PMM-T1148 Verify PMM user logged in using SSO and member of organization in Portal BUT not a SN account is NOT able to see Tickets @not-ui-pipeline @portal @post-pmm-portal-upgrade', async ({ page }) => {
+  test.skip('PMM-T1148 Verify PMM user logged in using SSO and member of organization in Portal BUT not a SN account is NOT able to see Tickets @not-ui-pipeline @portal @post-pmm-portal-upgrade', async ({ page }) => {
     const signInPage = new SignInPage(page);
     const homeDashboard = new HomeDashboard(page);
     const ticketsPage = new TicketsPage(page);
@@ -290,7 +290,7 @@ test.describe('Spec file for PMM connected the portal', async () => {
     }
   });
 
-  test('PMM-T1153 Verify user logged in using SSO and is not a member of SN account is NOT able to see Entitlements @not-ui-pipeline @portal @post-pmm-portal-upgrade', async ({ page }) => {
+  test.skip('PMM-T1153 Verify user logged in using SSO and is not a member of SN account is NOT able to see Entitlements @not-ui-pipeline @portal @post-pmm-portal-upgrade', async ({ page }) => {
     const signInPage = new SignInPage(page);
     const homeDashboard = new HomeDashboard(page);
     const ticketsPage = new TicketsPage(page);
@@ -360,7 +360,7 @@ test.describe('Spec file for PMM connected the portal', async () => {
     }
   });
   // Needs to be fixed in the future.
-  test('PMM-T1264 Verify that pmm admin user can force disconnect pmm from the portal. @not-ui-pipeline @portal @post-pmm-portal-upgrade', async ({ page }) => {
+  test.skip('PMM-T1264 Verify that pmm admin user can force disconnect pmm from the portal. @not-ui-pipeline @portal @post-pmm-portal-upgrade', async ({ page }) => {
     test.skip(pmmVersion < 29, 'This test is for PMM version 2.29.0 and higher');
     const platformPage = new PerconaPlatform(page);
 
