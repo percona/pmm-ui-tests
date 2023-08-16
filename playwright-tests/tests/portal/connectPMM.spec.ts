@@ -11,6 +11,7 @@ import { api } from '@api/api';
 import { portalHelper } from '@helpers/portalHelper';
 
 test.describe('Spec file for connecting PMM to the portal', async () => {
+  test.describe.configure({ retries: 0 });
   let pmmVersion: number;
   let firstAdmin: PortalUser;
   let secondAdmin: PortalUser;

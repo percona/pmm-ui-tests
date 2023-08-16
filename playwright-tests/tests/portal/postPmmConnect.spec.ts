@@ -15,12 +15,12 @@ import { portalHelper } from '@helpers/portalHelper';
 import { PortalUserRoles } from '@helpers/enums/portalUserRoles';
 
 test.describe('Spec file for PMM connected the portal', async () => {
+  test.describe.configure({ retries: 0 });
   let firstAdmin: PortalUser;
   let secondAdmin: PortalUser;
   let technicalUser: PortalUser;
   let freeUser: PortalUser;
   let pmmVersion: number;
-  // let orgId: string;
 
   test.beforeAll(async () => {
     if (!pmmVersion) {
