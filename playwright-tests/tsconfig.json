@@ -18,8 +18,7 @@
       "@tests/*": ["./*"],
       "@pages/*": ["pages/*"],
       "@api/*": ["api/*"],
-      "@support/*": ["support/*"],
-      "@root/*": ["../*"],
+      "@root/*": ["./*"],
       "@helpers/*": ["helpers/*"],
       "@components/*": ["components/*"]
     },

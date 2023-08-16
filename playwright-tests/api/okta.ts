@@ -1,26 +1,44 @@
 import { expect, Page } from '@playwright/test';
-import { getUser } from '@helpers/portalHelper';
 import config from '@tests/playwright.config';
-import User from '@support/types/user.interface';
-import { oktaRequest } from './helpers/oktaApiHelper';
+import { PortalUser } from '@helpers/types/PortalUser';
 import * as dotenv from 'dotenv';
+import { Constants } from '@helpers/Constants';
+import axios, { AxiosResponse, Method } from 'axios';
+import https from 'https';
 
 dotenv.config();
-
-const oktaUrl = `https://${process.env.OAUTH_DEV_HOST}`;
-const oktaIssuerUrl = process.env.REACT_APP_OAUTH_DEV_ISSUER_URI ? process.env.REACT_APP_OAUTH_DEV_ISSUER_URI : '';
-const oktaToken = `SSWS ${process.env.OKTA_TOKEN}`;
 const portalUrl = config.use!.baseURL!;
 
-export const oktaAPI = {
-  async loginByOktaApi(user: User, page: Page) {
+/**
+ * Implemented HTTP request to OKTA API using provided configuration.
+ *
+ * @param   method    HTTP request type {@link Method}
+ * @param   apiPath   API v1 endpoint path, ex: "/users"
+ * @param   payload   JSON {@code object}; an empty object for get or delete requests
+ */
+const oktaRequest = async (method: Method, apiPath: string, payload = {}): Promise<AxiosResponse> => {
+  console.log(`${method.toUpperCase()}: ${Constants.okta.url}/api/v1${apiPath}\nPayload: ${JSON.stringify(payload)}`);
+  const response = await axios({
+    url: `${Constants.okta.url}/api/v1${apiPath}`,
+    headers: { 'X-Requested-With': 'XMLHttpRequest', Authorization: Constants.okta.token },
+    method,
+    data: payload,
+    httpsAgent: new https.Agent({ rejectUnauthorized: false }),
+  });
+  expect(response.status, `Expected to be 200: ${response.status} ${response.statusText}`).toEqual(200);
+  console.log(`Status: ${response.status} ${response.statusText}`);
+  return response;
+};
+
+export const okta = {
+  async loginByOktaApi(user: PortalUser, page: Page) {
     const credentials = {
       username: user.email,
       password: user.password,
     };
-    const response = await oktaRequest(oktaUrl, '/api/v1/authn', 'post', oktaToken, credentials);
+    const response = await oktaRequest('post', '/authn', credentials);
     const authConfig = {
-      baseUrl: oktaUrl,
+      baseUrl: Constants.okta.url,
       clientId: process.env.REACT_APP_OAUTH_DEV_CLIENT_ID,
       redirectUri: `${portalUrl}/login/callback`,
       issuer: process.env.REACT_APP_OAUTH_DEV_ISSUER_URI,
@@ -65,7 +83,7 @@ export const oktaAPI = {
     await page.reload();
   },
 
-  async createUser(user: User, activate = true) {
+  async createUser(user: PortalUser, activate = true) {
     const data = {
       profile: {
         firstName: user.firstName,
@@ -79,29 +97,16 @@ export const oktaAPI = {
         password: { value: user.password },
       },
     };
-
-    const response = await oktaRequest(
-      oktaUrl,
-      `/api/v1/users?activate=${activate}`,
-      'post',
-      oktaToken,
-      data,
-    );
-
-    expect(response.status).toEqual(200);
-
-    return response;
+    return oktaRequest('post', `/users?activate=${activate}`, data);
   },
 
-  async createTestUser(userEmail?: string): Promise<User> {
-    const user = getUser(userEmail);
-
+  async createTestUser(userEmail?: string): Promise<PortalUser> {
+    const user = new PortalUser(userEmail);
     await this.createUser(user);
-
     return user;
   },
 
-  async createUserWithoutMarketingConsent(user: User, activate = true) {
+  async createUserWithoutMarketingConsent(user: PortalUser, activate = true) {
     const data = {
       profile: {
         firstName: user.firstName,
@@ -113,39 +118,23 @@ export const oktaAPI = {
         password: { value: user.password },
       },
     };
-
-    const response = await oktaRequest(
-      oktaUrl,
-      `/api/v1/users?activate=${activate}`,
-      'post',
-      oktaToken,
-      data,
-    );
-
-    expect(response.status).toEqual(200);
-
-    return response;
+    return oktaRequest('post', `/users?activate=${activate}`, data);
   },
 
-  async getUser(email: string) {
-    const response = await oktaRequest(oktaUrl, `/api/v1/users?q=${email}`, 'GET', oktaToken, {});
-
-    expect(response.status).toEqual(200);
-
-    return response.data[0];
+  async getUser(email: string): Promise<PortalUser> {
+    const response = await oktaRequest('GET', `/users?q=${email}`);
+    expect(response.data[0], `Found user must have email: ${response.data[0]}`).toHaveProperty(email);
+    expect(response.data[0].email, `Found user email must be: ${email}`).toEqual(email);
+    return response.data[0] as PortalUser;
   },
 
   async getUserDetails(userId: string) {
-    const response = await oktaRequest(oktaUrl, `/api/v1/users/${userId}`, 'GET', oktaToken, {});
-
-    expect(response.status).toEqual(200);
-
-    return response;
+    return oktaRequest('GET', `/users/${userId}`);
   },
 
   async getUserDetailsByEmail(userEmail: string) {
     const user = await this.getUser(userEmail);
-    const response = await oktaRequest(oktaUrl, `/api/v1/users/${user.id}`, 'GET', oktaToken, {});
+    const response = await oktaRequest('GET', `/users/${user.id}`);
 
     expect(response.status).toEqual(200);
 
@@ -153,26 +142,31 @@ export const oktaAPI = {
   },
 
   async getUserInfo(userToken: string) {
-    const response = await oktaRequest(oktaIssuerUrl, '/v1/userinfo', 'GET', `Bearer ${userToken}`, {});
-
-    expect(response.status).toEqual(200);
-
+    console.log(`GET: ${Constants.okta.issuerUrl}/v1/userinfo`);
+    const response = await axios({
+      url: `${Constants.okta.issuerUrl}/v1/userinfo`,
+      headers: { 'X-Requested-With': 'XMLHttpRequest', Authorization: `Bearer ${userToken}` },
+      method: 'GET',
+      httpsAgent: new https.Agent({ rejectUnauthorized: false }),
+    });
+    expect(response.status, `Expected to be 200: ${response.status} ${response.statusText}`).toEqual(200);
+    console.log(`Status: ${response.status} ${response.statusText}`);
     return response;
   },
 
-  async getUserId(user: User) {
-    const response = await oktaRequest(oktaUrl, '/api/v1/authn', 'POST', oktaToken, {
-      password: 'Test12345!',
-      username: 'peter.sirotnak@3pillarglobal.com',
+  async getUserId(user: PortalUser) {
+    const response = await oktaRequest('POST', '/api/v1/authn', {
+      password: user.password,
+      username: user.email,
       options: { warnBeforePasswordExpired: true, multiOptionalFactorEnroll: false },
     });
 
     // eslint-disable-next-line no-underscore-dangle
-    return response.data._embedded.user.id;
+    return response.data._embedded.user.id as number;
   },
 
   async deactivateUserById(userId: string) {
-    return oktaRequest(oktaUrl, `/api/v1/users/${userId}`, 'DELETE', oktaToken, {});
+    return oktaRequest('DELETE', `/users/${userId}`);
   },
 
   async deleteUserById(userId: string) {
@@ -184,9 +178,7 @@ export const oktaAPI = {
     const userDetails = await this.getUser(email);
 
     if (userDetails.id) {
-      const userId = userDetails.id;
-
-      await this.deleteUserById(userId);
+      await this.deleteUserById(userDetails.id);
     }
   },
 
@@ -196,10 +188,10 @@ export const oktaAPI = {
     }
   },
 
-  async deleteUsers(users: User[]) {
+  async deleteUsers(users: PortalUser[]) {
     // eslint-disable-next-line no-restricted-syntax
-    for await (const email of users) {
-      await this.deleteUserByEmail(email.email);
+    for await (const user of users) {
+      await this.deleteUserByEmail(user.email);
     }
   },
 };

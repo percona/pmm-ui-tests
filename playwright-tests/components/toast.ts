@@ -1,5 +1,5 @@
 import { Page, expect, Locator } from '@playwright/test';
-import Duration from '@helpers/Duration';
+import Duration from '@helpers/enums/Duration';
 import config from '@tests/playwright.config';
 
 export class Toast {

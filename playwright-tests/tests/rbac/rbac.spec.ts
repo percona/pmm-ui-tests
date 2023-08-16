@@ -1,19 +1,19 @@
 import { expect, test } from '@playwright/test';
 import apiHelper from '@api/helpers/apiHelper';
 import HomeDashboard from '@tests/pages/HomeDashboard.page';
-import grafanaHelper from '@tests/helpers/GrafanaHelper';
+import grafanaHelper from '@helpers/grafanaHelper';
 import { RbacPage } from '@tests/tests/configuration/pages/Rbac.page';
 import { CreateRolePage } from '@tests/tests/configuration/pages/CreateRole.page';
 import { NewUserPage } from '@tests/pages/serverAdmin/NewUser.page';
 import { UsersConfigurationPage } from '@tests/tests/configuration/pages/UsersConfiguration.page';
 import { MySqlDashboard } from '@tests/pages/dashboards/mysql/MySqlDashboard.page';
 import NodesOverviewDashboard from '@tests/pages/dashboards/nodes/NodesOverviewDashboard.page';
-import Duration from '@tests/helpers/Duration';
+import Duration from '@helpers/enums/Duration';
 import PostgresqlInstancesOverviewDashboard from '@tests/pages/dashboards/postgresql/PostgresqlInstancesOverview.page';
 import AdvancedSettings from '@tests/pages/pmmSettings/AdvancedSettings.page';
 import { api } from '@api/api';
 import { ListRoles } from '@tests/api/management';
-import { PmmVersion } from '@helpers/PmmVersion';
+import { PmmVersion } from '@helpers/types/PmmVersion';
 import * as console from 'console';
 
 console.log(`${!!process.env.PMM_SERVER_START_VERSION}`);

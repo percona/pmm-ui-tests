@@ -1,7 +1,7 @@
 import { expect, Page } from '@playwright/test';
 import PmmUpgrade from '@components/pmmUpgrade';
 import UpgradeModal from '@components/upgradeModal';
-import Duration from '@helpers/Duration';
+import Duration from '@helpers/enums/Duration';
 import PmmMenu from '@tests/components/dasboards/homeDashboard/pmmMenu';
 import { BaseDashboard } from './dashboards/BaseDashboard.page';
 

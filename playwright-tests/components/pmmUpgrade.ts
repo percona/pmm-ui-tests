@@ -1,5 +1,5 @@
 import { expect, Page } from '@playwright/test';
-import Duration from '@helpers/Duration';
+import Duration from '@helpers/enums/Duration';
 
 export default class PmmUpgrade {
   constructor(readonly page: Page) {}

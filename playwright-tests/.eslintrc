@@ -1,9 +1,5 @@
 {
   "root": true,
-  "ignorePatterns": [
-    "/node_modules",
-    "/playwright.config.ts"
-  ],
   "overrides": [
     {
       "files": ["*.ts", "*.tsx"],
@@ -27,14 +23,11 @@
       },
       "rules": {
         "@typescript-eslint/no-unsafe-assignment": ["off"],
-        "no-continue": ["off"],
+
         "@typescript-eslint/no-unused-vars": ["error", { "vars": "all"}],
         "@typescript-eslint/no-unsafe-member-access": ["off"],
         "@typescript-eslint/no-misused-promises": ["off"],
         "@typescript-eslint/no-unsafe-call": ["off"],
-        "playwright/no-wait-for-timeout": ["off"],
-
-        "import/prefer-default-export": "off",
         // Use function hoisting to improve code readability
         "@typescript-eslint/ban-ts-comment": ["off"],
         "@typescript-eslint/require-await": ["off"],
@@ -48,6 +41,10 @@
             "variables": true
           }
         ],
+        "import/no-extraneous-dependencies": ["error", {"devDependencies": true }],
+        "import/prefer-default-export": "off",
+        "no-continue": ["off"],
+        "playwright/no-wait-for-timeout": ["off"],
         // Allows i++ in for loops (overriding airbnb-base)
         "no-plusplus": ["error", { "allowForLoopAfterthoughts": true }],
         // Most of the time, we don't want to run multiple promises at the same time in loop
@@ -96,14 +93,14 @@
         ],
         "padding-line-between-statements": [
           "error",
-          { "blankLine": "always", "prev": "*", "next": "return" },
+//          { "blankLine": "always", "prev": "*", "next": "return" },
           { "blankLine": "always", "prev": "import", "next": "*" },
           { "blankLine": "any", "prev": "import", "next": "import" },
-          { "blankLine": "always", "prev": "function", "next": "*" },
-          { "blankLine": "always", "prev": "if", "next": "*" },
-          { "blankLine": "always", "prev": "for", "next": "*" },
-          { "blankLine": "always", "prev": ["const", "let", "var"], "next": "*" },
-          { "blankLine": "any", "prev": ["const", "let", "var"], "next": ["const", "let", "var"] }
+          { "blankLine": "always", "prev": "function", "next": "*" }
+//          { "blankLine": "always", "prev": "if", "next": "*" },
+//          { "blankLine": "always", "prev": "for", "next": "*" },
+//          { "blankLine": "always", "prev": ["const", "let", "var"], "next": "*" },
+//          { "blankLine": "any", "prev": ["const", "let", "var"], "next": ["const", "let", "var"] }
         ],
         "object-curly-newline": ["warn", {
           "ObjectExpression": { "multiline": true, "minProperties": 1},

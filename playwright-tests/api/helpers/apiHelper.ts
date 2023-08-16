@@ -1,7 +1,9 @@
-import { APIRequestContext, Page, expect, request } from '@playwright/test';
+import {
+  APIRequestContext, Page, expect, request,
+} from '@playwright/test';
 import config from '@tests/playwright.config';
-import grafanaHelper from '@helpers/GrafanaHelper';
-import { APIResponse } from "playwright-core";
+import grafanaHelper from '@helpers/grafanaHelper';
+import { APIResponse } from 'playwright-core';
 import { ReadStream } from 'fs';
 
 export interface Settings {
@@ -10,16 +12,18 @@ export interface Settings {
 
 const getConfiguredRestApi = async (): Promise<APIRequestContext> => {
   return request.newContext({
-    baseURL: config.use?.baseURL!,
-    extraHTTPHeaders: { Authorization: `Basic ${await grafanaHelper.getToken()}` },
+    baseURL: config.use?.baseURL,
+    extraHTTPHeaders: {
+      Authorization: `Basic ${grafanaHelper.getToken()}`,
+    },
     ignoreHTTPSErrors: true,
   });
 };
 
-const apiHelper = {
-  //TODO: move it from the helper to proper file API? It's not actually API call.
+export const apiHelper = {
+  // TODO: move it from the helper to proper file API? It's not actually API call.
   confirmTour: async (page: Page) => {
-    await page.route('**/v1/user', (route) =>
+    await page.route('**/v1/user', (route) => {
       route.fulfill({
         status: 200,
         body: JSON.stringify({
@@ -27,19 +31,18 @@ const apiHelper = {
           product_tour_completed: true,
           alerting_tour_completed: true,
         }),
-      }),
-    );
+      });
+    });
   },
 
-  //TODO: move it from the helper to proper file API. Suggestion: grafanaApi
+  // TODO: move it from the helper to proper file API. Suggestion: grafanaApi
   listOrgUsers: async () => {
     const restConfig = await getConfiguredRestApi();
-
     const response = await restConfig.get('/graph/api/org/users?accesscontrol=true');
-    return await response.json();
+    return response.json();
   },
 
-  //TODO: move it from the helper to proper file API? It's not actually API call.
+  // TODO: move it from the helper to proper file API? It's not actually API call.
   async interceptBackEndCall(page: Page, interceptedRoute: string, data = {}) {
     await page.route(interceptedRoute, async (route) => {
       await route.fulfill({
@@ -60,23 +63,24 @@ const apiHelper = {
    * @return            Promise<APIResponse> instance
    */
   get: async (path: string, options?:
-    {
-      data?: any;
-      failOnStatusCode?: boolean | undefined;
-      form?: { [key: string]: string | number | boolean; } | undefined;
-      headers?: { [key: string]: string; } | undefined;
-      ignoreHTTPSErrors?: boolean | undefined;
-      maxRedirects?: number | undefined;
-      multipart?: {
-        [key: string]: string | number | boolean | ReadStream | { name: string; mimeType: string; buffer: Buffer; };
-      } | undefined;
-      params?: { [key: string]: string | number | boolean; } | undefined;
-      timeout?: number | undefined;
-    } | undefined
-  ): Promise<APIResponse> => {
+  {
+    data?: any;
+    failOnStatusCode?: boolean | undefined;
+    form?: { [key: string]: string | number | boolean; } | undefined;
+    headers?: { [key: string]: string; } | undefined;
+    ignoreHTTPSErrors?: boolean | undefined;
+    maxRedirects?: number | undefined;
+    multipart?: {
+      [key: string]: string | number | boolean | ReadStream | { name: string; mimeType: string; buffer: Buffer; };
+    } | undefined;
+    params?: { [key: string]: string | number | boolean; } | undefined;
+    timeout?: number | undefined;
+  } | undefined): Promise<APIResponse> => {
     console.log(`GET: ${path}${options ? ` with ${JSON.stringify(options)}` : ''}`);
     const response = await (await getConfiguredRestApi()).get(path, options);
+
     expect(response.status(), `Status: ${response.status()} ${response.statusText()}`).toEqual(200);
+
     return response;
   },
 
@@ -87,12 +91,10 @@ const apiHelper = {
    * @param   payload   request body {@code Object}
    * @return            Promise<APIResponse> instance
    */
-  post: async (path: string, payload: Object): Promise<APIResponse> => {
+  post: async (path: string, payload: object): Promise<APIResponse> => {
     console.log(`POST: ${path}\nPayload: ${JSON.stringify(payload)}`);
     const response = await (await getConfiguredRestApi()).post(path, payload);
     expect(response.status(), `Status: ${response.status()} ${response.statusText()}`).toEqual(200);
     return response;
   },
 };
-
-export default apiHelper;

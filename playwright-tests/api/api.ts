@@ -1,9 +1,9 @@
-import { server } from "@api/server";
-import { settings } from "@tests/tests/configuration/api/settings";
-import { oktaAPI } from "@api/okta";
-import { portalAPI } from "@api/portalApi";
-import { inventory } from "./inventory";
-import { management } from "./management";
+import { server } from '@api/server';
+import { settings } from '@tests/tests/configuration/api/settings';
+import { okta } from '@api/okta';
+import { portalAPI } from '@api/portalApi';
+import { inventory } from './inventory';
+import { management } from './management';
 
 /**
  * User facing api collection. Accessible on Frontend via /swagger path.
@@ -18,6 +18,6 @@ export const api = {
     serverV1: server,
     managementV1: management,
   },
-  okta: oktaAPI,
+  okta: okta,
   portal: portalAPI,
-}
+};

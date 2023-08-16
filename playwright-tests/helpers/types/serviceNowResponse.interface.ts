@@ -1,6 +1,11 @@
-interface ServiceNowResponse {
+export interface ServiceNowResponse {
   account: Account;
   contacts: Contacts;
+}
+
+interface Account {
+  sys_id: string;
+  name: string;
 }
 
 interface Contacts {
@@ -9,13 +14,8 @@ interface Contacts {
   technical: ServiceNowUser;
 }
 
-interface ServiceNowUser {
+export interface ServiceNowUser {
   email: string;
   firstName: string;
   lastName: string;
 }
-interface Account {
-  sys_id: string;
-  name: string;
-}
-export default ServiceNowResponse;

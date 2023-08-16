@@ -1,4 +1,4 @@
-import { executeCommand } from '../CommandLine';
+import { executeCommand } from './cliHelper';
 
 const systemCommands = {
   getRunningContainerNames: async (): Promise<string[]> => {

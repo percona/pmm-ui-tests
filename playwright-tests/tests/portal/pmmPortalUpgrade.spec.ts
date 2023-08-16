@@ -1,24 +1,25 @@
-import { expect, test } from '@playwright/test';
-import User from '@support/types/user.interface';
-import apiHelper from '@api/helpers/apiHelper';
-import { fileHelper } from '@helpers/FileHelper';
+import { test } from '@playwright/test';
+import { PortalUser } from '@helpers/types/PortalUser';
+import { apiHelper } from '@api/helpers/apiHelper';
+import { fileHelper } from '@helpers/fileHelper';
 import { portalAPI } from '@api/portalApi';
 import { serviceNowAPI } from '@api/serviceNowApi';
-import { PortalUserRoles } from '@support/enums/portalUserRoles';
-import Duration from '@helpers/Duration';
+import { PortalUserRoles } from '@helpers/enums/portalUserRoles';
+import Duration from '@helpers/enums/Duration';
 import HomeDashboard from '@pages/HomeDashboard.page';
-import grafanaHelper from '@helpers/GrafanaHelper';
-import { oktaAPI } from '@api/okta';
+import grafanaHelper from '@helpers/grafanaHelper';
+import { okta } from '@api/okta';
 import { api } from '@api/api';
+import {portalHelper} from "@helpers/portalHelper";
 
 test.describe('Spec file for PMM connected the portal', async () => {
   test.describe.configure({
     retries: 0,
   });
-  let firstAdmin: User;
-  let secondAdmin: User;
-  let technicalUser: User;
-  let freeUser: User;
+  let firstAdmin: PortalUser;
+  let secondAdmin: PortalUser;
+  let technicalUser: PortalUser;
+  let freeUser: PortalUser;
   let pmmVersion: number;
   const fileName = 'portalCredentials';
   let orgId: string;
@@ -27,27 +28,10 @@ test.describe('Spec file for PMM connected the portal', async () => {
     if (!pmmVersion) {
       pmmVersion = (await api.pmm.serverV1.getPmmVersion()).minor;
     }
+    [firstAdmin, secondAdmin, technicalUser] = await portalHelper.loadTestUsers();
 
-    const userCredentials = await fileHelper.readfile(fileName);
-    let adminToken: string;
-
-    if (userCredentials) {
-      [firstAdmin, secondAdmin, technicalUser] = JSON.parse(userCredentials);
-      adminToken = await portalAPI.getUserAccessToken(firstAdmin.email, firstAdmin.password);
-      orgId = (await portalAPI.getOrg(adminToken)).orgs[0].id;
-    } else {
-      [firstAdmin, secondAdmin, technicalUser] = await serviceNowAPI.createServiceNowUsers();
-      adminToken = await portalAPI.getUserAccessToken(firstAdmin.email, firstAdmin.password);
-      const { org } = await portalAPI.createOrg(adminToken);
-
-      orgId = org.id;
-      await portalAPI.inviteUserToOrg(adminToken, org.id, secondAdmin.email, PortalUserRoles.admin);
-      await portalAPI.inviteUserToOrg(adminToken, org.id, technicalUser.email, PortalUserRoles.technical);
-      await fileHelper.writeFileSync(fileName, JSON.stringify([firstAdmin, secondAdmin, technicalUser]));
-    }
-
-    freeUser = await oktaAPI.createTestUser();
-    await portalAPI.inviteUserToOrg(adminToken, orgId, freeUser.email, PortalUserRoles.admin);
+    freeUser = await okta.createTestUser();
+    // await portalAPI.inviteUserToOrg(adminToken, orgId, freeUser.email, PortalUserRoles.admin);
   });
 
   test.beforeEach(async ({ page }) => {

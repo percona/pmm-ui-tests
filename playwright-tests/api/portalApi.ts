@@ -1,11 +1,6 @@
-import { PortalUserRoles } from '@support/enums/portalUserRoles';
+import { PortalUserRoles } from '@helpers/enums/portalUserRoles';
 import { portalAPIHelper } from './helpers/portalApiHelper';
 
-type PortalOrg = {
-  org: {
-    id: string
-  }
-};
 export const portalAPI = {
   async getUserAccessToken(username: string, password: string) {
     const response = await portalAPIHelper.post({
@@ -33,8 +28,7 @@ export const portalAPI = {
     return portalAPIHelper.delete({
       path: `/v1/orgs/${orgId}`,
       accessToken,
-      data: {
-      },
+      data: {},
     });
   },
 

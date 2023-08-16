@@ -1,5 +1,5 @@
 import { exec } from 'child_process';
-import { executeCommand } from '../CommandLine';
+import { executeCommand } from './cliHelper';
 
 const getClientPrefix = () => {
   return process.env.CI ? 'sudo ' : 'sudo docker exec pmm-integration-client ';

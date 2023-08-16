@@ -1,5 +1,5 @@
 import { expect, Page } from '@playwright/test';
-import Duration from '@tests/helpers/Duration';
+import Duration from '@helpers/enums/Duration';
 import { CommonPage } from '../Common.page';
 
 export class BaseDashboard extends CommonPage {

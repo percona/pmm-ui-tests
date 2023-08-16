@@ -1,7 +1,7 @@
 import type { PlaywrightTestConfig } from '@playwright/test';
 import { devices } from '@playwright/test';
 import * as dotenv from 'dotenv';
-import Duration from './helpers/Duration';
+import Duration from '@helpers/enums/Duration';
 
 dotenv.config({ path: '.env.local' });
 dotenv.config();

@@ -1,6 +1,6 @@
 import {expect, test} from '@playwright/test';
 import apiHelper from "@api/helpers/apiHelper";
-import grafanaHelper from '@helpers/GrafanaHelper';
+import grafanaHelper from '@helpers/grafanaHelper';
 import HomeDashboard from '@pages/HomeDashboard.page';
 
 test.describe('Common Upgrade PMM tests', async () => {

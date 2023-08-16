@@ -1,4 +1,4 @@
-import { PortalUserRoles } from '@support/enums/portalUserRoles';
+import { PortalUserRoles } from '@helpers/enums/portalUserRoles';
 
 interface InviteUserToOrg {
   username: string;

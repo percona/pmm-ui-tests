@@ -1,42 +1,27 @@
 import { expect, test } from '@playwright/test';
-import apiHelper from '@api/helpers/apiHelper';
+import { apiHelper } from '@api/helpers/apiHelper';
 import { portalAPI } from '@api/portalApi';
-import { serviceNowAPI } from '@api/serviceNowApi';
-import Duration from '@helpers/Duration';
-import { fileHelper } from '@helpers/FileHelper';
-import grafanaHelper from '@helpers/GrafanaHelper';
+import Duration from '@helpers/enums/Duration';
+import grafanaHelper from '@helpers/grafanaHelper';
 import HomeDashboard from '@pages/HomeDashboard.page';
 import PerconaPlatform from '@pages/pmmSettings/PerconaPlatform.page';
 import { SignInPage } from '@pages/SignIn.page';
-import { PortalUserRoles } from '@support/enums/portalUserRoles';
-import User from '@support/types/user.interface';
+import { PortalUser } from '@helpers/types/PortalUser';
 import { api } from '@api/api';
+import { portalHelper } from '@helpers/portalHelper';
 
 test.describe('Spec file for connecting PMM to the portal', async () => {
-  let firstAdmin: User;
-  let secondAdmin: User;
-  let technicalUser: User;
   let pmmVersion: number;
-  const fileName = 'portalCredentials';
+  let firstAdmin: PortalUser;
+  let secondAdmin: PortalUser;
+  let technicalUser: PortalUser;
 
   test.beforeAll(async ({ baseURL }) => {
+    pmmVersion = (await api.pmm.serverV1.getPmmVersion()).minor;
     await api.pmm.settingsV1.changeSettings({
       pmm_public_address: baseURL!.replace(/(^\w+:|^)\/\//, ''),
     });
-    pmmVersion = (await api.pmm.serverV1.getPmmVersion()).minor;
-    const userCredentials = await fileHelper.readfile(fileName, false);
-
-    if (userCredentials) {
-      [firstAdmin, secondAdmin, technicalUser] = JSON.parse(userCredentials);
-    } else {
-      [firstAdmin, secondAdmin, technicalUser] = await serviceNowAPI.createServiceNowUsers();
-      const adminToken = await portalAPI.getUserAccessToken(firstAdmin.email, firstAdmin.password);
-      const { org } = await portalAPI.createOrg(adminToken);
-
-      await portalAPI.inviteUserToOrg(adminToken, org.id, secondAdmin.email, PortalUserRoles.admin);
-      await portalAPI.inviteUserToOrg(adminToken, org.id, technicalUser.email, PortalUserRoles.technical);
-      await fileHelper.writeFileSync(fileName, JSON.stringify([firstAdmin, secondAdmin, technicalUser]));
-    }
+    [firstAdmin, secondAdmin, technicalUser] = await portalHelper.loadTestUsers();
   });
 
   test.beforeEach(async ({ page }) => {

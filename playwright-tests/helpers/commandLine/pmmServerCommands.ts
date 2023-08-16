@@ -1,4 +1,4 @@
-import { executeCommand } from "../CommandLine";
+import { executeCommand } from './cliHelper';
 
 const pmmServerCommands = {
   getNodeDetails: async (nodeId: string) => {

@@ -1,27 +1,32 @@
-import ServiceNowResponse from '@support/types/serviceNowResponse.interface';
-import { serviceNowRequest } from './helpers/serviceNowApiHelper';
-import { oktaAPI } from '@api/okta';
+import { ServiceNowResponse, ServiceNowUser } from '@helpers/types/serviceNowResponse.interface';
+import https from 'https';
+import * as dotenv from 'dotenv';
+import axios, { AxiosRequestConfig } from 'axios';
+import { Constants } from '@helpers/Constants';
+import { expect } from '@playwright/test';
+
+dotenv.config();
+
+const apiConfig: AxiosRequestConfig = {
+  auth: {
+    username: Constants.serviceNow.username, password: Constants.serviceNow.password,
+  },
+  httpsAgent: new https.Agent({ rejectUnauthorized: false }),
+};
 
 export const serviceNowAPI = {
-  async createServiceNowCredentials(): Promise<ServiceNowResponse> {
-    const response = await serviceNowRequest();
-
+  async getServiceNowCredentials(): Promise<ServiceNowResponse> {
+    console.log(`POST: ${Constants.serviceNow.devUrl}\nPayload: ${JSON.stringify({})}`);
+    const response = await axios.post(Constants.serviceNow.devUrl, {}, apiConfig);
+    expect(response.status, `Expected to be 200: ${response.status} ${response.statusText}`).toEqual(200);
+    console.log(`Status: ${response.status} ${response.statusText}`);
     return {
       account: response.data.result.account,
       contacts: {
-        admin1: response.data.result.contacts.find((contact: any) => contact.email.startsWith('ui_tests_admin-')),
-        admin2: response.data.result.contacts.find((contact: any) => contact.email.startsWith('ui_tests_admin2-')),
-        technical: response.data.result.contacts.find((contact: any) => contact.email.startsWith('ui_tests_technical-')),
+        admin1: response.data.result.contacts.find((contact: ServiceNowUser) => contact.email.startsWith('ui_tests_admin-')),
+        admin2: response.data.result.contacts.find((contact: ServiceNowUser) => contact.email.startsWith('ui_tests_admin2-')),
+        technical: response.data.result.contacts.find((contact: ServiceNowUser) => contact.email.startsWith('ui_tests_technical-')),
       },
     };
-  },
-
-  async createServiceNowUsers() {
-    const credentials: ServiceNowResponse = await this.createServiceNowCredentials();
-    const firstAdmin = await oktaAPI.createTestUser(credentials.contacts.admin1.email);
-    const secondAdmin = await oktaAPI.createTestUser(credentials.contacts.admin2.email);
-    const technicalUser = await oktaAPI.createTestUser(credentials.contacts.technical.email);
-
-    return [firstAdmin, secondAdmin, technicalUser];
   },
 };
