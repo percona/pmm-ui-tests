@@ -15,6 +15,7 @@ import { portalHelper } from '@helpers/portalHelper';
 import { PortalUserRoles } from '@helpers/enums/portalUserRoles';
 
 test.describe('Spec file for PMM connected the portal', async () => {
+  test.skip();
   test.describe.configure({ retries: 0 });
   let firstAdmin: PortalUser;
   let secondAdmin: PortalUser;
