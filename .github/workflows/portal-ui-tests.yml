@@ -100,7 +100,7 @@ jobs:
           npm ci
           npx playwright install
 
-      - name: 'Checkout pmm-qa: "${{ PMM_QA_BRANCH }}"'
+      - name: 'Checkout pmm-qa: "${{ env.PMM_QA_BRANCH }}"'
         uses: actions/checkout@v3
         with:
           repository: percona/pmm-qa
