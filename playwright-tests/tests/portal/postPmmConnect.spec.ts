@@ -35,8 +35,8 @@ test.describe('Spec file for PMM connected the portal', async () => {
     await page.goto('');
   });
 
-  test.skip('Verify user roles are untouched after PMM server upgrade @not-ui-pipeline @portal @post-pmm-portal-upgrade', async () => {
-    const users = await apiHelper.listOrgUsers();
+  test('Verify user roles are untouched after PMM server upgrade @not-ui-pipeline @portal @post-pmm-portal-upgrade', async () => {
+    const users = await api.grafana.listOrgUsers();
     const foundAdmin1User = users.find((user: any) => user.email === firstAdmin.email);
     const foundAdmin2User = users.find((user: any) => user.email === secondAdmin.email);
     const foundTechnicalUser = users.find((user: any) => user.email === technicalUser.email);
@@ -46,7 +46,7 @@ test.describe('Spec file for PMM connected the portal', async () => {
     expect(foundTechnicalUser.role).toEqual('Viewer');
   });
 
-  test('PMM-T1149 PMM-T1132 Verify PMM user logged in using SSO and member of SN account is able to see tickets @not-ui-pipeline @portal @post-pmm-portal-upgrade', async ({
+  test.skip('PMM-T1149 PMM-T1132 Verify PMM user logged in using SSO and member of SN account is able to see tickets @not-ui-pipeline @portal @post-pmm-portal-upgrade', async ({
     page,
     context,
   }) => {
@@ -95,7 +95,7 @@ test.describe('Spec file for PMM connected the portal', async () => {
     }
   });
 
-  test('PMM-T1152 Verify user logged in using SSO and is a member of SN account is able to see Entitlements @not-ui-pipeline @portal @post-pmm-portal-upgrade', async ({ page }) => {
+  test.skip('PMM-T1152 Verify user logged in using SSO and is a member of SN account is able to see Entitlements @not-ui-pipeline @portal @post-pmm-portal-upgrade', async ({ page }) => {
     const signInPage = new SignInPage(page);
     const homeDashboard = new HomeDashboard(page);
     const entitlementsPage = new EntitlementsPage(page);

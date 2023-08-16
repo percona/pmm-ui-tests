@@ -1,4 +1,4 @@
-import apiHelper from './helpers/apiHelper';
+import { apiHelper } from './helpers/apiHelper';
 
 interface ListNodes {
   generic?: NodeDetails[],
@@ -14,9 +14,6 @@ interface NodeDetails {
 
 export const inventory = {
   async listNodes(): Promise<ListNodes> {
-    const responseBody: ListNodes = await (await apiHelper.post('v1/inventory/Nodes/List', {
-    })).json();
-
-    return responseBody;
+    return await (await apiHelper.post('v1/inventory/Nodes/List', {})).json() as ListNodes;
   },
 };

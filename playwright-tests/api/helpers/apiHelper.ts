@@ -35,13 +35,6 @@ export const apiHelper = {
     });
   },
 
-  // TODO: move it from the helper to proper file API. Suggestion: grafanaApi
-  listOrgUsers: async () => {
-    const restConfig = await getConfiguredRestApi();
-    const response = await restConfig.get('/graph/api/org/users?accesscontrol=true');
-    return response.json();
-  },
-
   // TODO: move it from the helper to proper file API? It's not actually API call.
   async interceptBackEndCall(page: Page, interceptedRoute: string, data = {}) {
     await page.route(interceptedRoute, async (route) => {
@@ -79,7 +72,7 @@ export const apiHelper = {
     console.log(`GET: ${path}${options ? ` with ${JSON.stringify(options)}` : ''}`);
     const response = await (await getConfiguredRestApi()).get(path, options);
 
-    expect(response.status(), `Status: ${response.status()} ${response.statusText()}`).toEqual(200);
+    await expect(response, `Expected to be OK: ${response.status()} ${response.statusText()}`).toBeOK();
 
     return response;
   },
