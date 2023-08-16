@@ -30,12 +30,8 @@ test.describe('Spec file for connecting PMM to the portal', async () => {
     await page.goto('/');
   });
 
-  test('PMM-T398 Verify Percona Platform elements on PMM Settings Page @portal @pre-pmm-portal-upgrade', async ({ page }) => {
+  test('PMM-T809 PMM-T398 Verify Percona Platform elements on PMM Settings Page @portal @pre-pmm-portal-upgrade', async ({ page }) => {
     test.skip(pmmVersion < 27, 'This test is for PMM version 2.27.0 and higher');
-    test.info().annotations.push({
-      type: 'Also Covers',
-      description: 'PMM-T809 Verify validation for Percona Platform connect form',
-    });
     const platformPage = new PerconaPlatform(page);
 
     await test.step('1. Open Percona Platform tab in PMM Settings', async () => {

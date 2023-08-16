@@ -46,15 +46,10 @@ test.describe('Spec file for PMM connected the portal', async () => {
     expect(foundTechnicalUser.role).toEqual('Viewer');
   });
 
-  test('PMM-T1132 Verify PMM user logged in using SSO and member of SN account is able to see tickets @not-ui-pipeline @portal @post-pmm-portal-upgrade', async ({
+  test('PMM-T1149 PMM-T1132 Verify PMM user logged in using SSO and member of SN account is able to see tickets @not-ui-pipeline @portal @post-pmm-portal-upgrade', async ({
     page,
     context,
   }) => {
-    test.info().annotations.push({
-      type: 'Also Covers',
-      description:
-        'PMM-T1149 Verify PMM user logged in using SSO and is a member of SN account is able to see empty list of tickets',
-    });
     const signInPage = new SignInPage(page);
     const homeDashboard = new HomeDashboard(page);
     const ticketsPage = new TicketsPage(page);
@@ -137,14 +132,10 @@ test.describe('Spec file for PMM connected the portal', async () => {
     }
   });
 
-  test('PMM-T1222 Verify user can see the contacts from Percona @not-ui-pipeline @portal @post-pmm-portal-upgrade', async ({
+  test('PMM-T1168 PMM-T1222 Verify user can see the contacts from Percona @not-ui-pipeline @portal @post-pmm-portal-upgrade', async ({
     page,
     context,
   }) => {
-    test.info().annotations.push({
-      type: 'Also Covers:',
-      description: 'PMM-T1168 - Verify PMM user logged in using SSO and member of SN account is able to see contacts',
-    });
     await context.grantPermissions(['clipboard-write', 'clipboard-read']);
     const homeDashboard = new HomeDashboard(page);
     const signInPage = new SignInPage(page);
@@ -328,13 +319,7 @@ test.describe('Spec file for PMM connected the portal', async () => {
     }
   });
 
-  test('PMM-T1112 Verify user can disconnect pmm from portal success flow @portal @not-ui-pipeline @post-pmm-portal-upgrade', async ({ page }) => {
-    test.info().annotations.push({
-      type: 'Also Covers',
-      description:
-        "PMM-T1204 Verify the confirmation message appears when user's trying to logout from Portal",
-    });
-
+  test('PMM-T1204 PMM-T1112 Verify user can disconnect pmm from portal success flow @portal @not-ui-pipeline @post-pmm-portal-upgrade', async ({ page }) => {
     const signInPage = new SignInPage(page);
     const homeDashboard = new HomeDashboard(page);
     const platformPage = new PerconaPlatform(page);

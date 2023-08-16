@@ -4,9 +4,7 @@ import grafanaHelper from '@helpers/grafanaHelper';
 import HomeDashboard from '@pages/HomeDashboard.page';
 
 test.describe('Common Upgrade PMM tests', async () => {
-  test.describe.configure({
-    retries: 0,
-  });
+  test.describe.configure({ retries: 0 });
 
   test.beforeEach(async ({ page }) => {
     await grafanaHelper.authorize(page);
