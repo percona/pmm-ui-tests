@@ -1,16 +1,9 @@
-import { APIRequestContext, APIResponse, request } from '@playwright/test';
+import { APIRequestContext, APIResponse, expect, request } from '@playwright/test';
 import { Constants } from '@helpers/Constants';
 
-const throwPortalRequestError = (e: string) => {
-  throw new Error(`Failed to execute portal request. ${e}`);
-};
-
-const checkAndReturnResponse = (r: APIResponse) => {
-  if (r.ok()) {
-    return r.json();
-  }
-  throwPortalRequestError(`${r.status()} ${r.statusText()}`);
-  return null;
+const checkAndReturnResponse = async (r: APIResponse) => {
+  await expect(r, `Expected to be OK: ${r.status()} ${r.statusText()}`).toBeOK();
+  return r.json();
 };
 
 export interface RequestParams {
@@ -24,44 +17,36 @@ interface ContextOptions {
   extraHTTPHeaders?: { [key: string]: string; };
 }
 
-export const getRequestContext = async ({ accessToken }: {
-  baseURL?: string;
-  accessToken?: string;
-}): Promise<APIRequestContext> => {
-  const options: ContextOptions = {
-    baseURL: Constants.portal.url,
-  };
-
+const getRequestContext = async ({ accessToken }: { baseURL?: string; accessToken?: string; }): Promise<APIRequestContext> => {
+  const options: ContextOptions = { baseURL: Constants.portal.url };
   if (accessToken) {
     options.extraHTTPHeaders = {
       Authorization: `Bearer ${accessToken}`,
     };
   }
-
   return request.newContext(options);
 };
 
 export const portalAPIHelper = {
   async post(params: RequestParams) {
+    console.log(`POST: ${Constants.portal.url}${params.path}\nPayload: ${JSON.stringify(params.data)}`);
     return (await getRequestContext(params))
-      .post(params.path, { data: params.data })
-      .then((response: APIResponse) => checkAndReturnResponse(response))
-      .catch(throwPortalRequestError);
+      .post(params.path, { data: params.data }).then(checkAndReturnResponse);
   },
 
   async put(params: RequestParams) {
+    console.log(`PUT: ${Constants.portal.url}${params.path}\nPayload: ${JSON.stringify(params.data)}`);
     return (await getRequestContext(params))
-      .put(params.path, { data: params.data })
-      .then(checkAndReturnResponse).catch(throwPortalRequestError);
+      .put(params.path, { data: params.data }).then(checkAndReturnResponse);
   },
 
   async get(params: RequestParams) {
-    return (await getRequestContext(params)).get(params.path)
-      .then(checkAndReturnResponse).catch(throwPortalRequestError);
+    console.log(`GET: ${Constants.portal.url}${params.path}`);
+    return (await getRequestContext(params)).get(params.path).then(checkAndReturnResponse);
   },
 
   async delete(params: RequestParams) {
-    return (await getRequestContext(params)).delete(params.path)
-      .then(checkAndReturnResponse).catch(throwPortalRequestError);
+    console.log(`GET: ${Constants.portal.url}${params.path}`);
+    return (await getRequestContext(params)).delete(params.path).then(checkAndReturnResponse);
   },
 };
