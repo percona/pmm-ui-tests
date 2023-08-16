@@ -51,7 +51,7 @@ jobs:
       PMM_CLIENTS: ${{ inputs.pmm_clients || '' }}
       PMM_TEST_FLAG: ${{ inputs.pmm_test_flag || '@portal' }}
 
-      PMM_SERVER_VERSION: ${{ inputs.pmm_server_version || 'perconalab/pmm-server:dev-latest' }}
+      PMM_SERVER_VERSION: ${{ inputs.pmm_server_version || 'dev-latest' }}
       PMM_CLIENT_VERSION: ${{ inputs.pmm_client_version || 'dev-latest' }}
       PMM_QA_BRANCH: ${{ inputs.pmm_qa_branch || 'main' }}
 
@@ -111,7 +111,7 @@ jobs:
         working-directory: pmm-qa/pmm-integration
         run: |
           npm install
-          sudo npx ts-node ./integration-setup.ts --ci --setup-docker-pmm-server --rbac --pmm-server-docker-tag=${{ env.PMM_SERVER_VERSION }} --pmm-client-version=${{ env.PMM_CLIENT_VERSION }}
+          sudo npx ts-node ./integration-setup.ts --ci --setup-docker-pmm-server --rbac --pmm-server-docker-tag=${{ format('perconalab/pmm-server:{0}', env.PMM_SERVER_VERSION) }} --pmm-client-version=${{ env.PMM_CLIENT_VERSION }}
           timeout 100 bash -c 'while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' localhost/ping)" != "200" ]]; do sleep 5; done' || false
 
       - name: 'Setup <PMM Client: ${{ inputs.pmm_client_version }}>'
@@ -142,7 +142,7 @@ jobs:
         run: |
           # TODO: add job id for matrix call
           job_tag=$(echo "${{ env.PMM_TEST_FLAG }}" | sed -e "s/-pre-upgrade//" -e "s/@//")
-          report_name="$job_tag"-report
+          report_name=${{ env.PMM_SERVER_VERSION }}"$job_tag"-report
           echo $report_name
           echo "REPORT_NAME=$report_name" >> $GITHUB_ENV
 
