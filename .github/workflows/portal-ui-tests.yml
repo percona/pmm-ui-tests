@@ -74,7 +74,7 @@ jobs:
       SERVICENOW_DEV_URL: 'https://perconadev.service-now.com/api/x_pellc_percona_pl/platform/settest'
 
     steps:
-      - name: PMM server version ${{ inputs.pmm_server_version }} and UI tests for flag "${{ inputs.pmm_test_flag }}" and pmm-ui-tests branch ${{ inputs.pmm_ui_tests_branch }}
+      - name: PMM server version ${{ env.PMM_SERVER_VERSION }} and UI tests for flag "${{ env.PMM_TEST_FLAG }}" and pmm-ui-tests branch ${{ env.UI_TESTS_BRANCH }}
         if: ${{ env.SHA != 'null' }}
         uses: percona/gh-action-Sibz-github-status-action@v1
         continue-on-error: true
@@ -87,28 +87,27 @@ jobs:
           target_url: "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
           sha: ${{ env.SHA }}
 
-      - name: 'Checkout UI tests: "${{ inputs.pmm_ui_tests_branch }}"'
+      - name: 'Checkout UI tests: "${{ env.UI_TESTS_BRANCH }}"'
         uses: actions/checkout@v3
         with:
-          ref: ${{ inputs.pmm_ui_tests_branch }}
+          ref: ${{ env.UI_TESTS_BRANCH }}
           repository: percona/pmm-ui-tests
           path: ./pmm-ui-tests
 
       - name: 'Install playwright'
         working-directory: ./pmm-ui-tests/playwright-tests
         run: |
-          npm install
+          npm ci
           npx playwright install
 
-      - name: 'Checkout pmm-qa: "${{ inputs.pmm_qa_branch }}"'
+      - name: 'Checkout pmm-qa: "${{ PMM_QA_BRANCH }}"'
         uses: actions/checkout@v3
         with:
-          # token: ${{ secrets.ROBOT_TOKEN }}
           repository: percona/pmm-qa
-          ref: ${{ inputs.pmm_qa_branch }}
+          ref: ${{ PMM_QA_BRANCH }}
           path: ./pmm-qa
 
-      - name: 'Setup <PMM Sever>: "${{ inputs.pmm_server_version }}"'
+      - name: 'Setup <PMM Sever>: "${{ env.PMM_SERVER_VERSION }}"'
         working-directory: pmm-qa/pmm-integration
         run: |
           npm install
@@ -142,7 +141,7 @@ jobs:
         if: failure()
         run: |
           # TODO: add job id for matrix call
-          job_tag=$(echo "${{ inputs.pmm_test_flag }}" | sed -e "s/-pre-upgrade//" -e "s/@//")
+          job_tag=$(echo "${{ env.PMM_TEST_FLAG }}" | sed -e "s/-pre-upgrade//" -e "s/@//")
           report_name="$job_tag"-report
           echo $report_name
           echo "REPORT_NAME=$report_name" >> $GITHUB_ENV

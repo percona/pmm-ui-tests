@@ -31,58 +31,6 @@ const oktaRequest = async (method: Method, apiPath: string, payload = {}): Promi
 };
 
 export const oktaApi = {
-  async loginByOktaApi(user: PortalUser, page: Page) {
-    const credentials = {
-      username: user.email,
-      password: user.password,
-    };
-    const response = await oktaRequest('post', '/authn', credentials);
-    const authConfig = {
-      baseUrl: Constants.okta.url,
-      clientId: process.env.REACT_APP_OAUTH_DEV_CLIENT_ID,
-      redirectUri: `${portalUrl}/login/callback`,
-      issuer: process.env.REACT_APP_OAUTH_DEV_ISSUER_URI,
-      features: {
-        registration: true,
-        rememberMe: true,
-        idpDiscovery: true,
-      },
-      authParams: {
-        pkce: true,
-      },
-      scopes: ['openid', 'profile', 'email', 'percona'],
-      postLogoutRedirectUri: portalUrl,
-      idpDiscovery: {
-        requestContext: `${portalUrl}/login/callback`,
-      },
-      idps: [
-        { type: 'GOOGLE', id: process.env.REACT_APP_DEV_GOOGLE_IDP_ID },
-        { type: 'GITHUB', id: process.env.REACT_APP_DEV_GITHUB_IDP_ID },
-      ],
-    };
-
-    await page.addScriptTag({
-      path: './node_modules/@okta/okta-auth-js/dist/okta-auth-js.min.js',
-    });
-
-    await page.evaluate(
-      // eslint-disable-next-line @typescript-eslint/no-shadow
-      async ({ authConfig, response }) => {
-        // @ts-ignore
-        const authClient = new window.OktaAuth(authConfig);
-        const { tokens } = await authClient.token.getWithoutPrompt({
-          sessionToken: response.data.sessionToken,
-        });
-
-        const userToken = { accessToken: tokens.accessToken, idToken: tokens.idToken };
-
-        localStorage.setItem('okta-token-storage', JSON.stringify(userToken));
-      },
-      { authConfig, response },
-    );
-    await page.reload();
-  },
-
   async createUser(user: PortalUser, activate = true) {
     const data = {
       profile: {
@@ -106,21 +54,6 @@ export const oktaApi = {
     return user;
   },
 
-  async createUserWithoutMarketingConsent(user: PortalUser, activate = true) {
-    const data = {
-      profile: {
-        firstName: user.firstName,
-        lastName: user.lastName,
-        email: user.email,
-        login: user.email,
-      },
-      credentials: {
-        password: { value: user.password },
-      },
-    };
-    return oktaRequest('post', `/users?activate=${activate}`, data);
-  },
-
   async getUser(email: string): Promise<PortalUser> {
     const response = await oktaRequest('GET', `/users?q=${email}`);
     expect(response.data[0], `Found user must have email: ${response.data[0]}`).toHaveProperty(email);
@@ -138,19 +71,6 @@ export const oktaApi = {
 
     expect(response.status).toEqual(200);
 
-    return response;
-  },
-
-  async getUserInfo(userToken: string) {
-    console.log(`GET: ${Constants.okta.issuerUrl}/v1/userinfo`);
-    const response = await axios({
-      url: `${Constants.okta.issuerUrl}/v1/userinfo`,
-      headers: { 'X-Requested-With': 'XMLHttpRequest', Authorization: `Bearer ${userToken}` },
-      method: 'GET',
-      httpsAgent: new https.Agent({ rejectUnauthorized: false }),
-    });
-    expect(response.status, `Expected to be 200: ${response.status} ${response.statusText}`).toEqual(200);
-    console.log(`Status: ${response.status} ${response.statusText}`);
     return response;
   },
 
@@ -189,7 +109,6 @@ export const oktaApi = {
   },
 
   async deleteUsers(users: PortalUser[]) {
-    // eslint-disable-next-line no-restricted-syntax
     for await (const user of users) {
       await this.deleteUserByEmail(user.email);
     }
