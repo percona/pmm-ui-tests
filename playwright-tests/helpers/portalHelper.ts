@@ -2,11 +2,8 @@ import { PortalUserRoles } from '@helpers/enums/portalUserRoles';
 import { fileHelper } from '@helpers/fileHelper';
 import { PortalUser } from '@helpers/types/PortalUser';
 import { Constants } from '@helpers/Constants';
-import * as dotenv from 'dotenv';
 import { ServiceNowResponse } from '@helpers/types/serviceNowResponse.interface';
 import { api } from '@api/api';
-
-dotenv.config();
 
 /**
  * Collection of methods for Portal tests setup.
@@ -22,8 +19,7 @@ export const portalHelper = {
     let technicalUser: PortalUser;
 
     if (fileHelper.fileExists(Constants.portal.credentialsFile)) {
-      console.log(`Using existing users from file: ${Constants.portal.credentialsFile}`);
-      [firstAdmin, secondAdmin, technicalUser] = JSON.parse(fileHelper.readFile(Constants.portal.credentialsFile));
+      [firstAdmin, secondAdmin, technicalUser] = portalHelper.loadUsersFromFile();
       if (!Object.hasOwn(firstAdmin, 'org')) {
         const adminToken = await api.portal.getUserAccessToken(firstAdmin.email, firstAdmin.password);
         const orgId = Object.hasOwn(firstAdmin, 'org') ? firstAdmin.org!.id
@@ -40,6 +36,14 @@ export const portalHelper = {
   },
 
   /**
+   * Just a wrapper to hold constants
+   */
+  loadUsersFromFile: (): [PortalUser, PortalUser, PortalUser, PortalUser] => {
+    console.log(`Using existing users from file: ${Constants.portal.credentialsFile}`);
+    return JSON.parse(fileHelper.readFile(Constants.portal.credentialsFile)) as [PortalUser, PortalUser, PortalUser, PortalUser];
+  },
+
+  /**
    * Encapsulates all actions required to create Portal user for tests.
    */
   createNewUsers: async () => {
@@ -47,18 +51,20 @@ export const portalHelper = {
     const firstAdmin: PortalUser = await api.okta.createTestUser(credentials.contacts.admin1.email);
     const secondAdmin: PortalUser = await api.okta.createTestUser(credentials.contacts.admin2.email);
     const technicalUser: PortalUser = await api.okta.createTestUser(credentials.contacts.technical.email);
+    const freeUser: PortalUser = await api.okta.createTestUser();
 
     const adminToken = await api.portal.getUserAccessToken(firstAdmin.email, firstAdmin.password);
     const { org } = await api.portal.createOrg(adminToken);
 
     await api.portal.inviteUserToOrg(adminToken, org.id, secondAdmin.email, PortalUserRoles.admin);
     await api.portal.inviteUserToOrg(adminToken, org.id, technicalUser.email, PortalUserRoles.technical);
-
+    await api.portal.inviteUserToOrg(adminToken, org.id, freeUser.email, PortalUserRoles.admin);
     firstAdmin.org = { id: org.id, role: PortalUserRoles.admin };
     secondAdmin.org = { id: org.id, role: PortalUserRoles.admin };
     technicalUser.org = { id: org.id, role: PortalUserRoles.technical };
+    freeUser.org = { id: org.id, role: PortalUserRoles.admin };
 
-    return [firstAdmin, secondAdmin, technicalUser];
+    return [firstAdmin, secondAdmin, technicalUser, freeUser];
   },
 
   /**

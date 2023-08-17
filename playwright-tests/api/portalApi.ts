@@ -17,6 +17,7 @@ export const portalAPI = {
     return await portalAPIHelper.post({
       path: '/v1/orgs',
       accessToken,
+      timeout: 60_000,
       data: {
         name: orgName,
       },

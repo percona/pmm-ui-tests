@@ -10,15 +10,22 @@ export interface RequestParams {
   path: string;
   data?: any;
   accessToken?: string;
+  /**
+   * Request timeout in milliseconds. Defaults to `30000` (30 seconds). Pass `0` to disable timeout.
+   */
+  timeout?: number;
 }
 
 interface ContextOptions {
   baseURL: string;
   extraHTTPHeaders?: { [key: string]: string; };
+  timeout?: number;
 }
 
-const getRequestContext = async ({ accessToken }: { baseURL?: string; accessToken?: string; }): Promise<APIRequestContext> => {
-  const options: ContextOptions = { baseURL: Constants.portal.url };
+const getRequestContext = async (
+  { accessToken, timeout }: { accessToken?: string; timeout?: number; },
+): Promise<APIRequestContext> => {
+  const options: ContextOptions = { baseURL: Constants.portal.url, timeout };
   if (accessToken) {
     options.extraHTTPHeaders = {
       Authorization: `Bearer ${accessToken}`,

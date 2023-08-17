@@ -3,8 +3,12 @@ import { devices } from '@playwright/test';
 import * as dotenv from 'dotenv';
 import Duration from '@helpers/enums/Duration';
 
-dotenv.config({ path: '.env.local' });
+/**
+ * Read environment variables from file.
+ * https://github.com/motdotla/dotenv
+ */
 dotenv.config();
+dotenv.config({ path: '.env.local' });
 
 const config: PlaywrightTestConfig = {
   testDir: './tests',
@@ -12,7 +16,6 @@ const config: PlaywrightTestConfig = {
   expect: {
     timeout: 10_000,
   },
-
   fullyParallel: false,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 1 : 0,
@@ -20,7 +23,7 @@ const config: PlaywrightTestConfig = {
   reporter: [
     ['github'],
     ['list'],
-    ['html', { open: 'never', outputFolder: './playwright-report' }]
+    ['html', { open: 'never', outputFolder: './playwright-report' }],
   ],
 
   use: {
@@ -33,14 +36,37 @@ const config: PlaywrightTestConfig = {
   projects: [
     {
       name: 'chromium',
-      testDir: `./tests`,
+      testDir: './tests',
+      testIgnore: 'tests/portal/*.spec.ts',
       use: {
         contextOptions: {
           ignoreHTTPSErrors: true,
         },
         screenshot: 'on',
         ...devices['Desktop Chrome'],
-        viewport: { width: 1920, height: 1080 },
+        viewport: {
+          width: 1920, height: 1080,
+        },
+      },
+    },
+    {
+      name: 'Portal Setup',
+      testMatch: 'tests/portal/testUsers.setup.ts',
+    },
+    {
+      name: 'Portal',
+      dependencies: ['Portal Setup'],
+      testMatch: 'tests/portal/*.spec.ts',
+      retries: 0,
+      use: {
+        contextOptions: {
+          ignoreHTTPSErrors: true,
+        },
+        screenshot: 'on',
+        ...devices['Desktop Chrome'],
+        viewport: {
+          width: 1920, height: 1080,
+        },
       },
     },
   ],

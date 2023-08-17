@@ -27,8 +27,7 @@ test.describe('Spec file for PMM connected the portal', async () => {
     if (!pmmVersion) {
       pmmVersion = (await api.pmm.serverV1.getPmmVersion()).minor;
     }
-    [firstAdmin, secondAdmin, technicalUser] = await portalHelper.loadTestUsers();
-    freeUser = await portalHelper.addRandomUserToOrg(firstAdmin, PortalUserRoles.admin);
+    [firstAdmin, secondAdmin, technicalUser, freeUser] = portalHelper.loadUsersFromFile();
   });
 
   test.beforeEach(async ({ page }) => {
