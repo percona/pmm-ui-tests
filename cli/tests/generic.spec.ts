@@ -9,3 +9,4 @@ test('run pmm-status and grep NodeName', async ({}) => {
   await output.assertSuccess();
   await output.outContains('Node name: client_container_');
 });
+
