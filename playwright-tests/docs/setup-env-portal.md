@@ -4,28 +4,33 @@
 
 ### Run PMM Server with portal arguments  
 
-* **Use prepared docker-compose**   
-  Methods should be named as actions  with camelCase (changeSorting, changeGrouping, etc..)
-  * use "change" instead of "apply" for methods
-  * add postfix "Locator" for each method that returns locator
+* **Use prepared docker-compose:**   
+  1. navigate to the repo root folder contains [docker-compose.yaml](../../docker-compose.yml) 
+  2. run `docker-compose up -d`
 
 
-* **Run docker container manually**  
-  Assertion methods should start with ‘verify’ This will add more readability into our code and simplify search of the assertion
+* **Run docker container manually:**  
+  run the following commands:  
+  <pre>
+  PMM_VERSION=2.39.0  
+  docker pull percona/pmm-server:$PMM_VERSION
+  docker volume create pmm-data
+  docker run --detach --restart always \
+    --publish 443:443 \
+    -v pmm-data:/srv \
+    --name pmm-server \
+    -e PERCONA_PORTAL_URL=https://portal-dev.percona.com \
+    -e PERCONA_TEST_PLATFORM_ADDRESS=https://check-dev.percona.com:443 \
+    -e PERCONA_TEST_PLATFORM_PUBLIC_KEY=RWTg+ZmCCjt7O8eWeAmTLAqW+1ozUbpRSKSwNTmO+exlS5KEIPYWuYdX \
+    -e PERCONA_TEST_CHECKS_PUBLIC_KEY=RWTg+ZmCCjt7O8eWeAmTLAqW+1ozUbpRSKSwNTmO+exlS5KEIPYWuYdX \
+    -e PERCONA_TEST_VERSION_SERVICE_URL=https://check-dev.percona.com/versions/v1 \
+    percona/pmm-server:$PMM_VERSION
+  </pre>
+
+### Setup PMM Client
 
 
-* **Test Files.**   
-  Test files should be named with camelCase and end with _test. Ending is mandatory. TBD - Roman
-
-### Locators
-
-* **Locators outside of a test.**   
-  This is a bad practice to use hard coded locators inside a test. All locators should ‘live’ inside a [Page Object](https://codecept.io/pageobjects/)
+### Set required ENV variables
 
 
-* **Try to use stable locators.**   
-  Ideally there should exist a dedicated attribute for each interactive element (“data-qa” attribute). But id, classname, text also used frequently. (try to use small xpath)
-
-
-* **Locators preference: locate() > CSS > Xpath**  
-  Try to use `locate()` builder as a first priority, and only then CSS. Use XPath as a last stand. 
+### Run Portal tests

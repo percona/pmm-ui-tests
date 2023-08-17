@@ -28,8 +28,6 @@ this is it! tests are good to go on specified PMM server.
   This will launch docker compose with PMM Server, PMM Client, and set up replica set with 3 Percona MongoDB instance
 
 * **[Setup local environment for Portal tests](./docs/setup-env-portal.md)**  
-  run `bash -x testdata/backup-management/mongodb/setup-replica-and-pbm-local.sh`.
-  This will launch docker compose with PMM Server, PMM Client, and set up replica set with 3 Percona MongoDB instance
 
 * **Run tests upon remote PMM server:**  
   set desired instance URL in _**"PMM_UI_URL"**_ local environment variable    
