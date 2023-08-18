@@ -1,17 +1,17 @@
 import { expect, test } from '@playwright/test';
-import apiHelper from '@tests/api/helpers/apiHelper';
-import { NodeDetails } from '@tests/tests/inventory/components/nodesTable';
-import { ServiceDetails } from '@tests/tests/inventory/components/servicesTable';
-import cli from '@helpers/commandLine/cliHelper';
-import Duration from '@helpers/enums/Duration';
-import grafanaHelper from '@helpers/grafanaHelper';
-import { MongoDBInstanceSummary } from '@tests/pages/dashboards/mongo/MongoDBInstanceSummary.page';
-import HomeDashboard from '@tests/pages/HomeDashboard.page';
-import { AddServicePage } from '@tests/tests/inventory/pages/AddService.page';
-import { NodesPage } from '@tests/tests/inventory/pages/Nodes.page';
-import { ServicesPage } from '@tests/tests/inventory/pages/Services.page';
-import { QAN } from '@tests/pages/QAN/QueryAnalytics.page';
-import { api } from '@tests/api/api';
+import apiHelper from '@api/helpers/api-helper';
+import { NodeDetails } from '@tests/inventory/pages/components/nodes-table';
+import { ServiceDetails } from '@tests/inventory/pages/components/services-table';
+import cli from '@helpers/cli';
+import Duration from '@helpers/enums/duration';
+import grafanaHelper from '@helpers/grafana-helper';
+import { MongoDBInstanceSummary } from '@pages/dashboards/mongo/mongo-db-instance-summary.page';
+import HomeDashboardPage from '@pages/home-dashboard.page';
+import { AddServicePage } from '@tests/inventory/pages/add-service.page';
+import { NodesPage } from '@tests/inventory/pages/nodes.page';
+import { ServicesPage } from '@tests/inventory/pages/services.page';
+import { QAN } from '@pages/QAN/QueryAnalytics.page';
+import { api } from '@api/api';
 
 test.describe('Spec file for PMM inventory tests.', async () => {
   const mongoLocalService: ServiceDetails = {
@@ -52,7 +52,7 @@ test.describe('Spec file for PMM inventory tests.', async () => {
   test('PMM-T1669 Verify PMM Inventory redesign : Layout & Services @inventory @inventory-pre-upgrade @inventory-post-upgrade', async ({ page }) => {
     test.skip(pmmVersion < 37, 'Test is for versions 2.37.0+');
     const servicesPage = new ServicesPage(page);
-    const homeDashboard = new HomeDashboard(page);
+    const homeDashboard = new HomeDashboardPage(page);
     const mongoDBInstanceSummary = new MongoDBInstanceSummary(page);
     const qan = new QAN(page);
 

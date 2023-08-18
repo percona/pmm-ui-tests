@@ -15,12 +15,12 @@
       "dom"
     ],
     "paths": {
-      "@tests/*": ["./*"],
+      "@tests/*": ["tests/*"],
       "@pages/*": ["pages/*"],
       "@api/*": ["api/*"],
       "@root/*": ["./*"],
       "@helpers/*": ["helpers/*"],
-      "@components/*": ["components/*"]
+      "@components/*": ["pages/page-components/*"]
     },
     "noEmit": true,
     "noFallthroughCasesInSwitch": true,

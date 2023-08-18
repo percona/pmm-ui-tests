@@ -1,26 +1,34 @@
 import { expect, test } from '@playwright/test';
-import { apiHelper } from '@api/helpers/apiHelper';
-import HomeDashboard from '@tests/pages/HomeDashboard.page';
-import grafanaHelper from '@helpers/grafanaHelper';
-import { RbacPage } from '@tests/tests/configuration/pages/Rbac.page';
-import { CreateRolePage } from '@tests/tests/configuration/pages/CreateRole.page';
-import { NewUserPage } from '@tests/pages/serverAdmin/NewUser.page';
-import { UsersConfigurationPage } from '@tests/tests/configuration/pages/UsersConfiguration.page';
-import { MySqlDashboard } from '@tests/pages/dashboards/mysql/MySqlDashboard.page';
-import NodesOverviewDashboard from '@tests/pages/dashboards/nodes/NodesOverviewDashboard.page';
-import Duration from '@helpers/enums/Duration';
-import PostgresqlInstancesOverviewDashboard from '@tests/pages/dashboards/postgresql/PostgresqlInstancesOverview.page';
-import AdvancedSettings from '@tests/pages/pmmSettings/AdvancedSettings.page';
+import apiHelper from '@api/helpers/api-helper';
+import HomeDashboardPage from '@pages/home-dashboard.page';
+import grafanaHelper from '@helpers/grafana-helper';
+import { RbacPage } from '@tests/configuration/pages/rbac.page';
+import { CreateRolePage } from '@tests/configuration/pages/create-role.page';
+import { NewUserPage } from '@pages/serverAdmin/NewUser.page';
+import { UsersConfigurationPage } from '@tests/configuration/pages/users-configuration.page';
+import { MySqlDashboard } from '@pages/dashboards/mysql/mysql-dashboard.page';
+import NodesOverviewDashboard from '@pages/dashboards/nodes/nodes-overview-dashboard.page';
+import Duration from '@helpers/enums/duration';
+import PostgresqlInstancesOverviewDashboard from '@pages/dashboards/postgresql/postgresql-iInstances-overview.page';
+import AdvancedSettings from '@pages/pmm-settings/advanced-settings.page';
 import { api } from '@api/api';
-import { ListRoles } from '@tests/api/management';
-import { PmmVersion } from '@helpers/types/PmmVersion';
-import * as console from 'console';
+import { ListRoles } from '@api/management.api';
+import PmmVersion from '@helpers/types/pmm-version.class';
 
-console.log(`${!!process.env.PMM_SERVER_START_VERSION}`);
-let pmmVersion = process.env.PMM_SERVER_START_VERSION
-  ? new PmmVersion(process.env.PMM_SERVER_START_VERSION).minor
-  : null;
+let pmmVersion: number;
 let roles: ListRoles | undefined;
+
+/**
+ * Cp. Obvious: Lazy initialization.
+ */
+const getPmmVersion = async (): Promise<number> => {
+  if (!pmmVersion) {
+    pmmVersion = process.env.PMM_SERVER_START_VERSION
+      ? new PmmVersion(process.env.PMM_SERVER_START_VERSION).minor
+      : (await api.pmm.serverV1.getPmmVersion()).minor;
+  }
+  return pmmVersion;
+};
 
 /**
  * Cp. Obvious: Lazy initialization
@@ -29,12 +37,12 @@ const getRolesObj = async (): Promise<ListRoles | undefined> => {
   if (!roles) {
     roles = await api.pmm.managementV1.listRoles();
   }
-
   return roles;
 };
 
 test.describe('Spec file for Access Control (RBAC)', async () => {
-  test.skip(!!pmmVersion && pmmVersion < 35, 'Test is for PMM version 2.35.0+');
+  // test.skip(await getPmmVersion() < 35, 'Test is for PMM version 2.35.0+');
+  // test.skip(() => getPmmVersion() < 35);
   const newUser = {
     username: 'testUserRBAC', email: 'testUserRBAC@localhost', name: 'Test User', password: 'password',
   };
@@ -56,12 +64,12 @@ test.describe('Spec file for Access Control (RBAC)', async () => {
   });
 
   test('PMM-T1573 Verify Access Roles tab on Configuration page @rbac @rbac-pre-upgrade', async ({ page }) => {
-    test.skip(pmmVersion! < 35, 'Test is for versions 2.35.0+');
+    test.skip(await getPmmVersion() < 35, 'Test is for versions 2.35.0+');
     test.info().annotations.push({
       type: 'Also Covers',
       description: 'PMM-T1579 Verify docker variable to enable Access control (RBAC)',
     });
-    const homeDashboard = new HomeDashboard(page);
+    const homeDashboard = new HomeDashboardPage(page);
     const rbacPage = new RbacPage(page);
 
     await test.step('1. Click on Configuration on the left menu and then select Access roles link', async () => {
@@ -83,7 +91,7 @@ test.describe('Spec file for Access Control (RBAC)', async () => {
   });
 
   test('PMM-T1580 Verify creating Access Role @rbac @rbac-pre-upgrade @rbac-post-upgrade', async ({ page }) => {
-    test.skip(pmmVersion! < 35, 'Test is for versions 2.35.0+');
+    test.skip(await getPmmVersion() < 35, 'Test is for versions 2.35.0+');
     test.info().annotations.push({
       type: 'Also Covers',
       description: 'PMM-T1581 Verify assigning default role on Access roles page.',
@@ -122,7 +130,7 @@ test.describe('Spec file for Access Control (RBAC)', async () => {
   });
 
   test('PMM-T1584 Verify assigning Access role to user @rbac @rbac-pre-upgrade @rbac-post-upgrade', async ({ page }) => {
-    test.skip(pmmVersion! < 35, 'Test is for versions 2.35.0+');
+    test.skip(await getPmmVersion() < 35, 'Test is for versions 2.35.0+');
     test.skip((await getRolesObj())?.roles.length !== 1, 'For updating from version without RBAC (<35)');
     const rbacPage = new RbacPage(page);
     const createRolePage = new CreateRolePage(page);
@@ -168,7 +176,7 @@ test.describe('Spec file for Access Control (RBAC)', async () => {
   });
 
   test('PMM-T1599 Verify assigned role after upgrade @rbac @rbac-post-upgrade', async ({ page }) => {
-    test.skip(pmmVersion! < 35, 'Test is for versions 2.35.0+');
+    test.skip(await getPmmVersion() < 35, 'Test is for versions 2.35.0+');
     const usersConfigurationPage = new UsersConfigurationPage(page);
     const postgresqlInstancesOverviewDashboard = new PostgresqlInstancesOverviewDashboard(page);
 
@@ -186,7 +194,7 @@ test.describe('Spec file for Access Control (RBAC)', async () => {
   });
 
   test('PMM-T1585 Verify deleting Access role @rbac @rbac-post-upgrade', async ({ page }) => {
-    test.skip(pmmVersion! < 35, 'Test is for versions 2.35.0+');
+    test.skip(await getPmmVersion() < 35, 'Test is for versions 2.35.0+');
     test.info().annotations.push({
       type: 'Also Covers',
       description: 'PMM-T1578 Verify there is ability to enable Access control on Settings page.',
@@ -232,7 +240,7 @@ test.describe('Spec file for Access Control (RBAC)', async () => {
   });
 
   test('PMM-T1652 Verify replacing the role while removing it @rbac @rbac-post-upgrade', async ({ page }) => {
-    test.skip(pmmVersion! < 35, 'Test is for versions 2.35.0+');
+    test.skip(await getPmmVersion() < 35, 'Test is for versions 2.35.0+');
     const rbacPage = new RbacPage(page);
     const createRolePage = new CreateRolePage(page);
     const newUserPage = new NewUserPage(page);
@@ -286,7 +294,7 @@ test.describe('Spec file for Access Control (RBAC)', async () => {
       type: 'Also Covers',
       description: 'PMM-T1601 Verify Grafana Does not crash when filtering users from the admin page.',
     });
-    test.skip(pmmVersion! < 36, 'Test is for versions 2.36.0+');
+    test.skip(await getPmmVersion() < 36, 'Test is for versions 2.36.0+');
     const rbacPage = new RbacPage(page);
     const createRolePage = new CreateRolePage(page);
     const newUserPage = new NewUserPage(page);
@@ -350,9 +358,9 @@ test.describe('Spec file for Access Control (RBAC)', async () => {
   });
 
   test('PMM-T1629 Verify re-enabling of the Access Control @rbac @rbac-post-upgrade', async ({ page }) => {
-    test.skip(pmmVersion! < 35, 'Test is for versions 2.35.0+');
+    test.skip(await getPmmVersion() < 35, 'Test is for versions 2.35.0+');
     const advancedSettings = new AdvancedSettings(page);
-    const homeDashboard = new HomeDashboard(page);
+    const homeDashboard = new HomeDashboardPage(page);
     const rbacPage = new RbacPage(page);
 
     await test.step('1.Navigate to the advanced settings and disable Access Control.', async () => {

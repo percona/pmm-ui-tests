@@ -1,11 +1,11 @@
-import { server } from '@api/server';
-import { settings } from '@tests/tests/configuration/api/settings';
-import { oktaApi } from '@api/oktaApi';
-import { portalAPI } from '@api/portalApi';
-import { serviceNowAPI } from '@api/serviceNowApi';
-import { inventory } from '@api/inventory';
-import { management } from '@api/management';
-import {apiHelper} from "@api/helpers/apiHelper";
+import { server } from '@api/server.api';
+import { settingsApi } from '@tests/configuration/api/settings.api';
+import { oktaApi } from '@api/okta.api';
+import { portalApi } from '@api/portal.api';
+import { serviceNowApi } from '@api/service-now.api';
+import { inventoryApi } from '@api/inventory.api';
+import { managementApi } from '@api/management.api';
+import { apiHelper } from '@api/helpers/api-helper';
 
 /**
  * User facing api collection. Accessible on Frontend via /swagger path.
@@ -22,12 +22,12 @@ export const api = {
     },
   },
   pmm: {
-    inventoryV1: inventory,
-    settingsV1: settings,
+    inventoryV1: inventoryApi,
+    settingsV1: settingsApi,
     serverV1: server,
-    managementV1: management,
+    managementV1: managementApi,
   },
   okta: oktaApi,
-  portal: portalAPI,
-  serviceNow: serviceNowAPI,
+  portal: portalApi,
+  serviceNow: serviceNowApi,
 };

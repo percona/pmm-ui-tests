@@ -1,5 +1,5 @@
 import { Page } from '@playwright/test';
-import { CommonPage } from '../Common.page';
+import { CommonPage } from '../common.page';
 
 export class NewUserPage extends CommonPage {
   constructor(page: Page) {

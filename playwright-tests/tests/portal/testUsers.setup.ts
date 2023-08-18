@@ -1,8 +1,8 @@
 import { test as setup } from '@playwright/test';
 import { api } from '@api/api';
-import { portalHelper } from '@helpers/portalHelper';
-import { fileHelper } from '@helpers/fileHelper';
-import { Constants } from '@helpers/Constants';
+import { portalHelper } from '@helpers/portal-helper';
+import { fileHelper } from '@helpers/file-helper';
+import constants from '@helpers/constants';
 
 /**
  * Extension point: before Portal tests.
@@ -15,15 +15,15 @@ setup('Setup Portal tests', async ({ baseURL }) => {
     });
   });
   await setup.step('Remove old credentials file if it\'s there', async () => {
-    if (fileHelper.fileExists(Constants.portal.credentialsFile)) {
+    if (fileHelper.fileExists(constants.portal.credentialsFile)) {
       console.log('Found file with Portal test users! Removing...');
-      await fileHelper.removeFile(Constants.portal.credentialsFile);
+      await fileHelper.removeFile(constants.portal.credentialsFile);
     }
   });
   await setup.step('Generate new users and save to file', async () => {
     const [firstAdmin, secondAdmin, technicalUser, freeUser] = await portalHelper.createNewUsers();
     fileHelper.writeToFile(
-      Constants.portal.credentialsFile,
+      constants.portal.credentialsFile,
       JSON.stringify([firstAdmin, secondAdmin, technicalUser, freeUser]),
     );
   });

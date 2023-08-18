@@ -1,14 +1,17 @@
-
 import { Page } from '@playwright/test';
-import { CommonPage } from '../common.page';
+import { CommonPage } from '@pages/common.page';
 
-export class QAN extends CommonPage {
+export default class EntitlementsPage extends CommonPage {
   constructor(page: Page) {
     super(page);
   }
 
+  entitlementsUrl = 'graph/entitlements';
+  entitlementsContainer = this.page.getByTestId('page-wrapper-entitlements');
+
   elements = {
     ...super.getElements(),
+    row: this.entitlementsContainer.locator('//div[contains(@id, "collapse-label")]'),
   };
 
   fields = {
@@ -21,11 +24,11 @@ export class QAN extends CommonPage {
 
   buttons = {
     ...super.getButtons(),
-    serviceNameCheckbox: (serviceName: string) => this.page.locator(`//input[contains(@name, "service_name;${serviceName}")]`),
   };
 
   messages = {
     ...super.getMessages(),
+    noEntitlements: 'No entitlements found',
   };
 
   links = {

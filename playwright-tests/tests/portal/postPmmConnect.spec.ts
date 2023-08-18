@@ -1,22 +1,14 @@
-import { expect, test } from '@playwright/test';
-import { apiHelper } from '@api/helpers/apiHelper';
-import { PortalUser } from '@helpers/types/PortalUser';
-import { fileHelper } from '@helpers/fileHelper';
-import { SignInPage } from '@pages/SignIn.page';
-import HomeDashboard from '@pages/HomeDashboard.page';
-import TicketsPage from '@pages/platformPages/Tickets.page';
-import Duration from '@helpers/enums/Duration';
-import EntitlementsPage from '@pages/platformPages/Entitlements.page';
-import EnvironmentOverview from '@pages/platformPages/EnvironmentOverview.page';
-import grafanaHelper from '@helpers/grafanaHelper';
-import PerconaPlatform from '@pages/pmmSettings/PerconaPlatform.page';
+import { expect, test } from '@helpers/test-helper';
+import apiHelper from '@api/helpers/api-helper';
+import { PortalUser } from '@helpers/types/portal-user.class';
+import { fileHelper } from '@helpers/file-helper';
+import Duration from '@helpers/enums/duration';
+import grafanaHelper from '@helpers/grafana-helper';
 import { api } from '@api/api';
-import { portalHelper } from '@helpers/portalHelper';
-import { PortalUserRoles } from '@helpers/enums/portalUserRoles';
+import { portalHelper } from '@helpers/portal-helper';
 
 test.describe('Spec file for PMM connected the portal', async () => {
   test.skip();
-  test.describe.configure({ retries: 0 });
   let firstAdmin: PortalUser;
   let secondAdmin: PortalUser;
   let technicalUser: PortalUser;
@@ -35,7 +27,8 @@ test.describe('Spec file for PMM connected the portal', async () => {
     await page.goto('');
   });
 
-  test('Verify user roles are untouched after PMM server upgrade @not-ui-pipeline @portal @post-pmm-portal-upgrade', async () => {
+  test('Verify user roles are untouched after PMM server upgrade'
+      + ' @not-ui-pipeline @portal @post-pmm-portal-upgrade', async () => {
     const users = await api.grafana.listOrgUsers();
     const foundAdmin1User = users.find((user: any) => user.email === firstAdmin.email);
     const foundAdmin2User = users.find((user: any) => user.email === secondAdmin.email);
@@ -46,24 +39,20 @@ test.describe('Spec file for PMM connected the portal', async () => {
     expect(foundTechnicalUser.role).toEqual('Viewer');
   });
 
-  test.skip('PMM-T1149 PMM-T1132 Verify PMM user logged in using SSO and member of SN account is able to see tickets @not-ui-pipeline @portal @post-pmm-portal-upgrade', async ({
-    page,
-    context,
+  test.skip('PMM-T1149 PMM-T1132 Verify PMM user logged in using SSO and member of SN account is able to see tickets'
+      + ' @not-ui-pipeline @portal @post-pmm-portal-upgrade', async ({
+    page, loginPage, homeDashboardPage, ticketsPage, context,
   }) => {
-    const signInPage = new SignInPage(page);
-    const homeDashboard = new HomeDashboard(page);
-    const ticketsPage = new TicketsPage(page);
-
     if (pmmVersion > 27) {
       await test.step('1. Login to he connected pmm with SSO', async () => {
-        await signInPage.oktaLogin(firstAdmin.email, firstAdmin.password);
-        await homeDashboard.pmmUpgrade.elements.currentVersion.waitFor({
+        await loginPage.oktaLogin(firstAdmin.email, firstAdmin.password);
+        await homeDashboardPage.pmmUpgrade.elements.currentVersion.waitFor({
           state: 'visible', timeout: Duration.ThreeMinutes,
         });
       });
 
       await test.step('2. Verify that there is a side menu for organizational tickets', async () => {
-        await homeDashboard.sideMenu.elements.tickets.click();
+        await homeDashboardPage.sideMenu.elements.tickets.click();
       });
 
       await test.step('3. Verify user can see tickets for his org.', async () => {
@@ -95,21 +84,20 @@ test.describe('Spec file for PMM connected the portal', async () => {
     }
   });
 
-  test.skip('PMM-T1152 Verify user logged in using SSO and is a member of SN account is able to see Entitlements @not-ui-pipeline @portal @post-pmm-portal-upgrade', async ({ page }) => {
-    const signInPage = new SignInPage(page);
-    const homeDashboard = new HomeDashboard(page);
-    const entitlementsPage = new EntitlementsPage(page);
-
+  test.skip('PMM-T1152 Verify user logged in using SSO and is a member of SN account is able to see Entitlements'
+      + ' @not-ui-pipeline @portal @post-pmm-portal-upgrade', async ({
+    page, loginPage, homeDashboardPage, entitlementsPage,
+  }) => {
     if (pmmVersion > 27) {
       await test.step('1. Login to he connected pmm with SSO', async () => {
-        await signInPage.oktaLogin(firstAdmin.email, firstAdmin.password);
-        await homeDashboard.pmmUpgrade.elements.currentVersion.waitFor({
+        await loginPage.oktaLogin(firstAdmin.email, firstAdmin.password);
+        await homeDashboardPage.pmmUpgrade.elements.currentVersion.waitFor({
           state: 'visible', timeout: Duration.ThreeMinutes,
         });
       });
 
       await test.step('2. Verify that there is a side menu for Entitlements', async () => {
-        await homeDashboard.sideMenu.elements.entitlements.click();
+        await homeDashboardPage.sideMenu.elements.entitlements.click();
       });
 
       await test.step('3. Verify user can see entitlements for his org.', async () => {
@@ -132,23 +120,20 @@ test.describe('Spec file for PMM connected the portal', async () => {
     }
   });
 
-  test('PMM-T1168 PMM-T1222 Verify user can see the contacts from Percona @not-ui-pipeline @portal @post-pmm-portal-upgrade', async ({
-    page,
-    context,
+  test.skip('PMM-T1168 PMM-T1222 Verify user can see the contacts from Percona'
+      + ' @not-ui-pipeline @portal @post-pmm-portal-upgrade', async ({
+    page, loginPage, homeDashboardPage, environmentOverviewPage, context,
   }) => {
     await context.grantPermissions(['clipboard-write', 'clipboard-read']);
-    const homeDashboard = new HomeDashboard(page);
-    const signInPage = new SignInPage(page);
-    const environmentOverviewPage = new EnvironmentOverview(page);
     const userToken = await api.portal.getUserAccessToken(firstAdmin.email, firstAdmin.password);
     const contactsEmail = (await api.portal.getOrgDetails(userToken, firstAdmin.org!.id)).contacts.customer_success.email;
 
     if (pmmVersion >= 29) {
-      await signInPage.oktaLogin(firstAdmin.email, firstAdmin.password);
-      await homeDashboard.pmmUpgrade.elements.currentVersion.waitFor({
+      await loginPage.oktaLogin(firstAdmin.email, firstAdmin.password);
+      await homeDashboardPage.pmmUpgrade.elements.currentVersion.waitFor({
         state: 'visible', timeout: Duration.ThreeMinutes,
       });
-      await homeDashboard.sideMenu.elements.environmentOverview.click();
+      await homeDashboardPage.sideMenu.elements.environmentOverview.click();
       await environmentOverviewPage.elements.contactsHeader.waitFor({
         state: 'visible',
       });
@@ -171,20 +156,20 @@ test.describe('Spec file for PMM connected the portal', async () => {
     }
   });
 
-  test.skip('PMM-T1147 Verify PMM user that is not logged in with SSO can NOT see Tickets for organization @not-ui-pipeline @portal @post-pmm-portal-upgrade', async ({ page }) => {
-    const homeDashboard = new HomeDashboard(page);
-    const ticketsPage = new TicketsPage(page);
-
+  test.skip('PMM-T1147 Verify PMM user that is not logged in with SSO can NOT see Tickets for organization'
+      + ' @not-ui-pipeline @portal @post-pmm-portal-upgrade', async ({
+    page, homeDashboardPage, ticketsPage,
+  }) => {
     if (pmmVersion > 27) {
       await test.step('1. Login to he connected pmm with SSO', async () => {
         await grafanaHelper.authorize(page);
-        await homeDashboard.pmmUpgrade.elements.currentVersion.waitFor({
+        await homeDashboardPage.pmmUpgrade.elements.currentVersion.waitFor({
           state: 'visible', timeout: Duration.ThreeMinutes,
         });
       });
 
       await test.step('2. Verify that there is NO side menu for organizational tickets', async () => {
-        await homeDashboard.sideMenu.elements.tickets.waitFor({
+        await homeDashboardPage.sideMenu.elements.tickets.waitFor({
           state: 'detached',
         });
       });
@@ -205,20 +190,20 @@ test.describe('Spec file for PMM connected the portal', async () => {
     }
   });
 
-  test.skip('PMM-T1154 Verify PMM user that is not logged in with SSO can NOT see Entitlements for organization @not-ui-pipeline @portal @post-pmm-portal-upgrade', async ({ page }) => {
-    const homeDashboard = new HomeDashboard(page);
-    const entitlementsPage = new EntitlementsPage(page);
-
+  test.skip('PMM-T1154 Verify PMM user that is not logged in with SSO can NOT see Entitlements for organization'
+      + ' @not-ui-pipeline @portal @post-pmm-portal-upgrade', async ({
+    page, homeDashboardPage, entitlementsPage,
+  }) => {
     if (pmmVersion > 27) {
       await test.step('1. Login to the connected pmm with local account', async () => {
         await grafanaHelper.authorize(page);
-        await homeDashboard.pmmUpgrade.elements.currentVersion.waitFor({
+        await homeDashboardPage.pmmUpgrade.elements.currentVersion.waitFor({
           state: 'visible', timeout: Duration.ThreeMinutes,
         });
       });
 
       await test.step('2. Verify that there is NO side menu for organizational Entitlements', async () => {
-        await homeDashboard.sideMenu.elements.entitlements.waitFor({
+        await homeDashboardPage.sideMenu.elements.entitlements.waitFor({
           state: 'detached',
         });
       });
@@ -239,20 +224,20 @@ test.describe('Spec file for PMM connected the portal', async () => {
     }
   });
 
-  test.skip('PMM-T1170 Verify PMM user that is not logged in with SSO can NOT see Contacts for organization @not-ui-pipeline @portal @post-pmm-portal-upgrade', async ({ page }) => {
-    const homeDashboard = new HomeDashboard(page);
-    const environmentOverview = new EnvironmentOverview(page);
-
+  test.skip('PMM-T1170 Verify PMM user that is not logged in with SSO can NOT see Contacts for organization'
+      + ' @not-ui-pipeline @portal @post-pmm-portal-upgrade', async ({
+    page, homeDashboardPage, environmentOverviewPage,
+  }) => {
     if (pmmVersion > 27) {
       await test.step('1. Login to the connected pmm with local account', async () => {
         await grafanaHelper.authorize(page);
-        await homeDashboard.pmmUpgrade.elements.currentVersion.waitFor({
+        await homeDashboardPage.pmmUpgrade.elements.currentVersion.waitFor({
           state: 'visible', timeout: Duration.ThreeMinutes,
         });
       });
       await test.step('1. Login to the connected pmm with local account', async () => {
-        await page.goto(environmentOverview.environmentOverviewUrl);
-        await expect(environmentOverview.elements.notPlatformUser).toHaveText(environmentOverview.messages.loginWithPercona);
+        await page.goto(environmentOverviewPage.environmentOverviewUrl);
+        await expect(environmentOverviewPage.elements.notPlatformUser).toHaveText(environmentOverviewPage.messages.loginWithPercona);
       });
     } else {
       test.info().annotations.push({
@@ -262,21 +247,21 @@ test.describe('Spec file for PMM connected the portal', async () => {
     }
   });
 
-  test.skip('PMM-T1148 Verify PMM user logged in using SSO and member of organization in Portal BUT not a SN account is NOT able to see Tickets @not-ui-pipeline @portal @post-pmm-portal-upgrade', async ({ page }) => {
-    const signInPage = new SignInPage(page);
-    const homeDashboard = new HomeDashboard(page);
-    const ticketsPage = new TicketsPage(page);
-
+  test.skip('PMM-T1148 Verify PMM user logged in using SSO and member of organization in Portal'
+      + ' BUT not a SN account is NOT able to see Tickets'
+      + ' @not-ui-pipeline @portal @post-pmm-portal-upgrade', async ({
+    loginPage, homeDashboardPage, ticketsPage,
+  }) => {
     if (pmmVersion > 27) {
       await test.step('1. Login to he connected pmm with SSO', async () => {
-        await signInPage.oktaLogin(freeUser.email, freeUser.password);
-        await homeDashboard.pmmUpgrade.elements.currentVersion.waitFor({
+        await loginPage.oktaLogin(freeUser.email, freeUser.password);
+        await homeDashboardPage.pmmUpgrade.elements.currentVersion.waitFor({
           state: 'visible', timeout: Duration.ThreeMinutes,
         });
       });
 
       await test.step('2. Verify that there is a side menu for organizational tickets', async () => {
-        await homeDashboard.sideMenu.elements.tickets.click();
+        await homeDashboardPage.sideMenu.elements.tickets.click();
       });
 
       await test.step('3. Verify user can NOT see tickets for his org.', async () => {
@@ -290,24 +275,20 @@ test.describe('Spec file for PMM connected the portal', async () => {
     }
   });
 
-  test.skip('PMM-T1153 Verify user logged in using SSO and is not a member of SN account is NOT able to see Entitlements @not-ui-pipeline @portal @post-pmm-portal-upgrade', async ({ page }) => {
-    const signInPage = new SignInPage(page);
-    const homeDashboard = new HomeDashboard(page);
-    const ticketsPage = new TicketsPage(page);
-    const entitlementsPage = new EntitlementsPage(page);
-
+  test.skip('PMM-T1153 Verify user logged in using SSO and is not a member of SN account is NOT able to see Entitlements'
+      + ' @not-ui-pipeline @portal @post-pmm-portal-upgrade', async ({
+    loginPage, homeDashboardPage, ticketsPage, entitlementsPage,
+  }) => {
     if (pmmVersion > 27) {
       await test.step('1. Login to he connected pmm with SSO', async () => {
-        await signInPage.oktaLogin(freeUser.email, freeUser.password);
-        await homeDashboard.pmmUpgrade.elements.currentVersion.waitFor({
+        await loginPage.oktaLogin(freeUser.email, freeUser.password);
+        await homeDashboardPage.pmmUpgrade.elements.currentVersion.waitFor({
           state: 'visible', timeout: Duration.ThreeMinutes,
         });
       });
-
       await test.step('2. Verify that there is a side menu for organizational Entitlements', async () => {
-        await homeDashboard.sideMenu.elements.entitlements.click();
+        await homeDashboardPage.sideMenu.elements.entitlements.click();
       });
-
       await test.step('3. Verify user can NOT see Entitlements for his org.', async () => {
         await expect(ticketsPage.elements.noData).toHaveText(entitlementsPage.messages.noEntitlements);
       });
@@ -319,39 +300,38 @@ test.describe('Spec file for PMM connected the portal', async () => {
     }
   });
 
-  test('PMM-T1204 PMM-T1112 Verify user can disconnect pmm from portal success flow @portal @not-ui-pipeline @post-pmm-portal-upgrade', async ({ page }) => {
-    const signInPage = new SignInPage(page);
-    const homeDashboard = new HomeDashboard(page);
-    const platformPage = new PerconaPlatform(page);
-
+  test('PMM-T1204 PMM-T1112 Verify user can disconnect pmm from portal success flow'
+      + ' @portal @not-ui-pipeline @post-pmm-portal-upgrade', async ({
+    page, loginPage, homeDashboardPage, perconaPlatformPage,
+  }) => {
     if (pmmVersion > 27) {
-      await signInPage.oktaLogin(firstAdmin.email, firstAdmin.password);
-      await homeDashboard.pmmUpgrade.elements.currentVersion.waitFor({
+      await loginPage.oktaLogin(firstAdmin.email, firstAdmin.password);
+      await homeDashboardPage.pmmUpgrade.elements.currentVersion.waitFor({
         state: 'visible', timeout: Duration.ThreeMinutes,
       });
-      await page.goto(platformPage.perconaPlatformURL);
-      await platformPage.connectedContainer.waitFor({
+      await page.goto(perconaPlatformPage.perconaPlatformURL);
+      await perconaPlatformPage.connectedContainer.waitFor({
         state: 'visible',
       });
-      await platformPage.buttons.disconnect.click();
+      await perconaPlatformPage.buttons.disconnect.click();
       if (pmmVersion >= 28) {
-        await expect(platformPage.elements.modalMessage).toHaveText(platformPage.messages.disconnectWarning);
-        await platformPage.buttons.confirmDisconnect.click();
+        await expect(perconaPlatformPage.elements.modalMessage).toHaveText(perconaPlatformPage.messages.disconnectWarning);
+        await perconaPlatformPage.buttons.confirmDisconnect.click();
         await page.locator('//input[@name="user"]').waitFor({
           state: 'visible',
         });
       } else {
-        await platformPage.toast.checkToastMessage(platformPage.messages.pmmDisconnectedFromPortal);
+        await perconaPlatformPage.toast.checkToastMessage(perconaPlatformPage.messages.pmmDisconnectedFromPortal);
       }
 
       await grafanaHelper.authorize(page);
-      await homeDashboard.pmmUpgrade.elements.currentVersion.waitFor({
+      await homeDashboardPage.pmmUpgrade.elements.currentVersion.waitFor({
         state: 'visible', timeout: Duration.ThreeMinutes,
       });
-      await page.goto(platformPage.perconaPlatformURL);
+      await page.goto(perconaPlatformPage.perconaPlatformURL);
       const adminToken = await api.portal.getUserAccessToken(firstAdmin.email, firstAdmin.password);
 
-      await platformPage.connectToPortal(adminToken, `Test Server ${Date.now()}`, true);
+      await perconaPlatformPage.connectToPortal(adminToken, `Test Server ${Date.now()}`, true);
     } else {
       test.info().annotations.push({
         type: 'Old Version ',
@@ -360,42 +340,43 @@ test.describe('Spec file for PMM connected the portal', async () => {
     }
   });
   // Needs to be fixed in the future.
-  test.skip('PMM-T1264 Verify that pmm admin user can force disconnect pmm from the portal. @not-ui-pipeline @portal @post-pmm-portal-upgrade', async ({ page }) => {
+  test.skip('PMM-T1264 Verify that pmm admin user can force disconnect pmm from the portal'
+      + ' @not-ui-pipeline @portal @post-pmm-portal-upgrade', async ({
+    page, perconaPlatformPage,
+  }) => {
     test.skip(pmmVersion < 29, 'This test is for PMM version 2.29.0 and higher');
-    const platformPage = new PerconaPlatform(page);
 
     await test.step('1. Login into the pmm and navigate to the percona platform page.', async () => {
       await grafanaHelper.authorize(page);
-      await page.goto(platformPage.perconaPlatformURL);
-      await platformPage.connectedContainer.waitFor({
+      await page.goto(perconaPlatformPage.perconaPlatformURL);
+      await perconaPlatformPage.connectedContainer.waitFor({
         state: 'visible',
       });
     });
 
     await test.step('2. Force disconnect from the platform.', async () => {
-      await platformPage.buttons.disconnect.click();
-      await expect(platformPage.elements.forceDisconnectModal).toHaveText(platformPage.messages.forceDisconnectWarning);
-      await expect(platformPage.elements.readMore).toHaveAttribute('href', platformPage.links.readMore);
-      await platformPage.buttons.confirmDisconnect.click();
+      await perconaPlatformPage.buttons.disconnect.click();
+      await expect(perconaPlatformPage.elements.forceDisconnectModal).toHaveText(perconaPlatformPage.messages.forceDisconnectWarning);
+      await expect(perconaPlatformPage.elements.readMore).toHaveAttribute('href', perconaPlatformPage.links.readMore);
+      await perconaPlatformPage.buttons.confirmDisconnect.click();
     });
 
     await test.step('3. Verify that force disconnect was successful.', async () => {
-      await platformPage.toast.checkToastMessage(platformPage.messages.disconnectedSuccess);
-      await platformPage.buttons.connect.waitFor({
+      await perconaPlatformPage.toast.checkToastMessage(perconaPlatformPage.messages.disconnectedSuccess);
+      await perconaPlatformPage.buttons.connect.waitFor({
         state: 'visible',
       });
     });
   });
 
-  test('PMM-T1247 Verify user cannot access platform functionality when PMM is not connected to the portal. @not-ui-pipeline @portal @post-pmm-portal-upgrade', async ({ page }) => {
-    const environmentOverview = new EnvironmentOverview(page);
-    const entitlementsPage = new EntitlementsPage(page);
-    const ticketsPage = new TicketsPage(page);
-
+  test.skip('PMM-T1247 Verify user cannot access platform functionality when PMM is not connected to the portal'
+      + ' @not-ui-pipeline @portal @post-pmm-portal-upgrade', async ({
+    page, environmentOverviewPage, entitlementsPage, ticketsPage,
+  }) => {
     await grafanaHelper.authorize(page);
-    await page.goto(environmentOverview.environmentOverviewUrl);
-    await expect(environmentOverview.elements.notConnectedToPlatform).toHaveText(
-      environmentOverview.messages.notConnectedToThePortal,
+    await page.goto(environmentOverviewPage.environmentOverviewUrl);
+    await expect(environmentOverviewPage.elements.notConnectedToPlatform).toHaveText(
+      environmentOverviewPage.messages.notConnectedToThePortal,
     );
 
     await page.goto(entitlementsPage.entitlementsUrl);
@@ -405,7 +386,7 @@ test.describe('Spec file for PMM connected the portal', async () => {
     await expect(ticketsPage.elements.notConnectedToPlatform).toHaveText(ticketsPage.messages.notConnectedToThePortal);
   });
 
-  test('After tests cleanup.', async () => {
+  test.skip('After tests cleanup.', async () => {
     const adminToken = await api.portal.getUserAccessToken(firstAdmin.email, firstAdmin.password);
     const org = await api.portal.getOrg(adminToken);
 
