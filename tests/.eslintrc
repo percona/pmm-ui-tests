@@ -30,6 +30,8 @@
         "ignoreRegExpLiterals": true,
         "ignoreStrings": true,
         "ignoreTemplateLiterals": true,
+        "ignoreComments": true,
+        "ignoreTrailingComments": true,
         "ignoreUrls": true
       }
     ],
