@@ -5,6 +5,7 @@ const grafanaHelper = {
     const authToken = await this.getToken(username, password);
     await page.setExtraHTTPHeaders({ Authorization: `Basic ${authToken}` });
     await page.reload();
+    return page;
   },
 
   async unAuthorize(page: Page) {

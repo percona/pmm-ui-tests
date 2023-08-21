@@ -3,6 +3,7 @@ import { LeftNavigationMenu } from '@components/left-navigation-menu';
 import { Toast } from '@components/toast';
 import OptionsMenu from '@components/options-menu';
 import { expect } from '@helpers/test-helper';
+import grafanaHelper from "@helpers/grafana-helper";
 
 export class CommonPage {
   toast = new Toast(this.page);
@@ -28,6 +29,14 @@ export class CommonPage {
   };
 
   constructor(public readonly page: Page) {}
+
+  /**
+   * Authenticates current page at grafana level
+   */
+  authenticateSession = async () => {
+    await grafanaHelper.authorize(this.page);
+    return this;
+  };
 
   /**
    * To open Page with specified path by entering url into the address field.

@@ -106,9 +106,5 @@ export const test = base.extend<PagesCollection>({
   usersConfigurationPage: async ({ page }, use) => {
     await use(new UsersConfigurationPage(page));
   },
-
-  // authenticateSession: async ({ page: Page }) => {
-  //   await grafanaHelper.authorize(page);
-  // },
 });
 export { expect } from '@playwright/test';
