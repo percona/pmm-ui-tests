@@ -100,7 +100,7 @@ module.exports = {
     addMySqlRemote: '$mysql-instance',
     addPostgreSQLRemote: '$postgresql-instance',
     addProxySQLRemote: '$proxysql-instance',
-    addService: '#addInstance',
+    addService: '//div[contains(text(),\'Add service\')]',
     availabilityZone: '$az-text-input',
     clientID: '$azure_client_id-text-input',
     clientSecret: '$azure_client_secret-password-input',
@@ -116,6 +116,7 @@ module.exports = {
     hostName: '$address-text-input',
     iframe: '//div[@class="panel-content"]//iframe',
     metricsPath: '$metrics_path-text-input',
+    nextStep: '//div[contains(text(),\'Next step: Configuration\')]',
     noCredentialsError: '//div[text()="No credentials provided and IAM role is not defined"]',
     pageHeaderText: 'PMM Add Instance',
     parseFromURLRadioButton: locate('label').withText('Parse from URL string'),
@@ -130,7 +131,7 @@ module.exports = {
     secretKeyInput: '$aws_secret_key-password-input',
     serviceName: '$serviceName-text-input',
     setManualy: locate('label').withText('Set manually'),
-    skipConnectionCheck: '//input[@data-testid="skip_connection_check-checkbox-input"]/following-sibling::*[2]',
+    skipConnectionCheck: '//label[contains(text(),\'Skip connection check\')]',
     skipTLS: '//input[@name="tls_skip_verify"]',
     skipTLSL: locate('$tls_skip_verify-field-container').find('span'),
     startMonitoring: '/following-sibling::td/a',
@@ -203,24 +204,30 @@ module.exports = {
       case 'mysql':
       case 'mysql_ssl':
         I.click(this.fields.addMySqlRemote);
+        I.click(this.fields.nextStep);
         break;
       case 'mongodb':
       case 'mongodb_ssl':
         I.click(this.fields.addMongoDBRemote);
+        I.click(this.fields.nextStep);
         break;
       case 'postgresql':
       case 'postgresGC':
       case 'postgres_ssl':
         I.click(this.fields.addPostgreSQLRemote);
+        I.click(this.fields.nextStep);
         break;
       case 'proxysql':
         I.click(this.fields.addProxySQLRemote);
+        I.click(this.fields.nextStep);
         break;
       case 'external':
         I.click(this.fields.addExternalServiceRemote);
+        I.click(this.fields.nextStep);
         break;
       case 'haproxy':
         I.click(this.fields.addHAProxy);
+        I.click(this.fields.nextStep);
         break;
     }
     I.waitForElement(this.fields.serviceName, 60);
@@ -499,6 +506,7 @@ module.exports = {
         I.click(this.fields.disableBasicMetrics);
         break;
     }
+    I.checkOption(this.fields.skipConnectionCheck);
     I.click(this.fields.addService);
     I.waitForVisible(pmmInventoryPage.fields.serviceRow(serviceName), 30);
 
