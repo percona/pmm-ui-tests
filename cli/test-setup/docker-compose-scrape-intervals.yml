@@ -2,15 +2,15 @@
 version: '3.7'
 
 volumes:
-  scrape-intervals-pmm-server-data:
+  scrape-interval-pmm-server-data:
 
 networks:
-  scrape-intervals:
+  scrape-interval:
 
 services:
-  pmm-server-scrape-intervals:
+  pmm-server-scrape-interval:
     image: ${DOCKER_VERSION:-perconalab/pmm-server:dev-latest}
-    container_name: pmm-server-scrape-intervals
+    container_name: pmm-server-scrape-interval
     healthcheck:
       test: [ "CMD", "curl", "-f", "http://127.0.0.1/ping" ]
       interval: 3s
@@ -21,29 +21,66 @@ services:
       - "1443:443"
     environment:
       - PMM_DEBUG=1
-    volumes:
-      - scrape-intervals-pmm-server-data:/srv
     networks:
-      - scrape-intervals
+      - scrape-interval
 
-  pmm-client-scrape-intervals:
+  pmm-client-scrape-interval:
     image: ${CLIENT_DOCKER_VERSION:-perconalab/pmm-client:dev-latest}
-    container_name: pmm-client-scrape-intervals
+    container_name: pmm-client-scrape-interval
     depends_on:
-      pmm-server-scrape-intervals:
+      pmm-server-scrape-interval:
         condition: service_healthy
     environment:
       - PMM_AGENT_SETUP=1
-      - PMM_AGENT_SERVER_ADDRESS=pmm-server-scrape-intervals
+      - PMM_AGENT_SERVER_ADDRESS=pmm-server-scrape-interval
       - PMM_AGENT_SERVER_USERNAME=admin
       - PMM_AGENT_SERVER_PASSWORD=admin
       - PMM_AGENT_PORTS_MIN=41000
       - PMM_AGENT_PORTS_MAX=41500
       - PMM_AGENT_SERVER_INSECURE_TLS=1
       - PMM_AGENT_CONFIG_FILE=config/pmm-agent.yaml
-      - PMM_AGENT_SETUP_NODE_NAME=pmm-client-scrape-intervals
+      - PMM_AGENT_SETUP_NODE_NAME=pmm-client-scrape-interval
       - PMM_AGENT_SETUP_FORCE=1
       - PMM_AGENT_SETUP_NODE_TYPE=container
     restart: on-failure
     networks:
-      - scrape-intervals
+      - scrape-interval
+
+  pmm-server-custom-scrape-interval:
+    image: ${DOCKER_VERSION:-perconalab/pmm-server:dev-latest}
+    container_name: pmm-server-custom-scrape-interval
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://127.0.0.1/ping" ]
+      interval: 3s
+      timeout: 2s
+      retries: 20
+    ports:
+      - "280:80"
+      - "2443:443"
+    environment:
+      - PMM_DEBUG=1
+      - PMM_PROMSCRAPE_MAX_SCRAPE_SIZE=128MiB
+    networks:
+      - scrape-interval
+
+  pmm-client-custom-scrape-interval:
+    image: ${CLIENT_DOCKER_VERSION:-perconalab/pmm-client:dev-latest}
+    container_name: pmm-client-custom-scrape-interval
+    depends_on:
+      pmm-server-custom-scrape-interval:
+        condition: service_healthy
+    environment:
+      - PMM_AGENT_SETUP=1
+      - PMM_AGENT_SERVER_ADDRESS=pmm-server-custom-scrape-interval
+      - PMM_AGENT_SERVER_USERNAME=admin
+      - PMM_AGENT_SERVER_PASSWORD=admin
+      - PMM_AGENT_PORTS_MIN=41000
+      - PMM_AGENT_PORTS_MAX=41500
+      - PMM_AGENT_SERVER_INSECURE_TLS=1
+      - PMM_AGENT_CONFIG_FILE=config/pmm-agent.yaml
+      - PMM_AGENT_SETUP_NODE_NAME=pmm-server-custom-scrape-interval
+      - PMM_AGENT_SETUP_FORCE=1
+      - PMM_AGENT_SETUP_NODE_TYPE=container
+    restart: on-failure
+    networks:
+      - scrape-interval
