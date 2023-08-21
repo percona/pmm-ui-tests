@@ -32,5 +32,5 @@ module.exports = {
     await I.waitForVisible(this.elements.podName, 10);
     await I.click(this.elements.podName);
     await I.click(await this.elements.podNameDropdownSelect(podName));
-  }
+  },
 };

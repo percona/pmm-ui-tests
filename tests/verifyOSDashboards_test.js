@@ -73,7 +73,9 @@ Scenario(
 
 Scenario(
   'PMM-T1695 Verify that user is able to filter OS / Node Compare dashboard by Node Name @nightly @dashboards',
-  async ({ I, dashboardPage, adminPage, inventoryAPI }) => {
+  async ({
+    I, dashboardPage, adminPage, inventoryAPI,
+  }) => {
     const nodes = await inventoryAPI.getAllNodes();
 
     // get first two generic node names

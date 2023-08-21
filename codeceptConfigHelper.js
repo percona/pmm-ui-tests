@@ -48,7 +48,7 @@ module.exports = {
     agentsPage: './tests/configuration/pages/agentsPage.js',
     pmmServerAdminSettingsPage: './tests/configuration/pages/pmmServerAdminSettingsPage.js',
     pmmSettingsPage: './tests/configuration/pages/pmmSettingsPage.js',
-    portalAPI: './tests/pages/api/portalAPI.js',
+    portalAPI: './tests/pages/api/portalApi.js',
     profileAPI: './tests/configuration/api/profileApi.js',
     qanDetails: './tests/QAN/pages/qanDetailsFragment.js',
     qanFilters: './tests/QAN/pages/qanFiltersFragment.js',

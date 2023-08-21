@@ -1,9 +1,11 @@
-import { server } from "@api/server";
-import { settings } from "@tests/tests/configuration/api/settings";
-import { oktaAPI } from "@api/okta";
-import { portalAPI } from "@api/portalApi";
-import { inventory } from "./inventory";
-import { management } from "./management";
+import { server } from '@api/server.api';
+import { settingsApi } from '@tests/configuration/api/settings.api';
+import { oktaApi } from '@api/okta.api';
+import { portalApi } from '@api/portal.api';
+import { serviceNowApi } from '@api/service-now.api';
+import { inventoryApi } from '@api/inventory.api';
+import { managementApi } from '@api/management.api';
+import { apiHelper } from '@api/helpers/api-helper';
 
 /**
  * User facing api collection. Accessible on Frontend via /swagger path.
@@ -11,13 +13,21 @@ import { management } from "./management";
  * obvious which API and which version is used.
  */
 export const api = {
-  grafana: {},
-  pmm: {
-    inventoryV1: inventory,
-    settingsV1: settings,
-    serverV1: server,
-    managementV1: management,
+  grafana: {
+    // TODO: move it to proper file API. Suggestion: grafanaApi
+    listOrgUsers: async () => {
+      const response = await apiHelper.get('/graph/api/org/users?accesscontrol=true');
+      console.log(`Response:\n${JSON.stringify(await response.json())}`);
+      return response.json();
+    },
   },
-  okta: oktaAPI,
-  portal: portalAPI,
-}
+  pmm: {
+    inventoryV1: inventoryApi,
+    settingsV1: settingsApi,
+    serverV1: server,
+    managementV1: managementApi,
+  },
+  okta: oktaApi,
+  portal: portalApi,
+  serviceNow: serviceNowApi,
+};

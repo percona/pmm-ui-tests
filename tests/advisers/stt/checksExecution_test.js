@@ -120,16 +120,12 @@ Scenario.skip(
     // Silence mysql Empty Password failed check and verify it's not displayed
     I.waitForVisible(failedCheckRowLocator, 30);
 
-    const oldColor = await I.grabCssPropertyFrom(
-      locate(databaseChecksPage.elements.failedCheckRowBySummary(mysqlVersionSummary))
-        .find('td'), 'background-color',
-    );
+    const oldColor = await I.grabCssPropertyFrom(locate(databaseChecksPage.elements.failedCheckRowBySummary(mysqlVersionSummary))
+      .find('td'), 'background-color');
 
     I.click(failedCheckRowLocator.find('$silence-button'));
-    const newColor = await I.grabCssPropertyFrom(
-      locate(databaseChecksPage.elements.failedCheckRowBySummary(mysqlVersionSummary))
-        .find('td'), 'background-color',
-    );
+    const newColor = await I.grabCssPropertyFrom(locate(databaseChecksPage.elements.failedCheckRowBySummary(mysqlVersionSummary))
+      .find('td'), 'background-color');
 
     assert.ok(oldColor !== newColor);
   },
