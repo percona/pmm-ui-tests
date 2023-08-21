@@ -85,6 +85,6 @@ test.describe('PMM Client Docker CLI tests', async () => {
     await scrapeSizeContainer.outContains(`promscrape.maxScrapeSize=\\\"${expectedScrapeSize}MiB\\\"`)
 
     const scrapeSizeTarball = await cli.exec('ps aux | grep -v \'grep\' | grep \'vm_agent\' | tail -1')
-    await scrapeSizeTarball.outContains(`promscrape.maxScrapeSize=\\\"${expectedScrapeSize}MiB\\\"`)
+    await scrapeSizeTarball.outContains(`promscrape.maxScrapeSize=${expectedScrapeSize}MiB`)
   });
 });
