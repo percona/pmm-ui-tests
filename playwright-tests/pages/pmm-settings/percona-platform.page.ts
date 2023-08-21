@@ -1,5 +1,4 @@
 import { CommonPage } from '@pages/common.page';
-import { Locator } from '@playwright/test';
 
 export default class PerconaPlatformPage extends CommonPage {
   readonly PAGE_PATH = 'graph/settings/percona-platform';
@@ -7,7 +6,7 @@ export default class PerconaPlatformPage extends CommonPage {
   perconaPlatformContainer = this.page.getByTestId('connect-form');
   connectedContainer = this.page.getByTestId('connected-wrapper');
 
-  elements: { [key: string]: Locator } = {
+  elements: any = {
     ...this.elements,
     // heading: this.page.locator(`//h2[text()="${this.PAGE_HEADING}"] | //*[contains(text(), "${this.OLD_HEADING}")]`),
     heading: this.page.locator(`//h2[text()="${this.PAGE_HEADING}"]`),

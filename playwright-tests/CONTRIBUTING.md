@@ -40,15 +40,15 @@ great in terms of usability. The same applies for types `HTTPURLProvider` vs
 ### Locators
 
 * **Locators outside of a test.**   
-  This is a bad practice to use hard coded locators inside a test. All locators should ‘live’ inside a [Page Object](https://codecept.io/pageobjects/)
+  This is a bad practice to use hard coded locators inside a test. All locators should ‘live’ inside a Page Object
 
 
 * **Try to use stable locators.**   
   Ideally there should exist a dedicated attribute for each interactive element (“data-qa” attribute). But id, classname, text also used frequently. (try to use small xpath)
 
 
-* **Locators preference: locate() > CSS > Xpath**  
-  Try to use `locate()` builder as a first priority, and only then CSS. Use XPath as a last stand. 
+* **Locators preference: .getByXXX() > CSS > Xpath**  
+  Try to use `.getByXXX()` method as a first priority, and only then CSS. Use XPath as a last stand. 
 
 ### Assertions
 
@@ -59,13 +59,9 @@ great in terms of usability. The same applies for types `HTTPURLProvider` vs
 
 * **One feature per spec File.**  
 
-### Scenario
-
-* **Scenario title should contain Test Case ID.**  
-  In order to make searching for a test much easier we could add the original Test Case ID from TMT.
 
 
-* **Scenario title template.**  
+* **Test title template.**  
  {TEST_CASE_ID} Title {annotation}
 
 ### Annotations

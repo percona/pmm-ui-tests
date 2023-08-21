@@ -30,7 +30,7 @@ test.describe('Spec file for connecting PMM to the portal', async () => {
       await perconaPlatformPage.open();
     });
 
-    await test.step('2. Verify all required element are displayed.', async () => {
+    await test.step('2. Verify all required elements are displayed.', async () => {
       await expect(perconaPlatformPage.elements.pmmServerIdHeader)
         .toHaveText(perconaPlatformPage.labels.pmmServerId, { ignoreCase: true });
       await expect(perconaPlatformPage.elements.pmmServerNameHeader).toHaveText(perconaPlatformPage.labels.pmmServerName);

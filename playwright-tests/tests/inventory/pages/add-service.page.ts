@@ -14,10 +14,6 @@ export class AddServicePage extends CommonPage {
     haProxy: this.page.getByTestId('haproxy-instance'),
   };
 
-  messages: any = {
-    ...this.messages,
-  };
-
   verifyAllButtonsVisible = async () => {
     await expect(this.buttons.amazonRds).toBeVisible();
     await expect(this.buttons.postgreSql).toBeVisible();

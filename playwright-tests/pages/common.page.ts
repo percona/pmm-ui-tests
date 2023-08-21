@@ -3,7 +3,7 @@ import { LeftNavigationMenu } from '@components/left-navigation-menu';
 import { Toast } from '@components/toast';
 import OptionsMenu from '@components/options-menu';
 import { expect } from '@helpers/test-helper';
-import grafanaHelper from "@helpers/grafana-helper";
+import grafanaHelper from '@helpers/grafana-helper';
 
 export class CommonPage {
   toast = new Toast(this.page);
