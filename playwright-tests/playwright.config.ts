@@ -21,7 +21,6 @@ const config: PlaywrightTestConfig = {
   retries: process.env.CI ? 1 : 0,
   workers: 1,
   reporter: [
-    ['github'],
     ['list'],
     ['html', { open: 'never', outputFolder: './playwright-report' }],
   ],

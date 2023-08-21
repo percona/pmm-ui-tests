@@ -1,7 +1,7 @@
 import { test as base } from '@playwright/test';
 import HomeDashboardPage from '@pages/home-dashboard.page';
 import LoginPage from '@pages/login.page';
-import PerconaPlatformPage from '@pages/pmm-settings/PerconaPlatform.page';
+import PerconaPlatformPage from '@pages/pmm-settings/percona-platform.page';
 import EntitlementsPage from '@pages/platformPages/entitlements.page';
 import EnvironmentOverviewPage from '@pages/platformPages/environment-overview.page';
 import TicketsPage from '@pages/platformPages/tickets.page';
