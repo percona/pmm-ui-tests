@@ -123,6 +123,7 @@ module.exports = {
   },
 
   selectFolder(option) {
+    I.waitForElement(this.fields.folderLocator);
     I.click(this.fields.folderLocator);
     I.waitForElement(this.fields.resultsLocator(option));
     I.click(this.fields.resultsLocator(option));
