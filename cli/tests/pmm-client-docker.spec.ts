@@ -80,7 +80,7 @@ test.describe('PMM Client Docker CLI tests', async () => {
     const customScrapeSize = '128';
 
     await test.step('verify client docker logs for default value', async () => {
-      await (await cli.exec(`docker-compose -f cli/test-setup/docker-compose-scrape-intervals.yml up -d`)).assertSuccess();
+      await (await cli.exec(`docker-compose -f test-setup/docker-compose-scrape-intervals.yml up -d`)).assertSuccess();
       await page.waitForTimeout(10_000);
 
       const scrapeSizeLog = await cli.exec('docker logs pmm-client-scrape-interval 2>&1 | grep \'promscrape.maxScrapeSize.*vm_agent\' | tail -1');
