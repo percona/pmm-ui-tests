@@ -1,5 +1,5 @@
 import { CommonPage } from '@pages/common.page';
-import {Locator} from "@playwright/test";
+import { Locator } from '@playwright/test';
 
 export default class LoginPage extends CommonPage {
   readonly PAGE_PATH = 'graph/login';
