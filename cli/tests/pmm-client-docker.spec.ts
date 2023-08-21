@@ -95,6 +95,7 @@ test.describe('PMM Client Docker CLI tests', async () => {
     await test.step('verify logs from binary for default value', async () => {
       await (await cli.exec('sudo pmm-admin config --force \'--server-url=https://admin:admin@0.0.0.0:1443\' --server-insecure-tls 127.0.0.1')).assertSuccess()
 
+      await page.waitForTimeout(10_000);
       const scrapeSizeLog = await cli.exec('ps aux | grep -v \'grep\' | grep \'vm_agent\' | tail -1')
       await scrapeSizeLog.outContains(`promscrape.maxScrapeSize=${defaultScrapeSize}MiB`)
     })
@@ -102,6 +103,7 @@ test.describe('PMM Client Docker CLI tests', async () => {
     await test.step('verify logs from binary for custom value', async () => {
       await (await cli.exec('sudo pmm-admin config --force \'--server-url=https://admin:admin@0.0.0.0:2443\' --server-insecure-tls 127.0.0.1')).assertSuccess()
 
+      await page.waitForTimeout(10_000);
       const scrapeSizeLog = await cli.exec('ps aux | grep -v \'grep\' | grep \'vm_agent\' | tail -1')
       await scrapeSizeLog.outContains(`promscrape.maxScrapeSize=${customScrapeSize}MiB`)
     })
