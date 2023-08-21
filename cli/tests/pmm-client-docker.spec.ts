@@ -75,7 +75,7 @@ test.describe('PMM Client Docker CLI tests', async () => {
     await output.outContains('Service removed.');
   });
 
-  test('scrape interval default value', async ({page}) => {
+  test('@PMM-T1664 Verify vm_agents default value of -promscrape.maxScapeSize', async ({page}) => {
     const expectedScrapeSize = '64';
 
     await (await cli.exec(`docker-compose -f test-setup/docker-compose-scrape-intervals.yml up -d`)).assertSuccess();
@@ -84,7 +84,7 @@ test.describe('PMM Client Docker CLI tests', async () => {
     const scrapeSizeContainer = await cli.exec('docker logs pmm-client-scrape-intervals 2>&1 | grep \'promscrape.maxScrapeSize.*vm_agent\' | tail -1');
     await scrapeSizeContainer.outContains(`promscrape.maxScrapeSize=\\\"${expectedScrapeSize}MiB\\\"`)
 
-    const scrapeSizeTarball = await cli.exec('ps aux | grep -v \'grep\' | grep \'vm_agent\' | tail -1 | grep -o \'promscrape.maxScrapeSize.*vm_agent\' | tail -1')
+    const scrapeSizeTarball = await cli.exec('ps aux | grep -v \'grep\' | grep \'vm_agent\' | tail -1')
     await scrapeSizeTarball.outContains(`promscrape.maxScrapeSize=\\\"${expectedScrapeSize}MiB\\\"`)
   });
 });
