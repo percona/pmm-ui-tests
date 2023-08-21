@@ -98,6 +98,7 @@ Scenario(
     I.waitForEnabled(alertRulesPage.buttons.newAlertRule, 10);
     I.click(alertRulesPage.buttons.newAlertRule);
     await alertRulesPage.fillPerconaAlert(rule, newRule);
+    I.waitForEnabled(alertRulesPage.buttons.saveAndExit, 10);
     I.click(alertRulesPage.buttons.saveAndExit);
     // FIXME: unskip after https://jira.percona.com/browse/PMM-11399 is fixed
     // I.verifyPopUpMessage(alertRulesPage.messages.successRuleCreate(newRule.ruleName));
@@ -117,6 +118,7 @@ Scenario(
     I.waitForEnabled(alertRulesPage.buttons.newAlertRule, 10);
     I.click(alertRulesPage.buttons.newAlertRule);
     await alertRulesPage.fillPerconaAlert(rule,newRule);
+    I.waitForEnabled(alertRulesPage.buttons.saveAndExit, 10);
     I.click(alertRulesPage.buttons.saveAndExit);
     // FIXME: unskip after https://jira.percona.com/browse/PMM-11399 is fixed
     // I.verifyPopUpMessage(alertRulesPage.messages.successRuleCreate(newRule.ruleName));
