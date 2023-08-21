@@ -75,7 +75,7 @@ test.describe('PMM Client Docker CLI tests', async () => {
     await output.outContains('Service removed.');
   });
 
-  test.only('@PMM-T1664 @PMM-T1665 Verify vm_agents -promscrape.maxScapeSize parameter', async ({page}) => {
+  test('@PMM-T1664 @PMM-T1665 Verify vm_agents -promscrape.maxScapeSize parameter', async ({page}) => {
     const defaultScrapeSize = '64';
     const customScrapeSize = '128';
 
