@@ -1,34 +1,7 @@
+import { CommonPage } from '@pages/common.page';
 
-import { Page } from '@playwright/test';
-import { CommonPage } from '../common.page';
-
-export class QAN extends CommonPage {
-  constructor(page: Page) {
-    super(page);
-  }
-
-  elements = {
-    ...super.getElements(),
-  };
-
-  fields = {
-    ...super.getFields(),
-  };
-
-  labels = {
-    ...super.getLabels(),
-  };
-
+export class QanPage extends CommonPage {
   buttons = {
-    ...super.getButtons(),
     serviceNameCheckbox: (serviceName: string) => this.page.locator(`//input[contains(@name, "service_name;${serviceName}")]`),
-  };
-
-  messages = {
-    ...super.getMessages(),
-  };
-
-  links = {
-    ...super.getLinks(),
   };
 }

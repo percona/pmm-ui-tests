@@ -1,10 +1,10 @@
 import { expect } from '@playwright/test';
 import Duration from '@helpers/enums/duration';
-import { CommonPage } from '../common.page';
+import { CommonPage } from '@pages/common.page';
 
 export class BaseDashboard extends CommonPage {
-  private baseDashboardElements = {
-    ...super.getElements(),
+  elements: any = {
+    ...this.elements,
     collapsedPanel: this.page.locator('//*[contains(@class, "dashboard-row--collapsed")]'),
     panelContent: this.page.locator('//*[contains(@class, "panel-content")]'),
     panel: this.page.locator('//div[contains(@class, "react-grid-item")]'),
@@ -13,61 +13,19 @@ export class BaseDashboard extends CommonPage {
     dashboardName: this.page.locator('//a[@aria-label="Search dashboard by name"]//span'),
   };
 
-  private baseDashboardFields = {
-    ...super.getFields(),
-  };
-
-  private baseDashboardLabels = {
-    ...super.getLabels(),
-  };
-
-  private baseDashboardButtons = {
-    ...super.getButtons(),
+  buttons = {
     qan: this.page.locator('//*[@data-testid="data-testid Dashboard link"]//span[text()="Query Analytics"]'),
     serviceName: this.page.locator('//button[@id="var-service_name"]'),
   };
 
-  private baseDashboardMessages = {
-    ...super.getMessages(),
+  labels = {
+    create: 'Create',
   };
-
-  private baseDashboardLinks = {
-    ...super.getLinks(),
-  };
-
-  protected getBaseDashboardElements() {
-    return this.baseDashboardElements;
-  }
-
-  protected getBaseDashboardFields() {
-    return this.baseDashboardFields;
-  }
-
-  protected getBaseDashboardLabels() {
-    return this.baseDashboardLabels;
-  }
-
-  protected getBaseDashboardButtons() {
-    return this.baseDashboardButtons;
-  }
-
-  protected getBaseDashboardMessages() {
-    return this.baseDashboardMessages;
-  }
-
-  protected getBaseDashboardLinks() {
-    return this.baseDashboardLinks;
-  }
 
   openAllPanels = async () => {
-    try {
-      await this.baseDashboardElements.collapsedPanel.waitFor({
-        state: 'visible',
-      });
-    } catch (e) { }
-
-    const collapsedPanels = await this.baseDashboardElements.collapsedPanel.elementHandles();
-    for await (const [index, panel] of collapsedPanels.entries()) {
+    await this.elements.collapsedPanel.waitFor({ state: 'visible' });
+    const collapsedPanels = await this.elements.collapsedPanel.elementHandles();
+    for await (const panel of collapsedPanels.values()) {
       await panel.click();
     }
     await this.page.keyboard.press('PageDown');
@@ -86,14 +44,14 @@ export class BaseDashboard extends CommonPage {
 
   waitForPanelToHaveData = async (panelHeader: string, panelId: number, timeout: Duration = Duration.OneMinute) => {
     await this.openAllPanels();
-    await this.baseDashboardElements.getPanelByName(panelHeader, panelId).scrollIntoViewIfNeeded();
-    await expect(this.baseDashboardElements.getPanelByName(panelHeader, panelId)).not.toContainText('N/A', {
+    await this.elements.getPanelByName(panelHeader, panelId).scrollIntoViewIfNeeded();
+    await expect(this.elements.getPanelByName(panelHeader, panelId)).not.toContainText('N/A', {
       ignoreCase: true, timeout,
     });
-    await expect(this.baseDashboardElements.getPanelByName(panelHeader, panelId)).not.toContainText('No data', {
+    await expect(this.elements.getPanelByName(panelHeader, panelId)).not.toContainText('No data', {
       ignoreCase: true, timeout,
     });
-    await expect(this.baseDashboardElements.getPanelByName(panelHeader, panelId)).not.toContainText('Insufficient access permissions', {
+    await expect(this.elements.getPanelByName(panelHeader, panelId)).not.toContainText('Insufficient access permissions', {
       ignoreCase: true, timeout,
     });
     await this.page.keyboard.press('PageDown');
@@ -102,18 +60,18 @@ export class BaseDashboard extends CommonPage {
   verifyAllPanelsHaveData = async (panelsWithoutData: number) => {
     await this.openAllPanels();
     let noDataElements = 0;
-    const panelData = await this.baseDashboardElements.panelContent.elementHandles();
-    for await (const [index, panel] of panelData.entries()) {
-      await this.baseDashboardElements.panelContent.nth(index).scrollIntoViewIfNeeded();
+    const panelData = await this.elements.panelContent.elementHandles();
+    for await (const index of panelData.keys()) {
+      await this.elements.panelContent.nth(index).scrollIntoViewIfNeeded();
 
       try {
-        await expect(this.baseDashboardElements.panelContent.nth(index)).not.toContainText('N/A', {
+        await expect(this.elements.panelContent.nth(index)).not.toContainText('N/A', {
           ignoreCase: true,
         });
-        await expect(this.baseDashboardElements.panelContent.nth(index)).not.toContainText('No data', {
+        await expect(this.elements.panelContent.nth(index)).not.toContainText('No data', {
           ignoreCase: true,
         });
-        await expect(this.baseDashboardElements.panelContent.nth(index)).not.toContainText('Insufficient access permissions', {
+        await expect(this.elements.panelContent.nth(index)).not.toContainText('Insufficient access permissions', {
           ignoreCase: true,
         });
       } catch (err) {
@@ -128,17 +86,16 @@ export class BaseDashboard extends CommonPage {
 
   public verifyExpectedPanelsShowError = async (expectedPanels: any[]) => {
     await this.openAllPanels();
-    const panelData = await this.baseDashboardElements.panelTitle.elementHandles();
-    for await (const [index, expectedPanel] of expectedPanels.entries()) {
-      const foundPanel = panelData.find(async (panel) => {
+    const panelData = await this.elements.panelTitle.elementHandles();
+    for await (const expectedPanel of expectedPanels.values()) {
+      const foundPanel = panelData.find(async (panel: any) => {
         return (await panel.textContent()) === expectedPanel.name;
       });
 
       if (foundPanel) {
-        await this.baseDashboardElements.getPanelByName(expectedPanel.name, expectedPanel.panelId).scrollIntoViewIfNeeded();
-        await expect(this.baseDashboardElements.getPanelByName(expectedPanel.name, expectedPanel.panelId)).toContainText(expectedPanel.error, {
-          ignoreCase: true,
-        });
+        await this.elements.getPanelByName(expectedPanel.name, expectedPanel.panelId).scrollIntoViewIfNeeded();
+        await expect(this.elements.getPanelByName(expectedPanel.name, expectedPanel.panelId))
+          .toContainText(expectedPanel.error as string, { ignoreCase: true });
         await this.page.keyboard.press('PageDown');
       }
     }
@@ -146,12 +103,12 @@ export class BaseDashboard extends CommonPage {
 
   verifyAllPanelsDoesNotHaveData = async () => {
     await this.openAllPanels();
-    const panelData = await this.baseDashboardElements.panelContent.elementHandles();
-    for await (const [index, panel] of panelData.entries()) {
-      await this.baseDashboardElements.panelContent.nth(index).scrollIntoViewIfNeeded();
-      const text = await this.baseDashboardElements.panelContent.nth(index).textContent();
+    const panelData = await this.elements.panelContent.elementHandles();
+    for await (const index of panelData.keys()) {
+      await this.elements.panelContent.nth(index).scrollIntoViewIfNeeded();
+      const text = await this.elements.panelContent.nth(index).textContent();
       if (!text?.includes('N/A') && !text?.toLocaleLowerCase().includes('no data')) {
-        expect(true, `Panel ${await this.baseDashboardElements.panelTitle.nth(index).textContent()} does contains data: "${text}"`).toEqual(false);
+        expect(true, `Panel ${await this.elements.panelTitle.nth(index).textContent()} does contains data: "${text}"`).toEqual(false);
       }
       await this.page.keyboard.press('PageDown');
     }

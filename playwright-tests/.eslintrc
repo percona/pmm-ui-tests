@@ -45,8 +45,8 @@
         "import/prefer-default-export": "off",
         "no-continue": ["off"],
         "playwright/no-wait-for-timeout": ["off"],
-        // Allows i++ in for loops (overriding airbnb-base)
-        "no-plusplus": ["error", { "allowForLoopAfterthoughts": true }],
+        // Allows i++ (overriding airbnb-base)
+        "no-plusplus": "off",
         // Most of the time, we don't want to run multiple promises at the same time in loop
         "no-await-in-loop": "off",
         "max-classes-per-file": "off",

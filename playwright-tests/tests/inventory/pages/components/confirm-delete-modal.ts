@@ -5,23 +5,16 @@ export default class ConfirmDeleteModal {
 
   private modal = this.page.getByRole('dialog');
 
-  elements = {
+  elements: any = {
     modalHeader: this.modal.locator('//h4'),
   };
-
-  fields = {};
-
-  labels = {};
-
   buttons = {
     proceed: this.modal.getByText('Proceed'),
     force: this.page.locator('//input[@id="input-force-id"]'),
   };
 
-  messages = {
+  messages: any = {
     serviceHasAgents: (serviceId: string) => `Service with ID "${serviceId}" has agents.`,
     confirmNodeDeleteHeader: (numberNodes = 1) => `Are you sure that you want to permanently delete ${numberNodes} nodes`,
   };
-
-  links = {};
 }

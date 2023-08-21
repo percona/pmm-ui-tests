@@ -3,11 +3,7 @@ import { Page } from '@playwright/test';
 export default class ConfigurationMenu {
   constructor(readonly page: Page) { }
 
-  elements = {
-
-  };
-
-  fields = {};
+  elements: any = {};
 
   labels = {
     rbac: 'Access Roles',
@@ -19,10 +15,7 @@ export default class ConfigurationMenu {
     inventory: this.page.locator('//li[@data-key="inventory"]'),
   };
 
-  messages = {};
-
   links = {
-    rbac: "/graph/roles",
+    rbac: '/graph/roles',
   };
-
 }

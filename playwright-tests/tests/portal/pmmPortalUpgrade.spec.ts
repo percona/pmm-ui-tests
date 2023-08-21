@@ -1,5 +1,5 @@
 import { test } from '@playwright/test';
-import { apiHelper } from '@api/helpers/api-helper';
+import apiHelper from '@api/helpers/api-helper';
 import Duration from '@helpers/enums/duration';
 import HomeDashboardPage from '@pages/home-dashboard.page';
 import grafanaHelper from '@helpers/grafana-helper';
@@ -41,6 +41,6 @@ test.describe('Spec file for PMM connected the portal', async () => {
       description: `Upgrading PMM from the version: ${currentVersion} to the version: ${availableVersion}`,
     });
 
-    await homeDashboard.upgradePMM();
+    await homeDashboard.upgradePmm();
   });
 });

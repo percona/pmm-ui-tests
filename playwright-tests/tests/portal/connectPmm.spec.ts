@@ -20,7 +20,6 @@ test.describe('Spec file for connecting PMM to the portal', async () => {
 
   test.beforeEach(async ({ page }) => {
     await apiHelper.confirmTour(page);
-    await page.goto('/');
   });
 
   test(
@@ -31,26 +30,12 @@ test.describe('Spec file for connecting PMM to the portal', async () => {
 
       await test.step('1. Open Percona Platform tab in PMM Settings', async () => {
         await grafanaHelper.authorize(page);
-        await page.goto(perconaPlatformPage.perconaPlatformURL);
-        await expect(perconaPlatformPage.perconaPlatformContainer).toBeVisible();
-
-        if (pmmVersion >= 35) {
-          await expect(perconaPlatformPage.elements.header_2_35).toBeVisible();
-        } else {
-        // TODO: find out what works best .waitFor of expect
-          await page.getByText(perconaPlatformPage.labels.header).waitFor({
-            state: 'visible',
-          });
-        }
+        await perconaPlatformPage.open();
       });
 
       await test.step('2. Verify all required element are displayed.', async () => {
-        if (pmmVersion >= 35) {
-          await expect(perconaPlatformPage.elements.pmmServerIdHeader).toHaveText(perconaPlatformPage.labels.pmmServerId_35);
-        } else {
-          await expect(perconaPlatformPage.elements.pmmServerIdHeader).toHaveText(perconaPlatformPage.labels.pmmServerId);
-        }
-
+        await expect(perconaPlatformPage.elements.pmmServerIdHeader)
+          .toHaveText(perconaPlatformPage.labels.pmmServerId, { ignoreCase: true });
         await expect(perconaPlatformPage.elements.pmmServerNameHeader).toHaveText(perconaPlatformPage.labels.pmmServerName);
         await expect(perconaPlatformPage.elements.accessTokenHeader).toHaveText(perconaPlatformPage.labels.accessToken);
         if (pmmVersion >= 35) {
@@ -94,7 +79,7 @@ test.describe('Spec file for connecting PMM to the portal', async () => {
       test.skip(pmmVersion > 26, 'This test is for PMM version 2.26.0 and lower');
 
       await grafanaHelper.authorize(page);
-      await page.goto(perconaPlatformPage.perconaPlatformURL);
+      await page.goto(perconaPlatformPage.PAGE_PATH);
       await perconaPlatformPage.fields.pmmServerName.type(`Test Server ${Date.now()}`);
       await perconaPlatformPage.fields.email.type(firstAdmin.email);
       await perconaPlatformPage.fields.password.type(firstAdmin.password);
@@ -111,7 +96,7 @@ test.describe('Spec file for connecting PMM to the portal', async () => {
 
       await test.step('1. Open Percona Platform tab in PMM Settings', async () => {
         await grafanaHelper.authorize(page);
-        await page.goto(perconaPlatformPage.perconaPlatformURL);
+        await page.goto(perconaPlatformPage.PAGE_PATH);
         await perconaPlatformPage.perconaPlatformContainer.waitFor({
           state: 'visible',
         });
@@ -130,9 +115,7 @@ test.describe('Spec file for connecting PMM to the portal', async () => {
     'PMM-T1098 Verify All org users can login in connected PMM server'
       + ' @not-ui-pipeline @portal @pre-pmm-portal-upgrade @post-pmm-portal-upgrade',
     async ({
-      page, loginPage, homeDashboardPage,
-      baseURL,
-      context,
+      page, loginPage, homeDashboardPage, baseURL, context,
     }) => {
       test.skip(pmmVersion < 27, 'This test is for PMM version 2.27.0 and higher');
 

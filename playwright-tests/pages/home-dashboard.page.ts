@@ -10,32 +10,7 @@ export default class HomeDashboardPage extends BaseDashboard {
   upgradeModal = new UpgradeModal(this.page);
   pmmMenu = new PmmMenu(this.page);
 
-  elements = {
-    ...super.getBaseDashboardElements(),
-  };
-
-  fields = {
-    ...super.getBaseDashboardFields(),
-  };
-
-  labels = {
-    ...super.getBaseDashboardLabels(),
-
-  };
-
-  buttons = {
-    ...super.getBaseDashboardButtons(),
-  };
-
-  messages = {
-    ...super.getBaseDashboardMessages(),
-  };
-
-  links = {
-    ...super.getBaseDashboardLinks(),
-  };
-
-  upgradePMM = async () => {
+  upgradePmm = async () => {
     await this.pmmUpgrade.buttons.upgradeButton.waitFor({
       state: 'visible', timeout: Duration.ThreeMinutes,
     });
@@ -49,15 +24,10 @@ export default class HomeDashboardPage extends BaseDashboard {
     await this.upgradeModal.containers.modalContainer.waitFor({
       state: 'visible', timeout: Duration.OneMinute,
     });
-    await this.upgradeModal.elements.upgradeInProgressHeader.waitFor({
-      state: 'visible', timeout: Duration.OneMinute,
-    });
-    await expect(this.upgradeModal.elements.upgradeSuccess).toHaveText(
-      this.upgradeModal.messages.upgradeSuccess(availableVersion!),
-      {
-        timeout: Duration.TenMinutes,
-      },
-    );
+    await this.upgradeModal.elements.upgradeInProgressHeader
+      .waitFor({ state: 'visible', timeout: Duration.OneMinute });
+    await expect(this.upgradeModal.elements.upgradeSuccess)
+      .toHaveText(this.upgradeModal.messages.upgradeSuccess(availableVersion) as string, { timeout: Duration.TenMinutes });
     await this.upgradeModal.buttons.close.click();
   };
 }

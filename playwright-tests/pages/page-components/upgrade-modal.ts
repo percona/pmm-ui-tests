@@ -1,28 +1,25 @@
-import { Page } from '@playwright/test';
 import { CommonPage } from '@pages/common.page';
+import { Page } from '@playwright/test';
+
+const modalContainerLocator = (page: Page) => page.locator('//*[role="dialog"] | //*[contains(@class,"modalHeader")]/parent::div');
 
 export default class UpgradeModal extends CommonPage {
-  constructor(page: Page) {
-    super(page);
-  }
-
   containers = {
-    modalContainer: this.page.locator('//*[role="dialog"] | //*[contains(@class,"modalHeader")]/parent::div'),
+    modalContainer: modalContainerLocator(this.page),
   };
 
-  elements = {
-    modalContent: this.containers.modalContainer.getByTestId('modal-output-pre'),
-    upgradeInProgressHeader: this.containers.modalContainer.getByText('Upgrade in progress'),
-    upgradeSuccess: this.containers.modalContainer.getByTestId('modal-update-success-text'),
+  elements: any = {
+    ...this.elements,
+    modalContent: modalContainerLocator(this.page).getByTestId('modal-output-pre'),
+    upgradeInProgressHeader: modalContainerLocator(this.page).getByText('Upgrade in progress'),
+    upgradeSuccess: modalContainerLocator(this.page).getByTestId('modal-update-success-text'),
   };
 
   buttons = {
-    close: this.containers.modalContainer.getByTestId('modal-close'),
+    close: modalContainerLocator(this.page).getByTestId('modal-close'),
   };
 
-  fields = {};
-
-  messages = {
+  messages: any = {
     inProgress: 'Update in progress',
     upgradeSuccess: (pmmVersion: string) => `PMM has been successfully upgraded to version ${pmmVersion}`,
   };

@@ -8,7 +8,7 @@ export default class PmmUpgrade {
     upgradeContainer: this.page.locator('//*[@aria-label="PMM Upgrade panel"]'),
   };
 
-  elements = {
+  elements: any = {
     currentVersion: this.containers.upgradeContainer.getByTestId('update-installed-version'),
     availableVersion: this.containers.upgradeContainer.getByTestId('update-latest-version'),
     upToDate: this.containers.upgradeContainer.getByText('You are up to date'),

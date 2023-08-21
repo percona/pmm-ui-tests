@@ -3,7 +3,7 @@ import { Page } from '@playwright/test';
 export default class PmmMenu {
   constructor(readonly page: Page) { }
 
-  elements = {
+  elements: any = {
     container: this.page.getByRole('menu'),
   };
 
@@ -16,7 +16,7 @@ export default class PmmMenu {
     option: (option: string) => this.page.locator(`//a[contains(@aria-label, "${option}")]`),
   };
 
-  messages = {};
+  messages: any = {};
 
   links = {};
 

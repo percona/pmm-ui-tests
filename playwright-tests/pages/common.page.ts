@@ -1,18 +1,17 @@
-import { Page } from '@playwright/test';
-import { SideMenu } from '@components/side-menu';
+import { Locator, Page } from '@playwright/test';
+import { LeftNavigationMenu } from '@components/left-navigation-menu';
 import { Toast } from '@components/toast';
 import OptionsMenu from '@components/options-menu';
+import { expect } from '@helpers/test-helper';
 
 export class CommonPage {
-  constructor(readonly page: Page) {}
-
   toast = new Toast(this.page);
-  sideMenu = new SideMenu(this.page);
+  sideMenu = new LeftNavigationMenu(this.page);
   optionMenu = new OptionsMenu(this.page);
 
   landingUrl = 'graph/d/pmm-home/home-dashboard?orgId=1&refresh=1m';
 
-  private baseElements = {
+  elements: object = {
     mainView: this.page.locator('//*[@class="main-view"]'),
     emptyBlock: this.page.getByTestId('empty-block'),
     noDataTable: this.page.getByTestId('table-no-data'),
@@ -21,43 +20,27 @@ export class CommonPage {
     notConnectedToPlatform: this.page.getByTestId('not-connected-platform'),
   };
 
-  private baseFields = {};
-
-  private baseLabels = {};
-
-  private baseButtons = {
-    home: this.page.locator('//*[@aria-label="Home"]'),
-  };
-
-  private baseMessages = {
+  // TODO: not a part of a page... should be moved to the "toast" system message class
+  messages: { [key: string]: string } = {
     loginWithPercona: 'Login with Percona Account to access this content',
     notConnectedToThePortal: 'Not connected to Portal.',
     featureDisabled: 'Feature is disabled.',
   };
 
-  private baseLinks = {};
+  constructor(public readonly page: Page) {}
 
-  protected getElements() {
-    return this.baseElements;
-  }
-
-  protected getFields() {
-    return this.baseFields;
-  }
-
-  protected getLabels() {
-    return this.baseLabels;
-  }
-
-  protected getButtons() {
-    return this.baseButtons;
-  }
-
-  protected getMessages() {
-    return this.baseMessages;
-  }
-
-  protected getLinks() {
-    return this.baseLinks;
-  }
+  /**
+   * To open Page with specified path by entering url into the address field.
+   * Including all required checks
+   *
+   * @param  pathToPage       the path to open with admin url
+   * @param  nameOfPage       the Page Name for pretty logs
+   * @param  headingOnPage    the Heading on the page to wait to confirm that page is opened
+   */
+  protected openPageByPath = async (pathToPage: string, nameOfPage: string, headingOnPage: Locator) => {
+    await this.page.goto(pathToPage);
+    await expect(this.page).toHaveURL(pathToPage, { timeout: 30_000 });
+    await expect(headingOnPage, `Wait for "${nameOfPage}" Page heading to be visible`)
+      .toBeVisible({ timeout: 60_000 });
+  };
 }

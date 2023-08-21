@@ -1,4 +1,4 @@
-import { expect, Page } from '@playwright/test';
+import { expect } from '@playwright/test';
 import Table from '@components/table';
 import AgentsTable from './agents-table';
 
@@ -13,46 +13,34 @@ export interface ServiceDetails {
 export default class ServicesTable extends Table {
   private dropdownMenu = this.page.locator('//div[@data-testid="dropdown-menu-menu"]');
 
-  elements = {
-    ...super.getTableElements(),
-    serviceName: (serviceName: string) => super.getTableElements().rowByText(serviceName).locator('td').nth(2),
-    nodeName: (serviceName: string) => super.getTableElements().rowByText(serviceName).locator('td').nth(3),
-    monitoring: (serviceName: string) => super.getTableElements().rowByText(serviceName).locator('td').nth(4)
+  elements: any = {
+    ...this.elements,
+    serviceName: (serviceName: string) => this.elements.rowByText(serviceName).locator('td').nth(2),
+    nodeName: (serviceName: string) => this.elements.rowByText(serviceName).locator('td').nth(3),
+    monitoring: (serviceName: string) => this.elements.rowByText(serviceName).locator('td').nth(4)
       .locator('//a'),
-    address: (serviceName: string) => super.getTableElements().rowByText(serviceName).locator('td').nth(5),
-    port: (serviceName: string) => super.getTableElements().rowByText(serviceName).locator('td').nth(6),
-    serviceStatuses: super.getTableElements().row.locator('//td[5]'),
+    address: (serviceName: string) => this.elements.rowByText(serviceName).locator('td').nth(5),
+    port: (serviceName: string) => this.elements.rowByText(serviceName).locator('td').nth(6),
+    serviceStatuses: this.elements.row.locator('//td[5]'),
     agentStatus: this.page.locator('//span[@data-testid="details-row-content"]//div[contains(@data-testid, "status-badge")]'),
-    rowMonitoring: super.getTableElements().row.locator('//td[5]').locator('//a'),
+    rowMonitoring: this.elements.row.locator('//td[5]').locator('//a'),
   };
 
-  fields = {
-    ...super.getTableFields(),
-  };
-
-  labels = {
-    ...super.getTableLabels(),
-  };
-
-  buttons = {
-    ...super.getTableButtons(),
-    options: (serviceName: string) => super.getTableElements().rowByText(serviceName).locator('//button[@data-testid="dropdown-menu-toggle"]'),
+  buttons: any = {
+    ...this.buttons,
+    options: (serviceName: string) => this.buttons.rowByText(serviceName).locator('//button[@data-testid="dropdown-menu-toggle"]'),
     deleteService: this.dropdownMenu.locator('//span[text()="Delete"]'),
     serviceDashboard: this.dropdownMenu.locator('//span[text()="Dashboard"]'),
     qan: this.dropdownMenu.locator('//span[text()="QAN"]'),
-    showRowDetails: (serviceName: string) => super.getTableElements().rowByText(serviceName).getByTestId('show-row-details'),
-    hideRowDetails: (serviceName: string) => super.getTableElements().rowByText(serviceName).getByTestId('hide-row-details'),
+    showRowDetails: (serviceName: string) => this.buttons.rowByText(serviceName).getByTestId('show-row-details'),
+    hideRowDetails: (serviceName: string) => this.buttons.rowByText(serviceName).getByTestId('hide-row-details'),
     showDetails: this.page.getByTestId('show-row-details'),
-    selectService: (serviceName: string) => super.getTableElements().rowByText(serviceName).locator('//input[contains(@id, "input-table-select")]'),
+    selectService: (serviceName: string) => this.buttons.rowByText(serviceName).locator('//input[contains(@id, "input-table-select")]'),
   };
 
-  messages = {
-    ...super.getTableMessages(),
+  messages: any = {
+    ...this.messages,
     successfullyDeleted: (number: number) => `${number} of ${number} services successfully deleted`,
-  };
-
-  links = {
-    ...super.getTableLinks(),
   };
 
   verifyService = async (details: ServiceDetails) => {
@@ -82,7 +70,7 @@ export default class ServicesTable extends Table {
         state: 'visible',
       });
       await this.elements.rowMonitoring.nth(index).click();
-      await agentsTable.verifyAgentLabeVisibleForAgentsExcept(labelName, agentsException);
+      await agentsTable.verifyAgentLabelVisibleForAgentsExcept(labelName, agentsException);
       await agentsTable.buttons.goBackToServices.click();
     }
   };

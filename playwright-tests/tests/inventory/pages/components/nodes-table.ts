@@ -12,45 +12,33 @@ export interface NodeDetails {
 }
 
 export default class NodesTable extends Table {
-  elements = {
-    ...super.getTableElements(),
+  elements: any = {
+    ...this.elements,
     version_2_37: {
-      nodeName: (nodeName: string) => super.getTableElements().rowByText(nodeName).locator('td').nth(1),
-      nodeId: (nodeName: string) => super.getTableElements().rowByText(nodeName).locator('td').nth(2),
-      nodeType: (nodeName: string) => super.getTableElements().rowByText(nodeName).locator('td').nth(3),
-      address: (nodeName: string) => super.getTableElements().rowByText(nodeName).locator('td').nth(4),
+      nodeName: (nodeName: string) => this.elements.rowByText(nodeName).locator('td').nth(1),
+      nodeId: (nodeName: string) => this.elements.rowByText(nodeName).locator('td').nth(2),
+      nodeType: (nodeName: string) => this.elements.rowByText(nodeName).locator('td').nth(3),
+      address: (nodeName: string) => this.elements.rowByText(nodeName).locator('td').nth(4),
     },
-    status: (nodeName: string) => super.getTableElements().rowByText(nodeName).locator('td').nth(1),
-    nodeName: (nodeName: string) => super.getTableElements().rowByText(nodeName).locator('td').nth(2),
-    nodeType: (nodeName: string) => super.getTableElements().rowByText(nodeName).locator('td').nth(3),
-    monitoring: (nodeName: string) => super.getTableElements().rowByText(nodeName).locator('td').nth(4),
-    address: (nodeName: string) => super.getTableElements().rowByText(nodeName).locator('td').nth(5),
-    services: (nodeName: string) => super.getTableElements().rowByText(nodeName).locator('td').nth(6),
+    status: (nodeName: string) => this.elements.rowByText(nodeName).locator('td').nth(1),
+    nodeName: (nodeName: string) => this.elements.rowByText(nodeName).locator('td').nth(2),
+    nodeType: (nodeName: string) => this.elements.rowByText(nodeName).locator('td').nth(3),
+    monitoring: (nodeName: string) => this.elements.rowByText(nodeName).locator('td').nth(4),
+    address: (nodeName: string) => this.elements.rowByText(nodeName).locator('td').nth(5),
+    services: (nodeName: string) => this.elements.rowByText(nodeName).locator('td').nth(6),
   };
 
-  fields = {
-    ...super.getTableFields(),
+  buttons: any = {
+    ...this.buttons,
+    selectNode: (nodeName = '') => this.elements.rowByText(nodeName).locator('input'),
+    showRowDetails: (nodeName: string) => this.elements.rowByText(nodeName).getByTestId('show-row-details'),
+    hideRowDetails: (nodeName: string) => this.elements.rowByText(nodeName).getByTestId('hide-row-details'),
   };
 
-  labels = {
-    ...super.getTableLabels(),
-  };
-
-  buttons = {
-    ...super.getTableButtons(),
-    selectNode: (nodeName = '') => super.getTableElements().rowByText(nodeName).locator('input'),
-    showRowDetails: (nodeName: string) => super.getTableElements().rowByText(nodeName).getByTestId('show-row-details'),
-    hideRowDetails: (nodeName: string) => super.getTableElements().rowByText(nodeName).getByTestId('hide-row-details'),
-  };
-
-  messages = {
-    ...super.getTableMessages(),
+  messages: any = {
+    ...this.messages,
     hasAgents: (nodeId?: string) => `Node with ID "${nodeId}" has agents.`,
     nodesSuccessfullyDeleted: (number: number) => `${number} of ${number} nodes successfully deleted`,
-  };
-
-  links = {
-    ...super.getTableLinks(),
   };
 
   verifyNode = async (details: NodeDetails, versionMinor: number) => {

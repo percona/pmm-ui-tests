@@ -1,13 +1,16 @@
 import { CommonPage } from '@pages/common.page';
+import { Locator } from '@playwright/test';
 
 export default class PerconaPlatformPage extends CommonPage {
-  perconaPlatformURL = 'graph/settings/percona-platform';
+  readonly PAGE_PATH = 'graph/settings/percona-platform';
+  readonly PAGE_HEADING = 'Percona Platform';
   perconaPlatformContainer = this.page.getByTestId('connect-form');
   connectedContainer = this.page.getByTestId('connected-wrapper');
 
-  elements = {
-    ...super.getElements(),
-    header_2_35: this.page.getByText('Connect to Percona Platform'),
+  elements: { [key: string]: Locator } = {
+    ...this.elements,
+    // heading: this.page.locator(`//h2[text()="${this.PAGE_HEADING}"] | //*[contains(text(), "${this.OLD_HEADING}")]`),
+    heading: this.page.locator(`//h2[text()="${this.PAGE_HEADING}"]`),
     pmmServerIdHeader: this.perconaPlatformContainer.getByTestId('pmmServerId-field-label'),
     pmmServerNameHeader: this.perconaPlatformContainer.getByTestId('pmmServerName-field-label'),
     pmmServerNameError: this.perconaPlatformContainer.getByTestId('pmmServerName-field-error-message'),
@@ -19,7 +22,6 @@ export default class PerconaPlatformPage extends CommonPage {
   };
 
   fields = {
-    ...super.getFields(),
     pmmServerId: this.perconaPlatformContainer.getByTestId('pmmServerId-text-input'),
     email: this.perconaPlatformContainer.getByTestId('email-text-input'),
     password: this.perconaPlatformContainer.getByTestId('password-password-input'),
@@ -28,11 +30,8 @@ export default class PerconaPlatformPage extends CommonPage {
   };
 
   labels = {
-    ...super.getLabels(),
-    header: 'Connect PMM to Percona Platform',
     connectToPlatform: 'Connect to Percona Platform',
     pmmServerId: 'PMM Server Id',
-    pmmServerId_35: 'PMM Server ID',
     pmmServerName: 'PMM Server Name *',
     accessToken: 'Percona Platform Access Token *',
     getToken: 'Get token',
@@ -43,7 +42,6 @@ export default class PerconaPlatformPage extends CommonPage {
   };
 
   buttons = {
-    ...super.getButtons(),
     connect: this.perconaPlatformContainer.getByTestId('connect-button'),
     disconnect: this.connectedContainer.getByTestId('disconnect-button'),
     confirmDisconnect: this.page.locator('//*[@aria-label="Confirm Modal Danger Button"]'),
@@ -52,8 +50,8 @@ export default class PerconaPlatformPage extends CommonPage {
     createPerconaAccount: this.page.locator(`//*[contains(text(), "${this.labels.createPerconaAccount}")]//ancestor::a`),
   };
 
-  messages = {
-    ...super.getMessages(),
+  messages: { [key: string]: string } = {
+    ...this.messages,
     connectedSuccess: 'Successfully connected PMM to Percona Platform',
     disconnectedSuccess: 'You have successfully disconnected this server from Percona Platform',
     updateSuccess: 'Settings updated',
@@ -64,12 +62,28 @@ export default class PerconaPlatformPage extends CommonPage {
   };
 
   links = {
-    ...super.getLinks(),
     portalProfile: 'https://portal-dev.percona.com/profile',
     platformProfile: 'https://platform-dev.percona.com/profile',
     portalLogin: 'https://portal-dev.percona.com/login',
     readMore:
       'https://docs.percona.com/percona-monitoring-and-management/how-to/integrate-platform.html#disconnect-a-pmm-instance',
+  };
+
+  /**
+   * Opens given Page entering url into the address field.
+   */
+  public open = async () => {
+    await this.openPageByPath(this.PAGE_PATH, this.PAGE_HEADING, this.elements.heading);
+  };
+
+  /**
+   * Check whether current page path is displayed in browser address
+   *
+   * @return  {@code true} if url found; {@code false} otherwise
+   */
+  public isOpened = () => {
+    // TODO: insert baseUrl to change eval to "equals"
+    return this.page.url().includes(this.PAGE_PATH);
   };
 
   connectToPortal = async (token: string, serverName = 'Test Server', isIPAddressSet = false) => {

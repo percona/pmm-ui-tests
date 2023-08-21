@@ -5,7 +5,7 @@ export default class OptionsMenu {
 
   private selectOptionsMenuContainer = this.page.locator('//*[@aria-label="Select options menu"]')
 
-  elements = {
+  elements: any = {
     optionElement: (option: string) => this.selectOptionsMenuContainer.getByText(option),
   };
 
@@ -19,7 +19,7 @@ export default class OptionsMenu {
   buttons = {
   };
 
-  messages = {
+  messages: any = {
 
   };
 

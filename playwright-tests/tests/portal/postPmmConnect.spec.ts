@@ -309,7 +309,7 @@ test.describe('Spec file for PMM connected the portal', async () => {
       await homeDashboardPage.pmmUpgrade.elements.currentVersion.waitFor({
         state: 'visible', timeout: Duration.ThreeMinutes,
       });
-      await page.goto(perconaPlatformPage.perconaPlatformURL);
+      await page.goto(perconaPlatformPage.PAGE_PATH);
       await perconaPlatformPage.connectedContainer.waitFor({
         state: 'visible',
       });
@@ -328,7 +328,7 @@ test.describe('Spec file for PMM connected the portal', async () => {
       await homeDashboardPage.pmmUpgrade.elements.currentVersion.waitFor({
         state: 'visible', timeout: Duration.ThreeMinutes,
       });
-      await page.goto(perconaPlatformPage.perconaPlatformURL);
+      await page.goto(perconaPlatformPage.PAGE_PATH);
       const adminToken = await api.portal.getUserAccessToken(firstAdmin.email, firstAdmin.password);
 
       await perconaPlatformPage.connectToPortal(adminToken, `Test Server ${Date.now()}`, true);
@@ -348,7 +348,7 @@ test.describe('Spec file for PMM connected the portal', async () => {
 
     await test.step('1. Login into the pmm and navigate to the percona platform page.', async () => {
       await grafanaHelper.authorize(page);
-      await page.goto(perconaPlatformPage.perconaPlatformURL);
+      await page.goto(perconaPlatformPage.PAGE_PATH);
       await perconaPlatformPage.connectedContainer.waitFor({
         state: 'visible',
       });

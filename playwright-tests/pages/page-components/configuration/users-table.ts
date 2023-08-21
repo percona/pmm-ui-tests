@@ -6,7 +6,7 @@ export default class UsersTable {
 
   private optionMenu = new OptionsMenu(this.page);
 
-  elements = {
+  elements: any = {
     rowByText: (text: string) => this.page.locator(`//span[contains(text(),"${text}")]//ancestor::tr`),
   };
 
@@ -16,12 +16,4 @@ export default class UsersTable {
     removeRole: (username: string, roleName: string) =>
       this.elements.rowByText(username).locator(`//*[@aria-label="Remove ${roleName}"]`),
   };
-
-  labels = {};
-
-  buttons = {};
-
-  messages = {};
-
-  links = {};
 }

@@ -1,23 +1,10 @@
-import { expect, Page } from '@playwright/test';
+import { expect } from '@playwright/test';
 import { CommonPage } from '@pages/common.page';
 
 export class AddServicePage extends CommonPage {
   url = 'graph/add-instance';
 
-  elements = {
-    ...super.getElements(),
-  };
-
-  fields = {
-    ...super.getFields(),
-  };
-
-  labels = {
-    ...super.getLabels(),
-  };
-
   buttons = {
-    ...super.getButtons(),
     amazonRds: this.page.getByTestId('rds-instance'),
     postgreSql: this.page.getByTestId('postgresql-instance'),
     mySql: this.page.getByTestId('mysql-instance'),
@@ -27,12 +14,8 @@ export class AddServicePage extends CommonPage {
     haProxy: this.page.getByTestId('haproxy-instance'),
   };
 
-  messages = {
-    ...super.getMessages(),
-  };
-
-  links = {
-    ...super.getLinks(),
+  messages: any = {
+    ...this.messages,
   };
 
   verifyAllButtonsVisible = async () => {

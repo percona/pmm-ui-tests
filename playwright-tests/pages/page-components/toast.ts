@@ -21,30 +21,41 @@ export class Toast {
       default:
         return this.toast;
     }
-
-  }
+  };
 
   checkToastMessage = async (
     message: string,
     options?: { timeout?: number; variant?: 'success' | 'warning' | 'error', assertionTimeout?: number },
   ) => {
-    let selectedToast: Locator = this.selectToast(options?.variant);
+    const selectedToast: Locator = this.selectToast(options?.variant);
 
-    await selectedToast.waitFor({ state: 'visible', timeout: options?.timeout || 30000 });
-    await expect(selectedToast).toHaveText(message, { timeout: options?.assertionTimeout || config.expect?.timeout });
+    await selectedToast.waitFor({
+      state: 'visible', timeout: options?.timeout || 30000,
+    });
+    await expect(selectedToast).toHaveText(message, {
+      timeout: options?.assertionTimeout || config.expect?.timeout,
+    });
     await this.closeButton(selectedToast).click();
-    await selectedToast.waitFor({ state: 'detached' });
+    await selectedToast.waitFor({
+      state: 'detached',
+    });
   };
 
   checkToastMessageContains = async (
     message: string,
     options?: { timeout?: number; variant?: 'success' | 'warning' | 'error', assertionTimeout?: number },
   ) => {
-    let selectedToast: Locator = this.selectToast(options?.variant);
+    const selectedToast: Locator = this.selectToast(options?.variant);
 
-    await selectedToast.waitFor({ state: 'visible', timeout: options?.timeout });
-    await expect(selectedToast).toContainText(message, { timeout: options?.assertionTimeout || config.expect?.timeout });
+    await selectedToast.waitFor({
+      state: 'visible', timeout: options?.timeout,
+    });
+    await expect(selectedToast).toContainText(message, {
+      timeout: options?.assertionTimeout || config.expect?.timeout,
+    });
     await this.closeButton(selectedToast).click();
-    await selectedToast.waitFor({ state: 'detached' });
+    await selectedToast.waitFor({
+      state: 'detached',
+    });
   };
 }

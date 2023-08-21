@@ -1,35 +1,21 @@
 import RbacTable from '@components/rbac-table';
-import { ConfigurationPage } from './configuration.page';
+import { CommonPage } from '@pages/common.page';
 
-export class RbacPage extends ConfigurationPage {
+export class RbacPage extends CommonPage {
   url = 'graph/roles';
 
   rbacTable = new RbacTable(this.page);
 
-  elements = {
-    ...super.getConfigurationElements(),
-  };
-
-  fields = {
-    ...super.getConfigurationFields(),
+  elements: any = {
+    ...this.elements,
+    buttonCreate: this.page.getByTestId('access-roles-create-role'),
   };
 
   labels = {
-    ...super.getConfigurationLabels(),
     create: 'Create',
   };
 
-  buttons = {
-    ...super.getConfigurationButtons(),
-    create: this.page.getByTestId('access-roles-create-role'),
-  };
-
-  messages = {
-    ...super.getConfigurationMessages(),
-  };
-
   links = {
-    ...super.getConfigurationLinks(),
     createRole: '/roles/create',
   };
 }

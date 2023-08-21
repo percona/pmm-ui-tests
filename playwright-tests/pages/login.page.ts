@@ -1,51 +1,42 @@
-import { Page } from '@playwright/test';
-import { OktaSignInPage } from '@pages/okta-sign-in.page';
 import { CommonPage } from '@pages/common.page';
+import {Locator} from "@playwright/test";
 
-class LoginPage extends CommonPage {
-  private readonly pagePath = 'graph/login';
-  constructor(readonly page: Page) {
-    super(page);
-  }
+export default class LoginPage extends CommonPage {
+  readonly PAGE_PATH = 'graph/login';
+  readonly PAGE_HEADING = 'Percona Monitoring and Management';
 
-  elements = {
-    ...super.getElements(),
+  elements: any = {
+    ...this.elements,
+    headingLocator: this.page.locator('//h1'),
+    oktaLogin: {
+      usernameInput: this.page.locator('//*[@name="username"]'),
+      passwordInput: this.page.locator('//*[@name="password"]'),
+      nextButton: this.page.locator('//*[@id="idp-discovery-submit"]'),
+      signInButton: this.page.locator('//*[@id="okta-signin-submit"]'),
+    },
   };
 
   fields = {
-    ...super.getFields(),
     username: this.page.locator('//*[@name="username"]'),
     password: this.page.locator('//*[@name="password"]'),
   };
 
-  labels = {
-    ...super.getLabels(),
-  };
-
   buttons = {
-    ...super.getButtons(),
     oktaLogin: this.page.locator('//*[@href="login/generic_oauth"]'),
   };
 
-  messages = {
-    ...super.getMessages(),
+  /**
+   * Opens given Page entering url into the address field.
+   */
+  public open = async () => {
+    await this.openPageByPath(this.PAGE_PATH, this.PAGE_HEADING, this.elements.headingLocator as Locator);
   };
 
-  links = {
-    ...super.getLinks(),
-  };
-
-  open = async () => {
-    await this.page.goto(this.pagePath);
-  };
   oktaLogin = async (username: string, password: string) => {
-    const oktaSignInPage = new OktaSignInPage(this.page);
-
     await this.buttons.oktaLogin.click();
-    await oktaSignInPage.fields.username.type(username);
-    await oktaSignInPage.buttons.next.click();
-    await oktaSignInPage.fields.password.type(password);
-    await oktaSignInPage.buttons.signIn.click();
+    await this.elements.oktaLogin.usernameInput.type(username);
+    await this.elements.oktaLogin.nextButton.click();
+    await this.elements.oktaLogin.passwordInput.type(password);
+    await this.elements.oktaLogin.signInButton.click();
   };
 }
-export default LoginPage;

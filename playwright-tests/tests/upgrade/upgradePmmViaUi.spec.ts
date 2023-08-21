@@ -16,6 +16,6 @@ test.describe('Common Upgrade PMM tests', async () => {
   });
 
   test('PMM-T3 Verify user is able to Upgrade PMM version [blocker] @pmm-upgrade', async ({ homeDashboardPage }) => {
-    await homeDashboardPage.upgradePMM();
+    await homeDashboardPage.upgradePmm();
   });
 });
