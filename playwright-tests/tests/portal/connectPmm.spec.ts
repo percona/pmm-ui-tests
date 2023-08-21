@@ -30,7 +30,7 @@ test.describe('Spec file for connecting PMM to the portal', async () => {
       await perconaPlatformPage.open();
     });
 
-    await test.step('2. Verify all required element are displayed.', async () => {
+    await test.step('2. Verify all required elements are displayed.', async () => {
       await expect(perconaPlatformPage.elements.pmmServerIdHeader)
         .toHaveText(perconaPlatformPage.labels.pmmServerId, { ignoreCase: true });
       await expect(perconaPlatformPage.elements.pmmServerNameHeader).toHaveText(perconaPlatformPage.labels.pmmServerName);
@@ -103,9 +103,7 @@ test.describe('Spec file for connecting PMM to the portal', async () => {
   test(
     'PMM-T1098 Verify All org users can login in connected PMM server'
       + ' @not-ui-pipeline @portal @pre-pmm-portal-upgrade @post-pmm-portal-upgrade',
-    async ({
-      loginPage, homeDashboardPage, baseURL, context,
-    }) => {
+    async ({ loginPage, homeDashboardPage, baseURL, context }) => {
       test.skip(pmmVersion < 27, 'This test is for PMM version 2.27.0 and higher');
 
       await test.step('1. Login as admin user that created the org.', async () => {
@@ -120,9 +118,7 @@ test.describe('Spec file for connecting PMM to the portal', async () => {
 
       await test.step('1. Login as admin user that was invited to the org.', async () => {
         await loginPage.oktaLogin(secondAdmin.email, secondAdmin.password);
-        await homeDashboardPage.pmmUpgrade.containers.upgradeContainer.waitFor({
-          state: 'visible', timeout: Duration.OneMinute,
-        });
+        await homeDashboardPage.pmmUpgrade.containers.upgradeContainer.waitFor({ state: 'visible', timeout: Duration.OneMinute });
         await expect(loginPage.page).toHaveURL(`${baseURL}/${loginPage.landingUrl}`);
         await context.clearCookies();
         await loginPage.page.reload();
