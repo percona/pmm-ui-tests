@@ -1,4 +1,5 @@
 const assert = require('assert');
+
 const { I } = inject();
 
 module.exports = {
@@ -10,4 +11,4 @@ module.exports = {
   },
   messages: {
   },
-}
+};

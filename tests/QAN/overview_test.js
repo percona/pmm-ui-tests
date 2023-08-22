@@ -443,15 +443,21 @@ Scenario(
     }).format(-new Date().getTimezoneOffset() / 60);
     const clientTimeZone = `${clientTimeOffset}:00`;
 
-    I.assertContain(timestamp, clientTimeOffset,
-      `Timestamp does not contain expected local time offset, but contains ${timestamp}`);
+    I.assertContain(
+      timestamp,
+      clientTimeOffset,
+      `Timestamp does not contain expected local time offset, but contains ${timestamp}`,
+    );
 
     adminPage.applyTimeZone('Coordinated Universal Time');
     I.click(qanOverview.buttons.refresh);
     I.moveCursorTo(firstLoadCell);
     timestamp = await I.grabTextFrom(qanOverview.elements.tooltipContent);
 
-    I.assertContain(timestamp, '+00:00',
-      `Timestamp does not contain expected zero UTC time offset, but contains ${timestamp}`);
+    I.assertContain(
+      timestamp,
+      '+00:00',
+      `Timestamp does not contain expected zero UTC time offset, but contains ${timestamp}`,
+    );
   },
 );

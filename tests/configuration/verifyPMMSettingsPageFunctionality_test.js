@@ -227,7 +227,8 @@ Scenario('PMM-T520 - Verify that alert is being fired to external Alert Manager 
   await pmmSettingsPage.verifyExternalAlertManager(pmmSettingsPage.alertManager.ruleName);
 });
 
-Scenario('PMM-T532 PMM-T533 PMM-T536 - Verify user can disable/enable IA in Settings @ia @settings',
+Scenario(
+  'PMM-T532 PMM-T533 PMM-T536 - Verify user can disable/enable IA in Settings @ia @settings',
   async ({
     I, pmmSettingsPage, settingsAPI, adminPage,
   }) => {
@@ -251,9 +252,11 @@ Scenario('PMM-T532 PMM-T533 PMM-T536 - Verify user can disable/enable IA in Sett
     pmmSettingsPage.verifySwitch(pmmSettingsPage.fields.perconaAlertingSwitchInput, 'on');
     I.dontSeeElementInDOM(adminPage.sideMenu.integratedAlerting);
     I.dontSeeElement(pmmSettingsPage.communication.communicationSection);
-  }).retry(2);
+  },
+).retry(2);
 
-Scenario('PMM-T785 - Verify DBaaS cannot be disabled with ENABLE_DBAAS or PERCONA_TEST_DBAAS @dbaas',
+Scenario(
+  'PMM-T785 - Verify DBaaS cannot be disabled with ENABLE_DBAAS or PERCONA_TEST_DBAAS @dbaas',
   async ({ I, pmmSettingsPage }) => {
     I.amOnPage(pmmSettingsPage.advancedSettingsUrl);
     await pmmSettingsPage.waitForPmmSettingsPageLoaded();
@@ -265,9 +268,11 @@ Scenario('PMM-T785 - Verify DBaaS cannot be disabled with ENABLE_DBAAS or PERCON
     // skipped until PMM-9982 is fixed
     // pmmSettingsPage.verifySwitch(pmmSettingsPage.fields.dbaasSwitchSelectorInput, 'on');
     I.verifyPopUpMessage(pmmSettingsPage.messages.invalidDBaaSDisableMessage);
-  });
+  },
+);
 
-Data(communicationDefaults).Scenario('PMM-T534 PMM-T535 PMM-T1074 - Verify user is able to set up default Email/Slack communication settings / validation @ia @settings @grafana-pr',
+Data(communicationDefaults).Scenario(
+  'PMM-T534 PMM-T535 PMM-T1074 - Verify user is able to set up default Email/Slack communication settings / validation @ia @settings @grafana-pr',
   async ({
     I, pmmSettingsPage, settingsAPI, current,
   }) => {
@@ -281,7 +286,8 @@ Data(communicationDefaults).Scenario('PMM-T534 PMM-T535 PMM-T1074 - Verify user 
       await pmmSettingsPage.waitForPmmSettingsPageLoaded();
       await pmmSettingsPage.verifyCommunicationFields(current);
     }
-  });
+  },
+);
 
 Scenario(
   'PMM-T747 - Verify enabling Azure flag @instances',
@@ -389,8 +395,11 @@ Scenario(
     await pmmSettingsPage.waitForPmmSettingsPageLoaded();
     const publicAddressAfterRefresh = await I.grabValueFrom(pmmSettingsPage.fields.publicAddressInput);
 
-    I.assertEqual(publicAddressAfterRefresh, publicAddressValue,
-      `Expected the Public Address to be saved and Match ${publicAddressValue}`);
+    I.assertEqual(
+      publicAddressAfterRefresh,
+      publicAddressValue,
+      `Expected the Public Address to be saved and Match ${publicAddressValue}`,
+    );
   },
 ).retry(1);
 
@@ -462,7 +471,10 @@ Scenario(
     I.assertTrue(publicAddressValue.length > 0, 'Expected the Public Address Input Field to be not empty!');
     await pmmSettingsPage.waitForPmmSettingsPageLoaded();
 
-    await I.assertEqual(serverAddressIP, publicAddressValue,
-      `Expected the Public Address to be saved and Match ${publicAddressValue}`);
+    await I.assertEqual(
+      serverAddressIP,
+      publicAddressValue,
+      `Expected the Public Address to be saved and Match ${publicAddressValue}`,
+    );
   },
 ).retry(1);

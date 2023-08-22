@@ -1,4 +1,5 @@
 const assert = require('assert');
+
 const {
   I, iaCommon,
 } = inject();
@@ -56,8 +57,8 @@ module.exports = {
     testSent: 'Test alert sent.',
   },
   fields: {
-    cPName: `input[id=\'name\']`,
-    cPType: `input[id=\'contact-point-type-items.0.\']`,
+    cPName: 'input[id=\'name\']',
+    cPType: 'input[id=\'contact-point-type-items.0.\']',
     slackWebhookUrl: 'input[id=\'items.0.secureSettings.url\']',
     webhookUrl: 'input[id=\'items.0.settings.url\']',
     pagerDutyKey: 'input[id=\'items.0.secureSettings.integrationKey\']',
@@ -115,4 +116,4 @@ module.exports = {
         assert.ok(false, `Did not find a matching notification channel type ${type}`);
     }
   },
-}
+};

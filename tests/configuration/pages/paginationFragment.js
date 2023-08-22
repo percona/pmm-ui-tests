@@ -23,8 +23,11 @@ module.exports = {
    * @returns   {Promise<void>}
    */
   async verifySelectedCountPerPage(expectedNumber) {
-    I.assertContain([25, 50, 100], expectedNumber,
-      'Expected number is not the one available options to select in dropdown');
+    I.assertContain(
+      [25, 50, 100],
+      expectedNumber,
+      'Expected number is not the one available options to select in dropdown',
+    );
     I.waitForElement(this.elements.rowsPerPageDropdown, 30);
     await within(this.elements.rowsPerPageDropdown, () => {
       I.see(expectedNumber);

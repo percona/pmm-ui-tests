@@ -7,8 +7,11 @@ BeforeSuite(async ({
   addInstanceAPI, remoteInstancesHelper, credentials, inventoryAPI,
 }) => {
   for (let i = 1; i <= servicesNumber; i++) {
-    await addInstanceAPI.apiAddInstance(remoteInstancesHelper.instanceTypes.postgresql, `${serviceNameForPagination}${i}`,
-      { host: 'localhost', username: credentials.postgreSql.pmmServerUser, password: credentials.postgreSql.pmmServerUser });
+    await addInstanceAPI.apiAddInstance(
+      remoteInstancesHelper.instanceTypes.postgresql,
+      `${serviceNameForPagination}${i}`,
+      { host: 'localhost', username: credentials.postgreSql.pmmServerUser, password: credentials.postgreSql.pmmServerUser },
+    );
   }
 });
 
@@ -78,8 +81,10 @@ Data(subPages).Scenario(
     I.click(subPageLocator);
     I.waitForClickable(pmmInventoryPage.fields.selectAllCheckbox);
     I.click(pmmInventoryPage.fields.selectAllCheckbox);
-    I.waitNumberOfVisibleElements(pmmInventoryPage.fields.selectedCheckbox,
-      await pmmInventoryPage.pagination.getSelectedCountPerPage());
+    I.waitNumberOfVisibleElements(
+      pmmInventoryPage.fields.selectedCheckbox,
+      await pmmInventoryPage.pagination.getSelectedCountPerPage(),
+    );
     I.waitForClickable(pmmInventoryPage.pagination.elements.nextPageButton);
     I.click(pmmInventoryPage.pagination.elements.nextPageButton);
     I.waitNumberOfVisibleElements(pmmInventoryPage.fields.selectedCheckbox, 0);

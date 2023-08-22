@@ -13,7 +13,7 @@ module.exports = {
       responseService = services.data[service.service].find((obj) => obj.service_name === serviceName);
       if (responseService !== undefined) break;
 
-      await I.wait(1);
+      I.wait(1);
     }
 
     assert.ok(responseService !== undefined, `Service ${serviceName} was not found`);
