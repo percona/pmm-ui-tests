@@ -171,10 +171,12 @@ Scenario.skip(
     // Verify failed check on UI
     databaseChecksPage.verifyFailedCheckExists(detailsText, serviceId);
     I.see(psServiceName);
-    await inventoryAPI.verifyServiceExistsAndHasRunningStatus({
-      serviceType: 'MYSQL_SERVICE',
-      service: 'mysql',
-    },
-      psServiceName);
+    await inventoryAPI.verifyServiceExistsAndHasRunningStatus(
+      {
+        serviceType: 'MYSQL_SERVICE',
+        service: 'mysql',
+      },
+      psServiceName,
+    );
   },
 );

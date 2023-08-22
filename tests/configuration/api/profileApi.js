@@ -25,8 +25,11 @@ module.exports = {
     };
     const resp = await I.sendPutRequest(PATH, body, headers);
 
-    assert.equal(resp.status, 200,
-      `Failed change user account password! Response message is "${resp.data.message}"`);
+    assert.equal(
+      resp.status,
+      200,
+      `Failed change user account password! Response message is "${resp.data.message}"`,
+    );
   },
 
 };

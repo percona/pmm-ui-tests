@@ -70,8 +70,11 @@ Data(data).Scenario(
 
     I.amOnPage(`${basePmmUrl}${pmmInventoryPage.url}`);
     await I.waitForVisible(pmmInventoryPage.fields.serviceRow(serviceName), 30);
-    I.assertEqual(await pmmInventoryPage.servicesTab.getServiceMonitoringStatus(serviceName), 'OK',
-      `'${serviceName}' is expected to have 'OK' monitoring status`);
+    I.assertEqual(
+      await pmmInventoryPage.servicesTab.getServiceMonitoringStatus(serviceName),
+      'OK',
+      `'${serviceName}' is expected to have 'OK' monitoring status`,
+    );
 
     I.amOnPage(I.buildUrlWithParams(`${basePmmUrl}${dashboardPage.postgresqlInstanceSummaryDashboard.cleanUrl}`, { service_name: serviceName, node_name: 'pmm-server-db' }));
     dashboardPage.waitForDashboardOpened();
