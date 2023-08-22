@@ -111,6 +111,7 @@ test.describe('-promscrape.maxScapeSize tests', async () => {
     const customScrapeSize = '128';
 
     await test.step('verify client docker logs for custom value', async () => {
+      await page.waitForTimeout(10_000);
       const scrapeSizeLog = await cli.exec('docker logs pmm-client-custom-scrape-interval 2>&1 | grep \'promscrape.maxScrapeSize.*vm_agent\' | tail -1');
       await scrapeSizeLog.outContains(`promscrape.maxScrapeSize=\\\"${customScrapeSize}MiB\\\"`)
     })
