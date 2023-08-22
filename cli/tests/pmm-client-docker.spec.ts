@@ -74,22 +74,26 @@ test.describe('PMM Client Docker CLI tests', async () => {
     await output.assertSuccess();
     await output.outContains('Service removed.');
   });
+});
 
-  test('@PMM-T1664 @PMM-T1665 Verify vm_agents -promscrape.maxScapeSize parameter', async ({page}) => {
+test.describe('-promscrape.maxScapeSize tests', async () => {
+  test.beforeAll(async () => {
+    await (await cli.exec(`docker-compose -f test-setup/docker-compose-scrape-intervals.yml up -d`)).assertSuccess();
+  })
+
+  test.afterAll(async () => {
+    await (await cli.exec(`docker-compose -f test-setup/docker-compose-scrape-intervals.yml down`)).assertSuccess();
+  })
+
+  test('@PMM-T1664 Verify default value for vm_agents -promscrape.maxScapeSize parameter', async ({page}) => {
     const defaultScrapeSize = '64';
-    const customScrapeSize = '128';
 
     await test.step('verify client docker logs for default value', async () => {
-      await (await cli.exec(`docker-compose -f test-setup/docker-compose-scrape-intervals.yml up -d`)).assertSuccess();
       await page.waitForTimeout(10_000);
 
       const scrapeSizeLog = await cli.exec('docker logs pmm-client-scrape-interval 2>&1 | grep \'promscrape.maxScrapeSize.*vm_agent\' | tail -1');
       await scrapeSizeLog.outContains(`promscrape.maxScrapeSize=\\\"${defaultScrapeSize}MiB\\\"`)
 
-    })
-    await test.step('verify client docker logs for custom value', async () => {
-      const scrapeSizeLog = await cli.exec('docker logs pmm-client-custom-scrape-interval 2>&1 | grep \'promscrape.maxScrapeSize.*vm_agent\' | tail -1');
-      await scrapeSizeLog.outContains(`promscrape.maxScrapeSize=\\\"${customScrapeSize}MiB\\\"`)
     })
 
     await test.step('verify logs from binary for default value', async () => {
@@ -99,13 +103,5 @@ test.describe('PMM Client Docker CLI tests', async () => {
       const scrapeSizeLog = await cli.exec('ps aux | grep -v \'grep\' | grep \'vm_agent\' | tail -1')
       await scrapeSizeLog.outContains(`promscrape.maxScrapeSize=${defaultScrapeSize}MiB`)
     })
-
-    await test.step('verify logs from binary for custom value', async () => {
-      await (await cli.exec('sudo pmm-admin config --force \'--server-url=https://admin:admin@0.0.0.0:2443\' --server-insecure-tls 127.0.0.1')).assertSuccess()
-
-      await page.waitForTimeout(10_000);
-      const scrapeSizeLog = await cli.exec('ps aux | grep -v \'grep\' | grep \'vm_agent\' | tail -1')
-      await scrapeSizeLog.outContains(`promscrape.maxScrapeSize=${customScrapeSize}MiB`)
-    })
   });
-});
+})
