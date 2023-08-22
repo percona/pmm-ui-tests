@@ -144,7 +144,7 @@ test.describe('-promscrape.maxScapeSize tests', async () => {
     })
 
     await test.step('verify logs from binary for custom value', async () => {
-      await (await cli.exec('sudo pmm-admin config --force \'--server-url=https://admin:admin@0.0.0.0:2443\' --server-insecure-tls 127.0.0.1')).assertSuccess()
+      await (await cli.exec('sudo pmm-admin config --node-name=pmm-t1665 --force \'--server-url=https://admin:admin@0.0.0.0:2443\' --server-insecure-tls 127.0.0.1')).assertSuccess()
 
       await page.waitForTimeout(10_000);
       const scrapeSizeLog = await cli.exec('ps aux | grep -v \'grep\' | grep \'vm_agent\' | tail -1')
