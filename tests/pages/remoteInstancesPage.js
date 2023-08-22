@@ -109,7 +109,7 @@ module.exports = {
     database: '$database-text-input',
     disableBasicMetrics: '//input[@id="input-disable_basic_metrics-id"]/following-sibling::*[2]',
     disableEnhancedMetrics: '//input[@id="input-disable_enhanced_metrics-id"]/following-sibling::*[2]',
-    discoverBtn: '//span[normalize-space()=\'Discover\']',
+    discoverBtn: '//div[contains(text(),\'Discover\')]',
     discoveryResults: 'tbody[role="rowgroup"]',
     doNotTrack: locate('label').withText('Don\'t track'),
     environment: '$environment-text-input',
