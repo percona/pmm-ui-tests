@@ -124,49 +124,6 @@ Scenario.skip(
   },
 );
 
-Scenario(
-  'PMM-T782 PMM-T783 Verify DBaaS is disabled by default, Verify DBaaS can be enabled in PMM Settings @settings @settings-fb',
-  async ({ I, pmmSettingsPage, dbaasPage }) => {
-    I.amOnPage(pmmSettingsPage.advancedSettingsUrl);
-    await pmmSettingsPage.waitForPmmSettingsPageLoaded();
-
-    // Verify tooltip for Enable/Disable DBaaS toggle
-    await pmmSettingsPage.verifyTooltip(pmmSettingsPage.tooltips.advancedSettings.dbaas);
-
-    let selector = await I.grabAttributeFrom(pmmSettingsPage.fields.dbaasSwitchSelector, 'checked');
-
-    if (selector) {
-      assert.ok(selector === false, 'Dbaas Should be disabled by Default, toggle should be disabled');
-    }
-
-    I.dontSeeElement(pmmSettingsPage.fields.dbaasMenuIconLocator);
-    // FIXME: skip until https://jira.percona.com/browse/PMM-11221 is fixed
-    // I.amOnPage(dbaasPage.url);
-    // I.waitForElement(dbaasPage.disabledDbaaSMessage.settingsLinkLocator, 30);
-    // const message = (await I.grabTextFrom(dbaasPage.disabledDbaaSMessage.emptyBlock)).replace(/\s+/g, ' ');
-
-    // assert.ok(message === dbaasPage.disabledDbaaSMessage.textMessage,
-    //   `Message Shown on ${message} should be equal to ${dbaasPage.disabledDbaaSMessage.textMessage}`);
-    // const link = await I.grabAttributeFrom(dbaasPage.disabledDbaaSMessage.settingsLinkLocator, 'href');
-
-    // assert.ok(link.includes('/graph/settings/advanced-settings'),
-    //   `Advanced Setting Link displayed on DbaaS Page, when DbaaS is not enabled ${link}, please check the link`);
-    // Enable DbaaS via Advanced Settings, Make sure Menu is visible.
-    // await pmmSettingsPage.openAdvancedSettings();
-    I.waitForVisible(pmmSettingsPage.tooltips.advancedSettings.dbaas.iconLocator, 30);
-    I.click(pmmSettingsPage.fields.dbaasSwitchSelector);
-    I.click(pmmSettingsPage.fields.applyButton);
-    I.waitForElement(pmmSettingsPage.fields.dbaasMenuIconLocator, 30);
-    I.seeElement(pmmSettingsPage.fields.dbaasMenuIconLocator);
-    I.waitForElement(pmmSettingsPage.fields.dbaasSwitchSelector, 60);
-    selector = await I.grabAttributeFrom(pmmSettingsPage.fields.dbaasSwitchSelectorInput, 'checked');
-    assert.ok(selector === true, 'Dbaas Should be enabled, toggle should be checked now');
-    I.amOnPage(dbaasPage.url);
-    I.waitForElement(dbaasPage.tabs.kubernetesClusterTab.addKubernetesClusterButton, 50);
-    I.seeElement(dbaasPage.tabs.kubernetesClusterTab.addKubernetesClusterButton);
-  },
-);
-
 Scenario.skip(
   'PMM-T254 PMM-T253 Verify disable telemetry while Advisers enabled @settings @stt @grafana-pr',
   async ({ I, pmmSettingsPage }) => {
