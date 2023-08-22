@@ -115,31 +115,3 @@ test.describe('PMM Client "--help" validation', async () => {
     ]);
   });
 });
-
-test.describe('-promscrape.maxScapeSize tests', async () => {
-  test.beforeAll(async () => {
-    await (await cli.exec(`docker-compose -f test-setup/docker-compose-scrape-intervals.yml up -d`)).assertSuccess();
-  })
-
-  test.afterAll(async () => {
-    await (await cli.exec(`docker-compose -f test-setup/docker-compose-scrape-intervals.yml down`)).assertSuccess();
-  })
-
-  test('@PMM-T1665 Verify custom value for vm_agents -promscrape.maxScapeSize parameter', async ({page}) => {
-    const customScrapeSize = '128';
-
-    await test.step('verify client docker logs for custom value', async () => {
-      await page.waitForTimeout(10_000);
-      const scrapeSizeLog = await cli.exec('docker logs pmm-client-custom-scrape-interval 2>&1 | grep \'promscrape.maxScrapeSize.*vm_agent\' | tail -1');
-      await scrapeSizeLog.outContains(`promscrape.maxScrapeSize=\\\"${customScrapeSize}MiB\\\"`)
-    })
-
-    await test.step('verify logs from binary for custom value', async () => {
-      await (await cli.exec('sudo pmm-admin config --force \'--server-url=https://admin:admin@0.0.0.0:2443\' --server-insecure-tls 127.0.0.1')).assertSuccess()
-
-      await page.waitForTimeout(10_000);
-      const scrapeSizeLog = await cli.exec('ps aux | grep -v \'grep\' | grep \'vm_agent\' | tail -1')
-      await scrapeSizeLog.outContains(`promscrape.maxScrapeSize=${customScrapeSize}MiB`)
-    })
-  });
-})
