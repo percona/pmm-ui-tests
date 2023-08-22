@@ -131,7 +131,7 @@ module.exports = {
     secretKeyInput: '$aws_secret_key-password-input',
     serviceName: '$serviceName-text-input',
     setManualy: locate('label').withText('Set manually'),
-    skipConnectionCheck: '//label[contains(text(),\'Skip connection check\')]',
+    skipConnectionCheck: '//input[@data-testid="skip_connection_check-checkbox-input"]/following-sibling::*[2]',
     skipTLS: '//input[@name="tls_skip_verify"]',
     skipTLSL: locate('$tls_skip_verify-field-container').find('span'),
     startMonitoring: '/following-sibling::td/a',
@@ -506,7 +506,6 @@ module.exports = {
         I.click(this.fields.disableBasicMetrics);
         break;
     }
-    I.checkOption(this.fields.skipConnectionCheck);
     I.click(this.fields.addService);
     I.waitForVisible(pmmInventoryPage.fields.serviceRow(serviceName), 30);
 
