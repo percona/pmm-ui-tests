@@ -515,6 +515,8 @@ module.exports = {
   openAddAzure() {
     I.waitForVisible(this.fields.addAzureMySQLPostgreSQL, 10);
     I.click(this.fields.addAzureMySQLPostgreSQL);
+    I.waitForVisible(this.fields.nextStep, 10);
+    I.click(this.fields.nextStep);
     I.waitForVisible(this.fields.clientID, 10);
   },
 
@@ -532,6 +534,8 @@ module.exports = {
 
   openAddAWSRDSMySQLPage() {
     I.click(this.fields.addAWSRDSMySQLbtn);
+    I.waitForVisible(this.fields.nextStep, 10);
+    I.click(this.fields.nextStep);
     I.waitForVisible(this.fields.accessKeyInput, 30);
     I.waitForVisible(this.fields.secretKeyInput, 30);
   },
