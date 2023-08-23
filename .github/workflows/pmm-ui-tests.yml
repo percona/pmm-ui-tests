@@ -163,7 +163,7 @@ jobs:
         id: ui-tests-all
         working-directory: pmm-ui-tests/playwright-tests
         run: |
-          npx playwright test --config="playwright.config.ts" --quiet
+          npx playwright test --project="chromium" --quiet
 #        env:
 #          NODE_TLS_REJECT_UNAUTHORIZED: 0
 
