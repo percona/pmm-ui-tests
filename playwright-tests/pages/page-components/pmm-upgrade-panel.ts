@@ -1,12 +1,10 @@
 import { expect, Page } from '@playwright/test';
-import Duration from '@helpers/enums/duration';
+import Wait from '@helpers/enums/wait';
 
 export default class PmmUpgrade {
   constructor(readonly page: Page) {}
 
-  containers = {
-    upgradeContainer: this.page.locator('//*[@aria-label="PMM Upgrade panel"]'),
-  };
+  containers = { upgradeContainer: this.page.locator('//*[@aria-label="PMM Upgrade panel"]') };
 
   elements: any = {
     currentVersion: this.containers.upgradeContainer.getByTestId('update-installed-version'),
@@ -15,21 +13,21 @@ export default class PmmUpgrade {
     lastUpgradeCheckDate: this.containers.upgradeContainer.getByTestId('update-last-check'),
   };
 
-  buttons = {
-    upgradeButton: this.containers.upgradeContainer.getByText('Upgrade to', { exact: false }),
-  };
+  buttons = { upgradeButton: this.containers.upgradeContainer.getByText('Upgrade to', { exact: false }) };
 
   fields = {};
 
   getPMMVersion = async (versionString: string) => {
     const [versionMajor, versionMinor, versionPatch] = versionString.split('.');
-    return { versionMajor, versionMinor, versionPatch };
+    return {
+      versionMajor, versionMinor, versionPatch,
+    };
   };
 
   getCurrentPMMVersion = async () => {
-    await expect(this.elements.currentVersion).toContainText('2.', { timeout: Duration.ThreeMinutes });
+    await expect(this.elements.currentVersion).toContainText('2.', { timeout: Wait.ThreeMinutes });
     const versionString = await this.elements.currentVersion.textContent();
-    const [versionMajorString, versionMinorString, versionPatchString] = versionString!.split('.');
+    const [versionMajorString, versionMinorString, versionPatchString] = versionString.split('.');
     const versions = {
       versionMajor: parseInt(versionMajorString),
       versionMinor: parseInt(versionMinorString),
@@ -40,10 +38,10 @@ export default class PmmUpgrade {
   };
 
   verifyUpgradeWidget = async () => {
-    await this.buttons.upgradeButton.waitFor({ state: 'visible', timeout: Duration.ThreeMinutes });
+    await this.buttons.upgradeButton.waitFor({ state: 'visible', timeout: Wait.ThreeMinutes });
     await expect(this.elements.upToDate).toBeHidden();
     await this.elements.lastUpgradeCheckDate.waitFor({ state: 'visible' });
     const availableVersion = await this.elements.availableVersion.textContent();
-    await expect(this.elements.currentVersion).not.toHaveText(availableVersion!);
+    await expect(this.elements.currentVersion).not.toHaveText(availableVersion);
   };
 }

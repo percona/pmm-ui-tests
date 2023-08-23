@@ -1,14 +1,12 @@
 import { test } from '@playwright/test';
 import apiHelper from '@api/helpers/api-helper';
-import Duration from '@helpers/enums/duration';
+import Wait from '@helpers/enums/wait';
 import HomeDashboardPage from '@pages/home-dashboard.page';
 import grafanaHelper from '@helpers/grafana-helper';
 import { api } from '@api/api';
 
 test.describe('Spec file for PMM connected the portal', async () => {
-  test.describe.configure({
-    retries: 0,
-  });
+  test.describe.configure({ retries: 0 });
   let pmmVersion: number;
 
   test.beforeAll(async () => {
@@ -23,13 +21,11 @@ test.describe('Spec file for PMM connected the portal', async () => {
   });
 
   test('Verify user is able to Upgrade PMM version @not-ui-pipeline @pmm-portal-upgrade', async ({ page }) => {
-    test.setTimeout(Duration.TwentyMinutes);
+    test.setTimeout(Wait.TwentyMinutes);
     const homeDashboard = new HomeDashboardPage(page);
 
     await grafanaHelper.authorize(page);
-    await homeDashboard.pmmUpgrade.elements.currentVersion.waitFor({
-      state: 'visible', timeout: Duration.ThreeMinutes,
-    });
+    await homeDashboard.pmmUpgrade.elements.currentVersion.waitFor({ state: 'visible', timeout: Wait.ThreeMinutes });
 
     const currentVersion = await homeDashboard.pmmUpgrade.elements.currentVersion.textContent();
     const availableVersion = await homeDashboard.pmmUpgrade.elements.availableVersion.textContent();

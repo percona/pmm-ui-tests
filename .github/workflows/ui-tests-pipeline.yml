@@ -19,7 +19,7 @@ on:
         default: 'main'
         required: true
       pmm_server_version:
-        description: 'PMM Server version to test (latest|dev-latest|x.xx.x|x.xx.x-rc)'
+        description: 'PMM Server version to test (latest|dev-latest|x.xx.x|x.xx.x-rc|PR-xx-xxx)'
         type: string
         default: 'dev-latest'
         required: true
@@ -49,7 +49,7 @@ on:
         required: false
         type: string
       pmm_server_version:
-        description: 'PMM Server version to test (latest|dev-latest|x.xx.x|x.xx.x-rc)'
+        description: 'PMM Server version to test (latest|dev-latest|x.xx.x|x.xx.x-rc|PR)'
         type: string
         default: 'dev-latest'
         required: false
@@ -180,14 +180,17 @@ jobs:
         shell: bash
         run: |
           tag=${{ inputs.pmm_server_version }}
-          repo=percona
+          repo=percona/pmm-server
           if [[ "$tag" == "dev-latest" ]]; then
-            repo=perconalab
+            repo=perconalab/pmm-server
           fi
           if [[ "$tag" =~ "-rc" ]]; then
-            repo=perconalab
+            repo=perconalab/pmm-server
           fi
-          echo "image=$repo/pmm-server:$tag" >> "$GITHUB_OUTPUT"
+          if [[ "$tag" =~ "PR-" ]]; then
+            repo=perconalab/pmm-server-fb
+          fi
+          echo "image=$repo:$tag" >> "$GITHUB_OUTPUT"
           echo "DOCKER_VERSION=$repo/pmm-server:$tag" >> $GITHUB_ENV
 
       - name: 'Setup <PMM Server>: "${{ inputs.server_image || steps.get_pmm_image.outputs.image }}"'
@@ -251,7 +254,10 @@ jobs:
       - name: 'Run Playwright e2e tests: ${{ inputs.tags_for_playwright }}'
         if: ${{ !!inputs.tags_for_playwright }}
         working-directory: ./pmm-ui-tests/playwright-tests
-        run: npx playwright test --grep "${{ inputs.tags_for_playwright }}" --pass-with-no-tests
+        run: |
+          npx playwright test --pass-with-no-tests \
+          --project=${{ contains(inputs.tags_for_playwright, 'portal') && 'Portal' || 'Chromium' }} \
+          --grep "${{ inputs.tags_for_playwright }}" \
         env:
           NODE_TLS_REJECT_UNAUTHORIZED: 0
 

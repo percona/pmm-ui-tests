@@ -21,7 +21,6 @@ setup('Setup Portal tests', async ({ baseURL }) => {
       expect(val, `Portal tests requires "serviceNow.${key}"!`).toBeTruthy();
     });
   });
-
   await setup.step('Add pmm-server settings', async () => {
     await api.pmm.settingsV1.changeSettings({ pmm_public_address: baseURL!.replace(/(^\w+:|^)\/\//, '') });
   });

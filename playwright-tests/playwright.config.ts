@@ -1,7 +1,7 @@
 import type { PlaywrightTestConfig } from '@playwright/test';
 import { devices } from '@playwright/test';
 import * as dotenv from 'dotenv';
-import Duration from '@helpers/enums/duration';
+import Wait from '@helpers/enums/wait';
 
 /**
  * Read environment variables from file.
@@ -12,11 +12,11 @@ dotenv.config({ path: '.env.local' });
 
 const config: PlaywrightTestConfig = {
   testDir: './tests',
-  timeout: Duration.FiveMinutes,
-  expect: { timeout: 10_000 },
+  timeout: Wait.FiveMinutes,
+  expect: { timeout: Wait.TenSeconds },
   fullyParallel: false,
   forbidOnly: !!process.env.CI,
-  retries: process.env.CI ? 1 : 0,
+  retries: 0,
   workers: 1,
   reporter: [
     ['list'],
@@ -32,9 +32,9 @@ const config: PlaywrightTestConfig = {
   },
   projects: [
     {
-      name: 'chromium',
-      testDir: './tests',
-      testIgnore: 'tests/portal/*.spec.ts',
+      name: 'Chromium',
+      testMatch: 'tests/**/*.spec.ts',
+      testIgnore: 'tests/portal/*.ts',
       use: {
         contextOptions: { ignoreHTTPSErrors: true },
         screenshot: 'on',

@@ -1,5 +1,5 @@
 import { expect } from '@playwright/test';
-import Duration from '@helpers/enums/duration';
+import Wait from '@helpers/enums/wait';
 import { CommonPage } from '@pages/common.page';
 
 export class BaseDashboard extends CommonPage {
@@ -40,7 +40,7 @@ export class BaseDashboard extends CommonPage {
     await this.page.waitForTimeout(1000);
   };
 
-  waitForPanelToHaveData = async (panelHeader: string, panelId: number, timeout: Duration = Duration.OneMinute) => {
+  waitForPanelToHaveData = async (panelHeader: string, panelId: number, timeout: Wait = Wait.OneMinute) => {
     await this.openAllPanels();
     await this.elements.getPanelByName(panelHeader, panelId).scrollIntoViewIfNeeded();
     await expect(this.elements.getPanelByName(panelHeader, panelId))
