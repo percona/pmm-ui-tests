@@ -1,4 +1,4 @@
-name: PMM2 UI Tests-Matrix
+name: PMM E2E Tests(Playwright)
 
 on:
   schedule:
@@ -9,52 +9,54 @@ on:
         description: 'pmm-ui-tests repository branch'
         default: 'main'
         required: true
-      pmm_server_version:
-        description: 'PMM Server docker image'
-        default: 'perconalab/pmm-server:dev-latest'
-        required: true
-      pmm_client_version:
-        description: 'PMM Client version to test (dev-latest|pmm2-latest|pmm2-rc|x.xx.x)'
-        default: 'dev-latest'
-        required: true
       pmm_qa_branch:
         description: 'pmm-qa repository branch(for setup)'
         default: 'main'
         required: true
-
+      pmm_server_version:
+        description: 'PMM Server version to upgrade (latest|dev-latest|x.xx.x|x.xx.x-rc)'
+        default: 'latest'
+        required: true
+      pmm_client_version:
+        description: 'PMM Client version to upgrade from (dev-latest|pmm2-latest|pmm2-rc|x.xx.x)'
+        default: 'pmm2-latest'
+        required: true
 jobs:
-  rbac:
-    name: RBAC
-    uses: ./.github/workflows/pmm-ui-tests.yml
+  inventory:
+    name: Inventory
+    uses: ./.github/workflows/ui-tests-pipeline.yml
     secrets: inherit
     with:
       pmm_ui_tests_branch: ${{ github.event.inputs.pmm_ui_tests_branch || github.head_ref || 'main '}}
-      pmm_test_flag: '@rbac'
-      pmm_server_version: ${{ github.event.inputs.pmm_server_version || 'perconalab/pmm-server:dev-latest' }}
-      pmm_client_version: ${{ github.event.inputs.pmm_client_version || 'dev-latest' }}
-      pmm_clients: '--addclient=ps,1 --addclient=pdpgsql,1'
       pmm_qa_branch: ${{ github.event.inputs.pmm_qa_branch || 'main' }}
+      pmm_server_version: ${{ inputs.pmm_server_version || 'dev-latest' }}
+      client_version: ${{ .pmm_client_version || 'dev-latest' }}
+      tags_for_playwright: '@inventory'
+      client_flags: '--addclient=modb,1 --addclient=ps,1 --addclient=pdpgsql,1'
+      version_string: ${{ inputs.pmm_server_version || 'dev-latest' }}
 
   portal:
     name: Portal
-    uses: ./.github/workflows/pmm-ui-tests.yml
+    uses: ./.github/workflows/ui-tests-pipeline.yml
     secrets: inherit
     with:
       pmm_ui_tests_branch: ${{ github.event.inputs.pmm_ui_tests_branch || github.head_ref || 'main '}}
-      pmm_test_flag: '@portal'
-      pmm_server_version: ${{ github.event.inputs.pmm_server_version || 'perconalab/pmm-server:dev-latest' }}
-      pmm_client_version: ${{ github.event.inputs.pmm_client_version || 'dev-latest' }}
-      pmm_clients: ''
       pmm_qa_branch: ${{ github.event.inputs.pmm_qa_branch || 'main' }}
+      pmm_server_version: ${{ inputs.pmm_server_version || 'dev-latest' }}
+      client_version: ${{ .pmm_client_version || 'dev-latest' }}
+      tags_for_playwright: '@portal'
+      client_flags: ''
+      version_string: ${{ inputs.pmm_server_version || 'dev-latest' }}
 
-  inventory:
-    name: Inventory
-    uses: ./.github/workflows/pmm-ui-tests.yml
+  rbac:
+    name: RBAC
+    uses: ./.github/workflows/ui-tests-pipeline.yml
     secrets: inherit
     with:
       pmm_ui_tests_branch: ${{ github.event.inputs.pmm_ui_tests_branch || github.head_ref || 'main '}}
-      pmm_test_flag: '@inventory'
-      pmm_server_version: ${{ github.event.inputs.pmm_server_version || 'perconalab/pmm-server:dev-latest' }}
-      pmm_client_version: ${{ github.event.inputs.pmm_client_version || 'dev-latest' }}
-      pmm_clients: '--addclient=modb,1 --addclient=ps,1 --addclient=pdpgsql,1'
       pmm_qa_branch: ${{ github.event.inputs.pmm_qa_branch || 'main' }}
+      pmm_server_version: ${{ inputs.pmm_server_version || 'dev-latest' }}
+      client_version: ${{ .pmm_client_version || 'dev-latest' }}
+      tags_for_playwright: '@rbac'
+      client_flags: '--addclient=ps,1 --addclient=pdpgsql,1'
+      version_string: ${{ inputs.pmm_server_version || 'dev-latest' }}

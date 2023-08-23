@@ -13,9 +13,7 @@ dotenv.config({ path: '.env.local' });
 const config: PlaywrightTestConfig = {
   testDir: './tests',
   timeout: Duration.FiveMinutes,
-  expect: {
-    timeout: 10_000,
-  },
+  expect: { timeout: 10_000 },
   fullyParallel: false,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 1 : 0,
@@ -27,7 +25,7 @@ const config: PlaywrightTestConfig = {
 
   use: {
     navigationTimeout: 30_000,
-    baseURL: process.env.PMM_BASE_URL || 'https://localhost',
+    baseURL: process.env.PMM_UI_URL || 'https://localhost',
     ignoreHTTPSErrors: true,
     screenshot: 'only-on-failure',
     actionTimeout: 15_000,
@@ -38,14 +36,10 @@ const config: PlaywrightTestConfig = {
       testDir: './tests',
       testIgnore: 'tests/portal/*.spec.ts',
       use: {
-        contextOptions: {
-          ignoreHTTPSErrors: true,
-        },
+        contextOptions: { ignoreHTTPSErrors: true },
         screenshot: 'on',
         ...devices['Desktop Chrome'],
-        viewport: {
-          width: 1920, height: 1080,
-        },
+        viewport: { width: 1920, height: 1080 },
       },
     },
     {
@@ -58,14 +52,10 @@ const config: PlaywrightTestConfig = {
       testMatch: 'tests/portal/*.spec.ts',
       retries: 0,
       use: {
-        contextOptions: {
-          ignoreHTTPSErrors: true,
-        },
+        contextOptions: { ignoreHTTPSErrors: true },
         screenshot: 'on',
         ...devices['Desktop Chrome'],
-        viewport: {
-          width: 1920, height: 1080,
-        },
+        viewport: { width: 1920, height: 1080 },
       },
     },
   ],

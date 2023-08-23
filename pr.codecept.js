@@ -2,13 +2,15 @@ const { pageObjects, getChunks } = require('./codeceptConfigHelper');
 
 require('dotenv').config();
 
+const pmmUrl = 'http://127.0.0.1/';
+
 process.env.ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'admin';
 
 exports.config = {
   output: 'tests/output',
   helpers: {
     Playwright: {
-      url: process.env.PMM_UI_URL || 'http://127.0.0.1/',
+      url: process.env.PMM_UI_URL || pmmUrl,
       restart: true,
       browser: 'chromium',
       windowSize: '1920x1080',
@@ -62,7 +64,7 @@ exports.config = {
       require: './tests/helper/browser_helper.js',
     },
     REST: {
-      endpoint: process.env.PMM_UI_URL || 'http://127.0.0.1/',
+      endpoint: process.env.PMM_UI_URL || pmmUrl,
       timeout: 60000,
     },
     Mailosaur: {

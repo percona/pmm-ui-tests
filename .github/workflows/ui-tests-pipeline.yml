@@ -1,0 +1,291 @@
+---
+name: ui-tests-pipeline
+
+on:
+  workflow_dispatch:
+    inputs:
+      pmm_ui_tests_branch:
+        description: 'pmm-ui-tests repository branch'
+        type: string
+        default: 'main'
+        required: true
+      tests_tag:
+        description: 'Flag to run only specific portion of the tests.'
+        type: string
+        required: false
+      pmm_qa_branch:
+        description: 'pmm-qa repository branch(for setup)'
+        type: string
+        default: 'main'
+        required: true
+      pmm_server_version:
+        description: 'PMM Server version to test (latest|dev-latest|x.xx.x|x.xx.x-rc)'
+        type: string
+        default: 'dev-latest'
+        required: true
+      pmm_client_version:
+        description: 'PMM Client version to test (dev-latest|pmm2-latest|pmm2-rc|x.xx.x)'
+        type: string
+        default: 'dev-latest'
+        required: true
+      pmm_clients:
+        description: 'Services to setup and connect to pmm-server'
+        type: string
+        default: '--addclient=ps,1'
+        required: true
+
+  workflow_call:
+    inputs:
+      pmm_ui_tests_branch:
+        description: "Branch for PMM-UI tests to checkout"
+        required: false
+        type: string
+      pmm_qa_branch:
+        description: 'pmm-qa repository branch(for setup)'
+        required: false
+        type: string
+      sha:
+        description: "SHA (leave empty if running manually, default - 'null')"
+        required: false
+        type: string
+      pmm_server_version:
+        description: 'PMM Server version to test (latest|dev-latest|x.xx.x|x.xx.x-rc)'
+        type: string
+        default: 'dev-latest'
+        required: false
+      server_image:
+        description: "pmm-server docker image, default perconalab/pmm-server:dev-latest"
+        required: false
+        type: string
+      client_version:
+        description: "pmm2-client version Tarball or Dev-latest, default is dev-latest"
+        required: false
+        type: string
+      client_image:
+        description: "pmm2-client docker image, default perconalab/pmm-client:dev-latest"
+        required: false
+        type: string
+      client_flags:
+        description: "example: --addclient=ps,1 --ps-version=5.7"
+        required: false
+        type: string
+      tags_for_tests:
+        description: "CodeceptJS tag expression, ex: @settings-fb"
+        type: string
+      tags_for_playwright:
+        description: "Playwright ag expression, ex: @settings-fb"
+        type: string
+      version_string:
+        description: 'x.xx.x version string for josb name'
+        type: string
+
+jobs:
+  ui-tests-e2e:
+    name: ${{ inputs.version_string || inputs.pmm_server_version || 'dev-latest' }}
+    #    runs-on: ubuntu-latest Mongo Replica setup fails in ubuntu-latest for some reason. Additional investigation needed
+    runs-on: ubuntu-20.04
+    timeout-minutes: 60
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      SHA: ${{ inputs.sha || 'null' }}
+      PMM_QA_BRANCH: ${{ inputs.pmm_qa_branch || 'main' }}
+      PMM_QA_GIT_BRANCH: ${{ inputs.pmm_qa_branch || 'main' }}
+      PMM_UI_BRANCH: ${{ inputs.pmm_ui_tests_branch || 'main' }}
+      CLIENT_FLAGS: ${{ inputs.client_flags || '' }}
+      TAGS_FOR_TESTS: ${{ inputs.tags_for_tests || '@settings-fb' }}
+
+      ### Variables also used in tests
+      SERVER_IP: "192.168.0.1"
+      PMM_UI_URL: "http://192.168.0.1/"
+      ADMIN_PASSWORD: 'admin-password'
+      # PATH_TO_PMM_QA defined in job steps
+      DOCKER_VERSION: ${{ inputs.server_image }}
+
+      ##########################################
+      ###   Credentials required for tests   ###
+      ##########################################
+
+      # Backup tests credentials
+      BACKUP_LOCATION_ACCESS_KEY: ${{ secrets.BACKUP_LOCATION_ACCESS_KEY }}
+      BACKUP_LOCATION_SECRET_KEY: ${{ secrets.BACKUP_LOCATION_SECRET_KEY }}
+
+      # Portal tests credentials
+      PORTAL_BASE_URL: 'https://portal-dev.percona.com'
+      OAUTH_DEV_HOST: ${{ secrets.OAUTH_DEV_HOST }}
+      OAUTH_ISSUER_URL: 'https://id-dev.percona.com/oauth2/aus15pi5rjdtfrcH51d7'
+      OKTA_TOKEN: ${{ secrets.OKTA_TOKEN }}
+      SERVICENOW_LOGIN: percona_platform
+      SERVICENOW_PASSWORD: ${{ secrets.SERVICENOW_PASSWORD }}
+      SERVICENOW_DEV_URL: 'https://perconadev.service-now.com/api/x_pellc_percona_pl/platform/settest'
+
+    steps:
+      - name: Create status check
+        if: ${{ github.event_name != 'pull_request' }}
+        uses: percona-platform/github-status-action@v1
+        continue-on-error: true
+        with:
+          authToken: ${{ secrets.GITHUB_TOKEN }}
+          context: "${{ env.TAGS_FOR_TESTS || inputs.tags_for_playwright }} UI tests"
+          description: "Test execution ${{ job.status }}"
+          state: "pending"
+          repository: ${{ github.repository }}
+          target_url: "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          sha: ${{ env.SHA }}
+
+      - name: 'Checkout PMM UI tests: "${{ inputs.pmm_ui_tests_branch }}"'
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ env.PMM_UI_BRANCH }}
+          repository: percona/pmm-ui-tests
+          path: ./pmm-ui-tests
+
+      - name: 'Checkout pmm-qa: "${{ inputs.pmm_qa_branch }}"'
+        uses: actions/checkout@v3
+        with:
+          repository: percona/pmm-qa
+          ref: ${{ inputs.pmm_qa_branch }}
+          path: ./pmm-qa
+
+      - name: 'Export "PATH_TO_PMM_QA" variable'
+        working-directory: ./pmm-qa
+        run: echo "PATH_TO_PMM_QA=$(pwd)" >> $GITHUB_ENV
+
+      - name: Setup tools
+        run: |
+          npm install -g bats
+          sudo apt-get install -y apt-transport-https ca-certificates dirmngr ansible libaio1 libaio-dev libnuma-dev libncurses5 socat sysbench
+          sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 8919F6BD2B48D754
+          echo "deb https://packages.clickhouse.com/deb stable main" | sudo tee \
+              /etc/apt/sources.list.d/clickhouse.list
+          sudo apt-get update
+          sudo apt-get install -y clickhouse-client
+          sudo curl -s https://raw.githubusercontent.com/datacharmer/dbdeployer/master/scripts/dbdeployer-install.sh | bash
+          ls -la
+          # use ${{ env.PATH_TO_PMM_QA }} instead of pushd
+          pushd pmm-qa
+          wget https://raw.githubusercontent.com/Percona-QA/percona-qa/master/get_download_link.sh
+          chmod +x get_download_link.sh
+          popd
+
+      - name: 'Select <PMM Server> image'
+        if: ${{ inputs.server_image == 'null' }}
+        id: get_pmm_image
+        shell: bash
+        run: |
+          tag=${{ inputs.pmm_server_version }}
+          repo=percona
+          if [[ "$tag" == "dev-latest" ]]; then
+            repo=perconalab
+          fi
+          if [[ "$tag" =~ "-rc" ]]; then
+            repo=perconalab
+          fi
+          echo "image=$repo/pmm-server:$tag" >> "$GITHUB_OUTPUT"
+          echo "DOCKER_VERSION=$repo/pmm-server:$tag" >> $GITHUB_ENV
+
+      - name: 'Setup <PMM Sever>: "${{ inputs.server_image || steps.get_pmm_image.outputs.image }}"'
+        working-directory: ./pmm-ui-tests
+        run: |
+          PWD=$(pwd) PMM_SERVER_IMAGE=${{ inputs.server_image || steps.get_pmm_image.outputs.image }} docker-compose up -d
+          
+          ### wait for service to be ready
+          export CONTAINER_NAME="pmm-server"
+          export LOGS="pmm-managed entered RUNNING state"
+          attempt=0
+          while [ $attempt -le 3 ]; do
+            attempt=$(( $attempt + 1 ))
+            echo "Waiting for ${CONTAINER_NAME} to be up (attempt: $attempt)..."
+            result=$(systemctl --user status ${CONTAINER_NAME})
+            if grep "${LOGS}" <<< $result ; then
+              echo "${CONTAINER_NAME} is ready!"
+              break
+            fi
+            sleep 10
+          done;
+          timeout 100 bash -c 'while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' http://admin:admin@${{ env.SERVER_IP }}/ping)" != "200" ]]; do sleep 5; done' || false
+          
+          docker exec pmm-server change-admin-password ${{ env.ADMIN_PASSWORD }}
+          bash -x testdata/db_setup.sh
+
+      - name: 'Setup <PMM Client: ${{ env.CLIENT_VERSION }}>'
+        working-directory: ./pmm-qa
+        run: |
+          sudo bash -x pmm-tests/pmm2-client-setup.sh \
+            --pmm_server_ip ${{ env.SERVER_IP }} --client_version ${{ env.CLIENT_VERSION }} \
+            --admin_password ${{ env.ADMIN_PASSWORD }} --use_metrics_mode no
+
+      - name: Setup Services for the PMM Server
+        working-directory: ./pmm-qa
+        run: sudo -E bash -x pmm-tests/pmm-framework.sh ${{ env.CLIENT_FLAGS }} --pmm2
+
+      - name: Install CodeceptJs
+        if: ${{ inputs.tags_for_tests != 'null' }}
+        working-directory: ./pmm-ui-tests
+        run: |
+          npm ci
+          envsubst < env.list > env.generated.list
+
+      - name: 'Run Codecept e2e tests: ${{ inputs.tags_for_tests }}'
+        if: ${{ inputs.tags_for_tests != 'null' }}
+        working-directory: ./pmm-ui-tests
+        env:
+          PMM_URL : "http://admin:${{ env.ADMIN_PASSWORD }}@${{ env.SERVER_IP }}"
+        run: |
+          sed -i 's+http://localhost/+${PMM_UI_URL}/+g' pr.codecept.js
+          ./node_modules/.bin/codeceptjs run -c pr.codecept.js --grep "${{ inputs.tags_for_tests }}"
+
+      - name: 'Install playwright'
+        if: ${{ inputs.tags_for_playwright != 'null' }}
+        working-directory: ./pmm-ui-tests/playwright-tests
+        run: |
+          npm ci
+          npx playwright install
+
+      - name: 'Run Playwright e2e tests: ${{ inputs.tags_for_playwright }}'
+        if: ${{ inputs.tags_for_playwright != 'null' }}
+        working-directory: ./pmm-ui-tests/playwright-tests
+        run: npx playwright test --grep="${{ inputs.post_upgrade_tests }}" --pass-with-no-tests
+        env:
+          NODE_TLS_REJECT_UNAUTHORIZED: 0
+
+      - name: 'Create report name'
+        if: failure() && ${{ inputs.tags_for_playwright != 'null' }}
+        run: |
+          # TODO: add job id for matrix call
+          job_tag=$(echo "${{ inputs.tags_for_playwright }}" | sed -e "s/-pre-upgrade//" -e "s/@//")
+          report_name=${{ env.CLIENT_VERSION }}"$job_tag"-report
+          report_name="$job_tag"-${{ inputs.version_string_from || inputs.pmm_server_start_version }}-report
+          echo $report_name
+          echo "REPORT_NAME=$report_name" >> $GITHUB_ENV
+
+      - name: Generate and Attach the report
+        if: failure() && ${{ inputs.tags_for_playwright != 'null' }}
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ env.REPORT_NAME }}
+          path: ./pmm-ui-tests/playwright-tests/playwright-report
+
+      - uses: actions/github-script@v6
+        if: ${{ always() }}
+        id: artifact_name
+        with:
+          script: |
+            return `artifacts_for_${process.env.TAGS_FOR_TESTS.replaceAll('|', '')}`
+          result-encoding: string
+
+      - name: Create status check
+        if: ${{ github.event_name != 'pull_request' && always() }}
+        uses: percona-platform/github-status-action@v1
+        continue-on-error: true
+        with:
+          authToken: ${{ secrets.GITHUB_TOKEN }}
+          context: "${{ env.TAGS_FOR_TESTS || inputs.tags_for_playwright }} UI tests"
+          description: "Test execution ${{ job.status }}"
+          state: ${{ job.status }}
+          repository: ${{ github.repository }}
+          target_url: "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          sha: ${{ env.SHA }}
+
+#      - name: Setup tmate session  on failure
+#        if: ${{ failure() }}
+#        uses: percona-platform/action-tmate@v2
