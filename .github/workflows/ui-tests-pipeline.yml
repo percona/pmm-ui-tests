@@ -226,7 +226,7 @@ jobs:
         run: sudo -E bash -x pmm-tests/pmm-framework.sh ${{ env.CLIENT_FLAGS }} --pmm2
 
       - name: Install CodeceptJs
-        if: ${{ inputs.tags_for_tests != 'null' }}
+        if: ${{ !!inputs.tags_for_tests }}
         working-directory: ./pmm-ui-tests
         run: |
           npm ci
