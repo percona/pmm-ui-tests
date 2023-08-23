@@ -41,10 +41,10 @@ jobs:
       matrix:
         old_version: ${{ fromJSON(needs.get_versions.outputs.version_matrix) }}
     with:
-      pmm_ui_tests_branch: ${{ inputs.pmm_ui_tests_branch || 'main' }}
+      pmm_ui_tests_branch: ${{ inputs.pmm_ui_tests_branch || 'PMM-7-update-gh' }}
       pmm_qa_branch: ${{ inputs.pmm_qa_branch || 'main' }}
       pmm_server_version: ${{ matrix.old_version }}
       client_version: ${{ matrix.old_version }}
       tags_for_playwright: '@portal'
-      pmm_clients: ''
+      client_flags: ''
       version_string: ${{needs.get_versions.outputs.start_version}}
