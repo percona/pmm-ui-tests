@@ -15,11 +15,11 @@ on:
         required: true
       pmm_server_version:
         description: 'PMM Server version to upgrade (latest|dev-latest|x.xx.x|x.xx.x-rc)'
-        default: 'latest'
+        default: 'dev-latest'
         required: true
       pmm_client_version:
         description: 'PMM Client version to upgrade from (dev-latest|pmm2-latest|pmm2-rc|x.xx.x)'
-        default: 'pmm2-latest'
+        default: 'dev-latest'
         required: true
 jobs:
   inventory:
