@@ -1,6 +1,25 @@
 name: "Portal Tests Matrix"
 
 on:
+  workflow_dispatch:
+    inputs:
+      pmm_ui_tests_branch:
+        description: 'pmm-ui-tests repository branch'
+        default: 'main'
+        required: true
+      pmm_qa_branch:
+        description: 'pmm-qa repository branch(for setup)'
+        default: 'main'
+        required: true
+      pmm_server_version:
+        description: 'PMM Server version to upgrade (latest|dev-latest|x.xx.x|x.xx.x-rc)'
+        default: 'dev-latest'
+        required: true
+      pmm_client_version:
+        description: 'PMM Client version to upgrade from (dev-latest|pmm2-latest|pmm2-rc|x.xx.x)'
+        default: 'dev-latest'
+        required: true
+
 jobs:
   get_versions:
     name: Get versions
@@ -20,10 +39,9 @@ jobs:
         old_version: ${{ fromJSON(needs.get_versions.outputs.version_matrix) }}
     with:
       pmm_ui_tests_branch: ${{ inputs.pmm_ui_tests_branch || 'main' }}
-      pmm_test_flag: '@portal'
-      pmm_server_version: ${{ matrix.old_version }}
-      pmm_client_version: ${{ matrix.old_version }}
       pmm_qa_branch: ${{ inputs.pmm_qa_branch || 'main' }}
+      pmm_server_version: ${{ matrix.old_version }}
+      client_version: ${{ matrix.old_version }}
+      tags_for_playwright: '@portal'
       pmm_clients: ''
-      version_string_from: ${{needs.get_versions.outputs.start_version}}
-
+      version_string: ${{needs.get_versions.outputs.start_version}}

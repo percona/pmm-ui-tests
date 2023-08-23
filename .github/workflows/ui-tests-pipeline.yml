@@ -132,6 +132,13 @@ jobs:
           target_url: "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
           sha: ${{ env.SHA }}
 
+      - name: 'Prevent both Codecept and Playwright tests execution'
+        if: ${{ !!inputs.tags_for_tests && !!inputs.tags_for_playwright }}
+        run: |
+          echo "Both Codecept(tags_for_tests) and Playwright(tags_for_playwright) tests are forbidden in a single test run!"
+          echo "Please use only one tag input for job call"
+          exit 1
+
       - name: 'Checkout PMM UI tests: "${{ inputs.pmm_ui_tests_branch }}"'
         uses: actions/checkout@v3
         with:
@@ -226,7 +233,7 @@ jobs:
           envsubst < env.list > env.generated.list
 
       - name: 'Run Codecept e2e tests: ${{ inputs.tags_for_tests }}'
-        if: ${{ inputs.tags_for_tests != 'null' }}
+        if: ${{ !!inputs.tags_for_tests }}
         working-directory: ./pmm-ui-tests
         env:
           PMM_URL : "http://admin:${{ env.ADMIN_PASSWORD }}@${{ env.SERVER_IP }}"
@@ -235,21 +242,21 @@ jobs:
           ./node_modules/.bin/codeceptjs run -c pr.codecept.js --grep "${{ inputs.tags_for_tests }}"
 
       - name: 'Install playwright'
-        if: ${{ inputs.tags_for_playwright != 'null' }}
+        if: ${{ !!inputs.tags_for_playwright }}
         working-directory: ./pmm-ui-tests/playwright-tests
         run: |
           npm ci
           npx playwright install
 
       - name: 'Run Playwright e2e tests: ${{ inputs.tags_for_playwright }}'
-        if: ${{ inputs.tags_for_playwright != 'null' }}
+        if: ${{ !!inputs.tags_for_playwright }}
         working-directory: ./pmm-ui-tests/playwright-tests
         run: npx playwright test --grep="${{ inputs.post_upgrade_tests }}" --pass-with-no-tests
         env:
           NODE_TLS_REJECT_UNAUTHORIZED: 0
 
       - name: 'Create report name'
-        if: failure() && ${{ inputs.tags_for_playwright != 'null' }}
+        if: failure() && ${{ !!inputs.tags_for_playwright }}
         run: |
           # TODO: add job id for matrix call
           job_tag=$(echo "${{ inputs.tags_for_playwright }}" | sed -e "s/-pre-upgrade//" -e "s/@//")
