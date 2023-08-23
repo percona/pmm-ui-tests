@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { test } from '@playwright/test';
 import * as cli from '@helpers/cliHelper';
 
  /**
@@ -9,4 +9,3 @@ test('run pmm-status and grep NodeName', async ({}) => {
   await output.assertSuccess();
   await output.outContains('Node name: client_container_');
 });
-
