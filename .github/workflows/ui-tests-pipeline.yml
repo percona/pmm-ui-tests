@@ -251,7 +251,7 @@ jobs:
       - name: 'Run Playwright e2e tests: ${{ inputs.tags_for_playwright }}'
         if: ${{ !!inputs.tags_for_playwright }}
         working-directory: ./pmm-ui-tests/playwright-tests
-        run: npx playwright test --grep="${{ inputs.post_upgrade_tests }}" --pass-with-no-tests
+        run: npx playwright test --grep="${{ inputs.tags_for_playwright }}" --pass-with-no-tests
         env:
           NODE_TLS_REJECT_UNAUTHORIZED: 0
 
@@ -261,7 +261,6 @@ jobs:
           # TODO: add job id for matrix call
           job_tag=$(echo "${{ inputs.tags_for_playwright }}" | sed -e "s/-pre-upgrade//" -e "s/@//")
           report_name=${{ inputs.client_version }}"$job_tag"-report
-          report_name="$job_tag"-${{ inputs.version_string_from || inputs.pmm_server_start_version }}-report
           echo $report_name
           echo "REPORT_NAME=$report_name" >> $GITHUB_ENV
 
