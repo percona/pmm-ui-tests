@@ -168,7 +168,7 @@ jobs:
           popd
 
       - name: 'Select <PMM Server> image'
-        if: ${{ !inputs.server_image }}
+        if: ${{ !inputs.server_image && !!inputs.pmm_server_version }}
         id: get_pmm_image
         shell: bash
         run: |
@@ -183,7 +183,7 @@ jobs:
           echo "image=$repo/pmm-server:$tag" >> "$GITHUB_OUTPUT"
           echo "DOCKER_VERSION=$repo/pmm-server:$tag" >> $GITHUB_ENV
 
-      - name: 'Setup <PMM Sever>: "${{ inputs.server_image || steps.get_pmm_image.outputs.image }}"'
+      - name: 'Setup <PMM Server>: "${{ inputs.server_image || steps.get_pmm_image.outputs.image }}"'
         working-directory: ./pmm-ui-tests
         run: |
           PWD=$(pwd) PMM_SERVER_IMAGE=${{ inputs.server_image || steps.get_pmm_image.outputs.image }} docker-compose up -d
@@ -195,7 +195,7 @@ jobs:
           while [ $attempt -le 3 ]; do
             attempt=$(( $attempt + 1 ))
             echo "Waiting for ${CONTAINER_NAME} to be up (attempt: $attempt)..."
-            result=$(systemctl --user status ${CONTAINER_NAME})
+            result=$(docker logs ${CONTAINER_NAME} 2>&1)
             if grep "${LOGS}" <<< $result ; then
               echo "${CONTAINER_NAME} is ready!"
               break
