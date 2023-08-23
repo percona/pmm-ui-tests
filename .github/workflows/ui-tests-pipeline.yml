@@ -266,7 +266,7 @@ jobs:
         run: |
           # TODO: add job id for matrix call
           job_tag=$(echo "${{ inputs.tags_for_playwright }}" | sed -e "s/-pre-upgrade//" -e "s/@//")
-          report_name=${{ inputs.client_version }}"$job_tag"-report
+          report_name=${{ inputs.version_string || inputs.client_version }}-"$job_tag"-report
           echo $report_name
           echo "REPORT_NAME=$report_name" >> $GITHUB_ENV
 
