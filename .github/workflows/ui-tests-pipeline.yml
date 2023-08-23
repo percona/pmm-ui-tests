@@ -120,7 +120,7 @@ jobs:
 
     steps:
       - name: Create status check
-        if: ${{ github.event_name != 'pull_request' }}
+        if: ${{ env.SHA != 'null' }}
         uses: percona-platform/github-status-action@v1
         continue-on-error: true
         with:
@@ -262,7 +262,7 @@ jobs:
           NODE_TLS_REJECT_UNAUTHORIZED: 0
 
       - name: 'Create report name'
-        if: failure() && ${{ !!inputs.tags_for_playwright }}
+        if: ${{ failure() && !!inputs.tags_for_playwright }}
         run: |
           # TODO: add job id for matrix call
           job_tag=$(echo "${{ inputs.tags_for_playwright }}" | sed -e "s/-pre-upgrade//" -e "s/@//")
@@ -271,7 +271,7 @@ jobs:
           echo "REPORT_NAME=$report_name" >> $GITHUB_ENV
 
       - name: Generate and Attach the report
-        if: failure() && ${{ inputs.tags_for_playwright != 'null' }}
+        if: ${{ failure() && !!inputs.tags_for_playwright }}
         uses: actions/upload-artifact@v3
         with:
           name: ${{ env.REPORT_NAME }}
@@ -286,7 +286,7 @@ jobs:
           result-encoding: string
 
       - name: Create status check
-        if: ${{ github.event_name != 'pull_request' && always() }}
+        if: ${{ always() && env.SHA != 'null' }}
         uses: percona-platform/github-status-action@v1
         continue-on-error: true
         with:
