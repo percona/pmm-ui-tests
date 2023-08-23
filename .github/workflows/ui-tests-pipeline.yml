@@ -23,7 +23,7 @@ on:
         type: string
         default: 'dev-latest'
         required: true
-      pmm_client_version:
+      client_version:
         description: 'PMM Client version to test (dev-latest|pmm2-latest|pmm2-rc|x.xx.x)'
         type: string
         default: 'dev-latest'
@@ -207,11 +207,11 @@ jobs:
           docker exec pmm-server change-admin-password ${{ env.ADMIN_PASSWORD }}
           bash -x testdata/db_setup.sh
 
-      - name: 'Setup <PMM Client: ${{ env.CLIENT_VERSION }}>'
+      - name: 'Setup <PMM Client: ${{ inputs.client_version }}>'
         working-directory: ./pmm-qa
         run: |
           sudo bash -x pmm-tests/pmm2-client-setup.sh \
-            --pmm_server_ip ${{ env.SERVER_IP }} --client_version ${{ env.CLIENT_VERSION }} \
+            --pmm_server_ip ${{ env.SERVER_IP }} --client_version ${{ inputs.client_version }} \
             --admin_password ${{ env.ADMIN_PASSWORD }} --use_metrics_mode no
 
       - name: Setup Services for the PMM Server
@@ -253,7 +253,7 @@ jobs:
         run: |
           # TODO: add job id for matrix call
           job_tag=$(echo "${{ inputs.tags_for_playwright }}" | sed -e "s/-pre-upgrade//" -e "s/@//")
-          report_name=${{ env.CLIENT_VERSION }}"$job_tag"-report
+          report_name=${{ inputs.client_version }}"$job_tag"-report
           report_name="$job_tag"-${{ inputs.version_string_from || inputs.pmm_server_start_version }}-report
           echo $report_name
           echo "REPORT_NAME=$report_name" >> $GITHUB_ENV
