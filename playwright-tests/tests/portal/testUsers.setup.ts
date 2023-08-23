@@ -1,4 +1,4 @@
-import { test as setup } from '@playwright/test';
+import { expect, test as setup } from '@playwright/test';
 import { api } from '@api/api';
 import { portalHelper } from '@helpers/portal-helper';
 import { fileHelper } from '@helpers/file-helper';
@@ -11,6 +11,15 @@ import constants from '@helpers/constants';
 setup('Setup Portal tests', async ({ baseURL }) => {
   await setup.step('Validate environment variables credentials', async () => {
     // TODO: implement non empty check for constants.portal.* constants.okta.* constants.serviceNow.*
+    Object.entries(constants.portal).forEach(([key, val]) => {
+      expect(val, `Portal tests requires "portal.${key}"!`).toBeTruthy();
+    });
+    Object.entries(constants.okta).forEach(([key, val]) => {
+      expect(val, `Portal tests requires "okta.${key}"!`).toBeTruthy();
+    });
+    Object.entries(constants.serviceNow).forEach(([key, val]) => {
+      expect(val, `Portal tests requires "serviceNow.${key}"!`).toBeTruthy();
+    });
   });
 
   await setup.step('Add pmm-server settings', async () => {

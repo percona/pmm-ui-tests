@@ -168,7 +168,7 @@ jobs:
           popd
 
       - name: 'Select <PMM Server> image'
-        if: ${{ inputs.server_image == 'null' }}
+        if: ${{ !inputs.server_image }}
         id: get_pmm_image
         shell: bash
         run: |
