@@ -1,10 +1,6 @@
 name: "Portal Tests Matrix"
 
 on:
-  push:
-    branches:
-      - "PMM-7-fix-portal-pipeline"
-
 jobs:
   get_versions:
     name: Get versions
