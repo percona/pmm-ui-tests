@@ -204,30 +204,24 @@ module.exports = {
       case 'mysql':
       case 'mysql_ssl':
         I.click(this.fields.addMySqlRemote);
-        I.click(this.fields.nextStep);
         break;
       case 'mongodb':
       case 'mongodb_ssl':
         I.click(this.fields.addMongoDBRemote);
-        I.click(this.fields.nextStep);
         break;
       case 'postgresql':
       case 'postgresGC':
       case 'postgres_ssl':
         I.click(this.fields.addPostgreSQLRemote);
-        I.click(this.fields.nextStep);
         break;
       case 'proxysql':
         I.click(this.fields.addProxySQLRemote);
-        I.click(this.fields.nextStep);
         break;
       case 'external':
         I.click(this.fields.addExternalServiceRemote);
-        I.click(this.fields.nextStep);
         break;
       case 'haproxy':
         I.click(this.fields.addHAProxy);
-        I.click(this.fields.nextStep);
         break;
     }
     I.waitForElement(this.fields.serviceName, 60);
@@ -515,8 +509,6 @@ module.exports = {
   openAddAzure() {
     I.waitForVisible(this.fields.addAzureMySQLPostgreSQL, 10);
     I.click(this.fields.addAzureMySQLPostgreSQL);
-    I.waitForVisible(this.fields.nextStep, 10);
-    I.click(this.fields.nextStep);
     I.waitForVisible(this.fields.clientID, 10);
   },
 
@@ -534,8 +526,6 @@ module.exports = {
 
   openAddAWSRDSMySQLPage() {
     I.click(this.fields.addAWSRDSMySQLbtn);
-    I.waitForVisible(this.fields.nextStep, 10);
-    I.click(this.fields.nextStep);
     I.waitForVisible(this.fields.accessKeyInput, 30);
     I.waitForVisible(this.fields.secretKeyInput, 30);
   },
