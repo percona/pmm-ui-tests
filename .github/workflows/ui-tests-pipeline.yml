@@ -251,7 +251,7 @@ jobs:
       - name: 'Run Playwright e2e tests: ${{ inputs.tags_for_playwright }}'
         if: ${{ !!inputs.tags_for_playwright }}
         working-directory: ./pmm-ui-tests/playwright-tests
-        run: npx playwright test --grep="${{ inputs.tags_for_playwright }}" --pass-with-no-tests
+        run: npx playwright test --grep "${{ inputs.tags_for_playwright }}" --pass-with-no-tests
         env:
           NODE_TLS_REJECT_UNAUTHORIZED: 0
 

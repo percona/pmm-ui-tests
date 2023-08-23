@@ -14,14 +14,6 @@ on:
         description: 'pmm-qa repository branch(for setup)'
         default: 'main'
         required: true
-      pmm_server_version:
-        description: 'PMM Server version to upgrade (latest|dev-latest|x.xx.x|x.xx.x-rc)'
-        default: 'dev-latest'
-        required: true
-      pmm_client_version:
-        description: 'PMM Client version to upgrade from (dev-latest|pmm2-latest|pmm2-rc|x.xx.x)'
-        default: 'dev-latest'
-        required: true
 
 jobs:
   get_versions:
@@ -40,6 +32,8 @@ jobs:
       fail-fast: false
       matrix:
         old_version: ${{ fromJSON(needs.get_versions.outputs.version_matrix) }}
+        include:
+          - old_version: dev-latest
     with:
       pmm_ui_tests_branch: ${{ inputs.pmm_ui_tests_branch || 'PMM-7-update-gh' }}
       pmm_qa_branch: ${{ inputs.pmm_qa_branch || 'main' }}
