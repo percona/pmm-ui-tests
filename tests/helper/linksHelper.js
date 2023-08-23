@@ -17,5 +17,5 @@ module.exports = {
   microsoftAzureMonitoringDocs: 'https://per.co.na/azure_monitoring',
   sshKeyDocs: 'https://per.co.na/ssh_key',
   prometheusAlertManagerDocs: 'https://per.co.na/alertmanager',
-  xtrabackup80Docs: 'https://www.percona.com/doc/percona-xtrabackup/8.0/installation.html',
+  xtrabackup80Docs: 'https://per.co.na/install_pxb',
 };
