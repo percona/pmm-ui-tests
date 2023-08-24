@@ -24,7 +24,7 @@ on:
 jobs:
   inventory:
     name: Inventory
-    uses: ./.github/workflows/ui-tests-pipeline.yml
+    uses: ./.github/workflows/pmm-ui-tests.yml
     secrets: inherit
     with:
       pmm_ui_tests_branch: ${{ github.event.inputs.pmm_ui_tests_branch || github.head_ref || 'main '}}
@@ -37,7 +37,7 @@ jobs:
 
   portal:
     name: Portal
-    uses: ./.github/workflows/ui-tests-pipeline.yml
+    uses: ./.github/workflows/pmm-ui-tests.yml
     secrets: inherit
     with:
       pmm_ui_tests_branch: ${{ github.event.inputs.pmm_ui_tests_branch || github.head_ref || 'main '}}
@@ -50,7 +50,7 @@ jobs:
 
   rbac:
     name: RBAC
-    uses: ./.github/workflows/ui-tests-pipeline.yml
+    uses: ./.github/workflows/pmm-ui-tests.yml
     secrets: inherit
     with:
       pmm_ui_tests_branch: ${{ github.event.inputs.pmm_ui_tests_branch || github.head_ref || 'main '}}
