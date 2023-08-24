@@ -255,11 +255,10 @@ jobs:
         if: ${{ !!inputs.tags_for_playwright }}
         working-directory: ./pmm-ui-tests/playwright-tests
         run: |
-          npx playwright test --pass-with-no-tests \
-          --project=${{ contains(inputs.tags_for_playwright, 'portal') && 'Portal' || 'Chromium' }} \
-          --grep "${{ inputs.tags_for_playwright }}" \
-        env:
-          NODE_TLS_REJECT_UNAUTHORIZED: 0
+          project="${{ contains(inputs.tags_for_playwright, 'portal') && 'Portal' || 'Chromium' }}"
+          npx playwright test --project=$project --grep ${{ inputs.tags_for_playwright }} --pass-with-no-tests
+#        env:
+#          NODE_TLS_REJECT_UNAUTHORIZED: 0
 
       - name: 'Create report name'
         if: ${{ failure() && !!inputs.tags_for_playwright }}
