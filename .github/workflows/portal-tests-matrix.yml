@@ -3,17 +3,7 @@ name: "Portal Tests Matrix"
 on:
   push:
     branches:
-      - PMM-7-update-gh
-  workflow_dispatch:
-    inputs:
-      pmm_ui_tests_branch:
-        description: 'pmm-ui-tests repository branch'
-        default: 'main'
-        required: true
-      pmm_qa_branch:
-        description: 'pmm-qa repository branch(for setup)'
-        default: 'main'
-        required: true
+      - "PMM-7-fix-portal-pipeline"
 
 jobs:
   get_versions:
@@ -25,20 +15,19 @@ jobs:
 
   portal:
     name: 'Portal / Integration'
-    uses: ./.github/workflows/pmm-ui-tests.yml
+    uses: ./.github/workflows/portal-ui-tests.yml
     secrets: inherit
     needs: get_versions
     strategy:
       fail-fast: false
       matrix:
         old_version: ${{ fromJSON(needs.get_versions.outputs.version_matrix) }}
-        include:
-          - old_version: dev-latest
     with:
-      pmm_ui_tests_branch: ${{ inputs.pmm_ui_tests_branch || 'PMM-7-update-gh' }}
-      pmm_qa_branch: ${{ inputs.pmm_qa_branch || 'main' }}
+      pmm_ui_tests_branch: ${{ inputs.pmm_ui_tests_branch || 'main' }}
+      pmm_test_flag: '@portal'
       pmm_server_version: ${{ matrix.old_version }}
-      client_version: ${{ matrix.old_version }}
-      tags_for_playwright: '@portal'
-      client_flags: ''
-      version_string: ${{needs.get_versions.outputs.start_version}}
+      pmm_client_version: ${{ matrix.old_version }}
+      pmm_qa_branch: ${{ inputs.pmm_qa_branch || 'main' }}
+      pmm_clients: ''
+      version_string_from: ${{needs.get_versions.outputs.start_version}}
+
