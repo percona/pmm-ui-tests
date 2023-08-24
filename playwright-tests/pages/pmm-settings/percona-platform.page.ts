@@ -92,9 +92,9 @@ export default class PerconaPlatformPage extends CommonPage {
     await this.buttons.connect.click();
 
     if (!isIPAddressSet) {
-      await this.toast.checkToastMessage(this.messages.updateSuccess);
+      await this.toastMessage.waitForMessage(this.messages.updateSuccess);
     }
-    await this.toast.checkToastMessage(this.messages.connectedSuccess, { variant: 'success' });
+    await this.toastMessage.waitForMessage(this.messages.connectedSuccess);
     await this.connectedContainer.waitFor({ state: 'visible' });
   };
 }

@@ -1,5 +1,5 @@
 import { expect } from '@playwright/test';
-import Duration from '@helpers/enums/duration';
+import Wait from '@helpers/enums/wait';
 import { CommonPage } from '@pages/common.page';
 
 export class BaseDashboard extends CommonPage {
@@ -18,9 +18,7 @@ export class BaseDashboard extends CommonPage {
     serviceName: this.page.locator('//button[@id="var-service_name"]'),
   };
 
-  labels = {
-    create: 'Create',
-  };
+  labels = { create: 'Create' };
 
   openAllPanels = async () => {
     await this.elements.collapsedPanel.waitFor({ state: 'visible' });
@@ -42,18 +40,15 @@ export class BaseDashboard extends CommonPage {
     await this.page.waitForTimeout(1000);
   };
 
-  waitForPanelToHaveData = async (panelHeader: string, panelId: number, timeout: Duration = Duration.OneMinute) => {
+  waitForPanelToHaveData = async (panelHeader: string, panelId: number, timeout: Wait = Wait.OneMinute) => {
     await this.openAllPanels();
     await this.elements.getPanelByName(panelHeader, panelId).scrollIntoViewIfNeeded();
-    await expect(this.elements.getPanelByName(panelHeader, panelId)).not.toContainText('N/A', {
-      ignoreCase: true, timeout,
-    });
-    await expect(this.elements.getPanelByName(panelHeader, panelId)).not.toContainText('No data', {
-      ignoreCase: true, timeout,
-    });
-    await expect(this.elements.getPanelByName(panelHeader, panelId)).not.toContainText('Insufficient access permissions', {
-      ignoreCase: true, timeout,
-    });
+    await expect(this.elements.getPanelByName(panelHeader, panelId))
+      .not.toContainText('N/A', { ignoreCase: true, timeout });
+    await expect(this.elements.getPanelByName(panelHeader, panelId))
+      .not.toContainText('No data', { ignoreCase: true, timeout });
+    await expect(this.elements.getPanelByName(panelHeader, panelId))
+      .not.toContainText('Insufficient access permissions', { ignoreCase: true, timeout });
     await this.page.keyboard.press('PageDown');
   };
 
@@ -65,15 +60,10 @@ export class BaseDashboard extends CommonPage {
       await this.elements.panelContent.nth(index).scrollIntoViewIfNeeded();
 
       try {
-        await expect(this.elements.panelContent.nth(index)).not.toContainText('N/A', {
-          ignoreCase: true,
-        });
-        await expect(this.elements.panelContent.nth(index)).not.toContainText('No data', {
-          ignoreCase: true,
-        });
-        await expect(this.elements.panelContent.nth(index)).not.toContainText('Insufficient access permissions', {
-          ignoreCase: true,
-        });
+        await expect(this.elements.panelContent.nth(index)).not.toContainText('N/A', { ignoreCase: true });
+        await expect(this.elements.panelContent.nth(index)).not.toContainText('No data', { ignoreCase: true });
+        await expect(this.elements.panelContent.nth(index))
+          .not.toContainText('Insufficient access permissions', { ignoreCase: true });
       } catch (err) {
         noDataElements++;
         if (noDataElements > panelsWithoutData) {

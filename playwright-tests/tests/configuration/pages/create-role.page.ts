@@ -26,9 +26,7 @@ export class CreateRolePage extends CommonPage {
     selectValue: this.metricsAccessRowContainer.locator('//*[@id="prometheus-dimensions-filter-item-value"]'),
   };
 
-  buttons = {
-    submit: this.page.getByTestId('add-edit-role-submit'),
-  };
+  buttons = { submit: this.page.getByTestId('add-edit-role-submit') };
 
   messages: any = {
     ...this.messages,
@@ -52,8 +50,7 @@ export class CreateRolePage extends CommonPage {
     await this.fields.selectValue.click();
     await this.elements.menuOption(options.value).click();
     await this.buttons.submit.click();
-    await this.toast.checkToastMessage(
-      `${this.messages.roleCreatedHeader(options.roleName)}${this.messages.roleCreatedDescription}`,
-    );
+    await this.toastMessage
+      .waitForMessage(`${this.messages.roleCreatedHeader(options.roleName)}${this.messages.roleCreatedDescription}`);
   };
 }

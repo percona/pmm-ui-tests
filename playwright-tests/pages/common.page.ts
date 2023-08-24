@@ -1,12 +1,12 @@
 import { Locator, Page } from '@playwright/test';
 import { LeftNavigationMenu } from '@components/left-navigation-menu';
-import { Toast } from '@components/toast';
+import ToastMessage from '@components/toast-message-modal';
 import OptionsMenu from '@components/options-menu';
 import { expect } from '@helpers/test-helper';
-import grafanaHelper from "@helpers/grafana-helper";
+import grafanaHelper from '@helpers/grafana-helper';
 
 export class CommonPage {
-  toast = new Toast(this.page);
+  toastMessage = new ToastMessage(this.page);
   sideMenu = new LeftNavigationMenu(this.page);
   optionMenu = new OptionsMenu(this.page);
 

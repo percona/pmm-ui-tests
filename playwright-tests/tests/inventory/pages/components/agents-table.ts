@@ -35,20 +35,16 @@ export default class AgentsTable extends Table {
   };
 
   verifyAllAgentsStatus = async (expectedStatus: string) => {
-    await this.elements.statuses.first().waitFor({
-      state: 'visible',
-    });
+    await this.elements.statuses.first().waitFor({ state: 'visible' });
     const agents: ElementHandle[] = await this.elements.statuses.elementHandles();
 
-    for await (const [, agent] of agents.entries()) {
+    for await (const agent of agents.values()) {
       expect(await agent.textContent()).toEqual(expectedStatus);
     }
   };
 
   verifyAgentLabelPresent = async (labelName: string) => {
-    await this.elements.label(labelName).waitFor({
-      state: 'visible',
-    });
+    await this.elements.label(labelName).waitFor({ state: 'visible' });
   };
 
   verifyAgentLabelVisibleForAgentsExcept = async (labelName: string, exceptions: string[]) => {

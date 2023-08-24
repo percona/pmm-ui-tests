@@ -10,14 +10,9 @@ export class NewUserPage extends CommonPage {
     password: this.page.locator('//*[@id="password-input"]'),
   };
 
-  buttons = {
-    createUser: this.page.locator('//*[@type="submit"]')
-  };
+  buttons = { createUser: this.page.locator('//*[@type="submit"]') };
 
-  messages: any = {
-    ...this.messages,
-    userCreated: 'User created',
-  };
+  messages = { userCreated: 'User created' };
 
   fillUserDetails = async (name: string, email: string, username: string, password: string) => {
     await this.fields.name.type(name);
@@ -29,6 +24,6 @@ export class NewUserPage extends CommonPage {
   createUser = async (name: string, email: string, username: string, password: string) => {
     await this.fillUserDetails(name, email, username, password);
     await this.buttons.createUser.click();
-    await this.toast.checkToastMessage(this.messages.userCreated, { variant: 'success' });
+    await this.toastMessage.waitForMessage(this.messages.userCreated);
   };
 }

@@ -10,7 +10,7 @@ const constants = {
   },
   okta: {
     url: `https://${process.env.OAUTH_DEV_HOST}`,
-    issuerUrl: process.env.REACT_APP_OAUTH_DEV_ISSUER_URI || '',
+    issuerUrl: process.env.OAUTH_ISSUER_URL || '',
     token: `SSWS ${process.env.OKTA_TOKEN}`,
   },
   portal: {

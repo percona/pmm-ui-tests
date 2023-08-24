@@ -1,7 +1,7 @@
 import { expect, test } from '@helpers//test-helper';
 import apiHelper from '@api/helpers/api-helper';
 import grafanaHelper from '@helpers/grafana-helper';
-import Duration from '@helpers/enums/duration';
+import Wait from '@helpers/enums/wait';
 import { api } from '@api/api';
 import { ListRoles } from '@api/management.api';
 import PmmVersion from '@helpers/types/pmm-version.class';
@@ -53,9 +53,7 @@ test.describe('Spec file for Access Control (RBAC)', async () => {
     await grafanaHelper.authorize(page);
   });
 
-  test('PMM-T1573 Verify Access Roles tab on Configuration page @rbac @rbac-pre-upgrade', async ({
-    homeDashboardPage, rbacPage,
-  }) => {
+  test('PMM-T1573 Verify Access Roles tab on Configuration page @rbac @rbac-pre-upgrade', async ({ homeDashboardPage, rbacPage }) => {
     test.skip(await getPmmVersion() < 35, 'Test is for versions 2.35.0+');
     test.info().annotations.push({
       type: 'Also Covers',
@@ -79,9 +77,7 @@ test.describe('Spec file for Access Control (RBAC)', async () => {
     });
   });
 
-  test('PMM-T1580 Verify creating Access Role @rbac @rbac-pre-upgrade @rbac-post-upgrade', async ({
-    page, rbacPage, createRolePage,
-  }) => {
+  test('PMM-T1580 Verify creating Access Role @rbac @rbac-pre-upgrade @rbac-post-upgrade', async ({ page, rbacPage, createRolePage }) => {
     test.skip(await getPmmVersion() < 35, 'Test is for versions 2.35.0+');
     test.info().annotations.push({
       type: 'Also Covers',
@@ -145,7 +141,7 @@ test.describe('Spec file for Access Control (RBAC)', async () => {
       await usersConfigurationPage.usersTable.fields.accessRole('testUserRBAC@localhost').click();
       await usersConfigurationPage.optionMenu.selectOption(roleName);
       await page.goto(mySqlDashboard.url);
-      await mySqlDashboard.waitForPanelToHaveData('Top MySQL Used Connections', 444, Duration.TenMinutes);
+      await mySqlDashboard.waitForPanelToHaveData('Top MySQL Used Connections', 444, Wait.TenMinutes);
     });
 
     await test.step('3. Login as new user and verify that Node Dashboard does NOT show data.', async () => {
@@ -161,9 +157,7 @@ test.describe('Spec file for Access Control (RBAC)', async () => {
     });
   });
 
-  test('PMM-T1599 Verify assigned role after upgrade @rbac @rbac-post-upgrade', async ({
-    page, usersConfigurationPage, postgresqlInstancesOverviewDashboard,
-  }) => {
+  test('PMM-T1599 Verify assigned role after upgrade @rbac @rbac-post-upgrade', async ({ page, usersConfigurationPage, postgresqlInstancesOverviewDashboard }) => {
     test.skip(await getPmmVersion() < 35, 'Test is for versions 2.35.0+');
 
     await test.step('1. Verify user role is assigned after upgrade.', async () => {
@@ -179,9 +173,7 @@ test.describe('Spec file for Access Control (RBAC)', async () => {
     });
   });
 
-  test('PMM-T1585 Verify deleting Access role @rbac @rbac-post-upgrade', async ({
-    page, rbacPage, usersConfigurationPage,
-  }) => {
+  test('PMM-T1585 Verify deleting Access role @rbac @rbac-post-upgrade', async ({ page, rbacPage, usersConfigurationPage }) => {
     test.skip(await getPmmVersion() < 35, 'Test is for versions 2.35.0+');
     test.info().annotations.push({
       type: 'Also Covers',
@@ -203,12 +195,8 @@ test.describe('Spec file for Access Control (RBAC)', async () => {
       await page.goto(usersConfigurationPage.url);
       await usersConfigurationPage.usersTable.fields.accessRole(newUser.username).click();
       await usersConfigurationPage.usersTable.fields.assignRole('Full access').click();
-      await usersConfigurationPage.usersTable.fields.removeRole(newUser.username, roleName).click({
-        force: true,
-      });
-      await usersConfigurationPage.usersTable.fields.removeRole(newUser.username, roleName).click({
-        force: true,
-      });
+      await usersConfigurationPage.usersTable.fields.removeRole(newUser.username, roleName).click({ force: true });
+      await usersConfigurationPage.usersTable.fields.removeRole(newUser.username, roleName).click({ force: true });
     });
 
     await test.step('3. Delete role and verify that role was successfully deleted.', async () => {
@@ -216,17 +204,12 @@ test.describe('Spec file for Access Control (RBAC)', async () => {
       await rbacPage.rbacTable.elements.rowOptions(roleName).click();
       await rbacPage.rbacTable.elements.delete.click();
       await rbacPage.rbacTable.buttons.confirmAndDeleteRole.click();
-      await rbacPage.toast.checkToastMessageContains(
-        rbacPage.rbacTable.messages.roleDeleted(roleName) as string,
-        { variant: 'success' },
-      );
+      await rbacPage.toastMessage.waitForMessageContains(rbacPage.rbacTable.messages.roleDeleted(roleName) as string);
       await expect(rbacPage.rbacTable.elements.body).not.toContainText(roleName);
     });
   });
 
-  test('PMM-T1652 Verify replacing the role while removing it @rbac @rbac-post-upgrade', async ({
-    page, rbacPage, createRolePage, newUserPage, usersConfigurationPage,
-  }) => {
+  test('PMM-T1652 Verify replacing the role while removing it @rbac @rbac-post-upgrade', async ({ page, rbacPage, createRolePage, newUserPage, usersConfigurationPage }) => {
     test.skip(await getPmmVersion() < 35, 'Test is for versions 2.35.0+');
 
     const newRoleName = `Replace Role Test Role ${Date.now()}`;
@@ -270,9 +253,7 @@ test.describe('Spec file for Access Control (RBAC)', async () => {
     });
   });
 
-  test('PMM-T1668 Verify removing Access role for deleted user. @rbac @rbac-post-upgrade', async ({
-    page, rbacPage, createRolePage, newUserPage, usersConfigurationPage,
-  }) => {
+  test('PMM-T1668 Verify removing Access role for deleted user. @rbac @rbac-post-upgrade', async ({ page, rbacPage, createRolePage, newUserPage, usersConfigurationPage }) => {
     test.info().annotations.push({
       type: 'Also Covers',
       description: 'PMM-T1601 Verify Grafana Does not crash when filtering users from the admin page.',
@@ -309,9 +290,7 @@ test.describe('Spec file for Access Control (RBAC)', async () => {
 
     await test.step('3. Search for non existing user, and verify page does not crash.', async () => {
       await usersConfigurationPage.elements.searchUserInput.type('NonExistingUser');
-      await usersConfigurationPage.elements.deleteUserButton(deleteUser.email).waitFor({
-        state: 'hidden',
-      });
+      await usersConfigurationPage.elements.deleteUserButton(deleteUser.email).waitFor({ state: 'hidden' });
       await expect(usersConfigurationPage.elements.usersTable).toBeVisible();
       await usersConfigurationPage.elements.searchUserInput.clear();
     });
@@ -330,50 +309,37 @@ test.describe('Spec file for Access Control (RBAC)', async () => {
       await expect(rbacPage.rbacTable.elements.confirmDeleteRoleBody)
         .toContainText(rbacPage.rbacTable.messages.deleteRoleBody as string);
       await rbacPage.rbacTable.buttons.confirmAndDeleteRole.click();
-      await rbacPage.toast.checkToastMessageContains(
-        rbacPage.rbacTable.messages.roleDeleted(deleteUserRole) as string,
-        { variant: 'success' },
-      );
+      await rbacPage.toastMessage.waitForMessageContains(rbacPage.rbacTable.messages.roleDeleted(deleteUserRole) as string);
     });
   });
 
-  test('PMM-T1629 Verify re-enabling of the Access Control @rbac @rbac-post-upgrade', async ({
-    page, homeDashboardPage, rbacPage, advancedSettingsPage,
-  }) => {
+  test('PMM-T1629 Verify re-enabling of the Access Control @rbac @rbac-post-upgrade', async ({ page, homeDashboardPage, rbacPage, advancedSettingsPage }) => {
     test.skip(await getPmmVersion() < 35, 'Test is for versions 2.35.0+');
 
     await test.step('1.Navigate to the advanced settings and disable Access Control.', async () => {
       await page.goto(advancedSettingsPage.url);
-      await advancedSettingsPage.fields.accessControl.click({
-        force: true,
-      });
+      await advancedSettingsPage.fields.accessControl.click({ force: true });
       await expect(advancedSettingsPage.fields.accessControl).not.toBeChecked();
       await advancedSettingsPage.buttons.applyChanges.click();
     });
 
     await test.step('2. Verify Access Control is disabled.', async () => {
       await homeDashboardPage.sideMenu.elements.configuration.hover();
-      await homeDashboardPage.sideMenu.configuration.buttons.rbac.waitFor({
-        state: 'detached',
-      });
+      await homeDashboardPage.sideMenu.configuration.buttons.rbac.waitFor({ state: 'detached' });
       await page.goto(rbacPage.url);
       await expect(rbacPage.elements.emptyBlock).toHaveText(rbacPage.messages.featureDisabled);
     });
 
     await test.step('3. Re-enable Access Control.', async () => {
       await page.goto(advancedSettingsPage.url);
-      await advancedSettingsPage.fields.accessControl.check({
-        force: true,
-      });
+      await advancedSettingsPage.fields.accessControl.check({ force: true });
       await expect(advancedSettingsPage.fields.accessControl).toBeChecked();
       await advancedSettingsPage.buttons.applyChanges.click();
     });
 
     await test.step('2. Verify Access Control is enabled.', async () => {
       await homeDashboardPage.sideMenu.elements.configuration.hover();
-      await homeDashboardPage.sideMenu.configuration.buttons.rbac.waitFor({
-        state: 'visible',
-      });
+      await homeDashboardPage.sideMenu.configuration.buttons.rbac.waitFor({ state: 'visible' });
     });
   });
 });

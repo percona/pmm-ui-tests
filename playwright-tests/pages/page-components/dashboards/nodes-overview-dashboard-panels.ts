@@ -1,3 +1,4 @@
+/* eslint-disable object-curly-newline */
 export const NodesOverviewDashboardPanels = {
   // Overview
   nodes: { panelId: 326, name: 'Nodes', error: '1' },

@@ -10,15 +10,15 @@
 
 * **Acronyms**  
   Whenever an acronym is included as part of a type name or method name, keep the first
-letter of the acronym uppercase and use lowercase for the rest of the acronym. Otherwise,
-it becomes potentially very difficult to read or reason about the element without
-reading documentation (if documentation even exists).   
+  letter of the acronym uppercase and use lowercase for the rest of the acronym. Otherwise,
+  it becomes potentially very difficult to read or reason about the element without
+  reading documentation (if documentation even exists).
 
   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Consider for example a use case needing to support an HTTP URL. Calling the method
-`getHTTPURL()` is absolutely horrible in terms of usability; whereas, `getHttpUrl()` is
-great in terms of usability. The same applies for types `HTTPURLProvider` vs
-`HttpUrlProvider`.  
-|  
+  `getHTTPURL()` is absolutely horrible in terms of usability; whereas, `getHttpUrl()` is
+  great in terms of usability. The same applies for types `HTTPURLProvider` vs
+  `HttpUrlProvider`.  
+  |  
   Whenever an acronym is included as part of a field name or parameter name:
   * If the acronym comes at the start of the field or parameter name, use lowercase for the entire acronym, ex: `url;`
   * Otherwise, keep the first letter of the acronym uppercase and use lowercase for the rest of the acronym, ex: `baseUrl;`
@@ -40,33 +40,29 @@ great in terms of usability. The same applies for types `HTTPURLProvider` vs
 ### Locators
 
 * **Locators outside of a test.**   
-  This is a bad practice to use hard coded locators inside a test. All locators should ‘live’ inside a [Page Object](https://codecept.io/pageobjects/)
+  This is a bad practice to use hard coded locators inside a test. All locators should ‘live’ inside a Page Object
 
 
 * **Try to use stable locators.**   
   Ideally there should exist a dedicated attribute for each interactive element (“data-qa” attribute). But id, classname, text also used frequently. (try to use small xpath)
 
 
-* **Locators preference: locate() > CSS > Xpath**  
-  Try to use `locate()` builder as a first priority, and only then CSS. Use XPath as a last stand. 
+* **Locators preference: .getByXXX() > CSS > Xpath**  
+  Try to use `.getByXXX()` method as a first priority, and only then CSS. Use XPath as a last stand.
 
 ### Assertions
 
-* **coming soon...**  
+* **coming soon...**
 
 
 ### Test Files
 
-* **One feature per spec File.**  
-
-### Scenario
-
-* **Scenario title should contain Test Case ID.**  
-  In order to make searching for a test much easier we could add the original Test Case ID from TMT.
+* **One feature per spec File.**
 
 
-* **Scenario title template.**  
- {TEST_CASE_ID} Title {annotation}
+
+* **Test title template.**  
+  {TEST_CASE_ID} Title {annotation}
 
 ### Annotations
 
