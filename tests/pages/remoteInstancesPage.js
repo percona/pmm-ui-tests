@@ -116,7 +116,6 @@ module.exports = {
     hostName: '$address-text-input',
     iframe: '//div[@class="panel-content"]//iframe',
     metricsPath: '$metrics_path-text-input',
-    nextStep: '//div[contains(text(),\'Next step: Configuration\')]',
     noCredentialsError: '//div[text()="No credentials provided and IAM role is not defined"]',
     pageHeaderText: 'PMM Add Instance',
     parseFromURLRadioButton: locate('label').withText('Parse from URL string'),
