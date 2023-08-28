@@ -158,7 +158,6 @@ Scenario(
     I.amOnPage(remoteInstancesPage.url);
     remoteInstancesPage.waitUntilRemoteInstancesPageLoaded();
     remoteInstancesPage.openAddRemotePage('haproxy');
-    I.waitForVisible(remoteInstancesPage.fields.returnToMenuButton, 30);
     I.waitForVisible(remoteInstancesPage.fields.hostName, 30);
     I.waitForVisible(remoteInstancesPage.fields.serviceName, 30);
     I.waitForVisible(remoteInstancesPage.fields.portNumber, 30);
@@ -230,7 +229,6 @@ Scenario(
     I.click(remoteInstancesPage.fields.addService);
     remoteInstancesPage.checkRequiredField();
     // Verify fields on the page
-    I.seeElement(remoteInstancesPage.fields.returnToMenuButton, 30);
     I.seeElement(remoteInstancesPage.fields.hostName, 30);
     I.seeElement(remoteInstancesPage.fields.serviceName, 30);
     I.seeElement(remoteInstancesPage.fields.portNumber, 30);
