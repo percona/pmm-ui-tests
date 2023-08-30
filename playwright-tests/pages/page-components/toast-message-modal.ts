@@ -7,7 +7,7 @@ export default class ToastMessage {
   toastSuccess = this.page.locator('//div[@data-testid="data-testid Alert success" or @aria-label="Alert success"]');
   toastWarning = this.page.locator('//div[@data-testid="data-testid Alert warning" or @aria-label="Alert warning"]');
   toastError = this.page.locator('//div[@data-testid="data-testid Alert error" or @aria-label="Alert error"]');
-  messageText = this.page.locator('.page-alert-list div[data-testid^="data-testid Alert"] div[id]');
+  messageText = this.page.locator('.page-alert-list div[data-testid^="data-testid Alert"] div:has(div[id])');
   closeButton = this.page.locator('.page-alert-list button');
 
   waitForMessage = async (message: string, timeout?: number) => {

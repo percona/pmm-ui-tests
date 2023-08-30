@@ -48,7 +48,7 @@ test.describe('Spec file for PMM connected the portal', async () => {
       });
 
       await test.step('2. Verify that there is a side menu for organizational tickets', async () => {
-        await homeDashboardPage.sideMenu.elements.tickets.click();
+        await homeDashboardPage.sideMenu.tickets.click();
       });
 
       await test.step('3. Verify user can see tickets for his org.', async () => {
@@ -83,7 +83,7 @@ test.describe('Spec file for PMM connected the portal', async () => {
       });
 
       await test.step('2. Verify that there is a side menu for Entitlements', async () => {
-        await homeDashboardPage.sideMenu.elements.entitlements.click();
+        await homeDashboardPage.sideMenu.entitlements.click();
       });
 
       await test.step('3. Verify user can see entitlements for his org.', async () => {
@@ -113,7 +113,7 @@ test.describe('Spec file for PMM connected the portal', async () => {
     if (pmmVersion >= 29) {
       await loginPage.oktaLogin(firstAdmin.email, firstAdmin.password);
       await homeDashboardPage.pmmUpgrade.elements.currentVersion.waitFor({ state: 'visible', timeout: Wait.ThreeMinutes });
-      await homeDashboardPage.sideMenu.elements.environmentOverview.click();
+      await homeDashboardPage.sideMenu.environmentOverview.click();
       await environmentOverviewPage.elements.contactsHeader.waitFor({ state: 'visible' });
       await environmentOverviewPage.elements.contactsSubHeader.waitFor({ state: 'visible' });
       await environmentOverviewPage.elements.contactsName.waitFor({ state: 'visible' });
@@ -139,7 +139,7 @@ test.describe('Spec file for PMM connected the portal', async () => {
       });
 
       await test.step('2. Verify that there is NO side menu for organizational tickets', async () => {
-        await homeDashboardPage.sideMenu.elements.tickets.waitFor({ state: 'detached' });
+        await homeDashboardPage.sideMenu.tickets.waitFor({ state: 'detached' });
       });
 
       await test.step('3. Verify user can NOT see tickets.', async () => {
@@ -167,7 +167,7 @@ test.describe('Spec file for PMM connected the portal', async () => {
       });
 
       await test.step('2. Verify that there is NO side menu for organizational Entitlements', async () => {
-        await homeDashboardPage.sideMenu.elements.entitlements.waitFor({ state: 'detached' });
+        await homeDashboardPage.sideMenu.entitlements.waitFor({ state: 'detached' });
       });
 
       await test.step('3. Verify user can NOT see Entitlements.', async () => {
@@ -215,7 +215,7 @@ test.describe('Spec file for PMM connected the portal', async () => {
       });
 
       await test.step('2. Verify that there is a side menu for organizational tickets', async () => {
-        await homeDashboardPage.sideMenu.elements.tickets.click();
+        await homeDashboardPage.sideMenu.tickets.click();
       });
 
       await test.step('3. Verify user can NOT see tickets for his org.', async () => {
@@ -237,7 +237,7 @@ test.describe('Spec file for PMM connected the portal', async () => {
         await homeDashboardPage.pmmUpgrade.elements.currentVersion.waitFor({ state: 'visible', timeout: Wait.ThreeMinutes });
       });
       await test.step('2. Verify that there is a side menu for organizational Entitlements', async () => {
-        await homeDashboardPage.sideMenu.elements.entitlements.click();
+        await homeDashboardPage.sideMenu.entitlements.click();
       });
       await test.step('3. Verify user can NOT see Entitlements for his org.', async () => {
         await expect(ticketsPage.elements.noData).toHaveText(entitlementsPage.messages.noEntitlements);
