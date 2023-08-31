@@ -1,4 +1,4 @@
-import { apiHelper } from '@api/helpers/api-helper';
+import apiHelper from '@api/helpers/api-helper';
 
 export interface ListRoles {
   roles: Role[]

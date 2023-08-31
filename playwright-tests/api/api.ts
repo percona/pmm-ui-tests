@@ -5,7 +5,7 @@ import { portalApi } from '@api/portal.api';
 import { serviceNowApi } from '@api/service-now.api';
 import { inventoryApi } from '@api/inventory.api';
 import { managementApi } from '@api/management.api';
-import { apiHelper } from '@api/helpers/api-helper';
+import apiHelper from '@api/helpers/api-helper';
 
 /**
  * User facing api collection. Accessible on Frontend via /swagger path.

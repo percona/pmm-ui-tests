@@ -1,4 +1,4 @@
-import { apiHelper } from './helpers/api-helper';
+import apiHelper from './helpers/api-helper';
 
 interface ListNodes {
   generic?: NodeDetails[],
