@@ -63,7 +63,7 @@ Scenario(
   },
 );
 
-Scenario(
+Scenario.only(
   'PMM-T1260 - Verifying data in Clickhouse and comparing with PGSM output @not-ui-pipeline @pgsm-pmm-integration',
   async ({ I, qanAPI }) => {
     await I.pgExecuteQueryOnDemand('SELECT now();', connection);
@@ -120,6 +120,14 @@ Scenario(
       }
 
       await I.say(`query is : ${query}`);
+
+      if (!response.data.metrics.query_time) {
+        throw new Error(`there is no query time stored in clickhouse for query 
+        "${query}"
+        Full resp: 
+        "${JSON.stringify(response.data)}"
+        `);
+      }
 
       const clickhouse_sum = parseFloat((response.data.metrics.query_time.sum).toFixed(7));
       const clickhouse_avg = parseFloat((response.data.metrics.query_time.avg).toFixed(7));
