@@ -448,7 +448,7 @@ module.exports = {
     I.click('//span[contains(text(),"Edit")]');
     I.waitForElement('//h3[contains(text(),"Editing")]');
     I.seeElement('//h3[contains(text(),"Editing")]');
-    var lables;
+    var labels;
     switch (serviceName) {
       case remoteInstancesHelper.services.mysql:
         I.clearField(this.fields.environment);
