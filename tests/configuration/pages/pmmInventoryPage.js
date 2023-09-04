@@ -1,4 +1,4 @@
-const { I, inventoryAPI } = inject();
+const { I, inventoryAPI, remoteInstancesHelper } = inject();
 const assert = require('assert');
 const paginationPart = require('./paginationFragment');
 const servicesTab = require('./servicesTab');
