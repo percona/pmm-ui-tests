@@ -4,7 +4,7 @@ import { CommonPage } from '@pages/common.page';
 export class AccessRolesPage extends CommonPage {
   PAGE_PATH = 'graph/roles';
   PAGE_HEADING = 'Access Roles';
-  PAGE_HEADING_LOCATOR = this.page.getByTestId('access-roles-title');
+  PAGE_HEADING_LOCATOR = this.page.locator('//h2 | //div[@data-testid="empty-block"]');
 
   rbacTable = new RbacTable(this.page);
 

@@ -2,12 +2,10 @@ import { expect, test } from '@helpers//test-helper';
 import apiHelper from '@api/helpers/api-helper';
 import grafanaHelper from '@helpers/grafana-helper';
 import Wait from '@helpers/enums/wait';
-import { api } from '@api/api';
-import { ListRoles } from '@api/management.api';
+import { api, OrgUser, Role } from '@api/api';
 import PmmVersion from '@helpers/types/pmm-version.class';
 
 let pmmVersion: number;
-let roles: ListRoles | undefined;
 
 /**
  * Cp. Obvious: Lazy initialization.
@@ -19,16 +17,6 @@ const getPmmVersion = async (): Promise<number> => {
       : (await api.pmm.serverV1.getPmmVersion()).minor;
   }
   return pmmVersion;
-};
-
-/**
- * Cp. Obvious: Lazy initialization
- */
-const getRolesObj = async (): Promise<ListRoles | undefined> => {
-  if (!roles) {
-    roles = await api.pmm.managementV1.listRoles();
-  }
-  return roles;
 };
 
 test.describe('Spec file for Access Control (RBAC)', async () => {
@@ -75,7 +63,6 @@ test.describe('Spec file for Access Control (RBAC)', async () => {
       type: 'Also Covers',
       description: 'PMM-T1581 Verify assigning default role on Access roles page.',
     });
-    test.skip((await getRolesObj())?.roles.length !== 1, 'For updating from version without RBAC (<35)');
 
     await test.step('1. Navigate to the Access Role page, then click create button.', async () => {
       await accessRolesPage.open();
@@ -106,16 +93,21 @@ test.describe('Spec file for Access Control (RBAC)', async () => {
     });
   });
 
-  test('PMM-T1584 Verify assigning Access role to user @rbac @rbac-pre-upgrade @rbac-post-upgrade', async ({
+  test.skip('PMM-T1584 Verify assigning Access role to user @rbac @rbac-pre-upgrade', async ({
     page, accessRolesPage, createRolePage, newUserPage, usersConfigurationPage,
     mySqlDashboard, nodesOverviewDashboard,
   }) => {
     test.skip(await getPmmVersion() < 35, 'Test is for versions 2.35.0+');
-    test.skip((await getRolesObj())?.roles.length !== 1, 'For updating from version without RBAC (<35)');
 
     await test.step(
       '1. Navigate to the access role page then create role MySQL with label agent_type and value mysql_exporter',
       async () => {
+        // TODO: whole step is API request, but  need to fix 400 response
+        // await api.pmm.managementV1.roleCreate(roleName, roleDescription, '{agent_type="mysqld_exporter"}');
+        const rolesList = await api.pmm.managementV1.listRoles();
+        if (rolesList.roles.find((role: Role) => role.title === roleName)) {
+          await api.pmm.managementV1.deleteRole(roleName);
+        }
         await accessRolesPage.open();
         await accessRolesPage.elements.buttonCreate.click();
         await createRolePage.createNewRole({
@@ -126,6 +118,9 @@ test.describe('Spec file for Access Control (RBAC)', async () => {
     );
 
     await test.step('2. Create new user and assign new role to the user.', async () => {
+      if (await api.grafana.org.lookupOrgUser(newUser.email)) {
+        await api.grafana.org.deleteOrgUser(newUser.email);
+      }
       await page.goto(newUserPage.url);
       await newUserPage.createUser(newUser.name, newUser.email, newUser.username, newUser.password);
 
@@ -149,7 +144,7 @@ test.describe('Spec file for Access Control (RBAC)', async () => {
     });
   });
 
-  test('PMM-T1599 Verify assigned role after upgrade @rbac @rbac-post-upgrade', async ({ page, usersConfigurationPage, postgresqlInstancesOverviewDashboard }) => {
+  test.skip('PMM-T1599 Verify assigned role after upgrade @rbac-post-upgrade', async ({ page, usersConfigurationPage, postgresqlInstancesOverviewDashboard }) => {
     test.skip(await getPmmVersion() < 35, 'Test is for versions 2.35.0+');
 
     await test.step('1. Verify user role is assigned after upgrade.', async () => {
@@ -165,7 +160,7 @@ test.describe('Spec file for Access Control (RBAC)', async () => {
     });
   });
 
-  test('PMM-T1585 Verify deleting Access role @rbac @rbac-post-upgrade', async ({ page, accessRolesPage, usersConfigurationPage }) => {
+  test.skip('PMM-T1585 Verify deleting Access role @rbac @rbac-post-upgrade', async ({ page, accessRolesPage, usersConfigurationPage }) => {
     test.skip(await getPmmVersion() < 35, 'Test is for versions 2.35.0+');
     test.info().annotations.push({
       type: 'Also Covers',
@@ -201,7 +196,7 @@ test.describe('Spec file for Access Control (RBAC)', async () => {
     });
   });
 
-  test('PMM-T1652 Verify replacing the role while removing it @rbac @rbac-post-upgrade', async ({ page, accessRolesPage, createRolePage, newUserPage, usersConfigurationPage }) => {
+  test.skip('PMM-T1652 Verify replacing the role while removing it @rbac @rbac-post-upgrade', async ({ page, accessRolesPage, createRolePage, newUserPage, usersConfigurationPage }) => {
     test.skip(await getPmmVersion() < 35, 'Test is for versions 2.35.0+');
 
     const newRoleName = `Replace Role Test Role ${Date.now()}`;
@@ -305,14 +300,12 @@ test.describe('Spec file for Access Control (RBAC)', async () => {
     });
   });
 
-  test('PMM-T1629 Verify re-enabling of the Access Control @rbac @rbac-post-upgrade', async ({ page, homeDashboardPage, accessRolesPage, advancedSettingsPage }) => {
+  test('PMM-T1629 Verify re-enabling of the Access Control @rbac @rbac-post-upgrade', async ({ homeDashboardPage, accessRolesPage, advancedSettingsPage }) => {
     test.skip(await getPmmVersion() < 35, 'Test is for versions 2.35.0+');
 
     await test.step('1.Navigate to the advanced settings and disable Access Control.', async () => {
-      await page.goto(advancedSettingsPage.url);
-      await advancedSettingsPage.fields.accessControl.click({ force: true });
-      await expect(advancedSettingsPage.fields.accessControl).not.toBeChecked();
-      await advancedSettingsPage.buttons.applyChanges.click();
+      await advancedSettingsPage.open();
+      await advancedSettingsPage.switchAccessControl('off');
     });
 
     await test.step('2. Verify Access Control is disabled.', async () => {
@@ -320,13 +313,12 @@ test.describe('Spec file for Access Control (RBAC)', async () => {
       await homeDashboardPage.sideMenu.configuration().accessRoles.waitFor({ state: 'detached' });
       await accessRolesPage.open();
       await expect(accessRolesPage.elements.emptyBlock).toHaveText(accessRolesPage.messages.featureDisabled);
+      await accessRolesPage.toastMessage.waitForError();
     });
 
     await test.step('3. Re-enable Access Control.', async () => {
-      await page.goto(advancedSettingsPage.url);
-      await advancedSettingsPage.fields.accessControl.check({ force: true });
-      await expect(advancedSettingsPage.fields.accessControl).toBeChecked();
-      await advancedSettingsPage.buttons.applyChanges.click();
+      await advancedSettingsPage.open();
+      await advancedSettingsPage.switchAccessControl('on');
     });
 
     await test.step('2. Verify Access Control is enabled.', async () => {

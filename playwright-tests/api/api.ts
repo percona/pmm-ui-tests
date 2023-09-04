@@ -5,7 +5,37 @@ import { portalApi } from '@api/portal.api';
 import { serviceNowApi } from '@api/service-now.api';
 import { inventoryApi } from '@api/inventory.api';
 import { managementApi } from '@api/management.api';
-import apiHelper from '@api/helpers/api-helper';
+import { orgApi } from '@api/org.api';
+
+export interface OrgUser {
+  orgId: number,
+  userId: number,
+  email: string,
+  name: string,
+  avatarUrl: string,
+  login: string,
+  role: string,
+  lastSeenAt: string,
+  lastSeenAtAge: string,
+  accessControl: {
+    'org.users:add': boolean,
+    'org.users:read': boolean,
+    'org.users:remove': boolean,
+    'org.users:write': boolean
+  },
+  isDisabled: boolean
+}
+
+export interface ListRoles {
+  roles: Role[]
+}
+
+export interface Role {
+  role_id?: number,
+  title: string,
+  filter?: string,
+  description?: string
+}
 
 /**
  * User facing api collection. Accessible on Frontend via /swagger path.
@@ -13,14 +43,7 @@ import apiHelper from '@api/helpers/api-helper';
  * obvious which API and which version is used.
  */
 export const api = {
-  grafana: {
-    // TODO: move it to proper file API. Suggestion: grafanaApi
-    listOrgUsers: async () => {
-      const response = await apiHelper.get('/graph/api/org/users?accesscontrol=true');
-      console.log(`Response:\n${JSON.stringify(await response.json())}`);
-      return response.json();
-    },
-  },
+  grafana: { org: orgApi },
   pmm: {
     inventoryV1: inventoryApi,
     settingsV1: settingsApi,

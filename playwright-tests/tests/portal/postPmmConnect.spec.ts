@@ -4,7 +4,7 @@ import { PortalUser } from '@helpers/types/portal-user.class';
 import { fileHelper } from '@helpers/file-helper';
 import Wait from '@helpers/enums/wait';
 import grafanaHelper from '@helpers/grafana-helper';
-import { api } from '@api/api';
+import { api, OrgUser } from '@api/api';
 import { portalHelper } from '@helpers/portal-helper';
 
 test.describe('Spec file for PMM connected the portal', async () => {
@@ -29,14 +29,14 @@ test.describe('Spec file for PMM connected the portal', async () => {
 
   test('Verify user roles are untouched after PMM server upgrade'
       + ' @not-ui-pipeline @portal @post-pmm-portal-upgrade', async () => {
-    const users = await api.grafana.listOrgUsers();
-    const foundAdmin1User = users.find((user: any) => user.email === firstAdmin.email);
-    const foundAdmin2User = users.find((user: any) => user.email === secondAdmin.email);
-    const foundTechnicalUser = users.find((user: any) => user.email === technicalUser.email);
+    const users = await api.grafana.org.listOrgUsers();
+    const foundAdmin1User = users.find((user: OrgUser) => user.email === firstAdmin.email);
+    const foundAdmin2User = users.find((user: OrgUser) => user.email === secondAdmin.email);
+    const foundTechnicalUser = users.find((user: OrgUser) => user.email === technicalUser.email);
 
-    expect(foundAdmin1User.role).toEqual('Admin');
-    expect(foundAdmin2User.role).toEqual('Admin');
-    expect(foundTechnicalUser.role).toEqual('Viewer');
+    expect(foundAdmin1User!.role).toEqual('Admin');
+    expect(foundAdmin2User!.role).toEqual('Admin');
+    expect(foundTechnicalUser!.role).toEqual('Viewer');
   });
 
   test.skip('PMM-T1149 PMM-T1132 Verify PMM user logged in using SSO and member of SN account is able to see tickets'
