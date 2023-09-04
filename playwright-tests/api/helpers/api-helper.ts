@@ -106,7 +106,7 @@ const apiHelper = {
     multipart?: { [p: string]: string | number | boolean | ReadStream | { name: string, mimeType: string, buffer: Buffer } },
     params?: { [p: string]: string | number | boolean }, timeout?: number
   }): Promise<APIResponse> => {
-    console.log(`GET: ${path}${options ? ` with ${JSON.stringify(options)}` : ''}`);
+    console.log(`DELETE: ${path}${options ? ` with ${JSON.stringify(options)}` : ''}`);
     const response = await (await getConfiguredRestApi()).delete(path, options);
     expect(response.status(), `Status: ${response.status()} ${response.statusText()}`).toEqual(200);
     return response;
