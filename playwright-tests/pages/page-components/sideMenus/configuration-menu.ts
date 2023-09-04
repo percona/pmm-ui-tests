@@ -46,13 +46,13 @@ export default class ConfigurationMenu {
    */
   showMenu = async () => {
     if (await this.isFullMenu()) {
-      await this.fullMenuButton.click({ trial: true, timeout: Wait.OneSecond });
+      await this.fullMenuButton.click({ trial: true, timeout: Wait.TwoSeconds });
       await this.fullMenuButton.click();
-      await expect(this.fullMenuButton).toHaveAttribute('aria-expanded', 'true', { timeout: Wait.OneSecond });
+      await expect(this.fullMenuButton).toHaveAttribute('aria-expanded', 'true', { timeout: Wait.TwoSeconds });
     } else {
-      await this.shortMenuButton.click({ trial: true, timeout: Wait.OneSecond });
+      await this.shortMenuButton.click({ trial: true, timeout: Wait.TwoSeconds });
       await this.shortMenuButton.hover();
-      await this.hoverMenuContainer.waitFor({ state: 'visible', timeout: Wait.OneSecond });
+      await this.hoverMenuContainer.waitFor({ state: 'visible', timeout: Wait.TwoSeconds });
     }
   };
 

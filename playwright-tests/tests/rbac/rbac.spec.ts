@@ -2,7 +2,7 @@ import { expect, test } from '@helpers//test-helper';
 import apiHelper from '@api/helpers/api-helper';
 import grafanaHelper from '@helpers/grafana-helper';
 import Wait from '@helpers/enums/wait';
-import { api, OrgUser, Role } from '@api/api';
+import { api, Role } from '@api/api';
 import PmmVersion from '@helpers/types/pmm-version.class';
 
 let pmmVersion: number;
