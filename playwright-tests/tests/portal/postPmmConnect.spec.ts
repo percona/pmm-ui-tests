@@ -8,7 +8,6 @@ import { api } from '@api/api';
 import { portalHelper } from '@helpers/portal-helper';
 
 test.describe('Spec file for PMM connected the portal', async () => {
-  test.skip();
   let firstAdmin: PortalUser;
   let secondAdmin: PortalUser;
   let technicalUser: PortalUser;
@@ -39,7 +38,7 @@ test.describe('Spec file for PMM connected the portal', async () => {
     expect(foundTechnicalUser.role).toEqual('Viewer');
   });
 
-  test.skip('PMM-T1149 PMM-T1132 Verify PMM user logged in using SSO and member of SN account is able to see tickets'
+  test('PMM-T1149 PMM-T1132 Verify PMM user logged in using SSO and member of SN account is able to see tickets'
       + ' @not-ui-pipeline @portal @post-pmm-portal-upgrade', async ({ page, loginPage, homeDashboardPage, ticketsPage, context }) => {
     if (pmmVersion > 27) {
       await test.step('1. Login to he connected pmm with SSO', async () => {
@@ -74,7 +73,7 @@ test.describe('Spec file for PMM connected the portal', async () => {
     }
   });
 
-  test.skip('PMM-T1152 Verify user logged in using SSO and is a member of SN account is able to see Entitlements'
+  test('PMM-T1152 Verify user logged in using SSO and is a member of SN account is able to see Entitlements'
       + ' @not-ui-pipeline @portal @post-pmm-portal-upgrade', async ({ page, loginPage, homeDashboardPage, entitlementsPage }) => {
     if (pmmVersion > 27) {
       await test.step('1. Login to he connected pmm with SSO', async () => {
@@ -104,7 +103,7 @@ test.describe('Spec file for PMM connected the portal', async () => {
     }
   });
 
-  test.skip('PMM-T1168 PMM-T1222 Verify user can see the contacts from Percona'
+  test('PMM-T1168 PMM-T1222 Verify user can see the contacts from Percona'
       + ' @not-ui-pipeline @portal @post-pmm-portal-upgrade', async ({ page, loginPage, homeDashboardPage, environmentOverviewPage, context }) => {
     await context.grantPermissions(['clipboard-write', 'clipboard-read']);
     const userToken = await api.portal.getUserAccessToken(firstAdmin.email, firstAdmin.password);
@@ -130,7 +129,7 @@ test.describe('Spec file for PMM connected the portal', async () => {
     }
   });
 
-  test.skip('PMM-T1147 Verify PMM user that is not logged in with SSO can NOT see Tickets for organization'
+  test('PMM-T1147 Verify PMM user that is not logged in with SSO can NOT see Tickets for organization'
       + ' @not-ui-pipeline @portal @post-pmm-portal-upgrade', async ({ page, homeDashboardPage, ticketsPage }) => {
     if (pmmVersion > 27) {
       await test.step('1. Login to he connected pmm with SSO', async () => {
@@ -158,7 +157,7 @@ test.describe('Spec file for PMM connected the portal', async () => {
     }
   });
 
-  test.skip('PMM-T1154 Verify PMM user that is not logged in with SSO can NOT see Entitlements for organization'
+  test('PMM-T1154 Verify PMM user that is not logged in with SSO can NOT see Entitlements for organization'
       + ' @not-ui-pipeline @portal @post-pmm-portal-upgrade', async ({ page, homeDashboardPage, entitlementsPage }) => {
     if (pmmVersion > 27) {
       await test.step('1. Login to the connected pmm with local account', async () => {
@@ -186,7 +185,7 @@ test.describe('Spec file for PMM connected the portal', async () => {
     }
   });
 
-  test.skip('PMM-T1170 Verify PMM user that is not logged in with SSO can NOT see Contacts for organization'
+  test('PMM-T1170 Verify PMM user that is not logged in with SSO can NOT see Contacts for organization'
       + ' @not-ui-pipeline @portal @post-pmm-portal-upgrade', async ({ page, homeDashboardPage, environmentOverviewPage }) => {
     if (pmmVersion > 27) {
       await test.step('1. Login to the connected pmm with local account', async () => {
@@ -205,7 +204,7 @@ test.describe('Spec file for PMM connected the portal', async () => {
     }
   });
 
-  test.skip('PMM-T1148 Verify PMM user logged in using SSO and member of organization in Portal'
+  test('PMM-T1148 Verify PMM user logged in using SSO and member of organization in Portal'
       + ' BUT not a SN account is NOT able to see Tickets'
       + ' @not-ui-pipeline @portal @post-pmm-portal-upgrade', async ({ loginPage, homeDashboardPage, ticketsPage }) => {
     if (pmmVersion > 27) {
@@ -229,7 +228,7 @@ test.describe('Spec file for PMM connected the portal', async () => {
     }
   });
 
-  test.skip('PMM-T1153 Verify user logged in using SSO and is not a member of SN account is NOT able to see Entitlements'
+  test('PMM-T1153 Verify user logged in using SSO and is not a member of SN account is NOT able to see Entitlements'
       + ' @not-ui-pipeline @portal @post-pmm-portal-upgrade', async ({ loginPage, homeDashboardPage, ticketsPage, entitlementsPage }) => {
     if (pmmVersion > 27) {
       await test.step('1. Login to he connected pmm with SSO', async () => {
@@ -280,7 +279,7 @@ test.describe('Spec file for PMM connected the portal', async () => {
     }
   });
   // Needs to be fixed in the future.
-  test.skip('PMM-T1264 Verify that pmm admin user can force disconnect pmm from the portal'
+  test('PMM-T1264 Verify that pmm admin user can force disconnect pmm from the portal'
       + ' @not-ui-pipeline @portal @post-pmm-portal-upgrade', async ({ page, perconaPlatformPage }) => {
     test.skip(pmmVersion < 29, 'This test is for PMM version 2.29.0 and higher');
 
@@ -303,7 +302,7 @@ test.describe('Spec file for PMM connected the portal', async () => {
     });
   });
 
-  test.skip('PMM-T1247 Verify user cannot access platform functionality when PMM is not connected to the portal'
+  test('PMM-T1247 Verify user cannot access platform functionality when PMM is not connected to the portal'
       + ' @not-ui-pipeline @portal @post-pmm-portal-upgrade', async ({ page, environmentOverviewPage, entitlementsPage, ticketsPage }) => {
     await grafanaHelper.authorize(page);
     await page.goto(environmentOverviewPage.environmentOverviewUrl);
