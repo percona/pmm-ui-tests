@@ -1,5 +1,4 @@
 import { CommonPage } from '@pages/common.page';
-import { Locator } from '@playwright/test';
 import LoginPlatformPage from '@pages/login-platform.page';
 
 export default class LoginPage extends CommonPage {
@@ -18,7 +17,7 @@ export default class LoginPage extends CommonPage {
    * Opens given Page entering url into the address field.
    */
   public open = async () => {
-    await this.openPageByPath(this.PAGE_PATH, this.PAGE_HEADING, this.elements.headingLocator as Locator);
+    await this.openPageByPath(this.PAGE_PATH, this.PAGE_HEADING, this.PAGE_HEADING_LOCATOR);
   };
 
   signInWithPerconaAccount = async (username: string, password: string) => {

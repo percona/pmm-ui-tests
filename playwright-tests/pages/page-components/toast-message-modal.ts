@@ -4,11 +4,11 @@ import Wait from '@helpers/enums/wait';
 export default class ToastMessage {
   constructor(readonly page: Page) { }
 
-  toastSuccess = this.page.locator('//div[@data-testid="data-testid Alert success" or @aria-label="Alert success"]');
-  toastWarning = this.page.locator('//div[@data-testid="data-testid Alert warning" or @aria-label="Alert warning"]');
-  toastError = this.page.locator('//div[@data-testid="data-testid Alert error" or @aria-label="Alert error"]');
-  messageText = this.page.locator('.page-alert-list div[data-testid^="data-testid Alert"] div[id]');
-  closeButton = this.page.locator('.page-alert-list button');
+  private toastSuccess = this.page.locator('//div[@data-testid="data-testid Alert success" or @aria-label="Alert success"]');
+  private toastWarning = this.page.locator('//div[@data-testid="data-testid Alert warning" or @aria-label="Alert warning"]');
+  private toastError = this.page.locator('//div[@data-testid="data-testid Alert error" or @aria-label="Alert error"]');
+  private messageText = this.page.locator('.page-alert-list div[data-testid^="data-testid Alert"] div:has(div[id])');
+  private closeButton = this.page.locator('.page-alert-list button');
 
   waitForMessage = async (message: string, timeout?: number) => {
     await this.messageText.waitFor({ state: 'visible', timeout: timeout || Wait.ToastMessage });
@@ -32,4 +32,11 @@ export default class ToastMessage {
     await this.closeButton.click();
     await this.messageText.waitFor({ state: 'detached', timeout: Wait.TwoSeconds });
   }
+
+  waitForError = async (timeout?: number) => {
+    await this.messageText.waitFor({ state: 'visible', timeout: timeout || Wait.ToastMessage });
+    await expect(this.toastError, `Expected error: ${await this.messageText.textContent()}`).toBeVisible();
+    await this.closeButton.click();
+    await this.messageText.waitFor({ state: 'detached', timeout: Wait.TwoSeconds });
+  };
 }
