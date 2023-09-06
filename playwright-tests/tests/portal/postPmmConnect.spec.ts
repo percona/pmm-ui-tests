@@ -73,7 +73,7 @@ test.describe('Spec file for PMM connected the portal', async () => {
     }
   });
 
-  test.skip('PMM-T1152 Verify user logged in using SSO and is a member of SN account is able to see Entitlements'
+  test('PMM-T1152 Verify user logged in using SSO and is a member of SN account is able to see Entitlements'
       + ' @not-ui-pipeline @portal @portal-post-upgrade', async ({ page, loginPage, homeDashboardPage, entitlementsPage }) => {
     if (pmmVersion > 27) {
       await test.step('1. Login to he connected pmm with SSO', async () => {
@@ -278,8 +278,9 @@ test.describe('Spec file for PMM connected the portal', async () => {
       });
     }
   });
-  // Needs to be fixed in the future.
-  test('PMM-T1264 Verify that pmm admin user can force disconnect pmm from the portal'
+
+  // TODO: improve test to work without chain dependency. run new pmm-server, connect to portal and force disconnect then
+  test.skip('PMM-T1264 Verify that pmm admin user can force disconnect pmm from the portal'
       + ' @not-ui-pipeline @portal @portal-post-upgrade', async ({ page, perconaPlatformPage }) => {
     test.skip(pmmVersion < 29, 'This test is for PMM version 2.29.0 and higher');
 
