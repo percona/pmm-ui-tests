@@ -13,8 +13,6 @@ export default class HomeDashboardPage extends BaseDashboard {
   upgradeModal = new UpgradeModal(this.page);
   pmmMenu = new PmmMenu(this.page);
 
-  // landingUrl = 'graph/d/pmm-home/home-dashboard?orgId=1&refresh=1m';
-
   /**
    * Opens given Page entering url into the address field.
    */
@@ -23,7 +21,7 @@ export default class HomeDashboardPage extends BaseDashboard {
   };
 
   async waitToBeOpened() {
-    await this.pmmUpgrade.containers.upgradeContainer.waitFor({ state: 'visible', timeout: Wait.OneMinute });
+    await this.PAGE_HEADING_LOCATOR.waitFor({ state: 'visible', timeout: Wait.OneMinute });
     await expect(this.page).toHaveURL(this.PAGE_PATH);
   }
   upgradePmm = async () => {

@@ -1,7 +1,6 @@
 import { expect, test } from '@helpers/test-helper';
 import apiHelper from '@api/helpers/api-helper';
 import { PortalUser } from '@helpers/types/portal-user.class';
-import { fileHelper } from '@helpers/file-helper';
 import Wait from '@helpers/enums/wait';
 import grafanaHelper from '@helpers/grafana-helper';
 import { api, OrgUser } from '@api/api';
@@ -33,9 +32,12 @@ test.describe('Spec file for PMM connected the portal', async () => {
     const foundAdmin2User = users.find((user: OrgUser) => user.email === secondAdmin.email);
     const foundTechnicalUser = users.find((user: OrgUser) => user.email === technicalUser.email);
 
-    expect(foundAdmin1User!.role).toEqual('Admin');
-    expect(foundAdmin2User!.role).toEqual('Admin');
-    expect(foundTechnicalUser!.role).toEqual('Viewer');
+    expect(foundAdmin1User).toBeDefined();
+    expect(foundAdmin2User).toBeDefined();
+    expect(foundAdmin1User).toBeDefined();
+    expect(foundAdmin1User?.role).toEqual('Admin');
+    expect(foundAdmin2User?.role).toEqual('Admin');
+    expect(foundTechnicalUser?.role).toEqual('Viewer');
   });
 
   test('PMM-T1149 PMM-T1132 Verify PMM user logged in using SSO and member of SN account is able to see tickets'
@@ -78,7 +80,7 @@ test.describe('Spec file for PMM connected the portal', async () => {
     if (pmmVersion > 27) {
       await test.step('1. Login to he connected pmm with SSO', async () => {
         await loginPage.signInWithPerconaAccount(firstAdmin.email, firstAdmin.password);
-        await homeDashboardPage.pmmUpgrade.elements.currentVersion.waitFor({ state: 'visible', timeout: Wait.ThreeMinutes });
+        await homeDashboardPage.waitToBeOpened();
       });
 
       await test.step('2. Verify that there is a side menu for Entitlements', async () => {
@@ -111,7 +113,7 @@ test.describe('Spec file for PMM connected the portal', async () => {
 
     if (pmmVersion >= 29) {
       await loginPage.signInWithPerconaAccount(firstAdmin.email, firstAdmin.password);
-      await homeDashboardPage.pmmUpgrade.elements.currentVersion.waitFor({ state: 'visible', timeout: Wait.ThreeMinutes });
+      await homeDashboardPage.waitToBeOpened();
       await homeDashboardPage.sideMenu.environmentOverview.click();
       await environmentOverviewPage.elements.contactsHeader.waitFor({ state: 'visible' });
       await environmentOverviewPage.elements.contactsSubHeader.waitFor({ state: 'visible' });
@@ -134,7 +136,7 @@ test.describe('Spec file for PMM connected the portal', async () => {
     if (pmmVersion > 27) {
       await test.step('1. Login to he connected pmm with SSO', async () => {
         await grafanaHelper.authorize(page);
-        await homeDashboardPage.pmmUpgrade.elements.currentVersion.waitFor({ state: 'visible', timeout: Wait.ThreeMinutes });
+        await homeDashboardPage.waitToBeOpened();
       });
 
       await test.step('2. Verify that there is NO side menu for organizational tickets', async () => {
@@ -162,7 +164,7 @@ test.describe('Spec file for PMM connected the portal', async () => {
     if (pmmVersion > 27) {
       await test.step('1. Login to the connected pmm with local account', async () => {
         await grafanaHelper.authorize(page);
-        await homeDashboardPage.pmmUpgrade.elements.currentVersion.waitFor({ state: 'visible', timeout: Wait.ThreeMinutes });
+        await homeDashboardPage.waitToBeOpened();
       });
 
       await test.step('2. Verify that there is NO side menu for organizational Entitlements', async () => {
@@ -190,7 +192,7 @@ test.describe('Spec file for PMM connected the portal', async () => {
     if (pmmVersion > 27) {
       await test.step('1. Login to the connected pmm with local account', async () => {
         await grafanaHelper.authorize(page);
-        await homeDashboardPage.pmmUpgrade.elements.currentVersion.waitFor({ state: 'visible', timeout: Wait.ThreeMinutes });
+        await homeDashboardPage.waitToBeOpened();
       });
       await test.step('1. Login to the connected pmm with local account', async () => {
         await page.goto(environmentOverviewPage.environmentOverviewUrl);
@@ -210,7 +212,7 @@ test.describe('Spec file for PMM connected the portal', async () => {
     if (pmmVersion > 27) {
       await test.step('1. Login to he connected pmm with SSO', async () => {
         await loginPage.signInWithPerconaAccount(freeUser.email, freeUser.password);
-        await homeDashboardPage.pmmUpgrade.elements.currentVersion.waitFor({ state: 'visible', timeout: Wait.ThreeMinutes });
+        await homeDashboardPage.waitToBeOpened();
       });
 
       await test.step('2. Verify that there is a side menu for organizational tickets', async () => {
@@ -253,7 +255,7 @@ test.describe('Spec file for PMM connected the portal', async () => {
       + ' @portal @not-ui-pipeline @portal-post-upgrade', async ({ page, loginPage, homeDashboardPage, perconaPlatformPage }) => {
     if (pmmVersion > 27) {
       await loginPage.signInWithPerconaAccount(firstAdmin.email, firstAdmin.password);
-      await homeDashboardPage.pmmUpgrade.elements.currentVersion.waitFor({ state: 'visible', timeout: Wait.ThreeMinutes });
+      await homeDashboardPage.waitToBeOpened();
       await page.goto(perconaPlatformPage.PAGE_PATH);
       await perconaPlatformPage.connectedContainer.waitFor({ state: 'visible' });
       await perconaPlatformPage.buttons.disconnect.click();
@@ -266,7 +268,7 @@ test.describe('Spec file for PMM connected the portal', async () => {
       }
 
       await grafanaHelper.authorize(page);
-      await homeDashboardPage.pmmUpgrade.elements.currentVersion.waitFor({ state: 'visible', timeout: Wait.ThreeMinutes });
+      await homeDashboardPage.waitToBeOpened();
       await page.goto(perconaPlatformPage.PAGE_PATH);
       const adminToken = await api.portal.getUserAccessToken(firstAdmin.email, firstAdmin.password);
 

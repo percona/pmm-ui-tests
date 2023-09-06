@@ -6,11 +6,11 @@ import { expect } from '@helpers/test-helper';
 import grafanaHelper from '@helpers/grafana-helper';
 
 export class CommonPage {
+  PAGE_HEADING_LOCATOR: Locator = this.page.locator('//h1');
+
   toastMessage = new ToastMessage(this.page);
   sideMenu = new LeftNavigationMenu(this.page);
   optionMenu = new OptionsMenu(this.page);
-
-  PAGE_HEADING_LOCATOR = this.page.locator('//h1');
 
   elements: object = {
     mainView: this.page.locator('//*[@class="main-view"]'),
