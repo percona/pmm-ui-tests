@@ -26,6 +26,7 @@ export const portalApi = {
   async deleteOrg(accessToken: string, orgId: string) {
     return portalApiHelper.delete({
       path: `/v1/orgs/${orgId}`,
+      timeout: 120_000,
       accessToken,
       data: {},
     });

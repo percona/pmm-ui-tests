@@ -279,7 +279,7 @@ test.describe('Spec file for PMM connected the portal', async () => {
     }
   });
   // Needs to be fixed in the future.
-  test.skip('PMM-T1264 Verify that pmm admin user can force disconnect pmm from the portal'
+  test('PMM-T1264 Verify that pmm admin user can force disconnect pmm from the portal'
       + ' @not-ui-pipeline @portal @portal-post-upgrade', async ({ page, perconaPlatformPage }) => {
     test.skip(pmmVersion < 29, 'This test is for PMM version 2.29.0 and higher');
 
