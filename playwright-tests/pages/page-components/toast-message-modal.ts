@@ -25,4 +25,11 @@ export default class ToastMessage {
     await this.closeButton.click();
     await this.messageText.waitFor({ state: 'detached', timeout: Wait.TwoSeconds });
   };
+
+  async waitForSuccess(timeout?: number) {
+    await this.messageText.waitFor({ state: 'visible', timeout: timeout || Wait.ToastMessage });
+    await expect(this.toastSuccess, `Expected success: ${await this.messageText.textContent()}`).toBeVisible();
+    await this.closeButton.click();
+    await this.messageText.waitFor({ state: 'detached', timeout: Wait.TwoSeconds });
+  }
 }

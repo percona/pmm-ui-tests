@@ -5,6 +5,7 @@ import constants from '@helpers/constants';
 
 const checkAndReturnResponse = async (r: APIResponse) => {
   await expect(r, `Expected to be OK: ${r.status()} ${r.statusText()}`).toBeOK();
+  console.log(`Status: ${r.status()} ${r.statusText()}`);
   return r.json();
 };
 

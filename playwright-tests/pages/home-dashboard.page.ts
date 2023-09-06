@@ -6,9 +6,17 @@ import PmmMenu from '@components/dashboards/pmm-menu';
 import { BaseDashboard } from './dashboards/base-dashboard.page';
 
 export default class HomeDashboardPage extends BaseDashboard {
+  readonly PAGE_PATH = 'graph/d/pmm-home/home-dashboard?orgId=1&refresh=1m';
+  readonly PAGE_HEADING = 'Home Dashboard';
+
   pmmUpgrade = new PmmUpgrade(this.page);
   upgradeModal = new UpgradeModal(this.page);
   pmmMenu = new PmmMenu(this.page);
+
+  elements: any = {
+    ...this.elements,
+    headingLocator: this.page.locator('//h1'),
+  };
 
   upgradePmm = async () => {
     await this.pmmUpgrade.buttons.upgradeButton.waitFor({ state: 'visible', timeout: Wait.ThreeMinutes });

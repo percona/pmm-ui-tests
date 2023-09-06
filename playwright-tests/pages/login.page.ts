@@ -1,5 +1,6 @@
 import { CommonPage } from '@pages/common.page';
 import { Locator } from '@playwright/test';
+import LoginPlatformPage from '@pages/login-platform.page';
 
 export default class LoginPage extends CommonPage {
   readonly PAGE_PATH = 'graph/login';
@@ -8,21 +9,9 @@ export default class LoginPage extends CommonPage {
   elements: any = {
     ...this.elements,
     headingLocator: this.page.locator('//h1'),
-    oktaLogin: {
-      usernameInput: this.page.locator('//*[@name="username"]'),
-      passwordInput: this.page.locator('//*[@name="password"]'),
-      nextButton: this.page.locator('//*[@id="idp-discovery-submit"]'),
-      signInButton: this.page.locator('//*[@id="okta-signin-submit"]'),
-    },
-  };
-
-  fields = {
-    username: this.page.locator('//*[@name="username"]'),
-    password: this.page.locator('//*[@name="password"]'),
-  };
-
-  buttons = {
-    oktaLogin: this.page.locator('//*[@href="login/generic_oauth"]'),
+    username: this.page.locator('//input[@name="username"]'),
+    password: this.page.locator('//input[@name="password"]'),
+    signInWithPerconaAccountButton: this.page.locator('//*[@href="login/generic_oauth"]'),
   };
 
   /**
@@ -32,11 +21,9 @@ export default class LoginPage extends CommonPage {
     await this.openPageByPath(this.PAGE_PATH, this.PAGE_HEADING, this.elements.headingLocator as Locator);
   };
 
-  oktaLogin = async (username: string, password: string) => {
-    await this.buttons.oktaLogin.click();
-    await this.elements.oktaLogin.usernameInput.type(username);
-    await this.elements.oktaLogin.nextButton.click();
-    await this.elements.oktaLogin.passwordInput.type(password);
-    await this.elements.oktaLogin.signInButton.click();
+  signInWithPerconaAccount = async (username: string, password: string) => {
+    await this.elements.signInWithPerconaAccountButton.click();
+    await new LoginPlatformPage(this.page).login(username, password);
+    await this.toastMessage.waitForMessage('Logged in');
   };
 }
