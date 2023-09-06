@@ -50,10 +50,7 @@ test.describe('Spec file for PMM inventory tests.', async () => {
     await test.step('1. Verify navigation to the Inventory page.', async () => {
       await homeDashboardPage.pmmMenu.selectOption('PMM Inventory');
       await servicesPage.verifyPageLoaded();
-      await servicesPage.sideMenu.elements.configuration.hover();
-      await expect(homeDashboardPage.sideMenu.configuration.buttons.inventory)
-        .toHaveText(homeDashboardPage.sideMenu.configuration.labels.inventory);
-      await homeDashboardPage.sideMenu.configuration.buttons.inventory.click();
+      await servicesPage.sideMenu.configuration().selectInventory();
       await servicesPage.verifyPageLoaded();
       await page.goto(servicesPage.url);
       await servicesPage.verifyPageLoaded();
