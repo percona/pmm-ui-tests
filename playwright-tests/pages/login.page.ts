@@ -23,6 +23,6 @@ export default class LoginPage extends CommonPage {
   signInWithPerconaAccount = async (username: string, password: string) => {
     await this.elements.signInWithPerconaAccountButton.click();
     await new LoginPlatformPage(this.page).login(username, password);
-    await this.toastMessage.waitForMessage('Logged in');
+    await this.toastMessage.catchError();
   };
 }

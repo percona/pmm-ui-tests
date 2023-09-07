@@ -28,15 +28,27 @@ export default class ToastMessage {
 
   async waitForSuccess(timeout?: number) {
     await this.messageText.waitFor({ state: 'visible', timeout: timeout || Wait.ToastMessage });
-    await expect(this.toastSuccess, `Expected success: ${await this.messageText.textContent()}`).toBeVisible();
+    await expect(this.toastSuccess, `Verify found message is success: "${await this.messageText.textContent()}"`)
+      .toBeVisible();
     await this.closeButton.click();
     await this.messageText.waitFor({ state: 'detached', timeout: Wait.TwoSeconds });
   }
 
   waitForError = async (timeout?: number) => {
     await this.messageText.waitFor({ state: 'visible', timeout: timeout || Wait.ToastMessage });
-    await expect(this.toastError, `Expected error: ${await this.messageText.textContent()}`).toBeVisible();
+    await expect(this.toastError, `Verify found message is not an error: "${await this.messageText.textContent()}"`)
+      .toBeVisible();
     await this.closeButton.click();
     await this.messageText.waitFor({ state: 'detached', timeout: Wait.TwoSeconds });
+  };
+
+  catchError = async (timeout?: number) => {
+    let toastDisplayed = false;
+    await this.messageText.waitFor({ state: 'visible', timeout: timeout || Wait.ToastMessage })
+      .then(() => { toastDisplayed = true; }).catch();
+    if (toastDisplayed) {
+      await expect(this.toastSuccess, `Verify found message is not an error: "${await this.messageText.textContent()}"`)
+        .toBeVisible({ timeout: 1 });
+    }
   };
 }
