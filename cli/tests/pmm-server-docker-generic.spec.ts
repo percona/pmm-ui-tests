@@ -1,5 +1,6 @@
 import { test, expect } from '@playwright/test';
 import * as cli from '@helpers/cliHelper';
+import Output from "@support/types/output";
 
 const DOCKER_IMAGE = process.env.DOCKER_VERSION && process.env.DOCKER_VERSION.length > 0
     ? process.env.DOCKER_VERSION
@@ -12,15 +13,17 @@ test.describe('PMM Server CLI tests for Docker Environment Variables', async () 
    */
   test('PMM-T224 run docker container with a invalid value for a environment variable DATA_RETENTION=48', async ({}) => {
     await cli.exec(`docker run -d -p 81:80 -p 446:443 --name PMM-T224 -e DATA_RETENTION=48 ${DOCKER_IMAGE}`);
+    let out: Output
+
     await expect(async () => {
-      await (await cli.exec('docker ps | grep PMM-T224')).exitCodeEquals(1);
+      out = await cli.exec('docker logs PMM-T224 2>&1 | grep \'Configuration error: environment variable\'');
+      await out.exitCodeEquals(0)
     }).toPass({
       // Probe, wait 1s, probe, wait 2s, probe, wait 2s, probe, wait 2s, probe, ....
       intervals: [1_000, 2_000, 2_000],
       timeout: 60_000
     });
-    await (await cli.exec(`docker logs PMM-T224 2>&1 | grep 'Configuration error: environment variable "DATA_RETENTION=48" has invalid duration 48'`))
-        .assertSuccess();
+    await out.outContains('Configuration error: environment variable \\"DATA_RETENTION=48\\" has invalid duration 48.')
     await (await cli.exec('docker rm PMM-T224')).assertSuccess();
   });
 
@@ -29,11 +32,18 @@ test.describe('PMM Server CLI tests for Docker Environment Variables', async () 
    */
   test('PMM-T225 run docker container with a unexpected environment variable DATA_TENTION=48', async ({}) => {
     await cli.exec(`docker run -d -p 82:80 -p 447:443 --name PMM-T225 -e DATA_TENTION=48 ${DOCKER_IMAGE}`);
-    //TODO: implement fluent wait instead of sleep
-    // await cli.exec('sleep 20');
-    await (await cli.exec('docker ps | grep PMM-T225')).assertSuccess();
-    await (await cli.exec(`docker logs PMM-T225 2>&1 | grep 'Configuration warning: unknown environment variable "DATA_TENTION=48"'`))
-        .assertSuccess();
+    let out: Output
+
+    await expect(async () => {
+      out = await cli.exec(`docker logs PMM-T225 2>&1 | grep 'Configuration warning: unknown environment variable'`);
+      await out.exitCodeEquals(0)
+    }).toPass({
+      // Probe, wait 1s, probe, wait 2s, probe, wait 2s, probe, wait 2s, probe, ....
+      intervals: [1_000, 2_000, 2_000],
+      timeout: 60_000
+    });
+
+    await out.outContains('Configuration warning: unknown environment variable \\"DATA_TENTION=48\\".')
     await (await cli.exec('docker stop PMM-T225')).assertSuccess();
     await (await cli.exec('docker rm PMM-T225')).assertSuccess();
   });
@@ -48,8 +58,24 @@ test.describe('PMM Server CLI tests for Docker Environment Variables', async () 
     //TODO: implement fluent wait instead of sleep
     await cli.exec('sleep 20');
     await (await cli.exec('docker ps | grep PMM-T226')).assertSuccess();
-    await (await cli.exec('docker logs PMM-T226 2>&1 | grep "WARN"')).exitCodeEquals(1);
-    await (await cli.exec('docker logs PMM-T226 2>&1 | grep "ERRO"')).exitCodeEquals(1);
+    await expect(async () => {
+      const out = await cli.exec('docker logs PMM-T226 2>&1 | grep "WARN"');
+      await out.exitCodeEquals(1)
+    }).toPass({
+      // Probe, wait 1s, probe, wait 2s, probe, wait 2s, probe, wait 2s, probe, ....
+      intervals: [1_000, 2_000, 2_000],
+      timeout: 60_000
+    });
+
+    await expect(async () => {
+      const out = await cli.exec('docker logs PMM-T226 2>&1 | grep "ERRO"');
+      await out.exitCodeEquals(1)
+    }).toPass({
+      // Probe, wait 1s, probe, wait 2s, probe, wait 2s, probe, wait 2s, probe, ....
+      intervals: [1_000, 2_000, 2_000],
+      timeout: 60_000
+    });
+
     await (await cli.exec('docker stop PMM-T226')).assertSuccess();
     await (await cli.exec('docker rm PMM-T226')).assertSuccess();
   });
@@ -77,22 +103,23 @@ test.describe('PMM Server CLI tests for Docker Environment Variables', async () 
    * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/docker-env-variable-tests.bats#L67
    */
   test('Basic Sanity using Clickhouse shipped with PMM-Server, Check Connection, Run a Query', async ({}) => {
-    await (await cli.exec(`clickhouse-client --database pmm --query "select any(example),sum(num_queries) cnt, max(m_query_time_max) slowest  from metrics where period_start>subtractHours(now(),6)  group by queryid order by slowest desc limit 10"`))
+    await (await cli.exec(
+        `clickhouse-client \
+        --database pmm \
+        --query "select any(example),sum(num_queries) cnt, \
+        max(m_query_time_max) slowest from metrics where period_start>subtractHours(now(),6) \
+        group by queryid order by slowest desc limit 10"`))
         .assertSuccess();
 
-    // Check PMM Database Exist
-    let output = await cli.exec(`clickhouse-client --query 'SELECT * FROM system.databases' | grep pmm | awk -F' ' '{print $1}'`);
+    let output = await cli.exec(
+        `clickhouse-client --query 'SELECT * FROM system.databases' | grep pmm | tr -s '[:blank:]' '\\n'`);
     await output.assertSuccess();
-    await output.outContains('pmm');
 
-    // Check Data path matches expected Value
-    output = await cli.exec(`clickhouse-client --query 'SELECT * FROM system.databases' | grep pmm | awk -F' ' '{print $3}'`);
-    await output.assertSuccess();
-    await output.outContains('/srv/clickhouse/data/pmm/');
-
-    //   ## Check Metadata path matches expected Value
-    output = await cli.exec(`clickhouse-client --query 'SELECT * FROM system.databases' | grep pmm | awk -F' ' '{print $4}'`);
-    await output.assertSuccess();
-    await output.outContains('/srv/clickhouse/metadata/pmm/');
+    /** Make sure files are in mounted "/srv/" folder */
+    const expectedPath = '/srv/clickhouse/';
+    expect(output.getStdOutLines()[0], `Verify "pmm" Database Exists`).toEqual('pmm');
+    expect(output.getStdOutLines()[1], `Verify Clickhouse engine is "Atomic"`).toEqual('Atomic');
+    expect(output.getStdOutLines()[2], `Verify Clickhouse data_path is "${expectedPath}"`).toContain(expectedPath);
+    expect(output.getStdOutLines()[3], `Verify Clickhouse metadata_path contains "${expectedPath}"`).toContain(expectedPath);
   });
 });

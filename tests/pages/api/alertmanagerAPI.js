@@ -24,7 +24,7 @@ module.exports = {
 
     const silences = await I.sendGetRequest('graph/api/alertmanager/grafana/api/v2/silences', headers);
 
-    return silences.data.filter(({ status }) => status.state === 'active').map(e => e.id);
+    return silences.data.filter(({ status }) => status.state === 'active').map((e) => e.id);
   },
 
   async deleteSilences(silenceID) {
@@ -47,23 +47,23 @@ module.exports = {
 
       if (silenced) {
         assert.ok(
-            JSON.stringify(silences).includes(ruleId),
-            'Alert should be silenced in alertmanager',
+          JSON.stringify(silences).includes(ruleId),
+          'Alert should be silenced in alertmanager',
         );
 
         assert.ok(
-            !JSON.stringify(alerts).includes(ruleId),
-            'Silenced alert should not be active in alertmanager',
+          !JSON.stringify(alerts).includes(ruleId),
+          'Silenced alert should not be active in alertmanager',
         );
       } else {
         assert.ok(
-            JSON.stringify(alerts).includes(ruleId),
-            'Alert should be active in alertmanager',
+          JSON.stringify(alerts).includes(ruleId),
+          'Alert should be active in alertmanager',
         );
 
         assert.ok(
-            !JSON.stringify(silences).includes(ruleId),
-            'Alert should not be be silenced in alertmanager',
+          !JSON.stringify(silences).includes(ruleId),
+          'Alert should not be be silenced in alertmanager',
         );
       }
     }

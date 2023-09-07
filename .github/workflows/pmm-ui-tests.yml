@@ -1,5 +1,5 @@
 ---
-name: pmm-ui-tests
+name: ui-tests-pipeline
 
 on:
   workflow_call:
@@ -18,9 +18,6 @@ on:
         type: string
         default: 'dev-latest'
         required: true
-      pmm_server_docker_tag:
-        description: 'Use when tag different to: "perconalab/pmm-server" is required'
-        type: string
       pmm_client_version:
         description: 'Version of the pmm client used for testing'
         type: string
@@ -36,6 +33,7 @@ on:
         type: string
         default: 'main'
         required: true
+
   workflow_dispatch:
     inputs:
       pmm_ui_tests_branch:
@@ -52,9 +50,6 @@ on:
         type: string
         default: 'dev-latest'
         required: true
-      pmm_server_docker_tag:
-        description: 'Use when tag different to: "perconalab/pmm-server" is required'
-        type: string
       pmm_client_version:
         description: 'Version of the pmm client used for testing'
         type: string
@@ -109,8 +104,8 @@ jobs:
 
     steps:
       - name: PMM server version ${{ inputs.pmm_server_version }} and UI tests for flag "${{ inputs.pmm_test_flag }}" and pmm-ui-tests branch ${{ inputs.pmm_ui_tests_branch }}
-        uses: percona-platform/github-status-action@v1
-        if: ${{ github.event_name != 'pull_request' }}
+        if: ${{ env.SHA != 'null' }}
+        uses: percona/gh-action-Sibz-github-status-action@v1
         continue-on-error: true
         with:
           authToken: ${{ secrets.GITHUB_TOKEN }}
@@ -121,44 +116,39 @@ jobs:
           target_url: "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
           sha: ${{ env.SHA }}
 
-      - name: Checkout UI tests
+      - name: 'Checkout UI tests: "${{ inputs.pmm_ui_tests_branch }}"'
         uses: actions/checkout@v3
         with:
-          ref: ${{ env.UI_TESTS_BRANCH }}
+          ref: ${{ inputs.pmm_ui_tests_branch }}
           repository: percona/pmm-ui-tests
           path: ./pmm-ui-tests
 
-      - name: Checkout pmm-qa Repo
+      - name: 'Install playwright'
+        working-directory: ./pmm-ui-tests/playwright-tests
+        run: |
+          npm ci
+          npx playwright install
+
+      - name: 'Checkout pmm-qa: "${{ inputs.pmm_qa_branch }}"'
         uses: actions/checkout@v3
         with:
           # token: ${{ secrets.ROBOT_TOKEN }}
           repository: percona/pmm-qa
+          ref: ${{ inputs.pmm_qa_branch }}
           path: ./pmm-qa
-          ref: ${{ env.PMM_QA_BRANCH }}
 
-      - name: Compose PMM-Sever
-        if: ${{ inputs.pmm_server_docker_tag == '' }}
+      - name: 'Setup <PMM Sever>: "${{ inputs.pmm_server_version }}"'
         working-directory: pmm-qa/pmm-integration
         run: |
           npm install
-          sudo npx ts-node ./integration-setup.ts --ci --setup-docker-pmm-server --rbac --pmm-server-version=${{ env.PMM_SERVER_VERSION }} --pmm-client-version=${{ env.PMM_CLIENT_VERSION }}
+          sudo npx ts-node ./integration-setup.ts --ci --setup-docker-pmm-server --rbac --pmm-server-docker-tag=${{ env.PMM_SERVER_VERSION }} --pmm-client-version=${{ env.PMM_CLIENT_VERSION }}
+          timeout 100 bash -c 'while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' localhost/ping)" != "200" ]]; do sleep 5; done' || false
 
-      - name: Compose PMM-Sever with docker tag ${{ inputs.pmm_server_docker_tag }}
-        if: ${{ inputs.pmm_server_docker_tag != '' }}
-        working-directory: pmm-qa/pmm-integration
-        run: |
-          npm install
-          sudo npx ts-node ./integration-setup.ts --ci --setup-docker-pmm-server --rbac --pmm-server-docker-tag=${{ inputs.pmm_server_docker_tag }} --pmm-client-version=${{ env.PMM_CLIENT_VERSION }}          
-
-      - name: Health check for PMM2-server
-        run: timeout 100 bash -c 'while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' localhost/ping)" != "200" ]]; do sleep 5; done' || false
-
-      - name: Setup Client for PMM-Server
+      - name: 'Setup <PMM Client: ${{ inputs.pmm_client_version }}>'
         run: |
           sudo bash ./pmm-qa/pmm-tests/pmm2-client-setup.sh --pmm_server_ip 127.0.0.1 --client_version ${{ env.PMM_CLIENT_VERSION }} --admin_password admin --use_metrics_mode no
-
         shell: bash
-      
+
       - name: Setup Databases for the PMM-Server
         working-directory: pmm-qa/pmm-integration
         run: |
@@ -171,37 +161,41 @@ jobs:
       - name: Execute UI tests
         if: ${{ inputs.pmm_test_flag == 'null' }}
         id: ui-tests-all
-        working-directory: pmm-ui-tests
+        working-directory: pmm-ui-tests/playwright-tests
         run: |
-          npm install
-          npx playwright install
-          npx playwright test --config="playwright-tests/playwright.config.ts"
-        env:
-          NODE_TLS_REJECT_UNAUTHORIZED: 0
+          npx playwright test --project="chromium" --quiet
+#        env:
+#          NODE_TLS_REJECT_UNAUTHORIZED: 0
 
-      - name: Execute Flagged UI tests
+      - name: 'Run UI tests: ${{ env.PMM_TEST_FLAG }}'
         if: ${{ inputs.pmm_test_flag != 'null' }}
         id: ui-tests-flagged
-        working-directory: pmm-ui-tests
+        working-directory: pmm-ui-tests/playwright-tests
         run: |
-          npm install
-          npx playwright install
-          npx playwright test --config="playwright-tests/playwright.config.ts" --grep="${{ env.PMM_TEST_FLAG }}"
-        env:
-          NODE_TLS_REJECT_UNAUTHORIZED: 0
+          project="${{ contains(env.PMM_TEST_FLAG, 'portal') && 'Portal' || 'Chromium' }}"
+          npx playwright test --project=$project --grep ${{ env.PMM_TEST_FLAG }} --pass-with-no-tests
+#        env:
+#          NODE_TLS_REJECT_UNAUTHORIZED: 0
+
+      - name: 'Create report name'
+        if: failure()
+        run: |
+          # TODO: add job id for matrix call
+          job_tag=$(echo "${{ inputs.pmm_test_flag }}" | sed -e "s/-pre-upgrade//" -e "s/@//")
+          report_name="$job_tag"-report
+          echo $report_name
+          echo "REPORT_NAME=$report_name" >> $GITHUB_ENV
 
       - name: Generate and Attach the report
-        if: ${{ always() && steps.ui-tests.outcome != 'skipped' }}
-        uses: percona-platform/upload-artifact@v3
+        if: failure()
+        uses: actions/upload-artifact@v3
         with:
-          name: ui-tests-videos-screenshots
-          path: |
-            pmm-ui-tests/playwright-report/data/*webm
-            pmm-ui-tests/playwright-report/data/*png
+          name: ${{ env.REPORT_NAME }}
+          path: ./pmm-ui-tests/playwright-tests/playwright-report
 
       - name: Create status check
-        uses: percona-platform/github-status-action@v1
-        if: ${{ github.event_name != 'pull_request' && always() }}
+        uses: percona/gh-action-Sibz-github-status-action@v1
+        if: ${{ env.SHA != 'null' && always() }}
         continue-on-error: true
         with:
           authToken: ${{ secrets.GITHUB_TOKEN }}

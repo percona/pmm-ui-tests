@@ -124,49 +124,6 @@ Scenario.skip(
   },
 );
 
-Scenario(
-  'PMM-T782 PMM-T783 Verify DBaaS is disabled by default, Verify DBaaS can be enabled in PMM Settings @settings @settings-fb',
-  async ({ I, pmmSettingsPage, dbaasPage }) => {
-    I.amOnPage(pmmSettingsPage.advancedSettingsUrl);
-    await pmmSettingsPage.waitForPmmSettingsPageLoaded();
-
-    // Verify tooltip for Enable/Disable DBaaS toggle
-    await pmmSettingsPage.verifyTooltip(pmmSettingsPage.tooltips.advancedSettings.dbaas);
-
-    let selector = await I.grabAttributeFrom(pmmSettingsPage.fields.dbaasSwitchSelector, 'checked');
-
-    if (selector) {
-      assert.ok(selector === false, 'Dbaas Should be disabled by Default, toggle should be disabled');
-    }
-
-    I.dontSeeElement(pmmSettingsPage.fields.dbaasMenuIconLocator);
-    // FIXME: skip until https://jira.percona.com/browse/PMM-11221 is fixed
-    // I.amOnPage(dbaasPage.url);
-    // I.waitForElement(dbaasPage.disabledDbaaSMessage.settingsLinkLocator, 30);
-    // const message = (await I.grabTextFrom(dbaasPage.disabledDbaaSMessage.emptyBlock)).replace(/\s+/g, ' ');
-
-    // assert.ok(message === dbaasPage.disabledDbaaSMessage.textMessage,
-    //   `Message Shown on ${message} should be equal to ${dbaasPage.disabledDbaaSMessage.textMessage}`);
-    // const link = await I.grabAttributeFrom(dbaasPage.disabledDbaaSMessage.settingsLinkLocator, 'href');
-
-    // assert.ok(link.includes('/graph/settings/advanced-settings'),
-    //   `Advanced Setting Link displayed on DbaaS Page, when DbaaS is not enabled ${link}, please check the link`);
-    // Enable DbaaS via Advanced Settings, Make sure Menu is visible.
-    // await pmmSettingsPage.openAdvancedSettings();
-    I.waitForVisible(pmmSettingsPage.tooltips.advancedSettings.dbaas.iconLocator, 30);
-    I.click(pmmSettingsPage.fields.dbaasSwitchSelector);
-    I.click(pmmSettingsPage.fields.applyButton);
-    I.waitForElement(pmmSettingsPage.fields.dbaasMenuIconLocator, 30);
-    I.seeElement(pmmSettingsPage.fields.dbaasMenuIconLocator);
-    I.waitForElement(pmmSettingsPage.fields.dbaasSwitchSelector, 60);
-    selector = await I.grabAttributeFrom(pmmSettingsPage.fields.dbaasSwitchSelectorInput, 'checked');
-    assert.ok(selector === true, 'Dbaas Should be enabled, toggle should be checked now');
-    I.amOnPage(dbaasPage.url);
-    I.waitForElement(dbaasPage.tabs.kubernetesClusterTab.addKubernetesClusterButton, 50);
-    I.seeElement(dbaasPage.tabs.kubernetesClusterTab.addKubernetesClusterButton);
-  },
-);
-
 Scenario.skip(
   'PMM-T254 PMM-T253 Verify disable telemetry while Advisers enabled @settings @stt @grafana-pr',
   async ({ I, pmmSettingsPage }) => {
@@ -227,7 +184,8 @@ Scenario('PMM-T520 - Verify that alert is being fired to external Alert Manager 
   await pmmSettingsPage.verifyExternalAlertManager(pmmSettingsPage.alertManager.ruleName);
 });
 
-Scenario('PMM-T532 PMM-T533 PMM-T536 - Verify user can disable/enable IA in Settings @ia @settings',
+Scenario(
+  'PMM-T532 PMM-T533 PMM-T536 - Verify user can disable/enable IA in Settings @ia @settings',
   async ({
     I, pmmSettingsPage, settingsAPI, adminPage,
   }) => {
@@ -251,9 +209,11 @@ Scenario('PMM-T532 PMM-T533 PMM-T536 - Verify user can disable/enable IA in Sett
     pmmSettingsPage.verifySwitch(pmmSettingsPage.fields.perconaAlertingSwitchInput, 'on');
     I.dontSeeElementInDOM(adminPage.sideMenu.integratedAlerting);
     I.dontSeeElement(pmmSettingsPage.communication.communicationSection);
-  }).retry(2);
+  },
+).retry(2);
 
-Scenario('PMM-T785 - Verify DBaaS cannot be disabled with ENABLE_DBAAS or PERCONA_TEST_DBAAS @dbaas',
+Scenario(
+  'PMM-T785 - Verify DBaaS cannot be disabled with ENABLE_DBAAS or PERCONA_TEST_DBAAS @dbaas',
   async ({ I, pmmSettingsPage }) => {
     I.amOnPage(pmmSettingsPage.advancedSettingsUrl);
     await pmmSettingsPage.waitForPmmSettingsPageLoaded();
@@ -265,9 +225,11 @@ Scenario('PMM-T785 - Verify DBaaS cannot be disabled with ENABLE_DBAAS or PERCON
     // skipped until PMM-9982 is fixed
     // pmmSettingsPage.verifySwitch(pmmSettingsPage.fields.dbaasSwitchSelectorInput, 'on');
     I.verifyPopUpMessage(pmmSettingsPage.messages.invalidDBaaSDisableMessage);
-  });
+  },
+);
 
-Data(communicationDefaults).Scenario('PMM-T534 PMM-T535 PMM-T1074 - Verify user is able to set up default Email/Slack communication settings / validation @ia @settings @grafana-pr',
+Data(communicationDefaults).Scenario(
+  'PMM-T534 PMM-T535 PMM-T1074 - Verify user is able to set up default Email/Slack communication settings / validation @ia @settings @grafana-pr',
   async ({
     I, pmmSettingsPage, settingsAPI, current,
   }) => {
@@ -281,7 +243,8 @@ Data(communicationDefaults).Scenario('PMM-T534 PMM-T535 PMM-T1074 - Verify user 
       await pmmSettingsPage.waitForPmmSettingsPageLoaded();
       await pmmSettingsPage.verifyCommunicationFields(current);
     }
-  });
+  },
+);
 
 Scenario(
   'PMM-T747 - Verify enabling Azure flag @instances',
@@ -389,8 +352,11 @@ Scenario(
     await pmmSettingsPage.waitForPmmSettingsPageLoaded();
     const publicAddressAfterRefresh = await I.grabValueFrom(pmmSettingsPage.fields.publicAddressInput);
 
-    I.assertEqual(publicAddressAfterRefresh, publicAddressValue,
-      `Expected the Public Address to be saved and Match ${publicAddressValue}`);
+    I.assertEqual(
+      publicAddressAfterRefresh,
+      publicAddressValue,
+      `Expected the Public Address to be saved and Match ${publicAddressValue}`,
+    );
   },
 ).retry(1);
 
@@ -462,7 +428,10 @@ Scenario(
     I.assertTrue(publicAddressValue.length > 0, 'Expected the Public Address Input Field to be not empty!');
     await pmmSettingsPage.waitForPmmSettingsPageLoaded();
 
-    await I.assertEqual(serverAddressIP, publicAddressValue,
-      `Expected the Public Address to be saved and Match ${publicAddressValue}`);
+    await I.assertEqual(
+      serverAddressIP,
+      publicAddressValue,
+      `Expected the Public Address to be saved and Match ${publicAddressValue}`,
+    );
   },
 ).retry(1);

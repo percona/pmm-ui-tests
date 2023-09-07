@@ -10,7 +10,7 @@ Before(async ({ I, rulesAPI }) => {
 Scenario(
   'PMM-T643 Verify message about disabled IA @ia @alerting-fb',
   async ({
-    I, pmmSettingsPage, codeceptjsConfig
+    I, pmmSettingsPage, codeceptjsConfig,
   }) => {
     await settingsAPI.apiDisableIA();
     I.amOnPage(alertsPage.url);
@@ -24,11 +24,11 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T481 Verify IA tab bar, ' +
-  'PMM-T620 Verify after reloading the page user is on the same IA tab, ' +
-  'PMM-T776 Verify that user is able to see valid HTML Title on alerts page @ia @alerting-fb',
+  'PMM-T481 Verify IA tab bar, '
+  + 'PMM-T620 Verify after reloading the page user is on the same IA tab, '
+  + 'PMM-T776 Verify that user is able to see valid HTML Title on alerts page @ia @alerting-fb',
   async ({
-    I, alertRulesPage, ruleTemplatesPage, contactPointsPage, nPoliciesPage, silencesPage, alertGroupsPage, aiAdminPage
+    I, alertRulesPage, ruleTemplatesPage, contactPointsPage, nPoliciesPage, silencesPage, alertGroupsPage, aiAdminPage,
   }) => {
     await settingsAPI.apiEnableIA();
     const verifyNotificationChannelsPage = async () => {
@@ -44,8 +44,11 @@ Scenario(
     };
 
     verifyTitle('Fired alerts');
-    iaCommon.openAndVerifyTab(iaCommon.tabNames.ruleTemplates, ruleTemplatesPage.buttons.openAddTemplateModal,
-      ruleTemplatesPage.url);
+    iaCommon.openAndVerifyTab(
+      iaCommon.tabNames.ruleTemplates,
+      ruleTemplatesPage.buttons.openAddTemplateModal,
+      ruleTemplatesPage.url,
+    );
     verifyTitle('Alert rule templates');
     iaCommon.openAndVerifyTab(iaCommon.tabNames.alertRules, alertRulesPage.buttons.newAlertRule, alertRulesPage.url);
     verifyTitle('Alert rules');
