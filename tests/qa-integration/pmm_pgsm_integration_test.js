@@ -121,8 +121,8 @@ Scenario(
 
       await I.say(`query is : ${query}`);
 
-      if (!response.data.metrics.query_time) {
-        throw new Error(`there is no query time stored in clickhouse for query 
+      if (!response.data.metrics) {
+        throw new Error(`there are no metrics stored in clickhouse for query 
         "${query}"
         Full resp: 
         "${JSON.stringify(response.data)}"
