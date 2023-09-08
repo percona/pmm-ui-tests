@@ -6,6 +6,11 @@ import grafanaHelper from '@helpers/grafana-helper';
 import { api, OrgUser } from '@api/api';
 import { portalHelper } from '@helpers/portal-helper';
 
+/**
+ *  Connect PMM to Portal tests do not require any monitored services.
+ *  But requires environment variables(.env file supported) with credentials see: {@link constants.portal},
+ *  {@link constants.okta} and {@link constants.serviceNow}.
+ */
 test.describe('Spec file for PMM connected the portal', async () => {
   let firstAdmin: PortalUser;
   let secondAdmin: PortalUser;

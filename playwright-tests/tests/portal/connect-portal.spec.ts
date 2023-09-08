@@ -6,6 +6,11 @@ import { api } from '@api/api';
 import { portalHelper } from '@helpers/portal-helper';
 import Wait from '@helpers/enums/wait';
 
+/**
+ *  Connect PMM to Portal tests do not require any monitored services.
+ *  But requires environment variables(.env file supported) with credentials see: {@link constants.portal},
+ *  {@link constants.okta} and {@link constants.serviceNow}.
+ */
 test.describe('Spec file for connecting PMM to the portal', async () => {
   let pmmVersion: number;
   let firstAdmin: PortalUser;
