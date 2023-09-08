@@ -1,7 +1,6 @@
 import { expect, test } from '@helpers/test-helper';
 import apiHelper from '@api/helpers/api-helper';
 import { portalApi } from '@api/portal.api';
-import Wait from '@helpers/enums/wait';
 import { PortalUser } from '@helpers/types/portal-user.class';
 import { api } from '@api/api';
 import { portalHelper } from '@helpers/portal-helper';
@@ -103,32 +102,27 @@ test.describe('Spec file for connecting PMM to the portal', async () => {
   test(
     'PMM-T1098 Verify All org users can login in connected PMM server'
       + ' @not-ui-pipeline @portal @pre-pmm-portal-upgrade @post-pmm-portal-upgrade',
-    async ({ loginPage, homeDashboardPage, baseURL, context }) => {
+    async ({ loginPage, homeDashboardPage, context }) => {
       test.skip(pmmVersion < 27, 'This test is for PMM version 2.27.0 and higher');
 
       await test.step('1. Login as admin user that created the org.', async () => {
         await loginPage.open();
         await loginPage.oktaLogin(firstAdmin.email, firstAdmin.password);
-        await homeDashboardPage.pmmUpgrade.containers.upgradeContainer
-          .waitFor({ state: 'visible', timeout: Wait.OneMinute });
-        await expect(loginPage.page).toHaveURL(`${baseURL}/${loginPage.landingUrl}`);
+        await homeDashboardPage.waitToBeOpened();
         await context.clearCookies();
         await loginPage.page.reload();
       });
 
       await test.step('1. Login as admin user that was invited to the org.', async () => {
         await loginPage.oktaLogin(secondAdmin.email, secondAdmin.password);
-        await homeDashboardPage.pmmUpgrade.containers.upgradeContainer.waitFor({ state: 'visible', timeout: Wait.OneMinute });
-        await expect(loginPage.page).toHaveURL(`${baseURL}/${loginPage.landingUrl}`);
+        await homeDashboardPage.waitToBeOpened();
         await context.clearCookies();
         await loginPage.page.reload();
       });
 
       await test.step('1. Login as technical user that was invited to the org.', async () => {
         await loginPage.oktaLogin(technicalUser.email, technicalUser.password);
-        await homeDashboardPage.pmmUpgrade.containers.upgradeContainer
-          .waitFor({ state: 'visible', timeout: Wait.OneMinute });
-        await expect(loginPage.page).toHaveURL(`${baseURL}/${loginPage.landingUrl}`);
+        await homeDashboardPage.waitToBeOpened();
         await context.clearCookies();
         await loginPage.page.reload();
       });

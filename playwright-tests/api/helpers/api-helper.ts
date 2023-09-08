@@ -5,13 +5,12 @@ import config from '@root/playwright.config';
 import grafanaHelper from '@helpers/grafana-helper';
 import { APIResponse } from 'playwright-core';
 import { ReadStream } from 'fs';
+import { Serializable } from 'playwright-core/types/structs';
 
 const getConfiguredRestApi = async (): Promise<APIRequestContext> => {
   return request.newContext({
     baseURL: config.use?.baseURL,
-    extraHTTPHeaders: {
-      Authorization: `Basic ${grafanaHelper.getToken()}`,
-    },
+    extraHTTPHeaders: { Authorization: `Basic ${grafanaHelper.getToken()}` },
     ignoreHTTPSErrors: true,
   });
 };
@@ -44,7 +43,7 @@ const apiHelper = {
 
   /**
    * Implements HTTP GET to PMM Server API
-   * Request parameters can be configured with original clinet options.
+   * Request parameters can be configured with original client options.
    * See original doc for more details: {@link APIRequestContext#get()}
    *
    * @param   path      API endpoint path
@@ -83,6 +82,32 @@ const apiHelper = {
   post: async (path: string, payload: object): Promise<APIResponse> => {
     console.log(`POST: ${path}\nPayload: ${JSON.stringify(payload)}`);
     const response = await (await getConfiguredRestApi()).post(path, payload);
+    expect(response.status(), `Status: ${response.status()} ${response.statusText()}`).toEqual(200);
+    return response;
+  },
+
+  /**
+   * Implements HTTP DELETE to PMM Server API
+   * Request parameters can be configured with original client options.
+   * See original doc for more details: {@link APIRequestContext#delete()}
+   *
+   * @param   path      API endpoint path
+   * @param   options   see original doc: {@link APIRequestContext#delete()}
+   * @return            Promise<APIResponse> instance
+   */
+  delete: async (path: string, options?:
+  {
+    data?: string | Buffer | Serializable,
+    failOnStatusCode?: boolean,
+    form?: { [p: string]: string | number | boolean },
+    headers?: { [p: string]: string },
+    ignoreHTTPSErrors?: boolean,
+    maxRedirects?: number,
+    multipart?: { [p: string]: string | number | boolean | ReadStream | { name: string, mimeType: string, buffer: Buffer } },
+    params?: { [p: string]: string | number | boolean }, timeout?: number
+  }): Promise<APIResponse> => {
+    console.log(`DELETE: ${path}${options ? ` with ${JSON.stringify(options)}` : ''}`);
+    const response = await (await getConfiguredRestApi()).delete(path, options);
     expect(response.status(), `Status: ${response.status()} ${response.statusText()}`).toEqual(200);
     return response;
   },

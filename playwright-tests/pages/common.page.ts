@@ -10,7 +10,7 @@ export class CommonPage {
   sideMenu = new LeftNavigationMenu(this.page);
   optionMenu = new OptionsMenu(this.page);
 
-  landingUrl = 'graph/d/pmm-home/home-dashboard?orgId=1&refresh=1m';
+  PAGE_HEADING_LOCATOR = this.page.locator('//h1');
 
   elements: object = {
     mainView: this.page.locator('//*[@class="main-view"]'),

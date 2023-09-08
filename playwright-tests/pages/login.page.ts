@@ -1,5 +1,4 @@
 import { CommonPage } from '@pages/common.page';
-import { Locator } from '@playwright/test';
 
 export default class LoginPage extends CommonPage {
   readonly PAGE_PATH = 'graph/login';
@@ -7,33 +6,26 @@ export default class LoginPage extends CommonPage {
 
   elements: any = {
     ...this.elements,
-    headingLocator: this.page.locator('//h1'),
+    usernameInput: this.page.locator('//input[@name="user"]'),
+    passwordInput: this.page.locator('//input[@name="password"]'),
+    oktaLoginButton: this.page.locator('//*[@href="login/generic_oauth"]'),
     oktaLogin: {
-      usernameInput: this.page.locator('//*[@name="username"]'),
-      passwordInput: this.page.locator('//*[@name="password"]'),
+      usernameInput: this.page.locator('//input[@name="username"]'),
+      passwordInput: this.page.locator('//input[@name="password"]'),
       nextButton: this.page.locator('//*[@id="idp-discovery-submit"]'),
       signInButton: this.page.locator('//*[@id="okta-signin-submit"]'),
     },
-  };
-
-  fields = {
-    username: this.page.locator('//*[@name="username"]'),
-    password: this.page.locator('//*[@name="password"]'),
-  };
-
-  buttons = {
-    oktaLogin: this.page.locator('//*[@href="login/generic_oauth"]'),
   };
 
   /**
    * Opens given Page entering url into the address field.
    */
   public open = async () => {
-    await this.openPageByPath(this.PAGE_PATH, this.PAGE_HEADING, this.elements.headingLocator as Locator);
+    await this.openPageByPath(this.PAGE_PATH, this.PAGE_HEADING, this.PAGE_HEADING_LOCATOR);
   };
 
   oktaLogin = async (username: string, password: string) => {
-    await this.buttons.oktaLogin.click();
+    await this.elements.oktaLoginButton.click();
     await this.elements.oktaLogin.usernameInput.type(username);
     await this.elements.oktaLogin.nextButton.click();
     await this.elements.oktaLogin.passwordInput.type(password);
