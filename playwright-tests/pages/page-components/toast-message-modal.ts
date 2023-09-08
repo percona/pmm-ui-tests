@@ -44,8 +44,12 @@ export default class ToastMessage {
 
   catchError = async (timeout?: number) => {
     let toastDisplayed = false;
-    await this.messageText.waitFor({ state: 'visible', timeout: timeout || Wait.ToastMessage })
-      .then(() => { toastDisplayed = true; }).catch();
+    try {
+      await this.messageText.waitFor({ state: 'visible', timeout: timeout || Wait.ToastMessage })
+        .then(() => { toastDisplayed = true; });
+    } catch (TimeoutException) {
+      // normal flow that toast should not appear
+    }
     if (toastDisplayed) {
       await expect(this.toastSuccess, `Verify found message is not an error: "${await this.messageText.textContent()}"`)
         .toBeVisible({ timeout: 1 });

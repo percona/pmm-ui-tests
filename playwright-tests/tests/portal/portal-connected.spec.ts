@@ -50,7 +50,7 @@ test.describe('Spec file for PMM connected the portal', async () => {
     test.skip(pmmVersion < 27, 'This test is for PMM version 2.27.0 and higher');
     await test.step('1. Login to he connected pmm with SSO', async () => {
       await loginPage.signInWithPerconaAccount(firstAdmin.email, firstAdmin.password);
-      await homeDashboardPage.elements.headingLocator.waitFor({ state: 'visible', timeout: Wait.OneMinute });
+      await homeDashboardPage.waitToBeOpened();
     });
 
     await test.step('2. Verify that there is a side menu for organizational tickets', async () => {
