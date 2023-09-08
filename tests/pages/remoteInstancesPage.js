@@ -23,6 +23,11 @@ module.exports = {
     environment: 'remote-postgres',
     cluster: 'remote-postgres-cluster',
   },
+  mongodbSettings: {
+    environment: 'remote-mongodb',
+    cluster: 'remote-mongodb-cluster',
+    replicationSet: 'remote-mongodb-replica',
+  },
   postgresqlAzureInputs: {
     userName: remoteInstancesHelper.remote_instance.azure.azure_postgresql.userName,
     password: remoteInstancesHelper.remote_instance.azure.azure_postgresql.password,

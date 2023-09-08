@@ -1,15 +1,88 @@
-const { I, inventoryAPI } = inject();
+const { I, inventoryAPI, remoteInstancesHelper } = inject();
 const assert = require('assert');
 const paginationPart = require('./paginationFragment');
 const servicesTab = require('./servicesTab');
+const service = (serviceName) => `//span[contains(text(),'${serviceName}')]`;
 
 module.exports = {
+  postgresGCSettings: {
+    environment: 'Remote PostgreSQL_GC env new',
+    cluster: 'Remote PostgreSQL_GC cluster new',
+    replicationSet: 'Remote PostgreSQL_GC replica-new',
+  },
+  mysqlSettings: {
+    environment: 'remote-mysql-new',
+    cluster: 'remote-mysql-cluster-new',
+    replicationSet: 'remote-mysql-replica-new',
+  },
+  potgresqlSettings: {
+    environment: 'remote-postgres-new',
+    cluster: 'remote-postgres-cluster-new',
+    replicationSet: 'remote-postgres-replica-new',
+  },
+  mongodbSettings: {
+    environment: 'remote-mongodb-new',
+    cluster: 'remote-mongodb-cluster-new',
+    replicationSet: 'remote-mongodb-replica-new',
+  },
+  proxysqlSettings: {
+    environment: 'remote-proxysql-new',
+    cluster: 'remote-proxysql-cluster-new',
+    replicationSet: 'remote-proxysql-replica-new',
+  },
+  externalSettings: {
+    environment: 'remote-external-service-new',
+    cluster: 'remote-external-cluster-new',
+    replicationSet: 'remote-external-replica-new',
+  },
+  postgresqlAzureInputs: {
+    userName: remoteInstancesHelper.remote_instance.azure.azure_postgresql.userName,
+    password: remoteInstancesHelper.remote_instance.azure.azure_postgresql.password,
+    environment: 'Azure PostgreSQL environment new',
+    cluster: 'Azure PostgreSQL cluster new',
+    replicationSet: 'Azure PostgreSQL replica new',
+  },
+  mysqlAzureInputs: {
+    userName: remoteInstancesHelper.remote_instance.azure.azure_mysql.userName,
+    password: remoteInstancesHelper.remote_instance.azure.azure_mysql.password,
+    environment: 'Azure MySQL environment new',
+    cluster: 'Azure MySQL cluster new',
+    replicationSet: 'Azure MySQL replica new',
+  },
+  mysqlInputs: {
+    userName: remoteInstancesHelper.remote_instance.aws.aws_rds_5_6.username,
+    password: remoteInstancesHelper.remote_instance.aws.aws_rds_5_6.password,
+    environment: 'RDS MySQL 5.6 new',
+    cluster: 'rds56-cluster new',
+    replicationSet: 'rds56-replication new',
+  },
+  mysql57rdsInput: {
+    userName: remoteInstancesHelper.remote_instance.aws.aws_rds_5_7.username,
+    password: remoteInstancesHelper.remote_instance.aws.aws_rds_5_7.password,
+    environment: 'RDS MySQL 5.7 new',
+    cluster: 'rds57-cluster new',
+    replicationSet: 'rds57-replication new',
+  },
+  mysql80rdsInput: {
+    userName: remoteInstancesHelper.remote_instance.aws.aws_rds_8_0.username,
+    password: remoteInstancesHelper.remote_instance.aws.aws_rds_8_0.password,
+    environment: 'RDS MySQL 8.0 new',
+    cluster: 'rds80-cluster new',
+    replicationSet: 'rds80-replication new',
+  },
+  postgresqlInputs: {
+    userName: remoteInstancesHelper.remote_instance.aws.aws_postgresql_12.userName,
+    password: remoteInstancesHelper.remote_instance.aws.aws_postgresql_12.password,
+    environment: 'RDS Postgres new',
+    cluster: 'rdsPostgres-cluster new',
+    replicationSet: 'rdsPostgres-replication new',
+  },
   url: 'graph/inventory?orgId=1',
   fields: {
     servicesLink: locate('[role="tablist"] a').withText('Services').withAttr({ 'aria-label': 'Tab Services' }),
     serviceRow: (serviceName) => locate('tr').withChild(locate('td').withAttr({ title: serviceName })),
-    showServiceDetails: (serviceName) => `//span[contains(text(), '${serviceName}')]//ancestor::tr//button[@data-testid="show-row-details"]`,
-    hideServiceDetails: (serviceName) => `//span[contains(text(), '${serviceName}')]//ancestor::tr//button[@data-testid="hide-row-details"]`,
+    showServiceDetails: (serviceName) => `${service(serviceName)}//ancestor::tr//button[@data-testid="show-row-details"]`,
+    hideServiceDetails: (serviceName) => `${service(serviceName)}//ancestor::tr//button[@data-testid="hide-row-details"]`,
     showAgentDetails: (agentName) => `//td[contains(text(), '${agentName}')]//ancestor::tr//button[@data-testid="show-row-details"]`,
     showRowDetails: '//button[@data-testid="show-row-details"]',
     agentStatus: locate('$details-row-content').find('a'),
@@ -18,13 +91,16 @@ module.exports = {
     agentDetailsLabelByText: (label) => locate('[aria-label="Tags"]').find('li').withText(label),
     agentsLink: locate('[role="tablist"] a').withText('Agents').withAttr({ 'aria-label': 'Tab Agents' }),
     agentsLinkOld: locate('a').withText('Agents'),
+    cluster: '$cluster-text-input',
     deleteButton: locate('span').withText('Delete'),
+    environment: '$environment-text-input',
     externalExporter: locate('td').withText('External exporter'),
     forceModeCheckbox: locate('$force-field-label'),
     inventoryTable: locate('table'),
     inventoryTableColumn: locate('table').find('td'),
     inventoryTableRows: locate('tr').after('table'),
     inventoryTableRowCount: (count) => locate('span').withText(`${count}`),
+    kebabMenu: (serviceName) => `(${service(serviceName)}/following::span//*[name()='svg' and @class='css-hj6vlq'])[2]`,
     mongoServiceName: locate('td').withText('mongodb'),
     mysqlServiceName: locate('td').withText('ms-single'),
     // cannot be changed to locate because it's failing in I.waitForVisible()
@@ -50,6 +126,7 @@ module.exports = {
     selectAllCheckbox: locate('$select-all'),
     selectRowCheckbox: locate('$select-row'),
     removalDialogMessage: '//form/h4',
+    replicationSet: '$replication_set-text-input',
     selectedCheckbox: '//div[descendant::input[@value="true"] and @data-testid="select-row"]',
   },
   servicesTab,
@@ -373,4 +450,130 @@ module.exports = {
     await I.waitForVisible(agent, 30);
     I.click(this.fields.backToServices);
   },
+
+  async clearFields() {
+    I.clearField(this.fields.environment);
+    I.clearField(this.fields.cluster);
+    I.clearField(this.fields.replicationSet);
+  },
+
+  async fillFields(serviceParameters) {
+    adminPage.customClearField(this.fields.userName);
+    I.fillField(this.fields.environment, serviceParameters.environment);
+    I.fillField(this.fields.cluster, serviceParameters.cluster);
+    I.fillField(this.fields.replicationSet, serviceParameters.replicationSet);
+  },
+
+  async saveConfirm() {
+    I.click('//div[contains(text(),\'Save Changes\')]');
+    I.seeElement('//div[contains(text(),"Changing the cluster label will remove all scheduled backups")]');
+    I.click('//span[normalize-space()="Confirm and save changes"]');
+  },
+
+  async checkLabels(serviceParameters) {
+    labels = `//span[contains(text(),"${serviceParameters.environment}")]`;
+    I.waitForElement(labels, 30);
+    labels = `//span[contains(text(),"${serviceParameters.cluster}")]`;
+    I.waitForElement(labels, 30);
+    labels = `//span[contains(text(),"${serviceParameters.replicationSet}")]`;
+    I.waitForElement(labels, 30);
+  },
+  
+  async editRemoteServiceDisplayed(serviceName) {
+    I.waitForElement(this.fields.kebabMenu(serviceName),30);
+    I.wait(10);
+    I.click(this.fields.kebabMenu(serviceName));
+    I.waitForElement('//span[contains(text(),"Edit")]',30);
+    I.wait(10);
+    I.click('//span[contains(text(),"Edit")]');
+    I.waitForElement('//h3[contains(text(),"Editing")]');
+    I.seeElement('//h3[contains(text(),"Editing")]');
+    var labels;
+    switch (serviceName) {
+      case remoteInstancesHelper.services.mysql:
+        this.clearFields();
+        this.fillFields(this.mysqlSettings);
+        this.saveConfirm();
+        await I.click(this.fields.showServiceDetails(serviceName));
+        this.checkLabels(this.mysqlSettings);
+        break;
+      case remoteInstancesHelper.services.mongodb:
+        this.clearFields();
+        this.fillFields(this.mongodbSettings);
+        this.saveConfirm();
+        await I.click(this.fields.showServiceDetails(serviceName));
+        this.checkLabels(this.mongodbSettings);
+        break;
+      case remoteInstancesHelper.services.postgresql:
+        this.clearFields();
+        this.fillFields(this.potgresqlSettings);
+        this.saveConfirm();
+        await I.click(this.fields.showServiceDetails(serviceName));
+        this.checkLabels(this.potgresqlSettings);
+        break;
+      case remoteInstancesHelper.services.proxysql:
+        this.clearFields();
+        this.fillFields(this.proxysqlSettings);
+        this.saveConfirm();
+        await I.click(this.fields.showServiceDetails(serviceName));
+        this.checkLabels(this.proxysqlSettings);
+        break;
+      case 'external_service_new':
+        this.clearFields();
+        this.fillFields(this.externalSettings);
+        this.saveConfirm();
+        await I.click(this.fields.showServiceDetails(serviceName));
+        this.checkLabels(this.externalSettings);
+        break;
+      case remoteInstancesHelper.services.postgresGC:
+        this.clearFields();
+        this.fillFields(this.postgresGCSettings);
+        this.saveConfirm();
+        await I.click(this.fields.showServiceDetails(serviceName));
+        this.checkLabels(this.postgresGCSettings);
+        break;  
+      case 'rds-mysql56':
+        this.clearFields();
+        this.fillFields(this.mysqlInputs);
+        this.saveConfirm();
+        await I.click(this.fields.showServiceDetails(serviceName));
+        this.checkLabels(this.mysqlInputs);
+        break;
+      case 'pmm-qa-mysql-8-0-30':
+        this.clearFields();
+        this.fillFields(this.mysql80rdsInput);
+        this.saveConfirm();
+        await I.click(this.fields.showServiceDetails(serviceName));
+        this.fillFields(this.mysql80rdsInput);
+        break;
+      case 'pmm-qa-rds-mysql-5-7-39':
+        this.clearFields();
+        this.fillFields(this.mysql57rdsInput);
+        this.saveConfirm();
+        await I.click(this.fields.showServiceDetails(serviceName));
+        this.fillFields(this.mysql57rdsInput);
+        break;
+      case 'pmm-qa-pgsql-12':
+        this.clearFields();
+        this.fillFields(this.postgresqlInputs);
+        this.saveConfirm();
+        await I.click(this.fields.showServiceDetails(serviceName));
+        this.fillFields(this.postgresqlInputs);
+        break;
+      case 'azure-MySQL':
+        this.clearFields();
+        this.fillFields(this.mysqlAzureInputs);
+        this.saveConfirm();
+        await I.click(this.fields.showServiceDetails(serviceName));
+        this.fillFields(this.mysqlAzureInputs);
+        break;
+      case 'azure-PostgreSQL':
+        this.clearFields();
+        this.fillFields(this.postgresqlAzureInputs);
+        this.saveConfirm();
+        await I.click(this.fields.showServiceDetails(serviceName));
+        this.fillFields(this.postgresqlAzureInputs);
+        break;
+      }
+  },      
 };
