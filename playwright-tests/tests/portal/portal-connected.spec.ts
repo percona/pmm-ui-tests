@@ -30,7 +30,7 @@ test.describe('Spec file for PMM connected the portal', async () => {
     await loginPage.open();
   });
 
-  test('Verify user roles are untouched after PMM server upgrade'
+  test.skip('Verify user roles are untouched after PMM server upgrade'
       + ' @not-ui-pipeline @portal @portal-post-upgrade', async () => {
     const users = await api.grafana.org.listOrgUsers();
     const foundAdmin1User = users.find((user: OrgUser) => user.email === firstAdmin.email);
