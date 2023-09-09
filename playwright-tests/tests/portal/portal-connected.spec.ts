@@ -1,10 +1,10 @@
 import { expect, test } from '@helpers/test-helper';
 import apiHelper from '@api/helpers/api-helper';
 import { PortalUser } from '@helpers/types/portal-user.class';
-import Wait from '@helpers/enums/wait';
 import grafanaHelper from '@helpers/grafana-helper';
 import { api, OrgUser } from '@api/api';
 import { portalHelper } from '@helpers/portal-helper';
+import Wait from '@helpers/enums/wait';
 
 /**
  *  Connect PMM to Portal tests do not require any monitored services.
@@ -208,32 +208,42 @@ test.describe('Spec file for PMM connected the portal', async () => {
   test('PMM-T1204 PMM-T1112 Verify user can disconnect pmm from portal success flow'
       + ' @portal @not-ui-pipeline @portal-post-upgrade', async ({ page, loginPage, homeDashboardPage, perconaPlatformPage }) => {
     test.skip(pmmVersion < 27, 'This test is for PMM version 2.27.0 and higher');
-    await loginPage.signInWithPerconaAccount(firstAdmin.email, firstAdmin.password);
-    await homeDashboardPage.waitToBeOpened();
-    await page.goto(perconaPlatformPage.PAGE_PATH);
-    await perconaPlatformPage.connectedContainer.waitFor({ state: 'visible' });
-    await perconaPlatformPage.buttons.disconnect.click();
-    if (pmmVersion >= 28) {
-      await expect(perconaPlatformPage.elements.modalMessage).toHaveText(perconaPlatformPage.messages.disconnectWarning);
-      await perconaPlatformPage.buttons.confirmDisconnect.click();
-      await page.locator('//input[@name="user"]').waitFor({ state: 'visible' });
-    } else {
-      await perconaPlatformPage.toastMessage.waitForMessage(perconaPlatformPage.messages.pmmDisconnectedFromPortal);
-    }
 
-    await grafanaHelper.authorize(page);
-    await homeDashboardPage.waitToBeOpened();
-    await page.goto(perconaPlatformPage.PAGE_PATH);
-    const adminToken = await api.portal.getUserAccessToken(firstAdmin.email, firstAdmin.password);
-
-    await perconaPlatformPage.connectToPortal(adminToken, `Test Server ${Date.now()}`, true);
+    await test.step('Login as platform user and open "Settings / Percona Platform" page', async () => {
+      await loginPage.signInWithPerconaAccount(firstAdmin.email, firstAdmin.password);
+      await homeDashboardPage.waitToBeOpened();
+      await page.goto(perconaPlatformPage.PAGE_PATH);
+      await perconaPlatformPage.connectedContainer.waitFor({ state: 'visible' });
+      await perconaPlatformPage.buttons.disconnect.click();
+      if (pmmVersion >= 28) {
+        await expect(perconaPlatformPage.elements.modalMessage).toHaveText(perconaPlatformPage.messages.disconnectWarning);
+        await perconaPlatformPage.buttons.confirmDisconnect.click();
+        await page.locator('//input[@name="user"]').waitFor({ state: 'visible' });
+      } else {
+        await perconaPlatformPage.toastMessage.waitForMessage(perconaPlatformPage.messages.pmmDisconnectedFromPortal);
+      }
+    });
+    await test.step('Verify that force disconnect was successful.', async () => {
+      await grafanaHelper.authorize(page);
+      await homeDashboardPage.waitToBeOpened();
+      await page.goto(perconaPlatformPage.PAGE_PATH);
+      await expect(perconaPlatformPage.buttons.connect).toBeVisible({ timeout: Wait.PageLoad });
+    });
   });
 
   // TODO: improve test to work without chain dependency. run new pmm-server, connect to portal and force disconnect then
   test.skip('PMM-T1264 Verify that pmm admin user can force disconnect pmm from the portal'
-      + ' @not-ui-pipeline @portal @portal-post-upgrade', async ({ page, perconaPlatformPage }) => {
+      + ' @not-ui-pipeline @portal @portal-post-upgrade', async ({ page, homeDashboardPage, perconaPlatformPage }) => {
     test.skip(pmmVersion < 29, 'This test is for PMM version 2.29.0 and higher');
 
+    await test.step('Connect PMM to the Portal', async () => {
+      await homeDashboardPage.authenticateSession();
+      await homeDashboardPage.waitToBeOpened();
+      await page.goto(perconaPlatformPage.PAGE_PATH);
+      const adminToken = await api.portal.getUserAccessToken(firstAdmin.email, firstAdmin.password);
+      await perconaPlatformPage.connectToPortal(adminToken, `Test Server ${Date.now()}`, true);
+    });
+    // await perconaPlatformPage.connectToPortal(adminToken, `Test Server ${Date.now()}`, true);
     await test.step('1. Login into the pmm and navigate to the percona platform page.', async () => {
       await grafanaHelper.authorize(page);
       await page.goto(perconaPlatformPage.PAGE_PATH);

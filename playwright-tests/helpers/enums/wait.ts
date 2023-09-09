@@ -16,6 +16,7 @@ enum Wait {
   TenMinutes = 10 * oneMin,
   TwentyMinutes = 20 * oneMin,
   ToastMessage = 30 * oneSecond,
+  PageLoad = 30 * oneSecond,
 }
 
 export default Wait;

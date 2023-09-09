@@ -1,4 +1,5 @@
 import { CommonPage } from '@pages/common.page';
+import Wait from '@helpers/enums/wait';
 
 export default class LoginPlatformPage extends CommonPage {
   readonly PAGE_PATH = 'https://id-dev.percona.com/signin';
@@ -16,5 +17,6 @@ export default class LoginPlatformPage extends CommonPage {
     await this.elements.nextButton.click();
     await this.elements.passwordInput.type(password);
     await this.elements.signInButton.click();
+    await this.elements.signInButton.waitFor({ state: 'detached', timeout: Wait.ToastMessage });
   };
 }

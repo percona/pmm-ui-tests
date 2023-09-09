@@ -91,17 +91,17 @@ test.describe('Spec file for connecting PMM to the portal', async () => {
     async ({ perconaPlatformPage }) => {
       test.skip(pmmVersion < 27, 'This test is for PMM version 2.27.0 and higher');
 
-      await test.step('1. Open Percona Platform tab in PMM Settings', async () => {
+      await test.step('Open Percona Platform tab in PMM Settings', async () => {
         await perconaPlatformPage.authenticateSession();
         await perconaPlatformPage.open();
         await perconaPlatformPage.perconaPlatformContainer.waitFor({ state: 'visible' });
       });
-
-      await test.step('2. Connect PMM to the Portal', async () => {
+      await test.step('Connect PMM to the Portal', async () => {
         const adminToken = await portalApi.getUserAccessToken(firstAdmin.email, firstAdmin.password);
         // pmm address is not set automatically in older PMMs.
         await perconaPlatformPage.connectToPortal(adminToken, `Test Server ${Date.now()}`, true);
-        await perconaPlatformPage.toastMessage.waitForSuccess(Wait.TwoMinutes);
+        await expect(perconaPlatformPage.buttons.disconnect, 'Verify "Force Disconnect" button is visible')
+          .toBeVisible({ timeout: 1 });
       });
     },
   );

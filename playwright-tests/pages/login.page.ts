@@ -1,5 +1,6 @@
 import { CommonPage } from '@pages/common.page';
 import LoginPlatformPage from '@pages/login-platform.page';
+import Wait from '@helpers/enums/wait';
 
 export default class LoginPage extends CommonPage {
   readonly PAGE_PATH = 'graph/login';
@@ -23,6 +24,8 @@ export default class LoginPage extends CommonPage {
   signInWithPerconaAccount = async (username: string, password: string) => {
     await this.elements.signInWithPerconaAccountButton.click();
     await new LoginPlatformPage(this.page).login(username, password);
-    await this.toastMessage.catchError();
+    if (this.page.url().includes(this.PAGE_PATH)) {
+      await this.toastMessage.catchError(Wait.TwoSeconds);
+    }
   };
 }
