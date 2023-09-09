@@ -458,7 +458,6 @@ module.exports = {
   },
 
   async fillFields(serviceParameters) {
-    adminPage.customClearField(this.fields.userName);
     I.fillField(this.fields.environment, serviceParameters.environment);
     I.fillField(this.fields.cluster, serviceParameters.cluster);
     I.fillField(this.fields.replicationSet, serviceParameters.replicationSet);
