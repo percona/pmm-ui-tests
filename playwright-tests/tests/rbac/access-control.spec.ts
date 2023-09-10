@@ -22,6 +22,7 @@ const getPmmVersion = async (): Promise<number> => {
 /**
  *  Access Control (RBAC) requires monitored MySQL service.
  *  Example setup: sudo bash -x /.../pmm-framework.sh --addclient=ps,1 --pmm2
+ *  PMM Server needs to be started with "PMM_DEBUG=1" environment variable
  */
 test.describe('Spec file for Access Control (RBAC)', async () => {
   // test.skip(await getPmmVersion() < 35, 'Test is for PMM version 2.35.0+');

@@ -10,6 +10,9 @@ import Wait from '@helpers/enums/wait';
  *  Connect PMM to Portal tests do not require any monitored services.
  *  But requires environment variables(.env file supported) with credentials see: {@link constants.portal},
  *  {@link constants.okta} and {@link constants.serviceNow}.
+ *  PMM Server requires number of environment variables.
+ *
+ *  @see /docs/setup-env-portal.md
  */
 test.describe('Spec file for PMM connected the portal', async () => {
   let firstAdmin: PortalUser;
@@ -30,9 +33,15 @@ test.describe('Spec file for PMM connected the portal', async () => {
     await loginPage.open();
   });
 
-  test.skip('Verify user roles are untouched after PMM server upgrade'
+  test.fixme('Verify user roles are untouched after PMM server upgrade'
       + ' @not-ui-pipeline @portal @portal-post-upgrade', async () => {
+    // TODO: Investigate issue: listOrgUsers() authenticated with "admin" users and does not display
+    //  users from constants.portal.credentialsFile.
     const users = await api.grafana.org.listOrgUsers();
+    console.log(users);
+    console.log(firstAdmin.email);
+    console.log(secondAdmin.email);
+    console.log(technicalUser.email);
     const foundAdmin1User = users.find((user: OrgUser) => user.email === firstAdmin.email);
     const foundAdmin2User = users.find((user: OrgUser) => user.email === secondAdmin.email);
     const foundTechnicalUser = users.find((user: OrgUser) => user.email === technicalUser.email);
