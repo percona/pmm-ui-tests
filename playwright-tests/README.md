@@ -36,7 +36,8 @@ this is it! tests are good to go on specified PMM server.
 ### Running tests:
 Execute command in the **playwright-tests** folder
 * run all tests: `npx playwright test`
-* run a single test file: `npx playwright test tests/todo-page.spec.ts`
+* run a single test file: `npx playwright test --projet=Cromium rbac.spec.ts`
+* run Portal tests: `npx playwright test --projet=Portal -g @portal`
 * run a set of test files: `npx playwright test tests/todo-page/ tests/landing-page/`
 * run files that have **my-spec** or **my-spec-2** in the file name: `npx playwright test my-spec my-spec-2`
 * run desired [groups/tags](https://playwright.dev/docs/test-annotations#tag-tests): `npx playwright test --grep @rbac`

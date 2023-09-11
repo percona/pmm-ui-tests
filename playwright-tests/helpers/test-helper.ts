@@ -5,7 +5,7 @@ import PerconaPlatformPage from '@pages/pmm-settings/percona-platform.page';
 import EntitlementsPage from '@pages/platformPages/entitlements.page';
 import EnvironmentOverviewPage from '@pages/platformPages/environment-overview.page';
 import TicketsPage from '@pages/platformPages/tickets.page';
-import { RbacPage } from '@tests/configuration/pages/rbac.page';
+import { AccessRolesPage } from '@tests/configuration/pages/access-roles.page';
 import AdvancedSettingsPage from '@pages/pmm-settings/advanced-settings.page';
 import { CreateRolePage } from '@tests/configuration/pages/create-role.page';
 import { NewUserPage } from '@pages/serverAdmin/NewUser.page';
@@ -18,10 +18,10 @@ import { QanPage } from '@pages/QAN/QueryAnalytics.page';
 import { ServicesPage } from '@tests/inventory/pages/services.page';
 import { NodesPage } from '@tests/inventory/pages/nodes.page';
 import { AddServicePage } from '@tests/inventory/pages/add-service.page';
-import grafanaHelper from "@helpers/grafana-helper";
 
 // Declare the types of fixtures.
 type PagesCollection = {
+  accessRolesPage: AccessRolesPage;
   addServicePage: AddServicePage;
   advancedSettingsPage: AdvancedSettingsPage;
   createRolePage: CreateRolePage;
@@ -38,7 +38,6 @@ type PagesCollection = {
   postgresqlInstancesOverviewDashboard: PostgresqlInstancesOverviewDashboard;
   qanPage: QanPage;
   servicesPage: ServicesPage;
-  rbacPage: RbacPage;
   ticketsPage: TicketsPage;
   usersConfigurationPage: UsersConfigurationPage;
 };
@@ -49,6 +48,9 @@ type PagesCollection = {
  */
 export const test = base.extend<PagesCollection>({
   // TODO: implement lazy init ex: loginPage() to save resources
+  accessRolesPage: async ({ page }, use) => {
+    await use(new AccessRolesPage(page));
+  },
   addServicePage: async ({ page }, use) => {
     await use(new AddServicePage(page));
   },
@@ -96,9 +98,6 @@ export const test = base.extend<PagesCollection>({
   },
   servicesPage: async ({ page }, use) => {
     await use(new ServicesPage(page));
-  },
-  rbacPage: async ({ page }, use) => {
-    await use(new RbacPage(page));
   },
   ticketsPage: async ({ page }, use) => {
     await use(new TicketsPage(page));
