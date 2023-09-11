@@ -23,6 +23,7 @@ for (const [key, value] of Object.entries(remoteInstancesHelper.services)) {
         break;
       case 'mongodb':
         qanFilters.add([remoteInstancesPage.mongodbSettings.environment]);
+        break;
       case 'proxysql':
         break;
     }
