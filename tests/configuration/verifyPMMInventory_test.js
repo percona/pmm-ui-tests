@@ -26,6 +26,7 @@ for (const [key, value] of Object.entries(remoteInstancesHelper.services)) {
         break;
       case 'proxysql':
         break;
+      default:  
     }
     instances.add([key]);
   }

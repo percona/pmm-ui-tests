@@ -95,6 +95,8 @@ module.exports = {
     deleteButton: locate('span').withText('Delete'),
     environment: '$environment-text-input',
     externalExporter: locate('td').withText('External exporter'),
+    editAction: '//span[contains(text(),"Edit")]',
+    editText: '//h3[contains(text(),"Editing")]',
     forceModeCheckbox: locate('$force-field-label'),
     inventoryTable: locate('table'),
     inventoryTableColumn: locate('table').find('td'),
@@ -128,6 +130,9 @@ module.exports = {
     removalDialogMessage: '//form/h4',
     replicationSet: '$replication_set-text-input',
     selectedCheckbox: '//div[descendant::input[@value="true"] and @data-testid="select-row"]',
+    saveButton: '//div[contains(text(),\'Save Changes\')]',
+    saveConfirmButton: '//span[normalize-space()="Confirm and save changes"]',
+    savePopupMessage: '//div[contains(text(),"Changing the cluster label will remove all scheduled backups")]',
   },
   servicesTab,
   pagination: paginationPart,
@@ -464,12 +469,13 @@ module.exports = {
   },
 
   async saveConfirm() {
-    I.click('//div[contains(text(),\'Save Changes\')]');
-    I.seeElement('//div[contains(text(),"Changing the cluster label will remove all scheduled backups")]');
-    I.click('//span[normalize-space()="Confirm and save changes"]');
+    I.click(this.fields.saveButton);
+    I.seeElement(this.fields.savePopupMessage);
+    I.click(this.fields.saveConfirmButton);
   },
 
   async checkLabels(serviceParameters) {
+    var labels;
     labels = `//span[contains(text(),"${serviceParameters.environment}")]`;
     I.waitForElement(labels, 30);
     labels = `//span[contains(text(),"${serviceParameters.cluster}")]`;
@@ -482,12 +488,11 @@ module.exports = {
     I.waitForElement(this.fields.kebabMenu(serviceName),30);
     I.wait(10);
     I.click(this.fields.kebabMenu(serviceName));
-    I.waitForElement('//span[contains(text(),"Edit")]',30);
+    I.waitForElement(this.fields.editAction,30);
     I.wait(10);
-    I.click('//span[contains(text(),"Edit")]');
-    I.waitForElement('//h3[contains(text(),"Editing")]');
-    I.seeElement('//h3[contains(text(),"Editing")]');
-    var labels;
+    I.click(this.fields.editAction);
+    I.waitForElement(this.fields.editText);
+    I.seeElement(this.fields.editText);
     switch (serviceName) {
       case remoteInstancesHelper.services.mysql:
         this.clearFields();
@@ -573,6 +578,7 @@ module.exports = {
         await I.click(this.fields.showServiceDetails(serviceName));
         this.fillFields(this.postgresqlAzureInputs);
         break;
+        default:  
       }
   },      
 };
