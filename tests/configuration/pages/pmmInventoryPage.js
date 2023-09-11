@@ -6,58 +6,76 @@ const service = (serviceName) => `//span[contains(text(),'${serviceName}')]`;
 
 module.exports = {
   postgresGCSettings: {
-    environment: 'Remote PostgreSQL_GC env',
-    cluster: 'Remote PostgreSQL_GC cluster',
+    environment: 'Remote PostgreSQL_GC env new',
+    cluster: 'Remote PostgreSQL_GC cluster new',
+    replicationSet: 'Remote PostgreSQL_GC replica-new',
   },
   mysqlSettings: {
     environment: 'remote-mysql-new',
     cluster: 'remote-mysql-cluster-new',
+    replicationSet: 'remote-mysql-replica-new',
   },
   potgresqlSettings: {
     environment: 'remote-postgres-new',
     cluster: 'remote-postgres-cluster-new',
+    replicationSet: 'remote-postgres-replica-new',
+  },
+  mongodbSettings: {
+    environment: 'remote-mongodb-new',
+    cluster: 'remote-mongodb-cluster-new',
+    replicationSet: 'remote-mongodb-replica-new',
+  },
+  proxysqlSettings: {
+    environment: 'remote-proxysql-new',
+    cluster: 'remote-proxysql-cluster-new',
+    replicationSet: 'remote-proxysql-replica-new',
+  },
+  externalSettings: {
+    environment: 'remote-external-service-new',
+    cluster: 'remote-external-cluster-new',
+    replicationSet: 'remote-external-replica-new',
   },
   postgresqlAzureInputs: {
     userName: remoteInstancesHelper.remote_instance.azure.azure_postgresql.userName,
     password: remoteInstancesHelper.remote_instance.azure.azure_postgresql.password,
-    environment: 'Azure PostgreSQL environment',
-    cluster: 'Azure PostgreSQL cluster',
-    replicationSet: 'Azure PostgreSQL replica',
+    environment: 'Azure PostgreSQL environment new',
+    cluster: 'Azure PostgreSQL cluster new',
+    replicationSet: 'Azure PostgreSQL replica new',
   },
   mysqlAzureInputs: {
     userName: remoteInstancesHelper.remote_instance.azure.azure_mysql.userName,
     password: remoteInstancesHelper.remote_instance.azure.azure_mysql.password,
-    environment: 'Azure MySQL environment',
-    cluster: 'Azure MySQL cluster',
-    replicationSet: 'Azure MySQL replica',
+    environment: 'Azure MySQL environment new',
+    cluster: 'Azure MySQL cluster new',
+    replicationSet: 'Azure MySQL replica new',
   },
   mysqlInputs: {
     userName: remoteInstancesHelper.remote_instance.aws.aws_rds_5_6.username,
     password: remoteInstancesHelper.remote_instance.aws.aws_rds_5_6.password,
-    environment: 'RDS MySQL 5.6',
-    cluster: 'rds56-cluster',
-    replicationSet: 'rds56-replication',
+    environment: 'RDS MySQL 5.6 new',
+    cluster: 'rds56-cluster new',
+    replicationSet: 'rds56-replication new',
   },
   mysql57rdsInput: {
     userName: remoteInstancesHelper.remote_instance.aws.aws_rds_5_7.username,
     password: remoteInstancesHelper.remote_instance.aws.aws_rds_5_7.password,
-    environment: 'RDS MySQL 5.7',
-    cluster: 'rds57-cluster',
-    replicationSet: 'rds57-replication',
+    environment: 'RDS MySQL 5.7 new',
+    cluster: 'rds57-cluster new',
+    replicationSet: 'rds57-replication new',
   },
   mysql80rdsInput: {
     userName: remoteInstancesHelper.remote_instance.aws.aws_rds_8_0.username,
     password: remoteInstancesHelper.remote_instance.aws.aws_rds_8_0.password,
-    environment: 'RDS MySQL 8.0',
-    cluster: 'rds80-cluster',
-    replicationSet: 'rds80-replication',
+    environment: 'RDS MySQL 8.0 new',
+    cluster: 'rds80-cluster new',
+    replicationSet: 'rds80-replication new',
   },
   postgresqlInputs: {
     userName: remoteInstancesHelper.remote_instance.aws.aws_postgresql_12.userName,
     password: remoteInstancesHelper.remote_instance.aws.aws_postgresql_12.password,
-    environment: 'RDS Postgres',
-    cluster: 'rdsPostgres-cluster',
-    replicationSet: 'rdsPostgres-replication',
+    environment: 'RDS Postgres new',
+    cluster: 'rdsPostgres-cluster new',
+    replicationSet: 'rdsPostgres-replication new',
   },
   url: 'graph/inventory?orgId=1',
   fields: {
@@ -433,10 +451,31 @@ module.exports = {
     I.click(this.fields.backToServices);
   },
 
+  async clearFields() {
+    I.clearField(this.fields.environment);
+    I.clearField(this.fields.cluster);
+    I.clearField(this.fields.replicationSet);
+  },
+
+  async fillFields(serviceParameters) {
+    I.fillField(this.fields.environment, serviceParameters.environment);
+    I.fillField(this.fields.cluster, serviceParameters.cluster);
+    I.fillField(this.fields.replicationSet, serviceParameters.replicationSet);
+  },
+
   async saveConfirm() {
     I.click('//div[contains(text(),\'Save Changes\')]');
     I.seeElement('//div[contains(text(),"Changing the cluster label will remove all scheduled backups")]');
     I.click('//span[normalize-space()="Confirm and save changes"]');
+  },
+
+  async checkLabels(serviceParameters) {
+    labels = `//span[contains(text(),"${serviceParameters.environment}")]`;
+    I.waitForElement(labels, 30);
+    labels = `//span[contains(text(),"${serviceParameters.cluster}")]`;
+    I.waitForElement(labels, 30);
+    labels = `//span[contains(text(),"${serviceParameters.replicationSet}")]`;
+    I.waitForElement(labels, 30);
   },
   
   async editRemoteServiceDisplayed(serviceName) {
@@ -451,127 +490,89 @@ module.exports = {
     var labels;
     switch (serviceName) {
       case remoteInstancesHelper.services.mysql:
-        I.clearField(this.fields.environment);
-        I.fillField(this.fields.environment, this.mysqlSettings.environment);
-        I.clearField(this.fields.cluster);
-        I.fillField(this.fields.cluster, this.mysqlSettings.cluster);
+        this.clearFields();
+        this.fillFields(this.mysqlSettings);
         this.saveConfirm();
         await I.click(this.fields.showServiceDetails(serviceName));
-        labels = `//span[contains(text(),"${this.mysqlSettings.environment}")]`;
-        I.waitForElement(labels, 30);
-        labels = `//span[contains(text(),"${this.mysqlSettings.cluster}")]`;
-        I.waitForElement(labels, 30);
-        break;
-      case remoteInstancesHelper.services.mysql_ssl:
-        I.clearField(this.fields.environment);
-        I.fillField(
-          this.fields.environment,
-          remoteInstancesHelper.remote_instance.mysql.ms_8_0_ssl.environment,
-        );
-        I.clearField(this.fields.cluster);
-        I.fillField(
-        this.fields.cluster,
-          remoteInstancesHelper.remote_instance.mysql.ms_8_0_ssl.clusterName,
-        );
-        this.saveConfirm();
-        await I.click(this.fields.showServiceDetails(serviceName));
-        labels = `//span[contains(text(),"${remoteInstancesHelper.remote_instance.mysql.ms_8_0_ssl.environment}")]`;
-        I.waitForElement(labels, 30);
-        labels = `//span[contains(text(),"${remote_instance.mysql.ms_8_0_ssl.clusterName}")]`;
-        I.waitForElement(labels, 30);
+        this.checkLabels(this.mysqlSettings);
         break;
       case remoteInstancesHelper.services.mongodb:
-        I.clearField(this.fields.environment);
-        I.fillField(this.fields.environment, 'remote-mongodb-new');
-        I.clearField(this.fields.cluster);
-        I.fillField(this.fields.cluster, 'remote-mongodb-cluster-new');
+        this.clearFields();
+        this.fillFields(this.mongodbSettings);
         this.saveConfirm();
         await I.click(this.fields.showServiceDetails(serviceName));
-        labels = `//span[contains(text(),"remote-mongodb-new")]`;
-        I.waitForElement(labels, 30);
-        labels = `//span[contains(text(),"remote-mongodb-cluster-new")]`;
-        I.waitForElement(labels, 30);
-        break;
-      case remoteInstancesHelper.services.mongodb_ssl:
-        I.clearField(this.fields.environment);
-        I.fillField(
-        this.fields.environment,
-        remoteInstancesHelper.remote_instance.mongodb.mongodb_4_4_ssl.environment,
-        );
-        this.saveConfirm();
-        await I.click(this.fields.showServiceDetails(serviceName));
-        labels  = `//span[contains(text(),"${remote_instance.mongodb.mongodb_4_4_ssl.environment}")]`;
-        I.waitForElement(labels, 30);
+        this.checkLabels(this.mongodbSettings);
         break;
       case remoteInstancesHelper.services.postgresql:
-        I.clearField(this.fields.environment);
-        I.fillField(this.fields.environment, this.potgresqlSettings.environment);
-        I.clearField(this.fields.cluster);
-        I.fillField(this.fields.cluster, this.potgresqlSettings.cluster);
+        this.clearFields();
+        this.fillFields(this.potgresqlSettings);
         this.saveConfirm();
         await I.click(this.fields.showServiceDetails(serviceName));
-        labels = `//span[contains(text(),"${this.potgresqlSettings.environment}")]`;
-        I.waitForElement(labels, 30);
-        labels = `//span[contains(text(),"${this.potgresqlSettings.cluster}")]`;
-        I.waitForElement(labels, 30);
-        break;
-      case remoteInstancesHelper.services.postgres_ssl:
-        I.clearField(this.fields.environment);
-        I.fillField(
-        this.fields.environment,
-        remoteInstancesHelper.remote_instance.postgresql.postgres_13_3_ssl.environment,
-        );
-        I.clearField(this.fields.cluster);
-        I.fillField(
-        this.fields.cluster,
-        remoteInstancesHelper.remote_instance.postgresql.postgres_13_3_ssl.clusterName,
-        );
-        this.saveConfirm();
-        await I.click(this.fields.showServiceDetails(serviceName));
-        labels  = `//span[contains(text(),"${remote_instance.postgresql.postgres_13_3_ssl.environment}")]`;
-        I.waitForElement(labels, 30);
-        labels = `//span[contains(text(),"${remote_instance.postgresql.postgres_13_3_ssl.clusterName}")]`;
-        I.waitForElement(labels, 30);
+        this.checkLabels(this.potgresqlSettings);
         break;
       case remoteInstancesHelper.services.proxysql:
-        I.clearField(this.fields.environment);
-        I.fillField(this.fields.environment, 'remote-proxysql-new');
-        I.fillField(this.fields.cluster, 'remote-proxysql-cluster-new');
+        this.clearFields();
+        this.fillFields(this.proxysqlSettings);
         this.saveConfirm();
         await I.click(this.fields.showServiceDetails(serviceName));
-        labels  = `//span[contains(text(),"remote-proxysql-new")]`;
-        I.waitForElement(labels, 30);
-        labels = `//span[contains(text(),"remote-proxysql-cluster-new")]`;
-        I.waitForElement(labels, 30);
+        this.checkLabels(this.proxysqlSettings);
         break;
       case 'external_service_new':
-        I.clearField(this.fields.environment);
-        I.fillField(this.fields.environment, 'remote-external-service-new');
-        I.clearField(this.fields.cluster);
-        I.fillField(this.fields.cluster, 'remote-external-cluster-new');
+        this.clearFields();
+        this.fillFields(this.externalSettings);
         this.saveConfirm();
         await I.click(this.fields.showServiceDetails(serviceName));
-        labels  = `//span[contains(text(),"remote-external-service-new")]`;
-        I.waitForElement(labels, 30);
-        labels = `//span[contains(text(),"remote-external-cluster-new")]`;
-        I.waitForElement(labels, 30);
-        break;
-      case 'postgreDoNotTrack':
-      case 'postgresPGStatStatements':
-      case 'postgresPgStatMonitor':
+        this.checkLabels(this.externalSettings);
         break;
       case remoteInstancesHelper.services.postgresGC:
-        I.clearField(this.fields.environment);
-        I.fillField(this.fields.environment, this.postgresGCSettings.environment);
-        I.clearField(this.fields.cluster);
-        I.fillField(this.fields.cluster, this.postgresGCSettings.cluster);
+        this.clearFields();
+        this.fillFields(this.postgresGCSettings);
         this.saveConfirm();
         await I.click(this.fields.showServiceDetails(serviceName));
-        labels = `//span[contains(text(),"${this.postgresGCSettings.environment}")]`;
-        I.waitForElement(labels, 30);
-        labels = `//span[contains(text(),"${this.postgresGCSettings.cluster}")]`;
-        I.waitForElement(labels, 30);
+        this.checkLabels(this.postgresGCSettings);
         break;  
-        }
+      case 'rds-mysql56':
+        this.clearFields();
+        this.fillFields(this.mysqlInputs);
+        this.saveConfirm();
+        await I.click(this.fields.showServiceDetails(serviceName));
+        this.checkLabels(this.mysqlInputs);
+        break;
+      case 'pmm-qa-mysql-8-0-30':
+        this.clearFields();
+        this.fillFields(this.mysql80rdsInput);
+        this.saveConfirm();
+        await I.click(this.fields.showServiceDetails(serviceName));
+        this.fillFields(this.mysql80rdsInput);
+        break;
+      case 'pmm-qa-rds-mysql-5-7-39':
+        this.clearFields();
+        this.fillFields(this.mysql57rdsInput);
+        this.saveConfirm();
+        await I.click(this.fields.showServiceDetails(serviceName));
+        this.fillFields(this.mysql57rdsInput);
+        break;
+      case 'pmm-qa-pgsql-12':
+        this.clearFields();
+        this.fillFields(this.postgresqlInputs);
+        this.saveConfirm();
+        await I.click(this.fields.showServiceDetails(serviceName));
+        this.fillFields(this.postgresqlInputs);
+        break;
+      case 'azure-MySQL':
+        this.clearFields();
+        this.fillFields(this.mysqlAzureInputs);
+        this.saveConfirm();
+        await I.click(this.fields.showServiceDetails(serviceName));
+        this.fillFields(this.mysqlAzureInputs);
+        break;
+      case 'azure-PostgreSQL':
+        this.clearFields();
+        this.fillFields(this.postgresqlAzureInputs);
+        this.saveConfirm();
+        await I.click(this.fields.showServiceDetails(serviceName));
+        this.fillFields(this.postgresqlAzureInputs);
+        break;
+      }
   },      
 };
