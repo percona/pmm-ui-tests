@@ -6,16 +6,12 @@ import PmmMenu from '@components/dashboards/pmm-menu';
 import { BaseDashboard } from './dashboards/base-dashboard.page';
 
 export default class HomeDashboardPage extends BaseDashboard {
-  /** Page "path" and "heading" defaults to the "Home Dashboard Page" */
-  // url: 'graph/d/pmm-home/home-dashboard?orgId=1&refresh=1m&from=now-5m&to=now',
-  PAGE_PATH = 'graph/d/pmm-home/home-dashboard?orgId=1&refresh=1m';
-  PAGE_HEADING = 'Home Dashboard';
+  readonly PAGE_PATH = 'graph/d/pmm-home/home-dashboard?orgId=1&refresh=1m';
+  readonly PAGE_HEADING = 'Home Dashboard';
 
   pmmUpgrade = new PmmUpgrade(this.page);
   upgradeModal = new UpgradeModal(this.page);
   pmmMenu = new PmmMenu(this.page);
-
-  landingUrl = 'graph/d/pmm-home/home-dashboard?orgId=1&refresh=1m';
 
   /**
    * Opens given Page entering url into the address field.
@@ -25,7 +21,7 @@ export default class HomeDashboardPage extends BaseDashboard {
   };
 
   async waitToBeOpened() {
-    await this.pmmUpgrade.containers.upgradeContainer.waitFor({ state: 'visible', timeout: Wait.OneMinute });
+    await this.PAGE_HEADING_LOCATOR.waitFor({ state: 'visible', timeout: Wait.OneMinute });
     await expect(this.page).toHaveURL(this.PAGE_PATH);
   }
   upgradePmm = async () => {
@@ -39,7 +35,7 @@ export default class HomeDashboardPage extends BaseDashboard {
 
     await this.upgradeModal.containers.modalContainer.waitFor({ state: 'visible', timeout: Wait.OneMinute });
     await this.upgradeModal.elements.upgradeInProgressHeader
-      .waitFor({ state: 'visible', timeout: Wait.OneMinute as number });
+      .waitFor({ state: 'visible', timeout: Wait.OneMinute });
     await expect(this.upgradeModal.elements.upgradeSuccess)
       .toHaveText(this.upgradeModal.messages.upgradeSuccess(availableVersion) as string, { timeout: Wait.TenMinutes });
     await this.upgradeModal.buttons.close.click();

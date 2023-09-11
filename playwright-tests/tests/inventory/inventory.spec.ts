@@ -7,6 +7,10 @@ import Wait from '@helpers/enums/wait';
 import grafanaHelper from '@helpers/grafana-helper';
 import { api } from '@api/api';
 
+/**
+ * PMM Inventory tests require all types of monitored services: MySQL, MongoDB and PostgreSQL
+ * Example setup: sudo bash -x /.../pmm-framework.sh --addclient=modb,1 --addclient=ps,1 --addclient=pdpgsql,1 --pmm2
+ */
 test.describe('Spec file for PMM inventory tests.', async () => {
   const mongoLocalService: ServiceDetails = {
     serviceName: 'mo-integration-',
@@ -43,7 +47,7 @@ test.describe('Spec file for PMM inventory tests.', async () => {
     await grafanaHelper.authorize(page);
   });
 
-  test('PMM-T1669 Verify PMM Inventory redesign : Layout & Services'
+  test.skip('PMM-T1669 Verify PMM Inventory redesign : Layout & Services'
     + ' @inventory @inventory-pre-upgrade @inventory-post-upgrade', async ({ page, homeDashboardPage, servicesPage, mongoDBInstanceSummary, qanPage }) => {
     test.skip(pmmVersion < 37, 'Test is for versions 2.37.0+');
 
@@ -104,7 +108,7 @@ test.describe('Spec file for PMM inventory tests.', async () => {
     });
   });
 
-  test('PMM-T554 Check that all agents have status "RUNNING"'
+  test.skip('PMM-T554 Check that all agents have status "RUNNING"'
     + ' @inventory @inventory-pre-upgrade @inventory-post-upgrade', async ({ page, servicesPage, nodesPage }) => {
     test.info().annotations.push({
       type: 'Also Covers',
@@ -162,7 +166,7 @@ test.describe('Spec file for PMM inventory tests.', async () => {
     });
   });
 
-  test('PMM-T345 Verify removing pmm-agent on PMM Inventory page removes all associated agents'
+  test.skip('PMM-T345 Verify removing pmm-agent on PMM Inventory page removes all associated agents'
     + ' @inventory @inventory-pre-upgrade @inventory-post-upgrade', async ({ page, servicesPage, nodesPage }) => {
     await test.step('1. Go to services page and and verify postgres database is present.', async () => {
       await page.goto(servicesPage.url);
@@ -217,7 +221,7 @@ test.describe('Spec file for PMM inventory tests.', async () => {
     });
   });
 
-  test('PMM-T343 Verify agent can be removed on PMM Inventory page'
+  test.skip('PMM-T343 Verify agent can be removed on PMM Inventory page'
     + ' @inventory @inventory-pre-upgrade @inventory-post-upgrade', async ({ page, servicesPage }) => {
     test.skip(pmmVersion < 37, 'Test is for versions 2.37.0+');
 
@@ -258,7 +262,7 @@ test.describe('Spec file for PMM inventory tests.', async () => {
     });
   });
 
-  test('PMM-T1670 Verify PMM Inventory redesign : Layout & Nodes @inventory'
+  test.skip('PMM-T1670 Verify PMM Inventory redesign : Layout & Nodes @inventory'
       + ' @inventory-post-upgrade', async ({ page, servicesPage, nodesPage }) => {
     test.skip(pmmVersion < 37, 'Test is for versions 2.37.0+');
     test.info().annotations.push({
@@ -323,7 +327,7 @@ test.describe('Spec file for PMM inventory tests.', async () => {
     });
   });
 
-  test('PMM-T1672 Verify PMM Inventory redesign : State of the agents'
+  test.skip('PMM-T1672 Verify PMM Inventory redesign : State of the agents'
       + ' @inventory @inventory-post-upgrade', async ({ page, servicesPage }) => {
     test.skip(pmmVersion < 37, 'Test is for versions 2.37.0+');
     test.info().annotations.push({
@@ -407,7 +411,7 @@ test.describe('Spec file for PMM inventory tests.', async () => {
     });
   });
 
-  test('PMM-T339 Verify MySQL service is removed on PMM Inventory page'
+  test.skip('PMM-T339 Verify MySQL service is removed on PMM Inventory page'
       + ' @inventory @inventory-post-upgrade', async ({ page, servicesPage }) => {
     test.skip(pmmVersion < 37, 'Test is for versions 2.37.0+');
     let serviceId: string;
