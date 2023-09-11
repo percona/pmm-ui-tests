@@ -306,8 +306,8 @@ Scenario(
     I.amOnPage(remoteInstancesPage.url);
     remoteInstancesPage.waitUntilRemoteInstancesPageLoaded().openAddAWSRDSMySQLPage();
     remoteInstancesPage.discoverRDS();
-    //remoteInstancesPage.verifyInstanceIsDiscovered(instanceIdToMonitor);
-    //remoteInstancesPage.startMonitoringOfInstance(instanceIdToMonitor);
+    remoteInstancesPage.verifyInstanceIsDiscovered(serviceName);
+    remoteInstancesPage.startMonitoringOfInstance(serviceName);
     remoteInstancesPage.verifyAddInstancePageOpened();
     remoteInstancesPage.fillRemoteRDSFields(serviceName);
     remoteInstancesPage.createRemoteInstance(serviceName);
