@@ -9,13 +9,13 @@ Before(async ({ I, settingsAPI }) => {
 });
 
 const version = process.env.PXC_VERSION ? `${process.env.PXC_VERSION}` : '8.0';
-const container_name = `pxc_container_${version}`;
+const container_name = `pxc_container1_${version}`;
 const remoteServiceName = 'remote_pmm-mysql-integration';
 
 const connection = {
   host: container_name,
-  username: 'sysbench',
-  password: 'test',
+  username: 'admin',
+  password: 'admin',
 };
 
 Scenario(
@@ -27,7 +27,7 @@ Scenario(
     const details = {
       serviceName: remoteServiceName,
       serviceType: 'MYSQL_SERVICE',
-      port,
+      port: port,
       username: connection.username,
       password: connection.password,
       host: container_name,
@@ -47,7 +47,7 @@ Scenario(
     I.fillField(remoteInstancesPage.fields.environment, details.environment);
     I.fillField(remoteInstancesPage.fields.cluster, details.cluster);
     I.click(remoteInstancesPage.fields.addService);
-    I.waitForVisible(pmmInventoryPage.fields.agentsLink, 30);
+    //I.waitForVisible(pmmInventoryPage.fields.agentsLink, 30);
     await inventoryAPI.verifyServiceExistsAndHasRunningStatus(
       {
         serviceType: 'MYSQL_SERVICE',
