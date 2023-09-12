@@ -1,4 +1,6 @@
 import { CommonPage } from '@pages/common.page';
+import LoginPlatformPage from '@pages/login-platform.page';
+import Wait from '@helpers/enums/wait';
 
 export default class LoginPage extends CommonPage {
   readonly PAGE_PATH = 'graph/login';
@@ -6,15 +8,10 @@ export default class LoginPage extends CommonPage {
 
   elements: any = {
     ...this.elements,
-    usernameInput: this.page.locator('//input[@name="user"]'),
-    passwordInput: this.page.locator('//input[@name="password"]'),
-    oktaLoginButton: this.page.locator('//*[@href="login/generic_oauth"]'),
-    oktaLogin: {
-      usernameInput: this.page.locator('//input[@name="username"]'),
-      passwordInput: this.page.locator('//input[@name="password"]'),
-      nextButton: this.page.locator('//*[@id="idp-discovery-submit"]'),
-      signInButton: this.page.locator('//*[@id="okta-signin-submit"]'),
-    },
+    headingLocator: this.page.locator('//h1'),
+    username: this.page.locator('//input[@name="username"]'),
+    password: this.page.locator('//input[@name="password"]'),
+    signInWithPerconaAccountButton: this.page.locator('//*[@href="login/generic_oauth"]'),
   };
 
   /**
@@ -24,11 +21,11 @@ export default class LoginPage extends CommonPage {
     await this.openPageByPath(this.PAGE_PATH, this.PAGE_HEADING, this.PAGE_HEADING_LOCATOR);
   };
 
-  oktaLogin = async (username: string, password: string) => {
-    await this.elements.oktaLoginButton.click();
-    await this.elements.oktaLogin.usernameInput.type(username);
-    await this.elements.oktaLogin.nextButton.click();
-    await this.elements.oktaLogin.passwordInput.type(password);
-    await this.elements.oktaLogin.signInButton.click();
+  signInWithPerconaAccount = async (username: string, password: string) => {
+    await this.elements.signInWithPerconaAccountButton.click();
+    await new LoginPlatformPage(this.page).login(username, password);
+    if (this.page.url().includes(this.PAGE_PATH)) {
+      await this.toastMessage.catchError(Wait.TwoSeconds);
+    }
   };
 }

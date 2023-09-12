@@ -9,6 +9,10 @@ on:
         description: 'pmm-ui-tests repository branch'
         default: 'main'
         required: true
+      pmm_qa_branch:
+        description: 'pmm-qa repository branch(for setup)'
+        default: 'main'
+        required: true
       pmm_server_version:
         description: 'PMM Server docker image'
         default: 'perconalab/pmm-server:dev-latest'
@@ -16,10 +20,6 @@ on:
       pmm_client_version:
         description: 'PMM Client version to test (dev-latest|pmm2-latest|pmm2-rc|x.xx.x)'
         default: 'dev-latest'
-        required: true
-      pmm_qa_branch:
-        description: 'pmm-qa repository branch(for setup)'
-        default: 'main'
         required: true
 
 jobs:
