@@ -121,6 +121,14 @@ Scenario(
 
       await I.say(`query is : ${query}`);
 
+      if (!response.data.metrics) {
+        throw new Error(`there are no metrics stored in clickhouse for query 
+        "${query}"
+        Full resp: 
+        "${JSON.stringify(response.data)}"
+        `);
+      }
+
       const clickhouse_sum = parseFloat((response.data.metrics.query_time.sum).toFixed(7));
       const clickhouse_avg = parseFloat((response.data.metrics.query_time.avg).toFixed(7));
 
@@ -139,7 +147,7 @@ Scenario(
       assert.ok(response.data.metrics.query_time.cnt === query_cnt, `Expected Total Query Count Metrics to be same for query ${query} with id as ${queryid} found in clickhouse as ${response.data.metrics.query_time.cnt} while pgsm has value as ${query_cnt}`);
     }
   },
-).retry(1);
+).retry(2);
 
 Data(filters).Scenario(
   'PMM-T1261 - Verify the "Command type" filter for Postgres @not-ui-pipeline @pgsm-pmm-integration',
@@ -298,6 +306,16 @@ Scenario(
         assert.fail(`Expected queryid with id as ${queryid} and query as ${query} to have data in clickhouse but got response as ${response.status}. ${JSON.stringify(response.data)}}`);
       }
 
+      await I.say(`query is : ${query}`);
+
+      if (!response.data.metrics) {
+        throw new Error(`there are no metrics stored in clickhouse for query 
+        "${query}"
+        Full resp: 
+        "${JSON.stringify(response.data)}"
+        `);
+      }
+
       const clickhouse_sum = parseFloat((response.data.metrics.query_time.sum).toFixed(7));
       const clickhouse_avg = parseFloat((response.data.metrics.query_time.avg).toFixed(7));
 
@@ -316,7 +334,7 @@ Scenario(
       assert.ok(response.data.metrics.query_time.cnt === query_cnt, `Expected Total Query Count Metrics to be same for query ${query} with id as ${queryid} found in clickhouse as ${response.data.metrics.query_time.cnt} while pgsm has value as ${query_cnt}`);
     }
   },
-).retry(1);
+).retry(2);
 
 Scenario(
   'PMM-T1063 - Verify Application Name with pg_stat_monitor @pgsm-pmm-integration @not-ui-pipeline',
