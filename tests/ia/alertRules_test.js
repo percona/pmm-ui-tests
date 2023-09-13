@@ -125,11 +125,8 @@ Scenario(
     await alertRulesPage.verifyRuleList(newRule.folder, newRule.ruleName);
     await I.verifyCommand('docker pause ms_pmm_8.0');
     await alertRulesPage.verifyRuleState('Pending',180);
-    //await I.waitForText('Pending', 180, alertRulesPage.elements.ruleState1);
     await alertRulesPage.verifyRuleState('Firing',180);
-    //await I.waitForText('Firing', 180, alertRulesPage.elements.ruleState2);
     await I.verifyCommand('docker unpause ms_pmm_8.0');
-    //await I.waitForText('Normal', 180, alertRulesPage.elements.ruleState3);
     await alertRulesPage.verifyRuleState('Normal',180);
     await rulesAPI.removeAlertRule(newRule.folder);
   },

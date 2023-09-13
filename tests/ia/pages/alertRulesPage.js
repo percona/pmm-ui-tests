@@ -76,7 +76,7 @@ module.exports = {
       folder: newruleObj.folder || 'Insight',
     };
 
-    I.waitForElement(this.fields.templatesLoader);
+    I.waitForElement(this.fields.templatesLoader, 30);
     this.searchAndSelectResult('template', template);
     this.verifyAndReplaceInputField('ruleName', ruleName, editedRule.ruleName);
     const thresholdExists = await I.grabNumberOfVisibleElements(this.fields.resultsLocator(threshold));
@@ -110,22 +110,22 @@ module.exports = {
   },
 
   searchAndSelectResult(dropdownLabel, option) {
-    I.waitForElement(this.fields.searchDropdown(dropdownLabel));
+    I.waitForElement(this.fields.searchDropdown(dropdownLabel), 30);
     I.click(this.fields.searchDropdown(dropdownLabel));
-    I.waitForElement(this.fields.resultsLocator(option));
+    I.waitForElement(this.fields.resultsLocator(option), 30);
     I.click(this.fields.resultsLocator(option));
   },
 
   verifyAndReplaceInputField(fieldName, oldValue, newValue) {
-    I.waitForValue(this.fields.inputField(fieldName), oldValue);
+    I.waitForValue(this.fields.inputField(fieldName), oldValue, 30);
     I.clearField(this.fields.inputField(fieldName));
-    I.fillField(this.fields.inputField(fieldName), newValue);
+    I.fillField(this.fields.inputField(fieldName), newValue, 30);
   },
 
   selectFolder(option) {
-    I.waitForElement(this.fields.folderLocator);
+    I.waitForElement(this.fields.folderLocator, 30);
     I.click(this.fields.folderLocator);
-    I.waitForElement(this.fields.resultsLocator(option));
+    I.waitForElement(this.fields.resultsLocator(option), 30);
     I.click(this.fields.resultsLocator(option));
   },
 
