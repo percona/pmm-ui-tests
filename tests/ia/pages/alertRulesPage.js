@@ -28,7 +28,7 @@ module.exports = {
     ruleValidationError: (error) => locate('div').withText(error).inside('div').withAttr({ role: 'alert' }),
   },
   buttons: {
-    newAlertRule: '//span[contains(.,\'New alert rule\')]',
+    newAlertRule: '//a[@href=\'alerting/new\']//span',
     saveAndExit: locate('button').withText('Save and exit'),
     editAlertRule: '//a[contains(@href, \'edit?returnTo=%2Falerting%2Flist\')]',
     editRuleOnView: '//span[text()="Edit"]',
