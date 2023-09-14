@@ -34,11 +34,16 @@ this is it! tests are good to go on specified PMM server.
   ex: create `.env` file with the following line `PMM_UI_URL=http://myPmmServer.com`
 
 ### Running tests:
-Execute command in the **playwright-tests** folder
+Execute command in the **playwright-tests** folder   
+     
+    Note! since portal tests require spcial setup, all tests are split 
+    into 2 "projects": Chromium(without setup) and Portal(with setup). 
+    Run tests without project flag or "--project=Chromium" will run portal setup 
 * run all tests: `npx playwright test`
-* run a single test file: `npx playwright test tests/todo-page.spec.ts`
+* run a single test file: `npx playwright test --projet=Cromium access-control.spec.ts`
+* run Portal tests: `npx playwright test --projet=Portal -g @portal`
 * run a set of test files: `npx playwright test tests/todo-page/ tests/landing-page/`
-* run files that have **my-spec** or **my-spec-2** in the file name: `npx playwright test my-spec my-spec-2`
+* run files that have **my-spec** or **my-spec-2** in the file name: `npx playwright test --project=Chromium my-spec my-spec-2`
 * run desired [groups/tags](https://playwright.dev/docs/test-annotations#tag-tests): `npx playwright test --grep @rbac`
 
 ### Test report
@@ -51,6 +56,10 @@ Full list of arguments available on [Playwright docs](https://playwright.dev/doc
 `--config="playwright.config.ts"` tells plyawright which configuration file to use to run tests. Useful when local run needs additional configuration, ex:
 
     `npx playwright test --config=local.config.ts`
+
+`--quiet`  Run tests with no console output, ex:
+
+    `npx playwright test --project=Chromium --quiet`
 
 `--debug`  Run tests with Playwright Inspector, ex:
 

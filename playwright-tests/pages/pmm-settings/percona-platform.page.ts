@@ -66,7 +66,7 @@ export default class PerconaPlatformPage extends CommonPage {
     platformProfile: 'https://platform-dev.percona.com/profile',
     portalLogin: 'https://portal-dev.percona.com/login',
     readMore:
-      'https://docs.percona.com/percona-monitoring-and-management/how-to/integrate-platform.html#disconnect-a-pmm-instance',
+      'https://per.co.na/disconnect',
   };
 
   /**

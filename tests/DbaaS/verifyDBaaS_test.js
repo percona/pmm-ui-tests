@@ -229,7 +229,10 @@ Data(nameFields).Scenario(
     I.dontSee(dbaasPage.dbclusterNameLimitError, dbaasPage.tabs.dbClusterTab.basicOptions.fields.clusterNameFieldErrorMessage);
     adminPage.customClearField(current.field);
     I.fillField(dbaasPage.tabs.dbClusterTab.basicOptions.fields.clusterNameField, 'a23456789012345678901');
-    I.seeTextEquals(dbaasPage.dbclusterNameLimitError, dbaasPage.tabs.dbClusterTab.basicOptions.fields.clusterNameFieldErrorMessage);
+    I.seeTextEquals(
+      dbaasPage.dbclusterNameLimitError,
+      dbaasPage.tabs.dbClusterTab.basicOptions.fields.clusterNameFieldErrorMessage,
+    );
     current.value.forEach((input) => dbaasPage.verifyInputValidationMessages(
       current.field,
       input,
