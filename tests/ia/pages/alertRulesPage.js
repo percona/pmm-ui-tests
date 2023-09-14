@@ -104,8 +104,10 @@ module.exports = {
     I.verifyPopUpMessage(this.messages.successRuleEdit(ruleName));
   },
 
-  openAlertRulesTab() {
+  async openAlertRulesTab() {
     I.amOnPage(this.url);
+    order_sent = page.locator(this.buttons.newAlertRule);
+    await order_sent.wait_for()
     I.waitForVisible(this.buttons.newAlertRule, 30);
   },
 
