@@ -438,7 +438,8 @@ jobs:
         if: failure()
         run: |
           # TODO: add job id for matrix call
-          report_name=${{ env.JOB_TAG }}-${{ inputs.version_string_from || inputs.pmm_server_start_version }}-report
+          way=$(echo "${{ inputs.upgrade_type }}" | awk -F' ' '{print tolower($1)}')
+          report_name=${{ env.JOB_TAG }}-$way-${{ inputs.version_string_from || inputs.pmm_server_start_version }}-report
           echo $report_name
           echo "REPORT_NAME=$report_name" >> $GITHUB_ENV
 

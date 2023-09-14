@@ -4,7 +4,6 @@ import { portalApi } from '@api/portal.api';
 import { PortalUser } from '@helpers/types/portal-user.class';
 import { api } from '@api/api';
 import { portalHelper } from '@helpers/portal-helper';
-import Wait from '@helpers/enums/wait';
 
 /**
  *  Connect PMM to Portal tests do not require any monitored services.
