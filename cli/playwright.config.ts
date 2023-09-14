@@ -28,9 +28,7 @@ const config: PlaywrightTestConfig = {
   /* Opt out of parallel tests on CI. */
   workers: 6,
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
-  // reporter: process.env.CI ? 'github' : 'list',
   reporter: [
-    ['github'],
     ['list'],
     ['html', { open: 'never', outputFolder: './test-report' }]
   ],

@@ -4,7 +4,7 @@ const {
 const assert = require('assert');
 
 module.exports = {
-  
+
   /**
    * @param actionName - one of 'Delete', 'Restart', 'Edit', 'Suspend', 'Resume'
    * @param isActionPossible - true or false
@@ -56,7 +56,8 @@ module.exports = {
     I.click(dbaasPage.tabs.dbClusterTab.advancedOptionsButton);
     I.click(dbaasPage.tabs.dbClusterTab.advancedOptions.fields.resourcesPerNodeSelect);
     I.waitForVisible(dbaasPage.tabs.dbClusterTab.advancedOptions.fields.resourcesPerNodesOption(
-      configuration.resourcePerNode), 10);
+      configuration.resourcePerNode,
+    ), 10);
     if (configuration.resourcePerNode === 'Custom') {
       I.click(
         dbaasPage.tabs.dbClusterTab.advancedOptions.fields.resourcesPerNodesOption(configuration.resourcePerNode),
@@ -147,7 +148,8 @@ module.exports = {
     if (configuration.resourcePerNode === 'Custom') {
       I.click(dbaasPage.tabs.dbClusterTab.advancedOptions.fields.resourcesPerNodeSelect);
       I.waitForVisible(dbaasPage.tabs.dbClusterTab.advancedOptions.fields.resourcesPerNodesOption(
-        configuration.resourcePerNode), 10);
+        configuration.resourcePerNode,
+      ), 10);
       I.click(
         dbaasPage.tabs.dbClusterTab.advancedOptions.fields.resourcesPerNodesOption(configuration.resourcePerNode),
       );
@@ -212,15 +214,15 @@ module.exports = {
         resourceType,
       ),
     );
-    I.see(warningMessage,
+    I.see(
+      warningMessage,
       dbaasPage.tabs.dbClusterTab.advancedOptions.fields.resourceBarInsufficientResources(
         resourceType,
-      ));
-    await adminPage.verifyBackgroundColor(
-      dbaasPage.tabs.dbClusterTab.advancedOptions.fields.resourceBarResourceIndication(
-        resourceType,
-      ), 'rgb(209, 14, 92)',
+      ),
     );
+    await adminPage.verifyBackgroundColor(dbaasPage.tabs.dbClusterTab.advancedOptions.fields.resourceBarResourceIndication(
+      resourceType,
+    ), 'rgb(209, 14, 92)');
   },
 
   async updateCluster(dbClusterName) {

@@ -77,30 +77,41 @@ jobs:
       version_string_from: ${{needs.get_versions.outputs.start_version}}
       version_string_to: ${{needs.get_versions.outputs.finish_version}}
 
-# TODO: add / in the job names for good sub-jobs grouping
 #  portal:
-#    name: Portal
+#    ### '/' in the job name is for good sub-jobs grouping
+#    name: Portal / Portal
 #    uses: ./.github/workflows/upgrade-tests-pipeline.yml
 #    secrets: inherit
 #    needs: get_versions
+#    strategy:
+#      fail-fast: false
+#      matrix:
+#        old_version: ${{ fromJSON(needs.get_versions.outputs.version_matrix) }}
+#        upgrade_type: [ "UI way", "Docker way" ]
 #    with:
-#      pmm_ui_tests_branch: ${{ inputs.pmm_ui_tests_branch }}
+#      pmm_ui_tests_branch: ${{ inputs.pmm_ui_tests_branch || 'main' }}
 #      pre_upgrade_tests: '@pre-pmm-portal-upgrade'
 #      post_upgrade_tests: '@post-pmm-portal-upgrade'
-#      pmm_server_start_version: ${{ inputs.pmm_server_start_version }}
-#      pmm_client_start_version: ${{ inputs.pmm_client_start_version }}
-#      upgrade_type: ${{ inputs.upgrade_type }}
-#      pmm_qa_branch: ${{ inputs.pmm_qa_branch }}
+#      pmm_server_start_version: ${{ matrix.old_version }}
+#      pmm_client_start_version: ${{ matrix.old_version }}
+#      upgrade_type: ${{ matrix.upgrade_type }}
+#      pmm_qa_branch: ${{ inputs.pmm_qa_branch || 'main' }}
 #      services_list: ''
-#      repository: ${{ inputs.repository }}
+#      repository: ${{ inputs.repository || 'dev-latest'}}
 #      version_string_from: ${{needs.get_versions.outputs.start_version}}
 #      version_string_to: ${{needs.get_versions.outputs.finish_version}}
-#
+
 #  inventory:
+#     # TODO: add / in the job names for good sub-jobs grouping
 #    name: 'Inventory'
 #    uses: ./.github/workflows/upgrade-tests-pipeline.yml
 #    secrets: inherit
 #    needs: get_versions
+#    strategy:
+#      fail-fast: false
+#      matrix:
+#        old_version: ${{ fromJSON(needs.get_versions.outputs.version_matrix) }}
+#        upgrade_type: [ "UI way", "Docker way" ]
 #    with:
 #      pmm_ui_tests_branch: ${{ inputs.pmm_ui_tests_branch }}
 #      pre_upgrade_tests: '@inventory-pre-upgrade'

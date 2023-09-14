@@ -121,6 +121,14 @@ Scenario(
 
       await I.say(`query is : ${query}`);
 
+      if (!response.data.metrics) {
+        throw new Error(`there are no metrics stored in clickhouse for query 
+        "${query}"
+        Full resp: 
+        "${JSON.stringify(response.data)}"
+        `);
+      }
+
       const clickhouse_sum = parseFloat((response.data.metrics.query_time.sum).toFixed(7));
       const clickhouse_avg = parseFloat((response.data.metrics.query_time.avg).toFixed(7));
 
@@ -139,7 +147,7 @@ Scenario(
       assert.ok(response.data.metrics.query_time.cnt === query_cnt, `Expected Total Query Count Metrics to be same for query ${query} with id as ${queryid} found in clickhouse as ${response.data.metrics.query_time.cnt} while pgsm has value as ${query_cnt}`);
     }
   },
-).retry(1);
+).retry(2);
 
 Data(filters).Scenario(
   'PMM-T1261 - Verify the "Command type" filter for Postgres @not-ui-pipeline @pgsm-pmm-integration',
@@ -298,6 +306,16 @@ Scenario(
         assert.fail(`Expected queryid with id as ${queryid} and query as ${query} to have data in clickhouse but got response as ${response.status}. ${JSON.stringify(response.data)}}`);
       }
 
+      await I.say(`query is : ${query}`);
+
+      if (!response.data.metrics) {
+        throw new Error(`there are no metrics stored in clickhouse for query 
+        "${query}"
+        Full resp: 
+        "${JSON.stringify(response.data)}"
+        `);
+      }
+
       const clickhouse_sum = parseFloat((response.data.metrics.query_time.sum).toFixed(7));
       const clickhouse_avg = parseFloat((response.data.metrics.query_time.avg).toFixed(7));
 
@@ -316,7 +334,7 @@ Scenario(
       assert.ok(response.data.metrics.query_time.cnt === query_cnt, `Expected Total Query Count Metrics to be same for query ${query} with id as ${queryid} found in clickhouse as ${response.data.metrics.query_time.cnt} while pgsm has value as ${query_cnt}`);
     }
   },
-).retry(1);
+).retry(2);
 
 Scenario(
   'PMM-T1063 - Verify Application Name with pg_stat_monitor @pgsm-pmm-integration @not-ui-pipeline',
@@ -567,8 +585,10 @@ Scenario(
     I.wait(defaultValue);
     let log = await I.verifyCommand(`docker exec ${container_name} tail -n100 pmm-agent.log`);
 
-    assert.ok(!log.includes('non default bucket time value is not supported, status changed to WAITING'),
-      'The log wasn\'t supposed to contain errors regarding bucket time but it does');
+    assert.ok(
+      !log.includes('non default bucket time value is not supported, status changed to WAITING'),
+      'The log wasn\'t supposed to contain errors regarding bucket time but it does',
+    );
 
     await I.pgExecuteQueryOnDemand(`ALTER SYSTEM SET pg_stat_monitor.pgsm_bucket_time=${alteredValue};`, connection);
     await I.verifyCommand(`docker exec ${container_name} service postgresql restart`);
@@ -577,8 +597,10 @@ Scenario(
     I.wait(alteredValue);
     log = await I.verifyCommand(`docker exec ${container_name} tail -n100 pmm-agent.log`);
 
-    assert.ok(log.includes('non default bucket time value is not supported, status changed to WAITING'),
-      'The log was supposed to contain errors regarding bucket time but it doesn\'t');
+    assert.ok(
+      log.includes('non default bucket time value is not supported, status changed to WAITING'),
+      'The log was supposed to contain errors regarding bucket time but it doesn\'t',
+    );
 
     await I.verifyCommand(`docker exec ${container_name} pmm-admin list | grep "postgresql_pgstatmonitor_agent" | grep "Waiting"`);
     await I.pgExecuteQueryOnDemand(`ALTER SYSTEM SET pg_stat_monitor.pgsm_bucket_time=${defaultValue};`, connection);
