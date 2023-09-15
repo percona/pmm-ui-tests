@@ -10,17 +10,16 @@ units.add(['s', '[0, 100]']);
 units.add(['*', '[0, 100]']);
 units.add(['%', '']);
 
-// templates.add([page.ruleTemplate.paths.yaml, null]);
-// templates.add([page.ruleTemplate.paths.yml, null]);
-// templates.add([page.ruleTemplate.paths.txt, page.messages.failedToParse]);
-// templates.add(['tests/ia/templates/customParam.yml', null]);
-templates.add(['tests/ia/templates/multiple-templates.yml', null]);
-// templates.add(['tests/ia/templates/undefinedParam.yml',
-//   'failed to fill expression placeholders: template: :4:5: executing "" at <.threshold>: map has no entry for key "threshold".']);
-// templates.add(['tests/ia/templates/specialCharInParam.yml',
-//   'failed to parse expression: template: :4: bad character U+0040 \'@\'.']);
-// templates.add(['tests/ia/templates/spaceInParam.yml',
-//   'failed to parse expression: template: :4: function "old" not defined.']);
+templates.add([page.ruleTemplate.paths.yaml, null]);
+templates.add([page.ruleTemplate.paths.yml, null]);
+templates.add([page.ruleTemplate.paths.txt, page.messages.failedToParse]);
+templates.add(['tests/ia/templates/customParam.yml', null]);
+templates.add(['tests/ia/templates/undefinedParam.yml',
+  'failed to fill expression placeholders: template: :4:5: executing "" at <.threshold>: map has no entry for key "threshold".']);
+templates.add(['tests/ia/templates/specialCharInParam.yml',
+  'failed to parse expression: template: :4: bad character U+0040 \'@\'.']);
+templates.add(['tests/ia/templates/spaceInParam.yml',
+  'failed to parse expression: template: :4: function "old" not defined.']);
 
 Feature('IA: Alert rule templates').retry(1);
 
