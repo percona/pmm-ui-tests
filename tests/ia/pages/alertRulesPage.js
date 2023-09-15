@@ -106,6 +106,7 @@ module.exports = {
 
   async openAlertRulesTab() {
    await I.amOnPage(this.url);
+   I.refreshPage();
    I.waitForVisible(this.buttons.newAlertRule, 30);
   },
 
