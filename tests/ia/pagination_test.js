@@ -31,7 +31,7 @@ Scenario(
 
     const templatesTotal = await I.grabNumberOfVisibleElements(iaCommon.elements.rowInTable);
 
-    I.assertAbove(templatesTotal, 1, 'There\'s more then 10 templates by default');
+    I.assertAbove(templatesTotal, 10, 'There\'s more then 10 templates by default');
     I.seeNumberOfElements(iaCommon.buttons.pageButtonActive, 1);
 
     // Create more templates to have 2 pages (26 in sum)
