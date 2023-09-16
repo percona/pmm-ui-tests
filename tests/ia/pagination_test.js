@@ -221,12 +221,12 @@ Scenario(
 Scenario(
   'PMM-T631 PMM-T633 PMM-T1251 Changing rows per page resets view to 1 page @ia',
   async ({
-    I, iaCommon,
+    I, iaCommon, templatesAPI,
   }) => {
     const { createEntities, url, getListOfItems } = iaCommon.getCreateEntitiesAndPageUrl(page);
 
     // Create more templates to have 2 pages (101 in sum)
-    const templatesTotal = await I.grabNumberOfVisibleElements(iaCommon.elements.rowInTable);
+    const templatesTotal = (await templatesAPI.getTemplatesList()).length;
 
     await createEntities(101 - templatesTotal);
 
