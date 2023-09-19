@@ -16,27 +16,16 @@ const getConfiguredRestApi = async (): Promise<APIRequestContext> => {
 };
 
 const apiHelper = {
-  // TODO: move it from the helper to proper file API? It's not actually API call.
+  // TODO: remove in favor of xxxPage.network.suppressTour().
   confirmTour: async (page: Page) => {
-    await page.route('**/v1/user', (route) => {
-      route.fulfill({
+    await page.route('**/v1/user', async (route) => {
+      await route.fulfill({
         status: 200,
         body: JSON.stringify({
           user_id: 1,
           product_tour_completed: true,
           alerting_tour_completed: true,
         }),
-      });
-    });
-  },
-
-  // TODO: move it from the helper to proper file API? It's not actually API call.
-  async interceptBackEndCall(page: Page, interceptedRoute: string, data = {}) {
-    await page.route(interceptedRoute, async (route) => {
-      await route.fulfill({
-        body: JSON.stringify(data),
-        contentType: 'application/json',
-        headers: {},
       });
     });
   },

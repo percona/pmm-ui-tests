@@ -27,14 +27,32 @@ export default class ToastMessage {
   };
 
   async waitForSuccess(timeout?: number) {
-    await this.toastSuccess.waitFor({ state: 'visible', timeout: timeout || Wait.ToastMessage });
+    await this.messageText.waitFor({ state: 'visible', timeout: timeout || Wait.ToastMessage });
+    await expect(this.toastSuccess, `Verify found message is success: "${await this.messageText.textContent()}"`)
+      .toBeVisible();
     await this.closeButton.click();
     await this.messageText.waitFor({ state: 'detached', timeout: Wait.TwoSeconds });
   }
 
   waitForError = async (timeout?: number) => {
-    await this.toastError.waitFor({ state: 'visible', timeout: timeout || Wait.ToastMessage });
+    await this.messageText.waitFor({ state: 'visible', timeout: timeout || Wait.ToastMessage });
+    await expect(this.toastError, `Verify found message is not an error: "${await this.messageText.textContent()}"`)
+      .toBeVisible();
     await this.closeButton.click();
     await this.messageText.waitFor({ state: 'detached', timeout: Wait.TwoSeconds });
+  };
+
+  catchError = async (timeout?: number) => {
+    let toastDisplayed = false;
+    try {
+      await this.messageText.waitFor({ state: 'visible', timeout: timeout || Wait.ToastMessage })
+        .then(() => { toastDisplayed = true; });
+    } catch (TimeoutException) {
+      // normal flow that toast should not appear
+    }
+    if (toastDisplayed) {
+      await expect(this.toastSuccess, `Verify found message is not an error: "${await this.messageText.textContent()}"`)
+        .toBeVisible({ timeout: 1 });
+    }
   };
 }

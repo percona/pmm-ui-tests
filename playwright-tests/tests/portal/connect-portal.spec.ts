@@ -4,7 +4,13 @@ import { portalApi } from '@api/portal.api';
 import { PortalUser } from '@helpers/types/portal-user.class';
 import { api } from '@api/api';
 import { portalHelper } from '@helpers/portal-helper';
+import Wait from '@helpers/enums/wait';
 
+/**
+ *  Connect PMM to Portal tests do not require any monitored services.
+ *  But requires environment variables(.env file supported) with credentials see: {@link constants.portal},
+ *  {@link constants.okta} and {@link constants.serviceNow}.
+ */
 test.describe('Spec file for connecting PMM to the portal', async () => {
   let pmmVersion: number;
   let firstAdmin: PortalUser;
@@ -21,7 +27,7 @@ test.describe('Spec file for connecting PMM to the portal', async () => {
   });
 
   test('PMM-T809 PMM-T398 Verify Percona Platform elements on PMM Settings'
-      + ' Page @portal @pre-pmm-portal-upgrade', async ({ perconaPlatformPage }) => {
+      + ' Page @portal @portal-pre-upgrade', async ({ perconaPlatformPage }) => {
     test.skip(pmmVersion < 27, 'This test is for PMM version 2.27.0 and higher');
 
     await test.step('1. Open Percona Platform tab in PMM Settings', async () => {
@@ -66,7 +72,7 @@ test.describe('Spec file for connecting PMM to the portal', async () => {
 
   test(
     'PMM-T1224 Verify user is notified about using old PMM version while trying to connect to Portal'
-      + ' @portal @pre-pmm-portal-upgrade @post-pmm-portal-upgrade',
+      + ' @portal @portal-pre-upgrade @post-pmm-portal-upgrade',
     async ({ perconaPlatformPage }) => {
       test.skip(pmmVersion > 26, 'This test is for PMM version 2.26.0 and lower');
       await perconaPlatformPage.authenticateSession();
@@ -80,48 +86,49 @@ test.describe('Spec file for connecting PMM to the portal', async () => {
   );
 
   test(
-    'PMM-T1097 Verify PMM server is connected to Portal'
-      + ' @not-ui-pipeline @portal @pre-pmm-portal-upgrade',
+    'PMM-T1097 Verify PMM server can be connected to Portal'
+      + ' @portal @portal-pre-upgrade',
     async ({ perconaPlatformPage }) => {
       test.skip(pmmVersion < 27, 'This test is for PMM version 2.27.0 and higher');
 
-      await test.step('1. Open Percona Platform tab in PMM Settings', async () => {
+      await test.step('Open Percona Platform tab in PMM Settings', async () => {
         await perconaPlatformPage.authenticateSession();
         await perconaPlatformPage.open();
         await perconaPlatformPage.perconaPlatformContainer.waitFor({ state: 'visible' });
       });
-
-      await test.step('2. Connect PMM to the Portal', async () => {
+      await test.step('Connect PMM to the Portal', async () => {
         const adminToken = await portalApi.getUserAccessToken(firstAdmin.email, firstAdmin.password);
         // pmm address is not set automatically in older PMMs.
         await perconaPlatformPage.connectToPortal(adminToken, `Test Server ${Date.now()}`, true);
+        await expect(perconaPlatformPage.buttons.disconnect, 'Verify "Force Disconnect" button is visible')
+          .toBeVisible({ timeout: 1 });
       });
     },
   );
 
   test(
     'PMM-T1098 Verify All org users can login in connected PMM server'
-      + ' @not-ui-pipeline @portal @pre-pmm-portal-upgrade @post-pmm-portal-upgrade',
+      + ' @not-ui-pipeline @portal @portal-pre-upgrade @post-pmm-portal-upgrade',
     async ({ loginPage, homeDashboardPage, context }) => {
       test.skip(pmmVersion < 27, 'This test is for PMM version 2.27.0 and higher');
 
       await test.step('1. Login as admin user that created the org.', async () => {
         await loginPage.open();
-        await loginPage.oktaLogin(firstAdmin.email, firstAdmin.password);
+        await loginPage.signInWithPerconaAccount(firstAdmin.email, firstAdmin.password);
         await homeDashboardPage.waitToBeOpened();
         await context.clearCookies();
         await loginPage.page.reload();
       });
 
       await test.step('1. Login as admin user that was invited to the org.', async () => {
-        await loginPage.oktaLogin(secondAdmin.email, secondAdmin.password);
+        await loginPage.signInWithPerconaAccount(secondAdmin.email, secondAdmin.password);
         await homeDashboardPage.waitToBeOpened();
         await context.clearCookies();
         await loginPage.page.reload();
       });
 
       await test.step('1. Login as technical user that was invited to the org.', async () => {
-        await loginPage.oktaLogin(technicalUser.email, technicalUser.password);
+        await loginPage.signInWithPerconaAccount(technicalUser.email, technicalUser.password);
         await homeDashboardPage.waitToBeOpened();
         await context.clearCookies();
         await loginPage.page.reload();

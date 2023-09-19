@@ -44,7 +44,7 @@ const config: PlaywrightTestConfig = {
     },
     {
       name: 'Portal Setup',
-      testMatch: 'tests/portal/testUsers.setup.ts',
+      testMatch: 'tests/portal/test-users.setup.ts',
     },
     {
       name: 'Portal',
