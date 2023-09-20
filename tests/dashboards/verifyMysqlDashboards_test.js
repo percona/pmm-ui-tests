@@ -146,6 +146,21 @@ Scenario(
 );
 
 Scenario(
+  'PMM-T1743 - verify PXCGalera Cluster Summary Dashboard (Experimental) metrics @nightly @dashboards',
+  async ({ I, adminPage, dashboardPage }) => {
+    const url = I.buildUrlWithParams(dashboardPage.pxcGaleraClusterSummaryExperimentalDashboard.url, { from: 'now-5m' });
+
+    I.amOnPage(url);
+    dashboardPage.waitForDashboardOpened();
+    I.click(adminPage.fields.metricTitle);
+    adminPage.performPageDown(5);
+    dashboardPage.verifyMetricsExistence(dashboardPage.pxcGaleraClusterSummaryDashboard.metrics);
+    await dashboardPage.verifyThereAreNoGraphsWithNA();
+    await dashboardPage.verifyThereAreNoGraphsWithoutData(2);
+  },
+);
+
+Scenario(
   'PMM-T324 - Verify MySQL - MySQL User Details dashboard @nightly @dashboards',
   async ({ I, dashboardPage, adminPage }) => {
     const ps_service_response = await inventoryAPI.apiGetNodeInfoForAllNodesByServiceName('MYSQL_SERVICE', 'ps_8.0');
