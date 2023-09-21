@@ -91,7 +91,7 @@ services:
       - pmm-network
 
   postgres:
-    image: ${POSTGRES_IMAGE:-perconalab/percona-distribution-postgresql:13.3}
+    image: ${POSTGRES_IMAGE:-perconalab/percona-distribution-postgresql:15}
     container_name: pmm-agent_postgres
     command: >
       -c shared_preload_libraries=pg_stat_monitor,pg_stat_statements
@@ -111,7 +111,7 @@ services:
 
   # it needs for deleting postgres db for test T1087
   postgresremovedefaultdb:
-    image: ${POSTGRES_IMAGE:-perconalab/percona-distribution-postgresql:13.3}
+    image: ${POSTGRES_IMAGE:-perconalab/percona-distribution-postgresql:15}
     command: >
       psql -Utest -hpostgresnodb -dnot_default_db -c 'DROP DATABASE postgres WITH (FORCE);'
     depends_on:
@@ -123,7 +123,7 @@ services:
       - pmm-network
 
   postgresnodb:
-    image: ${POSTGRES_IMAGE:-perconalab/percona-distribution-postgresql:13.3}
+    image: ${POSTGRES_IMAGE:-perconalab/percona-distribution-postgresql:15}
     healthcheck:
       test: [ "CMD-SHELL", "pg_isready" ]
       interval: 5s
