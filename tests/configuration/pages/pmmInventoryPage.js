@@ -1,4 +1,6 @@
-const { I, inventoryAPI, remoteInstancesHelper } = inject();
+const { I, inventoryAPI, remoteInstancesHelper, adminPage } = inject();
+const testData = require('../testData');
+
 const assert = require('assert');
 const paginationPart = require('./paginationFragment');
 const servicesTab = require('./servicesTab');
@@ -95,14 +97,14 @@ module.exports = {
     deleteButton: locate('span').withText('Delete'),
     environment: '$environment-text-input',
     externalExporter: locate('td').withText('External exporter'),
-    editAction: '//span[contains(text(),"Edit")]',
-    editText: '//h3[contains(text(),"Editing")]',
+    editAction: locate('span').withText('Edit'),
+    editText: locate('h3').withText('Editing'),
     forceModeCheckbox: locate('$force-field-label'),
     inventoryTable: locate('table'),
     inventoryTableColumn: locate('table').find('td'),
     inventoryTableRows: locate('tr').after('table'),
     inventoryTableRowCount: (count) => locate('span').withText(`${count}`),
-    kebabMenu: (serviceName) => `(${service(serviceName)}/following::span//*[name()='svg' and @class='css-hj6vlq'])[2]`,
+    kebabMenu: (serviceName) => `${service(serviceName)}//ancestor::tr//button[@data-testid="dropdown-menu-toggle"]`,
     mongoServiceName: locate('td').withText('mongodb'),
     mysqlServiceName: locate('td').withText('ms-single'),
     // cannot be changed to locate because it's failing in I.waitForVisible()
@@ -130,9 +132,9 @@ module.exports = {
     removalDialogMessage: '//form/h4',
     replicationSet: '$replication_set-text-input',
     selectedCheckbox: '//div[descendant::input[@value="true"] and @data-testid="select-row"]',
-    saveButton: '//div[contains(text(),\'Save Changes\')]',
-    saveConfirmButton: '//span[normalize-space()="Confirm and save changes"]',
-    savePopupMessage: '//div[contains(text(),"Changing the cluster label will remove all scheduled backups")]',
+    saveButton: locate('button').withChild('div').withText('Save Changes'),
+    saveConfirmButton: locate('span').withText('Confirm and save changes'),
+    savePopupMessage: locate('p').withText('Changing existing labels can affect other parts of PMM dependent on it'),
   },
   servicesTab,
   pagination: paginationPart,
@@ -457,9 +459,12 @@ module.exports = {
   },
 
   async clearFields() {
-    I.clearField(this.fields.environment);
-    I.clearField(this.fields.cluster);
-    I.clearField(this.fields.replicationSet);
+    adminPage.customClearField(this.fields.environment);
+    //I.clearField(this.fields.environment);
+    adminPage.customClearField(this.fields.cluster);
+    //I.clearField(this.fields.cluster);
+    adminPage.customClearField(this.fields.replicationSet);
+    //I.clearField(this.fields.replicationSet);
   },
 
   async fillFields(serviceParameters) {
@@ -474,8 +479,8 @@ module.exports = {
     I.click(this.fields.saveConfirmButton);
   },
 
-  async checkLabels(serviceParameters) {
-    var labels;
+  async verifyLabels(serviceParameters) {
+    let labels;
     labels = `//span[contains(text(),"${serviceParameters.environment}")]`;
     I.waitForElement(labels, 30);
     labels = `//span[contains(text(),"${serviceParameters.cluster}")]`;
@@ -483,102 +488,58 @@ module.exports = {
     labels = `//span[contains(text(),"${serviceParameters.replicationSet}")]`;
     I.waitForElement(labels, 30);
   },
-  
-  async editRemoteServiceDisplayed(serviceName) {
-    I.waitForElement(this.fields.kebabMenu(serviceName),30);
-    I.wait(10);
+
+  async editRemoteService(serviceName) {
+    I.waitForElement(this.fields.kebabMenu(serviceName), 30);
     I.click(this.fields.kebabMenu(serviceName));
-    I.waitForElement(this.fields.editAction,30);
-    I.wait(10);
+    I.waitForElement(this.fields.editAction, 30);
     I.click(this.fields.editAction);
-    I.waitForElement(this.fields.editText);
+    I.waitForElement(this.fields.editText, 30);
     I.seeElement(this.fields.editText);
-    switch (serviceName) {
-      case remoteInstancesHelper.services.mysql:
-        this.clearFields();
-        this.fillFields(this.mysqlSettings);
-        this.saveConfirm();
-        await I.click(this.fields.showServiceDetails(serviceName));
-        this.checkLabels(this.mysqlSettings);
-        break;
-      case remoteInstancesHelper.services.mongodb:
-        this.clearFields();
-        this.fillFields(this.mongodbSettings);
-        this.saveConfirm();
-        await I.click(this.fields.showServiceDetails(serviceName));
-        this.checkLabels(this.mongodbSettings);
-        break;
-      case remoteInstancesHelper.services.postgresql:
-        this.clearFields();
-        this.fillFields(this.potgresqlSettings);
-        this.saveConfirm();
-        await I.click(this.fields.showServiceDetails(serviceName));
-        this.checkLabels(this.potgresqlSettings);
-        break;
-      case remoteInstancesHelper.services.proxysql:
-        this.clearFields();
-        this.fillFields(this.proxysqlSettings);
-        this.saveConfirm();
-        await I.click(this.fields.showServiceDetails(serviceName));
-        this.checkLabels(this.proxysqlSettings);
-        break;
-      case 'external_service_new':
-        this.clearFields();
-        this.fillFields(this.externalSettings);
-        this.saveConfirm();
-        await I.click(this.fields.showServiceDetails(serviceName));
-        this.checkLabels(this.externalSettings);
-        break;
-      case remoteInstancesHelper.services.postgresGC:
-        this.clearFields();
-        this.fillFields(this.postgresGCSettings);
-        this.saveConfirm();
-        await I.click(this.fields.showServiceDetails(serviceName));
-        this.checkLabels(this.postgresGCSettings);
-        break;  
-      case 'rds-mysql56':
-        this.clearFields();
-        this.fillFields(this.mysqlInputs);
-        this.saveConfirm();
-        await I.click(this.fields.showServiceDetails(serviceName));
-        this.checkLabels(this.mysqlInputs);
-        break;
-      case 'pmm-qa-mysql-8-0-30':
-        this.clearFields();
-        this.fillFields(this.mysql80rdsInput);
-        this.saveConfirm();
-        await I.click(this.fields.showServiceDetails(serviceName));
-        this.fillFields(this.mysql80rdsInput);
-        break;
-      case 'pmm-qa-rds-mysql-5-7-39':
-        this.clearFields();
-        this.fillFields(this.mysql57rdsInput);
-        this.saveConfirm();
-        await I.click(this.fields.showServiceDetails(serviceName));
-        this.fillFields(this.mysql57rdsInput);
-        break;
-      case 'pmm-qa-pgsql-12':
-        this.clearFields();
-        this.fillFields(this.postgresqlInputs);
-        this.saveConfirm();
-        await I.click(this.fields.showServiceDetails(serviceName));
-        this.fillFields(this.postgresqlInputs);
-        break;
-      case 'azure-MySQL':
-        this.clearFields();
-        this.fillFields(this.mysqlAzureInputs);
-        this.saveConfirm();
-        await I.click(this.fields.showServiceDetails(serviceName));
-        this.fillFields(this.mysqlAzureInputs);
-        break;
-      case 'azure-PostgreSQL':
-        this.clearFields();
-        this.fillFields(this.postgresqlAzureInputs);
-        this.saveConfirm();
-        await I.click(this.fields.showServiceDetails(serviceName));
-        this.fillFields(this.postgresqlAzureInputs);
-        break;
-        default:  
-      }
-  },      
+    this.clearFields();
+
+    const editActions = {
+      set: function (testData) {
+        this.data = testData;
+      },
+      'mysql_remote_new': function () {
+        return (this.data.mysqlSettings);
+      },
+      'mongodb_remote_new': function () {
+        return (this.data.mongodbSettings);
+      },
+      'postgresql_remote_new': function () {
+        return (this.data.potgresqlSettings);
+      },
+      'proxysql_remote_new': function () {
+        return (this.data.proxysqlSettings);
+      },
+      'external_service_new': function () {
+        return (this.data.externalSettings);
+      },
+      'rds-mysql56': function () {
+        return (this.data.mysqlInputs);
+      },
+      'pmm-qa-mysql-8-0-30': function () {
+        return (this.data.mysql80rdsInput);
+      },
+      'pmm-qa-rds-mysql-5-7-39': function () {
+        return (this.data.mysql57rdsInput);
+      },
+      'pmm-qa-pgsql-12': function () {
+        return (this.data.postgresqlInputs);
+      },
+      'azure-MySQL': function () {
+        return (this.data.mysqlAzureInputs);
+      },
+      'azure-PostgreSQL': function () {
+        return (this.data.postgresqlAzureInputs);
+      },
+    };
+    editActions.set(testData);
+    this.fillFields(editActions[serviceName](testData));
+    this.saveConfirm();
+    await I.click(this.fields.showServiceDetails(serviceName));
+    this.verifyLabels(editActions[serviceName](testData));
+  },
 };

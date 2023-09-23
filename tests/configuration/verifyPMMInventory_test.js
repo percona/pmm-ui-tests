@@ -282,7 +282,7 @@ Data(instances).Scenario(
     await remoteInstancesPage.fillRemoteFields(serviceName);
     remoteInstancesPage.createRemoteInstance(serviceName);
     pmmInventoryPage.verifyRemoteServiceIsDisplayed(serviceName);
-    pmmInventoryPage.editRemoteServiceDisplayed(serviceName);
+    pmmInventoryPage.editRemoteService(serviceName);
   },
 );
 
@@ -296,7 +296,7 @@ Scenario(
     I.waitForVisible(remoteInstancesPage.fields.addService, 30);
     I.click(remoteInstancesPage.fields.addService);
     pmmInventoryPage.verifyRemoteServiceIsDisplayed(externalExporterServiceName);
-    pmmInventoryPage.editRemoteServiceDisplayed(externalExporterServiceName);
+    pmmInventoryPage.editRemoteService(externalExporterServiceName);
   },
 ).retry(0);
 
@@ -314,7 +314,7 @@ Scenario(
     remoteInstancesPage.fillRemoteRDSFields(serviceName);
     remoteInstancesPage.createRemoteInstance(serviceName);
     pmmInventoryPage.verifyRemoteServiceIsDisplayed(serviceName);
-    pmmInventoryPage.editRemoteServiceDisplayed(serviceName);
+    pmmInventoryPage.editRemoteService(serviceName);
   },
 );
 
@@ -341,7 +341,7 @@ Scenario(
     I.waitForVisible(remoteInstancesPage.fields.addService, 30);
     I.click(remoteInstancesPage.fields.addService);
     pmmInventoryPage.verifyRemoteServiceIsDisplayed(haproxyServiceName);
-    pmmInventoryPage.editRemoteServiceDisplayed(haproxyServiceName);
+    pmmInventoryPage.editRemoteService(haproxyServiceName);
   },
 );
   
@@ -366,7 +366,7 @@ Scenario(
     remoteInstancesPage.fillRemoteRDSFields(serviceName);
     remoteInstancesPage.createRemoteInstance(serviceName);
     pmmInventoryPage.verifyRemoteServiceIsDisplayed(serviceName);
-    pmmInventoryPage.editRemoteServiceDisplayed(serviceName);
+    pmmInventoryPage.editRemoteService(serviceName);
   },
 );
 
@@ -386,7 +386,7 @@ Data(azureServices).Scenario(
     remoteInstancesPage.fillRemoteRDSFields(serviceName);
     I.click(remoteInstancesPage.fields.addService);
     pmmInventoryPage.verifyRemoteServiceIsDisplayed(serviceName);
-    pmmInventoryPage.editRemoteServiceDisplayed(serviceName);
+    pmmInventoryPage.editRemoteService(serviceName);
   },
 );
 
@@ -417,7 +417,7 @@ Data(aws_instances).Scenario('PMM-T2340 Verify adding and editing Aurora remote 
 
   I.amOnPage(pmmInventoryPage.url);
   pmmInventoryPage.verifyRemoteServiceIsDisplayed(details.service_name);
-  pmmInventoryPage.editRemoteServiceDisplayed(details.service_name);
+  pmmInventoryPage.editRemoteService(details.service_name);
 });
 
 Data(qanFilters).Scenario(
