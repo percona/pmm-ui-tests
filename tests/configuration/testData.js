@@ -78,4 +78,19 @@ module.exports = {
     cluster: 'rdsPostgres-cluster new',
     replicationSet: 'rdsPostgres-replication new',
   },
+  aurora2Inputs: {
+    userName: remoteInstancesHelper.remote_instance.aws.aurora.aurora2.address,
+    password: remoteInstancesHelper.remote_instance.aws.aurora.aurora2.password,
+    environment: 'Aurora2 Postgres new',
+    cluster: 'Aurora2-cluster new',
+    replicationSet: 'Aurora2-replication new',
+  },
+
+  aurora3Inputs: {
+    userName: remoteInstancesHelper.remote_instance.aws.aurora.aurora3.address,
+    password: remoteInstancesHelper.remote_instance.aws.aurora.aurora3.password,
+    environment: 'Aurora2 Postgres new',
+    cluster: 'Aurora2-cluster new',
+    replicationSet: 'Aurora2-replication new',
+  },
 };
