@@ -469,6 +469,9 @@ module.exports = {
       'pmm-qa-aurora3-mysql-instance-1': function () {
         return (this.data.postgresqlAzureInputs);
       },
+       'haproxy_remote': function () {
+       return (this.data.haproxy);
+      }, 
     };
     editActions.set(testData);
     this.fillFields(editActions[serviceName](testData));
