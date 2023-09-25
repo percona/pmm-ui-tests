@@ -392,7 +392,7 @@ Scenario(
     I.waitForVisible(remoteInstancesPage.fields.addService, 30);
     I.click(remoteInstancesPage.fields.addService);
     pmmInventoryPage.verifyRemoteServiceIsDisplayed(haproxyServiceName);
-    editActions.set(testData,editActions[serviceName](testData));
+    editActions.set(testData,editActions[haproxyServiceName](testData));
     pmmInventoryPage.verifyEditRemoteService(haproxyServiceName,editActions[serviceName](testData));
   },
 );
@@ -471,7 +471,7 @@ Data(aws_instances).Scenario('PMM-T2340 Verify adding and editing Aurora remote 
 
   I.amOnPage(pmmInventoryPage.url);
   pmmInventoryPage.verifyRemoteServiceIsDisplayed(details.service_name);
-  editActions.set(testData,editActions[serviceName](testData));
+  editActions.set(testData,editActions[details.service_name](testData));
   pmmInventoryPage.verifyEditRemoteService(details.service_name,editActions[serviceName](testData));
 });
 
