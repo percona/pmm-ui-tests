@@ -1,5 +1,4 @@
 const { I, inventoryAPI, remoteInstancesHelper, adminPage } = inject();
-const testData = require('../testData');
 
 const assert = require('assert');
 const paginationPart = require('./paginationFragment');
@@ -417,7 +416,7 @@ module.exports = {
     I.waitForElement(labels, 30);
   },
 
-  async editRemoteService(serviceName) {
+  async verifyEditRemoteService(serviceName, serviceParameters) {
     I.waitForElement(this.fields.kebabMenu(serviceName), 30);
     I.click(this.fields.kebabMenu(serviceName));
     I.waitForElement(this.fields.editButton, 30);
@@ -425,58 +424,9 @@ module.exports = {
     I.waitForElement(this.fields.editText, 30);
     I.seeElement(this.fields.editText);
     this.clearFields();
-
-    const editActions = {
-      set: function (testData) {
-        this.data = testData;
-      },
-      'mysql_remote_new': function () {
-        return (this.data.mysqlSettings);
-      },
-      'mongodb_remote_new': function () {
-        return (this.data.mongodbSettings);
-      },
-      'postgresql_remote_new': function () {
-        return (this.data.potgresqlSettings);
-      },
-      'proxysql_remote_new': function () {
-        return (this.data.proxysqlSettings);
-      },
-      'external_service_new': function () {
-        return (this.data.externalSettings);
-      },
-      'rds-mysql56': function () {
-        return (this.data.mysqlInputs);
-      },
-      'pmm-qa-mysql-8-0-30': function () {
-        return (this.data.mysql80rdsInput);
-      },
-      'pmm-qa-rds-mysql-5-7-39': function () {
-        return (this.data.mysql57rdsInput);
-      },
-      'pmm-qa-pgsql-12': function () {
-        return (this.data.postgresqlInputs);
-      },
-      'azure-MySQL': function () {
-        return (this.data.mysqlAzureInputs);
-      },
-      'azure-PostgreSQL': function () {
-        return (this.data.postgresqlAzureInputs);
-      },
-      'pmm-qa-aurora2-mysql-instance-1': function () {
-        return (this.data.postgresqlAzureInputs);
-      },
-      'pmm-qa-aurora3-mysql-instance-1': function () {
-        return (this.data.postgresqlAzureInputs);
-      },
-       'haproxy_remote': function () {
-       return (this.data.haproxy);
-      }, 
-    };
-    editActions.set(testData);
-    this.fillFields(editActions[serviceName](testData));
+    this.fillFields(serviceParameters);
     this.saveConfirm();
     await I.click(this.fields.showServiceDetails(serviceName));
-    this.verifyLabels(editActions[serviceName](testData));
+    this.verifyLabels(serviceParameters);
   },
 };
