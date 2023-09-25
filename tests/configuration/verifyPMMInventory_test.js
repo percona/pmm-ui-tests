@@ -346,7 +346,7 @@ Scenario(
     I.click(remoteInstancesPage.fields.addService);
     pmmInventoryPage.verifyRemoteServiceIsDisplayed(externalExporterServiceName);
     editActions.set(testData);
-    pmmInventoryPage.verifyEditRemoteService(externalExporterServiceName,editActions[serviceName](testData));
+    pmmInventoryPage.verifyEditRemoteService(externalExporterServiceName,editActions[externalExporterServiceName](testData));
   },
 ).retry(0);
 
@@ -393,7 +393,7 @@ Scenario(
     I.click(remoteInstancesPage.fields.addService);
     pmmInventoryPage.verifyRemoteServiceIsDisplayed(haproxyServiceName);
     editActions.set(testData,editActions[haproxyServiceName](testData));
-    pmmInventoryPage.verifyEditRemoteService(haproxyServiceName,editActions[serviceName](testData));
+    pmmInventoryPage.verifyEditRemoteService(haproxyServiceName,editActions[haproxyServiceName](testData));
   },
 );
   
@@ -472,7 +472,7 @@ Data(aws_instances).Scenario('PMM-T2340 Verify adding and editing Aurora remote 
   I.amOnPage(pmmInventoryPage.url);
   pmmInventoryPage.verifyRemoteServiceIsDisplayed(details.service_name);
   editActions.set(testData,editActions[details.service_name](testData));
-  pmmInventoryPage.verifyEditRemoteService(details.service_name,editActions[serviceName](testData));
+  pmmInventoryPage.verifyEditRemoteService(details.service_name,editActions[details.service_name](testData));
 });
 
 Data(qanFilters).Scenario(
