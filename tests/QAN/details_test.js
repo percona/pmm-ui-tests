@@ -132,6 +132,7 @@ Scenario(
     I.waitForElement(qanOverview.elements.querySelector, 30);
     qanOverview.selectRow(1);
 
+    // eslint-disable-next-line no-undef
     const foundErrorMessage = await tryTo(() => I.verifyPopUpMessage(
       'invalid GetActionRequest.ActionId: value length must be at least 1 runes',
       2,
