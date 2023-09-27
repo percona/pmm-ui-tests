@@ -202,13 +202,14 @@ Data(ptSummaryRoleCheck).Scenario(
   async ({
     I, databaseChecksPage, settingsAPI, locationsPage, current, adminPage, homePage,
   }) => {
+    const ACCESS_DENIED = 'Access Denied';
     const { username, password, dashboard } = current;
 
     await I.Authorize(username, password);
     I.amOnPage(homePage.url);
 
     // eslint-disable-next-line no-undef
-    let foundErrorMessage = await tryTo(() => I.verifyPopUpMessage('Access Denied', 2));
+    let foundErrorMessage = await tryTo(() => I.verifyPopUpMessage(ACCESS_DENIED, 2));
 
     I.assertFalse(foundErrorMessage, 'Found unexpected "Access Denied" error message!');
 
@@ -219,13 +220,13 @@ Data(ptSummaryRoleCheck).Scenario(
 
     I.refreshPage();
     // eslint-disable-next-line no-undef
-    foundErrorMessage = await tryTo(() => I.verifyPopUpMessage('Access Denied', 2));
+    foundErrorMessage = await tryTo(() => I.verifyPopUpMessage(ACCESS_DENIED, 2));
     I.assertFalse(foundErrorMessage, 'Found unexpected "Access Denied" error message!');
 
     I.amOnPage(dashboard);
 
     // eslint-disable-next-line no-undef
-    foundErrorMessage = await tryTo(() => I.verifyPopUpMessage('Access Denied', 2));
+    foundErrorMessage = await tryTo(() => I.verifyPopUpMessage(ACCESS_DENIED, 2));
     I.assertFalse(foundErrorMessage, 'Found unexpected "Access Denied" error message!');
 
     dashboardPage.waitForDashboardOpened();
@@ -237,7 +238,7 @@ Data(ptSummaryRoleCheck).Scenario(
 
     I.refreshPage();
     // eslint-disable-next-line no-undef
-    foundErrorMessage = await tryTo(() => I.verifyPopUpMessage('Access Denied', 2));
+    foundErrorMessage = await tryTo(() => I.verifyPopUpMessage(ACCESS_DENIED, 2));
     I.assertFalse(foundErrorMessage, 'Found unexpected "Access Denied" error message!');
   },
 );
