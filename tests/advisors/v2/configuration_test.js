@@ -4,7 +4,7 @@ Before(async ({ I }) => {
   await I.Authorize();
 });
 
-Scenario.only(
+Scenario(
   'PMM-T1771 Verify user is able to see advisor check technology family @advisors',
   async ({
     I, advisorsPage,
