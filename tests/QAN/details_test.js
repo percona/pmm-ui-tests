@@ -118,6 +118,32 @@ Scenario(
 );
 
 Scenario(
+  'PMM-T1790 - Verify that there is any no error on Explains after switching between queries from different DB servers '
+    + '@qan',
+  async ({
+    I, qanPage, qanOverview, qanFilters, qanDetails,
+  }) => {
+    I.amOnPage(I.buildUrlWithParams(qanPage.clearUrl, { environment: 'ps-dev', from: 'now-1h', search: 'insert' }));
+    I.waitForElement(qanOverview.elements.querySelector, 30);
+    qanOverview.selectRow(1);
+    qanFilters.waitForFiltersToLoad();
+    qanDetails.checkExplainTab();
+    await qanFilters.applyFilter('mongodb');
+    I.waitForElement(qanOverview.elements.querySelector, 30);
+    qanOverview.selectRow(1);
+
+    // eslint-disable-next-line no-undef
+    const foundErrorMessage = await tryTo(() => I.verifyPopUpMessage(
+      'invalid GetActionRequest.ActionId: value length must be at least 1 runes',
+      2,
+    ));
+
+    I.assertFalse(foundErrorMessage, 'Found unexpected error message!');
+    I.waitForElement(qanDetails.buttons.close, 30);
+  },
+);
+
+Scenario(
   'PMM-T245 - Verify that user is able to close the Details section @qan',
   async ({
     I, qanOverview, qanFilters, qanDetails,
