@@ -143,22 +143,32 @@ test.describe('PMM Server CLI tests for Docker Environment Variables', async () 
     await (await cli.exec('docker-compose -f test-setup/docker-compose-scrape-intervals.yml up -d')).assertSuccess();
 
     await test.step('verify client docker logs for custom value', async () => {
-      await page.waitForTimeout(10_000);
-      const scrapeSizeLog = await cli.exec('docker logs pmm-client-custom-scrape-interval 2>&1 | grep \'promscrape.maxScrapeSize.*vm_agent\' | tail -1');
-      await scrapeSizeLog.outContains(`promscrape.maxScrapeSize=\\\"${customScrapeSize}MiB\\\"`);
+      await expect(async () => {
+        const scrapeSizeLog = await cli.exec('docker logs pmm-client-custom-scrape-interval 2>&1 | grep \'promscrape.maxScrapeSize.*vm_agent\' | tail -1');
+        await scrapeSizeLog.outContains(`promscrape.maxScrapeSize=\\\"${customScrapeSize}MiB\\\"`);
+      }).toPass({
+        // Probe, wait 1s, probe, wait 2s, probe, wait 2s, probe, wait 2s, probe, ....
+        intervals: [1_000, 2_000, 2_000],
+        timeout: 10_000,
+      });
     });
 
     await test.step('verify logs from binary for custom value', async () => {
-      await (await cli.exec('sudo pmm-admin config --node-name=pmm-t1665 --force \'--server-url=https://admin:admin@0.0.0.0:2443\' --server-insecure-tls 127.0.0.1')).assertSuccess();
+      await (await cli.exec('sudo pmm-admin config node-name=pmm-t1665 --force \'--server-url=https://admin:admin@0.0.0.0:2443\' --server-insecure-tls')).assertSuccess();
 
-      await page.waitForTimeout(10_000);
-      const scrapeSizeLog = await cli.exec('ps aux | grep -v \'grep\' | grep \'vm_agent\' | tail -1');
-      await scrapeSizeLog.outContains(`promscrape.maxScrapeSize=${customScrapeSize}MiB`);
+      await expect(async () => {
+        const scrapeSizeLog = await cli.exec('ps aux | grep -v \'grep\' | grep \'vm_agent\' | tail -1');
+        await scrapeSizeLog.outContains(`promscrape.maxScrapeSize=${customScrapeSize}MiB`);
+      }).toPass({
+        // Probe, wait 1s, probe, wait 2s, probe, wait 2s, probe, wait 2s, probe, ....
+        intervals: [1_000, 2_000, 2_000],
+        timeout: 10_000,
+      });
     });
+    await (await cli.exec('sudo pmm-admin config --force \'--server-url=https://admin:admin@0.0.0.0:443\' --server-insecure-tls 127.0.0.1 || true')).logError();
     // TODO: remove docker compose in favor of "docker run" with afterEach cleanup
     // stopList.push('PMM-T1665');
     // removeList.push('PMM-T1665');
     await (await cli.exec('docker-compose -f test-setup/docker-compose-scrape-intervals.yml down')).assertSuccess();
-    await (await cli.exec('sudo pmm-admin config --force \'--server-url=https://admin:admin@0.0.0.0:443\' --server-insecure-tls 127.0.0.1 || true')).logError();
   });
 });
