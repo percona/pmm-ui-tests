@@ -335,7 +335,8 @@ Scenario(
   },
 );
 
-Scenario(
+// Unskip after https://jira.percona.com/browse/PBM-1193 is fixed
+Scenario.skip(
   '@PMM-T928 @PMM-T992 Verify schedule retries and restore from a scheduled backup artifact @backup @bm-mongo',
   async ({
     I, backupInventoryPage, scheduledAPI, backupAPI, restorePage,
@@ -523,7 +524,8 @@ Scenario(
   },
 );
 
-Scenario(
+// Unskip after https://jira.percona.com/browse/PBM-1193 is fixed
+Scenario.skip(
   '@PMM-T1562 - Verify Mongo restore error logs when replica primary down @backup @bm-mongo',
   async ({
     I, inventoryAPI, backupInventoryPage, backupAPI, restorePage,
@@ -596,7 +598,8 @@ Data(deleteArtifactsTests).Scenario(
   },
 );
 
-Scenario(
+// Unskip after https://jira.percona.com/browse/PBM-1193 is fixed
+Scenario.skip(
   '@PMM-T991 - Verify retries for backup on demand @backup @bm-mongo',
   async ({
     I, inventoryAPI, backupInventoryPage, backupAPI,
