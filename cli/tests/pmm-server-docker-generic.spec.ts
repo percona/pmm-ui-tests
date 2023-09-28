@@ -5,6 +5,17 @@ import Output from '@support/types/output';
 const DOCKER_IMAGE = process.env.DOCKER_VERSION && process.env.DOCKER_VERSION.length > 0
   ? process.env.DOCKER_VERSION
   : 'perconalab/pmm-server:dev-latest';
+const stopList: string[] = [];
+const removeList: string[] = [];
+
+test.afterEach(async () => {
+  while (stopList.length > 0) {
+    await (await cli.exec(`docker stop ${stopList.shift()}`)).assertSuccess();
+  }
+  while (removeList.length > 0) {
+    await (await cli.exec(`docker rm ${removeList.shift()}`)).assertSuccess();
+  }
+});
 
 test.describe('PMM Server CLI tests for Docker Environment Variables', async () => {
   /**
@@ -22,9 +33,9 @@ test.describe('PMM Server CLI tests for Docker Environment Variables', async () 
       intervals: [1_000, 2_000, 2_000],
       timeout: 60_000,
     });
+    removeList.push('PMM-T224');
     // @ts-ignore
     await out.outContains('Configuration error: environment variable \\"DATA_RETENTION=48\\" has invalid duration 48.');
-    await (await cli.exec('docker rm PMM-T224')).assertSuccess();
   });
 
   /**
@@ -42,11 +53,10 @@ test.describe('PMM Server CLI tests for Docker Environment Variables', async () 
       intervals: [1_000, 2_000, 2_000],
       timeout: 60_000,
     });
-
+    stopList.push('PMM-T225');
+    removeList.push('PMM-T225');
     // @ts-ignore
     await out.outContains('Configuration warning: unknown environment variable \\"DATA_TENTION=48\\".');
-    await (await cli.exec('docker stop PMM-T225')).assertSuccess();
-    await (await cli.exec('docker rm PMM-T225')).assertSuccess();
   });
 
   /**
@@ -78,8 +88,8 @@ test.describe('PMM Server CLI tests for Docker Environment Variables', async () 
       timeout: 60_000,
     });
 
-    await (await cli.exec('docker stop PMM-T226')).assertSuccess();
-    await (await cli.exec('docker rm PMM-T226')).assertSuccess();
+    stopList.push('PMM-T226');
+    removeList.push('PMM-T226');
   });
 
   /**
@@ -97,8 +107,8 @@ test.describe('PMM Server CLI tests for Docker Environment Variables', async () 
     await cli.exec('sleep 30');
     await (await cli.exec('docker ps --format \'{{.Names}}\t{{.Status}}\' | grep PMM-T526 | awk -F\' \' \'{print $5}\' | awk -F\'(\' \'{print $2}\' | awk -F\')\' \'{print $1}\''))
       .outContains('unhealthy');
-    await (await cli.exec('docker stop PMM-T526')).assertSuccess();
-    await (await cli.exec('docker rm PMM-T526')).assertSuccess();
+    stopList.push('PMM-T526');
+    removeList.push('PMM-T526');
   });
 
   /**
@@ -112,8 +122,7 @@ test.describe('PMM Server CLI tests for Docker Environment Variables', async () 
         --query "select any(example),sum(num_queries) cnt, \
         max(m_query_time_max) slowest from metrics where period_start>subtractHours(now(),6) \
         group by queryid order by slowest desc limit 10"',
-    ))
-      .assertSuccess();
+    )).assertSuccess();
 
     const output = await cli.exec(
       'clickhouse-client --query \'SELECT * FROM system.databases\' | grep pmm | tr -s \'[:blank:]\' \'\\n\'',
@@ -127,19 +136,11 @@ test.describe('PMM Server CLI tests for Docker Environment Variables', async () 
     expect(output.getStdOutLines()[2], `Verify Clickhouse data_path is "${expectedPath}"`).toContain(expectedPath);
     expect(output.getStdOutLines()[3], `Verify Clickhouse metadata_path contains "${expectedPath}"`).toContain(expectedPath);
   });
-});
-test.describe('-promscrape.maxScapeSize tests', async () => {
-  test.beforeAll(async () => {
-    await (await cli.exec('docker-compose -f test-setup/docker-compose-scrape-intervals.yml up -d')).assertSuccess();
-  });
-
-  test.afterAll(async () => {
-    await (await cli.exec('docker-compose -f test-setup/docker-compose-scrape-intervals.yml down')).assertSuccess();
-    await (await cli.exec('sudo pmm-admin config --force \'--server-url=https://admin:admin@0.0.0.0:443\' --server-insecure-tls 127.0.0.1 || true')).assertSuccess();
-  });
 
   test('@PMM-T1665 Verify custom value for vm_agents -promscrape.maxScapeSize parameter', async ({ page }) => {
     const customScrapeSize = '128';
+
+    await (await cli.exec('docker-compose -f test-setup/docker-compose-scrape-intervals.yml up -d')).assertSuccess();
 
     await test.step('verify client docker logs for custom value', async () => {
       await page.waitForTimeout(10_000);
@@ -154,5 +155,10 @@ test.describe('-promscrape.maxScapeSize tests', async () => {
       const scrapeSizeLog = await cli.exec('ps aux | grep -v \'grep\' | grep \'vm_agent\' | tail -1');
       await scrapeSizeLog.outContains(`promscrape.maxScrapeSize=${customScrapeSize}MiB`);
     });
+    // TODO: remove docker compose in favor of "docker run" with afterEach cleanup
+    // stopList.push('PMM-T1665');
+    // removeList.push('PMM-T1665');
+    await (await cli.exec('docker-compose -f test-setup/docker-compose-scrape-intervals.yml down')).assertSuccess();
+    await (await cli.exec('sudo pmm-admin config --force \'--server-url=https://admin:admin@0.0.0.0:443\' --server-insecure-tls 127.0.0.1 || true')).logError();
   });
 });
