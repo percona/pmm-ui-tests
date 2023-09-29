@@ -15,8 +15,8 @@ on:
         default: 'dev-latest'
         type: string
       matrix_range:
-        default: 10
-        type: number
+        default: '10'
+        type: string
     outputs:
       start_version:
         description: "Version detected based on tag input"

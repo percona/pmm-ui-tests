@@ -33,7 +33,7 @@ jobs:
     uses: ./.github/workflows/pmm-version-getter.yml
     with:
       repository: ${{ inputs.repository || 'dev-latest'}}
-      matrix_range: ${{ Number inputs.versions_range || 5 }}
+      matrix_range: ${{ inputs.versions_range || '5' }}
 
   configuration:
     name: 'Configuration / Settings'
