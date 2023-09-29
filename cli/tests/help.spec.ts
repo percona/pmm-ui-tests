@@ -1,13 +1,12 @@
-import { test, expect } from '@playwright/test';
+import { test } from '@playwright/test';
 import * as cli from '@helpers/cliHelper';
-import Output from "@support/types/output";
+import Output from '@support/types/output';
 
-let addMongoHelp:Output;
-let addPostgreSqlHelp:Output;
+let addMongoHelp: Output;
+let addPostgreSqlHelp: Output;
 
 test.describe('PMM Client "--help" validation', async () => {
-
-  test.beforeAll(async ({}) =>{
+  test.beforeAll(async ({}) => {
     addMongoHelp = await cli.execSilent('sudo pmm-admin add mongodb --help');
     await addMongoHelp.assertSuccess();
     addPostgreSqlHelp = await cli.execSilent('sudo pmm-admin add postgresql --help');
