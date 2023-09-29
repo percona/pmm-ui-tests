@@ -524,7 +524,7 @@ Scenario(
   },
 );
 
-Scenario.skip(
+Scenario(
   '@PMM-T1527 Verify BM Scheduler blocks mongo services that are not managed as cluster'
   + ' @backup @bm-mongo @bm-fb',
   async ({ I, scheduledPage }) => {
