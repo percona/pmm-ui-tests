@@ -25,6 +25,7 @@ on:
       versions_range:
         description: 'Last versions range:'
         default: 5
+        type: number
         required: true
 
 jobs:
