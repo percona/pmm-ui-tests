@@ -22,6 +22,10 @@ on:
           - release
           - release candidate
           - dev-latest
+      versions_range:
+        description: 'Last versions range:'
+        default: 5
+        required: true
 
 jobs:
   get_versions:
@@ -29,7 +33,7 @@ jobs:
     uses: ./.github/workflows/pmm-version-getter.yml
     with:
       repository: ${{ inputs.repository || 'dev-latest'}}
-      matrix_range: 10
+      matrix_range: ${{ inputs.versions_range || 5 }}
 
   configuration:
     name: 'Configuration / Settings'
