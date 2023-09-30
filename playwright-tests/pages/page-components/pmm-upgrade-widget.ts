@@ -1,7 +1,7 @@
 import { expect, Page } from '@playwright/test';
 import Wait from '@helpers/enums/wait';
 
-export default class PmmUpgrade {
+export default class PmmUpgradeWidget {
   constructor(readonly page: Page) {}
 
   containers = { upgradeContainer: this.page.locator('//*[@aria-label="PMM Upgrade panel"]') };

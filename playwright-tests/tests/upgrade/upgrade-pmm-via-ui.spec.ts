@@ -11,7 +11,7 @@ test.describe('Common Upgrade PMM tests', async () => {
   });
 
   test('PMM-T288 Verify user can see Update widget before upgrade [critical] @pmm-upgrade', async ({ homeDashboardPage }) => {
-    await homeDashboardPage.pmmUpgrade.verifyUpgradeWidget();
+    await homeDashboardPage.pmmUpgradeWidget.verifyUpgradeWidget();
   });
 
   test('PMM-T3 Verify user is able to Upgrade PMM version [blocker] @pmm-upgrade', async ({ homeDashboardPage }) => {
