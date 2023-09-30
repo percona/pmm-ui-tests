@@ -11,37 +11,14 @@ export default class PmmUpgrade {
     availableVersion: this.containers.upgradeContainer.getByTestId('update-latest-version'),
     upToDate: this.containers.upgradeContainer.getByText('You are up to date'),
     lastUpgradeCheckDate: this.containers.upgradeContainer.getByTestId('update-last-check'),
-  };
-
-  buttons = { upgradeButton: this.containers.upgradeContainer.getByText('Upgrade to', { exact: false }) };
-
-  fields = {};
-
-  getPMMVersion = async (versionString: string) => {
-    const [versionMajor, versionMinor, versionPatch] = versionString.split('.');
-    return {
-      versionMajor, versionMinor, versionPatch,
-    };
-  };
-
-  getCurrentPMMVersion = async () => {
-    await expect(this.elements.currentVersion).toContainText('2.', { timeout: Wait.ThreeMinutes });
-    const versionString = await this.elements.currentVersion.textContent();
-    const [versionMajorString, versionMinorString, versionPatchString] = versionString.split('.');
-    const versions = {
-      versionMajor: parseInt(versionMajorString),
-      versionMinor: parseInt(versionMinorString),
-      versionPatch: parseInt(versionPatchString),
-    };
-
-    return versions;
+    upgradeButton: this.containers.upgradeContainer.getByText('Upgrade to', { exact: false }),
   };
 
   verifyUpgradeWidget = async () => {
-    await this.buttons.upgradeButton.waitFor({ state: 'visible', timeout: Wait.ThreeMinutes });
+    await this.elements.upgradeButton.waitFor({ state: 'visible', timeout: Wait.ThreeMinutes });
     await expect(this.elements.upToDate).toBeHidden();
     await this.elements.lastUpgradeCheckDate.waitFor({ state: 'visible' });
-    const availableVersion = await this.elements.availableVersion.textContent();
+    const availableVersion: string = await this.elements.availableVersion.textContent();
     await expect(this.elements.currentVersion).not.toHaveText(availableVersion);
   };
 }

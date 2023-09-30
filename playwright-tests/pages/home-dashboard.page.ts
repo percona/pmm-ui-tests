@@ -25,10 +25,10 @@ export default class HomeDashboardPage extends BaseDashboard {
     await expect(this.page).toHaveURL(this.PAGE_PATH);
   }
   upgradePmm = async () => {
-    await this.pmmUpgrade.buttons.upgradeButton.waitFor({ state: 'visible', timeout: Wait.ThreeMinutes });
+    await this.pmmUpgrade.elements.upgradeButton.waitFor({ state: 'visible', timeout: Wait.ThreeMinutes });
     const currentVersion = await this.pmmUpgrade.elements.currentVersion.textContent();
 
-    await this.pmmUpgrade.buttons.upgradeButton.click();
+    await this.pmmUpgrade.elements.upgradeButton.click();
     const availableVersion = await this.pmmUpgrade.elements.availableVersion.textContent();
 
     console.log(`Upgrading pmm server from version: ${currentVersion} to the version: ${availableVersion}`);

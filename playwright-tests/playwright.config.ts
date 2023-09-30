@@ -24,11 +24,11 @@ const config: PlaywrightTestConfig = {
   ],
 
   use: {
-    navigationTimeout: 30_000,
+    navigationTimeout: Wait.PageLoad,
     baseURL: process.env.PMM_UI_URL || 'https://localhost',
     ignoreHTTPSErrors: true,
     screenshot: 'only-on-failure',
-    actionTimeout: 15_000,
+    actionTimeout: Wait.FifteenSeconds,
   },
   projects: [
     {
