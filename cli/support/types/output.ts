@@ -29,27 +29,31 @@ class Output {
     });
   }
 
+  async outEquals(expectedValue: string) {
+    expect(this.stdout, `Stdout should equals '${expectedValue}'`).toEqual(expectedValue);
+  }
+
   async outContains(expectedValue: string) {
     await test.step(`Verify command output contains ${expectedValue}`, async () => {
       expect(this.stdout, `Stdout does not contain ${expectedValue}!`).toContain(expectedValue);
-    })
+    });
   }
 
   async outNotContains(expectedValue: string) {
     await test.step(`Verify command output contains ${expectedValue}`, async () => {
       expect(this.stdout, `Stdout does not contain ${expectedValue}!`).not.toContain(expectedValue);
-    })
+    });
   }
 
   async outContainsNormalizedMany(expectedValues: string[]) {
     for (const val of expectedValues) {
       await test.step(`Verify command output contains ${val}`, async () => {
         expect.soft(this.stdout.replace(/ +(?= )/g, ''), `Stdout does not contain '${val}'!`).toContain(val);
-      })
+      });
     }
     expect(
       test.info().errors,
-      `'Contains all elements' failed with ${test.info().errors.length} error(s):\n${this.getErrors()}`
+      `'Contains all elements' failed with ${test.info().errors.length} error(s):\n${this.getErrors()}`,
     ).toHaveLength(0);
   }
 
@@ -57,20 +61,26 @@ class Output {
     for (const val of expectedValues) {
       await test.step(`Verify command output contains ${val}`, async () => {
         expect.soft(this.stdout, `Stdout does not contain '${val}'!`).toContain(val);
-      })
+      });
     }
     expect(
       test.info().errors,
-      `'Contains all elements' failed with ${test.info().errors.length} error(s):\n${this.getErrors()}`
+      `'Contains all elements' failed with ${test.info().errors.length} error(s):\n${this.getErrors()}`,
     ).toHaveLength(0);
   }
 
   private getErrors(): string {
-    let errors: string[] = [];
+    const errors: string[] = [];
     for (const obj of test.info().errors) {
-      errors.push(`\t${obj.message.split('\n')[0]}`);
+      errors.push(`\t${obj.message!.split('\n')[0]}`);
     }
     return errors.join('\n');
+  }
+
+  logError() {
+    if (this.code !== 0) {
+      console.log(`"${this.command}" exited with error: "${this.stderr || this.stdout}"`);
+    }
   }
 }
 
