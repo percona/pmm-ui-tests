@@ -449,13 +449,13 @@ module.exports = {
   // General Remote Instances Service List, this is what UI-tests job uses to run remote instances tests.
   services: {
     mysql: (remoteInstanceStatus.mysql.ps_5_7.enabled ? 'mysql_remote_new' : undefined),
-    mongodb: (remoteInstanceStatus.mongodb.psmdb_4_2.enabled ? 'mongodb_remote_new' : undefined),
-    postgresql: (remoteInstanceStatus.postgresql.pdpgsql_13_3.enabled ? 'postgresql_remote_new' : undefined),
-    proxysql: (remoteInstanceStatus.proxysql.proxysql_2_1_1.enabled ? 'proxysql_remote_new' : undefined),
-    postgresGC: (remoteInstanceStatus.gc.gc_postgresql.enabled ? 'postgresql_GC_remote_new' : undefined),
-    mysql_ssl: (remoteInstanceStatus.mysql.ms_8_0_ssl.enabled ? 'mysql_ssl_new' : undefined),
-    mongodb_ssl: (remoteInstanceStatus.mongodb.mongodb_4_4_ssl.enabled ? 'mongodb_ssl_new' : undefined),
-    postgres_ssl: (remoteInstanceStatus.postgresql.postgres_13_3_ssl.enabled ? 'postgres_ssl_new' : undefined),
+    // mongodb: (remoteInstanceStatus.mongodb.psmdb_4_2.enabled ? 'mongodb_remote_new' : undefined),
+    // postgresql: (remoteInstanceStatus.postgresql.pdpgsql_13_3.enabled ? 'postgresql_remote_new' : undefined),
+    // proxysql: (remoteInstanceStatus.proxysql.proxysql_2_1_1.enabled ? 'proxysql_remote_new' : undefined),
+    // postgresGC: (remoteInstanceStatus.gc.gc_postgresql.enabled ? 'postgresql_GC_remote_new' : undefined),
+    // mysql_ssl: (remoteInstanceStatus.mysql.ms_8_0_ssl.enabled ? 'mysql_ssl_new' : undefined),
+    // mongodb_ssl: (remoteInstanceStatus.mongodb.mongodb_4_4_ssl.enabled ? 'mongodb_ssl_new' : undefined),
+    // postgres_ssl: (remoteInstanceStatus.postgresql.postgres_13_3_ssl.enabled ? 'postgres_ssl_new' : undefined),
   },
 
   // Only add a service here when you want to include it as part of Upgrade tests cycle for AMI and Docker

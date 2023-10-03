@@ -284,17 +284,24 @@ module.exports = {
   },
 
   async fillRemoteFields(serviceName) {
+    let inputs;
+
     // eslint-disable-next-line default-case
     switch (serviceName) {
       case remoteInstancesHelper.services.mysql:
-        I.fillField(this.fields.hostName, remoteInstancesHelper.remote_instance.mysql.ps_5_7.host);
-        I.fillField(this.fields.userName, remoteInstancesHelper.remote_instance.mysql.ps_5_7.username);
-        I.fillField(this.fields.password, remoteInstancesHelper.remote_instance.mysql.ps_5_7.password);
+        inputs = {
+          ...remoteInstancesHelper.remote_instance.mysql.ps_5_7,
+          ...this.mysqlSettings,
+        };
+
+        I.fillField(this.fields.hostName, inputs.host);
+        I.fillField(this.fields.userName, inputs.username);
+        I.fillField(this.fields.password, inputs.password);
         adminPage.customClearField(this.fields.portNumber);
-        I.fillField(this.fields.portNumber, remoteInstancesHelper.remote_instance.mysql.ps_5_7.port);
+        I.fillField(this.fields.portNumber, inputs.port);
         I.fillField(this.fields.serviceName, serviceName);
-        I.fillField(this.fields.environment, this.mysqlSettings.environment);
-        I.fillField(this.fields.cluster, this.mysqlSettings.cluster);
+        I.fillField(this.fields.environment, inputs.environment);
+        I.fillField(this.fields.cluster, inputs.cluster);
         break;
       case remoteInstancesHelper.services.mysql_ssl:
         I.fillField(this.fields.hostName, remoteInstancesHelper.remote_instance.mysql.ms_8_0_ssl.host);
@@ -484,6 +491,8 @@ module.exports = {
         I.fillField(this.fields.cluster, this.postgresGCSettings.cluster);
     }
     adminPage.performPageDown(1);
+
+    return inputs;
   },
 
   createRemoteInstance(serviceName) {

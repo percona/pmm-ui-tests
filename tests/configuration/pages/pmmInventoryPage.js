@@ -1,8 +1,11 @@
-const { I, inventoryAPI, remoteInstancesHelper, adminPage } = inject();
+const {
+  I, inventoryAPI, remoteInstancesHelper, adminPage,
+} = inject();
 
 const assert = require('assert');
 const paginationPart = require('./paginationFragment');
 const servicesTab = require('./servicesTab');
+
 const service = (serviceName) => `//span[contains(text(),'${serviceName}')]`;
 
 module.exports = {
@@ -17,11 +20,13 @@ module.exports = {
     agentStatus: locate('$details-row-content').find('a'),
     backToServices: '//span[text()="Go back to services"]',
     agentsLinkNew: '//div[contains(@data-testid,"status-badge")]',
-    agentDetailsLabelByText: (label) => locate('[aria-label="Tags"]').find('li').withText(label),
+    detailsLabelByText: (label) => locate('[aria-label="Tags"]').find('li').withText(label),
+    // agentDetailsLabelByText: (label) => locate('[aria-label="Tags"]').find('li').withText(label),
     agentsLink: locate('[role="tablist"] a').withText('Agents').withAttr({ 'aria-label': 'Tab Agents' }),
     agentsLinkOld: locate('a').withText('Agents'),
     cluster: '$cluster-text-input',
     deleteButton: locate('span').withText('Delete'),
+    deleteButton: locate(I.useDataQA('dsd')).withText('Delete'),
     environment: '$environment-text-input',
     externalExporter: locate('td').withText('External exporter'),
     editButton: locate('span').withText('Edit'),
@@ -385,48 +390,40 @@ module.exports = {
     I.click(this.fields.backToServices);
   },
 
-  async clearFields() {
-    adminPage.customClearField(this.fields.environment);
-    //I.clearField(this.fields.environment);
-    adminPage.customClearField(this.fields.cluster);
-    //I.clearField(this.fields.cluster);
-    adminPage.customClearField(this.fields.replicationSet);
-    //I.clearField(this.fields.replicationSet);
-  },
-
-  async fillFields(serviceParameters) {
-    I.fillField(this.fields.environment, serviceParameters.environment);
-    I.fillField(this.fields.cluster, serviceParameters.cluster);
-    I.fillField(this.fields.replicationSet, serviceParameters.replicationSet);
-  },
-
-  async saveConfirm() {
+  async saveAndConfirm() {
     I.click(this.fields.saveButton);
     I.seeElement(this.fields.savePopupMessage);
     I.click(this.fields.saveConfirmButton);
   },
 
-  async verifyLabels(serviceParameters) {
-    let labels;
-    labels = `//span[contains(text(),"${serviceParameters.environment}")]`;
-    I.waitForElement(labels, 30);
-    labels = `//span[contains(text(),"${serviceParameters.cluster}")]`;
-    I.waitForElement(labels, 30);
-    labels = `//span[contains(text(),"${serviceParameters.replicationSet}")]`;
-    I.waitForElement(labels, 30);
-  },
-
-  async verifyEditRemoteService(serviceName, serviceParameters) {
+  openEditServiceWizard(serviceName) {
     I.waitForElement(this.fields.kebabMenu(serviceName), 30);
     I.click(this.fields.kebabMenu(serviceName));
     I.waitForElement(this.fields.editButton, 30);
     I.click(this.fields.editButton);
     I.waitForElement(this.fields.editText, 30);
     I.seeElement(this.fields.editText);
-    this.clearFields();
-    this.fillFields(serviceParameters);
-    this.saveConfirm();
-    await I.click(this.fields.showServiceDetails(serviceName));
-    this.verifyLabels(serviceParameters);
+  },
+
+  updateServiceLabels(serviceParameters) {
+    I.usePlaywrightTo('clear fields', async ({ page }) => {
+      await page.fill(I.useDataQA('environment-text-input'), serviceParameters.environment);
+      await page.fill(I.useDataQA('replication_set-text-input'), serviceParameters.replicationSet);
+      await page.fill(I.useDataQA('cluster-text-input'), serviceParameters.cluster);
+    });
+
+    this.saveAndConfirm();
+  },
+
+  verifyEditRemoteService() {
+
+  },
+
+  verifyServiceLabels(serviceParameters) {
+    // Verify new values for labels in details
+    I.waitForVisible(this.fields.detailsLabelByText(`environment=${serviceParameters.environment}`), 20);
+    I.seeElement(this.fields.detailsLabelByText(`environment=${serviceParameters.environment}`));
+    I.seeElement(this.fields.detailsLabelByText(`cluster=${serviceParameters.cluster}`));
+    I.seeElement(this.fields.detailsLabelByText(`replication_set=${serviceParameters.replicationSet}`));
   },
 };
