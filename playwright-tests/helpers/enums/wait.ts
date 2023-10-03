@@ -9,6 +9,7 @@ enum Wait {
   OneSecond = oneSecond,
   TwoSeconds = 2 * oneSecond,
   TenSeconds = 10 * oneSecond,
+  FifteenSeconds = 15 * oneSecond,
   OneMinute = 60 * oneSecond,
   TwoMinutes = 2 * oneMin,
   ThreeMinutes = 3 * oneMin,

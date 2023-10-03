@@ -203,7 +203,7 @@ if (versionMinor >= 15) {
       I,
       settingsAPI,
       databaseChecksPage,
-      securityChecksAPI,
+      advisorsAPI,
       addInstanceAPI,
       inventoryAPI,
     }) => {
@@ -215,13 +215,13 @@ if (versionMinor >= 15) {
       await settingsAPI.changeSettings({ stt: true });
       await addInstanceAPI.addInstanceForSTT(connection, psServiceName);
 
-      await securityChecksAPI.startSecurityChecks();
+      await advisorsAPI.startSecurityChecks();
       // Waiting to have results
       I.wait(60);
       // disable check, change interval for a check, change interval settings
       if (versionMinor >= 16) {
-        await securityChecksAPI.disableCheck('mongodb_version');
-        await securityChecksAPI.changeCheckInterval('postgresql_version');
+        await advisorsAPI.disableCheck('mongodb_version');
+        await advisorsAPI.changeCheckInterval('postgresql_version');
         await settingsAPI.setCheckIntervals({
           ...settingsAPI.defaultCheckIntervals,
           standard_interval: '3600s',
@@ -235,18 +235,18 @@ if (versionMinor >= 15) {
       // I.waitForVisible(failedCheckRowLocator, 60);
 
       // Check that there are failed checks
-      // await securityChecksAPI.verifyFailedCheckExists(emptyPasswordSummary);
-      // await securityChecksAPI.verifyFailedCheckExists(failedCheckMessage);
+      // await advisorsAPI.verifyFailedCheckExists(emptyPasswordSummary);
+      // await advisorsAPI.verifyFailedCheckExists(failedCheckMessage);
 
       // Silence mysql Empty Password failed check
       // I.waitForVisible(failedCheckRowLocator, 30);
 
       if (versionMinor >= 27) {
         const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName('MYSQL_SERVICE', psServiceName);
-        const { alert_id } = (await securityChecksAPI.getFailedChecks(service_id))
+        const { alert_id } = (await advisorsAPI.getFailedChecks(service_id))
           .find(({ summary }) => summary === failedCheckMessage);
 
-        await securityChecksAPI.toggleChecksAlert(alert_id);
+        await advisorsAPI.toggleChecksAlert(alert_id);
       } else {
         I.waitForVisible(failedCheckRowLocator, 30);
         I.click(failedCheckRowLocator.find('button').withText('Silence'));
@@ -650,8 +650,8 @@ if (versionMinor >= 15) {
     async ({
       I,
       pmmSettingsPage,
-      securityChecksAPI,
-      allChecksPage,
+      advisorsAPI,
+      advisorsPage,
     }) => {
       // Wait for 45 seconds to have latest check results
       I.wait(45);
@@ -660,10 +660,10 @@ if (versionMinor >= 15) {
       I.waitForVisible(pmmSettingsPage.fields.sttSwitchSelector, 30);
       pmmSettingsPage.verifySwitch(pmmSettingsPage.fields.sttSwitchSelectorInput, 'on');
 
-      I.amOnPage(allChecksPage.url);
-      I.waitForVisible(allChecksPage.buttons.startDBChecks, 30);
+      I.amOnPage(advisorsPage.url);
+      I.waitForVisible(advisorsPage.buttons.startDBChecks, 30);
       // Verify there is failed check
-      await securityChecksAPI.verifyFailedCheckExists(failedCheckMessage);
+      await advisorsAPI.verifyFailedCheckExists(failedCheckMessage);
     },
   );
 
@@ -703,14 +703,14 @@ if (versionMinor >= 16) {
     'Verify disabled checks remain disabled after upgrade @post-upgrade @pmm-upgrade',
     async ({
       I,
-      allChecksPage,
+      advisorsPage,
     }) => {
       const checkName = 'MongoDB Version';
 
-      I.amOnPage(allChecksPage.url);
-      I.waitForVisible(allChecksPage.buttons.disableEnableCheck(checkName));
-      I.seeTextEquals('Enable', allChecksPage.buttons.disableEnableCheck(checkName));
-      I.seeTextEquals('Disabled', allChecksPage.elements.statusCellByName(checkName));
+      I.amOnPage(advisorsPage.url);
+      I.waitForVisible(advisorsPage.buttons.disableEnableCheck(checkName));
+      I.seeTextEquals('Enable', advisorsPage.buttons.disableEnableCheck(checkName));
+      I.seeTextEquals('Disabled', advisorsPage.elements.statusCellByName(checkName));
     },
   );
 
@@ -718,13 +718,13 @@ if (versionMinor >= 16) {
     'Verify check intervals remain the same after upgrade @post-upgrade @pmm-upgrade',
     async ({
       I,
-      allChecksPage,
+      advisorsPage,
     }) => {
       const checkName = 'PostgreSQL Version';
 
-      I.amOnPage(allChecksPage.url);
-      I.waitForVisible(allChecksPage.buttons.disableEnableCheck(checkName));
-      I.seeTextEquals('Frequent', allChecksPage.elements.intervalCellByName(checkName));
+      I.amOnPage(advisorsPage.url);
+      I.waitForVisible(advisorsPage.buttons.disableEnableCheck(checkName));
+      I.seeTextEquals('Frequent', advisorsPage.elements.intervalCellByName(checkName));
     },
   );
 
@@ -732,11 +732,11 @@ if (versionMinor >= 16) {
     'Verify silenced checks remain silenced after upgrade @post-upgrade @pmm-upgrade',
     async ({
       I,
-      databaseChecksPage, inventoryAPI, securityChecksAPI,
+      databaseChecksPage, inventoryAPI, advisorsAPI,
     }) => {
       const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName('MYSQL_SERVICE', psServiceName);
 
-      await securityChecksAPI.waitForFailedCheckExistance(failedCheckMessage, psServiceName);
+      await advisorsAPI.waitForFailedCheckExistance(failedCheckMessage, psServiceName);
       databaseChecksPage.openFailedChecksListForService(service_id);
 
       I.waitForVisible(databaseChecksPage.elements.failedCheckRowBySummary(failedCheckMessage), 30);
