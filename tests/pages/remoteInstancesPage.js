@@ -600,7 +600,7 @@ module.exports = {
     I.fillField(this.fields.replicationSet, serviceParameters.replicationSet);
   },
 
-  fillRemoteRDSFields(serviceName) {
+  async fillRemoteRDSFields(serviceName) {
     let inputs;
     // eslint-disable-next-line default-case
     switch (serviceName) {
@@ -633,6 +633,7 @@ module.exports = {
         this.fillFields(inputs);
     }
     I.scrollPageToBottom();
+    return inputs;
   },
 
   parseURL(url) {

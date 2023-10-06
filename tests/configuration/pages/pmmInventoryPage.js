@@ -21,7 +21,7 @@ module.exports = {
     backToServices: '//span[text()="Go back to services"]',
     agentsLinkNew: '//div[contains(@data-testid,"status-badge")]',
     detailsLabelByText: (label) => locate('[aria-label="Tags"]').find('li').withText(label),
-    // agentDetailsLabelByText: (label) => locate('[aria-label="Tags"]').find('li').withText(label),
+    agentDetailsLabelByText: (label) => locate('[aria-label="Tags"]').find('li').withText(label),
     agentsLink: locate('[role="tablist"] a').withText('Agents').withAttr({ 'aria-label': 'Tab Agents' }),
     agentsLinkOld: locate('a').withText('Agents'),
     cluster: '$cluster-text-input',

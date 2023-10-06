@@ -305,7 +305,7 @@ Scenario(
     I.amOnPage(remoteInstancesPage.url);
     remoteInstancesPage.waitUntilRemoteInstancesPageLoaded();
     remoteInstancesPage.openAddRemotePage('external');
-    await remoteInstancesPage.fillRemoteFields(externalExporterServiceName);
+    const inputs =await remoteInstancesPage.fillRemoteFields(externalExporterServiceName);
     I.waitForVisible(remoteInstancesPage.fields.addService, 30);
     I.click(remoteInstancesPage.fields.addService);
     pmmInventoryPage.verifyRemoteServiceIsDisplayed(externalExporterServiceName);
@@ -333,7 +333,7 @@ Scenario(
     remoteInstancesPage.verifyInstanceIsDiscovered(serviceName);
     remoteInstancesPage.startMonitoringOfInstance(serviceName);
     remoteInstancesPage.verifyAddInstancePageOpened();
-    remoteInstancesPage.fillRemoteRDSFields(serviceName);
+    const inputs = await remoteInstancesPage.fillRemoteRDSFields(serviceName);
     remoteInstancesPage.createRemoteInstance(serviceName);
     pmmInventoryPage.verifyRemoteServiceIsDisplayed(serviceName);
     const newLabels = {
@@ -373,14 +373,14 @@ Scenario(
     I.click(remoteInstancesPage.fields.addService);
     pmmInventoryPage.verifyRemoteServiceIsDisplayed(haproxyServiceName);
     const newLabels = {
-        environment: `${inputs.environment} edited` || `${serviceName} environment edited`,
-        cluster: `${inputs.cluster} edited` || `${serviceName} cluster edited`,
-        replicationSet: `${inputs.replicationSet} edited` || `${serviceName} replicationSet edited`,
+        environment: `${remoteInstancesHelper.remote_instance.haproxy.environment} edited` || `${haproxyServiceName} environment edited`,
+        cluster: `${remoteInstancesHelper.remote_instance.haproxy.clusterName} edited` || `${haproxyServiceName} cluster edited`,
+        replicationSet: `${remoteInstancesHelper.remote_instance.haproxy.replicationSet} edited` || `${haproxyServiceName} replicationSet edited`,
     };
 
-    pmmInventoryPage.openEditServiceWizard(serviceName);
+    pmmInventoryPage.openEditServiceWizard(haproxyServiceName);
     pmmInventoryPage.updateServiceLabels(newLabels);
-    I.click(pmmInventoryPage.fields.showServiceDetails(serviceName));
+    I.click(pmmInventoryPage.fields.showServiceDetails(haproxyServiceName));
     pmmInventoryPage.verifyServiceLabels(newLabels);
   },
 );
@@ -402,7 +402,7 @@ Scenario(
 
     assert.ok(grabbedHostname.startsWith(serviceName), `Hostname is incorrect: ${grabbedHostname}`);
     I.seeInField(remoteInstancesPage.fields.serviceName, serviceName);
-    remoteInstancesPage.fillRemoteRDSFields(serviceName);
+    const inputs = await remoteInstancesPage.fillRemoteRDSFields(serviceName);
     remoteInstancesPage.createRemoteInstance(serviceName);
     pmmInventoryPage.verifyRemoteServiceIsDisplayed(serviceName);
     const newLabels = {
@@ -430,7 +430,7 @@ Data(azureServices).Scenario(
     remoteInstancesPage.discoverAzure();
     remoteInstancesPage.startMonitoringOfInstance(current.instanceToMonitor);
     remoteInstancesPage.verifyAddInstancePageOpened();
-    remoteInstancesPage.fillRemoteRDSFields(serviceName);
+    const inputs = await remoteInstancesPage.fillRemoteRDSFields(serviceName);
     I.click(remoteInstancesPage.fields.addService);
     pmmInventoryPage.verifyRemoteServiceIsDisplayed(serviceName);
     const newLabels = {
@@ -479,9 +479,9 @@ Data(aws_instances).Scenario('PMM-T2340 Verify adding and editing Aurora remote 
       replicationSet: `${details.replicationSet} edited` || `${details.service_name} replicationSet edited`,
   };
 
-  pmmInventoryPage.openEditServiceWizard(serviceName);
+  pmmInventoryPage.openEditServiceWizard(details.service_name);
   pmmInventoryPage.updateServiceLabels(newLabels);
-  I.click(pmmInventoryPage.fields.showServiceDetails(serviceName));
+  I.click(pmmInventoryPage.fields.showServiceDetails(details.service_name));
   pmmInventoryPage.verifyServiceLabels(newLabels);
 });
 
