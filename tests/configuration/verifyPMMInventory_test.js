@@ -1,5 +1,5 @@
 const assert = require('assert');
-const testData = require('./testData');
+const {de} = require("@faker-js/faker/lib/locales");
 
 const {
   I, remoteInstancesPage, pmmInventoryPage, remoteInstancesHelper,
@@ -61,54 +61,6 @@ aws_instances.add([
   remoteInstancesHelper.remote_instance.aws.aurora.aurora3.instance_id,
   remoteInstancesHelper.remote_instance.aws.aurora.aurora3.cluster_name,
 ]);
-
-const editActions = {
-  set(testData) {
-    this.data = testData;
-  },
-  mysql_remote_new() {
-    return (this.data.mysqlSettings);
-  },
-  mongodb_remote_new() {
-    return (this.data.mongodbSettings);
-  },
-  postgresql_remote_new() {
-    return (this.data.potgresqlSettings);
-  },
-  proxysql_remote_new() {
-    return (this.data.proxysqlSettings);
-  },
-  external_service_new() {
-    return (this.data.externalSettings);
-  },
-  'rds-mysql56': function () {
-    return (this.data.mysqlInputs);
-  },
-  'pmm-qa-mysql-8-0-30': function () {
-    return (this.data.mysql80rdsInput);
-  },
-  'pmm-qa-rds-mysql-5-7-39': function () {
-    return (this.data.mysql57rdsInput);
-  },
-  'pmm-qa-pgsql-12': function () {
-    return (this.data.postgresqlInputs);
-  },
-  'azure-MySQL': function () {
-    return (this.data.mysqlAzureInputs);
-  },
-  'azure-PostgreSQL': function () {
-    return (this.data.postgresqlAzureInputs);
-  },
-  'pmm-qa-aurora2-mysql-instance-1': function () {
-    return (this.data.postgresqlAzureInputs);
-  },
-  'pmm-qa-aurora3-mysql-instance-1': function () {
-    return (this.data.postgresqlAzureInputs);
-  },
-  haproxy_remote() {
-    return (this.data.haproxy);
-  },
-};
 
 Feature('Inventory page');
 
@@ -319,7 +271,7 @@ Scenario(
   },
 );
 
-Data(instances).only.Scenario(
+Data(instances).Scenario(
   'PMM-T2340 - Verify Remote Instances can be created and edited [critical] @inventory @inventory-fb',
   async ({
     I, pmmInventoryPage, current,
@@ -357,8 +309,16 @@ Scenario(
     I.waitForVisible(remoteInstancesPage.fields.addService, 30);
     I.click(remoteInstancesPage.fields.addService);
     pmmInventoryPage.verifyRemoteServiceIsDisplayed(externalExporterServiceName);
-    editActions.set(testData);
-    pmmInventoryPage.verifyEditRemoteService(externalExporterServiceName, editActions[externalExporterServiceName](testData));
+    const newLabels = {
+        environment: `${inputs.environment} edited` || `${serviceName} environment edited`,
+        cluster: `${inputs.cluster} edited` || `${serviceName} cluster edited`,
+        replicationSet: `${inputs.replicationSet} edited` || `${serviceName} replicationSet edited`,
+    };
+
+    pmmInventoryPage.openEditServiceWizard(serviceName);
+    pmmInventoryPage.updateServiceLabels(newLabels);
+    I.click(pmmInventoryPage.fields.showServiceDetails(serviceName));
+    pmmInventoryPage.verifyServiceLabels(newLabels);
   },
 ).retry(0);
 
@@ -376,8 +336,16 @@ Scenario(
     remoteInstancesPage.fillRemoteRDSFields(serviceName);
     remoteInstancesPage.createRemoteInstance(serviceName);
     pmmInventoryPage.verifyRemoteServiceIsDisplayed(serviceName);
-    editActions.set(testData);
-    pmmInventoryPage.verifyEditRemoteService(serviceName, editActions[serviceName](testData));
+    const newLabels = {
+        environment: `${inputs.environment} edited` || `${serviceName} environment edited`,
+        cluster: `${inputs.cluster} edited` || `${serviceName} cluster edited`,
+        replicationSet: `${inputs.replicationSet} edited` || `${serviceName} replicationSet edited`,
+    };
+
+    pmmInventoryPage.openEditServiceWizard(serviceName);
+    pmmInventoryPage.updateServiceLabels(newLabels);
+    I.click(pmmInventoryPage.fields.showServiceDetails(serviceName));
+    pmmInventoryPage.verifyServiceLabels(newLabels);
   },
 );
 
@@ -404,8 +372,16 @@ Scenario(
     I.waitForVisible(remoteInstancesPage.fields.addService, 30);
     I.click(remoteInstancesPage.fields.addService);
     pmmInventoryPage.verifyRemoteServiceIsDisplayed(haproxyServiceName);
-    editActions.set(testData, editActions[haproxyServiceName](testData));
-    pmmInventoryPage.verifyEditRemoteService(haproxyServiceName, editActions[haproxyServiceName](testData));
+    const newLabels = {
+        environment: `${inputs.environment} edited` || `${serviceName} environment edited`,
+        cluster: `${inputs.cluster} edited` || `${serviceName} cluster edited`,
+        replicationSet: `${inputs.replicationSet} edited` || `${serviceName} replicationSet edited`,
+    };
+
+    pmmInventoryPage.openEditServiceWizard(serviceName);
+    pmmInventoryPage.updateServiceLabels(newLabels);
+    I.click(pmmInventoryPage.fields.showServiceDetails(serviceName));
+    pmmInventoryPage.verifyServiceLabels(newLabels);
   },
 );
 
@@ -429,15 +405,22 @@ Scenario(
     remoteInstancesPage.fillRemoteRDSFields(serviceName);
     remoteInstancesPage.createRemoteInstance(serviceName);
     pmmInventoryPage.verifyRemoteServiceIsDisplayed(serviceName);
-    editActions.set(testData, editActions[serviceName](testData));
-    pmmInventoryPage.verifyEditRemoteService(serviceName, editActions[serviceName](testData));
+    const newLabels = {
+        environment: `${inputs.environment} edited` || `${serviceName} environment edited`,
+        cluster: `${inputs.cluster} edited` || `${serviceName} cluster edited`,
+        replicationSet: `${inputs.replicationSet} edited` || `${serviceName} replicationSet edited`,
+    };
+    pmmInventoryPage.openEditServiceWizard(serviceName);
+    pmmInventoryPage.updateServiceLabels(newLabels);
+    I.click(pmmInventoryPage.fields.showServiceDetails(serviceName));
+    pmmInventoryPage.verifyServiceLabels(newLabels);
   },
 );
 
 Data(azureServices).Scenario(
   'PMM-T2340 - Verify adding and editing monitoring for Azure @inventory @inventory-fb',
   async ({
-    I, remoteInstancesPage, pmmInventoryPage, settingsAPI, current, inventoryAPI,
+    I, remoteInstancesPage, pmmInventoryPage, settingsAPI, current,
   }) => {
     const serviceName = current.name;
 
@@ -450,13 +433,21 @@ Data(azureServices).Scenario(
     remoteInstancesPage.fillRemoteRDSFields(serviceName);
     I.click(remoteInstancesPage.fields.addService);
     pmmInventoryPage.verifyRemoteServiceIsDisplayed(serviceName);
-    editActions.set(testData, editActions[serviceName](testData));
-    pmmInventoryPage.verifyEditRemoteService(serviceName, editActions[serviceName](testData));
+    const newLabels = {
+        environment: `${inputs.environment} edited` || `${serviceName} environment edited`,
+        cluster: `${inputs.cluster} edited` || `${serviceName} cluster edited`,
+        replicationSet: `${inputs.replicationSet} edited` || `${serviceName} replicationSet edited`,
+    };
+
+    pmmInventoryPage.openEditServiceWizard(serviceName);
+    pmmInventoryPage.updateServiceLabels(newLabels);
+    I.click(pmmInventoryPage.fields.showServiceDetails(serviceName));
+    pmmInventoryPage.verifyServiceLabels(newLabels);
   },
 );
 
 Data(aws_instances).Scenario('PMM-T2340 Verify adding and editing Aurora remote instance @inventory @inventory-fb', async ({
-  I, addInstanceAPI, inventoryAPI, current,
+  I, addInstanceAPI, current,
 }) => {
   const {
     service_name, password, instance_id, cluster_name,
@@ -482,8 +473,16 @@ Data(aws_instances).Scenario('PMM-T2340 Verify adding and editing Aurora remote 
 
   I.amOnPage(pmmInventoryPage.url);
   pmmInventoryPage.verifyRemoteServiceIsDisplayed(details.service_name);
-  editActions.set(testData, editActions[details.service_name](testData));
-  pmmInventoryPage.verifyEditRemoteService(details.service_name, editActions[details.service_name](testData));
+  const newLabels = {
+      environment: `${details.environment} edited` || `${details.service_name} environment edited`,
+      cluster: `${details.cluster} edited` || `${details.service_name} cluster edited`,
+      replicationSet: `${details.replicationSet} edited` || `${details.service_name} replicationSet edited`,
+  };
+
+  pmmInventoryPage.openEditServiceWizard(serviceName);
+  pmmInventoryPage.updateServiceLabels(newLabels);
+  I.click(pmmInventoryPage.fields.showServiceDetails(serviceName));
+  pmmInventoryPage.verifyServiceLabels(newLabels);
 });
 
 Data(qanFilters).Scenario(
