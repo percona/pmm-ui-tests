@@ -310,14 +310,14 @@ Scenario(
     I.click(remoteInstancesPage.fields.addService);
     pmmInventoryPage.verifyRemoteServiceIsDisplayed(externalExporterServiceName);
     const newLabels = {
-        environment: `${inputs.environment} edited` || `${serviceName} environment edited`,
-        cluster: `${inputs.cluster} edited` || `${serviceName} cluster edited`,
-        replicationSet: `${inputs.replicationSet} edited` || `${serviceName} replicationSet edited`,
+        environment: `${inputs.environment} edited` || `${externalExporterServiceName} environment edited`,
+        cluster: `${inputs.cluster} edited` || `${externalExporterServiceName} cluster edited`,
+        replicationSet: `${inputs.replicationSet} edited` || `${externalExporterServiceName} replicationSet edited`,
     };
 
-    pmmInventoryPage.openEditServiceWizard(serviceName);
+    pmmInventoryPage.openEditServiceWizard(externalExporterServiceName);
     pmmInventoryPage.updateServiceLabels(newLabels);
-    I.click(pmmInventoryPage.fields.showServiceDetails(serviceName));
+    I.click(pmmInventoryPage.fields.showServiceDetails(externalExporterServiceName));
     pmmInventoryPage.verifyServiceLabels(newLabels);
   },
 ).retry(0);
