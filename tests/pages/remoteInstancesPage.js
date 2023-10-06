@@ -451,10 +451,7 @@ module.exports = {
         );
         break;
       case remoteInstancesHelper.services.proxysql:
-        inputs = {
-          ...remoteInstancesHelper.remote_instance.postgresql.proxysql_2_1_1,
-          ...this.potgresqlSettings,
-        };
+        inputs = remoteInstancesHelper.remote_instance.postgresql.proxysql_2_1_1
         I.fillField(this.fields.hostName, inputs.host);
         I.fillField(
           this.fields.userName,
