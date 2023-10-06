@@ -51,6 +51,10 @@ module.exports = {
     selectRowCheckbox: locate('$select-row'),
     removalDialogMessage: '//form/h4',
     selectedCheckbox: '//div[descendant::input[@value="true"] and @data-testid="select-row"]',
+    searchFilterText: '$search-text-input',
+    searchFilterDropDown: '//div[contains(text(), "All")]/../div[1]',
+    openSearchFields: '$open-search-fields',
+    searchCriteria: (criteria) => locate('span').withText(`${criteria}`),
   },
   servicesTab,
   pagination: paginationPart,
@@ -83,6 +87,22 @@ module.exports = {
     I.pressKey('ArrowDown');
     I.pressKey('Enter');
     I.wait(2);
+  },
+
+  async useSearchFilters(criteria = 'All', searchString) {
+    const numOfElements = await I.grabNumberOfVisibleElements(this.fields.searchFilterText);
+
+    if (numOfElements === 0) {
+      I.click(this.fields.openSearchFields);
+    }
+
+    I.pressKey(['Shift', 'Tab']);
+    I.pressKey('ArrowDown');
+    I.waitForElement(this.fields.searchCriteria('All'), 10);
+    I.waitForElement(this.fields.searchCriteria(criteria), 10);
+    I.click(this.fields.searchCriteria(criteria));
+    I.clearField(this.fields.searchFilterText);
+    I.fillField(this.fields.searchFilterText, searchString);
   },
 
   verifyRemoteServiceIsDisplayed(serviceName) {
