@@ -450,7 +450,7 @@ module.exports = {
             inputs.tlsKeyFile,
         );
         break;
-      case remoteInstancesHelper.services.:
+      case remoteInstancesHelper.services.proxysql:
         inputs = remoteInstancesHelper.remote_instance.proxysql.proxysql_2_1_1
         I.fillField(this.fields.hostName, inputs.host);
         I.fillField(
