@@ -26,7 +26,6 @@ module.exports = {
     agentsLinkOld: locate('a').withText('Agents'),
     cluster: '$cluster-text-input',
     deleteButton: locate('span').withText('Delete'),
-    deleteButton: locate(I.useDataQA('dsd')).withText('Delete'),
     environment: '$environment-text-input',
     externalExporter: locate('td').withText('External exporter'),
     editButton: locate('span').withText('Edit'),
@@ -413,10 +412,6 @@ module.exports = {
     });
 
     this.saveAndConfirm();
-  },
-
-  verifyEditRemoteService() {
-
   },
 
   verifyServiceLabels(serviceParameters) {

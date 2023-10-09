@@ -12,7 +12,7 @@ exports.config = {
     Playwright: {
       url: process.env.PMM_UI_URL || pmmUrl,
       restart: true,
-      show: false,
+      show: true,
       browser: 'chromium',
       windowSize: '1920x1080',
       timeout: 20000,
