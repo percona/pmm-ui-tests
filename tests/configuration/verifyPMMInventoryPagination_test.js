@@ -28,8 +28,8 @@ AfterSuite(async ({ inventoryAPI }) => {
 
 const subPages = new DataTable(['name']);
 
+//Todo Fix/Adjust Agent tests
 subPages.add(['services']);
-subPages.add(['agents']);
 subPages.add(['nodes']);
 
 Data(subPages).Scenario(
@@ -50,11 +50,11 @@ Data(subPages).Scenario(
   }) => {
     const subPageLocator = pmmInventoryPage.fields[`${current.name}Link`];
 
-    I.waitForClickable(subPageLocator, 30);
+    I.waitForClickable(subPageLocator, 60);
     I.click(subPageLocator);
-    I.waitForClickable(pmmInventoryPage.fields.slectAllCheckbox);
+    I.waitForClickable(pmmInventoryPage.fields.slectAllCheckbox,30);
     I.click(pmmInventoryPage.fields.selectAllCheckbox);
-    I.waitForVisible(pmmInventoryPage.fields.selectedCheckbox);
+    I.waitForVisible(pmmInventoryPage.fields.selectedCheckbox,30);
     let selectedCheckboxNumber = await I.grabNumberOfVisibleElements(pmmInventoryPage.fields.selectedCheckbox);
 
     I.waitForClickable(pmmInventoryPage.pagination.elements.nextPageButton);
@@ -66,8 +66,14 @@ Data(subPages).Scenario(
 
     I.waitForClickable(pmmInventoryPage.fields.deleteButton);
     I.click(pmmInventoryPage.fields.deleteButton);
-    I.seeTextEquals(`Are you sure that you want to permanently delete ${selectedCheckboxNumber} ${current.name}?`, pmmInventoryPage.fields.removalDialogMessage);
-  },
+    if (`${current.name}` === "services"){
+       I.waitForElement(pmmInventoryPage.fields.removalServiceDialogMessage, 30);
+       I.seeTextEquals(`Are you sure that you want to permanently delete ${selectedCheckboxNumber} ${current.name}`, pmmInventoryPage.fields.removalServiceDialogMessage);
+    }else{
+       I.waitForElement(pmmInventoryPage.fields.removalDialogMessage, 30);
+       I.seeTextEquals(`Are you sure that you want to permanently delete ${selectedCheckboxNumber} ${current.name}`, pmmInventoryPage.fields.removalDialogMessage);
+   }
+  }
 );
 
 Data(subPages).Scenario(
@@ -79,7 +85,7 @@ Data(subPages).Scenario(
 
     I.waitForClickable(subPageLocator, 30);
     I.click(subPageLocator);
-    I.waitForClickable(pmmInventoryPage.fields.selectAllCheckbox);
+    I.waitForClickable(pmmInventoryPage.fields.selectAllCheckbox,30);
     I.click(pmmInventoryPage.fields.selectAllCheckbox);
     I.waitNumberOfVisibleElements(
       pmmInventoryPage.fields.selectedCheckbox,

@@ -10,17 +10,19 @@ module.exports = {
     serviceRow: (serviceName) => locate('tr').withChild(locate('td').withAttr({ title: serviceName })),
     showServiceDetails: (serviceName) => `//span[contains(text(), '${serviceName}')]//ancestor::tr//button[@data-testid="show-row-details"]`,
     hideServiceDetails: (serviceName) => `//span[contains(text(), '${serviceName}')]//ancestor::tr//button[@data-testid="hide-row-details"]`,
-    showAgentDetails: (agentName) => `//td[contains(text(), '${agentName}')]//ancestor::tr//button[@data-testid="show-row-details"]`,
+    showAgentDetails: (agentName) => `//span[contains(text(), '${agentName}')]//ancestor::tr//button[@data-testid="show-row-details"]`,
     showRowDetails: '//button[@data-testid="show-row-details"]',
     agentStatus: locate('$details-row-content').find('a'),
     backToServices: '//span[text()="Go back to services"]',
     agentsLinkNew: '//div[contains(@data-testid,"status-badge")]',
     agentDetailsLabelByText: (label) => locate('[aria-label="Tags"]').find('li').withText(label),
     agentsLink: locate('[role="tablist"] a').withText('Agents').withAttr({ 'aria-label': 'Tab Agents' }),
+    agentsLink: locate('[role="tablist"] a').withText('Agents').withAttr({ 'aria-label': 'Tab Agents' }),
     agentsLinkOld: locate('a').withText('Agents'),
     deleteButton: locate('span').withText('Delete'),
     externalExporter: locate('td').withText('External exporter'),
-    forceModeCheckbox: locate('$force-field-label'),
+    serviceForceModeCheckbox: locate('input').withAttr({'data-testid': 'delete-services-force-mode'}),
+    nodeForceModeCheckbox: locate('input').withAttr({'data-testid': 'force-checkbox-input'}),
     inventoryTable: locate('table'),
     inventoryTableColumn: locate('table').find('td'),
     inventoryTableRows: locate('tr').after('table'),
@@ -37,7 +39,7 @@ module.exports = {
     postgresExporter: locate('td').withText('Postgres exporter'),
     postgresPgStatements: locate('td').withText('QAN PostgreSQL PgStatements'),
     postgresPgstatmonitor: locate('td').withText('QAN PostgreSQL Pgstatmonitor'),
-    proceedButton: locate('span').withText('Proceed'),
+    proceedButton: locate('span').withText('Yes, delete service'),
     runningStatus: locate('span').withText('RUNNING'),
     rowsPerPage: locate('$pagination').find('div'),
     serviceIdLocatorPrefix: '//table//tr/td[4][contains(text(),"',
@@ -49,7 +51,8 @@ module.exports = {
     agentId: '//td[contains(text(), "agent_id") and not(following-sibling::td[text()="PMM Agent"])]',
     selectAllCheckbox: locate('$select-all'),
     selectRowCheckbox: locate('$select-row'),
-    removalDialogMessage: '//form/h4',
+    removalServiceDialogMessage: locate('p').withAttr({'data-testid':'delete-services-description'}),
+    removalDialogMessage: locate('form').find('h4'),
     selectedCheckbox: '//div[descendant::input[@value="true"] and @data-testid="select-row"]',
   },
   servicesTab,
@@ -216,15 +219,19 @@ module.exports = {
   },
 
   selectService(serviceName) {
-    const serviceLocator = `${this.fields.serviceIdLocatorPrefix}${serviceName}")]/preceding-sibling::td/div[@data-testid="select-row"]`;
+    const serviceLocator = `//span[contains(text(),"${serviceName}")]/preceding::td[2]/div[@data-testid="select-row"]`;
+    I.waitForVisible(serviceLocator, 30);
+    I.click(serviceLocator);
+  },
 
+  selectNode(serviceName) {
+    const serviceLocator = `//td[contains(text(),"${serviceName}")]/preceding::td[2]/div[@data-testid="select-row"]`;
     I.waitForVisible(serviceLocator, 30);
     I.click(serviceLocator);
   },
 
   serviceExists(serviceName, deleted) {
-    const serviceLocator = `${this.fields.serviceIdLocatorPrefix}${serviceName}")]`;
-
+    const serviceLocator = `//span[contains(text(),"${serviceName}")]`;
     if (deleted) {
       I.waitForInvisible(serviceLocator, 30);
     } else {
@@ -233,7 +240,7 @@ module.exports = {
   },
 
   checkNodeExists(serviceName) {
-    const nodeName = `${this.fields.serviceIdLocatorPrefix}${serviceName}")]`;
+    const nodeName = `//td[contains(text(),"${serviceName}")]`;
 
     I.waitForVisible(nodeName, 20);
   },
@@ -258,17 +265,16 @@ module.exports = {
 
   selectAgent(agentType) {
     const agentLocator = `//table//tr/td[3][contains(text(),"${agentType}")]/preceding-sibling::td/div[@data-testid="select-row"]`;
-
     I.waitForVisible(agentLocator, 30);
     I.click(agentLocator);
   },
 
   async getAgentServiceID(agentType) {
     const serviceIdLocator = `//table//tr/td[3][contains(text(),"${agentType}")]/following-sibling::td//span[contains(text(), 'service_id:')]`;
-
     I.waitForVisible(serviceIdLocator, 30);
-    const serviceIDs = await I.grabTextFrom(serviceIdLocator);
+    const serviceIDs = await I.grabTextFrom(serviceIdLocator1);
 
+    console.out(serviceIDs);
     return serviceIDs[0].slice(12, serviceIDs[0].lenght);
   },
 
@@ -302,15 +308,23 @@ module.exports = {
   },
 
   selectAgentByID(id) {
-    const agentIdLocator = `//table//tr/td[2][contains(text(),"${id}")]/preceding-sibling::td/div[@data-testid="select-row"]`;
-
+    //const agentIdLocator = `//table//tr/td[2][contains(text(),"${id}")]/preceding-sibling::td/div[@data-testid="select-row"]`;
+    const agentIdLocator = `//span[contains(text(),"${id}")]/preceding::td[2]/div[@data-testid="select-row"]`;
     I.waitForVisible(agentIdLocator, 30);
     I.click(agentIdLocator);
   },
 
-  deleteWithForceOpt() {
+  async deleteServiceWithForceOpt(serviceName) {
     I.click(this.fields.deleteButton);
-    I.click(this.fields.forceModeCheckbox);
+    I.waitForElement(this.fields.serviceForceModeCheckbox,40);
+    await I.click(this.fields.serviceForceModeCheckbox);
+    I.click(this.fields.proceedButton);
+  },
+
+  async deleteNodeWithForceOpt() {
+    I.click(this.fields.deleteButton);
+    I.waitForElement(this.fields.nodeForceModeCheckbox,40);
+    await I.click(this.fields.nodeForceModeCheckbox);
     I.click(this.fields.proceedButton);
   },
 
