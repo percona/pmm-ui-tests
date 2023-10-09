@@ -22,7 +22,8 @@ module.exports = {
     deleteButton: locate('span').withText('Delete'),
     externalExporter: locate('td').withText('External exporter'),
     serviceForceModeCheckbox: locate('input').withAttr({'data-testid': 'delete-services-force-mode'}),
-    nodeForceModeCheckbox: locate('input').withAttr({'data-testid': 'force-checkbox-input'}),
+    //nodeForceModeCheckbox: locate('input').withAttr({'data-testid': 'force-checkbox-input'}),
+    nodeForceModeCheckbox: `//label[@for='input-force-id']//span`,
     inventoryTable: locate('table'),
     inventoryTableColumn: locate('table').find('td'),
     inventoryTableRows: locate('tr').after('table'),
@@ -39,7 +40,8 @@ module.exports = {
     postgresExporter: locate('td').withText('Postgres exporter'),
     postgresPgStatements: locate('td').withText('QAN PostgreSQL PgStatements'),
     postgresPgstatmonitor: locate('td').withText('QAN PostgreSQL Pgstatmonitor'),
-    proceedButton: locate('span').withText('Yes, delete service'),
+    serviceProceedButton: locate('button').find('span').withText('Yes, delete service'),
+    nodeProceedButton: locate('button').find('span').withText('Proceed'),
     runningStatus: locate('span').withText('RUNNING'),
     rowsPerPage: locate('$pagination').find('div'),
     serviceIdLocatorPrefix: '//table//tr/td[4][contains(text(),"',
@@ -318,14 +320,14 @@ module.exports = {
     I.click(this.fields.deleteButton);
     I.waitForElement(this.fields.serviceForceModeCheckbox,40);
     await I.click(this.fields.serviceForceModeCheckbox);
-    I.click(this.fields.proceedButton);
+    I.click(this.fields.serviceProceedButton);
   },
 
   async deleteNodeWithForceOpt() {
     I.click(this.fields.deleteButton);
     I.waitForElement(this.fields.nodeForceModeCheckbox,40);
     await I.click(this.fields.nodeForceModeCheckbox);
-    I.click(this.fields.proceedButton);
+    I.click(this.fields.nodeProceedButton);
   },
 
   async getCountOfItems() {
