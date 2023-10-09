@@ -52,16 +52,16 @@ Data(subPages).Scenario(
 
     I.waitForClickable(subPageLocator, 60);
     I.click(subPageLocator);
-    I.waitForClickable(pmmInventoryPage.fields.slectAllCheckbox,30);
+    I.waitForClickable(pmmInventoryPage.fields.selectAllCheckbox,30);
     I.click(pmmInventoryPage.fields.selectAllCheckbox);
     I.waitForVisible(pmmInventoryPage.fields.selectedCheckbox,30);
     let selectedCheckboxNumber = await I.grabNumberOfVisibleElements(pmmInventoryPage.fields.selectedCheckbox);
 
-    I.waitForClickable(pmmInventoryPage.pagination.elements.nextPageButton);
+    I.waitForClickable(pmmInventoryPage.pagination.elements.nextPageButton, 30);
     I.click(pmmInventoryPage.pagination.elements.nextPageButton);
-    I.waitForClickable(pmmInventoryPage.fields.selectRowCheckbox);
+    I.waitForClickable(pmmInventoryPage.fields.selectRowCheckbox, 30);
     I.click(pmmInventoryPage.fields.selectRowCheckbox);
-    I.waitForVisible(pmmInventoryPage.fields.selectedCheckbox);
+    I.waitForVisible(pmmInventoryPage.fields.selectedCheckbox, 30);
     selectedCheckboxNumber += await I.grabNumberOfVisibleElements(pmmInventoryPage.fields.selectedCheckbox);
 
     I.waitForClickable(pmmInventoryPage.fields.deleteButton);
@@ -83,10 +83,11 @@ Data(subPages).Scenario(
   }) => {
     const subPageLocator = pmmInventoryPage.fields[`${current.name}Link`];
 
-    I.waitForClickable(subPageLocator, 30);
+    I.waitForClickable(subPageLocator, 60);
     I.click(subPageLocator);
     I.waitForClickable(pmmInventoryPage.fields.selectAllCheckbox,30);
     I.click(pmmInventoryPage.fields.selectAllCheckbox);
+    I.waitForElement(pmmInventoryPage.fields.selectAllCheckbox,30);
     I.waitNumberOfVisibleElements(
       pmmInventoryPage.fields.selectedCheckbox,
       await pmmInventoryPage.pagination.getSelectedCountPerPage(),

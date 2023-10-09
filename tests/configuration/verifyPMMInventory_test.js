@@ -37,7 +37,7 @@ Scenario(
 
     pmmInventoryPage.selectService(serviceName);
     I.click(pmmInventoryPage.fields.deleteButton);
-    I.click(pmmInventoryPage.fields.proceedButton);
+    I.click(pmmInventoryPage.fields.serviceProceedButton);
     pmmInventoryPage.serviceExists(serviceName, false);
     pmmInventoryPage.selectService(serviceName);
     await pmmInventoryPage.deleteServiceWithForceOpt();
