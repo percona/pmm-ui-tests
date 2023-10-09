@@ -17,7 +17,6 @@ module.exports = {
     agentsLinkNew: '//div[contains(@data-testid,"status-badge")]',
     agentDetailsLabelByText: (label) => locate('[aria-label="Tags"]').find('li').withText(label),
     agentsLink: locate('[role="tablist"] a').withText('Agents').withAttr({ 'aria-label': 'Tab Agents' }),
-    agentsLink: locate('[role="tablist"] a').withText('Agents').withAttr({ 'aria-label': 'Tab Agents' }),
     agentsLinkOld: locate('a').withText('Agents'),
     deleteButton: locate('span').withText('Delete'),
     externalExporter: locate('td').withText('External exporter'),
@@ -274,9 +273,8 @@ module.exports = {
   async getAgentServiceID(agentType) {
     const serviceIdLocator = `//table//tr/td[3][contains(text(),"${agentType}")]/following-sibling::td//span[contains(text(), 'service_id:')]`;
     I.waitForVisible(serviceIdLocator, 30);
-    const serviceIDs = await I.grabTextFrom(serviceIdLocator1);
+    const serviceIDs = await I.grabTextFrom(serviceIdLocator);
 
-    console.out(serviceIDs);
     return serviceIDs[0].slice(12, serviceIDs[0].lenght);
   },
 
