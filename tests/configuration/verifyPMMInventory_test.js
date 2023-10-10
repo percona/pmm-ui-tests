@@ -70,6 +70,15 @@ Scenario(
   },
 );
 
+Scenario.only(
+  'PMM-T1811 - verify version displayed for added service on Inventory page @inventory-only',
+  async ({ I, addInstanceAPI, pmmInventoryPage }) => {
+    I.amOnPage(pmmInventoryPage.url);
+
+    assert.fail(`PS_VERSION=${process.env.PS_VERSION}, MO_VERSION=${process.env.MO_VERSION}, PDPGSQL_VERSION=${process.env.PDPGSQL_VERSION}`);
+  },
+);
+
 Scenario(
   'PMM-T342 - Verify pmm-server node cannot be removed from PMM Inventory page @inventory',
   async ({ I, pmmInventoryPage }) => {
