@@ -90,7 +90,7 @@ Scenario.only(
     const mongoServiceName = await inventoryAPI.apiGetNodeInfoByServiceName('mongo', 'mongodb');
 
     I.click(pmmInventoryPage.fields.showServiceDetails(mongoServiceName));
-    I.waitForVisible(pmmInventoryPage.fields.detailsLabelByText(`version=${process.env.MO_VERSION}}`));
+    I.waitForVisible(pmmInventoryPage.fields.detailsLabelByText(`version=${process.env.MODB_VERSION}}`));
   },
 );
 
