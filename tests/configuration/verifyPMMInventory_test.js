@@ -72,10 +72,25 @@ Scenario(
 
 Scenario.only(
   'PMM-T1811 - verify version displayed for added service on Inventory page @inventory-only',
-  async ({ I, addInstanceAPI, pmmInventoryPage }) => {
-    I.amOnPage(pmmInventoryPage.url);
+  async ({ I, inventoryAPI, pmmInventoryPage }) => {
+    const psServiceName = await inventoryAPI.apiGetNodeInfoByServiceName('mysql', 'ps_8.0');
 
-    assert.fail(`PS_VERSION=${process.env.PS_VERSION}, MO_VERSION=${process.env.MO_VERSION}, PDPGSQL_VERSION=${process.env.PDPGSQL_VERSION}`);
+    I.amOnPage(pmmInventoryPage.url);
+    I.waitForVisible(pmmInventoryPage.fields.showServiceDetails(psServiceName), 20);
+    I.click(pmmInventoryPage.fields.showServiceDetails(psServiceName));
+    I.waitForVisible(pmmInventoryPage.fields.detailsLabelByText(`version=${process.env.PS_VERSION}}`));
+    I.click(pmmInventoryPage.fields.hideServiceDetails(psServiceName));
+
+    const pgServiceName = await inventoryAPI.apiGetNodeInfoByServiceName('postgresql', 'PDPGSQL_16.0');
+
+    I.click(pmmInventoryPage.fields.showServiceDetails(pgServiceName));
+    I.waitForVisible(pmmInventoryPage.fields.detailsLabelByText(`version=${process.env.PDPGSQL_VERSION}}`));
+    I.click(pmmInventoryPage.fields.hideServiceDetails(pgServiceName));
+
+    const mongoServiceName = await inventoryAPI.apiGetNodeInfoByServiceName('mongo', 'mongodb');
+
+    I.click(pmmInventoryPage.fields.showServiceDetails(mongoServiceName));
+    I.waitForVisible(pmmInventoryPage.fields.detailsLabelByText(`version=${process.env.MO_VERSION}}`));
   },
 );
 
