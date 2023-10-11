@@ -79,19 +79,19 @@ Scenario.only(
     I.amOnPage(pmmInventoryPage.url);
     I.waitForVisible(pmmInventoryPage.fields.showServiceDetails(psServiceName), 20);
     I.click(pmmInventoryPage.fields.showServiceDetails(psServiceName));
-    I.waitForVisible(pmmInventoryPage.fields.detailsLabelByText(`version=${process.env.PS_VERSION}}`));
+    I.waitForVisible(pmmInventoryPage.fields.detailsLabelByText(`version=${process.env.PS_VERSION}`), 5);
     I.click(pmmInventoryPage.fields.hideServiceDetails(psServiceName));
 
     const { service_name: pgServiceName } = await inventoryAPI.apiGetNodeInfoByServiceName('POSTGRESQL_SERVICE', 'PDPGSQL_16.0');
 
     I.click(pmmInventoryPage.fields.showServiceDetails(pgServiceName));
-    I.waitForVisible(pmmInventoryPage.fields.detailsLabelByText(`version=${process.env.PDPGSQL_VERSION}}`));
+    I.waitForVisible(pmmInventoryPage.fields.detailsLabelByText(`version=${process.env.PDPGSQL_VERSION} - Percona Distribution`), 5);
     I.click(pmmInventoryPage.fields.hideServiceDetails(pgServiceName));
 
     const { service_name: mongoServiceName } = await inventoryAPI.apiGetNodeInfoByServiceName('MONGODB_SERVICE', 'mongodb');
 
     I.click(pmmInventoryPage.fields.showServiceDetails(mongoServiceName));
-    I.waitForVisible(pmmInventoryPage.fields.detailsLabelByText(`version=${process.env.MODB_VERSION}}`));
+    I.waitForVisible(pmmInventoryPage.fields.detailsLabelByText(`version=${process.env.MODB_VERSION}`), 5);
   },
 );
 
