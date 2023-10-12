@@ -79,7 +79,7 @@ services:
       - pmm-network
 
   mongo:
-    image: ${MONGO_IMAGE:-percona/percona-server-mongodb:4.2.8}
+    image: ${MONGO_IMAGE:-percona/percona-server-mongodb:4.4.24}
     container_name: pmm-agent_mongo
     command: --profile 2
     ports:
@@ -91,7 +91,7 @@ services:
       - pmm-network
 
   postgres:
-    image: ${POSTGRES_IMAGE:-perconalab/percona-distribution-postgresql:15}
+    image: ${POSTGRES_IMAGE:-perconalab/percona-distribution-postgresql:15.4}
     container_name: pmm-agent_postgres
     command: >
       -c shared_preload_libraries=pg_stat_monitor,pg_stat_statements

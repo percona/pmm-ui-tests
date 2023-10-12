@@ -2,8 +2,20 @@ const assert = require('assert');
 
 Feature('Inventory page');
 
+const psServiceName = 'ps_5.7_version_test';
+const rdsPostgresqlServiceName = 'pg_rds_version_test';
+const mongoServiceName = 'mongo_4.2_version_test';
+const pgServiceName = 'pg_15_version_test';
+
 Before(async ({ I }) => {
   await I.Authorize();
+});
+
+BeforeSuite(async ({ addInstanceAPI }) => {
+  await addInstanceAPI.addMysql(psServiceName);
+  await addInstanceAPI.addMongodb(mongoServiceName);
+  await addInstanceAPI.addPostgresql(pgServiceName);
+  await addInstanceAPI.addRDSPostgresql(rdsPostgresqlServiceName);
 });
 
 // Skipping temporarily because sorting is not yet implemented in new Inventory page (PMM 2.37.0)
@@ -70,28 +82,29 @@ Scenario(
   },
 );
 
-// pmm-framework params --addclient=ps,1 --addclient=modb,1 --addclient=pdpgsql,1
-Scenario.only(
-  'PMM-T1811 - verify version displayed for added service on Inventory page @inventory-only',
-  async ({ I, inventoryAPI, pmmInventoryPage }) => {
-    const { service_name: psServiceName } = await inventoryAPI.apiGetNodeInfoByServiceName('MYSQL_SERVICE', 'ps_8.0');
-
+Scenario(
+  'PMM-T1811 - verify version displayed for added service on Inventory page @inventory @inventory-fb',
+  async ({
+    I, pmmInventoryPage,
+  }) => {
     I.amOnPage(pmmInventoryPage.url);
     I.waitForVisible(pmmInventoryPage.fields.showServiceDetails(psServiceName), 20);
+
     I.click(pmmInventoryPage.fields.showServiceDetails(psServiceName));
-    I.waitForVisible(pmmInventoryPage.fields.detailsLabelByText(`version=${process.env.PS_VERSION}`), 5);
+    I.waitForVisible(pmmInventoryPage.fields.detailsLabelByText('version=5.7.30-33-log'), 5);
     I.click(pmmInventoryPage.fields.hideServiceDetails(psServiceName));
 
-    const { service_name: pgServiceName } = await inventoryAPI.apiGetNodeInfoByServiceName('POSTGRESQL_SERVICE', 'PDPGSQL_16.0');
-
     I.click(pmmInventoryPage.fields.showServiceDetails(pgServiceName));
-    I.waitForVisible(pmmInventoryPage.fields.detailsLabelByText(`version=${process.env.PDPGSQL_VERSION} - Percona Distribution`), 5);
+    I.waitForVisible(pmmInventoryPage.fields.detailsLabelByText('version=15.4 - Percona Distribution'), 5);
     I.click(pmmInventoryPage.fields.hideServiceDetails(pgServiceName));
 
-    const { service_name: mongoServiceName } = await inventoryAPI.apiGetNodeInfoByServiceName('MONGODB_SERVICE', 'mongodb');
-
     I.click(pmmInventoryPage.fields.showServiceDetails(mongoServiceName));
-    I.waitForVisible(pmmInventoryPage.fields.detailsLabelByText(`version=${process.env.MODB_VERSION}`), 5);
+    I.waitForVisible(pmmInventoryPage.fields.detailsLabelByText('version=4.4.24'), 5);
+    I.click(pmmInventoryPage.fields.hideServiceDetails(mongoServiceName));
+
+    I.click(pmmInventoryPage.fields.showServiceDetails(rdsPostgresqlServiceName));
+    I.waitForVisible(pmmInventoryPage.fields.detailsLabelByText('version=12.14'), 300);
+    I.click(pmmInventoryPage.fields.hideServiceDetails(rdsPostgresqlServiceName));
   },
 );
 
