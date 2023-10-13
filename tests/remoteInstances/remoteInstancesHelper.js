@@ -187,6 +187,7 @@ module.exports = {
         port: DB_CONFIG.PROXYSQL_SERVER_PORT,
         username: 'proxyadmin',
         password: 'yxZq!4SGv0A1',
+        environment: 'proxy_env',
         clusterName: 'proxy_clstr',
       },
     },
