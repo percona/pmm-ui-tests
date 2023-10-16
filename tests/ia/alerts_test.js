@@ -181,3 +181,20 @@ Scenario(
     I.seeElement(alertsPage.elements.noAlerts);
   },
 );
+
+Scenario(
+    'PMM-12442 Let users see full summary message on Fired alerts tab @ia',
+    async ({
+               I, alertsPage, alertRulesPage,
+           }) => {
+        I.amOnPage(alertsPage.url);
+        I.waitForElement(alertsPage.elements.firedAlertLink(ruleName), 180);
+        I.click(alertsPage.elements.firedAlertLink(ruleName));
+        I.click(alertRulesPage.buttons.editRuleOnView);
+        let summaryText = String("PostgreSQL too many connections, PMM-12442 Let users see full summary message on Fired alerts tab");
+        I.fillField(alertRulesPage.fields.editSummary, summaryText);
+        I.click(alertRulesPage.buttons.saveAndExit);
+        I.amOnPage(alertsPage.url);
+        I.waitForText(summaryText,180);
+    },
+);

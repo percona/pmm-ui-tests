@@ -51,6 +51,7 @@ module.exports = {
     editRuleThreshold: 'input[name=\'evaluateFor\']',
     editRuleEvaluate: 'input[name=\'evaluateEvery\']',
     editRuleSeverity: I.useDataQA('label-value-1'),
+    editSummary: I.useDataQA('annotation-value-1'),
     templatesLoader: locate('//div[@id=\'template\']').find('div').withText('Choose'),
   },
   messages: {
