@@ -1,15 +1,20 @@
-const { I, inventoryAPI } = inject();
+const {
+  I, inventoryAPI, remoteInstancesHelper, adminPage,
+} = inject();
+
 const assert = require('assert');
 const paginationPart = require('./paginationFragment');
 const servicesTab = require('./servicesTab');
+
+const service = (serviceName) => `//span[contains(text(),'${serviceName}')]`;
 
 module.exports = {
   url: 'graph/inventory?orgId=1',
   fields: {
     servicesLink: locate('[role="tablist"] a').withText('Services').withAttr({ 'aria-label': 'Tab Services' }),
     serviceRow: (serviceName) => locate('tr').withChild(locate('td').withAttr({ title: serviceName })),
-    showServiceDetails: (serviceName) => `//span[contains(text(), '${serviceName}')]//ancestor::tr//button[@data-testid="show-row-details"]`,
-    hideServiceDetails: (serviceName) => `//span[contains(text(), '${serviceName}')]//ancestor::tr//button[@data-testid="hide-row-details"]`,
+    showServiceDetails: (serviceName) => `${service(serviceName)}//ancestor::tr//button[@data-testid="show-row-details"]`,
+    hideServiceDetails: (serviceName) => `${service(serviceName)}//ancestor::tr//button[@data-testid="hide-row-details"]`,
     showAgentDetails: (agentName) => `//td[contains(text(), '${agentName}')]//ancestor::tr//button[@data-testid="show-row-details"]`,
     showRowDetails: '//button[@data-testid="show-row-details"]',
     agentStatus: locate('$details-row-content').find('a'),
@@ -19,13 +24,18 @@ module.exports = {
     agentDetailsLabelByText: (label) => locate('[aria-label="Tags"]').find('li').withText(label),
     agentsLink: locate('[role="tablist"] a').withText('Agents').withAttr({ 'aria-label': 'Tab Agents' }),
     agentsLinkOld: locate('a').withText('Agents'),
+    cluster: '$cluster-text-input',
     deleteButton: locate('span').withText('Delete'),
+    environment: '$environment-text-input',
     externalExporter: locate('td').withText('External exporter'),
+    editButton: locate('span').withText('Edit'),
+    editText: locate('h3').withText('Editing'),
     forceModeCheckbox: locate('$force-field-label'),
     inventoryTable: locate('table'),
     inventoryTableColumn: locate('table').find('td'),
     inventoryTableRows: locate('tr').after('table'),
     inventoryTableRowCount: (count) => locate('span').withText(`${count}`),
+    kebabMenu: (serviceName) => `${service(serviceName)}//ancestor::tr//button[@data-testid="dropdown-menu-toggle"]`,
     mongoServiceName: locate('td').withText('mongodb'),
     mysqlServiceName: locate('td').withText('ms-single'),
     // cannot be changed to locate because it's failing in I.waitForVisible()
@@ -51,7 +61,11 @@ module.exports = {
     selectAllCheckbox: locate('$select-all'),
     selectRowCheckbox: locate('$select-row'),
     removalDialogMessage: '//form/h4',
+    replicationSet: '$replication_set-text-input',
     selectedCheckbox: '//div[descendant::input[@value="true"] and @data-testid="select-row"]',
+    saveButton: locate('button').withChild('div').withText('Save Changes'),
+    saveConfirmButton: locate('span').withText('Confirm and save changes'),
+    savePopupMessage: locate('p').withText('Changing existing labels can affect other parts of PMM dependent on it'),
   },
   servicesTab,
   pagination: paginationPart,
@@ -373,5 +387,38 @@ module.exports = {
     I.click(this.fields.agentsLinkNew);
     await I.waitForVisible(agent, 30);
     I.click(this.fields.backToServices);
+  },
+
+  async saveAndConfirm() {
+    I.click(this.fields.saveButton);
+    I.seeElement(this.fields.savePopupMessage);
+    I.click(this.fields.saveConfirmButton);
+  },
+
+  openEditServiceWizard(serviceName) {
+    I.waitForElement(this.fields.kebabMenu(serviceName), 30);
+    I.click(this.fields.kebabMenu(serviceName));
+    I.waitForElement(this.fields.editButton, 30);
+    I.click(this.fields.editButton);
+    I.waitForElement(this.fields.editText, 30);
+    I.seeElement(this.fields.editText);
+  },
+
+  updateServiceLabels(serviceParameters) {
+    I.usePlaywrightTo('clear fields', async ({ page }) => {
+      await page.fill(I.useDataQA('environment-text-input'), serviceParameters.environment);
+      await page.fill(I.useDataQA('replication_set-text-input'), serviceParameters.replicationSet);
+      await page.fill(I.useDataQA('cluster-text-input'), serviceParameters.cluster);
+    });
+
+    this.saveAndConfirm();
+  },
+
+  verifyServiceLabels(serviceParameters) {
+    // Verify new values for labels in details
+    I.waitForVisible(this.fields.detailsLabelByText(`environment=${serviceParameters.environment}`), 20);
+    I.seeElement(this.fields.detailsLabelByText(`environment=${serviceParameters.environment}`));
+    I.seeElement(this.fields.detailsLabelByText(`cluster=${serviceParameters.cluster}`));
+    I.seeElement(this.fields.detailsLabelByText(`replication_set=${serviceParameters.replicationSet}`));
   },
 };
