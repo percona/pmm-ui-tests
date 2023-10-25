@@ -1215,3 +1215,15 @@ if (versionMinor >= 32) {
     },
   ).retry(0);
 }
+
+// This test must be executed last
+Scenario(
+  'verify user is able to change password after upgrade @post-upgrade @pmm-upgrade',
+  async ({
+    I, homePage,
+  }) => {
+    await I.verifyCommand('docker exec pmm-server change-admin-password admin1');
+    await I.Authorize('admin', 'admin1');
+    await homePage.open();
+  },
+);
