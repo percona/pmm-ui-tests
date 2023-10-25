@@ -5,6 +5,7 @@ const FormData = require('form-data');
 module.exports = {
   customDashboardName: 'auto-test-dashboard',
   customFolderName: 'auto-test-folder',
+  customPanelName: 'Custom Panel',
   randomDashboardName: 'uto-dashboard-custom',
   randomTag: 'tag-random',
 
@@ -39,12 +40,9 @@ module.exports = {
             },
             id: 2,
             targets: [
-              {
-                expr: 'alertmanager_alerts',
-                refId: 'A',
-              },
+              { expr: 'alertmanager_alerts', refId: 'A' },
             ],
-            title: 'Custom Panel',
+            title: this.customPanelName,
             type: 'graph',
             xaxis: {
               mode: 'time',

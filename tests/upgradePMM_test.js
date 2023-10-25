@@ -158,7 +158,8 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T391 Verify user is able to create and set custom home dashboard @pre-upgrade @ovf-upgrade @ami-upgrade @pmm-upgrade',
+  'PMM-T391 PMM-T1818 Verify user is able to create and set custom home dashboard'
+    + ' @pre-upgrade @ovf-upgrade @ami-upgrade @pmm-upgrade',
   async ({
     I, grafanaAPI, dashboardPage, searchDashboardsModal,
   }) => {
@@ -174,7 +175,9 @@ Scenario(
     I.amOnPage('');
     dashboardPage.waitForDashboardOpened();
     // dashboardPage.verifyMetricsExistence(['Custom Panel']);
-    I.seeInCurrentUrl(resp.url);
+    I.seeInCurrentUrl(grafanaAPI.customDashboardName);
+
+    dashboardPage.panelMenu('Custom Panel').showMenu().more().createLibraryPanel();
   },
 );
 
@@ -568,7 +571,8 @@ Scenario('@PMM-T1647 Verify pmm-server package doesn\'t exist @post-upgrade @pmm
 });
 
 Scenario(
-  'PMM-T391 Verify that custom home dashboard stays as home dashboard after upgrade @post-upgrade @ovf-upgrade @ami-upgrade @pmm-upgrade',
+  'PMM-T391 PMM-T1818 Verify that custom home dashboard stays as home dashboard after upgrade'
+    + ' @post-upgrade @ovf-upgrade @ami-upgrade @pmm-upgrade',
   async ({ I, grafanaAPI, dashboardPage }) => {
     I.amOnPage('');
     dashboardPage.waitForDashboardOpened();
@@ -576,6 +580,13 @@ Scenario(
     await dashboardPage.verifyThereAreNoGraphsWithNA();
     await dashboardPage.verifyThereAreNoGraphsWithoutData();
     I.seeInCurrentUrl(grafanaAPI.customDashboardName);
+
+    await I.say('Verify there is no "Error while loading library panels" errors on dashboard and no errors in grafana.log');
+    I.wait(1);
+    const errorLogs = await I.verifyCommand('docker exec pmm-server cat /srv/logs/grafana.log | grep level=error');
+    const loadingLibraryErrorLine = errorLogs.split('\n').filter((line) => line.includes('Error while loading library panels'));
+
+    I.assertEmpty(loadingLibraryErrorLine, `Logs contains errors about while loading library panels! \n The line is: \n ${loadingLibraryErrorLine}`);
   },
 );
 
