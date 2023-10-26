@@ -177,7 +177,7 @@ Scenario(
     // dashboardPage.verifyMetricsExistence(['Custom Panel']);
     I.seeInCurrentUrl(grafanaAPI.customDashboardName);
 
-    dashboardPage.panelMenu('Custom Panel').showMenu().more().createLibraryPanel();
+    dashboardPage.panelMenu(grafanaAPI.customPanelName).showMenu().more().createLibraryPanel();
   },
 );
 
