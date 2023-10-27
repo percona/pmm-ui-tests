@@ -1205,6 +1205,38 @@ if (versionMinor >= 32) {
   ).retry(0);
 }
 
+Scenario(
+    'PMM-12587 Verify duplicate dashboards dont break upgrade @pre-upgrade @ovf-upgrade @ami-upgrade @pmm-upgrade',
+    async ({
+             I, grafanaAPI, dashboardPage, searchDashboardsModal,
+           }) => {
+
+      const insightFolder = await grafanaAPI.lookupFolderByName(searchDashboardsModal.folders.insight.name);
+      const experimentalFolder = await grafanaAPI.lookupFolderByName(searchDashboardsModal.folders.experimental.name);
+
+      const resp1 = await grafanaAPI.createCustomDashboard('test-dashboard', insightFolder.id);
+      const resp2 = await grafanaAPI.createCustomDashboard('test-dashboard', experimentalFolder.id);
+
+      //Trim leading '/' from response url
+      const url1 = resp1.url.replace(/^\/+/g, '');
+      const url2 = resp2.url.replace(/^\/+/g, '');
+
+      I.amOnPage(url1);
+      dashboardPage.waitForDashboardOpened();
+      I.seeInCurrentUrl(url1);
+      I.amOnPage(url2);
+      dashboardPage.waitForDashboardOpened();
+      I.seeInCurrentUrl(url2);
+
+      await I.say('Verify there is no "Error after upgrade" in grafana.log');
+      I.wait(1);
+      const errorLogs = await I.verifyCommand('docker exec pmm-server cat /srv/logs/grafana.log | grep level=error');
+      const errorLine = errorLogs.search('unique constraint');
+
+      I.assertEqual(errorLine,-1,`Logs contains no unique constraint errors after upgrade!`);
+    },
+);
+
 // This test must be executed last
 Scenario(
   'verify user is able to change password after upgrade @post-upgrade @pmm-upgrade',
