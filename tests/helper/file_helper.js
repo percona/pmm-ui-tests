@@ -3,9 +3,9 @@ const assert = require('assert');
 const fs = require('fs');
 
 class FileHelper extends Helper {
-  async writeFileSync(path, data, failOnError = true) {
+  static async writeFileSync(path, data, failOnError = true) {
     try {
-      return fs.writeFileSync(path, data, { flag: 'rs+' });
+      return fs.writeFileSync(path, data, { flag: 'w+' });
     } catch (e) {
       if (!failOnError) assert.ok(false, `Could not write into file: ${path}, because of error: ${e}`);
     }
@@ -13,7 +13,7 @@ class FileHelper extends Helper {
     return null;
   }
 
-  async readFileSync(path, failOnError = true) {
+  static async readFileSync(path, failOnError = true) {
     try {
       return fs.readFileSync(path, 'utf8');
     } catch (e) {
