@@ -1210,9 +1210,11 @@ if (versionMinor >= 35) {
   Scenario(
     'PMM-T1189 - verify user is able to change password after upgrade @post-upgrade @pmm-upgrade',
     async ({ I, homePage }) => {
+      const newPass = process.env.NEW_ADMIN_PASSWORD || 'admin1';
+
       await I.unAuthorize();
-      await I.verifyCommand('docker exec pmm-server change-admin-password admin1');
-      await I.Authorize('admin', 'admin1');
+      await I.verifyCommand(`docker exec pmm-server change-admin-password ${newPass}`);
+      await I.Authorize('admin', newPass);
       await homePage.open();
     },
   );
