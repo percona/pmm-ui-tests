@@ -580,7 +580,7 @@ Scenario(
   async ({ I, grafanaAPI, dashboardPage }) => {
     I.amOnPage('');
     dashboardPage.waitForDashboardOpened();
-    dashboardPage.verifyMetricsExistence(['Custom Panel']);
+    dashboardPage.verifyMetricsExistence([grafanaAPI.customPanelName]);
     await dashboardPage.verifyThereAreNoGraphsWithNA();
     await dashboardPage.verifyThereAreNoGraphsWithoutData();
     I.seeInCurrentUrl(grafanaAPI.customDashboardName);
