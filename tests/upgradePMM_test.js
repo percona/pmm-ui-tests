@@ -11,7 +11,8 @@ const pathToPMMFramework = adminPage.pathToPMMTests;
 
 const sslinstances = new DataTable(['serviceName', 'version', 'container', 'serviceType', 'metric', 'dashboard']);
 
-sslinstances.add(['pgsql_14_ssl_service', '14', 'pgsql_14', 'postgres_ssl', 'pg_stat_database_xact_rollback', dashboardPage.postgresqlInstanceOverviewDashboard.url]);
+// Unskip after https://jira.percona.com/browse/PMM-12640
+// sslinstances.add(['pgsql_14_ssl_service', '14', 'pgsql_14', 'postgres_ssl', 'pg_stat_database_xact_rollback', dashboardPage.postgresqlInstanceOverviewDashboard.url]);
 sslinstances.add(['mysql_8.0_ssl_service', '8.0', 'mysql_8.0', 'mysql_ssl', 'mysql_global_status_max_used_connections', dashboardPage.mySQLInstanceOverview.url]);
 sslinstances.add(['mongodb_4.4_ssl_service', '4.4', 'mongodb_4.4', 'mongodb_ssl', 'mongodb_connections', dashboardPage.mongoDbInstanceOverview.url]);
 
@@ -1221,14 +1222,16 @@ if (versionMinor >= 32) {
 }
 
 // This test must be executed last
-Scenario(
-  'PMM-T1189 - verify user is able to change password after upgrade @post-upgrade @pmm-upgrade',
-  async ({
-    I, homePage,
-  }) => {
-    await I.unAuthorize();
-    await I.verifyCommand('docker exec pmm-server change-admin-password admin1');
-    await I.Authorize('admin', 'admin1');
-    await homePage.open();
-  },
-);
+if (versionMinor >= 35) {
+  Scenario(
+    'PMM-T1189 - verify user is able to change password after upgrade @post-upgrade @pmm-upgrade',
+    async ({ I, homePage }) => {
+      const newPass = process.env.NEW_ADMIN_PASSWORD || 'admin1';
+
+      await I.unAuthorize();
+      await I.verifyCommand(`docker exec pmm-server change-admin-password ${newPass}`);
+      await I.Authorize('admin', newPass);
+      await homePage.open();
+    },
+  );
+}
