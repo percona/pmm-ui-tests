@@ -163,11 +163,17 @@ Scenario(
   async ({
     I, grafanaAPI, dashboardPage, searchDashboardsModal,
   }) => {
-    const folder = await grafanaAPI.createFolder(grafanaAPI.customFolderName);
-    const resp = await grafanaAPI.createCustomDashboard(grafanaAPI.customDashboardName, folder.id);
     const insightFolder = await grafanaAPI.lookupFolderByName(searchDashboardsModal.folders.insight.name);
+    await grafanaAPI.createCustomDashboard(grafanaAPI.randomDashboardName, insightFolder.id, null, ['pmm-qa', grafanaAPI.randomTag]);
+    const folder = await grafanaAPI.createFolder(grafanaAPI.customFolderName);
+    const libResp = await grafanaAPI.savePanelToLibrary('Lib Panel', folder.id);
+    const libPanel = libResp.result.model;
 
-    await grafanaAPI.createCustomDashboard(grafanaAPI.randomDashboardName, insightFolder.id, ['pmm-qa', grafanaAPI.randomTag]);
+    libPanel.libraryPanel.meta = libResp.result.meta;
+    libPanel.libraryPanel.version = 1;
+    libPanel.libraryPanel.uid = libResp.result.uid;
+
+    const resp = await grafanaAPI.createCustomDashboard(grafanaAPI.customDashboardName, folder.id, [libPanel]);
 
     await grafanaAPI.starDashboard(resp.id);
     await grafanaAPI.setHomeDashboard(resp.id);
@@ -176,10 +182,8 @@ Scenario(
     dashboardPage.waitForDashboardOpened();
     // dashboardPage.verifyMetricsExistence(['Custom Panel']);
     I.seeInCurrentUrl(grafanaAPI.customDashboardName);
-
-    dashboardPage.panelMenu(grafanaAPI.customPanelName).showMenu().more().createLibraryPanel();
   },
-);
+).retry(0);
 
 Scenario(
   'Verify user is able to set custom Settings like Data_retention, Resolution @pre-upgrade @ovf-upgrade @ami-upgrade @pmm-upgrade',
