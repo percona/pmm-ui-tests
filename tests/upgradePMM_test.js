@@ -166,14 +166,20 @@ Scenario(
     const insightFolder = await grafanaAPI.lookupFolderByName(searchDashboardsModal.folders.insight.name);
     await grafanaAPI.createCustomDashboard(grafanaAPI.randomDashboardName, insightFolder.id, null, ['pmm-qa', grafanaAPI.randomTag]);
     const folder = await grafanaAPI.createFolder(grafanaAPI.customFolderName);
-    const libResp = await grafanaAPI.savePanelToLibrary('Lib Panel', folder.id);
-    const libPanel = libResp.result.model;
+    let additionalPanel = null;
 
-    libPanel.libraryPanel.meta = libResp.result.meta;
-    libPanel.libraryPanel.version = 1;
-    libPanel.libraryPanel.uid = libResp.result.uid;
+    // Panels Library is present from 2.27.0
+    if (versionMinor > 26) {
+      const libResp = await grafanaAPI.savePanelToLibrary('Lib Panel', folder.id);
+      const libPanel = libResp.result.model;
 
-    const resp = await grafanaAPI.createCustomDashboard(grafanaAPI.customDashboardName, folder.id, [libPanel]);
+      libPanel.libraryPanel.meta = libResp.result.meta;
+      libPanel.libraryPanel.version = 1;
+      libPanel.libraryPanel.uid = libResp.result.uid;
+      additionalPanel = [libPanel];
+    }
+
+    const resp = await grafanaAPI.createCustomDashboard(grafanaAPI.customDashboardName, folder.id, additionalPanel);
 
     await grafanaAPI.starDashboard(resp.id);
     await grafanaAPI.setHomeDashboard(resp.id);
