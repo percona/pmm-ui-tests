@@ -592,12 +592,19 @@ Scenario(
     await dashboardPage.verifyThereAreNoGraphsWithoutData();
     I.seeInCurrentUrl(grafanaAPI.customDashboardName);
 
-    await I.say('Verify there is no "Error while loading library panels" errors on dashboard and no errors in grafana.log');
-    I.wait(1);
-    const errorLogs = await I.verifyCommand('docker exec pmm-server cat /srv/logs/grafana.log | grep level=error');
-    const loadingLibraryErrorLine = errorLogs.split('\n').filter((line) => line.includes('Error while loading library panels'));
+    // Panels Library is present from 2.27.0
+    if (versionMinor > 26) {
+      await I.say('Verify there is no "Error while loading library panels" errors on dashboard and no errors in grafana.log');
+      I.wait(1);
+      const errorLogs = await I.verifyCommand('docker exec pmm-server cat /srv/logs/grafana.log | grep level=error');
+      const loadingLibraryErrorLine = errorLogs.split('\n')
+        .filter((line) => line.includes('Error while loading library panels'));
 
-    I.assertEmpty(loadingLibraryErrorLine, `Logs contains errors about while loading library panels! \n The line is: \n ${loadingLibraryErrorLine}`);
+      I.assertEmpty(
+        loadingLibraryErrorLine,
+        `Logs contains errors about while loading library panels! \n The line is: \n ${loadingLibraryErrorLine}`,
+      );
+    }
   },
 );
 
