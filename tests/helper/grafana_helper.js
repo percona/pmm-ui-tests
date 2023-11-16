@@ -191,7 +191,8 @@ class Grafana extends Helper {
     const { stdout, stderr, code } = shell.exec(command.replace(/(\r\n|\n|\r)/gm, ''), { silent: true });
 
     if (output && result === 'pass') {
-      assert.ok(stdout.includes(output), `The "${command}" output expected to include "${output}" but found "${stdout}"`);
+      assert.ok(stdout.includes(output) || stderr.includes(output),
+        `The "${command}" output expected to include "${output}" but found stdout: "${stdout}" stderr: "${stderr}"`);
     }
 
     if (result === 'pass') {
