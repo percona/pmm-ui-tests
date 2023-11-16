@@ -159,15 +159,28 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T391 Verify user is able to create and set custom home dashboard @pre-upgrade @ovf-upgrade @ami-upgrade @pmm-upgrade',
+  'PMM-T391 PMM-T1818 Verify user is able to create and set custom home dashboard'
+    + ' @pre-upgrade @ovf-upgrade @ami-upgrade @pmm-upgrade',
   async ({
     I, grafanaAPI, dashboardPage, searchDashboardsModal,
   }) => {
-    const folder = await grafanaAPI.createFolder(grafanaAPI.customFolderName);
-    const resp = await grafanaAPI.createCustomDashboard(grafanaAPI.customDashboardName, folder.id);
     const insightFolder = await grafanaAPI.lookupFolderByName(searchDashboardsModal.folders.insight.name);
+    await grafanaAPI.createCustomDashboard(grafanaAPI.randomDashboardName, insightFolder.id, null, ['pmm-qa', grafanaAPI.randomTag]);
+    const folder = await grafanaAPI.createFolder(grafanaAPI.customFolderName);
+    let additionalPanel = null;
 
-    await grafanaAPI.createCustomDashboard(grafanaAPI.randomDashboardName, insightFolder.id, ['pmm-qa', grafanaAPI.randomTag]);
+    // Panels Library is present from 2.27.0
+    if (versionMinor > 26) {
+      const libResp = await grafanaAPI.savePanelToLibrary('Lib Panel', folder.id);
+      const libPanel = libResp.result.model;
+
+      libPanel.libraryPanel.meta = libResp.result.meta;
+      libPanel.libraryPanel.version = 1;
+      libPanel.libraryPanel.uid = libResp.result.uid;
+      additionalPanel = [libPanel];
+    }
+
+    const resp = await grafanaAPI.createCustomDashboard(grafanaAPI.customDashboardName, folder.id, additionalPanel);
 
     await grafanaAPI.starDashboard(resp.id);
     await grafanaAPI.setHomeDashboard(resp.id);
@@ -175,9 +188,9 @@ Scenario(
     I.amOnPage('');
     dashboardPage.waitForDashboardOpened();
     // dashboardPage.verifyMetricsExistence(['Custom Panel']);
-    I.seeInCurrentUrl(resp.url);
+    I.seeInCurrentUrl(grafanaAPI.customDashboardName);
   },
-);
+).retry(0);
 
 Scenario(
   'Verify user is able to set custom Settings like Data_retention, Resolution @pre-upgrade @ovf-upgrade @ami-upgrade @pmm-upgrade',
@@ -569,14 +582,29 @@ Scenario('@PMM-T1647 Verify pmm-server package doesn\'t exist @post-upgrade @pmm
 });
 
 Scenario(
-  'PMM-T391 Verify that custom home dashboard stays as home dashboard after upgrade @post-upgrade @ovf-upgrade @ami-upgrade @pmm-upgrade',
+  'PMM-T391 PMM-T1818 Verify that custom home dashboard stays as home dashboard after upgrade'
+    + ' @post-upgrade @ovf-upgrade @ami-upgrade @pmm-upgrade',
   async ({ I, grafanaAPI, dashboardPage }) => {
     I.amOnPage('');
     dashboardPage.waitForDashboardOpened();
-    dashboardPage.verifyMetricsExistence(['Custom Panel']);
+    dashboardPage.verifyMetricsExistence([grafanaAPI.customPanelName]);
     await dashboardPage.verifyThereAreNoGraphsWithNA();
     await dashboardPage.verifyThereAreNoGraphsWithoutData();
     I.seeInCurrentUrl(grafanaAPI.customDashboardName);
+
+    // Panels Library is present from 2.27.0
+    if (versionMinor > 26) {
+      await I.say('Verify there is no "Error while loading library panels" errors on dashboard and no errors in grafana.log');
+      I.wait(1);
+      const errorLogs = await I.verifyCommand('docker exec pmm-server cat /srv/logs/grafana.log | grep level=error');
+      const loadingLibraryErrorLine = errorLogs.split('\n')
+        .filter((line) => line.includes('Error while loading library panels'));
+
+      I.assertEmpty(
+        loadingLibraryErrorLine,
+        `Logs contains errors about while loading library panels! \n The line is: \n ${loadingLibraryErrorLine}`,
+      );
+    }
   },
 );
 
