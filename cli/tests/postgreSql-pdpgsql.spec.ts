@@ -189,4 +189,30 @@ test.describe('Percona Distribution for PostgreSQL CLI tests ', async () => {
       await output.outContains('Service removed.');
     }
   });
+
+  test('PMM-T1833 Verify validation for auto-discovery-limit option for adding Postgres', async ({}) => {
+    const inputs = ['wer', '-34535353465757', ''];
+    for (const input of inputs) {
+      const output = await cli.exec(`sudo pmm-admin add postgresql --username=${PGSQL_USER} --password=${PGSQL_PASSWORD} --auto-discovery-limit=${input}`);
+      await output.errContainsNormalizedMany([
+          `pmm-admin: error: --auto-discovery-limit: expected a valid 32 bit int but got "${input}}"`,
+      ]);
+    }
+  });
+
+  test('PMM-T1829 Verify turning off autodiscovery database for PostgreSQL', async ({}) => {
+    const output = await cli.exec(`sudo pmm-admin add postgresql --service-name=turn-off-autodiscovery --username=${PGSQL_USER} --password=${PGSQL_PASSWORD} --auto-discovery-limit=5`);
+    await output.assertSuccess();
+    await output.outContains('PostgreSQL Service added.');
+
+    const psAuxOutput = await cli.exec(`ps aux |grep postgres_expor`);
+    await psAuxOutput.assertSuccess();
+    await psAuxOutput.outNotContains('--auto-discover-databases ');
+  });
+
+  test('PMM-T1828 Verify auto-discovery-database flag is enabled by default for postgres_exporter', async ({}) => {
+    const output = await cli.exec(`ps aux |grep postgres_expor`);
+    await output.assertSuccess();
+    await output.outContains('--auto-discover-databases ');
+  });
 });

@@ -57,6 +57,18 @@ class Output {
     ).toHaveLength(0);
   }
 
+  async errContainsNormalizedMany(expectedValues: string[]) {
+    for (const val of expectedValues) {
+      await test.step(`Verify command error contains ${val}`, async () => {
+        expect.soft(this.stderr.replace(/ +(?= )/g, ''), `Stderr does not contain '${val}'!`).not.toContain(val);
+      });
+    }
+    expect(
+        test.info().errors,
+        `'Contains all elements' failed with ${test.info().errors.length} error(s):\n${this.getErrors()}`,
+    ).toHaveLength(0);
+  }
+
   async outContainsMany(expectedValues: string[]) {
     for (const val of expectedValues) {
       await test.step(`Verify command output contains ${val}`, async () => {
