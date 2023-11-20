@@ -201,9 +201,14 @@ test.describe('Percona Distribution for PostgreSQL CLI tests ', async () => {
   });
 
   test('PMM-T1829 Verify turning off autodiscovery database for PostgreSQL', async ({}) => {
-    const output = await cli.exec(`sudo pmm-admin add postgresql --service-name=turn-off-autodiscovery --username=${PGSQL_USER} --password=${PGSQL_PASSWORD} --auto-discovery-limit=5`);
-    await output.assertSuccess();
-    await output.outContains('PostgreSQL Service added.');
+    let hosts = (await cli.exec(`sudo pmm-admin list | grep "PostgreSQL" | awk -F" " '{print $3}'`))
+        .stdout.trim().split('\n').filter((item) => item.trim().length > 0);
+    let n = 1;
+    for (const host of hosts) {
+      const output = await cli.exec(`sudo pmm-admin add postgresql --username=${PGSQL_USER} --password=${PGSQL_PASSWORD} --auto-discovery-limit=5 autodiscovery_${n} ${host}`);
+      await output.assertSuccess();
+      await output.outContains('PostgreSQL Service added.');
+    }
 
     const psAuxOutput = await cli.exec(`ps aux |grep postgres_expor`);
     await psAuxOutput.assertSuccess();
