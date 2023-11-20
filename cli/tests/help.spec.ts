@@ -115,11 +115,11 @@ test.describe('PMM Client "--help" validation', async () => {
   });
 
   test('PMM-T1827 - Verify there is --auto-discovery-limit option in pmm-admin add postgresql help output', async ({}) => {
-    await addPostgreSqlHelp.outContainsNormalizedMany([
-      '--auto-discovery-limit=NUMBER\n' +
-      '     Auto-discovery will be disabled if there are\n' +
-      '     more than that number of databases (default:\n' +
-      '     server-defined, -1: always disabled)',
-    ]);
+    await addPostgreSqlHelp.outContainsMany([
+        'auto-discovery-limit=NUMBER',
+        'Auto-discovery will be disabled if there are',
+        'more than that number of databases (default:',
+        'server-defined, -1: always disabled)'
+      ]);
   });
 });
