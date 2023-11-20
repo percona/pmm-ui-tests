@@ -21,7 +21,10 @@ services:
       - "443:443"
     environment:
       - PMM_DEBUG=1
+      - ENABLE_RBAC=1
       - PERCONA_TEST_SAAS_HOST=check-dev.percona.com:443
+      - GF_AUTH_OAUTH_ALLOW_INSECURE_EMAIL_LOOKUP=1
+      - PERCONA_PORTAL_URL=https://portal-dev.percona.com
       - PERCONA_TEST_CHECKS_PUBLIC_KEY=RWTg+ZmCCjt7O8eWeAmTLAqW+1ozUbpRSKSwNTmO+exlS5KEIPYWuYdX
       - PERCONA_TEST_PLATFORM_ADDRESS=https://check-dev.percona.com:443
       - PERCONA_TEST_PLATFORM_PUBLIC_KEY=RWTg+ZmCCjt7O8eWeAmTLAqW+1ozUbpRSKSwNTmO+exlS5KEIPYWuYdX
@@ -88,7 +91,7 @@ services:
       - pmm-network
 
   postgres:
-    image: ${POSTGRES_IMAGE:-perconalab/percona-distribution-postgresql:13.3}
+    image: ${POSTGRES_IMAGE:-perconalab/percona-distribution-postgresql:15}
     container_name: pmm-agent_postgres
     command: >
       -c shared_preload_libraries=pg_stat_monitor,pg_stat_statements
@@ -108,7 +111,7 @@ services:
 
   # it needs for deleting postgres db for test T1087
   postgresremovedefaultdb:
-    image: ${POSTGRES_IMAGE:-perconalab/percona-distribution-postgresql:13.3}
+    image: ${POSTGRES_IMAGE:-perconalab/percona-distribution-postgresql:15}
     command: >
       psql -Utest -hpostgresnodb -dnot_default_db -c 'DROP DATABASE postgres WITH (FORCE);'
     depends_on:
@@ -120,12 +123,11 @@ services:
       - pmm-network
 
   postgresnodb:
-    image: ${POSTGRES_IMAGE:-perconalab/percona-distribution-postgresql:13.3}
+    image: ${POSTGRES_IMAGE:-perconalab/percona-distribution-postgresql:15}
     healthcheck:
       test: [ "CMD-SHELL", "pg_isready" ]
-      interval: 10s
-      timeout: 5s
-      retries: 5
+      interval: 5s
+      retries: 12
     ports:
       - "6435:5432"
     environment:

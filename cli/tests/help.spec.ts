@@ -1,15 +1,14 @@
-import { test, expect } from '@playwright/test';
+import { test } from '@playwright/test';
 import * as cli from '@helpers/cliHelper';
-import Output from "@support/types/output";
+import Output from '@support/types/output';
 
-let output:Output;
-let addPostgreSqlHelp:Output;
+let addMongoHelp: Output;
+let addPostgreSqlHelp: Output;
 
 test.describe('PMM Client "--help" validation', async () => {
-
-  test.beforeAll(async ({}) =>{
-    output = await cli.execSilent('sudo pmm-admin add mongodb --help');
-    await output.assertSuccess();
+  test.beforeAll(async ({}) => {
+    addMongoHelp = await cli.execSilent('sudo pmm-admin add mongodb --help');
+    await addMongoHelp.assertSuccess();
     addPostgreSqlHelp = await cli.execSilent('sudo pmm-admin add postgresql --help');
     await addPostgreSqlHelp.assertSuccess();
   });
@@ -22,7 +21,7 @@ test.describe('PMM Client "--help" validation', async () => {
    * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/modb-tests.bats#L212
    */
   test('pmm-admin mongodb --help validation', async ({}) => {
-    await output.outContainsMany([
+    await addMongoHelp.outContainsMany([
       'Usage: pmm-admin add mongodb [<name> [<address>]]',
       '--socket=STRING',
       'metrics-mode="auto"',
@@ -36,7 +35,7 @@ test.describe('PMM Client "--help" validation', async () => {
    * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/modb-tests.bats#L287
    */
   test('PMM-T925 Verify pmm-admin add mongodb --help has TLS-related flags', async ({}) => {
-    await output.outContainsMany([
+    await addMongoHelp.outContainsMany([
       'tls                        Use TLS to connect to the database',
       'tls-skip-verify            Skip TLS certificates validation',
       'tls-certificate-key-file=STRING',

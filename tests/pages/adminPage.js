@@ -26,7 +26,7 @@ module.exports = {
     pmmDropdownMenuSelector: locate('a[data-toggle="dropdown"] > span').withText('PMM'),
     timeRangeFrom: locate('input').withAttr({ 'aria-label': 'Time Range from field' }),
     timeRangeTo: locate('input').withAttr({ 'aria-label': 'Time Range to field' }),
-    tooltipText: locate('$info-tooltip').find('./*[self::span or self::div]'),
+    tooltipText: locate('$info-tooltip').find('span'),
     tooltipReadMoreLink: locate('$info-tooltip').find('a'),
   },
 
@@ -194,7 +194,9 @@ module.exports = {
     const tooltipText = tooltipObj.tooltipText.as('Tooltip text');
 
     I.waitForVisible(tooltipIcon, 5);
+    I.scrollTo(tooltipIcon);
     I.moveCursorTo(tooltipIcon);
+    I.waitForVisible(tooltipText, 5);
     I.scrollTo(tooltipText);
     I.waitForVisible(tooltipText, 5);
     I.seeTextEquals(tooltipObj.text, tooltipText);

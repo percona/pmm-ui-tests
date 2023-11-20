@@ -6,6 +6,7 @@ const {
 } = inject();
 
 const locateLabel = (selector) => locate(I.useDataQA(selector)).find('span');
+const deprecatedFeaturesSection = '//fieldset[legend[contains(text(),"Deprecated features")]]';
 
 module.exports = {
   url: 'graph/settings',
@@ -315,8 +316,8 @@ module.exports = {
     telemetrySwitchSelector: locate('$advanced-telemetry').find('label'),
     perconaAlertingSwitchInput: locate('$advanced-alerting').find('input'),
     perconaAlertingSwitch: locate('$advanced-alerting').find('label'),
-    dbaasSwitchSelectorInput: locate('$advanced-dbaas').find('input'),
-    dbaasSwitchSelector: locate('$advanced-dbaas').find('label'),
+    dbaasSwitchSelectorInput: locate(deprecatedFeaturesSection).find('$advanced-dbaas').find('input'),
+    dbaasSwitchSelector: locate(deprecatedFeaturesSection).find('$advanced-dbaas').find('label'),
     dbaasSwitchItem: '$advanced-dbaas',
     telemetryLabel: locate('$advanced-telemetry').find('span'),
     tooltipText: locate('$info-tooltip').find('./*[self::span or self::div]'),

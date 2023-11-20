@@ -1,10 +1,11 @@
-import { test, expect } from '@playwright/test';
+import { test } from '@playwright/test';
 import * as cli from '@helpers/cliHelper';
 
 const checkZipFileContents = (arg) => {
     // ZIP_FILE_NAME=$(echo "${lines[-1]}" | awk '{ print $1 }')
     // run unzip -l "$ZIP_FILE_NAME"
 };
+
 test.describe('PMM Client "Generic" CLI tests', async () => {
   let PMM_VERSION;
   if ( process.env.CLIENT_VERSION == "dev-latest") {
@@ -449,5 +450,11 @@ test.describe('PMM Client "Generic" CLI tests', async () => {
     await output.exitCodeEquals(1);
     // no information about failure reasons is shown
     await output.outContains('Failed to register pmm-agent on PMM Server: Node with name');
+  });
+
+  test('PMM-T1258 Verify pmm-admin status shows node name', async ({}) => {
+    const output = await cli.exec('sudo pmm-admin status');
+    await output.assertSuccess();
+    await output.outContains('Node name: ');
   });
 });

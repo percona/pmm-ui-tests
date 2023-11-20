@@ -1,4 +1,3 @@
----
 templates:
   - name: test_user_rule_yaml
     version: 1

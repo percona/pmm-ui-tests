@@ -6,6 +6,7 @@ const faker = require('faker');
 
 module.exports = {
   url: 'graph/dbaas',
+  k8sClusterUrl: 'graph/dbaas/kubernetes',
   apiKeysUrl: 'graph/org/apikeys',
 
   apiKeysPage: {
@@ -180,7 +181,7 @@ module.exports = {
           advancedSettingsLabel: locate('legend').withText('Advanced Settings'),
         },
       },
-      dbConfigurations: {  
+      dbConfigurations: {
         configurationsHeader: (dbType) => locate('legend').withText(`${dbType} Configurations`),
         configurationLabel: (dbType) => locate('$configuration-field-label').withText(dbType),
         storageClassLabel: '$storageClass-field-label',
@@ -482,7 +483,7 @@ module.exports = {
     I.seeTextEquals('Expand all', this.tabs.dbClusterTab.fields.dbClusterLogs.expandAllLogsButton);
     I.waitForElement(this.tabs.dbClusterTab.fields.dbClusterLogs.refreshLogsButton);
     I.click(this.tabs.dbClusterTab.fields.dbClusterLogs.refreshLogsButton);
-    //I.waitForElement(this.tabs.dbClusterTab.fields.dbClusterLogs.refreshLogsSpinner);
+    // I.waitForElement(this.tabs.dbClusterTab.fields.dbClusterLogs.refreshLogsSpinner);
     I.waitForElement(this.tabs.dbClusterTab.fields.dbClusterLogs.podLogsHeader);
     I.click(this.tabs.dbClusterTab.fields.dbClusterLogs.podLogsHeader);
     numberOfExpanded = await I.grabNumberOfVisibleElements(
@@ -497,7 +498,7 @@ module.exports = {
     await dashboardPage.genericDashboardLoadForDbaaSClusters(`${dashboardPage.mysqlPXCGaleraNodeSummaryDashboard.url}?&var-service_name=${serviceName}`, 'Last 30 minutes', 4, 0, 3);
     await dashboardPage.genericDashboardLoadForDbaaSClusters(`graph/d/haproxy-instance-summary/haproxy-instance-summary?orgId=1&refresh=1m&var-service_name=${haproxynodeName}`, 'Last 30 minutes', 4, 1, 3);
     // eslint-disable-next-line no-inline-comments
-    await dashboardPage.genericDashboardLoadForDbaaSClusters(`${dashboardPage.mysqlInstanceSummaryDashboard.url}&var-service_name=${serviceName}`, 'Last 30 minutes', 4, 1, 5); //FIXME: Expected with N/A should be 0 after PMM-10308 is fixed
+    await dashboardPage.genericDashboardLoadForDbaaSClusters(`${dashboardPage.mysqlInstanceSummaryDashboard.url}&var-service_name=${serviceName}`, 'Last 30 minutes', 4, 1, 5); // FIXME: Expected with N/A should be 0 after PMM-10308 is fixed
     await dashboardPage.genericDashboardLoadForDbaaSClusters(`${dashboardPage.nodeSummaryDashboard.url}?&var-node_name=${nodeName}`, 'Last 30 minutes', 4, 0, 1);
   },
   async psmdbClusterMetricCheck(dbclusterName, serviceName, nodeName, replSet) {
@@ -535,7 +536,7 @@ module.exports = {
   },
 
   async verifySourceRangeCount(count) {
-    let sourceRange = await I.grabNumberOfVisibleElements(this.tabs.dbClusterTab.externalAccess.sourceRangeInput);
+    const sourceRange = await I.grabNumberOfVisibleElements(this.tabs.dbClusterTab.externalAccess.sourceRangeInput);
 
     assert.ok(sourceRange === count, `There should be ${count} Source Range Inputs but found ${sourceRange}`);
   },

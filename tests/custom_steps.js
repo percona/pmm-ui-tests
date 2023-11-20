@@ -4,6 +4,7 @@ const buildUrl = require('build-url');
 
 const systemMessageText = '.page-alert-list div[data-testid^="data-testid Alert"] > div';
 const systemMessageButtonClose = '.page-alert-list button';
+const warningLocator = '[data-testid="data-testid Alert warning"]';
 
 module.exports = () => actor({
 
@@ -11,6 +12,11 @@ module.exports = () => actor({
     this.waitForElement(systemMessageText, timeout);
     this.see(message, systemMessageText);
     this.click(systemMessageButtonClose);
+  },
+
+  verifyWarning(message, timeout = 10) {
+    this.waitForElement(warningLocator, timeout);
+    this.see(message, warningLocator);
   },
 
   async verifyInvisible(selector, timeOutInSeconds = 1) {

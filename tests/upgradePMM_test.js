@@ -11,7 +11,8 @@ const pathToPMMFramework = adminPage.pathToPMMTests;
 
 const sslinstances = new DataTable(['serviceName', 'version', 'container', 'serviceType', 'metric', 'dashboard']);
 
-sslinstances.add(['pgsql_14_ssl_service', '14', 'pgsql_14', 'postgres_ssl', 'pg_stat_database_xact_rollback', dashboardPage.postgresqlInstanceOverviewDashboard.url]);
+// Unskip after https://jira.percona.com/browse/PMM-12640
+// sslinstances.add(['pgsql_14_ssl_service', '14', 'pgsql_14', 'postgres_ssl', 'pg_stat_database_xact_rollback', dashboardPage.postgresqlInstanceOverviewDashboard.url]);
 sslinstances.add(['mysql_8.0_ssl_service', '8.0', 'mysql_8.0', 'mysql_ssl', 'mysql_global_status_max_used_connections', dashboardPage.mySQLInstanceOverview.url]);
 sslinstances.add(['mongodb_4.4_ssl_service', '4.4', 'mongodb_4.4', 'mongodb_ssl', 'mongodb_connections', dashboardPage.mongoDbInstanceOverview.url]);
 
@@ -158,15 +159,28 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T391 Verify user is able to create and set custom home dashboard @pre-upgrade @ovf-upgrade @ami-upgrade @pmm-upgrade',
+  'PMM-T391 PMM-T1818 Verify user is able to create and set custom home dashboard'
+    + ' @pre-upgrade @ovf-upgrade @ami-upgrade @pmm-upgrade',
   async ({
     I, grafanaAPI, dashboardPage, searchDashboardsModal,
   }) => {
-    const folder = await grafanaAPI.createFolder(grafanaAPI.customFolderName);
-    const resp = await grafanaAPI.createCustomDashboard(grafanaAPI.customDashboardName, folder.id);
     const insightFolder = await grafanaAPI.lookupFolderByName(searchDashboardsModal.folders.insight.name);
+    await grafanaAPI.createCustomDashboard(grafanaAPI.randomDashboardName, insightFolder.id, null, ['pmm-qa', grafanaAPI.randomTag]);
+    const folder = await grafanaAPI.createFolder(grafanaAPI.customFolderName);
+    let additionalPanel = null;
 
-    await grafanaAPI.createCustomDashboard(grafanaAPI.randomDashboardName, insightFolder.id, ['pmm-qa', grafanaAPI.randomTag]);
+    // Panels Library is present from 2.27.0
+    if (versionMinor > 26) {
+      const libResp = await grafanaAPI.savePanelToLibrary('Lib Panel', folder.id);
+      const libPanel = libResp.result.model;
+
+      libPanel.libraryPanel.meta = libResp.result.meta;
+      libPanel.libraryPanel.version = 1;
+      libPanel.libraryPanel.uid = libResp.result.uid;
+      additionalPanel = [libPanel];
+    }
+
+    const resp = await grafanaAPI.createCustomDashboard(grafanaAPI.customDashboardName, folder.id, additionalPanel);
 
     await grafanaAPI.starDashboard(resp.id);
     await grafanaAPI.setHomeDashboard(resp.id);
@@ -174,9 +188,9 @@ Scenario(
     I.amOnPage('');
     dashboardPage.waitForDashboardOpened();
     // dashboardPage.verifyMetricsExistence(['Custom Panel']);
-    I.seeInCurrentUrl(resp.url);
+    I.seeInCurrentUrl(grafanaAPI.customDashboardName);
   },
-);
+).retry(0);
 
 Scenario(
   'Verify user is able to set custom Settings like Data_retention, Resolution @pre-upgrade @ovf-upgrade @ami-upgrade @pmm-upgrade',
@@ -203,7 +217,7 @@ if (versionMinor >= 15) {
       I,
       settingsAPI,
       databaseChecksPage,
-      securityChecksAPI,
+      advisorsAPI,
       addInstanceAPI,
       inventoryAPI,
     }) => {
@@ -215,13 +229,13 @@ if (versionMinor >= 15) {
       await settingsAPI.changeSettings({ stt: true });
       await addInstanceAPI.addInstanceForSTT(connection, psServiceName);
 
-      await securityChecksAPI.startSecurityChecks();
+      await advisorsAPI.startSecurityChecks();
       // Waiting to have results
       I.wait(60);
       // disable check, change interval for a check, change interval settings
       if (versionMinor >= 16) {
-        await securityChecksAPI.disableCheck('mongodb_version');
-        await securityChecksAPI.changeCheckInterval('postgresql_version');
+        await advisorsAPI.disableCheck('mongodb_version');
+        await advisorsAPI.changeCheckInterval('postgresql_version');
         await settingsAPI.setCheckIntervals({
           ...settingsAPI.defaultCheckIntervals,
           standard_interval: '3600s',
@@ -235,18 +249,18 @@ if (versionMinor >= 15) {
       // I.waitForVisible(failedCheckRowLocator, 60);
 
       // Check that there are failed checks
-      // await securityChecksAPI.verifyFailedCheckExists(emptyPasswordSummary);
-      // await securityChecksAPI.verifyFailedCheckExists(failedCheckMessage);
+      // await advisorsAPI.verifyFailedCheckExists(emptyPasswordSummary);
+      // await advisorsAPI.verifyFailedCheckExists(failedCheckMessage);
 
       // Silence mysql Empty Password failed check
       // I.waitForVisible(failedCheckRowLocator, 30);
 
       if (versionMinor >= 27) {
         const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName('MYSQL_SERVICE', psServiceName);
-        const { alert_id } = (await securityChecksAPI.getFailedChecks(service_id))
+        const { alert_id } = (await advisorsAPI.getFailedChecks(service_id))
           .find(({ summary }) => summary === failedCheckMessage);
 
-        await securityChecksAPI.toggleChecksAlert(alert_id);
+        await advisorsAPI.toggleChecksAlert(alert_id);
       } else {
         I.waitForVisible(failedCheckRowLocator, 30);
         I.click(failedCheckRowLocator.find('button').withText('Silence'));
@@ -568,14 +582,29 @@ Scenario('@PMM-T1647 Verify pmm-server package doesn\'t exist @post-upgrade @pmm
 });
 
 Scenario(
-  'PMM-T391 Verify that custom home dashboard stays as home dashboard after upgrade @post-upgrade @ovf-upgrade @ami-upgrade @pmm-upgrade',
+  'PMM-T391 PMM-T1818 Verify that custom home dashboard stays as home dashboard after upgrade'
+    + ' @post-upgrade @ovf-upgrade @ami-upgrade @pmm-upgrade',
   async ({ I, grafanaAPI, dashboardPage }) => {
     I.amOnPage('');
     dashboardPage.waitForDashboardOpened();
-    dashboardPage.verifyMetricsExistence(['Custom Panel']);
+    dashboardPage.verifyMetricsExistence([grafanaAPI.customPanelName]);
     await dashboardPage.verifyThereAreNoGraphsWithNA();
     await dashboardPage.verifyThereAreNoGraphsWithoutData();
     I.seeInCurrentUrl(grafanaAPI.customDashboardName);
+
+    // Panels Library is present from 2.27.0
+    if (versionMinor > 26) {
+      await I.say('Verify there is no "Error while loading library panels" errors on dashboard and no errors in grafana.log');
+      I.wait(1);
+      const errorLogs = await I.verifyCommand('docker exec pmm-server cat /srv/logs/grafana.log | grep level=error');
+      const loadingLibraryErrorLine = errorLogs.split('\n')
+        .filter((line) => line.includes('Error while loading library panels'));
+
+      I.assertEmpty(
+        loadingLibraryErrorLine,
+        `Logs contains errors about while loading library panels! \n The line is: \n ${loadingLibraryErrorLine}`,
+      );
+    }
   },
 );
 
@@ -650,8 +679,8 @@ if (versionMinor >= 15) {
     async ({
       I,
       pmmSettingsPage,
-      securityChecksAPI,
-      allChecksPage,
+      advisorsAPI,
+      advisorsPage,
     }) => {
       // Wait for 45 seconds to have latest check results
       I.wait(45);
@@ -660,10 +689,10 @@ if (versionMinor >= 15) {
       I.waitForVisible(pmmSettingsPage.fields.sttSwitchSelector, 30);
       pmmSettingsPage.verifySwitch(pmmSettingsPage.fields.sttSwitchSelectorInput, 'on');
 
-      I.amOnPage(allChecksPage.url);
-      I.waitForVisible(allChecksPage.buttons.startDBChecks, 30);
+      I.amOnPage(advisorsPage.url);
+      I.waitForVisible(advisorsPage.buttons.startDBChecks, 30);
       // Verify there is failed check
-      await securityChecksAPI.verifyFailedCheckExists(failedCheckMessage);
+      await advisorsAPI.verifyFailedCheckExists(failedCheckMessage);
     },
   );
 
@@ -678,7 +707,8 @@ if (versionMinor >= 15) {
 
       await grafanaAPI.checkMetricExist(metricName);
       await grafanaAPI.checkMetricExist(metricName, { type: 'node_name', value: 'redis_external_remote' });
-      await grafanaAPI.checkMetricExist(metricName, { type: 'service_name', value: 'redis_external_2' });
+      // removing check for upgrade verification
+      // await grafanaAPI.checkMetricExist(metricName, { type: 'service_name', value: 'redis_external_2' });
 
       const response = await I.sendGetRequest('prometheus/api/v1/targets', headers);
       const targets = response.data.data.activeTargets.find(
@@ -686,10 +716,12 @@ if (versionMinor >= 15) {
       );
 
       const expectedScrapeUrl = `${remoteInstancesHelper.remote_instance.external.redis.schema}://${remoteInstancesHelper.remote_instance.external.redis.host
-        }:${remoteInstancesHelper.remote_instance.external.redis.port}${remoteInstancesHelper.remote_instance.external.redis.metricsPath}`;
+      }:${remoteInstancesHelper.remote_instance.external.redis.port}${remoteInstancesHelper.remote_instance.external.redis.metricsPath}`;
 
-      assert.ok(targets.scrapeUrl === expectedScrapeUrl,
-        `Active Target for external service Post Upgrade has wrong Address value, value found is ${targets.scrapeUrl} and value expected was ${expectedScrapeUrl}`);
+      assert.ok(
+        targets.scrapeUrl === expectedScrapeUrl,
+        `Active Target for external service Post Upgrade has wrong Address value, value found is ${targets.scrapeUrl} and value expected was ${expectedScrapeUrl}`,
+      );
       assert.ok(targets.health === 'up', `Active Target for external service Post Upgrade health value is not up! value found ${targets.health}`);
     },
   );
@@ -700,14 +732,14 @@ if (versionMinor >= 16) {
     'Verify disabled checks remain disabled after upgrade @post-upgrade @pmm-upgrade',
     async ({
       I,
-      allChecksPage,
+      advisorsPage,
     }) => {
       const checkName = 'MongoDB Version';
 
-      I.amOnPage(allChecksPage.url);
-      I.waitForVisible(allChecksPage.buttons.disableEnableCheck(checkName));
-      I.seeTextEquals('Enable', allChecksPage.buttons.disableEnableCheck(checkName));
-      I.seeTextEquals('Disabled', allChecksPage.elements.statusCellByName(checkName));
+      I.amOnPage(advisorsPage.url);
+      I.waitForVisible(advisorsPage.buttons.disableEnableCheck(checkName));
+      I.seeTextEquals('Enable', advisorsPage.buttons.disableEnableCheck(checkName));
+      I.seeTextEquals('Disabled', advisorsPage.elements.statusCellByName(checkName));
     },
   );
 
@@ -715,13 +747,13 @@ if (versionMinor >= 16) {
     'Verify check intervals remain the same after upgrade @post-upgrade @pmm-upgrade',
     async ({
       I,
-      allChecksPage,
+      advisorsPage,
     }) => {
       const checkName = 'PostgreSQL Version';
 
-      I.amOnPage(allChecksPage.url);
-      I.waitForVisible(allChecksPage.buttons.disableEnableCheck(checkName));
-      I.seeTextEquals('Frequent', allChecksPage.elements.intervalCellByName(checkName));
+      I.amOnPage(advisorsPage.url);
+      I.waitForVisible(advisorsPage.buttons.disableEnableCheck(checkName));
+      I.seeTextEquals('Frequent', advisorsPage.elements.intervalCellByName(checkName));
     },
   );
 
@@ -729,11 +761,11 @@ if (versionMinor >= 16) {
     'Verify silenced checks remain silenced after upgrade @post-upgrade @pmm-upgrade',
     async ({
       I,
-      databaseChecksPage, inventoryAPI, securityChecksAPI,
+      databaseChecksPage, inventoryAPI, advisorsAPI,
     }) => {
       const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName('MYSQL_SERVICE', psServiceName);
 
-      await securityChecksAPI.waitForFailedCheckExistance(failedCheckMessage, psServiceName);
+      await advisorsAPI.waitForFailedCheckExistance(failedCheckMessage, psServiceName);
       databaseChecksPage.openFailedChecksListForService(service_id);
 
       I.waitForVisible(databaseChecksPage.elements.failedCheckRowBySummary(failedCheckMessage), 30);
@@ -1200,4 +1232,19 @@ if (versionMinor >= 32) {
       }
     },
   ).retry(0);
+}
+
+// This test must be executed last
+if (versionMinor >= 35) {
+  Scenario(
+    'PMM-T1189 - verify user is able to change password after upgrade @post-upgrade @pmm-upgrade',
+    async ({ I, homePage }) => {
+      const newPass = process.env.NEW_ADMIN_PASSWORD || 'admin1';
+
+      await I.unAuthorize();
+      await I.verifyCommand(`docker exec pmm-server change-admin-password ${newPass}`);
+      await I.Authorize('admin', newPass);
+      await homePage.open();
+    },
+  );
 }

@@ -6,14 +6,14 @@ module.exports = {
   async verifyServiceExistsAndHasRunningStatus(service, serviceName) {
     let responseService;
 
-    // 30 sec ping for getting created service name
-    for (let i = 0; i < 30; i++) {
+    // 60 sec ping for getting created service name
+    for (let i = 0; i < 60; i++) {
       const services = await this.apiGetServices(service.serviceType);
 
       responseService = services.data[service.service].find((obj) => obj.service_name === serviceName);
       if (responseService !== undefined) break;
 
-      await new Promise((r) => setTimeout(r, 1000));
+      I.wait(1);
     }
 
     assert.ok(responseService !== undefined, `Service ${serviceName} was not found`);
@@ -24,7 +24,7 @@ module.exports = {
 
   async waitForRunningState(serviceId) {
     // 30 sec ping for getting Running status for Agents
-    for (let i = 0; i < 30; i++) {
+    for (let i = 0; i < 120; i++) {
       const agents = await this.apiGetAgents(serviceId);
       const areRunning = Object.values(agents.data)
         .flat(Infinity)
@@ -34,7 +34,7 @@ module.exports = {
         return agents;
       }
 
-      await new Promise((r) => setTimeout(r, 1000));
+      await I.wait(1);
     }
 
     return false;

@@ -1,4 +1,4 @@
-name: PMM2 UI Tests-Matrix
+name: PMM e2e Tests(Playwright)
 
 on:
   schedule:
@@ -6,23 +6,20 @@ on:
   workflow_dispatch:
     inputs:
       pmm_ui_tests_branch:
-        description: 'Target branch for pmm-ui-tests repository'
+        description: 'pmm-ui-tests repository branch'
+        default: 'main'
+        required: true
+      pmm_qa_branch:
+        description: 'pmm-qa repository branch(for setup)'
         default: 'main'
         required: true
       pmm_server_version:
-        description: 'Version of the pmm server used for testing'
-        default: 'dev-latest'
+        description: 'PMM Server docker image'
+        default: 'perconalab/pmm-server:dev-latest'
         required: true
-      pmm_server_docker_tag:
-        description: 'Use when tag different to: "perconalab/pmm-server" is required'
-        type: string
       pmm_client_version:
-        description: 'Version of the pmm client used for testing'
+        description: 'PMM Client version to test (dev-latest|pmm2-latest|pmm2-rc|x.xx.x)'
         default: 'dev-latest'
-        required: true
-      pmm_qa_branch:
-        description: 'Branch for the pmm-qa repository.'
-        default: 'main'
         required: true
 
 jobs:
@@ -33,8 +30,7 @@ jobs:
     with:
       pmm_ui_tests_branch: ${{ github.event.inputs.pmm_ui_tests_branch || github.head_ref || 'main '}}
       pmm_test_flag: '@rbac'
-      pmm_server_version: ${{ github.event.inputs.pmm_server_version || 'dev-latest' }}
-      pmm_server_docker_tag: ${{ inputs.pmm_server_docker_tag }}
+      pmm_server_version: ${{ github.event.inputs.pmm_server_version || 'perconalab/pmm-server:dev-latest' }}
       pmm_client_version: ${{ github.event.inputs.pmm_client_version || 'dev-latest' }}
       pmm_clients: '--addclient=ps,1 --addclient=pdpgsql,1'
       pmm_qa_branch: ${{ github.event.inputs.pmm_qa_branch || 'main' }}
@@ -46,8 +42,7 @@ jobs:
     with:
       pmm_ui_tests_branch: ${{ github.event.inputs.pmm_ui_tests_branch || github.head_ref || 'main '}}
       pmm_test_flag: '@portal'
-      pmm_server_version: ${{ github.event.inputs.pmm_server_version || 'dev-latest' }}
-      pmm_server_docker_tag: ${{ inputs.pmm_server_docker_tag }}
+      pmm_server_version: ${{ github.event.inputs.pmm_server_version || 'perconalab/pmm-server:dev-latest' }}
       pmm_client_version: ${{ github.event.inputs.pmm_client_version || 'dev-latest' }}
       pmm_clients: ''
       pmm_qa_branch: ${{ github.event.inputs.pmm_qa_branch || 'main' }}
@@ -59,8 +54,7 @@ jobs:
     with:
       pmm_ui_tests_branch: ${{ github.event.inputs.pmm_ui_tests_branch || github.head_ref || 'main '}}
       pmm_test_flag: '@inventory'
-      pmm_server_version: ${{ github.event.inputs.pmm_server_version || 'dev-latest' }}
-      pmm_server_docker_tag: ${{ inputs.pmm_server_docker_tag }}
+      pmm_server_version: ${{ github.event.inputs.pmm_server_version || 'perconalab/pmm-server:dev-latest' }}
       pmm_client_version: ${{ github.event.inputs.pmm_client_version || 'dev-latest' }}
       pmm_clients: '--addclient=modb,1 --addclient=ps,1 --addclient=pdpgsql,1'
       pmm_qa_branch: ${{ github.event.inputs.pmm_qa_branch || 'main' }}

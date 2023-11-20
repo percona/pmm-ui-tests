@@ -51,8 +51,8 @@ module.exports = {
     const body = { kubernetes_cluster_name: clusterName, name: dbClusterName, cluster_type: dbClusterType };
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
 
-    let response = await I.sendPostRequest('v1/management/DBaaS/DBClusters/List', body, headers);  
-    
+    let response = await I.sendPostRequest('v1/management/DBaaS/DBClusters/List', body, headers);
+
     if (response.data.pxc_clusters) {
       const pxc_cluster = response.data.pxc_clusters.find(
         (o) => o.name === dbClusterName,
@@ -72,6 +72,7 @@ module.exports = {
       const psmdb_cluster = response.data.psmdb_clusters.find(
         (o) => o.name === dbClusterName,
       );
+
       if (psmdb_cluster) {
         response = await I.sendPostRequest('v1/management/DBaaS/DBClusters/Delete', body, headers);
 
@@ -103,7 +104,8 @@ module.exports = {
   async waitForOperators() {
     const body = {};
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
-    let response, pxcOperatorStatus, psmdbOperatorStatus;
+    let response; let pxcOperatorStatus; let
+      psmdbOperatorStatus;
 
     for (let i = 0; i < 30; i++) {
       response = await I.sendPostRequest('v1/management/DBaaS/Kubernetes/List', body, headers);
@@ -112,18 +114,19 @@ module.exports = {
 
       if (pxcOperatorStatus && psmdbOperatorStatus === 'OPERATORS_STATUS_OK') {
         break;
-      }
-      else {
+      } else {
         await I.wait(20);
       }
     }
+
     I.say(`Status of PXC operator was ${pxcOperatorStatus}. Status of PSMDB operator was ${psmdbOperatorStatus}.`);
   },
 
   async waitForClusterStatus() {
     const body = {};
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
-    let response, clusterStatus;
+    let response; let
+      clusterStatus;
 
     for (let i = 0; i < 30; i++) {
       response = await I.sendPostRequest('v1/management/DBaaS/Kubernetes/List', body, headers);
@@ -131,11 +134,11 @@ module.exports = {
 
       if (clusterStatus === 'KUBERNETES_CLUSTER_STATUS_OK') {
         break;
-      }
-      else {
+      } else {
         await I.wait(10);
       }
     }
+
     I.say(`Kubernetes cluster status was ${clusterStatus}.`);
   },
 
@@ -146,7 +149,7 @@ module.exports = {
       status: 'KUBERNETES_CLUSTER_STATUS_OK',
     };
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
-    
+
     const response = await I.sendPostRequest('v1/management/DBaaS/DBClusters/List', body, headers);
 
     if (response.data.pxc_clusters) {
@@ -168,7 +171,7 @@ module.exports = {
     return false;
   },
 
-  async waitForDBClusterState(dbClusterName, clusterName, dbType = 'MySQL', dbState) {
+  async waitForDBClusterState(dbClusterName, clusterName, dbType, dbState) {
     const body = {
       kubernetesClusterName: clusterName,
       operators: { xtradb: { status: 'OPERATORS_STATUS_OK' }, psmdb: { status: 'OPERATORS_STATUS_OK' } },
@@ -177,13 +180,13 @@ module.exports = {
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
 
     for (let i = 0; i < 30; i++) {
-      let response = await I.sendPostRequest('v1/management/DBaaS/DBClusters/List', body, headers);
+      const response = await I.sendPostRequest('v1/management/DBaaS/DBClusters/List', body, headers);
 
       if (dbType === 'MySQL') {
         const pxc_cluster = response.data.pxc_clusters.find(
           (o) => o.name === dbClusterName,
         );
-        
+
         if (pxc_cluster && pxc_cluster.state === dbState) {
           break;
         }
@@ -197,7 +200,7 @@ module.exports = {
         }
       }
 
-      await new Promise((r) => setTimeout(r, 10000));
+      I.wait(10);
     }
   },
 
@@ -210,30 +213,31 @@ module.exports = {
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
 
     for (let i = 0; i < 30; i++) {
-      let response = await I.sendPostRequest('v1/management/DBaaS/DBClusters/List', body, headers);
+      const response = await I.sendPostRequest('v1/management/DBaaS/DBClusters/List', body, headers);
 
       if (response.data.pxc_clusters || response.data.psmdb_clusters) {
         if (dbType === 'MySQL' && response.data.pxc_clusters) {
           const pxc_cluster = response.data.pxc_clusters.find(
             (o) => o.name === dbClusterName,
           );
-          
+
           if (pxc_cluster === undefined) {
             break;
-          }          
+          }
         }
+
         if (dbType === 'MongoDB' && response.data.psmdb_clusters) {
           const psmdb_cluster = response.data.psmdb_clusters.find(
             (o) => o.name === dbClusterName,
-          );  
+          );
 
           if (psmdb_cluster === undefined) {
             break;
-          }     
+          }
         } else break;
       } else break;
 
-      await new Promise((r) => setTimeout(r, 10000));
+      I.wait(10);
     }
   },
 
@@ -280,33 +284,46 @@ module.exports = {
   },
 
   async createDefaultPXC(clusterName) {
-    const body = { kubernetes_cluster_name: clusterName, params: { disk_size: 1000000000 } }
+    const body = { kubernetes_cluster_name: clusterName, params: { disk_size: 1000000000 } };
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
 
-    await I.sendPostRequest('v1/management/DBaaS/PXCCluster/Create', body, headers);  
+    await I.sendPostRequest('v1/management/DBaaS/PXCCluster/Create', body, headers);
   },
 
   async createCustomPXC(clusterName, dbClusterName, clusterSize = '3', version = 'percona/percona-xtradb-cluster:8.0.22-13.1') {
-    const body = { kubernetes_cluster_name: clusterName, name: dbClusterName, params: { cluster_size: clusterSize,
-      pxc: { image: version, compute_resources: { disk_size: 1000000000 } } } }
+    const body = {
+      kubernetes_cluster_name: clusterName,
+      name: dbClusterName,
+      params: {
+        cluster_size: clusterSize,
+        pxc: { image: version, compute_resources: { disk_size: 1000000000 } },
+      },
+    };
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
 
-    await I.sendPostRequest('v1/management/DBaaS/PXCCluster/Create', body, headers);  
+    await I.sendPostRequest('v1/management/DBaaS/PXCCluster/Create', body, headers);
   },
 
   async createDefaultPSMDB(clusterName) {
     const body = { kubernetes_cluster_name: clusterName, params: { replicaset: { disk_size: 1000000000 } } };
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
 
-    await I.sendPostRequest('v1/management/DBaaS/PSMDBCluster/Create', body, headers);  
+    await I.sendPostRequest('v1/management/DBaaS/PSMDBCluster/Create', body, headers);
   },
 
   async createCustomPSMDB(clusterName, dbClusterName, clusterSize = '3', version = 'percona/percona-server-mongodb:5.0.7-6') {
-    const body = { kubernetes_cluster_name: clusterName, name: dbClusterName, params: { cluster_size: clusterSize, 
-      replicaset: { compute_resources: { cpu_m: 500, memory_bytes: 2000000000 }, disk_size: 1000000000 }, image: version } };
+    const body = {
+      kubernetes_cluster_name: clusterName,
+      name: dbClusterName,
+      params: {
+        cluster_size: clusterSize,
+        replicaset: { compute_resources: { cpu_m: 500, memory_bytes: 2000000000 }, disk_size: 1000000000 },
+        image: version,
+      },
+    };
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
 
-    await I.sendPostRequest('v1/management/DBaaS/PSMDBCluster/Create', body, headers);  
+    await I.sendPostRequest('v1/management/DBaaS/PSMDBCluster/Create', body, headers);
   },
 
   /**
@@ -317,18 +334,18 @@ module.exports = {
    */
   async waitForOutput(command, output, retry = 10, timeout = 20) {
     let stdout;
-    
+
     for (let i = 0; i < retry; i++) {
       stdout = shell.exec(command.replace(/(\r\n|\n|\r)/gm, ''), { silent: true });
       if (stdout.includes(output)) {
         break;
-      }
-      else {
+      } else {
         await I.wait(timeout);
       }
     }
 
     assert.ok(stdout.includes(output), `The "${command}" output expected to include "${output}" but found "${stdout}"`);
+
     return stdout.trim();
-  }
+  },
 };

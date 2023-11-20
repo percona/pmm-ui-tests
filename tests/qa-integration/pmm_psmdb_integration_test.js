@@ -13,6 +13,7 @@ Before(async ({ I, settingsAPI }) => {
 const version = process.env.PSMDB_VERSION ? `${process.env.PSMDB_VERSION}` : '4.4';
 const replica_container_name = `psmdb_pmm_${version}_replica`;
 const regular_container_name = `psmdb_pmm_${version}_regular`;
+const arbiter_container_name = `psmdb_pmm_${version}_arbiter`;
 const remoteServiceName = 'remote_pmm-psmdb-integration';
 
 const connection = {
@@ -23,7 +24,7 @@ const connection = {
 };
 
 Scenario(
-  'Verify Adding MongoDB services remotely @pmm-psmdb-integration @not-ui-pipeline',
+  'Verify Adding MongoDB services remotely @pmm-psmdb-regular-integration @not-ui-pipeline',
   async ({
     I, remoteInstancesPage, pmmInventoryPage, inventoryAPI, grafanaAPI,
   }) => {
@@ -67,7 +68,7 @@ Scenario(
 );
 
 Scenario(
-  'Verify metrics from PSMDB instances on PMM-Server @pmm-psmdb-integration @not-ui-pipeline',
+  'Verify metrics from PSMDB instances on PMM-Server @pmm-psmdb-replica-integration @not-ui-pipeline',
   async ({
     I, remoteInstancesPage, pmmInventoryPage, inventoryAPI, grafanaAPI,
   }) => {
@@ -97,7 +98,7 @@ Scenario(
 ).retry(1);
 
 Scenario(
-  'Verify dashboard after MongoDB Instances are added @pmm-psmdb-integration @not-ui-pipeline',
+  'Verify dashboard after MongoDB Instances are added @pmm-psmdb-replica-integration @not-ui-pipeline',
   async ({
     I, dashboardPage, adminPage,
   }) => {
@@ -133,7 +134,7 @@ Scenario(
 ).retry(1);
 
 Scenario(
-  'Verify QAN after MongoDB Instances is added @pmm-psmdb-integration @not-ui-pipeline',
+  'Verify QAN after MongoDB Instances is added @pmm-psmdb-replica-integration @not-ui-pipeline',
   async ({
     I, qanOverview, qanFilters, qanPage, adminPage,
   }) => {
@@ -155,3 +156,44 @@ Scenario(
     }
   },
 ).retry(1);
+
+Scenario(
+  'T2269 Verify Replicaset dashboard for MongoDB Instances contains ARBITER node @pmm-psmdb-arbiter-integration @not-ui-pipeline',
+  async ({
+    I, dashboardPage, adminPage,
+  }) => {
+
+    const arbiterLocator = '(//div[@ng-show=\'ctrl.panel.showLegendValues\'][contains(.,\'ARBITER\')])[1]';
+
+    I.amOnPage(`${dashboardPage.mongodbReplicaSetSummaryDashboard.url}&var-replset=rs1`);
+    dashboardPage.waitForDashboardOpened();
+    await I.waitForElement({xpath: arbiterLocator},60);
+    const numberOfVisibleElements = await I.grabNumberOfVisibleElements(arbiterLocator);
+    I.assertEqual(numberOfVisibleElements,1 , "No of ARBITER elements for ReplicatSet are not as expected");
+  },
+);
+
+Scenario(
+  'T2317 Verify Wrong Replication Lag by Set values if RS is PSA -( MongoDB Cluster Summary) @pmm-psmdb-arbiter-integration @not-ui-pipeline',
+  async ({
+    I, dashboardPage, adminPage,
+  }) => {
+
+  I.amOnPage(`${dashboardPage.mongodbReplicaSetSummaryDashboard.url}&var-replset=rs1`);
+  dashboardPage.waitForDashboardOpened();
+
+  // Grab secs or year lag value from Replication Lag min field in UI
+  const replLagLocator = '(//a[@data-testid=\'data-testid dashboard-row-title-Replication Lag\']/following::a[contains(text(),\'mongodb_rs2_1\')]/following::td[contains(text(),\' s\') or contains(text(),\' year\')])[1]';
+
+  // Get the text content of the element located
+  const replLagText = await I.grabTextFrom(replLagLocator);
+  // Grab only Lag value required from Text
+  let actualLagValue= +replLagText.split(".",1);
+  // Grab actual Lag value required from database
+  let expectedLagValue = (await I.verifyCommand(`docker exec -w /mongosh/bin/ ${arbiter_container_name} ./mongosh --eval rs\.printSecondaryReplicationInfo\\(\\) | awk '/replLag:/ {print $2}' | cut -c 2`)).trim();
+  // Give some threshold increase for actual replication lag, for now 2 secs extra
+  expectedLagValue = +expectedLagValue+2;
+  I.assertBelow(actualLagValue,expectedLagValue, "ReplicaLag is more than expected lag vaule");
+  },
+);
+
