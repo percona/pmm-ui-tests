@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import * as cli from '@helpers/cliHelper';
+import * as cli from '@helpers/cli-helper';
 import { waitForApiReady } from '@helpers/custom-assertions';
 
 const DOCKER_IMAGE = process.env.DOCKER_VERSION && process.env.DOCKER_VERSION.length > 0

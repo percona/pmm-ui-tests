@@ -29,6 +29,7 @@
   "dependencies": {
     "@faker-js/faker": "^8.0.2",
     "@types/luxon": "^3.3.0",
+    "adm-zip": "^0.5.10",
     "axios": "1.2.6",
     "luxon": "^3.3.0",
     "playwright": "^1.35.1",
@@ -40,6 +41,7 @@
   },
   "devDependencies": {
     "@playwright/test": "^1.35.1",
+    "@types/adm-zip": "^0.5.4",
     "@types/node": "^18.8.3",
     "@types/shelljs": "^0.8.12",
     "@typescript-eslint/eslint-plugin": "^5.59.7",

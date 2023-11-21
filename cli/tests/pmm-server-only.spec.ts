@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
-import * as cli from '@helpers/cliHelper';
-import Output from '@support/types/output';
+import * as cli from '@helpers/cli-helper';
+import ExecReturn from '@support/types/exec-return.class';
 import { waitForApiReady } from '@helpers/custom-assertions';
 
 const DOCKER_IMAGE = process.env.DOCKER_VERSION && process.env.DOCKER_VERSION.length > 0
@@ -24,7 +24,7 @@ test.describe('PMM Server CLI tests for Docker Environment Variables', async () 
    */
   test('PMM-T224 run docker container with a invalid value for a environment variable DATA_RETENTION=48', async ({}) => {
     await cli.exec(`docker run -d -p 81:80 -p 446:443 --name PMM-T224 -e DATA_RETENTION=48 ${DOCKER_IMAGE}`);
-    let out: Output;
+    let out: ExecReturn;
 
     await expect(async () => {
       out = await cli.exec('docker logs PMM-T224 2>&1 | grep \'Configuration error: environment variable\'');
@@ -44,7 +44,7 @@ test.describe('PMM Server CLI tests for Docker Environment Variables', async () 
    */
   test('PMM-T225 run docker container with a unexpected environment variable DATA_TENTION=48', async ({}) => {
     await cli.exec(`docker run -d -p 82:80 -p 447:443 --name PMM-T225 -e DATA_TENTION=48 ${DOCKER_IMAGE}`);
-    let out: Output;
+    let out: ExecReturn;
 
     await expect(async () => {
       out = await cli.exec('docker logs PMM-T225 2>&1 | grep \'Configuration warning: unknown environment variable\'');

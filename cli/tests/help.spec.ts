@@ -1,9 +1,9 @@
 import { test } from '@playwright/test';
-import * as cli from '@helpers/cliHelper';
-import Output from '@support/types/output';
+import * as cli from '@helpers/cli-helper';
+import ExecReturn from '@support/types/exec-return.class';
 
-let addMongoHelp: Output;
-let addPostgreSqlHelp: Output;
+let addMongoHelp: ExecReturn;
+let addPostgreSqlHelp: ExecReturn;
 
 test.describe('PMM Client "--help" validation', async () => {
   test.beforeAll(async ({}) => {

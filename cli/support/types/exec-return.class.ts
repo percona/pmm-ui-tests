@@ -1,26 +1,33 @@
 import { test, expect } from '@playwright/test';
+import StderrAssertions from '@support/types/stderr-assertions.class';
 
-class Output {
+class ExecReturn {
   command: string;
   code: number;
   stdout: string;
-  stderr: string;
+  stderr: StderrAssertions;
 
   constructor(command: string, exitCode: number, stdOut: string, stdErr: string) {
     this.command = command;
     this.code = exitCode;
     this.stdout = stdOut;
-    this.stderr = stdErr;
+    this.stderr = new StderrAssertions(command, stdErr);
   }
 
   getStdOutLines(): string[] {
     return this.stdout.trim().split('\n').filter((item) => item.trim().length > 0);
   }
 
+  logError() {
+    if (this.code !== 0) {
+      console.log(`"${this.command}" exited with error: "${this.stderr.text || this.stdout}"`);
+    }
+  }
+
   async assertSuccess() {
-    await test.step(`Verify "${this.command}" command executed successfully`, async () => {
-      expect(this.code, `"${this.command}" expected to exit with 0! Error: "${this.stderr || this.stdout}"`).toEqual(0);
-    });
+    const errorMsg = this.code === 0 ? '' : ` Error: "${this.stderr.text || this.stdout}"`;
+    expect(this.code, `Verify "${this.command}" exited with 0!${errorMsg}"`).toEqual(0);
+    return this;
   }
 
   async exitCodeEquals(expectedValue: number) {
@@ -30,7 +37,7 @@ class Output {
   }
 
   async outEquals(expectedValue: string) {
-    expect(this.stdout, `Stdout should equal ${expectedValue}!`).toBe(expectedValue);
+    expect(this.stdout, `Verify Stdout equals ${expectedValue}!`).toBe(expectedValue);
   }
 
   async outContains(expectedValue: string) {
@@ -47,25 +54,27 @@ class Output {
 
   async outContainsNormalizedMany(expectedValues: string[]) {
     for (const val of expectedValues) {
-      await test.step(`Verify command output contains ${val}`, async () => {
-        expect.soft(this.stdout.replace(/ +(?= )/g, ''), `Stdout does not contain '${val}'!`).toContain(val);
-      });
+      expect.soft(this.stdout.replace(/ +(?= )/g, ''), `Verify Stdout contains '${val}'`).toContain(val);
     }
+    const errorMsg = test.info().errors.length === 0
+      ? ''
+      : ` But got ${test.info().errors.length} error(s):\n${this.getErrors()}`;
     expect(
       test.info().errors,
-      `'Contains all elements' failed with ${test.info().errors.length} error(s):\n${this.getErrors()}`,
+      `'Contains all elements' should have 0 errors.${errorMsg}`,
     ).toHaveLength(0);
   }
 
   async outContainsMany(expectedValues: string[]) {
     for (const val of expectedValues) {
-      await test.step(`Verify command output contains ${val}`, async () => {
-        expect.soft(this.stdout, `Stdout does not contain '${val}'!`).toContain(val);
-      });
+      expect.soft(this.stdout, `Verify Stdout contains '${val}'`).toContain(val);
     }
+    const errorMsg = test.info().errors.length === 0
+      ? ''
+      : ` But got ${test.info().errors.length} error(s):\n${this.getErrors()}`;
     expect(
       test.info().errors,
-      `'Contains all elements' failed with ${test.info().errors.length} error(s):\n${this.getErrors()}`,
+      `'Contains all elements' should have 0 errors.${errorMsg}`,
     ).toHaveLength(0);
   }
 
@@ -76,12 +85,6 @@ class Output {
     }
     return errors.join('\n');
   }
-
-  logError() {
-    if (this.code !== 0) {
-      console.log(`"${this.command}" exited with error: "${this.stderr || this.stdout}"`);
-    }
-  }
 }
 
-export default Output;
+export default ExecReturn;
