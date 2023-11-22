@@ -12,6 +12,12 @@ test.describe('PMM Client "Generic" CLI tests', async () => {
       .stdout.trim();
   }
 
+  test('PMM-T1258 Verify pmm-admin status shows node name', async ({}) => {
+    const output = await cli.exec('sudo pmm-admin status');
+    await output.assertSuccess();
+    await output.outContains('Node name: ');
+  });
+
   /**
    * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/generic-tests.bats#L8
    * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/generic-tests.bats#L18
@@ -133,7 +139,7 @@ test.describe('PMM Client "Generic" CLI tests', async () => {
   test('run pmm-admin summary --server-url with https and verify warning', async ({}) => {
     const output = await cli.exec('sudo pmm-admin summary --server-url=\'https://admin:admin@localhost\'');
     await output.assertSuccess();
-    await output.outContains('certificate is not valid for any names');
+    await output.stderr.contains('certificate is not valid for any names');
     await output.outContains('.zip created.');
   });
 
@@ -157,8 +163,11 @@ test.describe('PMM Client "Generic" CLI tests', async () => {
   test('run pmm-admin summary --debug', async ({}) => {
     const output = await cli.exec('sudo pmm-admin summary --debug');
     await output.assertSuccess();
-    await output.outContains('POST /v1/inventory/Services/List HTTP/1.1');
-    await output.outContains('POST /v1/inventory/Agents/List HTTP/1.1'); // there are no request for those urls. but there are requests for /local/status
+    // there are no request for those urls. but there are requests for /local/status
+    await output.stderr.containsMany([
+      'POST /v1/inventory/Services/List HTTP/1.1',
+      'POST /v1/inventory/Agents/List HTTP/1.1',
+    ]);
     await output.outContains('.zip created.');
   });
 
@@ -168,10 +177,12 @@ test.describe('PMM Client "Generic" CLI tests', async () => {
   test('run pmm-admin summary --trace', async ({}) => {
     const output = await cli.exec('sudo pmm-admin summary --trace');
     await output.assertSuccess();
-    await output.outContainsMany([
-      'POST /v1/inventory/Services/List HTTP/1.1',
-      'POST /v1/inventory/Agents/List HTTP/1.1', // there are no request for those urls. but there are requests for /local/status
-      '.zip created.']);
+    // there are no request for those urls. but there are requests for /local/status
+    await output.stderr.containsMany([
+      '(*Runtime).Submit() POST /v1/inventory/Services/List HTTP/1.1',
+      '(*Runtime).Submit() POST /v1/inventory/Agents/List HTTP/1.1',
+    ]);
+    await output.outContains('.zip created.');
   });
 
   /**
@@ -199,7 +210,8 @@ test.describe('PMM Client "Generic" CLI tests', async () => {
    * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/generic-tests.bats#L162
    */
   test('run pmm-admin summary --filename', async ({}) => {
-    const output = await cli.exec('sudo pmm-admin summary --filename="test.zip"');
+    const zipName = 'test.zip';
+    const output = await cli.exec(`sudo pmm-admin summary --filename="${zipName}"`);
     await output.assertSuccess();
     await output.outContains('.zip created.');
   });
@@ -225,7 +237,7 @@ test.describe('PMM Client "Generic" CLI tests', async () => {
     await output.outContains('.zip created.');
     const zipName = output.getStdOutLines().find((item) => item.includes('.zip created.'))!
       .split(' ').at(0) ?? '';
-    expect(readZipFile(zipName), `Verify there are 6 files in ${zipName}`).toHaveLength(49);
+    expect(readZipFile(zipName), `Verify there are 10 files in ${zipName}`).toHaveLength(10);
   });
 
   /**
@@ -243,10 +255,10 @@ test.describe('PMM Client "Generic" CLI tests', async () => {
   test('run pmm-admin summary --skip-server --trace', async ({}) => {
     const output = await cli.exec('sudo pmm-admin summary --skip-server --trace');
     await output.assertSuccess();
-    await output.outContainsMany([
+    await output.stderr.containsMany([
       '(*Runtime).Submit() POST /v1/inventory/Services/List HTTP/1.1',
-      '(*Runtime).Submit() POST /v1/inventory/Agents/List HTTP/1.1',
-      '.zip created.']);
+      '(*Runtime).Submit() POST /v1/inventory/Agents/List HTTP/1.1']);
+    await output.outContains('.zip created.');
   });
 
   /**
@@ -255,10 +267,10 @@ test.describe('PMM Client "Generic" CLI tests', async () => {
   test('run pmm-admin summary --skip-server --debug', async ({}) => {
     const output = await cli.exec('sudo pmm-admin summary --skip-server --debug');
     await output.assertSuccess();
-    await output.outContainsMany([
+    await output.stderr.containsMany([
       'POST /v1/inventory/Services/List HTTP/1.1',
-      'POST /v1/inventory/Agents/List HTTP/1.1',
-      '.zip created.']);
+      'POST /v1/inventory/Agents/List HTTP/1.1']);
+    await output.outContains('.zip created.');
   });
 
   /**
@@ -268,7 +280,7 @@ test.describe('PMM Client "Generic" CLI tests', async () => {
     const ZIP_FILE_NAME = 'json_export.zip';
     const output = await cli.exec(`sudo pmm-admin summary --skip-server --json --debug --filename=${ZIP_FILE_NAME}`);
     await output.assertSuccess();
-    await output.outContainsMany([
+    await output.stderr.containsMany([
       'POST /v1/inventory/Services/List HTTP/1.1',
       'POST /v1/inventory/Agents/List HTTP/1.1']);
   });
@@ -410,7 +422,7 @@ test.describe('PMM Client "Generic" CLI tests', async () => {
   test('run pmm-admin annotate without any text and verify it should not work', async ({}) => {
     const output = await cli.exec('sudo pmm-admin annotate');
     await output.exitCodeEquals(1);
-    await output.outContains('pmm-admin: error: expected "<text>"');
+    await output.stderr.contains('pmm-admin: error: expected "<text>"');
   });
 
   /**
@@ -419,7 +431,7 @@ test.describe('PMM Client "Generic" CLI tests', async () => {
   test('run pmm-admin annotate with tags without text cannot be added', async ({}) => {
     const output = await cli.exec('sudo pmm-admin annotate --tags="testing"');
     await output.exitCodeEquals(1);
-    await output.outContains('pmm-admin: error: expected "<text>"');
+    await output.stderr.contains('pmm-admin: error: expected "<text>"');
   });
 
   /**
@@ -465,11 +477,5 @@ test.describe('PMM Client "Generic" CLI tests', async () => {
     await output.exitCodeEquals(1);
     // no information about failure reasons is shown
     await output.outContains('Failed to register pmm-agent on PMM Server: Node with name');
-  });
-
-  test('PMM-T1258 Verify pmm-admin status shows node name', async ({}) => {
-    const output = await cli.exec('sudo pmm-admin status');
-    await output.assertSuccess();
-    await output.outContains('Node name: ');
   });
 });

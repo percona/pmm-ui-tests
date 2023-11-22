@@ -1,17 +1,17 @@
 import { test, expect } from '@playwright/test';
-import StderrAssertions from '@support/types/stderr-assertions.class';
+import PipeAssertions from '@support/types/pipe-assertions.class';
 
 class ExecReturn {
   command: string;
   code: number;
   stdout: string;
-  stderr: StderrAssertions;
+  stderr: PipeAssertions;
 
   constructor(command: string, exitCode: number, stdOut: string, stdErr: string) {
     this.command = command;
     this.code = exitCode;
     this.stdout = stdOut;
-    this.stderr = new StderrAssertions(command, stdErr);
+    this.stderr = new PipeAssertions(command, 'Stderr', stdErr);
   }
 
   getStdOutLines(): string[] {
