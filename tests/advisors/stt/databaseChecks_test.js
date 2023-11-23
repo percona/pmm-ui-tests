@@ -1,7 +1,7 @@
 const assert = require('assert');
 
 const {
-  allChecksPage, databaseChecksPage, codeceptjsConfig, psMySql,
+  advisorsPage, databaseChecksPage, codeceptjsConfig, psMySql,
 } = inject();
 const config = codeceptjsConfig.config.helpers.Playwright;
 const connection = psMySql.defaultConnection;
@@ -11,7 +11,7 @@ let serviceId;
 const urls = new DataTable(['url']);
 
 urls.add([databaseChecksPage.url]);
-urls.add([allChecksPage.url]);
+urls.add([advisorsPage.url]);
 
 const psServiceName = 'databaseChecks-ps-5.7.30';
 const detailsText = process.env.OVF_TEST === 'yes'
@@ -71,10 +71,10 @@ Scenario.skip(
 xScenario(
   'PMM-T233 PMM-T234 Verify user is able to access PMM Database Checks through UI and with URL [critical] @stt',
   async ({
-    I, adminPage, databaseChecksPage, pmmSettingsPage, settingsAPI, securityChecksAPI,
+    I, adminPage, databaseChecksPage, pmmSettingsPage, settingsAPI, advisorsAPI,
   }) => {
     await settingsAPI.apiEnableSTT();
-    await securityChecksAPI.waitForFailedCheckExistance(detailsText, psServiceName);
+    await advisorsAPI.waitForFailedCheckExistance(detailsText, psServiceName);
     I.amOnPage(pmmSettingsPage.url);
     await pmmSettingsPage.waitForPmmSettingsPageLoaded();
     await adminPage.selectItemFromPMMDropdown('PMM Database Checks');
@@ -87,13 +87,13 @@ xScenario(
 Scenario.skip(
   'PMM-T233 PMM-T354 PMM-T368 open PMM Database Checks page from home dashboard [critical] @stt',
   async ({
-    I, homePage, databaseChecksPage, settingsAPI, securityChecksAPI,
+    I, homePage, databaseChecksPage, settingsAPI, advisorsAPI,
   }) => {
     const failedChecksDetails = locate('$checks-tooltip-body').find('div');
 
     await settingsAPI.apiEnableSTT();
-    await securityChecksAPI.startSecurityChecks(['mysql_version']);
-    await securityChecksAPI.waitForFailedCheckExistance(detailsText, psServiceName);
+    await advisorsAPI.startSecurityChecks(['mysql_version']);
+    await advisorsAPI.waitForFailedCheckExistance(detailsText, psServiceName);
     I.wait(30);
     I.amOnPage(homePage.url);
     I.waitForVisible(homePage.fields.checksPanelSelector, 30);
@@ -160,12 +160,12 @@ Scenario.skip(
 Scenario.skip(
   'PMM-T241 Verify user can see correct service name for failed checks [critical] @stt @advisors-fb',
   async ({
-    I, databaseChecksPage, settingsAPI, securityChecksAPI, inventoryAPI, allChecksPage,
+    I, databaseChecksPage, settingsAPI, advisorsAPI, inventoryAPI, advisorsPage,
   }) => {
     await settingsAPI.apiEnableSTT();
-    I.amOnPage(allChecksPage.url);
-    await allChecksPage.runDBChecks();
-    await securityChecksAPI.waitForFailedCheckExistance(detailsText, psServiceName);
+    I.amOnPage(advisorsPage.url);
+    await advisorsPage.runDBChecks();
+    await advisorsAPI.waitForFailedCheckExistance(detailsText, psServiceName);
 
     I.amOnPage(databaseChecksPage.url);
     // Verify failed check on UI

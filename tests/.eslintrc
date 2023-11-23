@@ -31,6 +31,7 @@
         "ignoreRegExpLiterals": true,
         "ignoreStrings": true,
         "ignoreTemplateLiterals": true,
+        "ignoreTrailingComments": true,
         "ignoreUrls": true
       }
     ],

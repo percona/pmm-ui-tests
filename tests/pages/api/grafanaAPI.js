@@ -5,10 +5,21 @@ const FormData = require('form-data');
 module.exports = {
   customDashboardName: 'auto-test-dashboard',
   customFolderName: 'auto-test-folder',
+  customPanelName: 'Monitored DB',
   randomDashboardName: 'uto-dashboard-custom',
   randomTag: 'tag-random',
 
-  async createCustomDashboard(name, folderId = 0, tags = ['pmm-qa']) {
+  /**
+   * Simulates adding new dashboard with custom panels via inner grafana API to keep test
+   * resistance to UI changes in different Grafans versions.
+   *
+   * @param   name              a dashboard name
+   * @param   folderId          folder ID to store new dashboard in. "General" folder ID is 0.
+   * @param   additionalPanels  Array of objects with panels to insert into the dashboard.
+   * @param   tags              a list of tags to apply to dashboard
+   * @return  {Promise<*>}      response object
+   */
+  async createCustomDashboard(name, folderId, additionalPanels, tags = ['pmm-qa']) {
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
     const body = {
       dashboard: {
@@ -28,11 +39,11 @@ module.exports = {
         editable: true,
         panels: [
           {
-            dashLength: 10,
+            title: this.customPanelName,
+            type: 'stat',
             datasource: 'Metrics',
-            fill: 1,
             gridPos: {
-              h: 9,
+              h: 5,
               w: 12,
               x: 0,
               y: 0,
@@ -40,31 +51,106 @@ module.exports = {
             id: 2,
             targets: [
               {
-                expr: 'alertmanager_alerts',
+                datasource: 'Metrics',
+                editorMode: 'code',
+                expr: 'count by (service_type) (mysql_global_status_uptime)',
+                format: 'time_series',
+                hide: false,
+                intervalFactor: 1,
+                legendFormat: 'MySQL',
+                range: true,
                 refId: 'A',
               },
-            ],
-            title: 'Custom Panel',
-            type: 'graph',
-            xaxis: {
-              mode: 'time',
-              show: true,
-            },
-            yaxes: [
               {
-                format: 'short',
-                logBase: 1,
-                show: true,
+                datasource: 'Metrics',
+                editorMode: 'code',
+                expr: 'count by (service_type) (mongodb_up)',
+                hide: false,
+                legendFormat: 'MongoDB',
+                range: true,
+                refId: 'B',
               },
               {
-                format: 'short',
-                logBase: 1,
-                show: true,
+                datasource: 'Metrics',
+                editorMode: 'code',
+                expr: 'count by (service_type)  (group by (service_name, service_type) (pg_up))',
+                hide: false,
+                legendFormat: 'PostgreSQL',
+                range: true,
+                refId: 'C',
+              },
+              {
+                datasource: 'Metrics',
+                editorMode: 'code',
+                expr: 'count by (service_type)  (group by (service_name, service_type) (proxysql_mysql_status_active_transactions))',
+                hide: false,
+                legendFormat: 'ProxySQL',
+                range: true,
+                refId: 'D',
               },
             ],
-            yaxis: {
-              align: false,
+            fieldConfig: {
+              defaults: {
+                color: {
+                  fixedColor: 'rgb(31, 120, 193)',
+                  mode: 'fixed',
+                },
+                links: [],
+                mappings: [
+                  {
+                    options: {
+                      match: 'null',
+                      result: {
+                        index: 0,
+                        text: 'N/A',
+                      },
+                    },
+                    type: 'special',
+                  },
+                ],
+                thresholds: {
+                  mode: 'absolute',
+                  steps: [
+                    {
+                      color: '#1F60C4',
+                      value: null,
+                    },
+                    {
+                      color: 'rgba(237, 129, 40, 0.89)',
+                      value: 100,
+                    },
+                    {
+                      color: '#d44a3a',
+                    },
+                  ],
+                },
+                unit: 'none',
+              },
+              overrides: [],
             },
+
+            links: [],
+            maxDataPoints: 100,
+            options: {
+              colorMode: 'value',
+              graphMode: 'none',
+              justifyMode: 'center',
+              orientation: 'vertical',
+              reduceOptions: {
+                calcs: [
+                  'lastNotNull',
+                ],
+                fields: '',
+                values: false,
+              },
+              text: {
+                titleSize: 14,
+                valueSize: 24,
+              },
+              textMode: 'auto',
+            },
+            pluginVersion: '9.2.20',
+
           },
         ],
         schemaVersion: 26,
@@ -79,6 +165,11 @@ module.exports = {
       },
       folderId,
     };
+
+    if (additionalPanels && additionalPanels.length > 0) {
+      additionalPanels.forEach((i) => body.dashboard.panels.push(i));
+    }
+
     const resp = await I.sendPostRequest('graph/api/dashboards/db/', body, headers);
 
     assert.ok(
@@ -129,6 +220,86 @@ module.exports = {
       resp.status === 200,
       `Failed to set custom Home dashboard '${id}'. Response message is ${resp.data.message}`,
     );
+  },
+
+  async savePanelToLibrary(name, folderId = 0) {
+    const headers = { Authorization: `Basic ${await I.getAuth()}` };
+    const payload = {
+      folderId,
+      name,
+      model: {
+        libraryPanel: { name },
+        id: 4,
+        gridPos: {
+          h: 9, w: 12, x: 0, y: 6,
+        },
+        title: name,
+        type: 'stat',
+        targets: [
+          {
+            datasource: 'Metrics',
+            expr: 'sum by () (node_memory_MemTotal_bytes)',
+            refId: 'B',
+          },
+        ],
+        datasource: 'Metrics',
+        maxDataPoints: 100,
+        interval: '$interval',
+        links: [],
+        fieldConfig: {
+          defaults: {
+            mappings: [
+              {
+                options: {
+                  match: 'null',
+                  result: {
+                    text: 'N/A',
+                  },
+                },
+                type: 'special',
+              },
+            ],
+            thresholds: {
+              mode: 'absolute',
+              steps: [
+                { color: '#0a437c', value: null },
+                { color: '#1f78c1', value: 10000000 },
+                { color: '#5195ce', value: 100000000 },
+              ],
+            },
+            color: { fixedColor: 'rgb(31, 120, 193)', mode: 'fixed' },
+            decimals: 1,
+            links: [],
+            unit: 'Bps',
+          },
+          overrides: [],
+        },
+        options: {
+          reduceOptions: {
+            values: false,
+            calcs: ['lastNotNull'],
+            fields: '',
+          },
+          orientation: 'auto',
+          textMode: 'value',
+          colorMode: 'none',
+          graphMode: 'area',
+          justifyMode: 'auto',
+          text: { valueSize: 24 },
+        },
+      },
+      kind: 1,
+    };
+
+    const resp = await I.sendPostRequest('graph/api/library-elements', payload, headers);
+
+    I.assertEqual(
+      resp.status,
+      200,
+      `Failed to save "${name}" panel to libraries. Response message is ${resp.data.message}`,
+    );
+
+    return resp.data;
   },
 
   async createFolder(name) {

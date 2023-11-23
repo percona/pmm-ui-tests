@@ -1,5 +1,6 @@
 const { I, adminPage } = inject();
 const assert = require('assert');
+const { DashboardPanelMenu } = require('../dashboards/pages/DashboardPanelMenu');
 
 const formatElementId = (text) => text.toLowerCase().replace(/ /g, '_');
 
@@ -246,6 +247,48 @@ module.exports = {
       'FC Trigger Low Limit',
       'FC Trigger High Limit',
       'IST Progress',
+      'Average Galera Replication Latency',
+      'Maximum Galera Replication Latency',
+    ],
+  },
+  pxcGaleraClusterSummaryExperimentalDashboard: {
+    url: 'graph/d/pxc_galera_cluster_summary/pxc-galera-cluster-summary-experimental',
+    metrics: [
+      'Number of clusters',
+      'Services',
+      'Node Size',
+      'Active Alerts',
+      'Cluster Summary',
+      'Service Summary',
+      'Query / second (QPS)',
+      'Used Connections',
+      'Aborted Connections',
+      'Receive Queue',
+      'Send Queue',
+      'Flow Control',
+      'Flow Control Paused Time',
+      'Flow Control Messages Sent',
+      'Writeset Inbound Traffic',
+      'Writeset Outbound Traffic',
+      'Total Bytes In/Out - Backend and Frontend',
+      'Transactions Received',
+      'Transactions Replicated',
+      'Average Incoming Transaction Size',
+      'Average Replicated Transaction Size',
+      'CPU Busy All',
+      'Memory Busy All',
+      'Storage All',
+      'Network IO All',
+      'Client Thread Activity',
+      'Thread Cache',
+      'Temporary Objects',
+      'MySQL Select Types',
+      'MySQL Handlers',
+      'InnoDB Data Reads',
+      'InnoDB Data Writes',
+      'InnoDB FSyncs',
+      'InnoDB Locking',
+      'Galera Replication Latency',
       'Average Galera Replication Latency',
       'Maximum Galera Replication Latency',
     ],
@@ -1433,5 +1476,15 @@ module.exports = {
     if (numberOfElements >= 1) {
       I.click(this.fields.skipTourButton);
     }
+  },
+
+  /**
+   * Creates and returns a panel menu(displayed on dasboard) object to interact in test in a piped style
+   *
+   * @param   panelTitle    title of a panel tointeract with
+   * @return  {DashboardPanelMenu} instance
+   */
+  panelMenu(panelTitle) {
+    return new DashboardPanelMenu(panelTitle);
   },
 };

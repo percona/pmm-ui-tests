@@ -43,14 +43,12 @@
     "mysql2": "^2.3.3",
     "pg": "^8.7.3",
     "playwright": "^1.35.1",
-    "playwright-core": "^1.30.0",
     "prettier": "^2.2.1",
     "shelljs": "^0.8.5",
     "typescript": "^5.1.6",
     "yaml": "^2.2.2"
   },
   "devDependencies": {
-    "@playwright/test": "^1.35.1",
     "@types/faker": "^6.6.9",
     "@types/node": "^18.8.3",
     "@types/shelljs": "^0.8.12",
