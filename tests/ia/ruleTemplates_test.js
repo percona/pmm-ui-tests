@@ -1,4 +1,5 @@
 const assert = require('assert');
+const YAML = require('yaml');
 const page = require('./pages/ruleTemplatesPage');
 
 const templates = new DataTable(['path', 'error']);
@@ -154,6 +155,100 @@ Data(templates)
       }
     },
   );
+
+Scenario(
+  '@PMM-T1785 Bulk rule templates upload @ia',
+  async ({ I, ruleTemplatesPage }) => {
+    const path = 'tests/ia/templates/multiple-templates.yml';
+    const templates = await ruleTemplatesPage.ruleTemplate.parseTemplates(path);
+
+    ruleTemplatesPage.openRuleTemplatesTab();
+    I.click(ruleTemplatesPage.buttons.openAddTemplateModal);
+    I.attachFile(ruleTemplatesPage.fields.fileInput, path);
+    await ruleTemplatesPage.verifyInputContent(path);
+    I.click(ruleTemplatesPage.buttons.addTemplate);
+    I.verifyPopUpMessage(ruleTemplatesPage.messages.successfullyAdded);
+
+    for (const { summary: templateName } of templates) {
+      const expectedSourceLocator = ruleTemplatesPage
+        .getSourceLocator(templateName, ruleTemplatesPage.templateSources.ui);
+      const editButton = ruleTemplatesPage.buttons
+        .editButtonBySource(ruleTemplatesPage.templateSources.ui);
+
+      I.waitForVisible(expectedSourceLocator, 30);
+      I.seeElementsEnabled(editButton);
+    }
+  },
+);
+
+Scenario(
+  '@PMM-T1786 Edit bulk uploaded rule template @ia',
+  async ({ I, ruleTemplatesPage, templatesAPI }) => {
+    const path = 'tests/ia/templates/multiple-templates.yml';
+    const templates = await ruleTemplatesPage.ruleTemplate.parseTemplates(path);
+
+    await templatesAPI.createRuleTemplate(path);
+
+    for (const templateData of templates) {
+      const templateName = templateData.summary;
+      const newTemplateName = `${templateName}_updated`;
+      const template = YAML.stringify({ templates: [templateData] });
+
+      // Normalizing data due to a library formatting difference
+      const yml = template
+        .replaceAll(/ +(?= )/g, '')
+        .replaceAll(' range:\n'
+          + ' - 0\n'
+          + ' - 100\n', ' range: [0, 100]\n')
+        .replaceAll('unit: "%"', 'unit: \'%\'');
+
+      ruleTemplatesPage.openRuleTemplatesTab();
+      ruleTemplatesPage.openEditDialog(templateName);
+      await ruleTemplatesPage.verifyRuleTemplateContent(yml);
+      const updatedTemplateText = template.replaceAll(templateName, newTemplateName);
+      const expectedTemplateText = yml.replaceAll(templateName, newTemplateName);
+
+      I.clearField(ruleTemplatesPage.fields.templateInput);
+      I.fillField(ruleTemplatesPage.fields.templateInput, updatedTemplateText);
+      I.click(ruleTemplatesPage.buttons.editTemplate);
+      I.verifyPopUpMessage(ruleTemplatesPage.messages.successfullyEdited);
+      ruleTemplatesPage.openEditDialog(newTemplateName);
+      await ruleTemplatesPage.verifyRuleTemplateContent(expectedTemplateText);
+    }
+  },
+);
+
+Scenario(
+  '@PMM-T1787 Delete bulk uploaded rule template @ia',
+  async ({ I, ruleTemplatesPage, templatesAPI }) => {
+    const path = 'tests/ia/templates/multiple-templates.yml';
+    const templates = await ruleTemplatesPage.ruleTemplate.parseTemplates(path);
+
+    await templatesAPI.createRuleTemplate(path);
+
+    for (const { summary: templateName } of templates) {
+      const deleteButton = ruleTemplatesPage.buttons
+        .deleteButtonByName(templateName);
+
+      ruleTemplatesPage.openRuleTemplatesTab();
+
+      I.waitForElement(deleteButton, 30);
+      I.click(deleteButton);
+      I.waitForText(
+        ruleTemplatesPage.messages.deleteModalHeaderText,
+        30,
+        ruleTemplatesPage.elements.modalHeader,
+      );
+      I.seeTextEquals(
+        ruleTemplatesPage.messages.deleteModalMessage(templateName),
+        locate(ruleTemplatesPage.elements.modalContent).find('h4'),
+      );
+      I.click(ruleTemplatesPage.buttons.confirmDelete);
+      I.verifyPopUpMessage(ruleTemplatesPage.messages.successfullyDeleted(templateName));
+      I.dontSeeElement(deleteButton);
+    }
+  },
+);
 
 Scenario(
   'PMM-T501 Upload duplicate rule template @ia @grafana-pr',

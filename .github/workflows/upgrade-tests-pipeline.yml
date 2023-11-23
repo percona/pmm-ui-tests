@@ -382,7 +382,7 @@ jobs:
             --volumes-from pmm-integration-server-data \
             --name pmm-integration-server \
             ${{ steps.pmm_server_to_image.outputs.IMAGE }}
-          sleep 30
+          timeout 240 bash -c 'while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' http://${{ env.PMM_SERVER_IP }}/v1/readyz)" != "200" ]]; do sleep 2; done' || false
 
       - name: 'Upgrade pmm-server: <Podman way>'
         if: ${{ inputs.upgrade_type == 'Podman way' }}
@@ -395,22 +395,7 @@ jobs:
           podman pull docker.io/${{ steps.pmm_server_to_image.outputs.IMAGE }}
           systemctl --user restart pmm-server
 
-          # sleep 30
-          ### wait for service to be ready
-          export CONTAINER_NAME="pmm-server"
-          export LOGS="pmm-managed entered RUNNING state"
-          attempt=0
-          while [ $attempt -le 3 ]; do
-            attempt=$(( $attempt + 1 ))
-            echo "Waiting for ${CONTAINER_NAME} to be up (attempt: $attempt)..."
-            result=$(systemctl --user status ${CONTAINER_NAME})
-            if grep "${LOGS}" <<< $result ; then
-              echo "${CONTAINER_NAME} is ready!"
-              break
-            fi
-            sleep 10
-          done;
-          timeout 100 bash -c 'while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' http://admin:${{env.ADMIN_PASSWORD}}@${{ env.PMM_SERVER_IP }}/ping)" != "200" ]]; do sleep 5; done' || false
+          timeout 240 bash -c 'while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' http://${{ env.PMM_SERVER_IP }}/v1/readyz)" != "200" ]]; do sleep 2; done' || false
 
       - name: 'Tests <before PMM Client> upgrade'
         working-directory: ./pmm-ui-tests/playwright-tests

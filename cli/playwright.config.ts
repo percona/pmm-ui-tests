@@ -6,20 +6,17 @@ import * as dotenv from 'dotenv';
  * Read environment variables from file.
  * https://github.com/motdotla/dotenv
  */
-dotenv.config({ path: '.env.local' });
 dotenv.config();
+dotenv.config({ path: '.env.local' });
 
 /**
  * See https://playwright.dev/docs/test-configuration.
  */
-const cliTestFolder = './';
 
 const config: PlaywrightTestConfig = {
-  testDir: './',
+  testDir: './tests',
   timeout: 120 * 1000,
-  expect: {
-    timeout: 2000,
-  },
+  expect: { timeout: 2000 },
 
   /* Run tests in files in parallel */
   fullyParallel: false,
@@ -30,9 +27,8 @@ const config: PlaywrightTestConfig = {
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
   reporter: [
     ['list'],
-    ['html', { open: 'never', outputFolder: './test-report' }]
+    ['html', { open: 'never', outputFolder: './test-report' }],
   ],
-
 
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
 };

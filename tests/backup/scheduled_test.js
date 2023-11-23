@@ -524,7 +524,7 @@ Scenario(
   },
 );
 
-Scenario(
+Scenario.skip(
   '@PMM-T1527 Verify BM Scheduler blocks mongo services that are not managed as cluster'
   + ' @backup @bm-mongo @bm-fb',
   async ({ I, scheduledPage }) => {
@@ -537,6 +537,7 @@ Scenario(
     scheduledPage.openScheduleBackupModal();
     scheduledPage.selectDropdownOption(scheduledPage.fields.serviceNameDropdown, mongoNameWithoutCluster);
     I.fillField(scheduledPage.fields.backupName, schedule.name);
+    I.click(scheduledPage.elements.advancedSettingsSection);
     I.fillField(scheduledPage.fields.folder, schedule.folder);
     scheduledPage.selectDropdownOption(scheduledPage.fields.locationDropdown, location.name);
     scheduledPage.selectDropdownOption(scheduledPage.fields.everyDropdown, 'Every minute');

@@ -1,0 +1,56 @@
+{
+  "name": "pmm-cli-tests",
+  "version": "1.0.0",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/percona/pmm-ui-tests.git"
+  },
+  "scripts": {
+    "lint": "npm run lint:ts && npm run typecheck && echo 'Lint OK'",
+    "lint:ts": "eslint .",
+    "lint:ts:fix": "eslint --fix .",
+    "typecheck": "tsc --noEmit",
+    "report": "playwright show-report",
+    "cli:help": "npx playwright test pmm-ui-tests/cli/tests/help.spec.ts",
+    "cli:remove": "npx playwright test pmm-ui-tests/cli/tests/remove.spec.ts",
+    "cli:ps": "npx playwright test pmm-ui-tests/cli/tests/perconaMySqlServer.spec.ts",
+    "cli:pgsql": "npx playwright test postgreSql",
+    "cli:psmdb": "npx playwright test pmm-ui-tests/cli/tests/mongoDb-psmdb.spec.ts",
+    "cli:mongo": "npx playwright test pmm-ui-tests/cli/tests/mongoDb.spec.ts",
+    "cli:generic": "npx playwright test generic unregister",
+    "cli:client-docker": "npx playwright test pmm-client-docker",
+    "cli:haproxy": "npx playwright test haproxy",
+    "cli:proxySql": "npx playwright test proxySql",
+    "cli:mysql": "npx playwright test pmm-ui-tests/cli/tests/mysql.spec.ts",
+    "cli:mysql-conf": "npx playwright test pmm-ui-tests/cli/tests/mysql-conf-file.spec.ts",
+    "cli:all": "playwright test --config=playwright.config.ts"
+  },
+  "dependencies": {
+    "@faker-js/faker": "^8.0.2",
+    "@types/luxon": "^3.3.0",
+    "axios": "1.2.6",
+    "luxon": "^3.3.0",
+    "playwright": "^1.35.1",
+    "playwright-core": "^1.37.0",
+    "prettier": "^2.2.1",
+    "shelljs": "^0.8.5",
+    "typescript": "^5.1.6",
+    "yaml": "^2.2.2"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.35.1",
+    "@types/node": "^18.8.3",
+    "@types/shelljs": "^0.8.12",
+    "@typescript-eslint/eslint-plugin": "^5.59.7",
+    "@typescript-eslint/parser": "^5.59.11",
+    "dotenv": "^16.1.4",
+    "eslint": "8.41",
+    "eslint-config-airbnb": "^19.0.4",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-config-airbnb-typescript": "^17.0.0",
+    "eslint-config-prettier": "^8.2.0",
+    "eslint-plugin-import": "^2.27.5",
+    "eslint-plugin-playwright": "^0.12.0"
+  }
+}

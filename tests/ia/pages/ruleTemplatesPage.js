@@ -73,6 +73,18 @@ module.exports = {
         return ['', '', '', ''];
       }
     },
+
+    parseTemplates: async (ymlPath) => {
+      const content = await I.readFile(ymlPath);
+
+      try {
+        const { templates } = YAML.parse(content);
+
+        return templates;
+      } catch (e) {
+        return [];
+      }
+    },
     inputFilePath: 'tests/ia/templates/inputTemplate.yml',
     paths: {
       yml: 'tests/ia/templates/template.yml',

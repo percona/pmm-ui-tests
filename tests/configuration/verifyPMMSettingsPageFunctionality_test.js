@@ -125,7 +125,7 @@ Scenario.skip(
 );
 
 Scenario.skip(
-  'PMM-T254 PMM-T253 Verify disable telemetry while Advisers enabled @settings @stt @grafana-pr',
+  'PMM-T254 PMM-T253 Verify disable telemetry while Advisors enabled @settings @stt @grafana-pr',
   async ({ I, pmmSettingsPage }) => {
     I.amOnPage(pmmSettingsPage.advancedSettingsUrl);
     await pmmSettingsPage.waitForPmmSettingsPageLoaded();
