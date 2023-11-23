@@ -204,15 +204,26 @@ test.describe('Percona Distribution for PostgreSQL CLI tests ', async () => {
     let hosts = (await cli.exec(`sudo pmm-admin list | grep "PostgreSQL" | awk -F" " '{print $3}'`))
         .stdout.trim().split('\n').filter((item) => item.trim().length > 0);
     let n = 1;
+    const serviceNames: string[] = [];
     for (const host of hosts) {
-      const output = await cli.exec(`sudo pmm-admin add postgresql --username=${PGSQL_USER} --password=${PGSQL_PASSWORD} --auto-discovery-limit=5 autodiscovery_${n} ${host}`);
+      const serviceName = `autodiscovery_${n}`;
+      serviceNames.push(serviceName);
+
+      const output = await cli.exec(`sudo pmm-admin add postgresql --username=${PGSQL_USER} --password=${PGSQL_PASSWORD} --auto-discovery-limit=5 ${serviceName} ${host}`);
       await output.assertSuccess();
       await output.outContains('PostgreSQL Service added.');
     }
 
-    const psAuxOutput = await cli.exec(`ps aux |grep postgres_expor`);
-    await psAuxOutput.assertSuccess();
-    await psAuxOutput.outNotContains('--auto-discover-databases ');
+    const jsonList = JSON.parse((await cli.exec('sudo pmm-admin list --json')).stdout);
+    const serviceIds = jsonList.service.filter((s) => serviceNames.includes(s.service_name)).map((s) => s.service_id);
+    const agentIds = jsonList.agent.filter((a) => a.agent_type === 'POSTGRES_EXPORTER' && serviceIds.includes(a.service_id)).map((a) => a.agent_id);
+
+    for (const agentId of agentIds) {
+      const agentUuid = agentId.split('/')[2]
+      const psAuxOutput = await cli.exec(`docker exec pgsql_pgsm_14 ps aux |awk '/postgres_expor/ && /${agentUuid}/'`);
+      await psAuxOutput.assertSuccess();
+      await psAuxOutput.outNotContains('--auto-discover-databases ');
+    }
   });
 
   test('PMM-T1828 Verify auto-discovery-database flag is enabled by default for postgres_exporter', async ({}) => {
