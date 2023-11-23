@@ -227,20 +227,18 @@ test.describe('Percona Distribution for PostgreSQL CLI tests ', async () => {
       timeout: 30_000,
     });
 
-    await cli.exec('sudo ps aux |awk \'/postgres_expor/\'');
-    await cli.exec('sudo ps aux |grep postgres_expor');
-
     for (const agentId of agentIds) {
       const agentUuid = agentId.split('/')[2];
-      const psAuxOutput = await cli.exec(`sudo ps aux |awk '/postgres_expor/ && /${agentUuid}/'`);
+      const psAuxOutput = await cli.exec(`sudo ps aux |awk '/postgres_exporter/ && /${agentUuid}/'`);
       await psAuxOutput.assertSuccess();
       await psAuxOutput.outNotContains('--auto-discover-databases ');
+      await psAuxOutput.outContains('postgres_exporter --collect');
     }
   });
 
   test('PMM-T1828 Verify auto-discovery-database flag is enabled by default for postgres_exporter', async ({}) => {
-    const output = await cli.exec('ps aux |grep postgres_expor');
+    const output = await cli.exec('ps aux |grep postgres_exporter');
     await output.assertSuccess();
-    await output.outContains('--auto-discover-databases ');
+    await output.outContains('postgres_exporter --auto-discover-databases ');
   });
 });
