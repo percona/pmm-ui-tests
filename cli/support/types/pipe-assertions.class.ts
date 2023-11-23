@@ -46,6 +46,10 @@ class PipeAssertions {
     }
     return errors.join('\n');
   }
+
+  async isEmpty() {
+    expect(this.text, 'Verify there is no errors').toBeFalsy();
+  }
 }
 
 export default PipeAssertions;

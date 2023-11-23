@@ -4,7 +4,6 @@ import { readZipFile } from '@helpers/zip-helper';
 
 test.describe('PMM Client "Generic" CLI tests', async () => {
   let PMM_VERSION: string;
-
   if (process.env.CLIENT_VERSION === 'dev-latest') {
     // TODO: refactor to use docker hub API to remove file-update dependency
     // See: https://github.com/Percona-QA/package-testing/blob/master/playbooks/pmm2-client_integration_upgrade_custom_path.yml#L41
@@ -209,11 +208,12 @@ test.describe('PMM Client "Generic" CLI tests', async () => {
   /**
    * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/generic-tests.bats#L162
    */
-  test('run pmm-admin summary --filename', async ({}) => {
+  test('PMM-T1832 run pmm-admin summary --filename', async ({}) => {
     const zipName = 'test.zip';
     const output = await cli.exec(`sudo pmm-admin summary --filename="${zipName}"`);
     await output.assertSuccess();
     await output.outContains('.zip created.');
+    await output.stderr.isEmpty();
   });
 
   /**
