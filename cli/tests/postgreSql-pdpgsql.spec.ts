@@ -218,6 +218,9 @@ test.describe('Percona Distribution for PostgreSQL CLI tests ', async () => {
     const serviceIds = jsonList.service.filter((s) => serviceNames.includes(s.service_name)).map((s) => s.service_id);
     const agentIds = jsonList.agent.filter((a) => a.agent_type === 'POSTGRES_EXPORTER' && serviceIds.includes(a.service_id)).map((a) => a.agent_id);
 
+    await cli.exec('ps aux |awk \'/postgres_expor/\'')
+    await cli.exec('ps aux |grep postgres_expor')
+
     for (const agentId of agentIds) {
       const agentUuid = agentId.split('/')[2]
       const psAuxOutput = await cli.exec(`ps aux |awk '/postgres_expor/ && /${agentUuid}/'`);
