@@ -220,7 +220,7 @@ test.describe('Percona Distribution for PostgreSQL CLI tests ', async () => {
 
     for (const agentId of agentIds) {
       const agentUuid = agentId.split('/')[2]
-      const psAuxOutput = await cli.exec(`docker exec pgsql_pgsm_14 ps aux |awk '/postgres_expor/ && /${agentUuid}/'`);
+      const psAuxOutput = await cli.exec(`ps aux |awk '/postgres_expor/ && /${agentUuid}/'`);
       await psAuxOutput.assertSuccess();
       await psAuxOutput.outNotContains('--auto-discover-databases ');
     }
