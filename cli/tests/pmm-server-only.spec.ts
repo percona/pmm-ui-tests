@@ -95,17 +95,23 @@ test.describe('PMM Server CLI tests for Docker Environment Variables', async () 
    * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/docker-env-variable-tests.bats#L53
    */
   test('PMM-T526 Use Invalid Prometheus Custom Config File to Check if Container is unhealthy', async ({}) => {
-    await cli.exec(`docker run -d -p 84:80 -p 449:443 --name PMM-T526 ${DOCKER_IMAGE}`);
-    stopList.push('PMM-T526');
-    removeList.push('PMM-T526');
-    await waitForApiReady('127.0.0.1', 84);
+    const containerName = 'PMM-T526';
+    const httpPort = 84;
+    await cli.exec(`docker run -d -p ${httpPort}:80 -p 449:443 --name ${containerName} ${DOCKER_IMAGE}`);
+    stopList.push(containerName);
+    removeList.push(containerName);
+    await waitForApiReady('127.0.0.1', httpPort);
     // TODO: implement file creation to remove repo dependency
     const curlCmd = 'curl -o /srv/prometheus/prometheus.base.yml https://raw.githubusercontent.com/percona/pmm-qa/main/pmm-tests/broken_prometheus.base.yml';
-    await (await cli.exec(`docker exec PMM-T526 ${curlCmd}`)).assertSuccess();
-    await cli.exec('docker restart PMM-T526');
-    await waitForApiReady('127.0.0.1', 84);
-    await (await cli.exec('docker ps --format \'{{.Names}}\t{{.Status}}\' | grep PMM-T526 | awk -F\' \' \'{print $5}\' | awk -F\'(\' \'{print $2}\' | awk -F\')\' \'{print $1}\''))
-      .outContains('unhealthy');
+    await (await cli.exec(`docker exec ${containerName} ${curlCmd}`)).assertSuccess();
+    await cli.exec(`docker restart ${containerName}`);
+
+    await test.step(`Waiting for ${containerName} to be unhealthy(30 sec)`, async () => {
+      await expect(async () => {
+        await (await cli.exec(`docker ps | grep ${containerName}`))
+          .outContains('unhealthy');
+      }).toPass({ intervals: [2_000, 2_000, 2_000], timeout: 30_000 });
+    });
   });
 
   /**
