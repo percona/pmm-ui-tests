@@ -1,5 +1,5 @@
 import { test } from '@playwright/test';
-import * as cli from '@helpers/cliHelper';
+import * as cli from '@helpers/cli-helper';
 
 test.describe('PMM Client Docker CLI tests', async () => {
   /**
