@@ -1,5 +1,5 @@
 import { test } from '@playwright/test';
-import * as cli from '@helpers/cliHelper';
+import * as cli from '@helpers/cli-helper';
 
 const PMM_SERVER_IMAGE = process.env.DOCKER_VERSION && process.env.DOCKER_VERSION.length > 0
   ? process.env.DOCKER_VERSION

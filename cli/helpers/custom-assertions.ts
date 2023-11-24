@@ -1,5 +1,5 @@
 import { APIRequestContext, expect, request } from '@playwright/test';
-import * as cli from '@helpers/cliHelper';
+import * as cli from '@helpers/cli-helper';
 
 export async function waitForPmmServerToBeReady(containerName: string, timeout = 60) {
   await expect(async () => {
