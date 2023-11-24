@@ -1,9 +1,9 @@
 import { test } from '@playwright/test';
-import * as cli from '@helpers/cliHelper';
-import Output from '@support/types/output';
+import * as cli from '@helpers/cli-helper';
+import ExecReturn from '@support/types/exec-return.class';
 
-let addMongoHelp: Output;
-let addPostgreSqlHelp: Output;
+let addMongoHelp: ExecReturn;
+let addPostgreSqlHelp: ExecReturn;
 
 test.describe('PMM Client "--help" validation', async () => {
   test.beforeAll(async ({}) => {
@@ -111,6 +111,42 @@ test.describe('PMM Client "--help" validation', async () => {
       'tls-cert-file=STRING       TLS certificate file',
       'tls-key-file=STRING        TLS certificate key file',
       'tls-ca-file=STRING         TLS CA certificate file',
+    ]);
+  });
+
+  /**
+   * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/generic-tests.bats#L312
+   */
+  test('run pmm-admin annotate --help', async ({}) => {
+    const output = await cli.execSilent('sudo pmm-admin annotate --help');
+    await output.assertSuccess();
+    await output.outContainsMany([
+      'Usage: pmm-admin annotate <text>',
+      '<text>    Text of annotation',
+      'Add an annotation to Grafana charts',
+    ]);
+  });
+
+  /**
+   * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/generic-tests.bats#L335
+   */
+  test('run pmm-admin --help to check if Annotation exist in help output', async ({}) => {
+    const output = await cli.execSilent('sudo pmm-admin --help');
+    await output.assertSuccess();
+    await output.outContains('annotate      Add an annotation to Grafana charts');
+  });
+
+  /**
+   * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/generic-tests.bats#L356
+   */
+  test('run pmm-admin config --help to check for Metrics Mode option', async ({}) => {
+    const output = await cli.execSilent('sudo pmm-admin config --help');
+    await output.assertSuccess();
+    await output.outContainsMany([
+      'Metrics flow mode for agents node-exporter,',
+      'can be push - agent will push metrics,',
+      'pull - server scrape metrics from agent or auto',
+      '- chosen by server',
     ]);
   });
 

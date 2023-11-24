@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import * as cli from '@helpers/cliHelper';
+import * as cli from '@helpers/cli-helper';
 
 const PGSQL_USER = 'postgres';
 const PGSQL_PASSWORD = 'oFukiBRg7GujAJXq3tmd';

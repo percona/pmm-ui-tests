@@ -1,5 +1,5 @@
 import { test } from '@playwright/test';
-import * as cli from '@helpers/cliHelper';
+import * as cli from '@helpers/cli-helper';
 
 test.describe('PMM Client Docker CLI tests', async () => {
   /**
@@ -85,20 +85,18 @@ test.describe('-promscrape.maxScapeSize tests', async () => {
     await (await cli.exec('docker-compose -f test-setup/docker-compose-scrape-intervals.yml down')).assertSuccess();
   });
 
-  test('@PMM-T1664 Verify default value for vm_agents -promscrape.maxScapeSize parameter pmm-client container', async ({ page }) => {
+  test('@PMM-T1664 Verify default value for vm_agents -promscrape.maxScapeSize parameter pmm-client container', async ({}) => {
     await test.step('verify client docker logs for default value', async () => {
-      await page.waitForTimeout(10_000);
-
+      await cli.exec('sleep 10');
       const scrapeSizeLog = await cli.exec('docker logs pmm-client-scrape-interval 2>&1 | grep \'promscrape.maxScrapeSize.*vm_agent\' | tail -1');
       await scrapeSizeLog.outContains(`promscrape.maxScrapeSize=\\\"${defaultScrapeSize}MiB\\\"`);
     });
   });
 
-  test('@PMM-T1664 Verify default value for vm_agents -promscrape.maxScapeSize parameter local pmm-client', async ({ page }) => {
+  test('@PMM-T1664 Verify default value for vm_agents -promscrape.maxScapeSize parameter local pmm-client', async ({}) => {
     await test.step('verify logs from binary for default value', async () => {
       await (await cli.exec('sudo pmm-admin config --force \'--server-url=https://admin:admin@0.0.0.0:1443\' --server-insecure-tls 127.0.0.1')).assertSuccess();
-
-      await page.waitForTimeout(10_000);
+      await cli.exec('sleep 10');
       const scrapeSizeLog = await cli.exec('ps aux | grep -v \'grep\' | grep \'vm_agent\' | tail -1');
       await scrapeSizeLog.outContains(`promscrape.maxScrapeSize=${defaultScrapeSize}MiB`);
     });
