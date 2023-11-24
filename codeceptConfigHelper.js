@@ -63,6 +63,7 @@ module.exports = {
     scheduledAPI: './tests/backup/pages/api/scheduledAPI.js',
     scheduledPage: './tests/backup/pages/scheduledPage.js',
     searchDashboardsModal: './tests/dashboards/pages/searchDashboardsModal.js',
+    serverApi: './tests/pages/api/serverApi.js',
     silencesPage: './tests/ia/pages/silencesPage.js',
     iaCommon: './tests/ia/pages/iaCommonPage.js',
     platformAPI: './tests/pages/api/platformAPI.js',
