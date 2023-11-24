@@ -144,9 +144,9 @@ test.describe('PMM Client "--help" validation', async () => {
     await output.assertSuccess();
     await output.outContainsMany([
       'Metrics flow mode for agents node-exporter,',
-      'can be push - agent will push metrics, pull -',
-      'server scrape metrics from agent or auto -',
-      'chosen by server.',
+      'can be push - agent will push metrics,',
+      'pull - server scrape metrics from agent or auto',
+      '- chosen by server',
     ]);
   });
 });
