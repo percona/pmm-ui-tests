@@ -22,6 +22,7 @@ test.describe('PMM Client "Generic" CLI tests', async () => {
    * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/generic-tests.bats#L18
    * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/generic-tests.bats#L28
    */
+  // eslint-disable-next-line playwright/expect-expect
   test('run pmm-admin without any arguments @client-generic', async ({}) => {
     const sudo = (parseInt((await cli.exec('id -u')).stdout, 10) === 0) ? '' : 'sudo ';
     const output = await cli.exec(`${sudo}pmm-admin`);

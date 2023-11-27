@@ -11,7 +11,7 @@ test.describe('Percona Distribution for PostgreSQL CLI tests ', async () => {
    */
   test('PMM-T442 run pmm-admin add postgreSQL with pgstatmonitor', async ({}) => {
     const hosts = (await cli.exec('sudo pmm-admin list | grep "PostgreSQL" | awk -F" " \'{print $3}\''))
-      .stdout.trim().split('\n').filter((item) => item.trim().length > 0);
+      .getStdOutLines();
     let n = 1;
     for (const host of hosts) {
       const output = await cli.exec(`sudo pmm-admin add postgresql --query-source=pgstatmonitor --username=${PGSQL_USER} --password=${PGSQL_PASSWORD} pgstatmonitor_${n} ${host}`);
@@ -38,7 +38,7 @@ test.describe('Percona Distribution for PostgreSQL CLI tests ', async () => {
    */
   test('PMM-T442 run pmm-admin add postgreSQL with default query source', async ({}) => {
     const hosts = (await cli.exec('sudo pmm-admin list | grep "PostgreSQL" | awk -F" " \'{print $3}\''))
-      .stdout.trim().split('\n').filter((item) => item.trim().length > 0);
+      .getStdOutLines();
     let n = 1;
     for (const host of hosts) {
       const output = await cli.exec(`sudo pmm-admin add postgresql --username=${PGSQL_USER} --password=${PGSQL_PASSWORD} pgdefault_${n} ${host}`);
@@ -53,7 +53,7 @@ test.describe('Percona Distribution for PostgreSQL CLI tests ', async () => {
    */
   test('run pmm-admin add postgreSQL with default query source and metrics mode push', async ({}) => {
     const hosts = (await cli.exec('sudo pmm-admin list | grep "PostgreSQL" | awk -F" " \'{print $3}\''))
-      .stdout.trim().split('\n').filter((item) => item.trim().length > 0);
+      .getStdOutLines();
     let n = 1;
     for (const host of hosts) {
       const output = await cli.exec(`sudo pmm-admin add postgresql --username=${PGSQL_USER} --password=${PGSQL_PASSWORD} --metrics-mode=push pgsqlpush_${n} ${host}`);
@@ -68,7 +68,7 @@ test.describe('Percona Distribution for PostgreSQL CLI tests ', async () => {
    */
   test('run pmm-admin add postgreSQL with default query source and metrics mode pull', async ({}) => {
     const hosts = (await cli.exec('sudo pmm-admin list | grep "PostgreSQL" | awk -F" " \'{print $3}\''))
-      .stdout.trim().split('\n').filter((item) => item.trim().length > 0);
+      .getStdOutLines();
     let n = 1;
     for (const host of hosts) {
       const output = await cli.exec(`sudo pmm-admin add postgresql --username=${PGSQL_USER} --password=${PGSQL_PASSWORD} --metrics-mode=pull pgsqlpull_${n} ${host}`);
@@ -83,7 +83,7 @@ test.describe('Percona Distribution for PostgreSQL CLI tests ', async () => {
    */
   test('run pmm-admin remove postgresql with metrics-mode push', async ({}) => {
     const services = (await cli.exec('sudo pmm-admin list | grep "PostgreSQL" | grep "pgsqlpush_" | awk -F" " \'{print $2}\''))
-      .stdout.trim().split('\n').filter((item) => item.trim().length > 0);
+      .getStdOutLines();
     for (const service of services) {
       const output = await cli.exec(`sudo pmm-admin remove postgresql ${service}`);
       await output.assertSuccess();
@@ -96,7 +96,7 @@ test.describe('Percona Distribution for PostgreSQL CLI tests ', async () => {
    */
   test('run pmm-admin remove postgresql with metrics-mode pull', async ({}) => {
     const services = (await cli.exec('sudo pmm-admin list | grep "PostgreSQL" | grep "pgsqlpull_" | awk -F" " \'{print $2}\''))
-      .stdout.trim().split('\n').filter((item) => item.trim().length > 0);
+      .getStdOutLines();
     for (const service of services) {
       const output = await cli.exec(`sudo pmm-admin remove postgresql ${service}`);
       await output.assertSuccess();
@@ -120,7 +120,7 @@ test.describe('Percona Distribution for PostgreSQL CLI tests ', async () => {
   test('run pmm-admin remove postgresql with pgstatmonitor', async ({}) => {
     const services = (
       await cli.exec('sudo pmm-admin list | grep "PostgreSQL" | grep "pgstatmonitor" | awk -F" " \'{print $2}\''))
-      .stdout.trim().split('\n').filter((item) => item.trim().length > 0);
+      .getStdOutLines();
     for (const service of services) {
       const output = await cli.exec(`sudo pmm-admin remove postgresql ${service}`);
       await output.assertSuccess();
@@ -133,7 +133,7 @@ test.describe('Percona Distribution for PostgreSQL CLI tests ', async () => {
    */
   test('run pmm-admin remove postgresql with default query source', async ({}) => {
     const services = (await cli.exec('sudo pmm-admin list | grep "PostgreSQL" | grep "pgdefault_" | awk -F" " \'{print $2}\''))
-      .stdout.trim().split('\n').filter((item) => item.trim().length > 0);
+      .getStdOutLines();
     for (const service of services) {
       const output = await cli.exec(`sudo pmm-admin remove postgresql ${service}`);
       await output.assertSuccess();
@@ -146,7 +146,7 @@ test.describe('Percona Distribution for PostgreSQL CLI tests ', async () => {
    */
   test('PMM-T963 run pmm-admin add postgresql with --agent-password flag', async ({}) => {
     const hosts = (await cli.exec('sudo pmm-admin list | grep "PostgreSQL" | awk -F" " \'{print $3}\''))
-      .stdout.trim().split('\n').filter((item) => item.trim().length > 0);
+      .getStdOutLines();
     let n = 1;
     for (const host of hosts) {
       const ip = host.split(':')[0];
@@ -163,7 +163,7 @@ test.describe('Percona Distribution for PostgreSQL CLI tests ', async () => {
   test('PMM-T963 check metrics from postgres service with custom agent password', async ({}) => {
     test.skip(true, 'Skipping this test, because of random failure and flaky behaviour');
     const hosts = (await cli.exec('sudo pmm-admin list | grep "PostgreSQL" | grep "pgsql_" | awk -F" " \'{print $3}\''))
-      .stdout.trim().split('\n').filter((item) => item.trim().length > 0);
+      .getStdOutLines();
     for (const host of hosts) {
       const ip = host.split(':')[0];
       // await (await cli.exec('sudo chmod +x /srv/pmm-qa/pmm-tests/pmm-2-0-bats-tests/check_metric.sh')).assertSuccess();
@@ -181,7 +181,7 @@ test.describe('Percona Distribution for PostgreSQL CLI tests ', async () => {
    */
   test('PMM-T963 run pmm-admin remove postgresql added with custom agent password', async ({}) => {
     const services = (await cli.exec('sudo pmm-admin list | grep "PostgreSQL" | grep "pgsql_" | awk -F" " \'{print $2}\''))
-      .stdout.trim().split('\n').filter((item) => item.trim().length > 0);
+      .getStdOutLines();
     for (const service of services) {
       const output = await cli.exec(`sudo pmm-admin remove postgresql ${service}`);
       await output.assertSuccess();

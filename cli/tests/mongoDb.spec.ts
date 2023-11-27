@@ -8,7 +8,7 @@ test.describe('MongoDB CLI tests ', async () => {
    * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/mongodb-tests.bats#L15
    */
   test('run pmm-admin @mongo', async ({}) => {
-    const sudo = (parseInt((await cli.exec('id -u')).stdout) === 0) ? '' : 'sudo ';
+    const sudo = (parseInt((await cli.exec('id -u')).stdout, 10) === 0) ? '' : 'sudo ';
     const output = await cli.exec(`${sudo}pmm-admin`);
     await output.exitCodeEquals(1);
     await output.outContains('Usage: pmm-admin <command>');
@@ -20,7 +20,7 @@ test.describe('MongoDB CLI tests ', async () => {
   test('run pmm-admin add mongodb based on running instances with metrics-mode push', async ({}) => {
     // let ports = (await cli.exec(`sudo pmm-admin list | grep "MongoDB" | awk -F" " '{print $3}'`)).stdout.split('\n');
     const hosts = (await cli.exec('sudo pmm-admin list | grep "MongoDB" | awk -F" " \'{print $3}\''))
-      .stdout.trim().split('\n').filter((item) => item.trim().length > 0);
+      .getStdOutLines();
     let n = 1;
     for (const host of hosts) {
       const output = await cli.exec(`sudo pmm-admin add mongodb --metrics-mode=push mongo_inst_${n++} ${host}`);
@@ -34,7 +34,7 @@ test.describe('MongoDB CLI tests ', async () => {
    */
   test('run pmm-admin remove mongodb push', async ({}) => {
     const services = (await cli.exec('sudo pmm-admin list | grep "MongoDB" | grep "mongo_inst_" | awk -F" " \'{print $2}\''))
-      .stdout.trim().split('\n').filter((item) => item.trim().length > 0);
+      .getStdOutLines();
     for (const service of services) {
       const output = await cli.exec(`sudo pmm-admin remove mongodb ${service}`);
       await output.assertSuccess();
@@ -47,7 +47,7 @@ test.describe('MongoDB CLI tests ', async () => {
    */
   test('run pmm-admin add mongodb based on running instances with metrics-mode pull', async ({}) => {
     const hosts = (await cli.exec('sudo pmm-admin list | grep "MongoDB" | awk -F" " \'{print $3}\''))
-      .stdout.trim().split('\n').filter((item) => item.trim().length > 0);
+      .getStdOutLines();
     let n = 1;
     for (const host of hosts) {
       const output = await cli.exec(`sudo pmm-admin add mongodb --metrics-mode=pull mongo_inst_${n++} ${host}`);
@@ -61,7 +61,7 @@ test.describe('MongoDB CLI tests ', async () => {
    */
   test('run pmm-admin remove mongodb pull', async ({}) => {
     const services = (await cli.exec('sudo pmm-admin list | grep "MongoDB" | grep "mongo_inst_" | awk -F" " \'{print $2}\''))
-      .stdout.trim().split('\n').filter((item) => item.trim().length > 0);
+      .getStdOutLines();
     for (const service of services) {
       const output = await cli.exec(`sudo pmm-admin remove mongodb ${service}`);
       await output.assertSuccess();
@@ -74,7 +74,7 @@ test.describe('MongoDB CLI tests ', async () => {
    */
   test('run pmm-admin add mongodb based on running instances', async ({}) => {
     const hosts = (await cli.exec('sudo pmm-admin list | grep "MongoDB" | awk -F" " \'{print $3}\''))
-      .stdout.trim().split('\n').filter((item) => item.trim().length > 0);
+      .getStdOutLines();
     let n = 1;
     for (const host of hosts) {
       const output = await cli.exec(`sudo pmm-admin add mongodb mongo_inst_${n++} ${host}`);
@@ -88,7 +88,7 @@ test.describe('MongoDB CLI tests ', async () => {
    */
   test('run pmm-admin add mongodb again based on running instances', async ({}) => {
     const hosts = (await cli.exec('sudo pmm-admin list | grep "MongoDB" | awk -F" " \'{print $3}\''))
-      .stdout.trim().split('\n').filter((item) => item.trim().length > 0);
+      .getStdOutLines();
     let n = 1;
     for (const host of hosts) {
       const output = await cli.exec(`sudo pmm-admin add mongodb mongo_inst_${n++} ${host}`);
@@ -102,7 +102,7 @@ test.describe('MongoDB CLI tests ', async () => {
    */
   test('PMM-T160 User can\'t use both socket and address while using pmm-admin add mongodb', async ({}) => {
     const hosts = (await cli.exec('sudo pmm-admin list | grep "MongoDB" | awk -F" " \'{print $3}\''))
-      .stdout.trim().split('\n').filter((item) => item.trim().length > 0);
+      .getStdOutLines();
     let n = 1;
     for (const host of hosts) {
       console.log(host);
@@ -118,7 +118,7 @@ test.describe('MongoDB CLI tests ', async () => {
    */
   test('run pmm-admin remove mongodb instance added based on running instances', async ({}) => {
     const services = (await cli.exec('sudo pmm-admin list | grep "MongoDB" | grep "mongo_inst_" | awk -F" " \'{print $2}\''))
-      .stdout.trim().split('\n').filter((item) => item.trim().length > 0);
+      .getStdOutLines();
     for (const service of services) {
       const output = await cli.exec(`sudo pmm-admin remove mongodb ${service}`);
       await output.assertSuccess();
@@ -131,7 +131,7 @@ test.describe('MongoDB CLI tests ', async () => {
    */
   test('run pmm-admin remove mongodb again', async ({}) => {
     const hosts = (await cli.exec('sudo pmm-admin list | grep "MongoDB" | awk -F" " \'{print $3}\''))
-      .stdout.trim().split('\n').filter((item) => item.trim().length > 0);
+      .getStdOutLines();
     let n = 1;
     for (const host of hosts) {
       const output = await cli.exec(`sudo pmm-admin remove mongodb mongo_inst_${n++}`);
@@ -147,7 +147,7 @@ test.describe('MongoDB CLI tests ', async () => {
     // skip "Skipping this test, because of setup issue on Framework, https://jira.percona.com/browse/PMM-8708"
     test.skip(process.env.instance_t === 'modb', 'Skipping this test, because you are running for official Mongodb');
     const hosts = (await cli.exec('sudo pmm-admin list | grep "MongoDB" | awk -F" " \'{print $3}\''))
-      .stdout.trim().split('\n').filter((item) => item.trim().length > 0);
+      .getStdOutLines();
     let n = 1;
     for (const host of hosts) {
       console.log(host);
@@ -168,7 +168,7 @@ test.describe('MongoDB CLI tests ', async () => {
       'Skipping this test, because you are running for Percona Distribution Mongodb',
     );
     const hosts = (await cli.exec('sudo pmm-admin list | grep "MongoDB" | awk -F" " \'{print $3}\''))
-      .stdout.trim().split('\n').filter((item) => item.trim().length > 0);
+      .getStdOutLines();
     let n = 1;
     for (const host of hosts) {
       console.log(host);
@@ -184,7 +184,7 @@ test.describe('MongoDB CLI tests ', async () => {
    */
   test('run pmm-admin remove mongodb Instance added with Socket Specified', async ({}) => {
     const services = (await cli.exec('sudo pmm-admin list | grep "MongoDB" | grep "mongo_inst_" | awk -F" " \'{print $2}\''))
-      .stdout.trim().split('\n').filter((item) => item.trim().length > 0);
+      .getStdOutLines();
     for (const service of services) {
       const output = await cli.exec(`sudo pmm-admin remove mongodb ${service}`);
       await output.assertSuccess();
@@ -199,7 +199,7 @@ test.describe('MongoDB CLI tests ', async () => {
     'run pmm-admin add mongodb based on running instances using service-name, port',
     async ({}) => {
       const hosts = (await cli.exec('sudo pmm-admin list | grep "MongoDB" | awk -F" " \'{print $3}\''))
-        .stdout.trim().split('\n').filter((item) => item.trim().length > 0);
+        .getStdOutLines();
       let n = 1;
       for (const host of hosts) {
         const ip = host.split(':')[0];
@@ -216,7 +216,7 @@ test.describe('MongoDB CLI tests ', async () => {
    */
   test('run pmm-admin remove mongodb for instances added with service-name and username password labels', async ({}) => {
     const services = (await cli.exec('sudo pmm-admin list | grep "MongoDB" | grep "mongo_inst_" | awk -F" " \'{print $2}\''))
-      .stdout.trim().split('\n').filter((item) => item.trim().length > 0);
+      .getStdOutLines();
     for (const service of services) {
       const output = await cli.exec(`sudo pmm-admin remove mongodb ${service}`);
       await output.assertSuccess();
@@ -229,7 +229,7 @@ test.describe('MongoDB CLI tests ', async () => {
    */
   test('PMM-T964 run pmm-admin add mongodb with --agent-password flag', async ({}) => {
     const hosts = (await cli.exec('sudo pmm-admin list | grep "MongoDB" | awk -F" " \'{print $3}\''))
-      .stdout.trim().split('\n').filter((item) => item.trim().length > 0);
+      .getStdOutLines();
     let n = 1;
     for (const host of hosts) {
       const ip = host.split(':')[0];
@@ -246,7 +246,7 @@ test.describe('MongoDB CLI tests ', async () => {
   test('PMM-T964 check metrics from mongodb service with custom agent password', async ({}) => {
     test.skip(true, 'Skipping this test, because of random failure and flaky behaviour');
     const hosts = (await cli.exec('sudo pmm-admin list | grep "MongoDB" | grep "mongo_inst_" | awk -F" " \'{print $3}\''))
-      .stdout.trim().split('\n').filter((item) => item.trim().length > 0);
+      .getStdOutLines();
     for (const host of hosts) {
       //         run sleep 20
       const ip = host.split(':')[0];
@@ -265,7 +265,7 @@ test.describe('MongoDB CLI tests ', async () => {
    */
   test('run pmm-admin remove mongodb added with custom agent password', async ({}) => {
     const services = (await cli.exec('sudo pmm-admin list | grep "MongoDB" | grep "mongo_inst_" | awk -F" " \'{print $2}\''))
-      .stdout.trim().split('\n').filter((item) => item.trim().length > 0);
+      .getStdOutLines();
     for (const service of services) {
       const output = await cli.exec(`sudo pmm-admin remove mongodb ${service}`);
       await output.assertSuccess();
