@@ -192,9 +192,7 @@ test.describe('Percona Distribution for PostgreSQL CLI tests ', async () => {
     const inputs = ['wer', '-34535353465757', ''];
     for (const input of inputs) {
       const output = await cli.exec(`sudo pmm-admin add postgresql --username=${PGSQL_USER} --password=${PGSQL_PASSWORD} --auto-discovery-limit=${input}`);
-      await output.errContainsNormalizedMany([
-        `pmm-admin: error: --auto-discovery-limit: expected a valid 32 bit int but got "${input}}"`,
-      ]);
+      await output.stderr.contains(`pmm-admin: error: --auto-discovery-limit: expected a valid 32 bit int but got "${input}}"`);
     }
   });
 
