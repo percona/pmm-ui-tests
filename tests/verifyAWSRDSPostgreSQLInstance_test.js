@@ -66,7 +66,7 @@ Scenario(
   }) => {
     const serviceName = 'pmm-qa-pgsql-12';
 
-    await inventoryAPI.deleteNodeByServiceName(serviceName);
+    await inventoryAPI.deleteNodeByServiceName('POSTGRESQL_SERVICE', serviceName);
 
     I.amOnPage(remoteInstancesPage.url);
     remoteInstancesPage.waitUntilRemoteInstancesPageLoaded().openAddAWSRDSMySQLPage();
