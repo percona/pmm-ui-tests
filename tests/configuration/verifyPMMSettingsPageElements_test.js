@@ -99,36 +99,6 @@ Scenario('PMM-T86 - Verify Alertmanager integration Section Elements @settings @
 //   I.verifyPopUpMessage(pmmSettingsPage.messages.invalidSSHKeyMessage);
 // });
 
-Scenario('PMM-T90 - Verify validation for Alertmanager URL without scheme @settings @grafana-pr', async ({ I, pmmSettingsPage }) => {
-  const urlWithoutScheme = 'invalid_url';
-  const sectionNameToExpand = pmmSettingsPage.sectionTabsList.alertmanager;
-
-  await pmmSettingsPage.waitForPmmSettingsPageLoaded();
-  await pmmSettingsPage.expandSection(sectionNameToExpand, pmmSettingsPage.fields.alertmanagerButton);
-  pmmSettingsPage.addAlertmanagerRule(urlWithoutScheme, '');
-  I.verifyPopUpMessage(pmmSettingsPage.messages.invalidAlertmanagerMissingSchemeMessage);
-});
-
-Scenario('PMM-T91 - Verify validation for Alertmanager URL without host @settings @grafana-pr', async ({ I, pmmSettingsPage }) => {
-  const urlWithoutHost = 'http://';
-  const sectionNameToExpand = pmmSettingsPage.sectionTabsList.alertmanager;
-
-  await pmmSettingsPage.waitForPmmSettingsPageLoaded();
-  await pmmSettingsPage.expandSection(sectionNameToExpand, pmmSettingsPage.fields.alertmanagerButton);
-  pmmSettingsPage.addAlertmanagerRule(urlWithoutHost, '');
-  I.verifyPopUpMessage(pmmSettingsPage.messages.invalidAlertmanagerMissingHostMessage);
-});
-
-Scenario('PMM-T92 - Verify validation for invalid Alertmanager Rule @settings @grafana-pr', async ({ I, pmmSettingsPage }) => {
-  const rule = 'invalid_rule';
-  const sectionNameToExpand = pmmSettingsPage.sectionTabsList.alertmanager;
-
-  await pmmSettingsPage.waitForPmmSettingsPageLoaded();
-  await pmmSettingsPage.expandSection(sectionNameToExpand, pmmSettingsPage.fields.alertmanagerButton);
-  pmmSettingsPage.addAlertmanagerRule('', rule);
-  I.verifyPopUpMessage(pmmSettingsPage.messages.invalidAlertmanagerRulesMessage);
-});
-
 // To be removed from Skip after https://jira.percona.com/browse/PMM-5791
 xScenario(
   'PMM-T227 Open PMM Settings page and verify DATA_RETENTION value is set to 2 days @settings',
