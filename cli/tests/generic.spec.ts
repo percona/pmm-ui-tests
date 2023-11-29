@@ -461,7 +461,7 @@ test.describe('PMM Client "Generic" CLI tests', async () => {
    * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/generic-tests.bats#L383
    */
   test('run pmm-admin config without parameters package installation', async ({}) => {
-    const isTarball: boolean = (await cli.exec('which pmm-admin | grep -q \'pmm2-client\'')).code === 0;
+    const isTarball: boolean = (await cli.exec('systemctl list-units --state running | grep -q "pmm-agent"')).code === 1;
     test.skip(isTarball, 'Skipping this test, because pmm2-client is a tarball setup');
     const output = await cli.exec('sudo pmm-admin config');
     await output.assertSuccess();
@@ -472,7 +472,8 @@ test.describe('PMM Client "Generic" CLI tests', async () => {
    * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/generic-tests.bats#L393
    */
   test('run pmm-admin config without parameters tarball installation', async ({}) => {
-    const isPackage: boolean = (await cli.exec('which pmm-admin | grep -qv \'pmm2-client\'')).code === 0;
+    // TODO: move out to function which will handle all linus types
+    const isPackage: boolean = (await cli.exec('systemctl list-units --state running | grep -q "pmm-agent"')).code === 0;
     test.skip(isPackage, 'Skipping this test, because pmm2-client is a package installation');
     const output = await cli.exec('sudo pmm-admin config');
     await output.exitCodeEquals(1);

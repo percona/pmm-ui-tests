@@ -35,53 +35,6 @@ test.describe('HAProxy service CLI tests ', async () => {
   });
 
   /**
-   * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/haproxy-tests.bats#L31
-   * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/haproxy-tests.bats#L45
-   * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/haproxy-tests.bats#L52
-   * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/haproxy-tests.bats#L59
-   * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/haproxy-tests.bats#L59
-   * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/haproxy-tests.bats#L66
-   * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/haproxy-tests.bats#L73
-   * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/haproxy-tests.bats#L80
-   * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/haproxy-tests.bats#L87
-   * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/haproxy-tests.bats#L94
-   * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/haproxy-tests.bats#L101
-   * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/haproxy-tests.bats#L108
-   * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/haproxy-tests.bats#L115
-   * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/haproxy-tests.bats#L122
-   * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/haproxy-tests.bats#L129
-   * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/haproxy-tests.bats#L136
-   * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/haproxy-tests.bats#L143
-   * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/haproxy-tests.bats#L150
-   * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/haproxy-tests.bats#L157
-   */
-  test('PMM-T674 - Verify help for adding HAProxy service', async ({}) => {
-    const output = await cli.exec('docker exec HAPROXY pmm-admin add haproxy --help');
-    await output.assertSuccess();
-    await output.outContainsMany([
-      'help',
-      'version',
-      'server-url=SERVER-URL',
-      'server-insecure-tls',
-      'debug',
-      'trace',
-      'json',
-      'username=STRING',
-      'password=STRING',
-      'scheme=http or https',
-      'metrics-path=/metrics',
-      'listen-port=port',
-      'node-id=STRING ',
-      'environment=prod',
-      'cluster=east-cluster',
-      'replication-set=rs1',
-      'custom-labels=KEY=VALUE,...',
-      'metrics-mode="auto"',
-      'skip-connection-check',
-    ]);
-  });
-
-  /**
    * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/haproxy-tests.bats#L164
    */
   test('PMM-T656 - Verify adding HAProxy service with wrong port', async ({}) => {

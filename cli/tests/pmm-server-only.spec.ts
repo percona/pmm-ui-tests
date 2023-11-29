@@ -110,7 +110,7 @@ test.describe('PMM Server CLI tests for Docker Environment Variables', async () 
       await expect(async () => {
         await (await cli.exec(`docker ps | grep ${containerName}`))
           .outContains('unhealthy');
-      }).toPass({ intervals: [2_000, 2_000, 2_000], timeout: 30_000 });
+      }).toPass({ intervals: [2_000], timeout: 30_000 });
     });
   });
 

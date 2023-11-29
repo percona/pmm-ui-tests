@@ -31,7 +31,7 @@ test.describe('Percona Server MySql (PS) Configuration file test ', async () => 
       await expect(async () => {
         output = await cli.exec(`sudo pmm-admin list | grep _exporter | grep ${serviceId}`);
         await output.outContains('Running');
-      }).toPass({ intervals: [1_000, 2_000, 2_000], timeout: 10_000 });
+      }).toPass({ intervals: [2_000], timeout: 10_000 });
     }
   });
 });
