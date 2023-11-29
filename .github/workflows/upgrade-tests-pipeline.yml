@@ -144,7 +144,7 @@ jobs:
 
       - name: 'PMM Server(${{ inputs.pmm_server_start_version }}) and UI tests with tags "${{ inputs.pre_upgrade_tests }}, ${{ inputs.post_upgrade_tests }}" from pmm-ui-tests branch: ${{ inputs.pmm_ui_tests_branch }}'
         if: ${{ env.SHA != 'null' }}
-        uses: percona/gh-action-Sibz-github-status-action@v1
+        uses: percona/gh-action-github-status-action@v1
         with:
           context: 'PMM Upgrade Tests ${{ env.REPORT_NAME }}'
           description: "Test execution ${{ job.status }}"

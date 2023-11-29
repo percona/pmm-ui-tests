@@ -1,5 +1,6 @@
 const { I, adminPage } = inject();
 const assert = require('assert');
+const { DashboardPanelMenu } = require('../dashboards/pages/DashboardPanelMenu');
 
 const formatElementId = (text) => text.toLowerCase().replace(/ /g, '_');
 
@@ -1475,5 +1476,15 @@ module.exports = {
     if (numberOfElements >= 1) {
       I.click(this.fields.skipTourButton);
     }
+  },
+
+  /**
+   * Creates and returns a panel menu(displayed on dasboard) object to interact in test in a piped style
+   *
+   * @param   panelTitle    title of a panel tointeract with
+   * @return  {DashboardPanelMenu} instance
+   */
+  panelMenu(panelTitle) {
+    return new DashboardPanelMenu(panelTitle);
   },
 };

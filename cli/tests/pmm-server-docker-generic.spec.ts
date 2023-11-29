@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import * as cli from '@helpers/cliHelper';
+import * as cli from '@helpers/cli-helper';
 import { waitForApiReady } from '@helpers/custom-assertions';
 
 const DOCKER_IMAGE = process.env.DOCKER_VERSION && process.env.DOCKER_VERSION.length > 0
@@ -11,6 +11,9 @@ const CLIENT_IMAGE = process.env.CLIENT_IMAGE && process.env.CLIENT_IMAGE.length
 const stopList: string[] = [];
 const removeList: string[] = [];
 
+/**
+ * TODO: investigate computability mode(the latest server with old client) and exclude tests if they do not work.
+ */
 test.describe('PMM Server Configuration impacts on client tests', async () => {
   test.afterEach(async () => {
     while (stopList.length > 0) {
