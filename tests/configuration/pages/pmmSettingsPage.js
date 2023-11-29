@@ -86,7 +86,6 @@ module.exports = {
     metrics: 'Metrics Resolution',
     advanced: 'Advanced Settings',
     ssh: 'SSH Key',
-    alertmanager: 'Alertmanager Integration',
     perconaPlatform: 'Percona Platform',
   },
   sectionButtonText: {
