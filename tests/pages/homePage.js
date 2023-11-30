@@ -76,7 +76,7 @@ module.exports = {
   },
   upgradeMilestones: [
     'TASK [Gathering Facts]',
-    'TASK [dashboards_upgrade : Copy file with image version]',
+    // 'TASK [dashboards_upgrade : Copy file with image version]',
     'TASK [Cleanup yum cache]',
     'failed=0',
   ],
