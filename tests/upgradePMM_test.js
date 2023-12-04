@@ -165,6 +165,7 @@ Scenario(
     I, grafanaAPI, dashboardPage, searchDashboardsModal,
   }) => {
     const insightFolder = await grafanaAPI.lookupFolderByName(searchDashboardsModal.folders.insight.name);
+
     await grafanaAPI.createCustomDashboard(grafanaAPI.randomDashboardName, insightFolder.id, null, ['pmm-qa', grafanaAPI.randomTag]);
     const folder = await grafanaAPI.createFolder(grafanaAPI.customFolderName);
     let additionalPanel = null;
@@ -596,7 +597,14 @@ Scenario(
     if (versionMinor > 26) {
       await I.say('Verify there is no "Error while loading library panels" errors on dashboard and no errors in grafana.log');
       I.wait(1);
-      const errorLogs = await I.verifyCommand('docker exec pmm-server cat /srv/logs/grafana.log | grep level=error');
+      let errorLogs;
+
+      if (process.env.AMI_UPGRADE_TESTING_INSTANCE !== 'true' && process.env.OVF_UPGRADE_TESTING_INSTANCE !== 'true') {
+        errorLogs = await I.verifyCommand('cat /srv/logs/grafana.log | grep level=error');
+      } else {
+        errorLogs = await I.verifyCommand('docker exec pmm-server cat /srv/logs/grafana.log | grep level=error');
+      }
+
       const loadingLibraryErrorLine = errorLogs.split('\n')
         .filter((line) => line.includes('Error while loading library panels'));
 
