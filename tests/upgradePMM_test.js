@@ -600,9 +600,9 @@ Scenario(
       let errorLogs;
 
       if (process.env.AMI_UPGRADE_TESTING_INSTANCE !== 'true' && process.env.OVF_UPGRADE_TESTING_INSTANCE !== 'true') {
-        errorLogs = await I.verifyCommand('cat /srv/logs/grafana.log | grep level=error');
-      } else {
         errorLogs = await I.verifyCommand('docker exec pmm-server cat /srv/logs/grafana.log | grep level=error');
+      } else {
+        errorLogs = await I.verifyCommand('cat /srv/logs/grafana.log | grep level=error');
       }
 
       const loadingLibraryErrorLine = errorLogs.split('\n')
