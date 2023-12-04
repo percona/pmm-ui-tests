@@ -78,17 +78,6 @@ Scenario('Verify Advanced Section Elements @settings @grafana-pr', async ({ I, p
   I.seeElement(pmmSettingsPage.fields.sttLabel);
 });
 
-Scenario('PMM-T86 - Verify Alertmanager integration Section Elements @settings @grafana-pr', async ({ I, pmmSettingsPage }) => {
-  const sectionNameToExpand = pmmSettingsPage.sectionTabsList.alertmanager;
-
-  await pmmSettingsPage.waitForPmmSettingsPageLoaded();
-  await pmmSettingsPage.expandSection(sectionNameToExpand, pmmSettingsPage.fields.alertmanagerButton);
-  I.see('Alertmanager URL', pmmSettingsPage.fields.alertmanagerUrlLabel);
-  I.see('Prometheus Alerting rules', pmmSettingsPage.fields.alertmanagerRuleslabel);
-  I.seeElement(pmmSettingsPage.fields.alertURLInput);
-  I.seeElement(pmmSettingsPage.fields.alertRulesInput);
-});
-
 // Scenario('PMM-T89 - Verify validation for invalid SSH Key @settings @grafana-pr', async ({ I, pmmSettingsPage }) => {
 //   const sshKeyForTest = 'ssh-rsa testKey test@key.local';
 //   const sectionNameToExpand = pmmSettingsPage.sectionTabsList.ssh;
