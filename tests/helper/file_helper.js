@@ -30,8 +30,8 @@ class FileHelper extends Helper {
     } catch (e) {
       if (!failOnError) assert.ok(false, `Could not get file size: ${path}, because of error: ${e}`);
     }
+    return -1;
   }
-
 }
 
 module.exports = FileHelper;
