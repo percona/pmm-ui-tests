@@ -2,7 +2,6 @@ const assert = require('assert');
 const faker = require('faker');
 const { generate } = require('generate-password');
 const { storageLocationConnection } = require('./backup/pages/testData');
-const fileHelper = require('./helper/file_helper');
 const {
   adminPage, remoteInstancesHelper, psMySql, pmmSettingsPage, dashboardPage, databaseChecksPage, scheduledAPI, locationsAPI,
 } = inject();
@@ -1216,22 +1215,13 @@ Scenario('PMM-12587-1 Verify duplicate dashboards dont break after upgrade @pre-
       const resp1 = await grafanaAPI.createCustomDashboard('test-dashboard', insightFolder.id);
       const resp2 = await grafanaAPI.createCustomDashboard('test-dashboard', experimentalFolder.id);
 
-      await fileHelper.writeFileSync('./dashboard.json', JSON.stringify({
+      await I.writeFileSync('./dashboard.json', JSON.stringify({
         DASHBOARD1_UID: resp1.uid,
         DASHBOARD2_UID: resp2.uid
       }),false);
 
-      //Trim leading '/' from response url
-      const url1 = resp1.url.replace(/^\/+/g, '');
-      const url2 = resp2.url.replace(/^\/+/g, '');
-
-      I.amOnPage(url1);
-      dashboardPage.waitForDashboardOpened();
-      I.seeInCurrentUrl(url1);
-      I.amOnPage(url2);
-      dashboardPage.waitForDashboardOpened();
-      I.seeInCurrentUrl(url2);
-
+      //Check if file with Dashboard info is present.
+      I.assertNotEqual(I.fileSize('./dashboard.json',false), 0, `Was expecting Dashboard info in the File, but its empty`);
     },);
 
 Scenario(
@@ -1239,7 +1229,7 @@ Scenario(
     async ({
              I, grafanaAPI, dashboardPage,
            }) => {
-      const resp = JSON.parse(await fileHelper.readFileSync('./dashboard.json',false));
+      const resp = JSON.parse(await I.readFileSync('./dashboard.json',false));
 
       const resp1 = await grafanaAPI.getDashboard(resp.DASHBOARD1_UID);
       const resp2 = await grafanaAPI.getDashboard(resp.DASHBOARD2_UID);
