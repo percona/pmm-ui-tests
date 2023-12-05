@@ -2,7 +2,6 @@ import { test, expect } from '@playwright/test';
 import * as cli from '@helpers/cli-helper';
 
 const PGSQL_USER = 'postgres';
-const PGSQL_HOST = 'localhost';
 const PGSQL_PASSWORD = 'oFukiBRg7GujAJXq3tmd';
 
 test.describe('Percona Distribution for PostgreSQL CLI tests ', async () => {
@@ -187,5 +186,57 @@ test.describe('Percona Distribution for PostgreSQL CLI tests ', async () => {
       await output.assertSuccess();
       await output.outContains('Service removed.');
     }
+  });
+
+  test('PMM-T1833 Verify validation for auto-discovery-limit option for adding Postgres', async ({}) => {
+    const inputs = ['wer', '-34535353465757', ''];
+    for (const input of inputs) {
+      const output = await cli.exec(`sudo pmm-admin add postgresql --username=${PGSQL_USER} --password=${PGSQL_PASSWORD} --auto-discovery-limit=${input}`);
+      await output.stderr.contains(`pmm-admin: error: --auto-discovery-limit: expected a valid 32 bit int but got "${input}"`);
+    }
+  });
+
+  test('PMM-T1829 Verify turning off autodiscovery database for PostgreSQL', async ({}) => {
+    const hosts = (await cli.exec('sudo pmm-admin list | grep "PostgreSQL" | awk -F" " \'{print $3}\''))
+      .stdout.trim().split('\n').filter((item) => item.trim().length > 0);
+    const n = 1;
+    const serviceNames: string[] = [];
+    for (const host of hosts) {
+      const serviceName = `autodiscovery_${n}`;
+      serviceNames.push(serviceName);
+
+      const output = await cli.exec(`sudo pmm-admin add postgresql --username=${PGSQL_USER} --password=${PGSQL_PASSWORD} --auto-discovery-limit=5 ${serviceName} ${host}`);
+      await output.assertSuccess();
+      await output.outContains('PostgreSQL Service added.');
+    }
+
+    let agentIds: string[] = [];
+
+    await expect(async () => {
+      const jsonList = JSON.parse((await cli.exec('sudo pmm-admin list --json')).stdout);
+      const serviceIds = jsonList.service.filter((s) => serviceNames.includes(s.service_name)).map((s) => s.service_id);
+      agentIds = jsonList.agent.filter((a) => a.agent_type === 'POSTGRES_EXPORTER'
+          && a.status === 'RUNNING'
+          && serviceIds.includes(a.service_id)).map((a) => a.agent_id);
+
+      expect(agentIds.length).toBeTruthy();
+    }).toPass({
+      intervals: [1_000],
+      timeout: 30_000,
+    });
+
+    for (const agentId of agentIds) {
+      const agentUuid = agentId.split('/')[2];
+      const psAuxOutput = await cli.exec(`sudo ps aux |awk '/postgres_exporter/ && /${agentUuid}/'`);
+      await psAuxOutput.assertSuccess();
+      await psAuxOutput.outNotContains('--auto-discover-databases ');
+      await psAuxOutput.outContains('postgres_exporter --collect');
+    }
+  });
+
+  test('PMM-T1828 Verify auto-discovery-database flag is enabled by default for postgres_exporter', async ({}) => {
+    const output = await cli.exec('ps aux |grep postgres_exporter');
+    await output.assertSuccess();
+    await output.outContains('postgres_exporter --auto-discover-databases ');
   });
 });
