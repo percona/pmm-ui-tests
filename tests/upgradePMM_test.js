@@ -1206,7 +1206,7 @@ if (versionMinor >= 32) {
 
 Scenario('PMM-12587-1 Verify duplicate dashboards dont break after upgrade @pre-upgrade @ovf-upgrade @ami-upgrade @pmm-upgrade',
     async ({
-             I, grafanaAPI, dashboardPage, searchDashboardsModal
+             I, grafanaAPI, searchDashboardsModal
            }) => {
 
       const insightFolder = await grafanaAPI.lookupFolderByName(searchDashboardsModal.folders.insight.name);
