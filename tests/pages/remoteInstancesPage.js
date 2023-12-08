@@ -160,6 +160,8 @@ module.exports = {
     dontTrackingRadio: locate('label').withAttr({ for: 'radio-btn-1' }).withText('Don\'t track'),
     pgStatStatementsRadio: locate('label').withAttr({ for: 'radio-btn-2' }).withText('PG Stat Statements'),
     pgStatMonitorRadio: locate('label').withAttr({ for: 'radio-btn-3' }).withText('PG Stat Monitor'),
+    customAutoDiscoveryButton: locate('//div[input[@data-testid="autoDiscoveryOptions-radio-button"]]').find('label').withText('Custom'),
+    customAutoDiscoveryfield: '$autoDiscoveryLimit-number-input',
   },
 
   async getFileContent(filePath) {
@@ -312,11 +314,11 @@ module.exports = {
         I.fillField(this.fields.serviceName, serviceName);
         I.fillField(
           this.fields.environment,
-            inputs.environment,
+          inputs.environment,
         );
         I.fillField(
           this.fields.cluster,
-            inputs.clusterName,
+          inputs.clusterName,
         );
         I.dontSeeElement(this.fields.tlscaInput);
         I.dontSeeElement(this.fields.tlsCertificateInput);
@@ -325,15 +327,15 @@ module.exports = {
         I.waitForElement(this.fields.tlscaInput, 30);
         await this.fillFileContent(
           this.fields.tlscaInput,
-            inputs.tlsCAFile,
+          inputs.tlsCAFile,
         );
         await this.fillFileContent(
           this.fields.tlsCertificateInput,
-            inputs.tlsCertificateFile,
+          inputs.tlsCertificateFile,
         );
         await this.fillFileContent(
           this.fields.tlsCertificateKeyInput,
-            inputs.tlsCertificateKeyFile,
+          inputs.tlsCertificateKeyFile,
         );
         break;
       case remoteInstancesHelper.services.mongodb:
@@ -354,16 +356,16 @@ module.exports = {
         adminPage.customClearField(this.fields.portNumber);
         I.fillField(
           this.fields.portNumber,
-            inputs.port,
+          inputs.port,
         );
         I.fillField(this.fields.serviceName, serviceName);
         I.fillField(
           this.fields.environment,
-            inputs.environment,
+          inputs.environment,
         );
         I.fillField(
           this.fields.cluster,
-            inputs.clusterName,
+          inputs.clusterName,
         );
         I.dontSeeElement(this.fields.tlscaInput);
         I.dontSeeElement(this.fields.tlsCertificateFilePasswordInput);
@@ -372,15 +374,15 @@ module.exports = {
         I.waitForElement(this.fields.tlscaInput, 30);
         await this.fillFileContent(
           this.fields.tlscaInput,
-            inputs.tlsCAFile,
+          inputs.tlsCAFile,
         );
         await this.fillFileContent(
           this.fields.tlsCertificateFilePasswordInput,
-            inputs.tlsCertificateKeyFilePassword,
+          inputs.tlsCertificateKeyFilePassword,
         );
         await this.fillFileContent(
           this.fields.tlsCertificateKey,
-            inputs.tlsCertificateKeyFile,
+          inputs.tlsCertificateKeyFile,
         );
         break;
       case remoteInstancesHelper.services.postgresql:
@@ -416,7 +418,7 @@ module.exports = {
         };
         I.fillField(
           this.fields.hostName,
-            inputs.host,
+          inputs.host,
         );
         adminPage.customClearField(this.fields.portNumber);
         I.fillField(
@@ -426,11 +428,11 @@ module.exports = {
         I.fillField(this.fields.serviceName, serviceName);
         I.fillField(
           this.fields.environment,
-            inputs.environment,
+          inputs.environment,
         );
         I.fillField(
           this.fields.cluster,
-            inputs.clusterName,
+          inputs.clusterName,
         );
         I.dontSeeElement(this.fields.tlscaInput);
         I.dontSeeElement(this.fields.tlsCertificateKeyInput);
@@ -439,27 +441,27 @@ module.exports = {
         I.waitForElement(this.fields.tlscaInput, 30);
         await this.fillFileContent(
           this.fields.tlscaInput,
-            inputs.tlsCAFile,
+          inputs.tlsCAFile,
         );
         await this.fillFileContent(
           this.fields.tlsCertificateInput,
-            inputs.tlsCertFile,
+          inputs.tlsCertFile,
         );
         await this.fillFileContent(
           this.fields.tlsCertificateKeyInput,
-            inputs.tlsKeyFile,
+          inputs.tlsKeyFile,
         );
         break;
       case remoteInstancesHelper.services.proxysql:
-        inputs = remoteInstancesHelper.remote_instance.proxysql.proxysql_2_1_1
+        inputs = remoteInstancesHelper.remote_instance.proxysql.proxysql_2_1_1;
         I.fillField(this.fields.hostName, inputs.host);
         I.fillField(
           this.fields.userName,
-            inputs.username,
+          inputs.username,
         );
         I.fillField(
           this.fields.password,
-            inputs.password,
+          inputs.password,
         );
         I.fillField(this.fields.serviceName, serviceName);
         I.fillField(this.fields.environment, inputs.environment);
@@ -479,14 +481,14 @@ module.exports = {
       case 'postgresPGStatStatements':
       case 'postgresPgStatMonitor':
         inputs = {
-        ...remoteInstancesHelper.remote_instance.postgresql.pdpgsql_13_3,
-        ...this.potgresqlSettings,
+          ...remoteInstancesHelper.remote_instance.postgresql.pdpgsql_13_3,
+          ...this.potgresqlSettings,
         };
-        I.fillField(this.fields.hostName,inputs.host,);
-        I.fillField(this.fields.userName, inputs.username,);
-        I.fillField(this.fields.password, inputs.password,);
+        I.fillField(this.fields.hostName, inputs.host);
+        I.fillField(this.fields.userName, inputs.username);
+        I.fillField(this.fields.password, inputs.password);
         adminPage.customClearField(this.fields.portNumber);
-        I.fillField(this.fields.portNumber, inputs.port,);
+        I.fillField(this.fields.portNumber, inputs.port);
         I.fillField(this.fields.serviceName, serviceName);
         break;
       case remoteInstancesHelper.services.postgresGC:
@@ -502,6 +504,7 @@ module.exports = {
         I.fillField(this.fields.cluster, inputs.cluster);
     }
     adminPage.performPageDown(1);
+
     return inputs;
   },
 
@@ -599,6 +602,7 @@ module.exports = {
 
   async fillRemoteRDSFields(serviceName) {
     let inputs;
+
     // eslint-disable-next-line default-case
     switch (serviceName) {
       case 'rds-mysql56':
@@ -630,6 +634,7 @@ module.exports = {
         this.fillFields(inputs);
     }
     I.scrollPageToBottom();
+
     return inputs;
   },
 
