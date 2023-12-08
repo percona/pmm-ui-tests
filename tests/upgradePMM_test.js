@@ -83,10 +83,13 @@ Before(async ({ I }) => {
   I.setRequestTimeout(60000);
 });
 
+const isAmiUpgrade = process.env.AMI_UPGRADE_TESTING_INSTANCE === 'true';
+const isOvfUpgrade = process.env.OVF_UPGRADE_TESTING_INSTANCE === 'true';
+
 BeforeSuite(async ({ I, codeceptjsConfig, credentials }) => {
   const mysqlComposeConnection = {
-    host: (process.env.AMI_UPGRADE_TESTING_INSTANCE === 'true' || process.env.OVF_UPGRADE_TESTING_INSTANCE === 'true' ? process.env.VM_CLIENT_IP : '127.0.0.1'),
-    port: (process.env.AMI_UPGRADE_TESTING_INSTANCE === 'true' || process.env.OVF_UPGRADE_TESTING_INSTANCE === 'true' ? remoteInstancesHelper.remote_instance.mysql.ps_5_7.port : '3309'),
+    host: (isAmiUpgrade || isOvfUpgrade ? process.env.VM_CLIENT_IP : '127.0.0.1'),
+    port: (isAmiUpgrade || isOvfUpgrade ? remoteInstancesHelper.remote_instance.mysql.ps_5_7.port : '3309'),
     username: connection.username,
     password: connection.password,
   };
@@ -95,8 +98,8 @@ BeforeSuite(async ({ I, codeceptjsConfig, credentials }) => {
 
   // Connect to MongoDB
   const mongoConnection = {
-    host: (process.env.AMI_UPGRADE_TESTING_INSTANCE === 'true' || process.env.OVF_UPGRADE_TESTING_INSTANCE === 'true' ? process.env.VM_CLIENT_IP : codeceptjsConfig.config.helpers.MongoDBHelper.host),
-    port: (process.env.AMI_UPGRADE_TESTING_INSTANCE === 'true' || process.env.OVF_UPGRADE_TESTING_INSTANCE === 'true' ? remoteInstancesHelper.remote_instance.mongodb.psmdb_4_2.port : codeceptjsConfig.config.helpers.MongoDBHelper.port),
+    host: (isAmiUpgrade || isOvfUpgrade ? process.env.VM_CLIENT_IP : codeceptjsConfig.config.helpers.MongoDBHelper.host),
+    port: (isAmiUpgrade || isOvfUpgrade ? remoteInstancesHelper.remote_instance.mongodb.psmdb_4_2.port : codeceptjsConfig.config.helpers.MongoDBHelper.port),
     username: codeceptjsConfig.config.helpers.MongoDBHelper.username,
     password: codeceptjsConfig.config.helpers.MongoDBHelper.password,
   };
@@ -165,6 +168,7 @@ Scenario(
     I, grafanaAPI, dashboardPage, searchDashboardsModal,
   }) => {
     const insightFolder = await grafanaAPI.lookupFolderByName(searchDashboardsModal.folders.insight.name);
+
     await grafanaAPI.createCustomDashboard(grafanaAPI.randomDashboardName, insightFolder.id, null, ['pmm-qa', grafanaAPI.randomTag]);
     const folder = await grafanaAPI.createFolder(grafanaAPI.customFolderName);
     let additionalPanel = null;
@@ -593,7 +597,7 @@ Scenario(
     I.seeInCurrentUrl(grafanaAPI.customDashboardName);
 
     // Panels Library is present from 2.27.0
-    if (versionMinor > 26) {
+    if (versionMinor > 26 && !isAmiUpgrade && !isOvfUpgrade) {
       await I.say('Verify there is no "Error while loading library panels" errors on dashboard and no errors in grafana.log');
       I.wait(1);
       const errorLogs = await I.verifyCommand('docker exec pmm-server cat /srv/logs/grafana.log | grep level=error');
