@@ -205,7 +205,12 @@ module.exports = {
   async getDashboard(uid) {
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
 
-    return await I.sendGetRequest(`graph/api/dashboards/uid/${uid}`, headers);
+    const resp = await I.sendGetRequest(`graph/api/dashboards/uid/${uid}`, headers);
+    assert.ok(
+        resp.status === 200,
+        `Failed to find dashboard with id '${uid}' . Response message is ${resp.data.message}`,
+    );
+    return resp.data;
   },
 
   async setHomeDashboard(id) {

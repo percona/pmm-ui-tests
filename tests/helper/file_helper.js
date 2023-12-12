@@ -5,7 +5,7 @@ const fs = require('fs');
 class FileHelper extends Helper {
   async writeFileSync(path, data, failOnError = true) {
     try {
-      return fs.writeFileSync(path, data, { flag: 'rs+' });
+      return fs.writeFileSync(path, data, { flag: 'w+' });
     } catch (e) {
       if (!failOnError) assert.ok(false, `Could not write into file: ${path}, because of error: ${e}`);
     }
@@ -21,6 +21,16 @@ class FileHelper extends Helper {
     }
 
     return null;
+  }
+
+  async fileSize(path, failOnError = true) {
+    try {
+      let stats = fs.statSync(path);
+      return stats.size;
+    } catch (e) {
+      if (!failOnError) assert.ok(false, `Could not get file size: ${path}, because of error: ${e}`);
+    }
+    return -1;
   }
 }
 
