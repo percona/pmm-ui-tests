@@ -1,5 +1,6 @@
 const { I } = inject();
 const assert = require('assert');
+const request = require('request');
 const fs = require('fs');
 const targz = require("tar.gz");
 const path = require('path');
@@ -41,7 +42,6 @@ module.exports = {
 
   async downloadDump(uid) {
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
-    const request = require('request');
     const targzFile = output_dir + '/' + uid + '.tar.gz';
     const destnDir = output_dir + '/' + uid ;
 
@@ -65,9 +65,9 @@ module.exports = {
         const fullPath = path.join(destnDir, item);
         const stats = fs.statSync(fullPath);
         if (stats.isDirectory()) {
-          isDir++;
+          isDir=isDir+1;
         } else if (stats.isFile()) {
-          isFile++;
+          isFile=isFile+1;
         }
       });
     }
@@ -86,10 +86,11 @@ module.exports = {
       for (let i = 0; i < 600000; i++) {
       const isSuccess = Object.values(dumps.data)
           .flat(Infinity)
-          .every(({dump_id, status}) => ( console.log(status) && (dump_id === uid && status === "DUMP_STATUS_SUCCESS")));
+          .every(({dump_id, status}) => ((dump_id === uid && status === "DUMP_STATUS_SUCCESS")));
       if (isSuccess) {
         return dumps;
       }
+        return null;
       }
   },
 

@@ -57,12 +57,12 @@ Scenario(
                 2,
                 result.isDir,
                 `Expected 2 folders in the archive but found ${result.isDir}`,
-            );        //dumpAPI.verifyDir(uid.dump_id);
+            );
             I.assertEqual(
                 2,
                 result.isFile,
                 `Expected 2 files in the archive but found ${result.isFile}`,
-            );        //dumpAPI.verifyDir(uid.dump_id);
+            );
         await dumpAPI.deleteDumps(uid.dump_id);
     },)
 
