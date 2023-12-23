@@ -10,7 +10,7 @@ on:
         description: 'PMM Client version to upgrade from (dev-latest|pmm2-latest|pmm2-rc|x.xx.x)'
         type: string
       repository:
-        description: 'Upgrade to:'
+        description: 'To detect "finish_version" string: X.XX.X'
         required: true
         default: 'dev-latest'
         type: string
@@ -80,7 +80,7 @@ jobs:
           if [[  "${{ inputs.repository }}" == "dev-latest" ]]; then
             echo "result=$dev_latest" >> "$GITHUB_OUTPUT"
           fi          
-          if [[ "${{ inputs.repository }}" == "release candidate" ]]; then
+          if [[ "${{ inputs.repository }}" =~ "release candidate" ]]; then
             echo "result=$rc_latest" >> "$GITHUB_OUTPUT"
           fi
           if [[ "${{ inputs.repository }}" == "release" ]]; then
