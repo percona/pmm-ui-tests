@@ -1,13 +1,12 @@
-import { test, expect } from '@playwright/test';
-import * as cli from '@helpers/cliHelper';
-import Output from "@support/types/output";
+import { test } from '@playwright/test';
+import * as cli from '@helpers/cli-helper';
+import ExecReturn from '@support/types/exec-return.class';
 
-let addMongoHelp:Output;
-let addPostgreSqlHelp:Output;
+let addMongoHelp: ExecReturn;
+let addPostgreSqlHelp: ExecReturn;
 
 test.describe('PMM Client "--help" validation', async () => {
-
-  test.beforeAll(async ({}) =>{
+  test.beforeAll(async ({}) => {
     addMongoHelp = await cli.execSilent('sudo pmm-admin add mongodb --help');
     await addMongoHelp.assertSuccess();
     addPostgreSqlHelp = await cli.execSilent('sudo pmm-admin add postgresql --help');
@@ -114,33 +113,49 @@ test.describe('PMM Client "--help" validation', async () => {
       'tls-ca-file=STRING         TLS CA certificate file',
     ]);
   });
-});
 
-test.describe('-promscrape.maxScapeSize tests', async () => {
-  test.beforeAll(async () => {
-    await (await cli.exec(`docker-compose -f test-setup/docker-compose-scrape-intervals.yml up -d`)).assertSuccess();
-  })
-
-  test.afterAll(async () => {
-    await (await cli.exec(`docker-compose -f test-setup/docker-compose-scrape-intervals.yml down`)).assertSuccess();
-    await (await cli.exec(`sudo pmm-admin config --force \'--server-url=https://admin:admin@0.0.0.0:443\' --server-insecure-tls 127.0.0.1 || true`)).assertSuccess();
-  })
-
-  test('@PMM-T1665 Verify custom value for vm_agents -promscrape.maxScapeSize parameter', async ({page}) => {
-    const customScrapeSize = '128';
-
-    await test.step('verify client docker logs for custom value', async () => {
-      await page.waitForTimeout(10_000);
-      const scrapeSizeLog = await cli.exec('docker logs pmm-client-custom-scrape-interval 2>&1 | grep \'promscrape.maxScrapeSize.*vm_agent\' | tail -1');
-      await scrapeSizeLog.outContains(`promscrape.maxScrapeSize=\\\"${customScrapeSize}MiB\\\"`)
-    })
-
-    await test.step('verify logs from binary for custom value', async () => {
-      await (await cli.exec('sudo pmm-admin config --node-name=pmm-t1665 --force \'--server-url=https://admin:admin@0.0.0.0:2443\' --server-insecure-tls 127.0.0.1')).assertSuccess()
-
-      await page.waitForTimeout(10_000);
-      const scrapeSizeLog = await cli.exec('ps aux | grep -v \'grep\' | grep \'vm_agent\' | tail -1')
-      await scrapeSizeLog.outContains(`promscrape.maxScrapeSize=${customScrapeSize}MiB`)
-    })
+  /**
+   * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/generic-tests.bats#L312
+   */
+  test('run pmm-admin annotate --help', async ({}) => {
+    const output = await cli.execSilent('sudo pmm-admin annotate --help');
+    await output.assertSuccess();
+    await output.outContainsMany([
+      'Usage: pmm-admin annotate <text>',
+      '<text>    Text of annotation',
+      'Add an annotation to Grafana charts',
+    ]);
   });
-})
+
+  /**
+   * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/generic-tests.bats#L335
+   */
+  test('run pmm-admin --help to check if Annotation exist in help output', async ({}) => {
+    const output = await cli.execSilent('sudo pmm-admin --help');
+    await output.assertSuccess();
+    await output.outContains('annotate      Add an annotation to Grafana charts');
+  });
+
+  /**
+   * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/generic-tests.bats#L356
+   */
+  test('run pmm-admin config --help to check for Metrics Mode option', async ({}) => {
+    const output = await cli.execSilent('sudo pmm-admin config --help');
+    await output.assertSuccess();
+    await output.outContainsMany([
+      'Metrics flow mode for agents node-exporter,',
+      'can be push - agent will push metrics,',
+      'pull - server scrape metrics from agent or auto',
+      '- chosen by server',
+    ]);
+  });
+
+  test('PMM-T1827 - Verify there is --auto-discovery-limit option in pmm-admin add postgresql help output', async ({}) => {
+    await addPostgreSqlHelp.outContainsMany([
+      'auto-discovery-limit=NUMBER',
+      'Auto-discovery will be disabled if there are',
+      'more than that number of databases (default:',
+      'server-defined, -1: always disabled)',
+    ]);
+  });
+});

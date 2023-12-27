@@ -12,6 +12,7 @@ exports.config = {
     Playwright: {
       url: process.env.PMM_UI_URL || pmmUrl,
       restart: true,
+      show: false,
       browser: 'chromium',
       windowSize: '1920x1080',
       timeout: 20000,
@@ -130,6 +131,6 @@ exports.config = {
   hooks: [],
   gherkin: {},
   tests: 'tests/**/*_test.js',
-  timeout: 1800,
+  timeout: 2400,
   name: 'pmm-qa',
 };

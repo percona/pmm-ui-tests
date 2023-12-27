@@ -1,21 +1,17 @@
 import { expect } from '@playwright/test';
-import PmmUpgrade from '@components/pmm-upgrade-panel';
+import PmmUpgradeWidget from '@components/pmm-upgrade-widget';
 import UpgradeModal from '@components/upgrade-modal';
 import Wait from '@helpers/enums/wait';
 import PmmMenu from '@components/dashboards/pmm-menu';
 import { BaseDashboard } from './dashboards/base-dashboard.page';
 
 export default class HomeDashboardPage extends BaseDashboard {
-  /** Page "path" and "heading" defaults to the "Home Dashboard Page" */
-  // url: 'graph/d/pmm-home/home-dashboard?orgId=1&refresh=1m&from=now-5m&to=now',
-  PAGE_PATH = 'graph/d/pmm-home/home-dashboard?orgId=1&refresh=1m';
-  PAGE_HEADING = 'Home Dashboard';
+  readonly PAGE_PATH = 'graph/d/pmm-home/home-dashboard?orgId=1&refresh=1m';
+  readonly PAGE_HEADING = 'Home Dashboard';
 
-  pmmUpgrade = new PmmUpgrade(this.page);
+  pmmUpgradeWidget = new PmmUpgradeWidget(this.page);
   upgradeModal = new UpgradeModal(this.page);
   pmmMenu = new PmmMenu(this.page);
-
-  landingUrl = 'graph/d/pmm-home/home-dashboard?orgId=1&refresh=1m';
 
   /**
    * Opens given Page entering url into the address field.
@@ -25,21 +21,21 @@ export default class HomeDashboardPage extends BaseDashboard {
   };
 
   async waitToBeOpened() {
-    await this.pmmUpgrade.containers.upgradeContainer.waitFor({ state: 'visible', timeout: Wait.OneMinute });
+    await this.PAGE_HEADING_LOCATOR.waitFor({ state: 'visible', timeout: Wait.OneMinute });
     await expect(this.page).toHaveURL(this.PAGE_PATH);
   }
   upgradePmm = async () => {
-    await this.pmmUpgrade.buttons.upgradeButton.waitFor({ state: 'visible', timeout: Wait.ThreeMinutes });
-    const currentVersion = await this.pmmUpgrade.elements.currentVersion.textContent();
+    await this.pmmUpgradeWidget.elements.upgradeButton.waitFor({ state: 'visible', timeout: Wait.ThreeMinutes });
+    const currentVersion = await this.pmmUpgradeWidget.elements.currentVersion.textContent();
 
-    await this.pmmUpgrade.buttons.upgradeButton.click();
-    const availableVersion = await this.pmmUpgrade.elements.availableVersion.textContent();
+    await this.pmmUpgradeWidget.elements.upgradeButton.click();
+    const availableVersion = await this.pmmUpgradeWidget.elements.availableVersion.textContent();
 
     console.log(`Upgrading pmm server from version: ${currentVersion} to the version: ${availableVersion}`);
 
     await this.upgradeModal.containers.modalContainer.waitFor({ state: 'visible', timeout: Wait.OneMinute });
     await this.upgradeModal.elements.upgradeInProgressHeader
-      .waitFor({ state: 'visible', timeout: Wait.OneMinute as number });
+      .waitFor({ state: 'visible', timeout: Wait.OneMinute });
     await expect(this.upgradeModal.elements.upgradeSuccess)
       .toHaveText(this.upgradeModal.messages.upgradeSuccess(availableVersion) as string, { timeout: Wait.TenMinutes });
     await this.upgradeModal.buttons.close.click();

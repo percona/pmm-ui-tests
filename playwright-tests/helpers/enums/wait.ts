@@ -9,12 +9,15 @@ enum Wait {
   OneSecond = oneSecond,
   TwoSeconds = 2 * oneSecond,
   TenSeconds = 10 * oneSecond,
-  OneMinute = oneMin,
+  FifteenSeconds = 15 * oneSecond,
+  OneMinute = 60 * oneSecond,
+  TwoMinutes = 2 * oneMin,
   ThreeMinutes = 3 * oneMin,
   FiveMinutes = 5 * oneMin,
   TenMinutes = 10 * oneMin,
   TwentyMinutes = 20 * oneMin,
   ToastMessage = 30 * oneSecond,
+  PageLoad = 30 * oneSecond,
 }
 
 export default Wait;

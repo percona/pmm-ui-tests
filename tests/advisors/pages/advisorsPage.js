@@ -1,5 +1,5 @@
 // xpath used here because locate('td').withText('') method does not work correctly
-const checkRow = (checkName) => `//tr[td[text()="${checkName}"]]`;
+const checkRow = (checkName) => locate('$table-tbody-tr').withDescendant(`//td[text()="${checkName}"]`);
 const actionButton = (checkName) => locate(checkRow(checkName)).find('td').last().find('button');
 
 const {
@@ -7,12 +7,14 @@ const {
 } = inject();
 
 module.exports = {
-  url: 'graph/pmm-database-checks/all-checks',
+  urlConfiguration: 'graph/advisors/configuration',
   elements: {
+    expandableSectionByName: (name) => locate('div[class$="collapse__header-label"] span').withText(name),
     checkNameCell: (checkName) => locate(checkRow(checkName)).find('td').at(1),
     descriptionCellByName: (checkName) => locate(checkRow(checkName)).find('td').at(2),
     statusCellByName: (checkName) => locate(checkRow(checkName)).find('td').at(3),
-    intervalCellByName: (checkName) => locate(checkRow(checkName)).find('td').at(4),
+    technologyCellByName: (checkName) => locate(checkRow(checkName)).find('td').at(4),
+    intervalCellByName: (checkName) => locate(checkRow(checkName)).find('td').at(5),
     tableBody: '$table-tbody',
     noChecksFound: '$table-no-data',
     modalContent: '$modal-content',

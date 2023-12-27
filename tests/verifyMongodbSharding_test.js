@@ -8,7 +8,7 @@ Scenario(
   async ({
     I,
   }) => {
-    const version = '6.0';
+    const version = '4.4';
     const edition = 'Community';
 
     await I.verifyCommand(`${pmmFrameworkLoader} --mongomagic --with-sharding --pmm2 --mo-version=${version}`);

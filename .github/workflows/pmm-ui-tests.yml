@@ -105,7 +105,7 @@ jobs:
     steps:
       - name: PMM server version ${{ inputs.pmm_server_version }} and UI tests for flag "${{ inputs.pmm_test_flag }}" and pmm-ui-tests branch ${{ inputs.pmm_ui_tests_branch }}
         if: ${{ env.SHA != 'null' }}
-        uses: percona/gh-action-Sibz-github-status-action@v1
+        uses: percona/gh-action-github-status-action@v1
         continue-on-error: true
         with:
           authToken: ${{ secrets.GITHUB_TOKEN }}
@@ -194,7 +194,7 @@ jobs:
           path: ./pmm-ui-tests/playwright-tests/playwright-report
 
       - name: Create status check
-        uses: percona/gh-action-Sibz-github-status-action@v1
+        uses: percona/gh-action-github-status-action@v1
         if: ${{ env.SHA != 'null' && always() }}
         continue-on-error: true
         with:
