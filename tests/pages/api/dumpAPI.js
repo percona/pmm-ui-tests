@@ -5,7 +5,7 @@ const fs = require('fs');
 const targz = require("tar.gz");
 const path = require('path');
 const {readdirSync} = require("fs");
-const outputDir= I.resultFilesFolder;
+const outputDir= 'tests/output/';
 
 module.exports = {
   /**
@@ -85,15 +85,15 @@ module.exports = {
   async waitForDumpStatus(uid) {
     // 1 sec ping for getting Success status for Dumps for 60 Secs
     const dumps = await this.listDumps();
-      for (let i = 0; i < 600000; i++) {
-      const isSuccess = Object.values(dumps.data)
+    for (let i = 0; i < 600000; i++) {
+      const isSuccess = await Object.values(dumps.data)
           .flat(Infinity)
           .every(({dump_id, status}) => ((dump_id === uid && status === "DUMP_STATUS_SUCCESS")));
         if (isSuccess) {
           return dumps;
         }
-        return null;
       }
+    return null;
   },
 
   async deleteDumps(uid) {
