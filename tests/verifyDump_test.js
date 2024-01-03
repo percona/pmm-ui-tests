@@ -13,7 +13,7 @@ Before(async ({ I }) => {
 Scenario(
     'Create Dump Archive and Verify its successful in UI @dump',
     async ({ dumpAPI, dumpPage }) => {
-        const resp = await dumpAPI.createDump('');
+        const resp = await dumpAPI.createDump([]);
         const uid = JSON.parse(JSON.stringify(resp));
 
         I.amOnPage(dumpPage.url);
@@ -27,7 +27,7 @@ Scenario(
 Scenario(
     'Verify Edit Buttons are Enabled for Dump @dump',
     async ({ dumpAPI, dumpPage }) => {
-        const resp = await dumpAPI.createDump('');
+        const resp = await dumpAPI.createDump([]);
         const uid = JSON.parse(JSON.stringify(resp));
         await dumpAPI.waitForDumpStatus(uid.dump_id);
         I.amOnPage(dumpPage.url);
@@ -43,7 +43,7 @@ Scenario(
 Scenario(
     'Download and Verify Dump Archive with QAN enabled @dump',
     async ({ dumpAPI, dumpPage, I }) => {
-        const resp = await dumpAPI.createDump('');
+        const resp = await dumpAPI.createDump([], true);
         const uid = JSON.parse(JSON.stringify(resp));
         await dumpAPI.waitForDumpStatus(uid.dump_id);
 
@@ -69,7 +69,7 @@ Scenario(
 Scenario(
     'Download and Verify Dump Archive with QAN disabled @dump',
     async ({ dumpAPI, dumpPage, I }) => {
-            const resp = await dumpAPI.createDump('',false);
+            const resp = await dumpAPI.createDump([],false);
             const uid = JSON.parse(JSON.stringify(resp));
             await dumpAPI.waitForDumpStatus(uid.dump_id);
 
@@ -83,19 +83,19 @@ Scenario(
                 1,
                 result.isDir,
                 `Expected 1 folders in the archive but found ${result.isDir}`,
-            );        //dumpAPI.verifyDir(uid.dump_id);
+            );
             I.assertEqual(
                 2,
                 result.isFile,
                 `Expected 2 files in the archive but found ${result.isFile}`,
-            );        //dumpAPI.verifyDir(uid.dump_id);
+            );
             await dumpAPI.deleteDumps(uid.dump_id);
     },)
 
 Scenario(
     'Check Dump Archives can be sent to Support in UI @dump',
     async ({ dumpAPI, dumpPage }) => {
-        const resp = await dumpAPI.createDump('');
+        const resp = await dumpAPI.createDump([]);
         const uid = JSON.parse(JSON.stringify(resp));
         await dumpAPI.waitForDumpStatus(uid.dump_id);
 
@@ -111,7 +111,7 @@ Scenario(
 Scenario(
     'Verify Dump extraction logs are visible @dump',
     async ({ dumpAPI, dumpPage }) => {
-        const resp = await dumpAPI.createDump('');
+        const resp = await dumpAPI.createDump([]);
         const uid = JSON.parse(JSON.stringify(resp));
         await dumpAPI.waitForDumpStatus(uid.dump_id);
 
@@ -126,7 +126,7 @@ Scenario(
 Scenario(
     'Verify details of Dump based on Service Name @dump-test',
     async ({ dumpAPI, dumpPage }) => {
-        const resp = await dumpAPI.createDump('pmm-server-postgresql');
+        const resp = await dumpAPI.createDump(['pmm-server-postgresql']);
         const uid = JSON.parse(JSON.stringify(resp));
         await dumpAPI.waitForDumpStatus(uid.dump_id);
 
