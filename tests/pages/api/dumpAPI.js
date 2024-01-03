@@ -57,7 +57,7 @@ module.exports = {
   },
 
   async verifyDump(uid){
-    await new Promise(resolve => setTimeout(resolve, 10000));
+    await new Promise(resolve => {setTimeout(resolve, 10000)});
     const destnDir = outputDir + '/' + uid ;
     let isDir=0;
     let isFile=0;
