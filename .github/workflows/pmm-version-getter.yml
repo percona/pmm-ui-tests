@@ -29,7 +29,8 @@ on:
         value: ${{ jobs.push_versions.outputs.version_matrix }}
       pt_os:
         description: "Json array with Package Tests Operating Systems"
-        value: ["bionic", "bullseye", "buster", "focal", "jammy", "centos-7", "ol-8", "ol-9"]
+        value: ${{ jobs.push_versions.outputs.pt_os_matrix }}
+
 
 jobs:
   push_versions:
@@ -40,6 +41,7 @@ jobs:
       start_version: ${{ steps.get-start.outputs.result }}
       finish_version: ${{ steps.get-finish.outputs.result }}
       version_matrix: ${{ steps.get-matrix.outputs.result }}
+      pt_os_matrix: "[\"bionic\", \"bullseye\", \"buster\", \"focal\", \"jammy\", \"centos-7\", \"ol-8\", \"ol-9\"]"
     steps:
       - name: Prevent upgrade to the same version
         shell: bash
