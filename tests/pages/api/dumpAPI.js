@@ -73,27 +73,17 @@ module.exports = {
     return I.sendPostRequest('v1/management/dump/Dumps/List', {}, headers);
   },
 
-  async waitForDumpStatus(uid) {
-    // 1 sec ping for getting Success status for Dumps for 60 Secs
-    for (let i = 0; i < 600000; i++) {
-      const dump = await this.listDumps();
-      const { dumps } = dump.data;
-      let flag = false;
-      dumps.every((elem) => {
-        if (elem.dump_id === uid && elem.status === 'DUMP_STATUS_SUCCESS') {
-          flag = true;
-          return flag;
-        }
-        return null;
-      });
-      if (flag) {
-        return flag;
-      }
-    }
-    return false;
+  async getDumpStatus(uid) {
+    const dump = await this.listDumps();
+    const { dumps } = dump.data;
+    return dumps.find((a) => a.dump_id === uid && a.status === 'DUMP_STATUS_SUCCESS');
   },
 
-  async deleteDumps(uid) {
+  async waitForDumpStatus(uid, timeout = 60) {
+    await I.asyncWaitFor(async () => this.getDumpStatus(uid), timeout);
+  },
+
+  async deleteDump(uid) {
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
     const body = JSON.stringify({dump_ids:[uid]});
     return I.sendPostRequest('v1/management/dump/Dumps/Delete',body, headers);

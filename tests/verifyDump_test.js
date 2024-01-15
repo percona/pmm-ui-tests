@@ -19,10 +19,9 @@ Scenario(
         I.amOnPage(dumpPage.url);
         // Required wait as delete in previous test takes time to reload page content.
         I.wait(5);
-        const status =await dumpAPI.waitForDumpStatus(uid.dump_id);
-        I.assertTrue(status, `Timeout getting status of ${uid.dump_id}`);
+        dumpAPI.waitForDumpStatus(uid.dump_id);
         dumpPage.verifyDumpVisible(uid.dump_id);
-        await dumpAPI.deleteDumps(uid.dump_id);
+        await dumpAPI.deleteDump(uid.dump_id);
     },)
 
 Scenario(
@@ -30,8 +29,7 @@ Scenario(
     async ({ dumpAPI, dumpPage }) => {
         const resp = await dumpAPI.createDump([]);
         const uid = JSON.parse(JSON.stringify(resp));
-        const status =await dumpAPI.waitForDumpStatus(uid.dump_id);
-        I.assertTrue(status, `Timeout getting status of ${uid.dump_id}`);
+        dumpAPI.waitForDumpStatus(uid.dump_id);
 
         I.amOnPage(dumpPage.url);
         // Required wait as delete in previous test takes time to reload page content.
@@ -40,16 +38,15 @@ Scenario(
         dumpPage.verifyDownloadEnabled();
         dumpPage.verifyDeleteEnabled();
         dumpPage.verifySFTPEnabled();
-        await dumpAPI.deleteDumps(uid.dump_id);
+        await dumpAPI.deleteDump(uid.dump_id);
     },)
 
 Scenario(
-    'Download and Verify Dump Archive with QAN enabled @dump',
+    'Download and Verify Dump Archive with QAN enabled @dump @test',
     async ({ dumpAPI, dumpPage, I }) => {
         const resp = await dumpAPI.createDump([], true);
         const uid = JSON.parse(JSON.stringify(resp));
-        const status = await dumpAPI.waitForDumpStatus(uid.dump_id);
-        I.assertTrue(status, `Timeout getting status of ${uid.dump_id}`);
+        await dumpAPI.waitForDumpStatus(uid.dump_id);
 
         I.amOnPage(dumpPage.url);
         // Required wait as delete in previous test takes time to reload page content.
@@ -67,7 +64,7 @@ Scenario(
                 result.isFile,
                 `Expected 2 files in the archive but found ${result.isFile}`,
             );
-        await dumpAPI.deleteDumps(uid.dump_id);
+        await dumpAPI.deleteDump(uid.dump_id);
     },)
 
 Scenario(
@@ -75,8 +72,7 @@ Scenario(
     async ({ dumpAPI, dumpPage, I }) => {
             const resp = await dumpAPI.createDump([],false);
             const uid = JSON.parse(JSON.stringify(resp));
-            const status =await dumpAPI.waitForDumpStatus(uid.dump_id);
-            I.assertTrue(status, `Timeout getting status of ${uid.dump_id}`);
+            await dumpAPI.waitForDumpStatus(uid.dump_id);
 
             I.amOnPage(dumpPage.url);
             // Required wait as delete in previous test takes time to reload page content.
@@ -94,7 +90,7 @@ Scenario(
                 result.isFile,
                 `Expected 2 files in the archive but found ${result.isFile}`,
             );
-            await dumpAPI.deleteDumps(uid.dump_id);
+            await dumpAPI.deleteDump(uid.dump_id);
     },)
 
 Scenario(
@@ -102,8 +98,7 @@ Scenario(
     async ({ dumpAPI, dumpPage }) => {
         const resp = await dumpAPI.createDump([]);
         const uid = JSON.parse(JSON.stringify(resp));
-        const status =await dumpAPI.waitForDumpStatus(uid.dump_id);
-        I.assertTrue(status, `Timeout getting status of ${uid.dump_id}`);
+        await dumpAPI.waitForDumpStatus(uid.dump_id);
 
         I.amOnPage(dumpPage.url);
         // Required wait as delete in previous test takes time to reload page content.
@@ -112,21 +107,20 @@ Scenario(
         dumpPage.verifySFTPEnabled();
         await I.click(dumpPage.fields.sendSupportButton);
         dumpPage.verifySFTP();
-        await dumpAPI.deleteDumps(uid.dump_id);
+        await dumpAPI.deleteDump(uid.dump_id);
     },)
 Scenario(
     'Verify Dump extraction logs are visible @dump',
     async ({ dumpAPI, dumpPage }) => {
         const resp = await dumpAPI.createDump([]);
         const uid = JSON.parse(JSON.stringify(resp));
-        const status =await dumpAPI.waitForDumpStatus(uid.dump_id);
-        I.assertTrue(status, `Timeout getting status of ${uid.dump_id}`);
+        await dumpAPI.waitForDumpStatus(uid.dump_id);
 
         I.amOnPage(dumpPage.url);
         // Required wait as delete in previous test takes time to reload page content.
         I.wait(5);
         dumpPage.verifyLogsVisible(uid.dump_id);
-        await dumpAPI.deleteDumps(uid.dump_id);
+        await dumpAPI.deleteDump(uid.dump_id);
     },
 );
 
@@ -135,14 +129,13 @@ Scenario(
     async ({ dumpAPI, dumpPage }) => {
         const resp = await dumpAPI.createDump(['pmm-server-postgresql']);
         const uid = JSON.parse(JSON.stringify(resp));
-        const status =await dumpAPI.waitForDumpStatus(uid.dump_id);
-        I.assertTrue(status, `Timeout getting status of ${uid.dump_id}`);
+        await dumpAPI.waitForDumpStatus(uid.dump_id);
 
         I.amOnPage(dumpPage.url);
         // Required wait as delete in previous test takes time to reload page content.
         I.wait(5);
         await dumpPage.verifyService(uid.dump_id);
         I.waitForText('pmm-server-postgresql');
-        await dumpAPI.deleteDumps(uid.dump_id);
+        await dumpAPI.deleteDump(uid.dump_id);
     },
 );
