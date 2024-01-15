@@ -8,14 +8,6 @@ const {readdirSync} = require("fs");
 const outputDir= 'tests/output/';
 
 module.exports = {
-  /**
-   * Simulates adding new dashboard with custom panels via inner grafana API to keep test
-   * resistance to UI changes in different Grafans versions.
-   *
-   * @return  {Promise<*>}      response object
-   * @param serviceName
-   * @param Qan
-   */
   async createDump(serviceName, Qan = true) {
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
 
@@ -78,22 +70,26 @@ module.exports = {
 
   async listDumps() {
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
-    const body = {};
-    return I.sendPostRequest('v1/management/dump/Dumps/List',body, headers);
+    return I.sendPostRequest('v1/management/dump/Dumps/List', {}, headers);
   },
 
   async waitForDumpStatus(uid) {
+    let flag = false;
     // 1 sec ping for getting Success status for Dumps for 60 Secs
-    const dumps = await this.listDumps();
     for (let i = 0; i < 600000; i++) {
-      const isSuccess = await Object.values(dumps.data)
-          .flat(Infinity)
-          .every(({dump_id, status}) => ((dump_id === uid && status === "DUMP_STATUS_SUCCESS")));
-        if (isSuccess) {
-          return dumps;
+      const dump = await this.listDumps();
+      const dumps = dump.data.dumps;
+      dumps.every(function (elem) {
+        if (elem.dump_id === uid && elem.status === "DUMP_STATUS_SUCCESS") {
+          flag = true;
+          return flag;
         }
+      });
+      if (flag) {
+        return flag;
       }
-    return null;
+    }
+    return flag;
   },
 
   async deleteDumps(uid) {
