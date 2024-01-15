@@ -76,7 +76,7 @@ module.exports = {
   async getDumpStatus(uid) {
     const dump = await this.listDumps();
     const { dumps } = dump.data;
-    return dumps.find((a) => a.dump_id === uid && a.status === 'DUMP_STATUS_SUCCESS');
+    return dumps.find((item) => item.dump_id === uid && item.status === 'DUMP_STATUS_SUCCESS');
   },
 
   async waitForDumpStatus(uid, timeout = 60) {
