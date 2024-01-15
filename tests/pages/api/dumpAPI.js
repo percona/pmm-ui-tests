@@ -74,22 +74,23 @@ module.exports = {
   },
 
   async waitForDumpStatus(uid) {
-    let flag = false;
     // 1 sec ping for getting Success status for Dumps for 60 Secs
     for (let i = 0; i < 600000; i++) {
       const dump = await this.listDumps();
-      const dumps = dump.data.dumps;
-      dumps.every(function (elem) {
-        if (elem.dump_id === uid && elem.status === "DUMP_STATUS_SUCCESS") {
+      const { dumps } = dump.data;
+      let flag = false;
+      dumps.every((elem) => {
+        if (elem.dump_id === uid && elem.status === 'DUMP_STATUS_SUCCESS') {
           flag = true;
           return flag;
         }
+        return null;
       });
       if (flag) {
         return flag;
       }
     }
-    return flag;
+    return false;
   },
 
   async deleteDumps(uid) {

@@ -131,7 +131,7 @@ Scenario(
 );
 
 Scenario(
-    'Verify details of Dump based on Service Name @dump-test',
+    'Verify details of Dump based on Service Name @dump',
     async ({ dumpAPI, dumpPage }) => {
         const resp = await dumpAPI.createDump(['pmm-server-postgresql']);
         const uid = JSON.parse(JSON.stringify(resp));
