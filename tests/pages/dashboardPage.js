@@ -233,7 +233,7 @@ module.exports = {
   pxcGaleraClusterSummaryDashboard: {
     url: 'graph/d/pxc-cluster-summary/pxc-galera-cluster-summary?orgId=1&',
     metrics: [
-      'Percona XtraDB / Galera Cluster Size',
+      'Cluster and Service Size History',
       'Flow Control Paused Time',
       'Flow Control Messages Sent',
       'Writeset Inbound Traffic',
@@ -244,9 +244,6 @@ module.exports = {
       'Transactions Replicated',
       'Average Incoming Transaction Size',
       'Average Replicated Transaction Size',
-      'FC Trigger Low Limit',
-      'FC Trigger High Limit',
-      'IST Progress',
       'Average Galera Replication Latency',
       'Maximum Galera Replication Latency',
     ],
