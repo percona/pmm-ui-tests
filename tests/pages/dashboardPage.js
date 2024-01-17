@@ -233,7 +233,7 @@ module.exports = {
   pxcGaleraClusterSummaryDashboard: {
     url: 'graph/d/pxc-cluster-summary/pxc-galera-cluster-summary?orgId=1&',
     metrics: [
-      'Cluster and Service Size History',
+      'Percona XtraDB / Galera Cluster Size',
       'Flow Control Paused Time',
       'Flow Control Messages Sent',
       'Writeset Inbound Traffic',
