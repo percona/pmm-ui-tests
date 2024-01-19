@@ -19,7 +19,7 @@ Scenario(
         I.amOnPage(dumpPage.url);
         // Required wait as delete in previous test takes time to reload page content.
         I.wait(5);
-        dumpAPI.waitForDumpStatus(uid.dump_id);
+        dumpAPI.waitForDumpSucceed(uid.dump_id);
         dumpPage.verifyDumpVisible(uid.dump_id);
         await dumpAPI.deleteDump(uid.dump_id);
     },)
@@ -29,7 +29,7 @@ Scenario(
     async ({ dumpAPI, dumpPage }) => {
         const resp = await dumpAPI.createDump([]);
         const uid = JSON.parse(JSON.stringify(resp));
-        dumpAPI.waitForDumpStatus(uid.dump_id);
+        dumpAPI.waitForDumpSucceed(uid.dump_id);
 
         I.amOnPage(dumpPage.url);
         // Required wait as delete in previous test takes time to reload page content.
@@ -42,11 +42,11 @@ Scenario(
     },)
 
 Scenario(
-    'Download and Verify Dump Archive with QAN enabled @dump @test',
+    'Download and Verify Dump Archive with QAN enabled @dump',
     async ({ dumpAPI, dumpPage, I }) => {
         const resp = await dumpAPI.createDump([], true);
         const uid = JSON.parse(JSON.stringify(resp));
-        await dumpAPI.waitForDumpStatus(uid.dump_id);
+        await dumpAPI.waitForDumpSucceed(uid.dump_id);
 
         I.amOnPage(dumpPage.url);
         // Required wait as delete in previous test takes time to reload page content.
@@ -72,7 +72,7 @@ Scenario(
     async ({ dumpAPI, dumpPage, I }) => {
             const resp = await dumpAPI.createDump([],false);
             const uid = JSON.parse(JSON.stringify(resp));
-            await dumpAPI.waitForDumpStatus(uid.dump_id);
+            await dumpAPI.waitForDumpSucceed(uid.dump_id);
 
             I.amOnPage(dumpPage.url);
             // Required wait as delete in previous test takes time to reload page content.
@@ -98,7 +98,7 @@ Scenario(
     async ({ dumpAPI, dumpPage }) => {
         const resp = await dumpAPI.createDump([]);
         const uid = JSON.parse(JSON.stringify(resp));
-        await dumpAPI.waitForDumpStatus(uid.dump_id);
+        await dumpAPI.waitForDumpSucceed(uid.dump_id);
 
         I.amOnPage(dumpPage.url);
         // Required wait as delete in previous test takes time to reload page content.
@@ -114,7 +114,7 @@ Scenario(
     async ({ dumpAPI, dumpPage }) => {
         const resp = await dumpAPI.createDump([]);
         const uid = JSON.parse(JSON.stringify(resp));
-        await dumpAPI.waitForDumpStatus(uid.dump_id);
+        await dumpAPI.waitForDumpSucceed(uid.dump_id);
 
         I.amOnPage(dumpPage.url);
         // Required wait as delete in previous test takes time to reload page content.
@@ -129,7 +129,7 @@ Scenario(
     async ({ dumpAPI, dumpPage }) => {
         const resp = await dumpAPI.createDump(['pmm-server-postgresql']);
         const uid = JSON.parse(JSON.stringify(resp));
-        await dumpAPI.waitForDumpStatus(uid.dump_id);
+        await dumpAPI.waitForDumpSucceed(uid.dump_id);
 
         I.amOnPage(dumpPage.url);
         // Required wait as delete in previous test takes time to reload page content.

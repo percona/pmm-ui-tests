@@ -73,14 +73,17 @@ module.exports = {
     return I.sendPostRequest('v1/management/dump/Dumps/List', {}, headers);
   },
 
-  async getDumpStatus(uid) {
+  async getDump(uid) {
     const dump = await this.listDumps();
     const { dumps } = dump.data;
-    return dumps.find((item) => item.dump_id === uid && item.status === 'DUMP_STATUS_SUCCESS');
+    return dumps.find((item) => item.dump_id === uid);
   },
 
-  async waitForDumpStatus(uid, timeout = 60) {
-    await I.asyncWaitFor(async () => this.getDumpStatus(uid), timeout);
+  async waitForDumpSucceed(uid, timeout = 60) {
+    await I.asyncWaitFor(async () => {
+      const dumpObj = await this.getDump(uid);
+      return dumpObj.status === 'DUMP_STATUS_SUCCESS';
+    }, timeout);
   },
 
   async deleteDump(uid) {
