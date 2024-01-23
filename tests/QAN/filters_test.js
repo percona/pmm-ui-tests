@@ -11,7 +11,7 @@ Feature('QAN filters').retry(1);
 // filterToApply - filter witch we check, searchValue - value to get zero search result
 const filters = new DataTable(['filterToApply', 'searchValue']);
 
-filters.add(['SELECT', 'INSERT']);
+filters.add(['SELECT', 'INSERT INTO']);
 // FIXME: unskip when https://jira.percona.com/browse/PMM-11657 is fixed
 // filters.add(['INSERT', 'SELECT']);
 // filters.add(['UPDATE', 'DELETE']);

@@ -154,7 +154,7 @@ Scenario(
     dashboardPage.waitForDashboardOpened();
     I.click(adminPage.fields.metricTitle);
     adminPage.performPageDown(5);
-    dashboardPage.verifyMetricsExistence(dashboardPage.pxcGaleraClusterSummaryDashboard.metrics);
+    dashboardPage.verifyMetricsExistence(dashboardPage.pxcGaleraClusterSummaryExperimentalDashboard.metrics);
     await dashboardPage.verifyThereAreNoGraphsWithNA();
     await dashboardPage.verifyThereAreNoGraphsWithoutData(2);
   },
