@@ -96,7 +96,7 @@ Data(instances).Scenario(
     await I.verifyCommand(command, responseMessage);
 
     // Wait for metrics to start hitting the server
-    I.wait(60);
+    I.wait(90);
 
     // verify metric for client container node instance
     const response = await grafanaAPI.checkMetricExist(metric, { type: 'service_name', value: noSslCheckServiceName });
@@ -144,7 +144,7 @@ Data(instances).Scenario(
       container,
     } = current;
 
-    let responseMessage = 'Connection check failed: tls: failed to find any PEM data in key input.';
+    let responseMessage = 'Connection check failed: stat /root/.postgresql/postgresql.key: no such file or directory.';
     let command = `docker exec ${container} pmm-admin add postgresql --tls --tls-ca-file=./certificates/ca.crt --tls-cert-file=./certificates/client.crt --port=5432 --username=pmm --password=pmm --service-name=PG_tls`;
 
     let output = await I.verifyCommand(command, responseMessage, 'fail');
