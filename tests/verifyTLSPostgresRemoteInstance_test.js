@@ -3,6 +3,7 @@ const assert = require('assert');
 const { adminPage } = inject();
 const pmmFrameworkLoader = `bash ${adminPage.pathToFramework}`;
 const pathToPMMFramework = adminPage.pathToPMMTests;
+const noSslCheckServiceName = 'pg_no_ssl_check';
 
 Feature('Monitoring SSL/TLS PGSQL instances');
 
@@ -80,6 +81,32 @@ Data(instances).Scenario(
 );
 
 Data(instances).Scenario(
+  'Verify adding PG with --tls-skip-verify option @ssl @ssl-postgres @ssl-remote @not-ui-pipeline',
+  async ({
+    I, current, grafanaAPI,
+  }) => {
+    const {
+      container, metric,
+    } = current;
+
+    // Verify user is able to add service with --tls-skip-verify option
+    const responseMessage = 'PostgreSQL Service added.';
+    const command = `docker exec ${container} pmm-admin add postgresql --username=pmm --password=pmm --query-source="pgstatements" --tls --tls-skip-verify ${noSslCheckServiceName}`;
+
+    await I.verifyCommand(command, responseMessage);
+
+    // Wait for metrics to start hitting the server
+    I.wait(60);
+
+    // verify metric for client container node instance
+    const response = await grafanaAPI.checkMetricExist(metric, { type: 'service_name', value: noSslCheckServiceName });
+    const result = JSON.stringify(response.data.data.result);
+
+    assert.ok(response.data.data.result.length !== 0, `Metrics ${metric} from ${noSslCheckServiceName} should be available but got empty ${result}`);
+  },
+);
+
+Data(instances).Scenario(
   'Verify metrics from SSL instances on PMM-Server @ssl @ssl-postgres @ssl-remote @not-ui-pipeline',
   async ({
     I, remoteInstancesPage, pmmInventoryPage, current, grafanaAPI,
@@ -87,7 +114,8 @@ Data(instances).Scenario(
     const {
       serviceName, metric,
     } = current;
-    let response; let result;
+    let response;
+    let result;
     const remoteServiceName = `remote_${serviceName}`;
 
     // Waiting for metrics to start hitting for remotely added services
@@ -155,7 +183,7 @@ Data(instances).Scenario(
       serviceName,
     } = current;
 
-    const serviceList = [serviceName, `remote_${serviceName}`];
+    const serviceList = [serviceName, `remote_${serviceName}`, noSslCheckServiceName];
 
     for (const service of serviceList) {
       I.amOnPage(dashboardPage.postgresqlInstanceOverviewDashboard.url);
@@ -180,7 +208,7 @@ Data(instances).Scenario(
       serviceName,
     } = current;
 
-    const serviceList = [serviceName, `remote_${serviceName}`];
+    const serviceList = [serviceName, `remote_${serviceName}`, noSslCheckServiceName];
 
     for (const service of serviceList) {
       I.amOnPage(qanPage.url);
