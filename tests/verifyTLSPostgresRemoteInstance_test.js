@@ -81,7 +81,7 @@ Data(instances).Scenario(
 );
 
 Data(instances).Scenario(
-  'Verify adding PG with --tls-skip-verify option @ssl @ssl-postgres @ssl-remote @not-ui-pipeline',
+  'PMM-T1859 Verify adding PG with --tls-skip-verify option @ssl @ssl-postgres @ssl-remote @not-ui-pipeline',
   async ({
     I, current, grafanaAPI,
   }) => {
