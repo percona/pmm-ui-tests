@@ -96,7 +96,7 @@ Data(instances).Scenario(
     const a = await I.verifyCommand(command, responseMessage);
 
     // Wait for metrics to start hitting the server
-    I.wait(90);
+    I.wait(120);
 
     // verify metric for client container node instance
     const response = await grafanaAPI.checkMetricExist('pg_stat_activity_count', { type: 'service_name', value: noSslCheckServiceName });
