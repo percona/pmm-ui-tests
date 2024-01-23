@@ -204,7 +204,7 @@ Data(instances).Scenario(
     for (const service of serviceList) {
       I.amOnPage(qanPage.url);
       qanOverview.waitForOverviewLoaded();
-      await adminPage.applyTimeRange('Last 20 minutes');
+      await adminPage.applyTimeRange('Last 5 minutes');
       qanOverview.waitForOverviewLoaded();
       qanFilters.waitForFiltersToLoad();
       await qanFilters.applySpecificFilter(service);
