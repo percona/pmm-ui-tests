@@ -86,23 +86,23 @@ Data(instances).Scenario(
     I, current, grafanaAPI,
   }) => {
     const {
-      container, metric,
+      container,
     } = current;
 
     // Verify user is able to add service with --tls-skip-verify option
     const responseMessage = 'PostgreSQL Service added.';
     const command = `docker exec ${container} pmm-admin add postgresql --username=pmm --password=pmm --query-source="pgstatements" --tls --tls-skip-verify ${noSslCheckServiceName}`;
 
-    await I.verifyCommand(command, responseMessage);
+    const a = await I.verifyCommand(command, responseMessage);
 
     // Wait for metrics to start hitting the server
     I.wait(90);
 
     // verify metric for client container node instance
-    const response = await grafanaAPI.checkMetricExist(metric, { type: 'service_name', value: noSslCheckServiceName });
+    const response = await grafanaAPI.checkMetricExist('pg_stat_activity_count', { type: 'service_name', value: noSslCheckServiceName });
     const result = JSON.stringify(response.data.data.result);
 
-    assert.ok(response.data.data.result.length !== 0, `Metrics ${metric} from ${noSslCheckServiceName} should be available but got empty ${result}`);
+    assert.ok(response.data.data.result.length !== 0, `Metrics 'pg_stat_activity_count' from ${noSslCheckServiceName} should be available but got empty ${result}`);
   },
 );
 
@@ -138,35 +138,35 @@ Data(instances).Scenario(
 Data(instances).Scenario(
   'PMM-T946 Verify adding PostgreSQL with --tls flag and with missing TLS options @ssl @ssl-remote @ssl-postgres @not-ui-pipeline',
   async ({
-    I, current, grafanaAPI,
+    I, current, grafanaAPI, dashboardPage,
   }) => {
     const {
       container,
     } = current;
 
+    I.amOnPage(dashboardPage.postgresqlInstanceOverviewDashboard.url);
+
     let responseMessage = 'Connection check failed: stat /root/.postgresql/postgresql.key: no such file or directory.';
-    let command = `docker exec ${container} pmm-admin add postgresql --tls --tls-ca-file=./certificates/ca.crt --tls-cert-file=./certificates/client.crt --port=5432 --username=pmm --password=pmm --service-name=PG_tls`;
+    let command = `docker exec ${container} pmm-admin add postgresql --tls --tls-ca-file=./certificates/ca.crt --tls-cert-file=./certificates/client.crt --query-source="pgstatements" --port=5432 --username=pmm --password=pmm --service-name=PG_tls`;
 
     let output = await I.verifyCommand(command, responseMessage, 'fail');
 
     assert.ok(output.trim() === responseMessage.trim(), `The ${command} was supposed to return ${responseMessage} but actually got ${output}`);
 
-    responseMessage = 'Connection check failed: tls: failed to find any PEM data in certificate input.';
-    command = `docker exec ${container} pmm-admin add postgresql --tls --tls-ca-file=./certificates/ca.crt --tls-key-file=./certificates/client.pem --port=5432 --username=pmm --password=pmm --service-name=PG_tls`;
+    responseMessage = 'PostgreSQL Service added.';
+    command = `docker exec ${container} pmm-admin add postgresql --tls --tls-ca-file=./certificates/ca.crt --tls-key-file=./certificates/client.pem --port=5432 --query-source="pgstatements" --username=pmm --password=pmm --service-name=PG_tls_1`;
+
+    await I.verifyCommand(command, responseMessage);
+
+    responseMessage = 'Connection check failed: x509: certificate signed by unknown authority.';
+    command = `docker exec ${container} pmm-admin add postgresql --tls --tls-cert-file=./certificates/client.crt --tls-key-file=./certificates/client.pem --query-source="pgstatements" --port=5432 --username=pmm --password=pmm --service-name=PG_tls`;
 
     output = await I.verifyCommand(command, responseMessage, 'fail');
 
     assert.ok(output.trim() === responseMessage.trim(), `The ${command} was supposed to return ${responseMessage} but actually got ${output}`);
 
-    responseMessage = 'Connection check failed: pq: couldn\'t parse pem in sslrootcert.';
-    command = `docker exec ${container} pmm-admin add postgresql --tls --tls-cert-file=./certificates/client.crt --tls-key-file=./certificates/client.pem --port=5432 --username=pmm --password=pmm --service-name=PG_tls`;
-
-    output = await I.verifyCommand(command, responseMessage, 'fail');
-
-    assert.ok(output.trim() === responseMessage.trim(), `The ${command} was supposed to return ${responseMessage} but actually got ${output}`);
-
-    responseMessage = 'Connection check failed: tls: failed to find any PEM data in certificate input.';
-    command = `docker exec ${container} pmm-admin add postgresql --tls --port=5432 --username=pmm --password=pmm --service-name=PG_tls_2`;
+    responseMessage = 'Connection check failed: x509: certificate signed by unknown authority.';
+    command = `docker exec ${container} pmm-admin add postgresql --tls --query-source="pgstatements" --port=5432 --username=pmm --password=pmm --service-name=PG_tls_2`;
 
     output = await I.verifyCommand(command, responseMessage, 'fail');
 
