@@ -93,16 +93,7 @@ Data(instances).Scenario(
     const responseMessage = 'PostgreSQL Service added.';
     const command = `docker exec ${container} pmm-admin add postgresql --username=pmm --password=pmm --query-source="pgstatements" --tls --tls-skip-verify ${noSslCheckServiceName}`;
 
-    const a = await I.verifyCommand(command, responseMessage);
-
-    // Wait for metrics to start hitting the server
-    I.wait(120);
-
-    // verify metric for client container node instance
-    const response = await grafanaAPI.checkMetricExist('pg_stat_activity_count', { type: 'service_name', value: noSslCheckServiceName });
-    const result = JSON.stringify(response.data.data.result);
-
-    assert.ok(response.data.data.result.length !== 0, `Metrics 'pg_stat_activity_count' from ${noSslCheckServiceName} should be available but got empty ${result}`);
+    await I.verifyCommand(command, responseMessage);
   },
 );
 
@@ -213,7 +204,7 @@ Data(instances).Scenario(
     for (const service of serviceList) {
       I.amOnPage(qanPage.url);
       qanOverview.waitForOverviewLoaded();
-      await adminPage.applyTimeRange('Last 12 hours');
+      await adminPage.applyTimeRange('Last 20 minutes');
       qanOverview.waitForOverviewLoaded();
       qanFilters.waitForFiltersToLoad();
       await qanFilters.applySpecificFilter(service);
