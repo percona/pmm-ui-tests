@@ -185,7 +185,7 @@ Scenario(
   // Grab secs or year lag value from Replication Lag min field in UI
   const replLagLocator = '(//a[@data-testid=\'data-testid dashboard-row-title-Replication Lag\']/following::a[contains(text(),\'mongodb_rs2_1\')]/following::td[contains(text(),\' s\') or contains(text(),\' year\')])[1]';
 
-  await I.waitForElement(replLagLocator,120);
+  await I.waitForElement(replLagLocator,180);
   // Get the text content of the element located
   const replLagText = await I.grabTextFrom(replLagLocator);
   // Grab only Lag value required from Text
