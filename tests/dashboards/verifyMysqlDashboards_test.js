@@ -153,6 +153,7 @@ Scenario(
     I.amOnPage(url);
     dashboardPage.waitForDashboardOpened();
     I.click(adminPage.fields.metricTitle);
+    await dashboardPage.expandEachDashboardRow();
     adminPage.performPageDown(5);
     dashboardPage.verifyMetricsExistence(dashboardPage.pxcGaleraClusterSummaryExperimentalDashboard.metrics);
     await dashboardPage.verifyThereAreNoGraphsWithNA();

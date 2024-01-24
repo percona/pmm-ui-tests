@@ -1096,7 +1096,7 @@ module.exports = {
 
   osNodesOverview: {
     noDataElements: 1,
-    naElements: 1,
+    naElements: 2,
     clearUrl: 'graph/d/node-instance-overview/nodes-overview',
     metrics: [
       'Nodes',
