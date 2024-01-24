@@ -3,11 +3,17 @@ const assert = require('assert');
 const { adminPage } = inject();
 const pmmFrameworkLoader = `bash ${adminPage.pathToFramework}`;
 const pathToPMMFramework = adminPage.pathToPMMTests;
+let pmmVersionMinor, pmmVersionPatch;
 
 Feature('Integration tests for PSMDB & PMM');
 
 Before(async ({ I, settingsAPI }) => {
   await I.Authorize();
+});
+
+BeforeSuite(async ({ homePage }) => {
+  pmmVersionMinor = await homePage.getVersions().versionMinor;
+  pmmVersionPatch = await homePage.getVersions().versionPatch;
 });
 
 const version = process.env.PSMDB_VERSION ? `${process.env.PSMDB_VERSION}` : '4.4';
@@ -185,6 +191,7 @@ Scenario(
   // Grab secs or year lag value from Replication Lag min field in UI
   const replLagLocator = '(//a[@data-testid=\'data-testid dashboard-row-title-Replication Lag\']/following::a[contains(text(),\'mongodb_rs2_1\')]/following::td[contains(text(),\' s\') or contains(text(),\' year\')])[1]';
 
+  await I.waitForElement(replLagLocator,120);
   // Get the text content of the element located
   const replLagText = await I.grabTextFrom(replLagLocator);
   // Grab only Lag value required from Text
@@ -197,3 +204,31 @@ Scenario(
   },
 );
 
+//Scenario(
+//    'PMM-12712 Collect Data about Sharded collections in MongoDB @pmm-psmdb-shards-integration @not-ui-pipeline',
+//    async ({
+//             I, dashboardPage, adminPage,
+//           }) => {
+
+//      if (( pmmVersionMinor >= 41 && pmmVersionPatch >=1) || (pmmVersionMinor === undefined) || (pmmVersionPatch === undefined)) {
+
+//        I.amOnPage(`${dashboardPage.mongodbReplicaSetSummaryDashboard.url}&var-replset=rs1`);
+//        dashboardPage.waitForDashboardOpened();
+
+        // Grab secs or year lag value from Replication Lag min field in UI
+//        const replLagLocator = '(//a[@data-testid=\'data-testid dashboard-row-title-Replication Lag\']/following::a[contains(text(),\'mongodb_rs2_1\')]/following::td[contains(text(),\' s\') or contains(text(),\' year\')])[1]';
+
+//        // Get the text content of the element located
+//        const replLagText = await I.grabTextFrom(replLagLocator);
+//        // Grab only Lag value required from Text
+//        let actualLagValue = +replLagText.split(".", 1);
+//        // Grab actual Lag value required from database
+//        let expectedLagValue = (await I.verifyCommand(`docker exec -w /mongosh/bin/ ${arbiter_container_name} ./mongosh --eval rs\.printSecondaryReplicationInfo\\(\\) | awk '/replLag:/ {print $2}' | cut -c 2`)).trim();
+//        // Give some threshold increase for actual replication lag, for now 2 secs extra
+//        expectedLagValue = +expectedLagValue + 2;
+//        I.assertBelow(actualLagValue, expectedLagValue, "ReplicaLag is more than expected lag vaule");
+//    } else {
+//        I.say('This functionality was added in PMM 2.41.1');
+//    }
+//    },
+//);
