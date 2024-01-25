@@ -191,15 +191,19 @@ Scenario(
   // Grab only Lag value required from Text
   let actualLagValue= +replLagText.split(".",1);
   const replLagValues = [];
-  // Grab actual Lag value required from database
+  // Grab actual Lag value required from database version(s)
   // few times to ensure we consider the maximum lag value.
   for (let i=0; i <=10; i++) {
-    replLagValues.push((await I.verifyCommand(`docker exec -w /mongosh/bin/ ${arbiter_container_name} ./mongosh --eval rs\.printSecondaryReplicationInfo\\(\\) | awk '/replLag:/ {print $2}' | cut -c2-`)).trim());
+    if ( `${version}` >= 6.0 ) {
+      replLagValues.push((await I.verifyCommand(`docker exec ${arbiter_container_name} ./psmdb_${version}/bin/mongo --eval rs\.printSecondaryReplicationInfo\\(\\) | awk '/behind the primary/ {print $2}' | cut -c2-`)).trim());
+    } else {
+      replLagValues.push((await I.verifyCommand(`docker exec ${arbiter_container_name} ./psmdb_${version}/bin/mongo --eval rs\.printSecondaryReplicationInfo\\(\\) | awk '/behind the primary/ {print $1}'`)).trim());
+    }
   }
   let expectedLagValue= Math.max(...replLagValues);
-  // Give some threshold increase for actual replication lag, for now 2 secs extra
-  expectedLagValue = +expectedLagValue+2;
-  //I.assertBelow(actualLagValue,expectedLagValue, "ReplicaLag is more than expected lag value");
+  // Give some threshold increase(5 secs extra) as replication lag can be negative sometimes.
+  expectedLagValue = +expectedLagValue+5;
+  I.assertBelow(actualLagValue,expectedLagValue, "ReplicaLag is more than expected lag value");
   },
 );
 
