@@ -100,11 +100,10 @@ function MenuOption(menuName, label, locator, path, menuLevel = 1) {
     // special check for 'Advisors' and 'Backup' because elemToClick locator matches more than one element
     if (label === 'Advisors' || label === 'Backup') {
       I.seeTextEquals(label, `.//ul[./@aria-label = '${label}']//div[text()="${label}"]`);
-    }
-    else {
+    } else {
       I.seeTextEquals(label, elemToClick);
     }
-    
+
     I.seeAttributesOnElements(elemToClick, { target: null });
     I.click(elemToClick);
   };
@@ -131,6 +130,7 @@ const menuOption = (menuName, label, path, menuLevel = 1) => new MenuOption(menu
  * @param   menuOptions   an object collection of {@link MenuOption} and/or {@link SubMenu}
  * @constructor
  */
+// eslint-disable-next-line default-param-last
 function SubMenu(topMenuName, name, path = '#', menuOptions) {
   this.menu = { };
   if (menuOptions != null) {

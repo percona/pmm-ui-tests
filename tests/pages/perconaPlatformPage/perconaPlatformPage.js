@@ -80,8 +80,9 @@ module.exports = {
     I.fillField(this.fields.tokenField, token);
     I.click(this.buttons.connect);
     if (isIPAddressSet) {
-      I.verifyPopUpMessage(this.messages.updateSuccess)
+      I.verifyPopUpMessage(this.messages.updateSuccess);
     }
+
     I.verifyPopUpMessage(this.messages.connectedSuccess);
     I.refreshPage();
     I.waitForVisible(this.elements.connectedWrapper, 20);

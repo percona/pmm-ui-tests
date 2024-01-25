@@ -23,6 +23,11 @@ module.exports = {
     environment: 'remote-postgres',
     cluster: 'remote-postgres-cluster',
   },
+  mongodbSettings: {
+    environment: 'remote-mongodb',
+    cluster: 'remote-mongodb-cluster',
+    replicationSet: 'remote-mongodb-replica',
+  },
   postgresqlAzureInputs: {
     userName: remoteInstancesHelper.remote_instance.azure.azure_postgresql.userName,
     password: remoteInstancesHelper.remote_instance.azure.azure_postgresql.password,
@@ -100,7 +105,7 @@ module.exports = {
     addMySqlRemote: '$mysql-instance',
     addPostgreSQLRemote: '$postgresql-instance',
     addProxySQLRemote: '$proxysql-instance',
-    addService: '#addInstance',
+    addService: '//div[contains(text(),\'Add service\')]',
     availabilityZone: '$az-text-input',
     clientID: '$azure_client_id-text-input',
     clientSecret: '$azure_client_secret-password-input',
@@ -109,7 +114,7 @@ module.exports = {
     database: '$database-text-input',
     disableBasicMetrics: '//input[@id="input-disable_basic_metrics-id"]/following-sibling::*[2]',
     disableEnhancedMetrics: '//input[@id="input-disable_enhanced_metrics-id"]/following-sibling::*[2]',
-    discoverBtn: '$credentials-search-button',
+    discoverBtn: '//div[contains(text(),\'Discover\')]',
     discoveryResults: 'tbody[role="rowgroup"]',
     doNotTrack: locate('label').withText('Don\'t track'),
     environment: '$environment-text-input',
@@ -155,6 +160,8 @@ module.exports = {
     dontTrackingRadio: locate('label').withAttr({ for: 'radio-btn-1' }).withText('Don\'t track'),
     pgStatStatementsRadio: locate('label').withAttr({ for: 'radio-btn-2' }).withText('PG Stat Statements'),
     pgStatMonitorRadio: locate('label').withAttr({ for: 'radio-btn-3' }).withText('PG Stat Monitor'),
+    customAutoDiscoveryButton: locate('//div[input[@data-testid="autoDiscoveryOptions-radio-button"]]').find('label').withText('Custom'),
+    customAutoDiscoveryfield: '$autoDiscoveryLimit-number-input',
   },
 
   async getFileContent(filePath) {
@@ -279,85 +286,121 @@ module.exports = {
   },
 
   async fillRemoteFields(serviceName) {
+    let inputs;
+
     // eslint-disable-next-line default-case
     switch (serviceName) {
       case remoteInstancesHelper.services.mysql:
-        I.fillField(this.fields.hostName, remoteInstancesHelper.remote_instance.mysql.ps_5_7.host);
-        I.fillField(this.fields.userName, remoteInstancesHelper.remote_instance.mysql.ps_5_7.username);
-        I.fillField(this.fields.password, remoteInstancesHelper.remote_instance.mysql.ps_5_7.password);
+        inputs = {
+          ...remoteInstancesHelper.remote_instance.mysql.ps_5_7,
+          ...this.mysqlSettings,
+        };
+        I.fillField(this.fields.hostName, inputs.host);
+        I.fillField(this.fields.userName, inputs.username);
+        I.fillField(this.fields.password, inputs.password);
         adminPage.customClearField(this.fields.portNumber);
-        I.fillField(this.fields.portNumber, remoteInstancesHelper.remote_instance.mysql.ps_5_7.port);
+        I.fillField(this.fields.portNumber, inputs.port);
         I.fillField(this.fields.serviceName, serviceName);
-        I.fillField(this.fields.environment, this.mysqlSettings.environment);
-        I.fillField(this.fields.cluster, this.mysqlSettings.cluster);
+        I.fillField(this.fields.environment, inputs.environment);
+        I.fillField(this.fields.cluster, inputs.cluster);
         break;
       case remoteInstancesHelper.services.mysql_ssl:
-        I.fillField(this.fields.hostName, remoteInstancesHelper.remote_instance.mysql.ms_8_0_ssl.host);
-        I.fillField(this.fields.userName, remoteInstancesHelper.remote_instance.mysql.ms_8_0_ssl.username);
-        I.fillField(this.fields.password, remoteInstancesHelper.remote_instance.mysql.ms_8_0_ssl.password);
+        inputs = remoteInstancesHelper.remote_instance.mysql.ms_8_0_ssl;
+        I.fillField(this.fields.hostName, inputs.host);
+        I.fillField(this.fields.userName, inputs.username);
+        I.fillField(this.fields.password, inputs.password);
         adminPage.customClearField(this.fields.portNumber);
-        I.fillField(this.fields.portNumber, remoteInstancesHelper.remote_instance.mysql.ms_8_0_ssl.port);
+        I.fillField(this.fields.portNumber, inputs.port);
         I.fillField(this.fields.serviceName, serviceName);
-        I.fillField(this.fields.environment,
-          remoteInstancesHelper.remote_instance.mysql.ms_8_0_ssl.environment);
-        I.fillField(this.fields.cluster,
-          remoteInstancesHelper.remote_instance.mysql.ms_8_0_ssl.clusterName);
+        I.fillField(
+          this.fields.environment,
+          inputs.environment,
+        );
+        I.fillField(
+          this.fields.cluster,
+          inputs.clusterName,
+        );
         I.dontSeeElement(this.fields.tlscaInput);
         I.dontSeeElement(this.fields.tlsCertificateInput);
         I.dontSeeElement(this.fields.tlsCertificateKeyInput);
         I.click(this.fields.useTLS);
         I.waitForElement(this.fields.tlscaInput, 30);
-        await this.fillFileContent(this.fields.tlscaInput,
-          remoteInstancesHelper.remote_instance.mysql.ms_8_0_ssl.tlsCAFile);
-        await this.fillFileContent(this.fields.tlsCertificateInput,
-          remoteInstancesHelper.remote_instance.mysql.ms_8_0_ssl.tlsCertificateFile);
-        await this.fillFileContent(this.fields.tlsCertificateKeyInput,
-          remoteInstancesHelper.remote_instance.mysql.ms_8_0_ssl.tlsCertificateKeyFile);
+        await this.fillFileContent(
+          this.fields.tlscaInput,
+          inputs.tlsCAFile,
+        );
+        await this.fillFileContent(
+          this.fields.tlsCertificateInput,
+          inputs.tlsCertificateFile,
+        );
+        await this.fillFileContent(
+          this.fields.tlsCertificateKeyInput,
+          inputs.tlsCertificateKeyFile,
+        );
         break;
       case remoteInstancesHelper.services.mongodb:
-        I.fillField(this.fields.hostName, remoteInstancesHelper.remote_instance.mongodb.psmdb_4_2.host);
-        I.fillField(this.fields.userName, remoteInstancesHelper.remote_instance.mongodb.psmdb_4_2.username);
-        I.fillField(this.fields.password, remoteInstancesHelper.remote_instance.mongodb.psmdb_4_2.password);
+        inputs = {
+          ...remoteInstancesHelper.remote_instance.mongodb.psmdb_4_2,
+          ...this.mongodbSettings,
+        };
+        I.fillField(this.fields.hostName, inputs.host);
+        I.fillField(this.fields.userName, inputs.username);
+        I.fillField(this.fields.password, inputs.password);
         I.fillField(this.fields.serviceName, serviceName);
-        I.fillField(this.fields.environment, 'remote-mongodb');
-        I.fillField(this.fields.cluster, 'remote-mongodb-cluster');
+        I.fillField(this.fields.environment, inputs.environment);
+        I.fillField(this.fields.cluster, inputs.cluster);
         break;
       case remoteInstancesHelper.services.mongodb_ssl:
-        I.fillField(this.fields.hostName, remoteInstancesHelper.remote_instance.mongodb.mongodb_4_4_ssl.host);
+        inputs = remoteInstancesHelper.remote_instance.mongodb.mongodb_4_4_ssl;
+        I.fillField(this.fields.hostName, inputs.host);
         adminPage.customClearField(this.fields.portNumber);
         I.fillField(
           this.fields.portNumber,
-          remoteInstancesHelper.remote_instance.mongodb.mongodb_4_4_ssl.port,
+          inputs.port,
         );
         I.fillField(this.fields.serviceName, serviceName);
-        I.fillField(this.fields.environment,
-          remoteInstancesHelper.remote_instance.mongodb.mongodb_4_4_ssl.environment);
-        I.fillField(this.fields.cluster,
-          remoteInstancesHelper.remote_instance.mongodb.mongodb_4_4_ssl.clusterName);
+        I.fillField(
+          this.fields.environment,
+          inputs.environment,
+        );
+        I.fillField(
+          this.fields.cluster,
+          inputs.clusterName,
+        );
         I.dontSeeElement(this.fields.tlscaInput);
         I.dontSeeElement(this.fields.tlsCertificateFilePasswordInput);
         I.dontSeeElement(this.fields.tlsCertificateKey);
         I.click(this.fields.useTLS);
         I.waitForElement(this.fields.tlscaInput, 30);
-        await this.fillFileContent(this.fields.tlscaInput,
-          remoteInstancesHelper.remote_instance.mongodb.mongodb_4_4_ssl.tlsCAFile);
-        await this.fillFileContent(this.fields.tlsCertificateFilePasswordInput,
-          remoteInstancesHelper.remote_instance.mongodb.mongodb_4_4_ssl.tlsCertificateKeyFilePassword);
-        await this.fillFileContent(this.fields.tlsCertificateKey,
-          remoteInstancesHelper.remote_instance.mongodb.mongodb_4_4_ssl.tlsCertificateKeyFile);
+        await this.fillFileContent(
+          this.fields.tlscaInput,
+          inputs.tlsCAFile,
+        );
+        await this.fillFileContent(
+          this.fields.tlsCertificateFilePasswordInput,
+          inputs.tlsCertificateKeyFilePassword,
+        );
+        await this.fillFileContent(
+          this.fields.tlsCertificateKey,
+          inputs.tlsCertificateKeyFile,
+        );
         break;
       case remoteInstancesHelper.services.postgresql:
+        inputs = {
+          ...remoteInstancesHelper.remote_instance.postgresql.pdpgsql_13_3,
+          ...this.potgresqlSettings,
+        };
         I.fillField(
           this.fields.hostName,
-          remoteInstancesHelper.remote_instance.postgresql.pdpgsql_13_3.host,
+          inputs.host,
         );
         I.fillField(
           this.fields.userName,
-          remoteInstancesHelper.remote_instance.postgresql.pdpgsql_13_3.username,
+          inputs.username,
         );
         I.fillField(
           this.fields.password,
-          remoteInstancesHelper.remote_instance.postgresql.pdpgsql_13_3.password,
+          inputs.password,
         );
         adminPage.customClearField(this.fields.portNumber);
         I.fillField(
@@ -365,86 +408,104 @@ module.exports = {
           remoteInstancesHelper.remote_instance.postgresql.pdpgsql_13_3.port,
         );
         I.fillField(this.fields.serviceName, serviceName);
-        I.fillField(this.fields.environment, this.potgresqlSettings.environment);
-        I.fillField(this.fields.cluster, this.potgresqlSettings.cluster);
+        I.fillField(this.fields.environment, inputs.environment);
+        I.fillField(this.fields.cluster, inputs.cluster);
         break;
       case remoteInstancesHelper.services.postgres_ssl:
-        I.fillField(this.fields.hostName,
-          remoteInstancesHelper.remote_instance.postgresql.postgres_13_3_ssl.host);
+        inputs = {
+          ...remoteInstancesHelper.remote_instance.postgresql.postgres_13_3_ssl,
+          ...this.potgresqlSettings,
+        };
+        I.fillField(
+          this.fields.hostName,
+          inputs.host,
+        );
         adminPage.customClearField(this.fields.portNumber);
-        I.fillField(this.fields.portNumber,
-          remoteInstancesHelper.remote_instance.postgresql.postgres_13_3_ssl.port);
+        I.fillField(
+          this.fields.portNumber,
+          inputs.port,
+        );
         I.fillField(this.fields.serviceName, serviceName);
-        I.fillField(this.fields.environment,
-          remoteInstancesHelper.remote_instance.postgresql.postgres_13_3_ssl.environment);
-        I.fillField(this.fields.cluster,
-          remoteInstancesHelper.remote_instance.postgresql.postgres_13_3_ssl.clusterName);
+        I.fillField(
+          this.fields.environment,
+          inputs.environment,
+        );
+        I.fillField(
+          this.fields.cluster,
+          inputs.clusterName,
+        );
         I.dontSeeElement(this.fields.tlscaInput);
         I.dontSeeElement(this.fields.tlsCertificateKeyInput);
         I.dontSeeElement(this.fields.tlsCertificateInput);
         I.click(this.fields.useTLS);
         I.waitForElement(this.fields.tlscaInput, 30);
-        await this.fillFileContent(this.fields.tlscaInput,
-          remoteInstancesHelper.remote_instance.postgresql.postgres_13_3_ssl.tlsCAFile);
-        await this.fillFileContent(this.fields.tlsCertificateInput,
-          remoteInstancesHelper.remote_instance.postgresql.postgres_13_3_ssl.tlsCertFile);
-        await this.fillFileContent(this.fields.tlsCertificateKeyInput,
-          remoteInstancesHelper.remote_instance.postgresql.postgres_13_3_ssl.tlsKeyFile);
+        await this.fillFileContent(
+          this.fields.tlscaInput,
+          inputs.tlsCAFile,
+        );
+        await this.fillFileContent(
+          this.fields.tlsCertificateInput,
+          inputs.tlsCertFile,
+        );
+        await this.fillFileContent(
+          this.fields.tlsCertificateKeyInput,
+          inputs.tlsKeyFile,
+        );
         break;
       case remoteInstancesHelper.services.proxysql:
-        I.fillField(this.fields.hostName, remoteInstancesHelper.remote_instance.proxysql.proxysql_2_1_1.host);
+        inputs = remoteInstancesHelper.remote_instance.proxysql.proxysql_2_1_1;
+        I.fillField(this.fields.hostName, inputs.host);
         I.fillField(
           this.fields.userName,
-          remoteInstancesHelper.remote_instance.proxysql.proxysql_2_1_1.username,
+          inputs.username,
         );
         I.fillField(
           this.fields.password,
-          remoteInstancesHelper.remote_instance.proxysql.proxysql_2_1_1.password,
+          inputs.password,
         );
         I.fillField(this.fields.serviceName, serviceName);
-        I.fillField(this.fields.environment, 'remote-proxysql');
-        I.fillField(this.fields.cluster, 'remote-proxysql-cluster');
+        I.fillField(this.fields.environment, inputs.environment);
+        I.fillField(this.fields.cluster, inputs.clusterName);
         break;
       case 'external_service_new':
+        inputs = remoteInstancesHelper.remote_instance.external.redis;
         I.fillField(this.fields.serviceName, serviceName);
-        I.fillField(this.fields.hostName, remoteInstancesHelper.remote_instance.external.redis.host);
+        I.fillField(this.fields.hostName, inputs.host);
         I.fillField(this.fields.metricsPath, '/metrics');
         adminPage.customClearField(this.fields.portNumber);
-        I.fillField(this.fields.portNumber, remoteInstancesHelper.remote_instance.external.redis.port);
+        I.fillField(this.fields.portNumber, inputs.port);
         I.fillField(this.fields.environment, 'remote-external-service');
         I.fillField(this.fields.cluster, 'remote-external-cluster');
         break;
       case 'postgreDoNotTrack':
       case 'postgresPGStatStatements':
       case 'postgresPgStatMonitor':
-        I.fillField(
-          this.fields.hostName,
-          remoteInstancesHelper.remote_instance.postgresql.pdpgsql_13_3.host,
-        );
-        I.fillField(
-          this.fields.userName,
-          remoteInstancesHelper.remote_instance.postgresql.pdpgsql_13_3.username,
-        );
-        I.fillField(
-          this.fields.password,
-          remoteInstancesHelper.remote_instance.postgresql.pdpgsql_13_3.password,
-        );
+        inputs = {
+          ...remoteInstancesHelper.remote_instance.postgresql.pdpgsql_13_3,
+          ...this.potgresqlSettings,
+        };
+        I.fillField(this.fields.hostName, inputs.host);
+        I.fillField(this.fields.userName, inputs.username);
+        I.fillField(this.fields.password, inputs.password);
         adminPage.customClearField(this.fields.portNumber);
-        I.fillField(
-          this.fields.portNumber,
-          remoteInstancesHelper.remote_instance.postgresql.pdpgsql_13_3.port,
-        );
+        I.fillField(this.fields.portNumber, inputs.port);
         I.fillField(this.fields.serviceName, serviceName);
         break;
       case remoteInstancesHelper.services.postgresGC:
-        I.fillField(this.fields.hostName, remoteInstancesHelper.remote_instance.gc.gc_postgresql.address);
-        I.fillField(this.fields.userName, remoteInstancesHelper.remote_instance.gc.gc_postgresql.userName);
-        I.fillField(this.fields.password, remoteInstancesHelper.remote_instance.gc.gc_postgresql.password);
+        inputs = {
+          ...remoteInstancesHelper.remote_instance.gc.gc_postgresql,
+          ...this.postgresGCSettings,
+        };
+        I.fillField(this.fields.hostName, inputs.address);
+        I.fillField(this.fields.userName, inputs.userName);
+        I.fillField(this.fields.password, inputs.password);
         I.fillField(this.fields.serviceName, serviceName);
-        I.fillField(this.fields.environment, this.postgresGCSettings.environment);
-        I.fillField(this.fields.cluster, this.postgresGCSettings.cluster);
+        I.fillField(this.fields.environment, inputs.environment);
+        I.fillField(this.fields.cluster, inputs.cluster);
     }
     adminPage.performPageDown(1);
+
+    return inputs;
   },
 
   createRemoteInstance(serviceName) {
@@ -481,8 +542,10 @@ module.exports = {
     I.fillField(this.fields.clientID, remoteInstancesHelper.remote_instance.azure.azure_client_id);
     I.fillField(this.fields.clientSecret, remoteInstancesHelper.remote_instance.azure.azure_client_secret);
     I.fillField(this.fields.tenantID, remoteInstancesHelper.remote_instance.azure.azure_tenant_id);
-    I.fillField(this.fields.subscriptionID,
-      remoteInstancesHelper.remote_instance.azure.azure_subscription_id);
+    I.fillField(
+      this.fields.subscriptionID,
+      remoteInstancesHelper.remote_instance.azure.azure_subscription_id,
+    );
     I.click(this.fields.discoverBtn);
     this.waitForDiscovery();
   },
@@ -537,32 +600,42 @@ module.exports = {
     I.fillField(this.fields.replicationSet, serviceParameters.replicationSet);
   },
 
-  fillRemoteRDSFields(serviceName) {
+  async fillRemoteRDSFields(serviceName) {
+    let inputs;
+
     // eslint-disable-next-line default-case
     switch (serviceName) {
       case 'rds-mysql56':
-        this.fillFields(this.mysqlInputs);
+        inputs = this.mysqlInputs;
+        this.fillFields(inputs);
         break;
       case 'pmm-qa-mysql-8-0-30':
-        this.fillFields(this.mysql80rdsInput);
+        inputs = this.mysql80rdsInput;
+        this.fillFields(inputs);
         break;
       case 'pmm-qa-rds-mysql-5-7-39':
-        this.fillFields(this.mysql57rdsInput);
+        inputs = this.mysql57rdsInput;
+        this.fillFields(inputs);
         break;
       case 'pmm-qa-pgsql-12':
-        this.fillFields(this.postgresqlInputs);
+        inputs = this.postgresqlInputs;
+        this.fillFields(inputs);
         break;
       case 'azure-MySQL':
+        inputs = this.mysqlAzureInputs;
         adminPage.customClearField(this.fields.serviceName);
         I.fillField(this.fields.serviceName, serviceName);
-        this.fillFields(this.mysqlAzureInputs);
+        this.fillFields(inputs);
         break;
       case 'azure-PostgreSQL':
+        inputs = this.postgresqlAzureInputs;
         adminPage.customClearField(this.fields.serviceName);
         I.fillField(this.fields.serviceName, serviceName);
-        this.fillFields(this.postgresqlAzureInputs);
+        this.fillFields(inputs);
     }
     I.scrollPageToBottom();
+
+    return inputs;
   },
 
   parseURL(url) {

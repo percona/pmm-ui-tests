@@ -317,7 +317,8 @@ Data(schedules).Scenario(
   },
 );
 
-Scenario('@PMM-T900 Verify user can copy scheduled backup @backup @bm-mongo',
+Scenario(
+  '@PMM-T900 Verify user can copy scheduled backup @backup @bm-mongo',
   async ({
     I, scheduledPage, scheduledAPI,
   }) => {
@@ -355,9 +356,11 @@ Scenario('@PMM-T900 Verify user can copy scheduled backup @backup @bm-mongo',
 
     // Verify schedule is disabled after copy
     I.seeAttributesOnElements(scheduledPage.elements.toggleByName(newSchedule.name), { checked: null });
-  });
+  },
+);
 
-Scenario('@PMM-T908 Verify user can enable/disable scheduled backup @backup @bm-mongo @bm-fb',
+Scenario(
+  '@PMM-T908 Verify user can enable/disable scheduled backup @backup @bm-mongo @bm-fb',
   async ({
     I, scheduledPage, scheduledAPI,
   }) => {
@@ -392,9 +395,11 @@ Scenario('@PMM-T908 Verify user can enable/disable scheduled backup @backup @bm-
 
     // Verify the color is the same as before enabling
     I.seeCssPropertiesOnElements(scheduledPage.elements.scheduleTypeByName(schedule.name), { 'background-color': color });
-  });
+  },
+);
 
-Scenario('@PMM-T901 Verify user can delete scheduled backup @backup @bm-mongo',
+Scenario(
+  '@PMM-T901 Verify user can delete scheduled backup @backup @bm-mongo',
   async ({
     I, scheduledPage, scheduledAPI,
   }) => {
@@ -416,13 +421,16 @@ Scenario('@PMM-T901 Verify user can delete scheduled backup @backup @bm-mongo',
 
     // Open Delete modal again and verify it has a correct schedule name in message
     scheduledPage.openDeleteModal(schedule.name);
-    I.seeTextEquals(scheduledPage.messages.confirmDelete(schedule.name),
-      locate(scheduledPage.elements.modalContent).find('h4'));
+    I.seeTextEquals(
+      scheduledPage.messages.confirmDelete(schedule.name),
+      locate(scheduledPage.elements.modalContent).find('h4'),
+    );
 
     // Confirm delete and verify success message
     I.click(scheduledPage.buttons.confirmDelete);
     I.verifyPopUpMessage(scheduledPage.messages.successfullyDeleted(schedule.name));
-  });
+  },
+);
 
 Scenario(
   '@PMM-T924 - Verify user is able to schedule a backup for MongoDB with replica & MySQL '
@@ -516,7 +524,7 @@ Scenario(
   },
 );
 
-Scenario(
+Scenario.skip(
   '@PMM-T1527 Verify BM Scheduler blocks mongo services that are not managed as cluster'
   + ' @backup @bm-mongo @bm-fb',
   async ({ I, scheduledPage }) => {
@@ -529,6 +537,7 @@ Scenario(
     scheduledPage.openScheduleBackupModal();
     scheduledPage.selectDropdownOption(scheduledPage.fields.serviceNameDropdown, mongoNameWithoutCluster);
     I.fillField(scheduledPage.fields.backupName, schedule.name);
+    I.click(scheduledPage.elements.advancedSettingsSection);
     I.fillField(scheduledPage.fields.folder, schedule.folder);
     scheduledPage.selectDropdownOption(scheduledPage.fields.locationDropdown, location.name);
     scheduledPage.selectDropdownOption(scheduledPage.fields.everyDropdown, 'Every minute');

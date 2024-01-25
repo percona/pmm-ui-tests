@@ -291,8 +291,11 @@ module.exports = {
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
     const resp = await I.sendPostRequest('v1/management/External/Add', body, headers);
 
-    I.assertEqual(resp.status, 200,
-      `External Service ${serviceName} was not added for monitoring got following response ${JSON.stringify(resp.data)}`);
+    I.assertEqual(
+      resp.status,
+      200,
+      `External Service ${serviceName} was not added for monitoring got following response ${JSON.stringify(resp.data)}`,
+    );
   },
 
   async addInstanceForSTT(connection, instanceName = 'stt-mysql-5.7.30') {

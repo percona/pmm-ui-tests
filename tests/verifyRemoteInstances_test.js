@@ -61,6 +61,12 @@ Before(async ({ I }) => {
   await I.Authorize();
 });
 
+// The test relies on --setup-external-service flag setup from pmm-framework
+Scenario('@PMM-T1700 - External service name is properly displayed @instances @instances-fb', async ({ I, pmmInventoryPage }) => {
+  I.amOnPage(pmmInventoryPage.url);
+  I.waitForVisible(pmmInventoryPage.fields.serviceRow('redis_external'), 10);
+});
+
 Scenario(
   '@PMM-T588 - Verify adding external exporter service via UI @instances @instances-fb',
   async ({ I, remoteInstancesPage, pmmInventoryPage }) => {
@@ -152,7 +158,6 @@ Scenario(
     I.amOnPage(remoteInstancesPage.url);
     remoteInstancesPage.waitUntilRemoteInstancesPageLoaded();
     remoteInstancesPage.openAddRemotePage('haproxy');
-    I.waitForVisible(remoteInstancesPage.fields.returnToMenuButton, 30);
     I.waitForVisible(remoteInstancesPage.fields.hostName, 30);
     I.waitForVisible(remoteInstancesPage.fields.serviceName, 30);
     I.waitForVisible(remoteInstancesPage.fields.portNumber, 30);
@@ -224,7 +229,6 @@ Scenario(
     I.click(remoteInstancesPage.fields.addService);
     remoteInstancesPage.checkRequiredField();
     // Verify fields on the page
-    I.seeElement(remoteInstancesPage.fields.returnToMenuButton, 30);
     I.seeElement(remoteInstancesPage.fields.hostName, 30);
     I.seeElement(remoteInstancesPage.fields.serviceName, 30);
     I.seeElement(remoteInstancesPage.fields.portNumber, 30);

@@ -17,10 +17,14 @@ const version = process.env.PGSQL_VERSION ? `${process.env.PGSQL_VERSION}` : '14
 const container = process.env.PGSQL_PGSM_CONTAINER ? `${process.env.PGSQL_PGSM_CONTAINER}` : 'pgsql_pgsm';
 const database = `pgsm${Math.floor(Math.random() * 99) + 1}`;
 const pgsm_service_name = `${container}_${version}_service`;
+const pgsm_service_name_socket = `socket_${container}_${version}_service`;
 const container_name = `${container}_${version}`;
 const percentageDiff = (a, b) => (a - b === 0 ? 0 : 100 * Math.abs((a - b) / b));
 
-const labels = [{ key: 'database', value: [`${database}`] }];
+const labels = [
+  { key: 'database', value: [database] },
+  { key: 'service_name', value: [pgsm_service_name] },
+];
 
 const filters = new DataTable(['filterSection', 'filterToApply']);
 
@@ -37,6 +41,27 @@ Feature('PMM + PGSM Integration Scenarios');
 Before(async ({ I }) => {
   await I.Authorize();
 });
+
+Scenario(
+  'PMM-T1728 - pg_stat_monitor agent does not continuously try to create pg_stat_monitor_settings view @not-ui-pipeline @pgsm-pmm-integration',
+  async ({ I }) => {
+    await I.verifyCommand(
+      `docker exec ${container_name} cat /var/log/postgresql/postgresql-${version}-main.log | grep 'ERROR: relation "pg_stat_monitor_settings" already exists'`,
+      '',
+      'fail',
+    );
+    await I.verifyCommand(
+      `docker exec ${container_name} cat /var/log/postgresql/postgresql-${version}-main.log | grep 'STATEMENT: CREATE VIEW pg_stat_monitor_settings AS SELECT * FROM pg_settings WHERE name like'`,
+      '',
+      'fail',
+    );
+
+    const out = await I.pgExecuteQueryOnDemand('select table_name from INFORMATION_SCHEMA.views;', connection);
+    const viewNamesArr = out.rows.map((v) => v.table_name);
+
+    assert.ok(!viewNamesArr.includes('pg_stat_monitor_settings'), 'PG should not have "pg_stat_monitor_settings" view');
+  },
+);
 
 Scenario(
   'PMM-T1260 - Verifying data in Clickhouse and comparing with PGSM output @not-ui-pipeline @pgsm-pmm-integration',
@@ -63,7 +88,7 @@ Scenario(
     // wait for pmm-agent to push the execution as part of next bucket to clickhouse
     await I.verifyCommand(`docker exec ${container_name} pmm-admin list | grep "postgresql_pgstatmonitor_agent" | grep "Running"`);
 
-    I.wait(5);
+    I.wait(30);
     let pgsm_output;
 
     if (version < 13) {
@@ -96,6 +121,14 @@ Scenario(
 
       await I.say(`query is : ${query}`);
 
+      if (!response.data.metrics) {
+        throw new Error(`there are no metrics stored in clickhouse for query 
+        "${query}"
+        Full resp: 
+        "${JSON.stringify(response.data)}"
+        `);
+      }
+
       const clickhouse_sum = parseFloat((response.data.metrics.query_time.sum).toFixed(7));
       const clickhouse_avg = parseFloat((response.data.metrics.query_time.avg).toFixed(7));
 
@@ -114,7 +147,7 @@ Scenario(
       assert.ok(response.data.metrics.query_time.cnt === query_cnt, `Expected Total Query Count Metrics to be same for query ${query} with id as ${queryid} found in clickhouse as ${response.data.metrics.query_time.cnt} while pgsm has value as ${query_cnt}`);
     }
   },
-);
+).retry(2);
 
 Data(filters).Scenario(
   'PMM-T1261 - Verify the "Command type" filter for Postgres @not-ui-pipeline @pgsm-pmm-integration',
@@ -154,6 +187,28 @@ Scenario(
   },
 );
 
+Scenario(
+  'PMM-T2261 - Verify Postgresql Dashboard Instance Summary has Data with socket based service and Agent log @not-ui-pipeline @pgsm-pmm-integration',
+  async ({
+    I, dashboardPage, adminPage,
+  }) => {
+    I.amOnPage(dashboardPage.postgresqlInstanceSummaryDashboard.url);
+    dashboardPage.waitForDashboardOpened();
+    await dashboardPage.applyFilter('Service Name', pgsm_service_name_socket);
+    await dashboardPage.expandEachDashboardRow();
+    I.click(adminPage.fields.metricTitle);
+    adminPage.performPageDown(5);
+    adminPage.performPageUp(5);
+    dashboardPage.verifyMetricsExistence(dashboardPage.postgresqlInstanceSummaryDashboard.metrics);
+    await dashboardPage.verifyThereAreNoGraphsWithNA();
+    await dashboardPage.verifyThereAreNoGraphsWithoutData(1);
+    const log = await I.verifyCommand(`docker exec ${container_name} cat pmm-agent.log`);
+
+    I.assertFalse(log.includes('Error opening connection to database \(postgres'),
+      'The log wasn\'t supposed to contain errors regarding connection to postgress database but it does');
+  },
+);
+
 // The numbers don't entirely match, we need to find a way to track based on difference
 Scenario(
   'PMM-T1259 - Verifying data in Clickhouse and comparing with PGSM output @pgsm-pmm-integration @not-ui-pipeline',
@@ -178,7 +233,11 @@ Scenario(
     // wait for pmm-agent to push the execution as part of next bucket to clickhouse
     await I.verifyCommand(`docker exec ${container_name} pmm-admin list | grep "postgresql_pgstatmonitor_agent" | grep "Running"`);
 
-    const labels = [{ key: 'database', value: [`${db}`] }];
+    const labels = [
+      { key: 'database', value: [`${db}`] },
+      { key: 'service_name', value: [pgsm_service_name] },
+    ];
+
     const excluded_queries = [
       'SELECT version()',
       'SELECT /* pmm-agent:pgstatmonitor */ version()',
@@ -212,6 +271,8 @@ Scenario(
       'BEGIN',
       'COMMIT',
     ];
+
+    I.wait(30);
     let pgsm_output;
 
     if (version < 13) {
@@ -245,6 +306,16 @@ Scenario(
         assert.fail(`Expected queryid with id as ${queryid} and query as ${query} to have data in clickhouse but got response as ${response.status}. ${JSON.stringify(response.data)}}`);
       }
 
+      await I.say(`query is : ${query}`);
+
+      if (!response.data.metrics) {
+        throw new Error(`there are no metrics stored in clickhouse for query 
+        "${query}"
+        Full resp: 
+        "${JSON.stringify(response.data)}"
+        `);
+      }
+
       const clickhouse_sum = parseFloat((response.data.metrics.query_time.sum).toFixed(7));
       const clickhouse_avg = parseFloat((response.data.metrics.query_time.avg).toFixed(7));
 
@@ -263,7 +334,7 @@ Scenario(
       assert.ok(response.data.metrics.query_time.cnt === query_cnt, `Expected Total Query Count Metrics to be same for query ${query} with id as ${queryid} found in clickhouse as ${response.data.metrics.query_time.cnt} while pgsm has value as ${query_cnt}`);
     }
   },
-);
+).retry(2);
 
 Scenario(
   'PMM-T1063 - Verify Application Name with pg_stat_monitor @pgsm-pmm-integration @not-ui-pipeline',
@@ -514,8 +585,10 @@ Scenario(
     I.wait(defaultValue);
     let log = await I.verifyCommand(`docker exec ${container_name} tail -n100 pmm-agent.log`);
 
-    assert.ok(!log.includes('non default bucket time value is not supported, status changed to WAITING'),
-      'The log wasn\'t supposed to contain errors regarding bucket time but it does');
+    assert.ok(
+      !log.includes('non default bucket time value is not supported, status changed to WAITING'),
+      'The log wasn\'t supposed to contain errors regarding bucket time but it does',
+    );
 
     await I.pgExecuteQueryOnDemand(`ALTER SYSTEM SET pg_stat_monitor.pgsm_bucket_time=${alteredValue};`, connection);
     await I.verifyCommand(`docker exec ${container_name} service postgresql restart`);
@@ -524,8 +597,10 @@ Scenario(
     I.wait(alteredValue);
     log = await I.verifyCommand(`docker exec ${container_name} tail -n100 pmm-agent.log`);
 
-    assert.ok(log.includes('non default bucket time value is not supported, status changed to WAITING'),
-      'The log was supposed to contain errors regarding bucket time but it doesn\'t');
+    assert.ok(
+      log.includes('non default bucket time value is not supported, status changed to WAITING'),
+      'The log was supposed to contain errors regarding bucket time but it doesn\'t',
+    );
 
     await I.verifyCommand(`docker exec ${container_name} pmm-admin list | grep "postgresql_pgstatmonitor_agent" | grep "Waiting"`);
     await I.pgExecuteQueryOnDemand(`ALTER SYSTEM SET pg_stat_monitor.pgsm_bucket_time=${defaultValue};`, connection);

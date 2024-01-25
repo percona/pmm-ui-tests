@@ -21,12 +21,52 @@ After(async ({ settingsAPI }) => {
 });
 
 Scenario(
+  'PMM-T1831 Verify adding PostgreSQL RDS with specified Auto-discovery limit @aws @instances',
+  async ({
+    I, remoteInstancesPage, pmmInventoryPage, inventoryAPI, agentsPage,
+  }) => {
+    const serviceName = 'pmm-qa-pgsql-12';
+
+    await inventoryAPI.deleteNodeByServiceName('POSTGRESQL_SERVICE', serviceName);
+
+    I.amOnPage(remoteInstancesPage.url);
+    remoteInstancesPage.waitUntilRemoteInstancesPageLoaded().openAddAWSRDSMySQLPage();
+    remoteInstancesPage.discoverRDS();
+    remoteInstancesPage.startMonitoringOfInstance(serviceName);
+    remoteInstancesPage.verifyAddInstancePageOpened();
+    I.seeInField(remoteInstancesPage.fields.serviceName, serviceName);
+    remoteInstancesPage.fillRemoteRDSFields(serviceName);
+    I.click(remoteInstancesPage.fields.customAutoDiscoveryButton);
+    I.clearField(remoteInstancesPage.fields.customAutoDiscoveryfield);
+    I.fillField(remoteInstancesPage.fields.customAutoDiscoveryfield, '1');
+
+    remoteInstancesPage.createRemoteInstance(serviceName);
+    pmmInventoryPage.verifyRemoteServiceIsDisplayed(serviceName);
+
+    const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName('POSTGRESQL_SERVICE', serviceName);
+
+    await agentsPage.open(service_id);
+    await agentsPage.verifyAgentOtherDetailsSection('Postgres exporter', 'auto_discovery_limit=1');
+
+    const agentId = await I.grabTextFrom(agentsPage.fields.agentIdByAgentName('Postgres exporter'));
+
+    I.wait(3);
+
+    const out = await I.verifyCommand(`docker top pmm-server | awk '/postgres_exporter/ && /${agentId.split('/')[2]}/'`);
+
+    assert(!out.includes('--auto-discover-databases'), 'postgres-exporter should not have flag "auto-discover-databases"');
+  },
+);
+
+Scenario(
   '@PMM-T716 - Verify adding PostgreSQL RDS monitoring to PMM via UI @aws @instances'
   + '@PMM-T1596 Verify that PostgreSQL exporter ignores connection error to "rdsadmin" database for Amazon RDS instance @aws @instances',
   async ({
-    I, remoteInstancesPage, pmmInventoryPage,
+    I, remoteInstancesPage, pmmInventoryPage, inventoryAPI,
   }) => {
     const serviceName = 'pmm-qa-pgsql-12';
+
+    await inventoryAPI.deleteNodeByServiceName('POSTGRESQL_SERVICE', serviceName);
 
     I.amOnPage(remoteInstancesPage.url);
     remoteInstancesPage.waitUntilRemoteInstancesPageLoaded().openAddAWSRDSMySQLPage();
@@ -45,9 +85,10 @@ Scenario(
     // await pmmInventoryPage.verifyAgentHasStatusRunning(serviceName);
 
     // await pmmInventoryPage.verifyMetricsFlags(serviceName);
-    const logs = await I.verifyCommand('docker exec pmm-server tail -n 100 /srv/logs/pmm-agent.log');
+    const logs = await I.verifyCommand('docker exec pmm-server tail -n 1000 /srv/logs/pmm-agent.log');
+    const rdsAdminErrorLine = logs.split('\n').find((l) => l.includes('rdsadmin') && l.includes('ERRO'));
 
-    I.assertFalse(logs.includes('rdsadmin') && logs.includes('ERRO'), 'Logs contains errors about rdsadmin database being used!');
+    I.assertFalse(!!rdsAdminErrorLine, `Logs contains errors about rdsadmin database being used! \n The line is: \n ${rdsAdminErrorLine}`);
   },
 );
 

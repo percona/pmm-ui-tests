@@ -4,6 +4,7 @@ const buildUrl = require('build-url');
 
 const systemMessageText = '.page-alert-list div[data-testid^="data-testid Alert"] > div';
 const systemMessageButtonClose = '.page-alert-list button';
+const warningLocator = '[data-testid="data-testid Alert warning"]';
 
 module.exports = () => actor({
 
@@ -11,6 +12,11 @@ module.exports = () => actor({
     this.waitForElement(systemMessageText, timeout);
     this.see(message, systemMessageText);
     this.click(systemMessageButtonClose);
+  },
+
+  verifyWarning(message, timeout = 10) {
+    this.waitForElement(warningLocator, timeout);
+    this.see(message, warningLocator);
   },
 
   async verifyInvisible(selector, timeOutInSeconds = 1) {
@@ -65,11 +71,34 @@ module.exports = () => actor({
     }
   },
 
+  /**
+   * Asserts that zip Archive contains elements specified in argument
+   *
+   * @param   filepath      a string path to target zip file
+   * @param   entriesArray  an array with element which must be present in zip archive
+   * @return  {Promise<void>}
+   */
   async seeEntriesInZip(filepath, entriesArray) {
+    this.assertDeepIncludeMembers(
+      await this.readZipArchive(filepath),
+      entriesArray,
+      `Zip file: '${filepath}' must include: ${entriesArray}`,
+    );
+  },
+
+  /**
+   * Asserts that zip Archive does not contain elements specified in argument
+   *
+   * @param   filepath      a string path to target zip file
+   * @param   entriesArray  an array with element which must not be present in zip archive
+   * @return  {Promise<void>}
+   */
+  async dontSeeEntriesInZip(filepath, entriesArray) {
     const entries = await this.readZipArchive(filepath);
 
+    // TODO: contribute this.assertDeepNotIncludeMembers(); to codecept-chai lib
     entriesArray.forEach((entry) => {
-      assert.ok(entries.includes(entry));
+      this.assertFalse(entries.includes(entry), `'${entry}' must not be in ${entries}`);
     });
   },
 

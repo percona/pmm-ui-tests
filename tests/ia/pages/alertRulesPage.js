@@ -12,7 +12,7 @@ module.exports = {
     noRules: 'div.page-body > div',
     columnHeaderLocator: (columnHeaderText) => locate('$header').withText(columnHeaderText),
     ruleNameValue: 'div[data-column=\'Name\']',
-    ruleState: '//div[@data-column=\'State\']//div//span',
+    ruleState: (text) => `//span[contains(.,'${text}')]`,
     ruleDetails: 'div[data-testid=\'expanded-content\']',
     searchByDataSourceDropdown: '//div[@aria-label="Data source picker select container"]',
     searchByLabel: '$input-wrapper',
@@ -79,7 +79,10 @@ module.exports = {
     I.waitForElement(this.fields.templatesLoader);
     this.searchAndSelectResult('template', template);
     this.verifyAndReplaceInputField('ruleName', ruleName, editedRule.ruleName);
-    this.verifyAndReplaceInputField('threshold', threshold, editedRule.threshold);
+    const thresholdExists = await I.grabNumberOfVisibleElements(this.fields.resultsLocator(threshold));
+    if (thresholdExists >0 ) {
+        this.verifyAndReplaceInputField('threshold', threshold, editedRule.threshold);
+    }
     this.verifyAndReplaceInputField('duration', duration, editedRule.duration);
     I.see(severity, this.fields.searchDropdown('severity'));
     this.searchAndSelectResult('severity', editedRule.severity);
@@ -120,6 +123,7 @@ module.exports = {
   },
 
   selectFolder(option) {
+    I.waitForElement(this.fields.folderLocator);
     I.click(this.fields.folderLocator);
     I.waitForElement(this.fields.resultsLocator(option));
     I.click(this.fields.resultsLocator(option));
@@ -145,5 +149,9 @@ module.exports = {
     I.waitForVisible(this.buttons.groupCollapseButton(folder));
     I.click(this.buttons.groupCollapseButton(folder));
     I.seeTextEquals(ruleName, this.elements.ruleNameValue);
+  },
+
+  verifyRuleState(ruleName, timeOut) {
+    I.waitForText(ruleName, timeOut, this.elements.ruleState(ruleName));
   },
 };

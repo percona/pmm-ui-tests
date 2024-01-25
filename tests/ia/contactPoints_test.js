@@ -13,8 +13,8 @@ Before(async ({ I }) => {
 });
 
 Data(contactPoints).Scenario(
-  'PMM-T1703 Verify Slack contact point can be created, ' +
-  'PMM-T1709 Verify Webhook contact point can be created @ia',
+  'PMM-T1703 Verify Slack contact point can be created, '
+  + 'PMM-T1709 Verify Webhook contact point can be created @ia',
   async ({ I, current }) => {
     await contactPointsPage.openContactPointsTab();
     await contactPointsPage.createCP(current.name, current.type);
@@ -64,8 +64,8 @@ Data(contactPoints).Scenario(
 );
 
 Scenario(
-  'PMM-T1710 Verify saving a contact point when required info is missing, ' +
-  'PMM-T1711 Verify contact point test @ia',
+  'PMM-T1710 Verify saving a contact point when required info is missing, '
+  + 'PMM-T1711 Verify contact point test @ia',
   async ({ I, iaCommon }) => {
     await contactPointsPage.openContactPointsTab();
     I.waitForVisible(contactPointsPage.buttons.newContactPoint, 10);
