@@ -2,7 +2,6 @@ const assert = require('assert');
 const faker = require('faker');
 const { generate } = require('generate-password');
 const { storageLocationConnection } = require('./backup/pages/testData');
-
 const {
   adminPage, remoteInstancesHelper, psMySql, pmmSettingsPage, dashboardPage, databaseChecksPage, scheduledAPI, locationsAPI,
 } = inject();
@@ -165,6 +164,7 @@ Scenario(
     I, grafanaAPI, dashboardPage, searchDashboardsModal,
   }) => {
     const insightFolder = await grafanaAPI.lookupFolderByName(searchDashboardsModal.folders.insight.name);
+
     await grafanaAPI.createCustomDashboard(grafanaAPI.randomDashboardName, insightFolder.id, null, ['pmm-qa', grafanaAPI.randomTag]);
     const folder = await grafanaAPI.createFolder(grafanaAPI.customFolderName);
     let additionalPanel = null;
@@ -596,7 +596,14 @@ Scenario(
     if (versionMinor > 26) {
       await I.say('Verify there is no "Error while loading library panels" errors on dashboard and no errors in grafana.log');
       I.wait(1);
-      const errorLogs = await I.verifyCommand('docker exec pmm-server cat /srv/logs/grafana.log | grep level=error');
+      let errorLogs;
+
+      if (process.env.AMI_UPGRADE_TESTING_INSTANCE !== 'true' && process.env.OVF_UPGRADE_TESTING_INSTANCE !== 'true') {
+        errorLogs = await I.verifyCommand('docker exec pmm-server cat /srv/logs/grafana.log | grep level=error');
+      } else {
+        errorLogs = await I.verifyCommand('cat /srv/logs/grafana.log | grep level=error || true');
+      }
+
       const loadingLibraryErrorLine = errorLogs.split('\n')
         .filter((line) => line.includes('Error while loading library panels'));
 
@@ -1020,7 +1027,7 @@ if (versionMinor >= 13) {
       const { service_name } = await inventoryAPI.apiGetNodeInfoByServiceName(serviceType, name, 'ssl');
       const dashboardUrl = I.buildUrlWithParams(dashboard.split('?')[0], {
         service_name,
-        from: 'now-30m',
+        from: 'now-60m',
       });
 
       I.amOnPage(dashboardUrl);
@@ -1233,6 +1240,49 @@ if (versionMinor >= 32) {
     },
   ).retry(0);
 }
+
+Scenario('PMM-12587-1 Verify duplicate dashboards dont break after upgrade @pre-upgrade @ovf-upgrade @ami-upgrade @pmm-upgrade',
+    async ({
+             I, grafanaAPI, searchDashboardsModal
+           }) => {
+
+      const insightFolder = await grafanaAPI.lookupFolderByName(searchDashboardsModal.folders.insight.name);
+      const experimentalFolder = await grafanaAPI.lookupFolderByName(searchDashboardsModal.folders.experimental.name);
+
+      const resp1 = await grafanaAPI.createCustomDashboard('test-dashboard', insightFolder.id);
+      const resp2 = await grafanaAPI.createCustomDashboard('test-dashboard', experimentalFolder.id);
+
+      await I.writeFileSync('./dashboard.json', JSON.stringify({
+        DASHBOARD1_UID: resp1.uid,
+        DASHBOARD2_UID: resp2.uid
+      }),false);
+
+      //Check if file with Dashboard info is present.
+      I.assertNotEqual(I.fileSize('./dashboard.json',false), 0, `Was expecting Dashboard info in the File, but its empty`);
+    },);
+
+Scenario(
+    'PMM-12587-2 Verify duplicate dashboards dont break after upgrade @post-upgrade @ovf-upgrade @ami-upgrade @pmm-upgrade',
+    async ({
+             I, grafanaAPI, dashboardPage,
+           }) => {
+      const resp = JSON.parse(await I.readFileSync('./dashboard.json',false));
+
+      const resp1 = await grafanaAPI.getDashboard(resp.DASHBOARD1_UID);
+      const resp2 = await grafanaAPI.getDashboard(resp.DASHBOARD2_UID);
+
+      //Trim leading '/' from response url
+      const url1 = resp1.meta.url.replace(/^\/+/g, '');
+      const url2 = resp2.meta.url.replace(/^\/+/g, '');
+
+      I.amOnPage(url1);
+      dashboardPage.waitForDashboardOpened();
+      I.seeInCurrentUrl(url1);
+      I.amOnPage(url2);
+      dashboardPage.waitForDashboardOpened();
+      I.seeInCurrentUrl(url2);
+    },
+);
 
 // This test must be executed last
 if (versionMinor >= 35) {
