@@ -190,7 +190,7 @@ Scenario(
   // Grab only Lag value required from Text
   let actualLagValue= +replLagText.split(".",1);
   // Grab actual Lag value required from database
-  let expectedLagValue = (await I.verifyCommand(`docker exec -w /mongosh/bin/ ${arbiter_container_name} ./mongosh --eval rs\.printSecondaryReplicationInfo\\(\\) | awk '/replLag:/ {print $2}' | cut -c 2`)).trim();
+  let expectedLagValue = (await I.verifyCommand(`docker exec -w /mongosh/bin/ ${arbiter_container_name} ./mongosh --eval rs\.printSecondaryReplicationInfo\\(\\) | awk '/replLag:/ {print $2}' | cut -c2-`)).trim();
   // Give some threshold increase for actual replication lag, for now 2 secs extra
   expectedLagValue = +expectedLagValue+2;
   I.assertBelow(actualLagValue,expectedLagValue, "ReplicaLag is more than expected lag vaule");
