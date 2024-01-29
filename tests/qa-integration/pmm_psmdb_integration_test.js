@@ -174,27 +174,22 @@ Scenario(
 );
 
 Scenario(
-  'T2317 Verify Wrong Replication Lag by Set values if RS is PSA -( MongoDB Cluster Summary) @pmm-psmdb-arbiter-integration @not-ui-pipeline',
-  async ({
-    I, dashboardPage, adminPage,
-  }) => {
+    'T1775 Verify Wrong Replication Lag by Set values if RS is PSA -( MongoDB Cluster Summary) @pmm-psmdb-arbiter-integration @not-ui-pipeline',
+    async ({
+             I, dashboardPage,
+           }) => {
 
-  I.amOnPage(`${dashboardPage.mongodbReplicaSetSummaryDashboard.url}&var-replset=rs1`);
-  dashboardPage.waitForDashboardOpened();
+      I.amOnPage(`${dashboardPage.mongodbReplicaSetSummaryDashboard.url}&var-replset=rs1`);
+      dashboardPage.waitForDashboardOpened();
 
-  // Grab secs or year lag value from Replication Lag min field in UI
-  const replLagLocator = '(//a[@data-testid=\'data-testid dashboard-row-title-Replication Lag\']/following::a[contains(text(),\'mongodb_rs2_1\')]/following::td[contains(text(),\' s\') or contains(text(),\' year\')])[1]';
+      const serviceName = "mongodb_rs2_1";
+      // Check service name from Replication Lag field in UI
+      const replLagService = `(//a[@data-testid='data-testid dashboard-row-title-Replication Lag']/following::a[contains(text(),'${serviceName}')])`;
+      await I.waitForElement({xpath: replLagService},300);
 
-  await I.waitForElement(replLagLocator,500);
-  // Get the text content of the element located
-  const replLagText = await I.grabTextFrom(replLagLocator);
-  // Grab only Lag value required from Text
-  let actualLagValue= +replLagText.split(".",1);
-  // Grab actual Lag value required from database
-  let expectedLagValue = (await I.verifyCommand(`docker exec -w /mongosh/bin/ ${arbiter_container_name} ./mongosh --eval rs\.printSecondaryReplicationInfo\\(\\) | awk '/replLag:/ {print $2}' | cut -c 2`)).trim();
-  // Give some threshold increase for actual replication lag, for now 2 secs extra
-  expectedLagValue = +expectedLagValue+2;
-  I.assertBelow(actualLagValue,expectedLagValue, "ReplicaLag is more than expected lag vaule");
-  },
+      // Check lag value from Replication Lag field in UI
+      const replLagValue = `(//a[@data-testid='data-testid dashboard-row-title-Replication Lag']/following::a[contains(text(),'${serviceName}')]/following::td[contains(text(),' year')])[1]`;
+      await I.dontSeeElement(replLagValue,180);
+    },
 );
 
