@@ -185,7 +185,7 @@ Scenario(
       const serviceName = "mongodb_rs2_1";
       // Check service name from Replication Lag field in UI
       const replLagService = `(//a[@data-testid='data-testid dashboard-row-title-Replication Lag']/following::a[contains(text(),'${serviceName}')])`;
-      await I.waitForElement({xpath: replLagService},500);
+      await I.waitForElement(replLagService,500);
 
       // Check lag value from Replication Lag field in UI
       const replLagValue = `(//a[@data-testid='data-testid dashboard-row-title-Replication Lag']/following::a[contains(text(),'${serviceName}')]/following::td[contains(text(),' year')])[1]`;
