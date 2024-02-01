@@ -182,6 +182,8 @@ Scenario(
       I.amOnPage(`${dashboardPage.mongodbReplicaSetSummaryDashboard.url}&var-replset=rs1`);
       dashboardPage.waitForDashboardOpened();
 
+      // This is due to some instances with many services take filter to load
+      I.wait(3);
       const serviceName = "mongodb_rs2_1";
       // Check service name from Replication Lag field in UI
       const replLagService = `(//a[@data-testid='data-testid dashboard-row-title-Replication Lag']/following::a[contains(text(),'${serviceName}')])`;
@@ -191,5 +193,5 @@ Scenario(
       const replLagValue = `(//a[@data-testid='data-testid dashboard-row-title-Replication Lag']/following::a[contains(text(),'${serviceName}')]/following::td[contains(text(),' year')])[1]`;
       await I.dontSeeElement(replLagValue,180);
     },
-);
+).retry(2);
 
