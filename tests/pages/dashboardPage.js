@@ -912,7 +912,7 @@ module.exports = {
     ],
   },
   mongodbReplicaSetSummaryDashboard: {
-    url: 'graph/d/mongodb-replicaset-summary/mongodb-replset-summary?orgId=1&refresh=5s&from=now-5m&to=now',
+    url: 'graph/d/mongodb-replicaset-summary/mongodb-replset-summary?orgId=1&refresh=1m&from=now-5m&to=now',
     metrics: [
       'Replication Lag',
       'ReplSet States',
