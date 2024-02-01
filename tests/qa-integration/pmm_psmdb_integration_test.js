@@ -184,7 +184,7 @@ Scenario(
 
       // Gather Secondary memeber Service Name from Mongo and PMM admin
       const secondaryLagPort = (await I.verifyCommand(`docker exec ${arbiter_container_name} ./psmdb_${version}/bin/mongo --eval rs\.printSecondaryReplicationInfo\\(\\) | awk -F ":" '/source/ {print $3}'`)).trim();
-      const serviceName = (await I.verifyCommand(`docker exec ${arbiter_container_name} pmm-admin list | awk '/'${secondaryLagPort}'/ {print $2}'`)).trim();
+      const serviceName = (await I.verifyCommand(`docker exec ${arbiter_container_name} pmm-admin list | awk -v pat=${secondaryLagPort} '$0~pat {print $2}'`)).trim();
 
       // Check service name from Replication Lag field in UI
       const replLagService = `(//a[@data-testid='data-testid dashboard-row-title-Replication Lag']/following::a[contains(text(),'${serviceName}')])`;
