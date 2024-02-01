@@ -182,7 +182,7 @@ Scenario(
       I.amOnPage(`${dashboardPage.mongodbReplicaSetSummaryDashboard.url}&var-replset=rs1`);
       dashboardPage.waitForDashboardOpened();
 
-      const serviceName = "mongodb_rs2_1";
+      const serviceName = "mongodb_rs2_2";
       // Check service name from Replication Lag field in UI
       const replLagService = `(//a[@data-testid='data-testid dashboard-row-title-Replication Lag']/following::a[contains(text(),'${serviceName}')])`;
       await I.retry(5).waitForElement(replLagService,180);
