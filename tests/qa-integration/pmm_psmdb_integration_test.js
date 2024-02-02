@@ -182,8 +182,12 @@ Scenario(
       I.amOnPage(`${dashboardPage.mongodbReplicaSetSummaryDashboard.url}&var-replset=rs1`);
       dashboardPage.waitForDashboardOpened();
 
+      //TODO Fix Setup and Change here before Merge
+      const username = 'dba';
+      const password = 'test1234';
+
       // Gather Secondary memeber Service Name from Mongo and PMM admin
-      const secondaryLagPort = (await I.verifyCommand(`docker exec ${arbiter_container_name} ./psmdb_${version}/bin/mongo --eval rs\.printSecondaryReplicationInfo\\(\\) | awk -F ":" '/source/ {print $3}'`)).trim();
+      const secondaryLagPort = (await I.verifyCommand(`docker exec ${arbiter_container_name} ./psmdb_${version}/bin/mongo --eval rs\.printSecondaryReplicationInfo\\(\\) --username=${username} --password=${password} | awk -F ":" '/source/ {print $3}'`)).trim();
       const serviceName = (await I.verifyCommand(`docker exec ${arbiter_container_name} pmm-admin list | awk -v pat='${secondaryLagPort}' '$0~pat {print $2}'`)).trim();
 
       // Check service name from Replication Lag field in UI
