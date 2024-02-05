@@ -1,3 +1,5 @@
+const assert = require('assert');
+
 Feature('MongoDB Experimental Dashboards tests');
 
 const { adminPage } = inject();
@@ -73,5 +75,20 @@ Scenario(
     dashboardPage.verifyMetricsExistence(dashboardPage.mongoDbOplogDetails.metrics);
     await dashboardPage.verifyThereAreNoGraphsWithNA();
     await dashboardPage.verifyThereAreNoGraphsWithoutData(1);
+  },
+);
+
+Scenario(
+  'PMM-T1860 - Verify there is no CommandNotSupportOnView error in mongo logs when using --enable-all-collectors @dashboards @mongodb-exporter',
+  async ({
+    I, dashboardPage,
+  }) => {
+    I.amOnPage(I.buildUrlWithParams(dashboardPage.mongoDbOplogDetails.clearUrl, { from: 'now-5m', service_name: mongodb_service_name_ac }));
+    dashboardPage.waitForDashboardOpened();
+
+    const logs = await I.verifyCommand(`docker exec ${connection.container_name} grep CommandNotSupportOnView /nodes/node1/mongod.log || true`);
+
+    assert.ok(logs.length === 0, `"CommandNotSupportOnView" error should not be in /nodes/node1/mongod.log log file. 
+ ${logs}`);
   },
 );
