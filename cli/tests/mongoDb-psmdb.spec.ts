@@ -266,7 +266,7 @@ test.describe('Percona Server MongoDB (PSMDB) CLI tests ', async () => {
   test('PMM-T1853 Collect Data about Sharded collections in MongoDB', async ({}) => {
     const hosts = (await cli.exec(`docker exec '${shard_container_name}' pmm-admin list | grep "mongodb_shraded_node" | awk -F" " \'{print $3}\'`))
         .stdout.trim().split('\n').filter((item) => item.trim().length > 0);
-      let i=1;
+      let i= 1;
       for (const host of hosts) {
         const ip = host.split(':')[0];
         const port = host.split(':')[1];
