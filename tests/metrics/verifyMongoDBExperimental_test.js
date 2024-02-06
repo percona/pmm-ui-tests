@@ -10,17 +10,13 @@ const connection = {
   container_name: 'psmdb_pmm',
 };
 const mongodb_service_name_ac = 'mongodb_service_all_collectors';
-const mongodbDockerComposeServiceName = 'mongo_docker_compose';
 
 BeforeSuite(async ({ I, grafanaAPI, remoteInstancesHelper }) => {
   await I.verifyCommand(`${pmmFrameworkLoader} --with-replica --mongomagic --pmm2 --mo-version=4.4`);
   connection.container_name = await I.verifyCommand('docker ps --format "table {{.ID}}\\t{{.Image}}\\t{{.Names}}" | grep \'psmdb\' | awk -F " " \'{print $3}\'');
   connection.port = await I.verifyCommand(`docker exec ${connection.container_name} pmm-admin list | grep mongodb_rs1_1 | awk -F " " '{print $3}' | awk -F ":" '{print $2}'`);
   await I.verifyCommand(`docker cp ./testdata/mongodb/testCollections.js  ${connection.container_name}:/`);
-  await I.verifyCommand('docker cp ./testdata/mongodb/testCollections.js  pmm-agent_mongo:/');
   await I.verifyCommand(`docker exec ${connection.container_name} /nodes/cl_primary.sh testCollections.js`);
-  await I.verifyCommand(`docker exec pmm-agent_mongo mongo --username=${remoteInstancesHelper.remote_instance.mongodb.psmdb_4_2.username} --password='${remoteInstancesHelper.remote_instance.mongodb.psmdb_4_2.password}' < /testCollections.js`);
-  await I.verifyCommand(`pmm-admin add mongodb --service-name=${mongodbDockerComposeServiceName} --enable-all-collectors`);
   await I.verifyCommand(`docker exec ${connection.container_name} pmm-admin add mongodb --cluster mongodb_node_cluster --replication-set=rs1 --environment=mongodb_rs_node --port=${connection.port} --service-name=${mongodb_service_name_ac} --enable-all-collectors --max-collections-limit=2000`);
   await grafanaAPI.waitForMetric('mongodb_up', { type: 'service_name', value: mongodb_service_name_ac }, 65);
 });
@@ -79,20 +75,5 @@ Scenario(
     dashboardPage.verifyMetricsExistence(dashboardPage.mongoDbOplogDetails.metrics);
     await dashboardPage.verifyThereAreNoGraphsWithNA();
     await dashboardPage.verifyThereAreNoGraphsWithoutData(1);
-  },
-);
-
-Scenario(
-  'PMM-T1860 - Verify there is no CommandNotSupportOnView error in mongo logs when using --enable-all-collectors @dashboards @mongodb-exporter',
-  async ({
-    I, dashboardPage, remoteInstancesHelper,
-  }) => {
-    I.amOnPage(I.buildUrlWithParams(dashboardPage.mongoDbOplogDetails.clearUrl, { from: 'now-5m', service_name: mongodbDockerComposeServiceName }));
-    dashboardPage.waitForDashboardOpened();
-
-    const logs = await I.verifyCommand('docker logs pmm-agent_mongo | grep "CommandNotSupportOnView" || true');
-
-    assert.ok(logs.length === 0, `"CommandNotSupportOnView" error should not be in mongo logs. 
- ${logs}`);
   },
 );

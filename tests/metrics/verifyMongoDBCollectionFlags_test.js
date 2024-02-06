@@ -34,6 +34,23 @@ BeforeSuite(async ({ I }) => {
   for (let i = 0; i < dbNames.length; i++) {
     await I.mongoCreateBulkCollections(dbNames[i], collectionNames);
   }
+
+  const col = await I.mongoCreateCollection('test', 'students');
+
+  col.insertMany([{
+    sID: 22001, name: 'Alex', year: 1, score: 4.0,
+  },
+  {
+    sID: 21001, name: 'bernie', year: 2, score: 3.7,
+  },
+  {
+    sID: 20010, name: 'Chris', year: 3, score: 2.5,
+  },
+  {
+    sID: 22021, name: 'Drew', year: 1, score: 3.2,
+  }]);
+
+  await I.verifyCommand(`'docker exec mongodb_node_1 mongo --username=${connection.username} --password=${connection.password} --eval "db.createView('firstYears', 'students', [{ $match: { year: 1 } }]);"`);
 });
 
 Before(async ({ I }) => {
@@ -47,6 +64,19 @@ After(async ({ I }) => {
 AfterSuite(async ({ I }) => {
   await I.mongoDisconnect();
 });
+
+Scenario(
+  'PMM-T1860 - Verify there is no CommandNotSupportOnView error in mongo logs when using --enable-all-collectors @dashboards @mongodb-exporter',
+  async ({ I }) => {
+    await I.say(await I.verifyCommand(`pmm-admin add mongodb --port=${connection.port} --enable-all-collectors --agent-password='testing' --password=${pmm_user_mongodb.password} --username=${pmm_user_mongodb.username} --service-name=${mongodb_service_name}`));
+
+    await I.wait(10);
+    const logs = await I.verifyCommand('docker logs mongodb_node_1 | grep "CommandNotSupportOnView" || true');
+
+    assert.ok(logs.length === 0, `"CommandNotSupportOnView" error should not be in mongo logs. 
+ ${logs}`);
+  },
+);
 
 Scenario(
   'PMM-T1208 - Verify metrics of MongoDB added with default flags'
