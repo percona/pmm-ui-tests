@@ -19,24 +19,3 @@ for (let i = 1; i <= 5; i++) {
   db.users.insert(dbObject);
   db.users.insertMany(dbArray);
 }
-
-db.students.insertMany([
-  {
-    sID: 22001, name: 'Alex', year: 1, score: 4.0,
-  },
-  {
-    sID: 21001, name: 'bernie', year: 2, score: 3.7,
-  },
-  {
-    sID: 20010, name: 'Chris', year: 3, score: 2.5,
-  },
-  {
-    sID: 22021, name: 'Drew', year: 1, score: 3.2,
-  },
-]);
-
-db.createView(
-  'firstYears',
-  'students',
-  [{ $match: { year: 1 } }],
-);
