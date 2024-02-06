@@ -27,9 +27,6 @@ const metrics = {
 };
 
 BeforeSuite(async ({ I }) => {
-  const port = await I.verifyCommand('pmm-admin list | grep rs101 | awk -F " " \'{print $3}\' | awk -F ":" \'{print $2}\'');
-
-  connection.port = port;
   await I.mongoConnect(connection);
   for (let i = 0; i < dbNames.length; i++) {
     await I.mongoCreateBulkCollections(dbNames[i], collectionNames);
