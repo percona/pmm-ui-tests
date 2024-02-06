@@ -263,13 +263,14 @@ test.describe('Percona Server MongoDB (PSMDB) CLI tests ', async () => {
   /*
   This test uses pmm-framework setup with pure docker environment.
   */
-  test('PMM-T1853 Collect Data about Sharded collections in MongoDB', async ({}) => {
-    const serviceName= 'mongo_shards_test';
+  test.only('PMM-T1853 Collect Data about Sharded collections in MongoDB', async ({}) => {
     const hosts = (await cli.exec(`docker exec '${shard_container_name}' pmm-admin list | grep "mongodb_shraded_node" | awk -F" " \'{print $3}\'`))
         .stdout.trim().split('\n').filter((item) => item.trim().length > 0);
+      let i=1;
       for (const host of hosts) {
         const ip = host.split(':')[0];
         const port = host.split(':')[1];
+        const serviceName= `mongo_shards_test_${i++}`;
         const output = await cli.exec(`docker exec ${shard_container_name} pmm-admin add mongodb --host=${ip} --port=${port} --service-name=${serviceName} --enable-all-collectors --agent-password='mypass'`);
         await output.assertSuccess();
         await output.outContains('MongoDB Service added');
