@@ -50,7 +50,7 @@ BeforeSuite(async ({ I }) => {
     sID: 22021, name: 'Drew', year: 1, score: 3.2,
   }]);
 
-  await I.verifyCommand(`'docker exec mongodb_node_1 mongo --username=${connection.username} --password=${connection.password} --eval "db.createView('firstYears', 'students', [{ $match: { year: 1 } }]);"`);
+  await I.verifyCommand(`docker exec mongodb_node_1 mongo --username=${connection.username} --password=${connection.password} --eval "db.createView('firstYears', 'students', [{ $match: { year: 1 } }]);"`);
 });
 
 Before(async ({ I }) => {
