@@ -7,15 +7,15 @@ const dbNames = ['db1', 'db2', 'db3', 'db4'];
 const connection = {
   host: '127.0.0.1',
   // eslint-disable-next-line no-inline-comments
-  port: '27023', // This is the port used by --addclient=modb,1 and docker-compose setup on a CI/CD
-  username: 'mongoadmin',
-  password: 'GRgrO9301RuF',
+  port: '27017', // This is the port used by --addclient=modb,1 and docker-compose setup on a CI/CD
+  username: 'pmm',
+  password: 'pmmpass',
 };
 const mongodb_service_name = 'mongodb_test_collections_flag';
 
 const pmm_user_mongodb = {
-  username: 'pmm_mongodb',
-  password: 'GRgrO9301RuF',
+  username: 'pmm',
+  password: 'pmmpass',
 };
 
 const metrics = {
@@ -27,7 +27,7 @@ const metrics = {
 };
 
 BeforeSuite(async ({ I }) => {
-  const port = await I.verifyCommand('pmm-admin list | grep mongodb_node_1 | awk -F " " \'{print $3}\' | awk -F ":" \'{print $2}\'');
+  const port = await I.verifyCommand('pmm-admin list | grep rs101 | awk -F " " \'{print $3}\' | awk -F ":" \'{print $2}\'');
 
   connection.port = port;
   await I.mongoConnect(connection);
@@ -48,7 +48,7 @@ AfterSuite(async ({ I }) => {
   await I.mongoDisconnect();
 });
 
-Scenario.only(
+Scenario(
   'PMM-T1860 - Verify there is no CommandNotSupportedOnView error in mongo logs when using --enable-all-collectors @dashboards @mongodb-exporter @only',
   async ({ I }) => {
     I.say('This test relies on the "--mongo-replica-for-backup" flag');
