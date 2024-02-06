@@ -8,7 +8,7 @@ import * as cli from '@helpers/cli-helper';
 const MONGO_USERNAME = 'pmm_mongodb';
 const MONGO_PASSWORD = 'GRgrO9301RuF';
 
-const version = process.env.PSMDB_VERSION ? `${process.env.PSMDB_VERSION}` : '4.4';
+const version = process.env.PSMDB_VERSION ? `${process.env.PSMDB_VERSION}` : '6.0';
 const shard_container_name = `psmdb_pmm_${version}_sharded`;
 
 test.describe('Percona Server MongoDB (PSMDB) CLI tests ', async () => {
@@ -275,12 +275,14 @@ test.describe('Percona Server MongoDB (PSMDB) CLI tests ', async () => {
         await output.assertSuccess();
         await output.outContains('MongoDB Service added');
 
-        // Require to wait for Service to be Added and Running.
-        await new Promise(resolve => setTimeout(resolve, 5000));
-
-        const metrics = await cli.getMetrics(serviceName, 'pmm', 'mypass', shard_container_name);
         const expectedValue = 'mongodb_shards_collection_chunks_count';
-        expect(metrics, `Scraped metrics do not contain ${expectedValue}!`).toContain(expectedValue);
+        await expect(async () => {
+          const metrics = await cli.getMetrics(serviceName, 'pmm', 'mypass', shard_container_name);
+          expect(metrics, `Scraped metrics must contain ${expectedValue}!`).toContain(expectedValue);
+        }).toPass({
+          intervals: [1_000],
+          timeout: 50_000,
+        });
 
         const results = await cli.exec(`docker exec ${shard_container_name} pmm-admin remove mongodb ${serviceName}`);
         await results.assertSuccess();
