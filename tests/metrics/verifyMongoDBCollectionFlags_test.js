@@ -7,7 +7,7 @@ const dbNames = ['db1', 'db2', 'db3', 'db4'];
 const connection = {
   host: '127.0.0.1',
   // eslint-disable-next-line no-inline-comments
-  port: '27017', // This is the port used by --addclient=modb,1 and docker-compose setup on a CI/CD
+  port: '27027', // This is the port used by --addclient=modb,1 and docker-compose setup on a CI/CD
   username: 'pmm',
   password: 'pmmpass',
 };
@@ -46,7 +46,7 @@ AfterSuite(async ({ I }) => {
 });
 
 Scenario(
-  'PMM-T1860 - Verify there is no CommandNotSupportedOnView error in mongo logs when using --enable-all-collectors @dashboards @mongodb-exporter @only',
+  'PMM-T1860 - Verify there is no CommandNotSupportedOnView error in mongo logs when using --enable-all-collectors @dashboards @mongodb-exporter',
   async ({ I }) => {
     I.say('This test relies on the "--mongo-replica-for-backup" flag');
     const logs = await I.verifyCommand('docker exec rs101 journalctl -u mongod --since "5 minutes ago"');

@@ -3,7 +3,7 @@ Feature('MongoDB Metrics tests');
 const connection = {
   host: '127.0.0.1',
   // eslint-disable-next-line no-inline-comments
-  port: '27017', // This is the port used by --addclient=modb,1 and docker-compose setup on a CI/CD
+  port: '27027', // This is the port used by --addclient=modb,1 and docker-compose setup on a CI/CD
   username: 'pmm',
   password: 'pmmpass',
 };

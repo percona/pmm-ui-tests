@@ -6,7 +6,7 @@ const { adminPage } = inject();
 const pmmFrameworkLoader = `bash ${adminPage.pathToFramework}`;
 const connection = {
   // eslint-disable-next-line no-inline-comments
-  port: '27017', // This is the port used by --addclient=mo,1 --with-replica --mongomagic
+  port: '27027', // This is the port used by --addclient=mo,1 --with-replica --mongomagic
   container_name: 'rs101',
 };
 const mongodb_service_name_ac = 'rs101';
