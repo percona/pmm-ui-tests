@@ -52,9 +52,9 @@ Scenario.only(
   'PMM-T1860 - Verify there is no CommandNotSupportedOnView error in mongo logs when using --enable-all-collectors @dashboards @mongodb-exporter @only',
   async ({ I }) => {
     I.say('This test relies on the "--mongo-replica-for-backup" flag');
-    const logs = await I.verifyCommand('docker exec rs101 journalctl -u mongod --since "1 minute ago" | grep "CommandNotSupportedOnView" || true');
+    const logs = await I.verifyCommand('docker exec rs101 journalctl -u mongod --since "5 minutes ago"');
 
-    assert.ok(logs.length === 0, `"CommandNotSupportedOnView" error should not be in mongo logs. 
+    assert.ok(!logs.includes('CommandNotSupportedOnView'), `"CommandNotSupportedOnView" error should not be in mongo logs. 
  ${logs}`);
   },
 );
