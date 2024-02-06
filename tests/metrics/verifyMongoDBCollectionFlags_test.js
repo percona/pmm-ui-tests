@@ -70,14 +70,14 @@ AfterSuite(async ({ I }) => {
 });
 
 Scenario(
-  'PMM-T1860 - Verify there is no CommandNotSupportOnView error in mongo logs when using --enable-all-collectors @dashboards @mongodb-exporter',
+  'PMM-T1860 - Verify there is no CommandNotSupportedOnView error in mongo logs when using --enable-all-collectors @dashboards @mongodb-exporter',
   async ({ I }) => {
     await I.say(await I.verifyCommand(`pmm-admin add mongodb --port=${connection.port} --enable-all-collectors --agent-password='testing' --password=${pmm_user_mongodb.password} --username=${pmm_user_mongodb.username} --service-name=${mongodb_service_name}`));
 
     await I.wait(10);
-    const logs = await I.verifyCommand('docker logs mongodb_node_1 | grep "CommandNotSupportOnView" || true');
+    const logs = await I.verifyCommand('docker logs mongodb_node_1 | grep "CommandNotSupportedOnView" || true');
 
-    assert.ok(logs.length === 0, `"CommandNotSupportOnView" error should not be in mongo logs. 
+    assert.ok(logs.length === 0, `"CommandNotSupportedOnView" error should not be in mongo logs. 
  ${logs}`);
   },
 );
