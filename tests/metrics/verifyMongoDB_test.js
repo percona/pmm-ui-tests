@@ -1,3 +1,5 @@
+import assert from 'assert';
+
 Feature('MongoDB Metrics tests');
 
 const connection = {
@@ -26,6 +28,11 @@ const telemetry = {
 BeforeSuite(async ({ I }) => {
   await I.mongoConnect(connection);
   await I.mongoAddUser(mongo_test_user.username, mongo_test_user.password);
+
+  // check that rs101 docker container exists
+  const dockerCheck = await I.verifyCommand('docker ps | grep rs101');
+
+  assert.ok(dockerCheck.includes('rs101'), 'rs101 docker container should exist. please run pmm-framework with --mongo-replica-for-backup');
 });
 
 Before(async ({ I }) => {

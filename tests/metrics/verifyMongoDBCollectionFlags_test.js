@@ -7,7 +7,7 @@ const dbNames = ['db1', 'db2', 'db3', 'db4'];
 const connection = {
   host: '127.0.0.1',
   // eslint-disable-next-line no-inline-comments
-  port: '27027', // This is the port used by --addclient=modb,1 and docker-compose setup on a CI/CD
+  port: '27027', // This is the port used by --mongo-replica-for-backup
   username: 'pmm',
   password: 'pmmpass',
 };
@@ -31,6 +31,11 @@ BeforeSuite(async ({ I }) => {
   for (let i = 0; i < dbNames.length; i++) {
     await I.mongoCreateBulkCollections(dbNames[i], collectionNames);
   }
+
+  // check that rs101 docker container exists
+  const dockerCheck = await I.verifyCommand('docker ps | grep rs101');
+
+  assert.ok(dockerCheck.includes('rs101'), 'rs101 docker container should exist. please run pmm-framework with --mongo-replica-for-backup');
 });
 
 Before(async ({ I }) => {
@@ -48,7 +53,6 @@ AfterSuite(async ({ I }) => {
 Scenario(
   'PMM-T1860 - Verify there is no CommandNotSupportedOnView error in mongo logs when using --enable-all-collectors @dashboards @mongodb-exporter',
   async ({ I }) => {
-    I.say('This test relies on the "--mongo-replica-for-backup" flag');
     const logs = await I.verifyCommand('docker exec rs101 journalctl -u mongod --since "5 minutes ago"');
 
     assert.ok(!logs.includes('CommandNotSupportedOnView'), `"CommandNotSupportedOnView" error should not be in mongo logs. 
