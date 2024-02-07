@@ -38,7 +38,7 @@ Before(async ({ I }) => {
 });
 
 After(async ({ I }) => {
-  await I.verifyCommand(`pmm-admin remove mongodb ${mongodb_service_name}`);
+  await I.verifyCommand(`pmm-admin remove mongodb ${mongodb_service_name} || true`);
 });
 
 AfterSuite(async ({ I }) => {
