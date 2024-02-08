@@ -13,8 +13,8 @@ module.exports = {
   fields: {
     servicesLink: locate('[role="tablist"] a').withText('Services').withAttr({ 'aria-label': 'Tab Services' }),
     serviceRow: (serviceName) => locate('tr').withChild(locate('td').withAttr({ title: serviceName })),
-    showServiceDetails: (serviceName) => `//span[contains(text(), '${serviceName}')]//ancestor::tr//button[@data-testid="show-row-details"]`,
-    hideServiceDetails: (serviceName) => `//span[contains(text(), '${serviceName}')]//ancestor::tr//button[@data-testid="hide-row-details"]`,
+    showServiceDetails: (serviceName) => `${service(serviceName)}//ancestor::tr//button[@data-testid="show-row-details"]`,
+    hideServiceDetails: (serviceName) => `${service(serviceName)}//ancestor::tr//button[@data-testid="hide-row-details"]`,
     showAgentDetails: (agentName) => `//span[contains(text(), '${agentName}')]//ancestor::tr//button[@data-testid="show-row-details"]`,
     showRowDetails: '//button[@data-testid="show-row-details"]',
     agentStatus: locate('$details-row-content').find('a'),
