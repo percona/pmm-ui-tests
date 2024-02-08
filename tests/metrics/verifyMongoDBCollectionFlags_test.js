@@ -50,8 +50,7 @@ AfterSuite(async ({ I }) => {
   await I.mongoDisconnect();
 });
 
-// TODO: Unskip after PMM-12805
-Scenario.skip(
+Scenario(
   'PMM-T1860 - Verify there is no CommandNotSupportedOnView error in mongo logs when using --enable-all-collectors @dashboards @mongodb-exporter',
   async ({ I }) => {
     const logs = await I.verifyCommand('docker exec rs101 journalctl -u mongod --since "5 minutes ago"');
