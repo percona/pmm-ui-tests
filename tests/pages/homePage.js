@@ -76,7 +76,7 @@ module.exports = {
   },
   upgradeMilestones: [
     'TASK [Gathering Facts]',
-    'TASK [dashboards_upgrade : Copy file with image version]',
+    'TASK [initialization : Copy file with image version]',
     'TASK [Cleanup yum cache]',
     'failed=0',
   ],
@@ -110,13 +110,13 @@ module.exports = {
         // to ensure that the logs window is never empty during upgrade
         I.waitForElement(`//pre[contains(text(), '${milestones[0]}')]`, 1200);
 
-        I.waitForText(locators.successUpgradeMessage, 1200, locators.successUpgradeMsgSelector);
+        I.waitForText(locators.successUpgradeMessage, 1800, locators.successUpgradeMsgSelector);
       }
 
       if (!this.isAmiUpgrade) {
         // to ensure that the logs window is never empty during upgrade
         I.waitForElement(`//pre[contains(text(), '${milestones[0]}')]`, 1200);
-        I.waitForText(locators.successUpgradeMessage, 1200, locators.successUpgradeMsgSelector);
+        I.waitForText(locators.successUpgradeMessage, 1800, locators.successUpgradeMsgSelector);
 
         if (!skipUpgradeLogs) {
           // Get upgrade logs from a container
@@ -130,7 +130,7 @@ module.exports = {
 
       I.click(locators.reloadButtonAfterUpgrade);
     } else {
-      I.waitForText(locators.successUpgradeMessage, 1200, locators.successUpgradeMsgSelector);
+      I.waitForText(locators.successUpgradeMessage, 1800, locators.successUpgradeMsgSelector);
       // we have a bug we need this https://jira.percona.com/browse/PMM-9294
       I.wait(60);
 

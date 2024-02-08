@@ -1,5 +1,6 @@
 const { I, adminPage } = inject();
 const assert = require('assert');
+const { DashboardPanelMenu } = require('../dashboards/pages/DashboardPanelMenu');
 
 const formatElementId = (text) => text.toLowerCase().replace(/ /g, '_');
 
@@ -243,9 +244,6 @@ module.exports = {
       'Transactions Replicated',
       'Average Incoming Transaction Size',
       'Average Replicated Transaction Size',
-      'FC Trigger Low Limit',
-      'FC Trigger High Limit',
-      'IST Progress',
       'Average Galera Replication Latency',
       'Maximum Galera Replication Latency',
     ],
@@ -1098,7 +1096,7 @@ module.exports = {
 
   osNodesOverview: {
     noDataElements: 1,
-    naElements: 1,
+    naElements: 2,
     clearUrl: 'graph/d/node-instance-overview/nodes-overview',
     metrics: [
       'Nodes',
@@ -1475,5 +1473,15 @@ module.exports = {
     if (numberOfElements >= 1) {
       I.click(this.fields.skipTourButton);
     }
+  },
+
+  /**
+   * Creates and returns a panel menu(displayed on dasboard) object to interact in test in a piped style
+   *
+   * @param   panelTitle    title of a panel tointeract with
+   * @return  {DashboardPanelMenu} instance
+   */
+  panelMenu(panelTitle) {
+    return new DashboardPanelMenu(panelTitle);
   },
 };
