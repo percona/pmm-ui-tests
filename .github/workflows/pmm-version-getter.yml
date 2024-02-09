@@ -27,6 +27,10 @@ on:
       version_matrix:
         description: "Json array with number of last versions"
         value: ${{ jobs.push_versions.outputs.version_matrix }}
+      pt_os:
+        description: "Json array with Package Tests Operating Systems"
+        value: ${{ jobs.push_versions.outputs.pt_os_matrix }}
+
 
 jobs:
   push_versions:
@@ -37,6 +41,7 @@ jobs:
       start_version: ${{ steps.get-start.outputs.result }}
       finish_version: ${{ steps.get-finish.outputs.result }}
       version_matrix: ${{ steps.get-matrix.outputs.result }}
+      pt_os_matrix: "[\"bullseye\", \"buster\", \"focal\", \"jammy\", \"centos-7\", \"ol-8\", \"ol-9\"]"
     steps:
       - name: Prevent upgrade to the same version
         shell: bash
@@ -55,8 +60,7 @@ jobs:
         run: |
           r_latest=$(wget -q https://registry.hub.docker.com/v2/repositories/percona/pmm-client/tags -O - | jq -r .results[].name  | grep -v latest | sort -V | tail -n1)
           rc_latest=$(wget -q "https://registry.hub.docker.com/v2/repositories/perconalab/pmm-client/tags?page_size=25&name=rc" -O - | jq -r .results[].name  | grep 2.*.*-rc$ | sort -V | tail -n1)
-          rc_minor=$(echo $rc_latest | awk -F. '{print $2}')
-          d_latest="2.$((++rc_minor)).0"
+          d_latest=$(wget -q https://raw.githubusercontent.com/Percona-Lab/pmm-submodules/PMM-2.0/VERSION -O -)
           
           echo "release_latest=$r_latest" >> $GITHUB_ENV
           echo "rc_latest=$rc_latest" >> $GITHUB_ENV
