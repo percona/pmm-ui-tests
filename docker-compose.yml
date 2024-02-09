@@ -78,7 +78,7 @@ services:
     networks:
       - pmm-network
 
-  mongo7:
+  mongo:
     image: ${MONGO_IMAGE:-percona/percona-server-mongodb:7.0}
     container_name: pmm-agent_mongo
     command: --profile 2
