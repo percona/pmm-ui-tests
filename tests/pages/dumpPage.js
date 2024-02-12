@@ -17,6 +17,7 @@ module.exports = {
     passwordField: locate('input').withAttr({ id: `password` }),
     directoryField: locate('input').withAttr({ id: `directory` }),
     saveAndExit: locate('button').withAttr({ type: `submit` }),
+    sftpMessage: 'The message was send successfully!',
   },
 
   /**
@@ -52,7 +53,7 @@ module.exports = {
     I.fillField(this.fields.passwordField, password);
     I.fillField(this.fields.directoryField, directory);
     I.click(this.fields.saveAndExit);
-    I.waitForText('The message was send successfully!', 60);
+    I.waitForText(this.fields.sftpMessage, 60);
   },
 
   verifyLogsVisible(uid) {
