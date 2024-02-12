@@ -5,6 +5,24 @@ const {I,
 
 Feature('Tests for Dump Tool');
 
+const host_volume=process.cwd() + '/tests/output/sftp/';
+const sftp = {
+    username: 'foo',
+    password: 'password',
+    directory: '/upload/',
+};
+
+BeforeSuite(async ({ I, codeceptjsConfig }) => {
+    await I.verifyCommand(`mkdir -p ${host_volume}`);
+    await I.verifyCommand(`chmod 777 ${host_volume}`);
+    await I.verifyCommand(`docker run --name sftp-server -v ${host_volume}:/home/foo${sftp.directory} -p 2222:22 -d atmoz/sftp ${sftp.username}:${sftp.password}`);
+    await I.wait(30);
+});
+
+AfterSuite(async ({ I, codeceptjsConfig }) => {
+    await I.verifyCommand(`docker rm --force sftp-server || true`);
+    await I.wait(10);
+});
 Before(async ({ I }) => {
     await I.Authorize();
     I.setRequestTimeout(60000);
@@ -94,7 +112,7 @@ Scenario(
     },)
 
 Scenario(
-    'PMM-T1835 Check Dump Archives can be sent to Support in UI @dump',
+    'PMM-T1835 Check Dump Archives can be sent to Support in UI @dump @test',
     async ({ dumpAPI, dumpPage }) => {
         const resp = await dumpAPI.createDump([]);
         const uid = JSON.parse(JSON.stringify(resp));
@@ -106,7 +124,24 @@ Scenario(
         await I.click(dumpPage.fields.status(uid.dump_id));
         dumpPage.verifySFTPEnabled();
         await I.click(dumpPage.fields.sendSupportButton);
-        dumpPage.verifySFTP();
+
+        const hostname = await I.verifyCommand(`hostname -I | awk -F ' ' '{print $1}'`);
+        await I.verifyCommand(`ssh-keyscan -H ${hostname} >> ~/.ssh/known_hosts || true`);
+        sftp.address = `${hostname}:2222`
+        dumpPage.verifySFTP(sftp);
+        await dumpAPI.extractDump(uid.dump_id,host_volume);
+
+        const result = await dumpAPI.verifyDump(uid.dump_id,host_volume);
+        I.assertEqual(
+            2,
+            result.isDir,
+            `Expected 2 folders in the archive but found ${result.isDir}`,
+        );
+        I.assertEqual(
+            2,
+            result.isFile,
+            `Expected 2 files in the archive but found ${result.isFile}`,
+        );
         await dumpAPI.deleteDump(uid.dump_id);
     },)
 Scenario(

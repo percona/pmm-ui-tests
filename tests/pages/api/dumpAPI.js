@@ -5,7 +5,7 @@ const fs = require('fs');
 const targz = require("tar.gz");
 const path = require('path');
 const {readdirSync} = require("fs");
-const outputDir= 'tests/output/';
+const outputDir= process.cwd() + '/tests/output/';
 
 module.exports = {
   async createDump(serviceName, Qan = true) {
@@ -48,13 +48,20 @@ module.exports = {
     })
   },
 
-  async verifyDump(uid){
-    await new Promise(resolve => {setTimeout(resolve, 10000)});
-    const destnDir = outputDir + '/' + uid ;
-    let isDir=0;
-    let isFile=0;
-    if (fs.existsSync(destnDir)) {
-      const contents = readdirSync(destnDir);
+  async extractDump(uid,sftpDir) {
+    const targzFile = sftpDir + '/' + uid + '.tar.gz';
+    const destnDir = sftpDir + '/' + uid ;
+
+    await I.asyncWaitFor(async () => {return fs.existsSync(targzFile)}, 60);
+    targz().extract(targzFile, destnDir);
+  },
+
+  async verifyDump(uid, sftDir){
+    const absOutputDir= sftDir || outputDir ;
+    const destnDir = absOutputDir + '/' + uid ;
+    await I.asyncWaitFor(async () => {return fs.existsSync(destnDir)}, 60);
+    let isDir=0, isFile=0;
+    const contents = readdirSync(destnDir);
       contents.forEach((item) => {
         const fullPath = path.join(destnDir, item);
         const stats = fs.statSync(fullPath);
@@ -64,9 +71,8 @@ module.exports = {
           isFile = isFile + 1;
         }
       });
-    }
     return {isDir, isFile};
-    },
+  },
 
   async listDumps() {
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
