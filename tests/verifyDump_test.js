@@ -5,7 +5,7 @@ const {I,
 
 Feature('Tests for Dump Tool');
 
-const host_volume=process.cwd() + '/tests/output/sftp/';
+const hostVolume=process.cwd() + '/tests/output/sftp/';
 const sftp = {
     username: 'foo',
     password: 'password',
@@ -13,10 +13,9 @@ const sftp = {
 };
 
 BeforeSuite(async ({ I, codeceptjsConfig }) => {
-    await I.verifyCommand(`mkdir -p ${host_volume}`);
-    await I.verifyCommand(`chmod 777 ${host_volume}`);
-    await I.verifyCommand(`docker run --name sftp-server -v ${host_volume}:/home/foo${sftp.directory} -p 2222:22 -d atmoz/sftp ${sftp.username}:${sftp.password}`);
+    await I.verifyCommand(`docker run --name sftp-server -v ${hostVolume}:/home/foo${sftp.directory} -p 2222:22 -d atmoz/sftp ${sftp.username}:${sftp.password}`);
     await I.wait(30);
+    await I.verifyCommand(`chmod 777 ${hostVolume}`);
 });
 
 AfterSuite(async ({ I, codeceptjsConfig }) => {
@@ -125,13 +124,14 @@ Scenario(
         dumpPage.verifySFTPEnabled();
         await I.click(dumpPage.fields.sendSupportButton);
 
-        const hostname = await I.verifyCommand(`hostname -I | awk -F ' ' '{print $1}'`);
-        await I.verifyCommand(`ssh-keyscan -H ${hostname} >> ~/.ssh/known_hosts || true`);
-        sftp.address = `${hostname}:2222`
+        // Get host ip and add it to know_hosts file on the host.
+        const hostName = await I.verifyCommand(`hostname -I | awk -F ' ' '{print $1}'`);
+        await I.verifyCommand(`ssh-keyscan -H ${hostName} >> ~/.ssh/known_hosts || true`);
+        sftp.address = `${hostName}:2222`;
         dumpPage.verifySFTP(sftp);
-        await dumpAPI.extractDump(uid.dump_id,host_volume);
+        await dumpAPI.extractDump(uid.dump_id,hostVolume);
 
-        const result = await dumpAPI.verifyDump(uid.dump_id,host_volume);
+        const result = await dumpAPI.verifyDump(uid.dump_id,hostVolume);
         I.assertEqual(
             2,
             result.isDir,
