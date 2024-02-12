@@ -47,7 +47,7 @@ AfterSuite(async ({ I }) => {
   await I.mongoDisconnect();
 });
 
-Scenario.skip(
+Scenario(
   'PMM-T1241 - Verify add mongoDB service with "+" in user password @not-ui-pipeline @mongodb-exporter @exporters',
   async ({ I, grafanaAPI }) => {
     await I.say(
