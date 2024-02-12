@@ -112,7 +112,7 @@ Scenario(
     },)
 
 Scenario(
-    'PMM-T1835 Check Dump Archives can be sent to Support in UI @dump @test',
+    'PMM-T1835 Check Dump Archives can be sent to Support in UI @dump',
     async ({ dumpAPI, dumpPage }) => {
         const resp = await dumpAPI.createDump([]);
         const uid = JSON.parse(JSON.stringify(resp));

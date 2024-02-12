@@ -52,6 +52,7 @@ module.exports = {
     I.fillField(this.fields.passwordField, password);
     I.fillField(this.fields.directoryField, directory);
     I.click(this.fields.saveAndExit);
+    I.waitForText('The message was send successfully!', 60);
   },
 
   verifyLogsVisible(uid) {
