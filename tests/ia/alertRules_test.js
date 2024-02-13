@@ -103,7 +103,7 @@ Scenario(
     // FIXME: unskip after https://jira.percona.com/browse/PMM-11399 is fixed
     // I.verifyPopUpMessage(alertRulesPage.messages.successRuleCreate(newRule.ruleName));
     alertRulesPage.verifyRuleList(newRule.folder, newRule.ruleName);
-    await alertRulesPage.verifyRuleState('Normal',60);
+    await alertRulesPage.verifyRuleState('Normal', 60);
     await rulesAPI.removeAlertRule(newRule.folder);
   },
 ).retry(1);
@@ -117,24 +117,23 @@ Scenario(
     alertRulesPage.openAlertRulesTab();
     I.waitForEnabled(alertRulesPage.buttons.newAlertRule, 10);
     I.click(alertRulesPage.buttons.newAlertRule);
-    await alertRulesPage.fillPerconaAlert(rule,newRule);
+    await alertRulesPage.fillPerconaAlert(rule, newRule);
     I.waitForEnabled(alertRulesPage.buttons.saveAndExit, 10);
     I.click(alertRulesPage.buttons.saveAndExit);
     // FIXME: unskip after https://jira.percona.com/browse/PMM-11399 is fixed
     // I.verifyPopUpMessage(alertRulesPage.messages.successRuleCreate(newRule.ruleName));
     await alertRulesPage.verifyRuleList(newRule.folder, newRule.ruleName);
     await I.verifyCommand('docker pause ms_pmm_8.0');
-    await alertRulesPage.verifyRuleState('Pending',180);
-    //await I.waitForText('Pending', 180, alertRulesPage.elements.ruleState1);
-    await alertRulesPage.verifyRuleState('Firing',180);
-    //await I.waitForText('Firing', 180, alertRulesPage.elements.ruleState2);
+    await alertRulesPage.verifyRuleState('Pending', 180);
+    // await I.waitForText('Pending', 180, alertRulesPage.elements.ruleState1);
+    await alertRulesPage.verifyRuleState('Firing', 180);
+    // await I.waitForText('Firing', 180, alertRulesPage.elements.ruleState2);
     await I.verifyCommand('docker unpause ms_pmm_8.0');
-    //await I.waitForText('Normal', 180, alertRulesPage.elements.ruleState3);
-    await alertRulesPage.verifyRuleState('Normal',180);
+    // await I.waitForText('Normal', 180, alertRulesPage.elements.ruleState3);
+    await alertRulesPage.verifyRuleState('Normal', 180);
     await rulesAPI.removeAlertRule(newRule.folder);
   },
-).retry(1);
-
+);
 
 // TODO: check ovf failure
 Scenario(

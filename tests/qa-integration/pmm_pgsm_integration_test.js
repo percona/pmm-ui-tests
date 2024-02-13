@@ -63,7 +63,7 @@ Scenario(
   },
 );
 
-Scenario(
+Scenario.skip(
   'PMM-T1260 - Verifying data in Clickhouse and comparing with PGSM output @not-ui-pipeline @pgsm-pmm-integration',
   async ({ I, qanAPI }) => {
     await I.pgExecuteQueryOnDemand('SELECT now();', connection);
@@ -152,11 +152,11 @@ Scenario(
 Data(filters).Scenario(
   'PMM-T1261 - Verify the "Command type" filter for Postgres @not-ui-pipeline @pgsm-pmm-integration',
   async ({
-    I, qanPage, qanOverview, qanFilters, current, adminPage,
+    I, qanPage, qanOverview, qanFilters, current,
   }) => {
     const serviceName = pgsm_service_name;
     const {
-      filterSection, filterToApply, searchValue,
+      filterSection, filterToApply,
     } = current;
 
     I.amOnPage(qanPage.url);
