@@ -14,7 +14,7 @@ const sftp = {
 BeforeSuite(async ({ I, codeceptjsConfig }) => {
   await I.verifyCommand(`docker run --name sftp-server -v ${hostVolume}:/home/foo${sftp.directory} -p 2222:22 -d atmoz/sftp ${sftp.username}:${sftp.password}`);
   await I.wait(30);
-  await I.verifyCommand(`chmod 777 ${hostVolume}`);
+  await I.verifyCommand(`sudo chmod 777 ${hostVolume}`);
 });
 
 AfterSuite(async ({ I, codeceptjsConfig }) => {
