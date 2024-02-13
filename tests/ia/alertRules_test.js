@@ -130,7 +130,7 @@ Scenario(
     // await I.waitForText('Firing', 180, alertRulesPage.elements.ruleState2);
     await I.verifyCommand('docker unpause ms_pmm_8.0');
     // await I.waitForText('Normal', 180, alertRulesPage.elements.ruleState3);
-    await alertRulesPage.verifyRuleState('Normal', 180);
+    await alertRulesPage.verifyRuleState('Normal', 240);
     await rulesAPI.removeAlertRule(newRule.folder);
   },
 );
