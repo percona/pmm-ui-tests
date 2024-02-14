@@ -108,7 +108,8 @@ Scenario(
   },
 ).retry(1);
 
-Scenario(
+// TODO: unskip in scope of https://perconadev.atlassian.net/browse/PMM-12938
+Scenario.skip(
   'PMM-T2282 Verfied Alerting is able to monitor for "PMM Agent Down" @ia @alerting-fb',
   async ({ I, alertRulesPage, rulesAPI }) => {
     const rule = page.rules[29];
