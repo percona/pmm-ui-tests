@@ -92,9 +92,9 @@ Scenario(
     let pgsm_output;
 
     if (version < 13) {
-      pgsm_output = await I.pgExecuteQueryOnDemand(`select query, pgsm_query_id, planid, query_plan, calls, total_time as total_exec_time, mean_time as mean_exec_time  from pg_stat_monitor where datname='${database}' and query NOT IN ('SELECT version()', 'SELECT /* pmm-agent:pgstatmonitor */ version()');`, connection);
+      pgsm_output = await I.pgExecuteQueryOnDemand(`select query, pgsm_query_id, planid, query_plan, calls, total_time as total_exec_time, mean_time as mean_exec_time  from pg_stat_monitor where datname='${database}' and query NOT IN ('SELECT version()', 'SELECT /* pmm-agent:pgstatmonitor */ version()') and query NOT LIKE 'current_database() datname%';`, connection);
     } else {
-      pgsm_output = await I.pgExecuteQueryOnDemand(`select query, pgsm_query_id, planid, query_plan, calls, total_exec_time, mean_exec_time from pg_stat_monitor where datname='${database}' and query NOT IN ('SELECT version()', 'SELECT /* pmm-agent:pgstatmonitor */ version()');`, connection);
+      pgsm_output = await I.pgExecuteQueryOnDemand(`select query, pgsm_query_id, planid, query_plan, calls, total_exec_time, mean_exec_time from pg_stat_monitor where datname='${database}' and query NOT IN ('SELECT version()', 'SELECT /* pmm-agent:pgstatmonitor */ version()') and query NOT LIKE '%current_database() datname%';`, connection);
     }
 
     I.wait(150);
@@ -152,11 +152,11 @@ Scenario(
 Data(filters).Scenario(
   'PMM-T1261 - Verify the "Command type" filter for Postgres @not-ui-pipeline @pgsm-pmm-integration',
   async ({
-    I, qanPage, qanOverview, qanFilters, current, adminPage,
+    I, qanPage, qanOverview, qanFilters, current,
   }) => {
     const serviceName = pgsm_service_name;
     const {
-      filterSection, filterToApply, searchValue,
+      filterSection, filterToApply,
     } = current;
 
     I.amOnPage(qanPage.url);

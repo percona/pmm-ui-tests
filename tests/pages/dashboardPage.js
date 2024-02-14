@@ -244,9 +244,6 @@ module.exports = {
       'Transactions Replicated',
       'Average Incoming Transaction Size',
       'Average Replicated Transaction Size',
-      'FC Trigger Low Limit',
-      'FC Trigger High Limit',
-      'IST Progress',
       'Average Galera Replication Latency',
       'Maximum Galera Replication Latency',
     ],
@@ -1099,7 +1096,7 @@ module.exports = {
 
   osNodesOverview: {
     noDataElements: 1,
-    naElements: 1,
+    naElements: 2,
     clearUrl: 'graph/d/node-instance-overview/nodes-overview',
     metrics: [
       'Nodes',
