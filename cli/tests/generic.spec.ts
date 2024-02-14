@@ -1,7 +1,6 @@
 import { expect, test } from '@playwright/test';
 import * as cli from '@helpers/cli-helper';
 import { readZipFile } from '@helpers/zip-helper';
-import * as process from 'process';
 
 test.describe('PMM Client "Generic" CLI tests', async () => {
   let PMM_VERSION: string;
