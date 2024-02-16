@@ -178,12 +178,17 @@ Scenario('@PMM-T1866 - Verify if public address has an port assigned and followi
   I.waitForElement(pmmSettingsPage.fields.publicAddressLabel);
   I.see('Public Address', pmmSettingsPage.fields.publicAddressLabel);
   // Set a public IP with port
+  adminPage.customClearField(pmmSettingsPage.fields.publicAddressInput);
   I.fillField(pmmSettingsPage.fields.publicAddressInput, '192.168.1.1:8433');
   I.click(pmmSettingsPage.fields.applyButton);
   I.dontSeeElement(pmmSettingsPage.fields.errorPopUpElement);
-  adminPage.customClearField(pmmSettingsPage.fields.dataRetentionInput);
+  await pmmSettingsPage.verifySettingsValue(pmmSettingsPage.fields.publicAddressInput, '192.168.1.1:8433');
+  // clearField and customClearField methods doesn't work for this field
+  I.usePlaywrightTo('clear field', async ({ page }) => {
+    await page.fill(I.useDataQA('retention-number-input'), '');
+  });
   I.fillField(pmmSettingsPage.fields.dataRetentionInput, '1');
   I.click(pmmSettingsPage.fields.applyButton);
   I.dontSeeElement(pmmSettingsPage.fields.errorPopUpElement);
-  await pmmSettingsPage.verifySettingsValue(pmmSettingsPage.fields.dataRetentionInput, 1);
+  await pmmSettingsPage.verifySettingsValue(pmmSettingsPage.fields.dataRetentionInput, '1');
 });
