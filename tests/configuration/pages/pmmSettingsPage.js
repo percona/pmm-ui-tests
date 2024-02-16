@@ -293,6 +293,7 @@ module.exports = {
     highInput: '$hr-number-input',
     perconaPlatformLink: '//li[contains(text(), \'Percona Platform\')]',
     privacyPolicy: '//span[contains(text(), "Privacy Policy")]',
+    popUpElement: '//div[@data-testid="data-testid Alert error"]',
     publicAddressLabel: locate('$public-address-label').find('span'),
     publicAddressInput: '$publicAddress-text-input',
     publicAddressButton: '$public-address-button',
