@@ -279,6 +279,7 @@ module.exports = {
     checkForUpdatesSwitch: '//div[@data-testid="advanced-updates"]//div[2]//input',
     dataRetentionInput: '$retention-number-input',
     dataRetentionLabel: locateLabel('form-field-data-retention'),
+    errorPopUpElement: I.useDataQA('data-testid Alert error'),
     iframe: '//div[@class="panel-content"]//iframe',
     metricsResolutionButton: '$metrics-resolution-button',
     metricsResolution: '//label[text()="',
@@ -292,7 +293,7 @@ module.exports = {
     highInput: '$hr-number-input',
     perconaPlatformLink: '//li[contains(text(), \'Percona Platform\')]',
     privacyPolicy: '//span[contains(text(), "Privacy Policy")]',
-
+    publicAddressLabel: locate('$public-address-label').find('span'),
     publicAddressInput: '$publicAddress-text-input',
     publicAddressButton: '$public-address-button',
     sectionHeader: '//div[@class="ant-collapse-header"]',
