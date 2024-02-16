@@ -254,7 +254,7 @@ test.describe('Percona Server MongoDB (PSMDB) CLI tests ', async () => {
         expect(metrics, `Scraped metrics must contain ${expectedValue}!`).toContain(expectedValue);
       }).toPass({
         intervals: [1_000],
-        timeout: 50_000,
+        timeout: 5_000,
       });
 
       const results = await cli.exec(`docker exec ${shardContainerName} pmm-admin remove mongodb ${serviceName}`);
