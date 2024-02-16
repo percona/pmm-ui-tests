@@ -170,7 +170,7 @@ Scenario(
     I.verifyWarning('Deprecation notice\nDBaaS feature is deprecated. We encourage you to use Everest instead. Check out our Migration guide', 10);
   },
 );
-Scenario('@PMM-T1866 - Verify if public address has an port assigned and following UI/API requests dont error @settings @grafana-pr', async ({ I, pmmSettingsPage, adminPage }) => {
+Scenario('@PMM-T1866 - Verify if public address has an port assigned and following UI/API requests dont error @settings', async ({ I, pmmSettingsPage, adminPage }) => {
   const sectionNameToExpand = pmmSettingsPage.sectionTabsList.advanced;
 
   await pmmSettingsPage.waitForPmmSettingsPageLoaded();
