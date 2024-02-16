@@ -170,7 +170,7 @@ Scenario(
     I.verifyWarning('Deprecation notice\nDBaaS feature is deprecated. We encourage you to use Everest instead. Check out our Migration guide', 10);
   },
 );
-Scenario('@PMM-T1866 - Verify if public address has an port assigned and following UI/API requests dont error @settings @grafana-pr @test', async ({ I, pmmSettingsPage }) => {
+Scenario('@PMM-T1866 - Verify if public address has an port assigned and following UI/API requests dont error @settings @grafana-pr', async ({ I, pmmSettingsPage, adminPage }) => {
   const sectionNameToExpand = pmmSettingsPage.sectionTabsList.advanced;
 
   await pmmSettingsPage.waitForPmmSettingsPageLoaded();
@@ -181,10 +181,9 @@ Scenario('@PMM-T1866 - Verify if public address has an port assigned and followi
   I.fillField(pmmSettingsPage.fields.publicAddressInput, '192.168.1.1:8433');
   I.click(pmmSettingsPage.fields.applyButton);
   I.dontSeeElement(pmmSettingsPage.fields.popUpElement);
-  I.dontSee(pmmSettingsPage.messages.internalServerErrorMessage);
-  I.clearField(pmmSettingsPage.fields.dataRetentionInput);
-  I.fillField(pmmSettingsPage.fields.dataRetentionInput, '30');
+  adminPage.customClearField(pmmSettingsPage.fields.dataRetentionInput);
+  I.fillField(pmmSettingsPage.fields.dataRetentionInput, '1');
   I.click(pmmSettingsPage.fields.applyButton);
   I.dontSeeElement(pmmSettingsPage.fields.popUpElement);
-  I.dontSee(pmmSettingsPage.messages.internalServerErrorMessage);
+  await pmmSettingsPage.verifySettingsValue(pmmSettingsPage.fields.dataRetentionInput, 1);
 });
