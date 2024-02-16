@@ -180,10 +180,10 @@ Scenario('@PMM-T1866 - Verify if public address has an port assigned and followi
   // Set a public IP with port
   I.fillField(pmmSettingsPage.fields.publicAddressInput, '192.168.1.1:8433');
   I.click(pmmSettingsPage.fields.applyButton);
-  I.dontSeeElement(pmmSettingsPage.fields.popUpElement);
+  I.dontSeeElement(pmmSettingsPage.fields.errorPopUpElement);
   adminPage.customClearField(pmmSettingsPage.fields.dataRetentionInput);
   I.fillField(pmmSettingsPage.fields.dataRetentionInput, '1');
   I.click(pmmSettingsPage.fields.applyButton);
-  I.dontSeeElement(pmmSettingsPage.fields.popUpElement);
+  I.dontSeeElement(pmmSettingsPage.fields.errorPopUpElement);
   await pmmSettingsPage.verifySettingsValue(pmmSettingsPage.fields.dataRetentionInput, 1);
 });
