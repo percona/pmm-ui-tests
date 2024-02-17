@@ -105,6 +105,7 @@ module.exports = {
       metrics_resolutions: defaultResolution,
       enable_telemetry: true,
       enable_stt: true,
+      enable_alerting: true,
       remove_email_alerting_settings: true,
       remove_slack_alerting_settings: true,
     };
@@ -225,5 +226,19 @@ module.exports = {
     const resp = await I.sendPostRequest('v1/Settings/Get', {}, headers);
 
     return resp.data.settings[property];
+  },
+
+  async setTourOptions(productTour = true, alertingTour = true) {
+    const headers = { Authorization: `Basic ${await I.getAuth()}` };
+
+    const body = {
+      user_id: 1,
+      product_tour_completed: productTour,
+      alerting_tour_completed: alertingTour,
+    };
+
+    const resp = await I.sendPutRequest('v1/user', body, headers);
+
+    assert.equal(resp.status, 200, `Failed to set up PMM tour options! Response with status ${resp.status}`);
   },
 };

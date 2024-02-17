@@ -4,7 +4,6 @@
     "browser": true
   },
   "root": true,
-  "plugins": ["eslint-plugin-no-inline-styles"],
   "rules": {
     "comma-dangle": [
       "error",
@@ -59,6 +58,7 @@
     "no-shadow": ["off"],
     // enable it later, it happens because null coalesion operator
     "no-unused-expressions": ["off"],
-    "class-methods-use-this": ["off"]
+    "class-methods-use-this": ["off"],
+    "no-continue": ["off"]
   }
 }

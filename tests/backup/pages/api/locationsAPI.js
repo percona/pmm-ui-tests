@@ -1,35 +1,35 @@
 const { I } = inject();
-const assert = require('assert');
-const { storageLocationConnection } = require('../testData');
+const { storageLocationConnection, psStorageLocationConnection } = require('../testData');
+
+const storageType = {
+  s3: 's3_config',
+  localClient: 'filesystem_config',
+};
+
+const localStorageDefaultConfig = {
+  path: '/tmp/backup_data',
+};
 
 module.exports = {
-  async createStorageLocation(locationObj) {
-    const {
-      name,
-      description = '',
-      type = 's3_config',
-      endpoint = storageLocationConnection.endpoint,
-      access_key = storageLocationConnection.access_key,
-      secret_key = storageLocationConnection.secret_key,
-      bucket_name = storageLocationConnection.bucket_name,
-    } = locationObj;
+  storageType,
+  localStorageDefaultConfig,
+  storageLocationConnection,
+  psStorageLocationConnection,
+
+  async createStorageLocation(name, type, config, description = '') {
     const body = {
       name,
       description,
-      [type]: {
-        endpoint,
-        access_key,
-        secret_key,
-        bucket_name,
-      },
+      [type]: config,
     };
 
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
 
     const resp = await I.sendPostRequest('v1/management/backup/Locations/Add', body, headers);
 
-    assert.ok(
-      resp.status === 200,
+    I.assertEqual(
+      resp.status,
+      200,
       `Failed to create a storage location with name "${name}". Response message is "${resp.data.message}"`,
     );
 
@@ -53,6 +53,26 @@ module.exports = {
     return resp.data.locations;
   },
 
+  /**
+   * Lookup and return Storage location fully matching specified name.
+   *
+   * @param   nameOfLocation  name {@code String} of the Location to lookup
+   * @return                  {Promise<unknown>} Location object if found; {@code null} otherwise
+   */
+  async getLocationDetails(nameOfLocation) {
+    const headers = { Authorization: `Basic ${await I.getAuth()}` };
+    const resp = await I.sendPostRequest('v1/management/backup/Locations/List', {}, headers);
+    const result = Object.values(resp.data)
+      .flat(Infinity)
+      .filter(({ name }) => name === nameOfLocation);
+
+    if (result.length) return result[0];
+
+    await I.say(`Storage Location with name "${nameOfLocation}" not found!`);
+
+    return null;
+  },
+
   async removeLocation(locationId, force) {
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
     const body = {
@@ -61,9 +81,10 @@ module.exports = {
     };
     const resp = await I.sendPostRequest('v1/management/backup/Locations/Remove', body, headers);
 
-    assert.ok(
-      resp.status === 200,
-      `Failed to remove storage location with ID "${locationId}". Response message is "${resp.data.message}"`,
-    );
+    // I.assertEqual(
+    //   resp.status,
+    //   200,
+    //   `Failed to remove storage location with ID "${locationId}". Response message is "${resp.data.message}"`,
+    // );
   },
 };

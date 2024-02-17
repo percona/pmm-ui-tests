@@ -3,7 +3,7 @@ module.exports = {
   elements: {
     ticketTable: '$table',
     ticketTableHead: '//*[@data-testid="table-thead"]//tr',
-    tableRow: '//div[@title="Click to expand"]',
+    tableRow: '//div[contains(@id, "collapse-label")]',
     header: '//body//*[contains(text(), "Entitlements")]',
     entitlementsMenuIcon: '//*[contains(@href, "/graph/entitlements")]',
     notPlatformUser: '$not-platform-user',

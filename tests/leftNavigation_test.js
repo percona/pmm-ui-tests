@@ -40,7 +40,7 @@ Data(sidebar).Scenario(
   },
 );
 
-// Needs to be removed, Advisors are on by default hence no settings link anymore
+// TODO: Needs to be removed, Advisors are on by default hence no settings link anymore
 xScenario(
   'PMM-T1051 - Verify PMM Settings page is opened from Home dashboard @menu',
   async ({ I, homePage, pmmSettingsPage }) => {
@@ -58,12 +58,11 @@ xScenario(
 );
 
 Scenario(
-  'PMM-9550 Verify downloading server diagnostics logs @menu',
-  async ({ I, homePage }) => {
+  '@PMM-9550 PMM-T1830 Verify downloading server diagnostics logs @menu',
+  async ({ I, homePage, serverApi }) => {
     await homePage.open();
     let path;
 
-    I.amOnPage('/');
     I.moveCursorTo(locate('li').find('a').withAttr({ 'aria-label': 'Help' }));
     I.waitForElement('//div[contains(text(), \'PMM Logs\')]', 3);
 
@@ -80,5 +79,11 @@ Scenario(
     });
 
     await I.seeEntriesInZip(path, ['pmm-agent.yaml', 'pmm-managed.log', 'pmm-agent.log']);
+
+    if ((await serverApi.getPmmVersion()).minor > 40) {
+    /* PMM-T1830 alertmanager as been removed since 2.41.0 */
+    /* note that 'alertmanager.ini',  'alertmanager.log' are still present in zip */
+      await I.dontSeeEntriesInZip(path, ['alertmanager.yml', 'alertmanager.base.yml']);
+    }
   },
 );

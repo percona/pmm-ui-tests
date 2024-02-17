@@ -3,16 +3,16 @@ const { I, dbaasPage } = inject();
 module.exports = {
   loader: locate('$pmm-overlay-wrapper').find('//i[contains(@class,"fa-spinner")]'),
   operatorVersion: {
-    PXC: 'PXC 1.10.0',
-    PSMDB: 'PSMDB 1.11.0',
+    PXC: 'Percona Operator for MySQL 1.12.0',
+    PSMDB: 'Percona Operator for MongoDB 1.14.0',
   },
   components: {
     PXC: {
-      name: 'PXC',
+      name: 'Percona Operator for MySQL',
       dataqa: 'pxcpxc',
     },
     PSMDB: {
-      name: 'PSMDB',
+      name: 'Percona Operator for MongoDB',
       dataqa: 'psmdbmongod',
     },
     HAPROXY: {
@@ -123,11 +123,9 @@ module.exports = {
 
   async selectOperatorVersion(operatorVersion) {
     I.click(this.manageVersion.operator);
-    I.waitForElement(
-      this.manageVersion.operatorSelector(
-        operatorVersion,
-      ), 30,
-    );
+    I.waitForElement(this.manageVersion.operatorSelector(
+      operatorVersion,
+    ), 30);
     I.forceClick(
       this.manageVersion.operatorSelector(
         operatorVersion,
@@ -137,11 +135,9 @@ module.exports = {
 
   async selectComponent(componentName) {
     I.click(this.manageVersion.component);
-    I.waitForElement(
-      this.manageVersion.componentSelector(
-        componentName,
-      ), 30,
-    );
+    I.waitForElement(this.manageVersion.componentSelector(
+      componentName,
+    ), 30);
     I.forceClick(
       this.manageVersion.componentSelector(
         componentName,
@@ -150,12 +146,9 @@ module.exports = {
   },
 
   async selectDefaultVersion(version) {
-    I.click(this.manageVersion.defaultVersionSelector);
-    I.waitForElement(
-      this.manageVersion.defaultVersionOption(
-        version,
-      ), 30,
-    );
+    I.waitForElement(this.manageVersion.defaultVersionOption(
+      version,
+    ), 30);
     I.forceClick(
       this.manageVersion.defaultVersionOption(
         version,

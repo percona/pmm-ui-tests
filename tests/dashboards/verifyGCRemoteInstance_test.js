@@ -111,7 +111,7 @@ Data(instances).Scenario(
 ).retry(2);
 
 // skipping mysql gc because of PMM-9389
-Data(instances.filter((instance) => instance.instanceType.indexOf('mysql') === -1)).Scenario(
+Data(instances).Scenario(
   'Verify QAN after remote Google Cloud instance is added @not-ui-pipeline @gcp',
   async ({
     I, qanOverview, qanFilters, qanPage, current,

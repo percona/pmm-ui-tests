@@ -96,6 +96,11 @@ module.exports = {
   },
 
   async oktaDeleteUserById(userId) {
+    this.oktaDeactivateUserById(userId);
+    this.oktaDeactivateUserById(userId);
+  },
+
+  async oktaDeactivateUserById(userId) {
     const oktaUrl = `${this.oktaUrl}api/v1/users/${userId}`;
     const headers = { Authorization: this.oktaToken };
     const response = await I.sendDeleteRequest(oktaUrl, headers);

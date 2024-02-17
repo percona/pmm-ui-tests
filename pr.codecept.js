@@ -1,8 +1,8 @@
 const { pageObjects, getChunks } = require('./codeceptConfigHelper');
 
-const PMM_URL = 'http://127.0.0.1/';
-
 require('dotenv').config();
+
+const pmmUrl = 'http://127.0.0.1/';
 
 process.env.ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'admin';
 
@@ -10,8 +10,9 @@ exports.config = {
   output: 'tests/output',
   helpers: {
     Playwright: {
-      url: process.env.PMM_UI_URL || PMM_URL,
+      url: process.env.PMM_UI_URL || pmmUrl,
       restart: true,
+      show: false,
       browser: 'chromium',
       windowSize: '1920x1080',
       timeout: 20000,
@@ -64,7 +65,7 @@ exports.config = {
       require: './tests/helper/browser_helper.js',
     },
     REST: {
-      endpoint: process.env.PMM_UI_URL || PMM_URL,
+      endpoint: process.env.PMM_UI_URL || pmmUrl,
       timeout: 60000,
     },
     Mailosaur: {
@@ -78,6 +79,12 @@ exports.config = {
     },
     ChaiWrapper: {
       require: 'codeceptjs-chai',
+    },
+    LocalStorageHelper: {
+      require: './tests/helper/localStorageHelper.js',
+    },
+    ApiHelper: {
+      require: './tests/helper/apiHelper.js',
     },
   },
   include: pageObjects,
@@ -97,10 +104,6 @@ exports.config = {
       attribute: 'data-testid',
       showActual: false,
     },
-    allure: {
-      enabled: true,
-      outputDir: 'tests/output/allure',
-    },
     tryTo: {
       enabled: true,
     },
@@ -111,7 +114,7 @@ exports.config = {
         stdout: '-',
         options: {
           verbose: false,
-          steps: true,
+          steps: false,
         },
       },
       'mocha-junit-reporter': {
@@ -128,6 +131,6 @@ exports.config = {
   hooks: [],
   gherkin: {},
   tests: 'tests/**/*_test.js',
-  timeout: 1800,
+  timeout: 2400,
   name: 'pmm-qa',
 };

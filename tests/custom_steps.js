@@ -4,6 +4,7 @@ const buildUrl = require('build-url');
 
 const systemMessageText = '.page-alert-list div[data-testid^="data-testid Alert"] > div';
 const systemMessageButtonClose = '.page-alert-list button';
+const warningLocator = '[data-testid="data-testid Alert warning"]';
 
 module.exports = () => actor({
 
@@ -13,10 +14,31 @@ module.exports = () => actor({
     this.click(systemMessageButtonClose);
   },
 
+  verifyWarning(message, timeout = 10) {
+    this.waitForElement(warningLocator, timeout);
+    this.see(message, warningLocator);
+  },
+
+  async verifyInvisible(selector, timeOutInSeconds = 1) {
+    const start = new Date().getTime();
+    const timeout = timeOutInSeconds * 1000;
+    const interval = 0.1;
+
+    while (true) {
+      this.dontSeeElement(selector);
+      await this.wait(interval);
+      if (new Date().getTime() - start >= timeout) {
+        this.say(`Element ${selector} was not visible on page for ${timeOutInSeconds} seconds`);
+
+        return;
+      }
+    }
+  },
+
   useDataQA: (selector) => `[data-testid="${selector}"]`,
   getSingleSelectOptionLocator: (optionName) => locate('[aria-label="Select option"]')
     .find('span')
-    .withText(optionName)
+    .withText(optionName.toString())
     .inside('[aria-label="Select options menu"]'),
   getClosePopUpButtonLocator: () => systemMessageButtonClose,
   getPopUpLocator: () => systemMessageText,
@@ -39,11 +61,44 @@ module.exports = () => actor({
     }
   },
 
+  async readFileInZipArchive(zipPath, filePath) {
+    try {
+      const zip = new AdmZip(zipPath);
+
+      return zip.readFile(filePath);
+    } catch (e) {
+      throw new Error(`Something went wrong when reading a zip file ${zipPath}. ${e}`);
+    }
+  },
+
+  /**
+   * Asserts that zip Archive contains elements specified in argument
+   *
+   * @param   filepath      a string path to target zip file
+   * @param   entriesArray  an array with element which must be present in zip archive
+   * @return  {Promise<void>}
+   */
   async seeEntriesInZip(filepath, entriesArray) {
+    this.assertDeepIncludeMembers(
+      await this.readZipArchive(filepath),
+      entriesArray,
+      `Zip file: '${filepath}' must include: ${entriesArray}`,
+    );
+  },
+
+  /**
+   * Asserts that zip Archive does not contain elements specified in argument
+   *
+   * @param   filepath      a string path to target zip file
+   * @param   entriesArray  an array with element which must not be present in zip archive
+   * @return  {Promise<void>}
+   */
+  async dontSeeEntriesInZip(filepath, entriesArray) {
     const entries = await this.readZipArchive(filepath);
 
+    // TODO: contribute this.assertDeepNotIncludeMembers(); to codecept-chai lib
     entriesArray.forEach((entry) => {
-      assert.ok(entries.includes(entry));
+      this.assertFalse(entries.includes(entry), `'${entry}' must not be in ${entries}`);
     });
   },
 
@@ -57,7 +112,7 @@ module.exports = () => actor({
    */
   async asyncWaitFor(boolCallable, timeOutInSeconds) {
     const start = new Date().getTime();
-    const timout = timeOutInSeconds * 1000;
+    const timeout = timeOutInSeconds * 1000;
     const interval = 1;
 
     /* eslint no-constant-condition: ["error", { "checkLoops": false }] */
@@ -69,12 +124,12 @@ module.exports = () => actor({
 
       // Check the timeout after evaluating main condition
       // to ensure conditions with a zero timeout can succeed.
-      if (new Date().getTime() - start >= timout) {
+      if (new Date().getTime() - start >= timeout) {
         assert.fail(`"${boolCallable.name}" is false: 
         tried to check for ${timeOutInSeconds} second(s) with ${interval} second(s) with interval`);
       }
 
-      this.wait(interval);
+      await this.wait(interval);
     }
   },
 
@@ -127,5 +182,9 @@ module.exports = () => actor({
     });
 
     return buildUrl(url, { queryParams });
+  },
+
+  signOut() {
+    this.amOnPage('graph/logout');
   },
 });

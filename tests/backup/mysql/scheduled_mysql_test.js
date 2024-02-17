@@ -1,11 +1,10 @@
 const moment = require('moment');
 
-const { locationsPage, psMySql } = inject();
+const { psMySql } = inject();
 const connection = psMySql.defaultConnection;
 const location = {
-  name: 'mysql scheduled backup location',
+  name: 'mysql_scheduled_backup_location',
   description: 'MySQL location for scheduling',
-  ...locationsPage.mongoStorageLocation,
 };
 const mysqlServiceName = 'mysql-with-backup';
 let locationId;
@@ -19,7 +18,12 @@ BeforeSuite(async ({
   await settingsAPI.changeSettings({ backup: true });
   await backupAPI.clearAllArtifacts();
   await locationsAPI.clearAllLocations(true);
-  locationId = await locationsAPI.createStorageLocation(location);
+  locationId = await locationsAPI.createStorageLocation(
+    location.name,
+    locationsAPI.storageType.s3,
+    locationsAPI.psStorageLocationConnection,
+    location.description,
+  );
   const mysqlComposeConnection = {
     host: '127.0.0.1',
     port: '3306',
@@ -50,12 +54,12 @@ AfterSuite(async ({ psMySql }) => {
 });
 
 Scenario(
-  'PMM-T923 - Verify user is able to schedule a backup for MySQL @bm-mysql @not-ui-pipeline',
+  '@PMM-T923 - Verify user is able to schedule a backup for MySQL @bm-mysql @not-ui-pipeline',
   async ({
     I, backupInventoryPage, scheduledAPI, backupAPI, scheduledPage,
   }) => {
     const schedule = {
-      name: 'schedule for backup',
+      name: 'schedule_for_backup',
       retention: 1,
     };
 
@@ -63,7 +67,7 @@ Scenario(
     scheduledPage.selectDropdownOption(scheduledPage.fields.serviceNameDropdown, mysqlServiceName);
     I.fillField(scheduledPage.fields.backupName, schedule.name);
     scheduledPage.selectDropdownOption(scheduledPage.fields.locationDropdown, location.name);
-    scheduledPage.selectDropdownOption(scheduledPage.fields.everyDropdown, 'Minute');
+    scheduledPage.selectDropdownOption(scheduledPage.fields.everyDropdown, 'Every minute');
     scheduledPage.clearRetentionField();
     I.fillField(scheduledPage.fields.retention, schedule.retention);
 
@@ -79,7 +83,10 @@ Scenario(
     // Verify local timestamp is shown in Last Backup column
     await scheduledAPI.waitForFirstExecution(schedule.name);
     scheduledPage.openScheduledBackupsPage();
-    I.seeTextEquals(moment().format('YYYY-MM-DDHH:mm:00'), scheduledPage.elements.lastBackupByName(schedule.name));
+    const lastBackup = await I.grabTextFrom(scheduledPage.elements.lastBackupByName(schedule.name));
+
+    I.assertStartsWith(lastBackup, moment().format('YYYY-MM-DD'));
+    I.assertEndsWith(lastBackup, moment().format('HH:mm:00'));
 
     await backupAPI.waitForBackupFinish(null, schedule.name, 300);
     const { scheduled_backup_id } = await scheduledAPI.getScheduleIdByName(schedule.name);

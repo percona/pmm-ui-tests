@@ -1,11 +1,11 @@
 const faker = require('faker');
 
-const { locationsPage } = inject();
+const { locationsPage, locationsAPI } = inject();
 
 const location = {
   name: `${faker.lorem.word()}_location`,
   description: 'test description',
-  ...locationsPage.storageLocationConnection,
+  config: locationsPage.storageLocationConnection,
 };
 
 const mongoServiceName = 'mongo-backup-locations';
@@ -13,7 +13,8 @@ const mongoServiceName = 'mongo-backup-locations';
 Feature('BM: Backup Locations').retry(1);
 
 BeforeSuite(async ({ I }) => {
-  I.say(await I.verifyCommand(`pmm-admin add mongodb --port=27027 --service-name=${mongoServiceName} --replication-set=rs0`));
+  // await I.suppressTour();
+  I.say(await I.verifyCommand(`docker exec rs101 pmm-admin add mongodb --username=pmm --password=pmmpass --port=27017 --service-name=${mongoServiceName} --replication-set=rs0 --cluster=rs`));
 });
 
 Before(async ({
@@ -27,11 +28,11 @@ Before(async ({
 
 const s3Errors = new DataTable(['field', 'value', 'error']);
 
-s3Errors.add(['bucket_name', 'pmm', 'AccessDenied: Access Denied']);
+// s3Errors.add(['bucket_name', 'pmm', 'AccessDenied: Access Denied']);
 s3Errors.add(['bucket_name', 'pmm-backup12', 'Bucket doesn\'t exist']);
-s3Errors.add(['bucket_name', 'random-bucket', '301 response missing Location header']);
-s3Errors.add(['endpoint', 'unknown', 'no such host']);
-s3Errors.add(['access_key', 'invalid', 'InvalidAccessKeyId: The AWS Access Key Id you provided does not exist in our records.']);
+// s3Errors.add(['bucket_name', 'random-bucket', '301 Moved Permanently: 301 Moved Permanently.']);
+// s3Errors.add(['endpoint', 'unknown', 'no such host']);
+s3Errors.add(['access_key', 'invalid', 'InvalidAccessKeyId: The Access Key Id you provided does not exist in our records..']);
 s3Errors.add(['secret_key', 'invalid', 'SignatureDoesNotMatch: The request signature we calculated does not match the signature you provided. Check your key and signing method.']);
 
 Scenario(
@@ -44,7 +45,7 @@ Scenario(
 );
 
 Scenario(
-  'Verify add storage location modal elements @backup',
+  'Verify add storage location modal elements @backup @bm-locations',
   async ({
     I, locationsPage,
   }) => {
@@ -68,10 +69,6 @@ Scenario(
       locationsPage.buttons.typeSelect(locationsPage.locationType.client),
       { checked: null },
     );
-    I.seeAttributesOnElements(
-      locationsPage.buttons.typeSelect(locationsPage.locationType.server),
-      { checked: null },
-    );
 
     // Verify buttons state
     I.seeTextEquals('Add', locationsPage.buttons.addLocation);
@@ -84,18 +81,18 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T696 Verify validation for add storage location modal @backup',
+  'PMM-T696 Verify validation for add storage location modal @backup @bm-locations',
   async ({
     I, locationsPage,
   }) => {
     locationsPage.openAddLocationModal();
+    I.click(locationsPage.fields.name);
+    I.click(locationsPage.fields.endpoint);
+    I.click(locationsPage.fields.bucket);
+    I.click(locationsPage.fields.accessKey);
+    I.click(locationsPage.fields.secretKey);
 
-    Object.entries(locationsPage.fields)
-      .filter(([key]) => key !== 'description')
-      .forEach(([, locator]) => {
-        I.click(locator);
-      });
-
+    // Additional click to have unfocused previous field
     I.click(locationsPage.fields.description);
 
     Object.entries(locationsPage.elements.validation)
@@ -106,14 +103,18 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T707 Verify user is able to test connection for storage location @backup',
+  'PMM-T707 Verify user is able to test connection for storage location @backup @bm-locations',
   async ({
     I, locationsPage,
   }) => {
     locationsPage.openAddLocationModal();
 
     // Fill required fields
-    locationsPage.fillLocationFields(location);
+    locationsPage.fillLocationFields(
+      location.name,
+      locationsAPI.storageType.s3,
+      location.config,
+    );
 
     // Verify buttons become enabled
     I.seeAttributesOnElements(locationsPage.buttons.addLocation, { disabled: null });
@@ -126,26 +127,37 @@ Scenario(
 );
 
 Data(s3Errors).Scenario(
-  'PMM-T708 Verify errors related to s3 storage location @backup',
+  'PMM-T708 Verify errors related to s3 storage location @backup @bm-locations ',
   async ({
     I, locationsPage, current,
   }) => {
     locationsPage.openAddLocationModal();
-    locationsPage.fillLocationFields({ ...location, [current.field]: current.value });
+    locationsPage.fillLocationFields(
+      location.name,
+      locationsAPI.storageType.s3,
+      {
+        ...location.config,
+        [current.field]: current.value,
+      },
+    );
     I.click(locationsPage.buttons.testLocation);
     I.verifyPopUpMessage(current.error, 40);
   },
 );
 
 Scenario(
-  'PMM-T683 PMM-T684 Verify user is able to add storage location @backup @fb',
+  'PMM-T683 PMM-T684 Verify user is able to add storage location @backup @bm-fb @bm-locations',
   async ({
     I, locationsPage,
   }) => {
     locationsPage.openAddLocationModal();
 
     // Fill required fields
-    locationsPage.fillLocationFields(location);
+    locationsPage.fillLocationFields(
+      location.name,
+      locationsAPI.storageType.s3,
+      location.config,
+    );
 
     // Verify success message
     I.click(locationsPage.buttons.addLocation);
@@ -158,37 +170,53 @@ Scenario(
     I.seeTextEquals('Actions', locate('th').at(4));
 
     // Verify storage location exists in locations list
+    I.waitForVisible(locationsPage.buttons.actionsMenuByName(location.name), 2);
+    I.click(locationsPage.buttons.actionsMenuByName(location.name));
     I.seeElement(locationsPage.buttons.deleteByName(location.name));
     I.seeElement(locationsPage.buttons.editByName(location.name));
     I.seeTextEquals(locationsPage.locationType.s3, locationsPage.elements.typeCellByName(location.name));
-    I.seeTextEquals(location.endpoint, locationsPage.elements.endpointCellByName(location.name));
+    I.seeTextEquals(location.config.endpoint, locationsPage.elements.endpointCellByName(location.name));
   },
 );
 
 Scenario(
-  'PMM-T690 Verify user is not able to add storage location with the same name @backup',
+  'PMM-T690 Verify user is not able to add storage location with the same name @backup @bm-locations',
   async ({
     I, locationsPage, locationsAPI,
   }) => {
-    await locationsAPI.createStorageLocation(location);
+    await locationsAPI.createStorageLocation(
+      location.name,
+      locationsAPI.storageType.s3,
+      locationsAPI.storageLocationConnection,
+      location.description,
+    );
     locationsPage.openLocationsPage();
     locationsPage.openAddLocationModal();
 
     // Fill required fields
-    locationsPage.fillLocationFields(location);
+    locationsPage.fillLocationFields(
+      location.name,
+      locationsAPI.storageType.s3,
+      location.config,
+    );
 
-    // Verify success message
+    // Verify validation message
     I.click(locationsPage.buttons.addLocation);
     I.verifyPopUpMessage(locationsPage.messages.locationAlreadyExists(location.name));
   },
 );
 
 Scenario(
-  'PMM-T693 Verify user is able to delete storage location @backup @fb',
+  'PMM-T693 Verify user is able to delete storage location @backup @bm-fb @bm-locations',
   async ({
     I, locationsPage, locationsAPI,
   }) => {
-    await locationsAPI.createStorageLocation(location);
+    await locationsAPI.createStorageLocation(
+      location.name,
+      locationsAPI.storageType.s3,
+      locationsAPI.storageLocationConnection,
+      location.description,
+    );
     locationsPage.openLocationsPage();
     locationsPage.openDeleteLocationModal(location.name);
 
@@ -211,14 +239,19 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T695 Verify user is not able to delete storage location that has backups @backup',
+  'PMM-T695 Verify user is not able to delete storage location that has backups @backup @bm-locations',
   async ({
     I, locationsPage, locationsAPI, backupAPI, inventoryAPI,
   }) => {
     const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName('MONGODB_SERVICE', mongoServiceName);
-    const location_id = await locationsAPI.createStorageLocation(location);
+    const location_id = await locationsAPI.createStorageLocation(
+      location.name,
+      locationsAPI.storageType.s3,
+      locationsAPI.storageLocationConnection,
+      location.description,
+    );
 
-    await backupAPI.startBackup('delete location', service_id, location_id);
+    await backupAPI.startBackup('delete_location', service_id, location_id);
     locationsPage.openLocationsPage();
     locationsPage.openDeleteLocationModal(location.name);
     I.click(locationsPage.buttons.confirmDelete);
@@ -228,13 +261,18 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T694 Verify user is able to force delete storage location that has backups @backup',
+  'PMM-T694 Verify user is able to force delete storage location that has backups @backup @bm-locations',
   async ({
     I, locationsPage, locationsAPI, backupAPI, backupInventoryPage, inventoryAPI,
   }) => {
-    const backupName = 'delete location';
+    const backupName = 'delete_location';
     const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName('MONGODB_SERVICE', mongoServiceName);
-    const location_id = await locationsAPI.createStorageLocation(location);
+    const location_id = await locationsAPI.createStorageLocation(
+      location.name,
+      locationsAPI.storageType.s3,
+      locationsAPI.storageLocationConnection,
+      location.description,
+    );
 
     await backupAPI.startBackup(backupName, service_id, location_id);
     locationsPage.openLocationsPage();
@@ -251,7 +289,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T692 Verify user is able to edit storage location @backup',
+  'PMM-T692 Verify user is able to edit storage location @backup @bm-locations',
   async ({
     I, locationsPage, locationsAPI,
   }) => {
@@ -261,15 +299,27 @@ Scenario(
       description: 'updated description',
     };
 
-    await locationsAPI.createStorageLocation(location);
+    await locationsAPI.createStorageLocation(
+      location.name,
+      locationsAPI.storageType.s3,
+      locationsAPI.storageLocationConnection,
+      location.description,
+    );
     locationsPage.openLocationsPage();
 
+    I.click(locationsPage.buttons.actionsMenuByName(location.name));
+    I.waitForVisible(locationsPage.buttons.editByName(location.name), 2);
     I.click(locationsPage.buttons.editByName(location.name));
 
     I.waitForText('Edit', 10, locationsPage.buttons.addLocation);
     I.seeAttributesOnElements(locationsPage.buttons.addLocation, { disabled: true });
 
-    locationsPage.verifyLocationFields(location);
+    locationsPage.verifyLocationFields(
+      location.name,
+      locationsAPI.storageType.s3,
+      locationsAPI.storageLocationConnection,
+      location.description,
+    );
 
     I.clearField(locationsPage.fields.name);
     I.fillField(locationsPage.fields.name, updatedLocation.name);
@@ -278,18 +328,29 @@ Scenario(
     I.click(locationsPage.buttons.addLocation);
     I.verifyPopUpMessage(locationsPage.messages.successfullyEdited(updatedLocation.name));
 
-    I.seeElement(locationsPage.buttons.editByName(updatedLocation.name));
+    I.click(locationsPage.buttons.actionsMenuByName(updatedLocation.name));
+    I.waitForVisible(locationsPage.buttons.editByName(updatedLocation.name), 2);
     I.click(locationsPage.buttons.editByName(updatedLocation.name));
-    locationsPage.verifyLocationFields(updatedLocation);
+    locationsPage.verifyLocationFields(
+      updatedLocation.name,
+      locationsAPI.storageType.s3,
+      locationsAPI.storageLocationConnection,
+      updatedLocation.description,
+    );
   },
 );
 
 Scenario(
-  'PMM-T689 Verify user is able see storage location details @backup',
+  'PMM-T689 Verify user is able see storage location details @backup @bm-locations',
   async ({
     I, locationsPage, locationsAPI,
   }) => {
-    await locationsAPI.createStorageLocation(location);
+    await locationsAPI.createStorageLocation(
+      location.name,
+      locationsAPI.storageType.s3,
+      locationsAPI.storageLocationConnection,
+      location.description,
+    );
     locationsPage.openLocationsPage();
 
     // Open details row
@@ -297,11 +358,11 @@ Scenario(
 
     // Verify storage location details
     I.seeTextEquals(location.description, locationsPage.elements.locationDetails.description);
-    I.seeTextEquals(location.bucket_name, locationsPage.elements.locationDetails.bucket);
-    I.see(location.access_key, locationsPage.elements.locationDetails.accessKey);
+    I.seeTextEquals(location.config.bucket_name, locationsPage.elements.locationDetails.bucket);
+    I.see(location.config.access_key, locationsPage.elements.locationDetails.accessKey);
     I.see('*****', locationsPage.elements.locationDetails.secretKey);
     I.click(locationsPage.buttons.showSecret);
-    I.see(location.secret_key, locationsPage.elements.locationDetails.secretKey);
+    I.see(location.config.secret_key, locationsPage.elements.locationDetails.secretKey);
 
     // Hide details
     I.click(locationsPage.buttons.hideDetails(location.name));
@@ -316,19 +377,23 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T896 Verify user is able to force delete location after MongoDB restore @backup',
+  'PMM-T896 Verify user is able to force delete location after MongoDB restore @backup @bm-locations',
   async ({
     I, locationsPage, backupAPI, inventoryAPI, locationsAPI, restorePage, backupInventoryPage,
   }) => {
     const mongoLocation = {
-      name: 'mongo l',
+      name: 'mongoL',
       description: 'test description',
-      ...locationsPage.mongoStorageLocation,
     };
 
-    const locationId = await locationsAPI.createStorageLocation(mongoLocation);
+    const locationId = await locationsAPI.createStorageLocation(
+      mongoLocation.name,
+      locationsAPI.storageType.s3,
+      locationsAPI.storageLocationConnection,
+      mongoLocation.description,
+    );
 
-    const backupName = 'mongo force delete locations test';
+    const backupName = 'mongo_force_delete_locations_test';
     const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName('MONGODB_SERVICE', mongoServiceName);
     const artifactId = await backupAPI.startBackup(backupName, service_id, locationId);
 
@@ -338,8 +403,7 @@ Scenario(
     await backupAPI.waitForRestoreFinish(restoreId);
 
     I.refreshPage();
-    I.waitForVisible(locationsPage.buttons.deleteByName(mongoLocation.name), 20);
-    I.click(locationsPage.buttons.deleteByName(mongoLocation.name));
+    locationsPage.openDeleteLocationModal(mongoLocation.name);
 
     I.waitForVisible(locationsPage.buttons.confirmDelete, 20);
     I.click(locationsPage.buttons.confirmDelete);

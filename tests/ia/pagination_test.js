@@ -1,34 +1,22 @@
-const pages = new DataTable(['page']);
+const { alertsAPI } = inject();
+const page = 'templates';
 
-pages.add(['channels']);
-// Commenting due to recent changes done with https://jira.percona.com/browse/PMM-8091
-// pages.add(['templates']);
-pages.add(['rules']);
+Feature('Alerting: Templates Pagination');
 
-Feature('IA: Pagination').retry(1);
-
-Before(async ({
-  I, channelsAPI, settingsAPI, rulesAPI, templatesAPI,
-}) => {
+Before(async ({ I, templatesAPI }) => {
   await I.Authorize();
-  await settingsAPI.apiEnableIA();
-  await rulesAPI.clearAllRules(true);
   await templatesAPI.clearAllTemplates();
-  await channelsAPI.clearAllNotificationChannels();
 });
 
-After(async ({ channelsAPI, rulesAPI, templatesAPI }) => {
-  await rulesAPI.clearAllRules(true);
+After(async ({ templatesAPI }) => {
   await templatesAPI.clearAllTemplates();
-  await channelsAPI.clearAllNotificationChannels();
 });
 
-Data(pages).Scenario(
-  'PMM-T632 PMM-T697 PMM-T701 Verify Pagination navigation @ia @grafana-pr',
+Scenario(
+  'PMM-T632 PMM-T697 PMM-T701 PMM-T1251 Verify Pagination navigation @ia @grafana-pr',
   async ({
-    I, iaCommon, current,
+    I, iaCommon,
   }) => {
-    const isTemplatesPage = current.page === 'templates';
     const initialButtonsState = {
       firstPageButton: 'disabled',
       prevPageButton: 'disabled',
@@ -36,35 +24,20 @@ Data(pages).Scenario(
       nextPageButton: 'disabled',
       lastPageButton: 'disabled',
     };
-    const { createEntities, url, getListOfItems } = iaCommon.getCreateEntitiesAndPageUrl(current.page);
+    const { createEntities, url, getListOfItems } = iaCommon.getCreateEntitiesAndPageUrl(page);
 
     I.amOnPage(url);
-
-    if (!isTemplatesPage) {
-      I.waitForElement(iaCommon.elements.noData, 30);
-      I.dontSeeElement(iaCommon.elements.pagination);
-    }
-
-    await createEntities(1);
-    I.refreshPage();
-
     await iaCommon.verifyPaginationButtonsState(initialButtonsState);
 
-    // Number of elements for Rule Templates is different because there are Built-In templates
-    isTemplatesPage
-      ? I.seeNumberOfElements(iaCommon.elements.rowInTable, 13)
-      : I.seeNumberOfElements(iaCommon.elements.rowInTable, 1);
+    const templatesTotal = await I.grabNumberOfVisibleElements(iaCommon.elements.rowInTable);
+
+    I.assertAbove(templatesTotal, 10, 'There\'s more then 10 templates by default');
     I.seeNumberOfElements(iaCommon.buttons.pageButtonActive, 1);
 
-    // Create entities for to have 2 pages (26 entities in sum)
-    isTemplatesPage
-      ? await createEntities(13)
-      : await createEntities(25);
-
+    // Create more templates to have 2 pages (26 in sum)
+    await createEntities(26 - templatesTotal);
     I.say(`1st checkpoint, URL = ${url}, Count of elements = ${(await getListOfItems()).length}`);
-
     I.refreshPage();
-    I.waitForVisible(iaCommon.elements.pagination, 30);
 
     iaCommon.verifyPaginationButtonsState({
       ...initialButtonsState,
@@ -72,34 +45,34 @@ Data(pages).Scenario(
       lastPageButton: 'enabled',
     });
 
-    // Verify number of rows and number of page buttons
+    // Verify number of rows and number of page buttons on page 1
     I.seeNumberOfElements(iaCommon.elements.rowInTable, 25);
     I.seeNumberOfElements(iaCommon.buttons.pageButton, 1);
     I.seeNumberOfElements(iaCommon.buttons.pageButtonActive, 1);
 
-    // Go to 2 page
+    // Go to page 2
     I.scrollTo(iaCommon.elements.pagination);
     I.click(locate(iaCommon.buttons.pageButton).at(1));
-
     I.waitForVisible(iaCommon.elements.pagination, 30);
+
     iaCommon.verifyPaginationButtonsState({
       ...initialButtonsState,
       firstPageButton: 'enabled',
       prevPageButton: 'enabled',
     });
-    // Verify only 1 row on 2 page
+
+    // Verify only 1 row on page 2
     I.seeNumberOfElements(iaCommon.elements.rowInTable, 1);
     I.seeNumberOfElements(iaCommon.buttons.pageButton, 1);
     I.seeNumberOfElements(iaCommon.buttons.pageButtonActive, 1);
 
-    // Create entities for to have 3 pages (51 entities in sum)
+    // Create 25 more templates to have 3 pages (51 in sum)
     await createEntities(25);
-
     I.say(`2nd checkpoint, URL = ${url}, Count of elements = ${(await getListOfItems()).length}`);
     I.refreshPage();
     I.waitForVisible(iaCommon.elements.pagination, 30);
 
-    // Go to 2nd page
+    // Go to page 2
     I.scrollTo(iaCommon.elements.pagination);
     I.click(locate(iaCommon.buttons.pageButton).at(1));
 
@@ -111,26 +84,26 @@ Data(pages).Scenario(
       lastPageButton: 'enabled',
     });
 
-    // Verify number of rows and number of page buttons
+    // Verify number of rows and number of page buttons on page 1
     I.seeNumberOfElements(iaCommon.elements.rowInTable, 25);
     I.seeNumberOfElements(iaCommon.buttons.pageButton, 2);
     I.seeNumberOfElements(iaCommon.buttons.pageButtonActive, 1);
 
-    // Go to 3d page
+    // Go to page 3
     I.scrollTo(iaCommon.elements.pagination);
     I.click(iaCommon.buttons.nextPageButton);
-
     I.waitForVisible(iaCommon.elements.pagination, 30);
+
     iaCommon.verifyPaginationButtonsState({
       ...initialButtonsState,
       firstPageButton: 'enabled',
       prevPageButton: 'enabled',
     });
 
-    // Verify 3d page has 1 row
+    // Verify page 3 has 1 row
     I.seeNumberOfElements(iaCommon.elements.rowInTable, 1);
 
-    // Go back to 1st page
+    // Go back to page 1
     I.scrollTo(iaCommon.elements.pagination);
     I.click(iaCommon.buttons.firstPageButton);
     I.waitForVisible(iaCommon.elements.pagination, 30);
@@ -147,13 +120,14 @@ Data(pages).Scenario(
     I.click(iaCommon.buttons.lastPageButton);
     I.waitForVisible(iaCommon.elements.pagination, 30);
     I.seeNumberOfElements(iaCommon.elements.rowInTable, 1);
+
     iaCommon.verifyPaginationButtonsState({
       ...initialButtonsState,
       firstPageButton: 'enabled',
       prevPageButton: 'enabled',
     });
 
-    // Go to 2nd page
+    // Go to page 2
     I.scrollTo(iaCommon.elements.pagination);
     I.click(iaCommon.buttons.prevPageButton);
     I.waitForVisible(iaCommon.elements.pagination, 30);
@@ -169,16 +143,12 @@ Data(pages).Scenario(
   },
 );
 
-// nightly candidate
-Data(pages).Scenario(
-  'PMM-T662 PMM-T698 PMM-T702 PMM-T631 Pagination rows per page persistence @ia',
+Scenario(
+  'PMM-T662 PMM-T698 PMM-T702 PMM-T631 PMM-T1251 Pagination rows per page persistence @ia',
   async ({
-    I, iaCommon, current,
+    I, iaCommon,
   }) => {
-    const isTemplatesPage = current.page === 'templates';
-    const { createEntities, url, getListOfItems } = iaCommon.getCreateEntitiesAndPageUrl(current.page);
-
-    await createEntities(1);
+    const { createEntities, url, getListOfItems } = iaCommon.getCreateEntitiesAndPageUrl(page);
 
     I.amOnPage(url);
 
@@ -190,14 +160,13 @@ Data(pages).Scenario(
     iaCommon.selectRowsPerPage(50);
     I.seeTextEquals('50', iaCommon.buttons.rowsPerPage);
 
-    // Create entities for to have 2 pages
-    isTemplatesPage
-      ? await createEntities(13)
-      : await createEntities(25);
+    // Create more templates to have 2 pages (26 in sum)
+    const templatesTotal = await I.grabNumberOfVisibleElements(iaCommon.elements.rowInTable);
+
+    await createEntities(26 - templatesTotal);
 
     // Rows per page is '50' after refreshing a page
     I.say(`1st checkpoint, URL = ${url}, Count of elements = ${(await getListOfItems()).length}`);
-
     I.refreshPage();
     I.waitForVisible(iaCommon.elements.pagination, 30);
     I.scrollTo(iaCommon.elements.pagination);
@@ -222,9 +191,8 @@ Data(pages).Scenario(
     I.seeNumberOfElements(iaCommon.elements.rowInTable, 26);
     I.seeNumberOfElements(iaCommon.buttons.pageButtonActive, 1);
 
-    // Create 75 entities more to have 101 in sum
+    // Create 75 more templates (101 in sum)
     await createEntities(75);
-
     I.say(`2nd checkpoint, URL = ${url}, Count of elements = ${(await getListOfItems()).length}`);
     I.refreshPage();
 
@@ -236,11 +204,11 @@ Data(pages).Scenario(
     I.seeNumberOfElements(iaCommon.buttons.pageButton, 1);
     I.seeNumberOfElements(iaCommon.buttons.pageButtonActive, 1);
 
-    // Go to 2nd page
+    // Go to page 2
     I.scrollTo(iaCommon.elements.pagination);
     I.click(locate(iaCommon.buttons.pageButton).at(1));
 
-    // Verify only 1 row on 2 page
+    // Verify only 1 row on page 2
     I.waitForVisible(iaCommon.elements.pagination, 30);
     I.waitForVisible(iaCommon.elements.rowInTable, 30);
     I.seeTextEquals('100', iaCommon.buttons.rowsPerPage);
@@ -250,19 +218,17 @@ Data(pages).Scenario(
   },
 );
 
-// nightly candidate
-Data(pages).Scenario(
-  'PMM-T631 PMM-T633 Changing rows per page resets view to 1 page @ia',
+Scenario(
+  'PMM-T631 PMM-T633 PMM-T1251 Changing rows per page resets view to 1 page @ia',
   async ({
-    I, iaCommon, current,
+    I, iaCommon, templatesAPI,
   }) => {
-    const isTemplatesPage = current.page === 'templates';
-    const { createEntities, url, getListOfItems } = iaCommon.getCreateEntitiesAndPageUrl(current.page);
+    const { createEntities, url, getListOfItems } = iaCommon.getCreateEntitiesAndPageUrl(page);
 
-    // Create entities for to have 2 pages
-    isTemplatesPage
-      ? await createEntities(89)
-      : await createEntities(101);
+    // Create more templates to have 2 pages (101 in sum)
+    const templatesTotal = (await templatesAPI.getTemplatesList()).length;
+
+    await createEntities(101 - templatesTotal);
 
     I.say(`Checkpoint, URL = ${url}, Count of elements = ${(await getListOfItems()).length}`);
     I.amOnPage(url);
@@ -272,10 +238,9 @@ Data(pages).Scenario(
     I.seeTextEquals('25', iaCommon.buttons.rowsPerPage);
     I.seeTextEquals(iaCommon.messages.itemsShown(1, 25, 101), iaCommon.elements.itemsShown);
 
-    // Go to 2nd page
+    // Go to page 2
     I.scrollTo(iaCommon.elements.pagination);
     I.click(locate(iaCommon.buttons.pageButton).at(1));
-
     I.waitForVisible(iaCommon.elements.pagination, 30);
     I.seeTextEquals(iaCommon.messages.itemsShown(26, 50, 101), iaCommon.elements.itemsShown);
 
@@ -284,12 +249,8 @@ Data(pages).Scenario(
     I.waitForVisible(iaCommon.elements.pagination, 30);
     I.scrollTo(iaCommon.elements.pagination);
     I.seeTextEquals('50', iaCommon.buttons.rowsPerPage);
-
     I.seeTextEquals(iaCommon.messages.itemsShown(1, 50, 101), iaCommon.elements.itemsShown);
-
-    I.scrollTo(iaCommon.elements.pagination);
     I.click(locate(iaCommon.buttons.pageButton).at(1));
-
     I.waitForVisible(iaCommon.elements.pagination, 30);
     I.seeTextEquals(iaCommon.messages.itemsShown(51, 100, 101), iaCommon.elements.itemsShown);
 
@@ -298,17 +259,12 @@ Data(pages).Scenario(
     I.waitForVisible(iaCommon.elements.pagination, 30);
     I.scrollTo(iaCommon.elements.pagination);
     I.seeTextEquals('100', iaCommon.buttons.rowsPerPage);
-
     I.seeTextEquals(iaCommon.messages.itemsShown(1, 100, 101), iaCommon.elements.itemsShown);
-
-    I.scrollTo(iaCommon.elements.pagination);
     I.click(locate(iaCommon.buttons.pageButton).at(1));
-
     I.waitForVisible(iaCommon.elements.pagination, 30);
     I.seeNumberOfElements(iaCommon.elements.rowInTable, 1);
     I.seeNumberOfElements(iaCommon.buttons.pageButton, 1);
     I.seeNumberOfElements(iaCommon.buttons.pageButtonActive, 1);
-
     I.seeTextEquals(iaCommon.messages.itemsShown(101, 101, 101), iaCommon.elements.itemsShown);
   },
 );

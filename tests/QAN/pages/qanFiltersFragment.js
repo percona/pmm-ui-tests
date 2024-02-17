@@ -21,6 +21,7 @@ module.exports = {
     filterCheckboxes: '.checkbox-container__checkmark',
   },
   buttons: {
+    refresh: I.useDataQA('data-testid RefreshPicker run button'),
     resetAll: '$qan-filters-reset-all',
     showSelected: '$qan-filters-show-selected',
   },
@@ -29,6 +30,7 @@ module.exports = {
     // tests fail if locate is used
     disabledResetAll: '//button[@data-testid="qan-filters-reset-all" and @disabled ]',
     environmentLabel: '//span[contains(text(), "Environment")]',
+    filterItem: (section, filter) => `//span[contains(text(), '${section}')]/parent::p/following-sibling::div//span[contains(@class, 'checkbox-container__label-text') and contains(text(), '${filter}')]`,
     filterName: 'span.checkbox-container__label-text',
   },
   requests: {
@@ -52,7 +54,7 @@ module.exports = {
   },
 
   checkLink(section, filter, visibility) {
-    const dashboardLink = locate(`$filter-checkbox-${filter === 'n/a' ? '' : filter}`).find('a');
+    const dashboardLink = locate(`$filter-checkbox-${filter}`).find('a');
     const locator = locate(dashboardLink).inside(this.getFilterSectionLocator(section));
 
     if (visibility) {
@@ -72,6 +74,14 @@ module.exports = {
     I.waitForDetached(this.elements.spinner, 60);
   },
 
+  async waitForFilterVisible(filterName, timeout) {
+    await I.asyncWaitFor(async () => {
+      I.click(this.buttons.refresh);
+
+      return I.seeElement(this.elements.filterItem('Service Name', filterName));
+    }, timeout);
+  },
+
   async expandAllFilters() {
     for (let i = 0; i < 4; i++) {
       const numOfElementsFilterCount = await I.grabNumberOfVisibleElements(
@@ -88,13 +98,15 @@ module.exports = {
     }
   },
 
-  applyFilter(filterName) {
+  async applyFilter(filterName) {
     const filterToApply = `//span[contains(@class, 'checkbox-container__label-text') and contains(text(), '${filterName}')]`;
+    const filterItemCheckbox = locate('span').before(filterToApply);
 
     I.waitForVisible(this.fields.filterBy, 30);
     I.fillField(this.fields.filterBy, filterName);
-    I.waitForVisible(filterToApply, 20);
+    I.waitForElement(filterToApply);
     I.forceClick(filterToApply);
+    I.waitForEnabled(filterItemCheckbox);
     I.waitForDetached(this.elements.spinner, 30);
     I.waitForElement(this.fields.filterBy, 30);
     // workaround for clearing the field completely
@@ -174,13 +186,6 @@ module.exports = {
     }
   },
 
-  async applyShowTop5Link(groupName) {
-    const showTop5Link = `//span[contains(text(), '${groupName}')]/following-sibling::span[contains(text(), 'Show top 5')]`;
-
-    I.waitForVisible(showTop5Link, 30);
-    I.click(showTop5Link);
-  },
-
   checkDisabledFilter(groupName, filter) {
     const filterLocator = `//span[contains(text(), '${groupName}')]/parent::p/following-sibling::div[@data-testid='filter-checkbox-${filter}']//input[contains(@name, '${filter}') and @disabled]`;
 
@@ -198,7 +203,13 @@ module.exports = {
   },
 
   async verifyShortcutAttributes(href, filterValue, timeRangeValue) {
-    const shortCutLocator = locate(`$filter-checkbox-${filterValue}`).find('a');
+    let shortCutLocator = locate(`$filter-checkbox-${filterValue}`).find('a');
+
+    if (filterValue === 'mongodb_rs1_2') {
+      shortCutLocator = '//div[contains(@data-testid, "filter-checkbox-mongodb_rs1_2")]//a';
+    }
+
+    await I.waitForVisible(shortCutLocator, 20);
     const linkText = await I.grabAttributeFrom(shortCutLocator, 'href');
     const target = await I.grabAttributeFrom(shortCutLocator, 'target');
 

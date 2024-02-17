@@ -1,27 +1,32 @@
 const assert = require('assert');
 
 const {
-  I, channelsAPI, alertRulesPage, ruleTemplatesPage, rulesAPI, templatesAPI, ncPage,
+  I, alertRulesPage, ruleTemplatesPage, rulesAPI, templatesAPI, alertsPage, alertsAPI,
 } = inject();
 
 module.exports = {
-  url: 'graph/integrated-alerting',
   tabNames: {
-    alerts: 'Alerts',
-    alertRules: 'Alert Rules',
-    ruleTemplates: 'Alert Rule Templates',
-    notificationChannels: 'Notification Channels',
+    firedAlerts: 'Fired alerts',
+    ruleTemplates: 'Alert rule templates',
+    alertRules: 'Alert rules',
+    contactPoints: 'Contact points',
+    notificationPolicies: 'Notification policies',
+    silences: 'Silences',
+    alertGroups: 'Alert groups',
+    admin: 'Admin',
   },
   elements: {
     noData: locate('$table-no-data').find('h1'),
     pagination: '$pagination',
     itemsShown: '$pagination-items-inverval',
     rowInTable: locate('$table-tbody').find('tr'),
-    tab: (tabName) => locate('li').find('a').withAttr({ 'aria-label': `Tab ${tabName}` }),
+    tab: (tabName) => locate('[role="tablist"] a').withAttr({ 'aria-label': `Tab ${tabName}` }),
     table: '$table-tbody',
-    breadcrumbActive: locate('$breadcrumb-section').last(),
     disabledIa: '$empty-block',
     settingsLink: '$settings-link',
+    selectDropdownOption: (option) => `$${option}-select-option`,
+    inputField: (id) => `input[id='${id}']`,
+    modalDialog: 'div[role=\'dialog\']',
   },
   buttons: {
     firstPageButton: '$first-page-button',
@@ -31,33 +36,31 @@ module.exports = {
     nextPageButton: '$next-page-button',
     lastPageButton: '$last-page-button',
     rowsPerPage: locate('$pagination').find('div[class*="-singleValue"]'),
-    rowsPerPageOption: (count) => locate('$pagination').find('[aria-label="Select option"] span').withText(count.toString()),
+    rowsPerPageOption: (count) => locate('[aria-label="Select option"] span').withText(count.toString()),
   },
   messages: {
     itemsShown: (leftNumber, rightNumber, totalItems) => `Showing ${leftNumber}-${rightNumber} of ${totalItems} items`,
-    disabledIa: 'Integrated Alerting is disabled. You can enable it in  \n'
+    disabledIa: 'Percona Alerting is disabled. You can enable it in  \n'
       + 'PMM Settings.',
   },
 
-  openTab(tabName) {
+  /**
+   * @param  {} tabName
+   * @param  {} tabElement  - element (locator) that exist in tab
+   * @param  {} tabUrl - expected url in tab
+   */
+  async openAndVerifyTab(tabName, tabElement, tabUrl) {
     I.waitForVisible(this.elements.tab(tabName), 30);
     I.click(this.elements.tab(tabName));
-    if (tabName === this.tabNames.ruleTemplates) {
-      I.waitForVisible(this.elements.table, 30);
-    } else {
-      I.waitForVisible(this.elements.noData, 30);
-    }
+    I.waitForVisible(tabElement, 10);
+    I.seeInCurrentUrl(tabUrl);
+
+    const className = await I.grabAttributeFrom(this.elements.tab(tabName), 'class');
+
+    assert.ok(className.endsWith('activeTabStyle'), `Tab ${tabName} should be active`);
   },
 
   getCreateEntitiesAndPageUrl(page) {
-    if (page === 'channels') {
-      return {
-        createEntities: channelsAPI.createNotificationChannels,
-        url: ncPage.url,
-        getListOfItems: channelsAPI.getChannelsList,
-      };
-    }
-
     if (page === 'rules') {
       return {
         createEntities: rulesAPI.createAlertRules,
@@ -71,6 +74,14 @@ module.exports = {
         createEntities: templatesAPI.createRuleTemplates,
         url: ruleTemplatesPage.url,
         getListOfItems: templatesAPI.getTemplatesList,
+      };
+    }
+
+    if (page === 'alerts') {
+      return {
+        createEntities: rulesAPI.createAlertRules,
+        url: alertsPage.url,
+        getListOfItems: alertsAPI.getAlertsList,
       };
     }
 
@@ -100,17 +111,5 @@ module.exports = {
 
   shouldBeDisabled(value) {
     return value === 'disabled' ? { disabled: true } : { disabled: null };
-  },
-
-  async verifyTabIsActive(tabName) {
-    const className = await I.grabAttributeFrom(this.elements.tab(tabName), 'class');
-
-    assert.ok(className.endsWith('activeTabStyle'), `Tab ${tabName} should be active`);
-  },
-
-  checkBreadcrumbText(text, locator) {
-    const breadcrumbSectionText = ` / ${text}`;
-
-    I.seeTextEquals(breadcrumbSectionText, locator);
   },
 };

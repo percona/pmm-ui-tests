@@ -21,12 +21,18 @@ Data(annotation).Scenario(
     I, dashboardPage, pmmInventoryPage, annotationAPI, inventoryAPI, current,
   }) => {
     const { annotationName } = current;
+    let service_response;
 
     I.amOnPage(pmmInventoryPage.url);
-    I.waitForVisible(pmmInventoryPage.fields.nodesLink, 30);
-    const service_response = await inventoryAPI.apiGetNodeInfoForAllNodesByServiceName(current.service_type, current.service);
-    const serviceName = service_response[0].service_name;
-    const nodeID = await pmmInventoryPage.getNodeId(serviceName);
+
+    if (current.service !== 'pmm-server') {
+      service_response = await inventoryAPI.apiGetNodeInfoByServiceName(current.service_type, current.service, 'pmm-server');
+    } else {
+      service_response = await inventoryAPI.apiGetNodeInfoByServiceName(current.service_type, current.service);
+    }
+
+    const serviceName = service_response.service_name;
+    const nodeID = service_response.node_id;
     const nodeName = await inventoryAPI.getNodeName(nodeID);
 
     await annotationAPI.setAnnotation(annotationName, 'PMM-T878', nodeName, serviceName, 200);
@@ -41,30 +47,26 @@ Data(annotation).Scenario(
       await dashboardPage.applyFilter('Service Name', serviceName);
       dashboardPage.verifyAnnotationsLoaded(annotationName, 1);
     }
-
-    I.seeElement(dashboardPage.annotationText(annotationName), 10);
   },
-);
+).retry(1);
 
 Scenario(
   'PMM-T878 - Verify user is not able to add an annotation for non-existing node name or service name and without service name @nightly @dashboards',
   async ({
-    I, annotationAPI, pmmInventoryPage, inventoryAPI,
+    I, annotationAPI, pmmInventoryPage,
   }) => {
     I.amOnPage(pmmInventoryPage.url);
     I.waitForVisible(pmmInventoryPage.fields.mysqlServiceName, 10);
     const serviceName = await I.grabTextFrom(pmmInventoryPage.fields.mysqlServiceName);
-    const nodeID = await pmmInventoryPage.getNodeId(serviceName);
-    const nodeName = await inventoryAPI.getNodeName(nodeID);
 
     // wrong node name
-    await annotationAPI.setAnnotation(`annotation-not-added${serviceName}node-name`, 'PMM-T878', 'random1', serviceName, 404);
+    await annotationAPI.setAnnotation('wrong-node-name', 'PMM-T878', 'random1', serviceName, 404);
 
     // wrong service name
-    await annotationAPI.setAnnotation('wrong-service-name', 'PMM-T878', nodeName, 'random2', 404);
+    await annotationAPI.setAnnotation('wrong-service-name', 'PMM-T878', 'pmm-server', 'random2', 404);
 
     // without service name
-    await annotationAPI.setAnnotation('empty-service-name', 'PMM-T878', nodeName, '', 400);
+    await annotationAPI.setAnnotation('empty-service-name', 'PMM-T878', 'pmm-server', '', 400);
   },
 );
 

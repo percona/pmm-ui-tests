@@ -15,13 +15,22 @@ module.exports = {
 
     return alerts.data;
   },
-
+  /**
+   * Get all silenced alerts with active status
+   * @return {array} of silences IDs
+   */
   async getSilenced() {
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
 
-    const silences = await I.sendGetRequest('alertmanager/api/v2/silences?silenced=false&inhibited=false&active=true', headers);
+    const silences = await I.sendGetRequest('graph/api/alertmanager/grafana/api/v2/silences', headers);
 
-    return silences.data.filter(({ status }) => status.state === 'active');
+    return silences.data.filter(({ status }) => status.state === 'active').map((e) => e.id);
+  },
+
+  async deleteSilences(silenceID) {
+    const headers = { Authorization: `Basic ${await I.getAuth()}` };
+
+    silenceID.forEach((item) => I.sendDeleteRequest(`graph/api/alertmanager/grafana/api/v2/silence/${item}`, headers));
   },
 
   /**
@@ -38,23 +47,23 @@ module.exports = {
 
       if (silenced) {
         assert.ok(
-            JSON.stringify(silences).includes(ruleId),
-            'Alert should be silenced in alertmanager',
+          JSON.stringify(silences).includes(ruleId),
+          'Alert should be silenced in alertmanager',
         );
 
         assert.ok(
-            !JSON.stringify(alerts).includes(ruleId),
-            'Silenced alert should not be active in alertmanager',
+          !JSON.stringify(alerts).includes(ruleId),
+          'Silenced alert should not be active in alertmanager',
         );
       } else {
         assert.ok(
-            JSON.stringify(alerts).includes(ruleId),
-            'Alert should be active in alertmanager',
+          JSON.stringify(alerts).includes(ruleId),
+          'Alert should be active in alertmanager',
         );
 
         assert.ok(
-            !JSON.stringify(silences).includes(ruleId),
-            'Alert should not be be silenced in alertmanager',
+          !JSON.stringify(silences).includes(ruleId),
+          'Alert should not be be silenced in alertmanager',
         );
       }
     }

@@ -136,25 +136,6 @@ class Grafana extends Helper {
     page.hover(locator);
   }
 
-  // eslint-disable-next-line no-underscore-dangle, class-methods-use-this
-  async _before(test) {
-    const allure = codeceptjs.container.plugins('allure');
-
-    switch (true) {
-      case test.title.includes('[blocker]'):
-        allure.severity('blocker');
-        break;
-      case test.title.includes('[critical]'):
-        allure.severity('critical');
-        break;
-      case test.title.includes('[minor]'):
-        allure.severity('minor');
-        break;
-      default:
-        allure.severity('normal');
-    }
-  }
-
   async createUser(username, password) {
     const apiContext = this.helpers.REST;
     const body = {
@@ -206,22 +187,22 @@ class Grafana extends Helper {
     return resp.data;
   }
 
-  async verifyCommand(command, output, result = 'pass', getError = false) {
+  async verifyCommand(command, output = null, result = 'pass', returnErrorPipe = false) {
     const { stdout, stderr, code } = shell.exec(command.replace(/(\r\n|\n|\r)/gm, ''), { silent: true });
 
     if (output && result === 'pass') {
-      assert.ok(stdout.includes(output), `The output for ${command} was expected to include ${output} but found ${stdout}`);
+      assert.ok(stdout.includes(output), `The "${command}" output expected to include "${output}" but found "${stdout}"`);
     }
 
     if (result === 'pass') {
-      assert.ok(code === 0, `The command ${command} was expected to run without any errors, the error found ${stderr}`);
+      assert.ok(code === 0, `The "${command}" command was expected to run without any errors, but the error found: "${stderr || stdout}"`);
     } else {
-      assert.ok(code !== 0, `The command ${command} was expected to return with failure but found to be executing without any error, the return code found ${code}`);
+      assert.ok(code !== 0, `The "${command}" command was expected to exit with error code, but exited with success code: "${code}"`);
     }
 
-    if (!getError) return stdout;
+    if (returnErrorPipe) return stderr.trim();
 
-    return stderr;
+    return stdout.trim();
   }
 }
 

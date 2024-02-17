@@ -21,8 +21,13 @@ services:
       - "443:443"
     environment:
       - PMM_DEBUG=1
+      - ENABLE_RBAC=1
       - PERCONA_TEST_SAAS_HOST=check-dev.percona.com:443
+      - GF_AUTH_OAUTH_ALLOW_INSECURE_EMAIL_LOOKUP=1
+      - PERCONA_PORTAL_URL=https://portal-dev.percona.com
       - PERCONA_TEST_CHECKS_PUBLIC_KEY=RWTg+ZmCCjt7O8eWeAmTLAqW+1ozUbpRSKSwNTmO+exlS5KEIPYWuYdX
+      - PERCONA_TEST_PLATFORM_ADDRESS=https://check-dev.percona.com:443
+      - PERCONA_TEST_PLATFORM_PUBLIC_KEY=RWTg+ZmCCjt7O8eWeAmTLAqW+1ozUbpRSKSwNTmO+exlS5KEIPYWuYdX
       - PERCONA_TEST_VERSION_SERVICE_URL=https://check-dev.percona.com/versions/v1
       - PERCONA_TEST_TELEMETRY_INTERVAL=10s
       - PERCONA_TEST_TELEMETRY_RETRY_BACKOFF=10s
@@ -44,7 +49,7 @@ services:
     ports:
       - "3309:3306"
     environment:
-      - MYSQL_ROOT_PASSWORD=ps
+      - MYSQL_ROOT_PASSWORD=^O6VrIoC1@9b
       - MYSQL_USER=pmm-agent
       - MYSQL_PASSWORD=pmm%*&agent-password
       - UMASK=0777  # for slowlog file
@@ -64,9 +69,9 @@ services:
     ports:
       - "3307:3306"
     environment:
-      - MYSQL_ROOT_PASSWORD=ps
+      - MYSQL_ROOT_PASSWORD=^O6VrIoC1@9b
       - MYSQL_USER=pmm-agent
-      - MYSQL_PASSWORD=pmm-agent-password
+      - MYSQL_PASSWORD=pmm%*&agent-password
       - UMASK=0777  # for slowlog file
     volumes:
       - /tmp/mysql/log:/tmp/mysql/log
@@ -85,17 +90,8 @@ services:
     networks:
       - pmm-network
 
-  mongonoauth:
-    image: ${MONGO_IMAGE:-percona/percona-server-mongodb:4.2.8}
-    container_name: pmm-agent_mongonoauth
-    command: --profile 2
-    ports:
-      - "27019:27017"
-    networks:
-      - pmm-network
-
   postgres:
-    image: ${POSTGRES_IMAGE:-perconalab/percona-distribution-postgresql:13.3}
+    image: ${POSTGRES_IMAGE:-perconalab/percona-distribution-postgresql:15}
     container_name: pmm-agent_postgres
     command: >
       -c shared_preload_libraries=pg_stat_monitor,pg_stat_statements
@@ -115,28 +111,27 @@ services:
 
   # it needs for deleting postgres db for test T1087
   postgresremovedefaultdb:
-    image: ${POSTGRES_IMAGE:-perconalab/percona-distribution-postgresql:13.3}
+    image: ${POSTGRES_IMAGE:-perconalab/percona-distribution-postgresql:15}
     command: >
       psql -Utest -hpostgresnodb -dnot_default_db -c 'DROP DATABASE postgres WITH (FORCE);'
     depends_on:
       postgresnodb:
         condition: service_healthy
     environment:
-      - PGPASSWORD=test
+      - PGPASSWORD=50mFC#z7lHZ1
     networks:
       - pmm-network
 
   postgresnodb:
-    image: ${POSTGRES_IMAGE:-perconalab/percona-distribution-postgresql:13.3}
+    image: ${POSTGRES_IMAGE:-perconalab/percona-distribution-postgresql:15}
     healthcheck:
       test: [ "CMD-SHELL", "pg_isready" ]
-      interval: 10s
-      timeout: 5s
-      retries: 5
+      interval: 5s
+      retries: 12
     ports:
       - "6435:5432"
     environment:
-      - POSTGRES_PASSWORD=test
+      - POSTGRES_PASSWORD=50mFC#z7lHZ1
       - POSTGRES_USER=test
       - POSTGRES_DB=not_default_db
     networks:
@@ -169,14 +164,14 @@ services:
               --host=mysql \
               --port=3306 \
               --user=root \
-              --password=ps \
+              --password=^O6VrIoC1@9b \
               -e 'CREATE DATABASE IF NOT EXISTS sbtest'
           sysbench \
               --db-driver=mysql \
               --mysql-host=mysql \
               --mysql-port=3306 \
               --mysql-user=root \
-              --mysql-password=ps \
+              --mysql-password=^O6VrIoC1@9b \
               --mysql-db=sbtest \
               --mysql-table-engine=innodb \
               --oltp-table-size=1000000 \
@@ -193,7 +188,7 @@ services:
               --mysql-host=mysql \
               --mysql-port=3306 \
               --mysql-user=root \
-              --mysql-password=ps \
+              --mysql-password=^O6VrIoC1@9b \
               --mysql-db=sbtest \
               --mysql-table-engine=innodb \
               --oltp-reconnect \

@@ -24,12 +24,14 @@
   },
   "rules": {
     "max-len": [
-      "error",
+      "warn",
       {
         "code": 130,
+        "ignoreComments": true,
         "ignoreRegExpLiterals": true,
         "ignoreStrings": true,
         "ignoreTemplateLiterals": true,
+        "ignoreTrailingComments": true,
         "ignoreUrls": true
       }
     ],
@@ -42,6 +44,7 @@
       }
     ],
     "no-await-in-loop": ["off"],
-    "no-return-await": ["off"]
+    "no-return-await": ["off"],
+    "no-useless-escape": ["off"]
   }
 }

@@ -1,7 +1,9 @@
 const assert = require('assert');
 const faker = require('faker');
 
-const { remoteInstancesPage, remoteInstancesHelper, pmmInventoryPage } = inject();
+const {
+  remoteInstancesPage, remoteInstancesHelper, pmmInventoryPage,
+} = inject();
 
 const externalExporterServiceName = 'external_service_new';
 const haproxyServiceName = 'haproxy_remote';
@@ -53,14 +55,21 @@ for (const [key, value] of Object.entries(remoteInstancesHelper.services)) {
   }
 }
 
-Feature('Remote DB Instances').retry(1);
+Feature('Remote DB Instances');
 
 Before(async ({ I }) => {
   await I.Authorize();
 });
 
+// The test relies on --setup-external-service flag setup from pmm-framework
+Scenario.skip('@PMM-T1700 - External service name is properly displayed @instances @instances-fb', async ({ I, pmmInventoryPage }) => {
+  I.amOnPage(pmmInventoryPage.url);
+  pmmInventoryPage.changeRowsPerPage(100);
+  I.waitForVisible(pmmInventoryPage.fields.serviceRow('redis_external'), 30);
+});
+
 Scenario(
-  'PMM-T588 - Verify adding external exporter service via UI @instances @fb',
+  '@PMM-T588 - Verify adding external exporter service via UI @instances @instances-fb',
   async ({ I, remoteInstancesPage, pmmInventoryPage }) => {
     I.amOnPage(remoteInstancesPage.url);
     remoteInstancesPage.waitUntilRemoteInstancesPageLoaded();
@@ -69,13 +78,14 @@ Scenario(
     I.waitForVisible(remoteInstancesPage.fields.addService, 30);
     I.click(remoteInstancesPage.fields.addService);
     pmmInventoryPage.verifyRemoteServiceIsDisplayed(externalExporterServiceName);
-    I.click(pmmInventoryPage.fields.agentsLink);
+    await I.click(pmmInventoryPage.fields.showServiceDetails(externalExporterServiceName));
+    await I.click(pmmInventoryPage.fields.agentsLinkNew);
     I.waitForVisible(pmmInventoryPage.fields.externalExporter, 30);
   },
-);
+).retry(0);
 
 Data(instances).Scenario(
-  'PMM-T898 Verify Remote Instance Addition [critical] @instances @fb',
+  'PMM-T898 Verify Remote Instance Addition [critical] @instances @instances-fb',
   async ({ I, remoteInstancesPage, current }) => {
     const serviceName = remoteInstancesHelper.services[current.name];
 
@@ -115,7 +125,7 @@ Scenario(
 );
 
 Data(instances).Scenario(
-  'Verify Remote Instance has Status Running [critical] @instances @fb',
+  'Verify Remote Instance has Status Running [critical] @instances @instances-fb',
   async ({
     I, pmmInventoryPage, current,
   }) => {
@@ -149,7 +159,6 @@ Scenario(
     I.amOnPage(remoteInstancesPage.url);
     remoteInstancesPage.waitUntilRemoteInstancesPageLoaded();
     remoteInstancesPage.openAddRemotePage('haproxy');
-    I.waitForVisible(remoteInstancesPage.fields.returnToMenuButton, 30);
     I.waitForVisible(remoteInstancesPage.fields.hostName, 30);
     I.waitForVisible(remoteInstancesPage.fields.serviceName, 30);
     I.waitForVisible(remoteInstancesPage.fields.portNumber, 30);
@@ -178,7 +187,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T635 - Verify Adding HAProxy service via UI @instances @fb',
+  '@PMM-T635 - Verify Adding HAProxy service via UI @instances @instances-fb',
   async ({
     I, remoteInstancesPage, pmmInventoryPage,
   }) => {
@@ -200,12 +209,42 @@ Scenario(
     I.waitForVisible(remoteInstancesPage.fields.addService, 30);
     I.click(remoteInstancesPage.fields.addService);
     pmmInventoryPage.verifyRemoteServiceIsDisplayed(haproxyServiceName);
-    const serviceId = await pmmInventoryPage.getServiceId(haproxyServiceName);
 
-    I.click(pmmInventoryPage.fields.agentsLink);
-    await pmmInventoryPage.checkAgentOtherDetailsSection('scheme:', 'scheme: http', haproxyServiceName, serviceId);
-    await pmmInventoryPage.checkAgentOtherDetailsSection('metrics_path:', 'metrics_path: /metrics', haproxyServiceName, serviceId);
-    await pmmInventoryPage.checkAgentOtherDetailsSection('listen_port:', `listen_port: ${remoteInstancesHelper.remote_instance.haproxy.haproxy_2.port}`, haproxyServiceName, serviceId);
+    await I.click(pmmInventoryPage.fields.showServiceDetails(haproxyServiceName));
+    await I.click(pmmInventoryPage.fields.agentsLinkNew);
+    await I.click(pmmInventoryPage.fields.showAgentDetails('External exporter'));
+    await pmmInventoryPage.checkAgentsLabel('metrics_scheme=http');
+    await pmmInventoryPage.checkAgentsLabel('metrics_path=/metrics');
+    await pmmInventoryPage.checkAgentsLabel(`listen_port=${remoteInstancesHelper.remote_instance.haproxy.haproxy_2.port}`);
+  },
+);
+
+Scenario(
+  'PMM-T1089 - Verify UI elements for PostgreSQL Instance @instances',
+  async ({
+    I, remoteInstancesPage,
+  }) => {
+    I.amOnPage(remoteInstancesPage.url);
+    remoteInstancesPage.waitUntilRemoteInstancesPageLoaded();
+    remoteInstancesPage.openAddRemotePage('postgresql');
+    I.click(remoteInstancesPage.fields.addService);
+    remoteInstancesPage.checkRequiredField();
+    // Verify fields on the page
+    I.seeElement(remoteInstancesPage.fields.hostName, 30);
+    I.seeElement(remoteInstancesPage.fields.serviceName, 30);
+    I.seeElement(remoteInstancesPage.fields.portNumber, 30);
+    I.seeElement(remoteInstancesPage.fields.userName, 30);
+    I.seeElement(remoteInstancesPage.fields.password, 30);
+    I.seeElement(remoteInstancesPage.fields.environment, 30);
+    I.seeElement(remoteInstancesPage.fields.region, 30);
+    I.seeElement(remoteInstancesPage.fields.availabilityZone, 30);
+    I.seeElement(remoteInstancesPage.fields.replicationSet, 30);
+    I.seeElement(remoteInstancesPage.fields.cluster, 30);
+    I.seeElement(remoteInstancesPage.fields.customLabels, 30);
+    I.seeElement(remoteInstancesPage.fields.skipConnectionCheck, 30);
+    I.seeElement(remoteInstancesPage.fields.dontTrackingRadio, 30);
+    I.seeElement(remoteInstancesPage.fields.pgStatStatementsRadio, 30);
+    I.seeElement(remoteInstancesPage.fields.pgStatMonitorRadio, 30);
   },
 );
 
@@ -246,7 +285,7 @@ Data(dashboardCheck).Scenario(
 ).retry(2);
 
 Data(qanFilters).Scenario(
-  'PMM-T854 - Verify QAN after remote instance is added @instances @fb',
+  'PMM-T854 - Verify QAN after remote instance is added @instances @instances-fb',
   async ({
     I, qanOverview, qanFilters, qanPage, current,
   }) => {
@@ -261,7 +300,7 @@ Data(qanFilters).Scenario(
 ).retry(2);
 
 Data(metrics).Scenario(
-  'PMM-T743 Check metrics from exporters are hitting PMM Server @instances @fb',
+  'PMM-T743 Check metrics from exporters are hitting PMM Server @instances @instances-fb',
   async ({ grafanaAPI, current }) => {
     await grafanaAPI.waitForMetric(current.metricName, { type: 'service_name', value: current.serviceName }, 10);
   },
@@ -282,7 +321,7 @@ Scenario(
       database: 'postgres',
       host: 'postgresnodb',
       username: 'test',
-      password: 'test',
+      password: '50mFC#z7lHZ1',
       environment: remoteInstancesPage.potgresqlSettings.environment,
       cluster: remoteInstancesPage.potgresqlSettings.cluster,
     };
