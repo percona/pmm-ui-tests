@@ -44,6 +44,7 @@
         "import/no-extraneous-dependencies": ["error", {"devDependencies": true }],
         "import/prefer-default-export": "off",
         "no-continue": ["off"],
+        "playwright/expect-expect": ["off"],
         "playwright/no-wait-for-timeout": ["off"],
         // Allows i++ (overriding airbnb-base)
         "no-plusplus": "off",
@@ -112,6 +113,7 @@
     }
   ],
   "rules": {
+    "playwright/expect-expect": ["off"],
     "playwright/no-wait-for-timeout": ["off"],
     "@typescript-eslint/no-useless-constructor": ["off"],
     "@typescript-eslint/await-thenable": ["off"],
