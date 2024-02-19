@@ -55,11 +55,7 @@ test.describe('PMM Server Configuration impacts on client tests', async () => {
     await expect(async () => {
       const scrapeSizeLog = await cli.exec(`docker logs ${clientContainer} 2>&1 | grep 'promscrape.maxScrapeSize.*vm_agent' | tail -1`);
       await scrapeSizeLog.outContains(`promscrape.maxScrapeSize=\\\"${customScrapeSize}MiB\\\"`);
-    }).toPass({
-      // Probe, wait 1s, probe, wait 2s, probe, wait 2s, probe, wait 2s, probe, ....
-      intervals: [1_000, 2_000, 2_000],
-      timeout: 10_000,
-    });
+    }).toPass({ intervals: [2_000], timeout: 10_000 });
   });
 
   // FIXME: skipped until solve conflict with changing pmm-agent config in generic spec
@@ -76,11 +72,7 @@ test.describe('PMM Server Configuration impacts on client tests', async () => {
     await expect(async () => {
       const scrapeSizeLog = await cli.exec('ps aux | grep -v \'grep\' | grep \'vm_agent\' | tail -1');
       await scrapeSizeLog.outContains(`promscrape.maxScrapeSize=${customScrapeSize}MiB`);
-    }).toPass({
-      // Probe, wait 1s, probe, wait 2s, probe, wait 2s, probe, wait 2s, probe, ....
-      intervals: [1_000, 2_000, 2_000],
-      timeout: 10_000,
-    });
+    }).toPass({ intervals: [2_000], timeout: 10_000 });
     // TODO: move out to aftereach
     await (await cli.exec('sudo pmm-admin config --force \'--server-url=https://admin:admin@0.0.0.0:443\' --server-insecure-tls 127.0.0.1 || true')).logError();
   });

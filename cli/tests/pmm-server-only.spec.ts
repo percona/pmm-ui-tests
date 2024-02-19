@@ -110,7 +110,7 @@ test.describe('PMM Server CLI tests for Docker Environment Variables', async () 
       await expect(async () => {
         await (await cli.exec(`docker ps | grep ${containerName}`))
           .outContains('unhealthy');
-      }).toPass({ intervals: [2_000, 2_000, 2_000], timeout: 30_000 });
+      }).toPass({ intervals: [2_000], timeout: 30_000 });
     });
   });
 
@@ -120,7 +120,7 @@ test.describe('PMM Server CLI tests for Docker Environment Variables', async () 
   test('Basic Sanity using Clickhouse shipped with PMM-Server, Check Connection, Run a Query', async ({}) => {
     await (await cli.exec(
       // eslint-disable-next-line no-multi-str
-      'clickhouse-client \
+      'docker exec pmm-server clickhouse-client \
         --database pmm \
         --query "select any(example),sum(num_queries) cnt, \
         max(m_query_time_max) slowest from metrics where period_start>subtractHours(now(),6) \
@@ -128,7 +128,7 @@ test.describe('PMM Server CLI tests for Docker Environment Variables', async () 
     )).assertSuccess();
 
     const output = await cli.exec(
-      'clickhouse-client --query \'SELECT * FROM system.databases\' | grep pmm | tr -s \'[:blank:]\' \'\\n\'',
+      'docker exec pmm-server clickhouse-client --query \'SELECT * FROM system.databases\' | grep pmm | tr -s \'[:blank:]\' \'\\n\'',
     );
     await output.assertSuccess();
 
