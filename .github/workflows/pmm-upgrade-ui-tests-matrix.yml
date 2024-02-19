@@ -35,7 +35,7 @@ on:
 jobs:
   get_versions:
     name: Get versions
-    uses: ./.github/workflows/pmm-version-getter.yml
+    uses: percona/pmm-qa/.github/workflows/pmm-version-getter.yml@main
     with:
       repository: ${{ inputs.repository || 'dev-latest'}}
       matrix_range: 10
