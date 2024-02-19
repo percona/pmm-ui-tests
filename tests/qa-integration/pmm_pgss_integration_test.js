@@ -34,6 +34,35 @@ Before(async ({ I }) => {
 });
 
 Scenario(
+  'PMM-T1728 - pg_stat_statements is used if no --query-source flag provided and pg_stat_monitor is not configured @not-ui-pipeline @pgss-pmm-integration',
+  async ({ I }) => {
+    const serviceName = `pgss_${Math.floor(Math.random() * 99) + 1}`;
+    const { service: { service_id: serviceId } } = JSON.parse(
+      await I.verifyCommand(`docker exec ${container_name} pmm-admin add postgresql --json --password=${connection.password} --username=${connection.user} --service-name=${serviceName}`),
+    );
+
+    let list;
+    let serviceAgents;
+
+    await I.asyncWaitFor(async () => {
+      list = JSON.parse(
+        await I.verifyCommand(`docker exec ${container_name} pmm-admin list --json`),
+      );
+      serviceAgents = list.agent.filter(({ service_id }) => service_id === serviceId);
+      const pgStatStatementsAgent = serviceAgents.find(({ agent_type }) => agent_type === 'QAN_POSTGRESQL_PGSTATEMENTS_AGENT');
+
+      assert.ok(pgStatStatementsAgent, 'pg_stat_statements agent should exist');
+
+      return pgStatStatementsAgent.status === 'RUNNING';
+    }, 30);
+
+    const pgStatMonitorAgent = serviceAgents.find(({ agent_type }) => agent_type === 'QAN_POSTGRESQL_PGSTATMONITOR_AGENT');
+
+    assert.ok(!pgStatMonitorAgent, 'pg_stat_monitor agent should not exist');
+  },
+);
+
+Scenario(
   '@PMM-T1312 Adding Load to Postgres test database and verifying PMM-Agent and PG_STATEMENTS QAN agent is in running status @not-ui-pipeline @pgss-pmm-integration',
   async ({ I }) => {
     await I.pgExecuteQueryOnDemand('SELECT now();', connection);
