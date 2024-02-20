@@ -64,7 +64,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T1728 - pg_stat_monitor is used by default without providing --query-source @not-ui-pipeline @pgsm-pmm-integration',
+  'PMM-T1867 - pg_stat_monitor is used by default without providing --query-source @not-ui-pipeline @pgsm-pmm-integration',
   async ({ I }) => {
     const serviceName = `pgsm_${Math.floor(Math.random() * 99) + 1}`;
     const { service: { service_id: serviceId } } = JSON.parse(

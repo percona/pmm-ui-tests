@@ -34,7 +34,7 @@ Before(async ({ I }) => {
 });
 
 Scenario(
-  'PMM-T1728 - pg_stat_statements is used if no --query-source flag provided and pg_stat_monitor is not configured @not-ui-pipeline @pgss-pmm-integration',
+  'PMM-T1868 - pg_stat_statements is used if no --query-source flag provided and pg_stat_monitor is not configured @not-ui-pipeline @pgss-pmm-integration',
   async ({ I }) => {
     const serviceName = `pgss_${Math.floor(Math.random() * 99) + 1}`;
     const { service: { service_id: serviceId } } = JSON.parse(
