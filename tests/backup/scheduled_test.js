@@ -47,12 +47,13 @@ BeforeSuite(async ({
     locationsAPI.storageLocationConnection,
     location.description,
   );
-  locationIdForPS = await locationsAPI.createStorageLocation(
-    'ps_location_for_scheduling',
-    locationsAPI.storageType.s3,
-    locationsAPI.psStorageLocationConnection,
-    location.description,
-  );
+  locationIdForPS = locationId;
+  // locationIdForPS = await locationsAPI.createStorageLocation(
+  //   'ps_location_for_scheduling',
+  //   locationsAPI.storageType.s3,
+  //   locationsAPI.psStorageLocationConnection,
+  //   location.description,
+  // );
   await I.mongoConnect({
     username: 'pmm',
     password: 'pmmpass',
