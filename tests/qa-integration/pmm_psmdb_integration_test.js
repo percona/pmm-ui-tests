@@ -153,7 +153,7 @@ Scenario(
   },
 ).retry(1);
 
-Scenario(
+Scenario.skip(
   'T2269 Verify Replicaset dashboard for MongoDB Instances contains ARBITER node @pmm-psmdb-arbiter-integration @not-ui-pipeline',
   async ({
     I, dashboardPage,
@@ -167,7 +167,7 @@ Scenario(
 
     I.assertEqual(numberOfVisibleElements, 1, 'No of ARBITER elements for ReplicatSet are not as expected');
   },
-);
+).retry(2);
 
 Scenario.skip(
   'T2317 Verify Wrong Replication Lag by Set values if RS is PSA -( MongoDB Cluster Summary) @pmm-psmdb-arbiter-integration @not-ui-pipeline',

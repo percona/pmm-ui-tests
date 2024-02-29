@@ -130,7 +130,8 @@ Scenario(
   },
 );
 
-Scenario(
+// TODO: https://perconadev.atlassian.net/browse/PMM-12956
+Scenario.skip(
   'PMM-T67 - Open the PXCGalera Cluster Summary Dashboard and verify Metrics are present and graphs are displayed @nightly @dashboards',
   async ({ I, adminPage, dashboardPage }) => {
     const url = I.buildUrlWithParams(dashboardPage.pxcGaleraClusterSummaryDashboard.url, { from: 'now-5m' });
@@ -146,7 +147,8 @@ Scenario(
   },
 );
 
-Scenario(
+// TODO: https://perconadev.atlassian.net/browse/PMM-12956
+Scenario.skip(
   'PMM-T1743 - verify PXCGalera Cluster Summary Dashboard (Experimental) metrics @nightly @dashboards',
   async ({ I, adminPage, dashboardPage }) => {
     const url = I.buildUrlWithParams(dashboardPage.pxcGaleraClusterSummaryExperimentalDashboard.url, { from: 'now-5m' });

@@ -64,6 +64,35 @@ Scenario(
 );
 
 Scenario(
+  'PMM-T1867 - pg_stat_monitor is used by default without providing --query-source @not-ui-pipeline @pgsm-pmm-integration',
+  async ({ I }) => {
+    const serviceName = `pgsm_${Math.floor(Math.random() * 99) + 1}`;
+    const { service: { service_id: serviceId } } = JSON.parse(
+      await I.verifyCommand(`docker exec ${container_name} pmm-admin add postgresql --json --password=${connection.password} --username=${connection.user} --service-name=${serviceName}`),
+    );
+
+    let list;
+    let serviceAgents;
+
+    await I.asyncWaitFor(async () => {
+      list = JSON.parse(
+        await I.verifyCommand(`docker exec ${container_name} pmm-admin list --json`),
+      );
+      serviceAgents = list.agent.filter(({ service_id }) => service_id === serviceId);
+      const pgStatMonitorAgent = serviceAgents.find(({ agent_type }) => agent_type === 'QAN_POSTGRESQL_PGSTATMONITOR_AGENT');
+
+      assert.ok(pgStatMonitorAgent, 'pg_stat_monitor agent should exist');
+
+      return pgStatMonitorAgent.status === 'RUNNING';
+    }, 30);
+
+    const pgStatStatementsAgent = serviceAgents.find(({ agent_type }) => agent_type === 'QAN_POSTGRESQL_PGSTATEMENTS_AGENT');
+
+    assert.ok(!pgStatStatementsAgent, 'pg_stat_statements agent should not exist');
+  },
+);
+
+Scenario(
   'PMM-T1260 - Verifying data in Clickhouse and comparing with PGSM output @not-ui-pipeline @pgsm-pmm-integration',
   async ({ I, qanAPI }) => {
     await I.pgExecuteQueryOnDemand('SELECT now();', connection);
