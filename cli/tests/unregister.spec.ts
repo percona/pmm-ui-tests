@@ -1,9 +1,9 @@
-import { test, expect } from '@playwright/test';
+import { test } from '@playwright/test';
 import * as cli from '@helpers/cli-helper';
 
 test.describe('PMM Client "unregister" CLI tests', async () => {
-  let PMM_VERSION;
-  if (process.env.CLIENT_VERSION == 'dev-latest') {
+  let PMM_VERSION: string;
+  if (process.env.CLIENT_VERSION === 'dev-latest') {
     // TODO: refactor to use docker hub API to remove file-update dependency
     // See: https://github.com/Percona-QA/package-testing/blob/master/playbooks/pmm2-client_integration_upgrade_custom_path.yml#L41
     PMM_VERSION = cli.execute('curl -s https://raw.githubusercontent.com/Percona-Lab/pmm-submodules/PMM-2.0/VERSION | xargs')
