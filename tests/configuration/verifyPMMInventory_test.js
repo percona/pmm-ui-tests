@@ -64,8 +64,20 @@ aws_instances.add([
 
 Feature('Inventory page');
 
+const psServiceName = 'ps_5.7_version_test';
+const rdsPostgresqlServiceName = 'pg_rds_version_test';
+const mongoServiceName = 'mongo_4.2_version_test';
+const pgServiceName = 'pg_15_version_test';
+
 Before(async ({ I }) => {
   await I.Authorize();
+});
+
+BeforeSuite(async ({ addInstanceAPI }) => {
+  await addInstanceAPI.addMysql(psServiceName);
+  await addInstanceAPI.addMongodb(mongoServiceName);
+  await addInstanceAPI.addPostgresql(pgServiceName);
+  await addInstanceAPI.addRDSPostgresql(rdsPostgresqlServiceName);
 });
 
 // Skipping temporarily because sorting is not yet implemented in new Inventory page (PMM 2.37.0)
@@ -129,6 +141,32 @@ Scenario(
     pmmInventoryPage.serviceExists(serviceName, true);
     I.click(pmmInventoryPage.fields.agentsLink);
     await pmmInventoryPage.getCountOfAgents(serviceId);
+  },
+);
+
+Scenario(
+  'PMM-T1811 - verify version displayed for added service on Inventory page @inventory @inventory-fb',
+  async ({
+    I, pmmInventoryPage,
+  }) => {
+    I.amOnPage(pmmInventoryPage.url);
+    I.waitForVisible(pmmInventoryPage.fields.showServiceDetails(psServiceName), 20);
+
+    I.click(pmmInventoryPage.fields.showServiceDetails(psServiceName));
+    I.waitForVisible(pmmInventoryPage.fields.detailsLabelByText('version=5.7.30-33-log'), 5);
+    I.click(pmmInventoryPage.fields.hideServiceDetails(psServiceName));
+
+    I.click(pmmInventoryPage.fields.showServiceDetails(pgServiceName));
+    I.waitForVisible(pmmInventoryPage.fields.detailsLabelByText('version=15.4 - Percona Distribution'), 5);
+    I.click(pmmInventoryPage.fields.hideServiceDetails(pgServiceName));
+
+    I.click(pmmInventoryPage.fields.showServiceDetails(mongoServiceName));
+    I.waitForVisible(pmmInventoryPage.fields.detailsLabelByText('version=4.4.24'), 5);
+    I.click(pmmInventoryPage.fields.hideServiceDetails(mongoServiceName));
+
+    I.click(pmmInventoryPage.fields.showServiceDetails(rdsPostgresqlServiceName));
+    I.waitForVisible(pmmInventoryPage.fields.detailsLabelByText('version=12.14'), 300);
+    I.click(pmmInventoryPage.fields.hideServiceDetails(rdsPostgresqlServiceName));
   },
 );
 
