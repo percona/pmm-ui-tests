@@ -11,6 +11,8 @@ module.exports = {
     backupStatusByName: (name) => locate('$statusMsg').inside(artifactCell(name)),
     backupPendingStatusByName: (name) => locate('$statusPending').inside(artifactCell(name)),
     backupStatusIconByName: (name) => locate('$statusMsg').inside(artifactCell(name)).find('div'),
+    backupStatusSuccessIconByName: (name) => locate('[title="RESTORE_STATUS_SUCCESS"]').inside(artifactCell(name)),
+    backupStatusFailureIconByName: (name) => locate('[title="RESTORE_STATUS_ERROR"]').inside(artifactCell(name)),
     targetServiceByName: (name) => locate('//td[6]').inside(artifactCell(name)),
     startedAtByName: (name) => locate('//td[4]').inside(artifactCell(name)),
     finishedAtByName: (name) => locate('//td[5]').inside(artifactCell(name)),
@@ -29,14 +31,12 @@ module.exports = {
     const similarRestores = await I.grabNumberOfVisibleElements(this.elements.backupStatusByName(backupName));
 
     for (let i = 1; i <= similarRestores; i++) {
-      I.waitForVisible(this.elements.backupStatusByName(backupName).at(i), 180);
-      I.seeAttributesOnElements(this.elements.backupStatusIconByName(backupName).at(i), { 'data-testid': 'success-icon' });
+      I.waitForVisible(this.elements.backupStatusSuccessIconByName(backupName).at(i), 180);
     }
   },
 
   waitForRestoreFailure(backupName) {
     I.amOnPage(this.url);
-    I.waitForVisible(this.elements.backupStatusByName(backupName), 180);
-    I.seeAttributesOnElements(this.elements.backupStatusIconByName(backupName), { 'data-testid': 'fail-icon' });
+    I.waitForVisible(this.elements.backupStatusFailureIconByName(backupName), 180);
   },
 };
