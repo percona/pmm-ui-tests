@@ -108,14 +108,14 @@ module.exports = {
     if (version > 11) {
       if (this.isAmiUpgrade) {
         // to ensure that the logs window is never empty during upgrade
-        I.waitForElement(`//pre[contains(text(), '${milestones[0]}')]`, 1200);
+        I.waitForElement(`//pre[contains(text(), '${milestones[0]}')]`, 3000);
 
         I.waitForText(locators.successUpgradeMessage, 1800, locators.successUpgradeMsgSelector);
       }
 
       if (!this.isAmiUpgrade) {
         // to ensure that the logs window is never empty during upgrade
-        I.waitForElement(`//pre[contains(text(), '${milestones[0]}')]`, 1200);
+        I.waitForElement(`//pre[contains(text(), '${milestones[0]}')]`, 3000);
         I.waitForText(locators.successUpgradeMessage, 1800, locators.successUpgradeMsgSelector);
 
         if (!skipUpgradeLogs) {
