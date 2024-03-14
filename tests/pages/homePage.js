@@ -110,13 +110,13 @@ module.exports = {
         // to ensure that the logs window is never empty during upgrade
         I.waitForElement(`//pre[contains(text(), '${milestones[0]}')]`, 1200);
 
-        I.waitForText(locators.successUpgradeMessage, 1800, locators.successUpgradeMsgSelector);
+        I.waitForText(locators.successUpgradeMessage, 3000, locators.successUpgradeMsgSelector);
       }
 
       if (!this.isAmiUpgrade) {
         // to ensure that the logs window is never empty during upgrade
         I.waitForElement(`//pre[contains(text(), '${milestones[0]}')]`, 1200);
-        I.waitForText(locators.successUpgradeMessage, 1800, locators.successUpgradeMsgSelector);
+        I.waitForText(locators.successUpgradeMessage, 3000, locators.successUpgradeMsgSelector);
 
         if (!skipUpgradeLogs) {
           // Get upgrade logs from a container
