@@ -102,11 +102,8 @@ module.exports = {
     k8sExperimental: {
       name: 'Kubernetes (experimental)',
       items: [
-        'Database Cluster on K8s Summary',
-        'Kubernetes Cluster Summary',
-        'Kubernetes Overview',
-        'Kubernetes Pods Status',
-        'Kubernetes Volumes',
+        'Databases on Kubernetes - Summary',
+        'Kubernetes Cluster Overview',
       ],
     },
   },
