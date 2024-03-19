@@ -21,6 +21,7 @@ module.exports = {
     failedSecurityChecksPmmSettingsLink: locate('$db-check-panel-settings-link').find('a'),
     sttFailedChecksPanelSelector: '$db-check-panel-has-checks',
     failedChecksPanelContent: '$db-check-panel-home',
+    leftMenuToggle: locate(I.useDataQA('data-testid Toggle menu')).find('[aria-label="Open menu"]'),
     checksPanelSelector: '$db-check-panel-home',
     noFailedChecksInPanel: '$db-check-panel-zero-checks',
     failedChecksPanelInfo: '[aria-label="Advisors check panel"] i',
@@ -89,6 +90,12 @@ module.exports = {
   async open() {
     I.amOnPage(this.url);
     I.waitForElement(this.fields.dashboardHeaderLocator, 60);
+  },
+
+  async openLeftMenu() {
+    I.waitForElement(this.fields.leftMenuToggle, 60);
+    I.click(this.fields.leftMenuToggle);
+    I.waitForVisible(I.useDataQA('data-testid Nav menu item'), 20);
   },
 
   // introducing methods

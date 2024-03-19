@@ -3,13 +3,13 @@ version: '3.7'
 
 services:
   pmm-server-external-clickhouse:
-    image: ${PMM_SERVER_IMAGE:-perconalab/pmm-server:dev-latest}
+    image: ${PMM_SERVER_IMAGE:-perconalab/pmm-server:3-dev-latest}
     container_name: pmm-server-external-clickhouse
     depends_on:
       - external-clickhouse
     ports:
-      - '8081:80'
-      - '8444:443'
+      - '8081:8080'
+      - '8444:8443'
     environment:
       - PMM_DEBUG=1
       - PERCONA_TEST_SAAS_HOST=check-dev.percona.com:443

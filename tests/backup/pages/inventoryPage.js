@@ -17,7 +17,8 @@ module.exports = {
     successIconByName: (name) => locate('$success-icon').inside(artifactCell(name)),
     pendingBackupByName: (name) => locate('$statusPending').inside(artifactCell(name)),
     backupStatusByName: (name) => locate('$statusMsg').inside(artifactCell(name)),
-    backupStatusIconByName: (name) => locate('$statusMsg').inside(artifactCell(name)).find('div'),
+    backupStatusSuccessIconByName: (name) => locate('[title="BACKUP_STATUS_SUCCESS"]').inside(artifactCell(name)),
+    backupStatusFailureIconByName: (name) => locate('[title="BACKUP_STATUS_ERROR"]').inside(artifactCell(name)),
     backupDateByName: (name) => locate('$detailed-date').inside(artifactCell(name)),
     artifactName: (name) => locate('//td[2]').inside(artifactCell(name)),
     forceDeleteLabel: '$force-field-label',
@@ -87,14 +88,12 @@ module.exports = {
 
   verifyBackupSucceeded(backupName) {
     I.amOnPage(this.url);
-    I.waitForVisible(this.elements.backupStatusByName(backupName), 120);
-    I.seeAttributesOnElements(this.elements.backupStatusIconByName(backupName), { 'data-testid': 'success-icon' });
+    I.waitForVisible(this.elements.backupStatusSuccessIconByName(backupName), 120);
   },
 
   verifyBackupFailed(backupName) {
     I.amOnPage(this.url);
-    I.waitForVisible(this.elements.backupStatusByName(backupName), 120);
-    I.seeAttributesOnElements(this.elements.backupStatusIconByName(backupName), { 'data-testid': 'fail-icon' });
+    I.waitForVisible(this.elements.backupStatusFailureIconByName(backupName), 120);
   },
 
   openDeleteBackupModal(backupName) {
