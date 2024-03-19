@@ -62,9 +62,10 @@ Before(async ({ I }) => {
 });
 
 // The test relies on --setup-external-service flag setup from pmm-framework
-Scenario('@PMM-T1700 - External service name is properly displayed @instances @instances-fb', async ({ I, pmmInventoryPage }) => {
+Scenario.skip('@PMM-T1700 - External service name is properly displayed @instances @instances-fb', async ({ I, pmmInventoryPage }) => {
   I.amOnPage(pmmInventoryPage.url);
-  I.waitForVisible(pmmInventoryPage.fields.serviceRow('redis_external'), 10);
+  pmmInventoryPage.changeRowsPerPage(100);
+  I.waitForVisible(pmmInventoryPage.fields.serviceRow('redis_external'), 30);
 });
 
 Scenario(

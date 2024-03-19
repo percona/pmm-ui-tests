@@ -1,20 +1,20 @@
-import { test, expect } from '@playwright/test';
-import * as cli from '@helpers/cliHelper';
+import { test } from '@playwright/test';
+import * as cli from '@helpers/cli-helper';
 
 test.describe('PMM Client "unregister" CLI tests', async () => {
-  let PMM_VERSION;
-  if ( process.env.CLIENT_VERSION == "dev-latest") {
-    //TODO: refactor to use docker hub API to remove file-update dependency
+  let PMM_VERSION: string;
+  if (process.env.CLIENT_VERSION === 'dev-latest') {
+    // TODO: refactor to use docker hub API to remove file-update dependency
     // See: https://github.com/Percona-QA/package-testing/blob/master/playbooks/pmm2-client_integration_upgrade_custom_path.yml#L41
     PMM_VERSION = cli.execute('curl -s https://raw.githubusercontent.com/Percona-Lab/pmm-submodules/PMM-2.0/VERSION | xargs')
-        .stdout.trim();
+      .stdout.trim();
   }
 
   /**
    * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/pmm-admin-unregister-tests.bats#L5
    */
   test('run pmm-admin --version --json', async ({}) => {
-    let output = await cli.exec('sudo pmm-admin --version --json');
+    const output = await cli.exec('sudo pmm-admin --version --json');
     await output.assertSuccess();
   });
 
@@ -22,7 +22,7 @@ test.describe('PMM Client "unregister" CLI tests', async () => {
    * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/pmm-admin-unregister-tests.bats#L10
    */
   test('run pmm-admin --version --json and grep PMMVersion', async ({}) => {
-      test.skip(!PMM_VERSION, 'Skipping version check because client version is not dev-latest');
+    test.skip(!PMM_VERSION, 'Skipping version check because client version is not dev-latest');
     const output = await cli.exec('sudo pmm-admin --version --json');
     await output.assertSuccess();
     await output.outContains(PMM_VERSION);
@@ -45,8 +45,8 @@ test.describe('PMM Client "unregister" CLI tests', async () => {
     const output = await cli.exec('sudo pmm-admin unregister');
     await output.exitCodeEquals(1);
     await output.outContainsMany([
-        'Node with ID',
-        'has agents.',
+      'Node with ID',
+      'has agents.',
     ]);
   });
 
@@ -65,7 +65,7 @@ test.describe('PMM Client "unregister" CLI tests', async () => {
   test('run pmm-admin unregister --force --node-name=pmm-server', async ({}) => {
     const output = await cli.exec('sudo pmm-admin unregister --force --node-name=pmm-server');
     await output.exitCodeEquals(1);
-    await output.outContains(`PMM Server node can't be removed.`);
+    await output.outContains('PMM Server node can\'t be removed.');
   });
 
   /**
@@ -75,8 +75,8 @@ test.describe('PMM Client "unregister" CLI tests', async () => {
     const output = await cli.exec('sudo pmm-admin unregister --force');
     await output.assertSuccess();
     await output.outContainsMany([
-        'Node with ID',
-        'unregistered.',
+      'Node with ID',
+      'unregistered.',
     ]);
   });
 });

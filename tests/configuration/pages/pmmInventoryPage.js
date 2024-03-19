@@ -20,7 +20,7 @@ module.exports = {
     agentStatus: locate('$details-row-content').find('a'),
     backToServices: '//span[text()="Go back to services"]',
     agentsLinkNew: '//div[contains(@data-testid,"status-badge")]',
-    detailsLabelByText: (label) => locate('[aria-label="Tags"]').find('li').withText(label),
+    detailsLabelByText: (label) => locate('[aria-label="Tags"]').find(`//li/span[contains(text(), "${label}")]`),
     agentDetailsLabelByText: (label) => locate('[aria-label="Tags"]').find('li').withText(label),
     agentsLink: locate('[role="tablist"] a').withText('Agents').withAttr({ 'aria-label': 'Tab Agents' }),
     agentsLinkOld: locate('a').withText('Agents'),

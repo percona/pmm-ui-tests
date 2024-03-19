@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
-import * as cli from '@helpers/cliHelper';
-import Output from '@support/types/output';
+import * as cli from '@helpers/cli-helper';
+import ExecReturn from '@support/types/exec-return.class';
 import { waitForApiReady } from '@helpers/custom-assertions';
 
 const DOCKER_IMAGE = process.env.DOCKER_VERSION && process.env.DOCKER_VERSION.length > 0
@@ -24,7 +24,7 @@ test.describe('PMM Server CLI tests for Docker Environment Variables', async () 
    */
   test('PMM-T224 run docker container with a invalid value for a environment variable DATA_RETENTION=48', async ({}) => {
     await cli.exec(`docker run -d -p 81:80 -p 446:443 --name PMM-T224 -e DATA_RETENTION=48 ${DOCKER_IMAGE}`);
-    let out: Output;
+    let out: ExecReturn;
 
     await expect(async () => {
       out = await cli.exec('docker logs PMM-T224 2>&1 | grep \'Configuration error: environment variable\'');
@@ -44,7 +44,7 @@ test.describe('PMM Server CLI tests for Docker Environment Variables', async () 
    */
   test('PMM-T225 run docker container with a unexpected environment variable DATA_TENTION=48', async ({}) => {
     await cli.exec(`docker run -d -p 82:80 -p 447:443 --name PMM-T225 -e DATA_TENTION=48 ${DOCKER_IMAGE}`);
-    let out: Output;
+    let out: ExecReturn;
 
     await expect(async () => {
       out = await cli.exec('docker logs PMM-T225 2>&1 | grep \'Configuration warning: unknown environment variable\'');
@@ -95,17 +95,23 @@ test.describe('PMM Server CLI tests for Docker Environment Variables', async () 
    * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/docker-env-variable-tests.bats#L53
    */
   test('PMM-T526 Use Invalid Prometheus Custom Config File to Check if Container is unhealthy', async ({}) => {
-    await cli.exec(`docker run -d -p 84:80 -p 449:443 --name PMM-T526 ${DOCKER_IMAGE}`);
-    stopList.push('PMM-T526');
-    removeList.push('PMM-T526');
-    await waitForApiReady('127.0.0.1', 84);
+    const containerName = 'PMM-T526';
+    const httpPort = 84;
+    await cli.exec(`docker run -d -p ${httpPort}:80 -p 449:443 --name ${containerName} ${DOCKER_IMAGE}`);
+    stopList.push(containerName);
+    removeList.push(containerName);
+    await waitForApiReady('127.0.0.1', httpPort);
     // TODO: implement file creation to remove repo dependency
     const curlCmd = 'curl -o /srv/prometheus/prometheus.base.yml https://raw.githubusercontent.com/percona/pmm-qa/main/pmm-tests/broken_prometheus.base.yml';
-    await (await cli.exec(`docker exec PMM-T526 ${curlCmd}`)).assertSuccess();
-    await cli.exec('docker restart PMM-T526');
-    await waitForApiReady('127.0.0.1', 84);
-    await (await cli.exec('docker ps --format \'{{.Names}}\t{{.Status}}\' | grep PMM-T526 | awk -F\' \' \'{print $5}\' | awk -F\'(\' \'{print $2}\' | awk -F\')\' \'{print $1}\''))
-      .outContains('unhealthy');
+    await (await cli.exec(`docker exec ${containerName} ${curlCmd}`)).assertSuccess();
+    await cli.exec(`docker restart ${containerName}`);
+
+    await test.step(`Waiting for ${containerName} to be unhealthy(30 sec)`, async () => {
+      await expect(async () => {
+        await (await cli.exec(`docker ps | grep ${containerName}`))
+          .outContains('unhealthy');
+      }).toPass({ intervals: [2_000], timeout: 30_000 });
+    });
   });
 
   /**
@@ -114,7 +120,7 @@ test.describe('PMM Server CLI tests for Docker Environment Variables', async () 
   test('Basic Sanity using Clickhouse shipped with PMM-Server, Check Connection, Run a Query', async ({}) => {
     await (await cli.exec(
       // eslint-disable-next-line no-multi-str
-      'clickhouse-client \
+      'docker exec pmm-server clickhouse-client \
         --database pmm \
         --query "select any(example),sum(num_queries) cnt, \
         max(m_query_time_max) slowest from metrics where period_start>subtractHours(now(),6) \
@@ -122,7 +128,7 @@ test.describe('PMM Server CLI tests for Docker Environment Variables', async () 
     )).assertSuccess();
 
     const output = await cli.exec(
-      'clickhouse-client --query \'SELECT * FROM system.databases\' | grep pmm | tr -s \'[:blank:]\' \'\\n\'',
+      'docker exec pmm-server clickhouse-client --query \'SELECT * FROM system.databases\' | grep pmm | tr -s \'[:blank:]\' \'\\n\'',
     );
     await output.assertSuccess();
 
