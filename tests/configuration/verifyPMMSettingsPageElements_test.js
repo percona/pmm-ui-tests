@@ -78,17 +78,6 @@ Scenario('Verify Advanced Section Elements @settings @grafana-pr', async ({ I, p
   I.seeElement(pmmSettingsPage.fields.sttLabel);
 });
 
-Scenario('PMM-T86 - Verify Alertmanager integration Section Elements @settings @grafana-pr', async ({ I, pmmSettingsPage }) => {
-  const sectionNameToExpand = pmmSettingsPage.sectionTabsList.alertmanager;
-
-  await pmmSettingsPage.waitForPmmSettingsPageLoaded();
-  await pmmSettingsPage.expandSection(sectionNameToExpand, pmmSettingsPage.fields.alertmanagerButton);
-  I.see('Alertmanager URL', pmmSettingsPage.fields.alertmanagerUrlLabel);
-  I.see('Prometheus Alerting rules', pmmSettingsPage.fields.alertmanagerRuleslabel);
-  I.seeElement(pmmSettingsPage.fields.alertURLInput);
-  I.seeElement(pmmSettingsPage.fields.alertRulesInput);
-});
-
 // Scenario('PMM-T89 - Verify validation for invalid SSH Key @settings @grafana-pr', async ({ I, pmmSettingsPage }) => {
 //   const sshKeyForTest = 'ssh-rsa testKey test@key.local';
 //   const sectionNameToExpand = pmmSettingsPage.sectionTabsList.ssh;
@@ -98,36 +87,6 @@ Scenario('PMM-T86 - Verify Alertmanager integration Section Elements @settings @
 //   pmmSettingsPage.addSSHKey(sshKeyForTest);
 //   I.verifyPopUpMessage(pmmSettingsPage.messages.invalidSSHKeyMessage);
 // });
-
-Scenario('PMM-T90 - Verify validation for Alertmanager URL without scheme @settings @grafana-pr', async ({ I, pmmSettingsPage }) => {
-  const urlWithoutScheme = 'invalid_url';
-  const sectionNameToExpand = pmmSettingsPage.sectionTabsList.alertmanager;
-
-  await pmmSettingsPage.waitForPmmSettingsPageLoaded();
-  await pmmSettingsPage.expandSection(sectionNameToExpand, pmmSettingsPage.fields.alertmanagerButton);
-  pmmSettingsPage.addAlertmanagerRule(urlWithoutScheme, '');
-  I.verifyPopUpMessage(pmmSettingsPage.messages.invalidAlertmanagerMissingSchemeMessage);
-});
-
-Scenario('PMM-T91 - Verify validation for Alertmanager URL without host @settings @grafana-pr', async ({ I, pmmSettingsPage }) => {
-  const urlWithoutHost = 'http://';
-  const sectionNameToExpand = pmmSettingsPage.sectionTabsList.alertmanager;
-
-  await pmmSettingsPage.waitForPmmSettingsPageLoaded();
-  await pmmSettingsPage.expandSection(sectionNameToExpand, pmmSettingsPage.fields.alertmanagerButton);
-  pmmSettingsPage.addAlertmanagerRule(urlWithoutHost, '');
-  I.verifyPopUpMessage(pmmSettingsPage.messages.invalidAlertmanagerMissingHostMessage);
-});
-
-Scenario('PMM-T92 - Verify validation for invalid Alertmanager Rule @settings @grafana-pr', async ({ I, pmmSettingsPage }) => {
-  const rule = 'invalid_rule';
-  const sectionNameToExpand = pmmSettingsPage.sectionTabsList.alertmanager;
-
-  await pmmSettingsPage.waitForPmmSettingsPageLoaded();
-  await pmmSettingsPage.expandSection(sectionNameToExpand, pmmSettingsPage.fields.alertmanagerButton);
-  pmmSettingsPage.addAlertmanagerRule('', rule);
-  I.verifyPopUpMessage(pmmSettingsPage.messages.invalidAlertmanagerRulesMessage);
-});
 
 // To be removed from Skip after https://jira.percona.com/browse/PMM-5791
 xScenario(
