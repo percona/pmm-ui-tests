@@ -34,6 +34,31 @@ class Grafana extends Helper {
     Playwright.haveRequestHeaders({ Authorization: `Basic ${basicAuthEncoded}` });
   }
 
+  async enableProductTour() {
+    const { Playwright } = this.helpers;
+
+    await Playwright.page.route('**/v1/user', async (route, request) => {
+      if (request.method() === 'GET') {
+        await route.fulfill({
+          status: 200,
+          body: JSON.stringify({
+            user_id: 1,
+            product_tour_completed: false,
+            alerting_tour_completed: false,
+          }),
+        });
+      } else {
+        await route.continue();
+      }
+    });
+  }
+
+  async stopMockingProductTourApi() {
+    const { Playwright } = this.helpers;
+
+    await Playwright.page.unroute('**/v1/user');
+  }
+
   async unAuthorize() {
     const { Playwright } = this.helpers;
     const { browserContext } = Playwright;
