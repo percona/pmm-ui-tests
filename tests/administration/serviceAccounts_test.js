@@ -34,4 +34,10 @@ Scenario('@PMM-T1883', async ({
   await dashboardPage.expandEachDashboardRow();
   await dashboardPage.verifyThereAreNoGraphsWithNA(1);
   await dashboardPage.verifyThereAreNoGraphsWithoutData(19);
+
+  await I.verifyCommand('pmm-admin add mysql --username root --password GRgrO9301RuF --host=127.0.0.1 --port=43306');
+  await I.wait(60);
+  await I.amOnPage(dashboardPage.mySQLInstanceOverview.url);
+  await dashboardPage.verifyThereAreNoGraphsWithNA(1);
+  await dashboardPage.verifyThereAreNoGraphsWithoutData(1);
 });
