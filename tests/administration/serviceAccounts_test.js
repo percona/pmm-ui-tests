@@ -16,9 +16,12 @@ Scenario('@PMM-T1883', async ({ I, serviceAccountsPage, inventoryAPI }) => {
 
   const oldAgentId = await I.verifyCommand('pmm-admin status | grep "Node ID" | awk -F " " \'{ print $4 }\'');
 
-  console.log(oldAgentId);
-  console.log(`Length of old agent id is: ${oldAgentId.length}`);
-  await inventoryAPI.deleteNode(oldAgentId, true);
+  if (oldAgentId) {
+    console.log(oldAgentId);
+    console.log(`Length of old agent id is: ${oldAgentId.length}`);
+    await inventoryAPI.deleteNode(oldAgentId, true);
+  }
+
   await I.amOnPage('');
   await I.wait(30);
   await I.saveScreenshot('debug1');
