@@ -10,9 +10,7 @@ Scenario('PMM-T1879 Verify that product tour dialog is displayed after check lat
   await I.amOnPage('');
   await I.waitForElement(homePage.productTour.laterButton);
   await I.click(homePage.productTour.laterButton);
-  await I.setLoginCookies();
   await I.refreshPage();
-  await I.setLoginCookies();
   await I.waitForElement(homePage.productTour.productTourModal, 10);
 });
 
