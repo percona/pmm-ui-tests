@@ -7,11 +7,10 @@ Before(async ({ I }) => {
 });
 
 Scenario('@PMM-T1883', async ({ I, serviceAccountsPage, inventoryAPI }) => {
-  const pmmServerUrl = config.helpers.Playwright.url.replace(/^(-)|[^0-9.,]+/g, '$1');
+  await I.amOnPage(serviceAccountsPage.url);
+  const pmmServerUrl = (await I.grabCurrentUrl()).replace(/^(-)|[^0-9.,]+/g, '$1');
 
   console.log(pmmServerUrl);
-  console.log(await I.getCurrentUrl());
-  await I.amOnPage(serviceAccountsPage.url);
   await serviceAccountsPage.createServiceAccount(`service_account_${Date.now()}`, 'Editor');
   const tokenValue = await serviceAccountsPage.createServiceAccountToken(`token_name_${Date.now()}`);
 
