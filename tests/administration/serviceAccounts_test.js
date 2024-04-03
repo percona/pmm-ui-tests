@@ -25,7 +25,7 @@ Scenario('@PMM-T1883', async ({ I, serviceAccountsPage, inventoryAPI }) => {
   await I.amOnPage('');
   await I.wait(30);
   await I.saveScreenshot('debug1');
-  const response = await I.verifyCommand(`pmm-agent setup --server-username=service_token --server-password=${tokenValue} --server-address=${pmmServerUrl} --server-insecure-tls`);
+  const response = await I.verifyCommand(`pmm-agent setup --server-username=service_token --server-password=${tokenValue} --server-address=${pmmServerUrl} --server-insecure-tls --config-file=/home/ec2-user/workspace/pmm3-aws-staging-start/pmm/config/pmm-agent.yaml --paths-base=/home/ec2-user/workspace/pmm3-aws-staging-start/pmm`);
 
   console.log(response);
 });
