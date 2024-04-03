@@ -11,7 +11,7 @@ Scenario('@PMM-T1883', async ({ I, serviceAccountsPage, inventoryAPI }) => {
   const pmmServerUrl = (await I.grabCurrentUrl()).replace(/^(-)|[^0-9.,]+/g, '$1');
 
   console.log(pmmServerUrl);
-  await serviceAccountsPage.createServiceAccount(`service_account_${Date.now()}`, 'Editor');
+  await serviceAccountsPage.createServiceAccount(`service_account_${Date.now()}`, 'Admin');
   const tokenValue = await serviceAccountsPage.createServiceAccountToken(`token_name_${Date.now()}`);
 
   const oldAgentId = await I.verifyCommand('pmm-admin status | grep "Node ID" | awk -F " " \'{ print $4 }\'');
