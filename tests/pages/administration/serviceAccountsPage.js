@@ -16,6 +16,7 @@ class ServiceAccountsPage {
   }
 
   async createServiceAccount(username, role) {
+    await I.waitForVisible(this.addAccountButton);
     await I.click(this.addAccountButton);
     await I.waitForVisible(this.nameInput);
     await I.fillField(this.nameInput, username);
