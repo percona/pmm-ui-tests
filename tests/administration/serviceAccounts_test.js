@@ -26,4 +26,12 @@ Scenario('@PMM-T1883', async ({
   await dashboardPage.expandEachDashboardRow();
   await dashboardPage.verifyThereAreNoGraphsWithNA(1);
   await dashboardPage.verifyThereAreNoGraphsWithoutData(19);
+
+  await I.verifyCommand('docker restart pmm-server');
+  await I.wait(60);
+  await I.amOnPage(nodesOverviewPage.url);
+  await dashboardPage.waitForDashboardOpened();
+  await dashboardPage.expandEachDashboardRow();
+  await dashboardPage.verifyThereAreNoGraphsWithNA(1);
+  await dashboardPage.verifyThereAreNoGraphsWithoutData(19);
 });
