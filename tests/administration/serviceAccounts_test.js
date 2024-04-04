@@ -50,9 +50,14 @@ Scenario('@PMM-T1884', async ({
   await I.amOnPage(serviceAccountsPage.url);
   await serviceAccountsPage.disableServiceAccount(serviceAccountUsername);
   await I.wait(10);
-  const response = await I.verifyCommand('pmm-admin list', '', 'fail');
+  const responseDisabled = await I.verifyCommand('pmm-admin list', '', 'fail');
+  const expectedDisabledMessage = 'Unauthorized. Please check username and password.';
 
-  console.log(response);
+  I.assertEqual(
+    responseDisabled,
+    expectedDisabledMessage,
+    `Expected the message: '${expectedDisabledMessage} when sending command: 'pmm-admin list'. Actual message is: ${responseDisabled}`,
+  );
 
   await serviceAccountsPage.enableServiceAccount(serviceAccountUsername);
   await I.wait(10);

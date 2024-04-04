@@ -48,6 +48,7 @@ class ServiceAccountsPage {
 
   async enableServiceAccount(username) {
     await I.waitForVisible(this.enableServiceAccountButton(username));
+    await I.click(this.enableServiceAccountButton(username));
     await I.verifyPopUpMessage(this.accountEditedMessage);
   }
 
