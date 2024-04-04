@@ -61,7 +61,7 @@ Scenario('@PMM-T1884', async ({
 
   await serviceAccountsPage.enableServiceAccount(serviceAccountUsername);
   await I.wait(10);
-  const responseSuccess = await I.verifyCommand('pmm-admin list');
+  const responseEnabled = await I.verifyCommand('pmm-admin list');
 
-  console.log(responseSuccess);
+  I.assertFalse(!responseEnabled.includes(expectedDisabledMessage), 'Expected message for enabled user is not present');
 });
