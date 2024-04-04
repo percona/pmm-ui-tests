@@ -39,6 +39,7 @@ class ServiceAccountsPage {
   }
 
   async disableServiceAccount(username) {
+    await I.waitForVisible(this.disableServiceAccountButton(username));
     await I.click(this.disableServiceAccountButton(username));
     await I.click(this.confirmDisableButton);
     // should this be edited? Not created?
