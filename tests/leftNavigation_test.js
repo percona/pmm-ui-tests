@@ -31,6 +31,7 @@ Data(sidebar).Scenario(
   'PMM-T433, PMM-T591 - Verify menu items on Grafana sidebar redirects to correct page @menu',
   async ({ I, homePage, current }) => {
     await homePage.open();
+    await homePage.openLeftMenu();
     I.usePlaywrightTo('check browser version', async ({ browser }) => {
       // eslint-disable-next-line no-underscore-dangle,no-console
       console.log(`${browser._name} - `, await browser.version());

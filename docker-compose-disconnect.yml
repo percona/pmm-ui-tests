@@ -17,11 +17,11 @@ networks:
 
 services:
   pmm-server-disconnect:
-    image: ${PMM_SERVER_IMAGE:-perconalab/pmm-server:dev-latest}
+    image: ${PMM_SERVER_IMAGE:-perconalab/pmm-server:3-dev-latest}
     container_name: pmm-server-disconnect
     ports:
-      - '8180:80'
-      - '8143:443'
+      - '8180:8080'
+      - '8143:8443'
     environment:
       - PMM_DEBUG=1
       - PERCONA_TEST_SAAS_HOST=check-dev.percona.com:443
