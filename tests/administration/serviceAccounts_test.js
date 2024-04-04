@@ -63,5 +63,5 @@ Scenario('@PMM-T1884', async ({
   await I.wait(10);
   const responseEnabled = await I.verifyCommand('pmm-admin list');
 
-  I.assertFalse(!responseEnabled.includes(expectedDisabledMessage), 'Expected message for enabled user is not present');
+  I.assertFalse(responseEnabled.includes(expectedDisabledMessage), 'Expected message for enabled user is not present');
 });
