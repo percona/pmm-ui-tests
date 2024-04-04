@@ -47,6 +47,7 @@ Scenario('@PMM-T1883', async ({
 Scenario('@PMM-T1884', async ({
   I, serviceAccountsPage, dashboardPage, inventoryAPI, nodesOverviewPage,
 }) => {
+  await I.amOnPage(serviceAccountsPage.url);
   await serviceAccountsPage.disableServiceAccount(serviceAccountUsername);
   const response = await I.verifyCommand('pmm-admin list');
 
