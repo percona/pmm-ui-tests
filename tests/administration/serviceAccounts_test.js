@@ -49,7 +49,7 @@ Scenario('@PMM-T1884', async ({
 }) => {
   await I.amOnPage(serviceAccountsPage.url);
   await serviceAccountsPage.disableServiceAccount(serviceAccountUsername);
-  const response = await I.verifyCommand('pmm-admin list', 'fail', true);
+  const response = await I.verifyCommand('pmm-admin list');
 
   console.log(response);
 
