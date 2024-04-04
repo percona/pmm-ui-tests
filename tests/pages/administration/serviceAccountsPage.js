@@ -14,6 +14,7 @@ class ServiceAccountsPage {
     this.generateTokenButton = locate('//span[text()="Generate token"]');
     this.tokenValue = locate('//input[@name="tokenValue"]');
     this.disableServiceAccountButton = (username) => locate(`//a[@title="${username}"]//ancestor::tr//span[text()="Disable"]`);
+    this.enableServiceAccountButton = (username) => locate(`//a[@title="${username}"]//ancestor::tr//span[text()="Enable"]`);
     this.confirmDisableButton = '//button[@data-testid="data-testid Confirm Modal Danger Button"]';
   }
 
@@ -42,7 +43,11 @@ class ServiceAccountsPage {
     await I.waitForVisible(this.disableServiceAccountButton(username));
     await I.click(this.disableServiceAccountButton(username));
     await I.click(this.confirmDisableButton);
-    // should this be edited? Not created?
+    await I.verifyPopUpMessage(this.accountEditedMessage);
+  }
+
+  async enableServiceAccount(username) {
+    await I.waitForVisible(this.enableServiceAccountButton(username));
     await I.verifyPopUpMessage(this.accountEditedMessage);
   }
 
