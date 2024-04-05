@@ -26,7 +26,6 @@ class ServiceAccountsPage {
     await I.click(this.roleSelect);
     await I.click(this.roleSelectValue(role));
     await I.click(this.createButton);
-    // should this be edited? Not created?
     await I.verifyPopUpMessage(this.accountEditedMessage);
   }
 
