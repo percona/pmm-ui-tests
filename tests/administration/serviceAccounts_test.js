@@ -22,6 +22,9 @@ Scenario('PMM-T1883 Configuring pmm-agent to use service account @service-accoun
     await inventoryAPI.deleteNode(oldAgentId, true);
   }
 
+  const pmmAgentLocation = await I.verifyCommand('find / -name pmm-agent.yaml');
+
+  console.log(pmmAgentLocation);
   await I.verifyCommand(`pmm-agent setup --server-username=service_token --server-password=${tokenValue} --server-address=${pmmServerUrl} --server-insecure-tls --config-file=/home/ec2-user/workspace/pmm3-aws-staging-start/pmm/config/pmm-agent.yaml --paths-base=/home/ec2-user/workspace/pmm3-aws-staging-start/pmm`);
   await I.wait(60);
   await I.amOnPage(nodesOverviewPage.url);
