@@ -1193,7 +1193,7 @@ module.exports = {
     collapsedDashboardRow: '//div[@class="dashboard-row dashboard-row--collapsed"]/a',
     dataLinkForRoot: '//div[contains(text(), "Data links")]/..//a',
     Last2Days: '//span[contains(text(), "Last 2 days")]',
-    metricTitle: '//div[@class="panel-title"]',
+    metricTitle: '//div[@data-testid="header-container"]//h6',
     metricPanel: '//section[@class="panel-container"]',
     mongoDBServiceSummaryContent: locate('pre').withText('Mongo Executable'),
     mySQLServiceSummaryContent: locate('pre').withText('Percona Toolkit MySQL Summary Report'),
