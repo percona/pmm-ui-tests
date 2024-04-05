@@ -1,4 +1,4 @@
-let config = require('codeceptjs').config.get();
+const config = require('codeceptjs').config.get();
 
 Feature('Service Accounts tests');
 
@@ -14,18 +14,15 @@ Scenario('PMM-T1883 Configuring pmm-agent to use service account', async ({
   await I.amOnPage(serviceAccountsPage.url);
   const pmmServerUrl = config.helpers.Playwright.url.replace(/^(-)|[^0-9.,]+/g, '$1');
 
-  console.log(pmmServerUrl);
-
   await serviceAccountsPage.createServiceAccount(serviceAccountUsername, 'Admin');
   const tokenValue = await serviceAccountsPage.createServiceAccountToken(`token_name_${Date.now()}`);
-
   const oldAgentId = await I.verifyCommand('pmm-admin status | grep "Node ID" | awk -F " " \'{ print $4 }\'');
 
   if (oldAgentId) {
     await inventoryAPI.deleteNode(oldAgentId, true);
   }
 
-  await I.verifyCommand(`pmm-agent setup --server-username=service_token --server-password=${tokenValue} --server-address=${pmmServerUrl} --server-insecure-tls`);
+  await I.verifyCommand(`pmm-agent setup --server-username=service_token --server-password=${tokenValue} --server-address=${pmmServerUrl} --server-insecure-tls --config-file=/home/ec2-user/workspace/pmm3-aws-staging-start/pmm/config/pmm-agent.yaml --paths-base=/home/ec2-user/workspace/pmm3-aws-staging-start/pmm`);
   await I.wait(60);
   await I.amOnPage(nodesOverviewPage.url);
   await dashboardPage.waitForDashboardOpened();
