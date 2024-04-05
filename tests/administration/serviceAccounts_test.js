@@ -28,7 +28,9 @@ Scenario('PMM-T1883 Configuring pmm-agent to use service account @service-accoun
 
   console.log((await I.verifyCommand('sudo find / -name pmm-agent.yaml -ignore_readdir_race')).split('\n'));
   console.log(pmmAgentConfigLocation);
-  await I.verifyCommand(`pmm-agent setup --server-username=service_token --server-password=${tokenValue} --server-address=${pmmServerUrl} --server-insecure-tls --config-file=${pmmAgentConfigLocation}`);
+  const setupResponse = await I.verifyCommand(`pmm-agent setup --server-username=service_token --server-password=${tokenValue} --server-address=${pmmServerUrl} --server-insecure-tls --config-file=${pmmAgentConfigLocation}`, '', 'fail');
+
+  console.log(setupResponse);
   await I.wait(60);
   await I.amOnPage(nodesOverviewPage.url);
   await dashboardPage.waitForDashboardOpened();
