@@ -1,6 +1,4 @@
-const {
-  I, inventoryAPI, remoteInstancesHelper, adminPage,
-} = inject();
+const { I, inventoryAPI } = inject();
 
 const assert = require('assert');
 const paginationPart = require('./paginationFragment');
@@ -116,7 +114,7 @@ module.exports = {
     I.waitForElement(this.fields.inventoryTable, 60);
     I.scrollPageToBottom();
 
-    const runningStatus = '//span[contains(text(), "Running")]';
+    const runningStatus = '//td/div[contains(text(), "Running")]';
 
     const numberOfAgents = await I.grabNumberOfVisibleElements(runningStatus);
 
@@ -291,9 +289,8 @@ module.exports = {
     const agentIdLocator = `//table//tr/td[3][contains(text(),"${agentType}")]/preceding-sibling::td[1]`;
 
     I.waitForVisible(agentIdLocator, 30);
-    const agentID = await I.grabTextFrom(agentIdLocator);
 
-    return agentID;
+    return await I.grabTextFrom(agentIdLocator);
   },
 
   async getNodeCount() {
@@ -335,9 +332,6 @@ module.exports = {
 
   async checkAllNotDeletedAgents(countBefore) {
     const countAfter = await this.getCountOfItems();
-    const otherDetails = await I.grabNumberOfVisibleElements(
-      '//table//tr/td[4]//span[contains(text(), "pmm-server")]',
-    );
 
     /* we are using count 10 because we have two agents for RDS Instance also,
     hence (pmm-agent, Node exporter, postgres exporter, mysql exporter, QAN RDS,

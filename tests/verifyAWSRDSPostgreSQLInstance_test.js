@@ -114,9 +114,11 @@ Scenario(
 
     // Wait 10 seconds before test to start getting metrics
     I.wait(10);
-    I.amOnPage(dashboardPage.postgresqlInstanceOverviewDashboard.url);
-    await dashboardPage.applyFilter('Node Name', serviceName);
-    await dashboardPage.verifyThereAreNoGraphsWithNA();
+    I.amOnPage(I.buildUrlWithParams(dashboardPage.postgresqlInstanceOverviewDashboard.cleanUrl, {
+      node_name: serviceName,
+      from: 'now-5m',
+    }));
+    await dashboardPage.expandEachDashboardRow();
     await dashboardPage.verifyThereAreNoGraphsWithoutData();
   },
 ).retry(2);

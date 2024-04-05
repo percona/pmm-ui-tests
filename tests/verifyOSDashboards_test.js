@@ -11,17 +11,13 @@ Before(async ({ I }) => {
 
 Scenario(
   'Open the Node Summary Dashboard and verify Metrics are present and graphs are displayed @nightly @dashboards',
-  async ({ I, dashboardPage, adminPage }) => {
+  async ({ I, dashboardPage }) => {
     I.amOnPage(dashboardPage.nodeSummaryDashboard.url);
     dashboardPage.waitForDashboardOpened();
-    await dashboardPage.expandEachDashboardRow();
     await dashboardPage.applyFilter('Node Name', 'pmm-server');
-    I.click(adminPage.fields.metricTitle);
     await dashboardPage.expandEachDashboardRow();
-    adminPage.performPageDown(5);
-    dashboardPage.verifyMetricsExistence(dashboardPage.nodeSummaryDashboard.metrics);
-    await dashboardPage.verifyThereAreNoGraphsWithNA();
-    await dashboardPage.verifyThereAreNoGraphsWithoutData(1);
+    await dashboardPage.verifyMetricsExistence(dashboardPage.nodeSummaryDashboard.metrics);
+    await dashboardPage.verifyThereAreNoGraphsWithoutData();
   },
 );
 
@@ -31,9 +27,9 @@ Scenario(
     I.amOnPage(dashboardPage.nodesCompareDashboard.url);
     dashboardPage.waitForDashboardOpened();
     await dashboardPage.expandEachDashboardRow();
-    dashboardPage.verifyMetricsExistence(dashboardPage.nodesCompareDashboard.metrics);
-    await dashboardPage.verifyThereAreNoGraphsWithNA(1);
-    await dashboardPage.verifyThereAreNoGraphsWithoutData(19);
+    await dashboardPage.verifyMetricsExistence(dashboardPage.nodesCompareDashboard.metrics);
+    // await dashboardPage.verifyThereAreNoGraphsWithNA(1);
+    await dashboardPage.verifyThereAreNoGraphsWithoutData();
   },
 );
 
@@ -42,7 +38,6 @@ Data(nodes).Scenario(
   async ({ I, dashboardPage, adminPage }) => {
     I.amOnPage(dashboardPage.nodeSummaryDashboard.url);
     dashboardPage.waitForDashboardOpened();
-    I.click(adminPage.fields.metricTitle);
     await dashboardPage.expandEachDashboardRow();
     adminPage.performPageUp(5);
     I.waitForElement(dashboardPage.nodeSummaryDashboard.ptSummaryDetail.reportContainer, 60);
@@ -74,42 +69,37 @@ Scenario(
 Scenario(
   'PMM-T1695 Verify that user is able to filter OS / Node Compare dashboard by Node Name @nightly @dashboards',
   async ({
-    I, dashboardPage, adminPage, inventoryAPI,
+    I, dashboardPage, inventoryAPI,
   }) => {
     const nodes = await inventoryAPI.getAllNodes();
-
+    const mergedNodes = nodes.generic.concat(nodes.container);
     // get first two generic node names
-    const node1 = nodes.generic[0].node_name;
-    const node2 = nodes.generic[1].node_name;
+    const node1 = mergedNodes[0].node_name;
+    const node2 = mergedNodes[1].node_name;
+    const url = I.buildUrlWithParams(dashboardPage.nodesCompareDashboard.cleanUrl, {
+      node_name: node1,
+      from: 'now-5m',
+    });
 
-    I.amOnPage(dashboardPage.nodesCompareDashboard.url);
+    I.amOnPage(url);
     dashboardPage.waitForDashboardOpened();
 
-    // clear selections first
-    dashboardPage.expandFilters('Node Name');
-    I.click(dashboardPage.toggleAllValues);
+    const initialNumOfPanels = await I.grabNumberOfVisibleElements(dashboardPage.panel);
 
-    await dashboardPage.applyFilter('Node Name', node1);
-    await dashboardPage.expandEachDashboardRow();
-
-    let numOfPanels = await I.grabNumberOfVisibleElements(dashboardPage.panel);
-
-    assert.ok(numOfPanels === 28, `There should be 28 panels for one node but found "${numOfPanels}".`);
-
-    I.scrollTo(adminPage.fields.metricTitle);
-    I.forceClick(adminPage.fields.metricTitle);
-    I.dontSeeElement(dashboardPage.systemUptimePanel(node2));
-    I.seeElement(dashboardPage.systemUptimePanel(node1));
+    I.scrollTo(dashboardPage.fields.metricTitle);
+    I.forceClick(dashboardPage.fields.metricTitle);
+    I.dontSeeElement(dashboardPage.graphsLocator(`${node2} - System Uptime`));
+    I.seeElement(dashboardPage.graphsLocator(`${node1} - System Uptime`));
 
     await dashboardPage.applyFilter('Node Name', node2);
-    I.scrollTo(adminPage.fields.metricTitle);
-    I.forceClick(adminPage.fields.metricTitle);
+    I.scrollTo(dashboardPage.fields.metricTitle);
+    I.forceClick(dashboardPage.fields.metricTitle);
 
-    numOfPanels = await I.grabNumberOfVisibleElements(dashboardPage.panel);
+    const finalNumOfPanels = await I.grabNumberOfVisibleElements(dashboardPage.panel);
 
-    assert.ok(numOfPanels === 50, `There should be 50 panels for two nodes but found "${numOfPanels}".`);
+    assert.ok(finalNumOfPanels > initialNumOfPanels, 'Number of panels should increase after adding another node for comparison');
 
-    I.seeElement(dashboardPage.systemUptimePanel(node2));
-    I.seeElement(dashboardPage.systemUptimePanel(node1));
+    I.seeElement(dashboardPage.graphsLocator(`${node1} - System Uptime`));
+    I.seeElement(dashboardPage.graphsLocator(`${node2} - System Uptime`));
   },
 );

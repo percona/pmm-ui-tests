@@ -1,5 +1,5 @@
 const assert = require('assert');
-const { communicationData, emailDefaults, telemetryTooltipData } = require('../../pages/testData');
+const { communicationData, emailDefaults } = require('../../pages/testData');
 
 const {
   I, adminPage, links, perconaPlatformPage,
@@ -281,7 +281,7 @@ module.exports = {
     errorPopUpElement: I.useDataQA('data-testid Alert error'),
     iframe: '//div[@class="panel-content"]//iframe',
     metricsResolutionButton: '$metrics-resolution-button',
-    metricsResolution: '//label[text()="',
+    metricsResolutionByText: (text) => locate('label').withText(text),
     metricsResolutionLabel: '$metrics-resolution-label',
     metricsResolutionRadio: '$resolutions-radio-button',
     microsoftAzureMonitoringSwitch: locate('$advanced-azure-discover').find('//div[2]//label'),
@@ -357,7 +357,6 @@ module.exports = {
   },
 
   async waitForPmmSettingsPageLoaded() {
-    I.waitForVisible(this.fields.tabsSection, 30);
     I.waitForVisible(this.fields.tabContent, 30);
   },
 
@@ -438,8 +437,8 @@ module.exports = {
   },
 
   async selectMetricsResolution(resolution) {
-    I.waitForElement(`${this.fields.metricsResolution + resolution}"]`, 30);
-    I.click(`${this.fields.metricsResolution + resolution}"]`);
+    I.waitForElement(this.fields.metricsResolutionByText(resolution), 30);
+    I.click(this.fields.metricsResolutionByText(resolution));
     I.click(this.fields.metricsResolutionButton);
   },
 

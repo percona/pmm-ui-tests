@@ -170,9 +170,7 @@ Scenario(
 
 Data(viewerRole).Scenario(
   'PMM-T824 - Verify viewer users do not see Inventory, Settings, Remote Instances Page @nightly @grafana-pr',
-  async ({
-    I, current, homePage, databaseChecksPage,
-  }) => {
+  async ({ I, current, databaseChecksPage }) => {
     const { username, password, dashboard } = current;
 
     await I.Authorize(username, password);
@@ -184,9 +182,7 @@ Data(viewerRole).Scenario(
 
 Data(editorRole).Scenario(
   'PMM-T824 - Verify editor users do not see Inventory, Settings, Remote Instances Page @nightly @grafana-pr',
-  async ({
-    I, current, homePage, databaseChecksPage,
-  }) => {
+  async ({ I, current, databaseChecksPage }) => {
     const { username, password, dashboard } = current;
 
     await I.Authorize(username, password);
@@ -200,7 +196,7 @@ Data(ptSummaryRoleCheck).Scenario(
   'PMM-T334 PMM-T420 PMM-T1726 Verify Home dashboard and the pt-summary with viewer or editor role '
   + '@nightly @grafana-pr',
   async ({
-    I, databaseChecksPage, settingsAPI, locationsPage, current, adminPage, homePage,
+    I, dashboardPage, current, adminPage, homePage,
   }) => {
     const ACCESS_DENIED = 'Access Denied';
     const { username, password, dashboard } = current;
@@ -215,8 +211,8 @@ Data(ptSummaryRoleCheck).Scenario(
 
     I.waitForVisible(homePage.fields.checksPanelSelector, 30);
     I.waitForVisible(homePage.fields.pmmCustomMenu, 30);
-    I.waitForVisible(homePage.fields.systemsUnderMonitoringCount, 30);
-    I.waitForVisible(homePage.fields.dbUnderMonitoringCount, 30);
+    I.waitForVisible(dashboardPage.graphsLocator('Monitored Nodes'), 30);
+    I.waitForVisible(dashboardPage.graphsLocator('Monitored DB Services'), 30);
 
     I.refreshPage();
     // eslint-disable-next-line no-undef

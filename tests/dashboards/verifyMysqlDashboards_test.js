@@ -14,7 +14,7 @@ urlsAndMetrics.add(['PMM Upgrade', homePage.url]);
 
 Feature('Test Dashboards inside the MySQL Folder');
 
-BeforeSuite(async ({ I }) => {
+BeforeSuite(async () => {
   const ps_service_response = await inventoryAPI.apiGetNodeInfoForAllNodesByServiceName('MYSQL_SERVICE', 'ps_');
   const ms_service_response = await inventoryAPI.apiGetNodeInfoForAllNodesByServiceName('MYSQL_SERVICE', 'ms-');
   const md_service_response = await inventoryAPI.apiGetNodeInfoForAllNodesByServiceName('MYSQL_SERVICE', 'md_');
@@ -32,56 +32,45 @@ Before(async ({ I }) => {
 
 Scenario(
   'PMM-T317 - Open the MySQL Instance Summary Dashboard and verify Metrics are present and graphs are displayed @nightly @dashboards',
-  async ({
-    I, adminPage, dashboardPage,
-  }) => {
+  async ({ I, dashboardPage }) => {
     for (const serviceName of serviceList) {
       const url = I.buildUrlWithParams(dashboardPage.mysqlInstanceSummaryDashboard.clearUrl, { service_name: serviceName, from: 'now-15m' });
 
       I.amOnPage(url);
       dashboardPage.waitForDashboardOpened();
       await dashboardPage.expandEachDashboardRow();
-      I.click(adminPage.fields.metricTitle);
-      adminPage.performPageDown(5);
-      dashboardPage.verifyMetricsExistence(dashboardPage.mysqlInstanceSummaryDashboard.metrics);
-      // eslint-disable-next-line no-inline-comments
-      await dashboardPage.verifyThereAreNoGraphsWithNA(1); // FIXME: 0 N/As once https://jira.percona.com/browse/PMM-10308 is fixed
-      await dashboardPage.verifyThereAreNoGraphsWithoutData(5);
+      await dashboardPage.verifyMetricsExistence(dashboardPage.mysqlInstanceSummaryDashboard.metrics);
+      // FIXME: 5 N/As once https://jira.percona.com/browse/PMM-10308 is fixed
+      await dashboardPage.verifyThereAreNoGraphsWithoutData(6);
     }
   },
 );
 
 Scenario(
   'PMM-T319 - Open the MySQL Instances Overview dashboard and verify Metrics are present and graphs are displayed @nightly @dashboards',
-  async ({ I, adminPage, dashboardPage }) => {
+  async ({ I, dashboardPage }) => {
     for (const serviceName of serviceList) {
       const url = I.buildUrlWithParams(dashboardPage.mySQLInstanceOverview.clearUrl, { service_name: serviceName, from: 'now-15m' });
 
       I.amOnPage(url);
       dashboardPage.waitForDashboardOpened();
       await dashboardPage.expandEachDashboardRow();
-      I.click(adminPage.fields.metricTitle);
-      adminPage.performPageDown(5);
-      dashboardPage.verifyMetricsExistence(dashboardPage.mySQLInstanceOverview.metrics);
-      await dashboardPage.verifyThereAreNoGraphsWithNA(1);
-      await dashboardPage.verifyThereAreNoGraphsWithoutData(1);
+      await dashboardPage.verifyMetricsExistence(dashboardPage.mySQLInstanceOverview.metrics);
+      await dashboardPage.verifyThereAreNoGraphsWithoutData(2);
     }
   },
 );
 
 Scenario(
   'PMM-T318 - Open the MySQL Instances Compare dashboard and verify Metrics are present and graphs are displayed @nightly @dashboards',
-  async ({ I, adminPage, dashboardPage }) => {
+  async ({ I, dashboardPage }) => {
     const url = I.buildUrlWithParams(dashboardPage.mysqlInstancesCompareDashboard.clearUrl, { from: 'now-5m' });
 
     I.amOnPage(url);
     dashboardPage.waitForDashboardOpened();
     await dashboardPage.expandEachDashboardRow();
-    I.click(adminPage.fields.metricTitle);
-    adminPage.performPageDown(5);
-    dashboardPage.verifyMetricsExistence(dashboardPage.mysqlInstancesCompareDashboard.metrics);
-    await dashboardPage.verifyThereAreNoGraphsWithNA(1);
-    await dashboardPage.verifyThereAreNoGraphsWithoutData(3);
+    await dashboardPage.verifyMetricsExistence(dashboardPage.mysqlInstancesCompareDashboard.metrics);
+    await dashboardPage.verifyThereAreNoGraphsWithoutData(4);
   },
 );
 
@@ -125,7 +114,6 @@ Scenario(
     dashboardPage.waitForDashboardOpened();
     await dashboardPage.expandEachDashboardRow();
     await dashboardPage.verifyMetricsExistence(dashboardPage.proxysqlInstanceSummaryDashboard.metrics);
-    await dashboardPage.verifyThereAreNoGraphsWithNA();
     await dashboardPage.verifyThereAreNoGraphsWithoutData(16);
   },
 );
@@ -133,16 +121,13 @@ Scenario(
 // TODO: https://perconadev.atlassian.net/browse/PMM-12956
 Scenario.skip(
   'PMM-T67 - Open the PXCGalera Cluster Summary Dashboard and verify Metrics are present and graphs are displayed @nightly @dashboards',
-  async ({ I, adminPage, dashboardPage }) => {
+  async ({ I, dashboardPage }) => {
     const url = I.buildUrlWithParams(dashboardPage.pxcGaleraClusterSummaryDashboard.url, { from: 'now-5m' });
 
     I.amOnPage(url);
     dashboardPage.waitForDashboardOpened();
-    I.click(adminPage.fields.metricTitle);
-    adminPage.performPageDown(10);
     await dashboardPage.expandEachDashboardRow();
-    dashboardPage.verifyMetricsExistence(dashboardPage.pxcGaleraClusterSummaryExperimentalDashboard.metrics);
-    await dashboardPage.verifyThereAreNoGraphsWithNA();
+    await dashboardPage.verifyMetricsExistence(dashboardPage.pxcGaleraClusterSummaryExperimentalDashboard.metrics);
     await dashboardPage.verifyThereAreNoGraphsWithoutData(2);
   },
 );
@@ -150,33 +135,27 @@ Scenario.skip(
 // TODO: https://perconadev.atlassian.net/browse/PMM-12956
 Scenario.skip(
   'PMM-T1743 - verify PXCGalera Cluster Summary Dashboard (Experimental) metrics @nightly @dashboards',
-  async ({ I, adminPage, dashboardPage }) => {
+  async ({ I, dashboardPage }) => {
     const url = I.buildUrlWithParams(dashboardPage.pxcGaleraClusterSummaryExperimentalDashboard.url, { from: 'now-5m' });
 
     I.amOnPage(url);
     dashboardPage.waitForDashboardOpened();
-    I.click(adminPage.fields.metricTitle);
     await dashboardPage.expandEachDashboardRow();
-    adminPage.performPageDown(5);
-    dashboardPage.verifyMetricsExistence(dashboardPage.pxcGaleraClusterSummaryExperimentalDashboard.metrics);
-    await dashboardPage.verifyThereAreNoGraphsWithNA();
+    await dashboardPage.verifyMetricsExistence(dashboardPage.pxcGaleraClusterSummaryExperimentalDashboard.metrics);
     await dashboardPage.verifyThereAreNoGraphsWithoutData(2);
   },
 );
 
 Scenario(
   'PMM-T324 - Verify MySQL - MySQL User Details dashboard @nightly @dashboards',
-  async ({ I, dashboardPage, adminPage }) => {
+  async ({ I, dashboardPage }) => {
     const ps_service_response = await inventoryAPI.apiGetNodeInfoForAllNodesByServiceName('MYSQL_SERVICE', 'ps_8.0');
     const url = I.buildUrlWithParams(dashboardPage.mysqlUserDetailsDashboard.clearUrl, { service_name: ps_service_response[0].service_name, from: 'now-5m' });
 
     I.amOnPage(url);
     dashboardPage.waitForDashboardOpened();
-    adminPage.performPageDown(5);
     await dashboardPage.expandEachDashboardRow();
-    adminPage.performPageUp(5);
-    dashboardPage.verifyMetricsExistence(dashboardPage.mysqlUserDetailsDashboard.metrics);
-    await dashboardPage.verifyThereAreNoGraphsWithNA();
+    await dashboardPage.verifyMetricsExistence(dashboardPage.mysqlUserDetailsDashboard.metrics);
     await dashboardPage.verifyThereAreNoGraphsWithoutData(1);
   },
 );
@@ -184,9 +163,7 @@ Scenario(
 // Need to Skip due to wait issue on locator
 xScenario(
   'PMM-T396 - Verify that parameters are passed from MySQL User Details dashboard to QAN @nightly @dashboards',
-  async ({
-    I, dashboardPage, qanFilters, adminPage,
-  }) => {
+  async ({ I, dashboardPage, qanFilters }) => {
     const filters = ['ps_8.0', 'root'];
     const timeRange = 'Last 12 hours';
 
@@ -219,47 +196,39 @@ xScenario(
 
 Scenario(
   'PMM-T348 - PXC/Galera Node Summary dashboard @dashboards @nightly',
-  async ({ I, dashboardPage, adminPage }) => {
-    const url = I.buildUrlWithParams(dashboardPage.mysqlPXCGaleraNodeSummaryDashboard.clearUrl, { from: 'now-15m' });
+  async ({ I, dashboardPage }) => {
+    const url = I.buildUrlWithParams(dashboardPage.mysqlPXCGaleraNodeSummaryDashboard.clearUrl, { from: 'now-15m', service_name: 'pxc_node' });
 
     I.amOnPage(url);
     dashboardPage.waitForDashboardOpened();
-    await dashboardPage.applyFilter('Service Name', 'pxc_node');
-    adminPage.performPageDown(5);
-    dashboardPage.verifyMetricsExistence(dashboardPage.mysqlPXCGaleraNodeSummaryDashboard.metrics);
-    await dashboardPage.verifyThereAreNoGraphsWithNA();
+    await dashboardPage.verifyMetricsExistence(dashboardPage.mysqlPXCGaleraNodeSummaryDashboard.metrics);
     await dashboardPage.verifyThereAreNoGraphsWithoutData(2);
   },
 );
 
 Scenario(
   'PMM-T349 - PXC/Galera Nodes Compare dashboard @dashboards @nightly',
-  async ({ I, dashboardPage, adminPage }) => {
-    const url = I.buildUrlWithParams(dashboardPage.mysqlPXCGaleraNodesCompareDashboard.clearUrl, { from: 'now-15m' });
+  async ({ I, dashboardPage }) => {
+    const url = I.buildUrlWithParams(dashboardPage.mysqlPXCGaleraNodesCompareDashboard.clearUrl, { from: 'now-15m', service_name: 'pxc' });
 
     I.amOnPage(url);
     dashboardPage.waitForDashboardOpened();
-    await dashboardPage.applyFilter('Service Name', 'pxc');
     await dashboardPage.expandEachDashboardRow();
-    dashboardPage.verifyMetricsExistence(dashboardPage.mysqlPXCGaleraNodesCompareDashboard.metrics);
+    await dashboardPage.verifyMetricsExistence(dashboardPage.mysqlPXCGaleraNodesCompareDashboard.metrics);
     dashboardPage.verifyTabExistence(dashboardPage.mysqlPXCGaleraNodesCompareDashboard.tabs);
-    await dashboardPage.verifyThereAreNoGraphsWithNA();
     await dashboardPage.verifyThereAreNoGraphsWithoutData(3);
   },
 );
 
 Scenario(
   'PMM-T430 - Verify metrics on MySQL Group Replication Summary Dashboard @dashboards @nightly',
-  async ({ I, dashboardPage, adminPage }) => {
+  async ({ I, dashboardPage }) => {
     const url = I.buildUrlWithParams(dashboardPage.groupReplicationDashboard.clearUrl, { from: 'now-1h' });
 
     I.amOnPage(url);
     dashboardPage.waitForDashboardOpened();
-    adminPage.performPageDown(5);
     await dashboardPage.expandEachDashboardRow();
-    adminPage.performPageUp(5);
-    dashboardPage.verifyMetricsExistence(dashboardPage.groupReplicationDashboard.metrics);
-    await dashboardPage.verifyThereAreNoGraphsWithNA();
+    await dashboardPage.verifyMetricsExistence(dashboardPage.groupReplicationDashboard.metrics);
     await dashboardPage.verifyThereAreNoGraphsWithoutData(3);
   },
 );

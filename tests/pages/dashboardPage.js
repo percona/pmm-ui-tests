@@ -13,12 +13,12 @@ module.exports = {
     '//button[@id="var-service_name"]/span',
   serviceNameInput:
     '//input[@aria-controls="options-service_name"]',
-  toggleAllValues:
-    '//a[@aria-label="Toggle all values"]',
+  toggleAllValues: '[aria-label="Toggle all values"]',
   panel: 'div[data-panelid]',
   systemUptimePanel: (nodeName) => `//div[@class="panel-title"]//h2[text()="${nodeName} - System Uptime"]`,
   nodesCompareDashboard: {
     url: 'graph/d/node-instance-compare/nodes-compare?orgId=1&refresh=1m&from=now-5m&to=now',
+    cleanUrl: 'graph/d/node-instance-compare/nodes-compare',
     metrics: [
       'System Info',
       'System Uptime',
@@ -105,6 +105,7 @@ module.exports = {
   },
   prometheusExporterStatusDashboard: {
     url: 'graph/d/prometheus-status/prometheus-exporter-status?orgId=1&refresh=1m&from=now-5m&to=now',
+    cleanUrl: 'graph/d/prometheus-status/prometheus-exporter-status',
     metrics: [
       'CPU Usage',
       'Memory Usage',
@@ -161,6 +162,7 @@ module.exports = {
   },
   prometheusExporterOverviewDashboard: {
     url: 'graph/d/prometheus-overview/prometheus-exporters-overview?orgId=1&refresh=1m&from=now-5m&to=now',
+    cleanUrl: 'graph/d/prometheus-overview/prometheus-exporters-overview',
     metrics: [
       'Avg CPU Usage per Node',
       'Avg Memory Usage per Node',
@@ -332,6 +334,7 @@ module.exports = {
   postgresqlInstanceOverviewDashboard: {
     // had to be changed after the PMM-6386 bug will be fixed
     url: 'graph/d/postgresql-instance-overview/postgresql-instances-overview?orgId=1&from=now-5m&to=now',
+    cleanUrl: 'graph/d/postgresql-instance-overview/postgresql-instances-overview',
     metrics: [
       'Services',
       'Max Active Connections',
@@ -1190,10 +1193,10 @@ module.exports = {
     },
     annotationMarker: '(//div[contains(@class,"events_marker")])',
     clearSelection: '//a[@ng-click="vm.clearSelections()"]',
-    collapsedDashboardRow: '//div[@class="dashboard-row dashboard-row--collapsed"]/a',
+    collapsedDashboardRow: '.dashboard-row--collapsed',
     dataLinkForRoot: '//div[contains(text(), "Data links")]/..//a',
     Last2Days: '//span[contains(text(), "Last 2 days")]',
-    metricTitle: '//div[@class="panel-title"]',
+    metricTitle: '$header-container',
     metricPanel: '//section[@class="panel-container"]',
     mongoDBServiceSummaryContent: locate('pre').withText('Mongo Executable'),
     mySQLServiceSummaryContent: locate('pre').withText('Percona Toolkit MySQL Summary Report'),
@@ -1205,22 +1208,27 @@ module.exports = {
     panelLoading: locate('div').withAttr({ class: 'panel-loading' }),
     postgreSQLServiceSummaryContent: locate('pre').withText('Detected PostgreSQL version:'),
     reportTitleWithNA:
-      locate('.panel-title').inside(locate('.panel-container').withDescendant('//span[contains(text(),"N/A")]')),
+      locate('$header-container')
+        .inside(locate('[class$="panel-container"]')
+          .withDescendant('//*[contains(text(),"No data") or contains(text(), "NO DATA") or contains(text(),"N/A") or (text()="-")]')),
     reportTitleWithNoData:
-      locate('.panel-title').inside(locate('.panel-container').withDescendant('//div[contains(text(),"No data")]')),
+    locate('$header-container')
+      .inside(locate('[class$="panel-container"]')
+        .withDescendant('//*[contains(text(),"No data") or contains(text(), "NO DATA") or contains(text(),"N/A")) or (text()="-")]')),
     rootUser: '//div[contains(text(), "root")]',
     serviceSummary: locate('a').withText('Service Summary'),
     // timeRangePickerButton: '.btn.navbar-button.navbar-button--tight',
     timeRangePickerButton: I.useDataQA('data-testid TimePicker Open Button'),
     refresh: I.useDataQA('data-testid RefreshPicker run button'),
-    allFilterDropdownOptions: '//a[contains(@class, "variable-option")][span[text()][not(contains(text(), "All"))]]',
+    allFilterDropdownOptions: '//button[contains(@data-testid, "variable-option")][span[text()][not(contains(text(), "All"))]]',
+    // allFilterDropdownOptions: '//a[contains(@class, "variable-option")][span[text()][not(contains(text(), "All"))]]',
     skipTourButton: '//button[span[text()="Skip"]]',
     timeRangeOption: (timeRange) => locate('li').withDescendant('label').withText(timeRange),
-    openFiltersDropdownLocator: (filterName) => locate('.variable-link-wrapper').after(`label[for="var-${formatElementId(filterName)}"]`),
-    filterDropdownOptionsLocator: (filterName) => locate('.variable-option').withText(filterName),
+    openFiltersDropdownLocator: (filterName) => locate(`#var-${formatElementId(filterName)}`),
+    filterDropdownOptionsLocator: (filterName) => locate(I.useDataQA('data-testid variable-option')).withText(filterName),
     refreshIntervalPicker: I.useDataQA('data-testid RefreshPicker interval button'),
     refreshIntervalOption: (interval) => locate(`//*[@role="menuitemradio" and text()="${interval}"]`),
-    clickablePanel: (name) => `//section[@aria-label="${name} panel"]//a`,
+    clickablePanel: (name) => locate('$header-container').withText(name).find('a'),
     dashboardTitle: (name) => locate('span').withText(name),
     metricPanelNa: (name) => `//section[@aria-label="${name}"]//span[text()="N/A"]`,
   },
@@ -1259,8 +1267,10 @@ module.exports = {
   },
 
   // introducing methods
-  verifyMetricsExistence(metrics) {
+  async verifyMetricsExistence(metrics) {
     for (const i in metrics) {
+      await adminPage.performPageDown(1);
+      await this.expandEachDashboardRow();
       I.waitForElement(this.graphsLocator(metrics[i]), 5);
       I.scrollTo(this.graphsLocator(metrics[i]));
       I.waitForVisible(this.graphsLocator(metrics[i]), 5);
@@ -1279,7 +1289,7 @@ module.exports = {
   },
 
   graphsLocator(metricName) {
-    return locate('.panel-title-container h2').withText(metricName);
+    return locate(this.fields.metricTitle).withText(metricName);
   },
 
   tabLocator(tabName) {
@@ -1290,20 +1300,6 @@ module.exports = {
     await I.waitForInvisible(this.fields.notAvailableDataPoints, timeout);
   },
 
-  async waitForGraphsToHaveData(acceptableElementsWithoutData, timeout = 60, retries = 0) {
-    const noDataElements = await this.getNumberOfGraphsWithoutData(timeout);
-
-    if (noDataElements > acceptableElementsWithoutData) {
-      if (retries > 9) {
-        I.assertTrue(false, `Expected ${acceptableElementsWithoutData} Elements without data but found ${noDataElements}`);
-      }
-
-      await I.wait(timeout / 10);
-      // eslint-disable-next-line no-plusplus, no-param-reassign
-      await this.waitForGraphsToHaveData(acceptableElementsWithoutData, timeout, ++retries);
-    }
-  },
-
   async getNumberOfGraphsWithoutData(timeout) {
     const naElements = await I.grabNumberOfVisibleElements(this.fields.notAvailableMetrics, timeout);
     const noDataElements = await I.grabNumberOfVisibleElements(this.fields.notAvailableDataPoints, timeout);
@@ -1311,10 +1307,10 @@ module.exports = {
     return naElements + noDataElements;
   },
 
-  async verifyThereAreNoGraphsWithNA(acceptableNACount = 0) {
-    const numberOfNAElements = await I.grabNumberOfVisibleElements(this.fields.notAvailableMetrics);
+  async verifyThereAreNoGraphsWithoutData(acceptableNACount = 0) {
+    const numberOfNAElements = await I.grabNumberOfVisibleElements(this.fields.reportTitleWithNA);
 
-    I.say(`number of N/A elements is = ${numberOfNAElements}`);
+    I.say(`Number of no data and N/A elements is = ${numberOfNAElements}`);
     if (numberOfNAElements > acceptableNACount) {
       const titles = await this.grabFailedReportTitles(this.fields.reportTitleWithNA);
 
@@ -1324,17 +1320,17 @@ module.exports = {
     }
   },
 
-  async verifyThereAreNoGraphsWithoutData(acceptableNoDataCount = 0) {
-    const numberOfNoDataElements = await I.grabNumberOfVisibleElements(this.fields.notAvailableDataPoints);
-
-    I.say(`number of No Data elements is = ${numberOfNoDataElements}`);
-    if (numberOfNoDataElements > acceptableNoDataCount) {
-      const titles = await this.grabFailedReportTitles(this.fields.reportTitleWithNoData);
-      const url = await I.grabCurrentUrl();
-
-      await this.printFailedReportNames(acceptableNoDataCount, numberOfNoDataElements, titles, url);
-    }
-  },
+  // async verifyThereAreNoGraphsWithoutData(acceptableNoDataCount = 0) {
+  //   const numberOfNoDataElements = await I.grabNumberOfVisibleElements(this.fields.reportTitleWithNA);
+  //
+  //   I.say(`number of No Data elements is = ${numberOfNoDataElements}`);
+  //   if (numberOfNoDataElements > acceptableNoDataCount) {
+  //     const titles = await this.grabFailedReportTitles(this.fields.reportTitleWithNoData);
+  //     const url = await I.grabCurrentUrl();
+  //
+  //     await this.printFailedReportNames(acceptableNoDataCount, numberOfNoDataElements, titles, url);
+  //   }
+  // },
 
   async printFailedReportNames(expectedNumber, actualNumber, titles, dashboardUrl) {
     assert.equal(
@@ -1348,43 +1344,25 @@ module.exports = {
     return await I.grabTextFromAll(selector);
   },
 
-  async expandEachDashboardRow(halfToExpand) {
-    let sectionsToExpand;
-    const sections = await I.grabTextFromAll(this.fields.collapsedDashboardRow);
+  async expandEachDashboardRow() {
+    await I.usePlaywrightTo('expanding collapsed rows', async ({ page }) => {
+      const getCollapsedRowsLocators = async () => await page.locator(this.fields.collapsedDashboardRow).all();
+      let collapsedRowsLocators = await getCollapsedRowsLocators();
 
-    if (halfToExpand === 1) {
-      sectionsToExpand = sections.slice(0, sections.length / 2);
-    } else if (halfToExpand === 2) {
-      sectionsToExpand = sections.slice(sections.length / 2, sections.length);
-    } else {
-      sectionsToExpand = sections;
-    }
+      while (collapsedRowsLocators.length > 0) {
+        await page.keyboard.press('End');
+        await collapsedRowsLocators[0].scrollIntoViewIfNeeded();
+        await collapsedRowsLocators[0].click();
+        collapsedRowsLocators.shift();
 
-    await this.expandRows(sectionsToExpand);
-  },
-
-  async expandRows(sectionsToExpand) {
-    let sections;
-
-    if (typeof sectionsToExpand === 'string') {
-      sections = [sectionsToExpand];
-    } else {
-      sections = sectionsToExpand;
-    }
-
-    for (let i = 0; i < sections.length; i++) {
-      const sectionName = sections[i].toString().split('(');
-      const rowToExpand = `${this.fields.collapsedDashboardRow}[contains(text(), '${sectionName[0]}')]`;
-
-      I.click(rowToExpand);
-      I.wait(0.5);
-      adminPage.performPageDown(1);
-      adminPage.performPageDown(1);
-    }
+        collapsedRowsLocators = await getCollapsedRowsLocators();
+      }
+    });
   },
 
   waitForDashboardOpened() {
     I.waitForElement(this.fields.metricTitle, 60);
+    I.click(this.fields.metricTitle);
   },
 
   waitForDataLoaded() {
@@ -1396,7 +1374,7 @@ module.exports = {
     const dropdownLocator = this.fields.openFiltersDropdownLocator(filterName);
 
     // This is due to some instances with many services take filter to load
-    I.wait(3);
+    // I.wait(1);
     I.waitForElement(dropdownLocator, 30);
     I.click(dropdownLocator);
 
@@ -1434,20 +1412,6 @@ module.exports = {
 
   async getTimeRange() {
     return await I.grabTextFrom(this.fields.timeRangePickerButton);
-  },
-
-  async waitPTSummaryInformation() {
-    const response = await I.waitForResponse(
-      (response) => response.url().endsWith('v1/management/Actions/StartPTSummary') && response.status() === 200,
-      { timeout: 60 },
-    );
-
-    await I.waitForResponse(
-      (response) => response.url().endsWith('v1/management/Actions/Get') && response.status() === 200,
-      { timeout: 60 },
-    );
-
-    return await response.json();
   },
 
   async waitAndSwitchTabs(ammountOfTabs) {
