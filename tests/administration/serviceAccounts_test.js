@@ -26,7 +26,7 @@ Scenario('PMM-T1883 Configuring pmm-agent to use service account @service-accoun
     .split('\n')
     .find((agentLocation) => agentLocation.includes('/home/') || (agentLocation.includes('/usr/local/config/') && !agentLocation.includes('docker')));
 
-  await I.verifyCommand(`sudo pmm-agent setup --server-username=service_token --server-password=${tokenValue} --server-address=${pmmServerUrl} --server-insecure-tls --config-file=${pmmAgentConfigLocation}`);
+  await I.verifyCommand(`sudo -E env "PATH=$PATH" pmm-agent setup --server-username=service_token --server-password=${tokenValue} --server-address=${pmmServerUrl} --server-insecure-tls --config-file=${pmmAgentConfigLocation}`);
   await I.wait(60);
   await I.amOnPage(nodesOverviewPage.url);
   await dashboardPage.waitForDashboardOpened();
@@ -42,7 +42,7 @@ Scenario('PMM-T1883 Configuring pmm-agent to use service account @service-accoun
   await dashboardPage.verifyThereAreNoGraphsWithNA(1);
   await dashboardPage.verifyThereAreNoGraphsWithoutData(19);
 
-  await I.verifyCommand('sudo pmm-admin add mysql --username root --password GRgrO9301RuF --host=127.0.0.1 --port=43306');
+  await I.verifyCommand('sudo -E env "PATH=$PATH" pmm-admin add mysql --username root --password GRgrO9301RuF --host=127.0.0.1 --port=43306');
   await I.wait(60);
   await I.amOnPage(dashboardPage.mySQLInstanceOverview.url);
   await dashboardPage.verifyThereAreNoGraphsWithNA(1);
@@ -53,7 +53,7 @@ Scenario('PMM-T1884 Verify disabling service account @service-account', async ({
   await I.amOnPage(serviceAccountsPage.url);
   await serviceAccountsPage.disableServiceAccount(serviceAccountUsername);
   await I.wait(10);
-  const responseDisabled = await I.verifyCommand('sudo pmm-admin list', '', 'fail');
+  const responseDisabled = await I.verifyCommand('sudo -E env "PATH=$PATH" pmm-admin list', '', 'fail');
   const expectedDisabledMessage = 'Unauthorized. Please check username and password.';
 
   I.assertEqual(
@@ -64,7 +64,7 @@ Scenario('PMM-T1884 Verify disabling service account @service-account', async ({
 
   await serviceAccountsPage.enableServiceAccount(serviceAccountUsername);
   await I.wait(10);
-  const responseEnabled = await I.verifyCommand('sudo pmm-admin list');
+  const responseEnabled = await I.verifyCommand('sudo -E env "PATH=$PATH" pmm-admin list');
 
   I.assertFalse(responseEnabled.includes(expectedDisabledMessage), 'Expected message for enabled user is not present');
 });
