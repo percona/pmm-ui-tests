@@ -25,7 +25,7 @@ Scenario('PMM-T1883 Configuring pmm-agent to use service account @service-accoun
   const pmmAgentLocation = (await I.verifyCommand('sudo find / -name pmm-agent.yaml')).split('\n');
 
   console.log(pmmAgentLocation);
-  console.log(pmmAgentLocation.find((agentLocation) => agentLocation.includes('user') || agentLocation.includes('usr')));
+  console.log(pmmAgentLocation.find((agentLocation) => agentLocation.includes('/home/') || agentLocation.includes('/usr/local/')));
   await I.verifyCommand(`pmm-agent setup --server-username=service_token --server-password=${tokenValue} --server-address=${pmmServerUrl} --server-insecure-tls --config-file=/home/ec2-user/workspace/pmm3-aws-staging-start/pmm/config/pmm-agent.yaml --paths-base=/home/ec2-user/workspace/pmm3-aws-staging-start/pmm`);
   await I.wait(60);
   await I.amOnPage(nodesOverviewPage.url);
