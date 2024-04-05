@@ -8,7 +8,7 @@ Before(async ({ I }) => {
 
 const serviceAccountUsername = `service_account_${Date.now()}`;
 
-Scenario('PMM-T1883 Configuring pmm-agent to use service account', async ({
+Scenario('PMM-T1883 Configuring pmm-agent to use service account @service-account', async ({
   I, serviceAccountsPage, dashboardPage, inventoryAPI, nodesOverviewPage,
 }) => {
   await I.amOnPage(serviceAccountsPage.url);
@@ -45,7 +45,7 @@ Scenario('PMM-T1883 Configuring pmm-agent to use service account', async ({
   await dashboardPage.verifyThereAreNoGraphsWithoutData(1);
 });
 
-Scenario('PMM-T1884 Verify disabling service account', async ({ I, serviceAccountsPage }) => {
+Scenario('PMM-T1884 Verify disabling service account @service-account', async ({ I, serviceAccountsPage }) => {
   await I.amOnPage(serviceAccountsPage.url);
   await serviceAccountsPage.disableServiceAccount(serviceAccountUsername);
   await I.wait(10);
