@@ -6,11 +6,13 @@ Before(async ({ I }) => {
 
 const serviceAccountUsername = `service_account_${Date.now()}`;
 
-Scenario('@PMM-T1883', async ({
+Scenario('PMM-T1883 Configuring pmm-agent to use service account', async ({
   I, serviceAccountsPage, dashboardPage, inventoryAPI, nodesOverviewPage,
 }) => {
   await I.amOnPage(serviceAccountsPage.url);
   const pmmServerUrl = (await I.grabCurrentUrl()).replace(/^(-)|[^0-9.,]+/g, '$1');
+
+  console.log(pmmServerUrl);
 
   await serviceAccountsPage.createServiceAccount(serviceAccountUsername, 'Admin');
   const tokenValue = await serviceAccountsPage.createServiceAccountToken(`token_name_${Date.now()}`);
@@ -44,7 +46,7 @@ Scenario('@PMM-T1883', async ({
   await dashboardPage.verifyThereAreNoGraphsWithoutData(1);
 });
 
-Scenario('@PMM-T1884', async ({
+Scenario('PMM-T1884 Verify disabling service account', async ({
   I, serviceAccountsPage, dashboardPage, inventoryAPI, nodesOverviewPage,
 }) => {
   await I.amOnPage(serviceAccountsPage.url);
