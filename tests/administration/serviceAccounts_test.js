@@ -22,7 +22,7 @@ Scenario('PMM-T1883 Configuring pmm-agent to use service account @service-accoun
     await inventoryAPI.deleteNode(oldAgentId, true);
   }
 
-  const pmmAgentConfigLocation = (await I.verifyCommand('sudo find / ! -path /proc -name pmm-agent.yaml'))
+  const pmmAgentConfigLocation = (await I.verifyCommand('sudo find / -name pmm-agent.yaml 2>/dev/null'))
     .split('\n')
     .find((agentLocation) => agentLocation.includes('/home/') || (agentLocation.includes('/usr/local/config/') && !agentLocation.includes('docker')));
 
