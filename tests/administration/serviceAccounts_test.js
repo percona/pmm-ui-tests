@@ -45,9 +45,7 @@ Scenario('PMM-T1883 Configuring pmm-agent to use service account', async ({
   await dashboardPage.verifyThereAreNoGraphsWithoutData(1);
 });
 
-Scenario('PMM-T1884 Verify disabling service account', async ({
-  I, serviceAccountsPage, dashboardPage, inventoryAPI, nodesOverviewPage,
-}) => {
+Scenario('PMM-T1884 Verify disabling service account', async ({ I, serviceAccountsPage }) => {
   await I.amOnPage(serviceAccountsPage.url);
   await serviceAccountsPage.disableServiceAccount(serviceAccountUsername);
   await I.wait(10);
