@@ -12,7 +12,7 @@ Scenario('PMM-T1883 Configuring pmm-agent to use service account', async ({
   I, serviceAccountsPage, dashboardPage, inventoryAPI, nodesOverviewPage,
 }) => {
   await I.amOnPage(serviceAccountsPage.url);
-  const pmmServerUrl = config.helpers.Playwright.url;
+  const pmmServerUrl = config.helpers.Playwright.url.replace(/^(-)|[^0-9.,]+/g, '$1');
 
   console.log(pmmServerUrl);
 
