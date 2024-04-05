@@ -26,6 +26,7 @@ Scenario('PMM-T1883 Configuring pmm-agent to use service account @service-accoun
     .split('\n')
     .find((agentLocation) => agentLocation.includes('/home/') || (agentLocation.includes('/usr/local/percona/') && !agentLocation.includes('docker')));
 
+  console.log((await I.verifyCommand('sudo find / -name pmm-agent.yaml -ignore_readdir_race')).split('\n'));
   console.log(pmmAgentConfigLocation);
   await I.verifyCommand(`pmm-agent setup --server-username=service_token --server-password=${tokenValue} --server-address=${pmmServerUrl} --server-insecure-tls --config-file=${pmmAgentConfigLocation}`);
   await I.wait(60);
