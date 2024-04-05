@@ -2,7 +2,7 @@ const assert = require('assert');
 const AdmZip = require('adm-zip');
 const buildUrl = require('build-url');
 
-const systemMessageText = 'div[data-testid^="data-testid Alert"] > div:nth-child(2) > span';
+const systemMessageText = 'div[data-testid^="data-testid Alert"] > div';
 const systemMessageButtonClose = '[aria-label="Close alert"]';
 const warningLocator = '[data-testid="data-testid Alert warning"]';
 
