@@ -1,3 +1,5 @@
+let config = require('codeceptjs').config.get();
+
 Feature('Service Accounts tests');
 
 Before(async ({ I }) => {
@@ -10,7 +12,7 @@ Scenario('PMM-T1883 Configuring pmm-agent to use service account', async ({
   I, serviceAccountsPage, dashboardPage, inventoryAPI, nodesOverviewPage,
 }) => {
   await I.amOnPage(serviceAccountsPage.url);
-  const pmmServerUrl = (await I.grabCurrentUrl()).replace(/^(-)|[^0-9.,]+/g, '$1');
+  const pmmServerUrl = config.helpers.Playwright.url;
 
   console.log(pmmServerUrl);
 
