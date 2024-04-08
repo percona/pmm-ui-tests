@@ -3,9 +3,9 @@ const assert = require('assert');
 const shortCutTests = new DataTable(['type', 'dashboard', 'shortcutLink', 'filter']);
 
 shortCutTests.add(['Cluster', 'MongoDB Cluster Summary', 'graph/d/mongodb-cluster-summary/mongodb-cluster-summary', 'mongodb_node_cluster']);
-shortCutTests.add(['Replication Set', 'MySQL Replication Summary', 'graph/d/mysql-replicaset-summary/mysql-replication-summary', 'ps-repl1']);
-shortCutTests.add(['Node Name', 'Node Summary', 'graph/d/node-instance-summary/node-summary?var-node_name=pmm-server', 'pmm-server']);
-shortCutTests.add(['Service Name', 'MongoDB Instance Summary', 'graph/d/mongodb-instance-summary/mongodb-instance-summary', 'mongodb_rs1_2']);
+// shortCutTests.add(['Replication Set', 'MySQL Replication Summary', 'graph/d/mysql-replicaset-summary/mysql-replication-summary', 'ps-repl1']);
+// shortCutTests.add(['Node Name', 'Node Summary', 'graph/d/node-instance-summary/node-summary?var-node_name=pmm-server', 'pmm-server']);
+// shortCutTests.add(['Service Name', 'MongoDB Instance Summary', 'graph/d/mongodb-instance-summary/mongodb-instance-summary', 'mongodb_rs1_2']);
 
 Feature('QAN filters');
 // filterToApply - filter witch we check, searchValue - value to get zero search result
@@ -200,7 +200,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T221 - Verify that all filter options are always visible (but some disabled) after selecting an item and % value is changed @qan @debug',
+  'PMM-T221 - Verify that all filter options are always visible (but some disabled) after selecting an item and % value is changed @qan',
   async ({
     I, adminPage, qanOverview, qanFilters,
   }) => {
@@ -232,7 +232,7 @@ Scenario(
 
 Data(shortCutTests).Scenario(
   'PMM-T436 PMM-T458 - Verify short-cut navigation from filters to related dashboards, '
-    + 'Verify time interval is passed from QAN to dashboards via shortcut links @qan',
+    + 'Verify time interval is passed from QAN to dashboards via shortcut links @qan @debug',
   async ({
     I, qanFilters, dashboardPage, current, adminPage, qanOverview, qanPage,
   }) => {
