@@ -1,7 +1,7 @@
 const assert = require('assert');
 const { qanFilters } = require('../remoteInstances/remoteInstancesHelper');
 
-Feature('QAN common').retry(1);
+Feature('QAN common');
 
 Before(async ({ I, qanPage }) => {
   await I.Authorize();
@@ -9,22 +9,40 @@ Before(async ({ I, qanPage }) => {
 });
 
 Scenario(
-  'PMM-T122 PMM-T269 - Verify QAN UI Elements are displayed @qan',
+  'PMM-T269 - Verify QAN UI Elements are displayed @qan',
   async ({
     I, qanFilters, qanOverview, qanPagination,
   }) => {
-    qanOverview.waitForOverviewLoaded();
-    I.waitForVisible(qanOverview.buttons.addColumn, 30);
-    await qanPagination.verifyPagesAndCount(25);
-    I.waitForVisible(qanFilters.elements.environmentLabel, 30);
+    await qanOverview.waitForOverviewLoaded();
+    await I.waitForVisible(qanOverview.buttons.addColumn, 30);
     await qanOverview.verifyRowCount(27);
-    await qanFilters.applyFilter('ps-dev');
-    I.waitForVisible(qanFilters.fields.filterBy, 30);
-    await qanOverview.searchByValue('insert');
-    I.waitForVisible(qanOverview.elements.querySelector, 30);
-    // TODO: find test case in TM4J
-    // I.click(qanOverview.elements.querySelector);
-    // I.waitForVisible(qanOverview.getColumnLocator('Lock Time'), 30);
+    await qanPagination.verifyPagesAndCount(25);
+
+    for await (const filter of qanFilters.filterGroups) {
+      await I.wait(5);
+      await I.waitForElement(qanFilters.elements.filterValuesByFilterName(filter), 10);
+      const numberOfFilterValues = await I.grabNumberOfVisibleElements(qanFilters.elements.filterValuesByFilterName(filter));
+      const randomFilterValue = Math.floor(Math.random() * numberOfFilterValues) + 1;
+
+      await I.click(qanFilters.elements.filterValuesByFilterName(filter).at(randomFilterValue));
+      await I.assertTrue((await qanOverview.getRowCount()) > 0, `No values for filter: "${filter}" were displayed`);
+      await I.click(qanFilters.elements.filterValuesByFilterName(filter).at(randomFilterValue));
+    }
+
+    await qanFilters.selectFilter('pmm-server');
+    await I.wait(3);
+    const numberOfFilters = await I.grabNumberOfVisibleElements(qanFilters.elements.filterHeaders);
+
+    for (let i = 0; i < numberOfFilters; i++) {
+      const filterName = await I.grabTextFrom(qanFilters.elements.filterHeaders.at(i + 1));
+      const displayedFilterValue = await I.grabTextFrom(qanFilters.elements.filterValuesByFilterName(filterName));
+
+      I.assertContain(
+        displayedFilterValue,
+        'pmm-server',
+        `Displayed filter value: "${displayedFilterValue}" does not contain expected value: "pmm-server"`,
+      );
+    }
   },
 );
 
@@ -80,22 +98,22 @@ Scenario(
     I, qanPage, searchDashboardsModal, qanOverview, qanDetails,
   }) => {
     qanPage.waitForOpened();
-    I.click(qanPage.fields.breadcrumbs.dashboardName);
-    I.wait(3);
-    searchDashboardsModal.waitForOpened();
-    I.click(searchDashboardsModal.fields.closeButton);
-    qanPage.waitForOpened();
-    qanOverview.waitForOverviewLoaded();
-    qanOverview.selectRow(1);
+    await I.waitForElement(qanPage.fields.search);
+    await I.click(qanPage.fields.search);
+    await searchDashboardsModal.waitForOpened();
+    await I.pressKey('Escape');
+    await qanPage.waitForOpened();
+    await qanOverview.waitForOverviewLoaded();
+    await qanOverview.selectRow(1);
     await qanDetails.checkDetailsTab();
-    I.click(qanPage.fields.topMenu.queryAnalytics);
-    I.click(qanPage.fields.breadcrumbs.dashboardName);
-    I.wait(3);
-    searchDashboardsModal.waitForOpened();
-    I.click(searchDashboardsModal.fields.closeButton);
-    qanPage.waitForOpened();
-    qanOverview.waitForOverviewLoaded();
-    qanOverview.selectRow(2);
+
+    await I.click(qanPage.fields.topMenu.queryAnalytics);
+    await I.click(qanPage.fields.search);
+    await searchDashboardsModal.waitForOpened();
+    await I.pressKey('Escape');
+    await qanPage.waitForOpened();
+    await qanOverview.waitForOverviewLoaded();
+    await qanOverview.selectRow(2);
     await qanDetails.checkDetailsTab();
   },
 );

@@ -6,6 +6,7 @@ module.exports = {
   clearUrl: 'graph/d/pmm-qan/pmm-query-analytics',
 
   fields: {
+    search: locate('//div[contains(@class, "input-wrapper")]'),
     qanTitle: locate('$"data-testid Panel header PMM Query Analytics"').as('QAN dashboard title'),
     breadcrumbs: {
       folder: locate('.page-toolbar').find('[aria-label="Search links"] > a').as('Folder name'),

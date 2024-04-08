@@ -32,6 +32,9 @@ module.exports = {
     environmentLabel: '//span[contains(text(), "Environment")]',
     filterItem: (section, filter) => `//span[contains(text(), '${section}')]/parent::p/following-sibling::div//span[contains(@class, 'checkbox-container__label-text') and contains(text(), '${filter}')]`,
     filterName: 'span.checkbox-container__label-text',
+    filterValuesByFilterName: (filterName) => locate(`//span[@data-testid="checkbox-group-header" and text()="${filterName}"]/parent::p/parent::div//div[contains(@data-testid, "filter-checkbox")]`),
+    filterHeaders: locate('//span[@data-testid="checkbox-group-header"]'),
+    filterValues: locate('//span[@data-testid="checkbox-group-header"]/parent::p/parent::div//div[contains(@data-testid, "filter-checkbox")]'),
   },
   requests: {
     getReportPath: '/v0/qan/GetReport',
@@ -96,6 +99,15 @@ module.exports = {
         );
       }
     }
+  },
+
+  async selectFilter(filterName) {
+    const filterToApply = `//span[contains(@class, 'checkbox-container__label-text') and contains(text(), '${filterName}')]`;
+    const filterItemCheckbox = locate('span').before(filterToApply);
+
+    I.waitForVisible(this.fields.filterBy, 30);
+    I.fillField(this.fields.filterBy, filterName);
+    I.waitForElement(filterToApply);
   },
 
   async applyFilter(filterName) {

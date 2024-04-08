@@ -245,6 +245,12 @@ module.exports = {
     this.selectRow(0);
   },
 
+  async getRowCount(rowCount) {
+    await I.waitForVisible(this.elements.tableRow, 30);
+
+    return await I.grabNumberOfVisibleElements(this.elements.tableRow);
+  },
+
   async verifyRowCount(rowCount) {
     I.waitForVisible(this.elements.querySelector, 30);
     const count = await I.grabNumberOfVisibleElements(this.elements.tableRow);

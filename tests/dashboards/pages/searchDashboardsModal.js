@@ -108,8 +108,8 @@ module.exports = {
     },
   },
   fields: {
-    searchInput: 'input[placeholder="Search dashboards by name"]',
-    folderLocator: I.useDataQA('data-testid Search section'),
+    searchInput: 'input[role="combobox"]',
+    folderLocator: locate('div[id="kbar-listbox"]'),
     collapsedFolderLocator: (folderName) => locate(folderWrapper)
       .withDescendant(locate('div').withText(folderName)),
     expandedFolderLocator: (folderName) => locate(folderWrapper).withDescendant('div').withText(folderName)
