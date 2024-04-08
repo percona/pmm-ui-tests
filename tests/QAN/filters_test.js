@@ -3,9 +3,9 @@ const assert = require('assert');
 const shortCutTests = new DataTable(['type', 'dashboard', 'shortcutLink', 'filter']);
 
 shortCutTests.add(['Cluster', 'MongoDB Cluster Summary', 'graph/d/mongodb-cluster-summary/mongodb-cluster-summary', 'mongodb_node_cluster']);
-// shortCutTests.add(['Replication Set', 'MySQL Replication Summary', 'graph/d/mysql-replicaset-summary/mysql-replication-summary', 'ps-repl1']);
-// shortCutTests.add(['Node Name', 'Node Summary', 'graph/d/node-instance-summary/node-summary?var-node_name=pmm-server', 'pmm-server']);
-// shortCutTests.add(['Service Name', 'MongoDB Instance Summary', 'graph/d/mongodb-instance-summary/mongodb-instance-summary', 'mongodb_rs1_2']);
+shortCutTests.add(['Replication Set', 'MySQL Replication Summary', 'graph/d/mysql-replicaset-summary/mysql-replication-summary', 'ps-repl1']);
+shortCutTests.add(['Node Name', 'Node Summary', 'graph/d/node-instance-summary/node-summary?var-node_name=pmm-server', 'pmm-server']);
+shortCutTests.add(['Service Name', 'MongoDB Instance Summary', 'graph/d/mongodb-instance-summary/mongodb-instance-summary', 'mongodb_rs1_2']);
 
 Feature('QAN filters');
 // filterToApply - filter witch we check, searchValue - value to get zero search result
@@ -232,7 +232,7 @@ Scenario(
 
 Data(shortCutTests).Scenario(
   'PMM-T436 PMM-T458 - Verify short-cut navigation from filters to related dashboards, '
-    + 'Verify time interval is passed from QAN to dashboards via shortcut links @qan @debug',
+    + 'Verify time interval is passed from QAN to dashboards via shortcut links @qan',
   async ({
     I, qanFilters, dashboardPage, current, adminPage, qanOverview, qanPage,
   }) => {
@@ -262,9 +262,9 @@ Data(shortCutTests).Scenario(
 );
 
 Scenario('PMM-T437 - Verify short-cut navigation for n/a items @qan', async ({ I, qanFilters }) => {
-  qanFilters.waitForFiltersToLoad();
-  qanFilters.checkLink('Cluster', 'dev-cluster', true);
-  I.fillField(qanFilters.fields.filterBy, 'n/a');
-  qanFilters.checkLink('Cluster', 'undefined', false);
-  qanFilters.checkLink('Replication Set', 'undefined', false);
+  await qanFilters.waitForFiltersToLoad();
+  await qanFilters.checkLink('Cluster', 'md-dev-cluster', true);
+  await I.fillField(qanFilters.fields.filterBy, 'n/a');
+  await qanFilters.checkLink('Cluster', 'undefined', false);
+  await qanFilters.checkLink('Replication Set', 'undefined', false);
 });
