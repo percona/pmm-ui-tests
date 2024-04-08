@@ -23,7 +23,7 @@ module.exports = {
     noDataIcon: 'div.ant-empty-image',
     querySelector: 'div.tr-1',
     removeMetricColumn: locate('div').withChild('.anticon-minus').withText('Remove column'),
-    spinner: locate('$table-loading').find('//i[contains(@class,"fa-spinner")]'),
+    spinner: locate('$Spinner'),
     tableRow: 'div.tr',
     tooltip: '.overview-column-tooltip',
     tooltipQPSValue: '$qps',
@@ -62,10 +62,10 @@ module.exports = {
   mainMetricByName: (metricName) => locate('$group-by').find(`//div[@class="ant-select-selection-selected-value" and text()="${metricName}"]`),
   mainMetricFromDropdown: (metricName) => locate(`//li[@class="ant-select-dropdown-menu-item" and text()="${metricName}"]`),
 
-  waitForOverviewLoaded() {
-    I.waitForDetached(this.elements.spinner, 30);
-    I.waitForVisible(this.root, 60);
-    I.waitForVisible(this.elements.querySelector, 60);
+  async waitForOverviewLoaded() {
+    await I.waitForDetached(this.elements.spinner, 30);
+    await I.waitForVisible(this.root, 60);
+    await I.waitForVisible(this.elements.querySelector, 60);
   },
 
   // Wait For Results count to be changed

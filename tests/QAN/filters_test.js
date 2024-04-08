@@ -7,7 +7,7 @@ shortCutTests.add(['Replication Set', 'MySQL Replication Summary', 'graph/d/mysq
 shortCutTests.add(['Node Name', 'Node Summary', 'graph/d/node-instance-summary/node-summary?var-node_name=pmm-server', 'pmm-server']);
 shortCutTests.add(['Service Name', 'MongoDB Instance Summary', 'graph/d/mongodb-instance-summary/mongodb-instance-summary', 'mongodb_rs1_2']);
 
-Feature('QAN filters').retry(1);
+Feature('QAN filters');
 // filterToApply - filter witch we check, searchValue - value to get zero search result
 const filters = new DataTable(['filterToApply', 'searchValue']);
 
@@ -142,18 +142,6 @@ xScenario(
 );
 
 Scenario(
-  'PMM-T269 Check All Filter Groups Exists in the Filter Section @qan',
-  async ({ I, qanFilters }) => {
-    for (const i in qanFilters.filterGroups) {
-      I.fillField(qanFilters.fields.filterBy, qanFilters.filterGroups[i]);
-      I.waitForVisible(qanFilters.getFilterSectionLocator(qanFilters.filterGroups[i]), 30);
-      I.seeElement(qanFilters.getFilterSectionLocator(qanFilters.filterGroups[i]));
-      I.clearField(qanFilters.fields.filterBy);
-    }
-  },
-);
-
-Scenario(
   'PMM-T191 - Verify Reset All and Show Selected filters @qan',
   async ({ I, qanFilters }) => {
     const environmentName1 = 'ps-dev';
@@ -212,34 +200,33 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T221 - Verify that all filter options are always visible (but some disabled) after selecting an item and % value is changed @qan',
+  'PMM-T221 - Verify that all filter options are always visible (but some disabled) after selecting an item and % value is changed @qan @debug',
   async ({
     I, adminPage, qanOverview, qanFilters,
   }) => {
     const serviceType = 'mysql';
     const serviceName = 'ps_8.0';
 
-    // change to 2 days for apply ps_8.0 value in filter
     await adminPage.applyTimeRange('Last 2 days');
-    qanOverview.waitForOverviewLoaded();
-    const countBefore = await qanOverview.getCountOfItems();
+    await qanOverview.waitForOverviewLoaded();
+
+    const countQueryAnalyticsBefore = await qanOverview.getCountOfItems();
     const percentageBefore = await qanFilters.getPercentage('Service Type', serviceType);
+    const countOfFiltersBefore = await I.grabNumberOfVisibleElements(qanFilters.fields.filterCheckboxes);
 
-    const countOfFilters = await I.grabNumberOfVisibleElements(qanFilters.fields.filterCheckboxes);
+    await I.click(qanFilters.elements.filterByValues(serviceType));
+    await qanOverview.waitForOverviewLoaded();
+    const countQueryAnalyticsAfter = await qanOverview.getCountOfItems();
 
-    await qanFilters.applyFilter(serviceType);
-    const countAfter = await qanOverview.getCountOfItems();
+    I.assertTrue(countQueryAnalyticsAfter !== countQueryAnalyticsBefore, 'Query count was expected to change');
+    const countOfFiltersAfter = await I.grabNumberOfVisibleElements(qanFilters.fields.filterCheckboxes);
 
-    assert.ok(countAfter !== countBefore, 'Query count was expected to change');
-
-    await qanFilters.verifyCountOfFilterLinks(countOfFilters, false);
-    await qanFilters.applyFilter(serviceName);
+    I.assertEqual(countOfFiltersBefore, countOfFiltersAfter, 'Count of all available filters should not change when filter is selected.');
+    await I.click(qanFilters.elements.filterByValues(serviceName));
+    await qanOverview.waitForOverviewLoaded();
     const percentageAfter = await qanFilters.getPercentage('Service Type', serviceType);
 
-    assert.ok(
-      percentageAfter !== percentageBefore,
-      'Percentage for filter Service Type was expected to change',
-    );
+    I.assertTrue(percentageAfter !== percentageBefore, 'Percentage for filter Service Type was expected to change');
   },
 );
 

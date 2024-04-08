@@ -32,6 +32,7 @@ module.exports = {
     environmentLabel: '//span[contains(text(), "Environment")]',
     filterItem: (section, filter) => `//span[contains(text(), '${section}')]/parent::p/following-sibling::div//span[contains(@class, 'checkbox-container__label-text') and contains(text(), '${filter}')]`,
     filterName: 'span.checkbox-container__label-text',
+    filterByValues: (filterValue) => locate(`//div[contains(@data-testid, "filter-checkbox-${filterValue}")]`),
     filterValuesByFilterName: (filterName) => locate(`//span[@data-testid="checkbox-group-header" and text()="${filterName}"]/parent::p/parent::div//div[contains(@data-testid, "filter-checkbox")]`),
     filterHeaders: locate('//span[@data-testid="checkbox-group-header"]'),
     filterValues: locate('//span[@data-testid="checkbox-group-header"]/parent::p/parent::div//div[contains(@data-testid, "filter-checkbox")]'),
@@ -181,6 +182,7 @@ module.exports = {
       assert.ok(count !== expectedCount, `The value: ${count} different than: ${expectedCount}`);
     }
   },
+
 
   applyShowAllLink(groupName) {
     const showAllLink = this.getFilterGroupCountSelector(groupName);
