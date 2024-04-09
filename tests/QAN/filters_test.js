@@ -110,9 +110,8 @@ Scenario(
   },
 );
 
-// Skipping because of a random failings
-xScenario(
-  'PMM-T123 - Verify User is able to search for DB types, Env and Cluster @qan',
+Scenario(
+  'PMM-T123 - Verify User is able to search for DB types, Env and Cluster @qan @debug',
   async ({ I, qanOverview, qanFilters }) => {
     const filters = [
       'postgres',
@@ -125,12 +124,13 @@ xScenario(
       'pgsql-repl1',
     ];
 
-    I.waitForElement(qanFilters.fields.filterBy, 30);
+    await I.waitForElement(qanFilters.fields.filterBy, 30);
     const countBefore = await qanOverview.getCountOfItems();
 
     for (const i in filters) {
       await qanFilters.applyFilter(filters[i]);
       await qanOverview.waitForNewItemsCount(countBefore);
+      await I.wait(5);
       const countAfter = await qanOverview.getCountOfItems();
       const locator = qanFilters.getFilterLocator(filters[i]);
 
