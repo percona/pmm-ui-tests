@@ -24,8 +24,8 @@ module.exports = {
     reportTitleWithNA:
       '//span[contains(text(), "N/A")]//ancestor::div[contains(@class,"panel-container")]//span[contains(@class,"panel-title-text")]',
     pmmDropdownMenuSelector: locate('a[data-toggle="dropdown"] > span').withText('PMM'),
-    timeRangeFrom: locate('input').withAttr({ 'aria-label': 'Time Range from field' }),
-    timeRangeTo: locate('input').withAttr({ 'aria-label': 'Time Range to field' }),
+    timeRangeFrom: locate('input').withAttr({ 'data-testid': 'data-testid Time Range from field' }),
+    timeRangeTo: locate('input').withAttr({ 'data-testid': 'data-testid Time Range to field' }),
     tooltipText: locate('$info-tooltip').find('span'),
     tooltipReadMoreLink: locate('$info-tooltip').find('a'),
   },
@@ -89,16 +89,16 @@ module.exports = {
     I.seeElement(selectedTimeRange);
   },
 
-  setAbsoluteTimeRange(from = '2022-01-10 09:09:59', to = '2022-01-10 10:00:59') {
-    I.waitForElement(this.fields.timePickerMenu, 30);
-    I.click(this.fields.timePickerMenu);
-    I.waitForVisible(this.fields.timeRangeFrom, 30);
-    I.clearField(this.fields.timeRangeFrom);
-    I.fillField(this.fields.timeRangeFrom, from);
-    I.clearField(this.fields.timeRangeTo);
-    I.fillField(this.fields.timeRangeTo, to);
-    I.click(this.fields.applyCustomTimer);
-    I.waitForInvisible(this.fields.applyCustomTimer, 30);
+  async setAbsoluteTimeRange(from = '2022-01-10 09:09:59', to = '2022-01-10 10:00:59') {
+    await I.waitForElement(this.fields.timePickerMenu, 30);
+    await I.click(this.fields.timePickerMenu);
+    await I.waitForVisible(this.fields.timeRangeFrom, 30);
+    await I.clearField(this.fields.timeRangeFrom);
+    await I.fillField(this.fields.timeRangeFrom, from);
+    await I.clearField(this.fields.timeRangeTo);
+    await I.fillField(this.fields.timeRangeTo, to);
+    await I.click(this.fields.applyCustomTimer);
+    await I.waitForInvisible(this.fields.applyCustomTimer, 30);
   },
 
   applyTimeZone(timeZone = 'Europe/London') {

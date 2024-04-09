@@ -121,12 +121,12 @@ Scenario(
 Scenario(
   'PMM-T188 Verify dashboard refresh @qan',
   async ({
-    I, qanPage, qanDetails, qanOverview, dashboardPage, qanFilters, adminPage,
+    I, qanPage, qanDetails, qanOverview, dashboardPage, adminPage, queryAnalyticsPage,
   }) => {
     await qanPage.waitForOpened();
     await qanOverview.changeMainMetric('Database');
     await qanOverview.changeSorting(2);
-    await qanFilters.applyFilter('pmm-managed');
+    await queryAnalyticsPage.filters.selectFilterInGroup('pmm-managed', 'Database');
     await qanOverview.addSpecificColumn('Bytes Sent');
     await adminPage.applyTimeRange('Last 1 hour');
     await qanOverview.searchByValue('pmm-managed');
@@ -134,7 +134,7 @@ Scenario(
     await dashboardPage.selectRefreshTimeInterval('5s');
     await qanOverview.verifyMainMetric('Database');
     await qanOverview.verifySorting(2, 'asc');
-    await qanFilters.verifySelectedFilters('pmm-managed');
+    await queryAnalyticsPage.filters.verifySelectedFilters('pmm-managed');
     await qanOverview.verifyColumnPresent('Bytes Sent');
     await qanDetails.checkDetailsTab();
     await adminPage.verifyTimeRange('Last 1 hour');

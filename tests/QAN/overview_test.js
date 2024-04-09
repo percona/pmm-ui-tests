@@ -33,38 +33,39 @@ Scenario(
   async ({
     I, adminPage, qanOverview, qanFilters, qanDetails,
   }) => {
-    await qanFilters.applyFilter('pdpgsql-dev');
-    qanOverview.waitForOverviewLoaded();
+    await qanFilters.clickFilter('pdpgsql-dev');
+    await qanOverview.waitForOverviewLoaded();
     await adminPage.applyTimeRange('Last 12 hours');
-    qanOverview.waitForOverviewLoaded();
+    await qanOverview.waitForOverviewLoaded();
     await qanOverview.searchByValue('SELECT current_database() datname, schemaname, relname, heap_blks_read, heap_blks_hit, idx_blks_read');
-    qanOverview.waitForOverviewLoaded();
-    qanOverview.mouseOverFirstInfoIcon();
+    await qanOverview.waitForOverviewLoaded();
+    await qanOverview.mouseOverFirstInfoIcon();
 
     let tooltipQueryId = await I.grabTextFrom(qanOverview.elements.tooltipQueryId);
 
     tooltipQueryId = tooltipQueryId.split(':');
     tooltipQueryId = tooltipQueryId[1].trim();
+    await qanOverview.hideTooltip();
 
-    qanOverview.selectRow(1);
-    qanFilters.waitForFiltersToLoad();
-    qanDetails.checkPlanTab();
+    await qanOverview.selectRow(1);
+    await qanFilters.waitForFiltersToLoad();
+    await qanDetails.checkPlanTab();
     await qanDetails.checkPlanTabIsNotEmpty();
-    qanDetails.mouseOverPlanInfoIcon();
+    await qanDetails.mouseOverPlanInfoIcon();
 
     let tooltipPlanId = await I.grabTextFrom(qanDetails.elements.tooltipPlanId);
 
     tooltipPlanId = tooltipPlanId.split(':');
     tooltipPlanId = tooltipPlanId[1].trim();
-
+    await qanOverview.hideTooltip();
     assert.notEqual(tooltipQueryId, tooltipPlanId, 'Plan Id should not be equal to Query Id');
-    I.click(qanFilters.buttons.resetAll);
+    await I.click(qanFilters.buttons.resetAll);
     await qanOverview.searchByValue('SELECT * FROM pg_stat_database');
-    qanOverview.waitForOverviewLoaded();
-    qanOverview.selectRow(1);
-    qanFilters.waitForFiltersToLoad();
-    qanDetails.checkPlanTab();
-    qanDetails.checkPlanTabIsEmpty();
+    await qanOverview.waitForOverviewLoaded();
+    await qanOverview.selectRow(1);
+    await qanFilters.waitForFiltersToLoad();
+    await qanDetails.checkPlanTab();
+    await qanDetails.checkPlanTabIsEmpty();
   },
 );
 
@@ -393,17 +394,17 @@ Scenario(
   }) => {
     const metricName = 'Query Count';
 
-    qanOverview.selectRow(1);
-    qanFilters.waitForFiltersToLoad();
-    I.waitForElement(qanDetails.buttons.close, 30);
-    I.seeElement(qanOverview.getQANMetricHeader(metricName));
-    qanOverview.removeMetricFromOverview(metricName);
+    await qanOverview.selectRow(1);
+    await qanFilters.waitForFiltersToLoad();
+    await I.waitForElement(qanDetails.buttons.close, 30);
+    await I.seeElement(qanOverview.getQANMetricHeader(metricName));
+    await qanOverview.removeMetricFromOverview(metricName);
     const url = await I.grabCurrentUrl();
 
-    I.amOnPage(url);
-    qanOverview.waitForOverviewLoaded();
-    I.waitForElement(qanOverview.buttons.addColumn, 30);
-    I.dontSeeElement(qanOverview.getQANMetricHeader(metricName));
+    await I.amOnPage(url);
+    await qanOverview.waitForOverviewLoaded();
+    await I.waitForElement(qanOverview.buttons.addColumn, 30);
+    await I.dontSeeElement(qanOverview.getQANMetricHeader(metricName));
   },
 );
 

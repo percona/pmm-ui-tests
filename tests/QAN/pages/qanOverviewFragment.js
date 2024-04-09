@@ -132,12 +132,12 @@ module.exports = {
     I.dontSeeElement(this.getQANMetricHeader(metricName));
   },
 
-  addSpecificColumn(columnName) {
-    I.click(this.buttons.addColumn);
+  async addSpecificColumn(columnName) {
+    await I.click(this.buttons.addColumn);
     const column = `//span[contains(text(), '${columnName}')]`;
 
-    I.waitForVisible(column, 30);
-    I.click(column);
+    await I.waitForVisible(column, 30);
+    await I.click(column);
   },
 
   verifyColumnPresent(columnName) {
@@ -153,6 +153,11 @@ module.exports = {
     I.scrollTo(tooltipSelector);
     I.moveCursorTo(tooltipSelector);
     I.waitForElement(this.elements.metricTooltip, 30);
+  },
+
+  async hideTooltip() {
+    await I.moveCursorTo(this.elements.countOfItems);
+    await I.waitForInvisible(this.elements.metricTooltip, 5);
   },
 
   changeSorting(columnNumber) {
@@ -212,13 +217,13 @@ module.exports = {
     I.seeTextEquals(groupBy, this.elements.groupBy);
   },
 
-  selectRow(rowNumber) {
+  async selectRow(rowNumber) {
     const rowSelector = this.getRowLocator(rowNumber);
 
-    I.waitForElement(rowSelector, 60);
-    I.forceClick(rowSelector);
-    this.waitForOverviewLoaded();
-    I.waitForVisible(this.elements.selectedRow, 10);
+    await I.waitForElement(rowSelector, 60);
+    await I.forceClick(rowSelector);
+    await this.waitForOverviewLoaded();
+    await I.waitForVisible(this.elements.selectedRow, 10);
   },
 
   selectRowByText(text) {
@@ -265,9 +270,9 @@ module.exports = {
     assert.ok(tooltip.includes(value), `The tooltip value is ${tooltip} while expected value was ${value}`);
   },
 
-  mouseOverFirstInfoIcon() {
-    I.moveCursorTo(this.elements.firstQueryInfoIcon);
-    I.waitForVisible(this.elements.tooltipQueryValue, 30);
+  async mouseOverFirstInfoIcon() {
+    await I.moveCursorTo(this.elements.firstQueryInfoIcon);
+    await I.waitForVisible(this.elements.tooltipQueryValue, 30);
   },
 
   async searchByValue(value, refresh = false) {

@@ -32,7 +32,6 @@ module.exports = {
     environmentLabel: '//span[contains(text(), "Environment")]',
     filterItem: (section, filter) => `//span[contains(text(), '${section}')]/parent::p/following-sibling::div//span[contains(@class, 'checkbox-container__label-text') and contains(text(), '${filter}')]`,
     filterName: 'span.checkbox-container__label-text',
-    filterByExactValue: (filterValue) => locate(`//div[@data-testid="filter-checkbox-${filterValue}"]`),
     filterByValues: (filterValue) => locate(`//div[contains(@data-testid, "filter-checkbox-${filterValue}")]`),
     filterValuesByFilterName: (filterName) => locate(`//span[@data-testid="checkbox-group-header" and text()="${filterName}"]/parent::p/parent::div//div[contains(@data-testid, "filter-checkbox")]`),
     filterHeaders: locate('//span[@data-testid="checkbox-group-header"]'),
@@ -45,18 +44,10 @@ module.exports = {
 
   getFilterSectionLocator: (section) => `//div[./p/span[@data-testid="checkbox-group-header" and contains(text(), "${section}")]]`,
 
-  getFilterGroupLocator: (filterName) => `//div[@class='filter-group__title']//span[contains(text(), '${filterName}')]`,
-
   getFilterGroupCountSelector: (groupName) => `//span[contains(text(), '${groupName}')]/following-sibling::span[contains(text(), 'Show all')]`,
 
   getFilterLocator: (filterValue) => `//span[@class="checkbox-container__label-text" and contains(text(), "${filterValue}")]`
     + '/../span[@class="checkbox-container__checkmark"]',
-
-  async getPercentage(filterType, filter) {
-    return await I.grabTextFrom(
-      `//span[contains(text(), '${filterType}')]/../../descendant::span[contains(text(), '${filter}')]/../../following-sibling::span/span`,
-    );
-  },
 
   checkLink(section, filter, visibility) {
     const dashboardLink = locate(`$filter-checkbox-${filter}`).find('a');
@@ -69,22 +60,8 @@ module.exports = {
     }
   },
 
-  async getCountOfFilters(groupName) {
-    const showAllLink = this.getFilterGroupCountSelector(groupName);
-
-    return (await I.grabTextFrom(showAllLink)).slice(10, 12);
-  },
-
-  waitForFiltersToLoad() {
-    I.waitForDetached(this.elements.spinner, 60);
-  },
-
-  async waitForFilterVisible(filterName, timeout) {
-    await I.asyncWaitFor(async () => {
-      I.click(this.buttons.refresh);
-
-      return I.seeElement(this.elements.filterItem('Service Name', filterName));
-    }, timeout);
+  async waitForFiltersToLoad() {
+    await I.waitForDetached(this.elements.spinner, 60);
   },
 
   async expandAllFilters() {
@@ -101,24 +78,6 @@ module.exports = {
         );
       }
     }
-  },
-
-  async clickFilter(filterName) {
-    await I.usePlaywrightTo('click', async ({ page }) => {
-      const locator = await page.locator(this.elements.filterByExactValue(filterName).value);
-
-      await locator.waitFor({ state: 'attached' });
-      await locator.click();
-    });
-  },
-
-  async showSelectedFilters() {
-    await I.usePlaywrightTo('click', async ({ page }) => {
-      const locator = await page.locator(this.buttons.showSelected.value);
-
-      await locator.waitFor({ state: 'attached' });
-      await locator.click();
-    });
   },
 
   async selectFilter(filterName) {
@@ -179,58 +138,6 @@ module.exports = {
     I.seeElement(filterLocator);
   },
 
-  async verifySectionItemsCount(filterSection, expectedCount) {
-    const sectionLocator = `//span[contains(text(), '${filterSection}')]/ancestor::p/following-sibling::`
-      + 'div//span[contains(@class, "checkbox-container__checkmark")]';
-
-    I.fillField(this.fields.filterBy, filterSection);
-    I.waitForVisible(`//span[contains(text(), '${filterSection}')]`, 30);
-    const countOfFiltersInSection = await I.grabNumberOfVisibleElements(sectionLocator);
-
-    assert.equal(countOfFiltersInSection, expectedCount, `There should be '${expectedCount}' visible links`);
-  },
-
-  async verifyCountOfFilterLinks(expectedCount, before) {
-    const count = await I.grabNumberOfVisibleElements(this.fields.filterCheckboxes);
-
-    if (!before) {
-      assert.ok(count >= expectedCount, `The value ${count} should be same or bigger than ${expectedCount}`);
-    }
-
-    if (before) {
-      assert.ok(count !== expectedCount, `The value: ${count} different than: ${expectedCount}`);
-    }
-  },
-
-  // Expected Result can be smaller, equals, bigger
-  async verifyCountOfFiltersDisplayed(expectedCount, expectedResult, timeoutInSeconds = 10) {
-    let count = 0;
-
-    for (let i = 0; i < timeoutInSeconds; i++) {
-      count = await I.grabNumberOfVisibleElements(this.fields.filterCheckboxes);
-
-      switch (expectedResult) {
-        case 'smaller':
-          if (count < expectedCount) return;
-
-          break;
-        case 'equals':
-          if (count === expectedCount) return;
-
-          break;
-        case 'bigger':
-          if (count > expectedCount) return;
-
-          break;
-        default:
-          throw new Error(`Expected Result: "${expectedResult}" is not supported.`);
-      }
-      await I.wait(1);
-    }
-
-    throw new Error(`Real value: ${count} is not ${expectedResult} then/to: ${expectedCount}`);
-  },
-
   applyShowAllLink(groupName) {
     const showAllLink = this.getFilterGroupCountSelector(groupName);
 
@@ -244,22 +151,6 @@ module.exports = {
 
     if (numOfShowAllLinkSectionCount) {
       this.applyShowAllLink(groupName);
-    }
-  },
-
-  checkDisabledFilter(groupName, filter) {
-    const filterLocator = `//span[contains(text(), '${groupName}')]/parent::p/following-sibling::div[@data-testid='filter-checkbox-${filter}']//input[contains(@name, '${filter}') and @disabled]`;
-
-    I.waitForElement(filterLocator, 20);
-  },
-
-  async verifySelectedFilters(filters) {
-    I.click(this.buttons.showSelected);
-    I.waitForVisible(this.elements.filterName, 20);
-    const currentFilters = await I.grabTextFrom(this.elements.filterName);
-
-    for (let i = 0; i <= filters.length - 1; i++) {
-      assert.ok(currentFilters[i].includes(filters[i]), `The filter '${filters[i]}' has not been found!`);
     }
   },
 

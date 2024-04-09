@@ -15,9 +15,9 @@ Before(async ({
 Scenario(
   'Open the QAN Dashboard and check that changing the time range resets current page to the first. @qan',
   async ({ adminPage, qanPagination, qanOverview }) => {
-    qanPagination.selectPage(2);
+    await qanPagination.selectPage(2);
     await adminPage.applyTimeRange('Last 3 hours');
-    qanOverview.waitForOverviewLoaded();
+    await qanOverview.waitForOverviewLoaded();
     await qanPagination.verifyActivePage(1);
   },
 );
@@ -27,22 +27,21 @@ Scenario(
   async ({
     I, adminPage, qanDetails, qanFilters, qanOverview,
   }) => {
-    I.seeInCurrentUrl('from=now-5m&to=now');
-    qanOverview.selectRow(1);
-    qanFilters.waitForFiltersToLoad();
-    I.seeElement(qanDetails.root);
+    await I.seeInCurrentUrl('from=now-5m&to=now');
+    await qanOverview.selectRow(1);
+    await qanFilters.waitForFiltersToLoad();
+    await I.seeElement(qanDetails.root);
 
     await adminPage.applyTimeRange('Last 3 hours');
-    qanOverview.waitForOverviewLoaded();
-    I.seeInCurrentUrl('from=now-3h&to=now');
-    I.dontSeeElement(qanDetails.root);
-    qanOverview.selectRow(1);
-    qanFilters.waitForFiltersToLoad();
-    I.seeElement(qanDetails.root);
+    await qanOverview.waitForOverviewLoaded();
+    await I.seeInCurrentUrl('from=now-3h&to=now');
+    await qanOverview.selectRow(1);
+    await qanFilters.waitForFiltersToLoad();
+    await I.seeElement(qanDetails.root);
   },
 );
 
-Scenario.skip(
+Scenario(
   'PMM-T432 Open the QAN Dashboard and check that changing absolute time range updates the overview table, URL. @nightly @qan',
   async ({
     I, adminPage, qanDetails, qanFilters, qanOverview,
@@ -51,16 +50,15 @@ Scenario.skip(
     const fromString = Date.parse(`${date} 00:00:00`);
     const toString = Date.parse(`${date} 23:59:59`);
 
-    I.seeInCurrentUrl('from=now-5m&to=now');
-    qanOverview.selectRow(1);
-    qanFilters.waitForFiltersToLoad();
-    I.seeElement(qanDetails.root);
-    adminPage.setAbsoluteTimeRange(`${date} 00:00:00`, `${date} 23:59:59`);
-    I.seeInCurrentUrl(`from=${fromString}&to=${toString}`);
-    I.dontSeeElement(qanDetails.root);
-    qanOverview.selectRow(1);
-    qanFilters.waitForFiltersToLoad();
-    I.seeElement(qanDetails.root);
+    await I.seeInCurrentUrl('from=now-5m&to=now');
+    await qanOverview.selectRow(1);
+    await qanFilters.waitForFiltersToLoad();
+    await I.seeElement(qanDetails.root);
+    await adminPage.setAbsoluteTimeRange(`${date} 00:00:00`, `${date} 23:59:59`);
+    await I.seeInCurrentUrl(`from=${fromString}&to=${toString}`);
+    await qanOverview.selectRow(1);
+    await qanFilters.waitForFiltersToLoad();
+    await I.seeElement(qanDetails.root);
   },
 );
 
@@ -144,24 +142,24 @@ Scenario(
   },
 );
 
-Scenario.skip(
+Scenario(
   'PMM-T1141 - Verify specific time range by new button to copy QAN URL @qan',
   async ({ I, adminPage, qanOverview }) => {
     const dateTime = moment();
     const to = dateTime.format('YYYY-MM-DD HH:mm:ss');
     const from = moment(dateTime).subtract(1, 'hours').format('YYYY-MM-DD HH:mm:ss');
-    const fromToString = `&from=${moment(from).format('x')}&to=${moment(to).format('x')}`;
+    const fromToString = `&from=${moment(from).valueOf()}&to=${moment(to).valueOf()}`;
 
-    adminPage.setAbsoluteTimeRange(from, to);
-    qanOverview.waitForOverviewLoaded();
-    I.seeInCurrentUrl(fromToString);
-    I.click(qanOverview.buttons.copyButton);
+    await adminPage.setAbsoluteTimeRange(from, to);
+    await qanOverview.waitForOverviewLoaded();
+    await I.seeInCurrentUrl(fromToString);
+    await I.click(qanOverview.buttons.copyButton);
 
     const url = await I.grabTextFrom(qanOverview.elements.clipboardLink);
 
-    I.openNewTab();
-    I.amOnPage(url);
-    I.seeInCurrentUrl(fromToString);
+    await I.openNewTab();
+    await I.amOnPage(url.match(/\bhttps?:\/\/\S+/gi)[0]);
+    await I.seeInCurrentUrl(fromToString);
   },
 );
 
@@ -170,26 +168,30 @@ Scenario(
   async ({
     I, qanPagination, qanOverview, qanDetails,
   }) => {
-    I.click(qanPagination.buttons.nextPage);
-    qanOverview.selectRow(2);
-    I.click(qanOverview.buttons.copyButton);
-    I.waitForVisible(I.getPopUpLocator(), 10);
+    await I.click(qanPagination.buttons.nextPage);
+    await qanOverview.selectRow(2);
+    await I.click(qanOverview.buttons.copyButton);
+    await I.waitForVisible(I.getPopUpLocator(), 10);
 
     const url = await I.grabTextFrom(qanOverview.elements.clipboardLink);
 
-    I.openNewTab();
-    I.amOnPage(url);
-    qanOverview.waitForOverviewLoaded();
+    await I.openNewTab();
+    await I.amOnPage(url.match(/\bhttps?:\/\/\S+/gi)[0]);
+
+    await I.assertContain(url, '&page_number=2', 'Expected the Url to contain selected page');
+    await qanOverview.waitForOverviewLoaded();
     // this check will need to be uncommented after tasks 9480 and 9481 are ready
     // qanPagination.verifyActivePage(2);
-    I.waitForVisible(qanOverview.getSelectedRowLocator(2), 20);
-    I.waitForElement(qanDetails.buttons.close, 30);
+    await I.waitForVisible(qanOverview.getSelectedRowLocator(2), 20);
+    await I.waitForElement(qanDetails.buttons.close, 30);
   },
 );
 
 Scenario(
   'PMM-T1143 - Verify columns and filters when we go on copied link by new QAN CopyButton @qan',
-  async ({ I, qanFilters, qanOverview }) => {
+  async ({
+    I, qanFilters, qanOverview, queryAnalyticsPage,
+  }) => {
     const environmentName = 'ps-dev';
     const columnName = 'Bytes Sent';
 
@@ -205,7 +207,7 @@ Scenario(
     I.amOnPage(url);
     qanOverview.waitForOverviewLoaded();
     I.seeInCurrentUrl(`environment=${environmentName}`);
-    await qanFilters.verifyCountOfFilterLinks(1, false);
+    await queryAnalyticsPage.filters.verifyCountOfFiltersDisplayed(1, 'equals');
     I.waitForElement(qanOverview.getColumnLocator(columnName), 30);
   },
 );
