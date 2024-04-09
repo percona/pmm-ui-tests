@@ -147,20 +147,18 @@ Scenario(
     const environmentName1 = 'ps-dev';
     const environmentName2 = 'pgsql-dev';
 
-    await qanFilters.applyFilter(environmentName1);
-    await qanFilters.applyFilter(environmentName2);
-    I.click(qanFilters.buttons.showSelected);
-    await qanFilters.verifyCountOfFilterLinks(2, false);
-    I.click(qanFilters.buttons.resetAll);
-    I.waitForInvisible(qanFilters.elements.spinner, 30);
-    await qanFilters.verifyCountOfFilterLinks(2, true);
+    await qanFilters.clickFilter(environmentName1);
+    await qanFilters.clickFilter(environmentName2);
+    await qanFilters.showSelectedFilters();
+    await qanFilters.verifyCountOfFiltersDisplayed(2, 'equals');
+    await I.click(qanFilters.buttons.resetAll);
+    await qanFilters.verifyCountOfFiltersDisplayed(2, 'bigger');
 
-    await qanFilters.applyFilter(environmentName1);
-    I.click(qanFilters.buttons.showSelected);
-    await qanFilters.verifyCountOfFilterLinks(1, false);
-    await qanFilters.applyFilter(environmentName1);
-    I.waitForInvisible(qanFilters.elements.spinner, 30);
-    await qanFilters.verifyCountOfFilterLinks(1, true);
+    await qanFilters.clickFilter(environmentName1);
+    await qanFilters.showSelectedFilters();
+    await qanFilters.verifyCountOfFiltersDisplayed(1, 'equals');
+    await qanFilters.clickFilter(environmentName1);
+    await qanFilters.verifyCountOfFiltersDisplayed(1, 'bigger');
   },
 );
 

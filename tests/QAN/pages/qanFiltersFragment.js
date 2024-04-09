@@ -23,7 +23,7 @@ module.exports = {
   buttons: {
     refresh: I.useDataQA('data-testid RefreshPicker run button'),
     resetAll: '$qan-filters-reset-all',
-    showSelected: '$qan-filters-show-selected',
+    showSelected: locate('$qan-filters-show-selected'),
   },
   elements: {
     spinner: locate('$pmm-overlay-wrapper').find('//i[contains(@class,"fa-spinner")]'),
@@ -32,6 +32,7 @@ module.exports = {
     environmentLabel: '//span[contains(text(), "Environment")]',
     filterItem: (section, filter) => `//span[contains(text(), '${section}')]/parent::p/following-sibling::div//span[contains(@class, 'checkbox-container__label-text') and contains(text(), '${filter}')]`,
     filterName: 'span.checkbox-container__label-text',
+    filterByExactValue: (filterValue) => locate(`//div[@data-testid="filter-checkbox-${filterValue}"]`),
     filterByValues: (filterValue) => locate(`//div[contains(@data-testid, "filter-checkbox-${filterValue}")]`),
     filterValuesByFilterName: (filterName) => locate(`//span[@data-testid="checkbox-group-header" and text()="${filterName}"]/parent::p/parent::div//div[contains(@data-testid, "filter-checkbox")]`),
     filterHeaders: locate('//span[@data-testid="checkbox-group-header"]'),
@@ -100,6 +101,24 @@ module.exports = {
         );
       }
     }
+  },
+
+  async clickFilter(filterName) {
+    await I.usePlaywrightTo('click', async ({ page }) => {
+      const locator = await page.locator(this.elements.filterByExactValue(filterName).value);
+
+      await locator.waitFor({ state: 'attached' });
+      await locator.click();
+    });
+  },
+
+  async showSelectedFilters() {
+    await I.usePlaywrightTo('click', async ({ page }) => {
+      const locator = await page.locator(this.buttons.showSelected.value);
+
+      await locator.waitFor({ state: 'attached' });
+      await locator.click();
+    });
   },
 
   async selectFilter(filterName) {
@@ -183,6 +202,34 @@ module.exports = {
     }
   },
 
+  // Expected Result can be smaller, equals, bigger
+  async verifyCountOfFiltersDisplayed(expectedCount, expectedResult, timeoutInSeconds = 10) {
+    let count = 0;
+
+    for (let i = 0; i < timeoutInSeconds; i++) {
+      count = await I.grabNumberOfVisibleElements(this.fields.filterCheckboxes);
+
+      switch (expectedResult) {
+        case 'smaller':
+          if (count < expectedCount) return;
+
+          break;
+        case 'equals':
+          if (count === expectedCount) return;
+
+          break;
+        case 'bigger':
+          if (count > expectedCount) return;
+
+          break;
+        default:
+          throw new Error(`Expected Result: "${expectedResult}" is not supported.`);
+      }
+      await I.wait(1);
+    }
+
+    throw new Error(`Real value: ${count} is not ${expectedResult} then/to: ${expectedCount}`);
+  },
 
   applyShowAllLink(groupName) {
     const showAllLink = this.getFilterGroupCountSelector(groupName);
