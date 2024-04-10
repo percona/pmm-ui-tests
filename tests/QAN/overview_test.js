@@ -1,6 +1,6 @@
 const assert = require('assert');
 
-Feature('QAN overview').retry(1);
+Feature('QAN overview');
 
 Before(async ({
   I, qanPage, qanOverview, qanFilters,
@@ -314,11 +314,11 @@ Scenario(
   }) => {
     const query = 'SELECT current_database() datname';
 
-    qanOverview.waitForOverviewLoaded();
+    await qanOverview.waitForOverviewLoaded();
     await adminPage.applyTimeRange('Last 3 hours');
-    qanOverview.waitForOverviewLoaded();
+    await qanOverview.waitForOverviewLoaded();
     await qanOverview.searchByValue(query);
-    I.waitForElement(qanOverview.elements.querySelector, 30);
+    await I.waitForElement(qanOverview.elements.querySelector, 30);
     const firstQueryText = await I.grabTextFrom(qanOverview.elements.firstQueryValue);
 
     assert.ok(firstQueryText.startsWith(query), `The Searched Query text was: "${query}", don't match the result text in overview for 1st result: "${firstQueryText}"`);
