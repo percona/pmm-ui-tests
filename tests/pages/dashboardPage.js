@@ -1219,7 +1219,7 @@ module.exports = {
     openFiltersDropdownLocator: (filterName) => locate('.variable-link-wrapper').after(`label[for="var-${formatElementId(filterName)}"]`),
     filterDropdownOptionsLocator: (filterName) => locate('.variable-option').withText(filterName),
     refreshIntervalPicker: I.useDataQA('data-testid RefreshPicker interval button'),
-    refreshIntervalOption: (interval) => locate(`//*[@role="menuitemradio" and text()="${interval}"]`),
+    refreshIntervalOption: (interval) => locate(`//*[@role="menuitemradio"]//span[text()="${interval}"]`),
     clickablePanel: (name) => `//section[@aria-label="${name} panel"]//a`,
     dashboardTitle: (name) => locate('span').withText(name),
     metricPanelNa: (name) => `//section[@aria-label="${name}"]//span[text()="N/A"]`,

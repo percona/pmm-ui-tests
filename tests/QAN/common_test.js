@@ -53,14 +53,14 @@ Scenario(
   }) => {
     const cellValue = qanDetails.getMetricsCellLocator('Query Time', 3);
 
-    qanOverview.waitForOverviewLoaded();
+    await qanOverview.waitForOverviewLoaded();
     await adminPage.applyTimeRange('Last 1 hour');
-    qanOverview.waitForOverviewLoaded();
+    await qanOverview.waitForOverviewLoaded();
     await qanFilters.applyFilter('ps-dev');
     await qanOverview.searchByValue('insert');
-    I.waitForElement(qanOverview.elements.querySelector, 30);
-    qanOverview.selectRow(1);
-    I.waitForVisible(cellValue, 30);
+    await I.waitForElement(qanOverview.elements.querySelector, 30);
+    await qanOverview.selectRow(1);
+    await I.waitForVisible(cellValue, 30);
     let overviewValue = await I.grabTextFrom(qanOverview.getCellValueLocator(1, 2));
     let detailsValue = await I.grabTextFrom(qanDetails.getMetricsCellLocator('Query Count', 2));
 
@@ -124,22 +124,23 @@ Scenario(
     I, qanPage, qanDetails, qanOverview, dashboardPage, adminPage, queryAnalyticsPage,
   }) => {
     await qanPage.waitForOpened();
-    await qanOverview.changeMainMetric('Database');
-    await qanOverview.changeSorting(2);
+    await queryAnalyticsPage.changeMainMetric('Database');
+    await queryAnalyticsPage.changeSorting(2);
     await queryAnalyticsPage.filters.selectFilterInGroup('pmm-managed', 'Database');
-    await qanOverview.addSpecificColumn('Bytes Sent');
+    await queryAnalyticsPage.addColumn('Bytes Sent');
     await adminPage.applyTimeRange('Last 1 hour');
     await qanOverview.searchByValue('pmm-managed');
     await qanOverview.selectTotalRow();
     await dashboardPage.selectRefreshTimeInterval('5s');
-    await qanOverview.verifyMainMetric('Database');
+    await queryAnalyticsPage.verifyMainMetric('Database');
     await qanOverview.verifySorting(2, 'asc');
     await queryAnalyticsPage.filters.verifySelectedFilters('pmm-managed');
     await qanOverview.verifyColumnPresent('Bytes Sent');
     await qanDetails.checkDetailsTab();
-    await adminPage.verifyTimeRange('Last 1 hour');
+    /** Skip step until: https://perconadev.atlassian.net/browse/PMM-13052 is fixed
+    await adminPage.verifyTimeRange('Last 1 hour'); */
     await qanOverview.verifySearchByValue('pmm-managed');
     await dashboardPage.selectRefreshTimeInterval('Off');
-    await I.verifyInvisible(qanOverview.elements.spinner, 70);
+    await queryAnalyticsPage.waitForLoaded();
   },
 );

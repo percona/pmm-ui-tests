@@ -53,8 +53,8 @@ class QueryAnalyticsFilters {
 
   async verifySelectedFilters(filters) {
     await I.click(this.buttons.showSelected);
-    await I.waitForVisible(this.elements.filterName, 20);
-    const currentFilters = await I.grabTextFrom(this.elements.filterName);
+    await I.waitForVisible(this.fields.filterName, 20);
+    const currentFilters = await I.grabTextFrom(this.fields.filterName);
 
     for (let i = 0; i <= filters.length - 1; i++) {
       assert.ok(currentFilters[i].includes(filters[i]), `The filter '${filters[i]}' has not been found!`);

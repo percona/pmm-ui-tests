@@ -34,8 +34,7 @@ module.exports = {
     firstQueryInfoIcon: 'div.tr-1 > div.td:nth-child(2) div > svg',
     selectedRow: '.selected-overview-row',
     clipboardLink: locate(I.getPopUpLocator()).find('span'),
-    mainMetricDropdown: locate('$group-by'),
-    selectedMainMetric: locate('$group-by').find('//div[@class="ant-select-selection-selected-value"]'),
+    selectedMainMetric: locate('$group-by').find('//li[contains(@class, "ant-select-dropdown-menu-item-selected")]'),
     tooltipContent: locate('div.tippy-content'),
   },
   messages: {
@@ -105,19 +104,6 @@ module.exports = {
     I.waitForElement(newMetric, 30);
     I.seeElement(newMetric);
     I.dontSeeElement(oldMetric);
-  },
-
-  async changeMainMetric(newMainMetric) {
-    const oldMainMetric = await I.grabTextFrom(this.elements.selectedMainMetric);
-
-    I.click(this.elements.mainMetricDropdown);
-    I.click(this.mainMetricFromDropdown(newMainMetric));
-    I.dontSeeElement(this.mainMetricByName(oldMainMetric));
-    I.waitForElement(this.mainMetricByName(newMainMetric), 10);
-  },
-
-  async verifyMainMetric(mainMetric) {
-    I.seeElement(this.mainMetricByName(mainMetric));
   },
 
   removeMetricFromOverview(metricName) {
@@ -246,8 +232,8 @@ module.exports = {
     return await I.grabTextFrom(locate(rowSelector).find('./div[@role="cell"][2]'));
   },
 
-  selectTotalRow() {
-    this.selectRow(0);
+  async selectTotalRow() {
+    await this.selectRow(0);
   },
 
   async getRowCount(rowCount) {

@@ -95,7 +95,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T125 - Verify user is able to Show only selected filter values and Show All filter values @qan @debug',
+  'PMM-T125 - Verify user is able to Show only selected filter values and Show All filter values @qan',
   async ({ I, qanFilters, queryAnalyticsPage }) => {
     const environmentName1 = 'ps-dev';
     const environmentName2 = 'pgsql-dev';
