@@ -44,7 +44,7 @@ class QueryAnalyticsPage extends BasePmmPage {
   }
 
   async addColumn(columnName) {
-    await I.click(this.buttons.addColumn);
+    await I.fillField(this.buttons.addColumn, columnName);
 
     await I.waitForVisible(this.elements.columnName(columnName), 30);
     await I.click(this.elements.columnName(columnName));

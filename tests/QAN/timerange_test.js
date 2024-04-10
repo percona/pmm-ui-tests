@@ -195,19 +195,19 @@ Scenario(
     const environmentName = 'ps-dev';
     const columnName = 'Bytes Sent';
 
-    qanOverview.addSpecificColumn(columnName);
+    await queryAnalyticsPage.addColumn(columnName);
     await qanFilters.applyFilter(environmentName);
-    qanOverview.waitForOverviewLoaded();
-    I.click(qanOverview.buttons.copyButton);
-    I.waitForVisible(I.getPopUpLocator(), 10);
+    await qanOverview.waitForOverviewLoaded();
+    await I.click(qanOverview.buttons.copyButton);
+    await I.waitForVisible(I.getPopUpLocator(), 10);
 
     const url = await I.grabTextFrom(qanOverview.elements.clipboardLink);
 
-    I.openNewTab();
-    I.amOnPage(url);
-    qanOverview.waitForOverviewLoaded();
-    I.seeInCurrentUrl(`environment=${environmentName}`);
-    await queryAnalyticsPage.filters.verifyCountOfFiltersDisplayed(1, 'equals');
-    I.waitForElement(qanOverview.getColumnLocator(columnName), 30);
+    await I.openNewTab();
+    await I.amOnPage(url.match(/\bhttps?:\/\/\S+/gi)[0]);
+    await queryAnalyticsPage.waitForLoaded();
+    await I.seeInCurrentUrl(`environment=${environmentName}`);
+    await queryAnalyticsPage.filters.verifyCheckedFilters([environmentName]);
+    await I.waitForElement(qanOverview.getColumnLocator(columnName), 30);
   },
 );

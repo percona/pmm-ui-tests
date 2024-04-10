@@ -14,6 +14,7 @@ class QueryAnalyticsFilters {
       filterByNameAndGroup: (filterName, groupName) => this.fields.filterGroup(groupName).find(`//div[@data-testid="filter-checkbox-${filterName}"]`),
       filterPercentageByNameAndGroup: (filterName, groupName) => this.fields.filterByNameAndGroup(filterName, groupName).find('//span').at(3),
       filterName: locate('//span[@class="checkbox-container__label-text"]'),
+      checkedFilters: () => this.fields.filterCheckboxes.find('//input[@type="checkbox" and @checked]//following-sibling::span[@class="checkbox-container__label-text"]'),
     };
     this.buttons = {
       showSelected: locate('$qan-filters-show-selected'),
@@ -106,6 +107,19 @@ class QueryAnalyticsFilters {
       await locator.waitFor({ state: 'attached' });
       await locator.click();
     });
+  }
+
+  async verifyCheckedFilters(expectedFilters) {
+    const checkedFilters = await I.grabTextFromAll(this.fields.checkedFilters());
+    const notCheckedFilters = [];
+
+    for (const expectedFilter of expectedFilters) {
+      if (!checkedFilters.includes(expectedFilter)) {
+        notCheckedFilters.push(expectedFilter);
+      }
+    }
+
+    assert.ok(notCheckedFilters.length === 0, `Expected filters "${expectedFilters}" are not euqal to checked filters: "${checkedFilters}. `);
   }
 }
 

@@ -88,22 +88,22 @@ module.exports = {
     return resultsCount[2];
   },
 
-  changeMetric(columnName, metricName) {
+  async changeMetric(columnName, metricName) {
     const newMetric = this.getColumnLocator(metricName);
     const metricInDropdown = this.getMetricLocatorInDropdown(metricName);
     const oldMetric = this.getColumnLocator(columnName);
 
-    I.waitForElement(oldMetric, 30);
-    I.waitForVisible(qanFilters.elements.filterName, 30);
+    await I.waitForElement(oldMetric, 30);
+    await I.waitForVisible(qanFilters.elements.filterName, 30);
 
     // Hardcoded wait because of random failings
-    I.wait(3);
-    I.click(oldMetric);
-    I.waitForElement(this.fields.columnSearchField, 10);
-    I.click(metricInDropdown);
-    I.waitForElement(newMetric, 30);
-    I.seeElement(newMetric);
-    I.dontSeeElement(oldMetric);
+    await I.wait(3);
+    await I.click(oldMetric);
+    await I.waitForElement(this.fields.columnSearchField, 10);
+    await I.click(metricInDropdown);
+    await I.waitForElement(newMetric, 30);
+    await I.seeElement(newMetric);
+    await I.dontSeeElement(oldMetric);
   },
 
   async removeMetricFromOverview(metricName) {

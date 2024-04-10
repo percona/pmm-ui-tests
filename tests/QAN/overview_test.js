@@ -148,61 +148,57 @@ Scenario(
     const newMetric = qanOverview.getColumnLocator(metricName);
     const oldMetric = qanOverview.getColumnLocator('Load');
 
-    I.waitForElement(qanOverview.buttons.addColumn, 30);
-    qanOverview.changeMetric('Load', metricName);
-    I.seeInCurrentUrl(urlString);
+    await I.waitForElement(qanOverview.buttons.addColumn, 30);
+    await qanOverview.changeMetric('Load', metricName);
+    await I.seeInCurrentUrl(urlString);
     const url = await I.grabCurrentUrl();
 
-    I.amOnPage(url);
-    I.waitForElement(qanOverview.buttons.addColumn, 30);
-    I.waitForElement(newMetric, 30);
-    I.dontSeeElement(oldMetric);
+    await I.amOnPage(url);
+    await I.waitForElement(qanOverview.buttons.addColumn, 30);
+    await I.waitForElement(newMetric, 30);
+    await I.dontSeeElement(oldMetric);
   },
 );
 
 Scenario(
   'PMM-T99 Verify User is able to add new metric, PMM-T222 Verify `Add column` dropdown works @qan',
-  async ({ I, qanOverview }) => {
+  async ({ I, qanOverview, queryAnalyticsPage }) => {
     const metricName = 'Query Count with errors';
     const urlString = 'num_queries_with_errors';
     const newMetric = qanOverview.getColumnLocator(metricName);
     const metricInDropdown = qanOverview.getMetricLocatorInDropdown(metricName);
     const oldMetric = qanOverview.getColumnLocator('Load');
 
-    I.waitForElement(qanOverview.getColumnLocator('Add column'), 30);
-    I.waitForElement(oldMetric, 30);
-    I.doubleClick(qanOverview.getColumnLocator('Add column'));
-    I.waitForElement(qanOverview.elements.newMetricDropdown, 30);
-    I.fillField(qanOverview.fields.columnSearchField, metricName);
-    I.click(metricInDropdown);
-    qanOverview.waitForOverviewLoaded();
-    I.waitForElement(newMetric, 30);
-    I.seeElement(newMetric);
-    I.seeElement(oldMetric);
-    I.seeInCurrentUrl(urlString);
+    await I.waitForElement(qanOverview.getColumnLocator('Add column'), 30);
+    await I.waitForElement(oldMetric, 30);
+    await queryAnalyticsPage.addColumn(metricName);
+    await queryAnalyticsPage.waitForLoaded();
+    await I.waitForElement(newMetric, 30);
+    await I.seeElement(newMetric);
+    await I.seeElement(oldMetric);
+    await I.seeInCurrentUrl(urlString);
     const url = await I.grabCurrentUrl();
 
-    I.amOnPage(url);
-    qanOverview.waitForOverviewLoaded();
-    I.waitForElement(qanOverview.buttons.addColumn, 30);
-    I.waitForElement(newMetric, 30);
-    I.seeElement(oldMetric);
-    I.seeElement(newMetric);
+    await I.amOnPage(url);
+    await queryAnalyticsPage.waitForLoaded();
+    await I.waitForElement(qanOverview.buttons.addColumn, 30);
+    await I.waitForElement(newMetric, 30);
+    await I.seeElement(oldMetric);
+    await I.seeElement(newMetric);
   },
 );
 
 Scenario(
   'PMM-T135 - Verify user is not able to add duplicate metric to the overview column @qan',
-  async ({ I, qanOverview }) => {
+  async ({ I, qanOverview, queryAnalyticsPage }) => {
     const columnName = 'Load';
     const column = qanOverview.getColumnLocator(columnName);
 
-    I.waitForVisible(column, 30);
-    I.seeElement(column);
-    I.click(qanOverview.buttons.addColumn);
-    I.fillField(qanOverview.fields.columnSearchField, columnName);
-    I.waitForVisible(qanOverview.elements.noDataIcon, 30);
-    I.seeElement(qanOverview.elements.noDataIcon);
+    await I.waitForVisible(column, 30);
+    await I.seeElement(column);
+    await I.fillField(queryAnalyticsPage.buttons.addColumn, columnName);
+    await I.waitForVisible(qanOverview.elements.noDataIcon, 30);
+    await I.seeElement(qanOverview.elements.noDataIcon);
   },
 );
 
