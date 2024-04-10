@@ -293,17 +293,17 @@ Scenario(
     const firstCell = qanOverview.getCellValueLocator(0, 1);
     const secondCell = qanOverview.getCellValueLocator(3, 3);
 
-    qanOverview.changeSorting(1);
-    qanOverview.verifySorting(1, 'desc');
-    I.waitForVisible(firstCell, 10);
-    I.moveCursorTo(firstCell);
-    I.waitForVisible(qanOverview.elements.tooltipQPSValue, 10);
-    qanOverview.changeMetric('Query Time', 'Innodb Queue Wait');
-    qanOverview.waitForOverviewLoaded();
-    I.waitForVisible(secondCell, 10);
-    I.moveCursorTo(secondCell);
-    I.dontSeeElement(qanOverview.elements.tooltip);
-    I.dontSeeElement(qanOverview.elements.tooltipQPSValue);
+    await qanOverview.changeSorting(1);
+    await qanOverview.verifySorting(1, 'desc');
+    await I.waitForVisible(firstCell, 10);
+    await I.moveCursorTo(firstCell);
+    await I.waitForVisible(qanOverview.elements.tooltipQPSValue, 10);
+    await qanOverview.changeMetric('Query Time', 'Innodb Queue Wait');
+    await qanOverview.waitForOverviewLoaded();
+    await I.waitForVisible(secondCell, 10);
+    await I.moveCursorTo(secondCell);
+    await I.dontSeeElement(qanOverview.elements.tooltip);
+    await I.dontSeeElement(qanOverview.elements.tooltipQPSValue);
   },
 );
 
