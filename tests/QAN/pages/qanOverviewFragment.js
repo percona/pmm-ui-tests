@@ -106,16 +106,16 @@ module.exports = {
     I.dontSeeElement(oldMetric);
   },
 
-  removeMetricFromOverview(metricName) {
+  async removeMetricFromOverview(metricName) {
     const column = this.getColumnLocator(metricName);
 
-    I.click(column);
-    I.waitForElement(this.fields.columnSearchField, 10);
-    I.waitForElement(this.elements.removeMetricColumn, 30);
-    I.forceClick(this.elements.removeMetricColumn);
-    this.waitForOverviewLoaded();
-    I.waitForInvisible(this.elements.spinner, 30);
-    I.dontSeeElement(this.getQANMetricHeader(metricName));
+    await I.click(column);
+    await I.waitForElement(this.fields.columnSearchField, 10);
+    await I.waitForElement(this.elements.removeMetricColumn, 30);
+    await I.forceClick(this.elements.removeMetricColumn);
+    await this.waitForOverviewLoaded();
+    await I.waitForInvisible(this.elements.spinner, 30);
+    await I.dontSeeElement(this.getQANMetricHeader(metricName));
   },
 
   async addSpecificColumn(columnName) {

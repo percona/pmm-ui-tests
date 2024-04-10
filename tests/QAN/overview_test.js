@@ -413,19 +413,19 @@ Scenario(
   async ({
     I, qanOverview, qanDetails, qanFilters,
   }) => {
-    qanOverview.selectRow(1);
-    qanFilters.waitForFiltersToLoad();
-    I.waitForElement(qanDetails.buttons.close, 30);
-    I.seeElement(qanOverview.getQANMetricHeader('Query Count'));
-    qanOverview.removeMetricFromOverview('Query Count');
-    qanOverview.removeMetricFromOverview('Query Time');
+    await qanOverview.selectRow(1);
+    await qanFilters.waitForFiltersToLoad();
+    await I.waitForElement(qanDetails.buttons.close, 30);
+    await I.seeElement(qanOverview.getQANMetricHeader('Query Count'));
+    await qanOverview.removeMetricFromOverview('Query Count');
+    await qanOverview.removeMetricFromOverview('Query Time');
     const column = qanOverview.getColumnLocator('Load');
 
-    I.waitForElement(column);
-    I.click(column);
-    I.waitForElement(qanOverview.fields.columnSearchField, 10);
-    I.fillField(qanOverview.fields.columnSearchField, 'Remove column');
-    I.dontSeeElement(qanOverview.elements.removeMetricColumn);
+    await I.waitForElement(column);
+    await I.click(column);
+    await I.waitForElement(qanOverview.fields.columnSearchField, 10);
+    await I.fillField(qanOverview.fields.columnSearchField, 'Remove column');
+    await I.dontSeeElement(qanOverview.elements.removeMetricColumn);
   },
 );
 
