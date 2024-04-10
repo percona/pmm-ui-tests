@@ -31,12 +31,11 @@ Data(filters).Scenario(
     const environmentName = 'pdpgsql-dev';
 
     await qanFilters.applyFilter(environmentName);
-    I.waitForVisible(qanFilters.buttons.showSelected, 30);
-
+    await I.waitForVisible(qanFilters.buttons.showSelected, 30);
     await qanFilters.applyFilterInSection('Command Type', current.filterToApply);
     await qanOverview.searchByValue(current.searchValue);
-    I.waitForVisible(qanOverview.elements.noResultTableText, 30);
-    I.seeTextEquals(qanOverview.messages.noResultTableText, qanOverview.elements.noResultTableText);
+    await I.waitForVisible(qanOverview.elements.noResultTableText, 30);
+    await I.seeTextEquals(qanOverview.messages.noResultTableText, qanOverview.elements.noResultTableText);
   },
 );
 

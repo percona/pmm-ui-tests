@@ -7,6 +7,7 @@ class QueryAnalyticsFilters {
     this.fields = {
       filterBy: locate('//input[@data-testid="filters-search-field"]'),
       filterCheckboxes: locate('//div[contains(@data-testid, "filter-checkbox")]'),
+      filterCheckBoxesInGroup: (groupName) => this.fields.filterGroup(groupName).find('//div[contains(@data-testid, "filter-checkbox")]'),
       filterGroup: (groupName) => locate(`//span[@data-testid="checkbox-group-header" and text()="${groupName}"]/parent::p/parent::div`),
       filterByExactName: (filterName) => locate(`//div[@data-testid="filter-checkbox-${filterName}"]`),
       filterByName: (filterName) => locate(`//div[contains(@data-testid, "filter-checkbox-${filterName}")]`),
@@ -39,6 +40,15 @@ class QueryAnalyticsFilters {
 
       await locator.waitFor({ state: 'attached' });
       await locator.click();
+    });
+  }
+
+  async selectFilterInGroupAtPosition(groupName, position) {
+    await I.usePlaywrightTo('Select QAN Filter', async ({ page }) => {
+      const locator = await page.locator(this.fields.filterCheckBoxesInGroup(groupName).value);
+
+      await locator.nth(position - 1).waitFor({ state: 'attached' });
+      await locator.nth(position - 1).click();
     });
   }
 

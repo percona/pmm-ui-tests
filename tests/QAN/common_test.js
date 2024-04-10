@@ -11,7 +11,7 @@ Before(async ({ I, qanPage }) => {
 Scenario(
   'PMM-T269 - Verify QAN UI Elements are displayed @qan',
   async ({
-    I, qanFilters, qanOverview, qanPagination,
+    I, qanFilters, qanOverview, qanPagination, queryAnalyticsPage,
   }) => {
     await qanOverview.waitForOverviewLoaded();
     await I.waitForVisible(qanOverview.buttons.addColumn, 30);
@@ -23,10 +23,9 @@ Scenario(
       await I.waitForElement(qanFilters.elements.filterValuesByFilterName(filter), 10);
       const numberOfFilterValues = await I.grabNumberOfVisibleElements(qanFilters.elements.filterValuesByFilterName(filter));
       const randomFilterValue = Math.floor(Math.random() * numberOfFilterValues) + 1;
-
-      await I.click(qanFilters.elements.filterValuesByFilterName(filter).at(randomFilterValue));
+      await queryAnalyticsPage.filters.selectFilterInGroupAtPosition(filter, randomFilterValue);
       await I.assertTrue((await qanOverview.getRowCount()) > 0, `No values for filter: "${filter}" were displayed`);
-      await I.click(qanFilters.elements.filterValuesByFilterName(filter).at(randomFilterValue));
+      await queryAnalyticsPage.filters.selectFilterInGroupAtPosition(filter, randomFilterValue);
     }
 
     await qanFilters.selectFilter('pmm-server');
