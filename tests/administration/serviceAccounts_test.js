@@ -17,12 +17,13 @@ Scenario('PMM-T1883 Configuring pmm-agent to use service account @service-accoun
   const tokenValue = await serviceAccountsPage.createServiceAccountToken(`token_name_${Date.now()}`);
   const oldNodeId = await I.verifyCommand('pmm-admin status | grep "Node ID" | awk -F " " \'{ print $4 }\'');
   const oldPmmAgentId = await I.verifyCommand('pmm-admin status | grep "Agent ID" | awk -F " " \'{ print $4 }\'');
+
   console.log(oldPmmAgentId);
+  const pmmAgentConfigLocation = await serviceAccountsPage.getPmmAgentConfigLocation(oldPmmAgentId);
+
   if (oldNodeId) {
     await inventoryAPI.deleteNode(oldNodeId, true);
   }
-
-  const pmmAgentConfigLocation = await serviceAccountsPage.getPmmAgentConfigLocation(oldPmmAgentId);
 
   await I.verifyCommand(`sudo -E env "PATH=$PATH" pmm-agent setup --server-username=service_token --server-password=${tokenValue} --server-address=${pmmServerUrl} --server-insecure-tls --config-file=${pmmAgentConfigLocation}`);
   await I.wait(60);
