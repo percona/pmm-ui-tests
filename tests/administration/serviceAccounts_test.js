@@ -1,5 +1,3 @@
-const config = require('codeceptjs').config.get();
-
 Feature('Service Accounts tests');
 
 Before(async ({ I }) => {
@@ -7,12 +5,13 @@ Before(async ({ I }) => {
 });
 
 const serviceAccountUsername = `service_account_${Date.now()}`;
+const newServiceName = 'mysql_service_service_token1';
 
 Scenario('PMM-T1883 Configuring pmm-agent to use service account @service-account', async ({
-  I, serviceAccountsPage, dashboardPage, inventoryAPI, nodesOverviewPage,
+  I, codeceptjsConfig, serviceAccountsPage, dashboardPage, inventoryAPI, nodesOverviewPage, adminPage, experimentalPostgresqlDashboardsPage,
 }) => {
   await I.amOnPage(serviceAccountsPage.url);
-  const pmmServerUrl = config.helpers.Playwright.url.replace(/^(-)|[^0-9.,]+/g, '$1');
+  const pmmServerUrl = codeceptjsConfig.helpers.Playwright.url.replace(/^(-)|[^0-9.,]+/g, '$1');
 
   await serviceAccountsPage.createServiceAccount(serviceAccountUsername, 'Admin');
   const tokenValue = await serviceAccountsPage.createServiceAccountToken(`token_name_${Date.now()}`);
@@ -42,9 +41,12 @@ Scenario('PMM-T1883 Configuring pmm-agent to use service account @service-accoun
   await dashboardPage.verifyThereAreNoGraphsWithNA(1);
   await dashboardPage.verifyThereAreNoGraphsWithoutData(19);
 
-  await I.verifyCommand('sudo -E env "PATH=$PATH" pmm-admin add mysql --username root --password GRgrO9301RuF --host=127.0.0.1 --port=43306');
+  await I.verifyCommand(`sudo -E env "PATH=$PATH" pmm-admin add mysql --username root --password GRgrO9301RuF --host=127.0.0.1 --port=43306 --service-name=${newServiceName}`);
   await I.wait(60);
   await I.amOnPage(dashboardPage.mySQLInstanceOverview.url);
+  await dashboardPage.applyFilter('Service Name', newServiceName);
+  await adminPage.setAbsoluteTimeRange('now-1m', 'now');
+  await I.wait(5);
   await dashboardPage.verifyThereAreNoGraphsWithNA(1);
   await dashboardPage.verifyThereAreNoGraphsWithoutData(1);
 });

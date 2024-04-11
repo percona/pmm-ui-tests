@@ -1217,7 +1217,7 @@ module.exports = {
     skipTourButton: '//button[span[text()="Skip"]]',
     timeRangeOption: (timeRange) => locate('li').withDescendant('label').withText(timeRange),
     openFiltersDropdownLocator: (filterName) => locate('.variable-link-wrapper').after(`label[for="var-${formatElementId(filterName)}"]`),
-    filterDropdownOptionsLocator: (filterName) => locate('.variable-option').withText(filterName),
+    filterDropdownOptionsLocator: (filterName) => locate('//*[contains(@data-testid, "data-testid Dashboard template variables Variable Value DropDown option")]').withText(filterName),
     refreshIntervalPicker: I.useDataQA('data-testid RefreshPicker interval button'),
     refreshIntervalOption: (interval) => locate(`//*[@role="menuitemradio" and text()="${interval}"]`),
     clickablePanel: (name) => `//section[@aria-label="${name} panel"]//a`,
