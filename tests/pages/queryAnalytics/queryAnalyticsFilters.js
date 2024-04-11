@@ -26,8 +26,8 @@ class QueryAnalyticsFilters {
     return this.fields.filterPercentageByNameAndGroup(filterName, groupName);
   }
 
-  async selectFilter(filterName) {
-    await I.usePlaywrightTo('Select QAN Filter', async ({ page }) => {
+  selectFilter(filterName) {
+    I.usePlaywrightTo('Select QAN Filter', async ({ page }) => {
       const locator = await page.locator(this.fields.filterByExactName(filterName).value);
 
       await locator.waitFor({ state: 'attached' });
@@ -35,8 +35,8 @@ class QueryAnalyticsFilters {
     });
   }
 
-  async selectFilterInGroup(filterName, groupName) {
-    await I.usePlaywrightTo('Select QAN Filter', async ({ page }) => {
+  selectFilterInGroup(filterName, groupName) {
+    I.usePlaywrightTo('Select QAN Filter', async ({ page }) => {
       const locator = await page.locator(this.fields.filterByNameAndGroup(filterName, groupName).value);
 
       await locator.waitFor({ state: 'attached' });
@@ -44,8 +44,8 @@ class QueryAnalyticsFilters {
     });
   }
 
-  async selectFilterInGroupAtPosition(groupName, position) {
-    await I.usePlaywrightTo('Select QAN Filter', async ({ page }) => {
+  selectFilterInGroupAtPosition(groupName, position) {
+    I.usePlaywrightTo('Select QAN Filter', async ({ page }) => {
       const locator = await page.locator(this.fields.filterCheckBoxesInGroup(groupName).value);
 
       await locator.nth(position - 1).waitFor({ state: 'attached' });
@@ -53,8 +53,8 @@ class QueryAnalyticsFilters {
     });
   }
 
-  async selectContainFilter(filterName) {
-    await I.usePlaywrightTo('Select QAN Filter', async ({ page }) => {
+  selectContainFilter(filterName) {
+    I.usePlaywrightTo('Select QAN Filter', async ({ page }) => {
       const locator = await page.locator(this.fields.filterByName(filterName).value);
 
       await locator.waitFor({ state: 'attached' });
@@ -63,8 +63,8 @@ class QueryAnalyticsFilters {
   }
 
   async verifySelectedFilters(filters) {
-    await I.click(this.buttons.showSelected);
-    await I.waitForVisible(this.fields.filterName, 20);
+    I.click(this.buttons.showSelected);
+    I.waitForVisible(this.fields.filterName, 20);
     const currentFilters = await I.grabTextFrom(this.fields.filterName);
 
     for (let i = 0; i <= filters.length - 1; i++) {
@@ -94,14 +94,14 @@ class QueryAnalyticsFilters {
         default:
           throw new Error(`Expected Result: "${expectedResult}" is not supported.`);
       }
-      await I.wait(1);
+      I.wait(1);
     }
 
     throw new Error(`Real value: ${count} is not ${expectedResult} then/to: ${expectedCount}`);
   }
 
-  async showSelectedFilters() {
-    await I.usePlaywrightTo('click', async ({ page }) => {
+  showSelectedFilters() {
+    I.usePlaywrightTo('click', async ({ page }) => {
       const locator = await page.locator(this.buttons.showSelected.value);
 
       await locator.waitFor({ state: 'attached' });
