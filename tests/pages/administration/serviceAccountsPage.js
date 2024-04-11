@@ -1,4 +1,4 @@
-const { I } = inject();
+const { I, inventoryAPI } = inject();
 
 class ServiceAccountsPage {
   constructor() {
@@ -15,10 +15,10 @@ class ServiceAccountsPage {
     this.tokenValue = locate('//input[@name="tokenValue"]');
     this.disableServiceAccountButton = (username) => locate(`//a[@title="${username}"]//ancestor::tr//span[text()="Disable"]`);
     this.enableServiceAccountButton = (username) => locate(`//a[@title="${username}"]//ancestor::tr//span[text()="Enable"]`);
-    this.confirmDisableButton = '//button[@data-testid="data-testid Confirm Modal Danger Button"]';
+    this.confirmDisableButton = I.useDataQA('data-testid Confirm Modal Danger Button');
   }
 
-  async createServiceAccount(username, role) {
+  createServiceAccount(username, role) {
     I.waitForVisible(this.addAccountButton);
     I.click(this.addAccountButton);
     I.waitForVisible(this.nameInput);
@@ -38,14 +38,14 @@ class ServiceAccountsPage {
     return await I.grabValueFrom(this.tokenValue);
   }
 
-  async disableServiceAccount(username) {
+  disableServiceAccount(username) {
     I.waitForVisible(this.disableServiceAccountButton(username));
     I.click(this.disableServiceAccountButton(username));
     I.click(this.confirmDisableButton);
     I.verifyPopUpMessage(this.accountEditedMessage);
   }
 
-  async enableServiceAccount(username) {
+  enableServiceAccount(username) {
     I.waitForVisible(this.enableServiceAccountButton(username));
     I.click(this.enableServiceAccountButton(username));
     I.verifyPopUpMessage(this.accountEditedMessage);
@@ -61,6 +61,14 @@ class ServiceAccountsPage {
     const response = await I.sendPostRequest(`graph/api/serviceaccounts/${accountId}/tokens`, { name: tokenName }, { Authorization: `Basic ${await I.getAuth()}` });
 
     return response.data;
+  }
+
+  async getPmmAgentConfigLocation(pmmAgentId) {
+    const actAg = await inventoryAPI.apiGetAgents();
+
+    const pmmLocation = actAg.data.node_exporter.find((detail) => detail.pmm_agent_id === pmmAgentId).process_exec_path.split('exporters')[0];
+
+    return `${pmmLocation}config/pmm-agent.yaml`;
   }
 }
 

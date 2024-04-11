@@ -11,19 +11,18 @@ Scenario('PMM-T1883 Configuring pmm-agent to use service account @service-accoun
   I, codeceptjsConfig, serviceAccountsPage, dashboardPage, inventoryAPI, nodesOverviewPage, adminPage, experimentalPostgresqlDashboardsPage,
 }) => {
   await I.amOnPage(serviceAccountsPage.url);
-  const pmmServerUrl = codeceptjsConfig.config.helpers.Playwright.url.replace(/^(-)|[^0-9.,]+/g, '$1');
+  const pmmServerUrl = new URL(codeceptjsConfig.config.helpers.Playwright.url).hostname;
 
   await serviceAccountsPage.createServiceAccount(serviceAccountUsername, 'Admin');
   const tokenValue = await serviceAccountsPage.createServiceAccountToken(`token_name_${Date.now()}`);
-  const oldAgentId = await I.verifyCommand('pmm-admin status | grep "Node ID" | awk -F " " \'{ print $4 }\'');
+  const oldNodeId = await I.verifyCommand('pmm-admin status | grep "Node ID" | awk -F " " \'{ print $4 }\'');
+  const oldPmmAgentId = await I.verifyCommand('pmm-admin status | grep "Agent ID" | awk -F " " \'{ print $4 }\'');
 
-  if (oldAgentId) {
-    await inventoryAPI.deleteNode(oldAgentId, true);
+  if (oldNodeId) {
+    await inventoryAPI.deleteNode(oldNodeId, true);
   }
 
-  const pmmAgentConfigLocation = (await I.verifyCommand('sudo find / -name pmm-agent.yaml 2>/dev/null'))
-    .split('\n')
-    .find((agentLocation) => agentLocation.includes('/home/') || (agentLocation.includes('/usr/local/config/') && !agentLocation.includes('docker')));
+  const pmmAgentConfigLocation = await serviceAccountsPage.getPmmAgentConfigLocation(oldPmmAgentId);
 
   await I.verifyCommand(`sudo -E env "PATH=$PATH" pmm-agent setup --server-username=service_token --server-password=${tokenValue} --server-address=${pmmServerUrl} --server-insecure-tls --config-file=${pmmAgentConfigLocation}`);
   await I.wait(60);
