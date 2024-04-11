@@ -16,15 +16,9 @@ Scenario('PMM-T1883 Configuring pmm-agent to use service account @service-accoun
   await serviceAccountsPage.createServiceAccount(serviceAccountUsername, 'Admin');
   const tokenValue = await serviceAccountsPage.createServiceAccountToken(`token_name_${Date.now()}`);
   const oldNodeId = await I.verifyCommand('pmm-admin status | grep "Node ID" | awk -F " " \'{ print $4 }\'');
-  const oldPmmAgentId = await I.verifyCommand('pmm-admin status | grep "Agent ID" | awk -F " " \'{ print $4 }\'');
-
-  console.log(oldPmmAgentId);
-  const pmmAgentConfigLocation = await serviceAccountsPage.getPmmAgentConfigLocation(oldPmmAgentId);
-  const oldPmmAgentConfigLocation = (await I.verifyCommand('sudo find / -name pmm-agent.yaml 2>/dev/null'))
+  const pmmAgentConfigLocation = (await I.verifyCommand('sudo find / -name pmm-agent.yaml 2>/dev/null'))
     .split('\n')
     .find((agentLocation) => agentLocation.includes('/home/') || (agentLocation.includes('/usr/local/config/') && !agentLocation.includes('docker')));
-
-  console.log(`Old pmm agent location is: ${oldPmmAgentConfigLocation} and new one is: ${pmmAgentConfigLocation}`);
 
   if (oldNodeId) {
     await inventoryAPI.deleteNode(oldNodeId, true);

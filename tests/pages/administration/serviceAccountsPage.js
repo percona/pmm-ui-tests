@@ -62,16 +62,6 @@ class ServiceAccountsPage {
 
     return response.data;
   }
-
-  async getPmmAgentConfigLocation(pmmAgentId) {
-    const actAg = await inventoryAPI.apiGetAgents();
-
-    console.log(actAg.data.node_exporter);
-
-    const pmmLocation = actAg.data.node_exporter.find((detail) => detail.pmm_agent_id === pmmAgentId).process_exec_path.split('exporters')[0];
-
-    return `${pmmLocation}config/pmm-agent.yaml`;
-  }
 }
 
 module.exports = new ServiceAccountsPage();
