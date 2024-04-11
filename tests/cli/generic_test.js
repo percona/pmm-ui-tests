@@ -55,7 +55,9 @@ Scenario('PMM-T1862 Verify all processes in PMM server is running under non-root
   const processes = (await I.verifyCommand('ps aux')).split('\n');
 
   for (const process of processes) {
-    console.log('Process');
-    console.log(process);
+    if (process.includes('pmm')) {
+      console.log('PMM Process');
+      console.log(process);
+    }
   }
 });
