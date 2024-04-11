@@ -57,10 +57,23 @@ Scenario('PMM-T1862 Verify all processes in PMM server is running under non-root
   const processes = (await I.verifyCommand('ps aux')).split('\n');
   const errorProccesses = [];
 
-  console.log(processes);
-
   for (const process of processes) {
-    if (process.includes('pmm') || process.includes('docker')) {
+    if (process.includes('pmm')
+      || process.includes('pgsql')
+      || process.includes('postgres14')
+      || process.includes('clickhouse')
+      || process.includes('grafana')
+      || process.includes('nginx')
+      || process.includes('victoriametrics')
+      || process.includes('vmalert')
+      || process.includes('vmproxy')
+      || process.includes('pmm-managed')
+      || process.includes('qan')
+      || process.includes('pmm-agent')
+      || process.includes('node_exporter')
+      || process.includes('postgres_exporter')
+      || process.includes('mysqld_export')
+      || process.includes('vmagent')) {
       if (process.includes('root')) {
         errorProccesses.push(process.replace(/\s+/g, ' ').split(' ')[10]);
       }
