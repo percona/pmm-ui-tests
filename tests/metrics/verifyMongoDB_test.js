@@ -30,9 +30,9 @@ BeforeSuite(async ({ I }) => {
   await I.mongoAddUser(mongo_test_user.username, mongo_test_user.password);
 
   // check that rs101 docker container exists
-  const dockerCheck = await I.verifyCommand('docker ps | grep rs101');
+  const dockerCheck = await I.verifyCommand('docker ps | grep mongodb_node_1');
 
-  assert.ok(dockerCheck.includes('rs101'), 'rs101 docker container should exist. please run pmm-framework with --mongo-replica-for-backup');
+  assert.ok(dockerCheck.includes('mongodb_node_1'), 'rs101 docker container should exist. please run pmm-framework with --mongo-replica-for-backup');
 });
 
 Before(async ({ I }) => {
