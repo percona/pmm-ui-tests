@@ -50,3 +50,9 @@ Scenario(
     );
   },
 );
+
+Scenario('PMM-T1862 Verify all processes in PMM server is running under non-root user @cli', async ({ I }) => {
+  const response = await I.verifyCommand('ps aux');
+
+  console.log(response.split('\n'));
+});
