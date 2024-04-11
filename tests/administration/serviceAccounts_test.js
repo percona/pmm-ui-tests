@@ -42,9 +42,13 @@ Scenario('PMM-T1883 Configuring pmm-agent to use service account @service-accoun
 
   await I.verifyCommand(`sudo -E env "PATH=$PATH" pmm-admin add mysql --username ${credentials.perconaServer.username} --password ${credentials.perconaServer.password} --host=${pmmServerUrl}  --port=43306 --service-name=${newServiceName}`);
   await I.wait(60);
-  await I.amOnPage(dashboardPage.mySQLInstanceOverview.url);
-  await dashboardPage.applyFilter('Service Name', newServiceName);
-  await adminPage.setAbsoluteTimeRange('now-1m', 'now');
+  const url = I.buildUrlWithParams(dashboardPage.mySQLInstanceOverview.clearUrl, {
+    from: 'now-1m',
+    to: 'now',
+    service_name: newServiceName,
+  });
+
+  await I.amOnPage(url);
   await I.wait(5);
   await dashboardPage.verifyThereAreNoGraphsWithNA(1);
   await dashboardPage.verifyThereAreNoGraphsWithoutData(1);
