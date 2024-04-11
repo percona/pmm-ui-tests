@@ -4,10 +4,9 @@ Feature('MongoDB Metrics tests');
 
 const connection = {
   host: '127.0.0.1',
-  // eslint-disable-next-line no-inline-comments
-  port: '27019', // This is the port used by --addclient=modb,1 and docker-compose setup on a CI/CD
-  username: 'mongoadmin',
-  password: 'GRgrO9301RuF',
+  port: '27027',
+  username: 'pmm',
+  password: 'pmmpass',
 };
 const mongodb_service_name = 'mongodb_test_pass_plus';
 const mongo_test_user = {
@@ -27,12 +26,12 @@ const telemetry = {
 
 BeforeSuite(async ({ I }) => {
   await I.mongoConnect(connection);
-  // await I.mongoAddUser(mongo_test_user.username, mongo_test_user.password);
+  await I.mongoAddUser(mongo_test_user.username, mongo_test_user.password);
 
   // check that rs101 docker container exists
-  const dockerCheck = await I.verifyCommand('docker ps | grep mongodb_node_1');
+  const dockerCheck = await I.verifyCommand('docker ps | grep rs101');
 
-  assert.ok(dockerCheck.includes('mongodb_node_1'), 'rs101 docker container should exist. please run pmm-framework with --mongo-replica-for-backup');
+  assert.ok(dockerCheck.includes('rs101'), 'rs101 docker container should exist. please run pmm-framework with --mongo-replica-for-backup');
 });
 
 Before(async ({ I }) => {
