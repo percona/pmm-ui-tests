@@ -11,7 +11,7 @@ Scenario('PMM-T1883 Configuring pmm-agent to use service account @service-accoun
   I, codeceptjsConfig, serviceAccountsPage, dashboardPage, inventoryAPI, nodesOverviewPage, adminPage, experimentalPostgresqlDashboardsPage,
 }) => {
   await I.amOnPage(serviceAccountsPage.url);
-  const pmmServerUrl = codeceptjsConfig.helpers.Playwright.url.replace(/^(-)|[^0-9.,]+/g, '$1');
+  const pmmServerUrl = codeceptjsConfig.config.helpers.Playwright.url.replace(/^(-)|[^0-9.,]+/g, '$1');
 
   await serviceAccountsPage.createServiceAccount(serviceAccountUsername, 'Admin');
   const tokenValue = await serviceAccountsPage.createServiceAccountToken(`token_name_${Date.now()}`);
