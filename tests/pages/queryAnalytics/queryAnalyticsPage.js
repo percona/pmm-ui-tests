@@ -1,10 +1,8 @@
 const { I } = inject();
-const { BasePmmPage } = require('../basePmmPage');
 const { QueryAnalyticsFilters } = require('./queryAnalyticsFilters');
 
-class QueryAnalyticsPage extends BasePmmPage {
+class QueryAnalyticsPage {
   constructor() {
-    super();
     this.filters = new QueryAnalyticsFilters();
     this.elements = {
       spinner: locate('//div[@data-testid="Spinner"]'),
@@ -20,34 +18,33 @@ class QueryAnalyticsPage extends BasePmmPage {
     };
   }
 
-  async waitForLoaded() {
-    await I.waitForDetached(this.elements.spinner, 60);
+  waitForLoaded() {
+    I.waitForDetached(this.elements.spinner, 60);
   }
 
   async changeMainMetric(newMainMetric) {
     const oldMainMetric = await I.grabTextFrom(this.elements.selectedMainMetric());
 
-    await I.click(this.elements.mainMetricsContainer);
-    await I.click(this.elements.mainMetricFromDropdown(newMainMetric));
-    await I.waitForDetached(this.elements.mainMetricByName(oldMainMetric), 10);
-    await I.waitForElement(this.elements.mainMetricByName(newMainMetric), 10);
+    I.click(this.elements.mainMetricsContainer);
+    I.click(this.elements.mainMetricFromDropdown(newMainMetric));
+    I.waitForDetached(this.elements.mainMetricByName(oldMainMetric), 10);
+    I.waitForElement(this.elements.mainMetricByName(newMainMetric), 10);
   }
 
-  async verifyMainMetric(mainMetric) {
-    await I.waitForVisible(this.elements.mainMetricByName(mainMetric));
+  verifyMainMetric(mainMetric) {
+    I.waitForVisible(this.elements.mainMetricByName(mainMetric));
   }
 
-  async changeSorting(columnNumber) {
-    await I.waitForElement(this.elements.metricsSorting(columnNumber), 30);
-    await this.waitForLoaded();
-    await I.forceClick(this.elements.metricsSorting(columnNumber));
+  changeSorting(columnNumber) {
+    I.waitForElement(this.elements.metricsSorting(columnNumber), 30);
+    this.waitForLoaded();
+    I.forceClick(this.elements.metricsSorting(columnNumber));
   }
 
-  async addColumn(columnName) {
-    await I.fillField(this.buttons.addColumn, columnName);
-
-    await I.waitForVisible(this.elements.columnName(columnName), 30);
-    await I.click(this.elements.columnName(columnName));
+  addColumn(columnName) {
+    I.fillField(this.buttons.addColumn, columnName);
+    I.waitForVisible(this.elements.columnName(columnName), 30);
+    I.click(this.elements.columnName(columnName));
   }
 }
 
