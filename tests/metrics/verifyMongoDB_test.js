@@ -27,7 +27,7 @@ const telemetry = {
 
 BeforeSuite(async ({ I }) => {
   await I.mongoConnect(connection);
-  await I.mongoAddUser(mongo_test_user.username, mongo_test_user.password);
+  // await I.mongoAddUser(mongo_test_user.username, mongo_test_user.password);
 
   // check that rs101 docker container exists
   const dockerCheck = await I.verifyCommand('docker ps | grep mongodb_node_1');
