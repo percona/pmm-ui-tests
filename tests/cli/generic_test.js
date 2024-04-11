@@ -67,5 +67,5 @@ Scenario('PMM-T1862 Verify all processes in PMM server is running under non-root
     }
   }
 
-  assert.ok(errorProccesses.length === 0, `Processes: "${errorProccesses} are running under root and not pmm user!`);
+  assert.ok(errorProccesses.length === 0, `Processes: [${errorProccesses}] are running under root and not pmm user!`);
 });
