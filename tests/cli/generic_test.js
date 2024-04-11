@@ -66,7 +66,7 @@ Scenario('PMM-T1862 Verify all processes in PMM server is running under non-root
       console.log('PMM Process');
       console.log(process);
     }
-
-    assert.ok(errorProccesses.length === 0, '');
   }
+
+  assert.ok(errorProccesses.length === 0, '');
 });
