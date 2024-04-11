@@ -10,8 +10,8 @@ const connection = {
 };
 const mongodb_service_name = 'mongodb_test_pass_plus';
 const mongo_test_user = {
-  username: 'test_user',
-  password: 'pass+',
+  username: 'test_user1',
+  password: 'pass_pass',
 };
 
 const telemetry = {
