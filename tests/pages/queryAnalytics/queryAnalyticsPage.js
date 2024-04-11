@@ -1,9 +1,11 @@
 const { I } = inject();
 const { QueryAnalyticsFilters } = require('./queryAnalyticsFilters');
+const { QueryAnalyticsData } = require('./queryAnalyticsData');
 
 class QueryAnalyticsPage {
   constructor() {
     this.filters = new QueryAnalyticsFilters();
+    this.data = new QueryAnalyticsData();
     this.elements = {
       spinner: locate('//div[@data-testid="Spinner"]'),
       mainMetricsContainer: locate('//div[@data-testid="group-by"]'),

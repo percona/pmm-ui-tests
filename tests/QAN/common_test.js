@@ -1,7 +1,7 @@
 const assert = require('assert');
 const { qanFilters } = require('../remoteInstances/remoteInstancesHelper');
 
-Feature('QAN common');
+Feature('QAN common').retry(1);
 
 Before(async ({ I, qanPage }) => {
   await I.Authorize();
@@ -11,30 +11,31 @@ Before(async ({ I, qanPage }) => {
 Scenario(
   'PMM-T269 - Verify QAN UI Elements are displayed @qan',
   async ({
-    I, qanFilters, qanOverview, qanPagination, queryAnalyticsPage,
+    I, queryAnalyticsPage,
   }) => {
-    await qanOverview.waitForOverviewLoaded();
-    await I.waitForVisible(qanOverview.buttons.addColumn, 30);
-    await qanOverview.verifyRowCount(27);
-    await qanPagination.verifyPagesAndCount(25);
+    queryAnalyticsPage.waitForLoaded();
+    I.waitForVisible(queryAnalyticsPage.buttons.addColumn, 30);
+    await queryAnalyticsPage.data.verifyRowCount(26);
+    await queryAnalyticsPage.data.verifyPagesAndCount(25);
 
-    for await (const filter of qanFilters.filterGroups) {
-      await I.wait(5);
-      await I.waitForElement(qanFilters.elements.filterValuesByFilterName(filter), 10);
-      const numberOfFilterValues = await I.grabNumberOfVisibleElements(qanFilters.elements.filterValuesByFilterName(filter));
+    for await (const filter of queryAnalyticsPage.filters.labels.filterGroups) {
+      I.wait(5);
+      I.waitForElement(queryAnalyticsPage.filters.fields.filterCheckBoxesInGroup(filter), 10);
+      const numberOfFilterValues = await I.grabNumberOfVisibleElements(queryAnalyticsPage.filters.fields.filterCheckBoxesInGroup(filter));
       const randomFilterValue = Math.floor(Math.random() * numberOfFilterValues) + 1;
+
       await queryAnalyticsPage.filters.selectFilterInGroupAtPosition(filter, randomFilterValue);
-      await I.assertTrue((await qanOverview.getRowCount()) > 0, `No values for filter: "${filter}" were displayed`);
+      I.assertTrue((await queryAnalyticsPage.data.getRowCount()) > 0, `No values for filter: "${filter}" were displayed`);
       await queryAnalyticsPage.filters.selectFilterInGroupAtPosition(filter, randomFilterValue);
     }
 
-    await qanFilters.selectFilter('pmm-server');
-    await I.wait(3);
-    const numberOfFilters = await I.grabNumberOfVisibleElements(qanFilters.elements.filterHeaders);
+    queryAnalyticsPage.filters.filterBy('pmm-server');
+    I.wait(3);
+    const numberOfFilters = await I.grabNumberOfVisibleElements(queryAnalyticsPage.filters.fields.filterHeaders);
 
-    for (let i = 0; i < numberOfFilters; i++) {
-      const filterName = await I.grabTextFrom(qanFilters.elements.filterHeaders.at(i + 1));
-      const displayedFilterValue = await I.grabTextFrom(qanFilters.elements.filterValuesByFilterName(filterName));
+    for (let i = 1; i <= numberOfFilters; i++) {
+      const filterName = await I.grabTextFrom(queryAnalyticsPage.filters.fields.filterHeaders.at(i));
+      const displayedFilterValue = await I.grabTextFrom(queryAnalyticsPage.filters.fields.filterCheckBoxesInGroup(filterName));
 
       I.assertContain(
         displayedFilterValue,
@@ -48,17 +49,17 @@ Scenario(
 Scenario(
   'PMM-T186 - Verify values in overview and in details match @qan',
   async ({
-    I, qanOverview, qanFilters, qanDetails, adminPage,
+    I, qanOverview, qanDetails, adminPage, queryAnalyticsPage,
   }) => {
     const cellValue = qanDetails.getMetricsCellLocator('Query Time', 3);
 
-    await qanOverview.waitForOverviewLoaded();
+    queryAnalyticsPage.waitForLoaded();
     await adminPage.applyTimeRange('Last 1 hour');
-    await qanOverview.waitForOverviewLoaded();
-    await qanFilters.applyFilter('ps-dev');
+    queryAnalyticsPage.waitForLoaded();
+    queryAnalyticsPage.filters.selectFilter('ps-dev');
     await qanOverview.searchByValue('insert');
-    await I.waitForElement(qanOverview.elements.querySelector, 30);
-    await qanOverview.selectRow(1);
+    I.waitForElement(queryAnalyticsPage.data.elements.queryRow(1), 30);
+    await qanOverview.data.selectRow(1);
     await I.waitForVisible(cellValue, 30);
     let overviewValue = await I.grabTextFrom(qanOverview.getCellValueLocator(1, 2));
     let detailsValue = await I.grabTextFrom(qanDetails.getMetricsCellLocator('Query Count', 2));

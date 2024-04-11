@@ -15,15 +15,34 @@ class QueryAnalyticsFilters {
       filterPercentageByNameAndGroup: (filterName, groupName) => this.fields.filterByNameAndGroup(filterName, groupName).find('//span').at(3),
       filterName: locate('//span[@class="checkbox-container__label-text"]'),
       checkedFilters: () => this.fields.filterCheckboxes.find('//input[@type="checkbox" and @checked]//following-sibling::span[@class="checkbox-container__label-text"]'),
+      filterHeaders: locate('//span[@data-testid="checkbox-group-header"]'),
     };
     this.buttons = {
       showSelected: locate('$qan-filters-show-selected'),
       resetAll: locate('$qan-filters-reset-all'),
     };
+    this.labels = {
+      filterGroups: [
+        'Environment',
+        'Cluster',
+        'Replication Set',
+        'Database',
+        'Node Name',
+        'Service Name',
+        'User Name',
+        'Node Type',
+        'Service Type',
+        'Command Type',
+      ],
+    };
   }
 
   async getFilterPercentage(filterName, groupName) {
     return this.fields.filterPercentageByNameAndGroup(filterName, groupName);
+  }
+
+  filterBy(filterName) {
+    I.fillField(this.fields.filterBy, filterName);
   }
 
   selectFilter(filterName) {
