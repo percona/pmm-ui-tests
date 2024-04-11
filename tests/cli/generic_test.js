@@ -60,7 +60,7 @@ Scenario('PMM-T1862 Verify all processes in PMM server is running under non-root
   for (const process of processes) {
     if (process.includes('pmm') || process.includes('docker')) {
       if (process.includes('root')) {
-        errorProccesses.push(process);
+        errorProccesses.push(process.split(' ')[10]);
       }
 
       console.log('PMM Process');
@@ -68,5 +68,5 @@ Scenario('PMM-T1862 Verify all processes in PMM server is running under non-root
     }
   }
 
-  assert.ok(errorProccesses.length === 0, '');
+  assert.ok(errorProccesses.length === 0, `Processes: "${errorProccesses} are running under root and not pmm user!`);
 });
