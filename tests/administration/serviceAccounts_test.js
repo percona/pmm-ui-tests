@@ -8,7 +8,7 @@ const serviceAccountUsername = `service_account_${Date.now()}`;
 const newServiceName = 'mysql_service_service_token1';
 
 Scenario('PMM-T1883 Configuring pmm-agent to use service account @service-account', async ({
-  I, codeceptjsConfig, serviceAccountsPage, dashboardPage, inventoryAPI, nodesOverviewPage, adminPage, experimentalPostgresqlDashboardsPage,
+  I, codeceptjsConfig, serviceAccountsPage, dashboardPage, inventoryAPI, nodesOverviewPage, adminPage, credentials,
 }) => {
   await I.amOnPage(serviceAccountsPage.url);
   const pmmServerUrl = new URL(codeceptjsConfig.config.helpers.Playwright.url).hostname;
@@ -17,7 +17,7 @@ Scenario('PMM-T1883 Configuring pmm-agent to use service account @service-accoun
   const tokenValue = await serviceAccountsPage.createServiceAccountToken(`token_name_${Date.now()}`);
   const oldNodeId = await I.verifyCommand('pmm-admin status | grep "Node ID" | awk -F " " \'{ print $4 }\'');
   const oldPmmAgentId = await I.verifyCommand('pmm-admin status | grep "Agent ID" | awk -F " " \'{ print $4 }\'');
-
+  console.log(oldPmmAgentId);
   if (oldNodeId) {
     await inventoryAPI.deleteNode(oldNodeId, true);
   }
@@ -40,7 +40,7 @@ Scenario('PMM-T1883 Configuring pmm-agent to use service account @service-accoun
   await dashboardPage.verifyThereAreNoGraphsWithNA(1);
   await dashboardPage.verifyThereAreNoGraphsWithoutData(19);
 
-  await I.verifyCommand(`sudo -E env "PATH=$PATH" pmm-admin add mysql --username root --password GRgrO9301RuF --host=127.0.0.1 --port=43306 --service-name=${newServiceName}`);
+  await I.verifyCommand(`sudo -E env "PATH=$PATH" pmm-admin add mysql --username ${credentials.perconaServer.username} --password ${credentials.perconaServer.password} --host=${pmmServerUrl}  --port=43306 --service-name=${newServiceName}`);
   await I.wait(60);
   await I.amOnPage(dashboardPage.mySQLInstanceOverview.url);
   await dashboardPage.applyFilter('Service Name', newServiceName);
