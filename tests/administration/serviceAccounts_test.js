@@ -8,7 +8,7 @@ const serviceAccountUsername = `service_account_${Date.now()}`;
 const newServiceName = 'mysql_service_service_token1';
 
 Scenario('PMM-T1883 Configuring pmm-agent to use service account @service-account', async ({
-  I, codeceptjsConfig, serviceAccountsPage, dashboardPage, inventoryAPI, nodesOverviewPage, adminPage, credentials,
+  I, codeceptjsConfig, serviceAccountsPage, dashboardPage, inventoryAPI, nodesOverviewPage, credentials,
 }) => {
   await I.amOnPage(serviceAccountsPage.url);
   const pmmServerUrl = new URL(codeceptjsConfig.config.helpers.Playwright.url).hostname;
@@ -26,7 +26,14 @@ Scenario('PMM-T1883 Configuring pmm-agent to use service account @service-accoun
 
   await I.verifyCommand(`sudo -E env "PATH=$PATH" pmm-agent setup --server-username=service_token --server-password=${tokenValue} --server-address=${pmmServerUrl} --server-insecure-tls --config-file=${pmmAgentConfigLocation}`);
   await I.wait(60);
-  await I.amOnPage(nodesOverviewPage.url);
+  const nodeName = (await inventoryAPI.getAllNodes()).generic.find((node) => node.node_name !== 'pmm-server').node_name;
+  const nodesUrl = I.buildUrlWithParams(nodesOverviewPage.url, {
+    from: 'now-1m',
+    to: 'now',
+    service_name: nodeName,
+  });
+
+  await I.amOnPage(nodesUrl);
   await dashboardPage.waitForDashboardOpened();
   await dashboardPage.expandEachDashboardRow();
   await dashboardPage.verifyThereAreNoGraphsWithNA(1);
