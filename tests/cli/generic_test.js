@@ -1,3 +1,5 @@
+const assert = require('assert');
+
 Feature('Generic PMM Server CLI Tests');
 
 /* BeforeSuite(async ({ I }) => {
@@ -53,11 +55,18 @@ Scenario(
 
 Scenario('PMM-T1862 Verify all processes in PMM server is running under non-root user @cli', async ({ I }) => {
   const processes = (await I.verifyCommand('ps aux')).split('\n');
+  const errorProccesses = [];
 
   for (const process of processes) {
     if (process.includes('pmm')) {
+      if (process.includes('root')) {
+        errorProccesses.push(process);
+      }
+
       console.log('PMM Process');
       console.log(process);
     }
+
+    assert.ok(errorProccesses.length === 0, '');
   }
 });
