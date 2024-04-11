@@ -1,6 +1,6 @@
 Feature('Generic PMM Server CLI Tests');
 
-BeforeSuite(async ({ I }) => {
+/* BeforeSuite(async ({ I }) => {
   await I.verifyCommand(`PMM_SERVER_IMAGE=${process.env.DOCKER_VERSION} docker-compose -f docker-compose-ubuntu.yml up -d`);
 });
 
@@ -18,7 +18,7 @@ After(async ({ I }) => {
   await I.verifyCommand('docker rm -f pmm-client-scrape');
   await I.verifyCommand(`sudo pmm-admin config --force '--server-url=https://${username}:${password}@0.0.0.0:443' --server-insecure-tls ${serverIp}`);
   await I.verifyCommand('docker rm -f pg-local ubuntu');
-});
+}); */
 
 Scenario(
   'PMM-T1201 Verify yum-cron updates are removed from PMM Server @settings',
