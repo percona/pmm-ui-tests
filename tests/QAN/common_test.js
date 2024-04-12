@@ -73,18 +73,17 @@ Scenario(
 Scenario(
   'PMM-T215 - Verify that buttons in QAN are disabled and visible on the screen @qan',
   async ({
-    I, qanPagination, qanFilters, qanOverview,
+    I, queryAnalyticsPage,
   }) => {
-    qanFilters.waitForFiltersToLoad();
-    qanOverview.waitForOverviewLoaded();
-    I.seeAttributesOnElements(qanPagination.buttons.previousPage, { 'aria-disabled': 'true' });
-    I.seeAttributesOnElements(qanPagination.buttons.nextPage, { 'aria-disabled': 'false' });
-    I.seeElementsDisabled(qanFilters.buttons.resetAll);
-    I.seeElementsDisabled(qanFilters.buttons.showSelected);
-    const count = await qanOverview.getCountOfItems();
+    queryAnalyticsPage.waitForLoaded();
+    I.seeAttributesOnElements(queryAnalyticsPage.data.buttons.previousPage, { 'aria-disabled': 'true' });
+    I.seeAttributesOnElements(queryAnalyticsPage.data.buttons.nextPage, { 'aria-disabled': 'false' });
+    I.seeElementsDisabled(queryAnalyticsPage.filters.buttons.resetAll);
+    I.seeElementsDisabled(queryAnalyticsPage.filters.buttons.showSelected);
+    const count = await queryAnalyticsPage.data.getCountOfItems();
 
     if (count > 100) {
-      I.seeElement(qanPagination.buttons.ellipsis);
+      I.seeElement(queryAnalyticsPage.data.buttons.ellipsis);
     }
   },
 );

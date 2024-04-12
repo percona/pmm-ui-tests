@@ -17,6 +17,9 @@ class QueryAnalyticsData {
     };
     this.buttons = {
       lastPage: locate('//li[contains(@class,"ant-pagination-item")]').last(),
+      previousPage: locate('.ant-pagination-prev'),
+      nextPage: locate('.ant-pagination-next'),
+      ellipsis: locate('.ant-pagination-item-ellipsis'),
     };
   }
 
@@ -63,6 +66,13 @@ class QueryAnalyticsData {
     I.clearField(this.fields.searchBy);
     I.fillField(this.fields.searchBy, value);
     I.pressKey('Enter');
+  }
+
+  async getCountOfItems() {
+    I.waitForVisible(this.elements.queryRow(1), 30);
+    const resultsCount = (await I.grabTextFrom(this.elements.totalItems)).split(' ');
+
+    return resultsCount[2];
   }
 }
 
