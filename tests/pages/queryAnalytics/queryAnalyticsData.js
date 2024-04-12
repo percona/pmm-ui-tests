@@ -8,6 +8,12 @@ class QueryAnalyticsData {
       queryRow: (rowNumber) => locate(`//div[@role="row" and contains(@class, "tr-${rowNumber}")]`),
       queryRows: locate('//div[@role="row" and contains(@class, "tr-")]'),
       totalItems: I.useDataQA('qan-total-items'),
+      selectedRow: locate('.selected-overview-row'),
+      metricsCellDetailValue: (metricName, columnNumber) => locate(`//td//span[contains(text(), "${metricName}")]/ancestor::tr/td[${columnNumber}]//span[1]`),
+      queryValue: (rowNumber, columnNumber) => `div.tr-${rowNumber} > div:nth-child(${columnNumber + 2}) span > div > span`,
+    };
+    this.fields = {
+      searchBy: '//input[contains(@name, "search")]',
     };
     this.buttons = {
       lastPage: locate('//li[contains(@class,"ant-pagination-item")]').last(),
@@ -50,6 +56,13 @@ class QueryAnalyticsData {
 
   async getLastPageNumber() {
     return await I.grabAttributeFrom(this.buttons.lastPage, 'title');
+  }
+
+  searchByValue(value, refresh = false) {
+    I.waitForVisible(this.fields.searchBy, 30);
+    I.clearField(this.fields.searchBy);
+    I.fillField(this.fields.searchBy, value);
+    I.pressKey('Enter');
   }
 }
 

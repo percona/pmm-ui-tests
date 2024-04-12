@@ -1,5 +1,4 @@
 const assert = require('assert');
-const { qanFilters } = require('../remoteInstances/remoteInstancesHelper');
 
 Feature('QAN common').retry(1);
 
@@ -49,25 +48,23 @@ Scenario(
 Scenario(
   'PMM-T186 - Verify values in overview and in details match @qan',
   async ({
-    I, qanOverview, qanDetails, adminPage, queryAnalyticsPage,
+    I, adminPage, queryAnalyticsPage,
   }) => {
-    const cellValue = qanDetails.getMetricsCellLocator('Query Time', 3);
-
     queryAnalyticsPage.waitForLoaded();
     await adminPage.applyTimeRange('Last 1 hour');
     queryAnalyticsPage.waitForLoaded();
     queryAnalyticsPage.filters.selectFilter('ps-dev');
-    await qanOverview.searchByValue('insert');
+    queryAnalyticsPage.data.searchByValue('insert');
     I.waitForElement(queryAnalyticsPage.data.elements.queryRow(1), 30);
-    await qanOverview.data.selectRow(1);
-    await I.waitForVisible(cellValue, 30);
-    let overviewValue = await I.grabTextFrom(qanOverview.getCellValueLocator(1, 2));
-    let detailsValue = await I.grabTextFrom(qanDetails.getMetricsCellLocator('Query Count', 2));
+    queryAnalyticsPage.data.selectRow(1);
+    I.waitForVisible(queryAnalyticsPage.data.elements.metricsCellDetailValue('Query Time', 3), 30);
+    let overviewValue = await I.grabTextFrom(queryAnalyticsPage.data.elements.queryValue(1, 2));
+    let detailsValue = await I.grabTextFrom(queryAnalyticsPage.data.elements.metricsCellDetailValue('Query Count', 2), 30);
 
     assert.ok(overviewValue === detailsValue, `Query Count value in Overview and Detail should match. Overview:'${overviewValue}'!=Detail:'${detailsValue}'`);
 
-    overviewValue = await I.grabTextFrom(qanOverview.getCellValueLocator(1, 3));
-    detailsValue = await I.grabTextFrom(qanDetails.getMetricsCellLocator('Query Time', 4));
+    overviewValue = await I.grabTextFrom(queryAnalyticsPage.data.elements.queryValue(1, 3));
+    detailsValue = await I.grabTextFrom(queryAnalyticsPage.data.elements.metricsCellDetailValue('Query Time', 4), 30);
 
     assert.ok(overviewValue === detailsValue, `Query Time value in Overview and Detail should match. Overview:'${overviewValue}'!=Detail:'${detailsValue}'`);
   },
