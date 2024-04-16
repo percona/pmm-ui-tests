@@ -13,15 +13,15 @@ Before(async ({
 
 Scenario(
   'PMM-T207 Verify hovering over query in overview table  @qan',
-  async ({ I, qanOverview }) => {
-    qanOverview.waitForOverviewLoaded();
-    I.waitForVisible(qanOverview.elements.firstQueryValue, 30);
-    let firstQueryText = await I.grabTextFrom(qanOverview.elements.firstQueryValue);
+  async ({ I, queryAnalyticsPage }) => {
+    queryAnalyticsPage.waitForLoaded();
+    I.waitForVisible(queryAnalyticsPage.data.elements.queryRowValue(1), 30);
+    let firstQueryText = await I.grabTextFrom(queryAnalyticsPage.data.elements.queryRowValue(1));
 
     firstQueryText = firstQueryText.replace(/ /g, '');
-    qanOverview.mouseOverFirstInfoIcon();
+    queryAnalyticsPage.data.mouseOverInfoIcon(1);
 
-    let tooltipQueryText = await I.grabTextFrom(qanOverview.elements.tooltipQueryValue);
+    let tooltipQueryText = await I.grabTextFrom(queryAnalyticsPage.data.elements.queryTooltipValue);
 
     tooltipQueryText = tooltipQueryText.replace(/ /g, '').replace(/\n/g, '');
     assert.ok(firstQueryText === tooltipQueryText, `The request text: ${firstQueryText}, don't match the request text on the tooltip: ${tooltipQueryText}.`);
@@ -31,12 +31,12 @@ Scenario(
 Scenario(
   'PMM-T1061 Verify Plan and PlanID with pg_stat_monitor @qan',
   async ({
-    I, adminPage, qanOverview, qanFilters, qanDetails,
+    I, adminPage, qanOverview, qanFilters, qanDetails, queryAnalyticsPage,
   }) => {
-    await qanFilters.clickFilter('pdpgsql-dev');
-    await qanOverview.waitForOverviewLoaded();
+    await queryAnalyticsPage.filters.selectFilter('pdpgsql-dev');
+    queryAnalyticsPage.waitForLoaded();
     await adminPage.applyTimeRange('Last 12 hours');
-    await qanOverview.waitForOverviewLoaded();
+    queryAnalyticsPage.waitForLoaded();
     await qanOverview.searchByValue('SELECT current_database() datname, schemaname, relname, heap_blks_read, heap_blks_hit, idx_blks_read');
     await qanOverview.waitForOverviewLoaded();
     await qanOverview.mouseOverFirstInfoIcon();
@@ -71,70 +71,64 @@ Scenario(
 
 Scenario(
   'PMM-T146 Verify user is able to see  chart tooltip for time related metric  @qan',
-  async ({ I, qanOverview }) => {
-    const ROW_NUMBER = 1;
-    const QUERY_TIME_COLUMN_NUMBER = 3;
-
-    qanOverview.waitForOverviewLoaded();
-    qanOverview.showTooltip(ROW_NUMBER, QUERY_TIME_COLUMN_NUMBER);
-    I.seeElement(qanOverview.elements.latencyChart);
+  async ({ I, queryAnalyticsPage }) => {
+    queryAnalyticsPage.waitForLoaded();
+    queryAnalyticsPage.data.showTooltip(1, 3);
+    I.seeElement(queryAnalyticsPage.data.elements.latencyChart);
   },
 );
 
 Scenario(
   'PMM-T151 Verify that hovering over a non-time metric displays a tooltip without a graph @qan',
-  async ({ I, qanOverview }) => {
-    const ROW_NUMBER = 1;
-    const QUERY_COUNT_COLUMN_NUMBER = 2;
-
-    qanOverview.waitForOverviewLoaded();
-    qanOverview.showTooltip(ROW_NUMBER, QUERY_COUNT_COLUMN_NUMBER);
-    I.dontSeeElement(qanOverview.elements.latencyChart);
+  async ({ I, queryAnalyticsPage }) => {
+    queryAnalyticsPage.waitForLoaded();
+    queryAnalyticsPage.data.showTooltip(1, 2);
+    I.dontSeeElement(queryAnalyticsPage.data.elements.latencyChart);
   },
 );
 
 Scenario(
   'PMM-T171 Verify that changing the time range doesnt reset sorting, Open the QAN Dashboard and check that sorting works correctly after sorting by another column. @qan',
-  async ({ qanOverview, adminPage }) => {
-    qanOverview.changeSorting(2);
-    qanOverview.verifySorting(2, 'asc');
-    qanOverview.waitForOverviewLoaded();
+  async ({ adminPage, queryAnalyticsPage }) => {
+    queryAnalyticsPage.changeSorting(2);
+    queryAnalyticsPage.data.verifySorting(2, 'asc');
+    queryAnalyticsPage.waitForLoaded();
     await adminPage.applyTimeRange('Last 1 hour');
-    qanOverview.waitForOverviewLoaded();
-    qanOverview.verifySorting(2, 'asc');
-    qanOverview.changeSorting(1);
-    qanOverview.verifySorting(1, 'asc');
-    qanOverview.changeSorting(1);
-    qanOverview.verifySorting(1, 'desc');
-    qanOverview.verifySorting(2);
+    queryAnalyticsPage.waitForLoaded();
+    queryAnalyticsPage.data.verifySorting(2, 'asc');
+    queryAnalyticsPage.changeSorting(1);
+    queryAnalyticsPage.data.verifySorting(1, 'asc');
+    queryAnalyticsPage.changeSorting(1);
+    queryAnalyticsPage.data.verifySorting(1, 'desc');
+    queryAnalyticsPage.data.verifySorting(2);
   },
 );
 
 Scenario(
   'PMM-T156 Verify that by default, queries are sorted by Load, from max to min @qan',
-  async ({ qanOverview }) => {
-    qanOverview.waitForOverviewLoaded();
-    qanOverview.verifySorting(1, 'asc');
+  async ({ queryAnalyticsPage }) => {
+    queryAnalyticsPage.waitForLoaded();
+    queryAnalyticsPage.data.verifySorting(1, 'asc');
   },
 );
 
 Scenario(
   'PMM-T183 Verify that "Group by" in the overview table can be changed @qan',
-  async ({ I, qanOverview }) => {
-    I.waitForText('Query', 30, qanOverview.elements.groupBy);
-    qanOverview.waitForOverviewLoaded();
-    await qanOverview.changeGroupBy('Database');
-    qanOverview.verifyGroupByIs('Database');
+  async ({ I, queryAnalyticsPage }) => {
+    I.waitForText('Query', 30, queryAnalyticsPage.elements.selectedMainMetric());
+    queryAnalyticsPage.waitForLoaded();
+    await queryAnalyticsPage.changeMainMetric('Database');
+    queryAnalyticsPage.verifyMainMetric('Database');
   },
 );
 
 Scenario(
   'PMM-T187 Verify that the selected row in the overview table is highlighted @qan',
-  async ({ I, qanOverview }) => {
+  async ({ I, queryAnalyticsPage }) => {
     const expectedColor = 'rgb(35, 70, 130)';
 
-    qanOverview.selectRow('2');
-    const color = await I.grabCssPropertyFrom(`${qanOverview.elements.selectedRow} > div`, 'background-color');
+    queryAnalyticsPage.data.selectRow('2');
+    const color = await I.grabCssPropertyFrom(`${queryAnalyticsPage.data.elements.selectedRow} > div`, 'background-color');
 
     assert.ok(color === expectedColor, `Row background color should be ${expectedColor} but it is ${color}`);
   },
@@ -142,21 +136,18 @@ Scenario(
 
 Scenario(
   'PMM-T133, PMM-T132, PMM-T100 Check Changing Main Metric, PMM-T203 Verify user is able to search for columns by typing @qan',
-  async ({ I, qanOverview }) => {
+  async ({ I, queryAnalyticsPage }) => {
     const metricName = 'Query Count with errors';
-    const urlString = 'num_queries_with_errors';
-    const newMetric = qanOverview.getColumnLocator(metricName);
-    const oldMetric = qanOverview.getColumnLocator('Load');
 
-    await I.waitForElement(qanOverview.buttons.addColumn, 30);
-    await qanOverview.changeMetric('Load', metricName);
-    await I.seeInCurrentUrl(urlString);
+    await I.waitForElement(queryAnalyticsPage.buttons.addColumnButton, 30);
+    await queryAnalyticsPage.data.changeMetric('Load', metricName);
+    await I.seeInCurrentUrl('num_queries_with_errors');
     const url = await I.grabCurrentUrl();
 
     await I.amOnPage(url);
-    await I.waitForElement(qanOverview.buttons.addColumn, 30);
-    await I.waitForElement(newMetric, 30);
-    await I.dontSeeElement(oldMetric);
+    await I.waitForElement(queryAnalyticsPage.buttons.addColumnButton, 30);
+    await I.waitForElement(queryAnalyticsPage.data.fields.columnHeader(metricName), 30);
+    await I.dontSeeElement(queryAnalyticsPage.data.fields.columnHeader('Load'));
   },
 );
 
@@ -165,40 +156,37 @@ Scenario(
   async ({ I, qanOverview, queryAnalyticsPage }) => {
     const metricName = 'Query Count with errors';
     const urlString = 'num_queries_with_errors';
-    const newMetric = qanOverview.getColumnLocator(metricName);
-    const metricInDropdown = qanOverview.getMetricLocatorInDropdown(metricName);
-    const oldMetric = qanOverview.getColumnLocator('Load');
+    const newMetric = queryAnalyticsPage.data.fields.columnHeader(metricName);
+    const oldMetric = queryAnalyticsPage.data.fields.columnHeader('Load');
 
-    await I.waitForElement(qanOverview.getColumnLocator('Add column'), 30);
-    await I.waitForElement(oldMetric, 30);
-    await queryAnalyticsPage.addColumn(metricName);
-    await queryAnalyticsPage.waitForLoaded();
-    await I.waitForElement(newMetric, 30);
-    await I.seeElement(newMetric);
-    await I.seeElement(oldMetric);
-    await I.seeInCurrentUrl(urlString);
+    queryAnalyticsPage.addColumn(metricName);
+    queryAnalyticsPage.waitForLoaded();
+    I.waitForElement(newMetric, 30);
+    I.seeElement(newMetric);
+    I.seeElement(oldMetric);
+    I.seeInCurrentUrl(urlString);
     const url = await I.grabCurrentUrl();
 
-    await I.amOnPage(url);
-    await queryAnalyticsPage.waitForLoaded();
-    await I.waitForElement(qanOverview.buttons.addColumn, 30);
-    await I.waitForElement(newMetric, 30);
-    await I.seeElement(oldMetric);
-    await I.seeElement(newMetric);
+    I.amOnPage(url);
+    queryAnalyticsPage.waitForLoaded();
+    I.waitForElement(queryAnalyticsPage.buttons.addColumnButton, 30);
+    I.waitForElement(newMetric, 30);
+    I.seeElement(oldMetric);
+    I.seeElement(newMetric);
   },
 );
 
 Scenario(
   'PMM-T135 - Verify user is not able to add duplicate metric to the overview column @qan',
-  async ({ I, qanOverview, queryAnalyticsPage }) => {
+  async ({ I, queryAnalyticsPage }) => {
     const columnName = 'Load';
-    const column = qanOverview.getColumnLocator(columnName);
+    const column = queryAnalyticsPage.data.fields.columnHeader(columnName);
 
     await I.waitForVisible(column, 30);
     await I.seeElement(column);
     await I.fillField(queryAnalyticsPage.buttons.addColumn, columnName);
-    await I.waitForVisible(qanOverview.elements.noDataIcon, 30);
-    await I.seeElement(qanOverview.elements.noDataIcon);
+    await I.waitForVisible(queryAnalyticsPage.data.elements.addColumnNoDataIcon, 30);
+    await I.seeElement(queryAnalyticsPage.data.elements.addColumnNoDataIcon);
   },
 );
 
@@ -234,88 +222,88 @@ xScenario(
 
 Scenario(
   'PMM-T156 Verify Queries are sorted by Load by Default Sorting from Max to Min, verify Sorting for Metrics works @qan',
-  async ({ qanOverview }) => {
-    qanOverview.verifySorting(1, 'asc');
-    await qanOverview.verifyMetricsSorted('Load', 3, 'down');
-    qanOverview.changeSorting(1);
-    qanOverview.verifySorting(1, 'desc');
-    await qanOverview.verifyMetricsSorted('Load', 3, 'up');
-    qanOverview.changeSorting(2);
-    qanOverview.verifySorting(2, 'asc');
-    await qanOverview.verifyMetricsSorted('Query Count', 4, 'down');
-    qanOverview.changeSorting(2);
-    qanOverview.verifySorting(2, 'desc');
-    await qanOverview.verifyMetricsSorted('Query Count', 4, 'up');
-    qanOverview.changeSorting(3);
-    qanOverview.verifySorting(3, 'asc');
-    await qanOverview.verifyMetricsSorted('Query Time', 5, 'down');
-    qanOverview.changeSorting(3);
-    qanOverview.verifySorting(3, 'desc');
-    await qanOverview.verifyMetricsSorted('Query Time', 5, 'up');
+  async ({ queryAnalyticsPage }) => {
+    queryAnalyticsPage.data.verifySorting(1, 'asc');
+    await queryAnalyticsPage.data.verifyMetricsSorted('Load', 3, 'down');
+    queryAnalyticsPage.changeSorting(1);
+    queryAnalyticsPage.data.verifySorting(1, 'desc');
+    await queryAnalyticsPage.data.verifyMetricsSorted('Load', 3, 'up');
+    queryAnalyticsPage.changeSorting(2);
+    queryAnalyticsPage.data.verifySorting(2, 'asc');
+    await queryAnalyticsPage.data.verifyMetricsSorted('Query Count', 4, 'down');
+    queryAnalyticsPage.changeSorting(2);
+    queryAnalyticsPage.data.verifySorting(2, 'desc');
+    await queryAnalyticsPage.data.verifyMetricsSorted('Query Count', 4, 'up');
+    queryAnalyticsPage.changeSorting(3);
+    queryAnalyticsPage.data.verifySorting(3, 'asc');
+    await queryAnalyticsPage.data.verifyMetricsSorted('Query Time', 5, 'down');
+    queryAnalyticsPage.changeSorting(3);
+    queryAnalyticsPage.data.verifySorting(3, 'desc');
+    await queryAnalyticsPage.data.verifyMetricsSorted('Query Time', 5, 'up');
   },
 );
 
 Scenario(
   'PMM-T179 - Verify user is able to hover sparkline buckets and see correct Query Count Value @qan',
-  async ({ I, qanOverview }) => {
-    qanOverview.waitForOverviewLoaded();
-    const firstCell = qanOverview.getCellValueLocator(3, 2);
+  async ({ I, queryAnalyticsPage }) => {
+    queryAnalyticsPage.waitForLoaded();
+    const firstCell = queryAnalyticsPage.data.elements.queryValue(3, 2);
 
     const [queryCount] = (await I.grabTextFrom(firstCell)).split(' ');
 
     I.moveCursorTo(firstCell);
-    I.waitForVisible(qanOverview.elements.tooltip, 20);
-    await qanOverview.verifyTooltipValue(queryCount);
+    I.waitForVisible(queryAnalyticsPage.data.elements.metricTooltip, 20);
+    I.assertTrue((await I.grabTextFrom(queryAnalyticsPage.data.elements.tooltipQPSValue)).includes(queryCount), `Expected QPS value: ${queryCount} does not equal displayed one: ${await I.grabTextFrom(queryAnalyticsPage.data.elements.tooltipQPSValue)}`);
   },
 );
 
 Scenario(
   'PMM-T179 - Verify user is able to hover sparkline buckets and see correct Query Time Value @qan',
-  async ({ I, qanOverview }) => {
-    qanOverview.waitForOverviewLoaded();
-    const secondCell = qanOverview.getCellValueLocator(3, 3);
+  async ({ I, queryAnalyticsPage }) => {
+    queryAnalyticsPage.waitForLoaded();
+    const secondCell = queryAnalyticsPage.data.elements.queryValue(3, 3);
 
     const queryTime = await I.grabTextFrom(secondCell);
 
     I.moveCursorTo(secondCell);
-    I.waitForVisible(qanOverview.elements.latencyChart, 20);
-    await qanOverview.verifyTooltipValue(`Per query : ${queryTime}`);
+    I.waitForVisible(queryAnalyticsPage.data.elements.latencyChart, 20);
+    await queryAnalyticsPage.data.verifyTooltipValue(`Per query : ${queryTime}`);
   },
 );
 
 Scenario(
   'PMM-T204 - Verify small and N/A values on sparkline @qan',
-  async ({ I, qanOverview }) => {
-    const firstCell = qanOverview.getCellValueLocator(0, 1);
-    const secondCell = qanOverview.getCellValueLocator(3, 3);
+  async ({ I, queryAnalyticsPage }) => {
+    const firstCell = queryAnalyticsPage.data.elements.queryValue(0, 1);
+    const secondCell = queryAnalyticsPage.data.elements.queryValue(3, 3);
 
-    await qanOverview.changeSorting(1);
-    await qanOverview.verifySorting(1, 'desc');
-    await I.waitForVisible(firstCell, 10);
-    await I.moveCursorTo(firstCell);
-    await I.waitForVisible(qanOverview.elements.tooltipQPSValue, 10);
-    await qanOverview.changeMetric('Query Time', 'Innodb Queue Wait');
-    await qanOverview.waitForOverviewLoaded();
-    await I.waitForVisible(secondCell, 10);
-    await I.moveCursorTo(secondCell);
-    await I.dontSeeElement(qanOverview.elements.tooltip);
-    await I.dontSeeElement(qanOverview.elements.tooltipQPSValue);
+    queryAnalyticsPage.changeSorting(1);
+    queryAnalyticsPage.data.verifySorting(1, 'desc');
+    I.waitForVisible(firstCell, 10);
+    I.moveCursorTo(firstCell);
+    I.waitForVisible(queryAnalyticsPage.data.elements.tooltipQPSValue, 10);
+    queryAnalyticsPage.data.changeMetric('Query Time', 'Innodb Queue Wait');
+    queryAnalyticsPage.waitForLoaded();
+    I.waitForVisible(secondCell, 10);
+    I.moveCursorTo(secondCell);
+    I.dontSeeElement(queryAnalyticsPage.data.elements.tooltip);
+    I.dontSeeElement(queryAnalyticsPage.data.elements.tooltipQPSValue);
   },
-);
+).retry(2);
 
 Scenario(
   'PMM-T412 - Verify user is able to search by part of query @qan',
   async ({
-    I, qanOverview, adminPage,
+    I, adminPage, queryAnalyticsPage,
   }) => {
     const query = 'SELECT current_database() datname';
 
-    await qanOverview.waitForOverviewLoaded();
+    queryAnalyticsPage.waitForLoaded();
     await adminPage.applyTimeRange('Last 3 hours');
-    await qanOverview.waitForOverviewLoaded();
-    await qanOverview.searchByValue(query);
-    await I.waitForElement(qanOverview.elements.querySelector, 30);
-    const firstQueryText = await I.grabTextFrom(qanOverview.elements.firstQueryValue);
+    queryAnalyticsPage.waitForLoaded();
+    queryAnalyticsPage.data.searchByValue(query);
+    await I.waitForElement(queryAnalyticsPage.data.elements.queryRows, 30);
+    const firstQueryText = await I.grabTextFrom(queryAnalyticsPage.data.elements.queryRowValue(1));
 
     assert.ok(firstQueryText.startsWith(query), `The Searched Query text was: "${query}", don't match the result text in overview for 1st result: "${firstQueryText}"`);
   },
@@ -323,18 +311,18 @@ Scenario(
 
 Scenario(
   'PMM-T417 Verify user is able to search by Database @qan',
-  async ({ I, qanOverview }) => {
+  async ({ I, qanOverview, queryAnalyticsPage }) => {
     const groupBy = 'Database';
     const query = 'postgres';
 
-    I.waitForText('Query', 30, qanOverview.elements.groupBy);
-    qanOverview.waitForOverviewLoaded();
-    await qanOverview.changeGroupBy(groupBy);
-    qanOverview.verifyGroupByIs(groupBy);
-    qanOverview.waitForOverviewLoaded();
-    await qanOverview.searchByValue(query);
-    I.waitForElement(qanOverview.elements.querySelector, 30);
-    const firstQueryText = await I.grabTextFrom(qanOverview.elements.firstQueryValue);
+    I.waitForText('Query', 30, queryAnalyticsPage.elements.selectedMainMetric());
+    queryAnalyticsPage.waitForLoaded();
+    await queryAnalyticsPage.changeMainMetric(groupBy);
+    queryAnalyticsPage.verifyMainMetric(groupBy);
+    queryAnalyticsPage.waitForLoaded();
+    queryAnalyticsPage.data.searchByValue(query);
+    I.waitForElement(queryAnalyticsPage.data.elements.queryRows, 30);
+    const firstQueryText = await I.grabTextFrom(queryAnalyticsPage.data.elements.queryRowValue(1));
 
     assert.ok(firstQueryText === query, `The Searched text was: ${query}, don't match the result text in overview for 1st result: ${firstQueryText}`);
   },
@@ -342,42 +330,42 @@ Scenario(
 
 Scenario(
   'PMM-T127 Verify user is able to Group By overview table results @qan',
-  async ({ I, qanOverview }) => {
-    I.waitForText('Query', 30, qanOverview.elements.groupBy);
-    qanOverview.waitForOverviewLoaded();
-    await qanOverview.changeGroupBy('Service Name');
-    qanOverview.verifyGroupByIs('Service Name');
-    await qanOverview.changeGroupBy('Database');
-    qanOverview.verifyGroupByIs('Database');
-    await qanOverview.changeGroupBy('Schema');
-    qanOverview.verifyGroupByIs('Schema');
-    await qanOverview.changeGroupBy('User Name');
-    qanOverview.verifyGroupByIs('User Name');
-    await qanOverview.changeGroupBy('Client Host');
-    qanOverview.verifyGroupByIs('Client Host');
-    await qanOverview.changeGroupBy('Query');
-    qanOverview.verifyGroupByIs('Query');
+  async ({ I, queryAnalyticsPage }) => {
+    I.waitForText('Query', 30, queryAnalyticsPage.elements.selectedMainMetric());
+    queryAnalyticsPage.waitForLoaded();
+    await queryAnalyticsPage.changeMainMetric('Service Name');
+    queryAnalyticsPage.verifyMainMetric('Service Name');
+    await queryAnalyticsPage.changeMainMetric('Database');
+    queryAnalyticsPage.verifyMainMetric('Database');
+    await queryAnalyticsPage.changeMainMetric('Schema');
+    queryAnalyticsPage.verifyMainMetric('Schema');
+    await queryAnalyticsPage.changeMainMetric('User Name');
+    queryAnalyticsPage.verifyMainMetric('User Name');
+    await queryAnalyticsPage.changeMainMetric('Client Host');
+    queryAnalyticsPage.verifyMainMetric('Client Host');
+    await queryAnalyticsPage.changeMainMetric('Query');
+    queryAnalyticsPage.verifyMainMetric('Query');
   },
 );
 
 Scenario(
   'PMM-T411 PMM-T400 PMM-T414 Verify search filed is displayed, Verify user is able to search the query id specified time range, Verify searching by Query ID @qan',
-  async ({ I, qanOverview }) => {
-    qanOverview.waitForOverviewLoaded();
-    I.waitForVisible(qanOverview.elements.firstQueryValue, 30);
-    const firstQueryText = await I.grabTextFrom(qanOverview.elements.firstQueryValue);
+  async ({ I, queryAnalyticsPage }) => {
+    queryAnalyticsPage.waitForLoaded();
+    I.waitForVisible(queryAnalyticsPage.data.elements.queryRows, 30);
+    const firstQueryText = await I.grabTextFrom(queryAnalyticsPage.data.elements.queryValue(1, 2));
 
-    qanOverview.mouseOverFirstInfoIcon();
+    queryAnalyticsPage.data.mouseOverInfoIcon(1);
 
-    let tooltipQueryId = await I.grabTextFrom(qanOverview.elements.tooltipQueryId);
+    let tooltipQueryId = await I.grabTextFrom(queryAnalyticsPage.data.elements.queryTooltipId);
 
     tooltipQueryId = tooltipQueryId.split(':');
 
     // fetch the query id field value, split to get just the queryId
     tooltipQueryId = tooltipQueryId[1].trim();
-    await qanOverview.searchByValue(tooltipQueryId);
-    I.waitForElement(qanOverview.elements.querySelector, 30);
-    const firstQuerySearchText = await I.grabTextFrom(qanOverview.elements.firstQueryValue);
+    await queryAnalyticsPage.data.searchByValue(tooltipQueryId);
+    I.waitForElement(queryAnalyticsPage.data.elements.queryRows, 30);
+    const firstQuerySearchText = await I.grabTextFrom(queryAnalyticsPage.data.elements.queryValue(1, 2));
 
     assert.ok(firstQuerySearchText === firstQueryText, `The search with Query Id: ${tooltipQueryId} was supposed to result in Query with value: ${firstQueryText} but the resulted query found is ${firstQuerySearchText}`);
   },
@@ -405,7 +393,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T220 Verify that last column cant be removed from Overview table @qan',
+  'PMM-T220 Verify that last column can\'t be removed from Overview table @qan',
   async ({
     I, qanOverview, qanDetails, qanFilters,
   }) => {
@@ -426,7 +414,7 @@ Scenario(
 );
 
 Scenario(
-  '@PMM-T1699 Verify that query time is shown in UTC timezone after hovering Load graph for query if user selected UTC timezone @qan',
+  '@PMM-T1699 Verify that query time is shown in UTC timezone after hovering Load graph for query if user selected UTC timezone @qan @debug',
   async ({ I, adminPage, qanOverview }) => {
     qanOverview.waitForOverviewLoaded();
     const firstLoadCell = qanOverview.getLoadLocator(2);

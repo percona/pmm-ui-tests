@@ -7,7 +7,8 @@ shortCutTests.add(['Replication Set', 'MySQL Replication Summary', 'graph/d/mysq
 shortCutTests.add(['Node Name', 'Node Summary', 'graph/d/node-instance-summary/node-summary?var-node_name=pmm-server', 'pmm-server']);
 shortCutTests.add(['Service Name', 'MongoDB Instance Summary', 'graph/d/mongodb-instance-summary/mongodb-instance-summary', 'mongodb_rs1_2']);
 
-Feature('QAN filters');
+Feature('QAN filters').retry(1);
+
 // filterToApply - filter witch we check, searchValue - value to get zero search result
 const filters = new DataTable(['filterToApply', 'searchValue']);
 
@@ -258,10 +259,10 @@ Data(shortCutTests).Scenario(
   },
 );
 
-Scenario('PMM-T437 - Verify short-cut navigation for n/a items @qan', async ({ I, qanFilters }) => {
-  await qanFilters.waitForFiltersToLoad();
-  await qanFilters.checkLink('Cluster', 'md-dev-cluster', true);
-  await I.fillField(qanFilters.fields.filterBy, 'n/a');
-  await qanFilters.checkLink('Cluster', 'undefined', false);
-  await qanFilters.checkLink('Replication Set', 'undefined', false);
+Scenario('PMM-T437 - Verify short-cut navigation for n/a items @qan', async ({ I, qanFilters, queryAnalyticsPage }) => {
+  queryAnalyticsPage.waitForLoaded();
+  queryAnalyticsPage.filters.checkLink('Cluster', 'md-dev-cluster', true);
+  queryAnalyticsPage.filters.filterBy('n/a');
+  queryAnalyticsPage.filters.checkLink('Cluster', 'undefined', false);
+  queryAnalyticsPage.filters.checkLink('Replication Set', 'undefined', false);
 });

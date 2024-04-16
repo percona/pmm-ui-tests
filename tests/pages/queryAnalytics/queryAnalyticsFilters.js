@@ -12,6 +12,7 @@ class QueryAnalyticsFilters {
       filterByExactName: (filterName) => locate(`//div[@data-testid="filter-checkbox-${filterName}"]`),
       filterByName: (filterName) => locate(`//div[contains(@data-testid, "filter-checkbox-${filterName}")]`),
       filterByNameAndGroup: (filterName, groupName) => this.fields.filterGroup(groupName).find(`//div[@data-testid="filter-checkbox-${filterName}"]`),
+      filterLinkByNameAndGroup: (filterName, groupName) => this.fields.filterByNameAndGroup(filterName, groupName).find('a'),
       filterPercentageByNameAndGroup: (filterName, groupName) => this.fields.filterByNameAndGroup(filterName, groupName).find('//span').at(3),
       filterName: locate('//span[@class="checkbox-container__label-text"]'),
       checkedFilters: () => this.fields.filterCheckboxes.find('//input[@type="checkbox" and @checked]//following-sibling::span[@class="checkbox-container__label-text"]'),
@@ -159,6 +160,14 @@ class QueryAnalyticsFilters {
   applyShowAllLink(groupName) {
     I.waitForVisible(this.fields.groupElementsCount(groupName), 30);
     I.forceClick(this.fields.groupElementsCount(groupName));
+  }
+
+  checkLink(filterName, groupName, visibility) {
+    if (visibility) {
+      I.waitForVisible(this.fields.filterLinkByNameAndGroup(filterName, groupName));
+    } else {
+      I.waitForDetached(this.fields.filterLinkByNameAndGroup(filterName, groupName));
+    }
   }
 }
 

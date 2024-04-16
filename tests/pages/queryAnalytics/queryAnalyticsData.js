@@ -8,15 +8,26 @@ class QueryAnalyticsData {
     this.elements = {
       queryRow: (rowNumber) => locate(`//div[@role="row" and contains(@class, "tr-${rowNumber}")]`),
       queryRows: locate('//div[@role="row" and contains(@class, "tr-")]'),
+      queryRowValue: (rowNumber) => locate(`div.tr-${rowNumber} > div.td:nth-child(2) div > div`),
+      queryRowIcon: (rowNumber) => locate(`div.tr-${rowNumber} > div.td:nth-child(2) div > svg`),
       totalItems: I.useDataQA('qan-total-items'),
       selectedRow: locate('.selected-overview-row'),
       queryValue: (rowNumber, columnNumber) => `div.tr-${rowNumber} > div:nth-child(${columnNumber + 2}) span > div > span`,
       columnHeaderText: (headerText) => locate(`//span[@class="ant-select-selection-item" and text()="${headerText}"]`),
       sorting: (columnNumber) => locate(`(//a[@data-testid='sort-by-control'])[${columnNumber}]`),
       sortingValue: (columnNumber) => this.elements.sorting(columnNumber).find('//span'),
+      queryTooltipValue: locate('.ant-tooltip-inner').find('code'),
+      queryTooltipId: locate('.ant-tooltip-inner').find('h5'),
+      latencyChart: locate('.latency-chart-container'),
+      metricTooltip: locate('.ant-tooltip-content'),
+      metricInDropdown: (name) => locate('[role="listbox"]').find(`[label='${name}']`),
+      addColumnNoDataIcon: 'div.ant-empty-image',
+      tooltipQPSValue: '$qps',
+      tooltip: '.overview-column-tooltip',
     };
     this.fields = {
       searchBy: '//input[contains(@name, "search")]',
+      columnHeader: (columnName) => locate('$manage-columns-selector').withText(columnName),
     };
     this.buttons = {
       lastPage: locate('//li[contains(@class,"ant-pagination-item")]').last(),
@@ -95,7 +106,11 @@ class QueryAnalyticsData {
 
   verifySorting(columnNumber, sortDirection) {
     I.waitForElement(this.elements.sortingValue(columnNumber), 30);
-    I.seeAttributesOnElements(this.elements.sortingValue(columnNumber), { class: `sort-by ${sortDirection}` });
+    if (sortDirection) {
+      I.seeAttributesOnElements(this.elements.sortingValue(columnNumber), { class: `sort-by ${sortDirection}` });
+    } else {
+      I.seeAttributesOnElements(this.elements.sortingValue(columnNumber), { class: 'sort-by ' });
+    }
   }
 
   waitForNewItemsCount(originalCount) {
@@ -109,6 +124,67 @@ class QueryAnalyticsData {
     }
 
     return false;
+  }
+
+  mouseOverInfoIcon(rowNumber) {
+    I.moveCursorTo(this.elements.queryRowIcon(rowNumber));
+    I.waitForVisible(this.elements.queryTooltipValue, 30);
+  }
+
+  showTooltip(rowNumber, dataColumnNumber) {
+    I.waitForElement(this.elements.queryValue(rowNumber, dataColumnNumber), 30);
+    I.scrollTo(this.elements.queryValue(rowNumber, dataColumnNumber));
+    I.moveCursorTo(this.elements.queryValue(rowNumber, dataColumnNumber));
+    I.waitForElement(this.elements.metricTooltip, 30);
+  }
+
+  changeMetric(columnName, metricName) {
+    const newMetric = this.fields.columnHeader(metricName);
+    const metricInDropdown = this.elements.metricInDropdown(metricName);
+    const oldMetric = this.fields.columnHeader(columnName);
+
+    I.waitForElement(oldMetric, 30);
+    queryAnalyticsPage.waitForLoaded();
+
+    // Hardcoded wait because of random failings
+    I.wait(3);
+    I.click(oldMetric);
+    queryAnalyticsPage.waitForLoaded();
+    I.click(metricInDropdown);
+    I.waitForElement(newMetric, 30);
+    I.seeElement(newMetric);
+    I.dontSeeElement(oldMetric);
+  }
+
+  async verifyMetricsSorted(metricName, columnNumber, sortOrder = 'down') {
+    I.waitForVisible(this.elements.queryRows);
+    const rows = await I.grabNumberOfVisibleElements(this.elements.queryRows);
+
+    for (let i = 1; i < rows; i++) {
+      let [metricValue] = this.elements.queryValue(columnNumber, i);
+      let [nextMetricValue] = this.elements.queryValue(columnNumber, i + 1);
+
+      if (metricValue.indexOf('<') > -1) {
+        [, metricValue] = metricValue.split('<');
+      }
+
+      if (nextMetricValue.indexOf('<') > -1) {
+        [, nextMetricValue] = nextMetricValue.split('<');
+      }
+
+      if (sortOrder === 'down') {
+        assert.ok(metricValue >= nextMetricValue, `Ascending Sort of ${metricName} is wrong`);
+      } else {
+        assert.ok(metricValue <= nextMetricValue, `Descending Sort of ${metricName} is wrong`);
+      }
+    }
+  }
+
+  async verifyTooltipValue(value) {
+    I.waitForText(value, 5, this.elements.tooltipQPSValue);
+    const tooltip = await I.grabTextFrom(this.elements.tooltipQPSValue);
+
+    assert.ok(tooltip.includes(value), `The tooltip value is ${tooltip} while expected value was ${value}`);
   }
 }
 
