@@ -1,15 +1,12 @@
 const moment = require('moment');
 const assert = require('assert');
 
-Feature('QAN timerange').retry(1);
+Feature('QAN timerange').retry(0);
 
-Before(async ({
-  I, qanPage, qanOverview, qanFilters,
-}) => {
+Before(async ({ I, queryAnalyticsPage }) => {
   await I.Authorize();
-  I.amOnPage(qanPage.url);
-  qanOverview.waitForOverviewLoaded();
-  qanFilters.waitForFiltersToLoad();
+  I.amOnPage(I.buildUrlWithParams(queryAnalyticsPage.url, { from: 'now-5m' }));
+  queryAnalyticsPage.waitForLoaded();
 });
 
 Scenario(
@@ -25,19 +22,19 @@ Scenario(
 Scenario(
   'PMM-T167 Open the QAN Dashboard and check that changing the time range updates the overview table, URL. @nightly @qan',
   async ({
-    I, adminPage, qanDetails, qanFilters, qanOverview,
+    I, adminPage, queryAnalyticsPage,
   }) => {
-    await I.seeInCurrentUrl('from=now-5m&to=now');
-    await qanOverview.selectRow(1);
-    await qanFilters.waitForFiltersToLoad();
-    await I.seeElement(qanDetails.root);
+    I.seeInCurrentUrl('from=now-5m&to=now');
+    queryAnalyticsPage.data.selectRow(1);
+    queryAnalyticsPage.waitForLoaded();
+    I.seeElement(queryAnalyticsPage.data.root);
 
     await adminPage.applyTimeRange('Last 3 hours');
-    await qanOverview.waitForOverviewLoaded();
-    await I.seeInCurrentUrl('from=now-3h&to=now');
-    await qanOverview.selectRow(1);
-    await qanFilters.waitForFiltersToLoad();
-    await I.seeElement(qanDetails.root);
+    queryAnalyticsPage.waitForLoaded();
+    I.seeInCurrentUrl('from=now-3h&to=now');
+    queryAnalyticsPage.data.selectRow(1);
+    queryAnalyticsPage.waitForLoaded();
+    I.seeElement(queryAnalyticsPage.data.root);
   },
 );
 
@@ -64,24 +61,30 @@ Scenario(
 
 Scenario(
   'PMM-T170 Open the QAN Dashboard and check that changing the time range doesn\'t clear "Group by". @qan',
-  async ({ I, adminPage, qanOverview }) => {
+  async ({ I, adminPage, queryAnalyticsPage }) => {
     const group = 'Client Host';
 
-    I.waitForText('Query', 30, qanOverview.elements.groupBy);
-    await qanOverview.changeGroupBy(group);
+    I.waitForText('Query', 30, queryAnalyticsPage.elements.selectedMainMetric());
+    await queryAnalyticsPage.changeMainMetric(group);
     await adminPage.applyTimeRange('Last 24 hours');
-    qanOverview.waitForOverviewLoaded();
-    qanOverview.verifyGroupByIs(group);
+    queryAnalyticsPage.waitForLoaded();
+    const mainMetricsText = await I.grabTextFrom(queryAnalyticsPage.elements.selectedMainMetric());
+
+    I.assertEqual(
+      group,
+      mainMetricsText,
+      `Expected main metric ${group} and real main metric ${mainMetricsText} are not equal`,
+    );
   },
 );
 
 Scenario(
   'Open the QAN Dashboard and check that changing the time range doesn\'t reset sorting. @qan',
-  async ({ adminPage, qanOverview }) => {
-    await qanOverview.changeSorting(1);
+  async ({ adminPage, queryAnalyticsPage }) => {
+    queryAnalyticsPage.changeSorting(1);
     await adminPage.applyTimeRange('Last 24 hours');
-    qanOverview.waitForOverviewLoaded();
-    qanOverview.verifySorting(1, 'desc');
+    queryAnalyticsPage.waitForLoaded();
+    queryAnalyticsPage.data.verifySorting(1, 'desc');
   },
 );
 

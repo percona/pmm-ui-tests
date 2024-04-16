@@ -14,18 +14,19 @@ class QueryAnalyticsPage {
     this.elements = {
       spinner: locate('//div[@data-testid="Spinner"]'),
       mainMetricsContainer: locate('//div[@data-testid="group-by"]'),
-      selectedMainMetric: () => this.elements.mainMetricsContainer.find('///div[@class="ant-select-selection-selected-value"]'),
+      selectedMainMetric: () => this.elements.mainMetricsContainer.find('//span[@class="ant-select-selection-item"]'),
       mainMetricByName: (metricsName) => this.elements.selectedMainMetric().withText(metricsName),
-      mainMetricFromDropdown: (metricName) => locate(`//li[@class="ant-select-dropdown-menu-item" and text()="${metricName}"]`),
+      mainMetricFromDropdown: (metricName) => locate(`//div[@class="ant-select-item-option-content" and text()="${metricName}"]`),
       metricsSorting: (columnNumber) => locate(`(//a[@data-testid='sort-by-control'])[${columnNumber}]`),
       columnName: (columnName) => locate(`//span[text()="${columnName}"]`),
+      clipboardText: locate(I.getPopUpLocator()).find('span'),
     };
     this.buttons = {
       addColumnButton: '//span[contains(text(), "Add column")]',
       addColumn: '//ancestor::div[contains(@class, "add-columns-selector")]//input',
       searchDashboard: '//div[contains(@class, "input-wrapper")]',
+      copyButton: locate('//button[@data-testid="copy-link-button"]'),
     };
-
   }
 
   waitForLoaded() {

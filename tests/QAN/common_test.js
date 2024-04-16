@@ -2,9 +2,9 @@ const assert = require('assert');
 
 Feature('QAN common').retry(1);
 
-Before(async ({ I, qanPage }) => {
+Before(async ({ I, queryAnalyticsPage }) => {
   await I.Authorize();
-  I.amOnPage(qanPage.url);
+  I.amOnPage(queryAnalyticsPage.url);
 });
 
 Scenario(
@@ -124,17 +124,17 @@ Scenario(
     queryAnalyticsPage.addColumn('Bytes Sent');
     await adminPage.applyTimeRange('Last 1 hour');
 
-    queryAnalyticsPage.data.searchByValue('SELECT');
+    queryAnalyticsPage.data.searchByValue('pmm-managed');
     queryAnalyticsPage.data.selectTotalRow();
     dashboardPage.selectRefreshTimeInterval('5s');
     queryAnalyticsPage.verifyMainMetric('Database');
     queryAnalyticsPage.data.verifySorting(2, 'asc');
     await queryAnalyticsPage.filters.verifySelectedFilters('pmm-managed');
     queryAnalyticsPage.data.verifyColumnPresent('Bytes Sent');
-    queryAnalyticsPage.data.waitForDetails();
+    queryAnalyticsPage.queryDetails.waitForDetails();
     /** Skip step until: https://perconadev.atlassian.net/browse/PMM-13052 is fixed
     await adminPage.verifyTimeRange('Last 1 hour'); */
-    queryAnalyticsPage.data.verifySearchByValue('SELECT');
+    queryAnalyticsPage.data.verifySearchByValue('pmm-managed');
     dashboardPage.selectRefreshTimeInterval('Off');
     queryAnalyticsPage.waitForLoaded();
   },
