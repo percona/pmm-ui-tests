@@ -1,22 +1,26 @@
 const { I } = inject();
 const { QueryAnalyticsFilters } = require('./queryAnalyticsFilters');
 const { QueryAnalyticsData } = require('./queryAnalyticsData');
+const { DashboardLinkContainer } = require('../components/dashboardLinkContainer');
 
 class QueryAnalyticsPage {
   constructor() {
+    this.dashboardLinks = new DashboardLinkContainer();
     this.filters = new QueryAnalyticsFilters();
     this.data = new QueryAnalyticsData();
     this.elements = {
       spinner: locate('//div[@data-testid="Spinner"]'),
       mainMetricsContainer: locate('//div[@data-testid="group-by"]'),
-      selectedMainMetric: () => this.elements.mainMetricsContainer.find('//span[@class="ant-select-selection-item"]'),
+      selectedMainMetric: () => this.elements.mainMetricsContainer.find('///div[@class="ant-select-selection-selected-value"]'),
       mainMetricByName: (metricsName) => this.elements.selectedMainMetric().withText(metricsName),
-      mainMetricFromDropdown: (metricName) => locate(`//div[@class="ant-select-item-option-content" and text()="${metricName}"]`),
+      mainMetricFromDropdown: (metricName) => locate(`//li[@class="ant-select-dropdown-menu-item" and text()="${metricName}"]`),
       metricsSorting: (columnNumber) => locate(`(//a[@data-testid='sort-by-control'])[${columnNumber}]`),
       columnName: (columnName) => locate(`//span[text()="${columnName}"]`),
     };
     this.buttons = {
-      addColumn: '//span[contains(text(), "Add column")]//ancestor::div[@class="ant-select-selector"]//input',
+      addColumnButton: '//span[contains(text(), "Add column")]',
+      addColumn: '//ancestor::div[contains(@class, "add-columns-selector")]//input',
+      searchDashboard: '//div[contains(@class, "input-wrapper")]',
     };
   }
 

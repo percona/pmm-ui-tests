@@ -13,7 +13,7 @@ Scenario(
     I, queryAnalyticsPage,
   }) => {
     queryAnalyticsPage.waitForLoaded();
-    I.waitForVisible(queryAnalyticsPage.buttons.addColumn, 30);
+    I.waitForVisible(queryAnalyticsPage.buttons.addColumnButton, 30);
     await queryAnalyticsPage.data.verifyRowCount(26);
     await queryAnalyticsPage.data.verifyPagesAndCount(25);
 
@@ -91,52 +91,51 @@ Scenario(
 Scenario(
   'PMM-T1207 - Verify dashboard search between QAN and dashboards @qan',
   async ({
-    I, qanPage, searchDashboardsModal, qanOverview, qanDetails,
+    I, searchDashboardsModal, queryAnalyticsPage,
   }) => {
-    qanPage.waitForOpened();
-    await I.waitForElement(qanPage.fields.search);
-    await I.click(qanPage.fields.search);
-    await searchDashboardsModal.waitForOpened();
-    await I.pressKey('Escape');
-    await qanPage.waitForOpened();
-    await qanOverview.waitForOverviewLoaded();
-    await qanOverview.selectRow(1);
-    await qanDetails.checkDetailsTab();
+    queryAnalyticsPage.waitForLoaded();
+    I.waitForElement(queryAnalyticsPage.buttons.searchDashboard);
+    I.click(queryAnalyticsPage.buttons.searchDashboard);
+    searchDashboardsModal.waitForOpened();
+    I.pressKey('Escape');
+    queryAnalyticsPage.waitForLoaded();
+    queryAnalyticsPage.data.selectRow(1);
+    queryAnalyticsPage.data.waitForDetails();
 
-    await I.click(qanPage.fields.topMenu.queryAnalytics);
-    await I.click(qanPage.fields.search);
-    await searchDashboardsModal.waitForOpened();
-    await I.pressKey('Escape');
-    await qanPage.waitForOpened();
-    await qanOverview.waitForOverviewLoaded();
-    await qanOverview.selectRow(2);
-    await qanDetails.checkDetailsTab();
+    I.click(queryAnalyticsPage.dashboardLinks.buttons.queryAnalytics);
+    I.click(queryAnalyticsPage.buttons.searchDashboard);
+    searchDashboardsModal.waitForOpened();
+    I.pressKey('Escape');
+    queryAnalyticsPage.waitForLoaded();
+    queryAnalyticsPage.data.selectRow(1);
+    queryAnalyticsPage.data.waitForDetails();
   },
 );
 
 Scenario(
   'PMM-T188 Verify dashboard refresh @qan',
   async ({
-    I, qanPage, qanDetails, qanOverview, dashboardPage, adminPage, queryAnalyticsPage,
+    I, dashboardPage, adminPage, queryAnalyticsPage,
   }) => {
-    await qanPage.waitForOpened();
+    queryAnalyticsPage.waitForLoaded();
     await queryAnalyticsPage.changeMainMetric('Database');
-    await queryAnalyticsPage.changeSorting(2);
-    await queryAnalyticsPage.filters.selectFilterInGroup('pmm-managed', 'Database');
-    await queryAnalyticsPage.addColumn('Bytes Sent');
+    queryAnalyticsPage.changeSorting(2);
+    queryAnalyticsPage.filters.selectFilterInGroup('pmm-managed', 'Database');
+    queryAnalyticsPage.addColumn('Bytes Sent');
     await adminPage.applyTimeRange('Last 1 hour');
-    await qanOverview.searchByValue('pmm-managed');
-    await qanOverview.selectTotalRow();
-    await dashboardPage.selectRefreshTimeInterval('5s');
-    await queryAnalyticsPage.verifyMainMetric('Database');
-    await qanOverview.verifySorting(2, 'asc');
+
+    queryAnalyticsPage.data.searchByValue('SELECT');
+    queryAnalyticsPage.data.selectTotalRow();
+    dashboardPage.selectRefreshTimeInterval('5s');
+    queryAnalyticsPage.verifyMainMetric('Database');
+    queryAnalyticsPage.data.verifySorting(2, 'asc');
     await queryAnalyticsPage.filters.verifySelectedFilters('pmm-managed');
-    await qanOverview.verifyColumnPresent('Bytes Sent');
-    await qanDetails.checkDetailsTab();
+    queryAnalyticsPage.data.verifyColumnPresent('Bytes Sent');
+    queryAnalyticsPage.data.waitForDetails();
     /** Skip step until: https://perconadev.atlassian.net/browse/PMM-13052 is fixed
     await adminPage.verifyTimeRange('Last 1 hour'); */
-    await qanOverview.verifySearchByValue('pmm-managed');
-    await dashboardPage.selectRefreshTimeInterval('Off');
-    await queryAnalyticsPage.waitForLoaded();
+    queryAnalyticsPage.data.verifySearchByValue('SELECT');
+    dashboardPage.selectRefreshTimeInterval('Off');
+    queryAnalyticsPage.waitForLoaded();
   },
 );
