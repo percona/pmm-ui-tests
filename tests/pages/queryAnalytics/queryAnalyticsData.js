@@ -82,15 +82,6 @@ class QueryAnalyticsData {
     return resultsCount[2];
   }
 
-  waitForDetails() {
-    I.waitForVisible(this.buttons.detailsTab('Details'), 30);
-    I.click(this.buttons.detailsTab('Details'));
-    I.wait(5);
-    queryAnalyticsPage.waitForLoaded();
-    I.dontSeeElement(this.elements.noClassic);
-    I.dontSeeElement(this.elements.noJSON);
-  }
-
   selectTotalRow() {
     I.click(this.elements.queryRow(0));
   }

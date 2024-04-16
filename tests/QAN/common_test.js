@@ -57,14 +57,14 @@ Scenario(
     queryAnalyticsPage.data.searchByValue('insert');
     I.waitForElement(queryAnalyticsPage.data.elements.queryRow(1), 30);
     queryAnalyticsPage.data.selectRow(1);
-    I.waitForVisible(queryAnalyticsPage.data.elements.metricsCellDetailValue('Query Time', 3), 30);
+    I.waitForVisible(queryAnalyticsPage.queryDetails.elements.metricsCellDetailValue('Query Time', 3), 30);
     let overviewValue = await I.grabTextFrom(queryAnalyticsPage.data.elements.queryValue(1, 2));
-    let detailsValue = await I.grabTextFrom(queryAnalyticsPage.data.elements.metricsCellDetailValue('Query Count', 2), 30);
+    let detailsValue = await I.grabTextFrom(queryAnalyticsPage.queryDetails.elements.metricsCellDetailValue('Query Count', 2), 30);
 
     assert.ok(overviewValue === detailsValue, `Query Count value in Overview and Detail should match. Overview:'${overviewValue}'!=Detail:'${detailsValue}'`);
 
     overviewValue = await I.grabTextFrom(queryAnalyticsPage.data.elements.queryValue(1, 3));
-    detailsValue = await I.grabTextFrom(queryAnalyticsPage.data.elements.metricsCellDetailValue('Query Time', 4), 30);
+    detailsValue = await I.grabTextFrom(queryAnalyticsPage.queryDetails.elements.metricsCellDetailValue('Query Time', 4), 30);
 
     assert.ok(overviewValue === detailsValue, `Query Time value in Overview and Detail should match. Overview:'${overviewValue}'!=Detail:'${detailsValue}'`);
   },
@@ -100,7 +100,7 @@ Scenario(
     I.pressKey('Escape');
     queryAnalyticsPage.waitForLoaded();
     queryAnalyticsPage.data.selectRow(1);
-    queryAnalyticsPage.data.waitForDetails();
+    queryAnalyticsPage.queryDetails.waitForDetails();
 
     I.click(queryAnalyticsPage.dashboardLinks.buttons.queryAnalytics);
     I.click(queryAnalyticsPage.buttons.searchDashboard);
@@ -108,7 +108,7 @@ Scenario(
     I.pressKey('Escape');
     queryAnalyticsPage.waitForLoaded();
     queryAnalyticsPage.data.selectRow(1);
-    queryAnalyticsPage.data.waitForDetails();
+    queryAnalyticsPage.queryDetails.waitForDetails();
   },
 );
 

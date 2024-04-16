@@ -90,6 +90,15 @@ class QueryAnalyticsQueryDetails {
     I.dontSeeElement(this.elements.noClassic);
     I.dontSeeElement(this.elements.noJSON);
   }
+
+  waitForDetails() {
+    I.waitForVisible(this.buttons.tab('Details'), 30);
+    I.click(this.buttons.tab('Details'));
+    I.wait(5);
+    queryAnalyticsPage.waitForLoaded();
+    I.dontSeeElement(this.elements.noClassic);
+    I.dontSeeElement(this.elements.noJSON);
+  }
 }
 
 module.exports = new QueryAnalyticsQueryDetails();
