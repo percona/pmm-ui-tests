@@ -72,22 +72,22 @@ Scenario(
 
 Scenario(
   'PMM-T126 - Verify user is able to Reset All filters @qan',
-  async ({ I, qanOverview, qanFilters }) => {
+  async ({ I, queryAnalyticsPage }) => {
     const environmentName1 = 'ps-dev';
     const environmentName2 = 'pgsql-dev';
 
-    const countBefore = await qanOverview.getCountOfItems();
+    const countBefore = await queryAnalyticsPage.data.getCountOfItems();
 
-    await qanFilters.applyFilter(environmentName1);
-    await qanFilters.applyFilter(environmentName2);
-    await qanOverview.waitForNewItemsCount(countBefore);
-    const countAfter = await qanOverview.getCountOfItems();
+    queryAnalyticsPage.filters.selectFilter(environmentName1);
+    queryAnalyticsPage.filters.selectFilter(environmentName2);
+    queryAnalyticsPage.data.waitForNewItemsCount(countBefore);
+    const countAfter = await queryAnalyticsPage.data.getCountOfItems();
 
     assert.ok(countAfter !== countBefore, 'Query count was expected to change');
 
-    I.click(qanFilters.buttons.resetAll);
-    I.waitForVisible(qanFilters.elements.disabledResetAll, 30);
-    const countAfterReset = await qanOverview.getCountOfItems();
+    I.click(queryAnalyticsPage.filters.buttons.resetAll);
+    I.seeAttributesOnElements(queryAnalyticsPage.filters.buttons.resetAll, { disabled: true });
+    const countAfterReset = await queryAnalyticsPage.data.getCountOfItems();
 
     assert.ok(countAfterReset >= countBefore, 'Query count wasn\'t expected to change');
   },
@@ -95,17 +95,17 @@ Scenario(
 
 Scenario(
   'PMM-T125 - Verify user is able to Show only selected filter values and Show All filter values @qan',
-  async ({ I, qanFilters, queryAnalyticsPage }) => {
+  async ({ I, queryAnalyticsPage }) => {
     const environmentName1 = 'ps-dev';
     const environmentName2 = 'pgsql-dev';
 
-    await qanFilters.applyFilter(environmentName1);
-    await qanFilters.applyFilter(environmentName2);
-    await I.waitForVisible(qanFilters.buttons.showSelected, 30);
-    await I.click(qanFilters.buttons.showSelected);
+    queryAnalyticsPage.filters.selectFilter(environmentName1);
+    queryAnalyticsPage.filters.selectFilter(environmentName2);
+    await I.waitForVisible(queryAnalyticsPage.filters.buttons.showSelected, 30);
+    await I.click(queryAnalyticsPage.filters.buttons.showSelected);
     await queryAnalyticsPage.filters.verifyCountOfFiltersDisplayed(2, 'equals');
-    await I.click(qanFilters.buttons.showSelected);
-    await queryAnalyticsPage.filters.verifyCountOfFiltersDisplayed(2, 'equals');
+    await I.click(queryAnalyticsPage.filters.buttons.showSelected);
+    await queryAnalyticsPage.filters.verifyCountOfFiltersDisplayed(2, 'bigger');
   },
 );
 
@@ -170,27 +170,27 @@ Scenario('PMM-T190 - Verify user is able to see n/a filter @qan', async ({ I, qu
 Scenario(
   'PMM-T390 - Verify that we show info message when empty result is returned @qan',
   async ({
-    I, qanOverview, qanFilters, adminPage,
+    I, adminPage, queryAnalyticsPage,
   }) => {
     const serviceName = 'ps_8.0';
     const db1 = 'postgres';
     const db2 = 'n/a';
     const section = 'Database';
 
-    let count = qanOverview.getCountOfItems();
+    let count = queryAnalyticsPage.data.getCountOfItems();
 
     await adminPage.applyTimeRange('Last 3 hour');
-    qanOverview.waitForOverviewLoaded();
-    await qanFilters.applyShowAllLinkIfItIsVisible(section);
-    await qanFilters.applyFilterInSection(section, db1);
-    count = await qanOverview.waitForNewItemsCount(count);
-    await qanFilters.applyShowAllLinkIfItIsVisible(section);
-    await qanFilters.applyFilterInSection(section, db2);
-    count = await qanOverview.waitForNewItemsCount(count);
-    await qanFilters.applyFilter(serviceName);
-    await qanOverview.waitForNewItemsCount(count);
-    await qanFilters.applyFilterInSection(section, db2);
-    await within(qanOverview.root, () => {
+    queryAnalyticsPage.waitForLoaded();
+    await queryAnalyticsPage.filters.applyShowAllLinkIfItIsVisible(section);
+    queryAnalyticsPage.filters.selectFilterInGroup(db1, section);
+    count = queryAnalyticsPage.data.waitForNewItemsCount(count);
+    await queryAnalyticsPage.filters.applyShowAllLinkIfItIsVisible(section);
+    queryAnalyticsPage.filters.selectFilterInGroup(db2, section);
+    count = queryAnalyticsPage.data.waitForNewItemsCount(count);
+    queryAnalyticsPage.filters.selectContainFilter(serviceName);
+    queryAnalyticsPage.data.waitForNewItemsCount(count);
+    queryAnalyticsPage.filters.selectFilterInGroup(db2, section);
+    await within(queryAnalyticsPage.data.root, () => {
       I.waitForText('No queries available for this combination of filters', 30);
     });
   },
@@ -199,37 +199,37 @@ Scenario(
 Scenario(
   'PMM-T221 - Verify that all filter options are always visible (but some disabled) after selecting an item and % value is changed @qan',
   async ({
-    I, adminPage, qanOverview, qanFilters, queryAnalyticsPage,
+    I, adminPage, queryAnalyticsPage,
   }) => {
     const serviceType = 'mysql';
     const serviceName = 'ps_8.0';
 
     await adminPage.applyTimeRange('Last 2 days');
-    await qanOverview.waitForOverviewLoaded();
+    queryAnalyticsPage.waitForLoaded();
 
-    const countQueryAnalyticsBefore = await qanOverview.getCountOfItems();
+    const countQueryAnalyticsBefore = await queryAnalyticsPage.data.getCountOfItems();
     const percentageBefore = await queryAnalyticsPage.filters.getFilterPercentage('Service Type', serviceType);
-    const countOfFiltersBefore = await I.grabNumberOfVisibleElements(qanFilters.fields.filterCheckboxes);
+    const countOfFiltersBefore = await I.grabNumberOfVisibleElements(queryAnalyticsPage.filters.fields.filterCheckboxes);
 
-    await I.click(qanFilters.elements.filterByValues(serviceType));
-    await qanOverview.waitForOverviewLoaded();
-    const countQueryAnalyticsAfter = await qanOverview.getCountOfItems();
+    queryAnalyticsPage.filters.selectFilter(serviceType);
+    queryAnalyticsPage.waitForLoaded();
+    const countQueryAnalyticsAfter = await queryAnalyticsPage.data.getCountOfItems();
 
     I.assertTrue(countQueryAnalyticsAfter !== countQueryAnalyticsBefore, 'Query count was expected to change');
-    const countOfFiltersAfter = await I.grabNumberOfVisibleElements(qanFilters.fields.filterCheckboxes);
+    const countOfFiltersAfter = await I.grabNumberOfVisibleElements(queryAnalyticsPage.filters.fields.filterCheckboxes);
 
     I.assertEqual(countOfFiltersBefore, countOfFiltersAfter, 'Count of all available filters should not change when filter is selected.');
-    await I.click(qanFilters.elements.filterByValues(serviceName));
-    await qanOverview.waitForOverviewLoaded();
+    queryAnalyticsPage.filters.selectContainFilter(serviceName);
+    queryAnalyticsPage.waitForLoaded();
     const percentageAfter = await queryAnalyticsPage.filters.getFilterPercentage('Service Type', serviceType);
 
     I.assertTrue(percentageAfter !== percentageBefore, 'Percentage for filter Service Type was expected to change');
   },
 );
-
+/** Time Range Bug. */
 Data(shortCutTests).Scenario(
   'PMM-T436 PMM-T458 - Verify short-cut navigation from filters to related dashboards, '
-    + 'Verify time interval is passed from QAN to dashboards via shortcut links @qan',
+    + 'Verify time interval is passed from QAN to dashboards via shortcut links @qan ',
   async ({
     I, qanFilters, dashboardPage, current, adminPage, qanOverview, qanPage,
   }) => {

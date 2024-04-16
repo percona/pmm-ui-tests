@@ -16,6 +16,7 @@ class QueryAnalyticsFilters {
       filterName: locate('//span[@class="checkbox-container__label-text"]'),
       checkedFilters: () => this.fields.filterCheckboxes.find('//input[@type="checkbox" and @checked]//following-sibling::span[@class="checkbox-container__label-text"]'),
       filterHeaders: locate('//span[@data-testid="checkbox-group-header"]'),
+      groupElementsCount: (groupName) => `//span[contains(text(), '${groupName}')]/following-sibling::span[contains(text(), 'Show all')]`,
     };
     this.buttons = {
       showSelected: locate('$qan-filters-show-selected'),
@@ -55,8 +56,14 @@ class QueryAnalyticsFilters {
   }
 
   selectFilterInGroup(filterName, groupName) {
+    let selectedFilter = filterName;
+
+    if (selectedFilter === 'n/a') {
+      selectedFilter = '';
+    }
+
     I.usePlaywrightTo('Select QAN Filter', async ({ page }) => {
-      const locator = await page.locator(this.fields.filterByNameAndGroup(filterName, groupName).value);
+      const locator = await page.locator(this.fields.filterByNameAndGroup(selectedFilter, groupName).value);
 
       await locator.waitFor({ state: 'attached' });
       await locator.click();
@@ -139,6 +146,19 @@ class QueryAnalyticsFilters {
     }
 
     assert.ok(notCheckedFilters.length === 0, `Expected filters "${expectedFilters}" are not euqal to checked filters: "${checkedFilters}. `);
+  }
+
+  async applyShowAllLinkIfItIsVisible(groupName) {
+    const numOfShowAllLinkSectionCount = await I.grabNumberOfVisibleElements(this.fields.groupElementsCount(groupName));
+
+    if (numOfShowAllLinkSectionCount) {
+      this.applyShowAllLink(groupName);
+    }
+  }
+
+  applyShowAllLink(groupName) {
+    I.waitForVisible(this.fields.groupElementsCount(groupName), 30);
+    I.forceClick(this.fields.groupElementsCount(groupName));
   }
 }
 

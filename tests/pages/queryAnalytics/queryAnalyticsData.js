@@ -4,14 +4,13 @@ const { I, queryAnalyticsPage } = inject();
 
 class QueryAnalyticsData {
   constructor() {
+    this.root = locate('.query-analytics-data');
     this.elements = {
       queryRow: (rowNumber) => locate(`//div[@role="row" and contains(@class, "tr-${rowNumber}")]`),
       queryRows: locate('//div[@role="row" and contains(@class, "tr-")]'),
       totalItems: I.useDataQA('qan-total-items'),
       selectedRow: locate('.selected-overview-row'),
-
       queryValue: (rowNumber, columnNumber) => `div.tr-${rowNumber} > div:nth-child(${columnNumber + 2}) span > div > span`,
-
       columnHeaderText: (headerText) => locate(`//span[@class="ant-select-selection-item" and text()="${headerText}"]`),
       sorting: (columnNumber) => locate(`(//a[@data-testid='sort-by-control'])[${columnNumber}]`),
       sortingValue: (columnNumber) => this.elements.sorting(columnNumber).find('//span'),
@@ -97,6 +96,19 @@ class QueryAnalyticsData {
   verifySorting(columnNumber, sortDirection) {
     I.waitForElement(this.elements.sortingValue(columnNumber), 30);
     I.seeAttributesOnElements(this.elements.sortingValue(columnNumber), { class: `sort-by ${sortDirection}` });
+  }
+
+  waitForNewItemsCount(originalCount) {
+    for (let i = 0; i < 5; i++) {
+      I.wait(1);
+      const count = this.getCountOfItems();
+
+      if (count !== originalCount) {
+        return count;
+      }
+    }
+
+    return false;
   }
 }
 
