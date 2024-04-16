@@ -29,7 +29,7 @@ Scenario(
     queryAnalyticsPage.data.selectRow(2);
     queryAnalyticsPage.waitForLoaded();
     for (const header of queryAnalyticsPage.data.labels.detailsHeaders) {
-      I.waitForVisible(queryAnalyticsPage.data.buttons.detailsTab(header), 5);
+      I.waitForVisible(queryAnalyticsPage.queryDetails.buttons.tab(header), 5);
     }
   },
 ).retry(1);
