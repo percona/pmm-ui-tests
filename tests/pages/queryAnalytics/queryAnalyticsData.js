@@ -9,10 +9,9 @@ class QueryAnalyticsData {
       queryRows: locate('//div[@role="row" and contains(@class, "tr-")]'),
       totalItems: I.useDataQA('qan-total-items'),
       selectedRow: locate('.selected-overview-row'),
-      metricsCellDetailValue: (metricName, columnNumber) => locate(`//td//span[contains(text(), "${metricName}")]/ancestor::tr/td[${columnNumber}]//span[1]`),
+
       queryValue: (rowNumber, columnNumber) => `div.tr-${rowNumber} > div:nth-child(${columnNumber + 2}) span > div > span`,
-      noClassic: '//pre[contains(text(), "No classic explain found")]',
-      noJSON: '//pre[contains(text(), "No JSON explain found")]',
+
       columnHeaderText: (headerText) => locate(`//span[@class="ant-select-selection-item" and text()="${headerText}"]`),
       sorting: (columnNumber) => locate(`(//a[@data-testid='sort-by-control'])[${columnNumber}]`),
       sortingValue: (columnNumber) => this.elements.sorting(columnNumber).find('//span'),
@@ -25,7 +24,9 @@ class QueryAnalyticsData {
       previousPage: locate('.ant-pagination-prev'),
       nextPage: locate('.ant-pagination-next'),
       ellipsis: locate('.ant-pagination-item-ellipsis'),
-      detailsTab: (tabName) => locate('button').withText(tabName),
+    };
+    this.labels = {
+      detailsHeaders: ['Details', 'Example', 'Explain', 'Tables'],
     };
   }
 

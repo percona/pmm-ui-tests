@@ -2,12 +2,15 @@ const { I } = inject();
 const { QueryAnalyticsFilters } = require('./queryAnalyticsFilters');
 const { QueryAnalyticsData } = require('./queryAnalyticsData');
 const { DashboardLinkContainer } = require('../components/dashboardLinkContainer');
+const { QueryAnalyticsQueryDetails } = require('./queryAnalyticsQueryDetails');
 
 class QueryAnalyticsPage {
   constructor() {
+    this.url = 'graph/d/pmm-qan/pmm-query-analytics';
     this.dashboardLinks = new DashboardLinkContainer();
     this.filters = new QueryAnalyticsFilters();
     this.data = new QueryAnalyticsData();
+    this.queryDetails = new QueryAnalyticsQueryDetails();
     this.elements = {
       spinner: locate('//div[@data-testid="Spinner"]'),
       mainMetricsContainer: locate('//div[@data-testid="group-by"]'),
@@ -22,6 +25,7 @@ class QueryAnalyticsPage {
       addColumn: '//ancestor::div[contains(@class, "add-columns-selector")]//input',
       searchDashboard: '//div[contains(@class, "input-wrapper")]',
     };
+
   }
 
   waitForLoaded() {
