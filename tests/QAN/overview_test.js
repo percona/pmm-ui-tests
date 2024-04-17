@@ -153,7 +153,7 @@ Scenario(
 
 Scenario(
   'PMM-T99 Verify User is able to add new metric, PMM-T222 Verify `Add column` dropdown works @qan',
-  async ({ I, qanOverview, queryAnalyticsPage }) => {
+  async ({ I, queryAnalyticsPage }) => {
     const metricName = 'Query Count with errors';
     const urlString = 'num_queries_with_errors';
     const newMetric = queryAnalyticsPage.data.fields.columnHeader(metricName);
