@@ -6,7 +6,7 @@ class QueryAnalyticsQueryDetails {
   constructor() {
     this.elements = {
       metricsCellDetailValue: (metricName, columnNumber) => locate(`//td//span[contains(text(), "${metricName}")]/ancestor::tr/td[${columnNumber}]//span[1]`),
-      codeBlock: I.useDataQA('highlight-code'),
+      codeBlock: locate('//*[@data-testid="highlight-code" or contains(@class, "pretty-json-container")]'),
       noExamples: locate('//pre[contains(text(), "Sorry, no examples found for this query")]'),
       noClassic: '//pre[contains(text(), "No classic explain found")]',
       noJSON: '//pre[contains(text(), "No JSON explain found")]',

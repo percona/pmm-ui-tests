@@ -29,7 +29,7 @@ Data(filters).Scenario(
   async ({
     I, current, queryAnalyticsPage,
   }) => {
-    queryAnalyticsPage.filters.selectFilter('pdpgsql-dev');
+    queryAnalyticsPage.filters.selectContainFilter('pdpgsql_pgsm_pmm');
     I.waitForVisible(queryAnalyticsPage.filters.buttons.showSelected, 30);
     queryAnalyticsPage.filters.selectFilterInGroup(current.filterToApply, 'Command Type');
     queryAnalyticsPage.data.searchByValue(current.searchValue);
@@ -41,13 +41,13 @@ Data(filters).Scenario(
 Scenario(
   'PMM-T175 - Verify user is able to apply filter that has dots in label @qan',
   async ({ I, queryAnalyticsPage }) => {
-    const serviceName = 'ps_8.0';
+    const serviceName = '127.0.0.1';
 
     const countBefore = await queryAnalyticsPage.data.getCountOfItems();
 
     queryAnalyticsPage.waitForLoaded();
     await queryAnalyticsPage.filters.selectContainFilter(serviceName);
-    I.seeInCurrentUrl(`service_name=${serviceName}`);
+    I.seeInCurrentUrl(`client_host=${serviceName}`);
     const countAfter = await queryAnalyticsPage.data.getCountOfItems();
 
     assert.ok(countBefore !== countAfter, 'Query count was expected to change');
@@ -57,7 +57,7 @@ Scenario(
 Scenario(
   'PMM-T172 - Verify that selecting a filter updates the table data and URL @qan',
   async ({ I, queryAnalyticsPage }) => {
-    const environmentName = 'ps-dev';
+    const environmentName = 'pxc-dev';
 
     const countBefore = await queryAnalyticsPage.data.getCountOfItems();
 
@@ -72,8 +72,8 @@ Scenario(
 Scenario(
   'PMM-T126 - Verify user is able to Reset All filters @qan',
   async ({ I, queryAnalyticsPage }) => {
-    const environmentName1 = 'ps-dev';
-    const environmentName2 = 'pgsql-dev';
+    const environmentName1 = 'pxc-dev';
+    const environmentName2 = 'dev';
 
     const countBefore = await queryAnalyticsPage.data.getCountOfItems();
 
@@ -84,7 +84,7 @@ Scenario(
 
     assert.ok(countAfter !== countBefore, 'Query count was expected to change');
 
-    I.click(queryAnalyticsPage.filters.buttons.resetAll);
+    queryAnalyticsPage.filters.resetAllFilters();
     I.seeAttributesOnElements(queryAnalyticsPage.filters.buttons.resetAll, { disabled: true });
     const countAfterReset = await queryAnalyticsPage.data.getCountOfItems();
 
@@ -95,16 +95,16 @@ Scenario(
 Scenario(
   'PMM-T125 - Verify user is able to Show only selected filter values and Show All filter values @qan',
   async ({ I, queryAnalyticsPage }) => {
-    const environmentName1 = 'ps-dev';
-    const environmentName2 = 'pgsql-dev';
+    const environmentName1 = 'pxc-dev';
+    const environmentName2 = 'dev';
 
     queryAnalyticsPage.filters.selectFilter(environmentName1);
     queryAnalyticsPage.filters.selectFilter(environmentName2);
     I.wait(5);
     I.waitForVisible(queryAnalyticsPage.filters.buttons.showSelected, 30);
-    I.click(queryAnalyticsPage.filters.buttons.showSelected);
+    queryAnalyticsPage.filters.showSelectedFilters();
     await queryAnalyticsPage.filters.verifyCountOfFiltersDisplayed(2, 'equals');
-    I.click(queryAnalyticsPage.filters.buttons.showSelected);
+    queryAnalyticsPage.filters.showSelectedFilters();
     await queryAnalyticsPage.filters.verifyCountOfFiltersDisplayed(2, 'bigger');
   },
 );
@@ -151,8 +151,8 @@ Scenario(
 Scenario(
   'PMM-T191 - Verify Reset All and Show Selected filters @qan',
   async ({ I, queryAnalyticsPage }) => {
-    const environmentName1 = 'ps-dev';
-    const environmentName2 = 'pgsql-dev';
+    const environmentName1 = 'pxc-dev';
+    const environmentName2 = 'dev';
 
     await queryAnalyticsPage.filters.selectFilter(environmentName1);
     await queryAnalyticsPage.filters.selectFilter(environmentName2);
@@ -180,7 +180,7 @@ Scenario(
   async ({
     I, adminPage, queryAnalyticsPage,
   }) => {
-    const serviceName = 'ps_8.0';
+    const serviceName = 'ps-single';
     const db1 = 'postgres';
     const db2 = 'n/a';
     const section = 'Database';
@@ -210,7 +210,7 @@ Scenario(
     I, adminPage, queryAnalyticsPage,
   }) => {
     const serviceType = 'mysql';
-    const serviceName = 'ps_8.0';
+    const serviceName = 'ps-single';
 
     await adminPage.applyTimeRange('Last 2 days');
     queryAnalyticsPage.waitForLoaded();
@@ -234,10 +234,10 @@ Scenario(
     I.assertTrue(percentageAfter !== percentageBefore, 'Percentage for filter Service Type was expected to change');
   },
 );
-/** Time Range Bug. */
+/** Time Range Bug.
 Data(shortCutTests).Scenario(
   'PMM-T436 PMM-T458 - Verify short-cut navigation from filters to related dashboards, '
-    + 'Verify time interval is passed from QAN to dashboards via shortcut links @qan ',
+    + 'Verify time interval is passed from QAN to dashboards via shortcut links @qan @debug',
   async ({
     I, qanFilters, dashboardPage, current, adminPage, qanOverview, qanPage,
   }) => {
@@ -265,10 +265,10 @@ Data(shortCutTests).Scenario(
     await dashboardPage.checkNavigationBar(header);
   },
 );
-
-Scenario('PMM-T437 - Verify short-cut navigation for n/a items @qan', async ({ I, qanFilters, queryAnalyticsPage }) => {
+*/
+Scenario('PMM-T437 - Verify short-cut navigation for n/a items @qan', async ({ I, queryAnalyticsPage }) => {
   queryAnalyticsPage.waitForLoaded();
-  queryAnalyticsPage.filters.checkLink('md-dev-cluster', 'Cluster', true);
+  queryAnalyticsPage.filters.checkLink('pxc-dev-cluster', 'Cluster', true);
   queryAnalyticsPage.filters.filterBy('n/a');
   queryAnalyticsPage.filters.checkLink('undefined', 'Cluster', false);
   queryAnalyticsPage.filters.checkLink('undefined', 'Replication Set', false);

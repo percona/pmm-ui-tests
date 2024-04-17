@@ -33,7 +33,7 @@ Scenario(
   async ({
     I, adminPage, qanOverview, qanFilters, qanDetails, queryAnalyticsPage,
   }) => {
-    await queryAnalyticsPage.filters.selectFilter('pdpgsql-dev');
+    await queryAnalyticsPage.filters.selectContainFilter('pdpgsql_pgsm_pmm');
     queryAnalyticsPage.waitForLoaded();
     await adminPage.applyTimeRange('Last 12 hours');
     queryAnalyticsPage.waitForLoaded();

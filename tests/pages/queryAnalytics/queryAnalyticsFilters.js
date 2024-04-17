@@ -1,6 +1,6 @@
 const assert = require('assert');
 
-const { I } = inject();
+const { I, queryAnalyticsPage, adminPage } = inject();
 
 class QueryAnalyticsFilters {
   constructor() {
@@ -8,6 +8,7 @@ class QueryAnalyticsFilters {
       filterBy: locate('//input[@data-testid="filters-search-field"]'),
       filterCheckboxes: locate('//div[contains(@data-testid, "filter-checkbox")]'),
       filterCheckBoxesInGroup: (groupName) => this.fields.filterGroup(groupName).find('//div[contains(@data-testid, "filter-checkbox")]'),
+      groupHeaders: locate('//span[@data-testid="checkbox-group-header"]'),
       filterGroup: (groupName) => locate(`//span[@data-testid="checkbox-group-header" and text()="${groupName}"]/parent::p/parent::div`),
       filterByExactName: (filterName) => locate(`//div[@data-testid="filter-checkbox-${filterName}"]`),
       filterByName: (filterName) => locate(`//div[contains(@data-testid, "filter-checkbox-${filterName}")]`),
@@ -57,6 +58,15 @@ class QueryAnalyticsFilters {
     });
   }
 
+  resetAllFilters() {
+    I.usePlaywrightTo('Select QAN Filter', async ({ page }) => {
+      const locator = await page.locator(this.buttons.resetAll.value);
+
+      await locator.waitFor({ state: 'attached' });
+      await locator.click();
+    });
+  }
+
   selectFilterInGroup(filterName, groupName) {
     let selectedFilter = filterName;
 
@@ -64,12 +74,17 @@ class QueryAnalyticsFilters {
       selectedFilter = '';
     }
 
+    I.fillField(this.fields.filterBy, filterName);
     I.usePlaywrightTo('Select QAN Filter', async ({ page }) => {
       const locator = await page.locator(this.fields.filterByNameAndGroup(selectedFilter, groupName).value);
 
       await locator.waitFor({ state: 'attached' });
       await locator.click();
     });
+    queryAnalyticsPage.waitForLoaded();
+    I.click(this.fields.filterBy);
+    adminPage.customClearField(this.fields.filterBy);
+    I.wait(1);
   }
 
   selectFilterInGroupAtPosition(groupName, position) {
@@ -82,13 +97,19 @@ class QueryAnalyticsFilters {
   }
 
   selectContainFilter(filterName) {
+    I.click(this.fields.groupHeaders);
     I.waitForVisible(this.fields.filterByName(filterName));
+    I.fillField(this.fields.filterBy, filterName);
     I.usePlaywrightTo('Select QAN Filter', async ({ page }) => {
       const locator = await page.locator(this.fields.filterByName(filterName).value);
 
-      await locator.waitFor({ state: 'attached' });
-      await locator.click();
+      await locator.first().waitFor({ state: 'attached' });
+      await locator.first().click();
     });
+    queryAnalyticsPage.waitForLoaded();
+    I.click(this.fields.filterBy);
+    adminPage.customClearField(this.fields.filterBy);
+    I.wait(1);
   }
 
   selectContainFilterInGroup(filterName, groupName) {
@@ -98,12 +119,17 @@ class QueryAnalyticsFilters {
       selectedFilter = '';
     }
 
+    I.fillField(this.fields.filterBy, filterName);
     I.usePlaywrightTo('Select QAN Filter', async ({ page }) => {
       const locator = await page.locator(this.fields.filterByNameAndGroupContains(selectedFilter, groupName).value);
 
       await locator.first().waitFor({ state: 'attached' });
       await locator.first().click();
     });
+    queryAnalyticsPage.waitForLoaded();
+    I.click(this.fields.filterBy);
+    adminPage.customClearField(this.fields.filterBy);
+    I.wait(1);
   }
 
   selectContainsFilterInGroupAtPosition(groupName, position) {
@@ -116,7 +142,7 @@ class QueryAnalyticsFilters {
   }
 
   async verifySelectedFilters(filters) {
-    I.click(this.buttons.showSelected);
+    this.showSelectedFilters();
     I.waitForVisible(this.fields.filterName, 20);
     const currentFilters = await I.grabTextFrom(this.fields.filterName);
 

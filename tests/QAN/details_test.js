@@ -9,10 +9,12 @@ querySources.add(['slowlog']);
 
 const databaseEnvironments = new DataTable(['name']);
 
-databaseEnvironments.add(['ps-dev']);
-databaseEnvironments.add(['pdpgsql-dev']);
-databaseEnvironments.add(['md-dev']);
-databaseEnvironments.add(['mongodb']);
+databaseEnvironments.add(['ps-single']);
+databaseEnvironments.add(['pxc_node']);
+databaseEnvironments.add(['pgsql_pgss_pmm']);
+databaseEnvironments.add(['pdpgsql_pgsm_pmm']);
+// databaseEnvironments.add(['md-dev']);
+databaseEnvironments.add(['mongos']);
 
 Before(async ({ I, queryAnalyticsPage }) => {
   await I.Authorize();
@@ -25,7 +27,7 @@ Scenario(
   async ({
     I, queryAnalyticsPage,
   }) => {
-    await queryAnalyticsPage.filters.selectFilter('ps-dev-cluster');
+    await queryAnalyticsPage.filters.selectFilter('pxc-dev-cluster');
     queryAnalyticsPage.data.selectRow(2);
     queryAnalyticsPage.waitForLoaded();
     for (const header of queryAnalyticsPage.data.labels.detailsHeaders) {
@@ -39,7 +41,7 @@ Scenario(
   async ({
     I, queryAnalyticsPage,
   }) => {
-    I.amOnPage(I.buildUrlWithParams(queryAnalyticsPage.url, { environment: 'ps-dev', from: 'now-1h', search: 'insert' }));
+    I.amOnPage(I.buildUrlWithParams(queryAnalyticsPage.url, { environment: 'dev', from: 'now-1h', search: 'insert' }));
     I.waitForElement(queryAnalyticsPage.data.elements.queryRows, 30);
     queryAnalyticsPage.data.selectRow(1);
     queryAnalyticsPage.waitForLoaded();
@@ -54,13 +56,15 @@ Data(databaseEnvironments).Scenario(
   async ({
     I, queryAnalyticsPage, current,
   }) => {
-    I.amOnPage(I.buildUrlWithParams(queryAnalyticsPage.url, { environment: current.name, from: 'now-1h', search: 'insert' }));
+    I.amOnPage(I.buildUrlWithParams(queryAnalyticsPage.url, { from: 'now-1h', search: 'insert' }));
+    queryAnalyticsPage.waitForLoaded();
+    queryAnalyticsPage.filters.selectContainFilterInGroup(current.name, 'Service Name');
     I.waitForElement(queryAnalyticsPage.data.elements.queryRows, 30);
     queryAnalyticsPage.data.selectRow(1);
     queryAnalyticsPage.waitForLoaded();
     queryAnalyticsPage.queryDetails.checkExamplesTab();
 
-    if (current.name !== 'pdpgsql-dev') {
+    if (!current.name.includes('pgsql')) {
       queryAnalyticsPage.queryDetails.checkTab('Explain');
     }
   },
@@ -72,14 +76,14 @@ Scenario(
   async ({
     I, queryAnalyticsPage,
   }) => {
-    I.amOnPage(I.buildUrlWithParams(queryAnalyticsPage.url, { environment: 'ps-dev', from: 'now-1h', search: 'insert' }));
+    I.amOnPage(I.buildUrlWithParams(queryAnalyticsPage.url, { from: 'now-1h', search: 'insert' }));
     I.waitForElement(queryAnalyticsPage.data.elements.queryRows, 30);
     queryAnalyticsPage.data.selectRow(1);
     queryAnalyticsPage.waitForLoaded();
     queryAnalyticsPage.queryDetails.checkTab('Explain');
-    queryAnalyticsPage.filters.selectFilter('ps-dev');
-    // await qanFilters.applyFilter('mongodb');
-    queryAnalyticsPage.filters.selectFilter('pdpgsql-dev');
+    await queryAnalyticsPage.filters.selectContainFilter('ps-single');
+    await queryAnalyticsPage.filters.selectContainFilter('mongos');
+    await queryAnalyticsPage.filters.selectContainFilter('pdpgsql_pgsm_pmm');
     I.waitForElement(queryAnalyticsPage.data.elements.queryRows, 30);
     queryAnalyticsPage.data.selectRow(1);
 

@@ -53,7 +53,7 @@ Scenario(
     queryAnalyticsPage.waitForLoaded();
     await adminPage.applyTimeRange('Last 1 hour');
     queryAnalyticsPage.waitForLoaded();
-    queryAnalyticsPage.filters.selectFilter('ps-dev');
+    queryAnalyticsPage.filters.selectFilter('pxc-dev');
     queryAnalyticsPage.data.searchByValue('insert');
     I.waitForElement(queryAnalyticsPage.data.elements.queryRow(1), 30);
     queryAnalyticsPage.data.selectRow(1);
@@ -115,7 +115,7 @@ Scenario(
 Scenario(
   'PMM-T188 Verify dashboard refresh @qan',
   async ({
-    I, dashboardPage, adminPage, queryAnalyticsPage,
+    dashboardPage, adminPage, queryAnalyticsPage,
   }) => {
     queryAnalyticsPage.waitForLoaded();
     await queryAnalyticsPage.changeMainMetric('Database');
