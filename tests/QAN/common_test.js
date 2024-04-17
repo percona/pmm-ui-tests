@@ -71,7 +71,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T215 - Verify that buttons in QAN are disabled and visible on the screen @qan @debug',
+  'PMM-T215 - Verify that buttons in QAN are disabled and visible on the screen @qan',
   async ({
     I, queryAnalyticsPage,
   }) => {

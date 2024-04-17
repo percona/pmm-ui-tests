@@ -14,10 +14,10 @@ databaseEnvironments.add(['pdpgsql-dev']);
 databaseEnvironments.add(['md-dev']);
 databaseEnvironments.add(['mongodb']);
 
-Before(async ({ I, qanPage, qanOverview }) => {
+Before(async ({ I, queryAnalyticsPage }) => {
   await I.Authorize();
-  I.amOnPage(I.buildUrlWithParams(qanPage.clearUrl, { from: 'now-1h' }));
-  qanOverview.waitForOverviewLoaded();
+  I.amOnPage(I.buildUrlWithParams(queryAnalyticsPage.url, { from: 'now-1h' }));
+  queryAnalyticsPage.waitForLoaded();
 });
 
 Scenario(

@@ -18,39 +18,37 @@ filters.add(['SELECT', 'INSERT INTO']);
 // filters.add(['UPDATE', 'DELETE']);
 // filters.add(['DELETE', 'UPDATE']);
 
-Before(async ({ I, qanPage, qanOverview }) => {
+Before(async ({ I, queryAnalyticsPage }) => {
   await I.Authorize();
-  I.amOnPage(`${qanPage.url}&orgId=1`);
-  qanOverview.waitForOverviewLoaded();
+  I.amOnPage(queryAnalyticsPage.url);
+  queryAnalyticsPage.waitForLoaded();
 });
 
 Data(filters).Scenario(
   'PMM-T1054 + PMM-T1055 - Verify the "Command type" filter for Postgres @qan',
   async ({
-    I, qanOverview, qanFilters, current,
+    I, current, queryAnalyticsPage,
   }) => {
-    const environmentName = 'pdpgsql-dev';
-
-    await qanFilters.applyFilter(environmentName);
-    await I.waitForVisible(qanFilters.buttons.showSelected, 30);
-    await qanFilters.applyFilterInSection('Command Type', current.filterToApply);
-    await qanOverview.searchByValue(current.searchValue);
-    await I.waitForVisible(qanOverview.elements.noResultTableText, 30);
-    await I.seeTextEquals(qanOverview.messages.noResultTableText, qanOverview.elements.noResultTableText);
+    queryAnalyticsPage.filters.selectFilter('pdpgsql-dev');
+    I.waitForVisible(queryAnalyticsPage.filters.buttons.showSelected, 30);
+    queryAnalyticsPage.filters.selectFilterInGroup(current.filterToApply, 'Command Type');
+    queryAnalyticsPage.data.searchByValue(current.searchValue);
+    await I.waitForVisible(queryAnalyticsPage.data.elements.noResultTableText, 30);
+    await I.seeTextEquals(queryAnalyticsPage.data.messages.noResultTableText, queryAnalyticsPage.data.elements.noResultTableText);
   },
 );
 
 Scenario(
   'PMM-T175 - Verify user is able to apply filter that has dots in label @qan',
-  async ({ I, qanOverview, qanFilters }) => {
+  async ({ I, queryAnalyticsPage }) => {
     const serviceName = 'ps_8.0';
 
-    const countBefore = await qanOverview.getCountOfItems();
+    const countBefore = await queryAnalyticsPage.data.getCountOfItems();
 
-    qanFilters.waitForFiltersToLoad();
-    await qanFilters.applyFilter(serviceName);
+    queryAnalyticsPage.waitForLoaded();
+    await queryAnalyticsPage.filters.selectContainFilter(serviceName);
     I.seeInCurrentUrl(`service_name=${serviceName}`);
-    const countAfter = await qanOverview.getCountOfItems();
+    const countAfter = await queryAnalyticsPage.data.getCountOfItems();
 
     assert.ok(countBefore !== countAfter, 'Query count was expected to change');
   },
@@ -58,14 +56,14 @@ Scenario(
 
 Scenario(
   'PMM-T172 - Verify that selecting a filter updates the table data and URL @qan',
-  async ({ I, qanOverview, qanFilters }) => {
+  async ({ I, queryAnalyticsPage }) => {
     const environmentName = 'ps-dev';
 
-    const countBefore = await qanOverview.getCountOfItems();
+    const countBefore = await queryAnalyticsPage.data.getCountOfItems();
 
-    await qanFilters.applyFilter(environmentName);
+    await queryAnalyticsPage.filters.selectFilter(environmentName);
     I.seeInCurrentUrl(`environment=${environmentName}`);
-    const countAfter = await qanOverview.getCountOfItems();
+    const countAfter = await queryAnalyticsPage.data.getCountOfItems();
 
     assert.ok(countBefore !== countAfter, 'Query count was expected to change');
   },
@@ -102,41 +100,50 @@ Scenario(
 
     queryAnalyticsPage.filters.selectFilter(environmentName1);
     queryAnalyticsPage.filters.selectFilter(environmentName2);
-    await I.waitForVisible(queryAnalyticsPage.filters.buttons.showSelected, 30);
-    await I.click(queryAnalyticsPage.filters.buttons.showSelected);
+    I.wait(5);
+    I.waitForVisible(queryAnalyticsPage.filters.buttons.showSelected, 30);
+    I.click(queryAnalyticsPage.filters.buttons.showSelected);
     await queryAnalyticsPage.filters.verifyCountOfFiltersDisplayed(2, 'equals');
-    await I.click(queryAnalyticsPage.filters.buttons.showSelected);
+    I.click(queryAnalyticsPage.filters.buttons.showSelected);
     await queryAnalyticsPage.filters.verifyCountOfFiltersDisplayed(2, 'bigger');
   },
 );
 
 Scenario(
   'PMM-T123 - Verify User is able to search for DB types, Env and Cluster @qan',
-  async ({ I, qanOverview, qanFilters }) => {
+  async ({ I, queryAnalyticsPage }) => {
     const filters = [
-      'postgres',
-      'mysql',
-      'pmm-server',
-      'postgresql',
-      'mongodb',
-      'ps-dev',
-      'ps-dev-cluster',
-      'pgsql-repl1',
+      'Environment',
+      'Cluster',
+      'Replication Set',
+      'Database',
+      'Schema',
+      'Node Name',
+      'Service Name',
+      'Client Host',
+      'User Name',
+      'Service Type',
+      'Application Name',
+      'Command Type',
     ];
 
-    await I.waitForElement(qanFilters.fields.filterBy, 30);
-    const countBefore = await qanOverview.getCountOfItems();
+    await I.waitForElement(queryAnalyticsPage.filters.fields.filterBy, 30);
+    const countBefore = await queryAnalyticsPage.data.getCountOfItems();
 
-    for (const i in filters) {
-      await qanFilters.applyFilter(filters[i]);
-      await qanOverview.waitForNewItemsCount(countBefore);
-      await I.wait(5);
-      const countAfter = await qanOverview.getCountOfItems();
-      const locator = qanFilters.getFilterLocator(filters[i]);
+    for await (const value of filters) {
+      queryAnalyticsPage.waitForLoaded();
+      const numberOfFilterValues = await I.grabNumberOfVisibleElements(queryAnalyticsPage.filters.fields.filterCheckBoxesInGroup(value));
+      const randomFilterValue = Math.floor(Math.random() * numberOfFilterValues) + 1;
+
+      queryAnalyticsPage.filters.selectContainsFilterInGroupAtPosition(value, randomFilterValue);
+      queryAnalyticsPage.waitForLoaded();
+      queryAnalyticsPage.data.waitForNewItemsCount(countBefore);
+      const countAfter = await queryAnalyticsPage.data.getCountOfItems();
 
       assert.ok(countBefore !== countAfter, 'Query count was expected to change');
 
-      I.forceClick(locator);
+      I.click(queryAnalyticsPage.filters.buttons.resetAll);
+      queryAnalyticsPage.waitForLoaded();
     }
   },
 );
@@ -261,8 +268,8 @@ Data(shortCutTests).Scenario(
 
 Scenario('PMM-T437 - Verify short-cut navigation for n/a items @qan', async ({ I, qanFilters, queryAnalyticsPage }) => {
   queryAnalyticsPage.waitForLoaded();
-  queryAnalyticsPage.filters.checkLink('Cluster', 'md-dev-cluster', true);
+  queryAnalyticsPage.filters.checkLink('md-dev-cluster', 'Cluster', true);
   queryAnalyticsPage.filters.filterBy('n/a');
-  queryAnalyticsPage.filters.checkLink('Cluster', 'undefined', false);
-  queryAnalyticsPage.filters.checkLink('Replication Set', 'undefined', false);
+  queryAnalyticsPage.filters.checkLink('undefined', 'Cluster', false);
+  queryAnalyticsPage.filters.checkLink('undefined', 'Replication Set', false);
 });

@@ -24,6 +24,7 @@ class QueryAnalyticsData {
       addColumnNoDataIcon: 'div.ant-empty-image',
       tooltipQPSValue: '$qps',
       tooltip: '.overview-column-tooltip',
+      noResultTableText: locate('$table-no-data').find('h1'),
     };
     this.fields = {
       searchBy: '//input[contains(@name, "search")]',
@@ -41,6 +42,9 @@ class QueryAnalyticsData {
     };
     this.labels = {
       detailsHeaders: ['Details', 'Example', 'Explain', 'Tables'],
+    };
+    this.messages = {
+      noResultTableText: 'No queries available for this combination of filters in the selected time frame',
     };
   }
 

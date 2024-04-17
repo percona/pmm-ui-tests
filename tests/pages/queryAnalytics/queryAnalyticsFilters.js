@@ -12,6 +12,7 @@ class QueryAnalyticsFilters {
       filterByExactName: (filterName) => locate(`//div[@data-testid="filter-checkbox-${filterName}"]`),
       filterByName: (filterName) => locate(`//div[contains(@data-testid, "filter-checkbox-${filterName}")]`),
       filterByNameAndGroup: (filterName, groupName) => this.fields.filterGroup(groupName).find(`//div[@data-testid="filter-checkbox-${filterName}"]`),
+      filterByNameAndGroupContains: (filterName, groupName) => this.fields.filterGroup(groupName).find(`//div[contains(@data-testid, "filter-checkbox-${filterName}")]`),
       filterLinkByNameAndGroup: (filterName, groupName) => this.fields.filterByNameAndGroup(filterName, groupName).find('a'),
       filterPercentageByNameAndGroup: (filterName, groupName) => this.fields.filterByNameAndGroup(filterName, groupName).find('//span').at(3),
       filterName: locate('//span[@class="checkbox-container__label-text"]'),
@@ -81,11 +82,36 @@ class QueryAnalyticsFilters {
   }
 
   selectContainFilter(filterName) {
+    I.waitForVisible(this.fields.filterByName(filterName));
     I.usePlaywrightTo('Select QAN Filter', async ({ page }) => {
       const locator = await page.locator(this.fields.filterByName(filterName).value);
 
       await locator.waitFor({ state: 'attached' });
       await locator.click();
+    });
+  }
+
+  selectContainFilterInGroup(filterName, groupName) {
+    let selectedFilter = filterName;
+
+    if (selectedFilter === 'n/a') {
+      selectedFilter = '';
+    }
+
+    I.usePlaywrightTo('Select QAN Filter', async ({ page }) => {
+      const locator = await page.locator(this.fields.filterByNameAndGroupContains(selectedFilter, groupName).value);
+
+      await locator.first().waitFor({ state: 'attached' });
+      await locator.first().click();
+    });
+  }
+
+  selectContainsFilterInGroupAtPosition(groupName, position) {
+    I.usePlaywrightTo('Select QAN Filter', async ({ page }) => {
+      const locator = await page.locator(this.fields.filterCheckBoxesInGroup(groupName).value);
+
+      await locator.nth(position - 1).waitFor({ state: 'attached' });
+      await locator.nth(position - 1).click();
     });
   }
 
