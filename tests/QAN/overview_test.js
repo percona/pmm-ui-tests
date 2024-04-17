@@ -414,7 +414,7 @@ Scenario(
 );
 
 Scenario(
-  '@PMM-T1699 Verify that query time is shown in UTC timezone after hovering Load graph for query if user selected UTC timezone @qan @debug',
+  '@PMM-T1699 Verify that query time is shown in UTC timezone after hovering Load graph for query if user selected UTC timezone @qan',
   async ({ I, adminPage, qanOverview }) => {
     qanOverview.waitForOverviewLoaded();
     const firstLoadCell = qanOverview.getLoadLocator(2);

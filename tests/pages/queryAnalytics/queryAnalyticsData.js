@@ -33,7 +33,11 @@ class QueryAnalyticsData {
       lastPage: locate('//li[contains(@class,"ant-pagination-item")]').last(),
       previousPage: locate('.ant-pagination-prev'),
       nextPage: locate('.ant-pagination-next'),
+      activePage: locate('//li[contains(@class, "ant-pagination-item-active")]'),
       ellipsis: locate('.ant-pagination-item-ellipsis'),
+      paginationPage: (number) => `//li[@class='ant-pagination-item ant-pagination-item-${number}']`,
+      paginationSize: locate('//div[@aria-label="Page Size"]//span[@class="ant-select-selection-item"]'),
+      paginationOption: (paginationSize) => locate(`//div[@role="option" and @title="${paginationSize}"]`),
     };
     this.labels = {
       detailsHeaders: ['Details', 'Example', 'Explain', 'Tables'],
@@ -185,6 +189,50 @@ class QueryAnalyticsData {
     const tooltip = await I.grabTextFrom(this.elements.tooltipQPSValue);
 
     assert.ok(tooltip.includes(value), `The tooltip value is ${tooltip} while expected value was ${value}`);
+  }
+
+  async verifyActivePage(expectedActivePage) {
+    I.waitForVisible(this.buttons.activePage);
+    const activePage = await I.grabTextFrom(this.buttons.activePage);
+
+    assert.ok(String(activePage) === String(expectedActivePage), `Expected Active page: "${expectedActivePage}" does not equal active page: "${activePage}"`);
+  }
+
+  async verifyPaginationRange(expectedRange) {
+    const count = await I.grabTextFrom(this.elements.totalItems);
+
+    I.assertEqual(count.includes(expectedRange), true, `The value ${expectedRange} should include ${count}`);
+  }
+
+  async verifySelectedCountPerPage(expectedNumber) {
+    I.assertContain(
+      [25, 50, 100],
+      Number(expectedNumber.match(/\d+/)),
+      'Expected number is not the one available options to select in dropdown',
+    );
+    I.waitForElement(this.buttons.paginationSize, 30);
+    const paginationSize = await I.grabTextFrom(this.buttons.paginationSize);
+
+    I.assertEqual(paginationSize.includes(expectedNumber), true, `The pagination size: ${paginationSize} should include ${expectedNumber}`);
+  }
+
+  async selectResultsPerPage(option) {
+    const optionToSelect = this.buttons.paginationOption(option);
+    const pageCount = await this.getLastPageNumber();
+
+    I.click(this.buttons.paginationSize);
+    I.click(optionToSelect);
+
+    // Max 20 sec wait for pages count to change
+    for (let i = 0; i < 10; i++) {
+      const newPageCount = await this.getLastPageNumber();
+
+      if (newPageCount !== pageCount) {
+        return;
+      }
+
+      I.wait(2);
+    }
   }
 }
 
