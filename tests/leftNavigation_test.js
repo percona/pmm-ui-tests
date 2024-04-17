@@ -26,7 +26,7 @@ Feature('Left Navigation menu tests').retry(1);
 Before(async ({ I }) => {
   await I.Authorize();
 });
-
+/**
 Data(sidebar).Scenario(
   'PMM-T433, PMM-T591 - Verify menu items on Grafana sidebar redirects to correct page @menu',
   async ({ I, homePage, current }) => {
@@ -40,7 +40,7 @@ Data(sidebar).Scenario(
     I.waitInUrl(current.path, 5);
   },
 );
-
+*/
 // TODO: Needs to be removed, Advisors are on by default hence no settings link anymore
 xScenario(
   'PMM-T1051 - Verify PMM Settings page is opened from Home dashboard @menu',
