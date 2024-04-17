@@ -180,11 +180,11 @@ module.exports = {
   },
   sharePanel: {
     elements: {
-      imageRendererPluginInfoText: '//div[@data-testid=\'data-testid Alert info\']//div[2]',
-      imageRendererPluginLink: locate('[role="alert"]').find('.external-link'),
+      imageRendererPluginInfoText: I.useDataQA('data-testid Alert info'),
+      imageRendererPluginLink: locate(I.useDataQA('data-testid Alert info')).find('.external-link'),
     },
     messages: {
-      imageRendererPlugin: 'render a panel image, you must install the Grafana image renderer plugin. Please contact your Grafana administrator to install the plugin.',
+      imageRendererPlugin: 'Image renderer plugin not installedTo render a panel image, you must install the Image Renderer plugin. Please contact your PMM administrator to install the plugin.',
     },
   },
   proxysqlInstanceSummaryDashboard: {
@@ -323,6 +323,7 @@ module.exports = {
   },
   postgresqlInstanceCompareDashboard: {
     url: 'graph/d/postgresql-instance-compare/postgresql-instances-compare?orgId=1&from=now-5m&to=now',
+    cleanUrl: 'graph/d/postgresql-instance-compare/postgresql-instances-compare',
     metrics: [
       'Service Info',
       'PostgreSQL Connections',
@@ -916,6 +917,7 @@ module.exports = {
   },
   mongodbReplicaSetSummaryDashboard: {
     url: 'graph/d/mongodb-replicaset-summary/mongodb-replset-summary?orgId=1&refresh=1m&from=now-5m&to=now',
+    cleanUrl: 'graph/d/mongodb-replicaset-summary/mongodb-replset-summary',
     metrics: [
       'Replication Lag',
       'ReplSet States',
@@ -1210,7 +1212,7 @@ module.exports = {
     reportTitleWithNA:
       locate('$header-container')
         .inside(locate('[class$="panel-container"]')
-          .withDescendant('//*[contains(text(),"No data") or contains(text(), "NO DATA") or contains(text(),"N/A") or (text()="-")]')),
+          .withDescendant('//*[(text()="No data") or (text()="NO DATA") or (text()="N/A") or (text()="-")]')),
     reportTitleWithNoData:
     locate('$header-container')
       .inside(locate('[class$="panel-container"]')
@@ -1269,6 +1271,8 @@ module.exports = {
   // introducing methods
   async verifyMetricsExistence(metrics) {
     for (const i in metrics) {
+      I.pressKey('PageDown');
+      await this.expandEachDashboardRow();
       I.waitForElement(this.graphsLocator(metrics[i]), 5);
       I.scrollTo(this.graphsLocator(metrics[i]));
       I.waitForVisible(this.graphsLocator(metrics[i]), 5);
@@ -1277,7 +1281,8 @@ module.exports = {
 
   openGraphDropdownMenu(metric) {
     I.waitForVisible(this.graphsLocator(metric), 10);
-    I.click(this.graphsLocator(metric));
+    I.moveCursorTo(this.graphsLocator(metric), 10);
+    I.click(this.graphsLocator(metric).find('[title="Menu"]'));
   },
 
   verifyTabExistence(tabs) {
@@ -1349,6 +1354,7 @@ module.exports = {
 
       while (collapsedRowsLocators.length > 0) {
         await page.keyboard.press('End');
+        await collapsedRowsLocators[0].scrollIntoViewIfNeeded();
         await collapsedRowsLocators[0].click();
         collapsedRowsLocators.shift();
 

@@ -180,6 +180,9 @@ module.exports = () => actor({
         case 'page_size':
           queryParams.page_size = value;
           break;
+        case 'refresh':
+          queryParams.refresh = value;
+          break;
         default:
       }
     });
