@@ -1269,8 +1269,6 @@ module.exports = {
   // introducing methods
   async verifyMetricsExistence(metrics) {
     for (const i in metrics) {
-      await adminPage.performPageDown(1);
-      await this.expandEachDashboardRow();
       I.waitForElement(this.graphsLocator(metrics[i]), 5);
       I.scrollTo(this.graphsLocator(metrics[i]));
       I.waitForVisible(this.graphsLocator(metrics[i]), 5);
@@ -1351,7 +1349,6 @@ module.exports = {
 
       while (collapsedRowsLocators.length > 0) {
         await page.keyboard.press('End');
-        await collapsedRowsLocators[0].scrollIntoViewIfNeeded();
         await collapsedRowsLocators[0].click();
         collapsedRowsLocators.shift();
 
