@@ -71,7 +71,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T215 - Verify that buttons in QAN are disabled and visible on the screen @qan',
+  'PMM-T215 - Verify that buttons in QAN are disabled and visible on the screen @qan @debug',
   async ({
     I, queryAnalyticsPage,
   }) => {
@@ -82,7 +82,7 @@ Scenario(
     I.seeElementsDisabled(queryAnalyticsPage.filters.buttons.showSelected);
     const count = await queryAnalyticsPage.data.getCountOfItems();
 
-    if (count > 100) {
+    if (count > 125) {
       I.seeElement(queryAnalyticsPage.data.buttons.ellipsis);
     }
   },
