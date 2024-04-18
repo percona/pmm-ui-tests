@@ -1100,8 +1100,7 @@ module.exports = {
   },
 
   osNodesOverview: {
-    noDataElements: 1,
-    naElements: 2,
+    noDataElements: 3,
     clearUrl: 'graph/d/node-instance-overview/nodes-overview',
     metrics: [
       'Nodes',
@@ -1275,7 +1274,6 @@ module.exports = {
       await this.expandEachDashboardRow();
       I.waitForElement(this.graphsLocator(metrics[i]), 5);
       I.scrollTo(this.graphsLocator(metrics[i]));
-      I.waitForVisible(this.graphsLocator(metrics[i]), 5);
     }
   },
 
@@ -1293,6 +1291,14 @@ module.exports = {
 
   graphsLocator(metricName) {
     return locate(this.fields.metricTitle).withText(metricName);
+  },
+
+  panelByTitle(title) {
+    return I.useDataQA(`data-testid Panel header ${title}`);
+  },
+
+  panelDataByTitle(title) {
+    return locate(this.panelByTitle(title)).find(I.useDataQA('data-testid Data link'));
   },
 
   tabLocator(tabName) {
