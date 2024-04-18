@@ -33,23 +33,21 @@ Scenario(
   async ({
     I, adminPage, qanOverview, qanFilters, qanDetails, queryAnalyticsPage,
   }) => {
-    await queryAnalyticsPage.filters.selectContainFilter('pdpgsql_pgsm_pmm');
+    queryAnalyticsPage.filters.selectContainFilter('pdpgsql_pgsm_pmm');
     queryAnalyticsPage.waitForLoaded();
     await adminPage.applyTimeRange('Last 12 hours');
     queryAnalyticsPage.waitForLoaded();
-    await qanOverview.searchByValue('SELECT current_database() datname, schemaname, relname, heap_blks_read, heap_blks_hit, idx_blks_read');
-    await qanOverview.waitForOverviewLoaded();
-    await qanOverview.mouseOverFirstInfoIcon();
+    queryAnalyticsPage.data.searchByValue('query_plan');
+    queryAnalyticsPage.waitForLoaded();
+    queryAnalyticsPage.data.mouseOverInfoIcon(1);
 
-    let tooltipQueryId = await I.grabTextFrom(qanOverview.elements.tooltipQueryId);
+    let tooltipQueryId = await queryAnalyticsPage.data.getTooltipQueryId();
 
-    tooltipQueryId = tooltipQueryId.split(':');
-    tooltipQueryId = tooltipQueryId[1].trim();
-    await qanOverview.hideTooltip();
+    await queryAnalyticsPage.data.hideTooltip();
 
-    await qanOverview.selectRow(1);
-    await qanFilters.waitForFiltersToLoad();
-    await qanDetails.checkPlanTab();
+    queryAnalyticsPage.data.selectRow(1);
+    queryAnalyticsPage.waitForLoaded();
+    queryAnalyticsPage.queryDetails.checkTab('Plan');
     await qanDetails.checkPlanTabIsNotEmpty();
     await qanDetails.mouseOverPlanInfoIcon();
 
@@ -271,7 +269,8 @@ Scenario(
   },
 );
 
-Scenario(
+// Test case requires comparing of canvas elements, unless we implement visual testing this test does not make sense.
+Scenario.skip(
   'PMM-T204 - Verify small and N/A values on sparkline @qan',
   async ({ I, queryAnalyticsPage }) => {
     const firstCell = queryAnalyticsPage.data.elements.queryValue(0, 1);
@@ -289,7 +288,7 @@ Scenario(
     I.dontSeeElement(queryAnalyticsPage.data.elements.tooltip);
     I.dontSeeElement(queryAnalyticsPage.data.elements.tooltipQPSValue);
   },
-).retry(2);
+);
 
 Scenario(
   'PMM-T412 - Verify user is able to search by part of query @qan',

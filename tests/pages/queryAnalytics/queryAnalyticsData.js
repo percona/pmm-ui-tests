@@ -241,6 +241,17 @@ class QueryAnalyticsData {
       I.wait(2);
     }
   }
+
+  async getTooltipQueryId() {
+    const rawText = (await I.grabTextFrom(this.elements.queryTooltipId)).split(':');
+
+    return rawText[1].trim();
+  }
+
+  async hideTooltip() {
+    await I.moveCursorTo(queryAnalyticsPage.buttons.addColumnButton);
+    await I.waitForInvisible(this.elements.metricTooltip, 5);
+  }
 }
 
 module.exports = new QueryAnalyticsData();
