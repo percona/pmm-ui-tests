@@ -76,6 +76,7 @@ Scenario(
     I, queryAnalyticsPage,
   }) => {
     queryAnalyticsPage.waitForLoaded();
+    I.waitForVisible(queryAnalyticsPage.data.buttons.previousPage, 60);
     I.seeAttributesOnElements(queryAnalyticsPage.data.buttons.previousPage, { 'aria-disabled': 'true' });
     I.seeAttributesOnElements(queryAnalyticsPage.data.buttons.nextPage, { 'aria-disabled': 'false' });
     I.seeElementsDisabled(queryAnalyticsPage.filters.buttons.resetAll);

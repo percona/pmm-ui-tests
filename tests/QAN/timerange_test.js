@@ -169,48 +169,48 @@ Scenario(
 Scenario(
   'PMM-T1142 - Verify that the table page and selected query are still the same when we go on copied link by new QAN CopyButton @qan',
   async ({
-    I, qanPagination, qanOverview, qanDetails,
+    I, queryAnalyticsPage,
   }) => {
-    await I.click(qanPagination.buttons.nextPage);
-    await qanOverview.selectRow(2);
-    await I.click(qanOverview.buttons.copyButton);
+    await I.waitForVisible(queryAnalyticsPage.data.buttons.nextPage);
+    await I.click(queryAnalyticsPage.data.buttons.nextPage);
+    await queryAnalyticsPage.data.selectRow(2);
+    await I.click(queryAnalyticsPage.buttons.copyButton);
     await I.waitForVisible(I.getPopUpLocator(), 10);
 
-    const url = await I.grabTextFrom(qanOverview.elements.clipboardLink);
+    const url = await I.grabTextFrom(queryAnalyticsPage.elements.clipboardLink);
 
-    await I.openNewTab();
-    await I.amOnPage(url.match(/\bhttps?:\/\/\S+/gi)[0]);
+    await I.openNewTab({ viewport: { width: 1920, height: 1080 } });
+    await I.amOnPage(url);
 
     await I.assertContain(url, '&page_number=2', 'Expected the Url to contain selected page');
-    await qanOverview.waitForOverviewLoaded();
-    // this check will need to be uncommented after tasks 9480 and 9481 are ready
-    // qanPagination.verifyActivePage(2);
-    await I.waitForVisible(qanOverview.getSelectedRowLocator(2), 20);
-    await I.waitForElement(qanDetails.buttons.close, 30);
+    await queryAnalyticsPage.waitForLoaded();
+    await queryAnalyticsPage.data.verifyActivePage(2);
+    await I.waitForVisible(queryAnalyticsPage.data.elements.selectedRowByNumber(2), 20);
+    await I.waitForElement(queryAnalyticsPage.data.buttons.close, 30);
   },
 );
 
 Scenario(
   'PMM-T1143 - Verify columns and filters when we go on copied link by new QAN CopyButton @qan',
   async ({
-    I, qanFilters, qanOverview, queryAnalyticsPage,
+    I, queryAnalyticsPage,
   }) => {
-    const environmentName = 'ps-dev';
+    const environmentName = 'pxc-dev';
     const columnName = 'Bytes Sent';
 
-    await queryAnalyticsPage.addColumn(columnName);
-    await qanFilters.applyFilter(environmentName);
-    await qanOverview.waitForOverviewLoaded();
-    await I.click(qanOverview.buttons.copyButton);
-    await I.waitForVisible(I.getPopUpLocator(), 10);
+    queryAnalyticsPage.addColumn(columnName);
+    queryAnalyticsPage.filters.selectFilter(environmentName);
+    queryAnalyticsPage.waitForLoaded();
+    I.click(queryAnalyticsPage.buttons.copyButton);
+    I.waitForVisible(I.getPopUpLocator(), 10);
 
-    const url = await I.grabTextFrom(qanOverview.elements.clipboardLink);
+    const url = await I.grabTextFrom(queryAnalyticsPage.elements.clipboardLink);
 
-    await I.openNewTab();
-    await I.amOnPage(url.match(/\bhttps?:\/\/\S+/gi)[0]);
-    await queryAnalyticsPage.waitForLoaded();
-    await I.seeInCurrentUrl(`environment=${environmentName}`);
+    I.openNewTab();
+    I.amOnPage(url);
+    queryAnalyticsPage.waitForLoaded();
+    I.seeInCurrentUrl(`environment=${environmentName}`);
     await queryAnalyticsPage.filters.verifyCheckedFilters([environmentName]);
-    await I.waitForElement(qanOverview.getColumnLocator(columnName), 30);
+    I.waitForElement(queryAnalyticsPage.data.fields.columnHeader(columnName), 30);
   },
 );

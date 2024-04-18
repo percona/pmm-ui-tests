@@ -12,14 +12,14 @@ class QueryAnalyticsPage {
     this.data = new QueryAnalyticsData();
     this.queryDetails = new QueryAnalyticsQueryDetails();
     this.elements = {
-      spinner: locate('//div[@data-testid="Spinner"]'),
+      spinner: locate('//div[@data-testid="Spinner" or @class="preloader"]'),
       mainMetricsContainer: locate('//div[@data-testid="group-by"]'),
       selectedMainMetric: () => this.elements.mainMetricsContainer.find('//span[@class="ant-select-selection-item"]'),
       mainMetricByName: (metricsName) => this.elements.selectedMainMetric().withText(metricsName),
       mainMetricFromDropdown: (metricName) => locate(`//div[@class="ant-select-item-option-content" and text()="${metricName}"]`),
       metricsSorting: (columnNumber) => locate(`(//a[@data-testid='sort-by-control'])[${columnNumber}]`),
       columnName: (columnName) => locate(`//span[text()="${columnName}"]`),
-      clipboardText: locate(I.getPopUpLocator()).find('span'),
+      clipboardLink: locate(I.getPopUpLocator()).find('span').find('span'),
     };
     this.buttons = {
       addColumnButton: '//span[contains(text(), "Add column")]',
@@ -53,6 +53,7 @@ class QueryAnalyticsPage {
   }
 
   addColumn(columnName) {
+    I.waitForVisible(this.buttons.addColumn, 30);
     I.fillField(this.buttons.addColumn, columnName);
     I.waitForVisible(this.elements.columnName(columnName), 30);
     I.click(this.elements.columnName(columnName));

@@ -25,6 +25,7 @@ class QueryAnalyticsData {
       tooltipQPSValue: '$qps',
       tooltip: '.overview-column-tooltip',
       noResultTableText: locate('$table-no-data').find('h1'),
+      selectedRowByNumber: (rowNumber) => locate(`div.tr-${rowNumber}.selected-overview-row`),
     };
     this.fields = {
       searchBy: '//input[contains(@name, "search")]',
@@ -39,6 +40,7 @@ class QueryAnalyticsData {
       paginationPage: (number) => `//li[@class='ant-pagination-item ant-pagination-item-${number}']`,
       paginationSize: locate('//div[@aria-label="Page Size"]//span[@class="ant-select-selection-item"]'),
       paginationOption: (paginationSize) => locate(`//div[@role="option" and @title="${paginationSize}"]`),
+      close: locate('button').find('span').withText('Close'),
     };
     this.labels = {
       detailsHeaders: ['Details', 'Example', 'Explain', 'Tables'],
@@ -101,6 +103,7 @@ class QueryAnalyticsData {
   }
 
   selectTotalRow() {
+    I.waitForVisible(this.elements.queryRow(0));
     I.click(this.elements.queryRow(0));
   }
 

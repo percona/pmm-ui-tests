@@ -97,6 +97,7 @@ class QueryAnalyticsFilters {
   }
 
   selectContainFilter(filterName) {
+    I.waitForVisible(this.fields.groupHeaders, 30);
     I.click(this.fields.groupHeaders);
     I.waitForVisible(this.fields.filterByName(filterName));
     I.fillField(this.fields.filterBy, filterName);
@@ -119,6 +120,7 @@ class QueryAnalyticsFilters {
       selectedFilter = '';
     }
 
+    I.waitForVisible(this.fields.filterBy, 30);
     I.fillField(this.fields.filterBy, filterName);
     I.usePlaywrightTo('Select QAN Filter', async ({ page }) => {
       const locator = await page.locator(this.fields.filterByNameAndGroupContains(selectedFilter, groupName).value);

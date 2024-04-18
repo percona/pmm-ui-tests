@@ -25,6 +25,7 @@ module.exports = {
   },
 
   selectPage(page) {
+    I.waitForVisible(this.getPageLocator(page));
     I.click(this.getPageLocator(page));
   },
 

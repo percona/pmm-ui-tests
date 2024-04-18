@@ -10,6 +10,7 @@ class QueryAnalyticsQueryDetails {
       noExamples: locate('//pre[contains(text(), "Sorry, no examples found for this query")]'),
       noClassic: '//pre[contains(text(), "No classic explain found")]',
       noJSON: '//pre[contains(text(), "No JSON explain found")]',
+      explainError: locate('//pre[@data-testid="json-explain-error"]'),
     };
     this.buttons = {
       tab: (tabName) => locate('button').withText(tabName),
@@ -89,6 +90,7 @@ class QueryAnalyticsQueryDetails {
     queryAnalyticsPage.waitForLoaded();
     I.dontSeeElement(this.elements.noClassic);
     I.dontSeeElement(this.elements.noJSON);
+    I.waitForDetached(this.elements.explainError);
   }
 
   waitForDetails() {
@@ -98,6 +100,7 @@ class QueryAnalyticsQueryDetails {
     queryAnalyticsPage.waitForLoaded();
     I.dontSeeElement(this.elements.noClassic);
     I.dontSeeElement(this.elements.noJSON);
+    I.waitForDetached(this.elements.explainError);
   }
 }
 

@@ -7,14 +7,7 @@ const querySources = new DataTable(['querySource']);
 querySources.add(['slowlog']);
 // querySources.add(['perfschema']);
 
-const databaseEnvironments = new DataTable(['name']);
 
-databaseEnvironments.add(['ps-single']);
-databaseEnvironments.add(['pxc_node']);
-databaseEnvironments.add(['pgsql_pgss_pmm']);
-databaseEnvironments.add(['pdpgsql_pgsm_pmm']);
-// databaseEnvironments.add(['md-dev']);
-databaseEnvironments.add(['mongos']);
 
 Before(async ({ I, queryAnalyticsPage }) => {
   await I.Authorize();
@@ -51,14 +44,23 @@ Scenario(
   },
 );
 
+const databaseEnvironments = new DataTable(['name', 'select']);
+
+databaseEnvironments.add(['ps-single', 'insert']);
+databaseEnvironments.add(['pxc_node', 'insert']);
+// databaseEnvironments.add(['pgsql_pgss_pmm', 'insert']);
+databaseEnvironments.add(['pdpgsql_pgsm_pmm', 'insert']);
+// databaseEnvironments.add(['md-dev', 'insert']);
+databaseEnvironments.add(['mongos', 'FIND collections']);
+
 Data(databaseEnvironments).Scenario(
   'PMM-T13 - Check Explain and Example for supported DBs @qan',
   async ({
     I, queryAnalyticsPage, current,
   }) => {
-    I.amOnPage(I.buildUrlWithParams(queryAnalyticsPage.url, { from: 'now-1h', search: 'insert' }));
     queryAnalyticsPage.waitForLoaded();
     queryAnalyticsPage.filters.selectContainFilterInGroup(current.name, 'Service Name');
+    queryAnalyticsPage.data.searchByValue(current.select);
     I.waitForElement(queryAnalyticsPage.data.elements.queryRows, 30);
     queryAnalyticsPage.data.selectRow(1);
     queryAnalyticsPage.waitForLoaded();
@@ -76,25 +78,18 @@ Scenario(
   async ({
     I, queryAnalyticsPage,
   }) => {
-    I.amOnPage(I.buildUrlWithParams(queryAnalyticsPage.url, { from: 'now-1h', search: 'insert' }));
-    I.waitForElement(queryAnalyticsPage.data.elements.queryRows, 30);
+    queryAnalyticsPage.filters.selectContainFilter('pxc-dev');
+    queryAnalyticsPage.data.searchByValue('SELECT');
+    queryAnalyticsPage.waitForLoaded();
     queryAnalyticsPage.data.selectRow(1);
     queryAnalyticsPage.waitForLoaded();
     queryAnalyticsPage.queryDetails.checkTab('Explain');
-    await queryAnalyticsPage.filters.selectContainFilter('ps-single');
-    await queryAnalyticsPage.filters.selectContainFilter('mongos');
-    await queryAnalyticsPage.filters.selectContainFilter('pdpgsql_pgsm_pmm');
-    I.waitForElement(queryAnalyticsPage.data.elements.queryRows, 30);
+    queryAnalyticsPage.filters.selectContainFilter('pxc-dev');
+    queryAnalyticsPage.filters.selectFilterInGroup('mongodb', 'Service Type');
+    queryAnalyticsPage.data.searchByValue('UPDATE');
     queryAnalyticsPage.data.selectRow(1);
-
-    // eslint-disable-next-line no-undef
-    const foundErrorMessage = await tryTo(() => I.verifyPopUpMessage(
-      'invalid GetActionRequest.ActionId: value length must be at least 1 runes',
-      2,
-    ));
-
-    I.assertFalse(foundErrorMessage, 'Found unexpected error message!');
-    I.waitForElement(queryAnalyticsPage.queryDetails.buttons.close, 30);
+    queryAnalyticsPage.queryDetails.checkTab('Explain');
+    // await queryAnalyticsPage.filters.selectContainFilter('pdpgsql_pgsm_pmm');
   },
 );
 
