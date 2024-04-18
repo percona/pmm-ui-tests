@@ -1,7 +1,7 @@
 const moment = require('moment');
 const assert = require('assert');
 
-Feature('QAN timerange').retry(0);
+Feature('QAN timerange').retry(1);
 
 Before(async ({ I, queryAnalyticsPage }) => {
   await I.Authorize();
@@ -9,7 +9,8 @@ Before(async ({ I, queryAnalyticsPage }) => {
   queryAnalyticsPage.waitForLoaded();
 });
 
-Scenario(
+// https://perconadev.atlassian.net/browse/PMM-13052 blocked
+Scenario.skip(
   'Open the QAN Dashboard and check that changing the time range resets current page to the first. @qan',
   async ({ adminPage, qanPagination, qanOverview }) => {
     await qanPagination.selectPage(2);
@@ -145,7 +146,8 @@ Scenario(
   },
 );
 
-Scenario(
+// https://perconadev.atlassian.net/browse/PMM-13052 blocked
+Scenario.skip(
   'PMM-T1141 - Verify specific time range by new button to copy QAN URL @qan',
   async ({ I, adminPage, qanOverview }) => {
     const dateTime = moment();

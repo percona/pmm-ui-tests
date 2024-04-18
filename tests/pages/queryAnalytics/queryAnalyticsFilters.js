@@ -58,6 +58,10 @@ class QueryAnalyticsFilters {
       await locator.waitFor({ state: 'attached' });
       await locator.click();
     });
+    queryAnalyticsPage.waitForLoaded();
+    I.click(this.fields.filterBy);
+    adminPage.customClearField(this.fields.filterBy);
+    I.wait(1)
   }
 
   resetAllFilters() {

@@ -46,7 +46,7 @@ Scenario(
 
 const databaseEnvironments = new DataTable(['name', 'select']);
 
-databaseEnvironments.add(['ps-single', 'insert']);
+databaseEnvironments.add(['ps-single', 'select']);
 databaseEnvironments.add(['pxc_node', 'insert']);
 // databaseEnvironments.add(['pgsql_pgss_pmm', 'insert']);
 databaseEnvironments.add(['pdpgsql_pgsm_pmm', 'insert']);
@@ -69,6 +69,9 @@ Data(databaseEnvironments).Scenario(
     if (!current.name.includes('pgsql')) {
       queryAnalyticsPage.queryDetails.checkTab('Explain');
     }
+    /**
+     * Add Verification for plan after bug is closed.
+     */
   },
 );
 
