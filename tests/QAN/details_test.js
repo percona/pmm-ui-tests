@@ -47,7 +47,7 @@ Scenario(
 const databaseEnvironments = new DataTable(['name', 'select']);
 
 databaseEnvironments.add(['ps-single', 'select']);
-databaseEnvironments.add(['pxc_node', 'insert']);
+databaseEnvironments.add(['pxc_node', 'select']);
 // databaseEnvironments.add(['pgsql_pgss_pmm', 'insert']);
 databaseEnvironments.add(['pdpgsql_pgsm_pmm', 'insert']);
 // databaseEnvironments.add(['md-dev', 'insert']);
