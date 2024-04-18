@@ -27,8 +27,8 @@ Scenario(
     assert.ok(firstQueryText === tooltipQueryText, `The request text: ${firstQueryText}, don't match the request text on the tooltip: ${tooltipQueryText}.`);
   },
 );
-
-Scenario(
+// https://perconadev.atlassian.net/browse/PMM-13071 blocked
+Scenario.skip(
   'PMM-T1061 Verify Plan and PlanID with pg_stat_monitor @qan',
   async ({
     I, adminPage, qanOverview, qanFilters, qanDetails, queryAnalyticsPage,
@@ -411,9 +411,9 @@ Scenario(
     await I.dontSeeElement(qanOverview.elements.removeMetricColumn);
   },
 );
-
-Scenario(
-  '@PMM-T1699 Verify that query time is shown in UTC timezone after hovering Load graph for query if user selected UTC timezone @qan',
+// https://perconadev.atlassian.net/browse/PMM-13052 blocked
+Scenario.skip(
+  'PMM-T1699 Verify that query time is shown in UTC timezone after hovering Load graph for query if user selected UTC timezone @qan',
   async ({ I, adminPage, qanOverview }) => {
     qanOverview.waitForOverviewLoaded();
     const firstLoadCell = qanOverview.getLoadLocator(2);
