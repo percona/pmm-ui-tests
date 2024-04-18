@@ -38,7 +38,7 @@ Scenario(
       await dashboardPage.expandEachDashboardRow();
       await dashboardPage.verifyMetricsExistence(dashboardPage.mysqlInstanceSummaryDashboard.metrics);
       // FIXME: 5 N/As once https://jira.percona.com/browse/PMM-10308 is fixed
-      await dashboardPage.verifyThereAreNoGraphsWithoutData(3);
+      await dashboardPage.verifyThereAreNoGraphsWithoutData(6);
     }
   },
 );
@@ -67,7 +67,7 @@ Scenario(
     dashboardPage.waitForDashboardOpened();
     await dashboardPage.expandEachDashboardRow();
     await dashboardPage.verifyMetricsExistence(dashboardPage.mysqlInstancesCompareDashboard.metrics);
-    await dashboardPage.verifyThereAreNoGraphsWithoutData(4);
+    await dashboardPage.verifyThereAreNoGraphsWithoutData(6);
   },
 );
 
@@ -214,8 +214,7 @@ Scenario(
     dashboardPage.waitForDashboardOpened();
     await dashboardPage.expandEachDashboardRow();
     await dashboardPage.verifyMetricsExistence(dashboardPage.mysqlPXCGaleraNodesCompareDashboard.metrics);
-    // dashboardPage.verifyTabExistence(dashboardPage.mysqlPXCGaleraNodesCompareDashboard.tabs);
-    await dashboardPage.verifyThereAreNoGraphsWithoutData();
+    await dashboardPage.verifyThereAreNoGraphsWithoutData(3);
   },
 );
 

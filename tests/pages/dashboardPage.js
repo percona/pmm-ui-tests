@@ -1200,15 +1200,15 @@ module.exports = {
     Last2Days: '//span[contains(text(), "Last 2 days")]',
     metricTitle: '$header-container',
     metricPanel: '//section[@class="panel-container"]',
-    mongoDBServiceSummaryContent: locate('pre').withText('Mongo Executable'),
-    mySQLServiceSummaryContent: locate('pre').withText('Percona Toolkit MySQL Summary Report'),
+    mongoDBServiceSummaryContent: locate('$pt-summary-fingerprint').withText('Mongo Executable'),
+    mySQLServiceSummaryContent: locate('$pt-summary-fingerprint').withText('Percona Toolkit MySQL Summary Report'),
     navbarLocator: '.page-toolbar',
     notAvailableDataPoints: '//div[contains(text(),"No data")]',
     notAvailableMetrics: '//span[contains(text(), "N/A")]',
     otherReportTitleWithNoData:
       '//span[contains(text(),"No Data")]//ancestor::div[contains(@class,"panel-container")]//span[contains(@class,"panel-title-text")]',
     panelLoading: locate('div').withAttr({ class: 'panel-loading' }),
-    postgreSQLServiceSummaryContent: locate('pre').withText('Detected PostgreSQL version:'),
+    postgreSQLServiceSummaryContent: locate('$pt-summary-fingerprint').withText('Detected PostgreSQL version:'),
     reportTitleWithNA:
       locate('$header-container')
         .inside(locate('[class$="panel-container"]')
@@ -1218,7 +1218,7 @@ module.exports = {
       .inside(locate('[class$="panel-container"]')
         .withDescendant('//*[contains(text(),"No data") or contains(text(), "NO DATA") or contains(text(),"N/A")) or (text()="-")]')),
     rootUser: '//div[contains(text(), "root")]',
-    serviceSummary: locate('a').withText('Service Summary'),
+    serviceSummary: I.useDataQA('data-testid dashboard-row-title-Service Summary'),
     // timeRangePickerButton: '.btn.navbar-button.navbar-button--tight',
     timeRangePickerButton: I.useDataQA('data-testid TimePicker Open Button'),
     refresh: I.useDataQA('data-testid RefreshPicker run button'),
