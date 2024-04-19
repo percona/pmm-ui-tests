@@ -202,6 +202,7 @@ class QueryAnalyticsFilters {
   }
 
   async verifyCheckedFilters(expectedFilters) {
+    I.waitForVisible(this.fields.checkedFilters());
     const checkedFilters = await I.grabTextFromAll(this.fields.checkedFilters());
     const notCheckedFilters = [];
 
