@@ -29,18 +29,13 @@ Data(panels).Scenario(
 
     I.click(dashboardPage.fields.openFiltersDropdownLocator('Node Name'));
     const nodeNames = await I.grabTextFromAll(dashboardPage.fields.allFilterDropdownOptions);
-    const currentPanelValue = await I.grabTextFrom(dashboardPage.panelDataByTitle(panelName));
+    const currentPanelValue = await I.grabTextFrom(dashboardPage.panelDataByTitle('Monitored Nodes'));
 
     I.click(dashboardPage.fields.filterDropdownOptionsLocator(nodeNames[0]));
     I.click(dashboardPage.fields.filterDropdownOptionsLocator(nodeNames[1]));
     I.click(dashboardPage.fields.refresh);
-
-    // The data will not change if the initial value was 0.0
-    if (currentPanelValue.startsWith('0')) {
-      I.wait(5);
-    } else {
-      I.waitForInvisible(locate(dashboardPage.panelDataByTitle(panelName)).withText(currentPanelValue), 20);
-    }
+    I.waitForInvisible(locate(dashboardPage.panelDataByTitle(panelName)).withText(currentPanelValue), 20);
+    I.wait(2);
 
     const expectedNodeName = dashboardType === 'singleNode'
       ? nodeNames.sort()[0]

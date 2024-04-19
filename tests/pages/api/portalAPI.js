@@ -73,6 +73,7 @@ module.exports = {
         lowercase: true,
         uppercase: true,
         strict: true,
+        symbols: true,
       }),
       firstName,
       lastName,

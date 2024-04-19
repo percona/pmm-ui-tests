@@ -21,6 +21,13 @@ Scenario(
     I.amOnPage(dashboardPage.victoriaMetricsAgentsOverviewDashboard.url);
     dashboardPage.waitForDashboardOpened();
     await dashboardPage.expandEachDashboardRow();
+
+    // Scroll till the end to see all graphs as there are no collapsed rows
+    await I.asyncWaitFor(async () => {
+      I.pressKey('PageDown');
+
+      return (await I.grabNumberOfVisibleElements(dashboardPage.graphsLocator('Network  Usage')));
+    }, 90);
     await dashboardPage.verifyMetricsExistence(dashboardPage.victoriaMetricsAgentsOverviewDashboard.metrics);
     await dashboardPage.verifyThereAreNoGraphsWithoutData();
   },

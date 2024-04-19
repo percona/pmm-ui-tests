@@ -479,7 +479,7 @@ module.exports = {
       'Amount of Collections in Shards',
       'Size of Collections in Shards',
       'QPS of Mongos Service',
-      'QPS of Services in Shard - All',
+      'QPS of Services in Shard',
       'QPS of Config Services',
       'Amount of Indexes in Shards',
       'Dynamic of Indexes',
@@ -1218,13 +1218,10 @@ module.exports = {
         .withDescendant('//*[contains(text(),"No data") or contains(text(), "NO DATA") or contains(text(),"N/A")) or (text()="-")]')),
     rootUser: '//div[contains(text(), "root")]',
     serviceSummary: I.useDataQA('data-testid dashboard-row-title-Service Summary'),
-    // timeRangePickerButton: '.btn.navbar-button.navbar-button--tight',
     timeRangePickerButton: I.useDataQA('data-testid TimePicker Open Button'),
     refresh: I.useDataQA('data-testid RefreshPicker run button'),
     allFilterDropdownOptions: '//button[contains(@data-testid, "variable-option")][span[text()][not(contains(text(), "All"))]]',
-    // allFilterDropdownOptions: '//a[contains(@class, "variable-option")][span[text()][not(contains(text(), "All"))]]',
     skipTourButton: '//button[span[text()="Skip"]]',
-    timeRangeOption: (timeRange) => locate('li').withDescendant('label').withText(timeRange),
     openFiltersDropdownLocator: (filterName) => locate(`#var-${formatElementId(filterName)}`),
     filterDropdownOptionsLocator: (filterName) => locate(I.useDataQA('data-testid variable-option')).withText(filterName),
     refreshIntervalPicker: I.useDataQA('data-testid RefreshPicker interval button'),
@@ -1234,19 +1231,11 @@ module.exports = {
     metricPanelNa: (name) => `//section[@aria-label="${name}"]//span[text()="N/A"]`,
   },
 
-  createAdvancedDataExplorationURL(metricName, time = '1m', nodeName = 'All') {
-    return `graph/d/prometheus-advanced/advanced-data-exploration?orgId=1&refresh=1m&var-metric=${metricName}&var-interval=$__auto_interval_interval&var-node_name=${nodeName}&from=now-${time}&to=now`;
-  },
-
   async checkNavigationBar(text) {
     I.waitForVisible(this.fields.navbarLocator, 30);
     const navbarText = await I.grabTextFrom(this.fields.navbarLocator);
 
     assert.ok(navbarText.includes(text));
-  },
-
-  async getExactFilterValue(filterName) {
-    return await I.grabAttributeFrom(`//label[contains(@aria-label, '${filterName}')]/..//a`, 'title');
   },
 
   annotationLocator(number = 1) {
@@ -1267,7 +1256,6 @@ module.exports = {
     I.waitForVisible(this.annotationText(title), 30);
   },
 
-  // introducing methods
   async verifyMetricsExistence(metrics) {
     for (const i in metrics) {
       I.pressKey('PageDown');
@@ -1283,12 +1271,6 @@ module.exports = {
     I.click(this.graphsLocator(metric).find('[title="Menu"]'));
   },
 
-  verifyTabExistence(tabs) {
-    for (const i in tabs) {
-      I.seeElement(this.tabLocator(tabs[i]));
-    }
-  },
-
   graphsLocator(metricName) {
     return locate(this.fields.metricTitle).withText(metricName);
   },
@@ -1301,19 +1283,9 @@ module.exports = {
     return locate(this.panelByTitle(title)).find(I.useDataQA('data-testid Data link'));
   },
 
-  tabLocator(tabName) {
-    return `//a[contains(text(), '${tabName}')]`;
-  },
   async waitForAllGraphsToHaveData(timeout = 60) {
     await I.waitForInvisible(this.fields.notAvailableMetrics, timeout);
     await I.waitForInvisible(this.fields.notAvailableDataPoints, timeout);
-  },
-
-  async getNumberOfGraphsWithoutData(timeout) {
-    const naElements = await I.grabNumberOfVisibleElements(this.fields.notAvailableMetrics, timeout);
-    const noDataElements = await I.grabNumberOfVisibleElements(this.fields.notAvailableDataPoints, timeout);
-
-    return naElements + noDataElements;
   },
 
   async verifyThereAreNoGraphsWithoutData(acceptableNACount = 0) {
@@ -1328,18 +1300,6 @@ module.exports = {
       await this.printFailedReportNames(acceptableNACount, numberOfNAElements, titles, url);
     }
   },
-
-  // async verifyThereAreNoGraphsWithoutData(acceptableNoDataCount = 0) {
-  //   const numberOfNoDataElements = await I.grabNumberOfVisibleElements(this.fields.reportTitleWithNA);
-  //
-  //   I.say(`number of No Data elements is = ${numberOfNoDataElements}`);
-  //   if (numberOfNoDataElements > acceptableNoDataCount) {
-  //     const titles = await this.grabFailedReportTitles(this.fields.reportTitleWithNoData);
-  //     const url = await I.grabCurrentUrl();
-  //
-  //     await this.printFailedReportNames(acceptableNoDataCount, numberOfNoDataElements, titles, url);
-  //   }
-  // },
 
   async printFailedReportNames(expectedNumber, actualNumber, titles, dashboardUrl) {
     assert.equal(
@@ -1372,11 +1332,6 @@ module.exports = {
   waitForDashboardOpened() {
     I.waitForElement(this.fields.metricTitle, 60);
     I.click(this.fields.metricTitle);
-  },
-
-  waitForDataLoaded() {
-    I.waitForVisible('//*[@aria-label="Loading indicator"]');
-    I.waitForInvisible('//*[@aria-label="Loading indicator"]');
   },
 
   expandFilters(filterName) {

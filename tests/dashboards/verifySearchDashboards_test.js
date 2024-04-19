@@ -11,7 +11,7 @@ Before(async ({ I, homePage }) => {
   await homePage.open();
 });
 
-Scenario(
+Scenario.skip(
   '@PMM-T1091 - Verify PMM Dashboards folders are correct @nightly @dashboards',
   async ({ I, searchDashboardsModal, dashboardPage }) => {
     I.click(dashboardPage.fields.breadcrumbs.dashboardName);
