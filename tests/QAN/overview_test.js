@@ -295,7 +295,7 @@ Scenario(
   async ({
     I, adminPage, queryAnalyticsPage,
   }) => {
-    const query = 'SELECT current_database() datname';
+    const query = 'SELECT pg_database';
 
     queryAnalyticsPage.waitForLoaded();
     await adminPage.applyTimeRange('Last 3 hours');
