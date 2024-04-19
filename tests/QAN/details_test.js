@@ -51,7 +51,7 @@ databaseEnvironments.add(['pxc_node', 'select']);
 // databaseEnvironments.add(['pgsql_pgss_pmm', 'insert']);
 databaseEnvironments.add(['pdpgsql_pgsm_pmm', 'insert']);
 // databaseEnvironments.add(['md-dev', 'insert']);
-databaseEnvironments.add(['mongos', 'AGGREGATE']);
+databaseEnvironments.add(['mongos', 'FIND collections']);
 
 Data(databaseEnvironments).Scenario(
   'PMM-T13 - Check Explain and Example for supported DBs @qan',
