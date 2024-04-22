@@ -71,7 +71,7 @@ Scenario(
   },
 );
 
-Data(urlsAndMetrics).only.Scenario(
+Data(urlsAndMetrics).Scenario(
   'PMM-T1070 + PMM-T449 - Verify link to instructions for enabling rendering images @nightly @dashboards',
   async ({
     I, dashboardPage, links, current,
