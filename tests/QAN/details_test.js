@@ -34,7 +34,7 @@ Scenario(
   async ({
     I, queryAnalyticsPage,
   }) => {
-    I.amOnPage(I.buildUrlWithParams(queryAnalyticsPage.url, { environment: 'dev', from: 'now-1h', search: 'insert' }));
+    I.amOnPage(I.buildUrlWithParams(queryAnalyticsPage.url, { environment: 'pxc-dev', from: 'now-1h', search: 'insert' }));
     I.waitForElement(queryAnalyticsPage.data.elements.queryRows, 30);
     queryAnalyticsPage.data.selectRow(1);
     queryAnalyticsPage.waitForLoaded();
@@ -51,7 +51,7 @@ databaseEnvironments.add(['pxc_node', 'select']);
 // databaseEnvironments.add(['pgsql_pgss_pmm', 'insert']);
 databaseEnvironments.add(['pdpgsql_pgsm_pmm', 'insert']);
 // databaseEnvironments.add(['md-dev', 'insert']);
-databaseEnvironments.add(['mongos', 'FIND collections']);
+databaseEnvironments.add(['rs101', 'update']);
 
 Data(databaseEnvironments).Scenario(
   'PMM-T13 - Check Explain and Example for supported DBs @qan',
