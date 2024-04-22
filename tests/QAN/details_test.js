@@ -50,7 +50,6 @@ databaseEnvironments.add(['ps-single', 'select']);
 databaseEnvironments.add(['pxc_node', 'select']);
 // databaseEnvironments.add(['pgsql_pgss_pmm', 'insert']);
 databaseEnvironments.add(['pdpgsql_pgsm_pmm', 'insert']);
-// databaseEnvironments.add(['md-dev', 'insert']);
 databaseEnvironments.add(['rs101', 'update']);
 
 Data(databaseEnvironments).Scenario(
