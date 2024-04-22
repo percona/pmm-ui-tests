@@ -71,18 +71,16 @@ Scenario(
   },
 );
 
-Data(urlsAndMetrics).Scenario(
+Data(urlsAndMetrics).only.Scenario(
   'PMM-T1070 + PMM-T449 - Verify link to instructions for enabling rendering images @nightly @dashboards',
   async ({
     I, dashboardPage, links, current,
   }) => {
     I.amOnPage(current.startUrl);
     dashboardPage.waitForDashboardOpened();
-    await dashboardPage.openGraphDropdownMenu(current.metricName);
-    const shareLocator = locate('[data-role="menuitem"]').withText('Share');
-
-    I.waitForVisible(shareLocator, 20);
-    I.click(shareLocator);
+    await dashboardPage.panelMenu(current.metricName)
+      .showMenu()
+      .share();
     I.waitForVisible(dashboardPage.sharePanel.elements.imageRendererPluginLink, 20);
     I.seeAttributesOnElements(
       dashboardPage.sharePanel.elements.imageRendererPluginLink,

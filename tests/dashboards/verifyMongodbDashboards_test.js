@@ -16,6 +16,7 @@ Scenario(
     dashboardPage.waitForDashboardOpened();
     await dashboardPage.expandEachDashboardRow();
     await dashboardPage.verifyMetricsExistence(dashboardPage.mongodbOverviewDashboard.metrics);
+    await dashboardPage.verifyThereAreNoGraphsWithoutData();
   },
 );
 
@@ -29,6 +30,7 @@ Scenario(
     dashboardPage.waitForDashboardOpened();
     await dashboardPage.expandEachDashboardRow();
     await dashboardPage.verifyMetricsExistence(dashboardPage.mongoDbClusterSummaryDashboard.metrics);
+    await dashboardPage.verifyThereAreNoGraphsWithoutData();
   },
 );
 
@@ -40,9 +42,10 @@ Scenario(
       cluster: 'replicaset',
     });
 
-    I.amOnPage(dashboardPage.mongodbReplicaSetSummaryDashboard.url);
+    I.amOnPage(url);
     dashboardPage.waitForDashboardOpened();
     await dashboardPage.expandEachDashboardRow();
     await dashboardPage.verifyMetricsExistence(dashboardPage.mongodbReplicaSetSummaryDashboard.metrics);
+    await dashboardPage.verifyThereAreNoGraphsWithoutData();
   },
 );

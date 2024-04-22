@@ -64,6 +64,7 @@ module.exports = {
     saveButton: locate('button').withChild('div').withText('Save Changes'),
     saveConfirmButton: locate('span').withText('Confirm and save changes'),
     savePopupMessage: locate('p').withText('Changing existing labels can affect other parts of PMM dependent on it'),
+    runningStatusAgent: '//td/div[contains(text(), "Running")]',
   },
   servicesTab,
   pagination: paginationPart,
@@ -114,9 +115,7 @@ module.exports = {
     I.waitForElement(this.fields.inventoryTable, 60);
     I.scrollPageToBottom();
 
-    const runningStatus = '//td/div[contains(text(), "Running")]';
-
-    const numberOfAgents = await I.grabNumberOfVisibleElements(runningStatus);
+    const numberOfAgents = await I.grabNumberOfVisibleElements(this.fields.runningStatusAgent);
 
     if (service_name.includes('azure')) {
       assert.equal(
