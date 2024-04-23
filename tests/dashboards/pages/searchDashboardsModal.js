@@ -115,6 +115,7 @@ module.exports = {
     itemLocator: (itemName) => locate(I.useDataQA(`data-testid Dashboard search item ${itemName}`)),
     closeButton: locate('button[aria-label="Close search"]').as('Close button'),
     folderRowLocator: locate('[data-testid^="data-testid browse dashboards row "]'),
+    itemsLocator: locate('[data-testid^="data-testid Dashboard search item "]'),
   },
 
   waitForOpened() {
@@ -138,7 +139,8 @@ module.exports = {
   expandFolder(name) {
     I.waitForVisible(this.fields.collapsedFolderLocator(name), 10);
     I.click(this.fields.collapsedFolderLocator(name));
-    I.waitForElement(this.fields.expandedFolderLocator(name), 10);
+    I.waitForVisible(this.fields.expandedFolderLocator(name), 10);
+    I.waitForVisible(this.fields.itemsLocator.first(), 10);
   },
 
   collapseFolder(name) {
