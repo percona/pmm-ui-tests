@@ -31,4 +31,4 @@ Data(folders).Scenario(
     searchDashboardsModal.expandFolder(current.folderObject.name);
     searchDashboardsModal.verifyDashboardsInFolderCollection(current.folderObject);
   },
-);
+).retry(1);

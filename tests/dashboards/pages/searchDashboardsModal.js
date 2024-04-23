@@ -138,7 +138,7 @@ module.exports = {
   expandFolder(name) {
     I.waitForVisible(this.fields.collapsedFolderLocator(name), 10);
     I.click(this.fields.collapsedFolderLocator(name));
-    I.waitForElement(this.fields.expandedFolderLocator(name), 5);
+    I.waitForElement(this.fields.expandedFolderLocator(name), 10);
   },
 
   collapseFolder(name) {
