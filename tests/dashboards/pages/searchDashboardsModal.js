@@ -34,6 +34,7 @@ module.exports = {
       items: [
         'HAProxy Instance Summary',
         'MySQL Amazon Aurora Details',
+        'MySQL Query Response Time Details',
         'MySQL Command/Handler Counters Compare',
         'MySQL Group Replication Summary',
         'MySQL InnoDB Compression Details',
@@ -44,7 +45,6 @@ module.exports = {
         'MySQL MyISAM/Aria Details',
         'MySQL MyRocks Details',
         'MySQL Performance Schema Details',
-        'MySQL Query Response Time Details',
         'MySQL Replication Summary',
         'MySQL Table Details',
         'MySQL TokuDB Details',
@@ -115,7 +115,7 @@ module.exports = {
     itemLocator: (itemName) => locate(I.useDataQA(`data-testid Dashboard search item ${itemName}`)),
     closeButton: locate('button[aria-label="Close search"]').as('Close button'),
     folderRowLocator: locate('[data-testid^="data-testid browse dashboards row "]'),
-    itemsLocator: locate('[data-testid^="data-testid Dashboard search item "]'),
+    itemsLocator: locate('[data-testid^="data-testid browse dashboards row"]'),
   },
 
   waitForOpened() {
@@ -149,8 +149,15 @@ module.exports = {
     I.waitForElement(this.fields.collapsedFolderLocator(name), 5);
   },
 
-  verifyDashboardsInFolderCollection(folderObject) {
+  async verifyDashboardsInFolderCollection(folderObject) {
     for (const item of folderObject.items) {
+      // Lazy loading is implemented here so we need to scroll the page in order to see other items
+      const elementsCount = await I.grabNumberOfVisibleElements(this.fields.folderItemLocator(item));
+
+      if (!elementsCount) {
+        I.pressKey('PageDown');
+      }
+
       I.seeElementInDOM(this.fields.folderItemLocator(item));
       I.see(item, this.fields.folderItemLocator(item));
     }

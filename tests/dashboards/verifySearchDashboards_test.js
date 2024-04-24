@@ -25,10 +25,10 @@ Scenario(
 Data(folders).Scenario(
   '@PMM-T1086 - Verify PMM Dashboards collections are present in correct folders @nightly @dashboards @post-upgrade',
   async ({
-    I, current, searchDashboardsModal,
+    current, searchDashboardsModal,
   }) => {
     searchDashboardsModal.waitForOpened();
     searchDashboardsModal.expandFolder(current.folderObject.name);
-    searchDashboardsModal.verifyDashboardsInFolderCollection(current.folderObject);
+    await searchDashboardsModal.verifyDashboardsInFolderCollection(current.folderObject);
   },
 ).retry(1);
