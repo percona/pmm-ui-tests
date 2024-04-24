@@ -1,11 +1,4 @@
-const assert = require('assert');
 const page = require('./pages/pmmSettingsPage');
-
-const {
-  codeceptjsConfig,
-} = inject();
-
-const url = new URL(codeceptjsConfig.config.helpers.Playwright.url);
 
 // Value should be in range from 1 to 3650 days, so put a value outside of the range
 const validationValues = ['2147483648', '-1', '0'];
@@ -22,25 +15,21 @@ for (const i in validationValues) {
 
 Feature('PMM Settings Elements').retry(2);
 
-Before(async ({ I, pmmSettingsPage, settingsAPI }) => {
+Before(async ({ I, settingsAPI }) => {
   await I.Authorize();
   await settingsAPI.restoreSettingsDefaults();
-  I.amOnPage(pmmSettingsPage.url);
 });
 
-Data(dataRetentionTable).Scenario('PMM-T97 - Verify server diagnostics on PMM Settings Page @settings @grafana-pr', async ({ pmmSettingsPage, current }) => {
-  const sectionNameToExpand = pmmSettingsPage.sectionTabsList.advanced;
+Data(dataRetentionTable).Scenario('PMM-T97 - Verify server diagnostics on PMM Settings Page @settings @grafana-pr', async ({ I, pmmSettingsPage, current }) => {
+  I.amOnPage(pmmSettingsPage.advancedSettingsUrl);
 
   await pmmSettingsPage.waitForPmmSettingsPageLoaded();
-  await pmmSettingsPage.expandSection(sectionNameToExpand, pmmSettingsPage.fields.advancedButton);
   pmmSettingsPage.checkDataRetentionInput(current.value, current.message);
 });
 
 Scenario('PMM-T84 - Verify Section Tabs and Metrics Section Elements [critical] @settings @grafana-pr', async ({ I, pmmSettingsPage }) => {
+  I.amOnPage(pmmSettingsPage.url);
   await pmmSettingsPage.waitForPmmSettingsPageLoaded();
-  Object.values(pmmSettingsPage.sectionTabsList).forEach((value) => {
-    I.see(value, pmmSettingsPage.fields.tabsSection);
-  });
 
   await within(pmmSettingsPage.fields.tabContent, () => {
     I.waitForElement(pmmSettingsPage.fields.metricsResolutionLabel, 30);
@@ -53,19 +42,16 @@ Scenario('PMM-T84 - Verify Section Tabs and Metrics Section Elements [critical] 
 });
 
 Scenario('PMM-T85 - Verify SSH Key Section Elements @settings @grafana-pr', async ({ I, pmmSettingsPage }) => {
-  const sectionNameToExpand = pmmSettingsPage.sectionTabsList.ssh;
-
+  I.amOnPage(pmmSettingsPage.sshKeyUrl);
   await pmmSettingsPage.waitForPmmSettingsPageLoaded();
-  await pmmSettingsPage.expandSection(sectionNameToExpand, pmmSettingsPage.fields.sshKeyButton);
   I.see('SSH key', pmmSettingsPage.fields.sshKeyLabel);
   I.seeElement(pmmSettingsPage.fields.sshKeyInput);
 });
 
 Scenario('Verify Advanced Section Elements @settings @grafana-pr', async ({ I, pmmSettingsPage }) => {
-  const sectionNameToExpand = pmmSettingsPage.sectionTabsList.advanced;
+  I.amOnPage(pmmSettingsPage.advancedSettingsUrl);
 
   await pmmSettingsPage.waitForPmmSettingsPageLoaded();
-  await pmmSettingsPage.expandSection(sectionNameToExpand, pmmSettingsPage.fields.advancedButton);
   I.see('Data retention', pmmSettingsPage.fields.advancedLabel);
   I.see('Telemetry', pmmSettingsPage.fields.telemetryLabel);
   I.see('Check for updates', pmmSettingsPage.fields.checkForUpdatesLabel);
@@ -94,6 +80,7 @@ xScenario(
   async ({ I, pmmSettingsPage }) => {
     const dataRetention = '2';
 
+    I.amOnPage(pmmSettingsPage.url);
     await pmmSettingsPage.waitForPmmSettingsPageLoaded();
     I.waitForValue(pmmSettingsPage.fields.dataRetentionCount, dataRetention, 30);
   },
@@ -102,10 +89,8 @@ xScenario(
 Scenario(
   '@PMM-T1519 Verify that alerting link inside settings forwarding to correct page @settings',
   async ({ I, pmmSettingsPage, alertsPage }) => {
-    const sectionNameToExpand = pmmSettingsPage.sectionTabsList.alertmanager;
-
+    I.amOnPage(pmmSettingsPage.alertManagerUrl);
     await pmmSettingsPage.waitForPmmSettingsPageLoaded();
-    await pmmSettingsPage.expandSection(sectionNameToExpand, pmmSettingsPage.fields.alertmanagerButton);
     I.click(pmmSettingsPage.fields.perconaAlertingUrl);
     I.assertTrue((await I.grabCurrentUrl()).includes(alertsPage.url), 'Link should lead to IA page. But it does not');
     I.waitForElement(alertsPage.elements.pageHeader, 30);
@@ -130,10 +115,9 @@ Scenario(
   },
 );
 Scenario('@PMM-T1866 - Verify if public address has an port assigned and following UI/API requests dont error @settings', async ({ I, pmmSettingsPage, adminPage }) => {
-  const sectionNameToExpand = pmmSettingsPage.sectionTabsList.advanced;
+  I.amOnPage(pmmSettingsPage.advancedSettingsUrl);
 
   await pmmSettingsPage.waitForPmmSettingsPageLoaded();
-  await pmmSettingsPage.expandSection(sectionNameToExpand, pmmSettingsPage.fields.advancedButton);
   I.waitForElement(pmmSettingsPage.fields.publicAddressLabel);
   I.see('Public Address', pmmSettingsPage.fields.publicAddressLabel);
   // Set a public IP with port

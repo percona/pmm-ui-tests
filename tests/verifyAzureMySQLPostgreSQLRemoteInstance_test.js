@@ -70,13 +70,13 @@ Data(azureServices).Scenario(
 // Skip Due to changes Home Dashboard
 xScenario(
   'PMM-T756 - Verify Azure node is displayed on Home dashboard @instances',
-  async ({
-    I, homePage, dashboardPage,
-  }) => {
+  async ({ I, homePage }) => {
     const nodeName = 'azure-MySQL';
 
-    I.amOnPage(homePage.url);
-    await dashboardPage.applyFilter('Node Name', nodeName);
+    I.amOnPage(I.buildUrlWithParams(homePage.cleanUrl, {
+      node_name: nodeName,
+      from: 'now-5m',
+    }));
     homePage.verifyVisibleService(nodeName);
     // part without RDS MySQL should be skipped for now
   },
