@@ -314,10 +314,10 @@ Scenario(
     const groupBy = 'Database';
     const query = 'postgres';
 
-    I.waitForText('Query', 30, queryAnalyticsPage.elements.selectedMainMetric());
+    I.waitForText('Query', 30, queryAnalyticsPage.data.elements.selectedMainMetric());
     queryAnalyticsPage.waitForLoaded();
-    await queryAnalyticsPage.changeMainMetric(groupBy);
-    queryAnalyticsPage.verifyMainMetric(groupBy);
+    await queryAnalyticsPage.data.changeMainMetric(groupBy);
+    queryAnalyticsPage.data.verifyMainMetric(groupBy);
     queryAnalyticsPage.waitForLoaded();
     queryAnalyticsPage.data.searchByValue(query);
     I.waitForElement(queryAnalyticsPage.data.elements.queryRows, 30);
@@ -330,20 +330,20 @@ Scenario(
 Scenario(
   'PMM-T127 Verify user is able to Group By overview table results @qan',
   async ({ I, queryAnalyticsPage }) => {
-    I.waitForText('Query', 30, queryAnalyticsPage.elements.selectedMainMetric());
+    I.waitForText('Query', 30, queryAnalyticsPage.data.elements.selectedMainMetric());
     queryAnalyticsPage.waitForLoaded();
-    await queryAnalyticsPage.changeMainMetric('Service Name');
-    queryAnalyticsPage.verifyMainMetric('Service Name');
-    await queryAnalyticsPage.changeMainMetric('Database');
-    queryAnalyticsPage.verifyMainMetric('Database');
-    await queryAnalyticsPage.changeMainMetric('Schema');
-    queryAnalyticsPage.verifyMainMetric('Schema');
-    await queryAnalyticsPage.changeMainMetric('User Name');
-    queryAnalyticsPage.verifyMainMetric('User Name');
-    await queryAnalyticsPage.changeMainMetric('Client Host');
-    queryAnalyticsPage.verifyMainMetric('Client Host');
-    await queryAnalyticsPage.changeMainMetric('Query');
-    queryAnalyticsPage.verifyMainMetric('Query');
+    await queryAnalyticsPage.data.changeMainMetric('Service Name');
+    queryAnalyticsPage.data.verifyMainMetric('Service Name');
+    await queryAnalyticsPage.data.changeMainMetric('Database');
+    queryAnalyticsPage.data.verifyMainMetric('Database');
+    await queryAnalyticsPage.data.changeMainMetric('Schema');
+    queryAnalyticsPage.data.verifyMainMetric('Schema');
+    await queryAnalyticsPage.data.changeMainMetric('User Name');
+    queryAnalyticsPage.data.verifyMainMetric('User Name');
+    await queryAnalyticsPage.data.changeMainMetric('Client Host');
+    queryAnalyticsPage.data.verifyMainMetric('Client Host');
+    await queryAnalyticsPage.data.changeMainMetric('Query');
+    queryAnalyticsPage.data.verifyMainMetric('Query');
   },
 );
 
