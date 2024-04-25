@@ -9,7 +9,7 @@ module.exports = {
   templates,
   alertRuleFilters: ['Firing', 'Normal', 'Pending', 'Alert', 'Recording', 'List', 'Grouped', 'State'],
   elements: {
-    noRules: 'div.page-body > div',
+    noRules: '#pageContent',
     columnHeaderLocator: (columnHeaderText) => locate('$header').withText(columnHeaderText),
     ruleNameValue: 'div[data-column=\'Name\']',
     ruleState: (text) => `//span[contains(.,'${text}')]`,
@@ -80,9 +80,11 @@ module.exports = {
     this.searchAndSelectResult('template', template);
     this.verifyAndReplaceInputField('ruleName', ruleName, editedRule.ruleName);
     const thresholdExists = await I.grabNumberOfVisibleElements(this.fields.resultsLocator(threshold));
-    if (thresholdExists >0 ) {
-        this.verifyAndReplaceInputField('threshold', threshold, editedRule.threshold);
+
+    if (thresholdExists > 0) {
+      this.verifyAndReplaceInputField('threshold', threshold, editedRule.threshold);
     }
+
     this.verifyAndReplaceInputField('duration', duration, editedRule.duration);
     I.see(severity, this.fields.searchDropdown('severity'));
     this.searchAndSelectResult('severity', editedRule.severity);
@@ -131,7 +133,7 @@ module.exports = {
 
   verifyRuleDetails(ruleObj) {
     const {
-      ruleName, threshold, duration, folder, severity, filters = [],
+      ruleName, duration, folder, severity,
     } = ruleObj;
 
     this.verifyRuleList(folder, ruleName);
