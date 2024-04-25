@@ -95,18 +95,18 @@ Scenario(
     I, searchDashboardsModal, queryAnalyticsPage,
   }) => {
     queryAnalyticsPage.waitForLoaded();
-    I.waitForElement(queryAnalyticsPage.buttons.searchDashboard);
-    I.click(queryAnalyticsPage.buttons.searchDashboard);
-    searchDashboardsModal.waitForOpened();
-    I.pressKey('Escape');
+    I.waitForElement(queryAnalyticsPage.buttons.qanBreadcrumb);
+    I.click(queryAnalyticsPage.buttons.qanBreadcrumb);
+    I.waitForVisible(searchDashboardsModal.fields.dashboardRow('PMM Query Analytics'));
+    I.click(searchDashboardsModal.fields.dashboardRow('PMM Query Analytics'));
     queryAnalyticsPage.waitForLoaded();
     queryAnalyticsPage.data.selectRow(1);
     queryAnalyticsPage.queryDetails.waitForDetails();
 
-    I.click(queryAnalyticsPage.dashboardLinks.buttons.queryAnalytics);
-    I.click(queryAnalyticsPage.buttons.searchDashboard);
-    searchDashboardsModal.waitForOpened();
-    I.pressKey('Escape');
+    I.waitForElement(queryAnalyticsPage.buttons.qanBreadcrumb);
+    I.click(queryAnalyticsPage.buttons.qanBreadcrumb);
+    I.waitForVisible(searchDashboardsModal.fields.dashboardRow('PMM Query Analytics'));
+    I.click(searchDashboardsModal.fields.dashboardRow('PMM Query Analytics'));
     queryAnalyticsPage.waitForLoaded();
     queryAnalyticsPage.data.selectRow(1);
     queryAnalyticsPage.queryDetails.waitForDetails();

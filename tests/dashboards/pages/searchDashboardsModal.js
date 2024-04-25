@@ -105,7 +105,7 @@ module.exports = {
     },
   },
   fields: {
-    searchInput: 'input[placeholder="Search or jump to..."]',
+    searchInput: 'input[placeholder="Search for dashboards and folders"]',
     searchDashboardModal: locate('//*[@id="kbar-listbox"]'),
     folderLocator: I.useDataQA('data-testid Search section'),
     collapsedFolderLocator: (folderName) => locate(`[aria-label="Expand folder ${folderName}"]`),
@@ -117,10 +117,11 @@ module.exports = {
     closeButton: locate('button[aria-label="Close search"]').as('Close button'),
     folderRowLocator: locate('[data-testid^="data-testid browse dashboards row "]'),
     itemsLocator: locate('[data-testid^="data-testid browse dashboards row"]'),
+    dashboardRow: (dashboardName) => locate(`//*[@data-testid="data-testid browse dashboards row ${dashboardName}"]//a`),
   },
 
   waitForOpened() {
-    I.waitForElement(this.fields.searchDashboardModal, 10);
+    I.waitForElement(this.fields.searchInput, 10);
   },
 
   async countFolders() {
