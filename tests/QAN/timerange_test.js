@@ -65,11 +65,11 @@ Scenario(
   async ({ I, adminPage, queryAnalyticsPage }) => {
     const group = 'Client Host';
 
-    I.waitForText('Query', 30, queryAnalyticsPage.elements.selectedMainMetric());
-    await queryAnalyticsPage.changeMainMetric(group);
+    I.waitForText('Query', 30, queryAnalyticsPage.data.elements.selectedMainMetric());
+    await queryAnalyticsPage.data.changeMainMetric(group);
     await adminPage.applyTimeRange('Last 24 hours');
     queryAnalyticsPage.waitForLoaded();
-    const mainMetricsText = await I.grabTextFrom(queryAnalyticsPage.elements.selectedMainMetric());
+    const mainMetricsText = await I.grabTextFrom(queryAnalyticsPage.data.elements.selectedMainMetric());
 
     I.assertEqual(
       group,

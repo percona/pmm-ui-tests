@@ -113,10 +113,10 @@ Scenario(
 Scenario(
   'PMM-T183 Verify that "Group by" in the overview table can be changed @qan',
   async ({ I, queryAnalyticsPage }) => {
-    I.waitForText('Query', 30, queryAnalyticsPage.elements.selectedMainMetric());
+    I.waitForText('Query', 30, queryAnalyticsPage.data.elements.selectedMainMetric());
     queryAnalyticsPage.waitForLoaded();
-    await queryAnalyticsPage.changeMainMetric('Database');
-    queryAnalyticsPage.verifyMainMetric('Database');
+    await queryAnalyticsPage.data.changeMainMetric('Database');
+    queryAnalyticsPage.data.verifyMainMetric('Database');
   },
 );
 

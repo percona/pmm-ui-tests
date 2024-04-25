@@ -119,16 +119,15 @@ Scenario(
     dashboardPage, adminPage, queryAnalyticsPage,
   }) => {
     queryAnalyticsPage.waitForLoaded();
-    await queryAnalyticsPage.changeMainMetric('Database');
+    await queryAnalyticsPage.data.changeMainMetric('Database');
     queryAnalyticsPage.changeSorting(2);
     queryAnalyticsPage.filters.selectFilterInGroup('pmm-managed', 'Database');
     queryAnalyticsPage.addColumn('Bytes Sent');
     await adminPage.applyTimeRange('Last 1 hour');
-
     queryAnalyticsPage.data.searchByValue('pmm-managed');
     queryAnalyticsPage.data.selectTotalRow();
     dashboardPage.selectRefreshTimeInterval('5s');
-    queryAnalyticsPage.verifyMainMetric('Database');
+    queryAnalyticsPage.data.verifyMainMetric('Database');
     queryAnalyticsPage.data.verifySorting(2, 'asc');
     await queryAnalyticsPage.filters.verifySelectedFilters('pmm-managed');
     queryAnalyticsPage.data.verifyColumnPresent('Bytes Sent');

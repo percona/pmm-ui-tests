@@ -26,6 +26,10 @@ class QueryAnalyticsData {
       tooltip: '.overview-column-tooltip',
       noResultTableText: locate('$table-no-data').find('h1'),
       selectedRowByNumber: (rowNumber) => locate(`div.tr-${rowNumber}.selected-overview-row`),
+      selectedMainMetric: () => this.elements.mainMetricsContainer.find('//span[@class="ant-select-selection-item"]'),
+      mainMetricsContainer: locate('//div[@data-testid="group-by"]'),
+      mainMetricFromDropdown: (metricName) => locate(`//div[@class="ant-select-item-option-content" and text()="${metricName}"]`),
+      mainMetricByName: (metricsName) => this.elements.selectedMainMetric().withText(metricsName),
     };
     this.fields = {
       searchBy: '//input[contains(@name, "search")]',
@@ -48,6 +52,19 @@ class QueryAnalyticsData {
     this.messages = {
       noResultTableText: 'No queries available for this combination of filters in the selected time frame',
     };
+  }
+
+  async changeMainMetric(newMainMetric) {
+    const oldMainMetric = await I.grabTextFrom(this.elements.selectedMainMetric());
+
+    I.click(this.elements.mainMetricsContainer);
+    I.click(this.elements.mainMetricFromDropdown(newMainMetric));
+    I.waitForDetached(this.elements.mainMetricByName(oldMainMetric), 10);
+    I.waitForElement(this.elements.mainMetricByName(newMainMetric), 10);
+  }
+
+  verifyMainMetric(mainMetric) {
+    I.waitForVisible(this.elements.mainMetricByName(mainMetric));
   }
 
   selectRow(rowNumber) {
