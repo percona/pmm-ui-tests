@@ -47,8 +47,7 @@ Scenario('PMM-T1883 Configuring pmm-agent to use service account @service-accoun
   await dashboardPage.expandEachDashboardRow();
   await dashboardPage.verifyThereAreNoGraphsWithNA(1);
   await dashboardPage.verifyThereAreNoGraphsWithoutData(19);
-
-  await I.verifyCommand(`sudo -E env "PATH=$PATH" pmm-admin add mysql --username ${credentials.perconaServer.username} --password ${credentials.perconaServer.password} --host=${pmmServerUrl}  --port=43306 --service-name=${newServiceName}`);
+  await I.verifyCommand(`sudo docker exec -it ps_pmm_8.0  pmm-admin add mysql --username=msandbox --password=msandbox --host=127.0.0.1  --port=8033 --service-name=${newServiceName}`);
   await I.wait(60);
   const url = I.buildUrlWithParams(dashboardPage.mySQLInstanceOverview.clearUrl, {
     from: 'now-1m',
