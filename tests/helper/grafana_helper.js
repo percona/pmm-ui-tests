@@ -194,7 +194,9 @@ class Grafana extends Helper {
       assert.ok(stdout.includes(output), `The "${command}" output expected to include "${output}" but found "${stdout}"`);
     }
     console.log(`Stdout length is: ${stdout.length}`);
+    console.log(stdout);
     console.log(`Stderr length is: ${stderr.length}`);
+    console.log(stderr);
     console.log(`Code is: ${code}`);
     if (result === 'pass') {
       assert.ok(code === 0, `The "${command}" command was expected to run without any errors, but the error found: "${stderr || stdout}"`);
