@@ -16,7 +16,7 @@ Scenario('PMM-T1883 Configuring pmm-agent to use service account @service-accoun
   await serviceAccountsPage.createServiceAccount(serviceAccountUsername, 'Admin');
   const tokenValue = await serviceAccountsPage.createServiceAccountToken(`token_name_${Date.now()}`);
   const oldNodeId = await I.verifyCommand('pmm-admin status | grep "Node ID" | awk -F " " \'{ print $4 }\'');
-  const pmmAgentConfigLocation = (await I.verifyCommand('sudo find / -name pmm-agent.yaml 2>/dev/null'))
+  const pmmAgentConfigLocation = (await I.verifyCommand('sudo find / -name pmm-agent.yaml'))
     .split('\n')
     .find((agentLocation) => agentLocation.includes('/home/') || (agentLocation.includes('/usr/local/config/') || (agentLocation.includes('/usr/local/percona/pmm/') && !agentLocation.includes('docker'))));
 
