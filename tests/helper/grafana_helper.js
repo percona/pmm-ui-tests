@@ -200,6 +200,12 @@ class Grafana extends Helper {
     console.log(`Code is: ${code}`);
     if (result === 'pass') {
       assert.ok(code === 0, `The "${command}" command was expected to run without any errors, but the error found: "${stderr || stdout}"`);
+    } else if (result === 'notConsequential') {
+      if (stdout.length) {
+        return stdout;
+      }
+
+      return stderr;
     } else {
       assert.ok(code !== 0, `The "${command}" command was expected to exit with error code, but exited with success code: "${code}"`);
     }
