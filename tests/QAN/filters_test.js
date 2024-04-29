@@ -171,8 +171,7 @@ Scenario(
 
 Scenario('PMM-T190 - Verify user is able to see n/a filter @qan', async ({ I, queryAnalyticsPage }) => {
   await queryAnalyticsPage.waitForLoaded();
-  await I.waitForVisible(queryAnalyticsPage.filters.fields.filterBy, 30);
-  await I.fillField(queryAnalyticsPage.filters.fields.filterBy, 'n/a');
+  await queryAnalyticsPage.filters.filterBy('n/a');
   await queryAnalyticsPage.filters.verifyCountOfFiltersDisplayed(0, 'bigger');
 });
 

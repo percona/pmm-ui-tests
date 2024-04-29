@@ -46,7 +46,12 @@ class QueryAnalyticsFilters {
   }
 
   filterBy(filterName) {
-    I.fillField(this.fields.filterBy, filterName);
+    I.usePlaywrightTo('Filter QAN by name', async ({ page }) => {
+      const locator = await page.locator(this.fields.filterBy.value);
+
+      await locator.waitFor({ state: 'attached' });
+      await locator.type(filterName);
+    });
   }
 
   selectFilter(filterName) {
@@ -61,7 +66,7 @@ class QueryAnalyticsFilters {
     queryAnalyticsPage.waitForLoaded();
     I.click(this.fields.filterBy);
     adminPage.customClearField(this.fields.filterBy);
-    I.wait(1)
+    I.wait(1);
   }
 
   resetAllFilters() {
