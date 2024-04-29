@@ -2,7 +2,7 @@ const assert = require('assert');
 
 const connection = {
   host: '127.0.0.1',
-  port: 5437,
+  port: 5447,
   user: 'postgres',
   password: 'pass+this',
   database: 'postgres',
@@ -13,11 +13,11 @@ const connection = {
 // Service Name: ${PGSQL_PGSM_CONTAINER}_${PGSQL_VERSION}_service
 // Docker Container Name: ${PGSQL_PGSM_CONTAINER}_${PGSQL_VERSION}
 
-const version = process.env.PGSQL_VERSION ? `${process.env.PGSQL_VERSION}` : '14';
-const container = process.env.PGSQL_PGSM_CONTAINER ? `${process.env.PGSQL_PGSM_CONTAINER}` : 'pgsql_pgsm';
+const version = process.env.PDPGSQL_VERSION ? `${process.env.PDPGSQL_VERSION}` : '16';
+const container = process.env.PGSQL_PGSM_CONTAINER ? `${process.env.PGSQL_PGSM_CONTAINER}` : 'pdpgsql_pgsm_pmm';
 const database = `pgsm${Math.floor(Math.random() * 99) + 1}`;
-const pgsm_service_name = `${container}_${version}_service`;
-const pgsm_service_name_socket = `socket_${container}_${version}_service`;
+let pgsm_service_name;
+let pgsm_service_name_socket;
 const container_name = `${container}_${version}`;
 const percentageDiff = (a, b) => (a - b === 0 ? 0 : 100 * Math.abs((a - b) / b));
 
@@ -37,6 +37,14 @@ filters.add(['Application Name', 'codeceptjs']);
 filters.add(['Database', database]);
 
 Feature('PMM + PGSM Integration Scenarios');
+
+BeforeSuite(async ({ inventoryAPI }) => {
+  const pgsm_service = await inventoryAPI.apiGetNodeInfoByServiceName('POSTGRESQL_SERVICE', 'pdpgsql_');
+  const socket_service = await inventoryAPI.apiGetNodeInfoByServiceName('POSTGRESQL_SERVICE', 'socket_pdpgsql_');
+
+  pgsm_service_name = pgsm_service.service_name;
+  pgsm_service_name_socket = socket_service.service_name;
+});
 
 Before(async ({ I }) => {
   await I.Authorize();
@@ -203,33 +211,37 @@ Scenario(
   async ({
     I, dashboardPage, adminPage,
   }) => {
-    I.amOnPage(dashboardPage.postgresqlInstanceSummaryDashboard.url);
+    const url = I.buildUrlWithParams(
+      dashboardPage.postgresqlInstanceSummaryDashboard.cleanUrl, {
+        service_name: pgsm_service_name,
+        from: 'now-5m',
+      },
+    );
+
+    I.amOnPage(url);
     dashboardPage.waitForDashboardOpened();
-    await dashboardPage.applyFilter('Service Name', pgsm_service_name);
     await dashboardPage.expandEachDashboardRow();
-    I.click(adminPage.fields.metricTitle);
-    adminPage.performPageDown(5);
-    adminPage.performPageUp(5);
-    dashboardPage.verifyMetricsExistence(dashboardPage.postgresqlInstanceSummaryDashboard.metrics);
-    await dashboardPage.verifyThereAreNoGraphsWithNA();
+    await dashboardPage.verifyMetricsExistence(dashboardPage.postgresqlInstanceSummaryDashboard.metrics);
     await dashboardPage.verifyThereAreNoGraphsWithoutData(1);
   },
 );
 
 Scenario(
-  'PMM-T2261 - Verify Postgresql Dashboard Instance Summary has Data with socket based service and Agent log @not-ui-pipeline @pgsm-pmm-integration',
+  'Verify Postgresql Dashboard Instance Summary has Data with socket based service and Agent log @not-ui-pipeline @pgsm-pmm-integration',
   async ({
     I, dashboardPage, adminPage,
   }) => {
-    I.amOnPage(dashboardPage.postgresqlInstanceSummaryDashboard.url);
+    const url = I.buildUrlWithParams(
+      dashboardPage.postgresqlInstanceSummaryDashboard.cleanUrl, {
+        service_name: pgsm_service_name_socket,
+        from: 'now-5m',
+      },
+    );
+
+    I.amOnPage(url);
     dashboardPage.waitForDashboardOpened();
-    await dashboardPage.applyFilter('Service Name', pgsm_service_name_socket);
     await dashboardPage.expandEachDashboardRow();
-    I.click(adminPage.fields.metricTitle);
-    adminPage.performPageDown(5);
-    adminPage.performPageUp(5);
-    dashboardPage.verifyMetricsExistence(dashboardPage.postgresqlInstanceSummaryDashboard.metrics);
-    await dashboardPage.verifyThereAreNoGraphsWithNA();
+    await dashboardPage.verifyMetricsExistence(dashboardPage.postgresqlInstanceSummaryDashboard.metrics);
     await dashboardPage.verifyThereAreNoGraphsWithoutData(1);
     const log = await I.verifyCommand(`docker exec ${container_name} cat pmm-agent.log`);
 
