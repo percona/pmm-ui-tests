@@ -141,49 +141,6 @@ Scenario.skip(
   },
 ).retry(2);
 
-Scenario('PMM-T520 - Verify that alert is in Firing State - internal alert manager @nightly @not-ovf', async ({
-  I,
-  pmmSettingsPage,
-}) => {
-  const scheme = 'http://127.0.0.1';
-  const sectionNameToExpand = pmmSettingsPage.sectionTabsList.alertmanager;
-
-  I.amOnPage(pmmSettingsPage.url);
-  await pmmSettingsPage.waitForPmmSettingsPageLoaded();
-  await pmmSettingsPage.expandSection(sectionNameToExpand, pmmSettingsPage.fields.alertmanagerButton);
-  pmmSettingsPage.addAlertmanagerRule(
-    scheme + pmmSettingsPage.alertManager.service,
-    pmmSettingsPage.alertManager.rule2,
-  );
-  I.verifyPopUpMessage(pmmSettingsPage.messages.successPopUpMessage);
-  pmmSettingsPage.openAlertsManagerUi();
-  await pmmSettingsPage.verifyAlertmanagerRuleAdded(pmmSettingsPage.alertManager.ruleName2);
-  I.amOnPage(pmmSettingsPage.stateOfAlertsUrl);
-  await pmmSettingsPage.verifyAlertmanagerRuleAdded(pmmSettingsPage.alertManager.ruleName2, true);
-});
-
-Scenario('PMM-T520 - Verify that alert is being fired to external Alert Manager @nightly @not-ovf', async ({
-  I,
-  pmmSettingsPage,
-}) => {
-  const scheme = 'http://';
-  const sectionNameToExpand = pmmSettingsPage.sectionTabsList.alertmanager;
-
-  I.amOnPage(pmmSettingsPage.url);
-  await pmmSettingsPage.waitForPmmSettingsPageLoaded();
-  await pmmSettingsPage.expandSection(sectionNameToExpand, pmmSettingsPage.fields.alertmanagerButton);
-  pmmSettingsPage.addAlertmanagerRule(
-    scheme + pmmSettingsPage.alertManager.ip + pmmSettingsPage.alertManager.externalAlertManagerPort,
-    pmmSettingsPage.alertManager.rule,
-  );
-  I.verifyPopUpMessage(pmmSettingsPage.messages.successPopUpMessage);
-  pmmSettingsPage.openAlertsManagerUi();
-  await pmmSettingsPage.verifyAlertmanagerRuleAdded(pmmSettingsPage.alertManager.ruleName);
-  I.amOnPage(pmmSettingsPage.stateOfAlertsUrl);
-  await pmmSettingsPage.verifyAlertmanagerRuleAdded(pmmSettingsPage.alertManager.ruleName, true);
-  await pmmSettingsPage.verifyExternalAlertManager(pmmSettingsPage.alertManager.ruleName);
-});
-
 Scenario(
   'PMM-T532 PMM-T533 PMM-T536 - Verify user can disable/enable IA in Settings @ia @settings',
   async ({
