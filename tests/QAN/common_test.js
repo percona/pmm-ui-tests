@@ -30,10 +30,10 @@ Scenario(
 
     queryAnalyticsPage.filters.filterBy('pmm-server');
     I.wait(3);
-    const numberOfFilters = await I.grabNumberOfVisibleElements(queryAnalyticsPage.filters.fields.filterHeaders);
+    const numberOfFilters = await I.grabNumberOfVisibleElements(queryAnalyticsPage.filters.fields.groupHeaders);
 
     for (let i = 1; i <= numberOfFilters; i++) {
-      const filterName = await I.grabTextFrom(queryAnalyticsPage.filters.fields.filterHeaders.at(i));
+      const filterName = await I.grabTextFrom(queryAnalyticsPage.filters.fields.groupHeaders.at(i));
       const displayedFilterValue = await I.grabTextFrom(queryAnalyticsPage.filters.fields.filterCheckBoxesInGroup(filterName));
 
       I.assertContain(

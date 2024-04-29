@@ -5,10 +5,10 @@ const { I, queryAnalyticsPage, adminPage } = inject();
 class QueryAnalyticsFilters {
   constructor() {
     this.fields = {
-      filterBy: locate('//input[@data-testid="filters-search-field"]'),
+      filterBy: locate(I.useDataQA('filters-search-field')),
       filterCheckboxes: locate('//div[contains(@data-testid, "filter-checkbox")]'),
       filterCheckBoxesInGroup: (groupName) => this.fields.filterGroup(groupName).find('//div[contains(@data-testid, "filter-checkbox")]'),
-      groupHeaders: locate('//span[@data-testid="checkbox-group-header"]'),
+      groupHeaders: locate(I.useDataQA('checkbox-group-header')),
       filterGroup: (groupName) => locate(`//span[@data-testid="checkbox-group-header" and text()="${groupName}"]/parent::p/parent::div`),
       filterByExactName: (filterName) => locate(`//div[@data-testid="filter-checkbox-${filterName}"]`),
       filterByName: (filterName) => locate(`//div[contains(@data-testid, "filter-checkbox-${filterName}")]`),
@@ -18,7 +18,6 @@ class QueryAnalyticsFilters {
       filterPercentageByNameAndGroup: (filterName, groupName) => this.fields.filterByNameAndGroup(filterName, groupName).find('//span').at(3),
       filterName: locate('//span[@class="checkbox-container__label-text"]'),
       checkedFilters: () => this.fields.filterCheckboxes.find('//input[@type="checkbox" and @checked]//following-sibling::span[@class="checkbox-container__label-text"]'),
-      filterHeaders: locate('//span[@data-testid="checkbox-group-header"]'),
       groupElementsCount: (groupName) => `//span[contains(text(), '${groupName}')]/following-sibling::span[contains(text(), 'Show all')]`,
     };
     this.buttons = {

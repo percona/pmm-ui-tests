@@ -21,7 +21,7 @@ class QueryAnalyticsPage {
       addColumnButton: '//span[contains(text(), "Add column")]',
       addColumn: '//ancestor::div[contains(@class, "add-columns-selector")]//input',
       searchDashboard: '//div[contains(@class, "input-wrapper")]',
-      copyButton: locate('//button[@data-testid="copy-link-button"]'),
+      copyButton: locate(I.useDataQA('copy-link-button')),
       qanBreadcrumb: locate('[data-testid="data-testid Query Analytics breadcrumb"]'),
     };
   }
@@ -29,7 +29,6 @@ class QueryAnalyticsPage {
   waitForLoaded() {
     I.waitForDetached(this.elements.spinner, 60);
   }
-
 
   changeSorting(columnNumber) {
     I.waitForElement(this.elements.metricsSorting(columnNumber), 30);

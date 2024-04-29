@@ -8,8 +8,9 @@ class QueryAnalyticsData {
     this.elements = {
       queryRow: (rowNumber) => locate(`//div[@role="row" and contains(@class, "tr-${rowNumber}")]`),
       queryRows: locate('//div[@role="row" and contains(@class, "tr-")]'),
-      queryRowValue: (rowNumber) => locate(`div.tr-${rowNumber} > div.td:nth-child(2) div > div`),
-      queryRowIcon: (rowNumber) => locate(`div.tr-${rowNumber} > div.td:nth-child(2) div > svg`),
+      queryRowCells: (rowNumber) => locate(`[class="tr tr-${rowNumber}"]`).find('[role="cell"]'),
+      queryRowValue: (rowNumber) => this.elements.queryRowCells(rowNumber).at(2),
+      queryRowIcon: (rowNumber) => this.elements.queryRowCells(rowNumber).at(3),
       totalItems: I.useDataQA('qan-total-items'),
       selectedRow: locate('.selected-overview-row'),
       queryValue: (rowNumber, columnNumber) => `div.tr-${rowNumber} > div:nth-child(${columnNumber + 2}) span > div > span`,
@@ -27,7 +28,7 @@ class QueryAnalyticsData {
       noResultTableText: locate('$table-no-data').find('h1'),
       selectedRowByNumber: (rowNumber) => locate(`div.tr-${rowNumber}.selected-overview-row`),
       selectedMainMetric: () => this.elements.mainMetricsContainer.find('//span[@class="ant-select-selection-item"]'),
-      mainMetricsContainer: locate('//div[@data-testid="group-by"]'),
+      mainMetricsContainer: locate(I.useDataQA('group-by')),
       mainMetricFromDropdown: (metricName) => locate(`//div[@class="ant-select-item-option-content" and text()="${metricName}"]`),
       mainMetricByName: (metricsName) => this.elements.selectedMainMetric().withText(metricsName),
     };

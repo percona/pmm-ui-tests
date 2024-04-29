@@ -103,7 +103,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T156 Verify that by default, queries are sorted by Load, from max to min @qan',
+  'PMM-T156 Verify that by default, queries are sorted by Load, from max to min @qan @debug',
   async ({ queryAnalyticsPage }) => {
     queryAnalyticsPage.waitForLoaded();
     queryAnalyticsPage.data.verifySorting(1, 'asc');

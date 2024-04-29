@@ -34,7 +34,7 @@ module.exports = {
     filterName: 'span.checkbox-container__label-text',
     filterByValues: (filterValue) => locate(`//div[contains(@data-testid, "filter-checkbox-${filterValue}")]`),
     filterValuesByFilterName: (filterName) => locate(`//span[@data-testid="checkbox-group-header" and text()="${filterName}"]/parent::p/parent::div//div[contains(@data-testid, "filter-checkbox")]`),
-    filterHeaders: locate('//span[@data-testid="checkbox-group-header"]'),
+    filterHeaders: locate(I.useDataQA('checkbox-group-header')),
     filterValues: locate('//span[@data-testid="checkbox-group-header"]/parent::p/parent::div//div[contains(@data-testid, "filter-checkbox")]'),
   },
   requests: {
