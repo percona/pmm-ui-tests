@@ -3,12 +3,11 @@ const assert = require('assert');
 Feature('QAN overview');
 
 Before(async ({
-  I, qanPage, qanOverview, qanFilters,
+  I, queryAnalyticsPage,
 }) => {
   await I.Authorize();
-  I.amOnPage(qanPage.url);
-  qanOverview.waitForOverviewLoaded();
-  qanFilters.waitForFiltersToLoad();
+  I.amOnPage(I.buildUrlWithParams(queryAnalyticsPage.url, { from: 'now-5m' }));
+  queryAnalyticsPage.waitForLoaded();
 });
 
 Scenario(

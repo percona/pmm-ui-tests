@@ -127,9 +127,9 @@ Scenario(
 xScenario(
   'PMM-T716 - Verify QAN for Postgres RDS added via UI @aws @instances',
   async ({
-    I, qanOverview, qanFilters, qanPage,
+    I, qanOverview, qanFilters, queryAnalyticsPage,
   }) => {
-    I.amOnPage(qanPage.url);
+    I.amOnPage(I.buildUrlWithParams(queryAnalyticsPage.url, { from: 'now-5m' }));
     qanOverview.waitForOverviewLoaded();
     await qanFilters.applyFilter('RDS Postgres');
     qanOverview.waitForOverviewLoaded();

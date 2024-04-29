@@ -83,9 +83,9 @@ xScenario(
 ).retry(2);
 
 Data(filters).Scenario('PMM-T746, PMM-T748 - Verify adding monitoring for Azure CHECK QAN @instances', async ({
-  I, qanFilters, qanOverview, qanPage, current,
+  I, qanFilters, qanOverview, queryAnalyticsPage, current,
 }) => {
-  I.amOnPage(qanPage.refreshRateFiveSecondsUrl);
+  I.amOnPage(I.buildUrlWithParams(queryAnalyticsPage.url, { from: 'now-5m', refresh: '5s' }));
   I.waitForElement(qanFilters.elements.filterItem('Environment', current.filter), 60);
   await qanFilters.applyFilter(current.filter);
   qanOverview.waitForOverviewLoaded();

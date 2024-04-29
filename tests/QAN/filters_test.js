@@ -247,7 +247,7 @@ Data(shortCutTests).Scenario(
     const filterValue = current.filter;
     const timeRangeValue = 'from=now-3h&to=now';
 
-    I.amOnPage(`${qanPage.url}&orgId=1`);
+    I.amOnPage(`${queryAnalyticsPage.url}&orgId=1`);
     await adminPage.applyTimeRange('Last 3 hours');
     qanOverview.waitForOverviewLoaded();
     qanFilters.waitForFiltersToLoad();

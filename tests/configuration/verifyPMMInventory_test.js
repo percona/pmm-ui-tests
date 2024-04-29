@@ -493,12 +493,12 @@ Data(aws_instances).Scenario('PMM-T2340 Verify adding and editing Aurora remote 
 Data(qanFilters).Scenario(
   'PMM-T2340 - Verify QAN after remote instance is added @inventory @inventory-fb',
   async ({
-    I, qanOverview, qanFilters, qanPage, current,
+    I, qanOverview, qanFilters, queryAnalyticsPage, current,
   }) => {
-    I.amOnPage(qanPage.url);
-    qanOverview.waitForOverviewLoaded();
+    I.amOnPage(I.buildUrlWithParams(queryAnalyticsPage.url, { from: 'now-5m' }));
+    queryAnalyticsPage.waitForLoaded();
     await qanFilters.applyFilter(current.filterName);
-    qanOverview.waitForOverviewLoaded();
+    queryAnalyticsPage.waitForLoaded();
     const count = await qanOverview.getCountOfItems();
 
     assert.ok(count > 0, `The queries for filter ${current.filterName} instance do NOT exist`);
@@ -508,11 +508,11 @@ Data(qanFilters).Scenario(
 Data(aws_instances).Scenario(
   'PMM-T2340 Verify QAN after Aurora instance is added and eidted @inventory @inventory-fb',
   async ({
-    I, qanOverview, qanFilters, qanPage, current, adminPage,
+    I, qanOverview, qanFilters, queryAnalyticsPage, current, adminPage,
   }) => {
     const { instance_id } = current;
 
-    I.amOnPage(qanPage.url);
+    I.amOnPage(I.buildUrlWithParams(queryAnalyticsPage.url, { from: 'now-5m' }));
     qanOverview.waitForOverviewLoaded();
     await adminPage.applyTimeRange('Last 12 hours');
     qanOverview.waitForOverviewLoaded();

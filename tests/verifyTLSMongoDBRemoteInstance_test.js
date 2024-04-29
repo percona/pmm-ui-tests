@@ -157,7 +157,7 @@ Data(instances).Scenario(
 Data(instances).Scenario(
   'Verify QAN after MongoDB SSL Instances is added @ssl @ssl-remote @ssl-mongo @not-ui-pipeline',
   async ({
-    I, qanOverview, qanFilters, qanPage, current, adminPage,
+    I, qanOverview, qanFilters, queryAnalyticsPage, current, adminPage,
   }) => {
     const {
       serviceName,
@@ -166,7 +166,7 @@ Data(instances).Scenario(
     const serviceList = [serviceName, `remote_${serviceName}`];
 
     for (const service of serviceList) {
-      I.amOnPage(qanPage.url);
+      I.amOnPage(I.buildUrlWithParams(queryAnalyticsPage.url, { from: 'now-5m' }));
       qanOverview.waitForOverviewLoaded();
       await adminPage.applyTimeRange('Last 12 hours');
       qanOverview.waitForOverviewLoaded();

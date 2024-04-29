@@ -109,7 +109,7 @@ Data(instances).Scenario(
 Data(instances).Scenario(
   'Verify QAN after remote Google Cloud instance is added @not-ui-pipeline @gcp',
   async ({
-    I, qanOverview, qanFilters, qanPage, current,
+    I, qanOverview, qanFilters, queryAnalyticsPage, current,
   }) => {
     const {
       instance,
@@ -117,7 +117,7 @@ Data(instances).Scenario(
 
     const instanceDetails = getInstance(instance);
 
-    I.amOnPage(qanPage.url);
+    I.amOnPage(I.buildUrlWithParams(queryAnalyticsPage.url, { from: 'now-5m' }));
     qanOverview.waitForOverviewLoaded();
     qanFilters.waitForFiltersToLoad();
     await qanFilters.applyFilter(instanceDetails.serviceName);

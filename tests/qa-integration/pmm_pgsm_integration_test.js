@@ -181,14 +181,14 @@ Scenario(
 Data(filters).Scenario(
   'PMM-T1261 - Verify the "Command type" filter for Postgres @not-ui-pipeline @pgsm-pmm-integration',
   async ({
-    I, qanPage, qanOverview, qanFilters, current,
+    I, queryAnalyticsPage, qanOverview, qanFilters, current,
   }) => {
     const serviceName = pgsm_service_name;
     const {
       filterSection, filterToApply,
     } = current;
 
-    I.amOnPage(qanPage.url);
+    I.amOnPage(I.buildUrlWithParams(queryAnalyticsPage.url, { from: 'now-5m' }));
     qanOverview.waitForOverviewLoaded();
     await qanFilters.applyFilter(serviceName);
     await qanFilters.applyFilter(database);
@@ -368,7 +368,7 @@ Scenario(
 Scenario(
   'PMM-T1063 - Verify Application Name with pg_stat_monitor @pgsm-pmm-integration @not-ui-pipeline',
   async ({
-    I, qanOverview, qanFilters, qanPage,
+    I, qanOverview, qanFilters, queryAnalyticsPage,
   }) => {
     await I.verifyCommand('docker exec pmm-server clickhouse-client --database pmm --query "TRUNCATE TABLE metrics"');
 
@@ -381,7 +381,7 @@ Scenario(
     await I.pgExecuteQueryOnDemand(sql, connection);
     I.wait(120);
     await I.verifyCommand(`docker exec ${container_name} pmm-admin list | grep "postgresql_pgstatmonitor_agent" | grep "Running"`);
-    I.amOnPage(qanPage.url);
+    I.amOnPage(I.buildUrlWithParams(queryAnalyticsPage.url, { from: 'now-5m' }));
     qanOverview.waitForOverviewLoaded();
     I.waitForVisible(qanFilters.buttons.showSelected, 30);
 
@@ -396,7 +396,7 @@ Scenario(
 Scenario(
   'PMM-T1063 - Verify Top Query and Top QueryID with pg_stat_monitor @pgsm-pmm-integration @not-ui-pipeline',
   async ({
-    I, qanOverview, qanFilters, qanPage, qanDetails,
+    I, qanOverview, qanFilters, queryAnalyticsPage, qanDetails,
   }) => {
     let pgsm_output;
     const db = `${database}_topquery`;
@@ -431,7 +431,7 @@ Scenario(
       const pgsmTopQuery = pgsm_output.rows[i].top_query;
       const pgsmQuery = pgsm_output.rows[i].query;
 
-      I.amOnPage(qanPage.url);
+      I.amOnPage(I.buildUrlWithParams(queryAnalyticsPage.url, { from: 'now-5m' }));
       qanOverview.waitForOverviewLoaded();
       I.waitForVisible(qanFilters.buttons.showSelected, 30);
 
@@ -456,7 +456,7 @@ Scenario(
 Scenario(
   'PMM-T1071 - Verify Histogram is displayed for each query with pg_stat_monitor @pgsm-pmm-integration @not-ui-pipeline',
   async ({
-    I, qanOverview, qanFilters, qanPage, qanDetails,
+    I, qanOverview, qanFilters, queryAnalyticsPage, qanDetails,
   }) => {
     let countHistogram = 0;
     const db = `${database}_histogram`;
@@ -477,7 +477,7 @@ Scenario(
     await I.pgExecuteQueryOnDemand(sql, connection);
     connection.database = 'postgres';
     I.wait(120);
-    I.amOnPage(qanPage.url);
+    I.amOnPage(I.buildUrlWithParams(queryAnalyticsPage.url, { from: 'now-5m' }));
     qanOverview.waitForOverviewLoaded();
     I.waitForVisible(qanFilters.buttons.showSelected, 30);
 
@@ -502,7 +502,7 @@ Scenario(
 xScenario(
   'PMM-T1253 Verify pg_stat_monitor.pgsm_normalized_query settings @not-ui-pipeline @pgsm-pmm-integration',
   async ({
-    I, qanPage, qanOverview, qanFilters, qanDetails,
+    I, queryAnalyticsPage, qanOverview, qanFilters, qanDetails,
   }) => {
     const defaultValue = 'no';
     const alteredValue = 'yes';
@@ -524,7 +524,7 @@ xScenario(
 
     //  Function used to produce data and check if examples are shown
     async function checkForExamples(isNoExamplesVisible) {
-      I.amOnPage(qanPage.url);
+      I.amOnPage(I.buildUrlWithParams(queryAnalyticsPage.url, { from: 'now-5m' }));
       qanOverview.waitForOverviewLoaded();
       qanFilters.waitForFiltersToLoad();
       await qanFilters.applyFilter(pgsm_service_name);

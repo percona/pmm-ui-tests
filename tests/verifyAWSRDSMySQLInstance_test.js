@@ -38,11 +38,11 @@ xScenario(
 xScenario(
   'Verify QAN Filters contain AWS RDS MySQL 5.6 after it was added for monitoring @instances',
   async ({
-    I, qanPage, remoteInstancesPage, qanFilters,
+    I, queryAnalyticsPage, remoteInstancesPage, qanFilters,
   }) => {
     const filters = remoteInstancesPage.mysql57rds;
 
-    I.amOnPage(qanPage.url);
+    I.amOnPage(I.buildUrlWithParams(queryAnalyticsPage.url, { from: 'now-5m' }));
     qanFilters.waitForFiltersLoad();
     await qanFilters.expandAllFilter();
     for (const filter of Object.values(filters)) {

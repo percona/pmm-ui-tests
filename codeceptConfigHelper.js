@@ -55,7 +55,6 @@ module.exports = {
     qanDetails: './tests/QAN/pages/qanDetailsFragment.js',
     qanFilters: './tests/QAN/pages/qanFiltersFragment.js',
     qanOverview: './tests/QAN/pages/qanOverviewFragment.js',
-    qanPage: './tests/QAN/pages/qanPage.js',
     qanPagination: './tests/QAN/pages/qanPaginationFragment.js',
     remoteInstancesPage: './tests/pages/remoteInstancesPage.js',
     remoteInstancesHelper: './tests/remoteInstances/remoteInstancesHelper.js',

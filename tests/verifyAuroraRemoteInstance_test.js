@@ -135,11 +135,11 @@ Data(instances)
   .Scenario(
     'PMM-T1295 Verify QAN after Aurora instance is added @instances',
     async ({
-      I, qanOverview, qanFilters, qanPage, current, adminPage,
+      I, qanOverview, qanFilters, queryAnalyticsPage, current, adminPage,
     }) => {
       const { instance_id } = current;
 
-      I.amOnPage(qanPage.url);
+      I.amOnPage(I.buildUrlWithParams(queryAnalyticsPage.url, { from: 'now-5m' }));
       qanOverview.waitForOverviewLoaded();
       await adminPage.applyTimeRange('Last 12 hours');
       qanOverview.waitForOverviewLoaded();

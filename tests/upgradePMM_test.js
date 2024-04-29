@@ -952,9 +952,9 @@ if (versionMinor > 14) {
 Scenario(
   'Verify QAN has specific filters for Remote Instances after Upgrade (UI) @ovf-upgrade @ami-upgrade @post-client-upgrade @post-upgrade @pmm-upgrade',
   async ({
-    I, qanPage, qanFilters, qanOverview,
+    I, queryAnalyticsPage, qanFilters, qanOverview,
   }) => {
-    I.amOnPage(qanPage.url);
+    I.amOnPage(I.buildUrlWithParams(queryAnalyticsPage.url, { from: 'now-5m' }));
     qanFilters.waitForFiltersToLoad();
     await qanFilters.expandAllFilters();
 
@@ -1130,7 +1130,7 @@ if (versionMinor >= 23) {
   Data(sslinstances).Scenario(
     'Verify QAN after upgrade for SSL Instances added @post-upgrade @pmm-upgrade',
     async ({
-      I, qanOverview, qanFilters, qanPage, current, adminPage,
+      I, qanOverview, qanFilters, queryAnalyticsPage, current, adminPage,
     }) => {
       const {
         serviceName,
@@ -1139,7 +1139,7 @@ if (versionMinor >= 23) {
       const serviceList = [serviceName, `remote_api_${serviceName}`];
 
       for (const service of serviceList) {
-        I.amOnPage(qanPage.url);
+        I.amOnPage(I.buildUrlWithParams(queryAnalyticsPage.url, { from: 'now-5m' }));
         qanOverview.waitForOverviewLoaded();
         await adminPage.applyTimeRange('Last 5 minutes');
         qanOverview.waitForOverviewLoaded();

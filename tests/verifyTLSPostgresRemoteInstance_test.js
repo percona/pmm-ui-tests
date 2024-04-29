@@ -193,7 +193,7 @@ Data(instances).Scenario(
 Data(instances).Scenario(
   'Verify QAN after PGSQL SSL Instances is added @ssl @ssl-remote @ssl-postgres @not-ui-pipeline',
   async ({
-    I, qanOverview, qanFilters, qanPage, current, adminPage,
+    I, qanOverview, qanFilters, queryAnalyticsPage, current, adminPage,
   }) => {
     const {
       serviceName,
@@ -202,7 +202,7 @@ Data(instances).Scenario(
     const serviceList = [serviceName, `remote_${serviceName}`, noSslCheckServiceName];
 
     for (const service of serviceList) {
-      I.amOnPage(qanPage.url);
+      I.amOnPage(I.buildUrlWithParams(queryAnalyticsPage.url, { from: 'now-5m' }));
       qanOverview.waitForOverviewLoaded();
       await adminPage.applyTimeRange('Last 5 minutes');
       qanOverview.waitForOverviewLoaded();
@@ -219,7 +219,7 @@ Data(instances).Scenario(
 Data(instances).Scenario(
   'PMM-T1426 Verify remote PostgreSQL can be added with specified Max Query Length @max-length @ssl @ssl-postgres @ssl-remote @not-ui-pipeline',
   async ({
-    I, remoteInstancesPage, pmmInventoryPage, qanPage, qanOverview, qanFilters, qanDetails, inventoryAPI, current,
+    I, remoteInstancesPage, pmmInventoryPage, queryAnalyticsPage, qanOverview, qanFilters, qanDetails, inventoryAPI, current,
   }) => {
     const {
       serviceName, serviceType, version, container, maxQueryLength,
@@ -276,7 +276,7 @@ Data(instances).Scenario(
 
     await I.wait(70);
     // Check max visible query length is less than max_query_length option
-    I.amOnPage(I.buildUrlWithParams(qanPage.clearUrl, { from: 'now-5m' }));
+    I.amOnPage(I.buildUrlWithParams(queryAnalyticsPage.url, { from: 'now-5m' }));
     qanOverview.waitForOverviewLoaded();
     await qanFilters.applyFilter(remoteServiceName);
     I.waitForElement(qanOverview.elements.querySelector, 30);

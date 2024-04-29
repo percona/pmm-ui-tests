@@ -287,9 +287,9 @@ Data(dashboardCheck).Scenario(
 Data(qanFilters).Scenario(
   'PMM-T854 - Verify QAN after remote instance is added @instances @instances-fb',
   async ({
-    I, qanOverview, qanFilters, qanPage, current,
+    I, qanOverview, qanFilters, queryAnalyticsPage, current,
   }) => {
-    I.amOnPage(qanPage.url);
+    I.amOnPage(I.buildUrlWithParams(queryAnalyticsPage.url, { from: 'now-5m' }));
     qanOverview.waitForOverviewLoaded();
     await qanFilters.applyFilter(current.filterName);
     qanOverview.waitForOverviewLoaded();
