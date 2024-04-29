@@ -69,7 +69,6 @@ Scenario('PMM-T1862 Verify all processes in PMM server is running under non-root
       || process.includes('vmproxy')
       || process.includes('pmm-managed')
       || process.includes('qan')
-      || process.includes('pmm-agent')
       || process.includes('node_exporter')
       || process.includes('postgres_exporter')
       || process.includes('mysqld_export')
