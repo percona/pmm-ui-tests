@@ -94,14 +94,30 @@ module.exports = {
     }
   },
 
-  async removeAlertRule(folder) {
+  async removeAlertRule(rule) {
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
-    const resp = await I.sendDeleteRequest(`/graph/api/ruler/grafana/api/v1/rules/${folder}/default-alert-group?subtype=cortex`, headers);
+    const rules = await I.sendGetRequest('/graph/api/ruler/grafana/api/v1/rules?subtype=cortex', headers);
 
-    assert.ok(
-      resp.status === 202,
-      `Failed to remove alert rule. Response message is "${resp.data.message}"`,
-    );
+    for (const [key, value] of Object.entries(rules.data)) {
+      if (key === rule.folder) {
+        const ruleUid = value.find((group) => group.name === rule.group.name)
+          .rules
+          .find((findRule) => findRule.grafana_alert.title === rule.ruleName)
+          .grafana_alert
+          .namespace_uid;
+
+        const resp = await I.sendDeleteRequest(`/graph/api/ruler/grafana/api/v1/rules/${ruleUid}/${rule.group.name}?subtype=cortex`, headers);
+
+        assert.ok(
+          resp.status === 202,
+          `Failed to remove alert rule. Response message is "${resp.data.message}"`,
+        );
+
+        return;
+      }
+    }
+
+    throw new Error(`Failed to get details for alert rule with name ${rule.ruleName}`);
   },
 
   async createAlertRules(numberOfRulesToCreate) {

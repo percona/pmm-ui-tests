@@ -88,23 +88,23 @@ Scenario.skip(
   },
 );
 
-Scenario.skip(
+Scenario(
   'PMM-T1420 Verify user can create Percona templated alert @ia @alerting-fb',
   async ({ I, alertRulesPage, rulesAPI }) => {
     const rule = page.rules[15];
     const newRule = page.rules[0];
 
     alertRulesPage.openAlertRulesTab();
-    I.waitForEnabled(alertRulesPage.buttons.newAlertRule, 10);
-    I.click(alertRulesPage.buttons.newAlertRule);
+    I.waitForEnabled(alertRulesPage.buttons.newAlertRuleFromTemplate, 10);
+    I.click(alertRulesPage.buttons.newAlertRuleFromTemplate);
+
     await alertRulesPage.fillPerconaAlert(rule, newRule);
     I.waitForEnabled(alertRulesPage.buttons.saveAndExit, 10);
     I.click(alertRulesPage.buttons.saveAndExit);
-    // FIXME: unskip after https://jira.percona.com/browse/PMM-11399 is fixed
-    // I.verifyPopUpMessage(alertRulesPage.messages.successRuleCreate(newRule.ruleName));
-    alertRulesPage.verifyRuleList(newRule.folder, newRule.ruleName);
+    I.verifyPopUpMessage(alertRulesPage.messages.successRuleCreate(newRule.ruleName));
+    alertRulesPage.verifyRuleList(newRule.folder, newRule.ruleName, newRule.group.name);
     await alertRulesPage.verifyRuleState('Normal', 60);
-    await rulesAPI.removeAlertRule(newRule.folder);
+    await rulesAPI.removeAlertRule(newRule);
   },
 ).retry(1);
 

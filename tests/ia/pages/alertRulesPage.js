@@ -26,24 +26,29 @@ module.exports = {
     detailsSeverityLabel: (value) => locate('span').withText(`severity=${value}`).inside('//ul[@aria-label="Tags"]').at(2),
     detailsFolderLabel: (value) => locate('span').withText(`grafana_folder=${value}`).inside('//ul[@aria-label="Tags"]'),
     ruleValidationError: (error) => locate('div').withText(error).inside('div').withAttr({ role: 'alert' }),
+    evaluationGroupOption: (evaluationGroupName) => locate(I.useDataQA(`${evaluationGroupName}-select-option`)),
   },
   buttons: {
     newAlertRule: '//a[contains(.,\'New alert rule\')]',
-    saveAndExit: locate('button').withText('Save and exit'),
+    newAlertRuleFromTemplate: locate('a').withText('New alert rule from template'),
+    saveAndExit: locate('button').withText('Save rule and exit'),
     editAlertRule: '//a[contains(@href, \'edit?returnTo=%2Falerting%2Flist\')]',
     editRuleOnView: '//span[text()="Edit"]',
     deleteAlertRule: locate('span').withText('Delete').inside('button'),
-    groupCollapseButton: (folderText) => `//button[@data-testid='group-collapse-toggle'][following::h6[contains(., '${folderText}')]]`,
+    groupCollapseButton: (folderText, groupText) => `//button[@data-testid='group-collapse-toggle'][following::div[contains(., '${folderText}') and contains(., '${groupText}')]]`,
     ruleCollapseButton: 'button[aria-label=\'Expand row\']',
     goToFolderButton: (folderID, folderText) => locate('[aria-label="go to folder"]').withAttr({ href: `/graph/dashboards/f/${folderID}/${folderText}` }),
     managePermissionsButton: (folderID, folderText) => locate('[aria-label="manage permissions"]').withAttr({ href: `/graph/dashboards/f/${folderID}/${folderText}/permissions` }),
     confirmModal: 'button[aria-label=\'Confirm Modal Danger Button\']',
     cancelModal: locate('button').withText('Cancel'),
+    newEvaluationGroup: locate('button').withText('New evaluation group'),
+    createNewEvaluationGroup: locate('button').withText('Create'),
   },
   fields: {
     // searchDropdown returns a locator of a search input for a given label
     searchDropdown: (option) => `//div[@id='${option}']`,
     folderLocator: I.useDataQA('data-testid Folder picker select container'),
+    groupSelect: locate('[id="group"]'),
     dropdownValue: (option) => `//*[@id='${option}']/div/div[1]/div[1]`,
     // resultsLocator returns item locator in a search dropdown based on a text
     resultsLocator: (name) => `//div[@aria-label="Select option"]//div//span[text()="${name}"]`,
@@ -52,6 +57,8 @@ module.exports = {
     editRuleEvaluate: 'input[name=\'evaluateEvery\']',
     editRuleSeverity: I.useDataQA('label-value-1'),
     templatesLoader: locate('//div[@id=\'template\']').find('div').withText('Choose'),
+    newEvaluationGroupName: locate('input').withAttr({ name: 'group' }),
+    newEvaluationGroupInterval: locate('input').withAttr({ name: 'evaluateEvery' }),
   },
   messages: {
     noRulesFound: 'You haven`t created any alert rules yet',
@@ -74,6 +81,7 @@ module.exports = {
       duration: newruleObj.duration || '2m',
       severity: newruleObj.severity || 'Debug',
       folder: newruleObj.folder || 'Insight',
+      group: newruleObj.group || { name: 'TestGroup', evaluationInterval: '30s' },
     };
 
     I.waitForElement(this.fields.templatesLoader);
@@ -89,6 +97,7 @@ module.exports = {
     I.see(severity, this.fields.searchDropdown('severity'));
     this.searchAndSelectResult('severity', editedRule.severity);
     this.selectFolder(editedRule.folder);
+    await this.selectOrCreateGroup(editedRule.group);
   },
 
   async editPerconaAlert(ruleObj) {
@@ -131,6 +140,31 @@ module.exports = {
     I.click(this.fields.resultsLocator(option));
   },
 
+  async selectOrCreateGroup(groupOptions) {
+    I.waitForElement(this.fields.groupSelect);
+    I.click(this.fields.groupSelect);
+    const numberOfElements = await I.grabNumberOfVisibleElements(this.elements.evaluationGroupOption(groupOptions.name));
+
+    if (numberOfElements) {
+      const groupDetails = await I.grabTextFrom(this.elements.evaluationGroupOption(groupOptions.name));
+
+      I.assertContain(
+        groupDetails,
+        groupOptions.evaluationInterval,
+        'Group with selected evaluation name but wrong evaluation interval already exists, group name has to be unique.',
+      );
+      I.forceClick(this.elements.evaluationGroupOption(groupOptions.name));
+
+      return;
+    }
+
+    I.forceClick(this.buttons.newEvaluationGroup);
+    I.waitForElement(this.fields.newEvaluationGroupName);
+    I.fillField(this.fields.newEvaluationGroupName, groupOptions.name);
+    I.fillField(this.fields.newEvaluationGroupInterval, groupOptions.evaluationInterval);
+    I.click(this.buttons.createNewEvaluationGroup);
+  },
+
   verifyRuleDetails(ruleObj) {
     const {
       ruleName, duration, folder, severity,
@@ -147,9 +181,9 @@ module.exports = {
     I.see(folder, this.elements.detailsFolderLabel(folder));
   },
 
-  verifyRuleList(folder, ruleName) {
-    I.waitForVisible(this.buttons.groupCollapseButton(folder));
-    I.click(this.buttons.groupCollapseButton(folder));
+  verifyRuleList(folder, ruleName, groupName) {
+    I.waitForVisible(this.buttons.groupCollapseButton(folder, groupName));
+    I.click(this.buttons.groupCollapseButton(folder, groupName));
     I.seeTextEquals(ruleName, this.elements.ruleNameValue);
   },
 

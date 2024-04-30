@@ -12,6 +12,7 @@ module.exports = {
     duration: '301s',
     severity: 'Info',
     folder: 'Experimental',
+    group: { name: 'TestGroup', evaluationInterval: '5m' },
   }, {
     template: 'MongoDB down',
     ruleName: 'mongodb_down Alerting Rule',
