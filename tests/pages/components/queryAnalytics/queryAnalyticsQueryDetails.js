@@ -7,10 +7,10 @@ class QueryAnalyticsQueryDetails {
     this.elements = {
       metricsCellDetailValue: (metricName, columnNumber) => locate(`//td//span[contains(text(), "${metricName}")]/ancestor::tr/td[${columnNumber}]//span[1]`),
       codeBlock: locate('//*[@data-testid="highlight-code" or contains(@class, "pretty-json-container")]'),
-      noExamples: locate('//pre[contains(text(), "Sorry, no examples found for this query")]'),
-      noClassic: '//pre[contains(text(), "No classic explain found")]',
-      noJSON: '//pre[contains(text(), "No JSON explain found")]',
-      explainError: locate('//pre[@data-testid="json-explain-error"]'),
+      noExamples: locate('pre').withText('Sorry, no examples found for this query'),
+      noClassic: locate('pre').withText('No classic explain found'),
+      noJSON: locate('pre').withText('No JSON explain found'),
+      explainError: locate('$json-explain-error'),
     };
     this.buttons = {
       tab: (tabName) => locate('button').withText(tabName),

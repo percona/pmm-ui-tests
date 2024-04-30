@@ -14,8 +14,8 @@ class QueryAnalyticsData {
       totalItems: I.useDataQA('qan-total-items'),
       selectedRow: locate('.selected-overview-row'),
       queryValue: (rowNumber, columnNumber) => `div.tr-${rowNumber} > div:nth-child(${columnNumber + 2}) span > div > span`,
-      columnHeaderText: (headerText) => locate(`//span[@class="ant-select-selection-item" and text()="${headerText}"]`),
-      sorting: (columnNumber) => locate(`(//a[@data-testid='sort-by-control'])[${columnNumber}]`),
+      columnHeaderText: (headerText) => locate('.ant-select-selection-item').withText(headerText),
+      sorting: (columnNumber) => locate('$sort-by-control').at(columnNumber),
       sortingValue: (columnNumber) => this.elements.sorting(columnNumber).find('//span'),
       queryTooltipValue: locate('.ant-tooltip-inner').find('code'),
       queryTooltipId: locate('.ant-tooltip-inner').find('h5'),
@@ -27,9 +27,9 @@ class QueryAnalyticsData {
       tooltip: '.overview-column-tooltip',
       noResultTableText: locate('$table-no-data').find('h1'),
       selectedRowByNumber: (rowNumber) => locate(`div.tr-${rowNumber}.selected-overview-row`),
-      selectedMainMetric: () => this.elements.mainMetricsContainer.find('//span[@class="ant-select-selection-item"]'),
+      selectedMainMetric: () => this.elements.mainMetricsContainer.find('.ant-select-selection-item'),
       mainMetricsContainer: locate(I.useDataQA('group-by')),
-      mainMetricFromDropdown: (metricName) => locate(`//div[@class="ant-select-item-option-content" and text()="${metricName}"]`),
+      mainMetricFromDropdown: (metricName) => locate('.ant-select-item-option-content').withText(metricName),
       mainMetricByName: (metricsName) => this.elements.selectedMainMetric().withText(metricsName),
     };
     this.fields = {
@@ -37,12 +37,12 @@ class QueryAnalyticsData {
       columnHeader: (columnName) => locate('$manage-columns-selector').withText(columnName),
     };
     this.buttons = {
-      lastPage: locate('//li[contains(@class,"ant-pagination-item")]').last(),
+      lastPage: locate('.ant-pagination-item').last(),
       previousPage: locate('.ant-pagination-prev'),
       nextPage: locate('.ant-pagination-next'),
-      activePage: locate('//li[contains(@class, "ant-pagination-item-active")]'),
+      activePage: locate('.ant-pagination-item-active'),
       ellipsis: locate('.ant-pagination-item-ellipsis'),
-      paginationPage: (number) => `//li[@class='ant-pagination-item ant-pagination-item-${number}']`,
+      paginationPage: (number) => locate(`li.ant-pagination-item-${number}`),
       paginationSize: locate('//div[@aria-label="Page Size"]//span[@class="ant-select-selection-item"]'),
       paginationOption: (paginationSize) => locate(`//div[@role="option" and @title="${paginationSize}"]`),
       close: locate('button').find('span').withText('Close'),

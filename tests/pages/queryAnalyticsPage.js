@@ -13,7 +13,7 @@ class QueryAnalyticsPage {
     this.queryDetails = new QueryAnalyticsQueryDetails();
     this.elements = {
       spinner: locate('//div[@data-testid="Spinner" or @class="preloader"]'),
-      metricsSorting: (columnNumber) => locate(`(//a[@data-testid='sort-by-control'])[${columnNumber}]`),
+      metricsSorting: (columnNumber) => locate('$sort-by-control').at(columnNumber),
       columnName: (columnName) => locate(`//span[text()="${columnName}"]`),
       clipboardLink: locate(I.getPopUpLocator()).find('span').find('span'),
     };
@@ -22,7 +22,7 @@ class QueryAnalyticsPage {
       addColumn: '//ancestor::div[contains(@class, "add-columns-selector")]//input',
       searchDashboard: '//div[contains(@class, "input-wrapper")]',
       copyButton: locate(I.useDataQA('copy-link-button')),
-      qanBreadcrumb: locate('[data-testid="data-testid Query Analytics breadcrumb"]'),
+      qanBreadcrumb: locate(I.useDataQA('data-testid Query Analytics breadcrumb')),
     };
   }
 
