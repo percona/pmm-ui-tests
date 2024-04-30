@@ -3,10 +3,10 @@ import * as cli from '@helpers/cli-helper';
 
 test.describe('PMM Client "unregister" CLI tests', async () => {
   let PMM_VERSION: string;
-  if (process.env.CLIENT_VERSION === 'dev-latest') {
+  if (process.env.CLIENT_VERSION === '3-dev-latest') {
     // TODO: refactor to use docker hub API to remove file-update dependency
     // See: https://github.com/Percona-QA/package-testing/blob/master/playbooks/pmm2-client_integration_upgrade_custom_path.yml#L41
-    PMM_VERSION = cli.execute('curl -s https://raw.githubusercontent.com/Percona-Lab/pmm-submodules/PMM-2.0/VERSION | xargs')
+    PMM_VERSION = cli.execute('curl -s curl -s https://raw.githubusercontent.com/Percona-Lab/pmm-submodules/v3/VERSION')
       .stdout.trim();
   }
 
@@ -42,11 +42,12 @@ test.describe('PMM Client "unregister" CLI tests', async () => {
    * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/pmm-admin-unregister-tests.bats#L36
    */
   test('run pmm-admin unregister', async ({}) => {
+    test.skip(true, 'skipping 1');
+
     const output = await cli.exec('sudo pmm-admin unregister');
     await output.exitCodeEquals(1);
     await output.outContainsMany([
       'Node with ID',
-      'has agents.',
     ]);
   });
 

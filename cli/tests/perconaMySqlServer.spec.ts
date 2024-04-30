@@ -1,9 +1,10 @@
 import { test, expect } from '@playwright/test';
 import * as cli from '@helpers/cli-helper';
 
-const MYSQL_USER = 'root';
-const MYSQL_PASSWORD = 'GRgrO9301RuF';
+const MYSQL_USER = 'msandbox';
+const MYSQL_PASSWORD = 'msandbox';
 let mysqlDbHosts: string[];
+const ipPort = '127.0.0.1:3307';
 
 const grepServicesCmd = (serviceName: string) => {
   return `sudo pmm-admin list | grep "MySQL" | grep "${serviceName}" | awk -F" " '{print $2}'`;
@@ -11,10 +12,16 @@ const grepServicesCmd = (serviceName: string) => {
 
 test.describe('PMM Client CLI tests for Percona Server Database', async () => {
   test.beforeAll(async ({}) => {
+    const output = await cli.exec(`sudo pmm-admin add mysql --username=${MYSQL_USER} --password=${MYSQL_PASSWORD} prerequisite ${ipPort}`);
+    await output.assertSuccess();
     mysqlDbHosts = (await cli.exec('sudo pmm-admin list | grep "MySQL" | awk -F" " \'{print $3}\''))
       .getStdOutLines();
   });
 
+  test.afterAll(async ({}) => {
+    const output = await cli.exec('sudo pmm-admin remove mysql prerequisite');
+    await output.assertSuccess();
+  });
   /**
    * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/ps-specific-tests.bats#L9
    * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/ps-specific-tests.bats#L19
@@ -79,6 +86,13 @@ test.describe('PMM Client CLI tests for Percona Server Database', async () => {
   test('run pmm-admin status check for RUNNING string in output for VM_AGENT', async ({ }) => {
     await expect(async () => {
       await (await cli.exec('sudo pmm-admin status | grep "vmagent Running"'))
+        .assertSuccess();
+    }).toPass({ intervals: [1_000], timeout: 5_000 });
+  });
+
+  test('run pmm-admin status check for RUNNING string in output for MYSQL_EXPORTER', async ({ }) => {
+    await expect(async () => {
+      await (await cli.exec('sudo pmm-admin status | grep "mysqld_exporter Running"'))
         .assertSuccess();
     }).toPass({ intervals: [1_000], timeout: 5_000 });
   });

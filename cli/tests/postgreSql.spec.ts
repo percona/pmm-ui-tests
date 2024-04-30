@@ -2,10 +2,19 @@ import { test, expect } from '@playwright/test';
 import * as cli from '@helpers/cli-helper';
 
 const PGSQL_USER = 'postgres';
-const PGSQL_HOST = 'localhost';
-const PGSQL_PASSWORD = 'oFukiBRg7GujAJXq3tmd';
+const PGSQL_PASSWORD = 'pass+this';
+const ipPort = '127.0.0.1:5447';
 
 test.describe('PMM Client CLI tests for PostgreSQL Data Base', async () => {
+  test.beforeAll(async ({}) => {
+    const output = await cli.exec(`sudo pmm-admin add postgresql --query-source=pgstatmonitor --username=${PGSQL_USER} --password=${PGSQL_PASSWORD} prerequisite ${ipPort}`);
+    await output.assertSuccess();
+  });
+
+  test.afterAll(async ({}) => {
+    const output = await cli.exec('sudo pmm-admin remove postgresql prerequisite');
+    await output.assertSuccess();
+  });
   /**
    * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/pgsql-specific-tests.bats#L10
    * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/pgsql-specific-tests.bats#L20
