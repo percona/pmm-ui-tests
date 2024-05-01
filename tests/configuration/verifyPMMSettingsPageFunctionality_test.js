@@ -1,44 +1,4 @@
-const communicationDefaults = new DataTable(['type', 'serverAddress', 'hello', 'from', 'authType', 'username', 'password', 'url', 'message']);
 const assert = require('assert');
-
-// pmmSettingsPage.communicationData.forEach(({
-//   type, serverAddress, hello, from, authType, username, password, url,
-// }) => {
-//   // eslint-disable-next-line max-len
-// eslint-disable-next-line max-len
-//   communicationDefaults.add([type, serverAddress, hello, from, authType, username, password, url, pmmSettingsPage.messages.successPopUpMessage]);
-// });
-
-// communicationDefaults.add([
-//   pmmSettingsPage.emailDefaults.type,
-//   'test.com',
-//   pmmSettingsPage.emailDefaults.hello,
-//   pmmSettingsPage.emailDefaults.from,
-//   pmmSettingsPage.emailDefaults.authType,
-//   null,
-//   null,
-//   null,
-//   'Invalid argument: invalid server address, expected format host:port']);
-// communicationDefaults.add([
-//   pmmSettingsPage.emailDefaults.type,
-//   pmmSettingsPage.emailDefaults.serverAddress,
-//   '%',
-//   pmmSettingsPage.emailDefaults.from,
-//   pmmSettingsPage.emailDefaults.authType,
-//   null,
-//   null,
-//   null,
-//   'Invalid argument: invalid hello field, expected valid host']);
-// communicationDefaults.add([
-//   'slack',
-//   null,
-//   null,
-//   null,
-//   null,
-//   null,
-//   null,
-//   'invalid@url',
-//   'Invalid argument: invalid url value']);
 
 Feature('PMM Settings Functionality').retry(1);
 
@@ -81,34 +41,6 @@ Scenario('PMM-T94 - Open PMM Settings page and verify changing Data Retention [c
   await pmmSettingsPage.waitForPmmSettingsPageLoaded();
   I.waitForValue(pmmSettingsPage.fields.dataRetentionInput, dataRetentionValue, 30);
 });
-
-// TODO: check ovf failure
-Scenario(
-  'PMM-T108 - Open PMM Settings page and verify adding Alertmanager Rule [critical] PMM-T109 - Verify adding and clearing Alertmanager rules @not-ovf @settings',
-  async ({ I, pmmSettingsPage }) => {
-    const scheme = 'http://';
-    const sectionNameToExpand = pmmSettingsPage.sectionTabsList.alertmanager;
-
-    I.amOnPage(pmmSettingsPage.url);
-    await pmmSettingsPage.waitForPmmSettingsPageLoaded();
-    await pmmSettingsPage.expandSection(sectionNameToExpand, pmmSettingsPage.fields.alertmanagerButton);
-    pmmSettingsPage.addAlertmanagerRule(
-      scheme + pmmSettingsPage.alertManager.ip + pmmSettingsPage.alertManager.service,
-      pmmSettingsPage.alertManager.editRule.replace('{{ sec }}', Math.floor(Math.random() * 10) + 1),
-    );
-    I.verifyPopUpMessage(pmmSettingsPage.messages.successPopUpMessage);
-    pmmSettingsPage.openAlertsManagerUi();
-    await pmmSettingsPage.verifyAlertmanagerRuleAdded(pmmSettingsPage.alertManager.editRuleName);
-    // PMM-T109 starting here
-    I.amOnPage(pmmSettingsPage.url);
-    await pmmSettingsPage.waitForPmmSettingsPageLoaded();
-    await pmmSettingsPage.expandSection(sectionNameToExpand, pmmSettingsPage.fields.alertmanagerButton);
-    pmmSettingsPage.addAlertmanagerRule('', '');
-    I.wait(5);
-    pmmSettingsPage.openAlertsManagerUi();
-    I.dontSeeElement(`//pre[contains(text(), '${pmmSettingsPage.alertManager.editRuleName}')]`);
-  },
-);
 
 Scenario.skip(
   'PMM-T253 Verify user can see correct tooltip for STT [trivial] @settings @stt @grafana-pr',
@@ -168,40 +100,6 @@ Scenario(
     I.dontSeeElement(pmmSettingsPage.communication.communicationSection);
   },
 ).retry(2);
-
-Scenario(
-  'PMM-T785 - Verify DBaaS cannot be disabled with ENABLE_DBAAS or PERCONA_TEST_DBAAS @dbaas',
-  async ({ I, pmmSettingsPage }) => {
-    I.amOnPage(pmmSettingsPage.advancedSettingsUrl);
-    await pmmSettingsPage.waitForPmmSettingsPageLoaded();
-    I.waitForVisible(pmmSettingsPage.fields.dbaasSwitchSelector, 30);
-    pmmSettingsPage.verifySwitch(pmmSettingsPage.fields.dbaasSwitchSelectorInput, 'on');
-    I.click(pmmSettingsPage.fields.dbaasSwitchSelector);
-    pmmSettingsPage.verifySwitch(pmmSettingsPage.fields.dbaasSwitchSelectorInput, 'off');
-    I.click(pmmSettingsPage.fields.advancedButton);
-    // skipped until PMM-9982 is fixed
-    // pmmSettingsPage.verifySwitch(pmmSettingsPage.fields.dbaasSwitchSelectorInput, 'on');
-    I.verifyPopUpMessage(pmmSettingsPage.messages.invalidDBaaSDisableMessage);
-  },
-);
-
-Data(communicationDefaults).Scenario(
-  'PMM-T534 PMM-T535 PMM-T1074 - Verify user is able to set up default Email/Slack communication settings / validation @ia @settings @grafana-pr',
-  async ({
-    I, pmmSettingsPage, settingsAPI, current,
-  }) => {
-    await settingsAPI.apiEnableIA();
-    I.amOnPage(pmmSettingsPage.communicationSettingsUrl);
-    await pmmSettingsPage.waitForPmmSettingsPageLoaded();
-    pmmSettingsPage.fillCommunicationFields(current);
-    I.verifyPopUpMessage(current.message);
-    if (current === pmmSettingsPage.messages.successPopUpMessage) {
-      I.refreshPage();
-      await pmmSettingsPage.waitForPmmSettingsPageLoaded();
-      await pmmSettingsPage.verifyCommunicationFields(current);
-    }
-  },
-);
 
 Scenario(
   'PMM-T747 - Verify enabling Azure flag @instances',

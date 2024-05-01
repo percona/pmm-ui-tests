@@ -1,22 +1,26 @@
 const assert = require('assert');
-const faker = require('faker');
-
-const { adminPage } = inject();
 
 Feature('Integration tests for Mysql Exporter PMM Agent and Log Level');
-const pmmFrameworkLoader = `bash ${adminPage.pathToFramework}`;
 
 const connection = {
   // eslint-disable-next-line no-inline-comments
-  port: '3307', // This is the port used by --setup-pmm-ps-integration --pmm2 --query-source=slowlog --ps-version=8.0
-  container_name: 'ps_pmm_8.0',
+  port: '3307', // This is the port used by --database ps,QUERY_SOURCE=slowlog
+  container_name: '',
   username: 'msandbox',
   password: 'msandbox',
 };
 const mysql_service_name_ac = 'mysql_service';
 
-BeforeSuite(async ({ I, grafanaAPI }) => {
-  await I.verifyCommand(`${pmmFrameworkLoader} --setup-pmm-ps-integration --pmm2 --query-source=slowlog --ps-version=8.0`);
+BeforeSuite(async ({ I, inventoryAPI }) => {
+  const psService = await inventoryAPI.apiGetNodeInfoByServiceName('MYSQL_SERVICE', 'ps-');
+
+  connection.port = psService.port;
+
+  // check that ps_pmm docker container exists
+  const dockerCheck = await I.verifyCommand('docker ps | grep ps_pmm | awk \'{print $NF}\'');
+
+  assert.ok(dockerCheck.includes('ps_pmm'), 'ps docker container should exist. please run pmm-framework with --database ps,QUERY_SOURCE=slowlog');
+  connection.container_name = dockerCheck.trim();
 });
 
 Before(async ({ I }) => {
@@ -30,7 +34,7 @@ After(async ({ I }) => {
 Scenario(
   'PMM-T1307 PMM-T1306 PMM-T1305 PMM-T1304 PMM-T1290 PMM-T1281 Verify that pmm-admin inventory add agent mysqld-exporter with --log-level flag adds MySQL exporter with corresponding log-level @not-ui-pipeline @exporters',
   async ({
-    I, inventoryAPI, grafanaAPI, dashboardPage,
+    I, inventoryAPI, dashboardPage,
   }) => {
     I.amOnPage(dashboardPage.mysqlInstanceSummaryDashboard.url);
     dashboardPage.waitForDashboardOpened();
@@ -71,7 +75,7 @@ Scenario(
 Scenario(
   'PMM-T1351 PMM-T1350 Verify that MySQL exporter cannot be added by pmm-admin add mysql with --log-level=fatal @not-ui-pipeline @exporters',
   async ({
-    I, inventoryAPI, grafanaAPI, dashboardPage,
+    I, inventoryAPI, dashboardPage,
   }) => {
     I.amOnPage(dashboardPage.mysqlInstanceSummaryDashboard.url);
     dashboardPage.waitForDashboardOpened();
@@ -105,14 +109,14 @@ Scenario(
   async ({ I, pmmInventoryPage }) => {
     I.amOnPage(pmmInventoryPage.url);
     // Find node ID
-    const nodeId = (await I.verifyCommand(`docker exec ${connection.container_name} ls /usr/local/percona/pmm2/tmp/node_exporter/agent_id/`)).trim();
+    const nodeId = (await I.verifyCommand(`docker exec ${connection.container_name} ls /usr/local/percona/pmm/tmp/node_exporter/agent_id/`)).trim();
 
     // Verify and find ids of node exporter
     let processIds = await I.verifyCommand(`docker exec ${connection.container_name} pgrep node_exporter`);
     const processId = processIds.split(/(\s+)/);
 
-    await I.verifyCommand(`docker exec ${connection.container_name} rm /usr/local/percona/pmm2/tmp/node_exporter/agent_id/${nodeId}/webConfigPlaceholder`);
-    const nodeFolder2 = await I.verifyCommand(`docker exec ${connection.container_name} ls /usr/local/percona/pmm2/tmp/node_exporter/agent_id/${nodeId}/`);
+    await I.verifyCommand(`docker exec ${connection.container_name} rm /usr/local/percona/pmm/tmp/node_exporter/agent_id/${nodeId}/webConfigPlaceholder`);
+    const nodeFolder2 = await I.verifyCommand(`docker exec ${connection.container_name} ls /usr/local/percona/pmm/tmp/node_exporter/agent_id/${nodeId}/`);
 
     assert.ok(nodeFolder2.length === 0, 'folder webConfigPlaceholder was not removed.');
 
@@ -129,12 +133,12 @@ Scenario(
 
     assert.ok(nodeExporterRestart.length, 'Node exporter is not restarted');
 
-    const folderRestart = await I.verifyCommand(`docker exec ${connection.container_name} ls /usr/local/percona/pmm2/tmp/node_exporter/agent_id/${nodeId}/`);
+    const folderRestart = await I.verifyCommand(`docker exec ${connection.container_name} ls /usr/local/percona/pmm/tmp/node_exporter/agent_id/${nodeId}/`);
 
     assert.ok(folderRestart.includes('webConfigPlaceholder'), 'webConfigPlaceholder was not recreated after restart');
 
     // remove node exporter folder
-    await I.verifyCommand(`docker exec ${connection.container_name} rm -r /usr/local/percona/pmm2/tmp/node_exporter/`);
+    await I.verifyCommand(`docker exec ${connection.container_name} rm -r /usr/local/percona/pmm/tmp/node_exporter/`);
     let restartProcessId = nodeExporterRestart.split(/(\s+)/);
 
     await I.verifyCommand(`docker exec ${connection.container_name} kill -9 ${restartProcessId[0]}`);
@@ -149,7 +153,7 @@ Scenario(
     const nodeExporterRemoved = await I.verifyCommand(`docker exec ${connection.container_name} pgrep node_exporter`);
 
     assert.ok(nodeExporterRemoved.length, 'Node exporter is not restarted');
-    const folderRemoveNodeExporter = await I.verifyCommand(`docker exec ${connection.container_name} ls /usr/local/percona/pmm2/tmp/node_exporter/agent_id/${nodeId}/`);
+    const folderRemoveNodeExporter = await I.verifyCommand(`docker exec ${connection.container_name} ls /usr/local/percona/pmm/tmp/node_exporter/agent_id/${nodeId}/`);
 
     assert.ok(folderRemoveNodeExporter.includes('webConfigPlaceholder'), 'webConfigPlaceholder was not recreated after restart');
   },

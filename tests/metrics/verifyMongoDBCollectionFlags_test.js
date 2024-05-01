@@ -7,11 +7,12 @@ const dbNames = ['db1', 'db2', 'db3', 'db4'];
 const connection = {
   host: '127.0.0.1',
   // eslint-disable-next-line no-inline-comments
-  port: '27027', // This is the port used by --mongo-replica-for-backup
+  port: '27027', // This is the port used by --database psmdb
   username: 'pmm',
   password: 'pmmpass',
 };
 const mongodb_service_name = 'mongodb_test_collections_flag';
+const containerName = 'rs101';
 
 const pmm_user_mongodb = {
   username: 'pmm',
@@ -43,7 +44,7 @@ Before(async ({ I }) => {
 });
 
 After(async ({ I }) => {
-  await I.verifyCommand(`pmm-admin remove mongodb ${mongodb_service_name} || true`);
+  await I.verifyCommand(`docker exec ${containerName} pmm-admin remove mongodb ${mongodb_service_name} || true`);
 });
 
 AfterSuite(async ({ I }) => {
@@ -53,7 +54,7 @@ AfterSuite(async ({ I }) => {
 Scenario(
   'PMM-T1860 - Verify there is no CommandNotSupportedOnView error in mongo logs when using --enable-all-collectors @dashboards @mongodb-exporter',
   async ({ I }) => {
-    const logs = await I.verifyCommand('docker exec rs101 journalctl -u mongod --since "5 minutes ago"');
+    const logs = await I.verifyCommand(`docker exec ${containerName} journalctl -u mongod --since "5 minutes ago"`);
 
     assert.ok(!logs.includes('CommandNotSupportedOnView'), `"CommandNotSupportedOnView" error should not be in mongo logs. 
  ${logs}`);
@@ -64,9 +65,9 @@ Scenario(
   'PMM-T1208 - Verify metrics of MongoDB added with default flags'
   + ' @not-ui-pipeline @mongodb-exporter @exporters',
   async ({ I, inventoryAPI, grafanaAPI }) => {
-    await I.say(await I.verifyCommand(`pmm-admin add mongodb --port=${connection.port} --agent-password='testing' --password=${pmm_user_mongodb.password} --username=${pmm_user_mongodb.username} --service-name=${mongodb_service_name} --replication-set=rs0s`));
+    await I.say(await I.verifyCommand(`docker exec ${containerName} pmm-admin add mongodb --agent-password='testing' --password=${pmm_user_mongodb.password} --username=${pmm_user_mongodb.username} --service-name=${mongodb_service_name} --replication-set=rs0s`));
 
-    const { service_id, listen_port } = await inventoryAPI.apiGetNodeInfoByServiceName('MONGODB_SERVICE', mongodb_service_name);
+    const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName('MONGODB_SERVICE', mongodb_service_name);
     const agentInfo = await inventoryAPI.apiGetPMMAgentInfoByServiceId(service_id);
 
     // assert dbstats and topmetrics collectors are disabled
@@ -85,7 +86,7 @@ Scenario(
   'PMM-T1209 - Verify metrics of MongoDB with --disable-collectors=topmetrics and --enable-all-collectors were specified'
   + ' @not-ui-pipeline @mongodb-exporter @exporters',
   async ({ I, inventoryAPI, grafanaAPI }) => {
-    await I.say(await I.verifyCommand(`pmm-admin add mongodb --port=${connection.port} --agent-password='testing' --password=${pmm_user_mongodb.password} --username=${pmm_user_mongodb.username} --enable-all-collectors  --disable-collectors=topmetrics --service-name=${mongodb_service_name} --replication-set=rs0s`));
+    await I.say(await I.verifyCommand(`docker exec ${containerName} pmm-admin add mongodb --agent-password='testing' --password=${pmm_user_mongodb.password} --username=${pmm_user_mongodb.username} --enable-all-collectors  --disable-collectors=topmetrics --service-name=${mongodb_service_name} --replication-set=rs0s`));
 
     const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName('MONGODB_SERVICE', mongodb_service_name);
     const agentInfo = await inventoryAPI.apiGetPMMAgentInfoByServiceId(service_id);
@@ -112,7 +113,7 @@ Scenario(
   'PMM-T1210 - Verify metrics of MongoDB with "--enable-all-collectors" was specified'
   + ' @not-ui-pipeline @mongodb-exporter @exporters',
   async ({ I, inventoryAPI, grafanaAPI }) => {
-    await I.say(await I.verifyCommand(`pmm-admin add mongodb --port=${connection.port} --agent-password='testing' --password=${pmm_user_mongodb.password} --username=${pmm_user_mongodb.username} --enable-all-collectors --service-name=${mongodb_service_name} --replication-set=rs0s`));
+    await I.say(await I.verifyCommand(`docker exec ${containerName} pmm-admin add mongodb --agent-password='testing' --password=${pmm_user_mongodb.password} --username=${pmm_user_mongodb.username} --enable-all-collectors --service-name=${mongodb_service_name} --replication-set=rs0s`));
 
     const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName('MONGODB_SERVICE', mongodb_service_name);
     const agentInfo = await inventoryAPI.apiGetPMMAgentInfoByServiceId(service_id);
@@ -133,7 +134,7 @@ Scenario(
   'PMM-T1211 - Verify metrics of MongoDB with --disable-collectors="" and --enable-all-collectors were specified'
   + ' @not-ui-pipeline @mongodb-exporter @exporters',
   async ({ I, inventoryAPI, grafanaAPI }) => {
-    await I.say(await I.verifyCommand(`pmm-admin add mongodb --port=${connection.port} --agent-password='testing' --password=${pmm_user_mongodb.password} --username=${pmm_user_mongodb.username} --enable-all-collectors  --disable-collectors="" --service-name=${mongodb_service_name} --replication-set=rs0s`));
+    await I.say(await I.verifyCommand(`docker exec ${containerName} pmm-admin add mongodb --agent-password='testing' --password=${pmm_user_mongodb.password} --username=${pmm_user_mongodb.username} --enable-all-collectors  --disable-collectors="" --service-name=${mongodb_service_name} --replication-set=rs0s`));
 
     const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName('MONGODB_SERVICE', mongodb_service_name);
     const agentInfo = await inventoryAPI.apiGetPMMAgentInfoByServiceId(service_id);
@@ -155,7 +156,7 @@ Scenario(
   'PMM-T1212 - Verify metrics of MongoDB with --disable-collectors="collstats,dbstats,topmetrics" specified'
   + ' @not-ui-pipeline @mongodb-exporter @exporters',
   async ({ I, inventoryAPI, grafanaAPI }) => {
-    await I.say(await I.verifyCommand(`pmm-admin add mongodb --port=${connection.port} --agent-password='testing' --password=${pmm_user_mongodb.password} --username=${pmm_user_mongodb.username} --enable-all-collectors  --disable-collectors="collstats,dbstats,topmetrics" --service-name=${mongodb_service_name} --replication-set=rs0s`));
+    await I.say(await I.verifyCommand(`docker exec ${containerName} pmm-admin add mongodb --agent-password='testing' --password=${pmm_user_mongodb.password} --username=${pmm_user_mongodb.username} --enable-all-collectors  --disable-collectors="collstats,dbstats,topmetrics" --service-name=${mongodb_service_name} --replication-set=rs0s`));
 
     const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName('MONGODB_SERVICE', mongodb_service_name);
     const agentInfo = await inventoryAPI.apiGetPMMAgentInfoByServiceId(service_id);
@@ -184,7 +185,7 @@ Scenario(
   'PMM-T1213 - Verify metrics of MongoDB with --stats-collections=db1,db2.col2 specified'
   + ' @not-ui-pipeline @mongodb-exporter @exporters',
   async ({ I, inventoryAPI, grafanaAPI }) => {
-    await I.say(await I.verifyCommand(`pmm-admin add mongodb --port=${connection.port} --agent-password='testing' --password=${pmm_user_mongodb.password} --username=${pmm_user_mongodb.username} --enable-all-collectors --stats-collections=db1,db2.col2 --service-name=${mongodb_service_name} --replication-set=rs0s`));
+    await I.say(await I.verifyCommand(`docker exec ${containerName} pmm-admin add mongodb --agent-password='testing' --password=${pmm_user_mongodb.password} --username=${pmm_user_mongodb.username} --enable-all-collectors --stats-collections=db1,db2.col2 --service-name=${mongodb_service_name} --replication-set=rs0s`));
 
     const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName('MONGODB_SERVICE', mongodb_service_name);
     const agentInfo = await inventoryAPI.apiGetPMMAgentInfoByServiceId(service_id);
@@ -211,7 +212,7 @@ Scenario(
   'PMM-T1213 - Verify metrics of MongoDB with --stats-collections=db1,db2.col2 & --max-collections-limit=5 specified when total collections across db1, db2 and the filters are 6'
   + ' @not-ui-pipeline @mongodb-exporter @exporters',
   async ({ I, inventoryAPI, grafanaAPI }) => {
-    await I.say(await I.verifyCommand(`pmm-admin add mongodb --port=${connection.port} --agent-password='testing' --password=${pmm_user_mongodb.password} --username=${pmm_user_mongodb.username} --enable-all-collectors --max-collections-limit=5 --stats-collections=db1,db2.col2 --service-name=${mongodb_service_name} --replication-set=rs0s`));
+    await I.say(await I.verifyCommand(`docker exec ${containerName} pmm-admin add mongodb --agent-password='testing' --password=${pmm_user_mongodb.password} --username=${pmm_user_mongodb.username} --enable-all-collectors --max-collections-limit=5 --stats-collections=db1,db2.col2 --service-name=${mongodb_service_name} --replication-set=rs0s`));
 
     const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName('MONGODB_SERVICE', mongodb_service_name);
     const agentInfo = await inventoryAPI.apiGetPMMAgentInfoByServiceId(service_id);
@@ -238,7 +239,7 @@ Scenario(
   'PMM-T1213 - Verify metrics of MongoDB with --stats-collections=db1,db2.col2 & --max-collections-limit=400 specified to allow fetching metrics from all collectors'
   + ' @not-ui-pipeline @mongodb-exporter @exporters',
   async ({ I, inventoryAPI, grafanaAPI }) => {
-    await I.say(await I.verifyCommand(`pmm-admin add mongodb --port=${connection.port} --agent-password='testing' --password=${pmm_user_mongodb.password} --username=${pmm_user_mongodb.username} --enable-all-collectors --max-collections-limit=400 --stats-collections=db1,db2.col2 --service-name=${mongodb_service_name} --replication-set=rs0s`));
+    await I.say(await I.verifyCommand(`docker exec ${containerName} pmm-admin add mongodb --agent-password='testing' --password=${pmm_user_mongodb.password} --username=${pmm_user_mongodb.username} --enable-all-collectors --max-collections-limit=400 --stats-collections=db1,db2.col2 --service-name=${mongodb_service_name} --replication-set=rs0s`));
 
     const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName('MONGODB_SERVICE', mongodb_service_name);
     const agentInfo = await inventoryAPI.apiGetPMMAgentInfoByServiceId(service_id);
@@ -265,7 +266,7 @@ Scenario(
   'PMM-9919 Verify smart metrics of MongoDB with --stats-collections=db1,db2.col2 & --max-collections-limit=400 specified to allow fetching metrics from all collectors'
   + ' @not-ui-pipeline @mongodb-exporter @exporters',
   async ({ I, inventoryAPI, grafanaAPI }) => {
-    await I.say(await I.verifyCommand(`pmm-admin add mongodb --port=${connection.port} --agent-password='testing' --password=${pmm_user_mongodb.password} --username=${pmm_user_mongodb.username} --enable-all-collectors --max-collections-limit=400 --stats-collections=db1,db2.col2 --service-name=${mongodb_service_name} --replication-set=rs0s`));
+    await I.say(await I.verifyCommand(`docker exec ${containerName} pmm-admin add mongodb --agent-password='testing' --password=${pmm_user_mongodb.password} --username=${pmm_user_mongodb.username} --enable-all-collectors --max-collections-limit=400 --stats-collections=db1,db2.col2 --service-name=${mongodb_service_name} --replication-set=rs0s`));
 
     const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName('MONGODB_SERVICE', mongodb_service_name);
     const agentInfo = await inventoryAPI.apiGetPMMAgentInfoByServiceId(service_id);
@@ -285,10 +286,10 @@ Scenario(
     await grafanaAPI.checkMetricExist(smartMetricName, [{ type: 'service_name', value: mongodb_service_name }, { type: 'collector', value: 'indexstats' }]);
     await grafanaAPI.checkMetricExist(smartMetricName, [{ type: 'service_name', value: mongodb_service_name }, { type: 'collector', value: 'replset_status' }]);
     await grafanaAPI.checkMetricExist(smartMetricName, [{ type: 'service_name', value: mongodb_service_name }, { type: 'collector', value: 'top' }]);
-    await I.say(await I.verifyCommand(`pmm-admin remove mongodb ${mongodb_service_name}`));
+    await I.say(await I.verifyCommand(`docker exec ${containerName} pmm-admin remove mongodb ${mongodb_service_name}`));
 
     // Re-add Service with Disable Top metrics, check no smart metrics for Top
-    await I.say(await I.verifyCommand(`pmm-admin add mongodb --port=${connection.port} --agent-password='testing' --password=${pmm_user_mongodb.password} --username=${pmm_user_mongodb.username} --enable-all-collectors --disable-collectors=topmetrics --max-collections-limit=400 --stats-collections=db1,db2.col2 --service-name=${mongodb_service_name} --replication-set=rs0s`));
+    await I.say(await I.verifyCommand(`docker exec ${containerName} pmm-admin add mongodb --agent-password='testing' --password=${pmm_user_mongodb.password} --username=${pmm_user_mongodb.username} --enable-all-collectors --disable-collectors=topmetrics --max-collections-limit=400 --stats-collections=db1,db2.col2 --service-name=${mongodb_service_name} --replication-set=rs0s`));
     await I.wait(30);
     await grafanaAPI.checkMetricExist(smartMetricName, [{ type: 'service_name', value: `${mongodb_service_name}` }, { type: 'collector', value: 'dbstats' }]);
     await grafanaAPI.checkMetricAbsent(smartMetricName, [{ type: 'service_name', value: `${mongodb_service_name}` }, { type: 'collector', value: 'top' }]);
@@ -299,15 +300,15 @@ Scenario(
   'PMM-T1280 Verify that pmm-admin inventory add agent mongodb-exporter with --log-level flag adds MongoDB exporter with corresponding log-level'
   + 'PMM-T1282, PMM-T1284, PMM-T1291 Verify that pmm-admin inventory add agent node-exporter with --log-level flag adds Node exporter with corresponding log-level @not-ui-pipeline @mongodb-exporter @exporters',
   async ({
-    I, inventoryAPI, grafanaAPI, dashboardPage,
+    I, inventoryAPI, dashboardPage,
   }) => {
     I.amOnPage(dashboardPage.mongoDbInstanceOverview.url);
     dashboardPage.waitForDashboardOpened();
     // adding service which will be used to verify various inventory addition commands
-    await I.say(await I.verifyCommand(`pmm-admin add mongodb --port=${connection.port} --agent-password='testing' --password=${pmm_user_mongodb.password} --username=${pmm_user_mongodb.username} --enable-all-collectors --service-name=${mongodb_service_name}`));
+    await I.say(await I.verifyCommand(`docker exec ${containerName} pmm-admin add mongodb --agent-password='testing' --password=${pmm_user_mongodb.password} --username=${pmm_user_mongodb.username} --enable-all-collectors --service-name=${mongodb_service_name}`));
     //
     const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName('MONGODB_SERVICE', mongodb_service_name);
-    const pmm_agent_id = (await I.verifyCommand('pmm-admin status | grep "Agent ID" | awk -F " " \'{print $4}\'')).trim();
+    const pmm_agent_id = (await I.verifyCommand(`docker exec ${containerName} pmm-admin status | grep "Agent ID" | awk -F " " '{print $4}'`)).trim();
 
     const dbDetails = {
       username: pmm_user_mongodb.username,
@@ -315,6 +316,7 @@ Scenario(
       pmm_agent_id,
       service_id,
       service_name: mongodb_service_name,
+      container_name: containerName,
     };
 
     await inventoryAPI.verifyAgentLogLevel('mongodb', dbDetails);
@@ -348,17 +350,17 @@ Scenario(
     const service_name = 'testing_force_flag';
 
     // adding service which will be used to verify various inventory addition commands
-    await I.say(await I.verifyCommand(`pmm-admin add mongodb --port=${connection.port} --agent-password='testing' --password=${pmm_user_mongodb.password} --username=${pmm_user_mongodb.username} --enable-all-collectors --service-name=${mongodb_service_name}`));
-    const pmm_agent_id = (await I.verifyCommand('pmm-admin status | grep "Agent ID" | awk -F " " \'{print $4}\'')).trim();
+    await I.say(await I.verifyCommand(`docker exec ${containerName} pmm-admin add mongodb --agent-password='testing' --password=${pmm_user_mongodb.password} --username=${pmm_user_mongodb.username} --enable-all-collectors --service-name=${mongodb_service_name}`));
+    const pmm_agent_id = (await I.verifyCommand(`docker exec ${containerName} pmm-admin status | grep "Agent ID" | awk -F " " '{print $4}'`)).trim();
 
     // adding service which will be used to verify various inventory addition commands
-    await I.say(await I.verifyCommand(`pmm-admin add mongodb --port=${connection.port} --agent-password='testing' --password=${pmm_user_mongodb.password} --username=${pmm_user_mongodb.username} --enable-all-collectors --service-name=${service_name}`));
+    await I.say(await I.verifyCommand(`docker exec ${containerName} pmm-admin add mongodb --agent-password='testing' --password=${pmm_user_mongodb.password} --username=${pmm_user_mongodb.username} --enable-all-collectors --service-name=${service_name}`));
     const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName('MONGODB_SERVICE', service_name);
 
     await grafanaAPI.waitForMetric('mongodb_up', [{ type: 'service_name', value: service_name }], 90);
-    await I.verifyCommand(`pmm-admin inventory remove service ${service_id} --force`);
+    await I.verifyCommand(`docker exec ${containerName} pmm-admin inventory remove service ${service_id} --force`);
     await grafanaAPI.waitForMetricAbsent('mongodb_up', [{ type: 'service_name', value: service_name }], 90);
     // PMM-T1352 Verify that Node exporter cannot be added by pmm-admin inventory add agent node-exporter with --log-level=fatal
-    await I.verifyCommand(`pmm-admin inventory add agent node-exporter --log-level=fatal ${pmm_agent_id}`, 'pmm-admin: error: --log-level must be one of "debug","info","warn","error" but got "fatal"', 'fail');
+    await I.verifyCommand(`docker exec ${containerName} pmm-admin inventory add agent node-exporter --log-level=fatal ${pmm_agent_id}`, 'pmm-admin: error: --log-level must be one of "debug","info","warn","error" but got "fatal"', 'fail');
   },
 );
