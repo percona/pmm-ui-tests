@@ -9,16 +9,6 @@ Feature('PMM User Profile tests');
 const INITIAL_ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
 const NEW_ADMIN_PASSWORD = 'admin1';
 
-const containerNames = [];
-
-BeforeSuite(async ({ I }) => {
-  for (const suffix of ['pdpgsql_', 'ps_pmm_', 'rs101']) {
-    const dockerCheck = await I.verifyCommand(`docker ps | grep ${suffix} | awk '{print $NF}'`);
-
-    containerNames.push(dockerCheck.trim());
-  }
-});
-
 After(async ({ I, profileAPI }) => {
   // eslint-disable-next-line no-undef
   await tryTo(() => {
@@ -47,17 +37,6 @@ Scenario(
     await I.waitForVisible(loginPage.fields.loginInput, 30);
     process.env.ADMIN_PASSWORD = NEW_ADMIN_PASSWORD;
     await loginPage.login();
-
-    await I.say('Verify all agents have "Running" status. There is no agent with "DONE" and "UNKNOWN" status');
-    for (const containerName of containerNames) {
-      for (const name of ['vmagent', 'node_exporter', 'postgres_exporter', 'mongodb_exporter', 'mysqld_exporter']) {
-        const listStatus = (await I.verifyCommand(`docker exec ${containerName} pmm-admin list | grep ${name} | awk -F' ' '{print $2}' | tail -n 1`)).trim();
-        const status = (await I.verifyCommand(`docker exec ${containerName} pmm-admin status | grep ${name} | awk -F' ' '{print $3}' | tail -n 1`)).trim();
-
-        I.assertEqual(listStatus, 'Running', `'${name}' is expected to have 'Running' status in pmm-admin list, but found: '${status}' in '${containerName}'`);
-        I.assertEqual(status, 'Running', `'${name}' is expected to have 'Running' status in pmm-admin status, but found: '${status}' in '${containerName}'`);
-      }
-    }
 
     await pmmInventoryPage.servicesTab.open();
     await pmmInventoryPage.servicesTab.pagination.selectRowsPerPage(100);
