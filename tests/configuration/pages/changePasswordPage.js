@@ -4,7 +4,7 @@ module.exports = {
   url: 'graph/profile/password',
 
   elements: {
-    heading: '.page-sub-heading',
+    heading: '[class*=page-header] h1',
     oldPasswordInput: '#current-password',
     newPasswordInput: '#new-password',
     confirmPasswordInput: '#confirm-new-password',
