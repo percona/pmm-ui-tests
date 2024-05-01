@@ -14,7 +14,7 @@ const connection = {
 // Service Name: ${PGSQL_PGSS_CONTAINER}_${PGSQL_VERSION}_service
 // Docker Container Name: ${PGSQL_PGSS_CONTAINER}_${PGSQL_VERSION}
 
-const version = process.env.PGSQL_VERSION ? `${process.env.PGSQL_VERSION}` : '14';
+const version = process.env.PGSQL_VERSION ? `${process.env.PGSQL_VERSION}` : '16';
 const container = process.env.PGSQL_PGSS_CONTAINER ? `${process.env.PGSQL_PGSS_CONTAINER}` : 'pgsql_pgss_pmm';
 const database = `pgss${Math.floor(Math.random() * 99) + 1}`;
 let pgss_service_name;

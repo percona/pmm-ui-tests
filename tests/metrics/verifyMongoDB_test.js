@@ -34,7 +34,7 @@ BeforeSuite(async ({ I }) => {
   // check that rs101 docker container exists
   const dockerCheck = await I.verifyCommand(`docker ps | grep ${containerName}`);
 
-  assert.ok(dockerCheck.includes(containerName), 'rs101 docker container should exist. please run pmm-framework with --mongo-replica-for-backup');
+  assert.ok(dockerCheck.includes(containerName), 'rs101 docker container should exist. please run pmm-framework with --database psmdb');
 });
 
 Before(async ({ I }) => {

@@ -14,11 +14,10 @@ const connection = {
 // Docker Container Name: ${PGSQL_PGSM_CONTAINER}_${PGSQL_VERSION}
 
 const version = process.env.PDPGSQL_VERSION ? `${process.env.PDPGSQL_VERSION}` : '16';
-const container = process.env.PGSQL_PGSM_CONTAINER ? `${process.env.PGSQL_PGSM_CONTAINER}` : 'pdpgsql_pgsm_pmm';
 const database = `pgsm${Math.floor(Math.random() * 99) + 1}`;
 let pgsm_service_name;
 let pgsm_service_name_socket;
-const container_name = `${container}_${version}`;
+let container_name;
 const percentageDiff = (a, b) => (a - b === 0 ? 0 : 100 * Math.abs((a - b) / b));
 
 const labels = [
@@ -38,12 +37,18 @@ filters.add(['Database', database]);
 
 Feature('PMM + PGSM Integration Scenarios');
 
-BeforeSuite(async ({ inventoryAPI }) => {
+BeforeSuite(async ({ I, inventoryAPI }) => {
   const pgsm_service = await inventoryAPI.apiGetNodeInfoByServiceName('POSTGRESQL_SERVICE', 'pdpgsql_');
   const socket_service = await inventoryAPI.apiGetNodeInfoByServiceName('POSTGRESQL_SERVICE', 'socket_pdpgsql_');
 
   pgsm_service_name = pgsm_service.service_name;
   pgsm_service_name_socket = socket_service.service_name;
+
+  // check that pdpgsql docker container exists
+  const dockerCheck = await I.verifyCommand('docker ps | grep pdpgsql_ | awk \'{print $NF}\'');
+
+  assert.ok(dockerCheck.includes('pdpgsql_'), 'pdpgsql docker container should exist. please run pmm-framework with --database pdpgsql');
+  container_name = dockerCheck.trim();
 });
 
 Before(async ({ I }) => {
