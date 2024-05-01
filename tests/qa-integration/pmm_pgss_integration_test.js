@@ -15,9 +15,9 @@ const connection = {
 // Docker Container Name: ${PGSQL_PGSS_CONTAINER}_${PGSQL_VERSION}
 
 const version = process.env.PGSQL_VERSION ? `${process.env.PGSQL_VERSION}` : '14';
-const container = process.env.PGSQL_PGSS_CONTAINER ? `${process.env.PGSQL_PGSS_CONTAINER}` : 'pgsql_pgss';
+const container = process.env.PGSQL_PGSS_CONTAINER ? `${process.env.PGSQL_PGSS_CONTAINER}` : 'pgsql_pgss_pmm';
 const database = `pgss${Math.floor(Math.random() * 99) + 1}`;
-const pgss_service_name = `${container}_${version}_service`;
+let pgss_service_name;
 const container_name = `${container}_${version}`;
 const pmmFrameworkLoader = `bash ${adminPage.pathToFramework}`;
 const pgsqlVersionPgss = new DataTable(['pgsqlVersion', 'expectedPgssVersion', 'expectedColumnName']);
@@ -28,6 +28,12 @@ pgsqlVersionPgss.add([13, '1.8', 'total_exec_time']);
 const labels = [{ key: 'database', value: [`${database}`] }];
 
 Feature('PMM + pgss Integration Scenarios');
+
+BeforeSuite(async ({ inventoryAPI }) => {
+  const pgss_service = await inventoryAPI.apiGetNodeInfoByServiceName('POSTGRESQL_SERVICE', 'pgsql_');
+
+  pgss_service_name = pgss_service.service_name;
+});
 
 Before(async ({ I }) => {
   await I.Authorize();
@@ -201,8 +207,6 @@ Data(pgsqlVersionPgss).Scenario(
     const containerName = `pgsql_pgss_${pgsqlVersion}`;
     const exposedPort = '5444';
     const serviceName = `pgsql_pgss_${pgsqlVersion}_service`;
-
-    await I.say(`admin password is: ${process.env.ADMIN_PASSWORD}`);
 
     await I.say(`${pmmFrameworkLoader} --pmm2 --setup-pmm-pgss-integration --pgsql-version=${pgsqlVersion} --pgsql-pgss-port=${exposedPort}`);
     await I.verifyCommand(`export ADMIN_PASSWORD=${process.env.ADMIN_PASSWORD}`);
