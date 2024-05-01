@@ -27,7 +27,7 @@ jobs:
     with:
       sha: 'null'
       pmm_ui_tests_branch: ${{ github.head_ref }}
-      pmm_qa_branch: 'PMM-13086-workflow-tweaks'
+      pmm_qa_branch: 'pmm7-framework-fix3'
       pmm_server_image: 'perconalab/pmm-server:3-dev-latest'
       pmm_client_image: 'perconalab/pmm-client:3-dev-latest'
       pmm_client_version: 'dev-latest'
