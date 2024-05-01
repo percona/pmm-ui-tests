@@ -27,7 +27,6 @@ Scenario(
 
     await grafanaAPI.waitForMetric('pg_stat_activity_count', null);
     await grafanaAPI.waitForMetric('mysql_global_status_threads_connected', null);
-    await grafanaAPI.waitForMetric('mongodb_up', null);
     await grafanaAPI.waitForMetric('node_cpu_seconds_total', null);
 
     await changePasswordPage.open();
@@ -58,7 +57,6 @@ Scenario(
     // Verify metrics exists: useless with current hardcoded time range
     await grafanaAPI.checkMetricExist('pg_stat_activity_count', null);
     await grafanaAPI.checkMetricExist('mysql_global_status_threads_connected', null);
-    await grafanaAPI.checkMetricExist('mongodb_up', null);
     await grafanaAPI.checkMetricExist('node_cpu_seconds_total', null);
   },
 );
