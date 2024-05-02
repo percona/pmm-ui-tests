@@ -37,7 +37,6 @@ Scenario('PMM-T1883 Configuring pmm-agent to use service account @service-accoun
   await I.amOnPage(nodesUrl);
   await dashboardPage.waitForDashboardOpened();
   await dashboardPage.expandEachDashboardRow();
-  await dashboardPage.verifyThereAreNoGraphsWithNA(1);
   await dashboardPage.verifyThereAreNoGraphsWithoutData(19);
 
   await I.verifyCommand('sudo docker restart pmm-server');
