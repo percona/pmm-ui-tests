@@ -44,9 +44,9 @@ Scenario('PMM-T1883 Configuring pmm-agent to use service account @service-accoun
   await dashboardPage.expandEachDashboardRow();
   await dashboardPage.verifyThereAreNoGraphsWithoutData(19);
 
-  await I.wait(60);
+  // await I.wait(60);
   const url = I.buildUrlWithParams(dashboardPage.mySQLInstanceOverview.clearUrl, {
-    from: 'now-2m',
+    from: 'now-1m',
     to: 'now',
     service_name: newServiceName,
   });
@@ -60,7 +60,7 @@ Scenario('PMM-T1884 Verify disabling service account @service-account', async ({
   await I.amOnPage(serviceAccountsPage.url);
   await serviceAccountsPage.disableServiceAccount(serviceAccountUsername);
   await I.wait(10);
-  const responseDisabled = await I.verifyCommand('sudo -E env "PATH=$PATH" pmm-admin list', '', 'fail');
+  const responseDisabled = await I.verifyCommand('sudo docker exec ps_pmm_8.0 pmm-admin list', '', 'fail');
   const expectedDisabledMessage = 'Unauthorized. Please check username and password.';
 
   I.assertEqual(
