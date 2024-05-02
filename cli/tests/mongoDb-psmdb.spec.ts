@@ -155,8 +155,8 @@ test.describe('Percona Server MongoDB (PSMDB) CLI tests ', async () => {
     for (const host of mongoRplHosts) {
       console.log(host);
       const port = host.split(':')[1];
-      const replPort = Number(port) - 10;
-      const output = await cli.exec(`sudo pmm-admin add mongodb --username=${MONGO_USERNAME} --password=${MONGO_PASSWORD} --socket=/tmp/mongodb/mongodb-${replPort}.sock mongo_inst_${n++}`);
+      const replSocketPort = Number(port) - 10;
+      const output = await cli.exec(`sudo pmm-admin add mongodb --username=${MONGO_USERNAME} --password=${MONGO_PASSWORD} --socket=/tmp/mongodb/mongodb-${replSocketPort}.sock mongo_inst_${n++}`);
       await output.assertSuccess();
       await output.outContains('MongoDB Service added');
     }
