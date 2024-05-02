@@ -25,6 +25,7 @@ module.exports = {
   },
 
   selectPage(page) {
+    I.waitForVisible(this.getPageLocator(page));
     I.click(this.getPageLocator(page));
   },
 
@@ -54,10 +55,10 @@ module.exports = {
     });
   },
 
-  verifyActivePage(page) {
+  async verifyActivePage(page) {
     const item = this.getActivePageLocator(page);
 
-    I.waitForElement(item, 30);
+    await I.waitForElement(item, 30);
   },
 
   async verifyPagesAndCount(itemsPerPage) {

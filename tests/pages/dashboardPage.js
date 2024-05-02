@@ -1225,7 +1225,7 @@ module.exports = {
     openFiltersDropdownLocator: (filterName) => locate(`#var-${formatElementId(filterName)}`),
     filterDropdownOptionsLocator: (filterName) => locate(I.useDataQA('data-testid variable-option')).withText(filterName),
     refreshIntervalPicker: I.useDataQA('data-testid RefreshPicker interval button'),
-    refreshIntervalOption: (interval) => locate(`//*[@role="menuitemradio" and text()="${interval}"]`),
+    refreshIntervalOption: (interval) => locate(`//*[@role="menuitemradio"]//span[text()="${interval}"]`),
     clickablePanel: (name) => locate('$header-container').withText(name).find('a'),
     dashboardTitle: (name) => locate('span').withText(name),
     metricPanelNa: (name) => `//section[@aria-label="${name}"]//span[text()="N/A"]`,

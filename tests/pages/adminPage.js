@@ -24,8 +24,8 @@ module.exports = {
     reportTitleWithNA:
       '//span[contains(text(), "N/A")]//ancestor::div[contains(@class,"panel-container")]//span[contains(@class,"panel-title-text")]',
     pmmDropdownMenuSelector: locate('a[data-toggle="dropdown"] > span').withText('PMM'),
-    timeRangeFrom: locate('input').withAttr({ 'aria-label': 'Time Range from field' }),
-    timeRangeTo: locate('input').withAttr({ 'aria-label': 'Time Range to field' }),
+    timeRangeFrom: locate('input').withAttr({ 'data-testid': 'data-testid Time Range from field' }),
+    timeRangeTo: locate('input').withAttr({ 'data-testid': 'data-testid Time Range to field' }),
     tooltipText: locate('$info-tooltip').find('span'),
     tooltipReadMoreLink: locate('$info-tooltip').find('a'),
   },
