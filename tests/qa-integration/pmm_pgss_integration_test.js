@@ -22,7 +22,7 @@ const container_name = `${container}_${version}`;
 const pmmFrameworkLoader = `bash ${adminPage.pathToFramework}`;
 const pgsqlVersionPgss = new DataTable(['pgsqlVersion', 'expectedPgssVersion', 'expectedColumnName']);
 
-// TODO: unskip when pmm-framework takes port parameter
+// TODO: unskip when pmm-framework takes port parameter https://perconadev.atlassian.net/browse/PMM-13096
 // pgsqlVersionPgss.add([12, '1.7', 'total_time']);
 // pgsqlVersionPgss.add([13, '1.8', 'total_exec_time']);
 
