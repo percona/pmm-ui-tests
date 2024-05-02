@@ -23,7 +23,7 @@ module.exports = {
     detailsEvaluateValue: '//div[text()="Evaluate"]/following-sibling::div',
     detailsDurationValue: '//div[text()="Pending period"]/following-sibling::div',
     detailsSeverityLabel: (value) => locate('div').withText('severity').before(`//*[text()='${value}']`),
-    detailsFolderLabel: (value) => locate('span').withText(`grafana_folder=${value}`).inside('//ul[@aria-label="Tags"]'),
+    detailsFolderLabel: (value) => locate('div').withAttr({ 'aria-label': `grafana_folder: ${value}` }).inside('//div[@data-column="Labels"]'),
     ruleValidationError: (error) => locate('div').withText(error).inside('div').withAttr({ role: 'alert' }),
     evaluationGroupOption: (evaluationGroupName) => locate(I.useDataQA(`${evaluationGroupName}-select-option`)),
     alertStatus: (ruleName) => locate(`//*[@data-column ='Name' and contains(text(), '${ruleName}')]//preceding-sibling::*[@data-column ='State']`),
@@ -108,11 +108,18 @@ module.exports = {
     I.waitForVisible(this.fields.inputField('name'));
     I.fillField(this.fields.inputField('name'), ruleName);
     this.selectFolder(folder);
-    I.fillField(this.fields.editRuleSeverity, severity);
+    this.editRuleSeverity(severity);
     I.fillField(this.fields.editRuleThreshold, duration);
     await this.selectOrCreateGroup(group);
     I.click(this.buttons.saveAndExit);
     I.verifyPopUpMessage(this.messages.successRuleEdit(ruleName));
+  },
+
+  editRuleSeverity(newSeverity) {
+    I.waitForVisible(this.fields.editRuleSeverity);
+    I.click(this.fields.editRuleSeverity);
+    I.fillField(this.fields.editRuleSeverity, newSeverity);
+    I.pressKey('Enter');
   },
 
   openAlertRulesTab() {
@@ -169,7 +176,7 @@ module.exports = {
     const {
       ruleName, duration, folder, severity, group,
     } = ruleObj;
-    console.log(`Severity is: ${folder}`);
+
     this.verifyRuleList(folder, ruleName, group.name);
     I.seeElement(this.buttons.ruleCollapseButton);
     I.click(this.buttons.ruleCollapseButton);

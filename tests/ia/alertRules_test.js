@@ -152,7 +152,7 @@ Scenario(
     I.click(alertRulesPage.buttons.editAlertRule);
     await alertRulesPage.editPerconaAlert(editedRule);
     await alertRulesPage.verifyRuleDetails(editedRule);
-    // await rulesAPI.removeAlertRule(editedRule.folder);
+    await rulesAPI.removeAlertRule(editedRule);
   },
 );
 
