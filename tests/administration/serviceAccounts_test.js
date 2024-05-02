@@ -14,6 +14,7 @@ Scenario('PMM-T1883 Configuring pmm-agent to use service account @service-accoun
   const pmmServerUrl = new URL(codeceptjsConfig.config.helpers.Playwright.url).hostname;
 
   await serviceAccountsPage.createServiceAccount(serviceAccountUsername, 'Admin');
+  console.log(serviceAccountUsername)
   const tokenValue = await serviceAccountsPage.createServiceAccountToken(`token_name_${Date.now()}`);
   const oldNodeId = await I.verifyCommand('pmm-admin status | grep "Node ID" | awk -F " " \'{ print $4 }\'');
   const pmmAgentConfigLocation = (await I.verifyCommand('sudo find / -name pmm-agent.yaml 2>/dev/null', null, 'notConsequential'))
