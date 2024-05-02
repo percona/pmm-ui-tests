@@ -10,7 +10,6 @@ const newServiceName = 'mysql_service_service_token1';
 Scenario('PMM-T1883 Configuring pmm-agent to use service account @service-account', async ({
   I, codeceptjsConfig, serviceAccountsPage, dashboardPage, inventoryAPI, nodesOverviewPage, credentials,
 }) => {
-  await I.verifyCommand(`pmm-admin add mysql --username=msandbox --password=msandbox --host=127.0.0.1  --port=3317 --service-name=${newServiceName}`);
   await I.amOnPage(serviceAccountsPage.url);
   const pmmServerUrl = new URL(codeceptjsConfig.config.helpers.Playwright.url).hostname;
 
@@ -27,6 +26,7 @@ Scenario('PMM-T1883 Configuring pmm-agent to use service account @service-accoun
   }
 
   await I.verifyCommand(`sudo -E env "PATH=$PATH" pmm-agent setup --server-username=service_token --server-password=${tokenValue} --server-address=${pmmServerUrl} --server-insecure-tls --config-file=${pmmAgentConfigLocation}`);
+  await I.verifyCommand(`pmm-admin add mysql --username=msandbox --password=msandbox --host=127.0.0.1  --port=3317 --service-name=${newServiceName}`);
   await I.wait(60);
   const nodeName = (await inventoryAPI.getAllNodes()).generic.find((node) => node.node_name !== 'pmm-server').node_name;
   const nodesUrl = I.buildUrlWithParams(nodesOverviewPage.url, {
@@ -46,7 +46,7 @@ Scenario('PMM-T1883 Configuring pmm-agent to use service account @service-accoun
   await dashboardPage.waitForDashboardOpened();
   await dashboardPage.expandEachDashboardRow();
   await dashboardPage.verifyThereAreNoGraphsWithoutData(19);
-  await I.verifyCommand(`pmm-admin add mysql --username=msandbox --password=msandbox --host=127.0.0.1  --port=3317 --service-name=${newServiceName}`);
+
   await I.wait(60);
   const url = I.buildUrlWithParams(dashboardPage.mySQLInstanceOverview.clearUrl, {
     from: 'now-30s',
