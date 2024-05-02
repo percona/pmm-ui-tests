@@ -12,7 +12,7 @@ module.exports = {
     duration: '301s',
     severity: 'Info',
     folder: 'Experimental',
-    group: { name: 'TestGroup', evaluationInterval: '5m' },
+    group: { name: 'TestGroup', evaluationInterval: '30s' },
   }, {
     template: 'MongoDB down',
     ruleName: 'mongodb_down Alerting Rule',
@@ -263,6 +263,7 @@ module.exports = {
     duration: '60s',
     severity: 'Critical',
     folder: 'Experimental',
+    group: { name: 'TestGroup', evaluationInterval: '30s' },
   }, {
     template: 'PMM agent down',
     ruleName: 'Custom pmm_agent_down Alerting Rule',
@@ -270,6 +271,7 @@ module.exports = {
     duration: '60s',
     severity: 'Critical',
     folder: 'Experimental',
+    group: { name: 'TestGroup', evaluationInterval: '30s' },
   }],
   templates: [{
     template: 'Memory used by MongoDB connections',

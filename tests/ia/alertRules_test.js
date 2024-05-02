@@ -74,7 +74,6 @@ Scenario.skip(
 Scenario.skip(
   'PMM-T1392 Verify fields dynamically change value when template is changed @ia @grafana-pr',
   async ({ I, alertRulesPage }) => {
-    // TODO: https://jira.percona.com/browse/PMM-10860 name doesn't change
     alertRulesPage.openAlertRulesTab();
     I.click(alertRulesPage.buttons.newAlertRule);
     I.waitForElement(alertRulesPage.fields.templatesLoader);
@@ -103,14 +102,13 @@ Scenario(
     I.click(alertRulesPage.buttons.saveAndExit);
     I.verifyPopUpMessage(alertRulesPage.messages.successRuleCreate(newRule.ruleName));
     alertRulesPage.verifyRuleList(newRule.folder, newRule.ruleName, newRule.group.name);
-    await alertRulesPage.verifyRuleState('Normal', 60);
+    await alertRulesPage.verifyRuleState(newRule, 'Normal', 60);
     await rulesAPI.removeAlertRule(newRule);
   },
 ).retry(1);
 
-// TODO: unskip in scope of https://perconadev.atlassian.net/browse/PMM-12938
-Scenario.skip(
-  'PMM-T2282 Verfied Alerting is able to monitor for "PMM Agent Down" @ia @alerting-fb',
+Scenario(
+  'PMM-T2282 Verify Alerting is able to monitor for "PMM Agent Down" @ia @alerting-fb',
   async ({ I, alertRulesPage, rulesAPI }) => {
     const rule = page.rules[29];
     const newRule = page.rules[30];
@@ -121,45 +119,40 @@ Scenario.skip(
     await alertRulesPage.fillPerconaAlert(rule, newRule);
     I.waitForEnabled(alertRulesPage.buttons.saveAndExit, 10);
     I.click(alertRulesPage.buttons.saveAndExit);
-    // FIXME: unskip after https://jira.percona.com/browse/PMM-11399 is fixed
-    // I.verifyPopUpMessage(alertRulesPage.messages.successRuleCreate(newRule.ruleName));
-    await alertRulesPage.verifyRuleList(newRule.folder, newRule.ruleName);
+    I.verifyPopUpMessage(alertRulesPage.messages.successRuleCreate(newRule.ruleName));
+    await alertRulesPage.verifyRuleList(newRule.folder, newRule.ruleName, newRule.group.name);
     await I.verifyCommand('docker pause ms_pmm_8.0');
-    await alertRulesPage.verifyRuleState('Pending', 180);
-    // await I.waitForText('Pending', 180, alertRulesPage.elements.ruleState1);
-    await alertRulesPage.verifyRuleState('Firing', 180);
-    // await I.waitForText('Firing', 180, alertRulesPage.elements.ruleState2);
+    await alertRulesPage.verifyRuleState(newRule, 'Pending', 180);
+    await alertRulesPage.verifyRuleState(newRule, 'Firing', 180);
     await I.verifyCommand('docker unpause ms_pmm_8.0');
-    // await I.waitForText('Normal', 180, alertRulesPage.elements.ruleState3);
-    await alertRulesPage.verifyRuleState('Normal', 240);
-    await rulesAPI.removeAlertRule(newRule.folder);
+    await alertRulesPage.verifyRuleState(newRule, 'Normal', 240);
+    await rulesAPI.removeAlertRule(newRule);
   },
 );
 
 // TODO: check ovf failure
-Scenario.skip(
+Scenario(
   'PMM-T1430 Verify user can edit Percona templated alert @ia @not-ovf @alerting-fb',
   async ({
     I, alertRulesPage, rulesAPI,
   }) => {
     const ruleName = 'testRule';
-    const ruleFolder = 'PostgreSQL';
+    const ruleFolder = 'Insight';
     const editedRule = {
       ruleName: 'EDITED rule',
       duration: '2m',
       severity: 'Alert',
       folder: 'Experimental',
+      group: { name: 'Edited Group', evaluationInterval: '30s' },
     };
 
     await rulesAPI.createAlertRule({ ruleName }, ruleFolder);
     alertRulesPage.openAlertRulesTab();
-    alertRulesPage.verifyRuleList(ruleFolder, ruleName);
-    I.waitForElement(alertRulesPage.buttons.ruleCollapseButton);
-    I.click(alertRulesPage.buttons.ruleCollapseButton);
+    alertRulesPage.verifyRuleList(ruleFolder, ruleName, 'default-alert-group');
     I.click(alertRulesPage.buttons.editAlertRule);
     await alertRulesPage.editPerconaAlert(editedRule);
     await alertRulesPage.verifyRuleDetails(editedRule);
-    await rulesAPI.removeAlertRule(editedRule.folder);
+    // await rulesAPI.removeAlertRule(editedRule.folder);
   },
 );
 
