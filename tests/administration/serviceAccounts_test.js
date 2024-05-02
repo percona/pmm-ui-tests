@@ -21,7 +21,6 @@ Scenario('PMM-T1883 Configuring pmm-agent to use service account @service-accoun
     .split('\n')
     .find((agentLocation) => agentLocation.includes('/home/') || (agentLocation.includes('/usr/local/config/') || (agentLocation.includes('/usr/local/percona/pmm/') && !agentLocation.includes('docker'))));
 
-  console.log(`Pmm agent config location is ${pmmAgentConfigLocation}`);
   if (oldNodeId) {
     await inventoryAPI.deleteNode(oldNodeId, true);
   }
