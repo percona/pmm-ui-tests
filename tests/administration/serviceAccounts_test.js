@@ -44,7 +44,6 @@ Scenario('PMM-T1883 Configuring pmm-agent to use service account @service-accoun
   await dashboardPage.expandEachDashboardRow();
   await dashboardPage.verifyThereAreNoGraphsWithoutData(19);
 
-  // await I.wait(60);
   const url = I.buildUrlWithParams(dashboardPage.mySQLInstanceOverview.clearUrl, {
     from: 'now-1m',
     to: 'now',
