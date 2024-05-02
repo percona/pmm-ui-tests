@@ -49,7 +49,7 @@ Scenario('PMM-T1883 Configuring pmm-agent to use service account @service-accoun
   await dashboardPage.expandEachDashboardRow();
   await dashboardPage.verifyThereAreNoGraphsWithNA(1);
   await dashboardPage.verifyThereAreNoGraphsWithoutData(19);
-  await I.verifyCommand(`sudo docker exec ps_pmm_8.0  pmm-admin add mysql --username=msandbox --password=msandbox --host=127.0.0.1  --port=3307 --service-name=${newServiceName}`);
+  await I.verifyCommand(`pmm-admin add mysql --username=msandbox --password=msandbox --host=127.0.0.1  --port=3307 --service-name=${newServiceName}`);
   await I.wait(60);
   const url = I.buildUrlWithParams(dashboardPage.mySQLInstanceOverview.clearUrl, {
     from: 'now-1m',
