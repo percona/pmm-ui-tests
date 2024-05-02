@@ -6,6 +6,7 @@ module.exports = {
   // insert your locators and methods here
   // setting locators
   url: 'graph/d/pmm-home/home-dashboard?orgId=1&refresh=1m&from=now-5m&to=now',
+  cleanUrl: 'graph/d/pmm-home/home-dashboard',
   landingUrl: 'graph/d/pmm-home/home-dashboard?orgId=1&refresh=1m',
   genericOauthUrl: 'graph/login/generic_oauth',
   requestEnd: '/v1/Updates/Check',
@@ -26,7 +27,7 @@ module.exports = {
     noFailedChecksInPanel: '$db-check-panel-zero-checks',
     failedChecksPanelInfo: '[aria-label="Advisors check panel"] i',
     newsPanelTitleSelector: dashboardPage.graphsLocator('Percona News'),
-    pmmCustomMenu: locate('$sidemenu').find('a[aria-label="Dashboards"]'),
+    pmmCustomMenu: locate('[data-toggle="dropdown"]').withText('PMM'),
     servicesButton: locate('span').withText('Services'),
     newsPanelContentSelector:
       locate('.panel-content').inside('[aria-label="Percona News panel"]'),

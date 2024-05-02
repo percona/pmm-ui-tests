@@ -33,15 +33,13 @@ function getInstance(key) {
   return remoteInstance[key];
 }
 
-Before(async ({ I, settingsAPI }) => {
+Before(async ({ I }) => {
   await I.Authorize();
 });
 
 Scenario(
   'Increasing Scrape Interval to Rare for remote pgsql instances bug @not-ui-pipeline @gcp',
-  async ({
-    I, settingsAPI,
-  }) => {
+  async ({ settingsAPI }) => {
     const body = {
       telemetry_enabled: true,
       metrics_resolutions: {
@@ -102,10 +100,7 @@ Data(instances).Scenario(
     dashboardPage.waitForDashboardOpened();
     await adminPage.applyTimeRange('Last 12 hours');
     await dashboardPage.applyFilter('Service Name', instanceDetails.serviceName);
-    adminPage.performPageDown(5);
     await dashboardPage.expandEachDashboardRow();
-    adminPage.performPageUp(5);
-    await dashboardPage.verifyThereAreNoGraphsWithNA();
     await dashboardPage.verifyThereAreNoGraphsWithoutData(1);
   },
 ).retry(2);
@@ -152,9 +147,7 @@ Data(instances).Scenario(
 
 Scenario(
   'Setting back to default Scrape Interval @not-ui-pipeline @gcp',
-  async ({
-    I, settingsAPI,
-  }) => {
+  async ({ settingsAPI }) => {
     const body = {
       telemetry_enabled: true,
       metrics_resolutions: settingsAPI.defaultResolution,

@@ -23,7 +23,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T167 Open the QAN Dashboard and check that changing the time range updates the overview table, URL. @nightly @qan',
+  'PMM-T167 Open the QAN Dashboard and check that changing the time range updates the overview table, URL @qan',
   async ({
     I, adminPage, qanDetails, qanFilters, qanOverview,
   }) => {
@@ -43,7 +43,7 @@ Scenario(
 );
 
 Scenario.skip(
-  'PMM-T432 Open the QAN Dashboard and check that changing absolute time range updates the overview table, URL. @nightly @qan',
+  'PMM-T432 Open the QAN Dashboard and check that changing absolute time range updates the overview table, URL @qan',
   async ({
     I, adminPage, qanDetails, qanFilters, qanOverview,
   }) => {

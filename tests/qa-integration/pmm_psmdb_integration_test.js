@@ -153,14 +153,14 @@ Scenario(
   },
 ).retry(1);
 
-Scenario.skip(
+Scenario(
   'T2269 Verify Replicaset dashboard for MongoDB Instances contains ARBITER node @pmm-psmdb-arbiter-integration @not-ui-pipeline',
   async ({
     I, dashboardPage,
   }) => {
-    const arbiterLocator = '(//div[@ng-show=\'ctrl.panel.showLegendValues\'][contains(.,\'ARBITER\')])[1]';
+    const arbiterLocator = '(//div[@ng-show="ctrl.panel.showLegend"][contains(.,"ARBITER")])[1]';
 
-    I.amOnPage(`${dashboardPage.mongodbReplicaSetSummaryDashboard.url}&var-replset=rs1`);
+    I.amOnPage(`${dashboardPage.mongodbReplicaSetSummaryDashboard.url}&var-replset=rs`);
     dashboardPage.waitForDashboardOpened();
     await I.waitForElement({ xpath: arbiterLocator }, 60);
     const numberOfVisibleElements = await I.grabNumberOfVisibleElements(arbiterLocator);
@@ -174,7 +174,7 @@ Scenario.skip(
   async ({
     I, dashboardPage,
   }) => {
-    I.amOnPage(`${dashboardPage.mongodbReplicaSetSummaryDashboard.url}&var-replset=rs1`);
+    I.amOnPage(`${dashboardPage.mongodbReplicaSetSummaryDashboard.url}&var-replset=rs`);
     dashboardPage.waitForDashboardOpened();
 
     // Grab secs or year lag value from Replication Lag min field in UI

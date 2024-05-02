@@ -156,6 +156,9 @@ module.exports = () => actor({
         case 'node_name':
           queryParams['var-node_name'] = value;
           break;
+        case 'cluster':
+          queryParams['var-cluster'] = value;
+          break;
         case 'service_name':
           queryParams['var-service_name'] = value;
           break;
@@ -176,6 +179,9 @@ module.exports = () => actor({
           break;
         case 'page_size':
           queryParams.page_size = value;
+          break;
+        case 'refresh':
+          queryParams.refresh = value;
           break;
         default:
       }

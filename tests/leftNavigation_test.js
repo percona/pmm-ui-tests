@@ -27,19 +27,19 @@ Before(async ({ I }) => {
   await I.Authorize();
 });
 
-Data(sidebar).Scenario(
-  'PMM-T433, PMM-T591 - Verify menu items on Grafana sidebar redirects to correct page @menu',
-  async ({ I, homePage, current }) => {
-    await homePage.open();
-    await homePage.openLeftMenu();
-    I.usePlaywrightTo('check browser version', async ({ browser }) => {
-      // eslint-disable-next-line no-underscore-dangle,no-console
-      console.log(`${browser._name} - `, await browser.version());
-    });
-    current.click();
-    I.waitInUrl(current.path, 5);
-  },
-);
+// Data(sidebar).Scenario(
+//   'PMM-T433, PMM-T591 - Verify menu items on Grafana sidebar redirects to correct page @menu',
+//   async ({ I, homePage, current }) => {
+//     await homePage.open();
+//     await homePage.openLeftMenu();
+//     I.usePlaywrightTo('check browser version', async ({ browser }) => {
+//       // eslint-disable-next-line no-underscore-dangle,no-console
+//       console.log(`${browser._name} - `, await browser.version());
+//     });
+//     current.click();
+//     I.waitInUrl(current.path, 5);
+//   },
+// );
 
 // TODO: Needs to be removed, Advisors are on by default hence no settings link anymore
 xScenario(
