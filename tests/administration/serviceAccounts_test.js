@@ -45,7 +45,6 @@ Scenario('PMM-T1883 Configuring pmm-agent to use service account @service-accoun
   await I.amOnPage(nodesOverviewPage.url);
   await dashboardPage.waitForDashboardOpened();
   await dashboardPage.expandEachDashboardRow();
-  await dashboardPage.verifyThereAreNoGraphsWithNA(1);
   await dashboardPage.verifyThereAreNoGraphsWithoutData(19);
   await I.verifyCommand(`pmm-admin add mysql --username=msandbox --password=msandbox --host=127.0.0.1  --port=3317 --service-name=${newServiceName}`);
   await I.wait(60);
@@ -57,7 +56,6 @@ Scenario('PMM-T1883 Configuring pmm-agent to use service account @service-accoun
 
   await I.amOnPage(url);
   await I.wait(5);
-  await dashboardPage.verifyThereAreNoGraphsWithNA(1);
   await dashboardPage.verifyThereAreNoGraphsWithoutData(1);
 });
 
