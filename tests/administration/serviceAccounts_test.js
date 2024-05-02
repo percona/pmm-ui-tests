@@ -10,6 +10,7 @@ const newServiceName = 'mysql_service_service_token1';
 Scenario('PMM-T1883 Configuring pmm-agent to use service account @service-account', async ({
   I, codeceptjsConfig, serviceAccountsPage, dashboardPage, inventoryAPI, nodesOverviewPage, credentials,
 }) => {
+  await I.verifyCommand(`pmm-admin add mysql --username=msandbox --password=msandbox --host=127.0.0.1  --port=3317 --service-name=${newServiceName}`);
   await I.amOnPage(serviceAccountsPage.url);
   const pmmServerUrl = new URL(codeceptjsConfig.config.helpers.Playwright.url).hostname;
 
@@ -48,7 +49,7 @@ Scenario('PMM-T1883 Configuring pmm-agent to use service account @service-accoun
   await I.verifyCommand(`pmm-admin add mysql --username=msandbox --password=msandbox --host=127.0.0.1  --port=3317 --service-name=${newServiceName}`);
   await I.wait(60);
   const url = I.buildUrlWithParams(dashboardPage.mySQLInstanceOverview.clearUrl, {
-    from: 'now-1m',
+    from: 'now-30s',
     to: 'now',
     service_name: newServiceName,
   });
