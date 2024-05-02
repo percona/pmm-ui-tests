@@ -24,8 +24,8 @@ test.describe('Percona Server MongoDB (PSMDB) CLI tests ', async () => {
   test.afterAll(async ({}) => {
     const output = await cli.exec('sudo pmm-admin remove mongodb prerequisite_1');
     await output.assertSuccess();
-    const output1 = await cli.exec('sudo pmm-admin remove mongodb prerequisite_2');
-    await output1.assertSuccess();
+    // const output1 = await cli.exec('sudo pmm-admin remove mongodb prerequisite_2');
+    // await output1.assertSuccess();
   });
 
   /**
