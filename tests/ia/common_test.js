@@ -7,7 +7,7 @@ Before(async ({ I, rulesAPI }) => {
   await rulesAPI.removeAllAlertRules();
 });
 
-Scenario.skip(
+Scenario(
   'PMM-T643 Verify message about disabled IA @ia @alerting-fb',
   async ({
     I, pmmSettingsPage, codeceptjsConfig,

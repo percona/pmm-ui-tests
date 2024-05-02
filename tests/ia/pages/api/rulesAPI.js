@@ -86,12 +86,16 @@ module.exports = {
   async removeAllAlertRules() {
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
     const resp = await I.sendGetRequest('graph/api/prometheus/grafana/api/v1/rules', headers);
-    const allRules = resp.data.data.groups;
 
-    if (allRules.length > 0) {
-      for (const i in allRules) {
-        await this.removeAlertRule(allRules[i].file);
+    for (const group of resp.data.data.groups) {
+      for (const rule of group.rules) {
+        const deleteRule = { folder: group.file, group: { name: group.name }, ruleName: rule.name };
+
+        console.log(deleteRule);
+        await this.removeAlertRule(deleteRule);
       }
+
+      console.log(group);
     }
   },
 
