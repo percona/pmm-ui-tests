@@ -7,18 +7,18 @@ let mongoRplHosts: string[];
 let mongoShardHosts: string[];
 
 const replIpPort = '127.0.0.1:27027';
-const mongosIpPort = '127.0.0.1:27017';
+// const mongosIpPort = '127.0.0.1:27017';
 
 test.describe('Percona Server MongoDB (PSMDB) CLI tests ', async () => {
   test.beforeAll(async ({}) => {
     const output = await cli.exec(`sudo pmm-admin add mongodb --username=${MONGO_USERNAME} --password=${MONGO_PASSWORD} prerequisite_1 ${replIpPort}`);
     await output.assertSuccess();
-    const output1 = await cli.exec(`sudo pmm-admin add mongodb --username=${MONGO_USERNAME} --password=${MONGO_PASSWORD} prerequisite_2 ${mongosIpPort}`);
-    await output1.assertSuccess();
+    // const output1 = await cli.exec(`sudo pmm-admin add mongodb --username=${MONGO_USERNAME} --password=${MONGO_PASSWORD} prerequisite_2 ${mongosIpPort}`);
+    // await output1.assertSuccess();
     mongoRplHosts = (await cli.exec('sudo pmm-admin list | grep "MongoDB" | awk -F" " \'{print $3}\' | grep 27027'))
       .getStdOutLines();
-    mongoShardHosts = (await cli.exec('sudo pmm-admin list | grep "MongoDB" | awk -F" " \'{print $3}\'| grep 27017'))
-      .getStdOutLines();
+    // mongoShardHosts = (await cli.exec('sudo pmm-admin list | grep "MongoDB" | awk -F" " \'{print $3}\'| grep 27017'))
+    //  .getStdOutLines();
   });
 
   test.afterAll(async ({}) => {
@@ -250,6 +250,7 @@ test.describe('Percona Server MongoDB (PSMDB) CLI tests ', async () => {
    * This test uses pmm-framework setup with pure docker environment.
   */
   test('PMM-T1853 Collect Data about Sharded collections in MongoDB', async ({}) => {
+    test.skip(true, 'Skipping this test, because PSMDB Shard setup is not working on GH atm');
     let i = 1;
     for (const host of mongoShardHosts) {
       const ip = host.split(':')[0];

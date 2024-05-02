@@ -4,7 +4,7 @@ import * as cli from '@helpers/cli-helper';
 const MYSQL_USER = 'msandbox';
 const MYSQL_PASSWORD = 'msandbox';
 let mysqlDbHosts: string[];
-const ipPort = '127.0.0.1:3307';
+const ipPort = '127.0.0.1:3317';
 
 const grepServicesCmd = (serviceName: string) => {
   return `sudo pmm-admin list | grep "MySQL" | grep "${serviceName}" | awk -F" " '{print $2}'`;

@@ -3,7 +3,7 @@ import * as cli from '@helpers/cli-helper';
 
 const MYSQL_USER = 'msandbox';
 const MYSQL_PASSWORD = 'msandbox';
-const ipPort = '127.0.0.1:3308';
+const ipPort = '127.0.0.1:3318';
 
 test.describe('Percona Server MySql (PS) Configuration file test ', async () => {
   test.beforeAll(async ({}) => {
