@@ -10,7 +10,7 @@ class QueryAnalyticsData {
       queryRows: locate('//div[@role="row" and contains(@class, "tr-")]'),
       queryRowCells: (rowNumber) => locate(`[class="tr tr-${rowNumber}"]`).find('[role="cell"]'),
       queryRowValue: (rowNumber) => this.elements.queryRowCells(rowNumber).at(2),
-      queryRowIcon: (rowNumber) => this.elements.queryRowCells(rowNumber).at(3),
+      queryRowIcon: (rowNumber) => this.elements.queryRowCells(rowNumber).at(2).find('//*[local-name()="path"]'),
       totalItems: I.useDataQA('qan-total-items'),
       selectedRow: locate('.selected-overview-row'),
       queryValue: (rowNumber, columnNumber) => `div.tr-${rowNumber} > div:nth-child(${columnNumber + 2}) span > div > span`,
