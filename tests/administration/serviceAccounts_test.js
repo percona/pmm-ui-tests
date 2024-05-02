@@ -49,7 +49,7 @@ Scenario('PMM-T1883 Configuring pmm-agent to use service account @service-accoun
 
   await I.wait(60);
   const url = I.buildUrlWithParams(dashboardPage.mySQLInstanceOverview.clearUrl, {
-    from: 'now-30s',
+    from: 'now-2m',
     to: 'now',
     service_name: newServiceName,
   });
