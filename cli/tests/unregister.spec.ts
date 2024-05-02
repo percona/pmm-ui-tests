@@ -42,6 +42,7 @@ test.describe('PMM Client "unregister" CLI tests', async () => {
    * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/pmm-admin-unregister-tests.bats#L36
    */
   test('run pmm-admin unregister', async ({}) => {
+    test.skip(true, 'Skipping this test, bug https://perconadev.atlassian.net/browse/PMM-13098');
     const output = await cli.exec('sudo pmm-admin unregister');
     await output.exitCodeEquals(1);
     await output.outContainsMany([
@@ -72,6 +73,7 @@ test.describe('PMM Client "unregister" CLI tests', async () => {
    * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/pmm-admin-unregister-tests.bats#L58
    */
   test('run pmm-admin unregister with --force', async ({}) => {
+    test.skip(true, 'Skipping this test, bug https://perconadev.atlassian.net/browse/PMM-13098');
     const output = await cli.exec('sudo pmm-admin unregister --force');
     await output.assertSuccess();
     await output.outContainsMany([
