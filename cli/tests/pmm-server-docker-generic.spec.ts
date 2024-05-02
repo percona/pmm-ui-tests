@@ -55,7 +55,7 @@ test.describe('PMM Server Configuration impacts on client tests', async () => {
 
     await expect(async () => {
       const scrapeSizeLog = await cli.exec(`docker logs ${clientContainer} > test.log 2>&1 | grep 'promscrape.maxScrapeSize.*vm_agent' | tail -1`);
-      await scrapeSizeLog.outContains(`promscrape.maxScrapeSize=\\\\"${customScrapeSize}MiB\\\\"`);
+      await scrapeSizeLog.outContains(`promscrape.maxScrapeSize=\\"${customScrapeSize}MiB\\"`);
     }).toPass({ intervals: [2_000], timeout: 60_000 });
   });
 

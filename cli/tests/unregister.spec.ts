@@ -42,12 +42,11 @@ test.describe('PMM Client "unregister" CLI tests', async () => {
    * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/pmm-admin-unregister-tests.bats#L36
    */
   test('run pmm-admin unregister', async ({}) => {
-    test.skip(true, 'skipping 1');
-
     const output = await cli.exec('sudo pmm-admin unregister');
     await output.exitCodeEquals(1);
     await output.outContainsMany([
       'Node with ID',
+      'and name',
     ]);
   });
 

@@ -44,11 +44,6 @@ services:
   pmm-server-custom-scrape-interval:
     image: ${DOCKER_VERSION:-perconalab/pmm-server:3-dev-latest}
     container_name: pmm-server-custom-scrape-interval
-    healthcheck:
-      test: [ "CMD", "curl", "-f", "http://127.0.0.1/ping" ]
-      interval: 3s
-      timeout: 2s
-      retries: 20
     ports:
       - "280:80"
       - "2443:8443"
