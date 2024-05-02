@@ -27,11 +27,11 @@ After(async () => {
   await rulesAPI.removeAllAlertRules();
 });
 
-Scenario.skip(
+Scenario(
   'PMM-T1384 Verify empty alert rules list @ia @grafana-pr',
   async ({ I, alertRulesPage }) => {
     alertRulesPage.openAlertRulesTab();
-    I.waitForText(alertRulesPage.messages.noRulesFound, 10, alertRulesPage.elements.noRules);
+    I.waitForElement(alertRulesPage.elements.noRules, 10);
     I.waitForVisible(alertRulesPage.buttons.newAlertRule, 10);
     I.waitForVisible(alertRulesPage.elements.alertsLearnMoreLinks, 10);
     const link = await I.grabAttributeFrom(alertRulesPage.elements.alertsLearnMoreLinks, 'href');

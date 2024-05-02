@@ -9,7 +9,7 @@ module.exports = {
   templates,
   alertRuleFilters: ['Firing', 'Normal', 'Pending', 'Alert', 'Recording', 'List', 'Grouped', 'State'],
   elements: {
-    noRules: '#pageContent',
+    noRules: locate('//p[text()="You haven\'t created any alert rules yet"]'),
     columnHeaderLocator: (columnHeaderText) => locate('$header').withText(columnHeaderText),
     ruleNameValue: 'div[data-column=\'Name\']',
     ruleDetails: 'div[data-testid=\'expanded-content\']',
