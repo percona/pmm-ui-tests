@@ -156,7 +156,7 @@ Scenario(
   },
 );
 
-Scenario.skip(
+Scenario(
   'PMM-T1433 Verify user can delete Percona templated alert @ia @alerting-fb',
   async ({
     I, alertRulesPage, rulesAPI, iaCommon,
@@ -166,17 +166,20 @@ Scenario.skip(
 
     await rulesAPI.createAlertRule({ ruleName }, ruleFolder);
     alertRulesPage.openAlertRulesTab();
-    alertRulesPage.verifyRuleList(ruleFolder, ruleName);
+    alertRulesPage.verifyRuleList(ruleFolder, ruleName, 'default-alert-group');
     I.waitForElement(alertRulesPage.buttons.ruleCollapseButton);
     I.click(alertRulesPage.buttons.ruleCollapseButton);
+    I.click(alertRulesPage.buttons.moreOptions);
     I.click(alertRulesPage.buttons.deleteAlertRule);
-    I.waitForText(alertRulesPage.messages.confirmDelete, iaCommon.elements.modalDialog);
+    I.waitForVisible(iaCommon.elements.modalDialog);
+    I.see(alertRulesPage.messages.confirmDelete(ruleName), iaCommon.elements.modalDialog);
     I.click(alertRulesPage.buttons.cancelModal);
+    I.click(alertRulesPage.buttons.moreOptions);
     I.click(alertRulesPage.buttons.deleteAlertRule);
     I.click(alertRulesPage.buttons.confirmModal);
     I.verifyPopUpMessage(alertRulesPage.messages.successfullyDeleted);
-    I.dontSeeElement(alertRulesPage.buttons.groupCollapseButton(ruleFolder));
-    I.waitForText(alertRulesPage.messages.noRulesFound, alertRulesPage.elements.noRules);
+    I.dontSeeElement(alertRulesPage.buttons.groupCollapseButton(ruleFolder, 'default-alert-group'));
+    I.waitForVisible(alertRulesPage.elements.noRules);
   },
 );
 

@@ -3,7 +3,7 @@ const assert = require('assert');
 const { I } = inject();
 
 module.exports = {
-  url: '/graph/alerting/silences',
+  url: 'graph/alerting/silences',
   elements: {
   },
   buttons: {

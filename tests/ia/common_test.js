@@ -44,31 +44,31 @@ Scenario(
     };
 
     verifyTitle('Fired alerts');
-    await iaCommon.openAndVerifyTab(
-      iaCommon.tabNames.ruleTemplates,
-      ruleTemplatesPage.buttons.openAddTemplateModal,
-      ruleTemplatesPage.url,
-    );
+    await iaCommon.openAndVerifyTab(iaCommon.tabNames.ruleTemplates, ruleTemplatesPage.url);
     verifyTitle('Alert rule templates');
-    await iaCommon.openAndVerifyTab(iaCommon.tabNames.alertRules, alertRulesPage.buttons.newAlertRule, alertRulesPage.url);
+
+    await iaCommon.openAndVerifyTab(iaCommon.tabNames.alertRules, alertRulesPage.url);
     verifyTitle('Alert rules');
-    await iaCommon
-      .openAndVerifyTab(iaCommon.tabNames.contactPoints, contactPointsPage.buttons.newContactPoint, contactPointsPage.url);
+
+    await iaCommon.openAndVerifyTab(iaCommon.tabNames.contactPoints, contactPointsPage.url);
     verifyTitle('Contact points');
-    await iaCommon.openAndVerifyTab(iaCommon.tabNames.notificationPolicies, nPoliciesPage.buttons.newPolicy, nPoliciesPage.url);
+
+    await iaCommon.openAndVerifyTab(iaCommon.tabNames.notificationPolicies, nPoliciesPage.url);
     verifyTitle('Notification policies');
 
     // PMM-T620
     I.refreshPage();
     await verifyNotificationChannelsPage();
 
-    await iaCommon.openAndVerifyTab(iaCommon.tabNames.silences, silencesPage.buttons.newSilence, silencesPage.url);
+    await iaCommon.openAndVerifyTab(iaCommon.tabNames.silences, silencesPage.url);
     verifyTitle('Silences');
-    await iaCommon
-      .openAndVerifyTab(iaCommon.tabNames.alertGroups, alertGroupsPage.elements.groupByContainer, alertGroupsPage.url);
+
+    await iaCommon.openAndVerifyTab(iaCommon.tabNames.alertGroups, alertGroupsPage.url);
     verifyTitle('Alert groups');
-    await iaCommon.openAndVerifyTab(iaCommon.tabNames.admin, aiAdminPage.elements.configTextarea, aiAdminPage.url);
+
+    await iaCommon.openAndVerifyTab(iaCommon.tabNames.admin, aiAdminPage.url);
     verifyTitle('Admin');
-    await iaCommon.openAndVerifyTab(iaCommon.tabNames.firedAlerts, alertsPage.elements.noAlerts, alertsPage.url);
+
+    await iaCommon.openAndVerifyTab(iaCommon.tabNames.firedAlerts, alertsPage.url);
   },
 );

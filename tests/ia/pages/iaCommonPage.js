@@ -20,13 +20,14 @@ module.exports = {
     pagination: '$pagination',
     itemsShown: '$pagination-items-inverval',
     rowInTable: locate('$table-tbody').find('tr'),
-    tab: (tabName) => locate('[role="tablist"] a').withAttr({ 'aria-label': `Tab ${tabName}` }),
+    tab: (tabName) => locate('div').withAttr({ 'aria-label': `${tabName}` }),
     table: '$table-tbody',
     disabledIa: '$empty-block',
     settingsLink: '$settings-link',
     selectDropdownOption: (option) => `$${option}-select-option`,
     inputField: (id) => `input[id='${id}']`,
-    modalDialog: 'div[role=\'dialog\']',
+    modalDialog: locate('div[role=\'dialog\']'),
+
   },
   buttons: {
     firstPageButton: '$first-page-button',
@@ -37,6 +38,7 @@ module.exports = {
     lastPageButton: '$last-page-button',
     rowsPerPage: locate('$pagination').find('div[class*="-singleValue"]'),
     rowsPerPageOption: (count) => locate('[aria-label="Select option"] span').withText(count.toString()),
+    expandAlertingMenu: locate('button').withAttr({ 'aria-label': 'Expand section Alerting' }),
   },
   messages: {
     itemsShown: (leftNumber, rightNumber, totalItems) => `Showing ${leftNumber}-${rightNumber} of ${totalItems} items`,
@@ -46,18 +48,18 @@ module.exports = {
 
   /**
    * @param  {} tabName
-   * @param  {} tabElement  - element (locator) that exist in tab
    * @param  {} tabUrl - expected url in tab
    */
-  async openAndVerifyTab(tabName, tabElement, tabUrl) {
+  async openAndVerifyTab(tabName, tabUrl) {
+    const expandMenu = await I.grabNumberOfVisibleElements(this.buttons.expandAlertingMenu);
+
+    if (expandMenu) {
+      I.click(this.buttons.expandAlertingMenu);
+    }
+
     I.waitForVisible(this.elements.tab(tabName), 30);
     I.click(this.elements.tab(tabName));
-    I.waitForVisible(tabElement, 10);
     I.seeInCurrentUrl(tabUrl);
-
-    const className = await I.grabAttributeFrom(this.elements.tab(tabName), 'class');
-
-    assert.ok(className.endsWith('activeTabStyle'), `Tab ${tabName} should be active`);
   },
 
   getCreateEntitiesAndPageUrl(page) {
