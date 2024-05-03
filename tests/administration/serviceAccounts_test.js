@@ -17,14 +17,16 @@ Scenario('PMM-T1883 Configuring pmm-agent to use service account @service-accoun
   await serviceAccountsPage.createServiceAccount(serviceAccountUsername, 'Admin');
 
   const tokenValue = await serviceAccountsPage.createServiceAccountToken(`token_name_${Date.now()}`);
-  const oldNodeId = await I.verifyCommand('sudo docker exec ps_pmm_8.0 pmm-admin status | grep "Node ID" | awk -F " " \'{ print $4 }\'');
+  const psContainerName = await I.verifyCommand('docker ps | grep ps_pmm | awk \'{print $NF}\'');
+  console.log(`Container name is: ${psContainerName}`);
+  const oldNodeId = await I.verifyCommand(`sudo docker exec ${psContainerName} pmm-admin status | grep "Node ID" | awk -F " " '{ print $4 }'`);
 
   if (oldNodeId) {
     await inventoryAPI.deleteNode(oldNodeId, true);
   }
 
-  await I.verifyCommand(`sudo docker exec ps_pmm_8.0 pmm-agent setup --server-username=service_token --server-password=${tokenValue} --server-address=${pmmServerUrl} --server-insecure-tls --config-file=/usr/local/percona/pmm/config/pmm-agent.yaml`);
-  await I.verifyCommand(`sudo docker exec ps_pmm_8.0 pmm-admin add mysql --username=msandbox --password=msandbox --host=127.0.0.1  --port=3307 --service-name=${newServiceName}`);
+  await I.verifyCommand(`sudo docker exec ${psContainerName} pmm-agent setup --server-username=service_token --server-password=${tokenValue} --server-address=${pmmServerUrl} --server-insecure-tls --config-file=/usr/local/percona/pmm/config/pmm-agent.yaml`);
+  await I.verifyCommand(`sudo docker exec ${psContainerName} pmm-admin add mysql --username=msandbox --password=msandbox --host=127.0.0.1  --port=3307 --service-name=${newServiceName}`);
   await I.wait(60);
   const nodeName = (await inventoryAPI.getAllNodes()).generic.find((node) => node.node_name !== 'pmm-server').node_name;
   const nodesUrl = I.buildUrlWithParams(nodesOverviewPage.url, {
@@ -60,7 +62,8 @@ Scenario('PMM-T1884 Verify disabling service account @service-account', async ({
   await I.amOnPage(serviceAccountsPage.url);
   await serviceAccountsPage.disableServiceAccount(serviceAccountUsername);
   await I.wait(10);
-  const responseDisabled = await I.verifyCommand('sudo docker exec ps_pmm_8.0 pmm-admin list', '', 'fail');
+  const psContainerName = await I.verifyCommand('docker ps | grep ps_pmm | awk \'{print $NF}\'');
+  const responseDisabled = await I.verifyCommand(`sudo docker exec ${psContainerName} pmm-admin list`, '', 'fail');
   const expectedDisabledMessage = 'Unauthorized. Please check username and password.';
 
   I.assertEqual(
