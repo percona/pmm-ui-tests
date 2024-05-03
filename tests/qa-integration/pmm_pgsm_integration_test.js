@@ -396,7 +396,7 @@ Scenario(
     I.amOnPage(queryAnalyticsPage.url);
     queryAnalyticsPage.waitForLoaded();
     I.waitForVisible(queryAnalyticsPage.filters.buttons.showSelected, 30);
-    queryAnalyticsPage.filters.selectFilterInGroup('Application Name', applicationName);
+    queryAnalyticsPage.filters.selectFilterInGroup(applicationName, 'Application Name');
     queryAnalyticsPage.waitForLoaded();
 
     const count = await queryAnalyticsPage.data.getRowCount();
@@ -444,7 +444,7 @@ Scenario(
       I.amOnPage(queryAnalyticsPage.url);
       queryAnalyticsPage.waitForLoaded();
       I.waitForVisible(queryAnalyticsPage.filters.buttons.showSelected, 30);
-      queryAnalyticsPage.filters.selectFilterInGroup('Database', db);
+      queryAnalyticsPage.filters.selectFilterInGroup(db, 'Database');
       queryAnalyticsPage.waitForLoaded();
 
       queryAnalyticsPage.data.searchByValue(queryId);
@@ -490,7 +490,7 @@ Scenario(
     I.amOnPage(queryAnalyticsPage.url);
     queryAnalyticsPage.waitForLoaded();
     I.waitForVisible(queryAnalyticsPage.filters.buttons.showSelected, 30);
-    queryAnalyticsPage.filters.selectFilterInGroup('Database', db);
+    queryAnalyticsPage.filters.selectFilterInGroup(db, 'Database');
     queryAnalyticsPage.waitForLoaded();
 
     const count = await queryAnalyticsPage.data.getRowCount();
