@@ -24,6 +24,7 @@ module.exports = {
     editTemplate: '$alert-rule-template-edit-button',
     cancelAdding: '$alert-rule-template-cancel-button',
     confirmDelete: '$confirm-delete-modal-button',
+    deleteTemplate: locate(I.useDataQA('delete-template-button')),
     // editButtonBySource returns Edit template button locators for a given source
     editButtonBySource: (source) => `//tr[descendant::div[contains(text(), "${source}")]]//button[@data-testid="edit-template-button"]`,
     // deleteButtonBySource returns Delete template button locators for a given source

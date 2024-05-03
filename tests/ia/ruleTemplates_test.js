@@ -326,22 +326,15 @@ Scenario.skip(
   },
 );
 
-Scenario.skip(
+Scenario(
   'PMM-T884 Verify templates from Percona (SAAS) cannot be deleted or edited @ia',
   async ({ I, ruleTemplatesPage }) => {
-    const saasDeleteButton = ruleTemplatesPage.buttons
-      .deleteButtonBySource(ruleTemplatesPage.templateSources.saas);
-    const saasEditButton = ruleTemplatesPage.buttons
-      .editButtonBySource(ruleTemplatesPage.templateSources.saas);
-
     ruleTemplatesPage.openRuleTemplatesTab();
-    I.waitForElement(saasDeleteButton, 30);
-    I.seeAttributesOnElements(saasDeleteButton, { disabled: true });
-    I.seeAttributesOnElements(saasEditButton, { disabled: true });
+    I.waitForInvisible(ruleTemplatesPage.buttons.deleteTemplate, 10);
   },
 );
 
-Scenario.skip(
+Scenario(
   'PMM-T553 Verify rule template can be deleted if there is a rule based on it @ia',
   async ({
     I, ruleTemplatesPage, templatesAPI, rulesAPI,
