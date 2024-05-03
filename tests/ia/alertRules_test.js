@@ -121,10 +121,10 @@ Scenario(
     I.click(alertRulesPage.buttons.saveAndExit);
     I.verifyPopUpMessage(alertRulesPage.messages.successRuleCreate(newRule.ruleName));
     await alertRulesPage.verifyRuleList(newRule.folder, newRule.ruleName, newRule.group.name);
-    await I.verifyCommand('docker pause mysql_pmm_8.0');
+    await I.verifyCommand('docker pause ps_pmm_8.0');
     await alertRulesPage.verifyRuleState(newRule, 'Pending', 180);
     await alertRulesPage.verifyRuleState(newRule, 'Firing', 180);
-    await I.verifyCommand('docker unpause mysql_pmm_8.0');
+    await I.verifyCommand('docker unpause ps_pmm_8.0');
     await alertRulesPage.verifyRuleState(newRule, 'Normal', 240);
     await rulesAPI.removeAlertRule(newRule);
   },
