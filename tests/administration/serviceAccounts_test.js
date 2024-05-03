@@ -4,12 +4,13 @@ Before(async ({ I }) => {
   await I.Authorize();
 });
 
-const serviceAccountUsername = `service_account_${Date.now()}`;
+let serviceAccountUsername = '';
 const newServiceName = 'mysql_service_service_token1';
 
 Scenario('PMM-T1883 Configuring pmm-agent to use service account @service-account', async ({
   I, codeceptjsConfig, serviceAccountsPage, dashboardPage, inventoryAPI, nodesOverviewPage, credentials,
 }) => {
+  serviceAccountUsername = `service_account_${Date.now()}`;
   await I.amOnPage(serviceAccountsPage.url);
   const pmmServerUrl = new URL(codeceptjsConfig.config.helpers.Playwright.url).hostname;
 
