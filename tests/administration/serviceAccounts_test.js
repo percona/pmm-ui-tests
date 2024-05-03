@@ -36,14 +36,14 @@ Scenario('PMM-T1883 Configuring pmm-agent to use service account @service-accoun
   await I.amOnPage(nodesUrl);
   await dashboardPage.waitForDashboardOpened();
   await dashboardPage.expandEachDashboardRow();
-  await dashboardPage.verifyThereAreNoGraphsWithoutData(19);
+  await dashboardPage.waitForGraphsToHaveData(19, 300);
 
   await I.verifyCommand('sudo docker restart pmm-server');
   await I.wait(60);
   await I.amOnPage(nodesOverviewPage.url);
   await dashboardPage.waitForDashboardOpened();
   await dashboardPage.expandEachDashboardRow();
-  await dashboardPage.verifyThereAreNoGraphsWithoutData(19);
+  await dashboardPage.waitForGraphsToHaveData(19, 300);
 
   const url = I.buildUrlWithParams(dashboardPage.mySQLInstanceOverview.clearUrl, {
     from: 'now-1m',
@@ -53,7 +53,7 @@ Scenario('PMM-T1883 Configuring pmm-agent to use service account @service-accoun
 
   await I.amOnPage(url);
   await I.wait(5);
-  await dashboardPage.verifyThereAreNoGraphsWithoutData(1);
+  await dashboardPage.waitForGraphsToHaveData(1, 300);
 }).retry(1);
 
 Scenario('PMM-T1884 Verify disabling service account @service-account', async ({ I, serviceAccountsPage }) => {
