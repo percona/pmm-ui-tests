@@ -53,7 +53,7 @@ Scenario('PMM-T1883 Configuring pmm-agent to use service account @service-accoun
   await I.amOnPage(url);
   await I.wait(5);
   await dashboardPage.verifyThereAreNoGraphsWithoutData(1);
-});
+}).retry(1);
 
 Scenario('PMM-T1884 Verify disabling service account @service-account', async ({ I, serviceAccountsPage }) => {
   await I.amOnPage(serviceAccountsPage.url);
