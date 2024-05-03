@@ -18,7 +18,6 @@ Scenario('PMM-T1883 Configuring pmm-agent to use service account @service-accoun
 
   const tokenValue = await serviceAccountsPage.createServiceAccountToken(`token_name_${Date.now()}`);
   const psContainerName = await I.verifyCommand('docker ps | grep ps_pmm | awk \'{print $NF}\'');
-  console.log(`Container name is: ${psContainerName}`);
   const oldNodeId = await I.verifyCommand(`sudo docker exec ${psContainerName} pmm-admin status | grep "Node ID" | awk -F " " '{ print $4 }'`);
 
   if (oldNodeId) {
