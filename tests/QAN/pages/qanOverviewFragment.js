@@ -23,7 +23,7 @@ module.exports = {
     noDataIcon: 'div.ant-empty-image',
     querySelector: 'div.tr-1',
     removeMetricColumn: locate('div').withChild('.anticon-minus').withText('Remove column'),
-    spinner: locate('$table-loading').find('//i[contains(@class,"fa-spinner")]'),
+    spinner: locate('$Spinner'),
     tableRow: 'div.tr',
     tooltip: '.overview-column-tooltip',
     tooltipQPSValue: '$qps',
@@ -34,8 +34,7 @@ module.exports = {
     firstQueryInfoIcon: 'div.tr-1 > div.td:nth-child(2) div > svg',
     selectedRow: '.selected-overview-row',
     clipboardLink: locate(I.getPopUpLocator()).find('span'),
-    mainMetricDropdown: locate('$group-by'),
-    selectedMainMetric: locate('$group-by').find('//div[@class="ant-select-selection-selected-value"]'),
+    selectedMainMetric: locate('$group-by').find('//li[contains(@class, "ant-select-dropdown-menu-item-selected")]'),
     tooltipContent: locate('div.tippy-content'),
   },
   messages: {
@@ -62,10 +61,10 @@ module.exports = {
   mainMetricByName: (metricName) => locate('$group-by').find(`//div[@class="ant-select-selection-selected-value" and text()="${metricName}"]`),
   mainMetricFromDropdown: (metricName) => locate(`//li[@class="ant-select-dropdown-menu-item" and text()="${metricName}"]`),
 
-  waitForOverviewLoaded() {
-    I.waitForDetached(this.elements.spinner, 30);
-    I.waitForVisible(this.root, 60);
-    I.waitForVisible(this.elements.querySelector, 60);
+  async waitForOverviewLoaded() {
+    await I.waitForDetached(this.elements.spinner, 30);
+    await I.waitForVisible(this.root, 60);
+    await I.waitForVisible(this.elements.querySelector, 60);
   },
 
   // Wait For Results count to be changed
@@ -89,55 +88,42 @@ module.exports = {
     return resultsCount[2];
   },
 
-  changeMetric(columnName, metricName) {
+  async changeMetric(columnName, metricName) {
     const newMetric = this.getColumnLocator(metricName);
     const metricInDropdown = this.getMetricLocatorInDropdown(metricName);
     const oldMetric = this.getColumnLocator(columnName);
 
-    I.waitForElement(oldMetric, 30);
-    I.waitForVisible(qanFilters.elements.filterName, 30);
+    await I.waitForElement(oldMetric, 30);
+    await I.waitForVisible(qanFilters.elements.filterName, 30);
 
     // Hardcoded wait because of random failings
-    I.wait(3);
-    I.click(oldMetric);
-    I.waitForElement(this.fields.columnSearchField, 10);
-    I.click(metricInDropdown);
-    I.waitForElement(newMetric, 30);
-    I.seeElement(newMetric);
-    I.dontSeeElement(oldMetric);
+    await I.wait(3);
+    await I.click(oldMetric);
+    await I.waitForElement(this.fields.columnSearchField, 10);
+    await I.click(metricInDropdown);
+    await I.waitForElement(newMetric, 30);
+    await I.seeElement(newMetric);
+    await I.dontSeeElement(oldMetric);
   },
 
-  async changeMainMetric(newMainMetric) {
-    const oldMainMetric = await I.grabTextFrom(this.elements.selectedMainMetric);
-
-    I.click(this.elements.mainMetricDropdown);
-    I.click(this.mainMetricFromDropdown(newMainMetric));
-    I.dontSeeElement(this.mainMetricByName(oldMainMetric));
-    I.waitForElement(this.mainMetricByName(newMainMetric), 10);
-  },
-
-  async verifyMainMetric(mainMetric) {
-    I.seeElement(this.mainMetricByName(mainMetric));
-  },
-
-  removeMetricFromOverview(metricName) {
+  async removeMetricFromOverview(metricName) {
     const column = this.getColumnLocator(metricName);
 
-    I.click(column);
-    I.waitForElement(this.fields.columnSearchField, 10);
-    I.waitForElement(this.elements.removeMetricColumn, 30);
-    I.forceClick(this.elements.removeMetricColumn);
-    this.waitForOverviewLoaded();
-    I.waitForInvisible(this.elements.spinner, 30);
-    I.dontSeeElement(this.getQANMetricHeader(metricName));
+    await I.click(column);
+    await I.waitForElement(this.fields.columnSearchField, 10);
+    await I.waitForElement(this.elements.removeMetricColumn, 30);
+    await I.forceClick(this.elements.removeMetricColumn);
+    await this.waitForOverviewLoaded();
+    await I.waitForInvisible(this.elements.spinner, 30);
+    await I.dontSeeElement(this.getQANMetricHeader(metricName));
   },
 
-  addSpecificColumn(columnName) {
-    I.click(this.buttons.addColumn);
+  async addSpecificColumn(columnName) {
+    await I.click(this.buttons.addColumn);
     const column = `//span[contains(text(), '${columnName}')]`;
 
-    I.waitForVisible(column, 30);
-    I.click(column);
+    await I.waitForVisible(column, 30);
+    await I.click(column);
   },
 
   verifyColumnPresent(columnName) {
@@ -153,6 +139,11 @@ module.exports = {
     I.scrollTo(tooltipSelector);
     I.moveCursorTo(tooltipSelector);
     I.waitForElement(this.elements.metricTooltip, 30);
+  },
+
+  async hideTooltip() {
+    await I.moveCursorTo(this.elements.countOfItems);
+    await I.waitForInvisible(this.elements.metricTooltip, 5);
   },
 
   changeSorting(columnNumber) {
@@ -212,13 +203,13 @@ module.exports = {
     I.seeTextEquals(groupBy, this.elements.groupBy);
   },
 
-  selectRow(rowNumber) {
+  async selectRow(rowNumber) {
     const rowSelector = this.getRowLocator(rowNumber);
 
-    I.waitForElement(rowSelector, 60);
-    I.forceClick(rowSelector);
-    this.waitForOverviewLoaded();
-    I.waitForVisible(this.elements.selectedRow, 10);
+    await I.waitForElement(rowSelector, 60);
+    await I.forceClick(rowSelector);
+    await this.waitForOverviewLoaded();
+    await I.waitForVisible(this.elements.selectedRow, 10);
   },
 
   selectRowByText(text) {
@@ -241,8 +232,14 @@ module.exports = {
     return await I.grabTextFrom(locate(rowSelector).find('./div[@role="cell"][2]'));
   },
 
-  selectTotalRow() {
-    this.selectRow(0);
+  async selectTotalRow() {
+    await this.selectRow(0);
+  },
+
+  async getRowCount(rowCount) {
+    await I.waitForVisible(this.elements.tableRow, 30);
+
+    return await I.grabNumberOfVisibleElements(this.elements.tableRow);
   },
 
   async verifyRowCount(rowCount) {
@@ -259,9 +256,9 @@ module.exports = {
     assert.ok(tooltip.includes(value), `The tooltip value is ${tooltip} while expected value was ${value}`);
   },
 
-  mouseOverFirstInfoIcon() {
-    I.moveCursorTo(this.elements.firstQueryInfoIcon);
-    I.waitForVisible(this.elements.tooltipQueryValue, 30);
+  async mouseOverFirstInfoIcon() {
+    await I.moveCursorTo(this.elements.firstQueryInfoIcon);
+    await I.waitForVisible(this.elements.tooltipQueryValue, 30);
   },
 
   async searchByValue(value, refresh = false) {
