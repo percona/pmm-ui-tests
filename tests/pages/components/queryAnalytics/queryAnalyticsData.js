@@ -82,7 +82,7 @@ class QueryAnalyticsData {
     assert.ok(count === expectedRowCount, `Row count should be ${expectedRowCount} instead of ${count}`);
   }
 
-  async getRowCount(rowCount) {
+  async getRowCount() {
     I.waitForVisible(this.elements.queryRows, 30);
 
     return await I.grabNumberOfVisibleElements(this.elements.queryRows);

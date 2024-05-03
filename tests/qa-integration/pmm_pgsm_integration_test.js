@@ -194,28 +194,26 @@ Scenario(
 Data(filters).Scenario(
   'PMM-T1261 - Verify the "Command type" filter for Postgres @not-ui-pipeline @pgsm-pmm-integration',
   async ({
-    I, qanPage, qanOverview, qanFilters, current,
+    I, queryAnalyticsPage, current,
   }) => {
     const serviceName = pgsm_service_name;
     const {
       filterSection, filterToApply,
     } = current;
 
-    I.amOnPage(qanPage.url);
-    qanOverview.waitForOverviewLoaded();
-    await qanFilters.applyFilter(serviceName);
-    await qanFilters.applyFilter(database);
-    I.waitForVisible(qanFilters.buttons.showSelected, 30);
+    I.amOnPage(queryAnalyticsPage.url);
+    queryAnalyticsPage.waitForLoaded();
+    queryAnalyticsPage.filters.selectContainFilter(serviceName);
+    queryAnalyticsPage.filters.selectContainFilter(database);
+    I.waitForVisible(queryAnalyticsPage.filters.buttons.showSelected, 30);
 
-    await qanFilters.applyFilterInSection(filterSection, filterToApply);
+    queryAnalyticsPage.filters.selectFilterInGroup(filterToApply, filterSection);
   },
 );
 
 Scenario(
   'PMM-T1262 - Verify Postgresql Dashboard Instance Summary has Data @not-ui-pipeline @pgsm-pmm-integration',
-  async ({
-    I, dashboardPage, adminPage,
-  }) => {
+  async ({ I, dashboardPage }) => {
     const url = I.buildUrlWithParams(
       dashboardPage.postgresqlInstanceSummaryDashboard.cleanUrl, {
         service_name: pgsm_service_name,
@@ -233,9 +231,7 @@ Scenario(
 
 Scenario(
   'Verify Postgresql Dashboard Instance Summary has Data with socket based service and Agent log @not-ui-pipeline @pgsm-pmm-integration',
-  async ({
-    I, dashboardPage, adminPage,
-  }) => {
+  async ({ I, dashboardPage }) => {
     const url = I.buildUrlWithParams(
       dashboardPage.postgresqlInstanceSummaryDashboard.cleanUrl, {
         service_name: pgsm_service_name_socket,
@@ -384,9 +380,7 @@ Scenario(
 
 Scenario(
   'PMM-T1063 - Verify Application Name with pg_stat_monitor @pgsm-pmm-integration @not-ui-pipeline',
-  async ({
-    I, qanOverview, qanFilters, qanPage,
-  }) => {
+  async ({ I, queryAnalyticsPage }) => {
     await I.verifyCommand('docker exec pmm-server clickhouse-client --database pmm --query "TRUNCATE TABLE metrics"');
 
     await I.pgExecuteQueryOnDemand('SELECT pg_stat_monitor_reset();', connection);
@@ -398,13 +392,14 @@ Scenario(
     await I.pgExecuteQueryOnDemand(sql, connection);
     I.wait(120);
     await I.verifyCommand(`docker exec ${container_name} pmm-admin list | grep "postgresql_pgstatmonitor_agent" | grep "Running"`);
-    I.amOnPage(qanPage.url);
-    qanOverview.waitForOverviewLoaded();
-    I.waitForVisible(qanFilters.buttons.showSelected, 30);
 
-    await qanFilters.applyFilterInSection('Application Name', applicationName);
-    qanOverview.waitForOverviewLoaded();
-    const count = await qanOverview.getCountOfItems();
+    I.amOnPage(queryAnalyticsPage.url);
+    queryAnalyticsPage.waitForLoaded();
+    I.waitForVisible(queryAnalyticsPage.filters.buttons.showSelected, 30);
+    queryAnalyticsPage.filters.selectFilterInGroup('Application Name', applicationName);
+    queryAnalyticsPage.waitForLoaded();
+
+    const count = await queryAnalyticsPage.data.getRowCount();
 
     assert.ok(parseInt(count, 10) === 5, `Expected only 5 Queries to show up for ${applicationName} based on the load script but found ${count}`);
   },
@@ -412,9 +407,7 @@ Scenario(
 
 Scenario(
   'PMM-T1063 - Verify Top Query and Top QueryID with pg_stat_monitor @pgsm-pmm-integration @not-ui-pipeline',
-  async ({
-    I, qanOverview, qanFilters, qanPage, qanDetails,
-  }) => {
+  async ({ I, queryAnalyticsPage }) => {
     let pgsm_output;
     const db = `${database}_topquery`;
     const queryWithTopId = '(select $1 + $2)';
@@ -448,17 +441,18 @@ Scenario(
       const pgsmTopQuery = pgsm_output.rows[i].top_query;
       const pgsmQuery = pgsm_output.rows[i].query;
 
-      I.amOnPage(qanPage.url);
-      qanOverview.waitForOverviewLoaded();
-      I.waitForVisible(qanFilters.buttons.showSelected, 30);
+      I.amOnPage(queryAnalyticsPage.url);
+      queryAnalyticsPage.waitForLoaded();
+      I.waitForVisible(queryAnalyticsPage.filters.buttons.showSelected, 30);
+      queryAnalyticsPage.filters.selectFilterInGroup('Database', db);
+      queryAnalyticsPage.waitForLoaded();
 
-      await qanFilters.applyFilterInSection('Database', db);
-      qanOverview.waitForOverviewLoaded();
-      await qanOverview.searchByValue(queryId);
-      qanOverview.waitForOverviewLoaded();
-      qanOverview.selectRow(1);
-      I.waitForElement(qanDetails.elements.topQuery);
-      I.click(qanDetails.elements.topQuery);
+      queryAnalyticsPage.data.searchByValue(queryId);
+      queryAnalyticsPage.waitForLoaded();
+      queryAnalyticsPage.data.selectRow(1);
+
+      I.waitForElement(queryAnalyticsPage.details.elements.topQuery);
+
       // qanOverview.waitForOverviewLoaded();
       // const queryid = await I.grabValueFrom(qanOverview.fields.searchBy);
       //
@@ -472,9 +466,7 @@ Scenario(
 
 Scenario(
   'PMM-T1071 - Verify Histogram is displayed for each query with pg_stat_monitor @pgsm-pmm-integration @not-ui-pipeline',
-  async ({
-    I, qanOverview, qanFilters, qanPage, qanDetails,
-  }) => {
+  async ({ I, queryAnalyticsPage }) => {
     let countHistogram = 0;
     const db = `${database}_histogram`;
 
@@ -494,19 +486,20 @@ Scenario(
     await I.pgExecuteQueryOnDemand(sql, connection);
     connection.database = 'postgres';
     I.wait(120);
-    I.amOnPage(qanPage.url);
-    qanOverview.waitForOverviewLoaded();
-    I.waitForVisible(qanFilters.buttons.showSelected, 30);
 
-    await qanFilters.applyFilterInSection('Database', db);
-    qanOverview.waitForOverviewLoaded();
-    const count = await qanOverview.getCountOfItems();
+    I.amOnPage(queryAnalyticsPage.url);
+    queryAnalyticsPage.waitForLoaded();
+    I.waitForVisible(queryAnalyticsPage.filters.buttons.showSelected, 30);
+    queryAnalyticsPage.filters.selectFilterInGroup('Database', db);
+    queryAnalyticsPage.waitForLoaded();
 
-    // Skipping the first one because thats the top query generated by select pg_sleep()
+    const count = await queryAnalyticsPage.data.getRowCount();
+
+    // Skipping the first one because that's the top query generated by select pg_sleep()
     for (let i = 2; i <= count; i++) {
-      qanOverview.selectRow(i);
-      I.waitForElement(qanDetails.buttons.close, 30);
-      const count = await I.grabNumberOfVisibleElements(qanDetails.elements.histogramContainer);
+      queryAnalyticsPage.data.selectRow(i);
+      I.waitForElement(queryAnalyticsPage.details.buttons.close, 30);
+      const count = await I.grabNumberOfVisibleElements(queryAnalyticsPage.details.elements.histogramContainer);
 
       countHistogram += count;
     }
