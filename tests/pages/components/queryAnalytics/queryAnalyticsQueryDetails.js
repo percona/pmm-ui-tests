@@ -11,6 +11,8 @@ class QueryAnalyticsQueryDetails {
       noClassic: locate('pre').withText('No classic explain found'),
       noJSON: locate('pre').withText('No JSON explain found'),
       explainError: locate('$json-explain-error'),
+      histogramContainer: locate('$histogram-collapse-container'),
+      topQuery: locate('$top-query').find('div'),
     };
     this.buttons = {
       tab: (tabName) => locate('button').withText(tabName),
