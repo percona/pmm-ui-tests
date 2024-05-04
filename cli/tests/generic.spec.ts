@@ -3,6 +3,11 @@ import * as cli from '@helpers/cli-helper';
 import { readZipFile } from '@helpers/zip-helper';
 
 test.describe('PMM Client "Generic" CLI tests', async () => {
+  test.beforeAll(async ({}) => {
+    const result1 = await cli.exec('sudo pmm-admin status"');
+    await result1.outContains('pmm-admin', 'pmm-client is not installed/connected locally, please run pmm3-client-setup script');
+  });
+
   let PMM_VERSION: string;
   if (/3-dev-latest|https:/.test(`${process.env.CLIENT_VERSION}`)) {
     // TODO: refactor to use docker hub API to remove file-update dependency
@@ -22,7 +27,6 @@ test.describe('PMM Client "Generic" CLI tests', async () => {
    * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/generic-tests.bats#L18
    * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/generic-tests.bats#L28
    */
-  // eslint-disable-next-line playwright/expect-expect
   test('run pmm-admin without any arguments @client-generic', async ({}) => {
     const sudo = (parseInt((await cli.exec('id -u')).stdout, 10) === 0) ? '' : 'sudo ';
     const output = await cli.exec(`${sudo}pmm-admin`);

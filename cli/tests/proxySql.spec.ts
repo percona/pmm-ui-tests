@@ -7,6 +7,10 @@ const ipPort = '127.0.0.1:6033';
 
 test.describe('PMM Client CLI tests for ProxySQL', async () => {
   test.beforeAll(async ({}) => {
+    const result = await cli.exec('docker ps | pxc_proxysql_pmm | awk \'{print $NF}\'');
+    await result.outContains('pxc_proxysql_pmm', 'PROXYSQL docker container should exist. please run pmm-framework with --database pxc');
+    const result1 = await cli.exec('sudo pmm-admin status"');
+    await result1.outContains('pmm-admin', 'pmm-client is not installed/connected locally, please run pmm3-client-setup script');
     const output = await cli.exec(`sudo pmm-admin add proxysql --username=${PXC_USER} --password=${PXC_PASSWORD} prerequisite ${ipPort}`);
     await output.assertSuccess();
   });

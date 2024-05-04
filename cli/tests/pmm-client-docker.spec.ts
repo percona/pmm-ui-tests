@@ -2,6 +2,10 @@ import { test } from '@playwright/test';
 import * as cli from '@helpers/cli-helper';
 
 test.describe('PMM Client Docker CLI tests', async () => {
+  test.beforeAll(async ({}) => {
+    const result = await cli.exec('docker ps | grep pmm-client-1 | awk \'{print $NF}\'');
+    await result.outContains('pmm-client-1', 'Docker container pmm-client-1 should exist. please run pmm-framework with --database dockerclients');
+  });
   /**
    * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/pmm-client-docker-tests.bats#L6
    */
@@ -12,7 +16,7 @@ test.describe('PMM Client Docker CLI tests', async () => {
       'Service type',
       'ps-8.0',
       'mongodb-7.0',
-      'postgres-16',
+      'pdpgsql-1',
       'Running',
     ]);
   });
@@ -40,7 +44,7 @@ test.describe('PMM Client Docker CLI tests', async () => {
    * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/pmm-client-docker-tests.bats#L32
    */
   test('run pmm-admin add mongodb with default options', async ({}) => {
-    const output = await cli.exec('docker exec pmm-client-1 pmm-admin add mongodb --username=pmm --password=pmm-pass --service-name=mongodb-7.0_2  --host=mongodb-1 --port=27017 --server-url=https://admin:admin@pmm-server-1:8443 --server-insecure-tls=true');
+    const output = await cli.exec('docker exec pmm-client-1 pmm-admin add mongodb --username=pmm --password=pmm-pass --service-name=mongodb-7.0_2  --host=psmdb-1 --port=27017 --server-url=https://admin:admin@pmm-server-1:8443 --server-insecure-tls=true');
     await output.assertSuccess();
     await output.outContains('MongoDB Service added.');
     await output.outContains('mongodb-7.0_2');
@@ -59,7 +63,7 @@ test.describe('PMM Client Docker CLI tests', async () => {
    * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/pmm-client-docker-tests.bats#L47
    */
   test('run pmm-admin add postgresql with default options', async ({}) => {
-    const output = await cli.exec('docker exec pmm-client-1 pmm-admin add postgresql --username=pmm --password=pmm-pass --service-name=postgres-16_2  --host=postgres-1 --port=5432 --server-url=https://admin:admin@pmm-server-1:8443 --server-insecure-tls=true');
+    const output = await cli.exec('docker exec pmm-client-1 pmm-admin add postgresql --username=pmm --password=pmm-pass --service-name=postgres-16_2  --host=pdpgsql-1 --port=5432 --server-url=https://admin:admin@pmm-server-1:8443 --server-insecure-tls=true');
     await output.assertSuccess();
     await output.outContains('PostgreSQL Service added.');
     await output.outContains('postgres-16_2');
