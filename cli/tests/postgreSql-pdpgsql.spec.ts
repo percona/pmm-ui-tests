@@ -7,9 +7,9 @@ const ipPort = '127.0.0.1:5447';
 
 test.describe('Percona Distribution for PostgreSQL CLI tests ', async () => {
   test.beforeAll(async ({}) => {
-    const result = await cli.exec('docker ps | pdpgsql_pgsm_pmm | awk \'{print $NF}\'');
+    const result = await cli.exec('docker ps | grep pdpgsql_pgsm_pmm | awk \'{print $NF}\'');
     await result.outContains('pdpgsql_pgsm_pmm', 'PDPGSQL docker container should exist. please run pmm-framework with --database pdpgsql');
-    const result1 = await cli.exec('sudo pmm-admin status"');
+    const result1 = await cli.exec('sudo pmm-admin status');
     await result1.outContains('Running', 'pmm-client is not installed/connected locally, please run pmm3-client-setup script');
     const output = await cli.exec(`sudo pmm-admin add postgresql --query-source=pgstatmonitor --username=${PGSQL_USER} --password=${PGSQL_PASSWORD} prerequisite ${ipPort}`);
     await output.assertSuccess();
@@ -244,7 +244,7 @@ test.describe('Percona Distribution for PostgreSQL CLI tests ', async () => {
       const agentUuid = agentId.split('/')[2];
       const psAuxOutput = await cli.exec(`sudo ps aux |awk '/postgres_exporter/ && /${agentUuid}/'`);
       await psAuxOutput.assertSuccess();
-      await psAuxOutput.outNotContains('--auto-discover-databases ');
+      await psAuxOutput.outNotContains('--auto-discover-databases');
       await psAuxOutput.outContains('postgres_exporter --collect');
     }
   });

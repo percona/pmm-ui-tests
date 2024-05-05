@@ -14,7 +14,7 @@ test.describe('PMM Client CLI tests for Percona Server Database', async () => {
   test.beforeAll(async ({}) => {
     const result = await cli.exec('docker ps | grep ps_pmm | awk \'{print $NF}\'');
     await result.outContains('ps_pmm', 'Percona MySQL docker container should exist. please run pmm-framework with --database ps');
-    const result1 = await cli.exec('sudo pmm-admin status"');
+    const result1 = await cli.exec('sudo pmm-admin status');
     await result1.outContains('Running', 'pmm-client is not installed/connected locally, please run pmm3-client-setup script');
     const output = await cli.exec(`sudo pmm-admin add mysql --username=${MYSQL_USER} --password=${MYSQL_PASSWORD} prerequisite ${ipPort}`);
     await output.assertSuccess();

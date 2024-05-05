@@ -9,7 +9,7 @@ test.describe('Percona Server MySql (PS) Configuration file test ', async () => 
   test.beforeAll(async ({}) => {
     const result = await cli.exec('docker ps | grep mysql_pmm | awk \'{print $NF}\'');
     await result.outContains('mysql_pmm', 'MYSQL docker container should exist. please run pmm-framework with --database mysql');
-    const result1 = await cli.exec('sudo pmm-admin status"');
+    const result1 = await cli.exec('sudo pmm-admin status');
     await result1.outContains('Running', 'pmm-client is not installed/connected locally, please run pmm3-client-setup script');
     const output = await cli.exec(`sudo pmm-admin add mysql --username=${MYSQL_USER} --password=${MYSQL_PASSWORD} prerequisite ${ipPort}`);
     await output.assertSuccess();

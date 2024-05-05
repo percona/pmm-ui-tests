@@ -1,15 +1,18 @@
 import { expect, test } from '@playwright/test';
 import * as cli from '@helpers/cli-helper';
 import { readZipFile } from '@helpers/zip-helper';
+const PGSQL_USER = 'postgres';
+const PGSQL_PASSWORD = 'pass+this';
+const ipPort = '127.0.0.1:5447';
 
 test.describe('PMM Client "Generic" CLI tests', async () => {
   test.beforeAll(async ({}) => {
-    const result1 = await cli.exec('sudo pmm-admin status"');
+    const result1 = await cli.exec('sudo pmm-admin status');
     await result1.outContains('pmm-admin', 'pmm-client is not installed/connected locally, please run pmm3-client-setup script');
   });
 
   let PMM_VERSION: string;
-  if (/3-dev-latest|https:/.test(`${process.env.CLIENT_VERSION}`)) {
+  if (/3-dev-latest|pmm3-rc|3.0|https:/.test(`${process.env.CLIENT_VERSION}`)) {
     // TODO: refactor to use docker hub API to remove file-update dependency
     // See: https://github.com/Percona-QA/package-testing/blob/master/playbooks/pmm2-client_integration_upgrade_custom_path.yml#L41
     PMM_VERSION = cli.execute('curl -s https://raw.githubusercontent.com/Percona-Lab/pmm-submodules/v3/VERSION')
@@ -443,11 +446,10 @@ test.describe('PMM Client "Generic" CLI tests', async () => {
    * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/generic-tests.bats#L375
    */
   test('Check that pmm-managed database encoding is UTF8', async ({}) => {
-    test.skip(true, 'skipping 1');
-
+    const [ipAddress, port] = ipPort.split(':');
     const containerName = (await cli.exec('docker ps -f name=-server --format "{{ .Names }}"')).stdout;
     const output = await cli.exec(
-      `docker exec ${containerName} su -l postgres -c "psql pmm-managed -c 'SHOW SERVER_ENCODING'" | grep UTF8`,
+      `export PGPASSWORD=${PGSQL_PASSWORD}; psql -h ${ipAddress} -p ${port} -U ${PGSQL_USER} -d template1 -c 'SHOW SERVER_ENCODING' | grep UTF8`,
     );
     await output.assertSuccess();
   });
@@ -456,11 +458,10 @@ test.describe('PMM Client "Generic" CLI tests', async () => {
    * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/generic-tests.bats#L379
    */
   test('Check that template1 database encoding is UTF8', async ({}) => {
-    test.skip(true, 'skipping 2');
-
+    const [ipAddress, port] = ipPort.split(':');
     const containerName = (await cli.exec('docker ps -f name=-server --format "{{ .Names }}"')).stdout;
     const output = await cli.exec(
-      `docker exec ${containerName} su -l postgres -c "psql template1 -c 'SHOW SERVER_ENCODING'" | grep UTF8`,
+      `export PGPASSWORD=${PGSQL_PASSWORD}; psql -h ${ipAddress} -p ${port} -U ${PGSQL_USER} -d template1 -c 'SHOW SERVER_ENCODING' | grep UTF8`,
     );
     await output.assertSuccess();
   });
