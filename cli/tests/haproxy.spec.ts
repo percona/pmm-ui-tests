@@ -6,7 +6,7 @@ test.describe('HAProxy service CLI tests ', async () => {
     const result = await cli.exec('docker ps | grep haproxy_pmm | awk \'{print $NF}\'');
     await result.outContains('haproxy_pmm', 'HAPROXY docker container should exist. please run pmm-framework with --database haproxy');
     const result1 = await cli.exec('sudo pmm-admin status"');
-    await result1.outContains('pmm-admin', 'pmm-client is not installed/connected locally, please run pmm3-client-setup script');
+    await result1.outContains('Running', 'pmm-client is not installed/connected locally, please run pmm3-client-setup script');
   });
   /**
    * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/haproxy-tests.bats#L5
