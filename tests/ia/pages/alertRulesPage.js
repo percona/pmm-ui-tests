@@ -36,7 +36,7 @@ module.exports = {
     editRuleOnView: '//span[text()="Edit"]',
     moreOptions: locate('span').withText('More').inside('button'),
     deleteAlertRule: locate('span').withText('Delete').inside('button'),
-    groupCollapseButton: (folderText, groupText) => `//button[@data-testid='group-collapse-toggle']//following-sibling::div[contains(., '${folderText}') and contains(., '${groupText}')]`,
+    groupCollapseButton: (folderText, groupText) => locate(`//div[contains(., '${folderText}') and contains(., '${groupText}')]//preceding-sibling::button[@data-testid="group-collapse-toggle"]`),
     ruleCollapseButton: 'button[aria-label=\'Expand row\']',
     goToFolderButton: (folderID, folderText) => locate('[aria-label="go to folder"]').withAttr({ href: `/graph/dashboards/f/${folderID}/${folderText}` }),
     managePermissionsButton: (folderID, folderText) => locate('[aria-label="manage permissions"]').withAttr({ href: `/graph/dashboards/f/${folderID}/${folderText}/permissions` }),

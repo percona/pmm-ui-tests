@@ -91,11 +91,8 @@ module.exports = {
       for (const rule of group.rules) {
         const deleteRule = { folder: group.file, group: { name: group.name }, ruleName: rule.name };
 
-        console.log(deleteRule);
         await this.removeAlertRule(deleteRule);
       }
-
-      console.log(group);
     }
   },
 
