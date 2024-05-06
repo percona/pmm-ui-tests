@@ -1225,7 +1225,7 @@ module.exports = {
     openFiltersDropdownLocator: (filterName) => locate(`#var-${formatElementId(filterName)}`),
     filterDropdownOptionsLocator: (filterName) => locate(I.useDataQA('data-testid variable-option')).withText(filterName),
     refreshIntervalPicker: I.useDataQA('data-testid RefreshPicker interval button'),
-    refreshIntervalOption: (interval) => locate(`//*[@role="menuitemradio" and text()="${interval}"]`),
+    refreshIntervalOption: (interval) => locate(`//*[@role="menuitemradio"]//span[text()="${interval}"]`),
     clickablePanel: (name) => locate('$header-container').withText(name).find('a'),
     dashboardTitle: (name) => locate('span').withText(name),
     metricPanelNa: (name) => `//section[@aria-label="${name}"]//span[text()="N/A"]`,
@@ -1286,6 +1286,27 @@ module.exports = {
   async waitForAllGraphsToHaveData(timeout = 60) {
     await I.waitForInvisible(this.fields.notAvailableMetrics, timeout);
     await I.waitForInvisible(this.fields.notAvailableDataPoints, timeout);
+  },
+
+  async waitForGraphsToHaveData(acceptableNACount = 0, timeoutInSeconds = 60) {
+    let currentIteration = 0;
+    let numberOfNAElements = 1000;
+
+    // eslint-disable-next-line no-plusplus
+    while (currentIteration++ <= timeoutInSeconds) {
+      numberOfNAElements = await I.grabNumberOfVisibleElements(this.fields.reportTitleWithNA);
+
+      if (numberOfNAElements < acceptableNACount) {
+        return;
+      }
+
+      I.wait(1);
+    }
+
+    const titles = await this.grabFailedReportTitles(this.fields.reportTitleWithNA);
+    const url = await I.grabCurrentUrl();
+
+    await this.printFailedReportNames(acceptableNACount, numberOfNAElements, titles, url);
   },
 
   async verifyThereAreNoGraphsWithoutData(acceptableNACount = 0) {

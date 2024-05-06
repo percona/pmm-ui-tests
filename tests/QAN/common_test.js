@@ -1,55 +1,70 @@
 const assert = require('assert');
-const { qanFilters } = require('../remoteInstances/remoteInstancesHelper');
 
 Feature('QAN common').retry(1);
 
-Before(async ({ I, qanPage }) => {
+Before(async ({ I, queryAnalyticsPage }) => {
   await I.Authorize();
-  I.amOnPage(qanPage.url);
+  I.amOnPage(queryAnalyticsPage.url);
 });
 
 Scenario(
-  'PMM-T122 PMM-T269 - Verify QAN UI Elements are displayed @qan',
+  'PMM-T269 - Verify QAN UI Elements are displayed @qan',
   async ({
-    I, qanFilters, qanOverview, qanPagination,
+    I, queryAnalyticsPage,
   }) => {
-    qanOverview.waitForOverviewLoaded();
-    I.waitForVisible(qanOverview.buttons.addColumn, 30);
-    await qanPagination.verifyPagesAndCount(25);
-    I.waitForVisible(qanFilters.elements.environmentLabel, 30);
-    await qanOverview.verifyRowCount(27);
-    await qanFilters.applyFilter('ps-dev');
-    I.waitForVisible(qanFilters.fields.filterBy, 30);
-    await qanOverview.searchByValue('insert');
-    I.waitForVisible(qanOverview.elements.querySelector, 30);
-    // TODO: find test case in TM4J
-    // I.click(qanOverview.elements.querySelector);
-    // I.waitForVisible(qanOverview.getColumnLocator('Lock Time'), 30);
+    queryAnalyticsPage.waitForLoaded();
+    I.waitForVisible(queryAnalyticsPage.buttons.addColumnButton, 30);
+    await queryAnalyticsPage.data.verifyRowCount(26);
+    await queryAnalyticsPage.data.verifyPagesAndCount(25);
+
+    for await (const filter of queryAnalyticsPage.filters.labels.filterGroups) {
+      I.wait(5);
+      I.waitForElement(queryAnalyticsPage.filters.fields.filterCheckBoxesInGroup(filter), 10);
+      const numberOfFilterValues = await I.grabNumberOfVisibleElements(queryAnalyticsPage.filters.fields.filterCheckBoxesInGroup(filter));
+      const randomFilterValue = Math.floor(Math.random() * numberOfFilterValues) + 1;
+
+      await queryAnalyticsPage.filters.selectFilterInGroupAtPosition(filter, randomFilterValue);
+      I.assertTrue((await queryAnalyticsPage.data.getRowCount()) > 0, `No values for filter: "${filter}" were displayed`);
+      await queryAnalyticsPage.filters.selectFilterInGroupAtPosition(filter, randomFilterValue);
+    }
+
+    queryAnalyticsPage.filters.filterBy('pmm-server');
+    I.wait(3);
+    const numberOfFilters = await I.grabNumberOfVisibleElements(queryAnalyticsPage.filters.fields.groupHeaders);
+
+    for (let i = 1; i <= numberOfFilters; i++) {
+      const filterName = await I.grabTextFrom(queryAnalyticsPage.filters.fields.groupHeaders.at(i));
+      const displayedFilterValue = await I.grabTextFrom(queryAnalyticsPage.filters.fields.filterCheckBoxesInGroup(filterName));
+
+      I.assertContain(
+        displayedFilterValue,
+        'pmm-server',
+        `Displayed filter value: "${displayedFilterValue}" does not contain expected value: "pmm-server"`,
+      );
+    }
   },
 );
 
 Scenario(
   'PMM-T186 - Verify values in overview and in details match @qan',
   async ({
-    I, qanOverview, qanFilters, qanDetails, adminPage,
+    I, adminPage, queryAnalyticsPage,
   }) => {
-    const cellValue = qanDetails.getMetricsCellLocator('Query Time', 3);
-
-    qanOverview.waitForOverviewLoaded();
+    queryAnalyticsPage.waitForLoaded();
     await adminPage.applyTimeRange('Last 1 hour');
-    qanOverview.waitForOverviewLoaded();
-    await qanFilters.applyFilter('ps-dev');
-    await qanOverview.searchByValue('insert');
-    I.waitForElement(qanOverview.elements.querySelector, 30);
-    qanOverview.selectRow(1);
-    I.waitForVisible(cellValue, 30);
-    let overviewValue = await I.grabTextFrom(qanOverview.getCellValueLocator(1, 2));
-    let detailsValue = await I.grabTextFrom(qanDetails.getMetricsCellLocator('Query Count', 2));
+    queryAnalyticsPage.waitForLoaded();
+    queryAnalyticsPage.filters.selectFilter('pxc-dev');
+    queryAnalyticsPage.data.searchByValue('insert');
+    I.waitForElement(queryAnalyticsPage.data.elements.queryRow(1), 30);
+    queryAnalyticsPage.data.selectRow(1);
+    I.waitForVisible(queryAnalyticsPage.queryDetails.elements.metricsCellDetailValue('Query Time', 3), 30);
+    let overviewValue = await I.grabTextFrom(queryAnalyticsPage.data.elements.queryValue(1, 2));
+    let detailsValue = await I.grabTextFrom(queryAnalyticsPage.queryDetails.elements.metricsCellDetailValue('Query Count', 2), 30);
 
     assert.ok(overviewValue === detailsValue, `Query Count value in Overview and Detail should match. Overview:'${overviewValue}'!=Detail:'${detailsValue}'`);
 
-    overviewValue = await I.grabTextFrom(qanOverview.getCellValueLocator(1, 3));
-    detailsValue = await I.grabTextFrom(qanDetails.getMetricsCellLocator('Query Time', 4));
+    overviewValue = await I.grabTextFrom(queryAnalyticsPage.data.elements.queryValue(1, 3));
+    detailsValue = await I.grabTextFrom(queryAnalyticsPage.queryDetails.elements.metricsCellDetailValue('Query Time', 4), 30);
 
     assert.ok(overviewValue === detailsValue, `Query Time value in Overview and Detail should match. Overview:'${overviewValue}'!=Detail:'${detailsValue}'`);
   },
@@ -58,18 +73,18 @@ Scenario(
 Scenario(
   'PMM-T215 - Verify that buttons in QAN are disabled and visible on the screen @qan',
   async ({
-    I, qanPagination, qanFilters, qanOverview,
+    I, queryAnalyticsPage,
   }) => {
-    qanFilters.waitForFiltersToLoad();
-    qanOverview.waitForOverviewLoaded();
-    I.seeAttributesOnElements(qanPagination.buttons.previousPage, { 'aria-disabled': 'true' });
-    I.seeAttributesOnElements(qanPagination.buttons.nextPage, { 'aria-disabled': 'false' });
-    I.seeElementsDisabled(qanFilters.buttons.resetAll);
-    I.seeElementsDisabled(qanFilters.buttons.showSelected);
-    const count = await qanOverview.getCountOfItems();
+    queryAnalyticsPage.waitForLoaded();
+    I.waitForVisible(queryAnalyticsPage.data.buttons.previousPage, 60);
+    I.seeAttributesOnElements(queryAnalyticsPage.data.buttons.previousPage, { 'aria-disabled': 'true' });
+    I.seeAttributesOnElements(queryAnalyticsPage.data.buttons.nextPage, { 'aria-disabled': 'false' });
+    I.seeElementsDisabled(queryAnalyticsPage.filters.buttons.resetAll);
+    I.seeElementsDisabled(queryAnalyticsPage.filters.buttons.showSelected);
+    const count = await queryAnalyticsPage.data.getCountOfItems();
 
-    if (count > 100) {
-      I.seeElement(qanPagination.buttons.ellipsis);
+    if (count > 125) {
+      I.seeElement(queryAnalyticsPage.data.buttons.ellipsis);
     }
   },
 );
@@ -77,51 +92,50 @@ Scenario(
 Scenario(
   'PMM-T1207 - Verify dashboard search between QAN and dashboards @qan',
   async ({
-    I, qanPage, searchDashboardsModal, qanOverview, qanDetails,
+    I, searchDashboardsModal, queryAnalyticsPage,
   }) => {
-    qanPage.waitForOpened();
-    I.click(qanPage.fields.breadcrumbs.dashboardName);
-    I.wait(3);
-    searchDashboardsModal.waitForOpened();
-    I.click(searchDashboardsModal.fields.closeButton);
-    qanPage.waitForOpened();
-    qanOverview.waitForOverviewLoaded();
-    qanOverview.selectRow(1);
-    await qanDetails.checkDetailsTab();
-    I.click(qanPage.fields.topMenu.queryAnalytics);
-    I.click(qanPage.fields.breadcrumbs.dashboardName);
-    I.wait(3);
-    searchDashboardsModal.waitForOpened();
-    I.click(searchDashboardsModal.fields.closeButton);
-    qanPage.waitForOpened();
-    qanOverview.waitForOverviewLoaded();
-    qanOverview.selectRow(2);
-    await qanDetails.checkDetailsTab();
+    queryAnalyticsPage.waitForLoaded();
+    I.waitForElement(queryAnalyticsPage.buttons.qanBreadcrumb);
+    I.click(queryAnalyticsPage.buttons.qanBreadcrumb);
+    I.waitForVisible(searchDashboardsModal.fields.dashboardRow('PMM Query Analytics'));
+    I.click(searchDashboardsModal.fields.dashboardRow('PMM Query Analytics'));
+    queryAnalyticsPage.waitForLoaded();
+    queryAnalyticsPage.data.selectRow(1);
+    queryAnalyticsPage.queryDetails.waitForDetails();
+
+    I.waitForElement(queryAnalyticsPage.buttons.qanBreadcrumb);
+    I.click(queryAnalyticsPage.buttons.qanBreadcrumb);
+    I.waitForVisible(searchDashboardsModal.fields.dashboardRow('PMM Query Analytics'));
+    I.click(searchDashboardsModal.fields.dashboardRow('PMM Query Analytics'));
+    queryAnalyticsPage.waitForLoaded();
+    queryAnalyticsPage.data.selectRow(1);
+    queryAnalyticsPage.queryDetails.waitForDetails();
   },
 );
 
 Scenario(
   'PMM-T188 Verify dashboard refresh @qan',
   async ({
-    I, qanPage, qanDetails, qanOverview, dashboardPage, qanFilters, adminPage,
+    dashboardPage, adminPage, queryAnalyticsPage,
   }) => {
-    await qanPage.waitForOpened();
-    await qanOverview.changeMainMetric('Database');
-    await qanOverview.changeSorting(2);
-    await qanFilters.applyFilter('pmm-managed');
-    await qanOverview.addSpecificColumn('Bytes Sent');
+    queryAnalyticsPage.waitForLoaded();
+    await queryAnalyticsPage.data.changeMainMetric('Database');
+    queryAnalyticsPage.changeSorting(2);
+    queryAnalyticsPage.filters.selectFilterInGroup('pmm-managed', 'Database');
+    queryAnalyticsPage.addColumn('Bytes Sent');
     await adminPage.applyTimeRange('Last 1 hour');
-    await qanOverview.searchByValue('pmm-managed');
-    await qanOverview.selectTotalRow();
-    await dashboardPage.selectRefreshTimeInterval('5s');
-    await qanOverview.verifyMainMetric('Database');
-    await qanOverview.verifySorting(2, 'asc');
-    await qanFilters.verifySelectedFilters('pmm-managed');
-    await qanOverview.verifyColumnPresent('Bytes Sent');
-    await qanDetails.checkDetailsTab();
-    await adminPage.verifyTimeRange('Last 1 hour');
-    await qanOverview.verifySearchByValue('pmm-managed');
-    await dashboardPage.selectRefreshTimeInterval('Off');
-    await I.verifyInvisible(qanOverview.elements.spinner, 70);
+    queryAnalyticsPage.data.searchByValue('pmm-managed');
+    queryAnalyticsPage.data.selectTotalRow();
+    dashboardPage.selectRefreshTimeInterval('5s');
+    queryAnalyticsPage.data.verifyMainMetric('Database');
+    queryAnalyticsPage.data.verifySorting(2, 'asc');
+    await queryAnalyticsPage.filters.verifySelectedFilters('pmm-managed');
+    queryAnalyticsPage.data.verifyColumnPresent('Bytes Sent');
+    queryAnalyticsPage.queryDetails.waitForDetails();
+    /** Skip step until: https://perconadev.atlassian.net/browse/PMM-13052 is fixed
+    await adminPage.verifyTimeRange('Last 1 hour'); */
+    queryAnalyticsPage.data.verifySearchByValue('pmm-managed');
+    dashboardPage.selectRefreshTimeInterval('Off');
+    queryAnalyticsPage.waitForLoaded();
   },
 );

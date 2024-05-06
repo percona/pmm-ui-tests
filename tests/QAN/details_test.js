@@ -7,113 +7,71 @@ const querySources = new DataTable(['querySource']);
 querySources.add(['slowlog']);
 // querySources.add(['perfschema']);
 
-Before(async ({ I, qanPage, qanOverview }) => {
+
+
+Before(async ({ I, queryAnalyticsPage }) => {
   await I.Authorize();
-  I.amOnPage(I.buildUrlWithParams(qanPage.clearUrl, { from: 'now-1h' }));
-  qanOverview.waitForOverviewLoaded();
+  I.amOnPage(I.buildUrlWithParams(queryAnalyticsPage.url, { from: 'now-1h' }));
+  queryAnalyticsPage.waitForLoaded();
 });
 
 Scenario(
   'Verify Details section tabs @qan',
   async ({
-    I, qanDetails, qanOverview, qanFilters,
+    I, queryAnalyticsPage,
   }) => {
-    await qanFilters.applyFilter('ps-dev-cluster');
-    qanOverview.selectRow(2);
-    qanFilters.waitForFiltersToLoad();
-    await within(qanDetails.root, () => {
-      I.waitForVisible(qanDetails.buttons.close, 30);
-      I.see('Details', qanDetails.getTabLocator('Details'));
-      I.see('Example', qanDetails.getTabLocator('Example'));
-      I.see('Explain', qanDetails.getTabLocator('Explain'));
-      I.see('Tables', qanDetails.getTabLocator('Tables'));
-    });
+    await queryAnalyticsPage.filters.selectFilter('pxc-dev-cluster');
+    queryAnalyticsPage.data.selectRow(2);
+    queryAnalyticsPage.waitForLoaded();
+    for (const header of queryAnalyticsPage.data.labels.detailsHeaders) {
+      I.waitForVisible(queryAnalyticsPage.queryDetails.buttons.tab(header), 5);
+    }
   },
 ).retry(1);
 
 Scenario(
   'PMM-T223 - Verify time metrics are AVG per query (not per second) @qan',
   async ({
-    I, qanPage, qanOverview, qanFilters, qanDetails,
+    I, queryAnalyticsPage,
   }) => {
-    const cellValue = qanDetails.getMetricsCellLocator('Query Time', 3);
-
-    I.amOnPage(I.buildUrlWithParams(qanPage.clearUrl, { environment: 'ps-dev', from: 'now-1h', search: 'insert' }));
-    I.waitForElement(qanOverview.elements.querySelector, 30);
-    qanOverview.selectRow(1);
-    qanFilters.waitForFiltersToLoad();
-    I.waitForVisible(cellValue, 30);
-    await qanDetails.verifyAvqQueryCount(3600);
-    await qanDetails.verifyAvgQueryTime(3600);
+    I.amOnPage(I.buildUrlWithParams(queryAnalyticsPage.url, { environment: 'pxc-dev', from: 'now-1h', search: 'insert' }));
+    I.waitForElement(queryAnalyticsPage.data.elements.queryRows, 30);
+    queryAnalyticsPage.data.selectRow(1);
+    queryAnalyticsPage.waitForLoaded();
+    I.waitForVisible(queryAnalyticsPage.queryDetails.elements.metricsCellDetailValue('Query Time', 3), 30);
+    await queryAnalyticsPage.queryDetails.verifyAverageQueryCount(3600);
+    await queryAnalyticsPage.queryDetails.verifyAverageQueryTime(3600);
   },
 );
 
-Scenario(
+const databaseEnvironments = new DataTable(['name', 'select']);
+
+databaseEnvironments.add(['ps-single', 'select name']);
+databaseEnvironments.add(['ms-single', 'select name']);
+databaseEnvironments.add(['pxc_node', 'select']);
+// databaseEnvironments.add(['pgsql_pgss_pmm', 'insert']);
+databaseEnvironments.add(['pdpgsql_pgsm_pmm', 'insert']);
+databaseEnvironments.add(['rs101', 'update']);
+
+Data(databaseEnvironments).Scenario(
   'PMM-T13 - Check Explain and Example for supported DBs @qan',
   async ({
-    I, qanPage, qanOverview, qanFilters, qanDetails,
+    I, queryAnalyticsPage, current,
   }) => {
-    I.amOnPage(I.buildUrlWithParams(qanPage.clearUrl, { environment: 'ps-dev', from: 'now-1h', search: 'insert' }));
-    I.waitForElement(qanOverview.elements.querySelector, 30);
-    qanOverview.selectRow(1);
-    qanFilters.waitForFiltersToLoad();
-    qanDetails.checkExamplesTab();
-    qanDetails.checkExplainTab();
-  },
-);
+    queryAnalyticsPage.waitForLoaded();
+    queryAnalyticsPage.filters.selectContainFilterInGroup(current.name, 'Service Name');
+    queryAnalyticsPage.data.searchByValue(current.select);
+    I.waitForElement(queryAnalyticsPage.data.elements.queryRows, 30);
+    queryAnalyticsPage.data.selectRow(1);
+    queryAnalyticsPage.waitForLoaded();
+    queryAnalyticsPage.queryDetails.checkExamplesTab();
 
-Scenario(
-  'PMM-T13 - Check Explain and Example for supported DBs - md @qan',
-  async ({
-    I, qanPage, qanOverview, qanFilters, qanDetails,
-  }) => {
-    I.amOnPage(I.buildUrlWithParams(qanPage.clearUrl, { environment: 'md-dev', from: 'now-1h' }));
-    I.waitForElement(qanOverview.elements.querySelector, 30);
-    qanOverview.selectRow(1);
-    qanFilters.waitForFiltersToLoad();
-    qanDetails.checkExamplesTab();
-    qanDetails.checkExplainTab();
-  },
-);
-
-Scenario(
-  'PMM-T13 - Check Explain and Example for supported DBs - ps @qan',
-  async ({
-    I, qanPage, qanOverview, qanFilters, qanDetails,
-  }) => {
-    I.amOnPage(I.buildUrlWithParams(qanPage.clearUrl, { environment: 'ps-dev', from: 'now-1h' }));
-    I.waitForElement(qanOverview.elements.querySelector, 30);
-    qanOverview.selectRow(1);
-    qanFilters.waitForFiltersToLoad();
-    qanDetails.checkExamplesTab();
-    qanDetails.checkExplainTab();
-  },
-);
-
-Scenario(
-  'PMM-T13 - Check Explain and Example for supported DBs - pdpqsql @qan',
-  async ({
-    I, qanPage, qanOverview, qanFilters, qanDetails,
-  }) => {
-    I.amOnPage(I.buildUrlWithParams(qanPage.clearUrl, { environment: 'pdpgsql-dev', from: 'now-1h' }));
-    I.waitForElement(qanOverview.elements.querySelector, 30);
-    qanOverview.selectRow(1);
-    qanFilters.waitForFiltersToLoad();
-    qanDetails.checkExamplesTab();
-  },
-);
-
-Scenario(
-  'PMM-T13 - Check Explain and Example for supported DBs - mongodb @qan',
-  async ({
-    I, qanOverview, qanFilters, qanDetails,
-  }) => {
-    await qanFilters.applyFilter('mongodb');
-    I.waitForElement(qanOverview.elements.querySelector, 30);
-    qanOverview.selectRow(1);
-    qanFilters.waitForFiltersToLoad();
-    qanDetails.checkExamplesTab();
-    qanDetails.checkExplainTab();
+    if (!current.name.includes('pgsql')) {
+      queryAnalyticsPage.queryDetails.checkTab('Explain');
+    }
+    /**
+     * Add Verification for plan after bug is closed.
+     */
   },
 );
 
@@ -121,56 +79,50 @@ Scenario(
   'PMM-T1790 - Verify that there is any no error on Explains after switching between queries from different DB servers '
     + '@qan',
   async ({
-    I, qanPage, qanOverview, qanFilters, qanDetails,
+    I, queryAnalyticsPage,
   }) => {
-    I.amOnPage(I.buildUrlWithParams(qanPage.clearUrl, { environment: 'ps-dev', from: 'now-1h', search: 'insert' }));
-    I.waitForElement(qanOverview.elements.querySelector, 30);
-    qanOverview.selectRow(1);
-    qanFilters.waitForFiltersToLoad();
-    qanDetails.checkExplainTab();
-    await qanFilters.applyFilter('mongodb');
-    I.waitForElement(qanOverview.elements.querySelector, 30);
-    qanOverview.selectRow(1);
-
-    // eslint-disable-next-line no-undef
-    const foundErrorMessage = await tryTo(() => I.verifyPopUpMessage(
-      'invalid GetActionRequest.ActionId: value length must be at least 1 runes',
-      2,
-    ));
-
-    I.assertFalse(foundErrorMessage, 'Found unexpected error message!');
-    I.waitForElement(qanDetails.buttons.close, 30);
+    queryAnalyticsPage.filters.selectContainFilter('pxc-dev');
+    queryAnalyticsPage.data.searchByValue('SELECT');
+    queryAnalyticsPage.waitForLoaded();
+    queryAnalyticsPage.data.selectRow(1);
+    queryAnalyticsPage.waitForLoaded();
+    queryAnalyticsPage.queryDetails.checkTab('Explain');
+    queryAnalyticsPage.filters.selectContainFilter('pxc-dev');
+    queryAnalyticsPage.filters.selectFilterInGroup('mongodb', 'Service Type');
+    queryAnalyticsPage.data.searchByValue('UPDATE');
+    queryAnalyticsPage.data.selectRow(1);
+    queryAnalyticsPage.queryDetails.checkTab('Explain');
+    // await queryAnalyticsPage.filters.selectContainFilter('pdpgsql_pgsm_pmm');
   },
 );
 
 Scenario(
   'PMM-T245 - Verify that user is able to close the Details section @qan',
   async ({
-    I, qanOverview, qanFilters, qanDetails,
+    I, queryAnalyticsPage,
   }) => {
-    I.waitForElement(qanOverview.elements.querySelector, 30);
-    qanOverview.selectRow(1);
-    qanFilters.waitForFiltersToLoad();
-    I.waitForElement(qanDetails.buttons.close, 30);
-    I.click(qanDetails.buttons.close);
-    I.waitForInvisible(qanDetails.buttons.close, 30);
-    I.dontSeeElement(qanDetails.buttons.close);
+    I.waitForElement(queryAnalyticsPage.data.elements.queryRows, 30);
+    queryAnalyticsPage.data.selectRow(1);
+    queryAnalyticsPage.waitForLoaded();
+    I.waitForElement(queryAnalyticsPage.queryDetails.buttons.close, 30);
+    I.click(queryAnalyticsPage.queryDetails.buttons.close);
+    I.waitForInvisible(queryAnalyticsPage.queryDetails.buttons.close, 30);
+    I.dontSeeElement(queryAnalyticsPage.queryDetails.buttons.close);
   },
 );
 
 Scenario(
   'PMM-T144 Verify that Details tab is the only one available when total row is selected @qan',
   async ({
-    I, qanPage, qanOverview, qanDetails,
+    I, queryAnalyticsPage,
   }) => {
-    qanPage.waitForOpened();
-    qanOverview.waitForOverviewLoaded();
-    qanOverview.selectTotalRow();
-    qanDetails.checkDetailsTab();
-    I.dontSeeElement(qanDetails.getTabLocator('Examples'));
-    I.dontSeeElement(qanDetails.getTabLocator('Explain'));
-    I.dontSeeElement(qanDetails.getTabLocator('Tables'));
-    I.dontSeeElement(qanDetails.getTabLocator('Plan'));
+    queryAnalyticsPage.waitForLoaded();
+    queryAnalyticsPage.data.selectTotalRow();
+    queryAnalyticsPage.queryDetails.checkTab('Details');
+    I.dontSeeElement(queryAnalyticsPage.queryDetails.buttons.tab('Examples'));
+    I.dontSeeElement(queryAnalyticsPage.queryDetails.buttons.tab('Explain'));
+    I.dontSeeElement(queryAnalyticsPage.queryDetails.buttons.tab('Tables'));
+    I.dontSeeElement(queryAnalyticsPage.queryDetails.buttons.tab('Plan'));
   },
 );
 

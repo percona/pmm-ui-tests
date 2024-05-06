@@ -18,7 +18,6 @@ test.describe('Percona Distribution for PostgreSQL CLI tests ', async () => {
   test.afterAll(async ({}) => {
     const output = await cli.exec('sudo pmm-admin remove postgresql prerequisite');
     await output.assertSuccess();
-
   });
   /**
    * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/pdpgsql-tests.bats#L10
