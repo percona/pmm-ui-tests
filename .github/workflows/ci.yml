@@ -28,7 +28,7 @@ jobs:
     with:
       sha: 'null'
       pmm_ui_tests_branch: ${{ github.head_ref }}
-      pmm_qa_branch: 'PMM-7-temp-debug-framework'
+      pmm_qa_branch: '6af896d0579774931e2140f3862ff901c1688af5'
       pmm_server_image: 'perconalab/pmm-server:3-dev-latest'
       pmm_client_image: 'perconalab/pmm-client:3-dev-latest'
       pmm_client_version: '3-dev-latest'
