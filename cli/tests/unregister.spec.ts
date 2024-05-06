@@ -8,10 +8,10 @@ test.describe('PMM Client "unregister" CLI tests', async () => {
   });
 
   let PMM_VERSION: string;
-  if (process.env.CLIENT_VERSION === '3-dev-latest') {
+  if (process.env.CLIENT_VERSION === '/3-dev-latest/pmm3-rc|3.0.*|https:/') {
     // TODO: refactor to use docker hub API to remove file-update dependency
     // See: https://github.com/Percona-QA/package-testing/blob/master/playbooks/pmm2-client_integration_upgrade_custom_path.yml#L41
-    PMM_VERSION = cli.execute('curl -s curl -s https://raw.githubusercontent.com/Percona-Lab/pmm-submodules/v3/VERSION')
+    PMM_VERSION = cli.execute('curl -s https://raw.githubusercontent.com/Percona-Lab/pmm-submodules/v3/VERSION')
       .stdout.trim();
   }
 

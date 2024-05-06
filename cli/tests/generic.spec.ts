@@ -7,12 +7,14 @@ const ipPort = '127.0.0.1:5447';
 
 test.describe('PMM Client "Generic" CLI tests', async () => {
   test.beforeAll(async ({}) => {
+    const result = await cli.exec('docker ps | grep pdpgsql_pgsm_pmm | awk \'{print $NF}\'');
+    await result.outContains('pdpgsql_pgsm_pmm', 'PDPGSQL docker container should exist. please run pmm-framework with --database pdpgsql');
     const result1 = await cli.exec('sudo pmm-admin status');
     await result1.outContains('pmm-admin', 'pmm-client is not installed/connected locally, please run pmm3-client-setup script');
   });
 
   let PMM_VERSION: string;
-  if (/3-dev-latest|pmm3-rc|3.0|https:/.test(`${process.env.CLIENT_VERSION}`)) {
+  if (/3-dev-latest|pmm3-rc|3.0.*|https:/.test(`${process.env.CLIENT_VERSION}`)) {
     // TODO: refactor to use docker hub API to remove file-update dependency
     // See: https://github.com/Percona-QA/package-testing/blob/master/playbooks/pmm2-client_integration_upgrade_custom_path.yml#L41
     PMM_VERSION = cli.execute('curl -s https://raw.githubusercontent.com/Percona-Lab/pmm-submodules/v3/VERSION')
