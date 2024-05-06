@@ -55,9 +55,11 @@ class QueryAnalyticsFilters {
 
   selectFilter(filterName) {
     I.waitForVisible(this.fields.filterBy, 30);
-    I.fillField(this.fields.filterBy, filterName);
+    // I.fillField(this.fields.filterBy, filterName);
     I.usePlaywrightTo('Select QAN Filter', async ({ page }) => {
       const locator = await page.locator(this.fields.filterByExactName(filterName).value);
+
+      await page.locator('[data-testid="filters-search-field"]').fill(filterName);
 
       await locator.waitFor({ state: 'attached' });
       await locator.click();
