@@ -2,15 +2,28 @@ import { test, expect } from '@playwright/test';
 import * as cli from '@helpers/cli-helper';
 
 const PGSQL_USER = 'postgres';
-const PGSQL_PASSWORD = 'oFukiBRg7GujAJXq3tmd';
+const PGSQL_PASSWORD = 'pass+this';
+const ipPort = '127.0.0.1:5447';
 
 test.describe('Percona Distribution for PostgreSQL CLI tests ', async () => {
+  test.beforeAll(async ({}) => {
+    const result = await cli.exec('docker ps | grep pdpgsql_pgsm_pmm | awk \'{print $NF}\'');
+    await result.outContains('pdpgsql_pgsm_pmm', 'PDPGSQL docker container should exist. please run pmm-framework with --database pdpgsql');
+    const result1 = await cli.exec('sudo pmm-admin status');
+    await result1.outContains('Running', 'pmm-client is not installed/connected locally, please run pmm3-client-setup script');
+    const output = await cli.exec(`sudo pmm-admin add postgresql --query-source=pgstatmonitor --username=${PGSQL_USER} --password=${PGSQL_PASSWORD} prerequisite ${ipPort}`);
+    await output.assertSuccess();
+  });
+
+  test.afterAll(async ({}) => {
+    const output = await cli.exec('sudo pmm-admin remove postgresql prerequisite');
+    await output.assertSuccess();
+  });
   /**
    * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/pdpgsql-tests.bats#L10
    */
   test('PMM-T442 run pmm-admin add postgreSQL with pgstatmonitor', async ({}) => {
-    const hosts = (await cli.exec('sudo pmm-admin list | grep "PostgreSQL" | awk -F" " \'{print $3}\''))
-      .getStdOutLines();
+    const hosts = [ipPort] || (await cli.exec('sudo pmm-admin list | grep "PostgreSQL" | awk -F" " \'{print $3}\'')).getStdOutLines();
     let n = 1;
     for (const host of hosts) {
       const output = await cli.exec(`sudo pmm-admin add postgresql --query-source=pgstatmonitor --username=${PGSQL_USER} --password=${PGSQL_PASSWORD} pgstatmonitor_${n} ${host}`);
@@ -214,10 +227,12 @@ test.describe('Percona Distribution for PostgreSQL CLI tests ', async () => {
 
     await expect(async () => {
       const jsonList = JSON.parse((await cli.exec('sudo pmm-admin list --json')).stdout);
-      const serviceIds = jsonList.service.filter((s) => serviceNames.includes(s.service_name)).map((s) => s.service_id);
-      agentIds = jsonList.agent.filter((a) => a.agent_type === 'POSTGRES_EXPORTER'
+      // eslint-disable-next-line max-len
+      const serviceIds = jsonList.service.filter((s: { service_name: string; }) => serviceNames.includes(s.service_name)).map((s: { service_id: never; }) => s.service_id);
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+      agentIds = jsonList.agent.filter((a: { agent_type: string; status: string; service_id: never; }) => a.agent_type === 'POSTGRES_EXPORTER'
           && a.status === 'RUNNING'
-          && serviceIds.includes(a.service_id)).map((a) => a.agent_id);
+          && serviceIds.includes(a.service_id)).map((a: { agent_id: never; }) => a.agent_id);
 
       expect(agentIds.length).toBeTruthy();
     }).toPass({
@@ -229,7 +244,7 @@ test.describe('Percona Distribution for PostgreSQL CLI tests ', async () => {
       const agentUuid = agentId.split('/')[2];
       const psAuxOutput = await cli.exec(`sudo ps aux |awk '/postgres_exporter/ && /${agentUuid}/'`);
       await psAuxOutput.assertSuccess();
-      await psAuxOutput.outNotContains('--auto-discover-databases ');
+      await psAuxOutput.outNotContains('--auto-discover-databases');
       await psAuxOutput.outContains('postgres_exporter --collect');
     }
   });
