@@ -84,6 +84,7 @@ class QueryAnalyticsFilters {
       selectedFilter = '';
     }
 
+    I.waitForVisible(this.fields.filterBy, 10);
     I.fillField(this.fields.filterBy, filterName);
     I.usePlaywrightTo('Select QAN Filter', async ({ page }) => {
       const locator = await page.locator(this.fields.filterByNameAndGroup(selectedFilter, groupName).value);
