@@ -393,10 +393,12 @@ Scenario(
     I.wait(120);
     await I.verifyCommand(`docker exec ${container_name} pmm-admin list | grep "postgresql_pgstatmonitor_agent" | grep "Running"`);
 
-    I.amOnPage(queryAnalyticsPage.url);
-    queryAnalyticsPage.waitForLoaded();
-    I.waitForVisible(queryAnalyticsPage.filters.buttons.showSelected, 30);
-    queryAnalyticsPage.filters.selectFilterInGroup(applicationName, 'Application Name');
+    const url = I.buildUrlWithParams(queryAnalyticsPage.url, {
+      application_name: applicationName,
+      from: 'now-5m',
+    });
+
+    I.amOnPage(url);
     queryAnalyticsPage.waitForLoaded();
 
     const count = await queryAnalyticsPage.data.getRowCount();
@@ -441,10 +443,12 @@ Scenario(
       const pgsmTopQuery = pgsm_output.rows[i].top_query;
       const pgsmQuery = pgsm_output.rows[i].query;
 
-      I.amOnPage(queryAnalyticsPage.url);
-      queryAnalyticsPage.waitForLoaded();
-      I.waitForVisible(queryAnalyticsPage.filters.buttons.showSelected, 30);
-      queryAnalyticsPage.filters.selectFilterInGroup(db, 'Database');
+      const url = I.buildUrlWithParams(queryAnalyticsPage.url, {
+        database: db,
+        from: 'now-5m',
+      });
+
+      I.amOnPage(url);
       queryAnalyticsPage.waitForLoaded();
 
       queryAnalyticsPage.data.searchByValue(queryId);
@@ -487,10 +491,12 @@ Scenario(
     connection.database = 'postgres';
     I.wait(120);
 
-    I.amOnPage(queryAnalyticsPage.url);
-    queryAnalyticsPage.waitForLoaded();
-    I.waitForVisible(queryAnalyticsPage.filters.buttons.showSelected, 30);
-    queryAnalyticsPage.filters.selectFilterInGroup(db, 'Database');
+    const url = I.buildUrlWithParams(queryAnalyticsPage.url, {
+      database: db,
+      from: 'now-5m',
+    });
+
+    I.amOnPage(url);
     queryAnalyticsPage.waitForLoaded();
 
     const count = await queryAnalyticsPage.data.getRowCount();
