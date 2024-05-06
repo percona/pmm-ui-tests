@@ -1,6 +1,7 @@
 import { expect, test } from '@playwright/test';
 import * as cli from '@helpers/cli-helper';
 import { readZipFile } from '@helpers/zip-helper';
+
 const PGSQL_USER = 'postgres';
 const PGSQL_PASSWORD = 'pass+this';
 const ipPort = '127.0.0.1:5447';

@@ -218,7 +218,7 @@ test.describe('Percona Distribution for PostgreSQL CLI tests ', async () => {
       const serviceName = `autodiscovery_${n}`;
       serviceNames.push(serviceName);
 
-      const output = await cli.exec(`sudo pmm-admin add postgresql --username=${PGSQL_USER} --password=${PGSQL_PASSWORD} --auto-discovery-limit=5 ${serviceName} ${host}`);
+      const output = await cli.exec(`sudo pmm-admin add postgresql --username=${PGSQL_USER} --password=${PGSQL_PASSWORD} --auto-discovery-limit=2 ${serviceName} ${host}`);
       await output.assertSuccess();
       await output.outContains('PostgreSQL Service added.');
     }
@@ -254,4 +254,5 @@ test.describe('Percona Distribution for PostgreSQL CLI tests ', async () => {
     await output.assertSuccess();
     await output.outContains('postgres_exporter --auto-discover-databases ');
   });
+
 });
