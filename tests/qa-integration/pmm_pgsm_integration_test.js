@@ -378,7 +378,7 @@ Scenario(
   },
 ).retry(2);
 
-Scenario.only(
+Scenario(
   'PMM-T1063 - Verify Application Name with pg_stat_monitor @pgsm-pmm-integration @not-ui-pipeline',
   async ({ I, queryAnalyticsPage }) => {
     await I.verifyCommand('docker exec pmm-server clickhouse-client --database pmm --query "TRUNCATE TABLE metrics"');
@@ -394,13 +394,15 @@ Scenario.only(
     await I.verifyCommand(`docker exec ${container_name} pmm-admin list | grep "postgresql_pgstatmonitor_agent" | grep "Running"`);
 
     const url = I.buildUrlWithParams(queryAnalyticsPage.url, {
-      application_name: applicationName,
+      // application_name: applicationName,
       from: 'now-5m',
     });
 
     I.amOnPage(url);
     queryAnalyticsPage.waitForLoaded();
     queryAnalyticsPage.filters.selectFilter(applicationName);
+    I.wait(5);
+    I.waitForVisible(queryAnalyticsPage.filters.buttons.showSelected, 30);
     queryAnalyticsPage.waitForLoaded();
 
     const count = await queryAnalyticsPage.data.getRowCount();
