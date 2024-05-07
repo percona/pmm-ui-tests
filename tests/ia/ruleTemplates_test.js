@@ -266,7 +266,7 @@ Scenario.skip(
   },
 );
 
-Scenario.skip(
+Scenario(
   'PMM-T483 PMM-T699 Verify user can edit UI-created IA rule template @ia @grafana-pr @alerting-fb',
   async ({ I, ruleTemplatesPage, templatesAPI }) => {
     const path = ruleTemplatesPage.ruleTemplate.paths.yaml;
