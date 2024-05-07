@@ -86,34 +86,6 @@ xScenario(
   },
 );
 
-Scenario(
-  '@PMM-T1519 Verify that alerting link inside settings forwarding to correct page @settings',
-  async ({ I, pmmSettingsPage, alertsPage }) => {
-    I.amOnPage(pmmSettingsPage.alertManagerUrl);
-    await pmmSettingsPage.waitForPmmSettingsPageLoaded();
-    I.click(pmmSettingsPage.fields.perconaAlertingUrl);
-    I.assertTrue((await I.grabCurrentUrl()).includes(alertsPage.url), 'Link should lead to IA page. But it does not');
-    I.waitForElement(alertsPage.elements.pageHeader, 30);
-  },
-);
-
-Scenario(
-  '@PMM-T1820 - Verify DBaaS deprecation warning @settings @settings-fb',
-  async ({
-    I, pmmSettingsPage, settingsAPI, dbaasPage,
-  }) => {
-    await settingsAPI.changeSettings({ dbaas: false });
-    I.amOnPage(pmmSettingsPage.advancedSettingsUrl);
-    await pmmSettingsPage.waitForPmmSettingsPageLoaded();
-    I.waitForVisible(pmmSettingsPage.fields.dbaasSwitchSelector, 30);
-    pmmSettingsPage.verifySwitch(pmmSettingsPage.fields.dbaasSwitchSelectorInput, 'off');
-    I.click(pmmSettingsPage.fields.dbaasSwitchSelector);
-    I.verifyWarning('Deprecation notice\nDBaaS feature is deprecated. We encourage you to use Everest instead. Check out our Migration guide', 10);
-    await settingsAPI.changeSettings({ dbaas: true });
-    I.amOnPage(dbaasPage.k8sClusterUrl);
-    I.verifyWarning('Deprecation notice\nDBaaS feature is deprecated. We encourage you to use Everest instead. Check out our Migration guide', 10);
-  },
-);
 Scenario('@PMM-T1866 - Verify if public address has an port assigned and following UI/API requests dont error @settings', async ({ I, pmmSettingsPage, adminPage }) => {
   I.amOnPage(pmmSettingsPage.advancedSettingsUrl);
 

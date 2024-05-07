@@ -1,8 +1,7 @@
 const assert = require('assert');
-const { de } = require('@faker-js/faker/lib/locales');
 
 const {
-  I, remoteInstancesPage, pmmInventoryPage, remoteInstancesHelper,
+  remoteInstancesPage, pmmInventoryPage, remoteInstancesHelper,
 } = inject();
 
 const externalExporterServiceName = 'external_service_new';
@@ -250,12 +249,16 @@ Scenario(
   },
 );
 
+// the test relies on --database psmdb
 Scenario(
   'PMM-T1225 - Verify summary file includes process_exec_path for agents @inventory @exporters @cli',
   async ({ I, pmmInventoryPage }) => {
     I.amOnPage(pmmInventoryPage.url);
-    const response = await I.verifyCommand('pmm-admin summary');
-    const statusFile = JSON.parse(await I.readFileInZipArchive(response.split(' ')[0], 'client/status.json'));
+    const response = await I.verifyCommand('docker exec rs101 pmm-admin summary');
+    const zipFileName = response.split(' ')[0];
+
+    await I.verifyCommand(`docker cp rs101:/${zipFileName} ./summary.zip`);
+    const statusFile = JSON.parse(await I.readFileInZipArchive('summary.zip', 'client/status.json'));
     const exporters = statusFile.agents_info.filter((agent) => !agent.agent_type.toLowerCase().includes('qan'));
 
     I.amOnPage(pmmInventoryPage.url);

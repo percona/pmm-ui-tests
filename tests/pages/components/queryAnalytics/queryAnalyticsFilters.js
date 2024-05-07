@@ -55,9 +55,10 @@ class QueryAnalyticsFilters {
 
   selectFilter(filterName) {
     I.waitForVisible(this.fields.filterBy, 30);
-    I.fillField(this.fields.filterBy, filterName);
-    I.usePlaywrightTo('Select QAN Filter', async ({ page }) => {
+    I.usePlaywrightTo('Search and select QAN Filter', async ({ page }) => {
       const locator = await page.locator(this.fields.filterByExactName(filterName).value);
+
+      await page.locator(this.fields.filterBy.value).fill(filterName);
 
       await locator.waitFor({ state: 'attached' });
       await locator.click();
@@ -84,6 +85,7 @@ class QueryAnalyticsFilters {
       selectedFilter = '';
     }
 
+    I.waitForVisible(this.fields.filterBy, 10);
     I.fillField(this.fields.filterBy, filterName);
     I.usePlaywrightTo('Select QAN Filter', async ({ page }) => {
       const locator = await page.locator(this.fields.filterByNameAndGroup(selectedFilter, groupName).value);

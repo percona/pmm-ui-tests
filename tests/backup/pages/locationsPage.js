@@ -51,7 +51,7 @@ module.exports = {
     deleteByName: (name) => locate('$delete-storage-location-button').inside(locationCell(name)),
     showDetails: (name) => locate('$show-row-details').inside(locationCell(name)),
     hideDetails: (name) => locate('$hide-row-details').inside(locationCell(name)),
-    showSecret: locate('div').after('$small-secret-holder'),
+    showSecret: locate('[class$="-Icon"]').after('$small-secret-holder'),
     forceDeleteCheckbox: '$force-checkbox-input',
     cancelDelete: '$cancel-delete-modal-button',
     confirmDelete: '$confirm-delete-modal-button',
@@ -128,7 +128,7 @@ module.exports = {
 
   verifyLocationFields(name, type, config, description = '') {
     const {
-      path, endpoint, bucket_name, access_key, secret_key,
+      endpoint, bucket_name, access_key, secret_key,
     } = config;
 
     I.waitForVisible(this.fields.name, 30);

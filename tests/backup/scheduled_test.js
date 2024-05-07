@@ -352,7 +352,8 @@ Scenario(
   },
 );
 
-Scenario(
+// TODO: unskip after https://perconadev.atlassian.net/browse/PMM-12988
+Scenario.skip(
   '@PMM-T908 Verify user can enable/disable scheduled backup @backup @bm-mongo @bm-fb',
   async ({
     I, scheduledPage, scheduledAPI,

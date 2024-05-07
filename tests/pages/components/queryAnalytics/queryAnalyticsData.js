@@ -82,10 +82,11 @@ class QueryAnalyticsData {
     assert.ok(count === expectedRowCount, `Row count should be ${expectedRowCount} instead of ${count}`);
   }
 
-  async getRowCount(rowCount) {
+  async getRowCount() {
     I.waitForVisible(this.elements.queryRows, 30);
 
-    return await I.grabNumberOfVisibleElements(this.elements.queryRows);
+    // Subtract 1 because it includes TOTAL
+    return (await I.grabNumberOfVisibleElements(this.elements.queryRows)) - 1;
   }
 
   async verifyPagesAndCount(itemsPerPage) {
