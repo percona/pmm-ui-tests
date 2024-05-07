@@ -297,7 +297,7 @@ Scenario(
   },
 );
 
-Scenario.skip(
+Scenario(
   'PMM-T562 Verify user can delete User-defined (UI) rule templates @ia @grafana-pr @alerting-fb',
   async ({ I, ruleTemplatesPage, templatesAPI }) => {
     const path = ruleTemplatesPage.ruleTemplate.paths.yaml;
