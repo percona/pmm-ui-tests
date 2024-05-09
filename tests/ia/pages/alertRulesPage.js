@@ -44,6 +44,7 @@ module.exports = {
     cancelModal: locate('button').withText('Cancel'),
     newEvaluationGroup: locate('button').withText('New evaluation group'),
     createNewEvaluationGroup: locate('button').withText('Create'),
+    addFilter: locate('span').withText('Add Filter'),
   },
   fields: {
     // searchDropdown returns a locator of a search input for a given label
@@ -60,6 +61,9 @@ module.exports = {
     templatesLoader: locate('//div[@id=\'template\']').find('div').withText('Choose'),
     newEvaluationGroupName: locate('input').withAttr({ name: 'group' }),
     newEvaluationGroupInterval: locate('input').withAttr({ name: 'evaluateEvery' }),
+    filterLabel: locate('input').withAttr({ placeholder: 'Label' }),
+    filterOperators: locate('//*[text()="Operators"]//following-sibling::*//input'),
+    filterRegex: locate('input').withAttr({ placeholder: 'Regex' }),
   },
   messages: {
     noRulesFound: 'You haven`t created any alert rules yet',
@@ -99,6 +103,9 @@ module.exports = {
     this.searchAndSelectResult('severity', editedRule.severity);
     this.selectFolder(editedRule.folder);
     await this.selectOrCreateGroup(editedRule.group);
+    if (newruleObj.filter) {
+      this.createFilter(newruleObj.filter);
+    }
   },
 
   async editPerconaAlert(ruleObj) {
@@ -146,6 +153,15 @@ module.exports = {
     I.click(this.fields.folderLocator);
     I.waitForElement(this.fields.resultsLocator(option));
     I.click(this.fields.resultsLocator(option));
+  },
+
+  createFilter(filter) {
+    I.waitForVisible(this.buttons.addFilter);
+    I.click(this.buttons.addFilter);
+    I.fillField(this.fields.filterLabel, filter.label);
+    I.fillField(this.fields.filterOperators, filter.operator);
+    I.pressKey('Enter');
+    I.fillField(this.fields.filterRegex, filter.regex);
   },
 
   async selectOrCreateGroup(groupOptions) {
