@@ -115,9 +115,6 @@ Scenario(
     const containerName = await I.verifyCommand('sudo docker exec ps_pmm_8.0 pmm-admin status | grep "Node name" | awk -F \' \' \'{print $3}\'');
 
     newRule.filter = { label: 'node_name', operator: 'MATCH', regex: containerName };
-
-    console.log(containerName);
-
     alertRulesPage.openAlertRulesTab();
     I.waitForEnabled(alertRulesPage.buttons.newAlertRule, 10);
     I.click(alertRulesPage.buttons.newAlertRule);
