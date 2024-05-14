@@ -62,22 +62,11 @@ Scenario(
   '@PMM-9550 PMM-T1830 Verify downloading server diagnostics logs @menu',
   async ({ I, homePage, serverApi }) => {
     await homePage.open();
-    let path;
 
-    I.moveCursorTo(locate('li').find('a').withAttr({ 'aria-label': 'Help' }));
-    I.waitForElement('//div[contains(text(), \'PMM Logs\')]', 3);
+    I.waitForVisible(homePage.buttons.pmmHelp);
+    I.click(homePage.buttons.pmmHelp);
 
-    await I.usePlaywrightTo('download', async ({ page }) => {
-      const [download] = await Promise.all([
-        // Start waiting for the download
-        page.waitForEvent('download'),
-        // Perform the action that initiates download
-        page.locator('//div[contains(text(), \'PMM Logs\')]').click(),
-      ]);
-
-      // Wait for the download process to complete
-      path = await download.path();
-    });
+    const path = await I.downloadFile(homePage.buttons.pmmLogs);
 
     await I.seeEntriesInZip(path, ['pmm-agent.yaml', 'pmm-managed.log', 'pmm-agent.log']);
 
@@ -87,4 +76,4 @@ Scenario(
       await I.dontSeeEntriesInZip(path, ['alertmanager.yml', 'alertmanager.base.yml']);
     }
   },
-);
+).config('Playwright', { waitForNavigation: 'load' });
