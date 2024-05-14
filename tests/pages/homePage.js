@@ -1,6 +1,7 @@
 const { I, dashboardPage } = inject();
 const assert = require('assert');
 const moment = require('moment');
+const productTourModal = require('./components/productTourComponent');
 
 module.exports = {
   // insert your locators and methods here
@@ -10,6 +11,9 @@ module.exports = {
   landingUrl: 'graph/d/pmm-home/home-dashboard?orgId=1&refresh=1m',
   genericOauthUrl: 'graph/login/generic_oauth',
   requestEnd: '/v1/Updates/Check',
+  elements: {
+    pageContent: locate('//div[@id="pageContent"]'),
+  },
   fields: {
     systemsUnderMonitoringCount:
       locate('.panel-content span').inside('[aria-label="Monitored Nodes panel"]'),
@@ -87,6 +91,8 @@ module.exports = {
   serviceDashboardLocator: (serviceName) => locate('a').withText(serviceName),
   isAmiUpgrade: process.env.AMI_UPGRADE_TESTING_INSTANCE === 'true' || process.env.OVF_UPGRADE_TESTING_INSTANCE === 'true',
   pmmServerName: process.env.VM_NAME ? process.env.VM_NAME : 'pmm-server',
+
+  productTour: productTourModal,
 
   async open() {
     I.amOnPage(this.url);
