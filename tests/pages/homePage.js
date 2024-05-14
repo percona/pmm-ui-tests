@@ -76,6 +76,10 @@ module.exports = {
       },
     },
   },
+  buttons: {
+    pmmHelp: locate('button').withAttr({ 'aria-label': 'Help' }),
+    pmmLogs: locate('//a[@href="/logs.zip"]'),
+  },
   upgradeMilestones: [
     'TASK [Gathering Facts]',
     'TASK [initialization : Copy file with image version]',
