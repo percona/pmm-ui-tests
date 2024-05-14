@@ -14,13 +14,16 @@ class ProductTourComponent {
   }
 
   async verifyProductTourSteps() {
-    for await (const [index, headerText] of this.productTourCategories.entries()) {
-      await I.waitForElement(this.tourStepHeader(headerText), 10);
+    const lastStepHeaderText = this.productTourCategories[this.productTourCategories.length - 1];
 
-      if (index + 1 === this.productTourCategories.length) {
-        await I.click(this.tourDoneButton);
+    for (const headerText of this.productTourCategories) {
+      I.waitForElement(this.tourStepHeader(headerText), 10);
+      if (headerText === lastStepHeaderText) {
+        I.dontSeeElement(this.nextStepButton);
+        I.click(this.tourDoneButton);
       } else {
-        await I.click(this.nextStepButton);
+        I.dontSeeElement(this.tourDoneButton);
+        I.click(this.nextStepButton);
       }
     }
   }
