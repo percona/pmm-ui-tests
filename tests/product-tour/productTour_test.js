@@ -12,7 +12,7 @@ Scenario('PMM-T1879 Verify that product tour dialog is displayed after check lat
   await I.click(homePage.productTour.laterButton);
   await I.refreshPage();
   await I.waitForElement(homePage.productTour.productTourModal, 10);
-});
+}).config('Playwright', { waitForNavigation: 'load' });
 
 Scenario('PMM-T1880 Verify that product tour dialog is displayed after closing @grafana-pr', async ({ I, homePage }) => {
   await I.amOnPage('');
@@ -20,7 +20,7 @@ Scenario('PMM-T1880 Verify that product tour dialog is displayed after closing @
   await I.click(homePage.productTour.closeButton);
   await I.refreshPage();
   await I.waitForElement(homePage.productTour.productTourModal, 10);
-});
+}).config('Playwright', { waitForNavigation: 'load' });
 
 Scenario('PMM-T1881 Verify that product tour dialog contains all the components. @grafana-pr', async ({ I, homePage }) => {
   await I.amOnPage('');
@@ -28,7 +28,7 @@ Scenario('PMM-T1881 Verify that product tour dialog contains all the components.
   await I.click(homePage.productTour.startTourButton);
   await homePage.productTour.verifyProductTourSteps();
   await I.waitForDetached(homePage.productTour.productTourModal);
-});
+}).config('Playwright', { waitForNavigation: 'load' });
 
 Scenario('PMM-T1882 Verify that product tour dialog is not displayed after skipping @grafana-pr', async ({ I, homePage }) => {
   await I.enableProductTour();
@@ -42,4 +42,4 @@ Scenario('PMM-T1882 Verify that product tour dialog is not displayed after skipp
 
   await I.waitForElement(homePage.elements.pageContent);
   await I.waitForDetached(homePage.productTour.productTourModal, 10);
-});
+}).config('Playwright', { waitForNavigation: 'load' });
