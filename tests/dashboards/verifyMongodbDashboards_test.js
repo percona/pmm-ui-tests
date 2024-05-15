@@ -20,7 +20,8 @@ Scenario(
   },
 );
 
-Scenario(
+// unskip after sharded cluster setup is available in the framework
+Scenario.skip(
   'Open the MongoDB Cluster Summary Dashboard and verify Metrics are present and graphs are displayed @nightly @dashboards',
   async ({ I, dashboardPage }) => {
     I.amOnPage(I.buildUrlWithParams(dashboardPage.mongoDbClusterSummaryDashboard.url, {
