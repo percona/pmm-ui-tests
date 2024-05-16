@@ -225,6 +225,6 @@ Scenario(
     dashboardPage.waitForDashboardOpened();
     await dashboardPage.expandEachDashboardRow();
     await dashboardPage.verifyMetricsExistence(dashboardPage.groupReplicationDashboard.metrics);
-    await dashboardPage.verifyThereAreNoGraphsWithoutData(3);
+    await dashboardPage.verifyThereAreNoGraphsWithoutData(8);
   },
 );

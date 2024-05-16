@@ -801,15 +801,6 @@ module.exports = {
   groupReplicationDashboard: {
     url: 'graph/d/mysql-group-replicaset-summary/mysql-group-replication-summary?orgId=1&refresh=1m',
     clearUrl: 'graph/d/mysql-group-replicaset-summary/mysql-group-replication-summary',
-    // Uncomment and add below graphs, after https://perconadev.atlassian.net/browse/PMM-13121 fixed.
-    // 'Checked Transactions',
-    // 'Transactions Row Validating',
-    // 'Applied Transactions',
-    // 'Sent Transactions',
-    // 'Received Transactions Queue',
-    // 'Rolled Back Transactions',
-    // 'Transactions in the Queue for Checking',
-    // 'Detected Conflicts',
     metrics: [
       'Group Replication Service States',
       'PRIMARY Service',
@@ -819,6 +810,14 @@ module.exports = {
       'Replication Delay',
       'Transaction Apply Time',
       'Transaction Time Inside the Local Queue',
+      'Checked Transactions',
+      'Transactions Row Validating',
+      'Applied Transactions',
+      'Sent Transactions',
+      'Received Transactions Queue',
+      'Rolled Back Transactions',
+      'Transactions in the Queue for Checking',
+      'Detected Conflicts',
     ],
   },
   mysqlPXCGaleraNodeSummaryDashboard: {
