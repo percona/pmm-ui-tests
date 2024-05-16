@@ -219,7 +219,7 @@ Scenario(
 Scenario(
   'PMM-T430 - Verify metrics on MySQL Group Replication Summary Dashboard @dashboards @nightly',
   async ({ I, dashboardPage }) => {
-    const url = I.buildUrlWithParams(dashboardPage.groupReplicationDashboard.clearUrl, { from: 'now-1h' });
+    const url = I.buildUrlWithParams(dashboardPage.groupReplicationDashboard.clearUrl, { from: 'now-5m' });
 
     I.amOnPage(url);
     dashboardPage.waitForDashboardOpened();
