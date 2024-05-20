@@ -1,7 +1,7 @@
 Feature('Test Dashboards inside the MongoDB Folder');
 
 Before(async ({ I }) => {
-  await I.Authorize('admin', 'pmm2023fortesting!');
+  await I.Authorize();
 });
 
 Scenario(
