@@ -43,7 +43,7 @@ Scenario(
 );
 
 Scenario('PMM-T1889 Verify Mongo replication lag graph shows correct info @nightly @dashboards', async ({ I, dashboardPage }) => {
-  const testConfigFile = '"c = rs.conf() \\nc.members[2].secondaryDelaySecs = 10\\nc.members[2].priority = 0 \\nc.members[2].hidden = true \\nrs.reconfig(c)';
+  const testConfigFile = 'c = rs.conf() \\nc.members[2].secondaryDelaySecs = 10\\nc.members[2].priority = 0 \\nc.members[2].hidden = true \\nrs.reconfig(c)';
 
   await I.verifyCommand(`echo -e "${testConfigFile}" > test.js`);
   await I.verifyCommand('sudo docker exec -it rs101 mongo "mongodb://root:root@localhost/?replicaSet=rs" < test.js');
