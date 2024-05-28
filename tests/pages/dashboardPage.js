@@ -928,6 +928,11 @@ module.exports = {
       'ReplSet Last Election',
       'MongoDB Versions',
     ],
+    elements: {
+      replicationLagMin: locate('//div[@aria-label="Replication Lag panel"]//td[@class="graph-legend-value min"]'),
+      replicationLagMax: locate('//div[@aria-label="Replication Lag panel"]//td[@class="graph-legend-value max"]'),
+      replicationLagAvg: locate('//div[@aria-label="Replication Lag panel"]//td[@class="graph-legend-value avg"]'),
+    },
   },
   victoriaMetricsAgentsOverviewDashboard: {
     url: 'graph/d/vmagent/victoriametrics-agents-overview?orgId=1&refresh=5m',
@@ -1483,5 +1488,14 @@ module.exports = {
    */
   panelMenu(panelTitle) {
     return new DashboardPanelMenu(panelTitle);
+  },
+
+  async getReplicationLagValues() {
+    I.waitForVisible(this.mongodbReplicaSetSummaryDashboard.elements.replicationLagMin);
+    const replicationLagMin = await I.grabtextFrom(this.mongodbReplicaSetSummaryDashboard.elements.replicationLagMin);
+    const replicationLagMax = await I.grabtextFrom(this.mongodbReplicaSetSummaryDashboard.elements.replicationLagMax);
+    const replicationLagAvg = await I.grabtextFrom(this.mongodbReplicaSetSummaryDashboard.elements.replicationLagAvg);
+
+    return [replicationLagMin, replicationLagMax, replicationLagAvg];
   },
 };
