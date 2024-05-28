@@ -83,13 +83,12 @@ xScenario(
 ).retry(2);
 
 Data(filters).Scenario('PMM-T746, PMM-T748 - Verify adding monitoring for Azure CHECK QAN @instances', async ({
-  I, qanFilters, qanOverview, qanPage, current,
+  I, current, queryAnalyticsPage,
 }) => {
-  I.amOnPage(qanPage.refreshRateFiveSecondsUrl);
-  I.waitForElement(qanFilters.elements.filterItem('Environment', current.filter), 60);
-  await qanFilters.applyFilter(current.filter);
-  qanOverview.waitForOverviewLoaded();
-  const count = await qanOverview.getCountOfItems();
+  I.amOnPage(I.buildUrlWithParams(queryAnalyticsPage.url, { from: 'now-5m', refresh: '5s' }));
+  await queryAnalyticsPage.filters.selectFilter(current.filter);
+  queryAnalyticsPage.waitForLoaded();
+  const count = await queryAnalyticsPage.data.getCountOfItems();
 
   assert.ok(count > 0, `QAN queries for added Azure service with env as ${current.filter} do not exist`);
 }).retry(1);

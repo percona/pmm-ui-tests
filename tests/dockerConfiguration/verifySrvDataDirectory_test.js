@@ -56,7 +56,7 @@ After(async ({ I }) => {
 Scenario(
   'PMM-T1243 Verify PMM Server without data container @docker-configuration',
   async ({
-    I, adminPage, qanPage, dashboardPage,
+    I, adminPage, queryAnalyticsPage, dashboardPage,
   }) => {
     const basePmmUrl = 'http://127.0.0.1:8081/';
 
@@ -64,10 +64,10 @@ Scenario(
     await I.Authorize('admin', 'admin');
     await I.wait(120);
     testCaseName = 'PMM-T1243';
-    await I.amOnPage(basePmmUrl + qanPage.url);
-    await I.waitForInvisible(qanPage.elements.noQueryAvailable, 180);
-    await I.waitForVisible(qanPage.elements.qanRow);
-    const qanRows = await I.grabNumberOfVisibleElements(qanPage.elements.qanRow);
+    await I.amOnPage(basePmmUrl + queryAnalyticsPage.url);
+    await I.waitForInvisible(queryAnalyticsPage.data.elements.noResultTableText, 180);
+    await I.waitForVisible(queryAnalyticsPage.data.elements.queryRows);
+    const qanRows = await I.grabNumberOfVisibleElements(queryAnalyticsPage.data.elements.queryRows);
 
     assert.ok(qanRows > 0, 'Query Analytics are empty');
     await I.amOnPage(`${basePmmUrl + dashboardPage.nodeSummaryDashboard.url}?orgId=1&refresh=5s`);
@@ -81,12 +81,12 @@ Scenario(
     const logs = await I.verifyCommand('docker logs pmm-server-srv');
 
     assert.ok(!logs.includes('Error: The directory named as part of the path /srv/logs/supervisord.log does not exist'));
-    await I.amOnPage(basePmmUrl + qanPage.url);
+    await I.amOnPage(basePmmUrl + queryAnalyticsPage.url);
     adminPage.setAbsoluteTimeRange(moment().subtract({ hours: 12 }).format('YYYY-MM-DD HH:mm:00'), moment().subtract({ minutes: 1 }).format('YYYY-MM-DD HH:mm:00'));
 
-    await I.waitForInvisible(qanPage.elements.noQueryAvailable, 180);
-    await I.waitForVisible(qanPage.elements.qanRow);
-    const qanRowsAfterRestart = await I.grabNumberOfVisibleElements(qanPage.elements.qanRow);
+    await I.waitForInvisible(queryAnalyticsPage.data.elements.noResultTableText, 180);
+    await I.waitForVisible(queryAnalyticsPage.data.elements.queryRows);
+    const qanRowsAfterRestart = await I.grabNumberOfVisibleElements(queryAnalyticsPage.data.elements.queryRows);
 
     assert.ok(qanRowsAfterRestart > 0, 'Query Analytics are empty after restart of docker container');
 
@@ -99,7 +99,7 @@ Scenario(
 Scenario(
   'PMM-T1244 Verify PMM Server with empty data container @docker-configuration',
   async ({
-    I, adminPage, qanPage, dashboardPage,
+    I, adminPage, dashboardPage, queryAnalyticsPage,
   }) => {
     const basePmmUrl = 'http://127.0.0.1:8083/';
 
@@ -108,10 +108,10 @@ Scenario(
     await I.Authorize('admin', 'admin');
     await I.wait(120);
     testCaseName = 'PMM-T1244';
-    await I.amOnPage(basePmmUrl + qanPage.url);
-    I.dontSeeElement(qanPage.elements.noQueryAvailable);
-    await I.waitForVisible(qanPage.elements.qanRow);
-    const qanRows = await I.grabNumberOfVisibleElements(qanPage.elements.qanRow);
+    await I.amOnPage(basePmmUrl + queryAnalyticsPage.url);
+    I.dontSeeElement(queryAnalyticsPage.data.elements.noResultTableText);
+    await I.waitForVisible(queryAnalyticsPage.data.elements.queryRows);
+    const qanRows = await I.grabNumberOfVisibleElements(queryAnalyticsPage.data.elements.queryRows);
 
     assert.ok(qanRows > 0, 'Query Analytics are empty');
     await I.amOnPage(`${basePmmUrl + dashboardPage.nodeSummaryDashboard.url}?orgId=1&refresh=5s`);
@@ -125,12 +125,12 @@ Scenario(
     const logs = await I.verifyCommand('docker logs pmm-server-srv');
 
     assert.ok(!logs.includes('Error: The directory named as part of the path /srv/logs/supervisord.log does not exist'));
-    await I.amOnPage(basePmmUrl + qanPage.url);
+    await I.amOnPage(basePmmUrl + queryAnalyticsPage.url);
     adminPage.setAbsoluteTimeRange(moment().subtract({ hours: 12 }).format('YYYY-MM-DD HH:mm:00'), moment().subtract({ minutes: 1 }).format('YYYY-MM-DD HH:mm:00'));
 
-    I.dontSeeElement(qanPage.elements.noQueryAvailable);
-    await I.waitForVisible(qanPage.elements.qanRow);
-    const qanRowsAfterRestart = await I.grabNumberOfVisibleElements(qanPage.elements.qanRow);
+    I.dontSeeElement(queryAnalyticsPage.data.elements.noResultTableText);
+    await I.waitForVisible(queryAnalyticsPage.data.elements.queryRows);
+    const qanRowsAfterRestart = await I.grabNumberOfVisibleElements(queryAnalyticsPage.data.elements.queryRows);
 
     assert.ok(qanRowsAfterRestart > 0, 'Query Analytics are empty after restart of docker container');
 
@@ -145,7 +145,7 @@ Scenario(
 Scenario.skip(
   'PMM-T1255 Verify GF_SECURITY_ADMIN_PASSWORD environment variable @docker-configuration',
   async ({
-    I, adminPage, qanPage, dashboardPage, homePage, loginPage,
+    I, homePage, loginPage,
   }) => {
     I.say('Alo covers: PMM-T1279 Verify GF_SECURITY_ADMIN_PASSWORD environment variable with change-admin-password');
     const basePmmUrl = 'http://127.0.0.1:8082/';
@@ -180,7 +180,7 @@ Scenario.skip(
 Scenario(
   'PMM-T1256 Verify GF_SECURITY_ADMIN_PASSWORD environment variable after upgrade @docker-configuration',
   async ({
-    I, adminPage, qanPage, dashboardPage, homePage,
+    I, homePage,
   }) => {
     const basePmmUrl = 'http://127.0.0.1:8084/';
 

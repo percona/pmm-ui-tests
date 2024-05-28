@@ -239,14 +239,14 @@ Data(shortCutTests).Scenario(
   'PMM-T436 PMM-T458 - Verify short-cut navigation from filters to related dashboards, '
     + 'Verify time interval is passed from QAN to dashboards via shortcut links @qan @debug',
   async ({
-    I, qanFilters, dashboardPage, current, adminPage, qanOverview, qanPage,
+    I, qanFilters, dashboardPage, current, adminPage, qanOverview, anPage,
   }) => {
     const shortCutLink = current.shortcutLink;
     const header = current.dashboard;
     const filterValue = current.filter;
     const timeRangeValue = 'from=now-3h&to=now';
 
-    I.amOnPage(`${qanPage.url}&orgId=1`);
+    I.amOnPage(`${anPage.url}&orgId=1`);
     await adminPage.applyTimeRange('Last 3 hours');
     qanOverview.waitForOverviewLoaded();
     qanFilters.waitForFiltersToLoad();

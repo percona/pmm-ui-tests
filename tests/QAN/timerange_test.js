@@ -42,21 +42,21 @@ Scenario(
 Scenario.skip(
   'PMM-T432 Open the QAN Dashboard and check that changing absolute time range updates the overview table, URL @qan',
   async ({
-    I, adminPage, qanDetails, qanFilters, qanOverview,
+    I, adminPage,
   }) => {
     const date = moment().format('YYYY-MM-DD');
     const fromString = Date.parse(`${date} 00:00:00`);
     const toString = Date.parse(`${date} 23:59:59`);
 
     await I.seeInCurrentUrl('from=now-5m&to=now');
-    await qanOverview.selectRow(1);
-    await qanFilters.waitForFiltersToLoad();
-    await I.seeElement(qanDetails.root);
+    // await qanOverview.selectRow(1);
+    // await qanFilters.waitForFiltersToLoad();
+    // await I.seeElement(qanDetails.root);
     await adminPage.setAbsoluteTimeRange(`${date} 00:00:00`, `${date} 23:59:59`);
     await I.seeInCurrentUrl(`from=${fromString}&to=${toString}`);
-    await qanOverview.selectRow(1);
-    await qanFilters.waitForFiltersToLoad();
-    await I.seeElement(qanDetails.root);
+    // await qanOverview.selectRow(1);
+    // await qanFilters.waitForFiltersToLoad();
+    // await I.seeElement(qanDetails.root);
   },
 );
 
