@@ -31,6 +31,7 @@ class QueryAnalyticsData {
       mainMetricsContainer: locate(I.useDataQA('group-by')),
       mainMetricFromDropdown: (metricName) => locate('.ant-select-item-option-content').withText(metricName),
       mainMetricByName: (metricsName) => this.elements.selectedMainMetric().withText(metricsName),
+      removeMetricColumn: locate('div').withChild('.anticon-minus').withText('Remove column'),
     };
     this.fields = {
       searchBy: '//input[contains(@name, "search")]',
@@ -270,6 +271,15 @@ class QueryAnalyticsData {
   async hideTooltip() {
     await I.moveCursorTo(queryAnalyticsPage.buttons.addColumnButton);
     await I.waitForInvisible(this.elements.metricTooltip, 5);
+  }
+
+  async removeMetricFromOverview(metricName) {
+    await I.click(this.fields.columnHeader(metricName));
+    await I.waitForElement(this.elements.removeMetricColumn, 10);
+    await I.waitForElement(this.elements.removeMetricColumn, 30);
+    await I.forceClick(this.elements.removeMetricColumn);
+    queryAnalyticsPage.waitForLoaded();
+    await I.dontSeeElement(this.fields.columnHeader(metricName));
   }
 }
 

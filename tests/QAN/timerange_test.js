@@ -12,11 +12,11 @@ Before(async ({ I, queryAnalyticsPage }) => {
 // https://perconadev.atlassian.net/browse/PMM-13052 blocked
 Scenario.skip(
   'Open the QAN Dashboard and check that changing the time range resets current page to the first. @qan',
-  async ({ adminPage, qanPagination, qanOverview }) => {
-    await qanPagination.selectPage(2);
+  async ({ adminPage }) => {
+    // await anPagination.selectPage(2);
     await adminPage.applyTimeRange('Last 3 hours');
-    await qanOverview.waitForOverviewLoaded();
-    await qanPagination.verifyActivePage(1);
+    // await anOverview.waitForOverviewLoaded();
+    // await anPagination.verifyActivePage(1);
   },
 );
 
@@ -49,14 +49,14 @@ Scenario.skip(
     const toString = Date.parse(`${date} 23:59:59`);
 
     await I.seeInCurrentUrl('from=now-5m&to=now');
-    // await qanOverview.selectRow(1);
-    // await qanFilters.waitForFiltersToLoad();
-    // await I.seeElement(qanDetails.root);
+    // await anOverview.selectRow(1);
+    // await anFilters.waitForFiltersToLoad();
+    // await I.seeElement(anDetails.root);
     await adminPage.setAbsoluteTimeRange(`${date} 00:00:00`, `${date} 23:59:59`);
     await I.seeInCurrentUrl(`from=${fromString}&to=${toString}`);
-    // await qanOverview.selectRow(1);
-    // await qanFilters.waitForFiltersToLoad();
-    // await I.seeElement(qanDetails.root);
+    // await anOverview.selectRow(1);
+    // await anFilters.waitForFiltersToLoad();
+    // await I.seeElement(anDetails.root);
   },
 );
 
@@ -91,43 +91,43 @@ Scenario(
 
 Scenario.skip(
   'PMM-T1138 - Verify QAN Copy Button for URL @qan',
-  async ({ I, adminPage, qanOverview }) => {
+  async ({ I, adminPage }) => {
     await adminPage.applyTimeRange('Last 12 hours');
 
     const dateTime = moment().format('x');
 
-    qanOverview.waitForOverviewLoaded();
-    qanOverview.selectRow(2);
-    I.click(qanOverview.buttons.copyButton);
+    // anOverview.waitForOverviewLoaded();
+    // anOverview.selectRow(2);
+    // I.click(anOverview.buttons.copyButton);
     I.waitForVisible(I.getPopUpLocator(), 10);
 
-    const url = new URL(await I.grabTextFrom(qanOverview.elements.clipboardLink));
+    // const url = new URL(await I.grabTextFrom(anOverview.elements.clipboardLink));
     const toTimeFromUrl1 = url.searchParams.get('to');
 
     assert.ok(Math.abs(dateTime - toTimeFromUrl1) < 30000, 'Difference between moment time and first copied time must be less then half of minute');
 
     I.wait(30);
     I.refreshPage();
-    qanOverview.waitForOverviewLoaded();
-    I.click(qanOverview.buttons.copyButton);
+    // anOverview.waitForOverviewLoaded();
+    // I.click(anOverview.buttons.copyButton);
     I.waitForVisible(I.getPopUpLocator(), 10);
 
-    const url2 = new URL(await I.grabTextFrom(qanOverview.elements.clipboardLink));
+    // const url2 = new URL(await I.grabTextFrom(anOverview.elements.clipboardLink));
     const toTimeFromUrl2 = url2.searchParams.get('to');
 
     assert.ok(Math.abs(toTimeFromUrl1 - toTimeFromUrl2) < 60000, 'Difference between moment time and second copied time must be less then one minute');
     assert.notEqual(toTimeFromUrl1, toTimeFromUrl2, 'TimeFromUrl2 must not be the same as timeFromUrl1');
 
     I.openNewTab();
-    I.amOnPage(url.toString());
-    qanOverview.waitForOverviewLoaded();
-    I.waitForVisible(qanOverview.getSelectedRowLocator(2));
+    // I.amOnPage(url.toString());
+    // anOverview.waitForOverviewLoaded();
+    // I.waitForVisible(anOverview.getSelectedRowLocator(2));
   },
 );
 
 Scenario(
   'PMM-T1140 - Verify relative time range copy URL from browser @qan',
-  async ({ I, qanOverview }) => {
+  async ({ I, queryAnalyticsPage }) => {
     const url = new URL(await I.grabCurrentUrl());
     const fromString1 = url.searchParams.get('from');
     const toString1 = url.searchParams.get('to');
@@ -135,7 +135,7 @@ Scenario(
     I.wait(60);
     I.openNewTab();
     I.amOnPage(url.toString());
-    qanOverview.waitForOverviewLoaded();
+    queryAnalyticsPage.waitForLoaded();
 
     const url2 = new URL(await I.grabCurrentUrl());
     const fromString2 = url2.searchParams.get('from');
@@ -149,21 +149,21 @@ Scenario(
 // https://perconadev.atlassian.net/browse/PMM-13052 blocked
 Scenario.skip(
   'PMM-T1141 - Verify specific time range by new button to copy QAN URL @qan',
-  async ({ I, adminPage, qanOverview }) => {
+  async ({ I, adminPage }) => {
     const dateTime = moment();
     const to = dateTime.format('YYYY-MM-DD HH:mm:ss');
     const from = moment(dateTime).subtract(1, 'hours').format('YYYY-MM-DD HH:mm:ss');
     const fromToString = `&from=${moment(from).valueOf()}&to=${moment(to).valueOf()}`;
 
     await adminPage.setAbsoluteTimeRange(from, to);
-    await qanOverview.waitForOverviewLoaded();
+    // await anOverview.waitForOverviewLoaded();
     await I.seeInCurrentUrl(fromToString);
-    await I.click(qanOverview.buttons.copyButton);
+    // await I.click(anOverview.buttons.copyButton);
 
-    const url = await I.grabTextFrom(qanOverview.elements.clipboardLink);
+    // const url = await I.grabTextFrom(anOverview.elements.clipboardLink);
 
     await I.openNewTab();
-    await I.amOnPage(url.match(/\bhttps?:\/\/\S+/gi)[0]);
+    // await I.amOnPage(url.match(/\bhttps?:\/\/\S+/gi)[0]);
     await I.seeInCurrentUrl(fromToString);
   },
 );

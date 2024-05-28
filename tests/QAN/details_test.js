@@ -154,7 +154,7 @@ Scenario(
 //     anOverview.waitForOverviewLoaded();
 //     await anOverview.searchByValue('SELECT * FROM test.cities WHERE ID');
 //     await I.asyncWaitFor(async () => {
-//       I.click(qanOverview.buttons.refresh);
+//       I.click(anOverview.buttons.refresh);
 
 //       return !(await I.grabNumberOfVisibleElements(anOverview.elements.noResultTableText));
 //     }, 300);
