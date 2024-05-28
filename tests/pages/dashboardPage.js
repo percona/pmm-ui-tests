@@ -1496,6 +1496,6 @@ module.exports = {
     const replicationLagMax = await I.grabTextFrom(this.mongodbReplicaSetSummaryDashboard.elements.replicationLagMax);
     const replicationLagAvg = await I.grabTextFrom(this.mongodbReplicaSetSummaryDashboard.elements.replicationLagAvg);
 
-    return [replicationLagMin, replicationLagMax, replicationLagAvg];
+    return [parseInt(replicationLagMin, 10), parseInt(replicationLagMax, 10), parseInt(replicationLagAvg, 10)];
   },
 };
