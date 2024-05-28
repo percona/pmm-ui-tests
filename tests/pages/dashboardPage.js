@@ -1492,9 +1492,9 @@ module.exports = {
 
   async getReplicationLagValues() {
     I.waitForVisible(this.mongodbReplicaSetSummaryDashboard.elements.replicationLagMin);
-    const replicationLagMin = await I.grabtextFrom(this.mongodbReplicaSetSummaryDashboard.elements.replicationLagMin);
-    const replicationLagMax = await I.grabtextFrom(this.mongodbReplicaSetSummaryDashboard.elements.replicationLagMax);
-    const replicationLagAvg = await I.grabtextFrom(this.mongodbReplicaSetSummaryDashboard.elements.replicationLagAvg);
+    const replicationLagMin = await I.grabTextFrom(this.mongodbReplicaSetSummaryDashboard.elements.replicationLagMin);
+    const replicationLagMax = await I.grabTextFrom(this.mongodbReplicaSetSummaryDashboard.elements.replicationLagMax);
+    const replicationLagAvg = await I.grabTextFrom(this.mongodbReplicaSetSummaryDashboard.elements.replicationLagAvg);
 
     return [replicationLagMin, replicationLagMax, replicationLagAvg];
   },
