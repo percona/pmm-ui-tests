@@ -50,7 +50,7 @@ Scenario('PMM-T1889 Verify Mongo replication lag graph shows correct info @night
   dashboardPage.waitForDashboardOpened();
   const [min, max, avg] = await dashboardPage.getReplicationLagValues('rs103');
 
-  I.assertAbove(min, 10, 'Replication Lag min is less than expected lag vaule');
-  I.assertAbove(max, 10, 'Replication Lag max is less than expected lag vaule');
-  I.assertAbove(avg, 10, 'Replication Lag avg is less than expected lag vaule');
+  I.assertAbove(min, 10, `Replication Lag min is less than expected lag value, expected: "10s" actual: ${min}`);
+  I.assertAbove(max, 10, `Replication Lag max is less than expected lag value, expected: "10s" actual: ${max}`);
+  I.assertAbove(avg, 10, `Replication Lag avg is less than expected lag value, expected: "10s" actual: ${avg}`);
 });
