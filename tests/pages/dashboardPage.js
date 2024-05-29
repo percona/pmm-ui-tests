@@ -794,6 +794,19 @@ module.exports = {
       'MySQL Table Definition Cache',
     ],
   },
+  mysqlInnoDBDetailsDashboard: {
+    url: 'graph/d/mysql-innodb/mysql-innodb-details?orgId=1&refresh=1m&from=now-5m&to=now',
+    clearUrl: 'graph/d/mysql-innodb/mysql-innodb-details',
+    metrics: [
+      'InnoDB Logging Performance',
+      'InnoDB Log File Usage Hourly',
+      'InnoDB Log Buffer Usage',
+      'Log Writes Details',
+      'InnoDB Log File Flush Latency',
+      'Log Padding Written',
+      'InnoDB Group Commit Batch Size',
+    ],
+  },
   groupReplicationDashboard: {
     url: 'graph/d/mysql-group-replicaset-summary/mysql-group-replication-summary?orgId=1&refresh=1m',
     clearUrl: 'graph/d/mysql-group-replicaset-summary/mysql-group-replication-summary',

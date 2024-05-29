@@ -263,3 +263,22 @@ Scenario(
     await dashboardPage.verifyThereAreNoGraphsWithoutData(8);
   },
 );
+
+Scenario(
+  'PMM-T1892 - Verify metrics on MySQL Innodb Log Details Dashboard @dashboards @nightly',
+  async ({ I, dashboardPage, adminPage }) => {
+    const url = I.buildUrlWithParams(dashboardPage.mysqlInnoDBDetailsDashboard.clearUrl, { from: 'now-15m' });
+
+    I.amOnPage(url);
+    dashboardPage.waitForDashboardOpened();
+    adminPage.performPageDown(3);
+
+    // Gather InndoDB logs pannel, metric name.
+    const metricName = '//div[@class="panel-title"]//h2[normalize-space()=\'Total Log Space\']';
+
+    I.click(metricName);
+    adminPage.performPageDown(3);
+    dashboardPage.verifyMetricsExistence(dashboardPage.mysqlInnoDBDetailsDashboard.metrics);
+    await dashboardPage.verifyThereAreNoGraphsWithoutData(0);
+  },
+);
