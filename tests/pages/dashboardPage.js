@@ -1492,8 +1492,8 @@ module.exports = {
     return new DashboardPanelMenu(panelTitle);
   },
 
-  async getReplicationLagValues(serviceName) {
-    for (let i = 0; i < 60; i++) {
+  async getReplicationLagValues(serviceName, timeoutInSeconds = 60) {
+    for (let i = 0; i < timeoutInSeconds; i++) {
       const numOfElements = await I.grabNumberOfVisibleElements(this.mongodbReplicaSetSummaryDashboard.elements.replicationLagMin(serviceName));
 
       if (numOfElements > 0) break;
