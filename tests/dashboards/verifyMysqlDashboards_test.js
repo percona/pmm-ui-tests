@@ -274,7 +274,6 @@ Scenario(
     await dashboardPage.expandEachDashboardRow();
     adminPage.performPageDown(3);
     dashboardPage.verifyMetricsExistence(dashboardPage.mysqlInnoDBDetailsDashboard.metrics);
-    // await dashboardPage.verifyThereAreNoGraphsWithNA();
     await dashboardPage.verifyThereAreNoGraphsWithoutData(6);
   },
 );
