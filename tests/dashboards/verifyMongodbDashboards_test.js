@@ -43,14 +43,14 @@ Scenario(
 );
 
 Scenario('PMM-T1889 Verify Mongo replication lag graph shows correct info @nightly @dashboards', async ({ I, dashboardPage }) => {
-  const testConfigFile = 'c = rs.conf(); c.members[2].secondaryDelaySecs = 20; c.members[2].priority = 0; c.members[2].hidden = true; rs.reconfig(c);';
+  const testConfigFile = 'c = rs.conf(); c.members[2].secondaryDelaySecs = 10; c.members[2].priority = 0; c.members[2].hidden = true; rs.reconfig(c);';
 
   await I.verifyCommand(`sudo docker exec rs101 mongo "mongodb://root:root@localhost/?replicaSet=rs" --eval "${testConfigFile}"`);
   I.amOnPage(dashboardPage.mongodbReplicaSetSummaryDashboard.cleanUrl);
   dashboardPage.waitForDashboardOpened();
   const [min, max, avg] = await dashboardPage.getReplicationLagValues('rs103');
 
-  I.assertBelow(min, 12, 'Replication Lag min is more than expected lag vaule');
-  I.assertBelow(max, 12, 'Replication Lag max is more than expected lag vaule');
-  I.assertBelow(avg, 12, 'Replication Lag avg is more than expected lag vaule');
+  I.assertAbove(min, 10, 'Replication Lag min is less than expected lag vaule');
+  I.assertAbove(max, 10, 'Replication Lag max is less than expected lag vaule');
+  I.assertAbove(avg, 10, 'Replication Lag avg is less than expected lag vaule');
 });
