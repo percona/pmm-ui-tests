@@ -49,7 +49,6 @@ Scenario('PMM-T1889 Verify Mongo replication lag graph shows correct info @night
 
   console.log(`sudo docker exec rs101 mongo "mongodb://root:root@localhost/?replicaSet=rs" --eval "${testConfigFile}"`);
 
-  I.wait(30);
   I.amOnPage(dashboardPage.mongodbReplicaSetSummaryDashboard.cleanUrl);
   dashboardPage.waitForDashboardOpened();
   const [min, max, avg] = await dashboardPage.getReplicationLagValues('rs103');
