@@ -52,7 +52,7 @@ Scenario('PMM-T1889 Verify Mongo replication lag graph shows correct info @night
   I.wait(30);
   I.amOnPage(dashboardPage.mongodbReplicaSetSummaryDashboard.cleanUrl);
   dashboardPage.waitForDashboardOpened();
-  const [min, max, avg] = await dashboardPage.getReplicationLagValues();
+  const [min, max, avg] = await dashboardPage.getReplicationLagValues('rs103');
 
   I.assertBelow(min, 12, 'Replication Lag min is more than expected lag vaule');
   I.assertBelow(max, 12, 'Replication Lag max is more than expected lag vaule');

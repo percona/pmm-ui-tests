@@ -16,6 +16,7 @@ module.exports = {
   toggleAllValues:
     '//a[@aria-label="Toggle all values"]',
   panel: 'div[data-panelid]',
+  refreshDashboard: locate('[aria-label="Refresh dashboard"]'),
   systemUptimePanel: (nodeName) => `//div[@class="panel-title"]//h2[text()="${nodeName} - System Uptime"]`,
   nodesCompareDashboard: {
     url: 'graph/d/node-instance-compare/nodes-compare?orgId=1&refresh=1m&from=now-5m&to=now',
@@ -1493,7 +1494,14 @@ module.exports = {
   },
 
   async getReplicationLagValues(serviceName) {
-    I.waitForVisible(this.mongodbReplicaSetSummaryDashboard.elements.replicationValues(serviceName));
+    for (let i = 0; i < 60; i++) {
+      const numOfElements = await I.grabNumberOfVisibleElements(this.mongodbReplicaSetSummaryDashboard.elements.replicationLagMin(serviceName));
+
+      if (numOfElements > 0) break;
+
+      I.wait(1);
+    }
+
     const replicationLagMin = await I.grabTextFrom(this.mongodbReplicaSetSummaryDashboard.elements.replicationLagMin(serviceName));
     const replicationLagMax = await I.grabTextFrom(this.mongodbReplicaSetSummaryDashboard.elements.replicationLagMax(serviceName));
     const replicationLagAvg = await I.grabTextFrom(this.mongodbReplicaSetSummaryDashboard.elements.replicationLagAvg(serviceName));
