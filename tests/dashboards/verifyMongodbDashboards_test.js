@@ -43,12 +43,14 @@ Scenario(
 );
 
 Scenario('PMM-T1889 Verify Mongo replication lag graph shows correct info @nightly @dashboards', async ({ I, dashboardPage }) => {
-  const testConfigFile = 'c = rs.conf() \\nc.members[2].secondaryDelaySecs = 10\\nc.members[2].priority = 0 \\nc.members[2].hidden = true \\nrs.reconfig(c)';
+  const testConfigFile = 'c = rs.conf(); c.members[2].secondaryDelaySecs = 10; c.members[2].priority = 0; c.members[2].hidden = true; rs.reconfig(c);';
 
-  await I.verifyCommand(`sudo docker exec rs101 echo -e "${testConfigFile}" > test.js`);
-  await I.verifyCommand('sudo docker exec rs101 mongo "mongodb://root:root@localhost/?replicaSet=rs" < test.js');
+  await I.verifyCommand(`sudo docker exec rs101 mongo "mongodb://root:root@localhost/?replicaSet=rs" --eval "${testConfigFile}"`);
 
-  I.amOnPage(dashboardPage.mongodbReplicaSetSummaryDashboard.url);
+  console.log(`sudo docker exec rs101 mongo "mongodb://root:root@localhost/?replicaSet=rs" --eval "${testConfigFile}"`);
+
+  I.wait(30);
+  I.amOnPage(dashboardPage.mongodbReplicaSetSummaryDashboard.cleanUrl);
   dashboardPage.waitForDashboardOpened();
   const [min, max, avg] = await dashboardPage.getReplicationLagValues();
 
