@@ -1494,7 +1494,6 @@ module.exports = {
 
   async getReplicationLagValues(serviceName) {
     for (let i = 0; i < 60; i++) {
-      console.log(this.mongodbReplicaSetSummaryDashboard.elements.replicationLagMin(serviceName));
       const numOfElements = await I.grabNumberOfVisibleElements(this.mongodbReplicaSetSummaryDashboard.elements.replicationLagMin(serviceName));
 
       if (numOfElements > 0) break;
