@@ -931,10 +931,9 @@ module.exports = {
       'MongoDB Versions',
     ],
     elements: {
-      replicationValues: (serviceName) => locate(`//div[@aria-label="Replication Lag panel"]//a[@title="${serviceName}"]//ancestor::tr[@class="graph-legend-series "]`),
-      replicationLagMin: (serviceName) => this.metrics.mongodbReplicaSetSummaryDashboard.elements.replicationValues(serviceName).find('//td[@class="graph-legend-value min"]'),
-      replicationLagMax: (serviceName) => this.metrics.mongodbReplicaSetSummaryDashboard.elements.replicationValues(serviceName).find('//td[@class="graph-legend-value max"]'),
-      replicationLagAvg: (serviceName) => this.metrics.mongodbReplicaSetSummaryDashboard.elements.replicationValues(serviceName).find('//td[@class="graph-legend-value avg"]'),
+      replicationLagMin: (serviceName) => locate(`//div[@aria-label="Replication Lag panel"]//a[@title="${serviceName}"]//ancestor::tr[@class="graph-legend-series "]//td[@class="graph-legend-value min"]`),
+      replicationLagMax: (serviceName) => locate(`//div[@aria-label="Replication Lag panel"]//a[@title="${serviceName}"]//ancestor::tr[@class="graph-legend-series "]//td[@class="graph-legend-value max"]`),
+      replicationLagAvg: (serviceName) => locate(`//div[@aria-label="Replication Lag panel"]//a[@title="${serviceName}"]//ancestor::tr[@class="graph-legend-series "]//td[@class="graph-legend-value avg"]`),
     },
   },
   victoriaMetricsAgentsOverviewDashboard: {
