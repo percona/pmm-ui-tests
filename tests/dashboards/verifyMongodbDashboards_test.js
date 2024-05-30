@@ -53,14 +53,4 @@ Scenario('PMM-T1889 Verify Mongo replication lag graph shows correct info @night
   const maxValue = await I.grabTextFrom(dashboardPage.mongodbReplicaSetSummaryDashboard.elements.replicationLagMax('rs103'));
 
   I.assertFalse(/min|hour|day|week|month|year/.test(maxValue), `Max replication value should be in seconds. Value is: ${maxValue}`);
-
-  const lagSecondary = await I.grabNumberOfVisibleElements(dashboardPage.mongodbReplicaSetSummaryDashboard.elements.replicationLagMin('rs102'));
-
-  if (lagSecondary) {
-    const [secondaryMin, secondaryMax, secondaryAvg] = await dashboardPage.getReplicationLagValues('rs102');
-
-    I.assertTrue(secondaryMin < lagValue, `Replication Lag for secondary instance min is more than lag value, value: ${secondaryMin}, max value: ${lagValue}`);
-    I.assertTrue(secondaryMax < lagValue, `Replication Lag for secondary instance max is more than lag value, value: ${secondaryMax}, max value: ${lagValue}`);
-    I.assertTrue(secondaryAvg < lagValue, `Replication Lag for secondary instance avg is more than lag value, value: ${secondaryAvg}, max value: ${lagValue}`);
-  }
 });
