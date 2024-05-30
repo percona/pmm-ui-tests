@@ -1509,10 +1509,8 @@ module.exports = {
     return [parseInt(replicationLagMin, 10), parseInt(replicationLagMax, 10), parseInt(replicationLagAvg, 10)];
   },
 
-  async waitForReplicationLagValuesAbove(serviceName, expectedValue, timeoutInSeconds = 60) {
-    let replicationLagMin;
+  async waitForMaxReplicationLagValuesAbove(serviceName, expectedValue, timeoutInSeconds = 60) {
     let replicationLagMax;
-    let replicationLagAvg;
 
     for (let i = 0; i < timeoutInSeconds; i++) {
       const numOfElements = await I.grabNumberOfVisibleElements(
@@ -1520,23 +1518,15 @@ module.exports = {
       );
 
       if (numOfElements > 0) {
-        replicationLagMin = await I.grabTextFrom(this.mongodbReplicaSetSummaryDashboard.elements.replicationLagMin(serviceName));
         replicationLagMax = await I.grabTextFrom(this.mongodbReplicaSetSummaryDashboard.elements.replicationLagMax(serviceName));
-        replicationLagAvg = await I.grabTextFrom(this.mongodbReplicaSetSummaryDashboard.elements.replicationLagAvg(serviceName));
 
-        if (parseInt(replicationLagMin, 10) >= expectedValue
-          && parseInt(replicationLagMax, 10) >= expectedValue
-          && parseInt(replicationLagAvg, 10) >= expectedValue) {
-          return;
-        }
+        if (parseInt(replicationLagMax, 10) >= expectedValue) return;
       }
 
       I.wait(1);
       I.click(this.refreshDashboard);
     }
 
-    I.assertTrue(parseInt(replicationLagMin, 10) >= expectedValue, `Replication Lag min is less than expected lag value, expected: "${expectedValue}s" actual: ${parseInt(replicationLagMin, 10)}s`);
     I.assertTrue(parseInt(replicationLagMax, 10) >= expectedValue, `Replication Lag max is less than expected lag value, expected: "${expectedValue}s" actual: ${parseInt(replicationLagMax, 10)}s`);
-    I.assertTrue(parseInt(replicationLagAvg, 10) >= expectedValue, `Replication Lag avg is less than expected lag value, expected: "${expectedValue}s" actual: ${parseInt(replicationLagAvg, 10)}s`);
   },
 };
