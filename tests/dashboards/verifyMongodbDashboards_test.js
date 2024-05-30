@@ -47,9 +47,9 @@ Scenario('PMM-T1889 Verify Mongo replication lag graph shows correct info @night
   const testConfigFile = `c = rs.conf(); c.members[2].secondaryDelaySecs = ${lagValue}; c.members[2].priority = 0; c.members[2].hidden = true; rs.reconfig(c);`;
 
   await I.verifyCommand(`sudo docker exec rs101 mongo "mongodb://root:root@localhost/?replicaSet=rs" --eval "${testConfigFile}"`);
-  I.amOnPage(dashboardPage.mongodbReplicaSetSummaryDashboard.cleanUrl);
+  I.amOnPage(I.buildUrlWithParams(dashboardPage.mongodbReplicaSetSummaryDashboard.cleanUrl, { from: 'now-5m' }));
   dashboardPage.waitForDashboardOpened();
-  await dashboardPage.waitForMaxReplicationLagValuesAbove('rs103', lagValue);
+  await dashboardPage.waitForMaxReplicationLagValuesAbove('rs103', lagValue, 90);
   const maxValue = await I.grabTextFrom(dashboardPage.mongodbReplicaSetSummaryDashboard.elements.replicationLagMax('rs103'));
 
   I.assertFalse(/min|hour|day|week|month|year/.test(maxValue), `Max replication value should be in seconds. Value is: ${maxValue}`);
