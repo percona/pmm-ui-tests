@@ -1535,8 +1535,8 @@ module.exports = {
       I.click(this.refreshDashboard);
     }
 
-    I.assertTrue(replicationLagMin >= expectedValue, `Replication Lag min is less than expected lag value, expected: "${expectedValue}s" actual: ${replicationLagMin}`);
-    I.assertTrue(replicationLagMax >= expectedValue, `Replication Lag max is less than expected lag value, expected: "${expectedValue}s" actual: ${replicationLagMax}`);
-    I.assertTrue(replicationLagAvg >= expectedValue, `Replication Lag avg is less than expected lag value, expected: "${expectedValue}s" actual: ${replicationLagAvg}`);
+    I.assertTrue(parseInt(replicationLagMin, 10) >= expectedValue, `Replication Lag min is less than expected lag value, expected: "${expectedValue}s" actual: ${parseInt(replicationLagMin, 10)}s`);
+    I.assertTrue(parseInt(replicationLagMax, 10) >= expectedValue, `Replication Lag max is less than expected lag value, expected: "${expectedValue}s" actual: ${parseInt(replicationLagMax, 10)}s`);
+    I.assertTrue(parseInt(replicationLagAvg, 10) >= expectedValue, `Replication Lag avg is less than expected lag value, expected: "${expectedValue}s" actual: ${parseInt(replicationLagAvg, 10)}s`);
   },
 };
