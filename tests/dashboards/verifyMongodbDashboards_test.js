@@ -53,7 +53,7 @@ Scenario('PMM-T1889 Verify Mongo replication lag graph shows correct info @night
   const lagSecondary = await I.grabNumberOfVisibleElements(dashboardPage.mongodbReplicaSetSummaryDashboard.elements.replicationLagMin('rs102'));
 
   if (lagSecondary) {
-    const [secondaryMin, secondaryMax, secondaryAvg] = await dashboardPage.getReplicationLagValues('rs103');
+    const [secondaryMin, secondaryMax, secondaryAvg] = await dashboardPage.getReplicationLagValues('rs102');
 
     I.assertTrue(secondaryMin < lagValue, `Replication Lag for secondary instance min is less than more lag value, value: ${secondaryMin}`);
     I.assertTrue(secondaryMax < lagValue, `Replication Lag for secondary instance max is less than more lag value, value: ${secondaryMax}`);

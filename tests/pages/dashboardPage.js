@@ -1524,6 +1524,7 @@ module.exports = {
         replicationLagMax = await I.grabTextFrom(this.mongodbReplicaSetSummaryDashboard.elements.replicationLagMax(serviceName));
         replicationLagAvg = await I.grabTextFrom(this.mongodbReplicaSetSummaryDashboard.elements.replicationLagAvg(serviceName));
 
+        console.log(this.mongodbReplicaSetSummaryDashboard.elements.replicationLagMin());
         console.log(`Min Value is ${replicationLagMin}`);
         console.log(`Max Value is ${replicationLagMin}`);
         console.log(`Avg Value is ${replicationLagMin}`);
