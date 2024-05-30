@@ -1524,12 +1524,9 @@ module.exports = {
         replicationLagMax = await I.grabTextFrom(this.mongodbReplicaSetSummaryDashboard.elements.replicationLagMax(serviceName));
         replicationLagAvg = await I.grabTextFrom(this.mongodbReplicaSetSummaryDashboard.elements.replicationLagAvg(serviceName));
 
-        console.log(this.mongodbReplicaSetSummaryDashboard.elements.replicationLagMin(serviceName));
-        console.log(`Min Value is ${replicationLagMin}`);
-        console.log(`Max Value is ${replicationLagMin}`);
-        console.log(`Avg Value is ${replicationLagMin}`);
-
-        if (replicationLagMin >= expectedValue && replicationLagMax >= expectedValue && replicationLagAvg >= expectedValue) {
+        if (parseInt(replicationLagMin, 10) >= expectedValue
+          && parseInt(replicationLagMax, 10) >= expectedValue
+          && parseInt(replicationLagAvg, 10) >= expectedValue) {
           return;
         }
       }
@@ -1537,10 +1534,6 @@ module.exports = {
       I.wait(1);
       I.click(this.refreshDashboard);
     }
-
-    console.log(`Assert Min Value is ${replicationLagMin}`);
-    console.log(`Assert Max Value is ${replicationLagMin}`);
-    console.log(`Assert Avg Value is ${replicationLagMin}`);
 
     I.assertTrue(replicationLagMin >= expectedValue, `Replication Lag min is less than expected lag value, expected: "${expectedValue}s" actual: ${replicationLagMin}`);
     I.assertTrue(replicationLagMax >= expectedValue, `Replication Lag max is less than expected lag value, expected: "${expectedValue}s" actual: ${replicationLagMax}`);

@@ -43,7 +43,7 @@ Scenario(
 );
 
 Scenario('PMM-T1889 Verify Mongo replication lag graph shows correct info @nightly @dashboards', async ({ I, dashboardPage }) => {
-  const lagValue = 10;
+  const lagValue = 30;
   const testConfigFile = `c = rs.conf(); c.members[2].secondaryDelaySecs = ${lagValue}; c.members[2].priority = 0; c.members[2].hidden = true; rs.reconfig(c);`;
 
   await I.verifyCommand(`sudo docker exec rs101 mongo "mongodb://root:root@localhost/?replicaSet=rs" --eval "${testConfigFile}"`);
@@ -55,8 +55,8 @@ Scenario('PMM-T1889 Verify Mongo replication lag graph shows correct info @night
   if (lagSecondary) {
     const [secondaryMin, secondaryMax, secondaryAvg] = await dashboardPage.getReplicationLagValues('rs102');
 
-    I.assertTrue(secondaryMin < lagValue, `Replication Lag for secondary instance min is less than more lag value, value: ${secondaryMin}`);
-    I.assertTrue(secondaryMax < lagValue, `Replication Lag for secondary instance max is less than more lag value, value: ${secondaryMax}`);
-    I.assertTrue(secondaryAvg < lagValue, `Replication Lag for secondary instance avg is less than more lag value, value: ${secondaryAvg}`);
+    I.assertTrue(secondaryMin < lagValue, `Replication Lag for secondary instance min is more than lag value, value: ${secondaryMin}, max value: ${lagValue}`);
+    I.assertTrue(secondaryMax < lagValue, `Replication Lag for secondary instance max is more than lag value, value: ${secondaryMax}, max value: ${lagValue}`);
+    I.assertTrue(secondaryAvg < lagValue, `Replication Lag for secondary instance avg is more than lag value, value: ${secondaryAvg}, max value: ${lagValue}`);
   }
 });
