@@ -49,12 +49,7 @@ Scenario('PMM-T1889 Verify Mongo replication lag graph shows correct info @night
   await I.verifyCommand(`sudo docker exec rs101 mongo "mongodb://root:root@localhost/?replicaSet=rs" --eval "${testConfigFile}"`);
   I.amOnPage(dashboardPage.mongodbReplicaSetSummaryDashboard.cleanUrl);
   dashboardPage.waitForDashboardOpened();
-  const [min, max, avg] = await dashboardPage.getReplicationLagValues('rs103');
-
-  I.assertTrue(min >= lagValue, `Replication Lag min is less than expected lag value, expected: "${lagValue}s" actual: ${min}`);
-  I.assertTrue(max >= lagValue, `Replication Lag max is less than expected lag value, expected: "${lagValue}s" actual: ${max}`);
-  I.assertTrue(avg >= lagValue, `Replication Lag avg is less than expected lag value, expected: "${lagValue}s" actual: ${avg}`);
-
+  await dashboardPage.waitForReplicationLagValuesAbove('rs103', lagValue);
   const lagSecondary = await I.grabNumberOfVisibleElements(dashboardPage.mongodbReplicaSetSummaryDashboard.elements.replicationLagMin('rs102'));
 
   if (lagSecondary) {
