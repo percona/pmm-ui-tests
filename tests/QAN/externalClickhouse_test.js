@@ -33,7 +33,7 @@ Scenario(
     I.seeInField(dataSourcePage.fields.clickhouseServerAddress, 'external-clickhouse');
     I.seeInField(dataSourcePage.fields.clickhouseServerPort, '9000');
 
-    I.amOnPage(I.buildUrlWithParams(queryAnalyticsPage.url, { from: 'now-5m' }));
+    I.amOnPage(I.buildUrlWithParams(`${basePmmUrl}${queryAnalyticsPage.url}`, { from: 'now-5m' }));
     queryAnalyticsPage.waitForLoaded();
     I.dontSeeElement(queryAnalyticsPage.data.elements.noResultTableText);
     await I.waitForVisible(queryAnalyticsPage.data.elements.queryRows);
