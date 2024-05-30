@@ -53,4 +53,6 @@ Scenario('PMM-T1889 Verify Mongo replication lag graph shows correct info @night
   I.assertTrue(min >= 10, `Replication Lag min is less than expected lag value, expected: "10s" actual: ${min}`);
   I.assertTrue(max >= 10, `Replication Lag max is less than expected lag value, expected: "10s" actual: ${max}`);
   I.assertTrue(avg >= 10, `Replication Lag avg is less than expected lag value, expected: "10s" actual: ${avg}`);
+  I.dontSee(dashboardPage.mongodbReplicaSetSummaryDashboard.elements.replicationLagMin('rs101'));
+  I.dontSee(dashboardPage.mongodbReplicaSetSummaryDashboard.elements.replicationLagMin('rs102'));
 });
