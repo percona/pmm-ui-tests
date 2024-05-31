@@ -41,7 +41,7 @@ Scenario.skip(
     queryAnalyticsPage.waitForLoaded();
     queryAnalyticsPage.data.mouseOverInfoIcon(1);
 
-    let tooltipQueryId = await queryAnalyticsPage.data.getTooltipQueryId();
+    // let tooltipQueryId = await queryAnalyticsPage.data.getTooltipQueryId();
 
     await queryAnalyticsPage.data.hideTooltip();
 
@@ -53,10 +53,10 @@ Scenario.skip(
 
     // let tooltipPlanId = await I.grabTextFrom(anDetails.elements.tooltipPlanId);
 
-    tooltipPlanId = tooltipPlanId.split(':');
-    tooltipPlanId = tooltipPlanId[1].trim();
+    // tooltipPlanId = tooltipPlanId.split(':');
+    // tooltipPlanId = tooltipPlanId[1].trim();
     // await anOverview.hideTooltip();
-    assert.notEqual(tooltipQueryId, tooltipPlanId, 'Plan Id should not be equal to Query Id');
+    // assert.notEqual(tooltipQueryId, tooltipPlanId, 'Plan Id should not be equal to Query Id');
     // await I.click(anFilters.buttons.resetAll);
     // await anOverview.searchByValue('SELECT * FROM pg_stat_database');
     // await anOverview.waitForOverviewLoaded();

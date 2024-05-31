@@ -102,9 +102,9 @@ Scenario.skip(
     I.waitForVisible(I.getPopUpLocator(), 10);
 
     // const url = new URL(await I.grabTextFrom(anOverview.elements.clipboardLink));
-    const toTimeFromUrl1 = url.searchParams.get('to');
+    // const toTimeFromUrl1 = url.searchParams.get('to');
 
-    assert.ok(Math.abs(dateTime - toTimeFromUrl1) < 30000, 'Difference between moment time and first copied time must be less then half of minute');
+    // assert.ok(Math.abs(dateTime - toTimeFromUrl1) < 30000, 'Difference between moment time and first copied time must be less then half of minute');
 
     I.wait(30);
     I.refreshPage();
@@ -113,10 +113,10 @@ Scenario.skip(
     I.waitForVisible(I.getPopUpLocator(), 10);
 
     // const url2 = new URL(await I.grabTextFrom(anOverview.elements.clipboardLink));
-    const toTimeFromUrl2 = url2.searchParams.get('to');
+    // const toTimeFromUrl2 = url2.searchParams.get('to');
 
-    assert.ok(Math.abs(toTimeFromUrl1 - toTimeFromUrl2) < 60000, 'Difference between moment time and second copied time must be less then one minute');
-    assert.notEqual(toTimeFromUrl1, toTimeFromUrl2, 'TimeFromUrl2 must not be the same as timeFromUrl1');
+    // assert.ok(Math.abs(toTimeFromUrl1 - toTimeFromUrl2) < 60000, 'Difference between moment time and second copied time must be less then one minute');
+    // assert.notEqual(toTimeFromUrl1, toTimeFromUrl2, 'TimeFromUrl2 must not be the same as timeFromUrl1');
 
     I.openNewTab();
     // I.amOnPage(url.toString());
