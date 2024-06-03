@@ -158,7 +158,7 @@ Scenario(
 // Need to Skip due to wait issue on locator
 xScenario(
   'PMM-T396 - Verify that parameters are passed from MySQL User Details dashboard to QAN @nightly @dashboards',
-  async ({ I, dashboardPage, qanFilters }) => {
+  async ({ I, dashboardPage, queryAnalyticsPage }) => {
     const serviceName = serviceList.find((service) => service.includes('ps-'));
     const filters = [serviceName, 'root'];
     const timeRange = 'Last 12 hours';
@@ -172,11 +172,11 @@ xScenario(
     I.waitForVisible(dashboardPage.fields.dataLinkForRoot);
     I.click(dashboardPage.fields.dataLinkForRoot);
     await dashboardPage.waitAndSwitchTabs(2);
-    I.waitForVisible(qanFilters.buttons.showSelected, 60);
+    I.waitForVisible(queryAnalyticsPage.filters.buttons.showSelected, 60);
     I.waitInUrl('&var-username=root', 30);
     I.waitInUrl('from=now-12h&to=now', 30);
-    I.waitForVisible(qanFilters.buttons.showSelected, 60);
-    await qanFilters.verifySelectedFilters(filters);
+    I.waitForVisible(queryAnalyticsPage.filters.buttons.showSelected, 60);
+    await queryAnalyticsPage.filters.verifyCheckedFilters(filters);
     const timeRangeGrabbed = await dashboardPage.getTimeRange();
 
     assert.equal(

@@ -127,13 +127,13 @@ Scenario(
 xScenario(
   'PMM-T716 - Verify QAN for Postgres RDS added via UI @aws @instances',
   async ({
-    I, qanOverview, qanFilters, qanPage,
+    I, queryAnalyticsPage,
   }) => {
-    I.amOnPage(qanPage.url);
-    qanOverview.waitForOverviewLoaded();
-    await qanFilters.applyFilter('RDS Postgres');
-    qanOverview.waitForOverviewLoaded();
-    const count = await qanOverview.getCountOfItems();
+    I.amOnPage(I.buildUrlWithParams(queryAnalyticsPage.url, { from: 'now-5m' }));
+    queryAnalyticsPage.waitForLoaded();
+    await queryAnalyticsPage.filters.selectFilter('RDS Postgres');
+    queryAnalyticsPage.waitForLoaded();
+    const count = await queryAnalyticsPage.data.getCountOfItems();
 
     assert.ok(count > 0, 'The queries for added RDS Postgres do NOT exist');
   },

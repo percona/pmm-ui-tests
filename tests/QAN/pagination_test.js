@@ -1,9 +1,9 @@
 Feature('QAN pagination');
 
-Before(async ({ I, qanPage, qanOverview }) => {
+Before(async ({ I, queryAnalyticsPage }) => {
   await I.Authorize();
-  I.amOnPage(qanPage.url);
-  qanOverview.waitForOverviewLoaded();
+  I.amOnPage(I.buildUrlWithParams(queryAnalyticsPage.url, { from: 'now-5m' }));
+  queryAnalyticsPage.waitForLoaded();
 });
 
 Scenario(

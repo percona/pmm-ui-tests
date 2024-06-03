@@ -522,7 +522,7 @@ Scenario(
 xScenario(
   'PMM-T1253 Verify pg_stat_monitor.pgsm_normalized_query settings @not-ui-pipeline @pgsm-pmm-integration',
   async ({
-    I, qanPage, qanOverview, qanFilters, qanDetails,
+    I, queryAnalyticsPage,
   }) => {
     const defaultValue = 'no';
     const alteredValue = 'yes';
@@ -544,24 +544,23 @@ xScenario(
 
     //  Function used to produce data and check if examples are shown
     async function checkForExamples(isNoExamplesVisible) {
-      I.amOnPage(qanPage.url);
-      qanOverview.waitForOverviewLoaded();
-      qanFilters.waitForFiltersToLoad();
-      await qanFilters.applyFilter(pgsm_service_name);
+      I.amOnPage(I.buildUrlWithParams(queryAnalyticsPage.url, { from: 'now-5m' }));
+      queryAnalyticsPage.waitForLoaded();
+      await queryAnalyticsPage.filters.selectFilter(pgsm_service_name);
       for (let i = 1; i < queriesNumber; i++) {
         const tableName = `PMM_T1253_${Date.now()}`;
 
         //  Sql queries used to produce data for table
         await I.pgExecuteQueryOnDemand(`CREATE TABLE ${tableName} ( TestId int );`, connection);
         await I.pgExecuteQueryOnDemand(`DROP TABLE ${tableName};`, connection);
-        await qanOverview.searchByValue(tableName, true);
-        qanOverview.selectRow(1);
-        qanFilters.waitForFiltersToLoad();
+        await queryAnalyticsPage.data.searchByValue(tableName, true);
+        queryAnalyticsPage.data.selectRow(1);
+        queryAnalyticsPage.waitForLoaded();
         //  Assertion that there are or there are no examples in the examples tab
-        qanDetails.checkExamplesTab(isNoExamplesVisible);
-        qanOverview.selectRow(2);
-        qanFilters.waitForFiltersToLoad();
-        qanDetails.checkExamplesTab(isNoExamplesVisible);
+        queryAnalyticsPage.queryDetails.checkExamplesTab(isNoExamplesVisible);
+        queryAnalyticsPage.data.selectRow(2);
+        queryAnalyticsPage.waitForLoaded();
+        queryAnalyticsPage.queryDetails.checkExamplesTab(isNoExamplesVisible);
       }
     }
 

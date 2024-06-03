@@ -241,6 +241,13 @@ class QueryAnalyticsFilters {
       I.waitForDetached(this.fields.filterLinkByNameAndGroup(filterName, groupName));
     }
   }
+
+  checkFilterExistInSection(section, filter) {
+    I.waitForVisible(this.fields.filterBy, 30);
+    I.fillField(this.fields.filterBy, filter);
+    I.waitForVisible(this.fields.filterByNameAndGroup(filter, section), 20);
+    I.seeElement(this.fields.filterByNameAndGroup(filter, section));
+  }
 }
 
 module.exports = new QueryAnalyticsFilters();
