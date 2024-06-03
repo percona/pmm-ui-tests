@@ -265,9 +265,9 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T1892 - Verify metrics on MySQL Innodb Details Dashboards @test @dashboards @nightly',
+  'PMM-T1892 - Verify metrics on MySQL Innodb Details Dashboards @dashboards @nightly',
   async ({ I, dashboardPage, adminPage }) => {
-    const url = I.buildUrlWithParams(dashboardPage.mysqlInnoDBDetailsDashboard.clearUrl, { from: 'now-1h' });
+    const url = I.buildUrlWithParams(dashboardPage.mysqlInnoDBDetailsDashboard.clearUrl, { from: 'now-15m' });
 
     I.amOnPage(url);
     dashboardPage.waitForDashboardOpened();
