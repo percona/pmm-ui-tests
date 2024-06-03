@@ -25,7 +25,7 @@ module.exports = {
 
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
 
-    const resp = await I.sendPostRequest('v1/management/backup/Locations/Add', body, headers);
+    const resp = await I.sendPostRequest('v1/backups/locations', body, headers);
 
     I.assertEqual(
       resp.status,
@@ -48,7 +48,7 @@ module.exports = {
 
   async getLocationsList() {
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
-    const resp = await I.sendPostRequest('v1/management/backup/Locations/List', {}, headers);
+    const resp = await I.sendGetRequest('v1/backups/locations', headers);
 
     return resp.data.locations;
   },
@@ -61,7 +61,7 @@ module.exports = {
    */
   async getLocationDetails(nameOfLocation) {
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
-    const resp = await I.sendPostRequest('v1/management/backup/Locations/List', {}, headers);
+    const resp = await I.sendGetRequest('v1/backup/locations', headers);
     const result = Object.values(resp.data)
       .flat(Infinity)
       .filter(({ name }) => name === nameOfLocation);
@@ -75,11 +75,7 @@ module.exports = {
 
   async removeLocation(locationId, force) {
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
-    const body = {
-      force,
-      location_id: locationId,
-    };
-    const resp = await I.sendPostRequest('v1/management/backup/Locations/Remove', body, headers);
+    const resp = await I.sendDeleteRequest(`v1/backup/locations/${locationId}?force=${force}`, headers);
 
     // I.assertEqual(
     //   resp.status,

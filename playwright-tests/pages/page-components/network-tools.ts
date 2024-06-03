@@ -5,7 +5,7 @@ export default class NetworkTools {
 
   // TODO: move it to api calls way
   suppressTour = async () => {
-    await this.page.route('**/v1/user', async (route) => {
+    await this.page.route('**/v1/users/me', async (route) => {
       await route.fulfill({
         status: 200,
         body: JSON.stringify({

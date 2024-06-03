@@ -3,7 +3,7 @@ Feature('Pmm Product tour tests');
 Before(async ({ I }) => {
   await I.stopMockingProductTourApi();
   await I.Authorize();
-  await I.sendGetRequest('v1/user', { Authorization: `Basic ${await I.getAuth()}` });
+  await I.sendGetRequest('v1/users/me', { Authorization: `Basic ${await I.getAuth()}` });
 });
 
 Scenario('PMM-T1879 Verify that product tour dialog is displayed after check later button pressed. @grafana-pr', async ({ I, homePage }) => {

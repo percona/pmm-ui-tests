@@ -40,7 +40,7 @@ module.exports = {
 
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
 
-    const resp = await I.sendPostRequest('v1/management/backup/Backups/Schedule', body, headers);
+    const resp = await I.sendPostRequest('v1/backups:schedule', body, headers);
 
     assert.ok(
       resp.status === 200,
@@ -63,7 +63,7 @@ module.exports = {
 
   async getScheduledList() {
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
-    const resp = await I.sendPostRequest('v1/management/backup/Backups/ListScheduled', {}, headers);
+    const resp = await I.sendGetRequest('v1/backups/scheduled', headers);
 
     return resp.data.scheduled_backups;
   },
@@ -88,10 +88,7 @@ module.exports = {
 
   async removeScheduledBackup(scheduledId) {
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
-    const body = {
-      scheduled_backup_id: scheduledId,
-    };
-    const resp = await I.sendPostRequest('v1/management/backup/Backups/RemoveScheduled', body, headers);
+    const resp = await I.sendDeleteRequest(`v1/backups/${scheduledId}`, headers);
 
     assert.ok(
       resp.status === 200,
@@ -111,7 +108,7 @@ module.exports = {
       enabled: false,
       scheduled_backup_id: scheduledId,
     };
-    const resp = await I.sendPostRequest('v1/management/backup/Backups/ChangeScheduled', body, headers);
+    const resp = await I.sendPutRequest('v1/backups:changeScheduled', body, headers);
 
     assert.ok(
       resp.status === 200,

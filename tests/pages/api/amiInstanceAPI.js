@@ -4,10 +4,7 @@ const { I } = inject();
 
 module.exports = {
   async verifyAmazonInstanceId(instanceId) {
-    const body = {
-      instance_id: instanceId,
-    };
-    const response = await I.sendPostRequest('v1/AWSInstanceCheck', body);
+    const response = await I.sendGetRequest(`v1/server/AWSInstance?instance_id=${instanceId}`);
 
     assert.ok(
       response.status === 200,

@@ -106,10 +106,10 @@ module.exports = {
   },
 
   async apiGetServices(serviceType) {
-    const body = serviceType ? { service_type: serviceType } : {};
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
+    const url = serviceType ? `v1/management/services?service_type=${serviceType}` : 'v1/management/services';
 
-    return await I.sendPostRequest('v1/inventory/Services/List', body, headers);
+    return await I.sendGetRequest(url, headers);
   },
 
   async verifyServiceIdExists(serviceId) {
@@ -159,12 +159,8 @@ module.exports = {
   },
 
   async deleteNode(nodeID, force) {
-    const body = {
-      force,
-      node_id: nodeID,
-    };
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
-    const resp = await I.sendPostRequest('v1/inventory/Nodes/Remove', body, headers);
+    const resp = await I.sendDeleteRequest(`v1/management/nodes/${nodeID}?force=${force}`, headers);
 
     assert.ok(
       resp.status === 200,
@@ -173,12 +169,8 @@ module.exports = {
   },
 
   async deleteService(serviceId, force = true) {
-    const body = {
-      force,
-      service_id: serviceId,
-    };
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
-    const resp = await I.sendPostRequest('v1/inventory/Services/Remove', body, headers);
+    const resp = await I.sendDeleteRequest(`v1/management/services/${serviceId}?force=${force}`, headers);
 
     assert.ok(
       resp.status === 200,
@@ -187,10 +179,9 @@ module.exports = {
   },
 
   async getNodeByName(nodeName) {
-    const headers = { Authorization: `Basic ${await I.getAuth()}` };
-    const resp = await I.sendPostRequest('v1/inventory/Nodes/List', {}, headers);
+    const nodes = await this.getAllNodes();
 
-    const node = Object.values(resp.data)
+    const node = Object.values(nodes)
       .flat(Infinity)
       .find(({ node_name }) => node_name === nodeName);
 
@@ -199,18 +190,15 @@ module.exports = {
 
   async getAllNodes() {
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
-    const resp = await I.sendPostRequest('v1/inventory/Nodes/List', {}, headers);
+    const resp = await I.sendGetRequest('v1/management/nodes', headers);
 
     return resp.data;
   },
 
   async getNodeName(nodeID) {
-    const body = {
-      node_id: nodeID,
-    };
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
 
-    const resp = await I.sendPostRequest('v1/inventory/Nodes/Get', body, headers);
+    const resp = await I.sendGetRequest(`v1/management/nodes/${nodeID}`, headers);
 
     const values = Object.values(resp.data)
       .flat(Infinity)
