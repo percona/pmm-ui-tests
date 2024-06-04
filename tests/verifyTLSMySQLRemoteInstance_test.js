@@ -142,6 +142,25 @@ Data(instances).Scenario(
 ).retry(1);
 
 Data(instances).Scenario(
+  'PMM-T1896 Verify MySQL w/ tls/ssl certs can be added when specified with --tls-skip-verify @ssl @ssl-mysql @not-ui-pipeline',
+  async ({
+    I, current, pmmInventoryPage,
+  }) => {
+    const {
+      version, container,
+    } = current;
+    const serviceName = `TLS_mysql_${version}`;
+    const responseMessage = 'MySQL Service added';
+    const command = `docker exec ${container} pmm-admin add mysql --username=pmm --password=pmm --port=3306 --query-source=perfschema --tls --tls-skip-verify --tls-ca=/var/lib/mysql/ca.pem --tls-cert=/var/lib/mysql/client-cert.pem --tls-key=/var/lib/mysql/client-key.pem ${serviceName}`;
+    const output = await I.verifyCommand(command);
+
+    I.assertTrue(output.includes(responseMessage), `The ${command} was supposed to return ${responseMessage} but actually got ${output}`);
+    I.amOnPage(pmmInventoryPage.url);
+    pmmInventoryPage.verifyRemoteServiceIsDisplayed(serviceName);
+  },
+);
+
+Data(instances).Scenario(
   'Verify dashboard after MySQL SSL Instances are added @ssl @ssl-mysql @ssl-remote @not-ui-pipeline',
   async ({
     I, dashboardPage, adminPage, current,
