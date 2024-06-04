@@ -1,4 +1,5 @@
 const assert = require('assert');
+const { AGENT_STATUS } = require('../../helper/constants');
 
 const { I, remoteInstancesHelper, grafanaAPI } = inject();
 
@@ -8,9 +9,9 @@ module.exports = {
 
     // 60 sec ping for getting created service name
     for (let i = 0; i < 60; i++) {
-      const services = await this.apiGetServices(service.serviceType);
+      const resp = await this.apiGetServices(service.serviceType);
 
-      responseService = services.data[service.service].find((obj) => obj.service_name === serviceName);
+      responseService = resp.data.services.find((service) => service.service_name === serviceName);
       if (responseService !== undefined) break;
 
       I.wait(1);
@@ -25,13 +26,13 @@ module.exports = {
   async waitForRunningState(serviceId) {
     // 30 sec ping for getting Running status for Agents
     for (let i = 0; i < 120; i++) {
-      const agents = await this.apiGetAgents(serviceId);
-      const areRunning = Object.values(agents.data)
-        .flat(Infinity)
-        .every(({ status }) => status === 'RUNNING');
+      const resp = await this.apiGetAgents(serviceId);
+
+      const areRunning = resp.data.agents
+        .every(({ status }) => status === AGENT_STATUS.RUNNING);
 
       if (areRunning) {
-        return agents;
+        return resp;
       }
 
       await I.wait(1);
@@ -41,10 +42,9 @@ module.exports = {
   },
 
   async apiGetNodeInfoByServiceName(serviceType, serviceName, excludeSubstring) {
-    const service = await this.apiGetServices(serviceType);
+    const resp = await this.apiGetServices(serviceType);
 
-    const data = Object.values(service.data)
-      .flat(Infinity)
+    const data = resp.data.services
       .filter(({ service_name }) => service_name.includes(serviceName));
 
     if (data.length === 0) await I.say(`Service "${serviceName}" of "${serviceType}" type is not found!`);
@@ -59,50 +59,38 @@ module.exports = {
   async apiGetNodeInfoForAllNodesByServiceName(serviceType, serviceName) {
     const service = await this.apiGetServices(serviceType);
 
-    const data = Object.values(service.data)
-      .flat(Infinity)
+    const data = service.data.services
       .filter(({ service_name }) => service_name.startsWith(serviceName));
 
     return data;
   },
 
   async apiGetPMMAgentInfoByServiceId(serviceId) {
-    const agents = await this.apiGetAgents(serviceId);
-    const data = Object.values(agents.data)
-      .flat(Infinity)
+    const resp = await this.apiGetAgents(serviceId);
+
+    const data = resp.data.agents
       .filter(({ service_id }) => service_id === serviceId);
 
     return data[0];
   },
 
   async apiGetAgents(serviceId) {
-    const body = {};
-
-    if (serviceId) {
-      body.service_id = serviceId;
-    }
-
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
+    const url = serviceId ? `v1/management/agents?service_id=${serviceId}` : 'v1/management/agents';
 
-    return I.sendPostRequest('v1/inventory/Agents/List', body, headers);
+    return I.sendGetRequest(url, headers);
   },
 
   async apiGetAgentDetailsViaAgentId(agentId) {
-    const body = {
-      agent_id: agentId,
-    };
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
 
-    return I.sendPostRequest('v1/inventory/Agents/Get', body, headers);
+    return I.sendGetRequest(`v1/management/agents/${agentId}`, headers);
   },
 
   async apiGetAgentsViaNodeId(nodeId) {
-    const body = {
-      node_id: nodeId,
-    };
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
 
-    return I.sendPostRequest('v1/inventory/Agents/List', body, headers);
+    return I.sendGetRequest(`v1/management/agents?node_id=${nodeId}`, headers);
   },
 
   async apiGetServices(serviceType) {
@@ -125,9 +113,7 @@ module.exports = {
   async getServiceById(serviceId) {
     const resp = await this.apiGetServices();
 
-    return Object.values(resp.data)
-      .flat(Infinity)
-      .filter(({ service_id }) => service_id === serviceId);
+    return resp.data.services.filter(({ service_id }) => service_id === serviceId);
   },
 
   /**
@@ -192,7 +178,7 @@ module.exports = {
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
     const resp = await I.sendGetRequest('v1/management/nodes', headers);
 
-    return resp.data;
+    return resp.data.nodes;
   },
 
   async getNodeName(nodeID) {
@@ -285,7 +271,7 @@ module.exports = {
           output = await this.apiGetAgentDetailsViaAgentId(agent_id);
           const { status } = output.data.qan_mysql_slowlog_agent;
 
-          return status === 'RUNNING';
+          return status === AGENT_STATUS.RUNNING;
         }, 20);
 
         log_level = output.data.qan_mysql_slowlog_agent.log_level;

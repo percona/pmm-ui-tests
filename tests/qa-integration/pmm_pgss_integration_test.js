@@ -1,4 +1,5 @@
 const assert = require('assert');
+const { SERVICE_TYPE } = require('../helper/constants');
 
 const { adminPage } = inject();
 const connection = {
@@ -31,7 +32,7 @@ const labels = [{ key: 'database', value: [`${database}`] }];
 Feature('PMM + pgss Integration Scenarios');
 
 BeforeSuite(async ({ inventoryAPI }) => {
-  const pgss_service = await inventoryAPI.apiGetNodeInfoByServiceName('POSTGRESQL_SERVICE', 'pgsql_');
+  const pgss_service = await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.POSTGRESQL, 'pgsql_');
 
   pgss_service_name = pgss_service.service_name;
 });
@@ -174,7 +175,7 @@ Scenario(
     await I.say(await I.verifyCommand(`docker exec ${container_name} pmm-admin remove postgresql ${pgsql_service_name} || true`));
     await I.say(await I.verifyCommand(`docker exec ${container_name} pmm-admin add postgresql --query-source=pgstatements --agent-password='testing' --password=${connection.password} --username=${connection.user} --service-name=${pgsql_service_name}`));
     //
-    const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName('POSTGRESQL_SERVICE', pgsql_service_name);
+    const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.POSTGRESQL, pgsql_service_name);
     const pmm_agent_id = (await I.verifyCommand(`docker exec ${container_name} pmm-admin status | grep "Agent ID" | awk -F " " '{print $4}'`)).trim();
 
     const dbDetails = {
@@ -218,7 +219,7 @@ Data(pgsqlVersionPgss).Scenario(
 
     await inventoryAPI.verifyServiceExistsAndHasRunningStatus(
       {
-        serviceType: 'POSTGRESQL_SERVICE',
+        serviceType: SERVICE_TYPE.POSTGRESQL,
         service: 'postgresql',
       },
       serviceName,
@@ -238,7 +239,7 @@ Data(pgsqlVersionPgss).Scenario(
       'Expected to have no errors regarding column name',
     );
 
-    const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName('POSTGRESQL_SERVICE', serviceName);
+    const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.POSTGRESQL, serviceName);
 
     await inventoryAPI.deleteService(service_id);
     await I.verifyCommand(`docker rm -f ${containerName}`);

@@ -1,4 +1,5 @@
 const assert = require('assert');
+const { NODE_TYPE, SERVICE_TYPE } = require('./helper/constants');
 
 const { remoteInstancesHelper, pmmInventoryPage } = inject();
 
@@ -35,7 +36,7 @@ Data(instances).Scenario('@PMM-T1295 Verify adding Aurora remote instance @insta
   const details = {
     add_node: {
       node_name: service_name,
-      node_type: 'REMOTE_NODE',
+      node_type: NODE_TYPE.REMOTE,
     },
     aws_access_key: remoteInstancesHelper.remote_instance.aws.aurora.aws_access_key,
     aws_secret_key: remoteInstancesHelper.remote_instance.aws.aurora.aws_secret_key,
@@ -54,7 +55,7 @@ Data(instances).Scenario('@PMM-T1295 Verify adding Aurora remote instance @insta
   pmmInventoryPage.verifyRemoteServiceIsDisplayed(details.service_name);
   await inventoryAPI.verifyServiceExistsAndHasRunningStatus(
     {
-      serviceType: 'MYSQL_SERVICE',
+      serviceType: SERVICE_TYPE.MYSQL,
       service: 'mysql',
     },
     details.service_name,

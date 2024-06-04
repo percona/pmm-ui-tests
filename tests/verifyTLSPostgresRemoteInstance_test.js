@@ -1,4 +1,5 @@
 const assert = require('assert');
+const { SERVICE_TYPE } = require('./helper/constants');
 
 const { adminPage } = inject();
 const pmmFrameworkLoader = `bash ${adminPage.pathToFramework}`;
@@ -68,7 +69,7 @@ Data(instances).Scenario(
     I.click(remoteInstancesPage.fields.addService);
     await inventoryAPI.verifyServiceExistsAndHasRunningStatus(
       {
-        serviceType: 'POSTGRESQL_SERVICE',
+        serviceType: SERVICE_TYPE.POSTGRESQL,
         service: 'postgresql',
       },
       serviceName,
@@ -259,13 +260,13 @@ Data(instances).Scenario(
 
     await inventoryAPI.verifyServiceExistsAndHasRunningStatus(
       {
-        serviceType: 'POSTGRESQL_SERVICE',
+        serviceType: SERVICE_TYPE.POSTGRESQL,
         service: 'postgresql',
       },
       serviceName,
     );
 
-    const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName('POSTGRESQL_SERVICE', remoteServiceName);
+    const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.POSTGRESQL, remoteServiceName);
 
     await pmmInventoryPage.openAgents(service_id);
     if (maxQueryLength !== '') {

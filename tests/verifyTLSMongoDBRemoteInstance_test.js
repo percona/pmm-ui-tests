@@ -1,4 +1,5 @@
 const assert = require('assert');
+const { SERVICE_TYPE } = require('./helper/constants');
 
 const { adminPage } = inject();
 const pmmFrameworkLoader = `bash ${adminPage.pathToFramework}`;
@@ -60,7 +61,7 @@ Data(instances).Scenario(
     I.click(remoteInstancesPage.fields.addService);
     await inventoryAPI.verifyServiceExistsAndHasRunningStatus(
       {
-        serviceType: 'MONGODB_SERVICE',
+        serviceType: SERVICE_TYPE.MONGODB,
         service: 'mongodb',
       },
       serviceName,
@@ -240,13 +241,13 @@ Data(instances).Scenario(
     pmmInventoryPage.verifyRemoteServiceIsDisplayed(remoteServiceName);
     await inventoryAPI.verifyServiceExistsAndHasRunningStatus(
       {
-        serviceType: 'MONGODB_SERVICE',
+        serviceType: SERVICE_TYPE.MONGODB,
         service: 'mongodb',
       },
       serviceName,
     );
 
-    const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName('MONGODB_SERVICE', remoteServiceName);
+    const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.MONGODB, remoteServiceName);
 
     // Check Remote Instance also added and have correct max_query_length option set
     await pmmInventoryPage.openAgents(service_id);

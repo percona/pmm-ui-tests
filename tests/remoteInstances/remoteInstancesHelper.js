@@ -1,3 +1,5 @@
+const { SERVICE_TYPE } = require("../helper/constants");
+
 const remoteInstanceStatus = {
   mysql: {
     ps_5_7: {
@@ -399,49 +401,49 @@ module.exports = {
   serviceTypes: {
     mysql: (
       remoteInstanceStatus.mysql.ps_5_7.enabled ? {
-        serviceType: 'MYSQL_SERVICE',
+        serviceType: SERVICE_TYPE.MYSQL,
         service: 'mysql',
       } : undefined
     ),
     mongodb: (
       remoteInstanceStatus.mongodb.psmdb_4_2.enabled ? {
-        serviceType: 'MONGODB_SERVICE',
+        serviceType: SERVICE_TYPE.MONGODB,
         service: 'mongodb',
       } : undefined
     ),
     postgresql: (
       remoteInstanceStatus.postgresql.pdpgsql_13_3.enabled ? {
-        serviceType: 'POSTGRESQL_SERVICE',
+        serviceType: SERVICE_TYPE.POSTGRESQL,
         service: 'postgresql',
       } : undefined
     ),
     proxysql: (
       remoteInstanceStatus.proxysql.proxysql_2_1_1.enabled ? {
-        serviceType: 'PROXYSQL_SERVICE',
+        serviceType: SERVICE_TYPE.PROXYSQL,
         service: 'proxysql',
       } : undefined
     ),
     postgresGC: (
       remoteInstanceStatus.gc.gc_postgresql.enabled ? {
-        serviceType: 'POSTGRESQL_SERVICE',
+        serviceType: SERVICE_TYPE.POSTGRESQL,
         service: 'postgresql',
       } : undefined
     ),
     mysql_ssl: (
       remoteInstanceStatus.mysql.ms_8_0_ssl.enabled ? {
-        serviceType: 'MYSQL_SERVICE',
+        serviceType: SERVICE_TYPE.MYSQL,
         service: 'mysql',
       } : undefined
     ),
     mongodb_ssl: (
       remoteInstanceStatus.mongodb.mongodb_4_4_ssl.enabled ? {
-        serviceType: 'MONGODB_SERVICE',
+        serviceType: SERVICE_TYPE.MONGODB,
         service: 'mongodb',
       } : undefined
     ),
     postgres_ssl: (
       remoteInstanceStatus.postgresql.postgres_13_3_ssl.enabled ? {
-        serviceType: 'POSTGRESQL_SERVICE',
+        serviceType: SERVICE_TYPE.POSTGRESQL,
         service: 'postgresql',
       } : undefined
     ),

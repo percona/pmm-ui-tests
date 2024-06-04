@@ -1,4 +1,5 @@
 const assert = require('assert');
+const { SERVICE_TYPE } = require('../helper/constants');
 
 const connection = {
   host: '127.0.0.1',
@@ -38,8 +39,8 @@ filters.add(['Database', database]);
 Feature('PMM + PGSM Integration Scenarios');
 
 BeforeSuite(async ({ I, inventoryAPI }) => {
-  const pgsm_service = await inventoryAPI.apiGetNodeInfoByServiceName('POSTGRESQL_SERVICE', 'pdpgsql_');
-  const socket_service = await inventoryAPI.apiGetNodeInfoByServiceName('POSTGRESQL_SERVICE', 'socket_pdpgsql_');
+  const pgsm_service = await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.POSTGRESQL, 'pdpgsql_');
+  const socket_service = await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.POSTGRESQL, 'socket_pdpgsql_');
 
   pgsm_service_name = pgsm_service.service_name;
   pgsm_service_name_socket = socket_service.service_name;
@@ -590,7 +591,7 @@ Scenario(
     await I.say(await I.verifyCommand(`docker exec ${container_name} pmm-admin remove postgresql ${pgsql_service_name} || true`));
     await I.say(await I.verifyCommand(`docker exec ${container_name} pmm-admin add postgresql --query-source=pgstatmonitor --agent-password='testing' --password=${connection.password} --username=${connection.user} --service-name=${pgsql_service_name}`));
     //
-    const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName('POSTGRESQL_SERVICE', pgsql_service_name);
+    const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.POSTGRESQL, pgsql_service_name);
     const pmm_agent_id = (await I.verifyCommand(`docker exec ${container_name} pmm-admin status | grep "Agent ID" | awk -F " " '{print $4}'`)).trim();
 
     const dbDetails = {

@@ -1,3 +1,5 @@
+const { SERVICE_TYPE } = require("./helper/constants");
+
 const clusterName = 'minikube';
 const pxc_cluster_name = 'upgrade-pxc';
 const psmdb_cluster_name = 'upgrade-psmdb';
@@ -80,7 +82,7 @@ Data(pxcDbClusterDetails).Scenario(
     const haproxyNodeName = `${current.namespace}-${current.clusterName}-haproxy-${current.node}`;
 
     await grafanaAPI.checkMetricExist('mysql_global_status_uptime', { type: 'service_name', value: serviceName });
-    await dbaasPage.dbClusterAgentStatusCheck(pxc_cluster_name, serviceName, 'MYSQL_SERVICE');
+    await dbaasPage.dbClusterAgentStatusCheck(pxc_cluster_name, serviceName, SERVICE_TYPE.MYSQL);
     await dbaasPage.dbaasQANCheck(pxc_cluster_name, serviceName, serviceName);
     await dbaasPage.pxcClusterMetricCheck(pxc_cluster_name, serviceName, serviceName, haproxyNodeName);
   },
@@ -118,7 +120,7 @@ Data(psmdbClusterDetails).Scenario(
     //   `kubectl exec psmdb-client -- mongo "mongodb://${username}:${password}@${host}/admin?ssl=false" /tmp/psmdb_cluster_connection_check.js`,
     // );
 
-    // await dbaasPage.dbClusterAgentStatusCheck(psmdb_cluster_name, serviceName, 'MONGODB_SERVICE');
+    // await dbaasPage.dbClusterAgentStatusCheck(psmdb_cluster_name, serviceName, SERVICE_TYPE.MONGODB);
     // // await dbaasPage.dbaasQANCheck(psmdb_cluster_name, serviceName, serviceName, { from: 'now-5m' });
     // await dbaasPage.psmdbClusterMetricCheck(psmdb_cluster_name, serviceName, serviceName);
     // await I.verifyCommand(
@@ -130,7 +132,7 @@ Data(psmdbClusterDetails).Scenario(
     const replSet = current.nodeType;
 
     // TODO: debug why this occasionally fails later
-    // await dbaasPage.dbClusterAgentStatusCheck(psmdb_cluster_name, serviceName, 'MONGODB_SERVICE');
+    // await dbaasPage.dbClusterAgentStatusCheck(psmdb_cluster_name, serviceName, SERVICE_TYPE.MONGODB);
     await grafanaAPI.checkMetricExist('mongodb_up', { type: 'service_name', value: serviceName });
     await dbaasPage.psmdbClusterMetricCheck(psmdb_cluster_name, serviceName, serviceName, replSet);
     // await dbaasPage.dbaasQANCheck(psmdb_cluster_name, serviceName, serviceName);

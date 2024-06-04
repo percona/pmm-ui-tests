@@ -1,3 +1,5 @@
+const { SERVICE_TYPE } = require("../../helper/constants");
+
 const { locationsPage, psMySql } = inject();
 const connection = psMySql.defaultConnection;
 const location = {
@@ -31,7 +33,7 @@ BeforeSuite(async ({
     locationsAPI.psStorageLocationConnection,
     location.description,
   );
-  await inventoryAPI.deleteNodeByServiceName('MYSQL_SERVICE', mysqlServiceNameForPreCheckTest);
+  await inventoryAPI.deleteNodeByServiceName(SERVICE_TYPE.MYSQL, mysqlServiceNameForPreCheckTest);
 
   await I.verifyCommand('docker exec pmm-server yum remove -y Percona-Server-server-57');
   await I.verifyCommand('docker exec pmm-server yum remove -y percona-xtrabackup-24');
@@ -46,7 +48,7 @@ BeforeSuite(async ({
 Before(async ({
   I, settingsAPI, backupInventoryPage, inventoryAPI, backupAPI,
 }) => {
-  const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName('MYSQL_SERVICE', mysqlServiceName);
+  const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.MYSQL, mysqlServiceName);
 
   serviceId = service_id;
 
@@ -112,7 +114,7 @@ Scenario(
     I, backupInventoryPage, backupAPI, inventoryAPI,
   }) => {
     const backupName = 'mysql_artifact_delete_test';
-    const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName('MYSQL_SERVICE', mysqlServiceName);
+    const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.MYSQL, mysqlServiceName);
     const artifactId = await backupAPI.startBackup(backupName, service_id, locationId, false, false);
 
     await backupAPI.waitForBackupFinish(artifactId);
@@ -182,7 +184,7 @@ Scenario(
     I, backupInventoryPage, backupAPI, inventoryAPI,
   }) => {
     const backupName = 'service_remove_backup';
-    const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName('MYSQL_SERVICE', mysqlServiceNameToDelete);
+    const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.MYSQL, mysqlServiceNameToDelete);
     const artifactId = await backupAPI.startBackup(backupName, service_id, locationId, false, false);
 
     await backupAPI.waitForBackupFinish(artifactId);

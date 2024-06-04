@@ -1,5 +1,6 @@
 const { dashboardPage, homePage } = inject();
 const assert = require('assert');
+const { SERVICE_TYPE } = require('../helper/constants');
 
 const {
   inventoryAPI,
@@ -15,8 +16,8 @@ urlsAndMetrics.add(['PMM Upgrade', homePage.url]);
 Feature('Test Dashboards inside the MySQL Folder');
 
 BeforeSuite(async () => {
-  const ps_service_response = await inventoryAPI.apiGetNodeInfoByServiceName('MYSQL_SERVICE', 'ps-');
-  const pxc_service_response = await inventoryAPI.apiGetNodeInfoByServiceName('MYSQL_SERVICE', 'pxc_');
+  const ps_service_response = await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.MYSQL, 'ps-');
+  const pxc_service_response = await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.MYSQL, 'pxc_');
 
   serviceList.push(ps_service_response.service_name);
   serviceList.push(pxc_service_response.service_name);

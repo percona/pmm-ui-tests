@@ -1,4 +1,5 @@
 const assert = require('assert');
+const { SERVICE_TYPE, NODE_TYPE } = require('../helper/constants');
 
 const {
   remoteInstancesPage, pmmInventoryPage, remoteInstancesHelper,
@@ -223,7 +224,7 @@ Scenario(
   'PMM-T1226 - Verify Agents has process_exec_path option on Inventory page @inventory @nightly @exporters',
   async ({ I, pmmInventoryPage, inventoryAPI }) => {
     I.amOnPage(pmmInventoryPage.url);
-    const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName('POSTGRESQL_SERVICE', 'pmm-server-postgresql');
+    const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.POSTGRESQL, 'pmm-server-postgresql');
 
     await pmmInventoryPage.openAgents(service_id);
     await pmmInventoryPage.checkAgentOtherDetailsSection('Postgres exporter', 'process_exec_path=/usr/local/percona/pmm/exporters/postgres_exporter');
@@ -464,7 +465,7 @@ Data(aws_instances).Scenario('PMM-T2340 Verify adding and editing Aurora remote 
   const details = {
     add_node: {
       node_name: service_name,
-      node_type: 'REMOTE_NODE',
+      node_type: NODE_TYPE.REMOTE,
     },
     aws_access_key: remoteInstancesHelper.remote_instance.aws.aurora.aws_access_key,
     aws_secret_key: remoteInstancesHelper.remote_instance.aws.aurora.aws_secret_key,

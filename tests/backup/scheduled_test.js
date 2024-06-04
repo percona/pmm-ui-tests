@@ -1,5 +1,6 @@
 const assert = require('assert');
 const moment = require('moment');
+const { SERVICE_TYPE } = require('../helper/constants');
 
 const { scheduledPage } = inject();
 
@@ -60,7 +61,7 @@ BeforeSuite(async ({
 Before(async ({
   I, scheduledPage, inventoryAPI, scheduledAPI,
 }) => {
-  const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName('MONGODB_SERVICE', mongoServiceName);
+  const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.MONGODB, mongoServiceName);
 
   serviceId = service_id;
   const c = await I.mongoGetCollection('test', 'test');
@@ -446,7 +447,7 @@ Scenario(
       enabled: true,
       retention: 1,
     };
-    const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName('MYSQL_SERVICE', mysqlServiceName);
+    const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.MYSQL, mysqlServiceName);
     const scheduleMySql = {
       service_id,
       location_id: locationId,

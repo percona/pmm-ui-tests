@@ -1,4 +1,5 @@
 const assert = require('assert');
+const { NODE_TYPE, DISCOVER_RDS } = require('../../helper/constants');
 
 const {
   remoteInstancesHelper,
@@ -46,7 +47,7 @@ module.exports = {
       mysql: {
         add_node: {
           node_name: serviceName,
-          node_type: 'REMOTE_NODE',
+          node_type: NODE_TYPE.REMOTE,
         },
         port: port || remoteInstancesHelper.remote_instance.mysql.ps_5_7.port,
         qan_mysql_perfschema: true,
@@ -55,7 +56,7 @@ module.exports = {
         username: username || remoteInstancesHelper.remote_instance.mysql.ps_5_7.username,
         password: password || remoteInstancesHelper.remote_instance.mysql.ps_5_7.password,
         cluster: remoteInstancesHelper.remote_instance.mysql.ps_5_7.clusterName,
-        engine: 'DISCOVER_RDS_MYSQL',
+        engine: DISCOVER_RDS.MYSQL,
         pmm_agent_id: 'pmm-server',
       },
     };
@@ -73,7 +74,7 @@ module.exports = {
       mysql: {
         add_node: {
           node_name: connection.serviceName,
-          node_type: 'REMOTE_NODE',
+          node_type: NODE_TYPE.REMOTE,
         },
         port: connection.port,
         address: connection.address,
@@ -104,7 +105,7 @@ module.exports = {
       postgresql: {
         add_node: {
           node_name: serviceName,
-          node_type: 'REMOTE_NODE',
+          node_type: NODE_TYPE.REMOTE,
         },
         port: port || remoteInstancesHelper.remote_instance.postgresql.pdpgsql_13_3.port,
         address: host || remoteInstancesHelper.remote_instance.postgresql.pdpgsql_13_3.host,
@@ -128,7 +129,7 @@ module.exports = {
       postgresql: {
         add_node: {
           node_name: connection.serviceName,
-          node_type: 'REMOTE_NODE',
+          node_type: NODE_TYPE.REMOTE,
         },
         port: connection.port,
         address: connection.address,
@@ -156,7 +157,7 @@ module.exports = {
       postgresql: {
         add_node: {
           node_name: serviceName,
-          node_type: 'REMOTE_NODE',
+          node_type: NODE_TYPE.REMOTE,
         },
         port: 5432,
         address: remoteInstancesHelper.remote_instance.gc.gc_postgresql.address,
@@ -180,7 +181,7 @@ module.exports = {
       proxysql: {
         add_node: {
           node_name: serviceName,
-          node_type: 'REMOTE_NODE',
+          node_type: NODE_TYPE.REMOTE,
         },
         port: remoteInstancesHelper.remote_instance.proxysql.proxysql_2_1_1.port,
         address: remoteInstancesHelper.remote_instance.proxysql.proxysql_2_1_1.host,
@@ -206,7 +207,7 @@ module.exports = {
       mongodb: {
         add_node: {
           node_name: serviceName,
-          node_type: 'REMOTE_NODE',
+          node_type: NODE_TYPE.REMOTE,
         },
         port: port || remoteInstancesHelper.remote_instance.mongodb.psmdb_4_2.port,
         address: host || remoteInstancesHelper.remote_instance.mongodb.psmdb_4_2.host,
@@ -230,7 +231,7 @@ module.exports = {
       mongodb: {
         add_node: {
           node_name: connection.serviceName,
-          node_type: 'REMOTE_NODE',
+          node_type: NODE_TYPE.REMOTE,
         },
         port: connection.port,
         address: connection.address,
@@ -260,7 +261,7 @@ module.exports = {
       rds: {
         add_node: {
           node_name: serviceName,
-          node_type: 'REMOTE_NODE',
+          node_type: NODE_TYPE.REMOTE,
         },
         address: address || remoteInstancesHelper.remote_instance.aws.aws_rds_5_7.address,
         aws_access_key: aws_access_key || remoteInstancesHelper.remote_instance.aws.aws_access_key,
@@ -270,7 +271,7 @@ module.exports = {
         password: password || remoteInstancesHelper.remote_instance.aws.aws_rds_5_7.password,
         az: 'us-east-2a',
         cluster: cluster || remoteInstancesHelper.remote_instance.aws.aws_rds_5_7.clusterName,
-        engine: 'DISCOVER_RDS_MYSQL',
+        engine: DISCOVER_RDS.MYSQL,
         instance_id: serviceName,
         isRDS: true,
         pmm_agent_id: 'pmm-server',
@@ -297,7 +298,7 @@ module.exports = {
       external: {
         add_node: {
           node_name: serviceName,
-          node_type: 'REMOTE_NODE',
+          node_type: NODE_TYPE.REMOTE,
         },
         address: remoteInstancesHelper.remote_instance.external.redis.host,
         service_name: serviceName,

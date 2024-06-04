@@ -183,7 +183,7 @@ Scenario(
 
 //     await dbaasPage.psmdbClusterMetricCheck(psmdb_cluster, serviceName, serviceName, replSet);
 //     await dbaasPage.dbaasQANCheck(psmdb_cluster, serviceName, serviceName);
-//     await dbaasPage.dbClusterAgentStatusCheck(psmdb_cluster, serviceName, 'MONGODB_SERVICE');
+//     await dbaasPage.dbClusterAgentStatusCheck(psmdb_cluster, serviceName, SERVICE_TYPE.MONGODB);
 //   },
 // );
 

@@ -1,5 +1,6 @@
 const assert = require('assert');
 const faker = require('faker');
+const { SERVICE_TYPE } = require('./helper/constants');
 
 const { adminPage } = inject();
 const pmmFrameworkLoader = `bash ${adminPage.pathToFramework}`;
@@ -74,7 +75,7 @@ Data(instances).Scenario(
     I.wait(10);
     await inventoryAPI.verifyServiceExistsAndHasRunningStatus(
       {
-        serviceType: 'MYSQL_SERVICE',
+        serviceType: SERVICE_TYPE.MYSQL,
         service: 'mysql',
       },
       serviceName,
@@ -273,13 +274,13 @@ Data(maxQueryLengthInstances).Scenario(
 
     await inventoryAPI.verifyServiceExistsAndHasRunningStatus(
       {
-        serviceType: 'MYSQL_SERVICE',
+        serviceType: SERVICE_TYPE.MYSQL,
         service: 'mysql',
       },
       serviceName,
     );
 
-    const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName('MYSQL_SERVICE', remoteServiceName);
+    const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.MYSQL, remoteServiceName);
 
     await pmmInventoryPage.openAgents(service_id);
     if (maxQueryLength !== '') {

@@ -1,4 +1,5 @@
 const faker = require('faker');
+const { SERVICE_TYPE } = require('../helper/constants');
 
 const { locationsPage, locationsAPI } = inject();
 
@@ -242,7 +243,7 @@ Scenario(
   async ({
     I, locationsPage, locationsAPI, backupAPI, inventoryAPI,
   }) => {
-    const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName('MONGODB_SERVICE', mongoServiceName);
+    const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.MONGODB, mongoServiceName);
     const location_id = await locationsAPI.createStorageLocation(
       location.name,
       locationsAPI.storageType.s3,
@@ -265,7 +266,7 @@ Scenario(
     I, locationsPage, locationsAPI, backupAPI, backupInventoryPage, inventoryAPI,
   }) => {
     const backupName = 'delete_location';
-    const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName('MONGODB_SERVICE', mongoServiceName);
+    const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.MONGODB, mongoServiceName);
     const location_id = await locationsAPI.createStorageLocation(
       location.name,
       locationsAPI.storageType.s3,
@@ -393,7 +394,7 @@ Scenario(
     );
 
     const backupName = 'mongo_force_delete_locations_test';
-    const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName('MONGODB_SERVICE', mongoServiceName);
+    const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.MONGODB, mongoServiceName);
     const artifactId = await backupAPI.startBackup(backupName, service_id, locationId);
 
     await backupAPI.waitForBackupFinish(artifactId);

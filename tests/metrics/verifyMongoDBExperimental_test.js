@@ -1,4 +1,5 @@
 const assert = require('assert');
+const { SERVICE_TYPE } = require('../helper/constants');
 
 Feature('MongoDB Experimental Dashboards tests');
 
@@ -6,7 +7,7 @@ let mongodb_service_name_ac;
 const containerName = 'rs101';
 
 BeforeSuite(async ({ I, inventoryAPI }) => {
-  const mongoService = await inventoryAPI.apiGetNodeInfoByServiceName('MONGODB_SERVICE', 'rs101');
+  const mongoService = await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.MONGODB, 'rs101');
 
   mongodb_service_name_ac = mongoService.service_name;
 
