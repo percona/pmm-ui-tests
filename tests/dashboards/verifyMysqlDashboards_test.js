@@ -263,3 +263,16 @@ Scenario(
     await dashboardPage.verifyThereAreNoGraphsWithoutData(8);
   },
 );
+
+Scenario(
+  'PMM-T1892 - Verify metrics on MySQL Innodb Details Dashboards @dashboards @nightly',
+  async ({ I, dashboardPage, adminPage }) => {
+    const url = I.buildUrlWithParams(dashboardPage.mysqlInnoDBDetailsDashboard.clearUrl, { service_name: 'ms-single', from: 'now-15m' });
+
+    I.amOnPage(url);
+    dashboardPage.waitForDashboardOpened();
+    await dashboardPage.expandEachDashboardRow();
+    dashboardPage.verifyMetricsExistence(dashboardPage.mysqlInnoDBDetailsDashboard.metrics);
+    await dashboardPage.verifyThereAreNoGraphsWithoutData(6);
+  },
+);
