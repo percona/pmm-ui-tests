@@ -7,12 +7,15 @@
     "url": "https://github.com/percona/pmm-ui-tests.git"
   },
   "scripts": {
+    "gen:types": "npx codeceptjs def --config=pr.codecept.js",
     "lint:tests": "eslint --ext .js --fix tests/",
     "e2e": "npx codeceptjs run-multiple parallel --debug --steps --reporter mocha-multi -c pr.codecept.js --grep '(?=.*)^(?!.*@not-ui-pipeline)^(?!.*@not-pr-pipeline)'",
     "e2e:ia": "npx codeceptjs run -c pr.codecept.js --grep '@ia'",
     "e2e:stt": "npx codeceptjs run -c pr.codecept.js --grep '@stt'",
     "e2e:dbaas": "npx codeceptjs run -c pr.codecept.js --grep '@dbaas'",
-    "e2e:grafana-pr": "npx codeceptjs run -c pr.codecept.js --grep '@grafana-pr'"
+    "e2e:grafana-pr": "npx codeceptjs run -c pr.codecept.js --grep '@grafana-pr'",
+    "prepare": "husky install",
+    "pre-push": "npm run gen:types && npm run lint:tests"
   },
   "dependencies": {
     "@faker-js/faker": "^5.5.3",
@@ -63,6 +66,7 @@
     "eslint-config-airbnb-typescript": "^17.0.0",
     "eslint-config-prettier": "^8.2.0",
     "eslint-plugin-import": "^2.27.5",
-    "eslint-plugin-playwright": "^0.12.0"
+    "eslint-plugin-playwright": "^0.12.0",
+    "husky": "^8.0.0"
   }
 }
