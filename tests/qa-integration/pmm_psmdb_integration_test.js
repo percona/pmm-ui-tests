@@ -170,29 +170,32 @@ Scenario.skip(
 ).retry(2);
 
 Scenario(
-    'T1775 Verify Wrong Replication Lag by Set values if RS is PSA -( MongoDB Cluster Summary) @pmm-psmdb-arbiter-integration @not-ui-pipeline',
-    async ({
-             I, dashboardPage,
-           }) => {
+  'T1775, T1888 Verify Wrong Replication Lag by Set values if RS is PSA -( MongoDB Cluster Summary) @pmm-psmdb-arbiter-integration @not-ui-pipeline',
+  async ({
+    I, dashboardPage,
+  }) => {
+    I.amOnPage(`${dashboardPage.mongodbReplicaSetSummaryDashboard.url}&var-replset=rs1`);
+    dashboardPage.waitForDashboardOpened();
 
-      I.amOnPage(`${dashboardPage.mongodbReplicaSetSummaryDashboard.url}&var-replset=rs1`);
-      dashboardPage.waitForDashboardOpened();
+    const username = 'dba';
+    const password = 'test1234';
 
-      //TODO Fix Setup and Change here before Merge
-      const username = 'dba';
-      const password = 'test1234';
+    // Gather Secondary member Service Name from Mongo and PMM admin
+    const secondaryLagPort = (await I.verifyCommand(`docker exec ${arbiter_container_name} ./psmdb_${version}/bin/mongo --eval rs\.printSecondaryReplicationInfo\\(\\) --username=${username} --password=${password} | awk -F ":" '/source/ {print $3}'`)).trim();
+    const serviceName = (await I.verifyCommand(`docker exec ${arbiter_container_name} pmm-admin list | awk -v pat='${secondaryLagPort}' '$0~pat {print $2}'`)).trim();
 
-      // Gather Secondary memeber Service Name from Mongo and PMM admin
-      const secondaryLagPort = (await I.verifyCommand(`docker exec ${arbiter_container_name} ./psmdb_${version}/bin/mongo --eval rs\.printSecondaryReplicationInfo\\(\\) --username=${username} --password=${password} | awk -F ":" '/source/ {print $3}'`)).trim();
-      const serviceName = (await I.verifyCommand(`docker exec ${arbiter_container_name} pmm-admin list | awk -v pat='${secondaryLagPort}' '$0~pat {print $2}'`)).trim();
+    const logErrors = (await I.verifyCommand(`docker exec ${arbiter_container_name} grep -ic "level=error.*some metrics might be unavailable on arbiter nodes" pmm-agent.log | awk '{print $1}'`));
 
-      // Check service name from Replication Lag field in UI
-      const replLagService = `(//a[@data-testid='data-testid dashboard-row-title-Replication Lag']/following::a[contains(text(),'${serviceName}')])`;
-      await I.waitForElement(replLagService,180);
+    I.assertTrue(logErrors.includes(0), `No error for arbiter missing metrics expected but got ${logErrors}`);
 
-      // Check lag value from Replication Lag field in UI
-      const replLagValue = `(//a[@data-testid='data-testid dashboard-row-title-Replication Lag']/following::a[contains(text(),'${serviceName}')]/following::td[contains(text(),' year')])[1]`;
-      await I.dontSeeElement(replLagValue,180);
-    },
-).retry(5);
+    // Check service name from Replication Lag field in UI
+    const replLagService = `(//a[@data-testid='data-testid dashboard-row-title-Replication Lag']/following::a[contains(text(),'${serviceName}')])`;
 
+    await I.waitForElement(replLagService, 180);
+
+    // Check lag value from Replication Lag field in UI
+    const replLagValue = `(//a[@data-testid='data-testid dashboard-row-title-Replication Lag']/following::a[contains(text(),'${serviceName}')]/following::td[contains(text(),' year')])[1]`;
+
+    await I.dontSeeElement(replLagValue, 180);
+  },
+).retry(1);
