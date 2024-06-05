@@ -461,3 +461,12 @@ Scenario(
     );
   },
 );
+
+Scenario(
+  'PMM-T1897 Verify Query Count metric on QAN page for MySQL @qan',
+  async ({ I }) => {
+    const psContainerName = await I.verifyCommand('sudo docker ps --format "{{.Names}}" | grep ps_');
+
+    console.log(`Ps Container name is: ${psContainerName}`);
+  },
+);
