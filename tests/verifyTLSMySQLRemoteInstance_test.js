@@ -296,7 +296,6 @@ Data(maxQueryLengthInstances).Scenario(
     }));
 
     I.waitForVisible(qanOverview.elements.querySelector, 60);
-    I.waitForElement(qanOverview.elements.querySelector, 30);
     const queryFromRow = await qanOverview.getQueryFromRow(1);
 
     if (maxQueryLength !== '' && maxQueryLength !== '-1') {
