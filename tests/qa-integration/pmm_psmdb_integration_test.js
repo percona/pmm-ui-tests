@@ -184,9 +184,18 @@ Scenario(
     const secondaryLagPort = (await I.verifyCommand(`docker exec ${arbiter_container_name} ./psmdb_${version}/bin/mongo --eval rs\.printSecondaryReplicationInfo\\(\\) --username=${username} --password=${password} | awk -F ":" '/source/ {print $3}'`)).trim();
     const serviceName = (await I.verifyCommand(`docker exec ${arbiter_container_name} pmm-admin list | awk -v pat='${secondaryLagPort}' '$0~pat {print $2}'`)).trim();
 
-    const logErrors = (await I.verifyCommand(`docker exec ${arbiter_container_name} grep -ic "level=error.*some metrics might be unavailable on arbiter nodes" pmm-agent.log | awk '{print $1}'`));
+    // Check if logs has arbiter connection
+    await I.asyncWaitFor(async () => {
+      const checkLog = await I.verifyCommand(`docker exec ${arbiter_container_name} grep -ic "level=warning.*some metrics might be unavailable on arbiter nodes" pmm-agent.log | awk '{print $1}'`);
 
-    I.assertTrue(logErrors.includes(0), `No error for arbiter missing metrics expected but got ${logErrors}`);
+      return checkLog > 1;
+    }, 60);
+
+    // Check if there are no errors but only warnings
+    let logErrors = 1;
+
+    logErrors = (await I.verifyCommand(`docker exec ${arbiter_container_name} grep -ic "level=error.*some metrics might be unavailable on arbiter nodes" pmm-agent.log | awk '{print $1}'`));
+    I.assertTrue(logErrors.includes(0), `No errors for arbiter setup expected but got ${logErrors}`);
 
     // Check service name from Replication Lag field in UI
     const replLagService = `(//a[@data-testid='data-testid dashboard-row-title-Replication Lag']/following::a[contains(text(),'${serviceName}')])`;
