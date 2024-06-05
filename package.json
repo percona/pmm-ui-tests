@@ -15,7 +15,7 @@
     "e2e:dbaas": "npx codeceptjs run -c pr.codecept.js --grep '@dbaas'",
     "e2e:grafana-pr": "npx codeceptjs run -c pr.codecept.js --grep '@grafana-pr'",
     "prepare": "husky install",
-    "pre-push": "npm run lint:tests && echo 'Lint OK'"
+    "pre-commit": "npm run lint:tests && echo 'Lint OK'"
   },
   "dependencies": {
     "@faker-js/faker": "^5.5.3",
