@@ -290,10 +290,12 @@ Data(maxQueryLengthInstances).Scenario(
 
     await I.wait(70);
     // Check max visible query length is less than max_query_length option
-    I.amOnPage(I.buildUrlWithParams(qanPage.clearUrl, { from: 'now-5m' }));
-    qanOverview.waitForOverviewLoaded();
-    await qanFilters.applyFilter(remoteServiceName);
-    I.waitForElement(qanOverview.elements.querySelector, 30);
+    I.amOnPage(I.buildUrlWithParams(qanPage.clearUrl, {
+      from: 'now-5m',
+      service_name: remoteServiceName,
+    }));
+
+    I.waitForVisible(qanOverview.elements.querySelector, 60);
     const queryFromRow = await qanOverview.getQueryFromRow(1);
 
     if (maxQueryLength !== '' && maxQueryLength !== '-1') {
