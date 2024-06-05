@@ -7,15 +7,15 @@ const dbNames = ['db1', 'db2', 'db3', 'db4'];
 const connection = {
   host: '127.0.0.1',
   // eslint-disable-next-line no-inline-comments
-  port: '27023', // This is the port used by --addclient=modb,1 and docker-compose setup on a CI/CD
-  username: 'mongoadmin',
-  password: 'GRgrO9301RuF',
+  port: '27027', // This is the port used by --mongo-replica-for-backup
+  username: 'pmm',
+  password: 'pmmpass',
 };
 const mongodb_service_name = 'mongodb_test_collections_flag';
 
 const pmm_user_mongodb = {
-  username: 'pmm_mongodb',
-  password: 'GRgrO9301RuF',
+  username: 'pmm',
+  password: 'pmmpass',
 };
 
 const metrics = {
@@ -27,13 +27,15 @@ const metrics = {
 };
 
 BeforeSuite(async ({ I }) => {
-  const port = await I.verifyCommand('pmm-admin list | grep mongodb_node_1 | awk -F " " \'{print $3}\' | awk -F ":" \'{print $2}\'');
-
-  connection.port = port;
   await I.mongoConnect(connection);
   for (let i = 0; i < dbNames.length; i++) {
     await I.mongoCreateBulkCollections(dbNames[i], collectionNames);
   }
+
+  // check that rs101 docker container exists
+  const dockerCheck = await I.verifyCommand('docker ps | grep rs101');
+
+  assert.ok(dockerCheck.includes('rs101'), 'rs101 docker container should exist. please run pmm-framework with --mongo-replica-for-backup');
 });
 
 Before(async ({ I }) => {
@@ -41,12 +43,22 @@ Before(async ({ I }) => {
 });
 
 After(async ({ I }) => {
-  await I.verifyCommand(`pmm-admin remove mongodb ${mongodb_service_name}`);
+  await I.verifyCommand(`pmm-admin remove mongodb ${mongodb_service_name} || true`);
 });
 
 AfterSuite(async ({ I }) => {
   await I.mongoDisconnect();
 });
+
+Scenario(
+  'PMM-T1860 - Verify there is no CommandNotSupportedOnView error in mongo logs when using --enable-all-collectors @dashboards @mongodb-exporter',
+  async ({ I }) => {
+    const logs = await I.verifyCommand('docker exec rs101 journalctl -u mongod --since "5 minutes ago"');
+
+    assert.ok(!logs.includes('CommandNotSupportedOnView'), `"CommandNotSupportedOnView" error should not be in mongo logs. 
+ ${logs}`);
+  },
+);
 
 Scenario(
   'PMM-T1208 - Verify metrics of MongoDB added with default flags'

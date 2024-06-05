@@ -12,6 +12,12 @@ module.exports = {
     viewLogs: locate('span').withText('View logs'),
     log: (uid) => locate('div').withText(`Logs for ${uid}`),
     showServiceDetails: (uid) => `//label[@for='input-table-select-${uid}-id']//ancestor::tr//button[@data-testid="show-row-details"]`,
+    addressField: locate('input').withAttr({ id: `address` }),
+    nameField: locate('input').withAttr({ id: `name` }),
+    passwordField: locate('input').withAttr({ id: `password` }),
+    directoryField: locate('input').withAttr({ id: `directory` }),
+    saveAndExit: locate('button').withAttr({ type: `submit` }),
+    sftpMessage: 'The message was send successfully!',
   },
 
   /**
@@ -36,8 +42,18 @@ module.exports = {
     I.seeElement(this.fields.sendSupportButton);
   },
 
-  verifySFTP() {
+  verifySFTP(sftp) {
+    const {
+      address, username, password, directory,
+    } = sftp;
+
     I.seeElement(this.fields.sendSupportDialog);
+    I.fillField(this.fields.addressField, address);
+    I.fillField(this.fields.nameField, username);
+    I.fillField(this.fields.passwordField, password);
+    I.fillField(this.fields.directoryField, directory);
+    I.click(this.fields.saveAndExit);
+    I.waitForText(this.fields.sftpMessage, 60);
   },
 
   verifyLogsVisible(uid) {

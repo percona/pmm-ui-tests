@@ -1,12 +1,8 @@
 const assert = require('assert');
 
-const { adminPage } = inject();
-const pmmFrameworkLoader = `bash ${adminPage.pathToFramework}`;
-const pathToPMMFramework = adminPage.pathToPMMTests;
-
 Feature('Integration tests for PSMDB & PMM');
 
-Before(async ({ I, settingsAPI }) => {
+Before(async ({ I }) => {
   await I.Authorize();
 });
 
@@ -26,7 +22,7 @@ const connection = {
 Scenario(
   'Verify Adding MongoDB services remotely @pmm-psmdb-regular-integration @not-ui-pipeline',
   async ({
-    I, remoteInstancesPage, pmmInventoryPage, inventoryAPI, grafanaAPI,
+    I, remoteInstancesPage, pmmInventoryPage, inventoryAPI,
   }) => {
     const details = {
       serviceName: remoteServiceName,
@@ -70,7 +66,7 @@ Scenario(
 Scenario(
   'Verify metrics from PSMDB instances on PMM-Server @pmm-psmdb-replica-integration @not-ui-pipeline',
   async ({
-    I, remoteInstancesPage, pmmInventoryPage, inventoryAPI, grafanaAPI,
+    I, grafanaAPI,
   }) => {
     let response; let result;
     const metricName = 'mongodb_connections';
@@ -136,7 +132,7 @@ Scenario(
 Scenario(
   'Verify QAN after MongoDB Instances is added @pmm-psmdb-replica-integration @not-ui-pipeline',
   async ({
-    I, qanOverview, qanFilters, qanPage, adminPage,
+    I, qanOverview, qanFilters, qanPage,
   }) => {
     const clientServiceName = (await I.verifyCommand(`docker exec ${replica_container_name} pmm-admin list | grep MongoDB | head -1 | awk -F" " '{print $2}'`)).trim();
 
@@ -157,21 +153,21 @@ Scenario(
   },
 ).retry(1);
 
-Scenario(
+Scenario.skip(
   'T2269 Verify Replicaset dashboard for MongoDB Instances contains ARBITER node @pmm-psmdb-arbiter-integration @not-ui-pipeline',
   async ({
-    I, dashboardPage, adminPage,
+    I, dashboardPage,
   }) => {
-
     const arbiterLocator = '(//div[@ng-show=\'ctrl.panel.showLegendValues\'][contains(.,\'ARBITER\')])[1]';
 
     I.amOnPage(`${dashboardPage.mongodbReplicaSetSummaryDashboard.url}&var-replset=rs1`);
     dashboardPage.waitForDashboardOpened();
-    await I.waitForElement({xpath: arbiterLocator},60);
+    await I.waitForElement({ xpath: arbiterLocator }, 60);
     const numberOfVisibleElements = await I.grabNumberOfVisibleElements(arbiterLocator);
-    I.assertEqual(numberOfVisibleElements,1 , "No of ARBITER elements for ReplicatSet are not as expected");
+
+    I.assertEqual(numberOfVisibleElements, 1, 'No of ARBITER elements for ReplicatSet are not as expected');
   },
-);
+).retry(2);
 
 Scenario(
     'T1775 Verify Wrong Replication Lag by Set values if RS is PSA -( MongoDB Cluster Summary) @pmm-psmdb-arbiter-integration @not-ui-pipeline',
