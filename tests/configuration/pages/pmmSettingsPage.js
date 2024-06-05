@@ -2,7 +2,7 @@ const assert = require('assert');
 const { communicationData, emailDefaults, telemetryTooltipData } = require('../../pages/testData');
 
 const {
-  I, adminPage, links, perconaPlatformPage,
+  I, adminPage, links, perconaPlatformPage, codeceptjsConfig,
 } = inject();
 
 const locateLabel = (selector) => locate(I.useDataQA(selector)).find('span');
@@ -25,7 +25,7 @@ module.exports = {
   agreementText:
     'Check here to indicate that you have read and agree to the \nTerms of Service\n and \nPrivacy Policy',
   alertManager: {
-    ip: process.env.VM_IP ? process.env.VM_IP : process.env.SERVER_IP,
+    ip: codeceptjsConfig.config.helpers.Playwright.url,
     service: ':9093/#/alerts',
     externalAlertManagerPort: ':9093',
     rule:
