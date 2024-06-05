@@ -2,6 +2,7 @@ const assert = require('assert');
 const faker = require('faker');
 const { generate } = require('generate-password');
 const { storageLocationConnection } = require('./backup/pages/testData');
+
 const {
   adminPage, remoteInstancesHelper, psMySql, pmmSettingsPage, dashboardPage, databaseChecksPage, scheduledAPI, locationsAPI,
 } = inject();
@@ -1241,47 +1242,48 @@ if (versionMinor >= 32) {
   ).retry(0);
 }
 
-Scenario('PMM-12587-1 Verify duplicate dashboards dont break after upgrade @pre-upgrade @ovf-upgrade @ami-upgrade @pmm-upgrade',
-    async ({
-             I, grafanaAPI, searchDashboardsModal
-           }) => {
+Scenario(
+  'PMM-12587-1 Verify duplicate dashboards dont break after upgrade @pre-upgrade @ovf-upgrade @ami-upgrade @pmm-upgrade',
+  async ({
+    I, grafanaAPI, searchDashboardsModal,
+  }) => {
+    const insightFolder = await grafanaAPI.lookupFolderByName(searchDashboardsModal.folders.insight.name);
+    const experimentalFolder = await grafanaAPI.lookupFolderByName(searchDashboardsModal.folders.experimental.name);
 
-      const insightFolder = await grafanaAPI.lookupFolderByName(searchDashboardsModal.folders.insight.name);
-      const experimentalFolder = await grafanaAPI.lookupFolderByName(searchDashboardsModal.folders.experimental.name);
+    const resp1 = await grafanaAPI.createCustomDashboard('test-dashboard', insightFolder.id);
+    const resp2 = await grafanaAPI.createCustomDashboard('test-dashboard', experimentalFolder.id);
 
-      const resp1 = await grafanaAPI.createCustomDashboard('test-dashboard', insightFolder.id);
-      const resp2 = await grafanaAPI.createCustomDashboard('test-dashboard', experimentalFolder.id);
+    await I.writeFileSync('./dashboard.json', JSON.stringify({
+      DASHBOARD1_UID: resp1.uid,
+      DASHBOARD2_UID: resp2.uid,
+    }), false);
 
-      await I.writeFileSync('./dashboard.json', JSON.stringify({
-        DASHBOARD1_UID: resp1.uid,
-        DASHBOARD2_UID: resp2.uid
-      }),false);
-
-      //Check if file with Dashboard info is present.
-      I.assertNotEqual(I.fileSize('./dashboard.json',false), 0, `Was expecting Dashboard info in the File, but its empty`);
-    },);
+    // Check if file with Dashboard info is present.
+    I.assertNotEqual(I.fileSize('./dashboard.json', false), 0, 'Was expecting Dashboard info in the File, but its empty');
+  },
+);
 
 Scenario(
-    'PMM-12587-2 Verify duplicate dashboards dont break after upgrade @post-upgrade @ovf-upgrade @ami-upgrade @pmm-upgrade',
-    async ({
-             I, grafanaAPI, dashboardPage,
-           }) => {
-      const resp = JSON.parse(await I.readFileSync('./dashboard.json',false));
+  'PMM-12587-2 Verify duplicate dashboards dont break after upgrade @post-upgrade @ovf-upgrade @ami-upgrade @pmm-upgrade',
+  async ({
+    I, grafanaAPI, dashboardPage,
+  }) => {
+    const resp = JSON.parse(await I.readFileSync('./dashboard.json', false));
 
-      const resp1 = await grafanaAPI.getDashboard(resp.DASHBOARD1_UID);
-      const resp2 = await grafanaAPI.getDashboard(resp.DASHBOARD2_UID);
+    const resp1 = await grafanaAPI.getDashboard(resp.DASHBOARD1_UID);
+    const resp2 = await grafanaAPI.getDashboard(resp.DASHBOARD2_UID);
 
-      //Trim leading '/' from response url
-      const url1 = resp1.meta.url.replace(/^\/+/g, '');
-      const url2 = resp2.meta.url.replace(/^\/+/g, '');
+    // Trim leading '/' from response url
+    const url1 = resp1.meta.url.replace(/^\/+/g, '');
+    const url2 = resp2.meta.url.replace(/^\/+/g, '');
 
-      I.amOnPage(url1);
-      dashboardPage.waitForDashboardOpened();
-      I.seeInCurrentUrl(url1);
-      I.amOnPage(url2);
-      dashboardPage.waitForDashboardOpened();
-      I.seeInCurrentUrl(url2);
-    },
+    I.amOnPage(url1);
+    dashboardPage.waitForDashboardOpened();
+    I.seeInCurrentUrl(url1);
+    I.amOnPage(url2);
+    dashboardPage.waitForDashboardOpened();
+    I.seeInCurrentUrl(url2);
+  },
 );
 
 // This test must be executed last
