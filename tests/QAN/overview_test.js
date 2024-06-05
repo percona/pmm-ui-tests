@@ -469,6 +469,15 @@ Scenario(
 
     console.log(`Ps Container name is: ${psContainerName}`);
 
-    await I.verifyCommand(`sudo docker exec ${psContainerName} mysql -h 127.0.0.1 -u root -pGRgrO9301RuF -e "CREATE DATABASE sbtest1"`);
+    // await I.verifyCommand(`sudo docker exec ${psContainerName} mysql -h 127.0.0.1 -u root -pGRgrO9301RuF -e "CREATE DATABASE sbtest1"`);
+
+    for (let i = 1; i <= 5; i++) {
+      await I.verifyCommand(`sudo docker exec ${psContainerName} mysql -h 127.0.0.1 -u root -pGRgrO9301RuF -e "CREATE TABLE Persons${i} ( PersonID int, LastName varchar(255), FirstName varchar(255), Address varchar(255), City varchar(255) );"`);
+      for (let j = 0; j < 4; j++) {
+        await I.verifyCommand(`sudo docker exec ${psContainerName} mysql -h 127.0.0.1 -u root -pGRgrO9301RuF -e "INSERT INTO Persons${i} values (${j},'Qwerty','Qwe','Address','City');"`);
+      }
+
+      await I.verifyCommand(`sudo docker exec ${psContainerName} mysql -h 127.0.0.1 -u root -pGRgrO9301RuF -e "select count(*) from Persons${i};"`);
+    }
   },
 );
