@@ -464,20 +464,21 @@ Scenario(
 
 Scenario(
   'PMM-T1897 Verify Query Count metric on QAN page for MySQL @qan',
-  async ({ I }) => {
+  async ({ I, credentials }) => {
+    const dbName = 'sbtest1';
     const psContainerName = await I.verifyCommand('sudo docker ps --format "{{.Names}}" | grep ps_');
 
     console.log(`Ps Container name is: ${psContainerName}`);
 
-    await I.verifyCommand(`sudo docker exec ${psContainerName} mysql -h 127.0.0.1 -u root -pGRgrO9301RuF -e "CREATE DATABASE sbtest1"`);
+    await I.verifyCommand(`sudo docker exec ${psContainerName} mysql -h 127.0.0.1 -u ${credentials.perconaServer.user} -p${credentials.perconaServer.password} -e "CREATE DATABASE ${dbName}"`);
 
     for (let i = 1; i <= 5; i++) {
-      await I.verifyCommand(`sudo docker exec ${psContainerName} mysql -h 127.0.0.1 -u root -pGRgrO9301RuF sbtest1 -e "CREATE TABLE Persons${i} ( PersonID int, LastName varchar(255), FirstName varchar(255), Address varchar(255), City varchar(255) );"`);
-      for (let j = 0; j < 4; j++) {
-        await I.verifyCommand(`sudo docker exec ${psContainerName} mysql -h 127.0.0.1 -u root -pGRgrO9301RuF sbtest1 -e "INSERT INTO Persons${i} values (${j},'Qwerty','Qwe','Address','City');"`);
+      await I.verifyCommand(`sudo docker exec ${psContainerName} mysql -h 127.0.0.1 -u ${credentials.perconaServer.user} -p${credentials.perconaServer.password} ${dbName} -e "CREATE TABLE Persons${i} ( PersonID int, LastName varchar(255), FirstName varchar(255), Address varchar(255), City varchar(255) );"`);
+      for (let j = 0; j <= 4; j++) {
+        await I.verifyCommand(`sudo docker exec ${psContainerName} mysql -h 127.0.0.1 -u ${credentials.perconaServer.user} -p${credentials.perconaServer.password} ${dbName} -e "INSERT INTO Persons${i} values (${j},'Qwerty','Qwe','Address','City');"`);
       }
 
-      await I.verifyCommand(`sudo docker exec ${psContainerName} mysql -h 127.0.0.1 -u root -pGRgrO9301RuF sbtest1 -e "select count(*) from Persons${i};"`);
+      await I.verifyCommand(`sudo docker exec ${psContainerName} mysql -h 127.0.0.1 -u ${credentials.perconaServer.user} -p${credentials.perconaServer.password} ${dbName} -e "select count(*) from Persons${i};"`);
     }
   },
 );
