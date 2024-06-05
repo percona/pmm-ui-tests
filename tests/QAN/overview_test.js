@@ -468,5 +468,7 @@ Scenario(
     const psContainerName = await I.verifyCommand('sudo docker ps --format "{{.Names}}" | grep ps_');
 
     console.log(`Ps Container name is: ${psContainerName}`);
+
+    await I.verifyCommand(`sudo docker exec ${psContainerName} mysql -h 127.0.0.1 -u root -pGRgrO9301RuF -e "CREATE DATABASE sbtest1"`);
   },
 );
