@@ -186,16 +186,16 @@ Scenario(
 
     // Check if logs has arbiter connection
     await I.asyncWaitFor(async () => {
-      const checkLog = await I.verifyCommand(`docker exec ${arbiter_container_name} grep -ic "level=warning.*some metrics might be unavailable on arbiter nodes" pmm-agent.log | awk '{print $1}'`);
+      const checkLog = await I.verifyCommand(`docker exec ${arbiter_container_name} grep -q "level=warning.*some metrics might be unavailable on arbiter nodes" pmm-agent.log; echo $?`);
 
-      return checkLog > 1;
+      return checkLog;
     }, 60);
 
     // Check if there are no errors but only warnings
     let logErrors = 1;
 
-    logErrors = (await I.verifyCommand(`docker exec ${arbiter_container_name} grep -ic "level=error.*some metrics might be unavailable on arbiter nodes" pmm-agent.log | awk '{print $1}'`));
-    I.assertTrue(logErrors.includes(0), `No errors for arbiter setup expected but got ${logErrors}`);
+    logErrors = (await I.verifyCommand(`docker exec ${arbiter_container_name} grep -q "level=error.*some metrics might be unavailable on arbiter nodes" pmm-agent.log; echo $?`));
+    I.assertTrue(logErrors.includes(1), `No errors for arbiter setup expected but got ${logErrors}`);
 
     // Check service name from Replication Lag field in UI
     const replLagService = `(//a[@data-testid='data-testid dashboard-row-title-Replication Lag']/following::a[contains(text(),'${serviceName}')])`;
