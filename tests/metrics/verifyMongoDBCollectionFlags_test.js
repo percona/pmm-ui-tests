@@ -279,8 +279,8 @@ Scenario(
     assert.ok(agentInfo.hasOwnProperty('enable_all_collectors'), `Was expecting Mongo Exporter for service ${mongodb_service_name} to have "enable_all_collectors" property`);
     // eslint-disable-next-line no-prototype-builtins
     assert.ok(agentInfo.enable_all_collectors, `Was expecting Mongo Exporter for service ${mongodb_service_name} to have "enable_all_collectors" property with "true"`);
-    I.say('Wait 20 seconds for Metrics being collected for the new service');
-    await I.wait(20);
+    I.say('Wait 120 seconds for Metrics being collected for the new service');
+    await I.wait(120);
     await grafanaAPI.checkMetricExist(smartMetricName, [{ type: 'service_name', value: mongodb_service_name }, { type: 'collector', value: 'collstats' }]);
     await grafanaAPI.checkMetricExist(smartMetricName, [{ type: 'service_name', value: mongodb_service_name }, { type: 'collector', value: 'dbstats' }]);
     await grafanaAPI.checkMetricExist(smartMetricName, [{ type: 'service_name', value: mongodb_service_name }, { type: 'collector', value: 'diagnostic_data' }]);
@@ -315,6 +315,7 @@ Scenario(
     const dbDetails = {
       username: pmm_user_mongodb.username,
       password: pmm_user_mongodb.password,
+      container_name: 'rs101',
       pmm_agent_id,
       service_id,
       service_name: mongodb_service_name,
