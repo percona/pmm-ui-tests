@@ -464,12 +464,13 @@ Scenario(
 
 Scenario(
   'PMM-T1897 Verify Query Count metric on QAN page for MySQL @qan',
-  async ({ I, credentials }) => {
+  async ({
+    I, credentials, qanOverview, qanPage, qanFilters, qanDetails,
+  }) => {
     const dbName = 'sbtest3';
     const sbUser = { name: 'sysbench', password: 'test' };
-    const psContainerName = await I.verifyCommand('sudo docker ps --format "{{.Names}}" | grep ps_');
 
-    console.log(`Ps Container name is: ${psContainerName}`);
+    const psContainerName = await I.verifyCommand('sudo docker ps --format "{{.Names}}" | grep ps_');
 
     await I.verifyCommand(`sudo docker exec ${psContainerName} mysql -h 127.0.0.1 -u ${credentials.perconaServer.user} -p${credentials.perconaServer.password} -e "CREATE USER sysbench@'%' IDENTIFIED WITH mysql_native_password BY 'test'; GRANT ALL ON *.* TO sysbench@'%'; DROP DATABASE IF EXISTS ${dbName};"`);
     await I.verifyCommand(`sudo docker exec ${psContainerName} mysql -h 127.0.0.1 -u ${sbUser.name} -p${sbUser.password} -e "SET GLOBAL slow_query_log=ON;"`);
@@ -484,5 +485,13 @@ Scenario(
 
       await I.verifyCommand(`sudo docker exec ${psContainerName} mysql -h 127.0.0.1 -u ${sbUser.name} -p${sbUser.password} ${dbName} -e "select count(*) from Persons${i};"`);
     }
+
+    I.amOnPage(qanPage.clearUrl);
+    qanOverview.waitForOverviewLoaded();
+    await qanFilters.applyFilter(dbName);
+    qanOverview.waitForOverviewLoaded();
+    await qanOverview.waitForCountOfItems(17, 180);
+    await qanOverview.selectRow(0);
+    await qanDetails.verifyQueryCount(105);
   },
 ).retry(0);

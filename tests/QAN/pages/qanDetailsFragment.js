@@ -23,6 +23,7 @@ module.exports = {
     firstPlaceholder: locate('$input-wrapper'),
     submitButton: locate('$query-analytics-details').find('./button[@type="submit"]'),
     explainTable: locate('$classic-explain-value'),
+    queryCountValue: locate('//*[@data-testid="query-analytics-details"]//span[text()="Query Count"]//ancestor::tr//td[3]//span[1]'),
   },
 
   getFilterSectionLocator: (filterSectionName) => `//span[contains(text(), '${filterSectionName}')]`,
@@ -142,6 +143,15 @@ module.exports = {
     }
 
     return result;
+  },
+
+  async verifyQueryCount(expectedQueryCount) {
+    I.waitForVisible(this.elements.queryCountValue);
+    const queryCount = parseInt((await I.grabTextFrom(this.elements.queryCountValue)), 10);
+
+    if (queryCount === parseInt(expectedQueryCount, 10)) return;
+
+    throw new Error(`Query count of does not equal to excepted value: "${expectedQueryCount}", actual value is: "${queryCount}".`);
   },
 };
 

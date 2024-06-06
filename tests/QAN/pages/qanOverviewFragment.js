@@ -89,6 +89,22 @@ module.exports = {
     return resultsCount[2];
   },
 
+  async waitForCountOfItems(expectedCount, timeout = 60) {
+    I.waitForVisible(this.elements.querySelector, 30);
+    let time = 0;
+    let resultsCount;
+
+    while (time <= timeout) {
+      resultsCount = parseInt(((await I.grabTextFrom(this.elements.countOfItems)).split(' '))[2], 10);
+      if (resultsCount === parseInt(expectedCount, 10)) return;
+
+      I.wait(10);
+      I.click(this.buttons.refresh);
+      time += 10;
+    }
+    throw new Error(`Total count of item does not equal to excepted value: "${expectedCount}", actual value is: "${resultsCount}".`);
+  },
+
   changeMetric(columnName, metricName) {
     const newMetric = this.getColumnLocator(metricName);
     const metricInDropdown = this.getMetricLocatorInDropdown(metricName);
