@@ -153,7 +153,7 @@ Scenario(
   },
 ).retry(1);
 
-Scenario.skip(
+Scenario(
   'T2269 Verify Replicaset dashboard for MongoDB Instances contains ARBITER node @pmm-psmdb-arbiter-integration @not-ui-pipeline',
   async ({
     I, dashboardPage,
@@ -192,10 +192,10 @@ Scenario(
     }, 60);
 
     // Check if there are no errors but only warnings
-    let logErrors = 1;
+    let errorCode = 0;
 
-    logErrors = (await I.verifyCommand(`docker exec ${arbiter_container_name} grep -q "level=error.*some metrics might be unavailable on arbiter nodes" pmm-agent.log; echo $?`));
-    I.assertTrue(logErrors.includes(1), `No errors for arbiter setup expected but got ${logErrors}`);
+    errorCode = (await I.verifyCommand(`docker exec ${arbiter_container_name} grep -q "level=error.*some metrics might be unavailable on arbiter nodes" pmm-agent.log; echo $?`));
+    I.assertTrue(errorCode.includes(1), `No errors for arbiter setup expected but got error code: ${errorCode}`);
 
     // Check service name from Replication Lag field in UI
     const replLagService = `(//a[@data-testid='data-testid dashboard-row-title-Replication Lag']/following::a[contains(text(),'${serviceName}')])`;
