@@ -539,7 +539,7 @@ module.exports = {
 
     for (let i = 0; i < 20; i++) {
       response = await I.sendGetRequest(
-        `http://${this.alertManager.ip}${this.alertManager.externalAlertManagerPort}/api/v2/alerts/groups?silenced=false&inhibited=false&active=true`,
+        `${this.alertManager.ip}${this.alertManager.externalAlertManagerPort}/api/v2/alerts/groups?silenced=false&inhibited=false&active=true`,
       );
       if (JSON.stringify(response.data).includes(ruleName)) {
         break;
