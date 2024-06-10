@@ -197,14 +197,13 @@ Scenario(
     errorCode = (await I.verifyCommand(`docker exec ${arbiter_container_name} grep -q "level=error.*some metrics might be unavailable on arbiter nodes" pmm-agent.log; echo $?`));
     I.assertTrue(errorCode.includes(1), `No errors for arbiter setup expected but got error code: ${errorCode}`);
 
+    const replLagServiceName = dashboardPage.graphLegendSeriesValue('Replication Lag', 'mongodb_rs2_1_1519');
+    const replLagSeriesValue = `${replLagServiceName.toXPath()}/following::td[contains(text(),'year')]`;
+
     // Check service name from Replication Lag field in UI
-    const replLagService = `(//a[@data-testid='data-testid dashboard-row-title-Replication Lag']/following::a[contains(text(),'${serviceName}')])`;
+    await I.waitForElement(replLagServiceName, 180);
 
-    await I.waitForElement(replLagService, 180);
-
-    // Check lag value from Replication Lag field in UI
-    const replLagValue = `(//a[@data-testid='data-testid dashboard-row-title-Replication Lag']/following::a[contains(text(),'${serviceName}')]/following::td[contains(text(),' year')])[1]`;
-
-    await I.dontSeeElement(replLagValue, 180);
+    // Check lag value from Replication Lag field is not 'year' in UI
+    await I.dontSeeElement(replLagSeriesValue, 180);
   },
 ).retry(1);
