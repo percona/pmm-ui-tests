@@ -20,8 +20,14 @@ module.exports = {
     password: 'pmmpass',
   },
   perconaServer: {
-    username: 'msandbox',
-    password: 'msandbox',
+    root: {
+      username: 'root',
+      password: 'GRgrO9301RuF',
+    },
+    msandbox: {
+      username: 'msandbox',
+      password: 'msandbox',
+    },
   },
   postgreSql: {
     port: '5433',
