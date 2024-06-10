@@ -168,7 +168,7 @@ Scenario(
       await I.verifyCommand(`sudo docker exec ${psContainerName} mysql -h 127.0.0.1 -u ${sbUser.name} -p${sbUser.password} ${dbName} -e "select count(*) from Persons${i};"`);
     }
 
-    I.amOnPage(qanPage.clearUrl);
+    I.amOnPage(I.buildUrlWithParams(qanPage.clearUrl, { from: 'now-1h', refresh: '5s' }));
     qanOverview.waitForOverviewLoaded();
     await qanFilters.applyFilter(dbName);
     qanOverview.waitForOverviewLoaded();
