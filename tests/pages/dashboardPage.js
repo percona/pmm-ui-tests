@@ -1366,12 +1366,17 @@ module.exports = {
   },
 
   graphsLocator(metricName) {
-    return locate('.panel-title-container h2').withText(metricName);
+    return locate('.panel-container').withDescendant(locate('.panel-title-container h2').withText(metricName));
+  },
+
+  graphLegendSeriesValue(metricName, value) {
+    return this.graphsLocator(metricName).find('.graph-legend-series').find('td').withText(value);
   },
 
   tabLocator(tabName) {
     return `//a[contains(text(), '${tabName}')]`;
   },
+
   async waitForAllGraphsToHaveData(timeout = 60) {
     await I.waitForInvisible(this.fields.notAvailableMetrics, timeout);
     await I.waitForInvisible(this.fields.notAvailableDataPoints, timeout);
