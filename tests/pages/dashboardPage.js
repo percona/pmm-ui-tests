@@ -1286,7 +1286,7 @@ module.exports = {
   },
 
   graphLegendSeriesRowByTitle(metricName, title) {
-    return this.graphsLocator(metricName).find(`//tr[@class="graph-legend-series "][td//a[@title="${title}"]]`);
+    return this.graphsLocator(metricName).find(`//tr[@class="graph-legend-series "][td//button[contains(@title, '${title}')]]`);
   },
 
   graphLegendColumnValueByExpression(graphName, title, columnName, expression) {
