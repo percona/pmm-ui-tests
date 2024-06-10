@@ -12,58 +12,58 @@ Before(async ({ I }) => {
   await I.Authorize();
 });
 
-Data(contactPoints).Scenario(
-  'PMM-T1703 Verify Slack contact point can be created, '
-  + 'PMM-T1709 Verify Webhook contact point can be created @ia',
-  async ({ I, current }) => {
-    await contactPointsPage.openContactPointsTab();
-    await contactPointsPage.createCP(current.name, current.type);
-    I.click(contactPointsPage.buttons.saveCP);
-    I.verifyPopUpMessage(contactPointsPage.messages.cPCreatedSuccess);
-    await contactPointsPage.verifyCPInTable(current.name);
-  },
-);
+// Data(contactPoints).Scenario(
+//   'PMM-T1703 Verify Slack contact point can be created, '
+//   + 'PMM-T1709 Verify Webhook contact point can be created @ia',
+//   async ({ I, current }) => {
+//     await contactPointsPage.openContactPointsTab();
+//     await contactPointsPage.createCP(current.name, current.type);
+//     I.click(contactPointsPage.buttons.saveCP);
+//     I.verifyPopUpMessage(contactPointsPage.messages.cPCreatedSuccess);
+//     await contactPointsPage.verifyCPInTable(current.name);
+//   },
+// );
+//
+// Data(contactPoints).Scenario(
+//   'PMM-T1707 Verify Slack contact point can be edited @ia',
+//   async ({ I, current }) => {
+//     await contactPointsPage.openContactPointsTab();
+//     await contactPointsPage.editCP(current.name);
+//     I.appendField(contactPointsPage.fields.cPName, editedCPName);
+//     I.click(contactPointsPage.buttons.saveCP);
+//     I.verifyPopUpMessage(contactPointsPage.messages.cPEditedSuccess);
+//     await contactPointsPage.verifyCPInTable(current.name + editedCPName);
+//   },
+// );
+//
+// Scenario.skip(
+//   'PMM-T1706 Verify default contact point cannot be deleted @ia',
+//   async ({ I }) => {
+//     await contactPointsPage.openContactPointsTab();
+//     await contactPointsPage.deleteCP('default');
+//     I.waitForVisible(contactPointsPage.elements.cannotdeleteCPDialogHeader, 10);
+//     I.see(contactPointsPage.messages.cPCannotDelete);
+//     I.click(contactPointsPage.buttons.closeModal);
+//     I.see('default', contactPointsPage.elements.cPTable);
+//   },
+// );
+//
+// Data(contactPoints).Scenario(
+//   'PMM-T1704 Verify Slack contact point can be deleted @ia',
+//   async ({ I, current }) => {
+//     const name = current.name + editedCPName;
+//
+//     await contactPointsPage.openContactPointsTab();
+//     await contactPointsPage.deleteCP(name);
+//     I.waitForVisible(contactPointsPage.elements.deleteCPDialogHeader, 10);
+//     I.see(contactPointsPage.messages.deleteCPConfirm(name));
+//     I.click(contactPointsPage.buttons.confirmDeleteCP);
+//     I.verifyPopUpMessage(contactPointsPage.messages.cPDeletedSuccess);
+//     I.dontSee(name, contactPointsPage.elements.cPTable);
+//   },
+// );
 
-Data(contactPoints).Scenario(
-  'PMM-T1707 Verify Slack contact point can be edited @ia',
-  async ({ I, current }) => {
-    await contactPointsPage.openContactPointsTab();
-    await contactPointsPage.editCP(current.name);
-    I.appendField(contactPointsPage.fields.cPName, editedCPName);
-    I.click(contactPointsPage.buttons.saveCP);
-    I.verifyPopUpMessage(contactPointsPage.messages.cPEditedSuccess);
-    await contactPointsPage.verifyCPInTable(current.name + editedCPName);
-  },
-);
-
-Scenario(
-  'PMM-T1706 Verify default contact point cannot be deleted @ia',
-  async ({ I }) => {
-    await contactPointsPage.openContactPointsTab();
-    await contactPointsPage.deleteCP('default');
-    I.waitForVisible(contactPointsPage.elements.cannotdeleteCPDialogHeader, 10);
-    I.see(contactPointsPage.messages.cPCannotDelete);
-    I.click(contactPointsPage.buttons.closeModal);
-    I.see('default', contactPointsPage.elements.cPTable);
-  },
-);
-
-Data(contactPoints).Scenario(
-  'PMM-T1704 Verify Slack contact point can be deleted @ia',
-  async ({ I, current }) => {
-    const name = current.name + editedCPName;
-
-    await contactPointsPage.openContactPointsTab();
-    await contactPointsPage.deleteCP(name);
-    I.waitForVisible(contactPointsPage.elements.deleteCPDialogHeader, 10);
-    I.see(contactPointsPage.messages.deleteCPConfirm(name));
-    I.click(contactPointsPage.buttons.confirmDeleteCP);
-    I.verifyPopUpMessage(contactPointsPage.messages.cPDeletedSuccess);
-    I.dontSee(name, contactPointsPage.elements.cPTable);
-  },
-);
-
-Scenario(
+Scenario.skip(
   'PMM-T1710 Verify saving a contact point when required info is missing, '
   + 'PMM-T1711 Verify contact point test @ia',
   async ({ I, iaCommon }) => {

@@ -29,6 +29,17 @@ class BrowserHelper extends Helper {
       tab.goto(address);
     }
   }
+
+  async downloadFile(clickElementXpath) {
+    const { page } = this.helpers.Playwright;
+
+    const [download] = await Promise.all([
+      page.waitForEvent('download'),
+      page.click(clickElementXpath.value),
+    ]);
+
+    return await download.path();
+  }
 }
 
 module.exports = BrowserHelper;

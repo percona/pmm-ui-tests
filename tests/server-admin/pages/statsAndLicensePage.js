@@ -28,7 +28,6 @@ module.exports = {
     sapHana: locate('div').withText('SAP HANA®'),
     honeycomb: locate('div').withText('Honeycomb'),
     jira: locate('div').withText('Jira'),
-    mongoDb: locate('div').withText('MongoDB'),
     salesForce: locate('div').withText('Salesforce'),
     snowflake: locate('div').withText('Snowflake'),
     waveFront: locate('div').withText('Wavefront'),
@@ -47,7 +46,7 @@ module.exports = {
   buttons: {
     manageDashboards: locate('a[href="/dashboards"]').withText('Manage dashboards'),
     manageDataSources: locate('a[href="/datasources"]').withText('Manage data sources'),
-    alerts: locate('a[href="/alerting/list"]').withText('Alerts'),
+    alerts: locate('a[href="/alerting/list"]').withText('Manage alerts'),
     manageUsers: locate('a[href="/admin/users"]').withText('Manage users'),
   },
   async waitForStatsAndLicensePageLoaded() {

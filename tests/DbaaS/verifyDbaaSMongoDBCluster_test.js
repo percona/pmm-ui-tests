@@ -152,7 +152,7 @@ Scenario(
     + 'PMM-T484 PMM-T461 Verify MongoDB Cluster can be restarted, '
     + 'PMM-T460 unregister k8s Cluster when Db Cluster Exist',
   async ({
-    I, dbaasPage, dbaasActionsPage, dashboardPage, qanOverview, qanPage, qanFilters,
+    I, dbaasPage, dbaasActionsPage, dashboardPage, queryAnalyticsPage,
   }) => {
     // PMM-T503
     await dashboardPage.genericDashboardLoadForDbaaSClusters(
@@ -162,9 +162,9 @@ Scenario(
       0,
       15,
     );
-    I.amOnPage(I.buildUrlWithParams(qanPage.clearUrl, { from: 'now-3h' }));
-    qanOverview.waitForOverviewLoaded();
-    qanFilters.checkFilterExistInSection('Cluster', psmdb_cluster);
+    I.amOnPage(I.buildUrlWithParams(queryAnalyticsPage.url, { from: 'now-3h' }));
+    queryAnalyticsPage.waitForLoaded();
+    queryAnalyticsPage.filters.checkFilterExistInSection('Cluster', psmdb_cluster);
     // PMM-T460
     await dbaasPage.waitForKubernetesClusterTab(clusterName);
     dbaasPage.unregisterCluster(clusterName);

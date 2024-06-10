@@ -68,11 +68,12 @@ module.exports = {
     return {
       email: email || `${firstName.toLowerCase()}.${lastName.toLowerCase()}.${Date.now()}.${faker.datatype.number()}@test.com`,
       password: generate({
-        length: 10,
+        length: 16,
         numbers: true,
         lowercase: true,
         uppercase: true,
         strict: true,
+        symbols: true,
       }),
       firstName,
       lastName,

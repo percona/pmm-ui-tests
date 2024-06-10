@@ -132,35 +132,33 @@ Scenario(
 Scenario(
   'Verify QAN after MongoDB Instances is added @pmm-psmdb-replica-integration @not-ui-pipeline',
   async ({
-    I, qanOverview, qanFilters, qanPage,
+    I, queryAnalyticsPage,
   }) => {
     const clientServiceName = (await I.verifyCommand(`docker exec ${replica_container_name} pmm-admin list | grep MongoDB | head -1 | awk -F" " '{print $2}'`)).trim();
 
     const serviceList = [clientServiceName, remoteServiceName];
 
     for (const service of serviceList) {
-      const url = I.buildUrlWithParams(qanPage.clearUrl, { from: 'now-120m', to: 'now' });
+      I.amOnPage(I.buildUrlWithParams(queryAnalyticsPage.url, { from: 'now-120m', to: 'now' }));
 
-      I.amOnPage(url);
-      qanOverview.waitForOverviewLoaded();
-      qanFilters.waitForFiltersToLoad();
-      await qanFilters.applySpecificFilter(service);
-      qanOverview.waitForOverviewLoaded();
-      const count = await qanOverview.getCountOfItems();
+      queryAnalyticsPage.waitForLoaded();
+      await queryAnalyticsPage.filters.selectFilter(service);
+      queryAnalyticsPage.waitForLoaded();
+      const count = await queryAnalyticsPage.data.getCountOfItems();
 
       assert.ok(count > 0, `The queries for service ${service} instance do NOT exist, check QAN Data`);
     }
   },
 ).retry(1);
 
-Scenario.skip(
+Scenario(
   'T2269 Verify Replicaset dashboard for MongoDB Instances contains ARBITER node @pmm-psmdb-arbiter-integration @not-ui-pipeline',
   async ({
     I, dashboardPage,
   }) => {
-    const arbiterLocator = '(//div[@ng-show=\'ctrl.panel.showLegendValues\'][contains(.,\'ARBITER\')])[1]';
+    const arbiterLocator = '(//div[@ng-show="ctrl.panel.showLegend"][contains(.,"ARBITER")])[1]';
 
-    I.amOnPage(`${dashboardPage.mongodbReplicaSetSummaryDashboard.url}&var-replset=rs1`);
+    I.amOnPage(`${dashboardPage.mongodbReplicaSetSummaryDashboard.url}&var-replset=rs`);
     dashboardPage.waitForDashboardOpened();
     await I.waitForElement({ xpath: arbiterLocator }, 60);
     const numberOfVisibleElements = await I.grabNumberOfVisibleElements(arbiterLocator);
@@ -174,7 +172,7 @@ Scenario.skip(
   async ({
     I, dashboardPage,
   }) => {
-    I.amOnPage(`${dashboardPage.mongodbReplicaSetSummaryDashboard.url}&var-replset=rs1`);
+    I.amOnPage(`${dashboardPage.mongodbReplicaSetSummaryDashboard.url}&var-replset=rs`);
     dashboardPage.waitForDashboardOpened();
 
     // Grab secs or year lag value from Replication Lag min field in UI

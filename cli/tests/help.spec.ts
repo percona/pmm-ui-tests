@@ -7,6 +7,11 @@ let addPostgreSqlHelp: ExecReturn;
 
 test.describe('PMM Client "--help" validation', async () => {
   test.beforeAll(async ({}) => {
+    const result1 = await cli.exec('sudo pmm-admin status');
+    await result1.outContains('Running', 'pmm-client is not installed/connected locally, please run pmm3-client-setup script');
+  });
+
+  test('pmm-admin mongodb --help check', async ({}) => {
     addMongoHelp = await cli.execSilent('sudo pmm-admin add mongodb --help');
     await addMongoHelp.assertSuccess();
     addPostgreSqlHelp = await cli.execSilent('sudo pmm-admin add postgresql --help');

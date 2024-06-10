@@ -52,11 +52,6 @@ module.exports = {
     pmmSettingsPage: './tests/configuration/pages/pmmSettingsPage.js',
     portalAPI: './tests/pages/api/portalAPI.js',
     profileAPI: './tests/configuration/api/profileApi.js',
-    qanDetails: './tests/QAN/pages/qanDetailsFragment.js',
-    qanFilters: './tests/QAN/pages/qanFiltersFragment.js',
-    qanOverview: './tests/QAN/pages/qanOverviewFragment.js',
-    qanPage: './tests/QAN/pages/qanPage.js',
-    qanPagination: './tests/QAN/pages/qanPaginationFragment.js',
     remoteInstancesPage: './tests/pages/remoteInstancesPage.js',
     remoteInstancesHelper: './tests/remoteInstances/remoteInstancesHelper.js',
     restorePage: './tests/backup/pages/restorePage.js',
@@ -66,6 +61,7 @@ module.exports = {
     scheduledPage: './tests/backup/pages/scheduledPage.js',
     searchDashboardsModal: './tests/dashboards/pages/searchDashboardsModal.js',
     serverApi: './tests/pages/api/serverApi.js',
+    serviceAccountsPage: './tests/pages/administration/serviceAccountsPage.js',
     silencesPage: './tests/ia/pages/silencesPage.js',
     iaCommon: './tests/ia/pages/iaCommonPage.js',
     platformAPI: './tests/pages/api/platformAPI.js',
@@ -80,6 +76,7 @@ module.exports = {
     pmmTourPage: './tests/pages/pmmTourPage.js',
     loginPage: './tests/pages/loginPage.js',
     nodesOverviewPage: './tests/pages/nodesOverviewPage.js',
+    queryAnalyticsPage: './tests/pages/queryAnalyticsPage.js',
   },
   getChunks: (files) => {
     const dependentTests = files.filter((value) => /PMMSettings|ia|stt|backup|permissions|Azure/.test(value));

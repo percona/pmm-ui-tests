@@ -9,21 +9,22 @@ const getServiceRowLocator = (serviceName) => `//span[contains(text(), '${servic
 module.exports = {
   url: 'graph/inventory/services',
   fields: {
-    nodesLink: locate('[role="tablist"] a').withText('Nodes').withAttr({ 'aria-label': 'Tab Nodes' }),
     serviceRow: (serviceName) => getServiceRowLocator(serviceName),
     serviceCellMonitoring: (serviceName) => `${getServiceRowLocator(serviceName)}/td[5]`,
     inventoryTable: locate('table'),
-
+  },
+  buttons: {
+    addService: locate('button').withText('Add Service'),
   },
   pagination: paginationPart,
 
   async open() {
     I.amOnPage(this.url);
-    await I.waitForVisible(this.fields.nodesLink, 30);
+    I.waitForVisible(this.buttons.addService, 30);
   },
 
   async getServiceMonitoringStatus(serviceName) {
-    await I.waitForVisible(this.fields.serviceRow(serviceName), 60);
+    I.waitForVisible(this.fields.serviceRow(serviceName), 60);
 
     return (await I.grabTextFrom(this.fields.serviceCellMonitoring(serviceName))).trim();
   },

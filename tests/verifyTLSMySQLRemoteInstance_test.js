@@ -142,6 +142,25 @@ Data(instances).Scenario(
 ).retry(1);
 
 Data(instances).Scenario(
+  'PMM-T1896 Verify MySQL w/ tls/ssl certs can be added when specified with --tls-skip-verify @ssl @ssl-mysql @not-ui-pipeline',
+  async ({
+    I, current, pmmInventoryPage,
+  }) => {
+    const {
+      version, container,
+    } = current;
+    const serviceName = `TLS_mysql_${version}`;
+    const responseMessage = 'MySQL Service added';
+    const command = `docker exec ${container} pmm-admin add mysql --username=pmm --password=pmm --port=3306 --query-source=perfschema --tls --tls-skip-verify --tls-ca=/var/lib/mysql/ca.pem --tls-cert=/var/lib/mysql/client-cert.pem --tls-key=/var/lib/mysql/client-key.pem ${serviceName}`;
+    const output = await I.verifyCommand(command);
+
+    I.assertTrue(output.includes(responseMessage), `The ${command} was supposed to return ${responseMessage} but actually got ${output}`);
+    I.amOnPage(pmmInventoryPage.url);
+    pmmInventoryPage.verifyRemoteServiceIsDisplayed(serviceName);
+  },
+);
+
+Data(instances).Scenario(
   'Verify dashboard after MySQL SSL Instances are added @ssl @ssl-mysql @ssl-remote @not-ui-pipeline',
   async ({
     I, dashboardPage, adminPage, current,
@@ -169,7 +188,7 @@ Data(instances).Scenario(
 Data(instances).Scenario(
   'Verify QAN after MySQL SSL Instances is added @ssl @ssl-mysql @ssl-remote @not-ui-pipeline',
   async ({
-    I, qanOverview, qanFilters, qanPage, current, adminPage,
+    I, queryAnalyticsPage, current, adminPage,
   }) => {
     const {
       serviceName,
@@ -178,14 +197,13 @@ Data(instances).Scenario(
     const serviceList = [serviceName, `remote_${serviceName}_faker`];
 
     for (const service of serviceList) {
-      I.amOnPage(qanPage.url);
-      qanOverview.waitForOverviewLoaded();
+      I.amOnPage(I.buildUrlWithParams(queryAnalyticsPage.url, { from: 'now-5m' }));
+      queryAnalyticsPage.waitForLoaded();
       await adminPage.applyTimeRange('Last 12 hours');
-      qanOverview.waitForOverviewLoaded();
-      qanFilters.waitForFiltersToLoad();
-      await qanFilters.applySpecificFilter(service);
-      qanOverview.waitForOverviewLoaded();
-      const count = await qanOverview.getCountOfItems();
+      queryAnalyticsPage.waitForLoaded();
+      await queryAnalyticsPage.filters.selectFilter(service);
+      queryAnalyticsPage.waitForLoaded();
+      const count = await queryAnalyticsPage.data.getCountOfItems();
 
       assert.ok(count > 0, `The queries for service ${service} instance do NOT exist, check QAN Data`);
     }
@@ -237,7 +255,7 @@ Data(maxQueryLengthInstances).Scenario(
     + ' PMM-T1426 Verify remote PostgreSQL can be added with specified Max Query Length'
     + ' PMM-T1431 Verify adding MongoDB instance via UI with specified Max Query Length option @max-length @ssl @ssl-remote @ssl-mysql @not-ui-pipeline',
   async ({
-    I, remoteInstancesPage, pmmInventoryPage, qanPage, qanOverview, qanFilters, qanDetails, inventoryAPI, current,
+    I, remoteInstancesPage, pmmInventoryPage, inventoryAPI, current, queryAnalyticsPage,
   }) => {
     const {
       serviceName, serviceType, version, container, maxQueryLength,
@@ -290,43 +308,21 @@ Data(maxQueryLengthInstances).Scenario(
 
     await I.wait(70);
     // Check max visible query length is less than max_query_length option
-    I.amOnPage(I.buildUrlWithParams(qanPage.clearUrl, {
-      from: 'now-5m',
-      service_name: remoteServiceName,
-    }));
-
-    I.waitForVisible(qanOverview.elements.querySelector, 60);
-    const queryFromRow = await qanOverview.getQueryFromRow(1);
+    I.amOnPage(I.buildUrlWithParams(queryAnalyticsPage.url, { from: 'now-5m' }));
+    queryAnalyticsPage.waitForLoaded();
+    await queryAnalyticsPage.filters.selectFilter(remoteServiceName);
+    I.waitForElement(queryAnalyticsPage.data.elements.queryRows, 30);
+    const queryFromRow = await queryAnalyticsPage.data.elements.queryRowValue(1);
 
     if (maxQueryLength !== '' && maxQueryLength !== '-1') {
       assert.ok(queryFromRow.length <= maxQueryLength, `Query length exceeds max length boundary equals ${queryFromRow.length} is more than ${maxQueryLength}`);
     } else {
       // 6 is chosen because it's the length of "SELECT" any query that starts with that word should be longer
       assert.ok(queryFromRow.length >= 6, `Query length is equal to ${queryFromRow.length} which is less than minimal possible length`);
-      qanOverview.selectRow(1);
-      qanFilters.waitForFiltersToLoad();
-      qanDetails.checkExamplesTab();
-      qanDetails.checkExplainTab();
+      queryAnalyticsPage.data.selectRow(1);
+      queryAnalyticsPage.waitForLoaded();
+      queryAnalyticsPage.queryDetails.checkExamplesTab();
+      queryAnalyticsPage.queryDetails.checkTab('Explain');
     }
-  },
-);
-
-// These tests must be executed last as previous tests are getting agentIds using grep
-Data(instances).Scenario(
-  'PMM-T1896 Verify MySQL w/ tls/ssl certs can be added when specified with --tls-skip-verify @ssl @ssl-mysql @not-ui-pipeline',
-  async ({
-    I, current, pmmInventoryPage,
-  }) => {
-    const {
-      version, container,
-    } = current;
-    const serviceName = `TLS_mysql_${version}`;
-    const responseMessage = 'MySQL Service added';
-    const command = `docker exec ${container} pmm-admin add mysql --username=pmm_tls --port=3306 --query-source=perfschema --tls --tls-skip-verify --tls-ca=/var/lib/mysql/ca.pem --tls-cert=/var/lib/mysql/client-cert.pem --tls-key=/var/lib/mysql/client-key.pem ${serviceName}`;
-    const output = await I.verifyCommand(command);
-
-    I.assertTrue(output.includes(responseMessage), `The ${command} was supposed to return ${responseMessage} but actually got ${output}`);
-    I.amOnPage(pmmInventoryPage.url);
-    pmmInventoryPage.verifyRemoteServiceIsDisplayed(serviceName);
   },
 );
