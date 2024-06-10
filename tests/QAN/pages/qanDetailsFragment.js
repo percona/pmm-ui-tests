@@ -144,15 +144,6 @@ module.exports = {
 
     return result;
   },
-
-  async verifyQueryCount(expectedQueryCount) {
-    I.waitForVisible(this.elements.queryCountValue);
-    const queryCount = parseInt((await I.grabTextFrom(this.elements.queryCountValue)), 10);
-
-    if (queryCount === parseInt(expectedQueryCount, 10)) return;
-
-    throw new Error(`Query count of does not equal to excepted value: "${expectedQueryCount}", actual value is: "${queryCount}".`);
-  },
 };
 
 function compareCalculation(value, result) {
