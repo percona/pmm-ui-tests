@@ -168,7 +168,7 @@ Scenario(
 
     I.amOnPage(I.buildUrlWithParams(queryAnalyticsPage.url, { from: 'now-1h', refresh: '5s' }));
     queryAnalyticsPage.waitForLoaded();
-    await queryAnalyticsPage.filters.selectFilter(dbName);
+    await queryAnalyticsPage.filters.selectFilter(dbName, 120000);
     queryAnalyticsPage.waitForLoaded();
     I.waitForText('17', 180, queryAnalyticsPage.data.elements.totalItems);
     await queryAnalyticsPage.data.selectRow(0);
