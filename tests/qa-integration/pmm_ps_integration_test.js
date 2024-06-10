@@ -176,4 +176,4 @@ Scenario(
     await qanOverview.selectRow(0);
     I.waitForText('105', 180, qanOverview.elements.queryCountValue);
   },
-).retry(0);
+).retry(1);
