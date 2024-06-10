@@ -556,14 +556,7 @@ module.exports = {
   },
 
   async verifySettingsValue(field, expectedValue) {
-    I.waitForElement(field, 30);
-    const fieldActualValue = await I.grabValueFrom(field);
-
-    assert.equal(
-      expectedValue,
-      fieldActualValue,
-      `The Value for Setting ${field} is not the same as expected Value ${expectedValue}, value found was ${fieldActualValue}`,
-    );
+    I.waitForValue(field, expectedValue, 30);
   },
 
   async verifyTooltip(tooltipObj) {
