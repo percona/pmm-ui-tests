@@ -29,9 +29,9 @@ module.exports = {
       'Expected number is not the one available options to select in dropdown',
     );
     I.waitForElement(this.elements.rowsPerPageDropdown, 30);
-    await within(this.elements.rowsPerPageDropdown, () => {
-      I.see(expectedNumber);
-    });
+    const selectedNumber = await I.grabTextFrom(this.elements.rowsPerPageDropdown);
+
+    I.assertEqual(expectedNumber.toString(), selectedNumber, 'Selected options is not the same as the expected one');
   },
 
   async getSelectedCountPerPage() {
