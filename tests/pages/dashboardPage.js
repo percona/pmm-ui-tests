@@ -15,7 +15,6 @@ module.exports = {
     '//input[@aria-controls="options-service_name"]',
   toggleAllValues: '[aria-label="Toggle all values"]',
   panel: 'div[data-panelid]',
-  refreshDashboard: locate('[aria-label="Refresh dashboard"]'),
   systemUptimePanel: (nodeName) => `//div[@class="panel-title"]//h2[text()="${nodeName} - System Uptime"]`,
   nodesCompareDashboard: {
     url: 'graph/d/node-instance-compare/nodes-compare?orgId=1&refresh=1m&from=now-5m&to=now',
@@ -934,11 +933,6 @@ module.exports = {
       'ReplSet Last Election',
       'MongoDB Versions',
     ],
-    elements: {
-      replicationLagMin: (serviceName) => locate(`//div[@aria-label="Replication Lag panel"]//a[@title="${serviceName}"]//ancestor::tr[@class="graph-legend-series "]//td[@class="graph-legend-value min"]`),
-      replicationLagMax: (serviceName) => locate(`//div[@aria-label="Replication Lag panel"]//a[@title="${serviceName}"]//ancestor::tr[@class="graph-legend-series "]//td[@class="graph-legend-value max"]`),
-      replicationLagAvg: (serviceName) => locate(`//div[@aria-label="Replication Lag panel"]//a[@title="${serviceName}"]//ancestor::tr[@class="graph-legend-series "]//td[@class="graph-legend-value avg"]`),
-    },
   },
   victoriaMetricsAgentsOverviewDashboard: {
     url: 'graph/d/vmagent/victoriametrics-agents-overview?orgId=1&refresh=5m',
@@ -1452,23 +1446,6 @@ module.exports = {
    */
   panelMenu(panelTitle) {
     return new DashboardPanelMenu(panelTitle);
-  },
-
-  async getReplicationLagValues(serviceName, timeoutInSeconds = 60) {
-    for (let i = 0; i < timeoutInSeconds; i++) {
-      const numOfElements = await I.grabNumberOfVisibleElements(this.mongodbReplicaSetSummaryDashboard.elements.replicationLagMin(serviceName));
-
-      if (numOfElements > 0) break;
-
-      I.wait(1);
-      I.click(this.refreshDashboard);
-    }
-
-    const replicationLagMin = await I.grabTextFrom(this.mongodbReplicaSetSummaryDashboard.elements.replicationLagMin(serviceName));
-    const replicationLagMax = await I.grabTextFrom(this.mongodbReplicaSetSummaryDashboard.elements.replicationLagMax(serviceName));
-    const replicationLagAvg = await I.grabTextFrom(this.mongodbReplicaSetSummaryDashboard.elements.replicationLagAvg(serviceName));
-
-    return [parseInt(replicationLagMin, 10), parseInt(replicationLagMax, 10), parseInt(replicationLagAvg, 10)];
   },
 
   async waitForMaxReplicationLagValuesAbove(serviceName, expectedValue, timeoutInSeconds = 60) {
