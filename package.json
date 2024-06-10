@@ -52,16 +52,16 @@
   "devDependencies": {
     "@types/faker": "^6.6.9",
     "@types/node": "^18.8.3",
-    "@types/shelljs": "^0.8.12",
-    "@typescript-eslint/eslint-plugin": "^5.59.7",
-    "@typescript-eslint/parser": "^5.59.11",
-    "dotenv": "^16.1.4",
-    "eslint": "8.41",
+    "@types/shelljs": "^0.8.15",
+    "@typescript-eslint/eslint-plugin": "^7.12.0",
+    "@typescript-eslint/parser": "^7.12.0",
+    "dotenv": "^16.4.5",
+    "eslint": "8.57.0",
     "eslint-config-airbnb": "^19.0.4",
     "eslint-config-airbnb-base": "^15.0.0",
-    "eslint-config-airbnb-typescript": "^17.0.0",
-    "eslint-config-prettier": "^8.2.0",
-    "eslint-plugin-import": "^2.27.5",
-    "eslint-plugin-playwright": "^0.12.0"
+    "eslint-config-airbnb-typescript": "^18.0.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-import": "^2.29.1",
+    "eslint-plugin-playwright": "^1.6.2"
   }
 }
