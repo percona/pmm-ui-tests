@@ -152,7 +152,7 @@ Scenario(
 
     const psContainerName = await I.verifyCommand('sudo docker ps --format "{{.Names}}" | grep ps_');
 
-    await I.verifyCommand(`sudo docker exec ${psContainerName} mysql -h 127.0.0.1 --port 3307 -u${credentials.perconaServer.username} -p${credentials.perconaServer.password} -e "CREATE USER sysbench@'%' IDENTIFIED WITH mysql_native_password BY 'test'; GRANT ALL ON *.* TO sysbench@'%'; DROP DATABASE IF EXISTS ${dbName};"`);
+    await I.verifyCommand(`sudo docker exec ${psContainerName} mysql -h 127.0.0.1 --port 3307 -u root -pGRgrO9301RuF -e "CREATE USER sysbench@'%' IDENTIFIED WITH mysql_native_password BY 'test'; GRANT ALL ON *.* TO sysbench@'%'; DROP DATABASE IF EXISTS ${dbName};"`);
     await I.verifyCommand(`sudo docker exec ${psContainerName} mysql -h 127.0.0.1 --port 3307 -u ${sbUser.name} -p${sbUser.password} -e "SET GLOBAL slow_query_log=ON;"`);
     await I.verifyCommand(`sudo docker exec ${psContainerName} mysql -h 127.0.0.1 --port 3307 -u ${sbUser.name} -p${sbUser.password} -e "SET GLOBAL long_query_time=0;"`);
     await I.verifyCommand(`sudo docker exec ${psContainerName} mysql -h 127.0.0.1 --port 3307 -u ${sbUser.name} -p${sbUser.password} -e "CREATE DATABASE ${dbName}"`);
