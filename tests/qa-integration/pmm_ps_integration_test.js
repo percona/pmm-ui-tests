@@ -172,7 +172,7 @@ Scenario(
     qanOverview.waitForOverviewLoaded();
     await qanFilters.applyFilter(dbName);
     qanOverview.waitForOverviewLoaded();
-    await qanOverview.waitForCountOfItems(17, 180);
+    I.waitForText('17', 180, qanOverview.elements.countOfItems);
     await qanOverview.selectRow(0);
     await qanDetails.verifyQueryCount(105);
   },
