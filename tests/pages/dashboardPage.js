@@ -1447,25 +1447,4 @@ module.exports = {
   panelMenu(panelTitle) {
     return new DashboardPanelMenu(panelTitle);
   },
-
-  async waitForMaxReplicationLagValuesAbove(serviceName, expectedValue, timeoutInSeconds = 60) {
-    let replicationLagMax;
-
-    for (let i = 0; i < timeoutInSeconds; i++) {
-      const numOfElements = await I.grabNumberOfVisibleElements(
-        this.mongodbReplicaSetSummaryDashboard.elements.replicationLagMin(serviceName),
-      );
-
-      if (numOfElements > 0) {
-        replicationLagMax = await I.grabTextFrom(this.mongodbReplicaSetSummaryDashboard.elements.replicationLagMax(serviceName));
-
-        if (parseInt(replicationLagMax, 10) >= expectedValue) return;
-      }
-
-      I.wait(1);
-      I.click(this.refreshDashboard);
-    }
-
-    I.assertTrue(parseInt(replicationLagMax, 10) >= expectedValue, `Replication Lag max is less than expected lag value, expected: "${expectedValue}s" actual: ${parseInt(replicationLagMax, 10)}s`);
-  },
 };
