@@ -1370,6 +1370,10 @@ module.exports = {
     return locate('.panel-container').withDescendant(locate('.panel-title-container h2').withText(metricName));
   },
 
+  graphLegendSeriesValue(metricName, value) {
+    return this.graphsLocator(metricName).find('.graph-legend-series').find('td').withText(value);
+  },
+
   graphLegendSeriesRowByTitle(metricName, title) {
     return this.graphsLocator(metricName).find(`//tr[@class="graph-legend-series "][td//a[@title="${title}"]]`);
   },
