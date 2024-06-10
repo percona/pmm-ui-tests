@@ -174,6 +174,7 @@ Scenario(
     qanOverview.waitForOverviewLoaded();
     I.waitForText('17', 180, qanOverview.elements.countOfItems);
     await qanOverview.selectRow(0);
-    await qanDetails.verifyQueryCount(105);
+    I.waitForText('105', 180, qanOverview.elements.queryCountValue);
+    // await qanDetails.verifyQueryCount(105);
   },
 ).retry(0);
