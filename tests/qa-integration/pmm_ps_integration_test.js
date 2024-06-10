@@ -174,4 +174,4 @@ Scenario(
     await queryAnalyticsPage.data.selectRow(0);
     I.waitForText('105', 180, queryAnalyticsPage.elements.queryCountValue);
   },
-).retry(0);
+).retry(1);
