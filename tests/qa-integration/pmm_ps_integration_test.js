@@ -173,6 +173,5 @@ Scenario(
     I.waitForText('17', 180, queryAnalyticsPage.data.elements.totalItems);
     await queryAnalyticsPage.data.selectRow(0);
     I.waitForText('105', 180, queryAnalyticsPage.elements.queryCountValue);
-    // await queryAnalyticsPage.verifyQueryCount(105);
   },
 ).retry(0);
