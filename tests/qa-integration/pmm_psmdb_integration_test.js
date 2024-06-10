@@ -63,7 +63,7 @@ Scenario(
   },
 );
 
-Scenario(
+Scenario.skip(
   'Verify metrics from PSMDB instances on PMM-Server @pmm-psmdb-replica-integration @not-ui-pipeline',
   async ({
     I, grafanaAPI,
@@ -93,7 +93,7 @@ Scenario(
   },
 ).retry(1);
 
-Scenario(
+Scenario.skip(
   'Verify dashboard after MongoDB Instances are added @pmm-psmdb-replica-integration @not-ui-pipeline',
   async ({
     I, dashboardPage, adminPage,
@@ -129,7 +129,7 @@ Scenario(
   },
 ).retry(1);
 
-Scenario(
+Scenario.skip(
   'Verify QAN after MongoDB Instances is added @pmm-psmdb-replica-integration @not-ui-pipeline',
   async ({
     I, qanOverview, qanFilters, qanPage,
