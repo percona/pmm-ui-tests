@@ -1000,6 +1000,7 @@ module.exports = {
   },
   mongodbReplicaSetSummaryDashboard: {
     url: 'graph/d/mongodb-replicaset-summary/mongodb-replset-summary?orgId=1&refresh=1m&from=now-5m&to=now',
+    cleanUrl: 'graph/d/mongodb-replicaset-summary/mongodb-replset-summary',
     metrics: [
       'Replication Lag',
       'ReplSet States',
@@ -1371,6 +1372,16 @@ module.exports = {
 
   graphLegendSeriesValue(metricName, value) {
     return this.graphsLocator(metricName).find('.graph-legend-series').find('td').withText(value);
+  },
+
+  graphLegendSeriesRowByTitle(metricName, title) {
+    return this.graphsLocator(metricName).find(`//tr[@class="graph-legend-series "][td//a[@title="${title}"]]`);
+  },
+
+  graphLegendColumnValueByExpression(graphName, title, columnName, expression) {
+    return this
+      .graphLegendSeriesRowByTitle(graphName, title)
+      .find(`//td[@class="graph-legend-value ${columnName}" and number(substring-before(text(), " ")) ${expression}]`);
   },
 
   tabLocator(tabName) {
