@@ -281,6 +281,11 @@ class QueryAnalyticsData {
     queryAnalyticsPage.waitForLoaded();
     await I.dontSeeElement(this.fields.columnHeader(metricName));
   }
+
+  selectPage(page) {
+    I.waitForVisible(this.buttons.paginationPage(page));
+    I.click(this.buttons.paginationPage(page));
+  }
 }
 
 module.exports = new QueryAnalyticsData();
