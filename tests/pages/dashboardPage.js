@@ -1272,7 +1272,11 @@ module.exports = {
   },
 
   graphsLocator(metricName) {
-    return locate(this.fields.metricTitle).withText(metricName);
+    return locate(`//div[@data-testid='data-testid Panel header ${metricName}']`);
+  },
+
+  graphLegendSeriesValue(metricName, value) {
+    return this.graphsLocator(metricName).find('.graph-legend-series').find('button').withText(value);
   },
 
   panelByTitle(title) {
