@@ -193,8 +193,8 @@ Scenario(
     dashboardPage.waitForDashboardOpened();
 
     // Gather Secondary member Service Name from Mongo
-    const secondayServiceName = (await I.verifyCommand(`docker exec ${arbiter_primary_container_name} mongo --eval rs\.printSecondaryReplicationInfo\\(\\) --username=${username} --password=${password} | awk -F ":" '/source/ {print $2}'`)).trim();
-    const replLagServiceName = dashboardPage.graphLegendSeriesValue('Replication Lag', secondayServiceName);
+    const secondaryServiceName = (await I.verifyCommand(`docker exec ${arbiter_primary_container_name} mongo --eval rs\.printSecondaryReplicationInfo\\(\\) --username=${username} --password=${password} | awk -F ":" '/source/ {print $2}'`)).trim();
+    const replLagServiceName = dashboardPage.graphLegendSeriesValue('Replication Lag', secondaryServiceName);
     const replLagSeriesValue = `${replLagServiceName.toXPath()}/following::td[contains(text(),'year')]`;
 
     // Check service name from Replication Lag field in UI
