@@ -132,8 +132,7 @@ Scenario(
     await queryAnalyticsPage.filters.verifySelectedFilters('pmm-managed');
     queryAnalyticsPage.data.verifyColumnPresent('Bytes Sent');
     queryAnalyticsPage.queryDetails.waitForDetails();
-    /** Skip step until: https://perconadev.atlassian.net/browse/PMM-13052 is fixed
-    await adminPage.verifyTimeRange('Last 1 hour'); */
+    await adminPage.verifyTimeRange('Last 1 hour');
     queryAnalyticsPage.data.verifySearchByValue('pmm-managed');
     dashboardPage.selectRefreshTimeInterval('Off');
     queryAnalyticsPage.waitForLoaded();

@@ -23,6 +23,7 @@ class QueryAnalyticsPage {
       searchDashboard: '//div[contains(@class, "input-wrapper")]',
       copyButton: locate(I.useDataQA('copy-link-button')),
       qanBreadcrumb: locate(I.useDataQA('data-testid Query Analytics breadcrumb')),
+      refresh: I.useDataQA('data-testid RefreshPicker run button'),
     };
   }
 

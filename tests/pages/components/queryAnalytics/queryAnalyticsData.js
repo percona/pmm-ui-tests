@@ -32,6 +32,8 @@ class QueryAnalyticsData {
       mainMetricFromDropdown: (metricName) => locate('.ant-select-item-option-content').withText(metricName),
       mainMetricByName: (metricsName) => this.elements.selectedMainMetric().withText(metricsName),
       removeMetricColumn: locate('div').withChild('.anticon-minus').withText('Remove column'),
+      loadColumn: (rowNumber) => locate(`div.tr-${rowNumber} .td canvas`),
+      tooltipContent: locate('div.tippy-content'),
     };
     this.fields = {
       searchBy: '//input[contains(@name, "search")]',

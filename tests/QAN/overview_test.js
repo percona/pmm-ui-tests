@@ -1,5 +1,4 @@
 const assert = require('assert');
-const {queryAnalytics} = require("../pages/leftNavMenu");
 
 Feature('QAN overview');
 
@@ -409,37 +408,35 @@ Scenario(
     await I.dontSeeElement(queryAnalyticsPage.data.elements.removeMetricColumn);
   },
 );
-// https://perconadev.atlassian.net/browse/PMM-13052 blocked
-Scenario.skip(
-  'PMM-T1699 Verify that query time is shown in UTC timezone after hovering Load graph for query if user selected UTC timezone @qan',
-  async ({ I, adminPage }) => {
-    // anOverview.waitForOverviewLoaded();
-    // const firstLoadCell = anOverview.getLoadLocator(2);
 
-    // I.moveCursorTo(firstLoadCell);
-    // let timestamp = await I.grabTextFrom(anOverview.elements.tooltipContent);
+Scenario(
+  'PMM-T1699 Verify that query time is shown in UTC timezone after hovering Load graph for query if user selected UTC timezone @qan',
+  async ({ I, adminPage, queryAnalyticsPage }) => {
+    I.waitForVisible(queryAnalyticsPage.data.elements.loadColumn('2'));
+    I.moveCursorTo(queryAnalyticsPage.data.elements.loadColumn('2'));
+    let timestamp = await I.grabTextFrom(queryAnalyticsPage.data.elements.tooltipContent);
 
     const clientTimeOffset = new Intl.NumberFormat('en-US', {
       minimumIntegerDigits: 2,
       signDisplay: 'exceptZero',
     }).format(-new Date().getTimezoneOffset() / 60);
-    const clientTimeZone = `${clientTimeOffset}:00`;
 
-    // I.assertContain(
-    //   timestamp,
-    //   clientTimeOffset,
-    //   `Timestamp does not contain expected local time offset, but contains ${timestamp}`,
-    // );
+    I.assertContain(
+      timestamp,
+      clientTimeOffset,
+      `Timestamp does not contain expected local time offset, but contains ${timestamp}`,
+    );
 
     adminPage.applyTimeZone('Coordinated Universal Time');
-    // I.click(anOverview.buttons.refresh);
-    // I.moveCursorTo(firstLoadCell);
-    // timestamp = await I.grabTextFrom(anOverview.elements.tooltipContent);
+    I.click(queryAnalyticsPage.buttons.refresh);
+    I.waitForVisible(queryAnalyticsPage.data.elements.loadColumn('2'));
+    I.moveCursorTo(queryAnalyticsPage.data.elements.loadColumn('2'));
+    timestamp = await I.grabTextFrom(queryAnalyticsPage.data.elements.tooltipContent);
 
-    // I.assertContain(
-    //   timestamp,
-    //   '+00:00',
-    //   `Timestamp does not contain expected zero UTC time offset, but contains ${timestamp}`,
-    // );
+    I.assertContain(
+      timestamp,
+      '+00:00',
+      `Timestamp does not contain expected zero UTC time offset, but contains ${timestamp}`,
+    );
   },
 );

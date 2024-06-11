@@ -9,7 +9,6 @@ Before(async ({ I, queryAnalyticsPage }) => {
   queryAnalyticsPage.waitForLoaded();
 });
 
-// https://perconadev.atlassian.net/browse/PMM-13052 blocked
 Scenario.skip(
   'Open the QAN Dashboard and check that changing the time range resets current page to the first. @qan',
   async ({ adminPage, queryAnalyticsPage }) => {
