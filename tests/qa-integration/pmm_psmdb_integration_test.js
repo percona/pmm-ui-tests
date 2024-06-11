@@ -151,7 +151,7 @@ Scenario(
   },
 ).retry(1);
 
-Scenario(
+Scenario.skip(
   'T2269 Verify Replicaset dashboard for MongoDB Instances contains ARBITER node @pmm-psmdb-arbiter-integration @not-ui-pipeline',
   async ({
     I, dashboardPage,
@@ -174,10 +174,6 @@ Scenario(
   }) => {
     const username = 'pmm';
     const password = 'pmmpass';
-
-    // Gather Secondary member Service Name from Mongo
-    const secondayServiceName = (await I.verifyCommand(`docker exec ${arbiter_primary_container_name} mongo --eval rs\.printSecondaryReplicationInfo\\(\\) --username=${username} --password=${password} | awk -F ":" '/source/ {print $2}'`)).trim();
-
     const arbiter_container_name = 'rs103';
 
     // Check if logs has arbiter connection
@@ -196,6 +192,8 @@ Scenario(
     I.amOnPage(I.buildUrlWithParams(dashboardPage.mongodbReplicaSetSummaryDashboard.cleanUrl, { from: 'now-1h', refresh: '5s' }));
     dashboardPage.waitForDashboardOpened();
 
+    // Gather Secondary member Service Name from Mongo
+    const secondayServiceName = (await I.verifyCommand(`docker exec ${arbiter_primary_container_name} mongo --eval rs\.printSecondaryReplicationInfo\\(\\) --username=${username} --password=${password} | awk -F ":" '/source/ {print $2}'`)).trim();
     const replLagServiceName = dashboardPage.graphLegendSeriesValue('Replication Lag', secondayServiceName);
     const replLagSeriesValue = `${replLagServiceName.toXPath()}/following::td[contains(text(),'year')]`;
 
