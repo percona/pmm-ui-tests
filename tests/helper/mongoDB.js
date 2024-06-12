@@ -8,7 +8,9 @@ class MongoDBHelper extends Helper {
     this.username = config.username;
     this.password = config.password;
     this.url = `mongodb://${config.username}:${encodeURIComponent(config.password)}@${config.host}:${config.port}/?authSource=admin`;
-    this.client = new MongoClient(this.url, { connectTimeoutMS: 30000 });
+    this.client = new MongoClient(this.url, {
+      useNewUrlParser: true, connectTimeoutMS: 30000,
+    });
   }
 
   /**
@@ -35,13 +37,11 @@ class MongoDBHelper extends Helper {
     this.url = `mongodb://${this.username}:${encodeURIComponent(this.password)}@${this.host}:${this.port}/?authSource=admin`;
     this.client.s.url = this.url;
 
-    this.client = new MongoClient(this.url, { connectTimeoutMS: 30000 });
-
-    console.log(`Mongo url is: ${this.url}`);
-    console.log(`Client is: ${this.client}`);
+    this.client = new MongoClient(this.url, {
+      useNewUrlParser: true, useUnifiedTopology: true, connectTimeoutMS: 30000,
+    });
 
     await this.client.connect();
-    console.log('Connected');
   }
 
   async mongoConnectReplica(connection) {
