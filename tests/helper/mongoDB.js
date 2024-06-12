@@ -8,6 +8,7 @@ class MongoDBHelper extends Helper {
     this.username = config.username;
     this.password = config.password;
     this.url = `mongodb://${config.username}:${encodeURIComponent(config.password)}@${config.host}:${config.port}/?authSource=admin`;
+    console.log(`Mongo url is: ${this.url}`)
     this.client = new MongoClient(this.url, {
       useNewUrlParser: true, connectTimeoutMS: 30000,
     });
