@@ -118,8 +118,8 @@ Data(units)
         I.verifyPopUpMessage(ruleTemplatesPage.messages.successfullyAdded);
 
         // Check that Edit and Delete buttons are enabled
-        I.seeElementsEnabled(editButton);
-        I.seeElementsEnabled(deleteButton);
+        I.waitForEnabled(editButton);
+        I.waitForEnabled(deleteButton);
 
         await templatesAPI.removeTemplate(id);
       } else {
@@ -149,7 +149,7 @@ Data(templates)
       if (validFile) {
         I.verifyPopUpMessage(ruleTemplatesPage.messages.successfullyAdded);
         I.waitForVisible(expectedSourceLocator, 30);
-        I.seeElementsEnabled(editButton);
+        I.waitForEnabled(editButton);
       } else {
         I.verifyPopUpMessage(current.error);
       }
@@ -176,7 +176,7 @@ Scenario(
         .editButtonBySource(ruleTemplatesPage.templateSources.ui);
 
       I.waitForVisible(expectedSourceLocator, 30);
-      I.seeElementsEnabled(editButton);
+      I.waitForEnabled(editButton);
     }
   },
 );

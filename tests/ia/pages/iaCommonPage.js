@@ -94,15 +94,21 @@ module.exports = {
     I.click(this.buttons.rowsPerPageOption(count));
   },
 
-  verifyButtonState(button, disabled) {
-    I.seeAttributesOnElements(button, disabled);
+  async verifyButtonState(button, disabled) {
+    const isDisabled = await I.grabAttributeFrom(button, 'disabled');
+
+    if (disabled) {
+      I.assertEqual(isDisabled, true, `Button ${button} should be disabled.`);
+    } else {
+      I.assertEqual(isDisabled, null, `Button ${button} should be enabled.`);
+    }
   },
 
-  verifyPaginationButtonsState(state) {
+  async verifyPaginationButtonsState(state) {
     for (const [key, value] of Object.entries(state)) {
       if (this.buttons[key]) {
         I.waitForVisible(this.buttons[key], 10);
-        this.verifyButtonState(this.buttons[key], this.shouldBeDisabled(value));
+        await this.verifyButtonState(this.buttons[key], this.shouldBeDisabled(value));
       } else {
         throw new Error(`Didn't find ${key} key in ${this.buttons} object`);
       }
