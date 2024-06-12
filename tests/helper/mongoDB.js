@@ -24,7 +24,7 @@ class MongoDBHelper extends Helper {
       host, port, username, password,
     } = connection;
 
-    console.log(`Connection is: ${connection}`);
+    console.log(`Connection is: ${connection.toString()}`);
 
     if (host) this.host = host;
 
@@ -37,9 +37,7 @@ class MongoDBHelper extends Helper {
     this.url = `mongodb://${this.username}:${encodeURIComponent(this.password)}@${this.host}:${this.port}/?authSource=admin`;
     this.client.s.url = this.url;
 
-    this.client = new MongoClient(this.url, {
-      useNewUrlParser: true, useUnifiedTopology: true, connectTimeoutMS: 30000,
-    });
+    this.client = new MongoClient(this.url, { connectTimeoutMS: 30000 });
 
     console.log(`Mongo url is: ${this.url}`);
 
