@@ -97,8 +97,8 @@ module.exports = {
   async verifyButtonState(button, disabled) {
     const isDisabled = await I.grabAttributeFrom(button, 'disabled');
 
-    if (disabled) {
-      I.assertEqual(isDisabled, true, `Button ${button} should be disabled.`);
+    if (disabled.disabled) {
+      I.assertEqual(isDisabled, '', `Button ${button} should be disabled.`);
     } else {
       I.assertEqual(isDisabled, null, `Button ${button} should be enabled.`);
     }
