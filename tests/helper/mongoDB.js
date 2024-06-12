@@ -40,7 +40,8 @@ class MongoDBHelper extends Helper {
     console.log(`Mongo url is: ${this.url}`);
     console.log(`Client is: ${this.client}`);
 
-    return await this.client.connect();
+    await this.client.connect();
+    console.log('Connected');
   }
 
   async mongoConnectReplica(connection) {
