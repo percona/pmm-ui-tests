@@ -74,10 +74,12 @@ Before(async ({
 
   serviceId = service_id;
 
+  console.log(`Service Id is: ${service_id}`);
   await I.verifyCommand('docker exec rs101 systemctl start mongod');
 
   const c = await I.mongoGetCollection('test', 'test');
 
+  console.log(`Mongo collection is: ${c}`);
   await c.deleteMany({ number: 2 });
 
   await I.Authorize();
