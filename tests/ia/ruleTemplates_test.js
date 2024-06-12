@@ -285,7 +285,7 @@ Scenario(
     I.seeElementsDisabled(ruleTemplatesPage.buttons.editTemplate);
     I.clearField(ruleTemplatesPage.fields.templateInput);
     I.fillField(ruleTemplatesPage.fields.templateInput, updatedTemplateText);
-    I.seeElementsEnabled(ruleTemplatesPage.buttons.editTemplate);
+    I.waitForEnabled(ruleTemplatesPage.buttons.editTemplate, 10);
     ruleTemplatesPage.verifyEditModalHeaderAndWarning(templateName);
     I.click(ruleTemplatesPage.buttons.editTemplate);
     I.verifyPopUpMessage(ruleTemplatesPage.messages.successfullyEdited);

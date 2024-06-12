@@ -117,8 +117,8 @@ Scenario(
     );
 
     // Verify buttons become enabled
-    I.seeAttributesOnElements(locationsPage.buttons.addLocation, { disabled: null });
-    I.seeAttributesOnElements(locationsPage.buttons.testLocation, { disabled: null });
+    I.waitForEnabled(locationsPage.buttons.addLocation, 10);
+    I.waitForEnabled(locationsPage.buttons.testLocation, 10);
 
     // Verify Test Connection works
     I.click(locationsPage.buttons.testLocation);

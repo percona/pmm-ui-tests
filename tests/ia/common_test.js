@@ -17,6 +17,7 @@ Scenario(
     I.waitForVisible(iaCommon.elements.disabledIa, 30);
     I.seeTextEquals(iaCommon.messages.disabledIa, iaCommon.elements.disabledIa);
 
+    console.log(await I.grabAttributeFrom(iaCommon.elements.settingsLink, 'href'));
     I.seeAttributesOnElements(iaCommon.elements.settingsLink, {
       href: `${codeceptjsConfig.config.helpers.Playwright.url}${pmmSettingsPage.advancedSettingsUrl}`,
     });
