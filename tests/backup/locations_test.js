@@ -75,7 +75,7 @@ Scenario(
     I.seeTextEquals('Test', locationsPage.buttons.testLocation);
     I.seeElementsDisabled(locationsPage.buttons.testLocation);
     I.seeTextEquals('Cancel', locationsPage.buttons.cancel);
-    I.seeElementsEnabled(locationsPage.buttons.cancel);
+    I.waitForEnabled(locationsPage.buttons.cancel);
   },
 );
 
