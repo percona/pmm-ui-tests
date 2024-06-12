@@ -24,8 +24,6 @@ class MongoDBHelper extends Helper {
       host, port, username, password,
     } = connection;
 
-    console.log(`Connection is: ${connection.toString()}`);
-
     if (host) this.host = host;
 
     if (port) this.port = port;
@@ -41,7 +39,7 @@ class MongoDBHelper extends Helper {
       useNewUrlParser: true, useUnifiedTopology: true, connectTimeoutMS: 30000,
     });
 
-    await this.client.connect();
+    return await this.client.connect();
   }
 
   async mongoConnectReplica(connection) {
