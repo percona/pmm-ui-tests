@@ -24,6 +24,8 @@ class MongoDBHelper extends Helper {
       host, port, username, password,
     } = connection;
 
+    console.log(`Connection is: ${connection}`);
+
     if (host) this.host = host;
 
     if (port) this.port = port;
