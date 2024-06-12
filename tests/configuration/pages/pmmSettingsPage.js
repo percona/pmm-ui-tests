@@ -606,7 +606,7 @@ module.exports = {
         tooltips: this.tooltips.alertManagerIntegration,
       },
       {
-        subPage: this.perconaPlatformUrl,
+        subPage: this.perconaPlatformUrl.url,
         tooltips: this.tooltips.perconaPlatform,
       },
     ];
