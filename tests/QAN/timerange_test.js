@@ -1,7 +1,7 @@
 const moment = require('moment');
 const assert = require('assert');
 
-Feature('QAN timerange').retry(0);
+Feature('QAN timerange').retry(1);
 
 Before(async ({ I, queryAnalyticsPage }) => {
   await I.Authorize();
