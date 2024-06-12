@@ -174,6 +174,9 @@ module.exports = () => actor({
         case 'page_number':
           queryParams.page_number = value;
           break;
+        case 'refresh':
+          queryParams.refresh = value;
+          break;
         case 'page_size':
           queryParams.page_size = value;
           break;
