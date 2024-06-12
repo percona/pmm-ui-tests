@@ -370,7 +370,9 @@ Scenario(
     await scheduledPage.openScheduledBackupsPage();
 
     // Verify schedule is disabled
-    I.seeAttributesOnElements(scheduledPage.elements.toggleByName(schedule.name), { checked: null });
+    let isChecked = await I.grabAttributeFrom(scheduledPage.elements.toggleByName(schedule.name), 'checked');
+
+    I.assertEqual(isChecked, null, `Element ${scheduledPage.elements.toggleByName(schedule.name).xpath} is checked, but should not be.`);
 
     // Grab background-color of a row
     const color = await I.grabCssPropertyFrom(scheduledPage.elements.scheduleTypeByName(schedule.name), 'background-color');
@@ -386,7 +388,7 @@ Scenario(
 
     // Disable schedule
     I.click(scheduledPage.buttons.enableDisableByName(schedule.name));
-    const isChecked = await I.grabAttributeFrom(scheduledPage.elements.toggleByName(schedule.name), 'checked');
+    isChecked = await I.grabAttributeFrom(scheduledPage.elements.toggleByName(schedule.name), 'checked');
 
     I.assertEqual(isChecked, null, `Element ${scheduledPage.elements.toggleByName(schedule.name).xpath} is checked, but should not be.`);
 
