@@ -8,9 +8,7 @@ class MongoDBHelper extends Helper {
     this.username = config.username;
     this.password = config.password;
     this.url = `mongodb://${config.username}:${encodeURIComponent(config.password)}@${config.host}:${config.port}/?authSource=admin`;
-    this.client = new MongoClient(this.url, {
-      useNewUrlParser: true, connectTimeoutMS: 30000,
-    });
+    this.client = new MongoClient(this.url, { connectTimeoutMS: 30000 });
   }
 
   /**
