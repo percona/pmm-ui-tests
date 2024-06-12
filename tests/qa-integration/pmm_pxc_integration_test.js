@@ -27,7 +27,7 @@ Scenario(
     const details = {
       serviceName: remoteServiceName,
       serviceType: 'MYSQL_SERVICE',
-      port: port,
+      port,
       username: connection.username,
       password: connection.password,
       host: container_name,
@@ -47,7 +47,7 @@ Scenario(
     I.fillField(remoteInstancesPage.fields.environment, details.environment);
     I.fillField(remoteInstancesPage.fields.cluster, details.cluster);
     I.click(remoteInstancesPage.fields.addService);
-    //I.waitForVisible(pmmInventoryPage.fields.agentsLink, 30);
+    // I.waitForVisible(pmmInventoryPage.fields.agentsLink, 30);
     await inventoryAPI.verifyServiceExistsAndHasRunningStatus(
       {
         serviceType: 'MYSQL_SERVICE',

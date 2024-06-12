@@ -233,8 +233,10 @@ Scenario(
     await dashboardPage.verifyThereAreNoGraphsWithoutData(1);
     const log = await I.verifyCommand(`docker exec ${container_name} cat pmm-agent.log`);
 
-    I.assertFalse(log.includes('Error opening connection to database \(postgres'),
-      'The log wasn\'t supposed to contain errors regarding connection to postgress database but it does');
+    I.assertFalse(
+      log.includes('Error opening connection to database \(postgres'),
+      'The log wasn\'t supposed to contain errors regarding connection to postgress database but it does',
+    );
   },
 );
 

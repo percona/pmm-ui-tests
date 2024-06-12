@@ -206,10 +206,12 @@ module.exports = {
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
 
     const resp = await I.sendGetRequest(`graph/api/dashboards/uid/${uid}`, headers);
+
     assert.ok(
-        resp.status === 200,
-        `Failed to find dashboard with id '${uid}' . Response message is ${resp.data.message}`,
+      resp.status === 200,
+      `Failed to find dashboard with id '${uid}' . Response message is ${resp.data.message}`,
     );
+
     return resp.data;
   },
 

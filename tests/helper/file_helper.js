@@ -25,11 +25,13 @@ class FileHelper extends Helper {
 
   async fileSize(path, failOnError = true) {
     try {
-      let stats = fs.statSync(path);
+      const stats = fs.statSync(path);
+
       return stats.size;
     } catch (e) {
       if (!failOnError) assert.ok(false, `Could not get file size: ${path}, because of error: ${e}`);
     }
+
     return -1;
   }
 }

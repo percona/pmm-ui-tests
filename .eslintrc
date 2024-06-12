@@ -15,6 +15,7 @@
         "functions": "always-multiline"
       }
     ],
+    "eol-last": ["error", "always"],
     "no-restricted-imports": 0,
     "no-param-reassign": ["error", { "ignorePropertyModificationsForRegex": ["^acc$"] }],
     "max-len": ["error", { "code": 130, "ignoreStrings": true, "ignoreRegExpLiterals": true }],
