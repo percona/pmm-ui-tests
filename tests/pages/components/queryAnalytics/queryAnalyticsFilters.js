@@ -53,14 +53,14 @@ class QueryAnalyticsFilters {
     });
   }
 
-  selectFilter(filterName) {
+  selectFilter(filterName, timeout = 30000) {
     I.waitForVisible(this.fields.filterBy, 30);
     I.usePlaywrightTo('Search and select QAN Filter', async ({ page }) => {
       const locator = await page.locator(this.fields.filterByExactName(filterName).value);
 
       await page.locator(this.fields.filterBy.value).fill(filterName);
 
-      await locator.waitFor({ state: 'attached' });
+      await locator.waitFor({ state: 'attached', timeout });
       await locator.click();
     });
     queryAnalyticsPage.waitForLoaded();

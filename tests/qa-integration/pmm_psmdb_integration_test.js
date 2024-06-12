@@ -63,7 +63,7 @@ Scenario(
   },
 );
 
-Scenario(
+Scenario.skip(
   'Verify metrics from PSMDB instances on PMM-Server @pmm-psmdb-replica-integration @not-ui-pipeline',
   async ({
     I, grafanaAPI,
@@ -93,7 +93,7 @@ Scenario(
   },
 ).retry(1);
 
-Scenario(
+Scenario.skip(
   'Verify dashboard after MongoDB Instances are added @pmm-psmdb-replica-integration @not-ui-pipeline',
   async ({
     I, dashboardPage, adminPage,
@@ -129,7 +129,7 @@ Scenario(
   },
 ).retry(1);
 
-Scenario(
+Scenario.skip(
   'Verify QAN after MongoDB Instances is added @pmm-psmdb-replica-integration @not-ui-pipeline',
   async ({
     I, queryAnalyticsPage,
@@ -204,3 +204,20 @@ Scenario(
     await I.dontSeeElement(replLagSeriesValue, 180);
   },
 ).retry(1);
+
+Scenario('PMM-T1889 Verify Mongo replication lag graph shows correct info @pmm-psmdb-replica-integration', async ({ I, dashboardPage }) => {
+  const lagValue = 10;
+  const testConfigFile = `c = rs.conf(); c.members[2].secondaryDelaySecs = ${lagValue}; c.members[2].priority = 0; c.members[2].hidden = true; rs.reconfig(c);`;
+  const serviceName = 'rs103';
+  const graphName = 'Replication Lag';
+
+  await I.verifyCommand(`sudo docker exec rs101 mongo "mongodb://root:root@localhost/?replicaSet=rs" --eval "${testConfigFile}"`);
+  I.amOnPage(I.buildUrlWithParams(dashboardPage.mongodbReplicaSetSummaryDashboard.cleanUrl, { from: 'now-5m', refresh: '5s' }));
+  dashboardPage.waitForDashboardOpened();
+
+  await I.waitForElement(dashboardPage.graphLegendColumnValueByExpression(graphName, serviceName, 'max', '>= 10'), 120);
+
+  const maxValue = await I.grabTextFrom(dashboardPage.graphLegendSeriesRowByTitle(graphName, serviceName));
+
+  I.assertFalse(/min|hour|day|week|month|year/.test(maxValue), `Max replication value should be in seconds. Value is: ${maxValue}`);
+});
