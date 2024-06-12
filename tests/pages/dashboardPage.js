@@ -1272,7 +1272,21 @@ module.exports = {
   },
 
   graphsLocator(metricName) {
-    return locate(this.fields.metricTitle).withText(metricName);
+    return locate(`//div[@data-testid='data-testid Panel header ${metricName}']`);
+  },
+
+  graphLegendSeriesValue(metricName, value) {
+    return this.graphsLocator(metricName).find('.graph-legend-series').find('td').withText(value);
+  },
+
+  graphLegendSeriesRowByTitle(metricName, title) {
+    return this.graphsLocator(metricName).find(`//tr[@class="graph-legend-series "][td//button[contains(@title, '${title}')]]`);
+  },
+
+  graphLegendColumnValueByExpression(graphName, title, columnName, expression) {
+    return this
+      .graphLegendSeriesRowByTitle(graphName, title)
+      .find(`//td[@class="graph-legend-value ${columnName}" and number(substring-before(text(), " ")) ${expression}]`);
   },
 
   panelByTitle(title) {
