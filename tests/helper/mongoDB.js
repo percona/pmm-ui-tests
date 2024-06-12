@@ -40,6 +40,7 @@ class MongoDBHelper extends Helper {
     this.client = new MongoClient(this.url, { connectTimeoutMS: 30000 });
 
     console.log(`Mongo url is: ${this.url}`);
+    console.log(`Client is: ${this.client}`);
 
     return await this.client.connect();
   }
