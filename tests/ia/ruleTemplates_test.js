@@ -117,8 +117,8 @@ Scenario.skip(
 //       I.verifyPopUpMessage(ruleTemplatesPage.messages.successfullyAdded);
 //
 //       // Check that Edit and Delete buttons are enabled
-//       I.seeElementsEnabled(editButton);
-//       I.seeElementsEnabled(deleteButton);
+//       I.waitForEnabled(editButton);
+//       I.waitForEnabled(deleteButton);
 //
 //       await templatesAPI.removeTemplate(id);
 //     } else {
@@ -147,7 +147,7 @@ Scenario.skip(
 //     if (validFile) {
 //       I.verifyPopUpMessage(ruleTemplatesPage.messages.successfullyAdded);
 //       I.waitForVisible(expectedSourceLocator, 30);
-//       I.seeElementsEnabled(editButton);
+//       I.waitForEnabled(editButton);
 //     } else {
 //       I.verifyPopUpMessage(current.error);
 //     }
@@ -283,7 +283,7 @@ Scenario.skip(
     I.seeElementsDisabled(ruleTemplatesPage.buttons.editTemplate);
     I.clearField(ruleTemplatesPage.fields.templateInput);
     I.fillField(ruleTemplatesPage.fields.templateInput, updatedTemplateText);
-    I.seeElementsEnabled(ruleTemplatesPage.buttons.editTemplate);
+    I.waitForEnabled(ruleTemplatesPage.buttons.editTemplate, 10);
     ruleTemplatesPage.verifyEditModalHeaderAndWarning(templateName);
     I.click(ruleTemplatesPage.buttons.editTemplate);
     I.verifyPopUpMessage(ruleTemplatesPage.messages.successfullyEdited);

@@ -20,6 +20,10 @@ Before(async ({ I, settingsAPI }) => {
   await settingsAPI.restoreSettingsDefaults();
 });
 
+After(async ({ settingsAPI }) => {
+  await settingsAPI.changeSettings({ publicAddress: '' });
+});
+
 Data(dataRetentionTable).Scenario('PMM-T97 - Verify server diagnostics on PMM Settings Page @settings @grafana-pr', async ({ I, pmmSettingsPage, current }) => {
   I.amOnPage(pmmSettingsPage.advancedSettingsUrl);
 
