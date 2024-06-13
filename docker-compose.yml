@@ -3,9 +3,9 @@ version: '3.7'
 
 volumes:
   pmm-server-data:
-  pmm-ui-tests_pmm-server-data:
+  pmm-data:
     external: true
-    name: pmm-ui-tests_pmm-server-data
+    name: pmm-data
 
 networks:
   pmm-network:
@@ -32,7 +32,7 @@ services:
       - PMM_DEV_TELEMETRY_INTERVAL=10s
       - PMM_DEV_TELEMETRY_RETRY_BACKOFF=10s
     volumes:
-      - pmm-ui-tests_pmm-server-data:/srv
+      - pmm-data:/srv
     networks:
       - pmm-network
 
