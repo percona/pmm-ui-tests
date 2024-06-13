@@ -29,7 +29,7 @@ services:
       - PMM_DEV_TELEMETRY_INTERVAL=10s
       - PMM_DEV_TELEMETRY_RETRY_BACKOFF=10s
     volumes:
-      - pmm-server-data:/srv
+      - pmm-ui-tests_pmm-server-data:/srv
     networks:
       - pmm-network
 
