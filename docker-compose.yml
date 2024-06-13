@@ -3,6 +3,9 @@ version: '3.7'
 
 volumes:
   pmm-server-data:
+  pmm-ui-tests_pmm-server-data:
+    external: true
+    name: pmm-ui-tests_pmm-server-data
 
 networks:
   pmm-network:
