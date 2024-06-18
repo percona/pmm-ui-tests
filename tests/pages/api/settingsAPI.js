@@ -108,6 +108,8 @@ module.exports = {
       enable_alerting: true,
       remove_email_alerting_settings: true,
       remove_slack_alerting_settings: true,
+      remove_alert_manager_url: true,
+      remove_alert_manager_rules: true,
     };
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
 
