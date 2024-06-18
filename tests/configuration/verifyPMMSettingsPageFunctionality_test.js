@@ -166,14 +166,13 @@ Scenario('PMM-T520 - Verify that alert is being fired to external Alert Manager 
   I,
   pmmSettingsPage,
 }) => {
-  const scheme = 'http://';
   const sectionNameToExpand = pmmSettingsPage.sectionTabsList.alertmanager;
 
   I.amOnPage(pmmSettingsPage.url);
   await pmmSettingsPage.waitForPmmSettingsPageLoaded();
   await pmmSettingsPage.expandSection(sectionNameToExpand, pmmSettingsPage.fields.alertmanagerButton);
   pmmSettingsPage.addAlertmanagerRule(
-    scheme + pmmSettingsPage.alertManager.ip + pmmSettingsPage.alertManager.externalAlertManagerPort,
+    pmmSettingsPage.alertManager.ip + pmmSettingsPage.alertManager.externalAlertManagerPort,
     pmmSettingsPage.alertManager.rule,
   );
   I.verifyPopUpMessage(pmmSettingsPage.messages.successPopUpMessage);
