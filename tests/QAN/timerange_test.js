@@ -9,13 +9,13 @@ Before(async ({ I, queryAnalyticsPage }) => {
   queryAnalyticsPage.waitForLoaded();
 });
 
-Scenario.skip(
+Scenario(
   'Open the QAN Dashboard and check that changing the time range resets current page to the first. @qan',
   async ({ adminPage, queryAnalyticsPage }) => {
     queryAnalyticsPage.data.selectPage('2');
     await adminPage.applyTimeRange('Last 3 hours');
     queryAnalyticsPage.waitForLoaded();
-    await queryAnalyticsPage.data.verifyActivePage(2);
+    await queryAnalyticsPage.data.verifyActivePage(1);
   },
 );
 
