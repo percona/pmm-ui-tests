@@ -2,7 +2,7 @@ Feature('QAN pagination');
 
 Before(async ({ I, qanPage, qanOverview }) => {
   await I.Authorize();
-  I.amOnPage(qanPage.url);
+  I.amOnPage(I.buildUrlWithParams(qanPage.clearUrl, { from: 'now-1h' }));
   qanOverview.waitForOverviewLoaded();
 });
 

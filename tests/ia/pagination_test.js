@@ -39,7 +39,7 @@ Scenario(
     I.say(`1st checkpoint, URL = ${url}, Count of elements = ${(await getListOfItems()).length}`);
     I.refreshPage();
 
-    iaCommon.verifyPaginationButtonsState({
+    await iaCommon.verifyPaginationButtonsState({
       ...initialButtonsState,
       nextPageButton: 'enabled',
       lastPageButton: 'enabled',
@@ -55,7 +55,7 @@ Scenario(
     I.click(locate(iaCommon.buttons.pageButton).at(1));
     I.waitForVisible(iaCommon.elements.pagination, 30);
 
-    iaCommon.verifyPaginationButtonsState({
+    await iaCommon.verifyPaginationButtonsState({
       ...initialButtonsState,
       firstPageButton: 'enabled',
       prevPageButton: 'enabled',
@@ -76,7 +76,7 @@ Scenario(
     I.scrollTo(iaCommon.elements.pagination);
     I.click(locate(iaCommon.buttons.pageButton).at(1));
 
-    iaCommon.verifyPaginationButtonsState({
+    await iaCommon.verifyPaginationButtonsState({
       ...initialButtonsState,
       firstPageButton: 'enabled',
       prevPageButton: 'enabled',
@@ -94,7 +94,7 @@ Scenario(
     I.click(iaCommon.buttons.nextPageButton);
     I.waitForVisible(iaCommon.elements.pagination, 30);
 
-    iaCommon.verifyPaginationButtonsState({
+    await iaCommon.verifyPaginationButtonsState({
       ...initialButtonsState,
       firstPageButton: 'enabled',
       prevPageButton: 'enabled',
@@ -109,7 +109,7 @@ Scenario(
     I.waitForVisible(iaCommon.elements.pagination, 30);
     I.seeNumberOfElements(iaCommon.elements.rowInTable, 25);
 
-    iaCommon.verifyPaginationButtonsState({
+    await iaCommon.verifyPaginationButtonsState({
       ...initialButtonsState,
       nextPageButton: 'enabled',
       lastPageButton: 'enabled',
@@ -121,7 +121,7 @@ Scenario(
     I.waitForVisible(iaCommon.elements.pagination, 30);
     I.seeNumberOfElements(iaCommon.elements.rowInTable, 1);
 
-    iaCommon.verifyPaginationButtonsState({
+    await iaCommon.verifyPaginationButtonsState({
       ...initialButtonsState,
       firstPageButton: 'enabled',
       prevPageButton: 'enabled',
@@ -133,7 +133,7 @@ Scenario(
     I.waitForVisible(iaCommon.elements.pagination, 30);
     I.seeNumberOfElements(iaCommon.elements.rowInTable, 25);
 
-    iaCommon.verifyPaginationButtonsState({
+    await iaCommon.verifyPaginationButtonsState({
       ...initialButtonsState,
       firstPageButton: 'enabled',
       prevPageButton: 'enabled',
