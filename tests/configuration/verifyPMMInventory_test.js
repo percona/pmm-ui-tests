@@ -1,5 +1,4 @@
 const assert = require('assert');
-const {de} = require("@faker-js/faker/lib/locales");
 
 const {
   I, remoteInstancesPage, pmmInventoryPage, remoteInstancesHelper,

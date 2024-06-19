@@ -1,8 +1,6 @@
 import { test, expect } from '@playwright/test';
 import * as cli from '@helpers/cli-helper';
 
-const shell = require('shelljs');
-
 const MYSQL_USER = 'msandbox';
 const MYSQL_PASSWORD = 'msandbox';
 
@@ -17,7 +15,7 @@ test.describe('Percona Server MySql (PS) Configuration file test ', async () => 
     );
 
     const hosts = (await cli.exec('sudo pmm-admin list | grep "MySQL" | awk -F" " \'{print $3}\''))
-      .stdout.trim().split('\n').filter((item) => item.trim().length > 0);
+      .getStdOutLines();
     let n = 1;
     for (const host of hosts) {
       // Add MySQL to monitoring using conf file:
@@ -26,18 +24,14 @@ test.describe('Percona Server MySql (PS) Configuration file test ', async () => 
       await output.outContains('MySQL Service added.');
 
       // Check that MySQL exporter is RUNNING:
-      const serviceId = output.getStdOutLines().find((item) => item.includes('/service_id/')).trim()
+      const serviceId = output.getStdOutLines().find((item) => item.includes('/service_id/'))!.trim()
         .split(':')
-        .find((item) => item.includes('/service_id/'))
+        .find((item) => item.includes('/service_id/'))!
         .trim();
       await expect(async () => {
         output = await cli.exec(`sudo pmm-admin list | grep _exporter | grep ${serviceId}`);
         await output.outContains('Running');
-      }).toPass({
-        // Probe, wait 1s, probe, wait 2s, probe, wait 2s, probe, wait 2s, probe, ....
-        intervals: [1_000, 2_000, 2_000],
-        timeout: 10_000,
-      });
+      }).toPass({ intervals: [2_000], timeout: 10_000 });
     }
   });
 });
