@@ -6,8 +6,9 @@ const paginationPart = require('./paginationFragment');
  */
 module.exports = {
   fields: {
-    backLink: locate('div').withText('Go back to services'),
+    backLink: locate('span').withText('Go back to services'),
     inventoryTable: locate('table'),
+    agentIdByAgentName: (agentName) => `//td[contains(text(), '${agentName}')]//following-sibling::td`,
     showAgentDetails: (agentName) => `//td[contains(text(), '${agentName}')]//ancestor::tr//button[@data-testid="show-row-details"]`,
     agentDetailsLabelByText: (label) => locate('[aria-label="Tags"]').find('li').withText(label),
   },

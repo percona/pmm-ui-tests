@@ -2,10 +2,11 @@ const assert = require('assert');
 const { communicationData, emailDefaults, telemetryTooltipData } = require('../../pages/testData');
 
 const {
-  I, adminPage, links, perconaPlatformPage,
+  I, adminPage, links, perconaPlatformPage, codeceptjsConfig,
 } = inject();
 
 const locateLabel = (selector) => locate(I.useDataQA(selector)).find('span');
+const deprecatedFeaturesSection = '//fieldset[legend[contains(text(),"Deprecated features")]]';
 
 module.exports = {
   url: 'graph/settings',
@@ -24,7 +25,7 @@ module.exports = {
   agreementText:
     'Check here to indicate that you have read and agree to the \nTerms of Service\n and \nPrivacy Policy',
   alertManager: {
-    ip: process.env.VM_IP ? process.env.VM_IP : process.env.SERVER_IP,
+    ip: codeceptjsConfig.config.helpers.Playwright.url,
     service: ':9093/#/alerts',
     externalAlertManagerPort: ':9093',
     rule:
@@ -278,6 +279,7 @@ module.exports = {
     checkForUpdatesSwitch: '//div[@data-testid="advanced-updates"]//div[2]//input',
     dataRetentionInput: '$retention-number-input',
     dataRetentionLabel: locateLabel('form-field-data-retention'),
+    errorPopUpElement: I.useDataQA('data-testid Alert error'),
     iframe: '//div[@class="panel-content"]//iframe',
     metricsResolutionButton: '$metrics-resolution-button',
     metricsResolution: '//label[text()="',
@@ -291,7 +293,7 @@ module.exports = {
     highInput: '$hr-number-input',
     perconaPlatformLink: '//li[contains(text(), \'Percona Platform\')]',
     privacyPolicy: '//span[contains(text(), "Privacy Policy")]',
-
+    publicAddressLabel: locate('$public-address-label').find('span'),
     publicAddressInput: '$publicAddress-text-input',
     publicAddressButton: '$public-address-button',
     sectionHeader: '//div[@class="ant-collapse-header"]',
@@ -315,8 +317,8 @@ module.exports = {
     telemetrySwitchSelector: locate('$advanced-telemetry').find('label'),
     perconaAlertingSwitchInput: locate('$advanced-alerting').find('input'),
     perconaAlertingSwitch: locate('$advanced-alerting').find('label'),
-    dbaasSwitchSelectorInput: locate('$advanced-dbaas').find('input'),
-    dbaasSwitchSelector: locate('$advanced-dbaas').find('label'),
+    dbaasSwitchSelectorInput: locate(deprecatedFeaturesSection).find('$advanced-dbaas').find('input'),
+    dbaasSwitchSelector: locate(deprecatedFeaturesSection).find('$advanced-dbaas').find('label'),
     dbaasSwitchItem: '$advanced-dbaas',
     telemetryLabel: locate('$advanced-telemetry').find('span'),
     tooltipText: locate('$info-tooltip').find('./*[self::span or self::div]'),
@@ -537,7 +539,7 @@ module.exports = {
 
     for (let i = 0; i < 20; i++) {
       response = await I.sendGetRequest(
-        `http://${this.alertManager.ip}${this.alertManager.externalAlertManagerPort}/api/v2/alerts/groups?silenced=false&inhibited=false&active=true`,
+        `${this.alertManager.ip}${this.alertManager.externalAlertManagerPort}/api/v2/alerts/groups?silenced=false&inhibited=false&active=true`,
       );
       if (JSON.stringify(response.data).includes(ruleName)) {
         break;
@@ -554,14 +556,7 @@ module.exports = {
   },
 
   async verifySettingsValue(field, expectedValue) {
-    I.waitForElement(field, 30);
-    const fieldActualValue = await I.grabValueFrom(field);
-
-    assert.equal(
-      expectedValue,
-      fieldActualValue,
-      `The Value for Setting ${field} is not the same as expected Value ${expectedValue}, value found was ${fieldActualValue}`,
-    );
+    I.waitForValue(field, expectedValue, 30);
   },
 
   async verifyTooltip(tooltipObj) {
@@ -611,7 +606,7 @@ module.exports = {
         tooltips: this.tooltips.alertManagerIntegration,
       },
       {
-        subPage: this.perconaPlatformUrl,
+        subPage: this.perconaPlatformUrl.url,
         tooltips: this.tooltips.perconaPlatform,
       },
     ];

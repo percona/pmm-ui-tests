@@ -3,7 +3,7 @@ import shell, { ExecOutputReturnValue } from 'shelljs';
 import ExecReturn from '@helpers/types/exec-return.class';
 
 /**
- * Shell(sh) exec() wrapper to use outside outside {@link test}
+ * Shell(sh) exec() wrapper to use outside of {@link test}
  * returns handy {@link ExecReturn} object.
  *
  * @param       command   sh command to execute
@@ -53,9 +53,7 @@ export async function execSilent(command: string): Promise<ExecReturn> {
  * @param silent
  */
 export const executeCommand = async (command: string, silent = true) => {
-  const { stdout, stderr, code } = shell.exec(command.replace(/(\r\n|\n|\r)/gm, ''), {
-    silent: true,
-  });
+  const { stdout, stderr, code } = shell.exec(command.replace(/(\r\n|\n|\r)/gm, ''), { silent: true });
 
   if (code === 0) {
     if (!silent) {
@@ -65,7 +63,5 @@ export const executeCommand = async (command: string, silent = true) => {
     throw new Error(`The command ${command} failed with error: ${stderr}`);
   }
 
-  return {
-    stdout, stderr,
-  } as { stdout: string, stderr: string };
+  return { stdout, stderr } as { stdout: string, stderr: string };
 };

@@ -290,10 +290,12 @@ Data(maxQueryLengthInstances).Scenario(
 
     await I.wait(70);
     // Check max visible query length is less than max_query_length option
-    I.amOnPage(I.buildUrlWithParams(qanPage.clearUrl, { from: 'now-5m' }));
-    qanOverview.waitForOverviewLoaded();
-    await qanFilters.applyFilter(remoteServiceName);
-    I.waitForElement(qanOverview.elements.querySelector, 30);
+    I.amOnPage(I.buildUrlWithParams(qanPage.clearUrl, {
+      from: 'now-5m',
+      service_name: remoteServiceName,
+    }));
+
+    I.waitForVisible(qanOverview.elements.querySelector, 60);
     const queryFromRow = await qanOverview.getQueryFromRow(1);
 
     if (maxQueryLength !== '' && maxQueryLength !== '-1') {
@@ -306,5 +308,25 @@ Data(maxQueryLengthInstances).Scenario(
       qanDetails.checkExamplesTab();
       qanDetails.checkExplainTab();
     }
+  },
+);
+
+// These tests must be executed last as previous tests are getting agentIds using grep
+Data(instances).Scenario(
+  'PMM-T1896 Verify MySQL w/ tls/ssl certs can be added when specified with --tls-skip-verify @ssl @ssl-mysql @not-ui-pipeline',
+  async ({
+    I, current, pmmInventoryPage,
+  }) => {
+    const {
+      version, container,
+    } = current;
+    const serviceName = `TLS_mysql_${version}`;
+    const responseMessage = 'MySQL Service added';
+    const command = `docker exec ${container} pmm-admin add mysql --username=pmm_tls --port=3306 --query-source=perfschema --tls --tls-skip-verify --tls-ca=/var/lib/mysql/ca.pem --tls-cert=/var/lib/mysql/client-cert.pem --tls-key=/var/lib/mysql/client-key.pem ${serviceName}`;
+    const output = await I.verifyCommand(command);
+
+    I.assertTrue(output.includes(responseMessage), `The ${command} was supposed to return ${responseMessage} but actually got ${output}`);
+    I.amOnPage(pmmInventoryPage.url);
+    pmmInventoryPage.verifyRemoteServiceIsDisplayed(serviceName);
   },
 );

@@ -2,7 +2,6 @@ const assert = require('assert');
 const faker = require('faker');
 const { generate } = require('generate-password');
 const { storageLocationConnection } = require('./backup/pages/testData');
-
 const {
   adminPage, remoteInstancesHelper, psMySql, pmmSettingsPage, dashboardPage, databaseChecksPage, scheduledAPI, locationsAPI,
 } = inject();
@@ -11,9 +10,10 @@ const pathToPMMFramework = adminPage.pathToPMMTests;
 
 const sslinstances = new DataTable(['serviceName', 'version', 'container', 'serviceType', 'metric', 'dashboard']);
 
-sslinstances.add(['pgsql_14_ssl_service', '14', 'pgsql_14', 'postgres_ssl', 'pg_stat_database_xact_rollback', dashboardPage.postgresqlInstanceOverviewDashboard.url]);
+// Unskip after https://jira.percona.com/browse/PMM-12640
+// sslinstances.add(['pgsql_14_ssl_service', '14', 'pgsql_14', 'postgres_ssl', 'pg_stat_database_xact_rollback', dashboardPage.postgresqlInstanceOverviewDashboard.url]);
 sslinstances.add(['mysql_8.0_ssl_service', '8.0', 'mysql_8.0', 'mysql_ssl', 'mysql_global_status_max_used_connections', dashboardPage.mySQLInstanceOverview.url]);
-sslinstances.add(['mongodb_4.4_ssl_service', '4.4', 'mongodb_4.4', 'mongodb_ssl', 'mongodb_connections', dashboardPage.mongoDbInstanceOverview.url]);
+sslinstances.add(['mongodb_6.0_ssl_service', '6.0', 'mongodb_6.0', 'mongodb_ssl', 'mongodb_connections', dashboardPage.mongoDbInstanceOverview.url]);
 
 const alertManager = {
   alertmanagerURL: 'http://192.168.0.1:9093',
@@ -158,15 +158,29 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T391 Verify user is able to create and set custom home dashboard @pre-upgrade @ovf-upgrade @ami-upgrade @pmm-upgrade',
+  'PMM-T391 PMM-T1818 Verify user is able to create and set custom home dashboard'
+    + ' @pre-upgrade @ovf-upgrade @ami-upgrade @pmm-upgrade',
   async ({
     I, grafanaAPI, dashboardPage, searchDashboardsModal,
   }) => {
-    const folder = await grafanaAPI.createFolder(grafanaAPI.customFolderName);
-    const resp = await grafanaAPI.createCustomDashboard(grafanaAPI.customDashboardName, folder.id);
     const insightFolder = await grafanaAPI.lookupFolderByName(searchDashboardsModal.folders.insight.name);
 
-    await grafanaAPI.createCustomDashboard(grafanaAPI.randomDashboardName, insightFolder.id, ['pmm-qa', grafanaAPI.randomTag]);
+    await grafanaAPI.createCustomDashboard(grafanaAPI.randomDashboardName, insightFolder.id, null, ['pmm-qa', grafanaAPI.randomTag]);
+    const folder = await grafanaAPI.createFolder(grafanaAPI.customFolderName);
+    let additionalPanel = null;
+
+    // Panels Library is present from 2.27.0
+    if (versionMinor > 26) {
+      const libResp = await grafanaAPI.savePanelToLibrary('Lib Panel', folder.id);
+      const libPanel = libResp.result.model;
+
+      libPanel.libraryPanel.meta = libResp.result.meta;
+      libPanel.libraryPanel.version = 1;
+      libPanel.libraryPanel.uid = libResp.result.uid;
+      additionalPanel = [libPanel];
+    }
+
+    const resp = await grafanaAPI.createCustomDashboard(grafanaAPI.customDashboardName, folder.id, additionalPanel);
 
     await grafanaAPI.starDashboard(resp.id);
     await grafanaAPI.setHomeDashboard(resp.id);
@@ -174,9 +188,9 @@ Scenario(
     I.amOnPage('');
     dashboardPage.waitForDashboardOpened();
     // dashboardPage.verifyMetricsExistence(['Custom Panel']);
-    I.seeInCurrentUrl(resp.url);
+    I.seeInCurrentUrl(grafanaAPI.customDashboardName);
   },
-);
+).retry(0);
 
 Scenario(
   'Verify user is able to set custom Settings like Data_retention, Resolution @pre-upgrade @ovf-upgrade @ami-upgrade @pmm-upgrade',
@@ -568,14 +582,36 @@ Scenario('@PMM-T1647 Verify pmm-server package doesn\'t exist @post-upgrade @pmm
 });
 
 Scenario(
-  'PMM-T391 Verify that custom home dashboard stays as home dashboard after upgrade @post-upgrade @ovf-upgrade @ami-upgrade @pmm-upgrade',
+  'PMM-T391 PMM-T1818 Verify that custom home dashboard stays as home dashboard after upgrade'
+    + ' @post-upgrade @ovf-upgrade @ami-upgrade @pmm-upgrade',
   async ({ I, grafanaAPI, dashboardPage }) => {
     I.amOnPage('');
     dashboardPage.waitForDashboardOpened();
-    dashboardPage.verifyMetricsExistence(['Custom Panel']);
+    dashboardPage.verifyMetricsExistence([grafanaAPI.customPanelName]);
     await dashboardPage.verifyThereAreNoGraphsWithNA();
     await dashboardPage.verifyThereAreNoGraphsWithoutData();
     I.seeInCurrentUrl(grafanaAPI.customDashboardName);
+
+    // Panels Library is present from 2.27.0
+    if (versionMinor > 26) {
+      await I.say('Verify there is no "Error while loading library panels" errors on dashboard and no errors in grafana.log');
+      I.wait(1);
+      let errorLogs;
+
+      if (process.env.AMI_UPGRADE_TESTING_INSTANCE !== 'true' && process.env.OVF_UPGRADE_TESTING_INSTANCE !== 'true') {
+        errorLogs = await I.verifyCommand('docker exec pmm-server cat /srv/logs/grafana.log | grep level=error');
+      } else {
+        errorLogs = await I.verifyCommand('cat /srv/logs/grafana.log | grep level=error || true');
+      }
+
+      const loadingLibraryErrorLine = errorLogs.split('\n')
+        .filter((line) => line.includes('Error while loading library panels'));
+
+      I.assertEmpty(
+        loadingLibraryErrorLine,
+        `Logs contains errors about while loading library panels! \n The line is: \n ${loadingLibraryErrorLine}`,
+      );
+    }
   },
 );
 
@@ -991,7 +1027,7 @@ if (versionMinor >= 13) {
       const { service_name } = await inventoryAPI.apiGetNodeInfoByServiceName(serviceType, name, 'ssl');
       const dashboardUrl = I.buildUrlWithParams(dashboard.split('?')[0], {
         service_name,
-        from: 'now-30m',
+        from: 'now-60m',
       });
 
       I.amOnPage(dashboardUrl);
@@ -1203,4 +1239,62 @@ if (versionMinor >= 32) {
       }
     },
   ).retry(0);
+}
+
+Scenario('PMM-12587-1 Verify duplicate dashboards dont break after upgrade @pre-upgrade @ovf-upgrade @ami-upgrade @pmm-upgrade',
+    async ({
+             I, grafanaAPI, searchDashboardsModal
+           }) => {
+
+      const insightFolder = await grafanaAPI.lookupFolderByName(searchDashboardsModal.folders.insight.name);
+      const experimentalFolder = await grafanaAPI.lookupFolderByName(searchDashboardsModal.folders.experimental.name);
+
+      const resp1 = await grafanaAPI.createCustomDashboard('test-dashboard', insightFolder.id);
+      const resp2 = await grafanaAPI.createCustomDashboard('test-dashboard', experimentalFolder.id);
+
+      await I.writeFileSync('./dashboard.json', JSON.stringify({
+        DASHBOARD1_UID: resp1.uid,
+        DASHBOARD2_UID: resp2.uid
+      }),false);
+
+      //Check if file with Dashboard info is present.
+      I.assertNotEqual(I.fileSize('./dashboard.json',false), 0, `Was expecting Dashboard info in the File, but its empty`);
+    },);
+
+Scenario(
+    'PMM-12587-2 Verify duplicate dashboards dont break after upgrade @post-upgrade @ovf-upgrade @ami-upgrade @pmm-upgrade',
+    async ({
+             I, grafanaAPI, dashboardPage,
+           }) => {
+      const resp = JSON.parse(await I.readFileSync('./dashboard.json',false));
+
+      const resp1 = await grafanaAPI.getDashboard(resp.DASHBOARD1_UID);
+      const resp2 = await grafanaAPI.getDashboard(resp.DASHBOARD2_UID);
+
+      //Trim leading '/' from response url
+      const url1 = resp1.meta.url.replace(/^\/+/g, '');
+      const url2 = resp2.meta.url.replace(/^\/+/g, '');
+
+      I.amOnPage(url1);
+      dashboardPage.waitForDashboardOpened();
+      I.seeInCurrentUrl(url1);
+      I.amOnPage(url2);
+      dashboardPage.waitForDashboardOpened();
+      I.seeInCurrentUrl(url2);
+    },
+);
+
+// This test must be executed last
+if (versionMinor >= 35) {
+  Scenario(
+    'PMM-T1189 - verify user is able to change password after upgrade @post-upgrade @pmm-upgrade',
+    async ({ I, homePage }) => {
+      const newPass = process.env.NEW_ADMIN_PASSWORD || 'admin1';
+
+      await I.unAuthorize();
+      await I.verifyCommand(`docker exec pmm-server change-admin-password ${newPass}`);
+      await I.Authorize('admin', newPass);
+      await homePage.open();
+    },
+  );
 }

@@ -2,7 +2,7 @@ const { pageObjects, getChunks } = require('./codeceptConfigHelper');
 
 require('dotenv').config();
 
-const pmmUrl = 'http://127.0.0.1/';
+const pmmUrl = process.env.PMM_UI_URL ? process.env.PMM_UI_URL : 'http://127.0.0.1/';
 
 process.env.ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'admin';
 
@@ -10,7 +10,8 @@ exports.config = {
   output: 'tests/output',
   helpers: {
     Playwright: {
-      url: process.env.PMM_UI_URL || pmmUrl,
+      // Replaces last forward slash in url due to bug of duplicate slashes
+      url: pmmUrl.replace(/\/(?!.*\/)$/gm, ''),
       restart: true,
       show: false,
       browser: 'chromium',
@@ -131,6 +132,6 @@ exports.config = {
   hooks: [],
   gherkin: {},
   tests: 'tests/**/*_test.js',
-  timeout: 1800,
+  timeout: 2400,
   name: 'pmm-qa',
 };

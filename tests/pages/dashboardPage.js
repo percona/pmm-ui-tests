@@ -1,5 +1,6 @@
 const { I, adminPage } = inject();
 const assert = require('assert');
+const { DashboardPanelMenu } = require('../dashboards/pages/DashboardPanelMenu');
 
 const formatElementId = (text) => text.toLowerCase().replace(/ /g, '_');
 
@@ -243,9 +244,6 @@ module.exports = {
       'Transactions Replicated',
       'Average Incoming Transaction Size',
       'Average Replicated Transaction Size',
-      'FC Trigger Low Limit',
-      'FC Trigger High Limit',
-      'IST Progress',
       'Average Galera Replication Latency',
       'Maximum Galera Replication Latency',
     ],
@@ -466,8 +464,8 @@ module.exports = {
       'Shards',
       'Chunks',
       'Balancer Enabled',
-      'Chunks Balanced',
       'Mongos Cursors',
+      'Chunks Balancer is running',
       'Change Log Events',
       'Operations Per Shard',
       'Current Connections Per Shard',
@@ -477,7 +475,7 @@ module.exports = {
       'Amount of Collections in Shards',
       'Size of Collections in Shards',
       'QPS of Mongos Service',
-      'QPS of Services in Shard - All',
+      'QPS of Services in Shard',
       'QPS of Config Services',
       'Amount of Indexes in Shards',
       'Dynamic of Indexes',
@@ -796,6 +794,93 @@ module.exports = {
       'MySQL Table Definition Cache',
     ],
   },
+  mysqlInnoDBDetailsDashboard: {
+    url: 'graph/d/mysql-innodb/mysql-innodb-details?orgId=1&refresh=1m&from=now-5m&to=now',
+    clearUrl: 'graph/d/mysql-innodb/mysql-innodb-details',
+    metrics: [
+      'InnoDB Row Reads',
+      'InnoDB Row Writes',
+      'InnoDB Read-Only Transactions',
+      'InnoDB Read-Write Transactions',
+      'InnoDB Transactions Information (RW)',
+      'Misc InnoDB Transactions Information',
+      'InnoDB Data Summary',
+      'InnoDB Data I/O',
+      'InnoDB Data Bandwitdh',
+      'InnoDB Log IO',
+      'InnoDB FSyncs',
+      'InnoDB Pending IO',
+      'InnoDB Pending Fsyncs',
+      'InnoDB IO Targets Bandwidth',
+      'InnoDB IO Targets Load',
+      'InnoDB IO Targets Read',
+      'InnoDB IO Targets Read Load',
+      'InnoDB IO Targets Write',
+      'InnoDB IO Targets Write Load',
+      'InnoDB IO Targets Write Latency',
+      'InnoDB IO Targets Read Latency',
+      'InnoDB Reads by Page Type',
+      'InnoDB Writes by Page Type',
+      'InnoDB Buffer Pool Pages',
+      'InnoDB Buffer Pool Data',
+      'InnoDB Buffer Pool Page Activity',
+      'InnoDB Buffer Pool Requests',
+      'InnoDB Read-Ahead',
+      'InnoDB Buffer Pool LRU Sub-Chain Churn',
+      'InnoDB Checkpoint Age',
+      'InnoDB Flushing by Type',
+      'InnoDB Logging Performance',
+      'InnoDB Log File Usage Hourly',
+      'InnoDB Log Buffer Usage',
+      'Log Writes Details',
+      'InnoDB Log File Flush Latency',
+      'Log Padding Written',
+      'InnoDB Group Commit Batch Size',
+      'InnoDB Row Lock Wait Activity',
+      'InnoDB Row Lock Wait Time',
+      'InnoDB Row Lock Wait Load',
+      'InnoDB Row Locks Activity',
+      'InnoDB Table Lock Activity',
+      'Current Locks',
+      'InnoDB Purge Activity',
+      'Transactions and Undo Records',
+      'InnoDB Undo Space Usage',
+      'InnoDB Undo Space IO',
+      'Transaction History',
+      'InnoDB Purge Throttling',
+      'InnoDB Page Splits and Merges',
+      'Page Merge Success Ratio',
+      'InnoDB Page Reorg Attempts',
+      'InnoDB Page Reorgs Failures',
+      'InnoDB AHI Usage',
+      'InnoDB AHI Miss Ratio',
+      'InnoDB AHI Churn - Rows',
+      'InnoDB AHI Churn - Pages',
+      'InnoDB Change Buffer',
+      'InnoDB Change Buffer Merged Records',
+      'InnoDB Change Buffer Discards',
+      'InnoDB Change Buffer Merges',
+      'InnoDB Change Buffer Merge Load',
+      'InnoDB Change Buffer IO',
+      'InnoDB Contention - OS Waits',
+      'InnoDB Contention - Spin Rounds',
+      'InnoDB Contention - OS Waits',
+      'InnoDB Contention - Spin Rounds',
+      'InnoDB Main Thread Utilization',
+      'InnoDB Activity',
+      'Index Condition Pushdown (ICP)',
+      'MySQL Connections',
+      'MySQL Client Thread Activity',
+      'MySQL Handlers',
+      'Top Command Counters',
+      'Process States',
+      'MySQL Network Traffic',
+      'CPU Usage',
+      'CPU Saturation and Max Core Usage',
+      'Disk I/O and Swap Activity',
+      'Network Traffic',
+    ],
+  },
   groupReplicationDashboard: {
     url: 'graph/d/mysql-group-replicaset-summary/mysql-group-replication-summary?orgId=1&refresh=1m',
     clearUrl: 'graph/d/mysql-group-replicaset-summary/mysql-group-replication-summary',
@@ -915,6 +1000,7 @@ module.exports = {
   },
   mongodbReplicaSetSummaryDashboard: {
     url: 'graph/d/mongodb-replicaset-summary/mongodb-replset-summary?orgId=1&refresh=1m&from=now-5m&to=now',
+    cleanUrl: 'graph/d/mongodb-replicaset-summary/mongodb-replset-summary',
     metrics: [
       'Replication Lag',
       'ReplSet States',
@@ -1098,7 +1184,7 @@ module.exports = {
 
   osNodesOverview: {
     noDataElements: 1,
-    naElements: 1,
+    naElements: 2,
     clearUrl: 'graph/d/node-instance-overview/nodes-overview',
     metrics: [
       'Nodes',
@@ -1281,12 +1367,27 @@ module.exports = {
   },
 
   graphsLocator(metricName) {
-    return locate('.panel-title-container h2').withText(metricName);
+    return locate('.panel-container').withDescendant(locate('.panel-title-container h2').withText(metricName));
+  },
+
+  graphLegendSeriesValue(metricName, value) {
+    return this.graphsLocator(metricName).find('.graph-legend-series').find('td').withText(value);
+  },
+
+  graphLegendSeriesRowByTitle(metricName, title) {
+    return this.graphsLocator(metricName).find(`//tr[@class="graph-legend-series "][td//a[@title="${title}"]]`);
+  },
+
+  graphLegendColumnValueByExpression(graphName, title, columnName, expression) {
+    return this
+      .graphLegendSeriesRowByTitle(graphName, title)
+      .find(`//td[@class="graph-legend-value ${columnName}" and number(substring-before(text(), " ")) ${expression}]`);
   },
 
   tabLocator(tabName) {
     return `//a[contains(text(), '${tabName}')]`;
   },
+
   async waitForAllGraphsToHaveData(timeout = 60) {
     await I.waitForInvisible(this.fields.notAvailableMetrics, timeout);
     await I.waitForInvisible(this.fields.notAvailableDataPoints, timeout);
@@ -1475,5 +1576,15 @@ module.exports = {
     if (numberOfElements >= 1) {
       I.click(this.fields.skipTourButton);
     }
+  },
+
+  /**
+   * Creates and returns a panel menu(displayed on dasboard) object to interact in test in a piped style
+   *
+   * @param   panelTitle    title of a panel tointeract with
+   * @return  {DashboardPanelMenu} instance
+   */
+  panelMenu(panelTitle) {
+    return new DashboardPanelMenu(panelTitle);
   },
 };

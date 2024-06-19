@@ -5,7 +5,7 @@ Feature('QAN common').retry(1);
 
 Before(async ({ I, qanPage }) => {
   await I.Authorize();
-  I.amOnPage(qanPage.url);
+  I.amOnPage(I.buildUrlWithParams(qanPage.clearUrl, { from: 'now-1h' }));
 });
 
 Scenario(

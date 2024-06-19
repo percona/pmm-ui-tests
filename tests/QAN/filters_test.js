@@ -2,16 +2,16 @@ const assert = require('assert');
 
 const shortCutTests = new DataTable(['type', 'dashboard', 'shortcutLink', 'filter']);
 
-shortCutTests.add(['Cluster', 'MongoDB Cluster Summary', 'graph/d/mongodb-cluster-summary/mongodb-cluster-summary', 'mongodb_node_cluster']);
+shortCutTests.add(['Cluster', 'MongoDB Cluster Summary', 'graph/d/mongodb-cluster-summary/mongodb-cluster-summary', 'replicaset']);
 shortCutTests.add(['Replication Set', 'MySQL Replication Summary', 'graph/d/mysql-replicaset-summary/mysql-replication-summary', 'ps-repl1']);
 shortCutTests.add(['Node Name', 'Node Summary', 'graph/d/node-instance-summary/node-summary?var-node_name=pmm-server', 'pmm-server']);
-shortCutTests.add(['Service Name', 'MongoDB Instance Summary', 'graph/d/mongodb-instance-summary/mongodb-instance-summary', 'mongodb_rs1_2']);
+shortCutTests.add(['Service Name', 'MongoDB Instance Summary', 'graph/d/mongodb-instance-summary/mongodb-instance-summary', 'rs101']);
 
 Feature('QAN filters').retry(1);
 // filterToApply - filter witch we check, searchValue - value to get zero search result
 const filters = new DataTable(['filterToApply', 'searchValue']);
 
-filters.add(['SELECT', 'INSERT']);
+filters.add(['SELECT', 'INSERT INTO']);
 // FIXME: unskip when https://jira.percona.com/browse/PMM-11657 is fixed
 // filters.add(['INSERT', 'SELECT']);
 // filters.add(['UPDATE', 'DELETE']);
