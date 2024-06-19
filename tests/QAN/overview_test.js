@@ -423,7 +423,6 @@ Scenario(
     I.waitForElement(column);
     I.click(column);
     I.waitForElement(qanOverview.fields.columnSearchField, 10);
-    I.fillField(qanOverview.fields.columnSearchField, 'Remove column');
     I.dontSeeElement(qanOverview.elements.removeMetricColumn);
   },
 );

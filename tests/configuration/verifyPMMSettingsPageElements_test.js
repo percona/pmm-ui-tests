@@ -28,6 +28,10 @@ Before(async ({ I, pmmSettingsPage, settingsAPI }) => {
   I.amOnPage(pmmSettingsPage.url);
 });
 
+After(async ({ settingsAPI }) => {
+  await settingsAPI.changeSettings({ publicAddress: '' });
+});
+
 Data(dataRetentionTable).Scenario('PMM-T97 - Verify server diagnostics on PMM Settings Page @settings @grafana-pr', async ({ pmmSettingsPage, current }) => {
   const sectionNameToExpand = pmmSettingsPage.sectionTabsList.advanced;
 
@@ -170,6 +174,7 @@ Scenario(
     I.verifyWarning('Deprecation notice\nDBaaS feature is deprecated. We encourage you to use Everest instead. Check out our Migration guide', 10);
   },
 );
+
 Scenario('@PMM-T1866 - Verify if public address has an port assigned and following UI/API requests dont error @settings', async ({ I, pmmSettingsPage, adminPage }) => {
   const sectionNameToExpand = pmmSettingsPage.sectionTabsList.advanced;
 
@@ -180,7 +185,7 @@ Scenario('@PMM-T1866 - Verify if public address has an port assigned and followi
   // Set a public IP with port
   adminPage.customClearField(pmmSettingsPage.fields.publicAddressInput);
   I.fillField(pmmSettingsPage.fields.publicAddressInput, '192.168.1.1:8433');
-  I.click(pmmSettingsPage.fields.applyButton);
+  pmmSettingsPage.applyChanges();
   I.dontSeeElement(pmmSettingsPage.fields.errorPopUpElement);
   await pmmSettingsPage.verifySettingsValue(pmmSettingsPage.fields.publicAddressInput, '192.168.1.1:8433');
   // clearField and customClearField methods doesn't work for this field
@@ -188,7 +193,7 @@ Scenario('@PMM-T1866 - Verify if public address has an port assigned and followi
     await page.fill(I.useDataQA('retention-number-input'), '');
   });
   I.fillField(pmmSettingsPage.fields.dataRetentionInput, '1');
-  I.click(pmmSettingsPage.fields.applyButton);
+  pmmSettingsPage.applyChanges();
   I.dontSeeElement(pmmSettingsPage.fields.errorPopUpElement);
   await pmmSettingsPage.verifySettingsValue(pmmSettingsPage.fields.dataRetentionInput, '1');
-});
+}).retry(0);

@@ -260,6 +260,19 @@ Scenario(
     adminPage.performPageUp(5);
     dashboardPage.verifyMetricsExistence(dashboardPage.groupReplicationDashboard.metrics);
     await dashboardPage.verifyThereAreNoGraphsWithNA();
-    await dashboardPage.verifyThereAreNoGraphsWithoutData(3);
+    await dashboardPage.verifyThereAreNoGraphsWithoutData(8);
+  },
+);
+
+Scenario(
+  'PMM-T1892 - Verify metrics on MySQL Innodb Details Dashboards @dashboards @nightly',
+  async ({ I, dashboardPage, adminPage }) => {
+    const url = I.buildUrlWithParams(dashboardPage.mysqlInnoDBDetailsDashboard.clearUrl, { service_name: 'ms-single', from: 'now-15m' });
+
+    I.amOnPage(url);
+    dashboardPage.waitForDashboardOpened();
+    await dashboardPage.expandEachDashboardRow();
+    dashboardPage.verifyMetricsExistence(dashboardPage.mysqlInnoDBDetailsDashboard.metrics);
+    await dashboardPage.verifyThereAreNoGraphsWithoutData(6);
   },
 );

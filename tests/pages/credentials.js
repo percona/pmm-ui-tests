@@ -24,6 +24,10 @@ module.exports = {
     pmmServerUser: 'pmm-managed',
     pmmServerPassword: 'pmm-managed',
   },
+  perconaServer: {
+    user: 'root',
+    password: 'GRgrO9301RuF',
+  },
 
   async detectPort(serviceName) {
     return await I.verifyCommand(`pmm-admin list | grep ${serviceName} | awk -F " " '{print $3}' | awk -F ":" '{print $2}'`);
