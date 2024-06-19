@@ -23,6 +23,7 @@ module.exports = {
     firstPlaceholder: locate('$input-wrapper'),
     submitButton: locate('$query-analytics-details').find('./button[@type="submit"]'),
     explainTable: locate('$classic-explain-value'),
+    queryCountValue: locate('//*[@data-testid="query-analytics-details"]//span[text()="Query Count"]//ancestor::tr//td[3]//span[1]'),
   },
 
   getFilterSectionLocator: (filterSectionName) => `//span[contains(text(), '${filterSectionName}')]`,

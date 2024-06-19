@@ -36,7 +36,7 @@ module.exports = {
     inventoryTableRows: locate('tr').after('table'),
     inventoryTableRowCount: (count) => locate('span').withText(`${count}`),
     kebabMenu: (serviceName) => `${service(serviceName)}//ancestor::tr//button[@data-testid="dropdown-menu-toggle"]`,
-    mongoServiceName: locate('td').withText('mongodb'),
+    mongoServiceName: locate('td').withText('rs10'),
     mysqlServiceName: locate('td').withText('ms-single'),
     // cannot be changed to locate because it's failing in I.waitForVisible()
     nodesLink: locate('[role="tablist"] a').withText('Nodes').withAttr({ 'aria-label': 'Tab Nodes' }),

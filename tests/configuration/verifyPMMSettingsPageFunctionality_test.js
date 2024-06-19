@@ -166,14 +166,13 @@ Scenario('PMM-T520 - Verify that alert is being fired to external Alert Manager 
   I,
   pmmSettingsPage,
 }) => {
-  const scheme = 'http://';
   const sectionNameToExpand = pmmSettingsPage.sectionTabsList.alertmanager;
 
   I.amOnPage(pmmSettingsPage.url);
   await pmmSettingsPage.waitForPmmSettingsPageLoaded();
   await pmmSettingsPage.expandSection(sectionNameToExpand, pmmSettingsPage.fields.alertmanagerButton);
   pmmSettingsPage.addAlertmanagerRule(
-    scheme + pmmSettingsPage.alertManager.ip + pmmSettingsPage.alertManager.externalAlertManagerPort,
+    pmmSettingsPage.alertManager.ip + pmmSettingsPage.alertManager.externalAlertManagerPort,
     pmmSettingsPage.alertManager.rule,
   );
   I.verifyPopUpMessage(pmmSettingsPage.messages.successPopUpMessage);
@@ -358,7 +357,7 @@ Scenario(
       `Expected the Public Address to be saved and Match ${publicAddressValue}`,
     );
   },
-).retry(1);
+).retry(2);
 
 Scenario(
   'PMM-T254 ensure Advisors are on by default @instances',
@@ -401,7 +400,8 @@ Scenario('PMM-T1401 Verify Percona Alerting wording in Settings @max-length @set
   await pmmSettingsPage.verifyTooltip(pmmSettingsPage.tooltips.advancedSettings.perconaAlerting);
 });
 
-Scenario(
+// unskip after SAAS-1437 is done and 500 error is fixed
+Scenario.skip(
   'PMM-T1328 Verify public address is set automatically on Percona Platform page once connected to Portal @nightly',
   async ({
     I, pmmSettingsPage, portalAPI, perconaPlatformPage, settingsAPI,

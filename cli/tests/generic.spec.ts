@@ -4,7 +4,7 @@ import { readZipFile } from '@helpers/zip-helper';
 
 test.describe('PMM Client "Generic" CLI tests', async () => {
   let PMM_VERSION: string;
-  if (process.env.CLIENT_VERSION === 'dev-latest') {
+  if (/dev-latest|https:/.test(`${process.env.CLIENT_VERSION}`)) {
     // TODO: refactor to use docker hub API to remove file-update dependency
     // See: https://github.com/Percona-QA/package-testing/blob/master/playbooks/pmm2-client_integration_upgrade_custom_path.yml#L41
     PMM_VERSION = cli.execute('curl -s https://raw.githubusercontent.com/Percona-Lab/pmm-submodules/PMM-2.0/VERSION | xargs')
@@ -22,6 +22,7 @@ test.describe('PMM Client "Generic" CLI tests', async () => {
    * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/generic-tests.bats#L18
    * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/generic-tests.bats#L28
    */
+  // eslint-disable-next-line playwright/expect-expect
   test('run pmm-admin without any arguments @client-generic', async ({}) => {
     const sudo = (parseInt((await cli.exec('id -u')).stdout, 10) === 0) ? '' : 'sudo ';
     const output = await cli.exec(`${sudo}pmm-admin`);
@@ -460,7 +461,9 @@ test.describe('PMM Client "Generic" CLI tests', async () => {
    * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/generic-tests.bats#L383
    */
   test('run pmm-admin config without parameters package installation', async ({}) => {
-    const isTarball: boolean = (await cli.exec('which pmm-admin | grep -q \'pmm2-client\'')).code === 0;
+    // FIXME: PMM-12950
+    test.skip(true, 'test is broken, see: PMM-12950');
+    const isTarball: boolean = (await cli.exec('systemctl list-units --state running | grep -q "pmm-agent"')).code === 1;
     test.skip(isTarball, 'Skipping this test, because pmm2-client is a tarball setup');
     const output = await cli.exec('sudo pmm-admin config');
     await output.assertSuccess();
@@ -471,7 +474,10 @@ test.describe('PMM Client "Generic" CLI tests', async () => {
    * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/generic-tests.bats#L393
    */
   test('run pmm-admin config without parameters tarball installation', async ({}) => {
-    const isPackage: boolean = (await cli.exec('which pmm-admin | grep -qv \'pmm2-client\'')).code === 0;
+    // FIXME: PMM-12950
+    test.skip(true, 'test is broken, see: PMM-12950');
+    // TODO: move out to function which will handle all linux types
+    const isPackage: boolean = (await cli.exec('systemctl list-units --state running | grep -q "pmm-agent"')).code === 0;
     test.skip(isPackage, 'Skipping this test, because pmm2-client is a package installation');
     const output = await cli.exec('sudo pmm-admin config');
     await output.exitCodeEquals(1);

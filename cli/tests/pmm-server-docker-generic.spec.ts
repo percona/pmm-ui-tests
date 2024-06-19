@@ -55,11 +55,7 @@ test.describe('PMM Server Configuration impacts on client tests', async () => {
     await expect(async () => {
       const scrapeSizeLog = await cli.exec(`docker logs ${clientContainer} 2>&1 | grep 'promscrape.maxScrapeSize.*vm_agent' | tail -1`);
       await scrapeSizeLog.outContains(`promscrape.maxScrapeSize=\\\"${customScrapeSize}MiB\\\"`);
-    }).toPass({
-      // Probe, wait 1s, probe, wait 2s, probe, wait 2s, probe, wait 2s, probe, ....
-      intervals: [1_000, 2_000, 2_000],
-      timeout: 10_000,
-    });
+    }).toPass({ intervals: [2_000], timeout: 10_000 });
   });
 
   // FIXME: skipped until solve conflict with changing pmm-agent config in generic spec
@@ -76,12 +72,43 @@ test.describe('PMM Server Configuration impacts on client tests', async () => {
     await expect(async () => {
       const scrapeSizeLog = await cli.exec('ps aux | grep -v \'grep\' | grep \'vm_agent\' | tail -1');
       await scrapeSizeLog.outContains(`promscrape.maxScrapeSize=${customScrapeSize}MiB`);
+    }).toPass({ intervals: [2_000], timeout: 10_000 });
+    // TODO: move out to aftereach
+    await (await cli.exec('sudo pmm-admin config --force \'--server-url=https://admin:admin@0.0.0.0:443\' --server-insecure-tls 127.0.0.1 || true')).logError();
+  });
+
+  test('@PMM-T1861 PMM does not honor the environment variables for VictoriaMetrics', async () => {
+    const search_maxQueryLen ='1';
+    const search_maxQueryDuration ='100';
+    const search_latencyOffset= '6';
+    const search_maxQueueDuration='40';
+    const search_logSlowQueryDuration='40';
+    const search_maxSamplesPerQuery = '1500000000';
+    const serverContainer = 'PMM-T1861';
+    await (await cli.exec(`docker run -d --restart always -p 290:80 -p 2443:443 --name ${serverContainer} 
+    -e VM_search_maxQueryLen=${search_maxQueryLen}MB 
+    -e VM_search_maxQueryDuration=${search_maxQueryDuration}s 
+    -e VM_search_latencyOffset=${search_latencyOffset}s 
+    -e VM_search_maxQueueDuration=${search_maxQueueDuration}s 
+    -e VM_search_logSlowQueryDuration=${search_logSlowQueryDuration}s 
+    -e VM_search_maxSamplesPerQuery=${search_maxSamplesPerQuery} 
+    ${DOCKER_IMAGE}`)).assertSuccess();
+    stopList.push(serverContainer);
+    removeList.push(serverContainer);
+    await waitForApiReady('127.0.0.1', 290);
+
+    await expect(async () => {
+      const scrapeSizeLog = await cli.exec(`docker exec ${serverContainer} cat /etc/supervisord.d/victoriametrics.ini`);
+      await scrapeSizeLog.outContainsMany([`--search.maxQueryLen=${search_maxQueryLen}MB`,
+        `--search.maxQueryDuration=${search_maxQueryDuration}s`,
+        `--search.latencyOffset=${search_latencyOffset}s`,
+        `--search.maxQueueDuration=${search_maxQueueDuration}s`,
+        `--search.logSlowQueryDuration=${search_logSlowQueryDuration}s`,
+        `--search.maxSamplesPerQuery=${search_maxSamplesPerQuery}`]);
     }).toPass({
       // Probe, wait 1s, probe, wait 2s, probe, wait 2s, probe, wait 2s, probe, ....
       intervals: [1_000, 2_000, 2_000],
       timeout: 10_000,
     });
-    // TODO: move out to aftereach
-    await (await cli.exec('sudo pmm-admin config --force \'--server-url=https://admin:admin@0.0.0.0:443\' --server-insecure-tls 127.0.0.1 || true')).logError();
   });
 });

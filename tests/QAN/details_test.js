@@ -106,9 +106,9 @@ Scenario(
 Scenario(
   'PMM-T13 - Check Explain and Example for supported DBs - mongodb @qan',
   async ({
-    I, qanOverview, qanFilters, qanDetails,
+    I, qanPage, qanOverview, qanFilters, qanDetails,
   }) => {
-    await qanFilters.applyFilter('mongodb');
+    I.amOnPage(I.buildUrlWithParams(qanPage.clearUrl, { service_name: 'rs101', from: 'now-1h' }));
     I.waitForElement(qanOverview.elements.querySelector, 30);
     qanOverview.selectRow(1);
     qanFilters.waitForFiltersToLoad();
@@ -128,7 +128,7 @@ Scenario(
     qanOverview.selectRow(1);
     qanFilters.waitForFiltersToLoad();
     qanDetails.checkExplainTab();
-    await qanFilters.applyFilter('mongodb');
+    await qanFilters.applyFilter('rs101');
     I.waitForElement(qanOverview.elements.querySelector, 30);
     qanOverview.selectRow(1);
 

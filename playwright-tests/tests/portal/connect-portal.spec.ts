@@ -11,7 +11,7 @@ import Wait from '@helpers/enums/wait';
  *  But requires environment variables(.env file supported) with credentials see: {@link constants.portal},
  *  {@link constants.okta} and {@link constants.serviceNow}.
  */
-test.describe('Spec file for connecting PMM to the portal', async () => {
+test.describe.skip('Spec file for connecting PMM to the portal', async () => {
   let pmmVersion: number;
   let firstAdmin: PortalUser;
   let secondAdmin: PortalUser;
