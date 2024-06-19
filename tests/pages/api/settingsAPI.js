@@ -207,6 +207,9 @@ module.exports = {
           case 'ssh':
             body.ssh_key = value;
             break;
+          case 'rbac':
+            value ? body.enable_access_control = true : body.disable_access_control = true;
+            break;
           default:
             throw Error(`Unknown property "${key}" was passed to Change Settings function`);
         }

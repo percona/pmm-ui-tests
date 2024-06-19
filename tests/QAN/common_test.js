@@ -20,8 +20,8 @@ Scenario(
     for await (const filter of queryAnalyticsPage.filters.labels.filterGroups) {
       I.wait(5);
       I.waitForElement(queryAnalyticsPage.filters.fields.filterCheckBoxesInGroup(filter), 10);
-      const numberOfFilterValues = await I.grabNumberOfVisibleElements(queryAnalyticsPage.filters.fields.filterCheckBoxesInGroup(filter));
-      const randomFilterValue = Math.floor(Math.random() * numberOfFilterValues) + 1;
+      const countFilters = await I.grabNumberOfVisibleElements(queryAnalyticsPage.filters.fields.filterCheckBoxesInGroup(filter));
+      const randomFilterValue = Math.floor(Math.random() * countFilters) + 1;
 
       await queryAnalyticsPage.filters.selectFilterInGroupAtPosition(filter, randomFilterValue);
       I.assertTrue((await queryAnalyticsPage.data.getRowCount()) > 0, `No values for filter: "${filter}" were displayed`);
