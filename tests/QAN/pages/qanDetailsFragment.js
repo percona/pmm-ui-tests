@@ -28,7 +28,7 @@ module.exports = {
 
   getFilterSectionLocator: (filterSectionName) => `//span[contains(text(), '${filterSectionName}')]`,
 
-  getTabLocator: (tabName) => locate('a').withText(tabName),
+  getTabLocator: (tabName) => locate('button').withText(tabName),
 
   getMetricsCellLocator: (metricName, columnNumber) => `//td//span[contains(text(), "${metricName}")]/ancestor::tr/td[${columnNumber}]//span[1]`,
 
@@ -62,13 +62,13 @@ module.exports = {
     I.dontSeeElement(this.elements.noJSON);
   },
 
-  checkPlanTab() {
-    I.waitForVisible(this.getTabLocator('Plan'), 30);
-    I.click(this.getTabLocator('Plan'));
-    I.wait(5);
-    qanFilters.waitForFiltersToLoad();
-    I.dontSeeElement(this.elements.noClassic);
-    I.dontSeeElement(this.elements.noJSON);
+  async checkPlanTab() {
+    await I.waitForVisible(this.getTabLocator('Plan'), 30);
+    await I.click(this.getTabLocator('Plan'));
+    await I.wait(5);
+    await qanFilters.waitForFiltersToLoad();
+    await I.dontSeeElement(this.elements.noClassic);
+    await I.dontSeeElement(this.elements.noJSON);
   },
 
   checkDetailsTab() {
@@ -102,9 +102,9 @@ module.exports = {
     I.dontSeeElement(this.elements.planInfoIcon);
   },
 
-  mouseOverPlanInfoIcon() {
-    I.moveCursorTo(this.elements.planInfoIcon);
-    I.waitForVisible(this.elements.tooltipPlanId, 30);
+  async mouseOverPlanInfoIcon() {
+    await I.moveCursorTo(this.elements.planInfoIcon);
+    await I.waitForVisible(this.elements.tooltipPlanId, 30);
   },
 
   async getQueryExampleText() {

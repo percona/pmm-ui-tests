@@ -1,5 +1,5 @@
 const {
-  I, dbaasAPI, dbaasActionsPage, dbaasManageVersionPage, dashboardPage, qanPage, qanFilters, qanOverview, inventoryAPI,
+  I, dbaasAPI, dbaasActionsPage, dbaasManageVersionPage, dashboardPage, queryAnalyticsPage, inventoryAPI,
 } = inject();
 const assert = require('assert');
 const faker = require('faker');
@@ -509,11 +509,11 @@ module.exports = {
   },
 
   async dbaasQANCheck(dbclusterName, nodeName, serviceName) {
-    I.amOnPage(I.buildUrlWithParams(qanPage.clearUrl, { from: 'now-3h' }));
-    qanOverview.waitForOverviewLoaded();
-    qanFilters.checkFilterExistInSection('Node Name', `${nodeName}`);
-    qanFilters.checkFilterExistInSection('Service Name', `${serviceName}`);
-    qanOverview.waitForOverviewLoaded();
+    I.amOnPage(I.buildUrlWithParams(queryAnalyticsPage.url, { from: 'now-3h' }));
+    queryAnalyticsPage.waitForLoaded();
+    queryAnalyticsPage.filters.checkFilterExistInSection('Node Name', `${nodeName}`);
+    queryAnalyticsPage.filters.checkFilterExistInSection('Service Name', `${serviceName}`);
+    queryAnalyticsPage.waitForLoaded();
   },
 
   async dbClusterAgentStatusCheck(dbClusterName, serviceName, serviceType) {

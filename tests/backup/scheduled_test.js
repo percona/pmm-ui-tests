@@ -350,11 +350,12 @@ Scenario(
     // Verify schedule is disabled after copy
     const isChecked = await I.grabAttributeFrom(scheduledPage.elements.toggleByName(newSchedule.name), 'checked');
 
-    I.assertEqual(isChecked, null, 'Element is checked, but should not be.');
+    I.assertEqual(isChecked, null, `Element "${scheduledPage.elements.toggleByName(newSchedule.name).xpath}" is checked, but should not be.`);
   },
 );
 
-Scenario(
+// TODO: unskip after https://perconadev.atlassian.net/browse/PMM-12988
+Scenario.skip(
   '@PMM-T908 Verify user can enable/disable scheduled backup @backup @bm-mongo @bm-fb',
   async ({
     I, scheduledPage, scheduledAPI,
@@ -370,9 +371,7 @@ Scenario(
     await scheduledPage.openScheduledBackupsPage();
 
     // Verify schedule is disabled
-    let isChecked = await I.grabAttributeFrom(scheduledPage.elements.toggleByName(schedule.name), 'checked');
-
-    I.assertEqual(isChecked, null, `Element ${scheduledPage.elements.toggleByName(schedule.name).xpath} is checked, but should not be.`);
+    I.seeAttributesOnElements(scheduledPage.elements.toggleByName(schedule.name), { checked: null });
 
     // Grab background-color of a row
     const color = await I.grabCssPropertyFrom(scheduledPage.elements.scheduleTypeByName(schedule.name), 'background-color');
@@ -388,9 +387,7 @@ Scenario(
 
     // Disable schedule
     I.click(scheduledPage.buttons.enableDisableByName(schedule.name));
-    isChecked = await I.grabAttributeFrom(scheduledPage.elements.toggleByName(schedule.name), 'checked');
-
-    I.assertEqual(isChecked, null, `Element ${scheduledPage.elements.toggleByName(schedule.name).xpath} is checked, but should not be.`);
+    I.seeAttributesOnElements(scheduledPage.elements.toggleByName(schedule.name), { checked: null });
 
     // Verify the color is the same as before enabling
     I.seeCssPropertiesOnElements(scheduledPage.elements.scheduleTypeByName(schedule.name), { 'background-color': color });

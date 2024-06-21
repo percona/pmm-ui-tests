@@ -3,7 +3,7 @@ const { I } = inject();
 module.exports = {
   url: 'graph/explore',
   elements: {
-    rawQueryToggleLabel: 'label[for^="switch-Raw-query"]',
+    rawQueryToggleLabel: '$QueryEditorModeToggle',
   },
 
   open() {

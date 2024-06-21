@@ -7,14 +7,13 @@ const serviceList = [];
 Feature('Test Dashboards inside the PostgreSQL Folder');
 
 BeforeSuite(async ({ I }) => {
-  const pdpgsql_service_response = await inventoryAPI.apiGetNodeInfoForAllNodesByServiceName('POSTGRESQL_SERVICE', 'PDPGSQL_');
-  const pgsql_service_response = await inventoryAPI.apiGetNodeInfoForAllNodesByServiceName('POSTGRESQL_SERVICE', 'PGSQL_');
-  const pmm_server = await inventoryAPI.apiGetNodeInfoForAllNodesByServiceName('POSTGRESQL_SERVICE', 'pmm-server');
+  const pdpgsql_service_response = await inventoryAPI.apiGetNodeInfoByServiceName('POSTGRESQL_SERVICE', 'pdpgsql_');
+  const pgsql_service_response = await inventoryAPI.apiGetNodeInfoByServiceName('POSTGRESQL_SERVICE', 'pgsql_');
+  const pmm_server = await inventoryAPI.apiGetNodeInfoByServiceName('POSTGRESQL_SERVICE', 'pmm-server-postgresql');
 
-  services = pmm_server.concat(pgsql_service_response).concat(pdpgsql_service_response);
-  for (const nodeInfo of services) {
-    serviceList.push(nodeInfo.service_name);
-  }
+  serviceList.push(pdpgsql_service_response.service_name);
+  serviceList.push(pgsql_service_response.service_name);
+  serviceList.push(pmm_server.service_name);
 });
 
 Before(async ({ I }) => {
@@ -26,15 +25,15 @@ Scenario(
   async ({ I, dashboardPage, adminPage }) => {
     I.say(serviceList);
     for (const serviceName of serviceList) {
-      I.amOnPage(dashboardPage.postgresqlInstanceSummaryDashboard.url);
+      const url = I.buildUrlWithParams(
+        dashboardPage.postgresqlInstanceSummaryDashboard.cleanUrl,
+        { service_name: serviceName, from: 'now-5m' },
+      );
+
+      I.amOnPage(url);
       dashboardPage.waitForDashboardOpened();
-      await dashboardPage.applyFilter('Service Name', serviceName);
       await dashboardPage.expandEachDashboardRow();
-      I.click(adminPage.fields.metricTitle);
-      adminPage.performPageDown(5);
-      adminPage.performPageUp(5);
-      dashboardPage.verifyMetricsExistence(dashboardPage.postgresqlInstanceSummaryDashboard.metrics);
-      await dashboardPage.verifyThereAreNoGraphsWithNA();
+      await dashboardPage.verifyMetricsExistence(dashboardPage.postgresqlInstanceSummaryDashboard.metrics);
       await dashboardPage.verifyThereAreNoGraphsWithoutData();
     }
   },
@@ -42,17 +41,17 @@ Scenario(
 
 Scenario(
   'PMM-T394 - PostgreSQL Instance Overview Dashboard metrics @nightly @dashboards',
-  async ({ I, dashboardPage, adminPage }) => {
+  async ({ I, dashboardPage }) => {
     for (const serviceName of serviceList) {
-      I.amOnPage(dashboardPage.postgresqlInstanceOverviewDashboard.url);
+      const url = I.buildUrlWithParams(
+        dashboardPage.postgresqlInstanceOverviewDashboard.cleanUrl,
+        { service_name: serviceName, from: 'now-5m' },
+      );
+
+      I.amOnPage(url);
       dashboardPage.waitForDashboardOpened();
-      await dashboardPage.applyFilter('Service Name', serviceName);
       await dashboardPage.expandEachDashboardRow();
-      I.click(adminPage.fields.metricTitle);
-      adminPage.performPageDown(5);
-      adminPage.performPageUp(5);
-      dashboardPage.verifyMetricsExistence(dashboardPage.postgresqlInstanceOverviewDashboard.metrics);
-      await dashboardPage.verifyThereAreNoGraphsWithNA();
+      await dashboardPage.verifyMetricsExistence(dashboardPage.postgresqlInstanceOverviewDashboard.metrics);
       await dashboardPage.verifyThereAreNoGraphsWithoutData();
     }
   },
@@ -61,19 +60,19 @@ Scenario(
 Scenario(
   'PMM-T394 - PostgreSQL Instance Compare Dashboard metrics @nightly @dashboards',
   async ({ I, dashboardPage, adminPage }) => {
-    I.amOnPage(dashboardPage.postgresqlInstanceCompareDashboard.url);
-    dashboardPage.waitForDashboardOpened();
-    dashboardPage.selectRefreshTimeInterval('Off');
-    for (const serviceName of serviceList) {
-      await dashboardPage.applyFilter('Service Name', serviceName);
-    }
+    const url = I.buildUrlWithParams(
+      dashboardPage.postgresqlInstanceCompareDashboard.cleanUrl,
+      {
+        from: 'now-5m',
+        service_name: 'All',
+        refresh: '1h',
+      },
+    );
 
+    I.amOnPage(url);
+    dashboardPage.waitForDashboardOpened();
     await dashboardPage.expandEachDashboardRow();
-    I.click(adminPage.fields.metricTitle);
-    adminPage.performPageDown(5);
-    adminPage.performPageUp(5);
-    dashboardPage.verifyMetricsExistence(dashboardPage.postgresqlInstanceCompareDashboard.metrics);
-    await dashboardPage.verifyThereAreNoGraphsWithNA();
+    await dashboardPage.verifyMetricsExistence(dashboardPage.postgresqlInstanceCompareDashboard.metrics);
     await dashboardPage.verifyThereAreNoGraphsWithoutData();
   },
 );

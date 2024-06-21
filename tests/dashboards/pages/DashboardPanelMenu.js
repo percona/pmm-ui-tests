@@ -6,16 +6,19 @@ const { I } = inject();
  * example call: dashboardPage.panelMenu('Custom Panel').showMenu().more().createLibraryPanel();
  */
 function DashboardPanelMenu(title) {
-  this.titleLocator = `header[data-testid$="${title}"]`;
+  this.titleLocator = I.useDataQA(`data-testid Panel header ${title}`);
   // header[@data-testid="data-testid Panel header Panel Title"]/.//div[@class="panel-menu-container dropdown open"]/ul
-  this.menuLocator = `header[data-testid$="${title}"] div.open > ul`;
+  this.menuLocator = I.useDataQA('panel-dropdown');
+  this.openMenuLocator = locate(this.titleLocator).find('[title="Menu"]');
 
-  const menuItemLocator = (itemTitle) => locate(this.menuLocator).find(`span[aria-label$="${itemTitle}"]`);
+  const menuItemLocator = (itemTitle) => locate('[data-role="menuitem"]').withText(itemTitle);
 
   const subMenuItemLocator = (itemTitle) => `li > a > span[aria-label$="${itemTitle}"]`;
 
   this.showMenu = () => {
-    I.click(this.titleLocator);
+    I.waitForVisible(this.titleLocator, 10);
+    I.moveCursorTo(this.titleLocator, 10);
+    I.click(this.openMenuLocator);
     I.waitForVisible(this.menuLocator, 2);
 
     return this;

@@ -292,8 +292,18 @@ module.exports = {
         break;
       case 'qan-slowlog':
         agent_id = (await I.verifyCommand(`docker exec ${dbDetails.container_name} pmm-admin inventory add agent qan-mysql-slowlog-agent --password=${dbDetails.password} ${logLvlFlag} ${dbDetails.pmm_agent_id} ${dbDetails.service_id} ${dbDetails.username} | grep "Agent ID" | grep -v "PMM-Agent ID" | awk -F " " '{print $4}'`)).trim();
-        output = await this.apiGetAgentDetailsViaAgentId(agent_id);
+
+        await I.asyncWaitFor(async () => {
+          output = await this.apiGetAgentDetailsViaAgentId(agent_id);
+          const { status } = output.data.qan_mysql_slowlog_agent;
+
+          return status === 'RUNNING';
+        }, 20);
+
         log_level = output.data.qan_mysql_slowlog_agent.log_level;
+
+        I.say(JSON.stringify(output.data, null, 2));
+        I.say(await I.verifyCommand(`docker exec ${dbDetails.container_name} pmm-admin list | grep mysql_slowlog_agent | grep ${agent_id} | grep ${dbDetails.service_id}`));
 
         // Wait for Status to change to running
         I.wait(10);

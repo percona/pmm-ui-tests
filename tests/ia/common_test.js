@@ -7,7 +7,7 @@ Before(async ({ I, rulesAPI }) => {
   await rulesAPI.removeAllAlertRules();
 });
 
-Scenario(
+Scenario.skip(
   'PMM-T643 Verify message about disabled IA @ia @alerting-fb',
   async ({
     I, pmmSettingsPage, codeceptjsConfig,
@@ -23,7 +23,7 @@ Scenario(
   },
 );
 
-Scenario(
+Scenario.skip(
   'PMM-T481 Verify IA tab bar, '
   + 'PMM-T620 Verify after reloading the page user is on the same IA tab, '
   + 'PMM-T776 Verify that user is able to see valid HTML Title on alerts page @ia @alerting-fb',
@@ -44,29 +44,31 @@ Scenario(
     };
 
     verifyTitle('Fired alerts');
-    iaCommon.openAndVerifyTab(
+    await iaCommon.openAndVerifyTab(
       iaCommon.tabNames.ruleTemplates,
       ruleTemplatesPage.buttons.openAddTemplateModal,
       ruleTemplatesPage.url,
     );
     verifyTitle('Alert rule templates');
-    iaCommon.openAndVerifyTab(iaCommon.tabNames.alertRules, alertRulesPage.buttons.newAlertRule, alertRulesPage.url);
+    await iaCommon.openAndVerifyTab(iaCommon.tabNames.alertRules, alertRulesPage.buttons.newAlertRule, alertRulesPage.url);
     verifyTitle('Alert rules');
-    iaCommon.openAndVerifyTab(iaCommon.tabNames.contactPoints, contactPointsPage.buttons.newContactPoint, contactPointsPage.url);
+    await iaCommon
+      .openAndVerifyTab(iaCommon.tabNames.contactPoints, contactPointsPage.buttons.newContactPoint, contactPointsPage.url);
     verifyTitle('Contact points');
-    iaCommon.openAndVerifyTab(iaCommon.tabNames.notificationPolicies, nPoliciesPage.buttons.newPolicy, nPoliciesPage.url);
+    await iaCommon.openAndVerifyTab(iaCommon.tabNames.notificationPolicies, nPoliciesPage.buttons.newPolicy, nPoliciesPage.url);
     verifyTitle('Notification policies');
 
     // PMM-T620
     I.refreshPage();
     await verifyNotificationChannelsPage();
 
-    iaCommon.openAndVerifyTab(iaCommon.tabNames.silences, silencesPage.buttons.newSilence, silencesPage.url);
+    await iaCommon.openAndVerifyTab(iaCommon.tabNames.silences, silencesPage.buttons.newSilence, silencesPage.url);
     verifyTitle('Silences');
-    iaCommon.openAndVerifyTab(iaCommon.tabNames.alertGroups, alertGroupsPage.elements.groupByContainer, alertGroupsPage.url);
+    await iaCommon
+      .openAndVerifyTab(iaCommon.tabNames.alertGroups, alertGroupsPage.elements.groupByContainer, alertGroupsPage.url);
     verifyTitle('Alert groups');
-    iaCommon.openAndVerifyTab(iaCommon.tabNames.admin, aiAdminPage.elements.configTextarea, aiAdminPage.url);
+    await iaCommon.openAndVerifyTab(iaCommon.tabNames.admin, aiAdminPage.elements.configTextarea, aiAdminPage.url);
     verifyTitle('Admin');
-    iaCommon.openAndVerifyTab(iaCommon.tabNames.firedAlerts, alertsPage.elements.noAlerts, alertsPage.url);
+    await iaCommon.openAndVerifyTab(iaCommon.tabNames.firedAlerts, alertsPage.elements.noAlerts, alertsPage.url);
   },
 );

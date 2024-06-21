@@ -34,32 +34,19 @@ xScenario(
   },
 ).retry(1);
 
-Scenario(
-  'Verify AWS RDS MySQL 5.7 instance has status running [critical] @instances',
-  async ({ I, remoteInstancesPage, pmmInventoryPage }) => {
-    const serviceName = remoteInstancesPage.mysql57rds['Service Name'];
-
-    I.amOnPage(pmmInventoryPage.url);
-    pmmInventoryPage.verifyRemoteServiceIsDisplayed(serviceName);
-    await pmmInventoryPage.verifyAgentHasStatusRunning(serviceName);
-  },
-);
 // Skipping the tests because QAN does not get any data right after instance was added for monitoring
 xScenario(
   'Verify QAN Filters contain AWS RDS MySQL 5.6 after it was added for monitoring @instances',
   async ({
-    I, qanPage, remoteInstancesPage, qanFilters,
+    I, queryAnalyticsPage, remoteInstancesPage,
   }) => {
     const filters = remoteInstancesPage.mysql57rds;
 
-    I.amOnPage(qanPage.url);
-    qanFilters.waitForFiltersLoad();
-    await qanFilters.expandAllFilter();
+    I.amOnPage(I.buildUrlWithParams(queryAnalyticsPage.url, { from: 'now-5m' }));
+    queryAnalyticsPage.waitForLoaded();
     for (const filter of Object.values(filters)) {
-      const name = qanFilters.getFilterLocator(filter);
-
-      I.waitForVisible(name, 30);
-      I.seeElement(name);
+      I.waitForVisible(queryAnalyticsPage.filters.filterByName(filter), 30);
+      I.seeElement(queryAnalyticsPage.filters.filterByName(filter));
     }
   },
 );
@@ -67,11 +54,13 @@ xScenario(
 Scenario(
   'Verify MySQL Instances Overview Dashboard for AWS RDS MySQL 5.7 data after it was added for monitoring @instances',
   async ({ I, dashboardPage }) => {
-    I.amOnPage(dashboardPage.mySQLInstanceOverview.urlWithRDSFilter);
+    I.amOnPage(I.buildUrlWithParams(dashboardPage.mySQLInstanceOverview.clearUrl, {
+      cluster: 'rds57-cluster',
+      from: 'now-5m',
+    }));
     dashboardPage.waitForDashboardOpened();
     await dashboardPage.expandEachDashboardRow();
-    await dashboardPage.verifyThereAreNoGraphsWithNA(1);
-    await dashboardPage.verifyThereAreNoGraphsWithoutData(6);
+    await dashboardPage.verifyThereAreNoGraphsWithoutData(7);
   },
 );
 

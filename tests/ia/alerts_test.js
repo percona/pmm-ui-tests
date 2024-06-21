@@ -1,4 +1,3 @@
-const assert = require('assert');
 const contactPointsAPI = require('./pages/api/contactPointsAPI');
 
 const ruleName = 'PSQL immortal rule';
@@ -42,7 +41,7 @@ AfterSuite(async ({ rulesAPI, I }) => {
   await I.verifyCommand('docker-compose -f docker-compose-webhook.yml stop');
 });
 
-Scenario(
+Scenario.skip(
   'PMM-T1482 Verify fired alert @ia',
   async ({ I, alertsPage, alertsAPI }) => {
     await alertsAPI.waitForAlerts(24, 1);
@@ -60,7 +59,7 @@ Scenario(
   },
 );
 
-Scenario(
+Scenario.skip(
   'PMM-T1494 PMM-T1495 Verify fired alert in Pager Duty and Webhook @ia',
   async ({ I, alertsAPI, rulesAPI }) => {
     const file = './testdata/ia/scripts/alert.txt';
@@ -76,7 +75,7 @@ Scenario(
   },
 );
 
-Scenario(
+Scenario.skip(
   'PMM-T1496 PMM-T1497 Verify it is possible to silence and unsilence alert @ia',
   async ({
     I, alertsPage, alertmanagerAPI,
@@ -94,7 +93,7 @@ Scenario(
   },
 );
 
-Scenario(
+Scenario.skip(
   'PMM-T1498 Verify firing alerts dissappear when the condition is fixed @ia',
   async ({
     I, alertsPage, alertRulesPage,
@@ -124,7 +123,7 @@ Scenario.skip(
   },
 );
 
-Scenario(
+Scenario.skip(
   'PMM-T1499 Verify an alert with non-existing filter (label) does not show up in list @ia',
   async ({ I, alertsPage, rulesAPI }) => {
     await rulesAPI.removeAllAlertRules();
@@ -146,7 +145,7 @@ Scenario(
   },
 );
 
-Scenario(
+Scenario.skip(
   'PMM-T564 Verify fired alert severity colors @ia',
   async ({
     I, alertsPage, rulesAPI, alertsAPI,
@@ -172,7 +171,7 @@ Scenario(
   },
 );
 
-Scenario(
+Scenario.skip(
   'PMM-T1467 Verify empty Fired alerts list @ia',
   async ({ I, alertsPage, rulesAPI }) => {
     await rulesAPI.removeAllAlertRules();

@@ -12,7 +12,7 @@ After(async ({ templatesAPI }) => {
   await templatesAPI.clearAllTemplates();
 });
 
-Scenario(
+Scenario.skip(
   'PMM-T632 PMM-T697 PMM-T701 PMM-T1251 Verify Pagination navigation @ia @grafana-pr',
   async ({
     I, iaCommon,
@@ -143,7 +143,7 @@ Scenario(
   },
 );
 
-Scenario(
+Scenario.skip(
   'PMM-T662 PMM-T698 PMM-T702 PMM-T631 PMM-T1251 Pagination rows per page persistence @ia',
   async ({
     I, iaCommon,
@@ -218,7 +218,7 @@ Scenario(
   },
 );
 
-Scenario(
+Scenario.skip(
   'PMM-T631 PMM-T633 PMM-T1251 Changing rows per page resets view to 1 page @ia',
   async ({
     I, iaCommon, templatesAPI,

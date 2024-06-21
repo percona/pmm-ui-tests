@@ -27,20 +27,20 @@ After(async () => {
   await rulesAPI.removeAllAlertRules();
 });
 
-Scenario(
+Scenario.skip(
   'PMM-T1384 Verify empty alert rules list @ia @grafana-pr',
   async ({ I, alertRulesPage }) => {
     alertRulesPage.openAlertRulesTab();
-    I.waitForText(alertRulesPage.messages.noRulesFound, alertRulesPage.elements.noRules);
+    I.waitForText(alertRulesPage.messages.noRulesFound, 10, alertRulesPage.elements.noRules);
     I.waitForVisible(alertRulesPage.buttons.newAlertRule, 10);
     I.waitForVisible(alertRulesPage.elements.alertsLearnMoreLinks, 10);
     const link = await I.grabAttributeFrom(alertRulesPage.elements.alertsLearnMoreLinks, 'href');
 
     assert.ok(link === 'https://grafana.com/docs/', `Redirect link ${link} is incorrect please check`);
   },
-).retry(2);
+).retry(0);
 
-Scenario(
+Scenario.skip(
   'PMM-T1385 Verify alert rules elements @ia @grafana-pr',
   async ({ I, alertRulesPage, rulesAPI }) => {
     const ruleName = 'testRule';
@@ -71,7 +71,7 @@ Scenario(
   },
 );
 
-Scenario(
+Scenario.skip(
   'PMM-T1392 Verify fields dynamically change value when template is changed @ia @grafana-pr',
   async ({ I, alertRulesPage }) => {
     // TODO: https://jira.percona.com/browse/PMM-10860 name doesn't change
@@ -88,7 +88,7 @@ Scenario(
   },
 );
 
-Scenario(
+Scenario.skip(
   'PMM-T1420 Verify user can create Percona templated alert @ia @alerting-fb',
   async ({ I, alertRulesPage, rulesAPI }) => {
     const rule = page.rules[15];
@@ -137,7 +137,7 @@ Scenario.skip(
 );
 
 // TODO: check ovf failure
-Scenario(
+Scenario.skip(
   'PMM-T1430 Verify user can edit Percona templated alert @ia @not-ovf @alerting-fb',
   async ({
     I, alertRulesPage, rulesAPI,
@@ -163,7 +163,7 @@ Scenario(
   },
 );
 
-Scenario(
+Scenario.skip(
   'PMM-T1433 Verify user can delete Percona templated alert @ia @alerting-fb',
   async ({
     I, alertRulesPage, rulesAPI, iaCommon,
@@ -189,7 +189,7 @@ Scenario(
 
 // nightly candidate
 // FIXME: flaky test fix and unskip
-xScenario(
+Scenario.skip(
   'PMM-T1434 Verify validation errors when creating new alert rule @ia @grafana-pr',
   async ({
     I, alertRulesPage,

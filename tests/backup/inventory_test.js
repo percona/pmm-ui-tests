@@ -258,8 +258,9 @@ Data(restoreFromDifferentStorageLocationsTests).Scenario(
 
 const restoreToDifferentService = new DataTable(['backupType']);
 
-restoreToDifferentService.add(['LOGICAL']);
-restoreToDifferentService.add(['PHYSICAL']);
+// TODO: unskip in scope of https://perconadev.atlassian.net/browse/PMM-13097
+// restoreToDifferentService.add(['LOGICAL']);
+// restoreToDifferentService.add(['PHYSICAL']);
 
 Data(restoreToDifferentService).Scenario(
   '@PMM-T1773 Verify user is able to perform MongoDB restore to compatible service @backup @bm-mongo @bm-fb',

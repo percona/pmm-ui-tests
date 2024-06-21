@@ -1,24 +1,24 @@
 ---
     version: '3.7'
-    
+
     services:
       pmm-server-remove:
-        image: ${PMM_SERVER_IMAGE:-perconalab/pmm-server:dev-latest}
+        image: ${PMM_SERVER_IMAGE:-perconalab/pmm-server:3-dev-latest}
         container_name: pmm-server-remove
         ports:
           - '8081:80'
-          - '8444:443'
+          - '8444:8443'
         environment:
           - PMM_DEBUG=1
       pmm-client-remove:
-        image: ${PMM_CLIENT_IMAGE:-perconalab/pmm-client:dev-latest}
+        image: ${PMM_CLIENT_IMAGE:-perconalab/pmm-client:3-dev-latest}
         container_name: pmm-client-remove
         depends_on:
           pmm-server-remove:
             condition: service_healthy
         environment:
           - PMM_AGENT_SETUP=1
-          - PMM_AGENT_SERVER_ADDRESS=pmm-server-remove
+          - PMM_AGENT_SERVER_ADDRESS=pmm-server-remove:8443
           - PMM_AGENT_SERVER_USERNAME=admin
           - PMM_AGENT_SERVER_PASSWORD=admin
           - PMM_AGENT_SERVER_INSECURE_TLS=1
@@ -27,7 +27,7 @@
           - PMM_AGENT_SETUP_FORCE=1
           - PMM_AGENT_SETUP_NODE_TYPE=container
         restart: on-failure
-    
+
       mysql5.7:
         container_name: mysql5.7
         image: mysql:5.7

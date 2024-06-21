@@ -2,11 +2,16 @@ import { test } from '@playwright/test';
 import * as cli from '@helpers/cli-helper';
 
 test.describe('PMM Client "unregister" CLI tests', async () => {
+  test.beforeAll(async ({}) => {
+    const result1 = await cli.exec('sudo pmm-admin status');
+    await result1.outContains('Running', 'pmm-client is not installed/connected locally, please run pmm3-client-setup script');
+  });
+
   let PMM_VERSION: string;
-  if (process.env.CLIENT_VERSION === 'dev-latest') {
+  if (process.env.CLIENT_VERSION === '/3-dev-latest/pmm3-rc|3.0.*|https:/') {
     // TODO: refactor to use docker hub API to remove file-update dependency
     // See: https://github.com/Percona-QA/package-testing/blob/master/playbooks/pmm2-client_integration_upgrade_custom_path.yml#L41
-    PMM_VERSION = cli.execute('curl -s https://raw.githubusercontent.com/Percona-Lab/pmm-submodules/PMM-2.0/VERSION | xargs')
+    PMM_VERSION = cli.execute('curl -s https://raw.githubusercontent.com/Percona-Lab/pmm-submodules/v3/VERSION')
       .stdout.trim();
   }
 
@@ -78,5 +83,12 @@ test.describe('PMM Client "unregister" CLI tests', async () => {
       'Node with ID',
       'unregistered.',
     ]);
+  });
+
+  /* PMM-T1900 PMM3 Client pmm-admin unregister w/o force removes nodes */
+  test('run pmm-admin status after unregister with --force', async ({}) => {
+    const output = await cli.exec('sudo pmm-admin status');
+    await output.exitCodeEquals(1);
+    await output.outContains('Failed to get PMM Agent status from local pmm-agent:');
   });
 });
