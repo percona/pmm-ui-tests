@@ -4,19 +4,25 @@ Feature('MongoDB Collectors Parameters and Flags tests');
 
 const collectionNames = ['col1', 'col2', 'col3', 'col4', 'col5'];
 const dbNames = ['db1', 'db2', 'db3', 'db4'];
-const connection = {
-  host: '127.0.0.1',
-  // eslint-disable-next-line no-inline-comments
-  port: '27027', // This is the port used by --database psmdb
-  username: 'pmm',
-  password: 'pmmpass',
-};
 const mongodb_service_name = 'mongodb_test_collections_flag';
 const containerName = 'rs101';
 
 const pmm_user_mongodb = {
   username: 'pmm',
   password: 'pmmpass',
+};
+
+const connection = {
+  host: 'rs101',
+  port: '27017',
+  ...pmm_user_mongodb,
+};
+
+const frameworkConnection = {
+  host: '127.0.0.1',
+  // eslint-disable-next-line no-inline-comments
+  port: '27027', // This is the port exposed by --mongo-replica-for-backup
+  ...pmm_user_mongodb,
 };
 
 const metrics = {
@@ -73,8 +79,8 @@ Scenario(
     // assert dbstats and topmetrics collectors are disabled
     // eslint-disable-next-line no-prototype-builtins
     assert.ok(!agentInfo.hasOwnProperty('enable_all_collectors'), `Was expecting enable_all_collectors to be disabled for Mongo Exporter for service "${mongodb_service_name}"`);
-    I.say('Wait 60 seconds for Metrics being collected for the new service');
-    await I.wait(60);
+    I.say('Wait 150 seconds for Metrics being collected for the new service');
+    await I.wait(150);
     await grafanaAPI.checkMetricAbsent(metrics.dbstats, { type: 'service_name', value: mongodb_service_name });
     await grafanaAPI.checkMetricAbsent(metrics.collstats, { type: 'service_name', value: mongodb_service_name });
     await grafanaAPI.checkMetricAbsent(metrics.topmetrics, { type: 'service_name', value: mongodb_service_name });
@@ -100,8 +106,8 @@ Scenario(
     assert.ok(agentInfo.disabled_collectors[0] === 'topmetrics', `Was expecting Mongo Exporter for service ${mongodb_service_name} to have "disabled_collectors: [ 'topmetrics' ]" property`);
     assert.ok(agentInfo.disabled_collectors.length === 1, `Was expecting Mongo Exporter for service ${mongodb_service_name} to have "disabled_collectors: [ 'topmetrics' ]" property`);
     assert.ok(agentInfo.enable_all_collectors, `Was expecting Mongo Exporter for service ${mongodb_service_name} to have "enable_all_collectors" property with "true"`);
-    I.say('Wait 60 seconds for Metrics being collected for the new service');
-    await I.wait(60);
+    I.say('Wait 150 seconds for Metrics being collected for the new service');
+    await I.wait(150);
     await grafanaAPI.checkMetricExist(metrics.dbstats, { type: 'service_name', value: mongodb_service_name });
     await grafanaAPI.checkMetricExist(metrics.collstats, { type: 'service_name', value: mongodb_service_name });
     await grafanaAPI.checkMetricExist(metrics.indexstats, { type: 'service_name', value: mongodb_service_name });
@@ -121,8 +127,8 @@ Scenario(
     // assert dbstats and topmetrics collectors are enabled
     I.assertTrue(Object.hasOwn(agentInfo, 'enable_all_collectors'), `Was expecting Mongo Exporter for service ${mongodb_service_name} to have "enable_all_collectors" property`);
     I.assertTrue(agentInfo.enable_all_collectors, `Was expecting Mongo Exporter for service ${mongodb_service_name} to have "enable_all_collectors" property with "true"`);
-    await I.say('Wait 60 seconds for Metrics being collected for the new service');
-    await I.wait(60);
+    await I.say('Wait 150 seconds for Metrics being collected for the new service');
+    await I.wait(150);
     await grafanaAPI.checkMetricExist(metrics.dbstats, { type: 'service_name', value: mongodb_service_name });
     await grafanaAPI.checkMetricExist(metrics.collstats, { type: 'service_name', value: mongodb_service_name });
     await grafanaAPI.checkMetricExist(metrics.indexstats, { type: 'service_name', value: mongodb_service_name });
@@ -143,8 +149,8 @@ Scenario(
     // eslint-disable-next-line no-prototype-builtins
     assert.ok(agentInfo.hasOwnProperty('enable_all_collectors'), `Was expecting Mongo Exporter for service ${mongodb_service_name} to have "enable_all_collectors" property`);
     assert.ok(agentInfo.enable_all_collectors, `Was expecting Mongo Exporter for service ${mongodb_service_name} to have "enable_all_collectors" property with "true"`);
-    I.say('Wait 60 seconds for Metrics being collected for the new service');
-    await I.wait(60);
+    I.say('Wait 150 seconds for Metrics being collected for the new service');
+    await I.wait(150);
     await grafanaAPI.checkMetricExist(metrics.dbstats, { type: 'service_name', value: mongodb_service_name });
     await grafanaAPI.checkMetricExist(metrics.collstats, { type: 'service_name', value: mongodb_service_name });
     await grafanaAPI.checkMetricExist(metrics.indexstats, { type: 'service_name', value: mongodb_service_name });
@@ -172,8 +178,8 @@ Scenario(
     assert.ok(agentInfo.disabled_collectors[2] === 'topmetrics', `Was expecting Mongo Exporter for service ${mongodb_service_name} to have "disabled_collectors: [ 'collstats', 'dbstats', 'topmetrics' ]" property but found ${agentInfo.disabled_collectors}`);
     assert.ok(agentInfo.disabled_collectors.length === 3, `Was expecting Mongo Exporter for service ${mongodb_service_name} to have "disabled_collectors: [ 'collstats', 'dbstats', 'topmetrics' ]" property but found ${agentInfo.disabled_collectors}`);
     assert.ok(agentInfo.enable_all_collectors, `Was expecting Mongo Exporter for service ${mongodb_service_name} to have "enable_all_collectors" property with "true"`);
-    I.say('Wait 60 seconds for Metrics being collected for the new service');
-    await I.wait(60);
+    I.say('Wait 150 seconds for Metrics being collected for the new service');
+    await I.wait(150);
     await grafanaAPI.checkMetricAbsent(metrics.dbstats, { type: 'service_name', value: mongodb_service_name });
     await grafanaAPI.checkMetricAbsent(metrics.collstats, { type: 'service_name', value: mongodb_service_name });
     await grafanaAPI.checkMetricExist(metrics.indexstats, { type: 'service_name', value: mongodb_service_name });
@@ -195,8 +201,8 @@ Scenario(
     assert.ok(agentInfo.hasOwnProperty('enable_all_collectors'), `Was expecting Mongo Exporter for service ${mongodb_service_name} to have "enable_all_collectors" property`);
     // eslint-disable-next-line no-prototype-builtins
     assert.ok(agentInfo.enable_all_collectors, `Was expecting Mongo Exporter for service ${mongodb_service_name} to have "enable_all_collectors" property with "true"`);
-    I.say('Wait 60 seconds for Metrics being collected for the new service');
-    await I.wait(60);
+    I.say('Wait 150 seconds for Metrics being collected for the new service');
+    await I.wait(150);
     await grafanaAPI.checkMetricExist(metrics.dbstats, { type: 'service_name', value: mongodb_service_name });
     await grafanaAPI.checkMetricExist(metrics.collstats, { type: 'service_name', value: mongodb_service_name });
     await grafanaAPI.checkMetricExist(metrics.indexstats, { type: 'service_name', value: mongodb_service_name });
@@ -222,8 +228,8 @@ Scenario(
     assert.ok(agentInfo.hasOwnProperty('enable_all_collectors'), `Was expecting Mongo Exporter for service ${mongodb_service_name} to have "enable_all_collectors" property`);
     // eslint-disable-next-line no-prototype-builtins
     assert.ok(agentInfo.enable_all_collectors, `Was expecting Mongo Exporter for service ${mongodb_service_name} to have "enable_all_collectors" property with "true"`);
-    I.say('Wait 60 seconds for Metrics being collected for the new service');
-    await I.wait(60);
+    I.say('Wait 150 seconds for Metrics being collected for the new service');
+    await I.wait(150);
     await grafanaAPI.checkMetricAbsent(metrics.dbstats, { type: 'service_name', value: mongodb_service_name });
     await grafanaAPI.checkMetricAbsent(metrics.collstats, { type: 'service_name', value: mongodb_service_name });
     await grafanaAPI.checkMetricAbsent(metrics.indexstats, { type: 'service_name', value: mongodb_service_name });
@@ -249,8 +255,8 @@ Scenario(
     assert.ok(agentInfo.hasOwnProperty('enable_all_collectors'), `Was expecting Mongo Exporter for service ${mongodb_service_name} to have "enable_all_collectors" property`);
     // eslint-disable-next-line no-prototype-builtins
     assert.ok(agentInfo.enable_all_collectors, `Was expecting Mongo Exporter for service ${mongodb_service_name} to have "enable_all_collectors" property with "true"`);
-    I.say('Wait 60 seconds for Metrics being collected for the new service');
-    await I.wait(60);
+    I.say('Wait 150 seconds for Metrics being collected for the new service');
+    await I.wait(150);
     await grafanaAPI.checkMetricExist(metrics.dbstats, { type: 'service_name', value: mongodb_service_name });
     await grafanaAPI.checkMetricExist(metrics.collstats, { type: 'service_name', value: mongodb_service_name });
     await grafanaAPI.checkMetricExist(metrics.indexstats, { type: 'service_name', value: mongodb_service_name });
