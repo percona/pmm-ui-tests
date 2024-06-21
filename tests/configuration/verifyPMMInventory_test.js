@@ -132,6 +132,42 @@ Scenario(
 );
 
 Scenario(
+  'PMM-T1811 - verify version displayed for added service on Inventory page @inventory @inventory-fb',
+  async ({
+    I, pmmInventoryPage, addInstanceAPI,
+  }) => {
+    const psServiceName = 'ps_5.7_version_test';
+    const rdsPostgresqlServiceName = 'pg_rds_version_test';
+    const mongoServiceName = 'mongo_4.2_version_test';
+    const pgServiceName = 'pg_15_version_test';
+
+    await addInstanceAPI.addMysql(psServiceName);
+    await addInstanceAPI.addMongodb(mongoServiceName);
+    await addInstanceAPI.addPostgresql(pgServiceName);
+    await addInstanceAPI.addRDSPostgresql(rdsPostgresqlServiceName);
+
+    I.amOnPage(pmmInventoryPage.url);
+    I.waitForVisible(pmmInventoryPage.fields.showServiceDetails(psServiceName), 20);
+
+    I.click(pmmInventoryPage.fields.showServiceDetails(psServiceName));
+    I.waitForVisible(pmmInventoryPage.fields.detailsLabelByText('version=5.7.30-33-log'), 5);
+    I.click(pmmInventoryPage.fields.hideServiceDetails(psServiceName));
+
+    I.click(pmmInventoryPage.fields.showServiceDetails(pgServiceName));
+    I.waitForVisible(pmmInventoryPage.fields.detailsLabelByText('version=15.4 - Percona Distribution'), 5);
+    I.click(pmmInventoryPage.fields.hideServiceDetails(pgServiceName));
+
+    I.click(pmmInventoryPage.fields.showServiceDetails(mongoServiceName));
+    I.waitForVisible(pmmInventoryPage.fields.detailsLabelByText('version=4.4.24'), 5);
+    I.click(pmmInventoryPage.fields.hideServiceDetails(mongoServiceName));
+
+    I.click(pmmInventoryPage.fields.showServiceDetails(rdsPostgresqlServiceName));
+    I.waitForVisible(pmmInventoryPage.fields.detailsLabelByText('version=12.14'), 300);
+    I.click(pmmInventoryPage.fields.hideServiceDetails(rdsPostgresqlServiceName));
+  },
+);
+
+Scenario(
   'PMM-T342 - Verify pmm-server node cannot be removed from PMM Inventory page @inventory',
   async ({ I, pmmInventoryPage }) => {
     const node = 'pmm-server';
@@ -304,14 +340,15 @@ Scenario(
     I.amOnPage(remoteInstancesPage.url);
     remoteInstancesPage.waitUntilRemoteInstancesPageLoaded();
     remoteInstancesPage.openAddRemotePage('external');
-    const inputs =await remoteInstancesPage.fillRemoteFields(externalExporterServiceName);
+    const inputs = await remoteInstancesPage.fillRemoteFields(externalExporterServiceName);
+
     I.waitForVisible(remoteInstancesPage.fields.addService, 30);
     I.click(remoteInstancesPage.fields.addService);
     pmmInventoryPage.verifyRemoteServiceIsDisplayed(externalExporterServiceName);
     const newLabels = {
-        environment: `${inputs.environment} edited` || `${externalExporterServiceName} environment edited`,
-        cluster: `${inputs.cluster} edited` || `${externalExporterServiceName} cluster edited`,
-        replicationSet: `${inputs.replicationSet} edited` || `${externalExporterServiceName} replicationSet edited`,
+      environment: `${inputs.environment} edited` || `${externalExporterServiceName} environment edited`,
+      cluster: `${inputs.cluster} edited` || `${externalExporterServiceName} cluster edited`,
+      replicationSet: `${inputs.replicationSet} edited` || `${externalExporterServiceName} replicationSet edited`,
     };
 
     pmmInventoryPage.openEditServiceWizard(externalExporterServiceName);
@@ -333,12 +370,13 @@ Scenario(
     remoteInstancesPage.startMonitoringOfInstance(serviceName);
     remoteInstancesPage.verifyAddInstancePageOpened();
     const inputs = await remoteInstancesPage.fillRemoteRDSFields(serviceName);
+
     remoteInstancesPage.createRemoteInstance(serviceName);
     pmmInventoryPage.verifyRemoteServiceIsDisplayed(serviceName);
     const newLabels = {
-        environment: `${inputs.environment} edited` || `${serviceName} environment edited`,
-        cluster: `${inputs.cluster} edited` || `${serviceName} cluster edited`,
-        replicationSet: `${inputs.replicationSet} edited` || `${serviceName} replicationSet edited`,
+      environment: `${inputs.environment} edited` || `${serviceName} environment edited`,
+      cluster: `${inputs.cluster} edited` || `${serviceName} cluster edited`,
+      replicationSet: `${inputs.replicationSet} edited` || `${serviceName} replicationSet edited`,
     };
 
     pmmInventoryPage.openEditServiceWizard(serviceName);
@@ -372,9 +410,9 @@ Scenario(
     I.click(remoteInstancesPage.fields.addService);
     pmmInventoryPage.verifyRemoteServiceIsDisplayed(haproxyServiceName);
     const newLabels = {
-        environment: `${remoteInstancesHelper.remote_instance.haproxy.environment} edited` || `${haproxyServiceName} environment edited`,
-        cluster: `${remoteInstancesHelper.remote_instance.haproxy.clusterName} edited` || `${haproxyServiceName} cluster edited`,
-        replicationSet: `${remoteInstancesHelper.remote_instance.haproxy.replicationSet} edited` || `${haproxyServiceName} replicationSet edited`,
+      environment: `${remoteInstancesHelper.remote_instance.haproxy.environment} edited` || `${haproxyServiceName} environment edited`,
+      cluster: `${remoteInstancesHelper.remote_instance.haproxy.clusterName} edited` || `${haproxyServiceName} cluster edited`,
+      replicationSet: `${remoteInstancesHelper.remote_instance.haproxy.replicationSet} edited` || `${haproxyServiceName} replicationSet edited`,
     };
 
     pmmInventoryPage.openEditServiceWizard(haproxyServiceName);
@@ -402,13 +440,15 @@ Scenario(
     assert.ok(grabbedHostname.startsWith(serviceName), `Hostname is incorrect: ${grabbedHostname}`);
     I.seeInField(remoteInstancesPage.fields.serviceName, serviceName);
     const inputs = await remoteInstancesPage.fillRemoteRDSFields(serviceName);
+
     remoteInstancesPage.createRemoteInstance(serviceName);
     pmmInventoryPage.verifyRemoteServiceIsDisplayed(serviceName);
     const newLabels = {
-        environment: `${inputs.environment} edited` || `${serviceName} environment edited`,
-        cluster: `${inputs.cluster} edited` || `${serviceName} cluster edited`,
-        replicationSet: `${inputs.replicationSet} edited` || `${serviceName} replicationSet edited`,
+      environment: `${inputs.environment} edited` || `${serviceName} environment edited`,
+      cluster: `${inputs.cluster} edited` || `${serviceName} cluster edited`,
+      replicationSet: `${inputs.replicationSet} edited` || `${serviceName} replicationSet edited`,
     };
+
     pmmInventoryPage.openEditServiceWizard(serviceName);
     pmmInventoryPage.updateServiceLabels(newLabels);
     I.click(pmmInventoryPage.fields.showServiceDetails(serviceName));
@@ -430,12 +470,13 @@ Data(azureServices).Scenario(
     remoteInstancesPage.startMonitoringOfInstance(current.instanceToMonitor);
     remoteInstancesPage.verifyAddInstancePageOpened();
     const inputs = await remoteInstancesPage.fillRemoteRDSFields(serviceName);
+
     I.click(remoteInstancesPage.fields.addService);
     pmmInventoryPage.verifyRemoteServiceIsDisplayed(serviceName);
     const newLabels = {
-        environment: `${inputs.environment} edited` || `${serviceName} environment edited`,
-        cluster: `${inputs.cluster} edited` || `${serviceName} cluster edited`,
-        replicationSet: `${inputs.replicationSet} edited` || `${serviceName} replicationSet edited`,
+      environment: `${inputs.environment} edited` || `${serviceName} environment edited`,
+      cluster: `${inputs.cluster} edited` || `${serviceName} cluster edited`,
+      replicationSet: `${inputs.replicationSet} edited` || `${serviceName} replicationSet edited`,
     };
 
     pmmInventoryPage.openEditServiceWizard(serviceName);
@@ -473,9 +514,9 @@ Data(aws_instances).Scenario('PMM-T2340 Verify adding and editing Aurora remote 
   I.amOnPage(pmmInventoryPage.url);
   pmmInventoryPage.verifyRemoteServiceIsDisplayed(details.service_name);
   const newLabels = {
-      environment: `${details.environment} edited` || `${details.service_name} environment edited`,
-      cluster: `${details.cluster} edited` || `${details.service_name} cluster edited`,
-      replicationSet: `${details.replicationSet} edited` || `${details.service_name} replicationSet edited`,
+    environment: `${details.environment} edited` || `${details.service_name} environment edited`,
+    cluster: `${details.cluster} edited` || `${details.service_name} cluster edited`,
+    replicationSet: `${details.replicationSet} edited` || `${details.service_name} replicationSet edited`,
   };
 
   pmmInventoryPage.openEditServiceWizard(details.service_name);
