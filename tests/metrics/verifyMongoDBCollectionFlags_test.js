@@ -34,7 +34,7 @@ const metrics = {
 };
 
 BeforeSuite(async ({ I }) => {
-  await I.mongoConnect(connection);
+  await I.mongoConnect(frameworkConnection);
   for (let i = 0; i < dbNames.length; i++) {
     await I.mongoCreateBulkCollections(dbNames[i], collectionNames);
   }
