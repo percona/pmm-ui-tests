@@ -1338,7 +1338,7 @@ module.exports = {
     }
   },
 
-  // acceptableDataCount - Bug in testing software, even when all tha tables are without data then condition does not met,
+  // acceptableDataCount - Defect in testing software, even when all tha tables are without data then condition are not met,
   async verifyThatAllGraphsNoData(acceptableDataCount = 0) {
     const numberOfNAElements = await I.grabNumberOfVisibleElements(this.fields.reportTitleWithNA);
     const allGraphs = await I.grabNumberOfVisibleElements(this.fields.reportTitle);
