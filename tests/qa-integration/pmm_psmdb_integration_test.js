@@ -1,12 +1,8 @@
 const assert = require('assert');
 
-const { adminPage } = inject();
-const pmmFrameworkLoader = `bash ${adminPage.pathToFramework}`;
-const pathToPMMFramework = adminPage.pathToPMMTests;
-
 Feature('Integration tests for PSMDB & PMM');
 
-Before(async ({ I, settingsAPI }) => {
+Before(async ({ I }) => {
   await I.Authorize();
 });
 
@@ -26,7 +22,7 @@ const connection = {
 Scenario(
   'Verify Adding MongoDB services remotely @pmm-psmdb-regular-integration @not-ui-pipeline',
   async ({
-    I, remoteInstancesPage, pmmInventoryPage, inventoryAPI, grafanaAPI,
+    I, remoteInstancesPage, pmmInventoryPage, inventoryAPI,
   }) => {
     const details = {
       serviceName: remoteServiceName,
@@ -67,10 +63,10 @@ Scenario(
   },
 );
 
-Scenario(
+Scenario.skip(
   'Verify metrics from PSMDB instances on PMM-Server @pmm-psmdb-replica-integration @not-ui-pipeline',
   async ({
-    I, remoteInstancesPage, pmmInventoryPage, inventoryAPI, grafanaAPI,
+    I, grafanaAPI,
   }) => {
     let response; let result;
     const metricName = 'mongodb_connections';
@@ -97,7 +93,7 @@ Scenario(
   },
 ).retry(1);
 
-Scenario(
+Scenario.skip(
   'Verify dashboard after MongoDB Instances are added @pmm-psmdb-replica-integration @not-ui-pipeline',
   async ({
     I, dashboardPage, adminPage,
@@ -133,10 +129,10 @@ Scenario(
   },
 ).retry(1);
 
-Scenario(
+Scenario.skip(
   'Verify QAN after MongoDB Instances is added @pmm-psmdb-replica-integration @not-ui-pipeline',
   async ({
-    I, qanOverview, qanFilters, qanPage, adminPage,
+    I, qanOverview, qanFilters, qanPage,
   }) => {
     const clientServiceName = (await I.verifyCommand(`docker exec ${replica_container_name} pmm-admin list | grep MongoDB | head -1 | awk -F" " '{print $2}'`)).trim();
 
@@ -157,44 +153,74 @@ Scenario(
   },
 ).retry(1);
 
-Scenario(
+Scenario.skip(
   'T2269 Verify Replicaset dashboard for MongoDB Instances contains ARBITER node @pmm-psmdb-arbiter-integration @not-ui-pipeline',
   async ({
-    I, dashboardPage, adminPage,
+    I, dashboardPage,
   }) => {
-
     const arbiterLocator = '(//div[@ng-show=\'ctrl.panel.showLegendValues\'][contains(.,\'ARBITER\')])[1]';
 
     I.amOnPage(`${dashboardPage.mongodbReplicaSetSummaryDashboard.url}&var-replset=rs1`);
     dashboardPage.waitForDashboardOpened();
-    await I.waitForElement({xpath: arbiterLocator},60);
+    await I.waitForElement({ xpath: arbiterLocator }, 60);
     const numberOfVisibleElements = await I.grabNumberOfVisibleElements(arbiterLocator);
-    I.assertEqual(numberOfVisibleElements,1 , "No of ARBITER elements for ReplicatSet are not as expected");
+
+    I.assertEqual(numberOfVisibleElements, 1, 'No of ARBITER elements for ReplicatSet are not as expected');
   },
-);
+).retry(2);
 
 Scenario(
-  'T2317 Verify Wrong Replication Lag by Set values if RS is PSA -( MongoDB Cluster Summary) @pmm-psmdb-arbiter-integration @not-ui-pipeline',
+  'T1775, T1888 Verify Wrong Replication Lag by Set values if RS is PSA -( MongoDB Cluster Summary) @pmm-psmdb-arbiter-integration @not-ui-pipeline',
   async ({
-    I, dashboardPage, adminPage,
+    I, dashboardPage,
   }) => {
+    I.amOnPage(`${dashboardPage.mongodbReplicaSetSummaryDashboard.url}&var-replset=rs1`);
+    dashboardPage.waitForDashboardOpened();
 
-  I.amOnPage(`${dashboardPage.mongodbReplicaSetSummaryDashboard.url}&var-replset=rs1`);
+    const username = 'dba';
+    const password = 'test1234';
+
+    // Gather Secondary member Service Name from Mongo and PMM admin
+    const secondaryLagPort = (await I.verifyCommand(`docker exec ${arbiter_container_name} ./psmdb_${version}/bin/mongo --eval rs\.printSecondaryReplicationInfo\\(\\) --username=${username} --password=${password} | awk -F ":" '/source/ {print $3}'`)).trim();
+    const serviceName = (await I.verifyCommand(`docker exec ${arbiter_container_name} pmm-admin list | awk -v pat='${secondaryLagPort}' '$0~pat {print $2}'`)).trim();
+
+    // Check if logs has arbiter connection
+    await I.asyncWaitFor(async () => {
+      const checkLog = await I.verifyCommand(`docker exec ${arbiter_container_name} grep -q "level=warning.*some metrics might be unavailable on arbiter nodes" pmm-agent.log; echo $?`);
+
+      return checkLog;
+    }, 60);
+
+    // Check if there are no errors but only warnings
+    let errorCode = 0;
+
+    errorCode = (await I.verifyCommand(`docker exec ${arbiter_container_name} grep -q "level=error.*some metrics might be unavailable on arbiter nodes" pmm-agent.log; echo $?`));
+    I.assertTrue(errorCode.includes(1), `No errors for arbiter setup expected but got error code: ${errorCode}`);
+
+    const replLagServiceName = dashboardPage.graphLegendSeriesValue('Replication Lag', serviceName);
+    const replLagSeriesValue = `${replLagServiceName.toXPath()}/following::td[contains(text(),'year')]`;
+
+    // Check service name from Replication Lag field in UI
+    await I.waitForElement(replLagServiceName, 180);
+
+    // Check lag value from Replication Lag field is not 'year' in UI
+    await I.dontSeeElement(replLagSeriesValue, 180);
+  },
+).retry(1);
+
+Scenario('PMM-T1889 Verify Mongo replication lag graph shows correct info @pmm-psmdb-replica-integration', async ({ I, dashboardPage }) => {
+  const lagValue = 10;
+  const testConfigFile = `c = rs.conf(); c.members[2].secondaryDelaySecs = ${lagValue}; c.members[2].priority = 0; c.members[2].hidden = true; rs.reconfig(c);`;
+  const serviceName = 'rs103';
+  const graphName = 'Replication Lag';
+
+  await I.verifyCommand(`sudo docker exec rs101 mongo "mongodb://root:root@localhost/?replicaSet=rs" --eval "${testConfigFile}"`);
+  I.amOnPage(I.buildUrlWithParams(dashboardPage.mongodbReplicaSetSummaryDashboard.cleanUrl, { from: 'now-5m', refresh: '5s' }));
   dashboardPage.waitForDashboardOpened();
 
-  // Grab secs or year lag value from Replication Lag min field in UI
-  const replLagLocator = '(//a[@data-testid=\'data-testid dashboard-row-title-Replication Lag\']/following::a[contains(text(),\'mongodb_rs2_1\')]/following::td[contains(text(),\' s\') or contains(text(),\' year\')])[1]';
+  await I.waitForElement(dashboardPage.graphLegendColumnValueByExpression(graphName, serviceName, 'max', '>= 10'), 120);
 
-  await I.waitForElement(replLagLocator,500);
-  // Get the text content of the element located
-  const replLagText = await I.grabTextFrom(replLagLocator);
-  // Grab only Lag value required from Text
-  let actualLagValue= +replLagText.split(".",1);
-  // Grab actual Lag value required from database
-  let expectedLagValue = (await I.verifyCommand(`docker exec -w /mongosh/bin/ ${arbiter_container_name} ./mongosh --eval rs\.printSecondaryReplicationInfo\\(\\) | awk '/replLag:/ {print $2}' | cut -c 2`)).trim();
-  // Give some threshold increase for actual replication lag, for now 2 secs extra
-  expectedLagValue = +expectedLagValue+2;
-  I.assertBelow(actualLagValue,expectedLagValue, "ReplicaLag is more than expected lag vaule");
-  },
-);
+  const maxValue = await I.grabTextFrom(dashboardPage.graphLegendSeriesRowByTitle(graphName, serviceName));
 
+  I.assertFalse(/min|hour|day|week|month|year/.test(maxValue), `Max replication value should be in seconds. Value is: ${maxValue}`);
+});

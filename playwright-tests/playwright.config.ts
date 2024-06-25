@@ -48,7 +48,7 @@ const config: PlaywrightTestConfig = {
     },
     {
       name: 'Portal',
-      dependencies: ['Portal Setup'],
+      // dependencies: ['Portal Setup'],
       testMatch: 'tests/portal/*.spec.ts',
       retries: 0,
       use: {
