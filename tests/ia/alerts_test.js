@@ -183,7 +183,7 @@ Scenario(
 );
 
 Scenario(
-    'PMM-12442 Let users see full summary message on Fired alerts tab @ia',
+    'PMM-12442 Let users see full summary message on Fired alerts tab @ia @alerting-fb',
     async ({
                I, alertsPage, alertRulesPage,
            }) => {
