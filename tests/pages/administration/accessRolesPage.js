@@ -10,6 +10,7 @@ class AccessRolesPage {
       create: locate('[data-testid="access-roles-create-role"]'),
       submit: locate('[data-testid="add-edit-role-submit"]'),
       openRoleOptions: (roleName) => locate(`//span[text()="${roleName}"]//ancestor::tr//button`),
+      editRole: locate('//span[text()="Edit"]//ancestor::button'),
       deleteRole: locate('//span[text()="Delete"]//ancestor::button'),
       confirmDelete: locate('span').withText('Confirm and delete role').inside('button[type="submit"]'),
     };
@@ -23,6 +24,7 @@ class AccessRolesPage {
     this.messages = {
       roleCreated: (roleName) => `Role “${roleName}” created Your new role is now ready to be assigned to any user.`,
       roleDeleted: (roleName) => `Role “${roleName}“ deleted The role no longer exists`,
+      roleEdited: (roleName) => `Role “${roleName}“ changed Your role is now live and effective with the most recent changes.`,
     };
   }
 
@@ -49,6 +51,32 @@ class AccessRolesPage {
     I.click(this.buttons.submit);
 
     I.verifyPopUpMessage(this.messages.roleCreated(role.name));
+  }
+
+  editAccessRole(role) {
+    I.waitForVisible(this.buttons.openRoleOptions(role.name));
+    I.click(this.buttons.openRoleOptions(role.name));
+    I.click(this.buttons.editRole);
+    I.waitForVisible(this.fields.roleName);
+    I.fillField(this.fields.roleName, role.name);
+
+    if (role.description) {
+      I.fillField(this.fields.roleDescription, role.description);
+    }
+
+    I.fillField(this.fields.selectLabel, role.label);
+    I.click(this.elements.option(role.label));
+
+    I.fillField(this.fields.selectOperator, role.operator);
+    I.click(this.elements.option(role.operator));
+
+    I.fillField(this.fields.selectValue, role.value);
+    I.waitForVisible(this.elements.option(role.value));
+    I.click(this.elements.option(role.value));
+
+    I.click(this.buttons.submit);
+
+    I.verifyPopUpMessage(this.messages.roleEdited(role.name));
   }
 
   deleteAccessRole(roleName) {

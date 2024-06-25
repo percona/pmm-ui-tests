@@ -1208,14 +1208,15 @@ module.exports = {
       '//span[contains(text(),"No Data")]//ancestor::div[contains(@class,"panel-container")]//span[contains(@class,"panel-title-text")]',
     panelLoading: locate('div').withAttr({ class: 'panel-loading' }),
     postgreSQLServiceSummaryContent: locate('$pt-summary-fingerprint').withText('Detected PostgreSQL version:'),
+    reportTitle: locate('$header-container').inside(locate('[class$="panel-container"]')),
     reportTitleWithNA:
       locate('$header-container')
         .inside(locate('[class$="panel-container"]')
-          .withDescendant('//*[(text()="No data") or (text()="NO DATA") or (text()="N/A") or (text()="-")]')),
+          .withDescendant('//*[(text()="No data") or (text()="NO DATA") or (text()="N/A") or (text()="-") or (text() = "No Data")]')),
     reportTitleWithNoData:
     locate('$header-container')
       .inside(locate('[class$="panel-container"]')
-        .withDescendant('//*[contains(text(),"No data") or contains(text(), "NO DATA") or contains(text(),"N/A")) or (text()="-")]')),
+        .withDescendant('//*[contains(text(),"No data") or contains(text(), "NO DATA") or contains(text(),"N/A")) or (text()="-") or (text() = "No Data")]')),
     rootUser: '//div[contains(text(), "root")]',
     serviceSummary: I.useDataQA('data-testid dashboard-row-title-Service Summary'),
     timeRangePickerButton: I.useDataQA('data-testid TimePicker Open Button'),
@@ -1229,6 +1230,7 @@ module.exports = {
     clickablePanel: (name) => locate('$header-container').withText(name).find('a'),
     dashboardTitle: (name) => locate('span').withText(name),
     metricPanelNa: (name) => `//section[@aria-label="${name}"]//span[text()="N/A"]`,
+    loadingElement: locate('//div[@aria-label="Panel loading bar"]'),
   },
 
   async checkNavigationBar(text) {
@@ -1336,6 +1338,22 @@ module.exports = {
     }
   },
 
+  // acceptableDataCount - Bug in testing software, even when all tha tables are without data then condition does not met,
+  async verifyThatAllGraphsNoData(acceptableDataCount = 0) {
+    const numberOfNAElements = await I.grabNumberOfVisibleElements(this.fields.reportTitleWithNA);
+    const allGraphs = await I.grabNumberOfVisibleElements(this.fields.reportTitle);
+
+    I.say(`Number of no data and N/A elements is = ${numberOfNAElements}`);
+    I.say(`Number of all graph elements is = ${allGraphs}`);
+    if ((allGraphs - numberOfNAElements) > acceptableDataCount) {
+      assert.equal(
+        (allGraphs - numberOfNAElements) <= acceptableDataCount,
+        true,
+        `Expected ${allGraphs} Elements without data but found ${numberOfNAElements} on Dashboard ${await I.grabCurrentUrl()}.`,
+      );
+    }
+  },
+
   async printFailedReportNames(expectedNumber, actualNumber, titles, dashboardUrl) {
     assert.equal(
       actualNumber <= expectedNumber,
@@ -1366,6 +1384,7 @@ module.exports = {
 
   waitForDashboardOpened() {
     I.waitForElement(this.fields.metricTitle, 60);
+    I.waitForDetached(this.fields.loadingElement, 60);
     I.click(this.fields.metricTitle);
   },
 
