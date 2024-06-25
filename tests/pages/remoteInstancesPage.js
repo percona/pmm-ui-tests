@@ -151,6 +151,7 @@ module.exports = {
     usePgStatMonitor: '//label[text()="PG Stat Monitor"]',
     usePgStatStatements: '//label[text()="PG Stat Statements"]',
     useQANMongoDBProfiler: '$qan_mongodb_profiler-field-label',
+    trackingRadioStateInput: '$tracking-radio-state',
     useTLS: '$tls-field-label',
     userName: '$username-text-input',
     urlInput: '$url-text-input',
@@ -160,6 +161,7 @@ module.exports = {
     dontTrackingRadio: locate('label').withAttr({ for: 'radio-btn-1' }).withText('Don\'t track'),
     pgStatStatementsRadio: locate('label').withAttr({ for: 'radio-btn-2' }).withText('PG Stat Statements'),
     pgStatMonitorRadio: locate('label').withAttr({ for: 'radio-btn-3' }).withText('PG Stat Monitor'),
+    pgStatMonitorRadioInput: locate('#radio-btn-3'),
     customAutoDiscoveryButton: locate('//div[input[@data-testid="autoDiscoveryOptions-radio-button"]]').find('label').withText('Custom'),
     customAutoDiscoveryfield: '$autoDiscoveryLimit-number-input',
   },
@@ -312,19 +314,14 @@ module.exports = {
         adminPage.customClearField(this.fields.portNumber);
         I.fillField(this.fields.portNumber, inputs.port);
         I.fillField(this.fields.serviceName, serviceName);
-        I.fillField(
-          this.fields.environment,
-          inputs.environment,
-        );
-        I.fillField(
-          this.fields.cluster,
-          inputs.clusterName,
-        );
+        I.fillField(this.fields.environment, inputs.environment);
+        I.fillField(this.fields.cluster, inputs.clusterName);
         I.dontSeeElement(this.fields.tlscaInput);
         I.dontSeeElement(this.fields.tlsCertificateInput);
         I.dontSeeElement(this.fields.tlsCertificateKeyInput);
         I.click(this.fields.useTLS);
         I.waitForElement(this.fields.tlscaInput, 30);
+
         await this.fillFileContent(
           this.fields.tlscaInput,
           inputs.tlsCAFile,
@@ -354,24 +351,16 @@ module.exports = {
         inputs = remoteInstancesHelper.remote_instance.mongodb.mongodb_4_4_ssl;
         I.fillField(this.fields.hostName, inputs.host);
         adminPage.customClearField(this.fields.portNumber);
-        I.fillField(
-          this.fields.portNumber,
-          inputs.port,
-        );
+        I.fillField(this.fields.portNumber, inputs.port);
         I.fillField(this.fields.serviceName, serviceName);
-        I.fillField(
-          this.fields.environment,
-          inputs.environment,
-        );
-        I.fillField(
-          this.fields.cluster,
-          inputs.clusterName,
-        );
+        I.fillField(this.fields.environment, inputs.environment);
+        I.fillField(this.fields.cluster, inputs.clusterName);
         I.dontSeeElement(this.fields.tlscaInput);
         I.dontSeeElement(this.fields.tlsCertificateFilePasswordInput);
         I.dontSeeElement(this.fields.tlsCertificateKey);
         I.click(this.fields.useTLS);
         I.waitForElement(this.fields.tlscaInput, 30);
+
         await this.fillFileContent(
           this.fields.tlscaInput,
           inputs.tlsCAFile,
@@ -390,18 +379,9 @@ module.exports = {
           ...remoteInstancesHelper.remote_instance.postgresql.pdpgsql_13_3,
           ...this.potgresqlSettings,
         };
-        I.fillField(
-          this.fields.hostName,
-          inputs.host,
-        );
-        I.fillField(
-          this.fields.userName,
-          inputs.username,
-        );
-        I.fillField(
-          this.fields.password,
-          inputs.password,
-        );
+        I.fillField(this.fields.hostName, inputs.host);
+        I.fillField(this.fields.userName, inputs.username);
+        I.fillField(this.fields.password, inputs.password);
         adminPage.customClearField(this.fields.portNumber);
         I.fillField(
           this.fields.portNumber,
@@ -416,29 +396,18 @@ module.exports = {
           ...remoteInstancesHelper.remote_instance.postgresql.postgres_13_3_ssl,
           ...this.potgresqlSettings,
         };
-        I.fillField(
-          this.fields.hostName,
-          inputs.host,
-        );
+        I.fillField(this.fields.hostName, inputs.host);
         adminPage.customClearField(this.fields.portNumber);
-        I.fillField(
-          this.fields.portNumber,
-          inputs.port,
-        );
+        I.fillField(this.fields.portNumber, inputs.port);
         I.fillField(this.fields.serviceName, serviceName);
-        I.fillField(
-          this.fields.environment,
-          inputs.environment,
-        );
-        I.fillField(
-          this.fields.cluster,
-          inputs.clusterName,
-        );
+        I.fillField(this.fields.environment, inputs.environment);
+        I.fillField(this.fields.cluster, inputs.clusterName);
         I.dontSeeElement(this.fields.tlscaInput);
         I.dontSeeElement(this.fields.tlsCertificateKeyInput);
         I.dontSeeElement(this.fields.tlsCertificateInput);
         I.click(this.fields.useTLS);
         I.waitForElement(this.fields.tlscaInput, 30);
+
         await this.fillFileContent(
           this.fields.tlscaInput,
           inputs.tlsCAFile,
@@ -455,14 +424,8 @@ module.exports = {
       case remoteInstancesHelper.services.proxysql:
         inputs = remoteInstancesHelper.remote_instance.proxysql.proxysql_2_1_1;
         I.fillField(this.fields.hostName, inputs.host);
-        I.fillField(
-          this.fields.userName,
-          inputs.username,
-        );
-        I.fillField(
-          this.fields.password,
-          inputs.password,
-        );
+        I.fillField(this.fields.userName, inputs.username);
+        I.fillField(this.fields.password, inputs.password);
         I.fillField(this.fields.serviceName, serviceName);
         I.fillField(this.fields.environment, inputs.environment);
         I.fillField(this.fields.cluster, inputs.clusterName);
@@ -519,7 +482,9 @@ module.exports = {
         I.click(this.fields.useQANMongoDBProfiler);
         break;
       case remoteInstancesHelper.services.postgresql:
-        I.click(this.fields.usePgStatStatements);
+        I.seeAttributesOnElements(this.fields.trackingRadioStateInput, { value: 'qan_postgresql_pgstatmonitor_agent' });
+        I.seeCheckboxIsChecked(this.fields.pgStatMonitorRadioInput);
+        I.click(this.fields.pgStatStatementsRadio);
         break;
       case 'pmm-qa-pgsql-12':
         I.click(this.fields.disableEnhancedMetrics);
