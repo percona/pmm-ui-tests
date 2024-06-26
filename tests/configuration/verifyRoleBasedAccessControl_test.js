@@ -68,7 +68,7 @@ Scenario(
     dashboardPage.waitForDashboardOpened();
     await dashboardPage.expandEachDashboardRow();
     dashboardPage.waitForDashboardOpened();
-    await dashboardPage.verifyThereAreNoGraphsWithoutData(3);
+    await dashboardPage.verifyThereAreNoGraphsWithoutData(4);
 
     I.amOnPage(dashboardPage.postgresqlInstanceOverviewDashboard.cleanUrl);
     dashboardPage.waitForDashboardOpened();
