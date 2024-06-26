@@ -7,8 +7,8 @@ class AccessRolesPage {
       option: (optionName) => locate('[data-testid*="-select-option"]').withText(optionName),
     };
     this.buttons = {
-      create: locate('[data-testid="access-roles-create-role"]'),
-      submit: locate('[data-testid="add-edit-role-submit"]'),
+      create: locate('$access-roles-create-role'),
+      submit: locate('$add-edit-role-submit'),
       openRoleOptions: (roleName) => locate(`//span[text()="${roleName}"]//ancestor::tr//button`),
       editRole: locate('//span[text()="Edit"]//ancestor::button'),
       deleteRole: locate('//span[text()="Delete"]//ancestor::button'),

@@ -22,9 +22,7 @@ class UsersPage {
     I.waitForVisible(this.fields.selectAccessRole(user));
     I.click(this.fields.selectAccessRole(user));
     I.click(this.elements.option(role));
-    I.usePlaywrightTo('Click to hide options', async ({ page }) => {
-      (await page.locator(this.buttons.allUsers.value)).click({ force: true });
-    });
+    I.usePlaywrightTo('Click to hide options', async ({ page }) => (await page.locator(this.buttons.allUsers.value)).click({ force: true }));
     I.verifyPopUpMessage(this.messages.roleAssigned(user));
   }
 }

@@ -287,7 +287,7 @@ module.exports = {
     microsoftAzureMonitoringSwitch: locate('$advanced-azure-discover').find('//div[2]//label'),
     microsoftAzureMonitoringSwitchInput: locate('$advanced-azure-discover').find('//div[2]//input'),
     accessControlInput: locate('[name="accessControl"]'),
-    accessControlSwitch: locate('[data-testid="access-control"]').find('label'),
+    accessControlSwitch: locate('$access-control').find('label'),
     loginButton: '$sign-in-submit-button',
     lowInput: '$lr-number-input',
     mediumInput: '$mr-number-input',
@@ -583,18 +583,6 @@ module.exports = {
         I.dontSeeCheckboxIsChecked(switchSelector);
         break;
       default:
-    }
-  },
-
-  async enableRBAC() {
-    I.waitForVisible(this.fields.accessControlInput);
-    const isChecked = await I.grabCheckedElementStatus(this.fields.accessControlInput);
-
-    if (isChecked) {
-      I.say('RBAC is already enabled!');
-    } else {
-      I.click(this.fields.accessControlSwitch);
-      this.applyChanges();
     }
   },
 

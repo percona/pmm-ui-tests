@@ -19,17 +19,17 @@ const pgRole = {
   value: 'postgresql',
 };
 
-BeforeSuite(async ({ I }) => {
+Before(async ({ I, settingsAPI }) => {
   rbacPsUserId = await I.createUser(newPsUser.username, newPsUser.password);
   rbacPgUserId = await I.createUser(newPgUser.username, newPgUser.password);
-});
-
-Before(async ({ I, settingsAPI }) => {
   await I.Authorize();
   await settingsAPI.changeSettings({ rbac: true });
 });
 
-AfterSuite(async ({ I }) => {
+After(async ({ I, rolesApi }) => {
+  const rolesId = await rolesApi.getNonDefaultRolesIds();
+
+  await rolesApi.deleteRoles(rolesId, 3);
   await I.deleteUser(rbacPsUserId);
   await I.deleteUser(rbacPgUserId);
 });
@@ -40,7 +40,10 @@ Scenario('PMM-T1580 Verify creating Access Role @rbac', async ({ I, accessRolesP
   accessRolesPage.createAccessRole(pgRole);
 });
 
-Scenario('PMM-T1584 Verify assigning Access role to user @rbac', async ({ I, usersPage }) => {
+Scenario('PMM-T1584 Verify assigning Access role to user @rbac', async ({ I, usersPage, rolesApi }) => {
+  await rolesApi.createRole(psRole);
+  await rolesApi.createRole(pgRole);
+
   I.amOnPage(usersPage.url);
   usersPage.assignRole(newPsUser.username, psRole.name);
   usersPage.assignRole(newPgUser.username, pgRole.name);
@@ -49,8 +52,14 @@ Scenario('PMM-T1584 Verify assigning Access role to user @rbac', async ({ I, use
 Scenario(
   'PMM-T1899 - Access Role based on Labels and Check Filtering of Metrics on Dashboard @rbac',
   async ({
-    I, dashboardPage, accessRolesPage,
+    I, dashboardPage, accessRolesPage, rolesApi,
   }) => {
+    const psRoleId = await rolesApi.createRole(psRole);
+    const pgRoleId = await rolesApi.createRole(pgRole);
+
+    await rolesApi.assignRole([psRoleId], rbacPsUserId);
+    await rolesApi.assignRole([pgRoleId], rbacPgUserId);
+
     await I.unAuthorize();
 
     await I.Authorize(newPsUser.username, newPsUser.password);
@@ -98,7 +107,10 @@ Scenario(
 
     await I.Authorize(newPsUser.username, newPsUser.password);
 
-    I.amOnPage(I.buildUrlWithParams(dashboardPage.mySQLInstanceOverview.clearUrl, { environment: psRole.value, from: 'now-1m' }));
+    I.amOnPage(I.buildUrlWithParams(dashboardPage.mySQLInstanceOverview.clearUrl, {
+      environment: psRole.value,
+      from: 'now-1m',
+    }));
     dashboardPage.waitForDashboardOpened();
     await dashboardPage.expandEachDashboardRow();
     dashboardPage.waitForDashboardOpened();
@@ -106,7 +118,10 @@ Scenario(
   },
 );
 
-Scenario('PMM-T1585 Verify deleting Access role @rbac', async ({ I, accessRolesPage }) => {
+Scenario('PMM-T1585 Verify deleting Access role @rbac', async ({ I, accessRolesPage, rolesApi }) => {
+  await rolesApi.createRole(psRole);
+  await rolesApi.createRole(pgRole);
+
   I.amOnPage(accessRolesPage.url);
   accessRolesPage.deleteAccessRole(pgRole.name);
   accessRolesPage.deleteAccessRole(psRole.name);
