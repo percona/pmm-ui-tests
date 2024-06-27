@@ -12,7 +12,7 @@ import https from 'https';
  * @param   payload   JSON {@code object}; an empty object for get or delete requests
  */
 const oktaRequest = async (method: Method, apiPath: string, payload = {}): Promise<AxiosResponse> => {
-  console.log(`${method.toUpperCase()}: ${constants.okta.url}/api/v1${apiPath}\nPayload: ${JSON.stringify(payload)}`);
+  console.log(`${method.toUpperCase()}: ${constants.okta.url}/api/v1${apiPath}`);
   const response = await axios({
     url: `${constants.okta.url}/api/v1${apiPath}`,
     headers: { 'X-Requested-With': 'XMLHttpRequest', Authorization: constants.okta.token },
@@ -36,9 +36,7 @@ export const oktaApi = {
         marketing: true,
         tos: true,
       },
-      credentials: {
-        password: { value: user.password },
-      },
+      credentials: { password: { value: user.password } },
     };
     return oktaRequest('post', `/users?activate=${activate}`, data);
   },

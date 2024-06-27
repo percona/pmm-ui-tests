@@ -6,6 +6,7 @@ const faker = require('faker');
 
 module.exports = {
   url: 'graph/dbaas',
+  k8sClusterUrl: 'graph/dbaas/kubernetes',
   apiKeysUrl: 'graph/org/apikeys',
 
   apiKeysPage: {

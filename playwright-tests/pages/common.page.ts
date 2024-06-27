@@ -4,13 +4,15 @@ import ToastMessage from '@components/toast-message-modal';
 import OptionsMenu from '@components/options-menu';
 import { expect } from '@helpers/test-helper';
 import grafanaHelper from '@helpers/grafana-helper';
+import NetworkTools from '@components/network-tools';
 
 export class CommonPage {
+  PAGE_HEADING_LOCATOR: Locator = this.page.locator('//h1');
+
+  network = new NetworkTools(this.page);
   toastMessage = new ToastMessage(this.page);
   sideMenu = new LeftNavigationMenu(this.page);
   optionMenu = new OptionsMenu(this.page);
-
-  landingUrl = 'graph/d/pmm-home/home-dashboard?orgId=1&refresh=1m';
 
   elements: object = {
     mainView: this.page.locator('//*[@class="main-view"]'),

@@ -17,9 +17,9 @@ Scenario(
     I.waitForVisible(iaCommon.elements.disabledIa, 30);
     I.seeTextEquals(iaCommon.messages.disabledIa, iaCommon.elements.disabledIa);
 
-    I.seeAttributesOnElements(iaCommon.elements.settingsLink, {
-      href: `${codeceptjsConfig.config.helpers.Playwright.url}${pmmSettingsPage.advancedSettingsUrl}`,
-    });
+    const link = await I.grabAttributeFrom(iaCommon.elements.settingsLink, 'href');
+
+    I.assertContain(link, pmmSettingsPage.advancedSettingsUrl, 'Settings link does not contain expected link.');
   },
 );
 

@@ -166,15 +166,15 @@ Scenario(
 
     I.seeElementsDisabled(backupInventoryPage.elements.retryTimes);
     I.click(backupInventoryPage.buttons.retryModeOption('Auto'));
-    I.seeElementsEnabled(backupInventoryPage.elements.retryTimes);
-    I.seeElementsEnabled(backupInventoryPage.elements.retryInterval);
+    I.waitForEnabled(backupInventoryPage.elements.retryTimes, 10);
+    I.waitForEnabled(backupInventoryPage.elements.retryInterval, 10);
     I.click(backupInventoryPage.buttons.retryModeOption('Manual'));
     I.seeElementsDisabled(backupInventoryPage.elements.retryTimes);
     I.seeElementsDisabled(backupInventoryPage.elements.retryInterval);
 
     I.seeElementsDisabled(backupInventoryPage.buttons.addBackup);
     I.fillField(backupInventoryPage.fields.backupName, backupName);
-    I.seeElementsEnabled(backupInventoryPage.buttons.addBackup);
+    I.waitForEnabled(backupInventoryPage.buttons.addBackup, 10);
     // TODO: uncomment when PMM-10899 will be fixed
     // I.fillField(backupInventoryPage.fields.description, 'test description');
   },
@@ -335,7 +335,8 @@ Scenario(
   },
 );
 
-Scenario(
+// Unskip after https://jira.percona.com/browse/PBM-1193 is fixed
+Scenario.skip(
   '@PMM-T928 @PMM-T992 Verify schedule retries and restore from a scheduled backup artifact @backup @bm-mongo',
   async ({
     I, backupInventoryPage, scheduledAPI, backupAPI, restorePage,
@@ -523,7 +524,8 @@ Scenario(
   },
 );
 
-Scenario(
+// Unskip after https://jira.percona.com/browse/PBM-1193 is fixed
+Scenario.skip(
   '@PMM-T1562 - Verify Mongo restore error logs when replica primary down @backup @bm-mongo',
   async ({
     I, inventoryAPI, backupInventoryPage, backupAPI, restorePage,
@@ -596,7 +598,8 @@ Data(deleteArtifactsTests).Scenario(
   },
 );
 
-Scenario(
+// Unskip after https://jira.percona.com/browse/PBM-1193 is fixed
+Scenario.skip(
   '@PMM-T991 - Verify retries for backup on demand @backup @bm-mongo',
   async ({
     I, inventoryAPI, backupInventoryPage, backupAPI,

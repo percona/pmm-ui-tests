@@ -99,6 +99,13 @@ module.exports = {
         'PMM Query Analytics',
       ],
     },
+    k8sExperimental: {
+      name: 'Kubernetes (experimental)',
+      items: [
+        'Databases on Kubernetes - Summary',
+        'Kubernetes Cluster Overview',
+      ],
+    },
   },
   fields: {
     searchInput: 'input[placeholder="Search dashboards by name"]',

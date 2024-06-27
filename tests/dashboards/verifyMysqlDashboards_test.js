@@ -130,7 +130,8 @@ Scenario(
   },
 );
 
-Scenario(
+// TODO: https://perconadev.atlassian.net/browse/PMM-12956
+Scenario.skip(
   'PMM-T67 - Open the PXCGalera Cluster Summary Dashboard and verify Metrics are present and graphs are displayed @nightly @dashboards',
   async ({ I, adminPage, dashboardPage }) => {
     const url = I.buildUrlWithParams(dashboardPage.pxcGaleraClusterSummaryDashboard.url, { from: 'now-5m' });
@@ -138,8 +139,26 @@ Scenario(
     I.amOnPage(url);
     dashboardPage.waitForDashboardOpened();
     I.click(adminPage.fields.metricTitle);
+    adminPage.performPageDown(10);
+    await dashboardPage.expandEachDashboardRow();
+    dashboardPage.verifyMetricsExistence(dashboardPage.pxcGaleraClusterSummaryExperimentalDashboard.metrics);
+    await dashboardPage.verifyThereAreNoGraphsWithNA();
+    await dashboardPage.verifyThereAreNoGraphsWithoutData(2);
+  },
+);
+
+// TODO: https://perconadev.atlassian.net/browse/PMM-12956
+Scenario.skip(
+  'PMM-T1743 - verify PXCGalera Cluster Summary Dashboard (Experimental) metrics @nightly @dashboards',
+  async ({ I, adminPage, dashboardPage }) => {
+    const url = I.buildUrlWithParams(dashboardPage.pxcGaleraClusterSummaryExperimentalDashboard.url, { from: 'now-5m' });
+
+    I.amOnPage(url);
+    dashboardPage.waitForDashboardOpened();
+    I.click(adminPage.fields.metricTitle);
+    await dashboardPage.expandEachDashboardRow();
     adminPage.performPageDown(5);
-    dashboardPage.verifyMetricsExistence(dashboardPage.pxcGaleraClusterSummaryDashboard.metrics);
+    dashboardPage.verifyMetricsExistence(dashboardPage.pxcGaleraClusterSummaryExperimentalDashboard.metrics);
     await dashboardPage.verifyThereAreNoGraphsWithNA();
     await dashboardPage.verifyThereAreNoGraphsWithoutData(2);
   },
@@ -241,6 +260,19 @@ Scenario(
     adminPage.performPageUp(5);
     dashboardPage.verifyMetricsExistence(dashboardPage.groupReplicationDashboard.metrics);
     await dashboardPage.verifyThereAreNoGraphsWithNA();
-    await dashboardPage.verifyThereAreNoGraphsWithoutData(3);
+    await dashboardPage.verifyThereAreNoGraphsWithoutData(8);
+  },
+);
+
+Scenario(
+  'PMM-T1892 - Verify metrics on MySQL Innodb Details Dashboards @dashboards @nightly',
+  async ({ I, dashboardPage, adminPage }) => {
+    const url = I.buildUrlWithParams(dashboardPage.mysqlInnoDBDetailsDashboard.clearUrl, { service_name: 'ms-single', from: 'now-15m' });
+
+    I.amOnPage(url);
+    dashboardPage.waitForDashboardOpened();
+    await dashboardPage.expandEachDashboardRow();
+    dashboardPage.verifyMetricsExistence(dashboardPage.mysqlInnoDBDetailsDashboard.metrics);
+    await dashboardPage.verifyThereAreNoGraphsWithoutData(6);
   },
 );

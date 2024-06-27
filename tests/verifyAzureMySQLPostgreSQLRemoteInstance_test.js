@@ -19,7 +19,8 @@ const metrics = new DataTable(['metricName']);
 
 metrics.add(['azure_memory_percent_average']);
 metrics.add(['mysql_global_status_max_used_connections']);
-metrics.add(['mysql_global_variables_azure_ia_enabled']);
+// Removing to avoid failures due to missing metric, seems to be some changes on Azure deployments.
+// metrics.add(['mysql_global_variables_azure_ia_enabled']);
 
 Feature('Monitoring Azure MySQL and PostgreSQL DB');
 

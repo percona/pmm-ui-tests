@@ -31,10 +31,6 @@ Data(sidebar).Scenario(
   'PMM-T433, PMM-T591 - Verify menu items on Grafana sidebar redirects to correct page @menu',
   async ({ I, homePage, current }) => {
     await homePage.open();
-    I.usePlaywrightTo('check browser version', async ({ browser }) => {
-      // eslint-disable-next-line no-underscore-dangle,no-console
-      console.log(`${browser._name} - `, await browser.version());
-    });
     current.click();
     I.waitInUrl(current.path, 5);
   },
@@ -58,8 +54,8 @@ xScenario(
 );
 
 Scenario(
-  '@PMM-9550 Verify downloading server diagnostics logs @menu',
-  async ({ I, homePage }) => {
+  '@PMM-9550 PMM-T1830 Verify downloading server diagnostics logs @menu',
+  async ({ I, homePage, serverApi }) => {
     await homePage.open();
     let path;
 
@@ -79,5 +75,11 @@ Scenario(
     });
 
     await I.seeEntriesInZip(path, ['pmm-agent.yaml', 'pmm-managed.log', 'pmm-agent.log']);
+
+    if ((await serverApi.getPmmVersion()).minor > 40) {
+    /* PMM-T1830 alertmanager as been removed since 2.41.0 */
+    /* note that 'alertmanager.ini',  'alertmanager.log' are still present in zip */
+      await I.dontSeeEntriesInZip(path, ['alertmanager.yml', 'alertmanager.base.yml']);
+    }
   },
 );

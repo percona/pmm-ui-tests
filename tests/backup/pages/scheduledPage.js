@@ -27,6 +27,7 @@ module.exports = {
       dataModel: locate('$scheduled-backup-details-data-model').find('span').at(2),
       cronExpression: locate('$scheduled-backup-details-cron').find('span').at(2),
     },
+    advancedSettingsSection: '$add-backup-advanced-settings',
   },
   buttons: {
     openAddScheduleModal: '$scheduled-backup-add-button',

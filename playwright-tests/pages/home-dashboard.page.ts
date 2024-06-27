@@ -1,21 +1,35 @@
 import { expect } from '@playwright/test';
-import PmmUpgrade from '@components/pmm-upgrade-panel';
+import PmmUpgradeWidget from '@components/pmm-upgrade-widget';
 import UpgradeModal from '@components/upgrade-modal';
 import Wait from '@helpers/enums/wait';
 import PmmMenu from '@components/dashboards/pmm-menu';
 import { BaseDashboard } from './dashboards/base-dashboard.page';
 
 export default class HomeDashboardPage extends BaseDashboard {
-  pmmUpgrade = new PmmUpgrade(this.page);
+  readonly PAGE_PATH = 'graph/d/pmm-home/home-dashboard?orgId=1&refresh=1m';
+  readonly PAGE_HEADING = 'Home Dashboard';
+
+  pmmUpgradeWidget = new PmmUpgradeWidget(this.page);
   upgradeModal = new UpgradeModal(this.page);
   pmmMenu = new PmmMenu(this.page);
 
-  upgradePmm = async () => {
-    await this.pmmUpgrade.buttons.upgradeButton.waitFor({ state: 'visible', timeout: Wait.ThreeMinutes });
-    const currentVersion = await this.pmmUpgrade.elements.currentVersion.textContent();
+  /**
+   * Opens given Page entering url into the address field.
+   */
+  public open = async () => {
+    await this.openPageByPath(this.PAGE_PATH, this.PAGE_HEADING, this.PAGE_HEADING_LOCATOR);
+  };
 
-    await this.pmmUpgrade.buttons.upgradeButton.click();
-    const availableVersion = await this.pmmUpgrade.elements.availableVersion.textContent();
+  async waitToBeOpened() {
+    await this.PAGE_HEADING_LOCATOR.waitFor({ state: 'visible', timeout: Wait.OneMinute });
+    await expect(this.page).toHaveURL(this.PAGE_PATH);
+  }
+  upgradePmm = async () => {
+    await this.pmmUpgradeWidget.elements.upgradeButton.waitFor({ state: 'visible', timeout: Wait.ThreeMinutes });
+    const currentVersion = await this.pmmUpgradeWidget.elements.currentVersion.textContent();
+
+    await this.pmmUpgradeWidget.elements.upgradeButton.click();
+    const availableVersion = await this.pmmUpgradeWidget.elements.availableVersion.textContent();
 
     console.log(`Upgrading pmm server from version: ${currentVersion} to the version: ${availableVersion}`);
 

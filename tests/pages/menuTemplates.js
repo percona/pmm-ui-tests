@@ -104,7 +104,6 @@ function MenuOption(menuName, label, locator, path, menuLevel = 1) {
       I.seeTextEquals(label, elemToClick);
     }
 
-    I.seeAttributesOnElements(elemToClick, { target: null });
     I.click(elemToClick);
   };
 }

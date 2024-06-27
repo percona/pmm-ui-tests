@@ -24,11 +24,11 @@ const config: PlaywrightTestConfig = {
   ],
 
   use: {
-    navigationTimeout: 30_000,
+    navigationTimeout: Wait.PageLoad,
     baseURL: process.env.PMM_UI_URL || 'https://localhost',
     ignoreHTTPSErrors: true,
     screenshot: 'only-on-failure',
-    actionTimeout: 15_000,
+    actionTimeout: Wait.FifteenSeconds,
   },
   projects: [
     {
@@ -44,11 +44,11 @@ const config: PlaywrightTestConfig = {
     },
     {
       name: 'Portal Setup',
-      testMatch: 'tests/portal/testUsers.setup.ts',
+      testMatch: 'tests/portal/test-users.setup.ts',
     },
     {
       name: 'Portal',
-      dependencies: ['Portal Setup'],
+      // dependencies: ['Portal Setup'],
       testMatch: 'tests/portal/*.spec.ts',
       retries: 0,
       use: {

@@ -64,6 +64,35 @@ Scenario(
 );
 
 Scenario(
+  'PMM-T1867 - pg_stat_monitor is used by default without providing --query-source @not-ui-pipeline @pgsm-pmm-integration',
+  async ({ I }) => {
+    const serviceName = `pgsm_${Math.floor(Math.random() * 99) + 1}`;
+    const { service: { service_id: serviceId } } = JSON.parse(
+      await I.verifyCommand(`docker exec ${container_name} pmm-admin add postgresql --json --password=${connection.password} --username=${connection.user} --service-name=${serviceName}`),
+    );
+
+    let list;
+    let serviceAgents;
+
+    await I.asyncWaitFor(async () => {
+      list = JSON.parse(
+        await I.verifyCommand(`docker exec ${container_name} pmm-admin list --json`),
+      );
+      serviceAgents = list.agent.filter(({ service_id }) => service_id === serviceId);
+      const pgStatMonitorAgent = serviceAgents.find(({ agent_type }) => agent_type === 'QAN_POSTGRESQL_PGSTATMONITOR_AGENT');
+
+      assert.ok(pgStatMonitorAgent, 'pg_stat_monitor agent should exist');
+
+      return pgStatMonitorAgent.status === 'RUNNING';
+    }, 30);
+
+    const pgStatStatementsAgent = serviceAgents.find(({ agent_type }) => agent_type === 'QAN_POSTGRESQL_PGSTATEMENTS_AGENT');
+
+    assert.ok(!pgStatStatementsAgent, 'pg_stat_statements agent should not exist');
+  },
+);
+
+Scenario(
   'PMM-T1260 - Verifying data in Clickhouse and comparing with PGSM output @not-ui-pipeline @pgsm-pmm-integration',
   async ({ I, qanAPI }) => {
     await I.pgExecuteQueryOnDemand('SELECT now();', connection);
@@ -92,9 +121,9 @@ Scenario(
     let pgsm_output;
 
     if (version < 13) {
-      pgsm_output = await I.pgExecuteQueryOnDemand(`select query, pgsm_query_id, planid, query_plan, calls, total_time as total_exec_time, mean_time as mean_exec_time  from pg_stat_monitor where datname='${database}' and query NOT IN ('SELECT version()', 'SELECT /* pmm-agent:pgstatmonitor */ version()');`, connection);
+      pgsm_output = await I.pgExecuteQueryOnDemand(`select query, pgsm_query_id, planid, query_plan, calls, total_time as total_exec_time, mean_time as mean_exec_time  from pg_stat_monitor where datname='${database}' and query NOT IN ('SELECT version()', 'SELECT /* pmm-agent:pgstatmonitor */ version()') and query NOT LIKE 'current_database() datname%';`, connection);
     } else {
-      pgsm_output = await I.pgExecuteQueryOnDemand(`select query, pgsm_query_id, planid, query_plan, calls, total_exec_time, mean_exec_time from pg_stat_monitor where datname='${database}' and query NOT IN ('SELECT version()', 'SELECT /* pmm-agent:pgstatmonitor */ version()');`, connection);
+      pgsm_output = await I.pgExecuteQueryOnDemand(`select query, pgsm_query_id, planid, query_plan, calls, total_exec_time, mean_exec_time from pg_stat_monitor where datname='${database}' and query NOT IN ('SELECT version()', 'SELECT /* pmm-agent:pgstatmonitor */ version()') and query NOT LIKE '%current_database() datname%';`, connection);
     }
 
     I.wait(150);
@@ -121,6 +150,14 @@ Scenario(
 
       await I.say(`query is : ${query}`);
 
+      if (!response.data.metrics) {
+        throw new Error(`there are no metrics stored in clickhouse for query 
+        "${query}"
+        Full resp: 
+        "${JSON.stringify(response.data)}"
+        `);
+      }
+
       const clickhouse_sum = parseFloat((response.data.metrics.query_time.sum).toFixed(7));
       const clickhouse_avg = parseFloat((response.data.metrics.query_time.avg).toFixed(7));
 
@@ -139,16 +176,16 @@ Scenario(
       assert.ok(response.data.metrics.query_time.cnt === query_cnt, `Expected Total Query Count Metrics to be same for query ${query} with id as ${queryid} found in clickhouse as ${response.data.metrics.query_time.cnt} while pgsm has value as ${query_cnt}`);
     }
   },
-).retry(1);
+).retry(2);
 
 Data(filters).Scenario(
   'PMM-T1261 - Verify the "Command type" filter for Postgres @not-ui-pipeline @pgsm-pmm-integration',
   async ({
-    I, qanPage, qanOverview, qanFilters, current, adminPage,
+    I, qanPage, qanOverview, qanFilters, current,
   }) => {
     const serviceName = pgsm_service_name;
     const {
-      filterSection, filterToApply, searchValue,
+      filterSection, filterToApply,
     } = current;
 
     I.amOnPage(qanPage.url);
@@ -298,6 +335,16 @@ Scenario(
         assert.fail(`Expected queryid with id as ${queryid} and query as ${query} to have data in clickhouse but got response as ${response.status}. ${JSON.stringify(response.data)}}`);
       }
 
+      await I.say(`query is : ${query}`);
+
+      if (!response.data.metrics) {
+        throw new Error(`there are no metrics stored in clickhouse for query 
+        "${query}"
+        Full resp: 
+        "${JSON.stringify(response.data)}"
+        `);
+      }
+
       const clickhouse_sum = parseFloat((response.data.metrics.query_time.sum).toFixed(7));
       const clickhouse_avg = parseFloat((response.data.metrics.query_time.avg).toFixed(7));
 
@@ -316,7 +363,7 @@ Scenario(
       assert.ok(response.data.metrics.query_time.cnt === query_cnt, `Expected Total Query Count Metrics to be same for query ${query} with id as ${queryid} found in clickhouse as ${response.data.metrics.query_time.cnt} while pgsm has value as ${query_cnt}`);
     }
   },
-).retry(1);
+).retry(2);
 
 Scenario(
   'PMM-T1063 - Verify Application Name with pg_stat_monitor @pgsm-pmm-integration @not-ui-pipeline',

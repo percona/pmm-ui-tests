@@ -311,7 +311,7 @@ Scenario(
   async ({
     I, qanOverview, adminPage,
   }) => {
-    const query = 'SELECT * FROM pg_stat_bgwriter';
+    const query = 'SELECT current_database() datname';
 
     qanOverview.waitForOverviewLoaded();
     await adminPage.applyTimeRange('Last 3 hours');
@@ -423,7 +423,6 @@ Scenario(
     I.waitForElement(column);
     I.click(column);
     I.waitForElement(qanOverview.fields.columnSearchField, 10);
-    I.fillField(qanOverview.fields.columnSearchField, 'Remove column');
     I.dontSeeElement(qanOverview.elements.removeMetricColumn);
   },
 );

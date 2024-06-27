@@ -31,7 +31,7 @@ class Grafana extends Helper {
     const { Playwright } = this.helpers;
     const basicAuthEncoded = await this.getAuth(username, password);
 
-    Playwright.haveRequestHeaders({ Authorization: `Basic ${basicAuthEncoded}` });
+    Playwright.setPlaywrightRequestHeaders({ Authorization: `Basic ${basicAuthEncoded}` });
   }
 
   async unAuthorize() {
@@ -39,7 +39,7 @@ class Grafana extends Helper {
     const { browserContext } = Playwright;
 
     await browserContext.clearCookies();
-    Playwright.haveRequestHeaders({});
+    Playwright.setPlaywrightRequestHeaders({});
   }
 
   async getBrowserCookies() {

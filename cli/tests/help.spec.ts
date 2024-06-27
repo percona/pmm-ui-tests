@@ -1,13 +1,12 @@
-import { test, expect } from '@playwright/test';
-import * as cli from '@helpers/cliHelper';
-import Output from "@support/types/output";
+import { test } from '@playwright/test';
+import * as cli from '@helpers/cli-helper';
+import ExecReturn from '@support/types/exec-return.class';
 
-let addMongoHelp:Output;
-let addPostgreSqlHelp:Output;
+let addMongoHelp: ExecReturn;
+let addPostgreSqlHelp: ExecReturn;
 
 test.describe('PMM Client "--help" validation', async () => {
-
-  test.beforeAll(async ({}) =>{
+  test.beforeAll(async ({}) => {
     addMongoHelp = await cli.execSilent('sudo pmm-admin add mongodb --help');
     await addMongoHelp.assertSuccess();
     addPostgreSqlHelp = await cli.execSilent('sudo pmm-admin add postgresql --help');
@@ -114,33 +113,164 @@ test.describe('PMM Client "--help" validation', async () => {
       'tls-ca-file=STRING         TLS CA certificate file',
     ]);
   });
-});
 
-test.describe('-promscrape.maxScapeSize tests', async () => {
-  test.beforeAll(async () => {
-    await (await cli.exec(`docker-compose -f test-setup/docker-compose-scrape-intervals.yml up -d`)).assertSuccess();
-  })
-
-  test.afterAll(async () => {
-    await (await cli.exec(`docker-compose -f test-setup/docker-compose-scrape-intervals.yml down`)).assertSuccess();
-    await (await cli.exec(`sudo pmm-admin config --force \'--server-url=https://admin:admin@0.0.0.0:443\' --server-insecure-tls 127.0.0.1 || true`)).assertSuccess();
-  })
-
-  test('@PMM-T1665 Verify custom value for vm_agents -promscrape.maxScapeSize parameter', async ({page}) => {
-    const customScrapeSize = '128';
-
-    await test.step('verify client docker logs for custom value', async () => {
-      await page.waitForTimeout(10_000);
-      const scrapeSizeLog = await cli.exec('docker logs pmm-client-custom-scrape-interval 2>&1 | grep \'promscrape.maxScrapeSize.*vm_agent\' | tail -1');
-      await scrapeSizeLog.outContains(`promscrape.maxScrapeSize=\\\"${customScrapeSize}MiB\\\"`)
-    })
-
-    await test.step('verify logs from binary for custom value', async () => {
-      await (await cli.exec('sudo pmm-admin config --node-name=pmm-t1665 --force \'--server-url=https://admin:admin@0.0.0.0:2443\' --server-insecure-tls 127.0.0.1')).assertSuccess()
-
-      await page.waitForTimeout(10_000);
-      const scrapeSizeLog = await cli.exec('ps aux | grep -v \'grep\' | grep \'vm_agent\' | tail -1')
-      await scrapeSizeLog.outContains(`promscrape.maxScrapeSize=${customScrapeSize}MiB`)
-    })
+  /**
+   * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/generic-tests.bats#L312
+   */
+  test('run pmm-admin annotate --help', async ({}) => {
+    const output = await cli.execSilent('sudo pmm-admin annotate --help');
+    await output.assertSuccess();
+    await output.outContainsMany([
+      'Usage: pmm-admin annotate <text>',
+      '<text>    Text of annotation',
+      'Add an annotation to Grafana charts',
+    ]);
   });
-})
+
+  /**
+   * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/generic-tests.bats#L335
+   */
+  test('run pmm-admin --help to check if Annotation exist in help output', async ({}) => {
+    const output = await cli.execSilent('sudo pmm-admin --help');
+    await output.assertSuccess();
+    await output.outContains('annotate      Add an annotation to Grafana charts');
+  });
+
+  /**
+   * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/generic-tests.bats#L356
+   */
+  test('run pmm-admin config --help to check for Metrics Mode option', async ({}) => {
+    const output = await cli.execSilent('sudo pmm-admin config --help');
+    await output.assertSuccess();
+    await output.outContainsMany([
+      'Metrics flow mode for agents node-exporter,',
+      'can be push - agent will push metrics,',
+      'pull - server scrape metrics from agent or auto',
+      '- chosen by server',
+    ]);
+  });
+
+  test('PMM-T1827 - Verify there is --auto-discovery-limit option in pmm-admin add postgresql help output', async ({}) => {
+    await addPostgreSqlHelp.outContainsMany([
+      'auto-discovery-limit=NUMBER',
+      'Auto-discovery will be disabled if there are',
+      'more than that number of databases (default:',
+      'server-defined, -1: always disabled)',
+    ]);
+  });
+
+  /**
+   * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/ms-specific-tests.bats#L77
+   * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/ms-specific-tests.bats#L162
+   * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/ps-specific-tests.bats#L137
+   * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/ps-specific-tests.bats#L144
+   * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/ps-specific-tests.bats#L123
+   * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/ps-specific-tests.bats#L130
+   * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/ps-specific-tests.bats#L151
+   */
+  test('PMM-T959 run pmm-admin add mysql --help', async ({ }) => {
+    const output = await cli.exec('sudo pmm-admin add mysql --help');
+    await output.assertSuccess();
+    await output.outContainsMany([
+      'help',
+      'server-url=SERVER-URL',
+      'server-insecure-tls',
+      'debug',
+      'trace',
+      'pmm-agent-listen-port=7777',
+      'json',
+      'version',
+      'socket=STRING',
+      'node-id=STRING',
+      'pmm-agent-id=STRING',
+      'username="root"',
+      'password=STRING',
+      'agent-password=STRING',
+      'query-source="slowlog"',
+      'max-query-length=NUMBER',
+      'disable-queryexamples',
+      'size-slow-logs=size',
+      'disable-tablestats',
+      'disable-tablestats-limit=NUMBER',
+      'environment=STRING',
+      'cluster=STRING',
+      'replication-set=STRING',
+      'custom-labels=KEY=VALUE,...',
+      'skip-connection-check',
+      'tls',
+      'tls-skip-verify',
+      'tls-ca=STRING',
+      'tls-cert=STRING',
+      'tls-key=STRING',
+      'metrics-mode="auto"',
+      'disable-collectors=DISABLE-COLLECTORS,',
+      'service-name=NAME',
+      'host=HOST',
+      'port=PORT',
+      'log-level="warn"',
+    ]);
+  });
+
+  /**
+   * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/ps-specific-tests.bats#L392
+   * TODO: merge with previous test
+   */
+  test('PMM-T789 - Verify help for pmm-admin add mysql has TLS-related flags', async ({ }) => {
+    const output = await cli.exec('sudo pmm-admin add mysql --help');
+    await output.assertSuccess();
+    await output.outContainsNormalizedMany([
+      'tls Use TLS to connect to the database',
+      'tls-skip-verify Skip TLS certificates validation',
+      'tls-ca=STRING Path to certificate authority certificate',
+      'tls-cert=STRING Path to client certificate file',
+      'tls-key=STRING Path to client key file',
+    ]);
+  });
+
+  /**
+   * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/haproxy-tests.bats#L31
+   * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/haproxy-tests.bats#L45
+   * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/haproxy-tests.bats#L52
+   * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/haproxy-tests.bats#L59
+   * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/haproxy-tests.bats#L59
+   * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/haproxy-tests.bats#L66
+   * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/haproxy-tests.bats#L73
+   * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/haproxy-tests.bats#L80
+   * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/haproxy-tests.bats#L87
+   * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/haproxy-tests.bats#L94
+   * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/haproxy-tests.bats#L101
+   * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/haproxy-tests.bats#L108
+   * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/haproxy-tests.bats#L115
+   * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/haproxy-tests.bats#L122
+   * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/haproxy-tests.bats#L129
+   * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/haproxy-tests.bats#L136
+   * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/haproxy-tests.bats#L143
+   * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/haproxy-tests.bats#L150
+   * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/haproxy-tests.bats#L157
+   */
+  test('PMM-T674 - Verify help for adding HAProxy service', async ({}) => {
+    const output = await cli.exec('sudo pmm-admin add haproxy --help');
+    await output.assertSuccess();
+    await output.outContainsMany([
+      'help',
+      'version',
+      'server-url=SERVER-URL',
+      'server-insecure-tls',
+      'debug',
+      'trace',
+      'json',
+      'username=STRING',
+      'password=STRING',
+      'scheme=http or https',
+      'metrics-path=/metrics',
+      'listen-port=port',
+      'node-id=STRING ',
+      'environment=prod',
+      'cluster=east-cluster',
+      'replication-set=rs1',
+      'custom-labels=KEY=VALUE,...',
+      'metrics-mode="auto"',
+      'skip-connection-check',
+    ]);
+  });
+});

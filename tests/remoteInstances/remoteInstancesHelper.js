@@ -187,6 +187,7 @@ module.exports = {
         port: DB_CONFIG.PROXYSQL_SERVER_PORT,
         username: 'proxyadmin',
         password: 'yxZq!4SGv0A1',
+        environment: 'proxy_env',
         clusterName: 'proxy_clstr',
       },
     },
@@ -233,9 +234,11 @@ module.exports = {
         port: 3306,
       },
       aws_postgresql_12: {
-        userName: secret(process.env.REMOTE_AWS_POSTGRES12_USER),
-        password: secret(process.env.REMOTE_AWS_POSTGRES12_PASSWORD),
+        address: process.env.PMM_QA_PGSQL_RDS_12_1_HOST,
+        userName: process.env.REMOTE_AWS_POSTGRES12_USER,
+        password: process.env.REMOTE_AWS_POSTGRES12_PASSWORD,
         clusterName: 'aws_postgresql_12',
+        database: process.env.PMM_QA_PGSQL_RDS_12_1_DATABASE,
         port: 42001,
       },
       aurora: {

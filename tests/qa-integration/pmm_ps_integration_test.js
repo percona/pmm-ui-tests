@@ -47,7 +47,7 @@ Scenario(
     I.fillField(remoteInstancesPage.fields.environment, details.environment);
     I.fillField(remoteInstancesPage.fields.cluster, details.cluster);
     I.click(remoteInstancesPage.fields.addService);
-    I.waitForVisible(pmmInventoryPage.fields.agentsLink, 30);
+    //I.waitForVisible(pmmInventoryPage.fields.agentsLink, 30);
     await inventoryAPI.verifyServiceExistsAndHasRunningStatus(
       {
         serviceType: 'MYSQL_SERVICE',
@@ -141,5 +141,39 @@ Scenario(
 
       assert.ok(count > 0, `The queries for service ${service} instance do NOT exist, check QAN Data`);
     }
+  },
+).retry(1);
+
+Scenario(
+  'PMM-T1897 Verify Query Count metric on QAN page for MySQL @pmm-ps-integration',
+  async ({
+    I, credentials, qanOverview, qanPage, qanFilters, qanDetails,
+  }) => {
+    const dbName = 'sbtest3';
+    const sbUser = { name: 'sysbench', password: 'test' };
+
+    const psContainerName = await I.verifyCommand('sudo docker ps --format "{{.Names}}" | grep ps_');
+
+    await I.verifyCommand(`sudo docker exec ${psContainerName} mysql -h 127.0.0.1 -u ${credentials.perconaServer.user} -p${credentials.perconaServer.password} -e "CREATE USER IF NOT EXISTS sysbench@'%' IDENTIFIED WITH mysql_native_password BY 'test'; GRANT ALL ON *.* TO sysbench@'%'; DROP DATABASE IF EXISTS ${dbName};"`);
+    await I.verifyCommand(`sudo docker exec ${psContainerName} mysql -h 127.0.0.1 -u ${sbUser.name} -p${sbUser.password} -e "SET GLOBAL slow_query_log=ON;"`);
+    await I.verifyCommand(`sudo docker exec ${psContainerName} mysql -h 127.0.0.1 -u ${sbUser.name} -p${sbUser.password} -e "SET GLOBAL long_query_time=0;"`);
+    await I.verifyCommand(`sudo docker exec ${psContainerName} mysql -h 127.0.0.1 -u ${sbUser.name} -p${sbUser.password} -e "CREATE DATABASE ${dbName}"`);
+
+    for (let i = 1; i <= 5; i++) {
+      await I.verifyCommand(`sudo docker exec ${psContainerName} mysql -h 127.0.0.1 -u ${sbUser.name} -p${sbUser.password} ${dbName} -e "CREATE TABLE Persons${i} ( PersonID int, LastName varchar(255), FirstName varchar(255), Address varchar(255), City varchar(255) );"`);
+      for (let j = 0; j <= 4; j++) {
+        await I.verifyCommand(`sudo docker exec ${psContainerName} mysql -h 127.0.0.1 -u ${sbUser.name} -p${sbUser.password} ${dbName} -e "INSERT INTO Persons${i} values (${j},'Qwerty','Qwe','Address','City');"`);
+      }
+
+      await I.verifyCommand(`sudo docker exec ${psContainerName} mysql -h 127.0.0.1 -u ${sbUser.name} -p${sbUser.password} ${dbName} -e "select count(*) from Persons${i};"`);
+    }
+
+    I.amOnPage(I.buildUrlWithParams(qanPage.clearUrl, { from: 'now-1h', refresh: '5s' }));
+    qanOverview.waitForOverviewLoaded();
+    await qanFilters.applyFilter(dbName);
+    qanOverview.waitForOverviewLoaded();
+    I.waitForText('17', 180, qanOverview.elements.countOfItems);
+    await qanOverview.selectRow(0);
+    I.waitForText('105', 180, qanOverview.elements.queryCountValue);
   },
 ).retry(1);

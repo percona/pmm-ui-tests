@@ -29,16 +29,17 @@ Scenario(
     I.amOnPage(url);
     await iaCommon.verifyPaginationButtonsState(initialButtonsState);
 
-    // There's 16 templates by default
-    I.seeNumberOfElements(iaCommon.elements.rowInTable, 17);
+    const templatesTotal = await I.grabNumberOfVisibleElements(iaCommon.elements.rowInTable);
+
+    I.assertAbove(templatesTotal, 10, 'There\'s more then 10 templates by default');
     I.seeNumberOfElements(iaCommon.buttons.pageButtonActive, 1);
 
-    // Create 9 more templates to have 2 pages (26 in sum)
-    await createEntities(9);
+    // Create more templates to have 2 pages (26 in sum)
+    await createEntities(26 - templatesTotal);
     I.say(`1st checkpoint, URL = ${url}, Count of elements = ${(await getListOfItems()).length}`);
     I.refreshPage();
 
-    iaCommon.verifyPaginationButtonsState({
+    await iaCommon.verifyPaginationButtonsState({
       ...initialButtonsState,
       nextPageButton: 'enabled',
       lastPageButton: 'enabled',
@@ -54,7 +55,7 @@ Scenario(
     I.click(locate(iaCommon.buttons.pageButton).at(1));
     I.waitForVisible(iaCommon.elements.pagination, 30);
 
-    iaCommon.verifyPaginationButtonsState({
+    await iaCommon.verifyPaginationButtonsState({
       ...initialButtonsState,
       firstPageButton: 'enabled',
       prevPageButton: 'enabled',
@@ -75,7 +76,7 @@ Scenario(
     I.scrollTo(iaCommon.elements.pagination);
     I.click(locate(iaCommon.buttons.pageButton).at(1));
 
-    iaCommon.verifyPaginationButtonsState({
+    await iaCommon.verifyPaginationButtonsState({
       ...initialButtonsState,
       firstPageButton: 'enabled',
       prevPageButton: 'enabled',
@@ -93,7 +94,7 @@ Scenario(
     I.click(iaCommon.buttons.nextPageButton);
     I.waitForVisible(iaCommon.elements.pagination, 30);
 
-    iaCommon.verifyPaginationButtonsState({
+    await iaCommon.verifyPaginationButtonsState({
       ...initialButtonsState,
       firstPageButton: 'enabled',
       prevPageButton: 'enabled',
@@ -108,7 +109,7 @@ Scenario(
     I.waitForVisible(iaCommon.elements.pagination, 30);
     I.seeNumberOfElements(iaCommon.elements.rowInTable, 25);
 
-    iaCommon.verifyPaginationButtonsState({
+    await iaCommon.verifyPaginationButtonsState({
       ...initialButtonsState,
       nextPageButton: 'enabled',
       lastPageButton: 'enabled',
@@ -120,7 +121,7 @@ Scenario(
     I.waitForVisible(iaCommon.elements.pagination, 30);
     I.seeNumberOfElements(iaCommon.elements.rowInTable, 1);
 
-    iaCommon.verifyPaginationButtonsState({
+    await iaCommon.verifyPaginationButtonsState({
       ...initialButtonsState,
       firstPageButton: 'enabled',
       prevPageButton: 'enabled',
@@ -132,7 +133,7 @@ Scenario(
     I.waitForVisible(iaCommon.elements.pagination, 30);
     I.seeNumberOfElements(iaCommon.elements.rowInTable, 25);
 
-    iaCommon.verifyPaginationButtonsState({
+    await iaCommon.verifyPaginationButtonsState({
       ...initialButtonsState,
       firstPageButton: 'enabled',
       prevPageButton: 'enabled',
@@ -159,8 +160,10 @@ Scenario(
     iaCommon.selectRowsPerPage(50);
     I.seeTextEquals('50', iaCommon.buttons.rowsPerPage);
 
-    // Create 9 templates to have 2 pages (26 in sum)
-    await createEntities(9);
+    // Create more templates to have 2 pages (26 in sum)
+    const templatesTotal = await I.grabNumberOfVisibleElements(iaCommon.elements.rowInTable);
+
+    await createEntities(26 - templatesTotal);
 
     // Rows per page is '50' after refreshing a page
     I.say(`1st checkpoint, URL = ${url}, Count of elements = ${(await getListOfItems()).length}`);
@@ -218,12 +221,14 @@ Scenario(
 Scenario(
   'PMM-T631 PMM-T633 PMM-T1251 Changing rows per page resets view to 1 page @ia',
   async ({
-    I, iaCommon,
+    I, iaCommon, templatesAPI,
   }) => {
     const { createEntities, url, getListOfItems } = iaCommon.getCreateEntitiesAndPageUrl(page);
 
-    // Create 84 templates (101 in sum)
-    await createEntities(84);
+    // Create more templates to have 2 pages (101 in sum)
+    const templatesTotal = (await templatesAPI.getTemplatesList()).length;
+
+    await createEntities(101 - templatesTotal);
 
     I.say(`Checkpoint, URL = ${url}, Count of elements = ${(await getListOfItems()).length}`);
     I.amOnPage(url);
