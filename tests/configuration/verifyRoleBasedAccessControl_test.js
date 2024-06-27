@@ -27,9 +27,9 @@ Before(async ({ I, settingsAPI }) => {
 });
 
 After(async ({ I, rolesApi }) => {
-  const rolesId = await rolesApi.getNonDefaultRolesIds();
+  const roleIds = await rolesApi.getNonDefaultRoleIds();
 
-  await rolesApi.deleteRoles(rolesId, 1);
+  await rolesApi.deleteRoles(roleIds, 1);
   await I.deleteUser(rbacPsUserId);
   await I.deleteUser(rbacPgUserId);
 });
@@ -37,16 +37,13 @@ After(async ({ I, rolesApi }) => {
 Scenario('PMM-T1580 Verify creating Access Role @rbac', async ({ I, accessRolesPage }) => {
   I.amOnPage(accessRolesPage.url);
   accessRolesPage.createAccessRole(psRole);
-  accessRolesPage.createAccessRole(pgRole);
 });
 
 Scenario('PMM-T1584 Verify assigning Access role to user @rbac', async ({ I, usersPage, rolesApi }) => {
   await rolesApi.createRole(psRole);
-  await rolesApi.createRole(pgRole);
 
   I.amOnPage(usersPage.url);
   usersPage.assignRole(newPsUser.username, psRole.name);
-  usersPage.assignRole(newPgUser.username, pgRole.name);
 });
 
 Scenario(

@@ -22,10 +22,10 @@ class RolesApi {
     await I.sendPostRequest(this.deleteUrl, body, headers);
   }
 
-  async deleteRoles(rolesId, replacement_role_id = 1) {
+  async deleteRoles(roleIds, replacement_role_id = 1) {
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
 
-    for await (const role_id of rolesId) {
+    for await (const role_id of roleIds) {
       await this.deleteRole(role_id, replacement_role_id);
     }
   }
@@ -47,18 +47,18 @@ class RolesApi {
     return (await I.sendPostRequest(this.listUrl, {}, headers)).data.roles;
   }
 
-  async getNonDefaultRolesIds() {
-    const rolesId = [];
+  async getNonDefaultRoleIds() {
+    const roleIds = [];
     const defaultRoleId = await settingsAPI.getSettings('default_role_id');
     const roles = (await this.listRoles());
 
     roles.forEach((role) => {
       if (role.role_id !== defaultRoleId) {
-        rolesId.push(role.role_id);
+        roleIds.push(role.role_id);
       }
     });
 
-    return rolesId;
+    return roleIds;
   }
 }
 
