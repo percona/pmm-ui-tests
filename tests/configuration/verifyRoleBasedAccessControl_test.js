@@ -61,6 +61,7 @@ Scenario(
     await rolesApi.assignRole([pgRoleId], rbacPgUserId);
 
     await I.unAuthorize();
+    await I.wait(5);
 
     await I.Authorize(newPsUser.username, newPsUser.password);
 
