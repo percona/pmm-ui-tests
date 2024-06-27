@@ -286,6 +286,8 @@ module.exports = {
     metricsResolutionRadio: '$resolutions-radio-button',
     microsoftAzureMonitoringSwitch: locate('$advanced-azure-discover').find('//div[2]//label'),
     microsoftAzureMonitoringSwitchInput: locate('$advanced-azure-discover').find('//div[2]//input'),
+    accessControlInput: locate('[name="accessControl"]'),
+    accessControlSwitch: locate('$access-control').find('label'),
     loginButton: '$sign-in-submit-button',
     lowInput: '$lr-number-input',
     mediumInput: '$mr-number-input',

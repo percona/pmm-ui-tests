@@ -132,8 +132,8 @@ Scenario(
 
     for await (const value of filters) {
       queryAnalyticsPage.waitForLoaded();
-      const numberOfFilterValues = await I.grabNumberOfVisibleElements(queryAnalyticsPage.filters.fields.filterCheckBoxesInGroup(value));
-      const randomFilterValue = Math.floor(Math.random() * numberOfFilterValues) + 1;
+      const countFilters = await I.grabNumberOfVisibleElements(queryAnalyticsPage.filters.fields.filterCheckBoxesInGroup(value));
+      const randomFilterValue = Math.floor(Math.random() * countFilters) + 1;
 
       queryAnalyticsPage.filters.selectContainsFilterInGroupAtPosition(value, randomFilterValue);
       queryAnalyticsPage.waitForLoaded();

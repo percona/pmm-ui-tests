@@ -3,6 +3,7 @@ module.exports = {
     I: './tests/custom_steps.js',
     codeceptjsConfig: './pr.codecept.js',
     credentials: './tests/pages/credentials.js',
+    accessRolesPage: './tests/pages/administration/accessRolesPage.js',
     addInstanceAPI: './tests/pages/api/addInstanceAPI.js',
     addInstancePage: './tests/pages/addInstancePage.js',
     amiInstanceAPI: './tests/pages/api/amiInstanceAPI.js',
@@ -55,6 +56,7 @@ module.exports = {
     remoteInstancesPage: './tests/pages/remoteInstancesPage.js',
     remoteInstancesHelper: './tests/remoteInstances/remoteInstancesHelper.js',
     restorePage: './tests/backup/pages/restorePage.js',
+    rolesApi: './tests/configuration/api/rolesApi.js',
     rulesAPI: './tests/ia/pages/api/rulesAPI.js',
     ruleTemplatesPage: './tests/ia/pages/ruleTemplatesPage.js',
     scheduledAPI: './tests/backup/pages/api/scheduledAPI.js',
@@ -77,6 +79,7 @@ module.exports = {
     loginPage: './tests/pages/loginPage.js',
     nodesOverviewPage: './tests/pages/nodesOverviewPage.js',
     queryAnalyticsPage: './tests/pages/queryAnalyticsPage.js',
+    usersPage: './tests/pages/administration/usersPage.js',
   },
   getChunks: (files) => {
     const dependentTests = files.filter((value) => /PMMSettings|ia|stt|backup|permissions|Azure/.test(value));
