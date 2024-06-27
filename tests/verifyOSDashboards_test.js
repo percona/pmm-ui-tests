@@ -1,5 +1,6 @@
 const nodes = new DataTable(['node-type', 'name']);
 const assert = require('assert');
+const { NODE_TYPE } = require('./helper/constants');
 
 nodes.add(['pmm-client', 'ip']);
 
@@ -71,7 +72,7 @@ Scenario(
     I, dashboardPage, inventoryAPI,
   }) => {
     const nodes = await inventoryAPI.getAllNodes();
-    const mergedNodes = nodes.generic.concat(nodes.container);
+    const mergedNodes = nodes.filter((node) => node.node_type === 'generic' || node.node_type === 'container');
     // get first two generic node names
     const node1 = mergedNodes[0].node_name;
     const node2 = mergedNodes[1].node_name;

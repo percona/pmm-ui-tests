@@ -3,7 +3,7 @@ const assert = require('assert');
 
 module.exports = {
   async startBackup(name, service_id, location_id, autoRetries = false, isLogical = true) {
-    const data_model = isLogical ? 'LOGICAL' : 'PHYSICAL';
+    const data_model = isLogical ? 'DATA_MODEL_LOGICAL' : 'DATA_MODEL_PHYSICAL';
     const retryConfig = {
       retries: 2,
       retry_interval: '30s',
@@ -20,7 +20,7 @@ module.exports = {
 
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
 
-    const resp = await I.sendPostRequest('v1/management/backup/Backups/Start', body, headers);
+    const resp = await I.sendPostRequest('v1/backups:start', body, headers);
 
     assert.ok(
       resp.status === 200,
@@ -66,7 +66,7 @@ module.exports = {
   async getArtifactsList() {
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
 
-    const resp = await I.sendPostRequest('v1/management/backup/Artifacts/List', {}, headers);
+    const resp = await I.sendGetRequest('v1/backups/artifacts', headers);
 
     return resp.data.artifacts;
   },
@@ -86,7 +86,7 @@ module.exports = {
 
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
 
-    const resp = await I.sendPostRequest('v1/management/backup/Backups/Restore', body, headers);
+    const resp = await I.sendPostRequest('v1/backups/restores:start', body, headers);
 
     assert.ok(
       resp.status === 200,
@@ -112,7 +112,7 @@ module.exports = {
   async getRestoreHistoryList() {
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
 
-    const resp = await I.sendPostRequest('v1/management/backup/RestoreHistory/List', {}, headers);
+    const resp = await I.sendGetRequest('v1/backups/restores', headers);
 
     assert.ok(
       resp.status === 200,
@@ -138,11 +138,10 @@ module.exports = {
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
 
     const body = {
-      artifact_id,
       remove_files,
     };
 
-    await I.sendPostRequest('v1/management/backup/Artifacts/Delete', body, headers);
+    await I.sendPostRequest(`v1/backups/artifacts/${artifact_id}`, body, headers);
 
     // assert.ok(
     //   resp.status === 200,

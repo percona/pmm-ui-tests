@@ -16,9 +16,9 @@ let serviceId;
 const intervalsTests = new DataTable(['interval', 'intervalValue']);
 
 // TODO: unskip after https://jira.percona.com/browse/PMM-8051
-// intervalsTests.add(['frequent_interval', 'FREQUENT']);
-intervalsTests.add(['standard_interval', 'STANDARD']);
-// intervalsTests.add(['rare_interval', 'RARE']);
+// intervalsTests.add(['frequent_interval', 'ADVISOR_CHECK_INTERVAL_FREQUENT']);
+intervalsTests.add(['standard_interval', 'ADVISOR_CHECK_INTERVAL_STANDARD']);
+// intervalsTests.add(['rare_interval', 'ADVISOR_CHECK_INTERVAL_RARE']);
 
 const cleanup = async () => {
   await settingsAPI.apiEnableSTT();

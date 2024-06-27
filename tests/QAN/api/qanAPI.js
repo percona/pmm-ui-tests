@@ -13,7 +13,7 @@ module.exports = {
       period_start_to: toTime,
       totals: false,
     };
-    const resp = await I.sendPostRequest('v0/qan/ObjectDetails/GetMetrics', data, headers);
+    const resp = await I.sendPostRequest('/v1/qan:getMetrics', data, headers);
 
     return resp;
   },

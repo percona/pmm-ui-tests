@@ -1,4 +1,5 @@
 const assert = require('assert');
+const { SERVICE_TYPE } = require('../../helper/constants');
 
 const {
   advisorsPage, databaseChecksPage, codeceptjsConfig, psMySql,
@@ -173,7 +174,7 @@ Scenario.skip(
     I.see(psServiceName);
     await inventoryAPI.verifyServiceExistsAndHasRunningStatus(
       {
-        serviceType: 'MYSQL_SERVICE',
+        serviceType: SERVICE_TYPE.MYSQL,
         service: 'mysql',
       },
       psServiceName,

@@ -1,4 +1,5 @@
 const assert = require('assert');
+const { SERVICE_TYPE } = require('./helper/constants');
 
 const { remoteInstancesPage, remoteInstancesHelper } = inject();
 
@@ -48,7 +49,7 @@ Data(azureServices).Scenario(
     if (serviceName === 'azure-MySQL') {
       await inventoryAPI.verifyServiceExistsAndHasRunningStatus(
         {
-          serviceType: 'MYSQL_SERVICE',
+          serviceType: SERVICE_TYPE.MYSQL,
           service: 'mysql',
         },
         serviceName,
@@ -56,7 +57,7 @@ Data(azureServices).Scenario(
     } else {
       await inventoryAPI.verifyServiceExistsAndHasRunningStatus(
         {
-          serviceType: 'POSTGRESQL_SERVICE',
+          serviceType: SERVICE_TYPE.POSTGRESQL,
           service: 'postgresql',
         },
         serviceName,

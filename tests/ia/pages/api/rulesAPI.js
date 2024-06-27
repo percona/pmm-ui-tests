@@ -35,7 +35,7 @@ module.exports = {
       group: 'default-alert-group',
       folder_uid: await this.getFolderUID(folder),
     };
-    const resp = await I.sendPostRequest('v1/management/alerting/Rules/Create', body, headers);
+    const resp = await I.sendPostRequest('v1/alerting/rules', body, headers);
 
     assert.ok(
       resp.status === 200,

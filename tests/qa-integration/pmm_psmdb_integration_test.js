@@ -1,4 +1,5 @@
 const assert = require('assert');
+const { SERVICE_TYPE } = require('../helper/constants');
 
 Feature('Integration tests for PSMDB & PMM');
 
@@ -26,7 +27,7 @@ Scenario(
   }) => {
     const details = {
       serviceName: remoteServiceName,
-      serviceType: 'MONGODB_SERVICE',
+      serviceType: SERVICE_TYPE.MONGODB,
       port: '27017',
       username: connection.username,
       password: connection.password,
@@ -51,7 +52,7 @@ Scenario(
     I.waitForVisible(pmmInventoryPage.fields.agentsLink, 30);
     await inventoryAPI.verifyServiceExistsAndHasRunningStatus(
       {
-        serviceType: 'MONGODB_SERVICE',
+        serviceType: SERVICE_TYPE.MONGODB,
         service: 'mongodb',
       },
       details.serviceName,

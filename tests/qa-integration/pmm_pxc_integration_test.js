@@ -1,4 +1,5 @@
 const assert = require('assert');
+const { SERVICE_TYPE } = require('../helper/constants');
 
 const { adminPage } = inject();
 
@@ -26,7 +27,7 @@ Scenario(
     const port = await I.verifyCommand(`docker exec ${container_name} pmm-admin list | grep "MySQL" | grep "pxc_node" | awk -F":" '{print $2}' | awk -F" " '{ print $1}' | head -1`);
     const details = {
       serviceName: remoteServiceName,
-      serviceType: 'MYSQL_SERVICE',
+      serviceType: SERVICE_TYPE.MYSQL,
       port: port,
       username: connection.username,
       password: connection.password,
@@ -50,7 +51,7 @@ Scenario(
     //I.waitForVisible(pmmInventoryPage.fields.agentsLink, 30);
     await inventoryAPI.verifyServiceExistsAndHasRunningStatus(
       {
-        serviceType: 'MYSQL_SERVICE',
+        serviceType: SERVICE_TYPE.MYSQL,
         service: 'mysql',
       },
       details.serviceName,

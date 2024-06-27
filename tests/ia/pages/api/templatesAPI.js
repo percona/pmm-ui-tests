@@ -13,7 +13,7 @@ module.exports = {
     const body = {
       yaml: templateText,
     };
-    const resp = await I.sendPostRequest('v1/management/alerting/Templates/Create', body, headers);
+    const resp = await I.sendPostRequest('v1/alerting/templates', body, headers);
 
     assert.ok(
       resp.status === 200,
@@ -37,17 +37,14 @@ module.exports = {
 
   async getTemplatesList() {
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
-    const resp = await I.sendPostRequest('v1/management/alerting/Templates/List', {}, headers);
+    const resp = await I.sendGetRequest('v1/alerting/templates', headers);
 
     return resp.data.templates;
   },
 
   async removeTemplate(templateId) {
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
-    const body = {
-      name: templateId,
-    };
-    const resp = await I.sendPostRequest('v1/management/alerting/Templates/Delete', body, headers);
+    const resp = await I.sendDeleteRequest(`v1/alerting/templates/${templateId}`, headers);
 
     assert.ok(
       resp.status === 200,

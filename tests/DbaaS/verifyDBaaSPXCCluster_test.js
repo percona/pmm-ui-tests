@@ -1,4 +1,5 @@
 const assert = require('assert');
+const { SERVICE_TYPE } = require('../helper/constants');
 
 const { dbaasAPI, dbaasPage, locationsPage } = inject();
 const clusterName = 'minikube';
@@ -167,7 +168,7 @@ Data(pxcDBClusterDetails).Scenario(
 
     await dbaasPage.dbaasQANCheck(pxc_cluster_name, serviceName, serviceName);
     await dbaasPage.pxcClusterMetricCheck(pxc_cluster_name, serviceName, serviceName, haproxyNodeName);
-    await dbaasPage.dbClusterAgentStatusCheck(pxc_cluster_name, serviceName, 'MYSQL_SERVICE');
+    await dbaasPage.dbClusterAgentStatusCheck(pxc_cluster_name, serviceName, SERVICE_TYPE.MYSQL);
   },
 );
 
