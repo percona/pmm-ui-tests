@@ -29,7 +29,7 @@ Before(async ({ I, settingsAPI }) => {
 After(async ({ I, rolesApi }) => {
   const rolesId = await rolesApi.getNonDefaultRolesIds();
 
-  await rolesApi.deleteRoles(rolesId, 3);
+  await rolesApi.deleteRoles(rolesId, 1);
   await I.deleteUser(rbacPsUserId);
   await I.deleteUser(rbacPgUserId);
 });
@@ -61,7 +61,6 @@ Scenario(
     await rolesApi.assignRole([pgRoleId], rbacPgUserId);
 
     await I.unAuthorize();
-    await I.wait(5);
 
     await I.Authorize(newPsUser.username, newPsUser.password);
 

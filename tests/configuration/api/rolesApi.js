@@ -8,9 +8,9 @@ class RolesApi {
     this.assignUrl = 'v1/management/Role/Assign';
   }
 
-  async assignRole(rolesId, userId) {
+  async assignRole(role_ids, user_id) {
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
-    const body = { role_ids: rolesId, user_id: userId };
+    const body = { role_ids, user_id };
 
     await I.sendPostRequest(this.assignUrl, body, headers);
   }
