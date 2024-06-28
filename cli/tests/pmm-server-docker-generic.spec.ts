@@ -53,16 +53,6 @@ test.describe('PMM Server Configuration impacts on client tests', async () => {
     removeList.push(clientContainer);
 
     await expect(async () => {
-      out = await cli.exec('docker logs PMM-T224 2>&1 | grep \'Configuration error: environment variable\'');
-      await out.exitCodeEquals(0)
-    }).toPass({
-      // Probe, wait 1s, probe, wait 2s, probe, wait 2s, probe, wait 2s, probe, ....
-      intervals: [1_000, 2_000, 2_000],
-      timeout: 60_000
-    });
-    // Extra escaping due to bug# PMM-12450, remove once fixed.
-    await out.outContains('Configuration error: environment variable \\"DATA_RETENTION=48\\" has invalid duration 48.')
-    await (await cli.exec('docker rm PMM-T224')).assertSuccess();
       const scrapeSizeLog = await cli.exec(`docker logs ${clientContainer} 2>&1 | grep 'promscrape.maxScrapeSize.*vm_agent' | tail -1`);
       await scrapeSizeLog.outContains(`promscrape.maxScrapeSize=\\\"${customScrapeSize}MiB\\\"`);
     }).toPass({ intervals: [2_000], timeout: 10_000 });
@@ -80,41 +70,6 @@ test.describe('PMM Server Configuration impacts on client tests', async () => {
     await (await cli.exec('sudo pmm-admin config node-name=pmm-t1665 --force \'--server-url=https://admin:admin@0.0.0.0:2443\' --server-insecure-tls')).assertSuccess();
 
     await expect(async () => {
-      out = await cli.exec(`docker logs PMM-T225 2>&1 | grep 'Configuration warning: unknown environment variable'`);
-      await out.exitCodeEquals(0)
-    }).toPass({
-      // Probe, wait 1s, probe, wait 2s, probe, wait 2s, probe, wait 2s, probe, ....
-      intervals: [1_000, 2_000, 2_000],
-      timeout: 60_000
-    });
-    // Extra escaping due to bug# PMM-12450, remove once fixed.
-    await out.outContains('Configuration warning: unknown environment variable \\"DATA_TENTION=48\\".')
-    await (await cli.exec('docker stop PMM-T225')).assertSuccess();
-    await (await cli.exec('docker rm PMM-T225')).assertSuccess();
-  });
-
-  /**
-   * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/docker-env-variable-tests.bats#L35
-   */
-  test('PMM-T226 run docker container with all valid environment variables not causing any warning or error message', async ({}) => {
-    await cli.exec(`docker run -d -p 83:80 -p 447:443 \ 
-    --name PMM-T226 -e DATA_RETENTION=48h -e DISABLE_UPDATES=true -e DISABLE_TELEMETRY=false \ 
-    -e METRICS_RESOLUTION=24h -e METRICS_RESOLUTION_LR=24h -e METRICS_RESOLUTION_MR=24h ${DOCKER_IMAGE}`);
-    //TODO: implement fluent wait instead of sleep
-    await cli.exec('sleep 20');
-    await (await cli.exec('docker ps | grep PMM-T226')).assertSuccess();
-    await expect(async () => {
-      const out = await cli.exec('docker logs PMM-T226 2>&1 | grep "warning"');
-      await out.exitCodeEquals(1)
-    }).toPass({
-      // Probe, wait 1s, probe, wait 2s, probe, wait 2s, probe, wait 2s, probe, ....
-      intervals: [1_000, 2_000, 2_000],
-      timeout: 60_000
-    });
-
-    await expect(async () => {
-      const out = await cli.exec('docker logs PMM-T226 2>&1 | grep "error"');
-      await out.exitCodeEquals(1)
       const scrapeSizeLog = await cli.exec('ps aux | grep -v \'grep\' | grep \'vm_agent\' | tail -1');
       await scrapeSizeLog.outContains(`promscrape.maxScrapeSize=${customScrapeSize}MiB`);
     }).toPass({ intervals: [2_000], timeout: 10_000 });
