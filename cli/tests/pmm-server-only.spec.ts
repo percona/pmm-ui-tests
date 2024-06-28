@@ -36,6 +36,7 @@ test.describe('PMM Server CLI tests for Docker Environment Variables', async () 
     });
     removeList.push('PMM-T224');
     // @ts-ignore
+    // Extra escaping due to bug# PMM-12450, remove once fixed.
     await out.outContains('Configuration error: environment variable \\"DATA_RETENTION=48\\" has invalid duration 48.');
   });
 
@@ -57,6 +58,7 @@ test.describe('PMM Server CLI tests for Docker Environment Variables', async () 
     stopList.push('PMM-T225');
     removeList.push('PMM-T225');
     // @ts-ignore
+    // Extra escaping due to bug# PMM-12450, remove once fixed.
     await out.outContains('Configuration warning: unknown environment variable \\"DATA_TENTION=48\\".');
   });
 
@@ -73,7 +75,7 @@ test.describe('PMM Server CLI tests for Docker Environment Variables', async () 
     await waitForApiReady('127.0.0.1', 83);
     await (await cli.exec('docker ps | grep PMM-T226')).assertSuccess();
     await expect(async () => {
-      const out = await cli.exec('docker logs PMM-T226 2>&1 | grep "WARN"');
+      const out = await cli.exec('docker logs PMM-T226 2>&1 | grep "warning"');
       await out.exitCodeEquals(1);
     }).toPass({
       // Probe, wait 1s, probe, wait 2s, probe, wait 2s, probe, wait 2s, probe, ....
@@ -82,7 +84,7 @@ test.describe('PMM Server CLI tests for Docker Environment Variables', async () 
     });
 
     await expect(async () => {
-      const out = await cli.exec('docker logs PMM-T226 2>&1 | grep "ERRO"');
+      const out = await cli.exec('docker logs PMM-T226 2>&1 | grep "error"');
       await out.exitCodeEquals(1);
     }).toPass({
       // Probe, wait 1s, probe, wait 2s, probe, wait 2s, probe, wait 2s, probe, ....
