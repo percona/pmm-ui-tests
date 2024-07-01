@@ -26,8 +26,8 @@ Scenario(
     assert.ok(firstQueryText === tooltipQueryText, `The request text: ${firstQueryText}, don't match the request text on the tooltip: ${tooltipQueryText}.`);
   },
 );
-// https://perconadev.atlassian.net/browse/PMM-13071 blocked
-Scenario.skip(
+
+Scenario(
   'PMM-T1061 Verify Plan and PlanID with pg_stat_monitor @qan',
   async ({
     I, adminPage, queryAnalyticsPage,
@@ -40,29 +40,29 @@ Scenario.skip(
     queryAnalyticsPage.waitForLoaded();
     queryAnalyticsPage.data.mouseOverInfoIcon(1);
 
-    // let tooltipQueryId = await queryAnalyticsPage.data.getTooltipQueryId();
+    const tooltipQueryId = await queryAnalyticsPage.data.getTooltipQueryId();
 
     await queryAnalyticsPage.data.hideTooltip();
 
     queryAnalyticsPage.data.selectRow(1);
     queryAnalyticsPage.waitForLoaded();
     queryAnalyticsPage.queryDetails.checkTab('Plan');
-    // await anDetails.checkPlanTabIsNotEmpty();
-    // await anDetails.mouseOverPlanInfoIcon();
+    await queryAnalyticsPage.queryDetails.checkPlanTabIsNotEmpty();
+    await queryAnalyticsPage.queryDetails.mouseOverPlanInfoIcon();
 
-    // let tooltipPlanId = await I.grabTextFrom(anDetails.elements.tooltipPlanId);
+    let tooltipPlanId = await I.grabTextFrom(queryAnalyticsPage.queryDetails.elements.tooltipPlanId);
 
-    // tooltipPlanId = tooltipPlanId.split(':');
-    // tooltipPlanId = tooltipPlanId[1].trim();
-    // await anOverview.hideTooltip();
-    // assert.notEqual(tooltipQueryId, tooltipPlanId, 'Plan Id should not be equal to Query Id');
-    // await I.click(anFilters.buttons.resetAll);
-    // await anOverview.searchByValue('SELECT * FROM pg_stat_database');
-    // await anOverview.waitForOverviewLoaded();
-    // await anOverview.selectRow(1);
-    // await anFilters.waitForFiltersToLoad();
-    // await anDetails.checkPlanTab();
-    // await anDetails.checkPlanTabIsEmpty();
+    tooltipPlanId = tooltipPlanId.split(':');
+    tooltipPlanId = tooltipPlanId[1].trim();
+    await queryAnalyticsPage.data.hideTooltip();
+    assert.notEqual(tooltipQueryId, tooltipPlanId, 'Plan Id should not be equal to Query Id');
+    queryAnalyticsPage.filters.resetAllFilters();
+    queryAnalyticsPage.data.searchByValue('SELECT * FROM pg_stat_database');
+    queryAnalyticsPage.waitForLoaded();
+    queryAnalyticsPage.data.selectRow(1);
+    queryAnalyticsPage.waitForLoaded();
+    queryAnalyticsPage.queryDetails.checkTab('Plan');
+    await queryAnalyticsPage.queryDetails.checkPlanTabIsEmpty();
   },
 );
 

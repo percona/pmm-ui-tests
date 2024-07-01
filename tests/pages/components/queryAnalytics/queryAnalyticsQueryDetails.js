@@ -13,6 +13,10 @@ class QueryAnalyticsQueryDetails {
       explainError: locate('$json-explain-error'),
       histogramContainer: locate('$histogram-collapse-container'),
       topQuery: locate('$top-query').find('div'),
+      emptyPlanText: locate('pre').withText('No plan found'),
+      planText: locate('pre').find('code'),
+      planInfoIcon: locate('$query-analytics-details').find('[tabindex="0"]'),
+      tooltipPlanId: locate(I.useDataQA('data-testid tooltip')),
     };
     this.buttons = {
       tab: (tabName) => locate('button').withText(tabName),
@@ -103,6 +107,24 @@ class QueryAnalyticsQueryDetails {
     I.dontSeeElement(this.elements.noClassic);
     I.dontSeeElement(this.elements.noJSON);
     I.waitForDetached(this.elements.explainError);
+  }
+
+  async checkPlanTabIsNotEmpty() {
+    I.dontSeeElement(this.elements.emptyPlanText);
+    I.waitForVisible(this.elements.planText, 20);
+    const text = await I.grabTextFrom(this.elements.planText);
+
+    assert.ok(text.length > 0, 'Plan text length must be more than 0');
+  }
+
+  async mouseOverPlanInfoIcon() {
+    await I.moveCursorTo(this.elements.planInfoIcon);
+    await I.waitForVisible(this.elements.tooltipPlanId, 30);
+  }
+
+  checkPlanTabIsEmpty() {
+    I.waitForVisible(this.elements.emptyPlanText, 20);
+    I.dontSeeElement(this.elements.planInfoIcon);
   }
 }
 
