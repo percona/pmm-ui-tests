@@ -7,9 +7,7 @@ Scenario('PMM-T1862 Verify all processes in PMM server are running under non-roo
     .replace('UID CMD\n', '')
     .split('\n');
 
-  console.log(`User is: ${processesUser}`);
-
-  const nonEc2UserProcesses = processesUser.filter((processUser) => !processUser.includes('ec3-user'));
+  const nonEc2UserProcesses = processesUser.filter((processUser) => !processUser.includes('ec2-user'));
 
   I.assertTrue(nonEc2UserProcesses.length === 0, `Processes that does not run under ec2-user are: ${nonEc2UserProcesses}`);
 });
