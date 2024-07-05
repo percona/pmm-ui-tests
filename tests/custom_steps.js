@@ -1,6 +1,9 @@
 const assert = require('assert');
 const AdmZip = require('adm-zip');
 const buildUrl = require('build-url');
+const fs = require('fs');
+const path = require('path');
+const axios = require('axios');
 
 const systemMessageText = '.page-alert-list div[data-testid^="data-testid Alert"] > div';
 const systemMessageButtonClose = '.page-alert-list button';
@@ -51,9 +54,39 @@ module.exports = () => actor({
     this.seeAttributesOnElements(locator, { disabled: null });
   },
 
-  async readZipArchive(filepath) {
+  /**
+   * Downloads a zip file from the given URL and saves it to the downloads directory using REST helper.
+   * @param {string} url - The URL of the zip file to download.
+   * @param {string} filename - The name to save the downloaded file as.
+   * @returns {string} - The path to the downloaded file.
+   */
+  async downloadZipFile(url, filename) {
+    const downloadsDir = path.join(__dirname, '..', 'downloads');
+
+    if (!fs.existsSync(downloadsDir)) {
+      fs.mkdirSync(downloadsDir, { recursive: true });
+    }
+
+    const outputPath = path.join(downloadsDir, filename);
+
+    const authHeader = `Basic ${await this.getAuth()}`;
+    const response = await axios.get(url, {
+      headers: {
+        Authorization: authHeader,
+      },
+      responseType: 'arraybuffer',
+    });
+
+    fs.writeFileSync(outputPath, response.data);
+
+    return outputPath;
+  },
+
+  readZipArchive(filepath, getZip = false) {
     try {
       const zip = new AdmZip(filepath);
+
+      if (getZip) return zip;
 
       return zip.getEntries().map(({ name }) => name);
     } catch (e) {
@@ -100,6 +133,26 @@ module.exports = () => actor({
     entriesArray.forEach((entry) => {
       this.assertFalse(entries.includes(entry), `'${entry}' must not be in ${entries}`);
     });
+  },
+
+  /**
+   * Returns the number of lines in the specified file within the zip archive.
+   * @param {string} zipPath - The path to the zip file.
+   * @param {string} fileName - The name of the file to check.
+   * @returns {number} - The number of lines in the file.
+   */
+  getFileLineCount(zipPath, fileName) {
+    const zip = this.readZipArchive(zipPath, true);
+
+    const zipEntry = zip.getEntry(fileName);
+
+    if (!zipEntry) {
+      throw new Error(`File ${fileName} not found in the ZIP`);
+    }
+
+    const fileContent = zipEntry.getData().toString('utf8');
+
+    return fileContent.split('\n').length;
   },
 
   /**
