@@ -11,6 +11,9 @@ export class PortalUser {
   public firstName: string;
   public lastName: string;
   public org?: { id: string, role: PortalUserRoles };
+  public profile?: {
+    email: string,
+  };
 
   public constructor(email = '') {
     const firstName = faker.person.firstName();
