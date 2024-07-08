@@ -50,6 +50,8 @@ export const oktaApi = {
   async getUser(email: string): Promise<PortalUser> {
     const response = await oktaRequest('GET', `/users?q=${email}`);
     console.log(`Response is: ${JSON.stringify(response.data)}`);
+    console.log(response.data[0].email);
+    console.log(response.data[0]);
     expect(response.data[0], `Found user must have email: ${response.data[0]}`).toHaveProperty('email', email);
     expect(response.data[0].email, `Found user email must be: ${email}`).toEqual(email);
     return response.data[0] as PortalUser;
