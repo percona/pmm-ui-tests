@@ -17,9 +17,10 @@ export const portalHelper = {
     let firstAdmin: PortalUser;
     let secondAdmin: PortalUser;
     let technicalUser: PortalUser;
+    let freeUser: PortalUser;
 
     if (fileHelper.fileExists(constants.portal.credentialsFile)) {
-      [firstAdmin, secondAdmin, technicalUser] = portalHelper.loadUsersFromFile();
+      [firstAdmin, secondAdmin, technicalUser, freeUser] = portalHelper.loadUsersFromFile();
       if (!Object.hasOwn(firstAdmin, 'org')) {
         const adminToken = await api.portal.getUserAccessToken(firstAdmin.email, firstAdmin.password);
         const orgId = Object.hasOwn(firstAdmin, 'org') ? firstAdmin.org!.id
@@ -27,12 +28,13 @@ export const portalHelper = {
         firstAdmin.org = { id: orgId, role: PortalUserRoles.admin };
         secondAdmin.org = { id: orgId, role: PortalUserRoles.admin };
         technicalUser.org = { id: orgId, role: PortalUserRoles.technical };
+        freeUser.org = { id: orgId, role: PortalUserRoles.admin };
       }
     } else {
-      [firstAdmin, secondAdmin, technicalUser] = await portalHelper.createNewUsers();
-      fileHelper.writeToFile(constants.portal.credentialsFile, JSON.stringify([firstAdmin, secondAdmin, technicalUser]));
+      [firstAdmin, secondAdmin, technicalUser, freeUser] = await portalHelper.createNewUsers();
+      fileHelper.writeToFile(constants.portal.credentialsFile, JSON.stringify([firstAdmin, secondAdmin, technicalUser, freeUser]));
     }
-    return [firstAdmin, secondAdmin, technicalUser];
+    return [firstAdmin, secondAdmin, technicalUser, freeUser];
   },
 
   /**
