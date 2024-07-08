@@ -19,7 +19,7 @@ test.describe('Spec file for connecting PMM to the portal', async () => {
 
   test.beforeAll(async () => {
     pmmVersion = (await api.pmm.serverV1.getPmmVersion()).minor;
-    [firstAdmin, secondAdmin, technicalUser] = portalHelper.loadUsersFromFile();
+    [firstAdmin, secondAdmin, technicalUser] = await portalHelper.loadTestUsers();
   });
 
   test.beforeEach(async ({ page }) => {
