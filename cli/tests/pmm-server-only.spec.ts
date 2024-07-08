@@ -139,4 +139,10 @@ test.describe('PMM Server CLI tests for Docker Environment Variables', async () 
     expect(output.getStdOutLines()[2], `Verify Clickhouse data_path is "${expectedPath}"`).toContain(expectedPath);
     expect(output.getStdOutLines()[3], `Verify Clickhouse metadata_path contains "${expectedPath}"`).toContain(expectedPath);
   });
+
+  test('PMM-T1862 Verify all processes in PMM server is running under non-root user', async ({}) => {
+    const pmmServerContainerId = await cli.exec('docker ps --filter "name=pmm-server" --format "{{ .ID }}"');
+
+    console.log(`Server Id is: ${pmmServerContainerId.stdout}`);
+  });
 });
