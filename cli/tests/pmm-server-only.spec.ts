@@ -144,5 +144,13 @@ test.describe('PMM Server CLI tests for Docker Environment Variables', async () 
     const pmmServerContainerId = await cli.exec('docker ps --filter "name=pmm-server" --format "{{ .ID }}"');
 
     console.log(`Server Id is: ${pmmServerContainerId.stdout}`);
+    const processesUser = (await cli.exec(`docker top ${pmmServerContainerId.stdout} | awk '{print $1 " " $8}'`))
+      .stdout
+      .replace('UID CMD\n', '')
+      .split('\n');
+
+    const rootProcesses = processesUser.filter((processUser) => processUser.includes('root'));
+
+    expect(rootProcesses, `Processes that does run as root are: ${rootProcesses}`).toHaveLength(0);
   });
 });
