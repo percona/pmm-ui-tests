@@ -149,7 +149,7 @@ test.describe('PMM Server CLI tests for Docker Environment Variables', async () 
       .replace('UID CMD\n', '')
       .split('\n');
 
-    const rootProcesses = processesUser.filter((processUser) => processUser.includes('root'));
+    const rootProcesses = processesUser.filter((processUser) => !processUser.includes('root'));
 
     expect(rootProcesses, `Processes that does run as root are: ${rootProcesses}`).toHaveLength(0);
   });
