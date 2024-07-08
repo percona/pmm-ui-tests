@@ -14,7 +14,7 @@ import Wait from '@helpers/enums/wait';
  *
  *  @see /docs/setup-env-portal.md
  */
-test.describe.skip('Spec file for PMM connected the portal', async () => {
+test.describe('Spec file for PMM connected the portal', async () => {
   let firstAdmin: PortalUser;
   let secondAdmin: PortalUser;
   let technicalUser: PortalUser;
