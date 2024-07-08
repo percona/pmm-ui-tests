@@ -21,7 +21,7 @@ export class PortalUser {
     this.lastName = lastName;
     this.email = email || fakeEmail;
     // this.password = `Aa2${faker.internet.password({ length: 5, pattern: /[a-zA-Z0-9]/ })}`;
-    this.password = `Aa2${faker.internet.password({ length: 10, pattern: /[a-zA-Z0-9]/ })}`;
+    this.password = `Aa2!${faker.internet.password({ length: 8, pattern: /[a-zA-Z0-9]/ })}`;
   }
 }
 
