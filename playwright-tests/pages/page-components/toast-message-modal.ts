@@ -11,9 +11,9 @@ export default class ToastMessage {
   private closeButton = this.page.locator('button[aria-label="Close alert"]');
 
   waitForMessage = async (message: string, timeout?: number) => {
-    await this.messageText.waitFor({ state: 'visible', timeout: timeout || Wait.ToastMessage });
+    // await this.messageText.waitFor({ state: 'visible', timeout: timeout || Wait.ToastMessage });
     await expect(this.messageText, `Waiting for Toast message with text "${message}"`)
-      .toHaveText(message, { timeout: Wait.OneSecond });
+      .toHaveText(message, { timeout: timeout || Wait.ToastMessage });
     await this.closeButton.click();
     await this.messageText.waitFor({ state: 'detached', timeout: Wait.TwoSeconds });
   };
