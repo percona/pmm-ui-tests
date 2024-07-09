@@ -44,7 +44,7 @@ export default class PerconaPlatformPage extends CommonPage {
   buttons = {
     connect: this.perconaPlatformContainer.getByTestId('connect-button'),
     disconnect: this.connectedContainer.getByTestId('disconnect-button'),
-    confirmDisconnect: this.page.locator('//*[@aria-label="Confirm Modal Danger Button"]'),
+    confirmDisconnect: this.page.getByTestId('data-testid Confirm Modal Danger Button'),
     getToken: this.perconaPlatformContainer.getByText(this.labels.getToken),
     getToken35: this.page.locator(`//*[contains(text(), "${this.labels.getToken}")]//ancestor::a`),
     createPerconaAccount: this.page.locator(`//*[contains(text(), "${this.labels.createPerconaAccount}")]//ancestor::a`),
