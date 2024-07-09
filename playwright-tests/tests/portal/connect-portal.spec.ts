@@ -104,7 +104,7 @@ test.describe('Spec file for connecting PMM to the portal', async () => {
       await test.step('Connect PMM to the Portal', async () => {
         const adminToken = await portalApi.getUserAccessToken(firstAdmin.email, firstAdmin.password);
         // pmm address is not set automatically in older PMMs.
-        await perconaPlatformPage.connectToPortal(adminToken, `Test Server ${Date.now()}`, false);
+        await perconaPlatformPage.connectToPortal(adminToken, `Test Server ${Date.now()}`, true);
         await expect(perconaPlatformPage.buttons.disconnect, 'Verify "Force Disconnect" button is visible')
           .toBeVisible({ timeout: 1 });
       });
