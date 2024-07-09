@@ -7,8 +7,8 @@ export default class ToastMessage {
   private toastSuccess = this.page.locator('//div[@data-testid="data-testid Alert success" or @aria-label="Alert success"]');
   private toastWarning = this.page.locator('//div[@data-testid="data-testid Alert warning" or @aria-label="Alert warning"]');
   private toastError = this.page.locator('//div[@data-testid="data-testid Alert error" or @aria-label="Alert error"]');
-  private messageText = this.page.locator('.page-alert-list div[data-testid^="data-testid Alert"] div:has(div[id])');
-  private closeButton = this.page.locator('.page-alert-list button');
+  private messageText = this.page.locator('div[data-testid^="data-testid Alert"] span');
+  private closeButton = this.page.locator('button[aria-label="Close alert"]');
 
   waitForMessage = async (message: string, timeout?: number) => {
     await this.messageText.waitFor({ state: 'visible', timeout: timeout || Wait.ToastMessage });
