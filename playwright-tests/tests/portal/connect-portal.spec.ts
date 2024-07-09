@@ -51,7 +51,7 @@ test.describe('Spec file for connecting PMM to the portal', async () => {
       } else {
         await expect(perconaPlatformPage.buttons.connect).toHaveText(perconaPlatformPage.labels.connect);
       }
-      if (pmmMinorVersion >= 35) {
+      if (pmmMinorVersion >= 35 || pmmMajorVersion > 2) {
         await expect(perconaPlatformPage.buttons.getToken35).toHaveAttribute('href', perconaPlatformPage.links.portalProfile);
       } else if (pmmMinorVersion > 29 && pmmMinorVersion < 35) {
         await expect(perconaPlatformPage.buttons.getToken).toHaveAttribute('href', perconaPlatformPage.links.portalProfile);
