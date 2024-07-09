@@ -45,7 +45,7 @@ test.describe('Spec file for connecting PMM to the portal', async () => {
         .toHaveText(perconaPlatformPage.labels.pmmServerId, { ignoreCase: true });
       await expect(perconaPlatformPage.elements.pmmServerNameHeader).toHaveText(perconaPlatformPage.labels.pmmServerName);
       await expect(perconaPlatformPage.elements.accessTokenHeader).toHaveText(perconaPlatformPage.labels.accessToken);
-      if (pmmMinorVersion >= 35) {
+      if (pmmMinorVersion >= 35 || pmmMajorVersion > 2) {
         await expect(perconaPlatformPage.buttons.createPerconaAccount).toHaveAttribute('href', perconaPlatformPage.links.portalLogin);
         await expect(perconaPlatformPage.buttons.connect).toHaveText(perconaPlatformPage.labels.validateConnection);
       } else {
