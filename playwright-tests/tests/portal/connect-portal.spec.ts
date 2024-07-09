@@ -77,7 +77,7 @@ test.describe('Spec file for connecting PMM to the portal', async () => {
     'PMM-T1224 Verify user is notified about using old PMM version while trying to connect to Portal'
       + ' @portal @portal-pre-upgrade @post-pmm-portal-upgrade',
     async ({ perconaPlatformPage }) => {
-      test.skip(pmmMinorVersion > 26 && pmmMajorVersion === 2, 'This test is for PMM version 2.26.0 and lower');
+      test.skip(pmmMinorVersion > 26 || pmmMajorVersion > 2, 'This test is for PMM version 2.26.0 and lower');
       await perconaPlatformPage.authenticateSession();
       await perconaPlatformPage.open();
       await perconaPlatformPage.fields.pmmServerName.type(`Test Server ${Date.now()}`);
