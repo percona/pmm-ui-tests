@@ -143,7 +143,7 @@ test.describe('Spec file for PMM connected the portal', async () => {
     });
     await test.step('3. Verify user can NOT see tickets.', async () => {
       await page.goto(ticketsPage.ticketsUrl);
-      if (pmmMinorVersion >= 28) {
+      if (pmmMinorVersion >= 28 || pmmMajorVersion > 2) {
         await expect(ticketsPage.elements.notPlatformUser).toHaveText(ticketsPage.messages.loginWithPercona);
       } else {
         await expect(ticketsPage.elements.emptyBlock).toHaveText(ticketsPage.messages.notConnectedToThePortal);
@@ -164,7 +164,7 @@ test.describe('Spec file for PMM connected the portal', async () => {
     });
     await test.step('3. Verify user can NOT see Entitlements.', async () => {
       await page.goto(entitlementsPage.entitlementsUrl);
-      if (pmmMinorVersion >= 28) {
+      if (pmmMinorVersion >= 28 || pmmMajorVersion > 2) {
         await expect(entitlementsPage.elements.notPlatformUser).toHaveText(entitlementsPage.messages.loginWithPercona);
       } else {
         await expect(entitlementsPage.elements.emptyBlock).toHaveText(entitlementsPage.messages.notConnectedToThePortal);
