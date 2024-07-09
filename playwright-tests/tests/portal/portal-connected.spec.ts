@@ -229,7 +229,7 @@ test.describe('Spec file for PMM connected the portal', async () => {
       await page.goto(perconaPlatformPage.PAGE_PATH);
       await perconaPlatformPage.connectedContainer.waitFor({ state: 'visible' });
       await perconaPlatformPage.buttons.disconnect.click();
-      if (pmmMinorVersion >= 28) {
+      if (pmmMinorVersion >= 28 || pmmMajorVersion > 2) {
         await expect(perconaPlatformPage.elements.modalMessage).toHaveText(perconaPlatformPage.messages.disconnectWarning);
         await perconaPlatformPage.buttons.confirmDisconnect.click();
         await page.locator('//input[@name="user"]').waitFor({ state: 'visible' });
