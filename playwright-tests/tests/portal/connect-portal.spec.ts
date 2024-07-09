@@ -33,7 +33,7 @@ test.describe('Spec file for connecting PMM to the portal', async () => {
 
   test('PMM-T809 PMM-T398 Verify Percona Platform elements on PMM Settings'
       + ' Page @portal @portal-pre-upgrade', async ({ perconaPlatformPage }) => {
-    test.skip(pmmMinorVersion < 27 || pmmMajorVersion < 3, 'This test is for PMM version 2.27.0 and higher');
+    test.skip(pmmMinorVersion < 27 && pmmMajorVersion < 3, 'This test is for PMM version 2.27.0 and higher');
 
     await test.step('1. Open Percona Platform tab in PMM Settings', async () => {
       await perconaPlatformPage.authenticateSession();
@@ -94,7 +94,7 @@ test.describe('Spec file for connecting PMM to the portal', async () => {
     'PMM-T1097 Verify PMM server can be connected to Portal'
       + ' @portal @portal-pre-upgrade',
     async ({ perconaPlatformPage }) => {
-      test.skip(pmmMinorVersion < 27 || pmmMajorVersion < 3, 'This test is for PMM version 2.27.0 and higher');
+      test.skip(pmmMinorVersion < 27 && pmmMajorVersion < 3, 'This test is for PMM version 2.27.0 and higher');
 
       await test.step('Open Percona Platform tab in PMM Settings', async () => {
         await perconaPlatformPage.authenticateSession();
@@ -115,7 +115,7 @@ test.describe('Spec file for connecting PMM to the portal', async () => {
     'PMM-T1098 Verify All org users can login in connected PMM server'
       + ' @not-ui-pipeline @portal @portal-pre-upgrade @post-pmm-portal-upgrade',
     async ({ loginPage, homeDashboardPage, context }) => {
-      test.skip(pmmMinorVersion < 27 || pmmMajorVersion < 3, 'This test is for PMM version 2.27.0 and higher');
+      test.skip(pmmMinorVersion < 27 && pmmMajorVersion < 3, 'This test is for PMM version 2.27.0 and higher');
 
       await test.step('1. Login as admin user that created the org.', async () => {
         await loginPage.open();
