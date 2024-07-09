@@ -22,6 +22,8 @@ test.describe('Spec file for connecting PMM to the portal', async () => {
     const pmmVersion = (await api.pmm.serverV1.getPmmVersion());
     pmmMajorVersion = pmmVersion.major;
     pmmMinorVersion = pmmVersion.minor;
+    console.log(`PMM Major version is: ${pmmMajorVersion} and PMM minor version is: ${pmmMinorVersion}`);
+
     [firstAdmin, secondAdmin, technicalUser] = await portalHelper.loadTestUsers();
   });
 
