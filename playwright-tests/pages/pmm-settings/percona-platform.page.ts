@@ -10,7 +10,7 @@ export default class PerconaPlatformPage extends CommonPage {
   elements: { [key: string]: Locator } = {
     ...this.elements,
     // heading: this.page.locator(`//h2[text()="${this.PAGE_HEADING}"] | //*[contains(text(), "${this.OLD_HEADING}")]`),
-    heading: this.page.locator(`//h2[text()="${this.PAGE_HEADING}"]`),
+    heading: this.page.locator(`//h1[text()="${this.PAGE_HEADING}"]`),
     pmmServerIdHeader: this.perconaPlatformContainer.getByTestId('pmmServerId-field-label'),
     pmmServerNameHeader: this.perconaPlatformContainer.getByTestId('pmmServerName-field-label'),
     pmmServerNameError: this.perconaPlatformContainer.getByTestId('pmmServerName-field-error-message'),
