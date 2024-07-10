@@ -3,7 +3,7 @@ import ConfigurationMenu from '@components/sideMenus/configuration-menu';
 import Wait from '@helpers/enums/wait';
 
 export class LeftNavigationMenu {
-  private shortMenu = this.page.getByTestId('sidemenu');
+  private shortMenu = this.page.getByTestId('data-testid navigation mega-menu');
   private fullMenu = this.page.getByTestId('navbarmenu');
   private openMenuButton = this.shortMenu.locator('button[aria-label="Open navigation menu"]');
   private closeMenuButton = this.fullMenu.locator('button[aria-label="Close navigation menu"]');

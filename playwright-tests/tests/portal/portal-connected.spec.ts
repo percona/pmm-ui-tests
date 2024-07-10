@@ -19,11 +19,16 @@ test.describe('Spec file for PMM connected the portal', async () => {
   let secondAdmin: PortalUser;
   let technicalUser: PortalUser;
   let freeUser: PortalUser;
-  let pmmVersion: number;
+  let pmmMinorVersion: number;
+  let pmmMajorVersion: number;
 
   test.beforeAll(async () => {
-    if (!pmmVersion) {
-      pmmVersion = (await api.pmm.serverV1.getPmmVersion()).minor;
+    const pmmVersion = await api.pmm.serverV1.getPmmVersion();
+    if (!pmmMinorVersion) {
+      pmmMinorVersion = pmmVersion.minor;
+    }
+    if (!pmmMajorVersion) {
+      pmmMajorVersion = pmmVersion.major;
     }
     [firstAdmin, secondAdmin, technicalUser, freeUser] = portalHelper.loadUsersFromFile();
   });
@@ -56,7 +61,7 @@ test.describe('Spec file for PMM connected the portal', async () => {
 
   test('PMM-T1149 PMM-T1132 Verify PMM user logged in using SSO and member of SN account is able to see tickets'
       + ' @not-ui-pipeline @portal @portal-post-upgrade', async ({ loginPage, homeDashboardPage, ticketsPage, context }) => {
-    test.skip(pmmVersion < 27, 'This test is for PMM version 2.27.0 and higher');
+    test.skip(pmmMinorVersion < 27 && pmmMajorVersion < 3, 'This test is for PMM version 2.27.0 and higher');
     await test.step('1. Login to he connected pmm with SSO', async () => {
       await loginPage.signInWithPerconaAccount(firstAdmin.email, firstAdmin.password);
       await homeDashboardPage.waitToBeOpened();
@@ -85,7 +90,7 @@ test.describe('Spec file for PMM connected the portal', async () => {
 
   test('PMM-T1152 Verify user logged in using SSO and is a member of SN account is able to see Entitlements'
       + ' @not-ui-pipeline @portal @portal-post-upgrade', async ({ page, loginPage, homeDashboardPage, entitlementsPage }) => {
-    test.skip(pmmVersion < 27, 'This test is for PMM version 2.27.0 and higher');
+    test.skip(pmmMinorVersion < 27 && pmmMajorVersion < 3, 'This test is for PMM version 2.27.0 and higher');
 
     await test.step('1. Login to he connected pmm with SSO', async () => {
       await loginPage.signInWithPerconaAccount(firstAdmin.email, firstAdmin.password);
@@ -107,7 +112,7 @@ test.describe('Spec file for PMM connected the portal', async () => {
 
   test('PMM-T1168 PMM-T1222 Verify user can see the contacts from Percona'
       + ' @not-ui-pipeline @portal @portal-post-upgrade', async ({ page, loginPage, homeDashboardPage, environmentOverviewPage, context }) => {
-    test.skip(pmmVersion < 29, 'This test is for PMM version 2.27.0 and higher');
+    test.skip(pmmMinorVersion < 27 && pmmMajorVersion < 3, 'This test is for PMM version 2.27.0 and higher');
     await context.grantPermissions(['clipboard-write', 'clipboard-read']);
     const userToken = await api.portal.getUserAccessToken(firstAdmin.email, firstAdmin.password);
     const contactsEmail = (await api.portal.getOrgDetails(userToken, firstAdmin.org!.id)).contacts.customer_success.email;
@@ -127,7 +132,7 @@ test.describe('Spec file for PMM connected the portal', async () => {
 
   test('PMM-T1147 Verify PMM user that is not logged in with SSO can NOT see Tickets for organization'
       + ' @not-ui-pipeline @portal @portal-post-upgrade', async ({ page, homeDashboardPage, ticketsPage }) => {
-    test.skip(pmmVersion < 27, 'This test is for PMM version 2.27.0 and higher');
+    test.skip(pmmMinorVersion < 27 && pmmMajorVersion < 3, 'This test is for PMM version 2.27.0 and higher');
 
     await test.step('1. Login to he connected pmm with SSO', async () => {
       await grafanaHelper.authorize(page);
@@ -138,7 +143,7 @@ test.describe('Spec file for PMM connected the portal', async () => {
     });
     await test.step('3. Verify user can NOT see tickets.', async () => {
       await page.goto(ticketsPage.ticketsUrl);
-      if (pmmVersion >= 28) {
+      if (pmmMinorVersion >= 28 || pmmMajorVersion > 2) {
         await expect(ticketsPage.elements.notPlatformUser).toHaveText(ticketsPage.messages.loginWithPercona);
       } else {
         await expect(ticketsPage.elements.emptyBlock).toHaveText(ticketsPage.messages.notConnectedToThePortal);
@@ -148,7 +153,7 @@ test.describe('Spec file for PMM connected the portal', async () => {
 
   test('PMM-T1154 Verify PMM user that is not logged in with SSO can NOT see Entitlements for organization'
       + ' @not-ui-pipeline @portal @portal-post-upgrade', async ({ page, homeDashboardPage, entitlementsPage }) => {
-    test.skip(pmmVersion < 27, 'This test is for PMM version 2.27.0 and higher');
+    test.skip(pmmMinorVersion < 27 && pmmMajorVersion < 3, 'This test is for PMM version 2.27.0 and higher');
 
     await test.step('1. Login to the connected pmm with local account', async () => {
       await grafanaHelper.authorize(page);
@@ -159,7 +164,7 @@ test.describe('Spec file for PMM connected the portal', async () => {
     });
     await test.step('3. Verify user can NOT see Entitlements.', async () => {
       await page.goto(entitlementsPage.entitlementsUrl);
-      if (pmmVersion >= 28) {
+      if (pmmMinorVersion >= 28 || pmmMajorVersion > 2) {
         await expect(entitlementsPage.elements.notPlatformUser).toHaveText(entitlementsPage.messages.loginWithPercona);
       } else {
         await expect(entitlementsPage.elements.emptyBlock).toHaveText(entitlementsPage.messages.notConnectedToThePortal);
@@ -169,7 +174,7 @@ test.describe('Spec file for PMM connected the portal', async () => {
 
   test('PMM-T1170 Verify PMM user that is not logged in with SSO can NOT see Contacts for organization'
       + ' @not-ui-pipeline @portal @portal-post-upgrade', async ({ page, homeDashboardPage, environmentOverviewPage }) => {
-    test.skip(pmmVersion < 27, 'This test is for PMM version 2.27.0 and higher');
+    test.skip(pmmMinorVersion < 27 && pmmMajorVersion < 3, 'This test is for PMM version 2.27.0 and higher');
 
     await test.step('1. Login to the connected pmm with local account', async () => {
       await grafanaHelper.authorize(page);
@@ -184,7 +189,7 @@ test.describe('Spec file for PMM connected the portal', async () => {
   test('PMM-T1148 Verify PMM user logged in using SSO and member of organization in Portal'
       + ' BUT not a SN account is NOT able to see Tickets'
       + ' @not-ui-pipeline @portal @portal-post-upgrade', async ({ loginPage, homeDashboardPage, ticketsPage }) => {
-    test.skip(pmmVersion < 27, 'This test is for PMM version 2.27.0 and higher');
+    test.skip(pmmMinorVersion < 27 && pmmMajorVersion < 3, 'This test is for PMM version 2.27.0 and higher');
 
     await test.step('1. Login to he connected pmm with SSO', async () => {
       await loginPage.signInWithPerconaAccount(freeUser.email, freeUser.password);
@@ -200,7 +205,7 @@ test.describe('Spec file for PMM connected the portal', async () => {
 
   test('PMM-T1153 Verify user logged in using SSO and is not a member of SN account is NOT able to see Entitlements'
       + ' @not-ui-pipeline @portal @portal-post-upgrade', async ({ loginPage, homeDashboardPage, ticketsPage, entitlementsPage }) => {
-    test.skip(pmmVersion < 27, 'This test is for PMM version 2.27.0 and higher');
+    test.skip(pmmMinorVersion < 27 && pmmMajorVersion < 3, 'This test is for PMM version 2.27.0 and higher');
 
     await test.step('1. Login to he connected pmm with SSO', async () => {
       await loginPage.signInWithPerconaAccount(freeUser.email, freeUser.password);
@@ -216,7 +221,7 @@ test.describe('Spec file for PMM connected the portal', async () => {
 
   test('PMM-T1204 PMM-T1112 Verify user can disconnect pmm from portal success flow'
       + ' @portal @not-ui-pipeline @portal-post-upgrade', async ({ page, loginPage, homeDashboardPage, perconaPlatformPage }) => {
-    test.skip(pmmVersion < 27, 'This test is for PMM version 2.27.0 and higher');
+    test.skip(pmmMinorVersion < 27 && pmmMajorVersion < 3, 'This test is for PMM version 2.27.0 and higher');
 
     await test.step('Login as platform user and open "Settings / Percona Platform" page', async () => {
       await loginPage.signInWithPerconaAccount(firstAdmin.email, firstAdmin.password);
@@ -224,7 +229,7 @@ test.describe('Spec file for PMM connected the portal', async () => {
       await page.goto(perconaPlatformPage.PAGE_PATH);
       await perconaPlatformPage.connectedContainer.waitFor({ state: 'visible' });
       await perconaPlatformPage.buttons.disconnect.click();
-      if (pmmVersion >= 28) {
+      if (pmmMinorVersion >= 28 || pmmMajorVersion > 2) {
         await expect(perconaPlatformPage.elements.modalMessage).toHaveText(perconaPlatformPage.messages.disconnectWarning);
         await perconaPlatformPage.buttons.confirmDisconnect.click();
         await page.locator('//input[@name="user"]').waitFor({ state: 'visible' });
@@ -243,7 +248,7 @@ test.describe('Spec file for PMM connected the portal', async () => {
   // TODO: improve test to work without chain dependency. run new pmm-server, connect to portal and force disconnect then
   test.skip('PMM-T1264 Verify that pmm admin user can force disconnect pmm from the portal'
       + ' @not-ui-pipeline @portal @portal-post-upgrade', async ({ page, homeDashboardPage, perconaPlatformPage }) => {
-    test.skip(pmmVersion < 29, 'This test is for PMM version 2.29.0 and higher');
+    test.skip(pmmMinorVersion < 29 && pmmMajorVersion < 3, 'This test is for PMM version 2.29.0 and higher');
 
     await test.step('Connect PMM to the Portal', async () => {
       await homeDashboardPage.authenticateSession();
