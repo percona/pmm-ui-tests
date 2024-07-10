@@ -11,7 +11,7 @@ import https from 'https';
  * @param   apiPath   API v1 endpoint path, ex: "/users"
  * @param   payload   JSON {@code object}; an empty object for get or delete requests
  */
-const oktaRequest = async (method: Method, apiPath: string, payload = {}): Promise<AxiosResponse> => {
+const oktaRequest = async (method: Method, apiPath: string, payload = {}, responseStatus = 200): Promise<AxiosResponse> => {
   console.log(`${method.toUpperCase()}: ${constants.okta.url}/api/v1${apiPath}`);
   const response = await axios({
     url: `${constants.okta.url}/api/v1${apiPath}`,
@@ -20,8 +20,7 @@ const oktaRequest = async (method: Method, apiPath: string, payload = {}): Promi
     data: payload,
     httpsAgent: new https.Agent({ rejectUnauthorized: false }),
   });
-  expect(response.status, `Expected to be 200: ${response.status} ${response.statusText}`).toEqual(200);
-  console.log(`Status: ${response.status} ${response.statusText}`);
+  expect(response.status, `Expected to be ${responseStatus}: ${response.status} ${response.statusText}`).toEqual(responseStatus);
   return response;
 };
 
@@ -49,8 +48,8 @@ export const oktaApi = {
 
   async getUser(email: string): Promise<PortalUser> {
     const response = await oktaRequest('GET', `/users?q=${email}`);
-    expect(response.data[0], `Found user must have email: ${response.data[0]}`).toHaveProperty(email);
-    expect(response.data[0].email, `Found user email must be: ${email}`).toEqual(email);
+    expect(response.data[0].profile, `Found user must have email: ${response.data[0].profile.email}`).toHaveProperty('email', email);
+
     return response.data[0] as PortalUser;
   },
 
@@ -79,7 +78,7 @@ export const oktaApi = {
   },
 
   async deactivateUserById(userId: string) {
-    return oktaRequest('DELETE', `/users/${userId}`);
+    return oktaRequest('DELETE', `/users/${userId}`, {}, 204);
   },
 
   async deleteUserById(userId: string) {
