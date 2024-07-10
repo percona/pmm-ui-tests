@@ -1,5 +1,6 @@
 module.exports = {
   pageObjects: {
+    manageSecrets: './tests/helper/secrets_helper',
     I: './tests/custom_steps.js',
     codeceptjsConfig: './pr.codecept.js',
     credentials: './tests/pages/credentials.js',
