@@ -11,6 +11,9 @@ export class PortalUser {
   public firstName: string;
   public lastName: string;
   public org?: { id: string, role: PortalUserRoles };
+  public profile?: {
+    email: string,
+  };
 
   public constructor(email = '') {
     const firstName = faker.person.firstName();
@@ -21,7 +24,7 @@ export class PortalUser {
     this.lastName = lastName;
     this.email = email || fakeEmail;
     // this.password = `Aa2${faker.internet.password({ length: 5, pattern: /[a-zA-Z0-9]/ })}`;
-    this.password = `Aa2${faker.internet.password({ length: 10, pattern: /[a-zA-Z0-9]/ })}`;
+    this.password = `Aa2!${faker.internet.password({ length: 8, pattern: /[a-zA-Z0-9]/ })}`;
   }
 }
 
