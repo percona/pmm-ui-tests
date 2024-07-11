@@ -49,7 +49,7 @@ Scenario(
     const output = await I.verifyCommand(`sudo docker exec ${pgsqlContainerName} psql -U postgres -d dvdrental -c 'SELECT tablename FROM pg_catalog.pg_tables;'`);
     const allTables = output.split(/\r?\n/);
 
-    await experimentalPostgresqlDashboardsPage.vacuumAnalyzeTables(allTables);
+    await experimentalPostgresqlDashboardsPage.vacuumAnalyzeTables(allTables, pgsqlContainerName);
     await experimentalPostgresqlDashboardsPage.waitForLastVacuumValues(600);
     await experimentalPostgresqlDashboardsPage.waitForLastAnalyzeValues(600);
   },
