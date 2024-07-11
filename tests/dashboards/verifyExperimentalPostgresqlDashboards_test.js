@@ -15,10 +15,10 @@ Scenario(
 
     await I.verifyCommand(`docker exec ${pgsqlContainerName} apt-get update`);
     await I.verifyCommand(`docker exec ${pgsqlContainerName} apt-get install -y wget unzip`);
-    await I.verifyCommand(`docker exec ${pgsqlContainerName} wget https://www.postgresqltutorial.com/wp-content/uploads/2019/05/dvdrental.zip`);
-    await I.verifyCommand(`docker exec ${pgsqlContainerName} unzip dvdrental.zip`);
+    await I.verifyCommand(`docker exec ${pgsqlContainerName} wget https://github.com/percona/pmm-qa/raw/PMM-10244-2/pmm-tests/postgres/SampleDB/dvdrental.tar.xz`);
+    await I.verifyCommand(`docker exec ${pgsqlContainerName} tar -xvf dvdrental.tar.xz`);
     await I.verifyCommand(`docker exec ${pgsqlContainerName} psql -U postgres -c 'create database dvdrental;'`);
-    await I.verifyCommand(`docker exec ${pgsqlContainerName} pg_restore -U postgres -d dvdrental dvdrental.tar`);
+    await I.verifyCommand(`docker exec ${pgsqlContainerName} psql -d dvdrental -f dvdrental.sql -U postgres`);
 
     for (let i = 0; i < 3; i++) {
       const oldLength = Math.floor(Math.random() * 120) + 100;
