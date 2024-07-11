@@ -6,6 +6,7 @@ module.exports = {
   url: '',
   elements: {
     barValue: '//div[@data-testid="data-testid Bar gauge value"]',
+    barWithValue: locate('//div[@data-testid="data-testid Bar gauge value"]//span[text() > "0"]'),
     lastVacuumValue: '//div[contains(@class, "react-grid-item")][5]//div[contains(text(), "dvdrental")]//following-sibling::*',
     lastAnalyzeValue: '//div[contains(@class, "react-grid-item")][6]//div[contains(text(), "dvdrental")]//following-sibling::*',
   },
