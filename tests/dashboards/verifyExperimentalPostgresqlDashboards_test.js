@@ -20,6 +20,21 @@ Scenario(
     await I.verifyCommand(`docker exec ${pgsqlContainerName} psql -U postgres -c 'create database dvdrental;'`);
     await I.verifyCommand(`docker exec ${pgsqlContainerName} pg_restore -U postgres -d dvdrental dvdrental.tar`);
 
+    for (let i = 0; i < 3; i++) {
+      const oldLength = Math.floor(Math.random() * 120) + 100;
+      const newLength = Math.floor(Math.random() * 120) + 100;
+      const table = Math.floor(Math.random() * 1000) + 1;
+      const count = parseInt(await I.verifyCommand(`docker exec ${pgsqlContainerName} psql -U postgres -d dvdrental -c "select count(*) from film_testing_${table} where length=${oldLength};" | tail -3 | head -1 | xargs`), 10);
+
+      await I.verifyCommand(`docker exec ${pgsqlContainerName} psql -U postgres -d dvdrental -c "delete from film_testing_${table} where length=${oldLength};"`);
+      for (let j = 0; j < count; j++) {
+        await I.verifyCommand(`docker exec ${pgsqlContainerName} psql -U postgres -d dvdrental -c "insert into film_testing_${table} values (${j}, 'title for ${j}', 'Description for ${j}', ${oldLength});"`);
+      }
+
+      await I.verifyCommand(`docker exec ${pgsqlContainerName} psql -U postgres -d dvdrental -c "update film_testing_${table} set length=${newLength} where length=${oldLength};"`);
+      I.wait(5);
+    }
+
     await I.amOnPage(experimentalPostgresqlDashboardsPage.vacuumDashboardPostgres.url);
     await experimentalPostgresqlDashboardsPage.selectServiceName(pgsqlContainerName);
     await I.waitForVisible(experimentalPostgresqlDashboardsPage.elements.barValue, 60);
