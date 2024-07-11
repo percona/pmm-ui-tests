@@ -17,12 +17,11 @@ Scenario(
     await I.verifyCommand(`docker exec ${pgsqlContainerName} apt-get install -y wget unzip`);
     await I.verifyCommand(`docker exec ${pgsqlContainerName} wget https://www.postgresqltutorial.com/wp-content/uploads/2019/05/dvdrental.zip`);
     await I.verifyCommand(`docker exec ${pgsqlContainerName} unzip dvdrental.zip`);
-    // await I.verifyCommand(`docker exec ${pgsqlContainerName} psql -U postgres -c "CREATE EXTENSION pg_stat_statements;"`);
     await I.verifyCommand(`docker exec ${pgsqlContainerName} psql -U postgres -c 'create database dvdrental;'`);
     await I.verifyCommand(`docker exec ${pgsqlContainerName} pg_restore -U postgres -d dvdrental dvdrental.tar`);
 
     await I.amOnPage(experimentalPostgresqlDashboardsPage.vacuumDashboardPostgres.url);
-    await experimentalPostgresqlDashboardsPage.selectServiceName('pgsql_vacuum_db');
+    await experimentalPostgresqlDashboardsPage.selectServiceName(pgsqlContainerName);
     await I.waitForVisible(experimentalPostgresqlDashboardsPage.elements.barValue, 60);
     const values = await I.grabTextFromAll(experimentalPostgresqlDashboardsPage.elements.barValue);
 
@@ -32,7 +31,7 @@ Scenario(
       I.assertAbove(valueInt, 0, 'The value for Postgres vacuum is zero, it supposed to be > 0');
     });
 
-    const output = await I.verifyCommand('sudo docker exec pgsql_vacuum_db psql -U postgres -d dvdrental -c \'SELECT tablename FROM pg_catalog.pg_tables;\'');
+    const output = await I.verifyCommand(`sudo docker exec ${pgsqlContainerName} psql -U postgres -d dvdrental -c 'SELECT tablename FROM pg_catalog.pg_tables;'`);
     const allTables = output.split(/\r?\n/);
 
     await experimentalPostgresqlDashboardsPage.vacuumAnalyzeTables(allTables);
