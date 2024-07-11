@@ -17,7 +17,7 @@ module.exports = {
     url: 'graph/d/postgres_vacuum_monitoring/postgresql-vacuum-monitoring?orgId=1&refresh=10s',
   },
 
-  async vacuumAnalyzeTables(tables) {
+  async vacuumAnalyzeTables(tables, containerName) {
     for await (const table of tables.values()) {
       if (table.includes('film')
         || table.includes('actor')
@@ -33,7 +33,7 @@ module.exports = {
         || table.includes('staff')
         || table.includes('payment')
       ) {
-        await I.verifyCommand(`sudo docker exec pgsql_vacuum_db psql -U postgres -d dvdrental -c 'VACUUM  ( ANALYZE ) ${table.trim()}'`);
+        await I.verifyCommand(`sudo docker exec ${containerName} psql -U postgres -d dvdrental -c 'VACUUM  ( ANALYZE ) ${table.trim()}'`);
       }
     }
   },
