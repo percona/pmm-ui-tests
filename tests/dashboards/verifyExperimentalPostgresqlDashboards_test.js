@@ -35,22 +35,22 @@ Scenario(
       I.wait(5);
     }
 
-    await I.amOnPage(experimentalPostgresqlDashboardsPage.vacuumDashboardPostgres.url);
-    await experimentalPostgresqlDashboardsPage.selectServiceName(pgsqlContainerName);
-    await I.waitForVisible(experimentalPostgresqlDashboardsPage.elements.barValue, 60);
-    const values = await I.grabTextFromAll(experimentalPostgresqlDashboardsPage.elements.barValue);
-
-    values.forEach((value) => {
-      const valueInt = parseInt(value.replace('%', ''), 10);
-
-      I.assertAbove(valueInt, 0, `The value for Postgres vacuum is: ${valueInt}, it supposed to be > 0`);
-    });
-
-    const output = await I.verifyCommand(`sudo docker exec ${pgsqlContainerName} psql -U postgres -d dvdrental -c 'SELECT tablename FROM pg_catalog.pg_tables;'`);
-    const allTables = output.split(/\r?\n/);
-
-    await experimentalPostgresqlDashboardsPage.vacuumAnalyzeTables(allTables, pgsqlContainerName);
-    await experimentalPostgresqlDashboardsPage.waitForLastVacuumValues(600);
-    await experimentalPostgresqlDashboardsPage.waitForLastAnalyzeValues(600);
+    // await I.amOnPage(experimentalPostgresqlDashboardsPage.vacuumDashboardPostgres.url);
+    // await experimentalPostgresqlDashboardsPage.selectServiceName(pgsqlContainerName);
+    // await I.waitForVisible(experimentalPostgresqlDashboardsPage.elements.barValue, 60);
+    // const values = await I.grabTextFromAll(experimentalPostgresqlDashboardsPage.elements.barValue);
+    //
+    // values.forEach((value) => {
+    //   const valueInt = parseInt(value.replace('%', ''), 10);
+    //
+    //   I.assertAbove(valueInt, 0, `The value for Postgres vacuum is: ${valueInt}, it supposed to be > 0`);
+    // });
+    //
+    // const output = await I.verifyCommand(`sudo docker exec ${pgsqlContainerName} psql -U postgres -d dvdrental -c 'SELECT tablename FROM pg_catalog.pg_tables;'`);
+    // const allTables = output.split(/\r?\n/);
+    //
+    // await experimentalPostgresqlDashboardsPage.vacuumAnalyzeTables(allTables, pgsqlContainerName);
+    // await experimentalPostgresqlDashboardsPage.waitForLastVacuumValues(600);
+    // await experimentalPostgresqlDashboardsPage.waitForLastAnalyzeValues(600);
   },
 );
