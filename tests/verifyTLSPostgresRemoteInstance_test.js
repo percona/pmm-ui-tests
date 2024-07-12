@@ -1,21 +1,19 @@
 const assert = require('assert');
 
 const noSslCheckServiceName = 'pg_no_ssl_check';
-let pdpgsql16ContainerName;
+let pdpgsql16ServiceName;
 
 Feature('Monitoring SSL/TLS PGSQL instances');
 
-const instances = new DataTable(['serviceName', 'version', 'container', 'serviceType', 'metric', 'maxQueryLength']);
-
-instances.add(['pgsql_14_ssl_service', '14', pdpgsql16ContainerName, 'postgres_ssl', 'pg_stat_database_xact_rollback', '7']);
-// skipping this due to bug in setup due to repo and packages
-// instances.add(['pgsql_12_ssl_service', '12', 'pgsql_12', 'postgres_ssl', 'pg_stat_database_xact_rollback']);
-// instances.add(['pgsql_11_ssl_service', '11', 'pgsql_11', 'postgres_ssl', 'pg_stat_database_xact_rollback']);
-// instances.add(['pgsql_13_ssl_service', '13', 'pgsql_13', 'postgres_ssl', 'pg_stat_database_xact_rollback']);
-
 BeforeSuite(async ({ I, adminPage }) => {
-  pdpgsql16ContainerName = await I.verifyCommand('docker ps -f name=pdpgsql_pgsm_ssl_16 --format "{{ .Names }}"');
-  console.log(`Pdpgsql container name is: ${pdpgsql16ContainerName}`);
+  const runningContainer = await I.verifyCommand('docker ps -a');
+  console.log(`Running Containers are:`);
+  console.log(runningContainer);
+
+  const connectedDbs = await I.verifyCommand('docker exec pdpgsql_pgsm_ssl_16 pmm-admin list');
+  console.log(connectedDbs);
+  pdpgsql16ServiceName = await I.verifyCommand('docker exec pdpgsql_pgsm_ssl_16 pmm-admin list | grep "PostgreSQL" | awk -F" " \'{print $2}\'');
+  console.log(`Service Name is: ${pdpgsql16ServiceName}`);
 //   // await I.verifyCommand(`${pmmFrameworkLoader} --pdpgsql-version=11 --setup-postgres-ssl --pmm2`);
 //   // await I.verifyCommand(`${pmmFrameworkLoader} --pdpgsql-version=12 --setup-postgres-ssl --pmm2`);
 //   // await I.verifyCommand(`${pmmFrameworkLoader} --pdpgsql-version=13 --setup-postgres-ssl --pmm2`);
@@ -34,6 +32,14 @@ BeforeSuite(async ({ I, adminPage }) => {
 Before(async ({ I, settingsAPI }) => {
   await I.Authorize();
 });
+
+const instances = new DataTable(['serviceName', 'version', 'container', 'serviceType', 'metric', 'maxQueryLength']);
+
+instances.add([pdpgsql16ServiceName, '14', 'pdpgsql_pgsm_ssl_16', 'postgres_ssl', 'pg_stat_database_xact_rollback', '7']);
+// skipping this due to bug in setup due to repo and packages
+// instances.add(['pgsql_12_ssl_service', '12', 'pgsql_12', 'postgres_ssl', 'pg_stat_database_xact_rollback']);
+// instances.add(['pgsql_11_ssl_service', '11', 'pgsql_11', 'postgres_ssl', 'pg_stat_database_xact_rollback']);
+// instances.add(['pgsql_13_ssl_service', '13', 'pgsql_13', 'postgres_ssl', 'pg_stat_database_xact_rollback']);
 
 Data(instances).Scenario(
   'PMM-T948 PMM-T947 Verify Adding SSL services remotely @ssl @ssl-postgres @ssl-remote @not-ui-pipeline',
