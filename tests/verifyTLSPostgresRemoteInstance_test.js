@@ -218,7 +218,7 @@ Data(instances).Scenario(
       queryAnalyticsPage.waitForLoaded();
       await adminPage.applyTimeRange('Last 5 minutes');
       queryAnalyticsPage.waitForLoaded();
-      await queryAnalyticsPage.filters.selectFilter(service);
+      await queryAnalyticsPage.filters.selectFilterInGroup(service, 'Service Name');
       queryAnalyticsPage.waitForLoaded();
       const count = await queryAnalyticsPage.data.getCountOfItems();
 
