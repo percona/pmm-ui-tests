@@ -6,14 +6,7 @@ let pdpgsql16ServiceName;
 Feature('Monitoring SSL/TLS PGSQL instances');
 
 BeforeSuite(async ({ I, adminPage }) => {
-  const runningContainer = await I.verifyCommand('docker ps -a');
-  console.log(`Running Containers are:`);
-  console.log(runningContainer);
-
-  const connectedDbs = await I.verifyCommand('docker exec pdpgsql_pgsm_ssl_14 pmm-admin list');
-  console.log(connectedDbs);
   pdpgsql16ServiceName = await I.verifyCommand('docker exec pdpgsql_pgsm_ssl_14 pmm-admin list | grep "PostgreSQL" | awk -F" " \'{print $2}\'');
-  console.log(`Service Name is: ${pdpgsql16ServiceName}`);
 //   // await I.verifyCommand(`${pmmFrameworkLoader} --pdpgsql-version=11 --setup-postgres-ssl --pmm2`);
 //   // await I.verifyCommand(`${pmmFrameworkLoader} --pdpgsql-version=12 --setup-postgres-ssl --pmm2`);
 //   // await I.verifyCommand(`${pmmFrameworkLoader} --pdpgsql-version=13 --setup-postgres-ssl --pmm2`);
