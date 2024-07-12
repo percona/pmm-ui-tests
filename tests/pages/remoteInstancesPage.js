@@ -265,9 +265,9 @@ module.exports = {
       I.dontSeeElement(this.fields.tlsCertificateInput);
       I.click(this.fields.useTLS);
       I.waitForElement(this.fields.tlscaInput, 30);
-      I.fillField(this.fields.tlscaInput, details.tlsCA);
-      I.fillField(this.fields.tlsCertificateInput, details.tlsCert);
-      I.fillField(this.fields.tlsCertificateKeyInput, details.tlsKey);
+      I.fillField(this.fields.tlscaInput, secret(details.tlsCA));
+      I.fillField(this.fields.tlsCertificateInput, secret(details.tlsCert));
+      I.fillField(this.fields.tlsCertificateKeyInput, secret(details.tlsKey));
       if (details.serviceType === 'postgres_ssl') I.click(this.fields.usePgStatStatements);
 
       if (details.serviceType === 'mysql_ssl') I.click(this.fields.skipTLSL);
