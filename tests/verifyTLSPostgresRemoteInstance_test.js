@@ -21,12 +21,12 @@ instances.add(['pgsql_14_ssl_service', '14', 'pgsql_14', 'postgres_ssl', 'pg_sta
 //   await I.verifyCommand(`python ${adminPage.pathToFramework} --database SSL_PDPGSQL=14`);
 // });
 
-AfterSuite(async ({ I }) => {
+// AfterSuite(async ({ I }) => {
   // await I.verifyCommand('docker stop pgsql_11 || docker rm pgsql_11');
   // await I.verifyCommand('docker stop pgsql_12 || docker rm pgsql_12');
   // await I.verifyCommand('docker stop pgsql_13 || docker rm pgsql_13');
-  await I.verifyCommand('docker stop pgsql_14 || docker rm pgsql_14');
-});
+  // await I.verifyCommand('docker stop pgsql_14 || docker rm pgsql_14');
+// });
 
 Before(async ({ I, settingsAPI }) => {
   await I.Authorize();
