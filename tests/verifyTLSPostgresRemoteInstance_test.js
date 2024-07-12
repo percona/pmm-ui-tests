@@ -72,7 +72,7 @@ Data(instances).Scenario(
         serviceType: 'POSTGRESQL_SERVICE',
         service: 'postgresql',
       },
-      serviceName,
+      remoteServiceName,
     );
 
     // Check Remote Instance also added and have running status
