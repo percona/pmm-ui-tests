@@ -293,7 +293,7 @@ Data(instances).Scenario(
     await queryAnalyticsPage.filters.selectFilterInGroup(remoteServiceName, 'Service Name');
     I.waitForElement(queryAnalyticsPage.data.elements.queryRows, 30);
     console.log(`Locator is: ${await queryAnalyticsPage.data.elements.queryRowValue(1)}`);
-    const queryFromRow = await queryAnalyticsPage.data.elements.queryRowValue(1);
+    const queryFromRow = await I.grabTextFrom(await queryAnalyticsPage.data.elements.queryRowValue(1));
 
     if (maxQueryLength !== '' && maxQueryLength !== '-1') {
       assert.ok(queryFromRow.length <= maxQueryLength, `Query length exceeds max length boundary equals ${queryFromRow.length} is more than ${maxQueryLength}`);
