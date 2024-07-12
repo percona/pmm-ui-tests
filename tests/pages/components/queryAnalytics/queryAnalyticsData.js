@@ -9,7 +9,7 @@ class QueryAnalyticsData {
       queryRow: (rowNumber) => locate(`//div[@role="row" and contains(@class, "tr-${rowNumber}")]`),
       queryRows: locate('//div[@role="row" and contains(@class, "tr-")]'),
       queryRowCells: (rowNumber) => locate(`[class="tr tr-${rowNumber}"]`).find('[role="cell"]'),
-      queryRowValue: (rowNumber) => this.elements.queryRowCells(rowNumber).at(2),
+      queryRowValue: (rowNumber) => this.elements.queryRowCells(rowNumber).find('div').find('div').at(2),
       queryRowIcon: (rowNumber) => this.elements.queryRowCells(rowNumber).at(2).find('//*[local-name()="path"]'),
       totalItems: I.useDataQA('qan-total-items'),
       selectedRow: locate('.selected-overview-row'),

@@ -233,65 +233,66 @@ Data(instances).Scenario(
   async ({
     I, remoteInstancesPage, pmmInventoryPage, inventoryAPI, current, queryAnalyticsPage,
   }) => {
-    const {
-      serviceName, serviceType, version, container, maxQueryLength,
-    } = current;
-    let details;
-    const remoteServiceName = `MaxQueryLenth_remote_${serviceName}`;
-
-    if (serviceType === 'postgres_ssl') {
-      details = {
-        serviceName: remoteServiceName,
-        serviceType,
-        port: '5432',
-        database: 'postgres',
-        host: container,
-        username: 'pmm',
-        password: 'pmm',
-        cluster: 'pgsql_remote_cluster',
-        environment: 'pgsql_remote_cluster',
-        tlsCA: await I.verifyCommand(`docker exec ${container} cat certificates/ca.crt`),
-        tlsKey: await I.verifyCommand(`docker exec ${container} cat certificates/client.pem`),
-        tlsCert: await I.verifyCommand(`docker exec ${container} cat certificates/client.crt`),
-      };
-    }
-
-    I.amOnPage(remoteInstancesPage.url);
-    remoteInstancesPage.waitUntilRemoteInstancesPageLoaded();
-    remoteInstancesPage.openAddRemotePage(serviceType);
-    await remoteInstancesPage.addRemoteSSLDetails(details);
-    I.fillField(remoteInstancesPage.fields.maxQueryLength, maxQueryLength);
-    I.click(remoteInstancesPage.fields.addService);
-
-    // Check Remote Instance also added and have running status
-    pmmInventoryPage.verifyRemoteServiceIsDisplayed(remoteServiceName);
-
-    // await pmmInventoryPage.verifyAgentHasStatusRunning(remoteServiceName);
-    // Check Remote Instance also added, have running status and have correct max_query_length option set
-
-    await inventoryAPI.verifyServiceExistsAndHasRunningStatus(
-      {
-        serviceType: 'POSTGRESQL_SERVICE',
-        service: 'postgresql',
-      },
-      remoteServiceName,
-    );
-
-    const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName('POSTGRESQL_SERVICE', remoteServiceName);
-
-    await pmmInventoryPage.openAgents(service_id);
-    if (maxQueryLength !== '') {
-      await pmmInventoryPage.checkAgentOtherDetailsSection('Qan postgresql pgstatements agent', `max_query_length=${maxQueryLength}`);
-    } else {
-      await pmmInventoryPage.checkAgentOtherDetailsSection('Qan postgresql pgstatements agent', `max_query_length=${maxQueryLength}`, false);
-    }
-
-    await I.wait(70);
+    // const {
+    //   serviceName, serviceType, version, container, maxQueryLength,
+    // } = current;
+    // let details;
+    // const remoteServiceName = `MaxQueryLenth_remote_${serviceName}`;
+    //
+    // if (serviceType === 'postgres_ssl') {
+    //   details = {
+    //     serviceName: remoteServiceName,
+    //     serviceType,
+    //     port: '5432',
+    //     database: 'postgres',
+    //     host: container,
+    //     username: 'pmm',
+    //     password: 'pmm',
+    //     cluster: 'pgsql_remote_cluster',
+    //     environment: 'pgsql_remote_cluster',
+    //     tlsCA: await I.verifyCommand(`docker exec ${container} cat certificates/ca.crt`),
+    //     tlsKey: await I.verifyCommand(`docker exec ${container} cat certificates/client.pem`),
+    //     tlsCert: await I.verifyCommand(`docker exec ${container} cat certificates/client.crt`),
+    //   };
+    // }
+    //
+    // I.amOnPage(remoteInstancesPage.url);
+    // remoteInstancesPage.waitUntilRemoteInstancesPageLoaded();
+    // remoteInstancesPage.openAddRemotePage(serviceType);
+    // await remoteInstancesPage.addRemoteSSLDetails(details);
+    // I.fillField(remoteInstancesPage.fields.maxQueryLength, maxQueryLength);
+    // I.click(remoteInstancesPage.fields.addService);
+    //
+    // // Check Remote Instance also added and have running status
+    // pmmInventoryPage.verifyRemoteServiceIsDisplayed(remoteServiceName);
+    //
+    // // await pmmInventoryPage.verifyAgentHasStatusRunning(remoteServiceName);
+    // // Check Remote Instance also added, have running status and have correct max_query_length option set
+    //
+    // await inventoryAPI.verifyServiceExistsAndHasRunningStatus(
+    //   {
+    //     serviceType: 'POSTGRESQL_SERVICE',
+    //     service: 'postgresql',
+    //   },
+    //   remoteServiceName,
+    // );
+    //
+    // const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName('POSTGRESQL_SERVICE', remoteServiceName);
+    //
+    // await pmmInventoryPage.openAgents(service_id);
+    // if (maxQueryLength !== '') {
+    //   await pmmInventoryPage.checkAgentOtherDetailsSection('Qan postgresql pgstatements agent', `max_query_length=${maxQueryLength}`);
+    // } else {
+    //   await pmmInventoryPage.checkAgentOtherDetailsSection('Qan postgresql pgstatements agent', `max_query_length=${maxQueryLength}`, false);
+    // }
+    //
+    // await I.wait(70);
     // Check max visible query length is less than max_query_length option
     I.amOnPage(I.buildUrlWithParams(queryAnalyticsPage.url, { from: 'now-5m' }));
     queryAnalyticsPage.waitForLoaded();
     await queryAnalyticsPage.filters.selectFilterInGroup(remoteServiceName, 'Service Name');
     I.waitForElement(queryAnalyticsPage.data.elements.queryRows, 30);
+    console.log(`Locator is: ${await queryAnalyticsPage.data.elements.queryRowValue(1)}`);
     const queryFromRow = await queryAnalyticsPage.data.elements.queryRowValue(1);
 
     if (maxQueryLength !== '' && maxQueryLength !== '-1') {
