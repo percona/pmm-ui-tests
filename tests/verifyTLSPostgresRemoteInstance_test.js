@@ -12,14 +12,14 @@ instances.add(['pgsql_14_ssl_service', '14', 'pgsql_14', 'postgres_ssl', 'pg_sta
 // instances.add(['pgsql_11_ssl_service', '11', 'pgsql_11', 'postgres_ssl', 'pg_stat_database_xact_rollback']);
 // instances.add(['pgsql_13_ssl_service', '13', 'pgsql_13', 'postgres_ssl', 'pg_stat_database_xact_rollback']);
 
-BeforeSuite(async ({ I, adminPage }) => {
-  // await I.verifyCommand(`${pmmFrameworkLoader} --pdpgsql-version=11 --setup-postgres-ssl --pmm2`);
-  // await I.verifyCommand(`${pmmFrameworkLoader} --pdpgsql-version=12 --setup-postgres-ssl --pmm2`);
-  // await I.verifyCommand(`${pmmFrameworkLoader} --pdpgsql-version=13 --setup-postgres-ssl --pmm2`);
-  // await I.verifyCommand('python3 -m venv virtenv');
-  await I.verifyCommand('. virtenv/bin/activate');
-  await I.verifyCommand(`python ${adminPage.pathToFramework} --database SSL_PDPGSQL=14`);
-});
+// BeforeSuite(async ({ I, adminPage }) => {
+//   // await I.verifyCommand(`${pmmFrameworkLoader} --pdpgsql-version=11 --setup-postgres-ssl --pmm2`);
+//   // await I.verifyCommand(`${pmmFrameworkLoader} --pdpgsql-version=12 --setup-postgres-ssl --pmm2`);
+//   // await I.verifyCommand(`${pmmFrameworkLoader} --pdpgsql-version=13 --setup-postgres-ssl --pmm2`);
+//   // await I.verifyCommand('python3 -m venv virtenv');
+//   await I.verifyCommand('. virtenv/bin/activate');
+//   await I.verifyCommand(`python ${adminPage.pathToFramework} --database SSL_PDPGSQL=14`);
+// });
 
 AfterSuite(async ({ I }) => {
   // await I.verifyCommand('docker stop pgsql_11 || docker rm pgsql_11');
