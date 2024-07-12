@@ -2,8 +2,7 @@ const { I } = inject();
 
 module.exports = {
   serviceName: '//label[@for="var-service_name"]//following-sibling::*',
-  serviceNameDropdown: '//*[@id="options-service_name"]',
-  serviceNameDropdownSelect: async (databaseName) => `${this.serviceNameDropdown}//span[contains(@data-testid, "${databaseName}")]`,
+  serviceNameDropdownSelect: async (databaseName) => `//*[@id="options-service_name"]//span[contains(@data-testid, "${databaseName}")]`,
 
   async getServiceName() {
     await I.waitForVisible(this.serviceName, 30);
