@@ -1,12 +1,10 @@
 const assert = require('assert');
 
 const noSslCheckServiceName = 'pg_no_ssl_check';
-let pdpgsql16ServiceName;
 
 Feature('Monitoring SSL/TLS PGSQL instances');
 
 BeforeSuite(async ({ I, adminPage }) => {
-  pdpgsql16ServiceName = await I.verifyCommand('docker exec pdpgsql_pgsm_ssl_14 pmm-admin list | grep "PostgreSQL" | awk -F" " \'{print $2}\'');
 //   // await I.verifyCommand(`${pmmFrameworkLoader} --pdpgsql-version=11 --setup-postgres-ssl --pmm2`);
 //   // await I.verifyCommand(`${pmmFrameworkLoader} --pdpgsql-version=12 --setup-postgres-ssl --pmm2`);
 //   // await I.verifyCommand(`${pmmFrameworkLoader} --pdpgsql-version=13 --setup-postgres-ssl --pmm2`);
@@ -28,7 +26,7 @@ Before(async ({ I, settingsAPI }) => {
 
 const instances = new DataTable(['serviceName', 'version', 'container', 'serviceType', 'metric', 'maxQueryLength']);
 
-instances.add([pdpgsql16ServiceName, '14', 'pdpgsql_pgsm_ssl_14', 'postgres_ssl', 'pg_stat_database_xact_rollback', '7']);
+instances.add(['pgsql_14_ssl_service', '14', 'pdpgsql_pgsm_ssl_14', 'postgres_ssl', 'pg_stat_database_xact_rollback', '7']);
 // skipping this due to bug in setup due to repo and packages
 // instances.add(['pgsql_12_ssl_service', '12', 'pgsql_12', 'postgres_ssl', 'pg_stat_database_xact_rollback']);
 // instances.add(['pgsql_11_ssl_service', '11', 'pgsql_11', 'postgres_ssl', 'pg_stat_database_xact_rollback']);
@@ -44,6 +42,8 @@ Data(instances).Scenario(
     } = current;
     let details;
     const remoteServiceName = `remote_${serviceName}`;
+
+    console.log(`Remote service name is: ${remoteServiceName}`);
 
     if (serviceType === 'postgres_ssl') {
       details = {
