@@ -273,7 +273,7 @@ Data(instances).Scenario(
         serviceType: 'POSTGRESQL_SERVICE',
         service: 'postgresql',
       },
-      serviceName,
+      remoteServiceName,
     );
 
     const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName('POSTGRESQL_SERVICE', remoteServiceName);
