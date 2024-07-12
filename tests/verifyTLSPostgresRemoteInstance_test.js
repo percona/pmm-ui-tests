@@ -119,6 +119,7 @@ Data(instances).Scenario(
     const localServiceName = await I.verifyCommand(`docker exec ${container} pmm-admin list | grep "PostgreSQL" | awk -F " " '{print $2}'`);
 
     console.log(`Local Service name is: ${localServiceName}`);
+    console.log(await I.verifyCommand(`docker exec ${container} pmm-admin list`));
 
     response = await grafanaAPI.checkMetricExist(metric, { type: 'service_name', value: localServiceName });
 
