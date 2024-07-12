@@ -142,9 +142,9 @@ module.exports = {
     subscriptionID: '$azure_subscription_id-text-input',
     tableStatsGroupTableLimit: '$tablestats_group_table_limit-number-input',
     tenantID: '$azure_tenant_id-text-input',
-    tlscaInput: '$tls_ca-textarea-input',
-    tlsCertificateInput: '$tls_cert-textarea-input',
-    tlsCertificateKeyInput: '$tls_key-textarea-input',
+    tlscaInput: locate('$tls_ca-textarea-input'),
+    tlsCertificateInput: locate('$tls_cert-textarea-input'),
+    tlsCertificateKeyInput: locate('$tls_key-textarea-input'),
     tlsCertificateFilePasswordInput: '$tls_certificate_file_password-password-input',
     tlsCertificateKey: '$tls_certificate_key-textarea-input',
     usePerformanceSchema2: '$qan_mysql_perfschema-field-container',
@@ -265,9 +265,15 @@ module.exports = {
       I.dontSeeElement(this.fields.tlsCertificateInput);
       I.click(this.fields.useTLS);
       I.waitForElement(this.fields.tlscaInput, 30);
-      I.fillField(this.fields.tlscaInput, secret(details.tlsCA));
-      I.fillField(this.fields.tlsCertificateInput, secret(details.tlsCert));
-      I.fillField(this.fields.tlsCertificateKeyInput, secret(details.tlsKey));
+      I.usePlaywrightTo('Fill TLS ca field', async ({ page }) => {
+        await page.fill(this.fields.tlscaInput, details.tlsCA);
+      });
+      I.usePlaywrightTo('Fill TLS certificate field', async ({ page }) => {
+        await page.fill(this.fields.tlsCertificateInput, details.tlsCert);
+      });
+      I.usePlaywrightTo('Fill TLS certificate key field', async ({ page }) => {
+        await page.fill(this.fields.tlsCertificateKeyInput, details.tlsKey);
+      });
       if (details.serviceType === 'postgres_ssl') I.click(this.fields.usePgStatStatements);
 
       if (details.serviceType === 'mysql_ssl') I.click(this.fields.skipTLSL);
