@@ -46,6 +46,8 @@ Data(instances).Scenario(
     const remoteServiceName = `remote_${serviceName}`;
 
     if (serviceType === 'postgres_ssl') {
+      console.log(await I.verifyCommand(`docker exec ${container} cat certificates/ca.crt`));
+
       details = {
         serviceName: remoteServiceName,
         serviceType,
