@@ -266,13 +266,13 @@ module.exports = {
       I.click(this.fields.useTLS);
       I.waitForElement(this.fields.tlscaInput, 30);
       I.usePlaywrightTo('Fill TLS ca field', async ({ page }) => {
-        await page.fill(this.fields.tlscaInput, details.tlsCA);
+        await page.fill(this.fields.tlscaInput.toXPath(), details.tlsCA);
       });
       I.usePlaywrightTo('Fill TLS certificate field', async ({ page }) => {
-        await page.fill(this.fields.tlsCertificateInput, details.tlsCert);
+        await page.fill(this.fields.tlsCertificateInput.toXPath(), details.tlsCert);
       });
       I.usePlaywrightTo('Fill TLS certificate key field', async ({ page }) => {
-        await page.fill(this.fields.tlsCertificateKeyInput, details.tlsKey);
+        await page.fill(this.fields.tlsCertificateKeyInput.toXPath(), details.tlsKey);
       });
       if (details.serviceType === 'postgres_ssl') I.click(this.fields.usePgStatStatements);
 
