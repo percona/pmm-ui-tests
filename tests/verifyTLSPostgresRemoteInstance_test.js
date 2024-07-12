@@ -289,7 +289,7 @@ Data(instances).Scenario(
     // Check max visible query length is less than max_query_length option
     I.amOnPage(I.buildUrlWithParams(queryAnalyticsPage.url, { from: 'now-5m' }));
     queryAnalyticsPage.waitForLoaded();
-    await queryAnalyticsPage.filters.selectFilter(remoteServiceName);
+    await queryAnalyticsPage.filters.selectFilterInGroup(remoteServiceName, 'Service Name');
     I.waitForElement(queryAnalyticsPage.data.elements.queryRows, 30);
     const queryFromRow = await queryAnalyticsPage.data.elements.queryRowValue(1);
 
