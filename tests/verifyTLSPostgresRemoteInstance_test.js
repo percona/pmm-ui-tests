@@ -1,25 +1,28 @@
 const assert = require('assert');
 
 const noSslCheckServiceName = 'pg_no_ssl_check';
+let pdpgsql16ContainerName;
 
 Feature('Monitoring SSL/TLS PGSQL instances');
 
 const instances = new DataTable(['serviceName', 'version', 'container', 'serviceType', 'metric', 'maxQueryLength']);
 
-instances.add(['pgsql_14_ssl_service', '14', 'pgsql_14', 'postgres_ssl', 'pg_stat_database_xact_rollback', '7']);
+instances.add(['pgsql_14_ssl_service', '14', pdpgsql16ContainerName, 'postgres_ssl', 'pg_stat_database_xact_rollback', '7']);
 // skipping this due to bug in setup due to repo and packages
 // instances.add(['pgsql_12_ssl_service', '12', 'pgsql_12', 'postgres_ssl', 'pg_stat_database_xact_rollback']);
 // instances.add(['pgsql_11_ssl_service', '11', 'pgsql_11', 'postgres_ssl', 'pg_stat_database_xact_rollback']);
 // instances.add(['pgsql_13_ssl_service', '13', 'pgsql_13', 'postgres_ssl', 'pg_stat_database_xact_rollback']);
 
-// BeforeSuite(async ({ I, adminPage }) => {
+BeforeSuite(async ({ I, adminPage }) => {
+  pdpgsql16ContainerName = await I.verifyCommand('docker ps -f name=pdpgsql_pgsm_ssl_16 --format "{{ .Names }}"');
+  console.log(`Pdpgsql container name is: ${pdpgsql16ContainerName}`);
 //   // await I.verifyCommand(`${pmmFrameworkLoader} --pdpgsql-version=11 --setup-postgres-ssl --pmm2`);
 //   // await I.verifyCommand(`${pmmFrameworkLoader} --pdpgsql-version=12 --setup-postgres-ssl --pmm2`);
 //   // await I.verifyCommand(`${pmmFrameworkLoader} --pdpgsql-version=13 --setup-postgres-ssl --pmm2`);
 //   // await I.verifyCommand('python3 -m venv virtenv');
 //   await I.verifyCommand('. virtenv/bin/activate');
 //   await I.verifyCommand(`python ${adminPage.pathToFramework} --database SSL_PDPGSQL=14`);
-// });
+});
 
 // AfterSuite(async ({ I }) => {
   // await I.verifyCommand('docker stop pgsql_11 || docker rm pgsql_11');
@@ -87,6 +90,8 @@ Data(instances).Scenario(
     const {
       container,
     } = current;
+
+    console.log(`Current container name is: ${container}`);
 
     // Verify user is able to add service with --tls-skip-verify option
     const responseMessage = 'PostgreSQL Service added.';
