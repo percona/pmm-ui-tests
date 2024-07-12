@@ -44,8 +44,6 @@ Data(instances).Scenario(
     let details;
     const remoteServiceName = `remote_${serviceName}`;
 
-    console.log(`Remote service name is: ${remoteServiceName}`);
-
     if (serviceType === 'postgres_ssl') {
       details = {
         serviceName: remoteServiceName,
@@ -91,8 +89,6 @@ Data(instances).Scenario(
       container,
     } = current;
 
-    console.log(`Current container name is: ${container}`);
-
     // Verify user is able to add service with --tls-skip-verify option
     const responseMessage = 'PostgreSQL Service added.';
     const command = `docker exec ${container} pmm-admin add postgresql --username=pmm --password=pmm --query-source="pgstatements" --tls --tls-skip-verify ${noSslCheckServiceName}`;
@@ -119,12 +115,7 @@ Data(instances).Scenario(
     // verify metric for client container node instance
     const localServiceName = await I.verifyCommand(`docker exec ${container} pmm-admin list | grep "PostgreSQL" | grep "ssl_service" | awk -F " " '{print $2}'`);
 
-    console.log(`Local Service name is: ${localServiceName}`);
-    console.log(await I.verifyCommand(`docker exec ${container} pmm-admin list`));
-
     response = await grafanaAPI.checkMetricExist(metric, { type: 'service_name', value: localServiceName });
-
-    console.log(response.data);
 
     result = JSON.stringify(response.data.data.result);
 

@@ -1,7 +1,7 @@
 const { I } = inject();
 const assert = require('assert');
 
-const pathToPmmQaRepo = process.env.PATH_TO_PMM_QA || '/home/runner/work/pmm-qa/pmm-qa/qa-integration/pmm_qa';
+const pathToPmmQaRepo = process.env.PATH_TO_PMM_QA || '/srv/pmm-qa';
 
 module.exports = {
   url: 'graph/d/pmm-home/home-dashboard?orgId=1',
