@@ -46,8 +46,6 @@ Data(instances).Scenario(
     const remoteServiceName = `remote_${serviceName}`;
 
     if (serviceType === 'postgres_ssl') {
-      console.log(await I.verifyCommand(`docker exec ${container} cat certificates/ca.crt`));
-
       details = {
         serviceName: remoteServiceName,
         serviceType,
@@ -58,9 +56,9 @@ Data(instances).Scenario(
         password: 'pmm',
         cluster: 'pgsql_remote_cluster',
         environment: 'pgsql_remote_cluster',
-        tlsCAFile: `${pathToPMMFramework}tls-ssl-setup/postgres/${version}/ca.crt`,
-        tlsKeyFile: `${pathToPMMFramework}tls-ssl-setup/postgres/${version}/client.pem`,
-        tlsCertFile: `${pathToPMMFramework}tls-ssl-setup/postgres/${version}/client.crt`,
+        tlsCA: await I.verifyCommand(`docker exec ${container} cat certificates/ca.crt`),
+        tlsKey: await I.verifyCommand(`docker exec ${container} cat certificates/client.pem`),
+        tlsCert: await I.verifyCommand(`docker exec ${container} cat certificates/client.crt`),
       };
     }
 
