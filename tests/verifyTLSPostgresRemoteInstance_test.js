@@ -121,6 +121,7 @@ Data(instances).Scenario(
     response = await grafanaAPI.checkMetricExist(metric, { type: 'service_name', value: localServiceName });
 
     console.log(response.data);
+    console.log(`Local Service name is: ${localServiceName}`);
     result = JSON.stringify(response.data.data.result);
 
     assert.ok(response.data.data.result.length !== 0, `Metrics ${metric} from ${serviceName} should be available but got empty ${result}`);
