@@ -1,11 +1,11 @@
 const { I } = inject();
 const assert = require('assert');
 
-const pathToPmmQaRepo = process.env.PATH_TO_PMM_QA || '/srv/pmm-qa';
+const pathToPmmQaRepo = process.env.PATH_TO_PMM_QA || '/home/runner/work/pmm-qa/pmm-qa/qa-integration/pmm_qa';
 
 module.exports = {
   url: 'graph/d/pmm-home/home-dashboard?orgId=1',
-  pathToFramework: `${pathToPmmQaRepo}/pmm-tests/pmm-framework.sh`,
+  pathToFramework: `${pathToPmmQaRepo}/pmm-framework.py`,
   pathToPMMTests: `${pathToPmmQaRepo}/pmm-tests/`,
   sideMenu: {
     integratedAlerting: 'li > a[href="/graph/integrated-alerting"]',
