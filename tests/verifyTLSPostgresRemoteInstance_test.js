@@ -116,7 +116,7 @@ Data(instances).Scenario(
     I.wait(10);
 
     // verify metric for client container node instance
-    const localServiceName = await I.verifyCommand(`docker exec ${container} pmm-admin list | grep "PostgreSQL" | awk -F " " '{print $2}'`);
+    const localServiceName = await I.verifyCommand(`docker exec ${container} pmm-admin list | grep "PostgreSQL" | grep "ssl_service" | awk -F " " '{print $2}'`);
 
     console.log(`Local Service name is: ${localServiceName}`);
     console.log(await I.verifyCommand(`docker exec ${container} pmm-admin list`));
