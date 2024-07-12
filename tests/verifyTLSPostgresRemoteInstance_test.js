@@ -106,7 +106,7 @@ Data(instances).Scenario(
     I, remoteInstancesPage, pmmInventoryPage, current, grafanaAPI,
   }) => {
     const {
-      serviceName, metric,
+      serviceName, metric, container
     } = current;
     let response;
     let result;
@@ -116,7 +116,11 @@ Data(instances).Scenario(
     I.wait(10);
 
     // verify metric for client container node instance
-    response = await grafanaAPI.checkMetricExist(metric, { type: 'service_name', value: serviceName });
+    const localServiceName = await I.verifyCommand(`docker ps -f name=${container} --format "{{ .Names }}"`);
+
+    response = await grafanaAPI.checkMetricExist(metric, { type: 'service_name', value: localServiceName });
+
+    console.log(response.data);
     result = JSON.stringify(response.data.data.result);
 
     assert.ok(response.data.data.result.length !== 0, `Metrics ${metric} from ${serviceName} should be available but got empty ${result}`);
