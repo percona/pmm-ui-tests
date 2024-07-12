@@ -205,10 +205,12 @@ Data(instances).Scenario(
     I, current, adminPage, queryAnalyticsPage,
   }) => {
     const {
-      serviceName,
+      serviceName, container,
     } = current;
 
-    const serviceList = [serviceName, `remote_${serviceName}`, noSslCheckServiceName];
+    const localServiceName = await I.verifyCommand(`docker exec ${container} pmm-admin list | grep "PostgreSQL" | awk -F " " '{print $2}'`);
+
+    const serviceList = [localServiceName, `remote_${serviceName}`, noSslCheckServiceName];
 
     for (const service of serviceList) {
       I.amOnPage(I.buildUrlWithParams(queryAnalyticsPage.url, { from: 'now-5m' }));
