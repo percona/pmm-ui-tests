@@ -16,7 +16,9 @@ BeforeSuite(async ({ I, adminPage }) => {
   // await I.verifyCommand(`${pmmFrameworkLoader} --pdpgsql-version=11 --setup-postgres-ssl --pmm2`);
   // await I.verifyCommand(`${pmmFrameworkLoader} --pdpgsql-version=12 --setup-postgres-ssl --pmm2`);
   // await I.verifyCommand(`${pmmFrameworkLoader} --pdpgsql-version=13 --setup-postgres-ssl --pmm2`);
-  await I.verifyCommand(` python ${adminPage.pathToFramework} --database SSL_PDPGSQL=14`);
+  // await I.verifyCommand('python3 -m venv virtenv');
+  await I.verifyCommand('. virtenv/bin/activate');
+  await I.verifyCommand(`python ${adminPage.pathToFramework} --database SSL_PDPGSQL=14`);
 });
 
 AfterSuite(async ({ I }) => {
