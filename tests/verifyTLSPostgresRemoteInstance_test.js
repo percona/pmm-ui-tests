@@ -106,7 +106,7 @@ Data(instances).Scenario(
     I, remoteInstancesPage, pmmInventoryPage, current, grafanaAPI,
   }) => {
     const {
-      serviceName, metric, container
+      serviceName, metric, container,
     } = current;
     let response;
     let result;
@@ -118,10 +118,12 @@ Data(instances).Scenario(
     // verify metric for client container node instance
     const localServiceName = await I.verifyCommand(`docker exec ${container} pmm-admin list | grep "PostgreSQL" | awk -F " " '{print $2}'`);
 
+    console.log(`Local Service name is: ${localServiceName}`);
+
     response = await grafanaAPI.checkMetricExist(metric, { type: 'service_name', value: localServiceName });
 
     console.log(response.data);
-    console.log(`Local Service name is: ${localServiceName}`);
+
     result = JSON.stringify(response.data.data.result);
 
     assert.ok(response.data.data.result.length !== 0, `Metrics ${metric} from ${serviceName} should be available but got empty ${result}`);
