@@ -1,8 +1,5 @@
 const assert = require('assert');
 
-const { adminPage } = inject();
-const pmmFrameworkLoader = `bash ${adminPage.pathToFramework}`;
-const pathToPMMFramework = adminPage.pathToPMMTests;
 const noSslCheckServiceName = 'pg_no_ssl_check';
 
 Feature('Monitoring SSL/TLS PGSQL instances');
@@ -15,11 +12,11 @@ instances.add(['pgsql_14_ssl_service', '14', 'pgsql_14', 'postgres_ssl', 'pg_sta
 // instances.add(['pgsql_11_ssl_service', '11', 'pgsql_11', 'postgres_ssl', 'pg_stat_database_xact_rollback']);
 // instances.add(['pgsql_13_ssl_service', '13', 'pgsql_13', 'postgres_ssl', 'pg_stat_database_xact_rollback']);
 
-BeforeSuite(async ({ I, codeceptjsConfig }) => {
+BeforeSuite(async ({ I, adminPage }) => {
   // await I.verifyCommand(`${pmmFrameworkLoader} --pdpgsql-version=11 --setup-postgres-ssl --pmm2`);
   // await I.verifyCommand(`${pmmFrameworkLoader} --pdpgsql-version=12 --setup-postgres-ssl --pmm2`);
   // await I.verifyCommand(`${pmmFrameworkLoader} --pdpgsql-version=13 --setup-postgres-ssl --pmm2`);
-  await I.verifyCommand(` python ${pmmFrameworkLoader} --database SSL_PDPGSQL`);
+  await I.verifyCommand(` python ${adminPage.pathToFramework} --database SSL_PDPGSQL=14`);
 });
 
 AfterSuite(async ({ I }) => {
