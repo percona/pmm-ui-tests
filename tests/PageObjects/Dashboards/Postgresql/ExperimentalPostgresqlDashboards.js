@@ -6,6 +6,7 @@ module.exports = {
   url: '',
   elements: {
     barValue: '//div[@data-testid="data-testid Bar gauge value"]',
+    barWithValue: locate('//div[@data-testid="data-testid Bar gauge value"]//span[text() > "0"]'),
     lastVacuumValue: '//div[contains(@class, "react-grid-item")][5]//div[contains(text(), "dvdrental")]//following-sibling::*',
     lastAnalyzeValue: '//div[contains(@class, "react-grid-item")][6]//div[contains(text(), "dvdrental")]//following-sibling::*',
   },
@@ -17,7 +18,7 @@ module.exports = {
     url: 'graph/d/postgres_vacuum_monitoring/postgresql-vacuum-monitoring?orgId=1&refresh=10s',
   },
 
-  async vacuumAnalyzeTables(tables) {
+  async vacuumAnalyzeTables(tables, containerName) {
     for await (const table of tables.values()) {
       if (table.includes('film')
         || table.includes('actor')
@@ -33,7 +34,7 @@ module.exports = {
         || table.includes('staff')
         || table.includes('payment')
       ) {
-        await I.verifyCommand(`sudo docker exec pgsql_vacuum_db psql -U postgres -d dvdrental -c 'VACUUM  ( ANALYZE ) ${table.trim()}'`);
+        await I.verifyCommand(`sudo docker exec ${containerName} psql -U postgres -d dvdrental -c 'VACUUM  ( ANALYZE ) ${table.trim()}'`);
       }
     }
   },
