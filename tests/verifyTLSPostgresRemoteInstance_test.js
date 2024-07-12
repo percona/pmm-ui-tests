@@ -233,11 +233,11 @@ Data(instances).Scenario(
   async ({
     I, remoteInstancesPage, pmmInventoryPage, inventoryAPI, current, queryAnalyticsPage,
   }) => {
-    // const {
-    //   serviceName, serviceType, version, container, maxQueryLength,
-    // } = current;
-    // let details;
-    // const remoteServiceName = `MaxQueryLenth_remote_${serviceName}`;
+    const {
+      serviceName, serviceType, version, container, maxQueryLength,
+    } = current;
+    let details;
+    const remoteServiceName = `MaxQueryLenth_remote_${serviceName}`;
     //
     // if (serviceType === 'postgres_ssl') {
     //   details = {
