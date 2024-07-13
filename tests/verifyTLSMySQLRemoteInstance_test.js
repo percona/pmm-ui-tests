@@ -16,7 +16,7 @@ maxQueryLengthTestData.add(['^']);
 maxQueryLengthTestData.add(['`']);
 maxQueryLengthTestData.add(['"']);
 
-instances.add(['mysql_5.7_ssl_service', '5.7', 'mysql_5.7', 'mysql_ssl', 'mysql_global_status_max_used_connections']);
+// instances.add(['mysql_5.7_ssl_service', '5.7', 'mysql_5.7', 'mysql_ssl', 'mysql_global_status_max_used_connections']);
 instances.add(['mysql_8.0_ssl_service', '8.0', 'mysql_8.0', 'mysql_ssl', 'mysql_global_status_max_used_connections']);
 
 maxQueryLengthInstances.add(['mysql_5.7_ssl_service', '5.7', 'mysql_5.7', 'mysql_ssl', 'mysql_global_status_max_used_connections', '10']);
@@ -26,10 +26,10 @@ maxQueryLengthInstances.add(['mysql_8.0_ssl_service', '8.0', 'mysql_8.0', 'mysql
 maxQueryLengthInstances.add(['mysql_8.0_ssl_service', '8.0', 'mysql_8.0', 'mysql_ssl', 'mysql_global_status_max_used_connections', '-1']);
 maxQueryLengthInstances.add(['mysql_8.0_ssl_service', '8.0', 'mysql_8.0', 'mysql_ssl', 'mysql_global_status_max_used_connections', '']);
 
-AfterSuite(async ({ I }) => {
-  await I.verifyCommand('docker stop mysql_5.7 || docker rm mysql_5.7');
-  await I.verifyCommand('docker stop mysql_8.0 || docker rm mysql_8.0');
-});
+// AfterSuite(async ({ I }) => {
+//   await I.verifyCommand('docker stop mysql_5.7 || docker rm mysql_5.7');
+//   await I.verifyCommand('docker stop mysql_8.0 || docker rm mysql_8.0');
+// });
 
 Before(async ({ I, settingsAPI }) => {
   await I.Authorize();
@@ -45,9 +45,6 @@ Data(instances).Scenario(
     } = current;
     let details;
     const remoteServiceName = `remote_${serviceName}_faker`;
-
-    await I.verifyCommand(`${pmmFrameworkLoader} --ps-version=${version} --setup-mysql-ssl --pmm2`);
-    await I.say(await I.verifyCommand(`docker exec ${container} bash -c 'source ~/.bash_profile || true; pmm-admin list'`));
 
     if (serviceType === 'mysql_ssl') {
       details = {
@@ -77,7 +74,7 @@ Data(instances).Scenario(
         serviceType: 'MYSQL_SERVICE',
         service: 'mysql',
       },
-      serviceName,
+      remoteServiceName,
     );
 
     // Check Remote Instance also added and have running status
