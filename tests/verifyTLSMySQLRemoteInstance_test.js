@@ -17,7 +17,7 @@ maxQueryLengthTestData.add(['`']);
 maxQueryLengthTestData.add(['"']);
 
 // instances.add(['mysql_5.7_ssl_service', '5.7', 'mysql_5.7', 'mysql_ssl', 'mysql_global_status_max_used_connections']);
-instances.add(['mysql_8.0_ssl_service', '8.0', 'mysql_8.0', 'mysql_ssl', 'mysql_global_status_max_used_connections']);
+instances.add(['mysql_8.0_ssl_service', '8.0', 'mysql_ssl_8.0', 'mysql_ssl', 'mysql_global_status_max_used_connections']);
 
 maxQueryLengthInstances.add(['mysql_5.7_ssl_service', '5.7', 'mysql_5.7', 'mysql_ssl', 'mysql_global_status_max_used_connections', '10']);
 maxQueryLengthInstances.add(['mysql_5.7_ssl_service', '5.7', 'mysql_5.7', 'mysql_ssl', 'mysql_global_status_max_used_connections', '-1']);
@@ -56,9 +56,9 @@ Data(instances).Scenario(
         password: 'pmm',
         cluster: 'mysql_remote_cluster',
         environment: 'mysql_remote_cluster',
-        tlsCAFile: `${adminPage.pathToPMMTests}tls-ssl-setup/mysql/${version}/ca.pem`,
-        tlsKeyFile: `${adminPage.pathToPMMTests}tls-ssl-setup/mysql/${version}/client-key.pem`,
-        tlsCertFile: `${adminPage.pathToPMMTests}tls-ssl-setup/mysql/${version}/client-cert.pem`,
+        tlsCA: await I.verifyCommand(`docker exec ${container} cat /var/lib/mysql/ca.pem`),
+        tlsKey: await I.verifyCommand(`docker exec ${container} cat  /var/lib/mysql/client-key.pem`),
+        tlsCert: await I.verifyCommand(`docker exec ${container} cat /var/lib/mysql/client-cert.pem`),
       };
     }
 
