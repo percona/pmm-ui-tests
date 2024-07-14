@@ -91,7 +91,7 @@ Data(instances).Scenario(
     I, remoteInstancesPage, pmmInventoryPage, current, grafanaAPI,
   }) => {
     const {
-      serviceName, metric,
+      serviceName, metric, container,
     } = current;
     let response; let result;
     const remoteServiceName = `remote_${serviceName}_faker`;
@@ -100,10 +100,12 @@ Data(instances).Scenario(
     I.wait(10);
 
     // verify metric for client container node instance
-    response = await grafanaAPI.checkMetricExist(metric, { type: 'service_name', value: serviceName });
+    const localServiceName = await I.verifyCommand(`docker exec ${container} pmm-admin list | grep "MySQL" | grep "ssl_service" | awk -F " " '{print $2}'`);
+
+    response = await grafanaAPI.checkMetricExist(metric, { type: 'service_name', value: localServiceName });
     result = JSON.stringify(response.data.data.result);
 
-    assert.ok(response.data.data.result.length !== 0, `Metrics ${metric} from ${serviceName} should be available but got empty ${result}`);
+    assert.ok(response.data.data.result.length !== 0, `Metrics ${metric} from ${localServiceName} should be available but got empty ${result}`);
 
     // verify metric for remote instance
     response = await grafanaAPI.checkMetricExist(metric, { type: 'service_name', value: remoteServiceName });
