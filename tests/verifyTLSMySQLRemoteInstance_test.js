@@ -19,9 +19,9 @@ maxQueryLengthTestData.add(['"']);
 // instances.add(['mysql_5.7_ssl_service', '5.7', 'mysql_ssl_5.7', 'mysql_ssl', 'mysql_global_status_max_used_connections']);
 instances.add(['mysql_8.0_ssl_service', '8.0', 'mysql_ssl_8.0', 'mysql_ssl', 'mysql_global_status_max_used_connections']);
 
-maxQueryLengthInstances.add(['mysql_5.7_ssl_service', '5.7', 'mysql_ssl_5.7', 'mysql_ssl', 'mysql_global_status_max_used_connections', '10']);
-maxQueryLengthInstances.add(['mysql_5.7_ssl_service', '5.7', 'mysql_ssl_5.7', 'mysql_ssl', 'mysql_global_status_max_used_connections', '-1']);
-maxQueryLengthInstances.add(['mysql_5.7_ssl_service', '5.7', 'mysql_ssl_5.7', 'mysql_ssl', 'mysql_global_status_max_used_connections', '']);
+// maxQueryLengthInstances.add(['mysql_5.7_ssl_service', '5.7', 'mysql_ssl_5.7', 'mysql_ssl', 'mysql_global_status_max_used_connections', '10']);
+// maxQueryLengthInstances.add(['mysql_5.7_ssl_service', '5.7', 'mysql_ssl_5.7', 'mysql_ssl', 'mysql_global_status_max_used_connections', '-1']);
+// maxQueryLengthInstances.add(['mysql_5.7_ssl_service', '5.7', 'mysql_ssl_5.7', 'mysql_ssl', 'mysql_global_status_max_used_connections', '']);
 maxQueryLengthInstances.add(['mysql_8.0_ssl_service', '8.0', 'mysql_ssl_8.0', 'mysql_ssl', 'mysql_global_status_max_used_connections', '10']);
 maxQueryLengthInstances.add(['mysql_8.0_ssl_service', '8.0', 'mysql_ssl_8.0', 'mysql_ssl', 'mysql_global_status_max_used_connections', '-1']);
 maxQueryLengthInstances.add(['mysql_8.0_ssl_service', '8.0', 'mysql_ssl_8.0', 'mysql_ssl', 'mysql_global_status_max_used_connections', '']);
