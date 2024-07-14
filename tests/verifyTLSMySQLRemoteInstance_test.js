@@ -16,7 +16,7 @@ maxQueryLengthTestData.add(['^']);
 maxQueryLengthTestData.add(['`']);
 maxQueryLengthTestData.add(['"']);
 
-// instances.add(['mysql_5.7_ssl_service', '5.7', 'mysql_5.7', 'mysql_ssl', 'mysql_global_status_max_used_connections']);
+// instances.add(['mysql_5.7_ssl_service', '5.7', 'mysql_ssl_5.7', 'mysql_ssl', 'mysql_global_status_max_used_connections']);
 instances.add(['mysql_8.0_ssl_service', '8.0', 'mysql_ssl_8.0', 'mysql_ssl', 'mysql_global_status_max_used_connections']);
 
 maxQueryLengthInstances.add(['mysql_5.7_ssl_service', '5.7', 'mysql_ssl_5.7', 'mysql_ssl', 'mysql_global_status_max_used_connections', '10']);
@@ -161,7 +161,7 @@ Data(instances).Scenario(
       adminPage.performPageDown(5);
       await dashboardPage.expandEachDashboardRow();
       adminPage.performPageUp(5);
-      await dashboardPage.verifyThereAreNoGraphsWithoutData(1);
+      await dashboardPage.verifyThereAreNoGraphsWithoutData(12);
     }
   },
 ).retry(2);
@@ -206,7 +206,7 @@ Data(instances).Scenario(
 
     const agent_id = await I.verifyCommand(`docker exec ${container} pmm-admin list | grep mysqld_exporter | awk -F" " '{print $4}' | awk -F"/" '{print $3}'`);
 
-    console.log(await I.verifyCommand(`docker exec ${container} -xdev 2>/dev/null -name "mysqld_exporter"`));
+    console.log(await I.verifyCommand(`docker exec ${container} find / -xdev 2>/dev/null -name "mysqld_exporter"`));
 
     await I.verifyCommand(`docker exec ${container} ls -la /usr/local/percona/pmm2/tmp/mysqld_exporter/agent_id/${agent_id}/ | grep tls`);
     await I.verifyCommand(`docker exec ${container} rm -r /usr/local/percona/pmm2/tmp/mysqld_exporter/`);
