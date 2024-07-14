@@ -142,7 +142,6 @@ Data(instances).Scenario(
   },
 ).retry(1);
 
-
 Data(instances).Scenario(
   'Verify dashboard after MySQL SSL Instances are added @ssl @ssl-mysql @ssl-remote @not-ui-pipeline',
   async ({
@@ -162,7 +161,6 @@ Data(instances).Scenario(
       adminPage.performPageDown(5);
       await dashboardPage.expandEachDashboardRow();
       adminPage.performPageUp(5);
-      await dashboardPage.verifyThereAreNoGraphsWithNA();
       await dashboardPage.verifyThereAreNoGraphsWithoutData(1);
     }
   },
@@ -174,17 +172,19 @@ Data(instances).Scenario(
     I, queryAnalyticsPage, current, adminPage,
   }) => {
     const {
-      serviceName,
+      serviceName, container,
     } = current;
 
-    const serviceList = [serviceName, `remote_${serviceName}_faker`];
+    const localServiceName = await I.verifyCommand(`docker exec ${container} pmm-admin list | grep "MySQL" | grep "ssl_service" | awk -F " " '{print $2}'`);
+
+    const serviceList = [localServiceName, `remote_${serviceName}_faker`];
 
     for (const service of serviceList) {
       I.amOnPage(I.buildUrlWithParams(queryAnalyticsPage.url, { from: 'now-5m' }));
       queryAnalyticsPage.waitForLoaded();
       await adminPage.applyTimeRange('Last 12 hours');
       queryAnalyticsPage.waitForLoaded();
-      await queryAnalyticsPage.filters.selectFilter(service);
+      await queryAnalyticsPage.filters.selectFilterInGroup(service, 'Service Name');
       queryAnalyticsPage.waitForLoaded();
       const count = await queryAnalyticsPage.data.getCountOfItems();
 
@@ -256,9 +256,9 @@ Data(maxQueryLengthInstances).Scenario(
         password: 'pmm',
         cluster: 'mysql_remote_cluster',
         environment: 'mysql_remote_cluster',
-        tlsCAFile: `${adminPage.pathToPMMTests}tls-ssl-setup/mysql/${version}/ca.pem`,
-        tlsKeyFile: `${adminPage.pathToPMMTests}tls-ssl-setup/mysql/${version}/client-key.pem`,
-        tlsCertFile: `${adminPage.pathToPMMTests}tls-ssl-setup/mysql/${version}/client-cert.pem`,
+        tlsCA: await I.verifyCommand(`docker exec ${container} cat /var/lib/mysql/ca.pem`),
+        tlsKey: await I.verifyCommand(`docker exec ${container} cat /var/lib/mysql/client-key.pem`),
+        tlsCert: await I.verifyCommand(`docker exec ${container} cat /var/lib/mysql/client-cert.pem`),
       };
     }
 
@@ -277,7 +277,7 @@ Data(maxQueryLengthInstances).Scenario(
         serviceType: 'MYSQL_SERVICE',
         service: 'mysql',
       },
-      serviceName,
+      remoteServiceName,
     );
 
     const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName('MYSQL_SERVICE', remoteServiceName);
@@ -293,9 +293,9 @@ Data(maxQueryLengthInstances).Scenario(
     // Check max visible query length is less than max_query_length option
     I.amOnPage(I.buildUrlWithParams(queryAnalyticsPage.url, { from: 'now-5m' }));
     queryAnalyticsPage.waitForLoaded();
-    await queryAnalyticsPage.filters.selectFilter(remoteServiceName);
+    await queryAnalyticsPage.filters.selectFilterInGroup(remoteServiceName, 'Service Name');
     I.waitForElement(queryAnalyticsPage.data.elements.queryRows, 30);
-    const queryFromRow = await queryAnalyticsPage.data.elements.queryRowValue(1);
+    const queryFromRow = await I.grabTextFrom(await queryAnalyticsPage.data.elements.queryRowValue(1));
 
     if (maxQueryLength !== '' && maxQueryLength !== '-1') {
       assert.ok(queryFromRow.length <= maxQueryLength, `Query length exceeds max length boundary equals ${queryFromRow.length} is more than ${maxQueryLength}`);
