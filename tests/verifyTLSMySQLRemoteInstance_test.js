@@ -19,12 +19,12 @@ maxQueryLengthTestData.add(['"']);
 // instances.add(['mysql_5.7_ssl_service', '5.7', 'mysql_5.7', 'mysql_ssl', 'mysql_global_status_max_used_connections']);
 instances.add(['mysql_8.0_ssl_service', '8.0', 'mysql_ssl_8.0', 'mysql_ssl', 'mysql_global_status_max_used_connections']);
 
-maxQueryLengthInstances.add(['mysql_5.7_ssl_service', '5.7', 'mysql_5.7', 'mysql_ssl', 'mysql_global_status_max_used_connections', '10']);
-maxQueryLengthInstances.add(['mysql_5.7_ssl_service', '5.7', 'mysql_5.7', 'mysql_ssl', 'mysql_global_status_max_used_connections', '-1']);
-maxQueryLengthInstances.add(['mysql_5.7_ssl_service', '5.7', 'mysql_5.7', 'mysql_ssl', 'mysql_global_status_max_used_connections', '']);
-maxQueryLengthInstances.add(['mysql_8.0_ssl_service', '8.0', 'mysql_8.0', 'mysql_ssl', 'mysql_global_status_max_used_connections', '10']);
-maxQueryLengthInstances.add(['mysql_8.0_ssl_service', '8.0', 'mysql_8.0', 'mysql_ssl', 'mysql_global_status_max_used_connections', '-1']);
-maxQueryLengthInstances.add(['mysql_8.0_ssl_service', '8.0', 'mysql_8.0', 'mysql_ssl', 'mysql_global_status_max_used_connections', '']);
+maxQueryLengthInstances.add(['mysql_5.7_ssl_service', '5.7', 'mysql_ssl_5.7', 'mysql_ssl', 'mysql_global_status_max_used_connections', '10']);
+maxQueryLengthInstances.add(['mysql_5.7_ssl_service', '5.7', 'mysql_ssl_5.7', 'mysql_ssl', 'mysql_global_status_max_used_connections', '-1']);
+maxQueryLengthInstances.add(['mysql_5.7_ssl_service', '5.7', 'mysql_ssl_5.7', 'mysql_ssl', 'mysql_global_status_max_used_connections', '']);
+maxQueryLengthInstances.add(['mysql_8.0_ssl_service', '8.0', 'mysql_ssl_8.0', 'mysql_ssl', 'mysql_global_status_max_used_connections', '10']);
+maxQueryLengthInstances.add(['mysql_8.0_ssl_service', '8.0', 'mysql_ssl_8.0', 'mysql_ssl', 'mysql_global_status_max_used_connections', '-1']);
+maxQueryLengthInstances.add(['mysql_8.0_ssl_service', '8.0', 'mysql_ssl_8.0', 'mysql_ssl', 'mysql_global_status_max_used_connections', '']);
 
 // AfterSuite(async ({ I }) => {
 //   await I.verifyCommand('docker stop mysql_5.7 || docker rm mysql_5.7');
@@ -205,6 +205,8 @@ Data(instances).Scenario(
     I.amOnPage(dashboardPage.mySQLInstanceOverview.url);
 
     const agent_id = await I.verifyCommand(`docker exec ${container} pmm-admin list | grep mysqld_exporter | awk -F" " '{print $4}' | awk -F"/" '{print $3}'`);
+
+    console.log(await I.verifyCommand(`docker exec ${container} -xdev 2>/dev/null -name "mysqld_exporter"`));
 
     await I.verifyCommand(`docker exec ${container} ls -la /usr/local/percona/pmm2/tmp/mysqld_exporter/agent_id/${agent_id}/ | grep tls`);
     await I.verifyCommand(`docker exec ${container} rm -r /usr/local/percona/pmm2/tmp/mysqld_exporter/`);
