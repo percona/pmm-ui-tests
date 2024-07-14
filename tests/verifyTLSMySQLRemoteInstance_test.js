@@ -46,6 +46,8 @@ Data(instances).Scenario(
     let details;
     const remoteServiceName = `remote_${serviceName}_faker`;
 
+    console.log(await I.verifyCommand('docker ps'));
+
     if (serviceType === 'mysql_ssl') {
       details = {
         serviceName: remoteServiceName,
@@ -57,7 +59,7 @@ Data(instances).Scenario(
         cluster: 'mysql_remote_cluster',
         environment: 'mysql_remote_cluster',
         tlsCA: await I.verifyCommand(`docker exec ${container} cat /var/lib/mysql/ca.pem`),
-        tlsKey: await I.verifyCommand(`docker exec ${container} cat  /var/lib/mysql/client-key.pem`),
+        tlsKey: await I.verifyCommand(`docker exec ${container} cat /var/lib/mysql/client-key.pem`),
         tlsCert: await I.verifyCommand(`docker exec ${container} cat /var/lib/mysql/client-cert.pem`),
       };
     }
