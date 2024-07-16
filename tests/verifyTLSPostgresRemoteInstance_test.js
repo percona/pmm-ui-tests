@@ -4,34 +4,16 @@ const noSslCheckServiceName = 'pg_no_ssl_check';
 
 Feature('Monitoring SSL/TLS PGSQL instances');
 
-BeforeSuite(async ({ I, adminPage }) => {
-//   // await I.verifyCommand(`${pmmFrameworkLoader} --pdpgsql-version=11 --setup-postgres-ssl --pmm2`);
-//   // await I.verifyCommand(`${pmmFrameworkLoader} --pdpgsql-version=12 --setup-postgres-ssl --pmm2`);
-//   // await I.verifyCommand(`${pmmFrameworkLoader} --pdpgsql-version=13 --setup-postgres-ssl --pmm2`);
-//   // await I.verifyCommand('python3 -m venv virtenv');
-//   await I.verifyCommand('. virtenv/bin/activate');
-//   await I.verifyCommand(`python ${adminPage.pathToFramework} --database SSL_PDPGSQL=14`);
-});
-
-// AfterSuite(async ({ I }) => {
-  // await I.verifyCommand('docker stop pgsql_11 || docker rm pgsql_11');
-  // await I.verifyCommand('docker stop pgsql_12 || docker rm pgsql_12');
-  // await I.verifyCommand('docker stop pgsql_13 || docker rm pgsql_13');
-  // await I.verifyCommand('docker stop pgsql_14 || docker rm pgsql_14');
-// });
-
 Before(async ({ I, settingsAPI }) => {
   await I.Authorize();
 });
 
 const instances = new DataTable(['serviceName', 'version', 'container', 'serviceType', 'metric', 'maxQueryLength']);
 
-// instances.add(['pgsql_16_ssl_service', '16', 'pdpgsql_pgsm_ssl_16', 'postgres_ssl', 'pg_stat_database_xact_rollback', '7']);
-instances.add(['pgsql_14_ssl_service', '14', 'pdpgsql_pgsm_ssl_14', 'postgres_ssl', 'pg_stat_database_xact_rollback', '7']);
-// skipping this due to bug in setup due to repo and packages
-// instances.add(['pgsql_12_ssl_service', '12', 'pgsql_12', 'postgres_ssl', 'pg_stat_database_xact_rollback']);
-// instances.add(['pgsql_11_ssl_service', '11', 'pgsql_11', 'postgres_ssl', 'pg_stat_database_xact_rollback']);
-// instances.add(['pgsql_13_ssl_service', '13', 'pgsql_13', 'postgres_ssl', 'pg_stat_database_xact_rollback']);
+instances.add(['pgsql_16_ssl_service', '16', 'pdpgsql_pgsm_ssl_16', 'postgres_ssl', 'pg_stat_database_xact_rollback', '7']);
+// instances.add(['pgsql_14_ssl_service', '14', 'pdpgsql_pgsm_ssl_14', 'postgres_ssl', 'pg_stat_database_xact_rollback', '7']);
+// instances.add(['pgsql_14_ssl_service', '13', 'pdpgsql_pgsm_ssl_13', 'postgres_ssl', 'pg_stat_database_xact_rollback', '7']);
+// instances.add(['pgsql_12_ssl_service', '12', 'pdpgsql_pgsm_ssl_12', 'postgres_ssl', 'pg_stat_database_xact_rollback', '7']);
 
 Data(instances).Scenario(
   'PMM-T948 PMM-T947 Verify Adding SSL services remotely @ssl @ssl-postgres @ssl-remote @not-ui-pipeline',
