@@ -65,10 +65,9 @@ Scenario(
       locationsPage.buttons.typeSelect(locationsPage.locationType.s3),
       { checked: true },
     );
-    I.seeAttributesOnElements(
-      locationsPage.buttons.typeSelect(locationsPage.locationType.client),
-      { checked: null },
-    );
+    const isChecked = await I.grabAttributeFrom(locationsPage.buttons.typeSelect(locationsPage.locationType.client), 'checked');
+
+    I.assertEqual(isChecked, null, 'Element is checked, but should not be.');
 
     // Verify buttons state
     I.seeTextEquals('Add', locationsPage.buttons.addLocation);
@@ -76,7 +75,7 @@ Scenario(
     I.seeTextEquals('Test', locationsPage.buttons.testLocation);
     I.seeElementsDisabled(locationsPage.buttons.testLocation);
     I.seeTextEquals('Cancel', locationsPage.buttons.cancel);
-    I.seeElementsEnabled(locationsPage.buttons.cancel);
+    I.waitForEnabled(locationsPage.buttons.cancel, 10);
   },
 );
 
@@ -117,8 +116,8 @@ Scenario(
     );
 
     // Verify buttons become enabled
-    I.seeAttributesOnElements(locationsPage.buttons.addLocation, { disabled: null });
-    I.seeAttributesOnElements(locationsPage.buttons.testLocation, { disabled: null });
+    I.waitForEnabled(locationsPage.buttons.addLocation, 10);
+    I.waitForEnabled(locationsPage.buttons.testLocation, 10);
 
     // Verify Test Connection works
     I.click(locationsPage.buttons.testLocation);

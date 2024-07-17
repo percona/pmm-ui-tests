@@ -158,7 +158,7 @@ Data(instances).Scenario(
 Data(instances).Scenario(
   'Verify QAN after MongoDB SSL Instances is added @ssl @ssl-remote @ssl-mongo @not-ui-pipeline',
   async ({
-    I, qanOverview, qanFilters, qanPage, current, adminPage,
+    I, queryAnalyticsPage, current, adminPage,
   }) => {
     const {
       serviceName,
@@ -167,14 +167,13 @@ Data(instances).Scenario(
     const serviceList = [serviceName, `remote_${serviceName}`];
 
     for (const service of serviceList) {
-      I.amOnPage(qanPage.url);
-      qanOverview.waitForOverviewLoaded();
+      I.amOnPage(I.buildUrlWithParams(queryAnalyticsPage.url, { from: 'now-5m' }));
+      queryAnalyticsPage.waitForLoaded();
       await adminPage.applyTimeRange('Last 12 hours');
-      qanOverview.waitForOverviewLoaded();
-      qanFilters.waitForFiltersToLoad();
-      await qanFilters.applySpecificFilter(service);
-      qanOverview.waitForOverviewLoaded();
-      const count = await qanOverview.getCountOfItems();
+      queryAnalyticsPage.waitForLoaded();
+      await queryAnalyticsPage.filters.selectFilter(service);
+      queryAnalyticsPage.waitForLoaded();
+      const count = await queryAnalyticsPage.data.getCountOfItems();
 
       assert.ok(count > 0, `The queries for service ${service} instance do NOT exist, check QAN Data`);
     }
@@ -208,7 +207,7 @@ Data(instances).Scenario(
 Data(instances).Scenario(
   ' PMM-T1431 Verify adding MongoDB instance via UI with specified Max Query Length option @max-length @ssl @ssl-remote @ssl-mongo @not-ui-pipeline',
   async ({
-    I, remoteInstancesPage, pmmInventoryPage, qanPage, qanOverview, qanFilters, qanDetails, inventoryAPI, current,
+    I, remoteInstancesPage, pmmInventoryPage, inventoryAPI, current,
   }) => {
     const {
       serviceName, serviceType, version, container, maxQueryLength,

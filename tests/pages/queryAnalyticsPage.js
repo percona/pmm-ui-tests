@@ -16,6 +16,7 @@ class QueryAnalyticsPage {
       metricsSorting: (columnNumber) => locate('$sort-by-control').at(columnNumber),
       columnName: (columnName) => locate(`//span[text()="${columnName}"]`),
       clipboardLink: locate(I.getPopUpLocator()).find('span').find('span'),
+      queryCountValue: locate('//*[@data-testid="query-analytics-details"]//span[text()="Query Count"]//ancestor::tr//td[3]//span[1]'),
     };
     this.buttons = {
       addColumnButton: '//span[contains(text(), "Add column")]',
@@ -23,6 +24,7 @@ class QueryAnalyticsPage {
       searchDashboard: '//div[contains(@class, "input-wrapper")]',
       copyButton: locate(I.useDataQA('copy-link-button')),
       qanBreadcrumb: locate(I.useDataQA('data-testid Query Analytics breadcrumb')),
+      refresh: I.useDataQA('data-testid RefreshPicker run button'),
     };
   }
 

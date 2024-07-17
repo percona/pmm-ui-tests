@@ -194,7 +194,7 @@ Data(instances).Scenario(
 Data(instances).Scenario(
   'Verify QAN after PGSQL SSL Instances is added @ssl @ssl-remote @ssl-postgres @not-ui-pipeline',
   async ({
-    I, qanOverview, qanFilters, qanPage, current, adminPage,
+    I, current, adminPage, queryAnalyticsPage,
   }) => {
     const {
       serviceName,
@@ -203,14 +203,13 @@ Data(instances).Scenario(
     const serviceList = [serviceName, `remote_${serviceName}`, noSslCheckServiceName];
 
     for (const service of serviceList) {
-      I.amOnPage(qanPage.url);
-      qanOverview.waitForOverviewLoaded();
+      I.amOnPage(I.buildUrlWithParams(queryAnalyticsPage.url, { from: 'now-5m' }));
+      queryAnalyticsPage.waitForLoaded();
       await adminPage.applyTimeRange('Last 5 minutes');
-      qanOverview.waitForOverviewLoaded();
-      qanFilters.waitForFiltersToLoad();
-      await qanFilters.applySpecificFilter(service);
-      qanOverview.waitForOverviewLoaded();
-      const count = await qanOverview.getCountOfItems();
+      queryAnalyticsPage.waitForLoaded();
+      await queryAnalyticsPage.filters.selectFilter(service);
+      queryAnalyticsPage.waitForLoaded();
+      const count = await queryAnalyticsPage.data.getCountOfItems();
 
       assert.ok(count > 0, `The queries for service ${service} instance do NOT exist, check QAN Data`);
     }
@@ -220,7 +219,7 @@ Data(instances).Scenario(
 Data(instances).Scenario(
   'PMM-T1426 Verify remote PostgreSQL can be added with specified Max Query Length @max-length @ssl @ssl-postgres @ssl-remote @not-ui-pipeline',
   async ({
-    I, remoteInstancesPage, pmmInventoryPage, qanPage, qanOverview, qanFilters, qanDetails, inventoryAPI, current,
+    I, remoteInstancesPage, pmmInventoryPage, inventoryAPI, current, queryAnalyticsPage,
   }) => {
     const {
       serviceName, serviceType, version, container, maxQueryLength,
@@ -277,21 +276,21 @@ Data(instances).Scenario(
 
     await I.wait(70);
     // Check max visible query length is less than max_query_length option
-    I.amOnPage(I.buildUrlWithParams(qanPage.clearUrl, { from: 'now-5m' }));
-    qanOverview.waitForOverviewLoaded();
-    await qanFilters.applyFilter(remoteServiceName);
-    I.waitForElement(qanOverview.elements.querySelector, 30);
-    const queryFromRow = await qanOverview.getQueryFromRow(1);
+    I.amOnPage(I.buildUrlWithParams(queryAnalyticsPage.url, { from: 'now-5m' }));
+    queryAnalyticsPage.waitForLoaded();
+    await queryAnalyticsPage.filters.selectFilter(remoteServiceName);
+    I.waitForElement(queryAnalyticsPage.data.elements.queryRows, 30);
+    const queryFromRow = await queryAnalyticsPage.data.elements.queryRowValue(1);
 
     if (maxQueryLength !== '' && maxQueryLength !== '-1') {
       assert.ok(queryFromRow.length <= maxQueryLength, `Query length exceeds max length boundary equals ${queryFromRow.length} is more than ${maxQueryLength}`);
     } else {
       // 6 is chosen because it's the length of "SELECT" any query that starts with that word should be longer
       assert.ok(queryFromRow.length >= 6, `Query length is equal to ${queryFromRow.length} which is less than minimal possible length`);
-      qanOverview.selectRow(1);
-      qanFilters.waitForFiltersToLoad();
-      qanDetails.checkExamplesTab();
-      qanDetails.checkExplainTab();
+      queryAnalyticsPage.data.selectRow(1);
+      queryAnalyticsPage.waitForLoaded();
+      queryAnalyticsPage.queryDetails.checkExamplesTab();
+      queryAnalyticsPage.queryDetails.checkTab('Explain');
     }
   },
 );

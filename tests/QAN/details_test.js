@@ -130,7 +130,7 @@ Scenario(
 // Data(querySources).Scenario(
 //   '@PMM-T1667 Verify that SQL injection is filtered in placeholders on QAN tab @qan',
 //   async ({
-//     I, qanPage, adminPage, qanOverview, qanDetails, qanFilters, current,
+//     I, adminPage, current,
 //   }) => {
 //     const { querySource } = current;
 //     const pmmFrameworkLoader = `bash ${adminPage.pathToFramework}`;
@@ -149,20 +149,20 @@ Scenario(
 //     await I.verifyCommand(`${mysqlCommandPrefix} "INSERT INTO cities VALUES (1,'New York','USA'),(2,'Atlanta','USA'), (3,'Paris','France');"`);
 //     await I.verifyCommand(`${mysqlCommandPrefix} "SELECT * FROM test.cities WHERE ID = 1;"`);
 
-//     I.amOnPage(I.buildUrlWithParams(qanPage.clearUrl, { from: 'now-15m' }));
-//     qanOverview.waitForOverviewLoaded();
-//     qanOverview.waitForOverviewLoaded();
-//     await qanOverview.searchByValue('SELECT * FROM test.cities WHERE ID');
+//     I.amOnPage(I.buildUrlWithParams(anPage.clearUrl, { from: 'now-15m' }));
+//     anOverview.waitForOverviewLoaded();
+//     anOverview.waitForOverviewLoaded();
+//     await anOverview.searchByValue('SELECT * FROM test.cities WHERE ID');
 //     await I.asyncWaitFor(async () => {
-//       I.click(qanOverview.buttons.refresh);
+//       I.click(anOverview.buttons.refresh);
 
-//       return !(await I.grabNumberOfVisibleElements(qanOverview.elements.noResultTableText));
+//       return !(await I.grabNumberOfVisibleElements(anOverview.elements.noResultTableText));
 //     }, 300);
-//     qanOverview.selectRowByText('select * from test.cities where id = ?');
-//     I.click(qanDetails.getTabLocator('Explain'));
-//     qanFilters.waitForFiltersToLoad();
-//     I.fillField(qanDetails.elements.firstPlaceholder, '1');
-//     I.waitForVisible(qanDetails.elements.explainTable);
+//     anOverview.selectRowByText('select * from test.cities where id = ?');
+//     I.click(anDetails.getTabLocator('Explain'));
+//     anFilters.waitForFiltersToLoad();
+//     I.fillField(anDetails.elements.firstPlaceholder, '1');
+//     I.waitForVisible(anDetails.elements.explainTable);
 //     I.assertEqual(await I.grabNumberOfVisibleElements(locate('$query-analytics-details').find('$table-row')), 1, 'Explain is expected to have one row in a table, but found more');
 //   },
 // );

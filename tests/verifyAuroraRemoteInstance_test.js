@@ -136,18 +136,17 @@ Data(instances)
   .Scenario(
     'PMM-T1295 Verify QAN after Aurora instance is added @instances',
     async ({
-      I, qanOverview, qanFilters, qanPage, current, adminPage,
+      I, queryAnalyticsPage, current, adminPage,
     }) => {
       const { instance_id } = current;
 
-      I.amOnPage(qanPage.url);
-      qanOverview.waitForOverviewLoaded();
+      I.amOnPage(I.buildUrlWithParams(queryAnalyticsPage.url, { from: 'now-5m' }));
+      queryAnalyticsPage.waitForLoaded();
       await adminPage.applyTimeRange('Last 12 hours');
-      qanOverview.waitForOverviewLoaded();
-      qanFilters.waitForFiltersToLoad();
-      await qanFilters.applySpecificFilter(instance_id);
-      qanOverview.waitForOverviewLoaded();
-      const count = await qanOverview.getCountOfItems();
+      queryAnalyticsPage.waitForLoaded();
+      await queryAnalyticsPage.filters.selectFilter(instance_id);
+      queryAnalyticsPage.waitForLoaded();
+      const count = await queryAnalyticsPage.data.getCountOfItems();
 
       assert.ok(count > 0, `The queries for service ${instance_id} instance do NOT exist, check QAN Data`);
     },

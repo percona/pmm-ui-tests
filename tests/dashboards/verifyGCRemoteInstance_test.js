@@ -109,7 +109,7 @@ Data(instances).Scenario(
 Data(instances).Scenario(
   'Verify QAN after remote Google Cloud instance is added @not-ui-pipeline @gcp',
   async ({
-    I, qanOverview, qanFilters, qanPage, current,
+    I, current, queryAnalyticsPage,
   }) => {
     const {
       instance,
@@ -117,12 +117,11 @@ Data(instances).Scenario(
 
     const instanceDetails = getInstance(instance);
 
-    I.amOnPage(qanPage.url);
-    qanOverview.waitForOverviewLoaded();
-    qanFilters.waitForFiltersToLoad();
-    await qanFilters.applyFilter(instanceDetails.serviceName);
-    qanOverview.waitForOverviewLoaded();
-    const count = await qanOverview.getCountOfItems();
+    I.amOnPage(I.buildUrlWithParams(queryAnalyticsPage.url, { from: 'now-5m' }));
+    queryAnalyticsPage.waitForLoaded();
+    await queryAnalyticsPage.filters.selectFilter(instanceDetails.serviceName);
+    queryAnalyticsPage.waitForLoaded();
+    const count = await queryAnalyticsPage.data.getCountOfItems();
 
     assert.ok(count > 0, `The queries for service ${instanceDetails.serviceName} instance do NOT exist`);
   },

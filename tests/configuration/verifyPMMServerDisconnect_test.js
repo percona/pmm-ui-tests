@@ -50,7 +50,7 @@ Scenario(
 
 Scenario(
   '@PMM-T1443 Verify metrics are saved if pmm-agent is stopped @disconnect',
-  async ({ I, dashboardPage, qanPage }) => {
+  async ({ I, dashboardPage }) => {
     await I.amOnPage(withCustomBaseUrl(dashboardPage.mySQLInstanceOverview.url));
     await dashboardPage.waitForDashboardOpened();
     await dashboardPage.expandEachDashboardRow();

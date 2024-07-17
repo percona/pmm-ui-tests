@@ -9,7 +9,7 @@ import PortalUser from '@helpers/types/portal-user.class';
  * Cleanup test users and related data after Portal tests.
  * As force disconnect leaves connected server record
  */
-test('Clean Up Portal tests', async () => {
+test('Clean Up Portal tests @portal', async () => {
   test.skip(!fileHelper.fileExists(constants.portal.credentialsFile));
   let firstAdmin: PortalUser;
   let secondAdmin: PortalUser;
@@ -30,6 +30,6 @@ test('Clean Up Portal tests', async () => {
     await api.okta.deleteUsers([firstAdmin, secondAdmin, technicalUser, freeUser]);
   });
   await test.step(`Remove "${constants.portal.credentialsFile}" file`, async () => {
-    await fileHelper.removeFile(constants.portal.credentialsFile);
+    fileHelper.removeFile(constants.portal.credentialsFile);
   });
 });

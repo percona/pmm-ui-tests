@@ -12,14 +12,19 @@ import Wait from '@helpers/enums/wait';
  *  {@link constants.okta} and {@link constants.serviceNow}.
  */
 test.describe('Spec file for connecting PMM to the portal', async () => {
-  let pmmVersion: number;
+  let pmmMajorVersion: number;
+  let pmmMinorVersion: number;
   let firstAdmin: PortalUser;
   let secondAdmin: PortalUser;
   let technicalUser: PortalUser;
 
   test.beforeAll(async () => {
-    pmmVersion = (await api.pmm.serverV1.getPmmVersion()).minor;
-    [firstAdmin, secondAdmin, technicalUser] = portalHelper.loadUsersFromFile();
+    const pmmVersion = (await api.pmm.serverV1.getPmmVersion());
+    pmmMajorVersion = pmmVersion.major;
+    pmmMinorVersion = pmmVersion.minor;
+    console.log(`PMM Major version is: ${pmmMajorVersion} and PMM minor version is: ${pmmMinorVersion}`);
+
+    [firstAdmin, secondAdmin, technicalUser] = await portalHelper.loadTestUsers();
   });
 
   test.beforeEach(async ({ page }) => {
@@ -28,7 +33,7 @@ test.describe('Spec file for connecting PMM to the portal', async () => {
 
   test('PMM-T809 PMM-T398 Verify Percona Platform elements on PMM Settings'
       + ' Page @portal @portal-pre-upgrade', async ({ perconaPlatformPage }) => {
-    test.skip(pmmVersion < 27, 'This test is for PMM version 2.27.0 and higher');
+    test.skip(pmmMinorVersion < 27 && pmmMajorVersion < 3, 'This test is for PMM version 2.27.0 and higher');
 
     await test.step('1. Open Percona Platform tab in PMM Settings', async () => {
       await perconaPlatformPage.authenticateSession();
@@ -40,15 +45,15 @@ test.describe('Spec file for connecting PMM to the portal', async () => {
         .toHaveText(perconaPlatformPage.labels.pmmServerId, { ignoreCase: true });
       await expect(perconaPlatformPage.elements.pmmServerNameHeader).toHaveText(perconaPlatformPage.labels.pmmServerName);
       await expect(perconaPlatformPage.elements.accessTokenHeader).toHaveText(perconaPlatformPage.labels.accessToken);
-      if (pmmVersion >= 35) {
+      if (pmmMinorVersion >= 35 || pmmMajorVersion > 2) {
         await expect(perconaPlatformPage.buttons.createPerconaAccount).toHaveAttribute('href', perconaPlatformPage.links.portalLogin);
         await expect(perconaPlatformPage.buttons.connect).toHaveText(perconaPlatformPage.labels.validateConnection);
       } else {
         await expect(perconaPlatformPage.buttons.connect).toHaveText(perconaPlatformPage.labels.connect);
       }
-      if (pmmVersion >= 35) {
+      if (pmmMinorVersion >= 35 || pmmMajorVersion > 2) {
         await expect(perconaPlatformPage.buttons.getToken35).toHaveAttribute('href', perconaPlatformPage.links.portalProfile);
-      } else if (pmmVersion > 29 && pmmVersion < 35) {
+      } else if (pmmMinorVersion > 29 && pmmMinorVersion < 35) {
         await expect(perconaPlatformPage.buttons.getToken).toHaveAttribute('href', perconaPlatformPage.links.portalProfile);
       } else {
         await expect(perconaPlatformPage.buttons.getToken).toHaveAttribute('href', perconaPlatformPage.links.platformProfile);
@@ -74,7 +79,7 @@ test.describe('Spec file for connecting PMM to the portal', async () => {
     'PMM-T1224 Verify user is notified about using old PMM version while trying to connect to Portal'
       + ' @portal @portal-pre-upgrade @post-pmm-portal-upgrade',
     async ({ perconaPlatformPage }) => {
-      test.skip(pmmVersion > 26, 'This test is for PMM version 2.26.0 and lower');
+      test.skip(pmmMinorVersion > 26 || pmmMajorVersion > 2, 'This test is for PMM version 2.26.0 and lower');
       await perconaPlatformPage.authenticateSession();
       await perconaPlatformPage.open();
       await perconaPlatformPage.fields.pmmServerName.type(`Test Server ${Date.now()}`);
@@ -89,7 +94,7 @@ test.describe('Spec file for connecting PMM to the portal', async () => {
     'PMM-T1097 Verify PMM server can be connected to Portal'
       + ' @portal @portal-pre-upgrade',
     async ({ perconaPlatformPage }) => {
-      test.skip(pmmVersion < 27, 'This test is for PMM version 2.27.0 and higher');
+      test.skip(pmmMinorVersion < 27 && pmmMajorVersion < 3, 'This test is for PMM version 2.27.0 and higher');
 
       await test.step('Open Percona Platform tab in PMM Settings', async () => {
         await perconaPlatformPage.authenticateSession();
@@ -110,7 +115,7 @@ test.describe('Spec file for connecting PMM to the portal', async () => {
     'PMM-T1098 Verify All org users can login in connected PMM server'
       + ' @not-ui-pipeline @portal @portal-pre-upgrade @post-pmm-portal-upgrade',
     async ({ loginPage, homeDashboardPage, context }) => {
-      test.skip(pmmVersion < 27, 'This test is for PMM version 2.27.0 and higher');
+      test.skip(pmmMinorVersion < 27 && pmmMajorVersion < 3, 'This test is for PMM version 2.27.0 and higher');
 
       await test.step('1. Login as admin user that created the org.', async () => {
         await loginPage.open();

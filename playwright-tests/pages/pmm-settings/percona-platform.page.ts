@@ -10,7 +10,7 @@ export default class PerconaPlatformPage extends CommonPage {
   elements: { [key: string]: Locator } = {
     ...this.elements,
     // heading: this.page.locator(`//h2[text()="${this.PAGE_HEADING}"] | //*[contains(text(), "${this.OLD_HEADING}")]`),
-    heading: this.page.locator(`//h2[text()="${this.PAGE_HEADING}"]`),
+    heading: this.page.locator(`//h1[text()="${this.PAGE_HEADING}"]`),
     pmmServerIdHeader: this.perconaPlatformContainer.getByTestId('pmmServerId-field-label'),
     pmmServerNameHeader: this.perconaPlatformContainer.getByTestId('pmmServerName-field-label'),
     pmmServerNameError: this.perconaPlatformContainer.getByTestId('pmmServerName-field-error-message'),
@@ -44,7 +44,7 @@ export default class PerconaPlatformPage extends CommonPage {
   buttons = {
     connect: this.perconaPlatformContainer.getByTestId('connect-button'),
     disconnect: this.connectedContainer.getByTestId('disconnect-button'),
-    confirmDisconnect: this.page.locator('//*[@aria-label="Confirm Modal Danger Button"]'),
+    confirmDisconnect: this.page.getByTestId('data-testid Confirm Modal Danger Button'),
     getToken: this.perconaPlatformContainer.getByText(this.labels.getToken),
     getToken35: this.page.locator(`//*[contains(text(), "${this.labels.getToken}")]//ancestor::a`),
     createPerconaAccount: this.page.locator(`//*[contains(text(), "${this.labels.createPerconaAccount}")]//ancestor::a`),

@@ -133,6 +133,42 @@ Scenario(
 );
 
 Scenario(
+  'PMM-T1811 - verify version displayed for added service on Inventory page @inventory @inventory-fb',
+  async ({
+    I, pmmInventoryPage, addInstanceAPI,
+  }) => {
+    const psServiceName = 'ps_5.7_version_test';
+    const rdsPostgresqlServiceName = 'pg_rds_version_test';
+    const mongoServiceName = 'mongo_4.2_version_test';
+    const pgServiceName = 'pg_15_version_test';
+
+    await addInstanceAPI.addMysql(psServiceName);
+    await addInstanceAPI.addMongodb(mongoServiceName);
+    await addInstanceAPI.addPostgresql(pgServiceName);
+    await addInstanceAPI.addRDSPostgresql(rdsPostgresqlServiceName);
+
+    I.amOnPage(pmmInventoryPage.url);
+    I.waitForVisible(pmmInventoryPage.fields.showServiceDetails(psServiceName), 20);
+
+    I.click(pmmInventoryPage.fields.showServiceDetails(psServiceName));
+    I.waitForVisible(pmmInventoryPage.fields.detailsLabelByText('version=5.7.30-33-log'), 5);
+    I.click(pmmInventoryPage.fields.hideServiceDetails(psServiceName));
+
+    I.click(pmmInventoryPage.fields.showServiceDetails(pgServiceName));
+    I.waitForVisible(pmmInventoryPage.fields.detailsLabelByText('version=15.4 - Percona Distribution'), 5);
+    I.click(pmmInventoryPage.fields.hideServiceDetails(pgServiceName));
+
+    I.click(pmmInventoryPage.fields.showServiceDetails(mongoServiceName));
+    I.waitForVisible(pmmInventoryPage.fields.detailsLabelByText('version=4.4.24'), 5);
+    I.click(pmmInventoryPage.fields.hideServiceDetails(mongoServiceName));
+
+    I.click(pmmInventoryPage.fields.showServiceDetails(rdsPostgresqlServiceName));
+    I.waitForVisible(pmmInventoryPage.fields.detailsLabelByText('version=12.14'), 300);
+    I.click(pmmInventoryPage.fields.hideServiceDetails(rdsPostgresqlServiceName));
+  },
+);
+
+Scenario(
   'PMM-T342 - Verify pmm-server node cannot be removed from PMM Inventory page @inventory',
   async ({ I, pmmInventoryPage }) => {
     const node = 'pmm-server';
@@ -497,33 +533,32 @@ Data(aws_instances).Scenario('PMM-T2340 Verify adding and editing Aurora remote 
 Data(qanFilters).Scenario(
   'PMM-T2340 - Verify QAN after remote instance is added @inventory @inventory-fb',
   async ({
-    I, qanOverview, qanFilters, qanPage, current,
+    I, current, queryAnalyticsPage,
   }) => {
-    I.amOnPage(qanPage.url);
-    qanOverview.waitForOverviewLoaded();
-    await qanFilters.applyFilter(current.filterName);
-    qanOverview.waitForOverviewLoaded();
-    const count = await qanOverview.getCountOfItems();
+    I.amOnPage(I.buildUrlWithParams(queryAnalyticsPage.url, { from: 'now-5m' }));
+    queryAnalyticsPage.waitForLoaded();
+    await queryAnalyticsPage.filters.selectFilter(current.filterName);
+    queryAnalyticsPage.waitForLoaded();
+    const count = await queryAnalyticsPage.data.getCountOfItems();
 
     assert.ok(count > 0, `The queries for filter ${current.filterName} instance do NOT exist`);
   },
 ).retry(2);
 
 Data(aws_instances).Scenario(
-  'PMM-T2340 Verify QAN after Aurora instance is added and eidted @inventory @inventory-fb',
+  'PMM-T2340 Verify QAN after Aurora instance is added and edited @inventory @inventory-fb',
   async ({
-    I, qanOverview, qanFilters, qanPage, current, adminPage,
+    I, queryAnalyticsPage, current, adminPage,
   }) => {
     const { instance_id } = current;
 
-    I.amOnPage(qanPage.url);
-    qanOverview.waitForOverviewLoaded();
+    I.amOnPage(I.buildUrlWithParams(queryAnalyticsPage.url, { from: 'now-5m' }));
+    queryAnalyticsPage.waitForLoaded();
     await adminPage.applyTimeRange('Last 12 hours');
-    qanOverview.waitForOverviewLoaded();
-    qanFilters.waitForFiltersToLoad();
-    await qanFilters.applySpecificFilter(instance_id);
-    qanOverview.waitForOverviewLoaded();
-    const count = await qanOverview.getCountOfItems();
+    queryAnalyticsPage.waitForLoaded();
+    await queryAnalyticsPage.filters.selectFilter(instance_id);
+    queryAnalyticsPage.waitForLoaded();
+    const count = await queryAnalyticsPage.data.getCountOfItems();
 
     assert.ok(count > 0, `The queries for service ${instance_id} instance do NOT exist, check QAN Data`);
   },

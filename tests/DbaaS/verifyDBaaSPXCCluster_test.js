@@ -147,14 +147,14 @@ Scenario(
 Scenario(
   'PMM-T502 Verify monitoring of PXC cluster @dbaas',
   async ({
-    I, dbaasPage, dashboardPage, qanFilters, qanPage, qanOverview,
+    I, dbaasPage, dashboardPage, queryAnalyticsPage,
   }) => {
     I.amOnPage(dbaasPage.url);
     I.waitForVisible(dbaasPage.tabs.dbClusterTab.dbClusterAddButtonTop, 30);
     await dashboardPage.genericDashboardLoadForDbaaSClusters(`${dashboardPage.pxcGaleraClusterSummaryDashboard.url}&var-cluster=${pxc_cluster_name}-pxc`, 'Last 15 minutes', 4, 0, 3);
-    I.amOnPage(I.buildUrlWithParams(qanPage.clearUrl, { from: 'now-3h' }));
-    qanOverview.waitForOverviewLoaded();
-    qanFilters.checkFilterExistInSection('Cluster', pxc_cluster_name);
+    I.amOnPage(I.buildUrlWithParams(queryAnalyticsPage.url, { from: 'now-3h' }));
+    queryAnalyticsPage.waitForLoaded();
+    queryAnalyticsPage.filters.checkFilterExistInSection('Cluster', pxc_cluster_name);
   },
 );
 

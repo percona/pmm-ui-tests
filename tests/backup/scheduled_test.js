@@ -105,7 +105,7 @@ Scenario(
 
     I.seeElementsDisabled(scheduledPage.buttons.createSchedule);
     I.fillField(scheduledPage.fields.backupName, scheduleName);
-    I.seeElementsEnabled(scheduledPage.buttons.createSchedule);
+    I.waitForEnabled(scheduledPage.buttons.createSchedule, 10);
   },
 );
 
@@ -349,7 +349,9 @@ Scenario(
     await scheduledPage.verifyBackupValues(newSchedule);
 
     // Verify schedule is disabled after copy
-    I.seeAttributesOnElements(scheduledPage.elements.toggleByName(newSchedule.name), { checked: null });
+    const isChecked = await I.grabAttributeFrom(scheduledPage.elements.toggleByName(newSchedule.name), 'checked');
+
+    I.assertEqual(isChecked, null, `Element "${scheduledPage.elements.toggleByName(newSchedule.name).xpath}" is checked, but should not be.`);
   },
 );
 
@@ -519,7 +521,7 @@ Scenario(
   },
 );
 
-Scenario.skip(
+Scenario(
   '@PMM-T1527 Verify BM Scheduler blocks mongo services that are not managed as cluster'
   + ' @backup @bm-mongo @bm-fb',
   async ({ I, scheduledPage }) => {
@@ -532,7 +534,6 @@ Scenario.skip(
     scheduledPage.openScheduleBackupModal();
     scheduledPage.selectDropdownOption(scheduledPage.fields.serviceNameDropdown, mongoNameWithoutCluster);
     I.fillField(scheduledPage.fields.backupName, schedule.name);
-    I.click(scheduledPage.elements.advancedSettingsSection);
     I.fillField(scheduledPage.fields.folder, schedule.folder);
     scheduledPage.selectDropdownOption(scheduledPage.fields.locationDropdown, location.name);
     scheduledPage.selectDropdownOption(scheduledPage.fields.everyDropdown, 'Every minute');

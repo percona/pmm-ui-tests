@@ -108,6 +108,8 @@ module.exports = {
       enable_alerting: true,
       remove_email_alerting_settings: true,
       remove_slack_alerting_settings: true,
+      remove_alert_manager_url: true,
+      remove_alert_manager_rules: true,
     };
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
 
@@ -204,6 +206,9 @@ module.exports = {
             break;
           case 'ssh':
             body.ssh_key = value;
+            break;
+          case 'rbac':
+            value ? body.enable_access_control = true : body.disable_access_control = true;
             break;
           default:
             throw Error(`Unknown property "${key}" was passed to Change Settings function`);

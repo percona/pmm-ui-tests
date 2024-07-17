@@ -32,10 +32,6 @@ Data(sidebar).Scenario(
   async ({ I, homePage, current }) => {
     await homePage.open();
     await homePage.openLeftMenu();
-    I.usePlaywrightTo('check browser version', async ({ browser }) => {
-      // eslint-disable-next-line no-underscore-dangle,no-console
-      console.log(`${browser._name} - `, await browser.version());
-    });
     current.click();
     I.waitInUrl(current.path, 5);
   },

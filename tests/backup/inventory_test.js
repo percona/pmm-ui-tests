@@ -167,15 +167,15 @@ Scenario(
 
     I.seeElementsDisabled(backupInventoryPage.elements.retryTimes);
     I.click(backupInventoryPage.buttons.retryModeOption('Auto'));
-    I.seeElementsEnabled(backupInventoryPage.elements.retryTimes);
-    I.seeElementsEnabled(backupInventoryPage.elements.retryInterval);
+    I.waitForEnabled(backupInventoryPage.elements.retryTimes, 10);
+    I.waitForEnabled(backupInventoryPage.elements.retryInterval, 10);
     I.click(backupInventoryPage.buttons.retryModeOption('Manual'));
     I.seeElementsDisabled(backupInventoryPage.elements.retryTimes);
     I.seeElementsDisabled(backupInventoryPage.elements.retryInterval);
 
     I.seeElementsDisabled(backupInventoryPage.buttons.addBackup);
     I.fillField(backupInventoryPage.fields.backupName, backupName);
-    I.seeElementsEnabled(backupInventoryPage.buttons.addBackup);
+    I.waitForEnabled(backupInventoryPage.buttons.addBackup, 10);
     // TODO: uncomment when PMM-10899 will be fixed
     // I.fillField(backupInventoryPage.fields.description, 'test description');
   },

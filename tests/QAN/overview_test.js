@@ -1,14 +1,13 @@
 const assert = require('assert');
 
-Feature('QAN overview');
+Feature('QAN overview').retry(1);
 
 Before(async ({
-  I, qanPage, qanOverview, qanFilters,
+  I, queryAnalyticsPage,
 }) => {
   await I.Authorize();
-  I.amOnPage(qanPage.url);
-  qanOverview.waitForOverviewLoaded();
-  qanFilters.waitForFiltersToLoad();
+  I.amOnPage(I.buildUrlWithParams(queryAnalyticsPage.url, { from: 'now-5m' }));
+  queryAnalyticsPage.waitForLoaded();
 });
 
 Scenario(
@@ -27,11 +26,11 @@ Scenario(
     assert.ok(firstQueryText === tooltipQueryText, `The request text: ${firstQueryText}, don't match the request text on the tooltip: ${tooltipQueryText}.`);
   },
 );
-// https://perconadev.atlassian.net/browse/PMM-13071 blocked
-Scenario.skip(
+
+Scenario(
   'PMM-T1061 Verify Plan and PlanID with pg_stat_monitor @qan',
   async ({
-    I, adminPage, qanOverview, qanFilters, qanDetails, queryAnalyticsPage,
+    I, adminPage, queryAnalyticsPage,
   }) => {
     queryAnalyticsPage.filters.selectContainFilter('pdpgsql_pgsm_pmm');
     queryAnalyticsPage.waitForLoaded();
@@ -41,29 +40,29 @@ Scenario.skip(
     queryAnalyticsPage.waitForLoaded();
     queryAnalyticsPage.data.mouseOverInfoIcon(1);
 
-    let tooltipQueryId = await queryAnalyticsPage.data.getTooltipQueryId();
+    const tooltipQueryId = await queryAnalyticsPage.data.getTooltipQueryId();
 
     await queryAnalyticsPage.data.hideTooltip();
 
     queryAnalyticsPage.data.selectRow(1);
     queryAnalyticsPage.waitForLoaded();
     queryAnalyticsPage.queryDetails.checkTab('Plan');
-    await qanDetails.checkPlanTabIsNotEmpty();
-    await qanDetails.mouseOverPlanInfoIcon();
+    await queryAnalyticsPage.queryDetails.checkPlanTabIsNotEmpty();
+    await queryAnalyticsPage.queryDetails.mouseOverPlanInfoIcon();
 
-    let tooltipPlanId = await I.grabTextFrom(qanDetails.elements.tooltipPlanId);
+    let tooltipPlanId = await I.grabTextFrom(queryAnalyticsPage.queryDetails.elements.tooltipPlanId);
 
     tooltipPlanId = tooltipPlanId.split(':');
     tooltipPlanId = tooltipPlanId[1].trim();
-    await qanOverview.hideTooltip();
+    await queryAnalyticsPage.data.hideTooltip();
     assert.notEqual(tooltipQueryId, tooltipPlanId, 'Plan Id should not be equal to Query Id');
-    await I.click(qanFilters.buttons.resetAll);
-    await qanOverview.searchByValue('SELECT * FROM pg_stat_database');
-    await qanOverview.waitForOverviewLoaded();
-    await qanOverview.selectRow(1);
-    await qanFilters.waitForFiltersToLoad();
-    await qanDetails.checkPlanTab();
-    await qanDetails.checkPlanTabIsEmpty();
+    queryAnalyticsPage.filters.resetAllFilters();
+    queryAnalyticsPage.data.searchByValue('SELECT * FROM pg_stat_database');
+    queryAnalyticsPage.waitForLoaded();
+    queryAnalyticsPage.data.selectRow(1);
+    queryAnalyticsPage.waitForLoaded();
+    queryAnalyticsPage.queryDetails.checkTab('Plan');
+    await queryAnalyticsPage.queryDetails.checkPlanTabIsEmpty();
   },
 );
 
@@ -190,7 +189,7 @@ Scenario(
 
 xScenario(
   'PMM-T219 - Verify that user is able to scroll up/down and resize the overview table @qan',
-  async ({ I, qanOverview, qanDetails }) => {
+  async ({ I }) => {
     const columnsToAdd = [
       'Bytes Sent',
       'Reading Blocks Time',
@@ -201,20 +200,20 @@ xScenario(
       'Full Scan',
     ];
 
-    for (const i in columnsToAdd) {
-      qanOverview.addSpecificColumn(columnsToAdd[i]);
-    }
+    // for (const i in columnsToAdd) {
+    //   anOverview.addSpecificColumn(columnsToAdd[i]);
+    // }
 
-    I.waitForElement(qanOverview.getColumnLocator('Local Blocks Written'), 30);
-    I.scrollTo(qanOverview.getColumnLocator('Local Blocks Written'), 30);
-    I.moveCursorTo(qanOverview.elements.querySelector);
-    I.waitForVisible(qanOverview.elements.querySelector);
-    I.click(qanOverview.elements.querySelector);
-    I.scrollTo(qanOverview.getRowLocator(10));
-    I.waitForVisible(qanOverview.getColumnLocator('Query Time'), 30);
-    I.waitForVisible(qanDetails.elements.resizer, 30);
-    I.dragAndDrop(qanDetails.elements.resizer, qanOverview.getColumnLocator('Query Time'));
-    I.scrollTo(qanOverview.getColumnLocator('Query Time'));
+    // I.waitForElement(anOverview.getColumnLocator('Local Blocks Written'), 30);
+    // I.scrollTo(anOverview.getColumnLocator('Local Blocks Written'), 30);
+    // I.moveCursorTo(anOverview.elements.querySelector);
+    // I.waitForVisible(anOverview.elements.querySelector);
+    // I.click(anOverview.elements.querySelector);
+    // I.scrollTo(anOverview.getRowLocator(10));
+    // I.waitForVisible(anOverview.getColumnLocator('Query Time'), 30);
+    // I.waitForVisible(anDetails.elements.resizer, 30);
+    // I.dragAndDrop(anDetails.elements.resizer, anOverview.getColumnLocator('Query Time'));
+    // I.scrollTo(anOverview.getColumnLocator('Query Time'));
   },
 );
 
@@ -310,7 +309,7 @@ Scenario(
 
 Scenario(
   'PMM-T417 Verify user is able to search by Database @qan',
-  async ({ I, qanOverview, queryAnalyticsPage }) => {
+  async ({ I, queryAnalyticsPage }) => {
     const groupBy = 'Database';
     const query = 'postgres';
 
@@ -373,59 +372,54 @@ Scenario(
 Scenario(
   'PMM-T134 Verify user is able to remove metric from the overview table @qan',
   async ({
-    I, qanOverview, qanDetails, qanFilters,
+    I, queryAnalyticsPage,
   }) => {
     const metricName = 'Query Count';
 
-    await qanOverview.selectRow(1);
-    await qanFilters.waitForFiltersToLoad();
-    await I.waitForElement(qanDetails.buttons.close, 30);
-    await I.seeElement(qanOverview.getQANMetricHeader(metricName));
-    await qanOverview.removeMetricFromOverview(metricName);
+    await queryAnalyticsPage.data.selectRow(1);
+    await queryAnalyticsPage.waitForLoaded();
+    await I.waitForElement(queryAnalyticsPage.queryDetails.buttons.close, 30);
+    await I.seeElement(queryAnalyticsPage.data.fields.columnHeader(metricName));
+    await queryAnalyticsPage.data.removeMetricFromOverview(metricName);
     const url = await I.grabCurrentUrl();
 
     await I.amOnPage(url);
-    await qanOverview.waitForOverviewLoaded();
-    await I.waitForElement(qanOverview.buttons.addColumn, 30);
-    await I.dontSeeElement(qanOverview.getQANMetricHeader(metricName));
+    await queryAnalyticsPage.waitForLoaded();
+    await I.waitForElement(queryAnalyticsPage.buttons.addColumn, 30);
+    await I.dontSeeElement(queryAnalyticsPage.data.fields.columnHeader(metricName));
   },
 );
 
 Scenario(
   'PMM-T220 Verify that last column can\'t be removed from Overview table @qan',
   async ({
-    I, qanOverview, qanDetails, qanFilters,
+    I, queryAnalyticsPage,
   }) => {
-    await qanOverview.selectRow(1);
-    await qanFilters.waitForFiltersToLoad();
-    await I.waitForElement(qanDetails.buttons.close, 30);
-    await I.seeElement(qanOverview.getQANMetricHeader('Query Count'));
-    await qanOverview.removeMetricFromOverview('Query Count');
-    await qanOverview.removeMetricFromOverview('Query Time');
-    const column = qanOverview.getColumnLocator('Load');
+    await queryAnalyticsPage.data.selectRow(1);
+    queryAnalyticsPage.waitForLoaded();
+    await I.waitForElement(queryAnalyticsPage.queryDetails.buttons.close, 30);
+    await I.seeElement(queryAnalyticsPage.data.fields.columnHeader('Query Count'));
+    await queryAnalyticsPage.data.removeMetricFromOverview('Query Count');
+    await queryAnalyticsPage.data.removeMetricFromOverview('Query Time');
 
-    await I.waitForElement(column);
-    await I.click(column);
-    await I.waitForElement(qanOverview.fields.columnSearchField, 10);
-    await I.fillField(qanOverview.fields.columnSearchField, 'Remove column');
-    await I.dontSeeElement(qanOverview.elements.removeMetricColumn);
+    await I.waitForElement(queryAnalyticsPage.data.fields.columnHeader('Load'));
+    await I.click(queryAnalyticsPage.data.fields.columnHeader('Load'));
+    await I.waitForElement(queryAnalyticsPage.data.fields.searchBy, 10);
+    await I.dontSeeElement(queryAnalyticsPage.data.elements.removeMetricColumn);
   },
 );
-// https://perconadev.atlassian.net/browse/PMM-13052 blocked
-Scenario.skip(
-  'PMM-T1699 Verify that query time is shown in UTC timezone after hovering Load graph for query if user selected UTC timezone @qan',
-  async ({ I, adminPage, qanOverview }) => {
-    qanOverview.waitForOverviewLoaded();
-    const firstLoadCell = qanOverview.getLoadLocator(2);
 
-    I.moveCursorTo(firstLoadCell);
-    let timestamp = await I.grabTextFrom(qanOverview.elements.tooltipContent);
+Scenario(
+  'PMM-T1699 Verify that query time is shown in UTC timezone after hovering Load graph for query if user selected UTC timezone @qan',
+  async ({ I, adminPage, queryAnalyticsPage }) => {
+    I.waitForVisible(queryAnalyticsPage.data.elements.loadColumn('2'));
+    I.moveCursorTo(queryAnalyticsPage.data.elements.loadColumn('2'));
+    let timestamp = await I.grabTextFrom(queryAnalyticsPage.data.elements.tooltipContent);
 
     const clientTimeOffset = new Intl.NumberFormat('en-US', {
       minimumIntegerDigits: 2,
       signDisplay: 'exceptZero',
     }).format(-new Date().getTimezoneOffset() / 60);
-    const clientTimeZone = `${clientTimeOffset}:00`;
 
     I.assertContain(
       timestamp,
@@ -434,9 +428,10 @@ Scenario.skip(
     );
 
     adminPage.applyTimeZone('Coordinated Universal Time');
-    I.click(qanOverview.buttons.refresh);
-    I.moveCursorTo(firstLoadCell);
-    timestamp = await I.grabTextFrom(qanOverview.elements.tooltipContent);
+    I.click(queryAnalyticsPage.buttons.refresh);
+    I.waitForVisible(queryAnalyticsPage.data.elements.loadColumn('2'));
+    I.moveCursorTo(queryAnalyticsPage.data.elements.loadColumn('2'));
+    timestamp = await I.grabTextFrom(queryAnalyticsPage.data.elements.tooltipContent);
 
     I.assertContain(
       timestamp,

@@ -2,7 +2,7 @@ const assert = require('assert');
 const { communicationData, emailDefaults } = require('../../pages/testData');
 
 const {
-  I, adminPage, links, perconaPlatformPage,
+  I, adminPage, links, perconaPlatformPage, codeceptjsConfig,
 } = inject();
 
 const locateLabel = (selector) => locate(I.useDataQA(selector)).find('span');
@@ -25,7 +25,7 @@ module.exports = {
   agreementText:
     'Check here to indicate that you have read and agree to the \nTerms of Service\n and \nPrivacy Policy',
   alertManager: {
-    ip: process.env.VM_IP ? process.env.VM_IP : process.env.SERVER_IP,
+    ip: codeceptjsConfig.config.helpers.Playwright.url,
     service: ':9093/#/alerts',
     externalAlertManagerPort: ':9093',
     rule:
@@ -286,6 +286,8 @@ module.exports = {
     metricsResolutionRadio: '$resolutions-radio-button',
     microsoftAzureMonitoringSwitch: locate('$advanced-azure-discover').find('//div[2]//label'),
     microsoftAzureMonitoringSwitchInput: locate('$advanced-azure-discover').find('//div[2]//input'),
+    accessControlInput: locate('[name="accessControl"]'),
+    accessControlSwitch: locate('$access-control').find('label'),
     loginButton: '$sign-in-submit-button',
     lowInput: '$lr-number-input',
     mediumInput: '$mr-number-input',
@@ -537,7 +539,7 @@ module.exports = {
 
     for (let i = 0; i < 20; i++) {
       response = await I.sendGetRequest(
-        `http://${this.alertManager.ip}${this.alertManager.externalAlertManagerPort}/api/v2/alerts/groups?silenced=false&inhibited=false&active=true`,
+        `${this.alertManager.ip}${this.alertManager.externalAlertManagerPort}/api/v2/alerts/groups?silenced=false&inhibited=false&active=true`,
       );
       if (JSON.stringify(response.data).includes(ruleName)) {
         break;
@@ -611,7 +613,7 @@ module.exports = {
         tooltips: this.tooltips.alertManagerIntegration,
       },
       {
-        subPage: this.perconaPlatformUrl,
+        subPage: this.perconaPlatformUrl.url,
         tooltips: this.tooltips.perconaPlatform,
       },
     ];

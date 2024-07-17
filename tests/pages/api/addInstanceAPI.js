@@ -293,6 +293,44 @@ module.exports = {
     return resp.data;
   },
 
+  async addRDSPostgresql(serviceName, connection = {}) {
+    const {
+      port, username, password, address, cluster, aws_access_key, aws_secret_key,
+    } = connection;
+    const body = {
+      add_node: {
+        node_name: serviceName,
+        node_type: 'REMOTE_NODE',
+      },
+      address: address || remoteInstancesHelper.remote_instance.aws.aws_postgresql_12.address,
+      aws_access_key: aws_access_key || remoteInstancesHelper.remote_instance.aws.aws_access_key,
+      aws_secret_key: aws_secret_key || remoteInstancesHelper.remote_instance.aws.aws_secret_key,
+      service_name: serviceName,
+      username: username || remoteInstancesHelper.remote_instance.aws.aws_postgresql_12.userName,
+      password: password || remoteInstancesHelper.remote_instance.aws.aws_postgresql_12.password,
+      az: 'us-east-2b',
+      database: remoteInstancesHelper.remote_instance.aws.aws_postgresql_12.database,
+      cluster: cluster || remoteInstancesHelper.remote_instance.aws.aws_postgresql_12.clusterName,
+      engine: 'DISCOVER_RDS_POSTGRESQL',
+      instance_id: 'pmm-qa-pgsql-12',
+      isRDS: true,
+      pmm_agent_id: 'pmm-server',
+      port: port || remoteInstancesHelper.remote_instance.aws.aws_postgresql_12.port,
+      rds_exporter: true,
+      region: 'us-east-2',
+      metrics_mode: 1,
+      tls_skip_verify: true,
+      disable_comments_parsing: true,
+      qan_postgresql_pgstatements: true,
+    };
+    const headers = { Authorization: `Basic ${await I.getAuth()}` };
+    const resp = await I.sendPostRequest('v1/management/RDS/Add', body, headers);
+
+    I.assertEqual(resp.status, 200, `Instance ${serviceName} was not added for monitoring. \n ${JSON.stringify(resp.data, null, 2)}`);
+
+    return resp.data;
+  },
+
   async addExternalService(serviceName) {
     const body = {
       external: {

@@ -43,7 +43,7 @@ AfterSuite(async ({ I }) => {
 Data(data).Scenario(
   '@PMM-T1678 Verify PMM with external PostgreSQL including upgrade @docker-configuration1',
   async ({
-    I, dashboardPage, qanPage, qanOverview, pmmInventoryPage, current,
+    I, dashboardPage, pmmInventoryPage, current, queryAnalyticsPage,
   }) => {
     const basePmmUrl = `http://127.0.0.1:${current.serverPort}/`;
     const serviceName = 'pmm-server-postgresql';
@@ -81,7 +81,7 @@ Data(data).Scenario(
     I.waitForText('YES', 20, locate('[aria-label="Connected panel"]'));
 
     I.wait(30);
-    I.amOnPage(I.buildUrlWithParams(`${basePmmUrl}${qanPage.clearUrl}`, { service_name: serviceName, node_name: 'pmm-server-db' }));
-    qanOverview.waitForOverviewLoaded();
+    I.amOnPage(I.buildUrlWithParams(`${basePmmUrl}${queryAnalyticsPage.url}`, { service_name: serviceName, node_name: 'pmm-server-db' }));
+    queryAnalyticsPage.waitForLoaded();
   },
 );

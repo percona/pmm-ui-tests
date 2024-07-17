@@ -953,22 +953,17 @@ if (versionMinor > 14) {
 Scenario(
   'Verify QAN has specific filters for Remote Instances after Upgrade (UI) @ovf-upgrade @ami-upgrade @post-client-upgrade @post-upgrade @pmm-upgrade',
   async ({
-    I, qanPage, qanFilters, qanOverview,
+    I, queryAnalyticsPage,
   }) => {
-    I.amOnPage(qanPage.url);
-    qanFilters.waitForFiltersToLoad();
-    await qanFilters.expandAllFilters();
+    I.amOnPage(I.buildUrlWithParams(queryAnalyticsPage.url, { from: 'now-5m' }));
+    queryAnalyticsPage.waitForLoaded();
 
     // Checking that Cluster filters are still in QAN after Upgrade
     for (const name of Object.keys(remoteInstancesHelper.upgradeServiceNames)) {
       if (remoteInstancesHelper.qanFilters.includes(name)) {
-        const filter = qanFilters.getFilterLocator(name);
-
-        qanFilters.waitForFiltersToLoad();
-        qanOverview.waitForOverviewLoaded();
-
-        I.waitForVisible(filter, 30);
-        I.seeElement(filter);
+        queryAnalyticsPage.waitForLoaded();
+        I.waitForVisible(queryAnalyticsPage.filters.fields.filterByName(name), 30);
+        I.seeElement(queryAnalyticsPage.filters.fields.filterByName(name));
       }
     }
   },
@@ -1131,7 +1126,7 @@ if (versionMinor >= 23) {
   Data(sslinstances).Scenario(
     'Verify QAN after upgrade for SSL Instances added @post-upgrade @pmm-upgrade',
     async ({
-      I, qanOverview, qanFilters, qanPage, current, adminPage,
+      I, queryAnalyticsPage, current, adminPage,
     }) => {
       const {
         serviceName,
@@ -1140,14 +1135,13 @@ if (versionMinor >= 23) {
       const serviceList = [serviceName, `remote_api_${serviceName}`];
 
       for (const service of serviceList) {
-        I.amOnPage(qanPage.url);
-        qanOverview.waitForOverviewLoaded();
+        I.amOnPage(I.buildUrlWithParams(queryAnalyticsPage.url, { from: 'now-5m' }));
+        queryAnalyticsPage.waitForLoaded();
         await adminPage.applyTimeRange('Last 5 minutes');
-        qanOverview.waitForOverviewLoaded();
-        qanFilters.waitForFiltersToLoad();
-        await qanFilters.applySpecificFilter(service);
-        qanOverview.waitForOverviewLoaded();
-        const count = await qanOverview.getCountOfItems();
+        queryAnalyticsPage.waitForLoaded();
+        await queryAnalyticsPage.filters.selectFilter(service);
+        queryAnalyticsPage.waitForLoaded();
+        const count = await queryAnalyticsPage.data.getCountOfItems();
 
         assert.ok(count > 0, `The queries for service ${service} instance do NOT exist, check QAN Data`);
       }
