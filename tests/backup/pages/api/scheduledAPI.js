@@ -2,8 +2,8 @@ const { I } = inject();
 const assert = require('assert');
 
 const backupModes = {
-  snapshot: 'SNAPSHOT',
-  pitr: 'PITR',
+  snapshot: 'BACKUP_MODE_SNAPSHOT',
+  pitr: 'BACKUP_MODE_PITR',
 };
 
 module.exports = {
@@ -23,7 +23,7 @@ module.exports = {
       isLogical = true,
     } = scheduleObj;
 
-    const data_model = isLogical ? 'LOGICAL' : 'PHYSICAL';
+    const data_model = isLogical ? 'DATA_MODEL_LOGICAL' : 'DATA_MODEL_PHYSICAL';
     const body = {
       service_id,
       location_id,
