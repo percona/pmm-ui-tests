@@ -77,10 +77,10 @@ module.exports = {
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
     const resp = await I.sendDeleteRequest(`v1/backup/locations/${locationId}?force=${force}`, headers);
 
-    // I.assertEqual(
-    //   resp.status,
-    //   200,
-    //   `Failed to remove storage location with ID "${locationId}". Response message is "${resp.data.message}"`,
-    // );
+    I.assertEqual(
+      resp.status,
+      200,
+      `Failed to remove storage location with ID "${locationId}". Response message is "${resp.data.message}"`,
+    );
   },
 };

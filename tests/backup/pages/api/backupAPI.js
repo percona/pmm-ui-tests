@@ -141,7 +141,7 @@ module.exports = {
       remove_files,
     };
 
-    await I.sendPostRequest(`v1/backups/artifacts/${artifact_id}`, body, headers);
+    await I.sendDeleteRequest(`v1/backups/artifacts/${artifact_id}`, body, headers);
 
     // assert.ok(
     //   resp.status === 200,
