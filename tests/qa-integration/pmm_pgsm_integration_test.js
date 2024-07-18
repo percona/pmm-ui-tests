@@ -93,14 +93,14 @@ Scenario(
         await I.verifyCommand(`docker exec ${container_name} pmm-admin list --json`),
       );
       serviceAgents = list.agent.filter(({ service_id }) => service_id === serviceId);
-      const pgStatMonitorAgent = serviceAgents.find(({ agent_type }) => agent_type === 'QAN_POSTGRESQL_PGSTATMONITOR_AGENT');
+      const pgStatMonitorAgent = serviceAgents.find(({ agent_type }) => agent_type === 'qan-postgresql-pgstatmonitor-agent');
 
       assert.ok(pgStatMonitorAgent, 'pg_stat_monitor agent should exist');
 
       return pgStatMonitorAgent.status === 'RUNNING';
     }, 30);
 
-    const pgStatStatementsAgent = serviceAgents.find(({ agent_type }) => agent_type === 'QAN_POSTGRESQL_PGSTATEMENTS_AGENT');
+    const pgStatStatementsAgent = serviceAgents.find(({ agent_type }) => agent_type === 'qan-postgresql-pgstatements-agent');
 
     assert.ok(!pgStatStatementsAgent, 'pg_stat_statements agent should not exist');
   },
@@ -215,12 +215,10 @@ Data(filters).Scenario(
 Scenario(
   'PMM-T1262 - Verify Postgresql Dashboard Instance Summary has Data @not-ui-pipeline @pgsm-pmm-integration',
   async ({ I, dashboardPage }) => {
-    const url = I.buildUrlWithParams(
-      dashboardPage.postgresqlInstanceSummaryDashboard.cleanUrl, {
-        service_name: pgsm_service_name,
-        from: 'now-5m',
-      },
-    );
+    const url = I.buildUrlWithParams(dashboardPage.postgresqlInstanceSummaryDashboard.cleanUrl, {
+      service_name: pgsm_service_name,
+      from: 'now-5m',
+    });
 
     I.amOnPage(url);
     dashboardPage.waitForDashboardOpened();
@@ -233,12 +231,10 @@ Scenario(
 Scenario(
   'Verify Postgresql Dashboard Instance Summary has Data with socket based service and Agent log @not-ui-pipeline @pgsm-pmm-integration',
   async ({ I, dashboardPage }) => {
-    const url = I.buildUrlWithParams(
-      dashboardPage.postgresqlInstanceSummaryDashboard.cleanUrl, {
-        service_name: pgsm_service_name_socket,
-        from: 'now-5m',
-      },
-    );
+    const url = I.buildUrlWithParams(dashboardPage.postgresqlInstanceSummaryDashboard.cleanUrl, {
+      service_name: pgsm_service_name_socket,
+      from: 'now-5m',
+    });
 
     I.amOnPage(url);
     dashboardPage.waitForDashboardOpened();
@@ -247,8 +243,10 @@ Scenario(
     await dashboardPage.verifyThereAreNoGraphsWithoutData(1);
     const log = await I.verifyCommand(`docker exec ${container_name} cat pmm-agent.log`);
 
-    I.assertFalse(log.includes('Error opening connection to database \(postgres'),
-      'The log wasn\'t supposed to contain errors regarding connection to postgress database but it does');
+    I.assertFalse(
+      log.includes('Error opening connection to database \(postgres'),
+      'The log wasn\'t supposed to contain errors regarding connection to postgress database but it does',
+    );
   },
 );
 

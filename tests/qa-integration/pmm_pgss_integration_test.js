@@ -59,14 +59,14 @@ Scenario(
         await I.verifyCommand(`docker exec ${container_name} pmm-admin list --json`),
       );
       serviceAgents = list.agent.filter(({ service_id }) => service_id === serviceId);
-      const pgStatStatementsAgent = serviceAgents.find(({ agent_type }) => agent_type === 'QAN_POSTGRESQL_PGSTATEMENTS_AGENT');
+      const pgStatStatementsAgent = serviceAgents.find(({ agent_type }) => agent_type === 'qan-postgresql-pgstatements-agent');
 
       assert.ok(pgStatStatementsAgent, 'pg_stat_statements agent should exist');
 
       return pgStatStatementsAgent.status === 'RUNNING';
     }, 30);
 
-    const pgStatMonitorAgent = serviceAgents.find(({ agent_type }) => agent_type === 'QAN_POSTGRESQL_PGSTATMONITOR_AGENT');
+    const pgStatMonitorAgent = serviceAgents.find(({ agent_type }) => agent_type === 'qan-postgresql-pgstatmonitor-agent');
 
     assert.ok(!pgStatMonitorAgent, 'pg_stat_monitor agent should not exist');
   },
