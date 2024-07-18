@@ -31,7 +31,7 @@ Scenario(
   'PMM-T1384 Verify empty alert rules list @ia @grafana-pr',
   async ({ I, alertRulesPage }) => {
     alertRulesPage.openAlertRulesTab();
-    I.waitForText(alertRulesPage.messages.noRulesFound, alertRulesPage.elements.noRules);
+    I.waitForText(alertRulesPage.messages.noRulesFound);
     I.waitForVisible(alertRulesPage.buttons.newAlertRule, 10);
     I.waitForVisible(alertRulesPage.elements.alertsLearnMoreLinks, 10);
     const link = await I.grabAttributeFrom(alertRulesPage.elements.alertsLearnMoreLinks, 'href');
