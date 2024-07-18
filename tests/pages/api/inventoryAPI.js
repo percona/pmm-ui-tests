@@ -76,7 +76,7 @@ module.exports = {
 
   async apiGetAgents(serviceId) {
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
-    const url = serviceId ? `/v1/inventory/agents?service_id=${serviceId}` : '/v1/inventory/agents';
+    const url = serviceId ? `v1/inventory/agents?service_id=${serviceId}` : 'v1/inventory/agents';
 
     return I.sendGetRequest(url, headers);
   },
@@ -84,13 +84,13 @@ module.exports = {
   async apiGetAgentDetailsViaAgentId(agentId) {
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
 
-    return I.sendGetRequest(`/v1/inventory/agents/${agentId}`, headers);
+    return I.sendGetRequest(`v1/inventory/agents/${agentId}`, headers);
   },
 
   async apiGetAgentsViaNodeId(nodeId) {
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
 
-    return I.sendGetRequest(`/v1/inventory/agents?node_id=${nodeId}`, headers);
+    return I.sendGetRequest(`v1/inventory/agents?node_id=${nodeId}`, headers);
   },
 
   async apiGetServices(serviceType) {
