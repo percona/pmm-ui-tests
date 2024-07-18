@@ -16,21 +16,21 @@ BeforeSuite(async ({ locationsAPI }) => {
 
 // @settings-fb tag added in order to execute these tests on FB
 
-Scenario('Verify no line_count parameter when downloading logs @settings-fb', async ({ I }) => {
+Scenario('PMM-T1902 Verify no line_count parameter when downloading logs @settings-fb', async ({ I }) => {
   const outputPath = await I.downloadZipFile(`${baseUrl}/logs.zip`, filename);
   const actualLineCount = I.getFileLineCount(outputPath, fileNameToCheck);
 
   assert.ok(actualLineCount === 50001, `File ${fileNameToCheck} has ${actualLineCount} lines, but expected 50001`);
 });
 
-Scenario('Verify line_count=10 parameter when downloading logs @settings-fb', async ({ I }) => {
+Scenario('PMM-T1903 Verify line_count=10 parameter when downloading logs @settings-fb', async ({ I }) => {
   const outputPath = await I.downloadZipFile(`${baseUrl}/logs.zip?line-count=10`, filename);
   const actualLineCount = I.getFileLineCount(outputPath, fileNameToCheck);
 
   assert.ok(actualLineCount === 11, `File ${fileNameToCheck} has ${actualLineCount} lines, but expected 11`);
 });
 
-Scenario('Verify line_count=-1 parameter when downloading logs @settings-fb', async ({ I }) => {
+Scenario('PMM-T1904 Verify line_count=-1 parameter when downloading logs @settings-fb', async ({ I }) => {
   const outputPath = await I.downloadZipFile(`${baseUrl}/logs.zip?line-count=-1`, filename);
   const actualLineCount = I.getFileLineCount(outputPath, fileNameToCheck);
 

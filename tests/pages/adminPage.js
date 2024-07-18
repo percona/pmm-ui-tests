@@ -5,8 +5,8 @@ const pathToPmmQaRepo = process.env.PATH_TO_PMM_QA || '/srv/pmm-qa';
 
 module.exports = {
   url: 'graph/d/pmm-home/home-dashboard?orgId=1',
-  pathToFramework: `${pathToPmmQaRepo}/pmm-tests/pmm-framework.sh`,
-  pathToPMMTests: `${pathToPmmQaRepo}/pmm-tests/`,
+  pathToFramework: `${pathToPmmQaRepo}/pmm_qa/pmm-framework.py`,
+  pathToPMMTests: `${pathToPmmQaRepo}/pmm_qa/pmm-tests/`,
   sideMenu: {
     integratedAlerting: 'li > a[href="/graph/integrated-alerting"]',
     alertingBellIcon: locate('$navbar-section').at(2).find('li a[aria-label="Alerting"]'),
