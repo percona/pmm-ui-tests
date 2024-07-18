@@ -42,8 +42,6 @@ Data(instances).Scenario(
     let details;
     const remoteServiceName = `remote_${serviceName}_faker`;
 
-    console.log(await I.verifyCommand('docker ps'));
-
     if (serviceType === 'mysql_ssl') {
       details = {
         serviceName: remoteServiceName,
