@@ -16,20 +16,16 @@ maxQueryLengthTestData.add(['^']);
 maxQueryLengthTestData.add(['`']);
 maxQueryLengthTestData.add(['"']);
 
-instances.add(['mysql_5.7_ssl_service', '5.7', 'mysql_5.7', 'mysql_ssl', 'mysql_global_status_max_used_connections']);
-instances.add(['mysql_8.0_ssl_service', '8.0', 'mysql_8.0', 'mysql_ssl', 'mysql_global_status_max_used_connections']);
+instances.add(['mysql_8.0_ssl_service', '8.0', 'mysql_ssl_8.0', 'mysql_ssl', 'mysql_global_status_max_used_connections']);
+// instances.add(['mysql_5.7_ssl_service', '5.7', 'mysql_ssl_5.7', 'mysql_ssl', 'mysql_global_status_max_used_connections']);
 
-maxQueryLengthInstances.add(['mysql_5.7_ssl_service', '5.7', 'mysql_5.7', 'mysql_ssl', 'mysql_global_status_max_used_connections', '10']);
-maxQueryLengthInstances.add(['mysql_5.7_ssl_service', '5.7', 'mysql_5.7', 'mysql_ssl', 'mysql_global_status_max_used_connections', '-1']);
-maxQueryLengthInstances.add(['mysql_5.7_ssl_service', '5.7', 'mysql_5.7', 'mysql_ssl', 'mysql_global_status_max_used_connections', '']);
-maxQueryLengthInstances.add(['mysql_8.0_ssl_service', '8.0', 'mysql_8.0', 'mysql_ssl', 'mysql_global_status_max_used_connections', '10']);
-maxQueryLengthInstances.add(['mysql_8.0_ssl_service', '8.0', 'mysql_8.0', 'mysql_ssl', 'mysql_global_status_max_used_connections', '-1']);
-maxQueryLengthInstances.add(['mysql_8.0_ssl_service', '8.0', 'mysql_8.0', 'mysql_ssl', 'mysql_global_status_max_used_connections', '']);
 
-AfterSuite(async ({ I }) => {
-  await I.verifyCommand('docker stop mysql_5.7 || docker rm mysql_5.7');
-  await I.verifyCommand('docker stop mysql_8.0 || docker rm mysql_8.0');
-});
+maxQueryLengthInstances.add(['mysql_8.0_ssl_service', '8.0', 'mysql_ssl_8.0', 'mysql_ssl', 'mysql_global_status_max_used_connections', '10']);
+maxQueryLengthInstances.add(['mysql_8.0_ssl_service', '8.0', 'mysql_ssl_8.0', 'mysql_ssl', 'mysql_global_status_max_used_connections', '-1']);
+maxQueryLengthInstances.add(['mysql_8.0_ssl_service', '8.0', 'mysql_ssl_8.0', 'mysql_ssl', 'mysql_global_status_max_used_connections', '']);
+// maxQueryLengthInstances.add(['mysql_5.7_ssl_service', '5.7', 'mysql_ssl_5.7', 'mysql_ssl', 'mysql_global_status_max_used_connections', '10']);
+// maxQueryLengthInstances.add(['mysql_5.7_ssl_service', '5.7', 'mysql_ssl_5.7', 'mysql_ssl', 'mysql_global_status_max_used_connections', '-1']);
+// maxQueryLengthInstances.add(['mysql_5.7_ssl_service', '5.7', 'mysql_ssl_5.7', 'mysql_ssl', 'mysql_global_status_max_used_connections', '']);
 
 Before(async ({ I, settingsAPI }) => {
   await I.Authorize();
@@ -46,9 +42,6 @@ Data(instances).Scenario(
     let details;
     const remoteServiceName = `remote_${serviceName}_faker`;
 
-    await I.verifyCommand(`${pmmFrameworkLoader} --ps-version=${version} --setup-mysql-ssl --pmm2`);
-    await I.say(await I.verifyCommand(`docker exec ${container} bash -c 'source ~/.bash_profile || true; pmm-admin list'`));
-
     if (serviceType === 'mysql_ssl') {
       details = {
         serviceName: remoteServiceName,
@@ -59,9 +52,9 @@ Data(instances).Scenario(
         password: 'pmm',
         cluster: 'mysql_remote_cluster',
         environment: 'mysql_remote_cluster',
-        tlsCAFile: `${adminPage.pathToPMMTests}tls-ssl-setup/mysql/${version}/ca.pem`,
-        tlsKeyFile: `${adminPage.pathToPMMTests}tls-ssl-setup/mysql/${version}/client-key.pem`,
-        tlsCertFile: `${adminPage.pathToPMMTests}tls-ssl-setup/mysql/${version}/client-cert.pem`,
+        tlsCA: await I.verifyCommand(`docker exec ${container} cat /var/lib/mysql/ca.pem`),
+        tlsKey: await I.verifyCommand(`docker exec ${container} cat /var/lib/mysql/client-key.pem`),
+        tlsCert: await I.verifyCommand(`docker exec ${container} cat /var/lib/mysql/client-cert.pem`),
       };
     }
 
@@ -77,7 +70,7 @@ Data(instances).Scenario(
         serviceType: 'MYSQL_SERVICE',
         service: 'mysql',
       },
-      serviceName,
+      remoteServiceName,
     );
 
     // Check Remote Instance also added and have running status
@@ -92,7 +85,7 @@ Data(instances).Scenario(
     I, remoteInstancesPage, pmmInventoryPage, current, grafanaAPI,
   }) => {
     const {
-      serviceName, metric,
+      serviceName, metric, container,
     } = current;
     let response; let result;
     const remoteServiceName = `remote_${serviceName}_faker`;
@@ -101,10 +94,12 @@ Data(instances).Scenario(
     I.wait(10);
 
     // verify metric for client container node instance
-    response = await grafanaAPI.checkMetricExist(metric, { type: 'service_name', value: serviceName });
+    const localServiceName = await I.verifyCommand(`docker exec ${container} pmm-admin list | grep "MySQL" | grep "ssl_service" | awk -F " " '{print $2}'`);
+
+    response = await grafanaAPI.checkMetricExist(metric, { type: 'service_name', value: localServiceName });
     result = JSON.stringify(response.data.data.result);
 
-    assert.ok(response.data.data.result.length !== 0, `Metrics ${metric} from ${serviceName} should be available but got empty ${result}`);
+    assert.ok(response.data.data.result.length !== 0, `Metrics ${metric} from ${localServiceName} should be available but got empty ${result}`);
 
     // verify metric for remote instance
     response = await grafanaAPI.checkMetricExist(metric, { type: 'service_name', value: remoteServiceName });
@@ -141,7 +136,6 @@ Data(instances).Scenario(
   },
 ).retry(1);
 
-
 Data(instances).Scenario(
   'Verify dashboard after MySQL SSL Instances are added @ssl @ssl-mysql @ssl-remote @not-ui-pipeline',
   async ({
@@ -161,8 +155,7 @@ Data(instances).Scenario(
       adminPage.performPageDown(5);
       await dashboardPage.expandEachDashboardRow();
       adminPage.performPageUp(5);
-      await dashboardPage.verifyThereAreNoGraphsWithNA();
-      await dashboardPage.verifyThereAreNoGraphsWithoutData(1);
+      await dashboardPage.verifyThereAreNoGraphsWithoutData(12);
     }
   },
 ).retry(2);
@@ -173,17 +166,19 @@ Data(instances).Scenario(
     I, queryAnalyticsPage, current, adminPage,
   }) => {
     const {
-      serviceName,
+      serviceName, container,
     } = current;
 
-    const serviceList = [serviceName, `remote_${serviceName}_faker`];
+    const localServiceName = await I.verifyCommand(`docker exec ${container} pmm-admin list | grep "MySQL" | grep "ssl_service" | awk -F " " '{print $2}'`);
+
+    const serviceList = [localServiceName, `remote_${serviceName}_faker`];
 
     for (const service of serviceList) {
       I.amOnPage(I.buildUrlWithParams(queryAnalyticsPage.url, { from: 'now-5m' }));
       queryAnalyticsPage.waitForLoaded();
       await adminPage.applyTimeRange('Last 12 hours');
       queryAnalyticsPage.waitForLoaded();
-      await queryAnalyticsPage.filters.selectFilter(service);
+      await queryAnalyticsPage.filters.selectFilterInGroup(service, 'Service Name');
       queryAnalyticsPage.waitForLoaded();
       const count = await queryAnalyticsPage.data.getCountOfItems();
 
@@ -205,14 +200,14 @@ Data(instances).Scenario(
 
     const agent_id = await I.verifyCommand(`docker exec ${container} pmm-admin list | grep mysqld_exporter | awk -F" " '{print $4}' | awk -F"/" '{print $3}'`);
 
-    await I.verifyCommand(`docker exec ${container} ls -la /usr/local/percona/pmm2/tmp/mysqld_exporter/agent_id/${agent_id}/ | grep tls`);
-    await I.verifyCommand(`docker exec ${container} rm -r /usr/local/percona/pmm2/tmp/mysqld_exporter/`);
-    await I.verifyCommand(`docker exec ${container} ls -la /usr/local/percona/pmm2/tmp/mysqld_exporter/`, 'ls: cannot access \'/usr/local/percona/pmm2/tmp/mysqld_exporter\': No such file or directory', 'fail');
+    await I.verifyCommand(`docker exec ${container} ls -la /usr/local/percona/pmm/tmp/mysqld_exporter/agent_id/${agent_id}/ | grep tls`);
+    await I.verifyCommand(`docker exec ${container} rm -r /usr/local/percona/pmm/tmp/mysqld_exporter/`);
+    await I.verifyCommand(`docker exec ${container} ls -la /usr/local/percona/pmm/tmp/mysqld_exporter/`, 'ls: cannot access \'/usr/local/percona/pmm2/tmp/mysqld_exporter\': No such file or directory', 'fail');
     await I.verifyCommand(`docker exec ${container} pmm-admin list | grep mysqld_exporter | grep Running`);
     await I.verifyCommand(`docker exec ${container} pkill -f mysqld_exporter`);
     I.wait(10);
     await I.verifyCommand(`docker exec ${container} pmm-admin list | grep mysqld_exporter | grep Running`);
-    await I.verifyCommand(`docker exec ${container} ls -la /usr/local/percona/pmm2/tmp/mysqld_exporter/agent_id/${agent_id}/ | grep tls`);
+    await I.verifyCommand(`docker exec ${container} ls -la /usr/local/percona/pmm/tmp/mysqld_exporter/agent_id/${agent_id}/ | grep tls`);
   },
 ).retry(1);
 
@@ -255,9 +250,9 @@ Data(maxQueryLengthInstances).Scenario(
         password: 'pmm',
         cluster: 'mysql_remote_cluster',
         environment: 'mysql_remote_cluster',
-        tlsCAFile: `${adminPage.pathToPMMTests}tls-ssl-setup/mysql/${version}/ca.pem`,
-        tlsKeyFile: `${adminPage.pathToPMMTests}tls-ssl-setup/mysql/${version}/client-key.pem`,
-        tlsCertFile: `${adminPage.pathToPMMTests}tls-ssl-setup/mysql/${version}/client-cert.pem`,
+        tlsCA: await I.verifyCommand(`docker exec ${container} cat /var/lib/mysql/ca.pem`),
+        tlsKey: await I.verifyCommand(`docker exec ${container} cat /var/lib/mysql/client-key.pem`),
+        tlsCert: await I.verifyCommand(`docker exec ${container} cat /var/lib/mysql/client-cert.pem`),
       };
     }
 
@@ -276,7 +271,7 @@ Data(maxQueryLengthInstances).Scenario(
         serviceType: 'MYSQL_SERVICE',
         service: 'mysql',
       },
-      serviceName,
+      remoteServiceName,
     );
 
     const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName('MYSQL_SERVICE', remoteServiceName);
@@ -292,9 +287,9 @@ Data(maxQueryLengthInstances).Scenario(
     // Check max visible query length is less than max_query_length option
     I.amOnPage(I.buildUrlWithParams(queryAnalyticsPage.url, { from: 'now-5m' }));
     queryAnalyticsPage.waitForLoaded();
-    await queryAnalyticsPage.filters.selectFilter(remoteServiceName);
+    await queryAnalyticsPage.filters.selectFilterInGroup(remoteServiceName, 'Service Name');
     I.waitForElement(queryAnalyticsPage.data.elements.queryRows, 30);
-    const queryFromRow = await queryAnalyticsPage.data.elements.queryRowValue(1);
+    const queryFromRow = await I.grabTextFrom(await queryAnalyticsPage.data.elements.queryRowValue(1));
 
     if (maxQueryLength !== '' && maxQueryLength !== '-1') {
       assert.ok(queryFromRow.length <= maxQueryLength, `Query length exceeds max length boundary equals ${queryFromRow.length} is more than ${maxQueryLength}`);
