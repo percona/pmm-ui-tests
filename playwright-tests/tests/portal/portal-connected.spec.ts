@@ -38,10 +38,8 @@ test.describe('Spec file for PMM connected the portal', async () => {
     await loginPage.open();
   });
 
-  test.fixme('Verify user roles are untouched after PMM server upgrade'
+  test('Verify user roles are untouched after PMM server upgrade'
       + ' @not-ui-pipeline @portal @portal-post-upgrade', async () => {
-    // TODO: Investigate issue: listOrgUsers() authenticated with "admin" users and does not display
-    //  users from constants.portal.credentialsFile.
     const users = await api.grafana.org.listOrgUsers();
     console.log(users);
     console.log(firstAdmin.email);
@@ -245,9 +243,23 @@ test.describe('Spec file for PMM connected the portal', async () => {
     });
   });
 
-  // TODO: improve test to work without chain dependency. run new pmm-server, connect to portal and force disconnect then
-  test.skip('PMM-T1264 Verify that pmm admin user can force disconnect pmm from the portal'
-      + ' @not-ui-pipeline @portal @portal-post-upgrade', async ({ page, homeDashboardPage, perconaPlatformPage }) => {
+  test('PMM-T1247 Verify user cannot access platform functionality when PMM is not connected to the portal'
+      + ' @not-ui-pipeline @portal @portal-post-upgrade', async ({ page, environmentOverviewPage, entitlementsPage, ticketsPage }) => {
+    await grafanaHelper.authorize(page);
+    await page.goto(environmentOverviewPage.environmentOverviewUrl);
+    await expect(environmentOverviewPage.elements.notConnectedToPlatform).toHaveText(
+      environmentOverviewPage.messages.notConnectedToThePortal,
+    );
+
+    await page.goto(entitlementsPage.entitlementsUrl);
+    await expect(entitlementsPage.elements.notConnectedToPlatform).toHaveText(entitlementsPage.messages.notConnectedToThePortal);
+
+    await page.goto(ticketsPage.ticketsUrl);
+    await expect(ticketsPage.elements.notConnectedToPlatform).toHaveText(ticketsPage.messages.notConnectedToThePortal);
+  });
+
+  test('PMM-T1264 Verify that pmm admin user can force disconnect pmm from the portal'
+    + ' @not-ui-pipeline @portal @portal-post-upgrade', async ({ page, homeDashboardPage, perconaPlatformPage }) => {
     test.skip(pmmMinorVersion < 29 && pmmMajorVersion < 3, 'This test is for PMM version 2.29.0 and higher');
 
     await test.step('Connect PMM to the Portal', async () => {
@@ -273,20 +285,5 @@ test.describe('Spec file for PMM connected the portal', async () => {
       await perconaPlatformPage.toastMessage.waitForMessage(perconaPlatformPage.messages.disconnectedSuccess);
       await perconaPlatformPage.buttons.connect.waitFor({ state: 'visible' });
     });
-  });
-
-  test('PMM-T1247 Verify user cannot access platform functionality when PMM is not connected to the portal'
-      + ' @not-ui-pipeline @portal @portal-post-upgrade', async ({ page, environmentOverviewPage, entitlementsPage, ticketsPage }) => {
-    await grafanaHelper.authorize(page);
-    await page.goto(environmentOverviewPage.environmentOverviewUrl);
-    await expect(environmentOverviewPage.elements.notConnectedToPlatform).toHaveText(
-      environmentOverviewPage.messages.notConnectedToThePortal,
-    );
-
-    await page.goto(entitlementsPage.entitlementsUrl);
-    await expect(entitlementsPage.elements.notConnectedToPlatform).toHaveText(entitlementsPage.messages.notConnectedToThePortal);
-
-    await page.goto(ticketsPage.ticketsUrl);
-    await expect(ticketsPage.elements.notConnectedToPlatform).toHaveText(ticketsPage.messages.notConnectedToThePortal);
   });
 });
