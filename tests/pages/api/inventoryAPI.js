@@ -24,12 +24,15 @@ module.exports = {
   },
 
   async waitForRunningState(serviceId) {
-    // 30 sec ping for getting Running status for Agents
+    // 120 sec ping for getting Running status for Agents
     for (let i = 0; i < 120; i++) {
       const resp = await this.apiGetAgents(serviceId);
 
-      const areRunning = resp.data.agents
-        .every(({ status }) => status === AGENT_STATUS.RUNNING);
+      // Filter out non-empty agent arrays and flatten them into a single array
+      const agents = Object.values(resp.data).flat().filter((entry) => entry);
+
+      // Check if all agents have the status "AGENT_STATUS.RUNNING"
+      const areRunning = agents.every(({ status }) => status === AGENT_STATUS.RUNNING);
 
       if (areRunning) {
         return resp;
