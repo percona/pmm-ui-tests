@@ -63,7 +63,7 @@ Scenario(
   },
 );
 
-Scenario.skip(
+Scenario(
   'Verify metrics from PS instances on PMM-Server @pmm-ps-integration @not-ui-pipeline',
   async ({
     I, grafanaAPI,
@@ -93,7 +93,7 @@ Scenario.skip(
   },
 ).retry(1);
 
-Scenario.skip(
+Scenario(
   'Verify dashboard after PS Instances are added @pmm-ps-integration @not-ui-pipeline',
   async ({
     I, dashboardPage, adminPage,
@@ -119,7 +119,7 @@ Scenario.skip(
   },
 ).retry(1);
 
-Scenario.skip(
+Scenario(
   'Verify QAN after PS Instances is added @pmm-ps-integration @not-ui-pipeline',
   async ({
     I, queryAnalyticsPage,
@@ -142,7 +142,7 @@ Scenario.skip(
   },
 ).retry(1);
 
-Scenario.skip(
+Scenario(
   'PMM-T1897 Verify Query Count metric on QAN page for MySQL @fb-pmm-ps-integration',
   async ({
     I, credentials, queryAnalyticsPage,
@@ -171,7 +171,5 @@ Scenario.skip(
     await queryAnalyticsPage.filters.selectFilter(dbName, 120000);
     queryAnalyticsPage.waitForLoaded();
     I.waitForText('16', 180, queryAnalyticsPage.data.elements.totalItems);
-    // await queryAnalyticsPage.data.selectRow(0);
-    // I.waitForText('105', 180, queryAnalyticsPage.elements.queryCountValue);
   },
 ).retry(1);
