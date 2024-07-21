@@ -47,7 +47,7 @@ Scenario(
     I.fillField(remoteInstancesPage.fields.environment, details.environment);
     I.fillField(remoteInstancesPage.fields.cluster, details.cluster);
     I.click(remoteInstancesPage.fields.addService);
-    //I.waitForVisible(pmmInventoryPage.fields.agentsLink, 30);
+    // I.waitForVisible(pmmInventoryPage.fields.agentsLink, 30);
     await inventoryAPI.verifyServiceExistsAndHasRunningStatus(
       {
         serviceType: 'MYSQL_SERVICE',
@@ -106,7 +106,7 @@ Scenario(
       url = I.buildUrlWithParams(dashboardPage.mysqlPXCGaleraNodeSummaryDashboard.url, { from: 'now-5m', service_name: service });
 
       I.amOnPage(url);
-      dashboardPage.waitForDashboardOpened();
+      await dashboardPage.waitForDashboardOpened();
       adminPage.performPageDown(5);
       await dashboardPage.expandEachDashboardRow();
       adminPage.performPageUp(5);
@@ -114,7 +114,7 @@ Scenario(
     }
 
     I.amOnPage(`${dashboardPage.pxcGaleraClusterSummaryDashboard.url}&var-replset=rs1`);
-    dashboardPage.waitForDashboardOpened();
+    await dashboardPage.waitForDashboardOpened();
     await adminPage.applyTimeRange('Last 5 minutes');
     adminPage.performPageDown(5);
     await dashboardPage.expandEachDashboardRow();

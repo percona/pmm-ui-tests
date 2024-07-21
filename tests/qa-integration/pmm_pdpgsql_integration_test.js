@@ -12,7 +12,7 @@ Scenario(
     I, dashboardPage, adminPage,
   }) => {
     I.amOnPage(dashboardPage.postgresqlInstanceSummaryDashboard.url);
-    dashboardPage.waitForDashboardOpened();
+    await dashboardPage.waitForDashboardOpened();
     await dashboardPage.applyFilter('Service Name', 'pdpgsql_');
     // Grab containerName from ServiceName
     const grabServiceName = await I.grabTextFrom('//label[@for="var-service_name"]//following-sibling::*');
