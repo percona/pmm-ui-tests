@@ -40,10 +40,18 @@ const DISCOVER_RDS = {
   POSTGRESQL: 'DISCOVER_RDS_ENGINE_POSTGRESQL',
 };
 
+const AGENT_TYPE = {
+  VMAGENT: 'vmagent',
+  MONGODB_EXPORTER: 'mongodb_exporter',
+  QAN_MONGODB_PROFILER: 'qan-mongodb-profiler-agent',
+  PMM_AGENT: 'pmm-agent',
+};
+
 module.exports = {
   SERVICE_TYPE,
   NODE_STATUS,
   AGENT_STATUS,
   NODE_TYPE,
   DISCOVER_RDS,
+  AGENT_TYPE,
 };

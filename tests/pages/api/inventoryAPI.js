@@ -1,5 +1,8 @@
 const assert = require('assert');
-const { AGENT_STATUS } = require('../../helper/constants');
+const {
+  AGENT_STATUS,
+  AGENT_TYPE,
+} = require('../../helper/constants');
 
 const { I, remoteInstancesHelper, grafanaAPI } = inject();
 
@@ -47,7 +50,8 @@ module.exports = {
   async apiGetNodeInfoByServiceName(serviceType, serviceName, excludeSubstring) {
     const resp = await this.apiGetServices(serviceType);
 
-    const data = resp.data.services
+    const data = Object.values(resp.data).flat()
+      .filter((entry) => entry)
       .filter(({ service_name }) => service_name.includes(serviceName));
 
     if (data.length === 0) await I.say(`Service "${serviceName}" of "${serviceType}" type is not found!`);
@@ -68,18 +72,20 @@ module.exports = {
     return data;
   },
 
-  async apiGetPMMAgentInfoByServiceId(serviceId) {
+  async apiGetPMMAgentInfoByServiceId(serviceId, agentType = AGENT_TYPE.PMM_AGENT) {
     const resp = await this.apiGetAgents(serviceId);
 
-    const data = resp.data.agents
-      .filter(({ service_id }) => service_id === serviceId);
+    const agent = resp.data.agents
+      .find(({ agent_type }) => agent_type === agentType);
 
-    return data[0];
+    await I.say(JSON.stringify(agent, null, 2));
+
+    return agent;
   },
 
   async apiGetAgents(serviceId) {
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
-    const url = serviceId ? `v1/inventory/agents?service_id=${serviceId}` : 'v1/inventory/agents';
+    const url = serviceId ? `v1/management/agents?service_id=${serviceId}` : 'v1/management/agents';
 
     return I.sendGetRequest(url, headers);
   },
@@ -96,9 +102,9 @@ module.exports = {
     return I.sendGetRequest(`v1/inventory/agents?node_id=${nodeId}`, headers);
   },
 
-  async apiGetServices(serviceType) {
+  async apiGetServices() {
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
-    const url = serviceType ? `v1/management/services?service_type=${serviceType}` : 'v1/management/services';
+    const url = 'v1/inventory/services';
 
     return await I.sendGetRequest(url, headers);
   },
@@ -202,20 +208,25 @@ module.exports = {
     let log_level;
     const logLvlFlag = logLevel ? `--log-level=${logLevel}` : '';
 
+    const expectedLogLevel = logLevel === 'warn' ? 'LOG_LEVEL_UNSPECIFIED' : logLevel || 'LOG_LEVEL_UNSPECIFIED';
+
     switch (agentType) {
       case 'mongodb':
         agent_id = (await I.verifyCommand(`docker exec ${dbDetails.container_name} pmm-admin inventory add agent mongodb-exporter --password=${dbDetails.password} --push-metrics ${logLvlFlag} ${dbDetails.pmm_agent_id} ${dbDetails.service_id} ${dbDetails.username} | grep "Agent ID" | grep -v "PMM-Agent ID" | awk -F " " '{print $4}'`)).trim();
         output = await this.apiGetAgentDetailsViaAgentId(agent_id);
+        await I.say(JSON.stringify(output.data, null, 2));
         log_level = output.data.mongodb_exporter.log_level;
         await grafanaAPI.waitForMetric('mongodb_up', [{ type: 'agent_id', value: agent_id }], 90);
-        I.assertEqual(log_level, logLevel || 'warn', `Was expecting Mongo Exporter for service ${dbDetails.service_name} added again via inventory command and log level to have ${logLevel || 'warn'} set`);
+
+        I.say(`Expecting to have ${logLevel} for agent ${agentType} when using ${logLvlFlag}, expected log level is ${expectedLogLevel}`);
+        I.assertEqual(log_level, expectedLogLevel, `Was expecting Mongo Exporter for service ${dbDetails.service_name} added again via inventory command and log level to have ${logLevel || 'warn'} set`);
         break;
       case 'node':
         agent_id = (await I.verifyCommand(`docker exec ${dbDetails.container_name} pmm-admin inventory add agent node-exporter --push-metrics ${logLvlFlag} ${dbDetails.pmm_agent_id} | grep "Agent ID" | grep -v "PMM-Agent ID" | awk -F " " '{print $4}'`)).trim();
         output = await this.apiGetAgentDetailsViaAgentId(agent_id);
         log_level = output.data.node_exporter.log_level;
         await grafanaAPI.waitForMetric('node_memory_MemTotal_bytes', [{ type: 'agent_id', value: agent_id }], 90);
-        assert.ok(log_level === logLevel || 'warn', `Was expecting Node Exporter for service ${dbDetails.service_name} added again via inventory command and log level to have ${logLevel || 'warn'} set`);
+        assert.ok(log_level === expectedLogLevel, `Was expecting Node Exporter for service ${dbDetails.service_name} added again via inventory command and log level to have ${logLevel || 'warn'} set`);
         break;
       case 'mongodb_profiler':
         agent_id = (await I.verifyCommand(`docker exec ${dbDetails.container_name} pmm-admin inventory add agent qan-mongodb-profiler-agent --password=${dbDetails.password} ${logLvlFlag} ${dbDetails.pmm_agent_id} ${dbDetails.service_id} ${dbDetails.username} | grep "Agent ID" | grep -v "PMM-Agent ID" | awk -F " " '{print $4}'`)).trim();
@@ -225,7 +236,7 @@ module.exports = {
         // Wait for Status to change to running
         I.wait(10);
         await I.verifyCommand(`docker exec ${dbDetails.container_name} pmm-admin list | grep mongodb_profiler_agent | grep ${agent_id} | grep ${dbDetails.service_id} | grep "Agent_status_running"`);
-        assert.ok(log_level === logLevel || 'warn', `Was expecting MongoDB QAN Profile for service ${dbDetails.service_name} added again via inventory command and log level to have ${logLevel || 'warn'} set`);
+        assert.ok(log_level === expectedLogLevel, `Was expecting MongoDB QAN Profile for service ${dbDetails.service_name} added again via inventory command and log level to have ${logLevel || 'warn'} set`);
         break;
       case 'postgresql':
         agent_id = (await I.verifyCommand(`docker exec ${dbDetails.container_name} pmm-admin inventory add agent postgres-exporter --password=${dbDetails.password} --push-metrics ${logLvlFlag} ${dbDetails.pmm_agent_id} ${dbDetails.service_id} ${dbDetails.username} | grep "Agent ID" | grep -v "PMM-Agent ID" | awk -F " " '{print $4}'`)).trim();
@@ -233,7 +244,7 @@ module.exports = {
         log_level = output.data.postgres_exporter.log_level;
 
         await grafanaAPI.waitForMetric('pg_up', [{ type: 'agent_id', value: agent_id }], 90);
-        assert.ok(log_level === logLevel || 'warn', `Was expecting Postgresql Exporter for service ${dbDetails.service_name} added again via inventory command and log level to have ${logLevel || 'warn'} set`);
+        assert.ok(log_level === expectedLogLevel, `Was expecting Postgresql Exporter for service ${dbDetails.service_name} added again via inventory command and log level to have ${logLevel || 'warn'} set`);
         await I.verifyCommand(`docker exec ${dbDetails.container_name} pmm-admin inventory remove agent ${agent_id}`);
         break;
       case 'pgstatmonitor':
@@ -244,7 +255,7 @@ module.exports = {
         // Wait for Status to change to running
         I.wait(10);
         await I.verifyCommand(`docker exec ${dbDetails.container_name} pmm-admin list | grep postgresql_pgstatmonitor_agent | grep ${agent_id} | grep ${dbDetails.service_id} | grep "Agent_status_running"`);
-        assert.ok(log_level === logLevel || 'warn', `Was expecting PGSTAT_MONITOR QAN for service ${dbDetails.service_name} added again via inventory command and log level to have ${logLevel || 'warn'} set`);
+        assert.ok(log_level === expectedLogLevel, `Was expecting PGSTAT_MONITOR QAN for service ${dbDetails.service_name} added again via inventory command and log level to have ${logLevel || 'warn'} set`);
         await I.verifyCommand(`docker exec ${dbDetails.container_name} pmm-admin inventory remove agent ${agent_id}`);
         break;
       case 'pgstatements':
@@ -255,7 +266,7 @@ module.exports = {
         // Wait for Status to change to running
         I.wait(10);
         await I.verifyCommand(`docker exec ${dbDetails.container_name} pmm-admin list | grep postgresql_pgstatements_agent | grep ${agent_id} | grep ${dbDetails.service_id} | grep "Agent_status_running"`);
-        assert.ok(log_level === logLevel || 'warn', `Was expecting PGSTATSTATEMENT QAN for service ${dbDetails.service_name} added again via inventory command and log level to have ${logLevel || 'warn'} set`);
+        assert.ok(log_level === expectedLogLevel, `Was expecting PGSTATSTATEMENT QAN for service ${dbDetails.service_name} added again via inventory command and log level to have ${logLevel || 'warn'} set`);
         await I.verifyCommand(`docker exec ${dbDetails.container_name} pmm-admin inventory remove agent ${agent_id}`);
         break;
       case 'mysql':
@@ -264,7 +275,7 @@ module.exports = {
         log_level = output.data.mysqld_exporter.log_level;
 
         await grafanaAPI.waitForMetric('mysql_up', [{ type: 'agent_id', value: agent_id }], 90);
-        assert.ok(log_level === logLevel || 'warn', `Was expecting Mysql Exporter for service ${dbDetails.service_name} added again via inventory command and log level to have ${logLevel || 'warn'} set`);
+        assert.ok(log_level === expectedLogLevel, `Was expecting Mysql Exporter for service ${dbDetails.service_name} added again via inventory command and log level to have ${logLevel || 'warn'} set`);
         await I.verifyCommand(`docker exec ${dbDetails.container_name} pmm-admin inventory remove agent ${agent_id}`);
         break;
       case 'qan-slowlog':
@@ -285,7 +296,7 @@ module.exports = {
         // Wait for Status to change to running
         I.wait(10);
         await I.verifyCommand(`docker exec ${dbDetails.container_name} pmm-admin list | grep mysql_slowlog_agent | grep ${agent_id} | grep ${dbDetails.service_id} | grep "Agent_status_running"`);
-        assert.ok(log_level === logLevel || 'warn', `Was expecting Slowlog QAN for service ${dbDetails.service_name} added again via inventory command and log level to have ${logLevel || 'warn'} set`);
+        assert.ok(log_level === expectedLogLevel, `Was expecting Slowlog QAN for service ${dbDetails.service_name} added again via inventory command and log level to have ${logLevel || 'warn'} set`);
         await I.verifyCommand(`docker exec ${dbDetails.container_name} pmm-admin inventory remove agent ${agent_id}`);
         break;
       case 'qan-perfschema':
@@ -296,7 +307,7 @@ module.exports = {
         // Wait for Status to change to running
         I.wait(10);
         await I.verifyCommand(`docker exec ${dbDetails.container_name} pmm-admin list | grep mysql_perfschema_agent | grep ${agent_id} | grep ${dbDetails.service_id} | grep "Agent_status_running"`);
-        assert.ok(log_level === logLevel || 'warn', `Was expecting PerfSchema QAN for service ${dbDetails.service_name} added again via inventory command and log level to have ${logLevel || 'warn'} set`);
+        assert.ok(log_level === expectedLogLevel, `Was expecting PerfSchema QAN for service ${dbDetails.service_name} added again via inventory command and log level to have ${logLevel || 'warn'} set`);
         await I.verifyCommand(`docker exec ${dbDetails.container_name} pmm-admin inventory remove agent ${agent_id}`);
         break;
       default:
