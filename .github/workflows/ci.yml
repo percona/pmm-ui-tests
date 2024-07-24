@@ -23,7 +23,7 @@ jobs:
 
   e2e_fb_tests:
     name: e2e FB tests
-    uses: percona/pmm-qa/.github/workflows/fb-e2e-suite.yml@main
+    uses: percona/pmm-qa/.github/workflows/fb-e2e-suite.yml@PMM-13267-split-exporters-execution
     secrets:
       BACKUP_LOCATION_ACCESS_KEY: ${{ secrets.BACKUP_LOCATION_ACCESS_KEY }}
       BACKUP_LOCATION_SECRET_KEY: ${{ secrets.BACKUP_LOCATION_SECRET_KEY }}
