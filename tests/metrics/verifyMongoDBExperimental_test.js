@@ -15,7 +15,8 @@ Before(async ({ I }) => {
   await I.Authorize();
 });
 
-Scenario(
+// TODO: update the test to use new Cluster Summary dashboard https://github.com/percona/grafana-dashboards/pull/1611
+Scenario.skip(
   'PMM-T1332 - Verify MongoDB - MongoDB Collection Details @mongodb-exporter',
   async ({
     I, adminPage, dashboardPage,
