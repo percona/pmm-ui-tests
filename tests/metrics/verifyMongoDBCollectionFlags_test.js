@@ -54,7 +54,7 @@ Before(async ({ I }) => {
 });
 
 After(async ({ I }) => {
-  // await I.verifyCommand(`docker exec ${containerName} pmm-admin remove mongodb ${mongodb_service_name} || true`);
+  await I.verifyCommand(`docker exec ${containerName} pmm-admin remove mongodb ${mongodb_service_name} || true`);
 });
 
 AfterSuite(async ({ I }) => {
