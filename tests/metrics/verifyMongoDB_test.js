@@ -50,7 +50,7 @@ AfterSuite(async ({ I }) => {
 });
 
 Scenario.skip(
-  'PMM-T1241 - Verify add mongoDB service with "+" in user password @not-ui-pipeline @mongodb-exporter @exporters',
+  'PMM-T1241 - Verify add mongoDB service with "+" in user password @not-ui-pipeline @mongodb-exporter',
   async ({ I, grafanaAPI }) => {
     await I.say(
       await I.verifyCommand(`docker exec ${containerName} pmm-admin add mongodb --password=${mongo_test_user.password} --username='${mongo_test_user.username}' --service-name=${mongodb_service_name}`),
@@ -61,7 +61,7 @@ Scenario.skip(
 );
 
 Scenario(
-  'PMM-T1458 - Verify MongoDB exporter meta-metrics supporting @not-ui-pipeline @mongodb-exporter @exporters',
+  'PMM-T1458 - Verify MongoDB exporter meta-metrics supporting @not-ui-pipeline @mongodb-exporter',
   async ({ I }) => {
     await I.say(await I.verifyCommand(`docker exec ${containerName} pmm-admin add mongodb --password=${connection.password} --username=${connection.username} --service-name=${mongodb_service_name} --enable-all-collectors`));
     let logs = '';
