@@ -1,10 +1,6 @@
 const assert = require('assert');
-const faker = require('faker');
-
-const { adminPage } = inject();
 
 Feature('Integration tests for Mysql Exporter PMM Agent and Log Level');
-const pmmFrameworkLoader = `bash ${adminPage.pathToFramework}`;
 
 const connection = {
   // eslint-disable-next-line no-inline-comments
@@ -14,10 +10,6 @@ const connection = {
   password: 'msandbox',
 };
 const mysql_service_name_ac = 'mysql_service';
-
-BeforeSuite(async ({ I, grafanaAPI }) => {
-  await I.verifyCommand(`${pmmFrameworkLoader} --setup-pmm-ps-integration --pmm2 --query-source=slowlog --ps-version=8.0`);
-});
 
 Before(async ({ I }) => {
   await I.Authorize();

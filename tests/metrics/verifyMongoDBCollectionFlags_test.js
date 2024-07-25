@@ -54,7 +54,7 @@ AfterSuite(async ({ I }) => {
 });
 
 Scenario(
-  'PMM-T1860 - Verify there is no CommandNotSupportedOnView error in mongo logs when using --enable-all-collectors @dashboards @mongodb-exporter',
+  'PMM-T1860 - Verify there is no CommandNotSupportedOnView error in mongo logs when using --enable-all-collectors @mongodb-exporter',
   async ({ I }) => {
     const logs = await I.verifyCommand('docker exec rs101 journalctl -u mongod --since "5 minutes ago"');
 
@@ -65,7 +65,7 @@ Scenario(
 
 Scenario(
   'PMM-T1208 - Verify metrics of MongoDB added with default flags'
-  + ' @not-ui-pipeline @mongodb-exporter @exporters',
+  + ' @not-ui-pipeline @mongodb-exporter',
   async ({ I, inventoryAPI, grafanaAPI }) => {
     await I.say(await I.verifyCommand(`docker exec rs101 pmm-admin add mongodb --port=${connection.port} --agent-password='testing' --password=${pmm_user_mongodb.password} --username=${pmm_user_mongodb.username} --service-name=${mongodb_service_name} --replication-set=rs0s`));
 
@@ -86,7 +86,7 @@ Scenario(
 
 Scenario(
   'PMM-T1209 - Verify metrics of MongoDB with --disable-collectors=topmetrics and --enable-all-collectors were specified'
-  + ' @not-ui-pipeline @mongodb-exporter @exporters',
+  + ' @not-ui-pipeline @mongodb-exporter',
   async ({ I, inventoryAPI, grafanaAPI }) => {
     await I.say(await I.verifyCommand(`docker exec rs101 pmm-admin add mongodb --port=${connection.port} --agent-password='testing' --password=${pmm_user_mongodb.password} --username=${pmm_user_mongodb.username} --enable-all-collectors  --disable-collectors=topmetrics --service-name=${mongodb_service_name} --replication-set=rs0s`));
 
@@ -113,7 +113,7 @@ Scenario(
 
 Scenario(
   'PMM-T1210 - Verify metrics of MongoDB with "--enable-all-collectors" was specified'
-  + ' @not-ui-pipeline @mongodb-exporter @exporters',
+  + ' @not-ui-pipeline @mongodb-exporter',
   async ({ I, inventoryAPI, grafanaAPI }) => {
     await I.say(await I.verifyCommand(`docker exec rs101 pmm-admin add mongodb --port=${connection.port} --agent-password='testing' --password=${pmm_user_mongodb.password} --username=${pmm_user_mongodb.username} --enable-all-collectors --service-name=${mongodb_service_name} --replication-set=rs0s`));
 
@@ -134,7 +134,7 @@ Scenario(
 
 Scenario(
   'PMM-T1211 - Verify metrics of MongoDB with --disable-collectors="" and --enable-all-collectors were specified'
-  + ' @not-ui-pipeline @mongodb-exporter @exporters',
+  + ' @not-ui-pipeline @mongodb-exporter',
   async ({ I, inventoryAPI, grafanaAPI }) => {
     await I.say(await I.verifyCommand(`docker exec rs101 pmm-admin add mongodb --port=${connection.port} --agent-password='testing' --password=${pmm_user_mongodb.password} --username=${pmm_user_mongodb.username} --enable-all-collectors  --disable-collectors="" --service-name=${mongodb_service_name} --replication-set=rs0s`));
 
@@ -156,7 +156,7 @@ Scenario(
 
 Scenario(
   'PMM-T1212 - Verify metrics of MongoDB with --disable-collectors="collstats,dbstats,topmetrics" specified'
-  + ' @not-ui-pipeline @mongodb-exporter @exporters',
+  + ' @not-ui-pipeline @mongodb-exporter',
   async ({ I, inventoryAPI, grafanaAPI }) => {
     await I.say(await I.verifyCommand(`docker exec rs101 pmm-admin add mongodb --port=${connection.port} --agent-password='testing' --password=${pmm_user_mongodb.password} --username=${pmm_user_mongodb.username} --enable-all-collectors  --disable-collectors="collstats,dbstats,topmetrics" --service-name=${mongodb_service_name} --replication-set=rs0s`));
 
@@ -185,7 +185,7 @@ Scenario(
 
 Scenario(
   'PMM-T1213 - Verify metrics of MongoDB with --stats-collections=db1,db2.col2 specified'
-  + ' @not-ui-pipeline @mongodb-exporter @exporters',
+  + ' @not-ui-pipeline @mongodb-exporter',
   async ({ I, inventoryAPI, grafanaAPI }) => {
     await I.say(await I.verifyCommand(`docker exec rs101 pmm-admin add mongodb --port=${connection.port} --agent-password='testing' --password=${pmm_user_mongodb.password} --username=${pmm_user_mongodb.username} --enable-all-collectors --stats-collections=db1,db2.col2 --service-name=${mongodb_service_name} --replication-set=rs0s`));
 
@@ -212,7 +212,7 @@ Scenario(
 
 Scenario(
   'PMM-T1213 - Verify metrics of MongoDB with --stats-collections=db1,db2.col2 & --max-collections-limit=5 specified when total collections across db1, db2 and the filters are 6'
-  + ' @not-ui-pipeline @mongodb-exporter @exporters',
+  + ' @not-ui-pipeline @mongodb-exporter',
   async ({ I, inventoryAPI, grafanaAPI }) => {
     await I.say(await I.verifyCommand(`docker exec rs101 pmm-admin add mongodb --port=${connection.port} --agent-password='testing' --password=${pmm_user_mongodb.password} --username=${pmm_user_mongodb.username} --enable-all-collectors --max-collections-limit=5 --stats-collections=db1,db2.col2 --service-name=${mongodb_service_name} --replication-set=rs0s`));
 
@@ -239,7 +239,7 @@ Scenario(
 
 Scenario(
   'PMM-T1213 - Verify metrics of MongoDB with --stats-collections=db1,db2.col2 & --max-collections-limit=400 specified to allow fetching metrics from all collectors'
-  + ' @not-ui-pipeline @mongodb-exporter @exporters',
+  + ' @not-ui-pipeline @mongodb-exporter',
   async ({ I, inventoryAPI, grafanaAPI }) => {
     await I.say(await I.verifyCommand(`docker exec rs101 pmm-admin add mongodb --port=${connection.port} --agent-password='testing' --password=${pmm_user_mongodb.password} --username=${pmm_user_mongodb.username} --enable-all-collectors --max-collections-limit=400 --stats-collections=db1,db2.col2 --service-name=${mongodb_service_name} --replication-set=rs0s`));
 
@@ -266,7 +266,7 @@ Scenario(
 
 Scenario(
   'PMM-9919 Verify smart metrics of MongoDB with --stats-collections=db1,db2.col2 & --max-collections-limit=400 specified to allow fetching metrics from all collectors'
-  + ' @not-ui-pipeline @mongodb-exporter @exporters',
+  + ' @not-ui-pipeline @mongodb-exporter',
   async ({ I, inventoryAPI, grafanaAPI }) => {
     await I.say(await I.verifyCommand(`docker exec rs101 pmm-admin add mongodb --port=${connection.port} --agent-password='testing' --password=${pmm_user_mongodb.password} --username=${pmm_user_mongodb.username} --enable-all-collectors --max-collections-limit=400 --stats-collections=db1,db2.col2 --service-name=${mongodb_service_name} --replication-set=rs0s`));
 
@@ -300,7 +300,7 @@ Scenario(
 
 Scenario(
   'PMM-T1280 Verify that docker exec rs101 pmm-admin inventory add agent mongodb-exporter with --log-level flag adds MongoDB exporter with corresponding log-level'
-  + 'PMM-T1282, PMM-T1284, PMM-T1291 Verify that docker exec rs101 pmm-admin inventory add agent node-exporter with --log-level flag adds Node exporter with corresponding log-level @not-ui-pipeline @mongodb-exporter @exporters',
+  + 'PMM-T1282, PMM-T1284, PMM-T1291 Verify that docker exec rs101 pmm-admin inventory add agent node-exporter with --log-level flag adds Node exporter with corresponding log-level @not-ui-pipeline @mongodb-exporter',
   async ({
     I, inventoryAPI, grafanaAPI, dashboardPage,
   }) => {
@@ -343,7 +343,7 @@ Scenario(
 
 Scenario(
   'PMM-T1352 + PMM-T610 Verify that docker exec rs101 pmm-admin inventory remove service with --force flag stops running agents and collecting data from exporters'
-  + ' @not-ui-pipeline @mongodb-exporter @exporters',
+  + ' @not-ui-pipeline @mongodb-exporter',
   async ({
     I, inventoryAPI, grafanaAPI, dashboardPage,
   }) => {
