@@ -110,7 +110,11 @@ Scenario(
       adminPage.performPageDown(5);
       await dashboardPage.expandEachDashboardRow();
       adminPage.performPageUp(5);
-      await dashboardPage.verifyThereAreNoGraphsWithoutData(2);
+      if (service === remoteServiceName) {
+        await dashboardPage.verifyThereAreNoGraphsWithoutData(6);
+      } else {
+        await dashboardPage.verifyThereAreNoGraphsWithoutData(3);
+      }
     }
 
     I.amOnPage(dashboardPage.proxysqlInstanceSummaryDashboard.url);

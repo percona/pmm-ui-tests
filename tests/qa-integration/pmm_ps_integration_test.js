@@ -111,7 +111,7 @@ Scenario(
       await dashboardPage.expandEachDashboardRow();
       adminPage.performPageUp(5);
       if (service === remoteServiceName) {
-        await dashboardPage.verifyThereAreNoGraphsWithoutData(10);
+        await dashboardPage.verifyThereAreNoGraphsWithoutData(15);
       } else {
         await dashboardPage.verifyThereAreNoGraphsWithoutData(6);
       }
