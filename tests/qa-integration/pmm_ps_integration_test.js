@@ -113,11 +113,11 @@ Scenario(
       if (service === remoteServiceName) {
         await dashboardPage.verifyThereAreNoGraphsWithoutData(10);
       } else {
-        await dashboardPage.verifyThereAreNoGraphsWithoutData(5);
+        await dashboardPage.verifyThereAreNoGraphsWithoutData(6);
       }
     }
   },
-).retry(1);
+).retry(2);
 
 Scenario(
   'Verify QAN after PS Instances is added @pmm-ps-integration @not-ui-pipeline',

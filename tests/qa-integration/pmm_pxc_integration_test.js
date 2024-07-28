@@ -103,25 +103,32 @@ Scenario(
     const serviceList = [clientServiceName, remoteServiceName];
 
     for (const service of serviceList) {
-      url = I.buildUrlWithParams(dashboardPage.mysqlPXCGaleraNodeSummaryDashboard.url, { from: 'now-5m', service_name: service });
+      url = I.buildUrlWithParams(dashboardPage.mysqlPXCGaleraNodeSummaryDashboard.clearUrl, { from: 'now-15m', service_name: service });
 
       I.amOnPage(url);
       await dashboardPage.waitForDashboardOpened();
       adminPage.performPageDown(5);
       await dashboardPage.expandEachDashboardRow();
       adminPage.performPageUp(5);
-      await dashboardPage.verifyThereAreNoGraphsWithoutData(1);
+      await dashboardPage.verifyThereAreNoGraphsWithoutData(2);
     }
 
-    I.amOnPage(`${dashboardPage.pxcGaleraClusterSummaryDashboard.url}&var-replset=rs1`);
+    I.amOnPage(dashboardPage.proxysqlInstanceSummaryDashboard.url);
+    dashboardPage.waitForDashboardOpened();
+    await adminPage.applyTimeRange('Last 5 minutes');
+    await dashboardPage.expandEachDashboardRow();
+    await dashboardPage.verifyMetricsExistence(dashboardPage.proxysqlInstanceSummaryDashboard.metrics);
+    await dashboardPage.verifyThereAreNoGraphsWithoutData(6);
+
+    I.amOnPage(dashboardPage.pxcGaleraClusterSummaryDashboard.url);
     await dashboardPage.waitForDashboardOpened();
     await adminPage.applyTimeRange('Last 5 minutes');
     adminPage.performPageDown(5);
     await dashboardPage.expandEachDashboardRow();
     adminPage.performPageUp(5);
-    await dashboardPage.verifyThereAreNoGraphsWithoutData(1);
+    await dashboardPage.verifyThereAreNoGraphsWithoutData(2);
   },
-).retry(1);
+).retry(3);
 
 Scenario(
   'Verify QAN after PXC Instances is added @pmm-pxc-integration @not-ui-pipeline',
