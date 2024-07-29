@@ -5,21 +5,34 @@ BeforeSuite(async ({ I }) => {
   const SERVER_PASSWORD = process.env.ADMIN_PASSWORD || 'admin';
 
   await I.verifyCommand(`docker run 
-          --rm \
-          --name pmm-client \
-          -e PMM_AGENT_SERVER_ADDRESS=pmm-server \
-          -e PMM_AGENT_SERVER_USERNAME=admin \
-          -e PMM_AGENT_SERVER_PASSWORD=${SERVER_PASSWORD} \
-          -e PMM_AGENT_SERVER_INSECURE_TLS=1 \
-          -e PMM_AGENT_SETUP=1 \
-          -e PMM_AGENT_CONFIG_FILE=config/pmm-agent.yaml \
+          --rm 
+          --name pmm-client 
+          -e PMM_AGENT_SERVER_ADDRESS=pmm-server 
+          -e PMM_AGENT_SERVER_USERNAME=admin 
+          -e PMM_AGENT_SERVER_PASSWORD=${SERVER_PASSWORD} 
+          -e PMM_AGENT_SERVER_INSECURE_TLS=1 
+          -e PMM_AGENT_SETUP=1 
+          -e PMM_AGENT_CONFIG_FILE=config/pmm-agent.yaml 
+          -- network pmm-qa 
           ${DOCKER_IMAGE}`);
+
+  await I.verifyCommand(`docker run -d 
+           --name mysql-multiarch 
+           -- network pmm-qa 
+           -e MYSQL_ROOT_PASSWORD=testPassword 
+           mysql:8`);
+  await I.verifyCommand('docker exec pmm-client pmm-admin add mysql --query-source=perfschema --username=root --password=testPassword --host=mysql-multiarch --port=3306');
 });
 
 Before(async ({ I }) => {
   await I.Authorize();
 });
 
-Scenario('Verify that dashboards contain data @client-docker-multi-arch', async ({ I }) => {
-  I.say('Test');
+Scenario('Verify that dashboards contain data @client-docker-multi-arch', async ({ I, dashboardPage }) => {
+  const url = I.buildUrlWithParams(dashboardPage.mysqlInstanceSummaryDashboard.clearUrl, { from: 'now-5m' });
+
+  I.amOnPage(url);
+  dashboardPage.waitForDashboardOpened();
+  await dashboardPage.verifyThereAreNoGraphsWithNA(1);
+  await dashboardPage.verifyThereAreNoGraphsWithoutData(5);
 });
