@@ -1,7 +1,8 @@
 Feature('Test PMM client multi arch docker container').retry(1);
 
 BeforeSuite(async ({ I }) => {
-  const DOCKER_IMAGE = process.env.DOCKER_VERSION || 'perconalab/pmm-client-test:dev-latest';
+  // eslint-disable-next-line no-inline-comments
+  const DOCKER_IMAGE = /* process.env.CLIENT_VERSION || */ 'perconalab/pmm-client-test:dev-latest';
   const SERVER_PASSWORD = process.env.ADMIN_PASSWORD || 'admin';
   const networkName = 'pmm-ui-tests-network';
 
