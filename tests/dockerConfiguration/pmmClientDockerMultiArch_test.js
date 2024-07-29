@@ -7,8 +7,6 @@ BeforeSuite(async ({ I }) => {
 
   await I.verifyCommand(`docker network create -d bridge ${networkName}`);
 
-  console.log(await I.verifyCommand('docker ps -a'));
-
   await I.verifyCommand(`docker run -d 
           --rm 
           --name pmm-client 
@@ -20,6 +18,11 @@ BeforeSuite(async ({ I }) => {
           -e PMM_AGENT_CONFIG_FILE=config/pmm-agent.yaml 
           --network ${networkName} 
           ${DOCKER_IMAGE}`);
+  await I.wait(10);
+
+  console.log(await I.verifyCommand('docker ps -a'));
+  console.log(await I.verifyCommand('docker exec pmm-client pmm-agent status'));
+  console.log(await I.verifyCommand('docker exec pmm-client pmm-admin list'));
 
   await I.verifyCommand(`docker run -d 
            --name mysql-multiarch 
