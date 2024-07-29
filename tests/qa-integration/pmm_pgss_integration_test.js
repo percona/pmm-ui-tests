@@ -69,7 +69,7 @@ Scenario(
       return pgStatStatementsAgent.status === AGENT_STATUS.RUNNING;
     }, 30);
 
-    const pgStatMonitorAgent = serviceAgents.find(({ agent_type }) => agent_type === 'AGENT_TYPE_QAN_POSTGRESQL_PGSTATEMENTS_AGENT');
+    const pgStatMonitorAgent = serviceAgents.find(({ agent_type }) => agent_type === 'AGENT_TYPE_QAN_POSTGRESQL_PGSTATMONITOR_AGENT');
 
     assert.ok(!pgStatMonitorAgent, 'pg_stat_monitor agent should not exist');
   },
