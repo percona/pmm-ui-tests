@@ -13,7 +13,6 @@ BeforeSuite(async ({ I }) => {
           -e PMM_AGENT_SERVER_INSECURE_TLS=1 \
           -e PMM_AGENT_SETUP=1 \
           -e PMM_AGENT_CONFIG_FILE=config/pmm-agent.yaml \
-          --volumes-from pmm-client-data \
           ${DOCKER_IMAGE}`);
 });
 
