@@ -11,7 +11,7 @@ BeforeSuite(async ({ I }) => {
   console.log(`Image name is: ${DOCKER_IMAGE}`);
   console.log(await I.verifyCommand(`docker run -d 
           --name pmm-client 
-          -e PMM_AGENT_SERVER_ADDRESS=pmm-server 
+          -e PMM_AGENT_SERVER_ADDRESS=127.0.0.1 
           -e PMM_AGENT_SERVER_USERNAME=admin 
           -e PMM_AGENT_SERVER_PASSWORD=${SERVER_PASSWORD} 
           -e PMM_AGENT_SERVER_INSECURE_TLS=1 
