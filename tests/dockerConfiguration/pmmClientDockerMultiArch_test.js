@@ -8,7 +8,8 @@ BeforeSuite(async ({ I }) => {
 
   await I.verifyCommand(`docker network create ${networkName}`);
 
-  await I.verifyCommand(`docker run -d 
+  console.log(`Image name is: ${DOCKER_IMAGE}`);
+  console.log(await I.verifyCommand(`docker run -d 
           --rm 
           --name pmm-client 
           -e PMM_AGENT_SERVER_ADDRESS=pmm-server 
@@ -18,7 +19,7 @@ BeforeSuite(async ({ I }) => {
           -e PMM_AGENT_SETUP=1 
           -e PMM_AGENT_CONFIG_FILE=config/pmm-agent.yaml 
           --network ${networkName} 
-          ${DOCKER_IMAGE}`);
+          ${DOCKER_IMAGE}`));
   await I.wait(10);
 
   console.log(await I.verifyCommand('docker ps -a'));
