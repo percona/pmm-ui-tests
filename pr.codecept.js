@@ -2,7 +2,7 @@ const { pageObjects, getChunks } = require('./codeceptConfigHelper');
 
 require('dotenv').config();
 
-const pmmUrl = process.env.PMM_UI_URL ? process.env.PMM_UI_URL : 'http://127.0.0.1/';
+const pmmUrl = process.env.PMM_UI_URL ? process.env.PMM_UI_URL : 'http://localhost/';
 
 process.env.ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'admin';
 
