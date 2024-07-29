@@ -7,7 +7,7 @@ BeforeSuite(async ({ I }) => {
 
   await I.verifyCommand(`docker network create -d bridge ${networkName}`);
 
-  await I.verifyCommand(`docker run 
+  await I.verifyCommand(`docker run -d 
           --rm 
           --name pmm-client 
           -e PMM_AGENT_SERVER_ADDRESS=pmm-server 
