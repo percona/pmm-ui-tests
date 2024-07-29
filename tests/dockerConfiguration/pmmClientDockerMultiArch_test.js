@@ -15,12 +15,18 @@ BeforeSuite(async ({ I }) => {
           -e PMM_AGENT_SERVER_USERNAME=admin 
           -e PMM_AGENT_SERVER_PASSWORD=${SERVER_PASSWORD} 
           -e PMM_AGENT_SERVER_INSECURE_TLS=1 
+          -e PMM_AGENT_PORTS_MIN=41000
+          -e PMM_AGENT_PORTS_MAX=41500
           -e PMM_AGENT_SETUP=1 
           -e PMM_AGENT_CONFIG_FILE=config/pmm-agent.yaml 
+          -e PMM_AGENT_SETUP_NODE_NAME=pmm-client
+          -e PMM_AGENT_SETUP_FORCE=1
+          -e PMM_AGENT_SETUP_NODE_TYPE=container
           --network ${networkName} 
           ${DOCKER_IMAGE}`));
-  await I.wait(10);
+  I.wait(10);
 
+  console.log(await I.verifyCommand('docker logs pmm-client'));
   console.log(await I.verifyCommand('docker ps -a'));
   console.log(await I.verifyCommand('docker exec pmm-client pmm-agent status'));
   console.log(await I.verifyCommand('docker exec pmm-client pmm-admin list'));
