@@ -288,7 +288,7 @@ Scenario(
 
 // the test relies on --database psmdb
 Scenario(
-  'PMM-T1225 - Verify summary file includes process_exec_path for agents @inventory @exporters @cli',
+  'PMM-T1225 - Verify summary file includes process_exec_path for agents @mongodb-exporter',
   async ({ I, pmmInventoryPage }) => {
     I.amOnPage(pmmInventoryPage.url);
     const response = await I.verifyCommand('docker exec rs101 pmm-admin summary');
