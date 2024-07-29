@@ -13,7 +13,7 @@ BeforeSuite(async ({ I }) => {
           -e PMM_AGENT_SERVER_INSECURE_TLS=1 
           -e PMM_AGENT_SETUP=1 
           -e PMM_AGENT_CONFIG_FILE=config/pmm-agent.yaml 
-          -- network pmm-qa 
+          --network pmm-qa 
           ${DOCKER_IMAGE}`);
 
   await I.verifyCommand(`docker run -d 
