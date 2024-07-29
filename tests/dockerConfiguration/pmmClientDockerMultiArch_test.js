@@ -5,7 +5,7 @@ BeforeSuite(async ({ I }) => {
   const SERVER_PASSWORD = process.env.ADMIN_PASSWORD || 'admin';
   const networkName = 'pmm-ui-tests-network';
 
-  await I.verifyCommand(`'docker create network -d bridge ${networkName}`);
+  await I.verifyCommand(`docker create network -d bridge ${networkName}`);
 
   await I.verifyCommand(`docker run 
           --rm 
