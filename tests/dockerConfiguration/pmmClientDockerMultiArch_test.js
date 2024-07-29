@@ -3,6 +3,9 @@ Feature('Test PMM client multi arch docker container').retry(1);
 BeforeSuite(async ({ I }) => {
   const DOCKER_IMAGE = process.env.DOCKER_VERSION || 'perconalab/pmm-client-test:dev-latest';
   const SERVER_PASSWORD = process.env.ADMIN_PASSWORD || 'admin';
+  const networkName = 'pmm-ui-tests-network';
+
+  await I.verifyCommand(`'docker create network -d bridge ${networkName}`);
 
   await I.verifyCommand(`docker run 
           --rm 
@@ -13,12 +16,12 @@ BeforeSuite(async ({ I }) => {
           -e PMM_AGENT_SERVER_INSECURE_TLS=1 
           -e PMM_AGENT_SETUP=1 
           -e PMM_AGENT_CONFIG_FILE=config/pmm-agent.yaml 
-          --network pmm-qa 
+          --network ${networkName} 
           ${DOCKER_IMAGE}`);
 
   await I.verifyCommand(`docker run -d 
            --name mysql-multiarch 
-           -- network pmm-qa 
+           --network ${networkName}  
            -e MYSQL_ROOT_PASSWORD=testPassword 
            mysql:8`);
   await I.verifyCommand('docker exec pmm-client pmm-admin add mysql --query-source=perfschema --username=root --password=testPassword --host=mysql-multiarch --port=3306');
