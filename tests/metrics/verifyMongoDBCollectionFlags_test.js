@@ -62,7 +62,7 @@ AfterSuite(async ({ I }) => {
 });
 
 Scenario(
-  'PMM-T1860 - Verify there is no CommandNotSupportedOnView error in mongo logs when using --enable-all-collectors @dashboards @mongodb-exporter',
+  'PMM-T1860 - Verify there is no CommandNotSupportedOnView error in mongo logs when using --enable-all-collectors @mongodb-exporter',
   async ({ I }) => {
     const logs = await I.verifyCommand(`docker exec ${containerName} journalctl -u mongod --since "5 minutes ago"`);
 

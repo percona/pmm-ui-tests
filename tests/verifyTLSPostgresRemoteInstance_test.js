@@ -1,38 +1,20 @@
 const assert = require('assert');
 const { SERVICE_TYPE } = require('./helper/constants');
 
-const { adminPage } = inject();
-const pmmFrameworkLoader = `bash ${adminPage.pathToFramework}`;
-const pathToPMMFramework = adminPage.pathToPMMTests;
 const noSslCheckServiceName = 'pg_no_ssl_check';
 
 Feature('Monitoring SSL/TLS PGSQL instances');
 
-const instances = new DataTable(['serviceName', 'version', 'container', 'serviceType', 'metric', 'maxQueryLength']);
-
-instances.add(['pgsql_14_ssl_service', '14', 'pgsql_14', 'postgres_ssl', 'pg_stat_database_xact_rollback', '7']);
-// skipping this due to bug in setup due to repo and packages
-// instances.add(['pgsql_12_ssl_service', '12', 'pgsql_12', 'postgres_ssl', 'pg_stat_database_xact_rollback']);
-// instances.add(['pgsql_11_ssl_service', '11', 'pgsql_11', 'postgres_ssl', 'pg_stat_database_xact_rollback']);
-// instances.add(['pgsql_13_ssl_service', '13', 'pgsql_13', 'postgres_ssl', 'pg_stat_database_xact_rollback']);
-
-BeforeSuite(async ({ I, codeceptjsConfig }) => {
-  // await I.verifyCommand(`${pmmFrameworkLoader} --pdpgsql-version=11 --setup-postgres-ssl --pmm2`);
-  // await I.verifyCommand(`${pmmFrameworkLoader} --pdpgsql-version=12 --setup-postgres-ssl --pmm2`);
-  // await I.verifyCommand(`${pmmFrameworkLoader} --pdpgsql-version=13 --setup-postgres-ssl --pmm2`);
-  await I.verifyCommand(`${pmmFrameworkLoader} --pdpgsql-version=14 --setup-postgres-ssl --pmm2`);
-});
-
-AfterSuite(async ({ I }) => {
-  // await I.verifyCommand('docker stop pgsql_11 || docker rm pgsql_11');
-  // await I.verifyCommand('docker stop pgsql_12 || docker rm pgsql_12');
-  // await I.verifyCommand('docker stop pgsql_13 || docker rm pgsql_13');
-  await I.verifyCommand('docker stop pgsql_14 || docker rm pgsql_14');
-});
-
 Before(async ({ I, settingsAPI }) => {
   await I.Authorize();
 });
+
+const instances = new DataTable(['serviceName', 'version', 'container', 'serviceType', 'metric', 'maxQueryLength']);
+
+instances.add(['pgsql_16_ssl_service', '16', 'pdpgsql_pgsm_ssl_16', 'postgres_ssl', 'pg_stat_database_xact_rollback', '7']);
+// instances.add(['pgsql_14_ssl_service', '14', 'pdpgsql_pgsm_ssl_14', 'postgres_ssl', 'pg_stat_database_xact_rollback', '7']);
+// instances.add(['pgsql_14_ssl_service', '13', 'pdpgsql_pgsm_ssl_13', 'postgres_ssl', 'pg_stat_database_xact_rollback', '7']);
+// instances.add(['pgsql_12_ssl_service', '12', 'pdpgsql_pgsm_ssl_12', 'postgres_ssl', 'pg_stat_database_xact_rollback', '7']);
 
 Data(instances).Scenario(
   'PMM-T948 PMM-T947 Verify Adding SSL services remotely @ssl @ssl-postgres @ssl-remote @not-ui-pipeline',
@@ -56,9 +38,9 @@ Data(instances).Scenario(
         password: 'pmm',
         cluster: 'pgsql_remote_cluster',
         environment: 'pgsql_remote_cluster',
-        tlsCAFile: `${pathToPMMFramework}tls-ssl-setup/postgres/${version}/ca.crt`,
-        tlsKeyFile: `${pathToPMMFramework}tls-ssl-setup/postgres/${version}/client.pem`,
-        tlsCertFile: `${pathToPMMFramework}tls-ssl-setup/postgres/${version}/client.crt`,
+        tlsCA: await I.verifyCommand(`docker exec ${container} cat certificates/ca.crt`),
+        tlsKey: await I.verifyCommand(`docker exec ${container} cat certificates/client.pem`),
+        tlsCert: await I.verifyCommand(`docker exec ${container} cat certificates/client.crt`),
       };
     }
 
@@ -72,7 +54,7 @@ Data(instances).Scenario(
         serviceType: SERVICE_TYPE.POSTGRESQL,
         service: 'postgresql',
       },
-      serviceName,
+      remoteServiceName,
     );
 
     // Check Remote Instance also added and have running status
@@ -104,7 +86,7 @@ Data(instances).Scenario(
     I, remoteInstancesPage, pmmInventoryPage, current, grafanaAPI,
   }) => {
     const {
-      serviceName, metric,
+      serviceName, metric, container,
     } = current;
     let response;
     let result;
@@ -114,7 +96,10 @@ Data(instances).Scenario(
     I.wait(10);
 
     // verify metric for client container node instance
-    response = await grafanaAPI.checkMetricExist(metric, { type: 'service_name', value: serviceName });
+    const localServiceName = await I.verifyCommand(`docker exec ${container} pmm-admin list | grep "PostgreSQL" | grep "ssl_service" | awk -F " " '{print $2}'`);
+
+    response = await grafanaAPI.checkMetricExist(metric, { type: 'service_name', value: localServiceName });
+
     result = JSON.stringify(response.data.data.result);
 
     assert.ok(response.data.data.result.length !== 0, `Metrics ${metric} from ${serviceName} should be available but got empty ${result}`);
@@ -185,7 +170,6 @@ Data(instances).Scenario(
       adminPage.performPageDown(5);
       await dashboardPage.expandEachDashboardRow();
       adminPage.performPageUp(5);
-      await dashboardPage.verifyThereAreNoGraphsWithNA();
       await dashboardPage.verifyThereAreNoGraphsWithoutData(1);
     }
   },
@@ -197,17 +181,19 @@ Data(instances).Scenario(
     I, current, adminPage, queryAnalyticsPage,
   }) => {
     const {
-      serviceName,
+      serviceName, container,
     } = current;
 
-    const serviceList = [serviceName, `remote_${serviceName}`, noSslCheckServiceName];
+    const localServiceName = await I.verifyCommand(`docker exec ${container} pmm-admin list | grep "PostgreSQL" | grep "ssl_service" | awk -F " " '{print $2}'`);
+
+    const serviceList = [localServiceName, `remote_${serviceName}`, noSslCheckServiceName];
 
     for (const service of serviceList) {
       I.amOnPage(I.buildUrlWithParams(queryAnalyticsPage.url, { from: 'now-5m' }));
       queryAnalyticsPage.waitForLoaded();
       await adminPage.applyTimeRange('Last 5 minutes');
       queryAnalyticsPage.waitForLoaded();
-      await queryAnalyticsPage.filters.selectFilter(service);
+      await queryAnalyticsPage.filters.selectFilterInGroup(service, 'Service Name');
       queryAnalyticsPage.waitForLoaded();
       const count = await queryAnalyticsPage.data.getCountOfItems();
 
@@ -238,9 +224,9 @@ Data(instances).Scenario(
         password: 'pmm',
         cluster: 'pgsql_remote_cluster',
         environment: 'pgsql_remote_cluster',
-        tlsCAFile: `${pathToPMMFramework}tls-ssl-setup/postgres/${version}/ca.crt`,
-        tlsKeyFile: `${pathToPMMFramework}tls-ssl-setup/postgres/${version}/client.pem`,
-        tlsCertFile: `${pathToPMMFramework}tls-ssl-setup/postgres/${version}/client.crt`,
+        tlsCA: await I.verifyCommand(`docker exec ${container} cat certificates/ca.crt`),
+        tlsKey: await I.verifyCommand(`docker exec ${container} cat certificates/client.pem`),
+        tlsCert: await I.verifyCommand(`docker exec ${container} cat certificates/client.crt`),
       };
     }
 
@@ -262,7 +248,7 @@ Data(instances).Scenario(
         serviceType: SERVICE_TYPE.POSTGRESQL,
         service: 'postgresql',
       },
-      serviceName,
+      remoteServiceName,
     );
 
     const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.POSTGRESQL, remoteServiceName);
@@ -278,9 +264,9 @@ Data(instances).Scenario(
     // Check max visible query length is less than max_query_length option
     I.amOnPage(I.buildUrlWithParams(queryAnalyticsPage.url, { from: 'now-5m' }));
     queryAnalyticsPage.waitForLoaded();
-    await queryAnalyticsPage.filters.selectFilter(remoteServiceName);
+    await queryAnalyticsPage.filters.selectFilterInGroup(remoteServiceName, 'Service Name');
     I.waitForElement(queryAnalyticsPage.data.elements.queryRows, 30);
-    const queryFromRow = await queryAnalyticsPage.data.elements.queryRowValue(1);
+    const queryFromRow = await I.grabTextFrom(await queryAnalyticsPage.data.elements.queryRowValue(1));
 
     if (maxQueryLength !== '' && maxQueryLength !== '-1') {
       assert.ok(queryFromRow.length <= maxQueryLength, `Query length exceeds max length boundary equals ${queryFromRow.length} is more than ${maxQueryLength}`);

@@ -21,8 +21,9 @@ Before(async ({ I }) => {
   await I.Authorize();
 });
 
-Scenario(
-  'PMM-T1332 - Verify MongoDB - MongoDB Collection Details @dashboards @mongodb-exporter',
+// TODO: update the test to use new Cluster Summary dashboard https://github.com/percona/grafana-dashboards/pull/1611
+Scenario.skip(
+  'PMM-T1332 - Verify MongoDB - MongoDB Collection Details @mongodb-exporter',
   async ({
     I, dashboardPage,
   }) => {
@@ -35,7 +36,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T1333 - Verify MongoDB - MongoDB Collections Overview @dashboards @mongodb-exporter',
+  'PMM-T1333 - Verify MongoDB - MongoDB Collections Overview @mongodb-exporter',
   async ({
     I, dashboardPage,
   }) => {
@@ -47,7 +48,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T1334 - Verify MongoDB - MongoDB Oplog Details @dashboards @mongodb-exporter',
+  'PMM-T1334 - Verify MongoDB - MongoDB Oplog Details @mongodb-exporter',
   async ({
     I, dashboardPage,
   }) => {
