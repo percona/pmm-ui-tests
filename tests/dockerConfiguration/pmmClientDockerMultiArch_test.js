@@ -7,6 +7,8 @@ BeforeSuite(async ({ I }) => {
 
   await I.verifyCommand(`docker network create -d bridge ${networkName}`);
 
+  console.log(I.verifyCommand('docker ps -a'));
+
   await I.verifyCommand(`docker run -d 
           --rm 
           --name pmm-client 
