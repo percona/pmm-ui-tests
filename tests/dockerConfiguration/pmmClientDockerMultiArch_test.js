@@ -38,6 +38,7 @@ BeforeSuite(async ({ I }) => {
            --network ${networkName}  
            -e MYSQL_ROOT_PASSWORD=testPassword 
            mysql:8`);
+  I.wait(30);
   await I.verifyCommand('docker exec pmm-client pmm-admin add mysql --query-source=perfschema --username=root --password=testPassword --host=mysql-multiarch --port=3306');
 });
 
