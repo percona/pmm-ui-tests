@@ -10,8 +10,7 @@ BeforeSuite(async ({ I }) => {
   await I.verifyCommand(`docker network connect ${networkName} pmm-server`);
   I.wait(30);
 
-  console.log(`Image name is: ${DOCKER_IMAGE}`);
-  console.log(await I.verifyCommand(`docker run -d 
+  await I.verifyCommand(`docker run -d 
           --name pmm-client 
           -e PMM_AGENT_SERVER_ADDRESS=pmm-server
           -e PMM_AGENT_SERVER_USERNAME=admin 
@@ -25,9 +24,9 @@ BeforeSuite(async ({ I }) => {
           -e PMM_AGENT_SETUP_FORCE=1
           -e PMM_AGENT_SETUP_NODE_TYPE=container
           --network ${networkName} 
-          ${DOCKER_IMAGE}`));
+          ${DOCKER_IMAGE}`);
   I.wait(10);
-  console.log(await I.verifyCommand('docker exec pmm-client pmm-agent --config-file=/usr/local/percona/pmm2/config/pmm-agent.yaml', null, 'fail', true));
+  console.log(await I.verifyCommand(`docker exec pmm-client pmm-agent --force --server-insecure-tls --server-url=https://admin:${SERVER_PASSWORD}@pmm-server:443 --config-file=/usr/local/percona/pmm2/config/pmm-agent.yaml`, null, 'fail', true));
 
   console.log(await I.verifyCommand('docker logs pmm-client'));
   console.log(await I.verifyCommand('docker ps -a'));
