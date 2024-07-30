@@ -30,7 +30,7 @@ BeforeSuite(async ({ I }) => {
 
   console.log(await I.verifyCommand('docker logs pmm-client'));
   console.log(await I.verifyCommand('docker ps -a'));
-  console.log(await I.verifyCommand('docker exec pmm-client pmm-agent status'));
+  // console.log(await I.verifyCommand('docker exec pmm-client pmm-agent status'));
   console.log(await I.verifyCommand('docker exec pmm-client pmm-admin list'));
 
   await I.verifyCommand(`docker run -d 
