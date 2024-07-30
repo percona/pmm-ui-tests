@@ -20,13 +20,14 @@ BeforeSuite(async ({ I }) => {
           -e PMM_AGENT_PORTS_MIN=41000
           -e PMM_AGENT_PORTS_MAX=41500
           -e PMM_AGENT_SETUP=1 
-          -e PMM_AGENT_CONFIG_FILE=config/pmm-agent.yaml 
+          -e PMM_AGENT_CONFIG_FILE=/usr/local/percona/pmm2/config/pmm-agent.yaml 
           -e PMM_AGENT_SETUP_NODE_NAME=pmm-client
           -e PMM_AGENT_SETUP_FORCE=1
           -e PMM_AGENT_SETUP_NODE_TYPE=container
           --network ${networkName} 
           ${DOCKER_IMAGE}`));
   I.wait(10);
+  await I.verifyCommand('docker exec pmm-client pmm-agent --config-file=/usr/local/percona/pmm2/config/pmm-agent.yaml');
 
   console.log(await I.verifyCommand('docker logs pmm-client'));
   console.log(await I.verifyCommand('docker ps -a'));
