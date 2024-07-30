@@ -27,7 +27,7 @@ BeforeSuite(async ({ I }) => {
           --network ${networkName} 
           ${DOCKER_IMAGE}`));
   I.wait(10);
-  await I.verifyCommand('docker exec pmm-client pmm-agent --config-file=/usr/local/percona/pmm2/config/pmm-agent.yaml', null, 'fail');
+  console.log(await I.verifyCommand('docker exec pmm-client pmm-agent --config-file=/usr/local/percona/pmm2/config/pmm-agent.yaml', null, 'fail', true));
 
   console.log(await I.verifyCommand('docker logs pmm-client'));
   console.log(await I.verifyCommand('docker ps -a'));
