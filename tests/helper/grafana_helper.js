@@ -37,7 +37,7 @@ class Grafana extends Helper {
   async enableProductTour() {
     const { Playwright } = this.helpers;
 
-    await Playwright.page.route('**/v1/user', async (route, request) => {
+    await Playwright.page.route('**/v1/users/me', async (route, request) => {
       if (request.method() === 'GET') {
         await route.fulfill({
           status: 200,
@@ -56,7 +56,7 @@ class Grafana extends Helper {
   async stopMockingProductTourApi() {
     const { Playwright } = this.helpers;
 
-    await Playwright.page.unroute('**/v1/user');
+    await Playwright.page.unroute('**/v1/users/me');
   }
 
   async unAuthorize() {

@@ -21,7 +21,7 @@ module.exports = {
       };
     }
 
-    const resp = await I.sendPostRequest('v1/management/Annotations/Add', body, headers);
+    const resp = await I.sendPostRequest('v1/management/annotations', body, headers);
 
     assert.ok(
       resp.status === statusCode,

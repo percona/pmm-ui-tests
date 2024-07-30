@@ -2,6 +2,8 @@ const assert = require('assert');
 const faker = require('faker');
 const { generate } = require('generate-password');
 const { storageLocationConnection } = require('./backup/pages/testData');
+const { NODE_TYPE, SERVICE_TYPE } = require('./helper/constants');
+
 const {
   adminPage, remoteInstancesHelper, psMySql, pmmSettingsPage, dashboardPage, databaseChecksPage, scheduledAPI, locationsAPI,
 } = inject();
@@ -22,10 +24,10 @@ const alertManager = {
 
 const clientDbServices = new DataTable(['serviceType', 'name', 'metric', 'annotationName', 'dashboard', 'upgrade_service']);
 
-clientDbServices.add(['MYSQL_SERVICE', 'ps_', 'mysql_global_status_max_used_connections', 'annotation-for-mysql', dashboardPage.mysqlInstanceSummaryDashboard.url, 'mysql_upgrade']);
-clientDbServices.add(['POSTGRESQL_SERVICE', 'PGSQL_', 'pg_stat_database_xact_rollback', 'annotation-for-postgres', dashboardPage.postgresqlInstanceSummaryDashboard.url, 'pgsql_upgrade']);
+clientDbServices.add([SERVICE_TYPE.MYSQL, 'ps_', 'mysql_global_status_max_used_connections', 'annotation-for-mysql', dashboardPage.mysqlInstanceSummaryDashboard.url, 'mysql_upgrade']);
+clientDbServices.add([SERVICE_TYPE.POSTGRESQL, 'PGSQL_', 'pg_stat_database_xact_rollback', 'annotation-for-postgres', dashboardPage.postgresqlInstanceSummaryDashboard.url, 'pgsql_upgrade']);
 // eslint-disable-next-line max-len
-clientDbServices.add(['MONGODB_SERVICE', 'mongodb_', 'mongodb_connections', 'annotation-for-mongo', dashboardPage.mongoDbInstanceSummaryDashboard.url, 'mongo_upgrade']);
+clientDbServices.add([SERVICE_TYPE.MONGODB, 'mongodb_', 'mongodb_connections', 'annotation-for-mongo', dashboardPage.mongoDbInstanceSummaryDashboard.url, 'mongo_upgrade']);
 
 const connection = psMySql.defaultConnection;
 const psServiceName = 'upgrade-stt-ps-5.7.30';
@@ -256,7 +258,7 @@ if (versionMinor >= 15) {
       // I.waitForVisible(failedCheckRowLocator, 30);
 
       if (versionMinor >= 27) {
-        const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName('MYSQL_SERVICE', psServiceName);
+        const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.MYSQL, psServiceName);
         const { alert_id } = (await advisorsAPI.getFailedChecks(service_id))
           .find(({ summary }) => summary === failedCheckMessage);
 
@@ -294,21 +296,21 @@ if (versionMinor >= 21) {
         service_id, node_id, address, port,
       } = await inventoryAPI.apiGetNodeInfoByServiceName(serviceType, name);
 
-      const { pmm_agent_id } = await inventoryAPI.apiGetPMMAgentInfoByServiceId(service_id);
+      const { agent_id: pmm_agent_id } = await inventoryAPI.apiGetPMMAgentInfoByServiceId(service_id);
       let output;
 
       switch (serviceType) {
-        case 'MYSQL_SERVICE':
+        case SERVICE_TYPE.MYSQL:
           output = await I.verifyCommand(
             `pmm-admin add mysql --node-id=${node_id} --pmm-agent-id=${pmm_agent_id} --port=${port} --password=GRgrO9301RuF --host=${address} --query-source=perfschema --agent-password=uitests --custom-labels="testing=upgrade" ${upgrade_service}`,
           );
           break;
-        case 'POSTGRESQL_SERVICE':
+        case SERVICE_TYPE.POSTGRESQL:
           output = await I.verifyCommand(
             `pmm-admin add postgresql --username=postgres --password=oFukiBRg7GujAJXq3tmd --node-id=${node_id} --pmm-agent-id=${pmm_agent_id} --port=${port} --host=${address} --agent-password=uitests --custom-labels="testing=upgrade" ${upgrade_service}`,
           );
           break;
-        case 'MONGODB_SERVICE':
+        case SERVICE_TYPE.MONGODB:
           output = await I.verifyCommand(
             `pmm-admin add mongodb --username=pmm_mongodb --password=GRgrO9301RuF --port=27023 --host=${address} --agent-password=uitests --custom-labels="testing=upgrade" ${upgrade_service}`,
           );
@@ -327,7 +329,7 @@ Scenario(
     const aurora_details = {
       add_node: {
         node_name: 'pmm-qa-aurora2-mysql-instance-1',
-        node_type: 'REMOTE_NODE',
+        node_type: NODE_TYPE.REMOTE,
       },
       aws_access_key: remoteInstancesHelper.remote_instance.aws.aurora.aws_access_key,
       aws_secret_key: remoteInstancesHelper.remote_instance.aws.aurora.aws_secret_key,
@@ -449,7 +451,7 @@ if (versionMinor >= 23) {
         I.wait(5);
         await inventoryAPI.verifyServiceExistsAndHasRunningStatus(
           {
-            serviceType: 'POSTGRESQL_SERVICE',
+            serviceType: SERVICE_TYPE.POSTGRESQL,
             service: 'postgresql',
           },
           remoteServiceName,
@@ -474,7 +476,7 @@ if (versionMinor >= 23) {
         I.wait(5);
         await inventoryAPI.verifyServiceExistsAndHasRunningStatus(
           {
-            serviceType: 'MYSQL_SERVICE',
+            serviceType: SERVICE_TYPE.MYSQL,
             service: 'mysql',
           },
           remoteServiceName,
@@ -497,7 +499,7 @@ if (versionMinor >= 23) {
         I.wait(5);
         await inventoryAPI.verifyServiceExistsAndHasRunningStatus(
           {
-            serviceType: 'MONGODB_SERVICE',
+            serviceType: SERVICE_TYPE.MONGODB,
             service: 'mongodb',
           },
           remoteServiceName,
@@ -520,7 +522,7 @@ if (versionMinor >= 32) {
     async ({
       I, settingsAPI, locationsAPI, backupAPI, scheduledAPI, inventoryAPI, backupInventoryPage, scheduledPage, credentials,
     }) => {
-      if (!await inventoryAPI.apiGetNodeInfoByServiceName('MONGODB_SERVICE', mongoServiceName)) {
+      if (!await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.MONGODB, mongoServiceName)) {
         await I.say(await I.verifyCommand(`docker exec rs101 pmm-admin add mongodb --port=27017 --username=${credentials.mongoReplicaPrimaryForBackups.username} --password=${credentials.mongoReplicaPrimaryForBackups.password} --service-name=${mongoServiceName} --replication-set=rs --cluster=rs`));
       }
 
@@ -533,7 +535,7 @@ if (versionMinor >= 32) {
         location.description,
       );
 
-      const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName('MONGODB_SERVICE', mongoServiceName);
+      const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.MONGODB, mongoServiceName);
       const backupId = await backupAPI.startBackup(backupName, service_id, locationId);
 
       // Every 20 mins schedule
@@ -770,7 +772,7 @@ if (versionMinor >= 16) {
       I,
       databaseChecksPage, inventoryAPI, advisorsAPI,
     }) => {
-      const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName('MYSQL_SERVICE', psServiceName);
+      const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.MYSQL, psServiceName);
 
       await advisorsAPI.waitForFailedCheckExistance(failedCheckMessage, psServiceName);
       databaseChecksPage.openFailedChecksListForService(service_id);
@@ -1060,7 +1062,7 @@ if (versionMinor >= 21) {
       } = await inventoryAPI.apiGetNodeInfoByServiceName(serviceType, upgrade_service);
 
       await grafanaAPI.checkMetricExist(metric, { type: 'service_name', value: upgrade_service });
-      if (serviceType !== 'MYSQL_SERVICE') {
+      if (serviceType !== SERVICE_TYPE.MYSQL) {
         assert.ok(custom_labels, `Node Information for ${serviceType} added with ${upgrade_service} is empty, value returned are ${custom_labels}`);
         assert.ok(custom_labels.testing === 'upgrade', `Custom Labels for ${serviceType} added before upgrade with custom labels, doesn't have the same label post upgrade, value found ${custom_labels}`);
       }
@@ -1158,7 +1160,7 @@ if (versionMinor >= 32) {
       const backupName = 'backup_after_update';
 
       const { location_id } = await locationsAPI.getLocationDetails(location.name);
-      const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName('MONGODB_SERVICE', mongoServiceName);
+      const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.MONGODB, mongoServiceName);
       const backupId = await backupAPI.startBackup(backupName, service_id, location_id);
 
       await backupAPI.waitForBackupFinish(backupId);
@@ -1235,47 +1237,48 @@ if (versionMinor >= 32) {
   ).retry(0);
 }
 
-Scenario('PMM-12587-1 Verify duplicate dashboards dont break after upgrade @pre-upgrade @ovf-upgrade @ami-upgrade @pmm-upgrade',
-    async ({
-             I, grafanaAPI, searchDashboardsModal
-           }) => {
+Scenario(
+  'PMM-12587-1 Verify duplicate dashboards dont break after upgrade @pre-upgrade @ovf-upgrade @ami-upgrade @pmm-upgrade',
+  async ({
+    I, grafanaAPI, searchDashboardsModal,
+  }) => {
+    const insightFolder = await grafanaAPI.lookupFolderByName(searchDashboardsModal.folders.insight.name);
+    const experimentalFolder = await grafanaAPI.lookupFolderByName(searchDashboardsModal.folders.experimental.name);
 
-      const insightFolder = await grafanaAPI.lookupFolderByName(searchDashboardsModal.folders.insight.name);
-      const experimentalFolder = await grafanaAPI.lookupFolderByName(searchDashboardsModal.folders.experimental.name);
+    const resp1 = await grafanaAPI.createCustomDashboard('test-dashboard', insightFolder.id);
+    const resp2 = await grafanaAPI.createCustomDashboard('test-dashboard', experimentalFolder.id);
 
-      const resp1 = await grafanaAPI.createCustomDashboard('test-dashboard', insightFolder.id);
-      const resp2 = await grafanaAPI.createCustomDashboard('test-dashboard', experimentalFolder.id);
+    await I.writeFileSync('./dashboard.json', JSON.stringify({
+      DASHBOARD1_UID: resp1.uid,
+      DASHBOARD2_UID: resp2.uid,
+    }), false);
 
-      await I.writeFileSync('./dashboard.json', JSON.stringify({
-        DASHBOARD1_UID: resp1.uid,
-        DASHBOARD2_UID: resp2.uid
-      }),false);
-
-      //Check if file with Dashboard info is present.
-      I.assertNotEqual(I.fileSize('./dashboard.json',false), 0, `Was expecting Dashboard info in the File, but its empty`);
-    },);
+    // Check if file with Dashboard info is present.
+    I.assertNotEqual(I.fileSize('./dashboard.json', false), 0, 'Was expecting Dashboard info in the File, but its empty');
+  },
+);
 
 Scenario(
-    'PMM-12587-2 Verify duplicate dashboards dont break after upgrade @post-upgrade @ovf-upgrade @ami-upgrade @pmm-upgrade',
-    async ({
-             I, grafanaAPI, dashboardPage,
-           }) => {
-      const resp = JSON.parse(await I.readFileSync('./dashboard.json',false));
+  'PMM-12587-2 Verify duplicate dashboards dont break after upgrade @post-upgrade @ovf-upgrade @ami-upgrade @pmm-upgrade',
+  async ({
+    I, grafanaAPI, dashboardPage,
+  }) => {
+    const resp = JSON.parse(await I.readFileSync('./dashboard.json', false));
 
-      const resp1 = await grafanaAPI.getDashboard(resp.DASHBOARD1_UID);
-      const resp2 = await grafanaAPI.getDashboard(resp.DASHBOARD2_UID);
+    const resp1 = await grafanaAPI.getDashboard(resp.DASHBOARD1_UID);
+    const resp2 = await grafanaAPI.getDashboard(resp.DASHBOARD2_UID);
 
-      //Trim leading '/' from response url
-      const url1 = resp1.meta.url.replace(/^\/+/g, '');
-      const url2 = resp2.meta.url.replace(/^\/+/g, '');
+    // Trim leading '/' from response url
+    const url1 = resp1.meta.url.replace(/^\/+/g, '');
+    const url2 = resp2.meta.url.replace(/^\/+/g, '');
 
-      I.amOnPage(url1);
-      dashboardPage.waitForDashboardOpened();
-      I.seeInCurrentUrl(url1);
-      I.amOnPage(url2);
-      dashboardPage.waitForDashboardOpened();
-      I.seeInCurrentUrl(url2);
-    },
+    I.amOnPage(url1);
+    dashboardPage.waitForDashboardOpened();
+    I.seeInCurrentUrl(url1);
+    I.amOnPage(url2);
+    dashboardPage.waitForDashboardOpened();
+    I.seeInCurrentUrl(url2);
+  },
 );
 
 // This test must be executed last

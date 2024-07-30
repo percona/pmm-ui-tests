@@ -83,7 +83,7 @@ module.exports = {
   },
 
   openAgents(serviceId) {
-    I.amOnPage(`graph/inventory/services/${serviceId.split('/')[2]}/agents`);
+    I.amOnPage(`graph/inventory/services/${serviceId}/agents`);
     this.changeRowsPerPage(100);
   },
 

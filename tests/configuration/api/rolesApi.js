@@ -2,10 +2,10 @@ const { I, settingsAPI } = inject();
 
 class RolesApi {
   constructor() {
-    this.deleteUrl = 'v1/management/Role/Delete';
-    this.createUrl = 'v1/management/Role/Create';
-    this.listUrl = 'v1/management/Role/List';
-    this.assignUrl = 'v1/management/Role/Assign';
+    this.deleteUrl = '/v1/accesscontrol/roles';
+    this.createUrl = '/v1/accesscontrol/roles';
+    this.listUrl = '/v1/accesscontrol/roles';
+    this.assignUrl = '/v1/accesscontrol/roles:assign';
   }
 
   async assignRole(role_ids, user_id) {
@@ -19,7 +19,7 @@ class RolesApi {
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
     const body = { replacement_role_id, role_id };
 
-    await I.sendPostRequest(this.deleteUrl, body, headers);
+    await I.sendDeleteRequest(`${this.deleteUrl}/${role_id}`, body, headers);
   }
 
   async deleteRoles(roleIds, replacement_role_id = 1) {
@@ -44,13 +44,13 @@ class RolesApi {
   async listRoles() {
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
 
-    return (await I.sendPostRequest(this.listUrl, {}, headers)).data.roles;
+    return (await I.sendGetRequest(this.listUrl, headers)).data.roles;
   }
 
   async getNonDefaultRoleIds() {
     const roleIds = [];
     const defaultRoleId = await settingsAPI.getSettings('default_role_id');
-    const roles = (await this.listRoles());
+    const roles = await this.listRoles();
 
     roles.forEach((role) => {
       if (role.role_id !== defaultRoleId) {

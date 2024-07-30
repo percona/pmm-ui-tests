@@ -14,6 +14,6 @@ interface NodeDetails {
 
 export const inventoryApi = {
   async listNodes(): Promise<ListNodes> {
-    return await (await apiHelper.post('v1/inventory/Nodes/List', {})).json() as ListNodes;
+    return await (await apiHelper.get('v1/management/nodes', {})).json() as ListNodes;
   },
 };
