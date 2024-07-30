@@ -190,7 +190,7 @@ Scenario(
     errorCode = (await I.verifyCommand(`docker exec ${arbiter_container_name} grep -q "level=error.*some metrics might be unavailable on arbiter nodes" /var/log/pmm-agent.log; echo $?`));
     I.assertTrue(errorCode.includes(1), `No errors for arbiter setup expected but got error code: ${errorCode}`);
 
-    I.amOnPage(I.buildUrlWithParams(dashboardPage.mongodbReplicaSetSummaryDashboard.cleanUrl, { from: 'now-1h', refresh: '5s' }));
+    I.amOnPage(I.buildUrlWithParams(dashboardPage.mongodbReplicaSetSummaryDashboard.cleanUrl, { from: 'now-5m', refresh: '5s' }));
     dashboardPage.waitForDashboardOpened();
 
     // Gather Secondary member Service Name from Mongo

@@ -649,7 +649,8 @@ Scenario(
 
     assert.ok(
       log.includes('non default bucket time value is not supported, status changed to WAITING'),
-      'The log was supposed to contain errors regarding bucket time but it doesn\'t',
+      `The log was supposed to contain errors regarding bucket time but it doesn't. 
+ ${log}`,
     );
 
     await I.verifyCommand(`docker exec ${container_name} pmm-admin list | grep "postgresql_pgstatmonitor_agent" | grep "Waiting"`);
