@@ -26,12 +26,9 @@ BeforeSuite(async ({ I }) => {
           --network ${networkName} 
           ${DOCKER_IMAGE}`);
   I.wait(10);
-  console.log(await I.verifyCommand(`docker exec pmm-client pmm-agent --force --server-insecure-tls --server-url=https://admin:${SERVER_PASSWORD}@pmm-server:443 --config-file=/usr/local/percona/pmm2/config/pmm-agent.yaml`, null, 'fail', true));
+  await I.verifyCommand(`docker exec pmm-client pmm-agent --force --server-insecure-tls --server-url=https://admin:${SERVER_PASSWORD}@pmm-server:443 --config-file=/usr/local/percona/pmm2/config/pmm-agent.yaml`, null, 'fail', true);
 
-  console.log(await I.verifyCommand('docker logs pmm-client'));
   console.log(await I.verifyCommand('docker ps -a'));
-  // console.log(await I.verifyCommand('docker exec pmm-client pmm-agent status'));
-  console.log(await I.verifyCommand('docker exec pmm-client pmm-admin list'));
 
   await I.verifyCommand(`docker run -d 
            --name mysql-multiarch 
@@ -40,17 +37,22 @@ BeforeSuite(async ({ I }) => {
            mysql:8`);
   I.wait(30);
   await I.verifyCommand('docker exec pmm-client pmm-admin add mysql --query-source=perfschema --username=root --password=testPassword --host=mysql-multiarch --port=3306');
+  I.wait(10);
+  console.log(await I.verifyCommand('docker exec pmm-client pmm-admin list'));
 });
 
 Before(async ({ I }) => {
   await I.Authorize();
 });
 
-Scenario('Verify that dashboards contain data @client-docker-multi-arch', async ({ I, dashboardPage }) => {
+Scenario('Verify that dashboards contain data @client-docker-multi-arch', async ({ I, dashboardPage, adminPage }) => {
   const url = I.buildUrlWithParams(dashboardPage.mysqlInstanceSummaryDashboard.clearUrl, { from: 'now-5m' });
 
   I.amOnPage(url);
   dashboardPage.waitForDashboardOpened();
+  adminPage.performPageDown(5);
+  await dashboardPage.expandEachDashboardRow();
+  adminPage.performPageUp(5);
   await dashboardPage.verifyThereAreNoGraphsWithNA(1);
   await dashboardPage.verifyThereAreNoGraphsWithoutData(5);
   await dashboardPage.verifyThereAreNoGraphsWithNA();
