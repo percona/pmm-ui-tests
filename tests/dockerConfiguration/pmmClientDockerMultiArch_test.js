@@ -6,11 +6,13 @@ BeforeSuite(async ({ I }) => {
   const SERVER_PASSWORD = process.env.ADMIN_PASSWORD || 'admin';
   const networkName = 'pmm-ui-tests-network';
 
+  console.log(`Ip address is: ${process.env.SERVER_IP}`);
+
   await I.verifyCommand(`docker network create ${networkName}`);
   await I.verifyCommand(`docker network connect ${networkName} pmm-server`);
   // I.wait(30);
 
-  console.log(`Ip address is: ${process.env.SERVER_IP}`);
+
 
   await I.verifyCommand(`docker run -d 
           --name pmm-client 
