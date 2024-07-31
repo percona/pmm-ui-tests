@@ -8,7 +8,7 @@ BeforeSuite(async ({ I }) => {
 
   await I.verifyCommand(`docker network create ${networkName}`);
   await I.verifyCommand(`docker network connect ${networkName} pmm-server`);
-  I.wait(30);
+  // I.wait(30);
 
   await I.verifyCommand(`docker run -d 
           --name pmm-client 
@@ -28,17 +28,13 @@ BeforeSuite(async ({ I }) => {
   I.wait(10);
   await I.verifyCommand(`docker exec pmm-client pmm-agent --force --server-insecure-tls --server-url=https://admin:${SERVER_PASSWORD}@pmm-server:443 --config-file=/usr/local/percona/pmm2/config/pmm-agent.yaml`, null, 'fail', true);
 
-  console.log(await I.verifyCommand('docker ps -a'));
-
   await I.verifyCommand(`docker run -d 
            --name mysql-multiarch 
            --network ${networkName}  
            -e MYSQL_ROOT_PASSWORD=testPassword 
            mysql:8`);
-  I.wait(30);
+  // I.wait(30);
   await I.verifyCommand('docker exec pmm-client pmm-admin add mysql --query-source=perfschema --username=root --password=testPassword --host=mysql-multiarch --port=3306');
-  I.wait(10);
-  console.log(await I.verifyCommand('docker exec pmm-client pmm-admin list'));
 });
 
 Before(async ({ I }) => {
