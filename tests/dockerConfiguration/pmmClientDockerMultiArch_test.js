@@ -10,10 +10,8 @@ BeforeSuite(async ({ I }) => {
   console.log(`Ip address is: ${process.env.PMM_UI_URL}`);
 
   await I.verifyCommand(`docker network create ${networkName}`);
-  await I.verifyCommand(`docker network connect ${networkName} pmm-server`);
+  // await I.verifyCommand(`docker network connect ${networkName} pmm-server`);
   // I.wait(30);
-
-
 
   await I.verifyCommand(`docker run -d 
           --name pmm-client 
