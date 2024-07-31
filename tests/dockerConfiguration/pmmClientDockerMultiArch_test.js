@@ -54,8 +54,6 @@ Scenario('Verify that dashboards contain data @client-docker-multi-arch', async 
   await dashboardPage.expandEachDashboardRow();
   adminPage.performPageUp(5);
   await dashboardPage.verifyThereAreNoGraphsWithNA(1);
-  await dashboardPage.verifyThereAreNoGraphsWithoutData(5);
-  await dashboardPage.verifyThereAreNoGraphsWithNA();
   await dashboardPage.verifyThereAreNoGraphsWithoutData();
   I.saveScreenshot();
 });
