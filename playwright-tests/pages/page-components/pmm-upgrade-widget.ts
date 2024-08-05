@@ -18,6 +18,8 @@ export default class PmmUpgradeWidget {
   verifyUpgradeWidget = async () => {
     let retries = 0;
     while (!(await this.elements.upgradeButton.isVisible())) {
+      console.log('Upgrade button xpath is:');
+      console.log(this.elements.upgradeButton);
       console.log(new Date());
       if (retries++ > 10) throw new Error('Upgrade button was not visible.');
       await this.elements.refresh.click({ timeout: Wait.OneMinute });
