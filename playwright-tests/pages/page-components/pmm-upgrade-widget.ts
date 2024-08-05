@@ -16,6 +16,13 @@ export default class PmmUpgradeWidget {
   };
 
   verifyUpgradeWidget = async () => {
+    let retries = 0;
+    while (!(await this.elements.upgradeButton.isVisible())) {
+      console.log(new Date());
+      if (retries++ > 5) throw new Error('Upgrade button was not visible.');
+      await this.elements.refresh.click();
+      await this.page.waitForTimeout(Wait.OneMinute);
+    }
     await this.elements.upgradeButton.waitFor({ state: 'visible', timeout: Wait.ThreeMinutes });
     await expect(this.elements.upToDate).toBeHidden();
     await this.elements.lastUpgradeCheckDate.waitFor({ state: 'visible' });
