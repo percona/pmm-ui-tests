@@ -12,6 +12,7 @@ export default class PmmUpgradeWidget {
     upToDate: this.containers.upgradeContainer.getByText('You are up to date'),
     lastUpgradeCheckDate: this.containers.upgradeContainer.getByTestId('update-last-check'),
     upgradeButton: this.containers.upgradeContainer.getByText('Upgrade to', { exact: false }),
+    refresh: this.containers.upgradeContainer.getByTestId('update-last-check-button'),
   };
 
   verifyUpgradeWidget = async () => {
