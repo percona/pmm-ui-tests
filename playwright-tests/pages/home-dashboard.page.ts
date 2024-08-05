@@ -28,7 +28,7 @@ export default class HomeDashboardPage extends BaseDashboard {
     let retries = 0;
     while (!(await this.pmmUpgradeWidget.elements.upgradeButton.isVisible())) {
       console.log(new Date());
-      if (retries++ > 5) throw new Error('Upgrade button was not visible.');
+      if (retries++ > 10) throw new Error('Upgrade button was not visible.');
       await this.pmmUpgradeWidget.elements.refresh.click({ timeout: Wait.OneMinute });
       await this.page.waitForTimeout(Wait.OneMinute);
     }

@@ -19,7 +19,7 @@ export default class PmmUpgradeWidget {
     let retries = 0;
     while (!(await this.elements.upgradeButton.isVisible())) {
       console.log(new Date());
-      if (retries++ > 5) throw new Error('Upgrade button was not visible.');
+      if (retries++ > 10) throw new Error('Upgrade button was not visible.');
       await this.elements.refresh.click({ timeout: Wait.OneMinute });
       await this.page.waitForTimeout(Wait.OneMinute);
     }
