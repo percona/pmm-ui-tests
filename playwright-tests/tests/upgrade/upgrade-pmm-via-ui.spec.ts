@@ -11,7 +11,6 @@ test.describe('Common Upgrade PMM tests', async () => {
   });
 
   test('PMM-T288 Verify user can see Update widget before upgrade [critical] @pmm-upgrade', async ({ homeDashboardPage }) => {
-    test.setTimeout(Wait.TwentyMinutes);
     await homeDashboardPage.pmmUpgradeWidget.verifyUpgradeWidget();
   });
 

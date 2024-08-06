@@ -11,20 +11,10 @@ export default class PmmUpgradeWidget {
     availableVersion: this.containers.upgradeContainer.getByTestId('update-latest-version'),
     upToDate: this.containers.upgradeContainer.getByText('You are up to date'),
     lastUpgradeCheckDate: this.containers.upgradeContainer.getByTestId('update-last-check'),
-    upgradeButton: this.containers.upgradeContainer.locator('//*[contains(text(), "Upgrade to")]'),
-    refresh: this.containers.upgradeContainer.getByTestId('update-last-check-button'),
+    upgradeButton: this.containers.upgradeContainer.getByText('Upgrade to', { exact: false }),
   };
 
   verifyUpgradeWidget = async () => {
-    let retries = 0;
-    while (!(await this.elements.upgradeButton.isVisible())) {
-      console.log('Upgrade button xpath is:');
-      console.log(this.elements.upgradeButton);
-      console.log(new Date());
-      if (retries++ > 10) throw new Error('Upgrade button was not visible.');
-      await this.elements.refresh.click({ timeout: Wait.OneMinute });
-      await this.page.waitForTimeout(Wait.OneMinute);
-    }
     await this.elements.upgradeButton.waitFor({ state: 'visible', timeout: Wait.ThreeMinutes });
     await expect(this.elements.upToDate).toBeHidden();
     await this.elements.lastUpgradeCheckDate.waitFor({ state: 'visible' });
