@@ -4,13 +4,13 @@ BeforeSuite(async ({ I }) => {
   // eslint-disable-next-line no-inline-comments
   const DOCKER_IMAGE = /* process.env.CLIENT_VERSION || */ 'perconalab/pmm-client-test:dev-latest';
   const SERVER_PASSWORD = process.env.ADMIN_PASSWORD || 'admin';
-  const networkName = 'pmm-ui-tests-network';
+  const networkName = 'pmm2-ui-tests_pmm-network';
   const pmmServerAddress = process.env.ARCHITECTURE === 'agent-amd64' ? 'pmm-server' : process.env.SERVER_IP;
 
   console.log(`Ip address is: ${process.env.SERVER_IP}`);
   console.log(`Architecture is: ${process.env.ARCHITECTURE}`);
   console.log(await I.verifyCommand('docker network ls --format "{{ .Name }}'));
-  await I.verifyCommand(`docker network create ${networkName}`);
+  // await I.verifyCommand(`docker network create ${networkName}`);
   await I.verifyCommand(`docker run -d 
           --name pmm-client 
           -e PMM_AGENT_SERVER_ADDRESS=${pmmServerAddress}
