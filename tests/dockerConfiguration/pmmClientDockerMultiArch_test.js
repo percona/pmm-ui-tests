@@ -7,6 +7,7 @@ BeforeSuite(async ({ I }) => {
   const networkName = 'pmm-ui-tests-network';
 
   console.log(`Ip address is: ${process.env.SERVER_IP}`);
+  console.log(`Ip address is: ${process.env.IP}`);
   console.log(`Ip address is: ${process.env.PMM_UI_URL}`);
   console.log(`Architecture is: ${process.env.ARCHITECTURE}`);
   console.log(`Server Password is: ${SERVER_PASSWORD}`);
