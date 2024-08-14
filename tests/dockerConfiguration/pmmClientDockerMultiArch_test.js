@@ -4,16 +4,17 @@ BeforeSuite(async ({ I }) => {
   // eslint-disable-next-line no-inline-comments
   const DOCKER_IMAGE = /* process.env.CLIENT_VERSION || */ 'perconalab/pmm-client-test:dev-latest';
   const SERVER_PASSWORD = process.env.ADMIN_PASSWORD || 'admin';
-  const networkName = 'pmm-network';
+  const networkName = 'pmm-ui-tests-network';
 
   console.log(`Ip address is: ${process.env.SERVER_IP}`);
   console.log(`Ip address is: ${process.env.PMM_UI_URL}`);
   console.log(`Architecture is: ${process.env.ARCHITECTURE}`);
+  console.log(`Server Password is: ${SERVER_PASSWORD}`);
   console.log(await I.verifyCommand('docker ps -a'));
 
-  await I.verifyCommand(`docker network create ${networkName} || true`);
+  await I.verifyCommand(`docker network create ${networkName}`);
   // await I.verifyCommand(`docker network connect ${networkName} pmm-server`);
-  I.wait(60);
+  // I.wait(60);
 
   await I.verifyCommand(`docker run -d 
           --name pmm-client 
@@ -31,7 +32,7 @@ BeforeSuite(async ({ I }) => {
           --network ${networkName} 
           ${DOCKER_IMAGE}`);
   I.wait(10);
-  // await I.verifyCommand(`docker exec pmm-client-${process.env.ARCHITECTURE} pmm-agent --force --server-insecure-tls --server-url=https://admin:${SERVER_PASSWORD}@pmm-server:443 --config-file=/usr/local/percona/pmm2/config/pmm-agent.yaml`, null, 'fail', true);
+  await I.verifyCommand(`docker exec pmm-client-${process.env.ARCHITECTURE} pmm-agent --force --server-insecure-tls --server-url=https://admin:${SERVER_PASSWORD}@pmm-server:443 --config-file=/usr/local/percona/pmm2/config/pmm-agent.yaml`, null, 'fail', true);
 
   await I.verifyCommand(`docker run -d 
            --name mysql-multiarch 
