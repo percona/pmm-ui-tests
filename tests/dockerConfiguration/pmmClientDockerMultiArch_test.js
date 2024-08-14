@@ -16,7 +16,7 @@ BeforeSuite(async ({ I }) => {
 
   await I.verifyCommand(`docker run -d 
           --name pmm-client 
-          -e PMM_AGENT_SERVER_ADDRESS=${process.env.SERVER_IP}
+          -e PMM_AGENT_SERVER_ADDRESS=pmm-server
           -e PMM_AGENT_SERVER_USERNAME=admin 
           -e PMM_AGENT_SERVER_PASSWORD=${SERVER_PASSWORD}
           -e PMM_AGENT_SERVER_INSECURE_TLS=1 
