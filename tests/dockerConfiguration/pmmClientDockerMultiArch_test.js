@@ -8,7 +8,7 @@ BeforeSuite(async ({ I }) => {
 
   console.log(`Ip address is: ${process.env.SERVER_IP}`);
   console.log(`Architecture is: ${process.env.ARCHITECTURE}`);
-
+  console.log(await I.verifyCommand('docker network ls'));
   await I.verifyCommand(`docker network create ${networkName}`);
   await I.verifyCommand(`docker run -d 
           --name pmm-client 
