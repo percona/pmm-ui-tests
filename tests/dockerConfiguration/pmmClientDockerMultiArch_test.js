@@ -5,13 +5,10 @@ BeforeSuite(async ({ I }) => {
   const DOCKER_IMAGE = /* process.env.CLIENT_VERSION || */ 'perconalab/pmm-client-test:dev-latest';
   const SERVER_PASSWORD = process.env.ADMIN_PASSWORD || 'admin';
   const networkName = 'pmm-ui-tests-network';
-  const pmmServerAddress = await I.verifyCommand('curl -s ifconfig.me');
 
   console.log(`Ip address is: ${process.env.SERVER_IP}`);
-  console.log(`Ip address is: ${pmmServerAddress}`);
   console.log(`Ip address is: ${process.env.PMM_UI_URL}`);
   console.log(`Architecture is: ${process.env.ARCHITECTURE}`);
-  console.log(`Server Password is: ${SERVER_PASSWORD}`);
   console.log(await I.verifyCommand('docker ps -a'));
 
   await I.verifyCommand(`docker network create ${networkName}`);
@@ -20,7 +17,7 @@ BeforeSuite(async ({ I }) => {
 
   await I.verifyCommand(`docker run -d 
           --name pmm-client 
-          -e PMM_AGENT_SERVER_ADDRESS=${pmmServerAddress}
+          -e PMM_AGENT_SERVER_ADDRESS=${process.env.SERVER_IP}:443
           -e PMM_AGENT_SERVER_USERNAME=admin 
           -e PMM_AGENT_SERVER_PASSWORD=${SERVER_PASSWORD}
           -e PMM_AGENT_SERVER_INSECURE_TLS=1 
