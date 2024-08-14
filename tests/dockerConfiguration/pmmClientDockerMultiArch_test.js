@@ -12,7 +12,7 @@ BeforeSuite(async ({ I }) => {
   console.log(await I.verifyCommand('docker network ls --format "{{ .Name }}"'));
 
   await I.verifyCommand(`docker run -d 
-          --name pmm-client 
+          --name pmm-client-${process.env.ARCHITECTURE}
           -e PMM_AGENT_SERVER_ADDRESS=${pmmServerAddress}
           -e PMM_AGENT_SERVER_USERNAME=admin 
           -e PMM_AGENT_SERVER_PASSWORD=${SERVER_PASSWORD}
