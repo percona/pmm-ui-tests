@@ -24,7 +24,7 @@ BeforeSuite(async ({ I }) => {
           -e PMM_AGENT_PORTS_MAX=41500
           -e PMM_AGENT_SETUP=1 
           -e PMM_AGENT_CONFIG_FILE=config/pmm-agent.yaml 
-          -e PMM_AGENT_SETUP_NODE_NAME=pmm-client
+          -e PMM_AGENT_SETUP_NODE_NAME=pmm-client-${process.env.ARCHITECTURE}
           -e PMM_AGENT_SETUP_FORCE=1
           -e PMM_AGENT_SETUP_NODE_TYPE=container
           --network ${networkName} 
