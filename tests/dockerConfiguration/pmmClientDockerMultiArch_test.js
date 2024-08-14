@@ -17,7 +17,7 @@ BeforeSuite(async ({ I }) => {
           --name pmm-client 
           -e PMM_AGENT_SERVER_ADDRESS=${process.env.SERVER_IP}
           -e PMM_AGENT_SERVER_USERNAME=admin 
-          -e PMM_AGENT_SERVER_PASSWORD=${SERVER_PASSWORD}
+          -e PMM_AGENT_SERVER_PASSWORD=admin
           -e PMM_AGENT_SERVER_INSECURE_TLS=1 
           -e PMM_AGENT_PORTS_MIN=41000
           -e PMM_AGENT_PORTS_MAX=41500
