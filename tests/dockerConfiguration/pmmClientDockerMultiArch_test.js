@@ -9,6 +9,7 @@ BeforeSuite(async ({ I }) => {
   console.log(`Ip address is: ${process.env.SERVER_IP}`);
   console.log(`Ip address is: ${process.env.PMM_UI_URL}`);
   console.log(`Architecture is: ${process.env.ARCHITECTURE}`);
+  console.log('docker ps -a');
 
   await I.verifyCommand(`docker network create ${networkName}`);
   // await I.verifyCommand(`docker network connect ${networkName} pmm-server`);
@@ -16,7 +17,7 @@ BeforeSuite(async ({ I }) => {
 
   await I.verifyCommand(`docker run -d 
           --name pmm-client 
-          -e PMM_AGENT_SERVER_ADDRESS=pmm-server
+          -e PMM_AGENT_SERVER_ADDRESS=${process.env.SERVER_IP}
           -e PMM_AGENT_SERVER_USERNAME=admin 
           -e PMM_AGENT_SERVER_PASSWORD=${SERVER_PASSWORD}
           -e PMM_AGENT_SERVER_INSECURE_TLS=1 
