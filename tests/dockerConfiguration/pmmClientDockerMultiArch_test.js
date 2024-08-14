@@ -9,6 +9,7 @@ BeforeSuite(async ({ I }) => {
 
   console.log(`Ip address is: ${process.env.SERVER_IP}`);
   console.log(`Architecture is: ${process.env.ARCHITECTURE}`);
+  await I.verifyCommand(`docker network create ${networkName} || true`);
   console.log(await I.verifyCommand('docker network ls --format "{{ .Name }}"'));
 
   await I.verifyCommand(`docker run -d 
@@ -28,7 +29,7 @@ BeforeSuite(async ({ I }) => {
           ${DOCKER_IMAGE}`);
 
   I.wait(10);
-  console.log(await I.verifyCommand('docker logs pmm-client'));
+  console.log(await I.verifyCommand(`docker logs pmm-client-${process.env.ARCHITECTURE}`));
   await I.verifyCommand(`docker exec pmm-client-${process.env.ARCHITECTURE} pmm-agent --force --server-insecure-tls --server-url=https://admin:${SERVER_PASSWORD}@${pmmServerAddress}:443 --config-file=/usr/local/percona/pmm2/config/pmm-agent.yaml`);
   await I.verifyCommand(`docker run -d 
            --name mysql-multiarch 
@@ -37,8 +38,8 @@ BeforeSuite(async ({ I }) => {
            mysql:8`);
 
   I.wait(15);
-  console.log(await I.verifyCommand('docker logs pmm-client'));
-  await I.verifyCommand('docker exec pmm-client pmm-admin add mysql --query-source=perfschema --username=root --password=testPassword --host=mysql-multiarch --port=3306');
+  console.log(await I.verifyCommand(`docker logs pmm-client-${process.env.ARCHITECTURE}`));
+  await I.verifyCommand(`docker exec pmm-client-${process.env.ARCHITECTURE} pmm-admin add mysql --query-source=perfschema --username=root --password=testPassword --host=mysql-multiarch --port=3306`);
 });
 
 Before(async ({ I }) => {
