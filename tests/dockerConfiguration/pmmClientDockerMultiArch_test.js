@@ -29,7 +29,7 @@ BeforeSuite(async ({ I }) => {
 
   I.wait(10);
   console.log(await I.verifyCommand('docker logs pmm-client'));
-  await I.verifyCommand(`docker exec pmm-client-${process.env.ARCHITECTURE} pmm-agent --force --server-insecure-tls --server-url=https://admin:${SERVER_PASSWORD}@pmm-server:443 --config-file=/usr/local/percona/pmm2/config/pmm-agent.yaml`, null, 'fail', true);
+  await I.verifyCommand(`docker exec pmm-client-${process.env.ARCHITECTURE} pmm-agent --force --server-insecure-tls --server-url=https://admin:${SERVER_PASSWORD}@${pmmServerAddress}:443 --config-file=/usr/local/percona/pmm2/config/pmm-agent.yaml`);
   await I.verifyCommand(`docker run -d 
            --name mysql-multiarch 
            --network ${networkName}  
