@@ -174,10 +174,9 @@ Scenario(
   async ({
     I, dashboardPage,
   }) => {
-    I.amOnPage(I.buildUrlWithParams(dashboardPage.mongodbReplicaSetSummaryDashboard.cleanUrl, { from: 'now-5m', refresh: '5s' }));
-    I.say(`Url is: ${I.buildUrlWithParams(dashboardPage.mongodbReplicaSetSummaryDashboard.cleanUrl, { from: 'now-5m', refresh: '5s' })}`);
+    I.amOnPage(`${dashboardPage.mongodbReplicaSetSummaryDashboard.url}&var-replset=rs1`);
     dashboardPage.waitForDashboardOpened();
-    await dashboardPage.expandRows('Replication Lag');
+
     const username = 'dba';
     const password = 'test1234';
 
