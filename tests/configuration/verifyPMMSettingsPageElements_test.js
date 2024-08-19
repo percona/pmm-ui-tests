@@ -184,8 +184,11 @@ Scenario('@PMM-T1866 - Verify if public address has an port assigned and followi
   I.see('Public Address', pmmSettingsPage.fields.publicAddressLabel);
   // Set a public IP with port
   adminPage.customClearField(pmmSettingsPage.fields.publicAddressInput);
+  pmmSettingsPage.applyChanges();
+  I.wait(10);
   I.fillField(pmmSettingsPage.fields.publicAddressInput, '192.168.1.1:8433');
   pmmSettingsPage.applyChanges();
+  I.wait(10);
   I.dontSeeElement(pmmSettingsPage.fields.errorPopUpElement);
   await pmmSettingsPage.verifySettingsValue(pmmSettingsPage.fields.publicAddressInput, '192.168.1.1:8433');
   // clearField and customClearField methods doesn't work for this field
