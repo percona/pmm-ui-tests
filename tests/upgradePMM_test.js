@@ -514,7 +514,7 @@ Scenario(
   },
 );
 
-if (versionMinor >= 32) {
+// if (versionMinor >= 32) {
   Scenario(
     'Create backups data to check after upgrade @pre-upgrade @pmm-upgrade',
     async ({
@@ -560,7 +560,7 @@ if (versionMinor >= 32) {
       I.waitForVisible(scheduledPage.elements.scheduleName(`${schedule.name}-wrong`), 20);
     },
   ).retry(0);
-}
+// }
 
 Scenario(
   'PMM-T3 Verify user is able to Upgrade PMM version [blocker] @pmm-upgrade @ovf-upgrade @ami-upgrade  ',
