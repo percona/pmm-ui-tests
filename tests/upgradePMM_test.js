@@ -1160,7 +1160,7 @@ if (versionMinor >= 23) {
   ).retry(1);
 }
 
-if (versionMinor >= 32) {
+// if (versionMinor >= 32) {
   Scenario(
     '@PMM-T1504 - The user is able to do a backup for MongoDB after upgrade'
     + ' @post-upgrade @pmm-upgrade',
@@ -1245,7 +1245,7 @@ if (versionMinor >= 32) {
       }
     },
   ).retry(0);
-}
+// }
 
 Scenario('PMM-12587-1 Verify duplicate dashboards dont break after upgrade @pre-upgrade @ovf-upgrade @ami-upgrade @pmm-upgrade',
     async ({
