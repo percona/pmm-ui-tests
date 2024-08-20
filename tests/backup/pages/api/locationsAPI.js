@@ -62,7 +62,7 @@ module.exports = {
   async getLocationDetails(nameOfLocation) {
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
     const resp = await I.sendPostRequest('v1/management/backup/Locations/List', {}, headers);
-    console.log(resp);
+    console.log(resp.data);
     const result = Object.values(resp.data)
       .flat(Infinity)
       .filter(({ name }) => name === nameOfLocation);
