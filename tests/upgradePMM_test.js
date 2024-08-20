@@ -1197,7 +1197,10 @@ if (versionMinor >= 23) {
       // Disable schedule
       I.click(scheduledPage.buttons.enableDisableByName(scheduleName));
       await I.waitForVisible(scheduledPage.elements.toggleByName(scheduleName));
-      I.seeAttributesOnElements(scheduledPage.elements.toggleByName(scheduleName), { checked: null });
+
+      const isChecked = await I.grabAttributeFrom(scheduledPage.elements.toggleByName(scheduleName), 'checked');
+
+      I.assertEqual(isChecked, null, `Element ${scheduledPage.elements.toggleByName(scheduleName).xpath} is checked, but should not be.`);
     },
   ).retry(0);
 
