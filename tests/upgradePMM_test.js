@@ -82,7 +82,7 @@ Before(async ({ I }) => {
   I.setRequestTimeout(60000);
 });
 
-BeforeSuite(async ({ I, codeceptjsConfig, credentials }) => {
+/* BeforeSuite(async ({ I, codeceptjsConfig, credentials }) => {
   const mysqlComposeConnection = {
     host: (process.env.AMI_UPGRADE_TESTING_INSTANCE === 'true' || process.env.OVF_UPGRADE_TESTING_INSTANCE === 'true' ? process.env.VM_CLIENT_IP : '127.0.0.1'),
     port: (process.env.AMI_UPGRADE_TESTING_INSTANCE === 'true' || process.env.OVF_UPGRADE_TESTING_INSTANCE === 'true' ? remoteInstancesHelper.remote_instance.mysql.ps_5_7.port : '3309'),
@@ -117,7 +117,7 @@ BeforeSuite(async ({ I, codeceptjsConfig, credentials }) => {
       await replicaPrimary.close();
     }
   }
-});
+}); */
 
 AfterSuite(async ({ I, psMySql }) => {
   await psMySql.disconnectFromPS();
