@@ -557,6 +557,7 @@ Scenario(
       backupInventoryPage.verifyBackupSucceeded(backupName);
       scheduledPage.openScheduledBackupsPage();
       I.wait(1500);
+      backupInventoryPage.openInventoryPage();
       I.waitForVisible(scheduledPage.elements.scheduleName(`${schedule.name}-wrong`), 20);
     },
   ).retry(0);
