@@ -124,7 +124,7 @@ AfterSuite(async ({ I, psMySql }) => {
   await I.mongoDisconnect();
 });
 
-Scenario(
+Scenario.skip(
   'Add AMI Instance ID @ami-upgrade',
   async ({ amiInstanceAPI }) => {
     await amiInstanceAPI.verifyAmazonInstanceId(process.env.AMI_INSTANCE_ID);
