@@ -82,7 +82,7 @@ Before(async ({ I }) => {
   I.setRequestTimeout(60000);
 });
 
-/* BeforeSuite(async ({ I, codeceptjsConfig, credentials }) => {
+BeforeSuite(async ({ I, codeceptjsConfig, credentials }) => {
   const mysqlComposeConnection = {
     host: (process.env.AMI_UPGRADE_TESTING_INSTANCE === 'true' || process.env.OVF_UPGRADE_TESTING_INSTANCE === 'true' ? process.env.VM_CLIENT_IP : '127.0.0.1'),
     port: (process.env.AMI_UPGRADE_TESTING_INSTANCE === 'true' || process.env.OVF_UPGRADE_TESTING_INSTANCE === 'true' ? remoteInstancesHelper.remote_instance.mysql.ps_5_7.port : '3309'),
@@ -117,14 +117,14 @@ Before(async ({ I }) => {
       await replicaPrimary.close();
     }
   }
-}); */
+});
 
 AfterSuite(async ({ I, psMySql }) => {
   await psMySql.disconnectFromPS();
   await I.mongoDisconnect();
 });
 
-Scenario.skip(
+Scenario(
   'Add AMI Instance ID @ami-upgrade',
   async ({ amiInstanceAPI }) => {
     await amiInstanceAPI.verifyAmazonInstanceId(process.env.AMI_INSTANCE_ID);
@@ -514,7 +514,7 @@ Scenario(
   },
 );
 
-// if (versionMinor >= 32) {
+if (versionMinor >= 32) {
   Scenario(
     'Create backups data to check after upgrade @pre-upgrade @pmm-upgrade',
     async ({
@@ -561,7 +561,7 @@ Scenario(
       I.waitForVisible(scheduledPage.elements.scheduleName(`${schedule.name}-wrong`), 20);
     },
   ).retry(0);
-// }
+}
 
 Scenario(
   'PMM-T3 Verify user is able to Upgrade PMM version [blocker] @pmm-upgrade @ovf-upgrade @ami-upgrade  ',
@@ -1161,7 +1161,7 @@ if (versionMinor >= 23) {
   ).retry(1);
 }
 
-// if (versionMinor >= 32) {
+if (versionMinor >= 32) {
   Scenario(
     '@PMM-T1504 - The user is able to do a backup for MongoDB after upgrade'
     + ' @post-upgrade @pmm-upgrade',
@@ -1249,7 +1249,7 @@ if (versionMinor >= 23) {
       }
     },
   ).retry(0);
-// }
+}
 
 Scenario('PMM-12587-1 Verify duplicate dashboards dont break after upgrade @pre-upgrade @ovf-upgrade @ami-upgrade @pmm-upgrade',
     async ({
