@@ -245,7 +245,7 @@ Scenario(
 
 Data(shortCutTests).Scenario(
   'PMM-T436 PMM-T458 - Verify short-cut navigation from filters to related dashboards, '
-    + 'Verify time interval is passed from QAN to dashboards via shortcut links @qan-test',
+    + 'Verify time interval is passed from QAN to dashboards via shortcut links @qan',
   async ({
     I, qanFilters, dashboardPage, current, adminPage, qanOverview, qanPage,
   }) => {
