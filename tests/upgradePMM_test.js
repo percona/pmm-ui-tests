@@ -551,7 +551,7 @@ if (versionMinor >= 32) {
       backupInventoryPage.openInventoryPage();
       backupInventoryPage.verifyBackupSucceeded(backupName);
       scheduledPage.openScheduledBackupsPage();
-      I.waitForVisible(scheduledPage.elements.scheduleName(`${schedule.name}-wrong`), 20);
+      I.waitForVisible(scheduledPage.elements.scheduleName(schedule.name), 20);
     },
   ).retry(0);
 }
