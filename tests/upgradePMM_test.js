@@ -533,12 +533,7 @@ if (versionMinor >= 32) {
         location.description,
       );
 
-      console.log(`Location id is: ${locationId}`);
-
       const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName('MONGODB_SERVICE', mongoServiceName);
-
-      console.log(`Service ID is: ${service_id}`);
-
       const backupId = await backupAPI.startBackup(backupName, service_id, locationId);
 
       // Every 20 mins schedule
@@ -556,8 +551,6 @@ if (versionMinor >= 32) {
       backupInventoryPage.openInventoryPage();
       backupInventoryPage.verifyBackupSucceeded(backupName);
       scheduledPage.openScheduledBackupsPage();
-      I.wait(1500);
-      backupInventoryPage.openInventoryPage();
       I.waitForVisible(scheduledPage.elements.scheduleName(`${schedule.name}-wrong`), 20);
     },
   ).retry(0);
