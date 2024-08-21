@@ -4,7 +4,7 @@ const assert = require('assert');
 const annotation = new DataTable(['annotationName', 'service', 'dashboard', 'service_type']);
 
 annotation.add(['annotation-for-postgres-server', 'pmm-server', dashboardPage.postgresqlInstanceSummaryDashboard.url, 'POSTGRESQL_SERVICE']);
-annotation.add(['annotation-for-mongo', 'rs10', dashboardPage.mongoDbInstanceSummaryDashboard.url, 'MONGODB_SERVICE']);
+annotation.add(['annotation-for-mongo', 'rs1', dashboardPage.mongoDbInstanceSummaryDashboard.url, 'MONGODB_SERVICE']);
 annotation.add(['annotation-for-postgres', 'PGSQL', dashboardPage.postgresqlInstanceSummaryDashboard.url, 'POSTGRESQL_SERVICE']);
 annotation.add(['annotation-for-mysql', 'ms-', dashboardPage.mysqlInstanceSummaryDashboard.url, 'MYSQL_SERVICE']);
 annotation.add(['mysql-node-name', 'ms-', dashboardPage.nodesCompareDashboard.url, 'MYSQL_SERVICE']);
@@ -16,7 +16,7 @@ Before(async ({ I }) => {
 });
 
 Data(annotation).Scenario(
-  'PMM-T878 - Verify adding annotation specific dashboard @nightly @dashboards @annotations',
+  'PMM-T878 - Verify adding annotation specific dashboard @nightly-test @dashboards @annotations',
   async ({
     I, dashboardPage, pmmInventoryPage, annotationAPI, inventoryAPI, current,
   }) => {
@@ -51,7 +51,7 @@ Data(annotation).Scenario(
 ).retry(1);
 
 Scenario(
-  'PMM-T878 - Verify user is not able to add an annotation for non-existing node name or service name and without service name @nightly @dashboards',
+  'PMM-T878 - Verify user is not able to add an annotation for non-existing node name or service name and without service name @nightly-test @dashboards',
   async ({
     I, annotationAPI, pmmInventoryPage,
   }) => {
