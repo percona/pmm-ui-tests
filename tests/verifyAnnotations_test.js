@@ -51,7 +51,7 @@ Data(annotation).Scenario(
 ).retry(1);
 
 Scenario(
-  'PMM-T878 - Verify user is not able to add an annotation for non-existing node name or service name and without service name @nightly-test @dashboards',
+  'PMM-T878 - Verify user is not able to add an annotation for non-existing node name or service name and without service name @nightly @dashboards',
   async ({
     I, annotationAPI, pmmInventoryPage,
   }) => {

@@ -2,7 +2,6 @@ const assert = require('assert');
 
 const shortCutTests = new DataTable(['type', 'dashboard', 'shortcutLink', 'filter']);
 
-// shortCutTests.add(['Cluster', 'MongoDB Cluster Summary', 'graph/d/mongodb-cluster-summary/mongodb-cluster-summary', 'mogodb_node_cluster']);
 shortCutTests.add(['Replication Set', 'MySQL Replication Summary', 'graph/d/mysql-replicaset-summary/mysql-replication-summary', 'ps-repl1']);
 shortCutTests.add(['Node Name', 'Node Summary', 'graph/d/node-instance-summary/node-summary?var-node_name=pmm-server', 'pmm-server']);
 shortCutTests.add(['Service Name', 'MongoDB ReplSet Summary', 'graph/d/mongodb-replicaset-summary/mongodb-replset-summary', 'rs1']);
