@@ -37,7 +37,7 @@ test.describe('PMM Server CLI tests for Docker Environment Variables', async () 
       await output.exitCodeEquals(1);
       await output.outContains(
         `We could not find a service associated with the local node. Please provide "Service ID" or "Service name". 
- ${output.stdout} \n ${output.stderr} \n ${output.code}`,
+ ${output.stdout} \n ${JSON.stringify(output.stderr)} \n ${output.code}`,
       );
     }
 
