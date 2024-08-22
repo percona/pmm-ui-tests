@@ -104,7 +104,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T13 - Check Explain and Example for supported DBs - mongodb @qan-test',
+  'PMM-T13 - Check Explain and Example for supported DBs - mongodb @qan',
   async ({
     I, qanPage, qanOverview, qanFilters, qanDetails, inventoryAPI,
   }) => {
