@@ -48,7 +48,7 @@ test.describe('PMM Server CLI tests for Docker Environment Variables', async () 
     let out: ExecReturn;
 
     await expect(async () => {
-      out = await cli.exec('docker logs PMM-T225 2>&1 | grep \'Configuration warning: unknown environment variable\'');
+      out = await cli.exec('docker logs PMM-T225 2>&1 | grep "Configuration warning: unknown environment variable"');
       await out.exitCodeEquals(0);
     }).toPass({
       // Probe, wait 1s, probe, wait 2s, probe, wait 2s, probe, wait 2s, probe, ....
