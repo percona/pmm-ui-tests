@@ -357,6 +357,7 @@ Scenario(
       publicAddressValue,
       `Expected the Public Address to be saved and Match ${publicAddressValue}`,
     );
+    I.wait(20);
   },
 ).retry(2);
 
