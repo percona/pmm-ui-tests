@@ -14,7 +14,7 @@ test.describe('PMM Server CLI tests for Docker Environment Variables', async () 
   test.beforeAll(async () => {
     await cli.exec(`PMM_SERVER_IMAGE=${PMM_SERVER_IMAGE}
       PMM_CLIENT_IMAGE=${PMM_CLIENT_IMAGE}
-      docker-compose -f test-setup/docker-compose-pmm-admin-remove.yml up -d`);
+      docker compose -f test-setup/docker-compose-pmm-admin-remove.yml up -d`);
     await cli.exec('sleep 10');
 
     for (let i = 0; i < 2; i++) {
