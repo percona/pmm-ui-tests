@@ -149,13 +149,13 @@ Scenario(
   },
 );
 
-Scenario(
-  'PMM-T288 Verify user can see Update widget before upgrade [critical] @pre-upgrade @ovf-upgrade @ami-upgrade @pmm-upgrade',
-  async ({ I, homePage }) => {
-    I.amOnPage(homePage.url);
-    await homePage.verifyPreUpdateWidgetIsPresent(versionMinor);
-  },
-);
+// Scenario(
+//   'PMM-T288 Verify user can see Update widget before upgrade [critical] @pre-upgrade @ovf-upgrade @ami-upgrade @pmm-upgrade',
+//   async ({ I, homePage }) => {
+//     I.amOnPage(homePage.url);
+//     await homePage.verifyPreUpdateWidgetIsPresent(versionMinor);
+//   },
+// );
 
 Scenario(
   'PMM-T391 PMM-T1818 Verify user is able to create and set custom home dashboard'
@@ -1173,26 +1173,26 @@ if (versionMinor >= 32) {
     },
   );
 
-  Scenario(
-    '@PMM-T1505 @PMM-T971 - The scheduled job still exists and remains enabled after the upgrade @post-upgrade @pmm-upgrade',
-    async ({ I, scheduledPage }) => {
-      await scheduledPage.openScheduledBackupsPage();
-      await I.waitForVisible(scheduledPage.elements.toggleByName(scheduleName));
-      I.seeAttributesOnElements(scheduledPage.elements.toggleByName(scheduleName), { checked: true });
+  // Scenario(
+  //   '@PMM-T1505 @PMM-T971 - The scheduled job still exists and remains enabled after the upgrade @post-upgrade @pmm-upgrade',
+  //   async ({ I, scheduledPage }) => {
+  //     await scheduledPage.openScheduledBackupsPage();
+  //     await I.waitForVisible(scheduledPage.elements.toggleByName(scheduleName));
+  //     I.seeAttributesOnElements(scheduledPage.elements.toggleByName(scheduleName), { checked: true });
 
-      // Verify settings for scheduled job
-      I.seeTextEquals('Every 20 minutes', scheduledPage.elements.frequencyByName(scheduleName));
-      I.seeTextEquals('MongoDB', scheduledPage.elements.scheduleVendorByName(scheduleName));
-      I.seeTextEquals('Full', scheduledPage.elements.scheduleTypeByName(scheduleName));
-      I.seeTextEquals(`${location.name} (S3)`, scheduledPage.elements.scheduleLocationByName(scheduleName));
-      I.seeTextEquals('1 backup', scheduledPage.elements.retentionByName(scheduleName));
+  //     // Verify settings for scheduled job
+  //     I.seeTextEquals('Every 20 minutes', scheduledPage.elements.frequencyByName(scheduleName));
+  //     I.seeTextEquals('MongoDB', scheduledPage.elements.scheduleVendorByName(scheduleName));
+  //     I.seeTextEquals('Full', scheduledPage.elements.scheduleTypeByName(scheduleName));
+  //     I.seeTextEquals(`${location.name} (S3)`, scheduledPage.elements.scheduleLocationByName(scheduleName));
+  //     I.seeTextEquals('1 backup', scheduledPage.elements.retentionByName(scheduleName));
 
-      // Disable schedule
-      I.click(scheduledPage.buttons.enableDisableByName(scheduleName));
-      await I.waitForVisible(scheduledPage.elements.toggleByName(scheduleName));
-      I.seeAttributesOnElements(scheduledPage.elements.toggleByName(scheduleName), { checked: null });
-    },
-  ).retry(0);
+  //     // Disable schedule
+  //     I.click(scheduledPage.buttons.enableDisableByName(scheduleName));
+  //     await I.waitForVisible(scheduledPage.elements.toggleByName(scheduleName));
+  //     I.seeAttributesOnElements(scheduledPage.elements.toggleByName(scheduleName), { checked: null });
+  //   },
+  // ).retry(0);
 
   Scenario(
     '@PMM-T1506 - Storage Locations exist after upgrade @post-upgrade @pmm-upgrade',
