@@ -43,7 +43,8 @@ test.describe('PMM Server CLI tests for Docker Environment Variables', async () 
   /**
    * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/docker-env-variable-tests.bats#L20
    */
-  test('PMM-T225 run docker container with a unexpected environment variable DATA_TENTION=48', async ({}) => {
+  // TODO: Unskip after https://perconadev.atlassian.net/browse/PMM-13323 is fixed
+  test.skip('PMM-T225 run docker container with a unexpected environment variable DATA_TENTION=48', async ({}) => {
     await cli.exec(`docker run -d -p 82:80 -p 447:443 --name PMM-T225 -e DATA_TENTION=48 ${DOCKER_IMAGE}`);
     let out: ExecReturn;
 
