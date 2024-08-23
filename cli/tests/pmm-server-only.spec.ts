@@ -43,8 +43,7 @@ test.describe('PMM Server CLI tests for Docker Environment Variables', async () 
   /**
    * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/docker-env-variable-tests.bats#L20
    */
-  // TODO: Unskip after https://perconadev.atlassian.net/browse/PMM-13323 is fixed
-  test.skip('PMM-T225 run docker container with a unexpected environment variable DATA_TENTION=48', async ({}) => {
+  test('PMM-T225 run docker container with a unexpected environment variable DATA_TENTION=48', async ({}) => {
     await cli.exec(`docker run -d -p 82:80 -p 447:443 --name PMM-T225 -e DATA_TENTION=48 ${DOCKER_IMAGE}`);
     let out: ExecReturn;
 
@@ -66,7 +65,8 @@ test.describe('PMM Server CLI tests for Docker Environment Variables', async () 
   /**
    * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/docker-env-variable-tests.bats#L35
    */
-  test('PMM-T226 run docker container with all valid environment variables not causing any warning or error message', async ({}) => {
+  // TODO: Unskip after https://perconadev.atlassian.net/browse/PMM-13323 is fixed
+  test.skip('PMM-T226 run docker container with all valid environment variables not causing any warning or error message', async ({}) => {
     // @ts-ignore
     await cli.exec(`docker run -d -p 83:80 -p 447:443 
     --name PMM-T226 -e DATA_RETENTION=48h -e DISABLE_UPDATES=true -e DISABLE_TELEMETRY=false  
