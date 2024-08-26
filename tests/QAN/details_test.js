@@ -130,7 +130,7 @@ Scenario(
     qanOverview.selectRow(1);
     qanFilters.waitForFiltersToLoad();
     qanDetails.checkExplainTab();
-    await qanFilters.applyFilter('rs101');
+    await qanFilters.applyFilter('rs1_1');
     I.waitForElement(qanOverview.elements.querySelector, 30);
     qanOverview.selectRow(1);
 
