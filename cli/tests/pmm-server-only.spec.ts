@@ -65,8 +65,7 @@ test.describe('PMM Server CLI tests for Docker Environment Variables', async () 
   /**
    * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/docker-env-variable-tests.bats#L35
    */
-  // TODO: Unskip after https://perconadev.atlassian.net/browse/PMM-13323 is fixed
-  test.skip('PMM-T226 run docker container with all valid environment variables not causing any warning or error message', async ({}) => {
+  test('PMM-T226 run docker container with all valid environment variables not causing any warning or error message', async ({}) => {
     // @ts-ignore
     await cli.exec(`docker run -d -p 83:80 -p 447:443 
     --name PMM-T226 -e DATA_RETENTION=48h -e DISABLE_UPDATES=true -e DISABLE_TELEMETRY=false  
