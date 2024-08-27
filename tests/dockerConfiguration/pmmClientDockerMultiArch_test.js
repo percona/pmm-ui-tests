@@ -42,7 +42,7 @@ Before(async ({ I }) => {
   await I.Authorize();
 });
 
-Scenario('PMM-T1923 Verify sanity check on pmm-client docker multi arch image (amd64, arm64) @client-docker-multi-arch', async ({ I, dashboardPage, adminPage }) => {
+Scenario('PMM-T1923 Verify sanity check on pmm-client docker multi arch image (amd64, arm64) @docker-client-multi-arch', async ({ I, dashboardPage, adminPage }) => {
   const url = I.buildUrlWithParams(dashboardPage.mysqlInstanceSummaryDashboard.clearUrl, { from: 'now-5m' });
 
   I.amOnPage(url);
