@@ -2,10 +2,9 @@ const assert = require('assert');
 
 const shortCutTests = new DataTable(['type', 'dashboard', 'shortcutLink', 'filter']);
 
-shortCutTests.add(['Cluster', 'MongoDB Cluster Summary', 'graph/d/mongodb-cluster-summary/mongodb-cluster-summary', 'replicaset']);
 shortCutTests.add(['Replication Set', 'MySQL Replication Summary', 'graph/d/mysql-replicaset-summary/mysql-replication-summary', 'ps-repl1']);
 shortCutTests.add(['Node Name', 'Node Summary', 'graph/d/node-instance-summary/node-summary?var-node_name=pmm-server', 'pmm-server']);
-shortCutTests.add(['Service Name', 'MongoDB Instance Summary', 'graph/d/mongodb-instance-summary/mongodb-instance-summary', 'rs101']);
+shortCutTests.add(['Service Name', 'MongoDB ReplSet Summary', 'graph/d/mongodb-replicaset-summary/mongodb-replset-summary', 'rs1']);
 
 Feature('QAN filters').retry(1);
 // filterToApply - filter witch we check, searchValue - value to get zero search result
@@ -250,6 +249,7 @@ Data(shortCutTests).Scenario(
     I, qanFilters, dashboardPage, current, adminPage, qanOverview, qanPage,
   }) => {
     const shortCutLink = current.shortcutLink;
+
     const header = current.dashboard;
     const filterValue = current.filter;
     const timeRangeValue = 'from=now-3h&to=now';
