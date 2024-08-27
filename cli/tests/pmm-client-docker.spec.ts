@@ -78,11 +78,11 @@ test.describe('PMM Client Docker CLI tests', async () => {
 test.describe('-promscrape.maxScapeSize tests', async () => {
   const defaultScrapeSize = '64';
   test.beforeAll(async () => {
-    await (await cli.exec('docker-compose -f test-setup/docker-compose-scrape-intervals.yml up -d')).assertSuccess();
+    await (await cli.exec('docker compose -f test-setup/docker-compose-scrape-intervals.yml up -d')).assertSuccess();
   });
 
   test.afterAll(async () => {
-    await (await cli.exec('docker-compose -f test-setup/docker-compose-scrape-intervals.yml down')).assertSuccess();
+    await (await cli.exec('docker compose -f test-setup/docker-compose-scrape-intervals.yml down')).assertSuccess();
   });
 
   test('@PMM-T1664 Verify default value for vm_agents -promscrape.maxScapeSize parameter pmm-client container', async ({}) => {
