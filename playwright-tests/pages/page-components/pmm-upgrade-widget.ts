@@ -9,6 +9,7 @@ export default class PmmUpgradeWidget {
   elements: any = {
     currentVersion: this.containers.upgradeContainer.getByTestId('update-installed-version'),
     availableVersion: this.containers.upgradeContainer.getByTestId('update-latest-version'),
+    checkForUpgradesButton: this.containers.upgradeContainer.getByTestId('update-last-check-button'),
     upToDate: this.containers.upgradeContainer.getByText('You are up to date'),
     lastUpgradeCheckDate: this.containers.upgradeContainer.getByTestId('update-last-check'),
     upgradeButton: this.containers.upgradeContainer.getByText('Upgrade to', { exact: false }),
