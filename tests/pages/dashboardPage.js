@@ -1356,8 +1356,8 @@ module.exports = {
   },
 
   openGraphDropdownMenu(metric) {
-    I.waitForVisible(this.graphsLocator(metric), 10);
-    I.click(this.graphsLocator(metric));
+    I.waitForVisible(this.graphsLocatorHeader(metric), 10);
+    I.click(this.graphsLocatorHeader(metric));
   },
 
   verifyTabExistence(tabs) {
@@ -1368,6 +1368,10 @@ module.exports = {
 
   graphsLocator(metricName) {
     return locate('.panel-container').withDescendant(locate('.panel-title-container h2').withText(metricName));
+  },
+
+  graphsLocatorHeader(metricName) {
+    return this.graphsLocator(metricName).find('.panel-header');
   },
 
   graphLegendSeriesValue(metricName, value) {
