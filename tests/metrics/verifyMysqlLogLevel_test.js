@@ -132,7 +132,7 @@ Scenario(
     await I.verifyCommand(`docker exec ${connection.container_name} kill -9 ${restartProcessId[0]}`);
     // Verify and find ids of node exporter
     I.wait(10);
-    restartProcessId = await I.verifyCommand(`docker exec ${connection.container_name} pgrep node_exporter`);
+    restartProcessId = await I.verifyCommand(`docker exec ${connection.container_name} pgrep node_exporter`, null, 'both');
     if (restartProcessId.length) {
       await I.verifyCommand(`docker exec ${connection.container_name} kill -9 ${restartProcessId}`);
     }
