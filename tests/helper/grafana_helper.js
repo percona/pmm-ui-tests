@@ -196,6 +196,8 @@ class Grafana extends Helper {
 
     if (result === 'pass') {
       assert.ok(code === 0, `The "${command}" command was expected to run without any errors, but the error found: "${stderr || stdout}"`);
+    } else if (result === 'both') {
+      return stdout || stderr;
     } else {
       assert.ok(code !== 0, `The "${command}" command was expected to exit with error code, but exited with success code: "${code}"`);
     }

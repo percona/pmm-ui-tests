@@ -110,7 +110,7 @@ Scenario(
 
     await I.verifyCommand(`docker exec ${connection.container_name} kill -9 ${processId[0]}`);
     I.wait(2);
-    processIds = await I.verifyCommand(`docker exec ${connection.container_name} pgrep node_exporter`);
+    processIds = await I.verifyCommand(`docker exec ${connection.container_name} pgrep node_exporter`, null, 'both');
     if (processId.length) {
       await I.verifyCommand(`docker exec ${connection.container_name} kill -9 ${processIds}`);
     }
