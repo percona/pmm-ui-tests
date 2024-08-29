@@ -101,28 +101,28 @@ BeforeSuite(async ({ I, codeceptjsConfig, credentials }) => {
     password: codeceptjsConfig.config.helpers.MongoDBHelper.password,
   };
 
-  // await I.mongoConnect(mongoConnection);
+  await I.mongoConnect(mongoConnection);
   // Init data for Backup Management test
   if (process.env.AMI_UPGRADE_TESTING_INSTANCE !== 'true' && process.env.OVF_UPGRADE_TESTING_INSTANCE !== 'true') {
-    // const replicaPrimary = await I.getMongoClient({
-    //   username: credentials.mongoReplicaPrimaryForBackups.username,
-    //   password: credentials.mongoReplicaPrimaryForBackups.password,
-    //   port: credentials.mongoReplicaPrimaryForBackups.port,
-    // });
-    //
-    // try {
-    //   const collection = replicaPrimary.db('test').collection('e2e');
-    //
-    //   await collection.insertOne({ number: 1, name: 'John' });
-    // } finally {
-    //   await replicaPrimary.close();
-    // }
+    const replicaPrimary = await I.getMongoClient({
+      username: credentials.mongoReplicaPrimaryForBackups.username,
+      password: credentials.mongoReplicaPrimaryForBackups.password,
+      port: credentials.mongoReplicaPrimaryForBackups.port,
+    });
+
+    try {
+      const collection = replicaPrimary.db('test').collection('e2e');
+
+      await collection.insertOne({ number: 1, name: 'John' });
+    } finally {
+      await replicaPrimary.close();
+    }
   }
 });
 
 AfterSuite(async ({ I, psMySql }) => {
   await psMySql.disconnectFromPS();
-  // await I.mongoDisconnect();
+  await I.mongoDisconnect();
 });
 
 Scenario(
@@ -508,7 +508,7 @@ Scenario(
 );
 
 if (versionMinor >= 32) {
-  Scenario.skip(
+  Scenario(
     'Create backups data to check after upgrade @pre-upgrade @pmm-upgrade',
     async ({
       I, settingsAPI, locationsAPI, backupAPI, scheduledAPI, inventoryAPI, backupInventoryPage, scheduledPage, credentials,
@@ -560,7 +560,7 @@ Scenario(
   },
 ).retry(0);
 
-Scenario.skip(
+Scenario(
   'Run queries for MongoDB after upgrade @post-upgrade @pmm-upgrade',
   async ({ I }) => {
     const col = await I.mongoCreateCollection('local', 'e2e');
@@ -1151,7 +1151,7 @@ if (versionMinor >= 23) {
 }
 
 if (versionMinor >= 32) {
-  Scenario.skip(
+  Scenario(
     '@PMM-T1504 - The user is able to do a backup for MongoDB after upgrade'
     + ' @post-upgrade @pmm-upgrade',
     async ({
@@ -1169,7 +1169,7 @@ if (versionMinor >= 32) {
     },
   );
 
-  Scenario.skip(
+  Scenario(
     '@PMM-T1505 @PMM-T971 - The scheduled job still exists and remains enabled after the upgrade @post-upgrade @pmm-upgrade',
     async ({ I, scheduledPage }) => {
       await scheduledPage.openScheduledBackupsPage();
@@ -1193,7 +1193,7 @@ if (versionMinor >= 32) {
     },
   ).retry(0);
 
-  Scenario.skip(
+  Scenario(
     '@PMM-T1506 - Storage Locations exist after upgrade @post-upgrade @pmm-upgrade',
     async ({ I, locationsPage }) => {
       locationsPage.openLocationsPage();
@@ -1206,7 +1206,7 @@ if (versionMinor >= 32) {
     },
   );
 
-  Scenario.skip(
+  Scenario(
     '@PMM-T1503 PMM-T970 - The user is able to do a restore for MongoDB after the upgrade'
     + ' @post-upgrade @pmm-upgrade',
     async ({
