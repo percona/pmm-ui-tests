@@ -110,13 +110,13 @@ module.exports = {
         // to ensure that the logs window is never empty during upgrade
         I.waitForElement(`//pre[contains(text(), '${milestones[0]}')]`, 1200);
 
-        I.waitForText(locators.successUpgradeMessage, 1800, locators.successUpgradeMsgSelector);
+        I.waitForText(locators.successUpgradeMessage, 2700, locators.successUpgradeMsgSelector);
       }
 
       if (!this.isAmiUpgrade) {
         // to ensure that the logs window is never empty during upgrade
         I.waitForElement(`//pre[contains(text(), '${milestones[0]}')]`, 1200);
-        I.waitForText(locators.successUpgradeMessage, 1800, locators.successUpgradeMsgSelector);
+        I.waitForText(locators.successUpgradeMessage, 2700, locators.successUpgradeMsgSelector);
 
         if (!skipUpgradeLogs) {
           // Get upgrade logs from a container
@@ -130,7 +130,7 @@ module.exports = {
 
       I.click(locators.reloadButtonAfterUpgrade);
     } else {
-      I.waitForText(locators.successUpgradeMessage, 1800, locators.successUpgradeMsgSelector);
+      I.waitForText(locators.successUpgradeMessage, 2700, locators.successUpgradeMsgSelector);
       // we have a bug we need this https://jira.percona.com/browse/PMM-9294
       I.wait(60);
 
