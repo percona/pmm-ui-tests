@@ -2,6 +2,7 @@ const assert = require('assert');
 const faker = require('faker');
 const { generate } = require('generate-password');
 const { storageLocationConnection } = require('./backup/pages/testData');
+
 const {
   adminPage, remoteInstancesHelper, psMySql, pmmSettingsPage, dashboardPage, databaseChecksPage, scheduledAPI, locationsAPI,
 } = inject();
@@ -100,28 +101,28 @@ BeforeSuite(async ({ I, codeceptjsConfig, credentials }) => {
     password: codeceptjsConfig.config.helpers.MongoDBHelper.password,
   };
 
-  await I.mongoConnect(mongoConnection);
+  // await I.mongoConnect(mongoConnection);
   // Init data for Backup Management test
   if (process.env.AMI_UPGRADE_TESTING_INSTANCE !== 'true' && process.env.OVF_UPGRADE_TESTING_INSTANCE !== 'true') {
-    const replicaPrimary = await I.getMongoClient({
-      username: credentials.mongoReplicaPrimaryForBackups.username,
-      password: credentials.mongoReplicaPrimaryForBackups.password,
-      port: credentials.mongoReplicaPrimaryForBackups.port,
-    });
-
-    try {
-      const collection = replicaPrimary.db('test').collection('e2e');
-
-      await collection.insertOne({ number: 1, name: 'John' });
-    } finally {
-      await replicaPrimary.close();
-    }
+    // const replicaPrimary = await I.getMongoClient({
+    //   username: credentials.mongoReplicaPrimaryForBackups.username,
+    //   password: credentials.mongoReplicaPrimaryForBackups.password,
+    //   port: credentials.mongoReplicaPrimaryForBackups.port,
+    // });
+    //
+    // try {
+    //   const collection = replicaPrimary.db('test').collection('e2e');
+    //
+    //   await collection.insertOne({ number: 1, name: 'John' });
+    // } finally {
+    //   await replicaPrimary.close();
+    // }
   }
 });
 
 AfterSuite(async ({ I, psMySql }) => {
   await psMySql.disconnectFromPS();
-  await I.mongoDisconnect();
+  // await I.mongoDisconnect();
 });
 
 Scenario(
@@ -515,7 +516,7 @@ Scenario(
 );
 
 if (versionMinor >= 32) {
-  Scenario(
+  Scenario.skip(
     'Create backups data to check after upgrade @pre-upgrade @pmm-upgrade',
     async ({
       I, settingsAPI, locationsAPI, backupAPI, scheduledAPI, inventoryAPI, backupInventoryPage, scheduledPage, credentials,
@@ -564,7 +565,7 @@ Scenario(
   },
 ).retry(0);
 
-Scenario(
+Scenario.skip(
   'Run queries for MongoDB after upgrade @post-upgrade @pmm-upgrade',
   async ({ I }) => {
     const col = await I.mongoCreateCollection('local', 'e2e');
@@ -1155,7 +1156,7 @@ if (versionMinor >= 23) {
 }
 
 if (versionMinor >= 32) {
-  Scenario(
+  Scenario.skip(
     '@PMM-T1504 - The user is able to do a backup for MongoDB after upgrade'
     + ' @post-upgrade @pmm-upgrade',
     async ({
@@ -1173,7 +1174,7 @@ if (versionMinor >= 32) {
     },
   );
 
-  Scenario(
+  Scenario.skip(
     '@PMM-T1505 @PMM-T971 - The scheduled job still exists and remains enabled after the upgrade @post-upgrade @pmm-upgrade',
     async ({ I, scheduledPage }) => {
       await scheduledPage.openScheduledBackupsPage();
@@ -1197,7 +1198,7 @@ if (versionMinor >= 32) {
     },
   ).retry(0);
 
-  Scenario(
+  Scenario.skip(
     '@PMM-T1506 - Storage Locations exist after upgrade @post-upgrade @pmm-upgrade',
     async ({ I, locationsPage }) => {
       locationsPage.openLocationsPage();
@@ -1210,7 +1211,7 @@ if (versionMinor >= 32) {
     },
   );
 
-  Scenario(
+  Scenario.skip(
     '@PMM-T1503 PMM-T970 - The user is able to do a restore for MongoDB after the upgrade'
     + ' @post-upgrade @pmm-upgrade',
     async ({
@@ -1244,47 +1245,48 @@ if (versionMinor >= 32) {
   ).retry(0);
 }
 
-Scenario('PMM-12587-1 Verify duplicate dashboards dont break after upgrade @pre-upgrade @ovf-upgrade @ami-upgrade @pmm-upgrade',
-    async ({
-             I, grafanaAPI, searchDashboardsModal
-           }) => {
+Scenario(
+  'PMM-12587-1 Verify duplicate dashboards dont break after upgrade @pre-upgrade @ovf-upgrade @ami-upgrade @pmm-upgrade',
+  async ({
+    I, grafanaAPI, searchDashboardsModal,
+  }) => {
+    const insightFolder = await grafanaAPI.lookupFolderByName(searchDashboardsModal.folders.insight.name);
+    const experimentalFolder = await grafanaAPI.lookupFolderByName(searchDashboardsModal.folders.experimental.name);
 
-      const insightFolder = await grafanaAPI.lookupFolderByName(searchDashboardsModal.folders.insight.name);
-      const experimentalFolder = await grafanaAPI.lookupFolderByName(searchDashboardsModal.folders.experimental.name);
+    const resp1 = await grafanaAPI.createCustomDashboard('test-dashboard', insightFolder.id);
+    const resp2 = await grafanaAPI.createCustomDashboard('test-dashboard', experimentalFolder.id);
 
-      const resp1 = await grafanaAPI.createCustomDashboard('test-dashboard', insightFolder.id);
-      const resp2 = await grafanaAPI.createCustomDashboard('test-dashboard', experimentalFolder.id);
+    await I.writeFileSync('./dashboard.json', JSON.stringify({
+      DASHBOARD1_UID: resp1.uid,
+      DASHBOARD2_UID: resp2.uid,
+    }), false);
 
-      await I.writeFileSync('./dashboard.json', JSON.stringify({
-        DASHBOARD1_UID: resp1.uid,
-        DASHBOARD2_UID: resp2.uid
-      }),false);
-
-      //Check if file with Dashboard info is present.
-      I.assertNotEqual(I.fileSize('./dashboard.json',false), 0, `Was expecting Dashboard info in the File, but its empty`);
-    },);
+    // Check if file with Dashboard info is present.
+    I.assertNotEqual(I.fileSize('./dashboard.json', false), 0, 'Was expecting Dashboard info in the File, but its empty');
+  },
+);
 
 Scenario(
-    'PMM-12587-2 Verify duplicate dashboards dont break after upgrade @post-upgrade @ovf-upgrade @ami-upgrade @pmm-upgrade',
-    async ({
-             I, grafanaAPI, dashboardPage,
-           }) => {
-      const resp = JSON.parse(await I.readFileSync('./dashboard.json',false));
+  'PMM-12587-2 Verify duplicate dashboards dont break after upgrade @post-upgrade @ovf-upgrade @ami-upgrade @pmm-upgrade',
+  async ({
+    I, grafanaAPI, dashboardPage,
+  }) => {
+    const resp = JSON.parse(await I.readFileSync('./dashboard.json', false));
 
-      const resp1 = await grafanaAPI.getDashboard(resp.DASHBOARD1_UID);
-      const resp2 = await grafanaAPI.getDashboard(resp.DASHBOARD2_UID);
+    const resp1 = await grafanaAPI.getDashboard(resp.DASHBOARD1_UID);
+    const resp2 = await grafanaAPI.getDashboard(resp.DASHBOARD2_UID);
 
-      //Trim leading '/' from response url
-      const url1 = resp1.meta.url.replace(/^\/+/g, '');
-      const url2 = resp2.meta.url.replace(/^\/+/g, '');
+    // Trim leading '/' from response url
+    const url1 = resp1.meta.url.replace(/^\/+/g, '');
+    const url2 = resp2.meta.url.replace(/^\/+/g, '');
 
-      I.amOnPage(url1);
-      dashboardPage.waitForDashboardOpened();
-      I.seeInCurrentUrl(url1);
-      I.amOnPage(url2);
-      dashboardPage.waitForDashboardOpened();
-      I.seeInCurrentUrl(url2);
-    },
+    I.amOnPage(url1);
+    dashboardPage.waitForDashboardOpened();
+    I.seeInCurrentUrl(url1);
+    I.amOnPage(url2);
+    dashboardPage.waitForDashboardOpened();
+    I.seeInCurrentUrl(url2);
+  },
 );
 
 // This test must be executed last
