@@ -151,14 +151,6 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T288 Verify user can see Update widget before upgrade [critical] @pre-upgrade @ovf-upgrade @ami-upgrade @pmm-upgrade',
-  async ({ I, homePage }) => {
-    I.amOnPage(homePage.url);
-    await homePage.verifyPreUpdateWidgetIsPresent(versionMinor);
-  },
-);
-
-Scenario(
   'PMM-T391 PMM-T1818 Verify user is able to create and set custom home dashboard'
     + ' @pre-upgrade @ovf-upgrade @ami-upgrade @pmm-upgrade',
   async ({
@@ -561,6 +553,9 @@ Scenario(
   'PMM-T3 Verify user is able to Upgrade PMM version [blocker] @pmm-upgrade @ovf-upgrade @ami-upgrade  ',
   async ({ I, homePage }) => {
     I.amOnPage(homePage.url);
+
+    // PMM-T288 Verify user can see Update widget before upgrade [critical] @pre-upgrade @ovf-upgrade @ami-upgrade @pmm-upgrade
+    await homePage.verifyPreUpdateWidgetIsPresent(versionMinor);
     await homePage.upgradePMM(versionMinor);
   },
 ).retry(0);
