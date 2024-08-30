@@ -1169,7 +1169,7 @@ module.exports = {
       'Avg Object Size in Database',
       'Index Size in Database',
       'Data Size for Database',
-      'Top 5 Hottest Collections by Read  (Total)',
+      'Top 5 Hottest Collections by Read (Total)',
       'Top 5 Hottest Collections by Write (Total)',
       'Top 5 Hottest Collections by Read (Rate)',
       'Top 5 Hottest Collections by Write (Rate)',

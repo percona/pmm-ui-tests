@@ -5,7 +5,7 @@ Before(async ({ I }) => {
 });
 
 Scenario(
-  'Open the MongoDB Overview Dashboard and verify Metrics are present and graphs are displayed @nightly-test @dashboards',
+  'Open the MongoDB Overview Dashboard and verify Metrics are present and graphs are displayed @mongodb-exporter @nightly @dashboards',
   async ({ I, dashboardPage }) => {
     I.amOnPage(dashboardPage.mongodbOverviewDashboard.url);
     dashboardPage.waitForDashboardOpened();
@@ -17,7 +17,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T305 Open the MongoDB Instance Summary Dashboard and verify Metrics are present and graphs are displayed @nightly @dashboards',
+  'PMM-T305 Open the MongoDB Instance Summary Dashboard and verify Metrics are present and graphs are displayed @mongodb-exporter @nightly @dashboards',
   async ({ I, dashboardPage }) => {
     I.amOnPage(dashboardPage.mongoDbInstanceSummaryDashboard.url);
     dashboardPage.waitForDashboardOpened();
@@ -29,7 +29,7 @@ Scenario(
 );
 
 Scenario(
-  'Open the MongoDB Cluster Summary Dashboard and verify Metrics are present and graphs are displayed @nightly @dashboards',
+  'Open the MongoDB Cluster Summary Dashboard and verify Metrics are present and graphs are displayed @mongodb-exporter @nightly @dashboards',
   async ({ I, adminPage, dashboardPage }) => {
     I.amOnPage(dashboardPage.mongoDbClusterSummaryDashboard.url);
     dashboardPage.waitForDashboardOpened();
@@ -43,7 +43,7 @@ Scenario(
 );
 
 Scenario(
-  'Open the MongoDB ReplicaSet Summary Dashboard and verify Metrics are present and graphs are displayed @nightly @dashboards',
+  'Open the MongoDB ReplicaSet Summary Dashboard and verify Metrics are present and graphs are displayed @mongodb-exporter @nightly @dashboards',
   async ({ I, dashboardPage }) => {
     I.amOnPage(dashboardPage.mongodbReplicaSetSummaryDashboard.url);
     dashboardPage.waitForDashboardOpened();
