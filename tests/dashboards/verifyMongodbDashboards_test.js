@@ -5,7 +5,7 @@ Before(async ({ I }) => {
 });
 
 Scenario(
-  'Open the MongoDB Overview Dashboard and verify Metrics are present and graphs are displayed @mongodb-exporter @nightly @dashboards',
+  'Open the MongoDB Overview Dashboard and verify Metrics are present and graphs are displayed @nightly @dashboards',
   async ({ I, dashboardPage }) => {
     I.amOnPage(dashboardPage.mongodbOverviewDashboard.url);
     dashboardPage.waitForDashboardOpened();
@@ -17,7 +17,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T305 Open the MongoDB Instance Summary Dashboard and verify Metrics are present and graphs are displayed @mongodb-exporter @nightly @dashboards',
+  'PMM-T305 Open the MongoDB Instance Summary Dashboard and verify Metrics are present and graphs are displayed @nightly @dashboards',
   async ({ I, dashboardPage }) => {
     I.amOnPage(dashboardPage.mongoDbInstanceSummaryDashboard.url);
     dashboardPage.waitForDashboardOpened();
@@ -29,7 +29,7 @@ Scenario(
 );
 
 Scenario(
-  'Open the MongoDB Cluster Summary Dashboard and verify Metrics are present and graphs are displayed @mongodb-exporter @nightly @dashboards',
+  'Open the MongoDB Cluster Summary Dashboard and verify Metrics are present and graphs are displayed @nightly @dashboards',
   async ({ I, adminPage, dashboardPage }) => {
     I.amOnPage(dashboardPage.mongoDbClusterSummaryDashboard.url);
     dashboardPage.waitForDashboardOpened();
@@ -38,7 +38,7 @@ Scenario(
     await dashboardPage.expandEachDashboardRow();
     dashboardPage.verifyMetricsExistence(dashboardPage.mongoDbClusterSummaryDashboard.metrics);
     await dashboardPage.verifyThereAreNoGraphsWithNA();
-    await dashboardPage.verifyThereAreNoGraphsWithoutData(2);
+    await dashboardPage.verifyThereAreNoGraphsWithoutData(3);
   },
 );
 

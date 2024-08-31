@@ -4,7 +4,7 @@ const assert = require('assert');
 const annotation = new DataTable(['annotationName', 'service', 'dashboard', 'service_type']);
 
 annotation.add(['annotation-for-postgres-server', 'pmm-server', dashboardPage.postgresqlInstanceSummaryDashboard.url, 'POSTGRESQL_SERVICE']);
-annotation.add(['annotation-for-mongo', 'rs1', dashboardPage.mongoDbInstanceSummaryDashboard.url, 'MONGODB_SERVICE']);
+annotation.add(['annotation-for-mongo', 'rs1_1', dashboardPage.mongoDbInstanceSummaryDashboard.url, 'MONGODB_SERVICE']);
 annotation.add(['annotation-for-postgres', 'PGSQL', dashboardPage.postgresqlInstanceSummaryDashboard.url, 'POSTGRESQL_SERVICE']);
 annotation.add(['annotation-for-mysql', 'ms-', dashboardPage.mysqlInstanceSummaryDashboard.url, 'MYSQL_SERVICE']);
 annotation.add(['mysql-node-name', 'ms-', dashboardPage.nodesCompareDashboard.url, 'MYSQL_SERVICE']);
