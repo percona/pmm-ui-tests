@@ -6,9 +6,9 @@ const mongodb_service_name_ac = 'rs101';
 
 BeforeSuite(async ({ I, grafanaAPI, remoteInstancesHelper }) => {
   // check that rs101 docker container exists
-  const dockerCheck = await I.verifyCommand('docker ps | grep rs101');
+  const dockerCheck = await I.verifyCommand('docker ps | grep -e rs101 -e psmdb');
 
-  assert.ok(dockerCheck.includes('rs101'), 'rs101 docker container should exist. please run pmm-framework with "--mongo-replica-for-backup" flag');
+  assert.ok(dockerCheck.includes('rs101'), 'rs101 or psmdb docker container should exist. please run pmm-framework with "--mongo-replica-for-backup/--psmdb" flag');
 });
 
 Before(async ({ I }) => {
