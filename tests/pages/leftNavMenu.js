@@ -92,7 +92,6 @@ module.exports = {
         },
       ),
       mongoDbInMemoryDetails: menuOption(mo, 'InMemory', '/graph/d/mongodb-inmemory/mongodb-inmemory-details'),
-      mongoDbMmaPv1Details: menuOption(mo, 'MMAPv1', '/graph/d/mongodb-mmapv1/mongodb-mmapv1-details'),
       mongoDbWiredTigerDetails: menuOption(mo, 'WiredTiger', '/graph/d/mongodb-wiredtiger/mongodb-wiredtiger-details'),
       mongoDbCollectionDetails: menuOption(mo, 'Collections', '/graph/d/mongodb-collections-overview/mongodb-collections-overview'),
       mongoDbOplogDetails: menuOption(mo, 'Oplog', '/graph/d/mongodb-oplog-details/mongodb-oplog-details'),
