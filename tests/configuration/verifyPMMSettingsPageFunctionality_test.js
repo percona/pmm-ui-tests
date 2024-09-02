@@ -347,6 +347,7 @@ Scenario(
 
     I.assertTrue(publicAddressValue.length > 0, 'Expected the Public Address Input Field to be not empty!');
     pmmSettingsPage.applyChanges();
+    I.wait(5);
     I.refreshPage();
     await pmmSettingsPage.waitForPmmSettingsPageLoaded();
     const publicAddressAfterRefresh = await I.grabValueFrom(pmmSettingsPage.fields.publicAddressInput);
