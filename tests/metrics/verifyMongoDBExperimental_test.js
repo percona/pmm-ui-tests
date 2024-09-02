@@ -6,9 +6,9 @@ const mongodb_service_name_ac = 'rs101';
 
 BeforeSuite(async ({ I, grafanaAPI, remoteInstancesHelper }) => {
   // check that rs101 docker container exists
-  const dockerCheck = await I.verifyCommand('docker ps | grep rs101');
+  const dockerCheck = await I.verifyCommand('docker ps | grep -e rs101 -e psmdb');
 
-  assert.ok(dockerCheck.includes('rs101'), 'rs101 docker container should exist. please run pmm-framework with "--mongo-replica-for-backup" flag');
+  assert.ok(dockerCheck.includes('rs101'), 'rs101 or psmdb docker container should exist. please run pmm-framework with "mongo setup" options');
 });
 
 Before(async ({ I }) => {
@@ -17,7 +17,7 @@ Before(async ({ I }) => {
 
 // TODO: update the test to use new Cluster Summary dashboard https://github.com/percona/grafana-dashboards/pull/1611
 Scenario.skip(
-  'PMM-T1332 - Verify MongoDB - MongoDB Collection Details @mongodb-exporter',
+  'PMM-T1332 - Verify MongoDB - MongoDB Collection Details @nightly',
   async ({
     I, adminPage, dashboardPage,
   }) => {
@@ -34,7 +34,7 @@ Scenario.skip(
 );
 
 Scenario(
-  'PMM-T1333 - Verify MongoDB - MongoDB Collections Overview @mongodb-exporter',
+  'PMM-T1333 - Verify MongoDB - MongoDB Collections Overview @nightly',
   async ({
     I, adminPage, dashboardPage,
   }) => {
@@ -50,7 +50,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T1334 - Verify MongoDB - MongoDB Oplog Details @mongodb-exporter',
+  'PMM-T1334 - Verify MongoDB - MongoDB Oplog Details @nightly',
   async ({
     I, adminPage, dashboardPage,
   }) => {
