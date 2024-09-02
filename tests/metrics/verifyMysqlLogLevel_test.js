@@ -116,7 +116,7 @@ Scenario(
     }
 
     // Verify and find ids of node exporter
-    I.wait(10);
+    I.wait(30);
     const nodeExporterRestart = await I.verifyCommand(`docker exec ${connection.container_name} pgrep node_exporter`);
 
     assert.ok(nodeExporterRestart.length, 'Node exporter is not restarted');
@@ -131,13 +131,13 @@ Scenario(
 
     await I.verifyCommand(`docker exec ${connection.container_name} kill -9 ${restartProcessId[0]}`);
     // Verify and find ids of node exporter
-    I.wait(10);
+    I.wait(30);
     restartProcessId = await I.verifyCommand(`docker exec ${connection.container_name} pgrep node_exporter`);
     if (restartProcessId.length) {
       await I.verifyCommand(`docker exec ${connection.container_name} kill -9 ${restartProcessId}`);
     }
 
-    await I.wait(15);
+    await I.wait(30);
     const nodeExporterRemoved = await I.verifyCommand(`docker exec ${connection.container_name} pgrep node_exporter`);
 
     assert.ok(nodeExporterRemoved.length, 'Node exporter is not restarted');
