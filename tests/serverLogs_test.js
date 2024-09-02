@@ -8,8 +8,8 @@ const fileNameToCheck = 'pmm-managed.log';
 const baseUrl = codeceptjsConfig.config.helpers.Playwright.url;
 
 BeforeSuite(async ({ locationsAPI }) => {
-  // Simple request to generate 51k lines in logs
-  for (let i = 0; i < 10000; i++) {
+  // Simple request to generate > 50k lines in logs
+  for (let i = 0; i < 13000; i++) {
     await locationsAPI.getLocationsList();
   }
 });
