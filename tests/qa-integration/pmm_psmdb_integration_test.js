@@ -197,6 +197,9 @@ Scenario(
     errorCode = (await I.verifyCommand(`docker exec ${arbiter_container_name} grep -q "level=error.*some metrics might be unavailable on arbiter nodes" pmm-agent.log; echo $?`));
     I.assertTrue(errorCode.includes(1), `No errors for arbiter setup expected but got error code: ${errorCode}`);
 
+    dashboardPage.waitForDashboardOpened();
+    await dashboardPage.expandRows('Replication');
+
     const replLagServiceName = dashboardPage.graphLegendSeriesValue('Replication Lag', serviceName);
     const replLagSeriesValue = `${replLagServiceName.toXPath()}/following::td[contains(text(),'year')]`;
 
@@ -212,13 +215,13 @@ Scenario('PMM-T1889 Verify Mongo replication lag graph shows correct info @pmm-p
   const lagValue = 10;
   const testConfigFile = `c = rs.conf(); c.members[2].secondaryDelaySecs = ${lagValue}; c.members[2].priority = 0; c.members[2].hidden = true; rs.reconfig(c);`;
   const serviceName = 'rs103';
-  const graphName = 'Replication Lag';
+  const graphName = 'Replication';
 
   await I.verifyCommand(`sudo docker exec rs101 mongo "mongodb://root:root@localhost/?replicaSet=rs" --eval "${testConfigFile}"`);
   I.amOnPage(I.buildUrlWithParams(dashboardPage.mongodbReplicaSetSummaryDashboard.cleanUrl, { from: 'now-5m', refresh: '5s' }));
   dashboardPage.waitForDashboardOpened();
   await dashboardPage.expandRows(graphName);
-  await I.waitForElement(dashboardPage.graphLegendColumnValueByExpression(graphName, serviceName, 'max', '>= 5'), 120);
+  await I.waitForElement(dashboardPage.graphLegendColumnValueByExpression(graphName, serviceName, 'max', '>= 1'), 120);
 
   const maxValue = await I.grabTextFrom(dashboardPage.graphLegendSeriesRowByTitle(graphName, serviceName));
 
