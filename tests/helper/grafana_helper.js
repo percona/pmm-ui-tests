@@ -204,6 +204,24 @@ class Grafana extends Helper {
 
     return stdout.trim();
   }
+
+  getPmmClientDockerTagFromClientVersion(clientVersion) {
+    let parsedClientVersion;
+
+    if (clientVersion.includes('perconalab/pmm-client') || clientVersion.includes('percona/pmm-client')) {
+      parsedClientVersion = clientVersion;
+    } else if (clientVersion === 'dev-latest') {
+      parsedClientVersion = 'perconalab/pmm-client:dev-latest';
+    } else if (clientVersion.includes('-rc')) {
+      parsedClientVersion = `perconalab/pmm-client:${clientVersion}`;
+    } else if (clientVersion.includes('https://')) {
+      parsedClientVersion = `perconalab/pmm-client-fb:${clientVersion.split('pmm-client/pmm-client-')[1].replace('.tar.gz', '')}`;
+    } else {
+      throw new Error(`CLIENT_VERSION TAG ${clientVersion} is not supported`);
+    }
+
+    return parsedClientVersion;
+  }
 }
 
 module.exports = Grafana;
