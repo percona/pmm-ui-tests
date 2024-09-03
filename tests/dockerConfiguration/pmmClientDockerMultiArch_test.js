@@ -1,6 +1,7 @@
 Feature('Test PMM client multi arch docker container').retry(1);
 
 BeforeSuite(async ({ I }) => {
+  console.log(`PMM Client tag is: ${process.env.CLIENT_VERSION}`);
   const pmmClientDockerTag = process.env.CLIENT_VERSION || 'perconalab/pmm-client-test:dev-latest';
   const pmmServerAdminPassword = process.env.ADMIN_PASSWORD || 'admin';
   const networkName = 'pmm2-ui-tests_pmm-network';
