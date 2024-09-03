@@ -187,6 +187,10 @@ Scenario('@PMM-T1866 - Verify if public address has an port assigned and followi
   I.fillField(pmmSettingsPage.fields.publicAddressInput, '192.168.1.1:8433');
   pmmSettingsPage.applyChanges();
   I.dontSeeElement(pmmSettingsPage.fields.errorPopUpElement);
+
+  // Remove wait after https://perconadev.atlassian.net/browse/PMM-13340 is fixed
+  I.wait(5);
+  I.refreshPage();
   await pmmSettingsPage.verifySettingsValue(pmmSettingsPage.fields.publicAddressInput, '192.168.1.1:8433');
   // clearField and customClearField methods doesn't work for this field
   I.usePlaywrightTo('clear field', async ({ page }) => {
