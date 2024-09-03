@@ -347,6 +347,7 @@ Scenario(
 
     I.assertTrue(publicAddressValue.length > 0, 'Expected the Public Address Input Field to be not empty!');
     pmmSettingsPage.applyChanges();
+    // Remove wait after https://perconadev.atlassian.net/browse/PMM-13340 is fixed
     I.wait(5);
     I.refreshPage();
     await pmmSettingsPage.waitForPmmSettingsPageLoaded();
