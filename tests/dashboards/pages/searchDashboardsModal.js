@@ -94,7 +94,7 @@ module.exports = {
         'MongoDB ReplSet Summary (Old)',
         'Patroni Details',
         'PMM Health',
-        'PostgreSQL Checkpoints, Buffer and WAL Usage',
+        'PostgreSQL Checkpoints, Buffers and WAL Usage',
         'PostgreSQL Vacuum Monitoring',
         'PostgreSQL Instance',
         'PXC Galera Cluster Summary (experimental)',

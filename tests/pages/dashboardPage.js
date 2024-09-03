@@ -1195,7 +1195,7 @@ module.exports = {
   },
 
   osDiskDetails: {
-    noDataElements: 1,
+    noDataElements: 3,
     naElements: 0,
     clearUrl: 'graph/d/node-disk/disk-details',
     metrics: [
