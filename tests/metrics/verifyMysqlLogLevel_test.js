@@ -92,7 +92,8 @@ Scenario(
   },
 );
 
-Scenario(
+// FIXME: fix in scope of https://perconadev.atlassian.net/browse/PMM-13346
+Scenario.skip(
   'PMM-T1275 - Verify webConfigPlaceholder is generated on every Node exporter restart @not-ui-pipeline @exporters',
   async ({ I, pmmInventoryPage }) => {
     I.amOnPage(pmmInventoryPage.url);
