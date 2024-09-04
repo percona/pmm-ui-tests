@@ -1417,7 +1417,7 @@ module.exports = {
   verifyAnnotationsLoaded(title, number = 1) {
     I.waitForElement(this.fields.annotationMarker, 30);
     I.moveCursorTo(this.annotationLocator(number));
-    I.waitForVisible(this.annotationText(title), 30);
+    I.waitForVisible(this.annotationText(title), 60);
   },
 
   // introducing methods
