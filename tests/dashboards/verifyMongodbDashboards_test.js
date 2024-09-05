@@ -50,6 +50,6 @@ Scenario(
     await dashboardPage.expandEachDashboardRow();
     await dashboardPage.verifyMetricsExistence(dashboardPage.mongodbReplicaSetSummaryDashboard.metrics);
     await dashboardPage.verifyThereAreNoGraphsWithNA();
-    await dashboardPage.verifyThereAreNoGraphsWithoutData();
+    await dashboardPage.verifyThereAreNoGraphsWithoutData(1);
   },
 );
