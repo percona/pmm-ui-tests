@@ -2,15 +2,6 @@ const assert = require('assert');
 
 Feature('MongoDB Experimental Dashboards tests');
 
-const mongodb_service_name_ac = 'rs101';
-
-BeforeSuite(async ({ I, grafanaAPI, remoteInstancesHelper }) => {
-  // check that rs101 docker container exists
-  const dockerCheck = await I.verifyCommand('docker ps | grep -e rs101 -e psmdb');
-
-  assert.ok(dockerCheck.includes('rs101'), 'rs101 or psmdb docker container should exist. please run pmm-framework with "mongo setup" options');
-});
-
 Before(async ({ I }) => {
   await I.Authorize();
 });
@@ -19,9 +10,11 @@ Before(async ({ I }) => {
 Scenario.skip(
   'PMM-T1332 - Verify MongoDB - MongoDB Collection Details @nightly',
   async ({
-    I, adminPage, dashboardPage,
+    I, adminPage, dashboardPage, inventoryAPI,
   }) => {
-    I.amOnPage(I.buildUrlWithParams(dashboardPage.mongoDbCollectionDetails.clearUrl, { from: 'now-5m', service_name: mongodb_service_name_ac }));
+    const service_response = await inventoryAPI.apiGetNodeInfoByServiceName('MONGODB_SERVICE', 'rs1_1');
+
+    I.amOnPage(I.buildUrlWithParams(dashboardPage.mongoDbCollectionDetails.clearUrl, { from: 'now-5m', service_name: service_response.service_name }));
     dashboardPage.waitForDashboardOpened();
     I.click(adminPage.fields.metricTitle);
     adminPage.performPageDown(2);
@@ -36,13 +29,15 @@ Scenario.skip(
 Scenario(
   'PMM-T1333 - Verify MongoDB - MongoDB Collections Overview @nightly',
   async ({
-    I, adminPage, dashboardPage,
+    I, adminPage, dashboardPage, inventoryAPI,
   }) => {
-    I.amOnPage(I.buildUrlWithParams(dashboardPage.mongoDbCollectionsOverview.clearUrl, { from: 'now-5m', service_name: mongodb_service_name_ac }));
+    const service_response = await inventoryAPI.apiGetNodeInfoByServiceName('MONGODB_SERVICE', 'rs1_1');
+
+    I.amOnPage(I.buildUrlWithParams(dashboardPage.mongoDbCollectionsOverview.clearUrl, { from: 'now-5m', service_name: service_response.service_name }));
     dashboardPage.waitForDashboardOpened();
     I.click(adminPage.fields.metricTitle);
-    adminPage.performPageDown(3);
-    adminPage.performPageUp(3);
+    adminPage.performPageDown(4);
+    adminPage.performPageUp(4);
     dashboardPage.verifyMetricsExistence(dashboardPage.mongoDbCollectionsOverview.metrics);
     await dashboardPage.verifyThereAreNoGraphsWithNA();
     await dashboardPage.verifyThereAreNoGraphsWithoutData(1);
@@ -52,9 +47,11 @@ Scenario(
 Scenario(
   'PMM-T1334 - Verify MongoDB - MongoDB Oplog Details @nightly',
   async ({
-    I, adminPage, dashboardPage,
+    I, adminPage, dashboardPage, inventoryAPI,
   }) => {
-    I.amOnPage(I.buildUrlWithParams(dashboardPage.mongoDbOplogDetails.clearUrl, { from: 'now-5m', service_name: mongodb_service_name_ac }));
+    const service_response = await inventoryAPI.apiGetNodeInfoByServiceName('MONGODB_SERVICE', 'rs1_1');
+
+    I.amOnPage(I.buildUrlWithParams(dashboardPage.mongoDbOplogDetails.clearUrl, { from: 'now-5m', service_name: service_response.service_name }));
     dashboardPage.waitForDashboardOpened();
     I.click(adminPage.fields.metricTitle);
     adminPage.performPageDown(3);

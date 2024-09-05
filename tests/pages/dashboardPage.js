@@ -421,7 +421,7 @@ module.exports = {
     ],
   },
   mongoDbInstanceSummaryDashboard: {
-    url: 'graph/d/mongodb-instance-summary/mongodb-instance-summary',
+    url: 'graph/d/mongodb-instance-summary/mongodb-instance-summary?orgId=1&from=now-5m&to=now',
     metrics: [
       'Node',
       'MongoDB Uptime',
@@ -1169,7 +1169,7 @@ module.exports = {
       'Avg Object Size in Database',
       'Index Size in Database',
       'Data Size for Database',
-      'Top 5 Hottest Collections by Read (Total)',
+      'Top 5 Hottest Collections by Read',
       'Top 5 Hottest Collections by Write (Total)',
       'Top 5 Hottest Collections by Read (Rate)',
       'Top 5 Hottest Collections by Write (Rate)',
@@ -1195,7 +1195,7 @@ module.exports = {
   },
 
   osDiskDetails: {
-    noDataElements: 1,
+    noDataElements: 3,
     naElements: 0,
     clearUrl: 'graph/d/node-disk/disk-details',
     metrics: [
@@ -1416,6 +1416,7 @@ module.exports = {
 
   verifyAnnotationsLoaded(title, number = 1) {
     I.waitForElement(this.fields.annotationMarker, 30);
+    I.waitForElement(this.annotationLocator(number), 30);
     I.moveCursorTo(this.annotationLocator(number));
     I.waitForVisible(this.annotationText(title), 30);
   },
