@@ -37,7 +37,7 @@ Data(annotation).Scenario(
 
     await annotationAPI.setAnnotation(annotationName, 'PMM-T878', nodeName, serviceName, 200);
 
-    I.amOnPage(I.buildUrlWithParams(current.dashboard, { from: 'now-5m', to: 'now' }));
+    I.amOnPage(current.dashboard);
     dashboardPage.waitForDashboardOpened();
     if (annotationName === 'mysql-node-name') {
       await dashboardPage.applyFilter('Node Name', nodeName);

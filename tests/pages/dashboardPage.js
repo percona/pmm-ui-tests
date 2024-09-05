@@ -421,7 +421,7 @@ module.exports = {
     ],
   },
   mongoDbInstanceSummaryDashboard: {
-    url: 'graph/d/mongodb-instance-summary/mongodb-instance-summary',
+    url: 'graph/d/mongodb-instance-summary/mongodb-instance-summary?orgId=1&from=now-5m&to=now',
     metrics: [
       'Node',
       'MongoDB Uptime',
