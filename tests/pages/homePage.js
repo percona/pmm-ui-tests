@@ -151,8 +151,11 @@ module.exports = {
   async verifyPreUpdateWidgetIsPresent(version) {
     const locators = this.getLocators(version);
 
-    I.waitForVisible(locators.triggerUpdate, 180);
     I.waitForVisible(locators.currentVersion, 180);
+    I.waitForVisible(locators.checkUpdateButton, 120);
+    I.click(locators.checkUpdateButton);
+    I.waitForVisible(locators.currentVersion, 180);
+    I.waitForVisible(locators.triggerUpdate, 180);
     I.seeElement(locators.availableVersion);
     I.seeElement(locators.currentVersion);
     I.seeElement(locators.triggerUpdate);
