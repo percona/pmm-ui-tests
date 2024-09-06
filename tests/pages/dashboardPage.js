@@ -1650,9 +1650,10 @@ module.exports = {
 
   async clickSkipPmmTour() {
     I.wait(2);
-    const numberOfElements = await I.grabNumberOfVisibleElements(this.fields.skipTourButton);
+    // eslint-disable-next-line no-undef
+    const pmmTourIsPresent = await tryTo(() => I.waitForVisible(this.fields.skipTourButton, 30));
 
-    if (numberOfElements >= 1) {
+    if (pmmTourIsPresent) {
       I.click(this.fields.skipTourButton);
     }
   },
