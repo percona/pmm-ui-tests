@@ -213,6 +213,7 @@ class Grafana extends Helper {
     } else if (clientVersion === 'dev-latest') {
       parsedClientVersion = 'perconalab/pmm-client:dev-latest';
     } else if (clientVersion === 'pmm2-rc') {
+      console.log(`Docker Tag is: ${process.env.DOCKER_VERSION}`);
       const apiContext = this.helpers.REST;
       const resp = (await apiContext.sendGetRequest('https://hub.docker.com/v2/repositories/perconalab/pmm-server/tags?page_size=10&page=1&ordering=&name=-rc')).data.results;
 
