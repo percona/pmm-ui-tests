@@ -223,6 +223,8 @@ class Grafana extends Helper {
       throw new Error(`CLIENT_VERSION TAG ${clientVersion} is not supported`);
     }
 
+    console.log(`Parsed Client Version: ${parsedClientVersion}`);
+
     return parsedClientVersion;
   }
 }
