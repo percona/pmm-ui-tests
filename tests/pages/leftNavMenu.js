@@ -89,6 +89,7 @@ module.exports = {
         {
           mongoDbClusterSummary: menuOption(mo, 'Cluster summary', '/graph/d/mongodb-cluster-summary/mongodb-sharded-cluster-summary', 2),
           mongoDbReplSetSummary: menuOption(mo, 'ReplSet summary', '/graph/d/mongodb-replicaset-summary/mongodb-replset-summary', 2),
+          mongoRouterSummary: menuOption(mo, 'Router summary', '/graph/d/mongodb-router-summary/mongodb-router-summary', 2),
         },
       ),
       mongoDbInMemoryDetails: menuOption(mo, 'InMemory', '/graph/d/mongodb-inmemory/mongodb-inmemory-details'),
