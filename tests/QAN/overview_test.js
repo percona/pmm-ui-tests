@@ -37,7 +37,7 @@ Scenario(
     qanOverview.waitForOverviewLoaded();
     await adminPage.applyTimeRange('Last 12 hours');
     qanOverview.waitForOverviewLoaded();
-    await qanOverview.searchByValue('SELECT current_database() datname, schemaname, relname, heap_blks_read, heap_blks_hit, idx_blks_read');
+    await qanOverview.searchByValue('agent=\'pgstatmonitor\'');
     qanOverview.waitForOverviewLoaded();
     qanOverview.mouseOverFirstInfoIcon();
 
@@ -311,7 +311,7 @@ Scenario(
   async ({
     I, qanOverview, adminPage,
   }) => {
-    const query = 'SELECT current_database() datname';
+    const query = 'SELECT';
 
     qanOverview.waitForOverviewLoaded();
     await adminPage.applyTimeRange('Last 3 hours');
