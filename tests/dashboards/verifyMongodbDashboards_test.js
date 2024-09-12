@@ -55,7 +55,7 @@ Scenario(
 );
 
 Scenario(
-  'Open the MongoDB Routers Summary Dashboard and verify Metrics are present and graphs are displayed @mongodb-exporter @nightly @dashboards',
+  'Open the MongoDB Routers Summary Dashboard and verify Metrics are present and graphs are displayed @nightly-test @dashboards',
   async ({ I, dashboardPage }) => {
     I.amOnPage(dashboardPage.mongodbRouterSummaryDashboard.url);
     dashboardPage.waitForDashboardOpened();
