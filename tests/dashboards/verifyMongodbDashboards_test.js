@@ -50,6 +50,20 @@ Scenario(
     await dashboardPage.expandEachDashboardRow();
     await dashboardPage.verifyMetricsExistence(dashboardPage.mongodbReplicaSetSummaryDashboard.metrics);
     await dashboardPage.verifyThereAreNoGraphsWithNA();
-    await dashboardPage.verifyThereAreNoGraphsWithoutData(1);
+    await dashboardPage.verifyThereAreNoGraphsWithoutData(2);
+  },
+);
+
+Scenario(
+  'Open the MongoDB Routers Summary Dashboard and verify Metrics are present and graphs are displayed @nightly-test @dashboards',
+  async ({ I, dashboardPage }) => {
+    I.amOnPage(dashboardPage.mongodbRouterSummaryDashboard.url);
+    dashboardPage.waitForDashboardOpened();
+    I.waitForVisible(dashboardPage.environment, 30);
+    await dashboardPage.selectDropdownItem(dashboardPage.environment, 'mongodb_shraded_node');
+    await dashboardPage.expandEachDashboardRow();
+    await dashboardPage.verifyMetricsExistence(dashboardPage.mongodbRouterSummaryDashboard.metrics);
+    await dashboardPage.verifyThereAreNoGraphsWithNA();
+    await dashboardPage.verifyThereAreNoGraphsWithoutData(2);
   },
 );

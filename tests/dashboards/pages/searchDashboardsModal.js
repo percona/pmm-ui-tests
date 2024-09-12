@@ -32,6 +32,7 @@ module.exports = {
         'MongoDB ReplSet Summary',
         'MongoDB Sharded Cluster Summary',
         'MongoDB WiredTiger Details',
+        'MongoDB Router Summary',
       ],
     },
     mySql: {

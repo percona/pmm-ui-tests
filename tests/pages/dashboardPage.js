@@ -7,6 +7,10 @@ const formatElementId = (text) => text.toLowerCase().replace(/ /g, '_');
 module.exports = {
   // insert your locators and methods here
   // setting locators
+  common: {
+    selectOptionInDropdown: (value) => `//span[contains(@data-testid,' DropDown option text ${value}')]`,
+  },
+  environment: '//button[@aria-controls=\'options-var-environment\']',
   serviceNameDropdown:
     '//button[@id="var-service_name"]',
   serviceName:
@@ -1091,6 +1095,25 @@ module.exports = {
       'Network Traffic',
     ],
   },
+  mongodbRouterSummaryDashboard: {
+    url: 'graph/d/mongodb-router-summary/mongodb-router-summary?orgId=1&refresh=1m&from=now-5m&to=now',
+    cleanUrl: 'graph/d/mongodb-router-summary/mongodb-router-summary',
+    metrics: [
+      'CPU Usage',
+      'Memory Used',
+      'Disk IO Utilization',
+      'Disk Space Utilization',
+      'Disk IOPS',
+      'Network Traffic',
+      'Uptime',
+      'Version',
+      'All states',
+      'Command Operations',
+      'Connections',
+      'Query execution times',
+      'Query Efficiency',
+    ],
+  },
   victoriaMetricsAgentsOverviewDashboard: {
     url: 'graph/d/vmagent/victoriametrics-agents-overview?orgId=1&refresh=5m',
     metrics: [
@@ -1666,5 +1689,12 @@ module.exports = {
    */
   panelMenu(panelTitle) {
     return new DashboardPanelMenu(panelTitle);
+  },
+
+  async selectDropdownItem(dropdownLocator, itemToSelect) {
+    I.seeElement(dropdownLocator);
+    I.click(dropdownLocator);
+    I.waitForElement(this.common.selectOptionInDropdown(itemToSelect));
+    I.click(this.common.selectOptionInDropdown(itemToSelect));
   },
 };
