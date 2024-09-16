@@ -211,8 +211,7 @@ Scenario(
   },
 ).retry(1);
 
-// Skip :: https://perconadev.atlassian.net/browse/PMM-13356
-Scenario.skip('PMM-T1889 Verify Mongo replication lag graph shows correct info @pmm-psmdb-replica-integration', async ({ I, dashboardPage }) => {
+Scenario('PMM-T1889 Verify Mongo replication lag graph shows correct info @pmm-psmdb-replica-integration', async ({ I, dashboardPage }) => {
   const lagValue = 10;
   const testConfigFile = `c = rs.conf(); c.members[2].secondaryDelaySecs = ${lagValue}; c.members[2].priority = 0; c.members[2].hidden = true; rs.reconfig(c);`;
   const serviceName = 'rs103';
