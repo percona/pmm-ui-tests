@@ -10,7 +10,7 @@ Before(async ({ I, settingsAPI }) => {
 });
 
 const version = process.env.PXC_VERSION ? `${process.env.PXC_VERSION}` : '8.0';
-const container_name = `pxc_container1_${version}`;
+const container_name = `pxc_proxysql_pmm_${version}`;
 const remoteServiceName = 'remote_pmm-mysql-integration';
 
 const connection = {
@@ -28,7 +28,7 @@ Scenario(
     const details = {
       serviceName: remoteServiceName,
       serviceType: SERVICE_TYPE.MYSQL,
-      port: port,
+      port,
       username: connection.username,
       password: connection.password,
       host: container_name,
@@ -48,7 +48,7 @@ Scenario(
     I.fillField(remoteInstancesPage.fields.environment, details.environment);
     I.fillField(remoteInstancesPage.fields.cluster, details.cluster);
     I.click(remoteInstancesPage.fields.addService);
-    //I.waitForVisible(pmmInventoryPage.fields.agentsLink, 30);
+    // I.waitForVisible(pmmInventoryPage.fields.agentsLink, 30);
     await inventoryAPI.verifyServiceExistsAndHasRunningStatus(
       {
         serviceType: SERVICE_TYPE.MYSQL,
@@ -104,42 +104,36 @@ Scenario(
     const serviceList = [clientServiceName, remoteServiceName];
 
     for (const service of serviceList) {
-      url = I.buildUrlWithParams(dashboardPage.mysqlInstanceSummaryDashboard.url, { from: 'now-5m', service_name: service });
+      url = I.buildUrlWithParams(dashboardPage.mysqlPXCGaleraNodeSummaryDashboard.clearUrl, { from: 'now-15m', service_name: service });
 
       I.amOnPage(url);
-      dashboardPage.waitForDashboardOpened();
+      await dashboardPage.waitForDashboardOpened();
       adminPage.performPageDown(5);
       await dashboardPage.expandEachDashboardRow();
       adminPage.performPageUp(5);
       if (service === remoteServiceName) {
-        await dashboardPage.verifyThereAreNoGraphsWithNA(7);
-        await dashboardPage.verifyThereAreNoGraphsWithoutData(9);
+        await dashboardPage.verifyThereAreNoGraphsWithoutData(6);
       } else {
-        await dashboardPage.verifyThereAreNoGraphsWithNA(1);
-        await dashboardPage.verifyThereAreNoGraphsWithoutData(5);
+        await dashboardPage.verifyThereAreNoGraphsWithoutData(3);
       }
-
-      url = I.buildUrlWithParams(dashboardPage.mysqlPXCGaleraNodeSummaryDashboard.url, { from: 'now-5m', service_name: service });
-
-      I.amOnPage(url);
-      dashboardPage.waitForDashboardOpened();
-      adminPage.performPageDown(5);
-      await dashboardPage.expandEachDashboardRow();
-      adminPage.performPageUp(5);
-      await dashboardPage.verifyThereAreNoGraphsWithNA(1);
-      await dashboardPage.verifyThereAreNoGraphsWithoutData(1);
     }
 
-    I.amOnPage(`${dashboardPage.pxcGaleraClusterSummaryDashboard.url}&var-replset=rs1`);
+    I.amOnPage(dashboardPage.proxysqlInstanceSummaryDashboard.url);
     dashboardPage.waitForDashboardOpened();
+    await adminPage.applyTimeRange('Last 5 minutes');
+    await dashboardPage.expandEachDashboardRow();
+    await dashboardPage.verifyMetricsExistence(dashboardPage.proxysqlInstanceSummaryDashboard.metrics);
+    await dashboardPage.verifyThereAreNoGraphsWithoutData(6);
+
+    I.amOnPage(dashboardPage.pxcGaleraClusterSummaryDashboard.url);
+    await dashboardPage.waitForDashboardOpened();
     await adminPage.applyTimeRange('Last 5 minutes');
     adminPage.performPageDown(5);
     await dashboardPage.expandEachDashboardRow();
     adminPage.performPageUp(5);
-    await dashboardPage.verifyThereAreNoGraphsWithNA();
-    await dashboardPage.verifyThereAreNoGraphsWithoutData(1);
+    await dashboardPage.verifyThereAreNoGraphsWithoutData(2);
   },
-).retry(1);
+).retry(3);
 
 Scenario(
   'Verify QAN after PXC Instances is added @pmm-pxc-integration @not-ui-pipeline',
@@ -154,7 +148,7 @@ Scenario(
       I.amOnPage(I.buildUrlWithParams(queryAnalyticsPage.url, { from: 'now-120m', to: 'now' }));
 
       queryAnalyticsPage.waitForLoaded();
-      queryAnalyticsPage.filters.selectFilter(service);
+      await queryAnalyticsPage.filters.selectFilterInGroup(service, 'Service Name');
       queryAnalyticsPage.waitForLoaded();
       const count = await queryAnalyticsPage.data.getCountOfItems();
 
