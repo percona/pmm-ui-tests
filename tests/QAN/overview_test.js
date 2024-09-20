@@ -268,8 +268,7 @@ Scenario(
   },
 );
 
-// Test case requires comparing of canvas elements, unless we implement visual testing this test does not make sense.
-Scenario.skip(
+Scenario(
   'PMM-T204 - Verify small and N/A values on sparkline @qan',
   async ({ I, queryAnalyticsPage }) => {
     const firstCell = queryAnalyticsPage.data.elements.queryValue(0, 1);
@@ -282,7 +281,7 @@ Scenario.skip(
     I.waitForVisible(queryAnalyticsPage.data.elements.tooltipQPSValue, 10);
     queryAnalyticsPage.data.changeMetric('Query Time', 'Innodb Queue Wait');
     queryAnalyticsPage.waitForLoaded();
-    I.waitForVisible(secondCell, 10);
+    I.seeElementInDOM(secondCell, 10);
     I.moveCursorTo(secondCell);
     I.dontSeeElement(queryAnalyticsPage.data.elements.tooltip);
     I.dontSeeElement(queryAnalyticsPage.data.elements.tooltipQPSValue);
