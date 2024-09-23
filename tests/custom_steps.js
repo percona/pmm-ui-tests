@@ -39,10 +39,7 @@ module.exports = () => actor({
   },
 
   useDataQA: (selector) => `[data-testid="${selector}"]`,
-  getSingleSelectOptionLocator: (optionName) => locate('[aria-label="Select option"]')
-    .find('span')
-    .withText(optionName.toString())
-    .inside('[aria-label="Select options menu"]'),
+  getSingleSelectOptionLocator: (optionName) => locate(`[data-testid="${optionName}-select-option"]`),
   getClosePopUpButtonLocator: () => systemMessageButtonClose,
   getPopUpLocator: () => systemMessageText,
 
