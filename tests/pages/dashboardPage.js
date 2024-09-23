@@ -1192,7 +1192,7 @@ module.exports = {
       folder: locate('.page-toolbar').find('[aria-label="Search links"] > a'),
       dashboardName: locate('.page-toolbar').find('[aria-label="Search dashboard by name"]'),
     },
-    annotationMarker: '(//div[contains(@class,"events_marker")])',
+    annotationMarker: I.useDataQA('data-testid annotation-marker'),
     clearSelection: '//a[@ng-click="vm.clearSelections()"]',
     collapsedDashboardRow: '.dashboard-row--collapsed',
     dataLinkForRoot: '//div[contains(text(), "Data links")]/..//a',
@@ -1241,7 +1241,7 @@ module.exports = {
   },
 
   annotationLocator(number = 1) {
-    return `(//div[contains(@class,"events_marker")])[${number}]`;
+    return `(//div[@data-testid="data-testid annotation-marker"])[${number}]`;
   },
 
   annotationTagText(tagValue) {
