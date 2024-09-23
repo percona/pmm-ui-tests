@@ -1194,7 +1194,7 @@ module.exports = {
     },
     annotationMarker: I.useDataQA('data-testid annotation-marker'),
     clearSelection: '//a[@ng-click="vm.clearSelections()"]',
-    collapsedDashboardRow: '.dashboard-row--collapsed',
+    collapsedDashboardRow: '//*[@data-testid="dashboard-row-container"]//button[@aria-expanded="false"]',
     dataLinkForRoot: '//div[contains(text(), "Data links")]/..//a',
     Last2Days: '//span[contains(text(), "Last 2 days")]',
     metricTitle: '$header-container',
