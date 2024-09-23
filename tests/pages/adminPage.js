@@ -30,7 +30,7 @@ module.exports = {
     tooltipReadMoreLink: locate('$info-tooltip').find('a'),
   },
 
-  getTimeZoneOptionSelector: (timeZone) => I.getSingleSelectOptionLocator(timeZone),
+  getTimeZoneOptionSelector: (timeZone) => locate('//*[contains(@data-testid, "Select option")]').find('span').withText(timeZone),
   getTimeZoneSelector: (timeZone) => locate('[aria-label="Time zone selection"]').find('span').withText(timeZone),
 
   async selectItemFromPMMDropdown(title) {
