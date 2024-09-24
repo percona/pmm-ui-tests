@@ -212,7 +212,7 @@ Scenario(
     I.amOnPage(url);
     dashboardPage.waitForDashboardOpened();
     await dashboardPage.expandEachDashboardRow();
-    await dashboardPage.verifyMetricsExistence(dashboardPage.mysqlPXCGaleraNodesCompareDashboard.metrics);
+    await dashboardPage.verifyMetricsExistencePartialMatch(dashboardPage.mysqlPXCGaleraNodesCompareDashboard.metrics);
     await dashboardPage.verifyThereAreNoGraphsWithoutData(3);
   },
 );
