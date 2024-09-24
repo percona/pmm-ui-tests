@@ -85,7 +85,7 @@ module.exports = {
 
   async apiGetAgents(serviceId) {
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
-    const url = serviceId ? `v1/management/agents?service_id=${serviceId}` : 'v1/management/agents';
+    const url = serviceId ? `v1/management/agents?service_id=${serviceId}` : 'v1/inventory/agents';
 
     return I.sendGetRequest(url, headers);
   },
