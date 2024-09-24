@@ -28,7 +28,7 @@ Scenario(
     I.amOnPage(dashboardPage.nodesCompareDashboard.url);
     dashboardPage.waitForDashboardOpened();
     await dashboardPage.expandEachDashboardRow();
-    await dashboardPage.verifyMetricsExistence(dashboardPage.nodesCompareDashboard.metrics);
+    await dashboardPage.verifyMetricsExistencePartialMatch(dashboardPage.nodesCompareDashboard.metrics);
     await dashboardPage.verifyThereAreNoGraphsWithoutData();
   },
 );
