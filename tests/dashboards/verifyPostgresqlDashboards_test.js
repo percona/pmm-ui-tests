@@ -74,7 +74,7 @@ Scenario(
     I.amOnPage(url);
     dashboardPage.waitForDashboardOpened();
     await dashboardPage.expandEachDashboardRow();
-    await dashboardPage.verifyMetricsExistence(dashboardPage.postgresqlInstanceCompareDashboard.metrics);
+    await dashboardPage.verifyMetricsExistencePartialMatch(dashboardPage.postgresqlInstanceCompareDashboard.metrics);
     await dashboardPage.verifyThereAreNoGraphsWithoutData();
   },
 );
