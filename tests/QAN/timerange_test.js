@@ -43,19 +43,19 @@ Scenario(
   async ({
     I, adminPage, queryAnalyticsPage,
   }) => {
-    const date = moment().format('YYYY-MM-DD');
-    const fromString = Date.parse(`${date} 00:00:00`);
-    const toString = Date.parse(`${date} 23:59:59`);
+    const currentDate = moment();
+    const date = currentDate.format('YYYY-MM-DD');
 
-    await I.seeInCurrentUrl('from=now-5m&to=now');
-    await queryAnalyticsPage.data.selectRow(1);
+    queryAnalyticsPage.data.selectRow(1);
     queryAnalyticsPage.waitForLoaded();
-    await I.seeElement(queryAnalyticsPage.data.root);
-    await adminPage.setAbsoluteTimeRange(`${date} 00:00:00`, `${date} 23:59:59`);
-    await I.seeInCurrentUrl(`from=${fromString}&to=${toString}`);
-    await queryAnalyticsPage.data.selectRow(1);
+    adminPage.setAbsoluteTimeRange(`${date} 00:00:00`, `${date} 23:59:59`);
     queryAnalyticsPage.waitForLoaded();
-    await I.seeElement(queryAnalyticsPage.data.root);
+    adminPage.verifySelectedTimeRange(`${date} 00:00:00`, `${date} 23:59:59`);
+
+    const url = await I.grabCurrentUrl();
+
+    I.assertContain(url.split('from=')[1].replaceAll('%20', ' '), `${currentDate.format('ddd MMM DD YYYY')} 00:00:00`, 'From Date is not correct');
+    I.assertContain(url.split('to=')[1].replaceAll('%20', ' '), `${currentDate.format('ddd MMM DD YYYY')} 23:59:59`, 'To Date is not correct');
   },
 );
 
