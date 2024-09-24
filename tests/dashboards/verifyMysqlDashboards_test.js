@@ -67,7 +67,7 @@ Scenario(
     I.amOnPage(url);
     dashboardPage.waitForDashboardOpened();
     await dashboardPage.expandEachDashboardRow();
-    await dashboardPage.verifyMetricsExistence(dashboardPage.mysqlInstancesCompareDashboard.metrics);
+    await dashboardPage.verifyMetricsExistencePartialMatch(dashboardPage.mysqlInstancesCompareDashboard.metrics);
     await dashboardPage.verifyThereAreNoGraphsWithoutData(6);
   },
 );

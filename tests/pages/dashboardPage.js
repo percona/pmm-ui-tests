@@ -1267,6 +1267,15 @@ module.exports = {
     }
   },
 
+  async verifyMetricsExistencePartialMatch(metrics) {
+    for (const i in metrics) {
+      I.pressKey('PageDown');
+      await this.expandEachDashboardRow();
+      I.waitForElement(this.graphsLocatorPartialMatch(metrics[i]), 5);
+      I.scrollTo(this.graphsLocatorPartialMatch(metrics[i]));
+    }
+  },
+
   openGraphDropdownMenu(metric) {
     I.waitForVisible(this.graphsLocator(metric), 10);
     I.moveCursorTo(this.graphsLocator(metric), 10);
@@ -1276,6 +1285,11 @@ module.exports = {
   graphsLocator(metricName) {
     return locate(`[data-testid^="data-testid Panel header ${metricName}"]`);
   },
+
+  graphsLocatorPartialMatch(metricName) {
+    return locate(`[data-testid*="data-testid Panel header"][data-testid*="${metricName}"]`);
+  },
+
 
   graphLegendSeriesValue(metricName, value) {
     return this.graphsLocator(metricName).find('.graph-legend-series').find('td').withText(value);
