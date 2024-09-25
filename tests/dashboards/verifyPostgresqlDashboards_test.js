@@ -54,7 +54,7 @@ Scenario(
       dashboardPage.waitForDashboardOpened();
       await dashboardPage.expandEachDashboardRow();
       await dashboardPage.verifyMetricsExistence(dashboardPage.postgresqlInstanceOverviewDashboard.metrics);
-      await dashboardPage.verifyThereAreNoGraphsWithoutData();
+      await dashboardPage.verifyThereAreNoGraphsWithoutData(1);
     }
   },
 );
