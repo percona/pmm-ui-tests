@@ -1,4 +1,5 @@
 const assert = require('assert');
+const { SERVICE_TYPE } = require('./helper/constants');
 
 Feature('Monitoring AWS RDS PostgreSQL');
 
@@ -27,7 +28,7 @@ Scenario(
   }) => {
     const serviceName = 'pmm-qa-pgsql-12';
 
-    await inventoryAPI.deleteNodeByServiceName('POSTGRESQL_SERVICE', serviceName);
+    await inventoryAPI.deleteNodeByServiceName(SERVICE_TYPE.POSTGRESQL, serviceName);
 
     I.amOnPage(remoteInstancesPage.url);
     remoteInstancesPage.waitUntilRemoteInstancesPageLoaded().openAddAWSRDSMySQLPage();
@@ -43,7 +44,7 @@ Scenario(
     remoteInstancesPage.createRemoteInstance(serviceName);
     pmmInventoryPage.verifyRemoteServiceIsDisplayed(serviceName);
 
-    const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName('POSTGRESQL_SERVICE', serviceName);
+    const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.POSTGRESQL, serviceName);
 
     await agentsPage.open(service_id);
     await agentsPage.verifyAgentOtherDetailsSection('Postgres exporter', 'auto_discovery_limit=1');
@@ -66,7 +67,7 @@ Scenario(
   }) => {
     const serviceName = 'pmm-qa-pgsql-12';
 
-    await inventoryAPI.deleteNodeByServiceName('POSTGRESQL_SERVICE', serviceName);
+    await inventoryAPI.deleteNodeByServiceName(SERVICE_TYPE.POSTGRESQL, serviceName);
 
     I.amOnPage(remoteInstancesPage.url);
     remoteInstancesPage.waitUntilRemoteInstancesPageLoaded().openAddAWSRDSMySQLPage();

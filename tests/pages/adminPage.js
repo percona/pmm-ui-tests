@@ -30,7 +30,7 @@ module.exports = {
     tooltipReadMoreLink: locate('$info-tooltip').find('a'),
   },
 
-  getTimeZoneOptionSelector: (timeZone) => I.getSingleSelectOptionLocator(timeZone),
+  getTimeZoneOptionSelector: (timeZone) => locate('//*[contains(@data-testid, "Select option")]').find('span').withText(timeZone),
   getTimeZoneSelector: (timeZone) => locate('[aria-label="Time zone selection"]').find('span').withText(timeZone),
 
   async selectItemFromPMMDropdown(title) {
@@ -97,6 +97,16 @@ module.exports = {
     I.fillField(this.fields.timeRangeFrom, from);
     I.clearField(this.fields.timeRangeTo);
     I.fillField(this.fields.timeRangeTo, to);
+    I.click(this.fields.applyCustomTimer);
+    I.waitForInvisible(this.fields.applyCustomTimer, 30);
+  },
+
+  verifySelectedTimeRange(from, to) {
+    I.waitForElement(this.fields.timePickerMenu, 30);
+    I.click(this.fields.timePickerMenu);
+    I.waitForVisible(this.fields.timeRangeFrom, 30);
+    I.waitForValue(this.fields.timeRangeFrom, from);
+    I.waitForValue(this.fields.timeRangeTo, to);
     I.click(this.fields.applyCustomTimer);
     I.waitForInvisible(this.fields.applyCustomTimer, 30);
   },

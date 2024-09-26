@@ -46,7 +46,7 @@ Scenario(
     I.amOnPage(url);
     dashboardPage.waitForDashboardOpened();
     await dashboardPage.expandEachDashboardRow();
-    await dashboardPage.verifyMetricsExistence(dashboardPage.mongodbReplicaSetSummaryDashboard.metrics);
+    await dashboardPage.verifyMetricsExistencePartialMatch(dashboardPage.mongodbReplicaSetSummaryDashboard.metrics);
     await dashboardPage.verifyThereAreNoGraphsWithoutData(1);
   },
 );

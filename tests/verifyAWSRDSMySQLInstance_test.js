@@ -1,4 +1,5 @@
 const assert = require('assert');
+const { SERVICE_TYPE } = require('./helper/constants');
 
 Feature('Monitoring AWS RDS MySQL DB');
 
@@ -88,7 +89,7 @@ Scenario(
   }) => {
     const metricNames = ['aws_rds_cpu_credit_usage_average', 'rdsosmetrics_memory_total', 'rdsosmetrics_cpuUtilization_total'];
     const serviceName = remoteInstancesPage.mysql57rds['Service Name'];
-    const { node_id } = await inventoryAPI.apiGetNodeInfoByServiceName('MYSQL_SERVICE', serviceName);
+    const { node_id } = await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.MYSQL, serviceName);
     const response = await inventoryAPI.apiGetAgentsViaNodeId(node_id);
     const result = response.data.rds_exporter[0];
 

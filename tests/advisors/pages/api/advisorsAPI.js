@@ -11,7 +11,7 @@ module.exports = {
   async getSecurityChecksResults() {
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
 
-    const resp = await I.sendPostRequest('v1/management/SecurityChecks/GetCheckResults', {}, headers);
+    const resp = await I.sendGetRequest('v1/advisor/checks', headers);
 
     assert.ok(
       resp.status === 200,
@@ -25,7 +25,7 @@ module.exports = {
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
     const body = checkNamesArray ? { names: checkNamesArray } : {};
 
-    const resp = await I.sendPostRequest('v1/management/SecurityChecks/Start', body, headers);
+    const resp = await I.sendPostRequest('v1/advisors/checks:start', body, headers);
 
     assert.ok(
       resp.status === 200,
@@ -37,7 +37,7 @@ module.exports = {
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
     const body = { service_id, page_params: { page_size: 25, index: 0 } };
 
-    const resp = await I.sendPostRequest('v1/management/SecurityChecks/FailedChecks', body, headers);
+    const resp = await I.sendPostRequest('v1/advisors/checks/failed', body, headers);
 
     assert.ok(
       resp.status === 200,
@@ -51,6 +51,7 @@ module.exports = {
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
     const body = { alert_id, silence };
 
+    // todo: api-breaking-changes
     const resp = await I.sendPostRequest('v1/management/SecurityChecks/ToggleCheckAlert', body, headers);
 
     assert.ok(
@@ -104,7 +105,7 @@ module.exports = {
       }],
     };
 
-    const resp = await I.sendPostRequest('v1/management/SecurityChecks/Change', body, headers);
+    const resp = await I.sendPostRequest('v1/advisors/checks:batchChange', body, headers);
 
     assert.ok(
       resp.status === 200,
@@ -121,7 +122,7 @@ module.exports = {
       }],
     };
 
-    const resp = await I.sendPostRequest('v1/management/SecurityChecks/Change', body, headers);
+    const resp = await I.sendPostRequest('v1/advisors/checks:batchChange', body, headers);
 
     assert.ok(
       resp.status === 200,
@@ -129,7 +130,7 @@ module.exports = {
     );
   },
 
-  async changeCheckInterval(checkName, interval = 'FREQUENT') {
+  async changeCheckInterval(checkName, interval = 'ADVISOR_CHECK_INTERVAL_FREQUENT') {
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
     const body = {
       params: [{
@@ -138,7 +139,7 @@ module.exports = {
       }],
     };
 
-    const resp = await I.sendPostRequest('v1/management/SecurityChecks/Change', body, headers);
+    const resp = await I.sendPostRequest('v1/advisors/checks:batchChange', body, headers);
 
     assert.ok(
       resp.status === 200,
@@ -148,7 +149,7 @@ module.exports = {
 
   async getAllChecksList() {
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
-    const resp = await I.sendPostRequest('v1/management/SecurityChecks/List', {}, headers);
+    const resp = await I.sendGetRequest('v1/advisors/checks', headers);
 
     return resp.data.checks;
   },
@@ -162,8 +163,8 @@ module.exports = {
     await I.asyncWaitFor(this.getAllChecksList, 60);
     const allChecks = await this.getAllChecksList();
 
-    allChecks.forEach(({ name }) => body.params.push({ name, interval: 'STANDARD' }));
-    const resp = await I.sendPostRequest('v1/management/SecurityChecks/Change', body, headers);
+    allChecks.forEach(({ name }) => body.params.push({ name, interval: 'ADVISOR_CHECK_INTERVAL_STANDARD' }));
+    const resp = await I.sendPostRequest('v1/advisors/checks:batchChange', body, headers);
 
     assert.ok(
       resp.status === 200,

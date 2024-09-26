@@ -24,7 +24,7 @@ module.exports = {
       export_qan: Qan,
     };
 
-    const resp = await I.sendPostRequest('v1/management/dump/Dumps/Start', body, headers);
+    const resp = await I.sendPostRequest('v1/dumps:start', body, headers);
 
     assert.ok(
       resp.status === 200,
@@ -83,7 +83,7 @@ module.exports = {
   async listDumps() {
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
 
-    return I.sendPostRequest('v1/management/dump/Dumps/List', {}, headers);
+    return I.sendGetRequest('v1/dumps', headers);
   },
 
   async getDump(uid) {
@@ -105,7 +105,7 @@ module.exports = {
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
     const body = JSON.stringify({ dump_ids: [uid] });
 
-    return I.sendPostRequest('v1/management/dump/Dumps/Delete', body, headers);
+    return I.sendPostRequest('v1/dumps:batchDelete', body, headers);
   },
 
 };

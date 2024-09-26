@@ -1,8 +1,7 @@
 import apiHelper from '@api/helpers/api-helper';
 import { APIResponse } from 'playwright-core';
 
-const PATH_GET = 'v1/Settings/Get';
-const PATH_CHANGE = 'v1/Settings/Change';
+const PATH = 'v1/server/settings';
 
 export interface Settings {
   pmm_public_address: string;
@@ -28,12 +27,12 @@ export const settingsApi = {
    * @returns       if property found - property value; {@code undefined} otherwise
    */
   async getSettingsProperty(name: SettingProperty): Promise<string | undefined> {
-    const responseBody: SettingObject = await (await apiHelper.post(PATH_GET, {})).json();
+    const responseBody: SettingObject = await (await apiHelper.post(PATH, {})).json();
     console.log(`Response:\n${JSON.stringify(responseBody)}`);
     return Object.hasOwn(responseBody.settings, name) ? responseBody.settings[name] as string : undefined;
   },
 
   changeSettings: async (settingsData: Settings): Promise<APIResponse> => {
-    return apiHelper.post(PATH_CHANGE, { data: settingsData });
+    return apiHelper.put(PATH, { data: settingsData });
   },
 };

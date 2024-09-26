@@ -1,3 +1,5 @@
+const { SERVICE_TYPE } = require("./helper/constants");
+
 Feature('PT Summary');
 Before(async ({ I }) => {
   await I.Authorize();
@@ -10,7 +12,7 @@ Scenario(
   async ({
     I, dashboardPage, inventoryAPI,
   }) => {
-    const ps_service_response = await inventoryAPI.apiGetNodeInfoByServiceName('MYSQL_SERVICE', 'ps-');
+    const ps_service_response = await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.MYSQL, 'ps-');
     const url = I.buildUrlWithParams(
       dashboardPage.mysqlInstanceSummaryDashboard.clearUrl,
       { service_name: ps_service_response.service_name, from: 'now-15m' },
@@ -29,7 +31,7 @@ Scenario(
   async ({
     I, dashboardPage, inventoryAPI,
   }) => {
-    const pgsql_service_response = await inventoryAPI.apiGetNodeInfoByServiceName('POSTGRESQL_SERVICE', 'pgsql_');
+    const pgsql_service_response = await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.POSTGRESQL, 'pgsql_');
     const url = I.buildUrlWithParams(
       dashboardPage.postgresqlInstanceSummaryDashboard.cleanUrl,
       { service_name: pgsql_service_response.service_name, from: 'now-15m' },

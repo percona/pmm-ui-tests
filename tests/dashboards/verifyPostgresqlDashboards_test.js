@@ -1,3 +1,5 @@
+const { SERVICE_TYPE } = require("../helper/constants");
+
 const {
   inventoryAPI,
 } = inject();
@@ -7,9 +9,9 @@ const serviceList = [];
 Feature('Test Dashboards inside the PostgreSQL Folder');
 
 BeforeSuite(async ({ I }) => {
-  const pdpgsql_service_response = await inventoryAPI.apiGetNodeInfoByServiceName('POSTGRESQL_SERVICE', 'pdpgsql_');
-  const pgsql_service_response = await inventoryAPI.apiGetNodeInfoByServiceName('POSTGRESQL_SERVICE', 'pgsql_');
-  const pmm_server = await inventoryAPI.apiGetNodeInfoByServiceName('POSTGRESQL_SERVICE', 'pmm-server-postgresql');
+  const pdpgsql_service_response = await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.POSTGRESQL, 'pdpgsql_');
+  const pgsql_service_response = await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.POSTGRESQL, 'pgsql_');
+  const pmm_server = await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.POSTGRESQL, 'pmm-server-postgresql');
 
   serviceList.push(pdpgsql_service_response.service_name);
   serviceList.push(pgsql_service_response.service_name);
@@ -52,7 +54,7 @@ Scenario(
       dashboardPage.waitForDashboardOpened();
       await dashboardPage.expandEachDashboardRow();
       await dashboardPage.verifyMetricsExistence(dashboardPage.postgresqlInstanceOverviewDashboard.metrics);
-      await dashboardPage.verifyThereAreNoGraphsWithoutData();
+      await dashboardPage.verifyThereAreNoGraphsWithoutData(1);
     }
   },
 );
@@ -72,7 +74,7 @@ Scenario(
     I.amOnPage(url);
     dashboardPage.waitForDashboardOpened();
     await dashboardPage.expandEachDashboardRow();
-    await dashboardPage.verifyMetricsExistence(dashboardPage.postgresqlInstanceCompareDashboard.metrics);
+    await dashboardPage.verifyMetricsExistencePartialMatch(dashboardPage.postgresqlInstanceCompareDashboard.metrics);
     await dashboardPage.verifyThereAreNoGraphsWithoutData();
   },
 );

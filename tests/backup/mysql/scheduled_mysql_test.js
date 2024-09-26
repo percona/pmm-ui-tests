@@ -1,4 +1,5 @@
 const moment = require('moment');
+const { SERVICE_TYPE } = require('../../helper/constants');
 
 const { psMySql } = inject();
 const connection = psMySql.defaultConnection;
@@ -39,7 +40,7 @@ BeforeSuite(async ({
 Before(async ({
   I, settingsAPI, scheduledPage, inventoryAPI, scheduledAPI,
 }) => {
-  const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName('MYSQL_SERVICE', mysqlServiceName);
+  const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.MYSQL, mysqlServiceName);
 
   serviceId = service_id;
 

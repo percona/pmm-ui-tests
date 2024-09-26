@@ -1,4 +1,5 @@
 const assert = require('assert');
+const { SERVICE_TYPE } = require('../helper/constants');
 
 const { adminPage } = inject();
 
@@ -26,7 +27,7 @@ Scenario(
     const port = await I.verifyCommand(`docker exec ${container_name} pmm-admin list | grep "MySQL" | grep "pxc_node" | awk -F":" '{print $2}' | awk -F" " '{ print $1}' | head -1`);
     const details = {
       serviceName: remoteServiceName,
-      serviceType: 'MYSQL_SERVICE',
+      serviceType: SERVICE_TYPE.MYSQL,
       port,
       username: connection.username,
       password: connection.password,
@@ -39,7 +40,7 @@ Scenario(
     remoteInstancesPage.waitUntilRemoteInstancesPageLoaded();
     remoteInstancesPage.openAddRemotePage('mysql');
     I.fillField(remoteInstancesPage.fields.hostName, details.host);
-    // I.clearField(remoteInstancesPage.fields.portNumber);
+    I.clearField(remoteInstancesPage.fields.portNumber);
     I.fillField(remoteInstancesPage.fields.portNumber, details.port);
     I.fillField(remoteInstancesPage.fields.userName, details.username);
     I.fillField(remoteInstancesPage.fields.serviceName, remoteServiceName);
@@ -50,7 +51,7 @@ Scenario(
     // I.waitForVisible(pmmInventoryPage.fields.agentsLink, 30);
     await inventoryAPI.verifyServiceExistsAndHasRunningStatus(
       {
-        serviceType: 'MYSQL_SERVICE',
+        serviceType: SERVICE_TYPE.MYSQL,
         service: 'mysql',
       },
       details.serviceName,
@@ -70,8 +71,8 @@ Scenario(
     let response; let result;
     const metricName = 'mysql_global_status_max_used_connections';
 
-    await I.verifyCommand(`docker exec ${container_name} pmm-admin list | grep "mysqld_exporter" | grep -i "Running" | wc -l | grep "3"`);
-    await I.verifyCommand(`docker exec ${container_name} pmm-admin list | grep "mysql_perfschema_agent" | grep -i "Running" | wc -l | grep "3"`);
+    await I.verifyCommand(`docker exec ${container_name} pmm-admin list | grep "mysqld_exporter" | grep "Agent_status_running" | wc -l | grep "3"`);
+    await I.verifyCommand(`docker exec ${container_name} pmm-admin list | grep "mysql_perfschema_agent" | grep "Agent_status_running" | wc -l | grep "3"`);
 
     const clientServiceName = (await I.verifyCommand(`docker exec ${container_name} pmm-admin list | grep MySQL | head -1 | awk -F" " '{print $2}'`)).trim();
 

@@ -43,19 +43,19 @@ Scenario(
   async ({
     I, adminPage, queryAnalyticsPage,
   }) => {
-    const date = moment().format('YYYY-MM-DD');
-    const fromString = Date.parse(`${date} 00:00:00`);
-    const toString = Date.parse(`${date} 23:59:59`);
+    const currentDate = moment();
+    const date = currentDate.format('YYYY-MM-DD');
 
-    await I.seeInCurrentUrl('from=now-5m&to=now');
-    await queryAnalyticsPage.data.selectRow(1);
+    queryAnalyticsPage.data.selectRow(1);
     queryAnalyticsPage.waitForLoaded();
-    await I.seeElement(queryAnalyticsPage.data.root);
-    await adminPage.setAbsoluteTimeRange(`${date} 00:00:00`, `${date} 23:59:59`);
-    await I.seeInCurrentUrl(`from=${fromString}&to=${toString}`);
-    await queryAnalyticsPage.data.selectRow(1);
+    adminPage.setAbsoluteTimeRange(`${date} 00:00:00`, `${date} 23:59:59`);
     queryAnalyticsPage.waitForLoaded();
-    await I.seeElement(queryAnalyticsPage.data.root);
+    adminPage.verifySelectedTimeRange(`${date} 00:00:00`, `${date} 23:59:59`);
+
+    const url = await I.grabCurrentUrl();
+
+    I.assertContain(url.split('from=')[1].replaceAll('%20', ' '), `${currentDate.format('ddd MMM DD YYYY')} 00:00:00`, 'From Date is not correct');
+    I.assertContain(url.split('to=')[1].replaceAll('%20', ' '), `${currentDate.format('ddd MMM DD YYYY')} 23:59:59`, 'To Date is not correct');
   },
 );
 
@@ -151,19 +151,25 @@ Scenario(
     const to = dateTime.format('YYYY-MM-DD HH:mm:ss');
     const from = moment(dateTime).subtract(1, 'hours').format('YYYY-MM-DD HH:mm:ss');
 
-    await adminPage.setAbsoluteTimeRange(from, to);
+    adminPage.setAbsoluteTimeRange(from, to);
     queryAnalyticsPage.waitForLoaded();
-    await I.seeInCurrentUrl(`&from=${moment(from).format('ddd%20MMM%20D%20YYYY%20HH:mm:ss')}`);
-    await I.seeInCurrentUrl(`&to=${moment(to).format('ddd%20MMM%20D%20YYYY%20HH:mm:ss')}`);
-    I.waitForVisible(queryAnalyticsPage.buttons.copyButton);
+
+    const url = await I.grabCurrentUrl();
+
+    I.assertContain(url.split('from=')[1].replaceAll('%20', ' '), moment(from).format('ddd MMM DD YYYY HH:mm:ss'), 'Url does not contain selected from date time');
+    I.assertContain(url.split('to=')[1].replaceAll('%20', ' '), moment(to).format('ddd MMM DD YYYY HH:mm:ss'), 'Url does not contain selected to date time');
+
     I.click(queryAnalyticsPage.buttons.copyButton);
+    const clipBoardUrl = await I.grabTextFrom(queryAnalyticsPage.elements.clipboardLink);
 
-    const url = await I.grabTextFrom(queryAnalyticsPage.elements.clipboardLink);
+    I.amOnPage(clipBoardUrl);
+    queryAnalyticsPage.waitForLoaded();
+    const secondUrl = await I.grabCurrentUrl();
 
-    await I.openNewTab();
-    await I.amOnPage(url.match(/\bhttps?:\/\/\S+/gi)[0]);
-    await I.seeInCurrentUrl(`&from=${moment(from).utc().format('ddd%20MMM%20D%20YYYY%20HH:mm:ss')}`);
-    await I.seeInCurrentUrl(`&to=${moment(to).utc().format('ddd%20MMM%20D%20YYYY%20HH:mm:ss')}`);
+    adminPage.verifySelectedTimeRange(from, to);
+
+    I.assertContain(secondUrl.split('from=')[1].replaceAll('%20', ' '), moment(from).utc().format('ddd MMM DD YYYY HH:mm:ss'), 'Second Url does not contain selected from date time');
+    I.assertContain(secondUrl.split('to=')[1].replaceAll('%20', ' '), moment(to).utc().format('ddd MMM DD YYYY HH:mm:ss'), 'Second Url does not contain selected to date time');
   },
 );
 

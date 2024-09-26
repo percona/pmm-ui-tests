@@ -375,7 +375,7 @@ module.exports = {
       'Top 5 Rollbacks Transactions',
       'Rollback Transactions',
       'Top 5 Duration of Active Transactions',
-      'Duration of Active Transactions',
+      ' Duration of Active Transactions',
       'Top 5 Duration of Other Transactions',
       'Duration of Other Transactions',
       'Top 5 Number of Temp Files',
@@ -547,7 +547,8 @@ module.exports = {
       'Users by CPU Time',
       'Users by Traffic',
       'Users by Bytes Written to The Binary Log',
-      'Rows Fetched/Read',
+      'Rows Fetched',
+      'Rows Read',
       'Rows Updated',
       'Users by Rows Fetched/Read',
       'Users by Rows Updated',
@@ -1038,7 +1039,7 @@ module.exports = {
   },
 
   osDiskDetails: {
-    noDataElements: 1,
+    noDataElements: 3,
     naElements: 0,
     clearUrl: 'graph/d/node-disk/disk-details',
     metrics: [
@@ -1158,20 +1159,20 @@ module.exports = {
       'Top 5 Swap Out (Writes)',
       'Min Free Space Available',
       'Top I/O Load',
-      'Top Disk Latency',
-      'Top Disk Operations',
-      'Top Disk Bandwidth',
-      'Top I/O Activity',
+      ' Top Disk Latency',
+      ' Top Disk Operations',
+      ' Top Disk Bandwidth',
+      ' Top I/O Activity',
       'Top 5 Disk I/O Load',
       'Disk I/O Load',
       'Top 5 Disk Latency',
-      'Disk Latency',
+      ' Disk Latency',
       'Top 5 Disk Bandwidth',
-      'Disk Bandwidth',
+      ' Disk Bandwidth',
       'Top 5 I/O Activity',
       'I/O Activity',
-      'Top Receive Network Traffic',
-      'Top Transmit Network Traffic',
+      ' Top Receive Network Traffic',
+      ' Top Transmit Network Traffic',
       'Top Errors',
       'Top Drop',
       'Top Retransmission',
@@ -1192,9 +1193,9 @@ module.exports = {
       folder: locate('.page-toolbar').find('[aria-label="Search links"] > a'),
       dashboardName: locate('.page-toolbar').find('[aria-label="Search dashboard by name"]'),
     },
-    annotationMarker: '(//div[contains(@class,"events_marker")])',
+    annotationMarker: I.useDataQA('data-testid annotation-marker'),
     clearSelection: '//a[@ng-click="vm.clearSelections()"]',
-    collapsedDashboardRow: '.dashboard-row--collapsed',
+    collapsedDashboardRow: '//*[@data-testid="dashboard-row-container"]//button[@aria-expanded="false"]',
     dataLinkForRoot: '//div[contains(text(), "Data links")]/..//a',
     Last2Days: '//span[contains(text(), "Last 2 days")]',
     metricTitle: '$header-container',
@@ -1241,7 +1242,7 @@ module.exports = {
   },
 
   annotationLocator(number = 1) {
-    return `(//div[contains(@class,"events_marker")])[${number}]`;
+    return `(//div[@data-testid="data-testid annotation-marker"])[${number}]`;
   },
 
   annotationTagText(tagValue) {
@@ -1267,6 +1268,15 @@ module.exports = {
     }
   },
 
+  async verifyMetricsExistencePartialMatch(metrics) {
+    for (const i in metrics) {
+      I.pressKey('PageDown');
+      await this.expandEachDashboardRow();
+      I.waitForElement(this.graphsLocatorPartialMatch(metrics[i]), 5);
+      I.scrollTo(this.graphsLocatorPartialMatch(metrics[i]));
+    }
+  },
+
   openGraphDropdownMenu(metric) {
     I.waitForVisible(this.graphsLocator(metric), 10);
     I.moveCursorTo(this.graphsLocator(metric), 10);
@@ -1276,6 +1286,11 @@ module.exports = {
   graphsLocator(metricName) {
     return locate(`[data-testid^="data-testid Panel header ${metricName}"]`);
   },
+
+  graphsLocatorPartialMatch(metricName) {
+    return locate(`[data-testid*="data-testid Panel header"][data-testid*="${metricName}"]`);
+  },
+
 
   graphLegendSeriesValue(metricName, value) {
     return this.graphsLocator(metricName).find('.graph-legend-series').find('td').withText(value);

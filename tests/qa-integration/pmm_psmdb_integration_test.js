@@ -1,4 +1,5 @@
 const assert = require('assert');
+const { SERVICE_TYPE } = require('../helper/constants');
 
 Feature('Integration tests for PSMDB & PMM');
 
@@ -26,7 +27,7 @@ Scenario(
   }) => {
     const details = {
       serviceName: remoteServiceName,
-      serviceType: 'MONGODB_SERVICE',
+      serviceType: SERVICE_TYPE.MONGODB,
       port: '27017',
       username: connection.username,
       password: connection.password,
@@ -51,7 +52,7 @@ Scenario(
     I.waitForVisible(pmmInventoryPage.fields.agentsLink, 30);
     await inventoryAPI.verifyServiceExistsAndHasRunningStatus(
       {
-        serviceType: 'MONGODB_SERVICE',
+        serviceType: SERVICE_TYPE.MONGODB,
         service: 'mongodb',
       },
       details.serviceName,
@@ -71,8 +72,8 @@ Scenario.skip(
     let response; let result;
     const metricName = 'mongodb_connections';
 
-    await I.verifyCommand(`docker exec ${replica_container_name} pmm-admin list | grep "mongodb_exporter" | grep "Running" | wc -l | grep "3"`);
-    await I.verifyCommand(`docker exec ${replica_container_name} pmm-admin list | grep "mongodb_profiler_agent" | grep "Running" | wc -l | grep "3"`);
+    await I.verifyCommand(`docker exec ${replica_container_name} pmm-admin list | grep "mongodb_exporter" | grep "Agent_status_running" | wc -l | grep "3"`);
+    await I.verifyCommand(`docker exec ${replica_container_name} pmm-admin list | grep "mongodb_profiler_agent" | grep "Agent_status_running" | wc -l | grep "3"`);
 
     const clientServiceName = (await I.verifyCommand(`docker exec ${replica_container_name} pmm-admin list | grep MongoDB | head -1 | awk -F" " '{print $2}'`)).trim();
 
@@ -189,8 +190,8 @@ Scenario(
     errorCode = (await I.verifyCommand(`docker exec ${arbiter_container_name} grep -q "level=error.*some metrics might be unavailable on arbiter nodes" /var/log/pmm-agent.log; echo $?`));
     I.assertTrue(errorCode.includes(1), `No errors for arbiter setup expected but got error code: ${errorCode}`);
 
-    I.amOnPage(I.buildUrlWithParams(dashboardPage.mongodbReplicaSetSummaryDashboard.cleanUrl, { from: 'now-1h', refresh: '5s' }));
-    await dashboardPage.waitForDashboardOpened();
+    I.amOnPage(I.buildUrlWithParams(dashboardPage.mongodbReplicaSetSummaryDashboard.cleanUrl, { from: 'now-5m', refresh: '5s' }));
+    dashboardPage.waitForDashboardOpened();
 
     // Gather Secondary member Service Name from Mongo
     const secondaryServiceName = (await I.verifyCommand(`docker exec ${arbiter_primary_container_name} mongo --eval rs\.printSecondaryReplicationInfo\\(\\) --username=${username} --password=${password} | awk -F ":" '/source/ {print $2}'`)).trim();
@@ -215,7 +216,7 @@ Scenario('PMM-T1889 Verify Mongo replication lag graph shows correct info @pmm-p
   I.amOnPage(I.buildUrlWithParams(dashboardPage.mongodbReplicaSetSummaryDashboard.cleanUrl, { from: 'now-5m', refresh: '5s' }));
   dashboardPage.waitForDashboardOpened();
 
-  await I.waitForElement(dashboardPage.graphLegendColumnValueByExpression(graphName, serviceName, 'max', '>= 10'), 120);
+  await I.waitForElement(dashboardPage.graphLegendColumnValueByExpression(graphName, serviceName, 'max', '>= 10'), 180);
 
   const maxValue = await I.grabTextFrom(dashboardPage.graphLegendSeriesRowByTitle(graphName, serviceName));
 

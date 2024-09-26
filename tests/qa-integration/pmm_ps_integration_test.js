@@ -1,4 +1,5 @@
 const assert = require('assert');
+const { SERVICE_TYPE } = require('../helper/constants');
 
 const { adminPage } = inject();
 
@@ -26,7 +27,7 @@ Scenario(
     const port = await I.verifyCommand(`docker exec ${container_name} pmm-admin list | grep "MySQL" | awk -F":" '{print $2}' | awk -F" " '{ print $1}' | head -1`);
     const details = {
       serviceName: remoteServiceName,
-      serviceType: 'MYSQL_SERVICE',
+      serviceType: SERVICE_TYPE.MYSQL,
       port,
       username: connection.username,
       password: connection.password,
@@ -51,7 +52,7 @@ Scenario(
     I.wait(10);
     await inventoryAPI.verifyServiceExistsAndHasRunningStatus(
       {
-        serviceType: 'MYSQL_SERVICE',
+        serviceType: SERVICE_TYPE.MYSQL,
         service: 'mysql',
       },
       details.serviceName,
@@ -71,8 +72,8 @@ Scenario(
     let response; let result;
     const metricName = 'mysql_global_status_max_used_connections';
 
-    await I.verifyCommand(`docker exec ${container_name} pmm-admin list | grep "mysqld_exporter" | grep -i "running" | wc -l | grep "1"`);
-    await I.verifyCommand(`docker exec ${container_name} pmm-admin list | grep "mysql_perfschema_agent" | grep -i "running" | wc -l | grep "1"`);
+    await I.verifyCommand(`docker exec ${container_name} pmm-admin list | grep "mysqld_exporter" | grep "Agent_status_running" | wc -l | grep "1"`);
+    await I.verifyCommand(`docker exec ${container_name} pmm-admin list | grep "mysql_slowlog_agent" | grep "Agent_status_running" | wc -l | grep "1"`);
 
     const clientServiceName = (await I.verifyCommand(`docker exec ${container_name} pmm-admin list | grep MySQL | head -1 | awk -F" " '{print $2}'`)).trim();
 
