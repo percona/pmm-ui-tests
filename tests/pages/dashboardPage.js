@@ -1220,6 +1220,7 @@ module.exports = {
         .withDescendant('//*[contains(text(),"No data") or contains(text(), "NO DATA") or contains(text(),"N/A")) or (text()="-") or (text() = "No Data")]')),
     rootUser: '//div[contains(text(), "root")]',
     serviceSummary: I.useDataQA('data-testid dashboard-row-title-Service Summary'),
+    collapsedRowByName: (rowName) => `//button[@data-testid="data-testid dashboard-row-title-${rowName}" and @aria-expanded="false"]`,
     timeRangePickerButton: I.useDataQA('data-testid TimePicker Open Button'),
     refresh: I.useDataQA('data-testid RefreshPicker run button'),
     allFilterDropdownOptions: '//button[contains(@data-testid, "variable-option")][span[text()][not(contains(text(), "All"))]]',
@@ -1379,6 +1380,11 @@ module.exports = {
 
   async grabFailedReportTitles(selector) {
     return await I.grabTextFromAll(selector);
+  },
+
+  expandDashboardRow(rowName) {
+    I.scrollTo(this.fields.collapsedRowByName(rowName));
+    I.click(this.fields.collapsedRowByName(rowName));
   },
 
   async expandEachDashboardRow() {
