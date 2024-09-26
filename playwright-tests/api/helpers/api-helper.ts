@@ -83,7 +83,7 @@ const apiHelper = {
    * @return            Promise<APIResponse> instance
    */
   put: async (path: string, payload: object): Promise<APIResponse> => {
-    console.log(`POST: ${path}\nPayload: ${JSON.stringify(payload)}`);
+    console.log(`PUT: ${path}\nPayload: ${JSON.stringify(payload)}`);
     const response = await (await getConfiguredRestApi()).put(path, { data: payload });
     expect(response.status(), `Status: ${response.status()} ${response.statusText()}`).toEqual(200);
     return response;
