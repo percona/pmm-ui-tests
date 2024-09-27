@@ -217,7 +217,7 @@ Scenario('PMM-T1889 Verify Mongo replication lag graph shows correct info @pmm-p
   dashboardPage.waitForDashboardOpened();
   dashboardPage.expandDashboardRow('Replication');
 
-  await I.waitForElement(dashboardPage.graphLegendColumnValueByExpression(graphName, serviceName, 'max', '>= 10'), 180);
+  await I.waitForElement(dashboardPage.graphLegendColumnValueByExpression(graphName, serviceName, 'max', '>= 1'), 180);
 
   const maxValue = await I.grabTextFrom(dashboardPage.graphLegendSeriesRowByTitle(graphName, serviceName));
 

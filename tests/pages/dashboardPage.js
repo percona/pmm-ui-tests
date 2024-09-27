@@ -1298,15 +1298,16 @@ module.exports = {
   },
 
   graphLegendSeriesRowByTitle(metricName, title) {
-    return this.graphsLocator(metricName).find(`//tr[@class="graph-legend-series "][td//button[contains(@title, '${title}')]]`);
+    return this.graphsLocator(metricName).find(`//tr)[2]//button[contains(text(), "${title}")]//ancestor::tr`);
   },
 
   graphLegendColumnValueByExpression(graphName, title, columnName, expression) {
     return this
       .graphLegendSeriesRowByTitle(graphName, title)
-      .find(`//td[@class="graph-legend-value ${columnName}" and number(substring-before(text(), " ")) ${expression}]`);
+      .find(`//td[position()="3" and number(substring-before(text(), " ")) ${expression}]`);
   },
-
+//*[@data-testid and starts-with(@data-testid, 'data-testid Panel header Replication Lag')]//tr)[2]//button[contains(text(), "rs102_15614")]//ancestor::tr//td[position()="3" and number(substring-before(text(), " ")) >= 1]
+//*[@data-testid and starts-with(@data-testid, 'data-testid Panel header Replication Lag')]//tr)[2]//button[contains(text(), "rs102_15614")]//ancestor::tr//td[position()="3" and number(substring-before(text(), " ")) >= 1]'
   panelByTitle(title) {
     return I.useDataQA(`data-testid Panel header ${title}`);
   },
