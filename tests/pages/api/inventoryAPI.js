@@ -219,7 +219,7 @@ module.exports = {
         await grafanaAPI.waitForMetric('mongodb_up', [{ type: 'agent_id', value: agent_id }], 90);
 
         I.say(`Expecting to have ${logLevel} for agent ${agentType} when using ${logLvlFlag}, expected log level is ${expectedLogLevel}`);
-        I.assertEqual(log_level, expectedLogLevel, `Was expecting Mongo Exporter for service ${dbDetails.service_name} added again via inventory command and log level to have ${logLevel || 'warn'} set`);
+        I.assertEqual(log_level, expectedLogLevel, `Was expecting Mongo Exporter for service ${dbDetails.service_name} added again via inventory command and log level to have ${logLevel || 'warn'} set. The actual log level was: ${log_level}`);
         break;
       case 'node':
         agent_id = (await I.verifyCommand(`docker exec ${dbDetails.container_name} pmm-admin inventory add agent node-exporter --push-metrics ${logLvlFlag} ${dbDetails.pmm_agent_id} | grep "Agent ID" | grep -v "PMM-Agent ID" | awk -F " " '{print $4}'`)).trim();
