@@ -28,7 +28,7 @@ Scenario('PMM-T1883 Configuring pmm-agent to use service account @service-accoun
   await I.wait(15);
   await I.verifyCommand(`sudo docker exec ${psContainerName} pmm-admin add mysql --username=msandbox --password=msandbox --host=127.0.0.1  --port=3307 --service-name=${newServiceName}`);
   await I.wait(60);
-  const nodeName = (await inventoryAPI.getAllNodes()).generic.find((node) => node.node_name !== 'pmm-server').node_name;
+  const nodeName = (await inventoryAPI.getAllNodes()).find((node) => node.node_name !== 'pmm-server').node_name;
   const nodesUrl = I.buildUrlWithParams(nodesOverviewPage.url, {
     from: 'now-1m',
     to: 'now',
