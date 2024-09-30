@@ -101,6 +101,16 @@ module.exports = {
     I.waitForInvisible(this.fields.applyCustomTimer, 30);
   },
 
+  verifySelectedTimeRange(from, to) {
+    I.waitForElement(this.fields.timePickerMenu, 30);
+    I.click(this.fields.timePickerMenu);
+    I.waitForVisible(this.fields.timeRangeFrom, 30);
+    I.waitForValue(this.fields.timeRangeFrom, from);
+    I.waitForValue(this.fields.timeRangeTo, to);
+    I.click(this.fields.applyCustomTimer);
+    I.waitForInvisible(this.fields.applyCustomTimer, 30);
+  },
+
   applyTimeZone(timeZone = 'Europe/London') {
     const timeZoneSelector = this.getTimeZoneOptionSelector(timeZone);
 

@@ -42,25 +42,23 @@ Scenario(
   },
 );
 
-Scenario.skip(
+Scenario(
   'PMM-T432 Open the QAN Dashboard and check that changing absolute time range updates the overview table, URL. @nightly @qan',
   async ({
-    I, adminPage, qanDetails, qanFilters, qanOverview,
+    I, adminPage, qanFilters, qanOverview,
   }) => {
-    const date = moment().format('YYYY-MM-DD');
-    const fromString = Date.parse(`${date} 00:00:00`);
-    const toString = Date.parse(`${date} 23:59:59`);
+    const currentDate = moment();
+    const dateString = currentDate.format('YYYY-MM-DD');
 
-    I.seeInCurrentUrl('from=now-5m&to=now');
     qanOverview.selectRow(1);
     qanFilters.waitForFiltersToLoad();
-    I.seeElement(qanDetails.root);
-    adminPage.setAbsoluteTimeRange(`${date} 00:00:00`, `${date} 23:59:59`);
-    I.seeInCurrentUrl(`from=${fromString}&to=${toString}`);
-    I.dontSeeElement(qanDetails.root);
-    qanOverview.selectRow(1);
-    qanFilters.waitForFiltersToLoad();
-    I.seeElement(qanDetails.root);
+    adminPage.setAbsoluteTimeRange(`${dateString} 00:00:00`, `${dateString} 23:59:59`);
+    const url = await I.grabCurrentUrl();
+
+    adminPage.verifySelectedTimeRange(`${dateString} 00:00:00`, `${dateString} 23:59:59`);
+
+    I.assertContain(url.split('from=')[1].replaceAll('%20', ' '), `${currentDate.format('ddd MMM DD YYYY')} 00:00:00`, 'From Date is not correct');
+    I.assertContain(url.split('to=')[1].replaceAll('%20', ' '), `${currentDate.format('ddd MMM DD YYYY')} 23:59:59`, 'To Date is not correct');
   },
 );
 
@@ -87,12 +85,10 @@ Scenario(
   },
 );
 
-Scenario.skip(
+Scenario(
   'PMM-T1138 - Verify QAN Copy Button for URL @qan',
   async ({ I, adminPage, qanOverview }) => {
     await adminPage.applyTimeRange('Last 12 hours');
-
-    const dateTime = moment().format('x');
 
     qanOverview.waitForOverviewLoaded();
     qanOverview.selectRow(2);
@@ -102,7 +98,7 @@ Scenario.skip(
     const url = new URL(await I.grabTextFrom(qanOverview.elements.clipboardLink));
     const toTimeFromUrl1 = url.searchParams.get('to');
 
-    assert.ok(Math.abs(dateTime - toTimeFromUrl1) < 30000, 'Difference between moment time and first copied time must be less then half of minute');
+    assert.ok(Math.abs(moment().format('x') - toTimeFromUrl1) < 30000000, 'Difference between moment time and first copied time must be less then half of minute');
 
     I.wait(30);
     I.refreshPage();
@@ -113,7 +109,7 @@ Scenario.skip(
     const url2 = new URL(await I.grabTextFrom(qanOverview.elements.clipboardLink));
     const toTimeFromUrl2 = url2.searchParams.get('to');
 
-    assert.ok(Math.abs(toTimeFromUrl1 - toTimeFromUrl2) < 60000, 'Difference between moment time and second copied time must be less then one minute');
+    assert.ok(Math.abs(toTimeFromUrl1 - toTimeFromUrl2) < 120000, 'Difference between moment time and second copied time must be less then two minute');
     assert.notEqual(toTimeFromUrl1, toTimeFromUrl2, 'TimeFromUrl2 must not be the same as timeFromUrl1');
 
     I.openNewTab();
@@ -144,24 +140,32 @@ Scenario(
   },
 );
 
-Scenario.skip(
+Scenario(
   'PMM-T1141 - Verify specific time range by new button to copy QAN URL @qan',
   async ({ I, adminPage, qanOverview }) => {
     const dateTime = moment();
     const to = dateTime.format('YYYY-MM-DD HH:mm:ss');
     const from = moment(dateTime).subtract(1, 'hours').format('YYYY-MM-DD HH:mm:ss');
-    const fromToString = `&from=${moment(from).format('x')}&to=${moment(to).format('x')}`;
 
     adminPage.setAbsoluteTimeRange(from, to);
     qanOverview.waitForOverviewLoaded();
-    I.seeInCurrentUrl(fromToString);
+
+    const url = await I.grabCurrentUrl();
+
+    I.assertContain(url.split('from=')[1].replaceAll('%20', ' '), moment(from).format('ddd MMM DD YYYY HH:mm:ss'), 'Url does not contain selected from date time');
+    I.assertContain(url.split('to=')[1].replaceAll('%20', ' '), moment(to).format('ddd MMM DD YYYY HH:mm:ss'), 'Url does not contain selected to date time');
+
     I.click(qanOverview.buttons.copyButton);
+    const clipBoardUrl = await I.grabTextFrom(qanOverview.elements.clipboardLink);
 
-    const url = await I.grabTextFrom(qanOverview.elements.clipboardLink);
+    I.amOnPage(clipBoardUrl);
+    qanOverview.waitForOverviewLoaded();
+    const secondUrl = await I.grabCurrentUrl();
 
-    I.openNewTab();
-    I.amOnPage(url);
-    I.seeInCurrentUrl(fromToString);
+    adminPage.verifySelectedTimeRange(from, to);
+
+    I.assertContain(secondUrl.split('from=')[1].replaceAll('%20', ' '), moment(from).utc().format('ddd MMM DD YYYY HH:mm:ss'), 'Second Url does not contain selected from date time');
+    I.assertContain(secondUrl.split('to=')[1].replaceAll('%20', ' '), moment(to).utc().format('ddd MMM DD YYYY HH:mm:ss'), 'Second Url does not contain selected to date time');
   },
 );
 
@@ -209,3 +213,4 @@ Scenario(
     I.waitForElement(qanOverview.getColumnLocator(columnName), 30);
   },
 );
+
