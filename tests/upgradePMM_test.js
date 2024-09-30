@@ -136,11 +136,12 @@ Scenario(
   'PMM-T289 Verify Whats New link is presented on Update Widget @ovf-upgrade @ami-upgrade @pre-upgrade @pmm-upgrade',
   async ({ I, homePage }) => {
     const locators = homePage.getLocators(versionMinor);
+    const dockerUpgrade = process.env.PERFORM_DOCKER_WAY_UPGRADE || '';
 
     I.amOnPage(homePage.url);
     // Whats New Link is added for the latest version hours before the release,
     // hence we need to skip checking on that, rest it should be available and checked.
-    if (majorVersionDiff >= 1 && patchVersionDiff >= 1) {
+    if (majorVersionDiff >= 1 && patchVersionDiff >= 1 && dockerUpgrade === 'no') {
       I.waitForElement(locators.whatsNewLink, 30);
       I.seeElement(locators.whatsNewLink);
       const link = await I.grabAttributeFrom(locators.whatsNewLink, 'href');
