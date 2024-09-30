@@ -115,7 +115,7 @@ Scenario('PMM-T1900 PMM3 Client pmm-admin unregister w/o force removes nodes & p
   await I.verifyCommand(`sudo docker exec ${psContainerName} pmm-admin add mysql --username=msandbox --password=msandbox --host=127.0.0.1  --port=3307 --service-name=${newServiceName}`);
   await I.asyncWaitFor(async () => await I.verifyCommand(`docker exec ${psContainerName} pmm-admin list | grep mysqld_exporter | grep -q Running; echo $?`) === '0', 60);
 
-  const nodeName = (await inventoryAPI.getAllNodes()).generic.find((node) => node.node_name !== 'pmm-server').node_name;
+  const nodeName = (await inventoryAPI.getAllNodes()).find((node) => node.node_name !== 'pmm-server').node_name;
   const nodesUrl = I.buildUrlWithParams(nodesOverviewPage.url, {
     from: 'now-1m',
     to: 'now',
