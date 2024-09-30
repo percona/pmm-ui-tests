@@ -136,6 +136,9 @@ Scenario(
   'PMM-T289 Verify Whats New link is presented on Update Widget @ovf-upgrade @ami-upgrade @pre-upgrade @pmm-upgrade',
   async ({ I, homePage }) => {
     const locators = homePage.getLocators(versionMinor);
+    const dockerUpgrade = process.env.PERFORM_DOCKER_WAY_UPGRADE;
+
+    console.log(`Docker way upgrade equals: ${dockerUpgrade}`);
 
     I.amOnPage(homePage.url);
     // Whats New Link is added for the latest version hours before the release,
