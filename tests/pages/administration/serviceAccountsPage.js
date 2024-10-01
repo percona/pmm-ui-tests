@@ -13,8 +13,8 @@ class ServiceAccountsPage {
     this.tokenName = locate('//input[@name="tokenName"]');
     this.generateTokenButton = locate('//span[text()="Generate token"]');
     this.tokenValue = locate('//input[@name="tokenValue"]');
-    this.disableServiceAccountButton = (username) => locate(`//a[@title="${username}"]//ancestor::tr//span[text()="Disable"]`);
-    this.enableServiceAccountButton = (username) => locate(`//a[@title="${username}"]//ancestor::tr//span[text()="Enable"]`);
+    this.disableServiceAccountButton = (username) => locate(`//a[text()="${username}"]//ancestor::tr//span[text()="Disable"]`);
+    this.enableServiceAccountButton = (username) => locate(`//a[text()="${username}"]//ancestor::tr//span[text()="Enable"]`);
     this.confirmDisableButton = I.useDataQA('data-testid Confirm Modal Danger Button');
   }
 
