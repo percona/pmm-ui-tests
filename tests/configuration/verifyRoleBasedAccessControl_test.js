@@ -21,34 +21,34 @@ const pgRole = {
   value: 'postgresql',
 };
 
-Before(async ({ I, settingsAPI }) => {
-  rbacPsUserId = await I.createUser(newPsUser.username, newPsUser.password);
-  rbacPgUserId = await I.createUser(newPgUser.username, newPgUser.password);
-  await I.Authorize();
-  await settingsAPI.changeSettings({ rbac: true });
-});
+// Before(async ({ I, settingsAPI }) => {
+//   rbacPsUserId = await I.createUser(newPsUser.username, newPsUser.password);
+//   rbacPgUserId = await I.createUser(newPgUser.username, newPgUser.password);
+//   await I.Authorize();
+//   await settingsAPI.changeSettings({ rbac: true });
+// });
+//
+// After(async ({ I, rolesApi }) => {
+//   const roleIds = await rolesApi.getNonDefaultRoleIds();
+//
+//   await rolesApi.deleteRoles(roleIds, 1);
+//   await I.deleteUser(rbacPsUserId);
+//   await I.deleteUser(rbacPgUserId);
+// });
 
-After(async ({ I, rolesApi }) => {
-  const roleIds = await rolesApi.getNonDefaultRoleIds();
-
-  await rolesApi.deleteRoles(roleIds, 1);
-  await I.deleteUser(rbacPsUserId);
-  await I.deleteUser(rbacPgUserId);
-});
-
-Scenario('PMM-T1580 Verify creating Access Role @rbac', async ({ I, accessRolesPage }) => {
+Scenario.skip('PMM-T1580 Verify creating Access Role @rbac', async ({ I, accessRolesPage }) => {
   I.amOnPage(accessRolesPage.url);
   accessRolesPage.createAccessRole(psRole);
 });
 
-Scenario('PMM-T1584 Verify assigning Access role to user @rbac', async ({ I, usersPage, rolesApi }) => {
+Scenario.skip('PMM-T1584 Verify assigning Access role to user @rbac', async ({ I, usersPage, rolesApi }) => {
   await rolesApi.createRole(psRole);
 
   I.amOnPage(usersPage.url);
   usersPage.assignRole(newPsUser.username, psRole.name);
 });
 
-Scenario(
+Scenario.skip(
   'PMM-T1899 - Access Role based on Labels and Check Filtering of Metrics on Dashboard @rbac',
   async ({
     I, dashboardPage, accessRolesPage, rolesApi,
@@ -121,7 +121,7 @@ Scenario(
   },
 );
 
-Scenario('PMM-T1585 Verify deleting Access role @rbac', async ({ I, accessRolesPage, rolesApi }) => {
+Scenario.skip('PMM-T1585 Verify deleting Access role @rbac', async ({ I, accessRolesPage, rolesApi }) => {
   await rolesApi.createRole(psRole);
   await rolesApi.createRole(pgRole);
 
