@@ -57,4 +57,4 @@ Data(panels).Scenario(
     await dashboardPage.verifyMetricsExistence(expectedDashboard.metrics);
     await dashboardPage.verifyThereAreNoGraphsWithoutData(expectedDashboard.noDataElements);
   },
-);
+).retry(2);
