@@ -1,3 +1,5 @@
+const sendSecret = require('../helper/secrets_helper');
+
 Feature('PMM Server Role Based Access Control (RBAC)');
 
 const newPsUser = { username: 'rbac_ps_test_user', password: 'Test1234!' };
@@ -5,14 +7,14 @@ const newPgUser = { username: 'rbac_pg_test_user', password: 'Test1234!' };
 let rbacPsUserId;
 let rbacPgUserId;
 let psRole = {
-  name: 'psRole',
+  name: `psRole_${Date.now()}`,
   description: 'Test PS Role',
   label: 'service_type',
   operator: '=',
   value: 'mysql',
 };
 const pgRole = {
-  name: 'pgRole',
+  name: `pgRole_${Date.now()}`,
   description: 'Test PG Role',
   label: 'service_type',
   operator: '=',
@@ -51,8 +53,12 @@ Scenario(
   async ({
     I, dashboardPage, accessRolesPage, rolesApi,
   }) => {
-    const psRoleId = await rolesApi.createRole(psRole);
-    const pgRoleId = await rolesApi.createRole(pgRole);
+    await rolesApi.createRole(psRole);
+    await rolesApi.createRole(pgRole);
+
+    const roles = await rolesApi.listRoles();
+    const psRoleId = roles.find((role) => role.title === psRole.name).role_id;
+    const pgRoleId = roles.find((role) => role.title === pgRole.name).role_id;
 
     await rolesApi.assignRole([psRoleId], rbacPsUserId);
     await rolesApi.assignRole([pgRoleId], rbacPgUserId);
@@ -81,7 +87,7 @@ Scenario(
     dashboardPage.waitForDashboardOpened();
     await dashboardPage.expandEachDashboardRow();
     dashboardPage.waitForDashboardOpened();
-    await dashboardPage.verifyThatAllGraphsNoData(1);
+    await dashboardPage.verifyThatAllGraphsNoData(3);
 
     I.amOnPage(dashboardPage.postgresqlInstanceOverviewDashboard.cleanUrl);
     dashboardPage.waitForDashboardOpened();
@@ -111,7 +117,7 @@ Scenario(
     dashboardPage.waitForDashboardOpened();
     await dashboardPage.expandEachDashboardRow();
     dashboardPage.waitForDashboardOpened();
-    await dashboardPage.verifyThatAllGraphsNoData();
+    await dashboardPage.verifyThatAllGraphsNoData(2);
   },
 );
 
@@ -122,4 +128,8 @@ Scenario('PMM-T1585 Verify deleting Access role @rbac', async ({ I, accessRolesP
   I.amOnPage(accessRolesPage.url);
   accessRolesPage.deleteAccessRole(pgRole.name);
   accessRolesPage.deleteAccessRole(psRole.name);
+});
+
+Scenario('Test Secrets @rbac', async ({ I }) => {
+  I.waitForVisible(sendSecret(locate('$not-existing-element')));
 });
