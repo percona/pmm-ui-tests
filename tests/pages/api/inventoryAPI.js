@@ -206,9 +206,11 @@ module.exports = {
     let agent_id;
     let output;
     let log_level;
-    const logLvlFlag = logLevel ? `--${logLevel}` : '';
+    const logLvlFlag = logLevel ? `--log-level=LOG_LEVEL_${logLevel.toUpperCase()}` : '';
 
     const expectedLogLevel = logLevel === 'warn' ? 'LOG_LEVEL_UNSPECIFIED' : logLevel || 'LOG_LEVEL_UNSPECIFIED';
+
+    console.log(`Log Level command is: ${logLvlFlag}`);
 
     switch (agentType) {
       case 'mongodb':
