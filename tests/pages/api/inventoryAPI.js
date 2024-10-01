@@ -210,7 +210,10 @@ module.exports = {
 
     const expectedLogLevel = logLevel === 'warn' ? 'LOG_LEVEL_UNSPECIFIED' : logLevel || 'LOG_LEVEL_UNSPECIFIED';
 
-    console.log(`Log Level command is: ${logLvlFlag}`);
+    if (logLevel === 'debug') {
+      console.log(`Log Level command is: ${logLvlFlag}`);
+    };
+
 
     switch (agentType) {
       case 'mongodb':
@@ -273,6 +276,7 @@ module.exports = {
         break;
       case 'mysql':
         agent_id = (await I.verifyCommand(`docker exec ${dbDetails.container_name} pmm-admin inventory add agent mysqld-exporter --password=${dbDetails.password} --push-metrics ${logLvlFlag} ${dbDetails.pmm_agent_id} ${dbDetails.service_id} ${dbDetails.username} | grep "Agent ID" | grep -v "PMM-Agent ID" | awk -F " " '{print $4}'`)).trim();
+        console.log(`Agent ID is: ${agent_id}`);
         output = await this.apiGetAgentDetailsViaAgentId(agent_id);
         console.log('Output is:');
         console.log(output.data);
