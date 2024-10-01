@@ -275,7 +275,7 @@ module.exports = {
         log_level = output.data.mysqld_exporter.log_level;
 
         await grafanaAPI.waitForMetric('mysql_up', [{ type: 'agent_id', value: agent_id }], 90);
-        assert.ok(log_level === expectedLogLevel, `Was expecting Mysql Exporter for service ${dbDetails.service_name} added again via inventory command and log level to have ${expectedLogLevel || 'warn'} set. The actual log level was: ${log_level}`);
+        I.assertEqual(log_level, expectedLogLevel, `Was expecting Mysql Exporter for service ${dbDetails.service_name} added again via inventory command and log level to have log level: ${expectedLogLevel} set. The actual log level was: ${log_level}`);
         await I.verifyCommand(`docker exec ${dbDetails.container_name} pmm-admin inventory remove agent ${agent_id}`);
         break;
       case 'qan-slowlog':
