@@ -593,6 +593,9 @@ Data(deleteArtifactsTests).Scenario(
 
     const logsText = await I.grabTextFrom(restorePage.elements.logsText);
 
+
+    console.log(logsText);
+
     assert.ok(
       logsText.includes('backup record not found by backup tool'),
       `Received unexpected logs: \n "${logsText}"`,
