@@ -1,7 +1,7 @@
 const { I, adminPage } = inject();
 const assert = require('assert');
 const { DashboardPanelMenu } = require('../dashboards/pages/DashboardPanelMenu');
-const MongodbReplicaSetSummaryDashboard = require('./dashboards/mongoDb/MongodbReplicaSetSummaryDashboard');
+const MongodbReplicaSetSummaryDashboard = require('./dashboards/mongoDb/mongodbReplicaSetSummaryDashboard');
 
 const formatElementId = (text) => text.toLowerCase().replace(/ /g, '_');
 
