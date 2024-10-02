@@ -1,6 +1,7 @@
 const { I, adminPage } = inject();
 const assert = require('assert');
 const { DashboardPanelMenu } = require('../dashboards/pages/DashboardPanelMenu');
+const MongodbReplicaSetSummaryDashboard = require('./dashboards/mongoDb/MongodbReplicaSetSummaryDashboard');
 
 const formatElementId = (text) => text.toLowerCase().replace(/ /g, '_');
 
@@ -916,25 +917,7 @@ module.exports = {
       'Sys Uptime',
     ],
   },
-  mongodbReplicaSetSummaryDashboard: {
-    url: 'graph/d/mongodb-replicaset-summary/mongodb-replset-summary?orgId=1&refresh=1m&from=now-5m&to=now',
-    cleanUrl: 'graph/d/mongodb-replicaset-summary/mongodb-replset-summary',
-    metrics: [
-      'Replication Lag',
-      'ReplSet States',
-      'ReplSet Members',
-      'Max Heartbeat Time',
-      'Elections',
-      'Oplog Recovery Window',
-      'Oplog Buffered Operations',
-      'Oplog Getmore Time',
-      'Services Details',
-      'Avg ReplSet Lag',
-      'Cluster Name',
-      'ReplSet Last Election',
-      'MongoDB Versions',
-    ],
-  },
+  mongodbReplicaSetSummaryDashboard: MongodbReplicaSetSummaryDashboard,
   victoriaMetricsAgentsOverviewDashboard: {
     url: 'graph/d/vmagent/victoriametrics-agents-overview?orgId=1&refresh=5m',
     metrics: [
@@ -1290,7 +1273,6 @@ module.exports = {
   graphsLocatorPartialMatch(metricName) {
     return locate(`[data-testid*="data-testid Panel header"][data-testid*="${metricName}"]`);
   },
-
 
   graphLegendSeriesValue(metricName, value) {
     return this.graphsLocator(metricName).find('.graph-legend-series').find('td').withText(value);
