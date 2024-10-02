@@ -286,7 +286,7 @@ Scenario(
     I.dontSeeElement(queryAnalyticsPage.data.elements.tooltip);
     I.dontSeeElement(queryAnalyticsPage.data.elements.tooltipQPSValue);
   },
-);
+).retry(2);
 
 Scenario(
   'PMM-T412 - Verify user is able to search by part of query @qan',
