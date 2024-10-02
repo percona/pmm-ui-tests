@@ -206,7 +206,7 @@ module.exports = {
     let agent_id;
     let output;
     let log_level;
-    const logLvlFlag = logLevel ? `--log-level=LOG_LEVEL_${logLevel.toUpperCase()}` : '';
+    const logLvlFlag = logLevel ? `--log-level=${logLevel}` : '';
 
     const expectedLogLevel = logLevel === 'warn' ? 'LOG_LEVEL_UNSPECIFIED' : logLevel || 'LOG_LEVEL_UNSPECIFIED';
 
