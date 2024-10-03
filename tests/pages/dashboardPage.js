@@ -1258,7 +1258,6 @@ module.exports = {
     I.usePlaywrightTo('Move mouse to anotation', async ({ page }) => {
       await page.locator(this.annotationLocator(number)).hover();
     });
-    // I.moveCursorTo(this.annotationLocator(number));
     I.waitForVisible(this.annotationText(title), 30);
   },
 
