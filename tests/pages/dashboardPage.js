@@ -1255,7 +1255,9 @@ module.exports = {
 
   verifyAnnotationsLoaded(title, number = 1) {
     I.waitForElement(this.fields.annotationMarker, 30);
-    I.moveCursorTo(this.annotationLocator(number));
+    I.usePlaywrightTo('Move mouse to anotation', async ({ page }) => {
+      await page.locator(this.annotationLocator(number)).hover();
+    });
     I.waitForVisible(this.annotationText(title), 30);
   },
 
