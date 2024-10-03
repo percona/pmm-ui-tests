@@ -33,7 +33,7 @@ services:
       - server-network
 
   pmm-client:
-    image: perconalab/pmm-client:dev-latest
+    image: perconalab/pmm-client:3-dev-latest
     container_name: pmm-client-disconnect
     depends_on:
       pmm-server-disconnect:
