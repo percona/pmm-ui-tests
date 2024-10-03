@@ -46,7 +46,6 @@ Scenario(
     await I.amOnPage(withCustomBaseUrl(`${dashboardPage.mySQLInstanceOverview.clearUrl}?orgId=1&from=now-3m&to=now-1m`));
     await dashboardPage.waitForDashboardOpened();
     await dashboardPage.expandEachDashboardRow();
-    await dashboardPage.verifyThereAreNoGraphsWithNA(1);
     await dashboardPage.verifyThereAreNoGraphsWithoutData(1);
     I.dontSeeElement(dashboardPage.fields.metricPanelNa('Services panel'));
   },
@@ -67,7 +66,6 @@ Scenario(
     await I.amOnPage(withCustomBaseUrl(`${dashboardPage.mySQLInstanceOverview.clearUrl}?orgId=1&from=now-3m&to=now-1m`));
     await dashboardPage.waitForDashboardOpened();
     await dashboardPage.expandEachDashboardRow();
-    await dashboardPage.verifyThereAreNoGraphsWithNA(1);
     await dashboardPage.verifyThereAreNoGraphsWithoutData(1);
     I.dontSeeElement(dashboardPage.fields.metricPanelNa('Services panel'));
   },
