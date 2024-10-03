@@ -73,7 +73,7 @@ module.exports = {
     };
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
 
-    const resp = await I.sendPostRequest(endpoint, body, headers);
+    const resp = await I.sendPutRequest(endpoint, body, headers);
 
     assert.ok(
       resp.status === 200,
