@@ -1196,6 +1196,7 @@ module.exports = {
     annotationMarker: I.useDataQA('data-testid annotation-marker'),
     clearSelection: '//a[@ng-click="vm.clearSelections()"]',
     collapsedDashboardRow: '//*[@data-testid="dashboard-row-container"]//button[@aria-expanded="false"]',
+    collapsedDashboardRowByName: (rowName) => `//*[@data-testid="dashboard-row-container"]//button[@aria-expanded="false" and contains(@data-testid, "${rowName}")]`,
     dataLinkForRoot: '//div[contains(text(), "Data links")]/..//a',
     Last2Days: '//span[contains(text(), "Last 2 days")]',
     metricTitle: '$header-container',
@@ -1291,19 +1292,8 @@ module.exports = {
     return locate(`[data-testid*="data-testid Panel header"][data-testid*="${metricName}"]`);
   },
 
-
-  graphLegendSeriesValue(metricName, value) {
-    return this.graphsLocator(metricName).find('.graph-legend-series').find('td').withText(value);
-  },
-
   graphLegendSeriesRowByTitle(metricName, title) {
     return this.graphsLocator(metricName).find(`//tr[@class="graph-legend-series "][td//button[contains(@title, '${title}')]]`);
-  },
-
-  graphLegendColumnValueByExpression(graphName, title, columnName, expression) {
-    return this
-      .graphLegendSeriesRowByTitle(graphName, title)
-      .find(`//td[@class="graph-legend-value ${columnName}" and number(substring-before(text(), " ")) ${expression}]`);
   },
 
   panelByTitle(title) {
@@ -1312,6 +1302,31 @@ module.exports = {
 
   panelDataByTitle(title) {
     return locate(this.panelByTitle(title)).find(I.useDataQA('data-testid Data link'));
+  },
+
+  async verifyColumnLegendMaxValueAbove(panelTitle, serviceName, expectedValue, timeout = 60) {
+    const maxValueLegendLocator = this.getColumnLegendMaxValue(panelTitle, serviceName);
+
+    await this.verifyColumnLegendValueAbove(maxValueLegendLocator, panelTitle, serviceName, expectedValue, timeout);
+  },
+
+  async verifyColumnLegendValueAbove(legendLocator, panelTitle, serviceName, expectedValue, timeout = 60) {
+    let retries = 0;
+    let actualValue = 0;
+
+    while (actualValue < expectedValue) {
+      // eslint-disable-next-line no-plusplus
+      if (retries++ > timeout) throw new Error(`Mean value in panel ${panelTitle} for ${serviceName} was never above ${expectedValue}`);
+
+      actualValue = parseInt(await I.grabTextFrom(legendLocator), 10);
+      I.wait(1);
+
+      if (actualValue >= expectedValue) return;
+    }
+  },
+
+  getColumnLegendMaxValue(panelTitle, serviceName) {
+    return locate(this.panelByTitle(panelTitle)).find(`//button[contains(@title, '${serviceName}')]//ancestor::tr//td[position()='3']`);
   },
 
   async waitForAllGraphsToHaveData(timeout = 60) {
@@ -1394,6 +1409,15 @@ module.exports = {
 
         collapsedRowsLocators = await getCollapsedRowsLocators();
       }
+    });
+  },
+
+  async expandDashboardRow(rowName) {
+    await I.usePlaywrightTo('Expand collapsed row', async ({ page }) => {
+      const rowLocator = await page.locator(this.fields.collapsedDashboardRowByName(rowName));
+
+      await rowLocator.scrollIntoViewIfNeeded();
+      await rowLocator.click();
     });
   },
 
