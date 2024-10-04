@@ -193,7 +193,7 @@ Scenario(
     I.amOnPage(I.buildUrlWithParams(dashboardPage.mongodbReplicaSetSummaryDashboard.cleanUrl, { from: 'now-5m', refresh: '5s' }));
     dashboardPage.waitForDashboardOpened();
     await dashboardPage.expandDashboardRow('Replication');
-    const testConfigFile = 'c = rs.conf(); c.members[2].secondaryDelaySecs = 10; c.members[2].priority = 0; c.members[2].hidden = true; rs.reconfig(c);';
+    const testConfigFile = 'c = rs.conf(); c.members[1].secondaryDelaySecs = 10; c.members[1].priority = 0; c.members[1].hidden = true; rs.reconfig(c);';
 
     await I.verifyCommand(`sudo docker exec rs101 mongo "mongodb://root:root@localhost/?replicaSet=rs" --eval "${testConfigFile}"`);
 
