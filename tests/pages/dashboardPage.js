@@ -1307,22 +1307,29 @@ module.exports = {
   async verifyColumnLegendMaxValueAbove(panelTitle, serviceName, expectedValue, timeout = 60) {
     const maxValueLegendLocator = this.getColumnLegendMaxValue(panelTitle, serviceName);
 
-    await this.verifyColumnLegendValueAbove(maxValueLegendLocator, panelTitle, serviceName, expectedValue, timeout);
+    await this.verifyColumnLegendValueAbove(maxValueLegendLocator.value, panelTitle, serviceName, expectedValue, timeout);
   },
 
   async verifyColumnLegendValueAbove(legendLocator, panelTitle, serviceName, expectedValue, timeout = 60) {
-    let retries = 0;
-    let actualValue = 0;
+    await I.usePlaywrightTo('Get Text from Element', async ({ page }) => {
+      let retries = 0;
+      let actualValue = 0;
 
-    while (actualValue < expectedValue) {
-      // eslint-disable-next-line no-plusplus
-      if (retries++ > timeout) throw new Error(`Mean value in panel ${panelTitle} for ${serviceName} was never above ${expectedValue}`);
+      const valueLocator = await page.locator(legendLocator);
 
-      actualValue = parseInt(await I.grabTextFrom(legendLocator), 10);
-      I.wait(1);
+      while (actualValue < expectedValue) {
+        // eslint-disable-next-line no-plusplus
+        if (retries++ > timeout) throw new Error(`Value in panel ${panelTitle} for ${serviceName} was never above ${expectedValue}`);
 
-      if (actualValue >= expectedValue) return;
-    }
+        if (await valueLocator.isVisible()) {
+          actualValue = await valueLocator.textContent();
+        }
+
+        await page.waitForTimeout(1000);
+
+        if (actualValue >= expectedValue) return;
+      }
+    });
   },
 
   getColumnLegendMaxValue(panelTitle, serviceName) {

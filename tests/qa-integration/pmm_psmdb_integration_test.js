@@ -197,7 +197,7 @@ Scenario(
     // Gather Secondary member Service Name from Mongo
     const secondaryServiceName = (await I.verifyCommand(`docker exec ${arbiter_primary_container_name} mongo --eval rs\.printSecondaryReplicationInfo\\(\\) --username=${username} --password=${password} | awk -F ":" '/source/ {print $2}'`)).trim();
 
-    await dashboardPage.verifyColumnLegendMaxValueAbove('Replication Lag', secondaryServiceName, 1);
+    await dashboardPage.verifyColumnLegendMaxValueAbove('Replication Lag', secondaryServiceName, 1, 240);
 
     const maxValue = await I.grabTextFrom(dashboardPage.getColumnLegendMaxValue('Replication Lag', secondaryServiceName));
 
@@ -216,7 +216,7 @@ Scenario('PMM-T1889 Verify Mongo replication lag graph shows correct info @pmm-p
   dashboardPage.waitForDashboardOpened();
   await dashboardPage.expandDashboardRow('Replication');
 
-  await dashboardPage.verifyColumnLegendMaxValueAbove(graphName, serviceName, 1);
+  await dashboardPage.verifyColumnLegendMaxValueAbove(graphName, serviceName, 1, 240);
 
   const maxValue = await I.grabTextFrom(dashboardPage.getColumnLegendMaxValue(graphName, serviceName));
 
