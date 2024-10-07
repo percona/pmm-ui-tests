@@ -16,6 +16,8 @@ services:
   watchtower:
     image: perconalab/watchtower:PMM-13202-fix-double-unlock
     container_name: watchtower
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
     environment:
       - WATCHTOWER_DEBUG=1
       - WATCHTOWER_HTTP_API_TOKEN=testUpgradeToken
