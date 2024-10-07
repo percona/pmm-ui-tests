@@ -13,9 +13,21 @@ networks:
           gateway: 192.168.0.1
 
 services:
+  watchtower:
+    image: perconalab/watchtower:PMM-13202-fix-double-unlock
+    container_name: watchtower
+    environment:
+      - WATCHTOWER_DEBUG=1
+      - WATCHTOWER_HTTP_API_TOKEN=testUpgradeToken
+      - WATCHTOWER_HTTP_API_UPDATE=1
+    networks:
+      - pmm-network
   pmm-server:
     image: ${PMM_SERVER_IMAGE:-perconalab/pmm-server:3-dev-latest}
     container_name: pmm-server
+    depends_on:
+      watchtower:
+        condition: service_healthy
     ports:
       - "80:8080"
       - "443:8443"
