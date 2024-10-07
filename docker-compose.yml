@@ -22,6 +22,7 @@ services:
       - WATCHTOWER_HTTP_API_UPDATE=1
     networks:
       - pmm-network
+
   pmm-server:
     image: ${PMM_SERVER_IMAGE:-perconalab/pmm-server:3-dev-latest}
     container_name: pmm-server
