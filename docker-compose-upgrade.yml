@@ -1,0 +1,50 @@
+---
+version: '3.7'
+
+volumes:
+  pmm-server-data:
+
+networks:
+  pmm-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 192.168.0.0/24
+          gateway: 192.168.0.1
+
+services:
+  watchtower:
+    image: perconalab/watchtower:PMM-13202-fix-double-unlock
+    container_name: watchtower
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      - WATCHTOWER_DEBUG=1
+      - WATCHTOWER_HTTP_API_TOKEN=testUpgradeToken
+      - WATCHTOWER_HTTP_API_UPDATE=1
+    networks:
+      - pmm-network
+
+  pmm-server:
+    image: ${PMM_SERVER_IMAGE:-perconalab/pmm-server:3.0.0}
+    container_name: pmm-server
+    depends_on:
+      watchtower:
+        condition: service_healthy
+    ports:
+      - "80:8080"
+      - "443:8443"
+    environment:
+      - PMM_DEBUG=1
+      - PMM_ENABLE_ACCESS_CONTROL=1
+      - GF_AUTH_OAUTH_ALLOW_INSECURE_EMAIL_LOOKUP=1
+      - PERCONA_PORTAL_URL=https://portal-dev.percona.com
+      - PMM_DEV_PERCONA_PLATFORM_PUBLIC_KEY=RWTg+ZmCCjt7O8eWeAmTLAqW+1ozUbpRSKSwNTmO+exlS5KEIPYWuYdX
+      - PMM_DEV_PERCONA_PLATFORM_ADDRESS=https://check-dev.percona.com:443
+      - PMM_DEV_TELEMETRY_INTERVAL=10s
+      - PMM_DEV_TELEMETRY_RETRY_BACKOFF=10s
+      - PMM_DEV_UPDATE_DOCKER_IMAGE=${PMM_SERVER_UPGRADE_IMAGE:-perconalab/pmm-server:3-dev-latest}
+    volumes:
+      - pmm-server-data:/srv
+    networks:
+      - pmm-network
