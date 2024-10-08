@@ -164,6 +164,7 @@ module.exports = {
     pgStatMonitorRadioInput: locate('#radio-btn-3'),
     customAutoDiscoveryButton: locate('//div[input[@data-testid="autoDiscoveryOptions-radio-button"]]').find('label').withText('Custom'),
     customAutoDiscoveryfield: '$autoDiscoveryLimit-number-input',
+    dropdownOption: (text) => locate('div[class$="-select-option-body"]').find('span').withText(text),
   },
 
   async getFileContent(filePath) {
@@ -237,8 +238,16 @@ module.exports = {
     return this;
   },
 
+  selectDropdownOption(dropdownLocator, text) {
+    I.click(dropdownLocator);
+    I.waitForVisible(this.fields.dropdownOption(text), 30);
+    I.click(this.fields.dropdownOption(text));
+    I.dontSeeElement(this.fields.dropdownOption(text));
+  },
+
   async addRemoteDetails(details, skipUserNamePassword = false) {
     I.waitForElement(this.fields.hostName, 30);
+    this.selectDropdownOption('$nodes-selectbox', 'pmm-server');
     I.fillField(this.fields.hostName, details.host);
     if (!skipUserNamePassword) {
       I.fillField(this.fields.userName, details.username);
