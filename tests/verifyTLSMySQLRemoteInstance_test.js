@@ -72,7 +72,7 @@ Data(instances).Scenario(
         serviceType: SERVICE_TYPE.MYSQL,
         service: 'mysql',
       },
-      serviceName,
+      remoteServiceName,
     );
 
     // Check Remote Instance also added and have running status
