@@ -274,19 +274,11 @@ module.exports = {
       I.dontSeeElement(this.fields.tlsCertificateInput);
       I.click(this.fields.useTLS);
       I.waitForElement(this.fields.tlscaInput, 30);
-      const caInput = this.fields.tlscaInput;
-      const certInput = this.fields.tlsCertificateInput;
-      const keyInput = this.fields.tlsCertificateKeyInput;
 
-      I.usePlaywrightTo('Fill TLS ca field', async ({ page }) => {
-        await page.fill(caInput.toXPath(), details.tlsCA);
-      });
-      I.usePlaywrightTo('Fill TLS certificate field', async ({ page }) => {
-        await page.fill(certInput.toXPath(), details.tlsCert);
-      });
-      I.usePlaywrightTo('Fill TLS certificate key field', async ({ page }) => {
-        await page.fill(keyInput.toXPath(), details.tlsKey);
-      });
+      await this.fillFileContent(this.fields.tlscaInput, details.tlsCAFile);
+      await this.fillFileContent(this.fields.tlsCertificateInput, details.tlsCertFile);
+      await this.fillFileContent(this.fields.tlsCertificateKeyInput, details.tlsKeyFile);
+
       if (details.serviceType === 'postgres_ssl') I.click(this.fields.usePgStatStatements);
 
       if (details.serviceType === 'mysql_ssl') I.click(this.fields.skipTLSL);
