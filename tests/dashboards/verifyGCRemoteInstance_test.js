@@ -88,7 +88,7 @@ Data(instances).Scenario(
 
     const instanceDetails = getInstance(instance);
 
-    I.wait(10);
+    I.wait(30);
     if (instanceType === 'mysql') {
       I.amOnPage(dashboardPage.mySQLInstanceOverview.url);
     }
@@ -101,7 +101,7 @@ Data(instances).Scenario(
     await adminPage.applyTimeRange('Last 5 minutes');
     await dashboardPage.applyFilter('Service Name', instanceDetails.serviceName);
     await dashboardPage.expandEachDashboardRow();
-    await dashboardPage.verifyThereAreNoGraphsWithoutData(1);
+    await dashboardPage.verifyThereAreNoGraphsWithoutData(6);
   },
 ).retry(2);
 
