@@ -18,7 +18,7 @@ module.exports = {
         {
           label: 'service_name',
           regexp: 'pmm-server-postgresql',
-          type: 'MATCH',
+          type: 'FILTER_TYPE_MATCH',
         },
       ],
       for: `${(duration || 60)}s`,
@@ -28,7 +28,7 @@ module.exports = {
       params: params || [
         {
           name: 'threshold',
-          type: 'FLOAT',
+          type: 'PARAM_TYPE_FLOAT',
           float: 1,
         },
       ],
