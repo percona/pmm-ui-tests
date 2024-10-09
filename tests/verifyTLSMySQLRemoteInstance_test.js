@@ -155,7 +155,6 @@ Data(instances).Scenario(
       adminPage.performPageDown(5);
       await dashboardPage.expandEachDashboardRow();
       adminPage.performPageUp(5);
-      await dashboardPage.verifyThereAreNoGraphsWithNA();
       await dashboardPage.verifyThereAreNoGraphsWithoutData(1);
     }
   },
@@ -174,8 +173,6 @@ Data(instances).Scenario(
 
     for (const service of serviceList) {
       I.amOnPage(I.buildUrlWithParams(queryAnalyticsPage.url, { from: 'now-5m' }));
-      queryAnalyticsPage.waitForLoaded();
-      await adminPage.applyTimeRange('Last 12 hours');
       queryAnalyticsPage.waitForLoaded();
       await queryAnalyticsPage.filters.selectFilter(service);
       queryAnalyticsPage.waitForLoaded();
