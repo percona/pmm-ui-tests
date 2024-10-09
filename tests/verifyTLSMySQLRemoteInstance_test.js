@@ -270,7 +270,7 @@ Data(maxQueryLengthInstances).Scenario(
         serviceType: SERVICE_TYPE.MYSQL,
         service: 'mysql',
       },
-      serviceName,
+      remoteServiceName,
     );
 
     const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.MYSQL, remoteServiceName);
