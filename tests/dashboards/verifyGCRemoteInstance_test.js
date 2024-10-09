@@ -98,7 +98,7 @@ Data(instances).Scenario(
     }
 
     dashboardPage.waitForDashboardOpened();
-    await adminPage.applyTimeRange('Last 12 hours');
+    await adminPage.applyTimeRange('Last 5 minutes');
     await dashboardPage.applyFilter('Service Name', instanceDetails.serviceName);
     await dashboardPage.expandEachDashboardRow();
     await dashboardPage.verifyThereAreNoGraphsWithoutData(1);

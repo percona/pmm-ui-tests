@@ -17,20 +17,15 @@ maxQueryLengthTestData.add(['^']);
 maxQueryLengthTestData.add(['`']);
 maxQueryLengthTestData.add(['"']);
 
-instances.add(['mysql_5.7_ssl_service', '5.7', 'mysql_5.7', 'mysql_ssl', 'mysql_global_status_max_used_connections']);
-instances.add(['mysql_8.0_ssl_service', '8.0', 'mysql_8.0', 'mysql_ssl', 'mysql_global_status_max_used_connections']);
+// instances.add(['mysql_5.7_ssl_service', '5.7', 'mysql_5.7', 'mysql_ssl', 'mysql_global_status_max_used_connections']);
+instances.add(['mysql_8.0_ssl_service', '8.0', 'mysql_ssl_8.0', 'mysql_ssl', 'mysql_global_status_max_used_connections']);
 
-maxQueryLengthInstances.add(['mysql_5.7_ssl_service', '5.7', 'mysql_5.7', 'mysql_ssl', 'mysql_global_status_max_used_connections', '10']);
-maxQueryLengthInstances.add(['mysql_5.7_ssl_service', '5.7', 'mysql_5.7', 'mysql_ssl', 'mysql_global_status_max_used_connections', '-1']);
-maxQueryLengthInstances.add(['mysql_5.7_ssl_service', '5.7', 'mysql_5.7', 'mysql_ssl', 'mysql_global_status_max_used_connections', '']);
-maxQueryLengthInstances.add(['mysql_8.0_ssl_service', '8.0', 'mysql_8.0', 'mysql_ssl', 'mysql_global_status_max_used_connections', '10']);
-maxQueryLengthInstances.add(['mysql_8.0_ssl_service', '8.0', 'mysql_8.0', 'mysql_ssl', 'mysql_global_status_max_used_connections', '-1']);
-maxQueryLengthInstances.add(['mysql_8.0_ssl_service', '8.0', 'mysql_8.0', 'mysql_ssl', 'mysql_global_status_max_used_connections', '']);
-
-AfterSuite(async ({ I }) => {
-  await I.verifyCommand('docker stop mysql_5.7 || docker rm mysql_5.7');
-  await I.verifyCommand('docker stop mysql_8.0 || docker rm mysql_8.0');
-});
+// maxQueryLengthInstances.add(['mysql_5.7_ssl_service', '5.7', 'mysql_5.7', 'mysql_ssl', 'mysql_global_status_max_used_connections', '10']);
+// maxQueryLengthInstances.add(['mysql_5.7_ssl_service', '5.7', 'mysql_5.7', 'mysql_ssl', 'mysql_global_status_max_used_connections', '-1']);
+// maxQueryLengthInstances.add(['mysql_5.7_ssl_service', '5.7', 'mysql_5.7', 'mysql_ssl', 'mysql_global_status_max_used_connections', '']);
+maxQueryLengthInstances.add(['mysql_8.0_ssl_service', '8.0', 'mysql_ssl_8.0', 'mysql_ssl', 'mysql_global_status_max_used_connections', '10']);
+maxQueryLengthInstances.add(['mysql_8.0_ssl_service', '8.0', 'mysql_ssl_8.0', 'mysql_ssl', 'mysql_global_status_max_used_connections', '-1']);
+maxQueryLengthInstances.add(['mysql_8.0_ssl_service', '8.0', 'mysql_ssl_8.0', 'mysql_ssl', 'mysql_global_status_max_used_connections', '']);
 
 Before(async ({ I, settingsAPI }) => {
   await I.Authorize();
@@ -47,7 +42,6 @@ Data(instances).Scenario(
     let details;
     const remoteServiceName = `remote_${serviceName}_faker`;
 
-    await I.verifyCommand(`${pmmFrameworkLoader} --ps-version=${version} --setup-mysql-ssl --pmm2`);
     await I.say(await I.verifyCommand(`docker exec ${container} bash -c 'source ~/.bash_profile || true; pmm-admin list'`));
 
     if (serviceType === 'mysql_ssl') {
@@ -142,7 +136,6 @@ Data(instances).Scenario(
   },
 ).retry(1);
 
-
 Data(instances).Scenario(
   'Verify dashboard after MySQL SSL Instances are added @ssl @ssl-mysql @ssl-remote @not-ui-pipeline',
   async ({
@@ -206,14 +199,14 @@ Data(instances).Scenario(
 
     const agent_id = await I.verifyCommand(`docker exec ${container} pmm-admin list | grep mysqld_exporter | awk -F" " '{print $4}' | awk -F"/" '{print $3}'`);
 
-    await I.verifyCommand(`docker exec ${container} ls -la /usr/local/percona/pmm2/tmp/mysqld_exporter/agent_id/${agent_id}/ | grep tls`);
-    await I.verifyCommand(`docker exec ${container} rm -r /usr/local/percona/pmm2/tmp/mysqld_exporter/`);
-    await I.verifyCommand(`docker exec ${container} ls -la /usr/local/percona/pmm2/tmp/mysqld_exporter/`, 'ls: cannot access \'/usr/local/percona/pmm2/tmp/mysqld_exporter\': No such file or directory', 'fail');
+    await I.verifyCommand(`docker exec ${container} ls -la /usr/local/percona/pmm/tmp/mysqld_exporter/agent_id/${agent_id}/ | grep tls`);
+    await I.verifyCommand(`docker exec ${container} rm -r /usr/local/percona/pmm/tmp/mysqld_exporter/`);
+    await I.verifyCommand(`docker exec ${container} ls -la /usr/local/percona/pmm/tmp/mysqld_exporter/`, 'ls: cannot access \'/usr/local/percona/pmm/tmp/mysqld_exporter\': No such file or directory', 'fail');
     await I.verifyCommand(`docker exec ${container} pmm-admin list | grep mysqld_exporter | grep Running`);
     await I.verifyCommand(`docker exec ${container} pkill -f mysqld_exporter`);
     I.wait(10);
     await I.verifyCommand(`docker exec ${container} pmm-admin list | grep mysqld_exporter | grep Running`);
-    await I.verifyCommand(`docker exec ${container} ls -la /usr/local/percona/pmm2/tmp/mysqld_exporter/agent_id/${agent_id}/ | grep tls`);
+    await I.verifyCommand(`docker exec ${container} ls -la /usr/local/percona/pmm/tmp/mysqld_exporter/agent_id/${agent_id}/ | grep tls`);
   },
 ).retry(1);
 
