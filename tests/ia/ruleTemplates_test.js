@@ -154,7 +154,7 @@ Scenario.skip(
 //   },
 // );
 
-Scenario.skip(
+Scenario(
   '@PMM-T1785 Bulk rule templates upload @ia',
   async ({ I, ruleTemplatesPage }) => {
     const path = 'tests/ia/templates/multiple-templates.yml';
@@ -179,7 +179,7 @@ Scenario.skip(
   },
 );
 
-Scenario.skip(
+Scenario(
   '@PMM-T1786 Edit bulk uploaded rule template @ia',
   async ({ I, ruleTemplatesPage, templatesAPI }) => {
     const path = 'tests/ia/templates/multiple-templates.yml';
@@ -216,7 +216,7 @@ Scenario.skip(
   },
 );
 
-Scenario.skip(
+Scenario(
   '@PMM-T1787 Delete bulk uploaded rule template @ia',
   async ({ I, ruleTemplatesPage, templatesAPI }) => {
     const path = 'tests/ia/templates/multiple-templates.yml';
@@ -248,7 +248,7 @@ Scenario.skip(
   },
 );
 
-Scenario.skip(
+Scenario(
   'PMM-T501 Upload duplicate rule template @ia @grafana-pr',
   async ({ I, ruleTemplatesPage, templatesAPI }) => {
     const path = ruleTemplatesPage.ruleTemplate.paths.yaml;
@@ -266,7 +266,7 @@ Scenario.skip(
   },
 );
 
-Scenario.skip(
+Scenario(
   'PMM-T483 PMM-T699 Verify user can edit UI-created IA rule template @ia @grafana-pr @alerting-fb',
   async ({ I, ruleTemplatesPage, templatesAPI }) => {
     const path = ruleTemplatesPage.ruleTemplate.paths.yaml;
@@ -297,7 +297,7 @@ Scenario.skip(
   },
 );
 
-Scenario.skip(
+Scenario(
   'PMM-T562 Verify user can delete User-defined (UI) rule templates @ia @grafana-pr @alerting-fb',
   async ({ I, ruleTemplatesPage, templatesAPI }) => {
     const path = ruleTemplatesPage.ruleTemplate.paths.yaml;
@@ -326,7 +326,7 @@ Scenario.skip(
   },
 );
 
-Scenario.skip(
+Scenario(
   'PMM-T884 Verify templates from Percona (SAAS) cannot be deleted or edited @ia',
   async ({ I, ruleTemplatesPage }) => {
     const saasDeleteButton = ruleTemplatesPage.buttons
@@ -341,7 +341,7 @@ Scenario.skip(
   },
 );
 
-Scenario.skip(
+Scenario(
   'PMM-T553 Verify rule template can be deleted if there is a rule based on it @ia',
   async ({
     I, ruleTemplatesPage, templatesAPI, rulesAPI,
@@ -363,7 +363,7 @@ Scenario.skip(
   },
 );
 
-Scenario.skip(
+Scenario(
   'PMM-T825 PMM-T821 Verify User can add Alert rule template in the file system @not-ovf @ia',
   async ({ I, ruleTemplatesPage }) => {
     const editButton = ruleTemplatesPage.buttons
@@ -385,7 +385,7 @@ Scenario.skip(
   },
 );
 
-Scenario.skip(
+Scenario(
   'PMM-T1126 - Verify there are no Templates from Percona if Telemetry is disabled @ia',
   async ({ I, settingsAPI, ruleTemplatesPage }) => {
     const editButton = ruleTemplatesPage.buttons
@@ -405,7 +405,7 @@ Scenario.skip(
   },
 );
 
-Scenario.skip(
+Scenario(
   '@PMM-T1514 Verify that alert rule templates has only 1 exit button @ia',
   async ({ I, ruleTemplatesPage, alertRulesPage }) => {
     ruleTemplatesPage.openRuleTemplatesTab();

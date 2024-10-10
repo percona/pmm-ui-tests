@@ -206,10 +206,12 @@ module.exports = {
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
 
     const resp = await I.sendGetRequest(`graph/api/dashboards/uid/${uid}`, headers);
+
     assert.ok(
-        resp.status === 200,
-        `Failed to find dashboard with id '${uid}' . Response message is ${resp.data.message}`,
+      resp.status === 200,
+      `Failed to find dashboard with id '${uid}' . Response message is ${resp.data.message}`,
     );
+
     return resp.data;
   },
 
@@ -342,45 +344,41 @@ module.exports = {
     );
   },
 
-  // Should be refactored
-  async getMetric(metricName, refineBy) {
-    const timeStamp = Date.now();
-    const bodyFormData = new FormData();
-
-    const body = {
-      query: metricName,
-      start: Math.floor((timeStamp - 15000) / 1000),
-      end: Math.floor((timeStamp) / 1000),
-      step: 1,
-    };
-
-    if (refineBy) {
-      // ideally would need to refactor existing metric check to implement it this way
-      if (Array.isArray(refineBy)) {
-        let metricLabels = '';
-
-        for (let i = 0; i < refineBy.length; i++) {
-          const { type, value } = refineBy[i];
-          const filter = `${type}="${value}", `;
-
-          metricLabels = metricLabels.concat(filter);
-        }
-
-        body.query = `${metricName}{${metricLabels}}`;
-      } else {
-        body.query = `${metricName}{${refineBy.type}=~"(${refineBy.value})"}`;
-      }
-    }
-
-    Object.keys(body).forEach((key) => bodyFormData.append(key, body[key]));
+  async getDataSourceUidByName(name = 'Metrics') {
     const headers = {
       Authorization: `Basic ${await I.getAuth()}`,
-      ...bodyFormData.getHeaders(),
+    };
+
+    const r = await I.sendGetRequest(
+      'graph/api/datasources',
+      headers,
+    );
+
+    return (r.data.find((d) => d.name === name)).uid;
+  },
+
+  // Should be refactored
+  async getMetric(metricName, refineBy) {
+    const uid = await this.getDataSourceUidByName();
+    const body = {
+      queries: [
+        {
+          datasource: {
+            uid,
+          },
+          expr: `${metricName}{${refineBy.type}=\"${refineBy.value}\"}`,
+        },
+      ],
+      from: 'now-15m',
+    };
+
+    const headers = {
+      Authorization: `Basic ${await I.getAuth()}`,
     };
 
     return await I.sendPostRequest(
-      'graph/api/datasources/proxy/1/api/v1/query_range',
-      bodyFormData,
+      'graph/api/ds/query?ds_type=prometheus&requestId=explore_vmt',
+      body,
       headers,
     );
   },
@@ -459,10 +457,11 @@ module.exports = {
 
   async checkMetricExist(metricName, refineBy) {
     const response = await this.getMetric(metricName, refineBy);
-    const result = JSON.stringify(response.data.data.result);
+
+    const result = JSON.stringify(response.data.results);
 
     I.assertTrue(
-      response.data.data.result.length !== 0,
+      response.data.results.A.frames[0].data.values.length !== 0,
       `Metrics '${metricName}' ${refineBy === null ? '' : `with filters as ${JSON.stringify(refineBy)} `}should be available but got empty ${result}`,
     );
 
