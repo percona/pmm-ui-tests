@@ -45,6 +45,7 @@ class Grafana extends Helper {
             user_id: 1,
             product_tour_completed: false,
             alerting_tour_completed: false,
+            snoozed_pmm_version: '',
           }),
         });
       } else {
