@@ -12,6 +12,7 @@ export default class NetworkTools {
           user_id: 1,
           product_tour_completed: true,
           alerting_tour_completed: true,
+          snoozed_pmm_version: '3.2.0',
         }),
       });
     });

@@ -213,12 +213,13 @@ module.exports = {
     return resp.data.settings[property];
   },
 
-  async setTourOptions(productTour = true, alertingTour = true) {
+  async setTourOptions(productTour = true, alertingTour = true, pmmVersion = '3.2.0') {
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
 
     const body = {
       product_tour_completed: productTour,
       alerting_tour_completed: alertingTour,
+      snoozed_pmm_version: pmmVersion,
     };
 
     const resp = await I.sendPutRequest('v1/users/me', body, headers);
