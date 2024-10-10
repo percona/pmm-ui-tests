@@ -96,10 +96,10 @@ Data(instances).Scenario(
     I.wait(10);
 
     // verify metric for client container node instance
-    response = await grafanaAPI.checkMetricExist(metric, { type: 'service_name', value: serviceName });
+    response = await grafanaAPI.checkMetricExist(metric, { type: 'service_name', value: remoteServiceName });
     result = JSON.stringify(response.data.data.result);
 
-    assert.ok(response.data.data.result.length !== 0, `Metrics ${metric} from ${serviceName} should be available but got empty ${result}`);
+    assert.ok(response.data.data.result.length !== 0, `Metrics ${metric} from ${remoteServiceName} should be available but got empty ${result}`);
 
     // verify metric for remote instance
     response = await grafanaAPI.checkMetricExist(metric, { type: 'service_name', value: remoteServiceName });
