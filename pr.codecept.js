@@ -13,7 +13,7 @@ exports.config = {
       // Replaces last forward slash in url due to bug of duplicate slashes
       url: pmmUrl.replace(/\/(?!.*\/)$/gm, ''),
       restart: true,
-      show: false,
+      show: true,
       browser: 'chromium',
       windowSize: '1920x1080',
       timeout: 20000,
