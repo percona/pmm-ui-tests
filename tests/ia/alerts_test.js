@@ -33,12 +33,12 @@ BeforeSuite(async ({ I, rulesAPI }) => {
   await rulesAPI.createAlertRule({ ruleName }, ruleFolder);
 
   // Preparation steps for checking Alert via webhook server
-  await I.verifyCommand('docker-compose -f docker-compose-webhook.yml up -d');
+  await I.verifyCommand('docker compose -f docker-compose-webhook.yml up -d');
 });
 
 AfterSuite(async ({ rulesAPI, I }) => {
   await rulesAPI.removeAllAlertRules();
-  await I.verifyCommand('docker-compose -f docker-compose-webhook.yml stop');
+  await I.verifyCommand('docker compose -f docker-compose-webhook.yml stop');
 });
 
 Scenario.skip(

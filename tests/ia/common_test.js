@@ -7,7 +7,7 @@ Before(async ({ I, rulesAPI }) => {
   await rulesAPI.removeAllAlertRules();
 });
 
-Scenario.skip(
+Scenario(
   'PMM-T643 Verify message about disabled IA @ia @alerting-fb',
   async ({
     I, pmmSettingsPage, codeceptjsConfig,
@@ -23,7 +23,7 @@ Scenario.skip(
   },
 );
 
-Scenario.skip(
+Scenario(
   'PMM-T481 Verify IA tab bar, '
   + 'PMM-T620 Verify after reloading the page user is on the same IA tab, '
   + 'PMM-T776 Verify that user is able to see valid HTML Title on alerts page @ia @alerting-fb',
