@@ -89,23 +89,15 @@ Data(instances).Scenario(
     const {
       serviceName, metric,
     } = current;
-    let response; let result;
     const remoteServiceName = `remote_${serviceName}_faker`;
 
     // Waiting for metrics to start hitting for remotely added services
     I.wait(10);
 
     // verify metric for client container node instance
-    response = await grafanaAPI.checkMetricExist(metric, { type: 'service_name', value: remoteServiceName });
-    result = JSON.stringify(response.data.data.result);
-
-    assert.ok(response.data.data.result.length !== 0, `Metrics ${metric} from ${remoteServiceName} should be available but got empty ${result}`);
-
+    await grafanaAPI.checkMetricExist(metric, { type: 'service_name', value: remoteServiceName });
     // verify metric for remote instance
-    response = await grafanaAPI.checkMetricExist(metric, { type: 'service_name', value: remoteServiceName });
-    result = JSON.stringify(response.data.data.result);
-
-    assert.ok(response.data.data.result.length !== 0, `Metrics ${metric} from ${remoteServiceName} should be available but got empty ${result}`);
+    await grafanaAPI.checkMetricExist(metric, { type: 'service_name', value: remoteServiceName });
   },
 ).retry(1);
 
