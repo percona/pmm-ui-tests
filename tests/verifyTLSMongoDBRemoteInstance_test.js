@@ -12,7 +12,7 @@ const instances = new DataTable(['serviceName', 'version', 'container', 'service
 // instances.add(['mongodb_4.4_ssl_service', '4.4', 'mongodb_4.4', 'mongodb_ssl', 'mongodb_connections', '7']);
 // instances.add(['mongodb_4.2_ssl_service', '4.2', 'mongodb_4.2', 'mongodb_ssl', 'mongodb_connections']);
 // instances.add(['mongodb_5.0_ssl_service', '5.0', 'mongodb_5.0', 'mongodb_ssl', 'mongodb_connections', '7']);
-instances.add(['mongodb_ssl_service', '5.0', 'psmdb-server', 'mongodb_ssl', 'mongodb_connections', '7']);
+instances.add(['mongodb_ssl_service', '6.0', 'psmdb-server', 'mongodb_ssl', 'mongodb_connections', '7']);
 
 Before(async ({ I, settingsAPI }) => {
   await I.Authorize();
@@ -37,9 +37,9 @@ Data(instances).Scenario(
         host: container,
         cluster: 'mongodb_remote_cluster',
         environment: 'mongodb_remote_cluster',
-        tlsCAFile: `${pathToPMMFramework}tls-ssl-setup/mongodb/${version}/ca.crt`,
-        tlsCertificateFilePasswordInput: `${pathToPMMFramework}tls-ssl-setup/mongodb/${version}/client.key`,
-        tlsCertificateKeyFile: `${pathToPMMFramework}tls-ssl-setup/mongodb/${version}/client.pem`,
+        tlsCAFile: `${pathToPMMFramework}../pmm_psmdb_diffauth_setup/certs/ca-certs.pem`,
+        tlsCertificateFilePasswordInput: `${pathToPMMFramework}../pmm_psmdb_diffauth_setup/certs/certificate.crt`,
+        tlsCertificateKeyFile: `${pathToPMMFramework}../pmm_psmdb_diffauth_setup/certs/client.pem`,
       };
     }
 
@@ -53,7 +53,7 @@ Data(instances).Scenario(
         serviceType: SERVICE_TYPE.MONGODB,
         service: 'mongodb',
       },
-      serviceName,
+      remoteServiceName,
     );
 
     // Check Remote Instance also added and have running status
@@ -79,10 +79,10 @@ Data(instances).Scenario(
     I.wait(10);
 
     // verify metric for client container node instance
-    response = await grafanaAPI.checkMetricExist(metric, { type: 'service_name', value: serviceName });
+    response = await grafanaAPI.checkMetricExist(metric, { type: 'service_name', value: remoteServiceName });
     result = JSON.stringify(response.data.data.result);
 
-    assert.ok(response.data.data.result.length !== 0, `Metrics ${metric} from ${serviceName} should be available but got empty ${result}`);
+    assert.ok(response.data.data.result.length !== 0, `Metrics ${metric} from ${remoteServiceName} should be available but got empty ${result}`);
 
     // verify metric for remote instance
     response = await grafanaAPI.checkMetricExist(metric, { type: 'service_name', value: remoteServiceName });
@@ -212,9 +212,9 @@ Data(instances).Scenario(
         host: container,
         cluster: 'mongodb_remote_cluster',
         environment: 'mongodb_remote_cluster',
-        tlsCAFile: `${pathToPMMFramework}tls-ssl-setup/mongodb/${version}/ca.crt`,
-        tlsCertificateFilePasswordInput: `${pathToPMMFramework}tls-ssl-setup/mongodb/${version}/client.key`,
-        tlsCertificateKeyFile: `${pathToPMMFramework}tls-ssl-setup/mongodb/${version}/client.pem`,
+        tlsCAFile: `${pathToPMMFramework}../pmm_psmdb_diffauth_setup/certs/ca-certs.pem`,
+        tlsCertificateFilePasswordInput: `${pathToPMMFramework}../pmm_psmdb_diffauth_setup/certs/certificate.crt`,
+        tlsCertificateKeyFile: `${pathToPMMFramework}../pmm_psmdb_diffauth_setup/certs/client.pem`,
       };
     }
 
@@ -232,7 +232,7 @@ Data(instances).Scenario(
         serviceType: SERVICE_TYPE.MONGODB,
         service: 'mongodb',
       },
-      serviceName,
+      remoteServiceName,
     );
 
     const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.MONGODB, remoteServiceName);
