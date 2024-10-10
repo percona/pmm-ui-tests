@@ -406,6 +406,8 @@ module.exports = {
       // Main condition check: metric body is not empty
       const response = await this.getMetric(metricName, queryBy);
 
+      console.log(response);
+
       if (response.data.data.result.length !== 0) {
         return response;
       }
