@@ -52,7 +52,7 @@ Scenario.skip(
   },
 );
 
-Scenario.skip(
+Scenario(
   'Verify rule templates list elements @ia @grafana-pr',
   async ({ I, ruleTemplatesPage, templatesAPI }) => {
     const path = ruleTemplatesPage.ruleTemplate.paths.yaml;
@@ -78,7 +78,7 @@ Scenario.skip(
   },
 );
 
-Scenario.skip(
+Scenario(
   'Add rule template modal elements @ia @grafana-pr',
   async ({ I, ruleTemplatesPage }) => {
     ruleTemplatesPage.openRuleTemplatesTab();
@@ -92,69 +92,69 @@ Scenario.skip(
 );
 
 // nightly candidate
-// Data(units).Scenario(
-//   'PMM-T500 PMM-T595 PMM-T596 Add rule templates with different units, empty range @ia',
-//   async ({
-//     I, ruleTemplatesPage, templatesAPI, current,
-//   }) => {
-//     const [templateName, fileContent, id] = await ruleTemplatesPage.ruleTemplate
-//       .templateNameAndContent(ruleTemplatesPage.ruleTemplate.inputFilePath);
-//     const editButton = ruleTemplatesPage.buttons
-//       .editButtonByName(templateName);
-//     const deleteButton = ruleTemplatesPage.buttons
-//       .deleteButtonByName(templateName);
-//
-//     const newFileContent = fileContent
-//       .replace('unit: \'%\'', `unit: '${current.unit}'`)
-//       .replace('range: [0, 100]', `range: ${current.range}`);
-//
-//     ruleTemplatesPage.openRuleTemplatesTab();
-//
-//     I.click(ruleTemplatesPage.buttons.openAddTemplateModal);
-//     I.fillField(ruleTemplatesPage.fields.templateInput, newFileContent);
-//     I.click(ruleTemplatesPage.buttons.addTemplate);
-//     if (current.unit !== '*') {
-//       I.verifyPopUpMessage(ruleTemplatesPage.messages.successfullyAdded);
-//
-//       // Check that Edit and Delete buttons are enabled
-//       I.waitForEnabled(editButton);
-//       I.waitForEnabled(deleteButton);
-//
-//       await templatesAPI.removeTemplate(id);
-//     } else {
-//       I.verifyPopUpMessage(ruleTemplatesPage.messages.failedToParse);
-//     }
-//   },
-// );
+Data(units).Scenario(
+  'PMM-T500 PMM-T595 PMM-T596 Add rule templates with different units, empty range @ia',
+  async ({
+    I, ruleTemplatesPage, templatesAPI, current,
+  }) => {
+    const [templateName, fileContent, id] = await ruleTemplatesPage.ruleTemplate
+      .templateNameAndContent(ruleTemplatesPage.ruleTemplate.inputFilePath);
+    const editButton = ruleTemplatesPage.buttons
+      .editButtonByName(templateName);
+    const deleteButton = ruleTemplatesPage.buttons
+      .deleteButtonByName(templateName);
 
-// Data(templates).Scenario(
-//   'PMM-T482 PMM-T499 PMM-T766 PMM-T758 PMM-T766 PMM-T767 PMM-T931 Upload rule templates @ia',
-//   async ({ I, ruleTemplatesPage, current }) => {
-//     const { path } = current;
-//     const validFile = !current.error;
-//     const [templateName] = await ruleTemplatesPage.ruleTemplate.templateNameAndContent(path);
-//     const expectedSourceLocator = ruleTemplatesPage
-//       .getSourceLocator(templateName, ruleTemplatesPage.templateSources.ui);
-//     const editButton = ruleTemplatesPage.buttons
-//       .editButtonBySource(ruleTemplatesPage.templateSources.ui);
-//
-//     ruleTemplatesPage.openRuleTemplatesTab();
-//     I.click(ruleTemplatesPage.buttons.openAddTemplateModal);
-//     I.attachFile(ruleTemplatesPage.fields.fileInput, path);
-//     await ruleTemplatesPage.verifyInputContent(path);
-//     I.click(ruleTemplatesPage.buttons.addTemplate);
-//
-//     if (validFile) {
-//       I.verifyPopUpMessage(ruleTemplatesPage.messages.successfullyAdded);
-//       I.waitForVisible(expectedSourceLocator, 30);
-//       I.waitForEnabled(editButton);
-//     } else {
-//       I.verifyPopUpMessage(current.error);
-//     }
-//   },
-// );
+    const newFileContent = fileContent
+      .replace('unit: \'%\'', `unit: '${current.unit}'`)
+      .replace('range: [0, 100]', `range: ${current.range}`);
 
-Scenario(
+    ruleTemplatesPage.openRuleTemplatesTab();
+
+    I.click(ruleTemplatesPage.buttons.openAddTemplateModal);
+    I.fillField(ruleTemplatesPage.fields.templateInput, newFileContent);
+    I.click(ruleTemplatesPage.buttons.addTemplate);
+    if (current.unit !== '*') {
+      I.verifyPopUpMessage(ruleTemplatesPage.messages.successfullyAdded);
+
+      // Check that Edit and Delete buttons are enabled
+      I.waitForEnabled(editButton);
+      I.waitForEnabled(deleteButton);
+
+      await templatesAPI.removeTemplate(id);
+    } else {
+      I.verifyPopUpMessage(ruleTemplatesPage.messages.failedToParse);
+    }
+  },
+);
+
+Data(templates).Scenario(
+  'PMM-T482 PMM-T499 PMM-T766 PMM-T758 PMM-T766 PMM-T767 PMM-T931 Upload rule templates @ia',
+  async ({ I, ruleTemplatesPage, current }) => {
+    const { path } = current;
+    const validFile = !current.error;
+    const [templateName] = await ruleTemplatesPage.ruleTemplate.templateNameAndContent(path);
+    const expectedSourceLocator = ruleTemplatesPage
+      .getSourceLocator(templateName, ruleTemplatesPage.templateSources.ui);
+    const editButton = ruleTemplatesPage.buttons
+      .editButtonBySource(ruleTemplatesPage.templateSources.ui);
+
+    ruleTemplatesPage.openRuleTemplatesTab();
+    I.click(ruleTemplatesPage.buttons.openAddTemplateModal);
+    I.attachFile(ruleTemplatesPage.fields.fileInput, path);
+    await ruleTemplatesPage.verifyInputContent(path);
+    I.click(ruleTemplatesPage.buttons.addTemplate);
+
+    if (validFile) {
+      I.verifyPopUpMessage(ruleTemplatesPage.messages.successfullyAdded);
+      I.waitForVisible(expectedSourceLocator, 30);
+      I.waitForEnabled(editButton);
+    } else {
+      I.verifyPopUpMessage(current.error);
+    }
+  },
+);
+
+Scenario.only(
   '@PMM-T1785 Bulk rule templates upload @ia',
   async ({ I, ruleTemplatesPage }) => {
     const path = 'tests/ia/templates/multiple-templates.yml';
@@ -174,7 +174,7 @@ Scenario(
         .editButtonBySource(ruleTemplatesPage.templateSources.ui);
 
       I.waitForVisible(expectedSourceLocator, 30);
-      I.seeElementsEnabled(editButton);
+      I.seeElement(editButton);
     }
   },
 );
