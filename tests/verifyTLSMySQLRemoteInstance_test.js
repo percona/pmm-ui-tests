@@ -27,8 +27,13 @@ maxQueryLengthInstances.add(['mysql_8.0_ssl_service', '8.0', 'mysql_ssl_8.0', 'm
 maxQueryLengthInstances.add(['mysql_8.0_ssl_service', '8.0', 'mysql_ssl_8.0', 'mysql_ssl', 'mysql_global_status_max_used_connections', '-1']);
 maxQueryLengthInstances.add(['mysql_8.0_ssl_service', '8.0', 'mysql_ssl_8.0', 'mysql_ssl', 'mysql_global_status_max_used_connections', '']);
 
-Before(async ({ I, settingsAPI }) => {
+let serviceName;
+
+Before(async ({ I, inventoryAPI }) => {
   await I.Authorize();
+  const { service_name } = await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.MYSQL, 'mysql_8.0_ssl_service');
+
+  serviceName = service_name;
 });
 
 Data(instances).Scenario(
@@ -37,7 +42,7 @@ Data(instances).Scenario(
     I, remoteInstancesPage, pmmInventoryPage, current, inventoryAPI,
   }) => {
     const {
-      serviceName, serviceType, version, container,
+      serviceType, version, container,
     } = current;
     let details;
     const remoteServiceName = `remote_${serviceName}_faker`;
@@ -87,7 +92,7 @@ Data(instances).Scenario(
     I, remoteInstancesPage, pmmInventoryPage, current, grafanaAPI,
   }) => {
     const {
-      serviceName, metric,
+      metric,
     } = current;
     const remoteServiceName = `remote_${serviceName}_faker`;
 
@@ -95,7 +100,7 @@ Data(instances).Scenario(
     I.wait(10);
 
     // verify metric for client container node instance
-    await grafanaAPI.checkMetricExist(metric, { type: 'service_name', value: remoteServiceName });
+    await grafanaAPI.checkMetricExist(metric, { type: 'service_name', value: serviceName });
     // verify metric for remote instance
     await grafanaAPI.checkMetricExist(metric, { type: 'service_name', value: remoteServiceName });
   },
@@ -128,15 +133,11 @@ Data(instances).Scenario(
   },
 ).retry(1);
 
-Data(instances).Scenario(
+Scenario(
   'Verify dashboard after MySQL SSL Instances are added @ssl @ssl-mysql @ssl-remote @not-ui-pipeline',
   async ({
-    I, dashboardPage, adminPage, current,
+    I, dashboardPage, adminPage,
   }) => {
-    const {
-      serviceName,
-    } = current;
-
     const serviceList = [serviceName, `remote_${serviceName}`];
 
     for (const service of serviceList) {
@@ -152,15 +153,11 @@ Data(instances).Scenario(
   },
 ).retry(2);
 
-Data(instances).Scenario(
+Scenario(
   'Verify QAN after MySQL SSL Instances is added @ssl @ssl-mysql @ssl-remote @not-ui-pipeline',
   async ({
-    I, queryAnalyticsPage, current, adminPage,
+    I, queryAnalyticsPage,
   }) => {
-    const {
-      serviceName,
-    } = current;
-
     const serviceList = [serviceName, `remote_${serviceName}_faker`];
 
     for (const service of serviceList) {
@@ -223,7 +220,7 @@ Data(maxQueryLengthInstances).Scenario(
     I, remoteInstancesPage, pmmInventoryPage, inventoryAPI, current, queryAnalyticsPage,
   }) => {
     const {
-      serviceName, serviceType, version, container, maxQueryLength,
+      serviceType, version, container, maxQueryLength,
     } = current;
     let details;
     const remoteServiceName = `MaxQueryLength_remote_${serviceName}_${faker.random.alphaNumeric(3)}`;
