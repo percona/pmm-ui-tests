@@ -136,11 +136,8 @@ Data(instances).Scenario(
 
     const instanceDetails = getInstance(instance);
 
-    I.wait(10);
-    const response = await grafanaAPI.checkMetricExist(metric, { type: 'service_name', value: instanceDetails.serviceName });
-    const result = JSON.stringify(response.data.data.result);
-
-    assert.ok(response.data.data.result.length !== 0, `Metrics ${metric} from ${instanceDetails.serviceName} should be available but got empty ${result}`);
+    I.wait(30);
+    await grafanaAPI.checkMetricExist(metric, { type: 'service_name', value: instanceDetails.serviceName });
   },
 );
 

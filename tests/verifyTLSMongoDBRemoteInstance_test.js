@@ -14,8 +14,14 @@ const instances = new DataTable(['serviceName', 'version', 'container', 'service
 // instances.add(['mongodb_5.0_ssl_service', '5.0', 'mongodb_5.0', 'mongodb_ssl', 'mongodb_connections', '7']);
 instances.add(['mongodb_ssl_service', '6.0', 'psmdb-server', 'mongodb_ssl', 'mongodb_connections', '7']);
 
-Before(async ({ I, settingsAPI }) => {
+let serviceName;
+
+Before(async ({ I, inventoryAPI }) => {
   await I.Authorize();
+
+  const { service_name } = await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.MONGODB, 'mongodb_ssl_service');
+
+  serviceName = service_name;
 });
 
 Data(instances).Scenario(
@@ -79,16 +85,9 @@ Data(instances).Scenario(
     I.wait(10);
 
     // verify metric for client container node instance
-    response = await grafanaAPI.checkMetricExist(metric, { type: 'service_name', value: remoteServiceName });
-    result = JSON.stringify(response.data.data.result);
-
-    assert.ok(response.data.data.result.length !== 0, `Metrics ${metric} from ${remoteServiceName} should be available but got empty ${result}`);
-
+    await grafanaAPI.checkMetricExist(metric, { type: 'service_name', value: serviceName });
     // verify metric for remote instance
-    response = await grafanaAPI.checkMetricExist(metric, { type: 'service_name', value: remoteServiceName });
-    result = JSON.stringify(response.data.data.result);
-
-    assert.ok(response.data.data.result.length !== 0, `Metrics ${metric} from ${remoteServiceName} should be available but got empty ${result}`);
+    await grafanaAPI.checkMetricExist(metric, { type: 'service_name', value: remoteServiceName });
   },
 ).retry(1);
 

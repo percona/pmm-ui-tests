@@ -88,8 +88,6 @@ Data(instances).Scenario(
     const {
       serviceName, metric, container,
     } = current;
-    let response;
-    let result;
     const remoteServiceName = `remote_${serviceName}`;
 
     // Waiting for metrics to start hitting for remotely added services
@@ -98,17 +96,9 @@ Data(instances).Scenario(
     // verify metric for client container node instance
     const localServiceName = await I.verifyCommand(`docker exec ${container} pmm-admin list | grep "PostgreSQL" | grep "ssl_service" | awk -F " " '{print $2}'`);
 
-    response = await grafanaAPI.checkMetricExist(metric, { type: 'service_name', value: localServiceName });
-
-    result = JSON.stringify(response.data.data.result);
-
-    assert.ok(response.data.data.result.length !== 0, `Metrics ${metric} from ${serviceName} should be available but got empty ${result}`);
-
+    await grafanaAPI.checkMetricExist(metric, { type: 'service_name', value: localServiceName });
     // verify metric for remote instance
-    response = await grafanaAPI.checkMetricExist(metric, { type: 'service_name', value: remoteServiceName });
-    result = JSON.stringify(response.data.data.result);
-
-    assert.ok(response.data.data.result.length !== 0, `Metrics ${metric} from ${remoteServiceName} should be available but got empty ${result}`);
+    await grafanaAPI.checkMetricExist(metric, { type: 'service_name', value: remoteServiceName });
   },
 ).retry(1);
 
