@@ -97,7 +97,7 @@ Data(instances).Scenario(
     const remoteServiceName = `remote_${serviceName}_faker`;
 
     // Waiting for metrics to start hitting for remotely added services
-    I.wait(10);
+    I.wait(60);
 
     // verify metric for client container node instance
     await grafanaAPI.checkMetricExist(metric, { type: 'service_name', value: serviceName });
