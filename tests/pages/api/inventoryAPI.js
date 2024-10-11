@@ -52,7 +52,6 @@ module.exports = {
     const resp = await this.apiGetServices(serviceType);
 
     const data = Object.values(resp.data).flat()
-      .filter((entry) => entry)
       .filter(({ service_name }) => service_name.includes(serviceName));
 
     if (data.length === 0) await I.say(`Service "${serviceName}" of "${serviceType}" type is not found!`);

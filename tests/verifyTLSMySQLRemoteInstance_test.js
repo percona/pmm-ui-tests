@@ -31,7 +31,7 @@ let serviceName;
 
 Before(async ({ I, inventoryAPI }) => {
   await I.Authorize();
-  const { service_name } = await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.MYSQL, 'mysql_8.0_ssl_service');
+  const { service_name } = await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.MYSQL, 'mysql_ssl_8.0_ssl_service');
 
   serviceName = service_name;
 });
