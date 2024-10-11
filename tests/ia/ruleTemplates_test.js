@@ -154,7 +154,7 @@ Data(templates).Scenario(
   },
 );
 
-Scenario.only(
+Scenario(
   '@PMM-T1785 Bulk rule templates upload @ia',
   async ({ I, ruleTemplatesPage }) => {
     const path = 'tests/ia/templates/multiple-templates.yml';
