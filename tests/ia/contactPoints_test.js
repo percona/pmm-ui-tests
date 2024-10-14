@@ -36,15 +36,13 @@ Data(contactPoints).Scenario(
   },
 );
 
-Scenario.skip(
+Scenario(
   'PMM-T1706 Verify default contact point cannot be deleted @ia',
   async ({ I }) => {
     await contactPointsPage.openContactPointsTab();
-    await contactPointsPage.deleteCP('default');
-    I.waitForVisible(contactPointsPage.elements.cannotdeleteCPDialogHeader, 10);
-    I.see(contactPointsPage.messages.cPCannotDelete);
-    I.click(contactPointsPage.buttons.closeModal);
-    I.see('default', contactPointsPage.elements.cPTable);
+    await contactPointsPage.openMoreMenu('default');
+    I.waitForVisible(contactPointsPage.buttons.deleteCP, 10);
+    I.seeAttributesOnElements(contactPointsPage.buttons.deleteCP, { disabled: 'true' });
   },
 );
 

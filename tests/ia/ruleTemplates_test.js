@@ -329,15 +329,10 @@ Scenario(
 Scenario(
   'PMM-T884 Verify templates from Percona (SAAS) cannot be deleted or edited @ia',
   async ({ I, ruleTemplatesPage }) => {
-    const saasDeleteButton = ruleTemplatesPage.buttons
-      .deleteButtonBySource(ruleTemplatesPage.templateSources.saas);
-    const saasEditButton = ruleTemplatesPage.buttons
-      .editButtonBySource(ruleTemplatesPage.templateSources.saas);
-
     ruleTemplatesPage.openRuleTemplatesTab();
-    I.waitForElement(saasDeleteButton, 30);
-    I.seeAttributesOnElements(saasDeleteButton, { disabled: true });
-    I.seeAttributesOnElements(saasEditButton, { disabled: true });
+    I.waitForElement(ruleTemplatesPage.elements.templateRowBySource(ruleTemplatesPage.templateSources.saas), 30);
+    I.dontSeeElement(ruleTemplatesPage.buttons.deleteButtonBySource(ruleTemplatesPage.templateSources.saas), 30);
+    I.dontSeeElement(ruleTemplatesPage.buttons.editButtonBySource(ruleTemplatesPage.templateSources.saas), 30);
   },
 );
 
@@ -376,12 +371,11 @@ Scenario(
     await I.verifyCommand('docker cp tests/ia/templates/template.txt pmm-server:/srv/alerting/templates');
 
     ruleTemplatesPage.openRuleTemplatesTab();
-    I.seeElement(editButton);
-    I.seeElement(ruleTemplatesPage.buttons.editButtonByName('Custom parameter template'));
-    I.dontSeeElement(ruleTemplatesPage.buttons.editButtonByName('Space in parameter'));
+    I.seeElement(ruleTemplatesPage.elements.templateRowByName('Custom parameter template'));
+    I.dontSeeElement(ruleTemplatesPage.buttons.templateRowByName('Space in parameter'));
 
-    I.seeElementsDisabled(editButton);
-    I.seeElementsDisabled(deleteButton);
+    I.dontSeeElement(editButton);
+    I.dontSeeElement(deleteButton);
   },
 );
 

@@ -21,6 +21,7 @@ Feature('Alerting: Alert rules');
 
 Before(async ({ I }) => {
   await I.Authorize();
+  await rulesAPI.removeAllAlertRules();
 });
 
 After(async () => {
@@ -78,10 +79,10 @@ Scenario(
     alertRulesPage.openAlertRulesTab();
     I.click(alertRulesPage.buttons.newAlertRule);
     I.waitForElement(alertRulesPage.fields.templatesLoader);
-    alertRulesPage.searchAndSelectResult('template', 'PostgreSQL down');
+    await alertRulesPage.searchAndSelectResult('template', 'PostgreSQL down');
     I.waitForValue(alertRulesPage.fields.inputField('duration'), '60s');
     I.seeTextEquals('Critical', alertRulesPage.fields.dropdownValue('severity'));
-    alertRulesPage.searchAndSelectResult('template', 'MySQL restarted');
+    await alertRulesPage.searchAndSelectResult('template', 'MySQL restarted');
     I.waitForValue(alertRulesPage.fields.inputField('threshold'), 300);
     I.waitForValue(alertRulesPage.fields.inputField('duration'), '60s');
     I.seeTextEquals('Warning', alertRulesPage.fields.dropdownValue('severity'));
