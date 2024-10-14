@@ -68,35 +68,15 @@ module.exports = {
   },
 
   async apiEnableIA() {
-    const body = {
-      enable_alerting: true,
-    };
-    const headers = { Authorization: `Basic ${await I.getAuth()}` };
-
-    const resp = await I.sendPostRequest(endpoint, body, headers);
-
-    assert.ok(
-      resp.status === 200,
-      `Failed to enable Integrated alerting. ${resp.data.message}`,
-    );
+    await this.changeSettings({ alerting: true });
   },
 
   async enableAzure() {
-    const body = {
-      enable_azurediscover: true,
-    };
-    const headers = { Authorization: `Basic ${await I.getAuth()}` };
-
-    await I.sendPostRequest(endpoint, body, headers);
+    await this.changeSettings({ azureDiscover: true });
   },
 
   async disableAzure() {
-    const body = {
-      disable_azurediscover: true,
-    };
-    const headers = { Authorization: `Basic ${await I.getAuth()}` };
-
-    await I.sendPostRequest(endpoint, body, headers);
+    await this.changeSettings({ azureDiscover: false });
   },
 
   async restoreSettingsDefaults() {
@@ -113,7 +93,7 @@ module.exports = {
     };
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
 
-    await I.sendPostRequest(endpoint, body, headers);
+    await I.sendPutRequest(endpoint, body, headers);
   },
 
   async setCheckIntervals(intervals = defaultCheckIntervals) {
@@ -122,7 +102,7 @@ module.exports = {
     };
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
 
-    await I.sendPostRequest(endpoint, body, headers);
+    await I.sendPutRequest(endpoint, body, headers);
   },
 
   async setEmailAlertingSettings(settings) {

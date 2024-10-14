@@ -56,7 +56,7 @@ class QueryAnalyticsFilters {
   selectFilter(filterName, timeout = 30000) {
     I.waitForVisible(this.fields.filterBy, 30);
     I.usePlaywrightTo('Search and select QAN Filter', async ({ page }) => {
-      const locator = await page.locator(this.fields.filterByExactName(filterName).value);
+      const locator = page.locator(this.fields.filterByExactName(filterName).value).first();
 
       await page.locator(this.fields.filterBy.value).fill(filterName);
 
