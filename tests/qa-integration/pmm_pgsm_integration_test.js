@@ -13,7 +13,7 @@ const connection = {
 // Service Name: ${PGSQL_PGSM_CONTAINER}_${PGSQL_VERSION}_service
 // Docker Container Name: ${PGSQL_PGSM_CONTAINER}_${PGSQL_VERSION}
 
-const version = process.env.PGSQL_VERSION ? `${process.env.PGSQL_VERSION}` : '14';
+const version = process.env.PGSQL_VERSION ? `${process.env.PGSQL_VERSION}` : '17';
 const container = process.env.PGSQL_PGSM_CONTAINER ? `${process.env.PGSQL_PGSM_CONTAINER}` : 'pgsql_pgsm';
 const database = `pgsm${Math.floor(Math.random() * 99) + 1}`;
 const pgsm_service_name = `${container}_${version}_service`;
@@ -212,7 +212,7 @@ Scenario(
     adminPage.performPageUp(5);
     dashboardPage.verifyMetricsExistence(dashboardPage.postgresqlInstanceSummaryDashboard.metrics);
     await dashboardPage.verifyThereAreNoGraphsWithNA();
-    await dashboardPage.verifyThereAreNoGraphsWithoutData(1);
+    await dashboardPage.verifyThereAreNoGraphsWithoutData(2);
   },
 );
 
@@ -230,11 +230,13 @@ Scenario(
     adminPage.performPageUp(5);
     dashboardPage.verifyMetricsExistence(dashboardPage.postgresqlInstanceSummaryDashboard.metrics);
     await dashboardPage.verifyThereAreNoGraphsWithNA();
-    await dashboardPage.verifyThereAreNoGraphsWithoutData(1);
+    await dashboardPage.verifyThereAreNoGraphsWithoutData(2);
     const log = await I.verifyCommand(`docker exec ${container_name} cat pmm-agent.log`);
 
-    I.assertFalse(log.includes('Error opening connection to database \(postgres'),
-      'The log wasn\'t supposed to contain errors regarding connection to postgress database but it does');
+    I.assertFalse(
+      log.includes('Error opening connection to database \(postgres'),
+      'The log wasn\'t supposed to contain errors regarding connection to postgress database but it does',
+    );
   },
 );
 
