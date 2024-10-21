@@ -410,6 +410,9 @@ module.exports = {
         return response;
       }
 
+      console.log('Response data is:');
+      console.log(response.data);
+
       // Check the timeout after evaluating main condition
       // to ensure conditions with a zero timeout can succeed.
       if (new Date().getTime() - start >= timout) {
