@@ -378,8 +378,7 @@ module.exports = {
       ...bodyFormData.getHeaders(),
     };
 
-    console.log(headers);
-    console.log(bodyFormData)
+    console.log(body);
 
     return await I.sendPostRequest(
       'graph/api/datasources/proxy/1/api/v1/query_range',
