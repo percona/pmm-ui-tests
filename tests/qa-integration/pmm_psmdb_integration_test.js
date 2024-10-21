@@ -192,17 +192,19 @@ Scenario(
 
     I.amOnPage(I.buildUrlWithParams(dashboardPage.mongodbReplicaSetSummaryDashboard.cleanUrl, { from: 'now-5m', refresh: '5s' }));
     dashboardPage.waitForDashboardOpened();
+    await dashboardPage.expandDashboardRow('Replication');
+    const testConfigFile = 'c = rs.conf(); c.members[1].secondaryDelaySecs = 10; c.members[1].priority = 0; c.members[1].hidden = true; rs.reconfig(c);';
+
+    await I.verifyCommand(`sudo docker exec rs101 mongo "mongodb://root:root@localhost/?replicaSet=rs" --eval "${testConfigFile}"`);
 
     // Gather Secondary member Service Name from Mongo
     const secondaryServiceName = (await I.verifyCommand(`docker exec ${arbiter_primary_container_name} mongo --eval rs\.printSecondaryReplicationInfo\\(\\) --username=${username} --password=${password} | awk -F ":" '/source/ {print $2}'`)).trim();
-    const replLagServiceName = dashboardPage.graphLegendSeriesValue('Replication Lag', secondaryServiceName);
-    const replLagSeriesValue = `${replLagServiceName.toXPath()}/following::td[contains(text(),'year')]`;
 
-    // Check service name from Replication Lag field in UI
-    await I.waitForElement(replLagServiceName, 180);
+    await dashboardPage.verifyColumnLegendMaxValueAbove('Replication Lag', secondaryServiceName, 1, 240);
 
-    // Check lag value from Replication Lag field is not 'year' in UI
-    await I.dontSeeElement(replLagSeriesValue, 180);
+    const maxValue = await I.grabTextFrom(dashboardPage.getColumnLegendMaxValue('Replication Lag', secondaryServiceName));
+
+    I.assertFalse(/min|hour|day|week|month|year/.test(maxValue), `Max replication value should be in seconds. Value is: ${maxValue}`);
   },
 ).retry(1);
 
@@ -215,10 +217,11 @@ Scenario('PMM-T1889 Verify Mongo replication lag graph shows correct info @pmm-p
   await I.verifyCommand(`sudo docker exec rs101 mongo "mongodb://root:root@localhost/?replicaSet=rs" --eval "${testConfigFile}"`);
   I.amOnPage(I.buildUrlWithParams(dashboardPage.mongodbReplicaSetSummaryDashboard.cleanUrl, { from: 'now-5m', refresh: '5s' }));
   dashboardPage.waitForDashboardOpened();
+  await dashboardPage.expandDashboardRow('Replication');
 
-  await I.waitForElement(dashboardPage.graphLegendColumnValueByExpression(graphName, serviceName, 'max', '>= 10'), 180);
+  await dashboardPage.verifyColumnLegendMaxValueAbove(graphName, serviceName, 1, 240);
 
-  const maxValue = await I.grabTextFrom(dashboardPage.graphLegendSeriesRowByTitle(graphName, serviceName));
+  const maxValue = await I.grabTextFrom(dashboardPage.getColumnLegendMaxValue(graphName, serviceName));
 
   I.assertFalse(/min|hour|day|week|month|year/.test(maxValue), `Max replication value should be in seconds. Value is: ${maxValue}`);
 });
