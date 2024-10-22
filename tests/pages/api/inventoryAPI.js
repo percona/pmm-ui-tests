@@ -309,10 +309,11 @@ module.exports = {
         // Wait for Status to change to running
         I.wait(10);
         await I.verifyCommand(`docker exec ${dbDetails.container_name} pmm-admin list | grep mysql_perfschema_agent | grep ${agent_id} | grep ${dbDetails.service_id} | grep "Running"`);
-        assert.ok(log_level === expectedLogLevel, `Was expecting PerfSchema QAN for service ${dbDetails.service_name} added again via inventory command and log level to have ${logLevel || 'warn'} set`);
+        I.assertEqual(log_level, expectedLogLevel, `Was expecting PerfSchema QAN for service ${dbDetails.service_name} added again via inventory command and log level to have ${logLevel || 'warn'} set`);
         await I.verifyCommand(`docker exec ${dbDetails.container_name} pmm-admin inventory remove agent ${agent_id}`);
         break;
       default:
+        break;
     }
   },
 };
