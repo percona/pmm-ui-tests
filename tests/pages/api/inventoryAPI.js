@@ -217,7 +217,12 @@ module.exports = {
         I.say(`Log Level is: ${log_level}`);
 
         await grafanaAPI.waitForMetric('mysql_up', [{ type: 'agent_id', value: agent_id }], 90);
-        I.assertEqual(log_level, logLevel, `Was expecting Mysql Exporter for service ${dbDetails.service_name} added again via inventory command and log level to have ${logLevel || 'warn'} set, actual log level was: ${logLevel}`);
+        I.assertEqual(
+          log_level,
+          logLevel,
+          `Was expecting Mysql Exporter for service ${dbDetails.service_name} added again via inventory command have log level: ${logLevel} set, actual log level was: ${logLevel}`,
+        );
+
         await I.verifyCommand(`docker exec ${dbDetails.container_name} pmm-admin inventory remove agent ${agent_id}`);
         break;
       default:
