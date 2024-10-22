@@ -213,10 +213,11 @@ module.exports = {
         agent_id = (await I.verifyCommand(`docker exec ${dbDetails.container_name} pmm-admin inventory add agent mysqld-exporter --password=${dbDetails.password} --push-metrics ${logLvlFlag} ${dbDetails.pmm_agent_id} ${dbDetails.service_id} ${dbDetails.username} | grep "Agent ID" | grep -v "PMM-Agent ID" | awk -F " " '{print $4}'`)).trim();
         output = await this.apiGetAgentDetailsViaAgentId(agent_id);
         actualLogLevel = output.data.mysqld_exporter.log_level;
+        await grafanaAPI.waitForMetric('mysql_up', [{ type: 'agent_id', value: agent_id }], 90);
 
         await I.say(`Log Level is: ${actualLogLevel}`);
+        await I.say(output.data);
 
-        await grafanaAPI.waitForMetric('mysql_up', [{ type: 'agent_id', value: agent_id }], 90);
         I.assertEqual(
           actualLogLevel,
           expectedLogLevel,
