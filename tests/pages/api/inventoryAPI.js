@@ -202,6 +202,29 @@ module.exports = {
     return values.node_name;
   },
 
+  async verifyMySqlAgentLogLevel(agentType, dbDetails, logLevel) {
+    let agent_id;
+    let output;
+    let log_level;
+    const logLvlFlag = logLevel ? `--log-level=${logLevel}` : '';
+
+    switch (agentType) {
+      case 'mysql':
+        agent_id = (await I.verifyCommand(`docker exec ${dbDetails.container_name} pmm-admin inventory add agent mysqld-exporter --password=${dbDetails.password} --push-metrics ${logLvlFlag} ${dbDetails.pmm_agent_id} ${dbDetails.service_id} ${dbDetails.username} | grep "Agent ID" | grep -v "PMM-Agent ID" | awk -F " " '{print $4}'`)).trim();
+        output = await this.apiGetAgentDetailsViaAgentId(agent_id);
+        log_level = output.data.mysqld_exporter.log_level;
+
+        I.say(`Log Level is: ${log_level}`);
+
+        await grafanaAPI.waitForMetric('mysql_up', [{ type: 'agent_id', value: agent_id }], 90);
+        I.assertEqual(log_level, logLevel, `Was expecting Mysql Exporter for service ${dbDetails.service_name} added again via inventory command and log level to have ${logLevel || 'warn'} set, actual log level was: ${logLevel}`);
+        await I.verifyCommand(`docker exec ${dbDetails.container_name} pmm-admin inventory remove agent ${agent_id}`);
+        break;
+      default:
+        break;
+    }
+  },
+
   async verifyAgentLogLevel(agentType, dbDetails, logLevel) {
     let agent_id;
     let output;

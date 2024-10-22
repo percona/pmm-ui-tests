@@ -60,7 +60,7 @@ Scenario(
     await inventoryAPI.verifyAgentLogLevel('mysql', dbDetails);
     await inventoryAPI.verifyAgentLogLevel('qan-slowlog', dbDetails);
     await inventoryAPI.verifyAgentLogLevel('qan-perfschema', dbDetails);
-    await inventoryAPI.verifyAgentLogLevel('mysql', dbDetails, 'debug');
+    await inventoryAPI.verifyMySqlAgentLogLevel('mysql', dbDetails, 'debug');
     await inventoryAPI.verifyAgentLogLevel('qan-slowlog', dbDetails, 'debug');
     await inventoryAPI.verifyAgentLogLevel('qan-perfschema', dbDetails, 'debug');
     await inventoryAPI.verifyAgentLogLevel('mysql', dbDetails, 'info');
