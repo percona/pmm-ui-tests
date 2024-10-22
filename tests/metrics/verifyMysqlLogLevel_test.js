@@ -29,9 +29,9 @@ Before(async ({ I }) => {
   await I.Authorize();
 });
 
-After(async ({ I }) => {
-  await I.verifyCommand(`docker exec ${connection.container_name} pmm-admin remove mysql ${mysql_service_name_ac} || true`);
-});
+// After(async ({ I }) => {
+//   await I.verifyCommand(`docker exec ${connection.container_name} pmm-admin remove mysql ${mysql_service_name_ac} || true`);
+// });
 
 Scenario(
   'PMM-T1307 PMM-T1306 PMM-T1305 PMM-T1304 PMM-T1290 PMM-T1281 Verify that pmm-admin inventory add agent mysqld-exporter with --log-level flag adds MySQL exporter with corresponding log-level @not-ui-pipeline @exporters',
@@ -42,7 +42,8 @@ Scenario(
     dashboardPage.waitForDashboardOpened();
     // adding service which will be used to verify various inventory addition commands
     await I.say(await I.verifyCommand(`docker exec ${connection.container_name} pmm-admin add mysql --port=${connection.port} --agent-password='testing' --password=${connection.password} --username=${connection.username} --port=${connection.port} --query-source=slowlog --service-name=${mysql_service_name_ac}`));
-    //
+    console.log(`docker exec ${connection.container_name} pmm-admin add mysql --port=${connection.port} --agent-password='testing' --password=${connection.password} --username=${connection.username} --port=${connection.port} --query-source=slowlog --service-name=${mysql_service_name_ac}`);
+
     const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.MYSQL, mysql_service_name_ac);
     const pmm_agent_id = (await I.verifyCommand(`docker exec ${connection.container_name} pmm-admin status | grep "Agent ID" | awk -F " " '{print $4}'`)).trim();
 
