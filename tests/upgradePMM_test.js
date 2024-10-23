@@ -84,47 +84,6 @@ Before(async ({ I }) => {
   I.setRequestTimeout(60000);
 });
 
-BeforeSuite(async ({ I, codeceptjsConfig, credentials }) => {
-  const mysqlComposeConnection = {
-    host: (process.env.AMI_UPGRADE_TESTING_INSTANCE === 'true' || process.env.OVF_UPGRADE_TESTING_INSTANCE === 'true' ? process.env.VM_CLIENT_IP : '127.0.0.1'),
-    port: (process.env.AMI_UPGRADE_TESTING_INSTANCE === 'true' || process.env.OVF_UPGRADE_TESTING_INSTANCE === 'true' ? remoteInstancesHelper.remote_instance.mysql.ps_5_7.port : '3309'),
-    username: connection.username,
-    password: connection.password,
-  };
-
-  psMySql.connectToPS(mysqlComposeConnection);
-
-  // Connect to MongoDB
-  const mongoConnection = {
-    host: (process.env.AMI_UPGRADE_TESTING_INSTANCE === 'true' || process.env.OVF_UPGRADE_TESTING_INSTANCE === 'true' ? process.env.VM_CLIENT_IP : codeceptjsConfig.config.helpers.MongoDBHelper.host),
-    port: (process.env.AMI_UPGRADE_TESTING_INSTANCE === 'true' || process.env.OVF_UPGRADE_TESTING_INSTANCE === 'true' ? remoteInstancesHelper.remote_instance.mongodb.psmdb_4_2.port : codeceptjsConfig.config.helpers.MongoDBHelper.port),
-    username: codeceptjsConfig.config.helpers.MongoDBHelper.username,
-    password: codeceptjsConfig.config.helpers.MongoDBHelper.password,
-  };
-
-  await I.mongoConnect(mongoConnection);
-  // Init data for Backup Management test
-  if (process.env.AMI_UPGRADE_TESTING_INSTANCE !== 'true' && process.env.OVF_UPGRADE_TESTING_INSTANCE !== 'true') {
-    const replicaPrimary = await I.getMongoClient({
-      username: credentials.mongoReplicaPrimaryForBackups.username,
-      password: credentials.mongoReplicaPrimaryForBackups.password,
-      port: credentials.mongoReplicaPrimaryForBackups.port,
-    });
-
-    try {
-      const collection = replicaPrimary.db('test').collection('e2e');
-
-      await collection.insertOne({ number: 1, name: 'John' });
-    } finally {
-      await replicaPrimary.close();
-    }
-  }
-});
-
-AfterSuite(async ({ I, psMySql }) => {
-  await psMySql.disconnectFromPS();
-  await I.mongoDisconnect();
-});
 
 Scenario(
   'Add AMI Instance ID @ami-upgrade',
