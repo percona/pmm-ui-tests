@@ -1,3 +1,4 @@
+const { Agent } = require('https');
 const { pageObjects, getChunks } = require('./codeceptConfigHelper');
 
 require('dotenv').config();
@@ -68,6 +69,9 @@ exports.config = {
     REST: {
       endpoint: process.env.PMM_UI_URL || pmmUrl,
       timeout: 60000,
+      httpsAgent: new Agent({
+        rejectUnauthorized: false,
+      }),
     },
     Mailosaur: {
       require: 'codeceptjs-mailosaurhelper',
