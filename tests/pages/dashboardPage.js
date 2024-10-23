@@ -1,6 +1,7 @@
 const { I, adminPage } = inject();
 const assert = require('assert');
 const { DashboardPanelMenu } = require('../dashboards/pages/DashboardPanelMenu');
+const {PrometheusExporterOverviewDashboard} = require("./dashboards/prometheusExporterOverviewDashboard");
 
 const formatElementId = (text) => text.toLowerCase().replace(/ /g, '_');
 
@@ -160,24 +161,7 @@ module.exports = {
       remoteNodeText: 'No pmm-agent running on this node',
     },
   },
-  prometheusExporterOverviewDashboard: {
-    url: 'graph/d/prometheus-overview/prometheus-exporters-overview?orgId=1&refresh=1m&from=now-5m&to=now',
-    cleanUrl: 'graph/d/prometheus-overview/prometheus-exporters-overview',
-    metrics: [
-      'Avg CPU Usage per Node',
-      'Avg Memory Usage per Node',
-      'Monitored Nodes',
-      'Exporters Running',
-      'CPU Usage',
-      'Memory Usage',
-      'CPU Cores Used',
-      'CPU Used',
-      'Mem Used',
-      'Virtual CPUs',
-      'RAM',
-      'File Descriptors Used',
-    ],
-  },
+  prometheusExporterOverviewDashboard: new PrometheusExporterOverviewDashboard(),
   sharePanel: {
     elements: {
       imageRendererPluginInfoText: I.useDataQA('data-testid Alert info'),
