@@ -1,4 +1,4 @@
-const { I, dashboardPage } = inject();
+const { I, dashboardPage, pmmUpgradePage } = inject();
 const assert = require('assert');
 const moment = require('moment');
 const productTourModal = require('./components/productTourComponent');
@@ -119,51 +119,8 @@ module.exports = {
     const available_version = await I.grabTextFrom(locators.availableVersion);
 
     I.click(locators.triggerUpdate);
-    I.waitForElement(locators.updateProgressModal, 30);
-    I.waitForText(locators.inProgressMessage, 30, locators.updateProgressModal);
-
-    // skipping milestones checks for 2.9 and 2.10, 2.11 versions due logs not showing issue
-    if (version > 11) {
-      if (this.isAmiUpgrade) {
-        // to ensure that the logs window is never empty during upgrade
-        I.waitForElement(`//pre[contains(text(), '${milestones[0]}')]`, 1200);
-
-        I.waitForText(locators.successUpgradeMessage, 1800, locators.successUpgradeMsgSelector);
-      }
-
-      if (!this.isAmiUpgrade) {
-        // to ensure that the logs window is never empty during upgrade
-        I.waitForElement(`//pre[contains(text(), '${milestones[0]}')]`, 1200);
-        I.waitForText(locators.successUpgradeMessage, 1800, locators.successUpgradeMsgSelector);
-
-        if (!skipUpgradeLogs) {
-          // Get upgrade logs from a container
-          const upgradeLogs = await I.verifyCommand(`docker exec ${containerName || this.pmmServerName} cat /srv/logs/pmm-update-perform.log`);
-
-          milestones.forEach((milestone) => {
-            assert.ok(upgradeLogs.includes(milestone), `Expected to see ${milestone} in upgrade logs`);
-          });
-        }
-      }
-
-      I.click(locators.reloadButtonAfterUpgrade);
-    } else {
-      I.waitForText(locators.successUpgradeMessage, 1800, locators.successUpgradeMsgSelector);
-      // we have a bug we need this https://jira.percona.com/browse/PMM-9294
-      I.wait(60);
-
-      I.click(locators.reloadButtonAfterUpgrade);
-      I.refreshPage();
-    }
-
-    locators = this.getLocators('latest');
-
-    I.waitForVisible(locators.upToDateLocator, 60);
-    assert.equal(
-      await I.grabTextFrom(locators.currentVersion),
-      available_version.split(' ')[0],
-      'Upgrade operation failed',
-    );
+    I.waitForElement(pmmUpgradePage.elements.updateNowButton);
+    I.click(pmmUpgradePage.elements.updateNowButton);
   },
 
   async verifyPreUpdateWidgetIsPresent(version) {
