@@ -5,11 +5,11 @@ Before(async ({ I }) => {
 });
 
 Scenario(
-  'PMM-T1943 Verify CPU and Memory Usage for each agents on Prometheus Overview status dashboard @dashboards',
+  'PMM-T1943 Verify CPU and Memory Usage for each agents on Prometheus Overview status dashboard @nightly',
   async ({ I, dashboardPage }) => {
-    I.amOnPage(I.buildUrlWithParams(dashboardPage.prometheusExporterOverviewDashboard.cleanUrl, { from: 'now-3h' }));
+    I.amOnPage(I.buildUrlWithParams(dashboardPage.prometheusExporterOverviewDashboard.cleanUrl, { from: 'now-2h' }));
     // dashboardPage.waitForDashboardOpened();
-    await dashboardPage.prometheusExporterOverviewDashboard.getGraphValues('CPU Usage', 100);
+    await dashboardPage.prometheusExporterOverviewDashboard.getGraphValues('CPU Cores Used', 100);
     I.saveScreenshot('PMM-T1943.png');
   },
 );
