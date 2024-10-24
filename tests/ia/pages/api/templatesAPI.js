@@ -31,7 +31,7 @@ module.exports = {
     }
 
     for (const { source, name } of templates) {
-      if (source === 'USER_API') { await this.removeTemplate(name); }
+      if (source === 'TEMPLATE_SOURCE_USER_API') { await this.removeTemplate(name); }
     }
   },
 

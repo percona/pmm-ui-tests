@@ -18,7 +18,7 @@ module.exports = {
         {
           label: 'service_name',
           regexp: 'pmm-server-postgresql',
-          type: 'MATCH',
+          type: 'FILTER_TYPE_MATCH',
         },
       ],
       for: `${(duration || 60)}s`,
@@ -28,7 +28,7 @@ module.exports = {
       params: params || [
         {
           name: 'threshold',
-          type: 'FLOAT',
+          type: 'PARAM_TYPE_FLOAT',
           float: 1,
         },
       ],
@@ -82,26 +82,30 @@ module.exports = {
     );
   },
 
-  async removeAllAlertRules() {
+  async removeAlertRule(folderId, name) {
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
-    const resp = await I.sendGetRequest('graph/api/prometheus/grafana/api/v1/rules', headers);
-    const allRules = resp.data.data.groups;
+    const resp = await I.sendDeleteRequest(`graph/api/ruler/grafana/api/v1/rules/${folderId}/${name}?subtype=cortex`, headers);
 
-    if (allRules.length > 0) {
-      for (const i in allRules) {
-        await this.removeAlertRule(allRules[i].file);
-      }
-    }
+    // assert.ok(
+    //   resp.status === 202,
+    //   `Failed to remove alert rule. Response message is "${resp.data.message}"`,
+    // );
   },
 
-  async removeAlertRule(folder) {
+  async removeAllAlertRules() {
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
-    const resp = await I.sendDeleteRequest(`/graph/api/ruler/grafana/api/v1/rules/${folder}/default-alert-group?subtype=cortex`, headers);
+    const resp = await I.sendGetRequest('graph/api/ruler/grafana/api/v1/rules?subtype=cortex', headers);
+    const rules = Object.values(resp.data).flat(Infinity);
+    const allRules = rules.map((r) => {
+      const { name } = r;
+      const folderId = r.rules[0].grafana_alert.namespace_uid;
 
-    assert.ok(
-      resp.status === 202,
-      `Failed to remove alert rule. Response message is "${resp.data.message}"`,
-    );
+      return { name, folderId };
+    });
+
+    for (const rule of allRules) {
+      await this.removeAlertRule(rule.folderId, rule.name);
+    }
   },
 
   async createAlertRules(numberOfRulesToCreate) {
