@@ -29,7 +29,7 @@ After(async () => {
 });
 
 Scenario(
-  'PMM-T1384 Verify empty alert rules list @ia @grafana-pr',
+  'PMM-T1384 Verify empty alert rules list @alerting-fb @grafana-pr',
   async ({ I, alertRulesPage }) => {
     alertRulesPage.openAlertRulesTab();
     I.waitForText(alertRulesPage.messages.noRulesFound, 10, alertRulesPage.elements.noRules);
@@ -42,7 +42,7 @@ Scenario(
 ).retry(0);
 
 Scenario(
-  'PMM-T1385 Verify alert rules elements @ia @grafana-pr',
+  'PMM-T1385 Verify alert rules elements @alerting-fb @grafana-pr',
   async ({ I, alertRulesPage, rulesAPI }) => {
     const ruleName = 'testRule';
     const ruleFolder = 'PostgreSQL';
@@ -73,7 +73,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T1392 Verify fields dynamically change value when template is changed @ia @grafana-pr',
+  'PMM-T1392 Verify fields dynamically change value when template is changed @alerting-fb @grafana-pr',
   async ({ I, alertRulesPage }) => {
     // TODO: https://jira.percona.com/browse/PMM-10860 name doesn't change
     alertRulesPage.openAlertRulesTab();
@@ -90,7 +90,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T1420 Verify user can create Percona templated alert @ia @alerting-fb',
+  'PMM-T1420 Verify user can create Percona templated alert @alerting-fb',
   async ({ I, alertRulesPage, rulesAPI }) => {
     const rule = page.rules[15];
     const newRule = page.rules[0];
@@ -111,7 +111,7 @@ Scenario(
 
 // TODO: unskip in scope of https://perconadev.atlassian.net/browse/PMM-12938
 Scenario.skip(
-  'PMM-T2282 Verfied Alerting is able to monitor for "PMM Agent Down" @ia @alerting-fb',
+  'PMM-T2282 Verfied Alerting is able to monitor for "PMM Agent Down" @alerting-fb',
   async ({ I, alertRulesPage, rulesAPI }) => {
     const rule = page.rules[29];
     const newRule = page.rules[30];
@@ -139,7 +139,7 @@ Scenario.skip(
 
 // TODO: check ovf failure
 Scenario(
-  'PMM-T1430 Verify user can edit Percona templated alert @ia @not-ovf @alerting-fb',
+  'PMM-T1430 Verify user can edit Percona templated alert @alerting-fb @not-ovf',
   async ({
     I, alertRulesPage, rulesAPI,
   }) => {
@@ -165,7 +165,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T1433 Verify user can delete Percona templated alert @ia @alerting-fb',
+  'PMM-T1433 Verify user can delete Percona templated alert @alerting-fb',
   async ({
     I, alertRulesPage, rulesAPI, iaCommon,
   }) => {
@@ -191,7 +191,7 @@ Scenario(
 // nightly candidate
 // FIXME: flaky test fix and unskip
 Scenario.skip(
-  'PMM-T1434 Verify validation errors when creating new alert rule @ia @grafana-pr',
+  'PMM-T1434 Verify validation errors when creating new alert rule @alerting-fb @grafana-pr',
   async ({
     I, alertRulesPage,
   }) => {

@@ -42,7 +42,7 @@ AfterSuite(async ({ rulesAPI, I }) => {
 });
 
 Scenario.skip(
-  'PMM-T1482 Verify fired alert @ia',
+  'PMM-T1482 Verify fired alert @alerting-fb',
   async ({ I, alertsPage, alertsAPI }) => {
     await alertsAPI.waitForAlerts(24, 1);
     await I.amOnPage(alertsPage.url);
@@ -60,7 +60,7 @@ Scenario.skip(
 );
 
 Scenario.skip(
-  'PMM-T1494 PMM-T1495 Verify fired alert in Pager Duty and Webhook @ia',
+  'PMM-T1494 PMM-T1495 Verify fired alert in Pager Duty and Webhook @alerting-fb',
   async ({ I, alertsAPI, rulesAPI }) => {
     const file = './testdata/ia/scripts/alert.txt';
     const alertUID = await rulesAPI.getAlertUID(ruleName, ruleFolder);
@@ -76,7 +76,7 @@ Scenario.skip(
 );
 
 Scenario.skip(
-  'PMM-T1496 PMM-T1497 Verify it is possible to silence and unsilence alert @ia',
+  'PMM-T1496 PMM-T1497 Verify it is possible to silence and unsilence alert @alerting-fb',
   async ({
     I, alertsPage, alertmanagerAPI,
   }) => {
@@ -94,7 +94,7 @@ Scenario.skip(
 );
 
 Scenario.skip(
-  'PMM-T1498 Verify firing alerts dissappear when the condition is fixed @ia',
+  'PMM-T1498 Verify firing alerts dissappear when the condition is fixed @alerting-fb',
   async ({
     I, alertsPage, alertRulesPage,
   }) => {
@@ -113,7 +113,7 @@ Scenario.skip(
 
 // FIXME: Skip until https://jira.percona.com/browse/PMM-11130 is fixed
 Scenario.skip(
-  'PMM-T659 Verify alerts are deleted after deleting rules @ia',
+  'PMM-T659 Verify alerts are deleted after deleting rules @alerting-fb',
   async ({ I, alertsPage, rulesAPI }) => {
     // Deleting rules
     await rulesAPI.removeAllAlertRules();
@@ -124,7 +124,7 @@ Scenario.skip(
 );
 
 Scenario.skip(
-  'PMM-T1499 Verify an alert with non-existing filter (label) does not show up in list @ia',
+  'PMM-T1499 Verify an alert with non-existing filter (label) does not show up in list @alerting-fb',
   async ({ I, alertsPage, rulesAPI }) => {
     await rulesAPI.removeAllAlertRules();
     const wrongFilterRule = {
@@ -146,7 +146,7 @@ Scenario.skip(
 );
 
 Scenario.skip(
-  'PMM-T564 Verify fired alert severity colors @ia',
+  'PMM-T564 Verify fired alert severity colors @alerting-fb',
   async ({
     I, alertsPage, rulesAPI, alertsAPI,
   }) => {
@@ -172,7 +172,7 @@ Scenario.skip(
 );
 
 Scenario.skip(
-  'PMM-T1467 Verify empty Fired alerts list @ia',
+  'PMM-T1467 Verify empty Fired alerts list @alerting-fb',
   async ({ I, alertsPage, rulesAPI }) => {
     await rulesAPI.removeAllAlertRules();
     I.amOnPage(alertsPage.url);

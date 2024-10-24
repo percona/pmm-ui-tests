@@ -14,7 +14,7 @@ Before(async ({ I }) => {
 
 Data(contactPoints).Scenario(
   'PMM-T1703 Verify Slack contact point can be created, '
-  + 'PMM-T1709 Verify Webhook contact point can be created @ia',
+  + 'PMM-T1709 Verify Webhook contact point can be created @alerting-fb',
   async ({ I, current }) => {
     await contactPointsPage.openContactPointsTab();
     await contactPointsPage.createCP(current.name, current.type);
@@ -25,7 +25,7 @@ Data(contactPoints).Scenario(
 );
 
 Data(contactPoints).Scenario(
-  'PMM-T1707 Verify Slack contact point can be edited @ia',
+  'PMM-T1707 Verify Slack contact point can be edited @alerting-fb',
   async ({ I, current }) => {
     await contactPointsPage.openContactPointsTab();
     await contactPointsPage.editCP(current.name);
@@ -37,7 +37,7 @@ Data(contactPoints).Scenario(
 );
 
 Scenario(
-  'PMM-T1706 Verify default contact point cannot be deleted @ia',
+  'PMM-T1706 Verify default contact point cannot be deleted @alerting-fb',
   async ({ I }) => {
     await contactPointsPage.openContactPointsTab();
     await contactPointsPage.openMoreMenu('default');
@@ -47,7 +47,7 @@ Scenario(
 );
 
 Data(contactPoints).Scenario(
-  'PMM-T1704 Verify Slack contact point can be deleted @ia',
+  'PMM-T1704 Verify Slack contact point can be deleted @alerting-fb',
   async ({ I, current }) => {
     const name = current.name + editedCPName;
 
@@ -63,7 +63,7 @@ Data(contactPoints).Scenario(
 
 Scenario(
   'PMM-T1710 Verify saving a contact point when required info is missing, '
-  + 'PMM-T1711 Verify contact point test @ia',
+  + 'PMM-T1711 Verify contact point test @alerting-fb',
   async ({ I, iaCommon }) => {
     await contactPointsPage.openContactPointsTab();
     I.waitForVisible(contactPointsPage.buttons.newContactPoint, 10);
