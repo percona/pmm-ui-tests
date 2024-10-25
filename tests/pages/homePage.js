@@ -120,8 +120,14 @@ module.exports = {
 
     I.click(locators.triggerUpdate);
     I.waitForElement(pmmUpgradePage.elements.updateNowButton);
-    I.waitForElement(pmmUpgradePage.elements.checkUpdatesNow);
-    I.click(pmmUpgradePage.elements.checkUpdatesNow);
+
+    I.wait(5);
+    const numberOfElements = await I.grabNumberOfVisibleElements(pmmUpgradePage.elements.checkUpdatesNow);
+
+    if (numberOfElements >= 1) {
+      I.click(pmmUpgradePage.elements.checkUpdatesNow);
+    }
+
     I.waitForElement(pmmUpgradePage.elements.updateNowButton);
     I.click(pmmUpgradePage.elements.updateNowButton);
   },
