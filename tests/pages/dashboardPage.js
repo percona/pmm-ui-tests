@@ -1225,6 +1225,7 @@ module.exports = {
     refresh: I.useDataQA('data-testid RefreshPicker run button'),
     allFilterDropdownOptions: '//button[contains(@data-testid, "variable-option")][span[text()][not(contains(text(), "All"))]]',
     skipTourButton: '//button[span[text()="Skip"]]',
+    closeModal: '//button[@aria-label="Close"]',
     openFiltersDropdownLocator: (filterName) => locate(`#var-${formatElementId(filterName)}`),
     filterDropdownOptionsLocator: (filterName) => locate(I.useDataQA('data-testid variable-option')).withText(filterName),
     refreshIntervalPicker: I.useDataQA('data-testid RefreshPicker interval button'),
@@ -1502,6 +1503,15 @@ module.exports = {
 
     if (numberOfElements >= 1) {
       I.click(this.fields.skipTourButton);
+    }
+  },
+
+  async clickUpgradeModal() {
+    I.wait(2);
+    const numberOfElements = await I.grabNumberOfVisibleElements(this.fields.closeModal);
+
+    if (numberOfElements >= 1) {
+      I.click(this.fields.closeModal);
     }
   },
 
