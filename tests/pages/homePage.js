@@ -120,6 +120,8 @@ module.exports = {
 
     I.click(locators.triggerUpdate);
     I.waitForElement(pmmUpgradePage.elements.updateNowButton);
+    I.waitForElement(pmmUpgradePage.elements.checkUpdatesNow);
+    I.click(pmmUpgradePage.elements.checkUpdatesNow);
     I.click(pmmUpgradePage.elements.updateNowButton);
   },
 

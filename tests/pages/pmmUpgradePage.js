@@ -3,7 +3,8 @@ class PmmUpgradePage {
     this.url = 'pmm-ui/updates';
     this.elements = {
       updateNowButton: locate('button').withText('Update Now'),
-    }
+      checkUpdatesNow: locate('button').withText('Check Updates Now'),
+    };
   }
 }
 
