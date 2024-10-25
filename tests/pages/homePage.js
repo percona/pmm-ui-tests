@@ -122,6 +122,7 @@ module.exports = {
     I.waitForElement(pmmUpgradePage.elements.updateNowButton);
     I.waitForElement(pmmUpgradePage.elements.checkUpdatesNow);
     I.click(pmmUpgradePage.elements.checkUpdatesNow);
+    I.waitForElement(pmmUpgradePage.elements.updateNowButton);
     I.click(pmmUpgradePage.elements.updateNowButton);
   },
 
