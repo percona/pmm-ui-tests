@@ -522,6 +522,7 @@ Scenario(
   async ({ I, homePage }) => {
     I.amOnPage(homePage.url);
     await homePage.upgradePMM(versionMinor);
+    I.saveScreenshot('@PMM-T3');
   },
 ).retry(0);
 
