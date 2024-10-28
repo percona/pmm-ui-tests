@@ -19,6 +19,9 @@ Data(sslinstances).Scenario(
     const {
       serviceName, serviceType, version, container,
     } = current;
+
+    console.log(await I.verifyCommand('docker ps -a'));
+
     let details;
     const remoteServiceName = `remote_api_${serviceName}`;
 
