@@ -229,7 +229,7 @@ if (versionMinor >= 15) {
   );
 
   Scenario(
-    'Adding Redis as external Service before Upgrade @pre-upgrade @pmm-upgrade',
+    'Adding Redis as external Service before Upgrade @pre-external-upgrade',
     async ({
       I, addInstanceAPI,
     }) => {
@@ -663,7 +663,7 @@ if (versionMinor >= 15) {
   );
 
   Scenario(
-    'Verify Redis as external Service Works After Upgrade @post-upgrade @post-client-upgrade @pmm-upgrade',
+    'Verify Redis as external Service Works After Upgrade @post-external-upgrade @post-client-upgrade',
     async ({
       I, grafanaAPI, remoteInstancesHelper,
     }) => {
