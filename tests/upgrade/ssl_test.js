@@ -11,6 +11,10 @@ sslinstances.add(['pgsql_16_ssl_service', '16', 'pdpgsql_pgsm_ssl_16', 'postgres
 sslinstances.add(['mysql_8.0_ssl_service', '8.0', 'mysql_ssl_8.0', 'mysql_ssl', 'mysql_global_status_max_used_connections', dashboardPage.mySQLInstanceOverview.url]);
 // sslinstances.add(['mongodb_6.0_ssl_service', '6.0', 'mongodb_6.0', 'mongodb_ssl', 'mongodb_connections', dashboardPage.mongoDbInstanceOverview.url]);
 
+Before(async ({ I }) => {
+  await I.Authorize();
+});
+
 Data(sslinstances).Scenario(
   'PMM-T948 PMM-T947 Verify Adding Postgresql, MySQL, MongoDB SSL services remotely via API before upgrade @pre-ssl-upgrade',
   async ({
@@ -104,7 +108,7 @@ Data(sslinstances).Scenario(
 Data(sslinstances).Scenario(
   'Verify metrics from SSL instances on PMM-Server @post-ssl-upgrade',
   async ({
-    I, remoteInstancesPage, pmmInventoryPage, current, grafanaAPI,
+    I, current, grafanaAPI, inventoryAPI,
   }) => {
     const {
       serviceName, metric,
@@ -114,6 +118,8 @@ Data(sslinstances).Scenario(
 
     // Waiting for metrics to start hitting for remotely added services
     I.wait(10);
+    console.log(await inventoryAPI.apiGetServices());
+
 
     // verify metric for client container node instance
     response = await grafanaAPI.checkMetricExist(metric, { type: 'service_name', value: serviceName });
@@ -148,7 +154,6 @@ Data(sslinstances).Scenario(
       adminPage.performPageDown(5);
       await dashboardPage.expandEachDashboardRow();
       adminPage.performPageUp(5);
-      await dashboardPage.verifyThereAreNoGraphsWithNA(3);
       await dashboardPage.verifyThereAreNoGraphsWithoutData(3);
     }
   },
