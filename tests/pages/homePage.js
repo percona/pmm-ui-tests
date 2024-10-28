@@ -130,6 +130,8 @@ module.exports = {
 
     I.waitForElement(pmmUpgradePage.elements.updateNowButton);
     I.click(pmmUpgradePage.elements.updateNowButton);
+
+    I.waitForElement(pmmUpgradePage.elements.updateSuccess, 120);
   },
 
   async verifyPreUpdateWidgetIsPresent(version) {

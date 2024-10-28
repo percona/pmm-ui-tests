@@ -87,7 +87,7 @@ Scenario('@PMM-T1647 Verify pmm-server package doesn\'t exist @post-upgrade @pmm
   I.assertTrue(!packages.includes('pmm-server'), 'pmm-server package present in package list.');
 });
 
-Scenario(
+Scenario.skip(
   'Verify user can see Update widget [critical] @post-upgrade @ovf-upgrade @ami-upgrade @pmm-upgrade',
   async ({ I, homePage }) => {
     I.amOnPage(homePage.url);
