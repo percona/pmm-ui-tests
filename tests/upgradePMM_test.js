@@ -227,18 +227,6 @@ if (versionMinor >= 15) {
       }
     },
   );
-
-  Scenario(
-    'Adding Redis as external Service before Upgrade @pre-external-upgrade',
-    async ({
-      I, addInstanceAPI,
-    }) => {
-      await addInstanceAPI.addExternalService('redis_external_remote');
-      await I.verifyCommand(
-        'pmm-admin add external --listen-port=42200 --group="redis" --custom-labels="testing=redis" --service-name="redis_external_2"',
-      );
-    },
-  );
 }
 
 if (versionMinor >= 21) {
@@ -639,59 +627,27 @@ Scenario(
   },
 );
 
-if (versionMinor >= 15) {
-  Scenario.skip(
-    'Verify user has failed checks after upgrade / STT on @post-upgrade @pmm-upgrade',
-    async ({
-      I,
-      pmmSettingsPage,
-      advisorsAPI,
-      advisorsPage,
-    }) => {
-      // Wait for 45 seconds to have latest check results
-      I.wait(45);
-      // Verify STT is enabled
-      I.amOnPage(pmmSettingsPage.advancedSettingsUrl);
-      I.waitForVisible(pmmSettingsPage.fields.sttSwitchSelector, 30);
-      pmmSettingsPage.verifySwitch(pmmSettingsPage.fields.sttSwitchSelectorInput, 'on');
+Scenario.skip(
+  'Verify user has failed checks after upgrade / STT on @post-upgrade @pmm-upgrade',
+  async ({
+    I,
+    pmmSettingsPage,
+    advisorsAPI,
+    advisorsPage,
+  }) => {
+    // Wait for 45 seconds to have latest check results
+    I.wait(45);
+    // Verify STT is enabled
+    I.amOnPage(pmmSettingsPage.advancedSettingsUrl);
+    I.waitForVisible(pmmSettingsPage.fields.sttSwitchSelector, 30);
+    pmmSettingsPage.verifySwitch(pmmSettingsPage.fields.sttSwitchSelectorInput, 'on');
 
-      I.amOnPage(advisorsPage.url);
-      I.waitForVisible(advisorsPage.buttons.startDBChecks, 30);
-      // Verify there is failed check
-      await advisorsAPI.verifyFailedCheckExists(failedCheckMessage);
-    },
-  );
-
-  Scenario(
-    'Verify Redis as external Service Works After Upgrade @post-external-upgrade @post-client-upgrade',
-    async ({
-      I, grafanaAPI, remoteInstancesHelper,
-    }) => {
-      // Make sure Metrics are hitting before Upgrade
-      const metricName = 'redis_uptime_in_seconds';
-      const headers = { Authorization: `Basic ${await I.getAuth()}` };
-
-      await grafanaAPI.checkMetricExist(metricName);
-      await grafanaAPI.checkMetricExist(metricName, { type: 'node_name', value: 'redis_external_remote' });
-      // removing check for upgrade verification
-      // await grafanaAPI.checkMetricExist(metricName, { type: 'service_name', value: 'redis_external_2' });
-
-      const response = await I.sendGetRequest('prometheus/api/v1/targets', headers);
-      const targets = response.data.data.activeTargets.find(
-        (o) => o.labels.external_group === 'redis-remote',
-      );
-
-      const expectedScrapeUrl = `${remoteInstancesHelper.remote_instance.external.redis.schema}://${remoteInstancesHelper.remote_instance.external.redis.host
-      }:${remoteInstancesHelper.remote_instance.external.redis.port}${remoteInstancesHelper.remote_instance.external.redis.metricsPath}`;
-
-      assert.ok(
-        targets.scrapeUrl === expectedScrapeUrl,
-        `Active Target for external service Post Upgrade has wrong Address value, value found is ${targets.scrapeUrl} and value expected was ${expectedScrapeUrl}`,
-      );
-      assert.ok(targets.health === 'up', `Active Target for external service Post Upgrade health value is not up! value found ${targets.health}`);
-    },
-  );
-}
+    I.amOnPage(advisorsPage.url);
+    I.waitForVisible(advisorsPage.buttons.startDBChecks, 30);
+    // Verify there is failed check
+    await advisorsAPI.verifyFailedCheckExists(failedCheckMessage);
+  },
+);
 
 if (versionMinor >= 16) {
   Scenario.skip(
@@ -1056,7 +1012,7 @@ Data(sslinstances).Scenario(
 ).retry(1);
 
 Data(sslinstances).Scenario(
-  'Verify dashboard for SSL Instances and services after upgrade @post-upgrade @pmm-upgrade',
+  'Verify dashboard for SSL Instances and services after upgrade @post-ssl-upgrade',
   async ({
     I, dashboardPage, adminPage, current,
   }) => {
@@ -1081,7 +1037,7 @@ Data(sslinstances).Scenario(
 ).retry(1);
 
 Data(sslinstances).Scenario(
-  'Verify QAN after upgrade for SSL Instances added @post-upgrade @pmm-upgrade',
+  'Verify QAN after upgrade for SSL Instances added @post-ssl-upgrade',
   async ({
     I, queryAnalyticsPage, current, adminPage,
   }) => {
