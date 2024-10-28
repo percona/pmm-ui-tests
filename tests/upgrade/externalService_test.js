@@ -2,14 +2,16 @@ const assert = require('assert');
 
 Feature('PMM upgrade tests for external services').retry(1);
 
+const serviceName = 'pmm-ui-tests-redis-external-remote';
+
 Scenario(
   'Adding Redis as external Service before Upgrade @pre-external-upgrade',
   async ({
     I, addInstanceAPI,
   }) => {
-    await addInstanceAPI.addExternalService('redis_external_remote');
+    await addInstanceAPI.addExternalService(serviceName);
     await I.verifyCommand(
-      'pmm-admin add external --listen-port=42200 --group="redis" --custom-labels="testing=redis" --service-name="redis_external_2"',
+      `pmm-admin add external --listen-port=42200 --group="redis" --custom-labels="testing=redis" --service-name=${serviceName}`,
     );
   },
 );
@@ -24,7 +26,7 @@ Scenario(
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
 
     await grafanaAPI.checkMetricExist(metricName);
-    await grafanaAPI.checkMetricExist(metricName, { type: 'node_name', value: 'redis_external_remote' });
+    await grafanaAPI.checkMetricExist(metricName, { type: 'node_name', value: serviceName });
     // removing check for upgrade verification
     // await grafanaAPI.checkMetricExist(metricName, { type: 'service_name', value: 'redis_external_2' });
 
