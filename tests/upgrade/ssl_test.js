@@ -4,7 +4,7 @@ const { SERVICE_TYPE } = require('../helper/constants');
 Feature('PMM upgrade tests for ssl').retry(1);
 
 const { adminPage, dashboardPage } = inject();
-
+const pathToPMMFramework = adminPage.pathToPMMTests;
 const sslinstances = new DataTable(['serviceName', 'version', 'container', 'serviceType', 'metric', 'dashboard']);
 
 // Unskip after https://jira.percona.com/browse/PMM-12640

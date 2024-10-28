@@ -1,12 +1,9 @@
 const assert = require('assert');
 const faker = require('faker');
 const { generate } = require('generate-password');
-const { storageLocationConnection } = require('./backup/pages/testData');
 const { NODE_TYPE, SERVICE_TYPE } = require('./helper/constants');
 
-const { adminPage, remoteInstancesHelper, psMySql, pmmSettingsPage, dashboardPage, databaseChecksPage, locationsAPI } = inject();
-
-const pathToPMMFramework = adminPage.pathToPMMTests;
+const { remoteInstancesHelper, psMySql, pmmSettingsPage, dashboardPage, databaseChecksPage, locationsAPI } = inject();
 
 const alertManager = {
   alertmanagerURL: 'http://192.168.0.1:9093',
