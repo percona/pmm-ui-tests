@@ -21,7 +21,7 @@ Data(clientDbServices).Scenario(
     } = current;
     const {
       service_id, node_id, address, port,
-    } = await inventoryAPI.apiGetNodeInfoByServiceName(serviceType, name);
+    } = await inventoryAPI.apiGetNodeInfoForAllNodesByServiceName(serviceType, name);
 
     const { agent_id: pmm_agent_id } = await inventoryAPI.apiGetPMMAgentInfoByServiceId(service_id);
     let output;
