@@ -14,7 +14,7 @@ const sslinstances = new DataTable(['serviceName', 'version', 'container', 'serv
 // Unskip after https://jira.percona.com/browse/PMM-12640
 // sslinstances.add(['pgsql_14_ssl_service', '14', 'pgsql_14', 'postgres_ssl', 'pg_stat_database_xact_rollback', dashboardPage.postgresqlInstanceOverviewDashboard.url]);
 sslinstances.add(['mysql_8.0_ssl_service', '8.0', 'mysql_8.0', 'mysql_ssl', 'mysql_global_status_max_used_connections', dashboardPage.mySQLInstanceOverview.url]);
-sslinstances.add(['mongodb_6.0_ssl_service', '6.0', 'mongodb_6.0', 'mongodb_ssl', 'mongodb_connections', dashboardPage.mongoDbInstanceOverview.url]);
+sslinstances.add(['mongodb_7.0_ssl_service', '7.0', 'mongodb_7.0', 'mongodb_ssl', 'mongodb_connections', dashboardPage.mongoDbInstanceOverview.url]);
 
 const alertManager = {
   alertmanagerURL: 'http://192.168.0.1:9093',
