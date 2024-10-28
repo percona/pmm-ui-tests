@@ -24,7 +24,7 @@ const scheduleSettings = {
 };
 
 Scenario(
-  'Create MongoDB backups data to check after upgrade @pre-upgrade @pmm-upgrade',
+  'Create MongoDB backups data to check after upgrade @pre-mongo-backup-upgrade',
   async ({
     I, settingsAPI, locationsAPI, backupAPI, scheduledAPI, inventoryAPI, backupInventoryPage, scheduledPage, credentials,
   }) => {
