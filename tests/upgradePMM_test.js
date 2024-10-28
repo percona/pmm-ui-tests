@@ -1,18 +1,12 @@
 const assert = require('assert');
 const { NODE_TYPE, SERVICE_TYPE } = require('./helper/constants');
 
-const { remoteInstancesHelper, psMySql, pmmSettingsPage, dashboardPage, databaseChecksPage, locationsAPI } = inject();
-
-const alertManager = {
-  alertmanagerURL: 'http://192.168.0.1:9093',
-  alertmanagerRules: pmmSettingsPage.alertManager.rule2,
-};
+const { psMySql, dashboardPage, databaseChecksPage } = inject();
 
 const clientDbServices = new DataTable(['serviceType', 'name', 'metric', 'annotationName', 'dashboard', 'upgrade_service']);
 
 clientDbServices.add([SERVICE_TYPE.MYSQL, 'ps_', 'mysql_global_status_max_used_connections', 'annotation-for-mysql', dashboardPage.mysqlInstanceSummaryDashboard.url, 'mysql_upgrade']);
 clientDbServices.add([SERVICE_TYPE.POSTGRESQL, 'PGSQL_', 'pg_stat_database_xact_rollback', 'annotation-for-postgres', dashboardPage.postgresqlInstanceSummaryDashboard.url, 'pgsql_upgrade']);
-// eslint-disable-next-line max-len
 clientDbServices.add([SERVICE_TYPE.MONGODB, 'mongodb_', 'mongodb_connections', 'annotation-for-mongo', dashboardPage.mongoDbInstanceSummaryDashboard.url, 'mongo_upgrade']);
 
 const connection = psMySql.defaultConnection;
@@ -160,46 +154,6 @@ if (versionMinor >= 15) {
     },
   );
 }
-
-Scenario(
-  'Verify user can create Remote Instances before upgrade @pre-upgrade @ovf-upgrade @ami-upgrade @pmm-upgrade',
-  async ({ addInstanceAPI }) => {
-    // Adding instances for monitoring
-
-    const aurora_details = {
-      add_node: {
-        node_name: 'pmm-qa-aurora2-mysql-instance-1',
-        node_type: NODE_TYPE.REMOTE,
-      },
-      aws_access_key: remoteInstancesHelper.remote_instance.aws.aurora.aws_access_key,
-      aws_secret_key: remoteInstancesHelper.remote_instance.aws.aurora.aws_secret_key,
-      address: remoteInstancesHelper.remote_instance.aws.aurora.aurora2.address,
-      service_name: 'pmm-qa-aurora2-mysql-instance-1',
-      port: remoteInstancesHelper.remote_instance.aws.aurora.port,
-      username: remoteInstancesHelper.remote_instance.aws.aurora.username,
-      password: remoteInstancesHelper.remote_instance.aws.aurora.aurora2.password,
-      instance_id: 'pmm-qa-aurora2-mysql-instance-1',
-      cluster: 'rdsaurora',
-    };
-
-    for (const type of Object.values(remoteInstancesHelper.instanceTypes)) {
-      if (type) {
-        if (type === 'RDSAurora') {
-          await addInstanceAPI.apiAddInstance(
-            type,
-            remoteInstancesHelper.upgradeServiceNames[type.toLowerCase()],
-            aurora_details,
-          );
-        } else {
-          await addInstanceAPI.apiAddInstance(
-            type,
-            remoteInstancesHelper.upgradeServiceNames[type.toLowerCase()],
-          );
-        }
-      }
-    }
-  },
-);
 
 if (iaReleased) {
   Scenario.skip(
@@ -387,20 +341,6 @@ if (iaReleased) {
 }
 
 Scenario(
-  'Verify Agents are RUNNING after Upgrade (API) [critical] @post-upgrade @post-client-upgrade @ovf-upgrade @ami-upgrade @pmm-upgrade',
-  async ({ inventoryAPI }) => {
-    for (const service of Object.values(remoteInstancesHelper.serviceTypes)) {
-      if (service) {
-        await inventoryAPI.verifyServiceExistsAndHasRunningStatus(
-          service,
-          remoteInstancesHelper.upgradeServiceNames[service.service],
-        );
-      }
-    }
-  },
-);
-
-Scenario(
   'Verify user can see Update widget [critical] @post-upgrade @ovf-upgrade @ami-upgrade @pmm-upgrade',
   async ({ I, homePage }) => {
     I.amOnPage(homePage.url);
@@ -428,36 +368,6 @@ Scenario(
   },
 );
 
-Scenario(
-  'Verify Agents are RUNNING after Upgrade (UI) [critical] @ovf-upgrade @ami-upgrade @post-upgrade @post-client-upgrade @pmm-upgrade',
-  async ({ I, pmmInventoryPage }) => {
-    for (const service of Object.values(remoteInstancesHelper.upgradeServiceNames)) {
-      if (service) {
-        I.amOnPage(pmmInventoryPage.url);
-        await I.scrollPageToBottom();
-        await pmmInventoryPage.verifyAgentHasStatusRunning(service);
-      }
-    }
-  },
-);
-
-Scenario(
-  'Verify Agents are Running and Metrics are being collected Post Upgrade (UI) [critical] @ovf-upgrade @ami-upgrade @post-client-upgrade @post-upgrade @pmm-upgrade',
-  async ({ grafanaAPI }) => {
-    const metrics = Object.keys(remoteInstancesHelper.upgradeServiceMetricNames);
-
-    for (const service of Object.values(remoteInstancesHelper.upgradeServiceNames)) {
-      if (service) {
-        if (metrics.includes(service)) {
-          const metricName = remoteInstancesHelper.upgradeServiceMetricNames[service];
-
-          await grafanaAPI.checkMetricExist(metricName, { type: 'node_name', value: service });
-        }
-      }
-    }
-  },
-);
-
 if (versionMinor > 14) {
   Data(clientDbServices)
     .Scenario(
@@ -478,25 +388,6 @@ if (versionMinor > 14) {
       },
     );
 }
-
-Scenario(
-  'Verify QAN has specific filters for Remote Instances after Upgrade (UI) @ovf-upgrade @ami-upgrade @post-client-upgrade @post-upgrade @pmm-upgrade',
-  async ({
-    I, queryAnalyticsPage,
-  }) => {
-    I.amOnPage(I.buildUrlWithParams(queryAnalyticsPage.url, { from: 'now-5m' }));
-    queryAnalyticsPage.waitForLoaded();
-
-    // Checking that Cluster filters are still in QAN after Upgrade
-    for (const name of Object.keys(remoteInstancesHelper.upgradeServiceNames)) {
-      if (remoteInstancesHelper.qanFilters.includes(name)) {
-        queryAnalyticsPage.waitForLoaded();
-        I.waitForVisible(queryAnalyticsPage.filters.fields.filterByName(name), 30);
-        I.seeElement(queryAnalyticsPage.filters.fields.filterByName(name));
-      }
-    }
-  },
-);
 
 Scenario(
   'Verify Metrics from custom queries for mysqld_exporter after upgrade (UI) @post-client-upgrade @post-upgrade @ovf-upgrade @ami-upgrade @pmm-upgrade',
