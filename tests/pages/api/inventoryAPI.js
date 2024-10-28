@@ -14,6 +14,8 @@ module.exports = {
     for (let i = 0; i < 60; i++) {
       const resp = await this.apiGetServices(service.serviceType);
 
+      console.log(resp.data.services);
+
       responseService = resp.data.services.find((service) => service.service_name === serviceName);
       if (responseService !== undefined) break;
 
@@ -68,8 +70,6 @@ module.exports = {
 
     const data = service.data.services
       .filter(({ service_name }) => service_name.startsWith(serviceName));
-
-    console.log(data);
 
     return data;
   },
