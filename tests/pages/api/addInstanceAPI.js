@@ -94,8 +94,6 @@ module.exports = {
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
     const resp = await I.sendPostRequest('v1/management/services', body, headers);
 
-    console.log(resp);
-
     I.assertEqual(resp.status, 200, `Instance ${connection.serviceName} was not added for monitoring`);
   },
 
@@ -150,8 +148,6 @@ module.exports = {
     };
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
     const resp = await I.sendPostRequest('v1/management/services', body, headers);
-
-    console.log(resp);
 
     I.assertEqual(resp.status, 200, `Instance ${connection.serviceName} was not added for monitoring`);
   },
