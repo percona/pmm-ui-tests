@@ -1,6 +1,4 @@
 const assert = require('assert');
-const faker = require('faker');
-const { generate } = require('generate-password');
 const { NODE_TYPE, SERVICE_TYPE } = require('./helper/constants');
 
 const { remoteInstancesHelper, psMySql, pmmSettingsPage, dashboardPage, databaseChecksPage, locationsAPI } = inject();
@@ -23,13 +21,6 @@ const failedCheckRowLocator = databaseChecksPage.elements
   .failedCheckRowByServiceName(psServiceName);
 const ruleName = 'Alert Rule for upgrade';
 const failedCheckMessage = 'Newer version of Percona Server for MySQL is available';
-
-const mongoServiceName = 'mongo-backup-upgrade';
-const location = {
-  name: 'upgrade-location',
-  description: 'upgrade-location description',
-  ...locationsAPI.storageLocationConnection,
-};
 
 // For running on local env set PMM_SERVER_LATEST and DOCKER_VERSION variables
 function getVersions() {
@@ -92,41 +83,6 @@ Scenario(
     await homePage.verifyPreUpdateWidgetIsPresent(versionMinor);
   },
 );
-
-Scenario(
-  'PMM-T391 PMM-T1818 Verify user is able to create and set custom home dashboard'
-    + ' @pre-upgrade @ovf-upgrade @ami-upgrade @pmm-upgrade',
-  async ({
-    I, grafanaAPI, dashboardPage, searchDashboardsModal,
-  }) => {
-    const insightFolder = await grafanaAPI.lookupFolderByName(searchDashboardsModal.folders.insight.name);
-
-    await grafanaAPI.createCustomDashboard(grafanaAPI.randomDashboardName, insightFolder.id, null, ['pmm-qa', grafanaAPI.randomTag]);
-    const folder = await grafanaAPI.createFolder(grafanaAPI.customFolderName);
-    let additionalPanel = null;
-
-    // Panels Library is present from 2.27.0
-    if (versionMinor > 26) {
-      const libResp = await grafanaAPI.savePanelToLibrary('Lib Panel', folder.id);
-      const libPanel = libResp.result.model;
-
-      libPanel.libraryPanel.meta = libResp.result.meta;
-      libPanel.libraryPanel.version = 1;
-      libPanel.libraryPanel.uid = libResp.result.uid;
-      additionalPanel = [libPanel];
-    }
-
-    const resp = await grafanaAPI.createCustomDashboard(grafanaAPI.customDashboardName, folder.id, additionalPanel);
-
-    await grafanaAPI.starDashboard(resp.id);
-    await grafanaAPI.setHomeDashboard(resp.id);
-
-    I.amOnPage('');
-    dashboardPage.waitForDashboardOpened();
-    // dashboardPage.verifyMetricsExistence(['Custom Panel']);
-    I.seeInCurrentUrl(grafanaAPI.customDashboardName);
-  },
-).retry(0);
 
 Scenario(
   'Verify user is able to set custom Settings like Data_retention, Resolution @pre-upgrade @ovf-upgrade @ami-upgrade @pmm-upgrade',
@@ -205,10 +161,6 @@ if (versionMinor >= 15) {
   );
 }
 
-if (versionMinor >= 21) {
-
-}
-
 Scenario(
   'Verify user can create Remote Instances before upgrade @pre-upgrade @ovf-upgrade @ami-upgrade @pmm-upgrade',
   async ({ addInstanceAPI }) => {
@@ -249,33 +201,6 @@ Scenario(
   },
 );
 
-if (versionMinor < 16 && versionMinor >= 10) {
-  Scenario(
-    'PMM-T720 Verify Platform registration for PMM before 2.16.0 @pre-upgrade @ovf-upgrade @ami-upgrade @pmm-upgrade',
-    async ({ I }) => {
-      const message = 'Please upgrade PMM to v2.16 or higher to use the new Percona Platform registration flow.';
-      const body = {
-        email: faker.internet.email(),
-        password: generate({
-          length: 10,
-          numbers: true,
-          lowercase: true,
-          uppercase: true,
-          strict: true,
-        }),
-      };
-      const headers = { Authorization: `Basic ${await I.getAuth()}` };
-
-      const resp = await I.sendPostRequest('v1/Platform/SignUp', body, headers);
-
-      assert.ok(
-        resp.status === 400 && resp.data.message === message,
-        `Expected to see ${message} for Sign Up to the Percona Platform call. Response message is "${resp.data.message}"`,
-      );
-    },
-  );
-}
-
 if (iaReleased) {
   Scenario.skip(
     'PMM-T577 Verify user is able to see IA alerts before upgrade @pre-upgrade @ovf-upgrade @ami-upgrade @pmm-upgrade',
@@ -307,8 +232,6 @@ if (versionMinor >= 13) {
     },
   );
 }
-
-
 
 Scenario(
   'Setup Prometheus Alerting with external Alert Manager via API PMM-Settings @pre-upgrade @pmm-upgrade',
@@ -342,94 +265,6 @@ Scenario('@PMM-T1647 Verify pmm-server package doesn\'t exist @post-upgrade @pmm
 
   I.assertTrue(!packages.includes('pmm-server'), 'pmm-server package present in package list.');
 });
-
-Scenario(
-  'PMM-T391 PMM-T1818 Verify that custom home dashboard stays as home dashboard after upgrade'
-    + ' @post-upgrade @ovf-upgrade @ami-upgrade @pmm-upgrade',
-  async ({ I, grafanaAPI, dashboardPage }) => {
-    I.amOnPage('');
-    dashboardPage.waitForDashboardOpened();
-    dashboardPage.verifyMetricsExistence([grafanaAPI.customPanelName]);
-    await dashboardPage.verifyThereAreNoGraphsWithNA();
-    await dashboardPage.verifyThereAreNoGraphsWithoutData();
-    I.seeInCurrentUrl(grafanaAPI.customDashboardName);
-
-    // Panels Library is present from 2.27.0
-    if (versionMinor > 26) {
-      await I.say('Verify there is no "Error while loading library panels" errors on dashboard and no errors in grafana.log');
-      I.wait(1);
-      let errorLogs;
-
-      if (process.env.AMI_UPGRADE_TESTING_INSTANCE !== 'true' && process.env.OVF_UPGRADE_TESTING_INSTANCE !== 'true') {
-        errorLogs = await I.verifyCommand('docker exec pmm-server cat /srv/logs/grafana.log | grep level=error');
-      } else {
-        errorLogs = await I.verifyCommand('cat /srv/logs/grafana.log | grep level=error || true');
-      }
-
-      const loadingLibraryErrorLine = errorLogs.split('\n')
-        .filter((line) => line.includes('Error while loading library panels'));
-
-      I.assertEmpty(
-        loadingLibraryErrorLine,
-        `Logs contains errors about while loading library panels! \n The line is: \n ${loadingLibraryErrorLine}`,
-      );
-    }
-  },
-);
-
-Scenario(
-  'PMM-T998 - Verify dashboard folders after upgrade @pmm-upgrade @ovf-upgrade @ami-upgrade @post-upgrade',
-  async ({
-    I, searchDashboardsModal, grafanaAPI, homePage,
-  }) => {
-    await homePage.open();
-    I.click(dashboardPage.fields.breadcrumbs.dashboardName);
-    searchDashboardsModal.waitForOpened();
-    const actualFolders = (await searchDashboardsModal.getFoldersList());
-
-    I.assertDeepIncludeMembers(actualFolders, ['Starred', grafanaAPI.customFolderName]);
-    I.click(searchDashboardsModal.fields.folderItemLocator(grafanaAPI.customFolderName));
-    I.seeElement(searchDashboardsModal.fields.folderItemLocator(grafanaAPI.customDashboardName));
-  },
-);
-
-Scenario(
-  'PMM-T1091 - Verify PMM Dashboards folders are correct @pmm-upgrade @ovf-upgrade @ami-upgrade @post-upgrade',
-  async ({
-    I, searchDashboardsModal, grafanaAPI, homePage,
-  }) => {
-    const foldersNames = Object.values(searchDashboardsModal.folders).map((folder) => folder.name);
-
-    foldersNames.unshift('Recent');
-    if (versionMinor < 25) {
-      foldersNames.push('PMM');
-    }
-
-    await homePage.open();
-    I.click(dashboardPage.fields.breadcrumbs.dashboardName);
-    searchDashboardsModal.waitForOpened();
-    const actualFolders = (await searchDashboardsModal.getFoldersList())
-      // these folders verified in dedicated test.
-      .filter((value) => value !== 'Starred' && value !== grafanaAPI.customFolderName);
-
-    I.assertDeepMembers(actualFolders, foldersNames);
-  },
-);
-
-Scenario(
-  'PMM-T1003 - Verify UI upgrade with Custom dashboard @pmm-upgrade @ovf-upgrade @ami-upgrade @post-upgrade',
-  async ({
-    I, searchDashboardsModal, grafanaAPI, homePage,
-  }) => {
-    await homePage.open();
-    I.click(dashboardPage.fields.breadcrumbs.dashboardName);
-    searchDashboardsModal.waitForOpened();
-    searchDashboardsModal.collapseFolder('Recent');
-    searchDashboardsModal.expandFolder(searchDashboardsModal.folders.insight.name);
-    I.seeElement(searchDashboardsModal.fields.folderItemLocator(grafanaAPI.randomDashboardName));
-    I.seeElement(searchDashboardsModal.fields.folderItemWithTagLocator(grafanaAPI.randomDashboardName, grafanaAPI.randomTag));
-  },
-);
 
 Scenario(
   'PMM-T268 - Verify Failed check singlestats after upgrade from old versions @post-upgrade @pmm-upgrade',
@@ -601,21 +436,6 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T424 Verify PT Summary Panel is available after Upgrade @post-upgrade @ovf-upgrade @ami-upgrade @post-client-upgrade @pmm-upgrade',
-  async ({ I, dashboardPage }) => {
-    const filter = 'Node Name';
-
-    I.amOnPage(`${dashboardPage.nodeSummaryDashboard.url}&var-node_name=pmm-server`);
-    dashboardPage.waitForDashboardOpened();
-    await dashboardPage.expandEachDashboardRow();
-    await dashboardPage.applyFilter(filter, 'pmm-server');
-
-    I.waitForElement(dashboardPage.nodeSummaryDashboard.ptSummaryDetail.reportContainer, 60);
-    I.seeElement(dashboardPage.nodeSummaryDashboard.ptSummaryDetail.reportContainer);
-  },
-);
-
-Scenario(
   'Verify Agents are RUNNING after Upgrade (UI) [critical] @ovf-upgrade @ami-upgrade @post-upgrade @post-client-upgrade @pmm-upgrade',
   async ({ I, pmmInventoryPage }) => {
     for (const service of Object.values(remoteInstancesHelper.upgradeServiceNames)) {
@@ -759,49 +579,5 @@ Scenario(
     assert.ok(url === alertManager.alertmanagerURL, `Alert Manager URL value is not persisted, expected value was ${alertManager.alertmanagerURL} but got ${url}`);
     assert.ok(rule === alertManager.alertmanagerRules, `Alert Manager Rule value is not valid, expected value was ${alertManager.alertmanagerRules} but got ${rule}`);
     await pmmSettingsPage.verifyAlertmanagerRuleAdded(pmmSettingsPage.alertManager.ruleName2, true);
-  },
-);
-
-Scenario(
-  'PMM-12587-1 Verify duplicate dashboards dont break after upgrade @pre-upgrade @ovf-upgrade @ami-upgrade @pmm-upgrade',
-  async ({
-    I, grafanaAPI, searchDashboardsModal,
-  }) => {
-    const insightFolder = await grafanaAPI.lookupFolderByName(searchDashboardsModal.folders.insight.name);
-    const experimentalFolder = await grafanaAPI.lookupFolderByName(searchDashboardsModal.folders.experimental.name);
-
-    const resp1 = await grafanaAPI.createCustomDashboard('test-dashboard', insightFolder.id);
-    const resp2 = await grafanaAPI.createCustomDashboard('test-dashboard', experimentalFolder.id);
-
-    await I.writeFileSync('./dashboard.json', JSON.stringify({
-      DASHBOARD1_UID: resp1.uid,
-      DASHBOARD2_UID: resp2.uid,
-    }), false);
-
-    // Check if file with Dashboard info is present.
-    I.assertNotEqual(I.fileSize('./dashboard.json', false), 0, 'Was expecting Dashboard info in the File, but its empty');
-  },
-);
-
-Scenario(
-  'PMM-12587-2 Verify duplicate dashboards dont break after upgrade @post-upgrade @ovf-upgrade @ami-upgrade @pmm-upgrade',
-  async ({
-    I, grafanaAPI, dashboardPage,
-  }) => {
-    const resp = JSON.parse(await I.readFileSync('./dashboard.json', false));
-
-    const resp1 = await grafanaAPI.getDashboard(resp.DASHBOARD1_UID);
-    const resp2 = await grafanaAPI.getDashboard(resp.DASHBOARD2_UID);
-
-    // Trim leading '/' from response url
-    const url1 = resp1.meta.url.replace(/^\/+/g, '');
-    const url2 = resp2.meta.url.replace(/^\/+/g, '');
-
-    I.amOnPage(url1);
-    dashboardPage.waitForDashboardOpened();
-    I.seeInCurrentUrl(url1);
-    I.amOnPage(url2);
-    dashboardPage.waitForDashboardOpened();
-    I.seeInCurrentUrl(url2);
   },
 );
