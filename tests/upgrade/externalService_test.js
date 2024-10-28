@@ -1,6 +1,6 @@
 const assert = require('assert');
 
-Feature('PMM upgrade tests for external services').retry(1);
+Feature('PMM upgrade tests for external services');
 
 const serviceName = 'pmm-ui-tests-redis-external-remote';
 
