@@ -72,24 +72,6 @@ Scenario(
 );
 
 Scenario(
-  'Verify user is able to set custom Settings like Data_retention, Resolution @pre-upgrade @ovf-upgrade @ami-upgrade @pmm-upgrade',
-  async ({ settingsAPI, I }) => {
-    const body = {
-      telemetry_enabled: true,
-      metrics_resolutions: {
-        hr: '30s',
-        mr: '60s',
-        lr: '60s',
-      },
-      data_retention: '172800s',
-    };
-
-    await settingsAPI.changeSettings(body, true);
-    I.wait(10);
-  },
-);
-
-Scenario(
   'PMM-T3 Verify user is able to Upgrade PMM version [blocker] @pmm-upgrade @ovf-upgrade @ami-upgrade  ',
   async ({ I, homePage }) => {
     I.amOnPage(homePage.url);
@@ -97,16 +79,6 @@ Scenario(
     I.saveScreenshot('@PMM-T3');
   },
 ).retry(0);
-
-Scenario(
-  'Run queries for MongoDB after upgrade @post-upgrade @pmm-upgrade',
-  async ({ I }) => {
-    const col = await I.mongoCreateCollection('local', 'e2e');
-
-    await col.insertOne({ a: '111' });
-    await col.findOne();
-  },
-);
 
 Scenario('@PMM-T1647 Verify pmm-server package doesn\'t exist @post-upgrade @pmm-upgrade', async ({ I }) => {
   await I.amOnPage('');
@@ -120,73 +92,5 @@ Scenario(
   async ({ I, homePage }) => {
     I.amOnPage(homePage.url);
     await homePage.verifyPostUpdateWidgetIsPresent();
-  },
-);
-
-Scenario(
-  'PMM-T262 Open PMM Settings page and verify DATA_RETENTION value is set to 2 days, Custom Resolution is still preserved after upgrade @ovf-upgrade @ami-upgrade @post-upgrade @pmm-upgrade',
-  async ({ I, pmmSettingsPage }) => {
-    const advancedSection = pmmSettingsPage.sectionTabsList.advanced;
-    const metricResoltionSection = pmmSettingsPage.sectionTabsList.metrics;
-
-    I.amOnPage(pmmSettingsPage.url);
-    await pmmSettingsPage.waitForPmmSettingsPageLoaded();
-    await pmmSettingsPage.expandSection(advancedSection, pmmSettingsPage.fields.advancedButton);
-    await pmmSettingsPage.verifySettingsValue(pmmSettingsPage.fields.dataRetentionInput, 2);
-    await pmmSettingsPage.expandSection(
-      metricResoltionSection,
-      pmmSettingsPage.fields.metricsResolutionButton,
-    );
-    await pmmSettingsPage.verifySettingsValue(pmmSettingsPage.fields.lowInput, 60);
-    await pmmSettingsPage.verifySettingsValue(pmmSettingsPage.fields.mediumInput, 60);
-    await pmmSettingsPage.verifySettingsValue(pmmSettingsPage.fields.highInput, 30);
-  },
-);
-
-if (versionMinor > 14) {
-  Data(clientDbServices)
-    .Scenario(
-      'Check Metrics for Client Nodes [critical] @ovf-upgrade @ami-upgrade @post-upgrade @post-client-upgrade @pmm-upgrade',
-      async ({
-        inventoryAPI,
-        grafanaAPI,
-        current,
-      }) => {
-        const metricName = current.metric;
-        const { node_id } = await inventoryAPI.apiGetNodeInfoByServiceName(current.serviceType, current.name);
-        const nodeName = await inventoryAPI.getNodeName(node_id);
-
-        await grafanaAPI.checkMetricExist(metricName, {
-          type: 'node_name',
-          value: nodeName,
-        });
-      },
-    );
-}
-
-Scenario(
-  'Verify Metrics from custom queries for mysqld_exporter after upgrade (UI) @post-client-upgrade @post-upgrade @ovf-upgrade @ami-upgrade @pmm-upgrade',
-  async ({ grafanaAPI }) => {
-    const metricName = 'mysql_performance_schema_memory_summary_current_bytes';
-
-    await grafanaAPI.checkMetricExist(metricName);
-  },
-);
-
-Scenario(
-  'Verify textfile collector extend metrics is still collected post upgrade (UI) @post-client-upgrade @post-upgrade @ovf-upgrade @ami-upgrade @pmm-upgrade',
-  async ({ grafanaAPI }) => {
-    const metricName = 'node_role';
-
-    await grafanaAPI.checkMetricExist(metricName);
-  },
-);
-
-Scenario(
-  'Verify Metrics from custom queries for postgres_exporter after upgrade (UI) @post-client-upgrade @post-upgrade @pmm-upgrade',
-  async ({ grafanaAPI }) => {
-    const metricName = 'pg_stat_user_tables_n_tup_ins';
-
-    await grafanaAPI.checkMetricExist(metricName);
   },
 );

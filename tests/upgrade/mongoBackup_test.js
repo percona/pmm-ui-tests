@@ -68,6 +68,16 @@ Scenario(
 ).retry(0);
 
 Scenario(
+  'Run queries for MongoDB after upgrade @post-mongo-backup-upgrade',
+  async ({ I }) => {
+    const col = await I.mongoCreateCollection('local', 'e2e');
+
+    await col.insertOne({ a: '111' });
+    await col.findOne();
+  },
+);
+
+Scenario(
   '@PMM-T1505 @PMM-T971 - The scheduled job still exists and remains enabled after the upgrade @post-mongo-backup-upgrade',
   async ({ I, scheduledPage }) => {
     await scheduledPage.openScheduledBackupsPage();
