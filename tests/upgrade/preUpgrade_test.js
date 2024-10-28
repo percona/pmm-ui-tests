@@ -3,6 +3,8 @@ const { clientDbServices} = require("./variables");
 
 Feature('PMM server pre Upgrade Tests').retry(1);
 
+const { adminPage, dashboardPage } = inject();
+
 const sslinstances = new DataTable(['serviceName', 'version', 'container', 'serviceType', 'metric', 'dashboard']);
 
 // Unskip after https://jira.percona.com/browse/PMM-12640
