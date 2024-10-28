@@ -84,7 +84,6 @@ Before(async ({ I }) => {
   I.setRequestTimeout(60000);
 });
 
-
 Scenario(
   'Add AMI Instance ID @ami-upgrade',
   async ({ amiInstanceAPI }) => {
@@ -379,94 +378,92 @@ if (versionMinor >= 13) {
   );
 }
 
-if (versionMinor >= 23) {
-  Data(sslinstances).Scenario(
-    'PMM-T948 PMM-T947 Verify Adding Postgresql, MySQL, MongoDB SSL services remotely via API before upgrade @pre-upgrade @pmm-upgrade',
-    async ({
-      I, remoteInstancesPage, pmmInventoryPage, current, addInstanceAPI, inventoryAPI,
-    }) => {
-      const {
-        serviceName, serviceType, version, container,
-      } = current;
-      let details;
-      const remoteServiceName = `remote_api_${serviceName}`;
+Data(sslinstances).Scenario(
+  'PMM-T948 PMM-T947 Verify Adding Postgresql, MySQL, MongoDB SSL services remotely via API before upgrade @pre-ssl-upgrade',
+  async ({
+    I, remoteInstancesPage, pmmInventoryPage, current, addInstanceAPI, inventoryAPI,
+  }) => {
+    const {
+      serviceName, serviceType, version, container,
+    } = current;
+    let details;
+    const remoteServiceName = `remote_api_${serviceName}`;
 
-      if (serviceType === 'postgres_ssl') {
-        details = {
-          serviceName: remoteServiceName,
-          serviceType,
-          port: '5432',
-          database: 'postgres',
-          address: container,
-          username: 'pmm',
-          password: 'pmm',
-          cluster: 'pgsql_remote_cluster',
-          environment: 'pgsql_remote_cluster',
-          tlsCAFile: await remoteInstancesPage.getFileContent(`${pathToPMMFramework}tls-ssl-setup/postgres/${version}/ca.crt`),
-          tlsKeyFile: await remoteInstancesPage.getFileContent(`${pathToPMMFramework}tls-ssl-setup/postgres/${version}/client.pem`),
-          tlsCertFile: await remoteInstancesPage.getFileContent(`${pathToPMMFramework}tls-ssl-setup/postgres/${version}/client.crt`),
-        };
-        await addInstanceAPI.addPostgreSqlSSL(details);
-        I.wait(5);
-        await inventoryAPI.verifyServiceExistsAndHasRunningStatus(
-          {
-            serviceType: SERVICE_TYPE.POSTGRESQL,
-            service: 'postgresql',
-          },
-          remoteServiceName,
-        );
-      }
+    if (serviceType === 'postgres_ssl') {
+      details = {
+        serviceName: remoteServiceName,
+        serviceType,
+        port: '5432',
+        database: 'postgres',
+        address: container,
+        username: 'pmm',
+        password: 'pmm',
+        cluster: 'pgsql_remote_cluster',
+        environment: 'pgsql_remote_cluster',
+        tlsCAFile: await remoteInstancesPage.getFileContent(`${pathToPMMFramework}tls-ssl-setup/postgres/${version}/ca.crt`),
+        tlsKeyFile: await remoteInstancesPage.getFileContent(`${pathToPMMFramework}tls-ssl-setup/postgres/${version}/client.pem`),
+        tlsCertFile: await remoteInstancesPage.getFileContent(`${pathToPMMFramework}tls-ssl-setup/postgres/${version}/client.crt`),
+      };
+      await addInstanceAPI.addPostgreSqlSSL(details);
+      I.wait(5);
+      await inventoryAPI.verifyServiceExistsAndHasRunningStatus(
+        {
+          serviceType: SERVICE_TYPE.POSTGRESQL,
+          service: 'postgresql',
+        },
+        remoteServiceName,
+      );
+    }
 
-      if (serviceType === 'mysql_ssl') {
-        details = {
-          serviceName: remoteServiceName,
-          serviceType,
-          port: '3306',
-          address: container,
-          username: 'pmm',
-          password: 'pmm',
-          cluster: 'mysql_ssl_remote_cluster',
-          environment: 'mysql_ssl_remote_cluster',
-          tlsCAFile: await remoteInstancesPage.getFileContent(`${adminPage.pathToPMMTests}tls-ssl-setup/mysql/${version}/ca.pem`),
-          tlsKeyFile: await remoteInstancesPage.getFileContent(`${adminPage.pathToPMMTests}tls-ssl-setup/mysql/${version}/client-key.pem`),
-          tlsCertFile: await remoteInstancesPage.getFileContent(`${adminPage.pathToPMMTests}tls-ssl-setup/mysql/${version}/client-cert.pem`),
-        };
-        await addInstanceAPI.addMysqlSSL(details);
-        I.wait(5);
-        await inventoryAPI.verifyServiceExistsAndHasRunningStatus(
-          {
-            serviceType: SERVICE_TYPE.MYSQL,
-            service: 'mysql',
-          },
-          remoteServiceName,
-        );
-      }
+    if (serviceType === 'mysql_ssl') {
+      details = {
+        serviceName: remoteServiceName,
+        serviceType,
+        port: '3306',
+        address: container,
+        username: 'pmm',
+        password: 'pmm',
+        cluster: 'mysql_ssl_remote_cluster',
+        environment: 'mysql_ssl_remote_cluster',
+        tlsCAFile: await remoteInstancesPage.getFileContent(`${adminPage.pathToPMMTests}tls-ssl-setup/mysql/${version}/ca.pem`),
+        tlsKeyFile: await remoteInstancesPage.getFileContent(`${adminPage.pathToPMMTests}tls-ssl-setup/mysql/${version}/client-key.pem`),
+        tlsCertFile: await remoteInstancesPage.getFileContent(`${adminPage.pathToPMMTests}tls-ssl-setup/mysql/${version}/client-cert.pem`),
+      };
+      await addInstanceAPI.addMysqlSSL(details);
+      I.wait(5);
+      await inventoryAPI.verifyServiceExistsAndHasRunningStatus(
+        {
+          serviceType: SERVICE_TYPE.MYSQL,
+          service: 'mysql',
+        },
+        remoteServiceName,
+      );
+    }
 
-      if (serviceType === 'mongodb_ssl') {
-        details = {
-          serviceName: remoteServiceName,
-          serviceType,
-          port: '27017',
-          address: container,
-          cluster: 'mongodb_ssl_remote_cluster',
-          environment: 'mongodb_ssl_remote_cluster',
-          tls_certificate_file_password: await remoteInstancesPage.getFileContent(`${pathToPMMFramework}tls-ssl-setup/mongodb/${version}/client.key`),
-          tls_certificate_key: await remoteInstancesPage.getFileContent(`${pathToPMMFramework}tls-ssl-setup/mongodb/${version}/client.pem`),
-          tls_ca: await remoteInstancesPage.getFileContent(`${pathToPMMFramework}tls-ssl-setup/mongodb/${version}/ca.crt`),
-        };
-        await addInstanceAPI.addMongoDBSSL(details);
-        I.wait(5);
-        await inventoryAPI.verifyServiceExistsAndHasRunningStatus(
-          {
-            serviceType: SERVICE_TYPE.MONGODB,
-            service: 'mongodb',
-          },
-          remoteServiceName,
-        );
-      }
-    },
-  );
-}
+    if (serviceType === 'mongodb_ssl') {
+      details = {
+        serviceName: remoteServiceName,
+        serviceType,
+        port: '27017',
+        address: container,
+        cluster: 'mongodb_ssl_remote_cluster',
+        environment: 'mongodb_ssl_remote_cluster',
+        tls_certificate_file_password: await remoteInstancesPage.getFileContent(`${pathToPMMFramework}tls-ssl-setup/mongodb/${version}/client.key`),
+        tls_certificate_key: await remoteInstancesPage.getFileContent(`${pathToPMMFramework}tls-ssl-setup/mongodb/${version}/client.pem`),
+        tls_ca: await remoteInstancesPage.getFileContent(`${pathToPMMFramework}tls-ssl-setup/mongodb/${version}/ca.crt`),
+      };
+      await addInstanceAPI.addMongoDBSSL(details);
+      I.wait(5);
+      await inventoryAPI.verifyServiceExistsAndHasRunningStatus(
+        {
+          serviceType: SERVICE_TYPE.MONGODB,
+          service: 'mongodb',
+        },
+        remoteServiceName,
+      );
+    }
+  },
+);
 
 Scenario(
   'Setup Prometheus Alerting with external Alert Manager via API PMM-Settings @pre-upgrade @pmm-upgrade',
@@ -1031,7 +1028,7 @@ if (versionMinor >= 21) {
 }
 
 Data(sslinstances).Scenario(
-  'Verify metrics from SSL instances on PMM-Server @post-upgrade @pmm-upgrade',
+  'Verify metrics from SSL instances on PMM-Server @post-ssl-upgrade',
   async ({
     I, remoteInstancesPage, pmmInventoryPage, current, grafanaAPI,
   }) => {
