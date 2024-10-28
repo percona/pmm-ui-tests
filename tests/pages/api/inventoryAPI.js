@@ -14,7 +14,7 @@ module.exports = {
     for (let i = 0; i < 60; i++) {
       const resp = await this.apiGetServices(service.serviceType);
 
-      console.log(resp.data.services);
+      console.log(resp.data);
 
       responseService = resp.data.services.find((service) => service.service_name === serviceName);
       if (responseService !== undefined) break;
