@@ -23,6 +23,10 @@ const scheduleSettings = {
   retention: 1,
 };
 
+Before(async ({ I }) => {
+  await I.Authorize();
+});
+
 Scenario(
   'Create MongoDB backups data to check after upgrade @pre-mongo-backup-upgrade',
   async ({
