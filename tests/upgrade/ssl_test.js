@@ -1,7 +1,7 @@
 const assert = require('assert');
 const { SERVICE_TYPE } = require('../helper/constants');
 
-Feature('PMM upgrade tests for ssl').retry(1);
+Feature('PMM upgrade tests for ssl');
 
 const { adminPage, dashboardPage } = inject();
 const pathToPMMFramework = adminPage.pathToPMMTests;
