@@ -16,6 +16,8 @@ module.exports = {
 
       console.log(resp.data);
 
+      console.log(service)
+
       responseService = resp.data.service.find((service) => service.service_name === serviceName);
       if (responseService !== undefined) break;
 
