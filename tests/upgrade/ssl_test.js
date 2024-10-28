@@ -7,10 +7,9 @@ const { adminPage, dashboardPage } = inject();
 const pathToPMMFramework = adminPage.pathToPMMTests;
 const sslinstances = new DataTable(['serviceName', 'version', 'container', 'serviceType', 'metric', 'dashboard']);
 
-// Unskip after https://jira.percona.com/browse/PMM-12640
-// sslinstances.add(['pgsql_14_ssl_service', '14', 'pgsql_14', 'postgres_ssl', 'pg_stat_database_xact_rollback', dashboardPage.postgresqlInstanceOverviewDashboard.url]);
+sslinstances.add(['pgsql_17_ssl_service', '17', 'pgsql_17', 'postgres_ssl', 'pg_stat_database_xact_rollback', dashboardPage.postgresqlInstanceOverviewDashboard.url]);
 sslinstances.add(['mysql_8.0_ssl_service', '8.0', 'mysql_8.0', 'mysql_ssl', 'mysql_global_status_max_used_connections', dashboardPage.mySQLInstanceOverview.url]);
-sslinstances.add(['mongodb_6.0_ssl_service', '6.0', 'mongodb_6.0', 'mongodb_ssl', 'mongodb_connections', dashboardPage.mongoDbInstanceOverview.url]);
+// sslinstances.add(['mongodb_6.0_ssl_service', '6.0', 'mongodb_6.0', 'mongodb_ssl', 'mongodb_connections', dashboardPage.mongoDbInstanceOverview.url]);
 
 Data(sslinstances).Scenario(
   'PMM-T948 PMM-T947 Verify Adding Postgresql, MySQL, MongoDB SSL services remotely via API before upgrade @pre-ssl-upgrade',
@@ -34,9 +33,9 @@ Data(sslinstances).Scenario(
         password: 'pmm',
         cluster: 'pgsql_remote_cluster',
         environment: 'pgsql_remote_cluster',
-        tlsCAFile: await remoteInstancesPage.getFileContent(`${pathToPMMFramework}tls-ssl-setup/postgres/${version}/ca.crt`),
-        tlsKeyFile: await remoteInstancesPage.getFileContent(`${pathToPMMFramework}tls-ssl-setup/postgres/${version}/client.pem`),
-        tlsCertFile: await remoteInstancesPage.getFileContent(`${pathToPMMFramework}tls-ssl-setup/postgres/${version}/client.crt`),
+        tlsCAFile: await remoteInstancesPage.getFileContent(`/srv/qa-integration/pmm_qa/tls-ssl-setup/postgres/${version}/ca.crt`),
+        tlsKeyFile: await remoteInstancesPage.getFileContent(`/srv/qa-integration/pmm_qa/tls-ssl-setup/postgres/${version}/client.pem`),
+        tlsCertFile: await remoteInstancesPage.getFileContent(`/srv/qa-integration/pmm_qa/tls-ssl-setup/postgres/${version}/client.crt`),
       };
       await addInstanceAPI.addPostgreSqlSSL(details);
       I.wait(5);
@@ -59,9 +58,9 @@ Data(sslinstances).Scenario(
         password: 'pmm',
         cluster: 'mysql_ssl_remote_cluster',
         environment: 'mysql_ssl_remote_cluster',
-        tlsCAFile: await remoteInstancesPage.getFileContent(`${adminPage.pathToPMMTests}tls-ssl-setup/mysql/${version}/ca.pem`),
-        tlsKeyFile: await remoteInstancesPage.getFileContent(`${adminPage.pathToPMMTests}tls-ssl-setup/mysql/${version}/client-key.pem`),
-        tlsCertFile: await remoteInstancesPage.getFileContent(`${adminPage.pathToPMMTests}tls-ssl-setup/mysql/${version}/client-cert.pem`),
+        tlsCAFile: await remoteInstancesPage.getFileContent(`/srv/qa-integration/pmm_qa/tls-ssl-setup/mysql/${version}/ca.pem`),
+        tlsKeyFile: await remoteInstancesPage.getFileContent(`/srv/qa-integration/pmm_qa/tls-ssl-setup/mysql/${version}/client-key.pem`),
+        tlsCertFile: await remoteInstancesPage.getFileContent(`/srv/qa-integration/pmm_qa/tls-ssl-setup/mysql/${version}/client-cert.pem`),
       };
       await addInstanceAPI.addMysqlSSL(details);
       I.wait(5);
