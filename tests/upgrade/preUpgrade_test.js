@@ -1,4 +1,5 @@
-const {SERVICE_TYPE} = require("../helper/constants");
+const { SERVICE_TYPE } = require('../helper/constants');
+const { clientDbServices} = require("./variables");
 
 Feature('PMM server pre Upgrade Tests').retry(1);
 
@@ -8,6 +9,44 @@ const sslinstances = new DataTable(['serviceName', 'version', 'container', 'serv
 // sslinstances.add(['pgsql_14_ssl_service', '14', 'pgsql_14', 'postgres_ssl', 'pg_stat_database_xact_rollback', dashboardPage.postgresqlInstanceOverviewDashboard.url]);
 sslinstances.add(['mysql_8.0_ssl_service', '8.0', 'mysql_8.0', 'mysql_ssl', 'mysql_global_status_max_used_connections', dashboardPage.mySQLInstanceOverview.url]);
 sslinstances.add(['mongodb_6.0_ssl_service', '6.0', 'mongodb_6.0', 'mongodb_ssl', 'mongodb_connections', dashboardPage.mongoDbInstanceOverview.url]);
+
+console.log(clientDbServices);
+
+Data(clientDbServices).Scenario(
+  'Adding custom agent Password, Custom Label before upgrade At service Level @pre-custom-password-upgrade',
+  async ({
+           I, inventoryAPI, current,
+         }) => {
+    const {
+      serviceType, name, upgrade_service,
+    } = current;
+    const {
+      service_id, node_id, address, port,
+    } = await inventoryAPI.apiGetNodeInfoByServiceName(serviceType, name);
+
+    const { agent_id: pmm_agent_id } = await inventoryAPI.apiGetPMMAgentInfoByServiceId(service_id);
+    let output;
+
+    switch (serviceType) {
+      case SERVICE_TYPE.MYSQL:
+        output = await I.verifyCommand(
+          `pmm-admin add mysql --node-id=${node_id} --pmm-agent-id=${pmm_agent_id} --port=${port} --password=GRgrO9301RuF --host=${address} --query-source=perfschema --agent-password=uitests --custom-labels="testing=upgrade" ${upgrade_service}`,
+        );
+        break;
+      case SERVICE_TYPE.POSTGRESQL:
+        output = await I.verifyCommand(
+          `pmm-admin add postgresql --username=postgres --password=oFukiBRg7GujAJXq3tmd --node-id=${node_id} --pmm-agent-id=${pmm_agent_id} --port=${port} --host=${address} --agent-password=uitests --custom-labels="testing=upgrade" ${upgrade_service}`,
+        );
+        break;
+      case SERVICE_TYPE.MONGODB:
+        output = await I.verifyCommand(
+          `pmm-admin add mongodb --username=pmm_mongodb --password=GRgrO9301RuF --port=27023 --host=${address} --agent-password=uitests --custom-labels="testing=upgrade" ${upgrade_service}`,
+        );
+        break;
+      default:
+    }
+  },
+);
 
 Scenario(
   'Adding Redis as external Service before Upgrade @pre-external-upgrade',
@@ -24,8 +63,8 @@ Scenario(
 Data(sslinstances).Scenario(
   'PMM-T948 PMM-T947 Verify Adding Postgresql, MySQL, MongoDB SSL services remotely via API before upgrade @pre-ssl-upgrade',
   async ({
-           I, remoteInstancesPage, pmmInventoryPage, current, addInstanceAPI, inventoryAPI,
-         }) => {
+    I, remoteInstancesPage, pmmInventoryPage, current, addInstanceAPI, inventoryAPI,
+  }) => {
     const {
       serviceName, serviceType, version, container,
     } = current;
