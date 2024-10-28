@@ -23,6 +23,8 @@ Data(clientDbServices).Scenario(
       service_id, node_id, address, port,
     } = await inventoryAPI.apiGetNodeInfoForAllNodesByServiceName(serviceType, name);
 
+    console.log(await I.verifyCommand('docker ps -a'));
+
     const { agent_id: pmm_agent_id } = await inventoryAPI.apiGetPMMAgentInfoByServiceId(service_id);
     let output;
 
