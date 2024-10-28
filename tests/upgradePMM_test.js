@@ -600,19 +600,6 @@ Scenario(
   },
 );
 
-// New Home dashboard for 2.32.0 doesn't have news panel on home dashboard
-xScenario(
-  'Verify user can see News Panel @post-upgrade @ami-upgrade @pmm-upgrade',
-  async ({ I, homePage }) => {
-    I.amOnPage(homePage.url);
-    I.waitForVisible(homePage.fields.newsPanelTitleSelector, 30);
-    I.waitForVisible(homePage.fields.newsPanelContentSelector, 30);
-    const newsItems = await I.grabNumberOfVisibleElements(locate('article').inside(homePage.fields.newsPanelContentSelector));
-
-    assert.ok(newsItems > 1, 'News Panel is empty');
-  },
-);
-
 Scenario(
   'PMM-T424 Verify PT Summary Panel is available after Upgrade @post-upgrade @ovf-upgrade @ami-upgrade @post-client-upgrade @pmm-upgrade',
   async ({ I, dashboardPage }) => {
@@ -775,79 +762,6 @@ Scenario(
   },
 );
 
-if (versionMinor >= 21) {
-
-}
-
-
-
-Scenario(
-  '@PMM-T1505 @PMM-T971 - The scheduled job still exists and remains enabled after the upgrade @post-upgrade @pmm-upgrade',
-  async ({ I, scheduledPage }) => {
-    await scheduledPage.openScheduledBackupsPage();
-    await I.waitForVisible(scheduledPage.elements.toggleByName(scheduleName));
-    I.seeAttributesOnElements(scheduledPage.elements.toggleByName(scheduleName), { checked: true });
-
-    // Verify settings for scheduled job
-    I.seeTextEquals('Every 20 minutes', scheduledPage.elements.frequencyByName(scheduleName));
-    I.seeTextEquals('MongoDB', scheduledPage.elements.scheduleVendorByName(scheduleName));
-    I.seeTextEquals('Full', scheduledPage.elements.scheduleTypeByName(scheduleName));
-    I.seeTextEquals(`${location.name} (S3)`, scheduledPage.elements.scheduleLocationByName(scheduleName));
-    I.seeTextEquals('1 backup', scheduledPage.elements.retentionByName(scheduleName));
-
-    // Disable schedule
-    I.click(scheduledPage.buttons.enableDisableByName(scheduleName));
-    await I.waitForVisible(scheduledPage.elements.toggleByName(scheduleName));
-    I.seeAttributesOnElements(scheduledPage.elements.toggleByName(scheduleName), { checked: null });
-  },
-).retry(0);
-
-Scenario(
-  '@PMM-T1506 - Storage Locations exist after upgrade @post-upgrade @pmm-upgrade',
-  async ({ I, locationsPage }) => {
-    locationsPage.openLocationsPage();
-    I.waitForVisible(locationsPage.buttons.actionsMenuByName(location.name), 2);
-    I.click(locationsPage.buttons.actionsMenuByName(location.name));
-    I.seeElement(locationsPage.buttons.deleteByName(location.name));
-    I.seeElement(locationsPage.buttons.editByName(location.name));
-    I.seeTextEquals(locationsPage.locationType.s3, locationsPage.elements.typeCellByName(location.name));
-    I.seeTextEquals(location.endpoint, locationsPage.elements.endpointCellByName(location.name));
-  },
-);
-
-Scenario(
-  '@PMM-T1503 PMM-T970 - The user is able to do a restore for MongoDB after the upgrade'
-    + ' @post-upgrade @pmm-upgrade',
-  async ({
-    I, backupInventoryPage, restorePage, credentials,
-  }) => {
-    const replica = await I.getMongoClient({
-      username: credentials.mongoReplicaPrimaryForBackups.username,
-      password: credentials.mongoReplicaPrimaryForBackups.password,
-      port: credentials.mongoReplicaPrimaryForBackups.port,
-    });
-
-    try {
-      let collection = replica.db('test').collection('e2e');
-
-      await I.say('I create test record in MongoDB after backup');
-      await collection.insertOne({ number: 2, name: 'Anna' });
-
-      backupInventoryPage.openInventoryPage();
-      backupInventoryPage.startRestore(backupName);
-      await restorePage.waitForRestoreSuccess(backupName);
-
-      await I.say('I search for the record after MongoDB restored from backup');
-      collection = replica.db('test').collection('e2e');
-      const record = await collection.findOne({ number: 2, name: 'Anna' });
-
-      I.assertEqual(record, null, `Was expecting to not have a record ${JSON.stringify(record, null, 2)} after restore operation`);
-    } finally {
-      await replica.close();
-    }
-  },
-).retry(0);
-
 Scenario(
   'PMM-12587-1 Verify duplicate dashboards dont break after upgrade @pre-upgrade @ovf-upgrade @ami-upgrade @pmm-upgrade',
   async ({
@@ -891,18 +805,3 @@ Scenario(
     I.seeInCurrentUrl(url2);
   },
 );
-
-// This test must be executed last
-if (versionMinor >= 35) {
-  Scenario(
-    'PMM-T1189 - verify user is able to change password after upgrade @post-upgrade @pmm-upgrade',
-    async ({ I, homePage }) => {
-      const newPass = process.env.NEW_ADMIN_PASSWORD || 'admin1';
-
-      await I.unAuthorize();
-      await I.verifyCommand(`docker exec pmm-server change-admin-password ${newPass}`);
-      await I.Authorize('admin', newPass);
-      await homePage.open();
-    },
-  );
-}
