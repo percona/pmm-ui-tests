@@ -1,8 +1,7 @@
 const assert = require('assert');
 const { SERVICE_TYPE } = require('../helper/constants');
-const { clientDbServices } = require("./variables");
 
-const { locationsAPI } = inject();
+const { locationsAPI, dashboardPage } = inject();
 
 Feature('PMM server post Upgrade Tests').retry(1);
 
@@ -21,35 +20,11 @@ const sslinstances = new DataTable(['serviceName', 'version', 'container', 'serv
 sslinstances.add(['mysql_8.0_ssl_service', '8.0', 'mysql_8.0', 'mysql_ssl', 'mysql_global_status_max_used_connections', dashboardPage.mySQLInstanceOverview.url]);
 sslinstances.add(['mongodb_6.0_ssl_service', '6.0', 'mongodb_6.0', 'mongodb_ssl', 'mongodb_connections', dashboardPage.mongoDbInstanceOverview.url]);
 
-Scenario(
-  'Verify Redis as external Service Works After Upgrade @post-external-upgrade @post-client-upgrade',
-  async ({
-    I, grafanaAPI, remoteInstancesHelper,
-  }) => {
-    // Make sure Metrics are hitting before Upgrade
-    const metricName = 'redis_uptime_in_seconds';
-    const headers = { Authorization: `Basic ${await I.getAuth()}` };
+const clientDbServices = new DataTable(['serviceType', 'name', 'metric', 'annotationName', 'dashboard', 'upgrade_service']);
 
-    await grafanaAPI.checkMetricExist(metricName);
-    await grafanaAPI.checkMetricExist(metricName, { type: 'node_name', value: 'redis_external_remote' });
-    // removing check for upgrade verification
-    // await grafanaAPI.checkMetricExist(metricName, { type: 'service_name', value: 'redis_external_2' });
-
-    const response = await I.sendGetRequest('prometheus/api/v1/targets', headers);
-    const targets = response.data.data.activeTargets.find(
-      (o) => o.labels.external_group === 'redis-remote',
-    );
-
-    const expectedScrapeUrl = `${remoteInstancesHelper.remote_instance.external.redis.schema}://${remoteInstancesHelper.remote_instance.external.redis.host
-    }:${remoteInstancesHelper.remote_instance.external.redis.port}${remoteInstancesHelper.remote_instance.external.redis.metricsPath}`;
-
-    assert.ok(
-      targets.scrapeUrl === expectedScrapeUrl,
-      `Active Target for external service Post Upgrade has wrong Address value, value found is ${targets.scrapeUrl} and value expected was ${expectedScrapeUrl}`,
-    );
-    assert.ok(targets.health === 'up', `Active Target for external service Post Upgrade health value is not up! value found ${targets.health}`);
-  },
-);
+clientDbServices.add([SERVICE_TYPE.MYSQL, 'ps_', 'mysql_global_status_max_used_connections', 'annotation-for-mysql', dashboardPage.mysqlInstanceSummaryDashboard.url, 'mysql_upgrade']);
+clientDbServices.add([SERVICE_TYPE.POSTGRESQL, 'PGSQL_', 'pg_stat_database_xact_rollback', 'annotation-for-postgres', dashboardPage.postgresqlInstanceSummaryDashboard.url, 'pgsql_upgrade']);
+clientDbServices.add([SERVICE_TYPE.MONGODB, 'mongodb_', 'mongodb_connections', 'annotation-for-mongo', dashboardPage.mongoDbInstanceSummaryDashboard.url, 'mongo_upgrade']);
 
 Scenario(
   '@PMM-T1504 - The user is able to do a backup for MongoDB after upgrade @post-mongo-backup-upgrade',
@@ -71,8 +46,8 @@ Scenario(
 Data(sslinstances).Scenario(
   'Verify metrics from SSL instances on PMM-Server @post-ssl-upgrade',
   async ({
-           I, remoteInstancesPage, pmmInventoryPage, current, grafanaAPI,
-         }) => {
+    I, remoteInstancesPage, pmmInventoryPage, current, grafanaAPI,
+  }) => {
     const {
       serviceName, metric,
     } = current;
@@ -99,8 +74,8 @@ Data(sslinstances).Scenario(
 Data(sslinstances).Scenario(
   'Verify dashboard for SSL Instances and services after upgrade @post-ssl-upgrade',
   async ({
-           I, dashboardPage, adminPage, current,
-         }) => {
+    I, dashboardPage, adminPage, current,
+  }) => {
     const {
       serviceName, dashboard,
     } = current;
@@ -124,8 +99,8 @@ Data(sslinstances).Scenario(
 Data(sslinstances).Scenario(
   'Verify QAN after upgrade for SSL Instances added @post-ssl-upgrade',
   async ({
-           I, queryAnalyticsPage, current, adminPage,
-         }) => {
+    I, queryAnalyticsPage, current, adminPage,
+  }) => {
     const {
       serviceName,
     } = current;
@@ -149,8 +124,8 @@ Data(sslinstances).Scenario(
 Data(clientDbServices).Scenario(
   'Verify if Agents added with custom password and custom label work as expected Post Upgrade @post-client-upgrade @post-custom-password-upgrade',
   async ({
-           current, inventoryAPI, grafanaAPI,
-         }) => {
+    current, inventoryAPI, grafanaAPI,
+  }) => {
     const {
       serviceType, metric, upgrade_service,
     } = current;

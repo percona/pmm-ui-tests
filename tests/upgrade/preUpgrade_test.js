@@ -1,5 +1,4 @@
 const { SERVICE_TYPE } = require('../helper/constants');
-const { clientDbServices} = require("./variables");
 
 Feature('PMM server pre Upgrade Tests').retry(1);
 
@@ -12,13 +11,17 @@ const sslinstances = new DataTable(['serviceName', 'version', 'container', 'serv
 sslinstances.add(['mysql_8.0_ssl_service', '8.0', 'mysql_8.0', 'mysql_ssl', 'mysql_global_status_max_used_connections', dashboardPage.mySQLInstanceOverview.url]);
 sslinstances.add(['mongodb_6.0_ssl_service', '6.0', 'mongodb_6.0', 'mongodb_ssl', 'mongodb_connections', dashboardPage.mongoDbInstanceOverview.url]);
 
-console.log(clientDbServices);
+const clientDbServices = new DataTable(['serviceType', 'name', 'metric', 'annotationName', 'dashboard', 'upgrade_service']);
+
+clientDbServices.add([SERVICE_TYPE.MYSQL, 'ps_', 'mysql_global_status_max_used_connections', 'annotation-for-mysql', dashboardPage.mysqlInstanceSummaryDashboard.url, 'mysql_upgrade']);
+clientDbServices.add([SERVICE_TYPE.POSTGRESQL, 'PGSQL_', 'pg_stat_database_xact_rollback', 'annotation-for-postgres', dashboardPage.postgresqlInstanceSummaryDashboard.url, 'pgsql_upgrade']);
+clientDbServices.add([SERVICE_TYPE.MONGODB, 'mongodb_', 'mongodb_connections', 'annotation-for-mongo', dashboardPage.mongoDbInstanceSummaryDashboard.url, 'mongo_upgrade']);
 
 Data(clientDbServices).Scenario(
   'Adding custom agent Password, Custom Label before upgrade At service Level @pre-custom-password-upgrade',
   async ({
-           I, inventoryAPI, current,
-         }) => {
+    I, inventoryAPI, current,
+  }) => {
     const {
       serviceType, name, upgrade_service,
     } = current;
