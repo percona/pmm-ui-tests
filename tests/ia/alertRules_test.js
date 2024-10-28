@@ -21,6 +21,7 @@ Feature('Alerting: Alert rules');
 
 Before(async ({ I }) => {
   await I.Authorize();
+  await rulesAPI.removeAllAlertRules();
 });
 
 After(async () => {

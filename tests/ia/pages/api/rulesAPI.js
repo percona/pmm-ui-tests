@@ -96,7 +96,7 @@ module.exports = {
 
   async removeAlertRule(folder) {
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
-    const resp = await I.sendDeleteRequest(`/graph/api/ruler/grafana/api/v1/rules/${folder}/default-alert-group?subtype=cortex`, headers);
+    const resp = await I.sendDeleteRequest(`graph/api/ruler/grafana/api/v1/rules/${folder}/default-alert-group?subtype=cortex`, headers);
 
     assert.ok(
       resp.status === 202,
