@@ -1,7 +1,7 @@
 const assert = require('assert');
 const { SERVICE_TYPE } = require('../helper/constants');
 
-Feature('PMM upgrade tests for ssl');
+Feature('PMM upgrade tests for SSL');
 
 const { adminPage, dashboardPage } = inject();
 const pathToPMMFramework = adminPage.pathToPMMTests;
@@ -134,23 +134,26 @@ Data(sslinstances).Scenario(
 Data(sslinstances).Scenario(
   'Verify dashboard for SSL Instances and services after upgrade @post-ssl-upgrade',
   async ({
-    I, dashboardPage, adminPage, current,
+    I, dashboardPage, adminPage, current, inventoryAPI,
   }) => {
     const {
-      serviceName, dashboard,
+      serviceType, serviceName, dashboard,
     } = current;
 
-    const serviceList = [serviceName, `remote_api_${serviceName}`];
+    const apiServiceDetails = (await inventoryAPI.apiGetServices()).data[serviceType].find((service) => service.service_name.startsWith(serviceName));
+
+    const serviceList = [apiServiceDetails.service_name, `remote_api_${serviceName}`];
 
     for (const service of serviceList) {
       I.amOnPage(dashboard);
       dashboardPage.waitForDashboardOpened();
       await adminPage.applyTimeRange('Last 5 minutes');
+      I.wait(2);
       await dashboardPage.applyFilter('Service Name', service);
       adminPage.performPageDown(5);
       await dashboardPage.expandEachDashboardRow();
       adminPage.performPageUp(5);
-      await dashboardPage.verifyThereAreNoGraphsWithoutData(3);
+      await dashboardPage.verifyThereAreNoGraphsWithoutData(16);
     }
   },
 ).retry(1);
@@ -158,13 +161,15 @@ Data(sslinstances).Scenario(
 Data(sslinstances).Scenario(
   'Verify QAN after upgrade for SSL Instances added @post-ssl-upgrade',
   async ({
-    I, queryAnalyticsPage, current, adminPage,
+    I, queryAnalyticsPage, current, adminPage, inventoryAPI,
   }) => {
     const {
-      serviceName,
+      serviceName, serviceType,
     } = current;
 
-    const serviceList = [serviceName, `remote_api_${serviceName}`];
+    const apiServiceDetails = (await inventoryAPI.apiGetServices()).data[serviceType].find((service) => service.service_name.startsWith(serviceName));
+
+    const serviceList = [apiServiceDetails.service_name, `remote_api_${serviceName}`];
 
     for (const service of serviceList) {
       I.amOnPage(I.buildUrlWithParams(queryAnalyticsPage.url, { from: 'now-5m' }));
