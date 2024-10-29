@@ -65,8 +65,10 @@ test.describe('PMM Server CLI tests for Docker Environment Variables', async () 
    */
   test('PMM-T226 run docker container with all valid environment variables not causing any warning or error message', async ({}) => {
     // @ts-ignore
-    await cli.exec(`docker run -d -p 83:8080 -p 447:8443 
-    --name PMM-T226 -e PMM_DATA_RETENTION=48h -e PMM_DISABLE_UPDATES=true -e PMM_DISABLE_TELEMETRY=false  
+    await cli.exec(`docker run -d -p 83:80 -p 447:443 
+    --name PMM-T226 -e PMM_DATA_RETENTION=48h -e PMM_ENABLE_UPDATES=true -e PMM_ENABLE_TELEMETRY=false 
+    -e PMM_ENABLE_ALERTING=true -e PMM_METRICS_RESOLUTION_HR=24h -e PMM_ENABLE_VM_CACHE=true
+    -e PMM_ENABLE_AZURE_DISCOVER=true -e PMM_PUBLIC_ADDRESS=127.0.0.1 -e PMM_DEBUG=true -e PMM_TRACE=true
     -e PMM_METRICS_RESOLUTION=24h -e PMM_METRICS_RESOLUTION_LR=24h -e PMM_METRICS_RESOLUTION_MR=24h ${DOCKER_IMAGE}`);
     stopList.push('PMM-T226');
     removeList.push('PMM-T226');
