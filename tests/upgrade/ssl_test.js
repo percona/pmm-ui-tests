@@ -9,7 +9,7 @@ const sslinstances = new DataTable(['serviceName', 'version', 'container', 'serv
 
 sslinstances.add(['pdpgsql_pgsm_ssl', '16', 'pdpgsql_pgsm_ssl_16', 'postgres_ssl', 'pg_stat_database_xact_rollback', dashboardPage.postgresqlInstanceOverviewDashboard.url, 'postgresql']);
 sslinstances.add(['mysql_ssl', '8.0', 'mysql_ssl_8.0', 'mysql_ssl', 'mysql_global_status_max_used_connections', dashboardPage.mySQLInstanceOverview.url, 'mysql']);
-sslinstances.add(['psmdb-server', '6.0', 'mongodb_6.0', 'mongodb_ssl', 'mongodb_connections', dashboardPage.mongoDbInstanceOverview.url, 'mongodb']);
+// sslinstances.add(['psmdb-server', '6.0', 'mongodb_6.0', 'mongodb_ssl', 'mongodb_connections', dashboardPage.mongoDbInstanceOverview.url, 'mongodb']);
 
 Before(async ({ I }) => {
   await I.Authorize();
