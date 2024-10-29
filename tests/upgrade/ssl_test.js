@@ -5,11 +5,11 @@ Feature('PMM upgrade tests for ssl');
 
 const { adminPage, dashboardPage } = inject();
 const pathToPMMFramework = adminPage.pathToPMMTests;
-const sslinstances = new DataTable(['serviceName', 'version', 'container', 'serviceType', 'metric', 'dashboard']);
+const sslinstances = new DataTable(['serviceName', 'version', 'container', 'serviceType', 'metric', 'dashboard', 'serviceType']);
 
-sslinstances.add(['pgsql_16_ssl_service', '16', 'pdpgsql_pgsm_ssl_16', 'postgres_ssl', 'pg_stat_database_xact_rollback', dashboardPage.postgresqlInstanceOverviewDashboard.url]);
-sslinstances.add(['mysql_8.0_ssl_service', '8.0', 'mysql_ssl_8.0', 'mysql_ssl', 'mysql_global_status_max_used_connections', dashboardPage.mySQLInstanceOverview.url]);
-// sslinstances.add(['mongodb_6.0_ssl_service', '6.0', 'mongodb_6.0', 'mongodb_ssl', 'mongodb_connections', dashboardPage.mongoDbInstanceOverview.url]);
+sslinstances.add(['pdpgsql_pgsm_ssl', '16', 'pdpgsql_pgsm_ssl_16', 'postgres_ssl', 'pg_stat_database_xact_rollback', dashboardPage.postgresqlInstanceOverviewDashboard.url, 'postgresql']);
+sslinstances.add(['mysql_ssl', '8.0', 'mysql_ssl_8.0', 'mysql_ssl', 'mysql_global_status_max_used_connections', dashboardPage.mySQLInstanceOverview.url, 'mysql']);
+sslinstances.add(['psmdb-server', '6.0', 'mongodb_6.0', 'mongodb_ssl', 'mongodb_connections', dashboardPage.mongoDbInstanceOverview.url, 'mongodb']);
 
 Before(async ({ I }) => {
   await I.Authorize();
@@ -18,14 +18,11 @@ Before(async ({ I }) => {
 Data(sslinstances).Scenario(
   'PMM-T948 PMM-T947 Verify Adding Postgresql, MySQL, MongoDB SSL services remotely via API before upgrade @pre-ssl-upgrade',
   async ({
-    I, remoteInstancesPage, pmmInventoryPage, current, addInstanceAPI, inventoryAPI,
+    I, remoteInstancesPage, current, addInstanceAPI, inventoryAPI,
   }) => {
     const {
       serviceName, serviceType, version, container,
     } = current;
-
-    console.log(await I.verifyCommand('docker ps -a'));
-
     let details;
     const remoteServiceName = `remote_api_${serviceName}`;
 
@@ -111,33 +108,28 @@ Data(sslinstances).Scenario(
     I, current, grafanaAPI, inventoryAPI,
   }) => {
     const {
-      serviceName, metric,
+      serviceName, metric, serviceType,
     } = current;
-    let response; let result;
     const remoteServiceName = `remote_api_${serviceName}`;
 
     // Waiting for metrics to start hitting for remotely added services
     I.wait(10);
 
     // verify metric for client container node instance
+    const apiServiceDetails = (await inventoryAPI.apiGetServices()).data[serviceType].find((service) => service.service_name.startsWith(serviceName));
 
-    console.log('Services are: ');
-    console.log(await inventoryAPI.apiGetServices());
-    response = await grafanaAPI.checkMetricExist(metric, { type: 'service_name', value: serviceName });
-
-    console.log('Response is: ');
-    console.log(response.data);
-    result = JSON.stringify(response.data.data.result);
+    const response = await grafanaAPI.checkMetricExist(metric, { type: 'service_name', value: apiServiceDetails.service_name });
+    const result = JSON.stringify(response.data.data.result);
 
     assert.ok(response.data.data.result.length !== 0, `Metrics ${metric} from ${serviceName} should be available but got empty ${result}`);
 
     // verify metric for remote instance
-    response = await grafanaAPI.checkMetricExist(metric, { type: 'service_name', value: remoteServiceName });
-    result = JSON.stringify(response.data.data.result);
+    const remoteResponse = await grafanaAPI.checkMetricExist(metric, { type: 'service_name', value: remoteServiceName });
+    const remoteResult = JSON.stringify(response.data.data.result);
 
-    assert.ok(response.data.data.result.length !== 0, `Metrics ${metric} from ${remoteServiceName} should be available but got empty ${result}`);
+    assert.ok(remoteResponse.data.data.result.length !== 0, `Metrics ${metric} from ${remoteServiceName} should be available but got empty ${remoteResult}`);
   },
-).retry(1);
+);
 
 Data(sslinstances).Scenario(
   'Verify dashboard for SSL Instances and services after upgrade @post-ssl-upgrade',
