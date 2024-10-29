@@ -54,6 +54,7 @@ Data(clientDbServices).Scenario(
     const {
       serviceType, metric, upgrade_service, name,
     } = current;
+    console.log(await inventoryAPI.apiGetServices());
     const apiServiceDetails = (await inventoryAPI.apiGetServices()).data[upgrade_service].find((service) => service.service_name.startsWith(name));
     const { custom_labels } = await inventoryAPI.apiGetNodeInfoByServiceName(serviceType, apiServiceDetails.service_name);
 
