@@ -22,7 +22,7 @@ Data(clientDbServices).Scenario(
     console.log(await I.verifyCommand('docker ps -a'));
     const {
       service_id, node_id, address, port,
-    } = await inventoryAPI.apiGetNodeInfoForAllNodesByServiceName(serviceType, name);
+    } = await inventoryAPI.apiGetNodeInfoForAllNodesByServiceName(upgrade_service, name);
 
 
 

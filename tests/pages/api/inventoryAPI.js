@@ -66,9 +66,9 @@ module.exports = {
   async apiGetNodeInfoForAllNodesByServiceName(serviceType, serviceName) {
     const service = await this.apiGetServices(serviceType);
 
-    console.log(service.data);
+    console.log(service.data[serviceType]);
 
-    const data = service.data.services
+    const data = service.data[serviceType]
       .filter(({ service_name }) => service_name.startsWith(serviceName));
 
     return data;
