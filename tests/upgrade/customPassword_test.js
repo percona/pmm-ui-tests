@@ -52,14 +52,12 @@ Data(clientDbServices).Scenario(
     current, inventoryAPI, grafanaAPI,
   }) => {
     const {
-      serviceType, metric, upgrade_service,
+      serviceType, metric, upgrade_service, name,
     } = current;
+    const apiServiceDetails = (await inventoryAPI.apiGetServices()).data[upgrade_service].find((service) => service.service_name.startsWith(name));
+    const { custom_labels } = await inventoryAPI.apiGetNodeInfoByServiceName(serviceType, apiServiceDetails.service_name);
 
-    const {
-      custom_labels,
-    } = await inventoryAPI.apiGetNodeInfoByServiceName(serviceType, upgrade_service);
-
-    await grafanaAPI.checkMetricExist(metric, { type: 'service_name', value: upgrade_service });
+    await grafanaAPI.checkMetricExist(metric, { type: 'service_name', value: apiServiceDetails.service_name });
     if (serviceType !== SERVICE_TYPE.MYSQL) {
       assert.ok(custom_labels, `Node Information for ${serviceType} added with ${upgrade_service} is empty, value returned are ${custom_labels}`);
       assert.ok(custom_labels.testing === 'upgrade', `Custom Labels for ${serviceType} added before upgrade with custom labels, doesn't have the same label post upgrade, value found ${custom_labels}`);
