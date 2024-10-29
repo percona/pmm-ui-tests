@@ -458,6 +458,7 @@ module.exports = {
   },
 
   async checkMetricExist(metricName, refineBy) {
+    console.log(await I.verifyCommand('docker ps -a'));
     const response = await this.getMetric(metricName, refineBy);
     const result = JSON.stringify(response.data.data.result);
 
