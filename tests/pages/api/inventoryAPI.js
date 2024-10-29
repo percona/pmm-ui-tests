@@ -77,6 +77,9 @@ module.exports = {
   async apiGetPMMAgentInfoByServiceId(serviceId, agentType = AGENT_TYPE.PMM_AGENT) {
     const resp = await this.apiGetAgents(serviceId);
 
+    console.log('Agents response is: ');
+    console.log(resp.data);
+
     const agent = resp.data.agents
       .find(({ agent_type }) => agent_type === agentType);
 
