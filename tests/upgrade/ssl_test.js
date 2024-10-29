@@ -5,7 +5,7 @@ Feature('PMM upgrade tests for SSL');
 
 const { adminPage, dashboardPage } = inject();
 const pathToPMMFramework = adminPage.pathToPMMTests;
-const sslinstances = new DataTable(['serviceName', 'version', 'container', 'serviceType', 'metric', 'dashboard', 'serviceType']);
+const sslinstances = new DataTable(['serviceName', 'version', 'container', 'serviceType', 'metric', 'dashboard', 'databaseType']);
 
 sslinstances.add(['pdpgsql_pgsm_ssl', '16', 'pdpgsql_pgsm_ssl_16', 'postgres_ssl', 'pg_stat_database_xact_rollback', dashboardPage.postgresqlInstanceOverviewDashboard.url, 'postgresql']);
 sslinstances.add(['mysql_ssl', '8.0', 'mysql_ssl_8.0', 'mysql_ssl', 'mysql_global_status_max_used_connections', dashboardPage.mySQLInstanceOverview.url, 'mysql']);
@@ -108,7 +108,7 @@ Data(sslinstances).Scenario(
     I, current, grafanaAPI, inventoryAPI,
   }) => {
     const {
-      serviceName, metric, serviceType,
+      serviceName, metric, databaseType,
     } = current;
     const remoteServiceName = `remote_api_${serviceName}`;
 
@@ -116,7 +116,7 @@ Data(sslinstances).Scenario(
     I.wait(10);
 
     // verify metric for client container node instance
-    const apiServiceDetails = (await inventoryAPI.apiGetServices()).data[serviceType].find((service) => service.service_name.startsWith(serviceName));
+    const apiServiceDetails = (await inventoryAPI.apiGetServices()).data[databaseType].find((service) => service.service_name.startsWith(serviceName));
 
     const response = await grafanaAPI.checkMetricExist(metric, { type: 'service_name', value: apiServiceDetails.service_name });
     const result = JSON.stringify(response.data.data.result);
@@ -137,10 +137,10 @@ Data(sslinstances).Scenario(
     I, dashboardPage, adminPage, current, inventoryAPI,
   }) => {
     const {
-      serviceType, serviceName, dashboard,
+      databaseType, serviceName, dashboard,
     } = current;
 
-    const apiServiceDetails = (await inventoryAPI.apiGetServices()).data[serviceType].find((service) => service.service_name.startsWith(serviceName));
+    const apiServiceDetails = (await inventoryAPI.apiGetServices()).data[databaseType].find((service) => service.service_name.startsWith(serviceName));
 
     const serviceList = [apiServiceDetails.service_name, `remote_api_${serviceName}`];
 
@@ -164,10 +164,10 @@ Data(sslinstances).Scenario(
     I, queryAnalyticsPage, current, adminPage, inventoryAPI,
   }) => {
     const {
-      serviceName, serviceType,
+      serviceName, databaseType,
     } = current;
 
-    const apiServiceDetails = (await inventoryAPI.apiGetServices()).data[serviceType].find((service) => service.service_name.startsWith(serviceName));
+    const apiServiceDetails = (await inventoryAPI.apiGetServices()).data[databaseType].find((service) => service.service_name.startsWith(serviceName));
 
     const serviceList = [apiServiceDetails.service_name, `remote_api_${serviceName}`];
 
