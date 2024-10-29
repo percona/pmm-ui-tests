@@ -7,8 +7,8 @@ const { dashboardPage } = inject();
 
 const clientDbServices = new DataTable(['serviceType', 'name', 'metric', 'annotationName', 'dashboard', 'upgrade_service']);
 
-clientDbServices.add([SERVICE_TYPE.MYSQL, 'ps_pmm_8.0', 'mysql_global_status_max_used_connections', 'annotation-for-mysql', dashboardPage.mysqlInstanceSummaryDashboard.url, 'mysql']);
-clientDbServices.add([SERVICE_TYPE.POSTGRESQL, 'pgsql_pgss_pmm_17', 'pg_stat_database_xact_rollback', 'annotation-for-postgres', dashboardPage.postgresqlInstanceSummaryDashboard.url, 'pgsql']);
+clientDbServices.add([SERVICE_TYPE.MYSQL, 'mysql_ssl_8.0_ssl_service', 'mysql_global_status_max_used_connections', 'annotation-for-mysql', dashboardPage.mysqlInstanceSummaryDashboard.url, 'mysql']);
+clientDbServices.add([SERVICE_TYPE.POSTGRESQL, 'pdpgsql_pgsm_ssl_17_ssl_service', 'pg_stat_database_xact_rollback', 'annotation-for-postgres', dashboardPage.postgresqlInstanceSummaryDashboard.url, 'pgsql']);
 // clientDbServices.add([SERVICE_TYPE.MONGODB, 'mongodb_', 'mongodb_connections', 'annotation-for-mongo', dashboardPage.mongoDbInstanceSummaryDashboard.url, 'mongo']);
 
 Data(clientDbServices).Scenario(
@@ -19,10 +19,9 @@ Data(clientDbServices).Scenario(
     const {
       serviceType, name, upgrade_service,
     } = current;
-    console.log(await I.verifyCommand('docker ps -a'));
     const {
       service_id, node_id, address, port,
-    } = await inventoryAPI.apiGetNodeInfoForAllNodesByServiceName(upgrade_service, name);
+    } = await inventoryAPI.apiGetNodeInfoForService(upgrade_service, name);
 
     const { agent_id: pmm_agent_id } = await inventoryAPI.apiGetPMMAgentInfoByServiceId(service_id);
     let output;

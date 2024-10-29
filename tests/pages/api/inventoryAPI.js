@@ -66,25 +66,25 @@ module.exports = {
   async apiGetNodeInfoForAllNodesByServiceName(serviceType, serviceName) {
     const service = await this.apiGetServices(serviceType);
 
-    console.log(service.data[serviceType]);
-
     const data = service.data[serviceType]
       .filter(({ service_name }) => service_name.startsWith(serviceName));
 
     return data;
   },
 
-  async apiGetPMMAgentInfoByServiceId(serviceId, agentType = AGENT_TYPE.PMM_AGENT) {
+  async apiGetNodeInfoForService(serviceType, serviceName) {
+    const service = await this.apiGetServices(serviceType);
+
+    const data = service.data[serviceType]
+      .filter(({ service_name }) => service_name.startsWith(serviceName));
+
+    return data[0];
+  },
+
+  async apiGetPMMAgentInfoByServiceId(serviceId) {
     const resp = await this.apiGetAgents(serviceId);
 
-    console.log('Agents response is: ');
-    console.log(resp.data[agentType]);
-
-    const agent = resp.data[agentType];
-
-    await I.say(JSON.stringify(agent, null, 2));
-
-    return agent;
+    return resp.data.agents.find((agentData) => agentData.agent_type === AGENT_TYPE.PMM_AGENT);
   },
 
   async apiGetAgents(serviceId) {

@@ -41,10 +41,10 @@ const DISCOVER_RDS = {
 };
 
 const AGENT_TYPE = {
-  VMAGENT: 'vm_agent',
+  VMAGENT: 'vm-agent',
   MONGODB_EXPORTER: 'mongodb_exporter',
   QAN_MONGODB_PROFILER: 'qan-mongodb-profiler-agent',
-  PMM_AGENT: 'pmm_agent',
+  PMM_AGENT: 'pmm-agent',
 };
 
 module.exports = {
