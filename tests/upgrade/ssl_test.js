@@ -107,7 +107,6 @@ Data(sslinstances).Scenario(
   async ({
     I, current, grafanaAPI, inventoryAPI,
   }) => {
-    console.log(await inventoryAPI.apiGetServices());
     const {
       serviceName, metric, databaseType,
     } = current;
@@ -177,7 +176,7 @@ Data(sslinstances).Scenario(
       queryAnalyticsPage.waitForLoaded();
       await adminPage.applyTimeRange('Last 5 minutes');
       queryAnalyticsPage.waitForLoaded();
-      await queryAnalyticsPage.filters.selectFilter(service);
+      await queryAnalyticsPage.filters.selectFilterInGroup(service, 'Service Name');
       queryAnalyticsPage.waitForLoaded();
       const count = await queryAnalyticsPage.data.getCountOfItems();
 
