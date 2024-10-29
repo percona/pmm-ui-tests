@@ -107,6 +107,7 @@ Data(sslinstances).Scenario(
   async ({
     I, current, grafanaAPI, inventoryAPI,
   }) => {
+    console.log(await inventoryAPI.apiGetServices());
     const {
       serviceName, metric, databaseType,
     } = current;
