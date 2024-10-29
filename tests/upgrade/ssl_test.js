@@ -120,6 +120,9 @@ Data(sslinstances).Scenario(
     I.wait(10);
 
     // verify metric for client container node instance
+
+    console.log('Services are: ');
+    console.log(await inventoryAPI.apiGetServices());
     response = await grafanaAPI.checkMetricExist(metric, { type: 'service_name', value: serviceName });
 
     console.log('Response is: ');
