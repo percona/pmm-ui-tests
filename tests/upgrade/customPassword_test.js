@@ -38,7 +38,7 @@ Data(clientDbServices).Scenario(
         break;
       case SERVICE_TYPE.MONGODB:
         output = await I.verifyCommand(
-          `pmm-admin add mongodb --username=pmm_mongodb --password=GRgrO9301RuF --port=27023 --host=${address} --agent-password=uitests --custom-labels="testing=upgrade" ${upgrade_service}`,
+          `pmm-admin add mongodb --username=pmm_mongodb --password=GRgrO9301RuF --port=27017 --host=${address} --agent-password=uitests --custom-labels="testing=upgrade" ${upgrade_service}`,
         );
         break;
       default:
