@@ -1,15 +1,14 @@
 const assert = require('assert');
 const { SERVICE_TYPE } = require('../helper/constants');
 
-Feature('PMM upgrade tests for custom password').retry(1);
-
+Feature('PMM upgrade tests for custom password');
 const { dashboardPage } = inject();
 
 const clientDbServices = new DataTable(['serviceType', 'name', 'metric', 'annotationName', 'dashboard', 'upgrade_service']);
 
-clientDbServices.add([SERVICE_TYPE.MYSQL, 'mysql_ssl_8.0_ssl_service', 'mysql_global_status_max_used_connections', 'annotation-for-mysql', dashboardPage.mysqlInstanceSummaryDashboard.url, 'mysql']);
-clientDbServices.add([SERVICE_TYPE.POSTGRESQL, 'pdpgsql_pgsm_ssl_17_ssl_service', 'pg_stat_database_xact_rollback', 'annotation-for-postgres', dashboardPage.postgresqlInstanceSummaryDashboard.url, 'pgsql']);
-// clientDbServices.add([SERVICE_TYPE.MONGODB, 'mongodb_', 'mongodb_connections', 'annotation-for-mongo', dashboardPage.mongoDbInstanceSummaryDashboard.url, 'mongo']);
+clientDbServices.add([SERVICE_TYPE.MYSQL, 'ps-single', 'mysql_global_status_max_used_connections', 'annotation-for-mysql', dashboardPage.mysqlInstanceSummaryDashboard.url, 'mysql']);
+clientDbServices.add([SERVICE_TYPE.POSTGRESQL, 'pgsql_pgss_pmm_17_service', 'pg_stat_database_xact_rollback', 'annotation-for-postgres', dashboardPage.postgresqlInstanceSummaryDashboard.url, 'postgresql']);
+clientDbServices.add([SERVICE_TYPE.MONGODB, 'rs101', 'mongodb_connections', 'annotation-for-mongo', dashboardPage.mongoDbInstanceSummaryDashboard.url, 'mongodb']);
 
 Data(clientDbServices).Scenario(
   'Adding custom agent Password, Custom Label before upgrade At service Level @pre-custom-password-upgrade',
