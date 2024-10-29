@@ -118,11 +118,12 @@ Data(sslinstances).Scenario(
 
     // Waiting for metrics to start hitting for remotely added services
     I.wait(10);
-    console.log(await inventoryAPI.apiGetServices());
-
 
     // verify metric for client container node instance
     response = await grafanaAPI.checkMetricExist(metric, { type: 'service_name', value: serviceName });
+
+    console.log('Response is: ');
+    console.log(response.data);
     result = JSON.stringify(response.data.data.result);
 
     assert.ok(response.data.data.result.length !== 0, `Metrics ${metric} from ${serviceName} should be available but got empty ${result}`);
