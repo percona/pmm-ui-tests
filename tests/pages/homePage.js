@@ -130,7 +130,7 @@ module.exports = {
 
     I.waitForElement(pmmUpgradePage.elements.updateNowButton);
     I.click(pmmUpgradePage.elements.updateNowButton);
-    I.wait(120);
+    I.wait(180);
 
     // I.waitForElement(pmmUpgradePage.elements.updateSuccess, 360);
   },
