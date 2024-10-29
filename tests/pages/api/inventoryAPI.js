@@ -78,10 +78,9 @@ module.exports = {
     const resp = await this.apiGetAgents(serviceId);
 
     console.log('Agents response is: ');
-    console.log(resp.data);
+    console.log(resp.data[agentType]);
 
-    const agent = resp.data.agents
-      .find(({ agent_type }) => agent_type === agentType);
+    const agent = resp.data[agentType];
 
     await I.say(JSON.stringify(agent, null, 2));
 
