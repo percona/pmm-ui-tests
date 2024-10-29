@@ -33,12 +33,12 @@ Data(clientDbServices).Scenario(
         break;
       case SERVICE_TYPE.POSTGRESQL:
         output = await I.verifyCommand(
-          `pmm-admin add postgresql --username=postgres --password=oFukiBRg7GujAJXq3tmd --node-id=${node_id} --pmm-agent-id=${pmm_agent_id} --port=${port} --host=${address} --agent-password=uitests --custom-labels="testing=upgrade" ${upgrade_service}`,
+          `pmm-admin add postgresql --username=pmm --password=pmm --node-id=${node_id} --pmm-agent-id=${pmm_agent_id} --port=${port} --host=${address} --agent-password=uitests --custom-labels="testing=upgrade" ${upgrade_service}`,
         );
         break;
       case SERVICE_TYPE.MONGODB:
         output = await I.verifyCommand(
-          `pmm-admin add mongodb --username=pmm_mongodb --password=GRgrO9301RuF --port=27017 --host=${address} --agent-password=uitests --custom-labels="testing=upgrade" ${upgrade_service}`,
+          `pmm-admin add mongodb --username=pmm_mongodb --password="5M](Q%q/U+YQ<^m" --port=27017 --host=${address} --agent-password=uitests --custom-labels="testing=upgrade" ${upgrade_service}`,
         );
         break;
       default:
