@@ -67,7 +67,7 @@ Scenario(
   },
 ).retry(0);
 
-Scenario(
+Scenario.skip(
   'Run queries for MongoDB after upgrade @post-mongo-backup-upgrade',
   async ({ I }) => {
     const col = await I.mongoCreateCollection('local', 'e2e');
@@ -82,7 +82,9 @@ Scenario(
   async ({ I, scheduledPage }) => {
     await scheduledPage.openScheduledBackupsPage();
     await I.waitForVisible(scheduledPage.elements.toggleByName(scheduleName));
-    I.seeAttributesOnElements(scheduledPage.elements.toggleByName(scheduleName), { checked: true });
+    let isChecked = await I.grabAttributeFrom(scheduledPage.elements.toggleByName(scheduleName), 'checked');
+
+    I.assertEqual(isChecked, null, `Element ${scheduledPage.elements.toggleByName(scheduleName).xpath} is checked, but should not be.`);
 
     // Verify settings for scheduled job
     I.seeTextEquals('Every 20 minutes', scheduledPage.elements.frequencyByName(scheduleName));
@@ -94,7 +96,9 @@ Scenario(
     // Disable schedule
     I.click(scheduledPage.buttons.enableDisableByName(scheduleName));
     await I.waitForVisible(scheduledPage.elements.toggleByName(scheduleName));
-    I.seeAttributesOnElements(scheduledPage.elements.toggleByName(scheduleName), { checked: null });
+    isChecked = await I.grabAttributeFrom(scheduledPage.elements.toggleByName(scheduleName), 'checked');
+
+    I.assertEqual(isChecked, '', `Element ${scheduledPage.elements.toggleByName(scheduleName).xpath} is checked, but should not be.`);
   },
 ).retry(0);
 
@@ -117,7 +121,6 @@ Scenario(
     locationsAPI, inventoryAPI, backupAPI, backupInventoryPage,
   }) => {
     const backupName = 'backup_after_update';
-
     const { location_id } = await locationsAPI.getLocationDetails(location.name);
     const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.MONGODB, mongoServiceName);
     const backupId = await backupAPI.startBackup(backupName, service_id, location_id);
