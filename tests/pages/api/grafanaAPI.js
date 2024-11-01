@@ -366,7 +366,7 @@ module.exports = {
           datasource: {
             uid,
           },
-          expr: `${metricName}{${refineBy.type}=\"${refineBy.value}\"}`,
+          expr: refineBy ? `${metricName}{${refineBy.type}=\"${refineBy.value}\"}` : metricName,
         },
       ],
       from: 'now-15m',
@@ -404,8 +404,8 @@ module.exports = {
       // Main condition check: metric body is not empty
       const response = await this.getMetric(metricName, queryBy);
 
-      if (response.data.data.result.length !== 0) {
-        return response;
+      if (response.data.results.A.frames[0].data.values !== 0) {
+        return response.data;
       }
 
       // Check the timeout after evaluating main condition
