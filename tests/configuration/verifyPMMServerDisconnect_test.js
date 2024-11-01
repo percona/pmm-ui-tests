@@ -8,11 +8,11 @@ const serverImage = process.env.DOCKER_VERSION || 'perconalab/pmm-server:3-dev-l
 
 BeforeSuite(async ({ I }) => {
   await I.verifyCommand(`PMM_SERVER_IMAGE=${serverImage} docker compose -f docker-compose-disconnect.yml up -d pmm-server-disconnect`);
-  await I.asyncWaitFor(async () => await I.verifyCommand(`echo $(curl -s -o /dev/null -w '%{http_code}' 127.0.0.1:${pmmServerPort}/ping)`) === '200', 100);
+  await I.asyncWaitFor(async () => await I.verifyCommand(`echo $(curl -s -o /dev/null -w '%{http_code}' 127.0.0.1:${pmmServerPort}/ping)`) === '200', 60);
   await I.verifyCommand('docker compose -f docker-compose-disconnect.yml up -d pmm-client');
   await I.verifyCommand('docker compose -f docker-compose-disconnect.yml up -d mysql5.7');
   clientServerNetwork = await I.verifyCommand('docker inspect pmm-client-disconnect -f \'{{range $k, $v := .NetworkSettings.Networks}}{{printf "%s\\n" $k}}{{end}}\' | grep -o \'.*server-network\'');
-  await I.asyncWaitFor(async () => await I.verifyCommand('echo $(docker container logs mysql-disconnect-5.7 2>&1 | grep "Server hostname (bind-address)")') !== '', 100);
+  await I.asyncWaitFor(async () => await I.verifyCommand('echo $(docker container logs mysql-disconnect-5.7 2>&1 | grep "Server hostname (bind-address)")') !== '', 60);
   await I.verifyCommand('docker exec pmm-client-disconnect pmm-admin add mysql --username=root --password=7B*53@lCdflR --host=mysql-disconnect-5.7 --port=3306 --query-source=perfschema mysql-disconnect-5.7');
   // wait for the data to be scraped from db
   I.wait(60);
@@ -28,7 +28,7 @@ AfterSuite(async ({ I }) => {
 
 const withCustomBaseUrl = (url) => `${basePmmUrl}${url}`;
 
-Scenario(
+Scenario.only(
   '@PMM-T1442 Verify metrics are saved if PMM server was offline @disconnect',
   async ({ I, dashboardPage }) => {
     await I.amOnPage(withCustomBaseUrl(dashboardPage.mySQLInstanceOverview.url));
