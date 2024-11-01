@@ -31,7 +31,7 @@ services:
         condition: service_healthy
     environment:
       - PMM_AGENT_SETUP=1
-      - PMM_AGENT_SERVER_ADDRESS=pmm-server-external-clickhouse
+      - PMM_AGENT_SERVER_ADDRESS=pmm-server-external-clickhouse:8443
       - PMM_AGENT_SERVER_USERNAME=admin
       - PMM_AGENT_SERVER_PASSWORD=admin
       - PMM_AGENT_PORTS_MIN=41000
