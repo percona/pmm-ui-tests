@@ -14,7 +14,7 @@ test.describe('PMM Server CLI tests for Docker Environment Variables', async () 
   test.beforeAll(async () => {
     await cli.exec(`PMM_SERVER_IMAGE=${PMM_SERVER_IMAGE}
       PMM_CLIENT_IMAGE=${PMM_CLIENT_IMAGE}
-      docker-compose -f test-setup/docker-compose-pmm-admin-remove.yml up -d`);
+      docker compose -f test-setup/docker-compose-pmm-admin-remove.yml up -d`);
     await cli.exec('sleep 10');
 
     for (let i = 0; i < 2; i++) {
@@ -28,7 +28,7 @@ test.describe('PMM Server CLI tests for Docker Environment Variables', async () 
   });
 
   test.afterAll(async () => {
-    await cli.exec('docker-compose -f test-setup/docker-compose-pmm-admin-remove.yml down -v');
+    await cli.exec('docker compose -f test-setup/docker-compose-pmm-admin-remove.yml down -v');
   });
 
   test('PMM-T1286, PMM-T1287, PMM-T1288, PMM-T1308 - Verify service removal without specifying service name/service id', async ({}) => {
@@ -36,7 +36,7 @@ test.describe('PMM Server CLI tests for Docker Environment Variables', async () 
       const output = await cli.exec(`docker exec pmm-client-remove pmm-admin remove ${services[i]}`);
       await output.exitCodeEquals(1);
       await output.outContains(
-        'We could not find a service associated with the local node. Please provide "Service ID" or "Service name"',
+        `We could not find a service associated with the local node. Please provide Service ID or Service name, ${services[i]} `,
       );
     }
 
