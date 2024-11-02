@@ -43,6 +43,7 @@ test.describe('Percona Server MySql (PS) Configuration file test', async () => {
       // eslint-disable-next-line @typescript-eslint/no-loop-func
       const serviceId: string = adminList.find((item: string | string[]) => item.includes(`mysql_conf_${n}`))
         ?.trim()
+        .split(' ')
         .pop() ?? ''; // Get the last item in the split result
 
       await expect(async () => {
