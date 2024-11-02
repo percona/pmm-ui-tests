@@ -1,5 +1,6 @@
 import { test, expect } from '@playwright/test';
 import * as cli from '@helpers/cli-helper';
+import {execute} from "@helpers/cli-helper";
 
 const MYSQL_USER = 'msandbox';
 const MYSQL_PASSWORD = 'msandbox';
@@ -38,6 +39,7 @@ test.describe('Percona Server MySql (PS) Configuration file test', async () => {
       await output.assertSuccess();
       await output.outContains('MySQL Service added.');
 
+      const adminList = (await execute('sudo pmm-admin list').assertSuccess()).getStdOutLines();
       // eslint-disable-next-line @typescript-eslint/no-loop-func
       const serviceId: string = adminList.find((item: string | string[]) => item.includes(`mysql_conf_${n}`))
         ?.trim()
