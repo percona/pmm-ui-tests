@@ -36,7 +36,7 @@ test.describe('PMM Server CLI tests for Docker Environment Variables', async () 
       const output = await cli.exec(`docker exec pmm-client-remove pmm-admin remove ${services[i]}`);
       await output.exitCodeEquals(1);
       await output.outContains(
-        `We could not find a service associated with the local node. Please provide Service ID or Service name, ${services[i]} `,
+        'We could not find a service associated with the local node. Please provide "Service ID" or "Service name".',
       );
     }
 
