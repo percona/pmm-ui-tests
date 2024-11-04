@@ -29,9 +29,9 @@ Before(async ({ I }) => {
   await I.Authorize();
 });
 
-// After(async ({ I }) => {
-//   await I.verifyCommand(`docker exec ${connection.container_name} pmm-admin remove mysql ${mysql_service_name_ac} || true`);
-// });
+After(async ({ I }) => {
+  await I.verifyCommand(`docker exec ${connection.container_name} pmm-admin remove mysql ${mysql_service_name_ac} || true`);
+});
 
 Scenario(
   'PMM-T1307 PMM-T1306 PMM-T1305 PMM-T1304 PMM-T1290 PMM-T1281 Verify that pmm-admin inventory add agent mysqld-exporter with --log-level flag adds MySQL exporter with corresponding log-level @not-ui-pipeline @exporters',
