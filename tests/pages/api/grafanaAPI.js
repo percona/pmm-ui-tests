@@ -6,7 +6,7 @@ module.exports = {
   customDashboardName: 'auto-test-dashboard',
   customFolderName: 'auto-test-folder',
   customPanelName: 'Monitored DB',
-  randomDashboardName: 'uto-dashboard-custom',
+  randomDashboardName: 'auto-dashboard-custom',
   randomTag: 'tag-random',
 
   /**

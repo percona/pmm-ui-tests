@@ -127,9 +127,9 @@ Scenario(
     I, searchDashboardsModal, grafanaAPI, homePage, dashboardPage,
   }) => {
     await homePage.open();
-    I.click(dashboardPage.fields.breadcrumbs.dashboardName);
-    searchDashboardsModal.waitForOpened();
-    searchDashboardsModal.collapseFolder('Recent');
+    I.waitForVisible(locate('a').withText('Dashboards'), 10);
+    I.click(locate('a').withText('Dashboards'));
+
     searchDashboardsModal.expandFolder(searchDashboardsModal.folders.insight.name);
     I.seeElement(searchDashboardsModal.fields.folderItemLocator(grafanaAPI.randomDashboardName));
     I.seeElement(searchDashboardsModal.fields.folderItemWithTagLocator(grafanaAPI.randomDashboardName, grafanaAPI.randomTag));
