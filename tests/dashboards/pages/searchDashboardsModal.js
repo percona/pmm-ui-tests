@@ -121,6 +121,7 @@ module.exports = {
     collapsedFolderLocator: (folderName) => locate(`[aria-label="Expand folder ${folderName}"]`),
     expandedFolderLocator: (folderName) => locate(`[aria-label="Collapse folder ${folderName}"]`),
     folderItemLocator: (itemName) => I.useDataQA(`data-testid browse dashboards row ${itemName}`),
+    folderItemLocatorExpand: (itemName) => locate(I.useDataQA(`data-testid browse dashboards row ${itemName}`)).find('button'),
     folderItemWithTagLocator: (itemName, tag) => locate(I.useDataQA(`data-testid browse dashboards row ${itemName}`))
       .find('[aria-label="Tags"] li').withText(tag),
     itemLocator: (itemName) => locate(I.useDataQA(`data-testid Dashboard search item ${itemName}`)),
