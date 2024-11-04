@@ -135,10 +135,11 @@ Scenario(
       backupInventoryPage.openInventoryPage();
       backupInventoryPage.startRestore(backupName);
       await restorePage.waitForRestoreSuccess(backupName);
+      I.wait(60);
 
       await I.say('I search for the record after MongoDB restored from backup');
       collection = replica.db('test').collection('e2e');
-      console.log(collection);
+
       const record = await collection.findOne({ number: 2, name: 'Anna' });
 
       I.assertEqual(record, null, `Was expecting to not have a record ${JSON.stringify(record, null, 2)} after restore operation`);
