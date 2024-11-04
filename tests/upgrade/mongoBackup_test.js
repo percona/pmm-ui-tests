@@ -118,8 +118,8 @@ Scenario(
 Scenario(
   '@PMM-T1503 PMM-T970 - The user is able to do a restore for MongoDB after the upgrade @post-mongo-backup-upgrade',
   async ({
-           I, backupInventoryPage, restorePage, credentials,
-         }) => {
+    I, backupInventoryPage, restorePage, credentials,
+  }) => {
     const replica = await I.getMongoClient({
       username: credentials.mongoReplicaPrimaryForBackups.username,
       password: credentials.mongoReplicaPrimaryForBackups.password,
@@ -138,6 +138,7 @@ Scenario(
 
       await I.say('I search for the record after MongoDB restored from backup');
       collection = replica.db('test').collection('e2e');
+      console.log(collection);
       const record = await collection.findOne({ number: 2, name: 'Anna' });
 
       I.assertEqual(record, null, `Was expecting to not have a record ${JSON.stringify(record, null, 2)} after restore operation`);
