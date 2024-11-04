@@ -108,11 +108,9 @@ Scenario(
   }) => {
     const foldersNames = Object.values(searchDashboardsModal.folders).map((folder) => folder.name);
 
-    foldersNames.unshift('Recent');
-
     await homePage.open();
-    I.click(dashboardPage.fields.breadcrumbs.dashboardName);
-    searchDashboardsModal.waitForOpened();
+    I.click(locate('a').withText('Dashboards'));
+
     const actualFolders = (await searchDashboardsModal.getFoldersList())
       // these folders verified in dedicated test.
       .filter((value) => value !== 'Starred' && value !== grafanaAPI.customFolderName);
