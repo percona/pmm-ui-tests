@@ -1,5 +1,9 @@
 Feature('PMM upgrade tests for dashboards');
 
+Before(async ({ I }) => {
+  await I.Authorize();
+});
+
 Scenario(
   'PMM-T391 PMM-T1818 Verify user is able to create and set custom home dashboard @pre-dashboards-upgrade',
   async ({
