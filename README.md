@@ -78,7 +78,7 @@ Execute command in the Project Root folder
                                 (e.g. Data from exporters is displayed at those dashboards)
     @dbaas                  DB as a Service functionality tests
     @grafana-pr             Executed in Github Actions for PRs in percona-platform/grafana repository
-    @ia                     Integrated Alerting functionality tests
+    @alerting-fb                     Integrated Alerting functionality tests
     @instances              Remote Instances addition functionality 
                                 and checking that data appears from exporters
     @inventory              Inventory functionality, removing nodes, services, etc.
