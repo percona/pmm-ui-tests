@@ -207,15 +207,6 @@ module.exports = {
     let output;
     let actualLogLevel;
     const logLvlFlag = expectedLogLevel ? `--log-level=${expectedLogLevel}` : '';
-    let parsedLogLevel;
-
-    switch (expectedLogLevel) {
-      case 'debug':
-        parsedLogLevel = 'LOG_LEVEL_DEBUG';
-        break;
-      default:
-        throw new Error(`Unsupported Log level ${expectedLogLevel}`);
-    }
 
     switch (agentType) {
       case 'mysql':
@@ -229,7 +220,7 @@ module.exports = {
 
         I.assertEqual(
           actualLogLevel,
-          parsedLogLevel,
+          expectedLogLevel,
           `Was expecting Mysql Exporter with id: ${agent_id} for service ${dbDetails.service_name} added again via inventory command have log level: ${expectedLogLevel} set, actual log level was: ${actualLogLevel}`,
         );
 
