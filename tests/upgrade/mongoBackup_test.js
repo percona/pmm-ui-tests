@@ -82,9 +82,14 @@ Scenario(
   async ({ I, scheduledPage }) => {
     await scheduledPage.openScheduledBackupsPage();
     await I.waitForVisible(scheduledPage.elements.toggleByName(scheduleName));
+    I.usePlaywrightTo('Check if scheduled job element is checked', async ({ page, expect }) => {
+      const scheduledJobLocator = await page.locator(scheduledPage.elements.toggleByName(scheduleName).toXPath());
+
+      await expect(scheduledJobLocator).toBeChecked();
+    });
     let isChecked = await I.grabAttributeFrom(scheduledPage.elements.toggleByName(scheduleName), 'checked');
 
-    I.assertEqual(isChecked, null, `Element ${scheduledPage.elements.toggleByName(scheduleName).xpath} is checked, but should not be.`);
+    I.assertEqual(isChecked, '', `Element ${scheduledPage.elements.toggleByName(scheduleName).xpath} is checked, but should not be.`);
 
     // Verify settings for scheduled job
     I.seeTextEquals('Every 20 minutes', scheduledPage.elements.frequencyByName(scheduleName));
@@ -116,26 +121,10 @@ Scenario(
 );
 
 Scenario(
-  '@PMM-T1504 - The user is able to do a backup for MongoDB after upgrade @post-mongo-backup-upgrade',
-  async ({
-    locationsAPI, inventoryAPI, backupAPI, backupInventoryPage,
-  }) => {
-    const backupName = 'backup_after_update';
-    const { location_id } = await locationsAPI.getLocationDetails(location.name);
-    const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.MONGODB, mongoServiceName);
-    const backupId = await backupAPI.startBackup(backupName, service_id, location_id);
-
-    await backupAPI.waitForBackupFinish(backupId);
-    backupInventoryPage.openInventoryPage();
-    backupInventoryPage.verifyBackupSucceeded(backupName);
-  },
-);
-
-Scenario(
   '@PMM-T1503 PMM-T970 - The user is able to do a restore for MongoDB after the upgrade @post-mongo-backup-upgrade',
   async ({
-    I, backupInventoryPage, restorePage, credentials,
-  }) => {
+           I, backupInventoryPage, restorePage, credentials,
+         }) => {
     const replica = await I.getMongoClient({
       username: credentials.mongoReplicaPrimaryForBackups.username,
       password: credentials.mongoReplicaPrimaryForBackups.password,
@@ -162,3 +151,21 @@ Scenario(
     }
   },
 ).retry(0);
+
+Scenario(
+  '@PMM-T1504 - The user is able to do a backup for MongoDB after upgrade @post-mongo-backup-upgrade',
+  async ({
+    locationsAPI, inventoryAPI, backupAPI, backupInventoryPage,
+  }) => {
+    const backupName = 'backup_after_update';
+    const { location_id } = await locationsAPI.getLocationDetails(location.name);
+    const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.MONGODB, mongoServiceName);
+    const backupId = await backupAPI.startBackup(backupName, service_id, location_id);
+
+    await backupAPI.waitForBackupFinish(backupId);
+    backupInventoryPage.openInventoryPage();
+    backupInventoryPage.verifyBackupSucceeded(backupName);
+  },
+);
+
+
