@@ -82,12 +82,7 @@ Scenario(
   async ({ I, scheduledPage }) => {
     await scheduledPage.openScheduledBackupsPage();
     await I.waitForVisible(scheduledPage.elements.toggleByName(scheduleName));
-    I.usePlaywrightTo('Check if scheduled job element is checked', async ({ page, expect }) => {
-      const scheduledJobLocator = await page.locator(scheduledPage.elements.toggleByName(scheduleName).toXPath());
-
-      await expect(scheduledJobLocator).toBeChecked();
-    });
-    let isChecked = await I.grabAttributeFrom(scheduledPage.elements.toggleByName(scheduleName), 'checked');
+    let isChecked = await I.usePlaywrightTo('Check if scheduled job element is checked', async ({ page, expect }) => await page.locator(scheduledPage.elements.toggleByName(scheduleName).toXPath()).getAttribute('checked'));
 
     I.assertEqual(isChecked, '', `Element ${scheduledPage.elements.toggleByName(scheduleName).xpath} is checked, but should not be.`);
 
