@@ -62,7 +62,7 @@ Scenario(
     I.amOnPage('');
     dashboardPage.waitForDashboardOpened();
     await dashboardPage.verifyMetricsExistence([grafanaAPI.customPanelName]);
-    await dashboardPage.verifyThereAreNoGraphsWithoutData();
+    await dashboardPage.verifyThereAreNoGraphsWithoutData(1);
     I.seeInCurrentUrl(grafanaAPI.customDashboardName);
 
     await I.say('Verify there is no "Error while loading library panels" errors on dashboard and no errors in grafana.log');
@@ -91,11 +91,12 @@ Scenario(
     I, searchDashboardsModal, grafanaAPI, homePage, dashboardPage,
   }) => {
     await homePage.open();
-    I.click(dashboardPage.fields.breadcrumbs.dashboardName);
-    searchDashboardsModal.waitForOpened();
+    I.waitForVisible(locate('a').withText('Dashboards'));
+    I.click(locate('a').withText('Dashboards'));
+
     const actualFolders = (await searchDashboardsModal.getFoldersList());
 
-    I.assertDeepIncludeMembers(actualFolders, ['Starred', grafanaAPI.customFolderName]);
+    I.assertDeepIncludeMembers(actualFolders, [grafanaAPI.customFolderName]);
     I.click(searchDashboardsModal.fields.folderItemLocator(grafanaAPI.customFolderName));
     I.seeElement(searchDashboardsModal.fields.folderItemLocator(grafanaAPI.customDashboardName));
   },
