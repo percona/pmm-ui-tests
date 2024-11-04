@@ -1,3 +1,4 @@
+const { expect } = require('@playwright/test');
 const { SERVICE_TYPE } = require('../helper/constants');
 
 Feature('PMM upgrade tests for mongo backup').retry(1);
@@ -82,7 +83,7 @@ Scenario(
   async ({ I, scheduledPage }) => {
     await scheduledPage.openScheduledBackupsPage();
     await I.waitForVisible(scheduledPage.elements.toggleByName(scheduleName));
-    I.usePlaywrightTo('Check if scheduled job element is checked', async ({ page, expect }) => {
+    I.usePlaywrightTo('Check if scheduled job element is checked', async ({ page }) => {
       const scheduledJobLocator = await page.locator(scheduledPage.elements.toggleByName(scheduleName).toXPath());
 
       await expect(scheduledJobLocator).toBeChecked();
