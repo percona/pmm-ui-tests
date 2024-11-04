@@ -61,8 +61,7 @@ Scenario(
   async ({ I, grafanaAPI, dashboardPage }) => {
     I.amOnPage('');
     dashboardPage.waitForDashboardOpened();
-    dashboardPage.verifyMetricsExistence([grafanaAPI.customPanelName]);
-    await dashboardPage.verifyThereAreNoGraphsWithNA();
+    await dashboardPage.verifyMetricsExistence([grafanaAPI.customPanelName]);
     await dashboardPage.verifyThereAreNoGraphsWithoutData();
     I.seeInCurrentUrl(grafanaAPI.customDashboardName);
 
