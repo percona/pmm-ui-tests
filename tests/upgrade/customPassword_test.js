@@ -28,17 +28,17 @@ Data(clientDbServices).Scenario(
     switch (serviceType) {
       case SERVICE_TYPE.MYSQL:
         output = await I.verifyCommand(
-          `pmm-admin add mysql --node-id=${node_id} --pmm-agent-id=${pmm_agent_id} --port=${port} --password=GRgrO9301RuF --host=${address} --query-source=perfschema --agent-password=uitests --custom-labels="testing=upgrade" ${upgrade_service}`,
+          `pmm-admin add mysql --node-id=${node_id} --pmm-agent-id=${pmm_agent_id} --port=${port} --password=GRgrO9301RuF --host=${address} --query-source=perfschema --agent-password=uitests --custom-labels="testing=upgrade" upgrade-${upgrade_service}`,
         );
         break;
       case SERVICE_TYPE.POSTGRESQL:
         output = await I.verifyCommand(
-          `pmm-admin add postgresql --username=pmm --password=pmm --node-id=${node_id} --pmm-agent-id=${pmm_agent_id} --port=${port} --host=${address} --agent-password=uitests --custom-labels="testing=upgrade" ${upgrade_service}`,
+          `pmm-admin add postgresql --username=pmm --password=pmm --node-id=${node_id} --pmm-agent-id=${pmm_agent_id} --port=${port} --host=${address} --agent-password=uitests --custom-labels="testing=upgrade" upgrade-${upgrade_service}`,
         );
         break;
       case SERVICE_TYPE.MONGODB:
         output = await I.verifyCommand(
-          `pmm-admin add mongodb --username=pmm_mongodb --password="5M](Q%q/U+YQ<^m" --port=27017 --host=${address} --agent-password=uitests --custom-labels="testing=upgrade" ${upgrade_service}`,
+          `pmm-admin add mongodb --username=pmm_mongodb --password="5M](Q%q/U+YQ<^m" --port=27017 --host=${address} --agent-password=uitests --custom-labels="testing=upgrade" upgrade-${upgrade_service}`,
         );
         break;
       default:
@@ -54,7 +54,9 @@ Data(clientDbServices).Scenario(
     const {
       serviceType, metric, upgrade_service, name,
     } = current;
-    const apiServiceDetails = (await inventoryAPI.apiGetServices()).data[upgrade_service].find((service) => service.service_name.startsWith(name));
+    const apiServiceDetails = (await inventoryAPI.apiGetServices()).data[upgrade_service].find((service) => service.service_name.startsWith(`upgrade-${upgrade_service}`));
+    console.log('Details are: ');
+    console.log(apiServiceDetails);
     const { custom_labels } = await inventoryAPI.apiGetNodeInfoByServiceName(serviceType, apiServiceDetails.service_name);
 
     console.log('Response is:');
