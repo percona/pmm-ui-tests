@@ -98,7 +98,7 @@ Scenario(
 
     I.assertDeepIncludeMembers(actualFolders, [grafanaAPI.customFolderName]);
     I.click(searchDashboardsModal.fields.folderItemLocator(grafanaAPI.customFolderName));
-    I.seeElement(searchDashboardsModal.fields.folderItemLocator(grafanaAPI.customDashboardName));
+    I.waitForVisible(searchDashboardsModal.fields.folderItemLocator(grafanaAPI.customDashboardName));
   },
 );
 
