@@ -58,6 +58,9 @@ Data(clientDbServices).Scenario(
     const apiServiceDetails = (await inventoryAPI.apiGetServices()).data[upgrade_service].find((service) => service.service_name.startsWith(name));
     const { custom_labels } = await inventoryAPI.apiGetNodeInfoByServiceName(serviceType, apiServiceDetails.service_name);
 
+    console.log('Custom labels is:');
+    console.log(custom_labels);
+
     await grafanaAPI.checkMetricExist(metric, { type: 'service_name', value: apiServiceDetails.service_name });
     if (serviceType !== SERVICE_TYPE.MYSQL) {
       assert.ok(custom_labels, `Node Information for ${serviceType} added with ${upgrade_service} is empty, value returned are ${custom_labels}`);
