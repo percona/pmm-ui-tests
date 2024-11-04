@@ -237,7 +237,7 @@ module.exports = {
     let log_level;
     const logLvlFlag = logLevel ? `--log-level=${logLevel}` : '';
 
-    const expectedLogLevel = logLevel === 'warn' ? 'LOG_LEVEL_UNSPECIFIED' : logLevel || 'LOG_LEVEL_UNSPECIFIED';
+    const expectedLogLevel = logLevel === 'warn' ? 'LOG_LEVEL_WARN' : logLevel || 'LOG_LEVEL_WARN';
 
     switch (agentType) {
       case 'mongodb':
