@@ -94,7 +94,7 @@ Scenario(
     connection.database = 'postgres';
     // wait for pmm-agent to push the execution as part of next bucket to clickhouse
     I.wait(90);
-    await I.verifyCommand(`docker exec ${container_name} pmm-admin list | grep "postgresql_pgstatements_agent" | grep "Agent_status_running"`);
+    await I.verifyCommand(`docker exec ${container_name} pmm-admin list | grep "postgresql_pgstatements_agent" | grep "Running"`);
   },
 );
 
@@ -120,7 +120,7 @@ Scenario.skip(
     connection.database = 'postgres';
     // wait for pmm-agent to push the execution as part of next bucket to clickhouse
     I.wait(150);
-    await I.verifyCommand(`docker exec ${container_name} pmm-admin list | grep "postgresql_pgstatements_agent" | grep "Agent_status_running"`);
+    await I.verifyCommand(`docker exec ${container_name} pmm-admin list | grep "postgresql_pgstatements_agent" | grep "Running"`);
 
     let toStart = new Date();
 
