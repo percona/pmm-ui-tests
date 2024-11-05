@@ -3,8 +3,8 @@ const { I, inventoryAPI } = inject();
 class MysqlAgentCli {
   async verifyMySqlAgentLogLevel(exporterType, dbDetails, logLevel = 'warn') {
     const logLvlFlag = logLevel ? `--log-level=${logLevel}` : '';
-    const addAgentResponse = await I.verifyCommand(`docker exec ${dbDetails.container_name} pmm-admin inventory add agent ${exporterType} --password=${dbDetails.password} ${exporterType === "mysqld-exporter" ? '--push-metrics': ''} ${logLvlFlag} ${dbDetails.pmm_agent_id} ${dbDetails.service_id} ${dbDetails.username}`);
-    const agent_id = addAgentResponse.split('\n').find((row) => row.includes('PMM-Agent ID')).split(':')[1].trim();
+    const addAgentResponse = await I.verifyCommand(`docker exec ${dbDetails.container_name} pmm-admin inventory add agent ${exporterType} --password=${dbDetails.password} ${exporterType === 'mysqld-exporter' ? '--push-metrics': ''} ${logLvlFlag} ${dbDetails.pmm_agent_id} ${dbDetails.service_id} ${dbDetails.username}`);
+    const agent_id = addAgentResponse.split('\n').find((row) => row.includes('Agent ID')).split(':')[1].trim();
 
     console.log(addAgentResponse);
     console.log(`Agent ID is: ${agent_id}`);
