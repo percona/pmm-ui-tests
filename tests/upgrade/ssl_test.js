@@ -85,7 +85,7 @@ Data(sslinstances).Scenario(
         address: container,
         cluster: 'mongodb_ssl_remote_cluster',
         environment: 'mongodb_ssl_remote_cluster',
-        tls_certificate_file_password: await I.verifyCommand('docker exec psmdb-server cat /mongodb_certs/ca-certs.pem'),
+        tls_certificate_file_password: '',
         tls_certificate_key: await I.verifyCommand('docker exec psmdb-server cat /mongodb_certs/client.pem'),
         tls_ca: await remoteInstancesPage.getFileContent('/srv/qa-integration/pmm_psmdb_diffauth_setup/pki/ca.crt'),
       };
