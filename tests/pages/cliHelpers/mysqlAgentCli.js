@@ -9,7 +9,7 @@ class MysqlAgentCli {
     console.log(addAgentResponse);
     console.log(`Agent ID is: ${agent_id}`);
 
-    I.wait(30);
+    I.wait(15);
 
     const actualLogLevel = await getLogLevel(agent_id, exporterType);
 
@@ -35,6 +35,8 @@ function getLogLevelResponse(logLevelFlag) {
   switch (logLevelFlag) {
     case 'warn':
       return 'LOG_LEVEL_WARN';
+    case 'debug':
+      return 'LOG_LEVEL_DEBUG';
     default:
       throw new Error(`Log Level: ${logLevelFlag} is not supported`);
   }
