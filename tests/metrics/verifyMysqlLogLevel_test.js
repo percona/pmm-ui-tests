@@ -68,14 +68,14 @@ Scenario(
     await mysqlAgentCli.verifyMySqlAgentLogLevel('mysqld-exporter', dbDetails, 'debug');
     console.log('Passed mysql with log level debug');
 
-    await inventoryAPI.verifyAgentLogLevel('qan-mysql-slowlog-agent', dbDetails, 'debug');
+    await mysqlAgentCli.verifyMySqlAgentLogLevel('qan-mysql-slowlog-agent', dbDetails, 'debug');
     console.log('Passed mysql qan slowlog with log level debug');
 
-    await inventoryAPI.verifyAgentLogLevel('qan-mysql-perfschema-agent', dbDetails, 'debug');
+    await mysqlAgentCli.verifyMySqlAgentLogLevel('qan-mysql-perfschema-agent', dbDetails, 'debug');
     console.log('Passed mysql qan perfschema with log level debug');
 
-    // await inventoryAPI.verifyAgentLogLevel('mysql', dbDetails, 'info');
-    // console.log('Passed mysql with log level info');
+    await mysqlAgentCli.verifyMySqlAgentLogLevel('mysqld-exporter', dbDetails, 'info');
+    console.log('Passed mysql with log level info');
     // await inventoryAPI.verifyAgentLogLevel('qan-slowlog', dbDetails, 'info');
     // console.log('Passed mysql qan slowlog with log level info');
     // await inventoryAPI.verifyAgentLogLevel('qan-perfschema', dbDetails, 'info');
