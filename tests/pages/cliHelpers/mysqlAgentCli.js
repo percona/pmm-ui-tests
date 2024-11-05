@@ -23,6 +23,9 @@ async function getLogLevel(agentId, exporterType) {
 
   await I.say(JSON.stringify(output.data, null, 2));
 
+  console.log('Log Level output is: ');
+  console.log(output.data);
+
   return output.data[exporterType.replaceAll('-', '_')].log_level;
 }
 
