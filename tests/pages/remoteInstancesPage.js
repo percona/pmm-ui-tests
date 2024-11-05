@@ -298,12 +298,15 @@ module.exports = {
     }
   },
 
+  selectNodeForRemoteInstance(nodeName = 'pmm-server') {
+    I.waitForElement(this.fields.hostName, 30);
+    this.selectDropdownOption('$nodes-selectbox', 'pmm-server');
+  },
+
   async fillRemoteFields(serviceName) {
     let inputs;
 
-    I.waitForElement(this.fields.hostName, 30);
-    this.selectDropdownOption('$nodes-selectbox', 'pmm-server');
-
+    this.selectNodeForRemoteInstance();
     // eslint-disable-next-line default-case
     switch (serviceName) {
       case remoteInstancesHelper.services.mysql:
@@ -582,6 +585,7 @@ module.exports = {
   async fillRemoteRDSFields(serviceName) {
     let inputs;
 
+    this.selectNodeForRemoteInstance();
     // eslint-disable-next-line default-case
     switch (serviceName) {
       case 'rds-mysql56':
