@@ -39,6 +39,8 @@ function getLogLevelResponse(logLevelFlag) {
       return 'LOG_LEVEL_DEBUG';
     case 'info':
       return 'LOG_LEVEL_INFO';
+    case 'error':
+      return 'LOG_LEVEL_ERROR';
     default:
       throw new Error(`Log Level: ${logLevelFlag} is not supported`);
   }
