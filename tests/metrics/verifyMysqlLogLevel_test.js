@@ -57,20 +57,35 @@ Scenario(
     };
 
     await inventoryAPI.verifyAgentLogLevel('mysql', dbDetails);
+    console.log('Passed mysql without log level');
     await inventoryAPI.verifyAgentLogLevel('qan-slowlog', dbDetails);
+    console.log('Passed mysql qan slowlog without log level');
     await inventoryAPI.verifyAgentLogLevel('qan-perfschema', dbDetails);
+    console.log('Passed mysql qan perfschema without log level');
     await inventoryAPI.verifyAgentLogLevel('mysql', dbDetails, 'LOG_LEVEL_DEBUG');
+    console.log('Passed mysql with log level debug');
     await inventoryAPI.verifyAgentLogLevel('qan-slowlog', dbDetails, 'LOG_LEVEL_DEBUG');
+    console.log('Passed mysql qan slowlog with log level debug');
     await inventoryAPI.verifyAgentLogLevel('qan-perfschema', dbDetails, 'LOG_LEVEL_DEBUG');
+    console.log('Passed mysql qan perfschema with log level debug');
     await inventoryAPI.verifyAgentLogLevel('mysql', dbDetails, 'info');
+    console.log('Passed mysql with log level info');
     await inventoryAPI.verifyAgentLogLevel('qan-slowlog', dbDetails, 'info');
+    console.log('Passed mysql qan slowlog with log level info');
     await inventoryAPI.verifyAgentLogLevel('qan-perfschema', dbDetails, 'info');
+    console.log('Passed mysql qan perfschema with log level info');
     await inventoryAPI.verifyAgentLogLevel('mysql', dbDetails, 'warn');
+    console.log('Passed mysql with log level warn');
     await inventoryAPI.verifyAgentLogLevel('qan-slowlog', dbDetails, 'warn');
+    console.log('Passed mysql qan slowlog with log level warn');
     await inventoryAPI.verifyAgentLogLevel('qan-perfschema', dbDetails, 'warn');
+    console.log('Passed mysql qan perfschema with log level warn');
     await inventoryAPI.verifyAgentLogLevel('mysql', dbDetails, 'error');
+    console.log('Passed mysql with log level error');
     await inventoryAPI.verifyAgentLogLevel('qan-slowlog', dbDetails, 'error');
+    console.log('Passed mysql qan slowlog with log level error');
     await inventoryAPI.verifyAgentLogLevel('qan-perfschema', dbDetails, 'error');
+    console.log('Passed mysql qan perfschema with log level error');
   },
 );
 
