@@ -170,6 +170,9 @@ module.exports = {
       additionalPanels.forEach((i) => body.dashboard.panels.push(i));
     }
 
+    console.log(body);
+    console.log(headers);
+
     const resp = await I.sendPostRequest('graph/api/dashboards/db/', body, headers);
 
     assert.ok(
