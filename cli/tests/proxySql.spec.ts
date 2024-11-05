@@ -1,9 +1,9 @@
 import { test, expect } from '@playwright/test';
 import * as cli from '@helpers/cli-helper';
 
-const PXC_USER = 'admin';
-const PXC_PASSWORD = 'admin';
-const ipPort = '127.0.0.1:6032';
+const PXC_USER = 'proxysql_user';
+const PXC_PASSWORD = 'passw0rd';
+const ipPort = '127.0.0.1:6033';
 
 test.describe('PMM Client CLI tests for ProxySQL', async () => {
   test.beforeAll(async ({}) => {

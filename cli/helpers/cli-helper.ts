@@ -79,10 +79,10 @@ export async function getMetrics(
     async () => {
       const prefix = dockerContainer ? `sudo docker exec ${dockerContainer} ` : '';
       const adminList = (await execute(`${prefix || 'sudo '}pmm-admin list`).assertSuccess()).getStdOutLines();
-      const serviceId: string = adminList.find((item) => item.includes(serviceName))!
+      const serviceId: string = adminList.find((item) => item.includes(serviceName))
+        ?.trim()
         .split(' ')
-        .find((item: string) => item.includes('/service_id/'))!
-        .trim() ?? '';
+        .pop() ?? ''; // Get the last item in the split result
 
       if (!serviceId) {
         throw new Error(`Failed to find '${serviceName}' service is in pmm-admin list output:\n${adminList}`);

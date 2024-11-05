@@ -175,8 +175,8 @@ test.describe('PMM Client "Generic" CLI tests', async () => {
     await output.assertSuccess();
     // there are no request for those urls. but there are requests for /local/status
     await output.stderr.containsMany([
-      'POST /v1/inventory/Services/List HTTP/1.1',
-      'POST /v1/inventory/Agents/List HTTP/1.1',
+      'GET /v1/inventory/services',
+      'GET /v1/inventory/agents',
     ]);
     await output.outContains('.zip created.');
   });
@@ -189,8 +189,8 @@ test.describe('PMM Client "Generic" CLI tests', async () => {
     await output.assertSuccess();
     // there are no request for those urls. but there are requests for /local/status
     await output.stderr.containsMany([
-      '(*Runtime).Submit() POST /v1/inventory/Services/List HTTP/1.1',
-      '(*Runtime).Submit() POST /v1/inventory/Agents/List HTTP/1.1',
+      '(*Runtime).Submit() GET /v1/inventory/services',
+      '(*Runtime).Submit() GET /v1/inventory/agents',
     ]);
     await output.outContains('.zip created.');
   });
@@ -267,8 +267,8 @@ test.describe('PMM Client "Generic" CLI tests', async () => {
     const output = await cli.exec('sudo pmm-admin summary --skip-server --trace');
     await output.assertSuccess();
     await output.stderr.containsMany([
-      '(*Runtime).Submit() POST /v1/inventory/Services/List HTTP/1.1',
-      '(*Runtime).Submit() POST /v1/inventory/Agents/List HTTP/1.1']);
+      '(*Runtime).Submit() GET /v1/inventory/services',
+      '(*Runtime).Submit() GET /v1/inventory/agents']);
     await output.outContains('.zip created.');
   });
 
@@ -279,8 +279,8 @@ test.describe('PMM Client "Generic" CLI tests', async () => {
     const output = await cli.exec('sudo pmm-admin summary --skip-server --debug');
     await output.assertSuccess();
     await output.stderr.containsMany([
-      'POST /v1/inventory/Services/List HTTP/1.1',
-      'POST /v1/inventory/Agents/List HTTP/1.1']);
+      'GET /v1/inventory/services',
+      'GET /v1/inventory/agents']);
     await output.outContains('.zip created.');
   });
 
@@ -292,8 +292,8 @@ test.describe('PMM Client "Generic" CLI tests', async () => {
     const output = await cli.exec(`sudo pmm-admin summary --skip-server --json --debug --filename=${ZIP_FILE_NAME}`);
     await output.assertSuccess();
     await output.stderr.containsMany([
-      'POST /v1/inventory/Services/List HTTP/1.1',
-      'POST /v1/inventory/Agents/List HTTP/1.1']);
+      'GET /v1/inventory/services',
+      'GET /v1/inventory/agents']);
   });
 
   /**
@@ -318,8 +318,8 @@ test.describe('PMM Client "Generic" CLI tests', async () => {
     const output = await cli.exec('sudo pmm-admin summary --pprof --trace');
     await output.assertSuccess();
     await output.outContainsMany([
-      '(*Runtime).Submit() POST /v1/inventory/Services/List HTTP/1.1',
-      '(*Runtime).Submit() POST /v1/inventory/Agents/List HTTP/1.1',
+      '(*Runtime).Submit() GET /v1/inventory/services',
+      '(*Runtime).Submit() GET /v1/inventory/agents',
       '.zip created.']);
     const zipName = output.getStdOutLines().find((item) => item.includes('.zip created.'))!
       .split(' ').at(0) ?? '';
@@ -334,8 +334,8 @@ test.describe('PMM Client "Generic" CLI tests', async () => {
     const output = await cli.exec('sudo pmm-admin summary --pprof --debug');
     await output.assertSuccess();
     await output.outContainsMany([
-      'POST /v1/inventory/Services/List HTTP/1.1',
-      'POST /v1/inventory/Agents/List HTTP/1.1',
+      'GET /v1/inventory/services',
+      'GET /v1/inventory/agents',
       '.zip created.']);
     const zipName = output.getStdOutLines().find((item) => item.includes('.zip created.'))!
       .split(' ').at(0) ?? '';
@@ -402,8 +402,8 @@ test.describe('PMM Client "Generic" CLI tests', async () => {
     const output = await cli.exec(`pmm-admin summary --pprof --debug --filename=${zipName} --skip-server`);
     await output.assertSuccess();
     await output.outContainsMany([
-      'POST /v1/inventory/Services/List HTTP/1.1',
-      'POST /v1/inventory/Agents/List HTTP/1.1',
+      'GET /v1/inventory/services',
+      'GET /v1/inventory/agents',
       `${zipName} created.`]);
     expect(readZipFile(zipName), `Verify 'client/pprof/' is present in ${zipName}`).toContain('client/pprof/');
     expect(readZipFile(zipName), `Verify there are 8 files in ${zipName}`).toHaveLength(8);
