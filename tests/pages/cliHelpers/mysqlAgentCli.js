@@ -1,3 +1,4 @@
+const {AGENT_STATUS} = require("../../helper/constants");
 const { I, inventoryAPI, grafanaAPI } = inject();
 
 class MysqlAgentCli {
@@ -9,7 +10,6 @@ class MysqlAgentCli {
     console.log(addAgentResponse);
     console.log(`Agent ID is: ${agent_id}`);
 
-    await grafanaAPI.waitForMetric('mysql_up', [{ type: 'agent_id', value: agent_id }], 120);
     const actualLogLevel = await getLogLevel(agent_id, exporterType);
 
     I.say(`Actual log level is: ${actualLogLevel}`);
@@ -20,7 +20,15 @@ class MysqlAgentCli {
 }
 
 async function getLogLevel(agentId, exporterType) {
-  const output = await inventoryAPI.apiGetAgentDetailsViaAgentId(agentId);
+  // = await inventoryAPI.apiGetAgentDetailsViaAgentId(agentId);
+  let output;
+
+  await I.asyncWaitFor(async () => {
+    output = await inventoryAPI.apiGetAgentDetailsViaAgentId(agentId);
+    const { status } = output.data[exporterType.replaceAll('-', '_')];
+
+    return status === AGENT_STATUS.RUNNING;
+  }, 30);
 
   await I.say(JSON.stringify(output.data, null, 2));
 
