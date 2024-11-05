@@ -23,7 +23,7 @@ Scenario(
     libPanel.libraryPanel.uid = libResp.result.uid;
     additionalPanel = [libPanel];
 
-    const resp = await grafanaAPI.createCustomDashboard(grafanaAPI.customDashboardName, folder.id, additionalPanel);
+    const resp = await grafanaAPI.createCustomDashboard(grafanaAPI.customDashboardName, folder.id, null, []);
 
     await grafanaAPI.starDashboard(resp.id);
     await grafanaAPI.setHomeDashboard(resp.id);
