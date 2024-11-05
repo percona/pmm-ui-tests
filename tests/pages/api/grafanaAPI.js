@@ -366,7 +366,7 @@ module.exports = {
           datasource: {
             uid,
           },
-          expr: refineBy ? `${metricName}{${refineBy.type}=\"${refineBy.value}\"}` : metricName,
+          expr: refineBy ? `${metricName}{${refineBy.type}="${refineBy.value}"}` : metricName,
         },
       ],
       from: 'now-15m',

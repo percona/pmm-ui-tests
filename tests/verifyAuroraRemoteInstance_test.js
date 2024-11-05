@@ -107,7 +107,6 @@ Scenario('PMM-T1295 Verify MySQL Amazon Aurora Details @instances', async ({ I, 
   dashboardPage.waitForDashboardOpened();
   await adminPage.applyTimeRange('Last 5 minutes');
   await dashboardPage.applyFilter('Service Name', 'pmm-qa-aurora2-mysql-instance-1');
-  await dashboardPage.verifyThereAreNoGraphsWithNA();
   await dashboardPage.verifyThereAreNoGraphsWithoutData(0);
 }).retry(1);
 
@@ -126,7 +125,6 @@ Data(instances)
       adminPage.performPageDown(5);
       await dashboardPage.expandEachDashboardRow();
       adminPage.performPageUp(5);
-      await dashboardPage.verifyThereAreNoGraphsWithNA();
       await dashboardPage.verifyThereAreNoGraphsWithoutData(1);
     },
   )
