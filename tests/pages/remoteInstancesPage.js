@@ -301,6 +301,9 @@ module.exports = {
   async fillRemoteFields(serviceName) {
     let inputs;
 
+    I.waitForElement(this.fields.hostName, 30);
+    this.selectDropdownOption('$nodes-selectbox', 'pmm-server');
+
     // eslint-disable-next-line default-case
     switch (serviceName) {
       case remoteInstancesHelper.services.mysql:
