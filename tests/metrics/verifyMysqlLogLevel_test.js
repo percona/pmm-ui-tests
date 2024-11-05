@@ -65,7 +65,7 @@ Scenario(
     await mysqlAgentCli.verifyMySqlAgentLogLevel('qan-mysql-perfschema-agent', dbDetails);
     console.log('Passed mysql qan perfschema without log level');
 
-    await mysqlAgentCli.verifyMySqlAgentLogLevel('mysql', dbDetails, 'debug');
+    await mysqlAgentCli.verifyMySqlAgentLogLevel('mysqld-exporter', dbDetails, 'debug');
     console.log('Passed mysql with log level debug');
 
     // await inventoryAPI.verifyAgentLogLevel('qan-slowlog', dbDetails, 'LOG_LEVEL_DEBUG');
