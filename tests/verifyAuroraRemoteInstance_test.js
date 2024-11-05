@@ -71,16 +71,15 @@ Data(instances)
     // Waiting for metrics to start hitting for remotely added services
     I.wait(10);
 
-    const response = await grafanaAPI.checkMetricExist(mysql_metric, {
+    await grafanaAPI.checkMetricExist(mysql_metric, {
       type: 'service_name',
       value: instance_id,
     });
-    const result = JSON.stringify(response.data.data.result);
 
-    assert.ok(
-      response.data.data.result.length !== 0,
-      `Metrics ${mysql_metric} from ${instance_id} should be available but got empty ${result}`,
-    );
+    await grafanaAPI.checkMetricExist(aurora_metric, {
+      type: 'service_name',
+      value: instance_id,
+    });
   })
   .retry(1);
 
