@@ -1,4 +1,4 @@
-const { I, inventoryAPI } = inject();
+const { I, inventoryAPI, grafanaAPI } = inject();
 
 class MysqlAgentCli {
   async verifyMySqlAgentLogLevel(exporterType, dbDetails, logLevel = 'warn') {
@@ -9,8 +9,7 @@ class MysqlAgentCli {
     console.log(addAgentResponse);
     console.log(`Agent ID is: ${agent_id}`);
 
-    I.wait(15);
-
+    await grafanaAPI.waitForMetric('mysql_up', [{ type: 'agent_id', value: agent_id }], 120);
     const actualLogLevel = await getLogLevel(agent_id, exporterType);
 
     I.say(`Actual log level is: ${actualLogLevel}`);

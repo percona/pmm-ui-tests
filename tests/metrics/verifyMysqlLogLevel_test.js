@@ -57,48 +57,24 @@ Scenario(
     };
 
     await mysqlAgentCli.verifyMySqlAgentLogLevel('mysqld-exporter', dbDetails);
-    console.log('Passed mysql without log level');
-
     await mysqlAgentCli.verifyMySqlAgentLogLevel('qan-mysql-slowlog-agent', dbDetails);
-    console.log('Passed mysql qan slowlog without log level');
-
     await mysqlAgentCli.verifyMySqlAgentLogLevel('qan-mysql-perfschema-agent', dbDetails);
-    console.log('Passed mysql qan perfschema without log level');
 
     await mysqlAgentCli.verifyMySqlAgentLogLevel('mysqld-exporter', dbDetails, 'debug');
-    console.log('Passed mysql with log level debug');
-
     await mysqlAgentCli.verifyMySqlAgentLogLevel('qan-mysql-slowlog-agent', dbDetails, 'debug');
-    console.log('Passed mysql qan slowlog with log level debug');
-
     await mysqlAgentCli.verifyMySqlAgentLogLevel('qan-mysql-perfschema-agent', dbDetails, 'debug');
-    console.log('Passed mysql qan perfschema with log level debug');
 
     await mysqlAgentCli.verifyMySqlAgentLogLevel('mysqld-exporter', dbDetails, 'info');
-    console.log('Passed mysql with log level info');
     await mysqlAgentCli.verifyMySqlAgentLogLevel('qan-mysql-slowlog-agent', dbDetails, 'info');
-    console.log('Passed mysql qan slowlog with log level info');
-
     await mysqlAgentCli.verifyMySqlAgentLogLevel('qan-mysql-perfschema-agent', dbDetails, 'info');
-    console.log('Passed mysql qan perfschema with log level info');
 
     await mysqlAgentCli.verifyMySqlAgentLogLevel('mysqld-exporter', dbDetails, 'warn');
-    console.log('Passed mysql with log level warn');
-
     await mysqlAgentCli.verifyMySqlAgentLogLevel('qan-mysql-slowlog-agent', dbDetails, 'warn');
-    console.log('Passed mysql qan slowlog with log level warn');
-
     await mysqlAgentCli.verifyMySqlAgentLogLevel('qan-mysql-perfschema-agent', dbDetails, 'warn');
-    console.log('Passed mysql qan perfschema with log level warn');
 
     await mysqlAgentCli.verifyMySqlAgentLogLevel('mysqld-exporter', dbDetails, 'error');
-    console.log('Passed mysql with log level error');
-
     await inventoryAPI.verifyAgentLogLevel('qan-mysql-slowlog-agent', dbDetails, 'error');
-    console.log('Passed mysql qan slowlog with log level error');
-
     await inventoryAPI.verifyAgentLogLevel('qan-mysql-perfschema-agent', dbDetails, 'error');
-    console.log('Passed mysql qan perfschema with log level error');
   },
 );
 
