@@ -9,7 +9,7 @@ class MysqlAgentCli {
     console.log(addAgentResponse);
     console.log(`Agent ID is: ${agent_id}`);
 
-    I.wait(60);
+    I.wait(30);
 
     const actualLogLevel = await getLogLevel(agent_id, exporterType);
 
