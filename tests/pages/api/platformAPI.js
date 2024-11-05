@@ -7,13 +7,14 @@ module.exports = {
   async signOut() {
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
 
+    // todo: find equivalent api endpoint
     await I.sendPostRequest('v1/Platform/SignOut', {}, headers);
   },
 
   async getServerInfo() {
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
 
-    const resp = await I.sendPostRequest('v1/Platform/ServerInfo', {}, headers);
+    const resp = await I.sendGetRequest('/v1/platform/server', headers);
 
     assert.ok(
       resp.status === 200,

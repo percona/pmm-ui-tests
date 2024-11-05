@@ -3,10 +3,10 @@ import * as cli from '@helpers/cli-helper';
 
 const PMM_SERVER_IMAGE = process.env.DOCKER_VERSION && process.env.DOCKER_VERSION.length > 0
   ? process.env.DOCKER_VERSION
-  : 'perconalab/pmm-server:dev-latest';
+  : 'perconalab/pmm-server:3-dev-latest';
 const PMM_CLIENT_IMAGE = process.env.CLIENT_IMAGE && process.env.CLIENT_IMAGE.length > 0
   ? process.env.CLIENT_IMAGE
-  : 'perconalab/pmm-client:dev-latest';
+  : 'perconalab/pmm-client:3-dev-latest';
 const clientPassword = 'gfaks4d8OH';
 const services = ['mysql', 'mongodb', 'postgresql', 'proxysql', 'external', 'haproxy'];
 
@@ -28,7 +28,7 @@ test.describe('PMM Server CLI tests for Docker Environment Variables', async () 
   });
 
   test.afterAll(async () => {
-    await cli.exec('docker compose -f docker-compose-pmm-admin-remove.yml down -v');
+    await cli.exec('docker compose -f test-setup/docker-compose-pmm-admin-remove.yml down -v');
   });
 
   test('PMM-T1286, PMM-T1287, PMM-T1288, PMM-T1308 - Verify service removal without specifying service name/service id', async ({}) => {

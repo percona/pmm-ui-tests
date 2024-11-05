@@ -1,5 +1,5 @@
 const assert = require('assert');
-const { communicationData, emailDefaults, telemetryTooltipData } = require('../../pages/testData');
+const { communicationData, emailDefaults } = require('../../pages/testData');
 
 const {
   I, adminPage, links, perconaPlatformPage, codeceptjsConfig,
@@ -86,7 +86,6 @@ module.exports = {
     metrics: 'Metrics Resolution',
     advanced: 'Advanced Settings',
     ssh: 'SSH Key',
-    alertmanager: 'Alertmanager Integration',
     perconaPlatform: 'Percona Platform',
   },
   sectionButtonText: {
@@ -94,45 +93,45 @@ module.exports = {
   },
   tooltips: {
     diagnostics: {
-      iconLocator: locate('$diagnostics-label').find('div[class$="-Icon"]').as('Diagnostics tooltip'),
+      iconLocator: locate('$diagnostics-label').find('div').as('Diagnostics tooltip'),
       text: 'You can download server logs to make the problem detection simpler. Please include this file if you are submitting a bug report.',
       link: false,
     },
     metricsResolution: {
       metricsResolutionSec: {
-        iconLocator: locate('$metrics-resolution-label').find('div[class$="-Icon"]').as('Metrics resolution tooltip'),
+        iconLocator: locate('$metrics-resolution-label').find('div').as('Metrics resolution tooltip'),
         text: 'This setting defines how frequently the data will be collected.',
         link: links.metricsResolutionDocs,
       },
     },
     advancedSettings: {
       dataRetention: {
-        iconLocator: locate('$advanced-label').find('div[class$="-Icon"]').as('Advanced settings tooltip'),
+        iconLocator: locate('$advanced-label').find('div').as('Advanced settings tooltip'),
         text: 'This is the value for how long data will be stored.',
         link: links.dataRetentionDocs,
       },
       telemetry: {
-        iconLocator: locate('$advanced-telemetry').find('div[class$="-Icon"]').as('Telemetry tooltip'),
+        iconLocator: locate('$advanced-telemetry').find('div').as('Telemetry tooltip'),
         text: '',
         link: links.telemetryDocs,
       },
       checkForUpdates: {
-        iconLocator: locate('$advanced-updates').find('div[class$="-Icon"]').as('Check for updates tooltip'),
+        iconLocator: locate('$advanced-updates').find('div').as('Check for updates tooltip'),
         text: 'Option to check new versions and ability to update PMM from UI.',
         link: links.checkForUpdates,
       },
       stt: {
-        iconLocator: locate('$advanced-advisors').find('div[class$="-Icon"]').as('Advanced advisors tooltip'),
+        iconLocator: locate('$advanced-advisors').find('div').as('Advanced advisors tooltip'),
         text: 'Enable Advisors and get updated checks from Percona.',
         link: links.advisorsDocs,
       },
       publicAddress: {
-        iconLocator: locate('$public-address-label').find('div[class$="-Icon"]').as('Public Address tooltip'),
+        iconLocator: locate('$public-address-label').find('div').as('Public Address tooltip'),
         text: 'Public Address to this PMM server.',
         link: false,
       },
       executionIntervals: {
-        iconLocator: locate('$check-intervals-label').find('div[class$="-Icon"]').as('Execution intervals tooltip'),
+        iconLocator: locate('$check-intervals-label').find('div').as('Execution intervals tooltip'),
         text: 'Interval between check runs',
         link: false,
       },
@@ -282,11 +281,13 @@ module.exports = {
     errorPopUpElement: I.useDataQA('data-testid Alert error'),
     iframe: '//div[@class="panel-content"]//iframe',
     metricsResolutionButton: '$metrics-resolution-button',
-    metricsResolution: '//label[text()="',
+    metricsResolutionByText: (text) => locate('label').withText(text),
     metricsResolutionLabel: '$metrics-resolution-label',
     metricsResolutionRadio: '$resolutions-radio-button',
     microsoftAzureMonitoringSwitch: locate('$advanced-azure-discover').find('//div[2]//label'),
     microsoftAzureMonitoringSwitchInput: locate('$advanced-azure-discover').find('//div[2]//input'),
+    accessControlInput: locate('[name="accessControl"]'),
+    accessControlSwitch: locate('$access-control').find('label'),
     loginButton: '$sign-in-submit-button',
     lowInput: '$lr-number-input',
     mediumInput: '$mr-number-input',
@@ -358,7 +359,6 @@ module.exports = {
   },
 
   async waitForPmmSettingsPageLoaded() {
-    I.waitForVisible(this.fields.tabsSection, 30);
     I.waitForVisible(this.fields.tabContent, 30);
   },
 
@@ -439,8 +439,8 @@ module.exports = {
   },
 
   async selectMetricsResolution(resolution) {
-    I.waitForElement(`${this.fields.metricsResolution + resolution}"]`, 30);
-    I.click(`${this.fields.metricsResolution + resolution}"]`);
+    I.waitForElement(this.fields.metricsResolutionByText(resolution), 30);
+    I.click(this.fields.metricsResolutionByText(resolution));
     I.click(this.fields.metricsResolutionButton);
   },
 
@@ -564,7 +564,7 @@ module.exports = {
     tooltipObj.tooltipReadMoreLink = this.fields.tooltipReadMoreLink;
     await adminPage.verifyTooltip(tooltipObj);
 
-    I.moveCursorTo(locate('li').withText('PMM Logs'));
+    I.moveCursorTo(locate('[title="Go to home"]'));
   },
 
   verifySwitch(switchSelector, expectedSwitchState = 'on') {

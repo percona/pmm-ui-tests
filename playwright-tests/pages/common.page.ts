@@ -15,6 +15,7 @@ export class CommonPage {
   optionMenu = new OptionsMenu(this.page);
 
   elements: object = {
+    mainApp: this.page.locator('//*[@class="main-view"]'),
     mainView: this.page.locator('//*[@class="main-view"]'),
     emptyBlock: this.page.getByTestId('empty-block'),
     noDataTable: this.page.getByTestId('table-no-data'),

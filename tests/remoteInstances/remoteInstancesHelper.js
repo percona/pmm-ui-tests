@@ -1,3 +1,5 @@
+const { SERVICE_TYPE } = require("../helper/constants");
+
 const remoteInstanceStatus = {
   mysql: {
     ps_5_7: {
@@ -96,7 +98,7 @@ DB_CONFIG = {
   MYSQL_SERVER_PORT: '3306',
   POSTGRES_SERVER_PORT: '5432',
   MONGODB_SERVER_PORT: '27017',
-  PROXYSQL_SERVER_PORT: '6032',
+  PROXYSQL_SERVER_PORT: '6033',
 };
 
 if (process.env.AMI_UPGRADE_TESTING_INSTANCE === 'true' || process.env.OVF_UPGRADE_TESTING_INSTANCE === 'true') {
@@ -185,22 +187,22 @@ module.exports = {
       proxysql_2_1_1: {
         host: (PMM_SERVER_OVF_AMI_SETUP === 'true' ? SERVER_HOST : 'proxysql'),
         port: DB_CONFIG.PROXYSQL_SERVER_PORT,
-        username: 'proxyadmin',
-        password: 'yxZq!4SGv0A1',
+        username: 'proxysql_user',
+        password: 'passw0rd',
         environment: 'proxy_env',
         clusterName: 'proxy_clstr',
       },
     },
     haproxy: {
       haproxy_2: {
-        host: (PMM_SERVER_OVF_AMI_SETUP === 'true' ? EXTERNAL_EXPORTER_HOST : 'HAPROXY'),
+        host: (PMM_SERVER_OVF_AMI_SETUP === 'true' ? EXTERNAL_EXPORTER_HOST : 'haproxy_pmm'),
         port: '42100',
         clusterName: 'haproxy_clst',
       },
     },
     external: {
       redis: {
-        host: (PMM_SERVER_OVF_AMI_SETUP === 'true' ? EXTERNAL_EXPORTER_HOST : '192.168.0.1'),
+        host: (PMM_SERVER_OVF_AMI_SETUP === 'true' ? EXTERNAL_EXPORTER_HOST : 'external_pmm'),
         port: '42200',
         clusterName: 'redis_external_exporter',
         environment: 'redis_external',
@@ -401,49 +403,49 @@ module.exports = {
   serviceTypes: {
     mysql: (
       remoteInstanceStatus.mysql.ps_5_7.enabled ? {
-        serviceType: 'MYSQL_SERVICE',
+        serviceType: SERVICE_TYPE.MYSQL,
         service: 'mysql',
       } : undefined
     ),
     mongodb: (
       remoteInstanceStatus.mongodb.psmdb_4_2.enabled ? {
-        serviceType: 'MONGODB_SERVICE',
+        serviceType: SERVICE_TYPE.MONGODB,
         service: 'mongodb',
       } : undefined
     ),
     postgresql: (
       remoteInstanceStatus.postgresql.pdpgsql_13_3.enabled ? {
-        serviceType: 'POSTGRESQL_SERVICE',
+        serviceType: SERVICE_TYPE.POSTGRESQL,
         service: 'postgresql',
       } : undefined
     ),
     proxysql: (
       remoteInstanceStatus.proxysql.proxysql_2_1_1.enabled ? {
-        serviceType: 'PROXYSQL_SERVICE',
+        serviceType: SERVICE_TYPE.PROXYSQL,
         service: 'proxysql',
       } : undefined
     ),
     postgresGC: (
       remoteInstanceStatus.gc.gc_postgresql.enabled ? {
-        serviceType: 'POSTGRESQL_SERVICE',
+        serviceType: SERVICE_TYPE.POSTGRESQL,
         service: 'postgresql',
       } : undefined
     ),
     mysql_ssl: (
       remoteInstanceStatus.mysql.ms_8_0_ssl.enabled ? {
-        serviceType: 'MYSQL_SERVICE',
+        serviceType: SERVICE_TYPE.MYSQL,
         service: 'mysql',
       } : undefined
     ),
     mongodb_ssl: (
       remoteInstanceStatus.mongodb.mongodb_4_4_ssl.enabled ? {
-        serviceType: 'MONGODB_SERVICE',
+        serviceType: SERVICE_TYPE.MONGODB,
         service: 'mongodb',
       } : undefined
     ),
     postgres_ssl: (
       remoteInstanceStatus.postgresql.postgres_13_3_ssl.enabled ? {
-        serviceType: 'POSTGRESQL_SERVICE',
+        serviceType: SERVICE_TYPE.POSTGRESQL,
         service: 'postgresql',
       } : undefined
     ),

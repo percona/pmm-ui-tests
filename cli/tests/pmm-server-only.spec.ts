@@ -5,7 +5,7 @@ import { waitForApiReady } from '@helpers/custom-assertions';
 
 const DOCKER_IMAGE = process.env.DOCKER_VERSION && process.env.DOCKER_VERSION.length > 0
   ? process.env.DOCKER_VERSION
-  : 'perconalab/pmm-server:dev-latest';
+  : 'perconalab/pmm-server:3-dev-latest';
 const stopList: string[] = [];
 const removeList: string[] = [];
 
@@ -22,8 +22,8 @@ test.describe('PMM Server CLI tests for Docker Environment Variables', async () 
   /**
    * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/docker-env-variable-tests.bats#L7
    */
-  test('PMM-T224 run docker container with a invalid value for a environment variable DATA_RETENTION=48', async ({}) => {
-    await cli.exec(`docker run -d -p 81:80 -p 446:443 --name PMM-T224 -e DATA_RETENTION=48 ${DOCKER_IMAGE}`);
+  test('PMM-T224 run docker container with a invalid value for a environment variable PMM_DATA_RETENTION=48', async ({}) => {
+    await cli.exec(`docker run -d -p 81:8080 -p 446:8443 --name PMM-T224 -e PMM_DATA_RETENTION=48 ${DOCKER_IMAGE}`);
     let out: ExecReturn;
 
     await expect(async () => {
@@ -36,19 +36,18 @@ test.describe('PMM Server CLI tests for Docker Environment Variables', async () 
     });
     removeList.push('PMM-T224');
     // @ts-ignore
-    // Extra escaping due to bug# PMM-12450, remove once fixed.
-    await out.outContains('Configuration error: environment variable \\"DATA_RETENTION=48\\" has invalid duration 48.');
+    await out.outContains('Configuration error: environment variable \\"PMM_DATA_RETENTION=48\\" has invalid duration 48.');
   });
 
   /**
    * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/docker-env-variable-tests.bats#L20
    */
-  test('PMM-T225 run docker container with a unexpected environment variable DATA_TENTION=48', async ({}) => {
-    await cli.exec(`docker run -d -p 82:80 -p 447:443 --name PMM-T225 -e DATA_TENTION=48 ${DOCKER_IMAGE}`);
+  test('PMM-T225 run docker container with a unexpected environment variable PMM_DATA_TENTION=48', async ({}) => {
+    await cli.exec(`docker run -d -p 82:80 -p 447:8443 --name PMM-T225 -e PMM_DATA_TENTION=48 ${DOCKER_IMAGE}`);
     let out: ExecReturn;
 
     await expect(async () => {
-      out = await cli.exec('docker logs PMM-T225 2>&1 | grep "Configuration warning: unknown environment variable"');
+      out = await cli.exec('docker logs PMM-T225 2>&1 | grep \'Configuration warning: unknown environment variable\'');
       await out.exitCodeEquals(0);
     }).toPass({
       // Probe, wait 1s, probe, wait 2s, probe, wait 2s, probe, wait 2s, probe, ....
@@ -58,8 +57,7 @@ test.describe('PMM Server CLI tests for Docker Environment Variables', async () 
     stopList.push('PMM-T225');
     removeList.push('PMM-T225');
     // @ts-ignore
-    // Extra escaping due to bug# PMM-12450, remove once fixed.
-    await out.outContains('Configuration warning: unknown environment variable \\"DATA_TENTION=48\\".');
+    await out.outContains('Configuration warning: unknown environment variable \\"PMM_DATA_TENTION=48\\".');
   });
 
   /**
@@ -67,15 +65,15 @@ test.describe('PMM Server CLI tests for Docker Environment Variables', async () 
    */
   test('PMM-T226 run docker container with all valid environment variables not causing any warning or error message', async ({}) => {
     // @ts-ignore
-    await cli.exec(`docker run -d -p 83:80 -p 447:443 
-    --name PMM-T226 -e DATA_RETENTION=48h -e DISABLE_UPDATES=true -e DISABLE_TELEMETRY=false  
-    -e METRICS_RESOLUTION=24h -e METRICS_RESOLUTION_LR=24h -e METRICS_RESOLUTION_MR=24h ${DOCKER_IMAGE}`);
+    await cli.exec(`docker run -d -p 83:8080 -p 447:8443 
+    --name PMM-T226 -e PMM_DATA_RETENTION=48h -e PMM_ENABLE_UPDATES=false -e PMM_ENABLE_TELEMETRY=false  
+    -e PMM_METRICS_RESOLUTION=24h -e PMM_METRICS_RESOLUTION_LR=24h -e PMM_METRICS_RESOLUTION_MR=24h ${DOCKER_IMAGE}`);
     stopList.push('PMM-T226');
     removeList.push('PMM-T226');
     await waitForApiReady('127.0.0.1', 83);
     await (await cli.exec('docker ps | grep PMM-T226')).assertSuccess();
     await expect(async () => {
-      const out = await cli.exec('docker logs PMM-T226 2>&1 | grep "warning"');
+      const out = await cli.exec('docker logs PMM-T226 2>&1 | grep -i "WARN"');
       await out.exitCodeEquals(1);
     }).toPass({
       // Probe, wait 1s, probe, wait 2s, probe, wait 2s, probe, wait 2s, probe, ....
@@ -84,7 +82,7 @@ test.describe('PMM Server CLI tests for Docker Environment Variables', async () 
     });
 
     await expect(async () => {
-      const out = await cli.exec('docker logs PMM-T226 2>&1 | grep "error"');
+      const out = await cli.exec('docker logs PMM-T226 > test1.log 2>&1 | grep -i "ERRO"');
       await out.exitCodeEquals(1);
     }).toPass({
       // Probe, wait 1s, probe, wait 2s, probe, wait 2s, probe, wait 2s, probe, ....
@@ -99,7 +97,7 @@ test.describe('PMM Server CLI tests for Docker Environment Variables', async () 
   test('PMM-T526 Use Invalid Prometheus Custom Config File to Check if Container is unhealthy', async ({}) => {
     const containerName = 'PMM-T526';
     const httpPort = 84;
-    await cli.exec(`docker run -d -p ${httpPort}:80 -p 449:443 --name ${containerName} ${DOCKER_IMAGE}`);
+    await cli.exec(`docker run -d -p ${httpPort}:8080 -p 449:8443 --name ${containerName} ${DOCKER_IMAGE}`);
     stopList.push(containerName);
     removeList.push(containerName);
     await waitForApiReady('127.0.0.1', httpPort);
@@ -140,5 +138,16 @@ test.describe('PMM Server CLI tests for Docker Environment Variables', async () 
     expect(output.getStdOutLines()[1], 'Verify Clickhouse engine is "Atomic"').toEqual('Atomic');
     expect(output.getStdOutLines()[2], `Verify Clickhouse data_path is "${expectedPath}"`).toContain(expectedPath);
     expect(output.getStdOutLines()[3], `Verify Clickhouse metadata_path contains "${expectedPath}"`).toContain(expectedPath);
+  });
+
+  test('PMM-T1862 Verify all processes in PMM server is running under non-root user', async ({}) => {
+    const pmmServerContainerId = await cli.exec('docker ps --filter "name=pmm-server" --format "{{ .ID }}"');
+    const processesUser = (await cli.exec(`docker top ${pmmServerContainerId.stdout} | awk '{print $1 " " $8}'`))
+      .stdout
+      .replace('UID CMD\n', '')
+      .split('\n');
+    const rootProcesses = processesUser.filter((processUser) => processUser.includes('root'));
+
+    expect(rootProcesses, `Processes that does run as root are: ${rootProcesses}`).toHaveLength(0);
   });
 });

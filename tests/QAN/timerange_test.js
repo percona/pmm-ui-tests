@@ -3,59 +3,56 @@ const assert = require('assert');
 
 Feature('QAN timerange').retry(1);
 
-Before(async ({
-  I, qanPage, qanOverview, qanFilters,
-}) => {
+Before(async ({ I, queryAnalyticsPage }) => {
   await I.Authorize();
-  I.amOnPage(qanPage.url);
-  qanOverview.waitForOverviewLoaded();
-  qanFilters.waitForFiltersToLoad();
+  I.amOnPage(I.buildUrlWithParams(queryAnalyticsPage.url, { from: 'now-5m' }));
+  queryAnalyticsPage.waitForLoaded();
 });
 
 Scenario(
   'Open the QAN Dashboard and check that changing the time range resets current page to the first. @qan',
-  async ({ adminPage, qanPagination, qanOverview }) => {
-    qanPagination.selectPage(2);
+  async ({ adminPage, queryAnalyticsPage }) => {
+    queryAnalyticsPage.data.selectPage('2');
     await adminPage.applyTimeRange('Last 3 hours');
-    qanOverview.waitForOverviewLoaded();
-    await qanPagination.verifyActivePage(1);
+    queryAnalyticsPage.waitForLoaded();
+    await queryAnalyticsPage.data.verifyActivePage(1);
   },
 );
 
 Scenario(
-  'PMM-T167 Open the QAN Dashboard and check that changing the time range updates the overview table, URL. @nightly @qan',
+  'PMM-T167 Open the QAN Dashboard and check that changing the time range updates the overview table, URL @qan',
   async ({
-    I, adminPage, qanDetails, qanFilters, qanOverview,
+    I, adminPage, queryAnalyticsPage,
   }) => {
     I.seeInCurrentUrl('from=now-5m&to=now');
-    qanOverview.selectRow(1);
-    qanFilters.waitForFiltersToLoad();
-    I.seeElement(qanDetails.root);
+    queryAnalyticsPage.data.selectRow(1);
+    queryAnalyticsPage.waitForLoaded();
+    I.seeElement(queryAnalyticsPage.data.root);
 
     await adminPage.applyTimeRange('Last 3 hours');
-    qanOverview.waitForOverviewLoaded();
+    queryAnalyticsPage.waitForLoaded();
     I.seeInCurrentUrl('from=now-3h&to=now');
-    I.dontSeeElement(qanDetails.root);
-    qanOverview.selectRow(1);
-    qanFilters.waitForFiltersToLoad();
-    I.seeElement(qanDetails.root);
+    queryAnalyticsPage.data.selectRow(1);
+    queryAnalyticsPage.waitForLoaded();
+    I.seeElement(queryAnalyticsPage.data.root);
   },
 );
 
 Scenario(
-  'PMM-T432 Open the QAN Dashboard and check that changing absolute time range updates the overview table, URL. @nightly @qan',
+  'PMM-T432 Open the QAN Dashboard and check that changing absolute time range updates the overview table, URL @qan',
   async ({
-    I, adminPage, qanFilters, qanOverview,
+    I, adminPage, queryAnalyticsPage,
   }) => {
     const currentDate = moment();
-    const dateString = currentDate.format('YYYY-MM-DD');
+    const date = currentDate.format('YYYY-MM-DD');
 
-    qanOverview.selectRow(1);
-    qanFilters.waitForFiltersToLoad();
-    adminPage.setAbsoluteTimeRange(`${dateString} 00:00:00`, `${dateString} 23:59:59`);
+    queryAnalyticsPage.data.selectRow(1);
+    queryAnalyticsPage.waitForLoaded();
+    adminPage.setAbsoluteTimeRange(`${date} 00:00:00`, `${date} 23:59:59`);
+    queryAnalyticsPage.waitForLoaded();
+    adminPage.verifySelectedTimeRange(`${date} 00:00:00`, `${date} 23:59:59`);
+
     const url = await I.grabCurrentUrl();
-
-    adminPage.verifySelectedTimeRange(`${dateString} 00:00:00`, `${dateString} 23:59:59`);
 
     I.assertContain(url.split('from=')[1].replaceAll('%20', ' '), `${currentDate.format('ddd MMM DD YYYY')} 00:00:00`, 'From Date is not correct');
     I.assertContain(url.split('to=')[1].replaceAll('%20', ' '), `${currentDate.format('ddd MMM DD YYYY')} 23:59:59`, 'To Date is not correct');
@@ -64,64 +61,71 @@ Scenario(
 
 Scenario(
   'PMM-T170 Open the QAN Dashboard and check that changing the time range doesn\'t clear "Group by". @qan',
-  async ({ I, adminPage, qanOverview }) => {
+  async ({ I, adminPage, queryAnalyticsPage }) => {
     const group = 'Client Host';
 
-    I.waitForText('Query', 30, qanOverview.elements.groupBy);
-    await qanOverview.changeGroupBy(group);
+    I.waitForText('Query', 30, queryAnalyticsPage.data.elements.selectedMainMetric());
+    await queryAnalyticsPage.data.changeMainMetric(group);
     await adminPage.applyTimeRange('Last 24 hours');
-    qanOverview.waitForOverviewLoaded();
-    qanOverview.verifyGroupByIs(group);
+    queryAnalyticsPage.waitForLoaded();
+    const mainMetricsText = await I.grabTextFrom(queryAnalyticsPage.data.elements.selectedMainMetric());
+
+    I.assertEqual(
+      group,
+      mainMetricsText,
+      `Expected main metric ${group} and real main metric ${mainMetricsText} are not equal`,
+    );
   },
 );
 
 Scenario(
   'Open the QAN Dashboard and check that changing the time range doesn\'t reset sorting. @qan',
-  async ({ adminPage, qanOverview }) => {
-    await qanOverview.changeSorting(1);
+  async ({ adminPage, queryAnalyticsPage }) => {
+    queryAnalyticsPage.changeSorting(1);
     await adminPage.applyTimeRange('Last 24 hours');
-    qanOverview.waitForOverviewLoaded();
-    qanOverview.verifySorting(1, 'desc');
+    queryAnalyticsPage.waitForLoaded();
+    queryAnalyticsPage.data.verifySorting(1, 'desc');
   },
 );
 
 Scenario(
   'PMM-T1138 - Verify QAN Copy Button for URL @qan',
-  async ({ I, adminPage, qanOverview }) => {
-    await adminPage.applyTimeRange('Last 12 hours');
-
-    qanOverview.waitForOverviewLoaded();
-    qanOverview.selectRow(2);
-    I.click(qanOverview.buttons.copyButton);
+  async ({ I, queryAnalyticsPage }) => {
+    I.amOnPage(I.buildUrlWithParams(queryAnalyticsPage.url, { from: 'now-12h' }));
+    queryAnalyticsPage.waitForLoaded();
+    await queryAnalyticsPage.data.selectRow(2);
+    I.click(queryAnalyticsPage.buttons.copyButton);
     I.waitForVisible(I.getPopUpLocator(), 10);
 
-    const url = new URL(await I.grabTextFrom(qanOverview.elements.clipboardLink));
+    const dateTime = moment().format('x');
+    const url = new URL(await I.grabTextFrom(queryAnalyticsPage.elements.clipboardLink));
     const toTimeFromUrl1 = url.searchParams.get('to');
 
-    assert.ok(Math.abs(moment().format('x') - toTimeFromUrl1) < 30000000, 'Difference between moment time and first copied time must be less then half of minute');
+    assert.ok(Math.abs(dateTime - toTimeFromUrl1) < 60000, 'Difference between moment time and first copied time must be less then one minute');
 
     I.wait(30);
     I.refreshPage();
-    qanOverview.waitForOverviewLoaded();
-    I.click(qanOverview.buttons.copyButton);
-    I.waitForVisible(I.getPopUpLocator(), 10);
+    queryAnalyticsPage.waitForLoaded();
 
-    const url2 = new URL(await I.grabTextFrom(qanOverview.elements.clipboardLink));
+    I.waitForVisible(queryAnalyticsPage.buttons.copyButton);
+    I.click(queryAnalyticsPage.buttons.copyButton);
+    I.waitForVisible(I.getPopUpLocator(), 10);
+    const url2 = new URL(await I.grabTextFrom(queryAnalyticsPage.elements.clipboardLink));
     const toTimeFromUrl2 = url2.searchParams.get('to');
 
-    assert.ok(Math.abs(toTimeFromUrl1 - toTimeFromUrl2) < 120000, 'Difference between moment time and second copied time must be less then two minute');
+    assert.ok(Math.abs(toTimeFromUrl1 - toTimeFromUrl2) < 120000, 'Difference between moment time and second copied time must be less then two minutes');
     assert.notEqual(toTimeFromUrl1, toTimeFromUrl2, 'TimeFromUrl2 must not be the same as timeFromUrl1');
 
     I.openNewTab();
     I.amOnPage(url.toString());
-    qanOverview.waitForOverviewLoaded();
-    I.waitForVisible(qanOverview.getSelectedRowLocator(2));
+    queryAnalyticsPage.waitForLoaded();
+    I.waitForVisible(queryAnalyticsPage.data.elements.selectedRowByNumber('2'));
   },
 );
 
 Scenario(
   'PMM-T1140 - Verify relative time range copy URL from browser @qan',
-  async ({ I, qanOverview }) => {
+  async ({ I, queryAnalyticsPage }) => {
     const url = new URL(await I.grabCurrentUrl());
     const fromString1 = url.searchParams.get('from');
     const toString1 = url.searchParams.get('to');
@@ -129,7 +133,7 @@ Scenario(
     I.wait(60);
     I.openNewTab();
     I.amOnPage(url.toString());
-    qanOverview.waitForOverviewLoaded();
+    queryAnalyticsPage.waitForLoaded();
 
     const url2 = new URL(await I.grabCurrentUrl());
     const fromString2 = url2.searchParams.get('from');
@@ -142,24 +146,24 @@ Scenario(
 
 Scenario(
   'PMM-T1141 - Verify specific time range by new button to copy QAN URL @qan',
-  async ({ I, adminPage, qanOverview }) => {
+  async ({ I, adminPage, queryAnalyticsPage }) => {
     const dateTime = moment();
     const to = dateTime.format('YYYY-MM-DD HH:mm:ss');
     const from = moment(dateTime).subtract(1, 'hours').format('YYYY-MM-DD HH:mm:ss');
 
     adminPage.setAbsoluteTimeRange(from, to);
-    qanOverview.waitForOverviewLoaded();
+    queryAnalyticsPage.waitForLoaded();
 
     const url = await I.grabCurrentUrl();
 
     I.assertContain(url.split('from=')[1].replaceAll('%20', ' '), moment(from).format('ddd MMM DD YYYY HH:mm:ss'), 'Url does not contain selected from date time');
     I.assertContain(url.split('to=')[1].replaceAll('%20', ' '), moment(to).format('ddd MMM DD YYYY HH:mm:ss'), 'Url does not contain selected to date time');
 
-    I.click(qanOverview.buttons.copyButton);
-    const clipBoardUrl = await I.grabTextFrom(qanOverview.elements.clipboardLink);
+    I.click(queryAnalyticsPage.buttons.copyButton);
+    const clipBoardUrl = await I.grabTextFrom(queryAnalyticsPage.elements.clipboardLink);
 
     I.amOnPage(clipBoardUrl);
-    qanOverview.waitForOverviewLoaded();
+    queryAnalyticsPage.waitForLoaded();
     const secondUrl = await I.grabCurrentUrl();
 
     adminPage.verifySelectedTimeRange(from, to);
@@ -172,45 +176,48 @@ Scenario(
 Scenario(
   'PMM-T1142 - Verify that the table page and selected query are still the same when we go on copied link by new QAN CopyButton @qan',
   async ({
-    I, qanPagination, qanOverview, qanDetails,
+    I, queryAnalyticsPage,
   }) => {
-    I.click(qanPagination.buttons.nextPage);
-    qanOverview.selectRow(2);
-    I.click(qanOverview.buttons.copyButton);
-    I.waitForVisible(I.getPopUpLocator(), 10);
+    await I.waitForVisible(queryAnalyticsPage.data.buttons.nextPage);
+    await I.click(queryAnalyticsPage.data.buttons.nextPage);
+    await queryAnalyticsPage.data.selectRow(2);
+    await I.click(queryAnalyticsPage.buttons.copyButton);
+    await I.waitForVisible(I.getPopUpLocator(), 10);
 
-    const url = await I.grabTextFrom(qanOverview.elements.clipboardLink);
+    const url = await I.grabTextFrom(queryAnalyticsPage.elements.clipboardLink);
 
-    I.openNewTab();
-    I.amOnPage(url);
-    qanOverview.waitForOverviewLoaded();
-    // this check will need to be uncommented after tasks 9480 and 9481 are ready
-    // qanPagination.verifyActivePage(2);
-    I.waitForVisible(qanOverview.getSelectedRowLocator(2), 20);
-    I.waitForElement(qanDetails.buttons.close, 30);
+    await I.openNewTab({ viewport: { width: 1920, height: 1080 } });
+    await I.amOnPage(url);
+
+    await I.assertContain(url, '&page_number=2', 'Expected the Url to contain selected page');
+    await queryAnalyticsPage.waitForLoaded();
+    await queryAnalyticsPage.data.verifyActivePage(2);
+    await I.waitForVisible(queryAnalyticsPage.data.elements.selectedRowByNumber(2), 20);
+    await I.waitForElement(queryAnalyticsPage.data.buttons.close, 30);
   },
 );
 
 Scenario(
   'PMM-T1143 - Verify columns and filters when we go on copied link by new QAN CopyButton @qan',
-  async ({ I, qanFilters, qanOverview }) => {
-    const environmentName = 'ps-dev';
+  async ({
+    I, queryAnalyticsPage,
+  }) => {
+    const environmentName = 'pxc-dev';
     const columnName = 'Bytes Sent';
 
-    qanOverview.addSpecificColumn(columnName);
-    await qanFilters.applyFilter(environmentName);
-    qanOverview.waitForOverviewLoaded();
-    I.click(qanOverview.buttons.copyButton);
+    queryAnalyticsPage.addColumn(columnName);
+    queryAnalyticsPage.filters.selectFilter(environmentName);
+    queryAnalyticsPage.waitForLoaded();
+    I.click(queryAnalyticsPage.buttons.copyButton);
     I.waitForVisible(I.getPopUpLocator(), 10);
 
-    const url = await I.grabTextFrom(qanOverview.elements.clipboardLink);
+    const url = await I.grabTextFrom(queryAnalyticsPage.elements.clipboardLink);
 
     I.openNewTab();
     I.amOnPage(url);
-    qanOverview.waitForOverviewLoaded();
+    queryAnalyticsPage.waitForLoaded();
     I.seeInCurrentUrl(`environment=${environmentName}`);
-    await qanFilters.verifyCountOfFilterLinks(1, false);
-    I.waitForElement(qanOverview.getColumnLocator(columnName), 30);
+    await queryAnalyticsPage.filters.verifyCheckedFilters([environmentName]);
+    I.waitForElement(queryAnalyticsPage.data.fields.columnHeader(columnName), 30);
   },
 );
-

@@ -17,11 +17,11 @@ networks:
 
 services:
   pmm-server-disconnect:
-    image: ${PMM_SERVER_IMAGE:-perconalab/pmm-server:dev-latest}
+    image: ${PMM_SERVER_IMAGE:-perconalab/pmm-server:3-dev-latest}
     container_name: pmm-server-disconnect
     ports:
-      - '8180:80'
-      - '8143:443'
+      - '8180:8080'
+      - '8143:8443'
     environment:
       - PMM_DEBUG=1
       - PERCONA_TEST_SAAS_HOST=check-dev.percona.com:443
@@ -33,14 +33,14 @@ services:
       - server-network
 
   pmm-client:
-    image: perconalab/pmm-client:dev-latest
+    image: perconalab/pmm-client:3-dev-latest
     container_name: pmm-client-disconnect
     depends_on:
       pmm-server-disconnect:
         condition: service_healthy
     environment:
       - PMM_AGENT_SETUP=1
-      - PMM_AGENT_SERVER_ADDRESS=pmm-server-disconnect
+      - PMM_AGENT_SERVER_ADDRESS=pmm-server-disconnect:8443
       - PMM_AGENT_SERVER_USERNAME=admin
       - PMM_AGENT_SERVER_PASSWORD=admin
       - PMM_AGENT_PORTS_MIN=41000
@@ -55,9 +55,9 @@ services:
       - server-network
       - mysql-network
 
-  mysql5.7:
-    container_name: mysql-disconnect-5.7
-    image: mysql:5.7
+  ps8:
+    container_name: ps8
+    image: percona:8.0
     command: --default-authentication-plugin=mysql_native_password
     restart: always
     environment:

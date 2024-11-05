@@ -4,12 +4,13 @@ class ApiHelper extends Helper {
     const { page } = this.helpers.Playwright;
 
     // mock user details call to prevent the tours from showing
-    await page.route('**/v1/user', (route) => route.fulfill({
+    await page.route('**/v1/users/me', (route) => route.fulfill({
       status: 200,
       body: JSON.stringify({
         user_id: 1,
         product_tour_completed: true,
         alerting_tour_completed: true,
+        snoozed_pmm_version: '3.2.0',
       }),
     }));
   }

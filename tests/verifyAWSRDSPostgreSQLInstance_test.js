@@ -1,4 +1,5 @@
 const assert = require('assert');
+const { SERVICE_TYPE } = require('./helper/constants');
 
 Feature('Monitoring AWS RDS PostgreSQL');
 
@@ -27,7 +28,7 @@ Scenario(
   }) => {
     const serviceName = 'pmm-qa-pgsql-12';
 
-    await inventoryAPI.deleteNodeByServiceName('POSTGRESQL_SERVICE', serviceName);
+    await inventoryAPI.deleteNodeByServiceName(SERVICE_TYPE.POSTGRESQL, serviceName);
 
     I.amOnPage(remoteInstancesPage.url);
     remoteInstancesPage.waitUntilRemoteInstancesPageLoaded().openAddAWSRDSMySQLPage();
@@ -43,7 +44,7 @@ Scenario(
     remoteInstancesPage.createRemoteInstance(serviceName);
     pmmInventoryPage.verifyRemoteServiceIsDisplayed(serviceName);
 
-    const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName('POSTGRESQL_SERVICE', serviceName);
+    const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.POSTGRESQL, serviceName);
 
     await agentsPage.open(service_id);
     await agentsPage.verifyAgentOtherDetailsSection('Postgres exporter', 'auto_discovery_limit=1');
@@ -66,7 +67,7 @@ Scenario(
   }) => {
     const serviceName = 'pmm-qa-pgsql-12';
 
-    await inventoryAPI.deleteNodeByServiceName('POSTGRESQL_SERVICE', serviceName);
+    await inventoryAPI.deleteNodeByServiceName(SERVICE_TYPE.POSTGRESQL, serviceName);
 
     I.amOnPage(remoteInstancesPage.url);
     remoteInstancesPage.waitUntilRemoteInstancesPageLoaded().openAddAWSRDSMySQLPage();
@@ -113,9 +114,11 @@ Scenario(
 
     // Wait 10 seconds before test to start getting metrics
     I.wait(10);
-    I.amOnPage(dashboardPage.postgresqlInstanceOverviewDashboard.url);
-    await dashboardPage.applyFilter('Node Name', serviceName);
-    await dashboardPage.verifyThereAreNoGraphsWithNA();
+    I.amOnPage(I.buildUrlWithParams(dashboardPage.postgresqlInstanceOverviewDashboard.cleanUrl, {
+      node_name: serviceName,
+      from: 'now-5m',
+    }));
+    await dashboardPage.expandEachDashboardRow();
     await dashboardPage.verifyThereAreNoGraphsWithoutData();
   },
 ).retry(2);
@@ -124,13 +127,13 @@ Scenario(
 xScenario(
   'PMM-T716 - Verify QAN for Postgres RDS added via UI @aws @instances',
   async ({
-    I, qanOverview, qanFilters, qanPage,
+    I, queryAnalyticsPage,
   }) => {
-    I.amOnPage(qanPage.url);
-    qanOverview.waitForOverviewLoaded();
-    await qanFilters.applyFilter('RDS Postgres');
-    qanOverview.waitForOverviewLoaded();
-    const count = await qanOverview.getCountOfItems();
+    I.amOnPage(I.buildUrlWithParams(queryAnalyticsPage.url, { from: 'now-5m' }));
+    queryAnalyticsPage.waitForLoaded();
+    await queryAnalyticsPage.filters.selectFilter('RDS Postgres');
+    queryAnalyticsPage.waitForLoaded();
+    const count = await queryAnalyticsPage.data.getCountOfItems();
 
     assert.ok(count > 0, 'The queries for added RDS Postgres do NOT exist');
   },

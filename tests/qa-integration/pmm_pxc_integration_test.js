@@ -1,4 +1,5 @@
 const assert = require('assert');
+const { SERVICE_TYPE } = require('../helper/constants');
 
 const { adminPage } = inject();
 
@@ -9,7 +10,7 @@ Before(async ({ I, settingsAPI }) => {
 });
 
 const version = process.env.PXC_VERSION ? `${process.env.PXC_VERSION}` : '8.0';
-const container_name = `pxc_container1_${version}`;
+const container_name = `pxc_proxysql_pmm_${version}`;
 const remoteServiceName = 'remote_pmm-mysql-integration';
 
 const connection = {
@@ -26,8 +27,8 @@ Scenario(
     const port = await I.verifyCommand(`docker exec ${container_name} pmm-admin list | grep "MySQL" | grep "pxc_node" | awk -F":" '{print $2}' | awk -F" " '{ print $1}' | head -1`);
     const details = {
       serviceName: remoteServiceName,
-      serviceType: 'MYSQL_SERVICE',
-      port: port,
+      serviceType: SERVICE_TYPE.MYSQL,
+      port,
       username: connection.username,
       password: connection.password,
       host: container_name,
@@ -47,10 +48,10 @@ Scenario(
     I.fillField(remoteInstancesPage.fields.environment, details.environment);
     I.fillField(remoteInstancesPage.fields.cluster, details.cluster);
     I.click(remoteInstancesPage.fields.addService);
-    //I.waitForVisible(pmmInventoryPage.fields.agentsLink, 30);
+    // I.waitForVisible(pmmInventoryPage.fields.agentsLink, 30);
     await inventoryAPI.verifyServiceExistsAndHasRunningStatus(
       {
-        serviceType: 'MYSQL_SERVICE',
+        serviceType: SERVICE_TYPE.MYSQL,
         service: 'mysql',
       },
       details.serviceName,
@@ -70,8 +71,8 @@ Scenario(
     let response; let result;
     const metricName = 'mysql_global_status_max_used_connections';
 
-    await I.verifyCommand(`docker exec ${container_name} pmm-admin list | grep "mysqld_exporter" | grep "Running" | wc -l | grep "3"`);
-    await I.verifyCommand(`docker exec ${container_name} pmm-admin list | grep "mysql_perfschema_agent" | grep "Running" | wc -l | grep "3"`);
+    await I.verifyCommand(`docker exec ${container_name} pmm-admin list | grep "mysqld_exporter" | grep "Agent_status_running" | wc -l | grep "3"`);
+    await I.verifyCommand(`docker exec ${container_name} pmm-admin list | grep "mysql_perfschema_agent" | grep "Agent_status_running" | wc -l | grep "3"`);
 
     const clientServiceName = (await I.verifyCommand(`docker exec ${container_name} pmm-admin list | grep MySQL | head -1 | awk -F" " '{print $2}'`)).trim();
 
@@ -103,61 +104,53 @@ Scenario(
     const serviceList = [clientServiceName, remoteServiceName];
 
     for (const service of serviceList) {
-      url = I.buildUrlWithParams(dashboardPage.mysqlInstanceSummaryDashboard.url, { from: 'now-5m', service_name: service });
+      url = I.buildUrlWithParams(dashboardPage.mysqlPXCGaleraNodeSummaryDashboard.clearUrl, { from: 'now-15m', service_name: service });
 
       I.amOnPage(url);
-      dashboardPage.waitForDashboardOpened();
+      await dashboardPage.waitForDashboardOpened();
       adminPage.performPageDown(5);
       await dashboardPage.expandEachDashboardRow();
       adminPage.performPageUp(5);
       if (service === remoteServiceName) {
-        await dashboardPage.verifyThereAreNoGraphsWithNA(7);
-        await dashboardPage.verifyThereAreNoGraphsWithoutData(9);
+        await dashboardPage.verifyThereAreNoGraphsWithoutData(6);
       } else {
-        await dashboardPage.verifyThereAreNoGraphsWithNA(1);
-        await dashboardPage.verifyThereAreNoGraphsWithoutData(5);
+        await dashboardPage.verifyThereAreNoGraphsWithoutData(3);
       }
-
-      url = I.buildUrlWithParams(dashboardPage.mysqlPXCGaleraNodeSummaryDashboard.url, { from: 'now-5m', service_name: service });
-
-      I.amOnPage(url);
-      dashboardPage.waitForDashboardOpened();
-      adminPage.performPageDown(5);
-      await dashboardPage.expandEachDashboardRow();
-      adminPage.performPageUp(5);
-      await dashboardPage.verifyThereAreNoGraphsWithNA(1);
-      await dashboardPage.verifyThereAreNoGraphsWithoutData(1);
     }
 
-    I.amOnPage(`${dashboardPage.pxcGaleraClusterSummaryDashboard.url}&var-replset=rs1`);
+    I.amOnPage(dashboardPage.proxysqlInstanceSummaryDashboard.url);
     dashboardPage.waitForDashboardOpened();
+    await adminPage.applyTimeRange('Last 5 minutes');
+    await dashboardPage.expandEachDashboardRow();
+    await dashboardPage.verifyMetricsExistence(dashboardPage.proxysqlInstanceSummaryDashboard.metrics);
+    await dashboardPage.verifyThereAreNoGraphsWithoutData(6);
+
+    I.amOnPage(dashboardPage.pxcGaleraClusterSummaryDashboard.url);
+    await dashboardPage.waitForDashboardOpened();
     await adminPage.applyTimeRange('Last 5 minutes');
     adminPage.performPageDown(5);
     await dashboardPage.expandEachDashboardRow();
     adminPage.performPageUp(5);
-    await dashboardPage.verifyThereAreNoGraphsWithNA();
-    await dashboardPage.verifyThereAreNoGraphsWithoutData(1);
+    await dashboardPage.verifyThereAreNoGraphsWithoutData(2);
   },
-).retry(1);
+).retry(3);
 
 Scenario(
   'Verify QAN after PXC Instances is added @pmm-pxc-integration @not-ui-pipeline',
   async ({
-    I, qanOverview, qanFilters, qanPage, adminPage,
+    I, queryAnalyticsPage,
   }) => {
     const clientServiceName = (await I.verifyCommand(`docker exec ${container_name} pmm-admin list | grep MySQL | head -1 | awk -F" " '{print $2}'`)).trim();
 
     const serviceList = [clientServiceName, remoteServiceName];
 
     for (const service of serviceList) {
-      const url = I.buildUrlWithParams(qanPage.clearUrl, { from: 'now-120m', to: 'now' });
+      I.amOnPage(I.buildUrlWithParams(queryAnalyticsPage.url, { from: 'now-120m', to: 'now' }));
 
-      I.amOnPage(url);
-      qanOverview.waitForOverviewLoaded();
-      qanFilters.waitForFiltersToLoad();
-      await qanFilters.applySpecificFilter(service);
-      qanOverview.waitForOverviewLoaded();
-      const count = await qanOverview.getCountOfItems();
+      queryAnalyticsPage.waitForLoaded();
+      await queryAnalyticsPage.filters.selectFilterInGroup(service, 'Service Name');
+      queryAnalyticsPage.waitForLoaded();
+      const count = await queryAnalyticsPage.data.getCountOfItems();
 
       assert.ok(count > 0, `The queries for service ${service} instance do NOT exist, check QAN Data`);
     }

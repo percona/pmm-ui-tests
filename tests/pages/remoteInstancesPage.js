@@ -142,9 +142,9 @@ module.exports = {
     subscriptionID: '$azure_subscription_id-text-input',
     tableStatsGroupTableLimit: '$tablestats_group_table_limit-number-input',
     tenantID: '$azure_tenant_id-text-input',
-    tlscaInput: '$tls_ca-textarea-input',
-    tlsCertificateInput: '$tls_cert-textarea-input',
-    tlsCertificateKeyInput: '$tls_key-textarea-input',
+    tlscaInput: locate('$tls_ca-textarea-input'),
+    tlsCertificateInput: locate('$tls_cert-textarea-input'),
+    tlsCertificateKeyInput: locate('$tls_key-textarea-input'),
     tlsCertificateFilePasswordInput: '$tls_certificate_file_password-password-input',
     tlsCertificateKey: '$tls_certificate_key-textarea-input',
     usePerformanceSchema2: '$qan_mysql_perfschema-field-container',
@@ -164,6 +164,7 @@ module.exports = {
     pgStatMonitorRadioInput: locate('#radio-btn-3'),
     customAutoDiscoveryButton: locate('//div[input[@data-testid="autoDiscoveryOptions-radio-button"]]').find('label').withText('Custom'),
     customAutoDiscoveryfield: '$autoDiscoveryLimit-number-input',
+    dropdownOption: (text) => locate('div[class$="-select-option-body"]').find('span').withText(text),
   },
 
   async getFileContent(filePath) {
@@ -237,8 +238,16 @@ module.exports = {
     return this;
   },
 
+  selectDropdownOption(dropdownLocator, text) {
+    I.click(dropdownLocator);
+    I.waitForVisible(this.fields.dropdownOption(text), 30);
+    I.click(this.fields.dropdownOption(text));
+    I.dontSeeElement(this.fields.dropdownOption(text));
+  },
+
   async addRemoteDetails(details, skipUserNamePassword = false) {
     I.waitForElement(this.fields.hostName, 30);
+    this.selectDropdownOption('$nodes-selectbox', 'pmm-server');
     I.fillField(this.fields.hostName, details.host);
     if (!skipUserNamePassword) {
       I.fillField(this.fields.userName, details.username);
@@ -265,9 +274,11 @@ module.exports = {
       I.dontSeeElement(this.fields.tlsCertificateInput);
       I.click(this.fields.useTLS);
       I.waitForElement(this.fields.tlscaInput, 30);
+
       await this.fillFileContent(this.fields.tlscaInput, details.tlsCAFile);
       await this.fillFileContent(this.fields.tlsCertificateInput, details.tlsCertFile);
       await this.fillFileContent(this.fields.tlsCertificateKeyInput, details.tlsKeyFile);
+
       if (details.serviceType === 'postgres_ssl') I.click(this.fields.usePgStatStatements);
 
       if (details.serviceType === 'mysql_ssl') I.click(this.fields.skipTLSL);

@@ -5,8 +5,8 @@ const fs = require('fs');
 const path = require('path');
 const axios = require('axios');
 
-const systemMessageText = '.page-alert-list div[data-testid^="data-testid Alert"] > div';
-const systemMessageButtonClose = '.page-alert-list button';
+const systemMessageText = 'div[data-testid^="data-testid Alert"] > div';
+const systemMessageButtonClose = '[aria-label="Close alert"]';
 const warningLocator = '[data-testid="data-testid Alert warning"]';
 
 module.exports = () => actor({
@@ -39,10 +39,7 @@ module.exports = () => actor({
   },
 
   useDataQA: (selector) => `[data-testid="${selector}"]`,
-  getSingleSelectOptionLocator: (optionName) => locate('[aria-label="Select option"]')
-    .find('span')
-    .withText(optionName.toString())
-    .inside('[aria-label="Select options menu"]'),
+  getSingleSelectOptionLocator: (optionName) => locate(`[data-testid="${optionName}-select-option"]`),
   getClosePopUpButtonLocator: () => systemMessageButtonClose,
   getPopUpLocator: () => systemMessageText,
 
@@ -209,8 +206,17 @@ module.exports = () => actor({
         case 'node_name':
           queryParams['var-node_name'] = value;
           break;
+        case 'cluster':
+          queryParams['var-cluster'] = value;
+          break;
         case 'service_name':
           queryParams['var-service_name'] = value;
+          break;
+        case 'application_name':
+          queryParams['var-application_name'] = value;
+          break;
+        case 'database':
+          queryParams['var-database'] = value;
           break;
         case 'columns':
           queryParams.columns = value;
@@ -232,6 +238,9 @@ module.exports = () => actor({
           break;
         case 'page_size':
           queryParams.page_size = value;
+          break;
+        case 'refresh':
+          queryParams.refresh = value;
           break;
         default:
       }

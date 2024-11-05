@@ -1,4 +1,5 @@
 const assert = require('assert');
+const { SERVICE_TYPE } = require('./helper/constants');
 
 const { remoteInstancesPage, remoteInstancesHelper } = inject();
 
@@ -48,7 +49,7 @@ Data(azureServices).Scenario(
     if (serviceName === 'azure-MySQL') {
       await inventoryAPI.verifyServiceExistsAndHasRunningStatus(
         {
-          serviceType: 'MYSQL_SERVICE',
+          serviceType: SERVICE_TYPE.MYSQL,
           service: 'mysql',
         },
         serviceName,
@@ -56,7 +57,7 @@ Data(azureServices).Scenario(
     } else {
       await inventoryAPI.verifyServiceExistsAndHasRunningStatus(
         {
-          serviceType: 'POSTGRESQL_SERVICE',
+          serviceType: SERVICE_TYPE.POSTGRESQL,
           service: 'postgresql',
         },
         serviceName,
@@ -70,26 +71,25 @@ Data(azureServices).Scenario(
 // Skip Due to changes Home Dashboard
 xScenario(
   'PMM-T756 - Verify Azure node is displayed on Home dashboard @instances',
-  async ({
-    I, homePage, dashboardPage,
-  }) => {
+  async ({ I, homePage }) => {
     const nodeName = 'azure-MySQL';
 
-    I.amOnPage(homePage.url);
-    await dashboardPage.applyFilter('Node Name', nodeName);
+    I.amOnPage(I.buildUrlWithParams(homePage.cleanUrl, {
+      node_name: nodeName,
+      from: 'now-5m',
+    }));
     homePage.verifyVisibleService(nodeName);
     // part without RDS MySQL should be skipped for now
   },
 ).retry(2);
 
 Data(filters).Scenario('PMM-T746, PMM-T748 - Verify adding monitoring for Azure CHECK QAN @instances', async ({
-  I, qanFilters, qanOverview, qanPage, current,
+  I, current, queryAnalyticsPage,
 }) => {
-  I.amOnPage(qanPage.refreshRateFiveSecondsUrl);
-  I.waitForElement(qanFilters.elements.filterItem('Environment', current.filter), 60);
-  await qanFilters.applyFilter(current.filter);
-  qanOverview.waitForOverviewLoaded();
-  const count = await qanOverview.getCountOfItems();
+  I.amOnPage(I.buildUrlWithParams(queryAnalyticsPage.url, { from: 'now-5m', refresh: '5s' }));
+  await queryAnalyticsPage.filters.selectFilter(current.filter);
+  queryAnalyticsPage.waitForLoaded();
+  const count = await queryAnalyticsPage.data.getCountOfItems();
 
   assert.ok(count > 0, `QAN queries for added Azure service with env as ${current.filter} do not exist`);
 }).retry(1);

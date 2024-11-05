@@ -5,13 +5,14 @@ export default class NetworkTools {
 
   // TODO: move it to api calls way
   suppressTour = async () => {
-    await this.page.route('**/v1/user', async (route) => {
+    await this.page.route('**/v1/users/me', async (route) => {
       await route.fulfill({
         status: 200,
         body: JSON.stringify({
           user_id: 1,
           product_tour_completed: true,
           alerting_tour_completed: true,
+          snoozed_pmm_version: '3.2.0',
         }),
       });
     });

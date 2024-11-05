@@ -2,6 +2,7 @@ const assert = require('assert');
 const faker = require('faker');
 const { generate } = require('generate-password');
 const { storageLocationConnection } = require('./backup/pages/testData');
+const { NODE_TYPE, SERVICE_TYPE } = require('./helper/constants');
 
 const {
   adminPage, remoteInstancesHelper, psMySql, pmmSettingsPage, dashboardPage, databaseChecksPage, scheduledAPI, locationsAPI,
@@ -14,7 +15,7 @@ const sslinstances = new DataTable(['serviceName', 'version', 'container', 'serv
 // Unskip after https://jira.percona.com/browse/PMM-12640
 // sslinstances.add(['pgsql_14_ssl_service', '14', 'pgsql_14', 'postgres_ssl', 'pg_stat_database_xact_rollback', dashboardPage.postgresqlInstanceOverviewDashboard.url]);
 sslinstances.add(['mysql_8.0_ssl_service', '8.0', 'mysql_8.0', 'mysql_ssl', 'mysql_global_status_max_used_connections', dashboardPage.mySQLInstanceOverview.url]);
-sslinstances.add(['mongodb_7.0_ssl_service', '7.0', 'mongodb_7.0', 'mongodb_ssl', 'mongodb_connections', dashboardPage.mongoDbInstanceOverview.url]);
+sslinstances.add(['mongodb_6.0_ssl_service', '6.0', 'mongodb_6.0', 'mongodb_ssl', 'mongodb_connections', dashboardPage.mongoDbInstanceOverview.url]);
 
 const alertManager = {
   alertmanagerURL: 'http://192.168.0.1:9093',
@@ -23,10 +24,10 @@ const alertManager = {
 
 const clientDbServices = new DataTable(['serviceType', 'name', 'metric', 'annotationName', 'dashboard', 'upgrade_service']);
 
-clientDbServices.add(['MYSQL_SERVICE', 'ps_', 'mysql_global_status_max_used_connections', 'annotation-for-mysql', dashboardPage.mysqlInstanceSummaryDashboard.url, 'mysql_upgrade']);
-clientDbServices.add(['POSTGRESQL_SERVICE', 'PGSQL_', 'pg_stat_database_xact_rollback', 'annotation-for-postgres', dashboardPage.postgresqlInstanceSummaryDashboard.url, 'pgsql_upgrade']);
+clientDbServices.add([SERVICE_TYPE.MYSQL, 'ps_', 'mysql_global_status_max_used_connections', 'annotation-for-mysql', dashboardPage.mysqlInstanceSummaryDashboard.url, 'mysql_upgrade']);
+clientDbServices.add([SERVICE_TYPE.POSTGRESQL, 'PGSQL_', 'pg_stat_database_xact_rollback', 'annotation-for-postgres', dashboardPage.postgresqlInstanceSummaryDashboard.url, 'pgsql_upgrade']);
 // eslint-disable-next-line max-len
-clientDbServices.add(['MONGODB_SERVICE', 'mongodb_', 'mongodb_connections', 'annotation-for-mongo', dashboardPage.mongoDbInstanceSummaryDashboard.url, 'mongo_upgrade']);
+clientDbServices.add([SERVICE_TYPE.MONGODB, 'mongodb_', 'mongodb_connections', 'annotation-for-mongo', dashboardPage.mongoDbInstanceSummaryDashboard.url, 'mongo_upgrade']);
 
 const connection = psMySql.defaultConnection;
 const psServiceName = 'upgrade-stt-ps-5.7.30';
@@ -136,18 +137,25 @@ Scenario(
   'PMM-T289 Verify Whats New link is presented on Update Widget @ovf-upgrade @ami-upgrade @pre-upgrade @pmm-upgrade',
   async ({ I, homePage }) => {
     const locators = homePage.getLocators(versionMinor);
-    const dockerUpgrade = process.env.PERFORM_DOCKER_WAY_UPGRADE || '';
 
     I.amOnPage(homePage.url);
     // Whats New Link is added for the latest version hours before the release,
     // hence we need to skip checking on that, rest it should be available and checked.
-    if (majorVersionDiff >= 1 && patchVersionDiff >= 1 && dockerUpgrade === 'no') {
+    if (majorVersionDiff >= 1 && patchVersionDiff >= 1) {
       I.waitForElement(locators.whatsNewLink, 30);
       I.seeElement(locators.whatsNewLink);
       const link = await I.grabAttributeFrom(locators.whatsNewLink, 'href');
 
       assert.equal(link.indexOf('https://per.co.na/pmm/') > -1, true, 'Whats New Link has an unexpected URL');
     }
+  },
+);
+
+Scenario(
+  'PMM-T288 Verify user can see Update widget before upgrade [critical] @pre-upgrade @ovf-upgrade @ami-upgrade @pmm-upgrade',
+  async ({ I, homePage }) => {
+    I.amOnPage(homePage.url);
+    await homePage.verifyPreUpdateWidgetIsPresent(versionMinor);
   },
 );
 
@@ -250,7 +258,7 @@ if (versionMinor >= 15) {
       // I.waitForVisible(failedCheckRowLocator, 30);
 
       if (versionMinor >= 27) {
-        const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName('MYSQL_SERVICE', psServiceName);
+        const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.MYSQL, psServiceName);
         const { alert_id } = (await advisorsAPI.getFailedChecks(service_id))
           .find(({ summary }) => summary === failedCheckMessage);
 
@@ -288,21 +296,21 @@ if (versionMinor >= 21) {
         service_id, node_id, address, port,
       } = await inventoryAPI.apiGetNodeInfoByServiceName(serviceType, name);
 
-      const { pmm_agent_id } = await inventoryAPI.apiGetPMMAgentInfoByServiceId(service_id);
+      const { agent_id: pmm_agent_id } = await inventoryAPI.apiGetPMMAgentInfoByServiceId(service_id);
       let output;
 
       switch (serviceType) {
-        case 'MYSQL_SERVICE':
+        case SERVICE_TYPE.MYSQL:
           output = await I.verifyCommand(
             `pmm-admin add mysql --node-id=${node_id} --pmm-agent-id=${pmm_agent_id} --port=${port} --password=GRgrO9301RuF --host=${address} --query-source=perfschema --agent-password=uitests --custom-labels="testing=upgrade" ${upgrade_service}`,
           );
           break;
-        case 'POSTGRESQL_SERVICE':
+        case SERVICE_TYPE.POSTGRESQL:
           output = await I.verifyCommand(
             `pmm-admin add postgresql --username=postgres --password=oFukiBRg7GujAJXq3tmd --node-id=${node_id} --pmm-agent-id=${pmm_agent_id} --port=${port} --host=${address} --agent-password=uitests --custom-labels="testing=upgrade" ${upgrade_service}`,
           );
           break;
-        case 'MONGODB_SERVICE':
+        case SERVICE_TYPE.MONGODB:
           output = await I.verifyCommand(
             `pmm-admin add mongodb --username=pmm_mongodb --password=GRgrO9301RuF --port=27023 --host=${address} --agent-password=uitests --custom-labels="testing=upgrade" ${upgrade_service}`,
           );
@@ -321,7 +329,7 @@ Scenario(
     const aurora_details = {
       add_node: {
         node_name: 'pmm-qa-aurora2-mysql-instance-1',
-        node_type: 'REMOTE_NODE',
+        node_type: NODE_TYPE.REMOTE,
       },
       aws_access_key: remoteInstancesHelper.remote_instance.aws.aurora.aws_access_key,
       aws_secret_key: remoteInstancesHelper.remote_instance.aws.aurora.aws_secret_key,
@@ -443,7 +451,7 @@ if (versionMinor >= 23) {
         I.wait(5);
         await inventoryAPI.verifyServiceExistsAndHasRunningStatus(
           {
-            serviceType: 'POSTGRESQL_SERVICE',
+            serviceType: SERVICE_TYPE.POSTGRESQL,
             service: 'postgresql',
           },
           remoteServiceName,
@@ -468,7 +476,7 @@ if (versionMinor >= 23) {
         I.wait(5);
         await inventoryAPI.verifyServiceExistsAndHasRunningStatus(
           {
-            serviceType: 'MYSQL_SERVICE',
+            serviceType: SERVICE_TYPE.MYSQL,
             service: 'mysql',
           },
           remoteServiceName,
@@ -491,7 +499,7 @@ if (versionMinor >= 23) {
         I.wait(5);
         await inventoryAPI.verifyServiceExistsAndHasRunningStatus(
           {
-            serviceType: 'MONGODB_SERVICE',
+            serviceType: SERVICE_TYPE.MONGODB,
             service: 'mongodb',
           },
           remoteServiceName,
@@ -514,7 +522,7 @@ if (versionMinor >= 32) {
     async ({
       I, settingsAPI, locationsAPI, backupAPI, scheduledAPI, inventoryAPI, backupInventoryPage, scheduledPage, credentials,
     }) => {
-      if (!await inventoryAPI.apiGetNodeInfoByServiceName('MONGODB_SERVICE', mongoServiceName)) {
+      if (!await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.MONGODB, mongoServiceName)) {
         await I.say(await I.verifyCommand(`docker exec rs101 pmm-admin add mongodb --port=27017 --username=${credentials.mongoReplicaPrimaryForBackups.username} --password=${credentials.mongoReplicaPrimaryForBackups.password} --service-name=${mongoServiceName} --replication-set=rs --cluster=rs`));
       }
 
@@ -527,7 +535,7 @@ if (versionMinor >= 32) {
         location.description,
       );
 
-      const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName('MONGODB_SERVICE', mongoServiceName);
+      const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.MONGODB, mongoServiceName);
       const backupId = await backupAPI.startBackup(backupName, service_id, locationId);
 
       // Every 20 mins schedule
@@ -554,9 +562,6 @@ Scenario(
   'PMM-T3 Verify user is able to Upgrade PMM version [blocker] @pmm-upgrade @ovf-upgrade @ami-upgrade  ',
   async ({ I, homePage }) => {
     I.amOnPage(homePage.url);
-
-    // PMM-T288 Verify user can see Update widget before upgrade [critical] @pre-upgrade @ovf-upgrade @ami-upgrade @pmm-upgrade
-    await homePage.verifyPreUpdateWidgetIsPresent(versionMinor);
     await homePage.upgradePMM(versionMinor);
   },
 ).retry(0);
@@ -767,7 +772,7 @@ if (versionMinor >= 16) {
       I,
       databaseChecksPage, inventoryAPI, advisorsAPI,
     }) => {
-      const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName('MYSQL_SERVICE', psServiceName);
+      const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.MYSQL, psServiceName);
 
       await advisorsAPI.waitForFailedCheckExistance(failedCheckMessage, psServiceName);
       databaseChecksPage.openFailedChecksListForService(service_id);
@@ -949,22 +954,17 @@ if (versionMinor > 14) {
 Scenario(
   'Verify QAN has specific filters for Remote Instances after Upgrade (UI) @ovf-upgrade @ami-upgrade @post-client-upgrade @post-upgrade @pmm-upgrade',
   async ({
-    I, qanPage, qanFilters, qanOverview,
+    I, queryAnalyticsPage,
   }) => {
-    I.amOnPage(qanPage.url);
-    qanFilters.waitForFiltersToLoad();
-    await qanFilters.expandAllFilters();
+    I.amOnPage(I.buildUrlWithParams(queryAnalyticsPage.url, { from: 'now-5m' }));
+    queryAnalyticsPage.waitForLoaded();
 
     // Checking that Cluster filters are still in QAN after Upgrade
     for (const name of Object.keys(remoteInstancesHelper.upgradeServiceNames)) {
       if (remoteInstancesHelper.qanFilters.includes(name)) {
-        const filter = qanFilters.getFilterLocator(name);
-
-        qanFilters.waitForFiltersToLoad();
-        qanOverview.waitForOverviewLoaded();
-
-        I.waitForVisible(filter, 30);
-        I.seeElement(filter);
+        queryAnalyticsPage.waitForLoaded();
+        I.waitForVisible(queryAnalyticsPage.filters.fields.filterByName(name), 30);
+        I.seeElement(queryAnalyticsPage.filters.fields.filterByName(name));
       }
     }
   },
@@ -1062,7 +1062,7 @@ if (versionMinor >= 21) {
       } = await inventoryAPI.apiGetNodeInfoByServiceName(serviceType, upgrade_service);
 
       await grafanaAPI.checkMetricExist(metric, { type: 'service_name', value: upgrade_service });
-      if (serviceType !== 'MYSQL_SERVICE') {
+      if (serviceType !== SERVICE_TYPE.MYSQL) {
         assert.ok(custom_labels, `Node Information for ${serviceType} added with ${upgrade_service} is empty, value returned are ${custom_labels}`);
         assert.ok(custom_labels.testing === 'upgrade', `Custom Labels for ${serviceType} added before upgrade with custom labels, doesn't have the same label post upgrade, value found ${custom_labels}`);
       }
@@ -1127,7 +1127,7 @@ if (versionMinor >= 23) {
   Data(sslinstances).Scenario(
     'Verify QAN after upgrade for SSL Instances added @post-upgrade @pmm-upgrade',
     async ({
-      I, qanOverview, qanFilters, qanPage, current, adminPage,
+      I, queryAnalyticsPage, current, adminPage,
     }) => {
       const {
         serviceName,
@@ -1136,14 +1136,13 @@ if (versionMinor >= 23) {
       const serviceList = [serviceName, `remote_api_${serviceName}`];
 
       for (const service of serviceList) {
-        I.amOnPage(qanPage.url);
-        qanOverview.waitForOverviewLoaded();
+        I.amOnPage(I.buildUrlWithParams(queryAnalyticsPage.url, { from: 'now-5m' }));
+        queryAnalyticsPage.waitForLoaded();
         await adminPage.applyTimeRange('Last 5 minutes');
-        qanOverview.waitForOverviewLoaded();
-        qanFilters.waitForFiltersToLoad();
-        await qanFilters.applySpecificFilter(service);
-        qanOverview.waitForOverviewLoaded();
-        const count = await qanOverview.getCountOfItems();
+        queryAnalyticsPage.waitForLoaded();
+        await queryAnalyticsPage.filters.selectFilter(service);
+        queryAnalyticsPage.waitForLoaded();
+        const count = await queryAnalyticsPage.data.getCountOfItems();
 
         assert.ok(count > 0, `The queries for service ${service} instance do NOT exist, check QAN Data`);
       }
@@ -1161,7 +1160,7 @@ if (versionMinor >= 32) {
       const backupName = 'backup_after_update';
 
       const { location_id } = await locationsAPI.getLocationDetails(location.name);
-      const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName('MONGODB_SERVICE', mongoServiceName);
+      const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.MONGODB, mongoServiceName);
       const backupId = await backupAPI.startBackup(backupName, service_id, location_id);
 
       await backupAPI.waitForBackupFinish(backupId);
@@ -1187,10 +1186,7 @@ if (versionMinor >= 32) {
       // Disable schedule
       I.click(scheduledPage.buttons.enableDisableByName(scheduleName));
       await I.waitForVisible(scheduledPage.elements.toggleByName(scheduleName));
-
-      const isChecked = await I.grabAttributeFrom(scheduledPage.elements.toggleByName(scheduleName), 'checked');
-
-      I.assertEqual(isChecked, null, `Element ${scheduledPage.elements.toggleByName(scheduleName).xpath} is checked, but should not be.`);
+      I.seeAttributesOnElements(scheduledPage.elements.toggleByName(scheduleName), { checked: null });
     },
   ).retry(0);
 

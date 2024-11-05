@@ -1,4 +1,5 @@
 const faker = require('faker');
+const { SERVICE_TYPE } = require('../helper/constants');
 
 const { locationsPage, locationsAPI } = inject();
 
@@ -13,7 +14,6 @@ const mongoServiceName = 'mongo-backup-locations';
 Feature('BM: Backup Locations').retry(1);
 
 BeforeSuite(async ({ I }) => {
-  // await I.suppressTour();
   I.say(await I.verifyCommand(`docker exec rs101 pmm-admin add mongodb --username=pmm --password=pmmpass --port=27017 --service-name=${mongoServiceName} --replication-set=rs0 --cluster=rs`));
 });
 
@@ -75,7 +75,7 @@ Scenario(
     I.seeTextEquals('Test', locationsPage.buttons.testLocation);
     I.seeElementsDisabled(locationsPage.buttons.testLocation);
     I.seeTextEquals('Cancel', locationsPage.buttons.cancel);
-    I.waitForEnabled(locationsPage.buttons.cancel);
+    I.waitForEnabled(locationsPage.buttons.cancel, 10);
   },
 );
 
@@ -242,7 +242,7 @@ Scenario(
   async ({
     I, locationsPage, locationsAPI, backupAPI, inventoryAPI,
   }) => {
-    const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName('MONGODB_SERVICE', mongoServiceName);
+    const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.MONGODB, mongoServiceName);
     const location_id = await locationsAPI.createStorageLocation(
       location.name,
       locationsAPI.storageType.s3,
@@ -265,7 +265,7 @@ Scenario(
     I, locationsPage, locationsAPI, backupAPI, backupInventoryPage, inventoryAPI,
   }) => {
     const backupName = 'delete_location';
-    const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName('MONGODB_SERVICE', mongoServiceName);
+    const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.MONGODB, mongoServiceName);
     const location_id = await locationsAPI.createStorageLocation(
       location.name,
       locationsAPI.storageType.s3,
@@ -393,7 +393,7 @@ Scenario(
     );
 
     const backupName = 'mongo_force_delete_locations_test';
-    const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName('MONGODB_SERVICE', mongoServiceName);
+    const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.MONGODB, mongoServiceName);
     const artifactId = await backupAPI.startBackup(backupName, service_id, locationId);
 
     await backupAPI.waitForBackupFinish(artifactId);

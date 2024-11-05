@@ -1,6 +1,4 @@
-const {
-  I, inventoryAPI, remoteInstancesHelper, adminPage,
-} = inject();
+const { I, inventoryAPI } = inject();
 
 const assert = require('assert');
 const paginationPart = require('./paginationFragment');
@@ -66,6 +64,7 @@ module.exports = {
     saveButton: locate('button').withChild('div').withText('Save Changes'),
     saveConfirmButton: locate('span').withText('Confirm and save changes'),
     savePopupMessage: locate('p').withText('Changing existing labels can affect other parts of PMM dependent on it'),
+    runningStatusAgent: '//td/div[contains(text(), "Running")]',
   },
   servicesTab,
   pagination: paginationPart,
@@ -84,7 +83,7 @@ module.exports = {
   },
 
   openAgents(serviceId) {
-    I.amOnPage(`graph/inventory/services/${serviceId.split('/')[2]}/agents`);
+    I.amOnPage(`graph/inventory/services/${serviceId}/agents`);
     this.changeRowsPerPage(100);
   },
 
@@ -116,9 +115,7 @@ module.exports = {
     I.waitForElement(this.fields.inventoryTable, 60);
     I.scrollPageToBottom();
 
-    const runningStatus = '//span[contains(text(), "Running")]';
-
-    const numberOfAgents = await I.grabNumberOfVisibleElements(runningStatus);
+    const numberOfAgents = await I.grabNumberOfVisibleElements(this.fields.runningStatusAgent);
 
     if (service_name.includes('azure')) {
       assert.equal(
@@ -291,9 +288,8 @@ module.exports = {
     const agentIdLocator = `//table//tr/td[3][contains(text(),"${agentType}")]/preceding-sibling::td[1]`;
 
     I.waitForVisible(agentIdLocator, 30);
-    const agentID = await I.grabTextFrom(agentIdLocator);
 
-    return agentID;
+    return await I.grabTextFrom(agentIdLocator);
   },
 
   async getNodeCount() {
@@ -335,9 +331,6 @@ module.exports = {
 
   async checkAllNotDeletedAgents(countBefore) {
     const countAfter = await this.getCountOfItems();
-    const otherDetails = await I.grabNumberOfVisibleElements(
-      '//table//tr/td[4]//span[contains(text(), "pmm-server")]',
-    );
 
     /* we are using count 10 because we have two agents for RDS Instance also,
     hence (pmm-agent, Node exporter, postgres exporter, mysql exporter, QAN RDS,

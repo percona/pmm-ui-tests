@@ -1,12 +1,12 @@
 const { I } = inject();
 const assert = require('assert');
 
-const pathToPmmQaRepo = process.env.PATH_TO_PMM_QA || '/srv/pmm-qa';
+const pathToPmmQaRepo = process.env.PATH_TO_PMM_QA || '/srv/qa-integration';
 
 module.exports = {
   url: 'graph/d/pmm-home/home-dashboard?orgId=1',
-  pathToFramework: `${pathToPmmQaRepo}/pmm-tests/pmm-framework.sh`,
-  pathToPMMTests: `${pathToPmmQaRepo}/pmm-tests/`,
+  pathToFramework: `${pathToPmmQaRepo}/pmm_qa/pmm-framework.py`,
+  pathToPMMTests: `${pathToPmmQaRepo}/pmm_qa/`,
   sideMenu: {
     integratedAlerting: 'li > a[href="/graph/integrated-alerting"]',
     alertingBellIcon: locate('$navbar-section').at(2).find('li a[aria-label="Alerting"]'),
@@ -24,13 +24,13 @@ module.exports = {
     reportTitleWithNA:
       '//span[contains(text(), "N/A")]//ancestor::div[contains(@class,"panel-container")]//span[contains(@class,"panel-title-text")]',
     pmmDropdownMenuSelector: locate('a[data-toggle="dropdown"] > span').withText('PMM'),
-    timeRangeFrom: locate('input').withAttr({ 'aria-label': 'Time Range from field' }),
-    timeRangeTo: locate('input').withAttr({ 'aria-label': 'Time Range to field' }),
+    timeRangeFrom: locate('input').withAttr({ 'data-testid': 'data-testid Time Range from field' }),
+    timeRangeTo: locate('input').withAttr({ 'data-testid': 'data-testid Time Range to field' }),
     tooltipText: locate('$info-tooltip').find('span'),
     tooltipReadMoreLink: locate('$info-tooltip').find('a'),
   },
 
-  getTimeZoneOptionSelector: (timeZone) => I.getSingleSelectOptionLocator(timeZone),
+  getTimeZoneOptionSelector: (timeZone) => locate('//*[contains(@data-testid, "Select option")]').find('span').withText(timeZone),
   getTimeZoneSelector: (timeZone) => locate('[aria-label="Time zone selection"]').find('span').withText(timeZone),
 
   async selectItemFromPMMDropdown(title) {

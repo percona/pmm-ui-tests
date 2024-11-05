@@ -1,14 +1,19 @@
 const { I, dashboardPage } = inject();
 const assert = require('assert');
 const moment = require('moment');
+const productTourModal = require('./components/productTourComponent');
 
 module.exports = {
   // insert your locators and methods here
   // setting locators
   url: 'graph/d/pmm-home/home-dashboard?orgId=1&refresh=1m&from=now-5m&to=now',
+  cleanUrl: 'graph/d/pmm-home/home-dashboard',
   landingUrl: 'graph/d/pmm-home/home-dashboard?orgId=1&refresh=1m',
   genericOauthUrl: 'graph/login/generic_oauth',
   requestEnd: '/v1/Updates/Check',
+  elements: {
+    pageContent: locate('//div[@id="pageContent"]'),
+  },
   fields: {
     systemsUnderMonitoringCount:
       locate('.panel-content span').inside('[aria-label="Monitored Nodes panel"]'),
@@ -21,11 +26,12 @@ module.exports = {
     failedSecurityChecksPmmSettingsLink: locate('$db-check-panel-settings-link').find('a'),
     sttFailedChecksPanelSelector: '$db-check-panel-has-checks',
     failedChecksPanelContent: '$db-check-panel-home',
+    leftMenuToggle: locate(I.useDataQA('data-testid Toggle menu')).find('[aria-label="Open menu"]'),
     checksPanelSelector: '$db-check-panel-home',
     noFailedChecksInPanel: '$db-check-panel-zero-checks',
     failedChecksPanelInfo: '[aria-label="Advisors check panel"] i',
     newsPanelTitleSelector: dashboardPage.graphsLocator('Percona News'),
-    pmmCustomMenu: locate('$sidemenu').find('a[aria-label="Dashboards"]'),
+    pmmCustomMenu: locate('[data-toggle="dropdown"]').withText('PMM'),
     servicesButton: locate('span').withText('Services'),
     newsPanelContentSelector:
       locate('.panel-content').inside('[aria-label="Percona News panel"]'),
@@ -74,6 +80,10 @@ module.exports = {
       },
     },
   },
+  buttons: {
+    pmmHelp: locate('button').withAttr({ 'aria-label': 'Help' }),
+    pmmLogs: locate('//a[@href="/logs.zip"]'),
+  },
   upgradeMilestones: [
     'TASK [Gathering Facts]',
     'TASK [initialization : Copy file with image version]',
@@ -86,9 +96,17 @@ module.exports = {
   isAmiUpgrade: process.env.AMI_UPGRADE_TESTING_INSTANCE === 'true' || process.env.OVF_UPGRADE_TESTING_INSTANCE === 'true',
   pmmServerName: process.env.VM_NAME ? process.env.VM_NAME : 'pmm-server',
 
+  productTour: productTourModal,
+
   async open() {
     I.amOnPage(this.url);
     I.waitForElement(this.fields.dashboardHeaderLocator, 60);
+  },
+
+  async openLeftMenu() {
+    I.waitForElement(this.fields.leftMenuToggle, 60);
+    I.click(this.fields.leftMenuToggle);
+    I.waitForVisible(I.useDataQA('data-testid Nav menu item'), 20);
   },
 
   // introducing methods

@@ -7,22 +7,18 @@ const formatElementId = (text) => text.toLowerCase().replace(/ /g, '_');
 module.exports = {
   // insert your locators and methods here
   // setting locators
-  common: {
-    selectOptionInDropdown: (value) => `//span[contains(@data-testid,' DropDown option text ${value}')]`,
-  },
-  environment: '//button[@aria-controls=\'options-var-environment\']',
   serviceNameDropdown:
     '//button[@id="var-service_name"]',
   serviceName:
     '//button[@id="var-service_name"]/span',
   serviceNameInput:
     '//input[@aria-controls="options-service_name"]',
-  toggleAllValues:
-    '//a[@aria-label="Toggle all values"]',
+  toggleAllValues: '[aria-label="Toggle all values"]',
   panel: 'div[data-panelid]',
   systemUptimePanel: (nodeName) => `//div[@class="panel-title"]//h2[text()="${nodeName} - System Uptime"]`,
   nodesCompareDashboard: {
     url: 'graph/d/node-instance-compare/nodes-compare?orgId=1&refresh=1m&from=now-5m&to=now',
+    cleanUrl: 'graph/d/node-instance-compare/nodes-compare',
     metrics: [
       'System Info',
       'System Uptime',
@@ -109,6 +105,7 @@ module.exports = {
   },
   prometheusExporterStatusDashboard: {
     url: 'graph/d/prometheus-status/prometheus-exporter-status?orgId=1&refresh=1m&from=now-5m&to=now',
+    cleanUrl: 'graph/d/prometheus-status/prometheus-exporter-status',
     metrics: [
       'CPU Usage',
       'Memory Usage',
@@ -165,6 +162,7 @@ module.exports = {
   },
   prometheusExporterOverviewDashboard: {
     url: 'graph/d/prometheus-overview/prometheus-exporters-overview?orgId=1&refresh=1m&from=now-5m&to=now',
+    cleanUrl: 'graph/d/prometheus-overview/prometheus-exporters-overview',
     metrics: [
       'Avg CPU Usage per Node',
       'Avg Memory Usage per Node',
@@ -182,11 +180,11 @@ module.exports = {
   },
   sharePanel: {
     elements: {
-      imageRendererPluginInfoText: '//div[@data-testid=\'data-testid Alert info\']//div[2]',
-      imageRendererPluginLink: locate('[role="alert"]').find('.external-link'),
+      imageRendererPluginInfoText: I.useDataQA('data-testid Alert info'),
+      imageRendererPluginLink: locate(I.useDataQA('data-testid Alert info')).find('.external-link'),
     },
     messages: {
-      imageRendererPlugin: 'render a panel image, you must install the Grafana image renderer plugin. Please contact your Grafana administrator to install the plugin.',
+      imageRendererPlugin: 'Image renderer plugin not installedTo render a panel image, you must install the Image Renderer plugin. Please contact your PMM administrator to install the plugin.',
     },
   },
   proxysqlInstanceSummaryDashboard: {
@@ -325,6 +323,7 @@ module.exports = {
   },
   postgresqlInstanceCompareDashboard: {
     url: 'graph/d/postgresql-instance-compare/postgresql-instances-compare?orgId=1&from=now-5m&to=now',
+    cleanUrl: 'graph/d/postgresql-instance-compare/postgresql-instances-compare',
     metrics: [
       'Service Info',
       'PostgreSQL Connections',
@@ -336,6 +335,7 @@ module.exports = {
   postgresqlInstanceOverviewDashboard: {
     // had to be changed after the PMM-6386 bug will be fixed
     url: 'graph/d/postgresql-instance-overview/postgresql-instances-overview?orgId=1&from=now-5m&to=now',
+    cleanUrl: 'graph/d/postgresql-instance-overview/postgresql-instances-overview',
     metrics: [
       'Services',
       'Max Active Connections',
@@ -375,7 +375,7 @@ module.exports = {
       'Top 5 Rollbacks Transactions',
       'Rollback Transactions',
       'Top 5 Duration of Active Transactions',
-      'Duration of Active Transactions',
+      ' Duration of Active Transactions',
       'Top 5 Duration of Other Transactions',
       'Duration of Other Transactions',
       'Top 5 Number of Temp Files',
@@ -424,8 +424,8 @@ module.exports = {
       'Written Files to Disk',
     ],
   },
-  mongoDbInstanceSummaryDashboard: {
-    url: 'graph/d/mongodb-instance-summary/mongodb-instance-summary?orgId=1&from=now-5m&to=now',
+  mongodbOverviewDashboard: {
+    url: 'graph/d/mongodb-instance-summary/mongodb-instance-summary',
     metrics: [
       'Node',
       'MongoDB Uptime',
@@ -460,102 +460,36 @@ module.exports = {
     ],
   },
   mongoDbClusterSummaryDashboard: {
-    url: 'graph/d/mongodb-cluster-summary/mongodb-sharded-cluster-summary?orgId=1&refresh=1m&from=now-5m&to=now',
+    url: 'graph/d/mongodb-cluster-summary/mongodb-cluster-summary',
     metrics: [
-      'QPS of Services in Shard',
-      'Shards',
-      'Mongos',
-      'DBs',
-      'Balancer Enabled',
+      'Unsharded DBs',
+      'Sharded DBs',
       'Sharded Collections',
-      'Total amount of Chunks',
-      'Last Election',
+      'Shards',
+      'Chunks',
       'Balancer Enabled',
-      'Chunks distribution',
-      'Command Operations',
-      'Top Hottest Collections by Read',
-      'Query execution times',
-      'Top Hottest Collections by Write',
+      'Mongos Cursors',
+      'Chunks Balancer is running',
+      'Change Log Events',
       'Operations Per Shard',
-      'MongoDB Versions',
-      'Node States',
-      'Size of Collections in Shards',
-      'Number of Collections in Shards',
       'Current Connections Per Shard',
-      'Available Connections',
-      'Amount of Chunks in Shards',
-      'Dynamic of Chunks',
-      'Chunks Move Events',
-      'Chunks Split Events',
-      'Replication Lag by Shard',
-      'Oplog Range by Shard',
+      'Cursors Per Shard',
+      'Replication Lag by Set',
+      'Oplog Range by Set',
+      'Amount of Collections in Shards',
+      'Size of Collections in Shards',
+      'QPS of Mongos Service',
+      'QPS of Services in Shard',
+      'QPS of Config Services',
+      'Amount of Indexes in Shards',
+      'Dynamic of Indexes',
+      'Total Connections',
+      'Current Connections Per Shard',
+      'Total Mongos Operations',
     ],
   },
-  mongodbOverviewDashboard: {
-    url: 'graph/d/mongodb-instance-overview/mongodb-instances-overview?orgId=1&refresh=1m',
-    metrics: [
-      'Services',
-      'Min MongoDB Uptime',
-      'Total Used Resident Memory',
-      'Total Used Virtual Memory',
-      'Total Used Mapped Memory',
-      'Total Current QPS',
-      'Top Connections',
-      'Top Opened Cursors',
-      'Min QPS',
-      'Max Latency',
-      'Top 5 Connections',
-      'Current Connections',
-      'Top 5 Total Cursors',
-      'Total Cursors',
-      'Pinned Cursors',
-      'Top 5 noTimeout Cursors',
-      'noTimeout Cursors',
-      'Min Index Scanned Ratio',
-      'Max Index Scanned Ratio',
-      'Min Document Scanned Ratio',
-      'Max Document Scanned Ratio',
-      'Top Opcounters',
-      'Top Document Operations',
-      'Top Queued Operations',
-      'Total Assert Events',
-      'Top 5 Command Operations',
-      'Command Operations',
-      'Top 5 Getmore Operations',
-      'Getmore Operations',
-      'Top 5 Delete Operations',
-      'Delete Operations',
-      'Top 5 Insert Operations',
-      'Insert Operations',
-      'Top 5 Update Operations',
-      'Update Operations',
-      'Top 5 Query Operations',
-      'Query Operations',
-      'Top 5 Query Operations',
-      'Query Operations',
-      'Top 5 Document Delete Operations',
-      'Document Delete Operations',
-      'Top 5 Document Insert Operations',
-      'Document Insert Operations',
-      'Top 5 Document Return Operations',
-      'Document Return Operations',
-      'Top 5 Document Update Operations',
-      'Document Update Operations',
-      'Top 5 Queued Read Operations',
-      'Queued Read Operations',
-      'Top 5 Queued Write Operations',
-      'Queued Write Operations',
-      'Top 5 Assert Msg Events',
-      'Assert Msg Events',
-      'Top 5 Assert Regular Events',
-      'Assert Regular Events',
-      'Top 5 Assert Rollovers Events',
-      'Assert Rollovers Events',
-      'Top 5 Assert User Events',
-      'Assert User Events',
-      'Top 5 Assert Msg Events',
-      'Assert Warning Events',
-    ],
+  mongoDbInstanceSummaryDashboard: {
+    url: 'graph/d/mongodb-instance-summary/mongodb-instance-summary?orgId=1&refresh=1m&from=now-5m&to=now',
   },
   mysqlInstanceSummaryDashboard: {
     url: 'graph/d/mysql-instance-summary/mysql-instance-summary?orgId=1&refresh=1m&from=now-5m&to=now',
@@ -613,7 +547,8 @@ module.exports = {
       'Users by CPU Time',
       'Users by Traffic',
       'Users by Bytes Written to The Binary Log',
-      'Rows Fetched/Read',
+      'Rows Fetched',
+      'Rows Read',
       'Rows Updated',
       'Users by Rows Fetched/Read',
       'Users by Rows Updated',
@@ -864,93 +799,6 @@ module.exports = {
       'MySQL Table Definition Cache',
     ],
   },
-  mysqlInnoDBDetailsDashboard: {
-    url: 'graph/d/mysql-innodb/mysql-innodb-details?orgId=1&refresh=1m&from=now-5m&to=now',
-    clearUrl: 'graph/d/mysql-innodb/mysql-innodb-details',
-    metrics: [
-      'InnoDB Row Reads',
-      'InnoDB Row Writes',
-      'InnoDB Read-Only Transactions',
-      'InnoDB Read-Write Transactions',
-      'InnoDB Transactions Information (RW)',
-      'Misc InnoDB Transactions Information',
-      'InnoDB Data Summary',
-      'InnoDB Data I/O',
-      'InnoDB Data Bandwitdh',
-      'InnoDB Log IO',
-      'InnoDB FSyncs',
-      'InnoDB Pending IO',
-      'InnoDB Pending Fsyncs',
-      'InnoDB IO Targets Bandwidth',
-      'InnoDB IO Targets Load',
-      'InnoDB IO Targets Read',
-      'InnoDB IO Targets Read Load',
-      'InnoDB IO Targets Write',
-      'InnoDB IO Targets Write Load',
-      'InnoDB IO Targets Write Latency',
-      'InnoDB IO Targets Read Latency',
-      'InnoDB Reads by Page Type',
-      'InnoDB Writes by Page Type',
-      'InnoDB Buffer Pool Pages',
-      'InnoDB Buffer Pool Data',
-      'InnoDB Buffer Pool Page Activity',
-      'InnoDB Buffer Pool Requests',
-      'InnoDB Read-Ahead',
-      'InnoDB Buffer Pool LRU Sub-Chain Churn',
-      'InnoDB Checkpoint Age',
-      'InnoDB Flushing by Type',
-      'InnoDB Logging Performance',
-      'InnoDB Log File Usage Hourly',
-      'InnoDB Log Buffer Usage',
-      'Log Writes Details',
-      'InnoDB Log File Flush Latency',
-      'Log Padding Written',
-      'InnoDB Group Commit Batch Size',
-      'InnoDB Row Lock Wait Activity',
-      'InnoDB Row Lock Wait Time',
-      'InnoDB Row Lock Wait Load',
-      'InnoDB Row Locks Activity',
-      'InnoDB Table Lock Activity',
-      'Current Locks',
-      'InnoDB Purge Activity',
-      'Transactions and Undo Records',
-      'InnoDB Undo Space Usage',
-      'InnoDB Undo Space IO',
-      'Transaction History',
-      'InnoDB Purge Throttling',
-      'InnoDB Page Splits and Merges',
-      'Page Merge Success Ratio',
-      'InnoDB Page Reorg Attempts',
-      'InnoDB Page Reorgs Failures',
-      'InnoDB AHI Usage',
-      'InnoDB AHI Miss Ratio',
-      'InnoDB AHI Churn - Rows',
-      'InnoDB AHI Churn - Pages',
-      'InnoDB Change Buffer',
-      'InnoDB Change Buffer Merged Records',
-      'InnoDB Change Buffer Discards',
-      'InnoDB Change Buffer Merges',
-      'InnoDB Change Buffer Merge Load',
-      'InnoDB Change Buffer IO',
-      'InnoDB Contention - OS Waits',
-      'InnoDB Contention - Spin Rounds',
-      'InnoDB Contention - OS Waits',
-      'InnoDB Contention - Spin Rounds',
-      'InnoDB Main Thread Utilization',
-      'InnoDB Activity',
-      'Index Condition Pushdown (ICP)',
-      'MySQL Connections',
-      'MySQL Client Thread Activity',
-      'MySQL Handlers',
-      'Top Command Counters',
-      'Process States',
-      'MySQL Network Traffic',
-      'CPU Usage',
-      'CPU Saturation and Max Core Usage',
-      'Disk I/O and Swap Activity',
-      'Network Traffic',
-    ],
-  },
   groupReplicationDashboard: {
     url: 'graph/d/mysql-group-replicaset-summary/mysql-group-replication-summary?orgId=1&refresh=1m',
     clearUrl: 'graph/d/mysql-group-replicaset-summary/mysql-group-replication-summary',
@@ -1072,46 +920,19 @@ module.exports = {
     url: 'graph/d/mongodb-replicaset-summary/mongodb-replset-summary?orgId=1&refresh=1m&from=now-5m&to=now',
     cleanUrl: 'graph/d/mongodb-replicaset-summary/mongodb-replset-summary',
     metrics: [
-      'Version',
-      'Node States',
-      'Command Operations',
-      'Top Hottest Collections by Read',
-      'Top Hottest Collections by Write',
-      'Query execution times',
-      'Query Efficiency',
-      'Queued Operations',
-      'Reads & Writes',
-      'Connections',
-      'Size of Collections',
-      'Number of Collections',
       'Replication Lag',
+      'ReplSet States',
+      'ReplSet Members',
+      'Max Heartbeat Time',
+      'Elections',
       'Oplog Recovery Window',
-      'Flow Control',
-      'WiredTiger Concurrency Tickets Available',
-      'Nodes Overview',
-      'CPU Usage',
-      'CPU Saturation and Max Core Usage',
-      'Disk I/O and Swap Activity',
-      'Network Traffic',
-    ],
-  },
-  mongodbRouterSummaryDashboard: {
-    url: 'graph/d/mongodb-router-summary/mongodb-router-summary?orgId=1&refresh=1m&from=now-5m&to=now',
-    cleanUrl: 'graph/d/mongodb-router-summary/mongodb-router-summary',
-    metrics: [
-      'CPU Usage',
-      'Memory Used',
-      'Disk IO Utilization',
-      'Disk Space Utilization',
-      'Disk IOPS',
-      'Network Traffic',
-      'Uptime',
-      'Version',
-      'All states',
-      'Command Operations',
-      'Connections',
-      'Query execution times',
-      'Query Efficiency',
+      'Oplog Buffered Operations',
+      'Oplog Getmore Time',
+      'Services Details',
+      'Avg ReplSet Lag',
+      'Cluster Name',
+      'ReplSet Last Election',
+      'MongoDB Versions',
     ],
   },
   victoriaMetricsAgentsOverviewDashboard: {
@@ -1192,12 +1013,12 @@ module.exports = {
       'Avg Object Size in Database',
       'Index Size in Database',
       'Data Size for Database',
-      'Top 5 Hottest Collections by Read',
+      'Top 5 Hottest Collections by Read  (Total)',
       'Top 5 Hottest Collections by Write (Total)',
       'Top 5 Hottest Collections by Read (Rate)',
       'Top 5 Hottest Collections by Write (Rate)',
-      'Collections statistics  for All (rate)',
-      'Collections statistics  for All (summary)',
+      'Collections statistics  for admin (rate)',
+      'Collections statistics  for admin (summary)',
       'Collections statistics  admin',
     ],
   },
@@ -1280,8 +1101,7 @@ module.exports = {
   },
 
   osNodesOverview: {
-    noDataElements: 1,
-    naElements: 2,
+    noDataElements: 3,
     clearUrl: 'graph/d/node-instance-overview/nodes-overview',
     metrics: [
       'Nodes',
@@ -1339,20 +1159,20 @@ module.exports = {
       'Top 5 Swap Out (Writes)',
       'Min Free Space Available',
       'Top I/O Load',
-      'Top Disk Latency',
-      'Top Disk Operations',
-      'Top Disk Bandwidth',
-      'Top I/O Activity',
+      ' Top Disk Latency',
+      ' Top Disk Operations',
+      ' Top Disk Bandwidth',
+      ' Top I/O Activity',
       'Top 5 Disk I/O Load',
       'Disk I/O Load',
       'Top 5 Disk Latency',
-      'Disk Latency',
+      ' Disk Latency',
       'Top 5 Disk Bandwidth',
-      'Disk Bandwidth',
+      ' Disk Bandwidth',
       'Top 5 I/O Activity',
       'I/O Activity',
-      'Top Receive Network Traffic',
-      'Top Transmit Network Traffic',
+      ' Top Receive Network Traffic',
+      ' Top Transmit Network Traffic',
       'Top Errors',
       'Top Drop',
       'Top Retransmission',
@@ -1373,45 +1193,47 @@ module.exports = {
       folder: locate('.page-toolbar').find('[aria-label="Search links"] > a'),
       dashboardName: locate('.page-toolbar').find('[aria-label="Search dashboard by name"]'),
     },
-    annotationMarker: '(//div[contains(@class,"events_marker")])',
+    annotationMarker: I.useDataQA('data-testid annotation-marker'),
     clearSelection: '//a[@ng-click="vm.clearSelections()"]',
-    collapsedDashboardRow: '//div[@class="dashboard-row dashboard-row--collapsed"]/a',
+    collapsedDashboardRow: '//*[@data-testid="dashboard-row-container"]//button[@aria-expanded="false"]',
+    collapsedDashboardRowByName: (rowName) => `//*[@data-testid="dashboard-row-container"]//button[@aria-expanded="false" and contains(@data-testid, "${rowName}")]`,
     dataLinkForRoot: '//div[contains(text(), "Data links")]/..//a',
     Last2Days: '//span[contains(text(), "Last 2 days")]',
-    metricTitle: '//div[@class="panel-title"]',
+    metricTitle: '$header-container',
     metricPanel: '//section[@class="panel-container"]',
-    mongoDBServiceSummaryContent: locate('pre').withText('Mongo Executable'),
-    mySQLServiceSummaryContent: locate('pre').withText('Percona Toolkit MySQL Summary Report'),
+    mongoDBServiceSummaryContent: locate('$pt-summary-fingerprint').withText('Mongo Executable'),
+    mySQLServiceSummaryContent: locate('$pt-summary-fingerprint').withText('Percona Toolkit MySQL Summary Report'),
     navbarLocator: '.page-toolbar',
     notAvailableDataPoints: '//div[contains(text(),"No data")]',
     notAvailableMetrics: '//span[contains(text(), "N/A")]',
     otherReportTitleWithNoData:
       '//span[contains(text(),"No Data")]//ancestor::div[contains(@class,"panel-container")]//span[contains(@class,"panel-title-text")]',
     panelLoading: locate('div').withAttr({ class: 'panel-loading' }),
-    postgreSQLServiceSummaryContent: locate('pre').withText('Detected PostgreSQL version:'),
+    postgreSQLServiceSummaryContent: locate('$pt-summary-fingerprint').withText('Detected PostgreSQL version:'),
+    reportTitle: locate('$header-container').inside(locate('[class$="panel-container"]')),
     reportTitleWithNA:
-      locate('.panel-title').inside(locate('.panel-container').withDescendant('//span[contains(text(),"N/A")]')),
+      locate('$header-container')
+        .inside(locate('[class$="panel-container"]')
+          .withDescendant('//*[(text()="No data") or (text()="NO DATA") or (text()="N/A") or (text()="-") or (text() = "No Data")]')),
     reportTitleWithNoData:
-      locate('.panel-title').inside(locate('.panel-container').withDescendant('//div[contains(text(),"No data")]')),
+    locate('$header-container')
+      .inside(locate('[class$="panel-container"]')
+        .withDescendant('//*[contains(text(),"No data") or contains(text(), "NO DATA") or contains(text(),"N/A")) or (text()="-") or (text() = "No Data")]')),
     rootUser: '//div[contains(text(), "root")]',
-    serviceSummary: locate('a').withText('Service Summary'),
-    // timeRangePickerButton: '.btn.navbar-button.navbar-button--tight',
+    serviceSummary: I.useDataQA('data-testid dashboard-row-title-Service Summary'),
     timeRangePickerButton: I.useDataQA('data-testid TimePicker Open Button'),
     refresh: I.useDataQA('data-testid RefreshPicker run button'),
-    allFilterDropdownOptions: '//a[contains(@class, "variable-option")][span[text()][not(contains(text(), "All"))]]',
+    allFilterDropdownOptions: '//button[contains(@data-testid, "variable-option")][span[text()][not(contains(text(), "All"))]]',
     skipTourButton: '//button[span[text()="Skip"]]',
-    timeRangeOption: (timeRange) => locate('li').withDescendant('label').withText(timeRange),
-    openFiltersDropdownLocator: (filterName) => locate('.variable-link-wrapper').after(`label[for="var-${formatElementId(filterName)}"]`),
-    filterDropdownOptionsLocator: (filterName) => locate('.variable-option').withText(filterName),
+    closeModal: '//button[@aria-label="Close"]',
+    openFiltersDropdownLocator: (filterName) => locate(`#var-${formatElementId(filterName)}`),
+    filterDropdownOptionsLocator: (filterName) => locate(I.useDataQA('data-testid variable-option')).withText(filterName),
     refreshIntervalPicker: I.useDataQA('data-testid RefreshPicker interval button'),
-    refreshIntervalOption: (interval) => locate(`//*[@role="menuitemradio" and text()="${interval}"]`),
-    clickablePanel: (name) => `//section[@aria-label="${name} panel"]//a`,
+    refreshIntervalOption: (interval) => locate(`//*[@role="menuitemradio"]//span[text()="${interval}"]`),
+    clickablePanel: (name) => locate('$header-container').withText(name).find('a'),
     dashboardTitle: (name) => locate('span').withText(name),
     metricPanelNa: (name) => `//section[@aria-label="${name}"]//span[text()="N/A"]`,
-  },
-
-  createAdvancedDataExplorationURL(metricName, time = '1m', nodeName = 'All') {
-    return `graph/d/prometheus-advanced/advanced-data-exploration?orgId=1&refresh=1m&var-metric=${metricName}&var-interval=$__auto_interval_interval&var-node_name=${nodeName}&from=now-${time}&to=now`;
+    loadingElement: locate('//div[@aria-label="Panel loading bar"]'),
   },
 
   async checkNavigationBar(text) {
@@ -1421,12 +1243,8 @@ module.exports = {
     assert.ok(navbarText.includes(text));
   },
 
-  async getExactFilterValue(filterName) {
-    return await I.grabAttributeFrom(`//label[contains(@aria-label, '${filterName}')]/..//a`, 'title');
-  },
-
   annotationLocator(number = 1) {
-    return `(//div[contains(@class,"events_marker")])[${number}]`;
+    return `(//div[@data-testid="data-testid annotation-marker"])[${number}]`;
   },
 
   annotationTagText(tagValue) {
@@ -1439,55 +1257,86 @@ module.exports = {
 
   verifyAnnotationsLoaded(title, number = 1) {
     I.waitForElement(this.fields.annotationMarker, 30);
-    I.waitForElement(this.annotationLocator(number), 30);
-    I.moveCursorTo(this.annotationLocator(number));
+    I.usePlaywrightTo('Move mouse to anotation', async ({ page }) => {
+      await page.locator(this.annotationLocator(number)).hover();
+    });
     I.waitForVisible(this.annotationText(title), 30);
   },
 
-  // introducing methods
-  verifyMetricsExistence(metrics) {
+  async verifyMetricsExistence(metrics) {
     for (const i in metrics) {
+      I.pressKey('PageDown');
+      await this.expandEachDashboardRow();
       I.waitForElement(this.graphsLocator(metrics[i]), 5);
       I.scrollTo(this.graphsLocator(metrics[i]));
-      I.waitForVisible(this.graphsLocator(metrics[i]), 5);
+    }
+  },
+
+  async verifyMetricsExistencePartialMatch(metrics) {
+    for (const i in metrics) {
+      I.pressKey('PageDown');
+      await this.expandEachDashboardRow();
+      I.waitForElement(this.graphsLocatorPartialMatch(metrics[i]), 5);
+      I.scrollTo(this.graphsLocatorPartialMatch(metrics[i]));
     }
   },
 
   openGraphDropdownMenu(metric) {
-    I.waitForVisible(this.graphsLocatorHeader(metric), 10);
-    I.click(this.graphsLocatorHeader(metric));
-  },
-
-  verifyTabExistence(tabs) {
-    for (const i in tabs) {
-      I.seeElement(this.tabLocator(tabs[i]));
-    }
+    I.waitForVisible(this.graphsLocator(metric), 10);
+    I.moveCursorTo(this.graphsLocator(metric), 10);
+    I.click(this.graphsLocator(metric).find('[title="Menu"]'));
   },
 
   graphsLocator(metricName) {
-    return locate('.panel-container').withDescendant(locate('.panel-title-container h2').withText(metricName));
+    return locate(`[data-testid^="data-testid Panel header ${metricName}"]`);
   },
 
-  graphsLocatorHeader(metricName) {
-    return this.graphsLocator(metricName).find('.panel-header');
-  },
-
-  graphLegendSeriesValue(metricName, value) {
-    return this.graphsLocator(metricName).find('.graph-legend-series').find('td').withText(value);
+  graphsLocatorPartialMatch(metricName) {
+    return locate(`[data-testid*="data-testid Panel header"][data-testid*="${metricName}"]`);
   },
 
   graphLegendSeriesRowByTitle(metricName, title) {
-    return this.graphsLocator(metricName).find(`//tr[@class="graph-legend-series "][td//a[@title="${title}"]]`);
+    return this.graphsLocator(metricName).find(`//tr[@class="graph-legend-series "][td//button[contains(@title, '${title}')]]`);
   },
 
-  graphLegendColumnValueByExpression(graphName, title, columnName, expression) {
-    return this
-      .graphLegendSeriesRowByTitle(graphName, title)
-      .find(`//td[@class="graph-legend-value ${columnName}" and number(substring-before(text(), " ")) ${expression}]`);
+  panelByTitle(title) {
+    return I.useDataQA(`data-testid Panel header ${title}`);
   },
 
-  tabLocator(tabName) {
-    return `//a[contains(text(), '${tabName}')]`;
+  panelDataByTitle(title) {
+    return locate(this.panelByTitle(title)).find(I.useDataQA('data-testid Data link'));
+  },
+
+  async verifyColumnLegendMaxValueAbove(panelTitle, serviceName, expectedValue, timeout = 60) {
+    const maxValueLegendLocator = this.getColumnLegendMaxValue(panelTitle, serviceName);
+
+    await this.verifyColumnLegendValueAbove(maxValueLegendLocator.value, panelTitle, serviceName, expectedValue, timeout);
+  },
+
+  async verifyColumnLegendValueAbove(legendLocator, panelTitle, serviceName, expectedValue, timeout = 60) {
+    await I.usePlaywrightTo('Get Text from Element', async ({ page }) => {
+      let retries = 0;
+      let actualValue = 0;
+
+      const valueLocator = await page.locator(legendLocator);
+
+      while (actualValue < expectedValue) {
+        // eslint-disable-next-line no-plusplus
+        if (retries++ > timeout) throw new Error(`Value in panel ${panelTitle} for ${serviceName} was never above ${expectedValue}`);
+
+        if (await valueLocator.isVisible()) {
+          actualValue = await valueLocator.textContent();
+        }
+
+        await page.waitForTimeout(1000);
+
+        if (actualValue >= expectedValue) return;
+      }
+    });
+  },
+
+  getColumnLegendMaxValue(panelTitle, serviceName) {
+    return locate(this.panelByTitle(panelTitle)).find(`//button[contains(@title, '${serviceName}')]//ancestor::tr//td[position()='3']`);
   },
 
   async waitForAllGraphsToHaveData(timeout = 60) {
@@ -1495,31 +1344,31 @@ module.exports = {
     await I.waitForInvisible(this.fields.notAvailableDataPoints, timeout);
   },
 
-  async waitForGraphsToHaveData(acceptableElementsWithoutData, timeout = 60, retries = 0) {
-    const noDataElements = await this.getNumberOfGraphsWithoutData(timeout);
+  async waitForGraphsToHaveData(acceptableNACount = 0, timeoutInSeconds = 60) {
+    let currentIteration = 0;
+    let numberOfNAElements = 1000;
 
-    if (noDataElements > acceptableElementsWithoutData) {
-      if (retries > 9) {
-        I.assertTrue(false, `Expected ${acceptableElementsWithoutData} Elements without data but found ${noDataElements}`);
+    // eslint-disable-next-line no-plusplus
+    while (currentIteration++ <= timeoutInSeconds) {
+      numberOfNAElements = await I.grabNumberOfVisibleElements(this.fields.reportTitleWithNA);
+
+      if (numberOfNAElements < acceptableNACount) {
+        return;
       }
 
-      await I.wait(timeout / 10);
-      // eslint-disable-next-line no-plusplus, no-param-reassign
-      await this.waitForGraphsToHaveData(acceptableElementsWithoutData, timeout, ++retries);
+      I.wait(1);
     }
+
+    const titles = await this.grabFailedReportTitles(this.fields.reportTitleWithNA);
+    const url = await I.grabCurrentUrl();
+
+    await this.printFailedReportNames(acceptableNACount, numberOfNAElements, titles, url);
   },
 
-  async getNumberOfGraphsWithoutData(timeout) {
-    const naElements = await I.grabNumberOfVisibleElements(this.fields.notAvailableMetrics, timeout);
-    const noDataElements = await I.grabNumberOfVisibleElements(this.fields.notAvailableDataPoints, timeout);
+  async verifyThereAreNoGraphsWithoutData(acceptableNACount = 0) {
+    const numberOfNAElements = await I.grabNumberOfVisibleElements(this.fields.reportTitleWithNA);
 
-    return naElements + noDataElements;
-  },
-
-  async verifyThereAreNoGraphsWithNA(acceptableNACount = 0) {
-    const numberOfNAElements = await I.grabNumberOfVisibleElements(this.fields.notAvailableMetrics);
-
-    I.say(`number of N/A elements is = ${numberOfNAElements}`);
+    I.say(`Number of no data and N/A elements is = ${numberOfNAElements}`);
     if (numberOfNAElements > acceptableNACount) {
       const titles = await this.grabFailedReportTitles(this.fields.reportTitleWithNA);
 
@@ -1529,15 +1378,19 @@ module.exports = {
     }
   },
 
-  async verifyThereAreNoGraphsWithoutData(acceptableNoDataCount = 0) {
-    const numberOfNoDataElements = await I.grabNumberOfVisibleElements(this.fields.notAvailableDataPoints);
+  // acceptableDataCount - Defect in testing software, even when all tha tables are without data then condition are not met,
+  async verifyThatAllGraphsNoData(acceptableDataCount = 0) {
+    const numberOfNAElements = await I.grabNumberOfVisibleElements(this.fields.reportTitleWithNA);
+    const allGraphs = await I.grabNumberOfVisibleElements(this.fields.reportTitle);
 
-    I.say(`number of No Data elements is = ${numberOfNoDataElements}`);
-    if (numberOfNoDataElements > acceptableNoDataCount) {
-      const titles = await this.grabFailedReportTitles(this.fields.reportTitleWithNoData);
-      const url = await I.grabCurrentUrl();
-
-      await this.printFailedReportNames(acceptableNoDataCount, numberOfNoDataElements, titles, url);
+    I.say(`Number of no data and N/A elements is = ${numberOfNAElements}`);
+    I.say(`Number of all graph elements is = ${allGraphs}`);
+    if ((allGraphs - numberOfNAElements) > acceptableDataCount) {
+      assert.equal(
+        (allGraphs - numberOfNAElements) <= acceptableDataCount,
+        true,
+        `Expected ${allGraphs} Elements without data but found ${numberOfNAElements} on Dashboard ${await I.grabCurrentUrl()}.`,
+      );
     }
   },
 
@@ -1553,55 +1406,42 @@ module.exports = {
     return await I.grabTextFromAll(selector);
   },
 
-  async expandEachDashboardRow(halfToExpand) {
-    let sectionsToExpand;
-    const sections = await I.grabTextFromAll(this.fields.collapsedDashboardRow);
+  async expandEachDashboardRow() {
+    await I.usePlaywrightTo('expanding collapsed rows', async ({ page }) => {
+      const getCollapsedRowsLocators = async () => await page.locator(this.fields.collapsedDashboardRow).all();
+      let collapsedRowsLocators = await getCollapsedRowsLocators();
 
-    if (halfToExpand === 1) {
-      sectionsToExpand = sections.slice(0, sections.length / 2);
-    } else if (halfToExpand === 2) {
-      sectionsToExpand = sections.slice(sections.length / 2, sections.length);
-    } else {
-      sectionsToExpand = sections;
-    }
+      while (collapsedRowsLocators.length > 0) {
+        await page.keyboard.press('End');
+        await collapsedRowsLocators[0].scrollIntoViewIfNeeded();
+        await collapsedRowsLocators[0].click();
+        collapsedRowsLocators.shift();
 
-    await this.expandRows(sectionsToExpand);
+        collapsedRowsLocators = await getCollapsedRowsLocators();
+      }
+    });
   },
 
-  async expandRows(sectionsToExpand) {
-    let sections;
+  async expandDashboardRow(rowName) {
+    await I.usePlaywrightTo('Expand collapsed row', async ({ page }) => {
+      const rowLocator = await page.locator(this.fields.collapsedDashboardRowByName(rowName));
 
-    if (typeof sectionsToExpand === 'string') {
-      sections = [sectionsToExpand];
-    } else {
-      sections = sectionsToExpand;
-    }
-
-    for (let i = 0; i < sections.length; i++) {
-      const sectionName = sections[i].toString().split('(');
-      const rowToExpand = `${this.fields.collapsedDashboardRow}[contains(text(), '${sectionName[0]}')]`;
-
-      I.click(rowToExpand);
-      I.wait(0.5);
-      adminPage.performPageDown(1);
-      adminPage.performPageDown(1);
-    }
+      await rowLocator.scrollIntoViewIfNeeded();
+      await rowLocator.click();
+    });
   },
 
   waitForDashboardOpened() {
     I.waitForElement(this.fields.metricTitle, 60);
-  },
-
-  waitForDataLoaded() {
-    I.waitForVisible('//*[@aria-label="Loading indicator"]');
-    I.waitForInvisible('//*[@aria-label="Loading indicator"]');
+    I.waitForDetached(this.fields.loadingElement, 60);
+    I.click(this.fields.metricTitle);
   },
 
   expandFilters(filterName) {
     const dropdownLocator = this.fields.openFiltersDropdownLocator(filterName);
 
     // This is due to some instances with many services take filter to load
-    I.wait(3);
+    // I.wait(1);
     I.waitForElement(dropdownLocator, 30);
     I.click(dropdownLocator);
 
@@ -1641,20 +1481,6 @@ module.exports = {
     return await I.grabTextFrom(this.fields.timeRangePickerButton);
   },
 
-  async waitPTSummaryInformation() {
-    const response = await I.waitForResponse(
-      (response) => response.url().endsWith('v1/management/Actions/StartPTSummary') && response.status() === 200,
-      { timeout: 60 },
-    );
-
-    await I.waitForResponse(
-      (response) => response.url().endsWith('v1/management/Actions/Get') && response.status() === 200,
-      { timeout: 60 },
-    );
-
-    return await response.json();
-  },
-
   async waitAndSwitchTabs(ammountOfTabs) {
     for (let i = 0; i <= 10; i++) {
       const numberOfTabs = await I.grabNumberOfTabs();
@@ -1673,11 +1499,19 @@ module.exports = {
 
   async clickSkipPmmTour() {
     I.wait(2);
-    // eslint-disable-next-line no-undef
-    const pmmTourIsPresent = await tryTo(() => I.waitForVisible(this.fields.skipTourButton, 30));
+    const numberOfElements = await I.grabNumberOfVisibleElements(this.fields.skipTourButton);
 
-    if (pmmTourIsPresent) {
+    if (numberOfElements >= 1) {
       I.click(this.fields.skipTourButton);
+    }
+  },
+
+  async clickUpgradeModal() {
+    I.wait(2);
+    const numberOfElements = await I.grabNumberOfVisibleElements(this.fields.closeModal);
+
+    if (numberOfElements >= 1) {
+      I.click(this.fields.closeModal);
     }
   },
 
@@ -1689,12 +1523,5 @@ module.exports = {
    */
   panelMenu(panelTitle) {
     return new DashboardPanelMenu(panelTitle);
-  },
-
-  async selectDropdownItem(dropdownLocator, itemToSelect) {
-    I.seeElement(dropdownLocator);
-    I.click(dropdownLocator);
-    I.waitForElement(this.common.selectOptionInDropdown(itemToSelect));
-    I.click(this.common.selectOptionInDropdown(itemToSelect));
   },
 };

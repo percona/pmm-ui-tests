@@ -1,7 +1,8 @@
 const assert = require('assert');
+const { SERVICE_TYPE, NODE_TYPE } = require('../helper/constants');
 
 const {
-  I, remoteInstancesPage, pmmInventoryPage, remoteInstancesHelper,
+  remoteInstancesPage, pmmInventoryPage, remoteInstancesHelper,
 } = inject();
 
 const externalExporterServiceName = 'external_service_new';
@@ -259,10 +260,10 @@ Scenario(
   'PMM-T1226 - Verify Agents has process_exec_path option on Inventory page @inventory @nightly @exporters',
   async ({ I, pmmInventoryPage, inventoryAPI }) => {
     I.amOnPage(pmmInventoryPage.url);
-    const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName('POSTGRESQL_SERVICE', 'pmm-server-postgresql');
+    const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.POSTGRESQL, 'pmm-server-postgresql');
 
     await pmmInventoryPage.openAgents(service_id);
-    await pmmInventoryPage.checkAgentOtherDetailsSection('Postgres exporter', 'process_exec_path=/usr/local/percona/pmm2/exporters/postgres_exporter');
+    await pmmInventoryPage.checkAgentOtherDetailsSection('Postgres exporter', 'process_exec_path=/usr/local/percona/pmm/exporters/postgres_exporter');
 
     const actAg = await inventoryAPI.apiGetAgents();
     const arr = [];
@@ -285,12 +286,16 @@ Scenario(
   },
 );
 
+// the test relies on --database psmdb
 Scenario(
-  'PMM-T1225 - Verify summary file includes process_exec_path for agents @inventory @exporters @cli',
+  'PMM-T1225 - Verify summary file includes process_exec_path for agents @mongodb-exporter',
   async ({ I, pmmInventoryPage }) => {
     I.amOnPage(pmmInventoryPage.url);
-    const response = await I.verifyCommand('pmm-admin summary');
-    const statusFile = JSON.parse(await I.readFileInZipArchive(response.split(' ')[0], 'client/status.json'));
+    const response = await I.verifyCommand('docker exec rs101 pmm-admin summary');
+    const zipFileName = response.split(' ')[0];
+
+    await I.verifyCommand(`docker cp rs101:/${zipFileName} ./summary.zip`);
+    const statusFile = JSON.parse(await I.readFileInZipArchive('summary.zip', 'client/status.json'));
     const exporters = statusFile.agents_info.filter((agent) => !agent.agent_type.toLowerCase().includes('qan'));
 
     I.amOnPage(pmmInventoryPage.url);
@@ -496,7 +501,7 @@ Data(aws_instances).Scenario('PMM-T2340 Verify adding and editing Aurora remote 
   const details = {
     add_node: {
       node_name: service_name,
-      node_type: 'REMOTE_NODE',
+      node_type: NODE_TYPE.REMOTE,
     },
     aws_access_key: remoteInstancesHelper.remote_instance.aws.aurora.aws_access_key,
     aws_secret_key: remoteInstancesHelper.remote_instance.aws.aurora.aws_secret_key,
@@ -528,33 +533,32 @@ Data(aws_instances).Scenario('PMM-T2340 Verify adding and editing Aurora remote 
 Data(qanFilters).Scenario(
   'PMM-T2340 - Verify QAN after remote instance is added @inventory @inventory-fb',
   async ({
-    I, qanOverview, qanFilters, qanPage, current,
+    I, current, queryAnalyticsPage,
   }) => {
-    I.amOnPage(qanPage.url);
-    qanOverview.waitForOverviewLoaded();
-    await qanFilters.applyFilter(current.filterName);
-    qanOverview.waitForOverviewLoaded();
-    const count = await qanOverview.getCountOfItems();
+    I.amOnPage(I.buildUrlWithParams(queryAnalyticsPage.url, { from: 'now-5m' }));
+    queryAnalyticsPage.waitForLoaded();
+    await queryAnalyticsPage.filters.selectFilter(current.filterName);
+    queryAnalyticsPage.waitForLoaded();
+    const count = await queryAnalyticsPage.data.getCountOfItems();
 
     assert.ok(count > 0, `The queries for filter ${current.filterName} instance do NOT exist`);
   },
 ).retry(2);
 
 Data(aws_instances).Scenario(
-  'PMM-T2340 Verify QAN after Aurora instance is added and eidted @inventory @inventory-fb',
+  'PMM-T2340 Verify QAN after Aurora instance is added and edited @inventory @inventory-fb',
   async ({
-    I, qanOverview, qanFilters, qanPage, current, adminPage,
+    I, queryAnalyticsPage, current, adminPage,
   }) => {
     const { instance_id } = current;
 
-    I.amOnPage(qanPage.url);
-    qanOverview.waitForOverviewLoaded();
+    I.amOnPage(I.buildUrlWithParams(queryAnalyticsPage.url, { from: 'now-5m' }));
+    queryAnalyticsPage.waitForLoaded();
     await adminPage.applyTimeRange('Last 12 hours');
-    qanOverview.waitForOverviewLoaded();
-    qanFilters.waitForFiltersToLoad();
-    await qanFilters.applySpecificFilter(instance_id);
-    qanOverview.waitForOverviewLoaded();
-    const count = await qanOverview.getCountOfItems();
+    queryAnalyticsPage.waitForLoaded();
+    await queryAnalyticsPage.filters.selectFilter(instance_id);
+    queryAnalyticsPage.waitForLoaded();
+    const count = await queryAnalyticsPage.data.getCountOfItems();
 
     assert.ok(count > 0, `The queries for service ${instance_id} instance do NOT exist, check QAN Data`);
   },

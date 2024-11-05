@@ -3,6 +3,7 @@ const { I } = inject();
 const folderWrapper = locate(I.useDataQA('data-testid Search section')).find('.pointer');
 
 module.exports = {
+  url: 'graph/dashboards',
   folders: {
     insight: {
       name: 'Insight',
@@ -14,10 +15,6 @@ module.exports = {
         'VictoriaMetrics',
         'VictoriaMetrics Agents Overview',
       ],
-    },
-    general: {
-      name: 'General',
-      items: [],
     },
     mongoDb: {
       name: 'MongoDB',
@@ -116,23 +113,23 @@ module.exports = {
     },
   },
   fields: {
-    searchInput: 'input[placeholder="Search dashboards by name"]',
+    searchInput: 'input[placeholder="Search for dashboards and folders"]',
+    searchDashboardModal: locate('//*[@id="kbar-listbox"]'),
     folderLocator: I.useDataQA('data-testid Search section'),
-    collapsedFolderLocator: (folderName) => locate(folderWrapper)
-      .withDescendant(locate('div').withText(folderName)),
-    expandedFolderLocator: (folderName) => locate(folderWrapper).withDescendant('div').withText(folderName)
-      .find('div')
-      .at(1),
-    folderItemLocator: (itemName) => locate(I.useDataQA('data-testid Search section')).withText(itemName),
+    collapsedFolderLocator: (folderName) => locate(`[aria-label="Expand folder ${folderName}"]`),
+    expandedFolderLocator: (folderName) => locate(`[aria-label="Collapse folder ${folderName}"]`),
+    folderItemLocator: (itemName) => I.useDataQA(`data-testid browse dashboards row ${itemName}`),
     folderItemWithTagLocator: (itemName, tag) => locate(I.useDataQA(`data-testid Dashboard search item ${itemName}`))
       .find('[aria-label="Tags"] li').withText(tag),
     itemLocator: (itemName) => locate(I.useDataQA(`data-testid Dashboard search item ${itemName}`)),
     closeButton: locate('button[aria-label="Close search"]').as('Close button'),
+    folderRowLocator: locate('[data-testid^="data-testid browse dashboards row "]'),
+    itemsLocator: locate('[data-testid^="data-testid browse dashboards row"]'),
+    dashboardRow: (dashboardName) => locate(`//*[@data-testid="data-testid browse dashboards row ${dashboardName}"]//a`),
   },
 
   waitForOpened() {
     I.waitForElement(this.fields.searchInput, 10);
-    I.waitForVisible(this.fields.folderLocator, 10);
   },
 
   async countFolders() {
@@ -140,15 +137,20 @@ module.exports = {
   },
 
   async getFoldersList() {
-    return (await I.grabTextFromAll(
-      '.pointer > div:nth-child(2)',
-    )).map((elem) => elem.split('|')[0]);
+    I.waitForVisible(this.fields.folderItemLocator(this.folders.insight.name), 10);
+
+    const text = await I.grabTextFromAll(
+      this.fields.folderRowLocator,
+    );
+
+    return text.map((elem) => elem.split('|')[0]);
   },
 
   expandFolder(name) {
     I.waitForVisible(this.fields.collapsedFolderLocator(name), 10);
     I.click(this.fields.collapsedFolderLocator(name));
-    I.waitForElement(this.fields.expandedFolderLocator(name), 5);
+    I.waitForVisible(this.fields.expandedFolderLocator(name), 10);
+    I.waitForVisible(this.fields.itemsLocator.first(), 10);
   },
 
   collapseFolder(name) {
@@ -157,8 +159,15 @@ module.exports = {
     I.waitForElement(this.fields.collapsedFolderLocator(name), 5);
   },
 
-  verifyDashboardsInFolderCollection(folderObject) {
+  async verifyDashboardsInFolderCollection(folderObject) {
     for (const item of folderObject.items) {
+      // Lazy loading is implemented here so we need to scroll the page in order to see other items
+      const elementsCount = await I.grabNumberOfVisibleElements(this.fields.folderItemLocator(item));
+
+      if (!elementsCount) {
+        I.pressKey('PageDown');
+      }
+
       I.seeElementInDOM(this.fields.folderItemLocator(item));
       I.see(item, this.fields.folderItemLocator(item));
     }

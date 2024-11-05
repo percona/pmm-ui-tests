@@ -16,7 +16,7 @@ const defaultResolution = {
   lr: '60s',
 };
 
-const endpoint = 'v1/Settings/Change';
+const endpoint = 'v1/server/settings';
 
 module.exports = {
   defaultCheckIntervals,
@@ -25,12 +25,12 @@ module.exports = {
   // methods for preparing state of application before test
   async apiEnableSTT() {
     const body = {
-      enable_stt: true,
+      enable_advisor: true,
       enable_telemetry: true,
     };
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
 
-    const resp = await I.sendPostRequest(endpoint, body, headers);
+    const resp = await I.sendPutRequest(endpoint, body, headers);
 
     assert.ok(
       resp.status === 200,
@@ -40,12 +40,12 @@ module.exports = {
 
   async apiDisableSTT() {
     const body = {
-      disable_stt: true,
+      enable_advisor: false,
       enable_telemetry: true,
     };
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
 
-    const resp = await I.sendPostRequest(endpoint, body, headers);
+    const resp = await I.sendPutRequest(endpoint, body, headers);
 
     assert.ok(
       resp.status === 200,
@@ -68,35 +68,15 @@ module.exports = {
   },
 
   async apiEnableIA() {
-    const body = {
-      enable_alerting: true,
-    };
-    const headers = { Authorization: `Basic ${await I.getAuth()}` };
-
-    const resp = await I.sendPostRequest(endpoint, body, headers);
-
-    assert.ok(
-      resp.status === 200,
-      `Failed to enable Integrated alerting. ${resp.data.message}`,
-    );
+    await this.changeSettings({ alerting: true });
   },
 
   async enableAzure() {
-    const body = {
-      enable_azurediscover: true,
-    };
-    const headers = { Authorization: `Basic ${await I.getAuth()}` };
-
-    await I.sendPostRequest(endpoint, body, headers);
+    await this.changeSettings({ azureDiscover: true });
   },
 
   async disableAzure() {
-    const body = {
-      disable_azurediscover: true,
-    };
-    const headers = { Authorization: `Basic ${await I.getAuth()}` };
-
-    await I.sendPostRequest(endpoint, body, headers);
+    await this.changeSettings({ azureDiscover: false });
   },
 
   async restoreSettingsDefaults() {
@@ -104,7 +84,7 @@ module.exports = {
       data_retention: '2592000s',
       metrics_resolutions: defaultResolution,
       enable_telemetry: true,
-      enable_stt: true,
+      enable_advisor: true,
       enable_alerting: true,
       remove_email_alerting_settings: true,
       remove_slack_alerting_settings: true,
@@ -113,16 +93,16 @@ module.exports = {
     };
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
 
-    await I.sendPostRequest(endpoint, body, headers);
+    await I.sendPutRequest(endpoint, body, headers);
   },
 
   async setCheckIntervals(intervals = defaultCheckIntervals) {
     const body = {
-      stt_check_intervals: intervals,
+      advisor_run_intervals: intervals,
     };
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
 
-    await I.sendPostRequest(endpoint, body, headers);
+    await I.sendPutRequest(endpoint, body, headers);
   },
 
   async setEmailAlertingSettings(settings) {
@@ -164,30 +144,30 @@ module.exports = {
       Object.entries(values).forEach(([key, value]) => {
         switch (key) {
           case 'alerting':
-            value ? body.enable_alerting = true : body.disable_alerting = true;
+            body.enable_alerting = value;
             break;
           case 'stt':
-            value ? body.enable_stt = true : body.disable_stt = true;
+            body.enable_advisor = value;
             break;
           case 'dbaas':
-            value ? body.enable_dbaas = true : body.disable_dbaas = true;
+            body.enable_dbaas = value;
             break;
           case 'telemetry':
-            value ? body.enable_telemetry = true : body.disable_telemetry = true;
+            body.enable_telemetry = value;
             break;
           case 'azureDiscover':
-            value ? body.enable_azurediscover = true : body.disable_azurediscover = true;
+            body.enable_azurediscover = value;
             break;
           case 'backup':
-            value ? body.enable_backup_management = true : body.disable_backup_management = true;
+            body.enable_backup_management = value;
             break;
           case 'updates':
-            value ? body.disable_updates = false : body.disable_updates = true;
+            body.enable_updates = value;
             break;
           case 'publicAddress':
             value
-              ? Object.assign(body, { pmm_public_address: value, remove_pmm_public_address: false })
-              : body.remove_pmm_public_address = true;
+              ? body.pmm_public_address = value
+              : body.remove_pmm_public_address = null;
             break;
           case 'data_retention':
             body.data_retention = value;
@@ -196,7 +176,7 @@ module.exports = {
             body.metrics_resolutions = value;
             break;
           case 'checkIntervals':
-            body.stt_check_intervals = value;
+            body.advisor_run_intervals = value;
             break;
           case 'alertmanagerRules':
             body.alert_manager_rules = value;
@@ -207,6 +187,9 @@ module.exports = {
           case 'ssh':
             body.ssh_key = value;
             break;
+          case 'rbac':
+            value ? body.enable_access_control = true : body.disable_access_control = true;
+            break;
           default:
             throw Error(`Unknown property "${key}" was passed to Change Settings function`);
         }
@@ -215,7 +198,7 @@ module.exports = {
 
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
 
-    const resp = await I.sendPostRequest(endpoint, body, headers);
+    const resp = await I.sendPutRequest(endpoint, body, headers);
 
     assert.ok(
       resp.status === 200,
@@ -225,21 +208,21 @@ module.exports = {
 
   async getSettings(property) {
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
-    const resp = await I.sendPostRequest('v1/Settings/Get', {}, headers);
+    const resp = await I.sendGetRequest(endpoint, headers);
 
     return resp.data.settings[property];
   },
 
-  async setTourOptions(productTour = true, alertingTour = true) {
+  async setTourOptions(productTour = true, alertingTour = true, pmmVersion = '3.2.0') {
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
 
     const body = {
-      user_id: 1,
       product_tour_completed: productTour,
       alerting_tour_completed: alertingTour,
+      snoozed_pmm_version: pmmVersion,
     };
 
-    const resp = await I.sendPutRequest('v1/user', body, headers);
+    const resp = await I.sendPutRequest('v1/users/me', body, headers);
 
     assert.equal(resp.status, 200, `Failed to set up PMM tour options! Response with status ${resp.status}`);
   },

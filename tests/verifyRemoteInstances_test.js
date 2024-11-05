@@ -287,13 +287,16 @@ Data(dashboardCheck).Scenario(
 Data(qanFilters).Scenario(
   'PMM-T854 - Verify QAN after remote instance is added @instances @instances-fb',
   async ({
-    I, qanOverview, qanFilters, qanPage, current,
+    I, queryAnalyticsPage, current,
   }) => {
-    I.amOnPage(qanPage.url);
-    qanOverview.waitForOverviewLoaded();
-    await qanFilters.applyFilter(current.filterName);
-    qanOverview.waitForOverviewLoaded();
-    const count = await qanOverview.getCountOfItems();
+    const url = I.buildUrlWithParams(queryAnalyticsPage.url, {
+      environment: current.filterName,
+      from: 'now-5m',
+    });
+
+    I.amOnPage(url);
+    queryAnalyticsPage.waitForLoaded();
+    const count = await queryAnalyticsPage.data.getCountOfItems();
 
     assert.ok(count > 0, `The queries for filter ${current.filterName} instance do NOT exist`);
   },
@@ -337,9 +340,6 @@ Scenario(
     pmmInventoryPage.verifyRemoteServiceIsDisplayed(remoteServiceName);
     await pmmInventoryPage.verifyAgentHasStatusRunning(remoteServiceName);
     // verify metric for client container node instance
-    const response = await grafanaAPI.checkMetricExist(metric, { type: 'service_name', value: remoteServiceName });
-    const result = JSON.stringify(response.data.data.result);
-
-    assert.ok(response.data.data.result.length !== 0, `Metrics ${metric} from ${remoteServiceName} should be available but got empty ${result}`);
+    await grafanaAPI.checkMetricExist(metric, { type: 'service_name', value: remoteServiceName });
   },
 );

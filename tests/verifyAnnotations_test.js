@@ -1,13 +1,14 @@
 const { pmmInventoryPage, dashboardPage } = inject();
 const assert = require('assert');
+const { SERVICE_TYPE } = require('./helper/constants');
 
 const annotation = new DataTable(['annotationName', 'service', 'dashboard', 'service_type']);
 
-annotation.add(['annotation-for-postgres-server', 'pmm-server', dashboardPage.postgresqlInstanceSummaryDashboard.url, 'POSTGRESQL_SERVICE']);
-annotation.add(['annotation-for-mongo', 'rs1_1', dashboardPage.mongoDbInstanceSummaryDashboard.url, 'MONGODB_SERVICE']);
-annotation.add(['annotation-for-postgres', 'PGSQL', dashboardPage.postgresqlInstanceSummaryDashboard.url, 'POSTGRESQL_SERVICE']);
-annotation.add(['annotation-for-mysql', 'ms-', dashboardPage.mysqlInstanceSummaryDashboard.url, 'MYSQL_SERVICE']);
-annotation.add(['mysql-node-name', 'ms-', dashboardPage.nodesCompareDashboard.url, 'MYSQL_SERVICE']);
+annotation.add(['annotation-for-postgres-server', 'pmm-server', dashboardPage.postgresqlInstanceSummaryDashboard.url, SERVICE_TYPE.POSTGRESQL]);
+annotation.add(['annotation-for-mongo', 'rs101', dashboardPage.mongoDbInstanceSummaryDashboard.url, SERVICE_TYPE.MONGODB]);
+annotation.add(['annotation-for-postgres', 'pgsql', dashboardPage.postgresqlInstanceSummaryDashboard.url, SERVICE_TYPE.POSTGRESQL]);
+annotation.add(['annotation-for-mysql', 'ps-', dashboardPage.mysqlInstanceSummaryDashboard.url, SERVICE_TYPE.MYSQL]);
+annotation.add(['mysql-node-name', 'ps-', dashboardPage.nodesCompareDashboard.url, SERVICE_TYPE.MYSQL]);
 
 Feature('Test annotation on dashboards');
 
@@ -53,11 +54,12 @@ Data(annotation).Scenario(
 Scenario(
   'PMM-T878 - Verify user is not able to add an annotation for non-existing node name or service name and without service name @nightly @dashboards',
   async ({
-    I, annotationAPI, pmmInventoryPage,
+    I, annotationAPI, pmmInventoryPage, inventoryAPI,
   }) => {
     I.amOnPage(pmmInventoryPage.url);
-    I.waitForVisible(pmmInventoryPage.fields.mongoServiceName, 10);
-    const serviceName = await I.grabTextFrom(pmmInventoryPage.fields.mongoServiceName);
+
+    const service_response = await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.MYSQL, 'ps-');
+    const serviceName = service_response.service_name;
 
     // wrong node name
     await annotationAPI.setAnnotation('wrong-node-name', 'PMM-T878', 'random1', serviceName, 404);

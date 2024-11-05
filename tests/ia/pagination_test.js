@@ -13,7 +13,7 @@ After(async ({ templatesAPI }) => {
 });
 
 Scenario(
-  'PMM-T632 PMM-T697 PMM-T701 PMM-T1251 Verify Pagination navigation @ia @grafana-pr',
+  'PMM-T632 PMM-T697 PMM-T701 PMM-T1251 Verify Pagination navigation @alerting-fb @grafana-pr',
   async ({
     I, iaCommon,
   }) => {
@@ -144,7 +144,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T662 PMM-T698 PMM-T702 PMM-T631 PMM-T1251 Pagination rows per page persistence @ia',
+  'PMM-T662 PMM-T698 PMM-T702 PMM-T631 PMM-T1251 Pagination rows per page persistence @alerting-fb',
   async ({
     I, iaCommon,
   }) => {
@@ -219,7 +219,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T631 PMM-T633 PMM-T1251 Changing rows per page resets view to 1 page @ia',
+  'PMM-T631 PMM-T633 PMM-T1251 Changing rows per page resets view to 1 page @alerting-fb',
   async ({
     I, iaCommon, templatesAPI,
   }) => {

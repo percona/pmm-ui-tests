@@ -33,15 +33,13 @@ function getInstance(key) {
   return remoteInstance[key];
 }
 
-Before(async ({ I, settingsAPI }) => {
+Before(async ({ I }) => {
   await I.Authorize();
 });
 
 Scenario(
   'Increasing Scrape Interval to Rare for remote pgsql instances bug @not-ui-pipeline @gcp',
-  async ({
-    I, settingsAPI,
-  }) => {
+  async ({ settingsAPI }) => {
     const body = {
       telemetry_enabled: true,
       metrics_resolutions: {
@@ -90,7 +88,7 @@ Data(instances).Scenario(
 
     const instanceDetails = getInstance(instance);
 
-    I.wait(10);
+    I.wait(30);
     if (instanceType === 'mysql') {
       I.amOnPage(dashboardPage.mySQLInstanceOverview.url);
     }
@@ -100,13 +98,10 @@ Data(instances).Scenario(
     }
 
     dashboardPage.waitForDashboardOpened();
-    await adminPage.applyTimeRange('Last 12 hours');
+    await adminPage.applyTimeRange('Last 5 minutes');
     await dashboardPage.applyFilter('Service Name', instanceDetails.serviceName);
-    adminPage.performPageDown(5);
     await dashboardPage.expandEachDashboardRow();
-    adminPage.performPageUp(5);
-    await dashboardPage.verifyThereAreNoGraphsWithNA();
-    await dashboardPage.verifyThereAreNoGraphsWithoutData(1);
+    await dashboardPage.verifyThereAreNoGraphsWithoutData(6);
   },
 ).retry(2);
 
@@ -114,7 +109,7 @@ Data(instances).Scenario(
 Data(instances).Scenario(
   'Verify QAN after remote Google Cloud instance is added @not-ui-pipeline @gcp',
   async ({
-    I, qanOverview, qanFilters, qanPage, current,
+    I, current, queryAnalyticsPage,
   }) => {
     const {
       instance,
@@ -122,12 +117,11 @@ Data(instances).Scenario(
 
     const instanceDetails = getInstance(instance);
 
-    I.amOnPage(qanPage.url);
-    qanOverview.waitForOverviewLoaded();
-    qanFilters.waitForFiltersToLoad();
-    await qanFilters.applyFilter(instanceDetails.serviceName);
-    qanOverview.waitForOverviewLoaded();
-    const count = await qanOverview.getCountOfItems();
+    I.amOnPage(I.buildUrlWithParams(queryAnalyticsPage.url, { from: 'now-5m' }));
+    queryAnalyticsPage.waitForLoaded();
+    await queryAnalyticsPage.filters.selectFilter(instanceDetails.serviceName);
+    queryAnalyticsPage.waitForLoaded();
+    const count = await queryAnalyticsPage.data.getCountOfItems();
 
     assert.ok(count > 0, `The queries for service ${instanceDetails.serviceName} instance do NOT exist`);
   },
@@ -142,19 +136,14 @@ Data(instances).Scenario(
 
     const instanceDetails = getInstance(instance);
 
-    I.wait(10);
-    const response = await grafanaAPI.checkMetricExist(metric, { type: 'service_name', value: instanceDetails.serviceName });
-    const result = JSON.stringify(response.data.data.result);
-
-    assert.ok(response.data.data.result.length !== 0, `Metrics ${metric} from ${instanceDetails.serviceName} should be available but got empty ${result}`);
+    I.wait(30);
+    await grafanaAPI.checkMetricExist(metric, { type: 'service_name', value: instanceDetails.serviceName });
   },
 );
 
 Scenario(
   'Setting back to default Scrape Interval @not-ui-pipeline @gcp',
-  async ({
-    I, settingsAPI,
-  }) => {
+  async ({ settingsAPI }) => {
     const body = {
       telemetry_enabled: true,
       metrics_resolutions: settingsAPI.defaultResolution,

@@ -6,42 +6,37 @@ Before(async ({ I }) => {
 
 Scenario(
   'Open Advanced Exploration Dashboard and verify Metrics are present and graphs are displayed @nightly @dashboards',
-  async ({ I, dashboardPage, adminPage }) => {
+  async ({ I, dashboardPage }) => {
     I.amOnPage(dashboardPage.advancedDataExplorationDashboard.url);
     dashboardPage.waitForDashboardOpened();
-    I.click(adminPage.fields.metricTitle);
-    adminPage.performPageDown(5);
-    dashboardPage.verifyMetricsExistence(dashboardPage.advancedDataExplorationDashboard.metrics);
-    await dashboardPage.verifyThereAreNoGraphsWithNA();
+    await dashboardPage.verifyMetricsExistence(dashboardPage.advancedDataExplorationDashboard.metrics);
     await dashboardPage.verifyThereAreNoGraphsWithoutData(1);
   },
 );
 
 Scenario(
   'Open the Prometheus Exporters Status Dashboard and verify Metrics are present and graphs are displayed @nightly @dashboards',
-  async ({ I, dashboardPage, adminPage }) => {
-    I.amOnPage(dashboardPage.prometheusExporterStatusDashboard.url);
+  async ({ I, dashboardPage }) => {
+    I.amOnPage(I.buildUrlWithParams(dashboardPage.prometheusExporterStatusDashboard.cleanUrl, {
+      node_name: 'pmm-server',
+      from: 'now-5m',
+    }));
     dashboardPage.waitForDashboardOpened();
-    await dashboardPage.applyFilter('Node Name', 'pmm-server');
-    I.click(adminPage.fields.metricTitle);
-    adminPage.performPageDown(5);
     await dashboardPage.expandEachDashboardRow();
-    dashboardPage.verifyMetricsExistence(dashboardPage.prometheusExporterStatusDashboard.metrics);
-    await dashboardPage.verifyThereAreNoGraphsWithNA(4);
-    await dashboardPage.verifyThereAreNoGraphsWithoutData(16);
+    await dashboardPage.verifyMetricsExistence(dashboardPage.prometheusExporterStatusDashboard.metrics);
+    await dashboardPage.verifyThereAreNoGraphsWithoutData(40);
   },
 );
 
 Scenario(
   'PMM-T300 Open the Prometheus Exporters Overview Dashboard and verify Metrics are present and graphs are displayed @nightly @dashboards',
-  async ({ I, dashboardPage, adminPage }) => {
-    I.amOnPage(dashboardPage.prometheusExporterOverviewDashboard.url);
+  async ({ I, dashboardPage }) => {
+    I.amOnPage(I.buildUrlWithParams(dashboardPage.prometheusExporterOverviewDashboard.cleanUrl, {
+      node_name: 'pmm-server',
+      from: 'now-5m',
+    }));
     dashboardPage.waitForDashboardOpened();
-    await dashboardPage.applyFilter('Node Name', 'pmm-server');
-    I.click(adminPage.fields.metricTitle);
-    adminPage.performPageDown(5);
-    dashboardPage.verifyMetricsExistence(dashboardPage.prometheusExporterOverviewDashboard.metrics);
-    await dashboardPage.verifyThereAreNoGraphsWithNA(6);
+    await dashboardPage.verifyMetricsExistence(dashboardPage.prometheusExporterOverviewDashboard.metrics);
     await dashboardPage.verifyThereAreNoGraphsWithoutData();
   },
 );

@@ -34,6 +34,32 @@ class Grafana extends Helper {
     Playwright.setPlaywrightRequestHeaders({ Authorization: `Basic ${basicAuthEncoded}` });
   }
 
+  async enableProductTour() {
+    const { Playwright } = this.helpers;
+
+    await Playwright.page.route('**/v1/users/me', async (route, request) => {
+      if (request.method() === 'GET') {
+        await route.fulfill({
+          status: 200,
+          body: JSON.stringify({
+            user_id: 1,
+            product_tour_completed: false,
+            alerting_tour_completed: false,
+            snoozed_pmm_version: '',
+          }),
+        });
+      } else {
+        await route.continue();
+      }
+    });
+  }
+
+  async stopMockingProductTourApi() {
+    const { Playwright } = this.helpers;
+
+    await Playwright.page.unroute('**/v1/users/me');
+  }
+
   async unAuthorize() {
     const { Playwright } = this.helpers;
     const { browserContext } = Playwright;
@@ -203,26 +229,6 @@ class Grafana extends Helper {
     if (returnErrorPipe) return stderr.trim();
 
     return stdout.trim();
-  }
-
-  async getPmmClientDockerTagFromClientVersion(clientVersion) {
-    let parsedClientVersion;
-
-    if (clientVersion.includes('perconalab/pmm-client') || clientVersion.includes('percona/pmm-client')) {
-      parsedClientVersion = clientVersion;
-    } else if (clientVersion === 'dev-latest') {
-      parsedClientVersion = 'perconalab/pmm-client:dev-latest';
-    } else if (clientVersion === 'pmm2-rc') {
-      const dockerTag = /(\d+\.)?(\d+\.)?(\*|\d+)-rc$/.exec(process.env.DOCKER_VERSION)[0];
-
-      parsedClientVersion = `perconalab/pmm-client:${dockerTag}`;
-    } else if (clientVersion.includes('https://')) {
-      parsedClientVersion = `perconalab/pmm-client-fb:${clientVersion.split('pmm-client/pmm-client-')[1].replace('.tar.gz', '')}`;
-    } else {
-      throw new Error(`CLIENT_VERSION TAG ${clientVersion} is not supported`);
-    }
-
-    return parsedClientVersion;
   }
 }
 

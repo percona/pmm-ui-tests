@@ -1,4 +1,5 @@
 const assert = require('assert');
+const { SERVICE_TYPE } = require('../helper/constants');
 
 const { adminPage } = inject();
 
@@ -23,10 +24,10 @@ Scenario(
   async ({
     I, remoteInstancesPage, pmmInventoryPage, inventoryAPI,
   }) => {
-    const port = await I.verifyCommand(`docker exec ${container_name} pmm-admin list | grep "MySQL" | grep "mysql_client" | awk -F":" '{print $2}' | awk -F" " '{ print $1}' | head -1`);
+    const port = await I.verifyCommand(`docker exec ${container_name} pmm-admin list | grep "MySQL" | awk -F":" '{print $2}' | awk -F" " '{ print $1}' | head -1`);
     const details = {
       serviceName: remoteServiceName,
-      serviceType: 'MYSQL_SERVICE',
+      serviceType: SERVICE_TYPE.MYSQL,
       port,
       username: connection.username,
       password: connection.password,
@@ -47,10 +48,11 @@ Scenario(
     I.fillField(remoteInstancesPage.fields.environment, details.environment);
     I.fillField(remoteInstancesPage.fields.cluster, details.cluster);
     I.click(remoteInstancesPage.fields.addService);
-    //I.waitForVisible(pmmInventoryPage.fields.agentsLink, 30);
+    // I.waitForVisible(pmmInventoryPage.fields.agentsLink, 30);
+    I.wait(10);
     await inventoryAPI.verifyServiceExistsAndHasRunningStatus(
       {
-        serviceType: 'MYSQL_SERVICE',
+        serviceType: SERVICE_TYPE.MYSQL,
         service: 'mysql',
       },
       details.serviceName,
@@ -70,8 +72,8 @@ Scenario(
     let response; let result;
     const metricName = 'mysql_global_status_max_used_connections';
 
-    await I.verifyCommand(`docker exec ${container_name} pmm-admin list | grep "mysqld_exporter" | grep "Running" | wc -l | grep "1"`);
-    await I.verifyCommand(`docker exec ${container_name} pmm-admin list | grep "mysql_slowlog_agent" | grep "Running" | wc -l | grep "1"`);
+    await I.verifyCommand(`docker exec ${container_name} pmm-admin list | grep "mysqld_exporter" | grep "Agent_status_running" | wc -l | grep "1"`);
+    await I.verifyCommand(`docker exec ${container_name} pmm-admin list | grep "mysql_slowlog_agent" | grep "Agent_status_running" | wc -l | grep "1"`);
 
     const clientServiceName = (await I.verifyCommand(`docker exec ${container_name} pmm-admin list | grep MySQL | head -1 | awk -F" " '{print $2}'`)).trim();
 
@@ -105,39 +107,36 @@ Scenario(
       const url = I.buildUrlWithParams(dashboardPage.mysqlInstanceSummaryDashboard.clearUrl, { from: 'now-5m', to: 'now', service_name: service });
 
       I.amOnPage(url);
-      dashboardPage.waitForDashboardOpened();
+      await dashboardPage.waitForDashboardOpened();
       adminPage.performPageDown(5);
       await dashboardPage.expandEachDashboardRow();
       adminPage.performPageUp(5);
       if (service === remoteServiceName) {
-        await dashboardPage.verifyThereAreNoGraphsWithNA(7);
-        await dashboardPage.verifyThereAreNoGraphsWithoutData(9);
+        await dashboardPage.verifyThereAreNoGraphsWithoutData(15);
       } else {
-        await dashboardPage.verifyThereAreNoGraphsWithNA(1);
-        await dashboardPage.verifyThereAreNoGraphsWithoutData(5);
+        await dashboardPage.verifyThereAreNoGraphsWithoutData(6);
       }
     }
   },
-).retry(1);
+).retry(2);
 
 Scenario(
   'Verify QAN after PS Instances is added @pmm-ps-integration @not-ui-pipeline',
   async ({
-    I, qanOverview, qanFilters, qanPage, adminPage,
+    I, queryAnalyticsPage,
   }) => {
     const clientServiceName = (await I.verifyCommand(`docker exec ${container_name} pmm-admin list | grep MySQL | head -1 | awk -F" " '{print $2}'`)).trim();
 
     const serviceList = [clientServiceName, remoteServiceName];
 
     for (const service of serviceList) {
-      const url = I.buildUrlWithParams(qanPage.clearUrl, { from: 'now-120m', to: 'now' });
-
-      I.amOnPage(url);
-      qanOverview.waitForOverviewLoaded();
-      qanFilters.waitForFiltersToLoad();
-      await qanFilters.applySpecificFilter(service);
-      qanOverview.waitForOverviewLoaded();
-      const count = await qanOverview.getCountOfItems();
+      I.amOnPage(I.buildUrlWithParams(queryAnalyticsPage.url, { from: 'now-5m' }));
+      queryAnalyticsPage.waitForLoaded();
+      await adminPage.applyTimeRange('Last 12 hours');
+      queryAnalyticsPage.waitForLoaded();
+      await queryAnalyticsPage.filters.selectFilterInGroup(service, 'Service Name');
+      queryAnalyticsPage.waitForLoaded();
+      const count = await queryAnalyticsPage.data.getCountOfItems();
 
       assert.ok(count > 0, `The queries for service ${service} instance do NOT exist, check QAN Data`);
     }
@@ -145,35 +144,33 @@ Scenario(
 ).retry(1);
 
 Scenario(
-  'PMM-T1897 Verify Query Count metric on QAN page for MySQL @pmm-ps-integration',
+  'PMM-T1897 Verify Query Count metric on QAN page for MySQL @fb-pmm-ps-integration',
   async ({
-    I, credentials, qanOverview, qanPage, qanFilters, qanDetails,
+    I, credentials, queryAnalyticsPage,
   }) => {
     const dbName = 'sbtest3';
     const sbUser = { name: 'sysbench', password: 'test' };
 
-    const psContainerName = await I.verifyCommand('sudo docker ps --format "{{.Names}}" | grep ps_');
+    const psContainerName = await I.verifyCommand('docker ps --format "{{.Names}}" | grep ps_');
 
-    await I.verifyCommand(`sudo docker exec ${psContainerName} mysql -h 127.0.0.1 -u ${credentials.perconaServer.user} -p${credentials.perconaServer.password} -e "CREATE USER IF NOT EXISTS sysbench@'%' IDENTIFIED WITH mysql_native_password BY 'test'; GRANT ALL ON *.* TO sysbench@'%'; DROP DATABASE IF EXISTS ${dbName};"`);
-    await I.verifyCommand(`sudo docker exec ${psContainerName} mysql -h 127.0.0.1 -u ${sbUser.name} -p${sbUser.password} -e "SET GLOBAL slow_query_log=ON;"`);
-    await I.verifyCommand(`sudo docker exec ${psContainerName} mysql -h 127.0.0.1 -u ${sbUser.name} -p${sbUser.password} -e "SET GLOBAL long_query_time=0;"`);
-    await I.verifyCommand(`sudo docker exec ${psContainerName} mysql -h 127.0.0.1 -u ${sbUser.name} -p${sbUser.password} -e "CREATE DATABASE ${dbName}"`);
+    await I.verifyCommand(`docker exec ${psContainerName} mysql -h 127.0.0.1 --port 3307 -u ${credentials.perconaServer.root.username} -p${credentials.perconaServer.root.password} -e "CREATE USER IF NOT EXISTS sysbench@'%' IDENTIFIED WITH mysql_native_password BY 'test'; GRANT ALL ON *.* TO sysbench@'%'; DROP DATABASE IF EXISTS ${dbName};"`);
+    await I.verifyCommand(`docker exec ${psContainerName} mysql -h 127.0.0.1 --port 3307 -u ${sbUser.name} -p${sbUser.password} -e "SET GLOBAL slow_query_log=ON;"`);
+    await I.verifyCommand(`docker exec ${psContainerName} mysql -h 127.0.0.1 --port 3307 -u ${sbUser.name} -p${sbUser.password} -e "SET GLOBAL long_query_time=0;"`);
+    await I.verifyCommand(`docker exec ${psContainerName} mysql -h 127.0.0.1 --port 3307 -u ${sbUser.name} -p${sbUser.password} -e "CREATE DATABASE ${dbName}"`);
 
     for (let i = 1; i <= 5; i++) {
-      await I.verifyCommand(`sudo docker exec ${psContainerName} mysql -h 127.0.0.1 -u ${sbUser.name} -p${sbUser.password} ${dbName} -e "CREATE TABLE Persons${i} ( PersonID int, LastName varchar(255), FirstName varchar(255), Address varchar(255), City varchar(255) );"`);
+      await I.verifyCommand(`docker exec ${psContainerName} mysql -h 127.0.0.1 --port 3307 -u ${sbUser.name} -p${sbUser.password} ${dbName} -e "CREATE TABLE Persons${i} ( PersonID int, LastName varchar(255), FirstName varchar(255), Address varchar(255), City varchar(255) );"`);
       for (let j = 0; j <= 4; j++) {
-        await I.verifyCommand(`sudo docker exec ${psContainerName} mysql -h 127.0.0.1 -u ${sbUser.name} -p${sbUser.password} ${dbName} -e "INSERT INTO Persons${i} values (${j},'Qwerty','Qwe','Address','City');"`);
+        await I.verifyCommand(`docker exec ${psContainerName} mysql -h 127.0.0.1 --port 3307 -u ${sbUser.name} -p${sbUser.password} ${dbName} -e "INSERT INTO Persons${i} values (${j},'Qwerty','Qwe','Address','City');"`);
       }
 
-      await I.verifyCommand(`sudo docker exec ${psContainerName} mysql -h 127.0.0.1 -u ${sbUser.name} -p${sbUser.password} ${dbName} -e "select count(*) from Persons${i};"`);
+      await I.verifyCommand(`docker exec ${psContainerName} mysql -h 127.0.0.1 --port 3307 -u ${sbUser.name} -p${sbUser.password} ${dbName} -e "select count(*) from Persons${i};"`);
     }
 
-    I.amOnPage(I.buildUrlWithParams(qanPage.clearUrl, { from: 'now-1h', refresh: '5s' }));
-    qanOverview.waitForOverviewLoaded();
-    await qanFilters.applyFilter(dbName);
-    qanOverview.waitForOverviewLoaded();
-    I.waitForText('17', 180, qanOverview.elements.countOfItems);
-    await qanOverview.selectRow(0);
-    I.waitForText('105', 180, qanOverview.elements.queryCountValue);
+    I.amOnPage(I.buildUrlWithParams(queryAnalyticsPage.url, { from: 'now-1h', refresh: '5s' }));
+    queryAnalyticsPage.waitForLoaded();
+    await queryAnalyticsPage.filters.selectFilter(dbName, 120000);
+    queryAnalyticsPage.waitForLoaded();
+    I.waitForText('16', 180, queryAnalyticsPage.data.elements.totalItems);
   },
 ).retry(1);

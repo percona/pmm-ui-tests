@@ -5,7 +5,7 @@ Feature('MongoDB Metrics tests');
 const connection = {
   host: '127.0.0.1',
   // eslint-disable-next-line no-inline-comments
-  port: '27027', // This is the port used by --addclient=modb,1 and docker-compose setup on a CI/CD
+  port: '27027', // This is the port used by --database psmdb
   username: 'pmm',
   password: 'pmmpass',
 };
@@ -25,14 +25,16 @@ const telemetry = {
   replsetStatus: 'mongodb_collector_scrape_time_replset_status',
 };
 
+const containerName = 'rs101';
+
 BeforeSuite(async ({ I }) => {
   await I.mongoConnect(connection);
   await I.mongoAddUser(mongo_test_user.username, mongo_test_user.password);
 
   // check that rs101 docker container exists
-  const dockerCheck = await I.verifyCommand('docker ps | grep rs101');
+  const dockerCheck = await I.verifyCommand(`docker ps | grep ${containerName}`);
 
-  assert.ok(dockerCheck.includes('rs101'), 'rs101 docker container should exist. please run pmm-framework with --mongo-replica-for-backup');
+  assert.ok(dockerCheck.includes(containerName), 'rs101 docker container should exist. please run pmm-framework with --database psmdb');
 });
 
 Before(async ({ I }) => {
@@ -40,7 +42,7 @@ Before(async ({ I }) => {
 });
 
 After(async ({ I }) => {
-  await I.verifyCommand(`pmm-admin remove mongodb ${mongodb_service_name} || true`);
+  await I.verifyCommand(`docker exec ${containerName} pmm-admin remove mongodb ${mongodb_service_name} || true`);
 });
 
 AfterSuite(async ({ I }) => {
@@ -48,10 +50,10 @@ AfterSuite(async ({ I }) => {
 });
 
 Scenario.skip(
-  'PMM-T1241 - Verify add mongoDB service with "+" in user password @not-ui-pipeline @mongodb-exporter',
+  'PMM-T1241 - Verify add mongoDB service with "+" in user password @mongodb-exporter',
   async ({ I, grafanaAPI }) => {
     await I.say(
-      await I.verifyCommand(`pmm-admin add mongodb --port=${connection.port} --password=${mongo_test_user.password} --username='${mongo_test_user.username}' --service-name=${mongodb_service_name}`),
+      await I.verifyCommand(`docker exec ${containerName} pmm-admin add mongodb --password=${mongo_test_user.password} --username='${mongo_test_user.username}' --service-name=${mongodb_service_name}`),
     );
 
     await grafanaAPI.waitForMetric('mongodb_up', { type: 'service_name', value: mongodb_service_name }, 65);
@@ -59,9 +61,9 @@ Scenario.skip(
 );
 
 Scenario(
-  'PMM-T1458 - Verify MongoDB exporter meta-metrics supporting @not-ui-pipeline @mongodb-exporter',
+  'PMM-T1458 - Verify MongoDB exporter meta-metrics supporting @mongodb-exporter',
   async ({ I }) => {
-    await I.say(await I.verifyCommand(`pmm-admin add mongodb --port=${connection.port} --password=${connection.password} --username=${connection.username} --service-name=${mongodb_service_name} --enable-all-collectors`));
+    await I.say(await I.verifyCommand(`docker exec ${containerName} pmm-admin add mongodb --password=${connection.password} --username=${connection.username} --service-name=${mongodb_service_name} --enable-all-collectors`));
     let logs = '';
 
     await I.asyncWaitFor(async () => {

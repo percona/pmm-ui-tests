@@ -1,31 +1,46 @@
+const { SERVICE_TYPE } = require("./helper/constants");
+
 Feature('PT Summary');
-const { dashboardPage } = inject();
-
-const dashboard = new DataTable(['page', 'content', 'service_name']);
-
-dashboard.add([dashboardPage.mysqlInstanceSummaryDashboard.url,
-  dashboardPage.fields.mySQLServiceSummaryContent, 'ps_']);
-dashboard.add([dashboardPage.postgresqlInstanceSummaryDashboard.url,
-  dashboardPage.fields.postgreSQLServiceSummaryContent, 'PGSQL_']);
-// FIXME: unskip when https://jira.percona.com/browse/PMM-11406 is fixed
-// dashboard.add([dashboardPage.mongoDbInstanceSummaryDashboard.url,
-//   dashboardPage.fields.mongoDBServiceSummaryContent, 'mongodb_']);
-
 Before(async ({ I }) => {
   await I.Authorize();
 });
 
-Data(dashboard).Scenario(
-  'PMM-T671, PMM-T666, PMM-T672 - Verify summary is displayed on Instance Summary dashboard @dashboards @nightly',
+// TODO: automate PMM-T672 mongodb after fix for https://perconadev.atlassian.net/browse/PMM-11406
+
+Scenario(
+  'PMM-T671, PMM-T666, PMM-T672 - Verify summary for PS is displayed on Instance Summary dashboard @dashboards @nightly',
   async ({
-    I, dashboardPage, adminPage, current,
+    I, dashboardPage, inventoryAPI,
   }) => {
-    I.amOnPage(current.page);
+    const ps_service_response = await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.MYSQL, 'ps-');
+    const url = I.buildUrlWithParams(
+      dashboardPage.mysqlInstanceSummaryDashboard.clearUrl,
+      { service_name: ps_service_response.service_name, from: 'now-15m' },
+    );
+
+    I.amOnPage(url);
     dashboardPage.waitForDashboardOpened();
-    await dashboardPage.applyFilter('Service Name', current.service_name);
-    I.click(adminPage.fields.metricTitle);
     I.waitForVisible(dashboardPage.fields.serviceSummary, 30);
     I.click(dashboardPage.fields.serviceSummary);
-    I.waitForVisible(current.content, 150);
+    I.waitForVisible(dashboardPage.fields.mySQLServiceSummaryContent, 150);
+  },
+).retry(1);
+
+Scenario(
+  'PMM-T666 - Verify summary for PG is displayed on Instance Summary dashboard @dashboards @nightly',
+  async ({
+    I, dashboardPage, inventoryAPI,
+  }) => {
+    const pgsql_service_response = await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.POSTGRESQL, 'pgsql_');
+    const url = I.buildUrlWithParams(
+      dashboardPage.postgresqlInstanceSummaryDashboard.cleanUrl,
+      { service_name: pgsql_service_response.service_name, from: 'now-15m' },
+    );
+
+    I.amOnPage(url);
+    dashboardPage.waitForDashboardOpened();
+    I.waitForVisible(dashboardPage.fields.serviceSummary, 30);
+    I.click(dashboardPage.fields.serviceSummary);
+    I.waitForVisible(dashboardPage.fields.postgreSQLServiceSummaryContent, 150);
   },
 ).retry(1);

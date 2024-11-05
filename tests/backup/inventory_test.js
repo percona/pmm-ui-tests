@@ -1,6 +1,7 @@
 const assert = require('assert');
 const moment = require('moment/moment');
 const faker = require('faker');
+const { SERVICE_TYPE } = require('../helper/constants');
 
 const { locationsAPI } = inject();
 
@@ -70,7 +71,7 @@ BeforeSuite(async ({
 Before(async ({
   I, settingsAPI, backupInventoryPage, inventoryAPI, backupAPI,
 }) => {
-  const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName('MONGODB_SERVICE', mongoServiceName);
+  const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.MONGODB, mongoServiceName);
 
   serviceId = service_id;
 
@@ -198,7 +199,7 @@ Data(restoreFromDifferentStorageLocationsTests).Scenario(
     const backupName = `mongo-restore-${current.storageType}-${current.backupType}`;
     const isLogical = current.backupType === 'LOGICAL';
 
-    const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName('MONGODB_SERVICE', mongoServiceName);
+    const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.MONGODB, mongoServiceName);
     const artifactId = await backupAPI.startBackup(backupName, service_id, currentLocationId, false, isLogical);
 
     await backupAPI.waitForBackupFinish(artifactId);
@@ -258,8 +259,9 @@ Data(restoreFromDifferentStorageLocationsTests).Scenario(
 
 const restoreToDifferentService = new DataTable(['backupType']);
 
-restoreToDifferentService.add(['LOGICAL']);
-restoreToDifferentService.add(['PHYSICAL']);
+// TODO: unskip in scope of https://perconadev.atlassian.net/browse/PMM-13097
+// restoreToDifferentService.add(['LOGICAL']);
+// restoreToDifferentService.add(['PHYSICAL']);
 
 Data(restoreToDifferentService).Scenario(
   '@PMM-T1773 Verify user is able to perform MongoDB restore to compatible service @backup @bm-mongo @bm-fb',
@@ -269,7 +271,7 @@ Data(restoreToDifferentService).Scenario(
     const backupName = `mongo-restore-another-replica-${current.backupType}`;
     const isLogical = current.backupType === 'LOGICAL';
 
-    const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName('MONGODB_SERVICE', mongoServiceName);
+    const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.MONGODB, mongoServiceName);
     const artifactId = await backupAPI.startBackup(backupName, service_id, locationId, false, isLogical);
 
     await backupAPI.waitForBackupFinish(artifactId);
@@ -312,7 +314,7 @@ Scenario(
     I, backupInventoryPage, backupAPI, inventoryAPI,
   }) => {
     const backupName = 'mongo_artifact_delete_test';
-    const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName('MONGODB_SERVICE', mongoServiceName);
+    const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.MONGODB, mongoServiceName);
     const artifactId = await backupAPI.startBackup(backupName, service_id, locationId);
 
     await backupAPI.waitForBackupFinish(artifactId);
@@ -394,7 +396,7 @@ Scenario(
     const serviceName = `mongo-service-to-delete-${faker.datatype.number(2)}`;
 
     I.say(await I.verifyCommand(`docker exec rs101 pmm-admin add mongodb --username=pmm --password=pmmpass --port=27017 --service-name=${serviceName} --replication-set=rs --cluster=rs`));
-    const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName('MONGODB_SERVICE', serviceName);
+    const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.MONGODB, serviceName);
     const artifactId = await backupAPI.startBackup(backupName, service_id, locationId);
 
     await backupAPI.waitForBackupFinish(artifactId);
@@ -475,7 +477,7 @@ Scenario(
     I, inventoryAPI, backupAPI, backupInventoryPage,
   }) => {
     const backupName = 'mongo_backup_logs_test';
-    const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName('MONGODB_SERVICE', mongoServiceName);
+    const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.MONGODB, mongoServiceName);
     const artifactId = await backupAPI.startBackup(backupName, service_id, locationId);
 
     await backupAPI.waitForBackupFinish(artifactId);
@@ -531,7 +533,7 @@ Scenario.skip(
     I, inventoryAPI, backupInventoryPage, backupAPI, restorePage,
   }) => {
     const backupName = 'mongo_error_logs';
-    const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName('MONGODB_SERVICE', mongoServiceName);
+    const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.MONGODB, mongoServiceName);
     const artifactId = await backupAPI.startBackup(backupName, service_id, locationId);
 
     await backupAPI.waitForBackupFinish(artifactId);
@@ -572,7 +574,7 @@ Data(deleteArtifactsTests).Scenario(
     const currentLocationId = isS3Type ? locationId : localStorageLocationId;
     const commandToClearStorage = isS3Type ? 'sudo rm -rfv /tmp/minio/backups/bcp/*' : 'docker exec rs101 rm -rfv /tmp/backup_data/*';
 
-    const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName('MONGODB_SERVICE', mongoServiceName);
+    const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.MONGODB, mongoServiceName);
     const artifactId = await backupAPI.startBackup(backupName, service_id, currentLocationId);
 
     await backupAPI.waitForBackupFinish(artifactId);
@@ -605,7 +607,7 @@ Scenario.skip(
     I, inventoryAPI, backupInventoryPage, backupAPI,
   }) => {
     const backupName = 'mongo_retry';
-    const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName('MONGODB_SERVICE', mongoServiceName);
+    const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.MONGODB, mongoServiceName);
     const artifactId = await backupAPI.startBackup(backupName, service_id, locationId, true);
 
     I.wait(5);

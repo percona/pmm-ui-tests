@@ -1,8 +1,12 @@
 const assert = require('assert');
+const {
+  SERVICE_TYPE,
+  AGENT_STATUS,
+} = require('../helper/constants');
 
 const connection = {
   host: '127.0.0.1',
-  port: 5437,
+  port: 5447,
   user: 'postgres',
   password: 'pass+this',
   database: 'postgres',
@@ -13,12 +17,11 @@ const connection = {
 // Service Name: ${PGSQL_PGSM_CONTAINER}_${PGSQL_VERSION}_service
 // Docker Container Name: ${PGSQL_PGSM_CONTAINER}_${PGSQL_VERSION}
 
-const version = process.env.PGSQL_VERSION ? `${process.env.PGSQL_VERSION}` : '17';
-const container = process.env.PGSQL_PGSM_CONTAINER ? `${process.env.PGSQL_PGSM_CONTAINER}` : 'pgsql_pgsm';
+const version = process.env.PDPGSQL_VERSION ? `${process.env.PDPGSQL_VERSION}` : '16';
 const database = `pgsm${Math.floor(Math.random() * 99) + 1}`;
-const pgsm_service_name = `${container}_${version}_service`;
-const pgsm_service_name_socket = `socket_${container}_${version}_service`;
-const container_name = `${container}_${version}`;
+let pgsm_service_name;
+let pgsm_service_name_socket;
+let container_name;
 const percentageDiff = (a, b) => (a - b === 0 ? 0 : 100 * Math.abs((a - b) / b));
 
 const labels = [
@@ -37,6 +40,20 @@ filters.add(['Application Name', 'codeceptjs']);
 filters.add(['Database', database]);
 
 Feature('PMM + PGSM Integration Scenarios');
+
+BeforeSuite(async ({ I, inventoryAPI }) => {
+  const pgsm_service = await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.POSTGRESQL, 'pdpgsql_');
+  const socket_service = await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.POSTGRESQL, 'socket_pdpgsql_');
+
+  pgsm_service_name = pgsm_service.service_name;
+  pgsm_service_name_socket = socket_service.service_name;
+
+  // check that pdpgsql docker container exists
+  const dockerCheck = await I.verifyCommand('docker ps | grep pdpgsql_ | awk \'{print $NF}\'');
+
+  assert.ok(dockerCheck.includes('pdpgsql_'), 'pdpgsql docker container should exist. please run pmm-framework with --database pdpgsql');
+  container_name = dockerCheck.trim();
+});
 
 Before(async ({ I }) => {
   await I.Authorize();
@@ -79,14 +96,14 @@ Scenario(
         await I.verifyCommand(`docker exec ${container_name} pmm-admin list --json`),
       );
       serviceAgents = list.agent.filter(({ service_id }) => service_id === serviceId);
-      const pgStatMonitorAgent = serviceAgents.find(({ agent_type }) => agent_type === 'QAN_POSTGRESQL_PGSTATMONITOR_AGENT');
+      const pgStatMonitorAgent = serviceAgents.find(({ agent_type }) => agent_type === 'AGENT_TYPE_QAN_POSTGRESQL_PGSTATMONITOR_AGENT');
 
       assert.ok(pgStatMonitorAgent, 'pg_stat_monitor agent should exist');
 
-      return pgStatMonitorAgent.status === 'RUNNING';
+      return pgStatMonitorAgent.status === AGENT_STATUS.RUNNING;
     }, 30);
 
-    const pgStatStatementsAgent = serviceAgents.find(({ agent_type }) => agent_type === 'QAN_POSTGRESQL_PGSTATEMENTS_AGENT');
+    const pgStatStatementsAgent = serviceAgents.find(({ agent_type }) => agent_type === 'AGENT_TYPE_QAN_POSTGRESQL_PGSTATEMENTS_AGENT');
 
     assert.ok(!pgStatStatementsAgent, 'pg_stat_statements agent should not exist');
   },
@@ -115,7 +132,7 @@ Scenario(
     await I.pgExecuteQueryOnDemand(sql, connection);
     connection.database = 'postgres';
     // wait for pmm-agent to push the execution as part of next bucket to clickhouse
-    await I.verifyCommand(`docker exec ${container_name} pmm-admin list | grep "postgresql_pgstatmonitor_agent" | grep "Running"`);
+    await I.verifyCommand(`docker exec ${container_name} pmm-admin list | grep "postgresql_pgstatmonitor_agent" | grep "Agent_status_running"`);
 
     I.wait(30);
     let pgsm_output;
@@ -181,56 +198,52 @@ Scenario(
 Data(filters).Scenario(
   'PMM-T1261 - Verify the "Command type" filter for Postgres @not-ui-pipeline @pgsm-pmm-integration',
   async ({
-    I, qanPage, qanOverview, qanFilters, current,
+    I, queryAnalyticsPage, current,
   }) => {
     const serviceName = pgsm_service_name;
     const {
       filterSection, filterToApply,
     } = current;
 
-    I.amOnPage(qanPage.url);
-    qanOverview.waitForOverviewLoaded();
-    await qanFilters.applyFilter(serviceName);
-    await qanFilters.applyFilter(database);
-    I.waitForVisible(qanFilters.buttons.showSelected, 30);
+    I.amOnPage(queryAnalyticsPage.url);
+    queryAnalyticsPage.waitForLoaded();
+    queryAnalyticsPage.filters.selectContainFilter(serviceName);
+    queryAnalyticsPage.filters.selectContainFilter(database);
+    I.waitForVisible(queryAnalyticsPage.filters.buttons.showSelected, 30);
 
-    await qanFilters.applyFilterInSection(filterSection, filterToApply);
+    queryAnalyticsPage.filters.selectFilterInGroup(filterToApply, filterSection);
   },
 );
 
 Scenario(
   'PMM-T1262 - Verify Postgresql Dashboard Instance Summary has Data @not-ui-pipeline @pgsm-pmm-integration',
-  async ({
-    I, dashboardPage, adminPage,
-  }) => {
-    I.amOnPage(dashboardPage.postgresqlInstanceSummaryDashboard.url);
+  async ({ I, dashboardPage }) => {
+    const url = I.buildUrlWithParams(dashboardPage.postgresqlInstanceSummaryDashboard.cleanUrl, {
+      service_name: pgsm_service_name,
+      from: 'now-5m',
+    });
+
+    I.amOnPage(url);
     dashboardPage.waitForDashboardOpened();
-    await dashboardPage.applyFilter('Service Name', pgsm_service_name);
     await dashboardPage.expandEachDashboardRow();
-    I.click(adminPage.fields.metricTitle);
-    adminPage.performPageDown(5);
-    adminPage.performPageUp(5);
-    dashboardPage.verifyMetricsExistence(dashboardPage.postgresqlInstanceSummaryDashboard.metrics);
-    await dashboardPage.verifyThereAreNoGraphsWithNA();
-    await dashboardPage.verifyThereAreNoGraphsWithoutData(2);
+    await dashboardPage.verifyMetricsExistence(dashboardPage.postgresqlInstanceSummaryDashboard.metrics);
+    await dashboardPage.verifyThereAreNoGraphsWithoutData(1);
   },
 );
 
 Scenario(
-  'PMM-T2261 - Verify Postgresql Dashboard Instance Summary has Data with socket based service and Agent log @not-ui-pipeline @pgsm-pmm-integration',
-  async ({
-    I, dashboardPage, adminPage,
-  }) => {
-    I.amOnPage(dashboardPage.postgresqlInstanceSummaryDashboard.url);
+  'Verify Postgresql Dashboard Instance Summary has Data with socket based service and Agent log @not-ui-pipeline @pgsm-pmm-integration',
+  async ({ I, dashboardPage }) => {
+    const url = I.buildUrlWithParams(dashboardPage.postgresqlInstanceSummaryDashboard.cleanUrl, {
+      service_name: pgsm_service_name_socket,
+      from: 'now-5m',
+    });
+
+    I.amOnPage(url);
     dashboardPage.waitForDashboardOpened();
-    await dashboardPage.applyFilter('Service Name', pgsm_service_name_socket);
     await dashboardPage.expandEachDashboardRow();
-    I.click(adminPage.fields.metricTitle);
-    adminPage.performPageDown(5);
-    adminPage.performPageUp(5);
-    dashboardPage.verifyMetricsExistence(dashboardPage.postgresqlInstanceSummaryDashboard.metrics);
-    await dashboardPage.verifyThereAreNoGraphsWithNA();
-    await dashboardPage.verifyThereAreNoGraphsWithoutData(2);
+    await dashboardPage.verifyMetricsExistence(dashboardPage.postgresqlInstanceSummaryDashboard.metrics);
+    await dashboardPage.verifyThereAreNoGraphsWithoutData(1);
     const log = await I.verifyCommand(`docker exec ${container_name} cat pmm-agent.log`);
 
     I.assertFalse(
@@ -262,7 +275,7 @@ Scenario(
     await I.verifyCommand(`docker exec ${container_name} pgbench -c 2 -j 2 -T 60 --username=pmm ${db}`);
     connection.database = 'postgres';
     // wait for pmm-agent to push the execution as part of next bucket to clickhouse
-    await I.verifyCommand(`docker exec ${container_name} pmm-admin list | grep "postgresql_pgstatmonitor_agent" | grep "Running"`);
+    await I.verifyCommand(`docker exec ${container_name} pmm-admin list | grep "postgresql_pgstatmonitor_agent" | grep "Agent_status_running"`);
 
     const labels = [
       { key: 'database', value: [`${db}`] },
@@ -369,9 +382,7 @@ Scenario(
 
 Scenario(
   'PMM-T1063 - Verify Application Name with pg_stat_monitor @pgsm-pmm-integration @not-ui-pipeline',
-  async ({
-    I, qanOverview, qanFilters, qanPage,
-  }) => {
+  async ({ I, queryAnalyticsPage }) => {
     await I.verifyCommand('docker exec pmm-server clickhouse-client --database pmm --query "TRUNCATE TABLE metrics"');
 
     await I.pgExecuteQueryOnDemand('SELECT pg_stat_monitor_reset();', connection);
@@ -382,14 +393,21 @@ Scenario(
 
     await I.pgExecuteQueryOnDemand(sql, connection);
     I.wait(120);
-    await I.verifyCommand(`docker exec ${container_name} pmm-admin list | grep "postgresql_pgstatmonitor_agent" | grep "Running"`);
-    I.amOnPage(qanPage.url);
-    qanOverview.waitForOverviewLoaded();
-    I.waitForVisible(qanFilters.buttons.showSelected, 30);
+    await I.verifyCommand(`docker exec ${container_name} pmm-admin list | grep "postgresql_pgstatmonitor_agent" | grep "Agent_status_running"`);
 
-    await qanFilters.applyFilterInSection('Application Name', applicationName);
-    qanOverview.waitForOverviewLoaded();
-    const count = await qanOverview.getCountOfItems();
+    const url = I.buildUrlWithParams(queryAnalyticsPage.url, {
+      // application_name: applicationName,
+      from: 'now-5m',
+    });
+
+    I.amOnPage(url);
+    queryAnalyticsPage.waitForLoaded();
+    queryAnalyticsPage.filters.selectFilter(applicationName);
+    I.wait(5);
+    I.waitForVisible(queryAnalyticsPage.filters.buttons.showSelected, 30);
+    queryAnalyticsPage.waitForLoaded();
+
+    const count = await queryAnalyticsPage.data.getRowCount();
 
     assert.ok(parseInt(count, 10) === 5, `Expected only 5 Queries to show up for ${applicationName} based on the load script but found ${count}`);
   },
@@ -397,9 +415,7 @@ Scenario(
 
 Scenario(
   'PMM-T1063 - Verify Top Query and Top QueryID with pg_stat_monitor @pgsm-pmm-integration @not-ui-pipeline',
-  async ({
-    I, qanOverview, qanFilters, qanPage, qanDetails,
-  }) => {
+  async ({ I, queryAnalyticsPage }) => {
     let pgsm_output;
     const db = `${database}_topquery`;
     const queryWithTopId = '(select $1 + $2)';
@@ -433,17 +449,20 @@ Scenario(
       const pgsmTopQuery = pgsm_output.rows[i].top_query;
       const pgsmQuery = pgsm_output.rows[i].query;
 
-      I.amOnPage(qanPage.url);
-      qanOverview.waitForOverviewLoaded();
-      I.waitForVisible(qanFilters.buttons.showSelected, 30);
+      const url = I.buildUrlWithParams(queryAnalyticsPage.url, {
+        database: db,
+        from: 'now-5m',
+      });
 
-      await qanFilters.applyFilterInSection('Database', db);
-      qanOverview.waitForOverviewLoaded();
-      await qanOverview.searchByValue(queryId);
-      qanOverview.waitForOverviewLoaded();
-      qanOverview.selectRow(1);
-      I.waitForElement(qanDetails.elements.topQuery);
-      I.click(qanDetails.elements.topQuery);
+      I.amOnPage(url);
+      queryAnalyticsPage.waitForLoaded();
+
+      queryAnalyticsPage.data.searchByValue(queryId);
+      queryAnalyticsPage.waitForLoaded();
+      queryAnalyticsPage.data.selectRow(1);
+
+      I.waitForElement(queryAnalyticsPage.queryDetails.elements.topQuery);
+
       // qanOverview.waitForOverviewLoaded();
       // const queryid = await I.grabValueFrom(qanOverview.fields.searchBy);
       //
@@ -457,9 +476,7 @@ Scenario(
 
 Scenario(
   'PMM-T1071 - Verify Histogram is displayed for each query with pg_stat_monitor @pgsm-pmm-integration @not-ui-pipeline',
-  async ({
-    I, qanOverview, qanFilters, qanPage, qanDetails,
-  }) => {
+  async ({ I, queryAnalyticsPage }) => {
     let countHistogram = 0;
     const db = `${database}_histogram`;
 
@@ -479,19 +496,22 @@ Scenario(
     await I.pgExecuteQueryOnDemand(sql, connection);
     connection.database = 'postgres';
     I.wait(120);
-    I.amOnPage(qanPage.url);
-    qanOverview.waitForOverviewLoaded();
-    I.waitForVisible(qanFilters.buttons.showSelected, 30);
 
-    await qanFilters.applyFilterInSection('Database', db);
-    qanOverview.waitForOverviewLoaded();
-    const count = await qanOverview.getCountOfItems();
+    const url = I.buildUrlWithParams(queryAnalyticsPage.url, {
+      database: db,
+      from: 'now-5m',
+    });
 
-    // Skipping the first one because thats the top query generated by select pg_sleep()
+    I.amOnPage(url);
+    queryAnalyticsPage.waitForLoaded();
+
+    const count = await queryAnalyticsPage.data.getRowCount();
+
+    // Skipping the first one because that's the top query generated by select pg_sleep()
     for (let i = 2; i <= count; i++) {
-      qanOverview.selectRow(i);
-      I.waitForElement(qanDetails.buttons.close, 30);
-      const count = await I.grabNumberOfVisibleElements(qanDetails.elements.histogramContainer);
+      queryAnalyticsPage.data.selectRow(i);
+      I.waitForElement(queryAnalyticsPage.queryDetails.buttons.close, 30);
+      const count = await I.grabNumberOfVisibleElements(queryAnalyticsPage.queryDetails.elements.histogramContainer);
 
       countHistogram += count;
     }
@@ -504,7 +524,7 @@ Scenario(
 xScenario(
   'PMM-T1253 Verify pg_stat_monitor.pgsm_normalized_query settings @not-ui-pipeline @pgsm-pmm-integration',
   async ({
-    I, qanPage, qanOverview, qanFilters, qanDetails,
+    I, queryAnalyticsPage,
   }) => {
     const defaultValue = 'no';
     const alteredValue = 'yes';
@@ -526,24 +546,23 @@ xScenario(
 
     //  Function used to produce data and check if examples are shown
     async function checkForExamples(isNoExamplesVisible) {
-      I.amOnPage(qanPage.url);
-      qanOverview.waitForOverviewLoaded();
-      qanFilters.waitForFiltersToLoad();
-      await qanFilters.applyFilter(pgsm_service_name);
+      I.amOnPage(I.buildUrlWithParams(queryAnalyticsPage.url, { from: 'now-5m' }));
+      queryAnalyticsPage.waitForLoaded();
+      await queryAnalyticsPage.filters.selectFilter(pgsm_service_name);
       for (let i = 1; i < queriesNumber; i++) {
         const tableName = `PMM_T1253_${Date.now()}`;
 
         //  Sql queries used to produce data for table
         await I.pgExecuteQueryOnDemand(`CREATE TABLE ${tableName} ( TestId int );`, connection);
         await I.pgExecuteQueryOnDemand(`DROP TABLE ${tableName};`, connection);
-        await qanOverview.searchByValue(tableName, true);
-        qanOverview.selectRow(1);
-        qanFilters.waitForFiltersToLoad();
+        await queryAnalyticsPage.data.searchByValue(tableName, true);
+        queryAnalyticsPage.data.selectRow(1);
+        queryAnalyticsPage.waitForLoaded();
         //  Assertion that there are or there are no examples in the examples tab
-        qanDetails.checkExamplesTab(isNoExamplesVisible);
-        qanOverview.selectRow(2);
-        qanFilters.waitForFiltersToLoad();
-        qanDetails.checkExamplesTab(isNoExamplesVisible);
+        queryAnalyticsPage.queryDetails.checkExamplesTab(isNoExamplesVisible);
+        queryAnalyticsPage.data.selectRow(2);
+        queryAnalyticsPage.waitForLoaded();
+        queryAnalyticsPage.queryDetails.checkExamplesTab(isNoExamplesVisible);
       }
     }
 
@@ -552,7 +571,7 @@ xScenario(
     await I.pgExecuteQueryOnDemand(`ALTER SYSTEM SET pg_stat_monitor.pgsm_normalized_query=${alteredValue};`, connection);
     await I.verifyCommand(`docker exec ${container_name} service postgresql restart`);
     I.wait(5);
-    await I.verifyCommand(`docker exec ${container_name} pmm-admin list | grep "postgresql_pgstatmonitor_agent" | grep "Running"`);
+    await I.verifyCommand(`docker exec ${container_name} pmm-admin list | grep "postgresql_pgstatmonitor_agent" | grep "Agent_status_running"`);
     output = await I.pgExecuteQueryOnDemand('SELECT * FROM pg_stat_monitor_settings WHERE name=\'pg_stat_monitor.pgsm_normalized_query\';', connection);
     assert.equal(output.rows[0].value, 'yes', `The default value of 'pg_stat_monitor.pgsm_normalized_query' should be equal to '${alteredValue}'`);
     await checkForExamples(true);
@@ -562,7 +581,7 @@ xScenario(
 Scenario(
   'PMM-T1292 PMM-T1302 PMM-T1303 PMM-T1283 Verify that pmm-admin inventory add agent postgres-exporter with --log-level flag adds PostgreSQL exporter with corresponding log-level @not-ui-pipeline @pgsm-pmm-integration',
   async ({
-    I, inventoryAPI, grafanaAPI, dashboardPage,
+    I, inventoryAPI, dashboardPage,
   }) => {
     I.amOnPage(dashboardPage.postgresqlInstanceOverviewDashboard.url);
     dashboardPage.waitForDashboardOpened();
@@ -572,7 +591,7 @@ Scenario(
     await I.say(await I.verifyCommand(`docker exec ${container_name} pmm-admin remove postgresql ${pgsql_service_name} || true`));
     await I.say(await I.verifyCommand(`docker exec ${container_name} pmm-admin add postgresql --query-source=pgstatmonitor --agent-password='testing' --password=${connection.password} --username=${connection.user} --service-name=${pgsql_service_name}`));
     //
-    const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName('POSTGRESQL_SERVICE', pgsql_service_name);
+    const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.POSTGRESQL, pgsql_service_name);
     const pmm_agent_id = (await I.verifyCommand(`docker exec ${container_name} pmm-admin status | grep "Agent ID" | awk -F " " '{print $4}'`)).trim();
 
     const dbDetails = {
@@ -612,7 +631,7 @@ Scenario(
     assert.equal(output.rows[0].setting, defaultValue, `The value of 'pg_stat_monitor.pgsm_bucket_time' should be equal to ${defaultValue}`);
     assert.equal(output.rows[0].reset_val, defaultValue, `The value of 'pg_stat_monitor.pgsm_bucket_time' should be equal to ${defaultValue}`);
     await I.verifyCommand(`docker exec ${container_name} true > pmm-agent.log`);
-    await I.verifyCommand(`docker exec ${container_name} pmm-admin list | grep "postgresql_pgstatmonitor_agent" | grep "Running"`);
+    await I.verifyCommand(`docker exec ${container_name} pmm-admin list | grep "postgresql_pgstatmonitor_agent" | grep "Agent_status_running"`);
     I.wait(defaultValue);
     let log = await I.verifyCommand(`docker exec ${container_name} tail -n100 pmm-agent.log`);
 
@@ -630,7 +649,8 @@ Scenario(
 
     assert.ok(
       log.includes('non default bucket time value is not supported, status changed to WAITING'),
-      'The log was supposed to contain errors regarding bucket time but it doesn\'t',
+      `The log was supposed to contain errors regarding bucket time but it doesn't. 
+ ${log}`,
     );
 
     await I.verifyCommand(`docker exec ${container_name} pmm-admin list | grep "postgresql_pgstatmonitor_agent" | grep "Waiting"`);

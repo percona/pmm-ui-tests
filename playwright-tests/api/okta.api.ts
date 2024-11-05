@@ -10,7 +10,6 @@ import https from 'https';
  * @param   method    HTTP request type {@link Method}
  * @param   apiPath   API v1 endpoint path, ex: "/users"
  * @param   payload   JSON {@code object}; an empty object for get or delete requests
- * @param responseStatus
  */
 const oktaRequest = async (method: Method, apiPath: string, payload = {}, responseStatus = 200): Promise<AxiosResponse> => {
   console.log(`${method.toUpperCase()}: ${constants.okta.url}/api/v1${apiPath}`);
@@ -50,6 +49,7 @@ export const oktaApi = {
   async getUser(email: string): Promise<PortalUser> {
     const response = await oktaRequest('GET', `/users?q=${email}`);
     expect(response.data[0].profile, `Found user must have email: ${response.data[0].profile.email}`).toHaveProperty('email', email);
+
     return response.data[0] as PortalUser;
   },
 

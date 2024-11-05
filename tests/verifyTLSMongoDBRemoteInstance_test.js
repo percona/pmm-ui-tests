@@ -1,4 +1,5 @@
 const assert = require('assert');
+const { SERVICE_TYPE } = require('./helper/constants');
 
 const { adminPage } = inject();
 const pmmFrameworkLoader = `bash ${adminPage.pathToFramework}`;
@@ -8,24 +9,19 @@ Feature('Monitoring SSL/TLS MongoDB instances');
 
 const instances = new DataTable(['serviceName', 'version', 'container', 'serviceType', 'metric', 'maxQueryLength']);
 
-instances.add(['mongodb_4.4_ssl_service', '4.4', 'mongodb_4.4', 'mongodb_ssl', 'mongodb_connections', '7']);
+// instances.add(['mongodb_4.4_ssl_service', '4.4', 'mongodb_4.4', 'mongodb_ssl', 'mongodb_connections', '7']);
 // instances.add(['mongodb_4.2_ssl_service', '4.2', 'mongodb_4.2', 'mongodb_ssl', 'mongodb_connections']);
-instances.add(['mongodb_5.0_ssl_service', '5.0', 'mongodb_5.0', 'mongodb_ssl', 'mongodb_connections', '7']);
+// instances.add(['mongodb_5.0_ssl_service', '5.0', 'mongodb_5.0', 'mongodb_ssl', 'mongodb_connections', '7']);
+instances.add(['mongodb_ssl_service', '6.0', 'psmdb-server', 'mongodb_ssl', 'mongodb_connections', '7']);
 
-BeforeSuite(async ({ I, codeceptjsConfig }) => {
-  // await I.verifyCommand(`${pmmFrameworkLoader} --mo-version=4.2 --setup-mongodb-ssl --pmm2`);
-  await I.verifyCommand(`${pmmFrameworkLoader} --mo-version=4.4 --setup-mongodb-ssl --pmm2`);
-  await I.verifyCommand(`${pmmFrameworkLoader} --mo-version=5.0 --setup-mongodb-ssl --pmm2`);
-});
+let serviceName;
 
-AfterSuite(async ({ I }) => {
-  await I.verifyCommand('docker stop mongodb_4.4 || docker rm mongodb_4.4');
-  // await I.verifyCommand('docker stop mongodb_4.2 || docker rm mongodb_4.2');
-  await I.verifyCommand('docker stop mongodb_5.0 || docker rm mongodb_5.0');
-});
-
-Before(async ({ I, settingsAPI }) => {
+Before(async ({ I, inventoryAPI }) => {
   await I.Authorize();
+
+  const { service_name } = await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.MONGODB, 'mongodb_ssl_service');
+
+  serviceName = service_name;
 });
 
 Data(instances).Scenario(
@@ -47,9 +43,9 @@ Data(instances).Scenario(
         host: container,
         cluster: 'mongodb_remote_cluster',
         environment: 'mongodb_remote_cluster',
-        tlsCAFile: `${pathToPMMFramework}tls-ssl-setup/mongodb/${version}/ca.crt`,
-        tlsCertificateFilePasswordInput: `${pathToPMMFramework}tls-ssl-setup/mongodb/${version}/client.key`,
-        tlsCertificateKeyFile: `${pathToPMMFramework}tls-ssl-setup/mongodb/${version}/client.pem`,
+        tlsCAFile: `${pathToPMMFramework}../pmm_psmdb_diffauth_setup/certs/ca-certs.pem`,
+        tlsCertificateFilePasswordInput: `${pathToPMMFramework}../pmm_psmdb_diffauth_setup/certs/certificate.crt`,
+        tlsCertificateKeyFile: `${pathToPMMFramework}../pmm_psmdb_diffauth_setup/certs/client.pem`,
       };
     }
 
@@ -60,10 +56,10 @@ Data(instances).Scenario(
     I.click(remoteInstancesPage.fields.addService);
     await inventoryAPI.verifyServiceExistsAndHasRunningStatus(
       {
-        serviceType: 'MONGODB_SERVICE',
+        serviceType: SERVICE_TYPE.MONGODB,
         service: 'mongodb',
       },
-      serviceName,
+      remoteServiceName,
     );
 
     // Check Remote Instance also added and have running status
@@ -89,16 +85,9 @@ Data(instances).Scenario(
     I.wait(10);
 
     // verify metric for client container node instance
-    response = await grafanaAPI.checkMetricExist(metric, { type: 'service_name', value: serviceName });
-    result = JSON.stringify(response.data.data.result);
-
-    assert.ok(response.data.data.result.length !== 0, `Metrics ${metric} from ${serviceName} should be available but got empty ${result}`);
-
+    await grafanaAPI.checkMetricExist(metric, { type: 'service_name', value: serviceName });
     // verify metric for remote instance
-    response = await grafanaAPI.checkMetricExist(metric, { type: 'service_name', value: remoteServiceName });
-    result = JSON.stringify(response.data.data.result);
-
-    assert.ok(response.data.data.result.length !== 0, `Metrics ${metric} from ${remoteServiceName} should be available but got empty ${result}`);
+    await grafanaAPI.checkMetricExist(metric, { type: 'service_name', value: remoteServiceName });
   },
 ).retry(1);
 
@@ -148,7 +137,7 @@ Data(instances).Scenario(
       adminPage.performPageDown(5);
       await dashboardPage.expandEachDashboardRow();
       adminPage.performPageUp(5);
-      await dashboardPage.verifyThereAreNoGraphsWithNA();
+      await dashboardPage.verifyThereAreNoGraphsWithoutData();
       await dashboardPage.verifyThereAreNoGraphsWithoutData(3);
     }
   },
@@ -157,7 +146,7 @@ Data(instances).Scenario(
 Data(instances).Scenario(
   'Verify QAN after MongoDB SSL Instances is added @ssl @ssl-remote @ssl-mongo @not-ui-pipeline',
   async ({
-    I, qanOverview, qanFilters, qanPage, current, adminPage,
+    I, queryAnalyticsPage, current, adminPage,
   }) => {
     const {
       serviceName,
@@ -166,14 +155,13 @@ Data(instances).Scenario(
     const serviceList = [serviceName, `remote_${serviceName}`];
 
     for (const service of serviceList) {
-      I.amOnPage(qanPage.url);
-      qanOverview.waitForOverviewLoaded();
+      I.amOnPage(I.buildUrlWithParams(queryAnalyticsPage.url, { from: 'now-5m' }));
+      queryAnalyticsPage.waitForLoaded();
       await adminPage.applyTimeRange('Last 12 hours');
-      qanOverview.waitForOverviewLoaded();
-      qanFilters.waitForFiltersToLoad();
-      await qanFilters.applySpecificFilter(service);
-      qanOverview.waitForOverviewLoaded();
-      const count = await qanOverview.getCountOfItems();
+      queryAnalyticsPage.waitForLoaded();
+      await queryAnalyticsPage.filters.selectFilter(service);
+      queryAnalyticsPage.waitForLoaded();
+      const count = await queryAnalyticsPage.data.getCountOfItems();
 
       assert.ok(count > 0, `The queries for service ${service} instance do NOT exist, check QAN Data`);
     }
@@ -193,21 +181,21 @@ Data(instances).Scenario(
 
     const agent_id = await I.verifyCommand(`docker exec ${container} pmm-admin list | grep mongodb_exporter | awk -F" " '{print $4}' | awk -F"/" '{print $3}'`);
 
-    await I.verifyCommand(`docker exec ${container} ls -la /usr/local/percona/pmm2/tmp/mongodb_exporter/agent_id/${agent_id}/ | grep caFile`);
-    await I.verifyCommand(`docker exec ${container} rm -r /usr/local/percona/pmm2/tmp/mongodb_exporter/`);
-    await I.verifyCommand(`docker exec ${container} ls -la /usr/local/percona/pmm2/tmp/mongodb_exporter/`, 'ls: cannot access \'/usr/local/percona/pmm2/tmp/mongodb_exporter\': No such file or directory', 'fail');
+    await I.verifyCommand(`docker exec ${container} ls -la /usr/local/percona/pmm/tmp/mongodb_exporter/agent_id/${agent_id}/ | grep caFile`);
+    await I.verifyCommand(`docker exec ${container} rm -r /usr/local/percona/pmm/tmp/mongodb_exporter/`);
+    await I.verifyCommand(`docker exec ${container} ls -la /usr/local/percona/pmm/tmp/mongodb_exporter/`, 'ls: cannot access \'/usr/local/percona/pmm/tmp/mongodb_exporter\': No such file or directory', 'fail');
     await I.verifyCommand(`docker exec ${container} pmm-admin list | grep mongodb_exporter | grep Running`);
     await I.verifyCommand(`docker exec ${container} pkill -f mongodb_exporter`);
     I.wait(10);
     await I.verifyCommand(`docker exec ${container} pmm-admin list | grep mongodb_exporter | grep Running`);
-    await I.verifyCommand(`docker exec ${container} ls -la /usr/local/percona/pmm2/tmp/mongodb_exporter/agent_id/${agent_id}/ | grep caFile`);
+    await I.verifyCommand(`docker exec ${container} ls -la /usr/local/percona/pmm/tmp/mongodb_exporter/agent_id/${agent_id}/ | grep caFile`);
   },
 ).retry(1);
 
 Data(instances).Scenario(
   ' PMM-T1431 Verify adding MongoDB instance via UI with specified Max Query Length option @max-length @ssl @ssl-remote @ssl-mongo @not-ui-pipeline',
   async ({
-    I, remoteInstancesPage, pmmInventoryPage, qanPage, qanOverview, qanFilters, qanDetails, inventoryAPI, current,
+    I, remoteInstancesPage, pmmInventoryPage, inventoryAPI, current,
   }) => {
     const {
       serviceName, serviceType, version, container, maxQueryLength,
@@ -223,9 +211,9 @@ Data(instances).Scenario(
         host: container,
         cluster: 'mongodb_remote_cluster',
         environment: 'mongodb_remote_cluster',
-        tlsCAFile: `${pathToPMMFramework}tls-ssl-setup/mongodb/${version}/ca.crt`,
-        tlsCertificateFilePasswordInput: `${pathToPMMFramework}tls-ssl-setup/mongodb/${version}/client.key`,
-        tlsCertificateKeyFile: `${pathToPMMFramework}tls-ssl-setup/mongodb/${version}/client.pem`,
+        tlsCAFile: `${pathToPMMFramework}../pmm_psmdb_diffauth_setup/certs/ca-certs.pem`,
+        tlsCertificateFilePasswordInput: `${pathToPMMFramework}../pmm_psmdb_diffauth_setup/certs/certificate.crt`,
+        tlsCertificateKeyFile: `${pathToPMMFramework}../pmm_psmdb_diffauth_setup/certs/client.pem`,
       };
     }
 
@@ -240,13 +228,13 @@ Data(instances).Scenario(
     pmmInventoryPage.verifyRemoteServiceIsDisplayed(remoteServiceName);
     await inventoryAPI.verifyServiceExistsAndHasRunningStatus(
       {
-        serviceType: 'MONGODB_SERVICE',
+        serviceType: SERVICE_TYPE.MONGODB,
         service: 'mongodb',
       },
-      serviceName,
+      remoteServiceName,
     );
 
-    const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName('MONGODB_SERVICE', remoteServiceName);
+    const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.MONGODB, remoteServiceName);
 
     // Check Remote Instance also added and have correct max_query_length option set
     await pmmInventoryPage.openAgents(service_id);

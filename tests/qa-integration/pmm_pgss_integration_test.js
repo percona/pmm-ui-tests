@@ -1,4 +1,8 @@
 const assert = require('assert');
+const {
+  SERVICE_TYPE,
+  AGENT_STATUS,
+} = require('../helper/constants');
 
 const { adminPage } = inject();
 const connection = {
@@ -14,20 +18,27 @@ const connection = {
 // Service Name: ${PGSQL_PGSS_CONTAINER}_${PGSQL_VERSION}_service
 // Docker Container Name: ${PGSQL_PGSS_CONTAINER}_${PGSQL_VERSION}
 
-const version = process.env.PGSQL_VERSION ? `${process.env.PGSQL_VERSION}` : '17';
-const container = process.env.PGSQL_PGSS_CONTAINER ? `${process.env.PGSQL_PGSS_CONTAINER}` : 'pgsql_pgss';
+const version = process.env.PGSQL_VERSION ? `${process.env.PGSQL_VERSION}` : '16';
+const container = process.env.PGSQL_PGSS_CONTAINER ? `${process.env.PGSQL_PGSS_CONTAINER}` : 'pgsql_pgss_pmm';
 const database = `pgss${Math.floor(Math.random() * 99) + 1}`;
-const pgss_service_name = `${container}_${version}_service`;
+let pgss_service_name;
 const container_name = `${container}_${version}`;
 const pmmFrameworkLoader = `bash ${adminPage.pathToFramework}`;
 const pgsqlVersionPgss = new DataTable(['pgsqlVersion', 'expectedPgssVersion', 'expectedColumnName']);
 
-pgsqlVersionPgss.add([12, '1.7', 'total_time']);
-pgsqlVersionPgss.add([13, '1.8', 'total_exec_time']);
+// TODO: unskip when pmm-framework takes port parameter https://perconadev.atlassian.net/browse/PMM-13096
+// pgsqlVersionPgss.add([12, '1.7', 'total_time']);
+// pgsqlVersionPgss.add([13, '1.8', 'total_exec_time']);
 
 const labels = [{ key: 'database', value: [`${database}`] }];
 
 Feature('PMM + pgss Integration Scenarios');
+
+BeforeSuite(async ({ inventoryAPI }) => {
+  const pgss_service = await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.POSTGRESQL, 'pgsql_');
+
+  pgss_service_name = pgss_service.service_name;
+});
 
 Before(async ({ I }) => {
   await I.Authorize();
@@ -51,14 +62,14 @@ Scenario(
         await I.verifyCommand(`docker exec ${container_name} pmm-admin list --json`),
       );
       serviceAgents = list.agent.filter(({ service_id }) => service_id === serviceId);
-      const pgStatStatementsAgent = serviceAgents.find(({ agent_type }) => agent_type === 'QAN_POSTGRESQL_PGSTATEMENTS_AGENT');
+      const pgStatStatementsAgent = serviceAgents.find(({ agent_type }) => agent_type === 'AGENT_TYPE_QAN_POSTGRESQL_PGSTATEMENTS_AGENT');
 
       assert.ok(pgStatStatementsAgent, 'pg_stat_statements agent should exist');
 
-      return pgStatStatementsAgent.status === 'RUNNING';
+      return pgStatStatementsAgent.status === AGENT_STATUS.RUNNING;
     }, 30);
 
-    const pgStatMonitorAgent = serviceAgents.find(({ agent_type }) => agent_type === 'QAN_POSTGRESQL_PGSTATMONITOR_AGENT');
+    const pgStatMonitorAgent = serviceAgents.find(({ agent_type }) => agent_type === 'AGENT_TYPE_QAN_POSTGRESQL_PGSTATMONITOR_AGENT');
 
     assert.ok(!pgStatMonitorAgent, 'pg_stat_monitor agent should not exist');
   },
@@ -83,7 +94,7 @@ Scenario(
     connection.database = 'postgres';
     // wait for pmm-agent to push the execution as part of next bucket to clickhouse
     I.wait(90);
-    await I.verifyCommand(`docker exec ${container_name} pmm-admin list | grep "postgresql_pgstatements_agent" | grep "Running"`);
+    await I.verifyCommand(`docker exec ${container_name} pmm-admin list | grep "postgresql_pgstatements_agent" | grep "Agent_status_running"`);
   },
 );
 
@@ -109,7 +120,7 @@ Scenario.skip(
     connection.database = 'postgres';
     // wait for pmm-agent to push the execution as part of next bucket to clickhouse
     I.wait(150);
-    await I.verifyCommand(`docker exec ${container_name} pmm-admin list | grep "postgresql_pgstatements_agent" | grep "Running"`);
+    await I.verifyCommand(`docker exec ${container_name} pmm-admin list | grep "postgresql_pgstatements_agent" | grep "Agent_status_running"`);
 
     let toStart = new Date();
 
@@ -167,7 +178,7 @@ Scenario(
     await I.say(await I.verifyCommand(`docker exec ${container_name} pmm-admin remove postgresql ${pgsql_service_name} || true`));
     await I.say(await I.verifyCommand(`docker exec ${container_name} pmm-admin add postgresql --query-source=pgstatements --agent-password='testing' --password=${connection.password} --username=${connection.user} --service-name=${pgsql_service_name}`));
     //
-    const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName('POSTGRESQL_SERVICE', pgsql_service_name);
+    const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.POSTGRESQL, pgsql_service_name);
     const pmm_agent_id = (await I.verifyCommand(`docker exec ${container_name} pmm-admin status | grep "Agent ID" | awk -F " " '{print $4}'`)).trim();
 
     const dbDetails = {
@@ -202,8 +213,6 @@ Data(pgsqlVersionPgss).Scenario(
     const exposedPort = '5444';
     const serviceName = `pgsql_pgss_${pgsqlVersion}_service`;
 
-    await I.say(`admin password is: ${process.env.ADMIN_PASSWORD}`);
-
     await I.say(`${pmmFrameworkLoader} --pmm2 --setup-pmm-pgss-integration --pgsql-version=${pgsqlVersion} --pgsql-pgss-port=${exposedPort}`);
     await I.verifyCommand(`export ADMIN_PASSWORD=${process.env.ADMIN_PASSWORD}`);
 
@@ -213,7 +222,7 @@ Data(pgsqlVersionPgss).Scenario(
 
     await inventoryAPI.verifyServiceExistsAndHasRunningStatus(
       {
-        serviceType: 'POSTGRESQL_SERVICE',
+        serviceType: SERVICE_TYPE.POSTGRESQL,
         service: 'postgresql',
       },
       serviceName,
@@ -233,7 +242,7 @@ Data(pgsqlVersionPgss).Scenario(
       'Expected to have no errors regarding column name',
     );
 
-    const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName('POSTGRESQL_SERVICE', serviceName);
+    const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.POSTGRESQL, serviceName);
 
     await inventoryAPI.deleteService(service_id);
     await I.verifyCommand(`docker rm -f ${containerName}`);

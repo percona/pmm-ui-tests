@@ -21,7 +21,7 @@ export default class HomeDashboardPage extends BaseDashboard {
   };
 
   async waitToBeOpened() {
-    await this.PAGE_HEADING_LOCATOR.waitFor({ state: 'visible', timeout: Wait.OneMinute });
+    await this.elements.mainApp.waitFor({ state: 'visible', timeout: Wait.OneMinute });
     await expect(this.page).toHaveURL(this.PAGE_PATH);
   }
   upgradePmm = async () => {

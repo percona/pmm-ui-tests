@@ -5,65 +5,48 @@ Before(async ({ I }) => {
 });
 
 Scenario(
-  'Open the MongoDB Overview Dashboard and verify Metrics are present and graphs are displayed @nightly @dashboards',
+  'PMM-T305 Open the MongoDB Instance Summary Dashboard and verify Metrics are present and graphs are displayed @nightly @dashboards',
   async ({ I, dashboardPage }) => {
-    I.amOnPage(dashboardPage.mongodbOverviewDashboard.url);
+    const url = I.buildUrlWithParams(dashboardPage.mongodbOverviewDashboard.url, {
+      from: 'now-5m',
+      cluster: 'replicaset',
+    });
+
+    I.amOnPage(url);
     dashboardPage.waitForDashboardOpened();
     await dashboardPage.expandEachDashboardRow();
     await dashboardPage.verifyMetricsExistence(dashboardPage.mongodbOverviewDashboard.metrics);
-    await dashboardPage.verifyThereAreNoGraphsWithNA();
-    await dashboardPage.verifyThereAreNoGraphsWithoutData(2);
+    await dashboardPage.verifyThereAreNoGraphsWithoutData();
   },
 );
 
-Scenario(
-  'PMM-T305 Open the MongoDB Instance Summary Dashboard and verify Metrics are present and graphs are displayed @nightly @dashboards',
+// unskip after sharded cluster setup is available in the framework
+Scenario.skip(
+  'Open the MongoDB Cluster Summary Dashboard and verify Metrics are present and graphs are displayed @nightly @dashboards',
   async ({ I, dashboardPage }) => {
-    I.amOnPage(dashboardPage.mongoDbInstanceSummaryDashboard.url);
+    I.amOnPage(I.buildUrlWithParams(dashboardPage.mongoDbClusterSummaryDashboard.url, {
+      cluster: 'sharded',
+      from: 'now-5m',
+    }));
     dashboardPage.waitForDashboardOpened();
     await dashboardPage.expandEachDashboardRow();
-    await dashboardPage.verifyMetricsExistence(dashboardPage.mongoDbInstanceSummaryDashboard.metrics);
-    await dashboardPage.verifyThereAreNoGraphsWithNA();
+    await dashboardPage.verifyMetricsExistence(dashboardPage.mongoDbClusterSummaryDashboard.metrics);
     await dashboardPage.verifyThereAreNoGraphsWithoutData();
   },
 );
 
 Scenario(
-  'Open the MongoDB Cluster Summary Dashboard and verify Metrics are present and graphs are displayed @nightly @dashboards',
-  async ({ I, adminPage, dashboardPage }) => {
-    I.amOnPage(dashboardPage.mongoDbClusterSummaryDashboard.url);
-    dashboardPage.waitForDashboardOpened();
-    I.click(adminPage.fields.metricTitle);
-    adminPage.performPageDown(3);
-    await dashboardPage.expandEachDashboardRow();
-    dashboardPage.verifyMetricsExistence(dashboardPage.mongoDbClusterSummaryDashboard.metrics);
-    await dashboardPage.verifyThereAreNoGraphsWithNA();
-    await dashboardPage.verifyThereAreNoGraphsWithoutData(3);
-  },
-);
-
-Scenario(
-  'Open the MongoDB ReplicaSet Summary Dashboard and verify Metrics are present and graphs are displayed @mongodb-exporter @nightly @dashboards',
+  'PMM-T1698 Verify that Disk I/O and Swap Activity and Network Traffic panels have graphs if Node name contains dot symbol @nightly @dashboards',
   async ({ I, dashboardPage }) => {
-    I.amOnPage(dashboardPage.mongodbReplicaSetSummaryDashboard.url);
-    dashboardPage.waitForDashboardOpened();
-    await dashboardPage.expandEachDashboardRow();
-    await dashboardPage.verifyMetricsExistence(dashboardPage.mongodbReplicaSetSummaryDashboard.metrics);
-    await dashboardPage.verifyThereAreNoGraphsWithNA();
-    await dashboardPage.verifyThereAreNoGraphsWithoutData(2);
-  },
-);
+    const url = I.buildUrlWithParams(dashboardPage.mongodbReplicaSetSummaryDashboard.cleanUrl, {
+      from: 'now-5m',
+      cluster: 'replicaset',
+    });
 
-Scenario(
-  'Open the MongoDB Routers Summary Dashboard and verify Metrics are present and graphs are displayed @nightly-test @dashboards',
-  async ({ I, dashboardPage }) => {
-    I.amOnPage(dashboardPage.mongodbRouterSummaryDashboard.url);
+    I.amOnPage(url);
     dashboardPage.waitForDashboardOpened();
-    I.waitForVisible(dashboardPage.environment, 30);
-    await dashboardPage.selectDropdownItem(dashboardPage.environment, 'mongodb_shraded_node');
     await dashboardPage.expandEachDashboardRow();
-    await dashboardPage.verifyMetricsExistence(dashboardPage.mongodbRouterSummaryDashboard.metrics);
-    await dashboardPage.verifyThereAreNoGraphsWithNA();
-    await dashboardPage.verifyThereAreNoGraphsWithoutData(2);
+    await dashboardPage.verifyMetricsExistencePartialMatch(dashboardPage.mongodbReplicaSetSummaryDashboard.metrics);
+    await dashboardPage.verifyThereAreNoGraphsWithoutData(1);
   },
 );

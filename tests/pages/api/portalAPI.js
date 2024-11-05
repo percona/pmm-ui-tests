@@ -68,11 +68,12 @@ module.exports = {
     return {
       email: email || `${firstName.toLowerCase()}.${lastName.toLowerCase()}.${Date.now()}.${faker.datatype.number()}@test.com`,
       password: generate({
-        length: 10,
+        length: 16,
         numbers: true,
         lowercase: true,
         uppercase: true,
         strict: true,
+        symbols: true,
       }),
       firstName,
       lastName,
@@ -185,7 +186,7 @@ module.exports = {
   async disconnectPMMFromPortal(grafana_session_cookie) {
     const headers = { Cookie: `${grafana_session_cookie.name}=${grafana_session_cookie.value}` };
 
-    const resp = await I.sendPostRequest('v1/Platform/Disconnect', {}, headers);
+    const resp = await I.sendPostRequest('v1/platform:disconnect', {}, headers);
 
     assert.ok(resp.status === 200, `Failed to disconnect PMM from the Portal. Response message is "${resp.data.message}"`);
 

@@ -18,13 +18,14 @@ const getConfiguredRestApi = async (): Promise<APIRequestContext> => {
 const apiHelper = {
   // TODO: remove in favor of xxxPage.network.suppressTour().
   confirmTour: async (page: Page) => {
-    await page.route('**/v1/user', async (route) => {
+    await page.route('**/v1/users/me', async (route) => {
       await route.fulfill({
         status: 200,
         body: JSON.stringify({
           user_id: 1,
           product_tour_completed: true,
           alerting_tour_completed: true,
+          snoozed_pmm_version: '3.2.0',
         }),
       });
     });
@@ -71,6 +72,20 @@ const apiHelper = {
   post: async (path: string, payload: object): Promise<APIResponse> => {
     console.log(`POST: ${path}\nPayload: ${JSON.stringify(payload)}`);
     const response = await (await getConfiguredRestApi()).post(path, payload);
+    expect(response.status(), `Status: ${response.status()} ${response.statusText()}`).toEqual(200);
+    return response;
+  },
+
+  /**
+   * Implements HTTP PUT to PMM Server API
+   *
+   * @param   path      API endpoint path
+   * @param   payload   request body {@code Object}
+   * @return            Promise<APIResponse> instance
+   */
+  put: async (path: string, payload: object): Promise<APIResponse> => {
+    console.log(`PUT: ${path}\nPayload: ${JSON.stringify(payload)}`);
+    const response = await (await getConfiguredRestApi()).put(path, { data: payload });
     expect(response.status(), `Status: ${response.status()} ${response.statusText()}`).toEqual(200);
     return response;
   },
