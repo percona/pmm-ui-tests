@@ -1,11 +1,12 @@
 import { test, expect } from '@playwright/test';
 import * as cli from '@helpers/cli-helper';
+import {execute} from "@helpers/cli-helper";
 
 const MYSQL_USER = 'msandbox';
 const MYSQL_PASSWORD = 'msandbox';
 const ipPort = '127.0.0.1:3318';
 
-test.describe('Percona Server MySql (PS) Configuration file test ', async () => {
+test.describe('Percona Server MySql (PS) Configuration file test', async () => {
   test.beforeAll(async ({}) => {
     const result = await cli.exec('docker ps | grep mysql_pmm | awk \'{print $NF}\'');
     await result.outContains('mysql_pmm', 'MYSQL docker container should exist. please run pmm-framework with --database mysql');
@@ -34,19 +35,22 @@ test.describe('Percona Server MySql (PS) Configuration file test ', async () => 
     let n = 1;
     for (const host of hosts) {
       // Add MySQL to monitoring using conf file:
-      let output = await cli.exec(`sudo pmm-admin add mysql --query-source=perfschema @${confFilePath} mysql_conf_${n++} ${host}`);
+      let output = await cli.exec(`sudo pmm-admin add mysql --query-source=perfschema @${confFilePath} mysql_conf_${n} ${host}`);
       await output.assertSuccess();
       await output.outContains('MySQL Service added.');
 
-      // Check that MySQL exporter is RUNNING:
-      const serviceId = output.getStdOutLines().find((item) => item.includes('/service_id/'))!.trim()
-        .split(':')
-        .find((item) => item.includes('/service_id/'))!
-        .trim();
+      const adminList = (await execute('sudo pmm-admin list').assertSuccess()).getStdOutLines();
+      // eslint-disable-next-line @typescript-eslint/no-loop-func
+      const serviceId: string = adminList.find((item: string | string[]) => item.includes(`mysql_conf_${n}`))
+        ?.trim()
+        .split(' ')
+        .pop() ?? ''; // Get the last item in the split result
+
       await expect(async () => {
         output = await cli.exec(`sudo pmm-admin list | grep _exporter | grep ${serviceId}`);
         await output.outContains('Running');
       }).toPass({ intervals: [2_000], timeout: 10_000 });
+      n++;
     }
   });
 

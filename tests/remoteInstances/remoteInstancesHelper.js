@@ -98,7 +98,7 @@ DB_CONFIG = {
   MYSQL_SERVER_PORT: '3306',
   POSTGRES_SERVER_PORT: '5432',
   MONGODB_SERVER_PORT: '27017',
-  PROXYSQL_SERVER_PORT: '6032',
+  PROXYSQL_SERVER_PORT: '6033',
 };
 
 if (process.env.AMI_UPGRADE_TESTING_INSTANCE === 'true' || process.env.OVF_UPGRADE_TESTING_INSTANCE === 'true') {
@@ -187,8 +187,8 @@ module.exports = {
       proxysql_2_1_1: {
         host: (PMM_SERVER_OVF_AMI_SETUP === 'true' ? SERVER_HOST : 'proxysql'),
         port: DB_CONFIG.PROXYSQL_SERVER_PORT,
-        username: 'proxyadmin',
-        password: 'yxZq!4SGv0A1',
+        username: 'proxysql_user',
+        password: 'passw0rd',
         environment: 'proxy_env',
         clusterName: 'proxy_clstr',
       },

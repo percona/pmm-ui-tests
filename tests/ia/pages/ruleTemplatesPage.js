@@ -14,6 +14,8 @@ module.exports = {
     templateName: '//tr/td[1]',
     modalHeader: '$modal-header',
     modalWarning: '$alert-rule-name-warning',
+    templateRowByName: (name) => templateRow(name),
+    templateRowBySource: (source) => `//tr[descendant::div[contains(text(), "${source}")]]`,
     columnHeaderLocator: (columnHeaderText) => `//th[text()="${columnHeaderText}"]`,
   },
   buttons: {

@@ -29,7 +29,7 @@ module.exports = {
     },
   },
   elements: {
-    cPHeader: locate('h4').withText('Contact points'),
+    cPHeader: locate('h1').withText('Contact points'),
     cPTable: '$dynamic-table',
     deleteCPDialogHeader: locate('h2').withText('Delete contact point'),
     cannotdeleteCPDialogHeader: locate('h2').withText('Cannot delete contact point'),
@@ -39,7 +39,8 @@ module.exports = {
   buttons: {
     newContactPoint: locate('button').find('span').withText('New contact point'),
     saveCP: locate('button').find('span').withText('Save contact point'),
-    deleteCP: (name) => `//*[@data-testid="row"][contains(., '${name}')]//button[@aria-label = 'Delete contact point']`,
+    deleteCP: locate('button').withText('Delete'),
+    moreMenu: (name) => locate(`//*[@data-testid="contact-point"][contains(., '${name}')]//button[@aria-label = 'More']`),
     confirmDeleteCP: locate('button').find('span').withText('Yes, delete'),
     editCP: (name) => `//*[@data-testid="row"][contains(., '${name}')]//a[@aria-label = 'Edit contact point']`,
     closeModal: locate('button').find('span').withText('Close'),
@@ -80,8 +81,13 @@ module.exports = {
     await this.fillFields(name, type);
   },
 
+  async openMoreMenu(name) {
+    I.waitForVisible(this.buttons.moreMenu(name), 10);
+    I.click(this.buttons.moreMenu(name));
+  },
+
   async deleteCP(name) {
-    I.waitForVisible(this.buttons.deleteCP(name), 10);
+    await this.openMoreMenu(name);
     I.click(this.buttons.deleteCP(name));
   },
 

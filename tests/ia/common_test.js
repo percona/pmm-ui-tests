@@ -7,8 +7,8 @@ Before(async ({ I, rulesAPI }) => {
   await rulesAPI.removeAllAlertRules();
 });
 
-Scenario.skip(
-  'PMM-T643 Verify message about disabled IA @ia @alerting-fb',
+Scenario(
+  'PMM-T643 Verify message about disabled IA @alerting-fb',
   async ({
     I, pmmSettingsPage, codeceptjsConfig,
   }) => {
@@ -23,10 +23,10 @@ Scenario.skip(
   },
 );
 
-Scenario.skip(
+Scenario(
   'PMM-T481 Verify IA tab bar, '
   + 'PMM-T620 Verify after reloading the page user is on the same IA tab, '
-  + 'PMM-T776 Verify that user is able to see valid HTML Title on alerts page @ia @alerting-fb',
+  + 'PMM-T776 Verify that user is able to see valid HTML Title on alerts page @alerting-fb',
   async ({
     I, alertRulesPage, ruleTemplatesPage, contactPointsPage, nPoliciesPage, silencesPage, alertGroupsPage, aiAdminPage,
   }) => {
@@ -44,18 +44,17 @@ Scenario.skip(
     };
 
     verifyTitle('Fired alerts');
-    await iaCommon.openAndVerifyTab(
+    iaCommon.openAndVerifyTab(
       iaCommon.tabNames.ruleTemplates,
       ruleTemplatesPage.buttons.openAddTemplateModal,
       ruleTemplatesPage.url,
     );
     verifyTitle('Alert rule templates');
-    await iaCommon.openAndVerifyTab(iaCommon.tabNames.alertRules, alertRulesPage.buttons.newAlertRule, alertRulesPage.url);
+    iaCommon.openAndVerifyTab(iaCommon.tabNames.alertRules, alertRulesPage.buttons.newAlertRule, alertRulesPage.url);
     verifyTitle('Alert rules');
-    await iaCommon
-      .openAndVerifyTab(iaCommon.tabNames.contactPoints, contactPointsPage.buttons.newContactPoint, contactPointsPage.url);
+    iaCommon.openAndVerifyTab(iaCommon.tabNames.contactPoints, contactPointsPage.buttons.newContactPoint, contactPointsPage.url);
     verifyTitle('Contact points');
-    await iaCommon.openAndVerifyTab(iaCommon.tabNames.notificationPolicies, nPoliciesPage.buttons.newPolicy, nPoliciesPage.url);
+    iaCommon.openAndVerifyTab(iaCommon.tabNames.notificationPolicies, nPoliciesPage.buttons.newPolicy, nPoliciesPage.url);
     verifyTitle('Notification policies');
 
     // PMM-T620
@@ -64,8 +63,7 @@ Scenario.skip(
 
     await iaCommon.openAndVerifyTab(iaCommon.tabNames.silences, silencesPage.buttons.newSilence, silencesPage.url);
     verifyTitle('Silences');
-    await iaCommon
-      .openAndVerifyTab(iaCommon.tabNames.alertGroups, alertGroupsPage.elements.groupByContainer, alertGroupsPage.url);
+    await iaCommon.openAndVerifyTab(iaCommon.tabNames.alertGroups, alertGroupsPage.elements.groupByContainer, alertGroupsPage.url);
     verifyTitle('Alert groups');
     await iaCommon.openAndVerifyTab(iaCommon.tabNames.admin, aiAdminPage.elements.configTextarea, aiAdminPage.url);
     verifyTitle('Admin');
