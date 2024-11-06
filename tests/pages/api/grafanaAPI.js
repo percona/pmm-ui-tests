@@ -478,4 +478,10 @@ module.exports = {
       `Metrics "${metricName}" with filters as ${JSON.stringify(refineBy)} should be empty but got available ${result}`,
     );
   },
+
+  async login(username, password) {
+    const body = { user: username, password };
+
+    await I.sendPostRequest('graph/login', body, {});
+  },
 };
