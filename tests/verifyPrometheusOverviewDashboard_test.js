@@ -7,17 +7,37 @@ Before(async ({ I }) => {
 Scenario(
   'PMM-T1943 Verify CPU and Memory Usage for each agents on Prometheus Overview status dashboard @nightly',
   async ({ I, dashboardPage, inventoryAPI }) => {
+    const errorValues = [];
+    const graphs = [{ id: '1915', name: 'CPU Cores Used', limitValue: 0.1 }, { id: '2216', name: 'Memory Usage', limitValue: 50 }];
     const { services } = (await inventoryAPI.getServices()).data;
 
-    // for (const service of services) {
-    // console.log(service.node_name);
-    // console.log(service.service_type);
-    console.log(`Testing for service: ${services[0].node_name}`);
-    I.amOnPage(I.buildUrlWithParams(dashboardPage.prometheusExporterOverviewDashboard.cleanUrl, { node_name: services[0].node_name, from: 'now-1h' }));
-    dashboardPage.waitForDashboardOpened();
-    await dashboardPage.prometheusExporterOverviewDashboard.getGraphValues('CPU Cores Used', services[0].service_type, services[0].node_name, 10);
-    // }
+    console.log(`Services are ${JSON.stringify(services)}`);
 
-    I.saveScreenshot('PMM-T1943.png');
+    for (const graph of graphs) {
+      for (const service of services) {
+        console.log(`Testing for service: ${service.node_name}`);
+
+        I.amOnPage(I.buildUrlWithParams(dashboardPage.prometheusExporterOverviewDashboard.cleanUrl, {
+          node_name: services[0].node_name,
+          from: 'now-1h',
+        }));
+        dashboardPage.waitForDashboardOpened();
+
+        const cpuCoresUsedValues = await dashboardPage.prometheusExporterOverviewDashboard
+          .getGraphValues(graph.id, services[0].service_type, services[0].node_name, 10);
+
+        for (const [name, values] of Object.entries(cpuCoresUsedValues)) {
+          values.forEach((value) => {
+            if (parseFloat(value) > graph.limitValue) {
+              errorValues.push({ graphName: graph.name, exporterName: name, value });
+            }
+          });
+        }
+      }
+    }
+
+    if (errorValues.length) {
+      throw new Error(`Values in graphs above threshold. Error values are: ${JSON.stringify(errorValues)}`);
+    }
   },
 );

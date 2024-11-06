@@ -6,6 +6,7 @@ class PrometheusExporterOverviewDashboard {
     this.cleanUrl = 'graph/d/prometheus-overview/prometheus-exporters-overview';
     this.elements = {
       graphBody: (graphName) => locate(`//*[@data-testid="data-testid Panel header ${graphName}"]//*[@class="u-over"]`),
+      graphBodyByPanelId: (graphId) => locate(`//*[@data-panelid="${graphId}"]//*[@class="u-over"]`),
       graphValue: (rowName) => `//*[@id="grafana-portal-container"]//*[text()="${rowName}"]//parent::*//following-sibling::*//div`
     };
     this.metrics = [
@@ -41,15 +42,15 @@ class PrometheusExporterOverviewDashboard {
     }
   }
 
-  async getGraphValues(graphName, serviceType, nodeName, numberOfPoints = 10) {
+  async getGraphValues(graphId, serviceType, nodeName, numberOfPoints = 10) {
     const exporters = this.getExportersForNodeType(serviceType, nodeName);
 
-    I.usePlaywrightTo('Get Graph Values', async ({ page }) => {
+    return await I.usePlaywrightTo('Get Graph Values', async ({ page }) => {
       console.log(`Exporters for node type ${serviceType} are: ${JSON.stringify(exporters)}`);
-      const boundingBox = await page.locator(this.elements.graphBody(graphName).value).boundingBox();
+      const boundingBox = await page.locator(this.elements.graphBodyByPanelId(graphId).value).boundingBox();
       const widthItterations = boundingBox.width / numberOfPoints;
 
-      await page.locator(this.elements.graphBody(graphName).value).waitFor({ state: 'visible' });
+      await page.locator(this.elements.graphBodyByPanelId(graphId).value).waitFor({ state: 'visible' });
 
       for (let i = 0; i <= numberOfPoints; i++) {
         let x;
@@ -62,16 +63,15 @@ class PrometheusExporterOverviewDashboard {
           x = i * widthItterations;
         }
 
-        await page.locator(this.elements.graphBody(graphName).value).hover({
+        await page.locator(this.elements.graphBodyByPanelId(graphId).value).hover({
           position: { x, y: boundingBox.height / 2 },
         });
         for (const [exporter, value] of Object.entries(exporters)) {
           exporters[exporter].push(await page.locator(this.elements.graphValue(exporter)).textContent());
-          // console.log(`Exporter is ${exporter}`);
-          // console.log(`Value for exporter ${exporter} is: ${await page.locator(this.elements.graphValue(exporter)).textContent()}`);
         }
       }
-      console.log(exporters);
+
+      return exporters;
     });
   }
 }
