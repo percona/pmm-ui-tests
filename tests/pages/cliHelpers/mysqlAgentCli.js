@@ -1,14 +1,12 @@
-const {AGENT_STATUS} = require("../../helper/constants");
-const { I, inventoryAPI, grafanaAPI } = inject();
+const { AGENT_STATUS } = require('../../helper/constants');
+
+const { I, inventoryAPI } = inject();
 
 class MysqlAgentCli {
   async verifyMySqlAgentLogLevel(exporterType, dbDetails, logLevel = 'warn') {
     const logLvlFlag = logLevel ? `--log-level=${logLevel}` : '';
     const addAgentResponse = await I.verifyCommand(`docker exec ${dbDetails.container_name} pmm-admin inventory add agent ${exporterType} --password=${dbDetails.password} ${exporterType === 'mysqld-exporter' ? '--push-metrics': ''} ${logLvlFlag} ${dbDetails.pmm_agent_id} ${dbDetails.service_id} ${dbDetails.username}`);
     const agent_id = addAgentResponse.split('\n').find((row) => row.includes('Agent ID')).split(':')[1].trim();
-
-    console.log(addAgentResponse);
-    console.log(`Agent ID is: ${agent_id}`);
 
     const actualLogLevel = await getLogLevel(agent_id, exporterType);
 
@@ -20,7 +18,6 @@ class MysqlAgentCli {
 }
 
 async function getLogLevel(agentId, exporterType) {
-  // = await inventoryAPI.apiGetAgentDetailsViaAgentId(agentId);
   let output;
 
   await I.asyncWaitFor(async () => {
@@ -31,9 +28,6 @@ async function getLogLevel(agentId, exporterType) {
   }, 30);
 
   await I.say(JSON.stringify(output.data, null, 2));
-
-  console.log('Log Level output is: ');
-  console.log(output.data);
 
   return output.data[exporterType.replaceAll('-', '_')].log_level;
 }
