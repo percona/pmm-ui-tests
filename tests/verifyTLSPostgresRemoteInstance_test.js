@@ -11,7 +11,7 @@ Before(async ({ I, settingsAPI }) => {
 
 const instances = new DataTable(['serviceName', 'version', 'container', 'serviceType', 'metric', 'maxQueryLength']);
 
-instances.add(['pgsql_16_ssl_service', '16', 'pdpgsql_pgsm_ssl_16', 'postgres_ssl', 'pg_stat_database_xact_rollback', '7']);
+instances.add(['pgsql_16_ssl_service', '16', 'pdpgsql_pgsm_ssl_16', 'postgres_ssl', 'pg_up', '7']);
 // instances.add(['pgsql_14_ssl_service', '14', 'pdpgsql_pgsm_ssl_14', 'postgres_ssl', 'pg_stat_database_xact_rollback', '7']);
 // instances.add(['pgsql_14_ssl_service', '13', 'pdpgsql_pgsm_ssl_13', 'postgres_ssl', 'pg_stat_database_xact_rollback', '7']);
 // instances.add(['pgsql_12_ssl_service', '12', 'pdpgsql_pgsm_ssl_12', 'postgres_ssl', 'pg_stat_database_xact_rollback', '7']);

@@ -275,13 +275,22 @@ module.exports = {
       I.click(this.fields.useTLS);
       I.waitForElement(this.fields.tlscaInput, 30);
 
-      await this.fillFileContent(this.fields.tlscaInput, details.tlsCAFile);
-      await this.fillFileContent(this.fields.tlsCertificateInput, details.tlsCertFile);
-      await this.fillFileContent(this.fields.tlsCertificateKeyInput, details.tlsKeyFile);
+      if (details.serviceType === 'postgres_ssl') {
+        I.click(this.fields.tlscaInput);
+        I.type(details.tlsCA);
+        I.click(this.fields.tlsCertificateInput);
+        I.type(details.tlsCert);
+        I.click(this.fields.tlsCertificateKeyInput);
+        I.type(details.tlsKey);
+        I.click(this.fields.usePgStatStatements);
+      }
 
-      if (details.serviceType === 'postgres_ssl') I.click(this.fields.usePgStatStatements);
-
-      if (details.serviceType === 'mysql_ssl') I.click(this.fields.skipTLSL);
+      if (details.serviceType === 'mysql_ssl') {
+        await this.fillFileContent(this.fields.tlscaInput, details.tlsCAFile);
+        await this.fillFileContent(this.fields.tlsCertificateInput, details.tlsCertFile);
+        await this.fillFileContent(this.fields.tlsCertificateKeyInput, details.tlsKeyFile);
+        I.click(this.fields.skipTLSL);
+      }
     }
 
     if (details.serviceType === 'mongodb_ssl') {

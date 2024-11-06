@@ -104,7 +104,7 @@ module.exports = {
 
   async apiGetServices() {
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
-    const url = 'v1/inventory/services';
+    const url = 'v1/management/services';
 
     return await I.sendGetRequest(url, headers);
   },
