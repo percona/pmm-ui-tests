@@ -72,8 +72,8 @@ Scenario.skip(
     let response; let result;
     const metricName = 'mongodb_connections';
 
-    await I.verifyCommand(`docker exec ${replica_container_name} pmm-admin list | grep "mongodb_exporter" | grep "Agent_status_running" | wc -l | grep "3"`);
-    await I.verifyCommand(`docker exec ${replica_container_name} pmm-admin list | grep "mongodb_profiler_agent" | grep "Agent_status_running" | wc -l | grep "3"`);
+    await I.verifyCommand(`docker exec ${replica_container_name} pmm-admin list | grep "mongodb_exporter" | grep "Running" | wc -l | grep "3"`);
+    await I.verifyCommand(`docker exec ${replica_container_name} pmm-admin list | grep "mongodb_profiler_agent" | grep "Running" | wc -l | grep "3"`);
 
     const clientServiceName = (await I.verifyCommand(`docker exec ${replica_container_name} pmm-admin list | grep MongoDB | head -1 | awk -F" " '{print $2}'`)).trim();
 

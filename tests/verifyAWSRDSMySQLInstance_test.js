@@ -18,7 +18,7 @@ Scenario(
     remoteInstancesPage.verifyInstanceIsDiscovered(instanceIdToMonitor);
     remoteInstancesPage.startMonitoringOfInstance(instanceIdToMonitor);
     remoteInstancesPage.verifyAddInstancePageOpened();
-    remoteInstancesPage.fillRemoteRDSFields(instanceIdToMonitor);
+    await remoteInstancesPage.fillRemoteRDSFields(instanceIdToMonitor);
     remoteInstancesPage.createRemoteInstance(instanceIdToMonitor);
     pmmInventoryPage.verifyRemoteServiceIsDisplayed(instanceIdToMonitor);
     await pmmInventoryPage.verifyAgentHasStatusRunning(instanceIdToMonitor);

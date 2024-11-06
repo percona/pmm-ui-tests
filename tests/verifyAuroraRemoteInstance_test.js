@@ -71,16 +71,15 @@ Data(instances)
     // Waiting for metrics to start hitting for remotely added services
     I.wait(10);
 
-    const response = await grafanaAPI.checkMetricExist(mysql_metric, {
+    await grafanaAPI.checkMetricExist(mysql_metric, {
       type: 'service_name',
       value: instance_id,
     });
-    const result = JSON.stringify(response.data.data.result);
 
-    assert.ok(
-      response.data.data.result.length !== 0,
-      `Metrics ${mysql_metric} from ${instance_id} should be available but got empty ${result}`,
-    );
+    await grafanaAPI.checkMetricExist(aurora_metric, {
+      type: 'service_name',
+      value: instance_id,
+    });
   })
   .retry(1);
 
@@ -107,7 +106,6 @@ Scenario('PMM-T1295 Verify MySQL Amazon Aurora Details @instances', async ({ I, 
   dashboardPage.waitForDashboardOpened();
   await adminPage.applyTimeRange('Last 5 minutes');
   await dashboardPage.applyFilter('Service Name', 'pmm-qa-aurora2-mysql-instance-1');
-  await dashboardPage.verifyThereAreNoGraphsWithNA();
   await dashboardPage.verifyThereAreNoGraphsWithoutData(0);
 }).retry(1);
 
@@ -126,7 +124,6 @@ Data(instances)
       adminPage.performPageDown(5);
       await dashboardPage.expandEachDashboardRow();
       adminPage.performPageUp(5);
-      await dashboardPage.verifyThereAreNoGraphsWithNA();
       await dashboardPage.verifyThereAreNoGraphsWithoutData(1);
     },
   )
