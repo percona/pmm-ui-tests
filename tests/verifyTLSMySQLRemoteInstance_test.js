@@ -268,13 +268,14 @@ Data(maxQueryLengthInstances).Scenario(
       await pmmInventoryPage.checkAgentOtherDetailsSection('Qan mysql perfschema agent', `max_query_length=${maxQueryLength}`, false);
     }
 
-    await I.wait(70);
+    await I.wait(5);
     // Check max visible query length is less than max_query_length option
     I.amOnPage(I.buildUrlWithParams(queryAnalyticsPage.url, { from: 'now-5m' }));
     queryAnalyticsPage.waitForLoaded();
     await queryAnalyticsPage.filters.selectFilter(remoteServiceName);
-    I.waitForElement(queryAnalyticsPage.data.elements.queryRows, 30);
-    const queryFromRow = await queryAnalyticsPage.data.elements.queryRowValue(1);
+    await I.wait(5);
+    await I.waitForElement(queryAnalyticsPage.data.elements.queryRows, 30);
+    const queryFromRow = await I.grabTextFrom(queryAnalyticsPage.data.elements.queryRowValue(1));
 
     if (maxQueryLength !== '' && maxQueryLength !== '-1') {
       assert.ok(queryFromRow.length <= maxQueryLength, `Query length exceeds max length boundary equals ${queryFromRow.length} is more than ${maxQueryLength}`);
