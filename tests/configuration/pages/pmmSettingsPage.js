@@ -363,7 +363,7 @@ module.exports = {
   },
 
   async expandSection(sectionName, expectedContentLocator) {
-    const sectionExpandLocator = locate('$settings-tabs').find('div > a').withText(sectionName);
+    const sectionExpandLocator = locate('a').withText(sectionName);
 
     I.click(sectionExpandLocator);
     I.waitForVisible(expectedContentLocator, 30);

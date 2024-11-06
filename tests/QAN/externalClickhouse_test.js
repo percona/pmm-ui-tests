@@ -19,7 +19,7 @@ Before(async ({ I }) => {
 });
 
 AfterSuite(async ({ I }) => {
-  await I.verifyCommand('docker-compose -f docker-compose-clickhouse.yml down -v');
+  await I.verifyCommand('docker compose -f docker-compose-clickhouse.yml down -v');
 });
 
 // Tag only for adding into matrix job, to be fixed later.
