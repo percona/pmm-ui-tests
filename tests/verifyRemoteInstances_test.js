@@ -340,9 +340,6 @@ Scenario(
     pmmInventoryPage.verifyRemoteServiceIsDisplayed(remoteServiceName);
     await pmmInventoryPage.verifyAgentHasStatusRunning(remoteServiceName);
     // verify metric for client container node instance
-    const response = await grafanaAPI.checkMetricExist(metric, { type: 'service_name', value: remoteServiceName });
-    const result = JSON.stringify(response.data.data.result);
-
-    assert.ok(response.data.data.result.length !== 0, `Metrics ${metric} from ${remoteServiceName} should be available but got empty ${result}`);
+    await grafanaAPI.checkMetricExist(metric, { type: 'service_name', value: remoteServiceName });
   },
 );

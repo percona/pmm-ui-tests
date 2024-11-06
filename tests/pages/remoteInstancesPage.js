@@ -164,6 +164,7 @@ module.exports = {
     pgStatMonitorRadioInput: locate('#radio-btn-3'),
     customAutoDiscoveryButton: locate('//div[input[@data-testid="autoDiscoveryOptions-radio-button"]]').find('label').withText('Custom'),
     customAutoDiscoveryfield: '$autoDiscoveryLimit-number-input',
+    dropdownOption: (text) => locate('div[class$="-select-option-body"]').find('span').withText(text),
   },
 
   async getFileContent(filePath) {
@@ -237,8 +238,16 @@ module.exports = {
     return this;
   },
 
+  selectDropdownOption(dropdownLocator, text) {
+    I.click(dropdownLocator);
+    I.waitForVisible(this.fields.dropdownOption(text), 30);
+    I.click(this.fields.dropdownOption(text));
+    I.dontSeeElement(this.fields.dropdownOption(text));
+  },
+
   async addRemoteDetails(details, skipUserNamePassword = false) {
     I.waitForElement(this.fields.hostName, 30);
+    this.selectDropdownOption('$nodes-selectbox', 'pmm-server');
     I.fillField(this.fields.hostName, details.host);
     if (!skipUserNamePassword) {
       I.fillField(this.fields.userName, details.username);
@@ -265,15 +274,11 @@ module.exports = {
       I.dontSeeElement(this.fields.tlsCertificateInput);
       I.click(this.fields.useTLS);
       I.waitForElement(this.fields.tlscaInput, 30);
-      I.usePlaywrightTo('Fill TLS ca field', async ({ page }) => {
-        await page.fill(this.fields.tlscaInput.toXPath(), details.tlsCA);
-      });
-      I.usePlaywrightTo('Fill TLS certificate field', async ({ page }) => {
-        await page.fill(this.fields.tlsCertificateInput.toXPath(), details.tlsCert);
-      });
-      I.usePlaywrightTo('Fill TLS certificate key field', async ({ page }) => {
-        await page.fill(this.fields.tlsCertificateKeyInput.toXPath(), details.tlsKey);
-      });
+
+      await this.fillFileContent(this.fields.tlscaInput, details.tlsCAFile);
+      await this.fillFileContent(this.fields.tlsCertificateInput, details.tlsCertFile);
+      await this.fillFileContent(this.fields.tlsCertificateKeyInput, details.tlsKeyFile);
+
       if (details.serviceType === 'postgres_ssl') I.click(this.fields.usePgStatStatements);
 
       if (details.serviceType === 'mysql_ssl') I.click(this.fields.skipTLSL);
