@@ -230,7 +230,7 @@ test.describe('Percona Distribution for PostgreSQL CLI tests ', async () => {
       // eslint-disable-next-line max-len
       const serviceIds = jsonList.service.filter((s: { service_name: string; }) => serviceNames.includes(s.service_name)).map((s: { service_id: never; }) => s.service_id);
       // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-      agentIds = jsonList.agent.filter((a: { agent_type: string; status: string; service_id: never; }) => a.agent_type === 'POSTGRES_EXPORTER'
+      agentIds = jsonList.agent.filter((a: { agent_type: string; status: string; service_id: never; }) => a.agent_type === 'AGENT_TYPE_POSTGRES_EXPORTER'
           && a.status === 'AGENT_STATUS_RUNNING'
           && serviceIds.includes(a.service_id)).map((a: { agent_id: never; }) => a.agent_id);
 
