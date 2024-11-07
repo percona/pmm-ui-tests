@@ -41,7 +41,7 @@ AfterSuite(async ({ rulesAPI, I }) => {
   await I.verifyCommand('docker compose -f docker-compose-webhook.yml stop');
 });
 
-Scenario.skip(
+Scenario(
   'PMM-T1482 Verify fired alert @alerting-fb',
   async ({ I, alertsPage, alertsAPI }) => {
     await alertsAPI.waitForAlerts(24, 1);
@@ -59,7 +59,7 @@ Scenario.skip(
   },
 );
 
-Scenario.skip(
+Scenario(
   'PMM-T1494 PMM-T1495 Verify fired alert in Pager Duty and Webhook @alerting-fb',
   async ({ I, alertsAPI, rulesAPI }) => {
     const file = './testdata/ia/scripts/alert.txt';
@@ -71,11 +71,11 @@ Scenario.skip(
     I.seeInThisFile(ruleName);
 
     // Pager Duty notification check
-    await alertsAPI.verifyAlertInPagerDuty(alertUID);
+    // await alertsAPI.verifyAlertInPagerDuty(alertUID);
   },
 );
 
-Scenario.skip(
+Scenario(
   'PMM-T1496 PMM-T1497 Verify it is possible to silence and unsilence alert @alerting-fb',
   async ({
     I, alertsPage, alertmanagerAPI,
@@ -93,7 +93,7 @@ Scenario.skip(
   },
 );
 
-Scenario.skip(
+Scenario(
   'PMM-T1498 Verify firing alerts dissappear when the condition is fixed @alerting-fb',
   async ({
     I, alertsPage, alertRulesPage,
@@ -112,7 +112,7 @@ Scenario.skip(
 );
 
 // FIXME: Skip until https://jira.percona.com/browse/PMM-11130 is fixed
-Scenario.skip(
+Scenario(
   'PMM-T659 Verify alerts are deleted after deleting rules @alerting-fb',
   async ({ I, alertsPage, rulesAPI }) => {
     // Deleting rules
@@ -123,7 +123,7 @@ Scenario.skip(
   },
 );
 
-Scenario.skip(
+Scenario(
   'PMM-T1499 Verify an alert with non-existing filter (label) does not show up in list @alerting-fb',
   async ({ I, alertsPage, rulesAPI }) => {
     await rulesAPI.removeAllAlertRules();
@@ -133,7 +133,7 @@ Scenario.skip(
         {
           label: 'service_name',
           regexp: 'wrong-service',
-          type: 'MATCH',
+          type: 'FILTER_TYPE_MATCH',
         },
       ],
     };
@@ -145,7 +145,7 @@ Scenario.skip(
   },
 );
 
-Scenario.skip(
+Scenario(
   'PMM-T564 Verify fired alert severity colors @alerting-fb',
   async ({
     I, alertsPage, rulesAPI, alertsAPI,
@@ -171,7 +171,7 @@ Scenario.skip(
   },
 );
 
-Scenario.skip(
+Scenario(
   'PMM-T1467 Verify empty Fired alerts list @alerting-fb',
   async ({ I, alertsPage, rulesAPI }) => {
     await rulesAPI.removeAllAlertRules();

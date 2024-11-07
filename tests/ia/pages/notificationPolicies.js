@@ -7,7 +7,7 @@ module.exports = {
   elements: {
   },
   buttons: {
-    newPolicy: locate('button').find('span').withText('New specific policy'),
+    newPolicy: locate('button').find('span').withText('New child policy'),
   },
   messages: {
   },
