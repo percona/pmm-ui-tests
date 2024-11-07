@@ -408,7 +408,7 @@ module.exports = {
       const response = await this.getMetric(metricName, queryBy);
 
       console.log('Response is:');
-      console.log(response.data);
+      console.log(JSON.stringify(response.data));
 
       if (response.data.results.A.frames[0].data.values !== 0) {
         return response.data;
