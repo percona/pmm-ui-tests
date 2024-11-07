@@ -360,6 +360,9 @@ module.exports = {
   // Should be refactored
   async getMetric(metricName, refineBy) {
     const uid = await this.getDataSourceUidByName();
+
+    console.log('Refine By: ');
+    console.log(refineBy);
     const body = {
       queries: [
         {
