@@ -66,7 +66,9 @@ class PrometheusExporterOverviewDashboard {
         await page.locator(this.elements.graphBodyByPanelId(graphId).value).hover({
           position: { x, y: boundingBox.height / 2 },
         });
+
         for (const [exporter, value] of Object.entries(exporters)) {
+          await page.locator(this.elements.graphValue(exporter).waitFor({ state: 'visible' }));
           exporters[exporter].push(await page.locator(this.elements.graphValue(exporter)).textContent());
         }
       }
