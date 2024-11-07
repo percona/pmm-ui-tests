@@ -31,7 +31,7 @@ let serviceName;
 
 Before(async ({ I, inventoryAPI }) => {
   await I.Authorize();
-  const { service_name } = await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.MYSQL, 'mysql_ssl_8.0_ssl_service');
+  const { service_name } = await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.MYSQL, 'mysql_ssl_8.0_ssl_service', 'remote');
 
   serviceName = service_name;
 });
@@ -86,14 +86,12 @@ Data(instances).Scenario(
   },
 );
 
-Data(instances).Scenario(
+Scenario(
   'Verify metrics from mysql SSL instances on PMM-Server @ssl @ssl-mysql @ssl-remote @not-ui-pipeline',
   async ({
-    I, remoteInstancesPage, pmmInventoryPage, current, grafanaAPI,
+    I, grafanaAPI,
   }) => {
-    const {
-      metric,
-    } = current;
+    const metric = 'mysql_global_status_max_used_connections';
     const remoteServiceName = `remote_${serviceName}_faker`;
 
     // Waiting for metrics to start hitting for remotely added services
