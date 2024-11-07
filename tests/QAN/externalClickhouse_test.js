@@ -8,7 +8,7 @@ const basePmmUrl = `http://127.0.0.1:${pmmServerPort}/`;
 const dockerVersion = process.env.DOCKER_VERSION || 'perconalab/pmm-server:3-dev-latest';
 
 BeforeSuite(async ({ I }) => {
-  await I.verifyCommand(`PMM_SERVER_IMAGE=${dockerVersion} docker-compose -f docker-compose-clickhouse.yml up -d`);
+  await I.verifyCommand(`PMM_SERVER_IMAGE=${dockerVersion} docker compose -f docker-compose-clickhouse.yml up -d`);
   await I.wait(30);
   await I.verifyCommand('docker exec pmm-client-clickhouse pmm-admin add mysql --username=root --password=7B*53@lCdflR --query-source=perfschema ps8 ps8:3306');
   await I.wait(60);
