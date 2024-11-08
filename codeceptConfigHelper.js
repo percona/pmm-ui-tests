@@ -80,7 +80,6 @@ module.exports = {
     nodesOverviewPage: './tests/pages/nodesOverviewPage.js',
     queryAnalyticsPage: './tests/pages/queryAnalyticsPage.js',
     usersPage: './tests/pages/administration/usersPage.js',
-    mysqlAgentCli: './tests/pages/cliHelpers/mysqlAgentCli.js',
     agentCli: './tests/pages/cliHelpers/agentCli.js',
   },
   getChunks: (files) => {

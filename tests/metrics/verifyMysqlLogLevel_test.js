@@ -36,7 +36,7 @@ After(async ({ I }) => {
 Scenario(
   'PMM-T1307 PMM-T1306 PMM-T1305 PMM-T1304 PMM-T1290 PMM-T1281 Verify that pmm-admin inventory add agent mysqld-exporter with --log-level flag adds MySQL exporter with corresponding log-level @not-ui-pipeline @exporters',
   async ({
-    I, inventoryAPI, dashboardPage, mysqlAgentCli,
+    I, inventoryAPI, dashboardPage, agentCli,
   }) => {
     I.amOnPage(dashboardPage.mysqlInstanceSummaryDashboard.url);
     dashboardPage.waitForDashboardOpened();
@@ -56,25 +56,25 @@ Scenario(
       container_name: connection.container_name,
     };
 
-    await mysqlAgentCli.verifyMySqlAgentLogLevel('mysqld-exporter', dbDetails);
-    await mysqlAgentCli.verifyMySqlAgentLogLevel('qan-mysql-slowlog-agent', dbDetails);
-    await mysqlAgentCli.verifyMySqlAgentLogLevel('qan-mysql-perfschema-agent', dbDetails);
+    await agentCli.verifyAgentLogLevel('mysqld-exporter', dbDetails);
+    await agentCli.verifyAgentLogLevel('qan-mysql-slowlog-agent', dbDetails);
+    await agentCli.verifyAgentLogLevel('qan-mysql-perfschema-agent', dbDetails);
 
-    await mysqlAgentCli.verifyMySqlAgentLogLevel('mysqld-exporter', dbDetails, 'debug');
-    await mysqlAgentCli.verifyMySqlAgentLogLevel('qan-mysql-slowlog-agent', dbDetails, 'debug');
-    await mysqlAgentCli.verifyMySqlAgentLogLevel('qan-mysql-perfschema-agent', dbDetails, 'debug');
+    await agentCli.verifyAgentLogLevel('mysqld-exporter', dbDetails, 'debug');
+    await agentCli.verifyAgentLogLevel('qan-mysql-slowlog-agent', dbDetails, 'debug');
+    await agentCli.verifyAgentLogLevel('qan-mysql-perfschema-agent', dbDetails, 'debug');
 
-    await mysqlAgentCli.verifyMySqlAgentLogLevel('mysqld-exporter', dbDetails, 'info');
-    await mysqlAgentCli.verifyMySqlAgentLogLevel('qan-mysql-slowlog-agent', dbDetails, 'info');
-    await mysqlAgentCli.verifyMySqlAgentLogLevel('qan-mysql-perfschema-agent', dbDetails, 'info');
+    await agentCli.verifyAgentLogLevel('mysqld-exporter', dbDetails, 'info');
+    await agentCli.verifyAgentLogLevel('qan-mysql-slowlog-agent', dbDetails, 'info');
+    await agentCli.verifyAgentLogLevel('qan-mysql-perfschema-agent', dbDetails, 'info');
 
-    await mysqlAgentCli.verifyMySqlAgentLogLevel('mysqld-exporter', dbDetails, 'warn');
-    await mysqlAgentCli.verifyMySqlAgentLogLevel('qan-mysql-slowlog-agent', dbDetails, 'warn');
-    await mysqlAgentCli.verifyMySqlAgentLogLevel('qan-mysql-perfschema-agent', dbDetails, 'warn');
+    await agentCli.verifyAgentLogLevel('mysqld-exporter', dbDetails, 'warn');
+    await agentCli.verifyAgentLogLevel('qan-mysql-slowlog-agent', dbDetails, 'warn');
+    await agentCli.verifyAgentLogLevel('qan-mysql-perfschema-agent', dbDetails, 'warn');
 
-    await mysqlAgentCli.verifyMySqlAgentLogLevel('mysqld-exporter', dbDetails, 'error');
-    await inventoryAPI.verifyAgentLogLevel('qan-mysql-slowlog-agent', dbDetails, 'error');
-    await inventoryAPI.verifyAgentLogLevel('qan-mysql-perfschema-agent', dbDetails, 'error');
+    await agentCli.verifyAgentLogLevel('mysqld-exporter', dbDetails, 'error');
+    await agentCli.verifyAgentLogLevel('qan-mysql-slowlog-agent', dbDetails, 'error');
+    await agentCli.verifyAgentLogLevel('qan-mysql-perfschema-agent', dbDetails, 'error');
   },
 );
 
