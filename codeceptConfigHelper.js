@@ -81,6 +81,7 @@ module.exports = {
     queryAnalyticsPage: './tests/pages/queryAnalyticsPage.js',
     usersPage: './tests/pages/administration/usersPage.js',
     mysqlAgentCli: './tests/pages/cliHelpers/mysqlAgentCli.js',
+    agentCli: './tests/pages/cliHelpers/agentCli.js',
   },
   getChunks: (files) => {
     const dependentTests = files.filter((value) => /PMMSettings|ia|stt|backup|permissions|Azure/.test(value));
