@@ -7,7 +7,7 @@ class PrometheusExporterOverviewDashboard {
     this.elements = {
       graphBody: (graphName) => locate(`//*[@data-testid="data-testid Panel header ${graphName}"]//*[@class="u-over"]`),
       graphBodyByPanelId: (graphId) => locate(`//*[@data-panelid="${graphId}"]//*[@class="u-over"]`),
-      graphValue: (rowName) => `//*[@id="grafana-portal-container"]//*[text()="${rowName}"]//parent::*//following-sibling::*//div`
+      graphValue: (rowName) => `//*[@id="grafana-portal-container"]//*[text()="${rowName}"]//parent::*//following-sibling::*//div`,
     };
     this.metrics = [
       'Avg CPU Usage per Node',
@@ -68,7 +68,7 @@ class PrometheusExporterOverviewDashboard {
         });
 
         for (const [exporter, value] of Object.entries(exporters)) {
-          await page.locator(this.elements.graphValue(exporter).waitFor({ state: 'visible' }));
+          await page.locator(this.elements.graphValue(exporter)).waitFor({ state: 'visible' });
           exporters[exporter].push(await page.locator(this.elements.graphValue(exporter)).textContent());
         }
       }
