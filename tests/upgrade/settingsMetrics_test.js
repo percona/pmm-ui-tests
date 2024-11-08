@@ -58,6 +58,8 @@ Data(clientDbServices)
       current,
     }) => {
       const metricName = current.metric;
+
+      console.log(`Node Details are: ${JSON.stringify(await inventoryAPI.apiGetNodeInfoByServiceName(current.serviceType, current.name))}`);
       const { node_id } = await inventoryAPI.apiGetNodeInfoByServiceName(current.serviceType, current.name);
       const nodeName = await inventoryAPI.getNodeName(node_id);
 
