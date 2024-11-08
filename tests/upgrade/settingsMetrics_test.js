@@ -6,9 +6,9 @@ const { dashboardPage } = inject();
 
 const clientDbServices = new DataTable(['serviceType', 'name', 'metric', 'annotationName', 'dashboard', 'upgrade_service']);
 
-clientDbServices.add([SERVICE_TYPE.MYSQL, 'ps_', 'mysql_global_status_max_used_connections', 'annotation-for-mysql', dashboardPage.mysqlInstanceSummaryDashboard.url, 'mysql_upgrade']);
-clientDbServices.add([SERVICE_TYPE.POSTGRESQL, 'PGSQL_', 'pg_stat_database_xact_rollback', 'annotation-for-postgres', dashboardPage.postgresqlInstanceSummaryDashboard.url, 'pgsql_upgrade']);
-clientDbServices.add([SERVICE_TYPE.MONGODB, 'mongodb_', 'mongodb_connections', 'annotation-for-mongo', dashboardPage.mongoDbInstanceSummaryDashboard.url, 'mongo_upgrade']);
+clientDbServices.add(['mysql', 'ps-single', 'mysql_global_status_max_used_connections', 'annotation-for-mysql', dashboardPage.mysqlInstanceSummaryDashboard.url, 'mysql_upgrade']);
+clientDbServices.add(['postgresql', 'pgsql_pgss_pmm', 'pg_stat_database_xact_rollback', 'annotation-for-postgres', dashboardPage.postgresqlInstanceSummaryDashboard.url, 'pgsql_upgrade']);
+clientDbServices.add(['mongodb', 'rs101', 'mongodb_connections', 'annotation-for-mongo', dashboardPage.mongoDbInstanceSummaryDashboard.url, 'mongo_upgrade']);
 
 Scenario(
   'Verify user is able to set custom Settings like Data_retention, Resolution @pre-settings-metrics-upgrade @pmm-upgrade',
@@ -57,11 +57,13 @@ Data(clientDbServices)
       current,
     }) => {
       const metricName = current.metric;
+      const apiServiceDetails = (await inventoryAPI.apiGetServices()).data[current.serviceType].find((service) => service.service_name.startsWith(current.serviceType));
 
+      console.log(`Service name is:  ${apiServiceDetails.service_name}`);
       console.log('Services are: ');
       console.log(JSON.stringify((await inventoryAPI.apiGetServices()).data));
-      console.log(`Node Details are: ${JSON.stringify(await inventoryAPI.apiGetNodeInfoByServiceName(current.serviceType, current.name))}`);
-      const { node_id } = await inventoryAPI.apiGetNodeInfoByServiceName(current.serviceType, current.name);
+      console.log(`Node Details are: ${JSON.stringify(await inventoryAPI.apiGetNodeInfoByServiceName(current.serviceType, apiServiceDetails.service_name))}`);
+      const { node_id } = await inventoryAPI.apiGetNodeInfoByServiceName(current.serviceType, apiServiceDetails.service_name);
       const nodeName = await inventoryAPI.getNodeName(node_id);
 
       await grafanaAPI.checkMetricExist(metricName, {
