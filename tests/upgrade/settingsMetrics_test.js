@@ -48,7 +48,6 @@ Scenario(
   },
 );
 
-
 Data(clientDbServices)
   .Scenario(
     'Check Metrics for Client Nodes [critical] @post-settings-metrics-upgrade @post-client-upgrade',
@@ -59,6 +58,8 @@ Data(clientDbServices)
     }) => {
       const metricName = current.metric;
 
+      console.log('Services are: ');
+      console.log(await inventoryAPI.apiGetServices());
       console.log(`Node Details are: ${JSON.stringify(await inventoryAPI.apiGetNodeInfoByServiceName(current.serviceType, current.name))}`);
       const { node_id } = await inventoryAPI.apiGetNodeInfoByServiceName(current.serviceType, current.name);
       const nodeName = await inventoryAPI.getNodeName(node_id);
