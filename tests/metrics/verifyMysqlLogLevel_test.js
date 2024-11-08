@@ -115,14 +115,14 @@ Scenario(
   async ({ I, pmmInventoryPage }) => {
     I.amOnPage(pmmInventoryPage.url);
     // Find node ID
-    const nodeId = (await I.verifyCommand(`docker exec ${connection.container_name} ls /usr/local/percona/pmm/tmp/node_exporter/agent_id/`)).trim();
+    const nodeId = (await I.verifyCommand(`docker exec ${connection.container_name} ls /usr/local/percona/pmm/tmp/agent_type_node_exporter/`)).trim();
 
     // Verify and find ids of node exporter
     let processIds = await I.verifyCommand(`docker exec ${connection.container_name} pgrep node_exporter`);
     const processId = processIds.split(/(\s+)/);
 
-    await I.verifyCommand(`docker exec ${connection.container_name} rm /usr/local/percona/pmm/tmp/node_exporter/agent_id/${nodeId}/webConfigPlaceholder`);
-    const nodeFolder2 = await I.verifyCommand(`docker exec ${connection.container_name} ls /usr/local/percona/pmm/tmp/node_exporter/agent_id/${nodeId}/`);
+    await I.verifyCommand(`docker exec ${connection.container_name} rm /usr/local/percona/pmm/tmp/agent_type_node_exporter/${nodeId}/webConfigPlaceholder`);
+    const nodeFolder2 = await I.verifyCommand(`docker exec ${connection.container_name} ls /usr/local/percona/pmm/tmp/agent_type_node_exporter/${nodeId}/`);
 
     assert.ok(nodeFolder2.length === 0, 'folder webConfigPlaceholder was not removed.');
 
@@ -139,12 +139,12 @@ Scenario(
 
     assert.ok(nodeExporterRestart.length, 'Node exporter is not restarted');
 
-    const folderRestart = await I.verifyCommand(`docker exec ${connection.container_name} ls /usr/local/percona/pmm/tmp/node_exporter/agent_id/${nodeId}/`);
+    const folderRestart = await I.verifyCommand(`docker exec ${connection.container_name} ls /usr/local/percona/pmm/tmp/agent_type_node_exporter/${nodeId}/`);
 
     assert.ok(folderRestart.includes('webConfigPlaceholder'), 'webConfigPlaceholder was not recreated after restart');
 
     // remove node exporter folder
-    await I.verifyCommand(`docker exec ${connection.container_name} rm -r /usr/local/percona/pmm/tmp/node_exporter/`);
+    await I.verifyCommand(`docker exec ${connection.container_name} rm -r /usr/local/percona/pmm/tmp/agent_type_node_exporter/`);
     let restartProcessId = nodeExporterRestart.split(/(\s+)/);
 
     await I.verifyCommand(`docker exec ${connection.container_name} kill -9 ${restartProcessId[0]}`);
@@ -159,7 +159,7 @@ Scenario(
     const nodeExporterRemoved = await I.verifyCommand(`docker exec ${connection.container_name} pgrep node_exporter`);
 
     assert.ok(nodeExporterRemoved.length, 'Node exporter is not restarted');
-    const folderRemoveNodeExporter = await I.verifyCommand(`docker exec ${connection.container_name} ls /usr/local/percona/pmm/tmp/node_exporter/agent_id/${nodeId}/`);
+    const folderRemoveNodeExporter = await I.verifyCommand(`docker exec ${connection.container_name} ls /usr/local/percona/pmm/tmp/agent_type_node_exporter/${nodeId}/`);
 
     assert.ok(folderRemoveNodeExporter.includes('webConfigPlaceholder'), 'webConfigPlaceholder was not recreated after restart');
   },
