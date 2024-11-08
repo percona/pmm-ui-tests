@@ -168,7 +168,7 @@ Scenario.skip(
 Scenario(
   'PMM-T1301 PMM-T1300 Verify that pmm-admin inventory add agent qan-postgresql-pgstatements-agent with --log-level flag adds QAN PostgreSQL PgStatements Agent with corresponding log-level @not-ui-pipeline @pgss-pmm-integration',
   async ({
-    I, inventoryAPI, grafanaAPI, dashboardPage,
+    I, inventoryAPI, pgsqlAgentCli, dashboardPage,
   }) => {
     I.amOnPage(dashboardPage.postgresqlInstanceOverviewDashboard.url);
     dashboardPage.waitForDashboardOpened();
@@ -190,11 +190,11 @@ Scenario(
       container_name,
     };
 
-    await inventoryAPI.verifyAgentLogLevel('pgstatements', dbDetails);
-    await inventoryAPI.verifyAgentLogLevel('pgstatements', dbDetails, 'debug');
-    await inventoryAPI.verifyAgentLogLevel('pgstatements', dbDetails, 'info');
-    await inventoryAPI.verifyAgentLogLevel('pgstatements', dbDetails, 'warn');
-    await inventoryAPI.verifyAgentLogLevel('pgstatements', dbDetails, 'error');
+    await pgsqlAgentCli.verifyAgentLogLevel('qan-postgresql-pgstatements-agent', dbDetails);
+    await pgsqlAgentCli.verifyAgentLogLevel('qan-postgresql-pgstatements-agent', dbDetails, 'debug');
+    await pgsqlAgentCli.verifyAgentLogLevel('qan-postgresql-pgstatements-agent', dbDetails, 'info');
+    await pgsqlAgentCli.verifyAgentLogLevel('qan-postgresql-pgstatements-agent', dbDetails, 'warn');
+    await pgsqlAgentCli.verifyAgentLogLevel('qan-postgresql-pgstatements-agent', dbDetails, 'error');
 
     await I.say(await I.verifyCommand(`docker exec ${container_name} pmm-admin remove postgresql ${pgsql_service_name}`));
   },
