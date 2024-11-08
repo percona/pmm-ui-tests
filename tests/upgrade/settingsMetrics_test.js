@@ -1,5 +1,3 @@
-const { SERVICE_TYPE } = require('../helper/constants');
-
 Feature('PMM upgrade tests for settings and metrics');
 
 const { dashboardPage } = inject();
@@ -57,11 +55,13 @@ Data(clientDbServices)
       current,
     }) => {
       const metricName = current.metric;
-      const apiServiceDetails = (await inventoryAPI.apiGetServices()).data[current.serviceType].find((service) => service.service_name.startsWith(current.serviceType));
+      const apiServiceDetails = (await inventoryAPI.apiGetServices()).data[current.serviceType].find((service) => service.service_name.startsWith(current.name));
 
-      console.log(`Service name is:  ${apiServiceDetails.service_name}`);
       console.log('Services are: ');
-      console.log(JSON.stringify((await inventoryAPI.apiGetServices()).data));
+      console.log((await inventoryAPI.apiGetServices()).data);
+      console.log(`Service Typ is: ${current.serviceType} and service name is: ${current.name}`);
+      console.log(`Service is:  ${JSON.stringify(apiServiceDetails)}`);
+
       console.log(`Node Details are: ${JSON.stringify(await inventoryAPI.apiGetNodeInfoByServiceName(current.serviceType, apiServiceDetails.service_name))}`);
       const { node_id } = await inventoryAPI.apiGetNodeInfoByServiceName(current.serviceType, apiServiceDetails.service_name);
       const nodeName = await inventoryAPI.getNodeName(node_id);
