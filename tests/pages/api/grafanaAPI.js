@@ -462,7 +462,7 @@ module.exports = {
       response = await this.getMetric(metricName, refineBy);
 
       return response.data.results.A.frames[0].data.values.length !== 0;
-    }, 120);
+    }, 60);
 
     const result = JSON.stringify(response.data.results);
 
@@ -481,7 +481,7 @@ module.exports = {
       response = await this.getMetric(metricName, refineBy);
 
       return response.data.results.A.frames[0].data.values.length === 0;
-    }, 120);
+    }, 60);
 
     const result = JSON.stringify(response.data.results);
 
