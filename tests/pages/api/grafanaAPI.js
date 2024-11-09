@@ -440,7 +440,7 @@ module.exports = {
       // Main condition check: metric body is not empty
       const response = await this.getMetric(metricName, queryBy);
 
-      if (response.data.data.result.length === 0) {
+      if (response.data.results.A.frames[0].data.values.length === 0) {
         return response;
       }
 
@@ -456,7 +456,13 @@ module.exports = {
   },
 
   async checkMetricExist(metricName, refineBy) {
-    const response = await this.getMetric(metricName, refineBy);
+    let response;
+
+    await I.asyncWaitFor(async () => {
+      response = await this.getMetric(metricName, refineBy);
+
+      return response.data.results.A.frames[0].data.values.length !== 0;
+    }, 120);
 
     const result = JSON.stringify(response.data.results);
 
@@ -469,13 +475,22 @@ module.exports = {
   },
 
   async checkMetricAbsent(metricName, refineBy) {
-    const response = await this.getMetric(metricName, refineBy);
-    const result = JSON.stringify(response.data.data.result);
+    let response;
+
+    await I.asyncWaitFor(async () => {
+      response = await this.getMetric(metricName, refineBy);
+
+      return response.data.results.A.frames[0].data.values.length === 0;
+    }, 120);
+
+    const result = JSON.stringify(response.data.results);
 
     I.assertEqual(
-      response.data.data.result.length,
+      response.data.results.A.frames[0].data.values.length,
       0,
       `Metrics "${metricName}" with filters as ${JSON.stringify(refineBy)} should be empty but got available ${result}`,
     );
+
+    return response;
   },
 };
