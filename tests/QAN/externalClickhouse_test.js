@@ -41,7 +41,7 @@ Scenario(
 
     assert.ok(qanRows > 0, 'Query Analytics is empty');
 
-    I.click(locate('span').withText('mysql5.7'));
+    I.click(locate('span').withText('ps8'));
     await I.waitForVisible(queryAnalyticsPage.data.elements.queryRows);
     const mysqlRows = await I.grabNumberOfVisibleElements(queryAnalyticsPage.data.elements.queryRows);
 

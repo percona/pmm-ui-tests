@@ -41,7 +41,7 @@ Scenario(
 Scenario(
   '@PMM-T1696 Verify that PostgreSQL exporter collects uptime on Ubuntu @cli',
   async ({ I }) => {
-    await I.wait(120);
+    await I.wait(30);
     await I.verifyCommand('docker exec pmm-client-ubuntu pmm-admin list', 'postgres-ubuntu', 'pass');
     await I.verifyCommand(
       'docker exec pmm-client-ubuntu curl -s -u pmm:agentpass localhost:42002/metrics | grep "pg_postmaster_uptime_seconds"',

@@ -15,7 +15,11 @@ services:
     depends_on:
       - pmm-server-ubuntu
       - postgres-ubuntu
-
+    healthcheck:
+      test: [ "CMD-SHELL", "pmm-admin list | grep postgres || exit 1" ]
+      interval: 30s
+      timeout: 300s
+      retries: 10
     command: >
       bash -c "
         apt-get update
@@ -32,6 +36,13 @@ services:
         pmm-admin add postgresql --username=postgres --password=postgres --agent-password=agentpass postgres-ubuntu postgres-ubuntu:5432
         tail -f /dev/null
       "
+
+  pmm-client-ubuntu-test:
+    container_name: pmm-client-ubuntu-test
+    image: ubuntu
+    depends_on:
+      pmm-client-ubuntu:
+        condition: service_healthy
 
   postgres-ubuntu:
     image: postgres
