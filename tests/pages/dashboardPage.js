@@ -1017,9 +1017,10 @@ module.exports = {
       'Top 5 Hottest Collections by Write (Total)',
       'Top 5 Hottest Collections by Read (Rate)',
       'Top 5 Hottest Collections by Write (Rate)',
-      'Collections statistics  for admin (rate)',
-      'Collections statistics  for admin (summary)',
+      'Collections statistics  for All (rate)',
+      'Collections statistics  for All (summary)',
       'Collections statistics  admin',
+      'Collections statistics  config',
     ],
   },
 

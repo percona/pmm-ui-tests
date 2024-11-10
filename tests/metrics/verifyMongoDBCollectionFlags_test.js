@@ -74,9 +74,6 @@ Scenario(
 Scenario(
   'PMM-T1208 - Verify metrics of MongoDB added with default flags @mongodb-exporter',
   async ({ I, inventoryAPI, grafanaAPI }) => {
-    const randomNumber = Math.floor(Math.random() * 100) + 1;
-    const mongodb_service_name = `${randomNumber}_mongo_${randomNumber}`;
-
     await I.say(await I.verifyCommand(`docker exec ${containerName} pmm-admin add mongodb --agent-password='testing' --password=${pmm_user_mongodb.password} --username=${pmm_user_mongodb.username} --service-name=${mongodb_service_name} --replication-set=rs0s`));
 
     const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.MONGODB, mongodb_service_name);
@@ -102,8 +99,6 @@ Scenario(
   + ' @mongodb-exporter',
   async ({ I, inventoryAPI, grafanaAPI }) => {
     const collectorsToDisable = 'topmetrics';
-    const randomNumber = Math.floor(Math.random() * 100) + 1;
-    const mongodb_service_name = `${randomNumber}_mongo_${randomNumber}`;
 
     await I.say(await I.verifyCommand(`docker exec ${containerName} pmm-admin add mongodb --agent-password='testing' --password=${pmm_user_mongodb.password} --username=${pmm_user_mongodb.username} --enable-all-collectors  --disable-collectors=${collectorsToDisable} --service-name=${mongodb_service_name} --replication-set=rs0s`));
 
@@ -132,8 +127,6 @@ Scenario(
 Scenario(
   'PMM-T1210 - Verify metrics of MongoDB with "--enable-all-collectors" was specified @mongodb-exporter',
   async ({ I, inventoryAPI, grafanaAPI }) => {
-    const randomNumber = Math.floor(Math.random() * 100) + 1;
-    const mongodb_service_name = `${randomNumber}_mongo_${randomNumber}`;
 
     await I.say(await I.verifyCommand(`docker exec ${containerName} pmm-admin add mongodb --agent-password='testing' --password=${pmm_user_mongodb.password} --username=${pmm_user_mongodb.username} --enable-all-collectors --service-name=${mongodb_service_name} --replication-set=rs0s`));
 
@@ -156,8 +149,6 @@ Scenario(
   'PMM-T1211 - Verify metrics of MongoDB with --disable-collectors="" and --enable-all-collectors were specified'
   + ' @mongodb-exporter',
   async ({ I, inventoryAPI, grafanaAPI }) => {
-    const randomNumber = Math.floor(Math.random() * 100) + 1;
-    const mongodb_service_name = `${randomNumber}_mongo_${randomNumber}`;
 
     await I.say(await I.verifyCommand(`docker exec ${containerName} pmm-admin add mongodb --agent-password='testing' --password=${pmm_user_mongodb.password} --username=${pmm_user_mongodb.username} --enable-all-collectors  --disable-collectors="" --service-name=${mongodb_service_name} --replication-set=rs0s`));
 
@@ -181,9 +172,6 @@ Scenario(
   'PMM-T1212 - Verify metrics of MongoDB with --disable-collectors="collstats,dbstats,topmetrics" specified'
   + ' @mongodb-exporter',
   async ({ I, inventoryAPI, grafanaAPI }) => {
-    const randomNumber = Math.floor(Math.random() * 100) + 1;
-    const mongodb_service_name = `${randomNumber}_mongo_${randomNumber}`;
-
     const collectorsToDisable = 'collstats,dbstats,topmetrics';
 
     await I.say(await I.verifyCommand(`docker exec ${containerName} pmm-admin add mongodb --agent-password='testing' --password=${pmm_user_mongodb.password} --username=${pmm_user_mongodb.username} --enable-all-collectors  --disable-collectors="${collectorsToDisable}" --service-name=${mongodb_service_name} --replication-set=rs0s`));
@@ -216,8 +204,6 @@ Scenario(
   'PMM-T1213 - Verify metrics of MongoDB with --stats-collections=db1,db2.col2 specified'
   + ' @mongodb-exporter',
   async ({ I, inventoryAPI, grafanaAPI }) => {
-    const randomNumber = Math.floor(Math.random() * 100) + 1;
-    const mongodb_service_name = `${randomNumber}_mongo_${randomNumber}`;
 
     await I.say(await I.verifyCommand(`docker exec ${containerName} pmm-admin add mongodb --agent-password='testing' --password=${pmm_user_mongodb.password} --username=${pmm_user_mongodb.username} --enable-all-collectors --stats-collections=db1,db2.col2 --service-name=${mongodb_service_name} --replication-set=rs0s`));
 
@@ -245,8 +231,6 @@ Scenario(
   'PMM-T1213 - Verify metrics of MongoDB with --stats-collections=db1,db2.col2 & --max-collections-limit=5 specified when total collections across db1, db2 and the filters are 6'
   + ' @mongodb-exporter',
   async ({ I, inventoryAPI, grafanaAPI }) => {
-    const randomNumber = Math.floor(Math.random() * 100) + 1;
-    const mongodb_service_name = `${randomNumber}_mongo_${randomNumber}`;
 
     await I.say(await I.verifyCommand(`docker exec ${containerName} pmm-admin add mongodb --agent-password='testing' --password=${pmm_user_mongodb.password} --username=${pmm_user_mongodb.username} --enable-all-collectors --max-collections-limit=5 --stats-collections=db1,db2.col2 --service-name=${mongodb_service_name} --replication-set=rs0s`));
 
@@ -274,8 +258,6 @@ Scenario(
   'PMM-T1213 - Verify metrics of MongoDB with --stats-collections=db1,db2.col2 & --max-collections-limit=400 specified to allow fetching metrics from all collectors'
   + ' @mongodb-exporter',
   async ({ I, inventoryAPI, grafanaAPI }) => {
-    const randomNumber = Math.floor(Math.random() * 100) + 1;
-    const mongodb_service_name = `${randomNumber}_mongo_${randomNumber}`;
 
     await I.say(await I.verifyCommand(`docker exec ${containerName} pmm-admin add mongodb --agent-password='testing' --password=${pmm_user_mongodb.password} --username=${pmm_user_mongodb.username} --enable-all-collectors --max-collections-limit=400 --stats-collections=db1,db2.col2 --service-name=${mongodb_service_name} --replication-set=rs0s`));
 
@@ -303,8 +285,6 @@ Scenario(
   'PMM-9919 Verify smart metrics of MongoDB with --stats-collections=db1,db2.col2 & --max-collections-limit=400 specified to allow fetching metrics from all collectors'
   + ' @mongodb-exporter',
   async ({ I, inventoryAPI, grafanaAPI }) => {
-    const randomNumber = Math.floor(Math.random() * 100) + 1;
-    const mongodb_service_name = `${randomNumber}_mongo_${randomNumber}`;
 
     await I.say(await I.verifyCommand(`docker exec ${containerName} pmm-admin add mongodb --agent-password='testing' --password=${pmm_user_mongodb.password} --username=${pmm_user_mongodb.username} --enable-all-collectors --max-collections-limit=400 --stats-collections=db1,db2.col2 --service-name=${mongodb_service_name} --replication-set=rs0s`));
 
@@ -387,8 +367,6 @@ Scenario(
   }) => {
     I.amOnPage(dashboardPage.mongoDbInstanceOverview.url);
     dashboardPage.waitForDashboardOpened();
-    const randomNumber = Math.floor(Math.random() * 100) + 1;
-    const mongodb_service_name = `${randomNumber}_mongo_${randomNumber}`;
 
     const service_name = 'testing_force_flag';
 
