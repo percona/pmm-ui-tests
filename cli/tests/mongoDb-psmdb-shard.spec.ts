@@ -9,8 +9,8 @@ const replIpPort = '127.0.0.1:27027';
 // eslint-disable-next-line playwright/valid-describe-callback
 test.describe('Percona Server MongoDB (PSMDB) CLI tests', async () => {
   test.beforeAll(async ({}) => {
-    const result = await cli.exec('docker ps | grep rs101 | awk \'{print $NF}\'');
-    await result.outContains('rs101', 'PSMDB rs101 docker container should exist. please run pmm-framework with --database psmdb,SETUP_TYPE=shards');
+    const result = await cli.exec('docker ps | grep rscfg01 | awk \'{print $NF}\'');
+    await result.outContains('rscfg01', 'PSMDB rscfg01 docker container should exist. please run pmm-framework with --database psmdb,SETUP_TYPE=shards');
     const result1 = await cli.exec('sudo pmm-admin status');
     await result1.outContains('Running', 'pmm-client is not installed/connected locally, please run pmm3-client-setup script');
     const output = await cli.exec(`sudo pmm-admin add mongodb --username=${MONGO_USERNAME} --password=${MONGO_PASSWORD} prerequisite_1 ${replIpPort}`);
@@ -18,8 +18,6 @@ test.describe('Percona Server MongoDB (PSMDB) CLI tests', async () => {
   });
 
   test.afterAll(async ({}) => {
-    const output = await cli.exec('sudo pmm-admin remove mongodb prerequisite_1');
-    await output.assertSuccess();
   });
 
   test('@PMM-T1539 Verify that MongoDB exporter shows version for mongos instance @pmm-psmdb-shard-cli', async ({}) => {
