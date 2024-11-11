@@ -17,7 +17,7 @@ const connection = {
 // Service Name: ${PGSQL_PGSM_CONTAINER}_${PGSQL_VERSION}_service
 // Docker Container Name: ${PGSQL_PGSM_CONTAINER}_${PGSQL_VERSION}
 
-const version = process.env.PDPGSQL_VERSION ? `${process.env.PDPGSQL_VERSION}` : '16';
+const version = process.env.PDPGSQL_VERSION ? `${process.env.PDPGSQL_VERSION}` : '17';
 const database = `pgsm${Math.floor(Math.random() * 99) + 1}`;
 let pgsm_service_name;
 let pgsm_service_name_socket;
