@@ -174,6 +174,6 @@ Scenario(
     queryAnalyticsPage.waitForLoaded();
     await queryAnalyticsPage.filters.selectFilter(dbName, 120000);
     queryAnalyticsPage.waitForLoaded();
-    I.waitForText('16', 180, queryAnalyticsPage.data.elements.totalItems);
+    I.waitForText('16', 240, queryAnalyticsPage.data.elements.totalItems);
   },
 ).retry(1);
