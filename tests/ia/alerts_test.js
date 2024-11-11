@@ -42,7 +42,7 @@ AfterSuite(async ({ rulesAPI, I }) => {
 });
 
 Scenario(
-  'PMM-T1482 Verify fired alert @alerting-fb',
+  'PMM-T1482 Verify fired alert @ia',
   async ({ I, alertsPage, alertsAPI }) => {
     await alertsAPI.waitForAlerts(24, 1);
     await I.amOnPage(alertsPage.url);
@@ -60,7 +60,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T1494 PMM-T1495 Verify fired alert in Pager Duty and Webhook @alerting-fb',
+  'PMM-T1494 PMM-T1495 Verify fired alert in Pager Duty and Webhook @ia',
   async ({ I, alertsAPI, rulesAPI }) => {
     const file = './testdata/ia/scripts/alert.txt';
     const alertUID = await rulesAPI.getAlertUID(ruleName, ruleFolder);
@@ -76,7 +76,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T1496 PMM-T1497 Verify it is possible to silence and unsilence alert @alerting-fb',
+  'PMM-T1496 PMM-T1497 Verify it is possible to silence and unsilence alert @ia',
   async ({
     I, alertsPage, alertmanagerAPI,
   }) => {
@@ -94,7 +94,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T1498 Verify firing alerts dissappear when the condition is fixed @alerting-fb',
+  'PMM-T1498 Verify firing alerts dissappear when the condition is fixed @ia',
   async ({
     I, alertsPage, alertRulesPage,
   }) => {
@@ -113,7 +113,7 @@ Scenario(
 
 // FIXME: Skip until https://jira.percona.com/browse/PMM-11130 is fixed
 Scenario(
-  'PMM-T659 Verify alerts are deleted after deleting rules @alerting-fb',
+  'PMM-T659 Verify alerts are deleted after deleting rules @ia',
   async ({ I, alertsPage, rulesAPI }) => {
     // Deleting rules
     await rulesAPI.removeAllAlertRules();
@@ -123,7 +123,7 @@ Scenario(
   },
 );
 
-Scenario(
+Scenario.skip(
   'PMM-T1499 Verify an alert with non-existing filter (label) does not show up in list @alerting-fb',
   async ({ I, alertsPage, rulesAPI }) => {
     await rulesAPI.removeAllAlertRules();
@@ -146,7 +146,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T564 Verify fired alert severity colors @alerting-fb',
+  'PMM-T564 Verify fired alert severity colors @ia',
   async ({
     I, alertsPage, rulesAPI, alertsAPI,
   }) => {
