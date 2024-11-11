@@ -12,26 +12,24 @@ services:
       - '8444:8443'
     environment:
       - PMM_DEBUG=1
-      - PERCONA_TEST_SAAS_HOST=check-dev.percona.com:443
-      - PERCONA_TEST_CHECKS_PUBLIC_KEY=RWTg+ZmCCjt7O8eWeAmTLAqW+1ozUbpRSKSwNTmO+exlS5KEIPYWuYdX
-      - PERCONA_TEST_VERSION_SERVICE_URL=https://check-dev.percona.com/versions/v1
-      - PERCONA_TEST_TELEMETRY_INTERVAL=10s
-      - PERCONA_TEST_TELEMETRY_RETRY_BACKOFF=10s
-      - PERCONA_TEST_PMM_CLICKHOUSE_ADDR=external-clickhouse:9000
-      - PERCONA_TEST_PMM_CLICKHOUSE_DATASOURCE_ADDR=external-clickhouse:8123
-      - PERCONA_TEST_PMM_CLICKHOUSE_DATABASE=pmm
-      - PERCONA_TEST_PMM_CLICKHOUSE_POOL_SIZE=1
-      - PERCONA_TEST_PMM_CLICKHOUSE_BLOCK_SIZE=65000
+      - PMM_DEV_PERCONA_PLATFORM_ADDRESS=check-dev.percona.com:443
+      - PMM_DEV_PERCONA_PLATFORM_PUBLIC_KEY=RWTg+ZmCCjt7O8eWeAmTLAqW+1ozUbpRSKSwNTmO+exlS5KEIPYWuYdX
+      - PMM_DEV_VERSION_SERVICE_URL=https://check-dev.percona.com/versions/v1
+      - PMM_DEV_TELEMETRY_INTERVAL=10s
+      - PMM_DEV_TELEMETRY_RETRY_BACKOFF=10s
+      - PMM_CLICKHOUSE_ADDR=external-clickhouse:9000
+      - PMM_CLICKHOUSE_DATASOURCE=external-clickhouse:8123
+      - PMM_CLICKHOUSE_DATABASE=pmm
 
   pmm-client:
-    image: perconalab/pmm-client:dev-latest
+    image: perconalab/pmm-client:3-dev-latest
     container_name: pmm-client-clickhouse
     depends_on:
       pmm-server-external-clickhouse:
         condition: service_healthy
     environment:
       - PMM_AGENT_SETUP=1
-      - PMM_AGENT_SERVER_ADDRESS=pmm-server-external-clickhouse
+      - PMM_AGENT_SERVER_ADDRESS=pmm-server-external-clickhouse:8443
       - PMM_AGENT_SERVER_USERNAME=admin
       - PMM_AGENT_SERVER_PASSWORD=admin
       - PMM_AGENT_PORTS_MIN=41000
@@ -43,9 +41,9 @@ services:
       - PMM_AGENT_SETUP_NODE_TYPE=container
     restart: on-failure
 
-  mysql5.7:
-    container_name: mysql5.7
-    image: mysql:5.7
+  ps8:
+    container_name: ps8
+    image: percona:8
     command: --default-authentication-plugin=mysql_native_password
     restart: always
     environment:

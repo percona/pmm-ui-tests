@@ -29,29 +29,34 @@ module.exports = {
   },
   buttons: {
     newAlertRule: '//a[contains(.,\'New alert rule\')]',
-    saveAndExit: locate('button').withText('Save and exit'),
+    saveAndExit: locate('button').withText('Save rule and exit'),
     editAlertRule: '//a[contains(@href, \'edit?returnTo=%2Falerting%2Flist\')]',
     editRuleOnView: '//span[text()="Edit"]',
     deleteAlertRule: locate('span').withText('Delete').inside('button'),
-    groupCollapseButton: (folderText) => `//button[@data-testid='group-collapse-toggle'][following::h6[contains(., '${folderText}')]]`,
+    groupCollapseButton: (folderText) => `//button[@data-testid='data-testid group-collapse-toggle'][following::div/h3[contains(., '${folderText}')]]`,
     ruleCollapseButton: 'button[aria-label=\'Expand row\']',
     goToFolderButton: (folderID, folderText) => locate('[aria-label="go to folder"]').withAttr({ href: `/graph/dashboards/f/${folderID}/${folderText}` }),
     managePermissionsButton: (folderID, folderText) => locate('[aria-label="manage permissions"]').withAttr({ href: `/graph/dashboards/f/${folderID}/${folderText}/permissions` }),
     confirmModal: 'button[aria-label=\'Confirm Modal Danger Button\']',
     cancelModal: locate('button').withText('Cancel'),
+    newEvaluationGroup: I.useDataQA('data-testid alert-rule new-evaluation-group-button'),
+    evaluationGroupCreate: I.useDataQA('data-testid alert-rule new-evaluation-group-create-button'),
   },
   fields: {
     // searchDropdown returns a locator of a search input for a given label
-    searchDropdown: (option) => `//div[@id='${option}']`,
-    folderLocator: I.useDataQA('data-testid Folder picker select container'),
+    searchDropdown: (option) => `$${option}-select-input`,
+    folderLocator: I.useDataQA('data-testid folder-picker-input'),
     dropdownValue: (option) => `//*[@id='${option}']/div/div[1]/div[1]`,
     // resultsLocator returns item locator in a search dropdown based on a text
-    resultsLocator: (name) => `//div[@aria-label="Select option"]//div//span[text()="${name}"]`,
+    resultsLocator: (name) => locate('[class*="grafana-select-menu"]')
+    // resultsLocator: (name) => locate('//div[@aria-label="Select options menu"]')
+      .find(I.useDataQA(`${name}-select-option`)),
     inputField: (input) => `input[name='${input}']`,
     editRuleThreshold: 'input[name=\'evaluateFor\']',
     editRuleEvaluate: 'input[name=\'evaluateEvery\']',
     editRuleSeverity: I.useDataQA('label-value-1'),
     templatesLoader: locate('//div[@id=\'template\']').find('div').withText('Choose'),
+    evaluationGroupName: I.useDataQA('data-testid alert-rule new-evaluation-group-name'),
   },
   messages: {
     noRulesFound: 'You haven`t created any alert rules yet',
@@ -89,6 +94,9 @@ module.exports = {
     I.see(severity, this.fields.searchDropdown('severity'));
     this.searchAndSelectResult('severity', editedRule.severity);
     this.selectFolder(editedRule.folder);
+    I.click(this.buttons.newEvaluationGroup);
+    I.fillField(this.fields.evaluationGroupName, '1m');
+    I.click(this.buttons.evaluationGroupCreate);
   },
 
   async editPerconaAlert(ruleObj) {

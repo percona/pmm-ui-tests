@@ -13,8 +13,9 @@ module.exports = {
     // 60 sec ping for getting created service name
     for (let i = 0; i < 60; i++) {
       const resp = await this.apiGetServices(service.serviceType);
+      const services = Object.values(resp.data).flat(Infinity);
 
-      responseService = resp.data[service.service].find((service) => service.service_name === serviceName);
+      responseService = services.find((service) => service.service_name === serviceName);
       if (responseService !== undefined) break;
 
       I.wait(1);
@@ -51,7 +52,6 @@ module.exports = {
     const resp = await this.apiGetServices(serviceType);
 
     const data = Object.values(resp.data).flat()
-      .filter((entry) => entry)
       .filter(({ service_name }) => service_name.includes(serviceName));
 
     if (data.length === 0) await I.say(`Service "${serviceName}" of "${serviceType}" type is not found!`);

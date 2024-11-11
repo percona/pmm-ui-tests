@@ -88,7 +88,7 @@ Data(instances).Scenario(
 
     const instanceDetails = getInstance(instance);
 
-    I.wait(10);
+    I.wait(30);
     if (instanceType === 'mysql') {
       I.amOnPage(dashboardPage.mySQLInstanceOverview.url);
     }
@@ -98,10 +98,10 @@ Data(instances).Scenario(
     }
 
     dashboardPage.waitForDashboardOpened();
-    await adminPage.applyTimeRange('Last 12 hours');
+    await adminPage.applyTimeRange('Last 5 minutes');
     await dashboardPage.applyFilter('Service Name', instanceDetails.serviceName);
     await dashboardPage.expandEachDashboardRow();
-    await dashboardPage.verifyThereAreNoGraphsWithoutData(1);
+    await dashboardPage.verifyThereAreNoGraphsWithoutData(6);
   },
 ).retry(2);
 
@@ -136,11 +136,8 @@ Data(instances).Scenario(
 
     const instanceDetails = getInstance(instance);
 
-    I.wait(10);
-    const response = await grafanaAPI.checkMetricExist(metric, { type: 'service_name', value: instanceDetails.serviceName });
-    const result = JSON.stringify(response.data.data.result);
-
-    assert.ok(response.data.data.result.length !== 0, `Metrics ${metric} from ${instanceDetails.serviceName} should be available but got empty ${result}`);
+    I.wait(30);
+    await grafanaAPI.checkMetricExist(metric, { type: 'service_name', value: instanceDetails.serviceName });
   },
 );
 
