@@ -581,7 +581,7 @@ xScenario(
 Scenario(
   'PMM-T1292 PMM-T1302 PMM-T1303 PMM-T1283 Verify that pmm-admin inventory add agent postgres-exporter with --log-level flag adds PostgreSQL exporter with corresponding log-level @not-ui-pipeline @pgsm-pmm-integration',
   async ({
-    I, inventoryAPI, dashboardPage,
+    I, inventoryAPI, dashboardPage, agentCli,
   }) => {
     I.amOnPage(dashboardPage.postgresqlInstanceOverviewDashboard.url);
     dashboardPage.waitForDashboardOpened();
@@ -603,16 +603,20 @@ Scenario(
       container_name,
     };
 
-    await inventoryAPI.verifyAgentLogLevel('postgresql', dbDetails);
-    await inventoryAPI.verifyAgentLogLevel('pgstatmonitor', dbDetails);
-    await inventoryAPI.verifyAgentLogLevel('postgresql', dbDetails, 'debug');
-    await inventoryAPI.verifyAgentLogLevel('pgstatmonitor', dbDetails, 'debug');
-    await inventoryAPI.verifyAgentLogLevel('postgresql', dbDetails, 'info');
-    await inventoryAPI.verifyAgentLogLevel('pgstatmonitor', dbDetails, 'info');
-    await inventoryAPI.verifyAgentLogLevel('postgresql', dbDetails, 'warn');
-    await inventoryAPI.verifyAgentLogLevel('pgstatmonitor', dbDetails, 'warn');
-    await inventoryAPI.verifyAgentLogLevel('postgresql', dbDetails, 'error');
-    await inventoryAPI.verifyAgentLogLevel('pgstatmonitor', dbDetails, 'error');
+    await agentCli.verifyAgentLogLevel('postgres-exporter', dbDetails);
+    await agentCli.verifyAgentLogLevel('qan-postgresql-pgstatmonitor-agent', dbDetails);
+
+    await agentCli.verifyAgentLogLevel('postgres-exporter', dbDetails, 'debug');
+    await agentCli.verifyAgentLogLevel('qan-postgresql-pgstatmonitor-agent', dbDetails, 'debug');
+
+    await agentCli.verifyAgentLogLevel('postgres-exporter', dbDetails, 'info');
+    await agentCli.verifyAgentLogLevel('qan-postgresql-pgstatmonitor-agent', dbDetails, 'info');
+
+    await agentCli.verifyAgentLogLevel('postgres-exporter', dbDetails, 'warn');
+    await agentCli.verifyAgentLogLevel('qan-postgresql-pgstatmonitor-agent', dbDetails, 'warn');
+
+    await agentCli.verifyAgentLogLevel('postgres-exporter', dbDetails, 'error');
+    await agentCli.verifyAgentLogLevel('qan-postgresql-pgstatmonitor-agent', dbDetails, 'error');
 
     await I.say(await I.verifyCommand(`docker exec ${container_name} pmm-admin remove postgresql ${pgsql_service_name}`));
   },
