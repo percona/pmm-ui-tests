@@ -921,7 +921,7 @@ module.exports = {
     cleanUrl: 'graph/d/mongodb-replicaset-summary/mongodb-replset-summary',
     metrics: [
       'Replication Lag',
-      'ReplSet States',
+      'States -',
       'ReplSet Members',
       'Max Heartbeat Time',
       'Elections',
