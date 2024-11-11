@@ -48,11 +48,10 @@ Scenario(
   'PMM-T1868 - pg_stat_statements is used if no --query-source flag provided and pg_stat_monitor is not configured @not-ui-pipeline @pgss-pmm-integration',
   async ({ I }) => {
     const serviceName = `pgss_${Math.floor(Math.random() * 99) + 1}`;
-    const { service: { service_id: serviceId }, warning } = JSON.parse(
-      await I.verifyCommand(`docker exec ${container_name} pmm-admin add postgresql --json --password=${connection.password} --username=${connection.user} --service-name=${serviceName}`),
-    );
+    const commandOut = await I.verifyCommand(`docker exec ${container_name} pmm-admin add postgresql --json --password=${connection.password} --username=${connection.user} --service-name=${serviceName}`);
+    const { service: { service_id: serviceId }, warning } = JSON.parse(commandOut);
 
-    assert.ok(warning === 'Could not to detect the pg_stat_monitor extension on your system. Falling back to the pg_stat_statements.');
+    assert.ok(warning === 'Could not to detect the pg_stat_monitor extension on your system. Falling back to the pg_stat_statements.', `Expected warning message, but received \n${commandOut}`);
 
     let list;
     let serviceAgents;
