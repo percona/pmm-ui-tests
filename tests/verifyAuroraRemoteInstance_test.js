@@ -62,7 +62,7 @@ Data(instances).Scenario('@PMM-T1295 Verify adding Aurora remote instance @insta
   );
 
   // Waiting for metrics to start hitting for remotely added services
-  I.wait(30);
+  I.wait(60);
   // await pmmInventoryPage.verifyAgentHasStatusRunning(details.service_name);
 });
 
@@ -91,16 +91,10 @@ Scenario('PMM-T1295 Verify Aurora instance metrics @instances', async ({ I, graf
   // Waiting for metrics to start hitting for remotely added services
   I.wait(10);
 
-  const response = await grafanaAPI.checkMetricExist(aurora_metric, {
+  await grafanaAPI.checkMetricExist(aurora_metric, {
     type: 'service_name',
     value: 'pmm-qa-aurora2-mysql-instance-1',
   });
-  const result = JSON.stringify(response.data.data.result);
-
-  assert.ok(
-    response.data.data.result.length !== 0,
-    `Metrics ${aurora_metric} from pmm-qa-aurora2-mysql-instance-1 should be available but got empty ${result}`,
-  );
 }).retry(1);
 
 // FIXME: Add also check for Aurora3 once https://jira.percona.com/browse/PMM-10201 is fixed

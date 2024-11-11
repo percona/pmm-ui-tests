@@ -314,8 +314,12 @@ module.exports = {
 
   async fillRemoteFields(serviceName) {
     let inputs;
+    const externalServiceName = 'external_service_new';
 
-    this.selectNodeForRemoteInstance();
+    if (serviceName !== externalServiceName) {
+      this.selectNodeForRemoteInstance();
+    }
+
     // eslint-disable-next-line default-case
     switch (serviceName) {
       case remoteInstancesHelper.services.mysql:
@@ -456,7 +460,7 @@ module.exports = {
         I.fillField(this.fields.environment, inputs.environment);
         I.fillField(this.fields.cluster, inputs.clusterName);
         break;
-      case 'external_service_new':
+      case externalServiceName:
         inputs = remoteInstancesHelper.remote_instance.external.redis;
         I.fillField(this.fields.serviceName, serviceName);
         I.fillField(this.fields.hostName, inputs.host);
