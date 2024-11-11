@@ -464,6 +464,9 @@ module.exports = {
     const response = await this.getMetric(metricName, refineBy);
     const result = JSON.stringify(response.data.data.result);
 
+    console.log(`Check Metrics for metric: ${metricName} refined by ${refineBy} is: `);
+    console.log(response.data);
+
     I.assertTrue(
       response.data.data.result.length !== 0,
       `Metrics '${metricName}' ${refineBy === null ? '' : `with filters as ${JSON.stringify(refineBy)} `}should be available but got empty ${result}`,
