@@ -60,6 +60,9 @@ Data(instances).Scenario('@PMM-T1295 Verify adding Aurora remote instance @insta
     },
     details.service_name,
   );
+
+  // Waiting for metrics to start hitting for remotely added services
+  I.wait(30);
   // await pmmInventoryPage.verifyAgentHasStatusRunning(details.service_name);
 });
 
@@ -138,8 +141,6 @@ Data(instances)
       const { instance_id } = current;
 
       I.amOnPage(I.buildUrlWithParams(queryAnalyticsPage.url, { from: 'now-5m' }));
-      queryAnalyticsPage.waitForLoaded();
-      await adminPage.applyTimeRange('Last 12 hours');
       queryAnalyticsPage.waitForLoaded();
       await queryAnalyticsPage.filters.selectFilter(instance_id);
       queryAnalyticsPage.waitForLoaded();

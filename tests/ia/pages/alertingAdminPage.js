@@ -4,10 +4,9 @@ const { I } = inject();
 
 module.exports = {
   url: 'graph/alerting/admin',
-  elements: {
-    configTextarea: 'textarea[id=\'configuration\']',
-  },
+  elements: {},
   buttons: {
+    editConfig: locate('button').withText('Edit configuration'),
   },
   messages: {
   },

@@ -54,17 +54,7 @@ module.exports = {
   },
 
   async apiDisableIA() {
-    const body = {
-      disable_alerting: true,
-    };
-    const headers = { Authorization: `Basic ${await I.getAuth()}` };
-
-    const resp = await I.sendPostRequest(endpoint, body, headers);
-
-    assert.ok(
-      resp.status === 200,
-      `Failed to disable Integrated alerting. ${resp.data.message}`,
-    );
+    await this.changeSettings({ alerting: false });
   },
 
   async apiEnableIA() {
