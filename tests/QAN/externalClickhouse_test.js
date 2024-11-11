@@ -8,7 +8,7 @@ const basePmmUrl = `http://127.0.0.1:${pmmServerPort}/`;
 const dockerVersion = process.env.DOCKER_VERSION || 'perconalab/pmm-server:3-dev-latest';
 
 BeforeSuite(async ({ I }) => {
-  await I.verifyCommand(`PMM_SERVER_IMAGE=${dockerVersion} docker-compose -f docker-compose-clickhouse.yml up -d`);
+  await I.verifyCommand(`PMM_SERVER_IMAGE=${dockerVersion} docker compose -f docker-compose-clickhouse.yml up -d`);
   await I.wait(30);
   await I.verifyCommand('docker exec pmm-client-clickhouse pmm-admin add mysql --username=root --password=7B*53@lCdflR --query-source=perfschema ps8 ps8:3306');
   await I.wait(60);
@@ -19,7 +19,7 @@ Before(async ({ I }) => {
 });
 
 AfterSuite(async ({ I }) => {
-  await I.verifyCommand('docker-compose -f docker-compose-clickhouse.yml down -v');
+  await I.verifyCommand('docker compose -f docker-compose-clickhouse.yml down -v');
 });
 
 // Tag only for adding into matrix job, to be fixed later.
@@ -41,7 +41,7 @@ Scenario(
 
     assert.ok(qanRows > 0, 'Query Analytics is empty');
 
-    I.click(locate('span').withText('mysql5.7'));
+    I.click(locate('span').withText('ps8'));
     await I.waitForVisible(queryAnalyticsPage.data.elements.queryRows);
     const mysqlRows = await I.grabNumberOfVisibleElements(queryAnalyticsPage.data.elements.queryRows);
 
