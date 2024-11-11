@@ -57,8 +57,6 @@ Data(clientDbServices)
       const metricName = current.metric;
       const apiServiceDetails = (await inventoryAPI.apiGetServices()).data[current.serviceType].find((service) => service.service_name.startsWith(current.name));
 
-      console.log('Services are: ');
-      console.log((await inventoryAPI.apiGetServices()).data);
       console.log(`Service Typ is: ${current.serviceType} and service name is: ${current.name}`);
       console.log(`Service is:  ${JSON.stringify(apiServiceDetails)}`);
 
