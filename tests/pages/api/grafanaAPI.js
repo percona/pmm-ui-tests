@@ -463,7 +463,7 @@ module.exports = {
 
     const result = JSON.stringify(response.data.results);
 
-    console.log(`Check Metrics for metric: ${metricName} refined by ${refineBy} is: `);
+    console.log(`Check Metrics for metric: ${metricName} refined by ${JSON.stringify(refineBy)} is: `);
     console.log(response.data.results.A.frames);
 
     I.assertTrue(
