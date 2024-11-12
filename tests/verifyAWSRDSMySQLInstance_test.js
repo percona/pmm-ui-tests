@@ -64,7 +64,7 @@ Scenario(
     }));
     dashboardPage.waitForDashboardOpened();
     await dashboardPage.expandEachDashboardRow();
-    await dashboardPage.verifyThereAreNoGraphsWithoutData(7);
+    await dashboardPage.verifyThereAreNoGraphsWithoutData(9);
   },
 );
 

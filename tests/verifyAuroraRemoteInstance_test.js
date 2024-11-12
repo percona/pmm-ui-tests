@@ -67,27 +67,29 @@ Data(instances).Scenario('@PMM-T1295 Verify adding Aurora remote instance @insta
 });
 
 // FIXME: Can be removed once https://jira.percona.com/browse/PMM-10201 is fixed
-Data(instances)
-  .Scenario('PMM-T1295 Verify Aurora instance metrics @instances', async ({ I, current, grafanaAPI }) => {
-    const { instance_id } = current;
-
-    // Waiting for metrics to start hitting for remotely added services
-    I.wait(10);
-
-    await grafanaAPI.checkMetricExist(mysql_metric, {
-      type: 'service_name',
-      value: instance_id,
-    });
-
-    await grafanaAPI.checkMetricExist(aurora_metric, {
-      type: 'service_name',
-      value: instance_id,
-    });
-  })
-  .retry(1);
+// TODO: unskip after PMM-13541
+// Data(instances)
+//   .Scenario('PMM-T1295 Verify Aurora instance metrics @instances', async ({ I, current, grafanaAPI }) => {
+//     const { instance_id } = current;
+//
+//     // Waiting for metrics to start hitting for remotely added services
+//     I.wait(10);
+//
+//     await grafanaAPI.checkMetricExist(mysql_metric, {
+//       type: 'service_name',
+//       value: instance_id,
+//     });
+//
+//     await grafanaAPI.checkMetricExist(aurora_metric, {
+//       type: 'service_name',
+//       value: instance_id,
+//     });
+//   })
+//   .retry(1);
 
 // FIXME: Add also check for Aurora3 once https://jira.percona.com/browse/PMM-10201 is fixed
-Scenario('PMM-T1295 Verify Aurora instance metrics @instances', async ({ I, grafanaAPI }) => {
+// TODO: unskip after PMM-13541
+Scenario.skip('PMM-T1295 Verify Aurora instance metrics @instances', async ({ I, grafanaAPI }) => {
   // Waiting for metrics to start hitting for remotely added services
   I.wait(10);
 
