@@ -167,22 +167,22 @@ Data(sslinstances).Scenario(
       serviceName, databaseType,
     } = current;
 
-    if (!serviceName.includes('psmdb')) {
-      const apiServiceDetails = (await inventoryAPI.apiGetServices()).data[databaseType].find((service) => service.service_name.startsWith(serviceName));
+    const apiServiceDetails = (await inventoryAPI.apiGetServices())
+      .data[databaseType]
+      .find((service) => service.service_name.startsWith(serviceName));
 
-      const serviceList = [apiServiceDetails.service_name, `remote_api_${serviceName}`];
+    const serviceList = [apiServiceDetails.service_name, `remote_api_${serviceName}`];
 
-      for (const service of serviceList) {
-        I.amOnPage(I.buildUrlWithParams(queryAnalyticsPage.url, {from: 'now-5m'}));
-        queryAnalyticsPage.waitForLoaded();
-        await adminPage.applyTimeRange('Last 5 minutes');
-        queryAnalyticsPage.waitForLoaded();
-        await queryAnalyticsPage.filters.selectFilterInGroup(service, 'Service Name');
-        queryAnalyticsPage.waitForLoaded();
-        const count = await queryAnalyticsPage.data.getCountOfItems();
+    for (const service of serviceList) {
+      I.amOnPage(I.buildUrlWithParams(queryAnalyticsPage.url, { from: 'now-5m' }));
+      queryAnalyticsPage.waitForLoaded();
+      await adminPage.applyTimeRange('Last 5 minutes');
+      queryAnalyticsPage.waitForLoaded();
+      await queryAnalyticsPage.filters.selectFilterInGroup(service, 'Service Name');
+      queryAnalyticsPage.waitForLoaded();
+      const count = await queryAnalyticsPage.data.getCountOfItems();
 
-        assert.ok(count > 0, `The queries for service ${service} instance do NOT exist, check QAN Data`);
-      }
+      assert.ok(count > 0, `The queries for service ${service} instance do NOT exist, check QAN Data`);
     }
   },
 ).retry(1);
