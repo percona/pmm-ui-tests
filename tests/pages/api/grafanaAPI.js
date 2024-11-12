@@ -377,7 +377,7 @@ module.exports = {
     };
 
     return await I.sendPostRequest(
-      'graph/api/ds/query?ds_type=prometheus&requestId=explore_vmt',
+      'graph/api/ds/query?ds_type=prometheus&requestId=explore_sbu',
       body,
       headers,
     );
