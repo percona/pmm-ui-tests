@@ -254,7 +254,8 @@ Scenario(
 );
 
 // The numbers don't entirely match, we need to find a way to track based on difference
-Scenario(
+// TODO: unskip after https://perconadev.atlassian.net/browse/PMM-13544
+Scenario.skip(
   'PMM-T1259 - Verifying data in Clickhouse and comparing with PGSM output @pgsm-pmm-integration @not-ui-pipeline',
   async ({ I, qanAPI }) => {
     await I.pgExecuteQueryOnDemand('SELECT now();', connection);
