@@ -357,19 +357,59 @@ module.exports = {
     return (r.data.find((d) => d.name === name)).uid;
   },
 
-  // Should be refactored
+  // Refactored function for new Grafana Explore UI format
   async getMetric(metricName, refineBy) {
     const uid = await this.getDataSourceUidByName();
+    const currentTime = Date.now();
     const body = {
       queries: [
         {
+          refId: 'A',
+          expr: refineBy ? `${metricName}{${refineBy.type}="${refineBy.value}"}` : metricName,
+          range: true,
+          instant: false,
           datasource: {
+            type: 'prometheus',
             uid,
           },
-          expr: refineBy ? `${metricName}{${refineBy.type}=\"${refineBy.value}\"}` : metricName,
+          editorMode: 'builder',
+          legendFormat: '__auto',
+          useBackend: false,
+          disableTextWrap: false,
+          fullMetaSearch: false,
+          includeNullMetadata: true,
+          requestId: '17102A',
+          utcOffsetSec: 19800,
+          interval: '',
+          datasourceId: 1,
+          intervalMs: 1000,
+          maxDataPoints: 757,
+        },
+        {
+          refId: 'A-Instant',
+          expr: refineBy ? `${metricName}{${refineBy.type}="${refineBy.value}"}` : metricName,
+          range: false,
+          instant: true,
+          datasource: {
+            type: 'prometheus',
+            uid,
+          },
+          editorMode: 'builder',
+          legendFormat: '__auto',
+          useBackend: false,
+          disableTextWrap: false,
+          fullMetaSearch: false,
+          includeNullMetadata: true,
+          requestId: '17102A',
+          utcOffsetSec: 19800,
+          interval: '',
+          datasourceId: 1,
+          intervalMs: 1000,
+          maxDataPoints: 757,
         },
       ],
-      from: 'now-15m',
+      from: (currentTime - 5 * 60 * 1000).toString(),
+      to: currentTime.toString(),
     };
 
     const headers = {

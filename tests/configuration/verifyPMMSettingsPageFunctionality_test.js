@@ -219,7 +219,7 @@ Scenario(
 Scenario(
   'PMM-T254 ensure Advisors are on by default @instances',
   async ({ settingsAPI }) => {
-    const resp = await settingsAPI.getSettings('stt_enabled');
+    const resp = await settingsAPI.getSettings('advisor_enabled');
 
     assert.ok(resp, `Advisors should be turned on by default from 2.28.0 release but found ${resp}`);
   },

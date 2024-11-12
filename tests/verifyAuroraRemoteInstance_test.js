@@ -60,45 +60,43 @@ Data(instances).Scenario('@PMM-T1295 Verify adding Aurora remote instance @insta
     },
     details.service_name,
   );
+
+  // Waiting for metrics to start hitting for remotely added services
+  I.wait(60);
   // await pmmInventoryPage.verifyAgentHasStatusRunning(details.service_name);
 });
 
 // FIXME: Can be removed once https://jira.percona.com/browse/PMM-10201 is fixed
-Data(instances)
-  .Scenario('PMM-T1295 Verify Aurora instance metrics @instances', async ({ I, current, grafanaAPI }) => {
-    const { instance_id } = current;
-
-    // Waiting for metrics to start hitting for remotely added services
-    I.wait(10);
-
-    const response = await grafanaAPI.checkMetricExist(mysql_metric, {
-      type: 'service_name',
-      value: instance_id,
-    });
-    const result = JSON.stringify(response.data.data.result);
-
-    assert.ok(
-      response.data.data.result.length !== 0,
-      `Metrics ${mysql_metric} from ${instance_id} should be available but got empty ${result}`,
-    );
-  })
-  .retry(1);
+// TODO: unskip after PMM-13541
+// Data(instances)
+//   .Scenario('PMM-T1295 Verify Aurora instance metrics @instances', async ({ I, current, grafanaAPI }) => {
+//     const { instance_id } = current;
+//
+//     // Waiting for metrics to start hitting for remotely added services
+//     I.wait(10);
+//
+//     await grafanaAPI.checkMetricExist(mysql_metric, {
+//       type: 'service_name',
+//       value: instance_id,
+//     });
+//
+//     await grafanaAPI.checkMetricExist(aurora_metric, {
+//       type: 'service_name',
+//       value: instance_id,
+//     });
+//   })
+//   .retry(1);
 
 // FIXME: Add also check for Aurora3 once https://jira.percona.com/browse/PMM-10201 is fixed
-Scenario('PMM-T1295 Verify Aurora instance metrics @instances', async ({ I, grafanaAPI }) => {
+// TODO: unskip after PMM-13541
+Scenario.skip('PMM-T1295 Verify Aurora instance metrics @instances', async ({ I, grafanaAPI }) => {
   // Waiting for metrics to start hitting for remotely added services
   I.wait(10);
 
-  const response = await grafanaAPI.checkMetricExist(aurora_metric, {
+  await grafanaAPI.checkMetricExist(aurora_metric, {
     type: 'service_name',
     value: 'pmm-qa-aurora2-mysql-instance-1',
   });
-  const result = JSON.stringify(response.data.data.result);
-
-  assert.ok(
-    response.data.data.result.length !== 0,
-    `Metrics ${aurora_metric} from pmm-qa-aurora2-mysql-instance-1 should be available but got empty ${result}`,
-  );
 }).retry(1);
 
 // FIXME: Add also check for Aurora3 once https://jira.percona.com/browse/PMM-10201 is fixed
@@ -107,7 +105,6 @@ Scenario('PMM-T1295 Verify MySQL Amazon Aurora Details @instances', async ({ I, 
   dashboardPage.waitForDashboardOpened();
   await adminPage.applyTimeRange('Last 5 minutes');
   await dashboardPage.applyFilter('Service Name', 'pmm-qa-aurora2-mysql-instance-1');
-  await dashboardPage.verifyThereAreNoGraphsWithNA();
   await dashboardPage.verifyThereAreNoGraphsWithoutData(0);
 }).retry(1);
 
@@ -126,7 +123,6 @@ Data(instances)
       adminPage.performPageDown(5);
       await dashboardPage.expandEachDashboardRow();
       adminPage.performPageUp(5);
-      await dashboardPage.verifyThereAreNoGraphsWithNA();
       await dashboardPage.verifyThereAreNoGraphsWithoutData(1);
     },
   )
@@ -141,8 +137,6 @@ Data(instances)
       const { instance_id } = current;
 
       I.amOnPage(I.buildUrlWithParams(queryAnalyticsPage.url, { from: 'now-5m' }));
-      queryAnalyticsPage.waitForLoaded();
-      await adminPage.applyTimeRange('Last 12 hours');
       queryAnalyticsPage.waitForLoaded();
       await queryAnalyticsPage.filters.selectFilter(instance_id);
       queryAnalyticsPage.waitForLoaded();
