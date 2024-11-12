@@ -148,18 +148,17 @@ test.describe('PMM Client "--help" validation', async () => {
     const output = await cli.execSilent('sudo pmm-admin config --help');
     await output.assertSuccess();
     await output.outContainsMany([
-      'Metrics flow mode for agents node-exporter,',
-      'can be push - agent will push metrics,',
-      'pull - server scrape metrics from agent or auto',
-      '- chosen by server',
+      'Metrics flow mode, can be push - agent will.*',
+      'push metrics, pull - server scrape metrics from.*',
+      'agent or auto - chosen by server',
     ]);
   });
 
   test('PMM-T1827 - Verify there is --auto-discovery-limit option in pmm-admin add postgresql help output', async ({}) => {
     await addPostgreSqlHelp.outContainsMany([
-      'auto-discovery-limit=NUMBER',
-      'Auto-discovery will be disabled if there are',
-      'more than that number of databases (default:',
+      'auto-discovery-limit=NUMBER.*',
+      'Auto-discovery will be disabled if there are.*',
+      'more than that number of databases (default:.*',
       'server-defined, -1: always disabled)',
     ]);
   });
