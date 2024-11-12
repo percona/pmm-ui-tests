@@ -1,7 +1,7 @@
 const assert = require('assert');
 const {
   SERVICE_TYPE,
-  AGENT_STATUS,
+  CLI_AGENT_STATUS,
 } = require('../helper/constants');
 
 const connection = {
@@ -100,7 +100,7 @@ Scenario(
 
       assert.ok(pgStatMonitorAgent, 'pg_stat_monitor agent should exist');
 
-      return pgStatMonitorAgent.status === AGENT_STATUS.RUNNING;
+      return pgStatMonitorAgent.status === CLI_AGENT_STATUS.RUNNING;
     }, 30);
 
     const pgStatStatementsAgent = serviceAgents.find(({ agent_type }) => agent_type === 'AGENT_TYPE_QAN_POSTGRESQL_PGSTATEMENTS_AGENT');
@@ -227,7 +227,7 @@ Scenario(
     dashboardPage.waitForDashboardOpened();
     await dashboardPage.expandEachDashboardRow();
     await dashboardPage.verifyMetricsExistence(dashboardPage.postgresqlInstanceSummaryDashboard.metrics);
-    await dashboardPage.verifyThereAreNoGraphsWithoutData(1);
+    await dashboardPage.verifyThereAreNoGraphsWithoutData(2);
   },
 );
 
@@ -243,7 +243,7 @@ Scenario(
     dashboardPage.waitForDashboardOpened();
     await dashboardPage.expandEachDashboardRow();
     await dashboardPage.verifyMetricsExistence(dashboardPage.postgresqlInstanceSummaryDashboard.metrics);
-    await dashboardPage.verifyThereAreNoGraphsWithoutData(1);
+    await dashboardPage.verifyThereAreNoGraphsWithoutData(2);
     const log = await I.verifyCommand(`docker exec ${container_name} cat pmm-agent.log`);
 
     I.assertFalse(

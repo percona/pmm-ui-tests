@@ -1,7 +1,7 @@
 const assert = require('assert');
 const {
   SERVICE_TYPE,
-  AGENT_STATUS,
+  CLI_AGENT_STATUS,
 } = require('../helper/constants');
 
 const { adminPage } = inject();
@@ -65,7 +65,7 @@ Scenario(
 
       assert.ok(pgStatStatementsAgent, 'pg_stat_statements agent should exist');
 
-      return pgStatStatementsAgent.status === AGENT_STATUS.RUNNING;
+      return pgStatStatementsAgent.status === CLI_AGENT_STATUS.RUNNING;
     }, 30);
 
     const pgStatMonitorAgent = serviceAgents.find(({ agent_type }) => agent_type === 'AGENT_TYPE_QAN_POSTGRESQL_PGSTATMONITOR_AGENT');
