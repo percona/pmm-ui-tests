@@ -261,8 +261,8 @@ Data(maxQueryLengthInstances).Scenario(
 
     await pmmInventoryPage.openAgents(service_id);
     await pmmInventoryPage.checkAgentOtherDetailsSection('Qan mysql perfschema agent', `max_query_length=${maxQueryLength}`);
-
-    await I.wait(70); // This extra time is needed for queries to appear in QAN
+    // This extra time is needed for queries to appear in QAN
+    await I.wait(70);
     // Check max visible query length is less than max_query_length option
     I.amOnPage(I.buildUrlWithParams(queryAnalyticsPage.url, { from: 'now-5m' }));
     queryAnalyticsPage.waitForLoaded();
