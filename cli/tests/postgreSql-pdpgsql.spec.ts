@@ -41,8 +41,8 @@ test.describe('Percona Distribution for PostgreSQL CLI tests', async () => {
     await cli.exec('sleep 30');
     const output = await cli.exec('sudo pmm-admin inventory list agents');
     await output.assertSuccess();
-    await output.outContains('postgres_exporter.*Running');
-    await output.outContains('postgresql_pgstatmonitor_agent.*Running');
+    await output.outContains('postgres_exporter             Running');
+    await output.outContains('postgresql_pgstatmonitor_agent Running');
   });
 
   /**
@@ -122,8 +122,8 @@ test.describe('Percona Distribution for PostgreSQL CLI tests', async () => {
   test('PMM-T442 run pmm-admin inventory list agents for check agent postgresql_pgstatements_agent', async ({}) => {
     const output = await cli.exec('sudo pmm-admin inventory list agents');
     await output.assertSuccess();
-    await output.outContains('postgres_exporter.*Running');
-    await output.outContains('postgresql_pgstatements_agent.*Running');
+    await output.outContains('postgres_exporter  Running');
+    await output.outContains('postgresql_pgstatements_agent  Running');
   });
 
   /**
