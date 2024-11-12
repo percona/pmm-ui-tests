@@ -165,9 +165,7 @@ module.exports = {
             body.enable_updates = value;
             break;
           case 'publicAddress':
-            value
-              ? body.pmm_public_address = value
-              : body.remove_pmm_public_address = null;
+            body.pmm_public_address = value;
             break;
           case 'data_retention':
             body.data_retention = value;

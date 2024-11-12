@@ -193,6 +193,7 @@ Scenario(
   'PMM-T486 - Verify Public Address in PMM Settings @settings @nightly',
   async ({ I, pmmSettingsPage, settingsAPI }) => {
     await settingsAPI.changeSettings({ publicAddress: '' });
+    I.wait(3);
     await pmmSettingsPage.openAdvancedSettings();
     await pmmSettingsPage.verifyTooltip(pmmSettingsPage.tooltips.advancedSettings.publicAddress);
 
