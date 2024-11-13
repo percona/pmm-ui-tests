@@ -73,10 +73,11 @@ Data(clientDbServices)
 
 Scenario(
   'Verify Metrics from custom queries for mysqld_exporter after upgrade (UI) @post-client-upgrade @post-settings-metrics-upgrade',
-  async ({ grafanaAPI }) => {
+  async ({ grafanaAPI, inventoryAPI }) => {
     const metricName = 'mysql_performance_schema_memory_summary_current_bytes';
+    const apiServiceDetails = await inventoryAPI.getServiceDetailsByPartialName('ps-single');
 
-    await grafanaAPI.checkMetricExist(metricName);
+    await grafanaAPI.checkMetricExist(metricName, { type: 'service_name', value: apiServiceDetails.service_name });
   },
 );
 
@@ -91,9 +92,10 @@ Scenario(
 
 Scenario(
   'Verify Metrics from custom queries for postgres_exporter after upgrade (UI) @post-client-upgrade @post-settings-metrics-upgrade',
-  async ({ grafanaAPI }) => {
+  async ({ grafanaAPI, inventoryAPI }) => {
     const metricName = 'pg_stat_user_tables_n_tup_ins';
+    const apiServiceDetails = await inventoryAPI.getServiceDetailsByPartialName('pgsql_pgss_pmm');
 
-    await grafanaAPI.checkMetricExist(metricName);
+    await grafanaAPI.checkMetricExist(metricName, { type: 'service_name', value: apiServiceDetails.service_name });
   },
 );
