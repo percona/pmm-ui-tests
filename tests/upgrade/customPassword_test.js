@@ -20,7 +20,7 @@ Data(clientDbServices).Scenario(
     } = current;
     const {
       service_id, node_id, address, port,
-    } = await inventoryAPI.apiGetNodeInfoForService(upgrade_service, name);
+    } = await inventoryAPI.getServiceDetailsByPartialName(name);
 
     const { agent_id: pmm_agent_id } = await inventoryAPI.apiGetPMMAgentInfoByServiceId(service_id);
     let output;

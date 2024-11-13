@@ -72,15 +72,6 @@ module.exports = {
       .find((service) => service.service_name.startsWith(serviceName));
   },
 
-  async apiGetNodeInfoForService(serviceType, serviceName) {
-    const service = await this.apiGetServices(serviceType);
-
-    const data = service.data[serviceType]
-      .filter(({ service_name }) => service_name.startsWith(serviceName));
-
-    return data[0];
-  },
-
   async apiGetPMMAgentInfoByServiceId(serviceId) {
     const resp = await this.apiGetAgents(serviceId);
 
