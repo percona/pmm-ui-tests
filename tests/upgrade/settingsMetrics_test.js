@@ -65,7 +65,7 @@ Data(clientDbServices)
       console.log(`Service is:  ${JSON.stringify(apiServiceDetails)}`);
 
       await grafanaAPI.checkMetricExist(metricName, {
-        type: 'node_name',
+        type: 'service_name',
         value: apiServiceDetails.service_name,
       });
     },
