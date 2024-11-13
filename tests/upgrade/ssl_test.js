@@ -116,8 +116,10 @@ Data(sslinstances).Scenario(
     I.wait(10);
 
     // verify metric for client container node instance
-    console.log((await inventoryAPI.apiGetServices()).data);
-    const apiServiceDetails = (await inventoryAPI.apiGetServices()).data[databaseType].find((service) => service.service_name.startsWith(serviceName));
+    console.log((await inventoryAPI.apiGetServices()).data.services);
+    console.log('Service is: ');
+    console.log((await inventoryAPI.apiGetServices()).data.services.find((service) => service.service_name.startsWith(serviceName)));
+    const apiServiceDetails = (await inventoryAPI.apiGetServices()).data.services.find((service) => service.service_name.startsWith(serviceName));
 
     const response = await grafanaAPI.checkMetricExist(metric, { type: 'service_name', value: apiServiceDetails.service_name });
     const result = JSON.stringify(response.data.data.result);
