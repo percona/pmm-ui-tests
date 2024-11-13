@@ -54,13 +54,9 @@ Data(clientDbServices).Scenario(
     const {
       serviceType, metric, upgrade_service, name,
     } = current;
-    const apiServiceDetails = (await inventoryAPI.apiGetServices()).data[upgrade_service].find((service) => service.service_name.startsWith(`upgrade-${upgrade_service}`));
-    console.log('Details are: ');
-    console.log(apiServiceDetails);
-    const { custom_labels } = await inventoryAPI.apiGetNodeInfoByServiceName(serviceType, apiServiceDetails.service_name);
 
-    console.log('Response is:');
-    console.log(await inventoryAPI.apiGetNodeInfoByServiceName(serviceType, apiServiceDetails.service_name));
+    const apiServiceDetails = await inventoryAPI.getServiceDetailsByPartialName(`upgrade-${upgrade_service}`);
+    const { custom_labels } = await inventoryAPI.apiGetNodeInfoByServiceName(serviceType, apiServiceDetails.service_name);
 
     await grafanaAPI.checkMetricExist(metric, { type: 'service_name', value: apiServiceDetails.service_name });
     if (serviceType !== SERVICE_TYPE.MYSQL) {
