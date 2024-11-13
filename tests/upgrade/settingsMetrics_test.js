@@ -8,6 +8,10 @@ clientDbServices.add(['mysql', 'ps-single', 'mysql_global_status_max_used_connec
 clientDbServices.add(['postgresql', 'pgsql_pgss_pmm', 'pg_stat_database_xact_rollback', 'annotation-for-postgres', dashboardPage.postgresqlInstanceSummaryDashboard.url, 'pgsql_upgrade']);
 clientDbServices.add(['mongodb', 'rs101', 'mongodb_connections', 'annotation-for-mongo', dashboardPage.mongoDbInstanceSummaryDashboard.url, 'mongo_upgrade']);
 
+Before(async ({ I }) => {
+  await I.Authorize();
+});
+
 Scenario(
   'Verify user is able to set custom Settings like Data_retention, Resolution @pre-settings-metrics-upgrade @pmm-upgrade',
   async ({ settingsAPI, I }) => {
