@@ -121,7 +121,11 @@ Data(sslinstances).Scenario(
     console.log((await inventoryAPI.apiGetServices()).data.services.find((service) => service.service_name.startsWith(serviceName)));
     const apiServiceDetails = (await inventoryAPI.apiGetServices()).data.services.find((service) => service.service_name.startsWith(serviceName));
 
+    console.log(`Service name is ${apiServiceDetails.service_name}`);
+
     const response = await grafanaAPI.checkMetricExist(metric, { type: 'service_name', value: apiServiceDetails.service_name });
+
+    console.log(`Check Metrics response is: ${JSON.stringify(response.data)}`);
     const result = JSON.stringify(response.data.data.result);
 
     assert.ok(response.data.data.result.length !== 0, `Metrics ${metric} from ${serviceName} should be available but got empty ${result}`);
