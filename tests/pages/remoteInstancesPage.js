@@ -275,13 +275,22 @@ module.exports = {
       I.click(this.fields.useTLS);
       I.waitForElement(this.fields.tlscaInput, 30);
 
-      await this.fillFileContent(this.fields.tlscaInput, details.tlsCAFile);
-      await this.fillFileContent(this.fields.tlsCertificateInput, details.tlsCertFile);
-      await this.fillFileContent(this.fields.tlsCertificateKeyInput, details.tlsKeyFile);
+      if (details.serviceType === 'postgres_ssl') {
+        I.click(this.fields.tlscaInput);
+        I.type(details.tlsCA);
+        I.click(this.fields.tlsCertificateInput);
+        I.type(details.tlsCert);
+        I.click(this.fields.tlsCertificateKeyInput);
+        I.type(details.tlsKey);
+        I.click(this.fields.usePgStatStatements);
+      }
 
-      if (details.serviceType === 'postgres_ssl') I.click(this.fields.usePgStatStatements);
-
-      if (details.serviceType === 'mysql_ssl') I.click(this.fields.skipTLSL);
+      if (details.serviceType === 'mysql_ssl') {
+        await this.fillFileContent(this.fields.tlscaInput, details.tlsCAFile);
+        await this.fillFileContent(this.fields.tlsCertificateInput, details.tlsCertFile);
+        await this.fillFileContent(this.fields.tlsCertificateKeyInput, details.tlsKeyFile);
+        I.click(this.fields.skipTLSL);
+      }
     }
 
     if (details.serviceType === 'mongodb_ssl') {
@@ -298,8 +307,18 @@ module.exports = {
     }
   },
 
+  selectNodeForRemoteInstance(nodeName = 'pmm-server') {
+    I.waitForElement(this.fields.hostName, 30);
+    this.selectDropdownOption('$nodes-selectbox', 'pmm-server');
+  },
+
   async fillRemoteFields(serviceName) {
     let inputs;
+    const externalServiceName = 'external_service_new';
+
+    if (serviceName !== externalServiceName) {
+      this.selectNodeForRemoteInstance();
+    }
 
     // eslint-disable-next-line default-case
     switch (serviceName) {
@@ -441,7 +460,7 @@ module.exports = {
         I.fillField(this.fields.environment, inputs.environment);
         I.fillField(this.fields.cluster, inputs.clusterName);
         break;
-      case 'external_service_new':
+      case externalServiceName:
         inputs = remoteInstancesHelper.remote_instance.external.redis;
         I.fillField(this.fields.serviceName, serviceName);
         I.fillField(this.fields.hostName, inputs.host);
@@ -579,6 +598,7 @@ module.exports = {
   async fillRemoteRDSFields(serviceName) {
     let inputs;
 
+    this.selectNodeForRemoteInstance();
     // eslint-disable-next-line default-case
     switch (serviceName) {
       case 'rds-mysql56':

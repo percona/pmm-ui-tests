@@ -1,7 +1,7 @@
 const assert = require('assert');
 const {
   SERVICE_TYPE,
-  AGENT_STATUS,
+  CLI_AGENT_STATUS,
 } = require('../helper/constants');
 
 const { adminPage } = inject();
@@ -18,7 +18,7 @@ const connection = {
 // Service Name: ${PGSQL_PGSS_CONTAINER}_${PGSQL_VERSION}_service
 // Docker Container Name: ${PGSQL_PGSS_CONTAINER}_${PGSQL_VERSION}
 
-const version = process.env.PGSQL_VERSION ? `${process.env.PGSQL_VERSION}` : '16';
+const version = process.env.PGSQL_VERSION ? `${process.env.PGSQL_VERSION}` : '17';
 const container = process.env.PGSQL_PGSS_CONTAINER ? `${process.env.PGSQL_PGSS_CONTAINER}` : 'pgsql_pgss_pmm';
 const database = `pgss${Math.floor(Math.random() * 99) + 1}`;
 let pgss_service_name;
@@ -48,11 +48,10 @@ Scenario(
   'PMM-T1868 - pg_stat_statements is used if no --query-source flag provided and pg_stat_monitor is not configured @not-ui-pipeline @pgss-pmm-integration',
   async ({ I }) => {
     const serviceName = `pgss_${Math.floor(Math.random() * 99) + 1}`;
-    const { service: { service_id: serviceId }, warning } = JSON.parse(
-      await I.verifyCommand(`docker exec ${container_name} pmm-admin add postgresql --json --password=${connection.password} --username=${connection.user} --service-name=${serviceName}`),
-    );
+    const commandOut = await I.verifyCommand(`docker exec ${container_name} pmm-admin add postgresql --json --password=${connection.password} --username=${connection.user} --service-name=${serviceName}`);
+    const { service: { service_id: serviceId }, warning } = JSON.parse(commandOut);
 
-    assert.ok(warning === 'Could not to detect the pg_stat_monitor extension on your system. Falling back to the pg_stat_statements.');
+    assert.ok(warning === 'Could not to detect the pg_stat_monitor extension on your system. Falling back to the pg_stat_statements.', `Expected warning message, but received \n${commandOut}`);
 
     let list;
     let serviceAgents;
@@ -66,7 +65,7 @@ Scenario(
 
       assert.ok(pgStatStatementsAgent, 'pg_stat_statements agent should exist');
 
-      return pgStatStatementsAgent.status === AGENT_STATUS.RUNNING;
+      return pgStatStatementsAgent.status === CLI_AGENT_STATUS.RUNNING;
     }, 30);
 
     const pgStatMonitorAgent = serviceAgents.find(({ agent_type }) => agent_type === 'AGENT_TYPE_QAN_POSTGRESQL_PGSTATMONITOR_AGENT');
@@ -121,7 +120,7 @@ Scenario.skip(
     connection.database = 'postgres';
     // wait for pmm-agent to push the execution as part of next bucket to clickhouse
     I.wait(150);
-    await I.verifyCommand(`docker exec ${container_name} pmm-admin list | grep "postgresql_pgstatements_agent" | grep "Agent_status_running"`);
+    await I.verifyCommand(`docker exec ${container_name} pmm-admin list | grep "postgresql_pgstatements_agent" | grep "Running"`);
 
     let toStart = new Date();
 

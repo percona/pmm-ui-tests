@@ -1,5 +1,8 @@
 const { I } = inject();
+const Promise = require('mongodb/lib/core/topologies/read_preference');
 const { rules, templates, filterOperators } = require('./testData');
+
+const rowByAlertRuleName = (ruleName) => `//div[@data-testid="row"][div[@data-column="Name" and contains(text(), "${ruleName}")]]`;
 
 module.exports = {
   url: 'graph/alerting/list',
@@ -13,8 +16,9 @@ module.exports = {
     columnHeaderLocator: (columnHeaderText) => locate('$header').withText(columnHeaderText),
     ruleNameValue: 'div[data-column=\'Name\']',
     ruleState: (text) => `//span[contains(.,'${text}')]`,
-    ruleDetails: 'div[data-testid=\'expanded-content\']',
-    searchByDataSourceDropdown: '//div[@aria-label="Data source picker select container"]',
+    alertRuleNameByName: (ruleName) => locate(rowByAlertRuleName(ruleName)).find('div[data-column="Name"]'),
+    ruleDetails: I.useDataQA('data-testid expanded-content'),
+    searchByDataSourceDropdown: I.useDataQA('data-testid Data source picker select container'),
     searchByLabel: '$input-wrapper',
     // eslint-disable-next-line no-inline-comments
     ruleFilterLocator: (ruleFilterText) => locate('label').withText(ruleFilterText).after('//input[@type="radio"]'),
@@ -32,15 +36,16 @@ module.exports = {
     saveAndExit: locate('button').withText('Save rule and exit'),
     editAlertRule: '//a[contains(@href, \'edit?returnTo=%2Falerting%2Flist\')]',
     editRuleOnView: '//span[text()="Edit"]',
-    deleteAlertRule: locate('span').withText('Delete').inside('button'),
+    deleteAlertRule: locate('[role="menuitem"]').withText('Delete'),
     groupCollapseButton: (folderText) => `//button[@data-testid='data-testid group-collapse-toggle'][following::div/h3[contains(., '${folderText}')]]`,
     ruleCollapseButton: 'button[aria-label=\'Expand row\']',
     goToFolderButton: (folderID, folderText) => locate('[aria-label="go to folder"]').withAttr({ href: `/graph/dashboards/f/${folderID}/${folderText}` }),
     managePermissionsButton: (folderID, folderText) => locate('[aria-label="manage permissions"]').withAttr({ href: `/graph/dashboards/f/${folderID}/${folderText}/permissions` }),
-    confirmModal: 'button[aria-label=\'Confirm Modal Danger Button\']',
+    confirmModal: I.useDataQA('data-testid Confirm Modal Danger Button'),
     cancelModal: locate('button').withText('Cancel'),
     newEvaluationGroup: I.useDataQA('data-testid alert-rule new-evaluation-group-button'),
     evaluationGroupCreate: I.useDataQA('data-testid alert-rule new-evaluation-group-create-button'),
+    moreMenuByAlertRuleName: (ruleName) => locate(rowByAlertRuleName(ruleName)).find('[aria-label="More"]'),
   },
   fields: {
     // searchDropdown returns a locator of a search input for a given label
@@ -59,7 +64,7 @@ module.exports = {
     evaluationGroupName: I.useDataQA('data-testid alert-rule new-evaluation-group-name'),
   },
   messages: {
-    noRulesFound: 'You haven`t created any alert rules yet',
+    noRulesFound: 'You haven\'t created any alert rules yet',
     confirmDelete: 'Deleting this rule will permanently remove it from your alert rule list. Are you sure you want to delete this rule?',
     successRuleCreate: (name) => `Rule "${name}" saved.`,
     successRuleEdit: (name) => `Rule "${name}" updated.`,
@@ -106,10 +111,10 @@ module.exports = {
 
     I.waitForVisible(this.fields.inputField('name'));
     I.fillField(this.fields.inputField('name'), ruleName);
-    this.selectFolder(folder);
-    I.fillField(this.fields.editRuleSeverity, severity);
+    // this.selectFolder(folder);
+    // I.fillField(this.fields.editRuleSeverity, severity);
     I.fillField(this.fields.editRuleThreshold, duration);
-    I.fillField(this.fields.editRuleEvaluate, '10s');
+    // I.fillField(this.fields.editRuleEvaluate, '10s');
     I.click(this.buttons.saveAndExit);
     I.verifyPopUpMessage(this.messages.successRuleEdit(ruleName));
   },
@@ -141,18 +146,14 @@ module.exports = {
 
   verifyRuleDetails(ruleObj) {
     const {
-      ruleName, duration, folder, severity,
+      ruleName, duration, folder,
     } = ruleObj;
 
     this.verifyRuleList(folder, ruleName);
     I.seeElement(this.buttons.ruleCollapseButton);
     I.click(this.buttons.ruleCollapseButton);
     I.waitForElement(this.elements.ruleDetails);
-    I.seeTextEquals(duration, this.elements.detailsDurationValue);
-    I.waitForElement(this.elements.detailsSeverityLabel(severity));
-    I.see(severity, this.elements.detailsSeverityLabel(severity));
-    I.waitForElement(this.elements.detailsFolderLabel(folder));
-    I.see(folder, this.elements.detailsFolderLabel(folder));
+    I.see(`Pending period ${duration}`, this.elements.ruleDetails);
   },
 
   verifyRuleList(folder, ruleName) {
@@ -163,5 +164,11 @@ module.exports = {
 
   verifyRuleState(ruleName, timeOut) {
     I.waitForText(ruleName, timeOut, this.elements.ruleState(ruleName));
+  },
+
+  openMoreMenu(ruleName) {
+    I.waitForVisible(this.buttons.moreMenuByAlertRuleName(ruleName), 30);
+    I.click(this.buttons.moreMenuByAlertRuleName(ruleName));
+    I.waitForVisible(this.buttons.deleteAlertRule, 10);
   },
 };

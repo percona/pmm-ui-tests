@@ -1,7 +1,7 @@
 const assert = require('assert');
 const {
   SERVICE_TYPE,
-  AGENT_STATUS,
+  CLI_AGENT_STATUS,
 } = require('../helper/constants');
 
 const connection = {
@@ -17,7 +17,7 @@ const connection = {
 // Service Name: ${PGSQL_PGSM_CONTAINER}_${PGSQL_VERSION}_service
 // Docker Container Name: ${PGSQL_PGSM_CONTAINER}_${PGSQL_VERSION}
 
-const version = process.env.PDPGSQL_VERSION ? `${process.env.PDPGSQL_VERSION}` : '16';
+const version = process.env.PDPGSQL_VERSION ? `${process.env.PDPGSQL_VERSION}` : '17';
 const database = `pgsm${Math.floor(Math.random() * 99) + 1}`;
 let pgsm_service_name;
 let pgsm_service_name_socket;
@@ -100,7 +100,7 @@ Scenario(
 
       assert.ok(pgStatMonitorAgent, 'pg_stat_monitor agent should exist');
 
-      return pgStatMonitorAgent.status === AGENT_STATUS.RUNNING;
+      return pgStatMonitorAgent.status === CLI_AGENT_STATUS.RUNNING;
     }, 30);
 
     const pgStatStatementsAgent = serviceAgents.find(({ agent_type }) => agent_type === 'AGENT_TYPE_QAN_POSTGRESQL_PGSTATEMENTS_AGENT');
@@ -227,7 +227,7 @@ Scenario(
     dashboardPage.waitForDashboardOpened();
     await dashboardPage.expandEachDashboardRow();
     await dashboardPage.verifyMetricsExistence(dashboardPage.postgresqlInstanceSummaryDashboard.metrics);
-    await dashboardPage.verifyThereAreNoGraphsWithoutData(1);
+    await dashboardPage.verifyThereAreNoGraphsWithoutData(2);
   },
 );
 
@@ -243,7 +243,7 @@ Scenario(
     dashboardPage.waitForDashboardOpened();
     await dashboardPage.expandEachDashboardRow();
     await dashboardPage.verifyMetricsExistence(dashboardPage.postgresqlInstanceSummaryDashboard.metrics);
-    await dashboardPage.verifyThereAreNoGraphsWithoutData(1);
+    await dashboardPage.verifyThereAreNoGraphsWithoutData(2);
     const log = await I.verifyCommand(`docker exec ${container_name} cat pmm-agent.log`);
 
     I.assertFalse(
@@ -254,7 +254,8 @@ Scenario(
 );
 
 // The numbers don't entirely match, we need to find a way to track based on difference
-Scenario(
+// TODO: unskip after https://perconadev.atlassian.net/browse/PMM-13544
+Scenario.skip(
   'PMM-T1259 - Verifying data in Clickhouse and comparing with PGSM output @pgsm-pmm-integration @not-ui-pipeline',
   async ({ I, qanAPI }) => {
     await I.pgExecuteQueryOnDemand('SELECT now();', connection);

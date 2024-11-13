@@ -14,14 +14,14 @@ module.exports = {
           name: 'default',
           grafana_managed_receiver_configs: [{
             // Pager Duty config
-            settings: {},
-            secureSettings: {
-              integrationKey: process.env.PAGER_DUTY_SERVICE_KEY,
-            },
-            type: 'pagerduty',
-            name: 'default',
-            disableResolveMessage: false,
-          }, {
+            //   settings: {},
+            //   secureSettings: {
+            //     integrationKey: process.env.PAGER_DUTY_SERVICE_KEY,
+            //   },
+            //   type: 'pagerduty',
+            //   name: 'default',
+            //   disableResolveMessage: false,
+            // }, {
             // Webhook config
             settings: {
               url: 'http://webhookd:8080/alert',
