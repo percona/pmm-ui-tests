@@ -138,7 +138,7 @@ test.describe('PMM Client "--help" validation', async () => {
   test('run pmm-admin --help to check if Annotation exist in help output', async ({}) => {
     const output = await cli.execSilent('sudo pmm-admin --help');
     await output.assertSuccess();
-    await output.outContains('annotate      Add an annotation to Grafana charts');
+    await output.outContains('annotate Add an annotation to Grafana charts');
   });
 
   /**
