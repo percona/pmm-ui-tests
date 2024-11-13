@@ -61,9 +61,6 @@ Data(clientDbServices)
       const metricName = current.metric;
       const apiServiceDetails = await inventoryAPI.getServiceDetailsByPartialName(current.name);
 
-      console.log(`Service Typ is: ${current.serviceType} and service name is: ${current.name}`);
-      console.log(`Service is:  ${JSON.stringify(apiServiceDetails)}`);
-
       await grafanaAPI.checkMetricExist(metricName, {
         type: 'service_name',
         value: apiServiceDetails.service_name,
