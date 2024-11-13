@@ -503,9 +503,6 @@ module.exports = {
 
     const result = JSON.stringify(response.data.results);
 
-    console.log(`Check Metrics for metric: ${metricName} refined by ${JSON.stringify(refineBy)} is: `);
-    console.log(response.data.results.A.frames);
-
     I.assertTrue(
       response.data.results.A.frames[0].data.values.length !== 0,
       `Metrics '${metricName}' ${refineBy === null ? '' : `with filters as ${JSON.stringify(refineBy)} `}should be available but got empty ${result}`,
