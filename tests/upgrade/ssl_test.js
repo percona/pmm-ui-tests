@@ -114,13 +114,9 @@ Data(sslinstances).Scenario(
 
     // Waiting for metrics to start hitting for remotely added services
     I.wait(10);
+    const apiServiceDetails = await inventoryAPI.getServiceDetailsByPartialName(serviceName);
 
     // verify metric for client container node instance
-    const apiServiceDetails = (await inventoryAPI.apiGetServices())
-      .data
-      .services
-      .find((service) => service.service_name.startsWith(serviceName));
-
     await grafanaAPI.checkMetricExist(metric, { type: 'service_name', value: apiServiceDetails.service_name });
 
     // verify metric for remote instance
@@ -137,7 +133,7 @@ Data(sslinstances).Scenario(
       databaseType, serviceName, dashboard,
     } = current;
 
-    const apiServiceDetails = (await inventoryAPI.apiGetServices()).data[databaseType].find((service) => service.service_name.startsWith(serviceName));
+    const apiServiceDetails = await inventoryAPI.getServiceDetailsByPartialName(serviceName);
 
     const serviceList = [apiServiceDetails.service_name, `remote_api_${serviceName}`];
 
@@ -161,12 +157,10 @@ Data(sslinstances).Scenario(
     I, queryAnalyticsPage, current, adminPage, inventoryAPI,
   }) => {
     const {
-      serviceName, databaseType,
+      serviceName,
     } = current;
 
-    const apiServiceDetails = (await inventoryAPI.apiGetServices())
-      .data[databaseType]
-      .find((service) => service.service_name.startsWith(serviceName));
+    const apiServiceDetails = await inventoryAPI.getServiceDetailsByPartialName(serviceName);
 
     const serviceList = [apiServiceDetails.service_name, `remote_api_${serviceName}`];
 
