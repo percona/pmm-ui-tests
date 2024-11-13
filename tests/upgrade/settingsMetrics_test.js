@@ -2,11 +2,11 @@ Feature('PMM upgrade tests for settings and metrics');
 
 const { dashboardPage } = inject();
 
-const clientDbServices = new DataTable(['serviceType', 'name', 'metric', 'annotationName', 'dashboard', 'upgrade_service']);
+const clientDbServices = new DataTable(['serviceType', 'name', 'metric']);
 
-clientDbServices.add(['mysql', 'ps-single', 'mysql_global_status_max_used_connections', 'annotation-for-mysql', dashboardPage.mysqlInstanceSummaryDashboard.url, 'mysql_upgrade']);
-clientDbServices.add(['postgresql', 'pgsql_pgss_pmm', 'pg_stat_database_xact_rollback', 'annotation-for-postgres', dashboardPage.postgresqlInstanceSummaryDashboard.url, 'pgsql_upgrade']);
-clientDbServices.add(['mongodb', 'rs101', 'mongodb_connections', 'annotation-for-mongo', dashboardPage.mongoDbInstanceSummaryDashboard.url, 'mongo_upgrade']);
+clientDbServices.add(['mysql', 'ps-single', 'mysql_global_status_max_used_connections']);
+clientDbServices.add(['postgresql', 'pgsql_pgss_pmm', 'pg_stat_database_xact_rollback']);
+clientDbServices.add(['mongodb', 'rs101', 'mongodb_connections']);
 
 Before(async ({ I }) => {
   await I.Authorize();
@@ -60,6 +60,9 @@ Data(clientDbServices)
     }) => {
       const metricName = current.metric;
       const apiServiceDetails = await inventoryAPI.getServiceDetailsByPartialName(current.name);
+
+      console.log(`Service Typ is: ${current.serviceType} and service name is: ${current.name}`);
+      console.log(`Service is:  ${JSON.stringify(apiServiceDetails)}`);
 
       await grafanaAPI.checkMetricExist(metricName, {
         type: 'node_name',
