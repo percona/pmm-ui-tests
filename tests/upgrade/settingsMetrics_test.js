@@ -61,16 +61,9 @@ Data(clientDbServices)
       const metricName = current.metric;
       const apiServiceDetails = await inventoryAPI.getServiceDetailsByPartialName(current.name);
 
-      console.log(`Service Typ is: ${current.serviceType} and service name is: ${current.name}`);
-      console.log(`Service is:  ${JSON.stringify(apiServiceDetails)}`);
-
-      console.log(`Node Details are: ${JSON.stringify(await inventoryAPI.apiGetNodeInfoByServiceName(current.serviceType, apiServiceDetails.service_name))}`);
-      const { node_id } = await inventoryAPI.apiGetNodeInfoByServiceName(current.serviceType, apiServiceDetails.service_name);
-      const nodeName = await inventoryAPI.getNodeName(node_id);
-
       await grafanaAPI.checkMetricExist(metricName, {
         type: 'node_name',
-        value: nodeName,
+        value: apiServiceDetails.service_name,
       });
     },
   );
