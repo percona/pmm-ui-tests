@@ -150,7 +150,7 @@ services:
     image: perconalab/sysbench
     container_name: pmm-agent_sysbench
     depends_on:
-      - mysql
+      - mysql8
     networks:
       - pmm-network
     command: >
