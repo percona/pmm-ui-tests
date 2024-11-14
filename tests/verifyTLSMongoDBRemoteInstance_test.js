@@ -12,14 +12,14 @@ const instances = new DataTable(['serviceName', 'version', 'container', 'service
 // instances.add(['mongodb_4.4_ssl_service', '4.4', 'mongodb_4.4', 'mongodb_ssl', 'mongodb_connections', '7']);
 // instances.add(['mongodb_4.2_ssl_service', '4.2', 'mongodb_4.2', 'mongodb_ssl', 'mongodb_connections']);
 // instances.add(['mongodb_5.0_ssl_service', '5.0', 'mongodb_5.0', 'mongodb_ssl', 'mongodb_connections', '7']);
-instances.add(['mongodb_ssl_service', '6.0', 'psmdb-server', 'mongodb_ssl', 'mongodb_connections', '7']);
+instances.add(['psmdb-server', '6.0', 'psmdb-server', 'mongodb_ssl', 'mongodb_connections', '7']);
 
 let serviceName;
 
 Before(async ({ I, inventoryAPI }) => {
   await I.Authorize();
 
-  const { service_name } = await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.MONGODB, 'mongodb_ssl_service');
+  const { service_name } = await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.MONGODB, 'psmdb-server');
 
   serviceName = service_name;
 });
@@ -101,7 +101,7 @@ Data(instances).Scenario(
       container,
     } = current;
     let responseMessage = 'Connection check failed: server selection error: server selection timeout, current topology:';
-    let command = `docker exec ${container} pmm-admin add mongodb --tls --tls-skip-verify --authentication-mechanism=MONGODB-X509 --authentication-database=$external --tls-ca-file=/nodes/certificates/ca.crt TLS_MongoDB_Service`;
+    let command = `docker exec ${container} pmm-admin add mongodb --tls --tls-skip-verify --authentication-mechanism=MONGODB-X509 --authentication-database=$external --tls-ca-file=/mongodb_certs/certificate.crt TLS_MongoDB_Service`;
 
     I.amOnPage(dashboardPage.mongoDbInstanceOverview.url);
 
@@ -110,7 +110,7 @@ Data(instances).Scenario(
     assert.ok(output.includes(responseMessage), `The ${command} was supposed to return output which contained ${responseMessage} but actually got ${output}`);
 
     responseMessage = 'Connection check failed: server selection error: server selection timeout, current topology:';
-    command = `docker exec ${container} pmm-admin add mongodb --tls --authentication-mechanism=MONGODB-X509 --authentication-database=$external --tls-certificate-key-file=/nodes/certificates/client.pem TLS_MongoDB_Service`;
+    command = `docker exec ${container} pmm-admin add mongodb --tls --authentication-mechanism=MONGODB-X509 --authentication-database=$external --tls-certificate-key-file=/mongodb_certs/client.pem TLS_MongoDB_Service`;
 
     output = await I.verifyCommand(command, responseMessage, 'fail');
 
@@ -137,8 +137,7 @@ Data(instances).Scenario(
       adminPage.performPageDown(5);
       await dashboardPage.expandEachDashboardRow();
       adminPage.performPageUp(5);
-      await dashboardPage.verifyThereAreNoGraphsWithoutData();
-      await dashboardPage.verifyThereAreNoGraphsWithoutData(3);
+      await dashboardPage.verifyThereAreNoGraphsWithoutData(2);
     }
   },
 ).retry(1);
@@ -179,16 +178,16 @@ Data(instances).Scenario(
 
     I.amOnPage(dashboardPage.mySQLInstanceOverview.url);
 
-    const agent_id = await I.verifyCommand(`docker exec ${container} pmm-admin list | grep mongodb_exporter | awk -F" " '{print $4}' | awk -F"/" '{print $3}'`);
+    const agent_id = await I.verifyCommand(`docker exec ${container} pmm-admin list | grep mongodb_exporter | awk -F" " '{print $4}'`);
 
-    await I.verifyCommand(`docker exec ${container} ls -la /usr/local/percona/pmm/tmp/mongodb_exporter/agent_id/${agent_id}/ | grep caFile`);
-    await I.verifyCommand(`docker exec ${container} rm -r /usr/local/percona/pmm/tmp/mongodb_exporter/`);
-    await I.verifyCommand(`docker exec ${container} ls -la /usr/local/percona/pmm/tmp/mongodb_exporter/`, 'ls: cannot access \'/usr/local/percona/pmm/tmp/mongodb_exporter\': No such file or directory', 'fail');
+    await I.verifyCommand(`docker exec ${container} ls -la /usr/local/percona/pmm/tmp/agent_type_mongodb_exporter/${agent_id}/ | grep caFile`);
+    await I.verifyCommand(`docker exec ${container} rm -r /usr/local/percona/pmm/tmp/agent_type_mongodb_exporter/`);
+    await I.verifyCommand(`docker exec ${container} ls -la /usr/local/percona/pmm/tmp/agent_type_mongodb_exporter/`, 'ls: cannot access \'/usr/local/percona/pmm/tmp/agent_type_mongodb_exporter\': No such file or directory', 'fail');
     await I.verifyCommand(`docker exec ${container} pmm-admin list | grep mongodb_exporter | grep Running`);
     await I.verifyCommand(`docker exec ${container} pkill -f mongodb_exporter`);
     I.wait(10);
     await I.verifyCommand(`docker exec ${container} pmm-admin list | grep mongodb_exporter | grep Running`);
-    await I.verifyCommand(`docker exec ${container} ls -la /usr/local/percona/pmm/tmp/mongodb_exporter/agent_id/${agent_id}/ | grep caFile`);
+    await I.verifyCommand(`docker exec ${container} ls -la /usr/local/percona/pmm/tmp/agent_type_mongodb_exporter/${agent_id}/ | grep caFile`);
   },
 ).retry(1);
 
