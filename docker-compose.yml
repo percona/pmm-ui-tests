@@ -158,7 +158,7 @@ services:
           set -o xtrace
           sleep 20
           mysql \
-              --host=mysql \
+              --host=mysql8 \
               --port=3306 \
               --user=root \
               --password=^O6VrIoC1@9b \
@@ -182,7 +182,7 @@ services:
               --events=0 \
               --rand-type=pareto \
               --db-driver=mysql \
-              --mysql-host=mysql \
+              --mysql-host=mysql8 \
               --mysql-port=3306 \
               --mysql-user=root \
               --mysql-password=^O6VrIoC1@9b \
