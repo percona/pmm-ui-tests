@@ -69,7 +69,7 @@ Data(instances).Scenario(
     remoteInstancesPage.waitUntilRemoteInstancesPageLoaded();
     remoteInstancesPage.openAddRemotePage(instanceType);
     await remoteInstancesPage.addRemoteDetails(instanceDetails);
-    I.click(remoteInstancesPage.fields.addService);
+    remoteInstancesPage.clickAddInstanceAndWaitForSuccess();
     pmmInventoryPage.verifyRemoteServiceIsDisplayed(instanceDetails.serviceName);
     await pmmInventoryPage.verifyAgentHasStatusRunning(instanceDetails.serviceName);
     // Waiting for metrics to start hitting PMM-Server

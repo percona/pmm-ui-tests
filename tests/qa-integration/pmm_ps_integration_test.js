@@ -47,7 +47,7 @@ Scenario(
     I.fillField(remoteInstancesPage.fields.password, details.password);
     I.fillField(remoteInstancesPage.fields.environment, details.environment);
     I.fillField(remoteInstancesPage.fields.cluster, details.cluster);
-    I.click(remoteInstancesPage.fields.addService);
+    remoteInstancesPage.clickAddInstanceAndWaitForSuccess();
     // I.waitForVisible(pmmInventoryPage.fields.agentsLink, 30);
     I.wait(10);
     await inventoryAPI.verifyServiceExistsAndHasRunningStatus(

@@ -75,8 +75,7 @@ Scenario(
     remoteInstancesPage.waitUntilRemoteInstancesPageLoaded();
     remoteInstancesPage.openAddRemotePage('external');
     await remoteInstancesPage.fillRemoteFields(externalExporterServiceName);
-    I.waitForVisible(remoteInstancesPage.fields.addService, 30);
-    I.click(remoteInstancesPage.fields.addService);
+    remoteInstancesPage.clickAddInstanceAndWaitForSuccess();
     pmmInventoryPage.verifyRemoteServiceIsDisplayed(externalExporterServiceName);
     await I.click(pmmInventoryPage.fields.showServiceDetails(externalExporterServiceName));
     await I.click(pmmInventoryPage.fields.agentsLinkNew);
@@ -206,8 +205,7 @@ Scenario(
       remoteInstancesHelper.remote_instance.haproxy.haproxy_2.port,
     );
     I.scrollPageToBottom();
-    I.waitForVisible(remoteInstancesPage.fields.addService, 30);
-    I.click(remoteInstancesPage.fields.addService);
+    remoteInstancesPage.clickAddInstanceAndWaitForSuccess();
     pmmInventoryPage.verifyRemoteServiceIsDisplayed(haproxyServiceName);
 
     await I.click(pmmInventoryPage.fields.showServiceDetails(haproxyServiceName));
@@ -260,10 +258,10 @@ Data(remotePostgreSQL).Scenario(
     I.waitForVisible(remoteInstancesPage.fields.skipTLSL, 30);
     I.click(remoteInstancesPage.fields.skipTLSL);
     I.click(current.trackingOption);
-    I.click(remoteInstancesPage.fields.addService);
+    remoteInstancesPage.clickAddInstanceAndWaitForSuccess();
     pmmInventoryPage.verifyRemoteServiceIsDisplayed(current.instanceName);
     await pmmInventoryPage.verifyAgentHasStatusRunning(current.instanceName);
-    pmmInventoryPage.checkExistingAgent(current.checkAgent);
+    await pmmInventoryPage.checkExistingAgent(current.checkAgent);
   },
 );
 
@@ -336,7 +334,7 @@ Scenario(
     I.click(remoteInstancesPage.fields.addService);
     I.verifyPopUpMessage(errorMessage);
     I.fillField(remoteInstancesPage.fields.database, 'not_default_db');
-    I.click(remoteInstancesPage.fields.addService);
+    remoteInstancesPage.clickAddInstanceAndWaitForSuccess();
     pmmInventoryPage.verifyRemoteServiceIsDisplayed(remoteServiceName);
     await pmmInventoryPage.verifyAgentHasStatusRunning(remoteServiceName);
     // verify metric for client container node instance

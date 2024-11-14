@@ -43,7 +43,7 @@ Data(azureServices).Scenario(
     remoteInstancesPage.startMonitoringOfInstance(current.instanceToMonitor);
     remoteInstancesPage.verifyAddInstancePageOpened();
     await remoteInstancesPage.fillRemoteRDSFields(serviceName);
-    I.click(remoteInstancesPage.fields.addService);
+    remoteInstancesPage.clickAddInstanceAndWaitForSuccess();
     pmmInventoryPage.verifyRemoteServiceIsDisplayed(serviceName);
 
     if (serviceName === 'azure-MySQL') {

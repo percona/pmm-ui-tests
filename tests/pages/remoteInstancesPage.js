@@ -503,7 +503,6 @@ module.exports = {
 
   createRemoteInstance(serviceName) {
     I.waitForVisible(this.fields.skipTLSL, 30);
-    I.waitForVisible(this.fields.addService, 30);
     I.checkOption(this.fields.skipTLSL);
     // eslint-disable-next-line default-case
     switch (serviceName) {
@@ -521,10 +520,32 @@ module.exports = {
         I.click(this.fields.disableBasicMetrics);
         break;
     }
-    I.click(this.fields.addService);
+
+    this.clickAddInstanceAndWaitForSuccess();
     I.waitForVisible(pmmInventoryPage.fields.serviceRow(serviceName), 30);
 
     return pmmInventoryPage;
+  },
+
+  clickAddInstanceAndWaitForSuccess() {
+    I.waitForVisible(this.fields.addService, 30);
+    I.click(this.fields.addService);
+
+    I.waitForResponse(
+      (response) => {
+        if (response.url().includes('v1/management/services')) {
+          if (response.status() === 200) {
+            return true;
+          }
+
+          throw new Error(`Expected status 200 but received ${response.status()}`);
+        }
+
+        // Continue waiting if this isn't the target request
+        return false;
+      },
+      30,
+    );
   },
 
   openAddAzure() {
