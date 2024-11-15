@@ -53,7 +53,7 @@ Data(instances).Scenario(
     remoteInstancesPage.waitUntilRemoteInstancesPageLoaded();
     remoteInstancesPage.openAddRemotePage(serviceType);
     await remoteInstancesPage.addRemoteSSLDetails(details);
-    remoteInstancesPage.clickAddInstanceAndWaitForSuccess();
+    await remoteInstancesPage.clickAddInstanceAndWaitForSuccess();
     await inventoryAPI.verifyServiceExistsAndHasRunningStatus(
       {
         serviceType: SERVICE_TYPE.MONGODB,
@@ -221,7 +221,7 @@ Data(instances).Scenario(
     remoteInstancesPage.openAddRemotePage(serviceType);
     await remoteInstancesPage.addRemoteSSLDetails(details);
     I.fillField(remoteInstancesPage.fields.maxQueryLength, maxQueryLength);
-    remoteInstancesPage.clickAddInstanceAndWaitForSuccess();
+    await remoteInstancesPage.clickAddInstanceAndWaitForSuccess();
 
     // Check Remote Instance also added and have running status
     pmmInventoryPage.verifyRemoteServiceIsDisplayed(remoteServiceName);
