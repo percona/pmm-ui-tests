@@ -529,7 +529,8 @@ module.exports = {
 
   clickAddInstanceAndWaitForSuccess() {
     I.waitForVisible(this.fields.addService, 30);
-    I.click(this.fields.addService);
+    I.wait(1);
+    I.click(this.fields.addService, { force: true });
 
     I.waitForResponse(
       (response) => {
