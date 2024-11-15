@@ -360,16 +360,71 @@ module.exports = {
   // Should be refactored
   async getMetric(metricName, refineBy) {
     const uid = await this.getDataSourceUidByName();
+    const currentTime = Date.now();
+
+    let refineByString = '';
+
+    if (Array.isArray(refineBy)) {
+      // Handle refineBy as an array of objects
+      refineByString = refineBy
+        // Check that type and value are defined
+        .filter(({ type, value }) => type && value)
+        .map(({ type, value }) => `${type}="${value}"`)
+        .join(',');
+    } else if (refineBy && refineBy.type && refineBy.value) {
+      // Handle refineBy as a single object with both type and value defined
+      refineByString = `${refineBy.type}="${refineBy.value}"`;
+    }
+
     const body = {
       queries: [
         {
+          refId: 'A',
+          expr: refineByString ? `${metricName}{${refineByString}}` : metricName,
+          range: true,
+          instant: false,
           datasource: {
+            type: 'prometheus',
             uid,
           },
-          expr: refineBy ? `${metricName}{${refineBy.type}=\"${refineBy.value}\"}` : metricName,
+          editorMode: 'builder',
+          legendFormat: '__auto',
+          useBackend: false,
+          disableTextWrap: false,
+          fullMetaSearch: false,
+          includeNullMetadata: true,
+          requestId: '17102A',
+          utcOffsetSec: 19800,
+          interval: '',
+          datasourceId: 1,
+          intervalMs: 1000,
+          maxDataPoints: 757,
+        },
+        {
+          refId: 'A-Instant',
+          expr: refineByString ? `${metricName}{${refineByString}}` : metricName,
+          range: false,
+          instant: true,
+          datasource: {
+            type: 'prometheus',
+            uid,
+          },
+          editorMode: 'builder',
+          legendFormat: '__auto',
+          useBackend: false,
+          disableTextWrap: false,
+          fullMetaSearch: false,
+          includeNullMetadata: true,
+          requestId: '17102A',
+          utcOffsetSec: 19800,
+          interval: '',
+          datasourceId: 1,
+          intervalMs: 1000,
+          maxDataPoints: 757,
         },
       ],
-      from: 'now-15m',
+      from: (currentTime - 5 * 60 * 1000).toString(),
+      to: currentTime.toString(),
     };
 
     const headers = {

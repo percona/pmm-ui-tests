@@ -87,10 +87,10 @@ Scenario(
     assert.ok(!mongoDbOptions.enable_all_collectors, `Was expecting enable_all_collectors to be disabled for Mongo Exporter for service "${mongodb_service_name}"`);
     I.say('Wait 180 seconds for Metrics being collected for the new service');
     await I.wait(180);
-    await grafanaAPI.checkMetricAbsent(metrics.dbstats, { type: 'service_name', value: mongodb_service_name });
-    await grafanaAPI.checkMetricAbsent(metrics.collstats, { type: 'service_name', value: mongodb_service_name });
-    await grafanaAPI.checkMetricAbsent(metrics.topmetrics, { type: 'service_name', value: mongodb_service_name });
-    await grafanaAPI.checkMetricAbsent(metrics.indexstats, { type: 'service_name', value: mongodb_service_name });
+    await grafanaAPI.checkMetricAbsent(metrics.dbstats, { type: 'service_id', value: service_id });
+    await grafanaAPI.checkMetricAbsent(metrics.collstats, { type: 'service_id', value: service_id });
+    await grafanaAPI.checkMetricAbsent(metrics.topmetrics, { type: 'service_id', value: service_id });
+    await grafanaAPI.checkMetricAbsent(metrics.indexstats, { type: 'service_id', value: service_id });
   },
 );
 
@@ -117,10 +117,10 @@ Scenario(
     assert.ok(mongoDbOptions.enable_all_collectors, `Was expecting Mongo Exporter for service ${mongodb_service_name} to have "enable_all_collectors" property with "true"`);
     I.say('Wait 180 seconds for Metrics being collected for the new service');
     await I.wait(180);
-    await grafanaAPI.checkMetricExist(metrics.dbstats, { type: 'service_name', value: mongodb_service_name });
-    await grafanaAPI.checkMetricExist(metrics.collstats, { type: 'service_name', value: mongodb_service_name });
-    await grafanaAPI.checkMetricExist(metrics.indexstats, { type: 'service_name', value: mongodb_service_name });
-    await grafanaAPI.checkMetricAbsent(metrics.topmetrics, { type: 'service_name', value: mongodb_service_name });
+    await grafanaAPI.checkMetricExist(metrics.dbstats, { type: 'service_id', value: service_id });
+    await grafanaAPI.checkMetricExist(metrics.collstats, { type: 'service_id', value: service_id });
+    await grafanaAPI.checkMetricExist(metrics.indexstats, { type: 'service_id', value: service_id });
+    await grafanaAPI.checkMetricAbsent(metrics.topmetrics, { type: 'service_id', value: service_id });
   },
 );
 
@@ -138,10 +138,10 @@ Scenario(
     assert.ok(mongoDbOptions.enable_all_collectors, `Was expecting Mongo Exporter for service ${mongodb_service_name} to have "enable_all_collectors" property`);
     await I.say('Wait 180 seconds for Metrics being collected for the new service');
     await I.wait(180);
-    await grafanaAPI.checkMetricExist(metrics.dbstats, { type: 'service_name', value: mongodb_service_name });
-    await grafanaAPI.checkMetricExist(metrics.collstats, { type: 'service_name', value: mongodb_service_name });
-    await grafanaAPI.checkMetricExist(metrics.indexstats, { type: 'service_name', value: mongodb_service_name });
-    await grafanaAPI.checkMetricExist(metrics.topmetrics, { type: 'service_name', value: mongodb_service_name });
+    await grafanaAPI.checkMetricExist(metrics.dbstats, { type: 'service_id', value: service_id });
+    await grafanaAPI.checkMetricExist(metrics.collstats, { type: 'service_id', value: service_id });
+    await grafanaAPI.checkMetricExist(metrics.indexstats, { type: 'service_id', value: service_id });
+    await grafanaAPI.checkMetricExist(metrics.topmetrics, { type: 'service_id', value: service_id });
   },
 );
 
@@ -161,10 +161,10 @@ Scenario(
     assert.ok(mongoDbOptions.enable_all_collectors, `Was expecting Mongo Exporter for service ${mongodb_service_name} to have "enable_all_collectors" property`);
     I.say('Wait 180 seconds for Metrics being collected for the new service');
     await I.wait(180);
-    await grafanaAPI.checkMetricExist(metrics.dbstats, { type: 'service_name', value: mongodb_service_name });
-    await grafanaAPI.checkMetricExist(metrics.collstats, { type: 'service_name', value: mongodb_service_name });
-    await grafanaAPI.checkMetricExist(metrics.indexstats, { type: 'service_name', value: mongodb_service_name });
-    await grafanaAPI.checkMetricExist(metrics.topmetrics, { type: 'service_name', value: mongodb_service_name });
+    await grafanaAPI.checkMetricExist(metrics.dbstats, { type: 'service_id', value: service_id });
+    await grafanaAPI.checkMetricExist(metrics.collstats, { type: 'service_id', value: service_id });
+    await grafanaAPI.checkMetricExist(metrics.indexstats, { type: 'service_id', value: service_id });
+    await grafanaAPI.checkMetricExist(metrics.topmetrics, { type: 'service_id', value: service_id });
   },
 );
 
@@ -193,10 +193,10 @@ Scenario(
     assert.ok(mongoDbOptions.enable_all_collectors, `Was expecting Mongo Exporter for service ${mongodb_service_name} to have "enable_all_collectors" property with "true"`);
     I.say('Wait 150 seconds for Metrics being collected for the new service');
     await I.wait(150);
-    await grafanaAPI.checkMetricAbsent(metrics.dbstats, { type: 'service_name', value: mongodb_service_name });
-    await grafanaAPI.checkMetricAbsent(metrics.collstats, { type: 'service_name', value: mongodb_service_name });
-    await grafanaAPI.checkMetricExist(metrics.indexstats, { type: 'service_name', value: mongodb_service_name });
-    await grafanaAPI.checkMetricAbsent(metrics.topmetrics, { type: 'service_name', value: mongodb_service_name });
+    await grafanaAPI.checkMetricAbsent(metrics.dbstats, { type: 'service_id', value: service_id });
+    await grafanaAPI.checkMetricAbsent(metrics.collstats, { type: 'service_id', value: service_id });
+    await grafanaAPI.checkMetricExist(metrics.indexstats, { type: 'service_id', value: service_id });
+    await grafanaAPI.checkMetricAbsent(metrics.topmetrics, { type: 'service_id', value: service_id });
   },
 );
 
@@ -216,14 +216,14 @@ Scenario(
     assert.ok(mongoDbOptions.enable_all_collectors, `Was expecting Mongo Exporter for service ${mongodb_service_name} to have "enable_all_collectors" property`);
     I.say('Wait 180 seconds for Metrics being collected for the new service');
     await I.wait(180);
-    await grafanaAPI.checkMetricExist(metrics.dbstats, { type: 'service_name', value: mongodb_service_name });
-    await grafanaAPI.checkMetricExist(metrics.collstats, { type: 'service_name', value: mongodb_service_name });
-    await grafanaAPI.checkMetricExist(metrics.indexstats, { type: 'service_name', value: mongodb_service_name });
-    await grafanaAPI.checkMetricExist(metrics.topmetrics, { type: 'service_name', value: mongodb_service_name });
-    await grafanaAPI.checkMetricExist(metrics.collstats, [{ type: 'service_name', value: mongodb_service_name }, { type: 'database', value: 'db1' }]);
-    await grafanaAPI.checkMetricAbsent(metrics.collstats, [{ type: 'service_name', value: mongodb_service_name }, { type: 'database', value: 'db3' }, { type: 'collection', value: 'col3' }]);
-    await grafanaAPI.checkMetricAbsent(metrics.collstats, [{ type: 'service_name', value: mongodb_service_name }, { type: 'database', value: 'db2' }, { type: 'collection', value: 'col1' }]);
-    await grafanaAPI.checkMetricExist(metrics.collstats, [{ type: 'service_name', value: mongodb_service_name }, { type: 'database', value: 'db2' }, { type: 'collection', value: 'col2' }]);
+    await grafanaAPI.checkMetricExist(metrics.dbstats, { type: 'service_id', value: service_id });
+    await grafanaAPI.checkMetricExist(metrics.collstats, { type: 'service_id', value: service_id });
+    await grafanaAPI.checkMetricExist(metrics.indexstats, { type: 'service_id', value: service_id });
+    await grafanaAPI.checkMetricExist(metrics.topmetrics, { type: 'service_id', value: service_id });
+    await grafanaAPI.checkMetricExist(metrics.collstats, [{ type: 'service_id', value: service_id }, { type: 'database', value: 'db1' }]);
+    await grafanaAPI.checkMetricAbsent(metrics.collstats, [{ type: 'service_id', value: service_id }, { type: 'database', value: 'db3' }, { type: 'collection', value: 'col3' }]);
+    await grafanaAPI.checkMetricAbsent(metrics.collstats, [{ type: 'service_id', value: service_id }, { type: 'database', value: 'db2' }, { type: 'collection', value: 'col1' }]);
+    await grafanaAPI.checkMetricExist(metrics.collstats, [{ type: 'service_id', value: service_id }, { type: 'database', value: 'db2' }, { type: 'collection', value: 'col2' }]);
   },
 );
 
@@ -231,7 +231,6 @@ Scenario(
   'PMM-T1213 - Verify metrics of MongoDB with --stats-collections=db1,db2.col2 & --max-collections-limit=5 specified when total collections across db1, db2 and the filters are 6'
   + ' @mongodb-exporter',
   async ({ I, inventoryAPI, grafanaAPI }) => {
-
     await I.say(await I.verifyCommand(`docker exec ${containerName} pmm-admin add mongodb --agent-password='testing' --password=${pmm_user_mongodb.password} --username=${pmm_user_mongodb.username} --enable-all-collectors --max-collections-limit=5 --stats-collections=db1,db2.col2 --service-name=${mongodb_service_name} --replication-set=rs0s`));
 
     const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.MONGODB, mongodb_service_name);
@@ -243,14 +242,14 @@ Scenario(
     assert.ok(mongoDbOptions.enable_all_collectors, `Was expecting Mongo Exporter for service ${mongodb_service_name} to have "enable_all_collectors" property`);
     I.say('Wait 180 seconds for Metrics being collected for the new service');
     await I.wait(180);
-    await grafanaAPI.checkMetricAbsent(metrics.dbstats, { type: 'service_name', value: mongodb_service_name });
-    await grafanaAPI.checkMetricAbsent(metrics.collstats, { type: 'service_name', value: mongodb_service_name });
-    await grafanaAPI.checkMetricAbsent(metrics.indexstats, { type: 'service_name', value: mongodb_service_name });
-    await grafanaAPI.checkMetricAbsent(metrics.topmetrics, { type: 'service_name', value: mongodb_service_name });
-    await grafanaAPI.checkMetricAbsent(metrics.collstats, [{ type: 'service_name', value: mongodb_service_name }, { type: 'database', value: 'db1' }]);
-    await grafanaAPI.checkMetricAbsent(metrics.collstats, [{ type: 'service_name', value: mongodb_service_name }, { type: 'database', value: 'db3' }, { type: 'collection', value: 'col3' }]);
-    await grafanaAPI.checkMetricAbsent(metrics.collstats, [{ type: 'service_name', value: mongodb_service_name }, { type: 'database', value: 'db2' }, { type: 'collection', value: 'col1' }]);
-    await grafanaAPI.checkMetricAbsent(metrics.collstats, [{ type: 'service_name', value: mongodb_service_name }, { type: 'database', value: 'db2' }, { type: 'collection', value: 'col2' }]);
+    await grafanaAPI.checkMetricAbsent(metrics.dbstats, { type: 'service_id', value: service_id });
+    await grafanaAPI.checkMetricAbsent(metrics.collstats, { type: 'service_id', value: service_id });
+    await grafanaAPI.checkMetricAbsent(metrics.indexstats, { type: 'service_id', value: service_id });
+    await grafanaAPI.checkMetricAbsent(metrics.topmetrics, { type: 'service_id', value: service_id });
+    await grafanaAPI.checkMetricAbsent(metrics.collstats, [{ type: 'service_id', value: service_id }, { type: 'database', value: 'db1' }]);
+    await grafanaAPI.checkMetricAbsent(metrics.collstats, [{ type: 'service_id', value: service_id }, { type: 'database', value: 'db3' }, { type: 'collection', value: 'col3' }]);
+    await grafanaAPI.checkMetricAbsent(metrics.collstats, [{ type: 'service_id', value: service_id }, { type: 'database', value: 'db2' }, { type: 'collection', value: 'col1' }]);
+    await grafanaAPI.checkMetricAbsent(metrics.collstats, [{ type: 'service_id', value: service_id }, { type: 'database', value: 'db2' }, { type: 'collection', value: 'col2' }]);
   },
 );
 
@@ -258,7 +257,6 @@ Scenario(
   'PMM-T1213 - Verify metrics of MongoDB with --stats-collections=db1,db2.col2 & --max-collections-limit=400 specified to allow fetching metrics from all collectors'
   + ' @mongodb-exporter',
   async ({ I, inventoryAPI, grafanaAPI }) => {
-
     await I.say(await I.verifyCommand(`docker exec ${containerName} pmm-admin add mongodb --agent-password='testing' --password=${pmm_user_mongodb.password} --username=${pmm_user_mongodb.username} --enable-all-collectors --max-collections-limit=400 --stats-collections=db1,db2.col2 --service-name=${mongodb_service_name} --replication-set=rs0s`));
 
     const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.MONGODB, mongodb_service_name);
@@ -270,14 +268,14 @@ Scenario(
     assert.ok(mongoDbOptions.enable_all_collectors, `Was expecting Mongo Exporter for service ${mongodb_service_name} to have "enable_all_collectors" property`);
     I.say('Wait 180 seconds for Metrics being collected for the new service');
     await I.wait(180);
-    await grafanaAPI.checkMetricExist(metrics.dbstats, { type: 'service_name', value: mongodb_service_name });
-    await grafanaAPI.checkMetricExist(metrics.collstats, { type: 'service_name', value: mongodb_service_name });
-    await grafanaAPI.checkMetricExist(metrics.indexstats, { type: 'service_name', value: mongodb_service_name });
-    await grafanaAPI.checkMetricExist(metrics.topmetrics, { type: 'service_name', value: mongodb_service_name });
-    await grafanaAPI.checkMetricExist(metrics.collstats, [{ type: 'service_name', value: mongodb_service_name }, { type: 'database', value: 'db1' }]);
-    await grafanaAPI.checkMetricAbsent(metrics.collstats, [{ type: 'service_name', value: mongodb_service_name }, { type: 'database', value: 'db3' }, { type: 'collection', value: 'col3' }]);
-    await grafanaAPI.checkMetricAbsent(metrics.collstats, [{ type: 'service_name', value: mongodb_service_name }, { type: 'database', value: 'db2' }, { type: 'collection', value: 'col1' }]);
-    await grafanaAPI.checkMetricExist(metrics.collstats, [{ type: 'service_name', value: mongodb_service_name }, { type: 'database', value: 'db2' }, { type: 'collection', value: 'col2' }]);
+    await grafanaAPI.checkMetricExist(metrics.dbstats, { type: 'service_id', value: service_id });
+    await grafanaAPI.checkMetricExist(metrics.collstats, { type: 'service_id', value: service_id });
+    await grafanaAPI.checkMetricExist(metrics.indexstats, { type: 'service_id', value: service_id });
+    await grafanaAPI.checkMetricExist(metrics.topmetrics, { type: 'service_id', value: service_id });
+    await grafanaAPI.checkMetricExist(metrics.collstats, [{ type: 'service_id', value: service_id }, { type: 'database', value: 'db1' }]);
+    await grafanaAPI.checkMetricAbsent(metrics.collstats, [{ type: 'service_id', value: service_id }, { type: 'database', value: 'db3' }, { type: 'collection', value: 'col3' }]);
+    await grafanaAPI.checkMetricAbsent(metrics.collstats, [{ type: 'service_id', value: service_id }, { type: 'database', value: 'db2' }, { type: 'collection', value: 'col1' }]);
+    await grafanaAPI.checkMetricExist(metrics.collstats, [{ type: 'service_id', value: service_id }, { type: 'database', value: 'db2' }, { type: 'collection', value: 'col2' }]);
   },
 );
 
@@ -285,7 +283,6 @@ Scenario(
   'PMM-9919 Verify smart metrics of MongoDB with --stats-collections=db1,db2.col2 & --max-collections-limit=400 specified to allow fetching metrics from all collectors'
   + ' @mongodb-exporter',
   async ({ I, inventoryAPI, grafanaAPI }) => {
-
     await I.say(await I.verifyCommand(`docker exec ${containerName} pmm-admin add mongodb --agent-password='testing' --password=${pmm_user_mongodb.password} --username=${pmm_user_mongodb.username} --enable-all-collectors --max-collections-limit=400 --stats-collections=db1,db2.col2 --service-name=${mongodb_service_name} --replication-set=rs0s`));
 
     const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.MONGODB, mongodb_service_name);
@@ -298,21 +295,21 @@ Scenario(
     assert.ok(mongoDbOptions.enable_all_collectors, `Was expecting Mongo Exporter for service ${mongodb_service_name} to have "enable_all_collectors" property`);
     I.say('Wait 180 seconds for Metrics being collected for the new service');
     await I.wait(180);
-    await grafanaAPI.checkMetricExist(smartMetricName, [{ type: 'service_name', value: mongodb_service_name }, { type: 'collector', value: 'collstats' }]);
-    await grafanaAPI.checkMetricExist(smartMetricName, [{ type: 'service_name', value: mongodb_service_name }, { type: 'collector', value: 'dbstats' }]);
-    await grafanaAPI.checkMetricExist(smartMetricName, [{ type: 'service_name', value: mongodb_service_name }, { type: 'collector', value: 'diagnostic_data' }]);
-    await grafanaAPI.checkMetricExist(smartMetricName, [{ type: 'service_name', value: mongodb_service_name }, { type: 'collector', value: 'general' }]);
-    await grafanaAPI.checkMetricExist(smartMetricName, [{ type: 'service_name', value: mongodb_service_name }, { type: 'collector', value: 'indexstats' }]);
-    await grafanaAPI.checkMetricExist(smartMetricName, [{ type: 'service_name', value: mongodb_service_name }, { type: 'collector', value: 'replset_status' }]);
-    await grafanaAPI.checkMetricExist(smartMetricName, [{ type: 'service_name', value: mongodb_service_name }, { type: 'collector', value: 'top' }]);
+    await grafanaAPI.checkMetricExist(smartMetricName, [{ type: 'service_id', value: service_id }, { type: 'collector', value: 'collstats' }]);
+    await grafanaAPI.checkMetricExist(smartMetricName, [{ type: 'service_id', value: service_id }, { type: 'collector', value: 'dbstats' }]);
+    await grafanaAPI.checkMetricExist(smartMetricName, [{ type: 'service_id', value: service_id }, { type: 'collector', value: 'diagnostic_data' }]);
+    await grafanaAPI.checkMetricExist(smartMetricName, [{ type: 'service_id', value: service_id }, { type: 'collector', value: 'general' }]);
+    await grafanaAPI.checkMetricExist(smartMetricName, [{ type: 'service_id', value: service_id }, { type: 'collector', value: 'indexstats' }]);
+    await grafanaAPI.checkMetricExist(smartMetricName, [{ type: 'service_id', value: service_id }, { type: 'collector', value: 'replset_status' }]);
+    await grafanaAPI.checkMetricExist(smartMetricName, [{ type: 'service_id', value: service_id }, { type: 'collector', value: 'top' }]);
     await I.say(await I.verifyCommand(`docker exec ${containerName} pmm-admin remove mongodb ${mongodb_service_name}`));
 
     // Re-add Service with Disable Top metrics, check no smart metrics for Top
     await I.say(await I.verifyCommand(`docker exec ${containerName} pmm-admin add mongodb --agent-password='testing' --password=${pmm_user_mongodb.password} --username=${pmm_user_mongodb.username} --enable-all-collectors --disable-collectors=topmetrics --max-collections-limit=400 --stats-collections=db1,db2.col2 --service-name=${mongodb_service_name} --replication-set=rs0s`));
     I.say('Wait 180 seconds for Metrics being collected for the new service');
     await I.wait(180);
-    await grafanaAPI.checkMetricExist(smartMetricName, [{ type: 'service_name', value: `${mongodb_service_name}` }, { type: 'collector', value: 'dbstats' }]);
-    await grafanaAPI.checkMetricAbsent(smartMetricName, [{ type: 'service_name', value: `${mongodb_service_name}` }, { type: 'collector', value: 'top' }]);
+    await grafanaAPI.checkMetricExist(smartMetricName, [{ type: 'service_id', value: `${service_id}` }, { type: 'collector', value: 'dbstats' }]);
+    await grafanaAPI.checkMetricAbsent(smartMetricName, [{ type: 'service_id', value: `${service_id}` }, { type: 'collector', value: 'top' }]);
   },
 );
 
@@ -378,9 +375,9 @@ Scenario(
     await I.say(await I.verifyCommand(`docker exec ${containerName} pmm-admin add mongodb --agent-password='testing' --password=${pmm_user_mongodb.password} --username=${pmm_user_mongodb.username} --enable-all-collectors --service-name=${service_name}`));
     const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.MONGODB, service_name);
 
-    await grafanaAPI.waitForMetric('mongodb_up', { type: 'service_name', value: service_name }, 90);
+    await grafanaAPI.waitForMetric('mongodb_up', { type: 'service_id', value: service_id }, 90);
     await I.verifyCommand(`docker exec ${containerName} pmm-admin inventory remove service ${service_id} --force`);
-    await grafanaAPI.waitForMetricAbsent('mongodb_up', { type: 'service_name', value: service_name }, 90);
+    await grafanaAPI.waitForMetricAbsent('mongodb_up', { type: 'service_id', value: service_id }, 90);
     // PMM-T1352 Verify that Node exporter cannot be added by pmm-admin inventory add agent node-exporter with --log-level=fatal
     await I.verifyCommand(`docker exec ${containerName} pmm-admin inventory add agent node-exporter --log-level=fatal ${pmm_agent_id}`, 'pmm-admin: error: --log-level must be one of "debug","info","warn","error" but got "fatal"', 'fail');
   },
