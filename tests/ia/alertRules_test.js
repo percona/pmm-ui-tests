@@ -63,11 +63,7 @@ Scenario(
 
       I.waitForVisible(columnHeader, 30);
     });
-    const folderUID = await rulesAPI.getFolderUID(ruleFolder);
-
-    I.seeElement(alertRulesPage.buttons.goToFolderButton(folderUID, ruleFolder.toLowerCase()));
-    I.seeElement(alertRulesPage.buttons.managePermissionsButton(folderUID, ruleFolder.toLowerCase()));
-    I.seeElement(alertRulesPage.elements.totalRulesCounter('1 rule', ruleFolder));
+    I.seeElement(alertRulesPage.elements.alertRuleNameByName(ruleName));
     await rulesAPI.removeAlertRule(ruleFolder);
   },
 );
@@ -148,8 +144,7 @@ Scenario(
     const editedRule = {
       ruleName: 'EDITED rule',
       duration: '2m',
-      severity: 'Alert',
-      folder: 'Experimental',
+      folder: 'PostgreSQL',
     };
 
     await rulesAPI.createAlertRule({ ruleName }, ruleFolder);
@@ -177,10 +172,13 @@ Scenario(
     alertRulesPage.verifyRuleList(ruleFolder, ruleName);
     I.waitForElement(alertRulesPage.buttons.ruleCollapseButton);
     I.click(alertRulesPage.buttons.ruleCollapseButton);
+    alertRulesPage.openMoreMenu(ruleName);
     I.click(alertRulesPage.buttons.deleteAlertRule);
     I.waitForText(alertRulesPage.messages.confirmDelete, iaCommon.elements.modalDialog);
     I.click(alertRulesPage.buttons.cancelModal);
+    alertRulesPage.openMoreMenu(ruleName);
     I.click(alertRulesPage.buttons.deleteAlertRule);
+    I.waitForElement(iaCommon.elements.modalDialog, 10);
     I.click(alertRulesPage.buttons.confirmModal);
     I.verifyPopUpMessage(alertRulesPage.messages.successfullyDeleted);
     I.dontSeeElement(alertRulesPage.buttons.groupCollapseButton(ruleFolder));

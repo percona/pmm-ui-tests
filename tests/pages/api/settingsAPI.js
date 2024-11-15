@@ -54,17 +54,7 @@ module.exports = {
   },
 
   async apiDisableIA() {
-    const body = {
-      disable_alerting: true,
-    };
-    const headers = { Authorization: `Basic ${await I.getAuth()}` };
-
-    const resp = await I.sendPostRequest(endpoint, body, headers);
-
-    assert.ok(
-      resp.status === 200,
-      `Failed to disable Integrated alerting. ${resp.data.message}`,
-    );
+    await this.changeSettings({ alerting: false });
   },
 
   async apiEnableIA() {
@@ -165,9 +155,7 @@ module.exports = {
             body.enable_updates = value;
             break;
           case 'publicAddress':
-            value
-              ? body.pmm_public_address = value
-              : body.remove_pmm_public_address = null;
+            body.pmm_public_address = value;
             break;
           case 'data_retention':
             body.data_retention = value;

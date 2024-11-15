@@ -21,7 +21,7 @@ module.exports = {
     debugSeverity: '//td[4]/span[text()="Debug"]',
     infoSeverity: '//td[4]/span[text()="Info"]',
     columnHeaderLocator: (columnHeaderText) => `//th[text()="${columnHeaderText}"]`,
-    noAlerts: '//h1[text()=\' No alerts detected\']',
+    noAlerts: locate('$table-no-data').withText('No alerts detected'),
     firedAlertLink: (alertName) => `//a[text()="${alertName}"]`,
   },
   buttons: {

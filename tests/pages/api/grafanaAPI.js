@@ -357,17 +357,15 @@ module.exports = {
     return (r.data.find((d) => d.name === name)).uid;
   },
 
-  // Should be refactored
+  // Refactored function for new Grafana Explore UI format
   async getMetric(metricName, refineBy) {
     const uid = await this.getDataSourceUidByName();
     const currentTime = Date.now();
-
     let refineByString = '';
 
     if (Array.isArray(refineBy)) {
       // Handle refineBy as an array of objects
       refineByString = refineBy
-        // Check that type and value are defined
         .filter(({ type, value }) => type && value)
         .map(({ type, value }) => `${type}="${value}"`)
         .join(',');
@@ -375,7 +373,6 @@ module.exports = {
       // Handle refineBy as a single object with both type and value defined
       refineByString = `${refineBy.type}="${refineBy.value}"`;
     }
-
     const body = {
       queries: [
         {
@@ -402,9 +399,9 @@ module.exports = {
         },
         {
           refId: 'A-Instant',
-          expr: refineByString ? `${metricName}{${refineByString}}` : metricName,
-          range: false,
-          instant: true,
+          expr: refineBy ? `${metricName}{${refineBy.type}="${refineBy.value}"}` : metricName,
+          range: true,
+          instant: false,
           datasource: {
             type: 'prometheus',
             uid,

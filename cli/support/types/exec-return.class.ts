@@ -42,7 +42,7 @@ class ExecReturn {
 
   async outContains(expectedValue: string, customString = '') {
     await test.step(`Verify command output contains ${expectedValue}`, async () => {
-      expect(this.stdout, `Stdout does not contain ${expectedValue}, ${customString}!`).toContain(expectedValue);
+      expect(this.stdout.replace(/ +(?= )/g, ''), `Stdout does not contain ${expectedValue}, ${customString}!`).toContain(expectedValue);
     });
   }
 

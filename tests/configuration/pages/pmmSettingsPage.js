@@ -2,7 +2,7 @@ const assert = require('assert');
 const { communicationData, emailDefaults } = require('../../pages/testData');
 
 const {
-  I, adminPage, links, perconaPlatformPage, codeceptjsConfig,
+  I, adminPage, links, perconaPlatformPage, codeceptjsConfig, settingsAPI,
 } = inject();
 
 const locateLabel = (selector) => locate(I.useDataQA(selector)).find('span');
@@ -93,86 +93,69 @@ module.exports = {
   },
   tooltips: {
     diagnostics: {
-      iconLocator: locate('$diagnostics-label').find('div').as('Diagnostics tooltip'),
+      iconLocator: locate('$diagnostics-label').find('[class$="-Icon"]').as('Diagnostics tooltip'),
       text: 'You can download server logs to make the problem detection simpler. Please include this file if you are submitting a bug report.',
       link: false,
     },
     metricsResolution: {
       metricsResolutionSec: {
-        iconLocator: locate('$metrics-resolution-label').find('div').as('Metrics resolution tooltip'),
+        iconLocator: locate('$metrics-resolution-label').find('[class$="-Icon"]').as('Metrics resolution tooltip'),
         text: 'This setting defines how frequently the data will be collected.',
         link: links.metricsResolutionDocs,
       },
     },
     advancedSettings: {
       dataRetention: {
-        iconLocator: locate('$advanced-label').find('div').as('Advanced settings tooltip'),
+        iconLocator: locate('$advanced-label').find('[class$="-Icon"]').as('Advanced settings tooltip'),
         text: 'This is the value for how long data will be stored.',
         link: links.dataRetentionDocs,
       },
       telemetry: {
-        iconLocator: locate('$advanced-telemetry').find('div').as('Telemetry tooltip'),
+        iconLocator: locate('$advanced-telemetry').find('[class$="-Icon"]').as('Telemetry tooltip'),
         text: '',
         link: links.telemetryDocs,
       },
       checkForUpdates: {
-        iconLocator: locate('$advanced-updates').find('div').as('Check for updates tooltip'),
+        iconLocator: locate('$advanced-updates').find('[class$="-Icon"]').as('Check for updates tooltip'),
         text: 'Option to check new versions and ability to update PMM from UI.',
         link: links.checkForUpdates,
       },
       stt: {
-        iconLocator: locate('$advanced-advisors').find('div').as('Advanced advisors tooltip'),
+        iconLocator: locate('$advanced-advisors').find('[class$="-Icon"]').as('Advanced advisors tooltip'),
         text: 'Enable Advisors and get updated checks from Percona.',
         link: links.advisorsDocs,
       },
       publicAddress: {
-        iconLocator: locate('$public-address-label').find('div').as('Public Address tooltip'),
+        iconLocator: locate('$public-address-label').find('[class$="-Icon"]').as('Public Address tooltip'),
         text: 'Public Address to this PMM server.',
         link: false,
       },
       executionIntervals: {
-        iconLocator: locate('$check-intervals-label').find('div').as('Execution intervals tooltip'),
+        iconLocator: locate('$check-intervals-label').find('[class$="-Icon"]').as('Execution intervals tooltip'),
         text: 'Interval between check runs',
         link: false,
       },
-      dbaas: {
-        iconLocator: locate('$advanced-dbaas').find('div[class$="-Icon"]').as('DBaaS tooltip'),
-        text: 'Option to enable/disable DBaaS features. Disabling DBaaS does not suspend or remove running clusters.',
-        link: links.dbaasDocs,
-      },
       backupManagement: {
-        iconLocator: locate('$advanced-backup').find('div[class$="-Icon"]').as('Backup management tooltip'),
+        iconLocator: locate('$advanced-backup').find('[class$="-Icon"]').as('Backup management tooltip'),
         text: 'Option to enable/disable Backup Management features.',
         link: links.backupManagementDocs,
       },
       perconaAlerting: {
-        iconLocator: locate('$advanced-alerting').find('div[class$="-Icon"]').as('Alerting tooltip'),
+        iconLocator: locate('$advanced-alerting').find('[class$="-Icon"]').as('Alerting tooltip'),
         text: 'Option to enable/disable Percona Alerting features.',
         link: links.integratedAlertingDocs,
       },
       microsoftAzureMonitoring: {
-        iconLocator: locate('$advanced-azure-discover').find('div[class$="-Icon"]').as('Microsoft Azure monitoring tooltip'),
+        iconLocator: locate('$advanced-azure-discover').find('[class$="-Icon"]').as('Microsoft Azure monitoring tooltip'),
         text: 'Option to enable/disable Microsoft Azure DB instanced discovery and monitoring',
         link: links.microsoftAzureMonitoringDocs,
       },
     },
     ssh: {
       sshKey: {
-        iconLocator: locate('$ssh-key-label').find('div[class$="-Icon"]').as('SSH key tooltip'),
+        iconLocator: locate('$ssh-key-label').find('[class$="-Icon"]').as('SSH key tooltip'),
         text: 'Public SSH key to let you login into the server using SSH.',
         link: links.sshKeyDocs,
-      },
-    },
-    alertManagerIntegration: {
-      alertManagerUrl: {
-        iconLocator: locate('$alertmanager-url-label').find('div[class$="-Icon"]').as('Alert management integration tooltip'),
-        text: 'The URL of the external Alertmanager to use.',
-        link: links.prometheusAlertManagerDocs,
-      },
-      prometheusAlertingRules: {
-        iconLocator: locate('$alertmanager-rules-label').find('div[class$="-Icon"]').as('Prometheus alerting rules tooltip'),
-        text: 'Alerting rules in the YAML configuration format.',
-        link: links.prometheusAlertManagerDocs,
       },
     },
     perconaPlatform: {},
@@ -363,7 +346,7 @@ module.exports = {
   },
 
   async expandSection(sectionName, expectedContentLocator) {
-    const sectionExpandLocator = locate('$settings-tabs').find('div > a').withText(sectionName);
+    const sectionExpandLocator = locate(`[aria-label="Tab ${sectionName}"]`);
 
     I.click(sectionExpandLocator);
     I.waitForVisible(expectedContentLocator, 30);
@@ -593,7 +576,7 @@ module.exports = {
     this.tooltips.advancedSettings.telemetry.text = `${'Option to send usage data back to Percona to let us make our product better.\n'
     + '\n'
     + 'We gather and send the following information to Percona:\n'
-    + '\n'}${(await I.sendPostRequest('v1/Settings/Get', '{}', headers)).data.settings.telemetry_summaries.join('\n').replace(/\s{2,}/g, ' ')}`;
+    + '\n'}${(await settingsAPI.getSettings('telemetry_summaries')).join('\n').replace(/\s{2,}/g, ' ')}`;
 
     return [
       {
@@ -607,10 +590,6 @@ module.exports = {
       {
         subPage: this.sshKeyUrl,
         tooltips: this.tooltips.ssh,
-      },
-      {
-        subPage: this.alertManagerIntegrationUrl,
-        tooltips: this.tooltips.alertManagerIntegration,
       },
       {
         subPage: this.perconaPlatformUrl.url,
