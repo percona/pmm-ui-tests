@@ -57,6 +57,10 @@ for (const [key, value] of Object.entries(remoteInstancesHelper.services)) {
 
 Feature('Remote DB Instances');
 
+BeforeSuite(async ({ I }) => {
+  await I.verifyCommand('docker compose -f docker-compose.yml up -d');
+});
+
 Before(async ({ I }) => {
   await I.Authorize();
 });
