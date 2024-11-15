@@ -119,7 +119,7 @@ Scenario(
     await rulesAPI.removeAllAlertRules();
 
     I.amOnPage(alertsPage.url);
-    I.seeElement(alertsPage.elements.noAlerts);
+    I.waitForElement(alertsPage.elements.noAlerts, 20);
   },
 );
 
