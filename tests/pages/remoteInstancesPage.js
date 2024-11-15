@@ -529,10 +529,9 @@ module.exports = {
 
   async clickAddInstanceAndWaitForSuccess() {
     I.waitForVisible(this.fields.addService, 30);
-    I.wait(1);
 
     await I.usePlaywrightTo('click Add service and wait for response', async ({ page }) => {
-      const [response] = await Promise.all([
+      await Promise.all([
         page.waitForResponse(
           async (response) => {
             if (response.url().includes('v1/management/services')) {
@@ -550,27 +549,6 @@ module.exports = {
         page.click(this.fields.addService),
       ]);
     });
-
-    // eslint-disable-next-line no-undef
-    // await retryTo((tryNum) => {
-    //   I.click(this.fields.addService);
-    //
-    //   I.waitForResponse(
-    //     (response) => {
-    //       if (response.url().includes('v1/management/services')) {
-    //         if (response.status() === 200) {
-    //           return true;
-    //         }
-    //
-    //         throw new Error(`Expected status 200 but received ${response.status()}`);
-    //       }
-    //
-    //       // Continue waiting if this isn't the target request
-    //       return false;
-    //     },
-    //     5,
-    //   );
-    // }, 5);
   },
 
   openAddAzure() {
