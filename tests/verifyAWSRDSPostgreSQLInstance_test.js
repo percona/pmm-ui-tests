@@ -36,7 +36,7 @@ Scenario(
     remoteInstancesPage.startMonitoringOfInstance(serviceName);
     remoteInstancesPage.verifyAddInstancePageOpened();
     I.seeInField(remoteInstancesPage.fields.serviceName, serviceName);
-    remoteInstancesPage.fillRemoteRDSFields(serviceName);
+    await remoteInstancesPage.fillRemoteRDSFields(serviceName);
     I.click(remoteInstancesPage.fields.customAutoDiscoveryButton);
     I.clearField(remoteInstancesPage.fields.customAutoDiscoveryfield);
     I.fillField(remoteInstancesPage.fields.customAutoDiscoveryfield, '1');
@@ -79,7 +79,7 @@ Scenario(
 
     assert.ok(grabbedHostname.startsWith(serviceName), `Hostname is incorrect: ${grabbedHostname}`);
     I.seeInField(remoteInstancesPage.fields.serviceName, serviceName);
-    remoteInstancesPage.fillRemoteRDSFields(serviceName);
+    await remoteInstancesPage.fillRemoteRDSFields(serviceName);
     remoteInstancesPage.createRemoteInstance(serviceName);
     pmmInventoryPage.verifyRemoteServiceIsDisplayed(serviceName);
     // Skipping due to QAN Setup part on AWS
@@ -88,7 +88,7 @@ Scenario(
     // await pmmInventoryPage.verifyMetricsFlags(serviceName);
     const logs = await I.verifyCommand('docker exec pmm-server cat /srv/logs/pmm-agent.log | awk \'/ERRO/ && /rdsadmin/\'');
 
-    assert.ok(logs, `Logs contains errors about rdsadmin database being used! \n The lines are: \n ${logs}`);
+    assert.ok(!logs, `Logs contains errors about rdsadmin database being used! \n The lines are: \n ${logs}`);
   },
 );
 
