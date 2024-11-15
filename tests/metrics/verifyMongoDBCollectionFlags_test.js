@@ -127,7 +127,6 @@ Scenario(
 Scenario(
   'PMM-T1210 - Verify metrics of MongoDB with "--enable-all-collectors" was specified @mongodb-exporter',
   async ({ I, inventoryAPI, grafanaAPI }) => {
-
     await I.say(await I.verifyCommand(`docker exec ${containerName} pmm-admin add mongodb --agent-password='testing' --password=${pmm_user_mongodb.password} --username=${pmm_user_mongodb.username} --enable-all-collectors --service-name=${mongodb_service_name} --replication-set=rs0s`));
 
     const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.MONGODB, mongodb_service_name);
@@ -149,7 +148,6 @@ Scenario(
   'PMM-T1211 - Verify metrics of MongoDB with --disable-collectors="" and --enable-all-collectors were specified'
   + ' @mongodb-exporter',
   async ({ I, inventoryAPI, grafanaAPI }) => {
-
     await I.say(await I.verifyCommand(`docker exec ${containerName} pmm-admin add mongodb --agent-password='testing' --password=${pmm_user_mongodb.password} --username=${pmm_user_mongodb.username} --enable-all-collectors  --disable-collectors="" --service-name=${mongodb_service_name} --replication-set=rs0s`));
 
     const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.MONGODB, mongodb_service_name);
@@ -204,7 +202,6 @@ Scenario(
   'PMM-T1213 - Verify metrics of MongoDB with --stats-collections=db1,db2.col2 specified'
   + ' @mongodb-exporter',
   async ({ I, inventoryAPI, grafanaAPI }) => {
-
     await I.say(await I.verifyCommand(`docker exec ${containerName} pmm-admin add mongodb --agent-password='testing' --password=${pmm_user_mongodb.password} --username=${pmm_user_mongodb.username} --enable-all-collectors --stats-collections=db1,db2.col2 --service-name=${mongodb_service_name} --replication-set=rs0s`));
 
     const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.MONGODB, mongodb_service_name);

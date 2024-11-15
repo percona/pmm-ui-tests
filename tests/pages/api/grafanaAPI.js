@@ -400,8 +400,8 @@ module.exports = {
         {
           refId: 'A-Instant',
           expr: refineBy ? `${metricName}{${refineBy.type}="${refineBy.value}"}` : metricName,
-          range: true,
-          instant: false,
+          range: false,
+          instant: true,
           datasource: {
             type: 'prometheus',
             uid,
