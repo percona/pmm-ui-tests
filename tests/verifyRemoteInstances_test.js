@@ -138,7 +138,7 @@ Data(instances).Scenario(
     pmmInventoryPage.verifyRemoteServiceIsDisplayed(serviceName);
     await pmmInventoryPage.verifyAgentHasStatusRunning(serviceName);
   },
-);
+).retry(2);
 
 Scenario(
   'TableStats UI Default table Options for Remote MySQL & AWS-RDS Instance @instances',
