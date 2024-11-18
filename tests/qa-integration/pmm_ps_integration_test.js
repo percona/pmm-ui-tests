@@ -175,6 +175,9 @@ Scenario(
     await queryAnalyticsPage.filters.selectFilter(dbName);
     queryAnalyticsPage.waitForLoaded();
     for (let i = 0; i <= 24; i++) {
+      console.log(`Count of queries is: ${await I.grabTextFrom(queryAnalyticsPage.data.elements.totalItems)}`);
+      console.log(`Count of queries is: ${parseInt(await I.grabTextFrom(queryAnalyticsPage.data.elements.totalItems), 10)}`);
+
       const countOfQueries = parseInt(await I.grabTextFrom(queryAnalyticsPage.data.elements.totalItems), 10);
 
       I.wait(10);
