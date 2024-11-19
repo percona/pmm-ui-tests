@@ -73,21 +73,24 @@ Data(instances).Scenario(
 Data(instances).Scenario(
   'Verify metrics from SSL instances on PMM-Server @ssl @ssl-remote @ssl-mongo @not-ui-pipeline',
   async ({
-    I, remoteInstancesPage, pmmInventoryPage, current, grafanaAPI,
+    I, remoteInstancesPage, pmmInventoryPage, current, grafanaAPI, inventoryAPI,
   }) => {
     const {
       serviceName, metric,
     } = current;
-    let response; let result;
     const remoteServiceName = `remote_${serviceName}`;
+
+    // Use Mongo service_id instead of service_name due to Bug#PMM-13554
+    const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.MONGODB, serviceName);
+    const { remote_service_id } = await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.MONGODB, remoteServiceName);
 
     // Waiting for metrics to start hitting for remotely added services
     I.wait(10);
 
     // verify metric for client container node instance
-    await grafanaAPI.checkMetricExist(metric, { type: 'service_name', value: serviceName });
+    await grafanaAPI.checkMetricExist(metric, { type: 'service_id', value: service_id });
     // verify metric for remote instance
-    await grafanaAPI.checkMetricExist(metric, { type: 'service_name', value: remoteServiceName });
+    await grafanaAPI.checkMetricExist(metric, { type: 'service_id', value: remote_service_id });
   },
 ).retry(1);
 
