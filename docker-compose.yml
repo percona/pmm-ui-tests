@@ -72,6 +72,7 @@ services:
       - UMASK=0777  # for slowlog file
     volumes:
       - /tmp/mysql/log:/tmp/mysql/log
+      - ./testdata/docker-db-setup-scripts/init_ps_8.sql:/docker-entrypoint-initdb.d/init.sql
     networks:
       - pmm-network
 
