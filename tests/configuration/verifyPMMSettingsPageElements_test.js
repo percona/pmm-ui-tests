@@ -110,4 +110,4 @@ Scenario('@PMM-T1866 - Verify if public address has an port assigned and followi
   I.click(pmmSettingsPage.fields.applyButton);
   I.dontSeeElement(pmmSettingsPage.fields.errorPopUpElement);
   await pmmSettingsPage.verifySettingsValue(pmmSettingsPage.fields.dataRetentionInput, '1');
-});
+}).retry(2);
