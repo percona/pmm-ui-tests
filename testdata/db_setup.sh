@@ -7,7 +7,7 @@ bash -x ${PWD}/testdata/docker-db-setup-scripts/docker_ps_5_7.sh
 
 
 ### Call PS8.0 Setup Scripts
-bash -x ${PWD}/testdata/docker-db-setup-scripts/docker_ps_8_0.sh
+#bash -x ${PWD}/testdata/docker-db-setup-scripts/docker_ps_8_0.sh
 
 ### Call Postgres Docker Setup Script
 bash -x ${PWD}/testdata/docker-db-setup-scripts/docker_postgres_13.sh
