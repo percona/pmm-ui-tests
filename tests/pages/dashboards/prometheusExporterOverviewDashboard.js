@@ -8,6 +8,7 @@ class PrometheusExporterOverviewDashboard {
       graphBody: (graphName) => locate(`//*[@data-testid="data-testid Panel header ${graphName}"]//*[@class="u-over"]`),
       graphBodyByPanelId: (graphId) => locate(`//*[@data-panelid="${graphId}"]//*[@class="u-over"]`),
       graphValue: (rowName) => `//*[@id="grafana-portal-container"]//*[text()="${rowName}"]//parent::*//following-sibling::*//div`,
+      graphPopover: '//*[@id="grafana-portal-container"]/div',
     };
     this.metrics = [
       'Avg CPU Usage per Node',
@@ -63,9 +64,17 @@ class PrometheusExporterOverviewDashboard {
           x = i * widthItterations;
         }
 
-        await page.locator(this.elements.graphBodyByPanelId(graphId).value).hover({
-          position: { x, y: boundingBox.height / 2 },
-        });
+        let retries = 0;
+
+        while (!(await page.locator(this.elements.graphPopover).isVisible())) {
+          await page.locator(this.elements.graphBodyByPanelId(graphId).value).hover({
+            position: { x, y: boundingBox.height / 2 },
+          });
+          await page.waitForTimeout(1000);
+
+          // eslint-disable-next-line no-plusplus
+          if (++retries >= 10) throw new Error('Displaying pop over for graph was not successful.');
+        }
 
         for (const [exporter, value] of Object.entries(exporters)) {
           await page.locator(this.elements.graphValue(exporter)).waitFor({ state: 'visible' });
