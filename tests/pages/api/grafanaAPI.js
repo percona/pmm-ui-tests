@@ -373,6 +373,7 @@ module.exports = {
       // Handle refineBy as a single object with both type and value defined
       refineByString = `${refineBy.type}="${refineBy.value}"`;
     }
+
     const body = {
       queries: [
         {
@@ -399,7 +400,7 @@ module.exports = {
         },
         {
           refId: 'A-Instant',
-          expr: refineBy ? `${metricName}{${refineBy.type}="${refineBy.value}"}` : metricName,
+          expr: refineByString ? `${metricName}{${refineByString}}` : metricName,
           range: false,
           instant: true,
           datasource: {
