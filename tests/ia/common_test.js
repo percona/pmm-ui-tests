@@ -40,21 +40,21 @@ Scenario(
     I.wait(10);
     // PMM-T776
     const verifyTitle = (page) => {
-      I.seeTitleEquals(`${page} - Alerting - Percona Monitoring and Management`);
+      I.seeTitleEquals(`${page} - Percona Monitoring and Management`);
     };
 
     verifyTitle('Fired alerts');
-    iaCommon.openAndVerifyTab(
+    await iaCommon.openAndVerifyTab(
       iaCommon.tabNames.ruleTemplates,
       ruleTemplatesPage.buttons.openAddTemplateModal,
       ruleTemplatesPage.url,
     );
     verifyTitle('Alert rule templates');
-    iaCommon.openAndVerifyTab(iaCommon.tabNames.alertRules, alertRulesPage.buttons.newAlertRule, alertRulesPage.url);
+    await iaCommon.openAndVerifyTab(iaCommon.tabNames.alertRules, alertRulesPage.buttons.newAlertRule, alertRulesPage.url);
     verifyTitle('Alert rules');
-    iaCommon.openAndVerifyTab(iaCommon.tabNames.contactPoints, contactPointsPage.buttons.newContactPoint, contactPointsPage.url);
+    await iaCommon.openAndVerifyTab(iaCommon.tabNames.contactPoints, contactPointsPage.buttons.newContactPoint, contactPointsPage.url);
     verifyTitle('Contact points');
-    iaCommon.openAndVerifyTab(iaCommon.tabNames.notificationPolicies, nPoliciesPage.buttons.newPolicy, nPoliciesPage.url);
+    await iaCommon.openAndVerifyTab(iaCommon.tabNames.notificationPolicies, nPoliciesPage.buttons.newPolicy, nPoliciesPage.url);
     verifyTitle('Notification policies');
 
     // PMM-T620
@@ -65,8 +65,8 @@ Scenario(
     verifyTitle('Silences');
     await iaCommon.openAndVerifyTab(iaCommon.tabNames.alertGroups, alertGroupsPage.elements.groupByContainer, alertGroupsPage.url);
     verifyTitle('Alert groups');
-    await iaCommon.openAndVerifyTab(iaCommon.tabNames.admin, aiAdminPage.elements.configTextarea, aiAdminPage.url);
-    verifyTitle('Admin');
+    await iaCommon.openAndVerifyTab(iaCommon.tabNames.admin, aiAdminPage.buttons.editConfig, aiAdminPage.url);
+    verifyTitle('Settings');
     await iaCommon.openAndVerifyTab(iaCommon.tabNames.firedAlerts, alertsPage.elements.noAlerts, alertsPage.url);
   },
 );

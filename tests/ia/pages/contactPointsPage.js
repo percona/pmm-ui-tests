@@ -37,7 +37,7 @@ module.exports = {
     cPTableRow: (name) => `//*[@data-testid="row"][contains(., '${name}')]`,
   },
   buttons: {
-    newContactPoint: locate('button').find('span').withText('New contact point'),
+    newContactPoint: locate('[aria-label="add contact point"]'),
     saveCP: locate('button').find('span').withText('Save contact point'),
     deleteCP: locate('button').withText('Delete'),
     moreMenu: (name) => locate(`//*[@data-testid="contact-point"][contains(., '${name}')]//button[@aria-label = 'More']`),

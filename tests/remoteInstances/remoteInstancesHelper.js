@@ -1,4 +1,4 @@
-const { SERVICE_TYPE } = require("../helper/constants");
+const { SERVICE_TYPE } = require('../helper/constants');
 
 const remoteInstanceStatus = {
   mysql: {
@@ -187,8 +187,8 @@ module.exports = {
       proxysql_2_1_1: {
         host: (PMM_SERVER_OVF_AMI_SETUP === 'true' ? SERVER_HOST : 'proxysql'),
         port: DB_CONFIG.PROXYSQL_SERVER_PORT,
-        username: 'proxysql_user',
-        password: 'passw0rd',
+        username: 'proxyadmin',
+        password: 'yxZq!4SGv0A1',
         environment: 'proxy_env',
         clusterName: 'proxy_clstr',
       },

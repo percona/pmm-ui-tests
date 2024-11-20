@@ -4,8 +4,8 @@ module.exports = {
   url: 'graph/add-instance',
   addMySQLRemoteURL: 'graph/add-instance?instance_type=mysql',
   fields: {
-    breadcrumbs: locate('h2').withText('Select service type'),
-    addAmazonRDSbtn: '//div[@data-testid=\'rds-instance\']//button[@type=\'button\']',
+    breadcrumbs: locate('.page-toolbar').withText('Inventory / Add service / Step 1 of 2'),
+    addAmazonRDSbtn: '$rds-instance',
   },
 
   async open() {

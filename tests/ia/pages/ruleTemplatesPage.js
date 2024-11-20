@@ -34,7 +34,7 @@ module.exports = {
     editButtonByName: (name) => `//td[contains(text(), "${name}")]/following-sibling::td//button[@data-testid="edit-template-button"]`,
     // deleteButtonByName returns Delete template button locator for a given Template name
     deleteButtonByName: (name) => `//td[contains(text(), "${name}")]/following-sibling::td//button[@data-testid="delete-template-button"]`,
-    addRuleButtonByName: (name) => `//td[contains(text(), "${name}")]/following-sibling::td//button[@data-testid="create-from-template-button"]`,
+    addRuleButtonByName: (name) => `//td[contains(text(), "${name}")]/following-sibling::td//a[@data-testid="create-from-template-button"]`,
   },
   fields: {
     templateInput: '$yaml-textarea-input',

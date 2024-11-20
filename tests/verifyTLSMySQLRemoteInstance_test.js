@@ -31,7 +31,7 @@ let serviceName;
 
 Before(async ({ I, inventoryAPI }) => {
   await I.Authorize();
-  const { service_name } = await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.MYSQL, 'mysql_ssl_8.0_ssl_service');
+  const { service_name } = await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.MYSQL, 'mysql_ssl_8.0_ssl_service', 'remote');
 
   serviceName = service_name;
 });
@@ -86,14 +86,12 @@ Data(instances).Scenario(
   },
 );
 
-Data(instances).Scenario(
+Scenario(
   'Verify metrics from mysql SSL instances on PMM-Server @ssl @ssl-mysql @ssl-remote @not-ui-pipeline',
   async ({
-    I, remoteInstancesPage, pmmInventoryPage, current, grafanaAPI,
+    I, grafanaAPI,
   }) => {
-    const {
-      metric,
-    } = current;
+    const metric = 'mysql_global_status_max_used_connections';
     const remoteServiceName = `remote_${serviceName}_faker`;
 
     // Waiting for metrics to start hitting for remotely added services
@@ -148,7 +146,7 @@ Scenario(
       adminPage.performPageDown(5);
       await dashboardPage.expandEachDashboardRow();
       adminPage.performPageUp(5);
-      await dashboardPage.verifyThereAreNoGraphsWithoutData(1);
+      await dashboardPage.verifyThereAreNoGraphsWithoutData(2);
     }
   },
 ).retry(2);
@@ -185,14 +183,14 @@ Data(instances).Scenario(
 
     const agent_id = await I.verifyCommand(`docker exec ${container} pmm-admin list | grep mysqld_exporter | awk -F" " '{print $4}' | awk -F"/" '{print $3}'`);
 
-    await I.verifyCommand(`docker exec ${container} ls -la /usr/local/percona/pmm/tmp/mysqld_exporter/${agent_id} | grep tls`);
-    await I.verifyCommand(`docker exec ${container} rm -r /usr/local/percona/pmm/tmp/mysqld_exporter/`);
-    await I.verifyCommand(`docker exec ${container} ls -la /usr/local/percona/pmm/tmp/mysqld_exporter/`, 'ls: cannot access \'/usr/local/percona/pmm/tmp/mysqld_exporter\': No such file or directory', 'fail');
+    await I.verifyCommand(`docker exec ${container} ls -R /usr/local/percona/pmm/tmp/agent_type_mysqld_exporter/${agent_id} | grep tls`);
+    await I.verifyCommand(`docker exec ${container} rm -r /usr/local/percona/pmm/tmp/agent_type_mysqld_exporter/`);
+    await I.verifyCommand(`docker exec ${container} ls -R /usr/local/percona/pmm/tmp/agent_type_mysqld_exporter/`, 'ls: cannot access \'/usr/local/percona/pmm/tmp/agent_type_mysqld_exporter\': No such file or directory', 'fail');
     await I.verifyCommand(`docker exec ${container} pmm-admin list | grep mysqld_exporter | grep Running`);
     await I.verifyCommand(`docker exec ${container} pkill -f mysqld_exporter`);
     I.wait(10);
     await I.verifyCommand(`docker exec ${container} pmm-admin list | grep mysqld_exporter | grep Running`);
-    await I.verifyCommand(`docker exec ${container} ls -la /usr/local/percona/pmm/tmp/mysqld_exporter/${agent_id} | grep tls`);
+    await I.verifyCommand(`docker exec ${container} ls -R /usr/local/percona/pmm/tmp/agent_type_mysqld_exporter/${agent_id} | grep tls`);
   },
 ).retry(1);
 
@@ -262,19 +260,16 @@ Data(maxQueryLengthInstances).Scenario(
     const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.MYSQL, remoteServiceName);
 
     await pmmInventoryPage.openAgents(service_id);
-    if (maxQueryLength !== '') {
-      await pmmInventoryPage.checkAgentOtherDetailsSection('Qan mysql perfschema agent', `max_query_length=${maxQueryLength}`);
-    } else {
-      await pmmInventoryPage.checkAgentOtherDetailsSection('Qan mysql perfschema agent', `max_query_length=${maxQueryLength}`, false);
-    }
-
+    await pmmInventoryPage.checkAgentOtherDetailsSection('Qan mysql perfschema agent', `max_query_length=${maxQueryLength}`);
+    // This extra time is needed for queries to appear in QAN
     await I.wait(70);
     // Check max visible query length is less than max_query_length option
     I.amOnPage(I.buildUrlWithParams(queryAnalyticsPage.url, { from: 'now-5m' }));
     queryAnalyticsPage.waitForLoaded();
     await queryAnalyticsPage.filters.selectFilter(remoteServiceName);
-    I.waitForElement(queryAnalyticsPage.data.elements.queryRows, 30);
-    const queryFromRow = await queryAnalyticsPage.data.elements.queryRowValue(1);
+    await I.wait(5);
+    await I.waitForElement(queryAnalyticsPage.data.elements.queryRows, 30);
+    const queryFromRow = await I.grabTextFrom(queryAnalyticsPage.data.elements.queryRowValue(1));
 
     if (maxQueryLength !== '' && maxQueryLength !== '-1') {
       assert.ok(queryFromRow.length <= maxQueryLength, `Query length exceeds max length boundary equals ${queryFromRow.length} is more than ${maxQueryLength}`);

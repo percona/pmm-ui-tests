@@ -15,7 +15,7 @@ module.exports = {
   pagination: paginationPart,
 
   async open(serviceId) {
-    I.amOnPage(`graph/inventory/services/${serviceId.split('/')[2]}/agents`);
+    I.amOnPage(`graph/inventory/services/${serviceId}/agents`);
     await I.waitForVisible(this.fields.backLink, 30);
   },
 

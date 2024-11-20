@@ -3,13 +3,13 @@ const { I } = inject();
 module.exports = {
   url: 'graph/admin/settings',
   fields: {
-    settingsTab: 'a[aria-label="Tab Settings"]',
+    settingsTitle: '[class*="title-info-container"]',
     typeLabel: locate('tr').withChild(locate('td').withText('type')).find('td').at(2),
   },
 
   async open() {
     I.amOnPage(this.url);
-    I.waitForElement(this.fields.settingsTab, 60);
+    I.waitForElement(this.fields.settingsTitle, 60);
   },
 
   async verifyDatabaseType(expectedValue) {

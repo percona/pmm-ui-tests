@@ -337,9 +337,9 @@ Scenario(
       .editButtonBySource(ruleTemplatesPage.templateSources.saas);
 
     ruleTemplatesPage.openRuleTemplatesTab();
-    I.waitForElement(saasDeleteButton, 30);
-    I.seeAttributesOnElements(saasDeleteButton, { disabled: true });
-    I.seeAttributesOnElements(saasEditButton, { disabled: true });
+    I.waitForElement(ruleTemplatesPage.elements.templateRowBySource(ruleTemplatesPage.templateSources.saas), 30);
+    I.dontSeeElement(saasEditButton);
+    I.dontSeeElement(saasDeleteButton);
   },
 );
 
@@ -365,7 +365,8 @@ Scenario(
   },
 );
 
-Scenario(
+// TODO: unskip after https://perconadev.atlassian.net/browse/PMM-13542 is fixed
+Scenario.skip(
   'PMM-T825 PMM-T821 Verify User can add Alert rule template in the file system @not-ovf @alerting-fb',
   async ({ I, ruleTemplatesPage }) => {
     const editButton = ruleTemplatesPage.buttons

@@ -357,19 +357,71 @@ module.exports = {
     return (r.data.find((d) => d.name === name)).uid;
   },
 
-  // Should be refactored
+  // Refactored function for new Grafana Explore UI format
   async getMetric(metricName, refineBy) {
     const uid = await this.getDataSourceUidByName();
+    const currentTime = Date.now();
+    let refineByString = '';
+
+    if (Array.isArray(refineBy)) {
+      // Handle refineBy as an array of objects
+      refineByString = refineBy
+        .filter(({ type, value }) => type && value)
+        .map(({ type, value }) => `${type}="${value}"`)
+        .join(',');
+    } else if (refineBy && refineBy.type && refineBy.value) {
+      // Handle refineBy as a single object with both type and value defined
+      refineByString = `${refineBy.type}="${refineBy.value}"`;
+    }
     const body = {
       queries: [
         {
+          refId: 'A',
+          expr: refineByString ? `${metricName}{${refineByString}}` : metricName,
+          range: true,
+          instant: false,
           datasource: {
+            type: 'prometheus',
             uid,
           },
-          expr: refineBy ? `${metricName}{${refineBy.type}=\"${refineBy.value}\"}` : metricName,
+          editorMode: 'builder',
+          legendFormat: '__auto',
+          useBackend: false,
+          disableTextWrap: false,
+          fullMetaSearch: false,
+          includeNullMetadata: true,
+          requestId: '17102A',
+          utcOffsetSec: 19800,
+          interval: '',
+          datasourceId: 1,
+          intervalMs: 1000,
+          maxDataPoints: 757,
+        },
+        {
+          refId: 'A-Instant',
+          expr: refineBy ? `${metricName}{${refineBy.type}="${refineBy.value}"}` : metricName,
+          range: false,
+          instant: true,
+          datasource: {
+            type: 'prometheus',
+            uid,
+          },
+          editorMode: 'builder',
+          legendFormat: '__auto',
+          useBackend: false,
+          disableTextWrap: false,
+          fullMetaSearch: false,
+          includeNullMetadata: true,
+          requestId: '17102A',
+          utcOffsetSec: 19800,
+          interval: '',
+          datasourceId: 1,
+          intervalMs: 1000,
+          maxDataPoints: 757,
         },
       ],
-      from: 'now-15m',
+      from: (currentTime - 5 * 60 * 1000).toString(),
+      to: currentTime.toString(),
     };
 
     const headers = {
@@ -377,7 +429,7 @@ module.exports = {
     };
 
     return await I.sendPostRequest(
-      'graph/api/ds/query?ds_type=prometheus&requestId=explore_vmt',
+      'graph/api/ds/query?ds_type=prometheus&requestId=explore_sbu',
       body,
       headers,
     );
@@ -440,7 +492,7 @@ module.exports = {
       // Main condition check: metric body is not empty
       const response = await this.getMetric(metricName, queryBy);
 
-      if (response.data.data.result.length === 0) {
+      if (response.data.results.A.frames[0].data.values.length === 0) {
         return response;
       }
 
@@ -456,7 +508,13 @@ module.exports = {
   },
 
   async checkMetricExist(metricName, refineBy) {
-    const response = await this.getMetric(metricName, refineBy);
+    let response;
+
+    await I.asyncWaitFor(async () => {
+      response = await this.getMetric(metricName, refineBy);
+
+      return response.data.results.A.frames[0].data.values.length !== 0;
+    }, 60);
 
     const result = JSON.stringify(response.data.results);
 
@@ -469,13 +527,22 @@ module.exports = {
   },
 
   async checkMetricAbsent(metricName, refineBy) {
-    const response = await this.getMetric(metricName, refineBy);
-    const result = JSON.stringify(response.data.data.result);
+    let response;
+
+    await I.asyncWaitFor(async () => {
+      response = await this.getMetric(metricName, refineBy);
+
+      return response.data.results.A.frames[0].data.values.length === 0;
+    }, 60);
+
+    const result = JSON.stringify(response.data.results);
 
     I.assertEqual(
-      response.data.data.result.length,
+      response.data.results.A.frames[0].data.values.length,
       0,
       `Metrics "${metricName}" with filters as ${JSON.stringify(refineBy)} should be empty but got available ${result}`,
     );
+
+    return response;
   },
 };

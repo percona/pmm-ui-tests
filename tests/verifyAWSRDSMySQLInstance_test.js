@@ -18,10 +18,13 @@ Scenario(
     remoteInstancesPage.verifyInstanceIsDiscovered(instanceIdToMonitor);
     remoteInstancesPage.startMonitoringOfInstance(instanceIdToMonitor);
     remoteInstancesPage.verifyAddInstancePageOpened();
-    remoteInstancesPage.fillRemoteRDSFields(instanceIdToMonitor);
+    await remoteInstancesPage.fillRemoteRDSFields(instanceIdToMonitor);
     remoteInstancesPage.createRemoteInstance(instanceIdToMonitor);
     pmmInventoryPage.verifyRemoteServiceIsDisplayed(instanceIdToMonitor);
     await pmmInventoryPage.verifyAgentHasStatusRunning(instanceIdToMonitor);
+
+    // Waiting for metrics to start hitting for remotely added services
+    I.wait(60);
   },
 );
 
@@ -61,7 +64,7 @@ Scenario(
     }));
     dashboardPage.waitForDashboardOpened();
     await dashboardPage.expandEachDashboardRow();
-    await dashboardPage.verifyThereAreNoGraphsWithoutData(7);
+    await dashboardPage.verifyThereAreNoGraphsWithoutData(9);
   },
 );
 

@@ -72,8 +72,8 @@ Scenario(
     let response; let result;
     const metricName = 'mysql_global_status_max_used_connections';
 
-    await I.verifyCommand(`docker exec ${container_name} pmm-admin list | grep "mysqld_exporter" | grep "Agent_status_running" | wc -l | grep "1"`);
-    await I.verifyCommand(`docker exec ${container_name} pmm-admin list | grep "mysql_slowlog_agent" | grep "Agent_status_running" | wc -l | grep "1"`);
+    await I.verifyCommand(`docker exec ${container_name} pmm-admin list | grep "mysqld_exporter" | grep "Running" | wc -l | grep "1"`);
+    await I.verifyCommand(`docker exec ${container_name} pmm-admin list | grep "mysql_slowlog_agent" | grep "Running" | wc -l | grep "1"`);
 
     const clientServiceName = (await I.verifyCommand(`docker exec ${container_name} pmm-admin list | grep MySQL | head -1 | awk -F" " '{print $2}'`)).trim();
 
@@ -151,6 +151,9 @@ Scenario(
     const dbName = 'sbtest3';
     const sbUser = { name: 'sysbench', password: 'test' };
 
+    // Add wait for Queries to appear in PMM
+    await I.wait(70);
+
     const psContainerName = await I.verifyCommand('docker ps --format "{{.Names}}" | grep ps_');
 
     await I.verifyCommand(`docker exec ${psContainerName} mysql -h 127.0.0.1 --port 3307 -u ${credentials.perconaServer.root.username} -p${credentials.perconaServer.root.password} -e "CREATE USER IF NOT EXISTS sysbench@'%' IDENTIFIED WITH mysql_native_password BY 'test'; GRANT ALL ON *.* TO sysbench@'%'; DROP DATABASE IF EXISTS ${dbName};"`);
@@ -169,8 +172,15 @@ Scenario(
 
     I.amOnPage(I.buildUrlWithParams(queryAnalyticsPage.url, { from: 'now-1h', refresh: '5s' }));
     queryAnalyticsPage.waitForLoaded();
-    await queryAnalyticsPage.filters.selectFilter(dbName, 120000);
+    await queryAnalyticsPage.filters.selectFilter(dbName);
     queryAnalyticsPage.waitForLoaded();
-    I.waitForText('16', 180, queryAnalyticsPage.data.elements.totalItems);
+    for (let i = 0; i <= 24; i++) {
+      const countOfQueries = parseInt((await I.grabTextFrom(queryAnalyticsPage.data.elements.totalItems)).split('of ')[1], 10);
+
+      I.wait(10);
+      if (countOfQueries === 17) continue;
+
+      if (i === 24) assert.equal(countOfQueries, 17, 'Count of queries is incorrect');
+    }
   },
 ).retry(1);

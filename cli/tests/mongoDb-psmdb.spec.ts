@@ -9,7 +9,8 @@ let mongoShardHosts: string[];
 const replIpPort = '127.0.0.1:27027';
 // const mongosIpPort = '127.0.0.1:27017';
 
-test.describe('Percona Server MongoDB (PSMDB) CLI tests ', async () => {
+// eslint-disable-next-line playwright/valid-describe-callback
+test.describe('Percona Server MongoDB (PSMDB) CLI tests', async () => {
   test.beforeAll(async ({}) => {
     const result = await cli.exec('docker ps | grep rs101 | awk \'{print $NF}\'');
     await result.outContains('rs101', 'PSMDB rs101 docker container should exist. please run pmm-framework with --database psmdb,SETUP_TYPE=pss');

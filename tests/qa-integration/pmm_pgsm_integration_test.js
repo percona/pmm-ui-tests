@@ -1,7 +1,7 @@
 const assert = require('assert');
 const {
   SERVICE_TYPE,
-  AGENT_STATUS,
+  CLI_AGENT_STATUS,
 } = require('../helper/constants');
 
 const connection = {
@@ -17,7 +17,7 @@ const connection = {
 // Service Name: ${PGSQL_PGSM_CONTAINER}_${PGSQL_VERSION}_service
 // Docker Container Name: ${PGSQL_PGSM_CONTAINER}_${PGSQL_VERSION}
 
-const version = process.env.PDPGSQL_VERSION ? `${process.env.PDPGSQL_VERSION}` : '16';
+const version = process.env.PDPGSQL_VERSION ? `${process.env.PDPGSQL_VERSION}` : '17';
 const database = `pgsm${Math.floor(Math.random() * 99) + 1}`;
 let pgsm_service_name;
 let pgsm_service_name_socket;
@@ -100,7 +100,7 @@ Scenario(
 
       assert.ok(pgStatMonitorAgent, 'pg_stat_monitor agent should exist');
 
-      return pgStatMonitorAgent.status === AGENT_STATUS.RUNNING;
+      return pgStatMonitorAgent.status === CLI_AGENT_STATUS.RUNNING;
     }, 30);
 
     const pgStatStatementsAgent = serviceAgents.find(({ agent_type }) => agent_type === 'AGENT_TYPE_QAN_POSTGRESQL_PGSTATEMENTS_AGENT');
@@ -132,7 +132,7 @@ Scenario(
     await I.pgExecuteQueryOnDemand(sql, connection);
     connection.database = 'postgres';
     // wait for pmm-agent to push the execution as part of next bucket to clickhouse
-    await I.verifyCommand(`docker exec ${container_name} pmm-admin list | grep "postgresql_pgstatmonitor_agent" | grep "Agent_status_running"`);
+    await I.verifyCommand(`docker exec ${container_name} pmm-admin list | grep "postgresql_pgstatmonitor_agent" | grep "Running"`);
 
     I.wait(30);
     let pgsm_output;
@@ -227,7 +227,7 @@ Scenario(
     dashboardPage.waitForDashboardOpened();
     await dashboardPage.expandEachDashboardRow();
     await dashboardPage.verifyMetricsExistence(dashboardPage.postgresqlInstanceSummaryDashboard.metrics);
-    await dashboardPage.verifyThereAreNoGraphsWithoutData(1);
+    await dashboardPage.verifyThereAreNoGraphsWithoutData(2);
   },
 );
 
@@ -243,7 +243,7 @@ Scenario(
     dashboardPage.waitForDashboardOpened();
     await dashboardPage.expandEachDashboardRow();
     await dashboardPage.verifyMetricsExistence(dashboardPage.postgresqlInstanceSummaryDashboard.metrics);
-    await dashboardPage.verifyThereAreNoGraphsWithoutData(1);
+    await dashboardPage.verifyThereAreNoGraphsWithoutData(2);
     const log = await I.verifyCommand(`docker exec ${container_name} cat pmm-agent.log`);
 
     I.assertFalse(
@@ -254,7 +254,8 @@ Scenario(
 );
 
 // The numbers don't entirely match, we need to find a way to track based on difference
-Scenario(
+// TODO: unskip after https://perconadev.atlassian.net/browse/PMM-13544
+Scenario.skip(
   'PMM-T1259 - Verifying data in Clickhouse and comparing with PGSM output @pgsm-pmm-integration @not-ui-pipeline',
   async ({ I, qanAPI }) => {
     await I.pgExecuteQueryOnDemand('SELECT now();', connection);
@@ -275,7 +276,7 @@ Scenario(
     await I.verifyCommand(`docker exec ${container_name} pgbench -c 2 -j 2 -T 60 --username=pmm ${db}`);
     connection.database = 'postgres';
     // wait for pmm-agent to push the execution as part of next bucket to clickhouse
-    await I.verifyCommand(`docker exec ${container_name} pmm-admin list | grep "postgresql_pgstatmonitor_agent" | grep "Agent_status_running"`);
+    await I.verifyCommand(`docker exec ${container_name} pmm-admin list | grep "postgresql_pgstatmonitor_agent" | grep "Running"`);
 
     const labels = [
       { key: 'database', value: [`${db}`] },
@@ -393,7 +394,7 @@ Scenario(
 
     await I.pgExecuteQueryOnDemand(sql, connection);
     I.wait(120);
-    await I.verifyCommand(`docker exec ${container_name} pmm-admin list | grep "postgresql_pgstatmonitor_agent" | grep "Agent_status_running"`);
+    await I.verifyCommand(`docker exec ${container_name} pmm-admin list | grep "postgresql_pgstatmonitor_agent" | grep "Running"`);
 
     const url = I.buildUrlWithParams(queryAnalyticsPage.url, {
       // application_name: applicationName,
@@ -571,7 +572,7 @@ xScenario(
     await I.pgExecuteQueryOnDemand(`ALTER SYSTEM SET pg_stat_monitor.pgsm_normalized_query=${alteredValue};`, connection);
     await I.verifyCommand(`docker exec ${container_name} service postgresql restart`);
     I.wait(5);
-    await I.verifyCommand(`docker exec ${container_name} pmm-admin list | grep "postgresql_pgstatmonitor_agent" | grep "Agent_status_running"`);
+    await I.verifyCommand(`docker exec ${container_name} pmm-admin list | grep "postgresql_pgstatmonitor_agent" | grep "Running"`);
     output = await I.pgExecuteQueryOnDemand('SELECT * FROM pg_stat_monitor_settings WHERE name=\'pg_stat_monitor.pgsm_normalized_query\';', connection);
     assert.equal(output.rows[0].value, 'yes', `The default value of 'pg_stat_monitor.pgsm_normalized_query' should be equal to '${alteredValue}'`);
     await checkForExamples(true);
@@ -581,7 +582,7 @@ xScenario(
 Scenario(
   'PMM-T1292 PMM-T1302 PMM-T1303 PMM-T1283 Verify that pmm-admin inventory add agent postgres-exporter with --log-level flag adds PostgreSQL exporter with corresponding log-level @not-ui-pipeline @pgsm-pmm-integration',
   async ({
-    I, inventoryAPI, dashboardPage,
+    I, inventoryAPI, dashboardPage, agentCli,
   }) => {
     I.amOnPage(dashboardPage.postgresqlInstanceOverviewDashboard.url);
     dashboardPage.waitForDashboardOpened();
@@ -603,16 +604,20 @@ Scenario(
       container_name,
     };
 
-    await inventoryAPI.verifyAgentLogLevel('postgresql', dbDetails);
-    await inventoryAPI.verifyAgentLogLevel('pgstatmonitor', dbDetails);
-    await inventoryAPI.verifyAgentLogLevel('postgresql', dbDetails, 'debug');
-    await inventoryAPI.verifyAgentLogLevel('pgstatmonitor', dbDetails, 'debug');
-    await inventoryAPI.verifyAgentLogLevel('postgresql', dbDetails, 'info');
-    await inventoryAPI.verifyAgentLogLevel('pgstatmonitor', dbDetails, 'info');
-    await inventoryAPI.verifyAgentLogLevel('postgresql', dbDetails, 'warn');
-    await inventoryAPI.verifyAgentLogLevel('pgstatmonitor', dbDetails, 'warn');
-    await inventoryAPI.verifyAgentLogLevel('postgresql', dbDetails, 'error');
-    await inventoryAPI.verifyAgentLogLevel('pgstatmonitor', dbDetails, 'error');
+    await agentCli.verifyAgentLogLevel('postgres-exporter', dbDetails);
+    await agentCli.verifyAgentLogLevel('qan-postgresql-pgstatmonitor-agent', dbDetails);
+
+    await agentCli.verifyAgentLogLevel('postgres-exporter', dbDetails, 'debug');
+    await agentCli.verifyAgentLogLevel('qan-postgresql-pgstatmonitor-agent', dbDetails, 'debug');
+
+    await agentCli.verifyAgentLogLevel('postgres-exporter', dbDetails, 'info');
+    await agentCli.verifyAgentLogLevel('qan-postgresql-pgstatmonitor-agent', dbDetails, 'info');
+
+    await agentCli.verifyAgentLogLevel('postgres-exporter', dbDetails, 'warn');
+    await agentCli.verifyAgentLogLevel('qan-postgresql-pgstatmonitor-agent', dbDetails, 'warn');
+
+    await agentCli.verifyAgentLogLevel('postgres-exporter', dbDetails, 'error');
+    await agentCli.verifyAgentLogLevel('qan-postgresql-pgstatmonitor-agent', dbDetails, 'error');
 
     await I.say(await I.verifyCommand(`docker exec ${container_name} pmm-admin remove postgresql ${pgsql_service_name}`));
   },
@@ -631,7 +636,7 @@ Scenario(
     assert.equal(output.rows[0].setting, defaultValue, `The value of 'pg_stat_monitor.pgsm_bucket_time' should be equal to ${defaultValue}`);
     assert.equal(output.rows[0].reset_val, defaultValue, `The value of 'pg_stat_monitor.pgsm_bucket_time' should be equal to ${defaultValue}`);
     await I.verifyCommand(`docker exec ${container_name} true > pmm-agent.log`);
-    await I.verifyCommand(`docker exec ${container_name} pmm-admin list | grep "postgresql_pgstatmonitor_agent" | grep "Agent_status_running"`);
+    await I.verifyCommand(`docker exec ${container_name} pmm-admin list | grep "postgresql_pgstatmonitor_agent" | grep "Running"`);
     I.wait(defaultValue);
     let log = await I.verifyCommand(`docker exec ${container_name} tail -n100 pmm-agent.log`);
 

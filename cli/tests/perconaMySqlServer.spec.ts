@@ -89,14 +89,14 @@ test.describe('PMM Client CLI tests for Percona Server Database', async () => {
    */
   test('run pmm-admin status check for RUNNING string in output for VM_AGENT', async ({ }) => {
     await expect(async () => {
-      await (await cli.exec('sudo pmm-admin status | grep "vmagent Running"'))
+      await (await cli.exec('sudo pmm-admin status | grep "vmagent.*Running"'))
         .assertSuccess();
     }).toPass({ intervals: [1_000], timeout: 5_000 });
   });
 
   test('run pmm-admin status check for RUNNING string in output for MYSQL_EXPORTER', async ({ }) => {
     await expect(async () => {
-      await (await cli.exec('sudo pmm-admin status | grep "mysqld_exporter Running"'))
+      await (await cli.exec('sudo pmm-admin status | grep "mysqld_exporter.*Running"'))
         .assertSuccess();
     }).toPass({ intervals: [1_000], timeout: 5_000 });
   });

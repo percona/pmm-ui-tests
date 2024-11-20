@@ -7,7 +7,7 @@ module.exports = {
   elements: {
   },
   buttons: {
-    newSilence: locate('$silences-table').find('a').withText('New'),
+    newSilence: locate('$silences-table').find('a').withText('Create silence'),
   },
   messages: {
   },

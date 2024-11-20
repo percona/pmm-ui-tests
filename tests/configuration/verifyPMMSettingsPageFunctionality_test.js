@@ -193,6 +193,7 @@ Scenario(
   'PMM-T486 - Verify Public Address in PMM Settings @settings @nightly',
   async ({ I, pmmSettingsPage, settingsAPI }) => {
     await settingsAPI.changeSettings({ publicAddress: '' });
+    I.wait(3);
     await pmmSettingsPage.openAdvancedSettings();
     await pmmSettingsPage.verifyTooltip(pmmSettingsPage.tooltips.advancedSettings.publicAddress);
 
@@ -218,7 +219,7 @@ Scenario(
 Scenario(
   'PMM-T254 ensure Advisors are on by default @instances',
   async ({ settingsAPI }) => {
-    const resp = await settingsAPI.getSettings('stt_enabled');
+    const resp = await settingsAPI.getSettings('advisor_enabled');
 
     assert.ok(resp, `Advisors should be turned on by default from 2.28.0 release but found ${resp}`);
   },

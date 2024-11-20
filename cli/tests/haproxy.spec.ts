@@ -1,7 +1,7 @@
 import { test } from '@playwright/test';
 import * as cli from '@helpers/cli-helper';
 
-test.describe('HAProxy service CLI tests ', async () => {
+test.describe('HAProxy service CLI tests', async () => {
   test.beforeAll(async ({}) => {
     const result = await cli.exec('docker ps | grep haproxy_pmm | awk \'{print $NF}\'');
     await result.outContains('haproxy_pmm', 'HAPROXY docker container should exist. please run pmm-framework with --database haproxy');
@@ -18,7 +18,7 @@ test.describe('HAProxy service CLI tests ', async () => {
 
     output = await cli.exec('sudo pmm-admin list');
     await output.assertSuccess();
-    await output.outContains('external-exporter        Unknown');
+    await output.outContains('external-exporter Unknown');
     await output.outContains('haproxyServiceCLI1');
   });
 
