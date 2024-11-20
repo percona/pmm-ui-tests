@@ -11,8 +11,6 @@ Scenario(
     const graphs = [{ id: '1915', name: 'CPU Cores Used', limitValue: 0.1 }, { id: '2216', name: 'Memory Usage', limitValue: 50 }];
     const { services } = (await inventoryAPI.getServices()).data;
 
-    console.log(`Services are ${JSON.stringify(services)}`);
-
     for (const graph of graphs) {
       for (const service of services) {
         console.log(`Testing for service: ${service.node_name}`);
