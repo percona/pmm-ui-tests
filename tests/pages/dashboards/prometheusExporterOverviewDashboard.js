@@ -74,7 +74,7 @@ class PrometheusExporterOverviewDashboard {
           await page.waitForTimeout(200);
 
           // eslint-disable-next-line no-plusplus
-          if (++retries >= 10) throw new Error('Displaying pop over for graph was not successful.');
+          if (++retries >= 10) throw new Error(`Displaying pop over for graph was not successful for point number ${i}`);
         }
 
         for (const [exporter, value] of Object.entries(exporters)) {
