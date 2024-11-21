@@ -347,8 +347,7 @@ Scenario(
     remoteInstancesPage.openAddRemotePage('external');
     const inputs = await remoteInstancesPage.fillRemoteFields(externalExporterServiceName);
 
-    I.waitForVisible(remoteInstancesPage.fields.addService, 30);
-    I.click(remoteInstancesPage.fields.addService);
+    await remoteInstancesPage.clickAddInstanceAndWaitForSuccess();
     pmmInventoryPage.verifyRemoteServiceIsDisplayed(externalExporterServiceName);
     const newLabels = {
       environment: `${inputs.environment} edited` || `${externalExporterServiceName} environment edited`,
@@ -411,8 +410,7 @@ Scenario(
       remoteInstancesHelper.remote_instance.haproxy.haproxy_2.port,
     );
     I.scrollPageToBottom();
-    I.waitForVisible(remoteInstancesPage.fields.addService, 30);
-    I.click(remoteInstancesPage.fields.addService);
+    await remoteInstancesPage.clickAddInstanceAndWaitForSuccess();
     pmmInventoryPage.verifyRemoteServiceIsDisplayed(haproxyServiceName);
     const newLabels = {
       environment: `${remoteInstancesHelper.remote_instance.haproxy.environment} edited` || `${haproxyServiceName} environment edited`,
@@ -476,7 +474,7 @@ Data(azureServices).Scenario(
     remoteInstancesPage.verifyAddInstancePageOpened();
     const inputs = await remoteInstancesPage.fillRemoteRDSFields(serviceName);
 
-    I.click(remoteInstancesPage.fields.addService);
+    await remoteInstancesPage.clickAddInstanceAndWaitForSuccess();
     pmmInventoryPage.verifyRemoteServiceIsDisplayed(serviceName);
     const newLabels = {
       environment: `${inputs.environment} edited` || `${serviceName} environment edited`,
