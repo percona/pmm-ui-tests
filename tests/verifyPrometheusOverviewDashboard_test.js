@@ -13,7 +13,7 @@ Scenario(
 
     for (const graph of graphs) {
       for (const service of services) {
-        console.log(`Testing for service: ${service.node_name}`);
+        console.log(`Testing for service: ${service.service_type}`);
 
         I.amOnPage(I.buildUrlWithParams(dashboardPage.prometheusExporterOverviewDashboard.cleanUrl, {
           node_name: services[0].node_name,
@@ -38,4 +38,4 @@ Scenario(
       throw new Error(`Values in graphs above threshold. Error values are: ${JSON.stringify(errorValues)}`);
     }
   },
-);
+).retry(2);

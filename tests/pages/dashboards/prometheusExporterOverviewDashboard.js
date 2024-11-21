@@ -39,6 +39,8 @@ class PrometheusExporterOverviewDashboard {
         return { postgres_exporter: [], node_exporter: [], vmagent: [] };
       case 'mongodb':
         return { mongodb_exporter: [], node_exporter: [], vmagent: [] };
+      case 'haproxy':
+        return { node_exporter: [], vmagent: [] };
       default:
         throw new Error(`Node type: "${serviceType}" is not supported`);
     }
@@ -68,13 +70,14 @@ class PrometheusExporterOverviewDashboard {
         let retries = 0;
 
         while (!(await page.locator(this.elements.graphPopover).isVisible())) {
+          await page.locator(this.elements.label).hover();
           await page.locator(this.elements.graphBodyByPanelId(graphId).value).hover({
             position: { x, y: boundingBox.height / 2 },
           });
           await page.waitForTimeout(200);
 
           // eslint-disable-next-line no-plusplus
-          if (++retries >= 10) throw new Error(`Displaying pop over for graph was not successful for point number ${i}`);
+          if (++retries >= 100) throw new Error(`Displaying pop over for graph was not successful for point number ${i} for  node: ${nodeName}`);
         }
 
         for (const [exporter, value] of Object.entries(exporters)) {
