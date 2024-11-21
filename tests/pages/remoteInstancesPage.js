@@ -324,7 +324,7 @@ module.exports = {
     switch (serviceName) {
       case remoteInstancesHelper.services.mysql:
         inputs = {
-          ...remoteInstancesHelper.remote_instance.mysql.ps_8_0,
+          ...remoteInstancesHelper.remote_instance.mysql.ps_5_7,
           ...this.mysqlSettings,
         };
         I.fillField(this.fields.hostName, inputs.host);
