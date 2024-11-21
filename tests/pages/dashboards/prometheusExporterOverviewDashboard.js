@@ -41,6 +41,13 @@ class PrometheusExporterOverviewDashboard {
         return { mongodb_exporter: [], node_exporter: [], vmagent: [] };
       case 'haproxy':
         return { node_exporter: [], vmagent: [] };
+      case 'proxysql':
+        return {
+          mysqld_exporter: [],
+          node_exporter: [],
+          vmagent: [],
+          proxysql_exporter: [],
+        };
       default:
         throw new Error(`Node type: "${serviceType}" is not supported`);
     }
