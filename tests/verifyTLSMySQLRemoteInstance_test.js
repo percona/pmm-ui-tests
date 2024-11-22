@@ -69,7 +69,7 @@ Data(instances).Scenario(
     remoteInstancesPage.waitUntilRemoteInstancesPageLoaded();
     remoteInstancesPage.openAddRemotePage(serviceType);
     await remoteInstancesPage.addRemoteSSLDetails(details);
-    I.click(remoteInstancesPage.fields.addService);
+    await remoteInstancesPage.clickAddInstanceAndWaitForSuccess();
     // Add wait for service status to be updated
     I.wait(10);
     await inventoryAPI.verifyServiceExistsAndHasRunningStatus(
@@ -244,7 +244,7 @@ Data(maxQueryLengthInstances).Scenario(
     remoteInstancesPage.openAddRemotePage(serviceType);
     await remoteInstancesPage.addRemoteSSLDetails(details);
     I.fillField(remoteInstancesPage.fields.maxQueryLength, maxQueryLength);
-    I.click(remoteInstancesPage.fields.addService);
+    await remoteInstancesPage.clickAddInstanceAndWaitForSuccess();
 
     // Check Remote Instance also added and have running status
     pmmInventoryPage.verifyRemoteServiceIsDisplayed(remoteServiceName);

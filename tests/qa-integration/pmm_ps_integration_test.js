@@ -47,7 +47,7 @@ Scenario(
     I.fillField(remoteInstancesPage.fields.password, details.password);
     I.fillField(remoteInstancesPage.fields.environment, details.environment);
     I.fillField(remoteInstancesPage.fields.cluster, details.cluster);
-    I.click(remoteInstancesPage.fields.addService);
+    await remoteInstancesPage.clickAddInstanceAndWaitForSuccess();
     // I.waitForVisible(pmmInventoryPage.fields.agentsLink, 30);
     I.wait(10);
     await inventoryAPI.verifyServiceExistsAndHasRunningStatus(
@@ -172,8 +172,15 @@ Scenario(
 
     I.amOnPage(I.buildUrlWithParams(queryAnalyticsPage.url, { from: 'now-1h', refresh: '5s' }));
     queryAnalyticsPage.waitForLoaded();
-    await queryAnalyticsPage.filters.selectFilter(dbName, 120000);
+    await queryAnalyticsPage.filters.selectFilter(dbName);
     queryAnalyticsPage.waitForLoaded();
-    I.waitForText('16', 240, queryAnalyticsPage.data.elements.totalItems);
+    for (let i = 0; i <= 24; i++) {
+      const countOfQueries = parseInt((await I.grabTextFrom(queryAnalyticsPage.data.elements.totalItems)).split('of ')[1], 10);
+
+      I.wait(10);
+      if (countOfQueries === 17) continue;
+
+      if (i === 24) assert.equal(countOfQueries, 17, 'Count of queries is incorrect');
+    }
   },
 ).retry(1);

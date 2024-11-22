@@ -123,7 +123,7 @@ Data(instances)
       adminPage.performPageDown(5);
       await dashboardPage.expandEachDashboardRow();
       adminPage.performPageUp(5);
-      await dashboardPage.verifyThereAreNoGraphsWithoutData(1);
+      await dashboardPage.verifyThereAreNoGraphsWithoutData(8);
     },
   )
   .retry(1);

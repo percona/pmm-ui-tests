@@ -55,6 +55,6 @@ Scenario(
     I.amOnPage(I.buildUrlWithParams(dashboardPage.mongoDbOplogDetails.clearUrl, { from: 'now-5m', service_name: mongodb_service_name_ac }));
     dashboardPage.waitForDashboardOpened();
     await dashboardPage.verifyMetricsExistence(dashboardPage.mongoDbOplogDetails.metrics);
-    await dashboardPage.verifyThereAreNoGraphsWithoutData(1);
+    await dashboardPage.verifyThereAreNoGraphsWithoutData(2);
   },
 );

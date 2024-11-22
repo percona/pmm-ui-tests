@@ -5,7 +5,7 @@ const PGSQL_USER = 'postgres';
 const PGSQL_PASSWORD = 'pass+this';
 const ipPort = '127.0.0.1:5447';
 
-test.describe('Percona Distribution for PostgreSQL CLI tests ', async () => {
+test.describe('Percona Distribution for PostgreSQL CLI tests', async () => {
   test.beforeAll(async ({}) => {
     const result = await cli.exec('docker ps | grep pdpgsql_pgsm_pmm | awk \'{print $NF}\'');
     await result.outContains('pdpgsql_pgsm_pmm', 'PDPGSQL docker container should exist. please run pmm-framework with --database pdpgsql');
@@ -41,7 +41,7 @@ test.describe('Percona Distribution for PostgreSQL CLI tests ', async () => {
     await cli.exec('sleep 30');
     const output = await cli.exec('sudo pmm-admin inventory list agents');
     await output.assertSuccess();
-    await output.outContains('postgres_exporter           Running');
+    await output.outContains('postgres_exporter Running');
     await output.outContains('postgresql_pgstatmonitor_agent Running');
   });
 
@@ -122,7 +122,7 @@ test.describe('Percona Distribution for PostgreSQL CLI tests ', async () => {
   test('PMM-T442 run pmm-admin inventory list agents for check agent postgresql_pgstatements_agent', async ({}) => {
     const output = await cli.exec('sudo pmm-admin inventory list agents');
     await output.assertSuccess();
-    await output.outContains('postgres_exporter           Running');
+    await output.outContains('postgres_exporter Running');
     await output.outContains('postgresql_pgstatements_agent Running');
   });
 
@@ -231,7 +231,7 @@ test.describe('Percona Distribution for PostgreSQL CLI tests ', async () => {
       const serviceIds = jsonList.service.filter((s: { service_name: string; }) => serviceNames.includes(s.service_name)).map((s: { service_id: never; }) => s.service_id);
       // eslint-disable-next-line @typescript-eslint/no-unsafe-return
       agentIds = jsonList.agent.filter((a: { agent_type: string; status: string; service_id: string | null }) => a.agent_type === 'AGENT_TYPE_POSTGRES_EXPORTER'
-       && a.status === 'AGENT_STATUS_RUNNING'
+       && a.status === 'RUNNING'
        && serviceIds.includes(a.service_id)).map((a: { agent_id: string }) => a.agent_id);
 
       expect(agentIds.length).toBeTruthy();
@@ -253,5 +253,4 @@ test.describe('Percona Distribution for PostgreSQL CLI tests ', async () => {
     await output.assertSuccess();
     await output.outContains('postgres_exporter --auto-discover-databases ');
   });
-
 });

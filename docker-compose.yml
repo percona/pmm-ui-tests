@@ -52,6 +52,7 @@ services:
       - UMASK=0777  # for slowlog file
     volumes:
       - /tmp/mysql/log:/tmp/mysql/log:rw
+      - ./testdata/docker-db-setup-scripts/init_ps_5_7.sql:/docker-entrypoint-initdb.d/init.sql
     networks:
       - pmm-network
 
@@ -72,6 +73,7 @@ services:
       - UMASK=0777  # for slowlog file
     volumes:
       - /tmp/mysql/log:/tmp/mysql/log
+      - ./testdata/docker-db-setup-scripts/init_ps_8.sql:/docker-entrypoint-initdb.d/init.sql
     networks:
       - pmm-network
 
@@ -150,7 +152,7 @@ services:
     image: perconalab/sysbench
     container_name: pmm-agent_sysbench
     depends_on:
-      - mysql
+      - mysql8
     networks:
       - pmm-network
     command: >
@@ -175,7 +177,7 @@ services:
               /usr/share/sysbench/tests/include/oltp_legacy/oltp.lua \
               prepare
           sysbench \
-              --rate=200 \
+              --rate=100 \
               --threads=64 \
               --report-interval=10 \
               --time=0 \
