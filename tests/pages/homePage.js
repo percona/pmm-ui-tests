@@ -122,6 +122,7 @@ module.exports = {
     I.waitForElement(pmmUpgradePage.elements.updateNowButton);
 
     I.wait(5);
+    console.log(await I.verifyCommand('docker ps -a'));
     const numberOfElements = await I.grabNumberOfVisibleElements(pmmUpgradePage.elements.checkUpdatesNow);
 
     if (numberOfElements >= 1) {
@@ -131,6 +132,8 @@ module.exports = {
     I.waitForElement(pmmUpgradePage.elements.updateNowButton);
     I.click(pmmUpgradePage.elements.updateNowButton);
     I.wait(240);
+
+    console.log(await I.verifyCommand('docker ps -a'));
 
     // I.waitForElement(pmmUpgradePage.elements.updateSuccess, 360);
   },
