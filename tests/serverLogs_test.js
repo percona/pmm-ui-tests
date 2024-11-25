@@ -1,4 +1,4 @@
-const { codeceptjsConfig } = inject();
+const { codeceptjsConfig, I } = inject();
 const assert = require('assert');
 
 Feature('Logs tests');
@@ -7,13 +7,21 @@ const filename = 'logs.zip';
 const fileNameToCheck = 'pmm-managed.log';
 const baseUrl = codeceptjsConfig.config.helpers.Playwright.url;
 
-BeforeSuite(async ({ I, locationsAPI }) => {
-  // Simple request to generate > 50k lines in logs
-  for (let i = 0; i < 13000; i++) {
-    await locationsAPI.getLocationsList();
-  }
+const getLineCount = async () => Number(await I.verifyCommand('docker exec pmm-server cat /srv/logs/pmm-managed.log | wc -l'));
 
-  I.wait(15);
+BeforeSuite(async ({ I, locationsAPI }) => {
+  let actualLineCount = await getLineCount();
+  // Simple request to generate > 50k lines in logs
+
+  while (actualLineCount < 50001) {
+    for (let i = 0; i < 1000; i++) {
+      await locationsAPI.getLocationsList();
+    }
+
+    I.wait(5);
+
+    actualLineCount = await getLineCount();
+  }
 });
 
 // @settings-fb tag added in order to execute these tests on FB
