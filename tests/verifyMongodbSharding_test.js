@@ -8,10 +8,10 @@ Scenario(
   async ({
     I,
   }) => {
-    const version = '6.0';
+    const version = '7.0';
     const edition = 'Community';
 
-    const containerName = await I.verifyCommand(`docker ps --format "table {{.ID}}\\t{{.Image}}\\t{{.Names}}" | grep 'psmdb_pmm_${version}_sharded' | awk -F " " '{print $3}'`);
+    const containerName = `psmdb_pmm_${version}_sharded`;
     const agentId = await I.verifyCommand(`docker exec ${containerName} pmm-admin list | grep "42002" | awk -F " " '{print $4}'`);
     const serviceId = await I.verifyCommand(`docker exec ${containerName} pmm-admin list | grep "mongodb_shraded" | awk -F " " '{print $4}'`);
     const port = await I.verifyCommand(`docker exec ${containerName} pmm-admin list | grep "mongodb_exporter.*${serviceId}" | awk -F " " '{print $6}'`);
