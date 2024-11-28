@@ -71,14 +71,14 @@ Scenario(
     I.amOnPage(remoteInstancesPage.url);
     remoteInstancesPage.waitUntilRemoteInstancesPageLoaded().openAddAWSRDSMySQLPage();
     remoteInstancesPage.discoverRDS();
-    remoteInstancesPage.verifyInstanceIsDiscovered(serviceName);
+    await remoteInstancesPage.verifyInstanceIsDiscovered(serviceName);
     remoteInstancesPage.startMonitoringOfInstance(serviceName);
     remoteInstancesPage.verifyAddInstancePageOpened();
     const grabbedHostname = await I.grabValueFrom(remoteInstancesPage.fields.hostName);
 
     assert.ok(grabbedHostname.startsWith(serviceName), `Hostname is incorrect: ${grabbedHostname}`);
     I.seeInField(remoteInstancesPage.fields.serviceName, serviceName);
-    remoteInstancesPage.fillRemoteRDSFields(serviceName);
+    await remoteInstancesPage.fillRemoteRDSFields(serviceName);
     remoteInstancesPage.createRemoteInstance(serviceName);
     pmmInventoryPage.verifyRemoteServiceIsDisplayed(serviceName);
     // Skipping due to QAN Setup part on AWS
