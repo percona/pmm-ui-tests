@@ -85,9 +85,9 @@ Scenario(
     // await pmmInventoryPage.verifyAgentHasStatusRunning(serviceName);
 
     // await pmmInventoryPage.verifyMetricsFlags(serviceName);
-    const logs = await I.verifyCommand('docker exec pmm-server cat /srv/logs/pmm-agent.log | awk \'/ERRO/ && /rdsadmin/\'');
+    const logs = await I.verifyCommand('docker exec pmm-server cat /srv/logs/pmm-agent.log | awk \'/postgres_exporter/ && /ERRO/ && /opening connection/ && /rdsadmin/\'');
 
-    assert.ok(logs, `Logs contains errors about rdsadmin database being used! \n The lines are: \n ${logs}`);
+    assert.ok(!logs, `Logs contains errors about rdsadmin database being used! \n The lines are: \n ${logs}`);
   },
 );
 
