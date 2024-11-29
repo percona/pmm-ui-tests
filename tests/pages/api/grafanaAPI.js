@@ -458,7 +458,13 @@ module.exports = {
   },
 
   async checkMetricExist(metricName, refineBy) {
-    const response = await this.getMetric(metricName, refineBy);
+    let response;
+
+    await I.asyncWaitFor(async () => {
+      response = await this.getMetric(metricName, refineBy);
+
+      return response.data.data.result.length !== 0;
+    }, 60);
     const result = JSON.stringify(response.data.data.result);
 
     I.assertTrue(
@@ -470,7 +476,14 @@ module.exports = {
   },
 
   async checkMetricAbsent(metricName, refineBy) {
-    const response = await this.getMetric(metricName, refineBy);
+    let response;
+
+    await I.asyncWaitFor(async () => {
+      response = await this.getMetric(metricName, refineBy);
+
+      return response.data.data.result.length === 0;
+    }, 60);
+
     const result = JSON.stringify(response.data.data.result);
 
     I.assertEqual(
