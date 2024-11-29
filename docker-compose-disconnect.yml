@@ -26,9 +26,6 @@ services:
       - PMM_DEBUG=1
       - PERCONA_TEST_SAAS_HOST=check-dev.percona.com:443
       - PERCONA_TEST_CHECKS_PUBLIC_KEY=RWTg+ZmCCjt7O8eWeAmTLAqW+1ozUbpRSKSwNTmO+exlS5KEIPYWuYdX
-      - PERCONA_TEST_VERSION_SERVICE_URL=https://check-dev.percona.com/versions/v1
-      - PERCONA_TEST_TELEMETRY_INTERVAL=10s
-      - PERCONA_TEST_TELEMETRY_RETRY_BACKOFF=10s
     networks:
       - server-network
 
@@ -55,9 +52,9 @@ services:
       - server-network
       - mysql-network
 
-  mysql5.7:
-    container_name: mysql-disconnect-5.7
-    image: mysql:5.7
+  ps8:
+    container_name: ps8
+    image: percona:8.0
     command: --default-authentication-plugin=mysql_native_password
     restart: always
     environment:

@@ -17,7 +17,8 @@ if (remoteInstancesHelper.getInstanceStatus('azure').azure_postgresql.enabled) {
 
 const metrics = new DataTable(['metricName']);
 
-metrics.add(['azure_memory_percent_average']);
+// TODO: bring back once PMM-13585 is fixed
+// metrics.add(['azure_memory_percent_average']);
 metrics.add(['mysql_global_status_max_used_connections']);
 // Removing to avoid failures due to missing metric, seems to be some changes on Azure deployments.
 // metrics.add(['mysql_global_variables_azure_ia_enabled']);
