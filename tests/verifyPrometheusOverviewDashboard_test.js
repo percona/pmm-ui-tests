@@ -36,6 +36,8 @@ Scenario(
       }
     }
 
+    I.waitForVisible(locate('//*[@id="not existing ID"]'));
+
     if (errorValues.length) {
       throw new Error(`Values in graphs above threshold. Error values are: ${JSON.stringify(errorValues)}`);
     }
