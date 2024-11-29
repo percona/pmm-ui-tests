@@ -21,10 +21,12 @@ Scenario(
         }));
         dashboardPage.waitForDashboardOpened();
 
-        const cpuCoresUsedValues = await dashboardPage.prometheusExporterOverviewDashboard
+        const graphValues = await dashboardPage.prometheusExporterOverviewDashboard
           .getGraphValues(graph.id, services[0].service_type, services[0].node_name, 10);
 
-        for (const [name, values] of Object.entries(cpuCoresUsedValues)) {
+        console.log(graphValues);
+
+        for (const [name, values] of Object.entries(graphValues)) {
           values.forEach((value) => {
             if (parseFloat(value) > graph.limitValue) {
               errorValues.push({ graphName: graph.name, exporterName: name, value });
