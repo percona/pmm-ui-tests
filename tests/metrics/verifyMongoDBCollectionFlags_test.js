@@ -291,8 +291,8 @@ Scenario(
     await I.say(await I.verifyCommand(`docker exec rs101 pmm-admin remove mongodb ${mongodb_service_name}`));
 
     // Re-add Service with Disable Top metrics, check no smart metrics for Top
-    await I.say(await I.verifyCommand(`docker exec rs101 pmm-admin add mongodb --port=${connection.port} --agent-password='testing' --password=${pmm_user_mongodb.password} --username=${pmm_user_mongodb.username} --enable-all-collectors --disable-collectors=topmetrics --max-collections-limit=400 --stats-collections=db1,db2.col2 --service-name=${mongodb_service_name} --replication-set=rs0s`));
-    await I.wait(30);
+    await I.say(await I.verifyCommand(`docker exec rs101 pmm-admin add mongodb --port=${connection.port} --agent-password='testing' --password=${pmm_user_mongodb.password} --username=${pmm_user_mongodb.username} --enable-all-collectors --disable-collectors='topmetrics' --max-collections-limit=400 --stats-collections=db1,db2.col2 --service-name=${mongodb_service_name} --replication-set=rs0s`));
+    await I.wait(60);
     await grafanaAPI.checkMetricExist(smartMetricName, [{ type: 'service_name', value: `${mongodb_service_name}` }, { type: 'collector', value: 'dbstats' }]);
     await grafanaAPI.checkMetricAbsent(smartMetricName, [{ type: 'service_name', value: `${mongodb_service_name}` }, { type: 'collector', value: 'top' }]);
   },
