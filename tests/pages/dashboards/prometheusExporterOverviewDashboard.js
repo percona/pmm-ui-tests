@@ -7,6 +7,7 @@ class PrometheusExporterOverviewDashboard {
     this.elements = {
       graphBody: (graphName) => locate(`//*[@data-testid="data-testid Panel header ${graphName}"]//*[@class="u-over"]`),
       graphBodyByPanelId: (graphId) => locate(`//*[@data-panelid="${graphId}"]//*[@class="u-over"]`),
+      graphItemsByPanelId: (graphId) => locate(`//*[@data-panelid="${graphId}"]//tbody//button`),
       graphValue: (rowName) => `//*[@id="grafana-portal-container"]//*[text()="${rowName}"]//parent::*//following-sibling::*//div`,
       graphPopover: '//*[@id="grafana-portal-container"]/div',
       label: '//label[text()="PMM Annotations"]',
@@ -27,38 +28,19 @@ class PrometheusExporterOverviewDashboard {
     ];
   }
 
-  getExportersForNodeType(serviceType, nodeName) {
-    switch (serviceType) {
-      case 'mysql':
-        return { mysqld_exporter: [], node_exporter: [], vmagent: [] };
-      case 'postgresql':
-        if (nodeName === 'pmm-server') {
-          return { postgres_exporter: [], node_exporter: [] };
-        }
-
-        return { postgres_exporter: [], node_exporter: [], vmagent: [] };
-      case 'mongodb':
-        return { mongodb_exporter: [], node_exporter: [], vmagent: [] };
-      case 'haproxy':
-        return { node_exporter: [], vmagent: [] };
-      case 'proxysql':
-        return {
-          mysqld_exporter: [],
-          node_exporter: [],
-          vmagent: [],
-          proxysql_exporter: [],
-        };
-      default:
-        throw new Error(`Node type: "${serviceType}" is not supported`);
-    }
-  }
-
-  async getGraphValues(graphId, serviceType, nodeName, numberOfPoints = 10) {
-    const exporters = this.getExportersForNodeType(serviceType, nodeName);
+  async getGraphValues(graphId, nodeName, numberOfPoints = 10) {
+    const exporters = [];
 
     return await I.usePlaywrightTo('Get Graph Values', async ({ page }) => {
-      console.log(`Exporters for node type ${serviceType} are: ${JSON.stringify(exporters)}`);
       const boundingBox = await page.locator(this.elements.graphBodyByPanelId(graphId).value).boundingBox();
+
+      for (let i = 0; i < await page.locator(this.elements.graphItemsByPanelId(graphId).value).count(); i++) {
+        exporters.push({
+          name: (await page.locator(this.elements.graphItemsByPanelId(graphId).value).nth(i).textContent()).trim(),
+          values: [],
+        });
+      }
+
       const widthItterations = boundingBox.width / numberOfPoints;
 
       await page.locator(this.elements.graphBodyByPanelId(graphId).value).waitFor({ state: 'visible' });
@@ -87,9 +69,12 @@ class PrometheusExporterOverviewDashboard {
           if (++retries >= 100) throw new Error(`Displaying pop over for graph was not successful for point number ${i} for  node: ${nodeName}`);
         }
 
-        for (const [exporter, value] of Object.entries(exporters)) {
-          await page.locator(this.elements.graphValue(exporter)).waitFor({ state: 'visible' });
-          exporters[exporter].push(await page.locator(this.elements.graphValue(exporter)).textContent());
+        for (const exporter of exporters) {
+          await page.locator(this.elements.graphValue(exporter.name)).waitFor({ state: 'visible' });
+
+          exporters.find((temp_exporter) => temp_exporter.name === exporter.name)
+            .values
+            .push(await page.locator(this.elements.graphValue(exporter.name)).textContent());
         }
 
         await page.locator(this.elements.label).hover();

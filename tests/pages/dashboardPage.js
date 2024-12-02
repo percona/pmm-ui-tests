@@ -1515,4 +1515,12 @@ module.exports = {
   panelMenu(panelTitle) {
     return new DashboardPanelMenu(panelTitle);
   },
+
+  convertBytes(value) {
+    if (value.includes('MiB')) {
+      return parseFloat(value) * 1048576;
+    }
+
+    throw new Error(`Unit ${value} is not supported`);
+  },
 };
