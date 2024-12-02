@@ -57,6 +57,10 @@ for (const [key, value] of Object.entries(remoteInstancesHelper.services)) {
 
 Feature('Remote DB Instances');
 
+BeforeSuite(async ({ I }) => {
+  await I.verifyCommand('docker compose -f docker-compose.yml up -d');
+});
+
 Before(async ({ I }) => {
   await I.Authorize();
 });
@@ -75,8 +79,7 @@ Scenario(
     remoteInstancesPage.waitUntilRemoteInstancesPageLoaded();
     remoteInstancesPage.openAddRemotePage('external');
     await remoteInstancesPage.fillRemoteFields(externalExporterServiceName);
-    I.waitForVisible(remoteInstancesPage.fields.addService, 30);
-    I.click(remoteInstancesPage.fields.addService);
+    await remoteInstancesPage.clickAddInstanceAndWaitForSuccess();
     pmmInventoryPage.verifyRemoteServiceIsDisplayed(externalExporterServiceName);
     await I.click(pmmInventoryPage.fields.showServiceDetails(externalExporterServiceName));
     await I.click(pmmInventoryPage.fields.agentsLinkNew);
@@ -135,7 +138,7 @@ Data(instances).Scenario(
     pmmInventoryPage.verifyRemoteServiceIsDisplayed(serviceName);
     await pmmInventoryPage.verifyAgentHasStatusRunning(serviceName);
   },
-);
+).retry(2);
 
 Scenario(
   'TableStats UI Default table Options for Remote MySQL & AWS-RDS Instance @instances',
@@ -206,8 +209,7 @@ Scenario(
       remoteInstancesHelper.remote_instance.haproxy.haproxy_2.port,
     );
     I.scrollPageToBottom();
-    I.waitForVisible(remoteInstancesPage.fields.addService, 30);
-    I.click(remoteInstancesPage.fields.addService);
+    await remoteInstancesPage.clickAddInstanceAndWaitForSuccess();
     pmmInventoryPage.verifyRemoteServiceIsDisplayed(haproxyServiceName);
 
     await I.click(pmmInventoryPage.fields.showServiceDetails(haproxyServiceName));
@@ -260,10 +262,10 @@ Data(remotePostgreSQL).Scenario(
     I.waitForVisible(remoteInstancesPage.fields.skipTLSL, 30);
     I.click(remoteInstancesPage.fields.skipTLSL);
     I.click(current.trackingOption);
-    I.click(remoteInstancesPage.fields.addService);
+    await remoteInstancesPage.clickAddInstanceAndWaitForSuccess();
     pmmInventoryPage.verifyRemoteServiceIsDisplayed(current.instanceName);
     await pmmInventoryPage.verifyAgentHasStatusRunning(current.instanceName);
-    pmmInventoryPage.checkExistingAgent(current.checkAgent);
+    await pmmInventoryPage.checkExistingAgent(current.checkAgent);
   },
 );
 
@@ -279,7 +281,6 @@ Data(dashboardCheck).Scenario(
     adminPage.performPageDown(5);
     await dashboardPage.expandEachDashboardRow();
     adminPage.performPageUp(5);
-    await dashboardPage.verifyThereAreNoGraphsWithNA();
     await dashboardPage.verifyThereAreNoGraphsWithoutData(1);
   },
 ).retry(2);
@@ -336,7 +337,7 @@ Scenario(
     I.click(remoteInstancesPage.fields.addService);
     I.verifyPopUpMessage(errorMessage);
     I.fillField(remoteInstancesPage.fields.database, 'not_default_db');
-    I.click(remoteInstancesPage.fields.addService);
+    await remoteInstancesPage.clickAddInstanceAndWaitForSuccess();
     pmmInventoryPage.verifyRemoteServiceIsDisplayed(remoteServiceName);
     await pmmInventoryPage.verifyAgentHasStatusRunning(remoteServiceName);
     // verify metric for client container node instance

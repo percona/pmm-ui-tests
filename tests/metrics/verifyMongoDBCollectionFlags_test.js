@@ -302,13 +302,14 @@ Scenario(
     await I.say(await I.verifyCommand(`docker exec ${containerName} pmm-admin remove mongodb ${mongodb_service_name}`));
 
     // Re-add Service with Disable Top metrics, check no smart metrics for Top
-    await I.say(await I.verifyCommand(`docker exec ${containerName} pmm-admin add mongodb --agent-password='testing' --password=${pmm_user_mongodb.password} --username=${pmm_user_mongodb.username} --enable-all-collectors --disable-collectors=topmetrics --max-collections-limit=400 --stats-collections=db1,db2.col2 --service-name=${mongodb_service_name} --replication-set=rs0s`));
+    await I.say(await I.verifyCommand(`docker exec ${containerName} pmm-admin add mongodb --agent-password='testing' --password=${pmm_user_mongodb.password} --username=${pmm_user_mongodb.username} --enable-all-collectors --disable-collectors='topmetrics' --max-collections-limit=400 --stats-collections=db1,db2.col2 --service-name=${mongodb_service_name} --replication-set=rs0s`));
     I.say('Wait 180 seconds for Metrics being collected for the new service');
-    const { new_service_id } = await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.MONGODB, mongodb_service_name);
+    const { service_id: new_service_id } = await inventoryAPI
+      .apiGetNodeInfoByServiceName(SERVICE_TYPE.MONGODB, mongodb_service_name);
 
     await I.wait(180);
-    await grafanaAPI.checkMetricExist(smartMetricName, [{ type: 'service_id', value: `${new_service_id}` }, { type: 'collector', value: 'dbstats' }]);
-    await grafanaAPI.checkMetricAbsent(smartMetricName, [{ type: 'service_id', value: `${new_service_id}` }, { type: 'collector', value: 'top' }]);
+    await grafanaAPI.checkMetricExist(smartMetricName, [{ type: 'service_id', value: new_service_id }, { type: 'collector', value: 'dbstats' }]);
+    await grafanaAPI.checkMetricAbsent(smartMetricName, [{ type: 'service_id', value: new_service_id }, { type: 'collector', value: 'top' }]);
   },
 );
 
