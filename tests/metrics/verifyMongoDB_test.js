@@ -27,7 +27,16 @@ const telemetry = {
 
 BeforeSuite(async ({ I }) => {
   await I.mongoConnect(connection);
-  await I.mongoAddUser(mongo_test_user.username, mongo_test_user.password);
+  await I.mongoAddUser(mongo_test_user.username, mongo_test_user.password, [
+    { role: 'explainRole', db: 'admin' },
+    { role: 'clusterMonitor', db: 'admin' },
+    { role: 'read', db: 'local' },
+    { db: 'admin', role: 'readWrite', collection: '' },
+    { db: 'admin', role: 'backup' },
+    { db: 'admin', role: 'clusterMonitor' },
+    { db: 'admin', role: 'restore' },
+    { db: 'admin', role: 'pbmAnyAction' },
+  ]);
 
   // check that rs101 docker container exists
   const dockerCheck = await I.verifyCommand('docker ps | grep rs101');
@@ -50,12 +59,12 @@ AfterSuite(async ({ I }) => {
 Scenario(
   'PMM-T1241 - Verify add mongoDB service with "+" in user password @not-ui-pipeline @mongodb-exporter',
   async ({ I, grafanaAPI }) => {
-    await I.say(await I.verifyCommand(`docker exer rs101 mongo "mongodb://${connection.username}:${connection.password}@localhost/" << EOF
-      db.getSiblingDB("admin").createUser({user: "test_user", pwd: "pass+", roles: [{ role: "explainRole", db: "admin" }, { role: "clusterMonitor", db: "admin" }, { role: "read", db: "local" }, { "db" : "admin", "role" : "readWrite", "collection": "" }, { "db" : "admin", "role" : "backup" }, { "db" : "admin", "role" : "clusterMonitor" }, { "db" : "admin", "role" : "restore" }, { "db" : "admin", "role" : "pbmAnyAction" }]});
-    EOF`));
+    // await I.say(await I.verifyCommand(`docker exer rs101 mongo "mongodb://${connection.username}:${connection.password}@localhost/" << EOF
+    //   db.getSiblingDB("admin").createUser({user: "test_user", pwd: "pass+", roles: [{ role: "explainRole", db: "admin" }, { role: "clusterMonitor", db: "admin" }, { role: "read", db: "local" }, { "db" : "admin", "role" : "readWrite", "collection": "" }, { "db" : "admin", "role" : "backup" }, { "db" : "admin", "role" : "clusterMonitor" }, { "db" : "admin", "role" : "restore" }, { "db" : "admin", "role" : "pbmAnyAction" }]});
+    // EOF`));
 
     await I.say(
-      await I.verifyCommand(`pmm-admin add mongodb --port=${connection.port} --password=${mongo_test_user.password} --username='${mongo_test_user.username}' --service-name=${mongodb_service_name}`),
+      await I.verifyCommand(`pmm-admin add mongodb --port=${connection.port} --password="${mongo_test_user.password}" --username="${mongo_test_user.username}" --service-name=${mongodb_service_name}`),
     );
 
     await grafanaAPI.waitForMetric('mongodb_up', { type: 'service_name', value: mongodb_service_name }, 65);
