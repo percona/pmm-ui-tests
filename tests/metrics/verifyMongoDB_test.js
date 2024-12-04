@@ -29,7 +29,16 @@ const containerName = 'rs101';
 
 BeforeSuite(async ({ I }) => {
   await I.mongoConnect(connection);
-  await I.mongoAddUser(mongo_test_user.username, mongo_test_user.password);
+  await I.mongoAddUser(mongo_test_user.username, mongo_test_user.password, [
+    { role: 'explainRole', db: 'admin' },
+    { role: 'clusterMonitor', db: 'admin' },
+    { role: 'read', db: 'local' },
+    { db: 'admin', role: 'readWrite', collection: '' },
+    { db: 'admin', role: 'backup' },
+    { db: 'admin', role: 'clusterMonitor' },
+    { db: 'admin', role: 'restore' },
+    { db: 'admin', role: 'pbmAnyAction' },
+  ]);
 
   // check that rs101 docker container exists
   const dockerCheck = await I.verifyCommand(`docker ps | grep ${containerName}`);
