@@ -9,6 +9,8 @@ test.describe('PMM Client "Generic" CLI tests', async () => {
     // See: https://github.com/Percona-QA/package-testing/blob/master/playbooks/pmm2-client_integration_upgrade_custom_path.yml#L41
     PMM_VERSION = cli.execute('curl -s https://raw.githubusercontent.com/Percona-Lab/pmm-submodules/PMM-2.0/VERSION | xargs')
       .stdout.trim();
+  } else {
+    PMM_VERSION = `${process.env.CLIENT_VERSION}`;
   }
 
   test('PMM-T1258 Verify pmm-admin status shows node name', async ({}) => {
