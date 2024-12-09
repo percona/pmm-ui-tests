@@ -66,7 +66,7 @@ Scenario(
 );
 
 Scenario(
-  'Verify metrics from PXC instances on PMM-Server @pmm-pxc-integration-1 @not-ui-pipeline',
+  'Verify metrics from PXC instances on PMM-Server @pmm-pxc-integration @not-ui-pipeline',
   async ({
     I, grafanaAPI,
   }) => {
@@ -109,6 +109,7 @@ Scenario(
       url = I.buildUrlWithParams(dashboardPage.mysqlPXCGaleraNodeSummaryDashboard.clearUrl, { from: 'now-15m', service_name: service });
 
       I.amOnPage(url);
+      I.wait(60);
       await dashboardPage.waitForDashboardOpened();
       adminPage.performPageDown(5);
       await dashboardPage.expandEachDashboardRow();
