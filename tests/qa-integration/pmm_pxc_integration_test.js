@@ -39,6 +39,8 @@ Scenario(
     I.amOnPage(remoteInstancesPage.url);
     remoteInstancesPage.waitUntilRemoteInstancesPageLoaded();
     remoteInstancesPage.openAddRemotePage('mysql');
+    I.waitForElement(remoteInstancesPage.fields.hostName, 30);
+    remoteInstancesPage.selectDropdownOption('$nodes-selectbox', 'pmm-server');
     I.fillField(remoteInstancesPage.fields.hostName, details.host);
     I.clearField(remoteInstancesPage.fields.portNumber);
     I.fillField(remoteInstancesPage.fields.portNumber, details.port);
@@ -64,7 +66,7 @@ Scenario(
 );
 
 Scenario(
-  'Verify metrics from PXC instances on PMM-Server @pmm-pxc-integration @not-ui-pipeline',
+  'Verify metrics from PXC instances on PMM-Server @pmm-pxc-integration-1 @not-ui-pipeline',
   async ({
     I, grafanaAPI,
   }) => {
@@ -81,15 +83,15 @@ Scenario(
 
     // verify metric for client container node instance
     response = await grafanaAPI.checkMetricExist(metricName, { type: 'service_name', value: clientServiceName });
-    result = JSON.stringify(response.data.data.result);
+    result = JSON.stringify(response.data.results);
 
-    assert.ok(response.data.data.result.length !== 0, `Metrics ${metricName} from ${clientServiceName} should be available but got empty ${result}`);
+    assert.ok(response.data.results.A.frames[0].data.values.length !== 0, `Metrics ${metricName} from ${clientServiceName} should be available but got empty ${result}`);
 
     // verify metric for remote instance
     response = await grafanaAPI.checkMetricExist(metricName, { type: 'service_name', value: remoteServiceName });
-    result = JSON.stringify(response.data.data.result);
+    result = JSON.stringify(response.data.results);
 
-    assert.ok(response.data.data.result.length !== 0, `Metrics ${metricName} from ${remoteServiceName} should be available but got empty ${result}`);
+    assert.ok(response.data.results.A.frames[0].data.values.length !== 0, `Metrics ${metricName} from ${remoteServiceName} should be available but got empty ${result}`);
   },
 ).retry(1);
 

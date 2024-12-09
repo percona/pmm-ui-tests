@@ -39,6 +39,8 @@ Scenario(
     I.amOnPage(remoteInstancesPage.url);
     remoteInstancesPage.waitUntilRemoteInstancesPageLoaded();
     remoteInstancesPage.openAddRemotePage('mysql');
+    I.waitForElement(remoteInstancesPage.fields.hostName, 30);
+    remoteInstancesPage.selectDropdownOption('$nodes-selectbox', 'pmm-server');
     I.fillField(remoteInstancesPage.fields.hostName, details.host);
     I.clearField(remoteInstancesPage.fields.portNumber);
     I.fillField(remoteInstancesPage.fields.portNumber, details.port);
@@ -73,7 +75,7 @@ Scenario(
     const metricName = 'mysql_global_status_max_used_connections';
 
     await I.verifyCommand(`docker exec ${container_name} pmm-admin list | grep "mysqld_exporter" | grep "Running" | wc -l | grep "1"`);
-    await I.verifyCommand(`docker exec ${container_name} pmm-admin list | grep "mysql_slowlog_agent" | grep "Running" | wc -l | grep "1"`);
+    await I.verifyCommand(`docker exec ${container_name} pmm-admin list | grep "mysql_perfschema_agent" | grep "Running" | wc -l | grep "1"`);
 
     const clientServiceName = (await I.verifyCommand(`docker exec ${container_name} pmm-admin list | grep MySQL | head -1 | awk -F" " '{print $2}'`)).trim();
 
@@ -82,15 +84,15 @@ Scenario(
 
     // verify metric for client container node instance
     response = await grafanaAPI.checkMetricExist(metricName, { type: 'service_name', value: clientServiceName });
-    result = JSON.stringify(response.data.data.result);
+    result = JSON.stringify(response.data.results);
 
-    assert.ok(response.data.data.result.length !== 0, `Metrics ${metricName} from ${clientServiceName} should be available but got empty ${result}`);
+    assert.ok(response.data.results.A.frames[0].data.values.length !== 0, `Metrics ${metricName} from ${clientServiceName} should be available but got empty ${result}`);
 
     // verify metric for remote instance
     response = await grafanaAPI.checkMetricExist(metricName, { type: 'service_name', value: remoteServiceName });
-    result = JSON.stringify(response.data.data.result);
+    result = JSON.stringify(response.data.results);
 
-    assert.ok(response.data.data.result.length !== 0, `Metrics ${metricName} from ${remoteServiceName} should be available but got empty ${result}`);
+    assert.ok(response.data.results.A.frames[0].data.values.length !== 0, `Metrics ${metricName} from ${remoteServiceName} should be available but got empty ${result}`);
   },
 ).retry(1);
 
@@ -175,6 +177,7 @@ Scenario(
     await queryAnalyticsPage.filters.selectFilter(dbName);
     queryAnalyticsPage.waitForLoaded();
     for (let i = 0; i <= 24; i++) {
+      I.refreshPage();
       const countOfQueries = parseInt((await I.grabTextFrom(queryAnalyticsPage.data.elements.totalItems)).split('of ')[1], 10);
 
       I.wait(10);
