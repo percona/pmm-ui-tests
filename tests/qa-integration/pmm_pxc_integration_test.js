@@ -109,7 +109,7 @@ Scenario(
       url = I.buildUrlWithParams(dashboardPage.mysqlPXCGaleraNodeSummaryDashboard.clearUrl, { from: 'now-15m', service_name: service });
 
       I.amOnPage(url);
-      I.wait(60);
+      I.wait(30);
       await dashboardPage.waitForDashboardOpened();
       adminPage.performPageDown(5);
       await dashboardPage.expandEachDashboardRow();
