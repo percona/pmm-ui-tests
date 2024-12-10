@@ -90,7 +90,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T1420 Verify user can create Percona templated alert @ia @alerting-fb',
+  'PMM-T1420 Verify user can create Percona templated alert @ia @fb-alerting',
   async ({ I, alertRulesPage, rulesAPI }) => {
     const rule = page.rules[15];
     const newRule = page.rules[0];
@@ -111,7 +111,7 @@ Scenario(
 
 // TODO: unskip in scope of https://perconadev.atlassian.net/browse/PMM-12938
 Scenario.skip(
-  'PMM-T2282 Verfied Alerting is able to monitor for "PMM Agent Down" @ia @alerting-fb',
+  'PMM-T2282 Verfied Alerting is able to monitor for "PMM Agent Down" @ia @fb-alerting',
   async ({ I, alertRulesPage, rulesAPI }) => {
     const rule = page.rules[29];
     const newRule = page.rules[30];
@@ -139,7 +139,7 @@ Scenario.skip(
 
 // TODO: check ovf failure
 Scenario(
-  'PMM-T1430 Verify user can edit Percona templated alert @ia @not-ovf @alerting-fb',
+  'PMM-T1430 Verify user can edit Percona templated alert @ia @not-ovf @fb-alerting',
   async ({
     I, alertRulesPage, rulesAPI,
   }) => {
@@ -165,7 +165,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T1433 Verify user can delete Percona templated alert @ia @alerting-fb',
+  'PMM-T1433 Verify user can delete Percona templated alert @ia @fb-alerting',
   async ({
     I, alertRulesPage, rulesAPI, iaCommon,
   }) => {
