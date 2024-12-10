@@ -18,13 +18,11 @@ Scenario(
     const grabServiceName = await I.grabTextFrom('//label[@for="var-service_name"]//following-sibling::*');
     const partsServiceName = grabServiceName.split('_service');
     const containerServiceName = partsServiceName[0];
-
+    I.wait(60);
     await dashboardPage.expandEachDashboardRow();
-    adminPage.performPageDown(5);
-    adminPage.performPageUp(5);
     await dashboardPage.verifyMetricsExistence(dashboardPage.postgresqlInstanceSummaryDashboard.metrics);
-    await dashboardPage.verifyThereAreNoGraphsWithoutData(1);
-    await I.verifyCommand('pmm-admin list | grep "postgresql_pgstatmonitor_agent" | grep "Running"');
-    await I.verifyCommand('pmm-admin list | grep "postgres_exporter" | grep "Running"');
+    await dashboardPage.verifyThereAreNoGraphsWithoutData();
+    await I.verifyCommand(`docker exec ${containerServiceName} pmm-admin list | grep "postgresql_pgstatmonitor_agent" | grep "Running"`);
+    await I.verifyCommand(`docker exec ${containerServiceName} pmm-admin list | grep "postgres_exporter" | grep "Running"`);
   },
-);
+).retry(3);
