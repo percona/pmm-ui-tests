@@ -65,7 +65,7 @@ Data(contactPoints).Scenario(
 
 Scenario(
   'PMM-T1710 Verify saving a contact point when required info is missing, '
-  + 'PMM-T1711 Verify contact point test @fb-alerting',
+  + 'PMM-T1711 Verify contact point test @ia',
   async ({ I, iaCommon }) => {
     await contactPointsPage.openContactPointsTab();
     I.waitForVisible(contactPointsPage.buttons.newContactPoint, 10);
