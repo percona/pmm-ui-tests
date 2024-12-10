@@ -78,7 +78,7 @@ Execute command in the Project Root folder
                                 (e.g. Data from exporters is displayed at those dashboards)
     @dbaas                  DB as a Service functionality tests
     @grafana-pr             Executed in Github Actions for PRs in percona-platform/grafana repository
-    @alerting-fb                     Integrated Alerting functionality tests
+    @fb-alerting                     Integrated Alerting functionality tests
     @instances              Remote Instances addition functionality 
                                 and checking that data appears from exporters
     @inventory              Inventory functionality, removing nodes, services, etc.
@@ -104,11 +104,11 @@ Execute command in the Project Root folder
     @not-ui-pipeline        legacy/deprecated
     @not-pr-pipeline        legacy/deprecated
     @cli                    cli related tests
-    @alerting-fb            alerting related tests executed on FB
+    @fb-alerting            alerting related tests executed on FB
     @advisors-fb            advisors related tests executed on FB
     @bm-fb                  backup management related tests executed on FB
-    @instances-fb           remote instances related tests executed on FB
-    @settings-fb            settings related tests executed on FB
+    @fb-instances           remote instances related tests executed on FB
+    @fb-settings            settings related tests executed on FB
 
 
 ## Contributing

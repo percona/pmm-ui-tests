@@ -38,7 +38,7 @@ Before(async ({ templatesAPI }) => {
 
 // TODO: Unskip after we bring back built-in templates
 Scenario.skip(
-  'PMM-T510 Verify built-in rule templates are non-editable @alerting-fb @grafana-pr',
+  'PMM-T510 Verify built-in rule templates are non-editable @fb-alerting @grafana-pr',
   async ({ I, ruleTemplatesPage }) => {
     const editButton = ruleTemplatesPage.buttons
       .editButtonBySource(ruleTemplatesPage.templateSources.builtin);
@@ -53,7 +53,7 @@ Scenario.skip(
 );
 
 Scenario(
-  'Verify rule templates list elements @alerting-fb @grafana-pr',
+  'Verify rule templates list elements @fb-alerting @grafana-pr',
   async ({ I, ruleTemplatesPage, templatesAPI }) => {
     const path = ruleTemplatesPage.ruleTemplate.paths.yaml;
 
@@ -79,7 +79,7 @@ Scenario(
 );
 
 Scenario(
-  'Add rule template modal elements @alerting-fb @grafana-pr',
+  'Add rule template modal elements @fb-alerting @grafana-pr',
   async ({ I, ruleTemplatesPage }) => {
     ruleTemplatesPage.openRuleTemplatesTab();
     I.click(ruleTemplatesPage.buttons.openAddTemplateModal);
@@ -94,7 +94,7 @@ Scenario(
 // nightly candidate
 Data(units)
   .Scenario(
-    'PMM-T500 PMM-T595 PMM-T596 Add rule templates with different units, empty range @alerting-fb',
+    'PMM-T500 PMM-T595 PMM-T596 Add rule templates with different units, empty range @fb-alerting',
     async ({
       I, ruleTemplatesPage, templatesAPI, current,
     }) => {
@@ -130,7 +130,7 @@ Data(units)
 
 Data(templates)
   .Scenario(
-    'PMM-T482 PMM-T499 PMM-T766 PMM-T758 PMM-T766 PMM-T767 PMM-T931 Upload rule templates @alerting-fb',
+    'PMM-T482 PMM-T499 PMM-T766 PMM-T758 PMM-T766 PMM-T767 PMM-T931 Upload rule templates @fb-alerting',
     async ({ I, ruleTemplatesPage, current }) => {
       const { path } = current;
       const validFile = !current.error;
@@ -157,7 +157,7 @@ Data(templates)
   );
 
 Scenario(
-  '@PMM-T1785 Bulk rule templates upload @alerting-fb',
+  '@PMM-T1785 Bulk rule templates upload @fb-alerting',
   async ({ I, ruleTemplatesPage }) => {
     const path = 'tests/ia/templates/multiple-templates.yml';
     const templates = await ruleTemplatesPage.ruleTemplate.parseTemplates(path);
@@ -182,7 +182,7 @@ Scenario(
 );
 
 Scenario(
-  '@PMM-T1786 Edit bulk uploaded rule template @alerting-fb',
+  '@PMM-T1786 Edit bulk uploaded rule template @fb-alerting',
   async ({ I, ruleTemplatesPage, templatesAPI }) => {
     const path = 'tests/ia/templates/multiple-templates.yml';
     const templates = await ruleTemplatesPage.ruleTemplate.parseTemplates(path);
@@ -219,7 +219,7 @@ Scenario(
 );
 
 Scenario(
-  '@PMM-T1787 Delete bulk uploaded rule template @alerting-fb',
+  '@PMM-T1787 Delete bulk uploaded rule template @fb-alerting',
   async ({ I, ruleTemplatesPage, templatesAPI }) => {
     const path = 'tests/ia/templates/multiple-templates.yml';
     const templates = await ruleTemplatesPage.ruleTemplate.parseTemplates(path);
@@ -251,7 +251,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T501 Upload duplicate rule template @alerting-fb @grafana-pr',
+  'PMM-T501 Upload duplicate rule template @fb-alerting @grafana-pr',
   async ({ I, ruleTemplatesPage, templatesAPI }) => {
     const path = ruleTemplatesPage.ruleTemplate.paths.yaml;
     const [, , id] = await ruleTemplatesPage.ruleTemplate.templateNameAndContent(path);
@@ -269,7 +269,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T483 PMM-T699 Verify user can edit UI-created IA rule template @grafana-pr @alerting-fb',
+  'PMM-T483 PMM-T699 Verify user can edit UI-created IA rule template @grafana-pr @fb-alerting',
   async ({ I, ruleTemplatesPage, templatesAPI }) => {
     const path = ruleTemplatesPage.ruleTemplate.paths.yaml;
     const [templateName, fileContent, id] = await ruleTemplatesPage.ruleTemplate
@@ -300,7 +300,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T562 Verify user can delete User-defined (UI) rule templates @grafana-pr @alerting-fb',
+  'PMM-T562 Verify user can delete User-defined (UI) rule templates @grafana-pr @fb-alerting',
   async ({ I, ruleTemplatesPage, templatesAPI }) => {
     const path = ruleTemplatesPage.ruleTemplate.paths.yaml;
     const [templateName] = await ruleTemplatesPage.ruleTemplate
@@ -329,7 +329,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T884 Verify templates from Percona (SAAS) cannot be deleted or edited @alerting-fb',
+  'PMM-T884 Verify templates from Percona (SAAS) cannot be deleted or edited @fb-alerting',
   async ({ I, ruleTemplatesPage }) => {
     const saasDeleteButton = ruleTemplatesPage.buttons
       .deleteButtonBySource(ruleTemplatesPage.templateSources.saas);
@@ -344,7 +344,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T553 Verify rule template can be deleted if there is a rule based on it @alerting-fb',
+  'PMM-T553 Verify rule template can be deleted if there is a rule based on it @fb-alerting',
   async ({
     I, ruleTemplatesPage, templatesAPI, rulesAPI,
   }) => {
@@ -367,7 +367,7 @@ Scenario(
 
 // TODO: unskip after https://perconadev.atlassian.net/browse/PMM-13542 is fixed
 Scenario.skip(
-  'PMM-T825 PMM-T821 Verify User can add Alert rule template in the file system @not-ovf @alerting-fb',
+  'PMM-T825 PMM-T821 Verify User can add Alert rule template in the file system @not-ovf @fb-alerting',
   async ({ I, ruleTemplatesPage }) => {
     const editButton = ruleTemplatesPage.buttons
       .editButtonBySource(ruleTemplatesPage.templateSources.file);
@@ -389,7 +389,7 @@ Scenario.skip(
 );
 
 Scenario(
-  'PMM-T1126 - Verify there are no Templates from Percona if Telemetry is disabled @alerting-fb',
+  'PMM-T1126 - Verify there are no Templates from Percona if Telemetry is disabled @fb-alerting',
   async ({ I, settingsAPI, ruleTemplatesPage }) => {
     const editButton = ruleTemplatesPage.buttons
       .editButtonBySource(ruleTemplatesPage.templateSources.saas);
@@ -409,7 +409,7 @@ Scenario(
 );
 
 Scenario(
-  '@PMM-T1514 Verify that alert rule templates has only 1 exit button @alerting-fb',
+  '@PMM-T1514 Verify that alert rule templates has only 1 exit button @fb-alerting',
   async ({ I, ruleTemplatesPage, alertRulesPage }) => {
     ruleTemplatesPage.openRuleTemplatesTab();
     ruleTemplatesPage.openAddDialog(await I.grabTextFrom(ruleTemplatesPage.elements.templateName));

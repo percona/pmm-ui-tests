@@ -66,14 +66,14 @@ Before(async ({ I }) => {
 });
 
 // The test relies on --setup-external-service flag setup from pmm-framework
-Scenario.skip('@PMM-T1700 - External service name is properly displayed @instances @instances-fb', async ({ I, pmmInventoryPage }) => {
+Scenario.skip('@PMM-T1700 - External service name is properly displayed @instances @fb-instances', async ({ I, pmmInventoryPage }) => {
   I.amOnPage(pmmInventoryPage.url);
   pmmInventoryPage.changeRowsPerPage(100);
   I.waitForVisible(pmmInventoryPage.fields.serviceRow('redis_external'), 30);
 });
 
 Scenario(
-  '@PMM-T588 - Verify adding external exporter service via UI @instances @instances-fb',
+  '@PMM-T588 - Verify adding external exporter service via UI @instances @fb-instances',
   async ({ I, remoteInstancesPage, pmmInventoryPage }) => {
     I.amOnPage(remoteInstancesPage.url);
     remoteInstancesPage.waitUntilRemoteInstancesPageLoaded();
@@ -88,7 +88,7 @@ Scenario(
 ).retry(0);
 
 Data(instances).Scenario(
-  'PMM-T898 Verify Remote Instance Addition [critical] @instances @instances-fb',
+  'PMM-T898 Verify Remote Instance Addition [critical] @instances @fb-instances',
   async ({ I, remoteInstancesPage, current }) => {
     const serviceName = remoteInstancesHelper.services[current.name];
 
@@ -128,7 +128,7 @@ Scenario(
 );
 
 Data(instances).Scenario(
-  'Verify Remote Instance has Status Running [critical] @instances @instances-fb',
+  'Verify Remote Instance has Status Running [critical] @instances @fb-instances',
   async ({
     I, pmmInventoryPage, current,
   }) => {
@@ -190,7 +190,7 @@ Scenario(
 );
 
 Scenario(
-  '@PMM-T635 - Verify Adding HAProxy service via UI @instances @instances-fb',
+  '@PMM-T635 - Verify Adding HAProxy service via UI @instances @fb-instances',
   async ({
     I, remoteInstancesPage, pmmInventoryPage,
   }) => {
@@ -286,7 +286,7 @@ Data(dashboardCheck).Scenario(
 ).retry(2);
 
 Data(qanFilters).Scenario(
-  'PMM-T854 - Verify QAN after remote instance is added @instances @instances-fb',
+  'PMM-T854 - Verify QAN after remote instance is added @instances @fb-instances',
   async ({
     I, queryAnalyticsPage, current,
   }) => {
@@ -304,7 +304,7 @@ Data(qanFilters).Scenario(
 ).retry(2);
 
 Data(metrics).Scenario(
-  'PMM-T743 Check metrics from exporters are hitting PMM Server @instances @instances-fb',
+  'PMM-T743 Check metrics from exporters are hitting PMM Server @instances @fb-instances',
   async ({ grafanaAPI, current }) => {
     await grafanaAPI.waitForMetric(current.metricName, { type: 'service_name', value: current.serviceName }, 10);
   },
