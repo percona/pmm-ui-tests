@@ -158,7 +158,7 @@ Scenario(
 );
 
 Scenario(
-  '@PMM-T1820 - Verify DBaaS deprecation warning @settings @settings-fb',
+  '@PMM-T1820 - Verify DBaaS deprecation warning @settings @fb-settings',
   async ({
     I, pmmSettingsPage, settingsAPI, dbaasPage,
   }) => {
