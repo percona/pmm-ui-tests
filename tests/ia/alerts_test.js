@@ -124,7 +124,7 @@ Scenario(
 );
 
 Scenario.skip(
-  'PMM-T1499 Verify an alert with non-existing filter (label) does not show up in list @alerting-fb',
+  'PMM-T1499 Verify an alert with non-existing filter (label) does not show up in list @fb-alerting',
   async ({ I, alertsPage, rulesAPI }) => {
     await rulesAPI.removeAllAlertRules();
     const wrongFilterRule = {
@@ -172,7 +172,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T1467 Verify empty Fired alerts list @alerting-fb',
+  'PMM-T1467 Verify empty Fired alerts list @fb-alerting',
   async ({ I, alertsPage, rulesAPI }) => {
     await rulesAPI.removeAllAlertRules();
     I.amOnPage(alertsPage.url);

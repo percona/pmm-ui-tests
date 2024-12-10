@@ -29,10 +29,10 @@ Shut down webhook server command: `docker-compose -f docker-compose-webhook.yml 
 
 ### Command to execute all Integrated Alerting tests:
 
-`npx codeceptjs run -c pr.codecept.js --grep '@alerting-fb'`
+`npx codeceptjs run -c pr.codecept.js --grep '@fb-alerting'`
 
 ### Execute Integrated Alerting tests in Jenkins
 * Job name - `pmm2-ui-tests`
-* tag - `@alerting-fb`
+* tag - `@fb-alerting`
 * run tagged day - `yes`
 * clients not needed
