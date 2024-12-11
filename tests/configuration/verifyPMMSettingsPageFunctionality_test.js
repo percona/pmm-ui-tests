@@ -246,7 +246,7 @@ Data(communicationDefaults).Scenario(
 );
 
 Scenario(
-  'PMM-T747 - Verify enabling Azure flag @instances',
+  'PMM-T747 - Verify enabling Azure flag @fb-instances',
   async ({
     I, pmmSettingsPage, remoteInstancesPage, settingsAPI,
   }) => {
@@ -362,7 +362,7 @@ Scenario(
 ).retry(2);
 
 Scenario(
-  'PMM-T254 ensure Advisors are on by default @instances',
+  'PMM-T254 ensure Advisors are on by default @fb-instances',
   async ({ settingsAPI }) => {
     const resp = await settingsAPI.getSettings('stt_enabled');
 
