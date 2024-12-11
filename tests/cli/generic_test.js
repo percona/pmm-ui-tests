@@ -21,7 +21,7 @@ After(async ({ I }) => {
 });
 
 Scenario(
-  'PMM-T1201 Verify yum-cron updates are removed from PMM Server @settings',
+  'PMM-T1201 Verify yum-cron updates are removed from PMM Server @fb-settings',
   async ({ I }) => {
     const pmm_server = await I.verifyCommand('docker ps --format "table {{.ID}}\\t{{.Image}}\\t{{.Names}}" | grep \'pmm-server\' | awk \'{print $3}\'');
 
