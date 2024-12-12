@@ -12,7 +12,7 @@ module.exports = {
   genericOauthUrl: 'graph/login/generic_oauth',
   requestEnd: '/v1/Updates/Check',
   elements: {
-    pageContent: locate('//div[@id="pageContent"]'),
+    pageContent: locate('//main[@id="pageContent"]'),
   },
   fields: {
     systemsUnderMonitoringCount:
