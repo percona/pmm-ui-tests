@@ -61,7 +61,7 @@ module.exports = {
       },
     };
 
-    console.log(`Adding Mysql ${body}`);
+    console.log(`Adding Mysql ${JSON.stringify(body)}`);
 
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
     const resp = await I.sendPostRequest('v1/management/services', body, headers);
