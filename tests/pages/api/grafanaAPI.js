@@ -514,11 +514,15 @@ module.exports = {
   async checkMetricExist(metricName, refineBy) {
     let response;
 
-    await I.asyncWaitFor(async () => {
-      response = await this.getMetric(metricName, refineBy);
+    try {
+      await I.asyncWaitFor(async () => {
+        response = await this.getMetric(metricName, refineBy);
 
-      return response.data.results.A.frames[0].data.values.length !== 0;
-    }, 60);
+        return response.data.results.A.frames[0].data.values.length !== 0;
+      }, 60);
+    } catch (e) {
+      throw new Error(`Metrics '${metricName}' ${refineBy === null ? '' : `with filters as ${JSON.stringify(refineBy)} `}should be available but got empty ${result}`);
+    }
 
     const result = JSON.stringify(response.data.results);
 
