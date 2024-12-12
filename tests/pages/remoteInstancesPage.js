@@ -1,9 +1,6 @@
 const {
   I, adminPage, pmmInventoryPage, codeceptjsConfig, remoteInstancesHelper,
 } = inject();
-const assert = require('assert');
-
-const url = new URL(codeceptjsConfig.config.helpers.Playwright.url);
 
 module.exports = {
   accessKey: remoteInstancesHelper.remote_instance.aws.aws_access_key,
@@ -119,6 +116,7 @@ module.exports = {
     doNotTrack: locate('label').withText('Don\'t track'),
     environment: '$environment-text-input',
     hostName: '$address-text-input',
+    protocol: locate('$schema-radio-state'),
     iframe: '//div[@class="panel-content"]//iframe',
     metricsPath: '$metrics_path-text-input',
     noCredentialsError: '//div[text()="No credentials provided and IAM role is not defined"]',
@@ -609,21 +607,6 @@ module.exports = {
     I.waitForVisible(this.fields.urlInput, 30);
     I.fillField(this.fields.urlInput, url);
     I.click(this.fields.setManualy);
-  },
-
-  async checkParsing(metricsPath, credentials) {
-    const grabbedHostname = await I.grabValueFrom(this.fields.hostName);
-    const grabbedMetricPath = await I.grabValueFrom(this.fields.metricsPath);
-    const grabbedPort = await I.grabValueFrom(this.fields.portNumber);
-    const grabbedCredentials = await I.grabValueFrom(this.fields.userName);
-    const protocol = locate('$schema-radio-state');
-
-    assert.ok(grabbedHostname === process.env.MONITORING_HOST, `Hostname is not parsed correctly: ${grabbedHostname}`);
-    assert.ok(grabbedMetricPath === metricsPath, `Metrics path is not parsed correctly: ${grabbedMetricPath}`);
-    assert.ok(grabbedPort === process.env.EXTERNAL_EXPORTER_PORT, `Port is not parsed correctly: ${grabbedPort}`);
-    assert.ok(grabbedCredentials === credentials, `Username is not parsed correctly: ${grabbedCredentials}`);
-    assert.ok(grabbedCredentials === credentials, `Password is not parsed correctly: ${grabbedCredentials}`);
-    I.seeAttributesOnElements(protocol, { value: 'https' });
   },
 
   checkRequiredField() {

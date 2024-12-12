@@ -32,7 +32,7 @@ After(async ({ settingsAPI }) => {
   await settingsAPI.changeSettings({ publicAddress: '' });
 });
 
-Data(dataRetentionTable).Scenario('PMM-T97 - Verify server diagnostics on PMM Settings Page @settings @grafana-pr', async ({ pmmSettingsPage, current }) => {
+Data(dataRetentionTable).Scenario('PMM-T97 - Verify server diagnostics on PMM Settings Page @fb-settings @grafana-pr', async ({ pmmSettingsPage, current }) => {
   const sectionNameToExpand = pmmSettingsPage.sectionTabsList.advanced;
 
   await pmmSettingsPage.waitForPmmSettingsPageLoaded();
@@ -40,7 +40,7 @@ Data(dataRetentionTable).Scenario('PMM-T97 - Verify server diagnostics on PMM Se
   pmmSettingsPage.checkDataRetentionInput(current.value, current.message);
 });
 
-Scenario('PMM-T84 - Verify Section Tabs and Metrics Section Elements [critical] @settings @grafana-pr', async ({ I, pmmSettingsPage }) => {
+Scenario('PMM-T84 - Verify Section Tabs and Metrics Section Elements [critical] @fb-settings @grafana-pr', async ({ I, pmmSettingsPage }) => {
   await pmmSettingsPage.waitForPmmSettingsPageLoaded();
   Object.values(pmmSettingsPage.sectionTabsList).forEach((value) => {
     I.see(value, pmmSettingsPage.fields.tabsSection);
@@ -56,7 +56,7 @@ Scenario('PMM-T84 - Verify Section Tabs and Metrics Section Elements [critical] 
   });
 });
 
-Scenario('PMM-T85 - Verify SSH Key Section Elements @settings @grafana-pr', async ({ I, pmmSettingsPage }) => {
+Scenario('PMM-T85 - Verify SSH Key Section Elements @fb-settings @grafana-pr', async ({ I, pmmSettingsPage }) => {
   const sectionNameToExpand = pmmSettingsPage.sectionTabsList.ssh;
 
   await pmmSettingsPage.waitForPmmSettingsPageLoaded();
@@ -65,7 +65,7 @@ Scenario('PMM-T85 - Verify SSH Key Section Elements @settings @grafana-pr', asyn
   I.seeElement(pmmSettingsPage.fields.sshKeyInput);
 });
 
-Scenario('Verify Advanced Section Elements @settings @grafana-pr', async ({ I, pmmSettingsPage }) => {
+Scenario('Verify Advanced Section Elements @fb-settings @grafana-pr', async ({ I, pmmSettingsPage }) => {
   const sectionNameToExpand = pmmSettingsPage.sectionTabsList.advanced;
 
   await pmmSettingsPage.waitForPmmSettingsPageLoaded();
@@ -82,7 +82,7 @@ Scenario('Verify Advanced Section Elements @settings @grafana-pr', async ({ I, p
   I.seeElement(pmmSettingsPage.fields.sttLabel);
 });
 
-Scenario('PMM-T86 - Verify Alertmanager integration Section Elements @settings @grafana-pr', async ({ I, pmmSettingsPage }) => {
+Scenario('PMM-T86 - Verify Alertmanager integration Section Elements @fb-settings @grafana-pr', async ({ I, pmmSettingsPage }) => {
   const sectionNameToExpand = pmmSettingsPage.sectionTabsList.alertmanager;
 
   await pmmSettingsPage.waitForPmmSettingsPageLoaded();
@@ -93,7 +93,7 @@ Scenario('PMM-T86 - Verify Alertmanager integration Section Elements @settings @
   I.seeElement(pmmSettingsPage.fields.alertRulesInput);
 });
 
-// Scenario('PMM-T89 - Verify validation for invalid SSH Key @settings @grafana-pr', async ({ I, pmmSettingsPage }) => {
+// Scenario('PMM-T89 - Verify validation for invalid SSH Key @fb-settings @grafana-pr', async ({ I, pmmSettingsPage }) => {
 //   const sshKeyForTest = 'ssh-rsa testKey test@key.local';
 //   const sectionNameToExpand = pmmSettingsPage.sectionTabsList.ssh;
 
@@ -103,7 +103,7 @@ Scenario('PMM-T86 - Verify Alertmanager integration Section Elements @settings @
 //   I.verifyPopUpMessage(pmmSettingsPage.messages.invalidSSHKeyMessage);
 // });
 
-Scenario('PMM-T90 - Verify validation for Alertmanager URL without scheme @settings @grafana-pr', async ({ I, pmmSettingsPage }) => {
+Scenario('PMM-T90 - Verify validation for Alertmanager URL without scheme @fb-settings @grafana-pr', async ({ I, pmmSettingsPage }) => {
   const urlWithoutScheme = 'invalid_url';
   const sectionNameToExpand = pmmSettingsPage.sectionTabsList.alertmanager;
 
@@ -113,7 +113,7 @@ Scenario('PMM-T90 - Verify validation for Alertmanager URL without scheme @setti
   I.verifyPopUpMessage(pmmSettingsPage.messages.invalidAlertmanagerMissingSchemeMessage);
 });
 
-Scenario('PMM-T91 - Verify validation for Alertmanager URL without host @settings @grafana-pr', async ({ I, pmmSettingsPage }) => {
+Scenario('PMM-T91 - Verify validation for Alertmanager URL without host @fb-settings @grafana-pr', async ({ I, pmmSettingsPage }) => {
   const urlWithoutHost = 'http://';
   const sectionNameToExpand = pmmSettingsPage.sectionTabsList.alertmanager;
 
@@ -123,7 +123,7 @@ Scenario('PMM-T91 - Verify validation for Alertmanager URL without host @setting
   I.verifyPopUpMessage(pmmSettingsPage.messages.invalidAlertmanagerMissingHostMessage);
 });
 
-Scenario('PMM-T92 - Verify validation for invalid Alertmanager Rule @settings @grafana-pr', async ({ I, pmmSettingsPage }) => {
+Scenario('PMM-T92 - Verify validation for invalid Alertmanager Rule @fb-settings @grafana-pr', async ({ I, pmmSettingsPage }) => {
   const rule = 'invalid_rule';
   const sectionNameToExpand = pmmSettingsPage.sectionTabsList.alertmanager;
 
@@ -135,7 +135,7 @@ Scenario('PMM-T92 - Verify validation for invalid Alertmanager Rule @settings @g
 
 // To be removed from Skip after https://jira.percona.com/browse/PMM-5791
 xScenario(
-  'PMM-T227 Open PMM Settings page and verify DATA_RETENTION value is set to 2 days @settings',
+  'PMM-T227 Open PMM Settings page and verify DATA_RETENTION value is set to 2 days @fb-settings',
   async ({ I, pmmSettingsPage }) => {
     const dataRetention = '2';
 
@@ -145,7 +145,7 @@ xScenario(
 );
 
 Scenario(
-  '@PMM-T1519 Verify that alerting link inside settings forwarding to correct page @settings',
+  '@PMM-T1519 Verify that alerting link inside settings forwarding to correct page @fb-settings',
   async ({ I, pmmSettingsPage, alertsPage }) => {
     const sectionNameToExpand = pmmSettingsPage.sectionTabsList.alertmanager;
 
@@ -158,7 +158,7 @@ Scenario(
 );
 
 Scenario(
-  '@PMM-T1820 - Verify DBaaS deprecation warning @settings @fb-settings',
+  '@PMM-T1820 - Verify DBaaS deprecation warning @fb-settings @fb-settings',
   async ({
     I, pmmSettingsPage, settingsAPI, dbaasPage,
   }) => {
@@ -175,7 +175,7 @@ Scenario(
   },
 );
 
-Scenario('@PMM-T1866 - Verify if public address has an port assigned and following UI/API requests dont error @settings', async ({ I, pmmSettingsPage, adminPage }) => {
+Scenario('@PMM-T1866 - Verify if public address has an port assigned and following UI/API requests dont error @fb-settings', async ({ I, pmmSettingsPage, adminPage }) => {
   const sectionNameToExpand = pmmSettingsPage.sectionTabsList.advanced;
 
   await pmmSettingsPage.waitForPmmSettingsPageLoaded();

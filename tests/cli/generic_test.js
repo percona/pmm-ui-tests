@@ -1,13 +1,13 @@
 Feature('Generic PMM Server CLI Tests');
 
 BeforeSuite(async ({ I }) => {
-  await I.verifyCommand(`PMM_SERVER_IMAGE=${process.env.DOCKER_VERSION} docker-compose -f docker-compose-ubuntu.yml up -d`);
+  await I.verifyCommand(`PMM_SERVER_IMAGE=${process.env.DOCKER_VERSION} docker compose -f docker-compose-ubuntu.yml up -d`);
 });
 
 AfterSuite(async ({ I }) => {
   await I.verifyCommand('docker rm -f pmm-server-default-scrape');
   await I.verifyCommand('docker rm -f pmm-server-custom-scrape');
-  await I.verifyCommand('docker-compose -f docker-compose-ubuntu.yml down -v');
+  await I.verifyCommand('docker compose -f docker-compose-ubuntu.yml down -v');
 });
 
 After(async ({ I }) => {
@@ -21,7 +21,7 @@ After(async ({ I }) => {
 });
 
 Scenario(
-  'PMM-T1201 Verify yum-cron updates are removed from PMM Server @settings',
+  'PMM-T1201 Verify yum-cron updates are removed from PMM Server @fb-settings',
   async ({ I }) => {
     const pmm_server = await I.verifyCommand('docker ps --format "table {{.ID}}\\t{{.Image}}\\t{{.Names}}" | grep \'pmm-server\' | awk \'{print $3}\'');
 
