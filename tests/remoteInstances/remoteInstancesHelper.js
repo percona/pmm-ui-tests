@@ -129,10 +129,10 @@ module.exports = {
         clusterName: 'mysql_clstr',
       },
       ps_8_0: {
-        host: 'mysql8',
-        port: DB_CONFIG.MYSQL_SERVER_PORT,
-        username: 'pmm-agent',
-        password: 'pmm%*&agent-password',
+        host: 'ps_pmm_8.0',
+        port: '3317',
+        username: 'msandbox',
+        password: 'msandbox',
         clusterName: 'mysql_clstr',
       },
       ms_8_0_ssl: {
