@@ -74,7 +74,7 @@ Scenario.skip(
 ).retry(2);
 
 Scenario(
-  'PMM-T532 PMM-T533 PMM-T536 - Verify user can disable/enable IA in Settings @alerting-fb @settings',
+  'PMM-T532 PMM-T533 PMM-T536 - Verify user can disable/enable IA in Settings @fb-alerting @settings',
   async ({
     I, pmmSettingsPage, settingsAPI, adminPage,
   }) => {
