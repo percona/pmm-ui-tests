@@ -34,7 +34,7 @@ class Grafana extends Helper {
     Playwright.setPlaywrightRequestHeaders({ Authorization: `Basic ${basicAuthEncoded}` });
   }
 
-  async enableProductTour() {
+  async enableProductTour(snooze = false) {
     const { Playwright } = this.helpers;
 
     await Playwright.page.route('**/v1/users/me', async (route, request) => {
@@ -45,7 +45,7 @@ class Grafana extends Helper {
             user_id: 1,
             product_tour_completed: false,
             alerting_tour_completed: false,
-            snoozed_pmm_version: '',
+            snoozed_pmm_version: snooze ? '3.2.0' : '',
           }),
         });
       } else {
