@@ -64,8 +64,6 @@ module.exports = {
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
     const resp = await I.sendPostRequest('v1/management/services', body, headers);
 
-    console.log(resp);
-
     I.assertEqual(resp.status, 200, `Instance ${serviceName} was not added for monitoring. ${resp.data.message}`);
 
     console.log(`Successfully added pgsql instance type with name: ${serviceName}`);
@@ -123,7 +121,7 @@ module.exports = {
       },
     };
 
-    console.log(body);
+    console.log(JSON.stringify(body));
 
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
     const resp = await I.sendPostRequest('v1/management/services', body, headers);
@@ -232,7 +230,7 @@ module.exports = {
       },
     };
 
-    console.log(body);
+    console.log(JSON.stringify(body));
 
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
     const resp = await I.sendPostRequest('v1/management/services', body, headers);
