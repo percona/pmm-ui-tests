@@ -521,7 +521,7 @@ module.exports = {
         return response.data.results.A.frames[0].data.values.length !== 0;
       }, 60);
     } catch (e) {
-      throw new Error(`Metrics '${metricName}' ${refineBy === null ? '' : `with filters as ${JSON.stringify(refineBy)} `}should be available but got empty ${result}`);
+      throw new Error(`Metrics '${metricName}' ${refineBy === null ? '' : `with filters as ${JSON.stringify(refineBy)} `}should be available but got empty.`);
     }
 
     const result = JSON.stringify(response.data.results);
