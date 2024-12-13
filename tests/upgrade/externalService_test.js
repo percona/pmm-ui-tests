@@ -38,8 +38,6 @@ Scenario(
       cluster: 'rdsaurora',
     };
 
-    console.log(await I.verifyCommand('docker ps -a'));
-
     for (const type of Object.values(remoteInstancesHelper.instanceTypes)) {
       console.log(`Adding DB type: ${type}`);
       if (type) {

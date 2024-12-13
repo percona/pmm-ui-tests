@@ -122,10 +122,13 @@ module.exports = {
         tls_skip_verify: true,
       },
     };
+
+    console.log(body);
+
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
     const resp = await I.sendPostRequest('v1/management/services', body, headers);
 
-    console.log(resp);
+    console.log(resp.status);
 
     I.assertEqual(resp.status, 200, `Instance ${serviceName} was not added for monitoring`);
 
@@ -228,6 +231,9 @@ module.exports = {
         tls_skip_verify: true,
       },
     };
+
+    console.log(body);
+
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
     const resp = await I.sendPostRequest('v1/management/services', body, headers);
 
