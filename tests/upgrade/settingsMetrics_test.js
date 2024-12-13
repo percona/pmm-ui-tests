@@ -70,9 +70,17 @@ Data(clientDbServices)
 
 Scenario(
   'Verify Metrics from custom queries for mysqld_exporter after upgrade (UI) @post-client-upgrade @post-settings-metrics-upgrade',
-  async ({ grafanaAPI, inventoryAPI }) => {
+  async ({ I, grafanaAPI, inventoryAPI }) => {
     const metricName = 'mysql_performance_schema_memory_summary';
     const apiServiceDetails = await inventoryAPI.getServiceDetailsByPartialName('ps-single');
+
+    const agentId = await I.verifyCommand('docker exec $psContainerName pmm-admin list | grep mysqld_exporter | awk -F\' \' \'{ print $4 }\'');
+    const agentPort = await I.verifyCommand('docker exec $psContainerName pmm-admin list | grep mysqld_exporter | awk -F\' \' \'{ print $6 }\'');
+    const headers = { Authorization: `Basic ${Buffer.from(`pmm:${agentId}`).toString('base64')}` };
+
+    const resp = await I.sendGetRequest(`http://127.0.0.1:${agentPort}/metrics`, headers);
+
+    console.log(resp.data);
 
     await grafanaAPI.checkMetricExist(metricName, { type: 'service_name', value: apiServiceDetails.service_name });
   },
