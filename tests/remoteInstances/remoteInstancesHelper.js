@@ -173,6 +173,13 @@ module.exports = {
         password: 'pmm-^*&@agent-password',
         clusterName: 'pgsql_clstr',
       },
+      pdpgsql_17: {
+        host: (PMM_SERVER_OVF_AMI_SETUP === 'true' ? SERVER_HOST : 'pgsql_pgss_pmm_17'),
+        port: DB_CONFIG.POSTGRES_SERVER_PORT,
+        username: 'pmm',
+        password: 'pmm',
+        clusterName: 'pgsql_clstr',
+      },
       postgres_13_3_ssl: {
         host: '192.168.0.1',
         port: '5439',
