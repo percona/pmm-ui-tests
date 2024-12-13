@@ -19,7 +19,7 @@ Scenario(
 
 Scenario(
   'Verify user can create Remote Instances before upgrade @pre-external-upgrade',
-  async ({ addInstanceAPI, remoteInstancesHelper }) => {
+  async ({ I, addInstanceAPI, remoteInstancesHelper }) => {
     // Adding instances for monitoring
 
     const aurora_details = {
@@ -37,6 +37,8 @@ Scenario(
       instance_id: 'pmm-qa-aurora2-mysql-instance-1',
       cluster: 'rdsaurora',
     };
+
+    console.log(I.verifyCommand('docker ps -a'));
 
     for (const type of Object.values(remoteInstancesHelper.instanceTypes)) {
       if (type) {
