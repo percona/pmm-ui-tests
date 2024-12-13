@@ -38,7 +38,7 @@ Scenario(
       cluster: 'rdsaurora',
     };
 
-    console.log(I.verifyCommand('docker ps -a'));
+    console.log(await I.verifyCommand('docker ps -a'));
 
     for (const type of Object.values(remoteInstancesHelper.instanceTypes)) {
       if (type) {
