@@ -61,12 +61,8 @@ module.exports = {
       },
     };
 
-    console.log(`Adding Mysql ${JSON.stringify(body)}`);
-
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
     const resp = await I.sendPostRequest('v1/management/services', body, headers);
-
-    console.log(resp);
 
     I.assertEqual(resp.status, 200, `Instance ${serviceName} was not added for monitoring. ${resp.data.message}`);
 

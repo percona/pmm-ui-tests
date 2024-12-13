@@ -78,7 +78,7 @@ Scenario(
     const agentPort = await I.verifyCommand('docker exec $psContainerName pmm-admin list | grep mysqld_exporter | awk -F\' \' \'{ print $6 }\'');
     const headers = { Authorization: `Basic ${Buffer.from(`pmm:${agentId}`).toString('base64')}` };
 
-    const resp = await I.sendGetRequest(`http://127.0.0.1:${agentPort}/metrics`, headers);
+    const resp = await I.verifyCommand(`docker exec ps_pmm_8.0 curl -s -u 'pmm:${agentId}' 'http://127.0.0.1:${agentPort}/metrics'`);
 
     console.log(resp.data);
 
