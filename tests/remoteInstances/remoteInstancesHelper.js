@@ -155,6 +155,13 @@ module.exports = {
         password: 'root-!@#%^password',
         clusterName: 'mongo_clstr',
       },
+      psmdb_7: {
+        host: (PMM_SERVER_OVF_AMI_SETUP === 'true' ? SERVER_HOST : 'rs101'),
+        port: DB_CONFIG.MONGODB_SERVER_PORT,
+        username: 'pmm',
+        password: 'pmmpass',
+        clusterName: 'mongo_clstr',
+      },
       mongodb_4_4_ssl: {
         host: '192.168.0.1',
         port: '27018',
