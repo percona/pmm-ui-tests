@@ -74,9 +74,12 @@ Scenario(
     const metricName = 'mysql_performance_schema_memory_summary';
     const apiServiceDetails = await inventoryAPI.getServiceDetailsByPartialName('ps-single');
 
-    const agentId = await I.verifyCommand('docker exec $psContainerName pmm-admin list | grep mysqld_exporter | awk -F\' \' \'{ print $4 }\'');
-    const agentPort = await I.verifyCommand('docker exec $psContainerName pmm-admin list | grep mysqld_exporter | awk -F\' \' \'{ print $6 }\'');
-    const headers = { Authorization: `Basic ${Buffer.from(`pmm:${agentId}`).toString('base64')}` };
+    const agentId = await I.verifyCommand('docker exec ps_pmm_8.0 pmm-admin list | grep mysqld_exporter | awk -F\' \' \'{ print $4 }\'');
+    const agentPort = await I.verifyCommand('docker exec ps_pmm_8.0 pmm-admin list | grep mysqld_exporter | awk -F\' \' \'{ print $6 }\'');
+
+    console.log(`Agent ID is: ${agentId}`);
+    console.log(`Agent Port is: ${agentPort}`);
+    console.log(await I.verifyCommand('docker exec ps_pmm_8.0 pmm-admin list | grep mysqld_exporter'));
 
     const resp = await I.verifyCommand(`docker exec ps_pmm_8.0 curl -s -u 'pmm:${agentId}' 'http://127.0.0.1:${agentPort}/metrics'`);
 
