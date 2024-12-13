@@ -66,7 +66,7 @@ module.exports = {
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
     const resp = await I.sendPostRequest('v1/management/services', body, headers);
 
-    console.log(resp.data);
+    console.log(resp);
 
     I.assertEqual(resp.status, 200, `Instance ${serviceName} was not added for monitoring. ${resp.data.message}`);
 
