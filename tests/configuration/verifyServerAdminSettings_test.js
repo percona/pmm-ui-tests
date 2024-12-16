@@ -5,7 +5,7 @@ Before(async ({ I }) => {
 });
 
 Scenario(
-  'PMM-T1110 - Verify Grafana using Postgres database @settings',
+  'PMM-T1110 - Verify Grafana using Postgres database @fb-settings',
   async ({ pmmServerAdminSettingsPage }) => {
     pmmServerAdminSettingsPage.open();
     await pmmServerAdminSettingsPage.verifyDatabaseType('postgres');

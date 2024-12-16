@@ -47,7 +47,7 @@ Before(async ({ I, settingsAPI }) => {
   await settingsAPI.restoreSettingsDefaults();
 });
 
-Scenario('PMM-T93 - Open PMM Settings page and verify changing Metrics Resolution [critical] @settings @grafana-pr', async ({
+Scenario('PMM-T93 - Open PMM Settings page and verify changing Metrics Resolution [critical] @fb-settings @grafana-pr', async ({
   I,
   pmmSettingsPage,
 }) => {
@@ -62,7 +62,7 @@ Scenario('PMM-T93 - Open PMM Settings page and verify changing Metrics Resolutio
   await pmmSettingsPage.verifySelectedResolution(resolutionToApply);
 });
 
-Scenario('PMM-T94 - Open PMM Settings page and verify changing Data Retention [critical] @settings', async ({
+Scenario('PMM-T94 - Open PMM Settings page and verify changing Data Retention [critical] @fb-settings', async ({
   I,
   pmmSettingsPage,
 }) => {
@@ -84,7 +84,7 @@ Scenario('PMM-T94 - Open PMM Settings page and verify changing Data Retention [c
 
 // TODO: check ovf failure
 Scenario(
-  'PMM-T108 - Open PMM Settings page and verify adding Alertmanager Rule [critical] PMM-T109 - Verify adding and clearing Alertmanager rules @not-ovf @settings',
+  'PMM-T108 - Open PMM Settings page and verify adding Alertmanager Rule [critical] PMM-T109 - Verify adding and clearing Alertmanager rules @not-ovf @fb-settings',
   async ({ I, pmmSettingsPage }) => {
     const scheme = 'http://';
     const sectionNameToExpand = pmmSettingsPage.sectionTabsList.alertmanager;
@@ -111,7 +111,7 @@ Scenario(
 );
 
 Scenario.skip(
-  'PMM-T253 Verify user can see correct tooltip for STT [trivial] @settings @stt @grafana-pr',
+  'PMM-T253 Verify user can see correct tooltip for STT [trivial] @fb-settings @stt @grafana-pr',
   async ({ I, pmmSettingsPage }) => {
     const sectionNameToExpand = pmmSettingsPage.sectionTabsList.advanced;
 
@@ -125,7 +125,7 @@ Scenario.skip(
 );
 
 Scenario.skip(
-  'PMM-T254 PMM-T253 Verify disable telemetry while Advisors enabled @settings @stt @grafana-pr',
+  'PMM-T254 PMM-T253 Verify disable telemetry while Advisors enabled @fb-settings @stt @grafana-pr',
   async ({ I, pmmSettingsPage }) => {
     I.amOnPage(pmmSettingsPage.advancedSettingsUrl);
     await pmmSettingsPage.waitForPmmSettingsPageLoaded();
@@ -184,7 +184,7 @@ Scenario('PMM-T520 - Verify that alert is being fired to external Alert Manager 
 });
 
 Scenario(
-  'PMM-T532 PMM-T533 PMM-T536 - Verify user can disable/enable IA in Settings @ia @settings',
+  'PMM-T532 PMM-T533 PMM-T536 - Verify user can disable/enable IA in Settings @ia @fb-settings',
   async ({
     I, pmmSettingsPage, settingsAPI, adminPage,
   }) => {
@@ -228,7 +228,7 @@ Scenario(
 );
 
 Data(communicationDefaults).Scenario(
-  'PMM-T534 PMM-T535 PMM-T1074 - Verify user is able to set up default Email/Slack communication settings / validation @ia @settings @grafana-pr',
+  'PMM-T534 PMM-T535 PMM-T1074 - Verify user is able to set up default Email/Slack communication settings / validation @ia @fb-settings @grafana-pr',
   async ({
     I, pmmSettingsPage, settingsAPI, current,
   }) => {
@@ -246,7 +246,7 @@ Data(communicationDefaults).Scenario(
 );
 
 Scenario(
-  'PMM-T747 - Verify enabling Azure flag @instances',
+  'PMM-T747 - Verify enabling Azure flag @fb-instances',
   async ({
     I, pmmSettingsPage, remoteInstancesPage, settingsAPI,
   }) => {
@@ -334,7 +334,7 @@ Scenario(
 ).retry(2);
 
 Scenario(
-  'PMM-T486 - Verify Public Address in PMM Settings @settings @nightly',
+  'PMM-T486 - Verify Public Address in PMM Settings @fb-settings @nightly',
   async ({ I, pmmSettingsPage, settingsAPI }) => {
     await settingsAPI.changeSettings({ publicAddress: '' });
     await pmmSettingsPage.openAdvancedSettings();
@@ -362,7 +362,7 @@ Scenario(
 ).retry(2);
 
 Scenario(
-  'PMM-T254 ensure Advisors are on by default @instances',
+  'PMM-T254 ensure Advisors are on by default @fb-instances',
   async ({ settingsAPI }) => {
     const resp = await settingsAPI.getSettings('stt_enabled');
 
@@ -372,7 +372,7 @@ Scenario(
 
 Scenario(
   '@PMM-T1227 @PMM-T1338 - Verify tooltip "Read more" links on PMM Settings page redirect to working pages '
-  + 'Verify that all the metrics from config are displayed on Telemetry tooltip in Settings > Advanced @settings',
+  + 'Verify that all the metrics from config are displayed on Telemetry tooltip in Settings > Advanced @fb-settings',
   async ({ I, pmmSettingsPage, settingsAPI }) => {
     await settingsAPI.changeSettings({ alerting: true });
 
@@ -392,7 +392,7 @@ Scenario(
   },
 );
 
-Scenario('PMM-T1401 Verify Percona Alerting wording in Settings @max-length @settings', async ({
+Scenario('PMM-T1401 Verify Percona Alerting wording in Settings @max-length @fb-settings', async ({
   I,
   pmmSettingsPage,
 }) => {
