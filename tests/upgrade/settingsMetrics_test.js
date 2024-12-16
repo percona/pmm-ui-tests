@@ -101,7 +101,7 @@ Scenario(
 Scenario(
   'Verify Metrics from custom queries for postgres_exporter after upgrade (UI) @post-client-upgrade @post-settings-metrics-upgrade',
   async ({ grafanaAPI, inventoryAPI }) => {
-    const metricName = 'pg_stat_user_tables_last_autovacuum';
+    const metricName = 'pg_stat_user_tables_analyze_count';
     const apiServiceDetails = await inventoryAPI.getServiceDetailsByPartialName('pgsql_pgss_pmm');
 
     await grafanaAPI.checkMetricExist(metricName, { type: 'service_name', value: apiServiceDetails.service_name });
