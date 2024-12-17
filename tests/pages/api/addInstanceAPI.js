@@ -124,6 +124,8 @@ module.exports = {
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
     const resp = await I.sendPostRequest('v1/management/services', body, headers);
 
+    console.log(await I.verifyCommand('docker ps -a'));
+
     if (resp.status === 400) {
       console.log(JSON.stringify(body));
       console.log(resp.data);
