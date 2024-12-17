@@ -121,12 +121,13 @@ module.exports = {
       },
     };
 
-    console.log(JSON.stringify(body));
-
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
     const resp = await I.sendPostRequest('v1/management/services', body, headers);
 
-    console.log(resp.status);
+    if (resp.status === 400) {
+      console.log(JSON.stringify(body));
+      console.log(resp.data);
+    }
 
     I.assertEqual(resp.status, 200, `Instance ${serviceName} was not added for monitoring`);
 
@@ -230,12 +231,13 @@ module.exports = {
       },
     };
 
-    console.log(JSON.stringify(body));
-
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
     const resp = await I.sendPostRequest('v1/management/services', body, headers);
 
-    console.log(resp);
+    if (resp.status === 400) {
+      console.log(JSON.stringify(body));
+      console.log(resp);
+    }
 
     I.assertEqual(resp.status, 200, `Instance ${serviceName} was not added for monitoring, \n ${JSON.stringify(resp.data, null, 2)}`);
 
