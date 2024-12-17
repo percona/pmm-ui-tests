@@ -349,7 +349,7 @@ Scenario(
     I, ruleTemplatesPage, templatesAPI, rulesAPI,
   }) => {
     const path = ruleTemplatesPage.ruleTemplate.paths.yaml;
-    const [templateName, , id] = await ruleTemplatesPage.ruleTemplate
+    const [templateName] = await ruleTemplatesPage.ruleTemplate
       .templateNameAndContent(path);
     const deleteButton = ruleTemplatesPage.buttons
       .deleteButtonByName(templateName);
@@ -365,8 +365,7 @@ Scenario(
   },
 );
 
-// TODO: unskip after https://perconadev.atlassian.net/browse/PMM-13542 is fixed
-Scenario.skip(
+Scenario(
   'PMM-T825 PMM-T821 Verify User can add Alert rule template in the file system @not-ovf @fb-alerting',
   async ({ I, ruleTemplatesPage }) => {
     const editButton = ruleTemplatesPage.buttons
@@ -379,12 +378,11 @@ Scenario.skip(
     await I.verifyCommand('docker cp tests/ia/templates/template.txt pmm-server:/srv/alerting/templates');
 
     ruleTemplatesPage.openRuleTemplatesTab();
-    I.seeElement(editButton);
-    I.seeElement(ruleTemplatesPage.buttons.editButtonByName('Custom parameter template'));
-    I.dontSeeElement(ruleTemplatesPage.buttons.editButtonByName('Space in parameter'));
+    I.seeElement(ruleTemplatesPage.buttons.addRuleButtonByName('Custom parameter template'));
+    I.dontSeeElement(ruleTemplatesPage.buttons.addRuleButtonByName('Space in parameter'));
 
-    I.seeElementsDisabled(editButton);
-    I.seeElementsDisabled(deleteButton);
+    I.dontSeeElement(editButton);
+    I.dontSeeElement(deleteButton);
   },
 );
 
