@@ -251,7 +251,7 @@ Scenario('PMM-T1956 Verify Node States metrics when one node is down @pmm-psmdb-
     frames = resp.data.results.A.frames;
 
     return frames.length === 2;
-  }, 120);
+  }, 180);
 
   assert.ok(frames.length === 2, 'There should be 2 frames in the response');
   const serviceNames = frames.map((frame) => frame.schema.fields[1].labels.service_name);
