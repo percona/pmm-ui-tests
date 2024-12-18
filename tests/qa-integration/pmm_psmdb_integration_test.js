@@ -246,12 +246,12 @@ Scenario('PMM-T1956 Verify Node States metrics when one node is down @pmm-psmdb-
   let frames;
 
   await I.asyncWaitFor(async () => {
-    const resp = await grafanaAPI.getMetric(expression, null);
+    const resp = await grafanaAPI.getMetric(expression, null, 1);
 
     frames = resp.data.results.A.frames;
 
     return frames.length === 2;
-  }, 180);
+  }, 120);
 
   assert.ok(frames.length === 2, 'There should be 2 frames in the response');
   const serviceNames = frames.map((frame) => frame.schema.fields[1].labels.service_name);
@@ -262,7 +262,7 @@ Scenario('PMM-T1956 Verify Node States metrics when one node is down @pmm-psmdb-
   await I.verifyCommand('docker start rs102');
 
   await I.asyncWaitFor(async () => {
-    const resp = await grafanaAPI.getMetric(expression, null);
+    const resp = await grafanaAPI.getMetric(expression, null, 1);
 
     frames = resp.data.results.A.frames;
 
