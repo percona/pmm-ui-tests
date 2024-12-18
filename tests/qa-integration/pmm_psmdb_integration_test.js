@@ -225,3 +225,47 @@ Scenario('PMM-T1889 Verify Mongo replication lag graph shows correct info @pmm-p
 
   I.assertFalse(/min|hour|day|week|month|year/.test(maxValue), `Max replication value should be in seconds. Value is: ${maxValue}`);
 });
+
+Scenario('PMM-T1956 Verify Node States metrics when one node is down @pmm-psmdb-replica-integration', async ({
+  I, dashboardPage, grafanaAPI, inventoryAPI,
+}) => {
+  I.amOnPage(I.buildUrlWithParams(dashboardPage.mongodbReplicaSetSummaryDashboard.cleanUrl, { from: 'now-5m', refresh: '10s', replica_set: 'rs' }));
+  dashboardPage.waitForDashboardOpened();
+
+  const { service_name: rs101ServiceName } = await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.MONGODB, 'rs101');
+  const { service_name: rs102ServiceName } = await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.MONGODB, 'rs102');
+  const { service_name: rs103ServiceName } = await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.MONGODB, 'rs103');
+  const expression = `max by (service_name) (mongodb_mongod_replset_my_state{environment=~".*", cluster=~"replicaset", set=~"rs", service_name=~"(${rs101ServiceName}|${rs102ServiceName}|${rs103ServiceName})"})`;
+
+  const initialMetrics = await grafanaAPI.getMetric(expression, null);
+  const initialFrames = initialMetrics.data.results.A.frames;
+
+  assert.ok(initialFrames.length === 3, 'There should be 3 frames in the response');
+
+  await I.verifyCommand('docker stop rs102');
+  let frames;
+
+  await I.asyncWaitFor(async () => {
+    const resp = await grafanaAPI.getMetric(expression, null);
+
+    frames = resp.data.results.A.frames;
+
+    return frames.length === 2;
+  }, 120);
+
+  assert.ok(frames.length === 2, 'There should be 2 frames in the response');
+  const serviceNames = frames.map((frame) => frame.schema.fields[1].labels.service_name);
+
+  assert.ok(serviceNames.includes(rs101ServiceName), 'rs101 service name should be in the list');
+  assert.ok(serviceNames.includes(rs103ServiceName), 'rs103 service name should be in the list');
+
+  await I.verifyCommand('docker start rs102');
+
+  await I.asyncWaitFor(async () => {
+    const resp = await grafanaAPI.getMetric(expression, null);
+
+    frames = resp.data.results.A.frames;
+
+    return frames.length === 3;
+  }, 120);
+});
