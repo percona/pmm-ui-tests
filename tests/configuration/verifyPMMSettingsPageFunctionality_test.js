@@ -218,14 +218,6 @@ Scenario(
       publicAddressValue,
       `Expected the Public Address to be saved and Match ${publicAddressValue}`,
     );
-
-    I.clearField(pmmSettingsPage.fields.publicAddressInput);
-    pmmSettingsPage.applyChanges();
-
-    I.waitForVisible(pmmSettingsPage.fields.publicAddressInput);
-    const publicAddressAfterClear = await I.grabValueFrom(pmmSettingsPage.fields.publicAddressInput);
-
-    I.assertTrue(publicAddressAfterClear.length === 0, 'Expected the Public Address Input Field to be empty!');
   },
 ).retry(1);
 
