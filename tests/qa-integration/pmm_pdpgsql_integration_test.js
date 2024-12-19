@@ -14,6 +14,7 @@ Scenario(
     I.amOnPage(dashboardPage.postgresqlInstanceSummaryDashboard.url);
     dashboardPage.waitForDashboardOpened();
     await dashboardPage.applyFilter('Service Name', 'PDPGSQL_');
+    I.wait(60);
     await dashboardPage.expandEachDashboardRow();
     I.click(adminPage.fields.metricTitle);
     adminPage.performPageDown(5);
