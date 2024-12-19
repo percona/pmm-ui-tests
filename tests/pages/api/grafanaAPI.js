@@ -358,7 +358,7 @@ module.exports = {
   },
 
   // Refactored function for new Grafana Explore UI format
-  async getMetric(metricName, refineBy) {
+  async getMetric(metricName, refineBy, lastMinutes = 5) {
     const uid = await this.getDataSourceUidByName();
     const currentTime = Date.now();
     let refineByString = '';
@@ -421,7 +421,7 @@ module.exports = {
           maxDataPoints: 757,
         },
       ],
-      from: (currentTime - 5 * 60 * 1000).toString(),
+      from: (currentTime - lastMinutes * 60 * 1000).toString(),
       to: currentTime.toString(),
     };
 
