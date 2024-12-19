@@ -7,6 +7,10 @@ Before(async ({ I }) => {
   await I.Authorize();
 });
 
+After(async ({ I }) => {
+  await I.verifyCommand('docker start rs102');
+});
+
 const version = process.env.PSMDB_VERSION ? `${process.env.PSMDB_VERSION}` : '4.4';
 const replica_container_name = `psmdb_pmm_${version}_replica`;
 const regular_container_name = `psmdb_pmm_${version}_regular`;
