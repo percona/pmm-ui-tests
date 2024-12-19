@@ -191,19 +191,24 @@ Scenario(
 
 Scenario(
   'PMM-T486 - Verify Public Address in PMM Settings @settings @nightly',
-  async ({ I, pmmSettingsPage, settingsAPI }) => {
+  async ({
+    I, pmmSettingsPage, settingsAPI,
+  }) => {
     await settingsAPI.changeSettings({ publicAddress: '' });
-    I.wait(3);
+    I.wait(10);
     await pmmSettingsPage.openAdvancedSettings();
     await pmmSettingsPage.verifyTooltip(pmmSettingsPage.tooltips.advancedSettings.publicAddress);
 
     await I.waitForVisible(pmmSettingsPage.fields.publicAddressInput, 30);
+
     I.seeElement(pmmSettingsPage.fields.publicAddressButton);
     I.click(pmmSettingsPage.fields.publicAddressButton);
+    pmmSettingsPage.applyChanges();
+    I.wait(5);
     const publicAddressValue = await I.grabValueFrom(pmmSettingsPage.fields.publicAddressInput);
 
     I.assertTrue(publicAddressValue.length > 0, 'Expected the Public Address Input Field to be not empty!');
-    pmmSettingsPage.applyChanges();
+    I.wait(5);
     I.refreshPage();
     await pmmSettingsPage.waitForPmmSettingsPageLoaded();
     const publicAddressAfterRefresh = await I.grabValueFrom(pmmSettingsPage.fields.publicAddressInput);
