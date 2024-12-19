@@ -29,6 +29,7 @@ jobs:
       sha: 'null'
       pmm_ui_tests_branch: ${{ github.head_ref }}
       pmm_qa_branch: 'v3'
-      pmm_server_image: 'perconalab/pmm-server:3-dev-latest'
+      pmm_server_image: 'perconalab/pmm-server-fb:PR-3761-646d9cc'
+#      pmm_server_image: 'perconalab/pmm-server:3-dev-latest'
       pmm_client_image: 'perconalab/pmm-client:3-dev-latest'
       pmm_client_version: '3-dev-latest'
