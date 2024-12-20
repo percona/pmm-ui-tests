@@ -92,6 +92,12 @@ exports.config = {
     ApiHelper: {
       require: './tests/helper/apiHelper.js',
     },
+    ResembleHelper: {
+      require: 'codeceptjs-resemblehelper',
+      baseFolder: './tests/screenshots/base/',
+      diffFolder: './tests/screenshots/diff/',
+      prepareBaseImage: true,
+    },
   },
   include: pageObjects,
   multiple: {
