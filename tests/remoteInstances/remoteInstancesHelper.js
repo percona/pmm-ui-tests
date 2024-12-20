@@ -208,9 +208,9 @@ module.exports = {
       },
       pxc_proxysql_8: {
         host: (PMM_SERVER_OVF_AMI_SETUP === 'true' ? SERVER_HOST : 'pxc_proxysql_pmm_8.0'),
-        port: '6032',
-        username: 'admin',
-        password: 'admin',
+        port: DB_CONFIG.PROXYSQL_SERVER_PORT,
+        username: 'proxysql_user',
+        password: 'passw0rd',
         environment: 'proxy_env',
         clusterName: 'proxy_clstr',
       },
