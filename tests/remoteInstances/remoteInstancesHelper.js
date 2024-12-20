@@ -206,7 +206,16 @@ module.exports = {
         environment: 'proxy_env',
         clusterName: 'proxy_clstr',
       },
+      pxc_proxysql_8: {
+        host: (PMM_SERVER_OVF_AMI_SETUP === 'true' ? SERVER_HOST : 'pxc_proxysql_pmm_8.0'),
+        port: '6032',
+        username: 'admin',
+        password: 'admin',
+        environment: 'proxy_env',
+        clusterName: 'proxy_clstr',
+      },
     },
+
     haproxy: {
       haproxy_2: {
         host: (PMM_SERVER_OVF_AMI_SETUP === 'true' ? EXTERNAL_EXPORTER_HOST : 'haproxy_pmm'),
