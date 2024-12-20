@@ -245,5 +245,6 @@ Scenario('PMM-T1956 Verify Node States panel when one node is down @pmm-psmdb-re
   I.wait(30);
 
   I.waitForElement(dashboardPage.panelByTitle('Node States').find('.u-over'), 15);
-  I.seeVisualDiffForElement(dashboardPage.panelByTitle('Node States').find('.u-over'), 'Mongo_down_nodes_states.png');
+  I.screenshotElement(dashboardPage.panelByTitle('Node States').find('.u-over'), 'Mongo_down_nodes_states');
+  I.seeVisualDiffForElement(dashboardPage.panelByTitle('Node States').find('.u-over'), 'Mongo_down_nodes_states.png', { prepareBaseImage: false });
 });
