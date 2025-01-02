@@ -60,9 +60,13 @@ Scenario(
 
     const response = await I.sendGetRequest('prometheus/api/v1/targets', headers);
 
+    console.log(response.data.data);
+
     const targets = response.data.data.activeTargets.find(
       (o) => o.labels.job === 'blackbox80',
     );
+
+    console.log(targets);
 
     assert.ok(targets.labels.job === 'blackbox80', 'Active Target from Custom Prometheus Config After Upgrade is not Available');
   },
