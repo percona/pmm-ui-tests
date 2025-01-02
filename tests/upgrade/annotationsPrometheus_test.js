@@ -60,7 +60,7 @@ Scenario(
 
     const response = await I.sendGetRequest('prometheus/api/v1/targets', headers);
 
-    console.log(response.data.data);
+    response.data.data.activeTargets.every((target) => console.log(target.labels));
 
     const targets = response.data.data.activeTargets.find(
       (o) => o.labels.job === 'blackbox80',
