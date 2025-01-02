@@ -5,7 +5,7 @@ const { dashboardPage } = inject();
 const clientDbServices = new DataTable(['serviceType', 'name', 'metric']);
 
 clientDbServices.add(['mysql', 'ps-single', 'mysql_global_status_max_used_connections']);
-clientDbServices.add(['postgresql', 'pgsql_pgss_pmm', 'pg_stat_database_xact_rollback']);
+clientDbServices.add(['postgresql', 'pgsql_pgs', 'pg_stat_database_xact_rollback']);
 clientDbServices.add(['mongodb', 'rs101', 'mongodb_connections']);
 
 Before(async ({ I }) => {
