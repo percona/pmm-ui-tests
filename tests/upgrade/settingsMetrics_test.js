@@ -100,7 +100,8 @@ Scenario(
 
 Scenario(
   'Verify Metrics from custom queries for postgres_exporter after upgrade (UI) @post-client-upgrade @post-settings-metrics-upgrade',
-  async ({ grafanaAPI, inventoryAPI }) => {
+  async ({ grafanaAPI, inventoryAPI, I }) => {
+    console.log(await I.verifyCommand('docker ps -a'));
     const metricName = 'pg_stat_user_tables_analyze_count';
     const apiServiceDetails = await inventoryAPI.getServiceDetailsByPartialName('pgsql_pgss_pmm');
 
