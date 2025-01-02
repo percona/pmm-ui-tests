@@ -103,7 +103,7 @@ Scenario(
   async ({ grafanaAPI, inventoryAPI, I }) => {
     console.log(await I.verifyCommand('docker ps -a'));
     const metricName = 'pg_stat_user_tables_analyze_count';
-    const apiServiceDetails = await inventoryAPI.getServiceDetailsByPartialName('pgsql_pgss_pmm');
+    const apiServiceDetails = await inventoryAPI.getServiceDetailsByPartialName('pgsql_pgs');
 
     await grafanaAPI.checkMetricExist(metricName, { type: 'service_name', value: apiServiceDetails.service_name });
   },
