@@ -91,6 +91,10 @@ Scenario(
 Scenario(
   'Verify Agents are RUNNING after Upgrade (API) [critical] @post-external-upgrade @post-client-upgrade',
   async ({ inventoryAPI, remoteInstancesHelper }) => {
+    const resp = await inventoryAPI.apiGetServices();
+
+    console.log(resp.data);
+
     for (const service of Object.values(remoteInstancesHelper.serviceTypes)) {
       if (service) {
         await inventoryAPI.verifyServiceExistsAndHasRunningStatus(
