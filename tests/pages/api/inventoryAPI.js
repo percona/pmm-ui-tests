@@ -36,6 +36,9 @@ module.exports = {
       const agents = Object.values(resp.data).flat().filter((entry) => entry);
 
       agents.every(({ status }) => console.log(status));
+      console.log(`Agent Status is: ${AGENT_STATUS.RUNNING}`);
+      agents.every(({ status }) => console.log(`Do statuses equal? ${status === AGENT_STATUS.RUNNING}`));
+      agents.every(({ status }) => console.log(`Do statuses equal? ${status.localeCompare(AGENT_STATUS.RUNNING)}`));
 
       // Check if all agents have the status "AGENT_STATUS.RUNNING"
       const areRunning = agents.every(({ status }) => status === AGENT_STATUS.RUNNING);
