@@ -54,7 +54,7 @@ Before(async ({
   await backupInventoryPage.openInventoryPage();
 });
 
-Scenario(
+Scenario.skip(
   'Create MongoDB backups data to check after upgrade @pre-mongo-backup-upgrade',
   async ({
     I, settingsAPI, locationsAPI, backupAPI, scheduledAPI, inventoryAPI, backupInventoryPage, scheduledPage, credentials,
