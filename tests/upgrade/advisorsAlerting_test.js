@@ -66,7 +66,7 @@ Scenario(
     settingsAPI, rulesAPI, alertsAPI,
   }) => {
     await settingsAPI.changeSettings({ alerting: true });
-    await rulesAPI.clearAllRules(true);
+    await rulesAPI.removeAllAlertRules(true);
     await rulesAPI.createAlertRule({ ruleName });
     // Wait for alert to appear
     await alertsAPI.waitForAlerts(60, 1);
@@ -108,7 +108,7 @@ Scenario(
     settingsAPI, rulesAPI, alertsAPI,
   }) => {
     await settingsAPI.changeSettings({ alerting: true });
-    await rulesAPI.clearAllRules(true);
+    await rulesAPI.removeAllAlertRules(true);
     await rulesAPI.createAlertRule({ ruleName });
     // Wait for alert to appear
     await alertsAPI.waitForAlerts(60, 1);
