@@ -76,8 +76,14 @@ Scenario(
     I.waitForVisible(backupInventoryPage.elements.pendingBackupByName(backupName), 10);
     backupInventoryPage.verifyBackupSucceeded(backupName);
 
-    const artifactName = await I.grabTextFrom(backupInventoryPage.elements.artifactName(backupName));
-    const artifact = await backupAPI.getArtifactByName(artifactName);
+    const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.MONGODB, mongoServiceName);
+    const schedule = {
+      service_id,
+      location_id: locationId,
+      ...scheduleSettings,
+    };
+
+    await scheduledAPI.createScheduledBackup(schedule);
   },
 ).retry(0);
 
