@@ -23,8 +23,35 @@ const scheduleSettings = {
   retention: 1,
 };
 
-Before(async ({ I }) => {
+const localStorageLocationName = 'mongoLocation';
+let localStorageLocationId;
+let locationId;
+
+BeforeSuite(async ({
+  I, locationsAPI, settingsAPI,
+}) => {
+  await settingsAPI.changeSettings({ backup: true });
+  await locationsAPI.clearAllLocations(true);
+  localStorageLocationId = await locationsAPI.createStorageLocation(
+    localStorageLocationName,
+    locationsAPI.storageType.localClient,
+    locationsAPI.localStorageDefaultConfig,
+  );
+  locationId = await locationsAPI.createStorageLocation(
+    location.name,
+    locationsAPI.storageType.s3,
+    locationsAPI.storageLocationConnection,
+    location.description,
+  );
+});
+
+Before(async ({
+  I, settingsAPI, backupAPI, backupInventoryPage,
+}) => {
   await I.Authorize();
+  await settingsAPI.changeSettings({ backup: true });
+  await backupAPI.clearAllArtifacts();
+  await backupInventoryPage.openInventoryPage();
 });
 
 Scenario(
@@ -36,34 +63,21 @@ Scenario(
       await I.say(await I.verifyCommand(`docker exec rs101 pmm-admin add mongodb --port=27017 --username=${credentials.mongoReplicaPrimaryForBackups.username} --password=${credentials.mongoReplicaPrimaryForBackups.password} --service-name=${mongoServiceName} --replication-set=rs --cluster=rs`));
     }
 
-    await settingsAPI.changeSettings({ backup: true });
-    await locationsAPI.clearAllLocations(true);
-    const locationId = await locationsAPI.createStorageLocation(
-      location.name,
-      locationsAPI.storageType.s3,
-      locationsAPI.storageLocationConnection,
-      location.description,
-    );
+    const backupName = 'mongo_backup_test';
 
-    const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.MONGODB, mongoServiceName);
-    const backupId = await backupAPI.startBackup(backupName, service_id, locationId);
+    I.click(backupInventoryPage.buttons.openAddBackupModal);
 
-    // Every 20 mins schedule
-    const schedule = {
-      service_id,
-      location_id: locationId,
-      ...scheduleSettings,
-    };
-
-    await scheduledAPI.createScheduledBackup(schedule);
-
-    /** waits and success check grouped together to speedup test */
-    await backupAPI.waitForBackupFinish(backupId);
-    // await backupAPI.waitForBackupFinish(null, schedule.name, 240);
-    backupInventoryPage.openInventoryPage();
+    backupInventoryPage.selectDropdownOption(backupInventoryPage.fields.serviceNameDropdown, mongoServiceName);
+    backupInventoryPage.selectDropdownOption(backupInventoryPage.fields.locationDropdown, backupName);
+    I.fillField(backupInventoryPage.fields.backupName, backupName);
+    // TODO: uncomment when PMM-10899 will be fixed
+    // I.fillField(backupInventoryPage.fields.description, 'test description');
+    I.click(backupInventoryPage.buttons.addBackup);
+    I.waitForVisible(backupInventoryPage.elements.pendingBackupByName(backupName), 10);
     backupInventoryPage.verifyBackupSucceeded(backupName);
-    scheduledPage.openScheduledBackupsPage();
-    I.waitForVisible(scheduledPage.elements.scheduleName(schedule.name), 20);
+
+    const artifactName = await I.grabTextFrom(backupInventoryPage.elements.artifactName(backupName));
+    const artifact = await backupAPI.getArtifactByName(artifactName);
   },
 ).retry(0);
 
