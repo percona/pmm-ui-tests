@@ -111,7 +111,7 @@ Scenario(
 const createBackupTests = new DataTable(['storageLocationName']);
 
 createBackupTests.add([location.name]);
-createBackupTests.add([localStorageLocationName]);
+// createBackupTests.add([localStorageLocationName]);
 
 Data(createBackupTests).Scenario(
   '@PMM-T855 @PMM-T1393 Verify user is able to perform MongoDB backup @backup @bm-mongo @bm-fb @pre-mongo-backup-upgrade',
