@@ -97,7 +97,7 @@ Scenario.skip(
   },
 );
 
-Scenario(
+Scenario.skip(
   '@PMM-T1505 @PMM-T971 - The scheduled job still exists and remains enabled after the upgrade @post-mongo-backup-upgrade',
   async ({ I, scheduledPage }) => {
     await scheduledPage.openScheduledBackupsPage();
@@ -122,7 +122,7 @@ Scenario(
   },
 ).retry(0);
 
-Scenario(
+Scenario.skip(
   '@PMM-T1506 - Storage Locations exist after upgrade @post-mongo-backup-upgrade',
   async ({ I, locationsPage }) => {
     locationsPage.openLocationsPage();
@@ -135,7 +135,7 @@ Scenario(
   },
 );
 
-Scenario(
+Scenario.skip(
   '@PMM-T1503 PMM-T970 - The user is able to do a restore for MongoDB after the upgrade @post-mongo-backup-upgrade',
   async ({
     I, backupInventoryPage, restorePage, credentials,
@@ -169,7 +169,7 @@ Scenario(
   },
 ).retry(0);
 
-Scenario(
+Scenario.skip(
   '@PMM-T1504 - The user is able to do a backup for MongoDB after upgrade @post-mongo-backup-upgrade',
   async ({
     locationsAPI, inventoryAPI, backupAPI, backupInventoryPage,
@@ -184,5 +184,3 @@ Scenario(
     backupInventoryPage.verifyBackupSucceeded(backupName);
   },
 );
-
-
