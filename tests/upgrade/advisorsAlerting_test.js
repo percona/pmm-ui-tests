@@ -109,7 +109,7 @@ Scenario(
   }) => {
     await settingsAPI.changeSettings({ alerting: true });
     await rulesAPI.removeAllAlertRules(true);
-    await rulesAPI.createAlertRule({ ruleName });
+    await rulesAPI.createAlertRule({ ruleName }, 'Insight');
     // Wait for alert to appear
     await alertsAPI.waitForAlerts(60, 1);
   },
