@@ -68,7 +68,7 @@ Scenario(
     I.click(backupInventoryPage.buttons.openAddBackupModal);
 
     backupInventoryPage.selectDropdownOption(backupInventoryPage.fields.serviceNameDropdown, mongoServiceName);
-    backupInventoryPage.selectDropdownOption(backupInventoryPage.fields.locationDropdown, backupName);
+    backupInventoryPage.selectDropdownOption(backupInventoryPage.fields.locationDropdown, location.name);
     I.fillField(backupInventoryPage.fields.backupName, backupName);
     // TODO: uncomment when PMM-10899 will be fixed
     // I.fillField(backupInventoryPage.fields.description, 'test description');
