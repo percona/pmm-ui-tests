@@ -88,6 +88,8 @@ module.exports = {
 
   verifyBackupSucceeded(backupName) {
     I.amOnPage(this.url);
+    I.waitForVisible(this.buttons.backupLogsByName(backupName));
+    I.click(this.buttons.backupLogsByName(backupName));
     I.waitForVisible(this.elements.backupStatusSuccessIconByName(backupName), 120);
   },
 
