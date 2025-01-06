@@ -103,7 +103,7 @@ Scenario(
     const serviceList = [clientServiceName, remoteServiceName];
 
     for (const service of serviceList) {
-      url = I.buildUrlWithParams(dashboardPage.mysqlInstanceSummaryDashboard.url, { from: 'now-5m', service_name: service });
+      url = I.buildUrlWithParams(dashboardPage.mysqlInstanceSummaryDashboard.clearUrl, { from: 'now-5m', service_name: service });
 
       I.amOnPage(url);
       dashboardPage.waitForDashboardOpened();
@@ -118,7 +118,7 @@ Scenario(
         await dashboardPage.verifyThereAreNoGraphsWithoutData(5);
       }
 
-      url = I.buildUrlWithParams(dashboardPage.mysqlPXCGaleraNodeSummaryDashboard.url, { from: 'now-5m', service_name: service });
+      url = I.buildUrlWithParams(dashboardPage.mysqlPXCGaleraNodeSummaryDashboard.clearUrl, { from: 'now-5m', service_name: service });
 
       I.amOnPage(url);
       dashboardPage.waitForDashboardOpened();
