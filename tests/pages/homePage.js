@@ -122,7 +122,6 @@ module.exports = {
     I.waitForElement(pmmUpgradePage.elements.updateNowButton);
 
     I.wait(5);
-    console.log(await I.verifyCommand('docker ps -a'));
     const numberOfElements = await I.grabNumberOfVisibleElements(pmmUpgradePage.elements.checkUpdatesNow);
 
     if (numberOfElements >= 1) {
@@ -131,11 +130,9 @@ module.exports = {
 
     I.waitForElement(pmmUpgradePage.elements.updateNowButton);
     I.click(pmmUpgradePage.elements.updateNowButton);
-    I.wait(240);
+    I.waitForElement(pmmUpgradePage.elements.updateSuccess, 240);
 
     console.log(`Upgraded to pmm server tag: ${await I.verifyCommand('docker ps -a | grep pmm-server | awk -F "pmm-server:" \'{print $2}\' | awk -F "  " \'{print $1}\'')}`);
-
-    // I.waitForElement(pmmUpgradePage.elements.updateSuccess, 360);
   },
 
   async verifyPreUpdateWidgetIsPresent(version) {
