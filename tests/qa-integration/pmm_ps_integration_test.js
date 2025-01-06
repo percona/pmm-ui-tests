@@ -149,7 +149,7 @@ Scenario(
   async ({
     I, credentials, qanOverview, qanPage, qanFilters, qanDetails,
   }) => {
-    const dbName = 'sbtest4';
+    const dbName = 'sbtest3';
     const sbUser = { name: 'sysbench', password: 'test' };
 
     const psContainerName = await I.verifyCommand('sudo docker ps --format "{{.Names}}" | grep ps_');
