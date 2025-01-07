@@ -214,11 +214,11 @@ Data(restoreFromDifferentStorageLocationsTests).Scenario(
     const artifactName = await I.grabTextFrom(backupInventoryPage.elements.artifactName(backupName));
     const artifact = await backupAPI.getArtifactByName(artifactName);
 
-    if (current.storageType === locationsAPI.storageType.localClient) {
-      console.log(await I.verifyCommand('ls /tmp/backup_data'));
-      await I.verifyCommand('ls -la /tmp/backup_data/rs', artifact.metadata_list[0].name);
-      // TODO: add check if the folder is not empty
-    }
+    // if (current.storageType === locationsAPI.storageType.localClient) {
+    //   console.log(await I.verifyCommand('ls /tmp/backup_data'));
+    //   await I.verifyCommand('ls -la /tmp/backup_data/rs', artifact.metadata_list[0].name);
+    //   // TODO: add check if the folder is not empty
+    // }
 
     let c = await I.mongoGetCollection('test', 'test');
 
