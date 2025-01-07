@@ -190,11 +190,12 @@ restoreFromDifferentStorageLocationsTests.add([locationsAPI.storageType.localCli
 restoreFromDifferentStorageLocationsTests.add([locationsAPI.storageType.s3, 'LOGICAL']);
 restoreFromDifferentStorageLocationsTests.add([locationsAPI.storageType.localClient, 'LOGICAL']);
 
+//
+
 Data(restoreFromDifferentStorageLocationsTests).Scenario(
-  '@PMM-T862 PMM-T1508 @PMM-T1393 @PMM-T1394 @PMM-T1508 @PMM-T1520 @PMM-T1452 PMM-T1583 PMM-T1674 PMM-T1675'
-  + ' Verify user is able to perform MongoDB restore from different storage locations @backup @bm-mongo @bm-fb @post-mongo-backup-upgrade',
+  ' @PMM-T1393  PMM-T1674 PMM-T1675 Verify user is able to perform MongoDB backup from different storage locations @backup @bm-mongo @bm-fb @pre-mongo-backup-upgrade',
   async ({
-    I, backupInventoryPage, backupAPI, inventoryAPI, restorePage, current,
+    I, backupInventoryPage, backupAPI, inventoryAPI, current,
   }) => {
     const currentLocationId = current.storageType === locationsAPI.storageType.s3
       ? locationId : localStorageLocationId;
@@ -212,13 +213,28 @@ Data(restoreFromDifferentStorageLocationsTests).Scenario(
     backupInventoryPage.verifyBackupSucceeded(backupName);
 
     const artifactName = await I.grabTextFrom(backupInventoryPage.elements.artifactName(backupName));
-    const artifact = await backupAPI.getArtifactByName(artifactName);
+    // const artifact = await backupAPI.getArtifactByName(artifactName);
 
     // if (current.storageType === locationsAPI.storageType.localClient) {
     //   console.log(await I.verifyCommand('ls /tmp/backup_data'));
     //   await I.verifyCommand('ls -la /tmp/backup_data/rs', artifact.metadata_list[0].name);
     //   // TODO: add check if the folder is not empty
     // }
+  },
+).retry(1);
+
+Data(restoreFromDifferentStorageLocationsTests).Scenario(
+  'PMM-T862 PMM-T1508 PMM-T1394 PMM-T1520 PMM-T1452  PMM-T1583  PMM-T1674 PMM-T1675 Verify user is able to perform MongoDB restore from different storage locations @backup @bm-mongo @bm-fb @post-mongo-backup-upgrade',
+  async ({
+    I, backupInventoryPage, backupAPI, inventoryAPI, restorePage, current,
+  }) => {
+    const backupName = `mongo-restore-${current.storageType}-${current.backupType}`;
+    const artifactName = await I.grabTextFrom(backupInventoryPage.elements.artifactName(backupName));
+    const isLogical = current.backupType === 'LOGICAL';
+    const currentLocationId = current.storageType === locationsAPI.storageType.s3
+      ? locationId : localStorageLocationId;
+    const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.MONGODB, mongoServiceName);
+    const artifactId = await backupAPI.startBackup(backupName, service_id, currentLocationId, false, isLogical);
 
     let c = await I.mongoGetCollection('test', 'test');
 
@@ -259,7 +275,7 @@ Data(restoreFromDifferentStorageLocationsTests).Scenario(
       await restorePage.waitForRestoreSuccess(artifactName);
     }
   },
-).retry(1);
+);
 
 const restoreToDifferentService = new DataTable(['backupType']);
 
