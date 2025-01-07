@@ -209,12 +209,7 @@ Data(restoreFromDifferentStorageLocationsTests).Scenario(
     I.refreshPage();
     I.waitForVisible(backupInventoryPage.elements.artifactName(backupName), 10);
 
-    if (current.storageType.includes('filesystem')) {
-      backupInventoryPage.verifyBackupSucceededTest(backupName);
-    } else {
-      backupInventoryPage.verifyBackupSucceeded(backupName);
-    }
-
+    backupInventoryPage.verifyBackupSucceeded(backupName);
 
     const artifactName = await I.grabTextFrom(backupInventoryPage.elements.artifactName(backupName));
     const artifact = await backupAPI.getArtifactByName(artifactName);
