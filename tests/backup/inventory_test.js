@@ -97,7 +97,7 @@ Scenario(
     );
 
     console.log('Locations are: ');
-    console.log((await locationsAPI.getLocationsList()).find((location) => location.name === localStorageLocationName));
+    console.log((await locationsAPI.getLocationsList()).find((location) => location.name === localStorageLocationName).location_id);
 
     const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.MONGODB, mongoServiceName);
 
@@ -241,7 +241,7 @@ Data(restoreFromDifferentStorageLocationsTests).Scenario(
     const backupName = `mongo-restore-${current.storageType}-${current.backupType}`;
     const artifactName = await I.grabTextFrom(backupInventoryPage.elements.artifactName(backupName));
     const isLogical = current.backupType === 'LOGICAL';
-    const currentLocationId = current.storageType === locationsAPI.storageType.s3
+    let currentLocationId = current.storageType === locationsAPI.storageType.s3
       ? locationId : localStorageLocationId;
     const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.MONGODB, mongoServiceName);
     let c = await I.mongoGetCollection('test', 'test');
@@ -273,11 +273,15 @@ Data(restoreFromDifferentStorageLocationsTests).Scenario(
     I.assertStartsWith(finishedAt, moment().format('YYYY-MM-DD'));
 
     if (current.storageType === locationsAPI.storageType.localClient) {
+      currentLocationId = (await locationsAPI.getLocationsList()).find((location) => location.name === localStorageLocationName)
+        .location_id;
       // PMM-T1583
       // Create new backup to rewrite pbm config and start restore from the very first backup artifact
       const newArtifactId = await backupAPI.startBackup(backupName, service_id, currentLocationId, false, isLogical);
 
       await backupAPI.waitForBackupFinish(newArtifactId);
+
+      console.log(await backupAPI.getArtifactByName(artifactName));
 
       await backupAPI.startRestore(service_id, artifactId);
       await restorePage.waitForRestoreSuccess(artifactName);
