@@ -97,7 +97,7 @@ Scenario(
     );
 
     console.log('Locations are: ');
-    console.log((await locationsAPI.getLocationsList()).find((location) => location.name === localStorageLocationName).location_id);
+    console.log((await locationsAPI.getLocationsList()).find((beLocation) => beLocation.name === location.name).location_id);
 
     const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.MONGODB, mongoServiceName);
 
@@ -347,6 +347,8 @@ Scenario(
   }) => {
     const backupName = 'mongo_artifact_delete_test';
     const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.MONGODB, mongoServiceName);
+
+    locationId = (await locationsAPI.getLocationsList()).find((beLocation) => beLocation.name === location.name).location_id;
     const artifactId = await backupAPI.startBackup(backupName, service_id, locationId);
 
     await backupAPI.waitForBackupFinish(artifactId);
