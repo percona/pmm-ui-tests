@@ -241,8 +241,6 @@ Data(restoreFromDifferentStorageLocationsTests).Scenario(
     const currentLocationId = current.storageType === locationsAPI.storageType.s3
       ? locationId : localStorageLocationId;
     const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.MONGODB, mongoServiceName);
-    const artifactId = await backupAPI.startBackup(backupName, service_id, currentLocationId, false, isLogical);
-
     let c = await I.mongoGetCollection('test', 'test');
 
     await c.insertOne({ number: 2, name: 'Anna' });
