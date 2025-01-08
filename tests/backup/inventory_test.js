@@ -96,6 +96,9 @@ Scenario(
       location.description,
     );
 
+    console.log('Locations are: ');
+    console.log(await locationsAPI.getLocationsList());
+
     const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.MONGODB, mongoServiceName);
 
     serviceId = service_id;
