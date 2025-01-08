@@ -281,9 +281,9 @@ Data(restoreFromDifferentStorageLocationsTests).Scenario(
 
       await backupAPI.waitForBackupFinish(newArtifactId);
 
-      console.log(await backupAPI.getArtifactByName(artifactName));
+      console.log((await backupAPI.getArtifactByName(artifactName)).artifact_id);
 
-      await backupAPI.startRestore(service_id, artifactId);
+      await backupAPI.startRestore(service_id, (await backupAPI.getArtifactByName(artifactName)).artifact_id);
       await restorePage.waitForRestoreSuccess(artifactName);
     }
   },
