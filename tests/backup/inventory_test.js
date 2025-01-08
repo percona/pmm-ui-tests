@@ -42,50 +42,14 @@ Feature('BM: Backup Inventory');
 BeforeSuite(async ({
   I, locationsAPI, settingsAPI, inventoryAPI,
 }) => {
-  await settingsAPI.changeSettings({ backup: true });
-  await locationsAPI.clearAllLocations(true);
-  localStorageLocationId = await locationsAPI.createStorageLocation(
-    localStorageLocationName,
-    locationsAPI.storageType.localClient,
-    locationsAPI.localStorageDefaultConfig,
-  );
-  locationId = await locationsAPI.createStorageLocation(
-    location.name,
-    locationsAPI.storageType.s3,
-    locationsAPI.storageLocationConnection,
-    location.description,
-  );
-
   await I.mongoConnect(mongoConnection);
-
-  if (!(await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.MONGODB, mongoServiceName))) {
-    I.say(await I.verifyCommand(`docker exec rs101 pmm-admin add mongodb --username=pmm --password=pmmpass --port=27017 --service-name=${mongoServiceName} --replication-set=rs --cluster=rs`));
-    I.say(await I.verifyCommand(`docker exec rs102 pmm-admin add mongodb --username=pmm --password=pmmpass --port=27017 --service-name=${mongoServiceName2} --replication-set=rs --cluster=rs`));
-    I.say(await I.verifyCommand(`docker exec rs103 pmm-admin add mongodb --username=pmm --password=pmmpass --port=27017 --service-name=${mongoServiceName3} --replication-set=rs --cluster=rs`));
-
-    // Adding extra replica set for restore
-    I.say(await I.verifyCommand(`docker exec rs101 pmm-admin add mongodb --username=pmm --password=pmmpass --port=27017 --service-name=${mongoExtraServiceName} --replication-set=rs1 --cluster=rs1`));
-    I.say(await I.verifyCommand(`docker exec rs102 pmm-admin add mongodb --username=pmm --password=pmmpass --port=27017 --service-name=${mongoExtraServiceName2} --replication-set=rs1 --cluster=rs1`));
-    I.say(await I.verifyCommand(`docker exec rs103 pmm-admin add mongodb --username=pmm --password=pmmpass --port=27017 --service-name=${mongoExtraServiceName3} --replication-set=rs1 --cluster=rs1`));
-  }
 });
 
 Before(async ({
   I, settingsAPI, backupInventoryPage, inventoryAPI, backupAPI,
 }) => {
-  const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.MONGODB, mongoServiceName);
-
-  serviceId = service_id;
-
-  await I.verifyCommand('docker exec rs101 systemctl start mongod');
-
-  const c = await I.mongoGetCollection('test', 'test');
-
-  await c.deleteMany({ number: 2 });
-
   await I.Authorize();
   await settingsAPI.changeSettings({ backup: true });
-  await backupAPI.clearAllArtifacts();
   await backupInventoryPage.openInventoryPage();
 });
 
@@ -101,6 +65,49 @@ AfterSuite(async ({ I }) => {
   await I.mongoDisconnect();
 });
 
+Scenario(
+  'Prepare environment for backup testing @backup @bm-mongo @pre-mongo-backup-upgrade',
+  async ({
+    I, inventoryAPI, backupAPI, settingsAPI,
+  }) => {
+    await settingsAPI.changeSettings({ backup: true });
+    await locationsAPI.clearAllLocations(true);
+
+    if (!(await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.MONGODB, mongoServiceName))) {
+      I.say(await I.verifyCommand(`docker exec rs101 pmm-admin add mongodb --username=pmm --password=pmmpass --port=27017 --service-name=${mongoServiceName} --replication-set=rs --cluster=rs`));
+      I.say(await I.verifyCommand(`docker exec rs102 pmm-admin add mongodb --username=pmm --password=pmmpass --port=27017 --service-name=${mongoServiceName2} --replication-set=rs --cluster=rs`));
+      I.say(await I.verifyCommand(`docker exec rs103 pmm-admin add mongodb --username=pmm --password=pmmpass --port=27017 --service-name=${mongoServiceName3} --replication-set=rs --cluster=rs`));
+
+      // Adding extra replica set for restore
+      I.say(await I.verifyCommand(`docker exec rs101 pmm-admin add mongodb --username=pmm --password=pmmpass --port=27017 --service-name=${mongoExtraServiceName} --replication-set=rs1 --cluster=rs1`));
+      I.say(await I.verifyCommand(`docker exec rs102 pmm-admin add mongodb --username=pmm --password=pmmpass --port=27017 --service-name=${mongoExtraServiceName2} --replication-set=rs1 --cluster=rs1`));
+      I.say(await I.verifyCommand(`docker exec rs103 pmm-admin add mongodb --username=pmm --password=pmmpass --port=27017 --service-name=${mongoExtraServiceName3} --replication-set=rs1 --cluster=rs1`));
+    }
+
+    localStorageLocationId = await locationsAPI.createStorageLocation(
+      localStorageLocationName,
+      locationsAPI.storageType.localClient,
+      locationsAPI.localStorageDefaultConfig,
+    );
+    locationId = await locationsAPI.createStorageLocation(
+      location.name,
+      locationsAPI.storageType.s3,
+      locationsAPI.storageLocationConnection,
+      location.description,
+    );
+
+    const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.MONGODB, mongoServiceName);
+
+    serviceId = service_id;
+
+    await I.verifyCommand('docker exec rs101 systemctl start mongod');
+
+    const c = await I.mongoGetCollection('test', 'test');
+
+    await c.deleteMany({ number: 2 });
+    await backupAPI.clearAllArtifacts();
+  },
+);
 Scenario(
   'PMM-T691 Verify message about no backups in inventory @backup @bm-mongo @pre-mongo-backup-upgrade',
   async ({
