@@ -97,7 +97,7 @@ Scenario(
     );
 
     console.log('Locations are: ');
-    console.log(await locationsAPI.getLocationsList());
+    console.log((await locationsAPI.getLocationsList()).find((location) => location.name === localStorageLocationName));
 
     const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.MONGODB, mongoServiceName);
 
