@@ -35,7 +35,7 @@ module.exports = {
       // Filter out non-empty agent arrays and flatten them into a single array
       const agents = Object.values(resp.data).flat().filter((entry) => entry);
 
-      agents.every(({ status }) => console.log(status));
+      agents.every(({ status }) => console.log(`Returned status is: ${status}`));
       console.log(`Agent Status is: ${AGENT_STATUS.RUNNING}`);
       agents.every(({ status }) => console.log(`Do statuses equal? ${status === AGENT_STATUS.RUNNING}`));
       agents.every(({ status }) => console.log(`Do statuses equal? ${status.localeCompare(AGENT_STATUS.RUNNING)}`));
