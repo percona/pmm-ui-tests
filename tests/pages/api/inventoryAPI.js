@@ -43,6 +43,9 @@ module.exports = {
       // Check if all agents have the status "AGENT_STATUS.RUNNING"
       const areRunning = agents.every(({ status }) => status === AGENT_STATUS.RUNNING);
 
+      console.log('Response of are running: ');
+      console.log(areRunning);
+
       if (areRunning) {
         return resp;
       }
