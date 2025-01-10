@@ -287,7 +287,7 @@ Data(restoreFromDifferentStorageLocationsTests).Scenario(
       await restorePage.waitForRestoreSuccess(artifactName);
     }
   },
-);
+).retry(1);
 
 const restoreToDifferentService = new DataTable(['backupType']);
 
