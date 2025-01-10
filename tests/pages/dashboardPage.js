@@ -1062,7 +1062,7 @@ module.exports = {
   },
 
   osMemoryDetails: {
-    noDataElements: 5,
+    noDataElements: 6,
     naElements: 0,
     clearUrl: 'graph/d/node-memory/memory-details',
     metrics: [

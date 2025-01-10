@@ -151,8 +151,8 @@ Scenario(
 Scenario(
   'PMM-T191 - Verify Reset All and Show Selected filters @qan',
   async ({ I, queryAnalyticsPage }) => {
-    const environmentName1 = 'pxc-dev';
-    const environmentName2 = 'dev';
+    const environmentName1 = 'pgsql-dev';
+    const environmentName2 = 'ps-dev';
 
     await queryAnalyticsPage.filters.selectFilter(environmentName1);
     await queryAnalyticsPage.filters.selectFilter(environmentName2);
@@ -180,7 +180,7 @@ Scenario(
   async ({
     I, adminPage, queryAnalyticsPage,
   }) => {
-    const serviceName = 'ps-single';
+    const serviceName = 'ps_';
     const db1 = 'postgres';
     const db2 = 'n/a';
     const section = 'Database';
