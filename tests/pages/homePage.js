@@ -2,8 +2,10 @@ const { I, dashboardPage } = inject();
 const assert = require('assert');
 const moment = require('moment');
 const productTourModal = require('./components/productTourComponent');
+const UpdatesAvailableDialog = require('./components/UpdatesAvailableModal');
 
 module.exports = {
+  updatesModal: UpdatesAvailableDialog,
   // insert your locators and methods here
   // setting locators
   url: 'graph/d/pmm-home/home-dashboard?orgId=1&refresh=1m&from=now-5m&to=now',
