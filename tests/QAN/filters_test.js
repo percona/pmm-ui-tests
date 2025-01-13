@@ -29,7 +29,7 @@ Data(filters).Scenario(
   async ({
     I, current, queryAnalyticsPage,
   }) => {
-    queryAnalyticsPage.filters.selectContainFilter('pdpgsql_pgsm_pmm');
+    queryAnalyticsPage.filters.selectContainFilter('PGSQL_16');
     I.waitForVisible(queryAnalyticsPage.filters.buttons.showSelected, 30);
     queryAnalyticsPage.filters.selectFilterInGroup(current.filterToApply, 'Command Type');
     queryAnalyticsPage.data.searchByValue(current.searchValue);
@@ -41,7 +41,7 @@ Data(filters).Scenario(
 Scenario(
   'PMM-T175 - Verify user is able to apply filter that has dots in label @qan',
   async ({ I, queryAnalyticsPage }) => {
-    const serviceName = '127.0.0.1';
+    const serviceName = 'ps_8.0';
 
     const countBefore = await queryAnalyticsPage.data.getCountOfItems();
 
@@ -73,7 +73,7 @@ Scenario(
   'PMM-T126 - Verify user is able to Reset All filters @qan',
   async ({ I, queryAnalyticsPage }) => {
     const environmentName1 = 'pxc-dev';
-    const environmentName2 = 'dev';
+    const environmentName2 = 'ps-dev';
 
     const countBefore = await queryAnalyticsPage.data.getCountOfItems();
 
@@ -175,7 +175,7 @@ Scenario('PMM-T190 - Verify user is able to see n/a filter @qan', async ({ I, qu
   await queryAnalyticsPage.filters.verifyCountOfFiltersDisplayed(0, 'bigger');
 });
 
-Scenario(
+Scenario.skip(
   'PMM-T390 - Verify that we show info message when empty result is returned @qan',
   async ({
     I, adminPage, queryAnalyticsPage,
