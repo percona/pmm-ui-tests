@@ -313,8 +313,8 @@ Scenario(
     I.click(homePage.updatesModal.closeIcon);
     // eslint-disable-next-line no-undef
     await tryTo(() => {
-      I.waitForVisible(homePage.productTourModal.skipButton, 5);
-      I.click(homePage.productTourModal.skipButton);
+      I.waitForVisible(homePage.productTour.skipButton, 5);
+      I.click(homePage.productTour.skipButton);
     });
     I.click(pmmSettingsPage.fields.checkForUpdatesSwitch);
     I.click(pmmSettingsPage.fields.applyButton);
