@@ -16,7 +16,6 @@ urlsAndMetrics.add(['PMM Upgrade', homePage.url]);
 Feature('Test Dashboards inside the MySQL Folder');
 
 BeforeSuite(async ({ I }) => {
-  console.log(await I.verifyCommand('docker ps -a'));
   const ps_service_response = await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.MYSQL, 'ps_');
   // const pxc_service_response = await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.MYSQL, 'pxc_');
 

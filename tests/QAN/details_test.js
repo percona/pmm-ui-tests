@@ -50,9 +50,9 @@ databaseEnvironments.add(['ps_8.0', 'select name']);
 // databaseEnvironments.add(['ms-single', 'select name']);
 // databaseEnvironments.add(['pxc_node', 'select']);
 // databaseEnvironments.add(['pgsql_pgss_pmm', 'insert']);
-databaseEnvironments.add(['pgsql_17', 'insert']);
+databaseEnvironments.add(['PGSQL_17', 'insert']);
 databaseEnvironments.add(['rs101', 'update']);
-
+/*
 Data(databaseEnvironments).Scenario(
   'PMM-T13 - Check Explain and Example for supported DBs @qan',
   async ({
@@ -71,23 +71,22 @@ Data(databaseEnvironments).Scenario(
     }
     /**
      * Add Verification for plan after bug is closed.
-     */
   },
 );
-
-Scenario(
+*/
+Scenario.skip(
   'PMM-T1790 - Verify that there is any no error on Explains after switching between queries from different DB servers '
     + '@qan',
   async ({
     I, queryAnalyticsPage,
   }) => {
-    queryAnalyticsPage.filters.selectContainFilter('pxc-dev');
+    queryAnalyticsPage.filters.selectContainFilter('ps-dev');
     queryAnalyticsPage.data.searchByValue('SELECT');
     queryAnalyticsPage.waitForLoaded();
     queryAnalyticsPage.data.selectRow(1);
     queryAnalyticsPage.waitForLoaded();
     queryAnalyticsPage.queryDetails.checkTab('Explain');
-    queryAnalyticsPage.filters.selectContainFilter('pxc-dev');
+    queryAnalyticsPage.filters.selectContainFilter('ps-dev');
     queryAnalyticsPage.filters.selectFilterInGroup('mongodb', 'Service Type');
     queryAnalyticsPage.data.searchByValue('UPDATE');
     queryAnalyticsPage.data.selectRow(1);

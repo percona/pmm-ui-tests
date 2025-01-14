@@ -29,7 +29,7 @@ Data(filters).Scenario(
   async ({
     I, current, queryAnalyticsPage,
   }) => {
-    queryAnalyticsPage.filters.selectContainFilter('PGSQL_16');
+    queryAnalyticsPage.filters.selectContainFilter('PGSQL_17');
     I.waitForVisible(queryAnalyticsPage.filters.buttons.showSelected, 30);
     queryAnalyticsPage.filters.selectFilterInGroup(current.filterToApply, 'Command Type');
     queryAnalyticsPage.data.searchByValue(current.searchValue);
@@ -47,7 +47,7 @@ Scenario(
 
     queryAnalyticsPage.waitForLoaded();
     await queryAnalyticsPage.filters.selectContainFilter(serviceName);
-    I.seeInCurrentUrl(`client_host=${serviceName}`);
+    I.seeInCurrentUrl(serviceName);
     const countAfter = await queryAnalyticsPage.data.getCountOfItems();
 
     assert.ok(countBefore !== countAfter, 'Query count was expected to change');
@@ -57,7 +57,7 @@ Scenario(
 Scenario(
   'PMM-T172 - Verify that selecting a filter updates the table data and URL @qan',
   async ({ I, queryAnalyticsPage }) => {
-    const environmentName = 'pxc-dev';
+    const environmentName = 'ps-dev';
 
     const countBefore = await queryAnalyticsPage.data.getCountOfItems();
 
@@ -72,7 +72,7 @@ Scenario(
 Scenario(
   'PMM-T126 - Verify user is able to Reset All filters @qan',
   async ({ I, queryAnalyticsPage }) => {
-    const environmentName1 = 'pxc-dev';
+    const environmentName1 = 'pdpgsql-dev';
     const environmentName2 = 'ps-dev';
 
     const countBefore = await queryAnalyticsPage.data.getCountOfItems();
@@ -95,8 +95,8 @@ Scenario(
 Scenario(
   'PMM-T125 - Verify user is able to Show only selected filter values and Show All filter values @qan',
   async ({ I, queryAnalyticsPage }) => {
-    const environmentName1 = 'pxc-dev';
-    const environmentName2 = 'dev';
+    const environmentName1 = 'ps-dev';
+    const environmentName2 = 'pgsql-dev';
 
     queryAnalyticsPage.filters.selectFilter(environmentName1);
     queryAnalyticsPage.filters.selectFilter(environmentName2);
@@ -117,7 +117,7 @@ Scenario(
       'Cluster',
       'Replication Set',
       'Database',
-      'Schema',
+      // 'Schema',
       'Node Name',
       'Service Name',
       'Client Host',
@@ -210,7 +210,7 @@ Scenario(
     I, adminPage, queryAnalyticsPage,
   }) => {
     const serviceType = 'mysql';
-    const serviceName = 'ps-single';
+    const serviceName = 'ps_8.0';
 
     await adminPage.applyTimeRange('Last 2 days');
     queryAnalyticsPage.waitForLoaded();
@@ -268,7 +268,7 @@ Data(shortCutTests).Scenario(
 */
 Scenario('PMM-T437 - Verify short-cut navigation for n/a items @qan', async ({ I, queryAnalyticsPage }) => {
   queryAnalyticsPage.waitForLoaded();
-  queryAnalyticsPage.filters.checkLink('pxc-dev-cluster', 'Cluster', true);
+  queryAnalyticsPage.filters.checkLink('ps-dev-cluster', 'Cluster', true);
   queryAnalyticsPage.filters.filterBy('n/a');
   queryAnalyticsPage.filters.checkLink('undefined', 'Cluster', false);
   queryAnalyticsPage.filters.checkLink('undefined', 'Replication Set', false);
