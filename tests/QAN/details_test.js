@@ -20,7 +20,7 @@ Scenario(
   async ({
     I, queryAnalyticsPage,
   }) => {
-    await queryAnalyticsPage.filters.selectFilter('pxc-dev-cluster');
+    await queryAnalyticsPage.filters.selectFilter('ps-dev-cluster');
     queryAnalyticsPage.data.selectRow(2);
     queryAnalyticsPage.waitForLoaded();
     for (const header of queryAnalyticsPage.data.labels.detailsHeaders) {
@@ -34,7 +34,7 @@ Scenario(
   async ({
     I, queryAnalyticsPage,
   }) => {
-    I.amOnPage(I.buildUrlWithParams(queryAnalyticsPage.url, { environment: 'pxc-dev', from: 'now-1h', search: 'insert' }));
+    I.amOnPage(I.buildUrlWithParams(queryAnalyticsPage.url, { environment: 'ps-dev', from: 'now-1h', search: 'insert' }));
     I.waitForElement(queryAnalyticsPage.data.elements.queryRows, 30);
     queryAnalyticsPage.data.selectRow(1);
     queryAnalyticsPage.waitForLoaded();
