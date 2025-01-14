@@ -310,6 +310,8 @@ Scenario(
 
     I.amOnPage(pmmSettingsPage.advancedSettingsUrl);
     I.waitForVisible(homePage.updatesModal.root, 30);
+    // eslint-disable-next-line no-undef
+    await tryTo(() => I.click(homePage.productTourModal.skipButton));
     I.click(homePage.updatesModal.closeIcon);
     I.click(pmmSettingsPage.fields.checkForUpdatesSwitch);
     I.click(pmmSettingsPage.fields.applyButton);
