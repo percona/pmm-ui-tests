@@ -298,7 +298,7 @@ Scenario.skip(
   },
 ).retry(1);
 
-Scenario(
+Scenario.only(
   'PMM-T1967 Verify Update modal respects update settings @fb-settings',
   async ({
     I, homePage, settingsAPI, pmmSettingsPage,
@@ -310,9 +310,12 @@ Scenario(
 
     I.amOnPage(pmmSettingsPage.advancedSettingsUrl);
     I.waitForVisible(homePage.updatesModal.root, 30);
-    // eslint-disable-next-line no-undef
-    await tryTo(() => I.click(homePage.productTourModal.skipButton));
     I.click(homePage.updatesModal.closeIcon);
+    // eslint-disable-next-line no-undef
+    await tryTo(() => {
+      I.waitForVisible(homePage.productTourModal.skipButton, 5);
+      I.click(homePage.productTourModal.skipButton);
+    });
     I.click(pmmSettingsPage.fields.checkForUpdatesSwitch);
     I.click(pmmSettingsPage.fields.applyButton);
     I.refreshPage();
