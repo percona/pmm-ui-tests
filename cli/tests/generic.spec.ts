@@ -28,6 +28,13 @@ test.describe('PMM Client "Generic" CLI tests', async () => {
     await output.outContains('Node name: ');
   });
 
+  test('Verify pmm-server container image size in not more than 2.8GB', async ({}) => {
+    const output = await cli.exec('docker image ls | grep pmm-server | awk \'{print $7}\'');
+    const size = parseFloat(output.stdout.trim().split('GB')[0]);
+
+    expect(size).toBeLessThanOrEqual(2.8);
+  });
+
   /**
    * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/generic-tests.bats#L8
    * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/generic-tests.bats#L18
