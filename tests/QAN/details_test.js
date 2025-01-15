@@ -20,7 +20,7 @@ Scenario(
   async ({
     I, queryAnalyticsPage,
   }) => {
-    await queryAnalyticsPage.filters.selectFilter('ps-dev-cluster');
+    await queryAnalyticsPage.filters.selectFilter('ps-dev');
     queryAnalyticsPage.data.selectRow(2);
     queryAnalyticsPage.waitForLoaded();
     for (const header of queryAnalyticsPage.data.labels.detailsHeaders) {
