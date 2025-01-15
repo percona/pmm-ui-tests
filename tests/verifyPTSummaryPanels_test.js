@@ -12,7 +12,7 @@ Scenario(
   async ({
     I, dashboardPage, inventoryAPI,
   }) => {
-    const ps_service_response = await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.MYSQL, 'ps-');
+    const ps_service_response = await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.MYSQL, 'ps_');
     const url = I.buildUrlWithParams(
       dashboardPage.mysqlInstanceSummaryDashboard.clearUrl,
       { service_name: ps_service_response.service_name, from: 'now-15m' },
