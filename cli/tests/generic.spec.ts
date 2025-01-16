@@ -125,7 +125,7 @@ test.describe('PMM Client "Generic" CLI tests', async () => {
       expect(output.getStdOutLines().length).toBeGreaterThan(0);
     });
 
-    output = await cli.exec('unzip -l pmm-summary.zip | grep vmagent-targets.json');
+    output = await cli.exec('unzip -l pmm-summary.zip | grep vmagent-targets');
     await output.assertSuccess();
     await output.outContainsMany(['client/vmagent-targets.json', 'client/vmagent-targets.html']);
   });
