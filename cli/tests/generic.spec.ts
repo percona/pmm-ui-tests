@@ -118,6 +118,25 @@ test.describe('PMM Client "Generic" CLI tests', async () => {
     await output.outContains(`Version: ${PMM_VERSION}`);
   });
 
+  test('PMM-T1219 - verify pmm-admin summary includes targets from vmagent', async ({}) => {
+    let output = await cli.exec('sudo pmm-admin summary --filename=pmm-summary.zip');
+    await output.assertSuccess();
+    await output.outContains('pmm-summary.zip created.');
+
+    output = await cli.exec('unzip pmm-summary.zip -d pmm-summary-logs');
+    await output.assertSuccess();
+
+    await test.step('@PMM-T1353 Verify pmm-admin summary doesn\'t save any credentials in files', async () => {
+      output = await cli.exec('cat pmm-summary-logs/client/status.json | grep \'"https://x*:x*@.*:.*"\'');
+      await output.assertSuccess();
+      expect(output.getStdOutLines().length).toBeGreaterThan(0);
+    });
+
+    output = await cli.exec('unzip -l pmm-summary.zip | grep vmagent-targets');
+    await output.assertSuccess();
+    await output.outContainsMany(['client/vmagent-targets.json', 'client/vmagent-targets.html']);
+  });
+
   /**
    * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/generic-tests.bats#L91
    */
