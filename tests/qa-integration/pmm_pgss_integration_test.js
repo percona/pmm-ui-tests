@@ -175,11 +175,11 @@ Scenario(
     const pgsql_service_name = 'pgsql_pgss_inventory_service';
 
     // adding service which will be used to verify various inventory addition commands
-    await I.say(await I.verifyCommand(`docker exec ${container_name} pmm-admin remove postgresql ${pgsql_service_name} || true`));
-    await I.say(await I.verifyCommand(`docker exec ${container_name} pmm-admin add postgresql --query-source=pgstatements --agent-password='testing' --password=${connection.password} --username=${connection.user} --service-name=${pgsql_service_name}`));
+    await I.say(await I.verifyCommand(`pmm-admin remove postgresql ${pgsql_service_name} || true`));
+    await I.say(await I.verifyCommand(`pmm-admin add postgresql --query-source=pgstatements --agent-password='testing' --password=${connection.password} --username=${connection.user} --service-name=${pgsql_service_name}`));
     //
     const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.POSTGRESQL, pgsql_service_name);
-    const pmm_agent_id = (await I.verifyCommand(`docker exec ${container_name} pmm-admin status | grep "Agent ID" | awk -F " " '{print $4}'`)).trim();
+    const pmm_agent_id = (await I.verifyCommand('pmm-admin status | grep "Agent ID" | awk -F " " \'{print $4}\'')).trim();
 
     const dbDetails = {
       username: 'pmm',

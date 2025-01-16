@@ -129,7 +129,10 @@ Scenario(
   async ({
     I, queryAnalyticsPage,
   }) => {
-    const clientServiceName = (await I.verifyCommand(`docker exec ${container_name} pmm-admin list | grep MySQL | head -1 | awk -F" " '{print $2}'`)).trim();
+    const clientServiceName = (await I.verifyCommand('pmm-admin list | grep MySQL | head -1 | awk -F" " \'{print $2}\'')).trim();
+
+    console.log(`Client service name is: ${clientServiceName}`);
+    console.log(`Remote service name is: ${remoteServiceName}`);
 
     const serviceList = [clientServiceName, remoteServiceName];
 
