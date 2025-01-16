@@ -10,7 +10,7 @@ Before(async ({ I, settingsAPI }) => {
 });
 
 const version = process.env.PS_VERSION ? `${process.env.PS_VERSION}` : '8.0';
-const container_name = `ps_8.0__1`;
+const container_name = 'ps_8.0__1';
 const remoteServiceName = 'remote_pmm-mysql-integration';
 
 const connection = {
@@ -73,6 +73,8 @@ Scenario(
   }) => {
     let response; let result;
     const metricName = 'mysql_global_status_max_used_connections';
+
+    console.log(await I.verifyCommand('docker exec ps_8.0__1 pmm-admin list'));
 
     await I.verifyCommand(`docker exec ${container_name} pmm-admin list | grep "mysqld_exporter" | grep "Running" | wc -l | grep "1"`);
     await I.verifyCommand(`docker exec ${container_name} pmm-admin list | grep "mysql_perfschema_agent" | grep "Running" | wc -l | grep "1"`);

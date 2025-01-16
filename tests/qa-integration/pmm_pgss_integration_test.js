@@ -22,7 +22,7 @@ const version = process.env.PGSQL_VERSION ? `${process.env.PGSQL_VERSION}` : '17
 const container = process.env.PGSQL_PGSS_CONTAINER ? `${process.env.PGSQL_PGSS_CONTAINER}` : 'pgsql_pgss_pmm';
 const database = `pgss${Math.floor(Math.random() * 99) + 1}`;
 let pgss_service_name;
-const container_name = `${container}_${version}`;
+const container_name = 'PGSQL_17__1';
 const pmmFrameworkLoader = `bash ${adminPage.pathToFramework}`;
 const pgsqlVersionPgss = new DataTable(['pgsqlVersion', 'expectedPgssVersion', 'expectedColumnName']);
 
@@ -35,7 +35,7 @@ const labels = [{ key: 'database', value: [`${database}`] }];
 Feature('PMM + pgss Integration Scenarios');
 
 BeforeSuite(async ({ inventoryAPI }) => {
-  const pgss_service = await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.POSTGRESQL, 'pgsql_');
+  const pgss_service = await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.POSTGRESQL, 'PDPGSQL_17');
 
   pgss_service_name = pgss_service.service_name;
 });
