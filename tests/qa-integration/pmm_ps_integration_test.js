@@ -74,12 +74,12 @@ Scenario(
     let response; let result;
     const metricName = 'mysql_global_status_max_used_connections';
 
-    console.log(await I.verifyCommand('docker exec ps_8.0__1 pmm-admin list'));
+    console.log(await I.verifyCommand('pmm-admin list'));
 
-    await I.verifyCommand(`docker exec ${container_name} pmm-admin list | grep "mysqld_exporter" | grep "Running" | wc -l | grep "1"`);
-    await I.verifyCommand(`docker exec ${container_name} pmm-admin list | grep "mysql_perfschema_agent" | grep "Running" | wc -l | grep "1"`);
+    await I.verifyCommand('pmm-admin list | grep "mysqld_exporter" | grep "Running" | wc -l | grep "1"');
+    await I.verifyCommand('pmm-admin list | grep "mysql_perfschema_agent" | grep "Running" | wc -l | grep "1"');
 
-    const clientServiceName = (await I.verifyCommand(`docker exec ${container_name} pmm-admin list | grep MySQL | head -1 | awk -F" " '{print $2}'`)).trim();
+    const clientServiceName = (await I.verifyCommand('pmm-admin list | grep MySQL | head -1 | awk -F" " \'{print $2}\'')).trim();
 
     // Waiting for metrics to start hitting for remotely added services
     I.wait(10);
