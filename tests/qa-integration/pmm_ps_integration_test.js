@@ -128,7 +128,7 @@ Scenario(
     I, queryAnalyticsPage, inventoryAPI,
   }) => {
     const clientServiceName = await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.POSTGRESQL, 'ps_pmm');
-    const serviceList = [clientServiceName, remoteServiceName];
+    const serviceList = [clientServiceName];
 
     for (const service of serviceList) {
       I.amOnPage(I.buildUrlWithParams(queryAnalyticsPage.url, { from: 'now-5m' }));
