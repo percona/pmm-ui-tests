@@ -7,9 +7,9 @@ const {
 const { adminPage } = inject();
 const connection = {
   host: '127.0.0.1',
-  port: 5432,
-  user: 'pmm',
-  password: 'pmm',
+  port: 5438,
+  user: 'postgres',
+  password: 'pass+this',
   database: 'postgres',
 };
 
