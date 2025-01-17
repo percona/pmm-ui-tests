@@ -119,9 +119,8 @@ class QueryAnalyticsData {
 
   async getCountOfItems() {
     I.waitForVisible(this.elements.queryRow(1), 30);
-    const resultsCount = (await I.grabTextFrom(this.elements.totalItems)).split(' ');
-
     console.log(`Result is: ${(await I.grabTextFrom(this.elements.totalItems))}`);
+    const resultsCount = (await I.grabTextFrom(this.elements.totalItems)).split(' ');
 
     return resultsCount[2];
   }
