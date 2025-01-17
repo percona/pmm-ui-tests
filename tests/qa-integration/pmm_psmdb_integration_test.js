@@ -94,14 +94,14 @@ Scenario.skip(
   },
 ).retry(1);
 
-Scenario.skip(
+Scenario(
   'Verify dashboard after MongoDB Instances are added @pmm-psmdb-replica-integration @not-ui-pipeline',
   async ({
-    I, dashboardPage, adminPage,
+    I, dashboardPage, adminPage, inventoryAPI,
   }) => {
-    const clientServiceName = (await I.verifyCommand(`docker exec ${replica_container_name} pmm-admin list | grep MongoDB | head -1 | awk -F" " '{print $2}'`)).trim();
+    const clientServiceName = (await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.POSTGRESQL, 'mongodb_node')).service_name;
 
-    const serviceList = [clientServiceName, remoteServiceName];
+    const serviceList = [clientServiceName];
 
     for (const service of serviceList) {
       const url = I.buildUrlWithParams(dashboardPage.mongoDbInstanceOverview.url, { from: 'now-5m', to: 'now', service_name: service });
@@ -130,7 +130,7 @@ Scenario.skip(
   },
 ).retry(1);
 
-Scenario.skip(
+Scenario(
   'Verify QAN after MongoDB Instances is added @pmm-psmdb-replica-integration @not-ui-pipeline',
   async ({
     I, queryAnalyticsPage, inventoryAPI,
