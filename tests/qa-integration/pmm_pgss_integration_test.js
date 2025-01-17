@@ -35,7 +35,7 @@ const labels = [{ key: 'database', value: [`${database}`] }];
 Feature('PMM + pgss Integration Scenarios');
 
 BeforeSuite(async ({ inventoryAPI }) => {
-  const pgss_service = await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.POSTGRESQL, 'PDPGSQL_17');
+  const pgss_service = await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.POSTGRESQL, 'pgsql_pgss_17');
 
   pgss_service_name = pgss_service.service_name;
 });
