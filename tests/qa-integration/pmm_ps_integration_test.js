@@ -130,7 +130,7 @@ Scenario(
     const clientServiceName = await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.POSTGRESQL, 'mysql_client_');
     const serviceList = [clientServiceName];
 
-    console.log(`Serivce List is: ${serviceList}`);
+    console.log(`Serivce List is: ${JSON.stringify(serviceList)}`);
 
     for (const service of serviceList) {
       I.amOnPage(I.buildUrlWithParams(queryAnalyticsPage.url, { from: 'now-5m' }));
