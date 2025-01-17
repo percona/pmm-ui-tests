@@ -95,7 +95,7 @@ Scenario.skip(
 ).retry(1);
 
 Scenario(
-  'Verify dashboard after MongoDB Instances are added @pmm-psmdb-replica-integration @not-ui-pipeline',
+  'Verify dashboard after MongoDB Instances are added @pmm-psmdb-replica-integration @not-ui-pipeline @pmm-migration',
   async ({
     I, dashboardPage, adminPage, inventoryAPI,
   }) => {
@@ -130,7 +130,7 @@ Scenario(
 ).retry(1);
 
 Scenario(
-  'Verify QAN after MongoDB Instances is added @pmm-psmdb-replica-integration @not-ui-pipeline',
+  'Verify QAN after MongoDB Instances is added @pmm-psmdb-replica-integration @not-ui-pipeline @pmm-migration',
   async ({
     I, queryAnalyticsPage, inventoryAPI,
   }) => {
