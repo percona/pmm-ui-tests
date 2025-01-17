@@ -101,7 +101,7 @@ Scenario(
   async ({
     I, dashboardPage, adminPage, inventoryAPI,
   }) => {
-    const clientServiceName = (await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.POSTGRESQL, 'mysql_client_')).service_name;
+    const clientServiceName = (await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.POSTGRESQL, 'ps_8')).service_name;
 
     const serviceList = [clientServiceName];
 
