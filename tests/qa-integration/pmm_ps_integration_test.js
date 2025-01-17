@@ -97,7 +97,7 @@ Scenario(
 ).retry(1);
 
 Scenario(
-  'Verify dashboard after PS Instances are added @pmm-ps-integration @not-ui-pipeline',
+  'Verify dashboard after PS Instances are added @pmm-ps-integration @not-ui-pipeline @pmm-migration',
   async ({
     I, dashboardPage, adminPage, inventoryAPI,
   }) => {
@@ -127,7 +127,7 @@ Scenario(
   async ({
     I, queryAnalyticsPage, inventoryAPI,
   }) => {
-    const clientServiceName = (await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.POSTGRESQL, 'mysql_client_')).service_name;
+    const clientServiceName = (await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.POSTGRESQL, 'ps_8')).service_name;
     const serviceList = [clientServiceName];
 
     console.log(`Serivce List is: ${JSON.stringify(serviceList)}`);
