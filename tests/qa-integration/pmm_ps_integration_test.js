@@ -125,9 +125,9 @@ Scenario(
 Scenario(
   'Verify QAN after PS Instances is added @pmm-ps-integration @not-ui-pipeline',
   async ({
-    I, queryAnalyticsPage,
+    I, queryAnalyticsPage, inventoryAPI,
   }) => {
-    const clientServiceName = (await I.verifyCommand(`docker exec ${container_name} pmm-admin list | grep MySQL | head -1 | awk -F" " '{print $2}'`)).trim();
+    const clientServiceName = await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.POSTGRESQL, 'ps_pmm');
     const serviceList = [clientServiceName, remoteServiceName];
 
     for (const service of serviceList) {
