@@ -48,7 +48,7 @@ Scenario(
   'PMM-T1868 - pg_stat_statements is used if no --query-source flag provided and pg_stat_monitor is not configured @not-ui-pipeline @pgss-pmm-integration',
   async ({ I }) => {
     const serviceName = `pgss_${Math.floor(Math.random() * 99) + 1}`;
-    const commandOut = await I.verifyCommand(`pmm-admin add postgresql --json --password=${connection.password} --username=${connection.user} --service-name=${serviceName} 127.0.0.1:${connection.port}`);
+    const commandOut = await I.verifyCommand(`docker exec ${container_name} pmm-admin add postgresql --json --password=${connection.password} --username=${connection.user} --service-name=${serviceName}`);
     const { service: { service_id: serviceId }, warning } = JSON.parse(commandOut);
 
     assert.ok(warning === 'Could not to detect the pg_stat_monitor extension on your system. Falling back to the pg_stat_statements.', `Expected warning message, but received \n${commandOut}`);
@@ -175,11 +175,11 @@ Scenario(
     const pgsql_service_name = 'pgsql_pgss_inventory_service';
 
     // adding service which will be used to verify various inventory addition commands
-    await I.say(await I.verifyCommand(`pmm-admin remove postgresql ${pgsql_service_name} || true`));
-    await I.say(await I.verifyCommand(`pmm-admin add postgresql --query-source=pgstatements --agent-password='testing' --password=${connection.password} --username=${connection.user} --service-name=${pgsql_service_name} 127.0.0.1:${connection.port}`));
-    //
+    await I.say(await I.verifyCommand(`docker exec ${container_name} pmm-admin remove postgresql ${pgsql_service_name} || true`));
+    await I.say(await I.verifyCommand(`docker exec ${container_name} pmm-admin add postgresql --query-source=pgstatements --agent-password='testing' --password=${connection.password} --username=${connection.user} --service-name=${pgsql_service_name}`));
+
     const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.POSTGRESQL, pgsql_service_name);
-    const pmm_agent_id = (await I.verifyCommand('pmm-admin status | grep "Agent ID" | awk -F " " \'{print $4}\'')).trim();
+    const pmm_agent_id = (await I.verifyCommand(`docker exec ${container_name} pmm-admin status | grep "Agent ID" | awk -F " " '{print $4}'`)).trim();
 
     const dbDetails = {
       username: 'pmm',
