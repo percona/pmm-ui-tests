@@ -10,7 +10,7 @@ Before(async ({ I, settingsAPI }) => {
 });
 
 const version = process.env.PS_VERSION ? `${process.env.PS_VERSION}` : '8.0';
-const container_name = 'ps_8.0__1';
+const container_name = `ps_pmm_${version}`;
 const remoteServiceName = 'remote_pmm-mysql-integration';
 
 const connection = {
@@ -74,12 +74,10 @@ Scenario(
     let response; let result;
     const metricName = 'mysql_global_status_max_used_connections';
 
-    console.log(await I.verifyCommand('pmm-admin list'));
+    await I.verifyCommand(`docker exec ${container_name} pmm-admin list | grep "mysqld_exporter" | grep "Running" | wc -l | grep "1"`);
+    await I.verifyCommand(`docker exec ${container_name} pmm-admin list | grep "mysql_perfschema_agent" | grep "Running" | wc -l | grep "1"`);
 
-    await I.verifyCommand('pmm-admin list | grep "mysqld_exporter" | grep "Running" | wc -l | grep "1"');
-    await I.verifyCommand('pmm-admin list | grep "mysql_perfschema_agent" | grep "Running" | wc -l | grep "1"');
-
-    const clientServiceName = (await I.verifyCommand('pmm-admin list | grep MySQL | head -1 | awk -F" " \'{print $2}\'')).trim();
+    const clientServiceName = (await I.verifyCommand(`docker exec ${container_name} pmm-admin list | grep MySQL | head -1 | awk -F" " '{print $2}'`)).trim();
 
     // Waiting for metrics to start hitting for remotely added services
     I.wait(10);
@@ -129,7 +127,7 @@ Scenario(
   async ({
     I, queryAnalyticsPage,
   }) => {
-    const clientServiceName = (await I.verifyCommand('pmm-admin list | grep MySQL | head -1 | awk -F" " \'{print $2}\'')).trim();
+    const clientServiceName = (await I.verifyCommand(`docker exec ${container_name} pmm-admin list | grep MySQL | head -1 | awk -F" " '{print $2}'`)).trim();
 
     console.log(`Client service name is: ${clientServiceName}`);
     console.log(`Remote service name is: ${remoteServiceName}`);
