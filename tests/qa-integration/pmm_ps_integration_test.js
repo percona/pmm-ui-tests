@@ -130,6 +130,8 @@ Scenario(
     const clientServiceName = await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.POSTGRESQL, 'ps_pmm');
     const serviceList = [clientServiceName];
 
+    console.log(`Serivce List is: ${serviceList}`);
+
     for (const service of serviceList) {
       I.amOnPage(I.buildUrlWithParams(queryAnalyticsPage.url, { from: 'now-5m' }));
       queryAnalyticsPage.waitForLoaded();
