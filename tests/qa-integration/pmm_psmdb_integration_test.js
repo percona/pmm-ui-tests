@@ -118,7 +118,9 @@ Scenario(
       }
     }
 
-    I.amOnPage(`${dashboardPage.mongodbReplicaSetSummaryDashboard.url}&var-replset=rs1`);
+    const url = I.buildUrlWithParams(dashboardPage.mongodbReplicaSetSummaryDashboard.cleanUrl, { from: 'now-5m' });
+
+    I.amOnPage(url);
     dashboardPage.waitForDashboardOpened();
     adminPage.performPageDown(5);
     await dashboardPage.expandEachDashboardRow();
