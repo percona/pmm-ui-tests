@@ -1,4 +1,5 @@
 const assert = require('assert');
+const { SERVICE_TYPE } = require('../helper/constants');
 
 Feature('PMM + PDPGSQL Integration Scenarios');
 
@@ -7,7 +8,7 @@ Before(async ({ I }) => {
 });
 
 Scenario(
-  'PMM-T1262 - Verify Postgresql Dashboard Instance Summary has Data @not-ui-pipeline @pdpgsql-pmm-integration',
+  'PMM-T1262 - Verify Postgresql Dashboard Instance Summary has Data @not-ui-pipeline @pdpgsql-pmm-integration @pmm-migration',
   async ({
     I, dashboardPage, adminPage,
   }) => {
