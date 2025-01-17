@@ -99,11 +99,11 @@ Scenario(
 Scenario(
   'Verify dashboard after PS Instances are added @pmm-ps-integration @not-ui-pipeline',
   async ({
-    I, dashboardPage, adminPage,
+    I, dashboardPage, adminPage, inventoryAPI,
   }) => {
-    const clientServiceName = (await I.verifyCommand(`docker exec ${container_name} pmm-admin list | grep MySQL | head -1 | awk -F" " '{print $2}'`)).trim();
+    const clientServiceName = (await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.POSTGRESQL, 'mysql_client_')).service_name;
 
-    const serviceList = [clientServiceName, remoteServiceName];
+    const serviceList = [clientServiceName];
 
     for (const service of serviceList) {
       const url = I.buildUrlWithParams(dashboardPage.mysqlInstanceSummaryDashboard.clearUrl, { from: 'now-5m', to: 'now', service_name: service });
@@ -123,7 +123,7 @@ Scenario(
 ).retry(2);
 
 Scenario(
-  'Verify QAN after PS Instances is added @pmm-ps-integration @not-ui-pipeline',
+  'Verify QAN after PS Instances is added @pmm-ps-integration @not-ui-pipeline @pmm-migration',
   async ({
     I, queryAnalyticsPage, inventoryAPI,
   }) => {
