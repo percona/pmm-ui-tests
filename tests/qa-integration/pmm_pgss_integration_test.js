@@ -22,7 +22,7 @@ const version = process.env.PGSQL_VERSION ? `${process.env.PGSQL_VERSION}` : '17
 const container = process.env.PGSQL_PGSS_CONTAINER ? `${process.env.PGSQL_PGSS_CONTAINER}` : 'pgsql_pgss_pmm';
 const database = `pgss${Math.floor(Math.random() * 99) + 1}`;
 let pgss_service_name;
-const container_name = 'PGSQL_17__1';
+const container_name = 'pgsql_pgss_17';
 const pmmFrameworkLoader = `bash ${adminPage.pathToFramework}`;
 const pgsqlVersionPgss = new DataTable(['pgsqlVersion', 'expectedPgssVersion', 'expectedColumnName']);
 
