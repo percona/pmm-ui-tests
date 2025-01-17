@@ -12,11 +12,11 @@ Scenario(
   async ({
     I, dashboardPage, inventoryAPI,
   }) => {
-    const clientServiceName = (await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.POSTGRESQL, 'PDGPGSQL_')).service_name;
+    const service = (await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.POSTGRESQL, 'PDGPGSQL_'));
 
-    console.log(`PDPGSQL client service name is: ${clientServiceName}`);
+    console.log(`PDPGSQL client service name is: ${service}`);
 
-    I.amOnPage(I.buildUrlWithParams(dashboardPage.postgresqlInstanceSummaryDashboard.cleanUrl, { from: 'now-5m', service_name: clientServiceName }));
+    I.amOnPage(I.buildUrlWithParams(dashboardPage.postgresqlInstanceSummaryDashboard.cleanUrl, { from: 'now-5m', service_name: service.service_name }));
     await dashboardPage.waitForDashboardOpened();
     await dashboardPage.expandEachDashboardRow();
     await dashboardPage.verifyMetricsExistence(dashboardPage.postgresqlInstanceSummaryDashboard.metrics);
