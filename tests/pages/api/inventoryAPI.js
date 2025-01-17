@@ -51,9 +51,6 @@ module.exports = {
   async apiGetNodeInfoByServiceName(serviceType, serviceName, excludeSubstring) {
     const resp = await this.apiGetServices(serviceType);
 
-    console.log(`Expected name ${serviceName}`);
-    console.log(resp.data);
-
     const data = Object.values(resp.data).flat()
       .filter(({ service_name }) => service_name.includes(serviceName));
 

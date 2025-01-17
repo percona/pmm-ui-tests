@@ -12,7 +12,7 @@ Scenario(
   async ({
     I, dashboardPage, inventoryAPI,
   }) => {
-    const service = (await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.POSTGRESQL, 'PDGPGSQL_'));
+    const service = (await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.POSTGRESQL, 'PDPGSQL_'));
 
     console.log(`PDPGSQL client service name is: ${service}`);
 
