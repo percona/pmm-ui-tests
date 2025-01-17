@@ -127,7 +127,7 @@ Scenario(
   async ({
     I, queryAnalyticsPage, inventoryAPI,
   }) => {
-    const clientServiceName = await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.POSTGRESQL, 'ps_pmm');
+    const clientServiceName = await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.POSTGRESQL, 'mysql_client_');
     const serviceList = [clientServiceName];
 
     console.log(`Serivce List is: ${serviceList}`);
