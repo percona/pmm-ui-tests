@@ -10,9 +10,13 @@ Before(async ({ I }) => {
 Scenario(
   'PMM-T1262 - Verify Postgresql Dashboard Instance Summary has Data @not-ui-pipeline @pdpgsql-pmm-integration @pmm-migration',
   async ({
-    I, dashboardPage, adminPage,
+    I, dashboardPage, inventoryAPI,
   }) => {
-    I.amOnPage(dashboardPage.postgresqlInstanceSummaryDashboard.url);
+    const clientServiceName = (await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.POSTGRESQL, 'PDGPGSQL_')).service_name;
+
+    console.log(`PDPGSQL client service name is: ${clientServiceName}`);
+
+    I.amOnPage(I.buildUrlWithParams(dashboardPage.postgresqlInstanceSummaryDashboard.cleanUrl, { from: 'now-5m', service_name: clientServiceName }));
     await dashboardPage.waitForDashboardOpened();
     await dashboardPage.applyFilter('Service Name', 'pdpgsql_');
     // Grab containerName from ServiceName
