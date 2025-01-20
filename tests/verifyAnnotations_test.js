@@ -78,7 +78,7 @@ Scenario(
     const annotationTitle = 'pmm-annotate-without-tags';
 
     await I.verifyCommand(
-      `pmm-admin annotate "${annotationTitle}"`,
+      `docker exec rs101 pmm-admin annotate "${annotationTitle}"`,
     );
 
     I.amOnPage(`${dashboardPage.processDetailsDashboard.url}`);
@@ -97,7 +97,7 @@ Scenario(
     const defaultAnnotation = 'pmm_annotation';
 
     await I.verifyCommand(
-      `pmm-admin annotate "${annotationTitle2}" --tags="${annotationTag1},${annotationTag2}"`,
+      `docker exec rs101 pmm-admin annotate "${annotationTitle2}" --tags="${annotationTag1},${annotationTag2}"`,
     );
     I.amOnPage(`${dashboardPage.processDetailsDashboard.url}`);
     dashboardPage.waitForDashboardOpened();
