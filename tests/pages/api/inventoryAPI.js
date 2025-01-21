@@ -37,8 +37,9 @@ module.exports = {
       const agents = Object.values(resp.data).flat().filter((entry) => entry);
 
       agents.every(({ status, agent_type }) => {
-        console.log(`Agent status is: ${status} for agent type: ${agent_type}`);
-        console.log(`Expected status is: ${AGENT_STATUS.RUNNING} do statuses equal? ${status === AGENT_STATUS.RUNNING}`);
+        if (status !== AGENT_STATUS.RUNNING) {
+          console.log(`Agent status is: ${status} for agent type: ${agent_type}`);
+        }
 
         return status === AGENT_STATUS.RUNNING;
       });
