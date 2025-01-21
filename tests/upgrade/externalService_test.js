@@ -39,7 +39,6 @@ Scenario(
     };
 
     for (const type of Object.values(remoteInstancesHelper.instanceTypes)) {
-      console.log(`Adding DB type: ${type}`);
       if (type) {
         if (type === 'RDSAurora') {
           await addInstanceAPI.apiAddInstance(
